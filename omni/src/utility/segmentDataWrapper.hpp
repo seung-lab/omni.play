@@ -5,6 +5,7 @@
 #include "segment/omSegmentCache.h"
 #include "volume/omSegmentation.h"
 #include "utility/segmentationDataWrapper.hpp"
+#include "segment/omSegmentLists.hpp"
 
 class SegmentDataWrapper {
 private:
@@ -144,6 +145,10 @@ public:
 
 	inline OmSegmentation& GetSegmentation() const {
 		return OmProject::GetSegmentation(segmentationID_);
+	}
+
+	inline boost::shared_ptr<OmSegmentLists> GetSegmentLists() const {
+		return GetSegmentation().GetSegmentLists();
 	}
 
 	inline OmSegment* getSegment() const {

@@ -12,6 +12,7 @@
 #include "view3d/omCamera.h"
 #include "view3d/omView3d.h"
 #include "view3d/omView3dUi.h"
+#include "view3d/omView3dKeyPressEventListener.h"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
@@ -35,6 +36,9 @@ void OmView3dUi::MouseRelease(QMouseEvent * event)
 {
 	if( SPLIT_MODE == OmStateManager::GetToolMode()){
 		DendModeMouseReleased(event);
+		return;
+	} else if(CUT_MODE == OmStateManager::GetToolMode()) {
+		CutModeMouseReleased(event);
 		return;
 	}
 
@@ -96,8 +100,18 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 		return;
 	}
 	mpView3d->updateGL();
-
 	OmActions::FindAndSplitSegments(sdw, mViewGroupState);
+}
+
+void OmView3dUi::CutModeMouseReleased(QMouseEvent * event)
+{
+	const SegmentDataWrapper sdw = PickSegmentMouse(event, false);
+	if (!sdw.IsSegmentValid()) {
+		mpView3d->updateGL();
+		return;
+	}
+	mpView3d->updateGL();
+	OmActions::FindAndCutSegments(sdw, mViewGroupState);
 }
 
 /////////////////////////////////

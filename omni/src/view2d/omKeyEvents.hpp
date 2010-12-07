@@ -43,9 +43,6 @@ public:
 		case Qt::Key_R:
 			OmSegmentSelected::RandomizeColor();
 			break;
-		case Qt::Key_V:
-			OmSegmentSelected::ToggleValid();
-			break;
 		case Qt::Key_L:
 			state_->ToggleLevelLock();
 			v2d_->myUpdate();

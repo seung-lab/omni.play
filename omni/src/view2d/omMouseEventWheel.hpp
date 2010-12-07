@@ -1,7 +1,7 @@
 #ifndef OM_MOUSE_EVENT_WHEEL_HPP
 #define OM_MOUSE_EVENT_WHEEL_HPP
 
-#include "gui/toolbars/mainToolbar/filterWidget.h"
+#include "gui/toolbars/mainToolbar/filterWidget.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "view2d/omMouseEventUtils.hpp"
@@ -34,13 +34,10 @@ public:
 				state_->MoveDownStackFartherFromViewer();
 			}
 		} else if(change_alpha){
-			FilterWidget* fw = state_->getViewGroupState()->GetFilterWidget();
-			if(fw){
-				if (numSteps >= 0) {
-					fw->increaseAlpha();
-				} else{
-					fw->decreaseAlpha();
-				}
+			if (numSteps >= 0) {
+				FilterWidget::IncreaseAlpha();
+			} else{
+				FilterWidget::DecreaseAlpha();
 			}
 		} else {
 			v2d_->Zoom()->MouseWheelZoom(numSteps);

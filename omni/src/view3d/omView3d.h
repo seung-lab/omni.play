@@ -9,6 +9,8 @@
 #include "system/events/omViewEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omPreferenceEvent.h"
+#include "system/events/omKeyPressEventListener.h"
+#include "view3d/omView3dKeyPressEventListener.h"
 #include "common/omCommon.h"
 
 #include <QGLWidget>
@@ -21,7 +23,8 @@ class OmView3d : public QGLWidget,
 	public OmPreferenceEventListener,
 	public OmSegmentEventListener,
 	public OmView3dEventListener,
-	public OmViewEventListener
+	public OmViewEventListener,
+	public OmView3dKeyPressEventListener
 {
 	Q_OBJECT
 

@@ -30,6 +30,10 @@ public:
 											   OmSegment* seg1,
 											   OmSegment* seg2)
 	{
+	  if(!seg1 || !seg2){
+	    return makeEdge();
+	  }
+
 		if( segCache->findRoot(seg1) != segCache->findRoot(seg2) ){
 			//debug(dend, "can't split disconnected objects.\n");
 			return makeEdge();

@@ -1,3 +1,6 @@
+#include "actions/io/omActionLogger.hpp"
+#include "actions/io/omActionReplayer.hpp"
+#include "actions/omActions.hpp"
 #include "common/omCommon.h"
 #include "common/omException.h"
 #include "common/omStd.h"
@@ -7,8 +10,8 @@
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omIDataWriter.h"
+#include "mesh/omMeshSegmentList.h"
 #include "project/omProject.h"
-#include "actions/omActions.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "system/cache/omCacheManager.h"
 #include "system/events/omEventManager.h"
@@ -17,12 +20,10 @@
 #include "system/omPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
+#include "tiles/cache/omTileCache.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
-#include "mesh/omMeshSegmentList.h"
-#include "actions/io/omActionLogger.hpp"
-#include "actions/io/omActionReplayer.hpp"
 
 #include <QDir>
 #include <QFile>
@@ -158,6 +159,7 @@ void OmProject::Close()
 	//OmLocalPreferences
 
 	//close project data
+	OmTileCache::Reset();
 	OmProjectData::Close();
 	OmProjectData::Delete();
 

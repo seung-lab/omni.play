@@ -244,7 +244,8 @@ void OmSegmentGraph::updateSizeListsFromJoin(OmSegment* parent, OmSegment* child
 {
 	OmSegment * root = mCache->findRoot(parent);
 	getSegmentLists()->UpdateFromJoinWorking(root, child);
-	getSegmentLists()->UpdateFromJoinValid(root, child); //TODO: we update valid?
+	getSegmentLists()->UpdateFromJoinUncertain(root, child);
+	getSegmentLists()->UpdateFromJoinValid(root, child);
 }
 
 void OmSegmentGraph::updateSizeListsFromSplit(OmSegment* parent, OmSegment* child)
@@ -252,7 +253,8 @@ void OmSegmentGraph::updateSizeListsFromSplit(OmSegment* parent, OmSegment* chil
 	OmSegment * root = mCache->findRoot(parent);
 	uint64_t newChildSize = computeSegmentSizeWithChildren(child->value());
 	getSegmentLists()->UpdateFromSplitWorking(root, child, newChildSize);
-    //TODO: we don't update valid?
+	getSegmentLists()->UpdateFromSplitUncertain(root, child, newChildSize);
+	getSegmentLists()->UpdateFromSplitValid(root, child, newChildSize);
 }
 
 quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )

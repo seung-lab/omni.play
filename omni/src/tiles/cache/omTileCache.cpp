@@ -1,137 +1,61 @@
-#include "view2d/omView2dState.hpp"
-#include "tiles/omTilePreFetcher.hpp"
-#include "view2d/omTileDrawer.hpp"
 #include "tiles/cache/omTileCache.h"
-#include "tiles/cache/omTileCacheImpl.h"
-#include "system/omStateManager.h"
-
-#include <boost/make_shared.hpp>
+#include "tiles/cache/omTileCacheImpl.hpp"
 
 OmTileCache::OmTileCache()
-	: cacheChannel_(boost::make_shared<OmTileCacheChannel>())
-	, cacheNonChannel_(boost::make_shared<OmTileCacheNonChannel>())
-	, preFetcher_(boost::make_shared<OmTilePreFetcher>())
-{
-	numDrawersActive_.set(0);
+	: impl_(new OmTileCacheImpl())
+{}
+
+void OmTileCache::Reset(){
+	instance().impl_ =
+		boost::shared_ptr<OmTileCacheImpl>(new OmTileCacheImpl());
 }
 
-void OmTileCache::Prefetch(const OmTileCoord& key)
-{
-	if(isChannel(key)){
-		cacheChannel_->Prefetch(key);
-	} else {
-		cacheNonChannel_->Prefetch(key);
-	}
+void OmTileCache::Prefetch(const OmTileCoord& key){
+	instance().impl_->Prefetch(key);
 }
 
 void OmTileCache::Get(OmTileDrawer* drawer,
 					  OmTilePtr& tile,
 					  const OmTileCoord& key,
-					  const om::Blocking blocking)
-{
-	setDrawerActive(drawer);
-	doGet(tile, key, blocking);
+					  const om::Blocking blocking){
+	instance().impl_->Get(drawer, tile, key, blocking);
 }
 
 void OmTileCache::doGet(OmTilePtr& tile,
 						const OmTileCoord& key,
-						const om::Blocking blocking)
-{
-	if(isChannel(key)){
-		cacheChannel_->Get(tile, key, blocking);
-	} else {
-		cacheNonChannel_->Get(tile, key, blocking);
-	}
+						const om::Blocking blocking){
+	instance().impl_->doGet(tile, key, blocking);
 }
 
 void OmTileCache::RemoveSpaceCoord(const SpaceCoord & coord){
-	cacheNonChannel_->RemoveSpaceCoord(coord);
-}
-
-bool OmTileCache::isChannel(const OmTileCoord& key){
-	return CHANNEL == key.getVolume()->getVolumeType();
+	instance().impl_->RemoveSpaceCoord(coord);
 }
 
 void OmTileCache::RegisterDrawer(OmTileDrawer* d){
-	drawersActive_[d] = false;
+	instance().impl_->RegisterDrawer(d);
 }
 
-void OmTileCache::UnRegisterDrawer(OmTileDrawer* d)
-{
-	if(drawersActive_[d]){
-		--numDrawersActive_;
-	}
-	drawersActive_.erase(d);
-	runIdleThreadTask();
+void OmTileCache::UnRegisterDrawer(OmTileDrawer* d){
+	instance().impl_->UnRegisterDrawer(d);
 }
 
-void OmTileCache::setDrawerActive(OmTileDrawer* d)
-{
-	if(drawersActive_[d]){
-		return;
-	}
-
-	drawersActive_[d] = true;
-	++numDrawersActive_;
-	stopIdleThreadTask();
-}
-
-void OmTileCache::SetDrawerDone(OmTileDrawer* d)
-{
-	if(!drawersActive_[d]){
-		return;
-	}
-
-	drawersActive_[d] = false;
-	--numDrawersActive_;
-	runIdleThreadTask();
-}
-
-void OmTileCache::runIdleThreadTask()
-{
-	if(OmStateManager::getNoTilePrefetch()){
-		return;
-	}
-
-	if(AreDrawersActive()){
-		return;
-	}
-
-	std::list<OmTileDrawer*> drawers;
-	FOR_EACH(iter, drawersActive_){
-		drawers.push_back(iter->first);
-	}
-	preFetcher_->RunTasks(drawers);
-}
-
-void OmTileCache::stopIdleThreadTask()
-{
-	if(!AreDrawersActive()){
-		return;
-	}
-
-	preFetcher_->StopTasks();
+void OmTileCache::SetDrawerDone(OmTileDrawer* d){
+	instance().impl_->SetDrawerDone(d);
 }
 
 void OmTileCache::WidgetVisibilityChanged(boost::shared_ptr<OmTileDrawer> drawer,
-										  const bool visible)
-{
-	if(visible){
-		setDrawerActive(drawer.get());
-	}else{
-		SetDrawerDone(drawer.get());
-	}
+										  const bool visible){
+	instance().impl_->WidgetVisibilityChanged(drawer, visible);
 }
 
-bool OmTileCache::AreDrawersActive()
-{
-	return numDrawersActive_.get() > 0 ||
-		OmCacheManager::AmClosingDown() ||
-		QApplication::mouseButtons() != Qt::NoButton;
+bool OmTileCache::AreDrawersActive(){
+	return instance().impl_->AreDrawersActive();
 }
 
-void OmTileCache::Clear()
-{
-	cacheChannel_->Clear();
-	cacheNonChannel_->Clear();
+void OmTileCache::Clear(){
+	instance().impl_->Clear();
+}
+
+void OmTileCache::ClearChannel(){
+	instance().impl_->ClearChannel();
 }

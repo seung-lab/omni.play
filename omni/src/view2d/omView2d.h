@@ -4,6 +4,8 @@
 #include "view2d/omView2dState.hpp"
 #include "view2d/omView2dCore.h"
 #include "system/omStateManager.h"
+#include "view2d/omView2dKeyPressEventListener.h"
+
 
 class OmView2dEvents;
 class OmScreenPainter;
@@ -13,7 +15,7 @@ class OmMouseEvents;
 class OmKeyEvents;
 class OmView2dZoom;
 
-class OmView2d : public OmView2dCore {
+class OmView2d : public OmView2dCore, public OmView2dKeyPressEventListener {
 Q_OBJECT
 
 public:

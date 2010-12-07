@@ -1,25 +1,16 @@
-
 #include "omCamera.h"
-
 #include "common/omGl.h"
 #include "common/omDebug.h"
 
-#define DEBUG 0
-
-//static const Vector3<float> INITIAL_POSITION(-20, 0, 0);      //position
 static const float INITIAL_DISTANCE = 20;
-static const Vector3 < float >INITIAL_DIRECTION(1, 0, 0);	//direction
-static const Vector3 < float >INITIAL_FOCUS(0, 0, 0);	//focus
-static const Vector3 < float >INITIAL_UP(0, 1, 0);	//orientation
+static const Vector3f INITIAL_DIRECTION(1, 0, 0);	//direction
+static const Vector3f INITIAL_FOCUS(0, 0, 0);	//focus
+static const Vector3f INITIAL_UP(0, 1, 0);     //orientation
 
-/////////////////////////////////
-///////
-///////          OmCamera
-///////
-
-//constructor
 OmCamera::OmCamera()
- : mZoomer(this), mPanner(this), mArcBall(this)
+	: mZoomer(this)
+	, mPanner(this)
+	, mArcBall(this)
 {
 
 	//initialize view matrix
@@ -38,7 +29,7 @@ OmCamera::OmCamera()
 ///////          State Accessors
 
 /*
- * Specifies the affine transformation of x and y from 
+ * Specifies the affine transformation of x and y from
  * normalized device coordinates to	window coordinates
  */
 Vector4 < int > OmCamera::GetViewport() const
@@ -116,7 +107,6 @@ void OmCamera::ApplyReshape(const Vector2 < int >&dims)
 
 void OmCamera::ResetModelview()
 {
-
 	///use gluLookAt to compute initial orbit
 	//set to modelview matrix
 	glMatrixMode(GL_MODELVIEW);
@@ -167,13 +157,13 @@ void OmCamera::ApplyModelview()
 ///////          Property Accessors
 ///////
 
-Vector3 < float > OmCamera::GetPosition()
+Vector3f OmCamera::GetPosition()
 {
 	bool valid;
 	return mModelViewMatrix.getInverse(valid).getTranslation();
 }
 
-Vector3 < float > OmCamera::GetFocus()
+Vector3f OmCamera::GetFocus()
 {
 	return -mFocusMatrix.getTranslation();
 }
@@ -187,14 +177,12 @@ void OmCamera::SetFocus(const Vector3f & focus)
 float OmCamera::GetDistance()
 {
 	return -mZoomMatrix.ml[14];
-	//return -Vector3f::dot( mZoomMatrix.getTranslation(), INITIAL_DIRECTION);
 }
 
 void OmCamera::SetDistance(float distance)
 {
 	//z-component of translation vector
 	mZoomMatrix.ml[14] = -distance;
-	//mZoomMatrix.setTranslation(  INITIAL_DIRECTION * (-distance) );
 	UpdateModelview();
 }
 
@@ -251,7 +239,7 @@ void OmCamera::DrawFocusAxis()
 	glLoadMatrixf((mLookAtMatrix * mZoomMatrix * mOrbitMatrix).ml);
 
 	//scale to maintain axis size
-	float scale = GetDistance() / 30.0f;
+	const float scale = GetDistance() / 30.0f;
 	glScalef(scale, scale, scale);
 
 	//draw axis

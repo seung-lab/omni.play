@@ -30,14 +30,15 @@ private:
 	OmSegID mSize;
 	bool mAreThereAnySegmentsSelected;
  	const uint32_t mNumElements;
-	int mCurSegCacheFreshness;
-	OmViewGroupState * mViewGroupState;
+	int freshness_;
+	OmViewGroupState* vgs_;
 
 	std::vector<OmColorWithFreshness> mColorCache;
 
 	void setup();
 
 	OmColor getVoxelColorForView2d(const OmSegID val);
+	OmColor getVoxelColorForView2d(OmSegment* seg);
 
 	static const std::vector<uint8_t> selectedColorLookup_;
 
@@ -68,6 +69,9 @@ private:
 	}
 
 	void doColorTile(uint32_t const*, OmColorRGBA*);
+	void doColorTileParallel(uint32_t const*const d,
+							 OmColorRGBA* colorMappedData);
+	OmColorRGBA colorVoxel(const uint32_t val);
 
 	struct colorizer_mutex_pool_tag;
 	typedef zi::spinlock::pool<colorizer_mutex_pool_tag>::guard mutex_guard_t;

@@ -2,7 +2,7 @@
 #include "gui/mainwindow.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
-#include "gui/toolbars/dendToolbar/displayTools.h"
+#include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
 #include "gui/toolbars/dendToolbar/validationGroup.h"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
@@ -27,10 +27,10 @@ DendToolBar::DendToolBar(MainWindow* mw, OmViewGroupState* vgs)
 	//addWidget(new BreakThresholdGroup(this));
 
 	/*
-	graphToolsDock = makeDockWidget(graphTools);
-	validationGroupDock = makeDockWidget(validationGroup);
-	displayToolsDock = makeDockWidget(displayTools);
-	updateToolBarsPos(QPoint(0,0));
+	  graphToolsDock = makeDockWidget(graphTools);
+	  validationGroupDock = makeDockWidget(validationGroup);
+	  displayToolsDock = makeDockWidget(displayTools);
+	  updateToolBarsPos(QPoint(0,0));
 	*/
 }
 
@@ -66,7 +66,7 @@ void DendToolBar::updateToolBarsPos(QPoint)
 QPoint DendToolBar::recalcPos(QPoint newPos, const int height)
 {
 	return QPoint(newPos.x(),
-		      newPos.y() + height);
+				  newPos.y() + height);
 }
 
 int DendToolBar::moveToolDock(QDockWidget* toolDock, QPoint newPos )
@@ -100,4 +100,9 @@ void DendToolBar::updateGui()
 void DendToolBar::SetSplittingOff()
 {
 	graphTools->SetSplittingOff();
+}
+
+void DendToolBar::SetCuttingOff()
+{
+	graphTools->SetCuttingOff();
 }

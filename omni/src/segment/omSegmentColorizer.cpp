@@ -1,3 +1,4 @@
+#include "segment/omSegmentUtils.hpp"
 #include "segment/omSegmentColorizer.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
@@ -12,12 +13,12 @@ const std::vector<uint8_t> OmSegmentColorizer::selectedColorLookup_ =
 
 OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache* cache,
 					const OmSegmentColorCacheType sccType,
-					const Vector2i& dims, OmViewGroupState * vgs)
+					const Vector2i& dims, OmViewGroupState* vgs)
 	: mSegmentCache(cache)
 	, mSccType(sccType)
 	, mSize(0)
 	, mNumElements(dims.x * dims.y)
-	, mViewGroupState(vgs)
+	, vgs_(vgs)
 {}
 
 void OmSegmentColorizer::setup()
@@ -39,21 +40,25 @@ OmSegmentColorizer::ColorTile(uint32_t const* imageData)
 {
 	setup();
 
-	zi::rwmutex::read_guard g(mMapResizeMutex); //prevent vectors from being resized while we're reading
+	{
+		//prevent vectors from being resized while we're reading
+		zi::rwmutex::read_guard g(mMapResizeMutex);
 
-	mAreThereAnySegmentsSelected =
-		mSegmentCache->AreSegmentsSelected() ||
-		mSegmentCache->AreSegmentsEnabled();
+		mAreThereAnySegmentsSelected =
+			mSegmentCache->AreSegmentsSelected() ||
+			mSegmentCache->AreSegmentsEnabled();
 
-	mCurSegCacheFreshness = OmCacheManager::GetFreshness();
+		freshness_ = OmCacheManager::GetFreshness();
 
-	boost::shared_ptr<OmColorRGBA> colorMappedDataPtr
-		= OmSmartPtr<OmColorRGBA>::MallocNumElements(mNumElements,
-													 om::DONT_ZERO_FILL);
+		boost::shared_ptr<OmColorRGBA> colorMappedDataPtr
+			= OmSmartPtr<OmColorRGBA>::MallocNumElements(mNumElements,
+														 om::DONT_ZERO_FILL);
 
-	doColorTile(imageData, colorMappedDataPtr.get());
+		doColorTile(imageData, colorMappedDataPtr.get());
+		//doColorTileParallel(imageData, colorMappedDataPtr.get());
 
-	return colorMappedDataPtr;
+		return colorMappedDataPtr;
+	}
 }
 
 void OmSegmentColorizer::doColorTile(uint32_t const*const d,
@@ -81,9 +86,9 @@ void OmSegmentColorizer::doColorTile(uint32_t const*const d,
 			{ // update cache, if needed
 				mutex_guard_t g( d[i] );
 
-				if(mCurSegCacheFreshness > mColorCache[d[i]].freshness){
+				if(freshness_ > mColorCache[d[i]].freshness){
 					mColorCache[d[i]].color = getVoxelColorForView2d(d[i]);
-					mColorCache[d[i]].freshness = mCurSegCacheFreshness;
+					mColorCache[d[i]].freshness = freshness_;
 				}
 			}
 
@@ -98,12 +103,51 @@ void OmSegmentColorizer::doColorTile(uint32_t const*const d,
 	}
 }
 
+OmColorRGBA OmSegmentColorizer::colorVoxel(const uint32_t val)
+{
+	static const uint8_t alpha = 255;
+
+	if( 0 == val ){ // black
+		OmColorRGBA ret = { 0, 0, 0, alpha };
+		return ret;
+	}
+
+	{
+		// update cache, if needed
+		mutex_guard_t g( val );
+		if(freshness_ > mColorCache[val].freshness){
+			mColorCache[val].color = getVoxelColorForView2d(val);
+			mColorCache[val].freshness = freshness_;
+		}
+	}
+
+	OmColorRGBA ret = { mColorCache[val].color.red,
+						mColorCache[val].color.green,
+						mColorCache[val].color.blue,
+						alpha };
+	return ret;
+}
+
+void OmSegmentColorizer::doColorTileParallel(uint32_t const*const data,
+											 OmColorRGBA* colorMappedData)
+{
+	zi::transform(data,
+				  data + mNumElements,
+				  colorMappedData,
+				  std::bind1st(std::mem_fun(&OmSegmentColorizer::colorVoxel), this));
+}
+
 OmColor OmSegmentColorizer::getVoxelColorForView2d(const OmSegID val)
 {
 	OmSegment* seg = mSegmentCache->GetSegment(val);
-	if( NULL == seg ) {
+	if(!seg){
 		return blackColor;
 	}
+	return getVoxelColorForView2d(seg);
+}
+
+OmColor OmSegmentColorizer::getVoxelColorForView2d(OmSegment* seg)
+{
 	OmSegment* segRoot = mSegmentCache->findRoot(seg);
 	const OmColor segRootColor = segRoot->GetColorInt();
 
@@ -118,23 +162,25 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d(const OmSegID val)
 			return segRootColor;
 		}
 		return blackColor;
+
 	case SCC_SEGMENTATION_VALID_BLACK:
 	case SCC_FILTER_VALID_BLACK:
 		if(seg->IsValidListType()) {
 			return blackColor;
 		}
 		return segRootColor;
+
 	case SCC_FILTER_BREAK:
 	case SCC_SEGMENTATION_BREAK:
 		if(isSelected){
-                	if(seg->getParent() &&
-                   	seg->getThreshold() > mViewGroupState->getBreakThreshold() &&
-                   	seg->getThreshold() < 2 ) { // 2 is the manual merge threshold
-                        	return getVoxelColorForView2d(seg->getParent()->value());
-                	}
-                	return seg->GetColorInt();
+			if(OmSegmentUtils::UseParentColorBasedOnThreshold(seg, vgs_)){
+				// WARNING: recusive operation is O(depth of MST)
+				return getVoxelColorForView2d(seg->getParent());
+			}
+			return seg->GetColorInt();
 		}
 		return blackColor;
+
 	default:
 		if(isSelected){
 			return makeSelectedColor(segRootColor);

@@ -20,35 +20,33 @@ public:
 
     static inline OmColor GetRandomColor()
     {
-        //OmColor colorInt = { GetRandomInt(1,127),
-        //GetRandomInt(1,127),
-        //GetRandomInt(1,127) };
-        //return colorInt;
-        return OmRand::getRandomColorImpl();
+      const OmColor ret = getRandomColorImpl();
+      //std::cout << "new color is " << ret << "\n";
+      return ret;
     }
 
 private:
 
     static OmColor getRandomColorImpl()
     {
-        int x, y, z;
+        int r, g, b;
         int v = 0;
 
         static const int min_variance = 120;
 
         while ( v < min_variance )
         {
-            x = GetRandomInt(1,127);
-            y = GetRandomInt(1,127);
-            z = GetRandomInt(1,127);
+            r = GetRandomInt(1,127);
+            g = GetRandomInt(1,127);
+            b = GetRandomInt(1,127);
 
-            int avg  = ( x + y + z ) / 3;
-            int avg2 = ( x*x + y*y + z*z ) / 3;
+            int avg  = ( r + g + b ) / 3;
+            int avg2 = ( r*r + g*g + b*b ) / 3;
 
             v = avg2 - avg*avg;
         }
 
-        OmColor ret = { x, y, z };
+        OmColor ret = { r, g, b };
 
         return ret;
     }

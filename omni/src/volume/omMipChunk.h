@@ -39,7 +39,7 @@ public:
 	void copyDataFromHDF5toMemMap();
 	void copyInChunkData(OmDataWrapperPtr hdf5);
 	OmImage<uint32_t, 3> GetCopyOfChunkDataAsOmImage32();
-	boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
+	OmImage<uint8_t, 2>  ExtractDataSlice8bit(const ViewType, const int);
 	boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);
 	OmImage<uint32_t, 3> GetMeshOmImageData();
 	bool compare(OmMipChunkPtr other);

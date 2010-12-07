@@ -7,6 +7,7 @@
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omViewEvent.h"
 #include "system/events/omToolModeEvent.h"
+#include "system/events/omKeyPressEventListener.h"
 
 #include "gui/widgets/omCursors.h"
 

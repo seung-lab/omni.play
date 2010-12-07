@@ -1,3 +1,4 @@
+#include "segment/omSegmentUtils.hpp"
 #include "common/omDebug.h"
 #include "common/omGl.h"
 #include "mesh/omMeshDrawer.h"
@@ -18,7 +19,7 @@
 
 OmMeshDrawer::OmMeshDrawer(OmSegmentation* seg, OmViewGroupState* vgs)
 	: mSeg(seg)
-	, mViewGroupState(vgs)
+	, vgs_(vgs)
 	, mSegmentCache(mSeg->GetSegmentCache())
 	, redrawNeeded_(false)
 {}
@@ -166,7 +167,7 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
 	FOR_EACH(iter, segmentsToDraw ){
 		OmSegment* seg = *iter;
 
-		if(seg->size() < mViewGroupState->getDustThreshold()){
+		if(seg->size() < vgs_->getDustThreshold()){
 			continue;
 		}
 
@@ -258,7 +259,7 @@ void OmMeshDrawer::colorMesh(const OmBitfield & drawOps, OmSegment * segment)
 {
 	OmSegmentColorCacheType sccType;
 
-	if( mViewGroupState->shouldVolumeBeShownBroken() ) {
+	if( vgs_->shouldVolumeBeShownBroken() ) {
 		sccType = SCC_SEGMENTATION_BREAK;
 	} else {
 		sccType = SCC_SEGMENTATION;
@@ -279,9 +280,8 @@ void OmMeshDrawer::applyColor(OmSegment * seg, const OmBitfield & drawOps,
 	if(SCC_SEGMENTATION_BREAK != sccType) {
 		hyperColor = seg->GetColorFloat() * 2.;
 	} else {
-		if(seg->getParent() &&
-		   seg->getThreshold() > mViewGroupState->getBreakThreshold() &&
-		   seg->getThreshold() < 2 ) { // 2 is the manual merge threshold
+		if(OmSegmentUtils::UseParentColorBasedOnThreshold(seg, vgs_)){
+			// WARNING: recusive operation is O(depth of MST)
 			applyColor(seg->getParent(), drawOps, sccType);
 			return;
 		}

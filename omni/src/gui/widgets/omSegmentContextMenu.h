@@ -32,6 +32,7 @@ private slots:
 
 	void mergeSegments();
 	void splitSegments();
+	void cutSegments();
 	void randomizeColor();
 	void randomizeSegmentColor();
 

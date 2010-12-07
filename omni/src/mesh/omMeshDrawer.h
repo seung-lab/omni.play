@@ -20,7 +20,7 @@ public:
 
 private:
 	OmSegmentation *const mSeg;
-	OmViewGroupState *const mViewGroupState;
+	OmViewGroupState *const vgs_;
 	OmSegmentCache *const mSegmentCache;
 
 	boost::shared_ptr<OmVolumeCuller> mVolumeCuller;

@@ -6,6 +6,8 @@
 #include "gui/segmentLists/details/segmentListUncertain.h"
 #include "gui/segmentLists/details/segmentListValid.h"
 #include "gui/segmentLists/details/segmentListWorking.h"
+#include "gui/segmentLists/segmentListKeyPressEventListener.h"
+#include "gui/widgets/omProgressBar.hpp"
 #include "system/events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
@@ -15,13 +17,20 @@
 
 class OmViewGroupState;
 
-class ElementListBoxImpl : public QGroupBox, public OmSegmentEventListener {
+class ElementListBoxImpl : public QGroupBox,
+						   public OmSegmentEventListener,
+						   public SegmentListKeyPressEventListener {
 Q_OBJECT
 
+protected:
+	void keyPressEvent(QKeyEvent* event){
+		SegmentListKeyPressEventListener::keyPressEvent(event);
+	}
+
 private:
-	QTabWidget * mDataElementsTabs;
-	QVBoxLayout * mOverallContainer;
-	QProgressBar * mValidProgress;
+	QTabWidget* mDataElementsTabs;
+	QVBoxLayout* mOverallContainer;
+	OmProgressBar<uint64_t>* mValidProgress;
 
 	int mCurrentlyActiveTab;
 
@@ -55,12 +64,9 @@ private:
 		const uint64_t working = sdw.GetSegmentLists()->Working().VoxelCount();
 		const uint64_t uncertain = sdw.GetSegmentLists()->Uncertain().VoxelCount();
 
-		mValidProgress->setMaximum((int)valid+working+uncertain);
-		mValidProgress->setMinimum(0);
-		mValidProgress->setValue((int)valid);
-		debug(validBar, "valid %li = %f\n", valid, float(valid) / (valid+working+uncertain));
-		debug(validBar, "working %li\n", working);
-		debug(validBar, "un %li\n", uncertain);
+
+		mValidProgress->setMaximum(valid + working + uncertain);
+		mValidProgress->setValue(valid);
 	}
 
 	QString GetSegmentationGroupBoxTitle(SegmentationDataWrapper sdw) {
@@ -82,8 +88,8 @@ public:
 		mOverallContainer = new QVBoxLayout( this );
 		mOverallContainer->addWidget( mDataElementsTabs );
 
-		mValidProgress = new QProgressBar(this);
-		mOverallContainer->addWidget( mValidProgress );
+		mValidProgress = new OmProgressBar<uint64_t>(this);
+		mOverallContainer->addWidget(mValidProgress);
 	}
 
 	void reset()
@@ -92,18 +98,19 @@ public:
 		setTitle("");
 	}
 
-	void setActiveTab( QWidget * tab )
+	void setActiveTab(QWidget* tab)
 	{
 		mCurrentlyActiveTab = mDataElementsTabs->indexOf(tab);
 	}
 
-	void addTab( const int preferredIndex, QWidget * tab, const QString & tabTitle)
+	void addTab(const int preferredIndex, QWidget* tab, const QString& tabTitle)
 	{
 		if( -1 != mDataElementsTabs->indexOf(tab) ){
 			return; // tab was already added, don't add again
 		}
 
-		const int insertedIndex = mDataElementsTabs->insertTab(preferredIndex, tab, tabTitle);
+		const int insertedIndex =
+			mDataElementsTabs->insertTab(preferredIndex, tab, tabTitle);
 
 		if( -1 == mCurrentlyActiveTab ){ // first time here
 			mCurrentlyActiveTab = insertedIndex;

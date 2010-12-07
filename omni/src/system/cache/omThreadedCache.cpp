@@ -37,7 +37,7 @@ void OmThreadedCache<KEY,PTR>::closeDownThreads()
 }
 
 template <typename KEY, typename PTR>
-void OmThreadedCache<KEY,PTR>::UpdateSize(const qint64 delta)
+void OmThreadedCache<KEY,PTR>::UpdateSize(const int64_t delta)
 {
 	curSize_.add(delta);
 	//	assert( curSize_.get() >= 0 );
@@ -173,6 +173,7 @@ void OmThreadedCache<KEY,PTR>::Clear()
 {
 	zi::guard g(mutex_);
 	cache_.clear();
+	curSize_.set(0);
 }
 
 template <typename KEY, typename PTR>
@@ -189,4 +190,5 @@ void OmThreadedCache<KEY,PTR>::InvalidateCache()
 
 	keyAccessList_.clear();
 	currentlyFetching_.clear();
+	curSize_.set(0);
 }

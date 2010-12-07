@@ -11,6 +11,7 @@
 #include "volume/omMipChunkCoord.h"
 #include "tiles/omTileCoord.h"
 #include "tiles/omTileTypes.hpp"
+#include "utility/image/omImage.hpp"
 
 #include <QColor>
 
@@ -39,7 +40,7 @@ private:
 
 	OmTextureIDPtr texture_;
 
-	boost::shared_ptr<uint8_t> getImageData8bit();
+	OmImage<uint8_t, 2> getImageData8bit();
 	boost::shared_ptr<uint32_t> getImageData32bit();
 
 	void makeNullTextureID();

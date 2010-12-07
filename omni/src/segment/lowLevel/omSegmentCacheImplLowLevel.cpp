@@ -168,11 +168,6 @@ void OmSegmentCacheImplLowLevel::setSegmentSelectedBatch( OmSegID segID,
        }
 }
 
-OmSegIDsSet & OmSegmentCacheImplLowLevel::GetSelectedSegmentIdsRef()
-{
-        return mSelectedSet;
-}
-
 quint32 OmSegmentCacheImplLowLevel::numberOfSelectedSegments()
 {
 	return mSelectedSet.size();

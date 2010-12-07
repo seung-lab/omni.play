@@ -82,6 +82,10 @@ public:
 		workingList_.updateFromJoin(root, child);
 	}
 
+	void UpdateFromJoinUncertain(OmSegment* root, OmSegment* child){
+		uncertainList_.updateFromJoin(root, child);
+	}
+
 	void UpdateFromJoinValid(OmSegment* root, OmSegment* child){
 		validList_.updateFromJoin(root, child);
 	}
@@ -89,6 +93,16 @@ public:
 	void UpdateFromSplitWorking(OmSegment* root, OmSegment* child,
 								const uint64_t newChildSize){
 		workingList_.updateFromSplit(root, child, newChildSize);
+	}
+
+	void UpdateFromSplitValid(OmSegment* root, OmSegment* child,
+								const uint64_t newChildSize){
+		validList_.updateFromSplit(root, child, newChildSize);
+	}
+
+	void UpdateFromSplitUncertain(OmSegment* root, OmSegment* child,
+				      const uint64_t newChildSize){
+		uncertainList_.updateFromSplit(root, child, newChildSize);
 	}
 
 	uint64_t getSegmentSize(OmSegment* seg){

@@ -38,7 +38,7 @@ public:
 		return name_;
 	}
 
-	void UpdateSize(const qint64 delta);
+	void UpdateSize(const int64_t delta);
 
 	int GetFetchStackSize();
 	qint64 GetCacheSize();

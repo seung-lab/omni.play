@@ -69,6 +69,8 @@ private:
 	void CenterAxisOfRotation(QMouseEvent * event);
 	SegmentDataWrapper PickVoxelMouseCrosshair(QMouseEvent* event,
 											   DataCoord& rVoxel);
+	void CutModeMouseReleased(QMouseEvent * event);
+
 	SegmentDataWrapper prevSDW_;
 	void resetWindow();
 	void doZoom(int direction);

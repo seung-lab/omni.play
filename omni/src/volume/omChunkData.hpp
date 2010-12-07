@@ -18,7 +18,7 @@ public:
 	void RefreshDirectDataValues(const bool, OmSegmentCache* segCache);
 	void RefreshBoundingData(OmSegmentCache* segCache);
 
-	boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
+	OmImage<uint8_t, 2> ExtractDataSlice8bit(const ViewType, const int);
 	boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);
 	OmImage<uint32_t, 3> GetCopyOfChunkDataAsOmImage32();
 

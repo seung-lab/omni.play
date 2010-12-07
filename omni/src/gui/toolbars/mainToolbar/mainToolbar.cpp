@@ -1,5 +1,5 @@
 #include "gui/mainwindow.h"
-#include "gui/toolbars/mainToolbar/filterWidget.h"
+#include "gui/toolbars/mainToolbar/filterWidget.hpp"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
 #include "gui/toolbars/mainToolbar/navAndEditButtons.h"
 #include "gui/toolbars/mainToolbar/openViewGroupButton.h"
@@ -13,7 +13,6 @@ MainToolbar::MainToolbar(MainWindow * mw)
 	, saveButton(new SaveButton(this))
 	, buttons(new NavAndEditButtons(mw))
 	, openViewGroupButton(new OpenViewGroupButton(mw))
-	, filterWidget(new FilterWidget(mw))
 	, volumeRefreshButton(new VolumeRefreshButton(mw))
 {
 	addWidgetToToolbar(saveButton);
@@ -27,7 +26,8 @@ MainToolbar::MainToolbar(MainWindow * mw)
 	addSeperatorToToolbar();
 
 	addWidgetToToolbar(new QLabel("Alpha Level: ",this));
-	addWidgetToToolbar(filterWidget);
+	FilterWidget::Create();
+	addWidgetToToolbar(FilterWidget::Widget());
 }
 
 void MainToolbar::addWidgetToToolbar( QWidget * widget )
@@ -51,7 +51,7 @@ void MainToolbar::setReadOnlyWidgetsEnabled()
 	buttons->setReadOnlyWidgetsEnabled(toBeEnabled);
 	openViewGroupButton->setEnabled(toBeEnabled);
 	volumeRefreshButton->setEnabled(toBeEnabled);
-	filterWidget->setEnabled(toBeEnabled);
+	FilterWidget::Widget()->setEnabled(toBeEnabled);
 }
 
 void MainToolbar::setModifyWidgetsEnabled()

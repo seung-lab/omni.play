@@ -7,6 +7,7 @@
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentCache.h"
 #include "viewGroup/omViewGroupState.h"
+#include "utility/segmentDataWrapper.hpp"
 
 class OmSegmentUtils {
 public:
@@ -29,8 +30,9 @@ public:
 	}
 
 private:
-	boost::optional<DataCoord>
-	static findCenterOfSelectedSegments(const SegmentationDataWrapper& sdw)
+
+	DataBbox
+	static computeSelectedSegmentBoundingBox(const SegmentationDataWrapper& sdw)
 	{
 		DataBbox box;
 
@@ -51,6 +53,14 @@ private:
 
 			seg = iter.getNextSegment();
 		}
+
+		return box;
+	}
+
+	boost::optional<DataCoord>
+	static findCenterOfSelectedSegments(const SegmentationDataWrapper& sdw)
+	{
+		DataBbox box = computeSelectedSegmentBoundingBox(sdw);
 
 		if(box.isEmpty()){
 			return boost::optional<DataCoord>();
@@ -78,32 +88,10 @@ private:
 	}
 
 public:
+	template <typename T>
 	static void CenterSegment(OmViewGroupState * vgs,
-							  const SegmentationDataWrapper& sdw)
+							  const T& sdw)
 	{
-
-		const boost::optional<DataCoord> voxelDC
-			= findCenterOfSelectedSegments(sdw);
-
-		if(!voxelDC){
-			return;
-		}
-
-		const SpaceCoord voxelSC
-			= sdw.GetSegmentation().DataToSpaceCoord(*voxelDC);
-
-		vgs->SetViewSliceDepth(YZ_VIEW, voxelSC.x );
-		vgs->SetViewSliceDepth(XZ_VIEW, voxelSC.y );
-		vgs->SetViewSliceDepth(XY_VIEW, voxelSC.z );
-
-		OmEvents::ViewCenterChanged();
-		OmEvents::View3dRecenter();
-	}
-
-	static void CenterSegment(OmViewGroupState * vgs,
-							  const SegmentDataWrapper& sdw)
-	{
-
 		const boost::optional<DataCoord> voxelDC
 			= findCenterOfSelectedSegments(sdw);
 
@@ -139,6 +127,94 @@ public:
 		return counter;
 	}
 
+	static bool UseParentColorBasedOnThreshold(OmSegment* seg,
+											   OmViewGroupState* vgs)
+	{
+		return seg->getParent() &&
+			seg->getThreshold() > vgs->getBreakThreshold() &&
+			seg->getThreshold() < 2;
+		// 2 is the manual merge threshold
+	}
+
+	static OmSegID
+	GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw)
+	{
+		if(!sdw.IsSegmentValid()){
+			return 0;
+		}
+
+		const OmSegID rootID = sdw.FindRootID();
+		const OmSegID nextID =
+			sdw.GetSegmentLists()->Working().GetNextSegmentIDinList(rootID);
+
+		if(sdw.GetSegmentCache()->IsSegmentValid(nextID)){
+			return nextID;
+		}
+		return 0;
+	}
+
+	static OmSegment*
+	GetNextSegInWorkingList(const SegmentDataWrapper& sdw)
+	{
+		const OmSegID nextID = GetNextSegIDinWorkingList(sdw);
+		if(!nextID){
+			return NULL;
+		}
+
+		return sdw.GetSegmentCache()->GetSegment(nextID);
+	}
+
+	/* iterate over selected segments; choose the segment
+	 *  whoose following segment is the largest
+	 */
+	static OmSegID
+	GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw_)
+	{
+		OmSegmentCache* segCache = sdw_.GetSegmentCache();
+
+		OmSegment* biggestSeg = NULL;
+		uint64_t biggestSegSize = 0;
+
+		FOR_EACH(iter, segCache->GetSelectedSegmentIds()){
+			SegmentDataWrapper sdw(sdw_, *iter);
+			OmSegment* seg = GetNextSegInWorkingList(sdw);
+			if(seg){
+				const uint64_t size = seg->getSizeWithChildren();
+				if(size > biggestSegSize){
+					biggestSeg = seg;
+					biggestSegSize = size;
+				}
+			}
+		}
+
+		if(biggestSeg && biggestSegSize){
+			return biggestSeg->value();
+		}
+		return 0;
+	}
+
+	static boost::optional<float> ComputeCameraDistanceForSelectedSegments()
+	{
+       	DataBbox box;
+		Vector3f res;
+
+        FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
+			SegmentationDataWrapper sdw(*iter);
+			box.merge(computeSelectedSegmentBoundingBox(sdw));
+			res = sdw.GetDataResolution();
+		}
+
+		if(box.isEmpty()){
+			return boost::optional<float>();
+        }
+
+		const float x = (box.getMax().x - box.getMin().x) * res.x;
+		const float y = (box.getMax().y - box.getMin().y) * res.y;
+		const float z = (box.getMax().z - box.getMin().z) * res.z;
+
+		return boost::optional<float>(sqrt(x*x + y*y + z*z));
+	}
+
 	static void RebuildCenterOfSegmentData(const SegmentationDataWrapper& sdw)
 	{
 		printf("rebuilding segment bounding box data...\n");
@@ -154,7 +230,5 @@ public:
 
 		sdw.GetSegmentation().UpdateVoxelBoundingData();
 	}
-
 };
-
 #endif

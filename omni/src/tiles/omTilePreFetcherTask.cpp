@@ -42,7 +42,7 @@ void OmTilePreFetcherTask::preLoadDepth(const int depthOffset)
 
 		//debugs(tilesVerbose) << "prefetching: " << tileCL->tileCoord << "\n";
 
-		state_->getCache()->Prefetch(tileCL->tileCoord);
+		OmTileCache::Prefetch(tileCL->tileCoord);
 		//prefetcher_->AddTileFetchTask(state, queue);
 	}
 
@@ -51,5 +51,5 @@ void OmTilePreFetcherTask::preLoadDepth(const int depthOffset)
 
 
 bool OmTilePreFetcherTask::shouldExitEarly(){
-	return state_->getCache()->AreDrawersActive();
+	return OmTileCache::AreDrawersActive();
 }

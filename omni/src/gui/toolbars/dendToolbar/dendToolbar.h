@@ -23,6 +23,7 @@ class DendToolBar : public QToolBar {
 	void updateGui();
 
         void SetSplittingOff();
+        void SetCuttingOff();
 
 	OmViewGroupState * getViewGroupState(){ return mViewGroupState; }
 	SegmentationDataWrapper GetSegmentationDataWrapper();

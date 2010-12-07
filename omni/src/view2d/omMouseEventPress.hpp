@@ -30,6 +30,12 @@ public:
 				v2d_->doRedraw2d();
 				return;
 			}
+		} else if(CUT_MODE == OmStateManager::GetToolMode()) {
+			if (event->button() == Qt::LeftButton) {
+				doFindAndCutSegment( event );
+				v2d_->doRedraw2d();
+				return;
+			}
 		}
 
 		if( event->button() == Qt::LeftButton) {
@@ -61,6 +67,18 @@ private:
 
 		OmActions::FindAndSplitSegments(*sdw, state_->getViewGroupState());
 	}
+
+	void doFindAndCutSegment(QMouseEvent* event)
+        {
+                boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
+
+                if(!sdw) {
+                        return;
+                }
+
+                OmActions::FindAndCutSegments(*sdw, state_->getViewGroupState());
+        }
+
 	void mouseSetCrosshair(QMouseEvent * event)
 	{
 		v2d_->doRedraw2d();

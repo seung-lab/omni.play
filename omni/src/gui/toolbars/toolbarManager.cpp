@@ -42,6 +42,13 @@ void ToolBarManager::SetSplittingOff()
 	}
 }
 
+void ToolBarManager::SetCuttingOff()
+{
+        if(dendToolBar){
+                dendToolBar->SetCuttingOff();
+        }
+}
+
 void ToolBarManager::setTool(const OmToolMode tool)
 {
 	mainToolbar->setTool(tool);

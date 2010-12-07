@@ -23,6 +23,7 @@ public:
 	void windowMoved(QPoint oldPos);
 
 	void SetSplittingOff();
+	void SetCuttingOff();
 	void setTool(const OmToolMode tool);
 
  private:

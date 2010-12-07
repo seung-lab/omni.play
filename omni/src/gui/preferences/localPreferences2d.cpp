@@ -1,5 +1,5 @@
 #include <QtGui>
-#include "gui/guiUtils.h"
+#include "gui/guiUtils.hpp"
 #include "gui/preferences/localPreferences2d.h"
 #include "common/omDebug.h"
 #include "system/omLocalPreferences.h"

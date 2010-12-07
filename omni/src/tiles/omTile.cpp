@@ -1,11 +1,10 @@
 #include "system/cache/omCacheBase.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
+#include "utility/image/omFilterImage.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipVolume.h"
-
-#include <boost/make_shared.hpp>
 
 OmTile::OmTile(OmCacheBase* cache, const OmTileCoord& key)
 	: cache_(cache)
@@ -35,7 +34,8 @@ void OmTile::makeNullTextureID(){
 void OmTile::doLoadData()
 {
 	if(getVolType() == CHANNEL) {
-		boost::shared_ptr<uint8_t> vData = getImageData8bit();
+		OmImage<uint8_t, 2> slice = getImageData8bit();
+		boost::shared_ptr<uint8_t> vData = OmImageFilter::FilterChannel(slice);
 		texture_ = boost::make_shared<OmTextureID>(dims_, vData);
 
 	} else {
@@ -54,7 +54,7 @@ int OmTile::getVolDepth(){
 	return getDepth() % (getVol()->GetChunkDimension());
 }
 
-boost::shared_ptr<uint8_t> OmTile::getImageData8bit()
+OmImage<uint8_t, 2> OmTile::getImageData8bit()
 {
 	OmMipChunkPtr chunk;
 	getVol()->GetChunk(chunk, mipChunkCoord_);
