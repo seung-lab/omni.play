@@ -297,7 +297,7 @@ void OmLineDraw::RemoveModifiedTiles()
 	}
 
 	FOR_EACH(iter, spaceCoordsToRemove){
-		state_->getCache()->RemoveSpaceCoord(*iter);
+		OmTileCache::RemoveSpaceCoord(*iter);
 	}
 }
 

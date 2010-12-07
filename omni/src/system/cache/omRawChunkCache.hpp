@@ -18,6 +18,13 @@ public:
 		, vol_(vol)
 	{}
 
+	/* TODO: test me
+	~OmRawChunkCache()
+	{
+		UpdateSize(chunk->NumBytes());
+	}
+	*/
+
 	boost::shared_ptr<OmRawChunk<T> >
 	HandleCacheMiss(const OmMipChunkCoord& coord)
 	{

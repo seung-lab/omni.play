@@ -19,6 +19,8 @@ public:
 	static void DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
 					  OmViewGroupState* vgs);
 
+	static void DoFindAndCutSegment(const SegmentDataWrapper& sdw,
+					  OmViewGroupState* vgs);
 private:
 	OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 						  const OmSegmentEdge & edge );

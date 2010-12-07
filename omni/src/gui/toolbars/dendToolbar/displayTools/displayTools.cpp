@@ -1,9 +1,13 @@
-#include "gui/toolbars/dendToolbar/sliceDepthSpinBoxX.hpp"
-#include "gui/toolbars/dendToolbar/sliceDepthSpinBoxY.hpp"
-#include "gui/toolbars/dendToolbar/sliceDepthSpinBoxZ.hpp"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
-#include "gui/toolbars/dendToolbar/displayTools.h"
-#include "gui/toolbars/dendToolbar/dust3DthresholdGroup.h"
+#include "gui/toolbars/dendToolbar/displayTools/brightnessSpinBox.hpp"
+#include "gui/toolbars/dendToolbar/displayTools/contrastSpinBox.hpp"
+#include "gui/toolbars/dendToolbar/displayTools/gammaSpinBox.hpp"
+#include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
+#include "gui/toolbars/dendToolbar/displayTools/dust3DthresholdGroup.hpp"
+#include "gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxX.hpp"
+#include "gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxY.hpp"
+#include "gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxZ.hpp"
+#include "gui/widgets/omLabelHBox.hpp"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
@@ -16,20 +20,38 @@ DisplayTools::DisplayTools(DendToolBar * d)
 	box->addWidget(thresholdBox());
 	box->addWidget(filterShowNonSelectedSegmentsBox());
 	box->addWidget(view2dSliceDepthBox());
+	box->addWidget(imageFilterControls());
+}
+
+QWidget* DisplayTools::imageFilterControls()
+{
+	QGroupBox* widget = new QGroupBox("Image Filters", this);
+	QVBoxLayout* layout = new QVBoxLayout(widget);
+
+	layout->addWidget(new OmLabelHBox(widget,
+									  new BrightnessSpinBox(this),
+									  om::LEFT_SIDE,
+									  "Brightness"));
+
+	layout->addWidget(new OmLabelHBox(widget,
+									  new ContrastSpinBox(this),
+									  om::LEFT_SIDE,
+									  "Contrast"));
+	layout->addWidget(new OmLabelHBox(widget,
+									  new GammaSpinBox(this),
+									  om::LEFT_SIDE,
+									  "Gamma"));
+	return widget;
 }
 
 QWidget* DisplayTools::view2dSliceDepthBox()
 {
 	QGroupBox* widget = new QGroupBox("Slice Depths (x,y,z)", this);
-
-	SliceDepthSpinBoxX* xDepth = new SliceDepthSpinBoxX(this);
-	SliceDepthSpinBoxY* yDepth = new SliceDepthSpinBoxY(this);
-	SliceDepthSpinBoxZ* zDepth = new SliceDepthSpinBoxZ(this);
-
 	QHBoxLayout* layout = new QHBoxLayout(widget);
-	layout->addWidget(xDepth);
-	layout->addWidget(yDepth);
-	layout->addWidget(zDepth);
+
+	layout->addWidget(new SliceDepthSpinBoxX(this));
+	layout->addWidget(new SliceDepthSpinBoxY(this));
+	layout->addWidget(new SliceDepthSpinBoxZ(this));
 
 	return widget;
 }

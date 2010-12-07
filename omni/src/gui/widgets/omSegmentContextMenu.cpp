@@ -102,6 +102,7 @@ void OmSegmentContextMenu::addDendActions()
 {
 	addAction("Merge Selected Segments", this, SLOT(mergeSegments()));
 	addAction("Split Segments", this, SLOT(splitSegments()));
+	addAction("Cut Segment(s)", this, SLOT(cutSegments()));
 }
 
 
@@ -132,7 +133,8 @@ void OmSegmentContextMenu::unselectOthers()
 
 void OmSegmentContextMenu::mergeSegments()
 {
-	OmSegIDsSet ids = sdw_.GetSegmentCache()->GetSelectedSegmentIds();
+	const OmSegIDsSet& ids =
+		sdw_.GetSegmentCache()->GetSelectedSegmentIds();
 	OmActions::JoinSegments(sdw_.GetSegmentationID(), ids);
 }
 
@@ -141,6 +143,11 @@ void OmSegmentContextMenu::splitSegments()
 	mViewGroupState->SetShowSplitMode(true);
 	OmStateManager::SetToolModeAndSendEvent(SPLIT_MODE);
 	mViewGroupState->SetSplitMode(sdw_);
+}
+
+void OmSegmentContextMenu::cutSegments()
+{
+	OmActions::FindAndCutSegments(sdw_, mViewGroupState);
 }
 
 void OmSegmentContextMenu::addColorActions()

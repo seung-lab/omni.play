@@ -1,5 +1,5 @@
 #include "localPreferencesSystem.h"
-#include "gui/guiUtils.h"
+#include "gui/guiUtils.hpp"
 #include "common/omDebug.h"
 #include "system/omLocalPreferences.h"
 
@@ -11,14 +11,14 @@ LocalPreferencesSystem::LocalPreferencesSystem(QWidget * parent)
 	overallContainer->insertStretch( 4, 1 );
 	init_cache_prop_values();
 
-	connect(ramSlider, SIGNAL(valueChanged(int)), 
+	connect(ramSlider, SIGNAL(valueChanged(int)),
 		this, SLOT( on_ramSlider_valueChanged()));
-	connect(vramSlider, SIGNAL(valueChanged(int)), 
+	connect(vramSlider, SIGNAL(valueChanged(int)),
 		this, SLOT(on_vramSlider_valueChanged()));
 
-	connect(ramSlider, SIGNAL(sliderReleased()), 
+	connect(ramSlider, SIGNAL(sliderReleased()),
 		this, SLOT( on_ramSlider_sliderReleased()));
-	connect(vramSlider, SIGNAL(sliderReleased()), 
+	connect(vramSlider, SIGNAL(sliderReleased()),
 		this, SLOT(on_vramSlider_sliderReleased()));
 }
 

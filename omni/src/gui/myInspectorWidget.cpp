@@ -2,7 +2,7 @@
 #include "gui/mstViewer.hpp"
 #include "common/omDebug.h"
 #include "gui/segmentLists/elementListBox.hpp"
-#include "gui/guiUtils.h"
+#include "gui/guiUtils.hpp"
 #include "gui/mainwindow.h"
 #include "gui/myInspectorWidget.h"
 #include "inspectors/chanInspector.h"

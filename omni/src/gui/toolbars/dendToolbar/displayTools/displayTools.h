@@ -34,6 +34,7 @@ private:
 	QWidget* filterShowNonSelectedSegmentsBox();
 	QWidget* thresholdBox();
 	QWidget* view2dSliceDepthBox();
+	QWidget* imageFilterControls();
 };
 
 #endif

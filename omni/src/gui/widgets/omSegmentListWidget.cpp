@@ -1,5 +1,5 @@
 #include "common/omCommon.h"
-#include "gui/guiUtils.h"
+#include "gui/guiUtils.hpp"
 #include "gui/inspectors/segObjectInspector.h"
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/widgets/omSegmentContextMenu.h"

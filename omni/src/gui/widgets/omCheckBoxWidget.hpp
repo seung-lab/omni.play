@@ -2,7 +2,7 @@
 #define OM_CHECK_BOX_WIDGET_HPP
 
 #include <QtGui>
-
+/*
 class OmCheckBoxWidget : public QCheckBox {
 Q_OBJECT
 public:
@@ -14,5 +14,5 @@ private:
 
 
 };
-
+*/
 #endif

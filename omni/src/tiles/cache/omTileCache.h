@@ -3,62 +3,48 @@
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
-#include "utility/omLockedPODs.hpp"
-
-#include <QApplication>
+#include "zi/omUtility.h"
 
 class OmTileCoord;
-class OmTileCacheChannel;
-class OmTileCacheNonChannel;
+class OmTileCacheImpl;
 class OmTileDrawer;
-class OmTilePreFetcher;
 
-/**
- *assumes called in a serialized fashion (as main QT GUI thread ensures)
- **/
+class OmTileCache : private om::singletonBase<OmTileCache>{
+private:
+	boost::shared_ptr<OmTileCacheImpl> impl_;
 
-class OmTileCache {
 public:
-	void RegisterDrawer(OmTileDrawer*);
-	void UnRegisterDrawer(OmTileDrawer*);
-	void SetDrawerDone(OmTileDrawer*);
-	void WidgetVisibilityChanged(boost::shared_ptr<OmTileDrawer> drawer,
-				     const bool visible);
+	static void Reset();
 
-	void Get(OmTileDrawer* drawer,
-		 OmTilePtr& tile,
-		 const OmTileCoord& key,
-		 const om::Blocking blocking);
+	static void RegisterDrawer(OmTileDrawer*);
+	static void UnRegisterDrawer(OmTileDrawer*);
+	static void SetDrawerDone(OmTileDrawer*);
+	static bool AreDrawersActive();
+	static void WidgetVisibilityChanged(boost::shared_ptr<OmTileDrawer> drawer,
+										const bool visible);
 
-	void Prefetch(const OmTileCoord& key);
+	static void Get(OmTileDrawer* drawer,
+					OmTilePtr& tile,
+					const OmTileCoord& key,
+					const om::Blocking blocking);
 
-	void RemoveSpaceCoord(const SpaceCoord & coord);
+	static void Prefetch(const OmTileCoord& key);
 
-	bool AreDrawersActive();
-
-	void Clear();
+	static void RemoveSpaceCoord(const SpaceCoord & coord);
+	static void Clear();
+	static void ClearChannel();
 
 private:
 	OmTileCache();
+	~OmTileCache(){}
 
-	boost::shared_ptr<OmTileCacheChannel> cacheChannel_;
-	boost::shared_ptr<OmTileCacheNonChannel> cacheNonChannel_;
-	boost::shared_ptr<OmTilePreFetcher> preFetcher_;
+	static void doGet(OmTilePtr& tile,
+					  const OmTileCoord& key,
+					  const om::Blocking blocking);
 
-	std::map<OmTileDrawer*, bool> drawersActive_;
-	LockedInt32 numDrawersActive_;
-
-	bool isChannel(const OmTileCoord& key);
-	void setDrawerActive(OmTileDrawer* v);
-	void runIdleThreadTask();
-	void stopIdleThreadTask();
-
-	void doGet(OmTilePtr& tile,
-			   const OmTileCoord& key,
-			   const om::Blocking blocking);
-
-	friend class OmProjectData; // location where OmTileCache is constructed
 	friend class OmTileDumper; // access doGet(...)
+
+	friend class zi::singleton<OmTileCache>;
 };
 
 #endif

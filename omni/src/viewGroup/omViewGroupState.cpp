@@ -40,9 +40,11 @@ OmViewGroupState::OmViewGroupState(MainWindow * mw)
 	mDustThreshold = 90;
 	mShatter = false;
 	mSplitting = false;
+	mCutting = false;
 	mBreakOnSplit = true;
 	mShowValid = false;
 	mShowSplit = false;
+	mShowCut = false;
 	mShowValidInColor = false;
 	mShowFilterInColor = false;
 
@@ -405,5 +407,29 @@ bool OmViewGroupState::shouldVolumeBeShownBroken()
 void OmViewGroupState::setTool(const OmToolMode tool)
 {
 	mToolBarManager->setTool(tool);
+}
+
+void OmViewGroupState::SetCutMode(bool mode, bool postEvent)
+{
+        mCutting = mode;
+        if(false == mode){
+		if(postEvent) {
+			mToolBarManager->SetCuttingOff();
+		}
+                SetShowCutMode(false);
+                OmStateManager::SetOldToolModeAndSendEvent();
+        }
+
+        OmCacheManager::TouchFresheness();
+        OmEvents::Redraw3d();
+        OmEvents::Redraw2d();
+}
+
+void OmViewGroupState::SetShowCutMode(bool mode)
+{
+        OmCacheManager::TouchFresheness();
+        OmEvents::Redraw3d();
+        OmEvents::Redraw2d();
+        mShowCut = mode;
 }
 

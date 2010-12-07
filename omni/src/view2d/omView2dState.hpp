@@ -198,7 +198,7 @@ public:
 
 		ZoomLevel()->Reset(getMaxMipLevel());
 
-		OmProjectData::getTileCache()->Clear();
+		OmTileCache::Clear();
 		OmEvents::Redraw2d();
 	}
 
@@ -293,11 +293,6 @@ public:
 	}
 	void setScribbling(const bool s){
 		scribbling_ = s;
-	}
-
-	// tile cache
-	const boost::shared_ptr<OmTileCache>& getCache() const {
-		return OmProjectData::getTileCache();
 	}
 
 	// zoom and mip level

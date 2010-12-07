@@ -38,7 +38,7 @@ public:
 	bool IsSegmentSelected( OmSegment * seg );
 	void setSegmentSelected( OmSegID segID, const bool, const bool );
 	void SetAllSelected(bool);
-	OmSegIDsSet & GetSelectedSegmentIds();
+	const OmSegIDsSet& GetSelectedSegmentIds();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
 	void UpdateSegmentSelection( const OmSegIDsSet & idsToSelect, const bool);

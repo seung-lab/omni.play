@@ -41,10 +41,6 @@ public:
 	static OmIDataReader* GetProjectIDataReader();
 	static OmIDataWriter* GetIDataWriter();
 
-	static const boost::shared_ptr<OmTileCache>& getTileCache(){
-		return Instance()->tileCache_;
-	}
-
 	static int getFileVersion(){ return Instance()->fileVersion_; }
 
 private:
@@ -59,7 +55,6 @@ private:
 
 	bool mIsOpen;
 	bool mIsReadOnly;
-	boost::shared_ptr<OmTileCache> tileCache_;
 
 	void setupDataLayer(const std::string&);
 	OmIDataReader* dataReader;

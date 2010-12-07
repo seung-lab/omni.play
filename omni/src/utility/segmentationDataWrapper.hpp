@@ -128,5 +128,13 @@ public:
 	inline boost::shared_ptr<OmValidGroupNum>& GetValidGroupNum() const {
 		return GetSegmentation().GetValidGroupNum();
 	}
+
+	inline const Vector3f& GetDataResolution() const {
+		return GetSegmentation().GetDataResolution();
+	}
+
+	inline const OmSegIDsSet& GetSelectedSegmentIds() const {
+		return GetSegmentCache()->GetSelectedSegmentIds();
+	}
 };
 #endif

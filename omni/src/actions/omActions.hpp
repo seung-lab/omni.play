@@ -34,8 +34,8 @@ public:
 	static void ValidateSegment(const SegmentDataWrapper& sdw,
 								const om::SetValid valid);
 
-	static void ValidateSegment(const SegmentationDataWrapper& sdw,
-								const om::SetValid valid);
+	static void ValidateSelectedSegments(const SegmentationDataWrapper& sdw,
+										 const om::SetValid valid);
 
 	static void UncertainSegment(const SegmentDataWrapper& sdw,
 								 const bool uncertain);
@@ -47,6 +47,8 @@ public:
 							 const OmSegIDsSet& ids);
 
 	static void FindAndSplitSegments(const SegmentDataWrapper& sdw,
+									 OmViewGroupState* vgs);
+	static void FindAndCutSegments(const SegmentDataWrapper& sdw,
 									 OmViewGroupState* vgs);
 
 	static void SelectSegments(const SegmentDataWrapper& sdw,

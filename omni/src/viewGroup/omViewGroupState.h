@@ -78,6 +78,9 @@ public:
 	void SetShowSplitMode(bool mode);
 	bool shouldVolumeBeShownBroken();
 
+	void SetCutMode(bool mode, bool postEvent = true);
+	void SetShowCutMode(bool mode);
+
 	void setTool(const OmToolMode tool);
 
 	void SetHowNonSelectedSegmentsAreColoredInFilter(const bool);
@@ -123,10 +126,12 @@ private:
 	ToolBarManager * mToolBarManager;
 	bool mShatter;
 	bool mSplitting;
+	bool mCutting;
 	bool mBreakOnSplit;
 	bool mShowValid;
 	bool mShowSplit;
 	bool mShowValidInColor;
+	bool mShowCut;
 
 	bool mShowFilterInColor;
 

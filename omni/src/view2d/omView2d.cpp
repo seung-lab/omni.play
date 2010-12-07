@@ -115,6 +115,7 @@ void OmView2d::mouseReleaseEvent(QMouseEvent * event){
 void OmView2d::keyPressEvent(QKeyEvent * event)
 {
 	if(!keyEvents_->Press(event)){
+		OmView2dKeyPressEventListener::keyPressEvent(event);
 		QWidget::keyPressEvent(event);
 	}
 }

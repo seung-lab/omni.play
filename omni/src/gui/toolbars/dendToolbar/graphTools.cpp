@@ -4,6 +4,7 @@
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/toolbars/dendToolbar/joinButton.h"
 #include "gui/toolbars/dendToolbar/splitButton.h"
+#include "gui/toolbars/dendToolbar/cutButton.h"
 #include "gui/toolbars/dendToolbar/thresholdGroup.h"
 #include "gui/toolbars/dendToolbar/breakThresholdGroup.h"
 #include "system/omEvents.h"
@@ -15,14 +16,21 @@ GraphTools::GraphTools(DendToolBar * d)
 	, mParent(d)
 	, autoBreakCheckbox(new AutoBreakCheckbox(this))
 	, splitButton(new SplitButton(this))
+	, cutButton(new CutButton(this))
 {
 	QVBoxLayout* box = new QVBoxLayout(this);
 	box->addWidget(thresholdBox());
-	box->addWidget(new JoinButton(this));
-	box->addWidget(splitButton);
-	//	box->addWidget(autoBreakCheckbox);
+
+	QWidget * wbox = new QWidget(this);
+        QGridLayout * box2 = new QGridLayout(wbox);
+	wbox->setLayout(box2);
+	box->addWidget(wbox);
+
+	box2->addWidget(new JoinButton(this), 0, 0, 1, 1);
+	box2->addWidget(splitButton, 0, 1, 1, 1);
+	box2->addWidget(cutButton, 1, 0, 1, 1);
 	autoBreakCheckbox->hide();
-	box->addWidget(new BreakButton(this));
+	box2->addWidget(new BreakButton(this), 1, 1, 1, 1);
 
 	box->addWidget(breakThresholdBox());
 }
@@ -52,6 +60,12 @@ QWidget* GraphTools::thresholdBox()
 void GraphTools::SetSplittingOff()
 {
 	splitButton->setChecked(false);
+}
+
+void GraphTools::SetCuttingOff()
+{
+	printf("GraphTools::SetCuttingOff\n");
+	cutButton->setChecked(false);
 }
 
 OmViewGroupState * GraphTools::getViewGroupState()

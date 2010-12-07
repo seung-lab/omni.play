@@ -1,7 +1,7 @@
 #ifndef SLICE_DEPTH_SPIN_BOX_X_HPP
 #define SLICE_DEPTH_SPIN_BOX_X_HPP
 
-#include "gui/toolbars/dendToolbar/sliceDepthSpinBoxBase.hpp"
+#include "gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxBase.hpp"
 
 class SliceDepthSpinBoxX : public SliceDepthSpinBoxBase {
 	Q_OBJECT

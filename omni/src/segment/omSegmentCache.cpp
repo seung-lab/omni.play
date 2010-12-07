@@ -75,10 +75,10 @@ quint32 OmSegmentCache::numberOfSelectedSegments()
 	return mImpl->numberOfSelectedSegments();
 }
 
-OmSegIDsSet & OmSegmentCache::GetSelectedSegmentIds()
+const OmSegIDsSet& OmSegmentCache::GetSelectedSegmentIds()
 {
 	zi::guard g(mutex_);
-	return mImpl->GetSelectedSegmentIdsRef();
+	return mImpl->GetSelectedSegmentIds();
 }
 
 OmSegIDsSet & OmSegmentCache::GetEnabledSegmentIds()

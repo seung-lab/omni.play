@@ -28,6 +28,7 @@ public:
 		if (event->buttons() == Qt::LeftButton) {
 			switch (OmStateManager::GetToolMode()) {
 			case SPLIT_MODE:
+			case CUT_MODE:
 				break;
 
 			case SELECT_MODE:

@@ -1,6 +1,6 @@
 #include "utility/omSystemInformation.h"
 #include "localPreferencesMeshing.h"
-#include "gui/guiUtils.h"
+#include "gui/guiUtils.hpp"
 #include "common/omDebug.h"
 #include "system/omLocalPreferences.h"
 

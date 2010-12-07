@@ -1,9 +1,8 @@
-#include "volume/omMipChunk.h"
-#include "utility/image/omImage.hpp"
-#include "volume/omChunkData.hpp"
-#include "volume/omVolumeData.hpp"
 #include "segment/omSegmentCache.h"
 #include "utility/omChunkVoxelWalker.hpp"
+#include "volume/omChunkData.hpp"
+#include "volume/omMipChunk.h"
+#include "volume/omVolumeData.hpp"
 
 OmChunkData::OmChunkData(OmMipVolume* vol,
 						 OmMipChunk* chunk,
@@ -25,25 +24,26 @@ OmRawDataPtrs& OmChunkData::getRawData()
 
 
 class ExtractDataSlice8bitVisitor
-	: public boost::static_visitor<boost::shared_ptr<uint8_t> >{
+	: public boost::static_visitor<OmImage<uint8_t, 2> >{
 public:
 	ExtractDataSlice8bitVisitor(const ViewType plane, int offset)
 		: plane(plane), offset(offset) {}
 
 	template <typename T>
-	boost::shared_ptr<uint8_t> operator()(T* d ) const {
+	OmImage<uint8_t, 2> operator()(T* d ) const {
 		OmImage<T, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
-		OmImage<T, 2> slice = chunk.getSlice(plane, offset);
-		return slice.recastToUint8().getMallocCopyOfData();
+		OmImage<T, 2> sliceT = chunk.getSlice(plane, offset);
+		OmImage<uint8_t, 2> slice = sliceT.recastToUint8();
+		return slice;
 	}
 
-	boost::shared_ptr<uint8_t> operator()(uint8_t* d ) const {
+	OmImage<uint8_t, 2> operator()(uint8_t* d ) const {
 		OmImage<uint8_t, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
 		OmImage<uint8_t, 2> slice = chunk.getSlice(plane, offset);
-		return slice.getMallocCopyOfData();
+		return slice;
 	}
 
-	boost::shared_ptr<uint8_t> operator()(float* d ) const {
+	OmImage<uint8_t, 2> operator()(float* d ) const {
 		OmImage<float, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
 		OmImage<float, 2> sliceFloat = chunk.getSlice(plane, offset);
 		float mn = 0.0;
@@ -51,14 +51,14 @@ public:
 		//	  mpMipVolume->GetBounds(mx, mn);
 		OmImage<uint8_t, 2> slice =
 			sliceFloat.rescaleAndCast<uint8_t>(mn, mx, 255.0);
-		return slice.getMallocCopyOfData();
+		return slice;
 	}
 private:
 	const ViewType plane;
 	const int offset;
 };
-boost::shared_ptr<uint8_t> OmChunkData::ExtractDataSlice8bit(const ViewType plane,
-															 const int offset)
+OmImage<uint8_t, 2> OmChunkData::ExtractDataSlice8bit(const ViewType plane,
+													  const int offset)
 {
 	return boost::apply_visitor(ExtractDataSlice8bitVisitor(plane, offset),
 								getRawData());

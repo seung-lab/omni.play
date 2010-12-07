@@ -7,6 +7,7 @@
 class DendToolBar;
 class AutoBreakCheckbox;
 class SplitButton;
+class CutButton;
 class OmViewGroupState;
 class SegmentationDataWrapper;
 
@@ -15,6 +16,7 @@ class GraphTools : public OmWidget {
  public:
 	GraphTools(DendToolBar *);
 	void SetSplittingOff();
+	void SetCuttingOff();
 
 	OmViewGroupState * getViewGroupState();
 	SegmentationDataWrapper GetSegmentationDataWrapper();
@@ -26,6 +28,7 @@ class GraphTools : public OmWidget {
 	DendToolBar *const mParent;
 	AutoBreakCheckbox * autoBreakCheckbox;
 	SplitButton * splitButton;
+	CutButton * cutButton;
 
 	QWidget* thresholdBox();
 	QWidget* breakThresholdBox();

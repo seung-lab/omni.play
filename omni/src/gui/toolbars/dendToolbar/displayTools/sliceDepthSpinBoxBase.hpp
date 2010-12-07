@@ -2,7 +2,7 @@
 #define SLICE_DEPTH_SPIN_BOX_BASE_HPP
 
 #include "common/omDebug.h"
-#include "gui/toolbars/dendToolbar/displayTools.h"
+#include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "system/events/omViewEvent.h"
 #include "viewGroup/omViewGroupState.h"

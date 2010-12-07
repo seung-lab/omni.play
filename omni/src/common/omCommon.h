@@ -116,7 +116,8 @@ enum OmToolMode { SELECT_MODE,
 				  SUBTRACT_VOXEL_MODE,
 				  SELECT_VOXEL_MODE,
 				  FILL_MODE,
-				  SPLIT_MODE
+				  SPLIT_MODE,
+				  CUT_MODE
 };
 
 

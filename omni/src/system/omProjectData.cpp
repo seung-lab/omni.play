@@ -22,9 +22,7 @@ OmProjectData::OmProjectData()
 	: fileVersion_(0)
 	, mIsOpen(false)
 	, mIsReadOnly(false)
-	, tileCache_(new OmTileCache())
-{
-}
+{}
 
 void OmProjectData::instantiateProjectData(const std::string& fileNameAndPath )
 {

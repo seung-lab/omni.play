@@ -1,3 +1,5 @@
+#include "segment/omSegmentSelector.h"
+#include "segment/omSegmentUtils.hpp"
 #include "actions/details/omProjectSaveAction.h"
 #include "actions/details/omProjectCloseAction.h"
 #include "actions/details/omSegmentGroupAction.h"
@@ -12,8 +14,6 @@
 #include "utility/segmentDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "system/omLocalPreferences.h"
-#include "segment/omSegmentLists.hpp"
-#include "segment/omSegmentIterator.h"
 
 // project-related
 void OmActions::Save(){
@@ -55,50 +55,51 @@ void OmActions::SetVoxels(const OmID segmentationID,
 void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
 								const om::SetValid valid)
 {
-	bool dontjump = false;
-	bool jump = OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
-	OmSegID seg = sdw.GetSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(sdw.getSegment()->getRootSegID());
+	const OmSegID nextSegmentIDtoJumpTo =
+		OmSegmentUtils::GetNextSegIDinWorkingList(sdw);
 
 	OmSegmentValidateAction::Validate(sdw, valid);
 
-        OmSegmentIterator iter(sdw.GetSegmentCache());
-        iter.iterOverSelectedIDs();
-        OmSegment * segment = iter.getNextSegment();
-        segment = iter.getNextSegment();
+	OmSegmentCache* segCache = sdw.GetSegmentCache();
 
-        if(jump && NULL != segment) {
-		dontjump = true;
-        }
+	const bool segmentGettingSetAsValid = om::SET_VALID == valid;
+	const bool shouldJump =
+		OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
+	const bool justOneSegmentSelected =
+		(1 == segCache->GetSelectedSegmentIds().size());
 
-	if(!dontjump && om::SET_VALID == valid && jump && seg && sdw.GetSegmentCache()->IsSegmentValid(seg)) {
-		sdw.GetSegmentCache()->SetAllSelected(false);
-		sdw.GetSegmentCache()->setSegmentSelected(seg, true, true);
+	if( justOneSegmentSelected &&
+		segmentGettingSetAsValid &&
+		shouldJump &&
+		nextSegmentIDtoJumpTo)
+	{
+		OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(),
+							  NULL,
+							  "jump after validate");
+		sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
+		sel.sendEvent();
 	}
 }
 
-void OmActions::ValidateSegment(const SegmentationDataWrapper& sdw,
-								const om::SetValid valid)
+void OmActions::ValidateSelectedSegments(const SegmentationDataWrapper& sdw,
+										 const om::SetValid valid)
 {
-	bool jump = OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
-
-	OmSegmentIterator iter(sdw.GetSegmentCache());
-	iter.iterOverSelectedIDs();
-	OmSegment * segment = iter.getNextSegment();
-
-	OmSegID seg = 0;
-	while(jump && NULL != segment) {
-		seg = sdw.GetSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(segment->getRootSegID());
-		if(seg) {
-			break;
-		}
-		segment = iter.getNextSegment();
-	}
+	const OmSegID nextSegmentIDtoJumpTo =
+		OmSegmentUtils::GetNextSegIDinWorkingList(sdw);
 
 	OmSegmentValidateAction::Validate(sdw, valid);
 
-	if(om::SET_VALID == valid && jump && seg && sdw.GetSegmentCache()->IsSegmentValid(seg)) {
-		sdw.GetSegmentCache()->SetAllSelected(false);
-		sdw.GetSegmentCache()->setSegmentSelected(seg, true, true);
+	const bool segmentGettingSetAsValid = om::SET_VALID == valid;
+	const bool shouldJump =
+		OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
+
+	if(shouldJump &&
+	   segmentGettingSetAsValid &&
+	   nextSegmentIDtoJumpTo)
+	{
+		OmSegmentSelector sel(sdw, NULL, "jump after validate");
+		sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
+		sel.sendEvent();
 	}
 }
 
@@ -203,6 +204,11 @@ void OmActions::JoinSegments(const OmID segmentationID,
 void OmActions::FindAndSplitSegments(const SegmentDataWrapper& sdw,
 									 OmViewGroupState* vgs){
 	OmSegmentSplitAction::DoFindAndSplitSegment(sdw, vgs);
+}
+
+void OmActions::FindAndCutSegments(const SegmentDataWrapper& sdw,
+									 OmViewGroupState* vgs){
+	OmSegmentSplitAction::DoFindAndCutSegment(sdw, vgs);
 }
 
 void OmActions::SelectSegments(const SegmentDataWrapper& sdw,

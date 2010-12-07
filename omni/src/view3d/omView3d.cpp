@@ -14,8 +14,8 @@
 #include "widgets/omInfoWidget.h"
 #include "widgets/omSelectionWidget.h"
 #include "widgets/omViewBoxWidget.h"
-#include "segment/omSegmentIterator.h"
-
+#include "segment/omSegmentUtils.hpp"
+#include "view3d/omView3dKeyPressEventListener.h"
 
 DECLARE_ZiARG_bool(noView3dThrottle);
 
@@ -211,6 +211,7 @@ void OmView3d::mouseWheelEvent(QWheelEvent * event)
 
 void OmView3d::keyPressEvent(QKeyEvent * event)
 {
+	OmView3dKeyPressEventListener::keyPressEvent(event);
 	mView3dUi.KeyPress(event);
 }
 
@@ -292,46 +293,15 @@ void OmView3d::View3dUpdatePreferencesEvent()
 
 void OmView3d::View3dRecenter()
 {
-	const SpaceCoord picked_voxel = mViewGroupState->GetViewDepthCoord();
+	const boost::optional<float> distance =
+		OmSegmentUtils::ComputeCameraDistanceForSelectedSegments();
 
-	Vector3f res = Vector3f(0.0,0.0,0.0);
-       	DataBbox box;
+	if(distance){
+		mCamera.SetDistance(*distance);
 
-        FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
-                OmSegmentation* seg = &OmProject::GetSegmentation(*iter);
-                res = seg->GetDataResolution();
-
-	
-        	OmSegmentIterator iter(seg->GetSegmentCache());
-        	iter.iterOverSelectedIDs();
-
-        	const int max = 5000;
-         	OmSegment* segment = iter.getNextSegment();
-        	for(int i = 0; segment && i < max && NULL != seg; ++i){
-
-                	const DataBbox& segBox = segment->getBounds();
-                	if(segBox.isEmpty()){
-                        	continue;
-                	}
-
-                	box.merge(segBox);
-
-                	segment = iter.getNextSegment();
-        	}
+		const SpaceCoord picked_voxel = mViewGroupState->GetViewDepthCoord();
+		mCamera.SetFocus(picked_voxel);
 	}
-
-        if(box.isEmpty()){
-		updateGL();
-		return;
-        }
-
-        const DataCoord ret = (box.getMin() + box.getMax()) / 2;
-	float x = box.getMax().x - box.getMin().x; x *= res.x;
-	float y = box.getMax().y - box.getMin().y; y *= res.y;
-	float z = box.getMax().z - box.getMin().z; z *= res.z;
-
-	mCamera.SetDistance(sqrt(x*x+y*y+z*z));
-	mCamera.SetFocus(picked_voxel);
 
 	updateGL();
 }

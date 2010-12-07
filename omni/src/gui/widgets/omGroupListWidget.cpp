@@ -1,5 +1,5 @@
 #include "common/omCommon.h"
-#include "gui/guiUtils.h"
+#include "gui/guiUtils.hpp"
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/widgets/omGroupListWidget.h"
 #include "system/omGroup.h"
@@ -15,7 +15,6 @@ OmGroupListWidget::OmGroupListWidget(GroupsTable * gt)
 	setColumnCount(3);
 
 	QStringList headers;
-	//	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
 	headers << tr("Name") << tr("ID");
 	setHeaderLabels(headers);
 

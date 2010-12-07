@@ -47,6 +47,17 @@ void OmSegmentSplitAction::save(const std::string& comment)
 	OmActionLogger::save(impl_, comment);
 }
 
+void OmSegmentSplitAction::DoFindAndCutSegment(const SegmentDataWrapper& sdw,
+												 OmViewGroupState* vgs)
+{
+	OmSegment* seg1 = sdw.getSegment();
+	OmSegment* seg2 = seg1->getParent();
+
+	runIfSplittable(seg1, seg2);
+
+	vgs->SetCutMode(false);
+}
+
 //TODO: put this somewhere else...
 void OmSegmentSplitAction::DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
 												 OmViewGroupState* vgs)

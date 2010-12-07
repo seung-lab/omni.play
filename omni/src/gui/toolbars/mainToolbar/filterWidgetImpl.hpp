@@ -4,11 +4,11 @@
 #include "common/omCommon.h"
 #include "gui/mainwindow.h"
 #include "project/omProject.h"
-#include "volume/omChannel.h"
-#include "volume/omSegmentation.h"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
+#include "volume/omChannel.h"
+#include "volume/omSegmentation.h"
 
 #include <QSize>
 #include <QSlider>
@@ -16,8 +16,10 @@
 
 class FilterWidgetImpl : public QSlider {
 Q_OBJECT
-public:
+private:
+	static const double delta_ = 0.05;
 
+public:
 	FilterWidgetImpl()
 		: QSlider(Qt::Horizontal)
 	{
@@ -34,14 +36,12 @@ public:
 
 	void IncreaseAlpha()
 	{
-		const double delta = 0.1;
-
 		const boost::optional<double> alpha = doGetFilterAlpha();
 		if(!alpha){
 			return;
 		}
 
-		double newAlpha = *alpha + delta;
+		double newAlpha = *alpha + delta_;
 
 		if(newAlpha > 1){
 			newAlpha = 1;
@@ -52,42 +52,15 @@ public:
 
 	void DecreaseAlpha()
 	{
-		const double delta = 0.1;
-
 		const boost::optional<double> alpha = doGetFilterAlpha();
 		if(!alpha){
 			return;
 		}
 
-		double newAlpha = *alpha - delta;
+		double newAlpha = *alpha - delta_;
 
 		if(newAlpha < 0){
 			newAlpha = 0;
-		}
-
-		doSetFilterAlpha(newAlpha);
-	}
-
-
-	void Cycle()
-	{
-		const boost::optional<double> alpha = doGetFilterAlpha();
-		if(!alpha){
-			return;
-		}
-
-		double delta = 0.1;
-		if(*alpha == 1){
-			delta = -0.1;
-		}
-
-		double newAlpha = *alpha + delta;
-
-		if(newAlpha < 0){
-			newAlpha = 0;
-		}
-		if(newAlpha > 1){
-			newAlpha = 1;
 		}
 
 		doSetFilterAlpha(newAlpha);
@@ -152,5 +125,6 @@ private:
 	}
 
 };
+
 
 #endif

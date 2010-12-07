@@ -205,8 +205,10 @@ SegmentationDataWrapper SegmentListBase::dealWithSegmentObjectModificationEvent(
 			newsdw = SegmentationDataWrapper();
 		}
 	}
+
  	if(newsdw.IsSegmentationValid()){
-		OmSegIDsSet & sel = newsdw.GetSegmentCache()->GetSelectedSegmentIds();
+		const OmSegIDsSet& sel =
+			newsdw.GetSegmentCache()->GetSelectedSegmentIds();
 		if(1 == sel.size()){
 			OmSegmentUtils::CenterSegment(vgs_, newsdw);
 		}

@@ -1,10 +1,9 @@
-#ifndef DUST_3D_THRESHOLD_GROUP_H
-#define DUST_3D_THRESHOLD_GROUP_H
+#ifndef DUST_3D_THRESHOLD_GROUP_HPP
+#define DUST_3D_THRESHOLD_GROUP_HPP
 
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "common/omDebug.h"
-#include "gui/toolbars/dendToolbar/displayTools.h"
-#include "gui/toolbars/dendToolbar/dust3DthresholdGroup.h"
+#include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
 #include "viewGroup/omViewGroupState.h"
 #include <limits>
 
