@@ -47,6 +47,14 @@ public:
 		return list_.GetNextSegmentIDinList(id);
 	}
 
+	uint64_t VoxelCount(){
+		return list_.VoxelCount();
+	}
+
+	T& List(){
+		return list_;
+	}
+
 private:
 	T list_;
 };

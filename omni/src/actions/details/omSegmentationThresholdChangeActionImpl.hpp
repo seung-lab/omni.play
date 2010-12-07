@@ -1,9 +1,10 @@
 #ifndef OM_SEGMENTATION_THRESHOLD_CHANGE_IMPL_HPP
 #define OM_SEGMENTATION_THRESHOLD_CHANGE_IMPL_HPP
 
+#include "system/omEvents.h"
 #include "common/omCommon.h"
 #include "project/omProject.h"
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "segment/omSegmentCache.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
@@ -16,6 +17,7 @@ private:
 	float mOldThreshold;
 
 public:
+	OmSegmentationThresholdChangeActionImpl() {}
 	OmSegmentationThresholdChangeActionImpl(const OmID segmentationId,
 											const float threshold)
 		: mSegmentationId( segmentationId )
@@ -27,12 +29,14 @@ public:
 		OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 		mOldThreshold = seg.GetDendThreshold();
 		seg.SetDendThreshold(mThreshold);
+		OmEvents::SegmentModified();
 	}
 
 	void Undo()
 	{
 		OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 		seg.SetDendThreshold(mOldThreshold);
+		OmEvents::SegmentModified();
 	}
 
 	std::string Description() const
@@ -46,7 +50,7 @@ public:
 	}
 
 private:
-	template <typename T> friend class OmActionLoggerFSThread;
+	template <typename T> friend class OmActionLoggerThread;
 
 	friend class QDataStream
 	&operator<<(QDataStream&, const OmSegmentationThresholdChangeActionImpl&);

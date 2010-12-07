@@ -1,3 +1,4 @@
+#include "segment/io/omValidGroupNum.hpp"
 #include "segment/io/omMST.h"
 #include "utility/stringHelpers.h"
 #include "volume/omSegmentation.h"
@@ -10,8 +11,7 @@
 OmSegmentGraph::OmSegmentGraph()
 	: mGraph(NULL)
 	, mCache(NULL)
-{
-}
+{}
 
 OmSegmentGraph::~OmSegmentGraph()
 {
@@ -68,8 +68,11 @@ void OmSegmentGraph::buildSegmentSizeLists()
 	OmSegmentIteratorLowLevel iter(mCache);
 	iter.iterOverAllSegments();
 
-	for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
-		if(0 == seg->getParentSegID()) {
+	for(OmSegment * seg = iter.getNextSegment();
+		NULL != seg;
+		seg = iter.getNextSegment())
+	{
+		if(!seg->getParent()) {
 			switch(seg->GetListType()){
 			case om::WORKING:
 				getSegmentLists()->InsertSegmentWorking(seg);
@@ -128,11 +131,6 @@ void OmSegmentGraph::setGlobalThreshold(boost::shared_ptr<OmMST> mst)
 	printf("done (%f secs)\n", timer.s_elapsed() );
 }
 
-void breakpoint()
-{
-	printf("hi\n");
-}
-
 void OmSegmentGraph::resetGlobalThreshold(boost::shared_ptr<OmMST> mst)
 {
 	printf("\t %d edges...", mst->NumEdges());
@@ -165,7 +163,6 @@ void OmSegmentGraph::resetGlobalThreshold(boost::shared_ptr<OmMST> mst)
 			if( splitChildFromParentInternal(edges[i].node1ID)){
 				edges[i].wasJoined = 0;
 			} else {
-				breakpoint();
 				edges[i].userJoin = 1;
 			}
 		}
@@ -180,15 +177,24 @@ bool OmSegmentGraph::JoinInternal( const OmSegID parentID,
 								   const int edgeNumber )
 {
 	const OmSegID childRootID = graph_getRootID(childUnknownDepthID);
-	OmSegment * childRoot = mCache->GetSegmentFromValue(childRootID);
-	OmSegment * parent = mCache->GetSegmentFromValue( parentID );
+	OmSegment * childRoot = mCache->GetSegment(childRootID);
+	OmSegment * parent = mCache->GetSegment( parentID );
 
 	if( childRoot == mCache->findRoot( parent ) ){
 		return false;
 	}
 
-	if( childRoot->IsValid() != parent->IsValid() ){
+	if(childRoot->IsValidListType() != parent->IsValidListType()){
 		return false;
+	}
+
+	boost::shared_ptr<OmValidGroupNum>& validGroupNum = GetValidGroupNum();
+	if(childRoot->IsValidListType()){
+		if(validGroupNum->Get(childRootID) !=
+		   validGroupNum->Get(parentID))
+		{
+			return false;
+		}
 	}
 
 	graph_join(childRootID, parentID);
@@ -206,30 +212,24 @@ bool OmSegmentGraph::JoinInternal( const OmSegID parentID,
 
 bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 {
-	OmSegment * child = mCache->GetSegmentFromValue( childID );
+	OmSegment * child = mCache->GetSegment( childID );
 
 	if( child->getThreshold() > 1 ){
-		breakpoint();
 		return false;
 	}
 
-	if(!child->getParentSegID()){ // user manually split?
-		breakpoint();
+	OmSegment* parent = child->getParent();
+	if(!parent){ // user manually split?
 		return false;
 	}
 
-	OmSegment * parent = mCache->GetSegmentFromValue( child->getParentSegID() );
-	assert(parent);
-
-	if( child->IsValid() == parent->IsValid() &&
-	    1 == child->IsValid() ){
-		breakpoint();
+	if( child->IsValidListType() || parent->IsValidListType()){
 		return false;
 	}
 
 	parent->removeChild(child);
 	graph_cut(child->value());
-	child->setParentSegID(0);
+	child->setParent(NULL); // TODO: also set threshold??
 	child->setEdgeNumber(-1);
 
 	mCache->findRoot(parent)->touchFreshnessForMeshes();
@@ -267,5 +267,9 @@ quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )
 }
 
 boost::shared_ptr<OmSegmentLists> OmSegmentGraph::getSegmentLists() {
-	return mCache->getSegmentation()->GetSegmentLists();
+	return mCache->GetSegmentation()->GetSegmentLists();
+}
+
+boost::shared_ptr<OmValidGroupNum>& OmSegmentGraph::GetValidGroupNum() const {
+	return mCache->GetSegmentation()->GetValidGroupNum();
 }

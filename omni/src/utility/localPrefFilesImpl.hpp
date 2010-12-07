@@ -41,7 +41,7 @@ public:
 			throw OmIoException("invalid preference found", setting);
 		}
 
-		return boost::lexical_cast<T>(lines[0].toStdString());
+		return om::StrToNum<T>(lines[0]);
 	}
 
 	template <typename T>

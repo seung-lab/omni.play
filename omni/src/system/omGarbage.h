@@ -15,6 +15,7 @@
 
 #include "common/omCommon.h"
 #include "common/omGl.h"
+#include "utility/omTimer.h"
 
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
@@ -42,10 +43,16 @@ public:
 			return;
 		}
 
-		glDeleteTextures(instance().mTextures.size(),
+		OmTimer timer;
+		const int size = instance().mTextures.size();
+
+		glDeleteTextures(size,
 						 &instance().mTextures[0]);
 
 		instance().mTextures.clear();
+
+		timer.Print("OmGarbage: cleared " +
+					om::NumToStr(size) + " old GL textures");
 	}
 
 	static void assignOmGenlistId(const GLuint genlistID)

@@ -18,6 +18,24 @@ QGroupBox* LocalPreferences2d::makeGeneralPropBox()
 	QGroupBox* groupBox = new QGroupBox("General");
 	QGridLayout* gridLayout = new QGridLayout;
 	groupBox->setLayout( gridLayout );
+/*
+	// 2D View Frames in 3D CheckBox
+	showCrosshairsCheckbox_ = new QCheckBox(groupBox);
+	showCrosshairsCheckbox_->setText("Show Crosshairs");
+	const bool viewSquare = Om3dPreferences::get2DViewFrameIn3D();
+	viewSquareCheckBox->setChecked(viewSquare);
+	gridLayout->addWidget(viewSquareCheckBox, 1, 0, 1, 1);
 
+	connect(discoCheckBox, SIGNAL(stateChanged(int)),
+			this, SLOT(on_discoCheckBox_stateChanged()));
+*/
   	return groupBox;
 }
+/*
+void LocalPreferences3d::on_viewSquareCheckBox_stateChanged()
+{
+	const bool val = GuiUtils::getBoolState( viewSquareCheckBox->checkState() );
+	Om3dPreferences::set2DViewFrameIn3D( val );
+	OmEvents::Redraw3d();
+}
+*/

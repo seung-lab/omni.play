@@ -2,6 +2,7 @@
 #define OM_LOAD_IMAGE_H
 
 #include "common/omCommon.h"
+#include "common/omDebug.h"
 #include "utility/stringHelpers.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omMipChunk.h"
@@ -9,6 +10,8 @@
 #include "volume/omMipVolume.h"
 #include "utility/omTimer.h"
 
+#include <QFile>
+#include <QFileInfoList>
 #include <QImage>
 
 template <typename VOL>
@@ -27,11 +30,12 @@ private:
 	QString mMsg;
 
 public:
-	OmLoadImage(VOL* vol, boost::shared_ptr<QFile> mip0volFile)
+	OmLoadImage(VOL* vol, boost::shared_ptr<QFile> mip0volFile,
+				const std::vector<QFileInfo>& files)
 		: vol_(vol)
 		, mip0volFile_(mip0volFile)
 		, mip0dims_(vol_->MipLevelDimensionsInMipChunks(0))
-		, totalNumImages_(vol_->mSourceFilenamesAndPaths.size())
+		, totalNumImages_(files.size())
 		, totalTilesInSlice_(mip0dims_.x * mip0dims_.y)
 		, sliceWidth_(vol_->GetChunkDimension())
 		, sliceHeight_(vol_->GetChunkDimension())

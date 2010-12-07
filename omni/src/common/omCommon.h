@@ -145,4 +145,24 @@ enum OmCacheGroupEnum {
 class OmTile;
 typedef boost::shared_ptr<OmTile> OmTilePtr;
 
+/**
+ * string-to-number and number-to-string converters
+ **/
+namespace om {
+	template <typename T>
+	static std::string NumToStr(const T& num){
+		return boost::lexical_cast<std::string>(num);
+	}
+
+	template <typename T>
+	static T StrToNum(const std::string& str){
+		return boost::lexical_cast<T>(str);
+	}
+
+	template <typename T>
+	static T StrToNum(const QString& str){
+		return boost::lexical_cast<T>(str.toStdString());
+	}
+}
+
 #endif

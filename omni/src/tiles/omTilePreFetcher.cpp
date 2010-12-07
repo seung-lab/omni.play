@@ -26,6 +26,7 @@ boost::shared_ptr<OmView2dState> OmTilePreFetcher::cloneState(OmTileDrawer* d)
 
 void OmTilePreFetcher::RunTasks(const std::list<OmTileDrawer*>& drawers)
 {
+	//init the map
 	FOR_EACH(iter, drawers){
 		boost::shared_ptr<OmTilePreFetcherTask> task =
 			boost::make_shared<OmTilePreFetcherTask>(cloneState(*iter));
@@ -36,5 +37,15 @@ void OmTilePreFetcher::RunTasks(const std::list<OmTileDrawer*>& drawers)
 void OmTilePreFetcher::StopTasks()
 {
 	mThreadPool.clear();
+	//kill map
 }
+
+#if 0
+void OmTilePreFetcher::AddTileFetchTask(state, coord)
+{
+	//lock
+	//add to map based on depth
+	//unlock
+}
+#endif
 

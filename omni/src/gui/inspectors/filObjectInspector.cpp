@@ -57,7 +57,7 @@ void FilObjectInspector::set_initial_values()
 
 	alphaSlider->setValue(filter.GetAlpha() * 100);
 	chanEdit->setText(QString::number(filter.GetChannel()));
-	segEdit->setText(QString::number(filter.GetSegmentation()));
+	segEdit->setText(QString::number(filter.GetSegmentationWrapper().GetSegmentationID()));
 }
 
 QGroupBox* FilObjectInspector::makeFilterOptionsBox()
@@ -123,7 +123,7 @@ int FilObjectInspector::getChannelIDtoFilter()
 	return chanEdit->text().toInt();
 }
 
-int FilObjectInspector::getSegmentationIDtoFilter()
+int FilObjectInspector::GetSegmentationIDtoFilter()
 {
 	return segEdit->text().toInt();
 }
@@ -136,6 +136,6 @@ void FilObjectInspector::sourceEditChangedChan()
 
 void FilObjectInspector::sourceEditChangedSeg()
 {
-	OmProject::GetChannel( mChannelID ).GetFilter( mFilterID ).SetSegmentation(getSegmentationIDtoFilter());
+	OmProject::GetChannel( mChannelID ).GetFilter( mFilterID ).SetSegmentation(GetSegmentationIDtoFilter());
 	//	OmProject::Save();
 }

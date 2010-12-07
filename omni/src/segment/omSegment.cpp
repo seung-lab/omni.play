@@ -4,13 +4,13 @@
 #include "segment/omSegmentIterator.h"
 #include "utility/omRand.hpp"
 
-void OmSegment::setParent(OmSegment * parent, const double threshold)
+void OmSegment::setParent(OmSegment* parent, const double threshold)
 {
-	if( parentSegID_ ){
-		assert(0);
+	if(parent_){
+		throw OmArgException("parent already set");
 	}
 
-	parentSegID_ = parent->data_->value;
+	parent_ = parent;
 	threshold_ = threshold;
 }
 
@@ -33,18 +33,18 @@ void OmSegment::reRandomizeColor()
 
 void OmSegment::SetColor(const Vector3f& color)
 {
-	data_->color.red   = static_cast<quint8>(color.x * 255);
-	data_->color.green = static_cast<quint8>(color.y * 255);
-	data_->color.blue  = static_cast<quint8>(color.z * 255);
+	data_->color.red   = static_cast<uint8_t>(color.x * 255);
+	data_->color.green = static_cast<uint8_t>(color.y * 255);
+	data_->color.blue  = static_cast<uint8_t>(color.z * 255);
 }
 
 QString OmSegment::GetNote()
 {
 	QString customNote = cache_->getSegmentNote(data_->value);
 
-	if( parentSegID_ ){
+	if(parent_ ){
 		customNote += "Parent: "
-			+ QString::number(parentSegID_)
+			+ QString::number(parent_->value())
 			+ "; ";
 	}
 
@@ -92,9 +92,9 @@ void OmSegment::SetEnabled( const bool isEnabled)
 	cache_->setSegmentEnabled( data_->value, isEnabled );
 }
 
-OmID OmSegment::getSegmentationID()
+OmID OmSegment::GetSegmentationID()
 {
-	return cache_->getSegmentationID();
+	return cache_->GetSegmentationID();
 }
 
 OmSegID OmSegment::getRootSegID()

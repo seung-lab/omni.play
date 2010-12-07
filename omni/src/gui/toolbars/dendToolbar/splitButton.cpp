@@ -22,6 +22,5 @@ void SplitButton::doAction()
 	} else {
         	//debug(dendbar, "unchecking\n");
 		mParent->getViewGroupState()->SetSplitMode(false, false);
-		OmStateManager::SetOldToolModeAndSendEvent();
 	}
 }

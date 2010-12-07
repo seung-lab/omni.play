@@ -35,10 +35,10 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 	SegmentDataWrapper sdw = OmSegmentSelected::Get();
 
 	//return if not valid
-	if (!sdw.isValidWrapper())
+	if (!sdw.IsSegmentValid())
 		return;
 
-	const OmID segmentation_id = sdw.getSegmentationID();
+	const OmID segmentation_id = sdw.GetSegmentationID();
 
 	//switch on tool mode
 	OmSegID data_value = 0;
@@ -110,7 +110,7 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 	//debug(brush, "coords: %i,%i,%i\n", x0, y0, mViewDepth);
 	//debug(brush, "mDepth = %f\n", mDepth);
 
-	OmSegmentSelector sel(segmentation_id, this, "view2d_selector" );
+	OmSegmentSelector sel(SegmentationDataWrapper(segmentation_id), this, "view2d_selector" );
 	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
 
 	if(doselection) {

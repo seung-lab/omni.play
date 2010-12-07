@@ -11,7 +11,7 @@ OmSegmentCache::OmSegmentCache(OmSegmentation* segmentation)
 	, mImpl(boost::make_shared<OmSegmentCacheImpl>(segmentation))
 {}
 
-OmSegID OmSegmentCache::getSegmentationID()
+OmSegID OmSegmentCache::GetSegmentationID()
 {
 	return mSegmentation->GetID();
 }
@@ -42,13 +42,13 @@ OmSegment* OmSegmentCache::GetOrAddSegment(const OmSegID val)
 bool OmSegmentCache::IsSegmentValid(OmSegID seg)
 {
 	zi::guard g(mutex_);
-	return (NULL != mImpl->GetSegmentFromValue(seg));
+	return (NULL != mImpl->GetSegment(seg));
 }
 
 OmSegment* OmSegmentCache::GetSegment(const OmSegID value)
 {
 	zi::guard g(mutex_);
-	return mImpl->GetSegmentFromValue( value );
+	return mImpl->GetSegment( value );
 }
 
 OmSegID OmSegmentCache::GetNumSegments()
@@ -179,26 +179,19 @@ OmSegID OmSegmentCache::findRootID(OmSegment* segment)
 	return mImpl->findRootID(segment);
 }
 
-OmSegmentEdge OmSegmentCache::findClosestCommonEdge(OmSegment * seg1,
-													OmSegment * seg2)
+OmSegIDsSet OmSegmentCache::JoinTheseSegments( const OmSegIDsSet & segmentList)
 {
 	zi::guard g(mutex_);
-	return mImpl->findClosestCommonEdge(seg1, seg2);
+	return mImpl->JoinTheseSegments(segmentList);
 }
 
-void OmSegmentCache::JoinTheseSegments( const OmSegIDsSet & segmentList)
+OmSegIDsSet OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 {
 	zi::guard g(mutex_);
-	mImpl->JoinTheseSegments(segmentList);
+	return mImpl->UnJoinTheseSegments(segmentList);
 }
 
-void OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
-{
-	zi::guard g(mutex_);
-	mImpl->UnJoinTheseSegments(segmentList);
-}
-
-quint32 OmSegmentCache::getMaxValue()
+uint32_t OmSegmentCache::getMaxValue()
 {
 	zi::guard g(mutex_);
 	return mImpl->getMaxValue();
@@ -245,4 +238,10 @@ void OmSegmentCache::Flush()
 {
 	zi::guard g(mutex_);
 	return mImpl->Flush();
+}
+
+bool OmSegmentCache::AreAnySegmentsInValidList(const OmSegIDsSet& ids)
+{
+	zi::guard g(mutex_);
+	return mImpl->AreAnySegmentsInValidList(ids);
 }

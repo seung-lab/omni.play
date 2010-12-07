@@ -14,7 +14,7 @@ template <typename T> class LockedList;
  *	Brett Warne - bwarne@mit.edu - 3/12/09
  */
 
-template <typename KEY, typename PTR> class HandleCacheMissThreaded;
+template <typename KEY, typename PTR> class OmHandleCacheMissTask;
 
 template <typename KEY, typename PTR>
 class OmThreadedCache : public OmCacheBase {
@@ -25,16 +25,21 @@ public:
 	virtual ~OmThreadedCache();
 
 	//value accessors
-	virtual void Get(PTR&, const KEY&, const om::BlockingRead);
-	void Remove(const KEY &key);
+	virtual void Get(PTR&, const KEY&, const om::Blocking);
+
+	void Prefetch(const KEY& key);
+
+	void Remove(const KEY& key);
 	int Clean();
-	void Clear(); //TODO: remove me
+	void Clear();
 	void InvalidateCache();
-	const std::string& GetName(){ return name_; }
+
+	const std::string& GetName(){
+		return name_;
+	}
 
 	void UpdateSize(const qint64 delta);
 
-	//get info about the cache
 	int GetFetchStackSize();
 	qint64 GetCacheSize();
 
@@ -43,27 +48,28 @@ public:
 	void closeDownThreads();
 
 private:
-	typedef HandleCacheMissThreaded<KEY, PTR> CacheMissHandler;
+	typedef OmHandleCacheMissTask<KEY, PTR> CacheMissHandler;
 	typedef boost::shared_ptr<CacheMissHandler> CacheMissHandlerPtr;
 	typedef boost::shared_ptr<std::map<KEY,PTR> > OldCachePtr;
 
 	const std::string name_;
 	const int numThreads_;
 
-	LockedInt64 mCurSize;
-	OmThreadPool mThreadPool;
+	LockedInt64 curSize_;
+	OmThreadPool threadPool_;
 
 	zi::mutex mutex_;
-	LockedKeySet<KEY> mCurrentlyFetching;
-	LockedCacheMap<KEY, PTR> mCache;
-	LockedKeyList<KEY> mKeyAccessList;
-	LockedBool mKillingCache;
+	LockedKeySet<KEY> currentlyFetching_;
+	LockedCacheMap<KEY, PTR> cache_;
+	LockedKeyMultiIndex<KEY> keyAccessList_;
+	LockedBool killingCache_;
 
-	int RemoveOldest();
 	boost::shared_ptr<LockedList<OldCachePtr> > cachesToClean_;
+
+	int removeOldest();
 	void get(PTR&, const KEY&, const bool);
 
-	template <typename T1, typename T2> friend class HandleCacheMissThreaded;
+	template <typename T1, typename T2> friend class OmHandleCacheMissTask;
 };
 
 #endif

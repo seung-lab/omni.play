@@ -1,3 +1,4 @@
+#include "system/omGarbage.h"
 #include "common/om.hpp"
 #include "project/omProject.h"
 #include "viewGroup/omViewGroupState.h"
@@ -38,18 +39,27 @@ void OmTileDrawer::FullRedraw2d()
 	reset();
 
 	OmMipVolume* vol = state_->getVol();
-	draw(vol);
 
 	if(CHANNEL == vol->getVolumeType()) {
 		OmChannel& chan = OmProject::GetChannel(vol->getID());
 		foreach( OmID id, chan.GetValidFilterIds() ) {
 			OmFilter2d &filter = chan.GetFilter(id);
+
+        		glEnable(GL_BLEND);     // enable blending for brightness
+			glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_CONSTANT_COLOR);
+
 			drawFromFilter(filter);
+			setupGLblendColor(filter.GetAlpha());
 		}
 	}
 
+	draw(vol);
+
 	if(IsDrawComplete()){
 		state_->getCache()->SetDrawerDone(this);
+		if(!state_->getCache()->AreDrawersActive()){
+			OmGarbage::safeCleanTextureIds();
+		}
 	}
 }
 
@@ -79,7 +89,7 @@ void OmTileDrawer::determineWhichTilesToDraw(OmMipVolume* vol)
 
 	FOR_EACH(tileCL, *tileCoordsAndLocations){
 
-		om::BlockingRead amBlocking = om::NON_BLOCKING;
+		om::Blocking amBlocking = om::NON_BLOCKING;
 		if(state_->getScribbling()){
 			amBlocking = om::BLOCKING;
 		}
@@ -190,19 +200,21 @@ void OmTileDrawer::drawFromFilter(OmFilter2d& filter)
 		return;
 	}
 
-	setupGLblendColor(filter.GetAlpha());
+	//setupGLblendColor(filter.GetAlpha());
 	{
 		draw(filter.getVolume());
 	}
-	teardownGLblendColor();
+	//teardownGLblendColor();
 }
 
 void OmTileDrawer::setupGLblendColor(const float alpha)
 {
 	glEnable(GL_BLEND);	// enable blending for transparency
-	glBlendFunc(GL_ONE_MINUS_CONSTANT_ALPHA, GL_CONSTANT_ALPHA);
+	//glBlendFunc(GL_SRC_COLOR, GL_CONSTANT_COLOR);
+	glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_CONSTANT_COLOR);
 
-	glBlendColor(1.f, 1.f, 1.f, (1.f - alpha));
+	//glBlendColor(1.0f - alpha, 1.0f - alpha, 1.0f - alpha, 1.0f - alpha);
+	glBlendColor(alpha, alpha, alpha, alpha);
 
 	// continued...
 }

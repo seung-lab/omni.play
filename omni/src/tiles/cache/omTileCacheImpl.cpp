@@ -56,7 +56,7 @@ bool OmTileCacheNonChannel::isKeyFresh(const OmTileCoord& key)
 }
 
 void OmTileCacheNonChannel::Get(OmTilePtr& ptr, const OmTileCoord& key,
-				const om::BlockingRead isBlocking)
+				const om::Blocking isBlocking)
 {
 	zi::guard g(mutex_);
 	if(key.getFreshness() > freshness_.get()){
@@ -66,6 +66,11 @@ void OmTileCacheNonChannel::Get(OmTilePtr& ptr, const OmTileCoord& key,
 	}
 
 	OmThreadedCache<OmTileCoord, OmTilePtr>::Get(ptr, key, isBlocking);
+}
+
+void OmTileCacheNonChannel::Prefetch(const OmTileCoord& key)
+{
+	OmThreadedCache<OmTileCoord, OmTilePtr>::Prefetch(key);
 }
 
 void OmTileCacheNonChannel::Clear()

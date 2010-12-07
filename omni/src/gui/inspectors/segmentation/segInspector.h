@@ -4,11 +4,11 @@
 #include <QtGui>
 
 #include "common/omCommon.h"
+#include "utility/dataWrappers.h"
 
 class AddSegmentButton;
 class OmSegmentation;
 class MyInspectorWidget;
-class SegmentationDataWrapper;
 class OmViewGroupState;
 
 class SegInspector : public QWidget
@@ -16,11 +16,12 @@ class SegInspector : public QWidget
     Q_OBJECT
 
 public:
-	SegInspector( const SegmentationDataWrapper sdw,
-				  MyInspectorWidget* parent);
+	SegInspector(const SegmentationDataWrapper& sdw,
+				 MyInspectorWidget* parent);
 
-	OmID getSegmentationID();
-	boost::shared_ptr<SegmentationDataWrapper> getSegmentationDataWrapper();
+	const SegmentationDataWrapper& GetSegmentationDataWrapper() const {
+		return sdw_;
+	}
 
 	QLineEdit * nameEdit;
 	QLabel *directoryLabel;
@@ -44,7 +45,7 @@ public:
 	void meshBuilt(OmID seg_id);
 
  private:
-	boost::shared_ptr<SegmentationDataWrapper> sdw;
+	SegmentationDataWrapper sdw_;
 	MyInspectorWidget *const inspectorWidget_;
 
 	void populateSegmentationInspector();

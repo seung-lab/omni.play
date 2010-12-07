@@ -1,8 +1,9 @@
-#include "utility/omLockedObjects.h"
-#include "omThreadedCache.h"
-#include "omHandleCacheMissThreaded.h"
-#include "utility/stringHelpers.h"
 #include "system/cache/omCacheManager.h"
+#include "system/cache/omHandleCacheMissTask.hpp"
+#include "system/cache/omThreadedCache.h"
+#include "utility/omLockedObjects.h"
+#include "utility/stringHelpers.h"
+
 #include <boost/make_shared.hpp>
 
 template <typename KEY, typename PTR>
@@ -15,7 +16,7 @@ OmThreadedCache<KEY,PTR>::OmThreadedCache(const OmCacheGroupEnum group,
 	, cachesToClean_(boost::make_shared<LockedList<OldCachePtr> >())
 {
 	OmCacheManager::AddCache(group, this);
-	mThreadPool.start(numThreads_);
+	threadPool_.start(numThreads_);
 }
 
 template <typename KEY, typename PTR>
@@ -28,18 +29,18 @@ OmThreadedCache<KEY,PTR>::~OmThreadedCache()
 template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::closeDownThreads()
 {
-	mKillingCache.set(true);
-	mThreadPool.stop();
-	mCache.clear();
-	mKeyAccessList.clear();
-	mCurrentlyFetching.clear();
+	killingCache_.set(true);
+	threadPool_.stop();
+	cache_.clear();
+	keyAccessList_.clear();
+	currentlyFetching_.clear();
 }
 
 template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::UpdateSize(const qint64 delta)
 {
-	mCurSize.add(delta);
-	//	assert( mCurSize.get() >= 0 );
+	curSize_.add(delta);
+	//	assert( curSize_.get() >= 0 );
 }
 
 /**
@@ -51,25 +52,25 @@ void OmThreadedCache<KEY,PTR>::get(PTR &p_value,
 								   const KEY &key,
 								   const bool blocking)
 {
-	if( mCache.setIfHadKey(key, p_value) ) {
+	if( cache_.setIfHadKey(key, p_value) ) {
 		// done!
 	} else if(blocking || !numThreads_){
 		p_value = HandleCacheMiss(key);
 		{
 			zi::guard g(mutex_);
-			mCache.set(key, p_value);
-			mKeyAccessList.touch(key);
+			cache_.set(key, p_value);
+			keyAccessList_.touch(key);
 		}
 	} else {
-		if(mThreadPool.getTaskCount() ==
-		   mThreadPool.getMaxSimultaneousTaskCount()) {
+		if(threadPool_.getTaskCount() ==
+		   threadPool_.getMaxSimultaneousTaskCount()) {
 			return; // restrict number of tasks to process
 		}
 
-		if(mCurrentlyFetching.insertSinceDidNotHaveKey(key) ){
+		if(currentlyFetching_.insertSinceDidNotHaveKey(key) ){
 			CacheMissHandlerPtr task =
 				boost::make_shared<CacheMissHandler>(this, key);
-			mThreadPool.addTaskFront(task);
+			threadPool_.addTaskFront(task);
 		}
 	}
 }
@@ -77,7 +78,7 @@ void OmThreadedCache<KEY,PTR>::get(PTR &p_value,
 template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::Get(PTR& p_value,
 								   const KEY &key,
-								   const om::BlockingRead blocking)
+								   const om::Blocking blocking)
 {
 	if(om::BLOCKING == blocking){
 		get(p_value, key, true);
@@ -87,16 +88,28 @@ void OmThreadedCache<KEY,PTR>::Get(PTR& p_value,
 }
 
 template <typename KEY, typename PTR>
+void OmThreadedCache<KEY,PTR>::Prefetch(const KEY &key)
+{
+	if(cache_.contains(key)){
+		return;
+	}
+
+	PTR val = HandleCacheMiss(key);
+	cache_.set(key, val);
+	keyAccessList_.touchPrefetch(key);
+}
+
+template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::Remove(const KEY &key)
 {
-	mCache.erase(key);
+	cache_.erase(key);
 }
 
 template <typename KEY, typename PTR>
 int OmThreadedCache<KEY,PTR>::Clean()
 {
 	if(cachesToClean_->empty()){
-		return RemoveOldest();
+		return removeOldest();
 	}
 
 	// avoid contention on cacheToClean by swapping in new, empty list
@@ -115,23 +128,23 @@ int OmThreadedCache<KEY,PTR>::Clean()
 }
 
 template <typename KEY, typename PTR>
-int OmThreadedCache<KEY,PTR>::RemoveOldest()
+int OmThreadedCache<KEY,PTR>::removeOldest()
 {
 	zi::guard g(mutex_);
 
-	if(mCache.empty() || mKeyAccessList.empty()){
+	if(cache_.empty() || keyAccessList_.empty()){
 		return 0;
 	}
 
-	const KEY key = mKeyAccessList.remove_back();
-	const PTR val = mCache.get(key);
+	const KEY key = keyAccessList_.remove_oldest();
+	const PTR val = cache_.get(key);
 	if(!val){
 		return 0;
 	}
 
 	val->Flush();
-	mCurSize.sub(val->NumBytes());
-	mCache.erase(key);
+	curSize_.sub(val->NumBytes());
+	cache_.erase(key);
 
 	return 1;
 }
@@ -139,7 +152,7 @@ int OmThreadedCache<KEY,PTR>::RemoveOldest()
 template <typename KEY, typename PTR>
 int OmThreadedCache<KEY,PTR>::GetFetchStackSize()
 {
-	return mThreadPool.getTaskCount();
+	return threadPool_.getTaskCount();
 }
 
 template <typename KEY, typename PTR>
@@ -148,18 +161,18 @@ qint64 OmThreadedCache<KEY,PTR>::GetCacheSize()
 	/*
 	  if(RAM_CACHE_GROUP == mCacheGroup ){
 	  std::cout << "current cache (" << getGroupName() << ") size is :"
-	  << StringHelpers::commaDeliminateNumber(mCurSize.get()).toStdString()
+	  << StringHelpers::commaDeliminateNumber(curSize_.get()).toStdString()
 	  << " bytes\n";
 	  }
 	*/
-	return mCurSize.get();
+	return curSize_.get();
 }
 
 template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::Clear()
 {
 	zi::guard g(mutex_);
-	mCache.clear();
+	cache_.clear();
 }
 
 template <typename KEY, typename PTR>
@@ -167,13 +180,13 @@ void OmThreadedCache<KEY,PTR>::InvalidateCache()
 {
 	zi::guard g(mutex_);
 
-	mThreadPool.clear();
+	threadPool_.clear();
 
 	// add current cache to list to be cleaned later by OmCacheMan thread
 	OldCachePtr cache(new std::map<KEY,PTR>());
-	mCache.swap(*cache);
+	cache_.swap(*cache);
 	cachesToClean_->push_back(cache);
 
-	mKeyAccessList.clear();
-	mCurrentlyFetching.clear();
+	keyAccessList_.clear();
+	currentlyFetching_.clear();
 }

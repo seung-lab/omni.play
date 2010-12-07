@@ -22,6 +22,7 @@ private:
 	OmSegID mNewValue;
 
 public:
+	OmVoxelSetValueActionImpl() {}
 	OmVoxelSetValueActionImpl(const OmID segmentationId,
 							  const DataCoord& rVoxel,
 							  const OmSegID value)
@@ -102,7 +103,7 @@ public:
 	}
 
 private:
-	template <typename T> friend class OmActionLoggerFSThread;
+	template <typename T> friend class OmActionLoggerThread;
 	friend class QDataStream &operator<<(QDataStream&,
 										 const OmVoxelSetValueActionImpl&);
 	friend class QDataStream &operator>>(QDataStream&,

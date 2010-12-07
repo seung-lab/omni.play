@@ -22,6 +22,8 @@ protected:
 	void addColorActions();
 	void addGroupActions();
 	void addPropertiesActions();
+	void addGroups();
+	void addDisableAction();
 
 private slots:
 	void select();
@@ -31,10 +33,15 @@ private slots:
 	void mergeSegments();
 	void splitSegments();
 	void randomizeColor();
+	void randomizeSegmentColor();
+
+
 	void setValid();
 	void setNotValid();
 	void showProperties();
 	void printChildren();
+
+	void disableSegment();
 
 private:
 	SegmentDataWrapper sdw_;

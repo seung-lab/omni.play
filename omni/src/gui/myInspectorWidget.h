@@ -6,6 +6,8 @@
 #include <QWidget>
 
 #include "common/omCommon.h"
+#include "zi/omUtility.h"
+
 
 class ChanInspector;
 class ChannelDataWrapper;

@@ -21,10 +21,9 @@ class ExportSegmentList : public OmButton<SegInspector> {
  private:
 	void doAction()
 	{
-		boost::shared_ptr<SegmentationDataWrapper> sdw
-			= mParent->getSegmentationDataWrapper();
+		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
 
-		OmSegmentCache* segmentCache = sdw->getSegmentCache();
+		OmSegmentCache* segmentCache = sdw.GetSegmentCache();
 
 		const QString outFile =
 			OmProjectData::getAbsoluteFileNameAndPath() + ".segments.txt";
@@ -45,7 +44,7 @@ class ExportSegmentList : public OmButton<SegInspector> {
 				continue;
 			}
 
-			out << i << "," << seg->IsValid() << "\n";
+			out << i << "," << seg->IsValidListType() << "\n";
 		}
 
 		printf("\tdone!\n");

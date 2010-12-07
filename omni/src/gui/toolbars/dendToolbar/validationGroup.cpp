@@ -74,9 +74,9 @@ bool ValidationGroup::isShowValidChecked()
 	return showValid->isChecked();
 }
 
-SegmentationDataWrapper ValidationGroup::getSegmentationDataWrapper()
+SegmentationDataWrapper ValidationGroup::GetSegmentationDataWrapper()
 {
-	return mDendToolBar->getSegmentationDataWrapper();
+	return mDendToolBar->GetSegmentationDataWrapper();
 }
 
 OmViewGroupState * ValidationGroup::getViewGroupState()

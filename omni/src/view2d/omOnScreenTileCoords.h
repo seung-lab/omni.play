@@ -5,6 +5,7 @@
 #include "tiles/omTileTypes.hpp"
 
 class OmView2dState;
+class OmFilter2d;
 
 class OmOnScreenTileCoords {
 public:
@@ -36,9 +37,11 @@ private:
 	void doComputeCoordsAndLocations(const int depthOffset);
 	void setDepths();
 	DataCoord toDataCoord(const int);
-	OmTileCoord makeTileCoord(const SpaceCoord&);
 	GLfloatBox computeVertices(const float, const float);
 	void computeTile(const float x, const float y, const int);
+	void makeTileCoordFromFilter(OmFilter2d& filter, const SpaceCoord & spaceCoord, const float x, const float y);
+	OmTileCoord makeTileCoord(const SpaceCoord& coord, OmMipVolume * vol, int freshness);
+
 };
 
 #endif

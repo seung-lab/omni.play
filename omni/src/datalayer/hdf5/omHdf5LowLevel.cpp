@@ -2,7 +2,6 @@
 #include "datalayer/hdf5/omHdf5LowLevel.h"
 #include "datalayer/hdf5/omHdf5Utils.hpp"
 #include "datalayer/omDataPaths.h"
-#include "utility/omImageDataIo.h"
 #include "utility/omSystemInformation.h"
 
 #include <QStringList>
@@ -86,7 +85,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readDataset(int *size)
 	}
 
 	OmDataWrapperPtr data =
-		OmHdf5Utils::getDataWrapper(dataset_data, dstype, MALLOC);
+		OmHdf5Utils::getDataWrapper(dataset_data, dstype, om::MALLOC);
 	H5Tclose( dstype );
 
 	//Releases and terminates access to a dataspace.
@@ -156,17 +155,18 @@ void OmHdf5LowLevel::allocateDataset(int size, OmDataWrapperPtr data)
  */
 void OmHdf5LowLevel::group_create_tree(const char* path)
 {
-	debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+    //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	std::string curPath;
-	foreach( const QString & folder, QString(path).split('/') ){
-		curPath += folder.toStdString() + "/";
+    std::string curPath;
+    foreach( const QString & folder, QString(path).split('/') )
+    {
+        curPath += folder.toStdString() + "/";
 
-                //create if group does not exist
-                if (!OmHdf5Utils::group_exists(fileId, curPath.c_str() ) ){
-                        OmHdf5Utils::group_create(fileId, curPath.c_str() );
-                }
+        //create if group does not exist
+        if (!OmHdf5Utils::group_exists(fileId, curPath.c_str() ) ){
+            OmHdf5Utils::group_create(fileId, curPath.c_str() );
         }
+    }
 }
 
 /////////////////////////////////
@@ -458,7 +458,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const DataBbox& extent)
 	}
 
 	OmDataWrapperPtr data =
-		OmHdf5Utils::getDataWrapper( imageData, dstype, MALLOC );
+		OmHdf5Utils::getDataWrapper( imageData, dstype, om::MALLOC );
 
 	H5Tclose( dstype );
 

@@ -18,13 +18,12 @@
 
 #include <boost/make_shared.hpp>
 
-SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw,
-							MyInspectorWidget* parent)
+SegInspector::SegInspector(const SegmentationDataWrapper& sdw,
+						   MyInspectorWidget* parent)
 	: QWidget(parent)
+	, sdw_(sdw)
 	, inspectorWidget_(parent)
 {
-	sdw = boost::make_shared<SegmentationDataWrapper>(incoming_sdw);
-
 	QVBoxLayout* overallContainer = new QVBoxLayout(this);
 	overallContainer->addWidget(makeSourcesBox());
 	overallContainer->addWidget(makeActionsBox());
@@ -41,7 +40,7 @@ SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw,
 
 QGroupBox* SegInspector::makeVolBox()
 {
-	return new OmVolInspector(&sdw->getSegmentation(), this);
+	return new OmVolInspector(sdw_.GetSegmentation(), this);
 }
 
 QGroupBox* SegInspector::makeStatsBox()
@@ -54,7 +53,7 @@ QGroupBox* SegInspector::makeStatsBox()
 	grid->addWidget( labelNumSegments, 0, 0 );
 	QLabel *labelNumSegmentsNum = new QLabel(statsBox);
 
-	QString commaNumSegs = StringHelpers::commaDeliminateNumQT(sdw->getNumberOfSegments());
+	QString commaNumSegs = StringHelpers::commaDeliminateNumQT(sdw_.getNumberOfSegments());
 	labelNumSegmentsNum->setText( commaNumSegs );
 	grid->addWidget( labelNumSegmentsNum, 0, 1 );
 
@@ -64,7 +63,7 @@ QGroupBox* SegInspector::makeStatsBox()
 	grid->addWidget( labelNumTopSegments, 1, 0 );
 	QLabel *labelNumTopSegmentsNum = new QLabel(statsBox);
 
-	QString commaNumTopSegs = StringHelpers::commaDeliminateNumQT(sdw->getNumberOfTopSegments());
+	QString commaNumTopSegs = StringHelpers::commaDeliminateNumQT(sdw_.getNumberOfTopSegments());
 	labelNumTopSegmentsNum->setText( commaNumTopSegs );
 	grid->addWidget( labelNumTopSegmentsNum, 1, 1 );
 
@@ -187,7 +186,7 @@ QGroupBox* SegInspector::makeSourcesBox()
 
 void SegInspector::on_nameEdit_editingFinished()
 {
-	sdw->getSegmentation().SetCustomName(nameEdit->text());
+	sdw_.GetSegmentation().SetCustomName(nameEdit->text());
 }
 
 void SegInspector::on_browseButton_clicked()
@@ -244,17 +243,12 @@ void SegInspector::on_patternEdit_textChanged()
 
 void SegInspector::on_notesEdit_textChanged()
 {
-	OmProject::GetSegmentation(sdw->getID()).SetNote(notesEdit->toPlainText());
-}
-
-OmID SegInspector::getSegmentationID()
-{
-	return sdw->getID();
+	OmProject::GetSegmentation(sdw_.getID()).SetNote(notesEdit->toPlainText());
 }
 
 void SegInspector::populateSegmentationInspector()
 {
-	nameEdit->setText( sdw->getName() );
+	nameEdit->setText( sdw_.getName() );
 	nameEdit->setMinimumWidth(200);
 
 	//TODO: fix me!
@@ -268,7 +262,7 @@ void SegInspector::populateSegmentationInspector()
 	patternEdit->setText( "*" );
 	patternEdit->setMinimumWidth(200);
 
-	notesEdit->setPlainText( sdw->getNote() );
+	notesEdit->setPlainText( sdw_.getNote() );
 
 	updateFileList();
 }
@@ -276,11 +270,6 @@ void SegInspector::populateSegmentationInspector()
 void SegInspector::rebuildSegmentLists(const OmID segmentationID, const OmSegID segID)
 {
 	inspectorWidget_->rebuildSegmentLists(segmentationID, segID);
-}
-
-boost::shared_ptr<SegmentationDataWrapper>
-SegInspector::getSegmentationDataWrapper(){
-	return sdw;
 }
 
 OmViewGroupState* SegInspector::getViewGroupState(){

@@ -1,14 +1,18 @@
 #include "inspectorProperties.h"
 #include "viewGroup/omViewGroupState.h"
+#include "gui/updateSegmentProperties.hpp"
 
-InspectorProperties::InspectorProperties(QWidget *parent, OmViewGroupState * vgs) : QDialog(parent), mViewGroupState(vgs)
+InspectorProperties::InspectorProperties(QWidget *parent, OmViewGroupState * vgs)
+	: QDialog(parent), mViewGroupState(vgs)
 {
 	mWidget = NULL;
-	
+
 	mainLayout = new QVBoxLayout();
 	setLayout(mainLayout);
 
 	mViewGroupState->SetInspectorProperties(this);
+
+	UpdateSegmentPropertiesDialog::SetInspectorProperties(this);
 }
 
 void InspectorProperties::setOrReplaceWidget(QWidget *incomingWidget, const QString title)

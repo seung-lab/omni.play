@@ -1,4 +1,4 @@
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "omProjectSaveAction.h"
 #include "actions/details/omProjectSaveActionImpl.hpp"
 
@@ -25,6 +25,6 @@ std::string OmProjectSaveAction::Description()
 
 void OmProjectSaveAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }
 

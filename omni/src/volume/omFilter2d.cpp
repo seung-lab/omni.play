@@ -2,6 +2,7 @@
 #include "volume/omFilter2d.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
+#include "utility/dataWrappers.h"
 
 OmFilter2d::OmFilter2d()
 	: mAlpha(0.0)
@@ -24,8 +25,8 @@ double OmFilter2d::GetAlpha(){
 	return mAlpha;
 }
 
-OmID OmFilter2d::GetSegmentation() {
-	return mSeg;
+SegmentationDataWrapper OmFilter2d::GetSegmentationWrapper() const {
+	return SegmentationDataWrapper(mSeg);
 }
 
 void OmFilter2d::SetSegmentation(const OmID id)

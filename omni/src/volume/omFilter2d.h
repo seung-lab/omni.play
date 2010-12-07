@@ -10,21 +10,21 @@
 #include "system/omManageableObject.h"
 
 class OmMipVolume;
+class SegmentationDataWrapper;
 
 class OmFilter2d : public OmManageableObject {
-
 public:
 	OmFilter2d();
 	OmFilter2d(OmID);
 
 	std::string GetName(){
-		return "filter" + boost::lexical_cast<std::string>(GetID());
+		return "filter" + om::NumToStr(GetID());
 	}
 
 	void SetAlpha(const double);
 	double GetAlpha();
 
-	OmID GetSegmentation();
+	SegmentationDataWrapper GetSegmentationWrapper() const;
 	void SetSegmentation(const OmID id);
 
 	OmID GetChannel();

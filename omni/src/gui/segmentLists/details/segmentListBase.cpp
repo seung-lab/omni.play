@@ -1,3 +1,4 @@
+#include "segment/omSegmentSearched.hpp"
 #include "utility/dataWrappers.h"
 #include "segment/omSegmentLists.hpp"
 #include "common/omCommon.h"
@@ -10,12 +11,14 @@
 #include "system/events/omSegmentEvent.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentSelector.h"
+#include "segment/omSegmentUtils.hpp"
 
 SegmentListBase::SegmentListBase( QWidget * parent,
 								  OmViewGroupState* vgs)
 	: QWidget(parent)
 	, haveValidSDW(false)
 	, currentPageNum(0)
+	, vgs_(vgs)
 {
 	layout = new QVBoxLayout(this);
 
@@ -68,7 +71,7 @@ void SegmentListBase::populate(const bool doScrollToSelectedSegment,
 	const bool shouldThisTabBeMadeActive =
 		segmentListWidget->populate(doScrollToSelectedSegment,
 									segmentJustSelectedID,
-									*currentSDW,
+									sdw_,
 									segIDs);
 
 	debug(segmentlist, "bye!\n");
@@ -166,25 +169,22 @@ void SegmentListBase::goToEndPage()
 	populate( false, offset, true);
 }
 
-void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw,
-											 const OmSegID segmentJustSelectedID,
+void SegmentListBase::makeSegmentationActive(const SegmentDataWrapper& sdw,
 											 const bool doScroll )
 {
-	currentSDW = boost::make_shared<SegmentationDataWrapper>(sdw);
+	sdw_ = sdw.MakeSegmentationDataWrapper();
 	haveValidSDW = true;
-	populate(doScroll, segmentJustSelectedID);
+	populate(doScroll, sdw.GetSegmentID());
 }
 
-void SegmentListBase::rebuildSegmentList(const OmID segmentationID,
-										 const OmSegID segmentJustAddedID)
+void SegmentListBase::rebuildSegmentList(const SegmentDataWrapper& sdw)
 {
-	makeSegmentationActive(SegmentationDataWrapper(segmentationID),
-						   segmentJustAddedID,
-						   true );
+	makeSegmentationActive(sdw, true);
 }
 
-int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
+SegmentationDataWrapper SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 {
+	SegmentationDataWrapper newsdw;
 	bool doScroll = event->getDoScroll();
 
 	// if we sent event, don't scroll
@@ -192,36 +192,47 @@ int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * eve
 		doScroll = false;
 	}
 
-	const OmID segmentationID = event->GetModifiedSegmentationId();
+	const SegmentDataWrapper& sdw = event->GetSegmentDataWrapper();
 
-	if (OmProject::IsSegmentationValid(segmentationID)) {
-		const OmSegID segmentJustSelectedID = event->GetSegmentJustSelectedID();
-		makeSegmentationActive(SegmentationDataWrapper(segmentationID),
-							   segmentJustSelectedID,
-							   doScroll );
-		return segmentationID;
+	if(sdw.IsSegmentationValid()){
+		makeSegmentationActive(sdw, doScroll );
+		newsdw = sdw.MakeSegmentationDataWrapper();
 	} else {
 		if( haveValidSDW ){
 			populate();
-			return currentSDW->getID();
+			newsdw = sdw_;
+		} else {
+			newsdw = SegmentationDataWrapper();
 		}
-		return 0;
 	}
+ 	if(newsdw.IsSegmentationValid()){
+		OmSegIDsSet & sel = newsdw.GetSegmentCache()->GetSelectedSegmentIds();
+		if(1 == sel.size()){
+			OmSegmentUtils::CenterSegment(vgs_, newsdw);
+		}
+	}
+
+	return newsdw;
 }
 
 void SegmentListBase::searchChanged()
 {
-	OmSegID segmenID = searchEdit->text().toInt();
+	const OmSegID segID = searchEdit->text().toInt();
+	SegmentDataWrapper sdw(sdw_, segID);
 
-	if(!currentSDW->getSegmentCache()->IsSegmentValid(segmenID)) {
+	if(!sdw.IsSegmentValid()){
 		return;
 	}
 
-	OmSegmentSelector sel(currentSDW->getID(), NULL, "segmentlistbase");
-	sel.selectJustThisSegment(segmenID, true);
+	OmSegmentSearched::Set(sdw);
+
+	OmSegmentSelector sel(sdw_, NULL, "segmentlistbase");
+	sel.selectJustThisSegment(segID, true);
 	sel.sendEvent();
 
-	makeSegmentationActive(*currentSDW, segmenID, true);
+	makeSegmentationActive(sdw, true);
+
+	OmSegmentUtils::CenterSegment(vgs_, sdw);
 }
 
 void SegmentListBase::userJustClickedInThisSegmentList()

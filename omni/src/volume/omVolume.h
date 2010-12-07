@@ -25,7 +25,9 @@ public:
 	void SetDataExtent(const DataBbox& extent);
 	Vector3i GetDataDimensions();
 	void SetDataDimensions(const Vector3i& dim);
-	Vector3f GetDataResolution();
+	const Vector3f& GetDataResolution() const {
+		return mDataResolution;
+	}
 	void SetDataResolution(const Vector3f& res);
 	void CheckDataResolution();
 	Vector2f GetStretchValues(ViewType plane);

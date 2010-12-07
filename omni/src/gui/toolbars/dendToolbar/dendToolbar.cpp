@@ -86,7 +86,7 @@ QWidget* DendToolBar::wrapWithGroupBox(OmWidget* widget)
 	return gbox;
 }
 
-SegmentationDataWrapper DendToolBar::getSegmentationDataWrapper()
+SegmentationDataWrapper DendToolBar::GetSegmentationDataWrapper()
 {
 	const OmID segmentationID = 1;
 	return SegmentationDataWrapper(segmentationID);

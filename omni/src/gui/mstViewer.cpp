@@ -13,7 +13,7 @@ MstViewerImpl::MstViewerImpl(QWidget * parent, SegmentationDataWrapper sdw)
 
 void MstViewerImpl::populate()
 {
-	OmSegmentation & segmentation = sdw_.getSegmentation();
+	OmSegmentation & segmentation = sdw_.GetSegmentation();
 	boost::shared_ptr<OmMST> mst = segmentation.getMST();
 
 	const int numEdges = mst->NumEdges();

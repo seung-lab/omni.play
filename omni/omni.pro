@@ -2,13 +2,6 @@ QT += opengl
 TEMPLATE = app
 CONFIG += qt
 
-mac {
-  CONFIG += release
-}
-else {
- CONFIG += debug
-}
-
 DEPENDPATH += . \
            include \
            include/vmmlib \
@@ -73,8 +66,11 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/archive/omDataArchiveSegment.h \
            src/datalayer/upgraders/omUpgraders.hpp \
            src/datalayer/upgraders/omUpgradeTo14.hpp \
-           src/actions/io/omActionLoggerFS.h \
-           src/actions/io/omActionLoggerFSthread.hpp \
+           src/datalayer/upgraders/omUpgradeTo20.hpp \
+           src/actions/io/omActionLogger.hpp \
+           src/actions/io/omActionOperators.h \
+           src/actions/io/omActionLoggerTask.hpp \
+           src/actions/io/omActionReplayer.hpp \
            src/datalayer/fs/omMemMappedVolume.hpp \
            src/datalayer/hdf5/omHdf5.h \
            src/datalayer/hdf5/omHdf5FileUtils.hpp \
@@ -89,7 +85,9 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/omDataWrapper.h \
            src/datalayer/omIDataWriter.h \
            src/datalayer/omDummyWriter.h \
+           src/gui/updateSegmentProperties.hpp \
            src/gui/meshPreviewer/meshPreviewer.hpp \
+           src/gui/meshPreviewer/scaleFactorLineEdit.hpp \
            src/gui/mstViewer.hpp \
            src/gui/cacheMonitorDialog.h \
            src/gui/groupsTable.h \
@@ -151,6 +149,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/toolbars/dendToolbar/sliceDepthSpinBoxZ.hpp \
            src/gui/toolbars/dendToolbar/dust3DthresholdGroup.h \
            src/gui/toolbars/dendToolbar/thresholdGroup.h \
+           src/gui/toolbars/dendToolbar/breakThresholdGroup.h \
            src/gui/toolbars/mainToolbar/filterWidget.h \
            src/gui/toolbars/mainToolbar/mainToolbar.h \
            src/gui/toolbars/mainToolbar/navAndEditButtonGroup.h \
@@ -171,6 +170,8 @@ HEADERS += lib/strnatcmp.h \
            src/gui/widgets/omGroupListWidget.h \
            src/gui/widgets/omIntSpinBox.hpp \
            src/gui/widgets/omDoubleSpinBox.hpp \
+           src/gui/widgets/omLineEdit.hpp \
+           src/mesh/omMeshParams.hpp \
            src/mesh/omMeshDrawer.h \
            src/mesh/omMeshTypes.h \
            src/mesh/omMipMesh.h \
@@ -178,12 +179,12 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/omMipMeshManager.h \
            src/mesh/omMeshSegmentList.h \
            src/mesh/omMeshSegmentListThread.h \
-           src/mesh/ziMesher.h \
-           src/mesh/ziMesherManager.h \
-           src/mesh/ziMeshingChunk.h \
+           src/mesh/ziMesher.hpp \
            src/project/omProject.h \
            src/actions/details/omProjectSaveAction.h \
            src/actions/details/omProjectSaveActionImpl.hpp \
+           src/actions/details/omProjectCloseAction.h \
+           src/actions/details/omProjectCloseActionImpl.hpp \
            src/actions/details/omSegmentGroupAction.h \
            src/actions/details/omSegmentGroupActionImpl.hpp \
            src/actions/details/omSegmentJoinAction.h \
@@ -202,6 +203,8 @@ HEADERS += lib/strnatcmp.h \
            src/actions/details/omSegmentationThresholdChangeAction.h \
            src/segment/details/omSegmentListContainer.hpp \
            src/segment/details/sortedRootSegments.hpp \
+           src/segment/details/sortedRootSegmentsVector.hpp \
+           src/segment/details/sortedRootSegmentsTypes.h \
            src/segment/lowLevel/DynamicForestPool.hpp \
            src/segment/lowLevel/omPagingPtrStore.h \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
@@ -224,6 +227,8 @@ HEADERS += lib/strnatcmp.h \
            src/segment/details/omSegmentListsTypes.hpp \
            src/segment/omSegmentValidation.hpp \
            src/segment/omSegmentUncertain.hpp \
+           src/segment/omFindCommonEdge.hpp \
+           src/segment/omSegmentUtils.hpp \
            src/system/omGenericManager.h \
            src/system/events/omPreferenceEvent.h \
            src/system/events/omProgressEvent.h \
@@ -232,8 +237,8 @@ HEADERS += lib/strnatcmp.h \
            src/system/events/omView3dEvent.h \
            src/system/events/omViewEvent.h \
            src/actions/details/omAction.h \
-           src/system/omBuildChannel.h \
-           src/system/omBuildSegmentation.h \
+           src/volume/build/omBuildChannel.hpp \
+           src/volume/build/omBuildSegmentation.hpp \
            src/system/omBuildVolumes.h \
            src/system/cache/omLockedCacheObjects.hpp \
            src/system/cache/omCacheBase.h \
@@ -251,7 +256,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/omProjectData.h \
            src/system/omStateManager.h \
            src/system/cache/omThreadedCache.h \
-           src/system/cache/omHandleCacheMissThreaded.h \
+           src/system/cache/omHandleCacheMissTask.hpp \
            src/viewGroup/omViewGroupState.h \
            src/viewGroup/omBrushSize.hpp \
            src/viewGroup/omZoomLevel.hpp \
@@ -269,7 +274,6 @@ HEADERS += lib/strnatcmp.h \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \
            src/utility/localPrefFilesImpl.hpp \
-           src/utility/omImageDataIo.h \
            src/utility/omSystemInformation.h \
            src/utility/omTimer.h \
            src/utility/sortHelpers.h \
@@ -321,6 +325,7 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omViewBoxWidget.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
            src/volume/build/omVolumeAllocater.hpp \
+           src/volume/build/omVolumeBuilder.hpp \
            src/volume/build/omDownsamplerTypes.hpp \
            src/volume/build/omDownsamplerVoxelTask.hpp \
            src/volume/build/omVolumeImporter.hpp \
@@ -347,16 +352,10 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omVolumeData.hpp \
            src/zi/base/base.h \
            src/zi/base/bash.h \
-           src/zi/base/omni.h \
            src/zi/base/strings.h \
            src/zi/base/thrift.h \
            src/zi/base/time.h \
            src/zi/base/usages.h \
-           src/zi/mesh/MarchingCubesTables.h \
-           src/zi/mesh/ext/TriStrip/TriStrip_graph_array.h \
-           src/zi/mesh/ext/TriStrip/TriStrip_heap_array.h \
-           src/zi/mesh/ext/TriStrip/TriStripper.h \
-           src/zi/zunit/zunit.h \
            src/zi/watershed/RawQuickieWS.h \
            tests/tests.hpp \
            tests/segment/segmentTests.hpp \
@@ -364,12 +363,17 @@ HEADERS += lib/strnatcmp.h \
            tests/fakeMemMapFile.hpp \
            tests/testUtils.hpp \
            tests/segment/omSegmentListBySizeTests.hpp \
-           tests/segment/mockSegments.hpp
+           tests/segment/mockSegments.hpp \
+           tests/cache/lockedObjectsTests.hpp \
+           src/segment/omSegmentSearched.hpp \
+           src/segment/io/omValidGroupNum.hpp \
+           src/datalayer/archive/omDataArchiveStd.hpp
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
            src/common/omGl.cpp \
            src/actions/omActions.cpp \
+           src/actions/io/omActionReplayer.cpp \
            src/segment/io/omMST.cpp \
            src/segment/io/omMSTold.cpp \
            src/datalayer/archive/omDataArchiveBoost.cpp \
@@ -377,7 +381,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/archive/omDataArchiveMipChunk.cpp \
            src/datalayer/archive/omDataArchiveProject.cpp \
            src/datalayer/archive/omDataArchiveSegment.cpp \
-           src/actions/io/omActionLoggerFS.cpp \
+           src/actions/io/omActionOperators.cpp \
            src/datalayer/hdf5/omHdf5.cpp \
            src/datalayer/hdf5/omHdf5FileUtils.cpp \
            src/datalayer/hdf5/omHdf5Utils.cpp \
@@ -397,7 +401,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/inspectors/inspectorProperties.cpp \
            src/gui/inspectors/segmentation/segInspector.cpp \
            src/gui/inspectors/segObjectInspector.cpp \
-           src/gui/inspectors/volInspector.cpp \
            src/main.cpp \
            src/gui/mainwindow.cpp \
            src/gui/menubar.cpp \
@@ -425,7 +428,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/toolbars/dendToolbar/graphTools.cpp \
            src/gui/toolbars/dendToolbar/displayTools.cpp \
            src/gui/toolbars/dendToolbar/autoBreakCheckbox.cpp \
-           src/gui/toolbars/mainToolbar/filterWidget.cpp \
            src/gui/toolbars/mainToolbar/mainToolbar.cpp \
            src/gui/toolbars/mainToolbar/navAndEditButtonGroup.cpp \
            src/gui/toolbars/mainToolbar/navAndEditButtons.cpp \
@@ -443,11 +445,9 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/omMipMeshManager.cpp \
            src/mesh/omMeshSegmentList.cpp \
            src/mesh/omMeshSegmentListThread.cpp \
-           src/mesh/ziMesher.cpp \
-           src/mesh/ziMesherManager.cpp \
-           src/mesh/ziMeshingChunk.cpp \
            src/project/omProject.cpp \
            src/actions/details/omProjectSaveAction.cpp \
+           src/actions/details/omProjectCloseAction.cpp \
            src/actions/details/omSegmentJoinAction.cpp \
            src/actions/details/omSegmentUncertainAction.cpp \
            src/actions/details/omSegmentValidateAction.cpp \
@@ -464,7 +464,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentCache.cpp \
            src/segment/omSegmentCacheImpl.cpp \
            src/segment/omSegmentColorizer.cpp \
-           src/segment/omSegmentEdge.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentSelector.cpp \
            src/system/events/omPreferenceEvent.cpp \
@@ -473,10 +472,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/events/omToolModeEvent.cpp \
            src/system/events/omView3dEvent.cpp \
            src/system/events/omViewEvent.cpp \
-           src/actions/details/omAction.cpp \
-           src/system/omBuildChannel.cpp \
-           src/system/omBuildSegmentation.cpp \
-           src/system/omBuildVolumes.cpp \
            src/system/cache/omCacheManager.cpp \
            src/system/cache/omCacheGroup.cpp \
            src/system/events/omEvent.cpp \
@@ -492,7 +487,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/viewGroup/omViewGroupState.cpp \
            src/utility/channelDataWrapper.cpp \
            src/utility/fileHelpers.cpp \
-           src/utility/omImageDataIo.cpp \
            src/utility/omSystemInformation.cpp \
            src/utility/stringHelpers.cpp \
            src/tiles/cache/omTileCacheImpl.cpp \
@@ -531,10 +525,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/omVolumeCuller.cpp \
            src/volume/omVolumeData.cpp \
            tests/utility/stringHelpersTest.cpp \
-           src/zi/mesh/MarchingCubes.cpp \
-           src/zi/mesh/QuadraticErrorSimplification.cpp \
-           src/zi/mesh/ext/TriStrip/TriStripper.cpp \
-           src/zi/watershed/RawQuickieWS.cpp
+           src/zi/watershed/RawQuickieWS.cpp \
+           tests/segment/mockSegments.cpp
 
 RESOURCES += src/gui/resources.qrc
 
@@ -567,5 +559,38 @@ DESTDIR = bin
 #QMAKE_CXXFLAGS += -pg
 #QMAKE_LFLAGS   += -pg
 
+####
+# if gcc > 4.1, make non-void functions not returning something generate an error
+# from http://stackoverflow.com/questions/801279/finding-compiler-vendor-version-using-qmake
+linux-g++ {
+    system( g++ --version | grep -e "4.[2-9]" ) {
+        message( g++ version 4.[2-9] found )
+        CONFIG += g++4new
+    }
+    else {
+        CONFIG += g++old
+    }
+}
 # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43943
-QMAKE_CXXFLAGS += -Werror=return-type
+g++4new: QMAKE_CXXFLAGS += -Werror=return-type
+
+####
+# debug/release
+# if mac or ./omni/release files exists, force release mode; else debug
+CONFIG -= debug
+CONFIG -= release
+mac {
+    CONFIG += release
+} else {
+    exists(release) {
+       CONFIG += release
+    }else {
+       CONFIG += debug
+    }
+}
+CONFIG(release, debug|release) {
+    message ( in release mode; adding NDEBUG and no-strict-aliasing )
+    QMAKE_CXXFLAGS += -DNDEBUG  -fno-strict-aliasing
+    QMAKE_LFLAGS   += -DNDEBUG
+}
+

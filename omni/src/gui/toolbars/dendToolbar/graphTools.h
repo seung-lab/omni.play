@@ -17,7 +17,7 @@ class GraphTools : public OmWidget {
 	void SetSplittingOff();
 
 	OmViewGroupState * getViewGroupState();
-	SegmentationDataWrapper getSegmentationDataWrapper();
+	SegmentationDataWrapper GetSegmentationDataWrapper();
 	void updateGui();
 
 	QString getName(){ return "Graph Tools"; }
@@ -28,6 +28,7 @@ class GraphTools : public OmWidget {
 	SplitButton * splitButton;
 
 	QWidget* thresholdBox();
+	QWidget* breakThresholdBox();
 
 };
 

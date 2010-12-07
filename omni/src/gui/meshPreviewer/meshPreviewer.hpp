@@ -1,20 +1,21 @@
 #ifndef MESH_PREVIEWER_HPP
 #define MESH_PREVIEWER_HPP
 
+#include "utility/dataWrappers.h"
+
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
 
-class SegmentationDataWrapper;
 class OmViewGroupState;
 
 class MeshPreviewerImpl : public QWidget {
 public:
 	MeshPreviewerImpl(QWidget* parent,
-					  boost::shared_ptr<SegmentationDataWrapper> sdw,
+					  const SegmentationDataWrapper& sdw,
 					  OmViewGroupState* vgs);
 
 private:
-	boost::shared_ptr<SegmentationDataWrapper> sdw_;
+	SegmentationDataWrapper sdw_;
 	OmViewGroupState* vgs_;
 
 	void mesh();
@@ -25,7 +26,7 @@ private:
 class MeshPreviewer : public QDialog {
 public:
 	MeshPreviewer(QWidget * p,
-				  boost::shared_ptr<SegmentationDataWrapper> sdw,
+				  const SegmentationDataWrapper& sdw,
 				  OmViewGroupState* vgs)
 		: QDialog(p)
 	{

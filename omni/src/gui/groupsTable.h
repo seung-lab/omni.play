@@ -21,15 +21,20 @@ class GroupsTable : public QWidget
 {
         Q_OBJECT
 public:
+	static void Repopulate(OmSegID id = 0);
         GroupsTable(OmViewGroupState * vgs);
 
 	void populateGroupTable(OmGroupID id);
+
+	void SetSegmentID(OmSegID seg);
 
 private slots:
 	void doDeleteAction();
 
 private:
-        OmID getSegmentationID();
+        OmID GetSegmentationID();
+	OmSegID seg_;
+	OmGroupID groupid_;
 
         void populateGroupsList();
 

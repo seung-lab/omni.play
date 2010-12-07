@@ -17,7 +17,7 @@
 #include "utility/dataWrappers.h"
 
 MainWindow::MainWindow()
- : prog_dialog(this)
+	: prog_dialog(this)
 {
 	exceptionMessage = new QErrorMessage(this);
 
@@ -187,6 +187,7 @@ bool MainWindow::closeProjectIfOpen()
 		preferences = NULL;
 	}
 
+	//OmActions::Close();
 	OmProject::Close();
 	windowTitleClear();
 
@@ -224,8 +225,8 @@ void MainWindow::openProject()
 		// Internally, this is the file that has Volume serialized
 
 		QString fileNameAndPath = QFileDialog::getOpenFileName(this,
-								       tr("Open Project"), "",
-								       tr("Project File (*.omni)"));
+															   tr("Open Project"), "",
+															   tr("Project File (*.omni)"));
 
 		if (fileNameAndPath == NULL)
 			return;
@@ -287,9 +288,9 @@ void MainWindow::openInspector()
 		mMenuBar->getWindowMenu()->addAction(dock->toggleViewAction());
 
 		connect(omniInspector, SIGNAL(triggerChannelView(OmID, ViewType)),
-			this, SLOT(openChannelView(OmID, ViewType)));
+				this, SLOT(openChannelView(OmID, ViewType)));
 		connect(omniInspector, SIGNAL(triggerSegmentationView(OmID, ViewType)),
-			this, SLOT(openSegmentationView(OmID, ViewType)));
+				this, SLOT(openSegmentationView(OmID, ViewType)));
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -302,12 +303,15 @@ void MainWindow::openUndoView()
 		undoView = new QUndoView();
 
 		QDockWidget *dock = new QDockWidget(tr("History"), this);
+
 		dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 
 		undoView->setParent(dock);
 		dock->setWidget(undoView);
 
 		addDockWidget(Qt::TopDockWidgetArea, dock);
+		dock->setFloating(true);
+
 		mMenuBar->getWindowMenu()->addAction(dock->toggleViewAction());
 
 		undoView->setStack(OmStateManager::GetUndoStack());
@@ -319,21 +323,21 @@ void MainWindow::openUndoView()
 
 void MainWindow::openGroupsTable()
 {
-        try {
-                GroupsTable * groupsTable = new GroupsTable(mViewGroupState);
+	try {
+		GroupsTable * groupsTable = new GroupsTable(mViewGroupState);
 
-                QDockWidget *dock = new QDockWidget(tr("Groups"), this);
-                dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+		QDockWidget *dock = new QDockWidget(tr("Groups"), this);
+		dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 
-                groupsTable->setParent(dock);
-                dock->setWidget(groupsTable);
+		groupsTable->setParent(dock);
+		dock->setWidget(groupsTable);
 
-                addDockWidget(Qt::TopDockWidgetArea, dock);
-                mMenuBar->getWindowMenu()->addAction(dock->toggleViewAction());
+		addDockWidget(Qt::TopDockWidgetArea, dock);
+		mMenuBar->getWindowMenu()->addAction(dock->toggleViewAction());
 
-        } catch(OmException & e) {
-                spawnErrorDialog(e);
-        }
+	} catch(OmException & e) {
+		spawnErrorDialog(e);
+	}
 }
 
 
@@ -530,7 +534,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
 	if( mToolBars != NULL ){
 		mToolBars->windowResized(QPoint(event->oldSize().width(),
-						event->oldSize().height()));
+										event->oldSize().height()));
 	}
 }
 

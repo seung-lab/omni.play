@@ -22,22 +22,22 @@ public:
 	OmSegment* AddSegment(OmSegID value);
 	OmSegment* GetOrAddSegment(const OmSegID val);
 
-	OmSegmentEdge findClosestCommonEdge(OmSegment*, OmSegment*);
-
-	std::pair<bool, OmSegmentEdge> JoinFromUserAction(OmSegmentEdge e);
-	OmSegmentEdge SplitEdgeUserAction(OmSegmentEdge e);
-	void JoinTheseSegments(const OmSegIDsSet& segmentList);
-	void UnJoinTheseSegments(const OmSegIDsSet& segmentList);
+	std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmSegmentEdge& e);
+	OmSegmentEdge SplitEdgeUserAction(const OmSegmentEdge& e);
+	OmSegIDsSet JoinTheseSegments(const OmSegIDsSet& segmentList);
+	OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
 
 	void refreshTree();
 	quint64 getSizeRootAndAllChildren(OmSegment* segUnknownDepth);
+
+	bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
 
 private:
 	OmSegmentEdge splitChildFromParent(OmSegment* child);
 
 	boost::shared_ptr<OmUserEdges> userEdges();
 
-	std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(OmSegmentEdge e);
+	std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(const OmSegmentEdge& e);
 	std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmID, const OmID);
 
 	void rerootSegmentLists();

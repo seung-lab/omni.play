@@ -1,4 +1,5 @@
-#include "actions/io/omActionLoggerFS.h"
+#include "segment/omSegmentUtils.hpp"
+#include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentUncertainAction.h"
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
 
@@ -8,28 +9,28 @@ void OmSegmentUncertainAction::SetUncertain(const SegmentDataWrapper& sdw,
 	OmSegIDsSet set;
 	set.insert(sdw.FindRootID());
 
-	OmSegmentation & seg = sdw.getSegmentation();
 	boost::shared_ptr<std::set<OmSegment*> > children =
-		seg.GetAllChildrenSegments(set);
+		OmSegmentUtils::GetAllChildrenSegments(sdw.GetSegmentCache(), set);
 
-	(new OmSegmentUncertainAction(seg.GetID(), children, uncertain))->Run();
+	(new OmSegmentUncertainAction(sdw.MakeSegmentationDataWrapper(),
+								  children, uncertain))->Run();
 }
 
 void OmSegmentUncertainAction::SetUncertain(const SegmentationDataWrapper& sdw,
 											const bool uncertain)
 {
-	OmSegmentation & seg = sdw.getSegmentation();
-
+	OmSegmentCache* segCache = sdw.GetSegmentCache();
 	boost::shared_ptr<std::set<OmSegment*> > children =
-		seg.GetAllChildrenSegments(seg.GetSegmentCache()->GetSelectedSegmentIds());
+		OmSegmentUtils::GetAllChildrenSegments(segCache,
+											   segCache->GetSelectedSegmentIds());
 
-	(new OmSegmentUncertainAction(seg.GetID(), children, uncertain))->Run();
+	(new OmSegmentUncertainAction(sdw, children, uncertain))->Run();
 }
 
-OmSegmentUncertainAction::OmSegmentUncertainAction(const OmID segmentationId,
+OmSegmentUncertainAction::OmSegmentUncertainAction(const SegmentationDataWrapper& sdw,
 												   boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 												   const bool uncertain)
-	: impl_(boost::make_shared<OmSegmentUncertainActionImpl>(segmentationId,
+	: impl_(boost::make_shared<OmSegmentUncertainActionImpl>(sdw,
 															 selectedSegments,
 															 uncertain))
 {
@@ -55,5 +56,5 @@ std::string OmSegmentUncertainAction::Description()
 
 void OmSegmentUncertainAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }

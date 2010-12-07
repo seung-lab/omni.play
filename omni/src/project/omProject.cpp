@@ -21,6 +21,8 @@
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 #include "mesh/omMeshSegmentList.h"
+#include "actions/io/omActionLogger.hpp"
+#include "actions/io/omActionReplayer.hpp"
 
 #include <QDir>
 #include <QFile>
@@ -132,10 +134,13 @@ void OmProject::Load(const QString& fileNameAndPath)
 		OmProjectData::Close();
 		throw;
 	}
+
+	OmActionReplayer::Replay();
 }
 
 void OmProject::Close()
 {
+	OmActions::Close();
 	// OmProject must be deleted first: it depends on the remaining classes...
 	OmCacheManager::SignalCachesToCloseDown();
 	OmMeshSegmentList::Delete();
@@ -228,7 +233,7 @@ void OmProject::RemoveSegmentation(const OmID id)
 		OmChannel & channel = OmProject::GetChannel(channelID);
 		foreach( OmID filterID, channel.GetValidFilterIds()) {
 			OmFilter2d &filter = channel.GetFilter(filterID);
-			if (filter.GetSegmentation() == id){
+			if (filter.GetSegmentationWrapper().GetSegmentationID() == id){
 				filter.SetSegmentation(0);
 			}
 		}

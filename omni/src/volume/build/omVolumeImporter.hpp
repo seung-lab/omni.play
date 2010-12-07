@@ -17,12 +17,18 @@ class OmVolumeImporter {
 private:
 	VOL *const vol_;
 	const OmDataPath path_;
+	const bool importImagesAreImages_;
 	std::vector<boost::shared_ptr<QFile> > volFiles_;
+	const std::vector<QFileInfo>& files_;
 
 public:
-	OmVolumeImporter(VOL* vol, const OmDataPath& path)
+	OmVolumeImporter(VOL* vol, const OmDataPath& path,
+					 const bool importImagesAreImages,
+					 const std::vector<QFileInfo>& files)
 		: vol_(vol)
 		, path_(path)
+		, importImagesAreImages_(importImagesAreImages)
+		, files_(files)
 	{}
 
 	bool Import()
@@ -33,7 +39,7 @@ public:
 		fflush(stdout);
 
 		const bool ret = doImport();
-		printf("done in %.2f secs\n", timer.s_elapsed());
+		timer.PrintDone();
 
 		return ret;
 	}
@@ -41,7 +47,7 @@ public:
 private:
 	bool doImport()
 	{
-		if(areImportFilesImages()){
+		if(importImagesAreImages_){
 			return doImportImageStack();
 		}
 
@@ -50,20 +56,16 @@ private:
 
 	bool doImportHDF5()
 	{
-		OmVolumeImporterHDF5<VOL> hdf5(vol_, path_);
+		OmVolumeImporterHDF5<VOL> hdf5(vol_, path_, files_);
 		allocateData(hdf5.DetermineDataType());
 		return hdf5.Import(volFiles_[0]);
 	}
 
 	bool doImportImageStack()
 	{
-		OmVolumeImporterImageStack<VOL> images(vol_);
+		OmVolumeImporterImageStack<VOL> images(vol_, files_);
 		allocateData(images.DetermineDataType());
 		return images.Import(volFiles_[0]);
-	}
-
-	bool areImportFilesImages(){
-		return vol_->areImportFilesImages();
 	}
 
 	void allocateData(const OmVolDataType type){

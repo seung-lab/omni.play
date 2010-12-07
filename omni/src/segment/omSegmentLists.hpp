@@ -3,15 +3,19 @@
 
 #include "segment/details/omSegmentListContainer.hpp"
 #include "segment/lowLevel/omSegmentListByMRU.h"
+#include "segment/details/omSegmentListBySize2.hpp"
+#include "zi/omUtility.h"
 
 class OmSegmentLists {
 private:
-	OmSegmentListContainer<OmSegmentListBySize> validList_;
-	OmSegmentListContainer<OmSegmentListBySize> workingList_;
-	OmSegmentListContainer<OmSegmentListBySize> uncertainList_;
+	typedef OmSegmentListBySize SizeListType;
+
+	OmSegmentListContainer<SizeListType> validList_;
+	OmSegmentListContainer<SizeListType> workingList_;
+	OmSegmentListContainer<SizeListType> uncertainList_;
 	OmSegmentListByMRU recentList_;
 
-	OmSegmentListContainer<OmSegmentListBySize>&
+	OmSegmentListContainer<SizeListType>&
 	getContainer(const om::OmSegListType type)
 	{
 		switch(type){
@@ -27,29 +31,31 @@ private:
 	}
 
 public:
-	OmSegmentListByMRU& Recent() {
+	OmSegmentListByMRU& Recent(){
 		return recentList_;
 	}
 
-	OmSegmentListContainer<OmSegmentListBySize>& Working() {
+	OmSegmentListContainer<SizeListType>& Working(){
 		return workingList_;
 	}
 
-	OmSegmentListContainer<OmSegmentListBySize>& Valid() {
+	OmSegmentListContainer<SizeListType>& Valid(){
 		return validList_;
 	}
 
-	OmSegmentListContainer<OmSegmentListBySize>& Uncertain() {
+	OmSegmentListContainer<SizeListType>& Uncertain(){
 		return uncertainList_;
 	}
 
 	void MoveSegment(const om::OmSegListType toType,
 					 OmSegment* seg)
 	{
+		if(seg->GetListType() == toType) {
+			printf("can't move segment into list, already in this list.\n");
+			return;
+		}
 		getContainer(seg->GetListType()).swapSegment(seg, getContainer(toType));
 		seg->SetListType(toType);
-//		printf("next segment id in list (by size) is %d\n",
-//			   getContainer(seg->GetListType()).GetNextSegmentIDinList(seg->value()));
 	}
 
 	void TouchRecentList(const OmSegID segID){
@@ -68,7 +74,7 @@ public:
 		uncertainList_.insertSegment(seg);
 	}
 
-	uint64_t GetNumTopLevelSegs() {
+	uint64_t GetNumTopLevelSegs(){
 		return workingList_.size() + validList_.size() + uncertainList_.size();
 	}
 
@@ -88,6 +94,7 @@ public:
 	uint64_t getSegmentSize(OmSegment* seg){
 		return getContainer(seg->GetListType()).getSegmentSize(seg);
 	}
+
 };
 
 #endif

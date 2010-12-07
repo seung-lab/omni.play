@@ -5,18 +5,18 @@
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 
 class PreviewButton : public OmButton<MeshPreviewerImpl> {
- public:
+public:
 	PreviewButton(MeshPreviewerImpl * d)
 		: OmButton<MeshPreviewerImpl>( d,
-								   "Preview Mesh",
-								   "Compute meshes and display",
-								   false)
+									   "Preview Mesh",
+									   "Compute meshes and display",
+									   false)
 	{
 	}
 
 private:
 
-void doAction()
+	void doAction()
 	{
 		mParent->mesh();
 	}

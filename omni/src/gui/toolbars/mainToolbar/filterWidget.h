@@ -2,31 +2,132 @@
 #define FILTER_WIDGET_H
 
 #include "common/omCommon.h"
+#include "gui/toolbars/mainToolbar/filterWidget.h"
+#include "gui/mainwindow.h"
+#include "project/omProject.h"
+#include "volume/omChannel.h"
+#include "volume/omSegmentation.h"
+#include "system/omEvents.h"
+#include "utility/dataWrappers.h"
+#include "viewGroup/omViewGroupState.h"
 
+#include <QSize>
 #include <QSlider>
 #include <boost/optional.hpp>
 
-class MainWindow;
-
 class FilterWidget : public QSlider {
- Q_OBJECT
- public:
-	FilterWidget(MainWindow*);
+	Q_OBJECT
+	public:
+	FilterWidget(MainWindow * mw)
+		: QSlider(Qt::Horizontal, mw)
+	{
+		QSize size = sizeHint();
+		size.setWidth(200);
+		setMaximumSize(size);
 
-	void increaseAlpha();
-	void decreaseAlpha();
+		initSilderTab();
 
- private slots:
-	void setFilAlpha(int alpha);
+		connect(this, SIGNAL(valueChanged(int)),
+				this, SLOT(setFilAlpha(int)),
+				Qt::DirectConnection);
 
- private:
-	OmID getChannelID();
-	OmID getFilterID();
+		mw->getViewGroupState()->SetFilterWidget(this);
+	}
 
-	void initSilderTab();
-	boost::optional<double> doGetFilterAlpha();
-	void doSetFilterAlpha(const double alpha);
-	void moveSliderTab(const double alpha);
+	void increaseAlpha()
+	{
+		const double delta = 0.1;
+
+		const boost::optional<double> alpha = doGetFilterAlpha();
+		if(!alpha){
+			return;
+		}
+
+		double newAlpha = *alpha + delta;
+
+		if(newAlpha > 1){
+			newAlpha = 1;
+		}
+
+		doSetFilterAlpha(newAlpha);
+	}
+
+	void decreaseAlpha()
+	{
+		const double delta = 0.1;
+
+		const boost::optional<double> alpha = doGetFilterAlpha();
+		if(!alpha){
+			return;
+		}
+
+		double newAlpha = *alpha - delta;
+
+		if(newAlpha < 0){
+			newAlpha = 0;
+		}
+
+		doSetFilterAlpha(newAlpha);
+	}
+
+private slots:
+// sliderVal is from 0 to 100
+	void setFilAlpha(const int sliderVal)
+	{
+		const double alpha = sliderVal / 100.0;
+		doSetFilterAlpha(alpha);
+	}
+
+private:
+	OmID getChannelID()
+	{
+		return 1;
+	}
+
+	OmID getFilterID()
+	{
+		return 1;
+	}
+
+	void initSilderTab()
+	{
+		const boost::optional<double> alpha = doGetFilterAlpha();
+
+		if(alpha){
+			moveSliderTab(*alpha);
+		}
+	}
+
+	void moveSliderTab(const double alpha)
+	{
+		this->setValue(alpha * 100);
+		OmEvents::Redraw2d();
+	}
+
+	boost::optional<double> doGetFilterAlpha()
+	{
+		FilterDataWrapper fdw(getChannelID(), getFilterID());
+
+		if(fdw.isValid()){
+			OmFilter2d* filter = fdw.getFilter();
+			return boost::optional<double>(filter->GetAlpha());
+		}
+
+		return boost::optional<double>();
+	}
+
+	void doSetFilterAlpha(const double alpha)
+	{
+		FilterDataWrapper fdw(getChannelID(), getFilterID());
+
+		if(fdw.isValid()){
+			OmFilter2d* filter = fdw.getFilter();
+			filter->SetAlpha(alpha);
+			moveSliderTab(alpha);
+			OmEvents::Redraw2d();
+		}
+	}
+
 };
 
 #endif

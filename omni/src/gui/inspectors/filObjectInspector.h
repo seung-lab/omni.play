@@ -36,7 +36,7 @@ private:
     QGroupBox* makeNotesBox();
 
     void set_initial_values();
-    int getSegmentationIDtoFilter();
+    int GetSegmentationIDtoFilter();
     int getChannelIDtoFilter();
 };
 #endif

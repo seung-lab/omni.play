@@ -12,8 +12,9 @@
 #include <cmath>
 #include <boost/lexical_cast.hpp>
 
-#include <zi/utility>
-#include <zi/time>
+#include <zi/utility/for_each.hpp>
+#include <zi/bits/cstdint.hpp>
+#include <zi/time.hpp>
 
 #include "mex.h"
 
@@ -52,9 +53,9 @@ T getMexScalar(const mxArray *prhs) {
 }
 
 #define DECLARE_MEX(_name_)                     \
-  static zi::Timer zTimer;		        \
-  static int    mexExecCount = 0;               \
-  static std::string S_MEX_NAME = #_name_
+    static zi::timer::wall zTimer;		        \
+    static int    mexExecCount = 0;                     \
+    static std::string S_MEX_NAME = #_name_
 
 #define MEXINIT()                                               \
   do {                                                          \
@@ -67,7 +68,7 @@ T getMexScalar(const mxArray *prhs) {
 #define MEXPRINTF(...)                                          \
   do {                                                          \
     mexPrintf("%s (%0.3f): ", S_MEX_NAME.c_str(),               \
-              zTimer.dTotal());                                 \
+              zTimer.elapsed< double >());                        \
     mexPrintf(__VA_ARGS__);                                     \
     mexPrintf("\n");                                            \
   } while(0)

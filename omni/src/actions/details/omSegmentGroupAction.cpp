@@ -1,4 +1,4 @@
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentGroupAction.h"
 #include "actions/details/omSegmentGroupActionImpl.hpp"
 
@@ -31,5 +31,5 @@ std::string OmSegmentGroupAction::Description()
 
 void OmSegmentGroupAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }

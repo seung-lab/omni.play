@@ -1,6 +1,7 @@
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentValidateAction.h"
 #include "actions/details/omSegmentValidateActionImpl.hpp"
+#include "segment/omSegmentUtils.hpp"
 
 void OmSegmentValidateAction::Validate(const SegmentDataWrapper& sdw,
 									   const om::SetValid validEnum)
@@ -11,13 +12,13 @@ void OmSegmentValidateAction::Validate(const SegmentDataWrapper& sdw,
 	}
 
 	OmSegIDsSet set;
-	set.insert(sdw.getSegmentCache()->findRootID(sdw.getID()));
+	set.insert(sdw.FindRootID());
 
-	OmSegmentation & seg = sdw.getSegmentation();
 	boost::shared_ptr<std::set<OmSegment*> > children =
-		seg.GetAllChildrenSegments(set);
+		OmSegmentUtils::GetAllChildrenSegments(sdw.GetSegmentCache(), set);
 
-	(new OmSegmentValidateAction(seg.GetID(), children, valid))->Run();
+	(new OmSegmentValidateAction(sdw.MakeSegmentationDataWrapper(),
+								 children, valid))->Run();
 }
 
 void OmSegmentValidateAction::Validate(const SegmentationDataWrapper& sdw,
@@ -28,18 +29,18 @@ void OmSegmentValidateAction::Validate(const SegmentationDataWrapper& sdw,
 		valid = true;
 	}
 
-	OmSegmentation & seg = sdw.getSegmentation();
-
+	OmSegmentCache* segCache = sdw.GetSegmentCache();
 	boost::shared_ptr<std::set<OmSegment*> > children =
-		seg.GetAllChildrenSegments(seg.GetSegmentCache()->GetSelectedSegmentIds());
+		OmSegmentUtils::GetAllChildrenSegments(segCache,
+											   segCache->GetSelectedSegmentIds());
 
-	(new OmSegmentValidateAction(seg.GetID(), children, valid))->Run();
+	(new OmSegmentValidateAction(sdw, children, valid))->Run();
 }
 
-OmSegmentValidateAction::OmSegmentValidateAction(const OmID segmentationId,
+OmSegmentValidateAction::OmSegmentValidateAction(const SegmentationDataWrapper& sdw,
 												 boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 												 const bool valid)
-	: impl_(boost::make_shared<OmSegmentValidateActionImpl>(segmentationId,
+	: impl_(boost::make_shared<OmSegmentValidateActionImpl>(sdw,
 															selectedSegments,
 															valid))
 {
@@ -63,5 +64,6 @@ std::string OmSegmentValidateAction::Description()
 
 void OmSegmentValidateAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }
+

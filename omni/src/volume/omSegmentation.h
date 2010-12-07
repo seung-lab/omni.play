@@ -13,6 +13,7 @@
 
 class OmMipMeshManager;
 class OmGroups;
+class OmValidGroupNum;
 class OmMST;
 class OmUserEdges;
 class OmSegmentLists;
@@ -44,7 +45,6 @@ public:
 	void CloseDownThreads();
 
 	void Flush();
-	void BuildVolumeData();
 	void Mesh();
 	void MeshChunk(const OmMipChunkCoord& coord);
 
@@ -65,22 +65,20 @@ public:
 
 	void SetDendThreshold( double t );
 	double GetDendThreshold();
+
 	boost::shared_ptr<OmMST> getMST(){
 		return mst_;
 	}
 	boost::shared_ptr<OmUserEdges> getMSTUserEdges(){
 		return mstUserEdges_;
 	}
+	boost::shared_ptr<OmValidGroupNum>& GetValidGroupNum(){
+		return validGroupNum_;
+	}
 
-	DataCoord FindCenterOfSelectedSegments() const;
 	void UpdateVoxelBoundingData();
 
-	bool ImportSourceData(const OmDataPath& path);
-
 	void SetVolDataType(const OmVolDataType);
-
-	boost::shared_ptr<std::set<OmSegment*> >
-	GetAllChildrenSegments(const OmSegIDsSet& set);
 
 	void BuildBlankVolume(const Vector3i & dims);
 
@@ -99,11 +97,13 @@ private:
 	boost::shared_ptr<OmMST> mst_;
 	boost::shared_ptr<OmUserEdges> mstUserEdges_;
 	boost::shared_ptr<OmMipMeshManager> mMipMeshManager;
+	boost::shared_ptr<OmValidGroupNum> validGroupNum_;
 
 	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &,
 								   const bool rerootSegments);
 
 	friend class OmBuildSegmentation;
+	template <class T> friend class OmVolumeBuilder;
 	template <class T> friend class OmVolumeImporter;
 
 	friend class OmSegmentCacheImpl;

@@ -168,11 +168,6 @@ void OmVolume::SetDataDimensions(const Vector3i & dim)
 	Update();
 }
 
-Vector3f OmVolume::GetDataResolution()
-{
-	return mDataResolution;
-}
-
 void OmVolume::SetDataResolution(const Vector3f & res)
 {
 	mDataResolution = res;

@@ -49,27 +49,27 @@ public:
 	QString getSegmentNote( OmSegID segID );
 	void setSegmentNote( OmSegID segID, QString note );
 
-	OmSegID getSegmentationID();
+	OmSegID GetSegmentationID();
 
 	OmSegment * findRoot( OmSegment * segment );
 	OmSegment * findRoot( const OmSegID segID );
 	OmSegID findRootID( const OmSegID segID );
 	OmSegID findRootID(OmSegment* segment);
 
-	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
-
 	std::pair<bool, OmSegmentEdge> JoinEdge( const OmSegmentEdge & e );
 	OmSegmentEdge SplitEdge( const OmSegmentEdge & e );
-	void JoinTheseSegments( const OmSegIDsSet & segmentList);
-	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
+	OmSegIDsSet JoinTheseSegments( const OmSegIDsSet & segmentList);
+	OmSegIDsSet UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
 	quint32 getPageSize();
 
-	quint32 getMaxValue();
+	uint32_t getMaxValue();
 
 	void refreshTree();
 
 	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
+
+	bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
 
 private:
 	zi::mutex mutex_;

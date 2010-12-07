@@ -8,6 +8,13 @@
 
 class SortHelpers {
 public:
+	static void SortNaturally(std::vector<QFileInfo>& in)
+	{
+		std::sort(in.begin(),
+				  in.end(),
+				  NaturalStringCaseInsensitiveCompareLessThanQFile);
+	}
+
 	static QStringList SortNaturally(const QStringList& in)
 	{
 		QStringList retVal = in;

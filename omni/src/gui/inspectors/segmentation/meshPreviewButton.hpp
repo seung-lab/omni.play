@@ -18,8 +18,7 @@ public:
 private:
 	void doAction()
 	{
-		boost::shared_ptr<SegmentationDataWrapper> sdw =
-			mParent->getSegmentationDataWrapper();
+		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
 
 		new MeshPreviewer(this, sdw, mParent->getViewGroupState());
 	}

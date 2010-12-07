@@ -9,6 +9,7 @@
 #include "segment/omSegmentColorizer.h"
 #include "tests/fakeMemMapFile.hpp"
 #include "volume/omSegmentation.h"
+#include "tests/testUtils.hpp"
 
 class MockSegments {
 private:
@@ -27,9 +28,13 @@ private:
 	std::vector<OmSegment*> segs_;
 	static const uint32_t MaxSegID_ = 10;
 
+	// ensure unique set of segments everything we instantiate a new
+	//  MockSegments object
+	static OmID segmentationID;
+
 public:
 	MockSegments()
-		: seg_(boost::make_shared<OmSegmentation>(1))
+		: seg_(boost::make_shared<OmSegmentation>(segmentationID++))
 		, s1_(NULL), s2_(NULL), s3_(NULL), s4_(NULL), s5_(NULL)
 		, s6_(NULL), s7_(NULL), s8_(NULL), s9_(NULL), s10_(NULL)
 		, cache_(seg_->GetSegmentCache())
@@ -39,7 +44,12 @@ public:
 	}
 
 	OmSegment* GetOrAddSegment(const uint32_t id){
-		return cache_->GetOrAddSegment(id);
+		OmSegment* seg = cache_->GetOrAddSegment(id);
+		if(segs_.size() <= id){
+			segs_.resize(id+1);
+		}
+		segs_[id] = seg;
+		return seg;
 	}
 
 	OmSegment* operator[] (const uint32_t id){

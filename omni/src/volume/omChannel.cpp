@@ -46,17 +46,11 @@ boost::shared_ptr<OmVolumeData> OmChannel::getVolData() {
 }
 
 std::string OmChannel::GetName(){
-	return "channel" +  boost::lexical_cast<std::string>(GetID());
+	return "channel" + om::NumToStr(GetID());
 }
 
 std::string OmChannel::GetDirectoryPath() {
 	return OmDataPaths::getDirectoryPath(this);
-}
-
-void OmChannel::BuildVolumeData()
-{
-	OmDataPath path = OmDataPath(OmDataPaths::getDefaultHDF5channelDatasetName());
-	OmMipVolume::Build(path);
 }
 
 OmFilter2d& OmChannel::AddFilter() {
@@ -82,12 +76,6 @@ bool OmChannel::IsFilterEnabled(OmID id){
 }
 
 void OmChannel::CloseDownThreads(){
-}
-
-bool OmChannel::ImportSourceData(const OmDataPath& path)
-{
-	OmVolumeImporter<OmChannel> importer(this, path);
-	return importer.Import();
 }
 
 void OmChannel::loadVolData()

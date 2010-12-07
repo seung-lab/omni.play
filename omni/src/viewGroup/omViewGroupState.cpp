@@ -96,7 +96,7 @@ void OmViewGroupState::SetViewSliceMin(const ViewType plane, const float x,
 		mYZSlice[1] = y;
 		break;
 	default:
-		assert(false);
+		throw OmArgException("unknown plane");
 	}
 }
 
@@ -110,7 +110,7 @@ Vector2f OmViewGroupState::GetViewSliceMin(ViewType plane)
 	case YZ_VIEW:
 		return Vector2f(&mYZSlice[0]);
 	default:
-		assert(false);
+		throw OmArgException("unknown plane");
 	}
 }
 
@@ -291,9 +291,9 @@ void OmViewGroupState::setupColorizer(const Vector2i& dims,
 		SegmentationDataWrapper sdw(key.getVolume()->getID());
 
 		OmSegmentColorizer* sc =
-			new OmSegmentColorizer(sdw.getSegmentCache(),
+			new OmSegmentColorizer(sdw.GetSegmentCache(),
 								   sccType,
-								   dims);
+								   dims, this);
 		mColorCaches[ sccType ] =
 			boost::shared_ptr<OmSegmentColorizer>(sc);
 	}

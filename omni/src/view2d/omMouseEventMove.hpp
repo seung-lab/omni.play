@@ -67,7 +67,7 @@ private:
 	void selectSegments(QMouseEvent* event)
 	{
 		SegmentDataWrapper sdw = OmSegmentSelected::Get();
-		if (!sdw.isValidWrapper()){
+		if (!sdw.IsSegmentValid()){
 			return;
 		}
 
@@ -89,7 +89,7 @@ private:
 	void paint(QMouseEvent* event)
 	{
 		SegmentDataWrapper sdw = OmSegmentSelected::Get();
-		if (!sdw.isValidWrapper()){
+		if (!sdw.IsSegmentValid()){
 			return;
 		}
 
@@ -101,7 +101,7 @@ private:
 			segmentValueToPaint = sdw.getID();
 		}
 
-		v2d_->LineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
+		v2d_->LineDrawer()->BrushToolApplyPaint(sdw.GetSegmentationID(),
 												dataClickPoint,
 												segmentValueToPaint);
 

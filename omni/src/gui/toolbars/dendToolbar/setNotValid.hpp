@@ -20,8 +20,8 @@ private:
 	void doAction()
 	{
 		//debug(dendbar, "ValidationGroup::deleteGroup\n");
-		SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
-		if(!sdw.isValid()){
+		SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
+		if(!sdw.IsSegmentationValid()){
 			return;
 		}
 

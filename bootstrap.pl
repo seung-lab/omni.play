@@ -102,18 +102,36 @@ sub makeDirPaths {
 }
 
 sub genOmniScript {
-    open (SCRIPT, ">", $omniScriptFile) or die $!;
+    my $script = "";
+    $script .= "cd $basePath/omni;";
 
-    my $script = <<END;
-cd $basePath/omni
-../external/libs/Qt/bin/qmake omni.pro
-make $globalMakeOptions
-END
-
-    if(isMac()) {
-	$script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.0/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
+    if(@_ == 1) {
+	my $debugMode = $_[0];
+	if($debugMode){
+	    print "building omni in debug mode\n";
+	    $script .= "rm -f release;";
+	} else {
+	    print "building omni in release mode\n";
+	    $script .= "touch release;";
+	}
+    } else {
+	print "building omni with current make options\n";
     }
 
+    $script .= "../external/libs/Qt/bin/qmake omni.pro;";
+
+    if(@_ == 1) {
+	print "will make clean\n";
+	$script .= "make clean;";
+    }
+
+    $script .= "make $globalMakeOptions";
+
+    if(isMac()) {
+	$script .= "; cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.1/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
+    }
+
+    open (SCRIPT, ">", $omniScriptFile) or die $!;
     print SCRIPT $script;
     close SCRIPT;
     `chmod +x $omniScriptFile`;
@@ -302,7 +320,7 @@ sub qt47 {
     # suggests --no-excpetion to reduce gcc-induced memory footprint increases
     # disable postgres/sqlite
     # debug not enabled?
-    my $baseFileName = "qt-everywhere-opensource-src-4.7.0";
+    my $baseFileName = "qt-everywhere-opensource-src-4.7.1";
     my @argsList = qw( -release -opensource -no-glib -v
  -no-exceptions
  -no-fast -make libs -make tools
@@ -326,7 +344,7 @@ sub qt47 {
 
 sub omni {
     printTitle("omni");
-    genOmniScript();
+    genOmniScript(@_);
 
     if(isMac()){
 	unlink($omniExecPathMac);
@@ -336,6 +354,11 @@ sub omni {
     print "running: ($cmd)\n";
     print `$cmd`;
     print "done\n";
+}
+
+sub stxxl {
+    my $args = "";
+    prepareAndBuild( "stxxl-1.3.0", "stxxl", $args );
 }
 
 sub printTitle {
@@ -359,8 +382,10 @@ sub menu {
     print "8 -- Generate scripts\n";
     print "10 -- Experimental builds...\n";
     print "11 -- Ubuntu library apt-gets...\n";
-    print "12 -- build omni (make clean first)...\n\n";
-    my $max_answer = 12;
+    print "12 -- build omni (make clean first)...\n";
+    print "13 -- build omni in debug mode...\n";
+    print "14 -- build omni in release mode...\n\n";
+    my $max_answer = 14;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -408,6 +433,10 @@ sub runMenuEntry {
         doUbuntuAptGets();
     }elsif( 12 == $entry ){
         omniClean();
+    }elsif( 13 == $entry ){
+        omni(1);
+    }elsif( 14 == $entry ){
+        omni(0);
     }
 }
 
@@ -453,8 +482,9 @@ sub experimentalMenu {
     print "0 -- exit\n";
     print "1 -- Build Omni no debug\n";
     print "2 -- Build qt 4.7\n";
+    print "3 -- Build stxxl\n";
     print "\n";
-    my $max_answer = 2;
+    my $max_answer = 3;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -482,6 +512,8 @@ sub runExperimentalMenuEntry {
 	omni();
     } elsif( 2 == $entry ){
 	qt47();
+    } elsif( 3 == $entry ){
+	stxxl();
     }
 }
 
@@ -500,7 +532,7 @@ sub checkCmdLineArgs {
 
 sub doUbuntuAptGets{
     my @packages = qw( libxrender-dev libxext-dev freeglut3-dev g++
-	libfreetype6-dev libxml2 libxml2-dev cmake mesa-common-dev
+	libfreetype6-dev libxml2 libxml2-dev mesa-common-dev
 	libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
 	libgl1-mesa-glx-dbg libboost-dev flex bison);
 

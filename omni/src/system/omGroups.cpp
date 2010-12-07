@@ -2,6 +2,7 @@
 #include "system/omGroup.h"
 #include "system/omGroups.h"
 #include "system/omManageableObject.h"
+#include "gui/groupsTable.h"
 
 OmGroups::OmGroups(OmSegmentation * seg)
 	: mSegmentation(seg)
@@ -21,13 +22,20 @@ OmGroup & OmGroups::AddGroup(OmGroupName name)
 
 	mGroupsByName.insert(name, group.GetID());
 
+	GroupsTable::Repopulate();
+
 	return group;
 }
 
-void OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool)
+void OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool add)
 {
 	printf("adding ids\n");
-	group->AddIds(set);
+	if(add) { 
+		group->AddIds(set);
+	} else {
+		group->RemoveIds(set);
+	}
+	GroupsTable::Repopulate(group->GetID());
 }
 
 void OmGroups::SetGroup(const OmSegIDsSet & set, OmGroupName name)
@@ -37,6 +45,7 @@ void OmGroups::SetGroup(const OmSegIDsSet & set, OmGroupName name)
 	} else {
 		setGroupIDs(set, &GetGroup(name), true);
 	}
+	GroupsTable::Repopulate();
 }
 
 void OmGroups::UnsetGroup(const OmSegIDsSet & set, OmGroupName name)
@@ -46,6 +55,8 @@ void OmGroups::UnsetGroup(const OmSegIDsSet & set, OmGroupName name)
 	} else {
 		setGroupIDs(set, &GetGroup(name), false);
 	}
+	printf("!!!!!!!!!!!!!!!!!\n");
+	GroupsTable::Repopulate();
 }
 
 OmGroup & OmGroups::GetGroup(OmGroupName name)
@@ -64,6 +75,21 @@ OmGroupIDsSet OmGroups::GetGroups()
 	foreach(OmGroupID id, mGroupsByName) {
 		set.insert(id);
 		printf("got\n");
+	}
+	return set;
+}
+
+OmGroupIDsSet OmGroups::GetGroups(OmSegID seg)
+{
+	OmGroupIDsSet set;
+	foreach(OmGroupID id, mGroupsByName) {
+		OmGroup & group = GetGroup(id);
+		OmSegIDsSet ids = group.GetIDs();
+		printf("searching %u for %u\n", id, seg);
+		if(ids.count(seg) > 0) {
+			set.insert(id);
+			printf("got %u\n", id);
+		}
 	}
 	return set;
 }

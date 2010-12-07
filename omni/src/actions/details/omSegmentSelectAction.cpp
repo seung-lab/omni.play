@@ -1,19 +1,17 @@
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentSelectAction.h"
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 
-OmSegmentSelectAction::OmSegmentSelectAction(const OmID segmentationId,
+OmSegmentSelectAction::OmSegmentSelectAction(const SegmentDataWrapper& sdw,
 											 const OmSegIDsSet & newSelectedIdSet,
 											 const OmSegIDsSet & oldSelectedIdSet,
-											 const OmID segmentJustSelected,
 											 void * sender,
 											 const std::string& comment,
 											 const bool doScroll,
 											 const bool addToRecentList)
-	: impl_(boost::make_shared<OmSegmentSelectActionImpl>(segmentationId,
+	: impl_(boost::make_shared<OmSegmentSelectActionImpl>(sdw,
 														 newSelectedIdSet,
 														 oldSelectedIdSet,
-														 segmentJustSelected,
 														 sender,
 														 comment,
 														 doScroll,
@@ -37,5 +35,5 @@ std::string OmSegmentSelectAction::Description()
 
 void OmSegmentSelectAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }

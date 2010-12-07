@@ -2,18 +2,6 @@
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type)
 	: OmEvent(type, CLASS)
-	, mSegmentationId(0)
-	, mSegmentJustSelectedID(0)
-	, mSender(NULL)
-	, mComment("unknown")
-	, mDoScroll(true)
-{
-}
-
-OmSegmentEvent::OmSegmentEvent(QEvent::Type type, OmID segmentationId)
-	: OmEvent(type, CLASS)
-	, mSegmentationId(segmentationId)
-	, mSegmentJustSelectedID(0)
 	, mSender(NULL)
 	, mComment("unknown")
 	, mDoScroll(true)
@@ -21,43 +9,16 @@ OmSegmentEvent::OmSegmentEvent(QEvent::Type type, OmID segmentationId)
 }
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
-			       OmID segmentationId,
-			       const OmID segmentJustSelectedID,
+			       const SegmentDataWrapper& sdw,
 			       void* sender,
 			       std::string comment,
 			       const bool doScroll )
 	: OmEvent(type, CLASS)
-	, mSegmentationId( segmentationId )
-	, mSegmentJustSelectedID( segmentJustSelectedID )
+	, sdw_(sdw)
 	, mSender( sender )
 	, mComment( comment )
 	, mDoScroll(doScroll)
 {
-}
-
-OmID OmSegmentEvent::GetModifiedSegmentationId()
-{
-	return mSegmentationId;
-}
-
-OmID OmSegmentEvent::GetSegmentJustSelectedID()
-{
-	return mSegmentJustSelectedID;
-}
-
-void* OmSegmentEvent::getSender()
-{
-	return mSender;
-}
-
-std::string OmSegmentEvent::getComment()
-{
-	return mComment;
-}
-
-bool OmSegmentEvent::getDoScroll()
-{
-	return mDoScroll;
 }
 
 /*

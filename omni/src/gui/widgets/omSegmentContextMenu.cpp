@@ -1,3 +1,4 @@
+#include "gui/inspectors/inspectorProperties.h"
 #include "actions/omActions.hpp"
 #include "common/omDebug.h"
 #include "gui/inspectors/segObjectInspector.h"
@@ -10,6 +11,8 @@
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
+#include "system/omGroup.h"
+#include "system/omGroups.h"
 
 /////////////////////////////////
 ///////          Context Menu Methods
@@ -41,16 +44,20 @@ void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
 	addGroupActions();
 	addSeparator();
 
+	addDisableAction();
 	addPropertiesActions();
+
+	addSeparator();
+	addGroups();
 }
 
 bool OmSegmentContextMenu::isValid() const {
-	assert(sdw_.isValidWrapper());
-	return sdw_.FindRoot()->IsValid();
+	assert(sdw_.IsSegmentValid());
+	return sdw_.FindRoot()->IsValidListType();
 }
 
 bool OmSegmentContextMenu::isUncertain() const {
-	assert(sdw_.isValidWrapper());
+	assert(sdw_.IsSegmentValid());
 	return om::UNCERTAIN == sdw_.FindRoot()->GetListType();
 }
 
@@ -65,11 +72,11 @@ void OmSegmentContextMenu::addSelectionNames()
 	if(isValid()){
 		validStr = QString("%1 %2")
 			.arg("Valid in ")
-			.arg(sdw_.getSegmentationName());
+			.arg(sdw_.GetSegmentationName());
 	} else {
 		validStr = QString("%1 %2")
 			.arg("Not valid in ")
-			.arg(sdw_.getSegmentationName());
+			.arg(sdw_.GetSegmentationName());
 	}
 	addAction(validStr);
 }
@@ -103,21 +110,21 @@ void OmSegmentContextMenu::addDendActions()
 
 void OmSegmentContextMenu::select()
 {
-	OmSegmentSelector sel(sdw_.getSegmentationID(), this, "view3d" );
+	OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), this, "view3d" );
 	sel.augmentSelectedSet(sdw_.getID(), true);
 	sel.sendEvent();
 }
 
 void OmSegmentContextMenu::unselect()
 {
-	OmSegmentSelector sel(sdw_.getSegmentationID(), this, "view3d" );
+	OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), this, "view3d" );
 	sel.augmentSelectedSet(sdw_.getID(), false);
 	sel.sendEvent();
 }
 
 void OmSegmentContextMenu::unselectOthers()
 {
-	OmSegmentSelector sel(sdw_.getSegmentationID(), this, "view3d" );
+	OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), this, "view3d" );
 	sel.selectNoSegments();
 	sel.selectJustThisSegment(sdw_.getID(), true);
 	sel.sendEvent();
@@ -125,8 +132,8 @@ void OmSegmentContextMenu::unselectOthers()
 
 void OmSegmentContextMenu::mergeSegments()
 {
-	OmSegIDsSet ids = sdw_.getSegmentCache()->GetSelectedSegmentIds();
-	OmActions::JoinSegments(sdw_.getSegmentationID(), ids);
+	OmSegIDsSet ids = sdw_.GetSegmentCache()->GetSelectedSegmentIds();
+	OmActions::JoinSegments(sdw_.GetSegmentationID(), ids);
 }
 
 void OmSegmentContextMenu::splitSegments()
@@ -138,7 +145,8 @@ void OmSegmentContextMenu::splitSegments()
 
 void OmSegmentContextMenu::addColorActions()
 {
-	addAction("Randomize Segment Color", this, SLOT(randomizeColor()));
+	addAction("Randomize Root Segment Color", this, SLOT(randomizeColor()));
+	addAction("Randomize Segment Color", this, SLOT(randomizeSegmentColor()));
 }
 
 void OmSegmentContextMenu::addGroupActions()
@@ -156,10 +164,19 @@ void OmSegmentContextMenu::randomizeColor()
 	OmEvents::Redraw2d();
 }
 
+void OmSegmentContextMenu::randomizeSegmentColor()
+{
+        OmSegment* segment = sdw_.getSegment();
+        segment->reRandomizeColor();
+
+        OmCacheManager::TouchFresheness();
+        OmEvents::Redraw2d();
+}
+
 void OmSegmentContextMenu::setValid()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
-	if(sdw_.isValidWrapper()){
+	if(sdw_.IsSegmentValid()){
 		OmActions::ValidateSegment(sdw_, om::SET_VALID);
 		OmEvents::SegmentModified();
 	}
@@ -168,7 +185,7 @@ void OmSegmentContextMenu::setValid()
 void OmSegmentContextMenu::setNotValid()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
-	if(sdw_.isValidWrapper()){
+	if(sdw_.IsSegmentValid()){
 		OmActions::ValidateSegment(sdw_, om::SET_NOT_VALID);
 		OmEvents::SegmentModified();
 	}
@@ -181,7 +198,7 @@ void OmSegmentContextMenu::showProperties()
 	mViewGroupState->GetInspectorProperties()->
 		setOrReplaceWidget( new SegObjectInspector(sdw_, this),
 							QString("Segmentation %1: Segment %2")
-							.arg(sdw_.getSegmentationID())
+							.arg(sdw_.GetSegmentationID())
 							.arg(segid));
 }
 
@@ -194,20 +211,61 @@ void OmSegmentContextMenu::addPropertiesActions()
 void OmSegmentContextMenu::printChildren()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
-	if (sdw_.isValidWrapper()){
-		OmSegmentCache* segCache = sdw_.getSegmentCache();
+	if (sdw_.IsSegmentValid()){
+		OmSegmentCache* segCache = sdw_.GetSegmentCache();
 		OmSegmentIterator iter(segCache);
 		iter.iterOverSegmentID(sdw_.FindRootID());
 
 		OmSegment * seg = iter.getNextSegment();
 		while(NULL != seg) {
+			OmSegment* parent = seg->getParent();
+			OmSegID parentID = 0;
+			if(parent){
+				parentID = parent->value();
+			}
 			const QString str = QString("%1 : %2, %3, %4")
 				.arg(seg->value())
-				.arg(seg->getParentSegID())
+				.arg(parentID)
 				.arg(seg->getThreshold())
 				.arg(seg->size());
 			printf("%s\n", qPrintable(str));
 			seg = iter.getNextSegment();
 		}
 	}
+}
+
+void OmSegmentContextMenu::addGroups()
+{
+        boost::shared_ptr<OmGroups> groups = sdw_.GetSegmentation().GetGroups();
+        OmGroupIDsSet set = groups->GetGroups(sdw_.getSegment()->getRootSegID());
+        OmGroupID firstID = 0;
+	QString groupsStr = "Groups: ";
+        foreach(OmGroupID id, set) {
+                if(!firstID) {
+                        firstID = id;
+                }
+                OmGroup & group = groups->GetGroup(id);
+                groupsStr += group.GetName() + " + ";
+
+                printf("here\n");
+        }
+	addAction(groupsStr);
+}
+
+void OmSegmentContextMenu::addDisableAction()
+{
+	const OmSegID segid = sdw_.FindRootID();
+	OmSegmentCache* segCache = sdw_.GetSegmentCache();
+
+	if(segCache->isSegmentEnabled(segid)) {
+		addAction("Disable Segment", this, SLOT(disableSegment()));
+	}
+}
+
+void OmSegmentContextMenu::disableSegment()
+{
+	const OmSegID segid = sdw_.FindRootID();
+	OmSegmentCache* segCache = sdw_.GetSegmentCache();
+
+	segCache->setSegmentEnabled(segid, false);
 }

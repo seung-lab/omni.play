@@ -213,44 +213,97 @@ void OmMipChunk::RefreshBoundingData(OmSegmentCache* segCache)
  *      to form continuous meshes with adjacent MipChunks.  This means an extra
  *      voxel of data is included on each dimensions.
  */
-OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
+
+OmImage< uint32_t, 3 > OmMipChunk::GetMeshOmImageData()
 {
-	OmImage<uint32_t, 3> retImage(OmExtents[129][129][129]);
+    OmImage< uint32_t, 3 > retImage( OmExtents[129][129][129] );
 
-	for (int z = 0; z < 2; z++) {
-		for (int y = 0; y < 2; y++) {
-			for (int x = 0; x < 2; x++) {
+    for ( int z = 0; z < 2; z++ )
+    {
+        for ( int y = 0; y < 2; y++ )
+        {
+            for ( int x = 0; x < 2; x++ )
+            {
+                int lenZ = z ? 1 : 128;
+                int lenY = y ? 1 : 128;
+                int lenX = x ? 1 : 128;
 
-				int lenZ = z ? 1 : 128;
-				int lenY = y ? 1 : 128;
-				int lenX = x ? 1 : 128;
+                //form mip coord
+                OmMipChunkCoord mip_coord( mCoordinate.getLevel(),
+                                           mCoordinate.getCoordinateX() + x,
+                                           mCoordinate.getCoordinateY() + y,
+                                           mCoordinate.getCoordinateZ() + z);
 
-				//form mip coord
-				OmMipChunkCoord mip_coord(mCoordinate.getLevel(),
-										  mCoordinate.getCoordinateX() + x,
-										  mCoordinate.getCoordinateY() + y,
-										  mCoordinate.getCoordinateZ() + z);
+                //skip invalid mip coord
+                if ( vol_->ContainsMipChunkCoord( mip_coord ) )
+                {
 
-				//skip invalid mip coord
-				if (!vol_->ContainsMipChunkCoord(mip_coord))
-					continue;
+                    OmMipChunkPtr chunk;
+                    vol_->GetChunk( chunk, mip_coord );
 
-				OmMipChunkPtr chunk;
-				vol_->GetChunk(chunk, mip_coord);
+                    OmImage< uint32_t, 3 > chunkImage = chunk->GetCopyOfChunkDataAsOmImage32();
 
-				OmImage<uint32_t, 3> chunkImage = chunk->GetCopyOfChunkDataAsOmImage32();
+                    retImage.copyFrom( chunkImage,
+                                       OmExtents[z*128][y*128][x*128],
+                                       OmExtents[0][0][0],
+                                       OmExtents[lenZ][lenY][lenX] );
+                }
+            }
+        }
+    }
 
-				retImage.copyFrom(chunkImage,
-								  OmExtents[z*128][y*128][x*128],
-								  OmExtents[0][0][0],
-								  OmExtents[lenZ][lenY][lenX]);
-
-			}
-		}
-	}
-
-	return retImage;
+    return retImage;
 }
+
+/*
+OmImage< uint32_t, 3 > OmMipChunk::GetMeshOmImageData()
+{
+    OmImage< uint32_t, 3 > retImage( OmExtents[130][130][130] );
+
+    for ( int z = -1; z < 2; z++ )
+    {
+        for ( int y = -1; y < 2; y++ )
+        {
+            for ( int x = -1; x < 2; x++ )
+            {
+                int lenZ = ( z != 0 ) ? 1 : 128;
+                int lenY = ( y != 0 ) ? 1 : 128;
+                int lenX = ( x != 0 ) ? 1 : 128;
+
+                int srcX = ( x == -1 ) ? 127 : 0;
+                int srcY = ( y == -1 ) ? 127 : 0;
+                int srcZ = ( z == -1 ) ? 127 : 0;
+
+                int tgtX = ( x == 1 ) ? 129 : x + 1;
+                int tgtY = ( y == 1 ) ? 129 : y + 1;
+                int tgtZ = ( z == 1 ) ? 129 : z + 1;
+
+                //form mip coord
+                OmMipChunkCoord mip_coord( mCoordinate.getLevel(),
+                                           mCoordinate.getCoordinateX() + x,
+                                           mCoordinate.getCoordinateY() + y,
+                                           mCoordinate.getCoordinateZ() + z);
+
+                //skip invalid mip coord
+                if ( vol_->ContainsMipChunkCoord( mip_coord ) )
+                {
+
+                    OmMipChunkPtr chunk;
+                    vol_->GetChunk( chunk, mip_coord );
+
+                    OmImage< uint32_t, 3 > chunkImage = chunk->GetCopyOfChunkDataAsOmImage32();
+
+                    retImage.copyFrom( chunkImage,
+                                       OmExtents[tgtZ][tgtY][tgtX],
+                                       OmExtents[srcZ][srcY][srcX],
+                                       OmExtents[lenZ][lenY][lenX] );
+                }
+            }
+        }
+    }
+
+    return retImage;
+    }*/
 
 bool OmMipChunk::ContainsVoxel(const DataCoord & vox)
 {

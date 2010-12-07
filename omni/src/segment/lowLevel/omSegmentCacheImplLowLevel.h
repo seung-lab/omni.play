@@ -18,7 +18,7 @@ public:
 
 	void growGraphIfNeeded(OmSegment * newSeg);
 
-	OmSegment* GetSegmentFromValue(const OmSegID value );
+	OmSegment* GetSegment(const OmSegID value );
 
 	OmSegID GetNumSegments();
 	OmSegID GetNumTopSegments();
@@ -50,15 +50,15 @@ public:
 	QString getSegmentNote( OmSegID segID );
 	void setSegmentNote( OmSegID segID, QString note );
 
-	OmSegmentation* getSegmentation() { return segmentation_; }
-	OmSegID getSegmentationID();
+	OmSegmentation* GetSegmentation() { return segmentation_; }
+	OmSegID GetSegmentationID();
 
 	void turnBatchModeOn(const bool batchMode);
 
 	quint32 getPageSize();
-	quint32 getMaxValue();
+	uint32_t getMaxValue();
 
-	OmSegmentCache* getSegmentCache();
+	OmSegmentCache* GetSegmentCache();
 
 protected:
 	OmSegmentation *const segmentation_;

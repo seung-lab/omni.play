@@ -1,7 +1,8 @@
 #include "common/omDebug.h"
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentSplitAction.h"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
+#include "segment/omFindCommonEdge.hpp"
 
 OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 											const OmSegmentEdge & edge )
@@ -10,17 +11,20 @@ OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 	SetUndoable(true);
 }
 
-void OmSegmentSplitAction::RunIfSplittable( OmSegment * seg1, OmSegment * seg2 )
+void OmSegmentSplitAction::runIfSplittable( OmSegment * seg1, OmSegment * seg2 )
 {
 	SegmentationDataWrapper sdw(seg1);
-	OmSegmentEdge edge = sdw.getSegmentCache()->findClosestCommonEdge(seg1, seg2);
+	OmSegmentEdge edge =
+		OmFindCommonEdge::FindClosestCommonEdge(sdw.GetSegmentCache(),
+												seg1,
+												seg2);
 
 	if(!edge.isValid()){
 		printf("edge was not splittable\n");
 		return;
 	}
 
-	(new OmSegmentSplitAction(sdw, edge))->OmAction::Run();
+	(new OmSegmentSplitAction(sdw, edge))->Run();
 }
 
 void OmSegmentSplitAction::Action()
@@ -40,7 +44,7 @@ std::string OmSegmentSplitAction::Description()
 
 void OmSegmentSplitAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }
 
 //TODO: put this somewhere else...
@@ -62,12 +66,12 @@ void OmSegmentSplitAction::DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
 			return;
 		}
 
-		RunIfSplittable(seg1, seg2);
+		runIfSplittable(seg1, seg2);
 
 		vgs->SetSplitMode(false);
 
 	} else { // set segment to be split later...
-		if(sdw.isValidWrapper()){
+		if(sdw.IsSegmentValid()){
 			vgs->SetSplitMode(sdw);
 		}
 	}

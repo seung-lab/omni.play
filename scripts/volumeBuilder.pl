@@ -56,6 +56,12 @@ sub build512useMeshinator {
     run($cmd);
 }
 
+sub build750 {
+    my $cmd = "/build750.cmd";
+    printTitle("750^3", $cmd );
+    run($cmd);
+}
+
 ###########################################
 
 sub buildRegionGraphNew150 {
@@ -120,8 +126,9 @@ sub menu {
     print "9 -- Build i1088_150 w/ region graphs\n";
     print "10 -- Build i1088_250 w/ region graphs\n";
     print "11 -- Build Matt's new stuff from MATLAB\n";
+    print "12 -- Build 750^3 e1088\n";
     print "\n";
-    my $max_answer = 11;
+    my $max_answer = 12;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -163,6 +170,8 @@ sub runMenuEntry {
 	buildRegionI1088250();
     }elsif( 11 == $entry ){
 	buildNew();
+    }elsif( 12 == $entry ){
+	build750();
     }
 }
 

@@ -36,7 +36,6 @@ public:
 	void NavigationModeMouseMove(QMouseEvent *event);
 	void NavigationModeMouseDoubleClick(QMouseEvent *event);
 	void NavigationModeMouseWheel(QWheelEvent *event);
-	void NavigationModeKeyPress(QKeyEvent *event);
 
 	//dend mode
 	void DendModeMouseReleased(QMouseEvent *event);

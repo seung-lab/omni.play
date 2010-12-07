@@ -42,6 +42,7 @@ void OmSelectionWidget::Draw()
 
 	//enable writing to color buffer
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
 	//glDepthMask(GL_TRUE);
 	mView3d->DrawVolumes(DRAWOP_LEVEL_ALL | DRAWOP_SEGMENT_FILTER_SELECTED | DRAWOP_SEGMENT_COLOR_HIGHLIGHT);
 

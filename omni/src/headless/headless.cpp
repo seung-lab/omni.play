@@ -9,8 +9,7 @@
 #include "mesh/omMipMesh.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
-#include "system/omBuildChannel.h"
-#include "system/omBuildSegmentation.h"
+#include "volume/build/omBuildSegmentation.hpp"
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
@@ -18,6 +17,7 @@
 #include "utility/dataWrappers.h"
 #include "utility/stringHelpers.h"
 #include "viewGroup/omViewGroupState.h"
+#include "volume/build/omBuildChannel.hpp"
 #include "volume/omFilter2d.h"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
@@ -55,10 +55,10 @@ void Headless::processLine(const QString& line, const QString&)
 			printf("Please choose segmentation first!\n");
 			return;
 		}
-		OmSegmentation& added_segmentation = OmProject::GetSegmentation(segmentationID_);
-		OmBuildSegmentation bs(&added_segmentation);
-		bs.build_seg_mesh();
-		bs.wait();
+		const SegmentationDataWrapper sdw(segmentationID_);
+		OmBuildSegmentation bs(sdw);
+		bs.BuildMesh(om::BLOCKING);
+
 	} else if("clearMST" == line) {
 		if(0 == segmentationID_ ){
 			printf("Please choose segmentation first!\n");
@@ -78,9 +78,10 @@ void Headless::processLine(const QString& line, const QString&)
 			printf("Please choose segmentation first!\n");
 			return;
 		}
-		OmSegmentation& added_segmentation = OmProject::GetSegmentation(segmentationID_);
-		OmBuildSegmentation bs(&added_segmentation);
+		const SegmentationDataWrapper sdw(segmentationID_);
+		OmBuildSegmentation bs(sdw);
 		bs.loadDendrogram();
+
 	} else if(line.startsWith("compareChanns:")) {
 		// format: compareChanns:id1,id2[:verbose]
 		QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -308,8 +309,7 @@ void Headless::processLine(const QString& line, const QString&)
 
 		OmBuildChannel bc(&chann);
 		bc.addFileNameAndPath(hdf5fnp);
-		bc.build_channel();
-		bc.wait();
+		bc.BuildBlocking();
 	} else if(line.startsWith("loadTIFFchann:")){
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 
@@ -329,8 +329,8 @@ void Headless::processLine(const QString& line, const QString&)
 			//printf("adding %s/\n", qPrintable(f.canonicalFilePath()));
 			bc.addFileNameAndPath(f.canonicalFilePath());
 		}
-		bc.build_channel();
-		bc.wait();
+		bc.BuildBlocking();
+
 	} else if(line.startsWith("loadTIFFseg:")){
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 
@@ -339,9 +339,8 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		OmSegmentation& seg = OmProject::AddSegmentation();
-		segmentationID_ = seg.GetID();
-		OmBuildSegmentation bs(&seg);
+		OmBuildSegmentation bs;
+		segmentationID_ = bs.GetDataWrapper().getID();
 
 		QDir dir(args[1]);
 		foreach(QFileInfo f, dir.entryInfoList()){
@@ -351,8 +350,9 @@ void Headless::processLine(const QString& line, const QString&)
 			//printf("adding %s/\n", qPrintable(f.canonicalFilePath()));
 			bs.addFileNameAndPath(f.canonicalFilePath());
 		}
-		bs.build_seg_image();
-		bs.wait();
+
+		bs.BuildImage(om::BLOCKING);
+
 	} else if(line.startsWith("buildHDF5:")){
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 
@@ -362,6 +362,7 @@ void Headless::processLine(const QString& line, const QString&)
 		}
 
 		HeadlessImpl::buildHDF5(args[1]);
+
 	} else if("loadChunk" == line){
 		if(0 == segmentationID_){
 			printf("Please choose segmentation first!\n");
@@ -432,6 +433,76 @@ void Headless::processLine(const QString& line, const QString&)
 		}
 	} else if(line.startsWith("watershed:")){
 		watershed(line);
+	} else if(line.startsWith("setChanResolution:")){
+		const QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if (args.size() != 2){
+			printf("format is setChannResolution:channID,xRes,yRes,zRes\n");
+			return;
+		}
+
+		const QStringList res = args[1].split(',', QString::SkipEmptyParts);
+
+		if (res.size() != 4){
+			printf("format is setChannResolution:channID,xRes,yRes,zRes\n");
+			return;
+		}
+
+		const OmID channID = StringHelpers::getUInt(res[0]);
+		const float xRes = StringHelpers::getFloat(res[1]);
+		const float yRes = StringHelpers::getFloat(res[2]);
+		const float zRes = StringHelpers::getFloat(res[3]);
+
+		ChannelDataWrapper cdw(channID);
+
+		if (!cdw.IsValidWrapper()){
+			printf("Channel %i is not a valid channel.\n", channID);
+			return;
+		}
+
+		HeadlessImpl::ChangeVolResolution(cdw.GetChannel(), xRes, yRes, zRes);
+
+	} else if(line.startsWith("setSegResolution:")){
+		const QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if (args.size() != 2){
+			printf("format is setSegResolution:channID,xRes,yRes,zRes\n");
+			return;
+		}
+
+		const QStringList res = args[1].split(',', QString::SkipEmptyParts);
+
+		if (res.size() != 4){
+			printf("format is setSegResolution:segID,xRes,yRes,zRes\n");
+			return;
+		}
+
+		const OmID segID = StringHelpers::getUInt(res[0]);
+		const float xRes = StringHelpers::getFloat(res[1]);
+		const float yRes = StringHelpers::getFloat(res[2]);
+		const float zRes = StringHelpers::getFloat(res[3]);
+
+		SegmentationDataWrapper sdw(segID);
+
+		if (!sdw.IsSegmentationValid()){
+			printf("Segmentation %i is not a valid segmentation\n", segID);
+			return;
+		}
+
+		HeadlessImpl::ChangeVolResolution(sdw.GetSegmentation(), xRes, yRes, zRes);
+
+	} else if(line.startsWith("setMeshDownScallingFactor:")){
+		const QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if (args.size() != 2){
+			printf("format is setMeshDownScallingFactor:factor (factor is double)\n");
+			return;
+		}
+
+		const double factor = StringHelpers::getDouble(args[1]);
+
+		HeadlessImpl::SetMeshDownScallingFactor(factor);
+
 	} else {
 		printf("Could not parse \"%s\".\n", qPrintable(line));
 	}

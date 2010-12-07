@@ -13,6 +13,7 @@ class OmSegmentValidateActionImpl;
 class OmSegmentValidateAction : public OmAction {
 
 public:
+	OmSegmentValidateAction(boost::shared_ptr<OmSegmentValidateActionImpl> impl) : impl_(impl) {}
 	static void Validate(const SegmentDataWrapper& sdw,
 						 const om::SetValid valid);
 
@@ -20,7 +21,7 @@ public:
 						 const om::SetValid valid);
 
 private:
-	OmSegmentValidateAction(const OmID segmentationId,
+	OmSegmentValidateAction(const SegmentationDataWrapper& sdw,
 							boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 							const bool valid);
 	void Action();
@@ -29,7 +30,6 @@ private:
 	void save(const std::string&);
 
 	boost::shared_ptr<OmSegmentValidateActionImpl> impl_;
-
 };
 
 #endif

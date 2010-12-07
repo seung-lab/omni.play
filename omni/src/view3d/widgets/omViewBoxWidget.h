@@ -18,17 +18,22 @@ private:
 			   SpaceCoord v1,
 			   SpaceCoord v2,
 			   SpaceCoord v3);
-	void drawSlice(ViewType plane,
-		       Vector2f min,
-		       Vector2f max,
-		       float depth);
+
+	void draw2dBox(const ViewType plane,
+				   const Vector2f& min,
+				   const Vector2f& max,
+				   const float depth);
+
 	void drawLines(SpaceCoord depth);
+
 	void drawChannelData(ViewType plane,
 			     std::vector<OmTilePtr>);
+
 	bool GetTextureMax(Vector3f coord,
 			   ViewType plane,
 			   Vector2f& dataMax,
 			   Vector2f& spaceMax );
+
 	bool GetTextureMin(Vector3f coord,
 			   ViewType plane,
 			   Vector2f & dataMin,

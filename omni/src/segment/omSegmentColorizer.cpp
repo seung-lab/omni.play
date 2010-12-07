@@ -3,6 +3,7 @@
 #include "segment/omSegmentCacheImpl.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/omSmartPtr.hpp"
+#include "viewGroup/omViewGroupState.h"
 
 static const OmColor blackColor = {0, 0, 0};
 
@@ -11,11 +12,12 @@ const std::vector<uint8_t> OmSegmentColorizer::selectedColorLookup_ =
 
 OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache* cache,
 					const OmSegmentColorCacheType sccType,
-					const Vector2i& dims)
+					const Vector2i& dims, OmViewGroupState * vgs)
 	: mSegmentCache(cache)
 	, mSccType(sccType)
 	, mSize(0)
 	, mNumElements(dims.x * dims.y)
+	, mViewGroupState(vgs)
 {}
 
 void OmSegmentColorizer::setup()
@@ -112,20 +114,25 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d(const OmSegID val)
 	switch(mSccType){
 	case SCC_SEGMENTATION_VALID:
 	case SCC_FILTER_VALID:
-		if(seg->IsValid()) {
+		if(seg->IsValidListType()) {
 			return segRootColor;
 		}
 		return blackColor;
 	case SCC_SEGMENTATION_VALID_BLACK:
 	case SCC_FILTER_VALID_BLACK:
-		if(seg->IsValid()) {
+		if(seg->IsValidListType()) {
 			return blackColor;
 		}
 		return segRootColor;
 	case SCC_FILTER_BREAK:
 	case SCC_SEGMENTATION_BREAK:
 		if(isSelected){
-			return seg->GetColorInt();;
+                	if(seg->getParent() &&
+                   	seg->getThreshold() > mViewGroupState->getBreakThreshold() &&
+                   	seg->getThreshold() < 2 ) { // 2 is the manual merge threshold
+                        	return getVoxelColorForView2d(seg->getParent()->value());
+                	}
+                	return seg->GetColorInt();
 		}
 		return blackColor;
 	default:

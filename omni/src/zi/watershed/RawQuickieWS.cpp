@@ -50,7 +50,7 @@ rawQuickieWS(const float* connections,
   int64_t singleOnes = 0;
   int64_t nullOnes   = 0;
 
-  //  memset((void*)result, 0, xyzDim * (int64_t)sizeof(int));
+  memset((void*)result, 0, xyzDim * (int64_t)sizeof(int));
 
 
   for (int64_t i=0,d=0; d<3; ++d) {
@@ -139,7 +139,7 @@ rawQuickieWS(const float* connections,
               }
               ++totalNice;
             } else {
-              result[j] |= 0x10000000;
+              result[j] |= 0x40000000;
               ++singleOnes;
             }
           } else {

@@ -25,15 +25,13 @@ void OmEvents::SegmentModified(){
 	POST(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
 }
 
-void OmEvents::SegmentModified(OmID segmentationId,
-							   const OmID segmentJustSelectedID,
+void OmEvents::SegmentModified(const SegmentDataWrapper& sdw,
 							   void* sender,
 							   std::string comment,
 							   const bool doScroll )
 {
 	POST(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
-							segmentationId,
-							segmentJustSelectedID,
+							sdw,
 							sender,
 							comment,
 							doScroll));
@@ -41,6 +39,10 @@ void OmEvents::SegmentModified(OmID segmentationId,
 
 void OmEvents::ViewCenterChanged(){
 	POST(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+}
+
+void OmEvents::View3dRecenter(){
+	POST(new OmView3dEvent(OmView3dEvent::RECENTER));
 }
 
 void OmEvents::ViewBoxChanged(){

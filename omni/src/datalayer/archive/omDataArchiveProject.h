@@ -37,6 +37,11 @@ class OmDataArchiveProject
 
 	static void storeOmVolume( QDataStream & out, const OmVolume & v );
 	static void loadOmVolume( QDataStream & in, OmVolume & v );
+
+private:
+	static void Upgrade(const OmDataPath& path,
+						OmProject* project);
+
 };
 
 QDataStream &operator<<(QDataStream & out, const OmProject & project );

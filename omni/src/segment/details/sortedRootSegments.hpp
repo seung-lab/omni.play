@@ -1,80 +1,99 @@
 #ifndef SORTED_ROOT_SEGMENTS_HPP
 #define SORTED_ROOT_SEGMENTS_HPP
 
+#include "common/omCommon.h"
+#include "segment/details/sortedRootSegmentsVector.hpp"
+#include "segment/details/sortedRootSegmentsTypes.h"
+
 class SortedRootSegments{
 private:
-	struct Node {
-		OmSegID segID;
-		uint64_t size;
+	typedef om::sortedRootSegments_::bm_type bm_type;
+	bm_type sortedMap_;
 
-		bool operator ==(const Node& b) const {
-			return segID == b.segID && size == b.size;
-		}
+	typedef om::sortedRootSegments_::Node Node;
 
-		friend std::ostream& operator<<(std::ostream &out, const Node &n) {
-			out << "[ segID: " << n.segID
-				<< ", size: " << n.size
-				<< " ]";
-			return out;
-		}
-	};
+	SortedRootSegmentsVector sortedVec_;
+	bool sortedVecIsFresh_;
 
-	// sort size descending; if size match, make segment ids increasing
-	static bool cmpNode(const Node& a, const Node& b)
+	inline void regenSortedVectorIfNeeded()
 	{
-		if(a.size == b.size){
-			return a.segID < b.segID;
+		if(sortedVecIsFresh_){
+			return;
 		}
-		return a.size > b.size;
-	}
 
-	std::vector<Node> sorted_;
+		sortedVec_.RegenSortedVector(sortedMap_);
+		sortedVecIsFresh_ = true;
+	}
 
 public:
+	SortedRootSegments()
+		: sortedVecIsFresh_(false)
+	{}
+
 	void Add(const OmSegID segID, const uint64_t size)
 	{
+		sortedVecIsFresh_ = false;
 		const Node n = { segID, size };
-
-		sorted_.insert(
-			std::upper_bound(sorted_.begin(),
-							 sorted_.end(),
-							 n,
-							 cmpNode),
-			n);
+		sortedMap_.left.insert(bm_type::left_value_type(n, segID));
 	}
 
-	void Remove(const OmSegID segID, const uint64_t oldSize)
+	uint64_t Remove(const OmSegID segID)
 	{
-		const Node n = { segID, oldSize };
+		sortedVecIsFresh_ = false;
 
-		std::vector<Node>::iterator iter
-			= std::lower_bound(sorted_.begin(),
-							   sorted_.end(),
-							   n,
-							   cmpNode);
-
-		if(iter == sorted_.end()){
-			assert(0);
+		bm_type::right_iterator right_iter = sortedMap_.right.find(segID);
+		if(right_iter == sortedMap_.right.end()){
+			return 0;
 		}
-
-		assert(*iter == n);
-
-		sorted_.erase(iter);
+		const uint64_t size = right_iter->second.size;
+		sortedMap_.right.erase(right_iter);
+		return size;
 	}
 
-	void Dump()
+	uint64_t GetSegmentSize(const OmSegID segID) const
 	{
-		for( size_t i = 0; i < sorted_.size(); ++i){
-			std::cout << sorted_[i] << "\n";
+		bm_type::right_const_iterator right_iter = sortedMap_.right.find(segID);
+		if(right_iter == sortedMap_.right.end()){
+			return 0;
 		}
+		return right_iter->second.size;
+	}
+
+	void Clear()
+	{
+		sortedVecIsFresh_ = false;
+		sortedMap_.clear();
+		sortedVec_.Clear();
+	}
+
+	void Dump() const
+	{
+		printf("map:\n");
+		FOR_EACH(iter, sortedMap_.left){
+			std::cout << "\t" << iter->first << ", " << iter->second << "\n";
+		}
+
+		sortedVec_.Dump();
 	}
 
 	size_t Size() const {
-		return sorted_.size();
+		return sortedMap_.size();
 	}
 
-	void Clear() {
-		sorted_.clear();
+	boost::shared_ptr<OmSegIDsListWithPage>
+	GetSimplePageOfSegmentIDs(const uint32_t offset, const int numToGet)
+	{
+		regenSortedVectorIfNeeded();
+		return sortedVec_.GetSimplePageOfSegmentIDs(offset, numToGet);
+	}
+
+	boost::shared_ptr<OmSegIDsListWithPage>
+	GetPageContainingSegment(const OmSegID startSegID, const uint32_t numToGet)
+	{
+		regenSortedVectorIfNeeded();
+		return sortedVec_.GetPageContainingSegment(startSegID,
+												   GetSegmentSize(startSegID),
+												   numToGet);
 	}
 };
 

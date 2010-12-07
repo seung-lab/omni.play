@@ -4,25 +4,25 @@
 #include "common/omCommon.h"
 #include "zi/omMutex.h"
 
-typedef struct {
-	OmColor color;
-	int freshness;
-} OmColorWithFreshness;
-
+class OmSegment;
 class OmSegmentCache;
 class OmViewGroupState;
-class OmSegment;
 
-class OmSegmentColorizer
-{
+class OmSegmentColorizer {
 public:
 	OmSegmentColorizer( OmSegmentCache*,
 						const OmSegmentColorCacheType,
-						const Vector2i& dims);
+						const Vector2i& dims, OmViewGroupState * vgs);
 
 	boost::shared_ptr<OmColorRGBA> ColorTile(uint32_t const*const imageData);
 
 private:
+	struct OmColorWithFreshness
+	{
+		OmColor color;
+		int freshness;
+	};
+
 	zi::rwmutex mMapResizeMutex;
 
 	OmSegmentCache* mSegmentCache;
@@ -31,6 +31,7 @@ private:
 	bool mAreThereAnySegmentsSelected;
  	const uint32_t mNumElements;
 	int mCurSegCacheFreshness;
+	OmViewGroupState * mViewGroupState;
 
 	std::vector<OmColorWithFreshness> mColorCache;
 
@@ -52,7 +53,9 @@ private:
 	{
 		static const double selectedSegColorFactor = 2.5;
 
-		return val > 101 ? 255 : val * selectedSegColorFactor;
+		return val > 101 ?
+			255 :
+			static_cast<uint8_t>(val * selectedSegColorFactor);
 	}
 
 	static std::vector<uint8_t> makeLookupTable()

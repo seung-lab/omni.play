@@ -158,7 +158,10 @@ private:
 		this->file_->resize(numBytes);
 		//TODO: allocate space??
 		const int64_t bytesRead = this->readIn();
-		assert(bytesRead == numBytes);
+
+		if(bytesRead != numBytes){
+			throw OmIoException("did't read right amount of data");
+		}
 
 		if(om::ZERO_FILL == shouldZeroFill){
 			memset(this->data_.get(), 0, numBytes);

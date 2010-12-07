@@ -11,7 +11,7 @@
 #include "datalayer/omDataLayer.h"
 #include "volume/omMipChunk.h"
 #include "system/omProjectData.h"
-#include "utility/omImageDataIo.h"
+#include "utility/stringHelpers.h"
 
 #include <QFileInfoList>
 
@@ -21,15 +21,18 @@ private:
 	VOL *const vol_;
 	const OmDataPath inpath_;
 	boost::shared_ptr<QFile> mip0volFile_;
+	const std::vector<QFileInfo>& files_;
 
 	Vector3i volSize_;
 	OmIDataReader* hdf5reader_;
 	OmDataPath src_path_;
 
 public:
-	OmVolumeImporterHDF5(VOL* vol, const OmDataPath& inpath)
+	OmVolumeImporterHDF5(VOL* vol, const OmDataPath& inpath,
+						 const std::vector<QFileInfo>& files)
 		: vol_(vol)
 		, inpath_(inpath)
+		, files_(files)
 	{
 		hdf5reader_ = OmDataLayer::getReader(getHDFfileNameAndPath(), true);
 		hdf5reader_->open();
@@ -103,14 +106,12 @@ private:
 
 	std::string getHDFfileNameAndPath()
 	{
-		QFileInfoList& files = vol_->mSourceFilenamesAndPaths;
-
 		//FIXME: don't assert, or check before calling me!
-		if( 1 != files.size()){
+		if( 1 != files_.size()){
 			throw OmIoException("More than one hdf5 file specified");
 		}
 
-		return files.at(0).filePath().toStdString();
+		return files_.at(0).filePath().toStdString();
 	}
 
 	template< typename T>

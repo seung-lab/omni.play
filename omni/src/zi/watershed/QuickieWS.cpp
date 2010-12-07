@@ -6,15 +6,17 @@
  */
 
 #include "zi/matlab/zmex.hpp"
-#include <zi/utility>
 #include "RawQuickieWS.h"
 
+#include <zi/utility/for_each.hpp>
 #include <iostream>
 #include <cstdlib>
 #include <vector>
 #include <stack>
 #include <list>
 #include <boost/unordered_map.hpp>
+
+#define typeof __typeof__
 
 using namespace std;
 using boost::unordered_map;

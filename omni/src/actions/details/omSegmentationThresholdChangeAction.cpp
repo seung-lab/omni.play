@@ -1,4 +1,4 @@
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentationThresholdChangeAction.h"
 #include "actions/details/omSegmentationThresholdChangeActionImpl.hpp"
 
@@ -27,5 +27,5 @@ std::string OmSegmentationThresholdChangeAction::Description()
 
 void OmSegmentationThresholdChangeAction::save(const std::string & comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }

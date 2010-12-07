@@ -7,12 +7,15 @@
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
 class OmViewGroupState;
+class OmSegmentCache;
 
 class OmActions {
 public:
 
 // project-related
 	static void Save();
+
+	static void Close();
 
 // MST-related
 	static void ChangeMSTthreshold(const OmID segmentationID,
@@ -46,10 +49,9 @@ public:
 	static void FindAndSplitSegments(const SegmentDataWrapper& sdw,
 									 OmViewGroupState* vgs);
 
-	static void SelectSegments(const OmID segmentationId,
+	static void SelectSegments(const SegmentDataWrapper& sdw,
 							   const OmSegIDsSet & mNewSelectedIdSet,
 							   const OmSegIDsSet & mOldSelectedIdSet,
-							   const OmID segmentJustSelected,
 							   void* sender,
 							   const std::string & comment,
 							   const bool doScroll,
@@ -60,6 +62,10 @@ public:
 										   const OmSegIDsSet& selectedSegmentIDs,
 										   const OmGroupName name,
 										   const bool create);
+private:
+	static OmSegIDsSet MutateSegmentsInValidList(OmSegmentCache * cache, const OmSegIDsSet& ids);
+	static void UnMutateSegmentsInValidList(OmSegmentCache * cache, const OmSegIDsSet& ids);
+
 };
 
 #endif

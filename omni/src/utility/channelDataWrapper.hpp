@@ -11,28 +11,42 @@ class FilterDataWrapper;
 class ChannelDataWrapper {
 private:
 	OmID mID;
-	ObjectType mType;
-public:
-	ChannelDataWrapper(){}
 
-	explicit ChannelDataWrapper(const OmID ID)
-		: mID(ID), mType(CHANNEL)
+public:
+	ChannelDataWrapper()
+		: mID(0)
 	{}
 
-	OmID getID(){
+	explicit ChannelDataWrapper(const OmID ID)
+		: mID(ID)
+	{}
+
+	inline OmID getID(){
 		return mID;
 	}
 
-	QString getName(){
-		return QString::fromStdString(OmProject::GetChannel(mID).GetName());
+	inline QString getName(){
+		return QString::fromStdString(GetChannel().GetName());
 	}
 
-	bool isEnabled(){
+	inline bool isEnabled(){
 		return OmProject::IsChannelEnabled(mID);
 	}
 
-	QString getNote(){
-		return OmProject::GetChannel(mID).GetNote();
+	inline QString getNote(){
+		return GetChannel().GetNote();
+	}
+
+	inline OmChannel& GetChannel(){
+		return OmProject::GetChannel(mID);
+	}
+
+	inline bool IsValidWrapper() const
+	{
+		if(!mID){
+			return false;
+		}
+		return OmProject::IsChannelValid(mID);
 	}
 
 	QHash<OmID, FilterDataWrapper> getAllFilterIDsAndNames();

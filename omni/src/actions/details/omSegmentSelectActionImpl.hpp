@@ -9,28 +9,26 @@
 
 class OmSegmentSelectActionImpl {
 private:
-	OmID mSegmentationId;
+	SegmentDataWrapper sdw_;
 	OmSegIDsSet mNewSelectedIdSet;
 	OmSegIDsSet mOldSelectedIdSet;
-	OmID mSegmentJustSelectedID;
 	void * mSender;
-	const std::string mComment;
-	const bool mDoScroll;
-	const bool mAddToRecentList;
+	std::string mComment;
+	bool mDoScroll;
+	bool mAddToRecentList;
 
 public:
-	OmSegmentSelectActionImpl(const OmID segmentationId,
+	OmSegmentSelectActionImpl() {}
+	OmSegmentSelectActionImpl(const SegmentDataWrapper& sdw,
 							  const OmSegIDsSet & newSelectedIdSet,
 							  const OmSegIDsSet & oldSelectedIdSet,
-							  const OmID segmentJustSelected,
 							  void* sender,
 							  const std::string & comment,
 							  const bool doScroll,
 							  const bool addToRecentList)
-		: mSegmentationId(segmentationId)
+		: sdw_(sdw)
 		, mNewSelectedIdSet(newSelectedIdSet)
 		, mOldSelectedIdSet(oldSelectedIdSet)
-		, mSegmentJustSelectedID(segmentJustSelected)
 		, mSender(sender)
 		, mComment(comment)
 		, mDoScroll(doScroll)
@@ -39,12 +37,10 @@ public:
 
 	void Execute()
 	{
-		SegmentationDataWrapper sdw(mSegmentationId);
-		sdw.getSegmentCache()->UpdateSegmentSelection(mNewSelectedIdSet,
-													  mAddToRecentList);
+		sdw_.GetSegmentCache()->UpdateSegmentSelection(mNewSelectedIdSet,
+													   mAddToRecentList);
 
-		OmEvents::SegmentModified(mSegmentationId,
-								  mSegmentJustSelectedID,
+		OmEvents::SegmentModified(sdw_,
 								  mSender,
 								  mComment,
 								  mDoScroll);
@@ -52,12 +48,10 @@ public:
 
 	void Undo()
 	{
-		SegmentationDataWrapper sdw(mSegmentationId);
-		sdw.getSegmentCache()->UpdateSegmentSelection(mOldSelectedIdSet,
-													  mAddToRecentList);
+		sdw_.GetSegmentCache()->UpdateSegmentSelection(mOldSelectedIdSet,
+													   mAddToRecentList);
 
-		OmEvents::SegmentModified(mSegmentationId,
-								  mSegmentJustSelectedID,
+		OmEvents::SegmentModified(sdw_,
 								  mSender,
 								  mComment,
 								  mDoScroll);
@@ -66,13 +60,13 @@ public:
 
 	std::string Description() const
 	{
-		QString lineItem = QString("Selected: ");
-		foreach(const OmSegID segId, mNewSelectedIdSet){
-			lineItem += QString("seg %1 + ").arg(segId);
+		QStringList segs;
+		foreach(const OmSegID& segID, mNewSelectedIdSet){
+			segs << QString::number(segID);
 		}
 
+		const QString lineItem = "Selected segments: " + segs.join(", ");
 		return lineItem.toStdString();
-
 	}
 
 	QString classNameForLogFile() const {
@@ -80,7 +74,7 @@ public:
 	}
 
 private:
-	template <typename T> friend class OmActionLoggerFSThread;
+	template <typename T> friend class OmActionLoggerThread;
 	friend QDataStream &operator<<(QDataStream&, const OmSegmentSelectActionImpl&);
 	friend QDataStream &operator>>(QDataStream&, OmSegmentSelectActionImpl&);
 };

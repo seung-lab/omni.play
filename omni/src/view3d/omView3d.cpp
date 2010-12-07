@@ -1,6 +1,7 @@
 #include "common/omDebug.h"
 #include "common/omGl.h"
 #include "mesh/omMeshDrawer.h"
+#include "mesh/omVolumeCuller.h"
 #include "project/omProject.h"
 #include "segment/omSegmentSelected.hpp"
 #include "system/omLocalPreferences.h"
@@ -8,11 +9,15 @@
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
 #include "view3d/omView3d.h"
-#include "mesh/omVolumeCuller.h"
+#include "viewGroup/omViewGroupState.h"
 #include "widgets/omChunkExtentWidget.h"
 #include "widgets/omInfoWidget.h"
 #include "widgets/omSelectionWidget.h"
 #include "widgets/omViewBoxWidget.h"
+#include "segment/omSegmentIterator.h"
+
+
+DECLARE_ZiARG_bool(noView3dThrottle);
 
 enum View3dWidgetIds {
 	VIEW3D_WIDGET_ID_SELECTION = 0,
@@ -149,7 +154,11 @@ void OmView3d::paintGL()
  */
 void OmView3d::myUpdate()
 {
-	doTimedDraw();
+	if(ZiARG_noView3dThrottle){
+		updateGL();
+	} else {
+		doTimedDraw();
+	}
 }
 
 void OmView3d::doTimedDraw()
@@ -281,6 +290,52 @@ void OmView3d::View3dUpdatePreferencesEvent()
 {
 }
 
+void OmView3d::View3dRecenter()
+{
+	const SpaceCoord picked_voxel = mViewGroupState->GetViewDepthCoord();
+
+	Vector3f res = Vector3f(0.0,0.0,0.0);
+       	DataBbox box;
+
+        FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
+                OmSegmentation* seg = &OmProject::GetSegmentation(*iter);
+                res = seg->GetDataResolution();
+
+	
+        	OmSegmentIterator iter(seg->GetSegmentCache());
+        	iter.iterOverSelectedIDs();
+
+        	const int max = 5000;
+         	OmSegment* segment = iter.getNextSegment();
+        	for(int i = 0; segment && i < max && NULL != seg; ++i){
+
+                	const DataBbox& segBox = segment->getBounds();
+                	if(segBox.isEmpty()){
+                        	continue;
+                	}
+
+                	box.merge(segBox);
+
+                	segment = iter.getNextSegment();
+        	}
+	}
+
+        if(box.isEmpty()){
+		updateGL();
+		return;
+        }
+
+        const DataCoord ret = (box.getMin() + box.getMax()) / 2;
+	float x = box.getMax().x - box.getMin().x; x *= res.x;
+	float y = box.getMax().y - box.getMin().y; y *= res.y;
+	float z = box.getMax().z - box.getMin().z; z *= res.z;
+
+	mCamera.SetDistance(sqrt(x*x+y*y+z*z));
+	mCamera.SetFocus(picked_voxel);
+
+	updateGL();
+}
+
 /////////////////////////////////
 ///////          Gl Actions
 
@@ -344,7 +399,7 @@ SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2d, int& pickName)
 	const OmSegID segmentID = result[1];
 	SegmentDataWrapper sdw(segmentationID, segmentID);
 
-	if (!sdw.isValidWrapper()){
+	if (!sdw.IsSegmentValid()){
 		return SegmentDataWrapper();
 	}
 

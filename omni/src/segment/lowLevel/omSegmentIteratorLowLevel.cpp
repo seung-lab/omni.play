@@ -20,7 +20,7 @@ void OmSegmentIteratorLowLevel::iterOverAllSegments()
 void OmSegmentIteratorLowLevel::iterOverSegmentID(const OmSegID segID)
 {
 	mIterOverAll = false;
-	mSegs.push_back( mCache->GetSegmentFromValue(segID) );
+	mSegs.push_back( mCache->GetSegment(segID) );
 }
 
 bool OmSegmentIteratorLowLevel::empty()
@@ -42,7 +42,7 @@ OmSegment* OmSegmentIteratorLowLevel::getNextSegmentFromFullList()
 	OmSegment* seg;
 	const OmSegID maxSegValue = mCache->getMaxValue();
 	for(OmSegID i = 1+mCurSegID; i <= maxSegValue; ++i){
-		seg = mCache->GetSegmentFromValue( i );
+		seg = mCache->GetSegment( i );
 		if(!seg){
 			continue;
 		}

@@ -93,7 +93,7 @@ std::string OmDataPaths::MipLevelInternalDataPath(const std::string & dirPath,
 												  const int level)
 {
 	return dirPath
-		+ boost::lexical_cast<std::string>(level)
+		+ om::NumToStr(level)
 		+ "/"
 		+ "volume.dat";
 }

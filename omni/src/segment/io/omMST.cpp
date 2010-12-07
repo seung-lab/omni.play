@@ -91,6 +91,11 @@ void OmMST::doReadInFromOldMST(const OmMSTold& old)
 		return;
 	}
 
+	if(!old.mDend || !old.mDendValues || !old.mEdgeDisabledByUser || !old.mEdgeForceJoin) {
+		printf("old MST not populated\n");
+		return;
+	}
+
 	create();
 
 	const quint32 * nodes = old.mDend->getPtr<uint32_t>();

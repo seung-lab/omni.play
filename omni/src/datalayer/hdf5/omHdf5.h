@@ -60,7 +60,7 @@ private:
 	const std::string m_fileNameAndPath;
 	const bool readOnly_;
 
-	zi::mutex fileLock;
+	zi::rwmutex fileLock;
 	boost::shared_ptr<OmHdf5Impl> hdf5_;
 
 	friend class OmHdf5Manager;

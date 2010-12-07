@@ -13,6 +13,7 @@
 #include "volume/omMipVolume.h"
 
 #include <QSize>
+#include <QMouseEvent>
 
 /**
  * Encapsulate most of state needed by view2d
@@ -104,20 +105,21 @@ public:
 		throw OmArgException("invalid viewType");
 	}
 
+	inline float GetResOfDataSlice() const
+	{
+		const Vector3f& res = vol_->GetDataResolution();
+		return getViewTypeDepth(res);
+	}
+
 	inline int GetDepthToDataSlice() const
 	{
 		const SpaceCoord depthCoord = vgs_->GetViewDepthCoord();
-		const DataCoord dataCoord = vol_->SpaceToDataCoord(depthCoord);
-		return getViewTypeDepth(dataCoord);
+		return getViewTypeDepth(depthCoord);
 	}
 
 	inline void SetDataSliceToDepth(const int slice) const
 	{
-		DataCoord dataCoord(0, 0, 0);
-		setViewTypeDepth(dataCoord, slice);
-		const SpaceCoord depthCoord = vol_->DataToSpaceCoord(dataCoord);
-
-		setSliceDepth(getViewTypeDepth(depthCoord));
+		setSliceDepth(slice);
 	}
 
 	inline Vector2f ComputePanDistance() const
@@ -210,14 +212,16 @@ public:
 	{
 		const int depth = GetDepthToDataSlice();
 		const int numberOfSlicestoAdvance = om::pow2int(getMipLevel());
-		SetDataSliceToDepth(depth+numberOfSlicestoAdvance);
+		float res = GetResOfDataSlice();
+		SetDataSliceToDepth(depth+numberOfSlicestoAdvance*res);
 	}
 
 	inline void MoveDownStackFartherFromViewer()
 	{
 		const int depth = GetDepthToDataSlice();
 		const int numberOfSlicestoAdvance = om::pow2int(getMipLevel());
-		SetDataSliceToDepth(depth-numberOfSlicestoAdvance);
+		float res = GetResOfDataSlice();
+		SetDataSliceToDepth(depth-numberOfSlicestoAdvance*res);
 	}
 
     // mouse movement
@@ -321,7 +325,9 @@ public:
 		return vol_->SpaceToDataCoord(getViewSliceDepthSpace());
 	}
 	float getSliceDepth() const {
-		return vgs_->GetViewSliceDepth(viewType_);
+		float depth = vgs_->GetViewSliceDepth(viewType_);
+		//printf("getSliceDepth d=%f\n", depth);
+		return depth;
 	}
 	float getXsliceDepth() const {
 		return vgs_->GetViewSliceDepth(YZ_VIEW);

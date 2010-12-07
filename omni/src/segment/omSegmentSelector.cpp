@@ -5,25 +5,11 @@
 #include "segment/omSegmentSelector.h"
 #include "volume/omSegmentation.h"
 
-OmSegmentSelector::OmSegmentSelector(OmSegmentation* segmentation,
-									 void* sender,
-									 const std::string& cmt )
-	: mSegmentation(segmentation)
-	, segmentCache_(mSegmentation->GetSegmentCache())
-	, mSegmentJustSelectedID(0)
-	, mSender(sender)
-	, mComment(cmt)
-	, oldSelectedIDs(segmentCache_->GetSelectedSegmentIds())
-	, newSelectedIDs(oldSelectedIDs)
-	, mAddToRecentList(true)
-{}
-
-OmSegmentSelector::OmSegmentSelector( const OmID segmentationID,
+OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
 									  void* sender,
 									  const std::string& cmt )
-	: mSegmentation(&OmProject::GetSegmentation( segmentationID ))
-	, segmentCache_(mSegmentation->GetSegmentCache())
-	, mSegmentJustSelectedID(0)
+	: sdw_(sdw, 0)
+	, segmentCache_(sdw_.GetSegmentCache())
 	, mSender(sender)
 	, mComment(cmt)
 	, oldSelectedIDs(segmentCache_->GetSelectedSegmentIds())
@@ -59,8 +45,8 @@ void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel,
 
 void OmSegmentSelector::setSelectedSegment(const OmSegID segID)
 {
-	OmSegmentSelected::Set(mSegmentation->GetID(), segID);
-	mSegmentJustSelectedID = segID;
+	sdw_.SetSegmentID(segID);
+	OmSegmentSelected::Set(sdw_);
 }
 
 void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
@@ -109,10 +95,9 @@ bool OmSegmentSelector::sendEvent()
 		return false;
 	}
 
-	OmActions::SelectSegments(mSegmentation->GetID(),
+	OmActions::SelectSegments(sdw_,
 							  newSelectedIDs,
 							  oldSelectedIDs,
-							  mSegmentJustSelectedID,
 							  mSender,
 							  mComment,
 							  true,

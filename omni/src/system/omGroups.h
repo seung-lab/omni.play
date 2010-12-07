@@ -23,8 +23,9 @@ public:
 	void UnsetGroup(const OmSegIDsSet & set, OmGroupName name);
 
 	OmGroupIDsSet GetGroups();
+	OmGroupIDsSet GetGroups(OmSegID);
 
-	OmID getSegmentationID();
+	OmID GetSegmentationID();
 	void populateGroupsList();
 
 

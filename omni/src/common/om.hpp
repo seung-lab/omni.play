@@ -6,7 +6,7 @@ namespace om {
 		ZERO_FILL,
 		DONT_ZERO_FILL
 	};
-	enum BlockingRead {
+	enum Blocking {
 		BLOCKING,
 		NON_BLOCKING
 	};

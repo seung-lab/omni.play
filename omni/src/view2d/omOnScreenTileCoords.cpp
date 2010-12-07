@@ -1,6 +1,9 @@
 #include "tiles/omTile.h"
 #include "view2d/omView2dState.hpp"
 #include "volume/omMipVolume.h"
+#include "volume/omChannel.h"
+#include "project/omProject.h"
+#include "volume/omFilter2d.h"
 #include "view2d/omOnScreenTileCoords.h"
 #include "system/cache/omCacheManager.h"
 #include "viewGroup/omViewGroupState.h"
@@ -33,7 +36,21 @@ void OmOnScreenTileCoords::setDepths()
 	Vector3f depth(0,0,0);
 	state_->setViewTypeDepth(depth, state_->getSliceDepth());
 	const DataCoord data_coord = vol_->SpaceToDataCoord(depth);
-	dataDepth_ = state_->getViewTypeDepth(data_coord);
+	//printf("depth: %f,%f,%f data: %i,%i,%i\n", DEBUGV3(depth), DEBUGV3(data_coord));
+	dataDepth_ = state_->getViewTypeDepth(depth);
+
+        Vector3f res = vol_->GetDataResolution();
+        switch(viewType_){
+        case XY_VIEW:
+                dataDepth_ /= res.z;
+                break;
+        case XZ_VIEW:
+                dataDepth_ /= res.y;
+                break;
+        case YZ_VIEW:
+                dataDepth_ /= res.x;
+                break;
+        }
 }
 
 OmTileCoordsAndLocationsPtr
@@ -49,7 +66,9 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 		doComputeCoordsAndLocations(depthOffset);
 	}
 
-	return tileCoordsAndLocations_;
+	OmTileCoordsAndLocationsPtr ret = tileCoordsAndLocations_;
+	tileCoordsAndLocations_ = boost::make_shared<OmTileCoordsAndLocations>();
+	return ret;
 }
 
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
@@ -59,8 +78,6 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 	float xval;
 	float yval;
 
-	//debugs("view2d") << "translateVector_ is: " << translateVector_ << "\n";
-
 	if(translateVector_.y < 0) {
 		yMipChunk_ = ((abs((int)translateVector_.y) /dataDim)) * dataDim * levelFactor;
 		yval = (-1 * (abs((int)translateVector_.y) % dataDim));
@@ -68,6 +85,7 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 		yMipChunk_ = 0;
 		yval = translateVector_.y;
 	}
+
 
 	const float maxY = totalViewport_.height/zoomFactor_/stretch_.y;
 	for(float y = yval; y < maxY; y += tileLength_, yMipChunk_ += dataDim){
@@ -80,13 +98,12 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 			xval = translateVector_.x;
 		}
 
-		//debugs("view2d") << "yMipChunk_: " << yMipChunk_
-		//				 << ", xMipChunk_: " << xMipChunk_ << "\n";
-
 		const float maxX = totalViewport_.width/zoomFactor_/stretch_.x;
 		for(float x = xval; x < maxX; x += tileLength_, xMipChunk_ += dataDim){
 
 			computeTile(x, y, depthOffset);
+
+			//printf("tile: %f,%f,%i\n", x, y, depthOffset);
 		}
 	}
 }
@@ -103,27 +120,65 @@ void OmOnScreenTileCoords::computeTile(const float x, const float y,
 	}
 
 	const SpaceCoord spaceCoord = vol_->DataToSpaceCoord(dataCoord);
+	//printf("x: %f y: %f depthOffset: %i data: %i,%i,%i space: %f,%f,%f\n", 
+		//x, y, depthOffset, DEBUGV3(dataCoord), DEBUGV3(spaceCoord));
 
-	OmTileCoordAndVertices pair = {makeTileCoord(spaceCoord),
+        if(CHANNEL == vol_->getVolumeType()) {
+                OmChannel& chan = OmProject::GetChannel(vol_->getID());
+                foreach( OmID id, chan.GetValidFilterIds() ) {
+                        OmFilter2d &filter = chan.GetFilter(id);
+                        makeTileCoordFromFilter(filter, spaceCoord, x, y);
+                }
+        }
+
+	//printf("vol=%p\n", vol_);
+	OmTileCoordAndVertices pair = {makeTileCoord(spaceCoord, vol_, freshness_),
 								   computeVertices(x, y) };
 
 	tileCoordsAndLocations_->push_back(pair);
 }
 
+void OmOnScreenTileCoords::makeTileCoordFromFilter(OmFilter2d& filter, const SpaceCoord & spaceCoord, const float x, const float y)
+{
+        if(!filter.setupVol()){
+                return;
+        }
+
+        OmTileCoordAndVertices pair = {makeTileCoord(spaceCoord, filter.getVolume(), OmCacheManager::GetFreshness()), computeVertices(x, y) };
+        tileCoordsAndLocations_->push_back(pair);
+
+}
+
 DataCoord OmOnScreenTileCoords::toDataCoord(const int depthOffset)
 {
+	Vector3f res = vol_->GetDataResolution();
+	int off;
+        switch(viewType_){
+        case XY_VIEW:
+		off = depthOffset / res.z;
+                break;
+        case XZ_VIEW:
+		off = depthOffset / res.y;
+                break;
+        case YZ_VIEW:
+		off = depthOffset / res.x;
+                break;
+        }
+
+	//printf("dataDepth_: %i depthOffset: %i\n", dataDepth_, depthOffset);
 	//TODO: yMipChunk_ and yMipChunk_ are floats; convert to int?
 	return state_->makeViewTypeVector3<int>(xMipChunk_,
 											yMipChunk_,
-											dataDepth_ + depthOffset);
+											dataDepth_ + off);
 }
 
-OmTileCoord OmOnScreenTileCoords::makeTileCoord(const SpaceCoord& coord)
+OmTileCoord OmOnScreenTileCoords::makeTileCoord(const SpaceCoord& coord, OmMipVolume * vol, int freshness)
 {
+
 	return OmTileCoord(mipLevel_,
 					   coord,
-					   vol_,
-					   freshness_,
+					   vol,
+					   freshness,
 					   vgs_,
 					   viewType_,
 					   state_->getObjectType());
