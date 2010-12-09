@@ -1,5 +1,5 @@
 #include "common/omException.h"
-#include "gui/groupsTable.h"
+#include "gui/groupsTable/groupsTable.h"
 #include "gui/cacheMonitorDialog.h"
 #include "gui/menubar.h"
 #include "gui/preferences/preferences.h"
@@ -61,7 +61,6 @@ MainWindow::~MainWindow()
 
 // Creates a new project
 // Prompts the user for a directory in which to create the new project
-// Internally, this sets the current working directory where the Volume will be serialized
 void MainWindow::newProject()
 {
 	try {

@@ -1,7 +1,7 @@
 #ifndef SEG_INSPECTOR_MESH_PREVIEW_BUTTON_H
 #define SEG_INSPECTOR_MESH_PREVIEW_BUTTON_H
 
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 
@@ -12,8 +12,7 @@ public:
 								  "Mesh Preview",
 								  "preview mesh",
 								  false)
-	{
-	}
+	{}
 
 private:
 	void doAction()

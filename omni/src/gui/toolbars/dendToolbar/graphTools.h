@@ -5,7 +5,6 @@
 #include "gui/widgets/omWidget.hpp"
 
 class DendToolBar;
-class AutoBreakCheckbox;
 class SplitButton;
 class CutButton;
 class OmViewGroupState;
@@ -26,7 +25,6 @@ class GraphTools : public OmWidget {
 
  private:
 	DendToolBar *const mParent;
-	AutoBreakCheckbox * autoBreakCheckbox;
 	SplitButton * splitButton;
 	CutButton * cutButton;
 

@@ -34,12 +34,12 @@ protected:
 	bool checkSettings()
 	{
 		if( !are_file_names_valid()){
-			printf("\tError: file list contains invalid files\n");
-			return false;
+			throw OmArgException("Error: file list contains invalid files");
 		}
 
 		return true;
 	}
+
 	bool canDoLoadDendrogram()
 	{
 		if( mFileNamesAndPaths.size() != 1){

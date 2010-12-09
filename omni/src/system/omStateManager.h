@@ -29,13 +29,6 @@ public:
 
 	static void UpdateStatusBar( const QString & msg );
 
-	static void setNoTilePrefetch(const bool noTilePrefetch){
-		Instance()->noTilePrefetch_ = noTilePrefetch;
-	}
-	static bool getNoTilePrefetch() {
-		return Instance()->noTilePrefetch_;
-	}
-
 	//tool mode
 	static OmToolMode GetToolMode();
 	static void SetToolModeAndSendEvent(const OmToolMode mode);
@@ -72,8 +65,6 @@ private:
 
 	//singleton
 	static OmStateManager* mspInstance;
-
-	bool noTilePrefetch_;
 
 	//project
 	std::string mProjectFileName;

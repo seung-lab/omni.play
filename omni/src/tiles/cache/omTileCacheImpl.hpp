@@ -8,10 +8,12 @@
 #include "tiles/cache/omTileCacheSegmentation.hpp"
 #include "tiles/omTilePreFetcher.hpp"
 #include "utility/omLockedPODs.hpp"
-#include "view2d/omTileDrawer.hpp"
+#include "view2d/omTileDrawer.h"
 #include "view2d/omView2dState.hpp"
 
 #include <QApplication>
+
+DECLARE_ZiARG_bool(noTilePrefetch);
 
 /**
  * assumes called in a serialized fashion (as main QT GUI thread ensures)
@@ -127,7 +129,7 @@ private:
 
 	void runIdleThreadTask()
 	{
-		if(OmStateManager::getNoTilePrefetch()){
+		if(ZiARG_noTilePrefetch){
 			return;
 		}
 

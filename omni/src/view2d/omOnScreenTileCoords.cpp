@@ -39,18 +39,18 @@ void OmOnScreenTileCoords::setDepths()
 	//printf("depth: %f,%f,%f data: %i,%i,%i\n", DEBUGV3(depth), DEBUGV3(data_coord));
 	dataDepth_ = state_->getViewTypeDepth(depth);
 
-        Vector3f res = vol_->GetDataResolution();
-        switch(viewType_){
-        case XY_VIEW:
-                dataDepth_ /= res.z;
-                break;
-        case XZ_VIEW:
-                dataDepth_ /= res.y;
-                break;
-        case YZ_VIEW:
-                dataDepth_ /= res.x;
-                break;
-        }
+	Vector3f res = vol_->GetDataResolution();
+	switch(viewType_){
+	case XY_VIEW:
+		dataDepth_ /= res.z;
+		break;
+	case XZ_VIEW:
+		dataDepth_ /= res.y;
+		break;
+	case YZ_VIEW:
+		dataDepth_ /= res.x;
+		break;
+	}
 }
 
 OmTileCoordsAndLocationsPtr
@@ -102,8 +102,6 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 		for(float x = xval; x < maxX; x += tileLength_, xMipChunk_ += dataDim){
 
 			computeTile(x, y, depthOffset);
-
-			//printf("tile: %f,%f,%i\n", x, y, depthOffset);
 		}
 	}
 }
@@ -120,50 +118,55 @@ void OmOnScreenTileCoords::computeTile(const float x, const float y,
 	}
 
 	const SpaceCoord spaceCoord = vol_->DataToSpaceCoord(dataCoord);
-	//printf("x: %f y: %f depthOffset: %i data: %i,%i,%i space: %f,%f,%f\n", 
-		//x, y, depthOffset, DEBUGV3(dataCoord), DEBUGV3(spaceCoord));
 
-        if(CHANNEL == vol_->getVolumeType()) {
-                OmChannel& chan = OmProject::GetChannel(vol_->getID());
-                foreach( OmID id, chan.GetValidFilterIds() ) {
-                        OmFilter2d &filter = chan.GetFilter(id);
-                        makeTileCoordFromFilter(filter, spaceCoord, x, y);
-                }
-        }
+	if(depthOffset){ // i.e. if we are pre-fetching
+		if(CHANNEL == vol_->getVolumeType()) {
+			OmChannel& chan = OmProject::GetChannel(vol_->getID());
+			foreach( OmID id, chan.GetValidFilterIds() ) {
+				OmFilter2d &filter = chan.GetFilter(id);
+				makeTileCoordFromFilter(filter, spaceCoord, x, y);
+			}
+		}
+	}
 
-	//printf("vol=%p\n", vol_);
 	OmTileCoordAndVertices pair = {makeTileCoord(spaceCoord, vol_, freshness_),
 								   computeVertices(x, y) };
 
 	tileCoordsAndLocations_->push_back(pair);
 }
 
-void OmOnScreenTileCoords::makeTileCoordFromFilter(OmFilter2d& filter, const SpaceCoord & spaceCoord, const float x, const float y)
+void OmOnScreenTileCoords::makeTileCoordFromFilter(OmFilter2d& filter,
+												   const SpaceCoord & spaceCoord,
+												   const float x, const float y)
 {
-        if(!filter.setupVol()){
-                return;
-        }
+	if(!filter.HasValidVol()){
+		return;
+	}
 
-        OmTileCoordAndVertices pair = {makeTileCoord(spaceCoord, filter.getVolume(), OmCacheManager::GetFreshness()), computeVertices(x, y) };
-        tileCoordsAndLocations_->push_back(pair);
+	OmTileCoordAndVertices pair =
+		{ makeTileCoord(spaceCoord,
+						filter.GetMipVolume(),
+						OmCacheManager::GetFreshness()),
+		  computeVertices(x, y) };
 
+	tileCoordsAndLocations_->push_back(pair);
 }
 
 DataCoord OmOnScreenTileCoords::toDataCoord(const int depthOffset)
 {
 	Vector3f res = vol_->GetDataResolution();
 	int off;
-        switch(viewType_){
-        case XY_VIEW:
+	switch(viewType_){
+	case XY_VIEW:
 		off = depthOffset / res.z;
-                break;
-        case XZ_VIEW:
+		break;
+	case XZ_VIEW:
 		off = depthOffset / res.y;
-                break;
-        case YZ_VIEW:
+		break;
+	case YZ_VIEW:
 		off = depthOffset / res.x;
-                break;
-        }
+		break;
+	}
 
 	//printf("dataDepth_: %i depthOffset: %i\n", dataDepth_, depthOffset);
 	//TODO: yMipChunk_ and yMipChunk_ are floats; convert to int?
@@ -172,7 +175,9 @@ DataCoord OmOnScreenTileCoords::toDataCoord(const int depthOffset)
 											dataDepth_ + off);
 }
 
-OmTileCoord OmOnScreenTileCoords::makeTileCoord(const SpaceCoord& coord, OmMipVolume * vol, int freshness)
+OmTileCoord OmOnScreenTileCoords::makeTileCoord(const SpaceCoord& coord,
+												OmMipVolume* vol,
+												int freshness)
 {
 
 	return OmTileCoord(mipLevel_,

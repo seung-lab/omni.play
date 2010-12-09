@@ -1,6 +1,8 @@
 #ifndef FILTER_DATA_WRAPPER_HPP
 #define FILTER_DATA_WRAPPER_HPP
 
+#include "volume/omFilter2d.h"
+
 class FilterDataWrapper {
 private:
 	OmID mID;
@@ -40,7 +42,8 @@ public:
 		return &OmProject::GetChannel(mChannelID).GetFilter(mID);
 	}
 
-	QString getName(){
+	QString getName()
+	{
 		OmFilter2d* f = getFilter();
 		if(!f){
 			return "";

@@ -1,3 +1,4 @@
+#include "gui/toolbars/dendToolbar/alphaVegasButton.hpp"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "gui/toolbars/dendToolbar/displayTools/brightnessSpinBox.hpp"
 #include "gui/toolbars/dendToolbar/displayTools/contrastSpinBox.hpp"
@@ -21,6 +22,7 @@ DisplayTools::DisplayTools(DendToolBar * d)
 	box->addWidget(filterShowNonSelectedSegmentsBox());
 	box->addWidget(view2dSliceDepthBox());
 	box->addWidget(imageFilterControls());
+	box->addWidget(new AlphaVegasButton(this));
 }
 
 QWidget* DisplayTools::imageFilterControls()

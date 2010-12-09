@@ -14,21 +14,23 @@ class OmView3d;
 class View2dDockWidget{
 public:
 	static void WireDockWithView2d(OmView2d*,
-				       const std::pair<QDockWidget*,QDockWidget*>&);
+								   const std::pair<QDockWidget*,QDockWidget*>&);
 private:
 	static void connectVisibilityChange(OmView2d*, QDockWidget*);
 	static void setComplimentaryDockWidget(OmView2d* ,
-					       QDockWidget*, QDockWidget*);
+										   QDockWidget*, QDockWidget*);
 };
 
 class ViewGroup{
 public:
 	ViewGroup(MainWindow*, OmViewGroupState*);
 
-	void AddView2Dchannel(const OmID chan_id,
-			      const ViewType vtype);
-	void AddView2Dsegmentation(const OmID segmentation_id,
-				   const ViewType vtype);
+	QDockWidget* AddView2Dchannel(const OmID chan_id,
+								  const ViewType vtype);
+
+	std::pair<QDockWidget*,QDockWidget*>
+	AddView2Dsegmentation(const OmID segmentation_id, const ViewType vtype);
+
 	void AddView3D();
 	void AddAllViews(const OmID channelID, const OmID segmentationID);
 

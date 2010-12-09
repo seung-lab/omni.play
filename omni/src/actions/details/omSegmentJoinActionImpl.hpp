@@ -10,7 +10,9 @@
 
 class OmSegmentJoinActionImpl {
 public:
-	OmSegmentJoinActionImpl() {}
+	OmSegmentJoinActionImpl()
+	{}
+
 	OmSegmentJoinActionImpl(const OmID segmentationId,
 							const OmSegIDsSet& selectedSegmentIds)
 		: mSegmentationId(segmentationId)
@@ -57,8 +59,6 @@ private:
 	template <typename T> friend class OmActionLoggerThread;
 	friend class QDataStream &operator<<(QDataStream&, const OmSegmentJoinActionImpl&);
 	friend class QDataStream &operator>>(QDataStream&, OmSegmentJoinActionImpl&);
-
-
 };
 
 #endif

@@ -4,8 +4,6 @@
 #include "view2d/omView2dState.hpp"
 #include "tiles/cache/omTileCache.h"
 
-#include <boost/make_shared.hpp>
-
 void OmTilePreFetcherTask::run()
 {
 	onScreenTileCoords_ = boost::make_shared<OmOnScreenTileCoords>(state_);
@@ -48,7 +46,6 @@ void OmTilePreFetcherTask::preLoadDepth(const int depthOffset)
 
 	debug(tiles, "OmTilePreFetcherTask: fetched %d tiles\n", count);
 }
-
 
 bool OmTilePreFetcherTask::shouldExitEarly(){
 	return OmTileCache::AreDrawersActive();

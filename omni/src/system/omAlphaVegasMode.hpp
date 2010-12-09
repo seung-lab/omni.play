@@ -3,19 +3,19 @@
 
 #include "common/omDebug.h"
 #include "system/events/omView3dEvent.h"
-#include "gui/toolbars/mainToolbar/filterWidget.h"
+#include "gui/toolbars/mainToolbar/filterWidget.hpp"
 
 #include <qthread.h>
 
-class OmAlphaVegaMode: public QThread {
+class OmAlphaVegasMode: public QThread {
 public:
-	OmAlphaVegaMode()
+	OmAlphaVegasMode()
 		: stop_(false)
 	{
 		start();
 	}
 
-	~OmAlphaVegaMode()
+	~OmAlphaVegasMode()
 	{
 		stop_ = true;
 		wait();
@@ -29,7 +29,7 @@ public:
 			}
 
 			FilterWidget::Cycle();
-			yieldCurrentThread();
+			QThread::msleep(666);
 		}
 	}
 

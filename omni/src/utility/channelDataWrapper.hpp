@@ -21,19 +21,23 @@ public:
 		: mID(ID)
 	{}
 
-	inline OmID getID(){
+	inline OmID getID() const {
 		return mID;
 	}
 
-	inline QString getName(){
+	inline OmID GetChannelID() const {
+		return mID;
+	}
+
+	inline QString getName() {
 		return QString::fromStdString(GetChannel().GetName());
 	}
 
-	inline bool isEnabled(){
+	inline bool isEnabled() const {
 		return OmProject::IsChannelEnabled(mID);
 	}
 
-	inline QString getNote(){
+	inline QString getNote() {
 		return GetChannel().GetNote();
 	}
 
@@ -41,7 +45,13 @@ public:
 		return OmProject::GetChannel(mID);
 	}
 
-	inline bool IsValidWrapper() const
+	inline OmChannel* GetChannelPtr()
+	{
+		OmChannel& chan = GetChannel();
+		return &chan;
+	}
+
+	inline bool IsChannelValid() const
 	{
 		if(!mID){
 			return false;

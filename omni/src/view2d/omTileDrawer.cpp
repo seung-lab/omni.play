@@ -1,18 +1,19 @@
-#include "system/omGarbage.h"
 #include "common/om.hpp"
 #include "project/omProject.h"
-#include "viewGroup/omViewGroupState.h"
+#include "system/omGarbage.h"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
 #include "tiles/omTileCoord.h"
-#include "view2d/omTileDrawer.hpp"
+#include "utility/dataWrappers.h"
+#include "view2d/om2dPreferences.hpp"
 #include "view2d/omOnScreenTileCoords.h"
+#include "view2d/omTileDrawer.h"
 #include "view2d/omView2dState.hpp"
+#include "viewGroup/omViewGroupState.h"
 #include "volume/omChannel.h"
 #include "volume/omFilter2d.h"
-
 #include "zi/omUtility.h"
 
 OmTileDrawer::OmTileDrawer(boost::shared_ptr<OmView2dState> state,
@@ -39,15 +40,18 @@ void OmTileDrawer::FullRedraw2d()
 	reset();
 
 	OmMipVolume* vol = state_->getVol();
-	draw(vol);
 
 	if(CHANNEL == vol->getVolumeType()) {
 		OmChannel& chan = OmProject::GetChannel(vol->getID());
 		foreach( OmID id, chan.GetValidFilterIds() ) {
 			OmFilter2d &filter = chan.GetFilter(id);
-			drawFromFilter(filter);
+			const bool shouldBrightenAlpha = drawFromFilter(filter);
+			setupGLblendColor(filter.GetAlpha(),
+							  shouldBrightenAlpha);
 		}
 	}
+
+	draw(vol);
 
 	if(IsDrawComplete()){
 		OmTileCache::SetDrawerDone(this);
@@ -81,16 +85,16 @@ void OmTileDrawer::determineWhichTilesToDraw(OmMipVolume* vol)
 
 	mTileCount += tileCoordsAndLocations->size();
 
-	FOR_EACH(tileCL, *tileCoordsAndLocations){
+	om::Blocking amBlocking = om::NON_BLOCKING;
+	if(state_->getScribbling()){
+		amBlocking = om::BLOCKING;
+	}
 
-		om::Blocking amBlocking = om::NON_BLOCKING;
-		if(state_->getScribbling()){
-			amBlocking = om::BLOCKING;
-		}
+	FOR_EACH(tileCL, *tileCoordsAndLocations){
 
 		OmTilePtr tile;
 		OmTileCache::Get(this, tile, tileCL->tileCoord,
-								amBlocking);
+						 amBlocking);
 
 		if(!tile){
 			++mTileCountIncomplete;
@@ -135,8 +139,11 @@ void OmTileDrawer::drawTile(const OmTileAndVertices& tv)
 	}
 
 	const OmTextureIDPtr& texture = tv.tile->GetTexture();
-	bindTileDataToGLid(texture);
-	glBindTexture(GL_TEXTURE_2D, texture->getTextureID());
+	if(texture->NeedToBuildTexture()){
+		doBindTileDataToGLid(texture);
+	}
+
+	glBindTexture(GL_TEXTURE_2D, texture->GetTextureID());
 
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f);	/* lower left corner */
@@ -157,13 +164,6 @@ void OmTileDrawer::drawTile(const OmTileAndVertices& tv)
 	glEnd();
 }
 
-void OmTileDrawer::bindTileDataToGLid(const OmTextureIDPtr& texture)
-{
-	if(texture->needToBuildTexture()){
-		doBindTileDataToGLid(texture);
-	}
-}
-
 void OmTileDrawer::doBindTileDataToGLid(const OmTextureIDPtr& texture)
 {
 	GLuint textureID;
@@ -176,41 +176,53 @@ void OmTileDrawer::doBindTileDataToGLid(const OmTextureIDPtr& texture)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-	const GLint format = texture->getGLformat();
+	const GLint format = texture->GetGLformat();
 	glTexImage2D(GL_TEXTURE_2D, 0,
 				 format,
-				 texture->getWidth(), texture->getHeight(),
+				 texture->GetWidth(), texture->GetHeight(),
 				 0,
 				 format,
 				 GL_UNSIGNED_BYTE,
-				 texture->getTileData());
+				 texture->GetTileData());
 
-	texture->textureBindComplete(textureID);
+	texture->TextureBindComplete(textureID);
 }
 
-void OmTileDrawer::drawFromFilter(OmFilter2d& filter)
+bool OmTileDrawer::drawFromFilter(OmFilter2d& filter)
 {
-	if(!filter.setupVol()){
-		return;
+	if(!filter.HasValidVol()){
+		return false;
 	}
 
-	setupGLblendColor(filter.GetAlpha());
-	{
-		draw(filter.getVolume());
+	OmMipVolume* vol = filter.GetMipVolume();
+	draw(vol);
+
+	if(CHANNEL == vol->getVolumeType()){
+		return false;
 	}
-	teardownGLblendColor();
+
+	const SegmentationDataWrapper& sdw = filter.GetSegmentationWrapper();
+	return sdw.GetSelectedSegmentIds().size() == 0;
 }
 
-void OmTileDrawer::setupGLblendColor(const float alpha)
+void OmTileDrawer::setupGLblendColor(const float alpha,
+									 const bool shouldBrightenAlpha)
 {
 	glEnable(GL_BLEND);	// enable blending for transparency
-	glBlendFunc(GL_ONE_MINUS_CONSTANT_ALPHA, GL_CONSTANT_ALPHA);
 
-	glBlendColor(1.f, 1.f, 1.f, (1.f - alpha));
+	if(Om2dPreferences::HaveAlphaGoToBlack()){
+		glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+		glBlendColor(1.f, 1.f, 1.f, (1.f - alpha));
 
-	// continued...
-}
+	} else {
+		glBlendFuncSeparate(GL_SRC_COLOR, GL_CONSTANT_COLOR,
+							GL_ONE_MINUS_CONSTANT_ALPHA, GL_CONSTANT_ALPHA);
 
-void OmTileDrawer::teardownGLblendColor(){
-	glDisable(GL_BLEND);	//disable blending for transparency
+		float factor = 0.4;
+		if(shouldBrightenAlpha){
+			factor = 0.7;
+		}
+		const float val = alpha * factor;
+		glBlendColor(val, val, val, val);
+	}
 }

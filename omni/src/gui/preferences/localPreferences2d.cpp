@@ -1,13 +1,15 @@
-#include <QtGui>
-#include "gui/guiUtils.hpp"
-#include "gui/preferences/localPreferences2d.h"
 #include "common/omDebug.h"
-#include "system/omLocalPreferences.h"
+#include "gui/preferences/checkboxHideCrosshairs.hpp"
+#include "gui/preferences/localPreferences2d.h"
+#include "gui/preferences/spinBoxCrosshairOpeningSize.hpp"
+#include "gui/widgets/omLabelHBox.hpp"
+
+#include <QtGui>
 
 LocalPreferences2d::LocalPreferences2d(QWidget * parent)
- : QWidget(parent)
+	: QWidget(parent)
 {
-	QVBoxLayout* overallContainer = new QVBoxLayout( this );
+	QVBoxLayout* overallContainer = new QVBoxLayout(this);
 
 	overallContainer->addWidget( makeGeneralPropBox());
 	overallContainer->insertStretch(2, 1);
@@ -15,27 +17,14 @@ LocalPreferences2d::LocalPreferences2d(QWidget * parent)
 
 QGroupBox* LocalPreferences2d::makeGeneralPropBox()
 {
-	QGroupBox* groupBox = new QGroupBox("General");
-	QGridLayout* gridLayout = new QGridLayout;
-	groupBox->setLayout( gridLayout );
-/*
-	// 2D View Frames in 3D CheckBox
-	showCrosshairsCheckbox_ = new QCheckBox(groupBox);
-	showCrosshairsCheckbox_->setText("Show Crosshairs");
-	const bool viewSquare = Om3dPreferences::get2DViewFrameIn3D();
-	viewSquareCheckBox->setChecked(viewSquare);
-	gridLayout->addWidget(viewSquareCheckBox, 1, 0, 1, 1);
+	QGroupBox* widget = new QGroupBox("General");
+	QVBoxLayout* layout = new QVBoxLayout(widget);
 
-	connect(discoCheckBox, SIGNAL(stateChanged(int)),
-			this, SLOT(on_discoCheckBox_stateChanged()));
-*/
-  	return groupBox;
+	layout->addWidget(new ShowCrosshairsCheckbox(this));
+
+	layout->addWidget(new OmLabelHBox(widget,
+									  new CrosshairOpeningSizeSpinBox(widget),
+									  om::LEFT_SIDE,
+									  "Crosshair Opening Size"));
+  	return widget;
 }
-/*
-void LocalPreferences3d::on_viewSquareCheckBox_stateChanged()
-{
-	const bool val = GuiUtils::getBoolState( viewSquareCheckBox->checkState() );
-	Om3dPreferences::set2DViewFrameIn3D( val );
-	OmEvents::Redraw3d();
-}
-*/

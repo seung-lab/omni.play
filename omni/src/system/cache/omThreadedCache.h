@@ -30,7 +30,7 @@ public:
 	void Prefetch(const KEY& key);
 
 	void Remove(const KEY& key);
-	int Clean();
+	int Clean(const bool okToRemoveOldest);
 	void Clear();
 	void InvalidateCache();
 

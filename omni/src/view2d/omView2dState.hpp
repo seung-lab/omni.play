@@ -4,7 +4,7 @@
 #include "common/omDebug.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omEvents.h"
-#include "system/omLocalPreferences.h"
+#include "system/omLocalPreferences.hpp"
 #include "system/omProjectData.h"
 #include "tiles/cache/omTileCache.h"
 #include "view2d/omView2dConverters.hpp"

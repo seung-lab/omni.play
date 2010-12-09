@@ -278,8 +278,8 @@ QDataStream &operator<<(QDataStream& out, const OmFilter2d& f)
 {
 	OmDataArchiveProject::storeOmManageableObject(out, f);
 	out << f.mAlpha;
-	out << f.mChannel;
-	out << f.mSeg;
+	out << f.cdw_.GetChannelID();
+	out << f.sdw_.GetSegmentationID();
 
 	return out;
 }
@@ -288,8 +288,14 @@ QDataStream &operator>>(QDataStream& in, OmFilter2d& f)
 {
 	OmDataArchiveProject::loadOmManageableObject(in, f);
 	in >> f.mAlpha;
-	in >> f.mChannel;
-	in >> f.mSeg;
+
+	OmID channID;
+	in >> channID;
+	f.cdw_ = ChannelDataWrapper(channID);
+
+	OmID segID;
+	in >> segID;
+	f.sdw_ = SegmentationDataWrapper(segID);
 
 	return in;
 }

@@ -1,7 +1,7 @@
 #ifndef SAVE_BUTTON_H
 #define SAVE_BUTTON_H
 
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
 
 class SaveButton : public OmButton<MainToolbar> {

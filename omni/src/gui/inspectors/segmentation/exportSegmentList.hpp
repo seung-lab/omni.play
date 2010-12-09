@@ -2,7 +2,7 @@
 #define EXPORT_SEGMENT_LIST_HPP
 
 #include "gui/inspectors/segmentation/segInspector.h"
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 #include "segment/omSegmentCache.h"
 #include "system/omProjectData.h"
 #include "utility/dataWrappers.h"

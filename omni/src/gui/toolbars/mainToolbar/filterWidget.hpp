@@ -17,6 +17,10 @@ public:
 		instance().impl_ = new FilterWidgetImpl();
 	}
 
+	static void Cycle(){
+		instance().impl_->Cycle();
+	}
+
 	static void IncreaseAlpha(){
 		instance().impl_->IncreaseAlpha();
 	}

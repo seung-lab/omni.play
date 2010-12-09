@@ -71,7 +71,7 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel,
 	OmTilePtr tile;
 	OmTileCache::doGet(tile, tileCoord, om::BLOCKING);
 
-	const char* tileData = (const char*)tile->GetTexture()->getTileData();
+	const char* tileData = (const char*)tile->GetTexture()->GetTileData();
 	const int numBytes = tile->GetTexture()->NumBytes();
 
 	out.writeBytes(tileData, numBytes);

@@ -81,6 +81,8 @@ QString OmProject::New(const QString& fileNameAndPathIn)
 	OmProjectData::instantiateProjectData(fileNameAndPath.toStdString());
 	OmProjectData::Create();
 	OmProjectData::Open();
+	OmCacheManager::Reset();
+	OmTileCache::Reset();
 
 	OmPreferenceDefaults::SetDefaultAllPreferences();
 
@@ -121,12 +123,13 @@ void OmProject::Load(const QString& fileNameAndPath)
 
 	QFile projectFile(Instance()->projectFileNameAndPath_.absoluteFilePath());
 	if( !projectFile.exists() ){
-		QString err = "Project file not found at \"" + fileNameAndPath + "\"";
-		throw OmIoException( qPrintable( err ));
+		throw OmIoException("Project file not found at", fileNameAndPath);
 	}
 
 	OmProjectData::instantiateProjectData(fileNameAndPath.toStdString());
 	OmProjectData::Open();
+	OmCacheManager::Reset();
+	OmTileCache::Reset();
 
 	try {
 		OmDataArchiveProject::ArchiveRead(OmDataPaths::getProjectArchiveNameQT(),
@@ -142,12 +145,12 @@ void OmProject::Load(const QString& fileNameAndPath)
 void OmProject::Close()
 {
 	OmActions::Close();
+
 	// OmProject must be deleted first: it depends on the remaining classes...
 	OmCacheManager::SignalCachesToCloseDown();
 	OmMeshSegmentList::Delete();
 //	zi::all_threads::join_all();
 	Delete();
-	OmCacheManager::Delete();
 
 	//delete all singletons
 	OmMeshSegmentList::Delete();
@@ -159,7 +162,8 @@ void OmProject::Close()
 	//OmLocalPreferences
 
 	//close project data
-	OmTileCache::Reset();
+	OmTileCache::Delete();
+	OmCacheManager::Delete();
 	OmProjectData::Close();
 	OmProjectData::Delete();
 

@@ -16,6 +16,7 @@ private:
 	std::string mComment;
 	bool mDoScroll;
 	bool mAddToRecentList;
+	bool mCenter;
 
 public:
 	OmSegmentSelectActionImpl() {}
@@ -25,7 +26,8 @@ public:
 							  void* sender,
 							  const std::string & comment,
 							  const bool doScroll,
-							  const bool addToRecentList)
+							  const bool addToRecentList, 
+							  const bool center=false)
 		: sdw_(sdw)
 		, mNewSelectedIdSet(newSelectedIdSet)
 		, mOldSelectedIdSet(oldSelectedIdSet)
@@ -33,6 +35,7 @@ public:
 		, mComment(comment)
 		, mDoScroll(doScroll)
 		, mAddToRecentList(addToRecentList)
+		, mCenter(center)
 	{}
 
 	void Execute()
@@ -43,7 +46,8 @@ public:
 		OmEvents::SegmentModified(sdw_,
 								  mSender,
 								  mComment,
-								  mDoScroll);
+								  mDoScroll,
+								  mCenter);
 	}
 
 	void Undo()
@@ -54,7 +58,8 @@ public:
 		OmEvents::SegmentModified(sdw_,
 								  mSender,
 								  mComment,
-								  mDoScroll);
+								  mDoScroll, 
+								  mCenter);
 
 	}
 

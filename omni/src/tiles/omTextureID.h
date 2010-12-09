@@ -2,12 +2,15 @@
 #define OM_TEXTURE_ID_H
 
 /*
- *      omTextureIDs are a wrapper for GLuint texture IDs.  They associate a texture ID with
- *      the corresponding TileCoord, and keep track of the size of the texture in memory.
+ * OmTextureIDs are a wrapper for GLuint texture IDs.
  *
- *	A TextureID is associated with a TextureIDCache that keeps track of how much GL video memory is in use.
+ * They associate a texture ID with the corresponding TileCoord,
+ * and keep track of the size of the texture in memory.
  *
- *	Rachel Shearer - rshearer@mit.edu - 3/17/09
+ * A TextureID is associated with a TextureIDCache that keeps track of how
+ * much GL video memory is in use.
+ *
+ * Rachel Shearer - rshearer@mit.edu - 3/17/09
  */
 
 #include "common/omGl.h"
@@ -21,19 +24,36 @@ public:
 	OmTextureID(const Vector2i&, boost::shared_ptr<OmColorRGBA>);
 	virtual ~OmTextureID();
 
-	int getWidth() const { return dims_.x; }
-	int getHeight() const { return dims_.y; }
-	GLuint getTextureID() const { return textureID_; }
+	int GetWidth() const {
+		return dims_.x;
+	}
 
-	uint64_t NumBytes() const { return numBytes_; }
-	void* getTileData() const;
+	int GetHeight() const {
+		return dims_.y;
+	}
 
-	bool needToBuildTexture() const {
+	GLuint GetTextureID() const
+	{
+		if(!textureID_){
+			throw OmIoException("texture not yet built");
+		}
+		return *textureID_;
+	}
+
+	uint64_t NumBytes() const {
+		return numBytes_;
+	}
+
+	void* GetTileData() const;
+
+	bool NeedToBuildTexture() const
+	{
 		return (flag_ == OMTILE_NEEDTEXTUREBUILT ||
 				flag_ == OMTILE_NEEDCOLORMAP);
 	}
 
-	GLint getGLformat() const {
+	GLint GetGLformat() const
+	{
 		switch(flag_){
 		case OMTILE_NEEDCOLORMAP:
 			return GL_RGBA;
@@ -44,9 +64,10 @@ public:
 		}
 	}
 
-	void textureBindComplete(const GLuint textureID){
+	void TextureBindComplete(const GLuint textureID)
+	{
 		flag_ = OMTILE_GOOD;
-		textureID_ = textureID;
+		textureID_ = boost::optional<GLuint>(textureID);
 		deleteTileData();
 	}
 
@@ -58,7 +79,7 @@ private:
 		OMTILE_GOOD
 	};
 
-	GLuint textureID_;
+	boost::optional<GLuint> textureID_;
 	const Vector2i dims_;
 	OmTileFlag flag_;
 	const uint64_t numBytes_;

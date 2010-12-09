@@ -1,6 +1,12 @@
 #ifndef SEGMENTATION_DATA_WRAPPER_HPP
 #define SEGMENTATION_DATA_WRAPPER_HPP
 
+#include "segment/omSegment.h"
+#include "volume/omSegmentation.h"
+#include "segment/omSegmentCache.h"
+
+class OmMST;
+class OmValidGroupNum;
 class OmSegmentLists;
 
 class SegmentationDataWrapper {
@@ -30,7 +36,8 @@ public:
 		id_ = sdw.id_;
 	}
 
-	SegmentationDataWrapper& operator =(const SegmentationDataWrapper& sdw){
+	SegmentationDataWrapper& operator =(const SegmentationDataWrapper& sdw)
+	{
 		if (this != &sdw){
 			id_ = sdw.id_;
 			segmentation_ = sdw.segmentation_;
@@ -54,7 +61,8 @@ public:
 		return id_;
 	}
 
-	OmSegmentation& Create() {
+	OmSegmentation& Create()
+	{
 		OmSegmentation& s = OmProject::AddSegmentation();
 		id_ = s.GetID();
 		printf("create segmentation %d\n", id_);
@@ -83,6 +91,12 @@ public:
 				boost::optional<OmSegmentation&>(OmProject::GetSegmentation(id_));
 		}
 		return *segmentation_;
+	}
+
+	inline OmSegmentation* GetSegmentationPtr() const
+	{
+		OmSegmentation& seg = GetSegmentation();
+		return &seg;
 	}
 
 	inline QString getName() const {

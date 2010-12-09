@@ -1,14 +1,15 @@
 #ifndef OM_SCREEN_PAINTER_HPP
 #define OM_SCREEN_PAINTER_HPP
 
+#include "system/omEvents.h"
+#include "system/omPreferenceDefinitions.h"
+#include "system/omPreferences.h"
 #include "utility/omTimer.h"
+#include "view2d/om2dPreferences.hpp"
+#include "view2d/omDisplayInfo.hpp"
+#include "view2d/omScreenShotSaver.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
-#include "system/omEvents.h"
-#include "view2d/omScreenShotSaver.hpp"
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
-#include "view2d/omDisplayInfo.hpp"
 
 #include <QPainter>
 
@@ -91,7 +92,9 @@ private:
 			displayInformation(painter);
 		}
 
-		drawCursors(painter);
+		if(Om2dPreferences::ShowCrosshairs()){
+			drawCursors(painter);
+		}
 	}
 
 	QColor getPenColor() const
@@ -159,7 +162,7 @@ private:
 		const int halfHeight = fullHeight/2;
 		const int fullWidth = vp.width;
 		const int halfWidth = fullWidth/2;
-		const int a = 20;
+		const int a = Om2dPreferences::CrosshairHoleSize();
 
 		std::pair<QColor, QColor> colors = getCursorColors();
 

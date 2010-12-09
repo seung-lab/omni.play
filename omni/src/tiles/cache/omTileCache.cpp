@@ -5,7 +5,12 @@ OmTileCache::OmTileCache()
 	: impl_(new OmTileCacheImpl())
 {}
 
-void OmTileCache::Reset(){
+void OmTileCache::Delete(){
+	instance().impl_.reset();
+}
+
+void OmTileCache::Reset()
+{
 	instance().impl_ =
 		boost::shared_ptr<OmTileCacheImpl>(new OmTileCacheImpl());
 }

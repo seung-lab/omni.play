@@ -10,7 +10,6 @@
 #include "volume/omVolume.h"
 #include "volume/omMipVolume.h"
 #include "system/omManageableObject.h"
-#include "volume/omFilter2d.h"
 #include "volume/omFilter2dManager.h"
 #include "common/omStd.h"
 

@@ -28,13 +28,15 @@ void OmEvents::SegmentModified(){
 void OmEvents::SegmentModified(const SegmentDataWrapper& sdw,
 							   void* sender,
 							   std::string comment,
-							   const bool doScroll )
+							   const bool doScroll,
+							   const bool center )
 {
 	POST(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 							sdw,
 							sender,
 							comment,
-							doScroll));
+							doScroll,
+							center));
 }
 
 void OmEvents::ViewCenterChanged(){

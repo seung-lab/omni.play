@@ -33,6 +33,12 @@ sub processFile{
 
 sub processCPP {
     my $file = $_[0];
+
+    my $matlabOnlyFile = "watershed/QuickieWS.cpp";
+    if($file =~ m/\Q$matlabOnlyFile\E/){
+	return;
+    }
+
     push(@cppFiles, $file);
 }
 

@@ -1,5 +1,5 @@
-#ifndef OM_LOCAL_CONFIGURATION_H
-#define OM_LOCAL_CONFIGURATION_H
+#ifndef OM_LOCAL_CONFIGURATION_HPP
+#define OM_LOCAL_CONFIGURATION_HPP
 
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
@@ -84,27 +84,6 @@ public:
 	static void SetShouldJumpToNextSegmentAfterValidate(const bool val)
 	{
 		LocalPrefFiles::writeSettingBool("shouldJumpToNextSegmentAfterValidate", val);
-	}
-
-// View2d crosshairs
-	static bool GetShowView2dCrosshairs()
-	{
-		const bool defaultVal = true;
-		return LocalPrefFiles::readSettingBool("ShowView2dCrosshairs", defaultVal);
-	}
-	static void SetShowView2dCrosshairs(const bool val)
-	{
-		LocalPrefFiles::writeSettingBool("ShowView2dCrosshairs", val);
-	}
-
-	static int View2dCrosshairHoleSize()
-	{
-		const int defaultVal = 10;
-		return LocalPrefFiles::readSettingNumber<int32_t>("View2dCrosshairHoleSize", defaultVal);
-	}
-	static void SetView2dCrosshairHoleSize(const int val)
-	{
-		LocalPrefFiles::writeSettingNumber<int32_t>("View2dCrosshairHoleSize", val);
 	}
 
 private:

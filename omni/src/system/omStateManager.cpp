@@ -4,7 +4,7 @@
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "project/omProject.h"
 #include "system/omEvents.h"
-#include "system/omLocalPreferences.h"
+#include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
 
 #include <zi/system.hpp>
@@ -21,7 +21,6 @@
 OmStateManager *OmStateManager::mspInstance = 0;
 
 OmStateManager::OmStateManager()
-	: noTilePrefetch_(false)
 {
 	//view3d
 	mpPrimaryView3dWidget = NULL;

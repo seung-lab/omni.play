@@ -3,7 +3,7 @@
 #include "common/omGl.h"
 #include "omViewBoxWidget.h"
 #include "project/omProject.h"
-#include "system/omLocalPreferences.h"
+#include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
@@ -185,7 +185,7 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
 			channel.SpaceToNormCoord(d->GetTileCoord().getSpaceCoord());
 
 		//debug ("FIXME", "normCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(normCoord));
-		glBindTexture(GL_TEXTURE_2D, d->GetTexture()->getTextureID());
+		glBindTexture(GL_TEXTURE_2D, d->GetTexture()->GetTextureID());
 		glBegin(GL_QUADS);
 
 		if (plane == XY_VIEW) {

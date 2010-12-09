@@ -3,7 +3,7 @@
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/widgets/omGroupListWidget.h"
 #include "system/omGroup.h"
-#include "gui/groupsTable.h"
+#include "gui/groupsTable/groupsTable.h"
 #include "viewGroup/omViewGroupState.h"
 
 OmGroupListWidget::OmGroupListWidget(GroupsTable * gt)
@@ -77,7 +77,10 @@ void OmGroupListWidget::populate(OmSegmentation & seg)
 		OmGroup & group = groups->GetGroup(id);
 		row->setText(0, group.GetName());
 		row->setData(0, Qt::UserRole, qVariantFromValue(id));
-		row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+		row->setFlags(Qt::ItemIsSelectable |
+					  Qt::ItemIsEditable |
+					  Qt::ItemIsUserCheckable |
+					  Qt::ItemIsEnabled);
 
 		printf("here\n");
 	}
