@@ -1,5 +1,5 @@
-#ifndef OM_BUTTON_H
-#define OM_BUTTON_H
+#ifndef OM_BUTTON_HPP
+#define OM_BUTTON_HPP
 
 #include <QtGui>
 
@@ -38,7 +38,7 @@ private:
 	void mousePressEvent(QMouseEvent* event)
 	{
 		QPushButton::mousePressEvent(event);
-        	if (event->button() == Qt::LeftButton) {
+		if (event->button() == Qt::LeftButton) {
 			doAction();
 		}
 	}

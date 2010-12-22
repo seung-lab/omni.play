@@ -122,7 +122,7 @@ void ViewGroup::AddView3D()
 	delete(vgw);
 }
 
-void ViewGroup::AddView2Dchannel(const OmID chan_id, const ViewType vtype)
+QDockWidget* ViewGroup::AddView2Dchannel(const OmID chan_id, const ViewType vtype)
 {
 	OmChannel& chan = OmProject::GetChannel(chan_id);
 	const QString name = getViewName(chan.GetName(), vtype);
@@ -141,10 +141,13 @@ void ViewGroup::AddView2Dchannel(const OmID chan_id, const ViewType vtype)
 		insertDockIntoGroup(vgw.get());
 
 	View2dDockWidget::WireDockWithView2d(v2d, dockAndCompliment);
+
+	return dockAndCompliment.first;
 }
 
-void ViewGroup::AddView2Dsegmentation(const OmID segmentation_id,
-				      const ViewType vtype)
+std::pair<QDockWidget*,QDockWidget*>
+ViewGroup::AddView2Dsegmentation(const OmID segmentation_id,
+								 const ViewType vtype)
 {
 	OmSegmentation& seg = OmProject::GetSegmentation(segmentation_id);
 	const QString name = getViewName(seg.GetName(), vtype);
@@ -165,6 +168,8 @@ void ViewGroup::AddView2Dsegmentation(const OmID segmentation_id,
 		insertDockIntoGroup(vgw.get());
 
 	View2dDockWidget::WireDockWithView2d(v2d, dockAndCompliment);
+
+	return dockAndCompliment;
 }
 
 QDockWidget* ViewGroup::makeDockWidget(ViewGroupWidgetInfo* vgw)
@@ -310,7 +315,7 @@ QDockWidget* ViewGroup::insertBySplitting(ViewGroupWidgetInfo* vgw,
 }
 
 QDockWidget* ViewGroup::insertByTabbing(ViewGroupWidgetInfo * vgw,
-					QDockWidget* widgetToTabify)
+										QDockWidget* widgetToTabify)
 {
 	QDockWidget* dock = makeDockWidget( vgw );
 	//debug(viewGroup, "\t inserting %s by tabbing...\n",
@@ -326,19 +331,38 @@ void ViewGroup::AddAllViews(const OmID channelID, const OmID segmentationID)
 		delete w;
 	}
 
-	if(OmProject::IsChannelValid(channelID)){
+	const bool validChan = OmProject::IsChannelValid(channelID);
+	const bool validSeg = OmProject::IsSegmentationValid(segmentationID);
+
+	if( validChan && validSeg){
 		AddView2Dchannel(channelID, UpperLeft);
 		AddView2Dchannel(channelID, UpperRight);
 		AddView2Dchannel(channelID, LowerLeft);
-	}
 
-	if(OmProject::IsSegmentationValid(segmentationID)){
 		AddView2Dsegmentation(segmentationID, UpperLeft);
-		AddView2Dsegmentation(segmentationID, UpperRight);
+		std::pair<QDockWidget*,QDockWidget*> dockAndCompliment =
+			AddView2Dsegmentation(segmentationID, UpperRight);
 		AddView2Dsegmentation(segmentationID, LowerLeft);
-	}
 
-	AddView3D();
+		AddView3D();
+
+		// raise must be done after adding view3d (Qt timing reasons?)
+		dockAndCompliment.second->raise();
+
+	} else {
+		if(validChan){
+			AddView2Dchannel(channelID, UpperLeft);
+			AddView2Dchannel(channelID, UpperRight);
+			AddView2Dchannel(channelID, LowerLeft);
+		}
+		if(validSeg){
+			AddView2Dsegmentation(segmentationID, UpperLeft);
+			AddView2Dsegmentation(segmentationID, UpperRight);
+			AddView2Dsegmentation(segmentationID, LowerLeft);
+		}
+
+		AddView3D();
+	}
 }
 
 QList<QDockWidget*> ViewGroup::findDockWidgets(const QString& name){

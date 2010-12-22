@@ -46,8 +46,6 @@ public:
 
 		setOmniExecutablePath();
 
-		OmStateManager::setNoTilePrefetch(ZiARG_noTilePrefetch);
-
 		if(ZiARG_importHDF5seg.size() > 0){
 			return importHDF5seg();
 		}

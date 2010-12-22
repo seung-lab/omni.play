@@ -110,7 +110,8 @@ HEADERS +=  \
 	src/datalayer/upgraders/omUpgraders.hpp \
 	src/gui/cacheMonitorDialog.h \
 	src/gui/cacheMonitorWidget.h \
-	src/gui/groupsTable.h \
+	src/gui/groupsTable/dropdownMenuButton.hpp \
+	src/gui/groupsTable/groupsTable.h \
 	src/gui/guiUtils.hpp \
 	src/gui/inspectors/chanInspector.h \
 	src/gui/inspectors/filObjectInspector.h \
@@ -134,6 +135,7 @@ HEADERS +=  \
 	src/gui/mstViewer.hpp \
 	src/gui/myInspectorWidget.h \
 	src/gui/omImageDialog.h \
+	src/gui/preferences/checkboxHideCrosshairs.hpp \
 	src/gui/preferences/localPreferences2d.h \
 	src/gui/preferences/localPreferences3d.h \
 	src/gui/preferences/localPreferencesMeshing.h \
@@ -142,6 +144,7 @@ HEADERS +=  \
 	src/gui/preferences/preferences2d.h \
 	src/gui/preferences/preferences3d.h \
 	src/gui/preferences/preferencesMesh.h \
+	src/gui/preferences/spinBoxCrosshairOpeningSize.hpp \
 	src/gui/preferences/ui_preferences3d.h \
 	src/gui/recentFileList.h \
 	src/gui/segmentLists/details/segmentListBase.h \
@@ -153,16 +156,15 @@ HEADERS +=  \
 	src/gui/segmentLists/elementListBoxImpl.hpp \
 	src/gui/segmentLists/segmentListKeyPressEventListener.h \
 	src/gui/toolbars/dendToolbar/alphaVegasButton.hpp \
-	src/gui/toolbars/dendToolbar/autoBreakCheckbox.h \
 	src/gui/toolbars/dendToolbar/breakButton.h \
 	src/gui/toolbars/dendToolbar/breakThresholdGroup.h \
 	src/gui/toolbars/dendToolbar/cutButton.h \
 	src/gui/toolbars/dendToolbar/dendToolbar.h \
 	src/gui/toolbars/dendToolbar/displayTools/brightnessSpinBox.hpp \
 	src/gui/toolbars/dendToolbar/displayTools/contrastSpinBox.hpp \
-	src/gui/toolbars/dendToolbar/displayTools/gammaSpinBox.hpp \
 	src/gui/toolbars/dendToolbar/displayTools/displayTools.h \
 	src/gui/toolbars/dendToolbar/displayTools/dust3DthresholdGroup.hpp \
+	src/gui/toolbars/dendToolbar/displayTools/gammaSpinBox.hpp \
 	src/gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxBase.hpp \
 	src/gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxX.hpp \
 	src/gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxY.hpp \
@@ -178,6 +180,7 @@ HEADERS +=  \
 	src/gui/toolbars/dendToolbar/splitButton.h \
 	src/gui/toolbars/dendToolbar/thresholdGroup.h \
 	src/gui/toolbars/dendToolbar/validationGroup.h \
+	src/gui/toolbars/mainToolbar/filterToBlackCheckbox.hpp \
 	src/gui/toolbars/mainToolbar/filterWidget.hpp \
 	src/gui/toolbars/mainToolbar/filterWidgetImpl.hpp \
 	src/gui/toolbars/mainToolbar/mainToolbar.h \
@@ -192,9 +195,8 @@ HEADERS +=  \
 	src/gui/updateSegmentProperties.hpp \
 	src/gui/viewGroup.h \
 	src/gui/viewGroupWidgetInfo.h \
-	src/gui/widgets/omButton.h \
+	src/gui/widgets/omButton.hpp \
 	src/gui/widgets/omCheckBoxWidget.hpp \
-	src/gui/widgets/omCheckbox.h \
 	src/gui/widgets/omCursors.h \
 	src/gui/widgets/omDoubleSpinBox.hpp \
 	src/gui/widgets/omGroupListWidget.h \
@@ -259,6 +261,7 @@ HEADERS +=  \
 	src/system/cache/omCacheGroup.h \
 	src/system/cache/omCacheInfo.h \
 	src/system/cache/omCacheManager.h \
+	src/system/cache/omCacheManagerImpl.hpp \
 	src/system/cache/omHandleCacheMissTask.hpp \
 	src/system/cache/omLockedCacheObjects.hpp \
 	src/system/cache/omMeshCache.h \
@@ -281,7 +284,7 @@ HEADERS +=  \
 	src/system/omGenericManager.h \
 	src/system/omGroup.h \
 	src/system/omGroups.h \
-	src/system/omLocalPreferences.h \
+	src/system/omLocalPreferences.hpp \
 	src/system/omManageableObject.h \
 	src/system/omPreferenceDefinitions.h \
 	src/system/omPreferences.h \
@@ -325,6 +328,7 @@ HEADERS +=  \
 	src/utility/sortHelpers.h \
 	src/utility/stringHelpers.h \
 	src/view2d/details/omMidpointCircleAlgorithm.hpp \
+	src/view2d/om2dPreferences.hpp \
 	src/view2d/omDisplayInfo.hpp \
 	src/view2d/omKeyEvents.hpp \
 	src/view2d/omLineDraw.hpp \
@@ -338,7 +342,7 @@ HEADERS +=  \
 	src/view2d/omPointsInCircle.hpp \
 	src/view2d/omScreenPainter.hpp \
 	src/view2d/omScreenShotSaver.hpp \
-	src/view2d/omTileDrawer.hpp \
+	src/view2d/omTileDrawer.h \
 	src/view2d/omView2d.h \
 	src/view2d/omView2dConverters.hpp \
 	src/view2d/omView2dCore.h \
@@ -445,7 +449,7 @@ SOURCES +=  \
 	src/datalayer/omDataPaths.cpp \
 	src/gui/cacheMonitorDialog.cpp \
 	src/gui/cacheMonitorWidget.cpp \
-	src/gui/groupsTable.cpp \
+	src/gui/groupsTable/groupsTable.cpp \
 	src/gui/inspectors/chanInspector.cpp \
 	src/gui/inspectors/filObjectInspector.cpp \
 	src/gui/inspectors/inspectorProperties.cpp \
@@ -467,7 +471,6 @@ SOURCES +=  \
 	src/gui/recentFileList.cpp \
 	src/gui/segmentLists/details/segmentListBase.cpp \
 	src/gui/segmentLists/elementListBox.cpp \
-	src/gui/toolbars/dendToolbar/autoBreakCheckbox.cpp \
 	src/gui/toolbars/dendToolbar/breakButton.cpp \
 	src/gui/toolbars/dendToolbar/cutButton.cpp \
 	src/gui/toolbars/dendToolbar/dendToolbar.cpp \

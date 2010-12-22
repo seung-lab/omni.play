@@ -3,7 +3,7 @@
 
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/validationGroup.h"
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 #include "actions/omActions.hpp"
 #include "system/omEvents.h"
 

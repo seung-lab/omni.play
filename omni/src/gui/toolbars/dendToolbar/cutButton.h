@@ -1,7 +1,7 @@
 #ifndef CUT_BUTTON_H
 #define CUT_BUTTON_H
 
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 
 class GraphTools;
 

@@ -1,7 +1,7 @@
 #ifndef OPEN_VIEW_GROUP_BUTTON_H
 #define OPEN_VIEW_GROUP_BUTTON_H
 
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 
 class MainWindow;
 

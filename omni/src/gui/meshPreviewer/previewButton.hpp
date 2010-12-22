@@ -1,7 +1,7 @@
 #ifndef PREVIEW_BUTTON_HPP
 #define PREVIEW_BUTTON_HPP
 
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 
 class PreviewButton : public OmButton<MeshPreviewerImpl> {

@@ -4,7 +4,7 @@
 #include "mesh/omVolumeCuller.h"
 #include "project/omProject.h"
 #include "segment/omSegmentSelected.hpp"
-#include "system/omLocalPreferences.h"
+#include "system/omLocalPreferences.hpp"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"

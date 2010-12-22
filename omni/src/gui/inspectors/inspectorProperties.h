@@ -4,7 +4,6 @@
 #include <QtGui>
 #include <QWidget>
 
-class UpdateSegmentPropertiesDialog;
 class OmViewGroupState;
 
 class InspectorProperties : public QDialog{
@@ -23,10 +22,9 @@ public slots:
 	void closeDialog();
 
 private:
+	OmViewGroupState * mViewGroupState;
 	QWidget* mWidget;
 	QVBoxLayout *mainLayout;
-	OmViewGroupState * mViewGroupState;
-	UpdateSegmentPropertiesDialog* uspd_;
 };
 
 #endif

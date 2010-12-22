@@ -14,6 +14,7 @@ private:
 	boost::shared_ptr<OmTileCacheImpl> impl_;
 
 public:
+	static void Delete();
 	static void Reset();
 
 	static void RegisterDrawer(OmTileDrawer*);

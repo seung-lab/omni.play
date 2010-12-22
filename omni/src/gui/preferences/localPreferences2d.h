@@ -3,18 +3,12 @@
 
 #include <QtGui>
 
-class LocalPreferences2d : public QWidget
-{
-    Q_OBJECT
-
- public:
+class LocalPreferences2d : public QWidget{
+Q_OBJECT
+public:
 	LocalPreferences2d(QWidget *parent);
 
- private slots:
-
- private:
+private:
  	QGroupBox* makeGeneralPropBox();
-
-	QCheckBox* showCrosshairsCheckbox_;
 };
 #endif

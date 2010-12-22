@@ -5,7 +5,7 @@
 #include "mesh/omMipMeshCoord.h"
 #include "mesh/omMipMeshManager.h"
 #include "project/omProject.h"
-#include "system/omLocalPreferences.h"
+#include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
 #include "volume/omChannel.h"
 #include "volume/omMipChunkCoord.h"

@@ -32,7 +32,7 @@ public:
 
 // segment-related
 	static void ValidateSegment(const SegmentDataWrapper& sdw,
-								const om::SetValid valid);
+								const om::SetValid valid, const bool dontCenter=false);
 
 	static void ValidateSelectedSegments(const SegmentationDataWrapper& sdw,
 										 const om::SetValid valid);
@@ -57,7 +57,8 @@ public:
 							   void* sender,
 							   const std::string & comment,
 							   const bool doScroll,
-							   const bool addToRecentList);
+							   const bool addToRecentList,
+							   const bool center=false);
 
 // group-related
 	static void CreateOrDeleteSegmentGroup(const OmID segmentationID,

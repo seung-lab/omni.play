@@ -9,7 +9,6 @@
 #include "segment/omSegmentCache.h"
 #include "system/omEvents.h"
 #include "system/omGarbage.h"
-#include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "view3d/om3dPreferences.hpp"

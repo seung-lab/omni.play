@@ -7,8 +7,7 @@
 
 OmCacheGroup::OmCacheGroup()
 	: mMaxSize(0)
-{
-}
+{}
 
 void OmCacheGroup::Clear()
 {
@@ -60,7 +59,7 @@ int OmCacheGroup::Clean()
 		curSize += cache->GetCacheSize();
 	}
 
-	if(curSize < mMaxSize){
+	if(!curSize){
 		return 0;
 	}
 
@@ -71,14 +70,32 @@ int OmCacheGroup::Clean()
 		  << "\n";
 
 	int numItemsRemoved = 0;
-	for(int count = 0; count < 200; count++) {
-		foreach( OmCacheBase * cache, mCacheSet ) {
+
+	// clear old data being held onto by cache; don't remove oldest
+	foreach(OmCacheBase* cache, mCacheSet) {
+		if(OmCacheManager::AmClosingDown()){
+			return numItemsRemoved;
+		}
+
+		uint64_t oldCacheSize = cache->GetCacheSize();
+		numItemsRemoved += cache->Clean(false);
+		curSize -= (oldCacheSize - cache->GetCacheSize());
+	}
+
+	if(curSize < mMaxSize){
+		return 0;
+	}
+
+	// remove oldest items
+	static const int numCycles = 200;
+	for(int count = 0; count < numCycles; ++count) {
+		foreach(OmCacheBase* cache, mCacheSet){
 			if(OmCacheManager::AmClosingDown()){
 				return numItemsRemoved;
 			}
 
 			uint64_t oldCacheSize = cache->GetCacheSize();
-			numItemsRemoved += cache->Clean();
+			numItemsRemoved += cache->Clean(true);
 			curSize -= (oldCacheSize - cache->GetCacheSize());
 
 			if(curSize < mMaxSize){

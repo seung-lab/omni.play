@@ -207,9 +207,8 @@ SegmentationDataWrapper SegmentListBase::dealWithSegmentObjectModificationEvent(
 	}
 
  	if(newsdw.IsSegmentationValid()){
-		const OmSegIDsSet& sel =
-			newsdw.GetSegmentCache()->GetSelectedSegmentIds();
-		if(1 == sel.size()){
+		//printf("centering... %i, scroll %i\n", event->getCenter(), doScroll);
+		if(event->getCenter() || !doScroll){
 			OmSegmentUtils::CenterSegment(vgs_, newsdw);
 		}
 	}

@@ -1,7 +1,7 @@
 #ifndef BREAK_BUTTON_H
 #define BREAK_BUTTON_H
 
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 class GraphTools;
 
 class BreakButton : public OmButton<GraphTools> {

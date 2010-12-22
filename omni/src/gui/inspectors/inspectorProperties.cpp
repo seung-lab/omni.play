@@ -2,11 +2,12 @@
 #include "viewGroup/omViewGroupState.h"
 #include "gui/updateSegmentProperties.hpp"
 
-InspectorProperties::InspectorProperties(QWidget *parent, OmViewGroupState * vgs)
-	: QDialog(parent), mViewGroupState(vgs)
+InspectorProperties::InspectorProperties(QWidget* parent,
+										 OmViewGroupState* vgs)
+	: QDialog(parent)
+	, mViewGroupState(vgs)
+	, mWidget(NULL)
 {
-	mWidget = NULL;
-
 	mainLayout = new QVBoxLayout();
 	setLayout(mainLayout);
 
@@ -15,7 +16,8 @@ InspectorProperties::InspectorProperties(QWidget *parent, OmViewGroupState * vgs
 	UpdateSegmentPropertiesDialog::SetInspectorProperties(this);
 }
 
-void InspectorProperties::setOrReplaceWidget(QWidget *incomingWidget, const QString title)
+void InspectorProperties::setOrReplaceWidget(QWidget *incomingWidget,
+											 const QString title)
 {
 	if( mWidget != NULL ){
 		mainLayout->removeWidget( mWidget );
@@ -35,12 +37,10 @@ void InspectorProperties::setOrReplaceWidget(QWidget *incomingWidget, const QStr
 	}
 }
 
-void InspectorProperties::closeDialog()
-{
+void InspectorProperties::closeDialog(){
 	QDialog::done(0);
 }
 
-OmViewGroupState * InspectorProperties::getViewGroupState()
-{
+OmViewGroupState* InspectorProperties::getViewGroupState(){
 	return mViewGroupState;
 }

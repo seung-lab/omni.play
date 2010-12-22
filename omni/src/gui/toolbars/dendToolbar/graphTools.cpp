@@ -1,4 +1,3 @@
-#include "gui/toolbars/dendToolbar/autoBreakCheckbox.h"
 #include "gui/toolbars/dendToolbar/breakButton.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
@@ -14,7 +13,6 @@
 GraphTools::GraphTools(DendToolBar * d)
 	: OmWidget(d)
 	, mParent(d)
-	, autoBreakCheckbox(new AutoBreakCheckbox(this))
 	, splitButton(new SplitButton(this))
 	, cutButton(new CutButton(this))
 {
@@ -29,7 +27,6 @@ GraphTools::GraphTools(DendToolBar * d)
 	box2->addWidget(new JoinButton(this), 0, 0, 1, 1);
 	box2->addWidget(splitButton, 0, 1, 1, 1);
 	box2->addWidget(cutButton, 1, 0, 1, 1);
-	autoBreakCheckbox->hide();
 	box2->addWidget(new BreakButton(this), 1, 1, 1, 1);
 
 	box->addWidget(breakThresholdBox());

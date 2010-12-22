@@ -56,25 +56,19 @@ public:
 
 		//if source data valid
 		if (!IsSourceValid()) {
-			// printf("OmMipVolume::Build: blank build complete\n");
-			vol_->SetBuildState(MIPVOL_BUILT);
-			return;
+			throw OmIoException("source files not found");
 		}
 
 		//copy source data
 		if (!ImportSourceData(dataset)) {
-			DeleteVolumeData();
-			vol_->SetBuildState(MIPVOL_UNBUILT);
-			return;
+			throw OmIoException("could not import source files");
 		}
 
 		vol_->getVolData()->downsample(vol_);
 
 		//build volume
 		if (!BuildThreadedVolume()) {
-			DeleteVolumeData();
-			vol_->SetBuildState(MIPVOL_UNBUILT);
-			return;
+			throw OmIoException("volume build failed");
 		}
 
 		//build complete

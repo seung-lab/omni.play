@@ -17,7 +17,7 @@ class OmSegmentEvent : public OmEvent {
  public:
 	OmSegmentEvent(QEvent::Type type);
 	OmSegmentEvent(QEvent::Type type, const SegmentDataWrapper& sdw,
-				   void*, std::string, const bool );
+				   void*, std::string, const bool, const bool center=false);
 
 	void Dispatch(OmEventListener *);
 
@@ -45,11 +45,16 @@ class OmSegmentEvent : public OmEvent {
 		return mDoScroll;
 	}
 
+	bool getCenter() const {
+		return mCenter;
+	}
+
  private:
 	SegmentDataWrapper sdw_;
 	void* mSender;
 	std::string mComment;
 	bool mDoScroll;
+	bool mCenter;
 };
 
 class OmSegmentEventListener : public OmEventListener {

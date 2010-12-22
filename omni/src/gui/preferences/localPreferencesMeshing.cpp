@@ -2,7 +2,7 @@
 #include "localPreferencesMeshing.h"
 #include "gui/guiUtils.hpp"
 #include "common/omDebug.h"
-#include "system/omLocalPreferences.h"
+#include "system/omLocalPreferences.hpp"
 
 LocalPreferencesMeshing::LocalPreferencesMeshing(QWidget * parent)
  : QWidget(parent)

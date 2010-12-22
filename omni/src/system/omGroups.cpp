@@ -2,17 +2,14 @@
 #include "system/omGroup.h"
 #include "system/omGroups.h"
 #include "system/omManageableObject.h"
-#include "gui/groupsTable.h"
+#include "gui/groupsTable/groupsTable.h"
 
 OmGroups::OmGroups(OmSegmentation * seg)
 	: mSegmentation(seg)
-{
-	//debug(groups, "construting group for seg\n");
-}
+{}
 
 OmGroups::~OmGroups()
-{
-}
+{}
 
 OmGroup & OmGroups::AddGroup(OmGroupName name)
 {
@@ -30,7 +27,7 @@ OmGroup & OmGroups::AddGroup(OmGroupName name)
 void OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool add)
 {
 	printf("adding ids\n");
-	if(add) { 
+	if(add) {
 		group->AddIds(set);
 	} else {
 		group->RemoveIds(set);
@@ -55,7 +52,7 @@ void OmGroups::UnsetGroup(const OmSegIDsSet & set, OmGroupName name)
 	} else {
 		setGroupIDs(set, &GetGroup(name), false);
 	}
-	printf("!!!!!!!!!!!!!!!!!\n");
+
 	GroupsTable::Repopulate();
 }
 
@@ -85,10 +82,8 @@ OmGroupIDsSet OmGroups::GetGroups(OmSegID seg)
 	foreach(OmGroupID id, mGroupsByName) {
 		OmGroup & group = GetGroup(id);
 		OmSegIDsSet ids = group.GetIDs();
-		printf("searching %u for %u\n", id, seg);
 		if(ids.count(seg) > 0) {
 			set.insert(id);
-			printf("got %u\n", id);
 		}
 	}
 	return set;

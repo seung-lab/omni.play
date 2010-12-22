@@ -1,7 +1,7 @@
 #ifndef VOLUME_REFRESH_BUTTON_H
 #define VOLUME_REFRESH_BUTTON_H
 
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 
 class MainWindow;
 

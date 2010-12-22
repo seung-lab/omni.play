@@ -3,7 +3,7 @@
 
 #include "segment/io/omMST.h"
 #include "gui/inspectors/segmentation/segInspector.h"
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 #include "segment/omSegmentCache.h"
 #include "system/omProjectData.h"
 #include "utility/dataWrappers.h"

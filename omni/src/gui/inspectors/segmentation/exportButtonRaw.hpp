@@ -1,7 +1,7 @@
 #ifndef SEG_INSPECTOR_EXPORT_BUTTON_RAW_HPP
 #define SEG_INSPECTOR_EXPORT_BUTTON_RAW_HPP
 
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "utility/dataWrappers.h"
 

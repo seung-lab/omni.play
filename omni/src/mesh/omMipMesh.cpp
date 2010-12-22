@@ -4,7 +4,7 @@
 #include "mesh/omMipMeshManager.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
-#include "system/omLocalPreferences.h"
+#include "system/omLocalPreferences.hpp"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "system/omGarbage.h"

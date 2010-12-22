@@ -16,15 +16,17 @@
 
 class FilterWidgetImpl : public QSlider {
 Q_OBJECT
+
 private:
-	static const double delta_ = 0.05;
+	static const double delta_ = 0.1;
 
 public:
 	FilterWidgetImpl()
 		: QSlider(Qt::Horizontal)
+		, slideAlphaForward_(true)
 	{
 		QSize size = sizeHint();
-		size.setWidth(200);
+		size.setWidth(150);
 		setMaximumSize(size);
 
 		initSilderTab();
@@ -32,9 +34,52 @@ public:
 		connect(this, SIGNAL(valueChanged(int)),
 				this, SLOT(setFilAlpha(int)),
 				Qt::DirectConnection);
+
+		connect(this, SIGNAL(signalIncreaseAlpha()),
+				this, SLOT(increaseAlphaSlot()),
+				Qt::DirectConnection);
+
+		connect(this, SIGNAL(signalDecreaseAlpha()),
+				this, SLOT(decreaseAlphaSlot()),
+				Qt::DirectConnection);
+
+		connect(this, SIGNAL(signalCycleAlpha()),
+				this, SLOT(cycleAlphaSlot()),
+				Qt::DirectConnection);
 	}
 
-	void IncreaseAlpha()
+	void IncreaseAlpha(){
+		emit signalIncreaseAlpha();
+	}
+
+	void DecreaseAlpha(){
+		emit signalDecreaseAlpha();
+	}
+
+	void Cycle(){
+		emit signalCycleAlpha();
+	}
+
+signals:
+	void signalIncreaseAlpha();
+	void signalDecreaseAlpha();
+	void signalCycleAlpha();
+
+private slots:
+	void increaseAlphaSlot(){
+		increaseAlpha();
+	}
+
+	void decreaseAlphaSlot(){
+		decreaseAlpha();
+	}
+
+	void cycleAlphaSlot(){
+		cycle();
+	}
+
+private:
+	void increaseAlpha()
 	{
 		const boost::optional<double> alpha = doGetFilterAlpha();
 		if(!alpha){
@@ -50,7 +95,7 @@ public:
 		doSetFilterAlpha(newAlpha);
 	}
 
-	void DecreaseAlpha()
+	void decreaseAlpha()
 	{
 		const boost::optional<double> alpha = doGetFilterAlpha();
 		if(!alpha){
@@ -61,6 +106,29 @@ public:
 
 		if(newAlpha < 0){
 			newAlpha = 0;
+		}
+
+		doSetFilterAlpha(newAlpha);
+	}
+
+	bool slideAlphaForward_;
+
+	void cycle()
+	{
+		const boost::optional<double> alpha = doGetFilterAlpha();
+		if(!alpha){
+			return;
+		}
+
+		static const double jumpDistance = 0.6;
+
+		double newAlpha = 0;
+		if(slideAlphaForward_){
+			newAlpha = jumpDistance;
+			slideAlphaForward_ = false;
+		} else{
+			newAlpha = 0;
+			slideAlphaForward_ = true;
 		}
 
 		doSetFilterAlpha(newAlpha);
@@ -120,11 +188,8 @@ private:
 			OmFilter2d* filter = fdw.getFilter();
 			filter->SetAlpha(alpha);
 			moveSliderTab(alpha);
-			OmEvents::Redraw2d();
 		}
 	}
-
 };
-
 
 #endif

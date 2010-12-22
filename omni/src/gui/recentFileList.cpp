@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include "common/omDebug.h"
-#include "system/omLocalPreferences.h"
+#include "system/omLocalPreferences.hpp"
 
 /********************************************
  * helper class to track recently created/opened files

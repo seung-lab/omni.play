@@ -15,6 +15,7 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
 	, oldSelectedIDs(segmentCache_->GetSelectedSegmentIds())
 	, newSelectedIDs(oldSelectedIDs)
 	, mAddToRecentList(true)
+	, mAutoCenter(false)
 {}
 
 void OmSegmentSelector::selectNoSegments()
@@ -23,8 +24,9 @@ void OmSegmentSelector::selectNoSegments()
 }
 
 void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel,
-											   const bool isSelected )
+											   const bool isSelected, const bool center)
 {
+	mAutoCenter = center;
 	selectNoSegments();
 
 	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
@@ -50,8 +52,9 @@ void OmSegmentSelector::setSelectedSegment(const OmSegID segID)
 }
 
 void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
-											const bool isSelected )
+											const bool isSelected, const bool center )
 {
+	mAutoCenter = center;
 	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
 
 	if(!segID){
@@ -67,8 +70,9 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
 	setSelectedSegment(segID);
 }
 
-void OmSegmentSelector::selectJustThisSegment_toggle( const OmSegID segIDunknownLevel )
+void OmSegmentSelector::selectJustThisSegment_toggle( const OmSegID segIDunknownLevel, const bool center )
 {
+	mAutoCenter = center;
 	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
 	if(!segID){
 		return;
@@ -78,8 +82,9 @@ void OmSegmentSelector::selectJustThisSegment_toggle( const OmSegID segIDunknown
 	selectJustThisSegment( segID, !isSelected );
 }
 
-void OmSegmentSelector::augmentSelectedSet_toggle( const OmSegID segIDunknownLevel )
+void OmSegmentSelector::augmentSelectedSet_toggle( const OmSegID segIDunknownLevel, const bool center )
 {
+	mAutoCenter = center;
 	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
 	if(!segID){
 		return;
@@ -101,7 +106,8 @@ bool OmSegmentSelector::sendEvent()
 							  mSender,
 							  mComment,
 							  true,
-							  mAddToRecentList);
+							  mAddToRecentList,
+							  mAutoCenter);
 	return true;
 }
 

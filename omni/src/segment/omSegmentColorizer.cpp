@@ -68,9 +68,8 @@ void OmSegmentColorizer::doColorTile(uint32_t const*const d,
 	OmSegID lastVal = 0;
 
 	for(uint32_t i = 0; i < mNumElements; ++i ) {
-
 		colorMappedData[i].alpha = 255;
-
+			
 		if( d[i] == lastVal ){ // memoized previous, non-zero color
 			colorMappedData[i].red   = prevColor.red;
 			colorMappedData[i].green = prevColor.green;

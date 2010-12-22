@@ -106,10 +106,13 @@ void OmThreadedCache<KEY,PTR>::Remove(const KEY &key)
 }
 
 template <typename KEY, typename PTR>
-int OmThreadedCache<KEY,PTR>::Clean()
+int OmThreadedCache<KEY,PTR>::Clean(const bool okToRemoveOldest)
 {
 	if(cachesToClean_->empty()){
-		return removeOldest();
+		if(okToRemoveOldest){
+			return removeOldest();
+		}
+		return 0;
 	}
 
 	// avoid contention on cacheToClean by swapping in new, empty list

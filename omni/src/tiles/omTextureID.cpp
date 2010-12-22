@@ -5,16 +5,14 @@
 #include "volume/omVolume.h"
 
 OmTextureID::OmTextureID()
-	: textureID_(0)
-	, dims_(Vector2i(0,0))
+	: dims_(Vector2i(0,0))
 	, flag_(OMTILE_COORDINVALID)
 	, numBytes_(0)
 {}
 
 OmTextureID::OmTextureID(const Vector2i& dims,
 						 boost::shared_ptr<uint8_t> data)
-	: textureID_(0)
-	, dims_(dims)
+	: dims_(dims)
 	, flag_(OMTILE_NEEDTEXTUREBUILT)
 	, numBytes_(dims_.x * dims_.y * sizeof(uint8_t))
 	, tileData_(data)
@@ -22,8 +20,7 @@ OmTextureID::OmTextureID(const Vector2i& dims,
 
 OmTextureID::OmTextureID(const Vector2i& dims,
 						 boost::shared_ptr<OmColorRGBA> data)
-	: textureID_(0)
-	, dims_(dims)
+	: dims_(dims)
 	, flag_(OMTILE_NEEDCOLORMAP)
 	, numBytes_(dims_.x * dims_.y * sizeof(OmColorRGBA))
 	, tileData_(data)
@@ -31,7 +28,9 @@ OmTextureID::OmTextureID(const Vector2i& dims,
 
 OmTextureID::~OmTextureID()
 {
-	OmGarbage::assignOmTextureId(textureID_);
+	if(textureID_){
+		OmGarbage::assignOmTextureId(*textureID_);
+	}
 
 	// data now in OpenGL texture; will be garbage collected via
 	//  OmGarbage getting called from main GUI thread
@@ -45,7 +44,7 @@ public:
 		return d.get();
 	}
 };
-void* OmTextureID::getTileData() const
+void* OmTextureID::GetTileData() const
 {
 	return boost::apply_visitor(GetTileDataVisitor(),
 				    tileData_);

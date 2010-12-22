@@ -8,36 +8,45 @@
  */
 
 #include "system/omManageableObject.h"
+#include "utility/channelDataWrapper.hpp"
+#include "utility/segmentationDataWrapper.hpp"
 
 class OmMipVolume;
-class SegmentationDataWrapper;
 
 class OmFilter2d : public OmManageableObject {
 public:
 	OmFilter2d();
-	OmFilter2d(OmID);
+	OmFilter2d(const OmID);
 
 	std::string GetName(){
 		return "filter" + om::NumToStr(GetID());
 	}
 
-	void SetAlpha(const double);
-	double GetAlpha();
+	void SetAlpha(const double alpha){
+		mAlpha = alpha;
+	}
+	double GetAlpha(){
+		return mAlpha;
+	}
 
-	SegmentationDataWrapper GetSegmentationWrapper() const;
 	void SetSegmentation(const OmID id);
+	const SegmentationDataWrapper& GetSegmentationWrapper() const{
+		return sdw_;
+	}
 
-	OmID GetChannel();
 	void SetChannel(const OmID id);
+	const ChannelDataWrapper& GetChannelDataWrapper() const{
+		return cdw_;
+	}
 
-	bool setupVol();
-	OmMipVolume* getVolume(){ return vol_; }
+	bool HasValidVol();
+	OmMipVolume* GetMipVolume();
 
 private:
 	double mAlpha;
-	OmID mChannel;
-	OmID mSeg;
-	OmMipVolume* vol_;
+
+	ChannelDataWrapper cdw_;
+	SegmentationDataWrapper sdw_;
 
 	friend QDataStream &operator<<(QDataStream&, const OmFilter2d&);
 	friend QDataStream &operator>>(QDataStream&, OmFilter2d&);

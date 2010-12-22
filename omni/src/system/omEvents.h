@@ -14,7 +14,7 @@ class OmEvents {
 	static void SegmentModified(const SegmentDataWrapper& sdw,
 								void* sender,
 								std::string comment,
-								const bool doScroll);
+								const bool doScroll, const bool center=false);
 	static void ViewCenterChanged();
 	static void View3dRecenter();
 	static void ViewBoxChanged();

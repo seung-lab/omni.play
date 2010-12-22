@@ -18,7 +18,7 @@ public:
 						  void* sender,
 						  const std::string & comment,
 						  const bool doScroll,
-						  const bool addToRecentList);
+						  const bool addToRecentList, const bool center=false);
 private:
 	void Action();
 	void UndoAction();

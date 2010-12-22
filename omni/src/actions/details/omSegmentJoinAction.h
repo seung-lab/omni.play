@@ -13,8 +13,9 @@ class OmSegmentJoinActionImpl;
 class OmSegmentJoinAction : public OmAction {
 
 public:
-        OmSegmentJoinAction(boost::shared_ptr<OmSegmentJoinActionImpl> impl) : impl_(impl) {}
-
+	OmSegmentJoinAction(boost::shared_ptr<OmSegmentJoinActionImpl> impl)
+		: impl_(impl)
+	{}
 	OmSegmentJoinAction( const OmID, const OmSegIDsSet&);
 
 private:

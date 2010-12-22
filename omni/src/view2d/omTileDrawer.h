@@ -1,5 +1,5 @@
-#ifndef OM_TILE_DRAWER_HPP
-#define OM_TILE_DRAWER_HPP
+#ifndef OM_TILE_DRAWER_H
+#define OM_TILE_DRAWER_H
 
 #include "tiles/omTileTypes.hpp"
 
@@ -10,7 +10,7 @@ class OmFilter2d;
 class OmTileDrawer{
 public:
 	OmTileDrawer(boost::shared_ptr<OmView2dState> v2ds,
-		     const ViewType vt);
+				 const ViewType vt);
 	~OmTileDrawer();
 
 	void FullRedraw2d();
@@ -42,7 +42,7 @@ private:
 
 	void determineWhichTilesToDraw(OmMipVolume* vol);
 	void draw(OmMipVolume* vol);
-	void drawFromFilter(OmFilter2d& filter);
+	bool drawFromFilter(OmFilter2d& filter);
 
 	OmTileCoordsAndLocationsPtr
 	getTileCoordsAndLocationsForCurrentScene(OmMipVolume* vol);
@@ -50,11 +50,9 @@ private:
 	void drawTiles();
 	void drawTile(const OmTileAndVertices& tv);
 
-	void bindTileDataToGLid(const OmTextureIDPtr&);
 	void doBindTileDataToGLid(const OmTextureIDPtr&);
 
-	void setupGLblendColor(const float alpha);
-	void teardownGLblendColor();
+	void setupGLblendColor(const float alpha, const bool);
 
 #ifdef WIN32
 	typedef void (*GLCOLOR)(GLfloat, GLfloat, GLfloat, GLfloat);

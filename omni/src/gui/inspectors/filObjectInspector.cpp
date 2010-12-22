@@ -56,7 +56,7 @@ void FilObjectInspector::set_initial_values()
 	OmFilter2d & filter = OmProject::GetChannel(mChannelID).GetFilter(mFilterID);
 
 	alphaSlider->setValue(filter.GetAlpha() * 100);
-	chanEdit->setText(QString::number(filter.GetChannel()));
+	chanEdit->setText(QString::number(filter.GetChannelDataWrapper().GetChannelID()));
 	segEdit->setText(QString::number(filter.GetSegmentationWrapper().GetSegmentationID()));
 }
 

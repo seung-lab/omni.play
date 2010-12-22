@@ -13,11 +13,11 @@ class OmSegmentSelector {
 					  void* sender,
 					  const std::string & cmt );
 
-	void selectJustThisSegment( const OmSegID segID, const bool isSelected );
-	void augmentSelectedSet( const OmSegID segID, const bool isSelected );
+	void selectJustThisSegment( const OmSegID segID, const bool isSelected, const bool center=false );
+	void augmentSelectedSet( const OmSegID segID, const bool isSelected, const bool center=false );
 
-	void selectJustThisSegment_toggle( const OmSegID segID );
-	void augmentSelectedSet_toggle( const OmSegID segID );
+	void selectJustThisSegment_toggle( const OmSegID segID, const bool center=false );
+	void augmentSelectedSet_toggle( const OmSegID segID, const bool center=false );
 
 	bool sendEvent();
 	void selectNoSegments();
@@ -37,6 +37,8 @@ private:
 	bool mAddToRecentList;
 
 	void setSelectedSegment(const OmSegID segID);
+
+	bool mAutoCenter;
 };
 
 #endif

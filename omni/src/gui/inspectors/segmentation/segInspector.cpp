@@ -10,7 +10,7 @@
 #include "gui/inspectors/segmentation/meshPreviewButton.hpp"
 #include "gui/inspectors/volInspector.h"
 #include "gui/myInspectorWidget.h"
-#include "system/omLocalPreferences.h"
+#include "system/omLocalPreferences.hpp"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "utility/sortHelpers.h"

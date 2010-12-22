@@ -1,13 +1,11 @@
 #include "system/omEvents.h"
 #include "system/omStateManager.h"
 #include "viewGroup/omViewGroupState.h"
-#include "view2d/omTileDrawer.hpp"
+#include "view2d/omTileDrawer.h"
 #include "tiles/cache/omTileCache.h"
 #include "view2d/omView2dCore.h"
 #include "view2d/omView2dState.hpp"
 #include "view2d/omLineDraw.hpp"
-
-#include <boost/make_shared.hpp>
 
 OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
 						   OmViewGroupState * vgs, const ViewType viewType,

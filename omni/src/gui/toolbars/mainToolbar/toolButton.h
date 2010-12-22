@@ -2,7 +2,7 @@
 #define TOOL_BUTTON_H
 
 #include "common/omCommon.h"
-#include "gui/widgets/omButton.h"
+#include "gui/widgets/omButton.hpp"
 
 class ToolButton : public OmButton<QWidget> {
 public:

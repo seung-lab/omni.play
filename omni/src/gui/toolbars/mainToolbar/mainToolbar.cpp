@@ -6,6 +6,7 @@
 #include "gui/toolbars/mainToolbar/refreshVolumeButton.h"
 #include "gui/toolbars/mainToolbar/saveButton.h"
 #include "system/omProjectData.h"
+#include "gui/toolbars/mainToolbar/filterToBlackCheckbox.hpp"
 
 MainToolbar::MainToolbar(MainWindow * mw)
 	: QWidget(mw)
@@ -28,6 +29,8 @@ MainToolbar::MainToolbar(MainWindow * mw)
 	addWidgetToToolbar(new QLabel("Alpha Level: ",this));
 	FilterWidget::Create();
 	addWidgetToToolbar(FilterWidget::Widget());
+
+	addWidgetToToolbar(new FilterToBlackCheckbox(this));
 }
 
 void MainToolbar::addWidgetToToolbar( QWidget * widget )
