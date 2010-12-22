@@ -254,7 +254,7 @@ void OmSegmentGraph::updateSizeListsFromSplit(OmSegment* parent, OmSegment* chil
 	uint64_t newChildSize = computeSegmentSizeWithChildren(child->value());
 	getSegmentLists()->UpdateFromSplitWorking(root, child, newChildSize);
 	getSegmentLists()->UpdateFromSplitUncertain(root, child, newChildSize);
-	getSegmentLists()->UpdateFromSplitValid(root, child, newChildSize);
+//	getSegmentLists()->UpdateFromSplitValid(root, child, newChildSize);
 }
 
 quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )

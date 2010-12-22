@@ -7,6 +7,7 @@
 #include "view2d/omView2dState.hpp"
 #include "view2d/omView2dZoom.hpp"
 #include "viewGroup/omBrushSize.hpp"
+#include "segment/omSegmentUtils.hpp"
 
 #include <QKeyEvent>
 
@@ -40,9 +41,6 @@ public:
 		}
 		break;
 
-		case Qt::Key_R:
-			OmSegmentSelected::RandomizeColor();
-			break;
 		case Qt::Key_L:
 			state_->ToggleLevelLock();
 			v2d_->myUpdate();
@@ -66,6 +64,12 @@ public:
 			state_->SetPanDistance(current_pan.x + 5, current_pan.y);
 		}
 		break;
+        	case Qt::Key_C:
+        	{
+                	SegmentationDataWrapper sdw(1);
+                	OmSegmentUtils::CenterSegment(state_->getViewGroupState(), sdw);
+        	}
+                break;
 		case Qt::Key_Left:
 		{
 			const Vector2f current_pan = state_->ComputePanDistance();

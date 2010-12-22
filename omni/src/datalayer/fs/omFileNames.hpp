@@ -3,6 +3,7 @@
 
 #include "common/omDebug.h"
 #include "system/omProjectData.h"
+#include "volume/omMipChunkCoord.h"
 
 #include <QFile>
 #include <QDir>
@@ -37,6 +38,29 @@ public:
 		const QDir filesDir(MakeVolPath(vol));
 
 		const QString subPath("segments/");
+
+		const QString fullPath = filesDir.absolutePath() + QDir::separator() + subPath;
+
+		if(!filesDir.mkpath(subPath)){
+			throw OmIoException("could not create folder", fullPath);
+		}
+
+		return fullPath;
+	}
+
+	template <typename T>
+	static QString MakeVolMeshesPath(T* vol, const float threshold,
+									 const OmMipChunkCoord& coord)
+	{
+		const QDir filesDir(MakeVolPath(vol));
+
+		const QString subPath =
+			QString("meshes/%1/%2/%3/%4/%5/")
+			.arg(threshold)
+			.arg(coord.getLevel())
+			.arg(coord.getCoordinateX())
+			.arg(coord.getCoordinateY())
+			.arg(coord.getCoordinateZ());
 
 		const QString fullPath = filesDir.absolutePath() + QDir::separator() + subPath;
 

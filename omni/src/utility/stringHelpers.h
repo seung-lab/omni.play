@@ -13,12 +13,13 @@ class StringHelpers
 	static QString getStringFromStringList( const QStringList & data_set );
 
 	template <typename T>
-	static std::string commaDeliminateNum(const T num){
+	inline static std::string commaDeliminateNum(const T num){
 		return commaDeliminateNumQT(num).toStdString();
 	}
 
 	template <typename T>
-	static QString commaDeliminateNumQT(const T num){
+	inline static QString commaDeliminateNumQT(const T num)
+	{
 		const std::string rawNumAsStr = QString::number(num).toStdString();
 
 		size_t counter = 0;

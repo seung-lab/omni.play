@@ -78,6 +78,10 @@ public:
 		return reinterpret_cast<T*>(dataCharPtr + offset);
 	}
 
+	uint64_t FileSizeBytes() const {
+		return file_->size();
+	}
+
 	std::string GetBaseFileName() const {
 		return "\"" + QFileInfo(*file_).fileName().toStdString() + "\"";
 	}

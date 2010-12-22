@@ -91,6 +91,7 @@ HEADERS +=  \
 	src/datalayer/fs/omIOnDiskFile.h \
 	src/datalayer/fs/omMemMappedFileQT.hpp \
 	src/datalayer/fs/omMemMappedVolume.hpp \
+	src/datalayer/fs/omVecInFile.hpp \
 	src/datalayer/hdf5/omHdf5.h \
 	src/datalayer/hdf5/omHdf5FileUtils.hpp \
 	src/datalayer/hdf5/omHdf5Impl.h \
@@ -212,6 +213,10 @@ HEADERS +=  \
 	src/mainpage.h \
 	src/mesh/detail/MipChunkMeshCollector.hpp \
 	src/mesh/detail/TriStripCollector.hpp \
+	src/mesh/io/v2/omMeshChunkAllocTable.hpp \
+	src/mesh/io/v2/omMeshChunkTypes.h \
+	src/mesh/io/v2/omMeshData.hpp \
+	src/mesh/io/v2/omMeshIO.hpp \
 	src/mesh/omDrawOptions.h \
 	src/mesh/omMeshDrawer.h \
 	src/mesh/omMeshParams.hpp \
@@ -409,6 +414,8 @@ HEADERS +=  \
 	src/zi/watershed/MemMap.hpp \
 	src/zi/watershed/RawQuickieWS.h \
 	tests/cache/lockedObjectsTests.hpp \
+	tests/datalayer/omMeshChunkAllocTableTests.hpp \
+	tests/datalayer/vecInFileTests.hpp \
 	tests/fakeMemMapFile.hpp \
 	tests/segment/mockSegments.hpp \
 	tests/segment/omSegmentListBySizeTests.hpp \
@@ -647,7 +654,7 @@ CONFIG(release, debug|release) {
 # GCC Parallel Mode support
 linux-g++ {
     system( g++ --version | grep -e "4.[3-9]" ) {
-        message( g++ Parallel Mode supported (probably) )
+        message( assuming g++ Parallel Mode supported )
         QMAKE_CXXFLAGS += -DZI_USE_OPENMP -fopenmp
         QMAKE_LFLAGS   += -DZI_USE_OPENMP -fopenmp
     }

@@ -190,6 +190,14 @@ public:
 	inline void RandomizeColor() const {
 		getSegment()->reRandomizeColor();
 	}
+
+	friend std::ostream& operator<<(std::ostream &out,
+									const SegmentDataWrapper& s)
+	{
+		out << "(segmentation " << s.segmentationID_
+			<< ", segment " << s.segmentID_ << ")";
+		return out;
+	}
 };
 
 #endif

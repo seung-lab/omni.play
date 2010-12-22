@@ -6,6 +6,8 @@
 #include "mesh/omMipMeshManager.h"
 #include "TriStripCollector.hpp"
 
+#include "mesh/io/v2/omMeshIO.hpp"
+
 #include <zi/bits/cstdint.hpp>
 #include <zi/bits/unordered_map.hpp>
 #include <zi/bits/shared_ptr.hpp>

@@ -18,7 +18,7 @@ void OmSegment::setParent(OmSegment* parent, const double threshold)
 ///////         Color
 void OmSegment::RandomizeColor()
 {
-	data_->color = OmRand::GetRandomColor();
+	data_->color = OmRand::GetRandomColor(data_->color);
 
 	debugs(segmentBuild) << "final color values: "
 						 << (int)data_->color.red << ","

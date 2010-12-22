@@ -359,6 +359,12 @@ sub omni {
 sub stxxl {
     my $args = "";
     prepareAndBuild( "stxxl-1.3.0", "stxxl", $args );
+
+#USE_BOOST	?= no
+#USE_MACOSX	?= no
+#USE_PMODE	?= yes
+#COMPILER_GCC	?= g++-4.4
+#make.settings.local
 }
 
 sub printTitle {

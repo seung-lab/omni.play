@@ -66,6 +66,7 @@ private:
 
 		boost::shared_ptr<OmValidGroupNum>& validGroupNum
 			= sdw_.GetValidGroupNum();
+
 		validGroupNum->Set(sdw_, selectedSegments_, valid_);
 
 		printf("done (%.2g secs)\n", timer.s_elapsed());
