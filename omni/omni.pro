@@ -670,6 +670,11 @@ CONFIG(release, debug|release) {
     QMAKE_LFLAGS   += -DNDEBUG
 }
 
+CONFIG(debug, debug|release) {
+    message ( in debug mode; adding gstabs+ )
+    QMAKE_CXXFLAGS += -gstabs+
+    QMAKE_LFLAGS   += -gstabs+
+}
 
 # GCC Parallel Mode support
 linux-g++ {
