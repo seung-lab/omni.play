@@ -5,9 +5,11 @@
 #include <QFileInfo>
 
 OmIDataReader* OmDataLayer::getReader(const std::string& fileNameAndPath,
-									  const bool readOnly)
+									  const bool readOnly,
+									  const om::Affinity aff)
 {
-	return OmHdf5::getHDF5(fileNameAndPath, readOnly);
+	printf("should be 1: %i\n", !om::NO_AFFINITY == aff);
+	return OmHdf5::getHDF5(fileNameAndPath, readOnly, aff);
 }
 
 OmIDataWriter* OmDataLayer::getWriter(const std::string& fileNameAndPath,

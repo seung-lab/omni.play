@@ -2,14 +2,13 @@
 #define MESH_ZIMESHER_H_
 
 #include "common/omCommon.h"
-#include "detail/MipChunkMeshCollector.hpp"
-#include "detail/TriStripCollector.hpp"
+#include "mesh/detail/MipChunkMeshCollector.hpp"
+#include "mesh/detail/TriStripCollector.hpp"
+#include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/omMeshParams.hpp"
-#include "project/omProject.h"
 #include "utility/omLockedPODs.hpp"
 #include "volume/omMipChunk.h"
 #include "volume/omMipChunkCoord.h"
-#include "volume/omMipVolume.h"
 #include "volume/omSegmentation.h"
 
 #include <zi/vl/vec.hpp>
@@ -23,56 +22,92 @@
 
 #include "zi/omThreads.h"
 
-class OmMipMeshManager;
-
 class ziMesher
 {
+private:
+	static const int numberParallelChunks = 5;
+
+    int getQueueSize() const
+    {
+        //TODO: retrieve from omLocalPreferences? (purcaro)
+        //Update by aleks: this actually shouldn't be too big, since
+        // each thread eats a lot of memory (pre loads the data)
+        const int idealNum = zi::system::cpu_count / 2;
+        printf("ziMesher: will use %d threads\n", idealNum);
+        return idealNum;
+    }
+
 public:
-    ziMesher( const OmID &segId, OmMipMeshManager *mmManager, int rootLevel )
-        : segmentationId_(segId),
-          mipMeshManager_(mmManager),
-          rootMipLevel_(rootLevel),
+    ziMesher( OmSegmentation* segmentation)
+        : segmentation_(segmentation),
           levelZeroChunks_(),
-          chunkCollectors_()
+          chunkCollectors_(),
+		  meshWriter_(boost::make_shared<OmMeshWriterV2>(segmentation_))
     {
     }
+
+	~ziMesher()
+	{
+	}
 
     void addChunkCoord( const OmMipChunkCoord &c )
     {
         levelZeroChunks_.push_back(c);
     }
 
-	void mesh(){
+	void mesh()
+	{
 		init();
+
+		meshWriter_->Stop();
+
+		segmentation_->MeshManager()->Metadata()->SetMeshedAndStorageAsChunkFiles();
 	}
 
-    LockedInt64 numOfChunksToProcess;
+	void MeshFullVolume()
+	{
+		rootMipLevel_ = segmentation_->GetRootMipLevel();
+
+		const Vector3i mc = segmentation_->MipLevelDimensionsInMipChunks(0);
+		for (int z = 0; z < mc.z; ++z) {
+			for (int y = 0; y < mc.y; ++y) {
+				for (int x = 0; x < mc.x; ++x) {
+					OmMipChunkCoord chunk_coord(0, x, y, z);
+					addChunkCoord(chunk_coord);
+				}
+			}
+		}
+		mesh();
+	}
 
 private:
 
-    OmID                           segmentationId_ ;
-    OmMipMeshManager*              mipMeshManager_ ;
+	OmSegmentation*                segmentation_;
     int                            rootMipLevel_   ;
     std::vector< OmMipChunkCoord > levelZeroChunks_;
 
     std::map< OmMipChunkCoord, std::vector< zi::shared_ptr< MipChunkMeshCollector > > > occurances_;
     std::map< OmMipChunkCoord, zi::shared_ptr< MipChunkMeshCollector > > chunkCollectors_;
 
+	boost::shared_ptr<OmMeshWriterV2> meshWriter_;
+
+    LockedInt64 numOfChunksToProcess_;
+
     void init()
     {
-        numOfChunksToProcess.set(levelZeroChunks_.size());
+        numOfChunksToProcess_.set(levelZeroChunks_.size());
 
         FOR_EACH( it, levelZeroChunks_ )
         {
             OmMipChunkCoord c = *it;
 
             OmMipChunkPtr chunk;
-            OmProject::GetSegmentation( segmentationId_ ).GetChunk( chunk, *it );
-            const OmSegIDsSet& idSet = chunk->GetDirectDataValues();
+            segmentation_->GetChunk( chunk, *it );
+            const OmSegIDsSet& idSet = chunk->GetUniqueSegIDs();
 
             chunkCollectors_.insert( std::make_pair( c, zi::shared_ptr< MipChunkMeshCollector >
                                                      ( new MipChunkMeshCollector
-                                                       ( segmentationId_, c, mipMeshManager_ ) )));
+                                                       ( c, meshWriter_) )));
 
             occurances_[ *it ].push_back( chunkCollectors_[ *it ] );
 
@@ -91,7 +126,7 @@ private:
                     chunkCollectors_.insert( std::make_pair
                                              ( c, zi::shared_ptr< MipChunkMeshCollector >
                                                ( new MipChunkMeshCollector
-                                                 ( segmentationId_, c, mipMeshManager_ ) )));
+                                                 ( c, meshWriter_ ) )));
                 }
 
                 FOR_EACH( cid, idSet )
@@ -106,7 +141,7 @@ private:
 
         }
 
-        zi::task_manager::simple manager( 3 );
+        zi::task_manager::simple manager( numberParallelChunks );
         manager.start();
 
         FOR_EACH( it, levelZeroChunks_ )
@@ -115,17 +150,6 @@ private:
         }
 
         manager.join();
-
-    }
-
-    int getQueueSize()
-    {
-        //TODO: retrieve from omLocalPreferences? (purcaro)
-        //Update by aleks: this actually shouldn't be too big, since
-        // each thread eats a lot of memory (pre loads the data)
-        int idealNum = zi::system::cpu_count;
-        printf("ziMesher: will use %d threads\n", idealNum);
-        return idealNum;
     }
 
 public:
@@ -166,10 +190,8 @@ public:
 
     void processChunk( OmMipChunkCoord coor )
     {
-        zi::task_manager::simple manager( getQueueSize() );
-
         OmMipChunkPtr chunk;
-        OmProject::GetSegmentation( segmentationId_ ).GetChunk( chunk, coor );
+		segmentation_->GetChunk( chunk, coor );
 
         AxisAlignedBoundingBox< int >   srcBbox = chunk->GetExtent();
         AxisAlignedBoundingBox< float > dstBbox = chunk->GetNormExtent();
@@ -195,8 +217,9 @@ public:
         zi::mesh::marching_cubes< int > cube_marcher;
         cube_marcher.marche( reinterpret_cast< const int* >( image_data ), 129, 129, 129 );
 
-        const OmSegIDsSet& idSet = chunk->GetDirectDataValues();
+        const OmSegIDsSet& idSet = chunk->GetUniqueSegIDs();
 
+        zi::task_manager::simple manager( getQueueSize() );
         manager.start();
 
         FOR_EACH( it, cube_marcher.meshes() )
@@ -223,9 +246,10 @@ public:
         cube_marcher.clear();
         manager.join();
 
-        numOfChunksToProcess.sub(1);
+        numOfChunksToProcess_.sub(1);
+
         std::cout << "finished chunk: " << coor << "; "
-                  << numOfChunksToProcess.get() << " chunks left\n";
+                  << numOfChunksToProcess_.get() << " chunks left\n";
     }
 
 };

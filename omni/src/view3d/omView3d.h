@@ -18,6 +18,7 @@
 #include <QtGui>
 
 class OmViewGroupState;
+class OmPercDone;
 
 class OmView3d : public QGLWidget,
 	public OmPreferenceEventListener,
@@ -26,13 +27,18 @@ class OmView3d : public QGLWidget,
 	public OmViewEventListener,
 	public OmView3dKeyPressEventListener
 {
-	Q_OBJECT
+Q_OBJECT
 
-  public:
+public:
+
 	OmView3d(QWidget *, OmViewGroupState * );
 	~OmView3d();
+
 	OmCamera& GetCamera();
 
+	const std::list<std::pair<float,float> >& PercVolDone() const {
+		return percVolDone_;
+	}
 
  protected:
 	//gl events
@@ -110,6 +116,9 @@ class OmView3d : public QGLWidget,
 
 	void initLights();
 	bool pickPoint(const Vector2i& point, std::vector<uint32_t>& names);
+
+	std::list<std::pair<float,float> > percVolDone_;
+	boost::shared_ptr<OmPercDone> percDoneWidget_;
 
 	friend class OmView3dUi;
 	friend class OmSelectionWidget;

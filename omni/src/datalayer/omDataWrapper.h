@@ -117,10 +117,15 @@ public:
         checkIfValid();
         return static_cast<C*>(ptr_.get());
     }
+
     void* getVoidPtr(){
         checkIfValid();
         return ptr_.get();
     }
+
+    boost::shared_ptr<T> Ptr(){
+		return ptr_;
+	}
 
     std::string getTypeAsString(){
         return OmVolumeTypeHelpers::GetTypeAsString(getVolDataType());

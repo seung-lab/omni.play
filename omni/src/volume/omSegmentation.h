@@ -10,15 +10,17 @@
 #include "volume/omMipVolume.h"
 #include "datalayer/omDataWrapper.h"
 #include "mesh/omMeshTypes.h"
+#include "common/om.hpp"
 
-class OmMipMeshManager;
 class OmGroups;
-class OmValidGroupNum;
 class OmMST;
-class OmUserEdges;
-class OmSegmentLists;
+class OmMeshDrawer;
+class OmMipMeshManager;
 class OmSegment;
 class OmSegmentCache;
+class OmSegmentLists;
+class OmUserEdges;
+class OmValidGroupNum;
 class OmViewGroupState;
 class OmVolumeCuller;
 class OmVolumeData;
@@ -39,6 +41,8 @@ public:
 	OmID getID(){ return GetID(); }
 	OmMipVolumeCache* getDataCache(){ return mDataCache; }
 	int GetBytesPerSample() const;
+        virtual om::Affinity GetAffinity() { return om::NO_AFFINITY; }
+
 
 	SegmentationDataWrapper getSDW() const;
 
@@ -58,10 +62,16 @@ public:
 		return mSegmentLists;
 	}
 
-	void GetMesh(OmMipMeshPtr& ptr, const OmMipChunkCoord&, const OmSegID );
+	OmMeshDrawer* MeshDrawer(){
+		return meshDrawer_.get();
+	}
+
+	void GetMesh(OmMipMeshPtr& ptr, const OmMipChunkCoord&, const OmSegID);
 
 	//group management
-	boost::shared_ptr<OmGroups> GetGroups(){ return mGroups; }
+	boost::shared_ptr<OmGroups> GetGroups(){
+		return mGroups;
+	}
 
 	void SetDendThreshold( double t );
 	double GetDendThreshold();
@@ -74,6 +84,9 @@ public:
 	}
 	boost::shared_ptr<OmValidGroupNum>& GetValidGroupNum(){
 		return validGroupNum_;
+	}
+	boost::shared_ptr<OmMipMeshManager>& MeshManager(){
+		return mMipMeshManager;
 	}
 
 	void UpdateVoxelBoundingData();
@@ -98,6 +111,7 @@ private:
 	boost::shared_ptr<OmUserEdges> mstUserEdges_;
 	boost::shared_ptr<OmMipMeshManager> mMipMeshManager;
 	boost::shared_ptr<OmValidGroupNum> validGroupNum_;
+	boost::shared_ptr<OmMeshDrawer> meshDrawer_;
 
 	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &,
 								   const bool rerootSegments);

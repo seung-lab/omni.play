@@ -22,8 +22,15 @@ class OmMipMeshCoord {
 	OmMipChunkCoord MipChunkCoord;
 	OmSegID DataValue;
 
-	friend QDataStream &operator<<(QDataStream & out, const OmMipMeshCoord & c );
-	friend QDataStream &operator>>(QDataStream & in, OmMipMeshCoord & c );
+	const OmMipChunkCoord& Coord() const {
+		return MipChunkCoord;
+	}
+
+	OmSegID SegID() const {
+		return DataValue;
+	}
+
+	friend std::ostream& operator<<(std::ostream &out, const OmMipMeshCoord &in);
 };
 
 #endif

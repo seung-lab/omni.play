@@ -6,7 +6,7 @@
 #include "system/omStateManager.h"
 #include "tiles/cache/omTileCacheChannel.hpp"
 #include "tiles/cache/omTileCacheSegmentation.hpp"
-#include "tiles/omTilePreFetcher.hpp"
+#include "tiles/omTilePreFetcher.h"
 #include "utility/omLockedPODs.hpp"
 #include "view2d/omTileDrawer.h"
 #include "view2d/omView2dState.hpp"
@@ -23,6 +23,10 @@ DECLARE_ZiARG_bool(noTilePrefetch);
 
 class OmTileCacheImpl {
 public:
+	~OmTileCacheImpl(){
+		preFetcher_->Shutdown();
+	}
+
 	void RegisterDrawer(OmTileDrawer* d){
 		drawersActive_[d] = false;
 	}
@@ -150,7 +154,7 @@ private:
 			return;
 		}
 
-		preFetcher_->StopTasks();
+		preFetcher_->ClearTasks();
 	}
 
 	void doGet(OmTilePtr& tile,

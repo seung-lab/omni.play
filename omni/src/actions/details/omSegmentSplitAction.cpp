@@ -11,14 +11,24 @@ OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 	SetUndoable(true);
 }
 
-void OmSegmentSplitAction::runIfSplittable( OmSegment * seg1, OmSegment * seg2 )
+OmSegmentSplitAction::OmSegmentSplitAction( const SegmentDataWrapper & sdw, const DataCoord coord1, const DataCoord coord2)
+	: impl_(boost::make_shared<OmSegmentSplitActionImpl>(sdw, coord1, coord2))
+{
+	SetUndoable(true);
+}
+
+void OmSegmentSplitAction::runIfSplittable( OmSegment * seg1, OmSegment * seg2, const DataCoord coord1, const DataCoord coord2 )
 {
 	SegmentationDataWrapper sdw(seg1);
+	if(seg1 == seg2) {
+		(new OmSegmentSplitAction(SegmentDataWrapper(seg1), coord1, coord2))->Run();
+		return;
+	}
+
 	OmSegmentEdge edge =
 		OmFindCommonEdge::FindClosestCommonEdge(sdw.GetSegmentCache(),
 												seg1,
 												seg2);
-
 	if(!edge.isValid()){
 		printf("edge was not splittable\n");
 		return;
@@ -53,18 +63,18 @@ void OmSegmentSplitAction::DoFindAndCutSegment(const SegmentDataWrapper& sdw,
 	OmSegment* seg1 = sdw.getSegment();
 	OmSegment* seg2 = seg1->getParent();
 
-	runIfSplittable(seg1, seg2);
+	runIfSplittable(seg1, seg2, DataCoord(), DataCoord());
 
 	vgs->SetCutMode(false);
 }
 
 //TODO: put this somewhere else...
 void OmSegmentSplitAction::DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
-												 OmViewGroupState* vgs)
+												 OmViewGroupState* vgs, const DataCoord coord)
 {
-	const std::pair<bool, SegmentDataWrapper> splittingAndSDW =
+	const std::pair<boost::optional<DataCoord>, SegmentDataWrapper> splittingAndSDW =
 		vgs->GetSplitMode();
-	const bool amAlreadySplitting = splittingAndSDW.first;
+	const boost::optional<DataCoord> amAlreadySplitting = splittingAndSDW.first;
 
 	if(amAlreadySplitting){
 
@@ -77,13 +87,13 @@ void OmSegmentSplitAction::DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
 			return;
 		}
 
-		runIfSplittable(seg1, seg2);
+		runIfSplittable(seg1, seg2, *amAlreadySplitting, coord);
 
 		vgs->SetSplitMode(false);
 
 	} else { // set segment to be split later...
 		if(sdw.IsSegmentValid()){
-			vgs->SetSplitMode(sdw);
+			vgs->SetSplitMode(sdw, coord);
 		}
 	}
 }

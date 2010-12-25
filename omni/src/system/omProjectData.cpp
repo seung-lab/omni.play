@@ -1,149 +1,71 @@
-#include "project/omProject.h"
-#include "common/omDebug.h"
-#include "common/omException.h"
-#include "datalayer/hdf5/omHdf5Manager.h"
-#include "datalayer/omDataLayer.h"
-#include "datalayer/omDataPath.h"
-#include "datalayer/omIDataReader.h"
-#include "datalayer/omIDataWriter.h"
-#include "segment/omSegment.h"
-#include "tiles/cache/omTileCache.h"
-#include "system/omPreferenceDefinitions.h"
 #include "system/omProjectData.h"
-#include "utility/fileHelpers.h"
-
-#include <QFile>
-#include <QFileInfo>
-
-//init instance pointer
-OmProjectData *OmProjectData::mspInstance = NULL;
+#include "project/omProject.h"
+#include "project/omProjectDataImpl.hpp"
 
 OmProjectData::OmProjectData()
-	: fileVersion_(0)
-	, mIsOpen(false)
-	, mIsReadOnly(false)
+	: impl_(boost::make_shared<OmProjectDataImpl>())
 {}
 
-void OmProjectData::instantiateProjectData(const std::string& fileNameAndPath )
-{
-	if (NULL != mspInstance) {
-		delete mspInstance;
-		mspInstance = new OmProjectData();
-	}
-
-	Instance()->setupDataLayer( fileNameAndPath );
+void OmProjectData::instantiateProjectData(const std::string& fileNameAndPath ){
+	instance().impl_->instantiateProjectData(fileNameAndPath);
 }
 
-OmProjectData *OmProjectData::Instance()
-{
-	if (NULL == mspInstance) {
-		mspInstance = new OmProjectData();
-	}
-	return mspInstance;
+void OmProjectData::Delete(){
+	instance().impl_.reset();
 }
 
-void OmProjectData::Delete()
-{
-	if (mspInstance){
-		delete mspInstance;
-	}
-	mspInstance = NULL;
-}
-
-QString OmProjectData::getFileNameAndPath()
-{
+QString OmProjectData::getFileNameAndPath(){
 	return OmProject::GetFileNameAndPath();
 }
 
-QString OmProjectData::getAbsoluteFileNameAndPath()
-{
+QString OmProjectData::getAbsoluteFileNameAndPath(){
 	return OmProject::GetFileNameAndPath();
 }
 
-QString OmProjectData::getAbsolutePath()
-{
+QString OmProjectData::getAbsolutePath(){
 	return OmProject::GetPath();
 }
 
-QDir OmProjectData::GetFilesFolderPath()
-{
-	if( "" == getAbsoluteFileNameAndPath()){
-		throw OmIoException("project file name not set");
-	}
-
-	return QDir(getAbsoluteFileNameAndPath() + ".files");
+const QDir& OmProjectData::GetFilesFolderPath(){
+	return instance().impl_->GetFilesFolderPath();
 }
 
-/////////////////////////////////
-///////          ProjectData Access
-
-void OmProjectData::Create()
-{
-	QFile projectFile(getFileNameAndPath());
-	if( projectFile.exists() ){
-		projectFile.remove();
-	}
-
-	QDir filesDir = GetFilesFolderPath();
-	const QString path = filesDir.absolutePath();
-	if(filesDir.exists()){
-		printf("removing folder %s...", qPrintable(path));
-		fflush(stdout);
-		if(FileHelpers::removeDir(path)){
-			printf("done!\n");
-		} else {
-			throw OmIoException("could not remove folder", path);
-		}
-	}
-
-	if(filesDir.mkpath(path)){
-		printf("made folder \"%s\"\n", qPrintable(path));
-	} else{
-		throw OmIoException("could not make folder", path);
-	}
-
-	Instance()->dataWriter->create();
+void OmProjectData::Create(){
+	instance().impl_->Create();
 }
 
-void OmProjectData::Open()
-{
-	Instance()->dataReader->open();
-	Instance()->mIsOpen = true;
+void OmProjectData::Open(){
+	instance().impl_->Open();
 }
 
-void OmProjectData::Close()
-{
-	if(!IsOpen()){
-		return;
-	}
-	Instance()->dataReader->close();
-	Instance()->mIsOpen = false;
+void OmProjectData::Close(){
+	instance().impl_->Close();
 }
 
-/**
- *	Deletes all data on disk associated with path if it exists.
- */
-void OmProjectData::DeleteInternalData(const OmDataPath & path)
-{
-	//TODO: mutex lock this?
-	if (OmProjectData::GetProjectIDataReader()->group_exists(path)) {
-		OmProjectData::GetIDataWriter()->group_delete(path);
-	}
+void OmProjectData::DeleteInternalData(const OmDataPath & path){
+	instance().impl_->DeleteInternalData(path);
 }
 
-OmIDataReader* OmProjectData::GetProjectIDataReader()
-{
-	return Instance()->dataReader;
+OmIDataReader* OmProjectData::GetProjectIDataReader(){
+	return instance().impl_->GetProjectIDataReader();
 }
 
-OmIDataWriter* OmProjectData::GetIDataWriter()
-{
-	return Instance()->dataWriter;
+OmIDataWriter* OmProjectData::GetIDataWriter(){
+	return instance().impl_->GetIDataWriter();
 }
 
-void OmProjectData::setupDataLayer(const std::string& fileNameAndPath)
-{
-	mIsReadOnly = FileHelpers::isFileReadOnly(fileNameAndPath);
-	dataReader = OmDataLayer::getReader(fileNameAndPath, mIsReadOnly);
-	dataWriter = OmDataLayer::getWriter(fileNameAndPath, mIsReadOnly);
+void OmProjectData::setFileVersion(const int fileVersion){
+	instance().impl_->setFileVersion(fileVersion);
+}
+
+bool OmProjectData::IsOpen(){
+	return instance().impl_->IsOpen();
+}
+
+bool OmProjectData::IsReadOnly(){
+	return instance().impl_->IsReadOnly();
+}
+
+int OmProjectData::getFileVersion(){
+	return instance().impl_->getFileVersion();
 }

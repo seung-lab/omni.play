@@ -11,9 +11,13 @@
 #include "volume/omMipChunkCoord.h"
 #include "volume/omSegmentation.h"
 
-std::string OmDataPaths::getDefaultHDF5channelDatasetName()
+std::string OmDataPaths::getDefaultHDF5channelDatasetName(const om::Affinity aff)
 {
-	return "chanSingle";
+	if(om::NO_AFFINITY == aff) {
+		return "chanSingle";
+	}
+
+	return "affGraphSingle";
 }
 
 OmDataPath OmDataPaths::getDefaultDatasetName()
@@ -35,19 +39,6 @@ OmDataPath OmDataPaths::getSegmentPagePath(const OmID segmentationID,
 			 % pageNum );
 
 	return OmDataPath(p);
-}
-
-std::string OmDataPaths::getMeshDirectoryPath(const OmMipMeshCoord& meshCoord,
-											  OmMipMeshManager* const mipMeshManager)
-{
-	const std::string p = str( boost::format("%1%/%2%_%3%_%4%/mesh/%5%/")
-							   % meshCoord.MipChunkCoord.Level
-							   % meshCoord.MipChunkCoord.Coordinate.x
-							   % meshCoord.MipChunkCoord.Coordinate.y
-							   % meshCoord.MipChunkCoord.Coordinate.z
-							   % meshCoord.DataValue);
-
-	return mipMeshManager->GetDirectoryPath() + p;
 }
 
 std::string OmDataPaths::getMeshFileName( const OmMipMeshCoord & meshCoord )

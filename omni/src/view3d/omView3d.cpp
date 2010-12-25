@@ -1,21 +1,22 @@
 #include "common/omDebug.h"
 #include "common/omGl.h"
-#include "mesh/omMeshDrawer.h"
+#include "mesh/drawer/omMeshDrawer.h"
 #include "mesh/omVolumeCuller.h"
 #include "project/omProject.h"
 #include "segment/omSegmentSelected.hpp"
+#include "segment/omSegmentUtils.hpp"
 #include "system/omLocalPreferences.hpp"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
 #include "view3d/omView3d.h"
+#include "view3d/omView3dKeyPressEventListener.h"
 #include "viewGroup/omViewGroupState.h"
 #include "widgets/omChunkExtentWidget.h"
 #include "widgets/omInfoWidget.h"
+#include "widgets/omPercDone.hpp"
 #include "widgets/omSelectionWidget.h"
 #include "widgets/omViewBoxWidget.h"
-#include "segment/omSegmentUtils.hpp"
-#include "view3d/omView3dKeyPressEventListener.h"
 
 DECLARE_ZiARG_bool(noView3dThrottle);
 
@@ -45,6 +46,8 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 	mView3dWidgetManager[VIEW3D_WIDGET_ID_VIEWBOX] = new OmViewBoxWidget(this, vgs);
 	mView3dWidgetManager[VIEW3D_WIDGET_ID_INFO] = new OmInfoWidget(this);
 	mView3dWidgetManager[VIEW3D_WIDGET_ID_CHUNK_EXTENT] = new OmChunkExtentWidget(this);
+
+	percDoneWidget_ = boost::make_shared<OmPercDone>(this);
 
 	//update enabled state of widgets
 	UpdateEnabledWidgets();
@@ -163,7 +166,7 @@ void OmView3d::myUpdate()
 
 void OmView3d::doTimedDraw()
 {
-	if (mElapsed->elapsed() > 5000) {
+	if (mElapsed->elapsed() > 1000) {
 		mElapsed->restart();
 		updateGL();
 	}
@@ -437,6 +440,8 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 	//apply camera modelview matrix
 	mCamera.ApplyModelview();
 
+	percVolDone_.clear();
+
 	//if drawing volumes
 	if (cullerOptions & DRAWOP_LEVEL_VOLUME) {
 
@@ -471,6 +476,9 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 	if (cullerOptions & DRAWOP_DRAW_WIDGETS) {
 		DrawWidgets();
 	}
+
+	percDoneWidget_->Draw();
+
 	//pop to init modelview
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
@@ -487,14 +495,25 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 	//setup culler to current projection-modelview matrix
 	OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
 						  mCamera.GetPosition(),
-						  mCamera.GetFocus(),
-						  cullerOptions);
+						  mCamera.GetFocus());
 
 	// Draw meshes!
-	FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
-		OmSegmentation* seg = &OmProject::GetSegmentation(*iter);
-		OmMeshDrawer drawer(seg, mViewGroupState);
-		drawer.Draw( culler );
+	FOR_EACH(iter, OmProject::GetValidSegmentationIds())
+	{
+		OmSegmentation& seg = OmProject::GetSegmentation(*iter);
+
+		boost::shared_ptr<OmVolumeCuller> newCuller =
+			culler.GetTransformedCuller(seg.GetNormToSpaceMatrix(),
+										seg.GetNormToSpaceInvMatrix());
+
+		OmMeshDrawer* meshDrawer = seg.MeshDrawer();
+
+		boost::optional<std::pair<float,float> > percVolDone =
+			meshDrawer->Draw(mViewGroupState, newCuller, cullerOptions);
+
+		if(percVolDone){
+			percVolDone_.push_back(*percVolDone);
+		}
 	}
 }
 

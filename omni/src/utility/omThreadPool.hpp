@@ -1,10 +1,13 @@
 #ifndef OM_THREAD_POOL_HPP
 #define OM_THREAD_POOL_HPP
 
+#include "common/om.hpp"
 #include "utility/details/omIThreadPool.h"
 #include "utility/details/omThreadPoolMock.hpp"
 #include "utility/details/omThreadPoolImpl.hpp"
 #include "utility/omSystemInformation.h"
+
+#include "utility/omThreadPoolManager.h"
 
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
@@ -14,8 +17,13 @@ private:
 	boost::shared_ptr<OmIThreadPool> impl_;
 
 public:
+	OmThreadPool(){
+		OmThreadPoolManager::Add(this);
+	}
+
 	virtual ~OmThreadPool(){
 		stop();
+		OmThreadPoolManager::Remove(this);
 	}
 
 	void start(){

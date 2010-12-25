@@ -1,6 +1,8 @@
 #ifndef OM_DATA_PATHS_H
 #define OM_DATA_PATHS_H
 
+#include "common/om.hpp"
+
 class OmChannel;
 class OmDataPath;
 class OmMipChunkCoord;
@@ -10,16 +12,13 @@ class OmSegmentation;
 
 class OmDataPaths {
 public:
-	static std::string getDefaultHDF5channelDatasetName();
+	static std::string getDefaultHDF5channelDatasetName(const om::Affinity aff = om::NO_AFFINITY);
 
 	static OmDataPath getDefaultDatasetName();
 	static OmDataPath getProjectArchiveNameQT();
 
 	static OmDataPath getSegmentPagePath( const OmID segmentationID,
 										  const quint32 pageNum );
-
-	static std::string getMeshDirectoryPath( const OmMipMeshCoord&,
-											 OmMipMeshManager *const );
 
 	static std::string getMeshFileName(const OmMipMeshCoord& meshCoord);
 	static std::string getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoord,

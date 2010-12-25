@@ -64,8 +64,9 @@ private:
 		if(!sdw) {
 			return;
 		}
-
-		OmActions::FindAndSplitSegments(*sdw, state_->getViewGroupState());
+                const DataCoord dataClickPoint =
+                        state_->ComputeMouseClickPointDataCoord(event);
+		OmActions::FindAndSplitSegments(*sdw, state_->getViewGroupState(), dataClickPoint);
 	}
 
 	void doFindAndCutSegment(QMouseEvent* event)
@@ -75,7 +76,6 @@ private:
                 if(!sdw) {
                         return;
                 }
-
                 OmActions::FindAndCutSegments(*sdw, state_->getViewGroupState());
         }
 
@@ -191,7 +191,9 @@ private:
 	{
 		boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
 		if(sdw){
-			mSegmentContextMenu.Refresh(*sdw, state_->getViewGroupState());
+			const DataCoord dataClickPoint =
+				state_->ComputeMouseClickPointDataCoord(event);
+			mSegmentContextMenu.Refresh(*sdw, state_->getViewGroupState(), dataClickPoint);
 			mSegmentContextMenu.exec(event->globalPos());
 		}
 	}

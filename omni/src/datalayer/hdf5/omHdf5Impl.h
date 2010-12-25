@@ -9,7 +9,7 @@ class OmDataPath;
 class OmHdf5Impl
 {
  public:
-	OmHdf5Impl(const std::string& fileName, const bool readOnly);
+	OmHdf5Impl(const std::string& fileName, const bool readOnly, const om::Affinity aff = om::NO_AFFINITY);
 	~OmHdf5Impl();
 
 	void flush();
@@ -37,6 +37,7 @@ class OmHdf5Impl
 	boost::shared_ptr<OmHdf5LowLevel> hdf_;
 	const bool mReadOnly;
 	int fileId;
+	const om::Affinity aff_;
 };
 
 #endif

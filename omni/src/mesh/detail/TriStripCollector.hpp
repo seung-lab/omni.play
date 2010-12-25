@@ -10,19 +10,18 @@
 class TriStripCollector
 {
 private:
-    std::vector< float    > data_   ;
-    std::vector< uint32_t > indices_;
-    std::vector< uint32_t > strips_ ;
-    std::size_t             missing_;
-    zi::rwmutex             lock_   ;
+	std::vector<float>    data_;
+    std::vector<uint32_t> indices_;
+    std::vector<uint32_t> strips_ ;
+    std::size_t           missing_;
+    zi::rwmutex           lock_   ;
+
+	template <typename T> friend class OmMeshWriterTaskV2;
 
 public:
 
     TriStripCollector()
-        : data_(),
-          indices_(),
-          strips_(),
-          missing_( 0 ),
+		: missing_( 0 ),
           lock_()
     {
     }
@@ -94,42 +93,13 @@ public:
         return missing_;
     }
 
-    void clear()
-    {
+	void clear()
+	{
         zi::rwmutex::write_guard g( lock_ );
         data_.clear();
         indices_.clear();
         strips_.clear();
-    }
-
-    std::size_t dataSize() const
-    {
-        zi::rwmutex::read_guard g( lock_ );
-        return data_.size();
-    }
-
-    std::size_t indicesSize() const
-    {
-        zi::rwmutex::read_guard g( lock_ );
-        return indices_.size();
-    }
-
-    std::size_t stripsSize() const
-    {
-        zi::rwmutex::read_guard g( lock_ );
-        return strips_.size();
-    }
-
-    // you have to make sure there's enough space in the
-    // given arrays!
-    void copyTo( float* data_ptr, uint32_t* indices_ptr, uint32_t* strips_ptr ) const
-    {
-        zi::rwmutex::read_guard g( lock_ );
-        std::copy( data_.begin(),    data_.end(),    data_ptr    );
-        std::copy( indices_.begin(), indices_.end(), indices_ptr );
-        std::copy( strips_.begin(),  strips_.end(),  strips_ptr  );
-    }
-
+	}
 };
 
 #endif

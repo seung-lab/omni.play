@@ -94,13 +94,14 @@ void OmView3dUi::doZoom(int direction)
 
 void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 {
-	const SegmentDataWrapper sdw = PickSegmentMouse(event, false);
+        DataCoord coord;
+        SegmentDataWrapper sdw = PickVoxelMouseCrosshair(event, coord);
 	if (!sdw.IsSegmentValid()) {
 		mpView3d->updateGL();
 		return;
 	}
 	mpView3d->updateGL();
-	OmActions::FindAndSplitSegments(sdw, mViewGroupState);
+	OmActions::FindAndSplitSegments(sdw, mViewGroupState, coord);
 }
 
 void OmView3dUi::CutModeMouseReleased(QMouseEvent * event)
@@ -285,7 +286,8 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 
 void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 {
-	SegmentDataWrapper sdw = PickSegmentMouse(event, false);
+	DataCoord coord;
+	SegmentDataWrapper sdw = PickVoxelMouseCrosshair(event, coord);
 	if (!sdw.IsSegmentValid()){
 		mpView3d->updateGL();
 		return;
@@ -293,7 +295,7 @@ void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 	mpView3d->updateGL();
 
 	//refersh context menu and display
-	mSegmentContextMenu.Refresh( sdw, mViewGroupState);
+	mSegmentContextMenu.Refresh( sdw, mViewGroupState, coord);
 	mSegmentContextMenu.exec(event->globalPos());
 }
 

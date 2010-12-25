@@ -12,10 +12,97 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 
-template <typename VAL>
-class LockableList
-	: public std::list<VAL>,
-	  public zi::rwmutex {
+template <typename KEY>
+class LockedBoostSet{
+public:
+	virtual ~LockedBoostSet()
+	{}
+
+	bool empty()
+	{
+		zi::guard g(mutex_);
+		return set_.empty();
+	}
+
+	void insert(const KEY& key)
+	{
+		zi::guard g(mutex_);
+		set_.insert(key);
+	}
+
+	void erase(const KEY& key)
+	{
+		zi::guard g(mutex_);
+		set_.erase(key);
+	}
+
+	void clear()
+	{
+		zi::guard g(mutex_);
+		set_.clear();
+	}
+
+	bool insertSinceWasntPresent(const KEY& key)
+	{
+		zi::guard g(mutex_);
+		if(set_.count(key)){
+			return false;
+		}else{
+			set_.insert(key);
+			return true;
+		}
+	}
+
+private:
+	boost::unordered_set<KEY> set_;
+	zi::mutex mutex_;
+};
+
+
+template <typename KEY>
+class LockedSet{
+public:
+	virtual ~LockedSet()
+	{}
+
+	bool empty()
+	{
+		zi::guard g(mutex_);
+		return set_.empty();
+	}
+
+	void erase(const KEY& key)
+	{
+		zi::guard g(mutex_);
+		set_.erase(key);
+	}
+
+	void insert(const KEY& key)
+	{
+		zi::guard g(mutex_);
+		set_.insert(key);
+	}
+
+	void clear()
+	{
+		zi::guard g(mutex_);
+		set_.clear();
+	}
+
+	bool insertSinceWasntPresent(const KEY& key)
+	{
+		zi::guard g(mutex_);
+		if(set_.count(key)){
+			return false;
+		}else{
+			set_.insert(key);
+			return true;
+		}
+	}
+
+private:
+	std::set<KEY> set_;
+	zi::mutex mutex_;
 };
 
 template <typename KEY>

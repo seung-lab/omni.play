@@ -14,7 +14,8 @@ public:
 	OmTileCacheChannel()
 		: OmThreadedCache<OmTileCoord, OmTilePtr>(VRAM_CACHE_GROUP,
 												  "Channel Tiles",
-												  NUM_THREADS)
+												  NUM_THREADS,
+												  om::THROTTLE)
 	{}
 
 private:

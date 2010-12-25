@@ -70,7 +70,8 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
 	setSelectedSegment(segID);
 }
 
-void OmSegmentSelector::selectJustThisSegment_toggle( const OmSegID segIDunknownLevel, const bool center )
+void OmSegmentSelector::selectJustThisSegment_toggle(const OmSegID segIDunknownLevel,
+													 const bool center )
 {
 	mAutoCenter = center;
 	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
@@ -82,7 +83,8 @@ void OmSegmentSelector::selectJustThisSegment_toggle( const OmSegID segIDunknown
 	selectJustThisSegment( segID, !isSelected );
 }
 
-void OmSegmentSelector::augmentSelectedSet_toggle( const OmSegID segIDunknownLevel, const bool center )
+void OmSegmentSelector::augmentSelectedSet_toggle(const OmSegID segIDunknownLevel,
+												  const bool center )
 {
 	mAutoCenter = center;
 	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );

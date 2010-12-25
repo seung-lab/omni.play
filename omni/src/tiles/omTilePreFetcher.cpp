@@ -1,4 +1,4 @@
-#include "tiles/omTilePreFetcher.hpp"
+#include "tiles/omTilePreFetcher.h"
 #include "tiles/omTilePreFetcherTask.hpp"
 #include "view2d/omTileDrawer.h"
 #include "zi/omUtility.h"
@@ -15,6 +15,11 @@ OmTilePreFetcher::OmTilePreFetcher()
 	}
 
 	mThreadPool.start(maxThreads);
+}
+
+OmTilePreFetcher::~OmTilePreFetcher()
+{
+	Shutdown();
 }
 
 // make a shallow copy of state information to avoid any locking issues
@@ -34,10 +39,16 @@ void OmTilePreFetcher::RunTasks(const std::list<OmTileDrawer*>& drawers)
 	}
 }
 
-void OmTilePreFetcher::StopTasks()
+void OmTilePreFetcher::ClearTasks()
 {
 	mThreadPool.clear();
 	//kill map
+}
+
+void OmTilePreFetcher::Shutdown()
+{
+	mThreadPool.clear();
+	mThreadPool.stop();
 }
 
 #if 0

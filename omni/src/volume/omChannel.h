@@ -42,6 +42,8 @@ public:
 
 	void SetVolDataType(const OmVolDataType);
 
+	virtual void SetAffinity(const om::Affinity aff) { mAffinity = aff; }
+	om::Affinity GetAffinity() { return mAffinity; }
 protected:
 	//protected copy constructor and assignment operator to prevent copy
 	OmChannel(const OmChannel&);
@@ -58,6 +60,8 @@ private:
 	boost::shared_ptr<OmVolumeData> mVolData;
 
 	OmFilter2dManager mFilter2dManager;
+
+	om::Affinity mAffinity;
 
 	friend class OmBuildChannel;
 	template <class T> friend class OmVolumeBuilder;

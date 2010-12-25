@@ -13,7 +13,7 @@ typedef LONG_PTR ssize_t;
 
 class OmHdf5LowLevel {
 public:
-	explicit OmHdf5LowLevel(const int id);
+	explicit OmHdf5LowLevel(const int id, const om::Affinity aff = om::NO_AFFINITY);
 
 	void setPath(const OmDataPath & p);
 	const char* getPath();
@@ -40,5 +40,6 @@ public:
 	// hid_t is typedef'd to int in H5Ipublic.h
 	const int fileId;
 	OmDataPath path;
+	om::Affinity aff_;
 };
 #endif

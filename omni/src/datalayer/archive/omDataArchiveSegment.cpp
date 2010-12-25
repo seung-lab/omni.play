@@ -1,5 +1,4 @@
 #include "common/omException.h"
-#include "datalayer/archive/omDataArchiveCoords.h"
 #include "datalayer/archive/omDataArchiveSegment.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omIDataReader.h"

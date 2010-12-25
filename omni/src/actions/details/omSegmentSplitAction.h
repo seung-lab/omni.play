@@ -17,20 +17,21 @@ public:
         OmSegmentSplitAction(boost::shared_ptr<OmSegmentSplitActionImpl> impl) : impl_(impl) {}
 
 	static void DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
-					  OmViewGroupState* vgs);
+					  OmViewGroupState* vgs, const DataCoord coord);
 
 	static void DoFindAndCutSegment(const SegmentDataWrapper& sdw,
 					  OmViewGroupState* vgs);
 private:
 	OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 						  const OmSegmentEdge & edge );
+	OmSegmentSplitAction( const SegmentDataWrapper & sdw, const DataCoord coord1, const DataCoord coord2);
 
 	void Action();
 	void UndoAction();
 	std::string Description();
 	void save(const std::string& comment);
 
-	static void runIfSplittable( OmSegment * seg1, OmSegment * seg2 );
+	static void runIfSplittable( OmSegment * seg1, OmSegment * seg2, const DataCoord coord1, const DataCoord coord2 );
 
 	boost::shared_ptr<OmSegmentSplitActionImpl> impl_;
 };

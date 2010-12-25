@@ -104,11 +104,14 @@ QDataStream& operator>>(QDataStream& in, OmSegmentUncertainActionImpl& a)
 
 QDataStream& operator<<(QDataStream& out, const OmSegmentSplitActionImpl& a)
 {
-	int version = 1;
+	int version = 2;
 	out << version;
 	out << a.mEdge;
 	out << a.mSegmentationID;
 	out << a.desc;
+	out << a.mSegID;
+	out << a.mCoord1;
+	out << a.mCoord2;
 
 	return out;
 }
@@ -117,9 +120,20 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentSplitActionImpl& a)
 {
 	int version;
 	in >> version;
+
 	in >> a.mEdge;
 	in >> a.mSegmentationID;
 	in >> a.desc;
+
+	if(1 == version) {
+		a.mSegID = 0;
+		a.mCoord1 = DataCoord();
+		a.mCoord2 = DataCoord();
+	} else {
+		in >> a.mSegID;
+		in >> a.mCoord1;
+		in >> a.mCoord2;
+	}
 
 	return in;
 }

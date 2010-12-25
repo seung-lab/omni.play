@@ -110,7 +110,7 @@ public:
 
 	static boost::shared_ptr<OmMemMappedFileWriteQT<T> >
 	WriterNumBytes(const std::string& fnp, const int64_t numBytes,
-						   const om::zeroMem shouldZeroFill)
+				   const om::ZeroMem shouldZeroFill)
 	{
 		OmMemMappedFileWriteQT* ret = new OmMemMappedFileWriteQT(fnp, numBytes,
 																 shouldZeroFill);
@@ -119,7 +119,7 @@ public:
 
 	static boost::shared_ptr<OmMemMappedFileWriteQT<T> >
 	WriterNumElements(const std::string& fnp, const int64_t numElements,
-					  const om::zeroMem shouldZeroFill)
+					  const om::ZeroMem shouldZeroFill)
 	{
 		const uint64_t numBytes = numElements * sizeof(T);
 		OmMemMappedFileWriteQT* ret = new OmMemMappedFileWriteQT(fnp, numBytes,
@@ -129,7 +129,7 @@ public:
 
 private:
 	OmMemMappedFileWriteQT(const std::string& fnp, const int64_t numBytes,
-						   const om::zeroMem shouldZeroFill)
+						   const om::ZeroMem shouldZeroFill)
 		: OmMemMappedFileQTbase<T>(fnp)
 	{
 		checkFileSize(numBytes);

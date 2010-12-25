@@ -15,13 +15,15 @@ public:
 	OmTileCacheSegmentation()
 		: OmThreadedCache<OmTileCoord, OmTilePtr>(VRAM_CACHE_GROUP,
 												  "Segmentation Tiles",
-												  NUM_THREADS)
+												  NUM_THREADS,
+												  om::THROTTLE)
 	{}
 
 	void Get(OmTilePtr& ptr, const OmTileCoord& key,
 			 const om::Blocking isBlocking)
 	{
 		zi::guard g(mutex_);
+
 		if(key.getFreshness() > freshness_.get()){
 			InvalidateCache();
 			keysBySpaceCoord_.clear();
@@ -33,8 +35,8 @@ public:
 
 	void RemoveSpaceCoord(const SpaceCoord& coord)
 	{
-		boost::shared_ptr<std::list<OmTileCoord> >
-			tileCoordsToRemove = keysBySpaceCoord_.removeKey(coord);
+		boost::shared_ptr<std::list<OmTileCoord> > tileCoordsToRemove =
+			keysBySpaceCoord_.removeKey(coord);
 
 		FOR_EACH(iter, *tileCoordsToRemove){
 			Remove(*iter);

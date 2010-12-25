@@ -163,7 +163,7 @@ const NormBbox& OmMipChunk::GetClippedNormExtent()
  *	Returns reference to set of all values directly contained by
  *	the image data of this MipChunk
  */
-const OmSegIDsSet& OmMipChunk::GetDirectDataValues()
+const OmSegIDsSet& OmMipChunk::GetUniqueSegIDs()
 {
 	zi::guard g(mDirectDataValueLock);
 	loadMetadataIfPresent();

@@ -324,6 +324,30 @@ void Headless::processLine(const QString& line, const QString&)
 		bc.addFileNameAndPath(hdf5fnp);
 		bc.BuildBlocking();
 
+        } else if(line.startsWith("loadHDF5affgraph:")){
+                QStringList args = line.split(':',QString::SkipEmptyParts);
+
+                if (args.size() < 3){
+                        printf("Please enter command like: loadHDF5affgraph:[0123]:file.hdf5\n");
+                        return;
+                }
+		om::Affinity aff = om::NO_AFFINITY;
+		int affNum = args[1].toInt();
+		if(1 == affNum) {
+			aff = om::X_AFFINITY;
+		} else if(2 == affNum) {
+			aff = om::Y_AFFINITY;
+		} else if(3 == affNum) {
+			aff = om::Z_AFFINITY;
+		}
+		printf("args: %s, %i, %i\n", qPrintable(args[1]), affNum, aff);
+                OmChannel& affgraph = OmProject::AddChannel(aff);
+                QString hdf5fnp = args[2];
+
+                OmBuildChannel bc(&affgraph);
+                bc.addFileNameAndPath(hdf5fnp);
+                bc.BuildBlocking();
+
 	} else if(line.startsWith("loadTIFFchann:")){
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 

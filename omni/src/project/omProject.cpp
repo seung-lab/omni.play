@@ -1,3 +1,4 @@
+#include "utility/omThreadPoolManager.h"
 #include "actions/io/omActionLogger.hpp"
 #include "actions/io/omActionReplayer.hpp"
 #include "actions/omActions.hpp"
@@ -10,7 +11,6 @@
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omIDataWriter.h"
-#include "mesh/omMeshSegmentList.h"
 #include "project/omProject.h"
 #include "segment/omSegmentSelected.hpp"
 #include "system/cache/omCacheManager.h"
@@ -148,12 +148,11 @@ void OmProject::Close()
 
 	// OmProject must be deleted first: it depends on the remaining classes...
 	OmCacheManager::SignalCachesToCloseDown();
-	OmMeshSegmentList::Delete();
-//	zi::all_threads::join_all();
+	OmThreadPoolManager::StopAll();
+	zi::all_threads::join_all();
 	Delete();
 
 	//delete all singletons
-	OmMeshSegmentList::Delete();
 	OmSegmentSelected::Delete();
 	OmEventManager::Delete();
 	OmGarbage::Delete();
@@ -178,9 +177,10 @@ OmChannel & OmProject::GetChannel(const OmID id)
 	return Instance()->mChannelManager.Get(id);
 }
 
-OmChannel & OmProject::AddChannel()
+OmChannel & OmProject::AddChannel(om::Affinity aff)
 {
 	OmChannel & r_channel = Instance()->mChannelManager.Add();
+	r_channel.SetAffinity(aff);
 	OmActions::Save();
 	return r_channel;
 }

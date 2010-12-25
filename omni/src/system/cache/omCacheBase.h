@@ -18,7 +18,7 @@ public:
 	virtual void UpdateSize(const int64_t delta) = 0;
 	virtual int Clean(const bool) = 0;
 	virtual int GetFetchStackSize() = 0;
-	virtual qint64 GetCacheSize() = 0;
+	virtual int64_t GetCacheSize() = 0;
 	virtual void closeDownThreads() = 0;
 	virtual const std::string& GetName() = 0;
 

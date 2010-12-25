@@ -1,12 +1,13 @@
-#include "segment/io/omValidGroupNum.hpp"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPaths.h"
+#include "mesh/drawer/omMeshDrawer.h"
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshManager.h"
 #include "mesh/ziMesher.hpp"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
+#include "segment/io/omValidGroupNum.hpp"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentLists.hpp"
 #include "system/cache/omCacheManager.h"
@@ -15,10 +16,10 @@
 #include "system/omGroups.h"
 #include "utility/dataWrappers.h"
 #include "utility/omThreadPool.hpp"
+#include "volume/build/omVolumeAllocater.hpp"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolumeData.hpp"
-#include "volume/build/omVolumeAllocater.hpp"
 #include "zi/omThreads.h"
 
 #include <QFile>
@@ -35,6 +36,7 @@ OmSegmentation::OmSegmentation()
 	, mstUserEdges_(boost::make_shared<OmUserEdges>(this))
 	, mMipMeshManager(boost::make_shared<OmMipMeshManager>(this))
 	, validGroupNum_(boost::make_shared<OmValidGroupNum>(this))
+	, meshDrawer_(boost::make_shared<OmMeshDrawer>(this))
 {}
 
 // used by OmGenericManager
@@ -49,6 +51,7 @@ OmSegmentation::OmSegmentation(OmID id)
 	, mstUserEdges_(boost::make_shared<OmUserEdges>(this))
 	, mMipMeshManager(boost::make_shared<OmMipMeshManager>(this))
 	, validGroupNum_(boost::make_shared<OmValidGroupNum>(this))
+	, meshDrawer_(boost::make_shared<OmMeshDrawer>(this))
 {
 	//uses meta data
 	mStoreChunkMetaData = true;
@@ -74,33 +77,17 @@ std::string OmSegmentation::GetDirectoryPath(){
 	return OmDataPaths::getDirectoryPath(this);
 }
 
-/////////////////////////////////
-///////          Build Methods
-
 void OmSegmentation::Mesh()
 {
-	ziMesher mesher(GetID(), mMipMeshManager.get(), GetRootMipLevel());
-	const Vector3i mc = MipLevelDimensionsInMipChunks(0);
-
-	for (int z = 0; z < mc.z; ++z) {
-		for (int y = 0; y < mc.y; ++y) {
-			for (int x = 0; x < mc.x; ++x) {
-				OmMipChunkCoord chunk_coord(0, x, y, z);
-				mesher.addChunkCoord(chunk_coord);
-			}
-		}
-	}
-
-	mesher.mesh();
-	OmProjectData::GetIDataWriter()->flush();
+	ziMesher mesher(this);
+	mesher.MeshFullVolume();
 }
 
 void OmSegmentation::MeshChunk(const OmMipChunkCoord& coord)
 {
-	ziMesher mesher(GetID(), mMipMeshManager.get(), GetRootMipLevel());
+	ziMesher mesher(this);
 	mesher.addChunkCoord(coord);
 	mesher.mesh();
-	OmProjectData::GetIDataWriter()->flush();
 }
 
 void OmSegmentation::RebuildChunk(const OmMipChunkCoord& mipCoord,
@@ -141,8 +128,7 @@ void OmSegmentation::SetDendThreshold(const double t)
 	mSegmentCache->refreshTree();
 }
 
-void OmSegmentation::CloseDownThreads()
-{
+void OmSegmentation::CloseDownThreads() {
 	mMipMeshManager->CloseDownThreads();
 }
 
@@ -153,8 +139,7 @@ void OmSegmentation::loadVolData()
 	}
 }
 
-double OmSegmentation::GetDendThreshold()
-{
+double OmSegmentation::GetDendThreshold() {
 	return mst_->UserThreshold();
 }
 
@@ -204,7 +189,7 @@ public:
 
 		chunk->RefreshDirectDataValues(isMIPzero, segmentCache_);
 		std::cout << "chunk " << coord_
-				  << " has " << chunk->GetDirectDataValues().size()
+				  << " has " << chunk->GetUniqueSegIDs().size()
 				  << " values\n";
 
 		if(isMIPzero){
@@ -301,8 +286,7 @@ void OmSegmentation::GetMesh(OmMipMeshPtr& ptr,
 	return mMipMeshManager->GetMesh(ptr, OmMipMeshCoord(coord, segID));
 }
 
-int OmSegmentation::GetBytesPerSample() const
-{
+int OmSegmentation::GetBytesPerSample() const {
 	return mVolData->GetBytesPerSample();
 }
 
@@ -312,8 +296,7 @@ void OmSegmentation::SetVolDataType(const OmVolDataType type)
 	getVolData()->setDataType(this);
 }
 
-SegmentationDataWrapper OmSegmentation::getSDW() const
-{
+SegmentationDataWrapper OmSegmentation::getSDW() const {
 	return SegmentationDataWrapper(GetID());
 }
 
@@ -325,7 +308,6 @@ void OmSegmentation::Flush()
 	mstUserEdges_->Save();
 }
 
-//FIXME: move into OmChannel/OmSegmentation so we don't assume default type
 void OmSegmentation::BuildBlankVolume(const Vector3i & dims)
 {
 	SetBuildState(MIPVOL_BUILDING);

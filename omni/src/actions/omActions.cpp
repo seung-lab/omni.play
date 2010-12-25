@@ -190,9 +190,8 @@ void OmActions::JoinSegments(const OmID segmentationID,
 	}
 }
 
-void OmActions::FindAndSplitSegments(const SegmentDataWrapper& sdw,
-									 OmViewGroupState* vgs){
-	OmSegmentSplitAction::DoFindAndSplitSegment(sdw, vgs);
+void OmActions::FindAndSplitSegments(const SegmentDataWrapper& sdw, OmViewGroupState* vgs, const DataCoord dataClickPoint){
+	OmSegmentSplitAction::DoFindAndSplitSegment(sdw, vgs, dataClickPoint);
 }
 
 void OmActions::FindAndCutSegments(const SegmentDataWrapper& sdw,

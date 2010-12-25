@@ -40,3 +40,10 @@ bool OmMipMeshCoord::operator<(const OmMipMeshCoord & rhs) const
 
 	return (DataValue < rhs.DataValue);
 }
+
+std::ostream& operator<<(std::ostream &out, const OmMipMeshCoord &c) {
+	out << "(" << c.DataValue << ", "
+		<< c.MipChunkCoord
+		<< ")";
+	return out;
+}

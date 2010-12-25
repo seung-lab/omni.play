@@ -19,6 +19,7 @@
 OmChannel::OmChannel()
 	: mDataCache(new OmMipVolumeCache(this))
 	, mVolData(new OmVolumeData())
+	, mAffinity(om::NO_AFFINITY)
 {
 	mWasBounded = false;
 }
@@ -27,6 +28,7 @@ OmChannel::OmChannel(OmID id)
 	: OmManageableObject(id)
 	, mDataCache(new OmMipVolumeCache(this))
 	, mVolData(new OmVolumeData())
+	, mAffinity(om::NO_AFFINITY)
 {
 	mWasBounded = false;
 

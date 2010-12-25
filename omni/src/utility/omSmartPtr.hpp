@@ -9,7 +9,7 @@ class OmSmartPtr {
 public:
 	static boost::shared_ptr<T>
 	inline MallocNumBytes(const uint64_t numBytes,
-						  const om::zeroMem shouldZeroMem)
+						  const om::ZeroMem shouldZeroMem)
 	{
 		T* rawPtr = static_cast<T*>(malloc(numBytes));
 
@@ -30,7 +30,7 @@ public:
 
 	static boost::shared_ptr<T>
 	inline MallocNumElements(const uint64_t numElements,
-							 const om::zeroMem shouldZeroMem)
+							 const om::ZeroMem shouldZeroMem)
 	{
 		return MallocNumBytes(numElements * sizeof(T), shouldZeroMem);
 	}

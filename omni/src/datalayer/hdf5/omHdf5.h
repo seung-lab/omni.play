@@ -2,6 +2,7 @@
 #define OM_HDF_H
 
 #include "common/omCommon.h"
+#include "common/om.hpp"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omIDataReader.h"
@@ -14,7 +15,7 @@ class OmDataPath;
 class OmHdf5 : public OmIDataReader,
 			   public OmIDataWriter {
 public:
-	static OmHdf5* getHDF5(const std::string& fnp, const bool readOnly);
+	static OmHdf5* getHDF5(const std::string& fnp, const bool readOnly, om::Affinity aff = om::NO_AFFINITY);
 
 	virtual ~OmHdf5(){}
 
@@ -52,13 +53,17 @@ public:
 	Vector3i getDatasetDims( const OmDataPath & path );
 
 private:
-	OmHdf5(const std::string& fnp, const bool readOnly)
+	OmHdf5(const std::string& fnp, const bool readOnly, om::Affinity aff = om::NO_AFFINITY)
 		: m_fileNameAndPath(fnp)
 		, readOnly_(readOnly)
-	{}
+		, aff_(aff)
+	{
+		printf("should be 1: %i\n", !om::NO_AFFINITY == aff_);
+	}
 
 	const std::string m_fileNameAndPath;
 	const bool readOnly_;
+	om::Affinity aff_;
 
 	zi::rwmutex fileLock;
 	boost::shared_ptr<OmHdf5Impl> hdf5_;

@@ -20,15 +20,18 @@ private:
 	const bool importImagesAreImages_;
 	std::vector<boost::shared_ptr<QFile> > volFiles_;
 	const std::vector<QFileInfo>& files_;
+	const om::Affinity aff_;
 
 public:
 	OmVolumeImporter(VOL* vol, const OmDataPath& path,
 					 const bool importImagesAreImages,
-					 const std::vector<QFileInfo>& files)
+					 const std::vector<QFileInfo>& files, 
+					 const om::Affinity aff = om::NO_AFFINITY)
 		: vol_(vol)
 		, path_(path)
 		, importImagesAreImages_(importImagesAreImages)
 		, files_(files)
+		, aff_(aff)
 	{}
 
 	bool Import()
@@ -56,7 +59,7 @@ private:
 
 	bool doImportHDF5()
 	{
-		OmVolumeImporterHDF5<VOL> hdf5(vol_, path_, files_);
+		OmVolumeImporterHDF5<VOL> hdf5(vol_, path_, files_, aff_);
 		allocateData(hdf5.DetermineDataType());
 		return hdf5.Import(volFiles_[0]);
 	}
