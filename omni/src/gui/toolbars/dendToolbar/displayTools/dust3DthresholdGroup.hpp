@@ -1,10 +1,12 @@
 #ifndef DUST_3D_THRESHOLD_GROUP_HPP
 #define DUST_3D_THRESHOLD_GROUP_HPP
 
-#include "gui/widgets/omIntSpinBox.hpp"
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
+#include "gui/widgets/omIntSpinBox.hpp"
+#include "system/omEvents.h"
 #include "viewGroup/omViewGroupState.h"
+
 #include <limits>
 
 class Dust3DThresholdGroup : public OmIntSpinBox {
@@ -27,6 +29,7 @@ private:
 	{
 		if( NULL != vgs() ) {
 			vgs()->setDustThreshold( threshold );
+			OmEvents::Redraw3d();
 		}
 	}
 

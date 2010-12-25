@@ -1,0 +1,85 @@
+#ifndef OM_MESH_CONVERT_V1_TO_V2_TASK_HPP
+#define OM_MESH_CONVERT_V1_TO_V2_TASK_HPP
+
+#include "mesh/io/v1/omMeshReaderV1.hpp"
+#include "mesh/io/v2/omMeshWriterV2.hpp"
+#include "mesh/io/omMeshMetadata.hpp"
+#include "system/cache/omCacheManager.h"
+#include "zi/omThreads.h"
+
+class OmMeshConvertV1toV2Task : public zi::runnable{
+private:
+	OmSegmentation* segmentation_;
+
+	boost::shared_ptr<OmMeshReaderV1> hdf5Reader_;
+	boost::shared_ptr<OmMeshWriterV2> meshWriter_;
+
+public:
+	OmMeshConvertV1toV2Task(OmSegmentation* segmentation)
+		: segmentation_(segmentation)
+		, hdf5Reader_(new OmMeshReaderV1(segmentation_))
+		, meshWriter_(new OmMeshWriterV2(segmentation_))
+	{}
+
+	void run()
+	{
+		printf("copying mesh data...\n");
+
+		for (int level = 0; level <= segmentation_->GetRootMipLevel(); ++level) {
+
+			const Vector3i dims = segmentation_->MipLevelDimensionsInMipChunks(level);
+
+			for (int z = 0; z < dims.z; ++z){
+				for (int y = 0; y < dims.y; ++y){
+					for (int x = 0; x < dims.x; ++x){
+
+						const OmMipChunkCoord coord(level, x, y, z);
+
+						if(!processChunk(coord)){
+							return;
+						}
+					}
+				}
+			}
+		}
+
+		meshWriter_->Join();
+
+		segmentation_->MeshManager()->Metadata()->SetMeshedAndStorageAsChunkFiles();
+
+		printf("mesh conversion done!\n");
+	}
+
+private:
+	bool processChunk(const OmMipChunkCoord& coord)
+	{
+		OmMipChunkPtr chunk;
+		segmentation_->GetChunk(chunk, coord);
+
+		const OmSegIDsSet& segIDs =	chunk->GetUniqueSegIDs();
+
+		FOR_EACH(segID, segIDs){
+
+			if(OmCacheManager::AmClosingDown()){
+				return false;
+			}
+
+			if(meshWriter_->WasMeshed(*segID, coord)){
+				continue;
+			}
+
+			boost::shared_ptr<OmDataForMeshLoad> mesh =
+				hdf5Reader_->Read(*segID, coord);
+
+			meshWriter_->Save(*segID, coord, mesh, om::DONT_BUFFER_WRITES,
+							  om::WRITE_ONCE);
+
+			//std::cout << "migrated segID " << *segID
+					  //<< " coord " << coord << "\n";
+		}
+
+		return true;
+	}
+};
+
+#endif

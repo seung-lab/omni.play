@@ -50,7 +50,7 @@ void MeshPreviewerImpl::mesh()
 	// select all segments
 	OmSegmentSelector sel(sdw_, this, "meshPreviewer");
 	sel.selectNoSegments();
-	FOR_EACH(iter, chunk->GetDirectDataValues()){
+	FOR_EACH(iter, chunk->GetUniqueSegIDs()){
 		sel.augmentSelectedSet(*iter, true);
 	}
 	sel.sendEvent();

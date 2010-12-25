@@ -1,6 +1,7 @@
 #ifndef TESTS_HPP
 #define TESTS_HPP
 
+#include "tests/datalayer/omMeshChunkAllocTableTests.hpp"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "src/common/omCommon.h"
@@ -15,6 +16,7 @@
 #include "tests/testUtils.hpp"
 #include "segment/segmentTests.hpp"
 #include "cache/lockedObjectsTests.hpp"
+#include "tests/datalayer/vecInFileTests.hpp"
 
 #include <QTextStream>
 
@@ -37,6 +39,16 @@ public:
 	void Run()
 	{
 //		imageResize();
+
+		{
+			VecInFileTests vif;
+			vif.RunAll();
+
+			OmMeshChunkAllocTableTests mcatt;
+			mcatt.RunAll();
+		}
+
+		return;
 
 		{
 			LockedObjectsTests lot;

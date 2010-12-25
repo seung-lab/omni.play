@@ -59,11 +59,17 @@ public:
 class OmIoException : public OmException {
 public:
 	OmIoException(const std::string& msg)
-		: OmException("OmIoException", msg) { }
+		: OmException("OmIoException", msg)
+	{}
 	OmIoException(const QString& str1,
 				  const QString& str2)
 		: OmException("OmIoException",
 					  QString(str1+" "+str2).toStdString())
+	{}
+	OmIoException(const QString& str1,
+				  const std::string& str2)
+		: OmException("OmIoException",
+					  str1.toStdString()+" "+str2)
 	{}
 };
 

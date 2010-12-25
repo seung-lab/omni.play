@@ -31,7 +31,7 @@ public:
 
 private:
 
-	DataBbox
+	boost::optional<DataBbox>
 	static computeSelectedSegmentBoundingBox(const SegmentationDataWrapper& sdw)
 	{
 		DataBbox box;
@@ -54,19 +54,23 @@ private:
 			seg = iter.getNextSegment();
 		}
 
-		return box;
+		if(box.isEmpty()){
+			return boost::optional<DataBbox>();
+		}
+
+		return boost::optional<DataBbox>(box);
 	}
 
 	boost::optional<DataCoord>
 	static findCenterOfSelectedSegments(const SegmentationDataWrapper& sdw)
 	{
-		DataBbox box = computeSelectedSegmentBoundingBox(sdw);
+		boost::optional<DataBbox> box = computeSelectedSegmentBoundingBox(sdw);
 
-		if(box.isEmpty()){
+		if(!box){
 			return boost::optional<DataCoord>();
 		}
 
-		const DataCoord ret = (box.getMin() + box.getMax()) / 2;
+		const DataCoord ret = (box->getMin() + box->getMax()) / 2;
 		return boost::optional<DataCoord>(ret);
 	}
 
@@ -200,7 +204,11 @@ public:
 
         FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
 			SegmentationDataWrapper sdw(*iter);
-			box.merge(computeSelectedSegmentBoundingBox(sdw));
+			const boost::optional<DataBbox> b =
+				computeSelectedSegmentBoundingBox(sdw);
+			if(b){
+				box.merge(*b);
+			}
 			res = sdw.GetDataResolution();
 		}
 
@@ -229,6 +237,7 @@ public:
 		}
 
 		sdw.GetSegmentation().UpdateVoxelBoundingData();
+		sdw.GetSegmentation().Flush();
 	}
 };
 #endif

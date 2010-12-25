@@ -10,6 +10,7 @@
  */
 
 #include "common/omCommon.h"
+#include "common/om.hpp"
 #include "system/omGenericManager.h"
 
 class OmChannel;
@@ -45,7 +46,7 @@ public:
 
 	//volume management
 	static OmChannel& GetChannel(const OmID id);
-	static OmChannel& AddChannel();
+	static OmChannel& AddChannel(om::Affinity aff = om::NO_AFFINITY);
 	static void RemoveChannel(const OmID id);
 	static bool IsChannelValid(const OmID id);
 	static const OmIDsSet & GetValidChannelIds();

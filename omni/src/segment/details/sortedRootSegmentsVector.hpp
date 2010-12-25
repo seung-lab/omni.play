@@ -64,7 +64,7 @@ public:
 							   om::sortedRootSegments_::cmpNode);
 
 		if(iter == sortedVec_.end()){
-			assert(0 && "could not find segment");
+			throw OmIoException("could not find segment");
 		}
 
 		assert(*iter == n);

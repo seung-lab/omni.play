@@ -21,7 +21,9 @@ class OmThreadedCache : public OmCacheBase {
 public:
 	OmThreadedCache(const OmCacheGroupEnum group,
 					const std::string& name,
-					const int numThreads);
+					const int numThreads,
+					const om::ShouldThrottle,
+					const om::ShouldFifo = om::DONT_FIFO);
 	virtual ~OmThreadedCache();
 
 	//value accessors
@@ -41,7 +43,7 @@ public:
 	void UpdateSize(const int64_t delta);
 
 	int GetFetchStackSize();
-	qint64 GetCacheSize();
+	int64_t GetCacheSize();
 
 	virtual PTR HandleCacheMiss(const KEY& key) = 0;
 
@@ -58,7 +60,7 @@ private:
 	LockedInt64 curSize_;
 	OmThreadPool threadPool_;
 
-	zi::mutex mutex_;
+	zi::rwmutex mutex_;
 	LockedKeySet<KEY> currentlyFetching_;
 	LockedCacheMap<KEY, PTR> cache_;
 	LockedKeyMultiIndex<KEY> keyAccessList_;
@@ -68,6 +70,9 @@ private:
 
 	int removeOldest();
 	void get(PTR&, const KEY&, const bool);
+
+	const om::ShouldThrottle throttle_;
+	const om::ShouldFifo fifo_;
 
 	template <typename T1, typename T2> friend class OmHandleCacheMissTask;
 };

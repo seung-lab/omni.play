@@ -18,6 +18,7 @@ public:
 		OmUpgradeTo14 u;
 		u.copyDataOutFromHDF5();
 	}
+
 	static void to20(){
 		OmUpgradeTo20 u;
 		u.GroupUpValidSegments();

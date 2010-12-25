@@ -16,22 +16,24 @@ class OmVolumeCuller {
 public:
 	OmVolumeCuller(const Matrix4f& projmodelview,
 				   const NormCoord& pos,
-				   const NormCoord& focus,
-				   OmBitfield options);
+				   const NormCoord& focus);
 
 	Visibility TestChunk(const NormBbox&);
-	bool CheckDrawOption(OmBitfield option);
-	OmBitfield GetDrawOptions();
 	const NormCoord& GetPosition() const;
 
-	boost::shared_ptr<OmVolumeCuller> GetTransformedCuller(const Matrix4f&,
-														   const Matrix4f&);
+	boost::shared_ptr<OmVolumeCuller>
+	GetTransformedCuller(const Matrix4f&, const Matrix4f&);
+
+	bool operator ==(const OmVolumeCuller& c) const;
+	bool operator !=(const OmVolumeCuller& c) const;
+	bool equals(const boost::shared_ptr<OmVolumeCuller>& c){
+		return *this == *c;
+	}
 
 private:
 	const Matrix4f mProjModelView;
 	const NormCoord mPosition;
 	const NormCoord mFocus;
-	const OmBitfield mOptionBits;
 
 	FrustumCullerf mFrustumCuller;
 };

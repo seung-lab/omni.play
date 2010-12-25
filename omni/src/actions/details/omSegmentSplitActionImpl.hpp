@@ -11,6 +11,9 @@ class OmSegmentSplitActionImpl {
 private:
 	OmSegmentEdge mEdge;
 	OmID mSegmentationID;
+	OmSegID mSegID;
+	DataCoord mCoord1;
+	DataCoord mCoord2;
 	QString desc;
 
 public:
@@ -19,41 +22,60 @@ public:
 							 const OmSegmentEdge & edge)
 		: mEdge(edge)
 		, mSegmentationID(sdw.GetSegmentationID())
+		, mSegID(0)
+		, mCoord1()
+		, mCoord2()
+		, desc("Splitting: ")
+	{}
+	OmSegmentSplitActionImpl(const SegmentDataWrapper & sdw, const DataCoord coord1, const DataCoord coord2)
+		: mEdge(0,0,0.0)
+		, mSegmentationID(sdw.GetSegmentationID())
+		, mSegID(sdw.GetSegmentID())
+		, mCoord1(coord1)
+		, mCoord2(coord2)
 		, desc("Splitting: ")
 	{}
 
 	void Execute()
 	{
 		SegmentationDataWrapper sdw(mSegmentationID);
-		mEdge = sdw.GetSegmentCache()->SplitEdge(mEdge);
+		if(!mSegID) {
+			mEdge = sdw.GetSegmentCache()->SplitEdge(mEdge);
+	
+			desc = QString("Split seg %1 from %2")
+				.arg(mEdge.childID)
+				.arg(mEdge.parentID);
 
-		desc = QString("Split seg %1 from %2")
-			.arg(mEdge.childID)
-			.arg(mEdge.parentID);
+			std::cout << desc.toStdString() << "\n";
 
-		std::cout << desc.toStdString() << "\n";
-
-		OmEvents::SegmentModified();
+			OmEvents::SegmentModified();
+		} else {
+			mEdge = sdw.GetSegmentCache()->SplitSegment(mSegID, mCoord1, mCoord2);
+		}
 	}
 
 	void Undo()
 	{
 		SegmentationDataWrapper sdw(mSegmentationID);
-		std::pair<bool, OmSegmentEdge> edge = sdw.GetSegmentCache()->JoinEdge(mEdge);
+		if(!mSegID) {
+			std::pair<bool, OmSegmentEdge> edge = sdw.GetSegmentCache()->JoinEdge(mEdge);
 
-		if(!mEdge.childID || !mEdge.parentID) {
-			printf("Can't undo a join that probably failed.\n");
-			return;
+			if(!mEdge.childID || !mEdge.parentID) {
+				printf("Can't undo a join that probably failed.\n");
+				return;
+			}
+
+			assert(edge.first && "edge could not be rejoined...");
+			mEdge = edge.second;
+
+			desc = QString("Joined seg %1 to %2")
+				.arg(mEdge.childID)
+				.arg(mEdge.parentID);
+
+			OmEvents::SegmentModified();
+		} else {
+			sdw.GetSegmentCache()->UnSplitSegment(mEdge);
 		}
-
-		assert(edge.first && "edge could not be rejoined...");
-		mEdge = edge.second;
-
-		desc = QString("Joined seg %1 to %2")
-			.arg(mEdge.childID)
-			.arg(mEdge.parentID);
-
-		OmEvents::SegmentModified();
 	}
 
 	std::string Description() const {

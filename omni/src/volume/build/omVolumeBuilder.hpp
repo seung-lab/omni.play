@@ -22,12 +22,16 @@ template <typename VOL>
 class OmVolumeBuilder {
 private:
 	VOL *const vol_;
+	om::Affinity aff_;
 
 public:
-	OmVolumeBuilder(VOL* vol)
+	OmVolumeBuilder(VOL* vol, const om::Affinity aff=om::NO_AFFINITY)
 		: vol_(vol)
+		, aff_(aff)
 		, sourceFilesWereSet(false)
-	{}
+	{
+		printf("2 aff_ %i\n", aff_);
+	}
 
 	void SetSourceFilenamesAndPaths(const std::vector<QFileInfo>& srcFiles)
 	{
@@ -81,7 +85,7 @@ private:
 	{
 		OmVolumeImporter<VOL> importer(vol_, path,
 									   areImportFilesImages(),
-									   files_);
+									   files_, aff_);
 		return importer.Import();
 	}
 
@@ -131,7 +135,7 @@ private:
 
 		OmIDataReader* hdf5reader =
 			OmDataLayer::getReader(files_[0].filePath().toStdString(),
-								   true );
+								   true, aff_);
 
 		hdf5reader->open();
 

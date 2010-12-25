@@ -6,6 +6,10 @@
 
 template <typename KEY, typename PTR >
 class OmHandleCacheMissTask : public zi::runnable {
+private:
+	OmThreadedCache<KEY,PTR> *const mTC;
+	const KEY mKey;
+
 public:
 	OmHandleCacheMissTask(OmThreadedCache<KEY,PTR>* tc,
 						  const KEY& key)
@@ -19,32 +23,22 @@ public:
 			return;
 		}
 
-		PTR ret = mTC->HandleCacheMiss(mKey);
-		handleFetchUpdate(ret);
-	}
+		PTR val = mTC->HandleCacheMiss(mKey);
 
-private:
-	OmThreadedCache<KEY,PTR> *const mTC;
-	const KEY mKey;
-
-	inline void handleFetchUpdate(PTR& val)
-	{
 		if(mTC->killingCache_.get()){
 			return;
 		}
 
-		doHandleFetchUpdate(val);
-	}
+		{
+			// update cache
+			zi::rwmutex::write_guard g(mTC->mutex_);
 
-	inline void doHandleFetchUpdate(PTR& val)
-	{
-		zi::guard g(mTC->mutex_);
-
-		if(val){
-			mTC->cache_.set(mKey, val);
-			mTC->keyAccessList_.touch(mKey);
+			if(val){
+				mTC->cache_.set(mKey, val);
+				mTC->keyAccessList_.touch(mKey);
+			}
+			mTC->currentlyFetching_.erase(mKey);
 		}
-		mTC->currentlyFetching_.erase(mKey);
 	}
 };
 

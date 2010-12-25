@@ -1,7 +1,15 @@
 #include "segment/lowLevel/omSegmentListBySize.h"
 
+void breakOnSeg(const OmSegID segID)
+{
+	if(4047 == segID){
+		printf("here");
+	}
+}
+
 void OmSegmentListBySize::InsertSegment(OmSegment* seg)
 {
+	breakOnSeg(seg->value());
 	do_insertSegment(seg->value(), seg->size());
 }
 
@@ -25,6 +33,8 @@ void OmSegmentListBySize::RemoveSegment(OmSegment* seg)
 
 void OmSegmentListBySize::UpdateFromJoin(OmSegment* root, OmSegment* child)
 {
+	breakOnSeg(root->value());
+	breakOnSeg(child->value());
 	do_incrementSegSize(root->value(), GetSegmentSize(child));
 	do_removeSegment(child->value());
 }
@@ -32,9 +42,17 @@ void OmSegmentListBySize::UpdateFromJoin(OmSegment* root, OmSegment* child)
 void OmSegmentListBySize::UpdateFromSplit(OmSegment* root, OmSegment* child,
 										  const int64_t newChildSize)
 {
+	breakOnSeg(root->value());
+	breakOnSeg(child->value());
+
 	assert(newChildSize > 0);
 	do_insertSegment(child->value(), newChildSize);
 	do_decrementSegSize(root->value(), newChildSize);
+}
+
+void breakOnNegativeVoxelSize()
+{
+	printf("negative voxel size\n");
 }
 
 void OmSegmentListBySize::do_incrementSegSize(const OmSegID segID_,
@@ -46,7 +64,9 @@ void OmSegmentListBySize::do_incrementSegSize(const OmSegID segID_,
 	if(iter != idIndex.end()){
 		const int64_t newSize = iter->segSize + addedSize;
 		mVoxels += addedSize;
-		assert(mVoxels > 0);
+		if(mVoxels < 0){
+			breakOnNegativeVoxelSize();
+		}
 		idIndex.erase(iter);
 		mList.insert(OmSegSize(segID_, newSize));
 	}
@@ -73,7 +93,9 @@ void OmSegmentListBySize::do_removeSegment(const OmSegID segID_)
 	List_by_ID::iterator iter = idIndex.find(segID_);
 	if(iter != idIndex.end()){
 		mVoxels -= iter->segSize;
-		assert(mVoxels > 0);
+		if(mVoxels < 0){
+			breakOnNegativeVoxelSize();
+		}
 		idIndex.erase(iter);
 	}
 }
@@ -83,7 +105,9 @@ void OmSegmentListBySize::do_insertSegment(const OmSegID segID_,
 {
 	mList.insert(OmSegSize(segID_, size_));
 	mVoxels += size_;
-	assert(mVoxels > 0);
+	if(mVoxels < 0){
+		breakOnNegativeVoxelSize();
+	}
 }
 
 void OmSegmentListBySize::advanceIter(List_by_size& sizeIndex,

@@ -4,16 +4,18 @@
 #include "utility/omLockedObjects.h"
 #include "utility/stringHelpers.h"
 
-#include <boost/make_shared.hpp>
-
 template <typename KEY, typename PTR>
 OmThreadedCache<KEY,PTR>::OmThreadedCache(const OmCacheGroupEnum group,
 										  const std::string& name,
-										  const int numThreads)
+										  const int numThreads,
+										  const om::ShouldThrottle throttle,
+										  const om::ShouldFifo fifo)
 	: OmCacheBase(group)
 	, name_(name)
 	, numThreads_(numThreads)
 	, cachesToClean_(boost::make_shared<LockedList<OldCachePtr> >())
+	, throttle_(throttle)
+	, fifo_(fifo)
 {
 	OmCacheManager::AddCache(group, this);
 	threadPool_.start(numThreads_);
@@ -57,20 +59,27 @@ void OmThreadedCache<KEY,PTR>::get(PTR &p_value,
 	} else if(blocking || !numThreads_){
 		p_value = HandleCacheMiss(key);
 		{
-			zi::guard g(mutex_);
+			zi::rwmutex::write_guard g(mutex_);
 			cache_.set(key, p_value);
 			keyAccessList_.touch(key);
 		}
 	} else {
-		if(threadPool_.getTaskCount() ==
-		   threadPool_.getMaxSimultaneousTaskCount()) {
-			return; // restrict number of tasks to process
+
+		if(om::THROTTLE == throttle_){
+			if(threadPool_.getTaskCount() ==
+			   threadPool_.getMaxSimultaneousTaskCount()) {
+				return; // restrict number of tasks to process
+			}
 		}
 
 		if(currentlyFetching_.insertSinceDidNotHaveKey(key) ){
 			CacheMissHandlerPtr task =
 				boost::make_shared<CacheMissHandler>(this, key);
-			threadPool_.addTaskFront(task);
+			if(om::FIFO == fifo_){
+				threadPool_.addTaskBack(task);
+			} else {
+				threadPool_.addTaskFront(task);
+			}
 		}
 	}
 }
@@ -133,7 +142,7 @@ int OmThreadedCache<KEY,PTR>::Clean(const bool okToRemoveOldest)
 template <typename KEY, typename PTR>
 int OmThreadedCache<KEY,PTR>::removeOldest()
 {
-	zi::guard g(mutex_);
+	zi::rwmutex::write_guard g(mutex_);
 
 	if(cache_.empty() || keyAccessList_.empty()){
 		return 0;
@@ -159,7 +168,7 @@ int OmThreadedCache<KEY,PTR>::GetFetchStackSize()
 }
 
 template <typename KEY, typename PTR>
-qint64 OmThreadedCache<KEY,PTR>::GetCacheSize()
+int64_t OmThreadedCache<KEY,PTR>::GetCacheSize()
 {
 	/*
 	  if(RAM_CACHE_GROUP == mCacheGroup ){
@@ -174,7 +183,7 @@ qint64 OmThreadedCache<KEY,PTR>::GetCacheSize()
 template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::Clear()
 {
-	zi::guard g(mutex_);
+	zi::rwmutex::write_guard g(mutex_);
 	cache_.clear();
 	curSize_.set(0);
 }
@@ -182,7 +191,7 @@ void OmThreadedCache<KEY,PTR>::Clear()
 template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::InvalidateCache()
 {
-	zi::guard g(mutex_);
+	zi::rwmutex::write_guard g(mutex_);
 
 	threadPool_.clear();
 

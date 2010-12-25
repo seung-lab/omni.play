@@ -24,6 +24,12 @@ my @hppFiles;
 
 sub processFile{
     my $file = $File::Find::name;
+
+    # exclude files containg #
+    if(/.*\#.*/){
+	return;
+    }
+
     if(/.*\.[cC](pp)?$/){
 	processCPP($file);
     }elsif(/.*\.[hH](pp)?$/){

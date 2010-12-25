@@ -63,11 +63,7 @@ int OmCacheGroup::Clean()
 		return 0;
 	}
 
-	std::cout << "cur size: "
-		  << StringHelpers::commaDeliminateNum(curSize)
-		  << " bytes; maxSize is: "
-		  << StringHelpers::commaDeliminateNum(mMaxSize)
-		  << "\n";
+	const uint64_t oldCurSize = curSize;
 
 	int numItemsRemoved = 0;
 
@@ -77,9 +73,16 @@ int OmCacheGroup::Clean()
 			return numItemsRemoved;
 		}
 
-		uint64_t oldCacheSize = cache->GetCacheSize();
+		const uint64_t oldCacheSize = cache->GetCacheSize();
 		numItemsRemoved += cache->Clean(false);
 		curSize -= (oldCacheSize - cache->GetCacheSize());
+	}
+
+	if(oldCurSize != curSize){
+		std::cout
+			<< "currently " << StringHelpers::commaDeliminateNum(curSize) << " bytes;"
+			<< " was: " << StringHelpers::commaDeliminateNum(oldCurSize) << " bytes;"
+			<< " max is: " << StringHelpers::commaDeliminateNum(mMaxSize) << "\n";
 	}
 
 	if(curSize < mMaxSize){

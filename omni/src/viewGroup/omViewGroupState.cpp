@@ -337,9 +337,9 @@ void OmViewGroupState::ToggleShatterMode()
 	mShatter = !mShatter;
 }
 
-std::pair<bool, SegmentDataWrapper> OmViewGroupState::GetSplitMode()
+std::pair<boost::optional<DataCoord>, SegmentDataWrapper> OmViewGroupState::GetSplitMode()
 {
-	return std::make_pair(mSplitting, *segmentBeingSplit_);
+	return std::make_pair(coordBeingSplit_, *segmentBeingSplit_);
 }
 
 void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
@@ -351,6 +351,7 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 		}
 		SetShowSplitMode(false);
 		OmStateManager::SetOldToolModeAndSendEvent();
+		coordBeingSplit_ = boost::optional<DataCoord>();
 	}
 
 	OmCacheManager::TouchFresheness();
@@ -358,9 +359,10 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 	OmEvents::Redraw2d();
 }
 
-void OmViewGroupState::SetSplitMode(const SegmentDataWrapper& sdw)
+void OmViewGroupState::SetSplitMode(const SegmentDataWrapper& sdw, DataCoord coord)
 {
 	segmentBeingSplit_->set(sdw);
+	coordBeingSplit_ = boost::optional<DataCoord>(coord);
 	SetSplitMode(true);
 }
 

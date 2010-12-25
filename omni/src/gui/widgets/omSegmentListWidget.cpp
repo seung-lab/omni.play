@@ -9,6 +9,7 @@
 #include "segment/omSegmentUtils.hpp"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
+#include "utility/stringHelpers.h"
 #include "viewGroup/omViewGroupState.h"
 #include "zi/omUtility.h"
 
@@ -61,10 +62,10 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(segDW));
 
 		const uint32_t numChildren = OmSegmentUtils::NumberOfDescendants(segDW);
-		row->setText(NUM_CHILD_COL, QString::number(numChildren));
+		row->setText(NUM_CHILD_COL, StringHelpers::commaDeliminateNumQT(numChildren));
 		row->setTextAlignment(NUM_CHILD_COL, Qt::AlignHCenter);
 
-		row->setText(SIZE_COL, QString::number(segDW.getSizeWithChildren()));
+		row->setText(SIZE_COL, StringHelpers::commaDeliminateNumQT(segDW.getSizeWithChildren()));
 		row->setTextAlignment(SIZE_COL, Qt::AlignHCenter);
 
 		row->setSelected(seg->IsSelected());

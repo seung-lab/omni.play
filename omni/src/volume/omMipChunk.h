@@ -55,7 +55,7 @@ public:
 	void ClearModifiedVoxelValues();
 
 	//mipchunk data accessors
-	const OmSegIDsSet & GetDirectDataValues();
+	const OmSegIDsSet & GetUniqueSegIDs();
 	void RefreshDirectDataValues(const bool, OmSegmentCache*);
 	void RefreshBoundingData(OmSegmentCache*);
 

@@ -2,11 +2,13 @@
 
 OmFilter2d::OmFilter2d()
 	: mAlpha(0.0)
+	, sdw_(SegmentationDataWrapper(1))
 {}
 
 OmFilter2d::OmFilter2d(const OmID omId)
 	: OmManageableObject(omId)
 	, mAlpha(0.0)
+	, sdw_(SegmentationDataWrapper(1))
 {}
 
 void OmFilter2d::SetSegmentation(const OmID id){

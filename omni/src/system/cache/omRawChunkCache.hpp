@@ -14,7 +14,10 @@ public:
 	OmRawChunkCache(OmMipVolume* vol)
 		: OmThreadedCache<OmMipChunkCoord,
 						  boost::shared_ptr<OmRawChunk<T> > >
-		  (RAM_CACHE_GROUP, "raw chunks", 0)
+		  (RAM_CACHE_GROUP,
+		   "raw chunks",
+		   0,
+		   om::DONT_THROTTLE)
 		, vol_(vol)
 	{}
 

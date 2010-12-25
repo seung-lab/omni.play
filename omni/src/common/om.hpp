@@ -2,7 +2,7 @@
 #define OM_HPP
 
 namespace om {
-	enum zeroMem {
+	enum ZeroMem {
 		ZERO_FILL,
 		DONT_ZERO_FILL
 	};
@@ -17,6 +17,28 @@ namespace om {
 	enum SetValid{
 		SET_VALID,
 		SET_NOT_VALID
+	};
+	enum ShouldThrottle {
+		THROTTLE,
+		DONT_THROTTLE
+	};
+	enum ShouldFifo {
+		FIFO,
+		DONT_FIFO
+	};
+	enum Affinity {
+		NO_AFFINITY,
+		X_AFFINITY,
+		Y_AFFINITY,
+		Z_AFFINITY
+	};
+	enum ShouldBufferWrites {
+		BUFFER_WRITES,
+		DONT_BUFFER_WRITES
+	};
+	enum AllowOverwrite {
+		WRITE_ONCE,
+		OVERWRITE
 	};
 }
 

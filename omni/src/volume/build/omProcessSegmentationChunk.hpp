@@ -37,7 +37,7 @@ public:
 		chunk_->containedValuesDataLoaded = true;
 		chunk_->WriteMetaData();
 		std::cout << "chunk " << coord_
-				  << " has " << chunk_->GetDirectDataValues().size()
+				  << " has " << chunk_->GetUniqueSegIDs().size()
 				  << " values\n";
 	}
 

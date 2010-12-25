@@ -5,8 +5,9 @@
 #include "datalayer/hdf5/omHdf5FileUtils.hpp"
 #include "datalayer/hdf5/omHdf5Manager.h"
 
-OmHdf5* OmHdf5::getHDF5(const std::string& fnp, const bool readOnly){
-	return OmHdf5Manager::getOmHdf5File(fnp, readOnly);
+OmHdf5* OmHdf5::getHDF5(const std::string& fnp, const bool readOnly, const om::Affinity aff){
+	printf("should be 1: %i\n", !om::NO_AFFINITY == aff);
+	return OmHdf5Manager::getOmHdf5File(fnp, readOnly, aff);
 }
 
 void OmHdf5::create()
@@ -19,7 +20,7 @@ void OmHdf5::open()
 {
 	zi::rwmutex::write_guard g(fileLock);
 	OmHdf5Impl* impl = new OmHdf5Impl(m_fileNameAndPath,
-					  readOnly_);
+					  readOnly_, aff_);
 	hdf5_ = boost::shared_ptr<OmHdf5Impl>(impl);
 }
 

@@ -1,20 +1,14 @@
-#include "mesh/omMeshSegmentListThread.h"
+#include "common/omCommon.h"
+#include "mesh/drawer/omMeshSegmentList.hpp"
+#include "mesh/drawer/omMeshSegmentListTask.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentIterator.h"
-#include "volume/omMipChunk.h"
-#include "mesh/omMeshSegmentList.h"
 #include "system/omEvents.h"
+#include "volume/omMipChunk.h"
 
-OmMeshSegmentListThread::OmMeshSegmentListThread(OmMipChunkPtr p_chunk,
-												 OmSegment * rootSeg)
-	: mChunk(p_chunk)
-	, mRootSeg(rootSeg)
+void OmMeshSegmentListTask::run()
 {
-}
-
-void OmMeshSegmentListThread::run()
-{
-	const OmSegIDsSet & chunkValues =  mChunk->GetDirectDataValues();
+	const OmSegIDsSet& chunkValues = mChunk->GetUniqueSegIDs();
 	OmSegmentIterator segIter(mRootSeg->GetSegmentCache());
 	segIter.iterOverSegmentID(mRootSeg->value());
 	OmSegment* seg = segIter.getNextSegment();
@@ -29,7 +23,7 @@ void OmMeshSegmentListThread::run()
 		seg = segIter.getNextSegment();
 	}
 
-	OmMeshSegmentList::addToCache(mChunk, mRootSeg, segmentsToDraw);
+	rootSegLists_->AddToCache(mChunk, mRootSeg, segmentsToDraw);
 	OmEvents::Redraw3d();
 	//	printf("done..(%u)\n", mRootSeg->value);
 }

@@ -4,11 +4,12 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/hdf5/omHdf5FileUtils.hpp"
 
-OmHdf5Impl::OmHdf5Impl(const std::string& fileName, const bool readOnly)
+OmHdf5Impl::OmHdf5Impl(const std::string& fileName, const bool readOnly, const om::Affinity aff)
 	: mReadOnly(readOnly)
+	, aff_(aff)
 {
 	fileId = OmHdf5FileUtils::file_open(fileName, mReadOnly);
-	OmHdf5LowLevel* hdf = new OmHdf5LowLevel(fileId);
+	OmHdf5LowLevel* hdf = new OmHdf5LowLevel(fileId, aff_);
 	hdf_ = boost::shared_ptr<OmHdf5LowLevel>(hdf);
 }
 

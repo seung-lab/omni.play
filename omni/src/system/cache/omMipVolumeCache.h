@@ -6,7 +6,9 @@
 #include "volume/omVolumeTypes.hpp"
 #include "volume/omMipChunkCoord.h"
 
-#include <boost/make_shared.hpp>
+/**
+ * cache is a mutex-lock map of chunk coords to OmMipChunk objects
+ **/
 
 class OmMipVolumeCache{
 public:

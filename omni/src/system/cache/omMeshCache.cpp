@@ -1,27 +1,24 @@
 #include "mesh/omMipMesh.h"
 #include "system/cache/omMeshCache.h"
 #include "mesh/omMipMeshManager.h"
+#include <zi/system.hpp>
 
-static const int NUM_THREADS = 3;
-
-OmMeshCache::OmMeshCache(OmMipMeshManager * parent)
+OmMeshCache::OmMeshCache(OmMipMeshManager* parent)
 	: OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr>(VRAM_CACHE_GROUP,
 													"Meshes",
-													NUM_THREADS)
+													zi::system::cpu_count,
+													om::THROTTLE,
+													om::FIFO)
 	, mOmMipMeshManager(parent)
-{
-}
+{}
 
 OmMipMeshPtr
 OmMeshCache::HandleCacheMiss(const OmMipMeshCoord& coord)
 {
-	OmMipMeshPtr mesh = mOmMipMeshManager->AllocMesh(coord);
+	OmMipMeshPtr mesh = mOmMipMeshManager->Produce(coord);
 
 	//load data from disk
-	try {
-		mesh->Load();
-	} catch (...) {
-	}
+	mesh->Load();
 
 	return mesh;
 }

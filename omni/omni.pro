@@ -81,7 +81,6 @@ HEADERS +=  \
 	src/common/omGl.h \
 	src/common/omStd.h \
 	src/datalayer/archive/omDataArchiveBoost.h \
-	src/datalayer/archive/omDataArchiveCoords.h \
 	src/datalayer/archive/omDataArchiveMipChunk.h \
 	src/datalayer/archive/omDataArchiveProject.h \
 	src/datalayer/archive/omDataArchiveSegment.h \
@@ -91,6 +90,7 @@ HEADERS +=  \
 	src/datalayer/fs/omIOnDiskFile.h \
 	src/datalayer/fs/omMemMappedFileQT.hpp \
 	src/datalayer/fs/omMemMappedVolume.hpp \
+	src/datalayer/fs/omVecInFile.hpp \
 	src/datalayer/hdf5/omHdf5.h \
 	src/datalayer/hdf5/omHdf5FileUtils.hpp \
 	src/datalayer/hdf5/omHdf5Impl.h \
@@ -212,11 +212,33 @@ HEADERS +=  \
 	src/mainpage.h \
 	src/mesh/detail/MipChunkMeshCollector.hpp \
 	src/mesh/detail/TriStripCollector.hpp \
+	src/mesh/drawer/omFindChunksToDraw.hpp \
+	src/mesh/drawer/omMeshDrawPlanner.hpp \
+	src/mesh/drawer/omMeshDrawer.h \
+	src/mesh/drawer/omMeshDrawerImpl.hpp \
+	src/mesh/drawer/omMeshPlan.h \
+	src/mesh/drawer/omMeshPlanCache.hpp \
+	src/mesh/drawer/omMeshSegmentList.hpp \
+	src/mesh/drawer/omMeshSegmentListTask.h \
+	src/mesh/drawer/omMeshSegmentListTypes.hpp \
+	src/mesh/io/omDataForMeshLoad.hpp \
+	src/mesh/io/omMeshConvertV1toV2.hpp \
+	src/mesh/io/omMeshConvertV1toV2Task.hpp \
+	src/mesh/io/omMeshMetadata.hpp \
+	src/mesh/io/v1/omMeshReaderV1.hpp \
+	src/mesh/io/v2/chunk/omMemMappedAllocFile.hpp \
+	src/mesh/io/v2/chunk/omMeshChunkAllocTable.hpp \
+	src/mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp \
+	src/mesh/io/v2/chunk/omMeshChunkDataWriterTaskV2.hpp \
+	src/mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp \
+	src/mesh/io/v2/chunk/omMeshChunkTypes.h \
+	src/mesh/io/v2/omMeshFilePtrCache.hpp \
+	src/mesh/io/v2/omMeshReaderV2.hpp \
+	src/mesh/io/v2/omMeshWriterV2.hpp \
+	src/mesh/io/v2/omRingBuffer.hpp \
+	src/mesh/io/v2/threads/omMeshWriterTaskV2.hpp \
 	src/mesh/omDrawOptions.h \
-	src/mesh/omMeshDrawer.h \
 	src/mesh/omMeshParams.hpp \
-	src/mesh/omMeshSegmentList.h \
-	src/mesh/omMeshSegmentListThread.h \
 	src/mesh/omMeshTypes.h \
 	src/mesh/omMipMesh.h \
 	src/mesh/omMipMeshCoord.h \
@@ -224,6 +246,7 @@ HEADERS +=  \
 	src/mesh/omVolumeCuller.h \
 	src/mesh/ziMesher.hpp \
 	src/project/omProject.h \
+	src/project/omProjectDataImpl.hpp \
 	src/segment/details/omSegmentListBySize2.hpp \
 	src/segment/details/omSegmentListContainer.hpp \
 	src/segment/details/omSegmentListsTypes.hpp \
@@ -298,7 +321,7 @@ HEADERS +=  \
 	src/tiles/omTile.h \
 	src/tiles/omTileCoord.h \
 	src/tiles/omTileDumper.hpp \
-	src/tiles/omTilePreFetcher.hpp \
+	src/tiles/omTilePreFetcher.h \
 	src/tiles/omTilePreFetcherTask.hpp \
 	src/tiles/omTileTypes.hpp \
 	src/utility/channelDataWrapper.hpp \
@@ -321,6 +344,7 @@ HEADERS +=  \
 	src/utility/omSmartPtr.hpp \
 	src/utility/omSystemInformation.h \
 	src/utility/omThreadPool.hpp \
+	src/utility/omThreadPoolManager.h \
 	src/utility/omTimer.h \
 	src/utility/segmentDataWrapper.hpp \
 	src/utility/segmentationDataWrapper.hpp \
@@ -359,6 +383,7 @@ HEADERS +=  \
 	src/view3d/omView3dWidget.h \
 	src/view3d/widgets/omChunkExtentWidget.h \
 	src/view3d/widgets/omInfoWidget.h \
+	src/view3d/widgets/omPercDone.hpp \
 	src/view3d/widgets/omSelectionWidget.h \
 	src/view3d/widgets/omViewBoxWidget.h \
 	src/view3d/widgets/omVolumeAxisWidget.h \
@@ -409,6 +434,8 @@ HEADERS +=  \
 	src/zi/watershed/MemMap.hpp \
 	src/zi/watershed/RawQuickieWS.h \
 	tests/cache/lockedObjectsTests.hpp \
+	tests/datalayer/omMeshChunkAllocTableTests.hpp \
+	tests/datalayer/vecInFileTests.hpp \
 	tests/fakeMemMapFile.hpp \
 	tests/segment/mockSegments.hpp \
 	tests/segment/omSegmentListBySizeTests.hpp \
@@ -436,7 +463,6 @@ SOURCES +=  \
 	src/common/omCommon.cpp \
 	src/common/omGl.cpp \
 	src/datalayer/archive/omDataArchiveBoost.cpp \
-	src/datalayer/archive/omDataArchiveCoords.cpp \
 	src/datalayer/archive/omDataArchiveMipChunk.cpp \
 	src/datalayer/archive/omDataArchiveProject.cpp \
 	src/datalayer/archive/omDataArchiveSegment.cpp \
@@ -496,9 +522,9 @@ SOURCES +=  \
 	src/gui/widgets/omSegmentListWidget.cpp \
 	src/headless/headless.cpp \
 	src/main.cpp \
-	src/mesh/omMeshDrawer.cpp \
-	src/mesh/omMeshSegmentList.cpp \
-	src/mesh/omMeshSegmentListThread.cpp \
+	src/mesh/drawer/omMeshDrawer.cpp \
+	src/mesh/drawer/omMeshSegmentListTask.cpp \
+	src/mesh/io/v2/chunk/omMeshChunkAllocTable.cpp \
 	src/mesh/omMipMesh.cpp \
 	src/mesh/omMipMeshCoord.cpp \
 	src/mesh/omMipMeshManager.cpp \
@@ -546,6 +572,7 @@ SOURCES +=  \
 	src/utility/channelDataWrapper.cpp \
 	src/utility/fileHelpers.cpp \
 	src/utility/omSystemInformation.cpp \
+	src/utility/omThreadPoolManager.cpp \
 	src/utility/stringHelpers.cpp \
 	src/view2d/omLineDraw.cpp \
 	src/view2d/omOnScreenTileCoords.cpp \
@@ -647,7 +674,7 @@ CONFIG(release, debug|release) {
 # GCC Parallel Mode support
 linux-g++ {
     system( g++ --version | grep -e "4.[3-9]" ) {
-        message( g++ Parallel Mode supported (probably) )
+        message( assuming g++ Parallel Mode supported )
         QMAKE_CXXFLAGS += -DZI_USE_OPENMP -fopenmp
         QMAKE_LFLAGS   += -DZI_USE_OPENMP -fopenmp
     }

@@ -3,7 +3,6 @@
 #include "mesh/omMipMeshManager.h"
 #include "common/omException.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
-#include "datalayer/archive/omDataArchiveCoords.h"
 #include "datalayer/archive/omDataArchiveProject.h"
 #include "datalayer/omIDataReader.h"
 #include "datalayer/omIDataWriter.h"
@@ -25,7 +24,7 @@
 
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
-static const int Omni_Version = 20;
+static const int Omni_Version = 21;
 static const QString Omni_Postfix("OMNI");
 static int fileVersion_;
 
@@ -387,6 +386,8 @@ QDataStream &operator>>(QDataStream& in, OmSegmentation& seg)
 	seg.mst_->Read();
 	seg.validGroupNum_->Load();
 	seg.mSegmentCache->refreshTree();
+
+	seg.mMipMeshManager->Load();
 
 	return in;
 }

@@ -8,6 +8,7 @@
  */
 
 #include "common/omCommon.h"
+#include "zi/omUtility.h"
 
 #include <QDir>
 
@@ -16,51 +17,43 @@ class OmDataLayer;
 class OmIDataReader;
 class OmIDataWriter;
 class OmSegment;
-class OmTileCache;
+class OmProjectDataImpl;
 
-class OmProjectData : boost::noncopyable {
+class OmProjectData : om::singletonBase<OmProjectData> {
+private:
+	boost::shared_ptr<OmProjectDataImpl> impl_;
+
 public:
 	static void instantiateProjectData(const std::string& fileNameAndPath);
 
-	static OmProjectData* Instance();
 	static void Delete();
 
 	static QString getFileNameAndPath();
 	static QString getAbsoluteFileNameAndPath();
 	static QString getAbsolutePath();
-	static QDir GetFilesFolderPath();
+	static const QDir& GetFilesFolderPath();
 
 	static void Create();
 	static void Open();
 	static void Close();
 	static void DeleteInternalData(const OmDataPath & path);
 
-	static bool IsOpen() {return Instance()->mIsOpen;}
-	static bool IsReadOnly() {return Instance()->mIsReadOnly;}
+	static bool IsOpen();
+	static bool IsReadOnly();
 
 	static OmIDataReader* GetProjectIDataReader();
 	static OmIDataWriter* GetIDataWriter();
 
-	static int getFileVersion(){ return Instance()->fileVersion_; }
+	static int getFileVersion();
 
 private:
 	OmProjectData();
 	~OmProjectData(){}
 
-	//singleton
-	static OmProjectData* mspInstance;
-
-	static void setFileVersion(const int v){ Instance()->fileVersion_ = v; }
-	int fileVersion_;
-
-	bool mIsOpen;
-	bool mIsReadOnly;
-
-	void setupDataLayer(const std::string&);
-	OmIDataReader* dataReader;
-	OmIDataWriter* dataWriter;
+	static void setFileVersion(const int fileVersion);
 
 	friend class OmDataArchiveProject;
+	friend class zi::singleton<OmProjectData>;
 };
 
 #endif

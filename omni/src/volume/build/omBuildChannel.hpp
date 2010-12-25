@@ -39,9 +39,10 @@ public:
 		OmTimer build_timer;
 		startTiming(type, build_timer);
 
-		OmVolumeBuilder<OmChannel> builder(mChann);
+		OmVolumeBuilder<OmChannel> builder(mChann, mChann->GetAffinity());
 		builder.SetSourceFilenamesAndPaths( mFileNamesAndPaths );
-		OmDataPath path(OmDataPaths::getDefaultHDF5channelDatasetName());
+		OmDataPath path(OmDataPaths::getDefaultHDF5channelDatasetName(mChann->GetAffinity()));
+
 		builder.Build(path);
 
 		stopTimingAndSave(type, build_timer);

@@ -71,6 +71,15 @@ public:
 
 	bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
 
+	OmSegmentEdge SplitSegment( const OmSegID, const DataCoord, const DataCoord )
+	{
+		printf("SplitSegment is NYI.\n"); 
+		return OmSegmentEdge(0,0,0.0);
+	}
+	void UnSplitSegment( const OmSegmentEdge & )
+	{
+		printf("UnSplitSegment is NYI.\n"); 
+	}
 private:
 	zi::mutex mutex_;
 	OmSegmentation *const mSegmentation;

@@ -48,9 +48,6 @@ public:
 	DataCoord Coordinate;
 
 	friend std::ostream& operator<<(std::ostream &out, const OmMipChunkCoord &in);
-
-	friend QDataStream &operator<<(QDataStream & out, const OmMipChunkCoord & c );
-	friend QDataStream &operator>>(QDataStream & in, OmMipChunkCoord & c );
 };
 
 #endif

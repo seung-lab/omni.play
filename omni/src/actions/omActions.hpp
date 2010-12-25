@@ -47,7 +47,7 @@ public:
 							 const OmSegIDsSet& ids);
 
 	static void FindAndSplitSegments(const SegmentDataWrapper& sdw,
-									 OmViewGroupState* vgs);
+									 OmViewGroupState* vgs, const DataCoord coord);
 	static void FindAndCutSegments(const SegmentDataWrapper& sdw,
 									 OmViewGroupState* vgs);
 

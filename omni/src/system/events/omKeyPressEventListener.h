@@ -30,6 +30,9 @@ protected:
 		case Qt::Key_Down:
 			PressDown(event);
 			break;
+		case Qt::Key_R:
+			OmSegmentSelected::RandomizeColor();
+			break;
 		default:
 			break;
 		}

@@ -27,7 +27,8 @@ public:
 	void makeSegmentationActive(const SegmentDataWrapper& sdw,
 								const bool doScroll );
 
-	SegmentationDataWrapper dealWithSegmentObjectModificationEvent(OmSegmentEvent* event);
+	SegmentationDataWrapper
+	dealWithSegmentObjectModificationEvent(OmSegmentEvent* event);
 
 	void userJustClickedInThisSegmentList();
 	void rebuildSegmentList(const SegmentDataWrapper& sdw);

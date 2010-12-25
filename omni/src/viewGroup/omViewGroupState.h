@@ -61,16 +61,20 @@ public:
 	void setBreakThreshold(float t){ mBreakThreshold = t; }
 	float getBreakThreshold(){ return mBreakThreshold; }
 
-	void setDustThreshold(unsigned int t){ mDustThreshold = t; }
-	unsigned int getDustThreshold(){ return mDustThreshold; }
+	void setDustThreshold(uint64_t t){
+		mDustThreshold = t;
+	}
+	uint64_t getDustThreshold(){
+		return mDustThreshold;
+	}
 
 	void SetToolBarManager(ToolBarManager * tbm);
 	bool GetShatterMode();
 	void SetShatterMode(bool shatter);
 	void ToggleShatterMode();
 
-	std::pair<bool, SegmentDataWrapper> GetSplitMode();
-	void SetSplitMode(const SegmentDataWrapper& sdw);
+	std::pair<boost::optional<DataCoord>, SegmentDataWrapper> GetSplitMode();
+	void SetSplitMode(const SegmentDataWrapper& sdw, DataCoord coord);
 	void SetSplitMode(bool onoroff, bool postEvent = true);
 	void SetBreakOnSplitMode(bool mode);
 
@@ -101,7 +105,7 @@ private:
 	boost::shared_ptr<OmBrushSize> brushSize_;
 
 	float mBreakThreshold;
-	unsigned int mDustThreshold;
+	uint64_t mDustThreshold;
 
 	//view event
 	float mXYSlice[6], mYZSlice[6], mXZSlice[6];
@@ -139,6 +143,7 @@ private:
 						const OmSegmentColorCacheType);
 
 	boost::shared_ptr<SegmentDataWrapper> segmentBeingSplit_;
+	boost::optional<DataCoord> coordBeingSplit_;
 };
 
 #endif

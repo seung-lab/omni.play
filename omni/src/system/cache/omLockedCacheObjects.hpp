@@ -64,7 +64,7 @@ class LockedKeySet{
 public:
 	virtual ~LockedKeySet(){}
 	bool insertSinceDidNotHaveKey(const KEY k){
-		zi::guard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		if(set_.count(k) > 0){
 			return false;
 		}
@@ -72,20 +72,20 @@ public:
 		return true;
 	}
 	void insert(const KEY& k){
-		zi::guard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		set_.insert(k);
 	}
 	void erase(const KEY& k){
-		zi::guard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		set_.erase(k);
 	}
 	void clear(){
-		zi::guard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		set_.clear();
 	}
 private:
 	std::set<KEY> set_;
-	zi::mutex mutex_;
+	zi::rwmutex mutex_;
 };
 
 template <typename KEY>
@@ -135,7 +135,7 @@ public:
 	virtual ~LockedKeyMultiIndex()
 	{}
 	KEY remove_oldest(){
-		zi::guard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		if(list_.empty()){
 			return KEY();
 		}
@@ -144,28 +144,28 @@ public:
 		return ret;
 	}
 	void touch(const KEY& key){
-		zi::guard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		std::pair<iterator, bool> p = list_.push_back(key);
 		if(!p.second){ // key already in list
 			list_.relocate(list_.end(), p.first);
 		}
 	}
 	void touchPrefetch(const KEY& key){
-		zi::guard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		// add to front (make LRU), or don't adjust position
 		list_.push_front(key);
 	}
 	bool empty() const {
-		zi::guard g(mutex_);
+		zi::rwmutex::read_guard g(mutex_);
 		return list_.empty();
 	}
 	void clear(){
-		zi::guard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		list_.clear();
 	}
 
 private:
-	zi::mutex mutex_;
+	zi::rwmutex mutex_;
 
 	typedef boost::multi_index::multi_index_container<
 		KEY,

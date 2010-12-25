@@ -182,7 +182,8 @@ void SegmentListBase::rebuildSegmentList(const SegmentDataWrapper& sdw)
 	makeSegmentationActive(sdw, true);
 }
 
-SegmentationDataWrapper SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
+SegmentationDataWrapper
+SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent* event)
 {
 	SegmentationDataWrapper newsdw;
 	bool doScroll = event->getDoScroll();

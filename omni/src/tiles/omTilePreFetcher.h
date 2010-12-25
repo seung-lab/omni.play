@@ -10,9 +10,12 @@ class OmView2dState;
 class OmTilePreFetcher{
 public:
 	OmTilePreFetcher();
+	~OmTilePreFetcher();
 
 	void RunTasks(const std::list<OmTileDrawer*>&);
-	void StopTasks();
+	void ClearTasks();
+
+	void Shutdown();
 
 private:
 	OmThreadPool mThreadPool;

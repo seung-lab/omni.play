@@ -18,10 +18,10 @@
 ///////          Context Menu Methods
 
 void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
-								   OmViewGroupState* vgs)
+								   OmViewGroupState* vgs, const DataCoord coord)
 {
 	sdw_ = sdw;
-
+	coord_ = coord;
 	mViewGroupState = vgs;
 
 	//clear old menu actions
@@ -142,7 +142,7 @@ void OmSegmentContextMenu::splitSegments()
 {
 	mViewGroupState->SetShowSplitMode(true);
 	OmStateManager::SetToolModeAndSendEvent(SPLIT_MODE);
-	mViewGroupState->SetSplitMode(sdw_);
+	mViewGroupState->SetSplitMode(sdw_, coord_);
 }
 
 void OmSegmentContextMenu::cutSegments()

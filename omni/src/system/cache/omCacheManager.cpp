@@ -2,7 +2,6 @@
 #include "system/cache/omCacheManagerImpl.hpp"
 
 OmCacheManager::OmCacheManager()
-	: impl_(new OmCacheManagerImpl())
 {}
 
 void OmCacheManager::Delete(){

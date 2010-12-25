@@ -38,6 +38,8 @@ public:
 	virtual ObjectType getVolumeType() = 0;
 	virtual OmID getID() = 0;
 	virtual OmMipVolumeCache* getDataCache() = 0;
+	virtual om::Affinity GetAffinity() = 0;
+	virtual void SetAffinity(om::Affinity) { }
 
 	inline bool IsVolumeReadyForDisplay() const {
 		return MIPVOL_UNBUILT != mBuildState;

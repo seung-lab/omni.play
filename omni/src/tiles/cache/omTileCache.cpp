@@ -2,7 +2,6 @@
 #include "tiles/cache/omTileCacheImpl.hpp"
 
 OmTileCache::OmTileCache()
-	: impl_(new OmTileCacheImpl())
 {}
 
 void OmTileCache::Delete(){

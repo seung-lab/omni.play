@@ -22,6 +22,7 @@ private:
 	const OmDataPath inpath_;
 	boost::shared_ptr<QFile> mip0volFile_;
 	const std::vector<QFileInfo>& files_;
+	const om::Affinity aff_;
 
 	Vector3i volSize_;
 	OmIDataReader* hdf5reader_;
@@ -29,12 +30,15 @@ private:
 
 public:
 	OmVolumeImporterHDF5(VOL* vol, const OmDataPath& inpath,
-						 const std::vector<QFileInfo>& files)
+						 const std::vector<QFileInfo>& files,
+						 const om::Affinity aff)
 		: vol_(vol)
 		, inpath_(inpath)
 		, files_(files)
+		, aff_(aff)
 	{
-		hdf5reader_ = OmDataLayer::getReader(getHDFfileNameAndPath(), true);
+		printf("1 aff_ %i\n", aff_);		
+		hdf5reader_ = OmDataLayer::getReader(getHDFfileNameAndPath(), true, aff_);
 		hdf5reader_->open();
 
 		src_path_ = getHDFsrcPath();
@@ -82,6 +86,7 @@ public:
 
 	OmVolDataType DetermineDataType()
 	{
+		//const DataBbox chunk_bbox(Vector3i(0,0,0), Vector3i(1,1,1));
 		const DataBbox chunk_bbox(Vector3i(0,0,0), Vector3i(1,0,0));
 
 		OmDataWrapperPtr data = hdf5reader_->readChunk(src_path_, chunk_bbox);
