@@ -59,7 +59,7 @@ public:
 	{
 		init();
 
-		meshWriter_->Stop();
+		meshWriter_->Join();
 
 		segmentation_->MeshManager()->Metadata()->SetMeshedAndStorageAsChunkFiles();
 	}

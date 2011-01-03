@@ -78,7 +78,7 @@ sub updateFolder {
 	updateDoxygenConfigFile( $svn_ver, $output_folder_base, $output_folder_rev, $src_path );
 
 	print "==> running doxygen...\n\tdoxygen warnings:\n";
-	`doxygen`;
+	`/home/buildbox/bin/doxygen/bin/doxygen`;
 	print "\n\ndone!\n";
 }
 
