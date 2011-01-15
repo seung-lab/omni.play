@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 #include "common/omDebug.h"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipChunkCoord.h"
@@ -130,8 +130,8 @@ private:
 				++tileNum;
 				printf("%s %s of %s tiles copied",
 					   qPrintable(mMsg),
-					   StringHelpers::commaDeliminateNum(tileNum).c_str(),
-					   StringHelpers::commaDeliminateNum(totalTilesInSlice_).c_str());
+					   OmStringHelpers::CommaDeliminateNum(tileNum).c_str(),
+					   OmStringHelpers::CommaDeliminateNum(totalTilesInSlice_).c_str());
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/io/omMST.h"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentLists.hpp"
 #include "segment/lowLevel/omSegmentGraph.h"
@@ -98,7 +98,7 @@ quint32 OmSegmentGraph::getNumTopLevelSegs()
 void OmSegmentGraph::setGlobalThreshold(boost::shared_ptr<OmMST> mst)
 {
 	printf("\t %s edges...",
-		   StringHelpers::commaDeliminateNum(mst->NumEdges()).c_str());
+		   OmStringHelpers::CommaDeliminateNum(mst->NumEdges()).c_str());
 	fflush(stdout);
 
 	OmTimer timer;

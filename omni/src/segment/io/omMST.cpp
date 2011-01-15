@@ -9,7 +9,7 @@
 #include "segment/omSegmentCache.h"
 #include "system/omProjectData.h"
 #include "utility/omSmartPtr.hpp"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 #include "volume/omSegmentation.h"
 
 static const double DefaultThresholdSize = 0.5;

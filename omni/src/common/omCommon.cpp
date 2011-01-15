@@ -1,4 +1,5 @@
 #include "common/omCommon.h"
+#include <QTextStream>
 
 std::ostream& operator<<(std::ostream &out, const OmColor& c)
 {
@@ -18,3 +19,25 @@ std::ostream& operator<<(std::ostream &out, const OmColorRGBA& c)
 		<< "]";
 	return out;
 }
+
+bool operator<(const OmColor& a, const OmColor& b)
+{
+	if(a.red != b.red){
+		return a.red < b.red;
+	}
+
+	if(a.green != b.green){
+		return a.green < b.green;
+	}
+
+	return a.blue < b.blue;
+}
+
+QTextStream &operator<<(QTextStream& out, const OmColor& c)
+{
+	out << c.red << "\t";
+	out << c.green << "\t";
+	out << c.blue;
+	return out;
+}
+

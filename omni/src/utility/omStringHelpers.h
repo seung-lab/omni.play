@@ -2,23 +2,23 @@
 #define STRING_HELPERS_H
 
 #include "common/omCommon.h"
-#include <QStringList>
 #include "zi/omUtility.h"
 
-class StringHelpers
-{
- public:
+#include <QStringList>
+
+class OmStringHelpers{
+public:
 	static QString getStringFromSegmentSet( const OmSegIDsSet & data_set );
 	static QString getStringFromIDset( const OmIDsSet & data_set );
 	static QString getStringFromStringList( const QStringList & data_set );
 
 	template <typename T>
-	inline static std::string commaDeliminateNum(const T num){
-		return commaDeliminateNumQT(num).toStdString();
+	inline static std::string CommaDeliminateNum(const T num){
+		return CommaDeliminateNumQT(num).toStdString();
 	}
 
 	template <typename T>
-	inline static QString commaDeliminateNumQT(const T num)
+	inline static QString CommaDeliminateNumQT(const T num)
 	{
 		const std::string rawNumAsStr = QString::number(num).toStdString();
 
@@ -28,7 +28,8 @@ class StringHelpers
 			++counter;
 			ret.prepend( (*i) );
 			if( 0 == ( counter % 3 ) &&
-				counter != rawNumAsStr.size() ){
+				counter != rawNumAsStr.size() )
+			{
 				ret.prepend(',');
 			}
 		}

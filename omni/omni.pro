@@ -312,6 +312,7 @@ HEADERS +=  \
 	src/system/omPreferenceDefinitions.h \
 	src/system/omPreferences.h \
 	src/system/omProjectData.h \
+	src/system/omQTApp.hpp \
 	src/system/omStateManager.h \
 	src/tiles/cache/omTileCache.h \
 	src/tiles/cache/omTileCacheChannel.hpp \
@@ -338,10 +339,12 @@ HEADERS +=  \
 	src/utility/localPrefFiles.h \
 	src/utility/localPrefFilesImpl.hpp \
 	src/utility/omChunkVoxelWalker.hpp \
+	src/utility/omColorUtils.hpp \
 	src/utility/omLockedObjects.h \
 	src/utility/omLockedPODs.hpp \
 	src/utility/omRand.hpp \
 	src/utility/omSmartPtr.hpp \
+	src/utility/omStringHelpers.h \
 	src/utility/omSystemInformation.h \
 	src/utility/omThreadPool.hpp \
 	src/utility/omThreadPoolManager.h \
@@ -350,7 +353,6 @@ HEADERS +=  \
 	src/utility/segmentationDataWrapper.hpp \
 	src/utility/setUtilities.h \
 	src/utility/sortHelpers.h \
-	src/utility/stringHelpers.h \
 	src/view2d/details/omMidpointCircleAlgorithm.hpp \
 	src/view2d/om2dPreferences.hpp \
 	src/view2d/omDisplayInfo.hpp \
@@ -571,9 +573,9 @@ SOURCES +=  \
 	src/tiles/omTilePreFetcherTask.cpp \
 	src/utility/channelDataWrapper.cpp \
 	src/utility/fileHelpers.cpp \
+	src/utility/omStringHelpers.cpp \
 	src/utility/omSystemInformation.cpp \
 	src/utility/omThreadPoolManager.cpp \
-	src/utility/stringHelpers.cpp \
 	src/view2d/omLineDraw.cpp \
 	src/view2d/omOnScreenTileCoords.cpp \
 	src/view2d/omTileDrawer.cpp \

@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 #include "volume/omMipVolume.h"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 #include "datalayer/fs/omFileNames.hpp"
 
 #include <QFile>
@@ -43,7 +43,7 @@ private:
 		const uint64_t size = dims.x * dims.y * dims.z * bps;
 
 		std::cout << "mip " << level << ": size is: "
-				  << StringHelpers::commaDeliminateNum(size)
+				  << OmStringHelpers::CommaDeliminateNum(size)
 				  << " (" << dims.x
 				  << "," << dims.y
 				  << "," << dims.z

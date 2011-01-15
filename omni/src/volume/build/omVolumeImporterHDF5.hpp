@@ -11,7 +11,7 @@
 #include "datalayer/omDataLayer.h"
 #include "volume/omMipChunk.h"
 #include "system/omProjectData.h"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 
 #include <QFileInfoList>
 

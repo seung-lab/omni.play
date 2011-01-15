@@ -6,7 +6,7 @@
 #include "datalayer/fs/omMemMappedFileQT.hpp"
 #include "project/omProject.h"
 #include "system/omProjectData.h"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 #include "volume/omMipChunkCoord.h"
 #include "volume/omVolumeTypes.hpp"
 #include "volume/omChannel.h"
@@ -59,7 +59,7 @@ public:
 			const int64_t size = dims.x * dims.y * dims.z * bps;
 
 			std::cout << "mip " << level << ": size is: "
-					  << StringHelpers::commaDeliminateNum(size)
+					  << OmStringHelpers::CommaDeliminateNum(size)
 					  << " (" << dims.x
 					  << "," << dims.y
 					  << "," << dims.z

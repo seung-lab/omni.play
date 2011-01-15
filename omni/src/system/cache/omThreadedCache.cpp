@@ -2,7 +2,7 @@
 #include "system/cache/omHandleCacheMissTask.hpp"
 #include "system/cache/omThreadedCache.h"
 #include "utility/omLockedObjects.h"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 
 template <typename KEY, typename PTR>
 OmThreadedCache<KEY,PTR>::OmThreadedCache(const OmCacheGroupEnum group,
@@ -173,7 +173,7 @@ int64_t OmThreadedCache<KEY,PTR>::GetCacheSize()
 	/*
 	  if(RAM_CACHE_GROUP == mCacheGroup ){
 	  std::cout << "current cache (" << getGroupName() << ") size is :"
-	  << StringHelpers::commaDeliminateNumber(curSize_.get()).toStdString()
+	  << OmStringHelpers::CommaDeliminateNumber(curSize_.get()).toStdString()
 	  << " bytes\n";
 	  }
 	*/

@@ -2,7 +2,7 @@
 #include "system/cache/omMipVolumeCache.h"
 #include "datalayer/hdf5/omHdf5LowLevel.h"
 #include "project/omProject.h"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 #include "common/omDebug.h"
 #include "common/omException.h"
 #include "common/omStd.h"

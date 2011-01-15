@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 #include "system/omManageableObject.h"
-#include "utility/omRand.hpp"
+#include "utility/omColorUtils.hpp"
 
 class OmGroup : public OmManageableObject {
 public:
@@ -12,12 +12,12 @@ public:
 	OmGroup(OmID id)
 		: OmManageableObject(id)
 	{
-		mColor = OmRand::GetRandomColor();
+		mColor = OmColorUtils::GetRandomColor();
 	}
 
 	OmGroup(const OmSegIDsSet& ids)
 	{
-		mColor = OmRand::GetRandomColor();
+		mColor = OmColorUtils::GetRandomColor();
 		AddIds(ids);
 	}
 

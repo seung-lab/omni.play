@@ -14,7 +14,7 @@
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "utility/sortHelpers.h"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 
 #include <boost/make_shared.hpp>
 
@@ -53,7 +53,7 @@ QGroupBox* SegInspector::makeStatsBox()
 	grid->addWidget( labelNumSegments, 0, 0 );
 	QLabel *labelNumSegmentsNum = new QLabel(statsBox);
 
-	QString commaNumSegs = StringHelpers::commaDeliminateNumQT(sdw_.getNumberOfSegments());
+	QString commaNumSegs = OmStringHelpers::CommaDeliminateNumQT(sdw_.getNumberOfSegments());
 	labelNumSegmentsNum->setText( commaNumSegs );
 	grid->addWidget( labelNumSegmentsNum, 0, 1 );
 
@@ -63,7 +63,7 @@ QGroupBox* SegInspector::makeStatsBox()
 	grid->addWidget( labelNumTopSegments, 1, 0 );
 	QLabel *labelNumTopSegmentsNum = new QLabel(statsBox);
 
-	QString commaNumTopSegs = StringHelpers::commaDeliminateNumQT(sdw_.getNumberOfTopSegments());
+	QString commaNumTopSegs = OmStringHelpers::CommaDeliminateNumQT(sdw_.getNumberOfTopSegments());
 	labelNumTopSegmentsNum->setText( commaNumTopSegs );
 	grid->addWidget( labelNumTopSegmentsNum, 1, 1 );
 

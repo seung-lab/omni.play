@@ -5,6 +5,10 @@
 
 class LocalPrefFiles : private om::singletonBase<LocalPrefFiles> {
 public:
+	static bool SettingExists(const QString& setting){
+		return instance().impl_->settingExists(setting);
+	}
+
 // bool
 	inline static bool readSettingBool(const QString& setting,
 									   const bool defaultRet)
