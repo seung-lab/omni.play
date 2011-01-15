@@ -9,7 +9,7 @@
 #include "segment/omSegmentCache.h"
 #include "system/omProjectData.h"
 #include "utility/omSmartPtr.hpp"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 #include "volume/omSegmentation.h"
 
 static const float DefaultThresholdSize = 0.5;
@@ -102,9 +102,9 @@ bool OmMSTold::importDend(OmIDataReader* hdf5reader)
 	int dendSize;
 	mDend = hdf5reader->readDataset(fpath, &dendSize);
 	printf("\tdendrogram is %s x %s (%s bytes)\n",
-		   StringHelpers::commaDeliminateNum(dSize.x).c_str(),
-		   StringHelpers::commaDeliminateNum(dSize.y).c_str(),
-		   StringHelpers::commaDeliminateNum(dendSize).c_str());
+		   OmStringHelpers::CommaDeliminateNum(dSize.x).c_str(),
+		   OmStringHelpers::CommaDeliminateNum(dSize.y).c_str(),
+		   OmStringHelpers::CommaDeliminateNum(dendSize).c_str());
 
 	mDendCount = dSize.y;
 
@@ -125,9 +125,9 @@ bool OmMSTold::importDendValues(OmIDataReader * hdf5reader)
 	mDendValues = hdf5reader->readDataset(fpath, &dendValuesSize);
 
 	printf("\tdendrogram values is %s x %s (%s bytes)\n",
-		   StringHelpers::commaDeliminateNum(vSize.x).c_str(),
-		   StringHelpers::commaDeliminateNum(vSize.y).c_str(),
-		   StringHelpers::commaDeliminateNum(dendValuesSize).c_str());
+		   OmStringHelpers::CommaDeliminateNum(vSize.x).c_str(),
+		   OmStringHelpers::CommaDeliminateNum(vSize.y).c_str(),
+		   OmStringHelpers::CommaDeliminateNum(dendValuesSize).c_str());
 
 	return true;
 }

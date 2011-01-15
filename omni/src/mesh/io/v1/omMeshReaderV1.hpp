@@ -25,27 +25,15 @@ public:
 
 	bool IsAnyMeshDataPresent()
 	{
-		const int level = 0;
+		const OmMipChunkCoord coord(0, 0, 0, 0);
 
-		const Vector3i dims = segmentation_->MipLevelDimensionsInMipChunks(level);
+		OmMipChunkPtr chunk;
+		segmentation_->GetChunk(chunk, coord);
+		const OmSegIDsSet& segIDs = chunk->GetUniqueSegIDs();
 
-		for (int z = 0; z < dims.z; ++z){
-			for (int y = 0; y < dims.y; ++y){
-				for (int x = 0; x < dims.x; ++x){
-
-					const OmMipChunkCoord coord(level, x, y, z);
-
-					OmMipChunkPtr chunk;
-					segmentation_->GetChunk(chunk, coord);
-					const OmSegIDsSet& segIDs =
-						chunk->GetUniqueSegIDs();
-
-					FOR_EACH(segID, segIDs){
-						if(isMeshDataPresent(*segID, coord)){
-							return true;
-						}
-					}
-				}
+		FOR_EACH(segID, segIDs){
+			if(isMeshDataPresent(*segID, coord)){
+				return true;
 			}
 		}
 

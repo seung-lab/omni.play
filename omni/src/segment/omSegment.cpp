@@ -2,7 +2,7 @@
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentIterator.h"
-#include "utility/omRand.hpp"
+#include "utility/omColorUtils.hpp"
 
 void OmSegment::setParent(OmSegment* parent, const double threshold)
 {
@@ -18,7 +18,7 @@ void OmSegment::setParent(OmSegment* parent, const double threshold)
 ///////         Color
 void OmSegment::RandomizeColor()
 {
-	data_->color = OmRand::GetRandomColor(data_->color);
+	data_->color = OmColorUtils::GetRandomColor(data_->color);
 
 	debugs(segmentBuild) << "final color values: "
 						 << (int)data_->color.red << ","

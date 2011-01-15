@@ -11,6 +11,17 @@
 class OmLocalPreferences : private om::singletonBase<OmLocalPreferences> {
 public:
 
+// font
+	static bool FontSizeWasSet(){
+		return LocalPrefFiles::SettingExists("fontSize");
+	}
+	static int32_t FontSize(){
+		return LocalPrefFiles::readSettingNumber<int32_t>("fontSize", 12);
+	}
+	static void FontSize(const int fontSize){
+		LocalPrefFiles::writeSettingNumber<int32_t>("fontSize", fontSize);
+	}
+
 // max number of mesh worker threads
 	static int32_t numAllowedWorkerThreads()
 	{
@@ -22,8 +33,7 @@ public:
 
 		return LocalPrefFiles::readSettingNumber<int32_t>("numThreads", numCores);
 	}
-	static void setNumAllowedWorkerThreads(const int32_t numThreads)
-	{
+	static void setNumAllowedWorkerThreads(const int32_t numThreads){
 		LocalPrefFiles::writeSettingNumber<int32_t>("numThreads", numThreads);
 	}
 

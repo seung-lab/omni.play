@@ -9,34 +9,64 @@
 #include "mesh/omMipMesh.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
-#include "volume/build/omBuildSegmentation.hpp"
 #include "system/omLocalPreferences.hpp"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "tiles/omTileDumper.hpp"
 #include "utility/dataWrappers.h"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/build/omBuildChannel.hpp"
+#include "volume/build/omBuildSegmentation.hpp"
 #include "volume/omFilter2d.h"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 #include "zi/base/base.h"
-#include "zi/watershed/RawQuickieWS.h"
 
 #include <QFileInfo>
 
-void Headless::openProject(const QString& fName)
+void Headless::runInteractive(const QString& fName)
 {
-	try {
-		printf("Please wait: Opening project \"%s\"...\n", qPrintable(fName));
-		OmProject::Load(fName);
-		//Set current working directory to file path
-		QDir::setCurrent(QFileInfo(fName).absolutePath());
-		printf("Opened project \"%s\"\n", qPrintable(fName));
-	} catch(...) {
-		printf("Error while loading project \"%s\"\n", qPrintable(fName));
+	QTextStream stream(stdin);
+	QString line;
+	do {
+		printf("> ");
+		line = stream.readLine();
+		processLine(line, fName);
+	} while (!line.isNull());
+}
+
+void Headless::runScript(const QString scriptFileName, const QString& fName)
+{
+	if (!QFile::exists(scriptFileName)) {
+		printf("Could not open plan file \"%s\"\n", qPrintable(scriptFileName));
+		exit(1);
+	}
+
+	QFile file(scriptFileName);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		printf("Could not read plan file \"%s\"\n", qPrintable(scriptFileName));
+		exit(1);
+	}
+
+	QTextStream in(&file);
+	while (!in.atEnd()) {
+		QString line = in.readLine();
+		processLine(line, fName);
+	}
+}
+
+void Headless::runHeadless(const QString& headlessCMD, const QString& fName)
+{
+	if(fName != ""){
+		HeadlessImpl::OpenProject(fName);
+	}
+
+	if("" == headlessCMD){
+		runInteractive(fName);
+	} else {
+		runScript(headlessCMD, fName);
 	}
 }
 
@@ -75,6 +105,13 @@ void Headless::processLine(const QString& line, const QString&)
 		}
 		HeadlessImpl::RebuildCenterOfSegmentData(segmentationID_);
 
+	} else if("revalidate" == line) {
+		if(0 == segmentationID_ ){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+		HeadlessImpl::ReValidateEveryObject(segmentationID_);
+
 	} else if("loadDend" == line) {
 		if(0 == segmentationID_ ){
 			printf("Please choose segmentation first!\n");
@@ -100,13 +137,13 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		int id1 = StringHelpers::getUInt(channelIDs[0]);
-		int id2 = StringHelpers::getUInt(channelIDs[1]);
+		int id1 = OmStringHelpers::getUInt(channelIDs[0]);
+		int id2 = OmStringHelpers::getUInt(channelIDs[1]);
 
 		bool verbose = 0;
 
 		if (3 == args.size()){
-			verbose = (bool) StringHelpers::getUInt(args[2]);
+			verbose = (bool) OmStringHelpers::getUInt(args[2]);
 		}
 
 		if(!OmProject::IsChannelValid(id1)) {
@@ -143,13 +180,13 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		const int id1 = StringHelpers::getUInt(segmentationIDs[0]);
-		const int id2 = StringHelpers::getUInt(segmentationIDs[1]);
+		const int id1 = OmStringHelpers::getUInt(segmentationIDs[0]);
+		const int id2 = OmStringHelpers::getUInt(segmentationIDs[1]);
 
 		bool verbose = 0;
 
 		if (3 == args.size()){
-			verbose = (bool) StringHelpers::getUInt(args[2]);
+			verbose = (bool) OmStringHelpers::getUInt(args[2]);
 		}
 
 		if(!OmProject::IsSegmentationValid(id1)) {
@@ -176,7 +213,7 @@ void Headless::processLine(const QString& line, const QString&)
 		OmID segID = 1;
 
 		if(3 == args.size()) {
-			segID = StringHelpers::getUInt(args[1]);
+			segID = OmStringHelpers::getUInt(args[1]);
 			fileNameAndPath = args[2];
 		} else if(2 == args.size()) {
 			segID = 1;
@@ -193,7 +230,7 @@ void Headless::processLine(const QString& line, const QString&)
 		OmID segID = 1;
 
 		if(3 == args.size()) {
-			segID = StringHelpers::getUInt(args[1]);
+			segID = OmStringHelpers::getUInt(args[1]);
 			file = args[2];
 		} else if(2 == args.size()) {
 			segID = 1;
@@ -210,7 +247,7 @@ void Headless::processLine(const QString& line, const QString&)
 			printf("Please enter a filename.\n");
 			return;
 		}
-		segmentationID_ = StringHelpers::getUInt(args[1]);
+		segmentationID_ = OmStringHelpers::getUInt(args[1]);
 		if(segmentationID_ > 0){
 			printf("segmentationID_ set to %d\n", segmentationID_);
 		} else {
@@ -223,7 +260,7 @@ void Headless::processLine(const QString& line, const QString&)
 			printf("Please enter a filename.\n");
 			return;
 		}
-		openProject(args[1]);
+		HeadlessImpl::OpenProject(args[1]);
 
 	} else if("close" == line){
 		OmProject::Close();
@@ -420,7 +457,7 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		int channID = StringHelpers::getUInt(args[1]);
+		int channID = OmStringHelpers::getUInt(args[1]);
 
 		if (!OmProject::IsChannelValid(channID)){
 			printf("Channel %i is not a valid channel.\n",channID);
@@ -438,7 +475,7 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		int segID = StringHelpers::getUInt(args[1]);
+		int segID = OmStringHelpers::getUInt(args[1]);
 
 		if (!OmProject::IsSegmentationValid(segID)){
 			printf("Segmentation %i is not a valid segmentation.\n",segID);
@@ -472,9 +509,6 @@ void Headless::processLine(const QString& line, const QString&)
 			printf("%i\t%s\n", *iter, qPrintable(sdw.getName()));
 		}
 
-	} else if(line.startsWith("watershed:")){
-		watershed(line);
-
 	} else if(line.startsWith("setChanResolution:")){
 		const QStringList args = line.split(':',QString::SkipEmptyParts);
 
@@ -490,10 +524,10 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		const OmID channID = StringHelpers::getUInt(res[0]);
-		const float xRes = StringHelpers::getFloat(res[1]);
-		const float yRes = StringHelpers::getFloat(res[2]);
-		const float zRes = StringHelpers::getFloat(res[3]);
+		const OmID channID = OmStringHelpers::getUInt(res[0]);
+		const float xRes = OmStringHelpers::getFloat(res[1]);
+		const float yRes = OmStringHelpers::getFloat(res[2]);
+		const float zRes = OmStringHelpers::getFloat(res[3]);
 
 		ChannelDataWrapper cdw(channID);
 
@@ -519,10 +553,10 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		const OmID segID = StringHelpers::getUInt(res[0]);
-		const float xRes = StringHelpers::getFloat(res[1]);
-		const float yRes = StringHelpers::getFloat(res[2]);
-		const float zRes = StringHelpers::getFloat(res[3]);
+		const OmID segID = OmStringHelpers::getUInt(res[0]);
+		const float xRes = OmStringHelpers::getFloat(res[1]);
+		const float yRes = OmStringHelpers::getFloat(res[2]);
+		const float zRes = OmStringHelpers::getFloat(res[3]);
 
 		SegmentationDataWrapper sdw(segID);
 
@@ -541,110 +575,33 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		const double factor = StringHelpers::getDouble(args[1]);
+		const double factor = OmStringHelpers::getDouble(args[1]);
 
 		HeadlessImpl::SetMeshDownScallingFactor(factor);
+
+	} else if(line.startsWith("dumpSegmentColors")){
+		if(0 == segmentationID_ ){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+		HeadlessImpl::DumpSegmentColorHistograms(segmentationID_);
+
+	} else if(line.startsWith("dumpRootSegmentColors")){
+		if(0 == segmentationID_ ){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+		HeadlessImpl::DumpRootSegmentColorHistograms(segmentationID_);
+
+	} else if(line.startsWith("recolorSegments")){
+		if(0 == segmentationID_ ){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+		HeadlessImpl::RecolorAllSegments(segmentationID_);
 
 	} else {
 		printf("Could not parse \"%s\".\n", qPrintable(line));
 	}
 }
 
-void Headless::runInteractive(const QString& fName)
-{
-	QTextStream stream(stdin);
-	QString line;
-	do {
-		printf("> ");
-		line = stream.readLine();
-		processLine(line, fName);
-	} while (!line.isNull());
-}
-
-void Headless::runScript(const QString scriptFileName, const QString& fName)
-{
-	if (!QFile::exists(scriptFileName)) {
-		printf("Could not open plan file \"%s\"\n", qPrintable(scriptFileName));
-		exit(1);
-	}
-
-	QFile file(scriptFileName);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		printf("Could not read plan file \"%s\"\n", qPrintable(scriptFileName));
-		exit(1);
-	}
-
-	QTextStream in(&file);
-	while (!in.atEnd()) {
-		QString line = in.readLine();
-		processLine(line, fName);
-	}
-}
-
-void Headless::runHeadless(const QString& headlessCMD, const QString& fName)
-{
-	if(fName != ""){
-		openProject(fName);
-	}
-
-	if("" == headlessCMD){
-		runInteractive(fName);
-	} else {
-		runScript(headlessCMD, fName);
-	}
-}
-
-void Headless::watershed(const QString&)
-{
-/*
-	const QStringList argsMain = line.split(':',QString::SkipEmptyParts);
-
-	if (argsMain.size() < 2){
-		printf("Please enter an input filename, x, y, and z, low, high, size, and absLowThreshold.\n");
-		return;
-	}
-
-	const QStringList args = argsMain[1].split(',',QString::SkipEmptyParts);
-	if (args.size() < 8){
-		printf("%d args; ", args.size());
-		printf("Please enter an input filename, x, y, and z, low, high, size, and absLowThreshold.\n");
-		return;
-	}
-
-	const int64_t xDim = StringHelpers::getUInt(args[1]);
-	const int64_t yDim = StringHelpers::getUInt(args[2]);
-	const int64_t zDim = StringHelpers::getUInt(args[3]);
-	const size_t numVoxels = xDim*yDim*zDim;
-	const size_t numBytesIn = numVoxels*sizeof(float)*3;
-	const size_t numBytesOut = numVoxels*sizeof(int);
-
-	const std::string in_fnp = args[0].toStdString();
-	OmMemMappedFileReadQT<float> in(in_fnp, numBytesIn);
-
-	const std::string out_fnp = in_fnp + ".out";
-	OmMemMappedFileWriteQT<int> out(out_fnp, numBytesOut);
-
-	const float loThreshold = StringHelpers::getFloat(args[4]);
-	const float hiThreshold = StringHelpers::getFloat(args[5]);
-	const int numThreshold = StringHelpers::getUInt(args[6]);
-	const float absLowThreshold = StringHelpers::getFloat(args[7]);
-
-	RawQuickieWS rqws(xDim,
-					  yDim,
-					  zDim,
-					  loThreshold,
-					  hiThreshold,
-					  numThreshold,
-					  absLowThreshold);
-
-	rqws.Run(in.GetPtr(), out.GetPtr());
-
-	const size_t numEdges = rqws.GetNumMSTedges();
-	const qint64 numBytesMST = numEdges*sizeof(OmMSTedge);
-
-	const std::string mst_fnp = out_fnp + ".mst";
-	OmMemMappedFileWriteQT<OmMSTedge> mst(mst_fnp, numBytesMST);
-
-	rqws.SaveToMemMap(mst.GetPtr());
-*/
-}

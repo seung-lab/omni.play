@@ -2,7 +2,7 @@
 #include "system/cache/omCacheGroup.h"
 #include "system/cache/omCacheInfo.h"
 #include "system/cache/omCacheManager.h"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 #include "zi/omMutex.h"
 
 OmCacheGroup::OmCacheGroup()
@@ -80,9 +80,9 @@ int OmCacheGroup::Clean()
 
 	if(oldCurSize != curSize){
 		std::cout
-			<< "currently " << StringHelpers::commaDeliminateNum(curSize) << " bytes;"
-			<< " was: " << StringHelpers::commaDeliminateNum(oldCurSize) << " bytes;"
-			<< " max is: " << StringHelpers::commaDeliminateNum(mMaxSize) << "\n";
+			<< "currently " << OmStringHelpers::CommaDeliminateNum(curSize) << " bytes;"
+			<< " was: " << OmStringHelpers::CommaDeliminateNum(oldCurSize) << " bytes;"
+			<< " max is: " << OmStringHelpers::CommaDeliminateNum(mMaxSize) << "\n";
 	}
 
 	if(curSize < mMaxSize){

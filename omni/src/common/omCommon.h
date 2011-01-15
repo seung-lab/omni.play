@@ -21,6 +21,7 @@
 #include "common/omException.h"
 #include <cassert>
 
+class QTextStream;
 
 /**
  * color structs
@@ -32,6 +33,8 @@ struct OmColor {
 	uint8_t blue;
 };
 std::ostream& operator<<(std::ostream &out, const OmColor& c);
+bool operator<(const OmColor& a, const OmColor& b);
+QTextStream &operator<<(QTextStream& out, const OmColor& c);
 
 struct OmColorRGBA {
 	uint8_t red;

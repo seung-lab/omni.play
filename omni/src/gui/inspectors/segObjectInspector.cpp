@@ -3,7 +3,7 @@
 #include "common/omDebug.h"
 #include "system/omEvents.h"
 #include "system/cache/omCacheManager.h"
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 
 #include <boost/make_shared.hpp>
 
@@ -46,8 +46,8 @@ void SegObjectInspector::set_initial_values()
 	colorButton->setIcon(QIcon(*pixm));
 	current_color = newcolor;
 
-	sizeNoChildren->setText( StringHelpers::commaDeliminateNumQT(sdw->getSize()));
-	sizeWithChildren->setText( StringHelpers::commaDeliminateNumQT(sdw->getSizeWithChildren()));
+	sizeNoChildren->setText( OmStringHelpers::CommaDeliminateNumQT(sdw->getSize()));
+	sizeWithChildren->setText( OmStringHelpers::CommaDeliminateNumQT(sdw->getSizeWithChildren()));
 
 	origDataValueList->setText( sdw->getIDstr() );
 	chunkList->setText( "disabled" );

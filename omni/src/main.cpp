@@ -24,6 +24,7 @@ DEFINE_ZiLOG(threadpool, false);
 #include "headless/headless.h"
 #include "headless/headlessImpl.hpp"
 #include "system/omStateManager.h"
+#include "system/omQTApp.hpp"
 #include "tests/tests.hpp"
 
 #include <QApplication>
@@ -110,16 +111,7 @@ private:
 		QApplication* app = new QApplication(argc_, argv_);
 		Q_INIT_RESOURCE(resources);
 
-/*
-#ifdef Q_WS_X11
-		// set default font size in Linux; untested
-		// from http://www.qtcentre.org/threads/24797-Large-fonts-on-Linux-and-Solaris
-		const int defaultFontSize = 12;
-		QFont appFont = app->font();
-		appFont.setPointSize(defaultFontSize);
-		app->setFont(appFont);
-#endif
-*/
+		OmQTApp::SetAppFontSize();
 
 		MainWindow mainWin;
 		mainWin.show();

@@ -1,4 +1,4 @@
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 #include "gui/cacheMonitorWidget.h"
 #include "system/cache/omCacheInfo.h"
 #include "system/cache/omCacheManager.h"
@@ -42,7 +42,7 @@ QGroupBox* CacheMonitorWidget::showDisplay(const QString& cacheType,
 
 		gridLayout->addWidget(cacheSizeBar, j*2+1, 0, 1, 3);
 
-		label = new QLabel(StringHelpers::commaDeliminateNumQT(info.cacheSize),
+		label = new QLabel(OmStringHelpers::CommaDeliminateNumQT(info.cacheSize),
 						   groupBox);
 		gridLayout->addWidget(label, j*2+1, 4, 1, 1);
 	}

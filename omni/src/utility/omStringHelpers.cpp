@@ -1,8 +1,8 @@
-#include "utility/stringHelpers.h"
+#include "utility/omStringHelpers.h"
 
 static const int numOfItemsToAddBeforeLinebreak = 8;
 
-QString StringHelpers::getStringFromSegmentSet( const OmSegIDsSet & data_set )
+QString OmStringHelpers::getStringFromSegmentSet( const OmSegIDsSet & data_set )
 {
 	if( data_set.size() == 0 ){
 		return "";
@@ -16,7 +16,7 @@ QString StringHelpers::getStringFromSegmentSet( const OmSegIDsSet & data_set )
 	return getStringFromStringList( strs );
 }
 
-QString StringHelpers::getStringFromIDset( const OmIDsSet & data_set )
+QString OmStringHelpers::getStringFromIDset( const OmIDsSet & data_set )
 {
 	if( data_set.size() == 0 ){
 		return "";
@@ -30,7 +30,7 @@ QString StringHelpers::getStringFromIDset( const OmIDsSet & data_set )
 	return getStringFromStringList( strs );
 }
 
-QString StringHelpers::getStringFromStringList( const QStringList & data_set )
+QString OmStringHelpers::getStringFromStringList( const QStringList & data_set )
 {
 	if( data_set.size() == 0 ){
 		return "";

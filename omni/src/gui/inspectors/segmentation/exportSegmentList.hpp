@@ -31,8 +31,7 @@ class ExportSegmentList : public OmButton<SegInspector> {
 		if(data.open(QFile::WriteOnly | QFile::Truncate)) {
 			printf("writing segment file %s\n", qPrintable(outFile));
 		} else{
-			throw OmIoException("could not open file \"" + outFile.toStdString()
-								+"\"");
+			throw OmIoException("could not open file", outFile);
 		}
 
 		QTextStream out(&data);
