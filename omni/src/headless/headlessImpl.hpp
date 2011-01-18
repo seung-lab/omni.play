@@ -12,6 +12,7 @@
 #include "volume/omSegmentation.h"
 #include "segment/io/omUserEdges.hpp"
 #include "utility/omColorUtils.hpp"
+#include "volume/build/omWatershedImporter.hpp"
 
 class HeadlessImpl {
 public:
@@ -225,6 +226,7 @@ private:
 		} else{
 			throw OmIoException("could not open file", outFile);
 		}
+
 		QTextStream out(&data);
 
 		out << "red\tgreen\tblue\tnum\n";
@@ -233,6 +235,16 @@ private:
 			out << iter->first << "\t"
 				<< iter->second << "\n";
 		}
+	}
+
+public:
+	static void ImportWatershed(const QString& fnp)
+	{
+		SegmentationDataWrapper sdw;
+		OmSegmentation& segmentation = sdw.Create();
+
+		OmWatershedImporter importer(segmentation, fnp);
+		importer.Import();
 	}
 };
 

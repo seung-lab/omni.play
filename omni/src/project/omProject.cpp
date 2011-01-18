@@ -78,8 +78,9 @@ QString OmProject::New(const QString& fileNameAndPathIn)
 		}
 	}
 
-	OmProjectData::instantiateProjectData(fileNameAndPath.toStdString());
 	OmProjectData::Create();
+	OmProjectData::instantiateProjectData(fileNameAndPath.toStdString());
+	OmProjectData::CreateProject();
 	OmProjectData::Open();
 	OmCacheManager::Reset();
 	OmTileCache::Reset();
@@ -126,6 +127,7 @@ void OmProject::Load(const QString& fileNameAndPath)
 		throw OmIoException("Project file not found at", fileNameAndPath);
 	}
 
+	OmProjectData::Create();
 	OmProjectData::instantiateProjectData(fileNameAndPath.toStdString());
 	OmProjectData::Open();
 	OmCacheManager::Reset();

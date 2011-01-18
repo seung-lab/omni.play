@@ -79,7 +79,8 @@ public:
 	}
 	static OmMipChunkCoord DataToMipCoord(const DataCoord& dataCoord,
 										  const int level,
-										  const Vector3i& chunkDimensions){
+										  const Vector3i& chunkDimensions)
+	{
 		if( dataCoord.x < 0 ||
 			dataCoord.y < 0 ||
 			dataCoord.z < 0 ){
@@ -166,13 +167,13 @@ protected:
 	bool mWasBounded;
 
 private:
-	void copyChunkFromMemMapToHDF5(const OmMipChunkCoord& coord);
 	uint32_t computeTotalNumChunks();
 
 	friend class OmMipChunk;
 	friend class OmDataArchiveProject;
 	friend class OmVolumeData;
 	friend class OmUpgradeTo14;
+	friend class OmWatershedImporter;
 };
 
 #endif

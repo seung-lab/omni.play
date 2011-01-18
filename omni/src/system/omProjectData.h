@@ -26,6 +26,7 @@ private:
 public:
 	static void instantiateProjectData(const std::string& fileNameAndPath);
 
+	static void Create();
 	static void Delete();
 
 	static QString getFileNameAndPath();
@@ -33,7 +34,7 @@ public:
 	static QString getAbsolutePath();
 	static const QDir& GetFilesFolderPath();
 
-	static void Create();
+	static void CreateProject();
 	static void Open();
 	static void Close();
 	static void DeleteInternalData(const OmDataPath & path);

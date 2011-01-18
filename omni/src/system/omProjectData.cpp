@@ -3,11 +3,14 @@
 #include "project/omProjectDataImpl.hpp"
 
 OmProjectData::OmProjectData()
-	: impl_(boost::make_shared<OmProjectDataImpl>())
 {}
 
 void OmProjectData::instantiateProjectData(const std::string& fileNameAndPath ){
 	instance().impl_->instantiateProjectData(fileNameAndPath);
+}
+
+void OmProjectData::Create(){
+	instance().impl_ = boost::make_shared<OmProjectDataImpl>();
 }
 
 void OmProjectData::Delete(){
@@ -30,8 +33,8 @@ const QDir& OmProjectData::GetFilesFolderPath(){
 	return instance().impl_->GetFilesFolderPath();
 }
 
-void OmProjectData::Create(){
-	instance().impl_->Create();
+void OmProjectData::CreateProject(){
+	instance().impl_->CreateProject();
 }
 
 void OmProjectData::Open(){

@@ -90,7 +90,7 @@ public:
 		return filesFolderPath_;
 	}
 
-	void Create()
+	void CreateProject()
 	{
 		QFile projectFile(getFileNameAndPath());
 		if( projectFile.exists() ){
