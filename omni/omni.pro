@@ -404,6 +404,7 @@ HEADERS +=  \
 	src/volume/build/omVolumeImporter.hpp \
 	src/volume/build/omVolumeImporterHDF5.hpp \
 	src/volume/build/omVolumeImporterImageStack.hpp \
+	src/volume/build/omWatershedImporter.hpp \
 	src/volume/omChannel.h \
 	src/volume/omChunkData.hpp \
 	src/volume/omFilter2d.h \

@@ -24,6 +24,9 @@ private:
 	VOL *const vol_;
 	om::Affinity aff_;
 
+	std::vector<QFileInfo> files_;
+	bool sourceFilesWereSet;
+
 public:
 	OmVolumeBuilder(VOL* vol, const om::Affinity aff=om::NO_AFFINITY)
 		: vol_(vol)
@@ -49,6 +52,11 @@ public:
 
 	void Build(OmDataPath & dataset)
 	{
+		//if source data valid
+		if(!isSourceValid()) {
+			throw OmIoException("source files not found");
+		}
+
 		//unbuild
 		vol_->SetBuildState(MIPVOL_BUILDING);
 
@@ -57,11 +65,6 @@ public:
 
 		//delete old
 		DeleteVolumeData();
-
-		//if source data valid
-		if (!IsSourceValid()) {
-			throw OmIoException("source files not found");
-		}
 
 		//copy source data
 		if (!ImportSourceData(dataset)) {
@@ -156,14 +159,12 @@ private:
 
 	void UpdateMipProperties(const OmDataPath& dataset)
 	{
-		if(IsSourceValid()) {
-			const Vector3i source_dims = get_dims(dataset);
+		const Vector3i source_dims = get_dims(dataset);
 
-			if (vol_->GetDataDimensions() != source_dims) {
-				//printf("OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS\n");
+		if (vol_->GetDataDimensions() != source_dims) {
+			//printf("OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS\n");
 
-				vol_->SetDataDimensions(source_dims);
-			}
+			vol_->SetDataDimensions(source_dims);
 		}
 
 		if(vol_->GetChunkDimension() % 2){
@@ -178,7 +179,7 @@ private:
 		return files_;
 	}
 
-	bool IsSourceValid()
+	bool isSourceValid()
 	{
 		if( files_.empty() ){
 			return false;
@@ -192,10 +193,6 @@ private:
 
 		return true;
 	}
-
-private:
-	std::vector<QFileInfo> files_;
-	bool sourceFilesWereSet;
 };
 
 #endif

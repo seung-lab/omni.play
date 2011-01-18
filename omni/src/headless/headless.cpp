@@ -600,6 +600,16 @@ void Headless::processLine(const QString& line, const QString&)
 		}
 		HeadlessImpl::RecolorAllSegments(segmentationID_);
 
+	} else if(line.startsWith("importWatershed:")){
+		const QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if (args.size() != 2){
+			printf("format is importWatershed:metadataFileName\n");
+			return;
+		}
+
+		HeadlessImpl::ImportWatershed(args[1]);
+
 	} else {
 		printf("Could not parse \"%s\".\n", qPrintable(line));
 	}
