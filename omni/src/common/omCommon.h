@@ -1,21 +1,11 @@
 #ifndef OM_COMMON_H
 #define OM_COMMON_H
 
-#define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
-
 #define QT_USE_FAST_CONCATENATION
 #define QT_USE_FAST_OPERATOR_PLUS
-
 #include <QString>
 
-#include <boost/format.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/strong_typedef.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/tr1/unordered_set.hpp>
-#include <boost/utility.hpp>
+#include "common/omBoost.h"
 
 #include "common/omStd.h"
 #include "common/omException.h"

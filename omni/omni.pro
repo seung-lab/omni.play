@@ -75,6 +75,7 @@ HEADERS +=  \
 	src/actions/io/omActionReplayer.hpp \
 	src/actions/omActions.hpp \
 	src/common/om.hpp \
+	src/common/omBoost.h \
 	src/common/omCommon.h \
 	src/common/omDebug.h \
 	src/common/omException.h \
@@ -355,6 +356,7 @@ HEADERS +=  \
 	src/utility/sortHelpers.h \
 	src/view2d/details/omMidpointCircleAlgorithm.hpp \
 	src/view2d/om2dPreferences.hpp \
+	src/view2d/omBrushSelect.hpp \
 	src/view2d/omDisplayInfo.hpp \
 	src/view2d/omKeyEvents.hpp \
 	src/view2d/omLineDraw.hpp \

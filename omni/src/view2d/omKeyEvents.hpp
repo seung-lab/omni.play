@@ -32,9 +32,9 @@ public:
 		{
 			const bool shiftKey = event->modifiers() & Qt::ShiftModifier;
 			if(shiftKey){
-				state_->getBrushSize()->IncreaseSize();
-			} else {
 				state_->getBrushSize()->DecreaseSize();
+			} else {
+				state_->getBrushSize()->IncreaseSize();
 			}
 			v2d_->myUpdate();
 		}

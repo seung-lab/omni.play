@@ -17,16 +17,19 @@ public:
 
 	void BrushToolApplyPaint(OmID segid, DataCoord gDC, OmSegID seg);
 
-	void bresenhamLineDraw(const DataCoord &first,
-						   const DataCoord &second,
-						   bool doselection);
+	void BresenhamLineDrawForPainting(const DataCoord & first,
+									  const DataCoord & second);
+
+	void BresenhamLineDrawForSelecting(const DataCoord & first,
+									   const DataCoord & second);
+
 	void FillToolFill(OmID segmentation,
 					  DataCoord gCP,
 					  OmSegID fc,
 					  OmSegID bc,
 					  int depth=0);
 
-	void myUpdate();
+	void MyUpdate();
 
 private:
 	boost::shared_ptr<OmView2dState> state_;
@@ -37,14 +40,14 @@ private:
 
 	std::set<DataCoord> mUpdatedDataCoords;
 
-	DataCoord BrushToolToGDC(const DataCoord& vec){
+	DataCoord brushToolToGDC(const DataCoord& vec){
 		return state_->makeViewTypeVector3(vec);
 	}
 
-	void RemoveModifiedTiles();
-	void PickToolAddToSelection(OmSegmentSelector & sel,
-								OmSegmentation & current_seg,
-								DataCoord globalDataClickPoint);
+	void removeModifiedTiles();
+	void pickToolAddToSelection(OmSegmentSelector& sel,
+								OmSegmentation& current_seg,
+								const DataCoord& globalDataClickPoint);
 
 };
 

@@ -467,6 +467,10 @@ public:
 		return objType_;
 	}
 
+	OmID GetSegmentationID() const {
+		return 1;
+	}
+
 private:
 	OmMipVolume* vol_;
 	const ObjectType objType_;

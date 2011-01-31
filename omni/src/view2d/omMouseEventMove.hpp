@@ -64,22 +64,12 @@ public:
 private:
 	void selectSegments(QMouseEvent* event)
 	{
-		SegmentDataWrapper sdw = OmSegmentSelected::Get();
-		if (!sdw.IsSegmentValid()){
-			return;
-		}
-
 		const DataCoord dataClickPoint =
 			state_->ComputeMouseClickPointDataCoord(event);
 
 		// TODO: bug here; ask MattW
-		v2d_->LineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
-											  dataClickPoint,
-											  true);
-
-		OmMouseEventUtils::PickToolAddToSelection(sdw,
-												  dataClickPoint,
-												  v2d_);
+		v2d_->LineDrawer()->BresenhamLineDrawForSelecting(state_->GetLastDataPoint(),
+														  dataClickPoint);
 
 		state_->SetLastDataPoint(dataClickPoint);
 	}
@@ -103,9 +93,8 @@ private:
 												dataClickPoint,
 												segmentValueToPaint);
 
-		v2d_->LineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
-											  dataClickPoint,
-											  false);
+		v2d_->LineDrawer()->BresenhamLineDrawForPainting(state_->GetLastDataPoint(),
+														 dataClickPoint);
 
 		state_->SetLastDataPoint(dataClickPoint);
 	}

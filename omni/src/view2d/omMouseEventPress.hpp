@@ -1,6 +1,7 @@
 #ifndef OM_MOUSE_EVENT_PRESS_HPP
 #define OM_MOUSE_EVENT_PRESS_HPP
 
+#include "view2d/omBrushSelect.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "view2d/omMouseEventUtils.hpp"
@@ -64,20 +65,20 @@ private:
 		if(!sdw) {
 			return;
 		}
-                const DataCoord dataClickPoint =
-                        state_->ComputeMouseClickPointDataCoord(event);
+		const DataCoord dataClickPoint =
+			state_->ComputeMouseClickPointDataCoord(event);
 		OmActions::FindAndSplitSegments(*sdw, state_->getViewGroupState(), dataClickPoint);
 	}
 
 	void doFindAndCutSegment(QMouseEvent* event)
-        {
-                boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
+	{
+		boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
 
-                if(!sdw) {
-                        return;
-                }
-                OmActions::FindAndCutSegments(*sdw, state_->getViewGroupState());
-        }
+		if(!sdw) {
+			return;
+		}
+		OmActions::FindAndCutSegments(*sdw, state_->getViewGroupState());
+	}
 
 	void mouseSetCrosshair(QMouseEvent * event)
 	{
@@ -96,8 +97,8 @@ private:
 		switch (OmStateManager::GetToolMode()) {
 		case SELECT_MODE:
 			state_->setScribbling(true);
-			mouseSelectSegment(event);
-			return;
+			doselection = true;
+			break;
 		case PAN_MODE:
 			state_->SetClickPoint(event->x(), event->y());
 			return;
@@ -122,10 +123,14 @@ private:
 		const DataCoord dataClickPoint =
 			state_->ComputeMouseClickPointDataCoord(event);
 
-		SegmentDataWrapper sdw = OmSegmentSelected::Get();
-		if ( sdw.IsSegmentValid() ) {
-			//run action
-			if (!doselection) {
+		if(doselection){
+			OmBrushSelect brushSelect(state_);
+			brushSelect.SelectSegments(dataClickPoint);
+
+		} else {
+			SegmentDataWrapper sdw = OmSegmentSelected::Get();
+			if ( sdw.IsSegmentValid() ) {
+				//run action
 				if (dosubtract) {
 					data_value = 0;
 				} else {
@@ -134,16 +139,7 @@ private:
 				v2d_->LineDrawer()->BrushToolApplyPaint(sdw.GetSegmentationID(),
 														dataClickPoint,
 														data_value);
-			} else {
-				OmMouseEventUtils::PickToolAddToSelection(sdw,
-														  dataClickPoint,
-														  v2d_);
-				v2d_->LineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
-														 dataClickPoint,
-														 true);
 			}
-		} else {
-			//debug(genone, "No segment_id in edit selection\n");
 		}
 
 		state_->SetLastDataPoint(dataClickPoint);

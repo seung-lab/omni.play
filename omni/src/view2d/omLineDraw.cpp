@@ -1,3 +1,4 @@
+#include "view2d/omBrushSelect.hpp"
 #include "viewGroup/omBrushSize.hpp"
 #include "project/omProject.h"
 #include "segment/omSegmentSelected.hpp"
@@ -12,9 +13,9 @@
 #include "volume/omSegmentation.h"
 #include "actions/omActions.hpp"
 
-OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> v2ds,
+OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> state,
 					   const ViewType vt)
-	: state_(v2ds)
+	: state_(state)
 	, mViewType(vt)
 {
 	mDoRefresh = false;
@@ -22,14 +23,15 @@ OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> v2ds,
 	mEditedSegmentation = 0;
 }
 
-void OmLineDraw::DrawLine(const DataCoord& /*startPoint*/,
-						  const DataCoord& /*endPoint*/)
+void OmLineDraw::BresenhamLineDrawForSelecting(const DataCoord & first,
+											   const DataCoord & second)
 {
+	OmBrushSelect brushSelect(state_.get());
+	brushSelect.BresenhamLineDrawForSelecting(first, second);
 }
 
-void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
-								   const DataCoord & second,
-								   bool doselection)
+void OmLineDraw::BresenhamLineDrawForPainting(const DataCoord & first,
+											  const DataCoord & second)
 {
 	//store current selection
 	SegmentDataWrapper sdw = OmSegmentSelected::Get();
@@ -106,13 +108,6 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 	//debug(brush, "coords: %i,%i,%i\n", x0, y0, mViewDepth);
 	//debug(brush, "mDepth = %f\n", mDepth);
 
-	OmSegmentSelector sel(SegmentationDataWrapper(segmentation_id), this, "view2d_selector" );
-	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
-
-	if(doselection) {
-		PickToolAddToSelection(sel, current_seg, first);
-	}
-
 	OmBrushSize* brushSize = state_->getBrushSize();
 
 	if (dx > dy) {
@@ -141,17 +136,9 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 
 			if(brushSize->Diameter() > 4 &&
 			   (x1 == x0 || abs(x1 - x0) % (brushSize->Diameter() / 4) == 0)) {
-				if (!doselection){
-					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-				} else {
-					PickToolAddToSelection(sel, current_seg, globalDC);
-				}
-			} else if (doselection || brushSize->Diameter() < 4) {
-				if (!doselection) {
-					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-				} else {
-					PickToolAddToSelection(sel, current_seg, globalDC);
-				}
+				BrushToolApplyPaint(segmentation_id, globalDC, data_value);
+			} else if(brushSize->Diameter() < 4) {
+				BrushToolApplyPaint(segmentation_id, globalDC, data_value);
 			}
 		}
 	} else {
@@ -180,25 +167,17 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 			}
 
 			if(brushSize->Diameter() > 4 && (y1 == y0 || abs(y1 - y0) % (brushSize->Diameter() / 4) == 0)) {
-				if (!doselection) {
-					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-				} else {
-					PickToolAddToSelection(sel, current_seg, globalDC);
-				}
-			} else if (doselection || brushSize->Diameter() < 4) {
-				if (!doselection){
-					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-				} else {
-					PickToolAddToSelection(sel, current_seg, globalDC);
-				}
+				BrushToolApplyPaint(segmentation_id, globalDC, data_value);
+			} else if (brushSize->Diameter() < 4) {
+				BrushToolApplyPaint(segmentation_id, globalDC, data_value);
 			}
 		}
 	}
 }
 
-void OmLineDraw::PickToolAddToSelection( OmSegmentSelector & sel,
-										 OmSegmentation & current_seg,
-										 DataCoord globalDataClickPoint)
+void OmLineDraw::pickToolAddToSelection(OmSegmentSelector& sel,
+										OmSegmentation& current_seg,
+										const DataCoord& globalDataClickPoint)
 {
 	const OmSegID segID = current_seg.GetVoxelValue(globalDataClickPoint);
 	if (segID ) {
@@ -210,7 +189,7 @@ void OmLineDraw::BrushToolApplyPaint(OmID segid, DataCoord gDC, OmSegID seg)
 {
 	OmBrushSize* brushSize = state_->getBrushSize();
 
-	DataCoord off = BrushToolToGDC(gDC);
+	DataCoord off = brushToolToGDC(gDC);
 
 	if (1 == brushSize->Diameter() ) {
 		mEditedSegmentation = segid;
@@ -236,7 +215,7 @@ void OmLineDraw::BrushToolApplyPaint(OmID segid, DataCoord gDC, OmSegID seg)
 					myoff.x += i - savedDia / 2.0;
 					myoff.y += j - savedDia / 2.0;
 					BrushToolApplyPaint(segid,
-										BrushToolToGDC(myoff),
+										brushToolToGDC(myoff),
 										seg);
 				}
 			}
@@ -263,28 +242,28 @@ void OmLineDraw::FillToolFill(OmID seg, DataCoord gCP, OmSegID fc,
 
 	if (segid == bc && segid != fc) {
 
-		DataCoord off = BrushToolToGDC(gCP);
+		DataCoord off = brushToolToGDC(gCP);
 
 		off.x++;
-		FillToolFill(seg, BrushToolToGDC(off), fc, bc, depth);
+		FillToolFill(seg, brushToolToGDC(off), fc, bc, depth);
 		off.y++;
-		FillToolFill(seg, BrushToolToGDC(off), fc, bc, depth);
+		FillToolFill(seg, brushToolToGDC(off), fc, bc, depth);
 		off.x--;
-		FillToolFill(seg, BrushToolToGDC(off), fc, bc, depth);
+		FillToolFill(seg, brushToolToGDC(off), fc, bc, depth);
 		off.x--;
-		FillToolFill(seg, BrushToolToGDC(off), fc, bc, depth);
+		FillToolFill(seg, brushToolToGDC(off), fc, bc, depth);
 		off.y--;
-		FillToolFill(seg, BrushToolToGDC(off), fc, bc, depth);
+		FillToolFill(seg, brushToolToGDC(off), fc, bc, depth);
 		off.y--;
-		FillToolFill(seg, BrushToolToGDC(off), fc, bc, depth);
+		FillToolFill(seg, brushToolToGDC(off), fc, bc, depth);
 		off.x++;
-		FillToolFill(seg, BrushToolToGDC(off), fc, bc, depth);
+		FillToolFill(seg, brushToolToGDC(off), fc, bc, depth);
 		off.x++;
-		FillToolFill(seg, BrushToolToGDC(off), fc, bc, depth);
+		FillToolFill(seg, brushToolToGDC(off), fc, bc, depth);
 	}
 }
 
-void OmLineDraw::RemoveModifiedTiles()
+void OmLineDraw::removeModifiedTiles()
 {
 	std::set<SpaceCoord> spaceCoordsToRemove;
 
@@ -297,7 +276,7 @@ void OmLineDraw::RemoveModifiedTiles()
 	}
 }
 
-void OmLineDraw::myUpdate()
+void OmLineDraw::MyUpdate()
 {
 	if(!mDoRefresh){
 		return;
@@ -307,7 +286,7 @@ void OmLineDraw::myUpdate()
 		OmActions::SetVoxels(mEditedSegmentation,
 							 mUpdatedDataCoords,
 							 mCurrentSegmentId);
-		RemoveModifiedTiles();
+		removeModifiedTiles();
 	} else {
 		state_->touchFreshnessAndRedraw2d();
 	}

@@ -69,7 +69,7 @@ void OmView2d::paintEvent(QPaintEvent *){
 
 void OmView2d::myUpdate()
 {
-	LineDrawer()->myUpdate();
+	LineDrawer()->MyUpdate();
 	update();
 }
 
