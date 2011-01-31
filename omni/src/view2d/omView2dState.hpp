@@ -412,7 +412,7 @@ public:
 	}
 
 	// brush size
-	boost::shared_ptr<OmBrushSize>& getBrushSize(){
+	OmBrushSize* getBrushSize(){
 		return vgs_->getBrushSize();
 	}
 

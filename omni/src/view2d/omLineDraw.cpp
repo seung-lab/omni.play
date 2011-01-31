@@ -113,7 +113,7 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 		PickToolAddToSelection(sel, current_seg, first);
 	}
 
-	boost::shared_ptr<OmBrushSize>& brushSize = state_->getBrushSize();
+	OmBrushSize* brushSize = state_->getBrushSize();
 
 	if (dx > dy) {
 		int fraction = dy - (dx >> 1);	// same as 2*dy - dx
@@ -208,7 +208,7 @@ void OmLineDraw::PickToolAddToSelection( OmSegmentSelector & sel,
 
 void OmLineDraw::BrushToolApplyPaint(OmID segid, DataCoord gDC, OmSegID seg)
 {
-	boost::shared_ptr<OmBrushSize>& brushSize = state_->getBrushSize();
+	OmBrushSize* brushSize = state_->getBrushSize();
 
 	DataCoord off = BrushToolToGDC(gDC);
 

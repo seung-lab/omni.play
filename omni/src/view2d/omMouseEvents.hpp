@@ -11,18 +11,17 @@
 
 class OmMouseEvents{
 private:
-	boost::shared_ptr<OmMouseEventMove> move_;
-	boost::shared_ptr<OmMouseEventPress> press_;
-	boost::shared_ptr<OmMouseEventRelease> release_;
-	boost::shared_ptr<OmMouseEventWheel> wheel_;
+	boost::scoped_ptr<OmMouseEventMove> move_;
+	boost::scoped_ptr<OmMouseEventPress> press_;
+	boost::scoped_ptr<OmMouseEventRelease> release_;
+	boost::scoped_ptr<OmMouseEventWheel> wheel_;
 
 public:
-	OmMouseEvents(OmView2d* v2d,
-		      boost::shared_ptr<OmView2dState> state)
-		: move_(boost::make_shared<OmMouseEventMove>(v2d, state))
-		, press_(boost::make_shared<OmMouseEventPress>(v2d, state))
-		, release_(boost::make_shared<OmMouseEventRelease>(v2d, state))
-		, wheel_(boost::make_shared<OmMouseEventWheel>(v2d, state))
+	OmMouseEvents(OmView2d* v2d, OmView2dState* state)
+		: move_(new OmMouseEventMove(v2d, state))
+		, press_(new OmMouseEventPress(v2d, state))
+		, release_(new OmMouseEventRelease(v2d, state))
+		, wheel_(new OmMouseEventWheel(v2d, state))
 	{}
 
 	void Press(QMouseEvent* event){

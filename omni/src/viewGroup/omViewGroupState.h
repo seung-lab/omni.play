@@ -90,7 +90,9 @@ public:
 	void SetHowNonSelectedSegmentsAreColoredInFilter(const bool);
 	bool ShowNonSelectedSegmentsInColorInFilter();
 
-	boost::shared_ptr<OmBrushSize>& getBrushSize(){ return brushSize_; }
+	OmBrushSize* getBrushSize(){
+		return brushSize_.get();
+	}
 
 	OmSegmentColorCacheType determineColorizationType(const ObjectType);
 

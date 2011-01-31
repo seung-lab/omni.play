@@ -12,10 +12,10 @@
 class OmMouseEventMove{
 private:
 	OmView2d *const v2d_;
-	boost::shared_ptr<OmView2dState> state_;
+	OmView2dState *const state_;
+
 public:
-	OmMouseEventMove(OmView2d* v2d,
-					 boost::shared_ptr<OmView2dState> state)
+	OmMouseEventMove(OmView2d* v2d, OmView2dState* state)
 		: v2d_(v2d)
 		, state_(state)
 	{}

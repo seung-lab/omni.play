@@ -16,8 +16,8 @@
 class OmScreenPainter{
 public:
 	OmScreenPainter(OmView2d* v2d,
-					boost::shared_ptr<OmView2dState> state,
-					boost::shared_ptr<OmScreenShotSaver> s)
+					OmView2dState* state,
+					OmScreenShotSaver* s)
 		: v2d_(v2d)
 		, state_(state)
 		, screenShotSaver_(s)
@@ -42,8 +42,8 @@ public:
 
 private:
 	OmView2d* v2d_;
-	boost::shared_ptr<OmView2dState> state_;
-	boost::shared_ptr<OmScreenShotSaver> screenShotSaver_;
+	OmView2dState* state_;
+	OmScreenShotSaver* screenShotSaver_;
 	OmTimer elapsed_;
 	const ViewType viewType_;
 	const bool shouldDisplayInfo_;
@@ -65,7 +65,7 @@ private:
 										  20,
 										  20),
 									5, 5);
-		}else if(usingEditingTool()){
+		}else if(showBrushSize()){
 			const float zoomFactor = state_->getZoomScale();
 			const int brushDiamater = zoomFactor *
 				state_->getBrushSize()->Diameter();
@@ -189,12 +189,13 @@ private:
 		}
 	}
 
-	bool usingEditingTool() const
+	bool showBrushSize() const
 	{
 		switch(OmStateManager::GetToolMode()){
 		case ADD_VOXEL_MODE:
 		case SUBTRACT_VOXEL_MODE:
 		case FILL_MODE:
+		case SELECT_MODE:
 			return true;
 		default:
 			return false;

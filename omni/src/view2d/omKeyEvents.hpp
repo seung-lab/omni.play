@@ -14,11 +14,10 @@
 class OmKeyEvents{
 private:
 	OmView2d *const v2d_;
-	boost::shared_ptr<OmView2dState> state_;
+	OmView2dState *const state_;
 
 public:
-	OmKeyEvents(OmView2d* v2d,
-				boost::shared_ptr<OmView2dState> state)
+	OmKeyEvents(OmView2d* v2d, OmView2dState* state)
  		: v2d_(v2d)
 		, state_(state)
 	{}

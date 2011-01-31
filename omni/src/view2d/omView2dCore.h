@@ -41,8 +41,8 @@ protected:
 
 	void resetPbuffer(const QSize&);
 
-	inline boost::shared_ptr<OmView2dState>& state() {
-		return state_;
+	inline OmView2dState* state() {
+		return state_.get();
 	}
 
 private:
