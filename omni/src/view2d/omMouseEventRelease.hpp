@@ -38,10 +38,6 @@ public:
 		case FILL_MODE:
 			doRelease(event);
 			break;
-
-		case SELECT_VOXEL_MODE:
-			assert(0 && "not implemented");
-			break;
 		}
 	}
 

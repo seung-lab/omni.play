@@ -115,7 +115,6 @@ private:
 			state_->setScribbling(true);
 			dosubtract = true;
 			break;
-		case SELECT_VOXEL_MODE:
 		default:
 			return;
 		}

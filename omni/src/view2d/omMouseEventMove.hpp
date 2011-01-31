@@ -55,9 +55,6 @@ public:
 					paint(event);
 				}
 				break;
-
-			case SELECT_VOXEL_MODE:
-				throw OmArgException("not implemented");
 			}
 		}
 

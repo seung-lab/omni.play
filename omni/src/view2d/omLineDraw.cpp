@@ -52,10 +52,6 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 		data_value = 0;
 		break;
 
-	case SELECT_VOXEL_MODE:
-		doselection = true;
-		break;
-
 	default:
 		//assert(false);
 		break;
