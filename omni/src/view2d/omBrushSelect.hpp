@@ -203,19 +203,23 @@ private:
 	{
 		DataCoord off = brushToolToGDC(gDC);
 
-		for (int i = 0; i < savedDia; i++) {
-			for (int j = 0; j < savedDia; j++) {
-				DataCoord myoff = off;
-				float x = i - savedDia / 2.0;
-				float y = j - savedDia / 2.0;
-				if (sqrt(x * x + y * y) <= savedDia / 2.0) {
-					myoff.x += i - savedDia / 2.0;
-					myoff.y += j - savedDia / 2.0;
+        const double radius   = static_cast< double >( savedDia ) / 2;
+        const double sqRadius = radius * radius;
 
-					addVoxel(brushToolToGDC(myoff));
-				}
-			}
-		}
+        for (int i = 0; i < savedDia; i++)
+        {
+			double x = static_cast< float >( i ) - radius;
+
+            for (int j = 0; j < savedDia; j++)
+            {
+                double y = static_cast< float >( j ) - radius;
+
+                if ( x * x + y * y <= sqRadius )
+                {
+                    addVoxel(brushToolToGDC( DataCoord( off.x + x, off.y + y )));
+                }
+            }
+        }
 	}
 };
 
