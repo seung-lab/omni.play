@@ -94,8 +94,11 @@ void OmSegmentSelector::augmentSelectedSet_toggle(const OmSegID segIDunknownLeve
 bool OmSegmentSelector::sendEvent()
 {
 	if( oldSelectedIDs == newSelectedIDs ){
+		printf("not sending segment list\n");
 		return false;
 	}
+
+	std::cout << oldSelectedIDs << "\n";
 
 	OmActions::SelectSegments(sdw_,
 							  newSelectedIDs,

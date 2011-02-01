@@ -74,9 +74,13 @@ enum ObjectType { CHANNEL, SEGMENTATION };
  * "segment" types
  */
 typedef uint32_t OmSegID;
-typedef std::set<OmSegID> OmSegIDsSet;
 typedef std::deque<OmSegID> OmSegIDsList;
 typedef uint32_t PageNum;
+
+struct OmSegIDsSet : public std::set<OmSegID>
+{
+	friend std::ostream& operator<<(std::ostream& out, const OmSegIDsSet& in);
+};
 
 
 /**

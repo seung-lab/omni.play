@@ -1,24 +1,17 @@
 #ifndef OM_BRUSH_SELECT_HPP
 #define OM_BRUSH_SELECT_HPP
 
-#include "viewGroup/omBrushSize.hpp"
-#include "project/omProject.h"
-#include "segment/omSegmentSelected.hpp"
-#include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
-#include "tiles/cache/omTileCache.h"
-#include "system/omStateManager.h"
-#include "viewGroup/omViewGroupState.h"
+#include "system/omEvents.h"
 #include "utility/dataWrappers.h"
-#include "view2d/omLineDraw.hpp"
 #include "view2d/omView2dState.hpp"
+#include "viewGroup/omBrushSize.hpp"
 #include "volume/omSegmentation.h"
-#include "actions/omActions.hpp"
-#include "common/omBoost.h"
 
 class OmBrushSelect {
 private:
 	OmView2dState *const state_;
+
 	const ViewType viewType_;
 	const SegmentationDataWrapper sdw_;
 	OmSegmentation *const segmentation_;
@@ -33,6 +26,7 @@ public:
 	{
 		OmBrushSelect s(state);
 		s.SelectSegments(gDC);
+		s.SendEvents();
 	}
 
 	static void SelectByLine(OmView2dState* state,
@@ -41,6 +35,7 @@ public:
 	{
 		OmBrushSelect s(state);
 		s.BresenhamLineDrawForSelecting(first, second);
+		s.SendEvents();
 	}
 
 private:
@@ -75,8 +70,6 @@ private:
 
 		const TwoPoints pts = computeTwoPoints(first, second);
 		doBresenhamLineDraw(pts.y0, pts.y1, pts.x0, pts.x1);
-
-		selector_->sendEvent();
 	}
 
 	void SelectSegments(const DataCoord& coord)
@@ -84,8 +77,12 @@ private:
 		setup(coord);
 
 		selectSegments(coord);
+	}
 
+	void SendEvents()
+	{
 		selector_->sendEvent();
+		OmEvents::Redraw2d();
 	}
 
 private:
@@ -97,6 +94,7 @@ private:
 		selector_->AutoCenter(false);
 
 		depth_ = OmView2dConverters::GetViewTypeDepth(coord, viewType_);
+		std::cout << "slice depth is: " << depth_ << "\n";
 	}
 
 	struct TwoPoints {
@@ -208,11 +206,7 @@ private:
 			return;
 		}
 
-		const DataCoord viewtypeCoord =
-			OmView2dConverters::MakeViewTypeVector3(xyzCoord, viewType_);
-
-		const OmSegID segID =
-			segmentation_->GetVoxelValue(viewtypeCoord);
+		const OmSegID segID = segmentation_->GetVoxelValue(xyzCoord);
 
 		if(segID) {
 			selector_->augmentSelectedSet(segID, true);
@@ -233,8 +227,18 @@ private:
 		selectSegmentsInCircle(xyzCoord);
 	}
 
-	inline void selectSegmentsInCircle(const DataCoord& xyzCoord)
+	inline DataCoord flipCoord(const DataCoord& coord){
+		return OmView2dConverters::MakeViewTypeVector3(coord, viewType_);
+	}
+
+	inline DataCoord flipCoord(const int x, const int y, const int z){
+		return OmView2dConverters::MakeViewTypeVector3(x, y, z, viewType_);
+	}
+
+	inline void selectSegmentsInCircle(const DataCoord& origCoord)
 	{
+		const DataCoord flippedCoord = flipCoord(origCoord);
+
         const int radius   = brushDia_ / 2;
         const int sqRadius = radius * radius;
 
@@ -248,9 +252,9 @@ private:
 
                 if( x * x + y * y <= sqRadius )
                 {
-                    addVoxel(DataCoord(xyzCoord.x + x,
-									   xyzCoord.y + y,
-									   xyzCoord.z));
+                    addVoxel(flipCoord(flippedCoord.x + x,
+									   flippedCoord.y + y,
+									   flippedCoord.z));
                 }
             }
         }

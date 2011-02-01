@@ -1,4 +1,7 @@
 #include "common/omCommon.h"
+#include "zi/omUtility.h"
+#include "common/omString.hpp"
+
 #include <QTextStream>
 
 std::ostream& operator<<(std::ostream &out, const OmColor& c)
@@ -41,3 +44,10 @@ QTextStream &operator<<(QTextStream& out, const OmColor& c)
 	return out;
 }
 
+std::ostream& operator<<(std::ostream &out, const OmSegIDsSet& in)
+{
+	const std::string joined = om::string::join(in);
+
+	out << "[" << joined << "]";
+	return out;
+}
