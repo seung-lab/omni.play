@@ -23,14 +23,37 @@ private:
 	const SegmentationDataWrapper sdw_;
 	OmSegmentation *const segmentation_;
 
+	const int brushDia_;
+	int depth_;
+
 	boost::scoped_ptr<OmSegmentSelector> selector_;
 
 public:
+	static void SelectByClick(OmView2dState* state, const DataCoord& gDC)
+	{
+		OmBrushSelect s(state);
+		s.SelectSegments(gDC);
+	}
+
+	static void SelectByLine(OmView2dState* state,
+							 const DataCoord& first,
+							 const DataCoord& second)
+	{
+		OmBrushSelect s(state);
+		s.BresenhamLineDrawForSelecting(first, second);
+	}
+
+private:
 	OmBrushSelect(OmView2dState* state)
 		: state_(state)
 		, mViewType(state->getViewType())
 		, sdw_(SegmentationDataWrapper(state->GetSegmentationID()))
 		, segmentation_(sdw_.GetSegmentationPtr())
+		, brushDia_(state_->getBrushSize()->Diameter())
+		, depth_(0)
+	{}
+
+	virtual ~OmBrushSelect()
 	{}
 
 	void BresenhamLineDrawForSelecting(const DataCoord& first,
@@ -38,10 +61,10 @@ public:
 	{
 		selector_.reset(new OmSegmentSelector(sdw_, this, "view2d_selector"));
 
-		const TwoPoints pts = computeTwoPoints(first, second);
-		const int depth = OmView2dConverters::GetViewTypeDepth(second, mViewType);
+		depth_ = OmView2dConverters::GetViewTypeDepth(second, mViewType);
 
-		doBresenhamLineDraw(pts.y0, pts.y1, pts.x0, pts.x1, depth);
+		const TwoPoints pts = computeTwoPoints(first, second);
+		doBresenhamLineDraw(pts.y0, pts.y1, pts.x0, pts.x1);
 
 		selector_->sendEvent();
 	}
@@ -53,11 +76,10 @@ public:
 		selector_->sendEvent();
 	}
 
-private:
 	struct TwoPoints {
 		int x0;
-		int y0;
 		int x1;
+		int y0;
 		int y1;
 	};
 
@@ -67,30 +89,29 @@ private:
 
 		switch (mViewType) {
 		case XY_VIEW:
-			ret.y1 = second.y;
-			ret.y0 = first.y;
-			ret.x1 = second.x;
 			ret.x0 = first.x;
+			ret.x1 = second.x;
+			ret.y0 = first.y;
+			ret.y1 = second.y;
 			break;
 		case XZ_VIEW:
-			ret.y1 = second.z;
-			ret.y0 = first.z;
-			ret.x1 = second.x;
 			ret.x0 = first.x;
+			ret.x1 = second.x;
+			ret.y0 = first.z;
+			ret.y1 = second.z;
 			break;
 		case YZ_VIEW:
-			ret.y1 = second.y;
-			ret.y0 = first.y;
-			ret.x1 = second.z;
 			ret.x0 = first.z;
+			ret.x1 = second.z;
+			ret.y0 = first.y;
+			ret.y1 = second.y;
 			break;
 		}
 
 		return ret;
 	}
 
-	void doBresenhamLineDraw(int y0, int y1, int x0, int x1,
-							 const int depth)
+	void doBresenhamLineDraw(int y0, int y1, int x0, int x1)
 	{
 		int dy = y1 - y0;
 		int stepy = 1;
@@ -109,8 +130,6 @@ private:
 		dy <<= 1;		// dy is now 2*dy
 		dx <<= 1;		// dx is now 2*dx
 
-		const int brushDia = state_->getBrushSize()->Diameter();
-
 		if (dx > dy) {
 			int fraction = dy - (dx >> 1);	// same as 2*dy - dx
 			while (x0 != x1) {
@@ -121,19 +140,13 @@ private:
 				x0 += stepx;
 				fraction += dy;	// same as fraction -= 2*dy
 
-				if(brushDia > 4 &&
-				   (x1 == x0 || abs(x1 - x0) % (brushDia / 4) == 0))
+				if(brushDia_ > 4 &&
+				   (x1 == x0 || abs(x1 - x0) % (brushDia_ / 4) == 0))
 				{
-					const DataCoord globalDC =
-						OmView2dConverters::MakeViewTypeVector3(x0, y0, depth, mViewType);
+					selectSegments(x0, y0);
 
-					selectSegments(globalDC);
-
-				} else if (brushDia < 4) {
-					const DataCoord globalDC =
-						OmView2dConverters::MakeViewTypeVector3(x0, y0, depth, mViewType);
-
-					selectSegments(globalDC);
+				} else if (brushDia_ < 4) {
+					selectSegments(x0, y0);
 				}
 			}
 		} else {
@@ -147,84 +160,76 @@ private:
 				y0 += stepy;
 				fraction += dx;
 
-				if(brushDia > 4 &&
-				   (y1 == y0 || abs(y1 - y0) % (brushDia / 4) == 0))
+				if(brushDia_ > 4 &&
+				   (y1 == y0 || abs(y1 - y0) % (brushDia_ / 4) == 0))
 				{
-					const DataCoord globalDC =
-						OmView2dConverters::MakeViewTypeVector3(x0, y0, depth, mViewType);
-					selectSegments(globalDC);
+					selectSegments(x0, y0);
 
-				} else if (brushDia < 4) {
-					const DataCoord globalDC =
-						OmView2dConverters::MakeViewTypeVector3(x0, y0, depth, mViewType);
-
-					selectSegments(globalDC);
+				} else if (brushDia_ < 4) {
+					selectSegments(x0, y0);
 				}
 			}
 		}
 	}
 
-	inline void addVoxel(const DataCoord& globalDataClickPoint)
+	inline void addVoxel(const DataCoord& xyzCoord)
 	{
-		if( globalDataClickPoint.x < 0 ||
-			globalDataClickPoint.y < 0 ||
-			globalDataClickPoint.z < 0)
+		if( xyzCoord.x < 0 ||
+			xyzCoord.y < 0 ||
+			xyzCoord.z < 0)
 		{
 			return;
 		}
-		const OmSegID segID = segmentation_->GetVoxelValue(globalDataClickPoint);
+
+		const DataCoord viewtypeCoord = getCoordsByViewType(xyzCoord);
+
+		const OmSegID segID =
+			segmentation_->GetVoxelValue(viewtypeCoord);
+
 		if(segID) {
 			selector_->augmentSelectedSet(segID, true);
 		}
 	}
 
-	inline void selectSegments(const DataCoord& gDC)
+	inline void selectSegments(const int x, const int y){
+		selectSegments(DataCoord(x, y, depth_));
+	}
+
+	inline void selectSegments(const DataCoord& xyzCoord)
 	{
-		const int brushDia = state_->getBrushSize()->Diameter();
-		if(1 == brushDia){
-			addVoxel(gDC);
+		if(1 == brushDia_){
+			addVoxel(xyzCoord);
 			return;
 		}
 
-		doSelectSegments(gDC, brushDia);
+		selectSegmentsInCircle(xyzCoord);
 	}
 
-	inline DataCoord brushToolToGDC(const DataCoord& vec)
-	{
-		return OmView2dConverters::MakeViewTypeVector3(vec.x,
-													   vec.y,
-													   vec.z,
-													   mViewType);
+	inline DataCoord getCoordsByViewType(const DataCoord& vec){
+		return OmView2dConverters::MakeViewTypeVector3(vec, mViewType);
 	}
 
-	inline void doSelectSegments(const DataCoord& gDC, const int savedDia)
+	inline void selectSegmentsInCircle(const DataCoord& xyzCoord)
 	{
-		const DataCoord off = brushToolToGDC(gDC);
-
-        const int radius   = savedDia / 2;
+        const int radius   = brushDia_ / 2;
         const int sqRadius = radius * radius;
 
-        for(int i = 0; i < savedDia; ++i)
+        for(int i = 0; i < brushDia_; ++i)
 		{
 			const int x = i - radius;
 
-            for(int j = 0; j < savedDia; ++j)
+            for(int j = 0; j < brushDia_; ++j)
             {
                 const int y = j - radius;
 
                 if( x * x + y * y <= sqRadius )
                 {
-                    addVoxel(brushToolToGDC( DataCoord( off.x + x,
-														off.y + y )));
+                    addVoxel(DataCoord(xyzCoord.x + x,
+									   xyzCoord.y + y,
+									   xyzCoord.z));
                 }
             }
         }
-	}
-
-	void play(int dA, int dB, int A1, int A2, int B1, int B2,
-			  const int stepA, const int setpB)
-	{
-
 	}
 };
 

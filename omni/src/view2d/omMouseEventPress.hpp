@@ -124,8 +124,7 @@ private:
 			state_->ComputeMouseClickPointDataCoord(event);
 
 		if(doselection){
-			OmBrushSelect brushSelect(state_);
-			brushSelect.SelectSegments(dataClickPoint);
+			OmBrushSelect::SelectByClick(state_, dataClickPoint);
 
 		} else {
 			SegmentDataWrapper sdw = OmSegmentSelected::Get();

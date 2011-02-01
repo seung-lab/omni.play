@@ -26,8 +26,7 @@ OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> state,
 void OmLineDraw::BresenhamLineDrawForSelecting(const DataCoord & first,
 											   const DataCoord & second)
 {
-	OmBrushSelect brushSelect(state_.get());
-	brushSelect.BresenhamLineDrawForSelecting(first, second);
+	OmBrushSelect::SelectByLine(state_.get(), first, second);
 }
 
 void OmLineDraw::BresenhamLineDrawForPainting(const DataCoord & first,
