@@ -96,6 +96,21 @@ public:
 		}
 	}
 
+	template <typename T>
+	inline static Vector2<T> Get2PtsInPlane(const Vector3<T>& vec,
+										   const ViewType viewType)
+	{
+		switch(viewType) {
+		case XY_VIEW:
+			return Vector2<T>(vec.x, vec.y);
+		case XZ_VIEW:
+			return Vector2<T>(vec.x, vec.z);
+		case YZ_VIEW:
+			return Vector2<T>(vec.z, vec.y);
+		default:
+			throw OmArgException("unknown viewType");
+		}
+	}
 };
 
 #endif

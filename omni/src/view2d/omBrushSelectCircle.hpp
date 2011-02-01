@@ -9,13 +9,11 @@
 class OmBrushSelectCircle {
 private:
 	OmSegmentation *const segmentation_;
-
-	boost::scoped_ptr<OmSegmentSelector> selector_;
-
-protected:
 	const ViewType viewType_;
 	const int brushDia_;
 	const int depth_;
+
+	boost::scoped_ptr<OmSegmentSelector> selector_;
 
 public:
 	OmBrushSelectCircle(OmSegmentation * segmentation,
@@ -33,10 +31,20 @@ public:
 	virtual ~OmBrushSelectCircle()
 	{}
 
-	void SelectCircle(const DataCoord& coord)
+	void SelectAndSendEvents(const DataCoord& coord)
 	{
 		selectSegments(coord);
-		sendEvents();
+		SendEvents();
+	}
+
+	void SendEvents()
+	{
+		selector_->sendEvent();
+		OmEvents::Redraw2d();
+	}
+
+	inline void SelectSegments(const int x, const int y){
+		selectSegments(DataCoord(x, y, depth_));
 	}
 
 private:
@@ -49,11 +57,14 @@ private:
 		selector_->AutoCenter(false);
 	}
 
-protected:
-	void sendEvents()
+	inline void selectSegments(const DataCoord& xyzCoord)
 	{
-		selector_->sendEvent();
-		OmEvents::Redraw2d();
+		if(1 == brushDia_){
+			addVoxel(xyzCoord);
+			return;
+		}
+
+		selectSegmentsInCircle(xyzCoord);
 	}
 
 	inline void addVoxel(const DataCoord& xyzCoord)
@@ -72,17 +83,6 @@ protected:
 		}
 	}
 
-	inline void selectSegments(const DataCoord& xyzCoord)
-	{
-		if(1 == brushDia_){
-			addVoxel(xyzCoord);
-			return;
-		}
-
-		selectSegmentsInCircle(xyzCoord);
-	}
-
-private:
 	inline DataCoord flipCoord(const DataCoord& coord){
 		return OmView2dConverters::MakeViewTypeVector3(coord, viewType_);
 	}

@@ -16,7 +16,7 @@ public:
 							  state->getViewType(),
 							  state->getBrushSize()->Diameter(),
 							  state->getSliceDepth());
-		s.SelectCircle(gDC);
+		s.SelectAndSendEvents(gDC);
 	}
 
 	static void SelectByLine(OmView2dState* state,
