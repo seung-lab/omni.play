@@ -23,6 +23,22 @@ public:
 	}
 
 	template <typename T>
+	inline static Vector3<T> MakeViewTypeVector3(const Vector3<T>& vec,
+												 const ViewType viewType)
+	{
+		switch(viewType){
+		case XY_VIEW:
+			return Vector3<T>(vec.x, vec.y, vec.z);
+		case XZ_VIEW:
+			return Vector3<T>(vec.x, vec.z, vec.y);
+		case YZ_VIEW:
+			return Vector3<T>(vec.z, vec.y, vec.x);
+		default:
+			throw OmArgException("invalid viewType");
+		}
+	}
+
+	template <typename T>
 	inline static T GetViewTypeDepth(const Vector3<T>& vec,
 									 const ViewType viewType)
 	{
