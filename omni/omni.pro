@@ -81,6 +81,7 @@ HEADERS +=  \
 	src/common/omException.h \
 	src/common/omGl.h \
 	src/common/omStd.h \
+	src/common/omString.hpp \
 	src/datalayer/archive/omDataArchiveBoost.h \
 	src/datalayer/archive/omDataArchiveMipChunk.h \
 	src/datalayer/archive/omDataArchiveProject.h \
@@ -357,6 +358,8 @@ HEADERS +=  \
 	src/view2d/details/omMidpointCircleAlgorithm.hpp \
 	src/view2d/om2dPreferences.hpp \
 	src/view2d/omBrushSelect.hpp \
+	src/view2d/omBrushSelectCircle.hpp \
+	src/view2d/omBrushSelectLine.hpp \
 	src/view2d/omDisplayInfo.hpp \
 	src/view2d/omKeyEvents.hpp \
 	src/view2d/omLineDraw.hpp \
