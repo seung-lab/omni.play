@@ -67,7 +67,6 @@ private:
 		const DataCoord dataClickPoint =
 			state_->ComputeMouseClickPointDataCoord(event);
 
-		// TODO: bug here; ask MattW
 		v2d_->LineDrawer()->BresenhamLineDrawForSelecting(state_->GetLastDataPoint(),
 														  dataClickPoint);
 

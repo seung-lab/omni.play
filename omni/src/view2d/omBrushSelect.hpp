@@ -92,6 +92,10 @@ private:
 	void setup(const DataCoord& coord)
 	{
 		selector_.reset(new OmSegmentSelector(sdw_, this, "view2d_selector"));
+		selector_->ShouldScroll(false);
+		selector_->AddToRecentList(false);
+		selector_->AutoCenter(false);
+
 		depth_ = OmView2dConverters::GetViewTypeDepth(coord, viewType_);
 	}
 

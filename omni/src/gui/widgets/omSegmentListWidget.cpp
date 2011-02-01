@@ -106,7 +106,7 @@ void OmSegmentListWidget::segmentLeftClick()
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 
 	OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), this, eventSenderName() );
-	sel.setAddToRecentList(segmentListBase->shouldSelectedSegmentsBeAddedToRecentList());
+	sel.AddToRecentList(segmentListBase->shouldSelectedSegmentsBeAddedToRecentList());
 
 	sel.selectNoSegments();
 
@@ -130,6 +130,7 @@ void OmSegmentListWidget::segmentLeftClick()
 		}
 	}
 
+	sel.AutoCenter(true);
 	sel.sendEvent();
 }
 

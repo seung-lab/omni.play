@@ -14,8 +14,9 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
 	, mComment(cmt)
 	, oldSelectedIDs(segmentCache_->GetSelectedSegmentIds())
 	, newSelectedIDs(oldSelectedIDs)
-	, mAddToRecentList(true)
-	, mAutoCenter(false)
+	, autoCenter_(false)
+	, shouldScroll_(true)
+	, addToRecentList_(true)
 {}
 
 void OmSegmentSelector::selectNoSegments()
@@ -24,9 +25,8 @@ void OmSegmentSelector::selectNoSegments()
 }
 
 void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel,
-											   const bool isSelected, const bool center)
+											   const bool isSelected)
 {
-	mAutoCenter = center;
 	selectNoSegments();
 
 	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
@@ -52,9 +52,8 @@ void OmSegmentSelector::setSelectedSegment(const OmSegID segID)
 }
 
 void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
-											const bool isSelected, const bool center )
+											const bool isSelected)
 {
-	mAutoCenter = center;
 	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
 
 	if(!segID){
@@ -70,10 +69,8 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
 	setSelectedSegment(segID);
 }
 
-void OmSegmentSelector::selectJustThisSegment_toggle(const OmSegID segIDunknownLevel,
-													 const bool center )
+void OmSegmentSelector::selectJustThisSegment_toggle(const OmSegID segIDunknownLevel)
 {
-	mAutoCenter = center;
 	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
 	if(!segID){
 		return;
@@ -83,10 +80,8 @@ void OmSegmentSelector::selectJustThisSegment_toggle(const OmSegID segIDunknownL
 	selectJustThisSegment( segID, !isSelected );
 }
 
-void OmSegmentSelector::augmentSelectedSet_toggle(const OmSegID segIDunknownLevel,
-												  const bool center )
+void OmSegmentSelector::augmentSelectedSet_toggle(const OmSegID segIDunknownLevel)
 {
-	mAutoCenter = center;
 	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
 	if(!segID){
 		return;
@@ -107,13 +102,8 @@ bool OmSegmentSelector::sendEvent()
 							  oldSelectedIDs,
 							  mSender,
 							  mComment,
-							  true,
-							  mAddToRecentList,
-							  mAutoCenter);
+							  shouldScroll_,
+							  addToRecentList_,
+							  autoCenter_);
 	return true;
-}
-
-void OmSegmentSelector::setAddToRecentList(const bool shouldAdd)
-{
-	mAddToRecentList = shouldAdd;
 }

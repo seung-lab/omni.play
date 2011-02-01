@@ -13,22 +13,32 @@ class OmSegmentSelector {
 					  void* sender,
 					  const std::string & cmt );
 
-	void selectJustThisSegment( const OmSegID segID, const bool isSelected, const bool center=false );
-	void augmentSelectedSet( const OmSegID segID, const bool isSelected, const bool center=false );
+	void selectJustThisSegment( const OmSegID segID, const bool isSelected);
+	void augmentSelectedSet( const OmSegID segID, const bool isSelected);
 
-	void selectJustThisSegment_toggle( const OmSegID segID, const bool center=false );
-	void augmentSelectedSet_toggle( const OmSegID segID, const bool center=false );
+	void selectJustThisSegment_toggle( const OmSegID segID);
+	void augmentSelectedSet_toggle( const OmSegID segID);
 
 	bool sendEvent();
 	void selectNoSegments();
 
-	void setAddToRecentList(const bool shouldAdd);
+	void ShouldScroll(const bool shouldScroll){
+		shouldScroll_ = shouldScroll;
+	}
+
+	void AddToRecentList(const bool addToRecentList){
+		addToRecentList_ = addToRecentList;
+	}
+
+	void AutoCenter(const bool autoCenter){
+		autoCenter_ = autoCenter;
+	}
 
 private:
 	SegmentDataWrapper sdw_;
 	OmSegmentCache* segmentCache_;
 
-	void * mSender;
+	void* mSender;
 	std::string mComment;
 
 	const OmSegIDsSet oldSelectedIDs;
@@ -38,7 +48,9 @@ private:
 
 	void setSelectedSegment(const OmSegID segID);
 
-	bool mAutoCenter;
+	bool autoCenter_;
+	bool shouldScroll_;
+	bool addToRecentList_;
 };
 
 #endif

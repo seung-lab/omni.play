@@ -77,7 +77,8 @@ void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
 		OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(),
 							  NULL,
 							  "jump after validate");
-		sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true, true);
+		sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
+		sel.AutoCenter(true);
 		sel.sendEvent();
 	}
 }
@@ -99,7 +100,8 @@ void OmActions::ValidateSelectedSegments(const SegmentationDataWrapper& sdw,
 	   nextSegmentIDtoJumpTo)
 	{
 		OmSegmentSelector sel(sdw, NULL, "jump after validate");
-		sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true, true);
+		sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
+		sel.AutoCenter(true);
 		sel.sendEvent();
 	}
 }
@@ -117,7 +119,8 @@ void OmActions::UncertainSegment(const SegmentDataWrapper& sdw,
 	   nextSegmentIDtoJumpTo)
 	{
 		OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), NULL, "jump after validate");
-		sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true, true);
+		sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
+		sel.AutoCenter(true);
 		sel.sendEvent();
 	}
 }
@@ -135,11 +138,11 @@ void OmActions::UncertainSegment(const SegmentationDataWrapper& sdw,
 	   nextSegmentIDtoJumpTo)
 	{
 		OmSegmentSelector sel(sdw, NULL, "jump after validate");
-		sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true, true);
+		sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
+		sel.AutoCenter(true);
 		sel.sendEvent();
 	}
 }
-
 
 OmSegIDsSet OmActions::MutateSegmentsInValidList(OmSegmentCache * cache, const OmSegIDsSet& ids)
 {

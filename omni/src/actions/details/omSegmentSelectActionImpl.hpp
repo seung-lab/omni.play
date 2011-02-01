@@ -26,8 +26,8 @@ public:
 							  void* sender,
 							  const std::string & comment,
 							  const bool doScroll,
-							  const bool addToRecentList, 
-							  const bool center=false)
+							  const bool addToRecentList,
+							  const bool center)
 		: sdw_(sdw)
 		, mNewSelectedIdSet(newSelectedIdSet)
 		, mOldSelectedIdSet(oldSelectedIdSet)
@@ -58,7 +58,7 @@ public:
 		OmEvents::SegmentModified(sdw_,
 								  mSender,
 								  mComment,
-								  mDoScroll, 
+								  mDoScroll,
 								  mCenter);
 
 	}

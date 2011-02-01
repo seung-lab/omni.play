@@ -185,7 +185,6 @@ void SegmentListBase::rebuildSegmentList(const SegmentDataWrapper& sdw)
 SegmentationDataWrapper
 SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent* event)
 {
-	SegmentationDataWrapper newsdw;
 	bool doScroll = event->getDoScroll();
 
 	// if we sent event, don't scroll
@@ -194,6 +193,8 @@ SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent* event)
 	}
 
 	const SegmentDataWrapper& sdw = event->GetSegmentDataWrapper();
+
+	SegmentationDataWrapper newsdw;
 
 	if(sdw.IsSegmentationValid()){
 		makeSegmentationActive(sdw, doScroll );
@@ -208,8 +209,11 @@ SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent* event)
 	}
 
  	if(newsdw.IsSegmentationValid()){
-		//printf("centering... %i, scroll %i\n", event->getCenter(), doScroll);
-		if(event->getCenter() || !doScroll){
+		debug(center, "centering... %i, scroll %i\n",
+			  event->getCenter(),
+			  doScroll);
+
+		if(event->getCenter()){
 			OmSegmentUtils::CenterSegment(vgs_, newsdw);
 		}
 	}
@@ -239,5 +243,5 @@ void SegmentListBase::searchChanged()
 
 void SegmentListBase::userJustClickedInThisSegmentList()
 {
-	ElementListBox::SetActiveTab(this);
+ 	ElementListBox::SetActiveTab(this);
 }
