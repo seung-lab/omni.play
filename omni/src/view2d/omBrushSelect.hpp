@@ -66,7 +66,7 @@ private:
 	void BresenhamLineDrawForSelecting(const DataCoord& first,
 									   const DataCoord& second)
 	{
-		setup(second); // depth of second == depth of first for given viewType_
+		setup();
 
 		const TwoPoints pts = computeTwoPoints(first, second);
 		doBresenhamLineDraw(pts.y0, pts.y1, pts.x0, pts.x1);
@@ -74,7 +74,7 @@ private:
 
 	void SelectSegments(const DataCoord& coord)
 	{
-		setup(coord);
+		setup();
 
 		selectSegments(coord);
 	}
@@ -86,14 +86,14 @@ private:
 	}
 
 private:
-	void setup(const DataCoord& coord)
+	void setup()
 	{
 		selector_.reset(new OmSegmentSelector(sdw_, this, "view2d_selector"));
 		selector_->ShouldScroll(false);
 		selector_->AddToRecentList(false);
 		selector_->AutoCenter(false);
 
-		depth_ = OmView2dConverters::GetViewTypeDepth(coord, viewType_);
+		depth_ = state_->getSliceDepth();
 		std::cout << "slice depth is: " << depth_ << "\n";
 	}
 
