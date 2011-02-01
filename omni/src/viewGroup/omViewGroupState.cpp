@@ -16,9 +16,9 @@ OmViewGroupState::OmViewGroupState(MainWindow * mw)
 	: OmManageableObject()
 	, mMainWindow(mw)
 	, mFilterWidget(NULL)
-	, mViewGroup(boost::make_shared<ViewGroup>(mMainWindow, this))
-	, brushSize_(boost::make_shared<OmBrushSize>())
-	, zoomLevel_(boost::make_shared<OmZoomLevel>())
+	, mViewGroup(new ViewGroup(mMainWindow, this))
+	, brushSize_(new OmBrushSize())
+	, zoomLevel_(new OmZoomLevel())
 	, segmentBeingSplit_(boost::make_shared<SegmentDataWrapper>())
 {
 	mXYSliceEnabled = false;
@@ -52,6 +52,9 @@ OmViewGroupState::OmViewGroupState(MainWindow * mw)
 
 	//debug(viewgroupstate, "constructed viewGroupState\n");
 }
+
+OmViewGroupState::~OmViewGroupState()
+{}
 
 // GUI state
 void OmViewGroupState::addView2Dchannel(OmID chan_id, ViewType vtype)

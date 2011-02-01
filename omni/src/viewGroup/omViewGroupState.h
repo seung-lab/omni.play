@@ -19,11 +19,15 @@ class ViewGroup;
 
 class OmViewGroupState : public OmManageableObject {
 public:
-	OmViewGroupState( MainWindow * mw );
-	~OmViewGroupState(){}
+	OmViewGroupState( MainWindow* mw );
+	virtual ~OmViewGroupState();
 
-	void SetInspectorProperties(InspectorProperties * ip) {mInspectorProperties = ip; }
-	InspectorProperties * GetInspectorProperties() { return mInspectorProperties; }
+	void SetInspectorProperties(InspectorProperties* ip) {
+		mInspectorProperties = ip;
+	}
+	InspectorProperties* GetInspectorProperties() {
+		return mInspectorProperties;
+	}
 
 	void SetFilterWidget(FilterWidget* f){ mFilterWidget = f; }
 	FilterWidget* GetFilterWidget(){ return mFilterWidget; }
@@ -47,8 +51,8 @@ public:
 	void SetViewSliceDepth(ViewType, float);
 	float GetViewSliceDepth(ViewType);
 
-	boost::shared_ptr<OmZoomLevel>& ZoomLevel() {
-		return zoomLevel_;
+	OmZoomLevel* ZoomLevel() {
+		return zoomLevel_.get();
 	}
 
 	void SetPanDistance(const ViewType, const Vector2f&);
@@ -68,7 +72,7 @@ public:
 		return mDustThreshold;
 	}
 
-	void SetToolBarManager(ToolBarManager * tbm);
+	void SetToolBarManager(ToolBarManager* tbm);
 	bool GetShatterMode();
 	void SetShatterMode(bool shatter);
 	void ToggleShatterMode();
@@ -99,12 +103,12 @@ public:
 private:
 	zi::mutex mColorCacheMapLock;
 
-	MainWindow * mMainWindow;
+	MainWindow* mMainWindow;
 	FilterWidget* mFilterWidget;
-	boost::shared_ptr<ViewGroup> mViewGroup;
-	InspectorProperties * mInspectorProperties;
+	boost::scoped_ptr<ViewGroup> mViewGroup;
+	InspectorProperties* mInspectorProperties;
 
-	boost::shared_ptr<OmBrushSize> brushSize_;
+	boost::scoped_ptr<OmBrushSize> brushSize_;
 
 	float mBreakThreshold;
 	uint64_t mDustThreshold;
@@ -113,7 +117,7 @@ private:
 	float mXYSlice[6], mYZSlice[6], mXZSlice[6];
 	float mXYPan[2], mYZPan[2], mXZPan[2];
 
-	boost::shared_ptr<OmZoomLevel> zoomLevel_;
+	boost::scoped_ptr<OmZoomLevel> zoomLevel_;
 
 	SpaceBbox mViewBbox;
 	SpaceCoord mViewCenter;
@@ -129,7 +133,7 @@ private:
 	std::vector<boost::shared_ptr<OmSegmentColorizer> > mColorCaches;
 
 	//toolbar stuff
-	ToolBarManager * mToolBarManager;
+	ToolBarManager* mToolBarManager;
 	bool mShatter;
 	bool mSplitting;
 	bool mCutting;

@@ -275,7 +275,7 @@ public:
 	}
 
 	// volume
-	OmMipVolume* getVol() const {
+	inline OmMipVolume* getVol() const {
 		return vol_;
 	}
 	void setVol(OmMipVolume* vol){
@@ -283,12 +283,12 @@ public:
 	}
 
 	// view group state
-	OmViewGroupState* getViewGroupState() const {
+	inline OmViewGroupState* getViewGroupState() const {
 		return vgs_;
 	}
 
 	// scribbling
-	bool getScribbling(){
+	inline bool getScribbling(){
 		return scribbling_;
 	}
 	void setScribbling(const bool s){
@@ -296,41 +296,41 @@ public:
 	}
 
 	// zoom and mip level
-	float getZoomScale() const {
+	inline float getZoomScale() const {
 		return ZoomLevel()->GetZoomScale();
 	}
-	int getMipLevel() const {
+	inline int getMipLevel() const {
 		return ZoomLevel()->GetMipLevel();
 	}
-	int getMaxMipLevel() const {
+	inline int getMaxMipLevel() const {
 		return vol_->GetRootMipLevel();
 	}
-	boost::shared_ptr<OmZoomLevel>& ZoomLevel() const {
+	inline OmZoomLevel* ZoomLevel() const {
 		return vgs_->ZoomLevel();
 	}
 
 	// slice depth
-	SpaceCoord getViewSliceDepthSpace() const
+	inline SpaceCoord getViewSliceDepthSpace() const
 	{
 		return SpaceCoord(getXsliceDepth(),
 						  getYsliceDepth(),
 						  getZsliceDepth());
 	}
-	DataCoord getViewSliceDepthData() const {
+	inline DataCoord getViewSliceDepthData() const {
 		return vol_->SpaceToDataCoord(getViewSliceDepthSpace());
 	}
-	float getSliceDepth() const {
+	inline float getSliceDepth() const {
 		float depth = vgs_->GetViewSliceDepth(viewType_);
 		//printf("getSliceDepth d=%f\n", depth);
 		return depth;
 	}
-	float getXsliceDepth() const {
+	inline float getXsliceDepth() const {
 		return vgs_->GetViewSliceDepth(YZ_VIEW);
 	}
-	float getYsliceDepth() const {
+	inline float getYsliceDepth() const {
 		return vgs_->GetViewSliceDepth(XZ_VIEW);
 	}
-	float getZsliceDepth() const {
+	inline float getZsliceDepth() const {
 		return vgs_->GetViewSliceDepth(XY_VIEW);
 	}
 
@@ -365,7 +365,7 @@ public:
 	}
 
 	//refresh
-	static void touchFreshnessAndRedraw2d()
+	inline static void touchFreshnessAndRedraw2d()
 	{
 		OmCacheManager::TouchFresheness();
 		OmEvents::Redraw2d();
@@ -413,12 +413,12 @@ public:
 	}
 
 	// brush size
-	OmBrushSize* getBrushSize() const {
+	inline OmBrushSize* getBrushSize() const {
 		return vgs_->getBrushSize();
 	}
 
 	// mouse point
-	const Vector2i& GetMousePoint() const {
+	inline const Vector2i& GetMousePoint() const {
 		return mousePoint_;
 	}
 	void SetMousePoint(const int x, const int y){
@@ -426,7 +426,7 @@ public:
 	}
 
 	// mip level lock
-	bool IsLevelLocked() const {
+	inline bool IsLevelLocked() const {
 		return isLevelLocked_;
 	}
 	void ToggleLevelLock(){
@@ -443,7 +443,7 @@ public:
 	}
 
 	// camera moving
-	bool IsCameraMoving() const {
+	inline bool IsCameraMoving() const {
 		return cameraMoving_;
 	}
 	void SetCameraMoving(const bool isMoving){
@@ -451,12 +451,12 @@ public:
 	}
 
 	// mouse click coord
-	DataCoord ComputeMouseClickPointDataCoord(QMouseEvent* event) const {
+	inline DataCoord ComputeMouseClickPointDataCoord(QMouseEvent* event) const {
 		return ScreenToDataCoord(Vector2f(event->x(), event->y()));
 	}
 
 	// last data point--coupled w/ click point?
-	const DataCoord& GetLastDataPoint() const {
+	inline const DataCoord& GetLastDataPoint() const {
 		return lastDataPoint_;
 	}
 	void SetLastDataPoint(const DataCoord& coord){
@@ -464,12 +464,12 @@ public:
 	}
 
 	// whether overall view2d widget is displaying a channel or a segmentation
-	ObjectType getObjectType() const {
+	inline ObjectType getObjectType() const {
 		return objType_;
 	}
 
 	//TODO: fixme! (purcaro)
-	OmID GetSegmentationID() const {
+	inline OmID GetSegmentationID() const {
 		return 1;
 	}
 
