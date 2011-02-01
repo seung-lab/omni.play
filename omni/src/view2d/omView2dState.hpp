@@ -39,7 +39,7 @@ public:
 		, isLevelLocked_(false)
 		, clickPoint_(0,0)
 		, cameraMoving_(false)
-		, lastDataPoint_(0,0)
+		, lastDataPoint_(0,0,0)
 	{
 		setTotalViewport(size);
 		ZoomLevel()->Update(getMaxMipLevel());
@@ -374,7 +374,7 @@ public:
 	// depth-related computation helpers
 	template <typename T>
 	inline Vector3<T> makeViewTypeVector3(const Vector3<T>& vec) const {
-		return makeViewTypeVector3(vec.x, vec.y, vec.z);
+		return OmView2dConverters::MakeViewTypeVector3(vec, viewType_);
 	}
 
 	template <typename T>
@@ -395,7 +395,8 @@ public:
 
 	template <typename T>
 	inline Vector3<T> scaleViewType(const T& x, const T& y,
-									const Vector3<T>& scale) const {
+									const Vector3<T>& scale) const
+	{
 		return OmView2dConverters::ScaleViewType(x, y, scale, viewType_);
 	}
 
@@ -412,7 +413,7 @@ public:
 	}
 
 	// brush size
-	OmBrushSize* getBrushSize(){
+	OmBrushSize* getBrushSize() const {
 		return vgs_->getBrushSize();
 	}
 
@@ -467,6 +468,7 @@ public:
 		return objType_;
 	}
 
+	//TODO: fixme! (purcaro)
 	OmID GetSegmentationID() const {
 		return 1;
 	}
@@ -486,7 +488,7 @@ private:
 	ScreenCoord clickPoint_;
 	bool cameraMoving_;
 
-	// FLAT data coordinates, not accurate for orthogonal views but accurate for Bresenham
+	// (x,y) coordinates only (no depth); needed for Bresenham
 	DataCoord lastDataPoint_;
 };
 

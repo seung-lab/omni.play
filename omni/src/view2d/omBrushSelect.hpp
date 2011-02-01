@@ -19,7 +19,7 @@
 class OmBrushSelect {
 private:
 	OmView2dState *const state_;
-	const ViewType mViewType;
+	const ViewType viewType_;
 	const SegmentationDataWrapper sdw_;
 	OmSegmentation *const segmentation_;
 
@@ -46,12 +46,24 @@ public:
 private:
 	OmBrushSelect(OmView2dState* state)
 		: state_(state)
-		, mViewType(state->getViewType())
+		, viewType_(state->getViewType())
 		, sdw_(SegmentationDataWrapper(state->GetSegmentationID()))
 		, segmentation_(sdw_.GetSegmentationPtr())
 		, brushDia_(state_->getBrushSize()->Diameter())
 		, depth_(0)
-	{}
+	{
+		if(brushDia_ > 1){
+			if(0 != brushDia_%2){
+				throw OmArgException("brush diameter must be a mulitple of 2");
+			}
+		}
+
+		if(brushDia_ > 2){
+			if(0 != brushDia_%4){
+				throw OmArgException("brush diameter must be a mulitple of 4");
+			}
+		}
+	}
 
 	virtual ~OmBrushSelect()
 	{}
@@ -59,9 +71,7 @@ private:
 	void BresenhamLineDrawForSelecting(const DataCoord& first,
 									   const DataCoord& second)
 	{
-		selector_.reset(new OmSegmentSelector(sdw_, this, "view2d_selector"));
-
-		depth_ = OmView2dConverters::GetViewTypeDepth(second, mViewType);
+		setup(second); // depth of second == depth of first for given viewType_
 
 		const TwoPoints pts = computeTwoPoints(first, second);
 		doBresenhamLineDraw(pts.y0, pts.y1, pts.x0, pts.x1);
@@ -69,11 +79,20 @@ private:
 		selector_->sendEvent();
 	}
 
-	void SelectSegments(const DataCoord& gDC)
+	void SelectSegments(const DataCoord& coord)
+	{
+		setup(coord);
+
+		selectSegments(coord);
+
+		selector_->sendEvent();
+	}
+
+private:
+	void setup(const DataCoord& coord)
 	{
 		selector_.reset(new OmSegmentSelector(sdw_, this, "view2d_selector"));
-		selectSegments(gDC);
-		selector_->sendEvent();
+		depth_ = OmView2dConverters::GetViewTypeDepth(coord, viewType_);
 	}
 
 	struct TwoPoints {
@@ -85,30 +104,34 @@ private:
 
 	TwoPoints computeTwoPoints(const DataCoord& first, const DataCoord& second)
 	{
-		TwoPoints ret = {0, 0, 0, 0};
-
-		switch (mViewType) {
+		switch(viewType_) {
 		case XY_VIEW:
-			ret.x0 = first.x;
-			ret.x1 = second.x;
-			ret.y0 = first.y;
-			ret.y1 = second.y;
-			break;
-		case XZ_VIEW:
-			ret.x0 = first.x;
-			ret.x1 = second.x;
-			ret.y0 = first.z;
-			ret.y1 = second.z;
-			break;
-		case YZ_VIEW:
-			ret.x0 = first.z;
-			ret.x1 = second.z;
-			ret.y0 = first.y;
-			ret.y1 = second.y;
-			break;
+		{
+			TwoPoints ret = {first.x,
+							 second.x,
+							 first.y,
+							 second.y};
+			return ret;
 		}
-
-		return ret;
+		case XZ_VIEW:
+		{
+			TwoPoints ret = {first.x,
+							 second.x,
+							 first.z,
+							 second.z};
+			return ret;
+		}
+		case YZ_VIEW:
+		{
+			TwoPoints ret = {first.z,
+							 second.z,
+							 first.y,
+							 second.y};
+			return ret;
+		}
+		default:
+			throw OmArgException("unknown type");
+		}
 	}
 
 	void doBresenhamLineDraw(int y0, int y1, int x0, int x1)
@@ -181,7 +204,8 @@ private:
 			return;
 		}
 
-		const DataCoord viewtypeCoord = getCoordsByViewType(xyzCoord);
+		const DataCoord viewtypeCoord =
+			OmView2dConverters::MakeViewTypeVector3(xyzCoord, viewType_);
 
 		const OmSegID segID =
 			segmentation_->GetVoxelValue(viewtypeCoord);
@@ -203,10 +227,6 @@ private:
 		}
 
 		selectSegmentsInCircle(xyzCoord);
-	}
-
-	inline DataCoord getCoordsByViewType(const DataCoord& vec){
-		return OmView2dConverters::MakeViewTypeVector3(vec, mViewType);
 	}
 
 	inline void selectSegmentsInCircle(const DataCoord& xyzCoord)
