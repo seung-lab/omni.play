@@ -71,6 +71,14 @@ private:
 		}
 
 		zoomFactor_ += numSteps / 10.0;
+
+		/*
+		  TODO: increase factor further zoom
+		  from Daniel Berger
+		 *= exp(log(2.0)/8*factor)
+
+		 */
+
 	}
 
 };

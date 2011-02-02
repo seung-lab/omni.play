@@ -46,6 +46,8 @@ public:
 	bool AreSegmentsSelected();
 	void setSegmentSelected( OmSegID segID, const bool, const bool  );
 	void UpdateSegmentSelection( const OmSegIDsSet & ids, const bool);
+	void AddToSegmentSelection(const OmSegIDsSet& idsToSelect);
+	void RemvoeFromSegmentSelection(const OmSegIDsSet& idsToSelect);
 
 	QString getSegmentName( OmSegID segID );
 	void setSegmentName( OmSegID segID, QString name );
@@ -61,7 +63,7 @@ public:
 	quint32 getPageSize();
 	uint32_t getMaxValue();
 
-	OmSegmentCache* GetSegmentCache();
+	OmSegmentCache* SegmentCache();
 
 protected:
 	OmSegmentation *const segmentation_;

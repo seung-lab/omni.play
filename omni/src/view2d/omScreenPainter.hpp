@@ -4,7 +4,7 @@
 #include "system/omEvents.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 #include "view2d/om2dPreferences.hpp"
 #include "view2d/omDisplayInfo.hpp"
 #include "view2d/omScreenShotSaver.hpp"
@@ -53,9 +53,9 @@ private:
 		QPainter painter(v2d_);
 		painter.drawImage(QPoint(0, 0), screenImage);
 
-		QPen the_pen;
-		the_pen.setColor(getPenColor());
-		painter.setPen(the_pen);
+		QPen pen;
+		pen.setColor(getPenColor());
+		painter.setPen(pen);
 
 		const Vector2i& mousePoint = state_->GetMousePoint();
 
@@ -79,7 +79,7 @@ private:
 		}
 
 		if(v2d_->hasFocus()){
-			the_pen.setWidth(5);
+			pen.setWidth(5);
 		}
 
 		const Vector4i& vp = state_->getTotalViewport();
@@ -89,7 +89,7 @@ private:
 						 vp.height - 1);
 
 		if(shouldDisplayInfo_){
-			displayInformation(painter);
+			displayInformation(painter, pen);
 		}
 
 		if(Om2dPreferences::ShowCrosshairs()){
@@ -111,11 +111,18 @@ private:
 		}
 	}
 
-	void displayInformation(QPainter& painter)
+	void displayInformation(QPainter& painter, QPen& pen)
 	{
+		const bool showTimingInfo = false;
+
+		int yTop = 45;
+		if(showTimingInfo){
+			yTop = 65;
+		}
+
 		const int xoffset = 10;
-		const int yTopOfText = state_->getTotalViewport().height - 65;
-		OmDisplayInfo di(painter, yTopOfText, xoffset);
+		const int yTopOfText = state_->getTotalViewport().height - yTop;
+		OmDisplayInfo di(painter, pen, yTopOfText, xoffset);
 
 		if(state_->IsLevelLocked()){
 			di.paint("MIP Level Locked (Press L to unlock.)");
@@ -128,7 +135,9 @@ private:
 		di.paint(state_->getSliceDepth(), "Slice Depth");
 
 		printTileCount(di);
-		printTimingInfo(di);
+		if(showTimingInfo){
+			printTimingInfo(di);
+		}
 	}
 
 	void printTileCount(OmDisplayInfo& di)
@@ -148,9 +157,11 @@ private:
 	{
 		const double timeMS = elapsed_.ms_elapsed();
 
+		/*
 		if(!state_->getScribbling()) {
 			di.paint(timeMS, "ms", 1);
 		}
+		*/
 
 		di.paint(1000.0 / timeMS, "fps", 0);
 	}

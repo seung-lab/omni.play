@@ -4,9 +4,9 @@
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/omMipMeshManager.h"
 
-OmMeshDrawer::OmMeshDrawer(OmSegmentation* seg)
-	: segmentation_(seg)
-	, rootSegLists_(boost::make_shared<OmMeshSegmentList>())
+OmMeshDrawer::OmMeshDrawer(OmSegmentation* segmentation)
+	: segmentation_(segmentation)
+	, rootSegLists_(boost::make_shared<OmMeshSegmentList>(segmentation))
 	, cache_(boost::make_shared<OmMeshPlanCache>(segmentation_,
 												 rootSegLists_.get()))
 	, numPrevRedraws_(0)
@@ -17,7 +17,7 @@ OmMeshDrawer::Draw(OmViewGroupState* vgs,
 				   boost::shared_ptr<OmVolumeCuller> culler,
 				   const OmBitfield drawOptions)
 {
-	if(!segmentation_->MeshManager()->Metadata()->IsBuilt()){
+	if(!segmentation_->MeshManager(1)->Metadata()->IsBuilt()){
 		printf("no meshes found\n");
 		return boost::optional<std::pair<float,float> >();
 	}

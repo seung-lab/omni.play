@@ -1,9 +1,9 @@
 #ifndef SEG_INSPECTOR_EXPORT_BUTTON_H
 #define SEG_INSPECTOR_EXPORT_BUTTON_H
 
+#include "datalayer/hdf5/omExportVolToHdf5.hpp"
 #include "gui/widgets/omButton.hpp"
 #include "gui/inspectors/segmentation/segInspector.h"
-#include "utility/dataWrappers.h"
 
 class ExportButton : public OmButton<SegInspector> {
 public:
@@ -25,7 +25,8 @@ private:
 			return;
 
 		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
-		sdw.GetSegmentation().ExportInternalData(fileName, true);
+
+		OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, true);
 	}
 };
 

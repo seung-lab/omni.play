@@ -10,7 +10,7 @@ void OmSegmentUncertainAction::SetUncertain(const SegmentDataWrapper& sdw,
 	set.insert(sdw.FindRootID());
 
 	boost::shared_ptr<std::set<OmSegment*> > children =
-		OmSegmentUtils::GetAllChildrenSegments(sdw.GetSegmentCache(), set);
+		OmSegmentUtils::GetAllChildrenSegments(sdw.SegmentCache(), set);
 
 	(new OmSegmentUncertainAction(sdw.MakeSegmentationDataWrapper(),
 								  children, uncertain))->Run();
@@ -19,7 +19,7 @@ void OmSegmentUncertainAction::SetUncertain(const SegmentDataWrapper& sdw,
 void OmSegmentUncertainAction::SetUncertain(const SegmentationDataWrapper& sdw,
 											const bool uncertain)
 {
-	OmSegmentCache* segCache = sdw.GetSegmentCache();
+	OmSegmentCache* segCache = sdw.SegmentCache();
 	boost::shared_ptr<std::set<OmSegment*> > children =
 		OmSegmentUtils::GetAllChildrenSegments(segCache,
 											   segCache->GetSelectedSegmentIds());

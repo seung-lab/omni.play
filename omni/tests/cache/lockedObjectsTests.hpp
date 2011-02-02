@@ -1,7 +1,7 @@
 #ifndef LOCKED_OBJECTS_TESTS_HPP
 #define LOCKED_OBJECTS_TESTS_HPP
 
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 #include "system/cache/omLockedCacheObjects.hpp"
 
 class LockedObjectsTests {

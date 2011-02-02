@@ -1,7 +1,9 @@
 #ifndef OM_SEGMENT_SELECT_ACTION_IMPL_HPP
 #define OM_SEGMENT_SELECT_ACTION_IMPL_HPP
 
+#include "utility/omCopyFirstN.hpp"
 #include "common/omCommon.h"
+#include "common/omString.hpp"
 #include "project/omProject.h"
 #include "project/omProject.h"
 #include "utility/dataWrappers.h"
@@ -17,6 +19,7 @@ private:
 	bool mDoScroll;
 	bool mAddToRecentList;
 	bool mCenter;
+	bool augmentListOnly_;
 
 public:
 	OmSegmentSelectActionImpl() {}
@@ -27,7 +30,8 @@ public:
 							  const std::string & comment,
 							  const bool doScroll,
 							  const bool addToRecentList,
-							  const bool center)
+							  const bool center,
+							  const bool augmentListOnly)
 		: sdw_(sdw)
 		, mNewSelectedIdSet(newSelectedIdSet)
 		, mOldSelectedIdSet(oldSelectedIdSet)
@@ -36,12 +40,18 @@ public:
 		, mDoScroll(doScroll)
 		, mAddToRecentList(addToRecentList)
 		, mCenter(center)
+		, augmentListOnly_(augmentListOnly)
 	{}
 
 	void Execute()
 	{
-		sdw_.GetSegmentCache()->UpdateSegmentSelection(mNewSelectedIdSet,
-													   mAddToRecentList);
+		if(augmentListOnly_){
+			sdw_.SegmentCache()->AddToSegmentSelection(mNewSelectedIdSet);
+
+		}else{
+			sdw_.SegmentCache()->UpdateSegmentSelection(mNewSelectedIdSet,
+														mAddToRecentList);
+		}
 
 		OmEvents::SegmentModified(sdw_,
 								  mSender,
@@ -52,8 +62,13 @@ public:
 
 	void Undo()
 	{
-		sdw_.GetSegmentCache()->UpdateSegmentSelection(mOldSelectedIdSet,
-													   mAddToRecentList);
+		if(augmentListOnly_){
+			sdw_.SegmentCache()->RemvoeFromSegmentSelection(mOldSelectedIdSet);
+
+		}else{
+			sdw_.SegmentCache()->UpdateSegmentSelection(mOldSelectedIdSet,
+														mAddToRecentList);
+		}
 
 		OmEvents::SegmentModified(sdw_,
 								  mSender,
@@ -65,13 +80,21 @@ public:
 
 	std::string Description() const
 	{
-		QStringList segs;
-		foreach(const OmSegID& segID, mNewSelectedIdSet){
-			segs << QString::number(segID);
+		static const size_t max = 5;
+
+		std::vector<OmSegID> segIDs;
+		segIDs.reserve(max);
+
+		om::utils::CopyFirstN(mNewSelectedIdSet, segIDs, max);
+
+		const std::string nums = om::string::join(segIDs);
+
+		std::string post = "";
+		if(mNewSelectedIdSet.size() > max){
+			post = "...";
 		}
 
-		const QString lineItem = "Selected segments: " + segs.join(", ");
-		return lineItem.toStdString();
+		return "Selected segments: " + nums + post;
 	}
 
 	QString classNameForLogFile() const {

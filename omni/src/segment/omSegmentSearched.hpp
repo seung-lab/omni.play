@@ -1,7 +1,7 @@
 #ifndef OM_SEGMENT_SEARCHED_H
 #define OM_SEGMENT_SEARCHED_H
 
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "common/omCommon.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omEvents.h"

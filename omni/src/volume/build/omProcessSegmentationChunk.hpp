@@ -3,27 +3,19 @@
 
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
-#include "volume/omMipChunkCoord.h"
+#include "chunks/omChunk.h"
+#include "chunks/omChunkCoord.h"
 
 class OmProcessSegmentationChunk {
-private:
-	OmMipChunk *const chunk_;
-	const OmMipChunkCoord coord_;
-	const bool computeSizes_;
-	const Vector3i minVertexOfChunk_;
-	OmSegmentCache *const segCache_;
-
 public:
-	OmProcessSegmentationChunk(OmMipChunk* chunk,
+	OmProcessSegmentationChunk(OmChunk* chunk,
+							   const bool computeSizes,
 							   OmSegmentCache* segCache)
 		: chunk_(chunk)
-		, coord_(chunk_->GetCoordinate())
-		, computeSizes_(0 == coord_.Level)
-		, minVertexOfChunk_(chunk_->GetExtent().getMin())
+		, computeSizes_(computeSizes)
+		, minVertexOfChunk_(chunk_->Mipping().GetExtent().getMin())
 		, segCache_(segCache)
-	{
-		chunk_->mDirectlyContainedValues.clear();
-	}
+	{}
 
 	~OmProcessSegmentationChunk()
 	{
@@ -33,18 +25,10 @@ public:
 			seg->addToSize(sizes_[val]);
 			seg->addToBounds(bounds_[val]);
 		}
-
-		chunk_->containedValuesDataLoaded = true;
-		chunk_->WriteMetaData();
-		std::cout << "chunk " << coord_
-				  << " has " << chunk_->GetUniqueSegIDs().size()
-				  << " values\n";
 	}
 
 	inline void processVoxel(const OmSegID val, const Vector3i& voxelPos)
 	{
-		chunk_->mDirectlyContainedValues.insert(val);
-
 		if(!computeSizes_){
 			return;
 		}
@@ -56,6 +40,11 @@ public:
 	}
 
 private:
+	OmChunk *const chunk_;
+	const bool computeSizes_;
+	const Vector3i minVertexOfChunk_;
+	OmSegmentCache *const segCache_;
+
 	boost::unordered_map<OmSegID, OmSegment*> localSegCache_;
 	boost::unordered_map<OmSegID, uint64_t> sizes_;
 	boost::unordered_map<OmSegID, DataBbox> bounds_;
@@ -68,6 +57,5 @@ private:
 		return localSegCache_[val];
 	}
 };
-
 
 #endif

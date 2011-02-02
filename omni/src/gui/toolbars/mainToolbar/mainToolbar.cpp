@@ -5,7 +5,6 @@
 #include "gui/toolbars/mainToolbar/openViewGroupButton.h"
 #include "gui/toolbars/mainToolbar/refreshVolumeButton.h"
 #include "gui/toolbars/mainToolbar/saveButton.h"
-#include "system/omProjectData.h"
 #include "gui/toolbars/mainToolbar/filterToBlackCheckbox.hpp"
 
 MainToolbar::MainToolbar(MainWindow * mw)
@@ -60,7 +59,7 @@ void MainToolbar::setReadOnlyWidgetsEnabled()
 void MainToolbar::setModifyWidgetsEnabled()
 {
 	bool toBeEnabled = false;
-	if( mMainWindow->isProjectOpen() && !OmProjectData::IsReadOnly() ){
+	if( mMainWindow->isProjectOpen() && !OmProject::IsReadOnly() ){
 		toBeEnabled = true;
 	}
 

@@ -4,19 +4,22 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentIterator.h"
 #include "system/omEvents.h"
-#include "volume/omMipChunk.h"
+#include "chunks/omChunk.h"
+#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 
 void OmMeshSegmentListTask::run()
 {
-	const OmSegIDsSet& chunkValues = mChunk->GetUniqueSegIDs();
-	OmSegmentIterator segIter(mRootSeg->GetSegmentCache());
+	const ChunkUniqueValues chunkSegIDs =
+		segmentation_->ChunkUniqueValues()->Values(mChunk->GetCoordinate(), 1);
+
+	OmSegmentIterator segIter(mRootSeg->SegmentCache());
 	segIter.iterOverSegmentID(mRootSeg->value());
 	OmSegment* seg = segIter.getNextSegment();
 
 	OmSegPtrList segmentsToDraw;
 
 	while( NULL != seg ){
-		if(0 != chunkValues.count(seg->value())){
+		if(chunkSegIDs.contains(seg->value())){
 			segmentsToDraw.push_back(seg);
 		}
 

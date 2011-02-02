@@ -7,6 +7,7 @@
 class OmMeshMetadata {
 private:
 	OmSegmentation *const segmentation_;
+	const double threshold_;
 	const QString fnp_;
 
 	int fileVersion_;
@@ -20,8 +21,9 @@ private:
 	zi::mutex lock_;
 
 public:
-	OmMeshMetadata(OmSegmentation *segmentation)
+	OmMeshMetadata(OmSegmentation *segmentation, const double threshold)
 		: segmentation_(segmentation)
+		, threshold_(threshold)
 		, fnp_(filePath())
 		, fileVersion_(1)
 		, meshBuilt_(false)
@@ -66,14 +68,9 @@ public:
 	}
 
 private:
-	QString filePath()
-	{
-		const QString volPath =
-			OmFileNames::MakeMeshFolderPath(segmentation_);
-		const QString fullPath = QString("%1meshMetadata.ver1")
-			.arg(volPath);
-
-		return fullPath;
+	QString filePath(){
+		return OmFileNames::MeshMetadataFilePerThreshold(segmentation_,
+														 threshold_);
 	}
 
 	bool load()

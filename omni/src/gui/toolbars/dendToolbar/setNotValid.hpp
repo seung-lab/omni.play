@@ -4,7 +4,7 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/validationGroup.h"
 #include "gui/widgets/omButton.hpp"
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "system/omEvents.h"
 
 class SetNotValid : public OmButton<ValidationGroup> {

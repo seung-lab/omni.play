@@ -10,7 +10,7 @@ namespace om {
 	public:
 		// from http://stackoverflow.com/questions/3804183/how-to-nicely-output-a-list-of-separated-strings
 		template <typename T>
-		static std::string join(const T& in, const std::string& sep = ", ")
+		static std::string join(const T& in, const std::string sep = ", ")
 		{
 			return boost::algorithm::join(
 				in  |

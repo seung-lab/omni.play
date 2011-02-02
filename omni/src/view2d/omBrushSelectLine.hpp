@@ -2,25 +2,20 @@
 #define OM_BRUSH_SELECT_LINE_HPP
 
 #include "view2d/omBrushSelectCircle.hpp"
+#include "view2d/omView2dConverters.hpp"
 
 class OmBrushSelectLine {
 private:
+	boost::shared_ptr<OmBrushSelectCircle> circle_;
 	const ViewType viewType_;
 	const int brushDia_;
 
-	boost::scoped_ptr<OmBrushSelectCircle> circle_;
-
 public:
-	OmBrushSelectLine(OmSegmentation * segmentation,
-					  const ViewType viewType,
-					  const int brushDia,
-					  const int depth)
-		: viewType_(viewType)
-		, brushDia_(brushDia)
-	{
-		circle_.reset(new OmBrushSelectCircle(segmentation, viewType,
-											  brushDia, depth));
-	}
+	OmBrushSelectLine(boost::shared_ptr<OmBrushSelectCircle> circle)
+		: circle_(circle)
+		, viewType_(circle->GetViewType())
+		, brushDia_(circle->BrushDiameter())
+	{}
 
 	virtual ~OmBrushSelectLine()
 	{}

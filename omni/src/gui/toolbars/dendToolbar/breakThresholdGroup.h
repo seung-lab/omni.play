@@ -1,7 +1,7 @@
 #ifndef BREAK_THRESHOLD_GROUP_H
 #define BREAK_THRESHOLD_GROUP_H
 
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/toolbars/dendToolbar/thresholdGroup.h"

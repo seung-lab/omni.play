@@ -2,9 +2,8 @@
 #define OM_ACTION_LOGGER_HPP
 
 #include "actions/io/omActionLoggerTask.hpp"
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "project/omProject.h"
-#include "system/omProjectData.h"
 #include "utility/omThreadPool.hpp"
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
@@ -45,9 +44,8 @@ private:
 
 	void setupLogDir()
 	{
-		const QDir filesDir = OmProjectData::GetFilesFolderPath();
 		const QString logFolderPath =
-			filesDir.absolutePath() +
+			OmProject::FilesFolder() +
 			QDir::separator() +
 			"logFiles" +
 			QDir::separator();

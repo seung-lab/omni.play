@@ -2,6 +2,13 @@
 #define OM_HPP
 
 namespace om {
+	struct point2d {
+		int x;
+		int y;
+	};
+}
+
+namespace om {
 	enum ZeroMem {
 		ZERO_FILL,
 		DONT_ZERO_FILL
@@ -26,7 +33,7 @@ namespace om {
 		FIFO,
 		DONT_FIFO
 	};
-	enum Affinity {
+	enum AffinityGraph {
 		NO_AFFINITY,
 		X_AFFINITY,
 		Y_AFFINITY,

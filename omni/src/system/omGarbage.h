@@ -15,7 +15,7 @@
 
 #include "common/omCommon.h"
 #include "common/omGl.h"
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"

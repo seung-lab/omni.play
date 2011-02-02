@@ -2,12 +2,8 @@
 #define OM_SEGMENT_CACHE_IMPL_H
 
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
-#include "segment/omSegmentPointers.h"
-#include "volume/omVolumeTypes.hpp"
 
-#include <QList>
-
-class OmMipChunkCoord;
+class OmChunkCoord;
 class OmSegmentEdge;
 class OmUserEdges;
 
@@ -35,8 +31,6 @@ public:
 private:
 	OmSegmentEdge splitChildFromParent(OmSegment* child);
 
-	boost::shared_ptr<OmUserEdges> userEdges();
-
 	std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(const OmSegmentEdge& e);
 	std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmID, const OmID);
 
@@ -45,7 +39,8 @@ private:
 	void setGlobalThreshold();
 	void resetGlobalThreshold();
 
-	inline boost::shared_ptr<OmSegmentLists> getSegmentLists();
+	OmSegmentLists* getSegmentLists();
+	OmUserEdges* userEdges();
 
 	friend class OmSegmentColorizer;
 	friend QDataStream& operator<<(QDataStream&, const OmSegmentCacheImpl&);

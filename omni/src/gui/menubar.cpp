@@ -1,6 +1,6 @@
 #include "gui/menubar.h"
 #include "gui/mainwindow.h"
-#include "system/omProjectData.h"
+#include "project/omProject.h"
 
 MenuBar::MenuBar( MainWindow * mw )
 	: QWidget(mw)
@@ -67,7 +67,7 @@ void MenuBar::createActions()
 	saveAct->setShortcut(tr("Ctrl+S"));
 	saveAct->setStatusTip(tr("Saves the current project"));
 	connect(saveAct, SIGNAL(triggered()), mMainWindow, SLOT(saveProject()));
-	
+
 	for (int i = 0; i < recentFiles.getMaxNumberOfRecentlyUsedFilesToDisplay(); i++) {
 		recentFiles.recentFileActs[i] = new QAction(mMainWindow);
 		recentFiles.recentFileActs[i]->setVisible(false);
@@ -127,7 +127,7 @@ void MenuBar::updateReadOnlyRelatedWidgets()
 {
 	bool toBeEnabled = false;
 
-	if ( mMainWindow->isProjectOpen() && !OmProjectData::IsReadOnly() ){
+	if ( mMainWindow->isProjectOpen() && !OmProject::IsReadOnly() ){
 		toBeEnabled = true;
 	}
 

@@ -5,7 +5,6 @@
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegmentCache.h"
-#include "system/omProjectData.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 
@@ -23,21 +22,20 @@ public:
 private:
 	void doAction()
 	{
-		const QString outFile =
-			OmProjectData::getAbsoluteFileNameAndPath() + ".mst.txt";
+		const QString outFile = OmProject::OmniFile() + ".mst.txt";
+
 		QFile data(outFile);
 		if(data.open(QFile::WriteOnly | QFile::Truncate)) {
 			printf("writing segment file %s\n", qPrintable(outFile));
 		} else{
-			throw OmIoException("could not open file \"" + outFile.toStdString()
-								+"\"");
+			throw OmIoException("could not open file", outFile);
 		}
 
 		QTextStream out(&data);
 
 		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
-		OmSegmentCache* segmentCache = sdw.GetSegmentCache();
-		boost::shared_ptr<OmMST> mst = sdw.GetSegmentation().getMST();
+		OmSegmentCache* segmentCache = sdw.SegmentCache();
+		OmMST* mst = sdw.MST();
 		OmMSTEdge* edges = mst->Edges();
 
 		QStringList headerLabels;

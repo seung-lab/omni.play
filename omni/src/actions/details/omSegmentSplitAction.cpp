@@ -17,7 +17,7 @@ OmSegmentSplitAction::OmSegmentSplitAction( const SegmentDataWrapper & sdw, cons
 	SetUndoable(true);
 }
 
-void OmSegmentSplitAction::runIfSplittable( OmSegment * seg1, OmSegment * seg2, const DataCoord coord1, const DataCoord coord2 )
+void OmSegmentSplitAction::RunIfSplittable( OmSegment * seg1, OmSegment * seg2, const DataCoord coord1, const DataCoord coord2 )
 {
 	SegmentationDataWrapper sdw(seg1);
 	if(seg1 == seg2) {
@@ -26,7 +26,7 @@ void OmSegmentSplitAction::runIfSplittable( OmSegment * seg1, OmSegment * seg2, 
 	}
 
 	OmSegmentEdge edge =
-		OmFindCommonEdge::FindClosestCommonEdge(sdw.GetSegmentCache(),
+		OmFindCommonEdge::FindClosestCommonEdge(sdw.SegmentCache(),
 												seg1,
 												seg2);
 	if(!edge.isValid()){
@@ -63,37 +63,7 @@ void OmSegmentSplitAction::DoFindAndCutSegment(const SegmentDataWrapper& sdw,
 	OmSegment* seg1 = sdw.getSegment();
 	OmSegment* seg2 = seg1->getParent();
 
-	runIfSplittable(seg1, seg2, DataCoord(), DataCoord());
+	RunIfSplittable(seg1, seg2, DataCoord(), DataCoord());
 
 	vgs->SetCutMode(false);
-}
-
-//TODO: put this somewhere else...
-void OmSegmentSplitAction::DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
-												 OmViewGroupState* vgs, const DataCoord coord)
-{
-	const std::pair<boost::optional<DataCoord>, SegmentDataWrapper> splittingAndSDW =
-		vgs->GetSplitMode();
-	const boost::optional<DataCoord> amAlreadySplitting = splittingAndSDW.first;
-
-	if(amAlreadySplitting){
-
-		SegmentDataWrapper segmentBeingSplit = splittingAndSDW.second;
-
-		OmSegment* seg1 = segmentBeingSplit.getSegment();
-		OmSegment* seg2 = sdw.getSegment();
-
-		if(NULL == seg1 || NULL == seg2) {
-			return;
-		}
-
-		runIfSplittable(seg1, seg2, *amAlreadySplitting, coord);
-
-		vgs->SetSplitMode(false);
-
-	} else { // set segment to be split later...
-		if(sdw.IsSegmentValid()){
-			vgs->SetSplitMode(sdw, coord);
-		}
-	}
 }

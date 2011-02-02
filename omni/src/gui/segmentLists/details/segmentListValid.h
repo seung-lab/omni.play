@@ -23,7 +23,7 @@ class SegmentListValid : public SegmentListBase
 	}
 
 	uint64_t Size() {
-		return sdw_.GetSegmentLists()->Valid().size();
+		return sdw_.SegmentLists()->Valid().size();
 	}
 
 	boost::shared_ptr<OmSegIDsListWithPage>
@@ -31,7 +31,7 @@ class SegmentListValid : public SegmentListBase
 					const int numToGet,
 					const OmSegID startSeg)
 	{
-		return sdw_.GetSegmentLists()->Valid().getPageOfSegmentIDs(offset, numToGet, startSeg);
+		return sdw_.SegmentLists()->Valid().getPageOfSegmentIDs(offset, numToGet, startSeg);
 	}
 
 	int getPreferredTabIndex(){

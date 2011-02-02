@@ -5,19 +5,19 @@
 
 OmTileCoord::OmTileCoord()
 	: OmTileCoordKey(-1,
-			 SpaceCoord(),
+			 DataCoord(),
 			 NULL,
 			 0,
 			 NULL,
 			 XY_VIEW,
 			 SCC_NUMBER_OF_ENUMS) {}
 
-OmTileCoord::OmTileCoord(const int level, const SpaceCoord& spaceCoord,
+OmTileCoord::OmTileCoord(const int level, const DataCoord& dataCoord,
 						 OmMipVolume* vol, const uint32_t freshness,
 						 OmViewGroupState* vgs, const ViewType vt,
 						 const ObjectType objType)
 	: OmTileCoordKey(level,
-					 spaceCoord,
+					 dataCoord,
 					 vol,
 					 freshness,
 					 vgs,
@@ -33,7 +33,7 @@ ObjectType OmTileCoord::getVolType() const {
 std::ostream& operator<<(std::ostream &out, const OmTileCoord &c) {
 	out << "["
 	    << c.getLevel() << ", "
-	    << c.getSpaceCoord() << ", "
+	    << c.getDataCoord() << ", "
 	    << c.getVolume()->GetName() << ", "
 	    << c.getFreshness() << ", "
 	    << c.getViewType() << ", "

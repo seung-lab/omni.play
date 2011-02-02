@@ -16,6 +16,8 @@ class OmSegmentSelector {
 	void selectJustThisSegment( const OmSegID segID, const bool isSelected);
 	void augmentSelectedSet( const OmSegID segID, const bool isSelected);
 
+	void InsertSegments(const boost::unordered_set<OmSegID>& segIDs);
+
 	void selectJustThisSegment_toggle( const OmSegID segID);
 	void augmentSelectedSet_toggle( const OmSegID segID);
 
@@ -32,6 +34,10 @@ class OmSegmentSelector {
 
 	void AutoCenter(const bool autoCenter){
 		autoCenter_ = autoCenter;
+	}
+
+	void AugmentListOnly(const bool augmentListOnly){
+		augmentListOnly_ = augmentListOnly;
 	}
 
 private:
@@ -51,6 +57,7 @@ private:
 	bool autoCenter_;
 	bool shouldScroll_;
 	bool addToRecentList_;
+	bool augmentListOnly_;
 };
 
 #endif

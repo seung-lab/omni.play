@@ -39,8 +39,8 @@ private:
 	DataCoord toDataCoord(const int);
 	GLfloatBox computeVertices(const float, const float);
 	void computeTile(const float x, const float y, const int);
-	void makeTileCoordFromFilter(OmFilter2d& filter, const SpaceCoord & spaceCoord, const float x, const float y);
-	OmTileCoord makeTileCoord(const SpaceCoord& coord, OmMipVolume * vol, int freshness);
+	void makeTileCoordFromFilter(OmFilter2d& filter, const DataCoord & dataCoord, const float x, const float y);
+	OmTileCoord makeTileCoord(const DataCoord& coord, OmMipVolume * vol, int freshness);
 
 };
 

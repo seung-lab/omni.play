@@ -356,17 +356,6 @@ sub omni {
     print "done\n";
 }
 
-sub stxxl {
-    my $args = "";
-    prepareAndBuild( "stxxl-1.3.0", "stxxl", $args );
-
-#USE_BOOST	?= no
-#USE_MACOSX	?= no
-#USE_PMODE	?= yes
-#COMPILER_GCC	?= g++-4.4
-#make.settings.local
-}
-
 sub printTitle {
     my $title = $_[0];
     printLine();
@@ -488,9 +477,8 @@ sub experimentalMenu {
     print "0 -- exit\n";
     print "1 -- Build Omni no debug\n";
     print "2 -- Build qt 4.7\n";
-    print "3 -- Build stxxl\n";
     print "\n";
-    my $max_answer = 3;
+    my $max_answer = 2;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -518,8 +506,6 @@ sub runExperimentalMenuEntry {
 	omni();
     } elsif( 2 == $entry ){
 	qt47();
-    } elsif( 3 == $entry ){
-	stxxl();
     }
 }
 

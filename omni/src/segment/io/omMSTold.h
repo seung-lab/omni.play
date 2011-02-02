@@ -4,36 +4,31 @@
 #include "datalayer/omDataWrapper.h"
 
 class OmSegmentation;
-class OmIDataReader;
-class OmDataPath;
+class OmMSTEdge;
 
 class OmMSTold {
-public:
-	OmMSTold();
-	~OmMSTold(){}
+private:
+	OmSegmentation *const segmentation_;
 
-	void readOld(OmSegmentation & seg);
-	void import(const std::string& fname);
+public:
+	OmMSTold(OmSegmentation* segmentation)
+		: segmentation_(segmentation)
+	{}
+
+	void ReadOld();
+	bool IsPopulated();
+	void MoveData(OmMSTEdge* edges, const uint32_t numEdges);
 
 	OmDataWrapperPtr mDend;
 	OmDataWrapperPtr mDendValues;
 	OmDataWrapperPtr mEdgeDisabledByUser;
 	OmDataWrapperPtr mEdgeForceJoin;
 
-	int NumEdges() const {
-		return mDendCount;
-	}
-
 private:
-	bool importDend(OmIDataReader*);
-	bool importDendValues(OmIDataReader*);
-	void setupUserEdges();
-	int mDendCount;
-
-	OmDataPath getDendPath(OmSegmentation&);
-	OmDataPath getDendValuesPath(OmSegmentation&);
-	OmDataPath getEdgeDisabledByUserPath(OmSegmentation&);
-	OmDataPath getEdgeForceJoinPath(OmSegmentation&);
+	OmDataPath getDendPath();
+	OmDataPath getDendValuesPath();
+	OmDataPath getEdgeDisabledByUserPath();
+	OmDataPath getEdgeForceJoinPath();
 };
 
 #endif

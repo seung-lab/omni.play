@@ -19,7 +19,8 @@ public:
 						  const std::string & comment,
 						  const bool doScroll,
 						  const bool addToRecentList,
-						  const bool center);
+						  const bool center,
+						  const bool augmentListOnly);
 private:
 	void Action();
 	void UndoAction();

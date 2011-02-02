@@ -1,7 +1,7 @@
 #ifndef OM_SEGMENT_LIST_BY_SIZE_TESTS_HPP
 #define OM_SEGMENT_LIST_BY_SIZE_TESTS_HPP
 
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 #include "segment/lowLevel/omSegmentListBySize.h"
 #include "segment/details/omSegmentListBySize2.hpp"
 #include "segment/mockSegments.hpp"

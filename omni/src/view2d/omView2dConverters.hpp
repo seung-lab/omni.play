@@ -28,7 +28,7 @@ public:
 	{
 		switch(viewType){
 		case XY_VIEW:
-			return Vector3<T>(vec.x, vec.y, vec.z);
+			return vec;
 		case XZ_VIEW:
 			return Vector3<T>(vec.x, vec.z, vec.y);
 		case YZ_VIEW:

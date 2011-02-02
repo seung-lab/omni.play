@@ -8,6 +8,7 @@
 class OmMeshConvertV1toV2 {
 private:
 	OmSegmentation* segmentation_;
+	const double threshold_;
 
 	boost::shared_ptr<OmMeshReaderV1> hdf5Reader_;
 	boost::shared_ptr<OmMeshReaderV2> meshReader_;
@@ -18,9 +19,10 @@ private:
 public:
 	OmMeshConvertV1toV2(OmSegmentation* segmentation)
 		: segmentation_(segmentation)
+		, threshold_(1)
 		, hdf5Reader_(new OmMeshReaderV1(segmentation_))
-		, meshReader_(new OmMeshReaderV2(segmentation_))
-		, meshWriter_(new OmMeshWriterV2(segmentation_))
+		, meshReader_(new OmMeshReaderV2(segmentation_, threshold_))
+		, meshWriter_(new OmMeshWriterV2(segmentation_, threshold_))
 	{}
 
 	~OmMeshConvertV1toV2(){
@@ -39,7 +41,7 @@ public:
 	ReadAndConvert(const OmMipMeshCoord& meshCoord)
 	{
 		const OmSegID segID = meshCoord.SegID();
-		const OmMipChunkCoord& coord = meshCoord.Coord();
+		const OmChunkCoord& coord = meshCoord.Coord();
 
 		if(!meshWriter_->Contains(segID, coord)){
 			std::cout << "did not find segID " << segID

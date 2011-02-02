@@ -2,35 +2,55 @@
 #define OM_BRUSH_SELECT_HPP
 
 #include "utility/dataWrappers.h"
-#include "view2d/omBrushSelectLine.hpp"
+#include "view2d/omBrushSelectLineTask.hpp"
 #include "view2d/omView2dState.hpp"
 #include "viewGroup/omBrushSize.hpp"
+#include "view2d/omView2dManager.hpp"
 
 class OmBrushSelect {
-public:
-	static void SelectByClick(OmView2dState* state, const DataCoord& gDC)
+private:
+	static int brushDiameterForMip(OmView2dState* state)
+	{
+		const float factor = om::pow2int(state->getMipLevel());
+		const int brushDia = state->getBrushSize()->Diameter();
+		return brushDia * factor;
+	}
+
+	static int getDepth(const DataCoord& coord, const ViewType viewType){
+		return OmView2dConverters::GetViewTypeDepth(coord, viewType);
+	}
+
+	static boost::shared_ptr<OmBrushSelectCircle>
+	makeCircle(OmView2dState* state, const DataCoord& coord)
 	{
 		SegmentationDataWrapper sdw(state->GetSegmentationID());
+		OmSegmentation* segmentation = sdw.GetSegmentationPtr();
 
-		OmBrushSelectCircle s(sdw.GetSegmentationPtr(),
-							  state->getViewType(),
-							  state->getBrushSize()->Diameter(),
-							  state->getSliceDepth());
-		s.SelectAndSendEvents(gDC);
+		const ViewType viewType = state->getViewType();
+		const int brushSize = brushDiameterForMip(state);
+		const int depth = getDepth(coord, viewType);
+
+		return boost::make_shared<OmBrushSelectCircle>(segmentation, viewType,
+													   brushSize, depth);
+	}
+
+public:
+	static void SelectByClick(OmView2dState* state, const DataCoord& coord)
+	{
+		boost::shared_ptr<OmBrushSelectCircle> circle = makeCircle(state, coord);
+		circle->SelectAndSendEvents(coord);
 	}
 
 	static void SelectByLine(OmView2dState* state,
 							 const DataCoord& first,
 							 const DataCoord& second)
 	{
-		SegmentationDataWrapper sdw(state->GetSegmentationID());
+		boost::shared_ptr<OmBrushSelectCircle> circle = makeCircle(state, second);
 
-		OmBrushSelectLine s(sdw.GetSegmentationPtr(),
-							state->getViewType(),
-							state->getBrushSize()->Diameter(),
-							state->getSliceDepth());
+		boost::shared_ptr<OmBrushSelectLineTask> task =
+			boost::make_shared<OmBrushSelectLineTask>(circle, first, second);
 
-		s.SelectLine(first, second);
+		OmView2dManager::AddTaskBack(task);
 	}
 };
 

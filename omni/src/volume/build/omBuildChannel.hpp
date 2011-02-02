@@ -1,15 +1,15 @@
 #ifndef OM_BUILD_CHANNEL_H
 #define OM_BUILD_CHANNEL_H
 
-#include "system/omBuildVolumes.h"
-#include "volume/omChannel.h"
-#include "volume/build/omVolumeBuilder.hpp"
 #include "datalayer/omDataPath.h"
+#include "volume/build/omBuildVolumes.hpp"
+#include "volume/build/omVolumeBuilder.hpp"
+#include "volume/omChannel.h"
 #include "zi/omThreads.h"
 
 class OmBuildChannel : public OmBuildVolumes {
 private:
-	OmChannel * mChann;
+	OmChannel *const mChann;
 
 public:
 	OmBuildChannel(OmChannel* chan)
@@ -39,11 +39,10 @@ public:
 		OmTimer build_timer;
 		startTiming(type, build_timer);
 
-		OmVolumeBuilder<OmChannel> builder(mChann, mChann->GetAffinity());
-		builder.SetSourceFilenamesAndPaths( mFileNamesAndPaths );
-		OmDataPath path(OmDataPaths::getDefaultHDF5channelDatasetName(mChann->GetAffinity()));
-
-		builder.Build(path);
+		OmVolumeBuilder<OmChannel> builder(mChann,
+										   mFileNamesAndPaths,
+										   mChann->GetDefaultHDF5DatasetName());
+		builder.Build();
 
 		stopTimingAndSave(type, build_timer);
 	}

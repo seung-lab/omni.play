@@ -19,14 +19,18 @@ class OmHdf5Manager : private om::singletonBase<OmHdf5Manager> {
 		instance().hdf5Files_.clear();
 	}
 
-	static OmHdf5* getOmHdf5File(const std::string& fileNameAndPath,
-								 const bool readOnly,
-								 const om::Affinity aff)
+	static OmHdf5* Get(const QString& fileNameAndPath,
+					   const bool readOnly){
+		return Get(fileNameAndPath.toStdString(), readOnly);
+	}
+
+	static OmHdf5* Get(const std::string& fileNameAndPath,
+					   const bool readOnly)
 	{
 		QFileInfo fInfo(QString::fromStdString(fileNameAndPath));
 		const std::string abs_fnpn = fInfo.absoluteFilePath().toStdString();
 
-		return instance().doGetOmHdf5File(abs_fnpn, readOnly, aff);
+		return instance().doGetOmHdf5File(abs_fnpn, readOnly);
 	}
 
 
@@ -37,17 +41,15 @@ class OmHdf5Manager : private om::singletonBase<OmHdf5Manager> {
 	zi::mutex mutex_;
 	std::map<std::string, boost::shared_ptr<OmHdf5> > hdf5Files_;
 
-	OmHdf5* doGetOmHdf5File(const std::string& fnp, const bool readOnly, const om::Affinity aff)
+	OmHdf5* doGetOmHdf5File(const std::string& fnp, const bool readOnly)
 	{
 		zi::guard g(mutex_);
 
 		if(hdf5Files_.count(fnp)){
-			OmHdf5* f = hdf5Files_[fnp].get();
-			f->aff_ = aff;
-			return f;
+			return hdf5Files_[fnp].get();
 		}
 
-		boost::shared_ptr<OmHdf5> hdf5File(new OmHdf5(fnp, readOnly, aff));
+		boost::shared_ptr<OmHdf5> hdf5File(new OmHdf5(fnp, readOnly));
 
 		hdf5Files_[fnp] = hdf5File;
 		return hdf5File.get();

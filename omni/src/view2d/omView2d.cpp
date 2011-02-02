@@ -77,8 +77,7 @@ QSize OmView2d::sizeHint () const {
 	return OmStateManager::getViewBoxSizeHint();
 }
 
-void OmView2d::mousePressEvent(QMouseEvent * event)
-{
+void OmView2d::mousePressEvent(QMouseEvent * event){
 	mouseEvents_->Press(event);
 }
 
@@ -91,7 +90,7 @@ void OmView2d::doRedraw2d()
 void OmView2d::SetDepth(QMouseEvent * event)
 {
 	const ScreenCoord screenc = ScreenCoord(event->x(), event->y());
-	const SpaceCoord newDepth = state()->ScreenToSpaceCoord(screenc);
+	const DataCoord newDepth = state()->ScreenToDataCoord(screenc);
 	state()->setSliceDepth(newDepth);
 
 	OmEvents::ViewCenterChanged();

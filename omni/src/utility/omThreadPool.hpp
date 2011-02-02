@@ -2,74 +2,92 @@
 #define OM_THREAD_POOL_HPP
 
 #include "common/om.hpp"
-#include "utility/details/omIThreadPool.h"
-#include "utility/details/omThreadPoolMock.hpp"
-#include "utility/details/omThreadPoolImpl.hpp"
 #include "utility/omSystemInformation.h"
-
 #include "utility/omThreadPoolManager.h"
-
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
+#include "zi/omThreads.h"
 
 class OmThreadPool {
 private:
-	boost::shared_ptr<OmIThreadPool> impl_;
+	boost::shared_ptr<zi::task_manager::simple> pool_;
 
 public:
 	OmThreadPool(){
 		OmThreadPoolManager::Add(this);
 	}
 
-	virtual ~OmThreadPool(){
-		stop();
+	virtual ~OmThreadPool()
+	{
+		if(pool_){
+			pool_->stop();
+		}
 		OmThreadPoolManager::Remove(this);
 	}
 
-	void start(){
+	bool wasStarted(){
+		return pool_;
+	}
+
+	void start()
+	{
 		const int numWokers = OmSystemInformation::get_num_cores();
 		start(numWokers);
 	}
 
-	void start(const int numWorkerThreads){
-		if(numWorkerThreads){
-			impl_ = boost::make_shared<OmThreadPoolImpl>();
-		} else {
-			impl_ = boost::make_shared<OmThreadPoolMock>();
+	void start(const uint32_t numWorkerThreads)
+	{
+		if(!numWorkerThreads){
+			throw OmIoException("please specify more than 0 threads");
 		}
-		impl_->DoStart(numWorkerThreads);
+
+		pool_ = boost::make_shared<zi::task_manager::simple>(numWorkerThreads);
+		pool_->start();
 	}
 
 	void join(){
-		impl_->DoJoin();
+		pool_->join();
 	}
 
-	void clear(){
-		impl_->DoClear();
+	void clear()
+	{
+		if(pool_->size()){
+			pool_->clear();
+		}
 	}
 
-	void stop(){
-		impl_->DoStop();
+	void stop()
+	{
+		clear();
+		pool_->stop();
 	}
 
 	void addTaskFront(const boost::shared_ptr<zi::runnable>& job){
-		impl_->DoAddTaskFront(job);
+		pool_->push_front(job);
 	}
 
 	void addTaskBack(const boost::shared_ptr<zi::runnable>& job){
-		impl_->DoAddTaskBack(job);
+		pool_->push_back(job);
 	}
 
+    template <typename T>
+    void push_front(const T& task){
+        pool_->push_front(task);
+    }
+
+    template <typename T>
+    void push_back(const T& task){
+        pool_->push_back(task);
+    }
+
 	int getTaskCount() const {
-		return impl_->DoGetTaskCount();
+		return pool_->size();
 	}
 
 	int getNumWorkerThreads() const {
-		return impl_->DoGetNumWorkerThreads();
+		return pool_->worker_count();
 	}
 
 	int getMaxSimultaneousTaskCount() const {
-		return impl_->DoGetMaxSimultaneousTaskCount();
+		return getNumWorkerThreads();
 	}
 };
 

@@ -7,22 +7,22 @@
  */
 
 #include "common/omStd.h"
-#include "volume/omMipChunkCoord.h"
+#include "chunks/omChunkCoord.h"
 
 class OmMipMeshCoord {
  public:
 	OmMipMeshCoord();
-	OmMipMeshCoord( const OmMipChunkCoord&, OmSegID );
+	OmMipMeshCoord( const OmChunkCoord&, OmSegID );
 
 	void operator=( const OmMipMeshCoord& rhs );
 	bool operator==( const OmMipMeshCoord& rhs ) const;
 	bool operator!=( const OmMipMeshCoord& rhs ) const;
 	bool operator<( const OmMipMeshCoord& rhs ) const;
 
-	OmMipChunkCoord MipChunkCoord;
+	OmChunkCoord MipChunkCoord;
 	OmSegID DataValue;
 
-	const OmMipChunkCoord& Coord() const {
+	const OmChunkCoord& Coord() const {
 		return MipChunkCoord;
 	}
 

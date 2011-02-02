@@ -1,12 +1,11 @@
 #include "common/omException.h"
 #include "datalayer/archive/omDataArchiveSegment.h"
-#include "datalayer/omDataPath.h"
-#include "datalayer/omIDataReader.h"
-#include "datalayer/omIDataWriter.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "segment/io/omSegmentPage.hpp"
-#include "system/omProjectData.h"
+#include "project/omProject.h"
+#include "datalayer/hdf5/omHdf5.h"
+
 #include <QDataStream>
 
 static const QString Omni_Postfix("OMNI");
@@ -27,13 +26,14 @@ OmDataArchiveSegment::OmDataArchiveSegment(const OmDataPath & path,
 	: path_(path)
 	, page_(page)
 	, pageSize_(pageSize)
-	, omniFileVersion_(OmProjectData::getFileVersion())
+	, omniFileVersion_(OmProject::GetFileVersion())
 {
 }
 
 void OmDataArchiveSegment::archiveRead()
 {
-	dw_ = OmProjectData::GetProjectIDataReader()->readDataset(path_, &size_);
+	OmHdf5* reader = OmProject::OldHDF5();
+	dw_ = reader->readDataset(path_, &size_);
 
 	if(omniFileVersion_ >= 15){
 		readSegmentsNew();

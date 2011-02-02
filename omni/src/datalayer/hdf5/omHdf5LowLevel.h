@@ -13,7 +13,7 @@ typedef LONG_PTR ssize_t;
 
 class OmHdf5LowLevel {
 public:
-	explicit OmHdf5LowLevel(const int id, const om::Affinity aff = om::NO_AFFINITY);
+	explicit OmHdf5LowLevel(const int id);
 
 	void setPath(const OmDataPath & p);
 	const char* getPath();
@@ -29,17 +29,17 @@ public:
 	OmDataWrapperPtr readDataset(int* size = NULL);
 	void allocateDataset(int size, OmDataWrapperPtr data);
 
-	Vector3i getChunkedDatasetDims();
+	Vector3i getChunkedDatasetDims(const om::AffinityGraph aff);
 	void allocateChunkedDataset(const Vector3i&,
 				    const Vector3i&,
 				    const OmVolDataType);
-	OmDataWrapperPtr readChunk(const DataBbox&);
+	OmDataWrapperPtr readChunk(const DataBbox&, const om::AffinityGraph aff);
 	void writeChunk(const DataBbox&, OmDataWrapperPtr);
+	OmDataWrapperPtr GetChunkDataType();
 
  private:
 	// hid_t is typedef'd to int in H5Ipublic.h
 	const int fileId;
 	OmDataPath path;
-	om::Affinity aff_;
 };
 #endif

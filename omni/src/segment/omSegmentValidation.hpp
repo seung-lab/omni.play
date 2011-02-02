@@ -6,7 +6,7 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentLists.hpp"
 #include "utility/dataWrappers.h"
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 #include "volume/omSegmentation.h"
 #include "zi/omMutex.h"
 #include "segment/io/omValidGroupNum.hpp"
@@ -34,8 +34,8 @@ private:
 		: sdw_(sdw)
 		, selectedSegments_(selectedSegments)
 		, valid_(valid)
-		, segmentLists_(sdw_.GetSegmentLists())
-		, edges_(sdw_.GetMST()->Edges())
+		, segmentLists_(sdw_.SegmentLists())
+		, edges_(sdw_.MST()->Edges())
 	{}
 
 	void setAsValidated()
@@ -64,10 +64,7 @@ private:
 			setSegEdge(seg);
 		}
 
-		boost::shared_ptr<OmValidGroupNum>& validGroupNum
-			= sdw_.GetValidGroupNum();
-
-		validGroupNum->Set(sdw_, selectedSegments_, valid_);
+		sdw_.ValidGroupNum()->Set(sdw_, selectedSegments_, valid_);
 
 		printf("done (%.2g secs)\n", timer.s_elapsed());
 	}

@@ -16,8 +16,7 @@ class OmSegmentSplitAction : public OmAction {
 public:
         OmSegmentSplitAction(boost::shared_ptr<OmSegmentSplitActionImpl> impl) : impl_(impl) {}
 
-	static void DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
-					  OmViewGroupState* vgs, const DataCoord coord);
+	static void RunIfSplittable( OmSegment * seg1, OmSegment * seg2, const DataCoord coord1, const DataCoord coord2 );
 
 	static void DoFindAndCutSegment(const SegmentDataWrapper& sdw,
 					  OmViewGroupState* vgs);
@@ -31,7 +30,6 @@ private:
 	std::string Description();
 	void save(const std::string& comment);
 
-	static void runIfSplittable( OmSegment * seg1, OmSegment * seg2, const DataCoord coord1, const DataCoord coord2 );
 
 	boost::shared_ptr<OmSegmentSplitActionImpl> impl_;
 };

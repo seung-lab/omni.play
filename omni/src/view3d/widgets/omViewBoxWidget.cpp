@@ -1,8 +1,10 @@
+#include "project/omChannelManager.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "common/omGl.h"
 #include "omViewBoxWidget.h"
 #include "project/omProject.h"
+#include "project/omProjectVolumes.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
 #include "tiles/omTextureID.h"
@@ -18,8 +20,7 @@ static const int RECT_WIREFRAME_LINE_WIDTH = 2;
 OmViewBoxWidget::OmViewBoxWidget(OmView3d *view3d, OmViewGroupState * vgs)
 	: OmView3dWidget(view3d)
 	, mViewGroupState(vgs)
-{
-}
+{}
 
 /**
  *	Draw the three orthogonal slices from of the view box
@@ -73,45 +74,45 @@ void OmViewBoxWidget::Draw()
 /**
  *	Draw a rectangle given the verticies in counter-clockwise order
  */
-void OmViewBoxWidget::drawRectangle(SpaceCoord v0, SpaceCoord v1, SpaceCoord v2, SpaceCoord v3)
+void OmViewBoxWidget::drawRectangle(DataCoord v0, DataCoord v1, DataCoord v2, DataCoord v3)
 {
 	glBegin(GL_LINE_STRIP);
-	glVertex3fv(v0.array);
-	glVertex3fv(v1.array);
-	glVertex3fv(v2.array);
-	glVertex3fv(v3.array);
-	glVertex3fv(v0.array);
+	glVertex3iv(v0.array);
+	glVertex3iv(v1.array);
+	glVertex3iv(v2.array);
+	glVertex3iv(v3.array);
+	glVertex3iv(v0.array);
 	glEnd();
 }
 
-void OmViewBoxWidget::drawLines(SpaceCoord depth)
+void OmViewBoxWidget::drawLines(DataCoord depth)
 {
-	SpaceCoord v0, v1;
+	DataCoord v0, v1;
 
 	float distance = ((float)Om3dPreferences::getCrosshairValue())/10.0;
 
 	glColor3fv(OMGL_BLUE);
-	v0 = SpaceCoord(depth.x, depth.y, depth.z-distance);
-	v1 = SpaceCoord(depth.x, depth.y, depth.z+distance);
+	v0 = DataCoord(depth.x, depth.y, depth.z-distance);
+	v1 = DataCoord(depth.x, depth.y, depth.z+distance);
 	glBegin(GL_LINE_STRIP);
-	glVertex3fv(v0.array);
-	glVertex3fv(v1.array);
+	glVertex3iv(v0.array);
+	glVertex3iv(v1.array);
 	glEnd();
 
 	glColor3fv(OMGL_GREEN);
-	v0 = SpaceCoord(depth.x, depth.y-distance, depth.z);
-	v1 = SpaceCoord(depth.x, depth.y+distance, depth.z);
+	v0 = DataCoord(depth.x, depth.y-distance, depth.z);
+	v1 = DataCoord(depth.x, depth.y+distance, depth.z);
 	glBegin(GL_LINE_STRIP);
-	glVertex3fv(v0.array);
-	glVertex3fv(v1.array);
+	glVertex3iv(v0.array);
+	glVertex3iv(v1.array);
 	glEnd();
 
 	glColor3fv(OMGL_RED);
-	v0 = SpaceCoord(depth.x-distance, depth.y, depth.z);
-	v1 = SpaceCoord(depth.x+distance, depth.y, depth.z);
+	v0 = DataCoord(depth.x-distance, depth.y, depth.z);
+	v1 = DataCoord(depth.x+distance, depth.y, depth.z);
 	glBegin(GL_LINE_STRIP);
-	glVertex3fv(v0.array);
-	glVertex3fv(v1.array);
+	glVertex3iv(v0.array);
+	glVertex3iv(v1.array);
 	glEnd();
 }
 
@@ -124,31 +125,31 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 								const float depth)
 {
 
-	SpaceCoord v0, v1, v2, v3;
+	DataCoord v0, v1, v2, v3;
 
 	switch (plane) {
 	case XY_VIEW:
 		glColor3fv(OMGL_BLUE);
-		v0 = SpaceCoord(min.x, min.y, depth);
-		v1 = SpaceCoord(max.x, min.y, depth);
-		v2 = SpaceCoord(max.x, max.y, depth);
-		v3 = SpaceCoord(min.x, max.y, depth);
+		v0 = DataCoord(min.x, min.y, depth);
+		v1 = DataCoord(max.x, min.y, depth);
+		v2 = DataCoord(max.x, max.y, depth);
+		v3 = DataCoord(min.x, max.y, depth);
 		break;
 
 	case XZ_VIEW:
 		glColor3fv(OMGL_GREEN);
-		v0 = SpaceCoord(min.x, depth, min.y);
-		v1 = SpaceCoord(min.x, depth, max.y);
-		v2 = SpaceCoord(max.x, depth, max.y);
-		v3 = SpaceCoord(max.x, depth, min.y);
+		v0 = DataCoord(min.x, depth, min.y);
+		v1 = DataCoord(min.x, depth, max.y);
+		v2 = DataCoord(max.x, depth, max.y);
+		v3 = DataCoord(max.x, depth, min.y);
 		break;
 
 	case YZ_VIEW:
 		glColor3fv(OMGL_RED);
-		v0 = SpaceCoord(depth, min.x, min.y);
-		v1 = SpaceCoord(depth, max.x, min.y);
-		v2 = SpaceCoord(depth, max.x, max.y);
-		v3 = SpaceCoord(depth, min.x, max.y);
+		v0 = DataCoord(depth, min.x, min.y);
+		v1 = DataCoord(depth, max.x, min.y);
+		v2 = DataCoord(depth, max.x, max.y);
+		v3 = DataCoord(depth, min.x, max.y);
 		break;
 	}
 
@@ -159,13 +160,13 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
 									  std::vector<OmTilePtr> drawables)
 {
 	if(!Om3dPreferences::get2DViewPaneIn3D() ||
-	   !OmProject::IsChannelValid(1)) {
+	   !OmProject::Volumes().Channels().IsChannelValid(1)) {
 		return;
 	}
 
-	OmChannel& channel = OmProject::GetChannel(1);
-	Vector3f resolution = channel.GetDataResolution();
-	Vector3i extents = channel.GetDataDimensions();
+	OmChannel& channel = OmProject::Volumes().Channels().GetChannel(1);
+	Vector3f resolution = channel.Coords().GetDataResolution();
+	Vector3i extents = channel.Coords().GetDataDimensions();
 
 	glColor3fv(OMGL_WHITE);
 	glEnable(GL_TEXTURE_2D);
@@ -179,10 +180,10 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
 		const int level = d->GetTileCoord().getLevel();
 		const Vector3f tileLength = resolution*128.0*om::pow2int(level);
 
-		const SpaceCoord thisCoord = d->GetTileCoord().getSpaceCoord();
+		const DataCoord thisCoord = d->GetTileCoord().getDataCoord();
 		//debug ("FIXME", "thisCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(thisCoord));
 		const NormCoord normCoord =
-			channel.SpaceToNormCoord(d->GetTileCoord().getSpaceCoord());
+			channel.Coords().DataToNormCoord(d->GetTileCoord().getDataCoord());
 
 		//debug ("FIXME", "normCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(normCoord));
 		glBindTexture(GL_TEXTURE_2D, d->GetTexture()->GetTextureID());
@@ -281,14 +282,14 @@ bool OmViewBoxWidget::GetTextureMax(Vector3f coord,
 									Vector2f & dataMax,
 									Vector2f & spaceMax)
 {
-	OmChannel& channel = OmProject::GetChannel( 1);
-	Vector3f resolution = channel.GetDataResolution();
+	OmChannel& channel = OmProject::Volumes().Channels().GetChannel( 1);
+	Vector3f resolution = channel.Coords().GetDataResolution();
 	Vector3f tileLength = resolution*128.0;
 	Vector2f maxScreen = mViewGroupState->GetViewSliceMax(plane);
-	DataCoord maxData = channel.GetDataExtent().getMax();
-	NormCoord maxNorm = channel.DataToNormCoord(maxData);
-	SpaceCoord maxSpace= channel.NormToSpaceCoord(maxNorm);
-	SpaceCoord maxLimit = maxSpace.compareMinimum(coord+tileLength);
+	DataCoord maxDataExt = channel.Coords().GetDataExtent().getMax();
+	NormCoord maxNorm = channel.Coords().DataToNormCoord(maxDataExt);
+	DataCoord maxData= channel.Coords().NormToDataCoord(maxNorm);
+	DataCoord maxLimit = maxData.compareMinimum(coord+tileLength);
 	bool result;
 
 	switch (plane) {
@@ -326,14 +327,15 @@ bool
 OmViewBoxWidget::GetTextureMin(Vector3f coord,ViewType plane, Vector2f & dataMin, Vector2f & spaceMin)
 {
 
-	OmChannel& channel = OmProject::GetChannel( 1);
-	Vector3f resolution = channel.GetDataResolution();
+	OmChannel& channel = OmProject::Volumes().Channels().GetChannel( 1);
+
+	Vector3f resolution = channel.Coords().GetDataResolution();
 	Vector3f tileLength = resolution*128.0;
 	Vector2f minScreen = mViewGroupState->GetViewSliceMin(plane);
-	DataCoord minData = channel.GetDataExtent().getMin();
-	NormCoord minNorm = channel.DataToNormCoord(minData);
-	SpaceCoord minSpace= channel.NormToSpaceCoord(minNorm);
-	SpaceCoord minLimit = minSpace.compareMaximum(coord);
+	DataCoord minDataExt = channel.Coords().GetDataExtent().getMin();
+	NormCoord minNorm = channel.Coords().DataToNormCoord(minDataExt);
+	DataCoord minData= channel.Coords().NormToDataCoord(minNorm);
+	DataCoord minLimit = minData.compareMaximum(coord);
 	bool result;
 
 	switch (plane) {

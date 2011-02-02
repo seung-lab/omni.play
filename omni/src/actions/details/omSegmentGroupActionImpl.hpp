@@ -1,9 +1,10 @@
 #ifndef OM_SEGMENT_GROUP_ACTION_IMPL_HPP
 #define OM_SEGMENT_GROUP_ACTION_IMPL_HPP
 
+#include "project/omSegmentationManager.h"
 #include "common/omCommon.h"
 #include "project/omProject.h"
-#include "project/omProject.h"
+#include "project/omProjectVolumes.h"
 #include "segment/omSegmentCache.h"
 #include "system/omGroups.h"
 #include "volume/omSegmentation.h"
@@ -30,22 +31,22 @@ public:
 
 	void Execute()
 	{
-		OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+		OmSegmentation & seg = OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
 		if(mCreate) {
-        	seg.GetGroups()->SetGroup(mSelectedSegmentIds, mName);
+        	seg.Groups()->SetGroup(mSelectedSegmentIds, mName);
 		} else {
-        	seg.GetGroups()->UnsetGroup(mSelectedSegmentIds, mName);
+        	seg.Groups()->UnsetGroup(mSelectedSegmentIds, mName);
 		}
 
 	}
 
 	void Undo()
 	{
-		OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+		OmSegmentation & seg = OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
 		if(!mCreate) {
-        	seg.GetGroups()->SetGroup(mSelectedSegmentIds, mName);
+        	seg.Groups()->SetGroup(mSelectedSegmentIds, mName);
 		} else {
-        	seg.GetGroups()->UnsetGroup(mSelectedSegmentIds, mName);
+        	seg.Groups()->UnsetGroup(mSelectedSegmentIds, mName);
 		}
 	}
 

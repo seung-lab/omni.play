@@ -1,0 +1,26 @@
+#####
+#
+# Test Four: Basic test of building affinity graph.
+#
+#####
+
+# The test data
+%OMNITEST = (
+	'cmd' => '
+create:{$OUTDIR}/{$TESTNAME}.omni
+loadHDF5seg:{$DATADIR}4.h5
+loadHDF5chann:{$DATADIR}4.h5
+loadHDF5affgraph:{$DATADIR}4.h5
+quit
+		'
+		,
+	'finish' => '$SUCCESS = -e "{$OUTDIR}/{$TESTNAME}.omni.files" && sane();'
+		,
+	'markup' => '$MARKUP = start_html("Test: {$TESTNAME}").
+					h1("Test: {$TESTNAME} ".result()).
+						"<a href=\"{$OUTDIR}/{$TESTNAME}.omni.files/\">resultant omni</a>".
+			       end_html();'
+);
+
+1; # Perl requires truth in evaluation so it is possible to add additional sanity checks here.
+#  # EOF

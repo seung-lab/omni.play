@@ -1,4 +1,3 @@
-#include "volume/omVolume.h"
 #include "preferences.h"
 #include "preferences3d.h"
 #include "preferences2d.h"
@@ -22,7 +21,7 @@ void Preferences::showLocalPreferences()
 
      closeButton = new QPushButton("&Close");
      connect(closeButton, SIGNAL(clicked()), this, SLOT(closeDialog()));
-     
+
      QVBoxLayout *mainLayout = new QVBoxLayout();
      mainLayout->addWidget(closeButton);
      mainLayout->addWidget(tabs);
@@ -39,7 +38,7 @@ void Preferences::showProjectPreferences()
 
      closeButton = new QPushButton("&Close");
      connect(closeButton, SIGNAL(clicked()), this, SLOT(closeDialog()));
-     
+
      QVBoxLayout *mainLayout = new QVBoxLayout();
      mainLayout->addWidget(closeButton);
      mainLayout->addWidget(tabs);

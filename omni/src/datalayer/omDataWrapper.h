@@ -130,12 +130,19 @@ public:
     std::string getTypeAsString(){
         return OmVolumeTypeHelpers::GetTypeAsString(getVolDataType());
     }
+
+    QString getTypeAsQString(){
+        return QString::fromStdString(getTypeAsString());
+    }
+
     OmVolDataType getVolDataType(){
         return OmVolDataTypeImpl<T>::getType();
     }
+
     int getHdf5FileType(){
         return OmVolumeTypeHelpers::getHDF5FileType(getVolDataType());
     }
+
     int getHdf5MemoryType(){
         return OmVolumeTypeHelpers::getHDF5MemoryType(getVolDataType());
     }

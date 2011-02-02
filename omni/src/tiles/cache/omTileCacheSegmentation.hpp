@@ -26,17 +26,17 @@ public:
 
 		if(key.getFreshness() > freshness_.get()){
 			InvalidateCache();
-			keysBySpaceCoord_.clear();
+			keysByDataCoord_.clear();
 			freshness_.set(key.getFreshness());
 		}
 
 		OmThreadedCache<OmTileCoord, OmTilePtr>::Get(ptr, key, isBlocking);
 	}
 
-	void RemoveSpaceCoord(const SpaceCoord& coord)
+	void RemoveDataCoord(const DataCoord& coord)
 	{
 		boost::shared_ptr<std::list<OmTileCoord> > tileCoordsToRemove =
-			keysBySpaceCoord_.removeKey(coord);
+			keysByDataCoord_.removeKey(coord);
 
 		FOR_EACH(iter, *tileCoordsToRemove){
 			Remove(*iter);
@@ -53,7 +53,7 @@ public:
 
 private:
 	zi::mutex mutex_;
-	LockedMultiMap<SpaceCoord, OmTileCoord> keysBySpaceCoord_;
+	LockedMultiMap<DataCoord, OmTileCoord> keysByDataCoord_;
 	LockedUint64 freshness_;
 
 	bool isKeyFresh(const OmTileCoord& key)
@@ -71,7 +71,7 @@ private:
 			return OmTilePtr();
 		}
 
-		keysBySpaceCoord_.insert(key.getSpaceCoord(), key);
+		keysByDataCoord_.insert(key.getDataCoord(), key);
 
 		OmTile* tile = new OmTile(this, key);
 		tile->LoadData();

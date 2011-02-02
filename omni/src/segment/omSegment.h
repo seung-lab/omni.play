@@ -139,7 +139,7 @@ public:
 		customMergeEdge_ = e;
 	}
 
-	OmSegmentCache* GetSegmentCache(){
+	OmSegmentCache* SegmentCache(){
 		return cache_;
 	}
 

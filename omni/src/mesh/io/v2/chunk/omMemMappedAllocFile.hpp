@@ -1,15 +1,17 @@
 #ifndef OM_MEM_MAPPED_ALLOC_FILE_HPP
 #define OM_MEM_MAPPED_ALLOC_FILE_HPP
 
-#include "volume/omMipChunk.h"
+#include "utility/omStringHelpers.h"
+#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
+#include "chunks/omChunk.h"
 #include "volume/omSegmentation.h"
-#include "volume/omMipChunkCoord.h"
+#include "chunks/omChunkCoord.h"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
 
 class OmMemMappedAllocFile {
 private:
 	OmSegmentation* segmentation_;
-	const OmMipChunkCoord coord_;
+	const OmChunkCoord coord_;
 	const double threshold_;
 	const QString fnp_;
 
@@ -19,11 +21,12 @@ private:
 
 public:
 	OmMemMappedAllocFile(OmSegmentation* segmentation,
-						 const OmMipChunkCoord& coord)
+						 const OmChunkCoord& coord,
+						 const double threshold)
 		: segmentation_(segmentation)
 		, coord_(coord)
-		, threshold_(1.)
-		, fnp_(filePath(threshold_))
+		, threshold_(threshold)
+		, fnp_(filePath())
 	{}
 
 	bool CreateIfNeeded()
@@ -98,10 +101,8 @@ private:
 
 	void setupFile()
 	{
-		OmMipChunkPtr chunk;
-		segmentation_->GetChunk(chunk, coord_);
-
-		const OmSegIDsSet& segIDs = chunk->GetUniqueSegIDs();
+		const ChunkUniqueValues segIDs =
+			segmentation_->ChunkUniqueValues()->Values(coord_, threshold_);
 
 		file_ = boost::make_shared<QFile>(fnp_);
 		if(!file_->open(QIODevice::ReadWrite)) {
@@ -124,7 +125,9 @@ private:
 		sortTable();
 
 		std::cout << "in chunk " << coord_
-				  << ", found " << numEntries_ << " segment IDs\n";
+				  << ", found "
+				  << OmStringHelpers::CommaDeliminateNum(numEntries_)
+				  << " segment IDs\n";
 	}
 
 	struct ResetEntry {
@@ -133,7 +136,7 @@ private:
 		}
 	};
 
-	void resetTable(const OmSegIDsSet& segIDs)
+	void resetTable(const ChunkUniqueValues& segIDs)
 	{
 		zi::transform(segIDs.begin(),
 					  segIDs.end(),
@@ -153,15 +156,15 @@ private:
 		return a.segID < b.segID;
 	}
 
-	QString filePath(const double threshold)
+	QString filePath()
 	{
 		const QString volPath =
 			OmFileNames::GetMeshChunkFolderPath(segmentation_,
-												threshold, coord_);
+												threshold_, coord_);
 
 		if(!QDir(volPath).exists()){
 			OmFileNames::MakeMeshChunkFolderPath(segmentation_,
-												 threshold, coord_);
+												 threshold_, coord_);
 		}
 
 		const QString fullPath = QString("%1meshAllocTable.ver2")

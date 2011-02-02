@@ -42,9 +42,9 @@ void OmTileDrawer::FullRedraw2d()
 	OmMipVolume* vol = state_->getVol();
 
 	if(CHANNEL == vol->getVolumeType()) {
-		OmChannel& chan = OmProject::GetChannel(vol->getID());
-		foreach( OmID id, chan.GetValidFilterIds() ) {
-			OmFilter2d &filter = chan.GetFilter(id);
+		OmChannel& chan = OmProject::Volumes().Channels().GetChannel(vol->getID());
+		foreach( OmID id, chan.FilterManager().GetValidFilterIds() ) {
+			OmFilter2d &filter = chan.FilterManager().GetFilter(id);
 			const bool shouldBrightenAlpha = drawFromFilter(filter);
 			setupGLblendColor(filter.GetAlpha(),
 							  shouldBrightenAlpha);
@@ -70,7 +70,7 @@ void OmTileDrawer::reset()
 
 void OmTileDrawer::draw(OmMipVolume* vol)
 {
-	if(!vol->IsVolumeReadyForDisplay()){
+	if(!vol->IsBuilt()){
 		return;
 	}
 

@@ -20,7 +20,7 @@ private slots:
 							mResY->text().toFloat(),
 							mResZ->text().toFloat());
 
-		mVol.SetDataResolution(dims);
+		mVol.Coords().SetDataResolution(dims);
 	}
 
 private:
@@ -39,7 +39,7 @@ public:
 	{
 		this->setTitle("Volume");
 
-		const Vector3i dims = mVol.GetDataDimensions();
+		const Vector3i dims = mVol.Coords().GetDataDimensions();
 
 		const QString extStr =
 			QString("%1 x %2 x %3").arg(dims.x).arg(dims.y).arg(dims.z);
@@ -66,7 +66,7 @@ public:
 		labelVolume->setText("Z Resolution:");
 		mGrid->addWidget(labelVolume, 3, 0);
 
-		Vector3f resf = mVol.GetDataResolution();
+		Vector3f resf = mVol.Coords().GetDataResolution();
 
 		QLineEdit * res = new QLineEdit(this);
 		mResX = res;

@@ -7,18 +7,9 @@
 #include "project/omProject.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
-#include "volume/omChannel.h"
-#include "volume/omMipChunkCoord.h"
+#include "volume/omChannelImpl.h"
+#include "chunks/omChunkCoord.h"
 #include "volume/omSegmentation.h"
-
-std::string OmDataPaths::getDefaultHDF5channelDatasetName(const om::Affinity aff)
-{
-	if(om::NO_AFFINITY == aff) {
-		return "chanSingle";
-	}
-
-	return "affGraphSingle";
-}
 
 OmDataPath OmDataPaths::getDefaultDatasetName()
 {
@@ -47,56 +38,23 @@ std::string OmDataPaths::getMeshFileName( const OmMipMeshCoord & meshCoord )
 				%meshCoord.DataValue);
 }
 
-std::string OmDataPaths::getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoord,
-											 const OmID segmentationID)
-{
-	const QString p = QString("%1.%2.%3_%4_%5.%6.%7.h5")
-		.arg(segmentationID)
-		.arg(meshCoord.MipChunkCoord.Level)
-		.arg(meshCoord.MipChunkCoord.Coordinate.x)
-		.arg(meshCoord.MipChunkCoord.Coordinate.y)
-		.arg(meshCoord.MipChunkCoord.Coordinate.z)
-		.arg( OmProject::GetFileName() )
-		.arg( OmStateManager::getPID() );
-
-	const QString ret =
-		OmLocalPreferences::getScratchPath() + "/meshinator_" + p;
-
-	//debug(parallel, "parallel mesh fs path: %s\n", qPrintable( ret ) );
-	fprintf(stderr, "parallel mesh fs path: %s\n", qPrintable( ret ) );
-
-	return ret.toStdString();
-}
-
 std::string OmDataPaths::getDirectoryPath(OmSegmentation* seg)
 {
 	return str( boost::format("segmentations/segmentation%1%/")
 				% seg->GetID());
 }
 
-std::string OmDataPaths::getDirectoryPath(OmChannel* chan)
+std::string OmDataPaths::getDirectoryPath(OmChannelImpl* chan)
 {
 	return str( boost::format("channels/channel%1%/")
 				% chan->GetID());
 }
 
-std::string OmDataPaths::MipLevelInternalDataPath(const std::string & dirPath,
-												  const int level)
+std::string OmDataPaths::Hdf5VolData(const std::string & dirPath,
+									 const int level)
 {
 	return dirPath
 		+ om::NumToStr(level)
 		+ "/"
 		+ "volume.dat";
-}
-
-std::string OmDataPaths::MipChunkMetaDataPath(const std::string & dirPath,
-											  const OmMipChunkCoord & coord)
-{
-	const QString p = QString("%1/%2_%3_%4/")
-		.arg(coord.Level)
-		.arg(coord.Coordinate.x)
-		.arg(coord.Coordinate.y)
-		.arg(coord.Coordinate.z);
-
-	return dirPath + p.toStdString() + "metachunk.dat";
 }

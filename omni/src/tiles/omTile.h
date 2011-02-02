@@ -8,10 +8,9 @@
  */
 
 #include "common/omStd.h"
-#include "volume/omMipChunkCoord.h"
+#include "chunks/omChunkCoord.h"
 #include "tiles/omTileCoord.h"
 #include "tiles/omTileTypes.hpp"
-#include "utility/image/omImage.hpp"
 
 #include <QColor>
 
@@ -36,15 +35,15 @@ private:
 	const OmTileCoord key_;
 	const int tileLength_;
 	const Vector2i dims_;
-	const OmMipChunkCoord mipChunkCoord_;
+	const OmChunkCoord mipChunkCoord_;
 
 	OmTextureIDPtr texture_;
 
-	OmImage<uint8_t, 2> getImageData8bit();
-	boost::shared_ptr<uint32_t> getImageData32bit();
+	void load8bitChannelTile();
+	void load32bitSegmentationTile();
 
 	void makeNullTextureID();
-	OmMipChunkCoord tileToMipCoord();
+	OmChunkCoord tileToMipCoord();
 	void doLoadData();
 	bool isMipChunkCoordValid();
 	int getDepth();

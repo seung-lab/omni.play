@@ -1,18 +1,19 @@
 #ifndef OM_BUILD_SEGMENTATION_H
 #define OM_BUILD_SEGMENTATION_H
 
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
+#include "mesh/omMipMeshManagers.hpp"
 #include "project/omProject.h"
 #include "segment/io/omMST.h"
 #include "segment/omSegmentCache.h"
-#include "system/omBuildVolumes.h"
 #include "system/omEvents.h"
+#include "utility/dataWrappers.h"
 #include "utility/omThreadPool.hpp"
+#include "volume/build/omBuildVolumes.hpp"
 #include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "zi/omThreads.h"
-#include "utility/dataWrappers.h"
 
 class OmBuildSegmentation : public OmBuildVolumes {
 private:
@@ -74,38 +75,26 @@ public:
 		}
 	}
 
+	void BuildMesh(const double threshold)
+	{
+		do_build_seg_mesh(threshold);
+	}
+
 	void buildBlankVolume()
 	{
 		printf("assuming channel 1\n");
-		assert(OmProject::IsChannelValid(1));
-		OmChannel& chann = OmProject::GetChannel(1);
+		assert(OmProject::Volumes().Channels().IsChannelValid(1));
+		OmChannel& chann = OmProject::Volumes().Channels().GetChannel(1);
 
-		seg_.BuildBlankVolume(chann.MipLevelDataDimensions(0));
+		seg_.BuildBlankVolume(chann.Coords().MipLevelDataDimensions(0));
 		seg_.loadVolData();
-		seg_.GetSegmentCache()->refreshTree();
+		seg_.SegmentCache()->refreshTree();
 
 		printf("allocated blank volume\n");
 	}
 
-	void loadDendrogram()
-	{
-		const QString type = "dendrogram";
-		if(!canDoLoadDendrogram()){
-			printf("no dendrogram found\n");
-			printf("************\n");
-			return;
-		}
-
-		OmTimer build_timer;
-		startTiming(type, build_timer);
-
-		const QString fname = mFileNamesAndPaths.front().filePath();
-		seg_.mst_->import(fname.toStdString());
-
-		stopTimingAndSave(type, build_timer);
-
-		printf("Segmentation MST load COMPLETELY done\n");
-		printf("************************\n");
+	void loadDendrogram(){
+		throw OmIoException("not implemented");
 	}
 
 private:
@@ -126,17 +115,12 @@ private:
 		OmTimer build_timer;
 		startTiming(type, build_timer);
 
-		OmVolumeBuilder<OmSegmentation> builder(&seg_);
-		builder.SetSourceFilenamesAndPaths( mFileNamesAndPaths );
-		OmDataPath path("main");
-		builder.Build(path);
+		OmVolumeBuilder<OmSegmentation> builder(&seg_,
+												mFileNamesAndPaths,
+												"main");
+		builder.Build();
 
 		stopTimingAndSave(type, build_timer);
-
-		loadDendrogram();
-		OmActions::ChangeMSTthreshold(seg_.GetID(), 0.5);
-
-		OmEvents::SegmentModified();
 
 		printf("Segmentation image COMPLETELY done\n");
 		printf("************************\n");
@@ -149,7 +133,21 @@ private:
 		OmTimer build_timer;
 		startTiming(type, build_timer);
 
-		seg_.Mesh();
+		seg_.MeshManagers()->FullMesh(1);
+//		seg_.MeshManagers()->FullMesh(.9);
+//		seg_.MeshManagers()->FullMesh(.8);
+
+		stopTimingAndSave(type, build_timer);
+	}
+
+	void do_build_seg_mesh(const double threshold)
+	{
+		const QString type = "segmentation mesh";
+
+		OmTimer build_timer;
+		startTiming(type, build_timer);
+
+		seg_.MeshManagers()->FullMesh(threshold);
 
 		stopTimingAndSave(type, build_timer);
 	}

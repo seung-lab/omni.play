@@ -46,7 +46,7 @@ QDataStream& operator>>(QDataStream& in, OmSegmentValidateActionImpl& a)
 	a.sdw_ = SegmentationDataWrapper(segmentationID);
 
 	SegmentationDataWrapper& sdw = a.sdw_;
-	OmSegmentCache* cache = sdw.GetSegmentCache();
+	OmSegmentCache* cache = sdw.SegmentCache();
 	std::set<OmSegment*>* segs = new std::set<OmSegment*>();
 	FOR_EACH(iter, ids){
 		OmSegment* seg = cache->GetSegment(*iter);
@@ -90,7 +90,7 @@ QDataStream& operator>>(QDataStream& in, OmSegmentUncertainActionImpl& a)
 	a.sdw_ = SegmentationDataWrapper(segmentationID);
 
 	SegmentationDataWrapper& sdw = a.sdw_;
-	OmSegmentCache* cache = sdw.GetSegmentCache();
+	OmSegmentCache* cache = sdw.SegmentCache();
 	std::set<OmSegment*>* segs = new std::set<OmSegment*>();
 	FOR_EACH(iter, ids){
 		OmSegment* seg = cache->GetSegment(*iter);
@@ -184,12 +184,13 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentJoinActionImpl& a)
 
 QDataStream& operator<<(QDataStream& out, const OmSegmentSelectActionImpl& a)
 {
-	int version = 1;
+	int version = 2;
 	out << version;
 	out << a.sdw_.GetSegmentationID();
 	out << a.mNewSelectedIdSet;
 	out << a.mOldSelectedIdSet;
 	out << a.sdw_.GetSegmentID();
+	out << a.augmentListOnly_;
 
 	return out;
 }
@@ -209,6 +210,10 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentSelectActionImpl& a)
 	in >> segmentID;
 
 	a.sdw_ = SegmentDataWrapper(segmentationID, segmentID);
+
+	if(version > 1){
+		in >> a.augmentListOnly_;
+	}
 
 	return in;
 }

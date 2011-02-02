@@ -5,7 +5,7 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentLists.hpp"
 #include "utility/dataWrappers.h"
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 #include "volume/omSegmentation.h"
 #include "zi/omMutex.h"
 
@@ -31,7 +31,7 @@ private:
 		: sdw_(sdw)
 		, selectedSegments_(selectedSegments)
 		, uncertain_(uncertain)
-		, segmentLists_(sdw_.GetSegmentLists())
+		, segmentLists_(sdw_.SegmentLists())
 	{}
 
 	void setAsUncertain()

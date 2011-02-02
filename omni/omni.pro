@@ -73,7 +73,23 @@ HEADERS +=  \
 	src/actions/io/omActionLoggerTask.hpp \
 	src/actions/io/omActionOperators.h \
 	src/actions/io/omActionReplayer.hpp \
-	src/actions/omActions.hpp \
+	src/actions/omActions.h \
+	src/chunks/details/omPtrToChunkDataBase.hpp \
+	src/chunks/details/omPtrToChunkDataMemMapVol.h \
+	src/chunks/omChunk.h \
+	src/chunks/omChunkCache.hpp \
+	src/chunks/omChunkCoord.h \
+	src/chunks/omChunkData.h \
+	src/chunks/omChunkMipping.hpp \
+	src/chunks/omChunkTypes.hpp \
+	src/chunks/omChunkUtils.hpp \
+	src/chunks/omSegChunk.h \
+	src/chunks/omSegChunkData.h \
+	src/chunks/omSegChunkDataVisitors.hpp \
+	src/chunks/uniqueValues/omChunkUniqueValuesManager.hpp \
+	src/chunks/uniqueValues/omChunkUniqueValuesPerThreshold.hpp \
+	src/chunks/uniqueValues/omChunkUniqueValuesTypes.h \
+	src/chunks/uniqueValues/omThresholdsInChunk.hpp \
 	src/common/om.hpp \
 	src/common/omBoost.h \
 	src/common/omCommon.h \
@@ -83,30 +99,30 @@ HEADERS +=  \
 	src/common/omStd.h \
 	src/common/omString.hpp \
 	src/datalayer/archive/omDataArchiveBoost.h \
-	src/datalayer/archive/omDataArchiveMipChunk.h \
 	src/datalayer/archive/omDataArchiveProject.h \
 	src/datalayer/archive/omDataArchiveSegment.h \
 	src/datalayer/archive/omDataArchiveStd.hpp \
+	src/datalayer/archive/omMetadataSegmentation.h \
+	src/datalayer/archive/omMipVolumeArchive.h \
+	src/datalayer/archive/omMipVolumeArchiveOld.h \
 	src/datalayer/fs/omFileNames.hpp \
 	src/datalayer/fs/omFileQT.hpp \
 	src/datalayer/fs/omIOnDiskFile.h \
 	src/datalayer/fs/omMemMappedFileQT.hpp \
-	src/datalayer/fs/omMemMappedVolume.hpp \
 	src/datalayer/fs/omVecInFile.hpp \
+	src/datalayer/hdf5/omExportVolToHdf5.hpp \
 	src/datalayer/hdf5/omHdf5.h \
+	src/datalayer/hdf5/omHdf5ChunkUtils.hpp \
 	src/datalayer/hdf5/omHdf5FileUtils.hpp \
 	src/datalayer/hdf5/omHdf5Impl.h \
 	src/datalayer/hdf5/omHdf5LowLevel.h \
 	src/datalayer/hdf5/omHdf5Manager.h \
 	src/datalayer/hdf5/omHdf5Utils.hpp \
-	src/datalayer/omDataLayer.h \
 	src/datalayer/omDataPath.h \
 	src/datalayer/omDataPaths.h \
 	src/datalayer/omDataWrapper.h \
 	src/datalayer/omDummyWriter.h \
-	src/datalayer/omIDataReader.h \
 	src/datalayer/omIDataVolume.hpp \
-	src/datalayer/omIDataWriter.h \
 	src/datalayer/upgraders/omUpgradeTo14.hpp \
 	src/datalayer/upgraders/omUpgradeTo20.hpp \
 	src/datalayer/upgraders/omUpgraders.hpp \
@@ -205,6 +221,7 @@ HEADERS +=  \
 	src/gui/widgets/omIntSpinBox.hpp \
 	src/gui/widgets/omLabelHBox.hpp \
 	src/gui/widgets/omLineEdit.hpp \
+	src/gui/widgets/omNewFileDialog.hpp \
 	src/gui/widgets/omProgressBar.hpp \
 	src/gui/widgets/omSegmentContextMenu.h \
 	src/gui/widgets/omSegmentListWidget.h \
@@ -245,10 +262,16 @@ HEADERS +=  \
 	src/mesh/omMipMesh.h \
 	src/mesh/omMipMeshCoord.h \
 	src/mesh/omMipMeshManager.h \
+	src/mesh/omMipMeshManagers.hpp \
 	src/mesh/omVolumeCuller.h \
 	src/mesh/ziMesher.hpp \
+	src/project/omAffinityGraphManager.h \
+	src/project/omChannelManager.h \
 	src/project/omProject.h \
-	src/project/omProjectDataImpl.hpp \
+	src/project/omProjectGlobals.h \
+	src/project/omProjectImpl.hpp \
+	src/project/omProjectVolumes.h \
+	src/project/omSegmentationManager.h \
 	src/segment/details/omSegmentListBySize2.hpp \
 	src/segment/details/omSegmentListContainer.hpp \
 	src/segment/details/omSegmentListsTypes.hpp \
@@ -257,10 +280,12 @@ HEADERS +=  \
 	src/segment/details/sortedRootSegmentsVector.hpp \
 	src/segment/io/omMST.h \
 	src/segment/io/omMSTold.h \
+	src/segment/io/omMSTtypes.h \
 	src/segment/io/omSegmentPage.hpp \
 	src/segment/io/omUserEdges.hpp \
 	src/segment/io/omValidGroupNum.hpp \
 	src/segment/lowLevel/DynamicForestPool.hpp \
+	src/segment/lowLevel/omDynamicForestCache.hpp \
 	src/segment/lowLevel/omPagingPtrStore.h \
 	src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
 	src/segment/lowLevel/omSegmentGraph.h \
@@ -269,6 +294,8 @@ HEADERS +=  \
 	src/segment/lowLevel/omSegmentListBySize.h \
 	src/segment/omFindCommonEdge.hpp \
 	src/segment/omSegment.h \
+	src/segment/omSegmentBag.hpp \
+	src/segment/omSegmentBags.hpp \
 	src/segment/omSegmentCache.h \
 	src/segment/omSegmentCacheImpl.h \
 	src/segment/omSegmentColorizer.h \
@@ -290,8 +317,6 @@ HEADERS +=  \
 	src/system/cache/omHandleCacheMissTask.hpp \
 	src/system/cache/omLockedCacheObjects.hpp \
 	src/system/cache/omMeshCache.h \
-	src/system/cache/omMipVolumeCache.h \
-	src/system/cache/omRawChunkCache.hpp \
 	src/system/cache/omThreadedCache.h \
 	src/system/events/omEvent.h \
 	src/system/events/omEventManager.h \
@@ -303,7 +328,6 @@ HEADERS +=  \
 	src/system/events/omView3dEvent.h \
 	src/system/events/omViewEvent.h \
 	src/system/omAlphaVegasMode.hpp \
-	src/system/omBuildVolumes.h \
 	src/system/omEvents.h \
 	src/system/omGarbage.h \
 	src/system/omGenericManager.h \
@@ -313,7 +337,6 @@ HEADERS +=  \
 	src/system/omManageableObject.h \
 	src/system/omPreferenceDefinitions.h \
 	src/system/omPreferences.h \
-	src/system/omProjectData.h \
 	src/system/omQTApp.hpp \
 	src/system/omStateManager.h \
 	src/tiles/cache/omTileCache.h \
@@ -330,11 +353,8 @@ HEADERS +=  \
 	src/utility/channelDataWrapper.hpp \
 	src/utility/dataWrapperContainer.hpp \
 	src/utility/dataWrappers.h \
-	src/utility/details/omIThreadPool.h \
-	src/utility/details/omThreadPoolImpl.hpp \
-	src/utility/details/omThreadPoolMock.hpp \
-	src/utility/fileHelpers.h \
 	src/utility/filterDataWrapper.hpp \
+	src/utility/fuzzyStdObjs.hpp \
 	src/utility/image/bits/omImage_traits.hpp \
 	src/utility/image/omFilterImage.hpp \
 	src/utility/image/omImage.hpp \
@@ -342,15 +362,18 @@ HEADERS +=  \
 	src/utility/localPrefFilesImpl.hpp \
 	src/utility/omChunkVoxelWalker.hpp \
 	src/utility/omColorUtils.hpp \
+	src/utility/omFileHelpers.h \
 	src/utility/omLockedObjects.h \
 	src/utility/omLockedPODs.hpp \
 	src/utility/omRand.hpp \
+	src/utility/omRandColorFile.hpp \
+	src/utility/omSimpleProgress.hpp \
 	src/utility/omSmartPtr.hpp \
 	src/utility/omStringHelpers.h \
 	src/utility/omSystemInformation.h \
 	src/utility/omThreadPool.hpp \
 	src/utility/omThreadPoolManager.h \
-	src/utility/omTimer.h \
+	src/utility/omTimer.hpp \
 	src/utility/segmentDataWrapper.hpp \
 	src/utility/segmentationDataWrapper.hpp \
 	src/utility/setUtilities.h \
@@ -360,6 +383,7 @@ HEADERS +=  \
 	src/view2d/omBrushSelect.hpp \
 	src/view2d/omBrushSelectCircle.hpp \
 	src/view2d/omBrushSelectLine.hpp \
+	src/view2d/omBrushSelectLineTask.hpp \
 	src/view2d/omDisplayInfo.hpp \
 	src/view2d/omKeyEvents.hpp \
 	src/view2d/omLineDraw.hpp \
@@ -379,6 +403,8 @@ HEADERS +=  \
 	src/view2d/omView2dCore.h \
 	src/view2d/omView2dEvents.hpp \
 	src/view2d/omView2dKeyPressEventListener.h \
+	src/view2d/omView2dManager.hpp \
+	src/view2d/omView2dManagerImpl.hpp \
 	src/view2d/omView2dState.hpp \
 	src/view2d/omView2dZoom.hpp \
 	src/view3d/om3dPreferences.hpp \
@@ -397,31 +423,47 @@ HEADERS +=  \
 	src/viewGroup/omBrushSize.hpp \
 	src/viewGroup/omViewGroupState.h \
 	src/viewGroup/omZoomLevel.hpp \
+	src/volume/build/omBuildAffinityChannel.hpp \
 	src/volume/build/omBuildChannel.hpp \
 	src/volume/build/omBuildSegmentation.hpp \
+	src/volume/build/omBuildVolumes.hpp \
+	src/volume/build/omCompactVolValues.hpp \
+	src/volume/build/omDataCopierBase.hpp \
+	src/volume/build/omDataCopierHdf5.hpp \
+	src/volume/build/omDataCopierHdf5Task.hpp \
+	src/volume/build/omDataCopierImages.hpp \
 	src/volume/build/omDownsampler.hpp \
 	src/volume/build/omDownsamplerTypes.hpp \
 	src/volume/build/omDownsamplerVoxelTask.hpp \
 	src/volume/build/omLoadImage.h \
+	src/volume/build/omMSTImportHdf5.hpp \
+	src/volume/build/omMSTImportWatershed.hpp \
 	src/volume/build/omProcessSegmentationChunk.hpp \
 	src/volume/build/omVolumeAllocater.hpp \
 	src/volume/build/omVolumeBuilder.hpp \
-	src/volume/build/omVolumeImporter.hpp \
-	src/volume/build/omVolumeImporterHDF5.hpp \
-	src/volume/build/omVolumeImporterImageStack.hpp \
-	src/volume/build/omWatershedImporter.hpp \
+	src/volume/build/omVolumeBuilderBase.hpp \
+	src/volume/build/omVolumeBuilderHdf5.hpp \
+	src/volume/build/omVolumeBuilderImages.hpp \
+	src/volume/build/omVolumeBuilderWatershed.hpp \
+	src/volume/build/omVolumeProcessor.h \
+	src/volume/build/omWatershedMetadata.hpp \
+	src/volume/io/omChunkOffset.hpp \
+	src/volume/io/omMemMappedVolume.h \
+	src/volume/io/omMemMappedVolumeImpl.hpp \
+	src/volume/io/omVolumeData.h \
+	src/volume/omAffinityChannel.h \
+	src/volume/omAffinityGraph.h \
 	src/volume/omChannel.h \
-	src/volume/omChunkData.hpp \
+	src/volume/omChannelImpl.h \
+	src/volume/omCompareVolumes.hpp \
 	src/volume/omFilter2d.h \
 	src/volume/omFilter2dManager.h \
-	src/volume/omMipChunk.h \
-	src/volume/omMipChunkCoord.h \
-	src/volume/omMipChunkData.hpp \
 	src/volume/omMipVolume.h \
 	src/volume/omRawChunk.hpp \
 	src/volume/omSegmentation.h \
-	src/volume/omVolume.h \
-	src/volume/omVolumeData.hpp \
+	src/volume/omUpdateBoundingBoxes.h \
+	src/volume/omVolCoords.hpp \
+	src/volume/omVolCoordsMipped.hpp \
 	src/volume/omVolumeTypes.hpp \
 	src/zi/base/base.h \
 	src/zi/base/bash.h \
@@ -468,18 +510,24 @@ SOURCES +=  \
 	src/actions/io/omActionOperators.cpp \
 	src/actions/io/omActionReplayer.cpp \
 	src/actions/omActions.cpp \
+	src/chunks/details/omPtrToChunkDataMemMapVol.cpp \
+	src/chunks/omChunk.cpp \
+	src/chunks/omChunkCoord.cpp \
+	src/chunks/omChunkData.cpp \
+	src/chunks/omSegChunk.cpp \
+	src/chunks/omSegChunkData.cpp \
 	src/common/omCommon.cpp \
 	src/common/omGl.cpp \
 	src/datalayer/archive/omDataArchiveBoost.cpp \
-	src/datalayer/archive/omDataArchiveMipChunk.cpp \
 	src/datalayer/archive/omDataArchiveProject.cpp \
 	src/datalayer/archive/omDataArchiveSegment.cpp \
+	src/datalayer/archive/omMetadataSegmentation.cpp \
+	src/datalayer/archive/omMipVolumeArchive.cpp \
 	src/datalayer/hdf5/omHdf5.cpp \
 	src/datalayer/hdf5/omHdf5FileUtils.cpp \
 	src/datalayer/hdf5/omHdf5Impl.cpp \
 	src/datalayer/hdf5/omHdf5LowLevel.cpp \
 	src/datalayer/hdf5/omHdf5Utils.cpp \
-	src/datalayer/omDataLayer.cpp \
 	src/datalayer/omDataPaths.cpp \
 	src/gui/cacheMonitorDialog.cpp \
 	src/gui/cacheMonitorWidget.cpp \
@@ -537,7 +585,12 @@ SOURCES +=  \
 	src/mesh/omMipMeshCoord.cpp \
 	src/mesh/omMipMeshManager.cpp \
 	src/mesh/omVolumeCuller.cpp \
+	src/project/omAffinityGraphManager.cpp \
+	src/project/omChannelManager.cpp \
 	src/project/omProject.cpp \
+	src/project/omProjectGlobals.cpp \
+	src/project/omProjectVolumes.cpp \
+	src/project/omSegmentationManager.cpp \
 	src/segment/io/omMST.cpp \
 	src/segment/io/omMSTold.cpp \
 	src/segment/lowLevel/omPagingPtrStore.cpp \
@@ -567,7 +620,6 @@ SOURCES +=  \
 	src/system/omEvents.cpp \
 	src/system/omGroups.cpp \
 	src/system/omPreferenceDefinitions.cpp \
-	src/system/omProjectData.cpp \
 	src/system/omStateManager.cpp \
 	src/system/templatedClasses.cpp \
 	src/tiles/cache/omTileCache.cpp \
@@ -578,7 +630,7 @@ SOURCES +=  \
 	src/tiles/omTilePreFetcher.cpp \
 	src/tiles/omTilePreFetcherTask.cpp \
 	src/utility/channelDataWrapper.cpp \
-	src/utility/fileHelpers.cpp \
+	src/utility/omFileHelpers.cpp \
 	src/utility/omStringHelpers.cpp \
 	src/utility/omSystemInformation.cpp \
 	src/utility/omThreadPoolManager.cpp \
@@ -596,16 +648,17 @@ SOURCES +=  \
 	src/view3d/widgets/omSelectionWidget.cpp \
 	src/view3d/widgets/omViewBoxWidget.cpp \
 	src/viewGroup/omViewGroupState.cpp \
+	src/volume/build/omVolumeProcessor.cpp \
+	src/volume/io/omMemMappedVolume.cpp \
+	src/volume/io/omVolumeData.cpp \
+	src/volume/omAffinityGraph.cpp \
 	src/volume/omChannel.cpp \
-	src/volume/omChunkData.cpp \
+	src/volume/omChannelImpl.cpp \
 	src/volume/omFilter2d.cpp \
 	src/volume/omFilter2dManager.cpp \
-	src/volume/omMipChunk.cpp \
-	src/volume/omMipChunkCoord.cpp \
 	src/volume/omMipVolume.cpp \
 	src/volume/omSegmentation.cpp \
-	src/volume/omVolume.cpp \
-	src/volume/omVolumeData.cpp \
+	src/volume/omUpdateBoundingBoxes.cpp \
 	src/volume/omVolumeTypes.cpp \
 	src/zi/watershed/RawQuickieWS.cpp \
 	tests/segment/mockSegments.cpp \
@@ -653,6 +706,7 @@ linux-g++ {
     }
     else {
         CONFIG += g++old
+        message( old g++ found )
     }
 }
 # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43943

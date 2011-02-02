@@ -36,7 +36,7 @@ public:
 			 boost::shared_ptr<std::set<OmSegment*> > segs,
 			 const bool isValid)
 	{
-		const uint32_t size = sdw.GetSegmentCache()->getMaxValue();
+		const uint32_t size = sdw.SegmentCache()->getMaxValue();
 		if(segToGroupNum_.size() <= size){
 			segToGroupNum_.resize(size*1.5, 0);
 		}

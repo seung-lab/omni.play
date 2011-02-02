@@ -1,23 +1,29 @@
+#include "project/omSegmentationManager.h"
+#include "common/omCommon.h"
+#include "gui/groupsTable/dropdownMenuButton.hpp"
 #include "gui/groupsTable/groupsTable.h"
+#include "project/omProjectVolumes.h"
+#include "segment/omSegmentCache.h"
+#include "system/omGroup.h"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
-#include "segment/omSegmentCache.h"
-#include "common/omCommon.h"
-#include "system/omGroup.h"
-#include "gui/groupsTable/dropdownMenuButton.hpp"
 
 #include <QTreeWidgetItem>
 #include <QMenu>
 
-static OmID mSeg = 1; //FIXME!
-static GroupsTable * gTable = NULL;
+// TODO: fixme!
+static const int SegmentationID = 1;
+static GroupsTable* gTable = NULL;
 
 void GroupsTable::SetSegmentID(OmSegID seg)
 {
 	seg_ = seg;
 }
 
-GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vgs)
+GroupsTable::GroupsTable(OmViewGroupState* vgs)
+	: QWidget()
+	, sdw_(SegmentationID)
+	, mViewGroupState(vgs)
 {
 	mLayout = new QGridLayout();
 	this->setLayout(mLayout);
@@ -33,7 +39,7 @@ GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vg
 
 	mMenu = new QMenu ();
 	mMenu->addSeparator();
-	QAction * delAction = new QAction(QString("Remove"), this);
+	QAction* delAction = new QAction(QString("Remove"), this);
 	connect(delAction, SIGNAL(triggered(bool)),
 			this, SLOT(doDeleteAction()));
 
@@ -45,31 +51,25 @@ GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vg
 
 void GroupsTable::doDeleteAction()
 {
-	printf("here %p %p %u %u\n", QObject::sender(), mMenu, seg_, groupid_);
-
-	if(!OmProject::IsSegmentationValid(GetSegmentationID())) {
+	if(!sdw_.IsSegmentationValid()){
 		return;
 	}
-	OmSegmentation & seg = OmProject::GetSegmentation(GetSegmentationID());
-	OmGroup & group = seg.GetGroups()->GetGroup(groupid_);
+
+	OmGroup& group = sdw_.Groups()->GetGroup(groupid_);
 
 	OmSegIDsSet set;
 	set.insert(seg_);
-	seg.GetGroups()->UnsetGroup(set, group.GetName());
-}
-
-OmID GroupsTable::GetSegmentationID()
-{
-	return mSeg;
+	sdw_.Groups()->UnsetGroup(set, group.GetName());
 }
 
 void GroupsTable::populateGroupsList()
 {
-	if(!OmProject::IsSegmentationValid(GetSegmentationID())) {
+	if(!sdw_.IsSegmentationValid()){
 		return;
 	}
+
 	printf("repopulating..\n");
-	mGroupsList->populate(OmProject::GetSegmentation(GetSegmentationID()));
+	mGroupsList->populate(sdw_.GetSegmentation());
 }
 
 void GroupsTable::Repopulate(OmSegID id)
@@ -88,21 +88,22 @@ void GroupsTable::populateGroupTable(OmGroupID id)
 {
 	groupid_ = id;
 
-	if(!OmProject::IsSegmentationValid(GetSegmentationID())) {
+	if(!sdw_.IsSegmentationValid()){
 		return;
 	}
 
-	OmSegmentation & seg = OmProject::GetSegmentation(GetSegmentationID());
-	OmGroup & group = seg.GetGroups()->GetGroup(id);
-	OmSegmentCache* cache = seg.GetSegmentCache();
+	OmGroup& group = sdw_.Groups()->GetGroup(id);
+	OmSegmentCache* cache = sdw_.SegmentCache();
 
-	const OmSegIDsSet & set = group.GetIDs();
+	const OmSegIDsSet& set = group.GetIDs();
 	mGroupsTable->setRowCount(set.size());
 	int count = 0;
 
 	foreach(OmSegID id, set) {
-		OmSegment * segment = cache->GetSegment(id);
-		OmColor color = segment->GetColorInt();
+		++count;
+
+		OmSegment* segment = cache->GetSegment(id);
+		const OmColor color = segment->GetColorInt();
 
 		GroupsTableDropDownMenuButton* segmentButton =
 			new GroupsTableDropDownMenuButton(this, id);
@@ -110,13 +111,14 @@ void GroupsTable::populateGroupTable(OmGroupID id)
 
 		mGroupsTable->setCellWidget(count, 0, segmentButton);
 
-		QPushButton * colorButton = new QPushButton();
+		QPushButton* colorButton = new QPushButton();
 		colorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3) }")
-								   .arg(color.red).arg(color.green).arg(color.blue));
+								   .arg(color.red).
+								   arg(color.green).
+								   arg(color.blue));
 		mGroupsTable->setCellWidget(count, 1, colorButton);
 		mGroupsTable->setItem(count, 2, new QTableWidgetItem(QString::number(segment->getSizeWithChildren()), 0));
 		mGroupsTable->setItem(count, 3, new QTableWidgetItem(QString::number(segment->size()), 0));
-		count++;
 	}
 }
 

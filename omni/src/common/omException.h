@@ -58,8 +58,15 @@ public:
 
 class OmIoException : public OmException {
 public:
+	OmIoException(const char* msg)
+		: OmException("OmIoException", std::string(msg))
+	{}
 	OmIoException(const std::string& msg)
 		: OmException("OmIoException", msg)
+	{}
+	OmIoException(const QString& str)
+		: OmException("OmIoException",
+					  str.toStdString())
 	{}
 	OmIoException(const QString& str1,
 				  const QString& str2)

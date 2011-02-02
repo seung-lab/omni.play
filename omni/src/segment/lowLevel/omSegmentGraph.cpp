@@ -1,3 +1,4 @@
+#include "segment/lowLevel/omDynamicForestCache.hpp"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/io/omMST.h"
 #include "utility/omStringHelpers.h"
@@ -6,7 +7,7 @@
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 
 OmSegmentGraph::OmSegmentGraph()
 	: mGraph(NULL)
@@ -20,22 +21,22 @@ OmSegmentGraph::~OmSegmentGraph()
 
 void OmSegmentGraph::graph_cut( const OmSegID segID )
 {
-	mGraph->cut(segID);
+	mGraph->Cut(segID);
 }
 
 OmSegID OmSegmentGraph::graph_getRootID( const OmSegID segID )
 {
-	return mGraph->root(segID);
+	return mGraph->Root(segID);
 }
 
 void OmSegmentGraph::graph_join( const OmSegID childRootID, const OmSegID parentRootID )
 {
-	mGraph->join(childRootID, parentRootID);
+	mGraph->Join(childRootID, parentRootID);
 }
 
 bool OmSegmentGraph::graph_doesGraphNeedToBeRefreshed( const quint32 maxValue )
 {
-	return (NULL == mGraph || mGraph->size() != maxValue+1 );
+	return (NULL == mGraph || mGraph->Size() != maxValue+1 );
 }
 
 void OmSegmentGraph::initialize( OmSegmentCacheImplLowLevel * cache )
@@ -47,7 +48,7 @@ void OmSegmentGraph::initialize( OmSegmentCacheImplLowLevel * cache )
 	// maxValue is a valid segment id, so array needs to be 1 bigger
 	const quint32 size = 1 + mCache->getMaxValue();
 
-	mGraph = new zi::DynamicForestPool<uint32_t>( size );
+	mGraph = new OmDynamicForestCache(size);
 
 	buildSegmentSizeLists();
 }
@@ -56,7 +57,7 @@ void OmSegmentGraph::growGraphIfNeeded(OmSegment * seg)
 {
 	// maxValue is a valid segment id, so array needs to be 1 bigger
 	const quint32 size = 1 + mCache->getMaxValue();
-	mGraph->resize(size);
+	mGraph->Resize(size);
 	getSegmentLists()->InsertSegmentWorking(seg);
 }
 
@@ -95,13 +96,15 @@ quint32 OmSegmentGraph::getNumTopLevelSegs()
 	return getSegmentLists()->GetNumTopLevelSegs();
 }
 
-void OmSegmentGraph::setGlobalThreshold(boost::shared_ptr<OmMST> mst)
+void OmSegmentGraph::setGlobalThreshold(OmMST* mst)
 {
-	printf("\t %s edges...",
-		   OmStringHelpers::CommaDeliminateNum(mst->NumEdges()).c_str());
-	fflush(stdout);
+	std::cout << "\t" << OmStringHelpers::CommaDeliminateNum(mst->NumEdges())
+			  << " edges..." << std::flush;
 
 	OmTimer timer;
+
+	mGraph->SetBatch(true);
+	mGraph->ClearCache();
 
 	const double stopThreshold = mst->UserThreshold();
 	OmMSTEdge* edges = mst->Edges();
@@ -128,13 +131,18 @@ void OmSegmentGraph::setGlobalThreshold(boost::shared_ptr<OmMST> mst)
 		}
 	}
 
+	mGraph->SetBatch(false);
+
 	printf("done (%f secs)\n", timer.s_elapsed() );
 }
 
-void OmSegmentGraph::resetGlobalThreshold(boost::shared_ptr<OmMST> mst)
+void OmSegmentGraph::resetGlobalThreshold(OmMST* mst)
 {
-	printf("\t %d edges...", mst->NumEdges());
-	fflush(stdout);
+	std::cout << "\t" << OmStringHelpers::CommaDeliminateNum(mst->NumEdges())
+			  << " edges..." << std::flush;
+
+	mGraph->SetBatch(true);
+	mGraph->ClearCache();
 
 	const double stopThreshold = mst->UserThreshold();
 	OmMSTEdge* edges = mst->Edges();
@@ -168,6 +176,8 @@ void OmSegmentGraph::resetGlobalThreshold(boost::shared_ptr<OmMST> mst)
 		}
 	}
 
+	mGraph->SetBatch(false);
+
 	printf("done\n");
 }
 
@@ -188,7 +198,7 @@ bool OmSegmentGraph::JoinInternal( const OmSegID parentID,
 		return false;
 	}
 
-	boost::shared_ptr<OmValidGroupNum>& validGroupNum = GetValidGroupNum();
+	OmValidGroupNum* validGroupNum = getValidGroupNum();
 	if(childRoot->IsValidListType()){
 		if(validGroupNum->Get(childRootID) !=
 		   validGroupNum->Get(parentID))
@@ -268,10 +278,10 @@ quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )
 	return size;
 }
 
-boost::shared_ptr<OmSegmentLists> OmSegmentGraph::getSegmentLists() {
-	return mCache->GetSegmentation()->GetSegmentLists();
+OmSegmentLists* OmSegmentGraph::getSegmentLists() {
+	return mCache->GetSegmentation()->SegmentLists();
 }
 
-boost::shared_ptr<OmValidGroupNum>& OmSegmentGraph::GetValidGroupNum() const {
-	return mCache->GetSegmentation()->GetValidGroupNum();
+OmValidGroupNum* OmSegmentGraph::getValidGroupNum() {
+	return mCache->GetSegmentation()->ValidGroupNum();
 }

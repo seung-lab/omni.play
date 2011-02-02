@@ -53,8 +53,6 @@ hid_t OmHdf5FileUtils::file_open(std::string fpath, const bool readOnly  )
 		throw OmIoException(errMsg);
 	}
 
-	printf("OPENING %i, %s\n", fileId, fpath.c_str());
-
 	return fileId;
 }
 
@@ -65,10 +63,6 @@ void OmHdf5FileUtils::flush(const hid_t fileId)
 
 void OmHdf5FileUtils::file_close (hid_t fileId)
 {
-	//debug(hdf5, "%s: closed HDF file\n", __FUNCTION__ );
-	//debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-	printf("CLOSING %i\n", fileId);
-
 	flush( fileId );
 	herr_t ret = H5Fclose(fileId);
 	if (ret < 0) {

@@ -189,7 +189,15 @@ public:
 		return *std::max_element(getScalarPtr(), getScalarPtr()+size());
 	}
 
-	const T* getScalarPtr()
+	T const* getScalarPtr() const
+	{
+		if(d_.data_) {
+			return d_.data_->data();
+		}
+		return 0;
+	}
+
+	T* getScalarPtrMutate()
 	{
 		if(d_.data_) {
 			return d_.data_->data();

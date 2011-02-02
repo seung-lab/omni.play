@@ -2,7 +2,6 @@
 #include "tiles/cache/omTileCache.h"
 #include "system/omGarbage.h"
 #include "tiles/omTextureID.h"
-#include "volume/omVolume.h"
 
 OmTextureID::OmTextureID()
 	: dims_(Vector2i(0,0))

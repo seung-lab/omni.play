@@ -3,25 +3,20 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/hdf5/omHdf5FileUtils.hpp"
-#include "datalayer/hdf5/omHdf5Manager.h"
-
-OmHdf5* OmHdf5::getHDF5(const std::string& fnp, const bool readOnly, const om::Affinity aff){
-	printf("should be 1: %i\n", !om::NO_AFFINITY == aff);
-	return OmHdf5Manager::getOmHdf5File(fnp, readOnly, aff);
-}
 
 void OmHdf5::create()
 {
 	zi::rwmutex::write_guard g(fileLock);
-	OmHdf5FileUtils::file_create(m_fileNameAndPath);
+	OmHdf5FileUtils::file_create(fnp_);
 }
 
 void OmHdf5::open()
 {
 	zi::rwmutex::write_guard g(fileLock);
-	OmHdf5Impl* impl = new OmHdf5Impl(m_fileNameAndPath,
-					  readOnly_, aff_);
-	hdf5_ = boost::shared_ptr<OmHdf5Impl>(impl);
+
+	hdf5_ = boost::make_shared<OmHdf5Impl>(fnp_, readOnly_);
+
+	std::cout << "opened hdf5 file " << fnp_ << "\n";
 }
 
 void OmHdf5::close()
@@ -55,9 +50,9 @@ bool OmHdf5::dataset_exists(const OmDataPath& path)
 }
 
 void OmHdf5::allocateChunkedDataset(const OmDataPath& path,
-						  const Vector3i& dataDims,
-						  const Vector3i& chunkDims,
-						  const OmVolDataType type)
+									const Vector3i& dataDims,
+									const Vector3i& chunkDims,
+									const OmVolDataType type)
 {
 	zi::rwmutex::write_guard g(fileLock);
 	hdf5_->allocateChunkedDataset(path, dataDims, chunkDims, type);
@@ -70,23 +65,30 @@ OmDataWrapperPtr OmHdf5::readDataset(const OmDataPath& path, int* size)
 }
 
 OmDataWrapperPtr OmHdf5::readChunk(const OmDataPath& path,
-						      DataBbox dataExtent)
+								   const DataBbox& dataExtent,
+								   const om::AffinityGraph aff)
 {
 	zi::rwmutex::write_guard g(fileLock);
-	return hdf5_->readChunk(path, dataExtent);
+	return hdf5_->readChunk(path, dataExtent, aff);
 }
 
 void OmHdf5::writeChunk(const OmDataPath& path,
-					  DataBbox dataExtent,
-					  OmDataWrapperPtr data)
+						DataBbox dataExtent,
+						OmDataWrapperPtr data)
 {
 	zi::rwmutex::write_guard g(fileLock);
 	hdf5_->writeChunk(path, dataExtent, data);
 }
 
+OmDataWrapperPtr OmHdf5::GetChunkDataType(const OmDataPath& path)
+{
+	zi::rwmutex::write_guard g(fileLock);
+	return hdf5_->GetChunkDataType(path);
+}
+
 void OmHdf5::writeDataset(const OmDataPath& path,
-						int size,
-						const OmDataWrapperPtr data)
+						  int size,
+						  const OmDataWrapperPtr data)
 {
 	if (!size){
 		return;
@@ -96,10 +98,11 @@ void OmHdf5::writeDataset(const OmDataPath& path,
 	hdf5_->writeDataset(path, size, data);
 }
 
-Vector3i OmHdf5::getChunkedDatasetDims(const OmDataPath& path)
+Vector3i OmHdf5::getChunkedDatasetDims(const OmDataPath& path,
+									   const om::AffinityGraph aff)
 {
 	zi::rwmutex::write_guard g(fileLock);
-	return hdf5_->getChunkedDatasetDims(path);
+	return hdf5_->getChunkedDatasetDims(path, aff);
 }
 
 Vector3i OmHdf5::getDatasetDims(const OmDataPath& path)

@@ -11,7 +11,6 @@
 #include "gui/inspectors/volInspector.h"
 #include "gui/myInspectorWidget.h"
 #include "system/omLocalPreferences.hpp"
-#include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "utility/sortHelpers.h"
 #include "utility/omStringHelpers.h"
@@ -56,7 +55,6 @@ QGroupBox* SegInspector::makeStatsBox()
 	QString commaNumSegs = OmStringHelpers::CommaDeliminateNumQT(sdw_.getNumberOfSegments());
 	labelNumSegmentsNum->setText( commaNumSegs );
 	grid->addWidget( labelNumSegmentsNum, 0, 1 );
-
 
 	QLabel *labelNumTopSegments = new QLabel(statsBox);
 	labelNumTopSegments->setText("number of top-level segments:");
@@ -243,19 +241,20 @@ void SegInspector::on_patternEdit_textChanged()
 
 void SegInspector::on_notesEdit_textChanged()
 {
-	OmProject::GetSegmentation(sdw_.getID()).SetNote(notesEdit->toPlainText());
+	sdw_.GetSegmentation().SetNote(notesEdit->toPlainText());
 }
 
 void SegInspector::populateSegmentationInspector()
 {
-	nameEdit->setText( sdw_.getName() );
+	nameEdit->setText(sdw_.GetName());
 	nameEdit->setMinimumWidth(200);
 
 	//TODO: fix me!
 	if( 0 ){
 		// use path from where import files were orginally...
 	} else {
-		directoryEdit->setText( OmProjectData::getAbsolutePath() );
+		const QString folder = QFileInfo(OmProject::OmniFile()).absolutePath();
+		directoryEdit->setText(folder);
 	}
 	directoryEdit->setMinimumWidth(200);
 

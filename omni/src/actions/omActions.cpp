@@ -10,7 +10,7 @@
 #include "actions/details/omSegmentValidateAction.h"
 #include "actions/details/omSegmentationThresholdChangeAction.h"
 #include "actions/details/omVoxelSetValueAction.h"
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "utility/segmentDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "system/omLocalPreferences.hpp"
@@ -60,7 +60,7 @@ void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
 
 	OmSegmentValidateAction::Validate(sdw, valid);
 
-	OmSegmentCache* segCache = sdw.GetSegmentCache();
+	OmSegmentCache* segCache = sdw.SegmentCache();
 
 	const bool segmentGettingSetAsValid = om::SET_VALID == valid;
 	const bool shouldJump =
@@ -179,22 +179,52 @@ void OmActions::JoinSegments(const OmID segmentationID,
 	bool revalidate = false;
 	OmSegIDsSet validSet;
 
-	if(sdw.GetSegmentCache()->AreAnySegmentsInValidList(ids)){
+	if(sdw.SegmentCache()->AreAnySegmentsInValidList(ids)){
 		//printf("valid segment present in list; not joining...\n");
 		//return;		// don't alow the join if valid segment is given
 		revalidate = true;
-		validSet = MutateSegmentsInValidList(sdw.GetSegmentCache(), ids);
+		validSet = MutateSegmentsInValidList(sdw.SegmentCache(), ids);
 	}
 
 	(new OmSegmentJoinAction(segmentationID, ids))->Run();
 
 	if(revalidate) {
-		UnMutateSegmentsInValidList(sdw.GetSegmentCache(), validSet);
+		UnMutateSegmentsInValidList(sdw.SegmentCache(), validSet);
 	}
 }
 
-void OmActions::FindAndSplitSegments(const SegmentDataWrapper& sdw, OmViewGroupState* vgs, const DataCoord dataClickPoint){
-	OmSegmentSplitAction::DoFindAndSplitSegment(sdw, vgs, dataClickPoint);
+void OmActions::DoFindAndSplitSegment(const SegmentDataWrapper& sdw, OmViewGroupState* vgs, const DataCoord coord)
+{
+        const std::pair<boost::optional<DataCoord>, SegmentDataWrapper> splittingAndSDW =
+                vgs->GetSplitMode();
+        const boost::optional<DataCoord> amAlreadySplitting = splittingAndSDW.first;
+
+        if(amAlreadySplitting){
+
+                SegmentDataWrapper segmentBeingSplit = splittingAndSDW.second;
+
+                OmSegment* seg1 = segmentBeingSplit.getSegment();
+                OmSegment* seg2 = sdw.getSegment();
+
+                if(NULL == seg1 || NULL == seg2) {
+                        return;
+                }
+
+                OmSegmentSplitAction::RunIfSplittable(seg1, seg2, *amAlreadySplitting, coord);
+
+                vgs->SetSplitMode(false);
+
+        } else { // set segment to be split later...
+                if(sdw.IsSegmentValid()){
+                        vgs->SetSplitMode(sdw, coord);
+                }
+        }
+}
+
+void OmActions::FindAndSplitSegments(const SegmentDataWrapper& sdw,
+							OmViewGroupState* vgs,
+							const DataCoord dataClickPoint){
+	DoFindAndSplitSegment(sdw, vgs, dataClickPoint);
 }
 
 void OmActions::FindAndCutSegments(const SegmentDataWrapper& sdw,
@@ -209,7 +239,8 @@ void OmActions::SelectSegments(const SegmentDataWrapper& sdw,
 							   const std::string & comment,
 							   const bool doScroll,
 							   const bool addToRecentList,
-							   const bool center)
+							   const bool center,
+							   const bool augmentListOnly)
 {
 	(new OmSegmentSelectAction(sdw,
 							   mNewSelectedIdSet,
@@ -218,7 +249,8 @@ void OmActions::SelectSegments(const SegmentDataWrapper& sdw,
 							   comment,
 							   doScroll,
 							   addToRecentList,
-							   center))->Run();
+							   center,
+							   augmentListOnly))->Run();
 }
 
 // group-related

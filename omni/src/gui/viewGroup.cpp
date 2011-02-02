@@ -1,3 +1,4 @@
+#include "project/omSegmentationManager.h"
 #include "common/omDebug.h"
 #include "gui/mainwindow.h"
 #include "gui/menubar.h"
@@ -9,9 +10,6 @@
 #include "view3d/omView3d.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
-
-#include <boost/make_shared.hpp>
 
 static const ViewType UpperLeft  = XY_VIEW;
 static const ViewType UpperRight = YZ_VIEW;
@@ -20,8 +18,7 @@ static const ViewType LowerLeft  = XZ_VIEW;
 ViewGroup::ViewGroup(MainWindow* mw, OmViewGroupState* vgs)
 	: mMainWindow(mw)
 	, mViewGroupState(vgs)
-{
-}
+{}
 
 int ViewGroup::getID(){
 	return mViewGroupState->GetID();
@@ -124,7 +121,7 @@ void ViewGroup::AddView3D()
 
 QDockWidget* ViewGroup::AddView2Dchannel(const OmID chan_id, const ViewType vtype)
 {
-	OmChannel& chan = OmProject::GetChannel(chan_id);
+	OmChannel& chan = OmProject::Volumes().Channels().GetChannel(chan_id);
 	const QString name = getViewName(chan.GetName(), vtype);
 
 	boost::shared_ptr<ViewGroupWidgetInfo> vgw =
@@ -149,8 +146,9 @@ std::pair<QDockWidget*,QDockWidget*>
 ViewGroup::AddView2Dsegmentation(const OmID segmentation_id,
 								 const ViewType vtype)
 {
-	OmSegmentation& seg = OmProject::GetSegmentation(segmentation_id);
-	const QString name = getViewName(seg.GetName(), vtype);
+	SegmentationDataWrapper sdw(segmentation_id);
+
+	const QString name = getViewName(sdw.GetName().toStdString(), vtype);
 
 	boost::shared_ptr<ViewGroupWidgetInfo> vgw =
 		boost::make_shared<ViewGroupWidgetInfo>(name, VIEW2D_SEG, vtype);
@@ -160,7 +158,7 @@ ViewGroup::AddView2Dsegmentation(const OmID segmentation_id,
 	}
 
 	OmView2d* v2d = new OmView2d(vtype, mMainWindow, mViewGroupState,
-				     &seg, name.toStdString());
+								 sdw.GetSegmentationPtr(), name.toStdString());
 
 	vgw->widget = v2d;
 
@@ -331,8 +329,11 @@ void ViewGroup::AddAllViews(const OmID channelID, const OmID segmentationID)
 		delete w;
 	}
 
-	const bool validChan = OmProject::IsChannelValid(channelID);
-	const bool validSeg = OmProject::IsSegmentationValid(segmentationID);
+	ChannelDataWrapper cdw(channelID);
+	SegmentationDataWrapper sdw(segmentationID);
+
+	const bool validChan = cdw.IsChannelValid() && cdw.IsBuilt();
+	const bool validSeg = sdw.IsSegmentationValid() && sdw.IsBuilt();
 
 	if( validChan && validSeg){
 		AddView2Dchannel(channelID, UpperLeft);
@@ -359,9 +360,8 @@ void ViewGroup::AddAllViews(const OmID channelID, const OmID segmentationID)
 			AddView2Dsegmentation(segmentationID, UpperLeft);
 			AddView2Dsegmentation(segmentationID, UpperRight);
 			AddView2Dsegmentation(segmentationID, LowerLeft);
+			AddView3D();
 		}
-
-		AddView3D();
 	}
 }
 

@@ -5,10 +5,10 @@
 #include "common/omDebug.h"
 #include "utility/omStringHelpers.h"
 #include "datalayer/omDataWrapper.h"
-#include "volume/omMipChunk.h"
-#include "volume/omMipChunkCoord.h"
+#include "chunks/omChunk.h"
+#include "chunks/omChunkCoord.h"
 #include "volume/omMipVolume.h"
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 
 #include <QFile>
 #include <QFileInfoList>
@@ -34,13 +34,13 @@ public:
 				const std::vector<QFileInfo>& files)
 		: vol_(vol)
 		, mip0volFile_(mip0volFile)
-		, mip0dims_(vol_->MipLevelDimensionsInMipChunks(0))
+		, mip0dims_(vol_->Coords().MipLevelDimensionsInMipChunks(0))
 		, totalNumImages_(files.size())
 		, totalTilesInSlice_(mip0dims_.x * mip0dims_.y)
-		, sliceWidth_(vol_->GetChunkDimension())
-		, sliceHeight_(vol_->GetChunkDimension())
-		, slicesPerChunk_(vol_->GetChunkDimension())
-		, sliceSizeBytes_(sliceWidth_*sliceHeight_*vol_->GetBytesPerSample())
+		, sliceWidth_(vol_->Coords().GetChunkDimension())
+		, sliceHeight_(vol_->Coords().GetChunkDimension())
+		, slicesPerChunk_(vol_->Coords().GetChunkDimension())
+		, sliceSizeBytes_(sliceWidth_*sliceHeight_*vol_->GetBytesPerVoxel())
 		, chunkSizeBytes_(sliceSizeBytes_*slicesPerChunk_)
 	{}
 
@@ -76,9 +76,9 @@ public:
 
 private:
 
-	std::map<OmMipChunkCoord, uint64_t> chunkOffsets_;
+	std::map<OmChunkCoord, uint64_t> chunkOffsets_;
 
-	uint64_t getChunkOffset(const OmMipChunkCoord& coord)
+	uint64_t getChunkOffset(const OmChunkCoord& coord)
 	{
 		if(chunkOffsets_.count(coord)){
 			return chunkOffsets_[coord];
@@ -86,7 +86,8 @@ private:
 
 		//if chunk was not in map, assume chunk is unallocated...
 		//TODO: just use OmRawChunk...
-		const uint64_t offset = vol_->ComputeChunkPtrOffsetBytes(coord);
+		const uint64_t offset =
+			OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
 
 		debugs(io) << "preallocating chunk: " << coord << "\n";
 		preallocateChunk(offset);
@@ -113,8 +114,8 @@ private:
 		for(int y = 0; y < mip0dims_.y; ++y) {
 			for(int x = 0; x < mip0dims_.x; ++x) {
 
-				const OmMipChunkCoord coord = OmMipChunkCoord(0, x, y, z);
-				const DataBbox chunk_bbox = vol_->MipCoordToDataBbox(coord, 0);
+				const OmChunkCoord coord = OmChunkCoord(0, x, y, z);
+				const DataBbox chunk_bbox = vol_->Coords().MipCoordToDataBbox(coord, 0);
 
 				const int startX = chunk_bbox.getMin().x;
 				const int startY = chunk_bbox.getMin().y;

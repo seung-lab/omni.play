@@ -8,16 +8,18 @@ OmSegmentSelectAction::OmSegmentSelectAction(const SegmentDataWrapper& sdw,
 											 void * sender,
 											 const std::string& comment,
 											 const bool doScroll,
-											 const bool addToRecentList, 
-											 const bool center)
+											 const bool addToRecentList,
+											 const bool center,
+											 const bool augmentListOnly)
 	: impl_(boost::make_shared<OmSegmentSelectActionImpl>(sdw,
-														 newSelectedIdSet,
-														 oldSelectedIdSet,
-														 sender,
-														 comment,
-														 doScroll,
-														 addToRecentList,
-														 center))
+														  newSelectedIdSet,
+														  oldSelectedIdSet,
+														  sender,
+														  comment,
+														  doScroll,
+														  addToRecentList,
+														  center,
+														  augmentListOnly))
 {}
 
 void OmSegmentSelectAction::Action()

@@ -21,7 +21,7 @@ private:
 	}
 
 	uint64_t Size() {
-		return sdw_.GetSegmentLists()->Recent().Size();
+		return sdw_.SegmentLists()->Recent().Size();
 	}
 
 	boost::shared_ptr<OmSegIDsListWithPage>
@@ -29,7 +29,7 @@ private:
 					const int numToGet,
 					const OmSegID startSeg)
 	{
-		return sdw_.GetSegmentLists()->Recent().GetPageOfSegmentIDs(offset, numToGet, startSeg);
+		return sdw_.SegmentLists()->Recent().GetPageOfSegmentIDs(offset, numToGet, startSeg);
 	}
 
 	int getPreferredTabIndex(){

@@ -7,13 +7,24 @@
 
 class OmDisplayInfo{
 public:
-	OmDisplayInfo(QPainter& painter, const int initialHeight,
+	OmDisplayInfo(QPainter& painter, QPen& pen, const int initialHeight,
 				  const int xoffset)
 		: painter_(painter)
+		, pen_(pen)
 		, yTopOfText_(initialHeight)
 		, xoffset_(xoffset)
 		, yHeightDec_(10)
-	{}
+		, oldPenColor_(pen.color())
+	{
+		pen_.setColor(QColor(Qt::white));
+		painter_.setPen(pen_);
+	}
+
+	virtual ~OmDisplayInfo()
+	{
+		pen_.setColor(oldPenColor_);
+		painter_.setPen(pen_);
+	}
 
 	void paint(const QString& str){
 		doPaint(str);
@@ -46,9 +57,11 @@ public:
 
 private:
 	QPainter& painter_;
+	QPen& pen_;
 	int yTopOfText_;
 	const int xoffset_;
 	const int yHeightDec_;
+	const QColor oldPenColor_;
 
 	void doPaint(const QString& str1, const QString& str2){
 		doPaint(str1 + " " + str2);

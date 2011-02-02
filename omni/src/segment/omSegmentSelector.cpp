@@ -1,5 +1,5 @@
 #include "project/omProject.h"
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
@@ -9,7 +9,7 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
 									  void* sender,
 									  const std::string& cmt )
 	: sdw_(sdw, 0)
-	, segmentCache_(sdw_.GetSegmentCache())
+	, segmentCache_(sdw_.SegmentCache())
 	, mSender(sender)
 	, mComment(cmt)
 	, oldSelectedIDs(segmentCache_->GetSelectedSegmentIds())
@@ -17,6 +17,7 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
 	, autoCenter_(false)
 	, shouldScroll_(true)
 	, addToRecentList_(true)
+	, augmentListOnly_(false)
 {}
 
 void OmSegmentSelector::selectNoSegments()
@@ -49,6 +50,13 @@ void OmSegmentSelector::setSelectedSegment(const OmSegID segID)
 {
 	sdw_.SetSegmentID(segID);
 	OmSegmentSelected::Set(sdw_);
+}
+
+void OmSegmentSelector::InsertSegments(const boost::unordered_set<OmSegID>& segIDs)
+{
+	FOR_EACH(iter, segIDs){
+		newSelectedIDs.insert(segmentCache_->findRootID(*iter));
+	}
 }
 
 void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
@@ -94,11 +102,11 @@ void OmSegmentSelector::augmentSelectedSet_toggle(const OmSegID segIDunknownLeve
 bool OmSegmentSelector::sendEvent()
 {
 	if( oldSelectedIDs == newSelectedIDs ){
-		printf("not sending segment list\n");
+//		printf("not sending segment list\n");
 		return false;
 	}
 
-	std::cout << oldSelectedIDs << "\n";
+//	std::cout << oldSelectedIDs << "\n";
 
 	OmActions::SelectSegments(sdw_,
 							  newSelectedIDs,
@@ -107,6 +115,7 @@ bool OmSegmentSelector::sendEvent()
 							  mComment,
 							  shouldScroll_,
 							  addToRecentList_,
-							  autoCenter_);
+							  autoCenter_,
+							  augmentListOnly_);
 	return true;
 }

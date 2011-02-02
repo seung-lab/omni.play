@@ -3,7 +3,7 @@
 #include "volume/omSegmentation.h"
 #include "utility/dataWrappers.h"
 #include "segment/omSegmentCache.h"
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
 
 JoinButton::JoinButton(GraphTools * d)
@@ -22,7 +22,7 @@ void JoinButton::doAction()
 	}
 
 	OmSegmentation & seg = sdw.GetSegmentation();
-	const OmSegIDsSet& ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
+	const OmSegIDsSet& ids = seg.SegmentCache()->GetSelectedSegmentIds();
 	OmActions::JoinSegments(sdw.getID(), ids);
 
 	mParent->updateGui();

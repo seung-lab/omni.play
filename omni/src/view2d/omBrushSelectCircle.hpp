@@ -3,7 +3,7 @@
 
 #include "segment/omSegmentSelector.h"
 #include "system/omEvents.h"
-#include "view2d/omView2dConverters.hpp"
+#include "view2d/omView2dManager.hpp"
 #include "volume/omSegmentation.h"
 
 class OmBrushSelectCircle {
@@ -13,7 +13,10 @@ private:
 	const int brushDia_;
 	const int depth_;
 
+	const std::vector<om::point2d>& ptsInCircle_;
+
 	boost::scoped_ptr<OmSegmentSelector> selector_;
+	boost::unordered_set<OmSegID> segIDs_;
 
 public:
 	OmBrushSelectCircle(OmSegmentation * segmentation,
@@ -24,6 +27,7 @@ public:
 		, viewType_(viewType)
 		, brushDia_(brushDia)
 		, depth_(depth)
+		, ptsInCircle_(OmView2dManager::GetPtsInCircle(brushDia))
 	{
 		setupSelector();
 	}
@@ -39,12 +43,21 @@ public:
 
 	void SendEvents()
 	{
+		selector_->InsertSegments(segIDs_);
 		selector_->sendEvent();
 		OmEvents::Redraw2d();
 	}
 
 	inline void SelectSegments(const int x, const int y){
 		selectSegments(DataCoord(x, y, depth_));
+	}
+
+	ViewType GetViewType() const {
+		return viewType_;
+	}
+
+	int BrushDiameter() const {
+		return brushDia_;
 	}
 
 private:
@@ -55,6 +68,7 @@ private:
 		selector_->ShouldScroll(false);
 		selector_->AddToRecentList(false);
 		selector_->AutoCenter(false);
+		selector_->AugmentListOnly(true);
 	}
 
 	inline void selectSegments(const DataCoord& xyzCoord)
@@ -79,41 +93,17 @@ private:
 		const OmSegID segID = segmentation_->GetVoxelValue(xyzCoord);
 
 		if(segID) {
-			selector_->augmentSelectedSet(segID, true);
+			segIDs_.insert(segID);
 		}
-	}
-
-	inline DataCoord flipCoord(const DataCoord& coord){
-		return OmView2dConverters::MakeViewTypeVector3(coord, viewType_);
-	}
-
-	inline DataCoord flipCoord(const int x, const int y, const int z){
-		return OmView2dConverters::MakeViewTypeVector3(x, y, z, viewType_);
 	}
 
 	inline void selectSegmentsInCircle(const DataCoord& origCoord)
 	{
-		const DataCoord flippedCoord = flipCoord(origCoord);
-
-        const int radius   = brushDia_ / 2;
-        const int sqRadius = radius * radius;
-
-        for(int i = 0; i < brushDia_; ++i)
-		{
-			const int x = i - radius;
-
-            for(int j = 0; j < brushDia_; ++j)
-            {
-                const int y = j - radius;
-
-                if( x * x + y * y <= sqRadius )
-                {
-                    addVoxel(flipCoord(flippedCoord.x + x,
-									   flippedCoord.y + y,
-									   flippedCoord.z));
-                }
-            }
-        }
+		FOR_EACH(iter, ptsInCircle_){
+			addVoxel(DataCoord(origCoord.x + iter->x,
+							   origCoord.y + iter->y,
+							   origCoord.z));
+		}
 	}
 };
 

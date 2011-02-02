@@ -1,16 +1,15 @@
-#include "utility/dataWrappers.h"
-#include <QtGui>
-#include "project/omProject.h"
+#include "datalayer/hdf5/omExportVolToHdf5.hpp"
 #include "chanInspector.h"
-#include "volInspector.h"
-#include "common/omStd.h"
-#include "volume/omVolume.h"
 #include "common/omDebug.h"
+#include "common/omStd.h"
+#include "project/omProject.h"
+#include "project/omProjectVolumes.h"
+#include "utility/dataWrappers.h"
 #include "utility/sortHelpers.h"
+#include "volInspector.h"
 #include "volume/build/omBuildChannel.hpp"
-#include "system/omProjectData.h"
 
-#include <boost/make_shared.hpp>
+#include <QtGui>
 
 ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent)
 	: QWidget(parent)
@@ -33,7 +32,7 @@ ChannelDataWrapper ChanInspector::getChannelDataWrapper()
 
 void ChanInspector::on_nameEdit_editingFinished()
 {
-	OmProject::GetChannel(cdw->getID()).SetCustomName(nameEdit->text());
+	cdw->GetChannel().SetCustomName(nameEdit->text());
 }
 
 void ChanInspector::on_browseButton_clicked()
@@ -54,7 +53,7 @@ void ChanInspector::on_exportButton_clicked()
 		return;
 	}
 
-	OmProject::GetChannel(cdw->getID()).ExportInternalData(fileName, false);
+	OmExportVolToHdf5::Export(cdw->GetChannel(), fileName);
 }
 
 QDir ChanInspector::getDir()
@@ -97,16 +96,16 @@ void ChanInspector::on_patternEdit_textChanged()
 
 void ChanInspector::on_buildButton_clicked()
 {
-	OmChannel & current_channel = OmProject::GetChannel(cdw->getID());
+	OmChannel & current_channel = cdw->GetChannel();
 
-	OmBuildChannel * bc = new OmBuildChannel( &current_channel );
+	OmBuildChannel* bc = new OmBuildChannel(&current_channel);
 	bc->setFileNamesAndPaths( getFileInfoList() );
 	bc->BuildNonBlocking();
 }
 
 void ChanInspector::on_notesEdit_textChanged()
 {
-	OmProject::GetChannel(cdw->getID()).SetNote(notesEdit->toPlainText());
+	cdw->GetChannel().SetNote(notesEdit->toPlainText());
 }
 
 OmID ChanInspector::getChannelID()
@@ -123,7 +122,8 @@ void ChanInspector::populateChannelInspector()
 	if( 0 ){
 		// use path from where import files were orginally...
 	} else {
-		directoryEdit->setText( OmProjectData::getAbsolutePath() );
+		const QString folder = QFileInfo(OmProject::OmniFile()).absolutePath();
+		directoryEdit->setText(folder);
 	}
 	directoryEdit->setMinimumWidth(200);
 
@@ -131,7 +131,7 @@ void ChanInspector::populateChannelInspector()
 	patternEdit->setMinimumWidth(200);
 
 
-	OmChannel & current_channel = OmProject::GetChannel(cdw->getID());
+	OmChannel& current_channel = cdw->GetChannel();
 	gridLayout_3->addWidget(new OmVolInspector(current_channel, this), 4, 0, 1, 1);
 
 	notesEdit->setPlainText( cdw->getNote() );

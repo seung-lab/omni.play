@@ -1,0 +1,23 @@
+#####
+#
+#####
+
+# The test data
+%OMNITEST = (
+	'cmd' => '
+create:{$OUTDIR}/{$TESTNAME}.omni
+loadTIFFchann:{$DATADIR}/stack2/
+quit
+		'
+		,
+	'finish' => '$SUCCESS = files_exist_omni("{$OUTDIR}/{$TESTNAME}.omni") && sane();'
+		,
+        'markup' => '$MARKUP = start_html("Test: {$TESTNAME}").
+                                        h1("Test: {$TESTNAME} ".result()).
+                                                "<a href=\"{$OUTDIR}/{$TESTNAME}.omni.files\">resultant omni</a>".
+                               end_html();'
+
+);
+
+1; # Perl requires truth in evaluation so it is possible to add additional sanity checks here.
+#  # EOF

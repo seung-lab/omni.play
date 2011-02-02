@@ -1,3 +1,4 @@
+#include "project/omSegmentationManager.h"
 #include "view2d/omBrushSelect.hpp"
 #include "viewGroup/omBrushSize.hpp"
 #include "project/omProject.h"
@@ -11,7 +12,7 @@
 #include "view2d/omLineDraw.hpp"
 #include "view2d/omView2dState.hpp"
 #include "volume/omSegmentation.h"
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 
 OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> state,
 					   const ViewType vt)
@@ -59,7 +60,7 @@ void OmLineDraw::BresenhamLineDrawForPainting(const DataCoord & first,
 	}
 
 	const float mDepth = state_->getViewGroupState()->GetViewSliceDepth(mViewType);
-	const DataCoord data_coord = state_->getVol()->SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
+	const DataCoord data_coord = DataCoord(0, 0, mDepth);
 
 	DataCoord globalDC;
 	int y1, y0, x1, x0;
@@ -226,14 +227,14 @@ void OmLineDraw::BrushToolApplyPaint(OmID segid, DataCoord gDC, OmSegID seg)
 void OmLineDraw::FillToolFill(OmID seg, DataCoord gCP, OmSegID fc,
 							  OmSegID bc, int depth)
 {
-	OmSegmentation & segmentation = OmProject::GetSegmentation(seg);
+	OmSegmentation & segmentation = OmProject::Volumes().Segmentations().GetSegmentation(seg);
 	OmID segid = segmentation.GetVoxelValue(gCP);
 
 	if (!segid) {
 		return;
 	}
 
-	segid = segmentation.GetSegmentCache()->findRootID(segid);
+	segid = segmentation.SegmentCache()->findRootID(segid);
 
 	if (depth > 5000)
 		return;
@@ -264,14 +265,14 @@ void OmLineDraw::FillToolFill(OmID seg, DataCoord gCP, OmSegID fc,
 
 void OmLineDraw::removeModifiedTiles()
 {
-	std::set<SpaceCoord> spaceCoordsToRemove;
+	std::set<DataCoord> dataCoordsToRemove;
 
 	FOR_EACH(iter, mUpdatedDataCoords){
-		spaceCoordsToRemove.insert(state_->computeTileSpaceCoord(*iter));
+		dataCoordsToRemove.insert(*iter);
 	}
 
-	FOR_EACH(iter, spaceCoordsToRemove){
-		OmTileCache::RemoveSpaceCoord(*iter);
+	FOR_EACH(iter, dataCoordsToRemove){
+		OmTileCache::RemoveDataCoord(*iter);
 	}
 }
 

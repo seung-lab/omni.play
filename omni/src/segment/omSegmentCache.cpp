@@ -1,7 +1,6 @@
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
-#include "system/omProjectData.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPath.h"
 #include "volume/omSegmentation.h"
@@ -202,6 +201,18 @@ void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect,
 {
 	zi::guard g(mutex_);
 	return mImpl->UpdateSegmentSelection(idsToSelect, addToRecentList);
+}
+
+void OmSegmentCache::AddToSegmentSelection(const OmSegIDsSet& idsToSelect)
+{
+	zi::guard g(mutex_);
+	return mImpl->AddToSegmentSelection(idsToSelect);
+}
+
+void OmSegmentCache::RemvoeFromSegmentSelection(const OmSegIDsSet& idsToSelect)
+{
+	zi::guard g(mutex_);
+	return mImpl->RemvoeFromSegmentSelection(idsToSelect);
 }
 
 std::pair<bool, OmSegmentEdge> OmSegmentCache::JoinEdge(const OmSegmentEdge& e)

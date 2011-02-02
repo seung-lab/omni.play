@@ -12,7 +12,7 @@ public:
 	{
 		std::sort(in.begin(),
 				  in.end(),
-				  NaturalStringCaseInsensitiveCompareLessThanQFile);
+				  naturalStringCaseInsensitiveCompareLessThanQFile);
 	}
 
 	static QStringList SortNaturally(const QStringList& in)
@@ -20,7 +20,7 @@ public:
 		QStringList retVal = in;
 		qSort(retVal.begin(),
 		      retVal.end(),
-		      NaturalStringCaseInsensitiveCompareLessThan);
+		      naturalStringCaseInsensitiveCompareLessThan);
 		return retVal;
 	}
 
@@ -29,24 +29,24 @@ public:
 		QFileInfoList retVal = in;
 		qSort(retVal.begin(),
 		      retVal.end(),
-		      NaturalStringCaseInsensitiveCompareLessThanQFile);
+		      naturalStringCaseInsensitiveCompareLessThanQFile);
 		return retVal;
 	}
 
 private:
 
-	static bool NaturalStringCaseInsensitiveCompareLessThan(const QString& lhs,
-								const QString& rhs)
+	static bool naturalStringCaseInsensitiveCompareLessThan(const QString& lhs,
+															const QString& rhs)
 	{
 		return strnatcmp(qPrintable(lhs),
-				 qPrintable(rhs)) < 0;
+						 qPrintable(rhs)) < 0;
 	}
 
-	static bool NaturalStringCaseInsensitiveCompareLessThanQFile(const QFileInfo& lhs,
-								     const QFileInfo & rhs)
+	static bool naturalStringCaseInsensitiveCompareLessThanQFile(const QFileInfo& lhs,
+																 const QFileInfo & rhs)
 	{
-		return NaturalStringCaseInsensitiveCompareLessThan(lhs.fileName(),
-								   rhs.fileName());
+		return naturalStringCaseInsensitiveCompareLessThan(lhs.fileName(),
+														   rhs.fileName());
 	}
 };
 

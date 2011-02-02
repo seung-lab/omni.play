@@ -296,7 +296,7 @@ void OmViewGroupState::setupColorizer(const Vector2i& dims,
 		SegmentationDataWrapper sdw(key.getVolume()->getID());
 
 		OmSegmentColorizer* sc =
-			new OmSegmentColorizer(sdw.GetSegmentCache(),
+			new OmSegmentColorizer(sdw.SegmentCache(),
 								   sccType,
 								   dims, this);
 		mColorCaches[ sccType ] =

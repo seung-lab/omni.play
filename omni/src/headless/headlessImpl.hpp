@@ -1,10 +1,14 @@
 #ifndef HEADLESS_IMPL_HPP
 #define HEADLESS_IMPL_HPP
 
+#include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
+#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
+#include "utility/omFileHelpers.h"
+#include "volume/omRawChunk.hpp"
 #include "segment/omSegmentLists.hpp"
 #include "segment/omSegmentUtils.hpp"
 #include "mesh/omMeshParams.hpp"
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "project/omProject.h"
 #include "segment/io/omMST.h"
 #include "volume/build/omBuildSegmentation.hpp"
@@ -12,7 +16,7 @@
 #include "volume/omSegmentation.h"
 #include "segment/io/omUserEdges.hpp"
 #include "utility/omColorUtils.hpp"
-#include "volume/build/omWatershedImporter.hpp"
+#include "volume/build/omVolumeBuilder.hpp"
 
 class HeadlessImpl {
 public:
@@ -78,7 +82,7 @@ public:
 	{
 		SegmentationDataWrapper sdw(segmentationID);
 
-		boost::shared_ptr<OmMST> mst = sdw.getMST();
+		OmMST* mst = sdw.MST();
 		OmMSTEdge* edges = mst->Edges();
 
 		for(uint32_t i = 0; i < mst->NumEdges(); ++i){
@@ -89,10 +93,10 @@ public:
 
 		mst->Flush();
 
-		sdw.GetSegmentation().getMSTUserEdges()->Clear();
-		sdw.GetSegmentation().getMSTUserEdges()->Save();
+		sdw.GetSegmentation().MSTUserEdges()->Clear();
+		sdw.GetSegmentation().MSTUserEdges()->Save();
 
-		OmSegmentCache* segCache = sdw.GetSegmentCache();
+		OmSegmentCache* segCache = sdw.SegmentCache();
 		for(OmSegID i = 1; i <= segCache->getMaxValue(); ++i){
 			OmSegment* seg = segCache->GetSegment(i);
 			if(!seg){
@@ -108,7 +112,7 @@ public:
 	{
 		SegmentationDataWrapper sdw(segmentationID);
 
-		OmSegmentCache* segCache = sdw.GetSegmentCache();
+		OmSegmentCache* segCache = sdw.SegmentCache();
 		for(OmSegID i = 1; i <= segCache->getMaxValue(); ++i){
 			OmSegment* seg = segCache->GetSegment(i);
 			if(!seg){
@@ -135,10 +139,10 @@ public:
 	{
 		const Vector3f dims(xRes, yRes, zRes);
 
-		vol.SetDataResolution(dims);
+		vol.Coords().SetDataResolution(dims);
 
 		std::cout << "\tvolume data resolution set to "
-				  << vol.GetDataResolution()
+				  << vol.Coords().GetDataResolution()
 				  << "\n";
 	}
 
@@ -152,8 +156,10 @@ public:
 
 	static void ReValidateEveryObject(const OmID segmentationID)
 	{
+		SegmentationDataWrapper sdw(segmentationID);
+
      	OmSegmentListContainer<OmSegmentListBySize>& validList =
-			SegmentationDataWrapper(segmentationID).GetSegmentation().GetSegmentLists()->Valid();
+			sdw.SegmentLists()->Valid();
 
 		OmSegIDsSet allSegIDs = validList.List().AllSegIDs();
 
@@ -201,7 +207,7 @@ private:
 				  << OmStringHelpers::CommaDeliminateNum(segColorHist.size())
 				  << " colors\n";
 
-		OmSegmentCache* segCache = sdw.GetSegmentCache();
+		OmSegmentCache* segCache = sdw.SegmentCache();
 		for(OmSegID i = 1; i <= segCache->getMaxValue(); ++i){
 			OmSegment* seg = segCache->GetSegment(i);
 			if(!seg){
@@ -238,13 +244,116 @@ private:
 	}
 
 public:
+
+	static void TimeSegChunkReads(const OmID segmentationID,
+								  const bool randomize,
+								  const bool useMeshChunk)
+	{
+		SegmentationDataWrapper sdw(segmentationID);
+		OmSegmentation& vol = sdw.GetSegmentation();
+
+		assert(4 == vol.GetBytesPerVoxel());
+
+		double timeSecs = 0;
+
+		boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+			vol.GetMipChunkCoords();
+		std::deque<OmChunkCoord>& coords = *coordsPtr;
+		const uint32_t numChunks = coords.size();
+
+		if(randomize){
+			zi::random_shuffle(coords.begin(), coords.end());
+		}
+
+		for(uint32_t i = 0; i < numChunks; ++i){
+			printf("\rreading chunk %d of %d...", i, numChunks);
+			fflush(stdout);
+
+			OmTimer timer;
+			if(useMeshChunk){
+				OmRawChunk<uint32_t> chunk(&vol, coords[i]);
+			}else{
+				assert(0 && "fixme!");
+			}
+			timeSecs += timer.s_elapsed();
+		}
+
+		const Vector3i chunkDims = vol.Coords().GetChunkDimensions();
+		const double totalMegs =
+			static_cast<double>(chunkDims.x) *
+			static_cast<double>(chunkDims.y) *
+			static_cast<double>(chunkDims.z) *
+			static_cast<double>(vol.GetBytesPerVoxel()) *
+			static_cast<double>(numChunks) /
+			static_cast<double>(BYTES_PER_MB);
+		const double megsPerSec = totalMegs / timeSecs;
+
+		std::cout << "raw chunk read ";
+		if(useMeshChunk){
+			std::cout << "(fseek and read): ";
+		} else {
+			std::cout << "(get copy of whole chunk using mesh reader): ";
+		}
+
+		std::cout << megsPerSec << " MB/sec\n";
+	}
+
+	static void RefindUniqueChunkValues(const OmID segmentationID_)
+	{
+		OmTimer timer;
+
+		SegmentationDataWrapper sdw(segmentationID_);
+		OmSegmentation& vol = sdw.GetSegmentation();
+
+		OmFileHelpers::RemoveDir(OmFileNames::GetChunksFolder(&vol));
+
+		boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+			vol.GetMipChunkCoords();
+
+		const uint32_t numChunks = coordsPtr->size();
+
+		int counter = 0;
+		FOR_EACH(iter, *coordsPtr){
+			const OmChunkCoord& coord = *iter;
+
+			++counter;
+			printf("\rfinding values in chunk %d of %d...", counter, numChunks);
+			fflush(stdout);
+
+			OmTimer timer;
+			const ChunkUniqueValues segIDs =
+				vol.ChunkUniqueValues()->Values(coord, 1);
+
+			const double time = timer.s_elapsed();
+			std::cout << " (done in " << time << " secs, "
+					  << 1. / time << " chunks per sec)"
+					  << std::flush;
+
+			vol.ChunkUniqueValues()->Clear();
+		}
+
+		timer.PrintDone();
+	}
+
+	static void Mesh(const OmID segmentationID)
+	{
+		const SegmentationDataWrapper sdw(segmentationID);
+		OmBuildSegmentation bs(sdw);
+		bs.BuildMesh(om::BLOCKING);
+	}
+
 	static void ImportWatershed(const QString& fnp)
 	{
 		SegmentationDataWrapper sdw;
 		OmSegmentation& segmentation = sdw.Create();
 
-		OmWatershedImporter importer(segmentation, fnp);
-		importer.Import();
+		std::vector<QFileInfo> files;
+		files.push_back(QFileInfo(fnp));
+
+		OmVolumeBuilder<OmSegmentation> builder(&segmentation, files);
+		builder.BuildWatershed();
+
+		OmActions::Save();
 	}
 };
 

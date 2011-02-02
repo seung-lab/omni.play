@@ -1,4 +1,4 @@
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "mesh/omDrawOptions.h"
@@ -15,17 +15,12 @@
 #include "view3d/omView3dKeyPressEventListener.h"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
 
 OmView3dUi::OmView3dUi(OmView3d * view3d, OmViewGroupState * vgs )
 	: mpView3d(view3d)
 	, mViewGroupState(vgs)
 	, mCPressed(false)
-{
-}
-
-/////////////////////////////////
-///////          Example Methods
+{}
 
 void OmView3dUi::MousePressed(QMouseEvent * event)
 {
@@ -309,9 +304,7 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 		return;
 	}
 
-	OmSegmentation & current_seg = sdw.GetSegmentation();
-	SpaceCoord picked_voxel = current_seg.DataToSpaceCoord(voxel);
-	mpView3d->mCamera.SetFocus(picked_voxel);
+	mpView3d->mCamera.SetFocus(voxel);
 	mpView3d->updateGL();
 
 	mCPressed = false;
@@ -327,12 +320,9 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 		return;
 	}
 
-	OmSegmentation & current_seg = sdw.GetSegmentation();
-	const SpaceCoord picked_voxel = current_seg.DataToSpaceCoord(voxel);
-
-	mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
-	mViewGroupState->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
-	mViewGroupState->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
+	mViewGroupState->SetViewSliceDepth(YZ_VIEW, voxel.x );
+	mViewGroupState->SetViewSliceDepth(XY_VIEW, voxel.z );
+	mViewGroupState->SetViewSliceDepth(XZ_VIEW, voxel.y );
 	OmEvents::ViewCenterChanged();
 }
 
@@ -366,8 +356,8 @@ SegmentDataWrapper OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent* event,
 
 	//get voxel at point3d
 	OmSegmentation & current_seg = sdw.GetSegmentation();
-	NormCoord norm_coord = current_seg.SpaceToNormCoord(point3d + scaled_norm_vec);
-	DataCoord voxel = current_seg.NormToDataCoord(norm_coord);
+	NormCoord norm_coord = current_seg.Coords().DataToNormCoord(point3d + scaled_norm_vec);
+	DataCoord voxel = current_seg.Coords().NormToDataCoord(norm_coord);
 
 	//return success with voxel
 	rVoxel = voxel;

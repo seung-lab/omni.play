@@ -1,13 +1,16 @@
 #ifndef __GROUPS_TABLE_H__
 #define __GROUPS_TABLE_H__
+
 /* Widget for editing and inspecting groups.
- * 
+ *
  * Author(s): Matt Wimer
  */
+
 #include "common/omCommon.h"
 #include "project/omProject.h"
 #include "system/omGroups.h"
 #include "gui/widgets/omGroupListWidget.h"
+#include "utility/segmentationDataWrapper.hpp"
 
 #include <QTableWidget>
 #include <QGridLayout>
@@ -17,12 +20,11 @@
 
 class OmViewGroupState;
 
-class GroupsTable : public QWidget
-{
-        Q_OBJECT
+class GroupsTable : public QWidget {
+Q_OBJECT
 public:
 	static void Repopulate(OmSegID id = 0);
-        GroupsTable(OmViewGroupState * vgs);
+	GroupsTable(OmViewGroupState * vgs);
 
 	void populateGroupTable(OmGroupID id);
 
@@ -32,15 +34,16 @@ private slots:
 	void doDeleteAction();
 
 private:
-        OmID GetSegmentationID();
+	SegmentationDataWrapper sdw_;
+
 	OmSegID seg_;
 	OmGroupID groupid_;
 
-        void populateGroupsList();
+	void populateGroupsList();
 
 	OmViewGroupState * mViewGroupState;
 
-        QGridLayout * mLayout;
+	QGridLayout * mLayout;
 	OmGroupListWidget * mGroupsList;
 	QTableWidget * mGroupsTable;
 	QMenu * mMenu;

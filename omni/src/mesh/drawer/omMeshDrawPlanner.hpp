@@ -1,11 +1,11 @@
 #ifndef OM_MESH_DRAW_PLANNER_HPP
 #define OM_MESH_DRAW_PLANNER_HPP
 
+#include "chunks/omSegChunk.h"
 #include "mesh/drawer/omFindChunksToDraw.hpp"
 #include "mesh/drawer/omMeshPlan.h"
 #include "mesh/drawer/omMeshSegmentList.hpp"
 #include "segment/omSegmentCache.h"
-#include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
 
 class OmMeshDrawPlanner {
@@ -18,7 +18,7 @@ private:
 	OmMeshSegmentList *const rootSegList_;
 
 	OmSegPtrList rootSegs_;
-	boost::shared_ptr<std::list<OmMipChunkPtr> > chunks_;
+	boost::shared_ptr<std::list<OmSegChunkPtr> > chunks_;
 	boost::shared_ptr<OmMeshPlan> sortedSegments_;
 
 	bool notAllSegmentsFound_;
@@ -30,7 +30,7 @@ public:
 					  const OmBitfield drawOptions,
 					  OmMeshSegmentList* rootSegList)
 		: segmentation_(segmentation)
-		, segCache_(segmentation_->GetSegmentCache())
+		, segCache_(segmentation_->SegmentCache())
 		, vgs_(vgs)
 		, culler_(culler)
 		, drawOptions_(drawOptions)
@@ -39,7 +39,7 @@ public:
 	{}
 
 	boost::shared_ptr<OmMeshPlan>
-	BuildPlan(boost::shared_ptr<std::list<OmMipChunkPtr> > chunks)
+	BuildPlan(boost::shared_ptr<std::list<OmSegChunkPtr> > chunks)
 	{
 		chunks_ = chunks;
 		sortedSegments_ = boost::make_shared<OmMeshPlan>();
@@ -47,7 +47,7 @@ public:
 		return sortedSegments_;
 	}
 
-	boost::shared_ptr<std::list<OmMipChunkPtr> > GetChunkList(){
+	boost::shared_ptr<std::list<OmSegChunkPtr> > GetChunkList(){
 		return chunks_;
 	}
 
@@ -94,7 +94,7 @@ private:
 		}
 	}
 
-	void determineSegmentsToDraw(OmMipChunkPtr chunk)
+	void determineSegmentsToDraw(OmSegChunkPtr chunk)
 	{
 		FOR_EACH(iter, rootSegs_)
 		{
@@ -116,7 +116,7 @@ private:
 		}
 	}
 
-	void addSegmentsToDraw(const OmMipChunkCoord& chunkCoord,
+	void addSegmentsToDraw(const OmChunkCoord& chunkCoord,
 						   const OmSegPtrList& segmentsToDraw)
 	{
 		FOR_EACH(iter, segmentsToDraw){

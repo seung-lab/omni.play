@@ -5,9 +5,9 @@ QHash<OmID, FilterDataWrapper> ChannelDataWrapper::getAllFilterIDsAndNames()
 {
 	QHash<OmID, FilterDataWrapper> filters;
 
-	OmChannel & chann = OmProject::GetChannel(mID);
+	OmChannel & chann = OmProject::Volumes().Channels().GetChannel(mID);
 
-	foreach(OmID filterID, chann.GetValidFilterIds()) {
+	foreach(OmID filterID, chann.FilterManager().GetValidFilterIds()) {
 		FilterDataWrapper filter(mID, filterID);
 		filters[filterID] = filter;
 	}

@@ -14,17 +14,17 @@ public:
 private:
 	OmViewGroupState* mViewGroupState;
 
-	void drawRectangle(SpaceCoord v0,
-			   SpaceCoord v1,
-			   SpaceCoord v2,
-			   SpaceCoord v3);
+	void drawRectangle(DataCoord v0,
+			   DataCoord v1,
+			   DataCoord v2,
+			   DataCoord v3);
 
 	void draw2dBox(const ViewType plane,
 				   const Vector2f& min,
 				   const Vector2f& max,
 				   const float depth);
 
-	void drawLines(SpaceCoord depth);
+	void drawLines(DataCoord depth);
 
 	void drawChannelData(ViewType plane,
 			     std::vector<OmTilePtr>);

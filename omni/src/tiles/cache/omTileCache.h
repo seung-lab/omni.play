@@ -31,7 +31,7 @@ public:
 
 	static void Prefetch(const OmTileCoord& key);
 
-	static void RemoveSpaceCoord(const SpaceCoord & coord);
+	static void RemoveDataCoord(const DataCoord & coord);
 	static void Clear();
 	static void ClearChannel();
 

@@ -4,7 +4,6 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
 #include "gui/widgets/omIntSpinBox.hpp"
-#include "system/omProjectData.h"
 #include "tiles/cache/omTileCache.h"
 #include "utility/image/omFilterImage.hpp"
 

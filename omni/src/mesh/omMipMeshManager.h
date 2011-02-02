@@ -12,13 +12,16 @@ class OmMipMesh;
 class OmMipMeshCoord;
 class OmSegmentation;
 
+#include <QDataStream>
+
 class OmMipMeshManager {
 public:
-	OmMipMeshManager(OmSegmentation* segmentation);
+	OmMipMeshManager(OmSegmentation* segmentation,
+					 const double threshold);
 	~OmMipMeshManager();
 
+	void Create();
 	void Load();
-	void InferMeshMetadata();
 
 	OmSegmentation* GetSegmentation() const{
 		return segmentation_;
@@ -51,6 +54,7 @@ public:
 private:
 	OmSegmentation *const segmentation_;
 	OmMeshCache *const mDataCache;
+	const double threshold_;
 
 	boost::shared_ptr<OmMeshFilePtrCache> filePtrCache_;
 	boost::shared_ptr<OmMeshMetadata> metadata_;
@@ -58,6 +62,11 @@ private:
 	boost::shared_ptr<OmMeshConvertV1toV2> converter_;
 
 	void HandleFetchUpdate();
+
+	void inferMeshMetadata();
+	void loadThreadhold1();
+	void loadThreadholdNon1();
+	void moveOldMetadataFile();
 
 	friend QDataStream &operator<<(QDataStream&, const OmMipMeshManager&);
 	friend QDataStream &operator>>(QDataStream&, OmMipMeshManager&);

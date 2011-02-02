@@ -10,16 +10,17 @@
 #include "utility/omThreadPool.hpp"
 #include "zi/omMutex.h"
 
-class OmMipChunkCoord;
+class OmChunkCoord;
 class OmMeshChunkAllocTableV2;
 class OmMeshChunkDataWriterV2;
 
 class OmMeshFilePtrCache {
 private:
-	OmSegmentation* segmentation_;
+	OmSegmentation *const segmentation_;
+	const double threshold_;
 
-	std::map<OmMipChunkCoord, boost::shared_ptr<OmMeshChunkAllocTableV2> > tables_;
-	std::map<OmMipChunkCoord, boost::shared_ptr<OmMeshChunkDataWriterV2> > data_;
+	std::map<OmChunkCoord, boost::shared_ptr<OmMeshChunkAllocTableV2> > tables_;
+	std::map<OmChunkCoord, boost::shared_ptr<OmMeshChunkDataWriterV2> > data_;
 	zi::rwmutex lock_;
 
 	OmThreadPool threadPool_;
@@ -27,8 +28,9 @@ private:
 	OmRingBuffer<OmMeshChunkAllocTableV2> mappedFiles_;
 
 public:
-	OmMeshFilePtrCache(OmSegmentation* segmentation)
+	OmMeshFilePtrCache(OmSegmentation* segmentation, const double threshold)
 		: segmentation_(segmentation)
+		, threshold_(threshold)
 	{
 		threadPool_.start();
 	}
@@ -49,28 +51,32 @@ public:
 		threadPool_.addTaskBack(job);
 	}
 
+	uint32_t NumTasks() const {
+		return threadPool_.getTaskCount();
+	}
+
 	void RegisterMappedFile(OmMeshChunkAllocTableV2* table){
 		mappedFiles_.Put(table);
 	}
 
-	OmMeshChunkAllocTableV2* GetAllocTable(const OmMipChunkCoord& coord)
+	OmMeshChunkAllocTableV2* GetAllocTable(const OmChunkCoord& coord)
 	{
 		zi::rwmutex::write_guard g(lock_);
 
 		if(!tables_.count(coord)){
 			tables_[coord] =
-				boost::make_shared<OmMeshChunkAllocTableV2>(this, segmentation_, coord);
+				boost::make_shared<OmMeshChunkAllocTableV2>(this, segmentation_, coord, threshold_);
 		}
 		return tables_[coord].get();
 	}
 
-	OmMeshChunkDataWriterV2* GetWriter(const OmMipChunkCoord& coord)
+	OmMeshChunkDataWriterV2* GetWriter(const OmChunkCoord& coord)
 	{
 		zi::rwmutex::write_guard g(lock_);
 
 		if(!data_.count(coord)){
 			data_[coord] =
-				boost::make_shared<OmMeshChunkDataWriterV2>(segmentation_, coord);
+				boost::make_shared<OmMeshChunkDataWriterV2>(segmentation_, coord, threshold_);
 		}
 		return data_[coord].get();
 	}

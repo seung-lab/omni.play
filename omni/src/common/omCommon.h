@@ -52,7 +52,6 @@ typedef vmml::AxisAlignedBoundingBox<float> NormBbox;
 typedef vmml::AxisAlignedBoundingBox<float> SpaceBbox;
 
 
-
 /**
  * "system" types
  */
@@ -149,6 +148,11 @@ namespace om {
 	template <typename T>
 	static std::string NumToStr(const T& num){
 		return boost::lexical_cast<std::string>(num);
+	}
+
+	template <typename T>
+	static QString NumToQStr(const T& num){
+		return QString::number(num);
 	}
 
 	template <typename T>

@@ -1,21 +1,23 @@
-#include "utility/dataWrappers.h"
-#include "gui/mstViewer.hpp"
+#include "project/omSegmentationManager.h"
 #include "common/omDebug.h"
-#include "gui/segmentLists/elementListBox.hpp"
 #include "gui/guiUtils.hpp"
 #include "gui/mainwindow.h"
+#include "gui/mstViewer.hpp"
 #include "gui/myInspectorWidget.h"
+#include "gui/segmentLists/elementListBox.hpp"
 #include "inspectors/chanInspector.h"
 #include "inspectors/filObjectInspector.h"
 #include "inspectors/inspectorProperties.h"
 #include "inspectors/segmentation/segInspector.h"
 #include "project/omProject.h"
+#include "project/omProjectVolumes.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "system/omStateManager.h"
+#include "utility/dataWrappers.h"
+#include "viewGroup/omViewGroupState.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "viewGroup/omViewGroupState.h"
 
 #include <QtGui>
 #include <QMessageBox>
@@ -77,7 +79,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 {
 	dataSrcListWidget->clear();
 
-	foreach(OmID channID, OmProject::GetValidChannelIds()) {
+	foreach(OmID channID, OmProject::Volumes().Channels().GetValidChannelIds()) {
 		DataWrapperContainer dwc = DataWrapperContainer(CHANNEL, channID);
 		ChannelDataWrapper cdw = dwc.getChannelDataWrapper();
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget);
@@ -88,11 +90,11 @@ void MyInspectorWidget::populateDataSrcListWidget()
 		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(cdw.isEnabled()));
 	}
 
-	foreach(OmID segmenID, OmProject::GetValidSegmentationIds()) {
+	foreach(OmID segmenID, OmProject::Volumes().Segmentations().GetValidSegmentationIds()) {
 		DataWrapperContainer dwc = DataWrapperContainer(SEGMENTATION, segmenID);
 		SegmentationDataWrapper sdw = dwc.GetSegmentationDataWrapper();
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget);
-		row->setText(NAME_COL, sdw.getName());
+		row->setText(NAME_COL, sdw.GetName());
 		row->setText(ID_COL, QString("%1").arg(sdw.getID()));
 		row->setText(NOTE_COL, sdw.getNote());
 		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
@@ -168,7 +170,7 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 
 void MyInspectorWidget::addChannelToVolume()
 {
-	OmChannel & added_channel = OmProject::AddChannel();
+	OmChannel & added_channel = OmProject::Volumes().Channels().AddChannel();
 	populateDataSrcListWidget();
 
 	ChannelDataWrapper cdw( added_channel.GetID() );
@@ -177,7 +179,7 @@ void MyInspectorWidget::addChannelToVolume()
 
 void MyInspectorWidget::addSegmentationToVolume()
 {
-	OmSegmentation & added_segmentation = OmProject::AddSegmentation();
+	OmSegmentation & added_segmentation = OmProject::Volumes().Segmentations().AddSegmentation();
 	populateDataSrcListWidget();
 
 	SegmentationDataWrapper sdw( added_segmentation.GetID() );
@@ -229,7 +231,7 @@ ViewType MyInspectorWidget::getViewType(QAction * act)
 void MyInspectorWidget::addFilter()
 {
 	ChannelDataWrapper cdw = channelInspectorWidget->getChannelDataWrapper();
-	OmProject::GetChannel(cdw.getID()).AddFilter();
+	cdw.GetChannel().FilterManager().AddFilter();
 	populateDataSrcListWidget();
 	populateFilterListWidget(cdw);
 }
@@ -467,10 +469,10 @@ void MyInspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
 		ElementListBox::Reset();
 
 		mParentWindow->cleanViewsOnVolumeChange(CHANNEL, sdw.getID());
-		foreach(OmID channelID, OmProject::GetValidChannelIds()) {
-			OmChannel & channel = OmProject::GetChannel(channelID);
-			foreach(OmID filterID, channel.GetValidFilterIds()) {
-				OmFilter2d &filter = channel.GetFilter(filterID);
+		foreach(OmID channelID, OmProject::Volumes().Channels().GetValidChannelIds()) {
+			OmChannel & channel = OmProject::Volumes().Channels().GetChannel(channelID);
+			foreach(OmID filterID, channel.FilterManager().GetValidFilterIds()) {
+				OmFilter2d &filter = channel.FilterManager().GetFilter(filterID);
 				if (filter.GetSegmentationWrapper() == sdw){
 					mParentWindow->cleanViewsOnVolumeChange(CHANNEL,channelID);
 				}
@@ -480,7 +482,7 @@ void MyInspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
 
 		inspectorProperties->closeDialog();
 
-		OmProject::RemoveSegmentation(sdw.getID());
+		OmProject::Volumes().Segmentations().RemoveSegmentation(sdw.getID());
 		populateDataSrcListWidget();
 	}
 }
@@ -498,7 +500,7 @@ void MyInspectorWidget::deleteChannel(ChannelDataWrapper cdw)
 		inspectorProperties->closeDialog();
 		ElementListBox::Reset();
 		mParentWindow->cleanViewsOnVolumeChange(CHANNEL, cdw.getID());
-		OmProject::RemoveChannel(cdw.getID());
+		OmProject::Volumes().Channels().RemoveChannel(cdw.getID());
 		populateDataSrcListWidget();
 	}
 }

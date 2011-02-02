@@ -37,7 +37,7 @@ public:
 		: seg_(boost::make_shared<OmSegmentation>(segmentationID++))
 		, s1_(NULL), s2_(NULL), s3_(NULL), s4_(NULL), s5_(NULL)
 		, s6_(NULL), s7_(NULL), s8_(NULL), s9_(NULL), s10_(NULL)
-		, cache_(seg_->GetSegmentCache())
+		, cache_(seg_->SegmentCache())
 	{
 		segs_.resize(MaxSegID_+1, NULL);
 		setupAndTestSegments();

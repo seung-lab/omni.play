@@ -31,8 +31,8 @@ void OmTileCache::doGet(OmTilePtr& tile,
 	instance().impl_->doGet(tile, key, blocking);
 }
 
-void OmTileCache::RemoveSpaceCoord(const SpaceCoord & coord){
-	instance().impl_->RemoveSpaceCoord(coord);
+void OmTileCache::RemoveDataCoord(const DataCoord & coord){
+	instance().impl_->RemoveDataCoord(coord);
 }
 
 void OmTileCache::RegisterDrawer(OmTileDrawer* d){

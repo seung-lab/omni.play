@@ -7,20 +7,20 @@ void OmThreadPoolManager::StopAll()
 
 	FOR_EACH(iter, instance().pools_){
 		OmThreadPool* pool = *iter;
-		pool->stop();
+		if(pool->wasStarted()){
+			pool->stop();
+		}
 	}
 }
 
 void OmThreadPoolManager::Add(OmThreadPool* p)
 {
 	zi::guard g(instance().lock_);
-
 	instance().pools_.insert(p);
 }
 
 void OmThreadPoolManager::Remove(OmThreadPool* p)
 {
 	zi::guard g(instance().lock_);
-
 	instance().pools_.erase(p);
 }

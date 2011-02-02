@@ -79,8 +79,8 @@ public:
 		}
 	}
 
-	void RemoveSpaceCoord(const SpaceCoord & coord){
-		cacheSegmentation_->RemoveSpaceCoord(coord);
+	void RemoveDataCoord(const DataCoord & coord){
+		cacheSegmentation_->RemoveDataCoord(coord);
 	}
 
 	bool AreDrawersActive()
