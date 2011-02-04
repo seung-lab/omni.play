@@ -2,8 +2,8 @@
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
 #include "gui/toolbars/toolbarManager.h"
-#include "system/omStateManager.h"
 #include "viewGroup/omViewGroupState.h"
+#include "system/omAppState.hpp"
 
 ToolBarManager::ToolBarManager( MainWindow * mw )
 	: QWidget(mw)
@@ -11,7 +11,7 @@ ToolBarManager::ToolBarManager( MainWindow * mw )
 	, mainToolbar(new MainToolbar(mw))
 	, dendToolBar(NULL)
 {
-	OmStateManager::setDendToolBar( dendToolBar );
+	OmAppState::SetDendToolBar(dendToolBar);
 }
 
 void ToolBarManager::setupToolbarInitially()

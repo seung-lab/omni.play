@@ -1,59 +1,52 @@
 #ifndef OM_POINTS_IN_CIRCLE_HPP
 #define OM_POINTS_IN_CIRCLE_HPP
 
-#include "view2d/details/omMidpointCircleAlgorithm.hpp"
+#include "common/om.hpp"
+#include "zi/omMutex.h"
 
 class OmPointsInCircle {
 private:
-	boost::unordered_map<int, std::vector<Om2dPoint> > pointLists_;
+	std::map<int, std::vector<om::point2d> > ptsInCircle_;
 
 public:
-	const std::vector<Om2dPoint>& GetPointsInCircleCached(const int r)
+	const std::vector<om::point2d>& GetPtsInCircle(const int brushDia)
 	{
-		if(!pointLists_.count(r)){
-			return pointLists_[r] = getPoints(r);
-		}
-		return pointLists_[r];
-	}
+		static zi::mutex lock;
+		zi::guard g(lock);
 
-	std::set<Om2dPoint> GetPointsInCircleNonCached(const int r)
-	{
-		return getPointsSet(r);
+		if(!ptsInCircle_.count(brushDia)){
+			return ptsInCircle_[brushDia] =	makePtrListInCircle(brushDia);
+		}
+		return ptsInCircle_[brushDia];
 	}
 
 private:
-
-	// fill using horizontal scan lines
-	std::set<Om2dPoint> getPointsSet(const int r)
+	static std::vector<om::point2d> makePtrListInCircle(const int brushDia)
 	{
-		OmMidpointCircleAlgorithm mca;
-		const std::set<Om2dPoint> pointsOnCircumfrence =
-			mca.GetPointsOnCircumfrence(r);
+        const int radius   = brushDia / 2;
+        const int sqRadius = radius * radius;
 
-		std::set<Om2dPoint> points;
+		std::vector<om::point2d> pts;
+		pts.reserve(brushDia * brushDia);
 
-		FOR_EACH(p, pointsOnCircumfrence){
-			if(p->x > r){
-				break;
-			}
+        for(int i = 0; i < brushDia; ++i)
+		{
+			const int x = i - radius;
 
-			for(int i = p->x; i <= 2*r-p->x; ++i){
-				Om2dPoint fp = { i, p->y };
-				points.insert(fp);
-			}
-		}
+            for(int j = 0; j < brushDia; ++j)
+            {
+                const int y = j - radius;
 
-		return points;
+                if( x * x + y * y <= sqRadius )
+                {
+					om::point2d p = {x,y};
+					pts.push_back(p);
+                }
+            }
+        }
+
+		return pts;
 	}
-
-	std::vector<Om2dPoint> getPoints(const int r)
-	{
-		std::set<Om2dPoint> points = getPointsSet(r);
-		std::vector<Om2dPoint> ret(points.size());
-		std::copy(points.begin(), points.end(), ret.begin());
-		return ret;
-	}
-
 };
 
 #endif

@@ -315,11 +315,16 @@ private:
 		const int r = 16;
 
 		OmPointsInCircle pc;
-		std::set<Om2dPoint> points = pc.GetPointsInCircleNonCached(r);
+		const std::vector<om::point2d>& pointsVec = pc.GetPtsInCircle(r);
+
+		std::set<om::point2d> points;
+		FOR_EACH(iter, pointsVec){
+			points.insert(*iter);
+		}
 
 		for(int x = 0; x < 33; ++x){
 			for(int y = 0; y < 33; ++y){
-				Om2dPoint fp = { x, y };
+				om::point2d fp = { x, y };
 				if(BrushTool32[x][y]){
 					verify(points.count(fp));
 				} else {
@@ -332,7 +337,7 @@ private:
 		if(0){
 			for( int y = 2*r; y >= 0; --y){
 				for(int x =0; x <= 2*r; ++x){
-					Om2dPoint fp = { x, y };
+					om::point2d fp = { x, y };
 					if(points.count(fp)){
 						printf("1,");
 					}else{

@@ -13,11 +13,11 @@
 #include "project/omProjectVolumes.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
-#include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
+#include "system/omAppState.hpp"
 
 #include <QtGui>
 #include <QMessageBox>
@@ -25,7 +25,7 @@
 Q_DECLARE_METATYPE(DataWrapperContainer);
 Q_DECLARE_METATYPE(FilterDataWrapper);
 
-MyInspectorWidget::MyInspectorWidget(MainWindow * parent, OmViewGroupState * vgs)
+MyInspectorWidget::MyInspectorWidget(MainWindow* parent, OmViewGroupState* vgs)
 	: QWidget(parent), mViewGroupState(vgs)
 {
 
@@ -47,13 +47,13 @@ MyInspectorWidget::MyInspectorWidget(MainWindow * parent, OmViewGroupState * vgs
 
 	QMetaObject::connectSlotsByName(this);
 
-	OmStateManager::setInspector( this );
+	OmAppState::SetInspector( this );
 }
 
 MyInspectorWidget::~MyInspectorWidget()
 {
 	ElementListBox::Delete();
-	OmStateManager::setInspector( NULL );
+	OmAppState::SetInspector(NULL);
 }
 
 QTreeWidget *MyInspectorWidget::setupFilterList()
@@ -69,7 +69,7 @@ QTreeWidget *MyInspectorWidget::setupFilterList()
 	return filterListWidget;
 }
 
-void MyInspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
+void MyInspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem* row, Qt::CheckState checkState)
 {
 	row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 	row->setCheckState(ENABLED_COL, checkState);
@@ -157,7 +157,7 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 											 QString("Segmentation %1 Inspector").arg(sdw.getID()) );
 }
 
-void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current)
+void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem* current)
 {
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	FilterDataWrapper fdw = result.value < FilterDataWrapper > ();
@@ -188,7 +188,7 @@ void MyInspectorWidget::addSegmentationToVolume()
 	addSegmentationToSplitter( sdw);
 }
 
-void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction * act)
+void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction* act)
 {
 	if (act == addChannelAct) {
 		addChannelToVolume();
@@ -199,14 +199,14 @@ void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction * act)
 	}
 }
 
-void MyInspectorWidget::leftClickOnFilterItem(QTreeWidgetItem * current)
+void MyInspectorWidget::leftClickOnFilterItem(QTreeWidgetItem* current)
 {
 	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
 		addToSplitterDataSource(current );
 	}
 }
 
-void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem * current)
+void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem* current)
 {
 	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
 		doShowDataSrcContextMenu( current );
@@ -215,7 +215,7 @@ void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem * current)
 	}
 }
 
-ViewType MyInspectorWidget::getViewType(QAction * act)
+ViewType MyInspectorWidget::getViewType(QAction* act)
 {
 	if (act == xyAct) {
 		return XY_VIEW;
@@ -303,7 +303,7 @@ void MyInspectorWidget::showDataSrcContextMenu(const QPoint & menuPoint)
 	doShowDataSrcContextMenu( dataSrcItem );
 }
 
-QMenu *MyInspectorWidget::makeDataSrcContextMenu(QTreeWidget * parent)
+QMenu *MyInspectorWidget::makeDataSrcContextMenu(QTreeWidget* parent)
 {
 	addChannelAct = new QAction(tr("Add Channel"), parent);
 
@@ -347,7 +347,7 @@ void MyInspectorWidget::showSegmentationContextMenu()
 	contextMenu->exec(QCursor::pos());
 }
 
-QMenu *MyInspectorWidget::makeContextMenuBase(QTreeWidget * parent)
+QMenu *MyInspectorWidget::makeContextMenuBase(QTreeWidget* parent)
 {
 	xyAct = new QAction(tr("&View XY"), parent);
 	xyAct->setStatusTip(tr("Opens the XY view"));
@@ -385,7 +385,7 @@ QMenu* MyInspectorWidget::makeSegmentationContextMenu(QTreeWidget* parent)
 	return menu;
 }
 
-void MyInspectorWidget::selectChannelView(QAction * act)
+void MyInspectorWidget::selectChannelView(QAction* act)
 {
 	ChannelDataWrapper cdw = getCurrentlySelectedChannel();
 	if( propAct == act ){
@@ -397,7 +397,7 @@ void MyInspectorWidget::selectChannelView(QAction * act)
 	}
 }
 
-void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current)
+void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem* current)
 {
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
@@ -428,7 +428,7 @@ SegmentationDataWrapper MyInspectorWidget::getCurrentlySelectedSegmentation()
 	return dwc.GetSegmentationDataWrapper();
 }
 
-void MyInspectorWidget::selectSegmentationView(QAction * act)
+void MyInspectorWidget::selectSegmentationView(QAction* act)
 {
 	SegmentationDataWrapper sdw = getCurrentlySelectedSegmentation();
 	updateSegmentListBox( sdw );

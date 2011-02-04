@@ -51,3 +51,41 @@ std::ostream& operator<<(std::ostream &out, const OmSegIDsSet& in)
 	out << "[" << joined << "]";
 	return out;
 }
+
+std::ostream& operator<<(std::ostream &out, const OmToolMode& tool)
+{
+	switch(tool){
+	case SELECT_MODE:
+		out << "SELECT_MODE";
+		break;
+	case PAN_MODE:
+		out << "PAN_MODE";
+		break;
+	case CROSSHAIR_MODE:
+		out << "CROSSHAIR_MODE";
+		break;
+	case ZOOM_MODE:
+		out << "ZOOM_MODE";
+		break;
+	case ADD_VOXEL_MODE:
+		out << "ADD_VOXEL_MODE";
+		break;
+	case SUBTRACT_VOXEL_MODE:
+		out << "SUBTRACT_VOXEL_MODE";
+		break;
+	case FILL_MODE:
+		out << "FILL_MODE";
+		break;
+	case SPLIT_MODE:
+		out << "SPLIT_MODE";
+		break;
+	case CUT_MODE:
+		out << "CUT_MODE";
+		break;
+	default:
+		out << "unknown";
+		break;
+	};
+
+	return out;
+}

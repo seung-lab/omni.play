@@ -13,6 +13,7 @@
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
+#include "system/omAppState.hpp"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
 
@@ -52,7 +53,7 @@ MainWindow::MainWindow()
 	mToolToolBar = addToolBar("Tools");
 	updateReadOnlyRelatedWidgets();
 
-	OmStateManager::setMainWindow(this);
+	OmAppState::SetMainWindow(this);
 }
 
 MainWindow::~MainWindow()

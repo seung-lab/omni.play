@@ -6,68 +6,75 @@
 
 class OmDynamicForestCache {
 private:
-	zi::DynamicForestPool<OmSegID> *const graph_;
-	boost::unordered_map<OmSegID, OmSegID> cache_;
+	boost::scoped_ptr<zi::DynamicForestPool<OmSegID> > graph_;
+	std::vector<OmSegID> cache_;
 
 	bool batchMode_;
 
-	inline void clearCache()
+	inline void zeroFillCache(){
+		std::fill(cache_.begin(), cache_.end(), 0);
+	}
+
+	inline void clearCacheIfNotBatch()
 	{
 		if(batchMode_){
 			return;
 		}
 
-		cache_.clear();
+		zeroFillCache();
 	}
 
 public:
 	OmDynamicForestCache(const size_t size)
 		: graph_(new zi::DynamicForestPool<OmSegID>(size))
 		, batchMode_(false)
-	{}
-
-	~OmDynamicForestCache(){
-		delete graph_;
+	{
+		cache_.resize(size, 0);
 	}
 
-	void SetBatch(const bool batchModeOn){
+	~OmDynamicForestCache()
+	{}
+
+	inline void SetBatch(const bool batchModeOn){
 		batchMode_ = batchModeOn;
 	}
 
-	void ClearCache(){
-		cache_.clear();
+	inline void ClearCache(){
+		zeroFillCache();
 	}
 
-	void Cut(const OmSegID segID)
+	inline void Cut(const OmSegID segID)
 	{
-		clearCache();
+		clearCacheIfNotBatch();
 		graph_->cut(segID);
 	}
 
-	OmSegID Root(const OmSegID segID)
+	inline OmSegID Root(const OmSegID segID)
 	{
 		if(batchMode_){
 			return graph_->root(segID);
 		}
 
-		if(!cache_.count(segID)){
+		if(!cache_[segID]){
 			return cache_[segID] = graph_->root(segID);
 		}
 		return cache_[segID];
 	}
 
-	void Join(const OmSegID childRootID, const OmSegID parentRootID)
+	inline void Join(const OmSegID childRootID, const OmSegID parentRootID)
 	{
-		clearCache();
+		clearCacheIfNotBatch();
 		graph_->join(childRootID, parentRootID);
 	}
 
-	size_t Size() const {
+	inline size_t Size() const {
 		return graph_->size();
 	}
 
-	void Resize(const size_t size){
+	inline void Resize(const size_t size)
+	{
 		graph_->resize(size);
+		cache_.resize(size, 0);
 	}
 };
 

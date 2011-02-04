@@ -7,95 +7,81 @@
 
 #include <QHash>
 
+class OmSegmentSelection;
 class OmSegmentCache;
 class OmSegmentation;
 class OmPagingPtrStore;
 
 class OmSegmentCacheImplLowLevel {
 public:
-	OmSegmentCacheImplLowLevel( OmSegmentation *);
-	virtual ~OmSegmentCacheImplLowLevel();
+    OmSegmentCacheImplLowLevel( OmSegmentation *);
+    virtual ~OmSegmentCacheImplLowLevel();
 
-	void growGraphIfNeeded(OmSegment * newSeg);
+    void growGraphIfNeeded(OmSegment * newSeg);
 
-	OmSegment* GetSegment(const OmSegID value );
+    OmSegment* GetSegment(const OmSegID value );
 
-	OmSegID GetNumSegments();
-	OmSegID GetNumTopSegments();
+    OmSegID GetNumSegments();
+    OmSegID GetNumTopSegments();
 
-	OmSegment * findRoot( OmSegment * segment );
-	OmSegment * findRoot(const OmSegID segID);
-	OmSegID findRootID( const OmSegID segID );
-	OmSegID findRootID(OmSegment* segment);
+    OmSegment * findRoot( OmSegment * segment );
+    OmSegment * findRoot(const OmSegID segID);
+    OmSegID findRootID( const OmSegID segID );
+    OmSegID findRootID(OmSegment* segment);
 
-	bool isSegmentEnabled( OmSegID segID );
-	void setSegmentEnabled( OmSegID segID, bool isEnabled );
-	void SetAllEnabled(bool);
-	OmSegIDsSet& GetEnabledSegmentIdsRef();
-	bool AreSegmentsEnabled();
-	uint32_t numberOfEnabledSegments();
+    bool isSegmentEnabled( OmSegID segID );
+    void setSegmentEnabled( OmSegID segID, bool isEnabled );
+    void SetAllEnabled(bool);
+    OmSegIDsSet& GetEnabledSegmentIdsRef();
+    bool AreSegmentsEnabled();
+    uint32_t numberOfEnabledSegments();
 
-	bool isSegmentSelected( OmSegID segID );
-	bool isSegmentSelected( OmSegment * seg );
-	void SetAllSelected(bool);
-	const OmSegIDsSet& GetSelectedSegmentIds(){
-        return mSelectedSet;
-	}
+    QString getSegmentName( OmSegID segID );
+    void setSegmentName( OmSegID segID, QString name );
 
-	quint32 numberOfSelectedSegments();
-	bool AreSegmentsSelected();
-	void setSegmentSelected( OmSegID segID, const bool, const bool  );
-	void UpdateSegmentSelection( const OmSegIDsSet & ids, const bool);
-	void AddToSegmentSelection(const OmSegIDsSet& idsToSelect);
-	void RemvoeFromSegmentSelection(const OmSegIDsSet& idsToSelect);
+    QString getSegmentNote( OmSegID segID );
+    void setSegmentNote( OmSegID segID, QString note );
 
-	QString getSegmentName( OmSegID segID );
-	void setSegmentName( OmSegID segID, QString name );
+    OmSegmentation* GetSegmentation() { return segmentation_; }
+    OmSegID GetSegmentationID();
 
-	QString getSegmentNote( OmSegID segID );
-	void setSegmentNote( OmSegID segID, QString note );
+    void turnBatchModeOn(const bool batchMode);
 
-	OmSegmentation* GetSegmentation() { return segmentation_; }
-	OmSegID GetSegmentationID();
+    quint32 getPageSize();
+    uint32_t getMaxValue();
 
-	void turnBatchModeOn(const bool batchMode);
+    OmSegmentCache* SegmentCache();
 
-	quint32 getPageSize();
-	uint32_t getMaxValue();
-
-	OmSegmentCache* SegmentCache();
+    inline OmSegmentSelection& SegmentSelection(){
+        return *segmentSelection_;
+    }
 
 protected:
-	OmSegmentation *const segmentation_;
-	boost::shared_ptr<OmPagingPtrStore> mSegments;
+    OmSegmentation *const segmentation_;
+    boost::shared_ptr<OmPagingPtrStore> mSegments;
 
-	OmSegID mMaxValue;
-	OmSegID getNextValue();
+    OmSegID mMaxValue;
+    OmSegID getNextValue();
 
-	quint32 mNumSegs;
+    uint32_t mNumSegs;
 
-	bool mAllSelected;
-	bool mAllEnabled;
+    boost::scoped_ptr<OmSegmentSelection> segmentSelection_;
 
-	OmSegIDsSet mEnabledSet;
-	OmSegIDsSet mSelectedSet;
+    QHash< OmID, QString > segmentCustomNames;
+    QHash< OmID, QString > segmentNotes;
 
-	QHash< OmID, QString > segmentCustomNames;
-	QHash< OmID, QString > segmentNotes;
+    void touchFreshness();
 
-	void doSelectedSetInsert( const OmSegID segID, const bool);
-	void doSelectedSetRemove( const OmSegID segID);
+    bool mAllEnabled;
+    OmSegIDsSet mEnabledSet;
 
-	void clearCaches();
+    OmSegmentGraph mSegmentGraph;
 
-	OmSegmentGraph mSegmentGraph;
-
-	void addToRecentMap( const OmSegID segID);
+    void addToRecentMap( const OmSegID segID);
 
 private:
-	void setSegmentSelectedBatch( OmSegID segID, const bool, const bool );
-
-	friend class SegmentTests;
+    friend class OmSegmentSelection;
+    friend class SegmentTests;
 };
 
 #endif

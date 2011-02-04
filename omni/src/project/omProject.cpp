@@ -88,7 +88,6 @@ void OmProject::Close()
 	OmEventManager::Delete();
 	OmGarbage::Delete();
 	OmPreferences::Delete();
-	OmStateManager::Delete();
 	//OmLocalPreferences
 
 	//close project data

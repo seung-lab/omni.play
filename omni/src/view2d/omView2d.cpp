@@ -1,3 +1,4 @@
+#include "system/omAppState.hpp"
 #include "view2d/omView2dEvents.hpp"
 #include "view2d/omMouseEvents.hpp"
 #include "view2d/omView2dZoom.hpp"
@@ -67,14 +68,12 @@ void OmView2d::paintEvent(QPaintEvent *){
 	screenPainter_->FullRedraw2d();
 }
 
-void OmView2d::myUpdate()
-{
-	LineDrawer()->MyUpdate();
+void OmView2d::myUpdate(){
 	update();
 }
 
 QSize OmView2d::sizeHint () const {
-	return OmStateManager::getViewBoxSizeHint();
+	return OmAppState::GetViewBoxSizeHint();
 }
 
 void OmView2d::mousePressEvent(QMouseEvent * event){

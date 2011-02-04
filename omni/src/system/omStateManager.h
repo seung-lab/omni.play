@@ -2,14 +2,15 @@
 #define OM_STATE_MANAGER_H
 
 /*
- *	Manages data structures that are shared between various parts of the system.  Making centralized
- *	changes in the StateManager will send events that cause the other interested systems to be
- *	notified and synchronized.
+ *	Manages data structures that are shared between various parts of the system.
  *
  *	Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
 #include "common/omCommon.h"
+#include "zi/omUtility.h"
+#include "project/omProject.h"
+#include "project/omProjectGlobals.h"
 
 #include <QSize>
 #include <QUndoStack>
@@ -19,16 +20,15 @@
 class MyInspectorWidget;
 class MainWindow;
 class DendToolBar;
+class OmStateManagerImpl;
 
-class OmStateManager : boost::noncopyable {
+class OmStateManager : private om::singletonBase<OmStateManager> {
+private:
+	inline static OmStateManagerImpl& impl(){
+		return OmProject::Globals().StateManagerImpl();
+	}
 
 public:
-
-	static OmStateManager* Instance();
-	static void Delete();
-
-	static void UpdateStatusBar( const QString & msg );
-
 	//tool mode
 	static OmToolMode GetToolMode();
 	static void SetToolModeAndSendEvent(const OmToolMode mode);
@@ -36,55 +36,18 @@ public:
 
 	//undostack
 	static QUndoStack* GetUndoStack();
-	static void PushUndoCommand(QUndoCommand *);
+	static void PushUndoCommand(QUndoCommand*);
 	static void ClearUndoStack();
 	static void UndoUndoCommand();
 
 	//view3d context
-	static void CreatePrimaryView3dWidget();
 	static const QGLWidget* GetPrimaryView3dWidget();
-
-	//view2d context
-	static QGLContext* GetSharedView2dContext(const QGLContext *pContext);
-
-	static void setOmniExecutableAbsolutePath( QString abs_path );
-	static QString getOmniExecutableAbsolutePath();
-
-	static QString getPID();
-	static QString getHostname();
-
-	static void setInspector( MyInspectorWidget * miw );
-	static void setMainWindow( MainWindow * mw );
-	static void setDendToolBar( DendToolBar * dtb);
-
-	static QSize getViewBoxSizeHint();
 
 private:
 	OmStateManager();
 	~OmStateManager();
 
-	//singleton
-	static OmStateManager* mspInstance;
-
-	//project
-	std::string mProjectFileName;
-	std::string mProjectDirectoryPath;
-
-	//tool mode
-	OmToolMode mCurToolMode;
-	OmToolMode mPrevToolMode;
-
-	//undostack
-	QUndoStack *mpUndoStack;
-
-	//view3d context
-	QGLWidget *mpPrimaryView3dWidget;
-
-	QString omniExecPathAbsolute;
-
-	MyInspectorWidget * inspectorWidget;
-	MainWindow * mainWindow;
-	DendToolBar * dendToolBar;
+	friend class zi::singleton<OmStateManager>;
 };
 
 #endif

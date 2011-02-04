@@ -1,27 +1,52 @@
 #ifndef OM_BRUSH_SIZE_HPP
 #define OM_BRUSH_SIZE_HPP
 
-class OmBrushSize{
-public:
-	OmBrushSize()
-		: diameter_(8) {}
+#include "view2d/omPointsInCircle.hpp"
 
-	int Diameter(){ return diameter_; }
+class OmBrushSize{
+private:
+	static const int defaultBrushDia = 8;
+
+	OmPointsInCircle circlePts_;
+	std::vector<om::point2d> ptsInBrush_;
+
+public:
+	OmBrushSize(){
+		setDiameter(defaultBrushDia);
+	}
+
+	inline int Diameter() const {
+		return diameter_;
+	}
 
 	void SetDiameter(const int size){
-		diameter_ = size;
+		setDiameter(size);
 	}
 
 	void IncreaseSize(){
-		diameter_ = getNextSizeUp();
+		setDiameter(getNextSizeUp());
 	}
 
 	void DecreaseSize(){
-		diameter_ = getNextSizeDown();
+		setDiameter(getNextSizeDown());
+	}
+
+	const std::vector<om::point2d>& GetPtsInCircle() const {
+		return ptsInBrush_;
 	}
 
 private:
 	int diameter_;
+
+	void setDiameter(const int diameter)
+	{
+		diameter_ = diameter;
+		setPtsInCircle();
+	}
+
+	void setPtsInCircle(){
+		ptsInBrush_ = circlePts_.GetPtsInCircle(diameter_);
+	}
 
 	int getNextSizeUp(){
 		switch(diameter_){

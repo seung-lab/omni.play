@@ -5,11 +5,13 @@
 
 class OmRandColorFile;
 class OmView2dManagerImpl;
+class OmStateManagerImpl;
 
 class OmProjectGlobals {
 private:
 	boost::scoped_ptr<OmRandColorFile> randColorFile_;
 	boost::scoped_ptr<OmView2dManagerImpl> v2dManagerImpl_;
+	boost::scoped_ptr<OmStateManagerImpl> stateMan_;
 
 public:
 	OmProjectGlobals();
@@ -21,6 +23,10 @@ public:
 
 	inline OmView2dManagerImpl& View2dManagerImpl(){
 		return *v2dManagerImpl_;
+	}
+
+	inline OmStateManagerImpl& StateManagerImpl(){
+		return *stateMan_;
 	}
 };
 

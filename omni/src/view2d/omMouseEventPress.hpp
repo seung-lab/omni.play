@@ -10,239 +10,258 @@
 
 class OmMouseEventPress{
 private:
-	OmView2d *const v2d_;
-	OmView2dState *const state_;
+    OmView2d *const v2d_;
+    OmView2dState *const state_;
 
-	OmSegmentContextMenu mSegmentContextMenu;
+    OmSegmentContextMenu mSegmentContextMenu;
+
+    bool controlKey_;
+    bool altKey_;
+    bool shiftKey_;
+    bool leftMouseButton_;
+    bool rightMouseButton_;
+    OmToolMode tool_;
+    QMouseEvent* event_;
+    DataCoord dataClickPoint_;
+
+    friend class OmMouseEventState;
 
 public:
-	OmMouseEventPress(OmView2d* v2d, OmView2dState* state)
-		: v2d_(v2d)
-		, state_(state)
-	{}
+    OmMouseEventPress(OmView2d* v2d, OmView2dState* state)
+        : v2d_(v2d)
+        , state_(state)
+    {}
 
-	void Press(QMouseEvent* event)
-	{
-		state_->SetClickPoint(event->x(), event->y());
+    void Press(QMouseEvent* event)
+    {
+        setState(event);
 
-		if( SPLIT_MODE == OmStateManager::GetToolMode()){
-			if (event->button() == Qt::LeftButton) {
-				doFindAndSplitSegment( event );
-				v2d_->doRedraw2d();
-				return;
-			}
-		} else if(CUT_MODE == OmStateManager::GetToolMode()) {
-			if (event->button() == Qt::LeftButton) {
-				doFindAndCutSegment( event );
-				v2d_->doRedraw2d();
-				return;
-			}
-		}
+        state_->SetClickPoint(event->x(), event->y());
 
-		if( event->button() == Qt::LeftButton) {
-			const bool crosshair = event->modifiers() & Qt::ControlModifier;
-			if( crosshair ){
-				mouseSetCrosshair(event);
-			} else {
-				mouseLeftButton(event);
-			}
-		} else if (event->button() == Qt::RightButton) {
-			if(event->modifiers() & Qt::ControlModifier) {
-				mouseSelectSegment(event);
-			} else {
-				mouseShowSegmentContextMenu(event);
-			}
-		}
+        if(leftMouseButton_){
+            if(SPLIT_MODE == tool_){
+                doFindAndSplitSegment();
+                v2d_->doRedraw2d();
+                return;
+            }
 
-		state_->SetCameraMoving(true);
-	}
+            if(CUT_MODE == tool_){
+                doFindAndCutSegment();
+                v2d_->doRedraw2d();
+                return;
+            }
+
+            const bool doCrosshair = controlKey_ && SELECT_MODE != tool_;
+
+            if(doCrosshair){
+                mouseSetCrosshair();
+
+            } else {
+                mouseLeftButton();
+            }
+
+        } else if(rightMouseButton_){
+            if(controlKey_){
+                mouseSelectSegment();
+
+            } else {
+                mouseShowSegmentContextMenu();
+            }
+        }
+
+        state_->SetCameraMoving(true);
+    }
 
 private:
-	void doFindAndSplitSegment(QMouseEvent* event)
-	{
-		boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
+    void setState(QMouseEvent* event){
+        OmMouseEventState::SetState(this, state_, event);
+    }
 
-		if(!sdw) {
-			return;
-		}
-		const DataCoord dataClickPoint =
-			state_->ComputeMouseClickPointDataCoord(event);
+    void doFindAndSplitSegment()
+    {
+        boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
 
-		OmActions::FindAndSplitSegments(*sdw,
-										state_->getViewGroupState(),
-										dataClickPoint);
-	}
+        if(!sdw) {
+            return;
+        }
 
-	void doFindAndCutSegment(QMouseEvent* event)
-	{
-		boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
+        OmActions::FindAndSplitSegments(*sdw,
+                                        state_->getViewGroupState(),
+                                        dataClickPoint_);
+    }
 
-		if(!sdw) {
-			return;
-		}
-		OmActions::FindAndCutSegments(*sdw, state_->getViewGroupState());
-	}
+    void doFindAndCutSegment()
+    {
+        boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
 
-	void mouseSetCrosshair(QMouseEvent * event)
-	{
-		v2d_->doRedraw2d();
-		v2d_->SetDepth(event);
-		state_->getViewGroupState()->setTool(PAN_MODE);
-	}
+        if(!sdw) {
+            return;
+        }
 
-	void mouseLeftButton(QMouseEvent * event)
-	{
-		bool doselection = false;
-		bool dosubtract = false;
+        OmActions::FindAndCutSegments(*sdw, state_->getViewGroupState());
+    }
 
-		OmSegID data_value;
+    void mouseSetCrosshair()
+    {
+        v2d_->doRedraw2d();
+        v2d_->SetDepth(event_);
+        state_->getViewGroupState()->setTool(PAN_MODE);
+    }
 
-		switch (OmStateManager::GetToolMode()) {
-		case SELECT_MODE:
-			state_->setScribbling(true);
-			doselection = true;
-			break;
-		case PAN_MODE:
-			state_->SetClickPoint(event->x(), event->y());
-			return;
-		case CROSSHAIR_MODE:
-			mouseSetCrosshair(event);
-			return;
-		case ZOOM_MODE:
-			v2d_->Zoom()->MouseLeftButtonClick(event);
-			OmEvents::Redraw3d();
-			return;
-		case ADD_VOXEL_MODE:
-			state_->setScribbling(true);
-			break;
-		case SUBTRACT_VOXEL_MODE:
-			state_->setScribbling(true);
-			dosubtract = true;
-			break;
-		default:
-			return;
-		}
+    void mouseLeftButton()
+    {
+        bool doselection = false;
 
-		const DataCoord dataClickPoint =
-			state_->ComputeMouseClickPointDataCoord(event);
+        switch(tool_){
+        case SELECT_MODE:
+            if(controlKey_){
+                return;
+            } else {
+                state_->setScribbling(true);
+                doselection = true;
+            }
+            break;
+        case PAN_MODE:
+            return;
+        case CROSSHAIR_MODE:
+            mouseSetCrosshair();
+            return;
+        case ZOOM_MODE:
+            v2d_->Zoom()->MouseLeftButtonClick(event_);
+            OmEvents::Redraw3d();
+            return;
+        case ADD_VOXEL_MODE:
+            state_->setScribbling(true);
+            break;
+        case SUBTRACT_VOXEL_MODE:
+            state_->setScribbling(true);
+            break;
+        default:
+            return;
+        }
 
-		if(doselection){
-			OmBrushSelect::SelectByClick(state_, dataClickPoint);
+        if(doselection){
+            if(altKey_){
+                OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::SUBTRACT);
+            } else {
+                OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::ADD);
+            }
 
-		} else {
-			SegmentDataWrapper sdw = OmSegmentSelected::Get();
-			if ( sdw.IsSegmentValid() ) {
-				//run action
-				if (dosubtract) {
-					data_value = 0;
-				} else {
-					data_value = sdw.getID();
-				}
-				v2d_->LineDrawer()->BrushToolApplyPaint(sdw.GetSegmentationID(),
-														dataClickPoint,
-														data_value);
-			}
-		}
+        } else {
+            paint();
+        }
 
-		state_->SetLastDataPoint(dataClickPoint);
+        state_->SetLastDataPoint(dataClickPoint_);
 
-		v2d_->myUpdate();
-	}
+        v2d_->myUpdate();
+    }
 
-	void mouseSelectSegment(QMouseEvent * event)
-	{
-		const bool augment_selection = event->modifiers() & Qt::ShiftModifier;
+    void paint()
+    {
+        SegmentDataWrapper sdw = OmSegmentSelected::Get();
+        if(!sdw.IsSegmentValid()){
+            return;
+        }
 
-		boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
-		if(!sdw){
-			return;
-		}
+        OmSegID segmentValueToPaint = 0;
+        if(ADD_VOXEL_MODE == tool_){
+            segmentValueToPaint = sdw.getID();
+        }
 
-		return doSelectSegment(*sdw, augment_selection );
-	}
+        OmBrushPaint::PaintByClick(state_,
+                                   dataClickPoint_,
+                                   segmentValueToPaint);
+    }
 
-	void doSelectSegment(const SegmentDataWrapper& sdw, bool augment_selection )
-	{
-		if( !sdw.IsSegmentValid() ){
-			printf("not valid\n");
-			return;
-		}
+    void mouseSelectSegment()
+    {
+        boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+        if(!sdw){
+            return;
+        }
 
-		const OmID segmentID = sdw.getID();
+        const bool augment_selection = shiftKey_;
+        return doSelectSegment(*sdw, augment_selection );
+    }
 
-		OmSegmentSelected::Set(sdw);
+    void doSelectSegment(const SegmentDataWrapper& sdw, bool augment_selection )
+    {
+        if( !sdw.IsSegmentValid() ){
+            printf("not valid\n");
+            return;
+        }
 
-		OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), this, "view2dEvent" );
-		if( augment_selection ){
-			sel.augmentSelectedSet_toggle( segmentID);
-		} else {
-			sel.selectJustThisSegment_toggle( segmentID );
-		}
-		sel.sendEvent();
+        const OmID segmentID = sdw.getID();
 
-		state_->touchFreshnessAndRedraw2d();
-		v2d_->myUpdate();
-	}
+        OmSegmentSelected::Set(sdw);
 
-	void mouseShowSegmentContextMenu(QMouseEvent * event)
-	{
-		boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
-		if(sdw){
-			const DataCoord dataClickPoint =
-				state_->ComputeMouseClickPointDataCoord(event);
-			mSegmentContextMenu.Refresh(*sdw, state_->getViewGroupState(), dataClickPoint);
-			mSegmentContextMenu.exec(event->globalPos());
-		}
-	}
+        OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), this, "view2dEvent" );
+        if( augment_selection ){
+            sel.augmentSelectedSet_toggle( segmentID);
+        } else {
+            sel.selectJustThisSegment_toggle( segmentID );
+        }
+        sel.sendEvent();
 
-	boost::optional<SegmentDataWrapper> getSelectedSegment( QMouseEvent * event )
-	{
-		const DataCoord dataClickPoint =
-			state_->ComputeMouseClickPointDataCoord(event);
+        state_->touchFreshnessAndRedraw2d();
+        v2d_->myUpdate();
+    }
 
-		if(SEGMENTATION == state_->getVol()->getVolumeType()){
-			SegmentationDataWrapper sdw(state_->getVol()->getID());
-			return getSelectedSegmentSegmentation(dataClickPoint, sdw);
-		}
+    void mouseShowSegmentContextMenu()
+    {
+        boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
 
-		boost::optional<SegmentDataWrapper> ret;
-		ChannelDataWrapper cdw(state_->getVol()->getID());
-		OmChannel& channel = cdw.GetChannel();
+        if(sdw){
+            mSegmentContextMenu.Refresh(*sdw, state_->getViewGroupState(),
+                                        dataClickPoint_);
+            mSegmentContextMenu.exec(event_->globalPos());
+        }
+    }
 
-		foreach( OmID id, channel.FilterManager().GetValidFilterIds() ) {
+    boost::optional<SegmentDataWrapper> getSelectedSegment()
+    {
+        if(SEGMENTATION == state_->getVol()->getVolumeType()){
+            SegmentationDataWrapper sdw(state_->getVol()->getID());
+            return getSelectedSegmentSegmentation(sdw);
+        }
 
-			OmFilter2d &filter = channel.FilterManager().GetFilter(id);
-			SegmentationDataWrapper sdw = filter.GetSegmentationWrapper();
-			if (!sdw.IsSegmentationValid()){
-				continue;
-			}
+        boost::optional<SegmentDataWrapper> ret;
+        ChannelDataWrapper cdw(state_->getVol()->getID());
+        OmChannel& channel = cdw.GetChannel();
 
-			ret = getSelectedSegmentSegmentation(dataClickPoint, sdw);
+        foreach( OmID id, channel.FilterManager().GetValidFilterIds() ) {
 
-			if(ret){
-				break;
-			}
-		}
+            OmFilter2d &filter = channel.FilterManager().GetFilter(id);
+            SegmentationDataWrapper sdw = filter.GetSegmentationWrapper();
+            if (!sdw.IsSegmentationValid()){
+                continue;
+            }
 
-		return ret;
-	}
+            ret = getSelectedSegmentSegmentation(sdw);
 
-	boost::optional<SegmentDataWrapper>
-	getSelectedSegmentSegmentation(const DataCoord& dataClickPoint,
-								   const SegmentationDataWrapper& sdw)
-	{
-		const OmSegID segmentID =
-			sdw.GetSegmentation().GetVoxelValue(dataClickPoint);
+            if(ret){
+                break;
+            }
+        }
 
-		printf("id = %u\n", segmentID);
+        return ret;
+    }
 
-		if(0 == segmentID){
-			return boost::optional<SegmentDataWrapper>();
-		}
+    boost::optional<SegmentDataWrapper>
+    getSelectedSegmentSegmentation(const SegmentationDataWrapper& sdw)
+    {
+        const OmSegID segmentID =
+            sdw.GetSegmentation().GetVoxelValue(dataClickPoint_);
 
-		SegmentDataWrapper ret(sdw, segmentID);
-		return boost::optional<SegmentDataWrapper>(ret);
-	}
+        printf("id = %u\n", segmentID);
+
+        if(0 == segmentID){
+            return boost::optional<SegmentDataWrapper>();
+        }
+
+        SegmentDataWrapper ret(sdw, segmentID);
+        return boost::optional<SegmentDataWrapper>(ret);
+    }
 };
 
 #endif

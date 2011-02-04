@@ -1,3 +1,4 @@
+#include "system/omAppState.hpp"
 #include "project/omSegmentationManager.h"
 #include "common/omDebug.h"
 #include "common/omGl.h"
@@ -21,13 +22,17 @@
 
 DECLARE_ZiARG_bool(noView3dThrottle);
 
-enum View3dWidgetIds {
-	VIEW3D_WIDGET_ID_SELECTION = 0,
-	VIEW3D_WIDGET_ID_VIEWBOX,
-	VIEW3D_WIDGET_ID_INFO,
-	VIEW3D_WIDGET_ID_CHUNK_EXTENT,
-	NUMBER_VIEW3D_WIDGET_IDS
-};
+namespace om {
+	namespace v3d {
+		enum widgets {
+			selection = 0,
+			viewbox,
+			info,
+			chunk_extent,
+			perc_done
+		};
+	}
+}
 
 /*
  *	Constructs View3d widget that shares with the primary widget.
@@ -42,13 +47,11 @@ OmView3d::OmView3d(QWidget* parent, OmViewGroupState* vgs)
 	setAttribute(Qt::WA_AcceptTouchEvents);
 
 	//setup widgets
-	mView3dWidgetManager.resize(NUMBER_VIEW3D_WIDGET_IDS, NULL);
-	mView3dWidgetManager[VIEW3D_WIDGET_ID_SELECTION] = new OmSelectionWidget(this);
-	mView3dWidgetManager[VIEW3D_WIDGET_ID_VIEWBOX] = new OmViewBoxWidget(this, vgs);
-	mView3dWidgetManager[VIEW3D_WIDGET_ID_INFO] = new OmInfoWidget(this);
-	mView3dWidgetManager[VIEW3D_WIDGET_ID_CHUNK_EXTENT] = new OmChunkExtentWidget(this);
-
-	percDoneWidget_ = boost::make_shared<OmPercDone>(this);
+	widgets_.push_back(new OmSelectionWidget(this)); // index = 0
+	widgets_.push_back(new OmViewBoxWidget(this, vgs));
+	widgets_.push_back(new OmInfoWidget(this));
+	widgets_.push_back(new OmChunkExtentWidget(this));
+	widgets_.push_back(new OmPercDone(this));
 
 	//update enabled state of widgets
 	UpdateEnabledWidgets();
@@ -56,7 +59,7 @@ OmView3d::OmView3d(QWidget* parent, OmViewGroupState* vgs)
 	mDrawTimer.stop();
 	connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
-	mElapsed = new QTime();
+	mElapsed.reset(new QTime());
 	mElapsed->start();
 
 	grabGesture(Qt::PanGesture);
@@ -68,12 +71,6 @@ OmView3d::~OmView3d()
 {
 	if (mDrawTimer.isActive()) {
 		mDrawTimer.stop();
-	}
-
-	delete mElapsed;
-
-	for( int i = 0; i < NUMBER_VIEW3D_WIDGET_IDS; ++i ){
-		delete mView3dWidgetManager[i];
 	}
 }
 
@@ -408,16 +405,18 @@ void OmView3d::UpdateEnabledWidgets()
 {
 	//set widgets enabled
 	bool highlight_widget_state = OmPreferences::GetBoolean(om::PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL);
-	mView3dWidgetManager[ VIEW3D_WIDGET_ID_SELECTION]->enabled = highlight_widget_state;
+	widgets_[om::v3d::selection].enabled = highlight_widget_state;
 
 	bool viewbox_widget_state = OmPreferences::GetBoolean(om::PREF_VIEW3D_SHOW_VIEWBOX_BOOL);
-	mView3dWidgetManager[ VIEW3D_WIDGET_ID_VIEWBOX]->enabled = viewbox_widget_state;
+	widgets_[om::v3d::viewbox].enabled = viewbox_widget_state;
 
 	bool info_widget_state = OmPreferences::GetBoolean(om::PREF_VIEW3D_SHOW_INFO_BOOL);
-	mView3dWidgetManager[VIEW3D_WIDGET_ID_INFO]->enabled = info_widget_state;
+	widgets_[om::v3d::info].enabled = info_widget_state;
 
 	bool extent_widget = OmPreferences::GetBoolean(om::PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL);
-	mView3dWidgetManager[ VIEW3D_WIDGET_ID_CHUNK_EXTENT]->enabled = extent_widget;
+	widgets_[om::v3d::chunk_extent].enabled = extent_widget;
+
+	widgets_[om::v3d::perc_done].enabled = true;
 }
 
 /////////////////////////////////
@@ -477,8 +476,6 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 	if (cullerOptions & DRAWOP_DRAW_WIDGETS) {
 		DrawWidgets();
 	}
-
-	percDoneWidget_->Draw();
 
 	//pop to init modelview
 	glMatrixMode(GL_MODELVIEW);
@@ -558,12 +555,9 @@ void OmView3d::SetBlending()
  */
 void OmView3d::DrawWidgets()
 {
-	OmView3dWidget * w;
-
-	for( int i = 0; i < NUMBER_VIEW3D_WIDGET_IDS; ++i ){
-		w = mView3dWidgetManager[i];
-		if( w->enabled ){
-			w->Draw();
+	FOR_EACH(iter, widgets_){
+		if(iter->enabled){
+			iter->Draw();
 		}
 	}
 }
@@ -601,9 +595,11 @@ void OmView3d::initLights()
 
 QSize OmView3d::sizeHint () const
 {
-	QSize s = OmStateManager::getViewBoxSizeHint();
-	const int offset = 76;
+	const QSize s = OmAppState::GetViewBoxSizeHint();
+
 	// TODO: offset is only 76 if tabs are present in the upper-right dock widget...
+	const int offset = 76;
+
 	return QSize( s.width(), s.height() - offset );
 }
 

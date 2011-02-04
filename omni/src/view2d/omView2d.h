@@ -35,8 +35,8 @@ public:
 		}
 	}
 
-	bool amInFillMode(){
-		return OmStateManager::GetToolMode() == FILL_MODE;
+	inline bool amInFillMode(){
+		return FILL_MODE == OmStateManager::GetToolMode();
 	}
 
 	inline OmScreenShotSaver* GetScreenShotSaver(){

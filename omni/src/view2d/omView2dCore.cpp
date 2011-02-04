@@ -5,7 +5,6 @@
 #include "tiles/cache/omTileCache.h"
 #include "view2d/omView2dCore.h"
 #include "view2d/omView2dState.hpp"
-#include "view2d/omLineDraw.hpp"
 
 OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
 						   OmViewGroupState * vgs, const ViewType viewType,
@@ -14,17 +13,21 @@ OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
 	, viewType_(viewType)
 	, name_(name)
 	, state_(boost::make_shared<OmView2dState>(vol, vgs, viewType, size(), name))
-	, tileDrawer_(boost::make_shared<OmTileDrawer>(state_, viewType))
-	, lineDraw_(boost::make_shared<OmLineDraw>(state_, viewType))
+	, tileDrawer_(new OmTileDrawer(state_, viewType))
+	, nearClip_(0)
+	, farClip_(0)
 {
 	resetPbuffer(size());
 }
 
+OmView2dCore::~OmView2dCore()
+{}
+
 void OmView2dCore::resetPbuffer(const QSize& size)
 {
-	pbuffer_ = boost::make_shared<QGLPixelBuffer>(size,
-												  QGLFormat::defaultFormat(),
-												  (QGLWidget*)OmStateManager::GetPrimaryView3dWidget());
+	pbuffer_.reset(new QGLPixelBuffer(size,
+									  QGLFormat::defaultFormat(),
+									  (QGLWidget*)OmStateManager::GetPrimaryView3dWidget()));
 }
 
 // pbuffered paint
@@ -49,8 +52,8 @@ void OmView2dCore::reset()
 {
 	state_->setTotalViewport(size());
 
-	mNearClip = -1;
-	mFarClip = 1;
+	nearClip_ = -1;
+	farClip_ = 1;
 }
 
 void OmView2dCore::setupMainGLpaintOp()
@@ -74,8 +77,8 @@ void OmView2dCore::setupMainGLpaintOp()
 				vp.width,	/* right */
 				vp.height,	/* bottom */
 				vp.lowerLeftY,	/* top */
-				mNearClip,
-				mFarClip);
+				nearClip_,
+				farClip_);
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
@@ -107,7 +110,6 @@ bool OmView2dCore::IsDrawComplete(){
 	return tileDrawer_->IsDrawComplete();
 }
 
-void OmView2dCore::dockVisibilityChanged(const bool visible)
-{
-	OmTileCache::WidgetVisibilityChanged(tileDrawer_, visible);
+void OmView2dCore::dockVisibilityChanged(const bool visible){
+	OmTileCache::WidgetVisibilityChanged(tileDrawer_.get(), visible);
 }

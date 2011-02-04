@@ -18,7 +18,6 @@
 #include <QtGui>
 
 class OmViewGroupState;
-class OmPercDone;
 
 class OmView3d : public QGLWidget,
 	public OmPreferenceEventListener,
@@ -101,16 +100,17 @@ public:
 	//widgets
 	void UpdateEnabledWidgets();
 
-	QSize sizeHint () const;
+	QSize sizeHint() const;
 
  private:
 	bool gestureEvent(QGestureEvent *event);
 	OmView3dUi mView3dUi;
 	OmViewGroupState * mViewGroupState;
-	QTime * mElapsed;
+	boost::scoped_ptr<QTime> mElapsed;
 	QTimer mDrawTimer;
 	OmCamera mCamera;
-	std::vector< OmView3dWidget* > mView3dWidgetManager;
+
+	boost::ptr_vector<OmView3dWidget> widgets_;
 
 	std::vector<int> mMousePickResult;
 
@@ -118,7 +118,6 @@ public:
 	bool pickPoint(const Vector2i& point, std::vector<uint32_t>& names);
 
 	std::list<std::pair<float,float> > percVolDone_;
-	boost::shared_ptr<OmPercDone> percDoneWidget_;
 
 	friend class OmView3dUi;
 	friend class OmSelectionWidget;

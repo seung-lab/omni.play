@@ -51,13 +51,13 @@ public:
 		runIdleThreadTask();
 	}
 
-	void WidgetVisibilityChanged(boost::shared_ptr<OmTileDrawer> drawer,
+	void WidgetVisibilityChanged(OmTileDrawer* drawer,
 								 const bool visible)
 	{
 		if(visible){
-			setDrawerActive(drawer.get());
+			setDrawerActive(drawer);
 		}else{
-			SetDrawerDone(drawer.get());
+			SetDrawerDone(drawer);
 		}
 	}
 

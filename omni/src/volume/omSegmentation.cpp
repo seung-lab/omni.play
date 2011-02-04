@@ -1,4 +1,3 @@
-#include "volume/omUpdateBoundingBoxes.h"
 #include "chunks/omSegChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "common/omCommon.h"
@@ -15,6 +14,7 @@
 #include "volume/build/omVolumeAllocater.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omSegmentation.h"
+#include "volume/omUpdateBoundingBoxes.h"
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()

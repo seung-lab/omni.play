@@ -74,6 +74,7 @@ HEADERS +=  \
 	src/actions/io/omActionOperators.h \
 	src/actions/io/omActionReplayer.hpp \
 	src/actions/omActions.h \
+	src/actions/omSelectSegmentParams.hpp \
 	src/chunks/details/omPtrToChunkDataBase.hpp \
 	src/chunks/details/omPtrToChunkDataMemMapVol.h \
 	src/chunks/omChunk.h \
@@ -292,6 +293,7 @@ HEADERS +=  \
 	src/segment/lowLevel/omSegmentIteratorLowLevel.h \
 	src/segment/lowLevel/omSegmentListByMRU.h \
 	src/segment/lowLevel/omSegmentListBySize.h \
+	src/segment/lowLevel/omSegmentSelection.hpp \
 	src/segment/omFindCommonEdge.hpp \
 	src/segment/omSegment.h \
 	src/segment/omSegmentBag.hpp \
@@ -328,6 +330,7 @@ HEADERS +=  \
 	src/system/events/omView3dEvent.h \
 	src/system/events/omViewEvent.h \
 	src/system/omAlphaVegasMode.hpp \
+	src/system/omAppState.hpp \
 	src/system/omEvents.h \
 	src/system/omGarbage.h \
 	src/system/omGenericManager.h \
@@ -339,6 +342,7 @@ HEADERS +=  \
 	src/system/omPreferences.h \
 	src/system/omQTApp.hpp \
 	src/system/omStateManager.h \
+	src/system/omStateManagerImpl.hpp \
 	src/tiles/cache/omTileCache.h \
 	src/tiles/cache/omTileCacheChannel.hpp \
 	src/tiles/cache/omTileCacheImpl.hpp \
@@ -362,6 +366,7 @@ HEADERS +=  \
 	src/utility/localPrefFilesImpl.hpp \
 	src/utility/omChunkVoxelWalker.hpp \
 	src/utility/omColorUtils.hpp \
+	src/utility/omCopyFirstN.hpp \
 	src/utility/omFileHelpers.h \
 	src/utility/omLockedObjects.h \
 	src/utility/omLockedPODs.hpp \
@@ -378,18 +383,26 @@ HEADERS +=  \
 	src/utility/segmentationDataWrapper.hpp \
 	src/utility/setUtilities.h \
 	src/utility/sortHelpers.h \
-	src/view2d/details/omMidpointCircleAlgorithm.hpp \
 	src/view2d/om2dPreferences.hpp \
+	src/view2d/omBrushOpp.hpp \
+	src/view2d/omBrushOppCircle.hpp \
+	src/view2d/omBrushOppLine.hpp \
+	src/view2d/omBrushPaint.hpp \
+	src/view2d/omBrushPaintCircle.hpp \
+	src/view2d/omBrushPaintLine.hpp \
+	src/view2d/omBrushPaintLineTask.hpp \
 	src/view2d/omBrushSelect.hpp \
 	src/view2d/omBrushSelectCircle.hpp \
 	src/view2d/omBrushSelectLine.hpp \
 	src/view2d/omBrushSelectLineTask.hpp \
 	src/view2d/omDisplayInfo.hpp \
+	src/view2d/omFillTool.hpp \
+	src/view2d/omGuiHelpers.hpp \
 	src/view2d/omKeyEvents.hpp \
-	src/view2d/omLineDraw.hpp \
 	src/view2d/omMouseEventMove.hpp \
 	src/view2d/omMouseEventPress.hpp \
 	src/view2d/omMouseEventRelease.hpp \
+	src/view2d/omMouseEventState.hpp \
 	src/view2d/omMouseEventUtils.hpp \
 	src/view2d/omMouseEventWheel.hpp \
 	src/view2d/omMouseEvents.hpp \
@@ -617,10 +630,12 @@ SOURCES +=  \
 	src/system/events/omToolModeEvent.cpp \
 	src/system/events/omView3dEvent.cpp \
 	src/system/events/omViewEvent.cpp \
+	src/system/omAppState.cpp \
 	src/system/omEvents.cpp \
 	src/system/omGroups.cpp \
 	src/system/omPreferenceDefinitions.cpp \
 	src/system/omStateManager.cpp \
+	src/system/omStateManagerImpl.cpp \
 	src/system/templatedClasses.cpp \
 	src/tiles/cache/omTileCache.cpp \
 	src/tiles/omTextureID.cpp \
@@ -634,7 +649,6 @@ SOURCES +=  \
 	src/utility/omStringHelpers.cpp \
 	src/utility/omSystemInformation.cpp \
 	src/utility/omThreadPoolManager.cpp \
-	src/view2d/omLineDraw.cpp \
 	src/view2d/omOnScreenTileCoords.cpp \
 	src/view2d/omTileDrawer.cpp \
 	src/view2d/omView2d.cpp \

@@ -16,10 +16,6 @@ public:
 	inline static void AddTaskBack(const T& task){
 		impl().AddTaskBack(task);
 	}
-
-	inline static const std::vector<om::point2d>& GetPtsInCircle(const int brushDia){
-		return impl().GetPtsInCircle(brushDia);
-	}
 };
 
 #endif

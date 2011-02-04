@@ -18,9 +18,11 @@ public:
 	int GetTileCount(){
 		return mTileCount;
 	}
+
 	int GetTileCountIncomplete(){
 		return mTileCountIncomplete;
 	}
+
 	bool IsDrawComplete(){
 		return !mTileCountIncomplete;
 	}

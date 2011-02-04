@@ -114,6 +114,7 @@ enum OmToolMode { SELECT_MODE,
 				  SPLIT_MODE,
 				  CUT_MODE
 };
+std::ostream& operator<<(std::ostream &out, const OmToolMode& c);
 
 
 /**

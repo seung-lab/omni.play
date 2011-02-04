@@ -11,7 +11,7 @@ class OmTileDrawer;
 
 class OmTileCache : private om::singletonBase<OmTileCache>{
 private:
-	boost::shared_ptr<OmTileCacheImpl> impl_;
+	boost::scoped_ptr<OmTileCacheImpl> impl_;
 
 public:
 	static void Delete();
@@ -21,7 +21,7 @@ public:
 	static void UnRegisterDrawer(OmTileDrawer*);
 	static void SetDrawerDone(OmTileDrawer*);
 	static bool AreDrawersActive();
-	static void WidgetVisibilityChanged(boost::shared_ptr<OmTileDrawer> drawer,
+	static void WidgetVisibilityChanged(OmTileDrawer* drawer,
 										const bool visible);
 
 	static void Get(OmTileDrawer* drawer,
@@ -37,7 +37,7 @@ public:
 
 private:
 	OmTileCache();
-	~OmTileCache(){}
+	~OmTileCache();
 
 	static void doGet(OmTilePtr& tile,
 					  const OmTileCoord& key,

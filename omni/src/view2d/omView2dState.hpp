@@ -412,7 +412,10 @@ public:
 	inline const Vector2i& GetMousePoint() const {
 		return mousePoint_;
 	}
-	void SetMousePoint(const int x, const int y){
+	inline void SetMousePoint(QMouseEvent* event){
+		mousePoint_ = Vector2i(event->x(), event->y());
+	}
+	inline void SetMousePoint(const int x, const int y){
 		mousePoint_ = Vector2i(x,y);
 	}
 

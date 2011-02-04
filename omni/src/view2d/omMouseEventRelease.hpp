@@ -4,6 +4,7 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "view2d/omMouseEventUtils.hpp"
+#include "view2d/omFillTool.hpp"
 
 class OmMouseEventRelease{
 private:
@@ -69,14 +70,14 @@ private:
 
 		switch (OmStateManager::GetToolMode()) {
 		case ADD_VOXEL_MODE:
-			v2d_->LineDrawer()->BrushToolApplyPaint(sdw.GetSegmentationID(),
-													dataClickPoint,
-													sdw.getID());
+			OmBrushPaint::PaintByClick(state_,
+									   dataClickPoint,
+									   sdw.getID());
 			break;
 		case SUBTRACT_VOXEL_MODE:
-			v2d_->LineDrawer()->BrushToolApplyPaint(sdw.GetSegmentationID(),
-													dataClickPoint,
-													0);
+			OmBrushPaint::PaintByClick(state_,
+									   dataClickPoint,
+									   0);
 			break;
 		case SELECT_MODE:
 			OmMouseEventUtils::PickToolAddToSelection(sdw,
@@ -119,10 +120,9 @@ private:
 
 		const OmSegID rootSegID = sdw.SegmentCache()->findRootID(segid);
 
-		v2d_->LineDrawer()->FillToolFill( sdw.GetSegmentationID(),
-										  dataClickPoint,
-										  data_value,
-										  rootSegID );
+		OmFillTool fillTool(sdw.GetSegmentationPtr(), state_->getViewType(),
+							data_value, rootSegID);
+		fillTool.Fill(dataClickPoint);
 
 		v2d_->doRedraw2d();
 	}

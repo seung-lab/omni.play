@@ -276,7 +276,7 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
 			return SCC_SEGMENTATION_VALID_BLACK;
 		}
 
-		if(shouldVolumeBeShownBroken() ){
+		if(shouldVolumeBeShownBroken()){
 			return SCC_SEGMENTATION_BREAK;
 		}
 
@@ -295,12 +295,10 @@ void OmViewGroupState::setupColorizer(const Vector2i& dims,
 	if(NULL == mColorCaches[sccType]){
 		SegmentationDataWrapper sdw(key.getVolume()->getID());
 
-		OmSegmentColorizer* sc =
-			new OmSegmentColorizer(sdw.SegmentCache(),
-								   sccType,
-								   dims, this);
 		mColorCaches[ sccType ] =
-			boost::shared_ptr<OmSegmentColorizer>(sc);
+			boost::make_shared<OmSegmentColorizer>(sdw.SegmentCache(),
+												   sccType,
+												   dims, this);
 	}
 }
 
@@ -416,25 +414,25 @@ void OmViewGroupState::setTool(const OmToolMode tool)
 
 void OmViewGroupState::SetCutMode(bool mode, bool postEvent)
 {
-        mCutting = mode;
-        if(false == mode){
+	mCutting = mode;
+	if(false == mode){
 		if(postEvent) {
 			mToolBarManager->SetCuttingOff();
 		}
-                SetShowCutMode(false);
-                OmStateManager::SetOldToolModeAndSendEvent();
-        }
+		SetShowCutMode(false);
+		OmStateManager::SetOldToolModeAndSendEvent();
+	}
 
-        OmCacheManager::TouchFresheness();
-        OmEvents::Redraw3d();
-        OmEvents::Redraw2d();
+	OmCacheManager::TouchFresheness();
+	OmEvents::Redraw3d();
+	OmEvents::Redraw2d();
 }
 
 void OmViewGroupState::SetShowCutMode(bool mode)
 {
-        OmCacheManager::TouchFresheness();
-        OmEvents::Redraw3d();
-        OmEvents::Redraw2d();
-        mShowCut = mode;
+	OmCacheManager::TouchFresheness();
+	OmEvents::Redraw3d();
+	OmEvents::Redraw2d();
+	mShowCut = mode;
 }
 

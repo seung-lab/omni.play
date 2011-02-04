@@ -2,62 +2,41 @@
 #define OM_SEGMENT_SELECTOR_H
 
 #include "common/omCommon.h"
-#include "utility/dataWrappers.h"
 
 class OmSegmentation;
 class OmSegmentCache;
+class OmSelectSegmentsParams;
+class SegmentationDataWrapper;
 
 class OmSegmentSelector {
- public:
-	OmSegmentSelector(const SegmentationDataWrapper& sdw,
-					  void* sender,
-					  const std::string & cmt );
+public:
+    OmSegmentSelector(const SegmentationDataWrapper& sdw,
+                      void* sender,
+                      const std::string& cmt);
 
-	void selectJustThisSegment( const OmSegID segID, const bool isSelected);
-	void augmentSelectedSet( const OmSegID segID, const bool isSelected);
+    void selectJustThisSegment( const OmSegID segID, const bool isSelected);
+    void augmentSelectedSet( const OmSegID segID, const bool isSelected);
 
-	void InsertSegments(const boost::unordered_set<OmSegID>& segIDs);
+    void InsertSegments(const boost::unordered_set<OmSegID>& segIDs);
+    void RemoveSegments(const boost::unordered_set<OmSegID>& segIDs);
 
-	void selectJustThisSegment_toggle( const OmSegID segID);
-	void augmentSelectedSet_toggle( const OmSegID segID);
+    void selectJustThisSegment_toggle( const OmSegID segID);
+    void augmentSelectedSet_toggle( const OmSegID segID);
 
-	bool sendEvent();
-	void selectNoSegments();
+    bool sendEvent();
+    void selectNoSegments();
 
-	void ShouldScroll(const bool shouldScroll){
-		shouldScroll_ = shouldScroll;
-	}
-
-	void AddToRecentList(const bool addToRecentList){
-		addToRecentList_ = addToRecentList;
-	}
-
-	void AutoCenter(const bool autoCenter){
-		autoCenter_ = autoCenter;
-	}
-
-	void AugmentListOnly(const bool augmentListOnly){
-		augmentListOnly_ = augmentListOnly;
-	}
+    void ShouldScroll(const bool shouldScroll);
+    void AddToRecentList(const bool addToRecentList);
+    void AutoCenter(const bool autoCenter);
+    void AugmentListOnly(const bool augmentListOnly);
+    void AddOrSubtract(const om::AddOrSubtract addSegments);
 
 private:
-	SegmentDataWrapper sdw_;
-	OmSegmentCache* segmentCache_;
+    OmSegmentCache* segmentCache_;
+    boost::shared_ptr<OmSelectSegmentsParams> params_;
 
-	void* mSender;
-	std::string mComment;
-
-	const OmSegIDsSet oldSelectedIDs;
-	OmSegIDsSet newSelectedIDs;
-
-	bool mAddToRecentList;
-
-	void setSelectedSegment(const OmSegID segID);
-
-	bool autoCenter_;
-	bool shouldScroll_;
-	bool addToRecentList_;
-	bool augmentListOnly_;
+    void setSelectedSegment(const OmSegID segID);
 };
 
 #endif

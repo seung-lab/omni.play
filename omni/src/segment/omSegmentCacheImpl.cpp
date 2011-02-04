@@ -1,3 +1,4 @@
+#include "segment/lowLevel/omSegmentSelection.hpp"
 #include "common/omDebug.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
@@ -12,7 +13,7 @@
 // entry into this class via OmSegmentCache hopefully guarantees proper locking...
 
 OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation* segmentation)
-	: OmSegmentCacheImplLowLevel(segmentation)
+    : OmSegmentCacheImplLowLevel(segmentation)
 {
 }
 
@@ -22,345 +23,346 @@ OmSegmentCacheImpl::~OmSegmentCacheImpl()
 
 OmSegment* OmSegmentCacheImpl::AddSegment()
 {
-	OmSegment * newSeg = AddSegment(getNextValue());
-	growGraphIfNeeded(newSeg);
-	return newSeg;
+    OmSegment * newSeg = AddSegment(getNextValue());
+    growGraphIfNeeded(newSeg);
+    return newSeg;
 }
 
 OmSegment* OmSegmentCacheImpl::AddSegment(const OmSegID value)
 {
-	if(0 == value){
-		return NULL;
-	}
+    if(0 == value){
+        return NULL;
+    }
 
-	OmSegment* seg = mSegments->AddSegment(value);
-	seg->RandomizeColor();
+    OmSegment* seg = mSegments->AddSegment(value);
+    seg->RandomizeColor();
 
-	++mNumSegs;
-	if (mMaxValue < value) {
-		mMaxValue = value;
-	}
+    ++mNumSegs;
+    if (mMaxValue < value) {
+        mMaxValue = value;
+    }
 
-	return seg;
+    return seg;
 }
 
 OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
 {
-	if(0 == val){
-		return NULL;
-	}
+    if(0 == val){
+        return NULL;
+    }
 
-	OmSegment* seg = GetSegment(val);
-	if(NULL == seg){
-		seg = AddSegment(val);
-	}
+    OmSegment* seg = GetSegment(val);
+    if(NULL == seg){
+        seg = AddSegment(val);
+    }
 
-	return seg;
+    return seg;
 }
 
 OmSegmentEdge OmSegmentCacheImpl::SplitEdgeUserAction(const OmSegmentEdge& e)
 {
-	if(!e.isValid()){
-		return OmSegmentEdge();
-	}
-	return splitChildFromParent(GetSegment(e.childID));
+    if(!e.isValid()){
+        return OmSegmentEdge();
+    }
+    return splitChildFromParent(GetSegment(e.childID));
 }
 
 OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent(OmSegment * child)
 {
-	OmSegment* parent = child->getParent();
-	assert(parent);
+    OmSegment* parent = child->getParent();
+    assert(parent);
 
-	if(child->IsValidListType() == parent->IsValidListType() &&
-	    1 == child->IsValidListType()){
-		printf("could not split %d from %d (one or more was valid!)\n", child->value(), parent->value());
-		return OmSegmentEdge();
-	}
+    if(child->IsValidListType() == parent->IsValidListType() &&
+       1 == child->IsValidListType()){
+        printf("could not split %d from %d (one or more was valid!)\n", child->value(), parent->value());
+        return OmSegmentEdge();
+    }
 
-	OmSegmentEdge edgeThatGotBroken(parent->value(),
-									child->value(),
-									child->getThreshold());
+    OmSegmentEdge edgeThatGotBroken(parent->value(),
+                                    child->value(),
+                                    child->getThreshold());
 
-	parent->removeChild(child);
-	mSegmentGraph.graph_cut(child->value());
-	child->setParent(NULL); // TODO: also set threshold???
+    parent->removeChild(child);
+    mSegmentGraph.graph_cut(child->value());
+    child->setParent(NULL); // TODO: also set threshold???
 
-	child->setThreshold(0);
+    child->setThreshold(0);
 
-	findRoot(parent)->touchFreshnessForMeshes();
-	child->touchFreshnessForMeshes();
+    findRoot(parent)->touchFreshnessForMeshes();
+    child->touchFreshnessForMeshes();
 
-	if(isSegmentSelected(parent->value())){
-		doSelectedSetInsert(child->value(), true);
-	} else {
-		doSelectedSetRemove(child->value());
-	}
+    if(SegmentSelection().isSegmentSelected(parent->value())){
+        SegmentSelection().doSelectedSetInsert(child->value(), true);
+    } else {
+        SegmentSelection().doSelectedSetRemove(child->value());
+    }
 
-	if(-1 != child->getEdgeNumber()){
-		const int e = child->getEdgeNumber();
-		OmMSTEdge* edges = segmentation_->MST()->Edges();
+    if(-1 != child->getEdgeNumber()){
+        const int e = child->getEdgeNumber();
+        OmMSTEdge* edges = segmentation_->MST()->Edges();
 
-		edges[e].userSplit = 1;
-		edges[e].wasJoined = 0;
-		edges[e].userJoin  = 0;
-		child->setEdgeNumber(-1);
-	}
+        edges[e].userSplit = 1;
+        edges[e].wasJoined = 0;
+        edges[e].userJoin  = 0;
+        child->setEdgeNumber(-1);
+    }
 
-	if(child->getCustomMergeEdge().isValid()){
-		const int numRemoved =
-			userEdges()->RemoveEdge(child->getCustomMergeEdge());
-		printf("number of user edges removed: %d\n", numRemoved);
-		child->setCustomMergeEdge(OmSegmentEdge());
-	}
+    if(child->getCustomMergeEdge().isValid()){
+        const int numRemoved =
+            userEdges()->RemoveEdge(child->getCustomMergeEdge());
+        printf("number of user edges removed: %d\n", numRemoved);
+        child->setCustomMergeEdge(OmSegmentEdge());
+    }
 
-	mSegmentGraph.updateSizeListsFromSplit(parent, child);
+    mSegmentGraph.updateSizeListsFromSplit(parent, child);
 
-	clearCaches();
+    touchFreshness();
 
-	return edgeThatGotBroken;
+    return edgeThatGotBroken;
 }
 
 std::pair<bool, OmSegmentEdge>
 OmSegmentCacheImpl::JoinFromUserAction(const OmSegmentEdge& e)
 {
-	if(!e.isValid()){
-		return std::make_pair(false, OmSegmentEdge());
-	}
+    if(!e.isValid()){
+        return std::make_pair(false, OmSegmentEdge());
+    }
 
-	std::pair<bool, OmSegmentEdge> edge = JoinEdgeFromUser(e);
-	if(edge.first){
-		userEdges()->AddEdge(edge.second);
-	}
-	return edge;
+    std::pair<bool, OmSegmentEdge> edge = JoinEdgeFromUser(e);
+    if(edge.first){
+        userEdges()->AddEdge(edge.second);
+    }
+    return edge;
 }
 
 std::pair<bool, OmSegmentEdge>
 OmSegmentCacheImpl::JoinEdgeFromUser(const OmSegmentEdge& e)
 {
-	const OmSegID childRootID = mSegmentGraph.graph_getRootID(e.childID);
-	OmSegment* childRoot = GetSegment(childRootID);
-	OmSegment* parent = GetSegment(e.parentID);
-	OmSegment* parentRoot = findRoot(parent);
+    const OmSegID childRootID = mSegmentGraph.graph_getRootID(e.childID);
+    OmSegment* childRoot = GetSegment(childRootID);
+    OmSegment* parent = GetSegment(e.parentID);
+    OmSegment* parentRoot = findRoot(parent);
 
-	if(childRoot == parentRoot){
-		printf("cycle found in user manual edge; skipping edge %d, %d, %f\n",
-		       e.childID, e.parentID, e.threshold);
-		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
-	}
+    if(childRoot == parentRoot){
+        printf("cycle found in user manual edge; skipping edge %d, %d, %f\n",
+               e.childID, e.parentID, e.threshold);
+        return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
+    }
 
-	if(childRoot->IsValidListType() != parent->IsValidListType()){
-		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
-		       childRoot->value(), parent->value(), childRoot->IsValidListType(), parent->IsValidListType());
-		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
-	}
+    if(childRoot->IsValidListType() != parent->IsValidListType()){
+        printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
+               childRoot->value(), parent->value(), childRoot->IsValidListType(), parent->IsValidListType());
+        return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
+    }
 
 /*
-	if(childRoot->IsValidListType() &&
-		childRoot != parentRoot){
-		printf("can't join two validated segments\n");
-		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
-	}
+  if(childRoot->IsValidListType() &&
+  childRoot != parentRoot){
+  printf("can't join two validated segments\n");
+  return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
+  }
 */
 
-	mSegmentGraph.graph_join(childRootID, e.parentID);
+    mSegmentGraph.graph_join(childRootID, e.parentID);
 
-	parent->addChild(childRoot);
-	childRoot->setParent(parent, e.threshold);
-	childRoot->setCustomMergeEdge(e);
+    parent->addChild(childRoot);
+    childRoot->setParent(parent, e.threshold);
+    childRoot->setCustomMergeEdge(e);
 
-	findRoot(parent)->touchFreshnessForMeshes();
+    findRoot(parent)->touchFreshnessForMeshes();
 
-	if(isSegmentSelected(e.childID)){
-		doSelectedSetInsert(parent->value(), true);
-	}
-	doSelectedSetRemove(e.childID);
+    if(SegmentSelection().isSegmentSelected(e.childID)){
+        SegmentSelection().doSelectedSetInsert(parent->value(), true);
+    }
+    SegmentSelection().doSelectedSetRemove(e.childID);
 
-	mSegmentGraph.updateSizeListsFromJoin(parent, childRoot);
+    mSegmentGraph.updateSizeListsFromJoin(parent, childRoot);
 
-	return std::pair<bool, OmSegmentEdge>(true,
-										  OmSegmentEdge(parent->value(),
-														childRoot->value(),
-														e.threshold));
+    return std::pair<bool, OmSegmentEdge>(true,
+                                          OmSegmentEdge(parent->value(),
+                                                        childRoot->value(),
+                                                        e.threshold));
 }
 
 std::pair<bool, OmSegmentEdge>
 OmSegmentCacheImpl::JoinFromUserAction(const OmSegID parentID,
-									   const OmSegID childUnknownDepthID)
+                                       const OmSegID childUnknownDepthID)
 {
-	const double threshold = 2.0f;
-	return JoinFromUserAction(OmSegmentEdge(parentID, childUnknownDepthID,
-											  threshold));
+    const double threshold = 2.0f;
+    return JoinFromUserAction(OmSegmentEdge(parentID, childUnknownDepthID,
+                                            threshold));
 }
 
 OmSegIDsSet OmSegmentCacheImpl::JoinTheseSegments(const OmSegIDsSet& segmentList)
 {
-	if(segmentList.size() < 2){
-		return OmSegIDsSet();
-	}
+    if(segmentList.size() < 2){
+        return OmSegIDsSet();
+    }
 
-	OmSegIDsSet set = segmentList; // Join() could modify list
+    OmSegIDsSet set = segmentList; // Join() could modify list
 
-	OmSegIDsSet ret; // segments actually joined
+    OmSegIDsSet ret; // segments actually joined
 
-	// The first Segment Id is the parent we join to
-	OmSegIDsSet::const_iterator iter = set.begin();
-	const OmSegID parentID = *iter;
-	++iter;
+    // The first Segment Id is the parent we join to
+    OmSegIDsSet::const_iterator iter = set.begin();
+    const OmSegID parentID = *iter;
+    ++iter;
 
-	// We then iterate through the Segment Ids and join
-	// each one to the parent
-	while (iter != set.end()) {
-		const OmSegID segID = *iter;
-		std::pair<bool, OmSegmentEdge> edge =
-			JoinFromUserAction(parentID, segID);
+    // We then iterate through the Segment Ids and join
+    // each one to the parent
+    while (iter != set.end()) {
+        const OmSegID segID = *iter;
+        std::pair<bool, OmSegmentEdge> edge =
+            JoinFromUserAction(parentID, segID);
 
-		if(!edge.first){
-			printf("WARNING: could not join edge; was a segment validated?\n");
-		} else {
-			ret.insert(segID);
-		}
+        if(!edge.first){
+            printf("WARNING: could not join edge; was a segment validated?\n");
+        } else {
+            ret.insert(segID);
+        }
 
-		++iter;
-	}
+        ++iter;
+    }
 
-	clearCaches();
+    touchFreshness();
 
-	if(!ret.empty()){
-		ret.insert(parentID);
-	}
+    if(!ret.empty()){
+        ret.insert(parentID);
+    }
 
-	return ret;
+    return ret;
 }
 
 OmSegIDsSet OmSegmentCacheImpl::UnJoinTheseSegments(const OmSegIDsSet& segmentList)
 {
-	if(segmentList.size() < 2){
-		return OmSegIDsSet();
-	}
+    if(segmentList.size() < 2){
+        return OmSegIDsSet();
+    }
 
-	OmSegIDsSet set = segmentList; // split() could modify list
-	OmSegIDsSet ret;
+    OmSegIDsSet set = segmentList; // split() could modify list
+    OmSegIDsSet ret;
 
-	// The first Segment Id is the parent we split from
-	OmSegIDsSet::const_iterator iter = set.begin();
-	const OmSegID parentID = *iter;
-	++iter;
+    // The first Segment Id is the parent we split from
+    OmSegIDsSet::const_iterator iter = set.begin();
+    const OmSegID parentID = *iter;
+    ++iter;
 
-	// We then iterate through the Segment Ids and split
-	// each one from the parent
-	while (iter != set.end()) {
-		const OmSegID segID = *iter;
-		OmSegmentEdge edge =
-			splitChildFromParent(GetSegment(segID));
+    // We then iterate through the Segment Ids and split
+    // each one from the parent
+    while (iter != set.end()) {
+        const OmSegID segID = *iter;
+        OmSegmentEdge edge =
+            splitChildFromParent(GetSegment(segID));
 
-		if(edge.isValid()){
-			printf("WARNING: could not split edge; was a segment validated?\n");
-		} else {
-			ret.insert(segID);
-		}
+        if(edge.isValid()){
+            printf("WARNING: could not split edge; was a segment validated?\n");
+        } else {
+            ret.insert(segID);
+        }
 
-		++iter;
-	}
+        ++iter;
+    }
 
-	clearCaches();
+    touchFreshness();
 
-	if(!ret.empty()){
-		ret.insert(parentID);
-	}
+    if(!ret.empty()){
+        ret.insert(parentID);
+    }
 
-	return ret;
+    return ret;
 }
 
 quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren(OmSegment * segUnknownDepth)
 {
-	OmSegment* seg = findRoot(segUnknownDepth);
-	return getSegmentLists()->getSegmentSize(seg);
+    OmSegment* seg = findRoot(segUnknownDepth);
+    return getSegmentLists()->getSegmentSize(seg);
 }
 
 void OmSegmentCacheImpl::rerootSegmentLists()
 {
-	rerootSegmentList(mEnabledSet);
-	rerootSegmentList(mSelectedSet);
+    rerootSegmentList(mEnabledSet);
+    SegmentSelection().rerootSegmentList();
 }
 
 void OmSegmentCacheImpl::rerootSegmentList(OmSegIDsSet& set)
 {
-	OmSegIDsSet old = set;
-	set.clear();
+    OmSegIDsSet old = set;
+    set.clear();
 
-	OmSegID rootSegID;
-	foreach(const OmSegID& id, old){
-		rootSegID = findRoot(GetSegment(id))->value();
-		set.insert(rootSegID);
-	}
+    OmSegID rootSegID;
+    foreach(const OmSegID& id, old){
+        rootSegID = findRoot(GetSegment(id))->value();
+        set.insert(rootSegID);
+    }
 }
 
 void OmSegmentCacheImpl::refreshTree()
 {
-	if(mSegmentGraph.graph_doesGraphNeedToBeRefreshed(mMaxValue)){
-		mSegmentGraph.initialize(this);
-		foreach(const OmSegmentEdge& e, userEdges()->Edges()){
-			JoinEdgeFromUser(e);
-		}
-		setGlobalThreshold();
-	} else {
-		resetGlobalThreshold();
-	}
+    if(mSegmentGraph.graph_doesGraphNeedToBeRefreshed(mMaxValue)){
+        mSegmentGraph.initialize(this);
+        foreach(const OmSegmentEdge& e, userEdges()->Edges()){
+            JoinEdgeFromUser(e);
+        }
+        setGlobalThreshold();
+    } else {
+        resetGlobalThreshold();
+    }
 }
 
 void OmSegmentCacheImpl::setGlobalThreshold()
 {
-	OmMST* mst = segmentation_->MST();
+    OmMST* mst = segmentation_->MST();
 
-	if(!mst->isValid()){
-		printf("no graph found...\n");
-		return;
-	}
+    if(!mst->isValid()){
+        printf("no graph found...\n");
+        return;
+    }
 
-	printf("setting global threshold to %f...\n", mst->UserThreshold());
-	mSegmentGraph.setGlobalThreshold(mst);
+    printf("setting global threshold to %f...\n", mst->UserThreshold());
+    mSegmentGraph.setGlobalThreshold(mst);
 
-	mSelectedSet.clear();
-	clearCaches();
+    SegmentSelection().Clear();
 
-	printf("done\n");
+    touchFreshness();
+
+    printf("done\n");
 }
 
 void OmSegmentCacheImpl::resetGlobalThreshold()
 {
-	OmMST* mst = segmentation_->MST();
+    OmMST* mst = segmentation_->MST();
 
-	printf("resetting global threshold to %f...\n", mst->UserThreshold());
+    printf("resetting global threshold to %f...\n", mst->UserThreshold());
 
-	mSegmentGraph.resetGlobalThreshold(mst);
-	rerootSegmentLists();
-	clearCaches();
+    mSegmentGraph.resetGlobalThreshold(mst);
+    rerootSegmentLists();
+    touchFreshness();
 
-	printf("done\n");
+    printf("done\n");
 }
 
 OmSegmentLists* OmSegmentCacheImpl::getSegmentLists() {
-	return GetSegmentation()->SegmentLists();
+    return GetSegmentation()->SegmentLists();
 }
 
 void OmSegmentCacheImpl::Flush(){
-	mSegments->Flush();
+    mSegments->Flush();
 }
 
 OmUserEdges* OmSegmentCacheImpl::userEdges(){
-	return segmentation_->MSTUserEdges();
+    return segmentation_->MSTUserEdges();
 }
 
 bool OmSegmentCacheImpl::AreAnySegmentsInValidList(const OmSegIDsSet& ids)
 {
-	FOR_EACH(iter, ids){
-		OmSegment* seg = GetSegment(*iter);
-		if(!seg){
-			continue;
-		}
-		if(seg->IsValidListType()){
-			return true;
-		}
-	}
-	return false;
+    FOR_EACH(iter, ids){
+        OmSegment* seg = GetSegment(*iter);
+        if(!seg){
+            continue;
+        }
+        if(seg->IsValidListType()){
+            return true;
+        }
+    }
+    return false;
 }

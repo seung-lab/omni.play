@@ -148,6 +148,12 @@ public:
 		return OmProject::Volumes().Segmentations().GetSegmentation(segmentationID_);
 	}
 
+	inline OmSegmentation* GetSegmentationPtr() const
+	{
+		OmSegmentation& segmentation = GetSegmentation();
+		return &segmentation;
+	}
+
 	inline OmSegmentLists* SegmentLists() const {
 		return GetSegmentation().SegmentLists();
 	}
