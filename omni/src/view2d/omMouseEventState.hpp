@@ -11,8 +11,8 @@ public:
         target->controlKey_ = om::gui::IsControlDown(event);
         target->shiftKey_ = om::gui::IsShiftDown(event);
         target->altKey_ = om::gui::IsAltDown(event);
-        target->leftMouseButton_ = om::gui::IsLeftButton();
-        target->rightMouseButton_ = om::gui::IsRightButton();
+        target->leftMouseButton_ = om::gui::IsLeftButton(event);
+        target->rightMouseButton_ = om::gui::IsRightButton(event);
         target->tool_ = OmStateManager::GetToolMode();
         target->dataClickPoint_ = state->ComputeMouseClickPointDataCoord(event);
 

@@ -4,29 +4,42 @@
 namespace om {
 namespace gui {
 
-	bool IsLeftButton(){
-		return QApplication::mouseButtons() == Qt::LeftButton;
-	}
+inline bool IsButton(QMouseEvent* event, const Qt::MouseButton button)
+{
+    return QApplication::mouseButtons() & button ||
+        event->buttons() & button;
+}
 
-	bool IsRightButton(){
-		return QApplication::mouseButtons() == Qt::RightButton;
-	}
+inline bool IsLeftButton(QMouseEvent* event){
+    return IsButton(event, Qt::LeftButton);
+}
 
-	bool NoModifer(QMouseEvent* event){
-		return event->modifiers() & Qt::NoModifier;
-	}
+inline bool IsRightButton(QMouseEvent* event){
+    return IsButton(event, Qt::RightButton);
+}
 
-	bool IsControlDown(QMouseEvent* event){
-		return event->modifiers() & Qt::ControlModifier;
-	}
+inline bool IsKeyDown(QMouseEvent* event, const Qt::KeyboardModifier key)
+{
+    return QApplication::keyboardModifiers() & key ||
+        event->modifiers() & key;
+}
 
-	bool IsShiftDown(QMouseEvent* event){
-		return event->modifiers() & Qt::ShiftModifier;
-	}
+inline bool NoModifer(QMouseEvent* event){
+    return IsKeyDown(event, Qt::NoModifier);
+}
 
-	bool IsAltDown(QMouseEvent* event){
-		return event->modifiers() & Qt::AltModifier;
-	}
+inline bool IsControlDown(QMouseEvent* event){
+    return IsKeyDown(event, Qt::ControlModifier);
+}
+
+inline bool IsShiftDown(QMouseEvent* event){
+    return IsKeyDown(event, Qt::ShiftModifier);
+}
+
+inline bool IsAltDown(QMouseEvent* event){
+    return IsKeyDown(event, Qt::AltModifier);
+}
+
 }
 }
 

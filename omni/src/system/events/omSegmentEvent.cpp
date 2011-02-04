@@ -1,7 +1,9 @@
-#include "omSegmentEvent.h"
+#include "actions/omSelectSegmentParams.hpp"
+#include "system/events/omSegmentEvent.h"
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type)
     : OmEvent(type, CLASS)
+    , params_(boost::make_shared<OmSelectSegmentsParams>())
 {}
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,

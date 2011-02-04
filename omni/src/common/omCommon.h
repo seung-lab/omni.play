@@ -18,19 +18,19 @@ class QTextStream;
  *
  **/
 struct OmColor {
-	uint8_t red;
-	uint8_t green;
-	uint8_t blue;
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
 };
 std::ostream& operator<<(std::ostream &out, const OmColor& c);
 bool operator<(const OmColor& a, const OmColor& b);
 QTextStream &operator<<(QTextStream& out, const OmColor& c);
 
 struct OmColorRGBA {
-	uint8_t red;
-	uint8_t green;
-	uint8_t blue;
-	uint8_t alpha;
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+    uint8_t alpha;
 };
 std::ostream& operator<<(std::ostream &out, const OmColorRGBA& c);
 
@@ -78,7 +78,7 @@ typedef uint32_t PageNum;
 
 struct OmSegIDsSet : public std::set<OmSegID>
 {
-	friend std::ostream& operator<<(std::ostream& out, const OmSegIDsSet& in);
+    friend std::ostream& operator<<(std::ostream& out, const OmSegIDsSet& in);
 };
 
 
@@ -86,10 +86,10 @@ struct OmSegIDsSet : public std::set<OmSegID>
  * GUI segment list types
  */
 namespace om {
-	// WARNING: used for serialization by OmSegmentPage
-	enum OmSegListType {WORKING = 0,
-						VALID = 1,
-						UNCERTAIN = 2};
+// WARNING: used for serialization by OmSegmentPage
+enum OmSegListType {WORKING = 0,
+                    VALID = 1,
+                    UNCERTAIN = 2};
 };
 
 
@@ -105,14 +105,14 @@ typedef boost::unordered_set<OmGroupID> OmGroupIDsSet;
  * System-state related
  **/
 enum OmToolMode { SELECT_MODE,
-				  PAN_MODE,
-				  CROSSHAIR_MODE,
-				  ZOOM_MODE,
-				  ADD_VOXEL_MODE,
-				  SUBTRACT_VOXEL_MODE,
-				  FILL_MODE,
-				  SPLIT_MODE,
-				  CUT_MODE
+                  PAN_MODE,
+                  CROSSHAIR_MODE,
+                  ZOOM_MODE,
+                  ADD_VOXEL_MODE,
+                  SUBTRACT_VOXEL_MODE,
+                  FILL_MODE,
+                  SPLIT_MODE,
+                  CUT_MODE
 };
 std::ostream& operator<<(std::ostream &out, const OmToolMode& c);
 
@@ -121,22 +121,22 @@ std::ostream& operator<<(std::ostream &out, const OmToolMode& c);
  * color cache enum
  */
 enum OmSegmentColorCacheType{SCC_FILTER_BLACK = 0,
-							 SCC_FILTER_COLOR,
-							 SCC_FILTER_BREAK,
-							 SCC_FILTER_VALID,
-							 SCC_FILTER_VALID_BLACK,
-							 SCC_SEGMENTATION,
-							 SCC_SEGMENTATION_BREAK,
-							 SCC_SEGMENTATION_VALID,
-							 SCC_SEGMENTATION_VALID_BLACK,
-							 SCC_NUMBER_OF_ENUMS };
+                             SCC_FILTER_COLOR,
+                             SCC_FILTER_BREAK,
+                             SCC_FILTER_VALID,
+                             SCC_FILTER_VALID_BLACK,
+                             SCC_SEGMENTATION,
+                             SCC_SEGMENTATION_BREAK,
+                             SCC_SEGMENTATION_VALID,
+                             SCC_SEGMENTATION_VALID_BLACK,
+                             SCC_NUMBER_OF_ENUMS };
 
 /**
  * cache-type enum
  */
 enum OmCacheGroupEnum {
-	RAM_CACHE_GROUP = 1,
-	VRAM_CACHE_GROUP
+    RAM_CACHE_GROUP = 1,
+    VRAM_CACHE_GROUP
 };
 
 class OmTile;
@@ -146,25 +146,25 @@ typedef boost::shared_ptr<OmTile> OmTilePtr;
  * string-to-number and number-to-string converters
  **/
 namespace om {
-	template <typename T>
-	static std::string NumToStr(const T& num){
-		return boost::lexical_cast<std::string>(num);
-	}
+template <typename T>
+static std::string NumToStr(const T& num){
+    return boost::lexical_cast<std::string>(num);
+}
 
-	template <typename T>
-	static QString NumToQStr(const T& num){
-		return QString::number(num);
-	}
+template <typename T>
+static QString NumToQStr(const T& num){
+    return QString::number(num);
+}
 
-	template <typename T>
-	static T StrToNum(const std::string& str){
-		return boost::lexical_cast<T>(str);
-	}
+template <typename T>
+static T StrToNum(const std::string& str){
+    return boost::lexical_cast<T>(str);
+}
 
-	template <typename T>
-	static T StrToNum(const QString& str){
-		return boost::lexical_cast<T>(str.toStdString());
-	}
+template <typename T>
+static T StrToNum(const QString& str){
+    return boost::lexical_cast<T>(str.toStdString());
+}
 }
 
 #endif

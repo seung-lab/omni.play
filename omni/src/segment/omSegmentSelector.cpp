@@ -1,6 +1,7 @@
 #include "actions/omActions.h"
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/omDebug.h"
+#include "common/omSet.hpp"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelected.hpp"
@@ -115,11 +116,31 @@ void OmSegmentSelector::augmentSelectedSet_toggle(const OmSegID segIDunknownLeve
     augmentSelectedSet( segID, !isSelected );
 }
 
+
 bool OmSegmentSelector::sendEvent()
 {
-    if( params_->oldSelectedIDs == params_->newSelectedIDs ){
-        debug(segmentSelector, "not sending segment list\n");
-        return false;
+    if(params_->augmentListOnly){
+        if(om::ADD == params_->addOrSubtract){
+            if(om::sets::SetAContainsB(params_->oldSelectedIDs,
+                                          params_->newSelectedIDs))
+            {
+                // already added
+                return false;
+            }
+        } else {
+            if(om::sets::SetsAreDisjoint(params_->oldSelectedIDs,
+                                        params_->newSelectedIDs))
+            {
+                // no segments to be removed are selected
+                return false;
+            }
+        }
+
+    } else {
+        if( params_->oldSelectedIDs == params_->newSelectedIDs ){
+            // no change in selected set
+            return false;
+        }
     }
 
     //debugs(segmentSelector) << params_->oldSelectedIDs << "\n";

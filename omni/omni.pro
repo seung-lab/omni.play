@@ -84,6 +84,8 @@ HEADERS +=  \
 	src/chunks/omChunkMipping.hpp \
 	src/chunks/omChunkTypes.hpp \
 	src/chunks/omChunkUtils.hpp \
+	src/chunks/omRawChunk.hpp \
+	src/chunks/omRawChunkMemMapped.hpp \
 	src/chunks/omSegChunk.h \
 	src/chunks/omSegChunkData.h \
 	src/chunks/omSegChunkDataVisitors.hpp \
@@ -97,6 +99,7 @@ HEADERS +=  \
 	src/common/omDebug.h \
 	src/common/omException.h \
 	src/common/omGl.h \
+	src/common/omSet.hpp \
 	src/common/omStd.h \
 	src/common/omString.hpp \
 	src/datalayer/archive/omDataArchiveBoost.h \
@@ -410,6 +413,7 @@ HEADERS +=  \
 	src/view2d/omPointsInCircle.hpp \
 	src/view2d/omScreenPainter.hpp \
 	src/view2d/omScreenShotSaver.hpp \
+	src/view2d/omSliceCache.hpp \
 	src/view2d/omTileDrawer.h \
 	src/view2d/omView2d.h \
 	src/view2d/omView2dConverters.hpp \
@@ -472,7 +476,6 @@ HEADERS +=  \
 	src/volume/omFilter2d.h \
 	src/volume/omFilter2dManager.h \
 	src/volume/omMipVolume.h \
-	src/volume/omRawChunk.hpp \
 	src/volume/omSegmentation.h \
 	src/volume/omUpdateBoundingBoxes.h \
 	src/volume/omVolCoords.hpp \

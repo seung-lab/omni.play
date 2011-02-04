@@ -110,15 +110,13 @@ private:
 
     void mouseLeftButton()
     {
-        bool doselection = false;
-
         switch(tool_){
         case SELECT_MODE:
             if(controlKey_){
                 return;
             } else {
                 state_->setScribbling(true);
-                doselection = true;
+                selectSegments();
             }
             break;
         case PAN_MODE:
@@ -132,28 +130,30 @@ private:
             return;
         case ADD_VOXEL_MODE:
             state_->setScribbling(true);
+            paint();
             break;
         case SUBTRACT_VOXEL_MODE:
             state_->setScribbling(true);
+            paint();
             break;
         default:
             return;
         }
 
-        if(doselection){
-            if(altKey_){
-                OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::SUBTRACT);
-            } else {
-                OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::ADD);
-            }
-
-        } else {
-            paint();
-        }
-
         state_->SetLastDataPoint(dataClickPoint_);
 
         v2d_->myUpdate();
+    }
+
+    void selectSegments()
+    {
+        om::AddOrSubtract addOrSubtractSegments = om::ADD;
+        if(altKey_){
+            addOrSubtractSegments = om::SUBTRACT;
+        }
+
+        OmBrushSelect::SelectByClick(state_, dataClickPoint_,
+                                     addOrSubtractSegments);
     }
 
     void paint()
