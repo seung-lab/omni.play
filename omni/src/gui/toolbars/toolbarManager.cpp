@@ -6,12 +6,12 @@
 #include "system/omAppState.hpp"
 
 ToolBarManager::ToolBarManager( MainWindow * mw )
-	: QWidget(mw)
-	, mMainWindow(mw)
-	, mainToolbar(new MainToolbar(mw))
-	, dendToolBar(NULL)
+    : QWidget(mw)
+    , mMainWindow(mw)
+    , mainToolbar(new MainToolbar(mw))
+    , dendToolBar(NULL)
 {
-	OmAppState::SetDendToolBar(dendToolBar);
+    OmAppState::SetDendToolBar(dendToolBar);
 }
 
 void ToolBarManager::setupToolbarInitially()
@@ -24,48 +24,48 @@ void ToolBarManager::updateReadOnlyRelatedWidgets()
 
 void ToolBarManager::updateGuiFromProjectLoadOrOpen(OmViewGroupState* vgs)
 {
-	mainToolbar->updateToolbar();
+    mainToolbar->updateToolbar();
 
-	if(dendToolBar){
-		mMainWindow->removeToolBar(dendToolBar);
-		delete dendToolBar;
-	}
-	dendToolBar = new DendToolBar(mMainWindow, vgs);
+    if(dendToolBar){
+        mMainWindow->removeToolBar(dendToolBar);
+        delete dendToolBar;
+    }
+    dendToolBar = new DendToolBar(mMainWindow, vgs);
 
-	vgs->SetToolBarManager(this);
+    vgs->SetToolBarManager(this);
 }
 
 void ToolBarManager::SetSplittingOff()
 {
-	if(dendToolBar){
-		dendToolBar->SetSplittingOff();
-	}
+    if(dendToolBar){
+        dendToolBar->SetSplittingOff();
+    }
 }
 
 void ToolBarManager::SetCuttingOff()
 {
-        if(dendToolBar){
-                dendToolBar->SetCuttingOff();
-        }
+    if(dendToolBar){
+        dendToolBar->SetCuttingOff();
+    }
 }
 
 void ToolBarManager::setTool(const OmToolMode tool)
 {
-	mainToolbar->setTool(tool);
+    mainToolbar->setTool(tool);
 }
 
 void ToolBarManager::windowResized(QPoint oldPos)
 {
-	//	printf("toolbarManager:: resizing to %d, %d\n", oldPos.x(), oldPos.y());
-	if(dendToolBar){
-		dendToolBar->updateToolBarsPos(oldPos);
-	}
+    //	printf("toolbarManager:: resizing to %d, %d\n", oldPos.x(), oldPos.y());
+    if(dendToolBar){
+        dendToolBar->updateToolBarsPos(oldPos);
+    }
 }
 
 void ToolBarManager::windowMoved(QPoint oldPos)
 {
-	//	printf("toolbarManager:: moving to %d, %d\n", oldPos.x(), oldPos.y());
-	if(dendToolBar){
-		dendToolBar->updateToolBarsPos(oldPos);
-	}
+    //	printf("toolbarManager:: moving to %d, %d\n", oldPos.x(), oldPos.y());
+    if(dendToolBar){
+        dendToolBar->updateToolBarsPos(oldPos);
+    }
 }

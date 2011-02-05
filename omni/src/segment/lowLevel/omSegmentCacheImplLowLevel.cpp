@@ -7,7 +7,7 @@
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
-OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel(OmSegmentation * segmentation)
+OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel(OmSegmentation* segmentation)
     : segmentation_(segmentation)
     , mSegments(new OmPagingPtrStore(segmentation))
     , mMaxValue(0)
@@ -19,8 +19,12 @@ OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel(OmSegmentation * segmenta
 OmSegmentCacheImplLowLevel::~OmSegmentCacheImplLowLevel()
 {}
 
-OmSegment * OmSegmentCacheImplLowLevel::findRoot(OmSegment * segment)
+OmSegment* OmSegmentCacheImplLowLevel::findRoot(OmSegment* segment)
 {
+    if(!segment){
+        return 0;
+    }
+
     if(!segment->getParent()) {
         return segment;
     }
@@ -28,9 +32,13 @@ OmSegment * OmSegmentCacheImplLowLevel::findRoot(OmSegment * segment)
     return GetSegment(mSegmentGraph.graph_getRootID(segment->value()));
 }
 
-OmSegment * OmSegmentCacheImplLowLevel::findRoot(const OmSegID segID)
+OmSegment* OmSegmentCacheImplLowLevel::findRoot(const OmSegID segID)
 {
-    return findRoot(GetSegment(segID));
+    if(!segID){
+        return 0;
+    }
+
+    return GetSegment(mSegmentGraph.graph_getRootID(segID));
 }
 
 OmSegID OmSegmentCacheImplLowLevel::findRootID(const OmSegID segID)
@@ -39,7 +47,7 @@ OmSegID OmSegmentCacheImplLowLevel::findRootID(const OmSegID segID)
         return 0;
     }
 
-    return findRoot(GetSegment(segID))->value();
+    return mSegmentGraph.graph_getRootID(segID);
 }
 
 OmSegID OmSegmentCacheImplLowLevel::findRootID(OmSegment* segment)
@@ -48,7 +56,11 @@ OmSegID OmSegmentCacheImplLowLevel::findRootID(OmSegment* segment)
         return 0;
     }
 
-    return findRoot(segment)->value();
+    if(!segment->getParent()) {
+        return segment->value();
+    }
+
+    return mSegmentGraph.graph_getRootID(segment->value());
 }
 
 OmSegment* OmSegmentCacheImplLowLevel::GetSegment(const OmSegID value)
@@ -57,9 +69,9 @@ OmSegment* OmSegmentCacheImplLowLevel::GetSegment(const OmSegID value)
 
     if(seg && seg->value() > mMaxValue){
         throw OmIoException("bad segment value: "
-                            + om::NumToStr(seg->value())
+                            + om::string::num(seg->value())
                             + "; maxValue is: "
-                            + om::NumToStr(mMaxValue));
+                            + om::string::num(mMaxValue));
     }
 
     return seg;
@@ -174,7 +186,7 @@ void OmSegmentCacheImplLowLevel::touchFreshness(){
     OmCacheManager::TouchFresheness();
 }
 
-void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)
+void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment* newSeg)
 {
     mSegmentGraph.growGraphIfNeeded(newSeg);
 }

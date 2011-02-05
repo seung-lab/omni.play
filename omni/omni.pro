@@ -48,16 +48,12 @@ DEPENDPATH += . \
 ## start of section to be rewritten using Perl
 HEADERS +=  \
 	lib/strnatcmp.h \
-	src/actions/details/omAction.h \
-	src/actions/details/omProjectCloseAction.h \
+	src/actions/details/omActionBase.hpp \
+	src/actions/details/omActionImpls.hpp \
 	src/actions/details/omProjectCloseActionImpl.hpp \
-	src/actions/details/omProjectSaveAction.h \
 	src/actions/details/omProjectSaveActionImpl.hpp \
-	src/actions/details/omSegmentGroupAction.h \
 	src/actions/details/omSegmentGroupActionImpl.hpp \
-	src/actions/details/omSegmentJoinAction.h \
 	src/actions/details/omSegmentJoinActionImpl.hpp \
-	src/actions/details/omSegmentSelectAction.h \
 	src/actions/details/omSegmentSelectActionImpl.hpp \
 	src/actions/details/omSegmentSplitAction.h \
 	src/actions/details/omSegmentSplitActionImpl.hpp \
@@ -65,8 +61,8 @@ HEADERS +=  \
 	src/actions/details/omSegmentUncertainActionImpl.hpp \
 	src/actions/details/omSegmentValidateAction.h \
 	src/actions/details/omSegmentValidateActionImpl.hpp \
-	src/actions/details/omSegmentationThresholdChangeAction.h \
 	src/actions/details/omSegmentationThresholdChangeActionImpl.hpp \
+	src/actions/details/omUndoCommand.hpp \
 	src/actions/details/omVoxelSetValueAction.h \
 	src/actions/details/omVoxelSetValueActionImpl.hpp \
 	src/actions/io/omActionLogger.hpp \
@@ -438,6 +434,7 @@ HEADERS +=  \
 	src/view3d/widgets/omViewBoxWidget.h \
 	src/view3d/widgets/omVolumeAxisWidget.h \
 	src/viewGroup/omBrushSize.hpp \
+	src/viewGroup/omSplitting.hpp \
 	src/viewGroup/omViewGroupState.h \
 	src/viewGroup/omZoomLevel.hpp \
 	src/volume/build/omBuildAffinityChannel.hpp \
@@ -513,15 +510,9 @@ HEADERS +=  \
 
 SOURCES +=  \
 	lib/strnatcmp.cpp \
-	src/actions/details/omProjectCloseAction.cpp \
-	src/actions/details/omProjectSaveAction.cpp \
-	src/actions/details/omSegmentGroupAction.cpp \
-	src/actions/details/omSegmentJoinAction.cpp \
-	src/actions/details/omSegmentSelectAction.cpp \
 	src/actions/details/omSegmentSplitAction.cpp \
 	src/actions/details/omSegmentUncertainAction.cpp \
 	src/actions/details/omSegmentValidateAction.cpp \
-	src/actions/details/omSegmentationThresholdChangeAction.cpp \
 	src/actions/details/omVoxelSetValueAction.cpp \
 	src/actions/io/omActionOperators.cpp \
 	src/actions/io/omActionReplayer.cpp \

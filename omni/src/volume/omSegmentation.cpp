@@ -53,23 +53,15 @@ OmSegmentation::~OmSegmentation()
 {}
 
 std::string OmSegmentation::GetName(){
-    return "segmentation" + om::NumToStr(GetID());
+    return "segmentation" + om::string::num(GetID());
 }
 
 std::string OmSegmentation::GetDirectoryPath(){
     return OmDataPaths::getDirectoryPath(this);
 }
 
-void OmSegmentation::SetDendThreshold(const double t)
-{
-    static zi::rwmutex lock;
-    zi::rwmutex::write_guard g(lock);
-
-    if(qFuzzyCompare(t, mst_->UserThreshold())){
-        return;
-    }
+void OmSegmentation::SetDendThreshold(const double t){
     mst_->SetUserThreshold(t);
-    segmentCache_->refreshTree();
 }
 
 void OmSegmentation::CloseDownThreads() {

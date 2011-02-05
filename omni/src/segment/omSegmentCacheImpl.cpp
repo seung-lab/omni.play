@@ -313,7 +313,7 @@ void OmSegmentCacheImpl::setGlobalThreshold()
 {
     OmMST* mst = segmentation_->MST();
 
-    if(!mst->isValid()){
+    if(!mst->IsValid()){
         printf("no graph found...\n");
         return;
     }

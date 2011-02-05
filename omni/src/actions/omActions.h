@@ -4,6 +4,7 @@
 #include "common/om.hpp"
 #include "common/omCommon.h"
 
+class OmSegment;
 class OmSelectSegmentsParams;
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
@@ -12,7 +13,6 @@ class OmSegmentCache;
 
 class OmActions {
 public:
-
 // project-related
     static void Save();
 
@@ -60,13 +60,22 @@ public:
                                            const OmGroupName name,
                                            const bool create);
 private:
-    static OmSegIDsSet MutateSegmentsInValidList(OmSegmentCache * cache,
-                                                 const OmSegIDsSet& ids);
-    static void UnMutateSegmentsInValidList(OmSegmentCache * cache,
-                                            const OmSegIDsSet& ids);
-    static void DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
-                                      OmViewGroupState* vgs,
-                                      const DataCoord coord);
+    static OmSegPtrSet setNotValid(OmSegmentCache * cache,
+                                   const OmSegIDsSet& ids);
+
+    static void setAsValid(const OmSegPtrSet& ids);
+
+    static void runIfSplittable(OmSegment* seg1, OmSegment* seg2,
+                                const DataCoord& coord1, const DataCoord& coord2);
+
+    static void doFindAndCutSegment(const SegmentDataWrapper& sdw,
+                                    OmViewGroupState* vgs);
+
+    static void setUncertain(const SegmentDataWrapper& sdw,
+                             const bool uncertain);
+
+    static void setUncertain(const SegmentationDataWrapper& sdw,
+                             const bool uncertain);
 
 };
 

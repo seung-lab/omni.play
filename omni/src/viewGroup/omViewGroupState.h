@@ -4,6 +4,7 @@
 #include "system/omManageableObject.h"
 #include "zi/omMutex.h"
 
+class OmSplitting;
 class FilterWidget;
 class InspectorProperties;
 class MainWindow;
@@ -19,137 +20,133 @@ class ViewGroup;
 
 class OmViewGroupState : public OmManageableObject {
 public:
-	OmViewGroupState( MainWindow* mw );
-	virtual ~OmViewGroupState();
+    OmViewGroupState( MainWindow* mw );
+    virtual ~OmViewGroupState();
 
-	void SetInspectorProperties(InspectorProperties* ip) {
-		mInspectorProperties = ip;
-	}
-	InspectorProperties* GetInspectorProperties() {
-		return mInspectorProperties;
-	}
+    void SetInspectorProperties(InspectorProperties* ip) {
+        mInspectorProperties = ip;
+    }
+    InspectorProperties* GetInspectorProperties() {
+        return mInspectorProperties;
+    }
 
-	void SetFilterWidget(FilterWidget* f){ mFilterWidget = f; }
-	FilterWidget* GetFilterWidget(){ return mFilterWidget; }
+    void SetFilterWidget(FilterWidget* f){ mFilterWidget = f; }
+    FilterWidget* GetFilterWidget(){ return mFilterWidget; }
 
-	// GUI state
-	void addView2Dchannel( OmID chan_id, ViewType vtype);
-	void addView2Dsegmentation( OmID segmentation_id, ViewType vtype);
-	void addView3D();
-	void addAllViews( OmID channelID, OmID segmentationID );
+    // GUI state
+    void addView2Dchannel( OmID chan_id, ViewType vtype);
+    void addView2Dsegmentation( OmID segmentation_id, ViewType vtype);
+    void addView3D();
+    void addAllViews( OmID channelID, OmID segmentationID );
 
-	//viewbox state
-	void SetViewSliceMin(const ViewType plane, const float x,
-						 const float y);
-	Vector2f GetViewSliceMin(ViewType);
+    //viewbox state
+    void SetViewSliceMin(const ViewType plane, const float x,
+                         const float y);
+    Vector2f GetViewSliceMin(ViewType);
 
-	void SetViewSliceMax(const ViewType plane, const float x,
-						 const float y);
-	Vector2f GetViewSliceMax(ViewType);
+    void SetViewSliceMax(const ViewType plane, const float x,
+                         const float y);
+    Vector2f GetViewSliceMax(ViewType);
 
-	SpaceCoord GetViewDepthCoord();
-	void SetViewSliceDepth(ViewType, float);
-	float GetViewSliceDepth(ViewType);
+    SpaceCoord GetViewDepthCoord();
+    void SetViewSliceDepth(ViewType, float);
+    float GetViewSliceDepth(ViewType);
 
-	OmZoomLevel* ZoomLevel() {
-		return zoomLevel_.get();
-	}
+    OmZoomLevel* ZoomLevel() {
+        return zoomLevel_.get();
+    }
 
-	void SetPanDistance(const ViewType, const Vector2f&);
-	Vector2f ComputePanDistance(ViewType);
+    void SetPanDistance(const ViewType, const Vector2f&);
+    Vector2f ComputePanDistance(ViewType);
 
-	boost::shared_ptr<OmColorRGBA> ColorTile(uint32_t const*,
-											 const Vector2i&,
-											 const OmTileCoord&);
+    boost::shared_ptr<OmColorRGBA> ColorTile(uint32_t const*,
+                                             const Vector2i&,
+                                             const OmTileCoord&);
 
-	void setBreakThreshold(float t){ mBreakThreshold = t; }
-	float getBreakThreshold(){ return mBreakThreshold; }
+    void setBreakThreshold(float t){ mBreakThreshold = t; }
+    float getBreakThreshold(){ return mBreakThreshold; }
 
-	void setDustThreshold(uint64_t t){
-		mDustThreshold = t;
-	}
-	uint64_t getDustThreshold(){
-		return mDustThreshold;
-	}
+    void setDustThreshold(uint64_t t){
+        mDustThreshold = t;
+    }
+    uint64_t getDustThreshold(){
+        return mDustThreshold;
+    }
 
-	void SetToolBarManager(ToolBarManager* tbm);
-	bool GetShatterMode();
-	void SetShatterMode(bool shatter);
-	void ToggleShatterMode();
+    void SetToolBarManager(ToolBarManager* tbm);
+    bool GetShatterMode();
+    void SetShatterMode(bool shatter);
+    void ToggleShatterMode();
 
-	std::pair<boost::optional<DataCoord>, SegmentDataWrapper> GetSplitMode();
-	void SetSplitMode(const SegmentDataWrapper& sdw, DataCoord coord);
-	void SetSplitMode(bool onoroff, bool postEvent = true);
-	void SetBreakOnSplitMode(bool mode);
+    void SetBreakOnSplitMode(bool mode);
 
-	void SetShowValidMode(bool mode, bool incolor);
-	void SetShowSplitMode(bool mode);
-	bool shouldVolumeBeShownBroken();
+    void SetShowValidMode(bool mode, bool incolor);
+    bool shouldVolumeBeShownBroken();
+    void SetCutMode(bool mode, bool postEvent = true);
+    void SetShowCutMode(bool mode);
 
-	void SetCutMode(bool mode, bool postEvent = true);
-	void SetShowCutMode(bool mode);
+    void setTool(const OmToolMode tool);
 
-	void setTool(const OmToolMode tool);
+    void SetHowNonSelectedSegmentsAreColoredInFilter(const bool);
+    bool ShowNonSelectedSegmentsInColorInFilter();
 
-	void SetHowNonSelectedSegmentsAreColoredInFilter(const bool);
-	bool ShowNonSelectedSegmentsInColorInFilter();
+    inline OmBrushSize* getBrushSize(){
+        return brushSize_.get();
+    }
 
-	OmBrushSize* getBrushSize(){
-		return brushSize_.get();
-	}
+    inline OmSplitting* Splitting(){
+        return splitting_.get();
+    }
 
-	OmSegmentColorCacheType determineColorizationType(const ObjectType);
+    OmSegmentColorCacheType determineColorizationType(const ObjectType);
 
 private:
-	zi::mutex mColorCacheMapLock;
+    zi::mutex mColorCacheMapLock;
 
-	MainWindow* mMainWindow;
-	FilterWidget* mFilterWidget;
-	boost::scoped_ptr<ViewGroup> mViewGroup;
-	InspectorProperties* mInspectorProperties;
+    MainWindow* mMainWindow;
+    FilterWidget* mFilterWidget;
+    boost::scoped_ptr<ViewGroup> mViewGroup;
+    InspectorProperties* mInspectorProperties;
 
-	boost::scoped_ptr<OmBrushSize> brushSize_;
+    boost::scoped_ptr<OmBrushSize> brushSize_;
 
-	float mBreakThreshold;
-	uint64_t mDustThreshold;
+    float mBreakThreshold;
+    uint64_t mDustThreshold;
 
-	//view event
-	float mXYSlice[6], mYZSlice[6], mXZSlice[6];
-	float mXYPan[2], mYZPan[2], mXZPan[2];
+    //view event
+    float mXYSlice[6], mYZSlice[6], mXZSlice[6];
+    float mXYPan[2], mYZPan[2], mXZPan[2];
 
-	boost::scoped_ptr<OmZoomLevel> zoomLevel_;
+    boost::scoped_ptr<OmZoomLevel> zoomLevel_;
 
-	SpaceBbox mViewBbox;
-	SpaceCoord mViewCenter;
+    SpaceBbox mViewBbox;
+    SpaceCoord mViewCenter;
 
-	bool mXYSliceEnabled, mYZSliceEnabled, mXZSliceEnabled;
+    bool mXYSliceEnabled, mYZSliceEnabled, mXZSliceEnabled;
 
-	int mViewSliceBytesPerSample;
-	int mViewSliceSamplesPerPixel;
-	Vector3i mViewSliceDimXY;
-	Vector3i mViewSliceDimYZ;
-	Vector3i mViewSliceDimXZ;
+    int mViewSliceBytesPerSample;
+    int mViewSliceSamplesPerPixel;
+    Vector3i mViewSliceDimXY;
+    Vector3i mViewSliceDimYZ;
+    Vector3i mViewSliceDimXZ;
 
-	std::vector<boost::shared_ptr<OmSegmentColorizer> > mColorCaches;
+    std::vector<boost::shared_ptr<OmSegmentColorizer> > mColorCaches;
 
-	//toolbar stuff
-	ToolBarManager* mToolBarManager;
-	bool mShatter;
-	bool mSplitting;
-	bool mCutting;
-	bool mBreakOnSplit;
-	bool mShowValid;
-	bool mShowSplit;
-	bool mShowValidInColor;
-	bool mShowCut;
+    //toolbar stuff
+    ToolBarManager* mToolBarManager;
+    bool mShatter;
+    bool mCutting;
+    bool mBreakOnSplit;
+    bool mShowValid;
+    bool mShowValidInColor;
+    bool mShowCut;
 
-	bool mShowFilterInColor;
+    bool mShowFilterInColor;
 
-	void setupColorizer(const Vector2i&, const OmTileCoord&,
-						const OmSegmentColorCacheType);
+    void setupColorizer(const Vector2i&, const OmTileCoord&,
+                        const OmSegmentColorCacheType);
 
-	boost::shared_ptr<SegmentDataWrapper> segmentBeingSplit_;
-	boost::optional<DataCoord> coordBeingSplit_;
+    boost::scoped_ptr<OmSplitting> splitting_;
 };
 
 #endif

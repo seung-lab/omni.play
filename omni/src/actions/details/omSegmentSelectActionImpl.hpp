@@ -62,19 +62,10 @@ public:
 
     std::string Description() const
     {
-        static const size_t max = 5;
+        static const int max = 5;
 
-        std::vector<OmSegID> segIDs;
-        segIDs.reserve(max);
-
-        om::utils::CopyFirstN(params_->newSelectedIDs, segIDs, max);
-
-        const std::string nums = om::string::join(segIDs);
-
-        std::string post = "";
-        if(params_->newSelectedIDs.size() > max){
-            post = "...";
-        }
+        const std::string nums =
+            om::utils::MakeShortStrList<OmSegIDsSet, OmSegID>(params_->newSelectedIDs, max);
 
         std::string prefix("Selected segments: ");
 
@@ -86,7 +77,7 @@ public:
             }
         }
 
-        return prefix + nums + post;
+        return prefix + nums;
     }
 
     QString classNameForLogFile() const {

@@ -1,6 +1,7 @@
 #ifndef TESTS_HPP
 #define TESTS_HPP
 
+#include "segment/lowLevel/DynamicForestPool.hpp"
 #include "common/omSet.hpp"
 #include "cache/lockedObjectsTests.hpp"
 #include "datalayer/fs/omFileNames.hpp"
@@ -40,6 +41,8 @@ public:
     void Run()
     {
         setDiffTests();
+
+        //dynamicForest();
 
         return;
 
@@ -396,6 +399,17 @@ private:
             verify(false == om::sets::SetsAreDisjoint(a, b));
         }
         std::cout << "set tests OK\n";
+    }
+
+    void dynamicForest()
+    {
+        zi::DynamicForestPool<uint32_t> forest(1000);
+
+        for(int i = 1; i < 1000; ++i){
+            std::cout << i << ", " << forest.root(i) << "\n";
+        }
+
+        std::cout << "dynamicForest\n";
     }
 };
 

@@ -6,29 +6,28 @@
 
 class OmProjectSaveActionImpl {
 public:
-	OmProjectSaveActionImpl()
-	{}
+    OmProjectSaveActionImpl()
+    {}
 
-	void Execute()
-	{
-		OmProject::Save();
-	}
+    void Execute(){
+        OmProject::Save();
+    }
 
-	void Undo()
-	{}
+    void Undo()
+    {}
 
-	std::string Description() const
-	{
-		QString lineItem = QString("Saved");
-		return lineItem.toStdString();
-	}
+    std::string Description() const
+    {
+        QString lineItem = QString("Saved");
+        return lineItem.toStdString();
+    }
 
-	QString classNameForLogFile() const {
-		return "OmProjectSaveAction";
-	}
+    QString classNameForLogFile() const {
+        return "OmProjectSaveAction";
+    }
 
 private:
-	template <typename T> friend class OmActionLoggerThread;
+    template <typename T> friend class OmActionLoggerThread;
 };
 
 #endif

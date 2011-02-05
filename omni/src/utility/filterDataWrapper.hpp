@@ -6,62 +6,62 @@
 
 class FilterDataWrapper {
 private:
-	OmID mID;
-	OmID mChannelID;
+    OmID mID;
+    OmID mChannelID;
 
 public:
-	FilterDataWrapper()
-	{}
+    FilterDataWrapper()
+    {}
 
-	FilterDataWrapper(const OmID channelID, const OmID ID)
-		: mID(ID)
-		, mChannelID(channelID)
-	{}
+    FilterDataWrapper(const OmID channelID, const OmID ID)
+        : mID(ID)
+        , mChannelID(channelID)
+    {}
 
-	OmID getChannelID() const {
-		return mChannelID;
-	}
+    OmID getChannelID() const {
+        return mChannelID;
+    }
 
-	OmID getID() const {
-		return mID;
-	}
+    OmID getID() const {
+        return mID;
+    }
 
-	OmChannel& GetChannel() const {
-		return OmProject::Volumes().Channels().GetChannel(mChannelID);
-	}
+    OmChannel& GetChannel() const {
+        return OmProject::Volumes().Channels().GetChannel(mChannelID);
+    }
 
-	bool isValid() const
-	{
-		if( OmProject::Volumes().Channels().IsChannelValid(mChannelID) ){
-			if( GetChannel().FilterManager().IsFilterValid(mID) ){
-				return true;
-			}
-		}
+    bool isValid() const
+    {
+        if( OmProject::Volumes().Channels().IsChannelValid(mChannelID) ){
+            if( GetChannel().FilterManager().IsFilterValid(mID) ){
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	OmFilter2d* getFilter() const
-	{
-		if(!isValid()){
-			return NULL;
-		}
+    OmFilter2d* getFilter() const
+    {
+        if(!isValid()){
+            return NULL;
+        }
 
-		return &GetChannel().FilterManager().GetFilter(mID);
-	}
+        return &GetChannel().FilterManager().GetFilter(mID);
+    }
 
-	QString getName() const
-	{
-		OmFilter2d* f = getFilter();
-		if(!f){
-			return "";
-		}
-		return QString::fromStdString(f->GetName());
-	}
+    QString getName() const
+    {
+        OmFilter2d* f = getFilter();
+        if(!f){
+            return "";
+        }
+        return QString::fromStdString(f->GetName());
+    }
 
-	bool isEnabled() const {
-		return GetChannel().FilterManager().IsFilterEnabled(mID);
-	}
+    bool isEnabled() const {
+        return GetChannel().FilterManager().IsFilterEnabled(mID);
+    }
 };
 
 #endif

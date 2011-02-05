@@ -76,6 +76,10 @@ typedef uint32_t OmSegID;
 typedef std::deque<OmSegID> OmSegIDsList;
 typedef uint32_t PageNum;
 
+class OmSegment;
+struct OmSegPtrSet : public std::set<OmSegment*>
+{};
+
 struct OmSegIDsSet : public std::set<OmSegID>
 {
     friend std::ostream& operator<<(std::ostream& out, const OmSegIDsSet& in);
@@ -141,30 +145,5 @@ enum OmCacheGroupEnum {
 
 class OmTile;
 typedef boost::shared_ptr<OmTile> OmTilePtr;
-
-/**
- * string-to-number and number-to-string converters
- **/
-namespace om {
-template <typename T>
-static std::string NumToStr(const T& num){
-    return boost::lexical_cast<std::string>(num);
-}
-
-template <typename T>
-static QString NumToQStr(const T& num){
-    return QString::number(num);
-}
-
-template <typename T>
-static T StrToNum(const std::string& str){
-    return boost::lexical_cast<T>(str);
-}
-
-template <typename T>
-static T StrToNum(const QString& str){
-    return boost::lexical_cast<T>(str.toStdString());
-}
-}
 
 #endif

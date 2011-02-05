@@ -24,7 +24,7 @@ public:
         return selected_;
     }
 
-    uint32_t numberOfSelectedSegments() const {
+    inline uint32_t numberOfSelectedSegments() const {
         return selected_.size();
     }
 
@@ -32,7 +32,7 @@ public:
         selected_.clear();
     }
 
-    inline void rerootSegmentList()
+    void rerootSegmentList()
     {
         OmSegIDsSet old = selected_;
         selected_.clear();
