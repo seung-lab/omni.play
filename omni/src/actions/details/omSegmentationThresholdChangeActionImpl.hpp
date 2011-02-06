@@ -4,7 +4,7 @@
 #include "actions/io/omActionLogger.hpp"
 #include "common/omCommon.h"
 #include "common/omString.hpp"
-#include "system/events/omSegmentEvent.h"
+#include "events/omSegmentEvent.h"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
 

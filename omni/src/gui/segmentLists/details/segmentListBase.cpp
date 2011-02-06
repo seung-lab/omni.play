@@ -10,7 +10,7 @@
 #include "segment/omSegmentSearched.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
-#include "system/events/omSegmentEvent.h"
+#include "events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 

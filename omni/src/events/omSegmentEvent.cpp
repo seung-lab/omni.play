@@ -1,5 +1,5 @@
 #include "actions/omSelectSegmentParams.hpp"
-#include "system/events/omSegmentEvent.h"
+#include "events/omSegmentEvent.h"
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type)
     : OmEvent(type, CLASS)

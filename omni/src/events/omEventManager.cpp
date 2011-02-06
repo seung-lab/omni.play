@@ -1,6 +1,6 @@
-#include "system/events/omEventManager.h"
-#include "system/events/omViewEvent.h"
-#include "system/events/omSegmentEvent.h"
+#include "events/omEventManager.h"
+#include "events/omViewEvent.h"
+#include "events/omSegmentEvent.h"
 #include "common/omDebug.h"
 #include "zi/omUtility.h"
 

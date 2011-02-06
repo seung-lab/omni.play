@@ -1,10 +1,10 @@
-#include "system/events/omPreferenceEvent.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/events/omToolModeEvent.h"
-#include "system/events/omView3dEvent.h"
-#include "system/events/omViewEvent.h"
-#include "system/events/omEvent.h"
-#include "system/events/omEventManager.h"
+#include "events/omPreferenceEvent.h"
+#include "events/omSegmentEvent.h"
+#include "events/omToolModeEvent.h"
+#include "events/omView3dEvent.h"
+#include "events/omViewEvent.h"
+#include "events/omEvent.h"
+#include "events/omEventManager.h"
 #include "system/omEvents.h"
 
 #define POST OmEventManager::PostEvent

@@ -7,7 +7,7 @@
 #include "system/cache/omCacheGroup.h"
 #include "system/cache/omCacheInfo.h"
 #include "system/cache/omCacheManager.h"
-#include "system/events/omPreferenceEvent.h"
+#include "events/omPreferenceEvent.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"

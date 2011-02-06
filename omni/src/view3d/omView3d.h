@@ -5,11 +5,11 @@
 #include "omView3dWidget.h"
 #include "omView3dUi.h"
 
-#include "system/events/omView3dEvent.h"
-#include "system/events/omViewEvent.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/events/omPreferenceEvent.h"
-#include "system/events/omKeyPressEventListener.h"
+#include "events/omView3dEvent.h"
+#include "events/omViewEvent.h"
+#include "events/omSegmentEvent.h"
+#include "events/omPreferenceEvent.h"
+#include "events/omKeyPressEventListener.h"
 #include "view3d/omView3dKeyPressEventListener.h"
 #include "common/omCommon.h"
 

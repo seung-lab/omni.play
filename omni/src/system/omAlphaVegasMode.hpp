@@ -2,7 +2,7 @@
 #define OM_ALPHA_VEGA_MODE_HPP
 
 #include "common/omDebug.h"
-#include "system/events/omView3dEvent.h"
+#include "events/omView3dEvent.h"
 #include "gui/toolbars/mainToolbar/filterWidget.hpp"
 
 #include <qthread.h>

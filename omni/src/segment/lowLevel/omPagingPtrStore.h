@@ -13,39 +13,65 @@ class OmSegmentation;
 class OmSegmentCache;
 
 class OmPagingPtrStore {
- public:
-	OmPagingPtrStore(OmSegmentation*);
-	virtual ~OmPagingPtrStore(){}
+public:
+    OmPagingPtrStore(OmSegmentation*);
+    virtual ~OmPagingPtrStore(){}
 
-	void Flush();
+    void Flush();
 
-	quint32 getPageSize() {
-		return pageSize_;
-	}
+    quint32 getPageSize() {
+        return pageSize_;
+    }
 
-	OmSegment* AddSegment(const OmSegID value);
-	OmSegment* GetSegment(const OmSegID value);
+    OmSegment* AddSegment(const OmSegID value);
 
- private:
-	OmSegmentation *const segmentation_;
+    /**
+     * returns NULL if segment was never instantiated;
+     **/
+    inline OmSegment* GetSegment(const OmSegID value)
+    {
+        if(!value){
+            return NULL;
+        }
 
-	uint32_t pageSize_;
-	std::vector<OmSegmentPage> pages_;
-	QSet<PageNum> validPageNumbers_;
+        const PageNum pageNum = value / pageSize_;
+        if(!validPageNumbers_.contains(pageNum)){
+            return NULL;
+        }
 
-	inline PageNum getValuePageNum(const OmSegID value){
-		return PageNum(value / pageSize_);
-	}
+        OmSegment* ret = &(pages_[pageNum][ value % pageSize_]);
 
-	void loadAllSegmentPages();
-	void resizeVectorIfNeeded(const PageNum pageNum);
+        const OmSegID loadedID = ret->data_->value;
+        if(!loadedID){
+            return NULL;
+        }
+        if(loadedID != value){
+            throw OmIoException("corruption detected in segment page");
+        }
 
-	QString metadataPathQStr();
-	void loadMetadata();
-	void storeMetadata();
+        return ret;
+    }
 
-	friend QDataStream &operator<< (QDataStream& out, const OmPagingPtrStore&);
-	friend QDataStream &operator>> (QDataStream& in, OmPagingPtrStore&);
+private:
+    OmSegmentation *const segmentation_;
+
+    uint32_t pageSize_;
+    std::vector<OmSegmentPage> pages_;
+    QSet<PageNum> validPageNumbers_;
+
+    inline PageNum getValuePageNum(const OmSegID value){
+        return PageNum(value / pageSize_);
+    }
+
+    void loadAllSegmentPages();
+    void resizeVectorIfNeeded(const PageNum pageNum);
+
+    QString metadataPathQStr();
+    void loadMetadata();
+    void storeMetadata();
+
+    friend QDataStream &operator<< (QDataStream& out, const OmPagingPtrStore&);
+    friend QDataStream &operator>> (QDataStream& in, OmPagingPtrStore&);
 };
 
 #endif

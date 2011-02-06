@@ -38,7 +38,7 @@ public:
         selected_.clear();
 
         FOR_EACH(iter, old){
-            selected_.insert(cache_->findRootID(*iter));
+            selected_.insert(cache_->FindRootID(*iter));
         }
     }
 
@@ -46,14 +46,12 @@ public:
         return selected_.size();
     }
 
-    inline bool isSegmentSelected(OmSegment* seg) const {
-        return isSegmentSelected(seg->value());
-    }
-
     inline bool isSegmentSelected(const OmSegID segID) const
     {
-        const OmSegID rootID = cache_->findRootID(segID);
-        return selected_.count(rootID);
+        if(selected_.empty()){
+            return false;
+        }
+        return selected_.count(cache_->FindRootID(segID));
     }
 
     inline void setSegmentSelected(OmSegID segID,
@@ -98,7 +96,7 @@ public:
                                         const bool isSelected,
                                         const bool addToRecentList)
     {
-        const OmSegID rootID = cache_->findRootID(segID);
+        const OmSegID rootID = cache_->FindRootID(segID);
 
         if (isSelected) {
             doSelectedSetInsert(rootID, addToRecentList);

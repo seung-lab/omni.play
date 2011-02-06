@@ -1,4 +1,5 @@
 #include "segment/lowLevel/omSegmentSelection.hpp"
+#include "segment/lowLevel/omEnabledSegments.hpp"
 #include "datalayer/archive/omMipVolumeArchive.h"
 #include "datalayer/archive/omMipVolumeArchiveOld.h"
 #include "common/omException.h"
@@ -55,8 +56,8 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp, OmProjectImpl* projec
 
     QString omniPostfix;
     in >> omniPostfix;
-    if(Omni_Postfix != omniPostfix ||
-       !in.atEnd()){
+
+    if(Omni_Postfix != omniPostfix || !in.atEnd()){
         throw OmIoException("corruption detected in Omni file");
     }
 
@@ -489,10 +490,10 @@ QDataStream &operator<<(QDataStream& out, const OmSegmentCacheImpl& sc)
     out << (*sc.mSegments);
 
     out << false; // TODO: DEAD: was sc.segmentSelection_->allSelected_;
-    out << sc.mAllEnabled;
+    out << false; //TODO: DEAD: was sc.mAllEnabled;
     out << sc.mMaxValue;
 
-    out << sc.mEnabledSet;
+    out << sc.enabledSegments_->enabled_;
     out << sc.segmentSelection_->selected_;
 
     out << sc.segmentCustomNames;
@@ -509,10 +510,10 @@ QDataStream &operator>>(QDataStream& in, OmSegmentCacheImpl& sc)
 
     bool dead;
     in >> dead;
-    in >> sc.mAllEnabled;
+    in >> dead;
     in >> sc.mMaxValue;
 
-    in >> sc.mEnabledSet;
+    in >> sc.enabledSegments_->enabled_;
     in >> sc.segmentSelection_->selected_;
 
     in >> sc.segmentCustomNames;
@@ -620,7 +621,7 @@ QDataStream &operator<<(QDataStream& out,
 
     foreach(const OmID& id, gm.mValidSet){
         out << *gm.mMap[id];
-        printf("id=%i\n", id);
+        //printf("id=%i\n", id);
     }
 
     return out;

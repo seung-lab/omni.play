@@ -7,7 +7,7 @@
  */
 
 #include <common/omStd.h>
-#include "system/events/omEvent.h"
+#include "events/omEvent.h"
 
 class OmToolModeEvent : public OmEvent {
 

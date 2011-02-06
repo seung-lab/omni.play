@@ -9,7 +9,7 @@
 
 
 #include <common/omStd.h>
-#include "system/events/omEvent.h"
+#include "events/omEvent.h"
 
 class OmView3dEvent : public OmEvent {
 public:

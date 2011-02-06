@@ -4,10 +4,10 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 
-#include "system/events/omSegmentEvent.h"
-#include "system/events/omViewEvent.h"
-#include "system/events/omToolModeEvent.h"
-#include "system/events/omKeyPressEventListener.h"
+#include "events/omSegmentEvent.h"
+#include "events/omViewEvent.h"
+#include "events/omToolModeEvent.h"
+#include "events/omKeyPressEventListener.h"
 
 #include "gui/widgets/omCursors.h"
 

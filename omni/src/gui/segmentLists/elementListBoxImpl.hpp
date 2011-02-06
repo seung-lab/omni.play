@@ -8,7 +8,7 @@
 #include "gui/segmentLists/details/segmentListWorking.h"
 #include "gui/segmentLists/segmentListKeyPressEventListener.h"
 #include "gui/widgets/omProgressBar.hpp"
-#include "system/events/omSegmentEvent.h"
+#include "events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
 

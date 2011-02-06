@@ -29,18 +29,16 @@ public:
     bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
 
 private:
+    OmUserEdges* userEdges_;
+
     OmSegmentEdge splitChildFromParent(OmSegment* child);
 
     std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(const OmSegmentEdge& e);
     std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmID, const OmID);
 
     void rerootSegmentLists();
-    void rerootSegmentList(OmSegIDsSet& set);
     void setGlobalThreshold();
     void resetGlobalThreshold();
-
-    OmSegmentLists* getSegmentLists();
-    OmUserEdges* userEdges();
 
     friend class OmSegmentColorizer;
     friend QDataStream& operator<<(QDataStream&, const OmSegmentCacheImpl&);

@@ -2,7 +2,7 @@
 #define UPDATE_SEGMENT_PROPERTIES_DIALOG_HPP
 
 #include "actions/omSelectSegmentParams.hpp"
-#include "system/events/omSegmentEvent.h"
+#include "events/omSegmentEvent.h"
 #include "gui/myInspectorWidget.h"
 #include "zi/omUtility.h"
 #include "gui/inspectors/segObjectInspector.h"

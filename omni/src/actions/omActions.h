@@ -47,6 +47,9 @@ public:
     static void JoinSegments(const OmID segmentationID,
                              const OmSegIDsSet& ids);
 
+    static void JoinSegments(const OmID segmentationID);
+    static void JoinSegments(const SegmentationDataWrapper& sdw);
+
     static void FindAndSplitSegments(const SegmentDataWrapper& sdw,
                                      OmViewGroupState* vgs, const DataCoord coord);
     static void FindAndCutSegments(const SegmentDataWrapper& sdw,
@@ -76,6 +79,9 @@ private:
 
     static void setUncertain(const SegmentationDataWrapper& sdw,
                              const bool uncertain);
+
+    static void doJoinSegments(const SegmentationDataWrapper& sdw,
+                               const OmSegIDsSet& ids);
 
 };
 

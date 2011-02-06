@@ -6,7 +6,7 @@
  * Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-#include "system/events/omEvent.h"
+#include "events/omEvent.h"
 #include "common/omCommon.h"
 
 class OmSegmentAction;

@@ -3,6 +3,7 @@
 #include "segment/omSegment.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
+#include "datalayer/archive/omDataArchiveWrappers.h"
 
 #include "actions/details/omSegmentGroupActionImpl.hpp"
 #include "actions/details/omSegmentJoinActionImpl.hpp"
@@ -41,19 +42,19 @@ QDataStream& operator>>(QDataStream& in, OmSegmentValidateActionImpl& a)
     in >> ids;
     in >> a.valid_;
 
-    OmID segmentationID;
-    in >> segmentationID;
-    a.sdw_ = SegmentationDataWrapper(segmentationID);
+    in >> a.sdw_;
 
-    SegmentationDataWrapper& sdw = a.sdw_;
-    OmSegmentCache* cache = sdw.SegmentCache();
-    std::set<OmSegment*>* segs = new std::set<OmSegment*>();
+    OmSegmentCache* cache = a.sdw_.SegmentCache();
+
+    boost::shared_ptr<std::set<OmSegment*> > segs =
+        boost::make_shared<std::set<OmSegment*> >();
+
     FOR_EACH(iter, ids){
         OmSegment* seg = cache->GetSegment(*iter);
         segs->insert(seg);
     }
 
-    a.selectedSegments_ = boost::shared_ptr<std::set<OmSegment*> >(segs);
+    a.selectedSegments_ = segs;
 
     return in;
 }
@@ -71,7 +72,7 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentUncertainActionImpl& a)
     }
     out << ids;
     out << a.uncertain_;
-    out << a.sdw_.GetSegmentationID();
+    out << a.sdw_;
 
     return out;
 }
@@ -85,19 +86,19 @@ QDataStream& operator>>(QDataStream& in, OmSegmentUncertainActionImpl& a)
     in >> ids;
     in >> a.uncertain_;
 
-    OmID segmentationID;
-    in >> segmentationID;
-    a.sdw_ = SegmentationDataWrapper(segmentationID);
+    in >> a.sdw_;
 
-    SegmentationDataWrapper& sdw = a.sdw_;
-    OmSegmentCache* cache = sdw.SegmentCache();
-    std::set<OmSegment*>* segs = new std::set<OmSegment*>();
+    OmSegmentCache* cache = a.sdw_.SegmentCache();
+
+    boost::shared_ptr<std::set<OmSegment*> > segs =
+        boost::make_shared<std::set<OmSegment*> >();
+
     FOR_EACH(iter, ids){
         OmSegment* seg = cache->GetSegment(*iter);
         segs->insert(seg);
     }
 
-    a.selectedSegments_ = boost::shared_ptr<std::set<OmSegment*> >(segs);
+    a.selectedSegments_ = segs;
 
     return in;
 }
@@ -166,8 +167,8 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentJoinActionImpl& a)
 {
     int version = 1;
     out << version;
-    out << a.mSegmentationId;
-    out << a.mSelectedSegmentIds;
+    out << a.sdw_;
+    out << a.segIDs_;
 
     return out;
 }
@@ -176,8 +177,8 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentJoinActionImpl& a)
 {
     int version;
     in >> version;
-    in >> a.mSegmentationId;
-    in >> a.mSelectedSegmentIds;
+    in >> a.sdw_;
+    in >> a.segIDs_;
 
     return in;
 }

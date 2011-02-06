@@ -102,6 +102,7 @@ HEADERS +=  \
 	src/datalayer/archive/omDataArchiveProject.h \
 	src/datalayer/archive/omDataArchiveSegment.h \
 	src/datalayer/archive/omDataArchiveStd.hpp \
+	src/datalayer/archive/omDataArchiveWrappers.h \
 	src/datalayer/archive/omMetadataSegmentation.h \
 	src/datalayer/archive/omMipVolumeArchive.h \
 	src/datalayer/archive/omMipVolumeArchiveOld.h \
@@ -126,6 +127,15 @@ HEADERS +=  \
 	src/datalayer/upgraders/omUpgradeTo14.hpp \
 	src/datalayer/upgraders/omUpgradeTo20.hpp \
 	src/datalayer/upgraders/omUpgraders.hpp \
+	src/events/omEvent.h \
+	src/events/omEventManager.h \
+	src/events/omKeyPressEventListener.h \
+	src/events/omPreferenceEvent.h \
+	src/events/omProgressEvent.h \
+	src/events/omSegmentEvent.h \
+	src/events/omToolModeEvent.h \
+	src/events/omView3dEvent.h \
+	src/events/omViewEvent.h \
 	src/gui/cacheMonitorDialog.h \
 	src/gui/cacheMonitorWidget.h \
 	src/gui/groupsTable/dropdownMenuButton.hpp \
@@ -286,7 +296,9 @@ HEADERS +=  \
 	src/segment/io/omValidGroupNum.hpp \
 	src/segment/lowLevel/DynamicForestPool.hpp \
 	src/segment/lowLevel/omDynamicForestCache.hpp \
+	src/segment/lowLevel/omEnabledSegments.hpp \
 	src/segment/lowLevel/omPagingPtrStore.h \
+	src/segment/lowLevel/omSegmentBags.hpp \
 	src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
 	src/segment/lowLevel/omSegmentGraph.h \
 	src/segment/lowLevel/omSegmentIteratorLowLevel.h \
@@ -295,8 +307,6 @@ HEADERS +=  \
 	src/segment/lowLevel/omSegmentSelection.hpp \
 	src/segment/omFindCommonEdge.hpp \
 	src/segment/omSegment.h \
-	src/segment/omSegmentBag.hpp \
-	src/segment/omSegmentBags.hpp \
 	src/segment/omSegmentCache.h \
 	src/segment/omSegmentCacheImpl.h \
 	src/segment/omSegmentColorizer.h \
@@ -319,15 +329,6 @@ HEADERS +=  \
 	src/system/cache/omLockedCacheObjects.hpp \
 	src/system/cache/omMeshCache.h \
 	src/system/cache/omThreadedCache.h \
-	src/system/events/omEvent.h \
-	src/system/events/omEventManager.h \
-	src/system/events/omKeyPressEventListener.h \
-	src/system/events/omPreferenceEvent.h \
-	src/system/events/omProgressEvent.h \
-	src/system/events/omSegmentEvent.h \
-	src/system/events/omToolModeEvent.h \
-	src/system/events/omView3dEvent.h \
-	src/system/events/omViewEvent.h \
 	src/system/omAlphaVegasMode.hpp \
 	src/system/omAppState.hpp \
 	src/system/omEvents.h \
@@ -528,6 +529,7 @@ SOURCES +=  \
 	src/datalayer/archive/omDataArchiveBoost.cpp \
 	src/datalayer/archive/omDataArchiveProject.cpp \
 	src/datalayer/archive/omDataArchiveSegment.cpp \
+	src/datalayer/archive/omDataArchiveWrappers.cpp \
 	src/datalayer/archive/omMetadataSegmentation.cpp \
 	src/datalayer/archive/omMipVolumeArchive.cpp \
 	src/datalayer/hdf5/omHdf5.cpp \
@@ -536,6 +538,14 @@ SOURCES +=  \
 	src/datalayer/hdf5/omHdf5LowLevel.cpp \
 	src/datalayer/hdf5/omHdf5Utils.cpp \
 	src/datalayer/omDataPaths.cpp \
+	src/events/omEvent.cpp \
+	src/events/omEventManager.cpp \
+	src/events/omPreferenceEvent.cpp \
+	src/events/omProgressEvent.cpp \
+	src/events/omSegmentEvent.cpp \
+	src/events/omToolModeEvent.cpp \
+	src/events/omView3dEvent.cpp \
+	src/events/omViewEvent.cpp \
 	src/gui/cacheMonitorDialog.cpp \
 	src/gui/cacheMonitorWidget.cpp \
 	src/gui/groupsTable/groupsTable.cpp \
@@ -616,14 +626,6 @@ SOURCES +=  \
 	src/system/cache/omCacheManager.cpp \
 	src/system/cache/omMeshCache.cpp \
 	src/system/cache/omThreadedCache.cpp \
-	src/system/events/omEvent.cpp \
-	src/system/events/omEventManager.cpp \
-	src/system/events/omPreferenceEvent.cpp \
-	src/system/events/omProgressEvent.cpp \
-	src/system/events/omSegmentEvent.cpp \
-	src/system/events/omToolModeEvent.cpp \
-	src/system/events/omView3dEvent.cpp \
-	src/system/events/omViewEvent.cpp \
 	src/system/omAppState.cpp \
 	src/system/omEvents.cpp \
 	src/system/omGroups.cpp \

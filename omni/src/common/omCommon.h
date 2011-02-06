@@ -77,13 +77,9 @@ typedef std::deque<OmSegID> OmSegIDsList;
 typedef uint32_t PageNum;
 
 class OmSegment;
-struct OmSegPtrSet : public std::set<OmSegment*>
-{};
-
-struct OmSegIDsSet : public std::set<OmSegID>
-{
-    friend std::ostream& operator<<(std::ostream& out, const OmSegIDsSet& in);
-};
+typedef std::set<OmSegment*> OmSegPtrSet;
+typedef std::set<OmSegID> OmSegIDsSet;
+std::ostream& operator<<(std::ostream& out, const OmSegIDsSet& in);
 
 
 /**

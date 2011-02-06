@@ -63,7 +63,7 @@ bool OmProject::IsOpen(){
 
 #include "actions/omActions.h"
 #include "segment/omSegmentSelected.hpp"
-#include "system/events/omEventManager.h"
+#include "events/omEventManager.h"
 #include "system/omGarbage.h"
 #include "utility/omThreadPoolManager.h"
 #include "zi/omThreads.h"

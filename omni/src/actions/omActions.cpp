@@ -192,11 +192,39 @@ void OmActions::setAsValid(const OmSegPtrSet& segs)
     }
 }
 
+void OmActions::JoinSegments(const OmID segmentationID)
+{
+    SegmentationDataWrapper sdw(segmentationID);
+    if(!sdw.IsSegmentationValid()){
+        return;
+    }
+
+    OmSegmentation & seg = sdw.GetSegmentation();
+    const OmSegIDsSet ids = seg.SegmentCache()->GetSelectedSegmentIds();
+    doJoinSegments(sdw, ids);
+}
+
+void OmActions::JoinSegments(const SegmentationDataWrapper& sdw)
+{
+    OmSegmentation & seg = sdw.GetSegmentation();
+    const OmSegIDsSet ids = seg.SegmentCache()->GetSelectedSegmentIds();
+    doJoinSegments(sdw, ids);
+}
+
 void OmActions::JoinSegments(const OmID segmentationID,
                              const OmSegIDsSet& ids)
 {
     SegmentationDataWrapper sdw(segmentationID);
+    if(!sdw.IsSegmentationValid()){
+        return;
+    }
 
+    doJoinSegments(sdw, ids);
+}
+
+void OmActions::doJoinSegments(const SegmentationDataWrapper& sdw,
+                               const OmSegIDsSet& ids)
+{
     OmSegPtrSet oldValidSet;
 
     if(sdw.SegmentCache()->AreAnySegmentsInValidList(ids)){
@@ -204,7 +232,7 @@ void OmActions::JoinSegments(const OmID segmentationID,
         oldValidSet = setNotValid(sdw.SegmentCache(), ids);
     }
 
-    (new OmSegmentJoinAction(segmentationID, ids))->Run();
+    (new OmSegmentJoinAction(sdw, ids))->Run();
 
     if(oldValidSet.size()){
         setAsValid(oldValidSet);

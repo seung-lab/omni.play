@@ -4,7 +4,7 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
 #include "gui/widgets/omIntSpinBox.hpp"
-#include "system/events/omViewEvent.h"
+#include "events/omViewEvent.h"
 #include "viewGroup/omViewGroupState.h"
 
 #include <limits>

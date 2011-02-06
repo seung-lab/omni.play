@@ -12,7 +12,7 @@
 #include <QErrorMessage>
 
 #include "common/omCommon.h"
-#include "system/events/omProgressEvent.h"
+#include "events/omProgressEvent.h"
 
 class CacheMonitorDialog;
 class MenuBar;

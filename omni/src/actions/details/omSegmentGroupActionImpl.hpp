@@ -38,7 +38,6 @@ public:
         } else {
             seg.Groups()->UnsetGroup(mSelectedSegmentIds, mName);
         }
-
     }
 
     void Undo()

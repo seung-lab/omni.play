@@ -1,9 +1,10 @@
+#include "datalayer/omDataPath.h"
+#include "datalayer/omDataPath.h"
+#include "segment/lowLevel/omEnabledSegments.hpp"
 #include "segment/lowLevel/omSegmentSelection.hpp"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
-#include "datalayer/omDataPath.h"
-#include "datalayer/omDataPath.h"
 #include "volume/omSegmentation.h"
 
 OmSegmentCache::OmSegmentCache(OmSegmentation* segmentation)
@@ -50,7 +51,7 @@ bool OmSegmentCache::IsSegmentValid(OmSegID seg)
 OmSegment* OmSegmentCache::GetSegment(const OmSegID value)
 {
     zi::guard g(mutex_);
-    return mImpl->GetSegment( value );
+    return mImpl->GetSegment(value);
 }
 
 OmSegID OmSegmentCache::GetNumSegments()
@@ -86,102 +87,96 @@ const OmSegIDsSet& OmSegmentCache::GetSelectedSegmentIds()
 OmSegIDsSet & OmSegmentCache::GetEnabledSegmentIds()
 {
     zi::guard g(mutex_);
-    return mImpl->GetEnabledSegmentIdsRef();
+    return mImpl->EnabledSegments().GetEnabledSegmentIdsRef();
 }
 
-void OmSegmentCache::SetAllEnabled(bool enabled)
+bool OmSegmentCache::isSegmentEnabled(OmSegID segID)
 {
     zi::guard g(mutex_);
-    mImpl->SetAllEnabled(enabled);
+    return mImpl->EnabledSegments().IsEnabled(segID);
 }
 
-bool OmSegmentCache::isSegmentEnabled( OmSegID segID )
+bool OmSegmentCache::IsSegmentSelected(OmSegID segID)
 {
     zi::guard g(mutex_);
-    return mImpl->isSegmentEnabled( segID );
+    return mImpl->SegmentSelection().isSegmentSelected(segID);
 }
 
-bool OmSegmentCache::IsSegmentSelected( OmSegID segID )
+bool OmSegmentCache::IsSegmentSelected(OmSegment* seg)
 {
     zi::guard g(mutex_);
-    return mImpl->SegmentSelection().isSegmentSelected( segID );
+    return mImpl->SegmentSelection().isSegmentSelected(seg->value());
 }
 
-bool OmSegmentCache::IsSegmentSelected( OmSegment * seg )
+void OmSegmentCache::setSegmentEnabled(OmSegID segID, bool isEnabled)
 {
     zi::guard g(mutex_);
-    return mImpl->SegmentSelection().isSegmentSelected( seg );
+    mImpl->EnabledSegments().SetEnabled(segID, isEnabled);
 }
 
-void OmSegmentCache::setSegmentEnabled( OmSegID segID, bool isEnabled )
-{
-    zi::guard g(mutex_);
-    mImpl->setSegmentEnabled( segID, isEnabled );
-}
-
-void OmSegmentCache::setSegmentSelected( OmSegID segID,
+void OmSegmentCache::setSegmentSelected(OmSegID segID,
                                          const bool isSelected,
                                          const bool addToRecentList)
 {
     zi::guard g(mutex_);
-    mImpl->SegmentSelection().setSegmentSelected( segID, isSelected, addToRecentList );
+    mImpl->SegmentSelection().setSegmentSelected(segID, isSelected, addToRecentList);
 }
 
-void OmSegmentCache::setSegmentName( OmSegID segID, QString name )
+void OmSegmentCache::setSegmentName(OmSegID segID, QString name)
 {
     zi::guard g(mutex_);
     mImpl->setSegmentName(segID, name);
 }
 
-QString OmSegmentCache::getSegmentName( OmSegID segID )
+QString OmSegmentCache::getSegmentName(OmSegID segID)
 {
     zi::guard g(mutex_);
-    return mImpl->getSegmentName( segID );
+    return mImpl->getSegmentName(segID);
 }
 
-void OmSegmentCache::setSegmentNote( OmSegID segID, QString note )
+void OmSegmentCache::setSegmentNote(OmSegID segID, QString note)
 {
     zi::guard g(mutex_);
-    mImpl->setSegmentNote( segID, note );
+    mImpl->setSegmentNote(segID, note);
 }
 
-QString OmSegmentCache::getSegmentNote( OmSegID segID )
+QString OmSegmentCache::getSegmentNote(OmSegID segID)
 {
     zi::guard g(mutex_);
-    return mImpl->getSegmentNote( segID );
+    return mImpl->getSegmentNote(segID);
 }
 
-OmSegment* OmSegmentCache::findRoot(OmSegment * segment)
+OmSegment* OmSegmentCache::findRoot(OmSegment* segment)
 {
     zi::guard g(mutex_);
-    return mImpl->findRoot( segment );
+    return mImpl->FindRoot(segment);
 }
 
 OmSegment* OmSegmentCache::findRoot(const OmSegID segID)
 {
     zi::guard g(mutex_);
-    return mImpl->findRoot( segID );
+    return mImpl->FindRoot(segID);
 }
 
 OmSegID OmSegmentCache::findRootID(const OmSegID segID)
 {
     zi::guard g(mutex_);
-    return mImpl->findRootID( segID );
+    return mImpl->FindRootID(segID);
 }
 
 OmSegID OmSegmentCache::findRootID(OmSegment* segment)
 {
     zi::guard g(mutex_);
-    return mImpl->findRootID(segment);
+    return mImpl->FindRootID(segment);
 }
 
-OmSegIDsSet OmSegmentCache::JoinTheseSegments( const OmSegIDsSet & segmentList)
+OmSegIDsSet OmSegmentCache::JoinTheseSegments(const OmSegIDsSet & segmentList)
 {
     zi::guard g(mutex_);
     return mImpl->JoinTheseSegments(segmentList);
 }
 
-OmSegIDsSet OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
+OmSegIDsSet OmSegmentCache::UnJoinTheseSegments(const OmSegIDsSet & segmentList)
 {
     zi::guard g(mutex_);
     return mImpl->UnJoinTheseSegments(segmentList);
@@ -193,7 +188,7 @@ uint32_t OmSegmentCache::getMaxValue()
     return mImpl->getMaxValue();
 }
 
-void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect,
+void OmSegmentCache::UpdateSegmentSelection(const OmSegIDsSet & idsToSelect,
                                              const bool addToRecentList)
 {
     zi::guard g(mutex_);
@@ -215,13 +210,13 @@ void OmSegmentCache::RemoveFromSegmentSelection(const OmSegIDsSet& idsToSelect)
 std::pair<bool, OmSegmentEdge> OmSegmentCache::JoinEdge(const OmSegmentEdge& e)
 {
     zi::guard g(mutex_);
-    return mImpl->JoinFromUserAction( e );
+    return mImpl->JoinFromUserAction(e);
 }
 
-OmSegmentEdge OmSegmentCache::SplitEdge( const OmSegmentEdge & e )
+OmSegmentEdge OmSegmentCache::SplitEdge(const OmSegmentEdge & e)
 {
     zi::guard g(mutex_);
-    return mImpl->SplitEdgeUserAction( e );
+    return mImpl->SplitEdgeUserAction(e);
 }
 
 void OmSegmentCache::refreshTree()
@@ -230,7 +225,7 @@ void OmSegmentCache::refreshTree()
     return mImpl->refreshTree();
 }
 
-quint64 OmSegmentCache::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
+quint64 OmSegmentCache::getSizeRootAndAllChildren(OmSegment* segUnknownDepth)
 {
     zi::guard g(mutex_);
     return mImpl->getSizeRootAndAllChildren(segUnknownDepth);
@@ -239,7 +234,7 @@ quint64 OmSegmentCache::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
 bool OmSegmentCache::AreSegmentsEnabled()
 {
     zi::guard g(mutex_);
-    return mImpl->AreSegmentsEnabled();
+    return mImpl->EnabledSegments().AnyEnabled();
 }
 
 void OmSegmentCache::Flush()

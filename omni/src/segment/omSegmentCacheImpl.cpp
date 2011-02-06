@@ -1,9 +1,10 @@
-#include "segment/lowLevel/omSegmentSelection.hpp"
 #include "common/omDebug.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
+#include "segment/lowLevel/omEnabledSegments.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
+#include "segment/lowLevel/omSegmentSelection.hpp"
 #include "segment/omSegmentCacheImpl.h"
 #include "segment/omSegmentEdge.h"
 #include "segment/omSegmentLists.hpp"
@@ -14,8 +15,8 @@
 
 OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation* segmentation)
     : OmSegmentCacheImplLowLevel(segmentation)
-{
-}
+    , userEdges_(NULL)
+{}
 
 OmSegmentCacheImpl::~OmSegmentCacheImpl()
 {
@@ -83,12 +84,12 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent(OmSegment * child)
                                     child->getThreshold());
 
     parent->removeChild(child);
-    mSegmentGraph.graph_cut(child->value());
+    mSegmentGraph.Cut(child->value());
     child->setParent(NULL); // TODO: also set threshold???
 
     child->setThreshold(0);
 
-    findRoot(parent)->touchFreshnessForMeshes();
+    FindRoot(parent)->touchFreshnessForMeshes();
     child->touchFreshnessForMeshes();
 
     if(SegmentSelection().isSegmentSelected(parent->value())){
@@ -108,13 +109,11 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent(OmSegment * child)
     }
 
     if(child->getCustomMergeEdge().isValid()){
-        const int numRemoved =
-            userEdges()->RemoveEdge(child->getCustomMergeEdge());
-        printf("number of user edges removed: %d\n", numRemoved);
+        userEdges_->RemoveEdge(child->getCustomMergeEdge());
         child->setCustomMergeEdge(OmSegmentEdge());
     }
 
-    mSegmentGraph.updateSizeListsFromSplit(parent, child);
+    mSegmentGraph.UpdateSizeListsFromSplit(parent, child);
 
     touchFreshness();
 
@@ -130,7 +129,7 @@ OmSegmentCacheImpl::JoinFromUserAction(const OmSegmentEdge& e)
 
     std::pair<bool, OmSegmentEdge> edge = JoinEdgeFromUser(e);
     if(edge.first){
-        userEdges()->AddEdge(edge.second);
+        userEdges_->AddEdge(edge.second);
     }
     return edge;
 }
@@ -138,10 +137,10 @@ OmSegmentCacheImpl::JoinFromUserAction(const OmSegmentEdge& e)
 std::pair<bool, OmSegmentEdge>
 OmSegmentCacheImpl::JoinEdgeFromUser(const OmSegmentEdge& e)
 {
-    const OmSegID childRootID = mSegmentGraph.graph_getRootID(e.childID);
+    const OmSegID childRootID = mSegmentGraph.Root(e.childID);
     OmSegment* childRoot = GetSegment(childRootID);
     OmSegment* parent = GetSegment(e.parentID);
-    OmSegment* parentRoot = findRoot(parent);
+    OmSegment* parentRoot = FindRoot(parent);
 
     if(childRoot == parentRoot){
         printf("cycle found in user manual edge; skipping edge %d, %d, %f\n",
@@ -163,20 +162,20 @@ OmSegmentCacheImpl::JoinEdgeFromUser(const OmSegmentEdge& e)
   }
 */
 
-    mSegmentGraph.graph_join(childRootID, e.parentID);
+    mSegmentGraph.Join(childRootID, e.parentID);
 
     parent->addChild(childRoot);
     childRoot->setParent(parent, e.threshold);
     childRoot->setCustomMergeEdge(e);
 
-    findRoot(parent)->touchFreshnessForMeshes();
+    FindRoot(parent)->touchFreshnessForMeshes();
 
     if(SegmentSelection().isSegmentSelected(e.childID)){
         SegmentSelection().doSelectedSetInsert(parent->value(), true);
     }
     SegmentSelection().doSelectedSetRemove(e.childID);
 
-    mSegmentGraph.updateSizeListsFromJoin(parent, childRoot);
+    mSegmentGraph.UpdateSizeListsFromJoin(parent, childRoot);
 
     return std::pair<bool, OmSegmentEdge>(true,
                                           OmSegmentEdge(parent->value(),
@@ -212,12 +211,11 @@ OmSegIDsSet OmSegmentCacheImpl::JoinTheseSegments(const OmSegIDsSet& segmentList
     // each one to the parent
     while (iter != set.end()) {
         const OmSegID segID = *iter;
+
         std::pair<bool, OmSegmentEdge> edge =
             JoinFromUserAction(parentID, segID);
 
-        if(!edge.first){
-            printf("WARNING: could not join edge; was a segment validated?\n");
-        } else {
+        if(edge.first){
             ret.insert(segID);
         }
 
@@ -274,36 +272,28 @@ OmSegIDsSet OmSegmentCacheImpl::UnJoinTheseSegments(const OmSegIDsSet& segmentLi
 
 quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren(OmSegment * segUnknownDepth)
 {
-    OmSegment* seg = findRoot(segUnknownDepth);
-    return getSegmentLists()->getSegmentSize(seg);
+    OmSegment* seg = FindRoot(segUnknownDepth);
+    return segmentation_->SegmentLists()->getSegmentSize(seg);
 }
 
 void OmSegmentCacheImpl::rerootSegmentLists()
 {
-    rerootSegmentList(mEnabledSet);
+    EnabledSegments().Reroot();
     SegmentSelection().rerootSegmentList();
-}
-
-void OmSegmentCacheImpl::rerootSegmentList(OmSegIDsSet& set)
-{
-    OmSegIDsSet old = set;
-    set.clear();
-
-    OmSegID rootSegID;
-    foreach(const OmSegID& id, old){
-        rootSegID = findRoot(GetSegment(id))->value();
-        set.insert(rootSegID);
-    }
 }
 
 void OmSegmentCacheImpl::refreshTree()
 {
-    if(mSegmentGraph.graph_doesGraphNeedToBeRefreshed(mMaxValue)){
-        mSegmentGraph.initialize(this);
-        foreach(const OmSegmentEdge& e, userEdges()->Edges()){
-            JoinEdgeFromUser(e);
+    if(mSegmentGraph.DoesGraphNeedToBeRefreshed(mMaxValue)){
+        mSegmentGraph.Initialize(segmentation_, this);
+
+        userEdges_ = segmentation_->MSTUserEdges();
+        FOR_EACH(iter, userEdges_->Edges()){
+            JoinEdgeFromUser(*iter);
         }
+
         setGlobalThreshold();
+
     } else {
         resetGlobalThreshold();
     }
@@ -319,10 +309,9 @@ void OmSegmentCacheImpl::setGlobalThreshold()
     }
 
     printf("setting global threshold to %f...\n", mst->UserThreshold());
-    mSegmentGraph.setGlobalThreshold(mst);
 
+    mSegmentGraph.SetGlobalThreshold(mst);
     SegmentSelection().Clear();
-
     touchFreshness();
 
     printf("done\n");
@@ -334,23 +323,15 @@ void OmSegmentCacheImpl::resetGlobalThreshold()
 
     printf("resetting global threshold to %f...\n", mst->UserThreshold());
 
-    mSegmentGraph.resetGlobalThreshold(mst);
+    mSegmentGraph.ResetGlobalThreshold(mst);
     rerootSegmentLists();
     touchFreshness();
 
     printf("done\n");
 }
 
-OmSegmentLists* OmSegmentCacheImpl::getSegmentLists() {
-    return GetSegmentation()->SegmentLists();
-}
-
 void OmSegmentCacheImpl::Flush(){
     mSegments->Flush();
-}
-
-OmUserEdges* OmSegmentCacheImpl::userEdges(){
-    return segmentation_->MSTUserEdges();
 }
 
 bool OmSegmentCacheImpl::AreAnySegmentsInValidList(const OmSegIDsSet& ids)

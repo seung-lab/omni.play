@@ -71,19 +71,15 @@ void OmSegmentContextMenu::addSelectionNames()
 
     QString validStr;
     if(isValid()){
-        validStr = QString("%1 %2")
-            .arg("Valid in ")
-            .arg(sdw_.GetSegmentationName());
+        validStr = "Valid in " + sdw_.GetSegmentationName();
     } else {
-        validStr = QString("%1 %2")
-            .arg("Not valid in ")
-            .arg(sdw_.GetSegmentationName());
+        validStr = "Not valid in " + sdw_.GetSegmentationName();
     }
     addAction(validStr);
 }
 
 /*
- *	adds Un/Select Segment Action
+ *  adds Un/Select Segment Action
  */
 void OmSegmentContextMenu::addSelectionAction()
 {
@@ -97,7 +93,7 @@ void OmSegmentContextMenu::addSelectionAction()
 }
 
 /*
- *	Merge Segments
+ *  Merge Segments
  */
 void OmSegmentContextMenu::addDendActions()
 {
@@ -105,7 +101,6 @@ void OmSegmentContextMenu::addDendActions()
     addAction("Split Segments", this, SLOT(splitSegments()));
     addAction("Cut Segment(s)", this, SLOT(cutSegments()));
 }
-
 
 /////////////////////////////////
 ///////          Context Menu Slots Methods
@@ -134,9 +129,7 @@ void OmSegmentContextMenu::unselectOthers()
 
 void OmSegmentContextMenu::mergeSegments()
 {
-    const OmSegIDsSet& ids =
-        sdw_.SegmentCache()->GetSelectedSegmentIds();
-    OmActions::JoinSegments(sdw_.GetSegmentationID(), ids);
+    OmActions::JoinSegments(sdw_.MakeSegmentationDataWrapper());
 }
 
 void OmSegmentContextMenu::splitSegments()

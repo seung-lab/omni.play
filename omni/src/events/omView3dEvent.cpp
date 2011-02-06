@@ -1,5 +1,5 @@
 #include "omView3dEvent.h"
-#include "system/events/omEventManager.h"
+#include "events/omEventManager.h"
 
 OmView3dEvent::OmView3dEvent(QEvent::Type type)
  : OmEvent(type, CLASS)

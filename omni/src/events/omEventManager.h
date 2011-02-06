@@ -9,7 +9,7 @@
  */
 
 #include "common/omCommon.h"
-#include "system/events/omEvent.h"
+#include "events/omEvent.h"
 
 #include <QObject>
 #include <QEvent>
