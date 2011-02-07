@@ -56,6 +56,7 @@ public:
     virtual void SetVolDataType(const OmVolDataType) = 0;
 
     virtual int GetBytesPerVoxel() const = 0;
+    virtual int GetBytesPerSlice() const = 0;
 
     inline OmMipVolCoords& Coords() {
         return coords_;

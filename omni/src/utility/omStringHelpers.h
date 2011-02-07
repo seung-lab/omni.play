@@ -2,82 +2,80 @@
 #define STRING_HELPERS_H
 
 #include "common/omCommon.h"
+#include "common/omString.hpp"
 #include "zi/omUtility.h"
-
-#include <QStringList>
 
 class OmStringHelpers{
 public:
-	static QString getStringFromSegmentSet( const OmSegIDsSet & data_set );
-	static QString getStringFromIDset( const OmIDsSet & data_set );
-	static QString getStringFromStringList( const QStringList & data_set );
 
-	template <typename T>
-	inline static std::string CommaDeliminateNum(const T num){
-		return CommaDeliminateNumQT(num).toStdString();
-	}
+    template <typename T>
+    inline static QString CommaDeliminateNumQT(const T num){
+        return QString::fromStdString(CommaDeliminateNum(num));
+    }
 
-	template <typename T>
-	inline static QString CommaDeliminateNumQT(const T num)
-	{
-		const std::string rawNumAsStr = QString::number(num).toStdString();
+    template <typename T>
+    inline static std::string CommaDeliminateNum(const T num)
+    {
+        const std::string rawNumAsStr = om::string::num(num);
 
-		size_t counter = 0;
-		QString ret;
-		FOR_EACH_R(i, rawNumAsStr){
-			++counter;
-			ret.prepend( (*i) );
-			if( 0 == ( counter % 3 ) &&
-				counter != rawNumAsStr.size() )
-			{
-				ret.prepend(',');
-			}
-		}
+        size_t counter = 0;
+        std::string ret;
 
-		return ret;
-	}
+        FOR_EACH_R(i, rawNumAsStr){
+            ++counter;
+            ret += *i;
+            if( 0 == ( counter % 3 ) &&
+                counter != rawNumAsStr.size() )
+            {
+                ret += ',';
+            }
+        }
 
-	static unsigned int getUInt(const QString& arg)
-	{
-		bool ok;
-		unsigned int ret = arg.toUInt(&ok, 10);
-		if( ok ){
-			return ret;
-		}
-		throw OmIoException("could not parse to unsigned int", arg);
-	}
+        std::reverse(ret.begin(), ret.end());
+        return ret;
+    }
 
-	static bool getBool(const QString& arg)
-	{
-		if("true" == arg){
-			return true;
-		}
-		if("false" == arg){
-			return false;
-		}
+    static uint32_t getUInt(const QString& arg)
+    {
+        bool ok;
+        uint32_t ret = arg.toUInt(&ok, 10);
+        if(ok){
+            return ret;
+        }
+        throw OmIoException("could not parse to uint32_t", arg);
+    }
 
-		return getUInt(arg);
-	}
+    static bool getBool(const QString& arg)
+    {
+        if("true" == arg){
+            return true;
+        }
+        if("false" == arg){
+            return false;
+        }
 
-	static double getDouble(const QString& arg)
-	{
-		bool ok;
-		double ret = arg.toDouble(&ok);
-		if( ok ){
-			return ret;
-		}
-		throw OmIoException("could not parse to double", arg);
-	}
+        return getUInt(arg);
+    }
 
-	static float getFloat(const QString& arg)
-	{
-		bool ok;
-		double ret = arg.toFloat(&ok);
-		if( ok ){
-			return ret;
-		}
-		throw OmIoException("could not parse to float", arg);
-	}
+    static double getDouble(const QString& arg)
+    {
+        bool ok;
+        double ret = arg.toDouble(&ok);
+        if( ok ){
+            return ret;
+        }
+        throw OmIoException("could not parse to double", arg);
+    }
+
+    static float getFloat(const QString& arg)
+    {
+        bool ok;
+        float ret = arg.toFloat(&ok);
+        if( ok ){
+            return ret;
+        }
+        throw OmIoException("could not parse to float", arg);
+    }
 };
 
 #endif

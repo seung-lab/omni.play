@@ -35,7 +35,7 @@ public:
 
 	virtual bool shouldSelectedSegmentsBeAddedToRecentList() = 0;
 
-public slots:
+public Q_SLOTS:
 	void goToNextPage();
 	void goToPrevPage();
 	void goToEndPage();

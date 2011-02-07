@@ -5,16 +5,16 @@
 #include <QtGui>
 
 class CacheMonitorWidget : public QWidget {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	CacheMonitorWidget(QWidget *parent);
+    CacheMonitorWidget(QWidget *parent);
 
-signals:
-	void triggerCacheView();
+Q_SIGNALS:
+    void triggerCacheView();
 
 private:
-	QGroupBox* showDisplay(const QString&, const OmCacheGroupEnum);
+    QGroupBox* showDisplay(const QString&, const om::CacheGroup);
 };
 
 #endif

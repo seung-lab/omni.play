@@ -2,8 +2,8 @@
 #define STRING_HELPERS_TEST_H
 
 class StringHelpersTest {
- public:
-	static void testCommaDeliminateNumber();
+public:
+    static void testCommaDeliminateNumber(const bool perfTest);
 };
 
-#endif 
+#endif

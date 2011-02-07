@@ -11,105 +11,105 @@
 #include "segment/omSegmentCache.h"
 
 /**
- *	Export MIP 0 to HDF5
+ * Export MIP 0 to HDF5
  */
 class OmExportVolToHdf5 {
 public:
-	static void Export(OmChannel& chan, const QString& fnp)
-	{
-		OmExportVolToHdf5 e;
-		e.exportVol(&chan, fnp, false);
-	}
+    static void Export(OmChannel& chan, const QString& fnp)
+    {
+        OmExportVolToHdf5 e;
+        e.exportVol(&chan, fnp, false);
+    }
 
-	static void Export(OmSegmentation* seg, const QString& fnp,
-					   const bool rerootSegments)
-	{
-		OmExportVolToHdf5 e;
-		e.exportVol(seg, fnp, rerootSegments);
-	}
+    static void Export(OmSegmentation* seg, const QString& fnp,
+                       const bool rerootSegments)
+    {
+        OmExportVolToHdf5 e;
+        e.exportVol(seg, fnp, rerootSegments);
+    }
 
 private:
-	OmExportVolToHdf5()
-	{}
+    OmExportVolToHdf5()
+    {}
 
-	virtual ~OmExportVolToHdf5()
-	{}
+    virtual ~OmExportVolToHdf5()
+    {}
 
-	template <typename VOL>
-	void exportVol(VOL* vol, const QString& fileNameAndPath,
-				   const bool rerootSegments)
-	{
-		printf("starting export...\n");
+    template <typename VOL>
+    void exportVol(VOL* vol, const QString& fileNameAndPath,
+                   const bool rerootSegments)
+    {
+        printf("starting export...\n");
 
-		OmHdf5* hdfExport = OmHdf5Manager::Get(fileNameAndPath, false);
-		OmDataPath fpath("main");
+        OmHdf5* hdfExport = OmHdf5Manager::Get(fileNameAndPath, false);
+        OmDataPath fpath("main");
 
-		if(!QFile::exists(fileNameAndPath)){
-			hdfExport->create();
-			hdfExport->open();
-			const Vector3i full = vol->Coords().MipLevelDataDimensions(0);
-			const Vector3i rounded_data_dims =
-				vol->Coords().getDimsRoundedToNearestChunk(0);
-			hdfExport->allocateChunkedDataset(fpath,
-											  rounded_data_dims,
-											  full,
-											  vol->getVolDataType());
-		} else {
-			hdfExport->open();
-		}
+        if(!QFile::exists(fileNameAndPath)){
+            hdfExport->create();
+            hdfExport->open();
+            const Vector3i full = vol->Coords().MipLevelDataDimensions(0);
+            const Vector3i rounded_data_dims =
+                vol->Coords().getDimsRoundedToNearestChunk(0);
+            hdfExport->allocateChunkedDataset(fpath,
+                                              rounded_data_dims,
+                                              full,
+                                              vol->getVolDataType());
+        } else {
+            hdfExport->open();
+        }
 
-		boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
-			vol->GetMipChunkCoords(0);
+        boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+            vol->GetMipChunkCoords(0);
 
-		FOR_EACH(iter, *coordsPtr){
-			const OmChunkCoord& coord = *iter;
+        FOR_EACH(iter, *coordsPtr){
+            const OmChunkCoord& coord = *iter;
 
-			OmDataWrapperPtr data = exportChunk(vol, coord, rerootSegments);
-			const DataBbox chunk_data_bbox =
-				vol->Coords().MipCoordToDataBbox(coord, 0);
+            OmDataWrapperPtr data = exportChunk(vol, coord, rerootSegments);
+            const DataBbox chunk_data_bbox =
+                vol->Coords().MipCoordToDataBbox(coord, 0);
 
-			hdfExport->writeChunk(OmDataPaths::getDefaultDatasetName(),
-								  chunk_data_bbox,
-								  data);
-		}
+            hdfExport->writeChunk(OmDataPaths::getDefaultDatasetName(),
+                                  chunk_data_bbox,
+                                  data);
+        }
 
-		hdfExport->close();
+        hdfExport->close();
 
-		printf("\nexport done!\n");
-	}
+        printf("\nexport done!\n");
+    }
 
-	OmDataWrapperPtr exportChunk(OmChannel* vol, const OmChunkCoord& coord,
-								 const bool)
-	{
-		OmChunkPtr chunk;
-		vol->GetChunk(chunk, coord);
-		return chunk->Data()->CopyOutChunkData();
-	}
+    OmDataWrapperPtr exportChunk(OmChannel* vol, const OmChunkCoord& coord,
+                                 const bool)
+    {
+        OmChunkPtr chunk;
+        vol->GetChunk(chunk, coord);
+        return chunk->Data()->CopyOutChunkData();
+    }
 
-	OmDataWrapperPtr exportChunk(OmSegmentation* vol,
-								 const OmChunkCoord& coord,
-								 const bool rerootSegments)
-	{
-		std::cout << "\r\texporting " << coord << std::flush;
+    OmDataWrapperPtr exportChunk(OmSegmentation* vol,
+                                 const OmChunkCoord& coord,
+                                 const bool rerootSegments)
+    {
+        std::cout << "\r\texporting " << coord << std::flush;
 
-		OmSegChunkPtr chunk;
-		vol->GetChunk(chunk, coord);
+        OmSegChunkPtr chunk;
+        vol->GetChunk(chunk, coord);
 
-		boost::shared_ptr<uint32_t> rawDataPtr =
-			chunk->SegData()->GetCopyOfChunkDataAsUint32();
+        boost::shared_ptr<uint32_t> rawDataPtr =
+            chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
-		if(rerootSegments){
-			uint32_t* rawData = rawDataPtr.get();
-			OmSegmentCache* segmentCache = vol->SegmentCache();
+        if(rerootSegments){
+            uint32_t* rawData = rawDataPtr.get();
+            OmSegmentCache* segmentCache = vol->SegmentCache();
 
-			for(uint32_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
-				if( 0 != rawData[i]) {
-					rawData[i] = segmentCache->findRootID(rawData[i]);
-				}
-			}
-		}
+            for(uint32_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
+                if( 0 != rawData[i]) {
+                    rawData[i] = segmentCache->findRootID(rawData[i]);
+                }
+            }
+        }
 
-		return OmDataWrapperFactory::produce(rawDataPtr);
-	}
+        return om::ptrs::Wrap(rawDataPtr);
+    }
 };
 #endif

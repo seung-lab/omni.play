@@ -7,28 +7,31 @@
 #include <QHash>
 
 class NavAndEditButtonGroup : public QButtonGroup {
- Q_OBJECT
- public:
-	explicit NavAndEditButtonGroup( QWidget * );
-	virtual ~NavAndEditButtonGroup(){}
+Q_OBJECT
 
-	void setReadOnlyWidgetsEnabled(const bool toBeEnabled);
-	void setModifyWidgetsEnabled(const bool toBeEnabled);
-	void setTool(const OmToolMode tool);
+public:
+    explicit NavAndEditButtonGroup(QWidget*);
 
- private slots:
-	void buttonWasClicked(const int id);
+    virtual ~NavAndEditButtonGroup()
+    {}
 
- private:
-	int addButton(ToolButton* button);
-	void addNavButton(ToolButton* button);
-	void addModifyButton(ToolButton* button);
-	void makeToolActive(ToolButton* button);
+    void setReadOnlyWidgetsEnabled(const bool toBeEnabled);
+    void setModifyWidgetsEnabled(const bool toBeEnabled);
+    void setTool(const OmToolMode tool);
 
-	QHash<int,ToolButton*> mAllToolsByID;
+private Q_SLOTS:
+    void buttonWasClicked(const int id);
 
-	QHash<OmToolMode,int> mNavToolIDsByToolType;
-	QHash<OmToolMode,int> mModifyToolIDsByToolType;
+private:
+    int addButton(ToolButton* button);
+    void addNavButton(ToolButton* button);
+    void addModifyButton(ToolButton* button);
+    void makeToolActive(ToolButton* button);
+
+    QHash<int,ToolButton*> mAllToolsByID;
+
+    QHash<OmToolMode,int> mNavToolIDsByToolType;
+    QHash<OmToolMode,int> mModifyToolIDsByToolType;
 };
 
 #endif

@@ -15,181 +15,181 @@
 #include <boost/optional.hpp>
 
 class FilterWidgetImpl : public QSlider {
-Q_OBJECT
+    Q_OBJECT
 
-private:
-	static const double delta_ = 0.1;
+    private:
+    static const double delta_ = 0.1;
 
 public:
-	FilterWidgetImpl()
-		: QSlider(Qt::Horizontal)
-		, slideAlphaForward_(true)
-	{
-		QSize size = sizeHint();
-		size.setWidth(150);
-		setMaximumSize(size);
+    FilterWidgetImpl()
+        : QSlider(Qt::Horizontal)
+        , slideAlphaForward_(true)
+    {
+        QSize size = sizeHint();
+        size.setWidth(150);
+        setMaximumSize(size);
 
-		initSilderTab();
+        initSilderTab();
 
-		connect(this, SIGNAL(valueChanged(int)),
-				this, SLOT(setFilAlpha(int)),
-				Qt::DirectConnection);
+        connect(this, SIGNAL(valueChanged(int)),
+                this, SLOT(setFilAlpha(int)),
+                Qt::DirectConnection);
 
-		connect(this, SIGNAL(signalIncreaseAlpha()),
-				this, SLOT(increaseAlphaSlot()),
-				Qt::DirectConnection);
+        connect(this, SIGNAL(signalIncreaseAlpha()),
+                this, SLOT(increaseAlphaSlot()),
+                Qt::DirectConnection);
 
-		connect(this, SIGNAL(signalDecreaseAlpha()),
-				this, SLOT(decreaseAlphaSlot()),
-				Qt::DirectConnection);
+        connect(this, SIGNAL(signalDecreaseAlpha()),
+                this, SLOT(decreaseAlphaSlot()),
+                Qt::DirectConnection);
 
-		connect(this, SIGNAL(signalCycleAlpha()),
-				this, SLOT(cycleAlphaSlot()),
-				Qt::DirectConnection);
-	}
+        connect(this, SIGNAL(signalCycleAlpha()),
+                this, SLOT(cycleAlphaSlot()),
+                Qt::DirectConnection);
+    }
 
-	void IncreaseAlpha(){
-		emit signalIncreaseAlpha();
-	}
+    void IncreaseAlpha(){
+        signalIncreaseAlpha();
+    }
 
-	void DecreaseAlpha(){
-		emit signalDecreaseAlpha();
-	}
+    void DecreaseAlpha(){
+        signalDecreaseAlpha();
+    }
 
-	void Cycle(){
-		emit signalCycleAlpha();
-	}
+    void Cycle(){
+        signalCycleAlpha();
+    }
 
-signals:
-	void signalIncreaseAlpha();
-	void signalDecreaseAlpha();
-	void signalCycleAlpha();
+Q_SIGNALS:
+    void signalIncreaseAlpha();
+    void signalDecreaseAlpha();
+    void signalCycleAlpha();
 
-private slots:
-	void increaseAlphaSlot(){
-		increaseAlpha();
-	}
+private Q_SLOTS:
+    void increaseAlphaSlot(){
+        increaseAlpha();
+    }
 
-	void decreaseAlphaSlot(){
-		decreaseAlpha();
-	}
+    void decreaseAlphaSlot(){
+        decreaseAlpha();
+    }
 
-	void cycleAlphaSlot(){
-		cycle();
-	}
+    void cycleAlphaSlot(){
+        cycle();
+    }
 
 private:
-	void increaseAlpha()
-	{
-		const boost::optional<double> alpha = doGetFilterAlpha();
-		if(!alpha){
-			return;
-		}
+    void increaseAlpha()
+    {
+        const boost::optional<double> alpha = doGetFilterAlpha();
+        if(!alpha){
+            return;
+        }
 
-		double newAlpha = *alpha + delta_;
+        double newAlpha = *alpha + delta_;
 
-		if(newAlpha > 1){
-			newAlpha = 1;
-		}
+        if(newAlpha > 1){
+            newAlpha = 1;
+        }
 
-		doSetFilterAlpha(newAlpha);
-	}
+        doSetFilterAlpha(newAlpha);
+    }
 
-	void decreaseAlpha()
-	{
-		const boost::optional<double> alpha = doGetFilterAlpha();
-		if(!alpha){
-			return;
-		}
+    void decreaseAlpha()
+    {
+        const boost::optional<double> alpha = doGetFilterAlpha();
+        if(!alpha){
+            return;
+        }
 
-		double newAlpha = *alpha - delta_;
+        double newAlpha = *alpha - delta_;
 
-		if(newAlpha < 0){
-			newAlpha = 0;
-		}
+        if(newAlpha < 0){
+            newAlpha = 0;
+        }
 
-		doSetFilterAlpha(newAlpha);
-	}
+        doSetFilterAlpha(newAlpha);
+    }
 
-	bool slideAlphaForward_;
+    bool slideAlphaForward_;
 
-	void cycle()
-	{
-		const boost::optional<double> alpha = doGetFilterAlpha();
-		if(!alpha){
-			return;
-		}
+    void cycle()
+    {
+        const boost::optional<double> alpha = doGetFilterAlpha();
+        if(!alpha){
+            return;
+        }
 
-		static const double jumpDistance = 0.6;
+        static const double jumpDistance = 0.6;
 
-		double newAlpha = 0;
-		if(slideAlphaForward_){
-			newAlpha = jumpDistance;
-			slideAlphaForward_ = false;
-		} else{
-			newAlpha = 0;
-			slideAlphaForward_ = true;
-		}
+        double newAlpha = 0;
+        if(slideAlphaForward_){
+            newAlpha = jumpDistance;
+            slideAlphaForward_ = false;
+        } else{
+            newAlpha = 0;
+            slideAlphaForward_ = true;
+        }
 
-		doSetFilterAlpha(newAlpha);
-	}
+        doSetFilterAlpha(newAlpha);
+    }
 
-private slots:
+private Q_SLOTS:
 // sliderVal is from 0 to 100
-	void setFilAlpha(const int sliderVal)
-	{
-		const double alpha = sliderVal / 100.0;
-		doSetFilterAlpha(alpha);
-	}
+    void setFilAlpha(const int sliderVal)
+    {
+        const double alpha = sliderVal / 100.0;
+        doSetFilterAlpha(alpha);
+    }
 
 private:
-	OmID getChannelID()
-	{
-		return 1;
-	}
+    OmID getChannelID()
+    {
+        return 1;
+    }
 
-	OmID getFilterID()
-	{
-		return 1;
-	}
+    OmID getFilterID()
+    {
+        return 1;
+    }
 
-	void initSilderTab()
-	{
-		const boost::optional<double> alpha = doGetFilterAlpha();
+    void initSilderTab()
+    {
+        const boost::optional<double> alpha = doGetFilterAlpha();
 
-		if(alpha){
-			moveSliderTab(*alpha);
-		}
-	}
+        if(alpha){
+            moveSliderTab(*alpha);
+        }
+    }
 
-	void moveSliderTab(const double alpha)
-	{
-		this->setValue(alpha * 100);
-		OmEvents::Redraw2d();
-	}
+    void moveSliderTab(const double alpha)
+    {
+        this->setValue(alpha * 100);
+        OmEvents::Redraw2d();
+    }
 
-	boost::optional<double> doGetFilterAlpha()
-	{
-		FilterDataWrapper fdw(getChannelID(), getFilterID());
+    boost::optional<double> doGetFilterAlpha()
+    {
+        FilterDataWrapper fdw(getChannelID(), getFilterID());
 
-		if(fdw.isValid()){
-			OmFilter2d* filter = fdw.getFilter();
-			return boost::optional<double>(filter->GetAlpha());
-		}
+        if(fdw.isValid()){
+            OmFilter2d* filter = fdw.getFilter();
+            return boost::optional<double>(filter->GetAlpha());
+        }
 
-		return boost::optional<double>();
-	}
+        return boost::optional<double>();
+    }
 
-	void doSetFilterAlpha(const double alpha)
-	{
-		FilterDataWrapper fdw(getChannelID(), getFilterID());
+    void doSetFilterAlpha(const double alpha)
+    {
+        FilterDataWrapper fdw(getChannelID(), getFilterID());
 
-		if(fdw.isValid()){
-			OmFilter2d* filter = fdw.getFilter();
-			filter->SetAlpha(alpha);
-			moveSliderTab(alpha);
-		}
-	}
+        if(fdw.isValid()){
+            OmFilter2d* filter = fdw.getFilter();
+            filter->SetAlpha(alpha);
+            moveSliderTab(alpha);
+        }
+    }
 };
 
 #endif

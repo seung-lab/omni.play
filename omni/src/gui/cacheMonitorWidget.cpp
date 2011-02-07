@@ -4,50 +4,50 @@
 #include "system/cache/omCacheManager.h"
 
 CacheMonitorWidget::CacheMonitorWidget(QWidget* parent)
-	: QWidget(parent)
+    : QWidget(parent)
 {
-	QVBoxLayout* mainLayout = new QVBoxLayout(this);
-	mainLayout->addWidget(showDisplay("RAM", RAM_CACHE_GROUP ));
-	mainLayout->addWidget(showDisplay("VRAM", VRAM_CACHE_GROUP ));
-	setLayout(mainLayout);
+    QVBoxLayout* mainLayout = new QVBoxLayout(this);
+    mainLayout->addWidget(showDisplay("MESH", om::MESH_CACHE));
+    mainLayout->addWidget(showDisplay("TILE", om::TILE_CACHE));
+    setLayout(mainLayout);
 }
 
 QGroupBox* CacheMonitorWidget::showDisplay(const QString& cacheType,
-										   const OmCacheGroupEnum cacheGroup )
+                                           const om::CacheGroup cacheGroup)
 {
-	QGroupBox* groupBox = new QGroupBox( cacheType );
-	QGridLayout* gridLayout = new QGridLayout( groupBox );
+    QGroupBox* groupBox = new QGroupBox(cacheType);
+    QGridLayout* gridLayout = new QGridLayout(groupBox);
 
-	long maxSize = 0;
+    uint64_t maxSize = 0;
 
-	QList<OmCacheInfo> infos = OmCacheManager::GetCacheInfo(cacheGroup);
-	for( int j = 0; j < infos.size(); ++j ){
+    QList<OmCacheInfo> infos = OmCacheManager::GetCacheInfo(cacheGroup);
+    for(int j = 0; j < infos.size(); ++j){
 
-		OmCacheInfo info = infos.at(j);
+        OmCacheInfo info = infos.at(j);
 
-		if( info.cacheSize > maxSize){
-			maxSize = info.cacheSize;
-		}
+        if(info.size > maxSize){
+            maxSize = info.size;
+        }
 
-		QLabel* label = new QLabel( info.cacheName, groupBox );
-		gridLayout->addWidget(label, j*2, 0, 1, 3);
+        QLabel* label = new QLabel(QString::fromStdString(info.name), groupBox);
+        gridLayout->addWidget(label, j*2, 0, 1, 3);
 
-		QProgressBar* cacheSizeBar = new QProgressBar(groupBox);
-		cacheSizeBar->setTextVisible(false);
+        QProgressBar* cacheSizeBar = new QProgressBar(groupBox);
+        cacheSizeBar->setTextVisible(false);
 
-		const int progress =
-			(int)(100*((float) info.cacheSize)/((float) maxSize));
+        const int progress =
+            (int)(100*((float) info.size)/((float) maxSize));
 
-		cacheSizeBar->setValue(progress);
+        cacheSizeBar->setValue(progress);
 
-		gridLayout->addWidget(cacheSizeBar, j*2+1, 0, 1, 3);
+        gridLayout->addWidget(cacheSizeBar, j*2+1, 0, 1, 3);
 
-		label = new QLabel(OmStringHelpers::CommaDeliminateNumQT(info.cacheSize),
-						   groupBox);
-		gridLayout->addWidget(label, j*2+1, 4, 1, 1);
-	}
+        label = new QLabel(OmStringHelpers::CommaDeliminateNumQT(info.size),
+                           groupBox);
+        gridLayout->addWidget(label, j*2+1, 4, 1, 1);
+    }
 
-	return groupBox;
+    return groupBox;
 }
 
 

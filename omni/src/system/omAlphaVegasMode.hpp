@@ -9,32 +9,32 @@
 
 class OmAlphaVegasMode: public QThread {
 public:
-	OmAlphaVegasMode()
-		: stop_(false)
-	{
-		start();
-	}
+    OmAlphaVegasMode()
+        : stop_(false)
+    {
+        start();
+    }
 
-	~OmAlphaVegasMode()
-	{
-		stop_ = true;
-		wait();
-	}
+    ~OmAlphaVegasMode()
+    {
+        stop_ = true;
+        wait();
+    }
 
-	void run()
-	{
-		forever{
-			if(stop_){
-				return;
-			}
+    void run()
+    {
+        Q_FOREVER{
+            if(stop_){
+                return;
+            }
 
-			FilterWidget::Cycle();
-			QThread::msleep(666);
-		}
-	}
+            FilterWidget::Cycle();
+            QThread::msleep(666);
+        }
+    }
 
 private:
-	bool stop_;
+    bool stop_;
 };
 
 #endif

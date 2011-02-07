@@ -4,27 +4,28 @@
 #include <QtGui>
 
 class LocalPreferencesSystem : public QWidget
-{ 
-    Q_OBJECT 
-	
-public: 
-	LocalPreferencesSystem(QWidget *parent); 
-    
-private slots: 
-	void on_ramSlider_valueChanged();
-	void on_vramSlider_valueChanged();
+{
+    Q_OBJECT
 
-	void on_ramSlider_sliderReleased();
-	void on_vramSlider_sliderReleased();
+public:
+    LocalPreferencesSystem(QWidget *parent);
 
- private:
-	QGroupBox* makeCachePropBox();
-	void init_cache_prop_values();
-	QLabel * sizeLabel;
-	QLabel * ramSizeLabel;
-	QLabel * vramLabel;
-	QLabel * vramSizeLabel;
-	QSlider * ramSlider;
-	QSlider * vramSlider;
-}; 
+private Q_SLOTS:
+    void on_meshSlider_valueChanged();
+    void on_tileSlider_valueChanged();
+
+    void on_meshSlider_sliderReleased();
+    void on_tileSlider_sliderReleased();
+
+private:
+    QLabel* sizeLabel;
+    QLabel* meshSizeLabel;
+    QLabel* vramLabel;
+    QLabel* tileSizeLabel;
+    QSlider* meshSlider;
+    QSlider* tileSlider;
+
+    QGroupBox* makeCachePropBox();
+    void init_cache_prop_values();
+};
 #endif

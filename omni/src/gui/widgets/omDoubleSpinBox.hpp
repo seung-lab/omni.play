@@ -30,7 +30,7 @@ public:
 		OmEvents::Redraw2d();
 	}
 
- private slots:
+ private Q_SLOTS:
 	void thresholdChanged()
 	{
 		OmBusyCursorWrapper busyCursorWrapper();

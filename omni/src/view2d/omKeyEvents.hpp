@@ -2,12 +2,13 @@
 #define OM_KEY_EVENTS_HPP
 
 #include "segment/omSegmentSelected.hpp"
+#include "segment/omSegmentUtils.hpp"
+#include "system/cache/omCacheManager.h"
 #include "view2d/omScreenShotSaver.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "view2d/omView2dZoom.hpp"
 #include "viewGroup/omBrushSize.hpp"
-#include "segment/omSegmentUtils.hpp"
 
 #include <QKeyEvent>
 
@@ -15,8 +16,6 @@ class OmKeyEvents{
 private:
     OmView2d *const v2d_;
     OmView2dState *const state_;
-
-
 
 public:
     OmKeyEvents(OmView2d* v2d, OmView2dState* state)
@@ -54,6 +53,7 @@ public:
             break;
         case Qt::Key_Escape:
             v2d_->resetWindow();
+            OmCacheManager::ClearCacheContents();
             break;
         case Qt::Key_Minus:
             v2d_->Zoom()->KeyboardZoomOut();

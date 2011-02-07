@@ -137,7 +137,7 @@ public:
     }
 
     inline void setColor(const Vector3f& color) const {
-        getSegment()->SetColor( color );
+        getSegment()->SetColor(color);
     }
 
     inline void setName( const QString& str ) const {

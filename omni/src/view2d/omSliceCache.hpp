@@ -1,13 +1,16 @@
 #ifndef OM_SLICE_CACHE_HPP
 #define OM_SLICE_CACHE_HPP
 
+#include "system/cache/omVolSliceCache.hpp"
 #include "chunks/omRawChunkMemMapped.hpp"
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 
 /**
- * lock-less, unmanaged cache of slices to speed-up brush select tool
+ * unmanaged cache of slices to speed-up brush select tool
+ *
+ * NOT thred-safe
  *
  * for transient-use only
  *
@@ -24,7 +27,7 @@ public:
 template <typename T>
 class OmSliceCacheImpl : public OmSliceCacheBase {
 private:
-    OmMipVolume *const vol_;
+    OmSegmentation *const vol_;
     const ViewType viewType_;
     const int chunkDim_;
 
@@ -35,7 +38,7 @@ private:
     std::map<OmSliceKey, boost::shared_ptr<T> > cache_;
 
 public:
-    OmSliceCacheImpl(OmMipVolume* vol, const ViewType viewType)
+    OmSliceCacheImpl(OmSegmentation* vol, const ViewType viewType)
         : vol_(vol)
         , viewType_(viewType)
         , chunkDim_(vol->Coords().GetChunkDimension())
@@ -51,12 +54,7 @@ public:
                              chunkCoord.Coordinate.z,
                              depth);
 
-        boost::shared_ptr<T> slicePtr;
-        if(cache_.count(key)){
-            slicePtr = cache_[key];
-        } else {
-            slicePtr = cache_[key] = loadSlice(chunkCoord, depth);
-        }
+        boost::shared_ptr<T> slicePtr = getCacheSlice(key, chunkCoord, depth);
 
         T const*const sliceData = slicePtr.get();
 
@@ -66,6 +64,28 @@ public:
     }
 
 private:
+    inline boost::shared_ptr<T> getCacheSlice(const OmSliceKey& key,
+                                              const OmChunkCoord& chunkCoord,
+                                              const int depth)
+    {
+        if(cache_.count(key)){
+            return cache_[key];
+        }
+
+        boost::shared_ptr<T> ret =
+            vol_->SliceCache()->Get<T>(chunkCoord, depth, viewType_);
+
+        if(ret){
+            return ret;
+        }
+
+        ret = cache_[key] = loadSlice(chunkCoord, depth);
+
+        vol_->SliceCache()->Set(chunkCoord, depth, viewType_, ret);
+
+        return ret;
+    }
+
     boost::shared_ptr<T> loadSlice(const OmChunkCoord& chunkCoord, const int depth)
     {
         OmRawChunkMemMapped<T> chunk(vol_, chunkCoord);
@@ -82,12 +102,12 @@ private:
 
 class OmSliceCache {
 private:
-    OmMipVolume *const vol_;
+    OmSegmentation *const vol_;
     const ViewType viewType_;
     const boost::scoped_ptr<OmSliceCacheBase> cache_;
 
 public:
-    OmSliceCache(OmMipVolume* vol, const ViewType viewType)
+    OmSliceCache(OmSegmentation* vol, const ViewType viewType)
         : vol_(vol)
         , viewType_(viewType)
         , cache_(cacheFactory())

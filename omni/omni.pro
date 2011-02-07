@@ -325,10 +325,12 @@ HEADERS +=  \
 	src/system/cache/omCacheInfo.h \
 	src/system/cache/omCacheManager.h \
 	src/system/cache/omCacheManagerImpl.hpp \
+	src/system/cache/omGetSetCache.hpp \
 	src/system/cache/omHandleCacheMissTask.hpp \
 	src/system/cache/omLockedCacheObjects.hpp \
 	src/system/cache/omMeshCache.h \
 	src/system/cache/omThreadedCache.h \
+	src/system/cache/omVolSliceCache.hpp \
 	src/system/omAlphaVegasMode.hpp \
 	src/system/omAppState.hpp \
 	src/system/omEvents.h \
@@ -642,7 +644,6 @@ SOURCES +=  \
 	src/tiles/omTilePreFetcherTask.cpp \
 	src/utility/channelDataWrapper.cpp \
 	src/utility/omFileHelpers.cpp \
-	src/utility/omStringHelpers.cpp \
 	src/utility/omSystemInformation.cpp \
 	src/utility/omThreadPoolManager.cpp \
 	src/view2d/omOnScreenTileCoords.cpp \
@@ -702,10 +703,6 @@ DESTDIR = bin
 #CONFIG += qt warn_on static
 #QMAKE_LFLAGS += -static
 
-#### for profiling
-#QMAKE_CXXFLAGS += -pg
-#QMAKE_LFLAGS   += -pg
-
 ####
 # if gcc > 4.1, make non-void functions not returning something generate an error
 # from http://stackoverflow.com/questions/801279/finding-compiler-vendor-version-using-qmake
@@ -756,4 +753,11 @@ linux-g++ {
         QMAKE_LFLAGS   += -DZI_USE_OPENMP -fopenmp
     }
 }
+
+# so QT wont define any non-all-caps keywords
+CONFIG += no_keywords
+
+#### for profiling
+#QMAKE_CXXFLAGS += -pg
+#QMAKE_LFLAGS   += -pg
 

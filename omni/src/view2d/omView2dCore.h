@@ -27,7 +27,7 @@ public:
 	int GetTileCount();
 	int GetTileCountIncomplete();
 
-public slots:
+public Q_SLOTS:
 	void dockVisibilityChanged(const bool visible);
 
 protected:

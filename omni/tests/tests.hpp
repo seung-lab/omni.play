@@ -1,6 +1,7 @@
 #ifndef TESTS_HPP
 #define TESTS_HPP
 
+#include "utility/stringHelpersTest.h"
 #include "segment/lowLevel/DynamicForestPool.hpp"
 #include "common/omSet.hpp"
 #include "cache/lockedObjectsTests.hpp"
@@ -41,6 +42,7 @@ public:
     void Run()
     {
         setDiffTests();
+        stringCommaTests();
 
         //dynamicForest();
 
@@ -410,6 +412,12 @@ private:
         }
 
         std::cout << "dynamicForest\n";
+    }
+
+    void stringCommaTests()
+    {
+        StringHelpersTest::testCommaDeliminateNumber(runPerfTests_);
+        std::cout << "string tests done\n";
     }
 };
 

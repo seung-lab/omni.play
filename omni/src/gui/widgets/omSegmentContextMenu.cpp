@@ -1,3 +1,4 @@
+#include "segment/omSegmentUtils.hpp"
 #include "viewGroup/omSplitting.hpp"
 #include "gui/inspectors/inspectorProperties.h"
 #include "actions/omActions.h"
@@ -176,7 +177,6 @@ void OmSegmentContextMenu::randomizeSegmentColor()
 
 void OmSegmentContextMenu::setValid()
 {
-    //debug(validate, "OmSegmentContextMenu::addGroup\n");
     if(sdw_.IsSegmentValid()){
         OmActions::ValidateSegment(sdw_, om::SET_VALID);
         OmEvents::SegmentModified();
@@ -185,7 +185,6 @@ void OmSegmentContextMenu::setValid()
 
 void OmSegmentContextMenu::setNotValid()
 {
-    //debug(validate, "OmSegmentContextMenu::addGroup\n");
     if(sdw_.IsSegmentValid()){
         OmActions::ValidateSegment(sdw_, om::SET_NOT_VALID);
         OmEvents::SegmentModified();
@@ -194,13 +193,15 @@ void OmSegmentContextMenu::setNotValid()
 
 void OmSegmentContextMenu::showProperties()
 {
-    const OmSegID segid = sdw_.FindRootID();
+    const OmSegID rootSegID = sdw_.FindRootID();
+    SegmentDataWrapper sdw(sdw_.GetSegmentationID(), rootSegID);
+
+    const QString title = QString("Segmentation %1: Segment %2")
+        .arg(sdw.GetSegmentationID())
+        .arg(rootSegID);
 
     mViewGroupState->GetInspectorProperties()->
-        setOrReplaceWidget( new SegObjectInspector(sdw_, this),
-                            QString("Segmentation %1: Segment %2")
-                            .arg(sdw_.GetSegmentationID())
-                            .arg(segid));
+        setOrReplaceWidget( new SegObjectInspector(sdw, this), title);
 }
 
 void OmSegmentContextMenu::addPropertiesActions()
@@ -209,30 +210,8 @@ void OmSegmentContextMenu::addPropertiesActions()
     addAction("List Children", this, SLOT(printChildren()));
 }
 
-void OmSegmentContextMenu::printChildren()
-{
-    //debug(validate, "OmSegmentContextMenu::addGroup\n");
-    if (sdw_.IsSegmentValid()){
-        OmSegmentCache* segCache = sdw_.SegmentCache();
-        OmSegmentIterator iter(segCache);
-        iter.iterOverSegmentID(sdw_.FindRootID());
-
-        OmSegment * seg = iter.getNextSegment();
-        while(NULL != seg) {
-            OmSegment* parent = seg->getParent();
-            OmSegID parentID = 0;
-            if(parent){
-                parentID = parent->value();
-            }
-            const QString str = QString("%1 : %2, %3, %4")
-                .arg(seg->value())
-                .arg(parentID)
-                .arg(seg->getThreshold())
-                .arg(seg->size());
-            printf("%s\n", qPrintable(str));
-            seg = iter.getNextSegment();
-        }
-    }
+void OmSegmentContextMenu::printChildren(){
+    OmSegmentUtils::PrintChildren(sdw_);
 }
 
 void OmSegmentContextMenu::addGroups()
@@ -242,7 +221,7 @@ void OmSegmentContextMenu::addGroups()
     OmGroupID firstID = 0;
     QString groupsStr = "Groups: ";
 
-    foreach(OmGroupID id, set) {
+    Q_FOREACH(OmGroupID id, set) {
         if(!firstID) {
             firstID = id;
         }

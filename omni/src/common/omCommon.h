@@ -134,10 +134,12 @@ enum OmSegmentColorCacheType{SCC_FILTER_BLACK = 0,
 /**
  * cache-type enum
  */
-enum OmCacheGroupEnum {
-    RAM_CACHE_GROUP = 1,
-    VRAM_CACHE_GROUP
+namespace om {
+enum CacheGroup {
+    MESH_CACHE = 1,
+    TILE_CACHE
 };
+} // om
 
 class OmTile;
 typedef boost::shared_ptr<OmTile> OmTilePtr;

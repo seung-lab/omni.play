@@ -26,7 +26,7 @@ class ValidationGroup : public OmWidget {
 
 	QString getName(){ return "Validation"; }
 
-private slots:
+private Q_SLOTS:
 	void changeMapColors();
 
 private:

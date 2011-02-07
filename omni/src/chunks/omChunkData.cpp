@@ -194,7 +194,7 @@ public:
         OmRawChunk<T> rawChunk(vol_, chunk_->GetCoordinate());
 
         boost::shared_ptr<T> data = rawChunk.SharedPtr();
-        return OmDataWrapperFactory::produce(data);
+        return om::ptrs::Wrap(data);
     }
 
 private:

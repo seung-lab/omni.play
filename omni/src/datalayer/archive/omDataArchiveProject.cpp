@@ -194,8 +194,8 @@ QDataStream &operator<<(QDataStream& out, const OmGenericManager<OmChannel>& cm)
     out << cm.mValidSet;
     out << cm.mEnabledSet;
 
-    foreach(const OmID& id, cm.mValidSet){
-        out << *cm.mMap[id];
+    FOR_EACH(iter, cm.mValidSet){
+        out << *cm.mMap[*iter];
     }
 
     return out;
@@ -292,8 +292,8 @@ QDataStream &operator<<(QDataStream& out, const OmGenericManager<OmFilter2d>& fm
     out << fm.mValidSet;
     out << fm.mEnabledSet;
 
-    foreach(const OmID& id, fm.mValidSet){
-        out << *fm.mMap[id];
+    FOR_EACH(iter, fm.mValidSet){
+        out << *fm.mMap[*iter];
     }
 
     return out;
@@ -366,8 +366,8 @@ QDataStream &operator<<(QDataStream& out, const OmGenericManager<OmSegmentation>
     out << sm.mValidSet;
     out << sm.mEnabledSet;
 
-    foreach(const OmID& id, sm.mValidSet){
-        out << *sm.mMap[id];
+    FOR_EACH(iter, sm.mValidSet){
+        out << *sm.mMap[*iter];
     }
 
     return out;
@@ -619,9 +619,8 @@ QDataStream &operator<<(QDataStream& out,
     out << gm.mValidSet;
     out << gm.mEnabledSet;
 
-    foreach(const OmID& id, gm.mValidSet){
-        out << *gm.mMap[id];
-        //printf("id=%i\n", id);
+    FOR_EACH(iter, gm.mValidSet){
+        out << *gm.mMap[*iter];
     }
 
     return out;

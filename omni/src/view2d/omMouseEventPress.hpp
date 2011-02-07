@@ -226,13 +226,13 @@ private:
         }
 
         boost::optional<SegmentDataWrapper> ret;
+
         ChannelDataWrapper cdw(state_->getVol()->getID());
-        OmChannel& channel = cdw.GetChannel();
+        const std::vector<OmFilter2d*> filters = cdw.GetFilters();
 
-        foreach( OmID id, channel.FilterManager().GetValidFilterIds() ) {
-
-            OmFilter2d &filter = channel.FilterManager().GetFilter(id);
-            SegmentationDataWrapper sdw = filter.GetSegmentationWrapper();
+        FOR_EACH(iter, filters){
+            OmFilter2d* filter = *iter;
+            SegmentationDataWrapper sdw = filter->GetSegmentationWrapper();
             if (!sdw.IsSegmentationValid()){
                 continue;
             }

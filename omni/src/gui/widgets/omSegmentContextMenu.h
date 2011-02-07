@@ -26,7 +26,7 @@ protected:
     void addGroups();
     void addDisableAction();
 
-private slots:
+private Q_SLOTS:
     void select();
     void unselect();
     void unselectOthers();

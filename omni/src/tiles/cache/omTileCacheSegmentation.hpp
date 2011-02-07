@@ -9,76 +9,74 @@
 
 class OmTileCacheSegmentation : private OmThreadedCache<OmTileCoord, OmTilePtr>{
 private:
-	static const int NUM_THREADS = 3;
+    static const int NUM_THREADS = 3;
 
 public:
-	OmTileCacheSegmentation()
-		: OmThreadedCache<OmTileCoord, OmTilePtr>(VRAM_CACHE_GROUP,
-												  "Segmentation Tiles",
-												  NUM_THREADS,
-												  om::THROTTLE)
-	{}
+    OmTileCacheSegmentation()
+        : OmThreadedCache<OmTileCoord, OmTilePtr>(om::TILE_CACHE,
+                                                  "Segmentation Tiles",
+                                                  NUM_THREADS,
+                                                  om::THROTTLE)
+    {}
 
-	void Get(OmTilePtr& ptr, const OmTileCoord& key,
-			 const om::Blocking isBlocking)
-	{
-		zi::guard g(mutex_);
+    inline void Get(OmTilePtr& ptr, const OmTileCoord& key,
+                    const om::Blocking isBlocking)
+    {
+        checkCacheFreshness(key);
+        OmThreadedCache<OmTileCoord, OmTilePtr>::Get(ptr, key, isBlocking);
+    }
 
-		if(key.getFreshness() > freshness_.get()){
-			InvalidateCache();
-			keysByDataCoord_.clear();
-			freshness_.set(key.getFreshness());
-		}
+    inline void RemoveDataCoord(const DataCoord& coord)
+    {
+        boost::shared_ptr<std::list<OmTileCoord> > tileCoordsToRemove =
+            keysByDataCoord_.removeKey(coord);
 
-		OmThreadedCache<OmTileCoord, OmTilePtr>::Get(ptr, key, isBlocking);
-	}
+        FOR_EACH(iter, *tileCoordsToRemove){
+            Remove(*iter);
+        }
+    }
 
-	void RemoveDataCoord(const DataCoord& coord)
-	{
-		boost::shared_ptr<std::list<OmTileCoord> > tileCoordsToRemove =
-			keysByDataCoord_.removeKey(coord);
+    void Clear()
+    {
+        keysByDataCoord_.clear();
+        OmThreadedCache<OmTileCoord, OmTilePtr>::Clear();
+    }
 
-		FOR_EACH(iter, *tileCoordsToRemove){
-			Remove(*iter);
-		}
-	}
-
-	void Clear(){
-		OmThreadedCache<OmTileCoord, OmTilePtr>::Clear();
-	}
-
-	void Prefetch(const OmTileCoord& key){
-		OmThreadedCache<OmTileCoord, OmTilePtr>::Prefetch(key);
-	}
+    inline void Prefetch(const OmTileCoord& key){
+        OmThreadedCache<OmTileCoord, OmTilePtr>::Prefetch(key);
+    }
 
 private:
-	zi::mutex mutex_;
-	LockedMultiMap<DataCoord, OmTileCoord> keysByDataCoord_;
-	LockedUint64 freshness_;
+    zi::mutex mutex_;
+    LockedMultiMap<DataCoord, OmTileCoord> keysByDataCoord_;
+    LockedUint64 freshness_;
 
-	bool isKeyFresh(const OmTileCoord& key)
-	{
-		if(key.getFreshness() < freshness_.get()){
-			return false; //old tile request
-		}
+    inline void checkCacheFreshness(const OmTileCoord& key)
+    {
+        zi::guard g(mutex_); // locked so changes across structures are atomic
 
-		return true;
-	}
+        if(key.getFreshness() > freshness_.get()){
+            OmThreadedCache<OmTileCoord, OmTilePtr>::InvalidateCache();
+            keysByDataCoord_.clear();
+            freshness_.set(key.getFreshness());
+        }
+    }
 
-	OmTilePtr HandleCacheMiss(const OmTileCoord& key)
-	{
-		if(!isKeyFresh(key)){
-			return OmTilePtr();
-		}
+    OmTilePtr HandleCacheMiss(const OmTileCoord& key)
+    {
+        if(key.getFreshness() != freshness_.get()){
+            // key's freshness is too old or new
+            return OmTilePtr();
+        }
 
-		keysByDataCoord_.insert(key.getDataCoord(), key);
+        keysByDataCoord_.insert(key.getDataCoord(), key);
 
-		OmTile* tile = new OmTile(this, key);
-		tile->LoadData();
-		return OmTilePtr(tile);
-	}
+        OmTile* tile = new OmTile(this, key);
+        tile->LoadData();
+        return OmTilePtr(tile);
+    }
 
-	friend class OmCacheManager;
+    friend class OmCacheManager;
 };
 
 #endif

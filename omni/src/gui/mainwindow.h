@@ -24,105 +24,103 @@ class Preferences;
 class ToolBarManager;
 class ViewGroup;
 
-class MainWindow
-: public QMainWindow
-  //  public OmProgressEventListener,
+class MainWindow : public QMainWindow
 {
- Q_OBJECT
+    Q_OBJECT
 
-  public:
-	MainWindow();
-	~MainWindow();
+    public:
+    MainWindow();
+    ~MainWindow();
 
-	void openProject( QString fileNameAndPath );
-	void openProject( QString fileName, QString pathName );
+    void openProject( QString fileNameAndPath );
+    void openProject( QString fileName, QString pathName );
 
-	void cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId);
-	void updateStatusBar( QString msg );
+    void cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId);
+    void updateStatusBar( QString msg );
 
-	bool isProjectOpen();
+    bool isProjectOpen();
 
-	OmViewGroupState* getViewGroupState(){ return mViewGroupState; }
+    OmViewGroupState* getViewGroupState(){ return mViewGroupState; }
 
-	void addToolbarWidget(QWidget * b);
-	void addToolbarSeperator();
+    void addToolbarWidget(QWidget * b);
+    void addToolbarSeperator();
 
-	void addToolbarRight(QToolBar * b);
+    void addToolbarRight(QToolBar * b);
 
-	friend class ViewGroup;
+    friend class ViewGroup;
 
- protected:
-	void closeEvent(QCloseEvent *event);
+protected:
+    void closeEvent(QCloseEvent *event);
 
-	void SegmentObjectModificationEvent(OmSegmentEvent *event);
+    void SegmentObjectModificationEvent(OmSegmentEvent *event);
 
- public slots:
-	void spawnErrorDialog(OmException &e);
-	void saveProject();
+public Q_SLOTS:
+    void spawnErrorDialog(OmException &e);
+    void saveProject();
 
- private slots:
-	void newProject();
-	void openProject();
-	void openRecentFile();
-	void closeProject();
+private Q_SLOTS:
+    void newProject();
+    void openProject();
+    void openRecentFile();
+    void closeProject();
 
-	void openInspector();
-	void openUndoView();
-	void openCacheMonitor();
-	void openGroupsTable();
+    void openInspector();
+    void openUndoView();
+    void openCacheMonitor();
+    void openGroupsTable();
 
 
-	void open3dView();
-	void openChannelView(OmID chan_id, ViewType vtype);
-	void openSegmentationView(OmID primary_id, ViewType vtype);
+    void open3dView();
+    void openChannelView(OmID chan_id, ViewType vtype);
+    void openSegmentationView(OmID primary_id, ViewType vtype);
 
-	void showEditPreferencesDialog();
-	void showEditLocalPreferencesDialog();
-	void addChannelToVolume();
-	void addSegmentationToVolume();
+    void showEditPreferencesDialog();
+    void showEditLocalPreferencesDialog();
+    void addChannelToVolume();
+    void addSegmentationToVolume();
 
- private:
-	int checkForSave();
+private:
+    int checkForSave();
 
-	QFrame *loadingDock;
+    QFrame *loadingDock;
 
-	QErrorMessage *exceptionMessage;
+    QErrorMessage *exceptionMessage;
 
-	QProgressDialog prog_dialog;
-	bool editsMade;
+    QProgressDialog prog_dialog;
+    bool editsMade;
 
-	MyInspectorWidget *omniInspector;
-	QUndoView *undoView;
-	CacheMonitorDialog *mCacheMonitorDialog;
+    MyInspectorWidget *omniInspector;
+    QUndoView *undoView;
+    CacheMonitorDialog *mCacheMonitorDialog;
 
-	void setProjectOpen(bool open);
-	bool mIsProjectOpen;
-	bool closeProjectIfOpen();
+    void setProjectOpen(bool open);
+    bool mIsProjectOpen;
+    bool closeProjectIfOpen();
 
-	QAction *panAct;
-	QAction *zoomAct;
+    QAction *panAct;
+    QAction *zoomAct;
 
-	Preferences* preferences;
-	void windowTitleSet(QString title);
-	void windowTitleClear();
-	void updateReadOnlyRelatedWidgets();
+    Preferences* preferences;
+    void windowTitleSet(QString title);
+    void windowTitleClear();
+    void updateReadOnlyRelatedWidgets();
 
-	void resetViewGroup();
+    void resetViewGroup();
 
-	void updateGuiFromProjectLoadOrOpen( QString fileName );
+    void updateGuiFromProjectLoadOrOpen( QString fileName );
 
-	QLabel * statusBarLabel;
+    QLabel * statusBarLabel;
 
-	void createStatusBar();
+    void createStatusBar();
 
-	ToolBarManager * mToolBars;
-	MenuBar * mMenuBar;
+    ToolBarManager * mToolBars;
+    MenuBar * mMenuBar;
 
-	OmViewGroupState * mViewGroupState;
-	QToolBar *mToolToolBar;
+    OmViewGroupState * mViewGroupState;
+    QToolBar *mToolToolBar;
 
-	void resizeEvent(QResizeEvent* event);
-	void moveEvent(QMoveEvent* event);
+    void resizeEvent(QResizeEvent* event);
+    void moveEvent(QMoveEvent* event);
 };
 
 #endif

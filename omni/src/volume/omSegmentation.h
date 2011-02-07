@@ -3,7 +3,7 @@
 
 /*
  *
- *	Brett Warne - bwarne@mit.edu - 3/9/09
+ * Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
 #include "chunks/omChunkCache.hpp"
@@ -14,6 +14,7 @@
 #include "system/omManageableObject.h"
 #include "volume/omMipVolume.h"
 
+class OmChunkUniqueValuesManager;
 class OmGroups;
 class OmMST;
 class OmMeshDrawer;
@@ -25,10 +26,10 @@ class OmSegmentLists;
 class OmUserEdges;
 class OmValidGroupNum;
 class OmViewGroupState;
+class OmVolSliceCache;
 class OmVolumeCuller;
 class OmVolumeData;
 class SegmentationDataWrapper;
-class OmChunkUniqueValuesManager;
 
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
 public:
@@ -51,7 +52,8 @@ public:
         return GetID();
     }
 
-    int GetBytesPerVoxel() const;
+    virtual int GetBytesPerVoxel() const;
+    virtual int GetBytesPerSlice() const;
 
     SegmentationDataWrapper getSDW() const;
 
@@ -107,6 +109,9 @@ public:
     inline OmVolumeData* VolData(){
         return volData_.get();
     }
+    inline OmVolSliceCache* SliceCache(){
+        return volSliceCache_.get();
+    }
 
 private:
     boost::scoped_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
@@ -120,6 +125,7 @@ private:
     boost::scoped_ptr<OmUserEdges> mstUserEdges_;
     boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
     boost::scoped_ptr<OmVolumeData> volData_;
+    boost::scoped_ptr<OmVolSliceCache> volSliceCache_;
 
     template <class T> friend class OmVolumeBuilder;
     template <class T> friend class OmVolumeBuilderHdf5;
@@ -133,6 +139,7 @@ private:
     friend class SegmentTests1;
 
     friend class OmDataArchiveProject;
+    friend QDataStream &operator>>(QDataStream& in, OmSegmentation&);
     friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
 };
 

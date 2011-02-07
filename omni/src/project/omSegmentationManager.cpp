@@ -7,55 +7,60 @@
 
 OmSegmentation& OmSegmentationManager::GetSegmentation(const OmID id)
 {
-	return mSegmentationManager.Get(id);
+    return mSegmentationManager.Get(id);
 }
 
 OmSegmentation& OmSegmentationManager::AddSegmentation()
 {
-	OmSegmentation& r_segmentation = mSegmentationManager.Add();
-	OmActions::Save();
-	return r_segmentation;
+    OmSegmentation& r_segmentation = mSegmentationManager.Add();
+    OmActions::Save();
+    return r_segmentation;
 }
 
 void OmSegmentationManager::RemoveSegmentation(const OmID id)
 {
-	foreach( OmID channelID, volumes_->Channels().GetValidChannelIds()) {
-		OmChannel& channel = volumes_->Channels().GetChannel(channelID);
-		foreach( OmID filterID, channel.FilterManager().GetValidFilterIds()) {
-			OmFilter2d&filter = channel.FilterManager().GetFilter(filterID);
-			if (filter.GetSegmentationWrapper().GetSegmentationID() == id){
-				filter.SetSegmentation(0);
-			}
-		}
-	}
+    FOR_EACH(channelID, volumes_->Channels().GetValidChannelIds()){
 
-	GetSegmentation(id).CloseDownThreads();
+        ChannelDataWrapper cdw(*channelID);
 
-	//TODO: fixme
-	//OmDataPath path(GetSegmentation(id).GetDirectoryPath());
-	//OmProjectData::DeleteInternalData(path);
+        const std::vector<OmFilter2d*> filters = cdw.GetFilters();
 
-	mSegmentationManager.Remove(id);
+        FOR_EACH(iter, filters){
+            OmFilter2d* filter = *iter;
 
-	OmActions::Save();
+            if(filter->GetSegmentationWrapper().GetSegmentationID() == id){
+                filter->SetSegmentation(0);
+            }
+        }
+    }
+
+    GetSegmentation(id).CloseDownThreads();
+
+    //TODO: fixme
+    //OmDataPath path(GetSegmentation(id).GetDirectoryPath());
+    //OmProjectData::DeleteInternalData(path);
+
+    mSegmentationManager.Remove(id);
+
+    OmActions::Save();
 }
 
 bool OmSegmentationManager::IsSegmentationValid(const OmID id)
 {
-	return mSegmentationManager.IsValid(id);
+    return mSegmentationManager.IsValid(id);
 }
 
 const OmIDsSet& OmSegmentationManager::GetValidSegmentationIds()
 {
-	return mSegmentationManager.GetValidIds();
+    return mSegmentationManager.GetValidIds();
 }
 
 bool OmSegmentationManager::IsSegmentationEnabled(const OmID id)
 {
-	return mSegmentationManager.IsEnabled(id);
+    return mSegmentationManager.IsEnabled(id);
 }
 
 void OmSegmentationManager::SetSegmentationEnabled(const OmID id, const bool enable)
 {
-	mSegmentationManager.SetEnabled(id, enable);
+    mSegmentationManager.SetEnabled(id, enable);
 }

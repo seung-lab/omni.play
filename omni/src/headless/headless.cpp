@@ -303,13 +303,13 @@ void Headless::processLine(const QString& line, const QString&)
 
     } else if("ls" == line){
         QStringList entrylist = QDir::current().entryList();
-        foreach (QString str, entrylist){
+        Q_FOREACH (QString str, entrylist){
             printf("%s\n",qPrintable(str));
         }
 
     } else if("ls -l" == line){
         QFileInfoList entrylist = QDir::current().entryInfoList();
-        foreach(QFileInfo f, entrylist){
+        Q_FOREACH(QFileInfo f, entrylist){
             QString line = QString("%1%2")
                 .arg(f.fileName(), -20, ' ')
                 .arg(QString::number((double)f.size()/BYTES_PER_MB, 'f', 3));
@@ -405,7 +405,7 @@ void Headless::processLine(const QString& line, const QString&)
         OmBuildChannel bc(&chann);
 
         QDir dir(args[1]);
-        foreach(QFileInfo f, dir.entryInfoList()){
+        Q_FOREACH(QFileInfo f, dir.entryInfoList()){
             if(!f.isFile()){
                 continue;
             }
@@ -426,7 +426,7 @@ void Headless::processLine(const QString& line, const QString&)
         segmentationID_ = bs.GetDataWrapper().getID();
 
         QDir dir(args[1]);
-        foreach(QFileInfo f, dir.entryInfoList()){
+        Q_FOREACH(QFileInfo f, dir.entryInfoList()){
             if(!f.isFile()){
                 continue;
             }

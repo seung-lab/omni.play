@@ -2,10 +2,10 @@
 #define OM_CHUNK_H
 
 /**
- *	OmChunk encapsulates a 3D-matrix of image data (typically 128^3) and
- *   its associated size/positioning metadata.
+ *  OmChunk encapsulates a 3D-matrix of image data (typically 128^3) and
+ *    its associated size/positioning metadata.
  *
- *	Brett Warne - bwarne@mit.edu - 2/24/09
+ *  Brett Warne - bwarne@mit.edu - 2/24/09
  *  Michael Purcaro - purcaro@gmail.com - 1/29/11
  */
 

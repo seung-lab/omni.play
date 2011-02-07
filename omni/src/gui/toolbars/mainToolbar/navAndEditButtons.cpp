@@ -4,35 +4,33 @@
 #include "gui/toolbars/mainToolbar/toolButton.h"
 
 NavAndEditButtons::NavAndEditButtons(MainWindow * mw)
-	: QWidget(mw)
-	, mMainWindow(mw)
-	, mButtonGroup(new NavAndEditButtonGroup(mw))
+    : QWidget(mw)
+    , mMainWindow(mw)
+    , mButtonGroup(new NavAndEditButtonGroup(mw))
 {
 }
 
 NavAndEditButtons::~NavAndEditButtons()
-{
-	delete mButtonGroup;
-}
+{}
 
 void NavAndEditButtons::addTheButtons()
 {
-	foreach( QAbstractButton * b, mButtonGroup->buttons() ){
-		mMainWindow->addToolbarWidget(b);		
-	}
+    Q_FOREACH( QAbstractButton * b, mButtonGroup->buttons() ){
+        mMainWindow->addToolbarWidget(b);
+    }
 }
 
 void NavAndEditButtons::setReadOnlyWidgetsEnabled(const bool toBeEnabled)
 {
-	mButtonGroup->setReadOnlyWidgetsEnabled(toBeEnabled);
+    mButtonGroup->setReadOnlyWidgetsEnabled(toBeEnabled);
 }
 
 void NavAndEditButtons::setModifyWidgetsEnabled(const bool toBeEnabled)
 {
-	mButtonGroup->setModifyWidgetsEnabled(toBeEnabled);
+    mButtonGroup->setModifyWidgetsEnabled(toBeEnabled);
 }
 
 void NavAndEditButtons::setTool(const OmToolMode tool)
 {
-	mButtonGroup->setTool(tool);
+    mButtonGroup->setTool(tool);
 }

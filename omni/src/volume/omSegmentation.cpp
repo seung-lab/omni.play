@@ -10,6 +10,7 @@
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentLists.hpp"
+#include "system/cache/omVolSliceCache.hpp"
 #include "system/omGroups.h"
 #include "volume/build/omVolumeAllocater.hpp"
 #include "volume/io/omVolumeData.h"
@@ -29,6 +30,7 @@ OmSegmentation::OmSegmentation()
     , mstUserEdges_(new OmUserEdges(this))
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new OmVolumeData())
+    , volSliceCache_(new OmVolSliceCache(this))
 {}
 
 // used by OmGenericManager
@@ -45,12 +47,21 @@ OmSegmentation::OmSegmentation(OmID id)
     , mstUserEdges_(new OmUserEdges(this))
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new OmVolumeData())
+    , volSliceCache_(new OmVolSliceCache(this))
 {
     segmentCache_->refreshTree();
 }
 
 OmSegmentation::~OmSegmentation()
 {}
+
+void OmSegmentation::loadVolData()
+{
+    if(IsBuilt()){
+        volData_->load(this);
+        volSliceCache_->Load();
+    }
+}
 
 std::string OmSegmentation::GetName(){
     return "segmentation" + om::string::num(GetID());
@@ -66,13 +77,6 @@ void OmSegmentation::SetDendThreshold(const double t){
 
 void OmSegmentation::CloseDownThreads() {
     meshManagers_->CloseDownThreads();
-}
-
-void OmSegmentation::loadVolData()
-{
-    if(IsBuilt()){
-        volData_->load(this);
-    }
 }
 
 void OmSegmentation::loadVolDataIfFoldersExist()
@@ -97,6 +101,10 @@ void OmSegmentation::UpdateVoxelBoundingData()
 
 int OmSegmentation::GetBytesPerVoxel() const {
     return volData_->GetBytesPerVoxel();
+}
+
+int OmSegmentation::GetBytesPerSlice() const {
+    return GetBytesPerVoxel()*128*128;
 }
 
 void OmSegmentation::SetVolDataType(const OmVolDataType type)

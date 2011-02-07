@@ -8,42 +8,56 @@
 #include "volume/build/omProcessSegmentationChunk.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omSegmentation.h"
+#include "system/cache/omVolSliceCache.hpp"
 
 class ExtractDataSlice32bitVisitor
     : public boost::static_visitor<boost::shared_ptr<uint32_t> >{
 public:
-    ExtractDataSlice32bitVisitor(const ViewType plane, int offset)
-        : plane(plane), offset(offset) {}
+    ExtractDataSlice32bitVisitor(OmSegmentation* vol, const OmChunkCoord& coord,
+                                 const ViewType plane, int depth)
+        : vol_(vol)
+        , coord_(coord)
+        , plane_(plane)
+        , depth_(depth)
+    {}
 
     template <typename T>
-    boost::shared_ptr<uint32_t> operator()(T* d) const
+    inline boost::shared_ptr<uint32_t> operator()(T* d) const
     {
-        OmImage<T, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
-        OmImage<T, 2> slice = chunk.getSlice(plane, offset);
+        boost::shared_ptr<T> dataPtr = getCachedRawSlice(d);
+        OmImage<T, 2, OmImageRefData> slice(OmExtents[128][128], dataPtr.get());
         return slice.recastToUint32().getMallocCopyOfData();
     }
 
-    boost::shared_ptr<uint32_t> operator()(uint32_t* d) const
-    {
-        OmImage<uint32_t, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
-        OmImage<uint32_t, 2> slice = chunk.getSlice(plane, offset);
-        return slice.getMallocCopyOfData();
+    inline boost::shared_ptr<uint32_t> operator()(uint32_t* d) const {
+        return getCachedRawSlice(d);
     }
 
-    boost::shared_ptr<uint32_t> operator()(float* d) const
-    {
-        OmImage<float, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
-        OmImage<float, 2> sliceFloat = chunk.getSlice(plane, offset);
-        float mn = 0.0;
-        float mx = 1.0;
-        //	  mpMipVolume->GetBounds(mx, mn);
-        OmImage<uint32_t, 2> slice =
-            sliceFloat.rescaleAndCast<uint32_t>(mn, mx, 255.0);
-        return slice.getMallocCopyOfData();
+    boost::shared_ptr<uint32_t> operator()(float*) const {
+        throw OmIoException("segmentation data shouldn't be float");
     }
+
 private:
-    const ViewType plane;
-    const int offset;
+    template <typename T>
+    inline boost::shared_ptr<T> getCachedRawSlice(T* d) const
+    {
+        boost::shared_ptr<T> dataPtr =
+            vol_->SliceCache()->Get<T>(coord_, depth_, plane_);
+
+        if(!dataPtr){
+            OmImage<T, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
+            OmImage<T, 2> slice = chunk.getSlice(plane_, depth_);
+            dataPtr = slice.getMallocCopyOfData();
+            vol_->SliceCache()->Set(coord_, depth_, plane_, dataPtr);
+        }
+
+        return dataPtr;
+    }
+
+    OmSegmentation *const vol_;
+    const OmChunkCoord coord_;
+    const ViewType plane_;
+    const int depth_;
 };
 
 class RefreshDirectDataValuesVisitor : public boost::static_visitor<>{

@@ -11,23 +11,24 @@ class OmCacheInfo;
 
 class OmCacheGroup {
 public:
-	OmCacheGroup();
+    OmCacheGroup();
 
-	void AddCache(OmCacheBase* cache);
-	void RemoveCache(OmCacheBase* cache);
-	void Clear();
+    void AddCache(OmCacheBase* cache);
+    void RemoveCache(OmCacheBase* cache);
+    void DeleteCaches();
 
-	void SetMaxSizeMB(const qint64 size);
+    void SetMaxSizeMB(const qint64 size);
 
-	int Clean();
-	void SignalCachesToCloseDown();
+    int Clean();
+    void ClearCacheContents();
+    void SignalCachesToCloseDown();
 
-	QList<OmCacheInfo> GetCacheInfo();
+    QList<OmCacheInfo> GetCacheInfo();
 
 private:
-	uint64_t mMaxSize;
-	zi::rwmutex mRWLock;
-	std::set<OmCacheBase*> mCacheSet;
+    uint64_t mMaxSize;
+    zi::rwmutex lock_;
+    std::set<OmCacheBase*> mCacheSet;
 };
 
 #endif

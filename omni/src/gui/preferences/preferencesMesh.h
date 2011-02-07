@@ -4,30 +4,30 @@
 #include <QtGui>
 
 class PreferencesMesh : public QWidget
-{ 
-    Q_OBJECT 
-	
-public: 
-	PreferencesMesh(QWidget *parent); 
-    
- private slots: 
-	void on_tdpSlider_valueChanged();	// om::PREF_MESH_REDUCTION_PERCENT_FLT
-	void on_pasSlider_valueChanged();	// om::PREF_MESH_PRESERVED_SHARP_ANGLE_FLT
-	void on_nsSlider_valueChanged();	// om::PREF_MESH_NUM_SMOOTHING_ITERS_INT
+{
+    Q_OBJECT
 
- private:
-	QGroupBox* makeSmoothnessBox();	
-	QSlider *tdpSlider;
-	QLabel *tdpSliderLabel;
+public:
+    PreferencesMesh(QWidget *parent);
 
-	QGroupBox* makeSharpnessBox();
-	QSlider *pasSlider;
-	QLabel *pasSliderLabel;
+private Q_SLOTS:
+    void on_tdpSlider_valueChanged();	// om::PREF_MESH_REDUCTION_PERCENT_FLT
+    void on_pasSlider_valueChanged();	// om::PREF_MESH_PRESERVED_SHARP_ANGLE_FLT
+    void on_nsSlider_valueChanged();	// om::PREF_MESH_NUM_SMOOTHING_ITERS_INT
 
-	QGroupBox* makeDecimationBox();
-	QSlider *nsSlider;
-        QLabel *nsSliderLabel;
+private:
+    QGroupBox* makeSmoothnessBox();
+    QSlider *tdpSlider;
+    QLabel *tdpSliderLabel;
 
-	QGroupBox* makeBoxGeneric( QLabel** label, QSlider** slider, QString title );
-}; 
+    QGroupBox* makeSharpnessBox();
+    QSlider *pasSlider;
+    QLabel *pasSliderLabel;
+
+    QGroupBox* makeDecimationBox();
+    QSlider *nsSlider;
+    QLabel *nsSliderLabel;
+
+    QGroupBox* makeBoxGeneric( QLabel** label, QSlider** slider, QString title );
+};
 #endif

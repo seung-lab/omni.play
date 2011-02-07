@@ -20,11 +20,7 @@ public:
 
     void growGraphIfNeeded(OmSegment * newSeg);
 
-    inline OmSegment* GetSegment(const OmSegID value)
-    {
-        if(value > mMaxValue){
-            throw OmIoException("bad segment value");
-        }
+    inline OmSegment* GetSegment(const OmSegID value){
         return mSegments->GetSegment(value);
     }
 

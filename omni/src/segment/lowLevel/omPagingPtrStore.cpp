@@ -18,7 +18,10 @@ void OmPagingPtrStore::loadAllSegmentPages()
 
     loadMetadata();
 
-    foreach(PageNum pageNum, validPageNumbers_){
+    FOR_EACH(iter, validPageNumbers_)
+    {
+        const PageNum pageNum = *iter;
+
         resizeVectorIfNeeded(pageNum);
 
         pages_[pageNum] = OmSegmentPage(segmentation_,
@@ -35,7 +38,8 @@ OmSegment* OmPagingPtrStore::AddSegment(const OmSegID value)
 {
     const PageNum pageNum = getValuePageNum(value);
 
-    if( !validPageNumbers_.contains(pageNum) ) {
+    if(!validPageNumbers_.contains(pageNum))
+    {
         resizeVectorIfNeeded(pageNum);
         validPageNumbers_.insert(pageNum);
 
@@ -110,7 +114,7 @@ void OmPagingPtrStore::storeMetadata()
 
 void OmPagingPtrStore::Flush()
 {
-    foreach(PageNum pageNum, validPageNumbers_){
-        pages_[pageNum].Flush();
+    FOR_EACH(iter, validPageNumbers_){
+        pages_[*iter].Flush();
     }
 }
