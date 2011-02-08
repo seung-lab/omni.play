@@ -132,6 +132,7 @@ private:
         case OmVolDataType::UINT32:
             return new OmSliceCacheImpl<uint32_t>(vol_, viewType_);
         case OmVolDataType::FLOAT:
+            return new OmSliceCacheImpl<float>(vol_, viewType_);
         case OmVolDataType::UNKNOWN:
         default:
             throw OmIoException("data type not handled");
