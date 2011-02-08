@@ -121,7 +121,9 @@ void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
     filterListWidget->selectionModel()->blockSignals(true);
     filterListWidget->selectionModel()->clearSelection();
 
-    FOR_EACH(iter, cdw.GetFilters()){
+    std::vector<OmFilter2d*> filters = cdw.GetFilters();
+
+    FOR_EACH(iter, filters){
         OmFilter2d* filterPtr = *iter;
         FilterDataWrapper filter(cdw.getID(), filterPtr->GetID());
         QTreeWidgetItem *row = new QTreeWidgetItem(filterListWidget);
