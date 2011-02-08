@@ -225,8 +225,9 @@ void SegInspector::updateFileList()
 {
     listWidget->clear();
 
-    FOR_EACH(iter, getFileList()){
-        listWidget->addItem(*iter);
+    const QStringList files = getFileList();
+    FOR_EACH(iter, files){
+         listWidget->addItem(*iter);
     }
 
     listWidget->update();
