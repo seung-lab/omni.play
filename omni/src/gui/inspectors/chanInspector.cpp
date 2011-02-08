@@ -70,19 +70,24 @@ QDir ChanInspector::getDir()
     return dir;
 }
 
-QStringList ChanInspector::getFileList(){
-    return SortHelpers::SortNaturally(getDir().entryList());
+QStringList ChanInspector::getFileList()
+{
+    QStringList files = getDir().entryList();
+    return SortHelpers::SortNaturally( files );
 }
 
-QFileInfoList ChanInspector::getFileInfoList(){
-    return SortHelpers::SortNaturally(getDir().entryInfoList());
+QFileInfoList ChanInspector::getFileInfoList()
+{
+    QFileInfoList files = getDir().entryInfoList();
+    return SortHelpers::SortNaturally( files );
 }
 
 void ChanInspector::updateFileList()
 {
     listWidget->clear();
 
-    FOR_EACH(iter, getFileList()){
+    const QStringList files = getFileList();
+    FOR_EACH(iter, files){
         listWidget->addItem(*iter);
     }
 
