@@ -49,10 +49,8 @@ public:
         collectChildren(child, childBag);
 
         FOR_EACH(iter, childBag){
-            if(!parentBag.erase(*iter)){
-                std::cout << "missing segment " << *iter << "\n";
-            }
-            childBag.insert(*iter);
+            parentBag.remove(*iter);
+            childBag.push_back(*iter);
         }
     }
 
