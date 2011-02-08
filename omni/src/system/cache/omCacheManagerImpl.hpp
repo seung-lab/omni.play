@@ -73,8 +73,8 @@ private:
     LockedUint64 freshness_;
 
     OmCacheManagerImpl()
-        : meshCaches_(new OmCacheGroup())
-        , tileCaches_(new OmCacheGroup())
+        : meshCaches_(new OmCacheGroup(om::MESH_CACHE))
+        , tileCaches_(new OmCacheGroup(om::TILE_CACHE))
     {
         freshness_.set(1); // non-segmentation tiles have freshness of 0
 
@@ -96,11 +96,11 @@ private:
             return false;
         }
 
-        const int numItemsRemoved =
-            meshCaches_->Clean() + tileCaches_->Clean();
+        meshCaches_->Clean();
+        tileCaches_->Clean();
 
-        if(numItemsRemoved > 0){
-            printf("\tcleaned cache; removed %d items...\n", numItemsRemoved);
+        if(amClosingDown.get()){
+            return false;
         }
 
         return true;

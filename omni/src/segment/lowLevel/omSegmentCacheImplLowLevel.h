@@ -21,7 +21,7 @@ public:
     void growGraphIfNeeded(OmSegment * newSeg);
 
     inline OmSegment* GetSegment(const OmSegID value){
-        return mSegments->GetSegment(value);
+        return segmentPages_->GetSegment(value);
     }
 
     inline OmSegID GetNumSegments() const {
@@ -98,7 +98,7 @@ public:
 
 protected:
     OmSegmentation *const segmentation_;
-    const boost::scoped_ptr<OmPagingPtrStore> mSegments;
+    const boost::scoped_ptr<OmPagingPtrStore> segmentPages_;
     const boost::scoped_ptr<OmSegmentSelection> segmentSelection_;
     const boost::scoped_ptr<OmEnabledSegments> enabledSegments_;
 

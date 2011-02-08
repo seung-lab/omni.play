@@ -487,7 +487,7 @@ QDataStream &operator>>(QDataStream& in, OmSegmentCache& sc)
 
 QDataStream &operator<<(QDataStream& out, const OmSegmentCacheImpl& sc)
 {
-    out << (*sc.mSegments);
+    out << (*sc.segmentPages_);
 
     out << false; // TODO: DEAD: was sc.segmentSelection_->allSelected_;
     out << false; //TODO: DEAD: was sc.mAllEnabled;
@@ -506,7 +506,7 @@ QDataStream &operator<<(QDataStream& out, const OmSegmentCacheImpl& sc)
 
 QDataStream &operator>>(QDataStream& in, OmSegmentCacheImpl& sc)
 {
-    in >> (*sc.mSegments);
+    in >> (*sc.segmentPages_);
 
     bool dead;
     in >> dead;

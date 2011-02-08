@@ -15,7 +15,6 @@ class QTextStream;
 
 /**
  * color structs
- *
  **/
 struct OmColor {
     uint8_t red;
@@ -139,7 +138,9 @@ enum CacheGroup {
     MESH_CACHE = 1,
     TILE_CACHE
 };
+
 } // om
+std::ostream& operator<<(std::ostream &out, const om::CacheGroup& c);
 
 class OmTile;
 typedef boost::shared_ptr<OmTile> OmTilePtr;

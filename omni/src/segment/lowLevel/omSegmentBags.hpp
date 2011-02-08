@@ -2,11 +2,13 @@
 #define OM_SEGMENT_BAGS_HPP
 
 #include "common/omCommon.h"
+#include "common/omSet.hpp"
+#include "segment/omSegment.h"
 #include "zi/omUtility.h"
 
 class OmSegmentBags {
 private:
-    typedef std::set<OmSegID> set_t;
+    typedef std::list<OmSegment*> set_t;
 
     std::vector<set_t> bags_;
 
@@ -19,25 +21,57 @@ public:
         bags_.resize(size);
     }
 
-    inline void Join(const OmSegID childRootID, const OmSegID parentRootID)
+    void Join(OmSegment* parent, OmSegment* child)
     {
-/*
-        if(!bags_.count(childRootID)){
-            bags_[parentRootID].insert(childRootID);
+        const OmSegID pID = parent->value();
+        const OmSegID cID = child->value();
+
+        set_t& parentBag = bags_[pID];
+        set_t& childBag  = bags_[cID];
+
+        parentBag.push_back(child);
+
+        if(childBag.empty()){
             return;
         }
 
-        set_t out;
-        const set_t& child = bags_[childRootID];
-        const set_t& parent = bags_[parentRootID];
+        parentBag.splice(parentBag.end(), childBag);
+    }
 
-        zi::set_union(child.begin(), child.end(),
-                      parent.begin(), parent.end(),
-                      std::inserter(out, out.begin()));
+    void Split(OmSegment* parent, OmSegment* child)
+    {
+        const OmSegID pID = parent->value();
+        const OmSegID cID = child->value();
 
-        bags_[parentRootID] = out;
-        bags_[childRootID].clear();
-*/
+        set_t& parentBag = bags_[pID];
+        set_t& childBag  = bags_[cID];
+
+        collectChildren(child, childBag);
+
+        FOR_EACH(iter, childBag){
+            if(!parentBag.erase(*iter)){
+                std::cout << "missing segment " << *iter << "\n";
+            }
+            childBag.insert(*iter);
+        }
+    }
+
+private:
+    void collectChildren(OmSegment* rootSeg, set_t& set)
+    {
+        set_t segs;
+        segs.push_back(rootSeg);
+
+        while(!segs.empty()){
+            OmSegment* segRet = segs.back();
+            segs.pop_back();
+
+            FOR_EACH(iter, segRet->getChildren()){
+                segs.push_back(*iter);
+            }
+
+            set.push_back(segRet);
+        }
     }
 };
 

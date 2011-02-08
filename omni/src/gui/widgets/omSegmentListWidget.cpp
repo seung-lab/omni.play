@@ -62,10 +62,10 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
         row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(segDW));
 
         const uint32_t numChildren = OmSegmentUtils::NumberOfDescendants(segDW);
-        row->setText(NUM_CHILD_COL, OmStringHelpers::CommaDeliminateNumQT(numChildren));
+        row->setText(NUM_CHILD_COL, OmStringHelpers::HumanizeNumQT(numChildren));
         row->setTextAlignment(NUM_CHILD_COL, Qt::AlignHCenter);
 
-        row->setText(SIZE_COL, OmStringHelpers::CommaDeliminateNumQT(segDW.getSizeWithChildren()));
+        row->setText(SIZE_COL, OmStringHelpers::HumanizeNumQT(segDW.getSizeWithChildren()));
         row->setTextAlignment(SIZE_COL, Qt::AlignHCenter);
 
         row->setSelected(seg->IsSelected());

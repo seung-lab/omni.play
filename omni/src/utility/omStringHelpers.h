@@ -9,30 +9,8 @@ class OmStringHelpers{
 public:
 
     template <typename T>
-    inline static QString CommaDeliminateNumQT(const T num){
-        return QString::fromStdString(CommaDeliminateNum(num));
-    }
-
-    template <typename T>
-    inline static std::string CommaDeliminateNum(const T num)
-    {
-        const std::string rawNumAsStr = om::string::num(num);
-
-        size_t counter = 0;
-        std::string ret;
-
-        FOR_EACH_R(i, rawNumAsStr){
-            ++counter;
-            ret += *i;
-            if( 0 == ( counter % 3 ) &&
-                counter != rawNumAsStr.size() )
-            {
-                ret += ',';
-            }
-        }
-
-        std::reverse(ret.begin(), ret.end());
-        return ret;
+    inline static QString HumanizeNumQT(const T num){
+        return QString::fromStdString(om::string::humanizeNum(num));
     }
 
     static uint32_t getUInt(const QString& arg)

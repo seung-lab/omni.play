@@ -9,12 +9,14 @@ OmThreadedCache<KEY,PTR>::OmThreadedCache(const om::CacheGroup group,
                                           const std::string& name,
                                           const int numThreads,
                                           const om::ShouldThrottle throttle,
-                                          const om::ShouldFifo fifo)
+                                          const om::ShouldFifo fifo,
+                                          const int64_t entrySize)
     : OmCacheBase(name, group)
     , numThreads_(numThreads)
-    , cachesToClean_(boost::make_shared<LockedList<OldCachePtr> >())
     , throttle_(throttle)
     , fifo_(fifo)
+    , entrySize_(entrySize)
+    , cachesToClean_(new LockedList<OldCachePtr>())
 {
     OmCacheManager::AddCache(group, this);
     threadPool_.start(numThreads_);
@@ -38,7 +40,7 @@ void OmThreadedCache<KEY,PTR>::closeDownThreads()
 }
 
 template <typename KEY, typename PTR>
-void OmThreadedCache<KEY,PTR>::UpdateSize(const int64_t delta)
+void OmThreadedCache<KEY,PTR>::updateSize(const int64_t delta)
 {
     curSize_.add(delta);
     // assert( curSize_.get() >= 0 );
@@ -114,69 +116,62 @@ void OmThreadedCache<KEY,PTR>::Remove(const KEY &key)
 }
 
 template <typename KEY, typename PTR>
-int OmThreadedCache<KEY,PTR>::Clean(const bool okToRemoveOldest)
+void OmThreadedCache<KEY,PTR>::Clean()
 {
     if(cachesToClean_->empty()){
-        if(okToRemoveOldest){
-            return removeOldest();
-        }
-        return 0;
+        return;
     }
 
     // avoid contention on cacheToClean by swapping in new, empty list
     std::list<OldCachePtr> oldCaches;
     cachesToClean_->swap(oldCaches);
 
-    int numItems = 0;
     FOR_EACH(iter, oldCaches){
         OldCachePtr cache = *iter;
-        numItems += cache->size();
         cache->clear();
     }
     oldCaches.clear();
-
-    return numItems;
 }
 
 template <typename KEY, typename PTR>
-int OmThreadedCache<KEY,PTR>::removeOldest()
+void OmThreadedCache<KEY,PTR>::RemoveOldest(const int numToRemove)
 {
-    zi::rwmutex::write_guard g(mutex_);
-
     if(cache_.empty() || keyAccessList_.empty()){
-        return 0;
+        return;
     }
 
-    const KEY key = keyAccessList_.remove_oldest();
-    const PTR val = cache_.get(key);
-    if(!val){
-        return 0;
+    for(int i = 0; i < numToRemove; ++i){
+        if(keyAccessList_.empty()){
+            return;
+        }
+        zi::rwmutex::write_guard g(mutex_);
+        {
+            const KEY key = keyAccessList_.remove_oldest();
+            const PTR val = cache_.get(key);
+            if(!val){
+                continue;
+            }
+
+            if(!entrySize_){
+                curSize_.sub(val->NumBytes());
+            }
+
+            cache_.erase(key);
+        }
     }
-
-    val->Flush();
-    curSize_.sub(val->NumBytes());
-    cache_.erase(key);
-
-    return 1;
-}
-
-template <typename KEY, typename PTR>
-int OmThreadedCache<KEY,PTR>::GetFetchStackSize() const
-{
-    return threadPool_.getTaskCount();
 }
 
 template <typename KEY, typename PTR>
 int64_t OmThreadedCache<KEY,PTR>::GetCacheSize() const
 {
-    /*
-      if(RAM_CACHE_GROUP == cacheGroup_ ){
-      std::cout << "current cache (" << getGroupName() << ") size is :"
-      << OmStringHelpers::CommaDeliminateNumber(curSize_.get()).toStdString()
-      << " bytes\n";
-      }
-    */
-    return curSize_.get();
+    // if entrySize_ == 0, cached objects have a variable size (i.e. meshes)
+    // if entrySize_ != 0, cached objects all have the same size (i.e. tiles)
+
+    if(!entrySize_){
+        return curSize_.get();
+    }
+
+    return entrySize_ * cache_.size();
 }
 
 template <typename KEY, typename PTR>

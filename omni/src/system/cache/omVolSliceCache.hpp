@@ -44,7 +44,8 @@ private:
 
 public:
     OmVolSliceCacheImpl(OmMipVolume* vol)
-        : cache_(new cache_t("slice cache", vol->GetBytesPerSlice()))
+        : cache_(new cache_t(om::TILE_CACHE, "slice cache",
+                             vol->GetBytesPerSlice()))
     {}
 
     virtual OmDataWrapperPtr Get(const OmVolSliceKey& key){

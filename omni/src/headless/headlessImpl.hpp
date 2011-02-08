@@ -204,7 +204,7 @@ private:
         }
 
         std::cout << "found "
-                  << OmStringHelpers::CommaDeliminateNum(segColorHist.size())
+                  << om::string::humanizeNum(segColorHist.size())
                   << " colors\n";
 
         OmSegmentCache* segCache = sdw.SegmentCache();

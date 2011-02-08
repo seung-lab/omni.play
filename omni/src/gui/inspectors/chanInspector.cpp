@@ -21,8 +21,8 @@ ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent)
 
     populateChannelInspector();
 
-    //	connect(nameEdit, SIGNAL(editingFinished()),
-    //		this, SLOT(nameEditChanged()), Qt::DirectConnection);
+    // connect(nameEdit, SIGNAL(editingFinished()),
+    // 	this, SLOT(nameEditChanged()), Qt::DirectConnection);
 }
 
 ChannelDataWrapper ChanInspector::getChannelDataWrapper()

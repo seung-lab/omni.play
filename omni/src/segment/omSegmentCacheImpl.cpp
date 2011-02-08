@@ -35,7 +35,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment(const OmSegID value)
         return NULL;
     }
 
-    OmSegment* seg = mSegments->AddSegment(value);
+    OmSegment* seg = segmentPages_->AddSegment(value);
     seg->RandomizeColor();
 
     ++mNumSegs;
@@ -331,7 +331,7 @@ void OmSegmentCacheImpl::resetGlobalThreshold()
 }
 
 void OmSegmentCacheImpl::Flush(){
-    mSegments->Flush();
+    segmentPages_->Flush();
 }
 
 bool OmSegmentCacheImpl::AreAnySegmentsInValidList(const OmSegIDsSet& ids)

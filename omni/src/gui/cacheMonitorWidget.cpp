@@ -42,7 +42,7 @@ QGroupBox* CacheMonitorWidget::showDisplay(const QString& cacheType,
 
         gridLayout->addWidget(cacheSizeBar, j*2+1, 0, 1, 3);
 
-        label = new QLabel(OmStringHelpers::CommaDeliminateNumQT(info.size),
+        label = new QLabel(OmStringHelpers::HumanizeNumQT(info.size),
                            groupBox);
         gridLayout->addWidget(label, j*2+1, 4, 1, 1);
     }

@@ -89,3 +89,13 @@ std::ostream& operator<<(std::ostream &out, const OmToolMode& tool)
 
     return out;
 }
+
+std::ostream& operator<<(std::ostream &out, const om::CacheGroup& c)
+{
+    if(om::MESH_CACHE == c){
+        out << "MESH_CACHE";
+    } else {
+        out <<"TILE_CACHE";
+    }
+    return out;
+}

@@ -31,6 +31,13 @@ private:
     }
 
 public:
+    void Clear()
+    {
+        workingList_.clear();
+        validList_.clear();
+        uncertainList_.clear();
+    }
+
     OmSegmentListByMRU& Recent(){
         return recentList_;
     }

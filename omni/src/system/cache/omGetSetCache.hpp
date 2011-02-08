@@ -3,29 +3,47 @@
 
 #include "common/om.hpp"
 #include "system/cache/omCacheBase.h"
-#include "system/cache/omLockedCacheObjects.hpp"
-#include "utility/omLockedPODs.hpp"
+#include "system/cache/omCacheManager.h"
+#include "system/cache/omCacheObjects.hpp"
 #include "zi/omMutex.h"
+
+/**
+ * simple locked-protected cache of fixed-sized objects
+ *
+ * will be memory-limited by OmCacheManager
+ *
+ * Michael Purcaro 02/2011
+ **/
 
 template <typename KEY, typename PTR>
 class OmGetSetCache : public OmCacheBase {
 private:
+    const om::CacheGroup cacheGroup_;
     const int64_t entrySize_;
 
     zi::mutex lock_;
-    std::map<KEY, PTR> cache_;
-    std::list<KEY> mru_;
 
-    LockedKeyMultiIndex<KEY> full_mru_;
+    std::map<KEY, PTR> cache_;
+
+    std::list<KEY> mru_; // most recent keys at end of list
+
+    // full MRU not lock-protected, and thus not thread-safe:
+    //   assumes access only by single-threaded cleaner thread
+    KeyMultiIndex<KEY> full_mru_;
 
 public:
-    OmGetSetCache(const std::string& cacheName, const int64_t entrySize)
-        : OmCacheBase(cacheName, om::TILE_CACHE)
+    OmGetSetCache(const om::CacheGroup cacheGroup, const std::string& cacheName,
+                  const int64_t entrySize)
+        : OmCacheBase(cacheName, cacheGroup)
+        , cacheGroup_(cacheGroup)
         , entrySize_(entrySize)
-    {}
+    {
+        OmCacheManager::AddCache(cacheGroup_, this);
+    }
 
-    virtual ~OmGetSetCache()
-    {}
+    virtual ~OmGetSetCache(){
+        OmCacheManager::RemoveCache(cacheGroup_, this);
+    }
 
     void Clear()
     {
@@ -45,38 +63,41 @@ public:
     inline void Set(const KEY& key, const PTR& ptr)
     {
         zi::guard g(lock_);
+        mru_.push_back(key);
         cache_[key] = ptr;
     }
 
-    int Clean(const bool)
+    void Clean()
     {
         std::list<KEY> mru;
         {
             zi::guard g(lock_);
-            if(!mru_.empty()){
-                mru_.swap(mru);
-            }
+            mru_.swap(mru);
         }
 
-        FOR_EACH(iter, mru){
-            full_mru_.touch(*iter);
-        }
-
-        if(full_mru_.empty()){
-            return 0;
-        }
-
-        const KEY key = full_mru_.remove_oldest();
-
-        int numRemoved;
-        {
-            zi::guard g(lock_);
-            numRemoved = cache_.erase(key);
-        }
-
-        return numRemoved;
+        // merge in keys got/set since last clean
+        full_mru_.touch(mru);
     }
 
+    void RemoveOldest(const int numToRemove)
+    {
+        if(full_mru_.empty()){
+            return;
+        }
+
+        for(int i = 0; i < numToRemove; ++i){
+            if(full_mru_.empty()){
+                return;
+            }
+            const KEY key = full_mru_.remove_oldest();
+            {
+                zi::guard g(lock_);
+                cache_.erase(key);
+            }
+        }
+    }
+
+    // cache of fixed-object sizes, so compute size
     int64_t GetCacheSize() const
     {
         int64_t numSlices;

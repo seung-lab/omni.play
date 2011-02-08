@@ -10,13 +10,16 @@
 class OmTileCacheSegmentation : private OmThreadedCache<OmTileCoord, OmTilePtr>{
 private:
     static const int NUM_THREADS = 3;
+    static const int SLICE_SIZE_BYTES = 128*128*4;
 
 public:
     OmTileCacheSegmentation()
         : OmThreadedCache<OmTileCoord, OmTilePtr>(om::TILE_CACHE,
                                                   "Segmentation Tiles",
                                                   NUM_THREADS,
-                                                  om::THROTTLE)
+                                                  om::THROTTLE,
+                                                  om::DONT_FIFO,
+                                                  SLICE_SIZE_BYTES)
     {}
 
     inline void Get(OmTilePtr& ptr, const OmTileCoord& key,

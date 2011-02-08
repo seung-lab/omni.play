@@ -8,14 +8,15 @@ OmMeshCache::OmMeshCache(OmMipMeshManager* parent)
                                                     "Meshes",
                                                     zi::system::cpu_count,
                                                     om::THROTTLE,
-                                                    om::FIFO)
-    , mOmMipMeshManager(parent)
+                                                    om::FIFO,
+                                                    0)
+    , meshMan_(parent)
 {}
 
 OmMipMeshPtr
 OmMeshCache::HandleCacheMiss(const OmMipMeshCoord& coord)
 {
-    OmMipMeshPtr mesh = mOmMipMeshManager->Produce(coord);
+    OmMipMeshPtr mesh = meshMan_->Produce(coord);
 
     //load data from disk
     mesh->Load();

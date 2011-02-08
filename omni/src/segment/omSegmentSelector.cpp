@@ -121,14 +121,14 @@ bool OmSegmentSelector::sendEvent()
 {
     if(params_->augmentListOnly){
         if(om::ADD == params_->addOrSubtract){
-            if(om::sets::SetAContainsB(params_->oldSelectedIDs,
-                                          params_->newSelectedIDs))
+            if(om::set::SetAContainsB(params_->oldSelectedIDs,
+                                      params_->newSelectedIDs))
             {
                 // already added
                 return false;
             }
         } else {
-            if(om::sets::SetsAreDisjoint(params_->oldSelectedIDs,
+            if(om::set::SetsAreDisjoint(params_->oldSelectedIDs,
                                         params_->newSelectedIDs))
             {
                 // no segments to be removed are selected

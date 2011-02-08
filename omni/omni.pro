@@ -325,6 +325,7 @@ HEADERS +=  \
 	src/system/cache/omCacheInfo.h \
 	src/system/cache/omCacheManager.h \
 	src/system/cache/omCacheManagerImpl.hpp \
+	src/system/cache/omCacheObjects.hpp \
 	src/system/cache/omGetSetCache.hpp \
 	src/system/cache/omHandleCacheMissTask.hpp \
 	src/system/cache/omLockedCacheObjects.hpp \

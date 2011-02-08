@@ -14,7 +14,7 @@ public:
     OmMipMeshPtr HandleCacheMiss(const OmMipMeshCoord &meshCoord);
 
 private:
-    OmMipMeshManager *const mOmMipMeshManager;
+    OmMipMeshManager *const meshMan_;
 };
 
 #endif

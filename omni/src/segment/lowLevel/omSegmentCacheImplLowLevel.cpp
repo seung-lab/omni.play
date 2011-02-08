@@ -7,10 +7,11 @@
 
 OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel(OmSegmentation* segmentation)
     : segmentation_(segmentation)
-    , mSegments(new OmPagingPtrStore(segmentation))
+    , segmentPages_(new OmPagingPtrStore(segmentation))
     , segmentSelection_(new OmSegmentSelection(this))
     , enabledSegments_(new OmEnabledSegments(this))
     , mMaxValue(0)
+    , mNumSegs(0)
 {}
 
 OmSegmentCacheImplLowLevel::~OmSegmentCacheImplLowLevel()
@@ -59,7 +60,7 @@ void OmSegmentCacheImplLowLevel::setSegmentNote(OmSegID segID, QString note){
 }
 
 quint32 OmSegmentCacheImplLowLevel::getPageSize(){
-    return mSegments->getPageSize();
+    return segmentPages_->getPageSize();
 }
 
 void OmSegmentCacheImplLowLevel::touchFreshness(){

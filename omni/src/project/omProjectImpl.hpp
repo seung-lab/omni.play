@@ -2,10 +2,10 @@
 #define OM_PROJECT_IMPL_HPP
 
 /*
- *	Manages data structures that are shared between various parts of the
- *  system.
+ *  Manages data structures that are shared between various parts of the
+ *    system.
  *
- *	Brett Warne - bwarne@mit.edu - 3/14/09
+ *  Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
 #include "actions/io/omActionReplayer.hpp"
@@ -34,235 +34,235 @@
 
 class OmProjectImpl {
 private:
-	QString projectMetadataFile_;
-	QString oldHDF5projectFile_;
-	OmHdf5* oldHDF5_;
-	QString filesFolder_;
-	QString omniFile_;
+    QString projectMetadataFile_;
+    QString oldHDF5projectFile_;
+    OmHdf5* oldHDF5_;
+    QString filesFolder_;
+    QString omniFile_;
 
-	int fileVersion_;
-	bool isReadOnly_;
+    int fileVersion_;
+    bool isReadOnly_;
 
-	OmProjectVolumes volumes_;
-	boost::scoped_ptr<OmProjectGlobals> globals_;
+    OmProjectVolumes volumes_;
+    boost::scoped_ptr<OmProjectGlobals> globals_;
 
 public:
-	OmProjectImpl()
-		: oldHDF5_(NULL)
-		, fileVersion_(0)
-		, isReadOnly_(false)
-	{}
+    OmProjectImpl()
+        : oldHDF5_(NULL)
+        , fileVersion_(0)
+        , isReadOnly_(false)
+    {}
 
-	~OmProjectImpl()
-	{}
+    ~OmProjectImpl()
+    {}
 
-	const QString& FilesFolder() {
-		return filesFolder_;
-	}
+    const QString& FilesFolder() {
+        return filesFolder_;
+    }
 
-	const QString& OmniFile() {
-		return omniFile_;
-	}
+    const QString& OmniFile() {
+        return omniFile_;
+    }
 
-	bool HasOldHDF5() const {
-		return NULL != oldHDF5_;
-	}
+    bool HasOldHDF5() const {
+        return NULL != oldHDF5_;
+    }
 
-	OmHdf5* OldHDF5()
-	{
-		if(!oldHDF5_){
-			throw OmIoException("no old hdf5 file present");
-		}
-		return oldHDF5_;
-	}
+    OmHdf5* OldHDF5()
+    {
+        if(!oldHDF5_){
+            throw OmIoException("no old hdf5 file present");
+        }
+        return oldHDF5_;
+    }
 
-	//volume management
-	OmProjectVolumes& Volumes(){
-		return volumes_;
-	}
+    //volume management
+    OmProjectVolumes& Volumes(){
+        return volumes_;
+    }
 
-	//project IO
-	QString New(const QString& fileNameAndPathIn)
-	{
-		const QString fnp_rel =
-			OmFileNames::AddOmniExtensionIfNeeded(fileNameAndPathIn);
-		const QString fnp = QFileInfo(fnp_rel).absoluteFilePath();
+    //project IO
+    QString New(const QString& fileNameAndPathIn)
+    {
+        const QString fnp_rel =
+            OmFileNames::AddOmniExtensionIfNeeded(fileNameAndPathIn);
+        const QString fnp = QFileInfo(fnp_rel).absoluteFilePath();
 
-		doNew(fnp);
+        doNew(fnp);
 
-		return fnp;
-	}
+        return fnp;
+    }
 
-	void Load(const QString& fileNameAndPath)
-	{
-		const QFileInfo projectFile(fileNameAndPath);
-		doLoad(projectFile.absoluteFilePath());
-	}
+    void Load(const QString& fileNameAndPath)
+    {
+        const QFileInfo projectFile(fileNameAndPath);
+        doLoad(projectFile.absoluteFilePath());
+    }
 
-	void Save()
-	{
-		FOR_EACH(iter, volumes_.Segmentations().GetValidSegmentationIds() ){
-			volumes_.Segmentations().GetSegmentation(*iter).Flush();
-		}
+    void Save()
+    {
+        FOR_EACH(iter, volumes_.Segmentations().GetValidSegmentationIds() ){
+            volumes_.Segmentations().GetSegmentation(*iter).Flush();
+        }
 
-		OmDataArchiveProject::ArchiveWrite(projectMetadataFile_, this);
+        OmDataArchiveProject::ArchiveWrite(projectMetadataFile_, this);
 
-		printf("omni project saved!\n");
-	}
+        printf("omni project saved!\n");
+    }
 
-	void Commit()
-	{
-		Save();
-		OmStateManager::ClearUndoStack();
-	}
+    void Commit()
+    {
+        Save();
+        OmStateManager::ClearUndoStack();
+    }
 
-	int GetFileVersion() const {
-		return fileVersion_;
-	}
+    int GetFileVersion() const {
+        return fileVersion_;
+    }
 
-	bool IsReadOnly() const {
-		return isReadOnly_;
-	}
+    bool IsReadOnly() const {
+        return isReadOnly_;
+    }
 
-	OmProjectGlobals& Globals(){
-		return *globals_;
-	}
+    OmProjectGlobals& Globals(){
+        return *globals_;
+    }
 
 private:
 
-	void doNew(const QString& fnp)
-	{
-		omniFile_ = fnp;
-		filesFolder_ = fnp + ".files";
-		projectMetadataFile_ =
-			filesFolder_ + QDir::separator() + "projectMetadata.qt";
-		oldHDF5projectFile_ = "";
+    void doNew(const QString& fnp)
+    {
+        omniFile_ = fnp;
+        filesFolder_ = fnp + ".files";
+        projectMetadataFile_ =
+            filesFolder_ + QDir::separator() + "projectMetadata.qt";
+        oldHDF5projectFile_ = "";
 
-		makeParentFolder();
-		doCreate();
-		touchEmptyProjectFile();
+        makeParentFolder();
+        doCreate();
+        touchEmptyProjectFile();
 
-		globals_.reset(new OmProjectGlobals());
+        globals_.reset(new OmProjectGlobals());
 
-		OmCacheManager::Reset();
-		OmTileCache::Reset();
+        OmCacheManager::Reset();
+        OmTileCache::Reset();
 
-		OmPreferenceDefaults::SetDefaultAllPreferences();
+        OmPreferenceDefaults::SetDefaultAllPreferences();
 
-		Save();
-	}
+        Save();
+    }
 
-	void makeParentFolder()
-	{
-		const QString dirStr = QFileInfo(omniFile_).absolutePath();
-		QDir dir(dirStr);
-		if( !dir.exists() ){
-			if( !dir.mkpath(dirStr) ){
-				throw OmIoException("could not make path", dirStr);
-			}
-		}
-	}
+    void makeParentFolder()
+    {
+        const QString dirStr = QFileInfo(omniFile_).absolutePath();
+        QDir dir(dirStr);
+        if( !dir.exists() ){
+            if( !dir.mkpath(dirStr) ){
+                throw OmIoException("could not make path", dirStr);
+            }
+        }
+    }
 
-	void doLoad(const QString& fnp)
-	{
-		if(!QFile::exists(fnp)){
-			throw OmIoException("Project file not found at", fnp);
-		}
+    void doLoad(const QString& fnp)
+    {
+        if(!QFile::exists(fnp)){
+            throw OmIoException("Project file not found at", fnp);
+        }
 
-		omniFile_ = fnp;
-		filesFolder_ = fnp + ".files";
-		projectMetadataFile_ =
-			filesFolder_ + QDir::separator() + "projectMetadata.qt";
-		oldHDF5projectFile_ =
-			filesFolder_ + QDir::separator() + "oldProjectFile.hdf5";
+        omniFile_ = fnp;
+        filesFolder_ = fnp + ".files";
+        projectMetadataFile_ =
+            filesFolder_ + QDir::separator() + "projectMetadata.qt";
+        oldHDF5projectFile_ =
+            filesFolder_ + QDir::separator() + "oldProjectFile.hdf5";
 
-		migrateFromHdf5();
+        migrateFromHdf5();
 
-		globals_.reset(new OmProjectGlobals());
+        globals_.reset(new OmProjectGlobals());
 
-		OmCacheManager::Reset();
-		OmTileCache::Reset();
+        OmCacheManager::Reset();
+        OmTileCache::Reset();
 
-		try {
-			OmDataArchiveProject::ArchiveRead(projectMetadataFile_, this);
-		} catch( ... ) {
-			throw;
-		}
+        try {
+            OmDataArchiveProject::ArchiveRead(projectMetadataFile_, this);
+        } catch( ... ) {
+            throw;
+        }
 
-		OmActionReplayer::Replay();
-	}
+        OmActionReplayer::Replay();
+    }
 
-	void doCreate()
-	{
-		QFile projectFile(omniFile_);
-		if( projectFile.exists() ){
-			projectFile.remove();
-		}
+    void doCreate()
+    {
+        QFile projectFile(omniFile_);
+        if( projectFile.exists() ){
+            projectFile.remove();
+        }
 
-		OmFileHelpers::RemoveDir(filesFolder_);
-		OmFileNames::MakeFilesFolder();
-	}
+        OmFileHelpers::RemoveDir(filesFolder_);
+        OmFileNames::MakeFilesFolder();
+    }
 
-	void openHDF5()
-	{
-		if(!QFile::exists(oldHDF5projectFile_)){
-			return;
-		}
+    void openHDF5()
+    {
+        if(!QFile::exists(oldHDF5projectFile_)){
+            return;
+        }
 
-		const bool isReadOnly = true;
+        const bool isReadOnly = true;
 
-		oldHDF5_ = OmHdf5Manager::Get(oldHDF5projectFile_, isReadOnly);
-		oldHDF5_->open();
-	}
+        oldHDF5_ = OmHdf5Manager::Get(oldHDF5projectFile_, isReadOnly);
+        oldHDF5_->open();
+    }
 
-	void touchEmptyProjectFile()
-	{
-		QFile file(omniFile_);
-		if(!file.open(QIODevice::WriteOnly)) {
-			throw OmIoException("could not open", omniFile_);
-		}
-	}
+    void touchEmptyProjectFile()
+    {
+        QFile file(omniFile_);
+        if(!file.open(QIODevice::WriteOnly)) {
+            throw OmIoException("could not open", omniFile_);
+        }
+    }
 
-	void migrateFromHdf5()
-	{
-		if(!QFileInfo(omniFile_).size()){
-			oldHDF5projectFile_ = "";
-			return;
-		}
+    void migrateFromHdf5()
+    {
+        if(!QFileInfo(omniFile_).size()){
+            oldHDF5projectFile_ = "";
+            return;
+        }
 
-		OmFileNames::MakeFilesFolder();
+        OmFileNames::MakeFilesFolder();
 
-		OmFileHelpers::MoveFile(omniFile_, oldHDF5projectFile_);
+        OmFileHelpers::MoveFile(omniFile_, oldHDF5projectFile_);
 
-		touchEmptyProjectFile();
+        touchEmptyProjectFile();
 
-		openHDF5();
+        openHDF5();
 
-		moveProjectMetadata();
-	}
+        moveProjectMetadata();
+    }
 
-	void moveProjectMetadata()
-	{
-		const OmDataPath path = OmDataPaths::getProjectArchiveNameQT();
-		int size;
-		OmDataWrapperPtr dw = oldHDF5_->readDataset(path, &size);
-		char const*const data = dw->getPtr<const char>();
+    void moveProjectMetadata()
+    {
+        const OmDataPath path = OmDataPaths::getProjectArchiveNameQT();
+        int size;
+        OmDataWrapperPtr dw = oldHDF5_->readDataset(path, &size);
+        char const*const data = dw->getPtr<const char>();
 
-		QFile newProjectMetadafile(projectMetadataFile_);
-		if(!newProjectMetadafile.open(QIODevice::WriteOnly)) {
-			throw OmIoException("could not open", projectMetadataFile_);
-		}
-		newProjectMetadafile.write(data, size);
-	}
+        QFile newProjectMetadafile(projectMetadataFile_);
+        if(!newProjectMetadafile.open(QIODevice::WriteOnly)) {
+            throw OmIoException("could not open", projectMetadataFile_);
+        }
+        newProjectMetadafile.write(data, size);
+    }
 
-	void setFileVersion(const int v){
-		fileVersion_ = v;
-	}
+    void setFileVersion(const int v){
+        fileVersion_ = v;
+    }
 
-	friend class OmProject;
+    friend class OmProject;
 
-	friend QDataStream &operator<<(QDataStream & out, const OmProjectImpl & p );
-	friend QDataStream &operator>>(QDataStream & in, OmProjectImpl & p );
+    friend QDataStream &operator<<(QDataStream & out, const OmProjectImpl & p );
+    friend QDataStream &operator>>(QDataStream & in, OmProjectImpl & p );
 };
 
 #endif

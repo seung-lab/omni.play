@@ -49,13 +49,12 @@ void OmSegmentGraph::GrowGraphIfNeeded(OmSegment* seg)
 
 void OmSegmentGraph::buildSegmentSizeLists()
 {
-    segmentLists_->Valid().clear();
-    segmentLists_->Working().clear();
+    segmentLists_->Clear();
 
     OmSegmentIteratorLowLevel iter(mCache);
     iter.iterOverAllSegments();
 
-    for(OmSegment * seg = iter.getNextSegment();
+    for(OmSegment* seg = iter.getNextSegment();
         NULL != seg;
         seg = iter.getNextSegment())
     {
@@ -84,7 +83,7 @@ uint32_t OmSegmentGraph::GetNumTopLevelSegs()
 
 void OmSegmentGraph::SetGlobalThreshold(OmMST* mst)
 {
-    std::cout << "\t" << OmStringHelpers::CommaDeliminateNum(mst->NumEdges())
+    std::cout << "\t" << om::string::humanizeNum(mst->NumEdges())
               << " edges..." << std::flush;
 
     OmTimer timer;
@@ -124,7 +123,7 @@ void OmSegmentGraph::SetGlobalThreshold(OmMST* mst)
 
 void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
 {
-    std::cout << "\t" << OmStringHelpers::CommaDeliminateNum(mst->NumEdges())
+    std::cout << "\t" << om::string::humanizeNum(mst->NumEdges())
               << " edges..." << std::flush;
 
     forest_->SetBatch(true);
@@ -208,7 +207,7 @@ bool OmSegmentGraph::joinInternal( const OmSegID parentID,
 
 bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 {
-    OmSegment * child = mCache->GetSegment( childID );
+    OmSegment* child = mCache->GetSegment( childID );
 
     if( child->getThreshold() > 1 ){
         return false;
@@ -228,29 +227,35 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
     child->setParent(NULL); // TODO: also set threshold??
     child->setEdgeNumber(-1);
 
-    mCache->FindRoot(parent)->touchFreshnessForMeshes();
+    OmSegment* parentRoot = mCache->FindRoot(parent);
+
+    parentRoot->touchFreshnessForMeshes();
     child->touchFreshnessForMeshes();
 
-    UpdateSizeListsFromSplit( parent, child );
+    UpdateSizeListsFromSplit(parentRoot, child);
 
     return true;
 }
 
 void OmSegmentGraph::UpdateSizeListsFromJoin(OmSegment* parent, OmSegment* child)
 {
-    OmSegment * root = mCache->FindRoot(parent);
+    OmSegment* root = mCache->FindRoot(parent);
     segmentLists_->UpdateFromJoinWorking(root, child);
     segmentLists_->UpdateFromJoinUncertain(root, child);
     segmentLists_->UpdateFromJoinValid(root, child);
+
+    //bags_->Join(root, child);
 }
 
 void OmSegmentGraph::UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* child)
 {
-    OmSegment * root = mCache->FindRoot(parent);
+    OmSegment* root = mCache->FindRoot(parent);
     uint64_t newChildSize = computeSegmentSizeWithChildren(child->value());
     segmentLists_->UpdateFromSplitWorking(root, child, newChildSize);
     segmentLists_->UpdateFromSplitUncertain(root, child, newChildSize);
 //	segmentLists_->UpdateFromSplitValid(root, child, newChildSize);
+
+    //bags_->Split(root, child);
 }
 
 quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )
@@ -258,7 +263,7 @@ quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )
     quint64 size = 0;
     OmSegmentIteratorLowLevel iter(mCache);
     iter.iterOverSegmentID( segID );
-    for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
+    for(OmSegment* seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
         size += seg->size();
     }
     return size;

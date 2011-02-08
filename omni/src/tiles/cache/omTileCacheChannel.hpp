@@ -9,13 +9,16 @@
 class OmTileCacheChannel : public OmThreadedCache<OmTileCoord, OmTilePtr> {
 private:
     static const int NUM_THREADS = 3;
+    static const int SLICE_SIZE_BYTES = 128*128;
 
 public:
     OmTileCacheChannel()
         : OmThreadedCache<OmTileCoord, OmTilePtr>(om::TILE_CACHE,
                                                   "Channel Tiles",
                                                   NUM_THREADS,
-                                                  om::THROTTLE)
+                                                  om::THROTTLE,
+                                                  om::DONT_FIFO,
+                                                  SLICE_SIZE_BYTES)
     {}
 
 private:

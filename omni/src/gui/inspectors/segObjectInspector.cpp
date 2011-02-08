@@ -45,8 +45,8 @@ void SegObjectInspector::set_initial_values()
     colorButton->setIcon(QIcon(*pixm));
     current_color = newcolor;
 
-    sizeNoChildren->setText( OmStringHelpers::CommaDeliminateNumQT(sdw_.getSize()));
-    sizeWithChildren->setText( OmStringHelpers::CommaDeliminateNumQT(sdw_.getSizeWithChildren()));
+    sizeNoChildren->setText( OmStringHelpers::HumanizeNumQT(sdw_.getSize()));
+    sizeWithChildren->setText( OmStringHelpers::HumanizeNumQT(sdw_.getSizeWithChildren()));
 
     origDataValueList->setText( sdw_.getIDstr() );
     chunkList->setText( "disabled" );

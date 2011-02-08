@@ -11,7 +11,7 @@
 template <typename T> class LockedList;
 
 /**
- *	Brett Warne - bwarne@mit.edu - 3/12/09
+ *  Brett Warne - bwarne@mit.edu - 3/12/09
  */
 
 template <typename KEY, typename PTR> class OmHandleCacheMissTask;
@@ -23,24 +23,23 @@ public:
                     const std::string& name,
                     const int numThreads,
                     const om::ShouldThrottle,
-                    const om::ShouldFifo = om::DONT_FIFO);
+                    const om::ShouldFifo,
+                    const int64_t entrySize);
+
     virtual ~OmThreadedCache();
 
     virtual void Get(PTR&, const KEY&, const om::Blocking);
+    virtual PTR HandleCacheMiss(const KEY& key) = 0;
 
     void Prefetch(const KEY& key);
 
     void Remove(const KEY& key);
-    int Clean(const bool okToRemoveOldest);
+    void RemoveOldest(const int numToRemove);
+    void Clean();
     void Clear();
     void InvalidateCache();
 
-    void UpdateSize(const int64_t delta);
-
-    int GetFetchStackSize() const;
     int64_t GetCacheSize() const;
-
-    virtual PTR HandleCacheMiss(const KEY& key) = 0;
 
     void closeDownThreads();
 
@@ -50,6 +49,9 @@ private:
     typedef boost::shared_ptr<std::map<KEY,PTR> > OldCachePtr;
 
     const int numThreads_;
+    const om::ShouldThrottle throttle_;
+    const om::ShouldFifo fifo_;
+    const int64_t entrySize_;
 
     LockedInt64 curSize_;
     OmThreadPool threadPool_;
@@ -60,13 +62,10 @@ private:
     LockedKeyMultiIndex<KEY> keyAccessList_;
     LockedBool killingCache_;
 
-    boost::shared_ptr<LockedList<OldCachePtr> > cachesToClean_;
+    boost::scoped_ptr<LockedList<OldCachePtr> > cachesToClean_;
 
-    int removeOldest();
     void get(PTR&, const KEY&, const bool);
-
-    const om::ShouldThrottle throttle_;
-    const om::ShouldFifo fifo_;
+    void updateSize(const int64_t delta);
 
     template <typename T1, typename T2> friend class OmHandleCacheMissTask;
 };

@@ -42,6 +42,7 @@ public:
     void Run()
     {
         setDiffTests();
+        setUnionTests();
         stringCommaTests();
 
         //dynamicForest();
@@ -379,8 +380,8 @@ private:
                 b.insert(i);
             }
 
-            verify(false == om::sets::SetAContainsB(a, b));
-            verify(true == om::sets::SetsAreDisjoint(a, b));
+            verify(false == om::set::SetAContainsB(a, b));
+            verify(true == om::set::SetsAreDisjoint(a, b));
         }
         {
             std::set<int> a;
@@ -393,14 +394,74 @@ private:
                 b.insert(i);
             }
 
-            verify(true == om::sets::SetAContainsB(a, b));
-            verify(false == om::sets::SetsAreDisjoint(a, b));
+            verify(true == om::set::SetAContainsB(a, b));
+            verify(false == om::set::SetsAreDisjoint(a, b));
 
             b.insert(200);
-            verify(false == om::sets::SetAContainsB(a, b));
-            verify(false == om::sets::SetsAreDisjoint(a, b));
+            verify(false == om::set::SetAContainsB(a, b));
+            verify(false == om::set::SetsAreDisjoint(a, b));
         }
-        std::cout << "set tests OK\n";
+        std::cout << "set diff tests OK\n";
+    }
+
+    void setUnionTests()
+    {
+        int num = 1;
+
+        OmTimer timer;
+        for(int c = 0; c < num; ++c)
+        {
+            std::set<int> a;
+            for(int i = 0; i < 100; ++i){
+                a.insert(i);
+            }
+
+            std::set<int> b;
+            for(int i = 200; i < 300; ++i){
+                b.insert(i);
+            }
+
+            std::set<int> c;
+            om::set::merge(a, b, c);
+            verify(200 == c.size());
+
+            for(int i = 0; i < 100; ++i){
+                c.erase(i);
+            }
+            for(int i = 200; i < 300; ++i){
+                c.erase(i);
+            }
+            verify(0 == c.size());
+        }
+        timer.Print("\t" + om::string::num(num) + " merge A,B into C");
+
+        timer.restart();
+        for(int c = 0; c < num; ++c)
+        {
+            std::set<int> a;
+            for(int i = 0; i < 100; ++i){
+                a.insert(i);
+            }
+
+            std::set<int> b;
+            for(int i = 200; i < 300; ++i){
+                b.insert(i);
+            }
+
+            om::set::mergeBintoA(a, b);
+            verify(200 == a.size());
+
+            for(int i = 0; i < 100; ++i){
+                a.erase(i);
+            }
+            for(int i = 200; i < 300; ++i){
+                a.erase(i);
+            }
+            verify(0 == a.size());
+        }
+        timer.Print("\t" + om::string::num(num) + " merge B into A");
+
+        std::cout << "set union tests OK\n";
     }
 
     void dynamicForest()

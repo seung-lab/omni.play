@@ -22,10 +22,12 @@ public:
     virtual ~OmCacheBase()
     {}
 
-    virtual void UpdateSize(const int64_t)
-    {}
+    om::CacheGroup Group() const {
+        return cacheGroup_;
+    }
 
-    virtual int Clean(const bool) = 0;
+    virtual void Clean() = 0;
+    virtual void RemoveOldest(const int numToRemove) = 0;
     virtual void Clear() = 0;
 
     virtual int64_t GetCacheSize() const = 0;
@@ -37,19 +39,11 @@ public:
         return cacheName_;
     }
 
-    std::string getGroupName() const
-    {
-        if(om::MESH_CACHE == cacheGroup_){
-            return "MESH_CACHE";
-        }
-        return "TILE_CACHE";
-    }
-
     friend std::ostream& operator<<(std::ostream &out, const OmCacheBase& in)
     {
         out << in.GetName()
             << " ("
-            << in.getGroupName()
+            << in.Group()
             << ")";
         return out;
     }
