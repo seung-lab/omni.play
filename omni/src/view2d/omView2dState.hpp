@@ -70,7 +70,9 @@ public:
                                               dataScale);
         Vector3i result = vol_->Coords().NormToDataCoord(normc);
 
-        const int depth = getSliceDepth() / GetResOfDataSlice();
+//        const int depth = getSliceDepth() / GetResOfDataSlice();
+        const int depth = getSliceDepth();
+
         setViewTypeDepth(result, depth);
 
         return result;
