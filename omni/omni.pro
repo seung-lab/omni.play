@@ -124,15 +124,6 @@ HEADERS +=  \
 	src/datalayer/upgraders/omUpgradeTo14.hpp \
 	src/datalayer/upgraders/omUpgradeTo20.hpp \
 	src/datalayer/upgraders/omUpgraders.hpp \
-	src/events/omEvent.h \
-	src/events/omEventManager.h \
-	src/events/omKeyPressEventListener.h \
-	src/events/omPreferenceEvent.h \
-	src/events/omProgressEvent.h \
-	src/events/omSegmentEvent.h \
-	src/events/omToolModeEvent.h \
-	src/events/omView3dEvent.h \
-	src/events/omViewEvent.h \
 	src/gui/cacheMonitorDialog.h \
 	src/gui/cacheMonitorWidget.h \
 	src/gui/groupsTable/dropdownMenuButton.hpp \
@@ -530,14 +521,6 @@ SOURCES +=  \
 	src/datalayer/hdf5/omHdf5LowLevel.cpp \
 	src/datalayer/hdf5/omHdf5Utils.cpp \
 	src/datalayer/omDataPaths.cpp \
-	src/events/omEvent.cpp \
-	src/events/omEventManager.cpp \
-	src/events/omPreferenceEvent.cpp \
-	src/events/omProgressEvent.cpp \
-	src/events/omSegmentEvent.cpp \
-	src/events/omToolModeEvent.cpp \
-	src/events/omView3dEvent.cpp \
-	src/events/omViewEvent.cpp \
 	src/gui/cacheMonitorDialog.cpp \
 	src/gui/cacheMonitorWidget.cpp \
 	src/gui/groupsTable/groupsTable.cpp \
