@@ -1,13 +1,14 @@
 #ifndef TESTS_HPP
 #define TESTS_HPP
 
+#include "volume/omVolCoordsMipped.hpp"
 #include "tests/datalayer/omMeshChunkAllocTableTests.hpp"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "src/common/omCommon.h"
 #include "src/utility/image/omImage.hpp"
 #include "utility/omRand.hpp"
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 #include "view2d/omPointsInCircle.hpp"
 #include "volume/omChannel.h"
 #include "volume/omMipVolume.h"
@@ -136,36 +137,36 @@ private:
 		const Vector3i chunkDims(128,128,128);
 
 		verify(OmChunkCoord(0,0,0,0) ==
-			   OmMipVolume::DataToMipCoord(DataCoord(1,1,1), 0, chunkDims));
+			   OmMipVolCoords::DataToMipCoord(DataCoord(1,1,1), 0, chunkDims));
 
 		verify(OmChunkCoord(0,1,1,1) ==
-			   OmMipVolume::DataToMipCoord(DataCoord(129,129,129), 0, chunkDims));
+			   OmMipVolCoords::DataToMipCoord(DataCoord(129,129,129), 0, chunkDims));
 
 		verify(OmChunkCoord(1,0,0,0) ==
-			   OmMipVolume::DataToMipCoord(DataCoord(255,255,255), 1, chunkDims));
+			   OmMipVolCoords::DataToMipCoord(DataCoord(255,255,255), 1, chunkDims));
 
 		verify(OmChunkCoord(1,1,1,1) ==
-			   OmMipVolume::DataToMipCoord(DataCoord(256,256,256), 1, chunkDims));
+			   OmMipVolCoords::DataToMipCoord(DataCoord(256,256,256), 1, chunkDims));
 
 		verify(OmChunkCoord(2,0,0,0) ==
-			   OmMipVolume::DataToMipCoord(DataCoord(511,511,511), 2, chunkDims));
+			   OmMipVolCoords::DataToMipCoord(DataCoord(511,511,511), 2, chunkDims));
 
 		verify(OmChunkCoord(2,1,1,1) ==
-			   OmMipVolume::DataToMipCoord(DataCoord(512,512,512), 2, chunkDims));
+			   OmMipVolCoords::DataToMipCoord(DataCoord(512,512,512), 2, chunkDims));
 
 		verify(OmChunkCoord::NULL_COORD ==
-			   OmMipVolume::DataToMipCoord(DataCoord(-8, 0, 0), 0, chunkDims));
+			   OmMipVolCoords::DataToMipCoord(DataCoord(-8, 0, 0), 0, chunkDims));
 
 		const Vector3<uint64_t> chunkDims64(128,128,128);
 		verify(OmChunkCoord(0,1,1,1) ==
-			   OmMipVolume::DataToMipCoord(DataCoord(130,128,128), 0, chunkDims64));
+			   OmMipVolCoords::DataToMipCoord(DataCoord(130,128,128), 0, chunkDims64));
 
 		if(runPerfTests_){
 			OmTimer timer;
 			const uint64_t max = 2000000;
 			for(uint64_t i = 0; i < max; ++i){
 				verify(OmChunkCoord(2,1,1,1) ==
-					   OmMipVolume::DataToMipCoord(DataCoord(512,512,512), 2, chunkDims));
+					   OmMipVolCoords::DataToMipCoord(DataCoord(512,512,512), 2, chunkDims));
 			}
 			std::cout << max << " conversions in " << timer.s_elapsed() << " secs\n";
 		}
