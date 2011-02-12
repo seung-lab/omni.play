@@ -9,57 +9,54 @@ class OmFilter2d;
 
 class OmTileDrawer{
 public:
-    OmTileDrawer(boost::shared_ptr<OmView2dState> v2ds,
-                 const ViewType vt);
-    ~OmTileDrawer();
+	OmTileDrawer(boost::shared_ptr<OmView2dState> v2ds,
+				 const ViewType vt);
+	~OmTileDrawer();
 
-    void FullRedraw2d();
+	void FullRedraw2d();
 
-    int GetTileCount(){
-        return mTileCount;
-    }
+	int GetTileCount(){
+		return mTileCount;
+	}
+	int GetTileCountIncomplete(){
+		return mTileCountIncomplete;
+	}
+	bool IsDrawComplete(){
+		return !mTileCountIncomplete;
+	}
 
-    int GetTileCountIncomplete(){
-        return mTileCountIncomplete;
-    }
-
-    bool IsDrawComplete(){
-        return !mTileCountIncomplete;
-    }
-
-    const boost::shared_ptr<OmView2dState>& GetState(){
-        return state_;
-    }
+	const boost::shared_ptr<OmView2dState>& GetState(){
+		return state_;
+	}
 
 private:
-    boost::shared_ptr<OmView2dState> state_;
-    const ViewType mViewType;
+	boost::shared_ptr<OmView2dState> state_;
+	const ViewType mViewType;
 
-    int mTileCount;
-    int mTileCountIncomplete;
+	int mTileCount;
+	int mTileCountIncomplete;
 
-    std::deque<OmTileAndVertices> mTileToDraw;
+	std::deque<OmTileAndVertices> mTileToDraw;
 
-    void reset();
+	void reset();
 
-    void determineWhichTilesToDraw(OmMipVolume* vol);
-    void draw(OmMipVolume* vol);
-    bool drawFromFilter(OmFilter2d* filter);
-    void filterDraw(OmFilter2d* filter);
+	void determineWhichTilesToDraw(OmMipVolume* vol);
+	void draw(OmMipVolume* vol);
+	bool drawFromFilter(OmFilter2d& filter);
 
-    OmTileCoordsAndLocationsPtr
-    getTileCoordsAndLocationsForCurrentScene(OmMipVolume* vol);
+	OmTileCoordsAndLocationsPtr
+	getTileCoordsAndLocationsForCurrentScene(OmMipVolume* vol);
 
-    void drawTiles();
-    void drawTile(const OmTileAndVertices& tv);
+	void drawTiles();
+	void drawTile(const OmTileAndVertices& tv);
 
-    void doBindTileDataToGLid(const OmTextureIDPtr&);
+	void doBindTileDataToGLid(const OmTextureIDPtr&);
 
-    void setupGLblendColor(const float alpha, const bool);
+	void setupGLblendColor(const float alpha, const bool);
 
 #ifdef WIN32
-    typedef void (*GLCOLOR)(GLfloat, GLfloat, GLfloat, GLfloat);
-    GLCOLOR mGlBlendColorFunction;
+	typedef void (*GLCOLOR)(GLfloat, GLfloat, GLfloat, GLfloat);
+	GLCOLOR mGlBlendColorFunction;
 #endif
 };
 

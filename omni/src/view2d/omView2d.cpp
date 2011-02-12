@@ -1,4 +1,3 @@
-#include "system/omAppState.hpp"
 #include "view2d/omView2dEvents.hpp"
 #include "view2d/omMouseEvents.hpp"
 #include "view2d/omView2dZoom.hpp"
@@ -6,17 +5,20 @@
 #include "view2d/omScreenPainter.hpp"
 #include "view2d/omView2d.h"
 
+#include <boost/make_shared.hpp>
+
 OmView2d::OmView2d(const ViewType viewtype, QWidget* parent,
 				   OmViewGroupState * vgs, OmMipVolume* vol,
 				   const std::string& name)
 	: OmView2dCore(parent, vol, vgs, viewtype, name)
 	, complimentaryDock_(NULL)
-	, mScreenShotSaver(new OmScreenShotSaver())
-	, screenPainter_(new OmScreenPainter(this, state(), mScreenShotSaver.get()))
-	, mouseEvents_(new OmMouseEvents(this, state()))
-	, keyEvents_(new OmKeyEvents(this, state()))
-	, events_(new OmView2dEvents(this, state()))
-	, zoom_(new OmView2dZoom(state()))
+	, mScreenShotSaver(boost::make_shared<OmScreenShotSaver>())
+	, screenPainter_(boost::make_shared<OmScreenPainter>(this, state(),
+														 mScreenShotSaver))
+	, mouseEvents_(boost::make_shared<OmMouseEvents>(this, state()))
+	, keyEvents_(boost::make_shared<OmKeyEvents>(this, state()))
+	, events_(boost::make_shared<OmView2dEvents>(this, state()))
+	, zoom_(boost::make_shared<OmView2dZoom>(state()))
 {
 	setFocusPolicy(Qt::ClickFocus);	// necessary for receiving keyboard events
 	setMouseTracking(true);	// necessary for mouse-centered zooming
@@ -68,12 +70,14 @@ void OmView2d::paintEvent(QPaintEvent *){
 	screenPainter_->FullRedraw2d();
 }
 
-void OmView2d::myUpdate(){
+void OmView2d::myUpdate()
+{
+	LineDrawer()->myUpdate();
 	update();
 }
 
 QSize OmView2d::sizeHint () const {
-	return OmAppState::GetViewBoxSizeHint();
+	return OmStateManager::getViewBoxSizeHint();
 }
 
 void OmView2d::mousePressEvent(QMouseEvent * event){
@@ -89,7 +93,7 @@ void OmView2d::doRedraw2d()
 void OmView2d::SetDepth(QMouseEvent * event)
 {
 	const ScreenCoord screenc = ScreenCoord(event->x(), event->y());
-	const DataCoord newDepth = state()->ScreenToDataCoord(screenc);
+	const SpaceCoord newDepth = state()->ScreenToSpaceCoord(screenc);
 	state()->setSliceDepth(newDepth);
 
 	OmEvents::ViewCenterChanged();

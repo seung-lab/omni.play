@@ -8,18 +8,18 @@ class NavAndEditButtonGroup;
 class MainWindow;
 
 class NavAndEditButtons : public QWidget {
-public:
-    explicit NavAndEditButtons(MainWindow *);
-    virtual ~NavAndEditButtons();
+ public:
+	explicit NavAndEditButtons(MainWindow *);
+	virtual ~NavAndEditButtons();
 
-    void addTheButtons();
-    void setReadOnlyWidgetsEnabled(const bool toBeEnabled);
-    void setModifyWidgetsEnabled(const bool toBeEnabled);
-    void setTool(const OmToolMode tool);
+	void addTheButtons();
+	void setReadOnlyWidgetsEnabled(const bool toBeEnabled);
+	void setModifyWidgetsEnabled(const bool toBeEnabled);
+	void setTool(const OmToolMode tool);
 
-private:
-    MainWindow * mMainWindow;
-    boost::scoped_ptr<NavAndEditButtonGroup> mButtonGroup;
+ private:
+	MainWindow * mMainWindow;
+	NavAndEditButtonGroup * mButtonGroup;
 };
 
 #endif

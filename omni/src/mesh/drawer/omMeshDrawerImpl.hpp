@@ -57,7 +57,7 @@ public:
 
 		//transform to normal frame
 		glPushMatrix();
-		glMultMatrixf(segmentation_->Coords().GetNormToDataMatrix().ml);
+		glMultMatrixf(segmentation_->Coords().GetNormToSpaceMatrix().ml);
 
 		//draw volume axis
 		if(checkDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {

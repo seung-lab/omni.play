@@ -7,54 +7,52 @@
 
 class OmGroup : public OmManageableObject {
 public:
-    OmGroup(){}
+	OmGroup(){}
 
-    OmGroup(OmID id)
-        : OmManageableObject(id)
-    {
-        mColor = OmColorUtils::GetRandomColor();
-    }
+	OmGroup(OmID id)
+		: OmManageableObject(id)
+	{
+		mColor = OmColorUtils::GetRandomColor();
+	}
 
-    OmGroup(const OmSegIDsSet& ids)
-    {
-        mColor = OmColorUtils::GetRandomColor();
-        AddIds(ids);
-    }
+	OmGroup(const OmSegIDsSet& ids)
+	{
+		mColor = OmColorUtils::GetRandomColor();
+		AddIds(ids);
+	}
 
-    virtual ~OmGroup()
-    {}
+	virtual ~OmGroup(){}
 
-    void AddIds(const OmSegIDsSet& ids)
-    {
-        FOR_EACH(iter, ids) {
-            mIDs.insert(*iter);
-        }
-    }
+	void AddIds(const OmSegIDsSet& ids)
+	{
+		foreach(OmSegID segid, ids) {
+			mIDs.insert(segid);
+		}
+	}
+	void RemoveIds(const OmSegIDsSet& ids)
+	{
+		foreach(OmSegID segid, ids) {
+			mIDs.erase(segid);
+		}
+	}
 
-    void RemoveIds(const OmSegIDsSet& ids)
-    {
-        FOR_EACH(iter, ids) {
-            mIDs.erase(*iter);
-        }
-    }
+	OmGroupName GetName() {
+		return mName;
+	}
 
-    OmGroupName GetName() const {
-        return mName;
-    }
-
-    const OmSegIDsSet& GetIDs() const {
-        return mIDs;
-    }
+	const OmSegIDsSet& GetIDs() {
+		return mIDs;
+	}
 
 private:
-    OmSegIDsSet mIDs;
-    OmColor mColor;
+	OmSegIDsSet mIDs;
+	OmColor mColor;
 
-    OmGroupName mName;
-    friend class OmGroups;
+	OmGroupName mName;
+	friend class OmGroups;
 
-    friend QDataStream &operator<<(QDataStream & out, const OmGroup & g );
-    friend QDataStream &operator>>(QDataStream & in, OmGroup & g );
+	friend QDataStream &operator<<(QDataStream & out, const OmGroup & g );
+	friend QDataStream &operator>>(QDataStream & in, OmGroup & g );
 
 };
 

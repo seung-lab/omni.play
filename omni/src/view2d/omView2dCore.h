@@ -9,6 +9,7 @@
 #include <QtGui>
 
 class OmFilter2d;
+class OmLineDraw;
 class OmTextureID;
 class OmTileCache;
 class OmTileDrawer;
@@ -18,7 +19,7 @@ class OmViewGroupState;
 class OmView2dCore : public QWidget {
 Q_OBJECT
 public:
-	inline ViewType GetViewType() const {
+	ViewType GetViewType() const {
 		return viewType_;
 	}
 
@@ -27,19 +28,21 @@ public:
 	int GetTileCount();
 	int GetTileCountIncomplete();
 
-public Q_SLOTS:
+	inline boost::shared_ptr<OmLineDraw>& LineDrawer(){
+		return lineDraw_;
+	}
+
+public slots:
 	void dockVisibilityChanged(const bool visible);
 
 protected:
 	OmView2dCore(QWidget *, OmMipVolume*, OmViewGroupState*, const ViewType,
 				 const std::string& name);
 
-	virtual ~OmView2dCore();
-
 	void resetPbuffer(const QSize&);
 
-	inline OmView2dState* state() {
-		return state_.get();
+	inline boost::shared_ptr<OmView2dState>& state() {
+		return state_;
 	}
 
 private:
@@ -47,15 +50,18 @@ private:
 	const std::string name_;
 
 	boost::shared_ptr<OmView2dState> state_;
-	boost::scoped_ptr<QGLPixelBuffer> pbuffer_;
-	boost::scoped_ptr<OmTileDrawer> tileDrawer_;
+	boost::shared_ptr<QGLPixelBuffer> pbuffer_;
+	boost::shared_ptr<OmTileDrawer> tileDrawer_;
+	boost::shared_ptr<OmLineDraw> lineDraw_;
 
-	int nearClip_;
-	int farClip_;
+	int mNearClip;
+	int mFarClip;
 
 	void reset();
 	void setupMainGLpaintOp();
 	void teardownMainGLpaintOp();
+
+	friend class OmTileDrawer;
 };
 
 #endif

@@ -26,7 +26,7 @@ public:
 		}
 	}
 
- private Q_SLOTS:
+ private slots:
 	void spinboxChanged()
 	{
 		OmBusyCursorWrapper busyCursorWrapper();

@@ -14,7 +14,7 @@ class FilObjectInspector : public QWidget
 public:
     FilObjectInspector(QWidget *parent, const FilterDataWrapper & fdw);
 
-private Q_SLOTS:
+private slots:
     void sourceEditChangedChan();
     void sourceEditChangedSeg();
     void setFilAlpha(int);

@@ -304,7 +304,9 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 		return;
 	}
 
-	mpView3d->mCamera.SetFocus(voxel);
+	OmSegmentation & current_seg = sdw.GetSegmentation();
+	SpaceCoord picked_voxel = current_seg.Coords().DataToSpaceCoord(voxel);
+	mpView3d->mCamera.SetFocus(picked_voxel);
 	mpView3d->updateGL();
 
 	mCPressed = false;
@@ -320,9 +322,12 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 		return;
 	}
 
-	mViewGroupState->SetViewSliceDepth(YZ_VIEW, voxel.x );
-	mViewGroupState->SetViewSliceDepth(XY_VIEW, voxel.z );
-	mViewGroupState->SetViewSliceDepth(XZ_VIEW, voxel.y );
+	OmSegmentation & current_seg = sdw.GetSegmentation();
+	const SpaceCoord picked_voxel = current_seg.Coords().DataToSpaceCoord(voxel);
+
+	mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
+	mViewGroupState->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
+	mViewGroupState->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
 	OmEvents::ViewCenterChanged();
 }
 
@@ -356,7 +361,7 @@ SegmentDataWrapper OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent* event,
 
 	//get voxel at point3d
 	OmSegmentation & current_seg = sdw.GetSegmentation();
-	NormCoord norm_coord = current_seg.Coords().DataToNormCoord(point3d + scaled_norm_vec);
+	NormCoord norm_coord = current_seg.Coords().SpaceToNormCoord(point3d + scaled_norm_vec);
 	DataCoord voxel = current_seg.Coords().NormToDataCoord(norm_coord);
 
 	//return success with voxel

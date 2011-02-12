@@ -2,125 +2,98 @@
 #define OM_SEGMENT_CACHE_IMPL_LOW_LEVEL_H
 
 #include "common/omCommon.h"
-#include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"
 
 #include <QHash>
 
-class OmEnabledSegments;
-class OmSegmentSelection;
 class OmSegmentCache;
 class OmSegmentation;
+class OmPagingPtrStore;
 
 class OmSegmentCacheImplLowLevel {
 public:
-    OmSegmentCacheImplLowLevel(OmSegmentation *);
-    virtual ~OmSegmentCacheImplLowLevel();
+	OmSegmentCacheImplLowLevel( OmSegmentation *);
+	virtual ~OmSegmentCacheImplLowLevel();
 
-    void growGraphIfNeeded(OmSegment * newSeg);
+	void growGraphIfNeeded(OmSegment * newSeg);
 
-    inline OmSegment* GetSegment(const OmSegID value){
-        return segmentPages_->GetSegment(value);
-    }
+	OmSegment* GetSegment(const OmSegID value );
 
-    inline OmSegID GetNumSegments() const {
-        return mNumSegs;
-    }
+	OmSegID GetNumSegments();
+	OmSegID GetNumTopSegments();
 
-    OmSegID GetNumTopSegments();
+	OmSegment * findRoot( OmSegment * segment );
+	OmSegment * findRoot(const OmSegID segID);
+	OmSegID findRootID( const OmSegID segID );
+	OmSegID findRootID(OmSegment* segment);
 
-    inline OmSegment* FindRoot(OmSegment* segment)
-    {
-        if(!segment){
-            return 0;
-        }
+	bool isSegmentEnabled( OmSegID segID );
+	void setSegmentEnabled( OmSegID segID, bool isEnabled );
+	void SetAllEnabled(bool);
+	OmSegIDsSet& GetEnabledSegmentIdsRef();
+	bool AreSegmentsEnabled();
+	uint32_t numberOfEnabledSegments();
 
-        if(!segment->getParent()) {
-            return segment;
-        }
+	bool isSegmentSelected( OmSegID segID );
+	bool isSegmentSelected( OmSegment * seg );
+	void SetAllSelected(bool);
+	const OmSegIDsSet& GetSelectedSegmentIds(){
+        return mSelectedSet;
+	}
 
-        return GetSegment(mSegmentGraph.Root(segment->value()));
-    }
+	quint32 numberOfSelectedSegments();
+	bool AreSegmentsSelected();
+	void setSegmentSelected( OmSegID segID, const bool, const bool  );
+	void UpdateSegmentSelection( const OmSegIDsSet & ids, const bool);
 
-    inline OmSegID FindRootID(OmSegment* segment)
-    {
-        if(!segment){
-            return 0;
-        }
+	QString getSegmentName( OmSegID segID );
+	void setSegmentName( OmSegID segID, QString name );
 
-        if(!segment->getParent()) {
-            return segment->value();
-        }
+	QString getSegmentNote( OmSegID segID );
+	void setSegmentNote( OmSegID segID, QString note );
 
-        return mSegmentGraph.Root(segment->value());
-    }
+	OmSegmentation* GetSegmentation() { return segmentation_; }
+	OmSegID GetSegmentationID();
 
-    inline OmSegment* FindRoot(const OmSegID segID)
-    {
-        if(!segID){
-            return 0;
-        }
+	void turnBatchModeOn(const bool batchMode);
 
-        return GetSegment(mSegmentGraph.Root(segID));
-    }
+	quint32 getPageSize();
+	uint32_t getMaxValue();
 
-    inline OmSegID FindRootID(const OmSegID segID)
-    {
-        if(!segID){
-            return 0;
-        }
-
-        return mSegmentGraph.Root(segID);
-    }
-
-    QString getSegmentName(OmSegID segID);
-    void setSegmentName(OmSegID segID, QString name);
-
-    QString getSegmentNote(OmSegID segID);
-    void setSegmentNote(OmSegID segID, QString note);
-
-    void turnBatchModeOn(const bool batchMode);
-
-    uint32_t getPageSize();
-
-    inline uint32_t getMaxValue() const {
-        return mMaxValue;
-    }
-
-    inline OmSegmentSelection& SegmentSelection(){
-        return *segmentSelection_;
-    }
-
-    inline OmEnabledSegments& EnabledSegments(){
-        return *enabledSegments_;
-    }
+	OmSegmentCache* SegmentCache();
 
 protected:
-    OmSegmentation *const segmentation_;
-    const boost::scoped_ptr<OmPagingPtrStore> segmentPages_;
-    const boost::scoped_ptr<OmSegmentSelection> segmentSelection_;
-    const boost::scoped_ptr<OmEnabledSegments> enabledSegments_;
+	OmSegmentation *const segmentation_;
+	boost::shared_ptr<OmPagingPtrStore> mSegments;
 
-    OmSegID mMaxValue;
-    uint32_t mNumSegs;
+	OmSegID mMaxValue;
+	OmSegID getNextValue();
 
-    QHash< OmID, QString > segmentCustomNames;
-    QHash< OmID, QString > segmentNotes;
+	quint32 mNumSegs;
 
-    inline OmSegID getNextValue(){
-        return ++mMaxValue;
-    }
-    void touchFreshness();
+	bool mAllSelected;
+	bool mAllEnabled;
 
-    OmSegmentGraph mSegmentGraph;
+	OmSegIDsSet mEnabledSet;
+	OmSegIDsSet mSelectedSet;
 
-    void addToRecentMap(const OmSegID segID);
+	QHash< OmID, QString > segmentCustomNames;
+	QHash< OmID, QString > segmentNotes;
+
+	void doSelectedSetInsert( const OmSegID segID, const bool);
+	void doSelectedSetRemove( const OmSegID segID);
+
+	void clearCaches();
+
+	OmSegmentGraph mSegmentGraph;
+
+	void addToRecentMap( const OmSegID segID);
 
 private:
-    friend class OmSegmentSelection;
-    friend class OmEnabledSegments;
-    friend class SegmentTests;
+	void setSegmentSelectedBatch( OmSegID segID, const bool, const bool );
+
+	friend class SegmentTests;
 };
 
 #endif

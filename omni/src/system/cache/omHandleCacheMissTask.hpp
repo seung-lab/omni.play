@@ -7,42 +7,39 @@
 template <typename KEY, typename PTR >
 class OmHandleCacheMissTask : public zi::runnable {
 private:
-    OmThreadedCache<KEY,PTR> *const mTC;
-    const KEY mKey;
+	OmThreadedCache<KEY,PTR> *const mTC;
+	const KEY mKey;
 
 public:
-    OmHandleCacheMissTask(OmThreadedCache<KEY,PTR>* tc,
-                          const KEY& key)
-        : mTC(tc)
-        , mKey(key)
-    {}
+	OmHandleCacheMissTask(OmThreadedCache<KEY,PTR>* tc,
+						  const KEY& key)
+		: mTC(tc)
+		, mKey(key)
+	{}
 
-    void run()
-    {
-        if(mTC->killingCache_.get()){
-            return;
-        }
+	void run()
+	{
+		if(mTC->killingCache_.get()){
+			return;
+		}
 
-        PTR val = mTC->HandleCacheMiss(mKey);
+		PTR val = mTC->HandleCacheMiss(mKey);
 
-        if(mTC->killingCache_.get()){
-            return;
-        }
+		if(mTC->killingCache_.get()){
+			return;
+		}
 
-        {
-            // update cache
-            zi::rwmutex::write_guard g(mTC->mutex_);
+		{
+			// update cache
+			zi::rwmutex::write_guard g(mTC->mutex_);
 
-            if(val){
-                mTC->cache_.set(mKey, val);
-                mTC->keyAccessList_.touch(mKey);
-                if(!mTC->entrySize_){
-                    mTC->updateSize(val->NumBytes());
-                }
-            }
-            mTC->currentlyFetching_.erase(mKey);
-        }
-    }
+			if(val){
+				mTC->cache_.set(mKey, val);
+				mTC->keyAccessList_.touch(mKey);
+			}
+			mTC->currentlyFetching_.erase(mKey);
+		}
+	}
 };
 
 #endif

@@ -4,15 +4,14 @@
 OmTileCache::OmTileCache()
 {}
 
-OmTileCache::~OmTileCache()
-{}
-
 void OmTileCache::Delete(){
 	instance().impl_.reset();
 }
 
-void OmTileCache::Reset(){
-	instance().impl_.reset(new OmTileCacheImpl());
+void OmTileCache::Reset()
+{
+	instance().impl_ =
+		boost::shared_ptr<OmTileCacheImpl>(new OmTileCacheImpl());
 }
 
 void OmTileCache::Prefetch(const OmTileCoord& key){
@@ -22,20 +21,18 @@ void OmTileCache::Prefetch(const OmTileCoord& key){
 void OmTileCache::Get(OmTileDrawer* drawer,
 					  OmTilePtr& tile,
 					  const OmTileCoord& key,
-					  const om::Blocking blocking)
-{
+					  const om::Blocking blocking){
 	instance().impl_->Get(drawer, tile, key, blocking);
 }
 
 void OmTileCache::doGet(OmTilePtr& tile,
 						const OmTileCoord& key,
-						const om::Blocking blocking)
-{
+						const om::Blocking blocking){
 	instance().impl_->doGet(tile, key, blocking);
 }
 
-void OmTileCache::RemoveDataCoord(const DataCoord & coord){
-	instance().impl_->RemoveDataCoord(coord);
+void OmTileCache::RemoveSpaceCoord(const SpaceCoord & coord){
+	instance().impl_->RemoveSpaceCoord(coord);
 }
 
 void OmTileCache::RegisterDrawer(OmTileDrawer* d){
@@ -50,7 +47,7 @@ void OmTileCache::SetDrawerDone(OmTileDrawer* d){
 	instance().impl_->SetDrawerDone(d);
 }
 
-void OmTileCache::WidgetVisibilityChanged(OmTileDrawer* drawer,
+void OmTileCache::WidgetVisibilityChanged(boost::shared_ptr<OmTileDrawer> drawer,
 										  const bool visible){
 	instance().impl_->WidgetVisibilityChanged(drawer, visible);
 }

@@ -13,7 +13,7 @@ public:
 				this, SLOT(updateFromEditDoneSignel()));
 	}
 
-private Q_SLOTS:
+private slots:
 	void updateFromEditDoneSignel(){
 		doUpdateFromEditDoneSignel();
 	}

@@ -7,21 +7,20 @@
 
 class MeshScaleFactorLineEdit : private OmLineEdit {
 public:
-    MeshScaleFactorLineEdit(QWidget* widget)
-        : OmLineEdit(widget)
-    {
-        setText(QString::number(OmMeshParams::GetDownScallingFactor()));
-    }
+	MeshScaleFactorLineEdit(QWidget* widget)
+		: OmLineEdit(widget)
+	{
+		setText(QString::number(OmMeshParams::GetDownScallingFactor()));
+	}
 
 private:
-    void doUpdateFromEditDoneSignel()
-    {
-        try {
-            const int factor = om::string::toNum<int>(text().toStdString());
-            OmMeshParams::SetDownScallingFactor(factor);
-        } catch (...){
-        }
-    }
+	void doUpdateFromEditDoneSignel()
+	{
+		try {
+			OmMeshParams::SetDownScallingFactor(om::StrToNum<int>(text()));
+		} catch (...){
+		}
+	}
 };
 
 #endif

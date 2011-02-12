@@ -126,7 +126,7 @@ private:
 
 		std::cout << "in chunk " << coord_
 				  << ", found "
-				  << om::string::humanizeNum(numEntries_)
+				  << OmStringHelpers::CommaDeliminateNum(numEntries_)
 				  << " segment IDs\n";
 	}
 

@@ -26,22 +26,22 @@
 class ziMesher
 {
 private:
-    static int numberParallelChunks()
-    {
-        const int megsMemNeededPerChunk = 5000;
+	static int numberParallelChunks()
+	{
+		const int megsMemNeededPerChunk = 5000;
 
-        const int sysMemMegs =
-            OmSystemInformation::get_total_system_memory_megs();
+		const int sysMemMegs =
+			OmSystemInformation::get_total_system_memory_megs();
 
-        int numChunks = sysMemMegs / megsMemNeededPerChunk;
-        if(numChunks < 2){
-            numChunks = 2;
-        }
+		int numChunks = sysMemMegs / megsMemNeededPerChunk;
+		if(numChunks < 2){
+			numChunks = 2;
+		}
 
-        printf("ziMesher: will process %d chunks at a time\n", numChunks);
+		printf("ziMesher: will process %d chunks at a time\n", numChunks);
 
-        return numChunks;
-    }
+		return numChunks;
+	}
 
     static int getQueueSize()
     {
@@ -55,79 +55,90 @@ private:
 
 public:
     ziMesher( OmSegmentation* segmentation, const double threshold )
-        : segmentation_(segmentation)
-        , rootMipLevel_(segmentation->Coords().GetRootMipLevel())
-        , threshold_(threshold)
-        , levelZeroChunks_()
-        , chunkCollectors_()
-        , meshWriter_(boost::make_shared<OmMeshWriterV2>(segmentation_, threshold_))
+        : segmentation_(segmentation),
+		  threshold_(threshold),
+          levelZeroChunks_(),
+          chunkCollectors_(),
+		  meshWriter_(boost::make_shared<OmMeshWriterV2>(segmentation_, threshold_))
     {
     }
 
-    ~ziMesher()
+	~ziMesher()
+	{
+	}
+
+    void addChunkCoord( const OmChunkCoord &c )
     {
+        levelZeroChunks_.push_back(c);
     }
 
-    void MeshFullVolume()
-    {
-        boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
-            segmentation_->GetMipChunkCoords(0);
+	void mesh()
+	{
+		init();
 
-        levelZeroChunks_.reserve(coordsPtr->size());
+		meshWriter_->Join();
 
-        FOR_EACH(iter, *coordsPtr){
-            const OmChunkCoord& coord = *iter;
-            levelZeroChunks_.push_back(coord);
-        }
+		segmentation_->MeshManager(threshold_)->Metadata()->SetMeshedAndStorageAsChunkFiles();
+	}
 
-        init();
+	void MeshFullVolume()
+	{
+		rootMipLevel_ = segmentation_->Coords().GetRootMipLevel();
 
-        meshWriter_->Join();
+		const Vector3i mc = segmentation_->Coords().MipLevelDimensionsInMipChunks(0);
+		for (int z = 0; z < mc.z; ++z) {
+			for (int y = 0; y < mc.y; ++y) {
+				for (int x = 0; x < mc.x; ++x) {
+					OmChunkCoord chunk_coord(0, x, y, z);
+					addChunkCoord(chunk_coord);
+				}
+			}
+		}
 
-        segmentation_->MeshManager(threshold_)->Metadata()->SetMeshedAndStorageAsChunkFiles();
-    }
+		mesh();
+	}
 
 private:
 
-    OmSegmentation *const       segmentation_;
-    const int                   rootMipLevel_;
-    const double                threshold_;
+	OmSegmentation*                segmentation_;
+	double                         threshold_;
+    int                            rootMipLevel_   ;
     std::vector< OmChunkCoord > levelZeroChunks_;
 
     std::map< OmChunkCoord, std::vector< zi::shared_ptr< MipChunkMeshCollector > > > occurances_;
     std::map< OmChunkCoord, zi::shared_ptr< MipChunkMeshCollector > > chunkCollectors_;
 
-    boost::shared_ptr<OmMeshWriterV2> meshWriter_;
+	boost::shared_ptr<OmMeshWriterV2> meshWriter_;
 
-    LockedInt32 numOfChunksToProcess_;
+    LockedInt64 numOfChunksToProcess_;
 
     void init()
     {
-        const size_t numChunks = levelZeroChunks_.size();
-        size_t counter = 0;
+		const size_t numChunks = levelZeroChunks_.size();
+		size_t counter = 0;
 
         numOfChunksToProcess_.set(numChunks);
 
         FOR_EACH( it, levelZeroChunks_ )
         {
-            ++counter;
-            std::cout << "\rfinding values in chunk " << counter
-                      << " of " << numChunks << "..."
-                      << std::flush;
+			++counter;
+			std::cout << "\rfinding values in chunk " << counter
+					  << " of " << numChunks << "..."
+					  << std::flush;
 
-            OmTimer chunkTimer;
+			OmTimer chunkTimer;
 
-            addValuesFromChunkAndDownsampledChunks(*it);
+			addValuesFromChunkAndDownsampledChunks(*it);
 
-            const double time = chunkTimer.s_elapsed();
-            std::cout << " (done in " << time << " secs, "
-                      << 1. / time << " chunks per sec)"
-                      << std::flush;
+			const double time = chunkTimer.s_elapsed();
+			std::cout << " (done in " << time << " secs, "
+					  << 1. / time << " chunks per sec)"
+					  << std::flush;
         }
 
-        printf("\n");
+		printf("\n");
 
-        segmentation_->ChunkUniqueValues()->Clear();
+		segmentation_->ChunkUniqueValues()->Clear();
 
         zi::task_manager::simple manager( numberParallelChunks() );
         manager.start();
@@ -140,46 +151,46 @@ private:
         manager.join();
     }
 
-    void addValuesFromChunkAndDownsampledChunks(const OmChunkCoord& mip0coord)
-    {
-        OmChunkCoord c = mip0coord;
+	void addValuesFromChunkAndDownsampledChunks(const OmChunkCoord& mip0coord)
+	{
+		OmChunkCoord c = mip0coord;
 
-        const ChunkUniqueValues segIDs =
-            segmentation_->ChunkUniqueValues()->Values(mip0coord, threshold_);
+		const ChunkUniqueValues segIDs =
+			segmentation_->ChunkUniqueValues()->Values(mip0coord, threshold_);
 
-        chunkCollectors_.insert( std::make_pair( c, zi::shared_ptr< MipChunkMeshCollector >
-                                                 ( new MipChunkMeshCollector
-                                                   ( c, meshWriter_) )));
+		chunkCollectors_.insert( std::make_pair( c, zi::shared_ptr< MipChunkMeshCollector >
+												 ( new MipChunkMeshCollector
+												   ( c, meshWriter_) )));
 
-        occurances_[ mip0coord ].push_back( chunkCollectors_[ mip0coord ] );
+		occurances_[ mip0coord ].push_back( chunkCollectors_[ mip0coord ] );
 
-        FOR_EACH( cid, segIDs )
-        {
-            chunkCollectors_[ c ]->registerMeshPart( *cid );
-        }
+		FOR_EACH( cid, segIDs )
+		{
+			chunkCollectors_[ c ]->registerMeshPart( *cid );
+		}
 
-        do
-        {
-            c = c.ParentCoord();
+		do
+		{
+			c = c.ParentCoord();
 
-            if ( chunkCollectors_.count( c ) == 0 )
-            {
-                chunkCollectors_.insert( std::make_pair
-                                         ( c, zi::shared_ptr< MipChunkMeshCollector >
-                                           ( new MipChunkMeshCollector
-                                             ( c, meshWriter_ ) )));
-            }
+			if ( chunkCollectors_.count( c ) == 0 )
+			{
+				chunkCollectors_.insert( std::make_pair
+										 ( c, zi::shared_ptr< MipChunkMeshCollector >
+										   ( new MipChunkMeshCollector
+											 ( c, meshWriter_ ) )));
+			}
 
-            FOR_EACH( cid, segIDs )
-            {
-                chunkCollectors_[ c ]->registerMeshPart( *cid );
-            }
+			FOR_EACH( cid, segIDs )
+			{
+				chunkCollectors_[ c ]->registerMeshPart( *cid );
+			}
 
-            occurances_[ mip0coord ].push_back( chunkCollectors_[ c ] );
+			occurances_[ mip0coord ].push_back( chunkCollectors_[ c ] );
 
 
-        } while (c.getLevel() < rootMipLevel_);
-    }
+		} while (c.getLevel() < rootMipLevel_);
+	}
 
 public:
 
@@ -194,7 +205,7 @@ public:
         FOR_EACH( it, targets )
         {
             simplifier->optimize( simplifier->face_count() / OmMeshParams::GetDownScallingFactor(),
-                                  max_err );
+								  max_err );
 
             std::vector< zi::vl::vec3d > pts ;
             std::vector< zi::vl::vec3d > nrms;
@@ -220,7 +231,7 @@ public:
     void processChunk( OmChunkCoord coor )
     {
         OmSegChunkPtr chunk;
-        segmentation_->GetChunk( chunk, coor );
+		segmentation_->GetChunk( chunk, coor );
 
         AxisAlignedBoundingBox< int >   srcBbox = chunk->Mipping().GetExtent();
         AxisAlignedBoundingBox< float > dstBbox = chunk->Mipping().GetNormExtent();
@@ -236,12 +247,12 @@ public:
         zi::vl::vec3d translate( dstDim.z, dstDim.y, dstDim.x );
 
         OmImage< uint32_t, 3 > image =
-            OmChunkUtils::GetMeshOmImageData(segmentation_, chunk);
-        OmChunkUtils::RewriteChunkAtThreshold(segmentation_, image, threshold_);
+			OmChunkUtils::GetMeshOmImageData(segmentation_, chunk);
+		OmChunkUtils::RewriteChunkAtThreshold(segmentation_, image, threshold_);
         const OmSegID *image_data = static_cast< const OmSegID* >( image.getScalarPtr() );
 
-        const ChunkUniqueValues segIDs =
-            segmentation_->ChunkUniqueValues()->Values(coor, threshold_);
+		const ChunkUniqueValues segIDs =
+			segmentation_->ChunkUniqueValues()->Values(coor, threshold_);
 
         double maxScale = scale.max();
         scale /= maxScale;

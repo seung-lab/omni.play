@@ -9,40 +9,42 @@ class OmUserEdges;
 
 class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 public:
-    OmSegmentCacheImpl(OmSegmentation*);
-    virtual ~OmSegmentCacheImpl();
+	OmSegmentCacheImpl(OmSegmentation*);
+	virtual ~OmSegmentCacheImpl();
 
-    void Flush();
+	void Flush();
 
-    OmSegment* AddSegment();
-    OmSegment* AddSegment(OmSegID value);
-    OmSegment* GetOrAddSegment(const OmSegID val);
+	OmSegment* AddSegment();
+	OmSegment* AddSegment(OmSegID value);
+	OmSegment* GetOrAddSegment(const OmSegID val);
 
-    std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmSegmentEdge& e);
-    OmSegmentEdge SplitEdgeUserAction(const OmSegmentEdge& e);
-    OmSegIDsSet JoinTheseSegments(const OmSegIDsSet& segmentList);
-    OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
+	std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmSegmentEdge& e);
+	OmSegmentEdge SplitEdgeUserAction(const OmSegmentEdge& e);
+	OmSegIDsSet JoinTheseSegments(const OmSegIDsSet& segmentList);
+	OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
 
-    void refreshTree();
-    quint64 getSizeRootAndAllChildren(OmSegment* segUnknownDepth);
+	void refreshTree();
+	quint64 getSizeRootAndAllChildren(OmSegment* segUnknownDepth);
 
-    bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
+	bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
 
 private:
-    OmUserEdges* userEdges_;
+	OmSegmentEdge splitChildFromParent(OmSegment* child);
 
-    OmSegmentEdge splitChildFromParent(OmSegment* child);
+	std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(const OmSegmentEdge& e);
+	std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmID, const OmID);
 
-    std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(const OmSegmentEdge& e);
-    std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmID, const OmID);
+	void rerootSegmentLists();
+	void rerootSegmentList(OmSegIDsSet& set);
+	void setGlobalThreshold();
+	void resetGlobalThreshold();
 
-    void rerootSegmentLists();
-    void setGlobalThreshold();
-    void resetGlobalThreshold();
+	OmSegmentLists* getSegmentLists();
+	OmUserEdges* userEdges();
 
-    friend class OmSegmentColorizer;
-    friend QDataStream& operator<<(QDataStream&, const OmSegmentCacheImpl&);
-    friend QDataStream& operator>>(QDataStream&, OmSegmentCacheImpl&);
+	friend class OmSegmentColorizer;
+	friend QDataStream& operator<<(QDataStream&, const OmSegmentCacheImpl&);
+	friend QDataStream& operator>>(QDataStream&, OmSegmentCacheImpl&);
 };
 
 #endif

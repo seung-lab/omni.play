@@ -4,67 +4,67 @@
 #include "zi/omUtility.h"
 
 OmSegmentIteratorLowLevel::OmSegmentIteratorLowLevel(
-    OmSegmentCacheImplLowLevel* cache )
-    : mCache(cache)
-    , mIterOverAll(false)
-    , mCurSegID(0)
+	OmSegmentCacheImplLowLevel* cache )
+	: mCache(cache)
+	, mIterOverAll(false)
+	, mCurSegID(0)
 {
 }
 
 void OmSegmentIteratorLowLevel::iterOverAllSegments()
 {
-    mIterOverAll = true;
-    mSegs.clear();
+	mIterOverAll = true;
+	mSegs.clear();
 }
 
 void OmSegmentIteratorLowLevel::iterOverSegmentID(const OmSegID segID)
 {
-    mIterOverAll = false;
-    mSegs.push_back( mCache->GetSegment(segID) );
+	mIterOverAll = false;
+	mSegs.push_back( mCache->GetSegment(segID) );
 }
 
 bool OmSegmentIteratorLowLevel::empty()
 {
-    return mSegs.empty();
+	return mSegs.empty();
 }
 
 OmSegment* OmSegmentIteratorLowLevel::getNextSegment()
 {
-    if( mIterOverAll ){
-        return getNextSegmentFromFullList();
-    } else {
-        return getNextSegmentFromSet();
-    }
+	if( mIterOverAll ){
+		return getNextSegmentFromFullList();
+	} else {
+		return getNextSegmentFromSet();
+	}
 }
 
 OmSegment* OmSegmentIteratorLowLevel::getNextSegmentFromFullList()
 {
-    OmSegment* seg;
-    const OmSegID maxSegValue = mCache->getMaxValue();
-    for(OmSegID i = 1+mCurSegID; i <= maxSegValue; ++i){
-        seg = mCache->GetSegment( i );
-        if(!seg){
-            continue;
-        }
-        mCurSegID = i;
-        return seg;
-    }
+	OmSegment* seg;
+	const OmSegID maxSegValue = mCache->getMaxValue();
+	for(OmSegID i = 1+mCurSegID; i <= maxSegValue; ++i){
+		seg = mCache->GetSegment( i );
+		if(!seg){
+			continue;
+		}
+		mCurSegID = i;
+		return seg;
+	}
 
-    return NULL;
+	return NULL;
 }
 
 OmSegment* OmSegmentIteratorLowLevel::getNextSegmentFromSet()
 {
-    if( mSegs.empty() ){
-        return NULL;
-    }
+	if( mSegs.empty() ){
+		return NULL;
+	}
 
-    OmSegment* segRet = mSegs.back();
-    mSegs.pop_back();
+	OmSegment* segRet = mSegs.back();
+	mSegs.pop_back();
 
-    FOR_EACH(iter, segRet->getChildren()){
-        mSegs.push_back(*iter);
-    }
+	FOR_EACH(iter, segRet->getChildren()){
+		mSegs.push_back(*iter);
+	}
 
-    return segRet;
+	return segRet;
 }

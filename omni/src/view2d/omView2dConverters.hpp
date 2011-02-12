@@ -23,22 +23,6 @@ public:
 	}
 
 	template <typename T>
-	inline static Vector3<T> MakeViewTypeVector3(const Vector3<T>& vec,
-												 const ViewType viewType)
-	{
-		switch(viewType){
-		case XY_VIEW:
-			return vec;
-		case XZ_VIEW:
-			return Vector3<T>(vec.x, vec.z, vec.y);
-		case YZ_VIEW:
-			return Vector3<T>(vec.z, vec.y, vec.x);
-		default:
-			throw OmArgException("invalid viewType");
-		}
-	}
-
-	template <typename T>
 	inline static T GetViewTypeDepth(const Vector3<T>& vec,
 									 const ViewType viewType)
 	{
@@ -96,21 +80,6 @@ public:
 		}
 	}
 
-	template <typename T>
-	inline static Vector2<T> Get2PtsInPlane(const Vector3<T>& vec,
-										   const ViewType viewType)
-	{
-		switch(viewType) {
-		case XY_VIEW:
-			return Vector2<T>(vec.x, vec.y);
-		case XZ_VIEW:
-			return Vector2<T>(vec.x, vec.z);
-		case YZ_VIEW:
-			return Vector2<T>(vec.z, vec.y);
-		default:
-			throw OmArgException("unknown viewType");
-		}
-	}
 };
 
 #endif

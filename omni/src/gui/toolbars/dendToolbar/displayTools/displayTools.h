@@ -21,7 +21,7 @@ public:
 		return "Display Tools";
 	}
 
-private Q_SLOTS:
+private slots:
 	void changeMapColorsSlot();
 
 private:

@@ -6,7 +6,11 @@
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheGroup.h"
 #include "system/cache/omCacheInfo.h"
+#include "system/cache/omCacheManager.h"
+#include "system/events/omPreferenceEvent.h"
 #include "system/omLocalPreferences.hpp"
+#include "system/omPreferenceDefinitions.h"
+#include "system/omPreferences.h"
 #include "utility/omLockedPODs.hpp"
 #include "zi/omMutex.h"
 #include "zi/omThreads.h"
@@ -15,119 +19,112 @@
 
 class OmCacheManagerImpl {
 private:
-    static const int CLEANER_THREAD_LOOP_TIME_SECS = 30;
+	static const int CLEANER_THREAD_LOOP_TIME_SECS = 30;
 
 public:
-    QList<OmCacheInfo> GetCacheInfo(const om::CacheGroup group){
-        return getCache(group)->GetCacheInfo();
-    }
+	QList<OmCacheInfo> GetCacheInfo(const OmCacheGroupEnum group){
+		return getCache(group)->GetCacheInfo();
+	}
 
-    void ClearCacheContents()
-    {
-        meshCaches_->ClearCacheContents();
-        tileCaches_->ClearCacheContents();
-    }
+	void AddCache(const OmCacheGroupEnum group, OmCacheBase* base){
+		getCache(group)->AddCache(base);
+	}
 
-    void AddCache(const om::CacheGroup group, OmCacheBase* base){
-        getCache(group)->AddCache(base);
-    }
+	void RemoveCache(const OmCacheGroupEnum group, OmCacheBase* base){
+		getCache(group)->RemoveCache(base);
+	}
 
-    void RemoveCache(const om::CacheGroup group, OmCacheBase* base){
-        getCache(group)->RemoveCache(base);
-    }
+	void SignalCachesToCloseDown()
+	{
+		amClosingDown.set(true);
+		cleaner_->stop();
+		mRamCacheMap->SignalCachesToCloseDown();
+		mVramCacheMap->SignalCachesToCloseDown();
+	}
 
-    void SignalCachesToCloseDown()
-    {
-        amClosingDown.set(true);
-        cleaner_->stop();
-        meshCaches_->SignalCachesToCloseDown();
-        tileCaches_->SignalCachesToCloseDown();
-    }
+	void UpdateCacheSizeFromLocalPrefs()
+	{
+		mRamCacheMap->SetMaxSizeMB(OmLocalPreferences::getRamCacheSizeMB());
+		mVramCacheMap->SetMaxSizeMB(OmLocalPreferences::getVRamCacheSizeMB());
+	}
 
-    void UpdateCacheSizeFromLocalPrefs()
-    {
-        meshCaches_->SetMaxSizeMB(OmLocalPreferences::getMeshCacheSizeMB());
-        tileCaches_->SetMaxSizeMB(OmLocalPreferences::getTileCacheSizeMB());
-    }
+	inline void TouchFresheness(){
+		freshness_.add(1);
+	}
 
-    inline void TouchFresheness(){
-        freshness_.add(1);
-    }
+	inline uint64_t GetFreshness(){
+		return freshness_.get();
+	}
 
-    inline uint64_t GetFreshness(){
-        return freshness_.get();
-    }
-
-    inline bool AmClosingDown(){
-        return amClosingDown.get();
-    }
+	inline bool AmClosingDown(){
+		return amClosingDown.get();
+	}
 
 private:
-    boost::scoped_ptr<OmCacheGroup> meshCaches_;
-    boost::scoped_ptr<OmCacheGroup> tileCaches_;
+	OmCacheManagerImpl()
+		: mRamCacheMap(new OmCacheGroup())
+		, mVramCacheMap(new OmCacheGroup())
+	{
+		freshness_.set(1); // non-segmentation tiles have freshness of 0
 
-    boost::shared_ptr<zi::periodic_function> cleaner_;
-    boost::shared_ptr<zi::thread> cleanerThread_;
+		mRamCacheMap->SetMaxSizeMB(OmLocalPreferences::getRamCacheSizeMB());
+		mVramCacheMap->SetMaxSizeMB(OmLocalPreferences::getVRamCacheSizeMB());
 
-    LockedBool amClosingDown;
-    LockedUint64 freshness_;
-
-    OmCacheManagerImpl()
-        : meshCaches_(new OmCacheGroup(om::MESH_CACHE))
-        , tileCaches_(new OmCacheGroup(om::TILE_CACHE))
-    {
-        freshness_.set(1); // non-segmentation tiles have freshness of 0
-
-        meshCaches_->SetMaxSizeMB(OmLocalPreferences::getMeshCacheSizeMB());
-        tileCaches_->SetMaxSizeMB(OmLocalPreferences::getTileCacheSizeMB());
-
-        setupCleanerThread();
-    }
+		setupCleanerThread();
+	}
 
 public:
-    ~OmCacheManagerImpl(){
-        SignalCachesToCloseDown();
-    }
+	~OmCacheManagerImpl(){
+		SignalCachesToCloseDown();
+	}
 
 private:
-    bool cacheManagerCleaner()
-    {
-        if(amClosingDown.get()){
-            return false;
-        }
+	boost::shared_ptr<OmCacheGroup> mRamCacheMap;
+	boost::shared_ptr<OmCacheGroup> mVramCacheMap;
+	boost::shared_ptr<zi::periodic_function> cleaner_;
+	boost::shared_ptr<zi::thread> cleanerThread_;
+	LockedBool amClosingDown;
+	LockedUint64 freshness_;
 
-        meshCaches_->Clean();
-        tileCaches_->Clean();
+	bool cacheManagerCleaner()
+	{
+		if(amClosingDown.get()){
+			return false;
+		}
 
-        if(amClosingDown.get()){
-            return false;
-        }
+		const int numItemsRemoved =
+			mRamCacheMap->Clean() + mVramCacheMap->Clean();
 
-        return true;
-    }
+		if(numItemsRemoved > 0){
+			printf("\tcleaned cache; removed %d items...\n", numItemsRemoved);
+		}
 
-    void setupCleanerThread()
-    {
-        const int64_t loopTimeSecs= CLEANER_THREAD_LOOP_TIME_SECS;
+		return true;
+	}
 
-        cleaner_ =
-            boost::make_shared<zi::periodic_function>(
-                &OmCacheManagerImpl::cacheManagerCleaner, this,
-                zi::interval::secs(loopTimeSecs));
+	void setupCleanerThread()
+	{
+		const int64_t loopTimeSecs= CLEANER_THREAD_LOOP_TIME_SECS;
 
-        cleanerThread_ = boost::make_shared<zi::thread>(*cleaner_);
-        cleanerThread_->start();
-    }
+		cleaner_ =
+			boost::make_shared<zi::periodic_function>(
+				&OmCacheManagerImpl::cacheManagerCleaner, this,
+				zi::interval::secs(loopTimeSecs));
 
-    inline OmCacheGroup* getCache(const om::CacheGroup group)
-    {
-        if(om::MESH_CACHE == group){
-            return meshCaches_.get();
-        }
-        return tileCaches_.get();
-    }
+		cleanerThread_ = boost::make_shared<zi::thread>(*cleaner_);
+		cleanerThread_->start();
+	}
 
-    friend class OmCacheManager;
+	inline boost::shared_ptr<OmCacheGroup>&
+	getCache(const OmCacheGroupEnum group)
+	{
+		if(RAM_CACHE_GROUP == group){
+			return mRamCacheMap;
+		}
+		return mVramCacheMap;
+	}
+
+	friend class OmCacheManager;
 };
 
 #endif

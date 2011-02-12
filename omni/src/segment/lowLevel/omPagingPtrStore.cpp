@@ -1,4 +1,5 @@
 #include "segment/lowLevel/omPagingPtrStore.h"
+#include "segment/omSegmentCache.h"
 #include "volume/omSegmentation.h"
 #include "utility/omTimer.hpp"
 
@@ -6,115 +7,132 @@ static const uint32_t DEFAULT_PAGE_SIZE = 100000; // about 4.8 MB on disk
 static const uint32_t DEFAULT_PAGE_VECTOR_SIZE = 20;
 
 OmPagingPtrStore::OmPagingPtrStore(OmSegmentation * segmentation)
-    : segmentation_(segmentation)
-    , pageSize_(DEFAULT_PAGE_SIZE)
+	: segmentation_(segmentation)
+	, pageSize_(DEFAULT_PAGE_SIZE)
 {
-    pages_.resize(DEFAULT_PAGE_VECTOR_SIZE);
+	pages_.resize(DEFAULT_PAGE_VECTOR_SIZE);
 }
 
 void OmPagingPtrStore::loadAllSegmentPages()
 {
-    OmTimer timer;
+	OmTimer timer;
 
-    loadMetadata();
+	loadMetadata();
 
-    FOR_EACH(iter, validPageNumbers_)
-    {
-        const PageNum pageNum = *iter;
+	foreach(PageNum pageNum, validPageNumbers_){
+		resizeVectorIfNeeded(pageNum);
 
-        resizeVectorIfNeeded(pageNum);
+		pages_[pageNum] = OmSegmentPage(segmentation_,
+										pageNum,
+										pageSize_);
+		pages_[pageNum].Load();
+	}
 
-        pages_[pageNum] = OmSegmentPage(segmentation_,
-                                        pageNum,
-                                        pageSize_);
-        pages_[pageNum].Load();
-    }
-
-    printf("loaded %d segment pages (%.6f secs) \n",
-           validPageNumbers_.size(), timer.s_elapsed());
+	printf("loaded %d segment pages (%.6f secs) \n",
+		   validPageNumbers_.size(), timer.s_elapsed());
 }
 
 OmSegment* OmPagingPtrStore::AddSegment(const OmSegID value)
 {
-    const PageNum pageNum = getValuePageNum(value);
+	const PageNum pageNum = getValuePageNum(value);
 
-    if(!validPageNumbers_.contains(pageNum))
-    {
-        resizeVectorIfNeeded(pageNum);
-        validPageNumbers_.insert(pageNum);
+	if( !validPageNumbers_.contains(pageNum) ) {
+		resizeVectorIfNeeded(pageNum);
+		validPageNumbers_.insert(pageNum);
 
-        pages_[pageNum] = OmSegmentPage(segmentation_,
-                                        pageNum,
-                                        pageSize_);
-        pages_[pageNum].Create();
+		pages_[pageNum] = OmSegmentPage(segmentation_,
+										pageNum,
+										pageSize_);
+		pages_[pageNum].Create();
 
-        storeMetadata();
-    }
+		storeMetadata();
+	}
 
-    OmSegment* ret = &(pages_[pageNum][ value % pageSize_]);
-    ret->data_->value = value;
+	OmSegment* ret = &(pages_[pageNum][ value % pageSize_]);
+	ret->data_->value = value;
 
-    return ret;
+	return ret;
+}
+
+/**
+ * returns NULL if segment was never instantiated;
+ **/
+OmSegment* OmPagingPtrStore::GetSegment(const OmSegID value)
+{
+	if(!value){
+		return NULL;
+	}
+
+	const PageNum pageNum = getValuePageNum(value);
+	if(!validPageNumbers_.contains(pageNum)){
+		return NULL;
+	}
+
+	OmSegment* ret = &(pages_[pageNum][ value % pageSize_]);
+	if(!ret->data_->value){
+		return NULL;
+	}
+
+	return ret;
 }
 
 void OmPagingPtrStore::resizeVectorIfNeeded(const PageNum pageNum)
 {
-    if( pageNum >= pages_.size() ){
-        pages_.resize(pageNum*2);
-    }
+	if( pageNum >= pages_.size() ){
+		pages_.resize(pageNum*2);
+	}
 }
 
-QString OmPagingPtrStore::metadataPathQStr()
-{
-    const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
-    return QString("%1/segment_pages.data").arg(volPath);
+QString OmPagingPtrStore::metadataPathQStr(){
+	const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
+	return QString("%1/segment_pages.data").arg(volPath);
 }
 
 void OmPagingPtrStore::loadMetadata()
 {
-    QFile file(metadataPathQStr());
+	QFile file(metadataPathQStr());
 
-    if(!file.open(QIODevice::ReadOnly)){
-        throw OmIoException("error reading file", metadataPathQStr());
-    }
+	if(!file.open(QIODevice::ReadOnly)){
+		throw OmIoException("error reading file", metadataPathQStr());
+	}
 
-    QDataStream in(&file);
-    in.setByteOrder( QDataStream::LittleEndian );
-    in.setVersion(QDataStream::Qt_4_6);
+	QDataStream in(&file);
+	in.setByteOrder( QDataStream::LittleEndian );
+	in.setVersion(QDataStream::Qt_4_6);
 
-    int version;
+	int version;
 
-    in >> version;
-    in >> pageSize_;
-    in >> validPageNumbers_;
+	in >> version;
+	in >> pageSize_;
+	in >> validPageNumbers_;
 
-    if(!in.atEnd()){
-        throw OmIoException("corrupt file?", metadataPathQStr());
-    }
+	if(!in.atEnd()){
+		throw OmIoException("corrupt file?", metadataPathQStr());
+	}
 }
 
 void OmPagingPtrStore::storeMetadata()
 {
-    QFile file(metadataPathQStr());
+	QFile file(metadataPathQStr());
 
-    if (!file.open(QIODevice::WriteOnly)) {
-        throw OmIoException("could not write file", metadataPathQStr());
-    }
+	if (!file.open(QIODevice::WriteOnly)) {
+		throw OmIoException("could not write file", metadataPathQStr());
+	}
 
-    QDataStream out(&file);
-    out.setByteOrder( QDataStream::LittleEndian );
-    out.setVersion(QDataStream::Qt_4_6);
+	QDataStream out(&file);
+	out.setByteOrder( QDataStream::LittleEndian );
+	out.setVersion(QDataStream::Qt_4_6);
 
-    static const int version = 1;
+	static const int version = 1;
 
-    out << version;
-    out << pageSize_;
-    out << validPageNumbers_;
+	out << version;
+	out << pageSize_;
+	out << validPageNumbers_;
 }
 
 void OmPagingPtrStore::Flush()
 {
-    FOR_EACH(iter, validPageNumbers_){
-        pages_[*iter].Flush();
-    }
+	foreach(PageNum pageNum, validPageNumbers_){
+		pages_[pageNum].Flush();
+	}
 }

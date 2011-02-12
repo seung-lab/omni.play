@@ -51,13 +51,13 @@ public:
 		runIdleThreadTask();
 	}
 
-	void WidgetVisibilityChanged(OmTileDrawer* drawer,
+	void WidgetVisibilityChanged(boost::shared_ptr<OmTileDrawer> drawer,
 								 const bool visible)
 	{
 		if(visible){
-			setDrawerActive(drawer);
+			setDrawerActive(drawer.get());
 		}else{
-			SetDrawerDone(drawer);
+			SetDrawerDone(drawer.get());
 		}
 	}
 
@@ -79,8 +79,8 @@ public:
 		}
 	}
 
-	void RemoveDataCoord(const DataCoord & coord){
-		cacheSegmentation_->RemoveDataCoord(coord);
+	void RemoveSpaceCoord(const SpaceCoord & coord){
+		cacheSegmentation_->RemoveSpaceCoord(coord);
 	}
 
 	bool AreDrawersActive()

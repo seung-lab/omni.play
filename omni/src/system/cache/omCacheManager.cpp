@@ -4,49 +4,42 @@
 OmCacheManager::OmCacheManager()
 {}
 
-OmCacheManager::~OmCacheManager()
-{}
-
 void OmCacheManager::Delete(){
-    instance().impl_.reset();
+	instance().impl_.reset();
 }
 
 void OmCacheManager::Reset(){
-    instance().impl_.reset(new OmCacheManagerImpl());
+	instance().impl_ = boost::shared_ptr<OmCacheManagerImpl>(new OmCacheManagerImpl());
 }
 
 void OmCacheManager::UpdateCacheSizeFromLocalPrefs(){
-    impl()->UpdateCacheSizeFromLocalPrefs();
+	instance().impl_->UpdateCacheSizeFromLocalPrefs();
 }
 
-void OmCacheManager::AddCache(const om::CacheGroup group, OmCacheBase* base){
-    impl()->AddCache(group, base);
+void OmCacheManager::AddCache(const OmCacheGroupEnum group, OmCacheBase* base){
+	instance().impl_->AddCache(group, base);
 }
 
-void OmCacheManager::RemoveCache(const om::CacheGroup group, OmCacheBase* base){
-    impl()->RemoveCache(group, base);
+void OmCacheManager::RemoveCache(const OmCacheGroupEnum group, OmCacheBase* base){
+	instance().impl_->RemoveCache(group, base);
 }
 
-QList<OmCacheInfo> OmCacheManager::GetCacheInfo(const om::CacheGroup group){
-    return impl()->GetCacheInfo(group);
+QList<OmCacheInfo> OmCacheManager::GetCacheInfo(const OmCacheGroupEnum group){
+	return instance().impl_->GetCacheInfo(group);
 }
 
 void OmCacheManager::SignalCachesToCloseDown(){
-    impl()->SignalCachesToCloseDown();
+	instance().impl_->SignalCachesToCloseDown();
 }
 
 void OmCacheManager::TouchFresheness(){
-    impl()->TouchFresheness();
+	instance().impl_->TouchFresheness();
 }
 
 uint64_t OmCacheManager::GetFreshness(){
-    return impl()->GetFreshness();
+	return instance().impl_->GetFreshness();
 }
 
 bool OmCacheManager::AmClosingDown(){
-    return impl()->AmClosingDown();
-}
-
-void OmCacheManager::ClearCacheContents(){
-    impl()->ClearCacheContents();
+	return instance().impl_->AmClosingDown();
 }

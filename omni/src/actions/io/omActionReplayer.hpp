@@ -6,47 +6,45 @@
 #include <QFileInfo>
 
 namespace om {
-namespace actionReplayer_ {
-enum ActionTypes {
-    OmSegmentValidateAction,
-    OmSegmentSplitAction,
-    OmSegmentJoinAction,
-    OmSegmentSelectAction,
-    OmSegmentGroupAction,
-    OmSegmentUncertainAction,
-    OmVolxelSetvalueAction,
-    OmSegmentationThresholdChangeAction,
-    OmProjectCloseAction,
-    OmProjectSaveAction,
-};
-}
+	namespace actionReplayer_ {
+		enum ActionTypes {
+			OmSegmentValidateAction,
+			OmSegmentSplitAction,
+			OmSegmentJoinAction,
+			OmSegmentSelectAction,
+			OmSegmentGroupAction,
+			OmSegmentUncertainAction,
+			OmVolxelSetvalueAction,
+			OmSegmentationThresholdChangeAction,
+			OmProjectCloseAction,
+			OmProjectSaveAction,
+		};
+	}
 }
 
 class OmActionReplayer {
 public:
-    static void Replay();
+	static void Replay();
 
 private:
-    std::map<QString, om::actionReplayer_::ActionTypes> actionStrToType_;
+	std::map<QString, om::actionReplayer_::ActionTypes> actionStrToType_;
 
-    OmActionReplayer();
+	OmActionReplayer();
 
-    void registerActionTypes();
-    void replayFile(const QFileInfo& file);
-    void doReplay();
+	void registerActionTypes();
+	void replayFile(const QFileInfo& file);
+	void doReplay();
 
-    void dispatchAction(const QString& actionName, QDataStream& in);
+	void dispatchAction(const QString& actionName, QDataStream& in);
 
-    template <typename ACTION, typename IMPL>
-    void doReplayFile(QDataStream& in)
-    {
-        boost::shared_ptr<IMPL> impl(new IMPL());
-        in >> (*impl);
-
-        // action will be deleted by QUndoState...
-        ACTION* action = new ACTION(impl);
-        action->Replay();
-    }
+	template <typename ACTION, typename IMPL>
+	void doReplayFile(QDataStream& in)
+	{
+		boost::shared_ptr<IMPL> impl(new IMPL());
+		in >> (*impl);
+		ACTION* action = new ACTION(impl);
+		action->Replay();
+	}
 };
 
 #endif

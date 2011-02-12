@@ -26,20 +26,20 @@ class OmVolume;
 
 class OmDataArchiveProject {
 public:
-    static void ArchiveRead(const QString& fnp, OmProjectImpl* project);
-    static void ArchiveWrite(const QString& fnp, OmProjectImpl* project );
+	static void ArchiveRead(const QString& fnp, OmProjectImpl* project);
+	static void ArchiveWrite(const QString& fnp, OmProjectImpl* project );
 
-    static void moveOldMeshMetadataFile(OmSegmentation* segmentation);
+	static void moveOldMeshMetadataFile(OmSegmentation* segmentation);
 
-    // public for access by QDataStream operators
-    static void LoadOldChannel(QDataStream& in, OmChannel& chan);
-    static void LoadNewChannel(QDataStream& in, OmChannel& chan);
+	// public for access by QDataStream operators
+	static void LoadOldChannel(QDataStream& in, OmChannel& chan);
+	static void LoadNewChannel(QDataStream& in, OmChannel& chan);
 
-    static void LoadOldSegmentation(QDataStream& in, OmSegmentation& seg);
-    static void LoadNewSegmentation(QDataStream& in, OmSegmentation& seg);
+	static void LoadOldSegmentation(QDataStream& in, OmSegmentation& seg);
+	static void LoadNewSegmentation(QDataStream& in, OmSegmentation& seg);
 
 private:
-    static void Upgrade(const QString& fnp, OmProjectImpl* project);
+	static void Upgrade(const QString& fnp, OmProjectImpl* project);
 };
 
 QDataStream &operator<<(QDataStream & out, const OmProject & project );

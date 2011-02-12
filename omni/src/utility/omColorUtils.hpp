@@ -2,17 +2,17 @@
 #define OM_COLOR_UTILS_HPP
 
 #include "common/omCommon.h"
-#include "project/omProjectGlobals.h"
-#include "utility/omRandColorFile.hpp"
+#include "project/omProjectGlobals.hpp"
 
 class OmColorUtils {
 private:
     enum ColorIndexInternal {RED, GREEN, BLUE};
 
 public:
-
-    static inline OmColor GetRandomColor(){
-		return OmProject::Globals().RandColorFile().GetRandomColor();
+    static inline OmColor GetRandomColor()
+	{
+		OmProjectGlobals& globals = OmProject::Globals();
+		return globals.RandColorFile().GetRandomColor();
 	}
 
     static inline OmColor GetRandomColor(const OmColor old)

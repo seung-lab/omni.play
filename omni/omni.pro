@@ -48,12 +48,16 @@ DEPENDPATH += . \
 ## start of section to be rewritten using Perl
 HEADERS +=  \
 	lib/strnatcmp.h \
-	src/actions/details/omActionBase.hpp \
-	src/actions/details/omActionImpls.hpp \
+	src/actions/details/omAction.h \
+	src/actions/details/omProjectCloseAction.h \
 	src/actions/details/omProjectCloseActionImpl.hpp \
+	src/actions/details/omProjectSaveAction.h \
 	src/actions/details/omProjectSaveActionImpl.hpp \
+	src/actions/details/omSegmentGroupAction.h \
 	src/actions/details/omSegmentGroupActionImpl.hpp \
+	src/actions/details/omSegmentJoinAction.h \
 	src/actions/details/omSegmentJoinActionImpl.hpp \
+	src/actions/details/omSegmentSelectAction.h \
 	src/actions/details/omSegmentSelectActionImpl.hpp \
 	src/actions/details/omSegmentSplitAction.h \
 	src/actions/details/omSegmentSplitActionImpl.hpp \
@@ -61,8 +65,8 @@ HEADERS +=  \
 	src/actions/details/omSegmentUncertainActionImpl.hpp \
 	src/actions/details/omSegmentValidateAction.h \
 	src/actions/details/omSegmentValidateActionImpl.hpp \
+	src/actions/details/omSegmentationThresholdChangeAction.h \
 	src/actions/details/omSegmentationThresholdChangeActionImpl.hpp \
-	src/actions/details/omUndoCommand.hpp \
 	src/actions/details/omVoxelSetValueAction.h \
 	src/actions/details/omVoxelSetValueActionImpl.hpp \
 	src/actions/io/omActionLogger.hpp \
@@ -70,7 +74,6 @@ HEADERS +=  \
 	src/actions/io/omActionOperators.h \
 	src/actions/io/omActionReplayer.hpp \
 	src/actions/omActions.h \
-	src/actions/omSelectSegmentParams.hpp \
 	src/chunks/details/omPtrToChunkDataBase.hpp \
 	src/chunks/details/omPtrToChunkDataMemMapVol.h \
 	src/chunks/omChunk.h \
@@ -80,8 +83,6 @@ HEADERS +=  \
 	src/chunks/omChunkMipping.hpp \
 	src/chunks/omChunkTypes.hpp \
 	src/chunks/omChunkUtils.hpp \
-	src/chunks/omRawChunk.hpp \
-	src/chunks/omRawChunkMemMapped.hpp \
 	src/chunks/omSegChunk.h \
 	src/chunks/omSegChunkData.h \
 	src/chunks/omSegChunkDataVisitors.hpp \
@@ -90,19 +91,15 @@ HEADERS +=  \
 	src/chunks/uniqueValues/omChunkUniqueValuesTypes.h \
 	src/chunks/uniqueValues/omThresholdsInChunk.hpp \
 	src/common/om.hpp \
-	src/common/omBoost.h \
 	src/common/omCommon.h \
 	src/common/omDebug.h \
 	src/common/omException.h \
 	src/common/omGl.h \
-	src/common/omSet.hpp \
 	src/common/omStd.h \
-	src/common/omString.hpp \
 	src/datalayer/archive/omDataArchiveBoost.h \
 	src/datalayer/archive/omDataArchiveProject.h \
 	src/datalayer/archive/omDataArchiveSegment.h \
 	src/datalayer/archive/omDataArchiveStd.hpp \
-	src/datalayer/archive/omDataArchiveWrappers.h \
 	src/datalayer/archive/omMetadataSegmentation.h \
 	src/datalayer/archive/omMipVolumeArchive.h \
 	src/datalayer/archive/omMipVolumeArchiveOld.h \
@@ -278,7 +275,7 @@ HEADERS +=  \
 	src/project/omAffinityGraphManager.h \
 	src/project/omChannelManager.h \
 	src/project/omProject.h \
-	src/project/omProjectGlobals.h \
+	src/project/omProjectGlobals.hpp \
 	src/project/omProjectImpl.hpp \
 	src/project/omProjectVolumes.h \
 	src/project/omSegmentationManager.h \
@@ -296,17 +293,16 @@ HEADERS +=  \
 	src/segment/io/omValidGroupNum.hpp \
 	src/segment/lowLevel/DynamicForestPool.hpp \
 	src/segment/lowLevel/omDynamicForestCache.hpp \
-	src/segment/lowLevel/omEnabledSegments.hpp \
 	src/segment/lowLevel/omPagingPtrStore.h \
-	src/segment/lowLevel/omSegmentBags.hpp \
 	src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
 	src/segment/lowLevel/omSegmentGraph.h \
 	src/segment/lowLevel/omSegmentIteratorLowLevel.h \
 	src/segment/lowLevel/omSegmentListByMRU.h \
 	src/segment/lowLevel/omSegmentListBySize.h \
-	src/segment/lowLevel/omSegmentSelection.hpp \
 	src/segment/omFindCommonEdge.hpp \
 	src/segment/omSegment.h \
+	src/segment/omSegmentBag.hpp \
+	src/segment/omSegmentBags.hpp \
 	src/segment/omSegmentCache.h \
 	src/segment/omSegmentCacheImpl.h \
 	src/segment/omSegmentColorizer.h \
@@ -325,15 +321,20 @@ HEADERS +=  \
 	src/system/cache/omCacheInfo.h \
 	src/system/cache/omCacheManager.h \
 	src/system/cache/omCacheManagerImpl.hpp \
-	src/system/cache/omCacheObjects.hpp \
-	src/system/cache/omGetSetCache.hpp \
 	src/system/cache/omHandleCacheMissTask.hpp \
 	src/system/cache/omLockedCacheObjects.hpp \
 	src/system/cache/omMeshCache.h \
 	src/system/cache/omThreadedCache.h \
-	src/system/cache/omVolSliceCache.hpp \
+	src/system/events/omEvent.h \
+	src/system/events/omEventManager.h \
+	src/system/events/omKeyPressEventListener.h \
+	src/system/events/omPreferenceEvent.h \
+	src/system/events/omProgressEvent.h \
+	src/system/events/omSegmentEvent.h \
+	src/system/events/omToolModeEvent.h \
+	src/system/events/omView3dEvent.h \
+	src/system/events/omViewEvent.h \
 	src/system/omAlphaVegasMode.hpp \
-	src/system/omAppState.hpp \
 	src/system/omEvents.h \
 	src/system/omGarbage.h \
 	src/system/omGenericManager.h \
@@ -345,7 +346,6 @@ HEADERS +=  \
 	src/system/omPreferences.h \
 	src/system/omQTApp.hpp \
 	src/system/omStateManager.h \
-	src/system/omStateManagerImpl.hpp \
 	src/tiles/cache/omTileCache.h \
 	src/tiles/cache/omTileCacheChannel.hpp \
 	src/tiles/cache/omTileCacheImpl.hpp \
@@ -369,7 +369,6 @@ HEADERS +=  \
 	src/utility/localPrefFilesImpl.hpp \
 	src/utility/omChunkVoxelWalker.hpp \
 	src/utility/omColorUtils.hpp \
-	src/utility/omCopyFirstN.hpp \
 	src/utility/omFileHelpers.h \
 	src/utility/omLockedObjects.h \
 	src/utility/omLockedPODs.hpp \
@@ -386,26 +385,14 @@ HEADERS +=  \
 	src/utility/segmentationDataWrapper.hpp \
 	src/utility/setUtilities.h \
 	src/utility/sortHelpers.h \
+	src/view2d/details/omMidpointCircleAlgorithm.hpp \
 	src/view2d/om2dPreferences.hpp \
-	src/view2d/omBrushOpp.hpp \
-	src/view2d/omBrushOppCircle.hpp \
-	src/view2d/omBrushOppLine.hpp \
-	src/view2d/omBrushPaint.hpp \
-	src/view2d/omBrushPaintCircle.hpp \
-	src/view2d/omBrushPaintLine.hpp \
-	src/view2d/omBrushPaintLineTask.hpp \
-	src/view2d/omBrushSelect.hpp \
-	src/view2d/omBrushSelectCircle.hpp \
-	src/view2d/omBrushSelectLine.hpp \
-	src/view2d/omBrushSelectLineTask.hpp \
 	src/view2d/omDisplayInfo.hpp \
-	src/view2d/omFillTool.hpp \
-	src/view2d/omGuiHelpers.hpp \
 	src/view2d/omKeyEvents.hpp \
+	src/view2d/omLineDraw.hpp \
 	src/view2d/omMouseEventMove.hpp \
 	src/view2d/omMouseEventPress.hpp \
 	src/view2d/omMouseEventRelease.hpp \
-	src/view2d/omMouseEventState.hpp \
 	src/view2d/omMouseEventUtils.hpp \
 	src/view2d/omMouseEventWheel.hpp \
 	src/view2d/omMouseEvents.hpp \
@@ -413,15 +400,12 @@ HEADERS +=  \
 	src/view2d/omPointsInCircle.hpp \
 	src/view2d/omScreenPainter.hpp \
 	src/view2d/omScreenShotSaver.hpp \
-	src/view2d/omSliceCache.hpp \
 	src/view2d/omTileDrawer.h \
 	src/view2d/omView2d.h \
 	src/view2d/omView2dConverters.hpp \
 	src/view2d/omView2dCore.h \
 	src/view2d/omView2dEvents.hpp \
 	src/view2d/omView2dKeyPressEventListener.h \
-	src/view2d/omView2dManager.hpp \
-	src/view2d/omView2dManagerImpl.hpp \
 	src/view2d/omView2dState.hpp \
 	src/view2d/omView2dZoom.hpp \
 	src/view3d/om3dPreferences.hpp \
@@ -438,7 +422,6 @@ HEADERS +=  \
 	src/view3d/widgets/omViewBoxWidget.h \
 	src/view3d/widgets/omVolumeAxisWidget.h \
 	src/viewGroup/omBrushSize.hpp \
-	src/viewGroup/omSplitting.hpp \
 	src/viewGroup/omViewGroupState.h \
 	src/viewGroup/omZoomLevel.hpp \
 	src/volume/build/omBuildAffinityChannel.hpp \
@@ -477,6 +460,7 @@ HEADERS +=  \
 	src/volume/omFilter2d.h \
 	src/volume/omFilter2dManager.h \
 	src/volume/omMipVolume.h \
+	src/volume/omRawChunk.hpp \
 	src/volume/omSegmentation.h \
 	src/volume/omUpdateBoundingBoxes.h \
 	src/volume/omVolCoords.hpp \
@@ -514,9 +498,15 @@ HEADERS +=  \
 
 SOURCES +=  \
 	lib/strnatcmp.cpp \
+	src/actions/details/omProjectCloseAction.cpp \
+	src/actions/details/omProjectSaveAction.cpp \
+	src/actions/details/omSegmentGroupAction.cpp \
+	src/actions/details/omSegmentJoinAction.cpp \
+	src/actions/details/omSegmentSelectAction.cpp \
 	src/actions/details/omSegmentSplitAction.cpp \
 	src/actions/details/omSegmentUncertainAction.cpp \
 	src/actions/details/omSegmentValidateAction.cpp \
+	src/actions/details/omSegmentationThresholdChangeAction.cpp \
 	src/actions/details/omVoxelSetValueAction.cpp \
 	src/actions/io/omActionOperators.cpp \
 	src/actions/io/omActionReplayer.cpp \
@@ -532,7 +522,6 @@ SOURCES +=  \
 	src/datalayer/archive/omDataArchiveBoost.cpp \
 	src/datalayer/archive/omDataArchiveProject.cpp \
 	src/datalayer/archive/omDataArchiveSegment.cpp \
-	src/datalayer/archive/omDataArchiveWrappers.cpp \
 	src/datalayer/archive/omMetadataSegmentation.cpp \
 	src/datalayer/archive/omMipVolumeArchive.cpp \
 	src/datalayer/hdf5/omHdf5.cpp \
@@ -608,7 +597,6 @@ SOURCES +=  \
 	src/project/omAffinityGraphManager.cpp \
 	src/project/omChannelManager.cpp \
 	src/project/omProject.cpp \
-	src/project/omProjectGlobals.cpp \
 	src/project/omProjectVolumes.cpp \
 	src/project/omSegmentationManager.cpp \
 	src/segment/io/omMST.cpp \
@@ -629,12 +617,18 @@ SOURCES +=  \
 	src/system/cache/omCacheManager.cpp \
 	src/system/cache/omMeshCache.cpp \
 	src/system/cache/omThreadedCache.cpp \
-	src/system/omAppState.cpp \
+	src/system/events/omEvent.cpp \
+	src/system/events/omEventManager.cpp \
+	src/system/events/omPreferenceEvent.cpp \
+	src/system/events/omProgressEvent.cpp \
+	src/system/events/omSegmentEvent.cpp \
+	src/system/events/omToolModeEvent.cpp \
+	src/system/events/omView3dEvent.cpp \
+	src/system/events/omViewEvent.cpp \
 	src/system/omEvents.cpp \
 	src/system/omGroups.cpp \
 	src/system/omPreferenceDefinitions.cpp \
 	src/system/omStateManager.cpp \
-	src/system/omStateManagerImpl.cpp \
 	src/system/templatedClasses.cpp \
 	src/tiles/cache/omTileCache.cpp \
 	src/tiles/omTextureID.cpp \
@@ -645,8 +639,10 @@ SOURCES +=  \
 	src/tiles/omTilePreFetcherTask.cpp \
 	src/utility/channelDataWrapper.cpp \
 	src/utility/omFileHelpers.cpp \
+	src/utility/omStringHelpers.cpp \
 	src/utility/omSystemInformation.cpp \
 	src/utility/omThreadPoolManager.cpp \
+	src/view2d/omLineDraw.cpp \
 	src/view2d/omOnScreenTileCoords.cpp \
 	src/view2d/omTileDrawer.cpp \
 	src/view2d/omView2d.cpp \
@@ -756,7 +752,7 @@ linux-g++ {
 }
 
 # so QT wont define any non-all-caps keywords
-CONFIG += no_keywords
+#CONFIG += no_keywords
 
 #### for profiling
 #QMAKE_CXXFLAGS += -pg

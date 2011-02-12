@@ -2,7 +2,7 @@
 #define OM_VIEW3D_KEY_PRESS_EVENT_LISTENER_H
 
 #include "segment/omSegmentSelected.hpp"
-#include "events/omKeyPressEventListener.h"
+#include "system/events/omKeyPressEventListener.h"
 
 
 class OmView3dKeyPressEventListener : public OmKeyPressEventListener {

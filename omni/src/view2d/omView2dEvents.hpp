@@ -4,10 +4,10 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 
-#include "events/omSegmentEvent.h"
-#include "events/omViewEvent.h"
-#include "events/omToolModeEvent.h"
-#include "events/omKeyPressEventListener.h"
+#include "system/events/omSegmentEvent.h"
+#include "system/events/omViewEvent.h"
+#include "system/events/omToolModeEvent.h"
+#include "system/events/omKeyPressEventListener.h"
 
 #include "gui/widgets/omCursors.h"
 
@@ -19,10 +19,11 @@ class OmView2dEvents
 {
 private:
 	OmView2d *const v2d_;
-	OmView2dState *const state_;
+	boost::shared_ptr<OmView2dState> state_;
 
 public:
-	OmView2dEvents(OmView2d* v2d, OmView2dState* state)
+	OmView2dEvents(OmView2d* v2d,
+		       boost::shared_ptr<OmView2dState> state)
  		: v2d_(v2d)
 		, state_(state)
 	{}

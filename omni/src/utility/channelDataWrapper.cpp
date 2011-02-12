@@ -1,6 +1,16 @@
 #include "utility/channelDataWrapper.hpp"
 #include "utility/dataWrappers.h"
 
-std::vector<OmFilter2d*> ChannelDataWrapper::GetFilters() const {
-    return GetChannel().FilterManager().GetFilters();
+QHash<OmID, FilterDataWrapper> ChannelDataWrapper::getAllFilterIDsAndNames()
+{
+	QHash<OmID, FilterDataWrapper> filters;
+
+	OmChannel & chann = OmProject::Volumes().Channels().GetChannel(mID);
+
+	foreach(OmID filterID, chann.FilterManager().GetValidFilterIds()) {
+		FilterDataWrapper filter(mID, filterID);
+		filters[filterID] = filter;
+	}
+
+	return filters;
 }

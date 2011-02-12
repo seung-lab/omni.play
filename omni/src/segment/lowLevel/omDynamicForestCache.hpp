@@ -6,76 +6,69 @@
 
 class OmDynamicForestCache {
 private:
-    boost::scoped_ptr<zi::DynamicForestPool<OmSegID> > graph_;
-    std::vector<OmSegID> cache_;
+	zi::DynamicForestPool<OmSegID> *const graph_;
+	boost::unordered_map<OmSegID, OmSegID> cache_;
 
-    bool batchMode_;
+	bool batchMode_;
 
-    inline void zeroFillCache(){
-        std::fill(cache_.begin(), cache_.end(), 0);
-    }
+	inline void clearCache()
+	{
+		if(batchMode_){
+			return;
+		}
 
-    inline void clearCacheIfNotBatch()
-    {
-        if(batchMode_){
-            return;
-        }
-
-        zeroFillCache();
-    }
+		cache_.clear();
+	}
 
 public:
-    OmDynamicForestCache(const size_t size)
-        : graph_(new zi::DynamicForestPool<OmSegID>(size))
-        , batchMode_(false)
-    {
-        cache_.resize(size, 0);
-    }
+	OmDynamicForestCache(const size_t size)
+		: graph_(new zi::DynamicForestPool<OmSegID>(size))
+		, batchMode_(false)
+	{}
 
-    ~OmDynamicForestCache()
-    {}
+	~OmDynamicForestCache(){
+		delete graph_;
+	}
 
-    inline void SetBatch(const bool batchModeOn){
-        batchMode_ = batchModeOn;
-    }
+	void SetBatch(const bool batchModeOn){
+		batchMode_ = batchModeOn;
+	}
 
-    inline void ClearCache(){
-        zeroFillCache();
-    }
+	void ClearCache(){
+		cache_.clear();
+	}
 
-    inline void Cut(const OmSegID segID)
-    {
-        clearCacheIfNotBatch();
-        graph_->cut(segID);
-    }
+	void Cut(const OmSegID segID)
+	{
+		clearCache();
+		graph_->cut(segID);
+	}
 
-    inline OmSegID Root(const OmSegID segID)
-    {
-        if(batchMode_){
-            return graph_->root(segID);
-        }
+	OmSegID Root(const OmSegID segID)
+	{
+		if(batchMode_){
+			return graph_->root(segID);
+		}
 
-        if(!cache_[segID]){
-            return cache_[segID] = graph_->root(segID);
-        }
-        return cache_[segID];
-    }
+		if(!cache_.count(segID)){
+			return cache_[segID] = graph_->root(segID);
+		}
+		return cache_[segID];
+	}
 
-    inline void Join(const OmSegID childRootID, const OmSegID parentRootID)
-    {
-        clearCacheIfNotBatch();
-        graph_->join(childRootID, parentRootID);
-    }
+	void Join(const OmSegID childRootID, const OmSegID parentRootID)
+	{
+		clearCache();
+		graph_->join(childRootID, parentRootID);
+	}
 
-    inline size_t Size() const {
-        return graph_->size();
-    }
+	size_t Size() const {
+		return graph_->size();
+	}
 
-    inline void Resize(const size_t size)
-    {
-        graph_->resize(size);
-        cache_.resize(size, 0);
-    }
+	void Resize(const size_t size){
+		graph_->resize(size);
+	}
 };
 
 #endif

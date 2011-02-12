@@ -30,7 +30,7 @@ public:
 
 	void SetSegmentID(OmSegID seg);
 
-private Q_SLOTS:
+private slots:
 	void doDeleteAction();
 
 private:

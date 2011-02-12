@@ -4,15 +4,15 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "view2d/omMouseEventUtils.hpp"
-#include "view2d/omFillTool.hpp"
 
 class OmMouseEventRelease{
 private:
 	OmView2d *const v2d_;
-	OmView2dState *const state_;
+	boost::shared_ptr<OmView2dState> state_;
 
 public:
-	OmMouseEventRelease(OmView2d* v2d, OmView2dState* state)
+	OmMouseEventRelease(OmView2d* v2d,
+						boost::shared_ptr<OmView2dState> state)
 		: v2d_(v2d)
 		, state_(state)
 	{}
@@ -37,6 +37,10 @@ public:
 		case SUBTRACT_VOXEL_MODE:
 		case FILL_MODE:
 			doRelease(event);
+			break;
+
+		case SELECT_VOXEL_MODE:
+			assert(0 && "not implemented");
 			break;
 		}
 	}
@@ -70,14 +74,14 @@ private:
 
 		switch (OmStateManager::GetToolMode()) {
 		case ADD_VOXEL_MODE:
-			OmBrushPaint::PaintByClick(state_,
-									   dataClickPoint,
-									   sdw.getID());
+			v2d_->LineDrawer()->BrushToolApplyPaint(sdw.GetSegmentationID(),
+													dataClickPoint,
+													sdw.getID());
 			break;
 		case SUBTRACT_VOXEL_MODE:
-			OmBrushPaint::PaintByClick(state_,
-									   dataClickPoint,
-									   0);
+			v2d_->LineDrawer()->BrushToolApplyPaint(sdw.GetSegmentationID(),
+													dataClickPoint,
+													0);
 			break;
 		case SELECT_MODE:
 			OmMouseEventUtils::PickToolAddToSelection(sdw,
@@ -120,9 +124,10 @@ private:
 
 		const OmSegID rootSegID = sdw.SegmentCache()->findRootID(segid);
 
-		OmFillTool fillTool(sdw.GetSegmentationPtr(), state_->getViewType(),
-							data_value, rootSegID);
-		fillTool.Fill(dataClickPoint);
+		v2d_->LineDrawer()->FillToolFill( sdw.GetSegmentationID(),
+										  dataClickPoint,
+										  data_value,
+										  rootSegID );
 
 		v2d_->doRedraw2d();
 	}

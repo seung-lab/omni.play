@@ -22,7 +22,7 @@ protected:
 		}
 	}
 
-private Q_SLOTS:
+private slots:
     void action(int state){
 		if (state == Qt::Checked) {
 			doAction(true);

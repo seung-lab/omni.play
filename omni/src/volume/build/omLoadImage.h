@@ -131,8 +131,8 @@ private:
 				++tileNum;
 				printf("%s %s of %s tiles copied",
 					   qPrintable(mMsg),
-					   om::string::humanizeNum(tileNum).c_str(),
-					   om::string::humanizeNum(totalTilesInSlice_).c_str());
+					   OmStringHelpers::CommaDeliminateNum(tileNum).c_str(),
+					   OmStringHelpers::CommaDeliminateNum(totalTilesInSlice_).c_str());
 			}
 		}
 	}

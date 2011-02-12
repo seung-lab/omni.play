@@ -87,9 +87,9 @@ private:
 		dend_ = hdf5->readDataset(datasetName, &numBytes);
 
 		printf("\tdendrogram is %s x %s (%s bytes)\n",
-			   om::string::humanizeNum(dendSizes_.x).c_str(),
-			   om::string::humanizeNum(dendSizes_.y).c_str(),
-			   om::string::humanizeNum(numBytes).c_str());
+			   OmStringHelpers::CommaDeliminateNum(dendSizes_.x).c_str(),
+			   OmStringHelpers::CommaDeliminateNum(dendSizes_.y).c_str(),
+			   OmStringHelpers::CommaDeliminateNum(numBytes).c_str());
 
 		return true;
 	}
@@ -109,9 +109,9 @@ private:
 		dendValues_ = hdf5->readDataset(datasetName, &numBytes);
 
 		printf("\tdendrogram values is %s x %s (%s bytes)\n",
-			   om::string::humanizeNum(dendValuesSizes_.x).c_str(),
-			   om::string::humanizeNum(dendValuesSizes_.y).c_str(),
-			   om::string::humanizeNum(numBytes).c_str());
+			   OmStringHelpers::CommaDeliminateNum(dendValuesSizes_.x).c_str(),
+			   OmStringHelpers::CommaDeliminateNum(dendValuesSizes_.y).c_str(),
+			   OmStringHelpers::CommaDeliminateNum(numBytes).c_str());
 
 		return true;
 	}

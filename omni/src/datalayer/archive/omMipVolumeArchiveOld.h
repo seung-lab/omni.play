@@ -87,8 +87,8 @@ private:
 
 	static void loadOldOmVolume(QDataStream& in, OmMipVolCoords& v)
 	{
-		in >> v.normToDataMat_;
-		in >> v.normToDataInvMat_;
+		in >> v.normToSpaceMat_;
+		in >> v.normToSpaceInvMat_;
 		in >> v.dataExtent_;
 		in >> v.dataResolution_;
 		in >> v.chunkDim_;

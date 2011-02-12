@@ -16,8 +16,8 @@
 class OmScreenPainter{
 public:
 	OmScreenPainter(OmView2d* v2d,
-					OmView2dState* state,
-					OmScreenShotSaver* s)
+					boost::shared_ptr<OmView2dState> state,
+					boost::shared_ptr<OmScreenShotSaver> s)
 		: v2d_(v2d)
 		, state_(state)
 		, screenShotSaver_(s)
@@ -42,8 +42,8 @@ public:
 
 private:
 	OmView2d* v2d_;
-	OmView2dState* state_;
-	OmScreenShotSaver* screenShotSaver_;
+	boost::shared_ptr<OmView2dState> state_;
+	boost::shared_ptr<OmScreenShotSaver> screenShotSaver_;
 	OmTimer elapsed_;
 	const ViewType viewType_;
 	const bool shouldDisplayInfo_;
@@ -53,9 +53,9 @@ private:
 		QPainter painter(v2d_);
 		painter.drawImage(QPoint(0, 0), screenImage);
 
-		QPen pen;
-		pen.setColor(getPenColor());
-		painter.setPen(pen);
+		QPen the_pen;
+		the_pen.setColor(getPenColor());
+		painter.setPen(the_pen);
 
 		const Vector2i& mousePoint = state_->GetMousePoint();
 
@@ -65,7 +65,7 @@ private:
 										  20,
 										  20),
 									5, 5);
-		}else if(showBrushSize()){
+		}else if(usingEditingTool()){
 			const float zoomFactor = state_->getZoomScale();
 			const int brushDiamater = zoomFactor *
 				state_->getBrushSize()->Diameter();
@@ -79,7 +79,7 @@ private:
 		}
 
 		if(v2d_->hasFocus()){
-			pen.setWidth(5);
+			the_pen.setWidth(5);
 		}
 
 		const Vector4i& vp = state_->getTotalViewport();
@@ -89,7 +89,7 @@ private:
 						 vp.height - 1);
 
 		if(shouldDisplayInfo_){
-			displayInformation(painter, pen);
+			displayInformation(painter);
 		}
 
 		if(Om2dPreferences::ShowCrosshairs()){
@@ -111,18 +111,11 @@ private:
 		}
 	}
 
-	void displayInformation(QPainter& painter, QPen& pen)
+	void displayInformation(QPainter& painter)
 	{
-		const bool showTimingInfo = false;
-
-		int yTop = 45;
-		if(showTimingInfo){
-			yTop = 65;
-		}
-
 		const int xoffset = 10;
-		const int yTopOfText = state_->getTotalViewport().height - yTop;
-		OmDisplayInfo di(painter, pen, yTopOfText, xoffset);
+		const int yTopOfText = state_->getTotalViewport().height - 65;
+		OmDisplayInfo di(painter, yTopOfText, xoffset);
 
 		if(state_->IsLevelLocked()){
 			di.paint("MIP Level Locked (Press L to unlock.)");
@@ -135,9 +128,7 @@ private:
 		di.paint(state_->getSliceDepth(), "Slice Depth");
 
 		printTileCount(di);
-		if(showTimingInfo){
-			printTimingInfo(di);
-		}
+		printTimingInfo(di);
 	}
 
 	void printTileCount(OmDisplayInfo& di)
@@ -157,11 +148,9 @@ private:
 	{
 		const double timeMS = elapsed_.ms_elapsed();
 
-		/*
 		if(!state_->getScribbling()) {
 			di.paint(timeMS, "ms", 1);
 		}
-		*/
 
 		di.paint(1000.0 / timeMS, "fps", 0);
 	}
@@ -200,13 +189,12 @@ private:
 		}
 	}
 
-	bool showBrushSize() const
+	bool usingEditingTool() const
 	{
 		switch(OmStateManager::GetToolMode()){
 		case ADD_VOXEL_MODE:
 		case SUBTRACT_VOXEL_MODE:
 		case FILL_MODE:
-		case SELECT_MODE:
 			return true;
 		default:
 			return false;

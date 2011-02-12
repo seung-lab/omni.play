@@ -1,7 +1,6 @@
 #ifndef LOCAL_PREF_FILES_IMPL_HPP
 #define LOCAL_PREF_FILES_IMPL_HPP
 
-#include "common/omString.hpp"
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
 
@@ -12,150 +11,150 @@
 
 class LocalPrefFilesImpl {
 public:
-    inline bool settingExists(const QString& setting)
-    {
-        if(prefFolder_.exists(getFileName(setting))){
-            return true;
-        }
-        return false;
-    }
+	inline bool settingExists(const QString& setting)
+	{
+		if(prefFolder_.exists(getFileName(setting))){
+			return true;
+		}
+		return false;
+	}
 
 // bool
-    inline bool readSettingBool(const QString& setting)
-    {
-        if(readSettingNumber<uint32_t>(setting)){
-            return true;
-        }
-        return false;
-    }
+	inline bool readSettingBool(const QString& setting)
+	{
+		if(readSettingNumber<uint32_t>(setting)){
+			return true;
+		}
+		return false;
+	}
 
-    inline void writeSettingBool(const QString& setting, const bool value){
-        writeSettingNumber<uint32_t>(setting, value);
-    }
+	inline void writeSettingBool(const QString& setting, const bool value){
+		writeSettingNumber<uint32_t>(setting, value);
+	}
 
 // number
-    template <typename T>
-    inline T readSettingNumber(const QString& setting)
-    {
-        QStringList lines = readFile(setting);
-        if(0 == lines.size()){
-            throw OmIoException("invalid preference found", setting);
-        }
+	template <typename T>
+	inline T readSettingNumber(const QString& setting)
+	{
+		QStringList lines = readFile(setting);
+		if(0 == lines.size()){
+			throw OmIoException("invalid preference found", setting);
+		}
 
-        return om::string::toNum<T>(lines[0].toStdString());
-    }
+		return om::StrToNum<T>(lines[0]);
+	}
 
-    template <typename T>
-    inline void writeSettingNumber(const QString& setting, const T value)
-    {
-        const QString fnp = getFileName(setting);
+	template <typename T>
+	inline void writeSettingNumber(const QString& setting, const T value)
+	{
+		const QString fnp = getFileName(setting);
 
-        QFile file(fnp);
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            throw OmIoException("could not write file", fnp);
-        }
+		QFile file(fnp);
+		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+			throw OmIoException("could not write file", fnp);
+		}
 
-        QTextStream out(&file);
-        out << QString::number(value);
-    }
+		QTextStream out(&file);
+		out << QString::number(value);
+	}
 
 // QString
-    inline QString readSettingQString(const QString& setting)
-    {
+	inline QString readSettingQString(const QString& setting)
+	{
         const QStringList lines = readFile(setting);
         if(1 != lines.size()){
-            throw OmIoException("no preference found", setting);
+			throw OmIoException("no preference found", setting);
         }
 
         return lines[0];
-    }
+	}
 
-    inline void writeSettingQString(const QString& setting,
-                                    const QString& value)
-    {
-        const QString fnp = getFileName(setting);
+	inline void writeSettingQString(const QString& setting,
+									const QString& value)
+	{
+		const QString fnp = getFileName(setting);
 
         QFile file(fnp);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            throw OmIoException("could not write file", fnp);
+			throw OmIoException("could not write file", fnp);
         }
 
         QTextStream out(&file);
-        out << value << endl;
-    }
+		out << value << endl;
+	}
 
 // QStringList
-    inline QStringList readSettingQStringList(const QString& setting){
-        return readFile(setting);
-    }
+	inline QStringList readSettingQStringList(const QString& setting){
+		return readFile(setting);
+	}
 
-    inline void writeSettingQStringList(const QString& setting,
-                                        const QStringList& values)
-    {
-        const QString fnp = getFileName(setting);
+	inline void writeSettingQStringList(const QString& setting,
+										const QStringList& values)
+	{
+		const QString fnp = getFileName(setting);
 
-        QFile file(fnp);
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            throw OmIoException("could not write file", fnp);
-        }
+		QFile file(fnp);
+		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+			throw OmIoException("could not write file", fnp);
+		}
 
-        QTextStream out(&file);
-        FOR_EACH(iter, values){
-            out << *iter << endl;
-        }
-    }
+		QTextStream out(&file);
+		FOR_EACH(iter, values){
+			out << *iter << endl;
+		}
+	}
 
 private:
 
-    QDir prefFolder_;
+	QDir prefFolder_;
 
-    LocalPrefFilesImpl() {
-        setupPrefFolder();
-    }
+	LocalPrefFilesImpl() {
+		setupPrefFolder();
+	}
 
-    inline void setupPrefFolder()
-    {
-        const QString omniFolderName = ".omni";
-        const QString homeFolder = QDir::homePath();
-        const QString omniFolderPath = homeFolder + "/" + omniFolderName;
+	inline void setupPrefFolder()
+	{
+		const QString omniFolderName = ".omni";
+		const QString homeFolder = QDir::homePath();
+		const QString omniFolderPath = homeFolder + "/" + omniFolderName;
 
-        QDir dir = QDir(omniFolderPath);
-        if(dir.exists()){
-            prefFolder_ = dir;
-            return;
-        }
+		QDir dir = QDir(omniFolderPath);
+		if(dir.exists()){
+			prefFolder_ = dir;
+			return;
+		}
 
-        if(QDir::home().mkdir(omniFolderName)){
-            printf("made folder %s\n", qPrintable(omniFolderPath));
-            prefFolder_ = dir;
-        } else {
-            throw OmIoException("could not create folder", omniFolderPath);
-        }
-    }
+		if(QDir::home().mkdir(omniFolderName)){
+			printf("made folder %s\n", qPrintable(omniFolderPath));
+			prefFolder_ = dir;
+		} else {
+			throw OmIoException("could not create folder", omniFolderPath);
+		}
+	}
 
-    inline QString getFileName(const QString& setting){
-        return prefFolder_.filePath(setting + ".txt");
-    }
+	inline QString getFileName(const QString& setting){
+		return prefFolder_.filePath(setting + ".txt");
+	}
 
-    inline QStringList readFile(const QString& setting)
-    {
-        const QString fnp = getFileName(setting);
+	inline QStringList readFile(const QString& setting)
+	{
+		const QString fnp = getFileName(setting);
 
-        QFile file(fnp);
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            throw OmIoException("could not read file", fnp);
-        }
+		QFile file(fnp);
+		if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+			throw OmIoException("could not read file", fnp);
+		}
 
-        QStringList lines;
-        QTextStream in(&file);
-        while (!in.atEnd()) {
-            lines.append(in.readLine());
-        }
+		QStringList lines;
+		QTextStream in(&file);
+		while (!in.atEnd()) {
+			lines.append(in.readLine());
+		}
 
-        return lines;
-    }
+		return lines;
+	}
 
-    friend class LocalPrefFiles;
+	friend class LocalPrefFiles;
 };
 
 #endif

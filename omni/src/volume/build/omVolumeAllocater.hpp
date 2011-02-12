@@ -44,7 +44,7 @@ private:
 		const uint64_t size = dims.x * dims.y * dims.z * bps;
 
 		std::cout << "mip " << level << ": size is: "
-				  << om::string::humanizeNum(size)
+				  << OmStringHelpers::CommaDeliminateNum(size)
 				  << " (" << dims.x
 				  << "," << dims.y
 				  << "," << dims.z

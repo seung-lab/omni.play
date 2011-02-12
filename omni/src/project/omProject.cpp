@@ -63,7 +63,7 @@ bool OmProject::IsOpen(){
 
 #include "actions/omActions.h"
 #include "segment/omSegmentSelected.hpp"
-#include "events/omEventManager.h"
+#include "system/events/omEventManager.h"
 #include "system/omGarbage.h"
 #include "utility/omThreadPoolManager.h"
 #include "zi/omThreads.h"
@@ -88,6 +88,7 @@ void OmProject::Close()
 	OmEventManager::Delete();
 	OmGarbage::Delete();
 	OmPreferences::Delete();
+	OmStateManager::Delete();
 	//OmLocalPreferences
 
 	//close project data

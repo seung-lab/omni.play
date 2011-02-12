@@ -77,11 +77,12 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel,
 {
 
 	const DataCoord data_coord = DataCoord(x, y, z);
+	const SpaceCoord space_coord = mVolume->Coords().DataToSpaceCoord(data_coord);
 
 	const int freshness = 0;
 
 	const OmTileCoord tileCoord(mipLevel,
-								data_coord,
+								space_coord,
 								mVolume,
 								freshness,
 								vgs_,
