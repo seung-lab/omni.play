@@ -1,5 +1,5 @@
 #include "project/omProject.h"
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
@@ -9,7 +9,7 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
 									  void* sender,
 									  const std::string& cmt )
 	: sdw_(sdw, 0)
-	, segmentCache_(sdw_.GetSegmentCache())
+	, segmentCache_(sdw_.SegmentCache())
 	, mSender(sender)
 	, mComment(cmt)
 	, oldSelectedIDs(segmentCache_->GetSelectedSegmentIds())

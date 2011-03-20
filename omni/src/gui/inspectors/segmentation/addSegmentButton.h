@@ -22,7 +22,7 @@ private:
 	{
 		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
 
-		OmSegment* newSeg = sdw.GetSegmentCache()->AddSegment();
+		OmSegment* newSeg = sdw.SegmentCache()->AddSegment();
 		mParent->rebuildSegmentLists(newSeg->GetSegmentationID(),
 									 newSeg->value());
 

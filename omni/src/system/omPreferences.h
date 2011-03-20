@@ -11,11 +11,11 @@
 #include "common/omCommon.h"
 #include "system/omEvents.h"
 #include "system/omPreferenceDefinitions.h"
-
-#include <QHash>
 #include "zi/omUtility.h"
 
-class OmProject;
+#include <QHash>
+
+class OmProjectImpl;
 
 class OmPreferences : private om::singletonBase<OmPreferences> {
 public:
@@ -82,10 +82,11 @@ private:
 	}
 
 	friend class zi::singleton<OmPreferences>;
+
 	friend QDataStream &operator<<(QDataStream & out, const OmPreferences & v );
 	friend QDataStream &operator>>(QDataStream & in, OmPreferences & v );
-	friend QDataStream &operator<<(QDataStream & out, const OmProject & p);
-	friend QDataStream &operator>>(QDataStream & in, OmProject & p);
+	friend QDataStream &operator<<(QDataStream & out, const OmProjectImpl& p);
+	friend QDataStream &operator>>(QDataStream & in, OmProjectImpl & p);
 };
 
 #endif

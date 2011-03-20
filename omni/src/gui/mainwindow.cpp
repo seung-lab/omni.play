@@ -1,20 +1,20 @@
+#include "actions/omActions.h"
 #include "common/omException.h"
-#include "gui/groupsTable/groupsTable.h"
 #include "gui/cacheMonitorDialog.h"
+#include "gui/groupsTable/groupsTable.h"
 #include "gui/menubar.h"
 #include "gui/preferences/preferences.h"
 #include "gui/toolbars/toolbarManager.h"
+#include "gui/widgets/omNewFileDialog.hpp"
 #include "mainwindow.h"
 #include "myInspectorWidget.h"
 #include "project/omProject.h"
-#include "actions/omActions.hpp"
 #include "recentFileList.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
-#include "system/omProjectData.h"
 #include "system/omStateManager.h"
-#include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
+#include "viewGroup/omViewGroupState.h"
 
 MainWindow::MainWindow()
 	: prog_dialog(this)
@@ -69,14 +69,13 @@ void MainWindow::newProject()
 			return;
 		}
 
-		QString fileName = QFileDialog::getSaveFileName(this, tr("New Project"));
-
-		if (fileName == NULL) {
+		OmNewFileDialog diag(this);
+		const QString fnp = diag.GetNewFileName();
+		if(NULL == fnp){
 			return;
 		}
 
-		QString fileNameAndPath = OmProject::New( fileName );
-
+		const QString fileNameAndPath = OmProject::New(fnp);
 		updateGuiFromProjectLoadOrOpen( fileNameAndPath );
 
 	} catch(OmException & e) {
@@ -153,7 +152,6 @@ void MainWindow::addSegmentationToVolume()
 /* returns false if New/Open action is cancelled by user */
 bool MainWindow::closeProjectIfOpen()
 {
-
 	if (!isProjectOpen() ) {
 		return true;
 	}
@@ -421,7 +419,7 @@ void MainWindow::windowTitleSet(QString title)
 {
 	QString str = "Omni - " + title;
 
-	if( OmProjectData::IsReadOnly() ){
+	if( OmProject::IsReadOnly() ){
 		str = "[READ-ONLY] " + str;
 	}
 

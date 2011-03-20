@@ -13,13 +13,15 @@
 
 class OmMeshWriterV2{
 private:
-	OmSegmentation* seg_;
+	OmSegmentation *const seg_;
+	const double threshold_;
 	OmMeshFilePtrCache* filePtrCache_;
 
 public:
-	OmMeshWriterV2(OmSegmentation* seg)
+	OmMeshWriterV2(OmSegmentation* seg, const double threshold)
 		: seg_(seg)
-		, filePtrCache_(seg->MeshManager()->FilePtrCache())
+		, threshold_(threshold)
+		, filePtrCache_(seg->MeshManager(threshold_)->FilePtrCache())
 	{}
 
 	~OmMeshWriterV2(){
@@ -34,14 +36,14 @@ public:
 		filePtrCache_->Stop();
 	}
 
-	bool Contains(const OmSegID segID, const OmMipChunkCoord& coord)
+	bool Contains(const OmSegID segID, const OmChunkCoord& coord)
 	{
 		OmMeshChunkAllocTableV2* chunk_table =
 			filePtrCache_->GetAllocTable(coord);
 		return chunk_table->Contains(segID);
 	}
 
-	bool WasMeshed(const OmSegID segID, const OmMipChunkCoord& coord)
+	bool WasMeshed(const OmSegID segID, const OmChunkCoord& coord)
 	{
 		OmMeshChunkAllocTableV2* chunk_table =
 			filePtrCache_->GetAllocTable(coord);
@@ -55,7 +57,7 @@ public:
 		return entry.wasMeshed;
 	}
 
-	bool HasData(const OmSegID segID, const OmMipChunkCoord& coord)
+	bool HasData(const OmSegID segID, const OmChunkCoord& coord)
 	{
 		OmMeshChunkAllocTableV2* chunk_table =
 			filePtrCache_->GetAllocTable(coord);
@@ -75,7 +77,7 @@ public:
 
 	// Save will take ownership of mesh data
 	template <typename U>
-	void Save(const OmSegID segID, const OmMipChunkCoord& coord,
+	void Save(const OmSegID segID, const OmChunkCoord& coord,
 			  const U data, const om::ShouldBufferWrites buffferWrites,
 			  const om::AllowOverwrite allowOverwrite)
 	{
@@ -87,8 +89,17 @@ public:
 													   data,
 													   allowOverwrite);
 
-		if(om::BUFFER_WRITES == buffferWrites){
+		static const uint32_t maxNumberTasks = 500;
+		const uint32_t curNumberTasks = filePtrCache_->NumTasks();
+		if(curNumberTasks > maxNumberTasks){
+			std::cout << "write back queue size " << curNumberTasks << "\n";
+		}
+
+		if(om::BUFFER_WRITES == buffferWrites &&
+		   curNumberTasks < maxNumberTasks)
+		{
 			filePtrCache_->AddTaskBack(task);
+
 		} else {
 			task->run();
 		}

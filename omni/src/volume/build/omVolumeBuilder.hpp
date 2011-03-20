@@ -1,197 +1,147 @@
 #ifndef OM_VOLUME_BUILDER_HPP
 #define OM_VOLUME_BUILDER_HPP
 
-#include "volume/build/omVolumeImporter.hpp"
-#include "volume/omVolumeData.hpp"
 #include "utility/sortHelpers.h"
-#include "common/omDebug.h"
-#include "datalayer/hdf5/omHdf5.h"
-#include "datalayer/omDataLayer.h"
-#include "datalayer/omDataPath.h"
-#include "datalayer/omDataPaths.h"
-#include "datalayer/omDataWrapper.h"
-#include "datalayer/omIDataReader.h"
-#include "system/omProjectData.h"
-#include "utility/omTimer.h"
-#include "volume/omMipVolume.h"
+#include "volume/build/omVolumeBuilderHdf5.hpp"
+#include "volume/build/omVolumeBuilderImages.hpp"
+#include "volume/build/omVolumeBuilderWatershed.hpp"
 
 #include <QFileInfo>
-#include <QImage>
 
 template <typename VOL>
 class OmVolumeBuilder {
 private:
 	VOL *const vol_;
-	om::Affinity aff_;
-
 	std::vector<QFileInfo> files_;
-	bool sourceFilesWereSet;
+	const QString hdf5path_;
+
+	enum ImportType {
+		HDF5,
+		IMAGES,
+		WATERSHED,
+		UNKNOWN
+	};
+	ImportType importType_;
 
 public:
-	OmVolumeBuilder(VOL* vol, const om::Affinity aff=om::NO_AFFINITY)
+	OmVolumeBuilder(VOL* vol,
+					const std::vector<QFileInfo>& files,
+					const QString& hdf5path)
 		: vol_(vol)
-		, aff_(aff)
-		, sourceFilesWereSet(false)
+		, files_(files)
+		, hdf5path_(hdf5path)
+		, importType_(UNKNOWN)
 	{
-		printf("2 aff_ %i\n", aff_);
+		setup();
 	}
 
-	void SetSourceFilenamesAndPaths(const std::vector<QFileInfo>& srcFiles)
+	OmVolumeBuilder(VOL* vol,
+					const std::vector<QFileInfo>& files)
+		: vol_(vol)
+		, files_(files)
+		, hdf5path_("")
+		, importType_(UNKNOWN)
 	{
-		files_ = srcFiles;
-		SortHelpers::SortNaturally(files_);
-		sourceFilesWereSet = true;
+		setup();
 	}
 
-	void DeleteVolumeData()
+	void Build()
 	{
-		OmDataPath path(vol_->GetDirectoryPath());
+		boost::shared_ptr<OmVolumeBuilderBase<VOL> > builder;
 
-		OmProjectData::DeleteInternalData(path);
+		switch(importType_){
+		case HDF5:
+			builder = boost::make_shared<OmVolumeBuilderHdf5<VOL> >(vol_,
+																	files_[0],
+																	hdf5path_);
+			break;
+		case IMAGES:
+			builder = boost::make_shared<OmVolumeBuilderImages<VOL> >(vol_,
+																	  files_);
+			break;
+		case WATERSHED:
+			builder = boost::make_shared<OmVolumeBuilderWatershed<VOL> >(vol_,
+																		 files_[0]);
+			break;
+		default:
+			throw OmArgException("unknown type");
+		};
+
+		builder->Build();
 	}
 
-	void Build(OmDataPath & dataset)
+	void Build(const om::AffinityGraph aff)
 	{
-		//if source data valid
-		if(!isSourceValid()) {
-			throw OmIoException("source files not found");
+		if(HDF5 != importType_){
+			throw OmArgException("first file to import is not HDF5");
 		}
 
-		//unbuild
-		vol_->SetBuildState(MIPVOL_BUILDING);
+		OmVolumeBuilderHdf5<VOL> builder(vol_, files_[0], hdf5path_, aff);
+		builder.Build();
+	}
 
-		//update properties
-		UpdateMipProperties(dataset);
-
-		//delete old
-		DeleteVolumeData();
-
-		//copy source data
-		if (!ImportSourceData(dataset)) {
-			throw OmIoException("could not import source files");
+	void BuildWatershed()
+	{
+		if(WATERSHED != importType_){
+			throw OmArgException("first file to import is not Watershed");
 		}
 
-		vol_->getVolData()->downsample(vol_);
-
-		//build volume
-		if (!BuildThreadedVolume()) {
-			throw OmIoException("volume build failed");
-		}
-
-		//build complete
-		vol_->SetBuildState(MIPVOL_BUILT);
+		OmVolumeBuilderWatershed<VOL> builder(vol_, files_[0]);
+		builder.Build();
 	}
 
 private:
-
-	bool ImportSourceData(const OmDataPath& path)
+	void setup()
 	{
-		OmVolumeImporter<VOL> importer(vol_, path,
-									   areImportFilesImages(),
-									   files_, aff_);
-		return importer.Import();
+		sortNaturally();
+		setImportType();
+		isSourceValid();
 	}
 
-	bool BuildThreadedVolume()
-	{
-		OmTimer timer;
-
-		try{
-			vol_->doBuildThreadedVolume();
-		} catch(...){
-			return false;
-		}
-
-		printf("OmVolumeBuilder: BuildThreadedVolume() done : %.6f secs\n",
-			   timer.s_elapsed());
-
-		return true;
+	void sortNaturally(){
+		SortHelpers::SortNaturally(files_);
 	}
 
-	bool areImportFilesImages()
+	void setImportType()
 	{
-		if( files_[0].fileName().endsWith(".h5", Qt::CaseInsensitive) ||
-			files_[0].fileName().endsWith(".hdf5", Qt::CaseInsensitive)){
-			return false;
+		if(files_.empty()){
+			throw OmIoException("no source files");
 		}
 
-		return true;
+		const QString fnp = files_[0].fileName();
+
+		if(fnp.endsWith(".h5", Qt::CaseInsensitive) ||
+		   fnp.endsWith(".hdf5", Qt::CaseInsensitive))
+		{
+			importType_ = HDF5;
+			return;
+		}
+
+		if(fnp.endsWith(".watershed", Qt::CaseInsensitive)){
+			importType_ = WATERSHED;
+			return;
+		}
+
+		importType_ = IMAGES;
 	}
 
-	Vector3i get_dims(const OmDataPath& dataset )
+	void isSourceValid()
 	{
-		if(areImportFilesImages()){
-			QImage img(files_[0].absoluteFilePath());
-			Vector3i dims(img.width(), img.height(), files_.size());
-			printf("dims are %dx%dx%d\n", DEBUGV3(dims));
-			return dims;
+		if(files_.empty()){
+			throw OmIoException("no source files");
 		}
 
-		return get_dims_hdf5(dataset);
-	}
-
-	Vector3i get_dims_hdf5(const OmDataPath& dataset )
-	{
-		if(files_.size() != 1){
-			throw OmArgException("expected one hdf5 file");
-		}
-
-		OmIDataReader* hdf5reader =
-			OmDataLayer::getReader(files_[0].filePath().toStdString(),
-								   true, aff_);
-
-		hdf5reader->open();
-
-		//get dims of image
-		Vector3i dims;
-		if(hdf5reader->dataset_exists(dataset)){
-			dims = hdf5reader->getChunkedDatasetDims( dataset );
-		} else {
-			dims = hdf5reader->getChunkedDatasetDims( OmDataPaths::getDefaultDatasetName() );
-		}
-
-		//debug(hfd5image, "dims are %i,%i,%i\n", DEBUGV3(dims));
-
-		hdf5reader->close();
-
-		return dims;
-	}
-
-	void UpdateMipProperties(const OmDataPath& dataset)
-	{
-		const Vector3i source_dims = get_dims(dataset);
-
-		if (vol_->GetDataDimensions() != source_dims) {
-			//printf("OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS\n");
-
-			vol_->SetDataDimensions(source_dims);
-		}
-
-		if(vol_->GetChunkDimension() % 2){
-			throw OmFormatException("Chunk dimensions must be even.");
-		}
-
-		vol_->UpdateRootLevel();
-	}
-
-	QFileInfoList GetSourceFilenamesAndPaths()
-	{
-		return files_;
-	}
-
-	bool isSourceValid()
-	{
-		if( files_.empty() ){
-			return false;
-		}
-
-		foreach( const QFileInfo & fi, files_ ){
-			if( !fi.exists() ){
-				return false;
+		if(HDF5 == importType_ || WATERSHED == importType_){
+			if(1 != files_.size()){
+				throw OmIoException("only import one hdf5/watershed file at a time");
 			}
 		}
 
-		return true;
+		foreach(const QFileInfo& file, files_){
+			if(!file.exists()){
+				throw OmIoException("source file not found", file.fileName());
+			}
+		}
 	}
 };
 

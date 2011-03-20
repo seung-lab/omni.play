@@ -1,6 +1,7 @@
 #ifndef MST_VIEWER_HPP
 #define MST_VIEWER_HPP
 
+#include "utility/segmentationDataWrapper.hpp"
 #include <QtGui>
 
 class MstViewerImpl : public QTableWidget {

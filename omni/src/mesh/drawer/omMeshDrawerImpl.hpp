@@ -6,6 +6,7 @@
 #include "common/omGl.h"
 #include "mesh/drawer/omMeshPlan.h"
 #include "mesh/omMipMesh.h"
+#include "mesh/omMipMeshManagers.hpp"
 #include "mesh/omVolumeCuller.h"
 #include "segment/omSegmentPointers.h"
 #include "segment/omSegmentUtils.hpp"
@@ -13,10 +14,10 @@
 #include "system/omGarbage.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 #include "view3d/om3dPreferences.hpp"
 #include "viewGroup/omViewGroupState.h"
-#include "volume/omMipChunk.h"
+#include "chunks/omChunk.h"
 
 class OmMeshDrawerImpl {
 private:
@@ -38,7 +39,7 @@ public:
 					 OmMeshPlan* sortedSegments)
 		: segmentation_(seg)
 		, vgs_(vgs)
-		, mSegmentCache(segmentation_->GetSegmentCache())
+		, mSegmentCache(segmentation_->SegmentCache())
 		, drawOptions_(drawOptions)
 		, sortedSegments_(sortedSegments)
 		, redrawNeeded_(false)
@@ -56,7 +57,7 @@ public:
 
 		//transform to normal frame
 		glPushMatrix();
-		glMultMatrixf(segmentation_->GetNormToSpaceMatrix().ml);
+		glMultMatrixf(segmentation_->Coords().GetNormToSpaceMatrix().ml);
 
 		//draw volume axis
 		if(checkDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
@@ -126,10 +127,10 @@ private:
 		}
 	}
 
-	void drawSegment(OmSegment* seg, const OmMipChunkCoord& coord)
+	void drawSegment(OmSegment* seg, const OmChunkCoord& coord)
 	{
 		OmMipMeshPtr mesh;
-		segmentation_->GetMesh(mesh, coord, seg->value());
+		segmentation_->MeshManagers()->GetMesh(mesh, coord, seg->value(), 1);
 
 		if(!mesh){
 			redrawNeeded_ = true;
@@ -157,7 +158,7 @@ private:
 	}
 
 	// draw chunk bounding box--broken? (purcaro)
-	void drawClippedExtent(OmMipChunkPtr p_chunk)
+	void drawClippedExtent(OmChunkPtr chunk)
 	{
 		return; // FIXME!
 
@@ -167,7 +168,7 @@ private:
 		//disable lighting for lines
 		glDisable(GL_LIGHTING);
 
-		const NormBbox & clippedNormExtent = p_chunk->GetClippedNormExtent();
+		const NormBbox& clippedNormExtent = chunk->Mipping().GetClippedNormExtent();
 
 		//translate and scale to chunk norm extent
 		const Vector3f translate = clippedNormExtent.getMin();

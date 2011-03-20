@@ -5,8 +5,8 @@
 #include "datalayer/fs/omFileNames.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterTaskV2.hpp"
 #include "utility/omLockedPODs.hpp"
-#include "volume/omMipChunk.h"
-#include "volume/omMipChunkCoord.h"
+#include "chunks/omChunk.h"
+#include "chunks/omChunkCoord.h"
 #include "zi/omMutex.h"
 
 class OmMeshChunkDataWriterV2{
@@ -15,8 +15,8 @@ private:
 	static const int defaultFileExpansionFactor = 5;
 
 private:
-	OmSegmentation* seg_;
-	const OmMipChunkCoord& coord_;
+	OmSegmentation *const seg_;
+	const OmChunkCoord& coord_;
 	const double threshold_;
 	const QString fnp_;
 
@@ -25,11 +25,12 @@ private:
 	zi::rwmutex lock_;
 
 public:
-	OmMeshChunkDataWriterV2(OmSegmentation* seg, const OmMipChunkCoord& coord)
+	OmMeshChunkDataWriterV2(OmSegmentation* seg, const OmChunkCoord& coord,
+							const double threshold)
 		: seg_(seg)
 		, coord_(coord)
-		, threshold_(1.)
-		, fnp_(filePath(threshold_))
+		, threshold_(threshold)
+		, fnp_(filePath())
 		, curEndOfFile_(0)
 	{
 		openOrCreateFile();
@@ -128,10 +129,15 @@ private:
 		}
 	}
 
-	QString filePath(const double threshold)
+	QString filePath()
 	{
 		const QString volPath =
-			OmFileNames::MakeMeshChunkFolderPath(seg_, threshold, coord_);
+			OmFileNames::GetMeshChunkFolderPath(seg_, threshold_, coord_);
+
+		if(!QDir(volPath).exists()){
+			OmFileNames::MakeMeshChunkFolderPath(seg_, threshold_, coord_);
+		}
+
 		const QString fullPath = QString("%1meshData.ver2")
 			.arg(volPath);
 		return fullPath;

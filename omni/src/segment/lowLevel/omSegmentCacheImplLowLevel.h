@@ -61,7 +61,7 @@ public:
 	quint32 getPageSize();
 	uint32_t getMaxValue();
 
-	OmSegmentCache* GetSegmentCache();
+	OmSegmentCache* SegmentCache();
 
 protected:
 	OmSegmentation *const segmentation_;

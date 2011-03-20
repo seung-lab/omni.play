@@ -1,6 +1,5 @@
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
 #include "system/cache/omCacheManager.h"
-#include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentLists.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
@@ -14,12 +13,10 @@ OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel(OmSegmentation * segmenta
 	, mNumSegs(0)
 	, mAllSelected(false)
 	, mAllEnabled(false)
-{
-}
+{}
 
 OmSegmentCacheImplLowLevel::~OmSegmentCacheImplLowLevel()
-{
-}
+{}
 
 OmSegment * OmSegmentCacheImplLowLevel::findRoot( OmSegment * segment )
 {
@@ -213,7 +210,7 @@ void OmSegmentCacheImplLowLevel::doSelectedSetRemove( const OmSegID segID)
 
 void OmSegmentCacheImplLowLevel::addToRecentMap( const OmSegID segID )
 {
-	segmentation_->GetSegmentLists()->TouchRecentList(segID);
+	segmentation_->SegmentLists()->TouchRecentList(segID);
 }
 
 QString OmSegmentCacheImplLowLevel::getSegmentName( OmSegID segID )
@@ -275,7 +272,7 @@ void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)
 	mSegmentGraph.growGraphIfNeeded(newSeg);
 }
 
-OmSegmentCache* OmSegmentCacheImplLowLevel::GetSegmentCache()
+OmSegmentCache* OmSegmentCacheImplLowLevel::SegmentCache()
 {
-	return segmentation_->GetSegmentCache();
+	return segmentation_->SegmentCache();
 }

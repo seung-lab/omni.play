@@ -1,5 +1,5 @@
 #include "gui/inspectors/inspectorProperties.h"
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "common/omDebug.h"
 #include "gui/inspectors/segObjectInspector.h"
 #include "gui/widgets/omSegmentContextMenu.h"
@@ -134,7 +134,7 @@ void OmSegmentContextMenu::unselectOthers()
 void OmSegmentContextMenu::mergeSegments()
 {
 	const OmSegIDsSet& ids =
-		sdw_.GetSegmentCache()->GetSelectedSegmentIds();
+		sdw_.SegmentCache()->GetSelectedSegmentIds();
 	OmActions::JoinSegments(sdw_.GetSegmentationID(), ids);
 }
 
@@ -173,11 +173,11 @@ void OmSegmentContextMenu::randomizeColor()
 
 void OmSegmentContextMenu::randomizeSegmentColor()
 {
-        OmSegment* segment = sdw_.getSegment();
-        segment->reRandomizeColor();
+	OmSegment* segment = sdw_.getSegment();
+	segment->reRandomizeColor();
 
-        OmCacheManager::TouchFresheness();
-        OmEvents::Redraw2d();
+	OmCacheManager::TouchFresheness();
+	OmEvents::Redraw2d();
 }
 
 void OmSegmentContextMenu::setValid()
@@ -219,7 +219,7 @@ void OmSegmentContextMenu::printChildren()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
 	if (sdw_.IsSegmentValid()){
-		OmSegmentCache* segCache = sdw_.GetSegmentCache();
+		OmSegmentCache* segCache = sdw_.SegmentCache();
 		OmSegmentIterator iter(segCache);
 		iter.iterOverSegmentID(sdw_.FindRootID());
 
@@ -243,26 +243,27 @@ void OmSegmentContextMenu::printChildren()
 
 void OmSegmentContextMenu::addGroups()
 {
-        boost::shared_ptr<OmGroups> groups = sdw_.GetSegmentation().GetGroups();
-        OmGroupIDsSet set = groups->GetGroups(sdw_.getSegment()->getRootSegID());
-        OmGroupID firstID = 0;
+	OmGroups* groups = sdw_.GetSegmentation().Groups();
+	OmGroupIDsSet set = groups->GetGroups(sdw_.FindRootID());
+	OmGroupID firstID = 0;
 	QString groupsStr = "Groups: ";
-        foreach(OmGroupID id, set) {
-                if(!firstID) {
-                        firstID = id;
-                }
-                OmGroup & group = groups->GetGroup(id);
-                groupsStr += group.GetName() + " + ";
 
-                printf("here\n");
-        }
+	foreach(OmGroupID id, set) {
+		if(!firstID) {
+			firstID = id;
+		}
+		OmGroup & group = groups->GetGroup(id);
+		groupsStr += group.GetName() + " + ";
+
+		printf("here\n");
+	}
 	addAction(groupsStr);
 }
 
 void OmSegmentContextMenu::addDisableAction()
 {
 	const OmSegID segid = sdw_.FindRootID();
-	OmSegmentCache* segCache = sdw_.GetSegmentCache();
+	OmSegmentCache* segCache = sdw_.SegmentCache();
 
 	if(segCache->isSegmentEnabled(segid)) {
 		addAction("Disable Segment", this, SLOT(disableSegment()));
@@ -272,7 +273,7 @@ void OmSegmentContextMenu::addDisableAction()
 void OmSegmentContextMenu::disableSegment()
 {
 	const OmSegID segid = sdw_.FindRootID();
-	OmSegmentCache* segCache = sdw_.GetSegmentCache();
+	OmSegmentCache* segCache = sdw_.SegmentCache();
 
 	segCache->setSegmentEnabled(segid, false);
 }

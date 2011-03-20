@@ -1,4 +1,4 @@
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 #include "gui/toolbars/dendToolbar/groupButtonTag.h"
 #include "common/omDebug.h"
 #include "utility/dataWrappers.h"
@@ -25,7 +25,7 @@ void GroupButtonTag::doAction()
 	OmSegmentation & seg = sdw.GetSegmentation();
 
 	OmActions::CreateOrDeleteSegmentGroup(seg.GetID(),
-										  seg.GetSegmentCache()->GetSelectedSegmentIds(),
+										  seg.SegmentCache()->GetSelectedSegmentIds(),
 										  mParent->getGroupNameFromGUI(),
 										  true);
 

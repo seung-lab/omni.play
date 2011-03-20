@@ -60,10 +60,9 @@ private:
 
 	void updateValidBar(const SegmentationDataWrapper& sdw)
 	{
-		const uint64_t valid = sdw.GetSegmentLists()->Valid().VoxelCount();
-		const uint64_t working = sdw.GetSegmentLists()->Working().VoxelCount();
-		const uint64_t uncertain = sdw.GetSegmentLists()->Uncertain().VoxelCount();
-
+		const uint64_t valid = sdw.SegmentLists()->Valid().VoxelCount();
+		const uint64_t working = sdw.SegmentLists()->Working().VoxelCount();
+		const uint64_t uncertain = sdw.SegmentLists()->Uncertain().VoxelCount();
 
 		mValidProgress->setMaximum(valid + working + uncertain);
 		mValidProgress->setValue(valid);

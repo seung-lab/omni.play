@@ -1,14 +1,15 @@
 #ifndef OM_VOXEL_SET_VALUE_ACTION_IMPL_HPP
 #define OM_VOXEL_SET_VALUE_ACTION_IMPL_HPP
 
+#include "project/omSegmentationManager.h"
 #include "common/omCommon.h"
-#include "project/omProject.h"
 #include "common/omCommon.h"
 #include "omVoxelSetValueAction.h"
+#include "project/omProject.h"
+#include "project/omProjectVolumes.h"
 #include "segment/omSegmentSelected.hpp"
 #include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
 
 class OmVoxelSetValueActionImpl {
 private:
@@ -22,7 +23,9 @@ private:
 	OmSegID mNewValue;
 
 public:
-	OmVoxelSetValueActionImpl() {}
+	OmVoxelSetValueActionImpl()
+	{}
+
 	OmVoxelSetValueActionImpl(const OmID segmentationId,
 							  const DataCoord& rVoxel,
 							  const OmSegID value)
@@ -57,7 +60,7 @@ public:
 	void Execute()
 	{
 		//set voxel
-		OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
+		OmSegmentation & r_segmentation = OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
 
 		//modified voxels
 		std::set<DataCoord> edited_voxels;
@@ -72,7 +75,7 @@ public:
 	void Undo()
 	{
 		//set voxel
-		OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
+		OmSegmentation & r_segmentation = OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
 
 		//modified voxels
 		std::set<DataCoord> edited_voxels;

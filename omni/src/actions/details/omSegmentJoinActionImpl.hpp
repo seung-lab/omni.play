@@ -6,7 +6,6 @@
 #include "segment/omSegmentCache.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
 
 class OmSegmentJoinActionImpl {
 public:
@@ -23,14 +22,14 @@ public:
 	{
 		SegmentationDataWrapper sdw(mSegmentationId);
 		mSelectedSegmentIds =
-			sdw.GetSegmentCache()->JoinTheseSegments(mSelectedSegmentIds);
+			sdw.SegmentCache()->JoinTheseSegments(mSelectedSegmentIds);
 	}
 
 	void Undo()
 	{
 		SegmentationDataWrapper sdw(mSegmentationId);
 		mSelectedSegmentIds =
-			sdw.GetSegmentCache()->UnJoinTheseSegments(mSelectedSegmentIds);
+			sdw.SegmentCache()->UnJoinTheseSegments(mSelectedSegmentIds);
 	}
 
 	std::string Description()

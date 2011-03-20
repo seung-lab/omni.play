@@ -1,57 +1,53 @@
-#include "segment/io/omValidGroupNum.hpp"
-#include "segment/io/omUserEdges.hpp"
-#include "mesh/omMipMeshManager.h"
+#include "datalayer/archive/omMipVolumeArchive.h"
+#include "datalayer/archive/omMipVolumeArchiveOld.h"
 #include "common/omException.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "datalayer/archive/omDataArchiveProject.h"
-#include "datalayer/omIDataReader.h"
-#include "datalayer/omIDataWriter.h"
-#include "segment/io/omMST.h"
 #include "datalayer/upgraders/omUpgraders.hpp"
+#include "mesh/omMipMeshManagers.hpp"
 #include "project/omProject.h"
+#include "project/omProjectImpl.hpp"
+#include "project/omProjectVolumes.h"
+#include "project/omSegmentationManager.h"
+#include "segment/io/omMST.h"
+#include "segment/io/omUserEdges.hpp"
+#include "segment/io/omValidGroupNum.hpp"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "segment/omSegmentEdge.h"
 #include "system/omGroup.h"
 #include "system/omGroups.h"
 #include "system/omPreferences.h"
-#include "system/omProjectData.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolumeData.hpp"
 
 #include <QDataStream>
 
-//TODO: Someday, delete subsamplemode and numtoplevel variables
-
-static const int Omni_Version = 21;
+static const int Omni_Version = 25;
 static const QString Omni_Postfix("OMNI");
 static int fileVersion_;
 
-void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
-									   OmProject* project)
+void OmDataArchiveProject::ArchiveRead(const QString& fnp, OmProjectImpl* project)
 {
-	int size;
+	QFile file(fnp);
+	if(!file.open(QIODevice::ReadOnly)) {
+		throw OmIoException("could not open", fnp);
+	}
 
-	OmDataWrapperPtr dw =
-		OmProjectData::GetProjectIDataReader()->
-		readDataset(path, &size);
-
-	QByteArray ba = QByteArray::fromRawData(dw->getPtr<char>(), size);
-	QDataStream in(&ba, QIODevice::ReadOnly);
+	QDataStream in(&file);
 	in.setByteOrder(QDataStream::LittleEndian);
 	in.setVersion(QDataStream::Qt_4_6);
 
 	in >> fileVersion_;
-	OmProjectData::setFileVersion(fileVersion_);
+	OmProject::setFileVersion(fileVersion_);
 	printf("Omni file version is %d\n", fileVersion_);
 
 	if(fileVersion_ < 10 || fileVersion_ > Omni_Version){
-		throw OmIoException("can not open file: file version is ("
-							+ om::NumToStr(fileVersion_)
-							+"), but Omni expecting ("
-							+ om::NumToStr(Omni_Version)
-							+ ")");
+		const QString err =
+			QString("can not open file: file version is (%1), but Omni expecting (%2)")
+			.arg(fileVersion_)
+			.arg(Omni_Version);
+		throw OmIoException(err);
 	}
 
 	in >> (*project);
@@ -64,12 +60,18 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 	}
 
 	if(fileVersion_ < Omni_Version){
-		Upgrade(path, project);
+		Upgrade(fnp, project);
+	}
+
+	FOR_EACH(iter, OmProject::Volumes().Segmentations().GetValidSegmentationIds()){
+		const SegmentationDataWrapper sdw(*iter);
+		if(sdw.IsBuilt()){
+			sdw.GetSegmentation().MeshManagers()->Load();
+		}
 	}
 }
 
-void OmDataArchiveProject::Upgrade(const OmDataPath& path,
-								   OmProject* project)
+void OmDataArchiveProject::Upgrade(const QString& fnp, OmProjectImpl* project)
 {
 	if(fileVersion_ < 14){
 		OmUpgraders::to14();
@@ -82,44 +84,67 @@ void OmDataArchiveProject::Upgrade(const OmDataPath& path,
 		OmUpgraders::to20();
 	}
 
-	ArchiveWrite(path, project);
+	ArchiveWrite(fnp, project);
 }
 
-void OmDataArchiveProject::ArchiveWrite(const OmDataPath& path,
-										OmProject* project)
+void OmDataArchiveProject::moveOldMeshMetadataFile(OmSegmentation* segmentation)
 {
-	QByteArray ba;
-	QDataStream out(&ba, QIODevice::WriteOnly);
+	const QString oldFileName =
+		OmFileNames::MeshMetadataFileOld(segmentation);
+
+	QFile oldFile(oldFileName);
+	if(oldFile.exists()){
+		const QString newFileName =
+			OmFileNames::MeshMetadataFilePerThreshold(segmentation, 1);
+
+		OmFileHelpers::MoveFile(oldFileName, newFileName);
+	}
+}
+
+void OmDataArchiveProject::ArchiveWrite(const QString& fnp, OmProjectImpl* project)
+{
+	QFile file(fnp);
+	if(!file.open(QIODevice::WriteOnly)) {
+		throw OmIoException("could not open", fnp);
+	}
+
+	QDataStream out(&file);
 	out.setByteOrder(QDataStream::LittleEndian);
 	out.setVersion(QDataStream::Qt_4_6);
 
-	OmProjectData::setFileVersion(Omni_Version);
+	OmProject::setFileVersion(Omni_Version);
 
 	out << Omni_Version;
 	out << (*project);
 	out << Omni_Postfix;
-
-	OmProjectData::GetIDataWriter()->
-		writeDataset( path,
-					  ba.size(),
-					  OmDataWrapperRaw(ba.constData()));
-
-	OmProjectData::GetIDataWriter()->flush();
 }
 
-QDataStream &operator<<(QDataStream& out, const OmProject& p)
+QDataStream &operator<<(QDataStream& out, const OmProjectImpl& p)
 {
 	out << OmPreferences::instance();
-	out << p.mChannelManager;
-	out << p.mSegmentationManager;
+	out << p.volumes_;
 	return out;
 }
 
-QDataStream &operator>>(QDataStream& in, OmProject& p)
+QDataStream &operator>>(QDataStream& in, OmProjectImpl& p)
 {
 	in >> OmPreferences::instance();
-	in >> p.mChannelManager;
-	in >> p.mSegmentationManager;
+	in >> p.volumes_;
+
+	return in;
+}
+
+QDataStream &operator<<(QDataStream& out, const OmProjectVolumes& p)
+{
+	out << *p.channels_;
+	out << *p.segmentations_;
+	return out;
+}
+
+QDataStream &operator>>(QDataStream& in, OmProjectVolumes& p)
+{
+	in >> *p.channels_;
+	in >> *p.segmentations_;
 
 	return in;
 }
@@ -147,6 +172,18 @@ QDataStream &operator>>(QDataStream& in, OmPreferences& p)
 /**
  * Channel
  */
+
+QDataStream &operator<<(QDataStream& out, const OmChannelManager& cm)
+{
+	out << cm.mChannelManager;
+	return out;
+}
+
+QDataStream &operator>>(QDataStream& in, OmChannelManager& cm)
+{
+	in >> cm.mChannelManager;
+	return in;
+}
 
 QDataStream &operator<<(QDataStream& out, const OmGenericManager<OmChannel>& cm)
 {
@@ -180,49 +217,54 @@ QDataStream &operator>>(QDataStream& in, OmGenericManager<OmChannel>& cm)
 	return in;
 }
 
-QDataStream &operator<<(QDataStream& out, const OmChannel& chan)
+QDataStream& operator<<(QDataStream& out, const OmChannel& chan)
 {
-	OmDataArchiveProject::storeOmManageableObject(out, chan);
-	OmDataArchiveProject::storeOmMipVolume(out, chan);
-	OmDataArchiveProject::storeOmVolume(out, chan);
+	OmMipVolumeArchive::Store(out, chan);
 
-	out << chan.mFilter2dManager;
-	out << chan.mWasBounded;
-
-	float oldmax = 0; //TODO: delete
-	float oldmin = 0; //TODO: delete
-	out << oldmax;
-	out << oldmin;
+	out << chan.filterManager_;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream& in, OmChannel& chan)
+QDataStream& operator>>(QDataStream& in, OmChannel& chan)
 {
-	OmDataArchiveProject::loadOmManageableObject(in, chan);
-	OmDataArchiveProject::loadOmMipVolume(in, chan);
-	OmDataArchiveProject::loadOmVolume(in, chan);
-
-	in >> chan.mFilter2dManager;
-	if(fileVersion_ > 13) {
-		in >> chan.mWasBounded;
-
-		float oldmax = 0; //TODO: delete
-		float oldmin = 0; //TODO: delete
-		in >> oldmax;
-		in >> oldmin;
+	if(fileVersion_ < 25){
+		OmDataArchiveProject::LoadOldChannel(in, chan);
 	} else{
-		chan.mWasBounded = false;
-	}
-
-	if(fileVersion_ > 13){
-		QDir filesDir = OmProjectData::GetFilesFolderPath();
-		if(filesDir.exists()){
-			chan.loadVolData();
-		}
+		OmDataArchiveProject::LoadNewChannel(in, chan);
 	}
 
 	return in;
+}
+
+void OmDataArchiveProject::LoadOldChannel(QDataStream& in, OmChannel& chan)
+{
+	OmMipVolumeArchiveOld::Load(in, chan, fileVersion_);
+
+	in >> chan.filterManager_;
+
+	if(fileVersion_ > 13) {
+		bool dead;
+		in >> dead;
+
+		if( fileVersion_ < 24){
+			float dead;
+			in >> dead;
+			in >> dead;
+		}
+	}
+
+	if(fileVersion_ > 13){
+		chan.loadVolDataIfFoldersExist();
+	}
+}
+
+void OmDataArchiveProject::LoadNewChannel(QDataStream& in, OmChannel& chan)
+{
+	OmMipVolumeArchive::Load(in, chan);
+
+	in >> chan.filterManager_;
+	chan.loadVolDataIfFoldersExist();
 }
 
 /**
@@ -231,13 +273,13 @@ QDataStream &operator>>(QDataStream& in, OmChannel& chan)
 
 QDataStream &operator<<(QDataStream& out, const OmFilter2dManager& fm)
 {
-	out << fm.mGenericFilterManager;
+	out << fm.filters_;
 	return out;
 }
 
 QDataStream &operator>>(QDataStream& in, OmFilter2dManager& fm)
 {
-	in >> fm.mGenericFilterManager;
+	in >> fm.filters_;
 	return in;
 }
 
@@ -275,7 +317,7 @@ QDataStream &operator>>(QDataStream& in, OmGenericManager<OmFilter2d>& fm)
 
 QDataStream &operator<<(QDataStream& out, const OmFilter2d& f)
 {
-	OmDataArchiveProject::storeOmManageableObject(out, f);
+	OmMipVolumeArchiveOld::StoreOmManageableObject(out, f);
 	out << f.mAlpha;
 	out << f.cdw_.GetChannelID();
 	out << f.sdw_.GetSegmentationID();
@@ -285,7 +327,7 @@ QDataStream &operator<<(QDataStream& out, const OmFilter2d& f)
 
 QDataStream &operator>>(QDataStream& in, OmFilter2d& f)
 {
-	OmDataArchiveProject::loadOmManageableObject(in, f);
+	OmMipVolumeArchiveOld::LoadOmManageableObject(in, f);
 	in >> f.mAlpha;
 
 	OmID channID;
@@ -302,6 +344,18 @@ QDataStream &operator>>(QDataStream& in, OmFilter2d& f)
 /**
  * Segmentation and related
  */
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentationManager& m)
+{
+	out << m.mSegmentationManager;
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in, OmSegmentationManager& m)
+{
+	in >> m.mSegmentationManager;
+	return in;
+}
 
 QDataStream &operator<<(QDataStream& out, const OmGenericManager<OmSegmentation>& sm)
 {
@@ -337,46 +391,51 @@ QDataStream &operator>>(QDataStream& in, OmGenericManager<OmSegmentation>& sm)
 
 QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg)
 {
-	OmDataArchiveProject::storeOmManageableObject(out, seg);
-	OmDataArchiveProject::storeOmVolume(out, seg);
-	OmDataArchiveProject::storeOmMipVolume(out, seg);
+	OmMipVolumeArchive::Store(out, seg);
 
-	out << (*seg.mMipMeshManager);
-	out << (*seg.mSegmentCache);
-
-	int dead = 0;
-
-	out << dead;
-	out << dead;
+	out << (*seg.segmentCache_);
 	out << seg.mst_->numEdges_;
 	out << seg.mst_->userThreshold_;
-	out << (*seg.mGroups);
+	out << (*seg.groups_);
 
 	return out;
 }
 
 QDataStream &operator>>(QDataStream& in, OmSegmentation& seg)
 {
-	OmDataArchiveProject::loadOmManageableObject(in, seg);
-	OmDataArchiveProject::loadOmVolume(in, seg);
-	OmDataArchiveProject::loadOmMipVolume(in, seg);
+	if(fileVersion_ < 25){
+		OmDataArchiveProject::LoadOldSegmentation(in, seg);
+	} else {
+		OmDataArchiveProject::LoadNewSegmentation(in, seg);
+	}
 
-	in >> (*seg.mMipMeshManager);
-	in >> (*seg.mSegmentCache);
+	return in;
+}
 
-	int dead;
+void OmDataArchiveProject::LoadOldSegmentation(QDataStream& in,
+											   OmSegmentation& seg)
+{
+	OmMipVolumeArchiveOld::Load(in, seg, fileVersion_);
 
-	in >> dead;
-	in >> dead;
+	if(fileVersion_ < 22){
+		QString dead;
+		in >> dead;
+	}
+
+	in >> (*seg.segmentCache_);
+
+	if(fileVersion_ < 24){
+		int dead;
+		in >> dead;
+		in >> dead;
+	}
+
 	in >> seg.mst_->numEdges_;
 	in >> seg.mst_->userThreshold_;
-	in >> (*seg.mGroups);
+	in >> (*seg.groups_);
 
 	if(fileVersion_ > 13){
-		QDir filesDir = OmProjectData::GetFilesFolderPath();
-		if(filesDir.exists()){
-			seg.loadVolData();
-		}
+		seg.loadVolDataIfFoldersExist();
 	}
 
 	if(fileVersion_ < 18){
@@ -385,27 +444,29 @@ QDataStream &operator>>(QDataStream& in, OmSegmentation& seg)
 
 	seg.mst_->Read();
 	seg.validGroupNum_->Load();
-	seg.mSegmentCache->refreshTree();
+	seg.segmentCache_->refreshTree();
 
-	seg.mMipMeshManager->Load();
-
-	return in;
+	if(fileVersion_ < 23){
+		OmDataArchiveProject::moveOldMeshMetadataFile(&seg);
+	}
 }
 
-QDataStream &operator<<(QDataStream& out, const OmMipMeshManager&)
+void OmDataArchiveProject::LoadNewSegmentation(QDataStream& in,
+											   OmSegmentation& seg)
 {
-	QString dead("");
-	out << dead;
+	OmMipVolumeArchive::Load(in, seg);
 
-	return out;
-}
+	in >> (*seg.segmentCache_);
 
-QDataStream &operator>>(QDataStream& in, OmMipMeshManager&)
-{
-	QString dead;
-	in >> dead;
+	in >> seg.mst_->numEdges_;
+	in >> seg.mst_->userThreshold_;
+	in >> (*seg.groups_);
 
-	return in;
+	seg.loadVolDataIfFoldersExist();
+
+	seg.mst_->Read();
+	seg.validGroupNum_->Load();
+	seg.segmentCache_->refreshTree();
 }
 
 QDataStream &operator<<(QDataStream& out, const OmSegmentCache& sc)
@@ -458,12 +519,11 @@ QDataStream &operator>>(QDataStream& in, OmSegmentCacheImpl& sc)
 	in >> sc.mNumSegs;
 
 	if(fileVersion_ < 12) {
-		quint32 mNumTopLevelSegs;
-		in >> mNumTopLevelSegs;
+		quint32 dead;
+		in >> dead;
 	}
 
-	boost::shared_ptr<OmUserEdges> userEdges =
-		sc.segmentation_->getMSTUserEdges();
+	OmUserEdges* userEdges = sc.segmentation_->MSTUserEdges();
 
 	if(fileVersion_ < 19){
 		int size;
@@ -506,7 +566,7 @@ QDataStream &operator>>(QDataStream& in, OmPagingPtrStore& ps)
 		ps.storeMetadata();
 	}
 
-	if(ps.segmentation_->IsVolumeReadyForDisplay()){
+	if(ps.segmentation_->IsBuilt()){
 		ps.loadAllSegmentPages();
 	}
 
@@ -530,91 +590,6 @@ QDataStream &operator>>(QDataStream& in, OmSegmentEdge& se)
 
 
 	return in;
-}
-
-/**
- * Generic base objects
- */
-
-void OmDataArchiveProject::storeOmManageableObject(QDataStream& out, const OmManageableObject& mo)
-{
-	out << mo.mId;
-	out << mo.mCustomName;
-	out << mo.mNote;
-}
-
-void OmDataArchiveProject::loadOmManageableObject(QDataStream& in, OmManageableObject& mo)
-{
-	in >> mo.mId;
-	in >> mo.mCustomName;
-	in >> mo.mNote;
-}
-
-void OmDataArchiveProject::storeOmMipVolume(QDataStream& out, const OmMipVolume& m)
-{
-	out << QString(""); // TODO: remove me; was m.mDirectoryPath;
-	out << m.mMipLeafDim;
-	out << m.mMipRootLevel;
-
-	qint32 subsamplemode = 0;
-	out << subsamplemode;
-	out << m.mBuildState;
-	out << m.mStoreChunkMetaData;
-
-	qint32 mBytesPerSample = 0;
-	out << mBytesPerSample; //FIXME: no longer used; was mBytesPerSample
-
-	const QString type =
-		QString::fromStdString(OmVolumeTypeHelpers::GetTypeAsString(m.mVolDataType));
-	out << type;
-	std::cout << "saved type as " << type.toStdString() << "\n";
-}
-
-void OmDataArchiveProject::loadOmMipVolume(QDataStream& in, OmMipVolume& m)
-{
-	QString mDirectoryPath; //TODO: remove me
-	in >> mDirectoryPath;
-	in >> m.mMipLeafDim;
-	in >> m.mMipRootLevel;
-
-	qint32 subsamplemode;
-	in >> subsamplemode;
-	in >> m.mBuildState;
-	in >> m.mStoreChunkMetaData;
-
-	qint32 mBytesPerSample;
-	in >> mBytesPerSample; //FIXME: no longer used
-
-	if(fileVersion_ > 13){
-		QString volDataType;
-		in >> volDataType;
-		m.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
-	} else {
-		m.mVolDataType = OmVolDataType::UNKNOWN;
-	}
-}
-
-void OmDataArchiveProject::storeOmVolume(QDataStream& out,
-										 const OmVolume& v)
-{
-	out << v.mNormToSpaceMat;
-	out << v.mNormToSpaceInvMat;
-	out << v.mDataExtent;
-	out << v.mDataResolution;
-	out << v.mChunkDim;
-	out << v.unitString;
-	out << v.mDataStretchValues;
-}
-
-void OmDataArchiveProject::loadOmVolume(QDataStream& in, OmVolume& v)
-{
-	in >> v.mNormToSpaceMat;
-	in >> v.mNormToSpaceInvMat;
-	in >> v.mDataExtent;
-	in >> v.mDataResolution;
-	in >> v.mChunkDim;
-	in >> v.unitString;
-	in >> v.mDataStretchValues;
 }
 
 QDataStream &operator<<(QDataStream& out, const OmGroups& g)
@@ -670,7 +645,7 @@ QDataStream &operator>>(QDataStream& in,
 
 QDataStream &operator<<(QDataStream& out, const OmGroup& g)
 {
-	OmDataArchiveProject::storeOmManageableObject(out, g);
+	OmMipVolumeArchiveOld::StoreOmManageableObject(out, g);
 	out << g.mName;
 	out << g.mIDs;
 
@@ -680,7 +655,7 @@ QDataStream &operator<<(QDataStream& out, const OmGroup& g)
 QDataStream &operator>>(QDataStream& in, OmGroup& g)
 {
 	if(fileVersion_ > 11) {
-		OmDataArchiveProject::loadOmManageableObject(in, g);
+		OmMipVolumeArchiveOld::LoadOmManageableObject(in, g);
 	}
 	in >> g.mName;
 	if(fileVersion_ > 11) {

@@ -1,27 +1,30 @@
-#include "actions/omActions.hpp"
+#include "volume/omCompareVolumes.hpp"
+#include "project/omSegmentationManager.h"
+#include "actions/details/omSegmentSplitAction.h"
+#include "actions/omActions.h"
 #include "common/omDebug.h"
 #include "datalayer/fs/omMemMappedFileQT.hpp"
-#include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPaths.h"
 #include "gui/recentFileList.h"
 #include "headless/headless.h"
 #include "headless/headlessImpl.hpp"
 #include "mesh/omMipMesh.h"
+#include "project/omAffinityGraphManager.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "system/omLocalPreferences.hpp"
-#include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "tiles/omTileDumper.hpp"
 #include "utility/dataWrappers.h"
 #include "utility/omStringHelpers.h"
 #include "viewGroup/omViewGroupState.h"
+#include "volume/build/omBuildAffinityChannel.hpp"
 #include "volume/build/omBuildChannel.hpp"
 #include "volume/build/omBuildSegmentation.hpp"
+#include "volume/omAffinityGraph.h"
 #include "volume/omFilter2d.h"
-#include "volume/omMipChunk.h"
+#include "chunks/omChunk.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
 #include "zi/base/base.h"
 
 #include <QFileInfo>
@@ -87,9 +90,27 @@ void Headless::processLine(const QString& line, const QString&)
 			printf("Please choose segmentation first!\n");
 			return;
 		}
+
+		HeadlessImpl::Mesh(segmentationID_);
+
+	} else if(line.startsWith("mesh:")) {
+		if(0 == segmentationID_ ){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if (args.size() < 2){
+			printf("Please specify threshold\n");
+			return;
+		}
+
+		const double threshold = OmStringHelpers::getDouble(args[1]);
+
 		const SegmentationDataWrapper sdw(segmentationID_);
 		OmBuildSegmentation bs(sdw);
-		bs.BuildMesh(om::BLOCKING);
+		bs.BuildMesh(threshold);
 
 	} else if("clearMST" == line) {
 		if(0 == segmentationID_ ){
@@ -146,17 +167,16 @@ void Headless::processLine(const QString& line, const QString&)
 			verbose = (bool) OmStringHelpers::getUInt(args[2]);
 		}
 
-		if(!OmProject::IsChannelValid(id1)) {
+		if(!OmProject::Volumes().Channels().IsChannelValid(id1)) {
 			printf("Channel %i is not a valid channel.\n",id1);
 			return;
 		}
-		if(!OmProject::IsChannelValid(id2)) {
+		if(!OmProject::Volumes().Channels().IsChannelValid(id2)) {
 			printf("Channel %i is not a valid channel.\n",id2);
 			return;
 		}
-		const bool same =
-			OmMipVolume::CompareVolumes(&OmProject::GetChannel(id1),
-										&OmProject::GetChannel(id2));
+
+		const bool same = OmCompareVolumes::CompareChannels(id1, id2);
 
 		if(same){
 			printf("Channel %i and Channel %i are identical.\n",id1,id2);
@@ -189,18 +209,18 @@ void Headless::processLine(const QString& line, const QString&)
 			verbose = (bool) OmStringHelpers::getUInt(args[2]);
 		}
 
-		if(!OmProject::IsSegmentationValid(id1)) {
+		if(!OmProject::Volumes().Segmentations().IsSegmentationValid(id1)) {
 			printf("Segmentation %i is not a valid segmentation.\n",id1);
 			return;
 		}
 
-		if(!OmProject::IsSegmentationValid(id2)) {
+		if(!OmProject::Volumes().Segmentations().IsSegmentationValid(id2)) {
 			printf("Segmentation %i is not a valid segmentation.\n",id2);
 			return;
 		}
-		const bool same =
-			OmMipVolume::CompareVolumes(&OmProject::GetSegmentation(id1),
-										&OmProject::GetSegmentation(id2));
+
+		const bool same = OmCompareVolumes::CompareSegmentations(id1, id2);
+
 		if(same){
 			printf("Segmentation %i and Segmentation %i are identical.\n",id1,id2);
 		} else {
@@ -302,7 +322,7 @@ void Headless::processLine(const QString& line, const QString&)
 			printf("Please choose segmentation first!\n");
 			return;
 		}
-		OmProject::GetSegmentation(segmentationID_).GetSegmentCache()->AddSegment();
+		OmProject::Volumes().Segmentations().GetSegmentation(segmentationID_).SegmentCache()->AddSegment();
 		OmActions::Save();
 
 	} else if(line.startsWith("create:")) {
@@ -354,36 +374,25 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		OmChannel& chann = OmProject::AddChannel();
+		OmChannel& chann = OmProject::Volumes().Channels().AddChannel();
 		QString hdf5fnp = args[1];
 
 		OmBuildChannel bc(&chann);
 		bc.addFileNameAndPath(hdf5fnp);
 		bc.BuildBlocking();
 
-        } else if(line.startsWith("loadHDF5affgraph:")){
-                QStringList args = line.split(':',QString::SkipEmptyParts);
+	} else if(line.startsWith("loadHDF5affgraph:")){
+		QStringList args = line.split(':',QString::SkipEmptyParts);
 
-                if (args.size() < 3){
-                        printf("Please enter command like: loadHDF5affgraph:[0123]:file.hdf5\n");
-                        return;
-                }
-		om::Affinity aff = om::NO_AFFINITY;
-		int affNum = args[1].toInt();
-		if(1 == affNum) {
-			aff = om::X_AFFINITY;
-		} else if(2 == affNum) {
-			aff = om::Y_AFFINITY;
-		} else if(3 == affNum) {
-			aff = om::Z_AFFINITY;
+		if (args.size() < 2){
+			printf("Please enter command like: loadHDF5affgraph:file.hdf5\n");
+			return;
 		}
-		printf("args: %s, %i, %i\n", qPrintable(args[1]), affNum, aff);
-                OmChannel& affgraph = OmProject::AddChannel(aff);
-                QString hdf5fnp = args[2];
 
-                OmBuildChannel bc(&affgraph);
-                bc.addFileNameAndPath(hdf5fnp);
-                bc.BuildBlocking();
+		const QString& hdf5fnp = args[1];
+
+		OmAffinityGraph& affGraph = OmProject::Volumes().AffinityGraphs().Add();
+		affGraph.ImportAllChannels(hdf5fnp);
 
 	} else if(line.startsWith("loadTIFFchann:")){
 		QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -393,7 +402,7 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		OmChannel& chann = OmProject::AddChannel();
+		OmChannel& chann = OmProject::Volumes().Channels().AddChannel();
 		OmBuildChannel bc(&chann);
 
 		QDir dir(args[1]);
@@ -444,9 +453,9 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		OmSegmentation& segmen = OmProject::GetSegmentation(segmentationID_);
-		OmMipChunkCoord chunk_coord(0,0,0,0);
-		OmMipChunkPtr p_chunk;
+		OmSegmentation& segmen = OmProject::Volumes().Segmentations().GetSegmentation(segmentationID_);
+		OmChunkCoord chunk_coord(0,0,0,0);
+		OmChunkPtr p_chunk;
 		segmen.GetChunk(p_chunk, chunk_coord);
 
 	} else if(line.startsWith("removeChann:")){
@@ -459,12 +468,12 @@ void Headless::processLine(const QString& line, const QString&)
 
 		int channID = OmStringHelpers::getUInt(args[1]);
 
-		if (!OmProject::IsChannelValid(channID)){
+		if (!OmProject::Volumes().Channels().IsChannelValid(channID)){
 			printf("Channel %i is not a valid channel.\n",channID);
 			return;
 		}
 
-		OmProject::RemoveChannel(channID);
+		OmProject::Volumes().Channels().RemoveChannel(channID);
 		printf("Channel %i removed.\n",channID);
 
 	} else if(line.startsWith("removeSeg:")){
@@ -477,16 +486,16 @@ void Headless::processLine(const QString& line, const QString&)
 
 		int segID = OmStringHelpers::getUInt(args[1]);
 
-		if (!OmProject::IsSegmentationValid(segID)){
+		if (!OmProject::Volumes().Segmentations().IsSegmentationValid(segID)){
 			printf("Segmentation %i is not a valid segmentation.\n",segID);
 			return;
 		}
 
-		OmProject::RemoveSegmentation(segID);
+		OmProject::Volumes().Segmentations().RemoveSegmentation(segID);
 		printf("Segmentation %i removed.\n",segID);
 
 	} else if("lsChann" == line){
-		OmIDsSet channset = OmProject::GetValidChannelIds();
+		OmIDsSet channset = OmProject::Volumes().Channels().GetValidChannelIds();
 		if (channset.empty()){
 			printf("No channels present.\n");
 			return;
@@ -498,7 +507,7 @@ void Headless::processLine(const QString& line, const QString&)
 		}
 
 	} else if("lsSeg" == line){
-		OmIDsSet segset = OmProject::GetValidSegmentationIds();
+		OmIDsSet segset = OmProject::Volumes().Segmentations().GetValidSegmentationIds();
 		if (segset.empty()){
 			printf("No segmentations present.\n");
 			return;
@@ -506,8 +515,24 @@ void Headless::processLine(const QString& line, const QString&)
 		printf("ID\tName\n");
 		FOR_EACH(iter,segset){
 			SegmentationDataWrapper sdw(*iter);
-			printf("%i\t%s\n", *iter, qPrintable(sdw.getName()));
+			printf("%i\t%s\n", *iter, qPrintable(sdw.GetName()));
 		}
+
+	} else if(line.startsWith("split:")){
+		if(0 == segmentationID_){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+		const QStringList args = line.split(':',QString::SkipEmptyParts);
+		const QStringList res = args[1].split(',', QString::SkipEmptyParts);
+
+		OmSegmentation& seg = OmProject::Volumes().Segmentations().GetSegmentation(segmentationID_);
+		OmSegmentCache * cache = seg.SegmentCache();
+
+		OmSegment * seg1 = cache->GetSegment(OmStringHelpers::getFloat(res[0]));
+		OmSegment * seg2 = cache->GetSegment(OmStringHelpers::getFloat(res[1]));
+
+		OmSegmentSplitAction::RunIfSplittable(seg1, seg2, DataCoord(), DataCoord());
 
 	} else if(line.startsWith("setChanResolution:")){
 		const QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -600,6 +625,13 @@ void Headless::processLine(const QString& line, const QString&)
 		}
 		HeadlessImpl::RecolorAllSegments(segmentationID_);
 
+	} else if("refindUniqueChunkValues" == line){
+		if(0 == segmentationID_ ){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+		HeadlessImpl::RefindUniqueChunkValues(segmentationID_);
+
 	} else if(line.startsWith("importWatershed:")){
 		const QStringList args = line.split(':',QString::SkipEmptyParts);
 
@@ -609,6 +641,20 @@ void Headless::processLine(const QString& line, const QString&)
 		}
 
 		HeadlessImpl::ImportWatershed(args[1]);
+
+	} else if(line.startsWith("timeSegChunkReads:")){
+		const QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if (args.size() != 4){
+			printf("format is timeSegChunkReads:segmentationID:randomize:useFseek\n");
+			return;
+		}
+
+		const OmID segID = OmStringHelpers::getUInt(args[1]);
+		const bool randomizeOrder = OmStringHelpers::getBool(args[2]);
+		const bool useRawChunk = OmStringHelpers::getBool(args[3]);
+
+		HeadlessImpl::TimeSegChunkReads(segID, randomizeOrder, useRawChunk);
 
 	} else {
 		printf("Could not parse \"%s\".\n", qPrintable(line));

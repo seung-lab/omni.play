@@ -60,9 +60,9 @@ void OmGroupListWidget::keyPressEvent(QKeyEvent* event)
 	}
 }
 
-void OmGroupListWidget::populate(OmSegmentation & seg)
+void OmGroupListWidget::populate(OmSegmentation& seg)
 {
-	boost::shared_ptr<OmGroups> groups = seg.GetGroups();
+	OmGroups* groups = seg.Groups();
 
 	clear();
 
@@ -74,7 +74,7 @@ void OmGroupListWidget::populate(OmSegmentation & seg)
 			firstID = id;
 		}
 		QTreeWidgetItem *row = new QTreeWidgetItem(this);
-		OmGroup & group = groups->GetGroup(id);
+		OmGroup& group = groups->GetGroup(id);
 		row->setText(0, group.GetName());
 		row->setData(0, Qt::UserRole, qVariantFromValue(id));
 		row->setFlags(Qt::ItemIsSelectable |

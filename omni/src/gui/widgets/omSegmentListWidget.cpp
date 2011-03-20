@@ -48,7 +48,7 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 
 	assert( 100 >= segIDs->List()->size() && "too many segments returned" );
 
-	OmSegmentCache* segCache = segmentationDW.GetSegmentCache();
+	OmSegmentCache* segCache = segmentationDW.SegmentCache();
 
 	FOR_EACH(iter, *segIDs->List()){
 		OmSegment* seg = segCache->GetSegment(*iter);

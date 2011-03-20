@@ -10,12 +10,14 @@
 class OmMeshReaderV2{
 private:
 	OmSegmentation *const segmentation_;
+	const double threshold_;
 	OmMeshFilePtrCache *const filePtrCache_;
 
 public:
-	OmMeshReaderV2(OmSegmentation* segmentation)
+	OmMeshReaderV2(OmSegmentation* segmentation, const double threshold)
 		: segmentation_(segmentation)
-		, filePtrCache_(segmentation->MeshManager()->FilePtrCache())
+		, threshold_(threshold)
+		, filePtrCache_(segmentation->MeshManager(threshold_)->FilePtrCache())
 	{}
 
 	~OmMeshReaderV2()
@@ -27,12 +29,12 @@ public:
 	}
 
 	boost::shared_ptr<OmDataForMeshLoad>
-	Read(const OmSegID segID, const OmMipChunkCoord& coord)
+	Read(const OmSegID segID, const OmChunkCoord& coord)
 	{
 		OmMeshChunkAllocTableV2* chunk_table =
 			filePtrCache_->GetAllocTable(coord);
 
-		OmMeshChunkDataReaderV2 chunk_data(segmentation_, coord);
+		OmMeshChunkDataReaderV2 chunk_data(segmentation_, coord, threshold_);
 
 		boost::shared_ptr<OmDataForMeshLoad> ret =
 			boost::make_shared<OmDataForMeshLoad>();
@@ -44,7 +46,9 @@ public:
 		const OmMeshDataEntry entry = chunk_table->Find(segID);
 
 		if(!entry.wasMeshed){
-			throw OmIoException("was not yet meshed");
+			std::cout << "did not yet mesh " << segID
+					  << " in coord " << coord << "\n" << std::flush;
+			throw OmIoException("mesh data not found");
 		}
 
 		ret->HasData(entry.hasMeshData);

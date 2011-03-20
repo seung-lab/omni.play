@@ -18,9 +18,10 @@ private:
 public:
 	OmMeshChunkAllocTableV2(OmMeshFilePtrCache* filePtrCache,
 							OmSegmentation* seg,
-							const OmMipChunkCoord& coord)
+							const OmChunkCoord& coord,
+							const double threshold)
 		: filePtrCache_(filePtrCache)
-		, file_(boost::make_shared<OmMemMappedAllocFile>(seg, coord))
+		, file_(boost::make_shared<OmMemMappedAllocFile>(seg, coord, threshold))
 	{
 		zi::rwmutex::write_guard g(lock_);
 

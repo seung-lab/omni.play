@@ -18,14 +18,14 @@
 class MipChunkMeshCollector
 {
 private:
-    OmMipChunkCoord    mipCoordinate_ ;
+    OmChunkCoord    mipCoordinate_ ;
 	boost::shared_ptr<OmMeshWriterV2> meshIO_;
     zi::rwmutex        lock_   ;
 
     zi::unordered_map< OmSegID, zi::shared_ptr< TriStripCollector > > meshes_;
 
 public:
-    MipChunkMeshCollector( const OmMipChunkCoord& coord,
+    MipChunkMeshCollector( const OmChunkCoord& coord,
 						   boost::shared_ptr<OmMeshWriterV2> meshIO )
         : mipCoordinate_( coord ),
           meshIO_( meshIO ),

@@ -1,10 +1,15 @@
 #ifndef OM_UPGRADE_TO_14_HPP
 #define OM_UPGRADE_TO_14_HPP
 
+#include "datalayer/hdf5/omHdf5ChunkUtils.hpp"
+#include "project/omChannelManager.h"
 #include "project/omProject.h"
-#include "volume/omVolumeData.hpp"
+#include "project/omProjectVolumes.h"
+#include "project/omSegmentationManager.h"
+#include "volume/io/omVolumeData.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
+#include "chunks/omSegChunk.h"
 
 // extract volumes from hdf5 to mem-map
 
@@ -18,16 +23,16 @@ private:
 
 	void doConvert()
 	{
-		FOR_EACH(iter, OmProject::GetValidChannelIds()){
-			OmChannel& channel = OmProject::GetChannel(*iter);
+		FOR_EACH(iter, OmProject::Volumes().Channels().GetValidChannelIds()){
 			printf("converting channel %d\n", *iter);
-			convertVolume(channel);
+			ChannelDataWrapper cdw(*iter);
+			convertVolume(cdw.GetChannel());
 		}
 
-		FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
-			OmSegmentation& segmentation = OmProject::GetSegmentation(*iter);
+		FOR_EACH(iter, OmProject::Volumes().Segmentations().GetValidSegmentationIds()){
 			printf("converting segmentation %d\n", *iter);
-			convertVolume(segmentation);
+			SegmentationDataWrapper sdw(*iter);
+			convertVolume(sdw.GetSegmentation());
 		}
 	}
 
@@ -43,20 +48,50 @@ private:
 	{
 		std::map<int, Vector3i> levelsAndDims;
 
-		for (int level = 0; level <= vol.GetRootMipLevel(); level++) {
-			levelsAndDims[level] = vol.getDimsRoundedToNearestChunk(level);
+		for (int level = 0; level <= vol.Coords().GetRootMipLevel(); level++) {
+			levelsAndDims[level] = vol.Coords().getDimsRoundedToNearestChunk(level);
 		}
 
 		// allocate mem-mapped files...
-		vol.getVolData()->create(&vol, levelsAndDims);
+		vol.VolData()->create(&vol, levelsAndDims);
 	}
 
 	template <typename T>
 	void copyData(T& vol)
 	{
-		vol.copyAllMipDataIntoMemMap();
+		const uint32_t numChunks = vol.Coords().ComputeTotalNumChunks();
+		uint32_t counter = 0;
+
+		for(int level = 0; level <= vol.Coords().GetRootMipLevel(); ++level) {
+
+			if(!OmHdf5ChunkUtils::VolumeExistsInHDF5(&vol, level)){
+				printf("no HDF5 volume data found for mip %d\n", level);
+				continue;
+			}
+
+			boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+				vol.GetMipChunkCoords(level);
+
+			FOR_EACH(iter, *coordsPtr){
+				++counter;
+				printf("\rcopying chunk %d of %d...", counter, numChunks);
+				fflush(stdout);
+
+				copyChunk(vol, *iter);
+			}
+		}
 	}
 
+	template <typename T>
+	void copyChunk(T& vol, const OmChunkCoord& coord)
+	{
+		OmChunkPtr chunk;
+		vol.GetChunk(chunk, coord);
+
+		OmDataWrapperPtr hdf5 =
+			OmHdf5ChunkUtils::ReadChunkData(&vol, chunk);
+		chunk->Data()->CopyInChunkData(hdf5);
+	}
 };
 
 #endif

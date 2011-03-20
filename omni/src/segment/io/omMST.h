@@ -5,28 +5,26 @@
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/fs/omIOnDiskFile.h"
 #include "datalayer/fs/omFileQT.hpp"
+#include "segment/io/omMSTtypes.h"
 
 class OmSegmentation;
-class OmMSTold;
-
-struct OmMSTEdge {
-	uint32_t number;
-	uint32_t node1ID;
-	uint32_t node2ID;
-	double threshold;
-	uint8_t userJoin;
-	uint8_t userSplit;
-	uint8_t wasJoined;	// transient state
-};
 
 class OmMST {
+private:
+	static const double defaultThresholdSize_ = 0.9;
+
 public:
 	OmMST(OmSegmentation* segmentation);
 	~OmMST(){}
 
+	static double DefaultThresholdSize(){
+		return defaultThresholdSize_;
+	}
+
 	void Read();
 	void Flush();
-	void import(const std::string& fname);
+
+	void Import(const std::vector<OmMSTImportEdge>& edges);
 
 	bool isValid(){
 		return numEdges_ > 0;
@@ -39,7 +37,8 @@ public:
 	double UserThreshold() const {
 		return userThreshold_;
 	}
-	void SetUserThreshold(const float t) {
+
+	void SetUserThreshold(const double t) {
 		userThreshold_ = t;
 	}
 
@@ -61,14 +60,12 @@ private:
 	typedef OmFileReadQT<OmMSTEdge> reader_t;
 	typedef OmFileWriteQT<OmMSTEdge> writer_t;
 
-	QString memMapPathQStr();
 	std::string memMapPath();
-	void doReadInFromOldMST(const OmMSTold& old);
 
 	friend class SegmentTests1;
 
-	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation &);
-	friend QDataStream &operator>>(QDataStream& in, OmSegmentation  &);
+	friend class OmDataArchiveProject;
+	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg);
 };
 
 #endif

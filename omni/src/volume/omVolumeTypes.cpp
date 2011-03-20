@@ -1,5 +1,4 @@
 #include "volume/omVolumeTypes.hpp"
-
 #include "hdf5.h"
 
 // hid_t is typedef'd to int in H5Ipublic.h
@@ -42,9 +41,12 @@ int OmVolumeTypeHelpers::getHDF5MemoryType(const OmVolDataType type)
 	}
 }
 
-std::string OmVolumeTypeHelpers::GetTypeAsString(const OmVolDataType type)
-{
+std::string OmVolumeTypeHelpers::GetTypeAsString(const OmVolDataType type){
 	return type.value();
+}
+
+QString OmVolumeTypeHelpers::GetTypeAsQString(const OmVolDataType type){
+	return QString::fromStdString(GetTypeAsString(type));
 }
 
 OmVolDataType OmVolumeTypeHelpers::GetTypeFromString(const QString & type)
@@ -56,7 +58,6 @@ OmVolDataType OmVolumeTypeHelpers::GetTypeFromString(const QString & type)
 		return *ret;
 	}
 
-	printf("bad type: \"%s\"\n", qPrintable(type));
-	throw OmIoException("invalid type");
+	throw OmIoException("invalid type", type);
 }
 

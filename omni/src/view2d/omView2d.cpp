@@ -80,8 +80,7 @@ QSize OmView2d::sizeHint () const {
 	return OmStateManager::getViewBoxSizeHint();
 }
 
-void OmView2d::mousePressEvent(QMouseEvent * event)
-{
+void OmView2d::mousePressEvent(QMouseEvent * event){
 	mouseEvents_->Press(event);
 }
 

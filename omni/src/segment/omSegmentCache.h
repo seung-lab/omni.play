@@ -6,7 +6,7 @@
 
 #include <zi/mutex.hpp>
 
-class OmMipChunkCoord;
+class OmChunkCoord;
 class OmSegment;
 class OmSegmentCacheImpl;
 class OmSegmentation;

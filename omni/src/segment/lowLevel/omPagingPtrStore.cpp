@@ -1,8 +1,7 @@
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/omSegmentCache.h"
-#include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 
 static const uint32_t DEFAULT_PAGE_SIZE = 100000; // about 4.8 MB on disk
 static const uint32_t DEFAULT_PAGE_VECTOR_SIZE = 20;

@@ -18,7 +18,7 @@ private:
 	OmSegmentation *const seg_;
 	OmMeshFilePtrCache *const  filePtrCache_;
 	const OmSegID segID_;
-	const OmMipChunkCoord coord_;
+	const OmChunkCoord coord_;
 	const U mesh_;
 	const om::AllowOverwrite allowOverwrite_;
 
@@ -26,7 +26,7 @@ public:
 	OmMeshWriterTaskV2(OmSegmentation* seg,
 					   OmMeshFilePtrCache* filePtrCache,
 					   const OmSegID segID,
-					   const OmMipChunkCoord& coord,
+					   const OmChunkCoord& coord,
 					   const U mesh,
 					   const om::AllowOverwrite allowOverwrite)
 		: seg_(seg)
@@ -43,7 +43,7 @@ public:
 			filePtrCache_->GetAllocTable(coord_);
 
 		if(!chunk_table->Contains(segID_)){
-			printInfoAboutSkippedSegment(mesh_);
+			//printInfoAboutSkippedSegment(mesh_);
 			return;
 		}
 
@@ -160,8 +160,6 @@ private:
 
 	void printInfoAboutSkippedSegment(boost::shared_ptr<OmDataForMeshLoad>)
 	{
-		return;
-
 		std::cout << "skipping segID " << segID_
 				  << " in chunk " << coord_
 				  << "\n";
@@ -169,8 +167,6 @@ private:
 
 	void printInfoAboutSkippedSegment(zi::shared_ptr<TriStripCollector> triStrips)
 	{
-		return;
-
 		printf(".");
 
 		const int vertexData = triStrips->data_.size();
@@ -184,7 +180,6 @@ private:
 				  << "; stripsSize size (" << stripsSize << ")"
 				  << "\n";
 	}
-
 };
 
 #endif

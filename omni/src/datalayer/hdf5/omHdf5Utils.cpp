@@ -109,17 +109,23 @@ OmDataWrapperPtr OmHdf5Utils::getDataWrapper(void* dataset,
 	case H5T_INTEGER:
 		if( H5Tequal(dstype, H5T_NATIVE_UCHAR ) ){
 			return OmDataWrapper<uint8_t>::produce(dataset, allocType);
+
 		} else if( H5Tequal(dstype, H5T_NATIVE_CHAR ) ){
 			return OmDataWrapper<int8_t>::produce(dataset, allocType);
+
 		}else if( H5Tequal(dstype, H5T_NATIVE_UINT ) ){
 			return OmDataWrapper<uint32_t>::produce(dataset, allocType);
+
 		}else if( H5Tequal(dstype, H5T_NATIVE_INT ) ){
 			return OmDataWrapper<int32_t>::produce(dataset, allocType);
+
 		}else {
 			throw OmIoException("unknown hdf5 integer type");
 		}
+
 	case H5T_FLOAT:
 		return OmDataWrapper<float>::produce(dataset, allocType);
+
 	default:
 		throw OmIoException("unknown hdf5 type");
 	}

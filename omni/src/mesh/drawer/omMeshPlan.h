@@ -2,7 +2,7 @@
 #define OM_MESH_PLAN_H
 
 #include "segment/omSegment.h"
-#include "volume/omMipChunkCoord.h"
+#include "chunks/omChunkCoord.h"
 
 struct LargestSegmentFirst {
 	bool operator() (const OmSegment* a, const OmSegment* b) const {
@@ -11,7 +11,7 @@ struct LargestSegmentFirst {
 };
 
 typedef std::multimap<OmSegment*,
-					  OmMipChunkCoord,
+					  OmChunkCoord,
 					  LargestSegmentFirst> OmMeshPlanStruct;
 
 class OmMeshPlan : public OmMeshPlanStruct {
@@ -23,7 +23,7 @@ public:
 		: voxelCount_(0)
 	{}
 
-	void Add(OmSegment* seg, const OmMipChunkCoord& coord)
+	void Add(OmSegment* seg, const OmChunkCoord& coord)
 	{
 		insert(std::make_pair(seg, coord));
 		voxelCount_ += seg->size();

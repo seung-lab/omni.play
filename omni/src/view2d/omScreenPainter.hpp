@@ -4,7 +4,7 @@
 #include "system/omEvents.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 #include "view2d/om2dPreferences.hpp"
 #include "view2d/omDisplayInfo.hpp"
 #include "view2d/omScreenShotSaver.hpp"

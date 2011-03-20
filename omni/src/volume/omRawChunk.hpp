@@ -1,22 +1,22 @@
 #ifndef OM_RAW_CHUNK_HPP
 #define OM_RAW_CHUNK_HPP
 
-#include "zi/omMutex.h"
-#include "zi/omThreads.h"
-#include "volume/omMipVolume.h"
-#include "volume/omVolumeTypes.hpp"
-#include "volume/omMipChunkCoord.h"
+#include "chunks/omChunkCoord.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/omSmartPtr.hpp"
+#include "volume/io/omVolumeData.h"
+#include "volume/omMipVolume.h"
+#include "volume/omVolumeTypes.hpp"
+#include "zi/omMutex.h"
+#include "zi/omThreads.h"
 
-#include <boost/make_shared.hpp>
 #include <QFile>
 
 template <typename T>
 class OmRawChunk {
 private:
 	OmMipVolume *const vol_;
-	const OmMipChunkCoord coord_;
+	const OmChunkCoord coord_;
 	const uint64_t chunkOffset_;
 	const QString memMapFileName_;
 	const uint64_t numBytes_;
@@ -30,13 +30,13 @@ private:
 	typedef typename zi::spinlock::pool<raw_chunk_mutex_pool_tag>::guard mutex_guard_t;
 
 public:
-	OmRawChunk(OmMipVolume* vol, const OmMipChunkCoord& coord)
+	OmRawChunk(OmMipVolume* vol, const OmChunkCoord& coord)
 		: vol_(vol)
 		, coord_(coord)
-		, chunkOffset_(vol_->ComputeChunkPtrOffsetBytes(coord_))
-		, memMapFileName_(OmFileNames::GetMemMapFileNameQT(vol_,
+		, chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))
+		, memMapFileName_(OmFileNames::GetMemMapFileNameQT(vol,
 														   coord.Level))
-		, numBytes_(128*128*128*vol_->GetBytesPerSample())
+		, numBytes_(128*128*128*vol_->GetBytesPerVoxel())
 		, dataRaw_(NULL)
 		, dirty_(false)
 	{
@@ -46,6 +46,10 @@ public:
 	~OmRawChunk()
 	{
 		Flush();
+	}
+
+	void SetDirty(){
+		dirty_ = true;
 	}
 
 	void Flush()
@@ -70,6 +74,14 @@ public:
 
 	uint64_t NumBytes() const {
 		return numBytes_;
+	}
+
+	T* Data(){
+		return dataRaw_;
+	}
+
+	boost::shared_ptr<T> SharedPtr(){
+		return data_;
 	}
 
 private:

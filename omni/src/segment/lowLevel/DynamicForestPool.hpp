@@ -33,6 +33,7 @@ public:
     x_ = (Node*)malloc((s+1) * sizeof(Node));
     memset((char*)x_, 0, (s+1) * sizeof(Node));
   }
+
   ~DynamicForestPool() {
     free(x_);
   }

@@ -1,11 +1,13 @@
 #ifndef OM_SEGMENT_UTILS_HPP
 #define OM_SEGMENT_UTILS_HPP
 
+#include "project/omSegmentationManager.h"
 #include "segment/omSegmentSearched.hpp"
 #include "segment/omSegment.h"
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentCache.h"
+#include "project/omProjectVolumes.h"
 #include "viewGroup/omViewGroupState.h"
 #include "utility/segmentDataWrapper.hpp"
 
@@ -36,7 +38,7 @@ private:
 	{
 		DataBbox box;
 
-		OmSegmentIterator iter(sdw.GetSegmentCache());
+		OmSegmentIterator iter(sdw.SegmentCache());
 		iter.iterOverSelectedIDs();
 
 		const int max = 5000;
@@ -104,7 +106,7 @@ public:
 		}
 
 		const SpaceCoord voxelSC
-			= sdw.GetSegmentation().DataToSpaceCoord(*voxelDC);
+			= sdw.GetSegmentation().Coords().DataToSpaceCoord(*voxelDC);
 
 		vgs->SetViewSliceDepth(YZ_VIEW, voxelSC.x );
 		vgs->SetViewSliceDepth(XZ_VIEW, voxelSC.y );
@@ -117,7 +119,7 @@ public:
 	// TODO: make more efficient
 	static uint32_t NumberOfDescendants(const SegmentDataWrapper& sdw)
 	{
-		OmSegmentIterator iter(sdw.GetSegmentCache());
+		OmSegmentIterator iter(sdw.SegmentCache());
 		iter.iterOverSegmentID(sdw.GetSegmentID());
 
 		uint32_t counter = 0;
@@ -149,9 +151,9 @@ public:
 
 		const OmSegID rootID = sdw.FindRootID();
 		const OmSegID nextID =
-			sdw.GetSegmentLists()->Working().GetNextSegmentIDinList(rootID);
+			sdw.SegmentLists()->Working().GetNextSegmentIDinList(rootID);
 
-		if(sdw.GetSegmentCache()->IsSegmentValid(nextID)){
+		if(sdw.SegmentCache()->IsSegmentValid(nextID)){
 			return nextID;
 		}
 		return 0;
@@ -165,7 +167,7 @@ public:
 			return NULL;
 		}
 
-		return sdw.GetSegmentCache()->GetSegment(nextID);
+		return sdw.SegmentCache()->GetSegment(nextID);
 	}
 
 	/* iterate over selected segments; choose the segment
@@ -174,7 +176,7 @@ public:
 	static OmSegID
 	GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw_)
 	{
-		OmSegmentCache* segCache = sdw_.GetSegmentCache();
+		OmSegmentCache* segCache = sdw_.SegmentCache();
 
 		OmSegment* biggestSeg = NULL;
 		uint64_t biggestSegSize = 0;
@@ -202,7 +204,7 @@ public:
        	DataBbox box;
 		Vector3f res;
 
-        FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
+        FOR_EACH(iter, OmProject::Volumes().Segmentations().GetValidSegmentationIds()){
 			SegmentationDataWrapper sdw(*iter);
 			const boost::optional<DataBbox> b =
 				computeSelectedSegmentBoundingBox(sdw);
@@ -227,7 +229,7 @@ public:
 	{
 		printf("rebuilding segment bounding box data...\n");
 
-		OmSegmentCache* segCache = sdw.GetSegmentCache();
+		OmSegmentCache* segCache = sdw.SegmentCache();
 		for(OmSegID i = 1; i <= segCache->getMaxValue(); ++i){
 			OmSegment* seg = segCache->GetSegment(i);
 			if(!seg){

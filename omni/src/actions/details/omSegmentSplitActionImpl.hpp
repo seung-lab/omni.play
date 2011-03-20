@@ -40,7 +40,7 @@ public:
 	{
 		SegmentationDataWrapper sdw(mSegmentationID);
 		if(!mSegID) {
-			mEdge = sdw.GetSegmentCache()->SplitEdge(mEdge);
+			mEdge = sdw.SegmentCache()->SplitEdge(mEdge);
 	
 			desc = QString("Split seg %1 from %2")
 				.arg(mEdge.childID)
@@ -50,7 +50,7 @@ public:
 
 			OmEvents::SegmentModified();
 		} else {
-			mEdge = sdw.GetSegmentCache()->SplitSegment(mSegID, mCoord1, mCoord2);
+			mEdge = sdw.SegmentCache()->SplitSegment(mSegID, mCoord1, mCoord2);
 		}
 	}
 
@@ -58,7 +58,7 @@ public:
 	{
 		SegmentationDataWrapper sdw(mSegmentationID);
 		if(!mSegID) {
-			std::pair<bool, OmSegmentEdge> edge = sdw.GetSegmentCache()->JoinEdge(mEdge);
+			std::pair<bool, OmSegmentEdge> edge = sdw.SegmentCache()->JoinEdge(mEdge);
 
 			if(!mEdge.childID || !mEdge.parentID) {
 				printf("Can't undo a join that probably failed.\n");
@@ -74,7 +74,7 @@ public:
 
 			OmEvents::SegmentModified();
 		} else {
-			sdw.GetSegmentCache()->UnSplitSegment(mEdge);
+			sdw.SegmentCache()->UnSplitSegment(mEdge);
 		}
 	}
 

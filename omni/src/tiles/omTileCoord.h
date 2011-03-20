@@ -6,7 +6,7 @@
 #include <boost/tuple/tuple_comparison.hpp>
 
 class OmMipVolume;
-class OmMipChunkCoord;
+class OmChunkCoord;
 class OmViewGroupState;
 
 // Level, Coordinate, OmMipVolume*, freshness, OmViewGroupState*,
@@ -25,7 +25,7 @@ public:
 				const ObjectType);
 
 	ObjectType getVolType() const;
-	OmMipChunkCoord getOmMipChunkCoord() const;
+	OmChunkCoord getOmChunkCoord() const;
 
 	int getLevel() const {
 		return this->get<0>();

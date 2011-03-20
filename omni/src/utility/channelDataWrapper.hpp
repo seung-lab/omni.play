@@ -2,6 +2,8 @@
 #define CHANNEL_DATA_WRAPPER_HPP
 
 #include "project/omProject.h"
+#include "project/omProjectVolumes.h"
+#include "project/omChannelManager.h"
 #include "volume/omChannel.h"
 
 #include <QHash>
@@ -29,23 +31,23 @@ public:
 		return mID;
 	}
 
-	inline QString getName() {
+	inline QString getName() const {
 		return QString::fromStdString(GetChannel().GetName());
 	}
 
 	inline bool isEnabled() const {
-		return OmProject::IsChannelEnabled(mID);
+		return OmProject::Volumes().Channels().IsChannelEnabled(mID);
 	}
 
-	inline QString getNote() {
+	inline QString getNote() const {
 		return GetChannel().GetNote();
 	}
 
-	inline OmChannel& GetChannel(){
-		return OmProject::GetChannel(mID);
+	inline OmChannel& GetChannel() const {
+		return OmProject::Volumes().Channels().GetChannel(mID);
 	}
 
-	inline OmChannel* GetChannelPtr()
+	inline OmChannel* GetChannelPtr() const
 	{
 		OmChannel& chan = GetChannel();
 		return &chan;
@@ -56,7 +58,11 @@ public:
 		if(!mID){
 			return false;
 		}
-		return OmProject::IsChannelValid(mID);
+		return OmProject::Volumes().Channels().IsChannelValid(mID);
+	}
+
+	inline bool IsBuilt() const {
+		return GetChannel().IsBuilt();
 	}
 
 	QHash<OmID, FilterDataWrapper> getAllFilterIDsAndNames();

@@ -5,7 +5,6 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omEvents.h"
 #include "system/omLocalPreferences.hpp"
-#include "system/omProjectData.h"
 #include "tiles/cache/omTileCache.h"
 #include "view2d/omView2dConverters.hpp"
 #include "viewGroup/omViewGroupState.h"
@@ -48,7 +47,7 @@ public:
 	// coord convertors
 	inline Vector2f ScreenToPanShift(const Vector2i& screenshift) const
 	{
-		const Vector2f stretch= vol_->GetStretchValues(viewType_);
+		const Vector2f stretch= vol_->Coords().GetStretchValues(viewType_);
 		const float zoomScale = getZoomScale();
 		const float panx = screenshift.x/zoomScale/stretch.x;
 		const float pany = screenshift.y/zoomScale/stretch.y;
@@ -58,9 +57,9 @@ public:
 	inline SpaceCoord ScreenToSpaceCoord(const ScreenCoord& screenc) const
 	{
 		const Vector2f mPanDistance = ComputePanDistance();
-		const Vector2f stretch = vol_->GetStretchValues(viewType_);
+		const Vector2f stretch = vol_->Coords().GetStretchValues(viewType_);
 
-		const Vector3f dataScale = vol_->GetDataDimensions();
+		const Vector3f dataScale = vol_->Coords().GetDataDimensions();
 		const float factor = om::pow2int(getMipLevel());
 		const float zoomScale = getZoomScale();
 
@@ -70,23 +69,23 @@ public:
 		const NormCoord normc = scaleViewType(unscaleNormX, unscaleNormY,
 											  dataScale);
 
-		SpaceCoord result = vol_->NormToSpaceCoord(normc);
+		SpaceCoord result = vol_->Coords().NormToSpaceCoord(normc);
 		setViewTypeDepth(result, getSliceDepth());
 		return result;
 	}
 
 	inline DataCoord ScreenToDataCoord(const ScreenCoord & screenc) const {
-		return vol_->SpaceToDataCoord(ScreenToSpaceCoord(screenc));
+		return vol_->Coords().SpaceToDataCoord(ScreenToSpaceCoord(screenc));
 	}
 
 	inline ScreenCoord SpaceToScreenCoord(const SpaceCoord& spacec) const
 	{
-		const NormCoord normCoord = vol_->SpaceToNormCoord(spacec);
-		const Vector3f scale = vol_->GetDataDimensions();
+		const NormCoord normCoord = vol_->Coords().SpaceToNormCoord(spacec);
+		const Vector3f scale = vol_->Coords().GetDataDimensions();
 		const Vector3f datac = normCoord * scale;
 
 		const Vector2f mPanDistance = ComputePanDistance();
-		const Vector2f stretch = vol_->GetStretchValues(viewType_);
+		const Vector2f stretch = vol_->Coords().GetStretchValues(viewType_);
 		const float factor = om::pow2int(getMipLevel());
 		const float zoomScale = getZoomScale();
 
@@ -107,7 +106,7 @@ public:
 
 	inline float GetResOfDataSlice() const
 	{
-		const Vector3f& res = vol_->GetDataResolution();
+		const Vector3f& res = vol_->Coords().GetDataResolution();
 		return getViewTypeDepth(res);
 	}
 
@@ -124,7 +123,7 @@ public:
 
 	inline Vector2f ComputePanDistance() const
 	{
-		const Vector2f stretch = vol_->GetStretchValues(viewType_);
+		const Vector2f stretch = vol_->Coords().GetStretchValues(viewType_);
 		const float factor = om::pow2int(getMipLevel());
 
 		const DataCoord mydataCoord = getViewSliceDepthData();
@@ -163,8 +162,8 @@ public:
 								  totalViewport_.height / zoomFactor * pl - translateVector.y * pl,
 								  0);
 
-		setSliceMinAndMax(vol_->DataToSpaceCoord(minDCoord),
-						  vol_->DataToSpaceCoord(maxDCoord));
+		setSliceMinAndMax(vol_->Coords().DataToSpaceCoord(minDCoord),
+						  vol_->Coords().DataToSpaceCoord(maxDCoord));
 
 		OmEvents::Redraw3d();
 	}
@@ -188,7 +187,7 @@ public:
 	inline void ResetWindowState()
 	{
 		static const NormCoord midPoint(0.5, 0.5, 0.5);
-		const SpaceCoord depth = vol_->NormToSpaceCoord(midPoint);
+		const SpaceCoord depth = vol_->Coords().NormToSpaceCoord(midPoint);
 
 		setSliceDepth(depth);
 
@@ -303,7 +302,7 @@ public:
 		return ZoomLevel()->GetMipLevel();
 	}
 	int getMaxMipLevel() const {
-		return vol_->GetRootMipLevel();
+		return vol_->Coords().GetRootMipLevel();
 	}
 	boost::shared_ptr<OmZoomLevel>& ZoomLevel() const {
 		return vgs_->ZoomLevel();
@@ -317,7 +316,7 @@ public:
 						  getZsliceDepth());
 	}
 	DataCoord getViewSliceDepthData() const {
-		return vol_->SpaceToDataCoord(getViewSliceDepthSpace());
+		return vol_->Coords().SpaceToDataCoord(getViewSliceDepthSpace());
 	}
 	float getSliceDepth() const {
 		float depth = vgs_->GetViewSliceDepth(viewType_);
@@ -402,13 +401,13 @@ public:
 	// for tile coord creation
 	SpaceCoord computeTileSpaceCoord(const DataCoord& dataCoord) const
 	{
-		const DataBbox box = vol_->DataToDataBBox(dataCoord, 0);
+		const DataBbox box = vol_->Coords().DataToDataBBox(dataCoord, 0);
 		const int depth = getViewTypeDepth(dataCoord);
 
 		Vector3i bcoord = box.getMin();
 		setViewTypeDepth(bcoord, depth);
 
-		return vol_->DataToSpaceCoord(bcoord);
+		return vol_->Coords().DataToSpaceCoord(bcoord);
 	}
 
 	// brush size

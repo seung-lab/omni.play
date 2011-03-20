@@ -3,36 +3,35 @@
 
 #include "common/omDebug.h"
 #include "datalayer/hdf5/omHdf5.h"
-#include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
-#include "datalayer/omIDataReader.h"
-#include "datalayer/omIDataWriter.h"
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/omMipMeshCoord.h"
-#include "volume/omMipChunk.h"
+#include "chunks/omChunk.h"
 #include "volume/omSegmentation.h"
-#include "system/omProjectData.h"
+#include "project/omProject.h"
 
 class OmMeshReaderV1{
 private:
-	OmSegmentation* segmentation_;
+	OmSegmentation *const segmentation_;
+	OmHdf5* reader_;
 
 public:
 	OmMeshReaderV1(OmSegmentation* segmentation)
 		: segmentation_(segmentation)
-	{}
+	{
+		reader_ = OmProject::OldHDF5();
+	}
 
 	bool IsAnyMeshDataPresent()
 	{
-		const OmMipChunkCoord coord(0, 0, 0, 0);
+		const OmChunkCoord coord(0, 0, 0, 0);
 
-		OmMipChunkPtr chunk;
-		segmentation_->GetChunk(chunk, coord);
-		const OmSegIDsSet& segIDs = chunk->GetUniqueSegIDs();
+		const ChunkUniqueValues segIDs =
+			segmentation_->ChunkUniqueValues()->Values(coord, 1);
 
-		FOR_EACH(segID, segIDs){
-			if(isMeshDataPresent(*segID, coord)){
+		FOR_EACH(iter, segIDs){
+			if(isMeshDataPresent(*iter, coord)){
 				return true;
 			}
 		}
@@ -46,7 +45,7 @@ public:
 	}
 
 	inline boost::shared_ptr<OmDataForMeshLoad>
-	Read(const OmSegID segID, const OmMipChunkCoord& coord)
+	Read(const OmSegID segID, const OmChunkCoord& coord)
 	{
 		try{
 			return doRead(segID, coord);
@@ -57,7 +56,7 @@ public:
 
 private:
 
- 	bool isMeshDataPresent(const OmSegID segID, const OmMipChunkCoord& coord)
+ 	bool isMeshDataPresent(const OmSegID segID, const OmChunkCoord& coord)
 	{
 		try{
 			return doIsMeshDataPresent(segID, coord);
@@ -66,18 +65,18 @@ private:
 		}
 	}
 
- 	bool doIsMeshDataPresent(const OmSegID segID, const OmMipChunkCoord& coord)
+ 	bool doIsMeshDataPresent(const OmSegID segID, const OmChunkCoord& coord)
 	{
 		const OmMipMeshCoord meshCoord(coord, segID);
 
 		const std::string path = getDirectoryPath(meshCoord);
 
 		OmDataPath fpath( path + "metamesh.dat" );
-		if( !OmProjectData::GetProjectIDataReader()->dataset_exists( fpath ) ){
+		if(!reader_->dataset_exists(fpath)){
 			return false;
 		}
 
-		OmDataWrapperPtr result = OmProjectData::GetProjectIDataReader()->readDataset(fpath);
+		OmDataWrapperPtr result = reader_->readDataset(fpath);
 		unsigned char noData = *(result->getPtr<unsigned char>());
 		if ( 0 == noData ){
 			return false;
@@ -87,7 +86,7 @@ private:
 	}
 
 	boost::shared_ptr<OmDataForMeshLoad>
-	doRead(const OmSegID segID, const OmMipChunkCoord& coord)
+	doRead(const OmSegID segID, const OmChunkCoord& coord)
 	{
 		boost::shared_ptr<OmDataForMeshLoad> ret =
 			boost::make_shared<OmDataForMeshLoad>();
@@ -97,11 +96,11 @@ private:
 		const std::string path = getDirectoryPath(meshCoord);
 
 		OmDataPath fpath( path + "metamesh.dat" );
-		if( !OmProjectData::GetProjectIDataReader()->dataset_exists( fpath ) ){
+		if( !reader_->dataset_exists( fpath ) ){
 			return ret;
 		}
 
-		OmDataWrapperPtr result = OmProjectData::GetProjectIDataReader()->readDataset(fpath);
+		OmDataWrapperPtr result = reader_->readDataset(fpath);
 		unsigned char noData = *(result->getPtr<unsigned char>());
 		if ( 0 == noData ){
 			return ret;
@@ -163,8 +162,9 @@ private:
 		const OmDataPath fpath( path + fileName );
 
 		int size;
+
 		boost::shared_ptr<OmDataWrapperBase> dataPtr =
-			OmProjectData::GetProjectIDataReader()->readDataset(fpath, &size);
+			reader_->readDataset(fpath, &size);
 
 		boost::shared_ptr<T> data;
 

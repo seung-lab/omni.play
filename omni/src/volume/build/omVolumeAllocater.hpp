@@ -18,12 +18,13 @@ public:
 		assert(OmVolDataType::UNKNOWN != type.index());
 		vol->SetVolDataType(type);
 
-		const int maxLevel = vol->GetRootMipLevel();
+		const int maxLevel = vol->Coords().GetRootMipLevel();
 
 		std::vector<boost::shared_ptr<QFile> > volFiles(maxLevel + 1);
 
 		for (int level = 0; level <= maxLevel; ++level) {
-			const Vector3<uint64_t> dims = vol->getDimsRoundedToNearestChunk(level);
+			const Vector3<uint64_t> dims =
+				vol->Coords().getDimsRoundedToNearestChunk(level);
 			volFiles[level] = createFile(vol, level, dims);
 		}
 
@@ -39,7 +40,7 @@ private:
 	createFile(OmMipVolume* vol, const int level,
 			   const Vector3<uint64_t>& dims)
 	{
-		const uint64_t bps = vol->GetBytesPerSample();
+		const uint64_t bps = vol->GetBytesPerVoxel();
 		const uint64_t size = dims.x * dims.y * dims.z * bps;
 
 		std::cout << "mip " << level << ": size is: "

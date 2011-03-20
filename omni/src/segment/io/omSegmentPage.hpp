@@ -8,7 +8,6 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "segment/omSegment.h"
-#include "system/omProjectData.h"
 #include "utility/dataWrappers.h"
 #include "utility/omSmartPtr.hpp"
 #include "datalayer/fs/omFileQT.hpp"
@@ -58,7 +57,7 @@ public:
 		, pageNum_(pageNum)
 		, pageSize_(pageSize)
 		, version_(0)
-		, cache_(segmentation_->GetSegmentCache())
+		, cache_(segmentation_->SegmentCache())
 		, segments_(NULL)
 		, segmentsData_(NULL)
 	{

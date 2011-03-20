@@ -1,22 +1,25 @@
 #ifndef OM_MESH_SEGMENT_LIST_HPP
 #define OM_MESH_SEGMENT_LIST_HPP
 
+#include "chunks/omChunkCoord.h"
+#include "chunks/omSegChunk.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "mesh/drawer/omMeshSegmentListTask.h"
 #include "mesh/drawer/omMeshSegmentListTypes.hpp"
 #include "utility/omThreadPool.hpp"
-#include "volume/omMipChunk.h"
-#include "volume/omMipChunkCoord.h"
 #include "volume/omMipVolume.h"
 #include "zi/omMutex.h"
 
 class OmMeshSegmentList {
 private:
 	static const int MAX_THREADS = 3;
+	OmSegmentation *const segmentation_;
 
 public:
-	OmMeshSegmentList(){
+	OmMeshSegmentList(OmSegmentation* segmentation)
+		: segmentation_(segmentation)
+	{
 		threadPool_.start(MAX_THREADS);
 	}
 
@@ -27,7 +30,7 @@ public:
 	}
 
 	boost::optional<OmSegPtrList>
-	GetFromCacheIfReady(OmMipChunkPtr chunk, OmSegment* rootSeg)
+	GetFromCacheIfReady(OmSegChunkPtr chunk, OmSegment* rootSeg)
 	{
 		zi::guard g(lock_);
 
@@ -51,7 +54,10 @@ public:
 			spList = OmSegPtrListValid(true);
 
 			boost::shared_ptr<OmMeshSegmentListTask> task
-				= boost::make_shared<OmMeshSegmentListTask>(chunk, rootSeg, this);
+				= boost::make_shared<OmMeshSegmentListTask>(chunk,
+															rootSeg,
+															this,
+															segmentation_);
 
 			threadPool_.addTaskFront(task);
 			return boost::optional<OmSegPtrList>();
@@ -61,7 +67,7 @@ public:
 		return boost::optional<OmSegPtrList>(spList.list);
 	}
 
-	void AddToCache(OmMipChunkPtr chunk, OmSegment* rootSeg,
+	void AddToCache(OmSegChunkPtr chunk, OmSegment* rootSeg,
 					const OmSegPtrList & segmentsToDraw)
 	{
 		zi::guard g(lock_);
@@ -76,9 +82,9 @@ private:
 	OmThreadPool threadPool_;
 	zi::mutex lock_;
 
-	OmMeshSegListKey makeKey(OmMipChunkPtr chunk, OmSegment* rootSeg)
+	OmMeshSegListKey makeKey(OmSegChunkPtr chunk, OmSegment* rootSeg)
 	{
-		const OmMipChunkCoord& c = chunk->GetCoordinate();
+		const OmChunkCoord& c = chunk->GetCoordinate();
 		return OmMeshSegListKey(rootSeg->GetSegmentationID(),
 								rootSeg->value(),
 								c.Level,

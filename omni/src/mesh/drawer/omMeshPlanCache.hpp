@@ -20,7 +20,7 @@ private:
 	struct CachedData
 	{
 		boost::shared_ptr<OmVolumeCuller> culler;
-		boost::shared_ptr<std::list<OmMipChunkPtr> > chunks;
+		boost::shared_ptr<std::list<OmSegChunkPtr> > chunks;
 		std::map<OmBitfield, CachedDataEnry> dataByBitfield;
 	};
 

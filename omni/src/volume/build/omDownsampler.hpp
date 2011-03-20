@@ -1,31 +1,30 @@
 #ifndef OM_DOWNSAMPLER_HPP
 #define OM_DOWNSAMPLER_HPP
 
-#include "volume/omMipVolume.h"
-#include "utility/omTimer.h"
-#include "zi/omThreads.h"
 #include "utility/omThreadPool.hpp"
-#include "system/cache/omRawChunkCache.hpp"
-
+#include "utility/omTimer.hpp"
 #include "volume/build/omDownsamplerTypes.hpp"
 #include "volume/build/omDownsamplerVoxelTask.hpp"
+#include "volume/omMipVolume.h"
+#include "zi/omThreads.h"
 
 template <typename T>
 class OmDownsampler {
 private:
 	OmMipVolume *const vol_;
+	OmMemMappedVolumeImpl<T> *const files_;
+
 	std::vector<MipLevelInfo> mips_;
 	MippingInfo mippingInfo_;
-	boost::shared_ptr<OmRawChunkCache<T> > cache_;
 
 public:
-	OmDownsampler(OmMipVolume* vol)
+	OmDownsampler(OmMipVolume* vol, OmMemMappedVolumeImpl<T>* files)
 		: vol_(vol)
-		, cache_(boost::make_shared<OmRawChunkCache<T> >(vol_))
+		, files_(files)
 	{
-		mippingInfo_.maxMipLevel = vol_->GetRootMipLevel();
+		mippingInfo_.maxMipLevel = vol_->Coords().GetRootMipLevel();
 
-		const Vector3<uint64_t> chunkDims = vol_->GetChunkDimensions();
+		const Vector3<uint64_t> chunkDims = vol_->Coords().GetChunkDimensions();
 
 		mippingInfo_.chunkDims = chunkDims;
 		mippingInfo_.chunkSize = chunkDims.x * chunkDims.y * chunkDims.z;
@@ -36,7 +35,7 @@ public:
 		for(int i=0; i <= mippingInfo_.maxMipLevel; ++i){
 			mips_[i].factor = om::pow2int(i);
 
-			const Vector3i dims = vol_->getDimsRoundedToNearestChunk(i);
+			const Vector3i dims = vol_->Coords().getDimsRoundedToNearestChunk(i);
 			mips_[i].volDims = dims;
 			mips_[i].volSlabSize = dims.x * dims.y * chunkDims.z;
 			mips_[i].volSliceSize = dims.x * dims.y;
@@ -53,23 +52,19 @@ public:
 		OmThreadPool threadPool;
 		threadPool.start(3);
 
-		const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);
+		boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+			vol_->GetMipChunkCoords(0);
 
-		//for all chunks
-		for (int z = 0; z < leaf_mip_dims.z; ++z) {
-			for (int y = 0; y < leaf_mip_dims.y; ++y) {
-				for (int x = 0; x < leaf_mip_dims.x; ++x) {
-					const OmMipChunkCoord coord(0, x, y, z);
+		FOR_EACH(iter, *coordsPtr){
+			const OmChunkCoord& coord = *iter;
 
-					boost::shared_ptr<DownsampleVoxelTask<T> > task =
-						boost::make_shared<DownsampleVoxelTask<T> >(vol_,
-																	mips_,
-																	mippingInfo_,
-																	coord,
-																	cache_);
-					threadPool.addTaskBack(task);
-				}
-			}
+			boost::shared_ptr<DownsampleVoxelTask<T> > task =
+				boost::make_shared<DownsampleVoxelTask<T> >(vol_,
+															mips_,
+															mippingInfo_,
+															coord,
+															files_);
+			threadPool.addTaskBack(task);
 		}
 
 		threadPool.join();

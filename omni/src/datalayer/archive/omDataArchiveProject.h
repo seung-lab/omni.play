@@ -6,52 +6,55 @@
 #include "system/omGroups.h"
 #include "segment/lowLevel/omPagingPtrStore.h"
 
-class OmSegment;
+class OmChannel;
+class OmChannelManager;
 class OmDataPath;
-class OmProject;
+class OmFilter2d;
+class OmFilter2dManager;
 class OmManageableObject;
-class OmVolume;
+class OmMipMeshManager;
 class OmMipVolume;
 class OmPreferences;
-class OmChannel;
-class OmFilter2dManager;
-class OmFilter2d;
-class OmSegmentation;
-class OmMipMeshManager;
+class OmProjectImpl;
+class OmSegment;
 class OmSegmentCache;
 class OmSegmentCacheImpl;
 class OmSegmentEdge;
+class OmSegmentation;
+class OmSegmentationManager;
+class OmVolume;
 
+class OmDataArchiveProject {
+public:
+	static void ArchiveRead(const QString& fnp, OmProjectImpl* project);
+	static void ArchiveWrite(const QString& fnp, OmProjectImpl* project );
 
-class OmDataArchiveProject
-{
- public:
-	static void ArchiveRead( const OmDataPath & path, OmProject * project );
-	static void ArchiveWrite( const OmDataPath & path, OmProject * project );
+	static void moveOldMeshMetadataFile(OmSegmentation* segmentation);
 
-	static void storeOmManageableObject( QDataStream & out, const OmManageableObject & mo );
-	static void loadOmManageableObject( QDataStream & in, OmManageableObject & mo );
+	// public for access by QDataStream operators
+	static void LoadOldChannel(QDataStream& in, OmChannel& chan);
+	static void LoadNewChannel(QDataStream& in, OmChannel& chan);
 
-	static void storeOmMipVolume( QDataStream & out, const OmMipVolume & m );
-	static void loadOmMipVolume( QDataStream & in, OmMipVolume & m );
-
-	static void storeOmVolume( QDataStream & out, const OmVolume & v );
-	static void loadOmVolume( QDataStream & in, OmVolume & v );
+	static void LoadOldSegmentation(QDataStream& in, OmSegmentation& seg);
+	static void LoadNewSegmentation(QDataStream& in, OmSegmentation& seg);
 
 private:
-	static void Upgrade(const OmDataPath& path,
-						OmProject* project);
-
+	static void Upgrade(const QString& fnp, OmProjectImpl* project);
 };
 
 QDataStream &operator<<(QDataStream & out, const OmProject & project );
 QDataStream &operator>>(QDataStream & in, OmProject & project );
 
+QDataStream &operator<<(QDataStream& out, const OmProjectVolumes& p);
+QDataStream &operator>>(QDataStream& in, OmProjectVolumes& p);
+
 QDataStream &operator<<(QDataStream & out, const OmPreferences & p );
 QDataStream &operator>>(QDataStream & in, OmPreferences & p );
 
-QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmChannel> & );
-QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & );
+QDataStream &operator<<(QDataStream & out, const OmChannelManager& );
+QDataStream &operator>>(QDataStream & in, OmChannelManager& );
+QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmChannel>&);
+QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel>&);
 
 QDataStream &operator<<(QDataStream & out, const OmChannel & );
 QDataStream &operator>>(QDataStream & in, OmChannel & );
@@ -65,6 +68,8 @@ QDataStream &operator>>(QDataStream & in, OmFilter2d & f );
 QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmFilter2d> & );
 QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & );
 
+QDataStream &operator<<(QDataStream & out, const OmSegmentationManager&);
+QDataStream &operator>>(QDataStream & in, OmSegmentationManager&);
 QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmSegmentation> & );
 QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & );
 

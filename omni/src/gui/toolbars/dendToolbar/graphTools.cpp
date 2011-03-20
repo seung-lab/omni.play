@@ -20,7 +20,7 @@ GraphTools::GraphTools(DendToolBar * d)
 	box->addWidget(thresholdBox());
 
 	QWidget * wbox = new QWidget(this);
-        QGridLayout * box2 = new QGridLayout(wbox);
+	QGridLayout * box2 = new QGridLayout(wbox);
 	wbox->setLayout(box2);
 	box->addWidget(wbox);
 
@@ -45,13 +45,13 @@ QWidget* GraphTools::breakThresholdBox()
 
 QWidget* GraphTools::thresholdBox()
 {
-        QGroupBox* widget = new QGroupBox("Overall Threshold", this);
-        ThresholdGroup* thresholdBox = new ThresholdGroup(this);
+	QGroupBox* widget = new QGroupBox("Overall Threshold", this);
+	ThresholdGroup* thresholdBox = new ThresholdGroup(this);
 
-        QHBoxLayout* layout = new QHBoxLayout(widget);
-        layout->addWidget(thresholdBox);
+	QHBoxLayout* layout = new QHBoxLayout(widget);
+	layout->addWidget(thresholdBox);
 
-        return widget;
+	return widget;
 }
 
 void GraphTools::SetSplittingOff()

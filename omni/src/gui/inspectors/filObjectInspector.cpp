@@ -1,15 +1,14 @@
-#include "utility/dataWrappers.h"
-#include "filObjectInspector.h"
 #include "common/omDebug.h"
+#include "filObjectInspector.h"
+#include "project/omProjectVolumes.h"
 #include "system/omEvents.h"
+#include "utility/dataWrappers.h"
 
 FilObjectInspector::FilObjectInspector(QWidget * parent,
 									   const FilterDataWrapper & fdw )
  : QWidget(parent)
 {
-	mFDW = boost::make_shared<FilterDataWrapper>(fdw);
-	mChannelID = mFDW->getChannelID();
-	mFilterID = mFDW->getID();
+	fdw_ = boost::make_shared<FilterDataWrapper>(fdw);
 
 	QVBoxLayout* overallContainer = new QVBoxLayout( this );
 
@@ -35,29 +34,27 @@ FilObjectInspector::FilObjectInspector(QWidget * parent,
 }
 
 void FilObjectInspector::saveFilterAlphaValue()
-{
-	//	OmProject::Save();
-}
+{}
 
 void FilObjectInspector::setFilAlpha(int alpha)
 {
-	if( OmProject::IsChannelValid( mChannelID ) ){
-		OmChannel& channel = OmProject::GetChannel( mChannelID);
-		if( channel.IsFilterValid( mFilterID ) ){
-			////debug(filter, "setting alpha\n");
-			channel.GetFilter( mFilterID).SetAlpha((double)alpha / 100.00);
-			OmEvents::Redraw2d();
- 		}
+	if(fdw_->isValid()){
+		fdw_->getFilter()->SetAlpha((double)alpha / 100.00);
+		OmEvents::Redraw2d();
 	}
 }
 
 void FilObjectInspector::set_initial_values()
 {
-	OmFilter2d & filter = OmProject::GetChannel(mChannelID).GetFilter(mFilterID);
+	if(!fdw_->isValid()){
+		return;
+	}
 
-	alphaSlider->setValue(filter.GetAlpha() * 100);
-	chanEdit->setText(QString::number(filter.GetChannelDataWrapper().GetChannelID()));
-	segEdit->setText(QString::number(filter.GetSegmentationWrapper().GetSegmentationID()));
+	OmFilter2d* filter = fdw_->getFilter();
+
+	alphaSlider->setValue(filter->GetAlpha() * 100);
+	chanEdit->setText(QString::number(filter->GetChannelDataWrapper().GetChannelID()));
+	segEdit->setText(QString::number(filter->GetSegmentationWrapper().GetSegmentationID()));
 }
 
 QGroupBox* FilObjectInspector::makeFilterOptionsBox()
@@ -130,12 +127,18 @@ int FilObjectInspector::GetSegmentationIDtoFilter()
 
 void FilObjectInspector::sourceEditChangedChan()
 {
-	OmProject::GetChannel( mChannelID ).GetFilter( mFilterID ).SetChannel(getChannelIDtoFilter());
-	//	OmProject::Save();
+	if(!fdw_->isValid()){
+		return;
+	}
+
+	fdw_->getFilter()->SetChannel(getChannelIDtoFilter());
 }
 
 void FilObjectInspector::sourceEditChangedSeg()
 {
-	OmProject::GetChannel( mChannelID ).GetFilter( mFilterID ).SetSegmentation(GetSegmentationIDtoFilter());
-	//	OmProject::Save();
+	if(!fdw_->isValid()){
+		return;
+	}
+
+	fdw_->getFilter()->SetSegmentation(GetSegmentationIDtoFilter());
 }

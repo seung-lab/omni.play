@@ -3,23 +3,24 @@
 
 #include "common/omCommon.h"
 #include "datalayer/fs/omFileNames.hpp"
-#include "volume/omMipChunk.h"
-#include "volume/omMipChunkCoord.h"
+#include "chunks/omChunk.h"
+#include "chunks/omChunkCoord.h"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
 
 class OmMeshChunkDataReaderV2{
 private:
-	OmSegmentation* seg_;
-	const OmMipChunkCoord& coord_;
+	OmSegmentation *const seg_;
+	const OmChunkCoord& coord_;
 	const double threshold_;
 	const QString fnp_;
 
 public:
-	OmMeshChunkDataReaderV2(OmSegmentation* seg, const OmMipChunkCoord& coord)
+	OmMeshChunkDataReaderV2(OmSegmentation* seg, const OmChunkCoord& coord,
+							const double threshold)
 		: seg_(seg)
 		, coord_(coord)
-		, threshold_(1.)
-		, fnp_(filePath(threshold_))
+		, threshold_(threshold)
+		, fnp_(filePath())
 	{}
 
 	~OmMeshChunkDataReaderV2()
@@ -60,10 +61,11 @@ public:
 	}
 
 private:
-	QString filePath(const double threshold)
+	QString filePath()
 	{
 		const QString volPath =
-			OmFileNames::GetMeshChunkFolderPath(seg_, threshold, coord_);
+			OmFileNames::GetMeshChunkFolderPath(seg_, threshold_, coord_);
+
 		const QString fullPath = QString("%1meshData.ver2")
 			.arg(volPath);
 		return fullPath;

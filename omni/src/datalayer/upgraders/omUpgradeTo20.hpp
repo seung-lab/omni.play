@@ -2,10 +2,11 @@
 #define OM_UPGRADE_TO_20_HPP
 
 #include "segment/details/omSegmentListContainer.hpp"
+#include "segment/io/omValidGroupNum.hpp"
 #include "segment/lowLevel/omSegmentListBySize.h"
-#include "utility/dataWrappers.h"
 #include "segment/omSegmentLists.hpp"
 #include "segment/omSegmentUtils.hpp"
+#include "utility/dataWrappers.h"
 
 class OmUpgradeTo20{
 public:
@@ -19,13 +20,11 @@ private:
 	{
 		printf("rewriting valid segment data...\n");
 
-		boost::shared_ptr<OmSegmentLists> segLists = sdw.GetSegmentLists();
 		OmSegmentListContainer<OmSegmentListBySize>& validListCont
-			= segLists->Valid();
+			= sdw.SegmentLists()->Valid();
 		OmSegmentListBySize& validList = validListCont.List();
 
-		boost::shared_ptr<OmValidGroupNum>& validGroupNum
-			= sdw.GetValidGroupNum();
+		OmValidGroupNum* validGroupNum = sdw.ValidGroupNum();
 
 		OmSegIDsSet allSegIDs = validList.AllSegIDs();
 		FOR_EACH(iter, allSegIDs){
@@ -34,7 +33,7 @@ private:
 			set.insert(segID);
 
 			boost::shared_ptr<std::set<OmSegment*> > children =
-				OmSegmentUtils::GetAllChildrenSegments(sdw.GetSegmentCache(), set);
+				OmSegmentUtils::GetAllChildrenSegments(sdw.SegmentCache(), set);
 
 			validGroupNum->Set(sdw, children, true);
 		}

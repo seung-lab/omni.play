@@ -5,7 +5,7 @@
 #include "view2d/omView2dState.hpp"
 #include "view2d/omMouseEventUtils.hpp"
 #include "gui/widgets/omSegmentContextMenu.h"
-#include "actions/omActions.hpp"
+#include "actions/omActions.h"
 
 class OmMouseEventPress{
 private:
@@ -64,20 +64,23 @@ private:
 		if(!sdw) {
 			return;
 		}
-                const DataCoord dataClickPoint =
-                        state_->ComputeMouseClickPointDataCoord(event);
-		OmActions::FindAndSplitSegments(*sdw, state_->getViewGroupState(), dataClickPoint);
+		const DataCoord dataClickPoint =
+			state_->ComputeMouseClickPointDataCoord(event);
+
+		OmActions::FindAndSplitSegments(*sdw,
+										state_->getViewGroupState(),
+										dataClickPoint);
 	}
 
 	void doFindAndCutSegment(QMouseEvent* event)
-        {
-                boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
+	{
+		boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
 
-                if(!sdw) {
-                        return;
-                }
-                OmActions::FindAndCutSegments(*sdw, state_->getViewGroupState());
-        }
+		if(!sdw) {
+			return;
+		}
+		OmActions::FindAndCutSegments(*sdw, state_->getViewGroupState());
+	}
 
 	void mouseSetCrosshair(QMouseEvent * event)
 	{
@@ -140,8 +143,8 @@ private:
 														  dataClickPoint,
 														  v2d_);
 				v2d_->LineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
-														 dataClickPoint,
-														 true);
+													  dataClickPoint,
+													  true);
 			}
 		} else {
 			//debug(genone, "No segment_id in edit selection\n");
@@ -154,7 +157,7 @@ private:
 
 	void mouseSelectSegment(QMouseEvent * event)
 	{
-		bool augment_selection = event->modifiers() & Qt::ShiftModifier;
+		const bool augment_selection = event->modifiers() & Qt::ShiftModifier;
 
 		boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
 		if(!sdw){
@@ -209,10 +212,12 @@ private:
 		}
 
 		boost::optional<SegmentDataWrapper> ret;
-		OmChannel& channel = OmProject::GetChannel(state_->getVol()->getID());
-		foreach( OmID id, channel.GetValidFilterIds() ) {
+		ChannelDataWrapper cdw(state_->getVol()->getID());
+		OmChannel& channel = cdw.GetChannel();
 
-			OmFilter2d &filter = channel.GetFilter(id);
+		foreach( OmID id, channel.FilterManager().GetValidFilterIds() ) {
+
+			OmFilter2d &filter = channel.FilterManager().GetFilter(id);
 			SegmentationDataWrapper sdw = filter.GetSegmentationWrapper();
 			if (!sdw.IsSegmentationValid()){
 				continue;

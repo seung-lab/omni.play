@@ -43,10 +43,20 @@ public:
 		unsigned int ret = arg.toUInt(&ok, 10);
 		if( ok ){
 			return ret;
-		} else {
-			printf("could not parse to unsigned int \"%s\"\n", qPrintable(arg) );
-			return 0;
 		}
+		throw OmIoException("could not parse to unsigned int", arg);
+	}
+
+	static bool getBool(const QString& arg)
+	{
+		if("true" == arg){
+			return true;
+		}
+		if("false" == arg){
+			return false;
+		}
+
+		return getUInt(arg);
 	}
 
 	static double getDouble(const QString& arg)
@@ -55,10 +65,8 @@ public:
 		double ret = arg.toDouble(&ok);
 		if( ok ){
 			return ret;
-		} else {
-			printf("could not parse to double  \"%s\"\n", qPrintable(arg) );
-			return 0;
 		}
+		throw OmIoException("could not parse to double", arg);
 	}
 
 	static float getFloat(const QString& arg)
@@ -67,10 +75,8 @@ public:
 		double ret = arg.toFloat(&ok);
 		if( ok ){
 			return ret;
-		} else {
-			printf("could not parse to float  \"%s\"\n", qPrintable(arg) );
-			return 0;
 		}
+		throw OmIoException("could not parse to float", arg);
 	}
 };
 

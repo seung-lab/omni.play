@@ -10,6 +10,7 @@
 
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/strong_typedef.hpp>
@@ -60,7 +61,6 @@ typedef vmml::Vector2<int> ScreenCoord;
 typedef vmml::AxisAlignedBoundingBox<int> DataBbox;
 typedef vmml::AxisAlignedBoundingBox<float> NormBbox;
 typedef vmml::AxisAlignedBoundingBox<float> SpaceBbox;
-
 
 
 /**
@@ -156,6 +156,11 @@ namespace om {
 	template <typename T>
 	static std::string NumToStr(const T& num){
 		return boost::lexical_cast<std::string>(num);
+	}
+
+	template <typename T>
+	static QString NumToQStr(const T& num){
+		return QString::number(num);
 	}
 
 	template <typename T>

@@ -40,7 +40,7 @@ public:
 
 	void Execute()
 	{
-		sdw_.GetSegmentCache()->UpdateSegmentSelection(mNewSelectedIdSet,
+		sdw_.SegmentCache()->UpdateSegmentSelection(mNewSelectedIdSet,
 													   mAddToRecentList);
 
 		OmEvents::SegmentModified(sdw_,
@@ -52,7 +52,7 @@ public:
 
 	void Undo()
 	{
-		sdw_.GetSegmentCache()->UpdateSegmentSelection(mOldSelectedIdSet,
+		sdw_.SegmentCache()->UpdateSegmentSelection(mOldSelectedIdSet,
 													   mAddToRecentList);
 
 		OmEvents::SegmentModified(sdw_,

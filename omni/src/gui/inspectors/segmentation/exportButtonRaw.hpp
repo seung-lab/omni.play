@@ -3,7 +3,7 @@
 
 #include "gui/widgets/omButton.hpp"
 #include "gui/inspectors/segmentation/segInspector.h"
-#include "utility/dataWrappers.h"
+#include "gui/inspectors/segmentation/segInspector.h"
 
 class ExportButtonRaw : public OmButton<SegInspector> {
 public:
@@ -17,7 +17,6 @@ public:
 private:
 	void doAction()
 	{
-
 		const QString fileName =
 			QFileDialog::getSaveFileName(this, tr("Export As"));
 
@@ -25,7 +24,8 @@ private:
 			return;
 
 		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
-		sdw.GetSegmentation().ExportInternalData(fileName, false);
+
+		OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, false);
 	}
 };
 

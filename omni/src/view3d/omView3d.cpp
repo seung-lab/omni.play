@@ -1,3 +1,4 @@
+#include "project/omSegmentationManager.h"
 #include "common/omDebug.h"
 #include "common/omGl.h"
 #include "mesh/drawer/omMeshDrawer.h"
@@ -31,7 +32,7 @@ enum View3dWidgetIds {
 /*
  *	Constructs View3d widget that shares with the primary widget.
  */
-OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
+OmView3d::OmView3d(QWidget* parent, OmViewGroupState* vgs)
 	: QGLWidget(parent, OmStateManager::GetPrimaryView3dWidget())
 	, mView3dUi(this, vgs)
 	, mViewGroupState(vgs)
@@ -498,13 +499,18 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 						  mCamera.GetFocus());
 
 	// Draw meshes!
-	FOR_EACH(iter, OmProject::GetValidSegmentationIds())
+	FOR_EACH(iter, OmProject::Volumes().Segmentations().GetValidSegmentationIds())
 	{
-		OmSegmentation& seg = OmProject::GetSegmentation(*iter);
+		SegmentationDataWrapper sdw(*iter);
+		if(!sdw.IsBuilt()){
+			continue;
+		}
+
+		OmSegmentation& seg = sdw.GetSegmentation();
 
 		boost::shared_ptr<OmVolumeCuller> newCuller =
-			culler.GetTransformedCuller(seg.GetNormToSpaceMatrix(),
-										seg.GetNormToSpaceInvMatrix());
+			culler.GetTransformedCuller(seg.Coords().GetNormToSpaceMatrix(),
+										seg.Coords().GetNormToSpaceInvMatrix());
 
 		OmMeshDrawer* meshDrawer = seg.MeshDrawer();
 

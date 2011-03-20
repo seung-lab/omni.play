@@ -20,12 +20,14 @@ protected:
 		: fnp_(fnp)
 	{}
 
-	virtual ~OmMemMappedFileQTbase(){
+	virtual ~OmMemMappedFileQTbase()
+	{
 		file_->unmap(map_);
 		debug(memmap, "closing file %s\n", GetBaseFileName().c_str());
 	}
 
-	uint64_t Size(){
+	uint64_t Size()
+	{
 		boost::shared_ptr<QFile> file =
 			boost::make_shared<QFile>(QString::fromStdString(fnp_));
 		return file->size();

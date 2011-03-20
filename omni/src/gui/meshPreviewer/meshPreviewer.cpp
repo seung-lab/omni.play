@@ -1,3 +1,4 @@
+#include "mesh/omMipMeshManagers.hpp"
 #include "gui/meshPreviewer/scaleFactorLineEdit.hpp"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 #include "gui/meshPreviewer/previewButton.hpp"
@@ -5,7 +6,7 @@
 #include "segment/omSegmentSelector.h"
 #include "utility/dataWrappers.h"
 #include "view3d/omView3d.h"
-#include "volume/omMipChunk.h"
+#include "chunks/omChunk.h"
 #include "volume/omSegmentation.h"
 #include "zi/omUtility.h"
 
@@ -39,14 +40,14 @@ void MeshPreviewerImpl::mesh()
 {
 	OmSegmentation& segmentation = sdw_.GetSegmentation();
 	const DataCoord center =
-		segmentation.NormToDataCoord(NormCoord(0.5, 0.5, 0.5));
-	const OmMipChunkCoord coord = segmentation.DataToMipCoord(center, 0);
+		segmentation.Coords().NormToDataCoord(NormCoord(0.5, 0.5, 0.5));
+	const OmChunkCoord coord = segmentation.Coords().DataToMipCoord(center, 0);
 
-	segmentation.MeshChunk(coord);
+	segmentation.MeshManagers()->MeshChunk(coord);
 
-	OmMipChunkPtr chunk;
+	OmChunkPtr chunk;
 	segmentation.GetChunk(chunk, coord);
-
+/*
 	// select all segments
 	OmSegmentSelector sel(sdw_, this, "meshPreviewer");
 	sel.selectNoSegments();
@@ -54,4 +55,5 @@ void MeshPreviewerImpl::mesh()
 		sel.augmentSelectedSet(*iter, true);
 	}
 	sel.sendEvent();
+*/
 }

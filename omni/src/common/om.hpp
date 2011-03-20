@@ -26,7 +26,7 @@ namespace om {
 		FIFO,
 		DONT_FIFO
 	};
-	enum Affinity {
+	enum AffinityGraph {
 		NO_AFFINITY,
 		X_AFFINITY,
 		Y_AFFINITY,

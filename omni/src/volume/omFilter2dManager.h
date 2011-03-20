@@ -21,7 +21,7 @@ public:
 	bool IsFilterValid(OmID id);
 
 private:
-	OmGenericManager<OmFilter2d> mGenericFilterManager;
+	OmGenericManager<OmFilter2d> filters_;
 
 	friend QDataStream &operator<<(QDataStream&, const OmFilter2dManager&);
 	friend QDataStream &operator>>(QDataStream&, OmFilter2dManager& );

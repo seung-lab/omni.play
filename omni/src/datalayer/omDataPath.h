@@ -3,44 +3,51 @@
 
 #include "common/omCommon.h"
 
-class OmDataPath
-{
+class OmDataPath {
+private:
+    std::string path_;
+
 public:
     OmDataPath()
     {}
 
-    OmDataPath( const std::string &str ): mPath( str )
+	OmDataPath(const char* str)
+		: path_(std::string(str))
+	{}
+
+    OmDataPath(const std::string& str)
+		: path_(str)
     {}
 
-    void setPath( const std::string &str ){
-        mPath = str;
+    OmDataPath(const QString& str)
+		: path_(str.toStdString())
+    {}
+
+	void setPath(const char* str){
+		path_ = std::string(str);
+	}
+
+    void setPath(const std::string& str){
+        path_ = str;
     }
 
-    // why did we have two different function names? weird...
-    void setPath( const QString &str ){
-        mPath = str.toStdString();
-    }
-
-    void setPathQstr( const QString & str ){
-        mPath = str.toStdString();
+    void setPath(const QString& str){
+        path_ = str.toStdString();
     }
 
     const std::string& getString() const {
-        return mPath;
+        return path_;
     }
 
     const QString getQString() const {
-        return QString::fromStdString(mPath);
+        return QString::fromStdString(path_);
     }
 
-	friend std::ostream& operator<<(std::ostream &out, const OmDataPath &in)
+	friend std::ostream& operator<<(std::ostream& out, const OmDataPath& in)
 	{
-		out << "\"" << in.mPath << "\"";
+		out << "\"" << in.path_ << "\"";
 		return out;
 	}
-
-private:
-    std::string mPath;
 };
 
 #endif

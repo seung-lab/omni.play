@@ -44,7 +44,8 @@ protected:
 	QString mNote;
 	QString mCustomName;
 
-	friend class OmDataArchiveProject;
+	friend class OmMipVolumeArchive;
+	friend class OmMipVolumeArchiveOld;
 };
 
 #endif

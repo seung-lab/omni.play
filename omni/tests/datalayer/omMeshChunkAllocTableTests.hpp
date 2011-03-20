@@ -20,7 +20,7 @@ private:
 	{
 		/*
 		OmSegmentation seg(1);
-		OmMipChunkCoord coord(0,0,0,0);
+		OmChunkCoord coord(0,0,0,0);
 		OmMipChunkPtr chunk(new OmMipChunk(coord, &seg));
 
 		const OmSegID maxSeg = 100;

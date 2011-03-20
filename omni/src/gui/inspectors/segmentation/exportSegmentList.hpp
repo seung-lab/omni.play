@@ -4,7 +4,6 @@
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegmentCache.h"
-#include "system/omProjectData.h"
 #include "utility/dataWrappers.h"
 
 #include <QTextStream>
@@ -23,10 +22,10 @@ class ExportSegmentList : public OmButton<SegInspector> {
 	{
 		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
 
-		OmSegmentCache* segmentCache = sdw.GetSegmentCache();
+		OmSegmentCache* segmentCache = sdw.SegmentCache();
 
-		const QString outFile =
-			OmProjectData::getAbsoluteFileNameAndPath() + ".segments.txt";
+		const QString outFile = OmProject::OmniFile() + ".segments.txt";
+
 		QFile data(outFile);
 		if(data.open(QFile::WriteOnly | QFile::Truncate)) {
 			printf("writing segment file %s\n", qPrintable(outFile));

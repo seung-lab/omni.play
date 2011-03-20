@@ -2,7 +2,7 @@
 #define OM_RING_BUFFER_HPP
 
 #include "common/omCommon.h"
-#include "utility/omTimer.h"
+#include "utility/omTimer.hpp"
 #include "zi/omUtility.h"
 #include "zi/omMutex.h"
 

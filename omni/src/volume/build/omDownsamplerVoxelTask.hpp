@@ -1,40 +1,41 @@
 #ifndef OM_DOWNSAMPLER_VOXEL_TASK
 #define OM_DOWNSAMPLER_VOXEL_TASK
 
+#include "volume/io/omMemMappedVolumeImpl.hpp"
+#include "volume/omRawChunk.hpp"
+
 template <typename T>
 class DownsampleVoxelTask : public zi::runnable {
 private:
 	OmMipVolume *const vol_;
 	const std::vector<MipLevelInfo>& mips_;
 	const MippingInfo& mippingInfo_;
-	const OmMipChunkCoord coord_;
+	const OmChunkCoord coord_;
 	const Vector3i srcChunkStartPos_;
-	boost::shared_ptr<OmRawChunkCache<T> > cache_;
 
-	std::vector<boost::shared_ptr<OmRawChunk<T> > > chunks_;
+	OmMemMappedVolumeImpl<T> *const files_;
+	std::vector<T*> rawChunks_;
 
 public:
 	DownsampleVoxelTask(OmMipVolume* vol,
 						const std::vector<MipLevelInfo>& mips,
 						const MippingInfo& mippingInfo,
-						const OmMipChunkCoord& coord,
-						boost::shared_ptr<OmRawChunkCache<T> > cache)
+						const OmChunkCoord& coord,
+						OmMemMappedVolumeImpl<T>* files)
 		: vol_(vol)
 		, mips_(mips)
 		, mippingInfo_(mippingInfo)
 		, coord_(coord)
-		, srcChunkStartPos_(vol_->MipCoordToDataBbox(coord_, 0).getMin())
-		, cache_(cache)
+		, srcChunkStartPos_(vol_->Coords().MipCoordToDataBbox(coord_, 0).getMin())
+		, files_(files)
 	{
-		chunks_.resize(mippingInfo.maxMipLevel + 1);
+		rawChunks_.resize(mippingInfo.maxMipLevel + 1);
 
 		for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i){
 			const DataCoord dstCoord = coord_.Coordinate / mips_[i].factor;
-			const OmMipChunkCoord coord(i, dstCoord);
+			const OmChunkCoord coord(i, dstCoord);
 
-			boost::shared_ptr<OmRawChunk<T> > chunk;
-			cache_->Get(chunk, coord, om::BLOCKING);
-			chunks_[i] = chunk;
+			rawChunks_[i] = files_->GetChunkPtr(coord);
 		}
 	}
 
@@ -80,7 +81,7 @@ public:
 									 dstLocation.y  % 128,
 									 dstLocation.z  % 128);
 			const uint64_t offset = computeVoxelOffsetIntoChunk(dstCoord);
-			chunks_[i]->Set(offset, srcVoxel);
+			rawChunks_[i][offset] = srcVoxel;
 		}
 	}
 };
