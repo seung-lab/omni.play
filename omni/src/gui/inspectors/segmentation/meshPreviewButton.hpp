@@ -17,7 +17,7 @@ public:
 private:
 	void doAction()
 	{
-		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
+		const SegmentationDataWrapper& sdw = mParent->GetSDW();
 
 		new MeshPreviewer(this, sdw, mParent->getViewGroupState());
 	}

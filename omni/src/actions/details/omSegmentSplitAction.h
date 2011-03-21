@@ -1,7 +1,7 @@
 #ifndef OM_SEGMENT_SPLIT_ACTION_H
 #define OM_SEGMENT_SPLIT_ACTION_H
 
-#include "actions/details/omAction.h"
+#include "actions/details/omUndoCommand.hpp"
 #include "segment/omSegmentEdge.h"
 
 class SegmentDataWrapper;
@@ -11,27 +11,25 @@ class OmSegment;
 class OmViewGroupState;
 class OmSegmentSplitActionImpl;
 
-class OmSegmentSplitAction : public OmAction {
+class OmSegmentSplitAction : public OmUndoCommand {
 
 public:
-        OmSegmentSplitAction(boost::shared_ptr<OmSegmentSplitActionImpl> impl) : impl_(impl) {}
+    OmSegmentSplitAction(boost::shared_ptr<OmSegmentSplitActionImpl> impl)
+        : impl_(impl)
+    {}
 
-	static void RunIfSplittable( OmSegment * seg1, OmSegment * seg2, const DataCoord coord1, const DataCoord coord2 );
+    OmSegmentSplitAction(const SegmentationDataWrapper& sdw,
+                          const OmSegmentEdge& edge);
+    OmSegmentSplitAction(const SegmentDataWrapper & sdw,
+                         const DataCoord coord1, const DataCoord coord2);
 
-	static void DoFindAndCutSegment(const SegmentDataWrapper& sdw,
-					  OmViewGroupState* vgs);
 private:
-	OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
-						  const OmSegmentEdge & edge );
-	OmSegmentSplitAction( const SegmentDataWrapper & sdw, const DataCoord coord1, const DataCoord coord2);
+    void Action();
+    void UndoAction();
+    std::string Description();
+    void save(const std::string& comment);
 
-	void Action();
-	void UndoAction();
-	std::string Description();
-	void save(const std::string& comment);
-
-
-	boost::shared_ptr<OmSegmentSplitActionImpl> impl_;
+    boost::shared_ptr<OmSegmentSplitActionImpl> impl_;
 };
 
 #endif

@@ -1,204 +1,212 @@
 #ifndef SEGMENT_DATA_WRAPPER_HPP
 #define SEGMENT_DATA_WRAPPER_HPP
 
-#include "project/omSegmentationManager.h"
+#include "project/details/omSegmentationManager.h"
 #include "project/omProject.h"
-#include "segment/omSegmentCache.h"
-#include "volume/omSegmentation.h"
+#include "segment/lists/omSegmentLists.h"
+#include "segment/omSegments.h"
 #include "utility/segmentationDataWrapper.hpp"
-#include "segment/omSegmentLists.hpp"
+#include "volume/omSegmentation.h"
 
 class SegmentDataWrapper {
 private:
-	OmSegID segmentID_;
-	OmID segmentationID_;
+    OmSegID segmentID_;
+    OmID segmentationID_;
 
-	// not allowed--allows wrappers to be implicitly converted!!!
-	explicit SegmentDataWrapper(const SegmentationDataWrapper& sdw);
+    // not allowed--allows wrappers to be implicitly converted!!!
+    explicit SegmentDataWrapper(const SegmentationDataWrapper& sdw);
 
 public:
-	SegmentDataWrapper()
-		: segmentID_(0)
-		, segmentationID_(0)
-	{}
+    SegmentDataWrapper()
+        : segmentID_(0)
+        , segmentationID_(0)
+    {}
 
-	SegmentDataWrapper(const OmID segmentationID,
-					   const OmSegID segmentID)
-		: segmentID_(segmentID)
-		, segmentationID_(segmentationID)
-	{}
+    SegmentDataWrapper(const OmID segmentationID,
+                       const OmSegID segmentID)
+        : segmentID_(segmentID)
+        , segmentationID_(segmentationID)
+    {}
 
-	explicit SegmentDataWrapper(OmSegment* seg)
-		: segmentID_(seg->value())
-		, segmentationID_(seg->GetSegmentationID())
-	{}
+    SegmentDataWrapper(const OmSegmentation* segmentation,
+                       const OmSegID segmentID)
+        : segmentID_(segmentID)
+        , segmentationID_(segmentation->getID())
+    {}
 
-	SegmentDataWrapper(const SegmentationDataWrapper& sdw, const OmSegID segID)
-		: segmentID_(segID)
-		, segmentationID_(sdw.GetSegmentationID())
-	{}
+    explicit SegmentDataWrapper(OmSegment* seg)
+        : segmentID_(seg->value())
+        , segmentationID_(seg->GetSegmentationID())
+    {}
 
-	inline void set(const SegmentDataWrapper& sdw)
-	{
-		segmentID_ = sdw.segmentID_;
-		segmentationID_ = sdw.segmentationID_;
-	}
+    SegmentDataWrapper(const SegmentationDataWrapper& sdw, const OmSegID segID)
+        : segmentID_(segID)
+        , segmentationID_(sdw.GetSegmentationID())
+    {}
 
-	inline void SetSegmentID(const OmSegID segID){
-		segmentID_ = segID;
-	}
+    inline void set(const SegmentDataWrapper& sdw)
+    {
+        segmentID_ = sdw.segmentID_;
+        segmentationID_ = sdw.segmentationID_;
+    }
 
-	SegmentDataWrapper& operator =(const SegmentDataWrapper& sdw){
-		if (this != &sdw){
-			segmentID_ = sdw.segmentID_;
-			segmentationID_ = sdw.segmentationID_;
-		}
-		return *this;
-	}
+    inline void SetSegmentID(const OmSegID segID){
+        segmentID_ = segID;
+    }
 
-	inline OmSegID GetSegmentID() const {
-		return segmentID_;
-	}
+    SegmentDataWrapper& operator =(const SegmentDataWrapper& sdw)
+    {
+        if (this != &sdw){
+            segmentID_ = sdw.segmentID_;
+            segmentationID_ = sdw.segmentationID_;
+        }
+        return *this;
+    }
 
-	bool operator ==(const SegmentDataWrapper& sdw) const {
-		return segmentID_ == sdw.segmentID_ && segmentationID_ == sdw.segmentationID_;
-	}
+    inline OmSegID GetSegmentID() const {
+        return segmentID_;
+    }
 
-	bool operator !=(const SegmentDataWrapper& sdw) const {
-		return !(*this == sdw);
-	}
+    bool operator ==(const SegmentDataWrapper& sdw) const {
+        return segmentID_ == sdw.segmentID_ && segmentationID_ == sdw.segmentationID_;
+    }
 
-	SegmentationDataWrapper MakeSegmentationDataWrapper() const {
-		return SegmentationDataWrapper(segmentationID_);
-	}
+    bool operator !=(const SegmentDataWrapper& sdw) const {
+        return !(*this == sdw);
+    }
 
-	inline bool IsSegmentationValid() const
-	{
-		if(!segmentationID_){
-			return false;
-		}
+    SegmentationDataWrapper MakeSegmentationDataWrapper() const {
+        return SegmentationDataWrapper(segmentationID_);
+    }
 
-		return OmProject::Volumes().Segmentations().IsSegmentationValid(segmentationID_);
-	}
+    inline bool IsSegmentationValid() const
+    {
+        if(!segmentationID_){
+            return false;
+        }
 
-	inline bool IsSegmentValid() const
-	{
-		if(!segmentID_ && !segmentationID_){
-			return false;
-		}
+        return OmProject::Volumes().Segmentations().IsSegmentationValid(segmentationID_);
+    }
 
-		return OmProject::Volumes().Segmentations().IsSegmentationValid(segmentationID_) &&
-			SegmentCache()->IsSegmentValid(segmentID_);
-	}
+    inline bool IsSegmentValid() const
+    {
+        if(!segmentID_ && !segmentationID_){
+            return false;
+        }
 
-	inline QString getName() const {
-		return getSegment()->GetName();
-	}
+        return IsSegmentationValid() && Segments()->IsSegmentValid(segmentID_);
+    }
 
-	inline QString GetSegmentationName() const {
-		return QString::fromStdString(GetSegmentation().GetName());
-	}
+    inline QString getName() const {
+        return GetSegment()->GetName();
+    }
 
-	inline bool isSelected() const {
-		return SegmentCache()->IsSegmentSelected(segmentID_);
-	}
+    inline QString GetSegmentationName() const {
+        return QString::fromStdString(GetSegmentation().GetName());
+    }
 
-	inline void setSelected(const bool isSelected,
-			 const bool addToRecentList) const {
-		SegmentCache()->setSegmentSelected(segmentID_, isSelected, addToRecentList);
-	}
+    inline bool isSelected() const {
+        return Segments()->IsSegmentSelected(segmentID_);
+    }
 
-	inline bool isEnabled() const {
-		return SegmentCache()->isSegmentEnabled(segmentID_);
-	}
+    inline void setSelected(const bool isSelected,
+                            const bool addToRecentList) const {
+        Segments()->setSegmentSelected(segmentID_, isSelected, addToRecentList);
+    }
 
-	inline void setEnabled(const bool enabled) const {
-		SegmentCache()->setSegmentEnabled(segmentID_, enabled );
-	}
+    inline bool isEnabled() const {
+        return Segments()->isSegmentEnabled(segmentID_);
+    }
 
-	inline QString getNote() const {
-		return getSegment()->GetNote();
-	}
+    inline void setEnabled(const bool enabled) const {
+        Segments()->setSegmentEnabled(segmentID_, enabled );
+    }
 
-	inline void setNote(const QString& str) const {
-		getSegment()->SetNote(str);
-	}
+    inline QString getNote() const {
+        return GetSegment()->GetNote();
+    }
 
-	inline QString getIDstr() const {
-		return QString("%1").arg(getID());
-	}
+    inline void setNote(const QString& str) const {
+        GetSegment()->SetNote(str);
+    }
 
-	inline OmColor getColorInt() const {
-		return getSegment()->GetColorInt();
-	}
+    inline QString getIDstr() const {
+        return QString("%1").arg(getID());
+    }
 
-	inline Vector3f getColorFloat() const {
-		return getSegment()->GetColorFloat();
-	}
+    inline OmColor getColorInt() const {
+        return GetSegment()->GetColorInt();
+    }
 
-	inline void setColor(const Vector3f& color) const {
-		getSegment()->SetColor( color );
-	}
+    inline Vector3f getColorFloat() const {
+        return GetSegment()->GetColorFloat();
+    }
 
-	inline void setName( const QString& str ) const {
-		getSegment()->SetName( str );
-	}
+    inline void setColor(const Vector3f& color) const {
+        GetSegment()->SetColor(color);
+    }
 
-	inline OmSegmentation& GetSegmentation() const {
-		return OmProject::Volumes().Segmentations().GetSegmentation(segmentationID_);
-	}
+    inline void setName( const QString& str ) const {
+        GetSegment()->SetName( str );
+    }
 
-	inline OmSegmentLists* SegmentLists() const {
-		return GetSegmentation().SegmentLists();
-	}
+    inline OmSegmentation& GetSegmentation() const {
+        return OmProject::Volumes().Segmentations().GetSegmentation(segmentationID_);
+    }
 
-	inline OmSegment* getSegment() const {
-		return SegmentCache()->GetSegment( segmentID_ );
-	}
+    inline OmSegmentation* GetSegmentationPtr() const
+    {
+        OmSegmentation& segmentation = GetSegmentation();
+        return &segmentation;
+    }
 
-	inline OmSegmentCache* SegmentCache() const {
-		return GetSegmentation().SegmentCache();
-	}
+    inline OmSegment* GetSegment() const {
+        return Segments()->GetSegment( segmentID_ );
+    }
 
-	inline uint64_t getSize() const {
-		return getSegment()->size();
-	}
+    inline OmSegments* Segments() const {
+        return GetSegmentation().Segments();
+    }
 
-	inline uint64_t getSizeWithChildren() const {
-		return getSegment()->getSizeWithChildren();
-	}
+    inline uint64_t getSize() const {
+        return GetSegment()->size();
+    }
 
-	inline OmID GetSegmentationID() const {
-		return segmentationID_;
-	}
+    inline OmID GetSegmentationID() const {
+        return segmentationID_;
+    }
 
-	inline OmSegID getID() const {
-		return segmentID_;
-	}
+    inline OmSegID getID() const {
+        return segmentID_;
+    }
 
-	inline OmSegID GetVoxelValue(const DataCoord& dataClickPoint) const {
-		return GetSegmentation().GetVoxelValue(dataClickPoint);
-	}
+    inline OmSegID GetVoxelValue(const DataCoord& dataClickPoint) const {
+        return GetSegmentation().GetVoxelValue(dataClickPoint);
+    }
 
-	inline OmSegID FindRootID() const {
-		return SegmentCache()->findRootID(segmentID_);
-	}
+    inline OmSegID FindRootID() const {
+        return Segments()->findRootID(segmentID_);
+    }
 
-	inline OmSegment* FindRoot() const {
-		return SegmentCache()->findRoot(segmentID_);
-	}
+    inline OmSegment* FindRoot() const {
+        return Segments()->findRoot(segmentID_);
+    }
 
-	inline void RandomizeColor() const {
-		getSegment()->reRandomizeColor();
-	}
+    inline void RandomizeColor() const {
+        GetSegment()->reRandomizeColor();
+    }
 
-	friend std::ostream& operator<<(std::ostream &out,
-									const SegmentDataWrapper& s)
-	{
-		out << "(segmentation " << s.segmentationID_
-			<< ", segment " << s.segmentID_ << ")";
-		return out;
-	}
+    inline int64_t GetSizeWithChildren() const {
+        return GetSegmentation().SegmentLists()->GetSizeWithChildren(segmentID_);
+    }
+
+    friend std::ostream& operator<<(std::ostream &out,
+                                    const SegmentDataWrapper& s)
+    {
+        out << "(segmentation " << s.segmentationID_
+            << ", segment " << s.segmentID_ << ")";
+        return out;
+    }
 };
 
 #endif

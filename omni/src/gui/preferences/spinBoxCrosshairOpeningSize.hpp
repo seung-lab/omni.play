@@ -3,7 +3,7 @@
 
 #include "view2d/om2dPreferences.hpp"
 #include "gui/widgets/omIntSpinBox.hpp"
-#include "system/omEvents.h"
+#include "events/omEvents.h"
 
 class CrosshairOpeningSizeSpinBox : public OmIntSpinBox {
 public:

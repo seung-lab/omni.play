@@ -2,6 +2,8 @@
 #define OM_MOUSE_EVENT_UTILS_HPP
 
 #include "view2d/omView2dZoom.hpp"
+#include "view2d/omGuiHelpers.hpp"
+#include "view2d/omMouseEventState.hpp"
 
 class OmView2d;
 
@@ -20,8 +22,6 @@ public:
 			sel.sendEvent();
 		}
 	}
-
-
 };
 
 #endif

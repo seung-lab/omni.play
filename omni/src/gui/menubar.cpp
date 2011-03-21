@@ -1,157 +1,144 @@
+#include "system/omConnect.hpp"
 #include "gui/menubar.h"
-#include "gui/mainwindow.h"
+#include "gui/mainWindow/mainWindow.h"
 #include "project/omProject.h"
 
-MenuBar::MenuBar( MainWindow * mw )
-	: QWidget(mw)
+MenuBar::MenuBar(MainWindow* mainWindow)
+    : QWidget(mainWindow)
+    , mainWindow_(mainWindow)
 {
-	mMainWindow = mw;
-	createActions();
-	createMenus();
+    createActions();
+    createMenus();
 
-	recentFiles.loadRecentlyUsedFilesListFromFS();
+    recentFiles_.loadRecentlyUsedFilesListFromFS();
 }
 
 void MenuBar::createMenus()
 {
-	fileMenu = mMainWindow->menuBar()->addMenu(tr("&File"));
-	fileMenu->addAction(newAct);
-	fileMenu->addAction(openAct);
-	fileMenu->addSeparator();
-	fileMenu->addAction(closeAct);
-	fileMenu->addAction(saveAct);
-	fileMenu->addSeparator();
-	for (int i = 0; i < recentFiles.getMaxNumberOfRecentlyUsedFilesToDisplay(); i++) {
-		fileMenu->addAction(recentFiles.recentFileActs[i]);
-	}
-	fileMenu->addSeparator();
-	fileMenu->addAction(quitAct);
+    fileMenu_ = mainWindow_->menuBar()->addMenu(tr("&File"));
+    fileMenu_->addAction(newAct_);
+    fileMenu_->addAction(openAct_);
+    fileMenu_->addSeparator();
+    fileMenu_->addAction(closeAct_);
+    fileMenu_->addAction(saveAct_);
+    fileMenu_->addSeparator();
+    for (int i = 0; i < recentFiles_.getMaxNumberOfRecentlyUsedFilesToDisplay(); i++) {
+        fileMenu_->addAction(recentFiles_.recentFileActs[i]);
+    }
+    fileMenu_->addSeparator();
+    fileMenu_->addAction(quitAct_);
 
-	editMenu = mMainWindow->menuBar()->addMenu(tr("&Edit"));
-	editMenu->addAction(editLocalPreferencesAct);
-	editMenu->addAction(editPreferencesAct);
+    editMenu_ = mainWindow_->menuBar()->addMenu(tr("&Edit"));
+    editMenu_->addAction(editLocalPreferencesAct_);
+    editMenu_->addAction(editPreferencesAct_);
 
-	projectMenu = mMainWindow->menuBar()->addMenu(tr("&Project"));
-	projectMenu->addAction(addChannelAct);
-	projectMenu->addAction(addSegmentationAct);
+    projectMenu_ = mainWindow_->menuBar()->addMenu(tr("&Project"));
+    projectMenu_->addAction(addChannelAct_);
+    projectMenu_->addAction(addSegmentationAct_);
+    projectMenu_->addAction(dumpActionLogAct_);
 
-	toolMenu = mMainWindow->menuBar()->addMenu(tr("&Tools"));
-	toolMenu->addAction(openOmniInspector);
-	toolMenu->addAction(openUndoViewAct);
-	toolMenu->addAction(openCacheMonitorAct);
-	toolMenu->addAction(openGroupsTableAct);
+    toolMenu_ = mainWindow_->menuBar()->addMenu(tr("&Tools"));
+    toolMenu_->addAction(openOmniInspector_);
+    toolMenu_->addAction(openUndoViewAct_);
+    toolMenu_->addAction(openCacheMonitorAct_);
+    toolMenu_->addAction(openGroupsTableAct_);
 
-	windowMenu = mMainWindow->menuBar()->addMenu(tr("&Window"));
-	windowMenu->addAction(open3DAct);
+    windowMenu_ = mainWindow_->menuBar()->addMenu(tr("&Window"));
+    windowMenu_->addAction(open3DAct_);
 }
 
 void MenuBar::createActions()
 {
-	// Menubar
-	// File
-	newAct = new QAction(tr("&New Project..."), mMainWindow);
-	newAct->setShortcut(tr("Ctrl+N"));
-	newAct->setStatusTip(tr("Begin a new project"));
-	connect(newAct, SIGNAL(triggered()), mMainWindow, SLOT(newProject()));
+    // Menubar
+    // File
+    newAct_ = new QAction(tr("&New Project..."), mainWindow_);
+    newAct_->setShortcut(tr("Ctrl+N"));
+    newAct_->setStatusTip(tr("Begin a new project"));
+    om::connect(newAct_, SIGNAL(triggered()), mainWindow_, SLOT(newProject()));
 
-	openAct = new QAction(tr("&Open..."), mMainWindow);
-	openAct->setShortcut(tr("Ctrl+O"));
-	openAct->setStatusTip(tr("Open an existing project"));
-	connect(openAct, SIGNAL(triggered()), mMainWindow, SLOT(openProject()));
+    openAct_ = new QAction(tr("&Open..."), mainWindow_);
+    openAct_->setShortcut(tr("Ctrl+O"));
+    openAct_->setStatusTip(tr("Open an existing project"));
+    om::connect(openAct_, SIGNAL(triggered()), mainWindow_, SLOT(openProject()));
 
-	closeAct = new QAction(tr("&Close"), mMainWindow);
-	closeAct->setStatusTip(tr("Close current project"));
-	connect(closeAct, SIGNAL(triggered()), mMainWindow, SLOT(closeProject()));
+    closeAct_ = new QAction(tr("&Close"), mainWindow_);
+    closeAct_->setStatusTip(tr("Close current project"));
+    om::connect(closeAct_, SIGNAL(triggered()), mainWindow_, SLOT(closeProject()));
 
-	saveAct = new QAction(tr("&Save"), mMainWindow);
-	saveAct->setShortcut(tr("Ctrl+S"));
-	saveAct->setStatusTip(tr("Saves the current project"));
-	connect(saveAct, SIGNAL(triggered()), mMainWindow, SLOT(saveProject()));
+    saveAct_ = new QAction(tr("&Save"), mainWindow_);
+    saveAct_->setShortcut(tr("Ctrl+S"));
+    saveAct_->setStatusTip(tr("Saves the current project"));
+    om::connect(saveAct_, SIGNAL(triggered()), mainWindow_, SLOT(saveProject()));
 
-	for (int i = 0; i < recentFiles.getMaxNumberOfRecentlyUsedFilesToDisplay(); i++) {
-		recentFiles.recentFileActs[i] = new QAction(mMainWindow);
-		recentFiles.recentFileActs[i]->setVisible(false);
-		connect(recentFiles.recentFileActs[i], SIGNAL(triggered()), mMainWindow, SLOT(openRecentFile()));
-	}
+    for (int i = 0; i < recentFiles_.getMaxNumberOfRecentlyUsedFilesToDisplay(); i++) {
+        recentFiles_.recentFileActs[i] = new QAction(mainWindow_);
+        recentFiles_.recentFileActs[i]->setVisible(false);
+        om::connect(recentFiles_.recentFileActs[i], SIGNAL(triggered()), mainWindow_, SLOT(openRecentFile()));
+    }
 
-	quitAct = new QAction(tr("&Quit"), mMainWindow);
-	quitAct->setShortcut(tr("Ctrl+Q"));
-	quitAct->setStatusTip(tr("Quit the application"));
-	connect(quitAct, SIGNAL(triggered()), mMainWindow, SLOT(close()));
+    quitAct_ = new QAction(tr("&Quit"), mainWindow_);
+    quitAct_->setShortcut(tr("Ctrl+Q"));
+    quitAct_->setStatusTip(tr("Quit the application"));
+    om::connect(quitAct_, SIGNAL(triggered()), mainWindow_, SLOT(close()));
 
-	// Edit
-	editLocalPreferencesAct = new QAction(tr("&Local Preferences"), mMainWindow);
-	connect(editLocalPreferencesAct, SIGNAL(triggered()), mMainWindow, SLOT(showEditLocalPreferencesDialog()));
+    // Edit
+    editLocalPreferencesAct_ = new QAction(tr("&Local Preferences"), mainWindow_);
+    om::connect(editLocalPreferencesAct_, SIGNAL(triggered()), mainWindow_, SLOT(showEditLocalPreferencesDialog()));
 
-	editPreferencesAct = new QAction(tr("&Project Preferences"), mMainWindow);
-	connect(editPreferencesAct, SIGNAL(triggered()), mMainWindow, SLOT(showEditPreferencesDialog()));
+    editPreferencesAct_ = new QAction(tr("&Project Preferences"), mainWindow_);
+    om::connect(editPreferencesAct_, SIGNAL(triggered()), mainWindow_, SLOT(showEditPreferencesDialog()));
 
-	// Project
-	addChannelAct = new QAction(tr("Add &Channel"), mMainWindow);
-	addChannelAct->setShortcut(tr("Ctrl+Shift+C"));
-	addChannelAct->setStatusTip(tr("Adds a channe to the current project"));
-	connect(addChannelAct, SIGNAL(triggered()), mMainWindow, SLOT(addChannelToVolume()));
+    // Project
+    addChannelAct_ = new QAction(tr("Add &Channel"), mainWindow_);
+    addChannelAct_->setShortcut(tr("Ctrl+Shift+C"));
+    addChannelAct_->setStatusTip(tr("Adds a channe to the current project"));
+    om::connect(addChannelAct_, SIGNAL(triggered()), mainWindow_, SLOT(addChannelToVolume()));
 
-	addSegmentationAct = new QAction(tr("Add &Segmentation"), mMainWindow);
-	addSegmentationAct->setShortcut(tr("Ctrl+Shift+S"));
-	addSegmentationAct->setStatusTip(tr("Adds a volume to the current project"));
-	connect(addSegmentationAct, SIGNAL(triggered()), mMainWindow, SLOT(addSegmentationToVolume()));
+    addSegmentationAct_ = new QAction(tr("Add &Segmentation"), mainWindow_);
+    addSegmentationAct_->setShortcut(tr("Ctrl+Shift+S"));
+    addSegmentationAct_->setStatusTip(tr("Adds a volume to the current project"));
+    om::connect(addSegmentationAct_, SIGNAL(triggered()), mainWindow_, SLOT(addSegmentationToVolume()));
 
-	// Tools
-	openOmniInspector = new QAction(tr("&Inspector"), mMainWindow);
-	openOmniInspector->setShortcut(tr("Ctrl+I"));
-	openOmniInspector->setStatusTip(tr("Opens the Omni Inspector"));
-	connect(openOmniInspector, SIGNAL(triggered()), mMainWindow, SLOT(openInspector()));
+    dumpActionLogAct_ = new QAction("Dump Action Log", mainWindow_);
+    om::connect(dumpActionLogAct_, SIGNAL(triggered()), mainWindow_, SLOT(dumpActionLog()));
 
-	openUndoViewAct = new QAction(tr("&History"), mMainWindow);
-	openUndoViewAct->setStatusTip(tr("Opens the Undo History"));
-	connect(openUndoViewAct, SIGNAL(triggered()), mMainWindow, SLOT(openUndoView()));
+    // Tools
+    openOmniInspector_ = new QAction(tr("&Inspector"), mainWindow_);
+    openOmniInspector_->setShortcut(tr("Ctrl+I"));
+    openOmniInspector_->setStatusTip(tr("Opens the Omni Inspector"));
+    om::connect(openOmniInspector_, SIGNAL(triggered()), mainWindow_, SLOT(openInspector()));
 
-	openCacheMonitorAct = new QAction(tr("&Cache Monitor"), mMainWindow);
-	openUndoViewAct->setStatusTip(tr("Opens the Cache Monitor Tool"));
-	connect(openCacheMonitorAct, SIGNAL(triggered()), mMainWindow, SLOT(openCacheMonitor()));
+    openUndoViewAct_ = new QAction(tr("&History"), mainWindow_);
+    openUndoViewAct_->setStatusTip(tr("Opens the Undo History"));
+    om::connect(openUndoViewAct_, SIGNAL(triggered()), mainWindow_, SLOT(openUndoView()));
 
-	openGroupsTableAct = new QAction(tr("Inspect &Groups"), mMainWindow);
-	openGroupsTableAct->setStatusTip(tr("Opens the Groups Table"));
-	connect(openGroupsTableAct, SIGNAL(triggered()), mMainWindow, SLOT(openGroupsTable()));
+    openCacheMonitorAct_ = new QAction(tr("&Cache Monitor"), mainWindow_);
+    openUndoViewAct_->setStatusTip(tr("Opens the Cache Monitor Tool"));
+    om::connect(openCacheMonitorAct_, SIGNAL(triggered()), mainWindow_, SLOT(openCacheMonitor()));
 
+    openGroupsTableAct_ = new QAction(tr("Inspect &Groups"), mainWindow_);
+    openGroupsTableAct_->setStatusTip(tr("Opens the Groups Table"));
+    om::connect(openGroupsTableAct_, SIGNAL(triggered()), mainWindow_, SLOT(openGroupsTable()));
 
-	// Window
-	open3DAct = new QAction(tr("Open &3D View"), mMainWindow);
-	open3DAct->setShortcut(tr("Ctrl+3"));
-	open3DAct->setStatusTip(tr("Opens the 3D view"));
-	connect(open3DAct, SIGNAL(triggered()), mMainWindow, SLOT(open3dView()));
+    // Window
+    open3DAct_ = new QAction(tr("Open &3D View"), mainWindow_);
+    open3DAct_->setShortcut(tr("Ctrl+3"));
+    open3DAct_->setStatusTip(tr("Opens the 3D view"));
+    om::connect(open3DAct_, SIGNAL(triggered()), mainWindow_, SLOT(open3dView()));
 }
 
-void MenuBar::updateReadOnlyRelatedWidgets()
+void MenuBar::UpdateReadOnlyRelatedWidgets()
 {
-	bool toBeEnabled = false;
+    const bool projectOpen = OmProject::IsOpen();
+    const bool readWrite = OmProject::IsOpen() && !OmProject::IsReadOnly();
 
-	if ( mMainWindow->isProjectOpen() && !OmProject::IsReadOnly() ){
-		toBeEnabled = true;
-	}
+    saveAct_->setEnabled(readWrite);
+    closeAct_->setEnabled(projectOpen);
 
-	saveAct->setEnabled(toBeEnabled);
-
-	addChannelAct->setEnabled( toBeEnabled );
-	addSegmentationAct->setEnabled( toBeEnabled );
-
-	if ( mMainWindow->isProjectOpen() ){
-		toBeEnabled = true;
-	}
+    addChannelAct_->setEnabled(readWrite);
+    addSegmentationAct_->setEnabled(readWrite);
 }
 
-QMenu * MenuBar::getWindowMenu()
-{
-	return windowMenu;
-}
-
-QAction * MenuBar::getOpenCacheMonitorAct()
-{
-	return openCacheMonitorAct;
-}
-
-void MenuBar::addRecentFile( QString fileName )
-{
-	recentFiles.addFile( fileName );
+void MenuBar::AddRecentFile(const QString& fnp){
+    recentFiles_.addFile(fnp);
 }

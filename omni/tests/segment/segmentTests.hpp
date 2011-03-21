@@ -2,32 +2,31 @@
 #define SEGMENT_TESTS_HPP
 
 #include "segment/io/omMST.h"
-#include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
+#include "segment/lowLevel/omSegmentsImplLowLevel.h"
 #include "segment/lowLevel/omSegmentGraph.h"
-#include "segment/omSegmentCache.h"
-#include "segment/omSegmentCacheImpl.h"
-#include "segment/omSegmentColorizer.h"
+#include "segment/omSegments.h"
+#include "segment/omSegmentsImpl.h"
+#include "segment/colorizer/omSegmentColorizer.h"
 #include "tests/fakeMemMapFile.hpp"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentListBySizeTests.hpp"
 
 class SegmentTests {
 public:
-	SegmentTests()
-	{}
+    SegmentTests()
+    {}
 
-	void RunAll()
-	{
-		segmentListBySizeTests();
-	}
+    void RunAll()
+    {
+        segmentListBySizeTests();
+    }
 
 private:
-	void segmentListBySizeTests()
-	{
-		OmSegmentListBySizeTests segListTests;
-		segListTests.RunAll();
-	}
+    void segmentListBySizeTests()
+    {
+        OmSegmentListBySizeTests segListTests;
+        segListTests.RunAll();
+    }
 };
-
 
 #endif

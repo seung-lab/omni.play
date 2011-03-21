@@ -1,62 +1,49 @@
 #include "tiles/omTilePreFetcher.h"
 #include "tiles/omTilePreFetcherTask.hpp"
-#include "view2d/omTileDrawer.h"
-#include "zi/omUtility.h"
-#include "view2d/omView2dState.hpp"
 #include "utility/omSystemInformation.h"
-
-#include <boost/make_shared.hpp>
+#include "view2d/omTileDrawer.hpp"
+#include "view2d/omView2dState.hpp"
+#include "zi/omUtility.h"
 
 OmTilePreFetcher::OmTilePreFetcher()
 {
-	int maxThreads = 2;
-	if(OmSystemInformation::get_num_cores() < 3){
-		maxThreads = 1;
-	}
+    int maxThreads = 2;
+    if(OmSystemInformation::get_num_cores() < 3){
+        maxThreads = 1;
+    }
 
-	mThreadPool.start(maxThreads);
+    mThreadPool.start(maxThreads);
 }
 
 OmTilePreFetcher::~OmTilePreFetcher()
 {
-	Shutdown();
+    Shutdown();
 }
 
 // make a shallow copy of state information to avoid any locking issues
 //  with mTotalViewport
 boost::shared_ptr<OmView2dState> OmTilePreFetcher::cloneState(OmTileDrawer* d)
 {
-	return boost::make_shared<OmView2dState>(*(d->GetState()));
+    return boost::make_shared<OmView2dState>(*(d->GetState()));
 }
 
 void OmTilePreFetcher::RunTasks(const std::list<OmTileDrawer*>& drawers)
 {
-	//init the map
-	FOR_EACH(iter, drawers){
-		boost::shared_ptr<OmTilePreFetcherTask> task =
-			boost::make_shared<OmTilePreFetcherTask>(cloneState(*iter));
-		mThreadPool.addTaskFront(task);
-	}
+    //init the map
+    FOR_EACH(iter, drawers){
+        boost::shared_ptr<OmTilePreFetcherTask> task =
+            boost::make_shared<OmTilePreFetcherTask>(cloneState(*iter));
+        mThreadPool.addTaskFront(task);
+    }
 }
 
 void OmTilePreFetcher::ClearTasks()
 {
-	mThreadPool.clear();
-	//kill map
+    mThreadPool.clear();
 }
 
 void OmTilePreFetcher::Shutdown()
 {
-	mThreadPool.clear();
-	mThreadPool.stop();
+    mThreadPool.clear();
+    mThreadPool.stop();
 }
-
-#if 0
-void OmTilePreFetcher::AddTileFetchTask(state, coord)
-{
-	//lock
-	//add to map based on depth
-	//unlock
-}
-#endif
-

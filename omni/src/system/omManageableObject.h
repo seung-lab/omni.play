@@ -3,7 +3,7 @@
 
 /*
  *
- *	Brett Warne - bwarne@mit.edu - 3/3/09
+ * Brett Warne - bwarne@mit.edu - 3/3/09
  */
 
 #include "common/omStd.h"
@@ -11,41 +11,41 @@
 
 class OmManageableObject {
 public:
-	OmManageableObject()
-		: mId( 1 )
-		, mNote("")
-	{}
+    OmManageableObject()
+        : id_( 1 )
+    {}
 
-	explicit OmManageableObject(const OmID id)
-		: mId( id )
-		, mNote("")
-	{}
+    explicit OmManageableObject(const OmID id)
+        : id_( id )
+    {}
 
-	OmID GetID() const {
-		return mId;
-	}
+    inline OmID GetID() const {
+        return id_;
+    }
 
-	QString GetCustomName() const {
-		return mCustomName;
-	}
-	void SetCustomName(const QString & name){
-		mCustomName = name;
-	}
+    inline const QString& GetCustomName() const {
+        return customName_;
+    }
 
-	const QString& GetNote() const {
-		return mNote;
-	}
-	void SetNote(const QString &note){
-		mNote = note;
-	}
+    inline void SetCustomName(const QString & name){
+        customName_ = name;
+    }
+
+    inline const QString& GetNote() const {
+        return note_;
+    }
+
+    inline void SetNote(const QString &note){
+        note_ = note;
+    }
 
 protected:
-	OmID mId;
-	QString mNote;
-	QString mCustomName;
+    OmID id_;
+    QString note_;
+    QString customName_;
 
-	friend class OmMipVolumeArchive;
-	friend class OmMipVolumeArchiveOld;
+    friend class OmMipVolumeArchive;
+    friend class OmMipVolumeArchiveOld;
 };
 
 #endif

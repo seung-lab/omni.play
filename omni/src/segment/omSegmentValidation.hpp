@@ -3,8 +3,8 @@
 
 #include "common/omCommon.h"
 #include "segment/io/omMST.h"
-#include "segment/omSegmentCache.h"
-#include "segment/omSegmentLists.hpp"
+#include "segment/omSegments.h"
+#include "segment/lists/omSegmentLists.h"
 #include "utility/dataWrappers.h"
 #include "utility/omTimer.hpp"
 #include "volume/omSegmentation.h"
@@ -13,72 +13,74 @@
 
 class OmSegmentValidation {
 public:
-	static void SetAsValidated(const SegmentationDataWrapper& sdw,
-							   boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
-							   const bool valid)
-	{
-		OmSegmentValidation validator(sdw, selectedSegments, valid);
-		validator.setAsValidated();
-	}
+    static void SetAsValidated(const SegmentationDataWrapper& sdw,
+                               boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                               const bool valid)
+    {
+        OmSegmentValidation validator(sdw, selectedSegments, valid);
+        validator.setAsValidated();
+    }
 
 private:
-	const SegmentationDataWrapper& sdw_;
-	const boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
-	const bool valid_;
-	const boost::shared_ptr<OmSegmentLists> segmentLists_;
-	OmMSTEdge *const edges_;
+    const SegmentationDataWrapper& sdw_;
+    const boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+    const bool valid_;
+    OmMSTEdge *const edges_;
 
-	OmSegmentValidation(const SegmentationDataWrapper& sdw,
-						boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
-						const bool valid)
-		: sdw_(sdw)
-		, selectedSegments_(selectedSegments)
-		, valid_(valid)
-		, segmentLists_(sdw_.SegmentLists())
-		, edges_(sdw_.MST()->Edges())
-	{}
+    OmSegmentValidation(const SegmentationDataWrapper& sdw,
+                        boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                        const bool valid)
+        : sdw_(sdw)
+        , selectedSegments_(selectedSegments)
+        , valid_(valid)
+        , edges_(sdw_.MST()->Edges())
+    {}
 
-	void setAsValidated()
-	{
-		static zi::mutex mutex;
-		zi::guard g(mutex);
+    void setAsValidated()
+    {
+        static zi::mutex mutex;
+        zi::guard g(mutex);
 
-		OmTimer timer;
+        OmTimer timer;
 
-		if(valid_){
-			std::cout << "setting " << selectedSegments_->size()
-					  << " segments as valid..." << std::flush;
-		} else {
-			std::cout << "setting " << selectedSegments_->size()
-					  << " segments as NOT valid..." << std::flush;
-		}
+        std::string notValid("");
+        if(!valid_){
+            notValid = " NOT";
+        }
 
-		FOR_EACH(iter, *selectedSegments_){
-			OmSegment* seg = *iter;
+        std::cout << "setting " << selectedSegments_->size()
+                  << " segments as" << notValid << " valid..." << std::flush;
 
-			if(valid_){
-				segmentLists_->MoveSegment(om::VALID, seg);
-			} else {
-				segmentLists_->MoveSegment(om::WORKING, seg);
-			}
-			setSegEdge(seg);
-		}
+        FOR_EACH(iter, *selectedSegments_)
+        {
+            OmSegment* seg = *iter;
 
-		sdw_.ValidGroupNum()->Set(sdw_, selectedSegments_, valid_);
+            if(valid_){
+                seg->SetListType(om::VALID);
+            } else {
+                seg->SetListType(om::WORKING);
+            }
 
-		printf("done (%.2g secs)\n", timer.s_elapsed());
-	}
+            setSegEdge(seg);
+        }
 
-	inline void setSegEdge(OmSegment* seg)
-	{
-		const int edgeNum = seg->getEdgeNumber();
-		if( -1 == edgeNum ){
-			return;
-		}
+        sdw_.ValidGroupNum()->Set(selectedSegments_, valid_);
 
-		// force edge to be joined on MST load
-		edges_[edgeNum].userJoin = valid_;
-	}
+        sdw_.SegmentLists()->RefreshGUIlists();
+
+        timer.PrintDone();
+    }
+
+    inline void setSegEdge(OmSegment* seg)
+    {
+        const int edgeNum = seg->getEdgeNumber();
+        if( -1 == edgeNum ){
+            return;
+        }
+
+        // force edge to be joined on MST load
+        edges_[edgeNum].userJoin = valid_;
+    }
 };
 
 #endif

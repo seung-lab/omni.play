@@ -3,7 +3,7 @@
 
 #include "zi/omUtility.h"
 
-#include <boost/shared_ptr.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <QWidget>
 
 class QString;
@@ -14,29 +14,29 @@ class SegmentationDataWrapper;
 
 class ElementListBox : private om::singletonBase<ElementListBox> {
 private:
-	boost::shared_ptr<ElementListBoxImpl> impl_;
+    boost::scoped_ptr<ElementListBoxImpl> impl_;
 
 public:
-	static QWidget* Widget();
+    static QWidget* Widget();
 
-	static void Create(OmViewGroupState* vgs);
-	static void Delete();
-	static void Reset();
+    static void Create(OmViewGroupState* vgs);
+    static void Delete();
+    static void Reset();
 
-	static void SetActiveTab(QWidget* tab);
-	static void SetTitle(const QString& title);
-	static void AddTab( const int preferredIndex, QWidget* tab,
-						const QString& tabTitle);
+    static void SetActiveTab(QWidget* tab);
+    static void SetTitle(const QString& title);
+    static void AddTab( const int preferredIndex, QWidget* tab,
+                        const QString& tabTitle);
 
-	static void PopulateLists();
-	static void RebuildLists(const SegmentDataWrapper& sdw);
-	static void UpdateSegmentListBox(const SegmentationDataWrapper& sdw);
+    static void PopulateLists();
+    static void RebuildLists(const SegmentDataWrapper& sdw);
+    static void UpdateSegmentListBox(const SegmentationDataWrapper& sdw);
 
 private:
-	ElementListBox(){}
-	~ElementListBox(){}
+    ElementListBox();
+    ~ElementListBox();
 
-	friend class zi::singleton<ElementListBox>;
+    friend class zi::singleton<ElementListBox>;
 };
 
 #endif

@@ -1,71 +1,97 @@
-#include "gui/mainwindow.h"
+#include "gui/mainWindow/mainWindow.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
 #include "gui/toolbars/toolbarManager.h"
-#include "system/omStateManager.h"
+#include "system/omAppState.hpp"
 #include "viewGroup/omViewGroupState.h"
 
-ToolBarManager::ToolBarManager( MainWindow * mw )
-	: QWidget(mw)
-	, mMainWindow(mw)
-	, mainToolbar(new MainToolbar(mw))
-	, dendToolBar(NULL)
+ToolBarManager::ToolBarManager(MainWindow* mainWindow)
+    : QWidget(mainWindow)
+    , mainWindow_(mainWindow)
 {
-	OmStateManager::setDendToolBar( dendToolBar );
+    OmAppState::SetToolBarManager(this);
 }
 
-void ToolBarManager::setupToolbarInitially()
+ToolBarManager::~ToolBarManager()
+{}
+
+void ToolBarManager::UpdateReadOnlyRelatedWidgets()
 {
+   if(mainToolBar_){
+       mainToolBar_->UpdateToolbar();
+    }
 }
 
-void ToolBarManager::updateReadOnlyRelatedWidgets()
+void ToolBarManager::deleteDendBar()
 {
+   if(dendToolBar_){
+        mainWindow_->removeToolBar(dendToolBar_.get());
+        dendToolBar_.reset();
+    }
 }
 
-void ToolBarManager::updateGuiFromProjectLoadOrOpen(OmViewGroupState* vgs)
+void ToolBarManager::deleteMainBar()
 {
-	mainToolbar->updateToolbar();
+   if(mainToolBar_){
+        mainWindow_->removeToolBar(mainToolBar_.get());
+        mainToolBar_.reset();
+    }
+}
 
-	if(dendToolBar){
-		mMainWindow->removeToolBar(dendToolBar);
-		delete dendToolBar;
-	}
-	dendToolBar = new DendToolBar(mMainWindow, vgs);
+void ToolBarManager::UpdateGuiFromProjectLoadOrOpen(OmViewGroupState* vgs)
+{
+    deleteMainBar();
+    mainToolBar_.reset(new MainToolBar(mainWindow_));
 
-	vgs->SetToolBarManager(this);
+    deleteDendBar();
+    dendToolBar_.reset(new DendToolBar(mainWindow_, vgs));
+
+    vgs->SetToolBarManager(this);
+}
+
+void ToolBarManager::UpdateGuiFromProjectClose()
+{
+    deleteDendBar();
+    deleteMainBar();
 }
 
 void ToolBarManager::SetSplittingOff()
 {
-	if(dendToolBar){
-		dendToolBar->SetSplittingOff();
-	}
+    if(dendToolBar_){
+        dendToolBar_->SetSplittingOff();
+    }
+}
+
+void ToolBarManager::ShowSplitterBusy(const bool showBusy)
+{
+    if(dendToolBar_){
+        dendToolBar_->ShowSplitterBusy(showBusy);
+    }
 }
 
 void ToolBarManager::SetCuttingOff()
 {
-        if(dendToolBar){
-                dendToolBar->SetCuttingOff();
-        }
+    if(dendToolBar_){
+        dendToolBar_->SetCuttingOff();
+    }
 }
 
-void ToolBarManager::setTool(const OmToolMode tool)
-{
-	mainToolbar->setTool(tool);
+void ToolBarManager::SetTool(const om::tool::mode tool){
+    mainToolBar_->SetTool(tool);
 }
 
-void ToolBarManager::windowResized(QPoint oldPos)
+void ToolBarManager::WindowResized(QPoint oldPos)
 {
-	//	printf("toolbarManager:: resizing to %d, %d\n", oldPos.x(), oldPos.y());
-	if(dendToolBar){
-		dendToolBar->updateToolBarsPos(oldPos);
-	}
+    // printf("toolbarManager:: resizing to %d, %d\n", oldPos.x(), oldPos.y());
+    if(dendToolBar_){
+        dendToolBar_->updateToolBarsPos(oldPos);
+    }
 }
 
-void ToolBarManager::windowMoved(QPoint oldPos)
+void ToolBarManager::WindowMoved(QPoint oldPos)
 {
-	//	printf("toolbarManager:: moving to %d, %d\n", oldPos.x(), oldPos.y());
-	if(dendToolBar){
-		dendToolBar->updateToolBarsPos(oldPos);
-	}
+    // printf("toolbarManager:: moving to %d, %d\n", oldPos.x(), oldPos.y());
+    if(dendToolBar_){
+        dendToolBar_->updateToolBarsPos(oldPos);
+    }
 }

@@ -2,7 +2,7 @@
 #define OM_VOLUME_BUILDER_HDF5_HPP
 
 #include "volume/build/omMSTImportHdf5.hpp"
-#include "system/omEvents.h"
+#include "events/omEvents.h"
 #include "volume/build/omVolumeBuilderBase.hpp"
 #include "volume/build/omDataCopierHdf5.hpp"
 #include "datalayer/hdf5/omHdf5.h"

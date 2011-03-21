@@ -4,6 +4,7 @@
 #include "actions/io/omActionLoggerTask.hpp"
 #include "actions/omActions.h"
 #include "project/omProject.h"
+#include "project/omProjectGlobals.h"
 #include "utility/omThreadPool.hpp"
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
@@ -11,58 +12,64 @@
 #include <QDir>
 
 class OmActionLogger : private om::singletonBase<OmActionLogger> {
+private:
+    static inline OmActionLogger& impl(){
+        return OmProject::Globals().ActionLogger();
+    }
+
 public:
-	static QDir& LogFolder(){
-		return instance().logFolder_;
-	}
+    ~OmActionLogger(){
+        threadPool_.join();
+    }
 
-	template <typename T>
-	static void save(boost::shared_ptr<T> actionImpl,
-					 const std::string& str)
-	{
-		boost::shared_ptr<OmActionLoggerTask<T> >
-			task(new OmActionLoggerTask<T>(actionImpl,
-										   str,
-										   LogFolder()));
+    inline static const QDir& LogFolder(){
+        return impl().logFolder_;
+    }
 
-		instance().threadPool_.addTaskBack(task);
-	}
+    template <typename T>
+    static void save(boost::shared_ptr<T> actionImpl,
+                     const std::string& str)
+    {
+        boost::shared_ptr<OmActionLoggerTask<T> >
+            task(new OmActionLoggerTask<T>(actionImpl,
+                                           str,
+                                           impl().logFolder_));
+
+        impl().threadPool_.addTaskBack(task);
+    }
 
 private:
-	QDir logFolder_;
-	OmThreadPool threadPool_;
+    QDir logFolder_;
+    OmThreadPool threadPool_;
 
-	OmActionLogger()
-	{
-		setupLogDir();
-		threadPool_.start(1);
-	}
+    OmActionLogger()
+    {
+        setupLogDir();
+        threadPool_.start(1);
+    }
 
-	~OmActionLogger(){
-		threadPool_.stop();
-	}
+    void setupLogDir()
+    {
+        const QString logFolderPath =
+            OmProject::FilesFolder() +
+            QDir::separator() +
+            "logFiles" +
+            QDir::separator();
 
-	void setupLogDir()
-	{
-		const QString logFolderPath =
-			OmProject::FilesFolder() +
-			QDir::separator() +
-			"logFiles" +
-			QDir::separator();
+        logFolder_ = QDir(logFolderPath);
+        if(logFolder_.exists()){
+            return;
+        }
 
-		logFolder_ = QDir(logFolderPath);
-		if(logFolder_.exists()){
-			return;
-		}
+        if(QDir::home().mkdir(logFolderPath)){
+            printf("made folder %s\n", qPrintable(logFolderPath));
+        } else {
+            throw OmIoException("could not make folder", logFolderPath);
+        }
+    }
 
-		if(QDir::home().mkdir(logFolderPath)){
-			printf("made folder %s\n", qPrintable(logFolderPath));
-		} else {
-			throw OmIoException("could not make folder", logFolderPath);
-		}
-	}
-
-	friend class zi::singleton<OmActionLogger>;
+    friend class OmProjectGlobals;
+    friend class zi::singleton<OmActionLogger>;
 };
 
 #endif

@@ -14,14 +14,14 @@ public:
 	DisplayTools(DendToolBar *);
 
 	OmViewGroupState * getViewGroupState();
-	SegmentationDataWrapper GetSegmentationDataWrapper();
+	SegmentationDataWrapper GetSDW();
 	void updateGui();
 
 	QString getName(){
 		return "Display Tools";
 	}
 
-private slots:
+private Q_SLOTS:
 	void changeMapColorsSlot();
 
 private:

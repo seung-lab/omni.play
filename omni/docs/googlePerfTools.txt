@@ -1,0 +1,4 @@
+env CPUPROFILE=/tmp/mybin8.prof ~/omni.exp/omni/bin/omni
+
+pprof -gv --focus=Tile ~/omni.exp/omni/bin/omni ./mybin8.prof
+

@@ -9,6 +9,11 @@ ZiARG_bool(noTilePrefetch, false, "disable tile prefetcher");
 ZiARG_string(importHDF5seg, "", "create new Omni project file from data");
 ZiARG_bool(noView3dThrottle, false, "disable View3d throttling");
 
+// network args
+ZiARG_bool(client, false, "run Omni in client mode");
+ZiARG_string(clientCMD, "", "command for client to ask server");
+ZiARG_bool(server, false, "run Omni in server mode");
+
 #include <zi/logging.hpp>
 USE_ZiLOGGING(STDOUT);
 DEFINE_ZiLOG(memmap, false );
@@ -19,12 +24,15 @@ DEFINE_ZiLOG(segmentlist, false);
 DEFINE_ZiLOG(tiles, false);
 DEFINE_ZiLOG(tilesVerbose, false);
 DEFINE_ZiLOG(threadpool, false);
+DEFINE_ZiLOG(segmentSelector, false);
 
-#include "gui/mainwindow.h"
+#include "gui/mainWindow/mainWindow.h"
 #include "headless/headless.h"
 #include "headless/headlessImpl.hpp"
-#include "system/omStateManager.h"
+#include "network/omClient.hpp"
+#include "network/omServer.h"
 #include "system/omQTApp.hpp"
+#include "system/omStateManager.h"
 #include "tests/tests.hpp"
 
 #include <QApplication>
@@ -32,128 +40,158 @@ DEFINE_ZiLOG(threadpool, false);
 
 class Omni{
 private:
-	int argc_;
-	char **argv_;
-	QString fileToOpen_;
+    int argc_;
+    char **argv_;
+    QString fileToOpen_;
 
 public:
-	Omni(int argc, char **argv)
-		: argc_(argc), argv_(argv) {}
+    Omni(int argc, char **argv)
+        : argc_(argc), argv_(argv) {}
 
-	int Run()
-	{
-		checkRemainingArgs();
-		fileToOpen_ = getFileToOpen();
+    int Run()
+    {
+        checkRemainingArgs();
 
-		setOmniExecutablePath();
+        if(ZiARG_client){
+            return runClient();
+        }
 
-		if(ZiARG_importHDF5seg.size() > 0){
-			return importHDF5seg();
-		}
+        fileToOpen_ = getFileToOpen();
 
-		if(ZiARG_tests){
-			return runTests();
-		}
+        if(ZiARG_importHDF5seg.size() > 0){
+            return importHDF5seg();
+        }
 
-		if(shouldRunHeadless()){
-			return runHeadless();
-		}
+        if(ZiARG_tests){
+            return runTests();
+        }
 
-		return runGUI();
-	}
+        if(ZiARG_server){
+            return runServer();
+        }
+
+        if(shouldRunHeadless()){
+            return runHeadless();
+        }
+
+        return runGUI();
+    }
 
 private:
-	void setOmniExecutablePath()
-	{
-		const QString arg = QString(argv_[0]);
-		QFileInfo fInfo(arg);
-		const QString fnpn = fInfo.absoluteFilePath();
-		OmStateManager::setOmniExecutableAbsolutePath(fnpn);
-	}
+    bool runServer()
+    {
+        QCoreApplication* app = new QCoreApplication(argc_, argv_);
+        registerTypes();
 
-	bool shouldRunHeadless()
-	{
+        if(fileToOpen_ != ""){
+            HeadlessImpl::OpenProject(fileToOpen_);
+        }
+
+        OmServer server;
+        server.Start();
+
+        return app->exec();
+    }
+
+    bool runClient()
+    {
+        OmClient client;
+        client.Send(ZiARG_clientCMD);
+        return 0;
+    }
+
+    bool shouldRunHeadless()
+    {
+// from QT docs
 #ifdef Q_WS_X11
-		bool useGUI = getenv("DISPLAY") != 0;
+        bool useGUI = getenv("DISPLAY") != 0;
 #else
-		bool useGUI = true;
+        bool useGUI = true;
 #endif
-		const bool headless = ZiARG_headless;
+        const bool headless = ZiARG_headless;
 
-		if(!useGUI && !headless){
-			printf("No GUI detected; Running headless....\n");
-			return true;
-		} else if(headless){
-			return true;
-		}
+        if(!useGUI && !headless){
+            printf("No GUI detected; Running headless....\n");
+            return true;
+        } else if(headless){
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	int runTests()
-	{
-		Tests().Run();
-		return 0;
-	}
+    int runTests()
+    {
+        Tests().Run();
+        return 0;
+    }
 
-	int runHeadless()
-	{
-		const QString headlessCMD = QString::fromStdString(ZiARG_cmdfile);
+    void registerTypes()
+    {
+        qRegisterMetaType<om::tool::mode>("om::tool::mode");
+        qRegisterMetaType<OmID>("OmID");
+        qRegisterMetaType<ViewType>("ViewType");
+    }
 
-		Headless h;
-		h.runHeadless(headlessCMD, fileToOpen_);
-		return 0;
-	}
+    int runHeadless()
+    {
+        const QString headlessCMD = QString::fromStdString(ZiARG_cmdfile);
 
-	int runGUI()
-	{
-		// leak QApplication to avoid "~QX11PixmapData(): QPixmap objects" error
-		QApplication* app = new QApplication(argc_, argv_);
-		Q_INIT_RESOURCE(resources);
+        Headless h;
+        h.runHeadless(headlessCMD, fileToOpen_);
+        return 0;
+    }
 
-		OmQTApp::SetAppFontSize();
+    int runGUI()
+    {
+        // leak QApplication to avoid "~QX11PixmapData(): QPixmap objects" error
+        QApplication* app = new QApplication(argc_, argv_);
+        Q_INIT_RESOURCE(resources);
+        registerTypes();
 
-		MainWindow mainWin;
-		mainWin.show();
+        OmQTApp::SetAppFontSize();
 
-		if(fileToOpen_ != ""){
-			mainWin.openProject(fileToOpen_);
-		}
+        MainWindow mainWin;
+        mainWin.show();
 
-		return app->exec();
-	}
+        if(fileToOpen_ != ""){
+            mainWin.openProject(fileToOpen_);
+        }
 
-	void checkRemainingArgs()
-	{
-		if( argc_ > 2){
-			printf("too many arguments given:\n");
-			for(int i = 1; i < argc_; ++i){
-				printf("\t(%d) %s\n", i, argv_[i]);
-			}
-			exit(EXIT_FAILURE);
-		}
-	}
+        return app->exec();
+    }
 
-	QString getFileToOpen()
-	{
-		if(2 == argc_){
-			return QString(argv_[1]);
-		}
+    void checkRemainingArgs()
+    {
+        if( argc_ > 2){
+            printf("too many arguments given:\n");
+            for(int i = 1; i < argc_; ++i){
+                printf("\t(%d) %s\n", i, argv_[i]);
+            }
+            exit(EXIT_FAILURE);
+        }
+    }
 
-		return "";
-	}
+    QString getFileToOpen()
+    {
+        if(2 == argc_){
+            return QString(argv_[1]);
+        }
 
-	int importHDF5seg()
-	{
-		HeadlessImpl::importHDF5seg(ZiARG_importHDF5seg);
-		OmProject::Close();
-		return 0;
-	}
+        return "";
+    }
+
+    int importHDF5seg()
+    {
+        HeadlessImpl::importHDF5seg(ZiARG_importHDF5seg);
+        OmProject::Close();
+        return 0;
+    }
 };
 
 int main(int argc, char *argv[])
 {
-	zi::parse_arguments(argc, argv, true);
+    zi::parse_arguments(argc, argv, true);
 
-	return Omni(argc, argv).Run();
+    return Omni(argc, argv).Run();
 }

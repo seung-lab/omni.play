@@ -2,7 +2,7 @@
 #include "gui/meshPreviewer/scaleFactorLineEdit.hpp"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 #include "gui/meshPreviewer/previewButton.hpp"
-#include "segment/omSegmentCache.h"
+#include "segment/omSegments.h"
 #include "segment/omSegmentSelector.h"
 #include "utility/dataWrappers.h"
 #include "view3d/omView3d.h"
@@ -13,47 +13,47 @@
 #include <boost/make_shared.hpp>
 
 MeshPreviewerImpl::MeshPreviewerImpl(QWidget* parent,
-									 const SegmentationDataWrapper& sdw,
-									 OmViewGroupState* vgs)
-	: QWidget(parent)
-	, sdw_(sdw)
-	, vgs_(vgs)
+                                     const SegmentationDataWrapper& sdw,
+                                     OmViewGroupState* vgs)
+    : QWidget(parent)
+    , sdw_(sdw)
+    , vgs_(vgs)
 {
-	QLineEdit* downsample = new QLineEdit(this);
-	QLineEdit* initialError = new QLineEdit(this);
+    QLineEdit* downsample = new QLineEdit(this);
+    QLineEdit* initialError = new QLineEdit(this);
 
-	QFormLayout* formLayout = new QFormLayout;
-	formLayout->addRow(tr("Initial Error:"), initialError);
-	formLayout->addRow(tr("&Edge shrink factor:"), downsample);
+    QFormLayout* formLayout = new QFormLayout;
+    formLayout->addRow(tr("Initial Error:"), initialError);
+    formLayout->addRow(tr("&Edge shrink factor:"), downsample);
 
-	QVBoxLayout* overallContainer = new QVBoxLayout(this);
-	overallContainer->addLayout(formLayout);
+    QVBoxLayout* overallContainer = new QVBoxLayout(this);
+    overallContainer->addLayout(formLayout);
 
-	OmView3d* v3d = new OmView3d(this, vgs_);
-	overallContainer->addWidget(v3d);
+    OmView3d* v3d = new OmView3d(this, vgs_);
+    overallContainer->addWidget(v3d);
 
-	PreviewButton* pb = new PreviewButton(this);
-	overallContainer->addWidget(pb);
+    PreviewButton* pb = new PreviewButton(this);
+    overallContainer->addWidget(pb);
 }
 
 void MeshPreviewerImpl::mesh()
 {
-	OmSegmentation& segmentation = sdw_.GetSegmentation();
-	const DataCoord center =
-		segmentation.Coords().NormToDataCoord(NormCoord(0.5, 0.5, 0.5));
-	const OmChunkCoord coord = segmentation.Coords().DataToMipCoord(center, 0);
+    OmSegmentation& segmentation = sdw_.GetSegmentation();
+    const DataCoord center =
+        segmentation.Coords().NormToDataCoord(NormCoord(0.5, 0.5, 0.5));
+    const OmChunkCoord coord = segmentation.Coords().DataToMipCoord(center, 0);
 
-	segmentation.MeshManagers()->MeshChunk(coord);
-
-	OmChunkPtr chunk;
-	segmentation.GetChunk(chunk, coord);
 /*
-	// select all segments
-	OmSegmentSelector sel(sdw_, this, "meshPreviewer");
-	sel.selectNoSegments();
-	FOR_EACH(iter, chunk->GetUniqueSegIDs()){
-		sel.augmentSelectedSet(*iter, true);
-	}
-	sel.sendEvent();
+    segmentation.MeshManagers()->MeshChunk(coord);
+
+    OmChunkPtr chunk;
+    segmentation.GetChunk(chunk, coord);
+// select all segments
+OmSegmentSelector sel(sdw_, this, "meshPreviewer");
+sel.selectNoSegments();
+FOR_EACH(iter, chunk->GetUniqueSegIDs()){
+sel.augmentSelectedSet(*iter, true);
+}
+sel.sendEvent();
 */
 }

@@ -13,6 +13,11 @@
 #include <string.h>
 #include <utility>
 
+#ifndef NDEBUG
+#  define NEEDS_TO_UNDEF_NDEBUG
+#  define NDEBUG
+#endif
+
 namespace zi {
 
 template<typename T>
@@ -190,5 +195,10 @@ public:
 };
 
 }
+
+#if defined( NEEDS_TO_UNDEF_NDEBUG )
+#  undef NDEBUG
+#  undef NEEDS_TO_UNDEF_NDEBUG
+#endif
 
 #endif

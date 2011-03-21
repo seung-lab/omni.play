@@ -2,8 +2,8 @@
 #include "project/omProject.h"
 #include "actions/omActions.h"
 
-SaveButton::SaveButton(MainToolbar * parent)
-	: OmButton<MainToolbar>( parent,
+SaveButton::SaveButton(MainToolBar * parent)
+	: OmButton<MainToolBar>( parent,
 				 "Save",
 				 "Saves the current project",
 				 false)

@@ -3,52 +3,52 @@
 
 #include "common/om.hpp"
 #include "common/omDebug.h"
+#include "events/omEvents.h"
 #include "gui/widgets/omCursors.h"
-#include "system/omEvents.h"
+#include "system/omConnect.hpp"
 
 #include <QtGui>
 
 class OmDoubleSpinBox : public QDoubleSpinBox {
 Q_OBJECT
 public:
-	OmDoubleSpinBox(QWidget * d,
-			  const om::ShouldUpdateAsType updateAsType)
-		: QDoubleSpinBox(d)
-	{
-		if(om::UPDATE_AS_TYPE == updateAsType){
-			connect(this, SIGNAL(valueChanged(double)),
-					this, SLOT(thresholdChanged()),
-					Qt::DirectConnection );
-		} else {
-			connect(this, SIGNAL(editingFinished()),
-					this, SLOT(thresholdChanged()),
-					Qt::DirectConnection );
-		}
-	}
+    OmDoubleSpinBox(QWidget* d,
+                    const om::ShouldUpdateAsType updateAsType)
+        : QDoubleSpinBox(d)
+    {
+        if(om::UPDATE_AS_TYPE == updateAsType)
+        {
+            om::connect(this, SIGNAL(valueChanged(double)),
+                        this, SLOT(valueChanged()));
 
-	void updateGui(){
-		OmEvents::Redraw2d();
-	}
+        } else {
+            om::connect(this, SIGNAL(editingFinished()),
+                        this, SLOT(valueChanged()));
+        }
+    }
 
- private slots:
-	void thresholdChanged()
-	{
-		OmBusyCursorWrapper busyCursorWrapper();
-		actUponThresholdChange(getGUIvalue());
-		updateGui();
-	}
+    void updateGui(){
+        OmEvents::Redraw2d();
+    }
 
- protected:
-	double getGUIvalue(){
-		return value();
-	}
+private Q_SLOTS:
+    void valueChanged()
+    {
+        actUponValueChange(getGUIvalue());
+        updateGui();
+    }
 
-	void setGUIvalue(const double newThreshold){
-		setValue(newThreshold);
-	}
+protected:
+    double getGUIvalue(){
+        return value();
+    }
 
-	virtual void setInitialGUIThresholdValue() = 0;
-	virtual void actUponThresholdChange( const float threshold ) = 0;
+    void setGUIvalue(const double newThreshold){
+        setValue(newThreshold);
+    }
+
+    virtual void setInitialGUIThresholdValue() = 0;
+    virtual void actUponValueChange(const double threshold) = 0;
 };
 
 #endif

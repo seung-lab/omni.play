@@ -13,6 +13,7 @@ my $basePath = `pwd`;
 chomp $basePath;
 my $srcPath     = $basePath.'/src';
 my $libPath     = $basePath.'/lib';
+my $includePath = $basePath.'/include';
 my $testPath    = $basePath.'/tests';
 my $omniProFile = $basePath.'/omni.pro';
 
@@ -112,6 +113,7 @@ sub makeReplacementStr {
 sub main{
     find(\&processFile, $srcPath);
     find(\&processFile, $libPath);
+    find(\&processFile, $includePath);
     find(\&processFile, $testPath);
     rewriteOmniPro();
 }

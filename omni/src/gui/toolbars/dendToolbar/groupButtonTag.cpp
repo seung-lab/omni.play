@@ -3,8 +3,8 @@
 #include "common/omDebug.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
-#include "system/omEvents.h"
-#include "segment/omSegmentCache.h"
+#include "events/omEvents.h"
+#include "segment/omSegments.h"
 
 GroupButtonTag::GroupButtonTag(ValidationGroup * d)
 	: OmButton<ValidationGroup>( d,
@@ -17,7 +17,7 @@ GroupButtonTag::GroupButtonTag(ValidationGroup * d)
 void GroupButtonTag::doAction()
 {
 	//debug(dendbar, "ValidationGroup::specialGroupAdd\n");
-	SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
+	SegmentationDataWrapper sdw = mParent->GetSDW();
 	if(!sdw.IsSegmentationValid()){
 		return;
 	}
@@ -25,7 +25,7 @@ void GroupButtonTag::doAction()
 	OmSegmentation & seg = sdw.GetSegmentation();
 
 	OmActions::CreateOrDeleteSegmentGroup(seg.GetID(),
-										  seg.SegmentCache()->GetSelectedSegmentIds(),
+										  seg.Segments()->GetSelectedSegmentIds(),
 										  mParent->getGroupNameFromGUI(),
 										  true);
 

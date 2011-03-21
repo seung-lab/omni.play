@@ -10,27 +10,36 @@
 class OmTextureID;
 typedef boost::shared_ptr<OmTextureID> OmTextureIDPtr;
 
-typedef struct {
-	GLfloat x;
-	GLfloat y;
-} GLfloatPair;
+struct GLfloatPair {
+    GLfloat x;
+    GLfloat y;
+};
 
-typedef struct {
-	GLfloatPair lowerLeft;
-	GLfloatPair lowerRight;
-	GLfloatPair upperRight;
-	GLfloatPair upperLeft;
-} GLfloatBox;
+struct GLfloatBox {
+    GLfloatPair lowerLeft;
+    GLfloatPair lowerRight;
+    GLfloatPair upperRight;
+    GLfloatPair upperLeft;
+};
 
-typedef struct {
-	OmTileCoord tileCoord;
-	GLfloatBox vertices;
-} OmTileCoordAndVertices;
+std::ostream& operator<<(std::ostream &out, const GLfloatPair& b);
+std::ostream& operator<<(std::ostream &out, const GLfloatBox& b);
 
-typedef struct {
-	OmTilePtr tile;
-	GLfloatBox vertices;
-} OmTileAndVertices;
+struct OmTileCoordAndVertices {
+    OmTileCoord tileCoord;
+    GLfloatBox vertices;
+};
+
+struct TextureVectices {
+    GLfloatPair upperLeft;
+    GLfloatPair lowerRight;
+};
+
+struct OmTileAndVertices {
+    OmTilePtr tile;
+    GLfloatBox vertices;
+    TextureVectices textureVectices;
+};
 
 typedef std::deque<OmTileCoordAndVertices> OmTileCoordsAndLocations;
 typedef boost::shared_ptr<OmTileCoordsAndLocations> OmTileCoordsAndLocationsPtr;

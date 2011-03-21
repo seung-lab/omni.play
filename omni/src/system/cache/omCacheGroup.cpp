@@ -5,115 +5,133 @@
 #include "utility/omStringHelpers.h"
 #include "zi/omMutex.h"
 
-OmCacheGroup::OmCacheGroup()
-	: mMaxSize(0)
+OmCacheGroup::OmCacheGroup(const om::CacheGroup cacheGroup)
+    : cacheGroup_(cacheGroup)
+    , maxAllowedSize_(0)
 {}
 
-void OmCacheGroup::Clear()
+void OmCacheGroup::DeleteCaches()
 {
-	zi::rwmutex::write_guard lock(mRWLock);
-	mCacheSet.clear();
+    zi::rwmutex::write_guard lock(lock_);
+    caches_.clear();
 }
 
 void OmCacheGroup::AddCache(OmCacheBase* cache)
 {
-	zi::rwmutex::write_guard lock(mRWLock);
-	mCacheSet.insert(cache);
+    zi::rwmutex::write_guard lock(lock_);
+    caches_.insert(cache);
 }
 
 void OmCacheGroup::RemoveCache(OmCacheBase* cache)
 {
-	zi::rwmutex::write_guard lock(mRWLock);
-	mCacheSet.erase(cache);
+    zi::rwmutex::write_guard lock(lock_);
+    caches_.erase(cache);
 }
 
-void OmCacheGroup::SetMaxSizeMB(const qint64 size)
+void OmCacheGroup::SetMaxSizeMB(const int64_t size)
 {
-	zi::rwmutex::write_guard lock(mRWLock);
-	mMaxSize = size * (qint64)BYTES_PER_MB;
+    zi::rwmutex::write_guard lock(lock_);
+    maxAllowedSize_ = size * static_cast<int64_t>(BYTES_PER_MB);
 }
 
 QList<OmCacheInfo> OmCacheGroup::GetCacheInfo()
 {
-	zi::rwmutex::read_guard lock(mRWLock);
+    zi::rwmutex::read_guard lock(lock_);
 
-	QList<OmCacheInfo> infos;
-	foreach(OmCacheBase* c, mCacheSet){
-		OmCacheInfo info;
-		info.cacheSize = c->GetCacheSize();
-		const std::string name =
-			c->GetName()
-			+ " ("
-			+ c->getGroupName()
-			+ ")";
-		info.cacheName = QString::fromStdString(name);
-		infos << info;
-	}
-	return infos;
+    QList<OmCacheInfo> infos;
+    FOR_EACH(iter, caches_){
+        OmCacheBase* cache = *iter;
+
+        OmCacheInfo info;
+        info.size = cache->GetCacheSize();
+
+        std::stringstream name;
+        name << *cache;
+        info.name = name.str();
+
+        infos << info;
+    }
+    return infos;
 }
 
-int OmCacheGroup::Clean()
+void OmCacheGroup::ClearCacheContents()
 {
-	uint64_t curSize = 0;
-	foreach( OmCacheBase * cache, mCacheSet ) {
-		curSize += cache->GetCacheSize();
-	}
-
-	if(!curSize){
-		return 0;
-	}
-
-	const uint64_t oldCurSize = curSize;
-
-	int numItemsRemoved = 0;
-
-	// clear old data being held onto by cache; don't remove oldest
-	foreach(OmCacheBase* cache, mCacheSet) {
-		if(OmCacheManager::AmClosingDown()){
-			return numItemsRemoved;
-		}
-
-		const uint64_t oldCacheSize = cache->GetCacheSize();
-		numItemsRemoved += cache->Clean(false);
-		curSize -= (oldCacheSize - cache->GetCacheSize());
-	}
-
-	if(oldCurSize != curSize){
-		std::cout
-			<< "currently " << OmStringHelpers::CommaDeliminateNum(curSize) << " bytes;"
-			<< " was: " << OmStringHelpers::CommaDeliminateNum(oldCurSize) << " bytes;"
-			<< " max is: " << OmStringHelpers::CommaDeliminateNum(mMaxSize) << "\n";
-	}
-
-	if(curSize < mMaxSize){
-		return 0;
-	}
-
-	// remove oldest items
-	static const int numCycles = 200;
-	for(int count = 0; count < numCycles; ++count) {
-		foreach(OmCacheBase* cache, mCacheSet){
-			if(OmCacheManager::AmClosingDown()){
-				return numItemsRemoved;
-			}
-
-			uint64_t oldCacheSize = cache->GetCacheSize();
-			numItemsRemoved += cache->Clean(true);
-			curSize -= (oldCacheSize - cache->GetCacheSize());
-
-			if(curSize < mMaxSize){
-				return numItemsRemoved;
-			}
-		}
-	}
-
-	return numItemsRemoved;
+    zi::rwmutex::read_guard lock(lock_);
+    FOR_EACH(iter, caches_){
+        OmCacheBase* cache = *iter;
+        cache->Clear();
+    }
 }
+
 
 void OmCacheGroup::SignalCachesToCloseDown()
 {
-	zi::rwmutex::read_guard lock(mRWLock);
-	foreach( OmCacheBase * cache, mCacheSet ) {
-		cache->closeDownThreads();
-	}
+    zi::rwmutex::read_guard lock(lock_);
+    FOR_EACH(iter, caches_){
+        OmCacheBase* cache = *iter;
+        cache->closeDownThreads();
+    }
+}
+
+void OmCacheGroup::clearDeadItems()
+{
+    // clear old data being held onto by cache; don't remove oldest
+    FOR_EACH(iter, caches_){
+        OmCacheBase* cache = *iter;
+        cache->Clean();
+    }
+}
+
+int64_t OmCacheGroup::currentSize()
+{
+    int64_t totalSize = 0;
+
+    FOR_EACH(iter, caches_){
+        OmCacheBase* cache = *iter;
+        totalSize += cache->GetCacheSize();
+    }
+
+    return totalSize;
+}
+
+int64_t OmCacheGroup::removeOldest(const int64_t oldTotalSize)
+{
+    const int64_t totalAmtMemToFreeBytes = oldTotalSize - maxAllowedSize_;
+
+    const int64_t indivAmtMemToFreeBytes =
+        totalAmtMemToFreeBytes / caches_.size();
+
+    int64_t totalSize = 0;
+
+    FOR_EACH(iter, caches_){
+        OmCacheBase* cache = *iter;
+        cache->RemoveOldest(indivAmtMemToFreeBytes);
+        totalSize += cache->GetCacheSize();
+    }
+
+    return totalSize;
+}
+
+void OmCacheGroup::Clean()
+{
+    zi::rwmutex::read_guard lock(lock_);
+
+    clearDeadItems();
+
+    const int64_t oldTotalSize = currentSize();
+
+    if(oldTotalSize <= maxAllowedSize_){
+        return;
+    }
+
+    const int64_t curTotalSize = removeOldest(oldTotalSize);
+
+    if(oldTotalSize != curTotalSize){
+        std::cout
+            << cacheGroup_
+            << " was: " << om::string::bytesToMB(oldTotalSize)
+            << "; currently: " << om::string::bytesToMB(curTotalSize)
+            << "; max is: " << om::string::bytesToMB(maxAllowedSize_)
+            << "\n";
+    }
 }

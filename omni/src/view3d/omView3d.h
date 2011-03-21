@@ -5,12 +5,10 @@
 #include "omView3dWidget.h"
 #include "omView3dUi.h"
 
-#include "system/events/omView3dEvent.h"
-#include "system/events/omViewEvent.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/events/omPreferenceEvent.h"
-#include "system/events/omKeyPressEventListener.h"
-#include "view3d/omView3dKeyPressEventListener.h"
+#include "events/details/omView3dEvent.h"
+#include "events/details/omViewEvent.h"
+#include "events/details/omSegmentEvent.h"
+#include "events/details/omPreferenceEvent.h"
 #include "common/omCommon.h"
 
 #include <QGLWidget>
@@ -18,111 +16,114 @@
 #include <QtGui>
 
 class OmViewGroupState;
-class OmPercDone;
 
 class OmView3d : public QGLWidget,
-	public OmPreferenceEventListener,
-	public OmSegmentEventListener,
-	public OmView3dEventListener,
-	public OmViewEventListener,
-	public OmView3dKeyPressEventListener
+                 public OmPreferenceEventListener,
+                 public OmSegmentEventListener,
+                 public OmView3dEventListener,
+                 public OmViewEventListener
 {
 Q_OBJECT
 
 public:
 
-	OmView3d(QWidget *, OmViewGroupState * );
-	~OmView3d();
+    OmView3d(QWidget *, OmViewGroupState * );
+    ~OmView3d();
 
-	OmCamera& GetCamera();
+    OmCamera& GetCamera();
 
-	const std::list<std::pair<float,float> >& PercVolDone() const {
-		return percVolDone_;
-	}
+    const std::list<std::pair<float,float> >& PercVolDone() const {
+        return percVolDone_;
+    }
 
- protected:
-	//gl events
-	void initializeGL();
-	void resizeGL(int width, int height);
-	void paintGL();
+    inline bool MeshesFound() const {
+        return meshesFound_;
+    }
 
-	//mouse events
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void mouseDoubleClickEvent(QMouseEvent *event);
-	void mouseWheelEvent(QWheelEvent * event);
-	void wheelEvent(QWheelEvent * event );
-	void keyPressEvent (QKeyEvent *);
+protected:
+    //gl events
+    void initializeGL();
+    void resizeGL(int width, int height);
+    void paintGL();
 
-	bool event(QEvent *e);
-	void pinchTriggered(QPinchGesture *gesture);
+    //mouse events
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
+    void mouseWheelEvent(QWheelEvent * event);
+    void wheelEvent(QWheelEvent * event );
+    void keyPressEvent (QKeyEvent *);
 
+    bool event(QEvent *e);
+    void pinchTriggered(QPinchGesture *gesture);
 
-	//omni events
-	void SegmentObjectModificationEvent(OmSegmentEvent *event);
-	void SegmentEditSelectionChangeEvent() {}
-	void SegmentDataModificationEvent();
-	void PreferenceChangeEvent(OmPreferenceEvent *event);
-	void ViewBoxChangeEvent();
-	void View3dRedrawEvent();
-	void View3dRedrawEventFromCache();
-	void View3dUpdatePreferencesEvent();
-	void ViewCenterChangeEvent() {}
-	void View3dRecenter();
-	void ViewPosChangeEvent() {}
-	void ViewRedrawEvent() {}
+    //omni events
+    void SegmentModificationEvent(OmSegmentEvent *event);
+    void PreferenceChangeEvent(OmPreferenceEvent *event);
+    void ViewBoxChangeEvent();
+    void View3dRedrawEvent();
+    void View3dRedrawEventFromCache();
+    void ViewCenterChangeEvent() {}
+    void View3dRecenter();
+    void ViewPosChangeEvent() {}
+    void ViewRedrawEvent() {}
 
-	//edit actions
-	void SelectSegment(QMouseEvent *event);
+    //edit actions
+    void SelectSegment(QMouseEvent *event);
 
-	//voxel selection
-	void FocusSelectVoxel(QKeyEvent *event);
-	void MouseSelectVoxel(QMouseEvent *event, bool drag);
-	void SelectVoxel(DataCoord &voxel, bool append);
+    //voxel selection
+    void FocusSelectVoxel(QKeyEvent *event);
+    void MouseSelectVoxel(QMouseEvent *event, bool drag);
+    void SelectVoxel(DataCoord &voxel, bool append);
 
-	//gl actions
-	SegmentDataWrapper PickPoint(const Vector2i& point2d, int& pickName);
-	bool UnprojectPoint(Vector2i point2d, Vector3f &point3d,
-						float depth_scale_factor = 1.0f);
+    //gl actions
+    SegmentDataWrapper PickPoint(const Vector2i& point2di, int& pickName);
+    bool UnprojectPoint(Vector2i point2di, Vector3f &point3d,
+                        float depth_scale_factor = 1.0f);
 
-	//draw methods
-	void Draw(OmBitfield option);
-	void DrawVolumes(OmBitfield option);
-	void DrawWidgets();
-	void doTimedDraw();
-	void myUpdate();
+    //draw methods
+    void Draw(OmBitfield option);
+    void DrawVolumes(OmBitfield option);
+    void DrawWidgets();
+    void doTimedDraw();
+    void myUpdate();
 
-	//draw settings
-	void SetBackgroundColor();
-	void SetBlending();
-	void SetCameraPerspective();
+    //draw settings
+    void SetBackgroundColor();
+    void SetBlending();
+    void SetCameraPerspective();
 
-	//widgets
-	void UpdateEnabledWidgets();
+    //widgets
+    void UpdateEnabledWidgets();
 
-	QSize sizeHint () const;
+    QSize sizeHint() const;
 
- private:
-	bool gestureEvent(QGestureEvent *event);
-	OmView3dUi mView3dUi;
-	OmViewGroupState * mViewGroupState;
-	QTime * mElapsed;
-	QTimer mDrawTimer;
-	OmCamera mCamera;
-	std::vector< OmView3dWidget* > mView3dWidgetManager;
+    void DoZoom(const int direction);
 
-	std::vector<int> mMousePickResult;
+private:
+    bool gestureEvent(QGestureEvent *event);
+    OmView3dUi mView3dUi;
+    OmViewGroupState* vgs_;
+    boost::scoped_ptr<QTime> mElapsed;
+    QTimer mDrawTimer;
+    OmCamera mCamera;
 
-	void initLights();
-	bool pickPoint(const Vector2i& point, std::vector<uint32_t>& names);
+    boost::ptr_vector<OmView3dWidget> widgets_;
 
-	std::list<std::pair<float,float> > percVolDone_;
-	boost::shared_ptr<OmPercDone> percDoneWidget_;
+    std::vector<int> mMousePickResult;
 
-	friend class OmView3dUi;
-	friend class OmSelectionWidget;
-	friend class OmChunkExtentWidget;
+    void initLights();
+    bool pickPoint(const Vector2i& point, std::vector<uint32_t>& names);
+
+    std::list<std::pair<float,float> > percVolDone_;
+
+    bool meshesFound_;
+
+    friend class OmMacOSXGestures;
+    friend class OmView3dUi;
+    friend class OmSelectionWidget;
+    friend class OmChunkExtentWidget;
 };
 
 #endif

@@ -2,62 +2,59 @@
 #define OM_SEGMENT_JOIN_ACTION_IMPL_HPP
 
 #include "common/omCommon.h"
-#include "actions/io/omActionLogger.hpp"
-#include "segment/omSegmentCache.h"
 #include "utility/dataWrappers.h"
-#include "volume/omSegmentation.h"
+#include "segment/lists/omSegmentLists.h"
 
 class OmSegmentJoinActionImpl {
+private:
+    SegmentationDataWrapper sdw_;
+    OmSegIDsSet segIDs_;
+
 public:
-	OmSegmentJoinActionImpl()
-	{}
+    OmSegmentJoinActionImpl()
+    {}
 
-	OmSegmentJoinActionImpl(const OmID segmentationId,
-							const OmSegIDsSet& selectedSegmentIds)
-		: mSegmentationId(segmentationId)
-		, mSelectedSegmentIds(selectedSegmentIds)
-	{}
+    OmSegmentJoinActionImpl(const SegmentationDataWrapper& sdw,
+                            const OmSegIDsSet& segIDs)
+        : sdw_(sdw)
+        , segIDs_(segIDs)
+    {}
 
-	void Execute()
-	{
-		SegmentationDataWrapper sdw(mSegmentationId);
-		mSelectedSegmentIds =
-			sdw.SegmentCache()->JoinTheseSegments(mSelectedSegmentIds);
-	}
+    void Execute(){
+        segIDs_ = sdw_.Segments()->JoinTheseSegments(segIDs_);
+        sdw_.SegmentLists()->RefreshGUIlists();
+    }
 
-	void Undo()
-	{
-		SegmentationDataWrapper sdw(mSegmentationId);
-		mSelectedSegmentIds =
-			sdw.SegmentCache()->UnJoinTheseSegments(mSelectedSegmentIds);
-	}
+    void Undo(){
+        segIDs_ = sdw_.Segments()->UnJoinTheseSegments(segIDs_);
+        sdw_.SegmentLists()->RefreshGUIlists();
+    }
 
-	std::string Description()
-	{
-		if(!mSelectedSegmentIds.size()){
-			return "did not join segments";
-		}
+    std::string Description()
+    {
+        if(!segIDs_.size()){
+            return "did not join segments";
+        }
 
-		QStringList segs;
-		foreach(const OmSegID& segID, mSelectedSegmentIds){
-			segs << QString::number(segID);
-		}
+        static const int max = 5;
 
-		const QString lineItem = "Joined segments: " + segs.join(", ");
-		return lineItem.toStdString();
-	}
+        const std::string nums =
+            om::utils::MakeShortStrList<OmSegIDsSet, OmSegID>(segIDs_, max);
 
-	QString classNameForLogFile() const {
-		return "OmSegmentJoinAction";
-	}
+        return "Joined segments: " + nums;
+    }
+
+    QString classNameForLogFile() const {
+        return "OmSegmentJoinAction";
+    }
 
 private:
-	OmID mSegmentationId;
-	OmSegIDsSet mSelectedSegmentIds;
+    template <typename T> friend class OmActionLoggerThread;
 
-	template <typename T> friend class OmActionLoggerThread;
-	friend class QDataStream &operator<<(QDataStream&, const OmSegmentJoinActionImpl&);
-	friend class QDataStream &operator>>(QDataStream&, OmSegmentJoinActionImpl&);
+    friend class QDataStream &operator<<(QDataStream&, const OmSegmentJoinActionImpl&);
+    friend class QDataStream &operator>>(QDataStream&, OmSegmentJoinActionImpl&);
+
+    friend QTextStream& operator<<(QTextStream&, const OmSegmentJoinActionImpl&);
 };
 
 #endif

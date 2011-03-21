@@ -1,7 +1,7 @@
 #include "utility/dataWrappers.h"
 #include "gui/mstViewer.hpp"
 #include "volume/omSegmentation.h"
-#include "segment/omSegmentCache.h"
+#include "segment/omSegments.h"
 #include "segment/io/omMST.h"
 
 MstViewerImpl::MstViewerImpl(QWidget * parent, SegmentationDataWrapper sdw)
@@ -31,8 +31,8 @@ void MstViewerImpl::populate()
 		const OmSegID node2ID  = edges[i].node2ID;
 		const float threshold  = edges[i].threshold;
 
-		OmSegment* node1 = segmentation.SegmentCache()->GetSegment(node1ID);
-		OmSegment* node2 = segmentation.SegmentCache()->GetSegment(node2ID);
+		OmSegment* node1 = segmentation.Segments()->GetSegment(node1ID);
+		OmSegment* node2 = segmentation.Segments()->GetSegment(node2ID);
 
 		int colNum = 0;
 		setCell(i, colNum, i);

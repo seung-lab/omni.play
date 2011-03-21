@@ -1,49 +1,46 @@
 #ifndef SEGMENT_LIST_UNCERTAIN_H
 #define SEGMENT_LIST_UNCERTAIN_H
 
-#include "gui/segmentLists/details/segmentListBase.h"
 #include "common/omCommon.h"
+#include "gui/segmentLists/details/segmentListBase.h"
+#include "segment/lists/omSegmentLists.h"
 #include "utility/dataWrappers.h"
-#include "segment/omSegmentLists.hpp"
 
 class SegmentListUncertain : public SegmentListBase {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	SegmentListUncertain(QWidget * parent,
-						 OmViewGroupState* vgs)
-		: SegmentListBase(parent, vgs)
-	{}
+    SegmentListUncertain(QWidget * parent,
+                         OmViewGroupState* vgs)
+        : SegmentListBase(parent, vgs)
+    {}
 
 private:
-	QString getTabTitle(){
-		return QString("Uncertain");
-	}
+    QString getTabTitle(){
+        return QString("Uncertain");
+    }
 
-	uint64_t Size() {
-		return sdw_.SegmentLists()->Uncertain().size();
-	}
+    uint64_t Size() {
+        return sdw_.SegmentLists()->Size(om::UNCERTAIN);
+    }
 
-	boost::shared_ptr<OmSegIDsListWithPage>
-	getPageSegments(const unsigned int offset,
-					const int numToGet,
-					const OmSegID startSeg)
-	{
-		return sdw_.SegmentLists()
-			->Uncertain().getPageOfSegmentIDs(offset, numToGet, startSeg);
-	}
+    boost::shared_ptr<GUIPageOfSegments>
+    getPageSegments(const GUIPageRequest& request)
+    {
+        return sdw_.SegmentLists()->GetSegmentGUIPage(om::UNCERTAIN, request);
+    }
 
-	int getPreferredTabIndex(){
-		return 2;
-	}
+    int getPreferredTabIndex(){
+        return 2;
+    }
 
-	void makeTabActiveIfContainsJumpedToSegment(){
-		// don't jump to this tab
-	}
+    void makeTabActiveIfContainsJumpedToSegment(){
+        // don't jump to this tab
+    }
 
-	bool shouldSelectedSegmentsBeAddedToRecentList(){
-		return true;
-	}
+    bool shouldSelectedSegmentsBeAddedToRecentList(){
+        return true;
+    }
 };
 
 #endif

@@ -2,54 +2,91 @@
 #define OM_FILTER2D_H
 
 /*
- *	Filter Object
+ * Filter Object
  *
- *	Matthew Wimer - mwimer@mit.edu - 11/13/09
+ * A filter can overlay a channel OR a segmentation (purcaro)
+ *
+ * Filters need to be refactored out of OmChannel and into their own
+ *  top-level class; they should also be able to support multiple volumes,
+ *  different alpha-blending levels, etc. (purcaro)
+ *
+ * Matthew Wimer - mwimer@mit.edu - 11/13/09
  */
 
+#include "common/omString.hpp"
 #include "system/omManageableObject.h"
-#include "utility/channelDataWrapper.hpp"
-#include "utility/segmentationDataWrapper.hpp"
 
-class OmMipVolume;
+class OmChannel;
+class OmSegmentation;
+
+namespace om {
+enum FilterType {
+    OVERLAY_CHANNEL,
+    OVERLAY_SEGMENTATION,
+    OVERLAY_NONE
+};
+} // namespace om
 
 class OmFilter2d : public OmManageableObject {
 public:
-	OmFilter2d();
-	OmFilter2d(const OmID);
+    OmFilter2d();
+    OmFilter2d(const OmID);
 
-	std::string GetName(){
-		return "filter" + om::NumToStr(GetID());
-	}
+    void Load();
 
-	void SetAlpha(const double alpha){
-		mAlpha = alpha;
-	}
-	double GetAlpha(){
-		return mAlpha;
-	}
+    std::string GetName(){
+        return "filter" + om::string::num(GetID());
+    }
 
-	void SetSegmentation(const OmID id);
-	const SegmentationDataWrapper& GetSegmentationWrapper() const{
-		return sdw_;
-	}
+    inline void SetAlpha(const double alpha){
+        alpha_ = alpha;
+    }
 
-	void SetChannel(const OmID id);
-	const ChannelDataWrapper& GetChannelDataWrapper() const{
-		return cdw_;
-	}
+    inline double GetAlpha(){
+        return alpha_;
+    }
 
-	bool HasValidVol();
-	OmMipVolume* GetMipVolume();
+    void SetSegmentation(const OmID id);
+    void SetChannel(const OmID id);
+
+    inline bool HasValidVol() const {
+        return om::OVERLAY_NONE != filterType_;
+    }
+
+    inline om::FilterType FilterType() const {
+        return filterType_;
+    }
+
+    inline OmChannel* GetChannel() const {
+        return *channVolPtr_;
+    }
+
+    inline OmSegmentation* GetSegmentation() const {
+        return *segVolPtr_;
+    }
+
+    inline OmID GetChannelID() const{
+        return chanID_;
+    }
+
+    inline OmID GetSegmentationID() const{
+        return segID_;
+    }
 
 private:
-	double mAlpha;
+    double alpha_;
+    om::FilterType filterType_;
 
-	ChannelDataWrapper cdw_;
-	SegmentationDataWrapper sdw_;
+    boost::optional<OmChannel*> channVolPtr_;
+    boost::optional<OmSegmentation*> segVolPtr_;
 
-	friend QDataStream &operator<<(QDataStream&, const OmFilter2d&);
-	friend QDataStream &operator>>(QDataStream&, OmFilter2d&);
+    OmID chanID_;
+    OmID segID_;
+
+    void reset();
+
+    friend QDataStream &operator<<(QDataStream&, const OmFilter2d&);
+    friend QDataStream &operator>>(QDataStream&, OmFilter2d&);
 };
 
 #endif

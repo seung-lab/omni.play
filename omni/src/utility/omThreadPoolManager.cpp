@@ -1,26 +1,46 @@
 #include "utility/omThreadPool.hpp"
 #include "utility/omThreadPoolManager.h"
 
+OmThreadPoolManager::~OmThreadPoolManager() {
+    StopAll();
+}
+
 void OmThreadPoolManager::StopAll()
 {
-	zi::guard g(instance().lock_);
+    // as threadpools close down, there are potential races on the pool mutex,
+    //  so use copy of pools_
 
-	FOR_EACH(iter, instance().pools_){
-		OmThreadPool* pool = *iter;
-		pool->stop();
-	}
+    std::set<OmThreadPool*> pools;
+    {
+        zi::guard g(instance().lock_);
+        pools = instance().pools_;
+    }
+
+    FOR_EACH(iter, pools)
+    {
+        OmThreadPool* pool = *iter;
+
+        {
+            zi::guard g(instance().lock_);
+            if(!instance().pools_.count(pool)){
+                continue;
+            }
+        }
+
+        if(pool->wasStarted()){
+            pool->join();
+        }
+    }
 }
 
 void OmThreadPoolManager::Add(OmThreadPool* p)
 {
-	zi::guard g(instance().lock_);
-
-	instance().pools_.insert(p);
+    zi::guard g(instance().lock_);
+    instance().pools_.insert(p);
 }
 
 void OmThreadPoolManager::Remove(OmThreadPool* p)
 {
-	zi::guard g(instance().lock_);
-
-	instance().pools_.erase(p);
+    zi::guard g(instance().lock_);
+    instance().pools_.erase(p);
 }

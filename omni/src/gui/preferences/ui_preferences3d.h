@@ -10,6 +10,8 @@
 #ifndef UI_PREFERENCES3D_H
 #define UI_PREFERENCES3D_H
 
+#include "system/omConnect.hpp"
+
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
@@ -298,9 +300,9 @@ public:
 
 
     retranslateUi(preferences3d);
-    QObject::connect(farplaneSlider, SIGNAL(valueChanged(int)), farplaneSliderLabel, SLOT(setNum(int)));
-    QObject::connect(nearplaneSlider, SIGNAL(valueChanged(int)), nearplaneSliderLabel, SLOT(setNum(int)));
-    QObject::connect(fovSlider, SIGNAL(valueChanged(int)), fovSliderLabel, SLOT(setNum(int)));
+    om::connect(farplaneSlider, SIGNAL(valueChanged(int)), farplaneSliderLabel, SLOT(setNum(int)));
+    om::connect(nearplaneSlider, SIGNAL(valueChanged(int)), nearplaneSliderLabel, SLOT(setNum(int)));
+    om::connect(fovSlider, SIGNAL(valueChanged(int)), fovSliderLabel, SLOT(setNum(int)));
 
     QMetaObject::connectSlotsByName(preferences3d);
     } // setupUi

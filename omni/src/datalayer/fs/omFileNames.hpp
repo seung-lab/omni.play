@@ -1,9 +1,11 @@
 #ifndef OM_FILE_NAMES_HPP
 #define OM_FILE_NAMES_HPP
 
-#include "common/omDebug.h"
-#include "project/omProject.h"
 #include "chunks/omChunkCoord.h"
+#include "common/omDebug.h"
+#include "datalayer/fs/omFile.hpp"
+#include "project/omProject.h"
+#include "utility/omUUID.hpp"
 #include "volume/omSegmentation.h"
 #include "zi/omMutex.h"
 
@@ -12,259 +14,267 @@
 
 class OmFileNames {
 private:
-	static inline void createFolder(const QString& fullPath,
-									zi::rwmutex& lock)
-	{
-		zi::rwmutex::write_guard g(lock);
+    static inline void createFolder(const QString& fullPath,
+                                    zi::rwmutex& lock)
+    {
+        if(QDir(fullPath).exists()){
+            return;
+        }
 
-		if(!QDir(fullPath).exists()){
-			if(!QDir().mkpath(fullPath)){
-				throw OmIoException("could not create folder", fullPath);
-			}
-		}
-	}
+        {
+            zi::rwmutex::write_guard g(lock);
+
+            if(!QDir(fullPath).exists()){
+                if(!QDir().mkpath(fullPath)){
+                    throw OmIoException("could not create folder", fullPath);
+                }
+            }
+        }
+    }
 
 public:
 
-	static QString AddOmniExtensionIfNeeded(const QString& str)
-	{
-		if(NULL == str){
-			return NULL;
-		}
+    static std::string TempFileName(const OmUUID& uuid){
+        return om::file::tempPath() + "/omni.temp." + uuid.Str();
+    }
 
-		QString fnp = str;
-		if(!fnp.endsWith(".omni")) {
-			fnp.append(".omni");
-		}
-		return fnp;
-	}
+    static QString AddOmniExtensionIfNeeded(const QString& str)
+    {
+        if(NULL == str){
+            return NULL;
+        }
 
-	static void MakeFilesFolder()
-	{
-		static zi::rwmutex lock;
-		createFolder(OmProject::FilesFolder(), lock);
-	}
+        QString fnp = str;
+        if(!fnp.endsWith(".omni")) {
+            fnp.append(".omni");
+        }
+        return fnp;
+    }
 
-	static QString GetRandColorFileName()
-	{
-		const QString fileName("rand_colors.raw");
-		return OmProject::FilesFolder() + QDir::separator() + fileName;
-	}
+    static void MakeFilesFolder()
+    {
+        static zi::rwmutex lock;
+        createFolder(OmProject::FilesFolder(), lock);
+    }
 
-	template <typename T>
-	static QString GetVolPath(T* vol)
-	{
-		const QString subPath = QString("%1/")
-			.arg(QString::fromStdString(vol->GetDirectoryPath()));
+    static std::string GetRandColorFileName() {
+        return OmProject::FilesFolder().toStdString() + "/rand_colors.raw";
+    }
 
-		if(subPath.startsWith("/")){
-			throw OmIoException("not a relative path", subPath);
-		}
+    template <typename T>
+    static QString GetVolPath(T* vol)
+    {
+        const QString subPath = QString("%1/")
+            .arg(QString::fromStdString(vol->GetDirectoryPath()));
 
-		return OmProject::FilesFolder() + QDir::separator() + subPath;
-	}
+        if(subPath.startsWith("/")){
+            throw OmIoException("not a relative path", subPath);
+        }
 
-	template <typename T>
-	static QString MakeVolPath(T* vol)
-	{
-		static zi::rwmutex lock;
+        return OmProject::FilesFolder() + QLatin1String("/") + subPath;
+    }
 
-		const QString fullPath = GetVolPath(vol);
-		createFolder(fullPath, lock);
+    template <typename T>
+    static QString MakeVolPath(T* vol)
+    {
+        static zi::rwmutex lock;
 
-		return fullPath;
-	}
+        const QString fullPath = GetVolPath(vol);
+        createFolder(fullPath, lock);
 
-	static QString GetVolSegmentsPath(OmSegmentation* vol)
-	{
-		const QDir filesDir(GetVolPath(vol));
+        return fullPath;
+    }
 
-		const QString subPath("segments/");
+    static QString GetVolSegmentsPath(OmSegmentation* vol)
+    {
+        const QDir filesDir(GetVolPath(vol));
 
-		return filesDir.absolutePath() + QDir::separator() + subPath;
-	}
+        const QString subPath("segments/");
 
-	static QString MakeVolSegmentsPath(OmSegmentation* vol)
-	{
-		static zi::rwmutex lock;
+        return filesDir.absolutePath() + QLatin1String("/") + subPath;
+    }
 
-		const QString fullPath = GetVolSegmentsPath(vol);
-		createFolder(fullPath, lock);
-		return fullPath;
-	}
+    static QString MakeVolSegmentsPath(OmSegmentation* vol)
+    {
+        static zi::rwmutex lock;
 
-	static QString GetMeshChunkFolderPath(OmSegmentation* vol,
-										  const double threshold,
-										  const OmChunkCoord& coord)
-	{
-		const QDir filesDir(GetVolPath(vol));
+        const QString fullPath = GetVolSegmentsPath(vol);
+        createFolder(fullPath, lock);
+        return fullPath;
+    }
 
-		const QString subPath =
-			QString("meshes/%1/%2/%3/%4/%5/")
-			.arg(QString::number(threshold, 'f', 4))
-			.arg(coord.getLevel())
-			.arg(coord.getCoordinateX())
-			.arg(coord.getCoordinateY())
-			.arg(coord.getCoordinateZ());
+    static QString GetMeshChunkFolderPath(OmSegmentation* vol,
+                                          const double threshold,
+                                          const OmChunkCoord& coord)
+    {
+        const QDir filesDir(GetVolPath(vol));
 
-		return filesDir.absolutePath() + QDir::separator() + subPath;
-	}
+        const QString subPath =
+            QString("meshes/%1/%2/%3/%4/%5/")
+            .arg(QString::number(threshold, 'f', 4))
+            .arg(coord.getLevel())
+            .arg(coord.getCoordinateX())
+            .arg(coord.getCoordinateY())
+            .arg(coord.getCoordinateZ());
 
-	static QString MakeMeshChunkFolderPath(OmSegmentation* vol,
-										   const double threshold,
-										   const OmChunkCoord& coord)
-	{
-		static zi::rwmutex lock;
+        return filesDir.absolutePath() + QLatin1String("/") + subPath;
+    }
 
-		const QString fullPath = GetMeshChunkFolderPath(vol,
-														threshold,
-														coord);
-		createFolder(fullPath, lock);
-		return fullPath;
-	}
+    static QString MakeMeshChunkFolderPath(OmSegmentation* vol,
+                                           const double threshold,
+                                           const OmChunkCoord& coord)
+    {
+        static zi::rwmutex lock;
 
-	static QString GetMeshFolderPath(OmSegmentation* vol)
-	{
-		const QDir filesDir(GetVolPath(vol));
+        const QString fullPath = GetMeshChunkFolderPath(vol,
+                                                        threshold,
+                                                        coord);
+        createFolder(fullPath, lock);
+        return fullPath;
+    }
 
-		const QString subPath("meshes/");
+    static QString GetMeshFolderPath(OmSegmentation* vol)
+    {
+        const QDir filesDir(GetVolPath(vol));
 
-		return filesDir.absolutePath() + QDir::separator() + subPath;
-	}
+        const QString subPath("meshes/");
 
-	static QString MakeMeshFolderPath(OmSegmentation* vol)
-	{
-		static zi::rwmutex lock;
+        return filesDir.absolutePath() + QLatin1String("/") + subPath;
+    }
 
-		const QString fullPath = GetMeshFolderPath(vol);
-		createFolder(fullPath, lock);
-		return fullPath;
-	}
+    static QString MakeMeshFolderPath(OmSegmentation* vol)
+    {
+        static zi::rwmutex lock;
 
-	static QString GetMeshThresholdFolderPath(OmSegmentation* vol,
-											  const double threshold)
-	{
-		const QDir filesDir(GetVolPath(vol));
+        const QString fullPath = GetMeshFolderPath(vol);
+        createFolder(fullPath, lock);
+        return fullPath;
+    }
 
-		const QString subPath =
-			QString("meshes/%1/")
-			.arg(QString::number(threshold, 'f', 4));
+    static QString GetMeshThresholdFolderPath(OmSegmentation* vol,
+                                              const double threshold)
+    {
+        const QDir filesDir(GetVolPath(vol));
 
-		return filesDir.absolutePath() + QDir::separator() + subPath;
-	}
+        const QString subPath =
+            QString("meshes/%1/")
+            .arg(QString::number(threshold, 'f', 4));
 
-	static QString MakeMeshThresholdFolderPath(OmSegmentation* vol,
-											   const double threshold)
-	{
-		static zi::rwmutex lock;
+        return filesDir.absolutePath() + QLatin1String("/") + subPath;
+    }
 
-		const QString fullPath = GetMeshThresholdFolderPath(vol, threshold);
-		createFolder(fullPath, lock);
-		return fullPath;
-	}
+    static QString MakeMeshThresholdFolderPath(OmSegmentation* vol,
+                                               const double threshold)
+    {
+        static zi::rwmutex lock;
 
-	static QString MeshMetadataFileOld(OmSegmentation* segmentation)
-	{
-		const QString volPath =
-			OmFileNames::MakeMeshFolderPath(segmentation);
-		const QString fullPath = QString("%1meshMetadata.ver1")
-			.arg(volPath);
+        const QString fullPath = GetMeshThresholdFolderPath(vol, threshold);
+        createFolder(fullPath, lock);
+        return fullPath;
+    }
 
-		return fullPath;
-	}
+    static QString MeshMetadataFileOld(OmSegmentation* segmentation)
+    {
+        const QString volPath =
+            OmFileNames::MakeMeshFolderPath(segmentation);
+        const QString fullPath = QString("%1meshMetadata.ver1")
+            .arg(volPath);
 
-	static QString MeshMetadataFilePerThreshold(OmSegmentation* segmentation,
-												const double threshold)
-	{
-		const QString volPath =
-			OmFileNames::MakeMeshThresholdFolderPath(segmentation,
-													 threshold);
-		const QString fullPath = QString("%1meshMetadata.ver1")
-			.arg(volPath);
+        return fullPath;
+    }
 
-		return fullPath;
-	}
+    static QString MeshMetadataFilePerThreshold(OmSegmentation* segmentation,
+                                                const double threshold)
+    {
+        const QString volPath =
+            OmFileNames::MakeMeshThresholdFolderPath(segmentation,
+                                                     threshold);
+        const QString fullPath = QString("%1meshMetadata.ver1")
+            .arg(volPath);
 
-	//TODO: cleanup!
-	//ex:  /home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
-	template <typename T>
-	static std::string GetMemMapFileName(T* vol, const int level)
-	{
-		return GetMemMapFileNameQT(vol, level).toStdString();
-	}
+        return fullPath;
+    }
 
-	template <typename T>
-	static QString GetVolDataFolderPath(T* vol, const int level)
-	{
-		const QString subPath = QString("%1/%2/")
-			.arg(QString::fromStdString(vol->GetDirectoryPath()))
-			.arg(level);
+    //TODO: cleanup!
+    //ex:  /home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
+    template <typename T>
+    static std::string GetMemMapFileName(T* vol, const int level)
+    {
+        return GetMemMapFileNameQT(vol, level).toStdString();
+    }
 
-		if(subPath.startsWith("/")){
-			throw OmIoException("not a relative path: " + subPath.toStdString());
-		}
+    template <typename T>
+    static QString GetVolDataFolderPath(T* vol, const int level)
+    {
+        const QString subPath = QString("%1/%2/")
+            .arg(QString::fromStdString(vol->GetDirectoryPath()))
+            .arg(level);
 
-		return OmProject::FilesFolder() + QDir::separator() + subPath;
-	}
+        if(subPath.startsWith("/")){
+            throw OmIoException("not a relative path: " + subPath.toStdString());
+        }
 
-	template <typename T>
-	static QString GetMemMapFileNameQT(T* vol, const int level)
-	{
-		static zi::rwmutex lock;
-		zi::rwmutex::write_guard g(lock);
+        return OmProject::FilesFolder() + QLatin1String("/") + subPath;
+    }
 
-		const QString fullPath = GetVolDataFolderPath(vol, level);
+    template <typename T>
+    static QString GetMemMapFileNameQT(T* vol, const int level)
+    {
+        static zi::rwmutex lock;
+        zi::rwmutex::write_guard g(lock);
 
-		if(!QDir(fullPath).exists()){
-			if(!QDir().mkpath(fullPath)){
-				throw OmIoException("could not create folder", fullPath);
-			}
-		}
+        const QString fullPath = GetVolDataFolderPath(vol, level);
 
-		const std::string volType = vol->getVolDataTypeAsStr();
+        if(!QDir(fullPath).exists()){
+            if(!QDir().mkpath(fullPath)){
+                throw OmIoException("could not create folder", fullPath);
+            }
+        }
 
-		const QString fnp = QString("/%1/volume.%2.raw")
-			.arg(fullPath)
-			.arg(QString::fromStdString(volType));
+        const std::string volType = vol->getVolDataTypeAsStr();
 
-		const QString fnp_clean = QDir::cleanPath(fnp);
+        const QString fnp = QString("/%1/volume.%2.raw")
+            .arg(fullPath)
+            .arg(QString::fromStdString(volType));
 
-		ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
+        const QString fnp_clean = QDir::cleanPath(fnp);
 
-		return fnp_clean;
-	}
+        ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
 
-	static QString GetChunksFolder(OmSegmentation* vol)
-	{
-		const QDir filesDir(GetVolPath(vol));
-		const QString subPath =	QString("chunks/");
-		return filesDir.absolutePath() + QDir::separator() + subPath;
-	}
+        return fnp_clean;
+    }
 
-	static QString GetChunkFolderPath(OmSegmentation* vol,
-									  const OmChunkCoord& coord)
-	{
-		const QDir filesDir(GetVolPath(vol));
+    static QString GetChunksFolder(OmSegmentation* vol)
+    {
+        const QDir filesDir(GetVolPath(vol));
+        const QString subPath =	QString("chunks/");
+        return filesDir.absolutePath() + QLatin1String("/") + subPath;
+    }
 
-		const QString subPath =
-			QString("chunks/%1/%2/%3/%4/")
-			.arg(coord.getLevel())
-			.arg(coord.getCoordinateX())
-			.arg(coord.getCoordinateY())
-			.arg(coord.getCoordinateZ());
+    static QString GetChunkFolderPath(OmSegmentation* vol,
+                                      const OmChunkCoord& coord)
+    {
+        const QDir filesDir(GetVolPath(vol));
 
-		return filesDir.absolutePath() + QDir::separator() + subPath;
-	}
+        const QString subPath =
+            QString("chunks/%1/%2/%3/%4/")
+            .arg(coord.getLevel())
+            .arg(coord.getCoordinateX())
+            .arg(coord.getCoordinateY())
+            .arg(coord.getCoordinateZ());
 
-	static QString MakeChunkFolderPath(OmSegmentation* vol,
-									   const OmChunkCoord& coord)
-	{
-		static zi::rwmutex lock;
+        return filesDir.absolutePath() + QLatin1String("/") + subPath;
+    }
 
-		const QString fullPath = GetChunkFolderPath(vol, coord);
-		createFolder(fullPath, lock);
-		return fullPath;
-	}
+    static QString MakeChunkFolderPath(OmSegmentation* vol,
+                                       const OmChunkCoord& coord)
+    {
+        static zi::rwmutex lock;
+
+        const QString fullPath = GetChunkFolderPath(vol, coord);
+        createFolder(fullPath, lock);
+        return fullPath;
+    }
 };
 
 #endif

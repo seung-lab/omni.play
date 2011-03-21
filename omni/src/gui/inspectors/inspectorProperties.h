@@ -10,21 +10,23 @@ class InspectorProperties : public QDialog{
 Q_OBJECT
 
 public:
-	InspectorProperties(QWidget *parent, OmViewGroupState * vgs);
-	void setOrReplaceWidget(QWidget *incomingWidget, const QString title);
-	OmViewGroupState * getViewGroupState();
+    InspectorProperties(QWidget *parent, OmViewGroupState * vgs);
+    ~InspectorProperties();
 
-	bool WidgetIsViewable() const {
-		return isVisible();
-	}
+    void setOrReplaceWidget(QWidget *incomingWidget, const QString title);
+    OmViewGroupState* getViewGroupState();
 
-public slots:
-	void closeDialog();
+    bool WidgetIsViewable() const {
+        return isVisible();
+    }
+
+public Q_SLOTS:
+    void closeDialog();
 
 private:
-	OmViewGroupState * mViewGroupState;
-	QWidget* mWidget;
-	QVBoxLayout *mainLayout;
+    OmViewGroupState* vgs_;
+    QWidget* widget_;
+    QVBoxLayout* mainLayout;
 };
 
 #endif

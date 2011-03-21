@@ -2,9 +2,9 @@
 #define OM_VIEW_3D_WIDGET_H
 
 /*
- *	An interface for widgets belonging to the OmView3d viewing system.
+ * An interface for widgets belonging to the OmView3d viewing system.
  *
- *	Can call a View3d event if the widget needs to be redrawn.
+ * Can call a View3d event if the widget needs to be redrawn.
  */
 
 
@@ -12,22 +12,26 @@ class OmCamera;
 class OmView3d;
 
 class OmView3dWidget {
+private:
+    OmView3d *const view3d_;
+
 public:
-	OmView3dWidget(OmView3d *view3d)
-		: mView3d(view3d)
-	{
-		enabled = false;
-	}
+    OmView3dWidget(OmView3d *view3d)
+        : view3d_(view3d)
+    {
+        enabled = false;
+    }
 
-	virtual ~OmView3dWidget()
-	{}
+    virtual ~OmView3dWidget()
+    {}
 
-	virtual void Draw() = 0;
+    virtual void Draw() = 0;
 
-	bool enabled;
+    OmView3d* View3dPtr() const {
+        return view3d_;
+    }
 
-protected:
-	OmView3d * const mView3d;
+    bool enabled;
 };
 
 #endif

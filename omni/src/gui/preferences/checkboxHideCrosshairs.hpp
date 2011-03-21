@@ -3,7 +3,7 @@
 
 #include "view2d/om2dPreferences.hpp"
 #include "gui/widgets/omCheckBoxWidget.hpp"
-#include "system/omEvents.h"
+#include "events/omEvents.h"
 
 class ShowCrosshairsCheckbox : public OmCheckBoxWidget {
 public:

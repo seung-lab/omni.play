@@ -27,7 +27,7 @@ public:
 		OmSegmentUncertain::SetAsUncertain(sdw_,
 										   selectedSegments_,
 										   uncertain_);
-		OmCacheManager::TouchFresheness();
+		OmCacheManager::TouchFreshness();
 	}
 
 	void Undo()
@@ -35,7 +35,7 @@ public:
 		OmSegmentUncertain::SetAsUncertain(sdw_,
 										   selectedSegments_,
 										   !uncertain_);
-		OmCacheManager::TouchFresheness();
+		OmCacheManager::TouchFreshness();
 	}
 
 	std::string Description() const

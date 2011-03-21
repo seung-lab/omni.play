@@ -11,41 +11,46 @@ class OmTileDrawer;
 
 class OmTileCache : private om::singletonBase<OmTileCache>{
 private:
-	boost::shared_ptr<OmTileCacheImpl> impl_;
+    boost::scoped_ptr<OmTileCacheImpl> impl_;
 
 public:
-	static void Delete();
-	static void Reset();
+    static void Delete();
+    static void Reset();
 
-	static void RegisterDrawer(OmTileDrawer*);
-	static void UnRegisterDrawer(OmTileDrawer*);
-	static void SetDrawerDone(OmTileDrawer*);
-	static bool AreDrawersActive();
-	static void WidgetVisibilityChanged(boost::shared_ptr<OmTileDrawer> drawer,
-										const bool visible);
+    static void RegisterDrawer(OmTileDrawer*);
+    static void UnRegisterDrawer(OmTileDrawer*);
+    static void SetDrawerDone(OmTileDrawer*);
+    static bool AreDrawersActive();
+    static void WidgetVisibilityChanged(OmTileDrawer* drawer,
+                                        const bool visible);
 
-	static void Get(OmTileDrawer* drawer,
-					OmTilePtr& tile,
-					const OmTileCoord& key,
-					const om::Blocking blocking);
+    static void Get(OmTileDrawer* drawer,
+                    OmTilePtr& tile,
+                    const OmTileCoord& key,
+                    const om::Blocking blocking);
 
-	static void Prefetch(const OmTileCoord& key);
+    static void BlockingCreate(OmTileDrawer* drawer,
+                               OmTilePtr& tile,
+                               const OmTileCoord& key);
 
-	static void RemoveSpaceCoord(const SpaceCoord & coord);
-	static void Clear();
-	static void ClearChannel();
+    static void Prefetch(const OmTileCoord& key);
+
+    static void RemoveDataCoord(const DataCoord & coord);
+    static void ClearAll();
+    static void ClearChannel();
+    static void ClearSegmentation();
 
 private:
-	OmTileCache();
-	~OmTileCache(){}
+    OmTileCache();
+    ~OmTileCache();
 
-	static void doGet(OmTilePtr& tile,
-					  const OmTileCoord& key,
-					  const om::Blocking blocking);
+    static void doGet(OmTilePtr& tile,
+                      const OmTileCoord& key,
+                      const om::Blocking blocking);
 
-	friend class OmTileDumper; // access doGet(...)
+    friend class OmTileDumper; // access doGet(...)
 
-	friend class zi::singleton<OmTileCache>;
+    friend class zi::singleton<OmTileCache>;
 };
 
 #endif

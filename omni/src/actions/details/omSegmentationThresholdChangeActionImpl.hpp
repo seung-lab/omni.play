@@ -1,66 +1,74 @@
 #ifndef OM_SEGMENTATION_THRESHOLD_CHANGE_IMPL_HPP
 #define OM_SEGMENTATION_THRESHOLD_CHANGE_IMPL_HPP
 
-#include "project/omSegmentationManager.h"
 #include "actions/io/omActionLogger.hpp"
 #include "common/omCommon.h"
-#include "project/omProject.h"
-#include "project/omProjectVolumes.h"
-#include "segment/omSegmentCache.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/omEvents.h"
+#include "common/omString.hpp"
+#include "events/details/omSegmentEvent.h"
+#include "events/omEvents.h"
+#include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "system/omAppState.hpp"
 #include "utility/dataWrappers.h"
-#include "volume/omSegmentation.h"
 
 class OmSegmentationThresholdChangeActionImpl {
 private:
-	OmID mSegmentationId;
-	float mThreshold;
-	float mOldThreshold;
+    SegmentationDataWrapper sdw_;
+    float mThreshold;
+    float mOldThreshold;
 
 public:
-	OmSegmentationThresholdChangeActionImpl()
-	{}
+    OmSegmentationThresholdChangeActionImpl()
+    {}
 
-	OmSegmentationThresholdChangeActionImpl(const OmID segmentationId,
-											const float threshold)
-		: mSegmentationId( segmentationId )
-		, mThreshold( threshold )
-	{}
+    OmSegmentationThresholdChangeActionImpl(const SegmentationDataWrapper sdw,
+                                            const double threshold)
+        : sdw_(sdw)
+        , mThreshold(threshold)
+    {}
 
-	void Execute()
-	{
-		OmSegmentation & seg = OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
-		mOldThreshold = seg.GetDendThreshold();
-		seg.SetDendThreshold(mThreshold);
-		OmEvents::SegmentModified();
-	}
+    void Execute()
+    {
+        OmSegmentation & seg = sdw_.GetSegmentation();
 
-	void Undo()
-	{
-		OmSegmentation & seg = OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
-		seg.SetDendThreshold(mOldThreshold);
-		OmEvents::SegmentModified();
-	}
+        mOldThreshold = seg.GetDendThreshold();
+        seg.SetDendThreshold(mThreshold);
 
-	std::string Description() const
-	{
-		QString lineItem = QString("Threshold: %1").arg(mThreshold);
-		return lineItem.toStdString();
-	}
+        //TODO: don't access view-level directly
+        if(OmAppState::GetDendToolBar()){
+            OmAppState::GetDendToolBar()->RefreshThreshold();
+        }
 
-	QString classNameForLogFile() const {
-		return "OmSegmentationThresholdChangeAction";
-	}
+        OmEvents::SegmentModified();
+    }
+
+    void Undo()
+    {
+        OmSegmentation & seg = sdw_.GetSegmentation();
+
+        seg.SetDendThreshold(mOldThreshold);
+
+        //TODO: don't access view-level directly
+        if(OmAppState::GetDendToolBar()){
+            OmAppState::GetDendToolBar()->RefreshThreshold();
+        }
+
+        OmEvents::SegmentModified();
+    }
+
+    std::string Description() const {
+        return "Threshold: " + om::string::num(mThreshold);
+    }
+
+    QString classNameForLogFile() const {
+        return "OmSegmentationThresholdChangeAction";
+    }
 
 private:
-	template <typename T> friend class OmActionLoggerThread;
+    template <typename T> friend class OmActionLoggerThread;
 
-	friend class QDataStream
-	&operator<<(QDataStream&, const OmSegmentationThresholdChangeActionImpl&);
-
-	friend class QDataStream
-	&operator>>(QDataStream&, OmSegmentationThresholdChangeActionImpl&);
+    friend class QDataStream &operator<<(QDataStream&, const OmSegmentationThresholdChangeActionImpl&);
+    friend class QDataStream &operator>>(QDataStream&, OmSegmentationThresholdChangeActionImpl&);
+    friend class QTextStream &operator<<(QTextStream& out, const OmSegmentationThresholdChangeActionImpl& a);
 };
 
 #endif

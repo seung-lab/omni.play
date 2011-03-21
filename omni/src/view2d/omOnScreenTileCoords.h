@@ -9,39 +9,42 @@ class OmFilter2d;
 
 class OmOnScreenTileCoords {
 public:
-	OmOnScreenTileCoords(const boost::shared_ptr<OmView2dState>&);
+    OmOnScreenTileCoords(const boost::shared_ptr<OmView2dState>&);
 
-	OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations();
-	OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations(const int);
+    OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations();
+    OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations(const int);
 
 private:
-	const boost::shared_ptr<OmView2dState> state_;
-	OmMipVolume *const vol_;
-	const ViewType viewType_;
-	OmViewGroupState *const vgs_;
-	const float tileLength_;
-	const float zoomFactor_;
-	const float mipLevel_;
-	const Vector2f stretch_;
-	const Vector4i totalViewport_; //lower left x, lower left y, width, height
-	const Vector2f translateVector_;
+    const boost::shared_ptr<OmView2dState> state_;
+    OmMipVolume *const vol_;
+    const ViewType viewType_;
+    OmViewGroupState *const vgs_;
+    const float tileLength_;
+    const float zoomFactor_;
+    const float mipLevel_;
+    const Vector2f stretch_;
+    const Vector4i totalViewport_; //lower left x, lower left y, width, height
+    const Vector2f translateVector_;
 
-	int dataDepth_;
-	uint64_t freshness_;
+    int dataDepth_;
+    uint64_t freshness_;
 
-	int xMipChunk_;
-	int yMipChunk_;
+    int xMipChunk_;
+    int yMipChunk_;
 
-	OmTileCoordsAndLocationsPtr tileCoordsAndLocations_;
+    OmTileCoordsAndLocationsPtr tileCoordsAndLocations_;
 
-	void doComputeCoordsAndLocations(const int depthOffset);
-	void setDepths();
-	DataCoord toDataCoord(const int);
-	GLfloatBox computeVertices(const float, const float);
-	void computeTile(const float x, const float y, const int);
-	void makeTileCoordFromFilter(OmFilter2d& filter, const SpaceCoord & spaceCoord, const float x, const float y);
-	OmTileCoord makeTileCoord(const SpaceCoord& coord, OmMipVolume * vol, int freshness);
+    void doComputeCoordsAndLocations(const int depthOffset);
+    void setDepths();
+    DataCoord toDataCoord(const int);
+    GLfloatBox computeVertices(const float, const float);
+    void computeTile(const float x, const float y, const int);
+    void makeTileCoordFromFilter(OmFilter2d* filter, const DataCoord & dataCoord,
+                                 const float x, const float y);
+    OmTileCoord makeTileCoord(const DataCoord& coord, OmMipVolume * vol,
+                              int freshness);
 
+    friend std::ostream& operator<<(std::ostream &out, const OmOnScreenTileCoords& c);
 };
 
 #endif

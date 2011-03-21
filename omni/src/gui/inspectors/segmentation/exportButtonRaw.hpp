@@ -23,7 +23,7 @@ private:
 		if (fileName == NULL)
 			return;
 
-		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
+		const SegmentationDataWrapper& sdw = mParent->GetSDW();
 
 		OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, false);
 	}

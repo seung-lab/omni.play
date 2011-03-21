@@ -2,8 +2,8 @@
 #define CHANNEL_DATA_WRAPPER_HPP
 
 #include "project/omProject.h"
-#include "project/omProjectVolumes.h"
-#include "project/omChannelManager.h"
+#include "project/details/omProjectVolumes.h"
+#include "project/details/omChannelManager.h"
 #include "volume/omChannel.h"
 
 #include <QHash>
@@ -11,61 +11,84 @@
 class FilterDataWrapper;
 
 class ChannelDataWrapper {
+public:
+    static const OmIDsSet& ValidIDs(){
+        return OmProject::Volumes().Channels().GetValidChannelIds();
+    }
+
+    static void Remove(const OmID id){
+        OmProject::Volumes().Channels().RemoveChannel(id);
+    }
+
 private:
-	OmID mID;
+    OmID id_;
 
 public:
-	ChannelDataWrapper()
-		: mID(0)
-	{}
+    ChannelDataWrapper()
+        : id_(0)
+    {}
 
-	explicit ChannelDataWrapper(const OmID ID)
-		: mID(ID)
-	{}
+    explicit ChannelDataWrapper(const OmID ID)
+        : id_(ID)
+    {}
 
-	inline OmID getID() const {
-		return mID;
-	}
+    inline OmID getID() const {
+        return id_;
+    }
 
-	inline OmID GetChannelID() const {
-		return mID;
-	}
+    inline OmID GetChannelID() const {
+        return id_;
+    }
 
-	inline QString getName() const {
-		return QString::fromStdString(GetChannel().GetName());
-	}
+    OmChannel& Create()
+    {
+        OmChannel& c = OmProject::Volumes().Channels().AddChannel();
+        id_ = c.GetID();
+        printf("create channel %d\n", id_);
+        return c;
+    }
 
-	inline bool isEnabled() const {
-		return OmProject::Volumes().Channels().IsChannelEnabled(mID);
-	}
+    void Remove()
+    {
+        Remove(id_);
+        id_ = 0;
+    }
 
-	inline QString getNote() const {
-		return GetChannel().GetNote();
-	}
+    inline QString getName() const {
+        return QString::fromStdString(GetChannel().GetName());
+    }
 
-	inline OmChannel& GetChannel() const {
-		return OmProject::Volumes().Channels().GetChannel(mID);
-	}
+    inline bool isEnabled() const {
+        return OmProject::Volumes().Channels().IsChannelEnabled(id_);
+    }
 
-	inline OmChannel* GetChannelPtr() const
-	{
-		OmChannel& chan = GetChannel();
-		return &chan;
-	}
+    inline QString getNote() const {
+        return GetChannel().GetNote();
+    }
 
-	inline bool IsChannelValid() const
-	{
-		if(!mID){
-			return false;
-		}
-		return OmProject::Volumes().Channels().IsChannelValid(mID);
-	}
+    inline OmChannel& GetChannel() const {
+        return OmProject::Volumes().Channels().GetChannel(id_);
+    }
 
-	inline bool IsBuilt() const {
-		return GetChannel().IsBuilt();
-	}
+    inline OmChannel* GetChannelPtr() const
+    {
+        OmChannel& chan = GetChannel();
+        return &chan;
+    }
 
-	QHash<OmID, FilterDataWrapper> getAllFilterIDsAndNames();
+    inline bool IsChannelValid() const
+    {
+        if(!id_){
+            return false;
+        }
+        return OmProject::Volumes().Channels().IsChannelValid(id_);
+    }
+
+    inline bool IsBuilt() const {
+        return GetChannel().IsBuilt();
+    }
+
+    std::vector<OmFilter2d*> GetFilters() const;
 };
 
 #endif

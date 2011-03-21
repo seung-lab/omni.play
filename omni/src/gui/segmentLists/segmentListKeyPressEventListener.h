@@ -2,20 +2,23 @@
 #define OM_SEGMENT_LIST_KEY_PRESS_EVENT_LISTENER_H
 
 #include "segment/omSegmentSelected.hpp"
-#include "system/events/omKeyPressEventListener.h"
 
-class SegmentListKeyPressEventListener : public OmKeyPressEventListener {
+class SegmentListKeyPressEventListener {
 public:
-	SegmentListKeyPressEventListener(){}
+    SegmentListKeyPressEventListener()
+    {}
 
-protected:
-	virtual void PressDown(QKeyEvent*){
-		printf("segment list key down\n");
-	}
-
-	virtual void PressUp(QKeyEvent*){
-		printf("segment list key up\n");
-	}
+    void keyPressEvent(QKeyEvent* event)
+    {
+        switch (event->key()) {
+        case Qt::Key_Down:
+            printf("segment list key down\n");
+            break;
+        case Qt::Key_Up:
+            printf("segment list key up\n");
+            break;
+        }
+    }
 };
 
 #endif

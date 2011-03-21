@@ -5,7 +5,7 @@
 #include "gui/toolbars/dendToolbar/validationGroup.h"
 #include "gui/widgets/omButton.hpp"
 #include "actions/omActions.h"
-#include "system/omEvents.h"
+#include "events/omEvents.h"
 
 class SetNotValid : public OmButton<ValidationGroup> {
 public:
@@ -20,7 +20,7 @@ private:
 	void doAction()
 	{
 		//debug(dendbar, "ValidationGroup::deleteGroup\n");
-		SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
+		SegmentationDataWrapper sdw = mParent->GetSDW();
 		if(!sdw.IsSegmentationValid()){
 			return;
 		}

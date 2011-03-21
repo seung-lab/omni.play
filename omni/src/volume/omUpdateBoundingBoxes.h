@@ -2,17 +2,20 @@
 #define OM_UPDATE_BOUNDING_BOXES_H
 
 class OmSegmentation;
+class OmSegments;
+class OmChunkCoord;
 
 class OmUpdateBoundingBoxes {
 private:
-	OmSegmentation *const vol_;
+    OmSegmentation *const vol_;
+    OmSegments *const segments_;
 
 public:
-	OmUpdateBoundingBoxes(OmSegmentation* vol)
-		: vol_(vol)
-	{}
+    OmUpdateBoundingBoxes(OmSegmentation* vol);
+    void Update();
 
-	void Update();
+private:
+    void doUpdate(const OmChunkCoord& coord);
 };
 
 #endif

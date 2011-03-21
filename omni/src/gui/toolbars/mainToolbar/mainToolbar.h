@@ -6,33 +6,37 @@
 #include <QtGui>
 
 class MainWindow;
-class NavAndEditButtons;
+class NavAndEditButtonGroup;
 class OmViewGroupState;
 class OpenViewGroupButton;
+class OpenSingleViewButton;
 class SaveButton;
 class VolumeRefreshButton;
+class BrushToolbox;
 
-class MainToolbar : public QWidget {
+class MainToolBar : public QToolBar {
 Q_OBJECT
 
 public:
-	MainToolbar(MainWindow* mw);
+    MainToolBar(MainWindow* mw);
 
-	void updateToolbar();
-	void setTool(const OmToolMode tool);
+    void UpdateToolbar();
+    void SetTool(const om::tool::mode tool);
 
 private:
-	MainWindow *const mMainWindow;
+    MainWindow *const mainWindow_;
 
-	SaveButton *const saveButton;
-	NavAndEditButtons *const buttons;
-	OpenViewGroupButton *const openViewGroupButton;
-	VolumeRefreshButton *const volumeRefreshButton;
+    SaveButton *const saveButton;
+    OpenViewGroupButton *const openViewGroupButton_;
+    OpenSingleViewButton *const openSingleViewButton_;
+    VolumeRefreshButton *const volumeRefreshButton;
+    NavAndEditButtonGroup *const navEditButtons_;
 
-	void addWidgetToToolbar( QWidget * widget );
-	void addSeperatorToToolbar();
-	void setReadOnlyWidgetsEnabled();
-	void setModifyWidgetsEnabled();
+    BrushToolbox* brushToolbox_;
+
+    void addNavEditButtons();
+    void setReadOnlyWidgetsEnabled();
+    void setModifyWidgetsEnabled();
 };
 
 #endif

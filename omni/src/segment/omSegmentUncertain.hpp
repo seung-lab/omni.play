@@ -2,8 +2,8 @@
 #define OM_SEGMENT_UNCERTAIN_HPP
 
 #include "common/omCommon.h"
-#include "segment/omSegmentCache.h"
-#include "segment/omSegmentLists.hpp"
+#include "segment/omSegments.h"
+#include "segment/lists/omSegmentLists.h"
 #include "utility/dataWrappers.h"
 #include "utility/omTimer.hpp"
 #include "volume/omSegmentation.h"
@@ -11,56 +11,59 @@
 
 class OmSegmentUncertain {
 public:
-	static void SetAsUncertain(const SegmentationDataWrapper& sdw,
-							   boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
-							   const bool uncertain)
-	{
-		OmSegmentUncertain uncertainer(sdw, selectedSegments, uncertain);
-		uncertainer.setAsUncertain();
-	}
+    static void SetAsUncertain(const SegmentationDataWrapper& sdw,
+                               boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                               const bool uncertain)
+    {
+        OmSegmentUncertain uncertainer(sdw, selectedSegments, uncertain);
+        uncertainer.setAsUncertain();
+    }
 
 private:
-	const SegmentationDataWrapper& sdw_;
-	const boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
-	const bool uncertain_;
-	const boost::shared_ptr<OmSegmentLists> segmentLists_;
+    const SegmentationDataWrapper& sdw_;
+    const boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+    const bool uncertain_;
 
-	OmSegmentUncertain(const SegmentationDataWrapper& sdw,
-					   boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
-					   const bool uncertain)
-		: sdw_(sdw)
-		, selectedSegments_(selectedSegments)
-		, uncertain_(uncertain)
-		, segmentLists_(sdw_.SegmentLists())
-	{}
+    OmSegmentUncertain(const SegmentationDataWrapper& sdw,
+                       boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                       const bool uncertain)
+        : sdw_(sdw)
+        , selectedSegments_(selectedSegments)
+        , uncertain_(uncertain)
+    {}
 
-	void setAsUncertain()
-	{
-		static zi::mutex mutex;
-		zi::guard g(mutex);
+    void setAsUncertain()
+    {
+        static zi::mutex mutex;
+        zi::guard g(mutex);
 
-		OmTimer timer;
+        OmTimer timer;
 
-		if(uncertain_){
-			std::cout << "setting " << selectedSegments_->size()
-					  << " segments as uncertain..." << std::flush;
-		} else {
-			std::cout << "setting " << selectedSegments_->size()
-					  << " segments as NOT uncertain..." << std::flush;
-		}
+        if(uncertain_)
+        {
+            std::cout << "setting " << selectedSegments_->size()
+                      << " segments as uncertain..." << std::flush;
+        } else
+        {
+            std::cout << "setting " << selectedSegments_->size()
+                      << " segments as NOT uncertain..." << std::flush;
+        }
 
-		FOR_EACH(iter, *selectedSegments_){
-			OmSegment* seg = *iter;
+        FOR_EACH(iter, *selectedSegments_)
+        {
+            OmSegment* seg = *iter;
 
-			if(uncertain_){
-				segmentLists_->MoveSegment(om::UNCERTAIN, seg);
-			} else {
-				segmentLists_->MoveSegment(om::WORKING, seg);
-			}
-		}
+            if(uncertain_){
+                seg->SetListType(om::UNCERTAIN);
+            } else {
+                seg->SetListType(om::WORKING);
+            }
+        }
 
-		printf("done (%.2g secs)\n", timer.s_elapsed());
-	}
+        sdw_.SegmentLists()->RefreshGUIlists();
+
+        timer.PrintDone();
+    }
 };
 
 #endif

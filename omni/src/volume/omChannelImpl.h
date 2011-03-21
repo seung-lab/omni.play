@@ -2,9 +2,9 @@
 #define OM_CHANNEL_IMPL_H
 
 /*
- *	OmChannel is the MIP data structure for a raw data volume
+ * OmChannel is the MIP data structure for a raw data volume
  *
- *	Brett Warne - bwarne@mit.edu - 2/6/09
+ * Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
 #include "chunks/omChunkCache.hpp"
@@ -19,47 +19,59 @@ class OmVolumeData;
 class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
 public:
-	OmChannelImpl();
-	OmChannelImpl(OmID id);
-	virtual ~OmChannelImpl();
+    OmChannelImpl();
+    OmChannelImpl(OmID id);
+    virtual ~OmChannelImpl();
 
-	virtual QString GetDefaultHDF5DatasetName() = 0;
+    virtual QString GetDefaultHDF5DatasetName() = 0;
 
-	OmVolumeData* VolData() {
-		return volData_.get();
-	}
+    OmVolumeData* VolData() {
+        return volData_.get();
+    }
 
-	std::string GetName();
-	std::string GetDirectoryPath();
-	void loadVolData();
-	void loadVolDataIfFoldersExist();
-	ObjectType getVolumeType(){ return CHANNEL; }
-	OmID getID(){ return GetID(); }
-	int GetBytesPerVoxel() const;
+    std::string GetName();
+    std::string GetDirectoryPath();
+    void loadVolData();
+    void loadVolDataIfFoldersExist();
 
-	void CloseDownThreads();
+    ObjectType getVolumeType() const {
+        return CHANNEL;
+    }
 
-	OmFilter2dManager& FilterManager(){
-		return filterManager_;
-	}
+    OmID getID() const {
+        return GetID();
+    }
 
-	void SetVolDataType(const OmVolDataType);
+    virtual int GetBytesPerVoxel() const;
+    virtual int GetBytesPerSlice() const;
 
-	void GetChunk(OmChunkPtr& ptr, const OmChunkCoord& coord);
+    void CloseDownThreads();
+
+    OmFilter2dManager& FilterManager(){
+        return filterManager_;
+    }
+
+    void SetVolDataType(const OmVolDataType);
+
+    void GetChunk(OmChunkPtr& ptr, const OmChunkCoord& coord);
+
+    inline std::vector<OmFilter2d*> GetFilters() const {
+        return filterManager_.GetFilters();
+    }
 
 protected:
-	//protected copy constructor and assignment operator to prevent copy
-	OmChannelImpl(const OmChannelImpl&);
-	OmChannelImpl& operator= (const OmChannelImpl&);
+    //protected copy constructor and assignment operator to prevent copy
+    OmChannelImpl(const OmChannelImpl&);
+    OmChannelImpl& operator= (const OmChannelImpl&);
 
-	boost::scoped_ptr<OmChunkCache<OmChannelImpl, OmChunk> > chunkCache_;
-	boost::scoped_ptr<OmVolumeData> volData_;
+    boost::scoped_ptr<OmChunkCache<OmChannelImpl, OmChunk> > chunkCache_;
+    boost::scoped_ptr<OmVolumeData> volData_;
 
-	OmFilter2dManager filterManager_;
+    OmFilter2dManager filterManager_;
 
 private:
-	friend class OmChannelImplChunkBuildTask;
-	friend class OmDataArchiveProject;
+    friend class OmChannelImplChunkBuildTask;
+    friend class OmDataArchiveProject;
 };
 
 #endif

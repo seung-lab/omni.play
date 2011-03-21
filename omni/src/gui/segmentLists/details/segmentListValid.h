@@ -5,46 +5,44 @@
 #include "gui/segmentLists/elementListBox.hpp"
 #include "common/omCommon.h"
 #include "utility/dataWrappers.h"
-#include "segment/omSegmentLists.hpp"
+#include "segment/lists/omSegmentLists.h"
 
 class SegmentListValid : public SegmentListBase
 {
-	Q_OBJECT
+    Q_OBJECT
 
- public:
-	SegmentListValid(QWidget * parent,
-					 OmViewGroupState* vgs)
-		: SegmentListBase(parent, vgs)
-	{}
+    public:
+    SegmentListValid(QWidget * parent,
+                     OmViewGroupState* vgs)
+        : SegmentListBase(parent, vgs)
+    {}
 
- private:
-	QString getTabTitle(){
-		return QString("Valid");
-	}
+private:
+    QString getTabTitle(){
+        return QString("Valid");
+    }
 
-	uint64_t Size() {
-		return sdw_.SegmentLists()->Valid().size();
-	}
+    uint64_t Size(){
+        return sdw_.SegmentLists()->Size(om::VALID);
+    }
 
-	boost::shared_ptr<OmSegIDsListWithPage>
-	getPageSegments(const unsigned int offset,
-					const int numToGet,
-					const OmSegID startSeg)
-	{
-		return sdw_.SegmentLists()->Valid().getPageOfSegmentIDs(offset, numToGet, startSeg);
-	}
+    boost::shared_ptr<GUIPageOfSegments>
+    getPageSegments(const GUIPageRequest& request)
+    {
+        return sdw_.SegmentLists()->GetSegmentGUIPage(om::VALID, request);
+    }
 
-	int getPreferredTabIndex(){
-		return 1;
-	}
+    int getPreferredTabIndex(){
+        return 1;
+    }
 
-	void makeTabActiveIfContainsJumpedToSegment(){
-		ElementListBox::SetActiveTab( this );
-	}
+    void makeTabActiveIfContainsJumpedToSegment(){
+        ElementListBox::SetActiveTab( this );
+    }
 
-	bool shouldSelectedSegmentsBeAddedToRecentList(){
-		return true;
-	}
+    bool shouldSelectedSegmentsBeAddedToRecentList(){
+        return true;
+    }
 };
 
 #endif

@@ -2,35 +2,51 @@
 #define OM_CACHE_BASE_H
 
 /**
- *	Base class of all caches.
- *	Brett Warne - bwarne@mit.edu - 7/15/09
+ * Base class of all caches.
+ * Brett Warne - bwarne@mit.edu - 7/15/09
  */
 
 #include "common/omCommon.h"
 
 class OmCacheBase {
+protected:
+    const std::string cacheName_;
+    const om::CacheGroup cacheGroup_;
+
 public:
-	OmCacheBase(OmCacheGroupEnum group)
-		: mCacheGroup(group) {}
+    OmCacheBase(const std::string& cacheName, const om::CacheGroup group)
+        : cacheName_(cacheName)
+        , cacheGroup_(group)
+    {}
 
-	virtual ~OmCacheBase(){}
+    virtual ~OmCacheBase()
+    {}
 
-	virtual void UpdateSize(const int64_t delta) = 0;
-	virtual int Clean(const bool) = 0;
-	virtual int GetFetchStackSize() = 0;
-	virtual int64_t GetCacheSize() = 0;
-	virtual void closeDownThreads() = 0;
-	virtual const std::string& GetName() = 0;
+    om::CacheGroup Group() const {
+        return cacheGroup_;
+    }
 
-	std::string getGroupName()
-	{
-		if(mCacheGroup == RAM_CACHE_GROUP){
-			return "RAM_CACHE";
-		}
-		return "VRAM_CACHE";
-	}
+    virtual void Clean() = 0;
+    virtual void RemoveOldest(const int64_t numBytes) = 0;
+    virtual void Clear() = 0;
 
-	const OmCacheGroupEnum mCacheGroup;
+    virtual int64_t GetCacheSize() const = 0;
+
+    virtual void closeDownThreads()
+    {}
+
+    virtual const std::string& GetName() const {
+        return cacheName_;
+    }
+
+    friend std::ostream& operator<<(std::ostream &out, const OmCacheBase& in)
+    {
+        out << in.GetName()
+            << " ("
+            << in.Group()
+            << ")";
+        return out;
+    }
 };
 
 #endif

@@ -6,11 +6,11 @@
 class GraphTools;
 
 class SplitButton : public OmButton<GraphTools> {
- public:
-	SplitButton(GraphTools *);
+public:
+    SplitButton(GraphTools *);
 
- private:
-	void doAction();
+private:
+    void doAction();
 };
 
 #endif

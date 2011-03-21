@@ -16,8 +16,8 @@ public:
     // return rand int in range [min, max]
     static inline int GetRandomInt(const int min, const int max)
     {
-		static zi::mutex lock;
-		zi::guard g(lock);
+        static zi::mutex lock;
+        zi::guard g(lock);
 
         boost::uniform_int<> dist(min, max);
         boost::variate_generator<boost::mt19937&,

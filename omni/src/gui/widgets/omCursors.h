@@ -4,19 +4,21 @@
 #include <QtGui>
 
 class OmBusyCursorWrapper {
- public:
-	OmBusyCursorWrapper(){	
-		QApplication::setOverrideCursor(QCursor(Qt::WaitCursor)); 
-	}
+public:
+    OmBusyCursorWrapper(){
+        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+    }
 
-	~OmBusyCursorWrapper(){ 
-		QApplication::restoreOverrideCursor(); 
-	}
+    ~OmBusyCursorWrapper(){
+        QApplication::restoreOverrideCursor();
+    }
 };
 
 class OmCursors {
- public:
-	static void setToolCursor(QWidget*);
+public:
+    static void setToolCursor(QWidget*);
+private:
+    static QCursor figureOutCursor();
 };
 
 #endif
