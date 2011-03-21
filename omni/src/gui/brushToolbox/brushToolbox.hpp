@@ -23,22 +23,22 @@ private:
     {
         if(dock_)
         {
-            dock_->show();
+            // dock_->show();
             return;
         }
 
-        makeToolbox();
+        // makeToolbox();
     }
 
     void showEraseBox()
     {
         if(dock_)
         {
-            dock_->show();
+            // dock_->show();
             return;
         }
 
-        makeToolbox();
+        // makeToolbox();
     }
 
     void hideBox()
