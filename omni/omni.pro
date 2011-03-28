@@ -807,7 +807,6 @@ win32 {
 #### Linux or MacOS
    INCLUDEPATH +=  ../external/libs/HDF5/include
    LIBS += ../external/libs/HDF5/lib/libhdf5.a
-   LIBS += -lz
 }
 
 OBJECTS_DIR = build
