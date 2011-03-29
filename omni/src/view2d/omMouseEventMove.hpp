@@ -80,8 +80,17 @@ public:
     }
 
 private:
-    inline void setState(QMouseEvent* event){
-        OmMouseEventState::SetState(this, state_, event);
+    inline void setState(QMouseEvent* event)
+    {
+        controlKey_ = event->modifiers() & Qt::ControlModifier;
+        shiftKey_ = event->modifiers() & Qt::ShiftModifier;
+        altKey_ = event->modifiers() & Qt::AltModifier;
+
+        leftMouseButton_ = event->buttons() & Qt::LeftButton;
+        rightMouseButton_ = event->buttons() & Qt::RightButton;
+
+        tool_ = OmStateManager::GetToolMode();
+        dataClickPoint_ = state_->ComputeMouseClickPointDataCoord(event);
     }
 
     inline void selectSegments()

@@ -497,7 +497,6 @@ HEADERS +=  \
 	src/view2d/omCalcTileCoordsDownsampled.hpp \
 	src/view2d/omDisplayInfo.hpp \
 	src/view2d/omFillTool.hpp \
-	src/view2d/omGuiHelpers.hpp \
 	src/view2d/omKeyEvents.hpp \
 	src/view2d/omMouseEventMove.hpp \
 	src/view2d/omMouseEventPress.hpp \

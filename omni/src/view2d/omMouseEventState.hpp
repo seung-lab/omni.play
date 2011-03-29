@@ -4,22 +4,6 @@
 class OmMouseEventState {
 public:
     template <class T>
-    static void SetState(T* target, OmView2dState* state, QMouseEvent* event)
-    {
-        target->event_ = event;
-
-        target->controlKey_ = om::gui::IsControlDown(event);
-        target->shiftKey_ = om::gui::IsShiftDown(event);
-        target->altKey_ = om::gui::IsAltDown(event);
-        target->leftMouseButton_ = om::gui::IsLeftButton(event);
-        target->rightMouseButton_ = om::gui::IsRightButton(event);
-        target->tool_ = OmStateManager::GetToolMode();
-        target->dataClickPoint_ = state->ComputeMouseClickPointDataCoord(event);
-
-        //Print(target);
-    }
-
-    template <class T>
     static void Print(T* target)
     {
         printf("controlKey_(%d), altKey_(%d), shiftKey_(%d), leftMouseButton_(%d), "
