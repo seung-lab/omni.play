@@ -45,7 +45,9 @@ public:
                 break;
 
             case om::tool::SELECT:
-                if(controlKey_){ // pan in select-mode
+                if(controlKey_ || state_->AmPanningInSelectMode())
+                {
+                    // pan in select-mode
                     mousePan();
                     OmEvents::Redraw3d();
                 } else {

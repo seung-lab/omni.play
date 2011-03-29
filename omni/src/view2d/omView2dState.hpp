@@ -45,6 +45,7 @@ public:
         , lastDataPoint_(0,0)
         , location_(boost::make_shared<OmView2dVolLocation>(vol, vgs, viewType))
         , brushSize_(OmStateManager::BrushSize())
+        , amPanningInSelectMode_(false)
     {
         setTotalViewport(size);
         zoomLevel_->Update(getMaxMipLevel());
@@ -398,6 +399,14 @@ public:
         return location_.get();
     }
 
+    inline bool AmPanningInSelectMode(){
+        return amPanningInSelectMode_;
+    }
+
+    inline void AmPanningInSelectMode(const bool b){
+        amPanningInSelectMode_ = b;
+    }
+
 private:
     OmMipVolume* vol_;
     const ObjectType objType_;
@@ -420,6 +429,8 @@ private:
     boost::shared_ptr<OmView2dVolLocation> location_;
 
     OmBrushSize *const brushSize_;
+
+    bool amPanningInSelectMode_;
 };
 
 #endif

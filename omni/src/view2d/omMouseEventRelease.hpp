@@ -29,6 +29,7 @@ public:
 
         case om::tool::SELECT:
             ElementListBox::PopulateLists();
+            state_->AmPanningInSelectMode(false);
             break;
 
         case om::tool::CROSSHAIR:

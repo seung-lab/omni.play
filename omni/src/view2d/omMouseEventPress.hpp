@@ -121,6 +121,7 @@ private:
         switch(tool_){
         case om::tool::SELECT:
             if(controlKey_){
+                state_->AmPanningInSelectMode(true);
                 return;
             } else {
                 state_->setScribbling(true);
