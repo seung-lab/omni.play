@@ -77,6 +77,7 @@ public:
             break;
 
         case Qt::Key_S:
+        case Qt::Key_E:
         case Qt::Key_PageDown:
             state_->MoveDownStackFartherFromViewer();
             OmEvents::ViewCenterChanged();
