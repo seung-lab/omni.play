@@ -82,6 +82,8 @@ public:
 private:
     inline void setState(QMouseEvent* event)
     {
+        event_ = event;
+
         controlKey_ = event->modifiers() & Qt::ControlModifier;
         shiftKey_ = event->modifiers() & Qt::ShiftModifier;
         altKey_ = event->modifiers() & Qt::AltModifier;
