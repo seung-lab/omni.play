@@ -34,7 +34,7 @@ my $NumCores;
 ##
 # source tar-ball versions
 ##
-my $BOOST_VER = "boost_1_46_0";
+my $BOOST_VER = "boost_1_46_1";
 my $QT_VER = "qt-everywhere-opensource-src-4.7.2";
 my $HDF5_VER = "hdf5-1.8.6";
 my $ZLIB_VER = "zlib-1.2.5";

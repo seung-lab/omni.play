@@ -12,7 +12,7 @@ class GUIPageOfSegments;
 class OmViewGroupState;
 class OmSegmentEvent;
 class OmSegmentListWidget;
-class SegObjectInspector;
+class SegmentInspector;
 class OmViewGroupState;
 
 class SegmentListBase : public QWidget {

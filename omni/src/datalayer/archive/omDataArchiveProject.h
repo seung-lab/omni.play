@@ -4,8 +4,9 @@
 #include "common/omCommon.h"
 #include "system/omGenericManager.hpp"
 #include "system/omGroups.h"
-#include "segment/lowLevel/omPagingPtrStore.h"
 
+class OmPagingPtrStore;
+class OmProjectVolumes;
 class OmChannel;
 class OmChannelManager;
 class OmDataPath;
@@ -15,13 +16,14 @@ class OmManageableObject;
 class OmMipMeshManager;
 class OmMipVolume;
 class OmPreferences;
+class OmProject;
 class OmProjectImpl;
 class OmSegment;
-class OmSegments;
-class OmSegmentsImpl;
 class OmSegmentEdge;
 class OmSegmentation;
 class OmSegmentationManager;
+class OmSegments;
+class OmSegmentsImpl;
 class OmVolume;
 
 class OmDataArchiveProject {

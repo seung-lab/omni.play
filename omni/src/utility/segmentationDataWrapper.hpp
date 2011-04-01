@@ -88,6 +88,10 @@ public:
         return SEGMENTATION;
     }
 
+    inline bool IsValidWrapper() const {
+        return IsSegmentationValid();
+    }
+
     inline bool IsSegmentationValid() const
     {
         if(!id_){

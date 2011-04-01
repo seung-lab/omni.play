@@ -8,7 +8,7 @@
 
 class OmSegment;
 class OmSegments;
-class OmCacheSegments;
+template <class> class OmPooledTile;
 
 class OmSegmentColorizer {
 public:
@@ -19,13 +19,12 @@ public:
 
     ~OmSegmentColorizer();
 
-    boost::shared_ptr<OmColorRGBA> ColorTile(uint32_t const*const imageData);
+    OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*const imageData);
 
     static const std::vector<uint8_t> SelectedColorLookupTable;
 
 private:
     OmSegmentColorizerColorCache colorCache_;
-    boost::scoped_ptr<OmCacheSegments> cacheSegments_;
 
     SegmentColorParams params_;
 

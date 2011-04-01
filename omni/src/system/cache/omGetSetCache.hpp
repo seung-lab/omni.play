@@ -25,7 +25,7 @@ private:
 
     std::map<KEY, PTR> cache_;
 
-    std::list<KEY> mru_; // most recent keys at end of list
+    std::deque<KEY> mru_; // most recent keys at end of list
 
     LockedKeyMultiIndex<KEY> full_mru_;
 
@@ -69,7 +69,7 @@ public:
 
     void Clean()
     {
-        std::list<KEY> mru;
+        std::deque<KEY> mru;
         {
             zi::guard g(lock_);
             mru_.swap(mru);

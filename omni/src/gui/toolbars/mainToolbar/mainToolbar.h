@@ -12,7 +12,6 @@ class OpenViewGroupButton;
 class OpenSingleViewButton;
 class SaveButton;
 class VolumeRefreshButton;
-class BrushToolbox;
 
 class MainToolBar : public QToolBar {
 Q_OBJECT
@@ -31,8 +30,6 @@ private:
     OpenSingleViewButton *const openSingleViewButton_;
     VolumeRefreshButton *const volumeRefreshButton;
     NavAndEditButtonGroup *const navEditButtons_;
-
-    BrushToolbox* brushToolbox_;
 
     void addNavEditButtons();
     void setReadOnlyWidgetsEnabled();

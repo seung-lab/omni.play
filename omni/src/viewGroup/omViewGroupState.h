@@ -16,6 +16,7 @@ class OmZoomLevel;
 class SegmentDataWrapper;
 class ToolBarManager;
 class ViewGroup;
+template <class> class OmPooledTile;
 
 class OmViewGroupState : public OmManageableObject {
 public:
@@ -97,9 +98,9 @@ public:
 
     OmSegmentColorCacheType determineColorizationType(const ObjectType);
 
-    boost::shared_ptr<OmColorRGBA> ColorTile(uint32_t const*,
-                                             const Vector2i&,
-                                             const OmTileCoord&);
+    OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*,
+                                         const Vector2i&,
+                                         const OmTileCoord&);
 private:
     MainWindow* mMainWindow;
     FilterWidget* mFilterWidget;

@@ -1,6 +1,7 @@
 #ifndef OM_IMAGE_FILTER_HPP
 #define OM_IMAGE_FILTER_HPP
 
+#include "tiles/omPooledTile.hpp"
 #include "utility/image/omImage.hpp"
 #include "zi/omUtility.h"
 
@@ -8,7 +9,7 @@
 
 class OmImageFilter : private om::singletonBase<OmImageFilter>{
 public:
-    static boost::shared_ptr<uint8_t>
+    static OmPooledTile<uint8_t>*
     FilterChannel(OmImage<uint8_t, 2>& slice)
     {
         static const uint8_t absMax = 255;
@@ -29,7 +30,10 @@ public:
             slice.Gamma(instance().gamma_);
         }
 
-        return slice.getMallocCopyOfData();
+        OmPooledTile<uint8_t>* tile = new OmPooledTile<uint8_t>();
+        slice.copyInto(tile->GetData());
+
+        return tile;
     }
 
     static int32_t GetBrightnessShift(){

@@ -10,6 +10,7 @@
 #include "project/omProject.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
+#include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentUtils.hpp"
 #include "utility/dataWrappers.h"
 #include "utility/omColorUtils.hpp"
@@ -127,7 +128,7 @@ public:
     static void RebuildCenterOfSegmentData(const OmID segmentationID)
     {
         SegmentationDataWrapper sdw(segmentationID);
-        OmSegmentUtils::RebuildCenterOfSegmentData(sdw);
+        OmSegmentCenter::RebuildCenterOfSegmentData(sdw);
         OmActions::Save();
     }
 

@@ -3,14 +3,16 @@
 
 #include "datalayer/upgraders/omUpgradeTo14.hpp"
 #include "datalayer/upgraders/omUpgradeTo20.hpp"
+#include "segment/omSegmentCenter.hpp"
 
 class OmUpgraders{
 public:
     static void RebuildCenterOfSegmentData()
     {
-        FOR_EACH(iter, OmProject::Volumes().Segmentations().GetValidSegmentationIds()){
+        FOR_EACH(iter, SegmentationDataWrapper::ValidIDs())
+        {
             const SegmentationDataWrapper sdw(*iter);
-            OmSegmentUtils::RebuildCenterOfSegmentData(sdw);
+            OmSegmentCenter::RebuildCenterOfSegmentData(sdw);
         }
     }
 

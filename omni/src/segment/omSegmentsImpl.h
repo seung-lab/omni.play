@@ -7,10 +7,11 @@ class OmChunkCoord;
 class OmSegmentEdge;
 class OmUserEdges;
 class OmSegmentChildren;
+class OmSegmentsStore;
 
 class OmSegmentsImpl : public OmSegmentsImplLowLevel {
 public:
-    OmSegmentsImpl(OmSegmentation*);
+    OmSegmentsImpl(OmSegmentation*, OmSegmentsStore*);
     virtual ~OmSegmentsImpl();
 
     void Flush();

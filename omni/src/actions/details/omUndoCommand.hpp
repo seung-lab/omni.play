@@ -20,14 +20,15 @@ public:
             return;
         }
 
-        SetDescription();
-
         if(mUndoable) {
             //push string on undo stack (causing redo to be called)
+            SetDescription();
             OmStateManager::UndoStack().Push(this);
+
         } else {
             // call redo outselves
             redo();
+            delete this;
         }
     }
 
@@ -37,6 +38,7 @@ public:
         SetDescription();
         Action();
         save("executeOrRedo");
+        delete this;
     }
 
     void Replay()
@@ -95,7 +97,10 @@ private:
         // Only do the action if the action is activated.
         if(mActivate) {
             Action();
-            save("executeOrRedo");
+
+            if(mUndoable){
+                save("executeOrRedo");
+            }
         } else {
             mActivate = true;
         }

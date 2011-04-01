@@ -76,6 +76,10 @@ public:
         return &chan;
     }
 
+    inline bool IsValidWrapper() const {
+        return IsChannelValid();
+    }
+
     inline bool IsChannelValid() const
     {
         if(!id_){

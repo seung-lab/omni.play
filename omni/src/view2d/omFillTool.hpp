@@ -6,65 +6,107 @@
 
 class OmFillTool {
 private:
-    OmSegmentation *const segmentation_;
-    OmSegments *const segments_;
+    const SegmentDataWrapper sdw_;
+    const uint32_t newSegID_;
     const ViewType viewType_;
-    const OmSegID fc_;
-    const OmSegID bc_;
+    OmSegmentation& vol_;
+    const DataBbox segDataExtent_;
+    OmSegments *const segments_;
 
-    inline DataCoord flipCoords(const DataCoord& vec){
-        return OmView2dConverters::MakeViewTypeVector3(vec, viewType_);
-    }
+    zi::semaphore semaphore_;
 
 public:
-    OmFillTool(OmSegmentation* segmentation, const ViewType viewType,
-               const OmSegID fc, const OmSegID bc)
-        : segmentation_(segmentation)
-        , segments_(segmentation->Segments())
+    OmFillTool(const SegmentDataWrapper& sdw, const ViewType viewType)
+        : sdw_(sdw)
+        , newSegID_(sdw.getID())
         , viewType_(viewType)
-        , fc_(fc)
-        , bc_(bc)
+        , vol_(sdw.GetSegmentation())
+        , segDataExtent_(vol_.Coords().GetDataExtent())
+        , segments_(vol_.Segments())
     {}
 
-    void Fill(DataCoord gCP, int depth = 0)
+    ~OmFillTool()
+    {}
+
+    void Fill(const DataCoord& v)
     {
-        OmID segid = segmentation_->GetVoxelValue(gCP);
-
-        if (!segid){
+        if(!segDataExtent_.contains(v)){
             return;
         }
 
-        segid = segments_->findRootID(segid);
+        const OmSegID segIDtoReplace =
+            segments_->findRootIDcached(vol_.GetVoxelValue(v));
 
-        if (depth > 5000){
-            return;
+        vol_.SetVoxelValue(v, newSegID_);
+
+        std::deque<DataCoord> voxels;
+
+        voxels.push_back(DataCoord(v.x - 1, v.y,     v.z));
+        voxels.push_back(DataCoord(v.x + 1, v.y,     v.z));
+        voxels.push_back(DataCoord(v.x,     v.y - 1, v.z));
+        voxels.push_back(DataCoord(v.x,     v.y + 1, v.z));
+
+        semaphore_.set(0);
+
+        FOR_EACH(iter, voxels)
+        {
+            OmView2dManager::AddTaskBack(
+                zi::run_fn(
+                    zi::bind(&OmFillTool::doFill, this,
+                             *iter, segIDtoReplace)));
         }
 
-        ++depth;
+        semaphore_.acquire(voxels.size());
 
-        if(segid == bc_ && segid != fc_) {
+        clearCaches();
+    }
 
-            DataCoord off = flipCoords(gCP);
+private:
 
-            //(new OmVoxelSetValueAction(seg, gCP, fc))->Run();
+    void doFill(const DataCoord voxelLocStart, const OmSegID segIDtoReplace)
+    {
+        std::deque<DataCoord> voxels;
+        voxels.push_back(voxelLocStart);
 
-            off.x++;
-            Fill(flipCoords(off), depth);
-            off.y++;
-            Fill(flipCoords(off), depth);
-            off.x--;
-            Fill(flipCoords(off), depth);
-            off.x--;
-            Fill(flipCoords(off), depth);
-            off.y--;
-            Fill(flipCoords(off), depth);
-            off.y--;
-            Fill(flipCoords(off), depth);
-            off.x++;
-            Fill(flipCoords(off), depth);
-            off.x++;
-            Fill(flipCoords(off), depth);
+        DataCoord v;
+
+        while(!voxels.empty())
+        {
+            v = voxels.back();
+            voxels.pop_back();
+
+            if(!segDataExtent_.contains(v)){
+                continue;
+            }
+
+            const OmSegID curSegID = vol_.GetVoxelValue(v);
+
+            if(newSegID_ == curSegID){
+                continue;
+            }
+
+            if(segIDtoReplace != curSegID &&
+               segIDtoReplace != segments_->findRootIDcached(curSegID))
+            {
+                continue;
+            }
+
+            vol_.SetVoxelValue(v, newSegID_);
+
+            // TODO: assumes XY_VIEW for now
+            voxels.push_back(DataCoord(v.x - 1, v.y,     v.z));
+            voxels.push_back(DataCoord(v.x + 1, v.y,     v.z));
+            voxels.push_back(DataCoord(v.x,     v.y - 1, v.z));
+            voxels.push_back(DataCoord(v.x,     v.y + 1, v.z));
         }
+
+        semaphore_.release(1);
+    }
+
+    void clearCaches()
+    {
+        vol_.SliceCache()->Clear();
+        OmTileCache::ClearSegmentation();
     }
 };
 

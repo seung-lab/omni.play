@@ -97,6 +97,10 @@ public:
         return IsSegmentationValid() && Segments()->IsSegmentValid(segmentID_);
     }
 
+    inline bool IsValidWrapper() const {
+        return IsSegmentValid();
+    }
+
     inline QString getName() const {
         return GetSegment()->GetName();
     }
@@ -134,15 +138,19 @@ public:
         return QString("%1").arg(getID());
     }
 
-    inline OmColor getColorInt() const {
+    inline OmColor GetColorInt() const {
         return GetSegment()->GetColorInt();
     }
 
-    inline Vector3f getColorFloat() const {
+    inline Vector3f GetColorFloat() const {
         return GetSegment()->GetColorFloat();
     }
 
-    inline void setColor(const Vector3f& color) const {
+    inline void SetColor(const OmColor& color) const {
+        GetSegment()->SetColor(color);
+    }
+
+    inline void SetColor(const Vector3f& color) const {
         GetSegment()->SetColor(color);
     }
 

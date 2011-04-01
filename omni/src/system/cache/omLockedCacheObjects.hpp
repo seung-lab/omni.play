@@ -165,6 +165,11 @@ public:
         zi::rwmutex::write_guard g(mutex_);
         list_.touch(keys);
     }
+    inline void touch(const std::deque<KEY>& keys)
+    {
+        zi::rwmutex::write_guard g(mutex_);
+        list_.touch(keys);
+    }
     inline void touchPrefetch(const KEY& key)
     {
         zi::rwmutex::write_guard g(mutex_);

@@ -2,7 +2,7 @@
 #define OM_SEG_CHUNK_H
 
 /**
- *	OmSegChunk extends OmChunk with extra funtionality specific to
+ * OmSegChunk extends OmChunk with extra funtionality specific to
  *   manipulating segmentation data.
  *
  *  Michael Purcaro - purcaro@gmail.com - 1/29/11
@@ -15,21 +15,22 @@ class OmSegmentation;
 
 class OmSegChunk : public OmChunk {
 private:
-	OmSegmentation *const vol_;
-	const boost::scoped_ptr<OmSegChunkData> segChunkData_;
+    OmSegmentation *const vol_;
+    const boost::scoped_ptr<OmSegChunkData> segChunkData_;
 
-	boost::unordered_set<OmSegID> modifiedSegIDs_;
+    std::set<OmSegID> modifiedSegIDs_;
+    zi::spinlock modifiedSegIDsLock_;
 
 public:
-	OmSegChunk(OmSegmentation* vol, const OmChunkCoord& coord);
-	virtual ~OmSegChunk();
+    OmSegChunk(OmSegmentation* vol, const OmChunkCoord& coord);
+    virtual ~OmSegChunk();
 
-	uint32_t GetVoxelValue(const DataCoord& vox);
-	void SetVoxelValue(const DataCoord& vox, const uint32_t value);
+    uint32_t GetVoxelValue(const DataCoord& vox);
+    void SetVoxelValue(const DataCoord& vox, const uint32_t value);
 
-	OmSegChunkData* SegData(){
-		return segChunkData_.get();
-	}
+    OmSegChunkData* SegData(){
+        return segChunkData_.get();
+    }
 };
 
 #endif

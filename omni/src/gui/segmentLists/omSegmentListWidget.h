@@ -43,7 +43,7 @@ private:
     void segmentShowContexMenu(QMouseEvent* event);
 
     static const int ID_COL = 0;
-    static const int NUM_CHILD_COL = 1;
+    static const int NUM_PIECES_COL = 1;
     static const int SIZE_COL = 2;
     static const int USER_DATA_COL = 3;
 

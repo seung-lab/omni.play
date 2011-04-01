@@ -29,6 +29,11 @@ public:
         return om::json::GetVector<T>(value_, "params");
     }
 
+    template <typename T>
+    boost::optional<std::vector<T> > Params(const std::string& name) const {
+        return om::json::GetVector<T>(value_, name);
+    }
+
     std::string TypeStr() const {
         return om::json::TypeStr(value_);
     }

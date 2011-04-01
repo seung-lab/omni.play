@@ -75,27 +75,24 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel,
                                 vgs_,
                                 viewType,
                                 SEGMENTATION);
-    //printf("%i %i %i %i %i + ", mipLevel, x, y, z, viewType);
-    //printf("%f %f %f\n", DEBUGV3(space_coord));
-
 
     OmTilePtr tile;
-
     OmTileCache::doGet(tile, tileCoord, om::BLOCKING);
 
-    const char* tileData = (const char*)tile->GetTexture()->GetTileData();
-    const int numBytes = tile->GetTexture()->NumBytes();
-    const QImage::Format qimageFormat = tile->GetTexture()->GetQTimageFormat();
+    const OmTextureIDPtr& texture = tile->GetTexture();
+
+    const char* tileData = (const char*)texture->GetTileData();
+    const int numBytes = texture->NumBytes();
+    const QImage::Format qimageFormat = texture->GetQTimageFormat();
 
     QImage img = QImage((const uchar*)tileData,
-                        tile->GetTexture()->GetWidth(),
-                        tile->GetTexture()->GetHeight(),
+                        texture->GetWidth(),
+                        texture->GetHeight(),
                         qimageFormat);
 
     QGLWidget::convertToGLFormat(img);
 
     img.save(dumpfile_ + QString("-%1-%2.%3.%4-%5.png").arg(mipLevel).arg(x).arg(y).arg(z).arg(viewType));
-
 
     out.writeBytes(tileData, numBytes);
 }

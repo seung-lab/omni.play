@@ -5,8 +5,8 @@
 #include "gui/inspectors/segmentation/exportMST.hpp"
 #include "gui/inspectors/segmentation/exportSegmentList.hpp"
 #include "gui/inspectors/segmentation/meshPreviewButton.hpp"
-#include "gui/inspectors/segmentation/segInspector.h"
-#include "gui/inspectors/segmentation/segInspectorButtons.hpp"
+#include "gui/inspectors/segmentation/segmentationInspector.h"
+#include "gui/inspectors/segmentation/segmentationInspectorButtons.hpp"
 #include "gui/inspectors/volInspector.h"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 #include "system/omLocalPreferences.hpp"
@@ -15,7 +15,7 @@
 #include "utility/omStringHelpers.h"
 #include "utility/sortHelpers.h"
 
-SegInspector::SegInspector(QWidget* parent, OmViewGroupState* vgs, const SegmentationDataWrapper& sdw)
+SegmentationInspector::SegmentationInspector(QWidget* parent, OmViewGroupState* vgs, const SegmentationDataWrapper& sdw)
     : QWidget(parent)
     , vgs_(vgs)
     , sdw_(sdw)
@@ -34,12 +34,12 @@ SegInspector::SegInspector(QWidget* parent, OmViewGroupState* vgs, const Segment
     QMetaObject::connectSlotsByName(this);
 }
 
-QGroupBox* SegInspector::makeVolBox()
+QGroupBox* SegmentationInspector::makeVolBox()
 {
     return new OmVolInspector(sdw_.GetSegmentation(), this);
 }
 
-QGroupBox* SegInspector::makeStatsBox()
+QGroupBox* SegmentationInspector::makeStatsBox()
 {
     QGroupBox* statsBox = new QGroupBox("Stats");
     QGridLayout *grid = new QGridLayout( statsBox );
@@ -65,7 +65,7 @@ QGroupBox* SegInspector::makeStatsBox()
     return statsBox;
 }
 
-QGroupBox* SegInspector::makeNotesBox()
+QGroupBox* SegmentationInspector::makeNotesBox()
 {
     QGroupBox* notesBox = new QGroupBox("Notes");
     QGridLayout *gridNotes = new QGridLayout( notesBox );
@@ -77,7 +77,7 @@ QGroupBox* SegInspector::makeNotesBox()
     return notesBox;
 }
 
-QGroupBox* SegInspector::makeToolsBox()
+QGroupBox* SegmentationInspector::makeToolsBox()
 {
     QGroupBox* segmentBox = new QGroupBox("Tools");
     QGridLayout *gridSegment = new QGridLayout( segmentBox );
@@ -88,7 +88,7 @@ QGroupBox* SegInspector::makeToolsBox()
     return segmentBox;
 }
 
-QGroupBox* SegInspector::makeActionsBox()
+QGroupBox* SegmentationInspector::makeActionsBox()
 {
     QGroupBox* actionsBox = new QGroupBox("Actions");
     QGridLayout *gridAction = new QGridLayout( actionsBox );
@@ -130,7 +130,7 @@ QGroupBox* SegInspector::makeActionsBox()
     return actionsBox;
 }
 
-QGroupBox* SegInspector::makeSourcesBox()
+QGroupBox* SegmentationInspector::makeSourcesBox()
 {
     QGroupBox* sourceBox = new QGroupBox("Source");
     QGridLayout *grid = new QGridLayout( sourceBox );
@@ -183,12 +183,12 @@ QGroupBox* SegInspector::makeSourcesBox()
     return sourceBox;
 }
 
-void SegInspector::on_nameEdit_editingFinished()
+void SegmentationInspector::on_nameEdit_editingFinished()
 {
     sdw_.GetSegmentation().SetCustomName(nameEdit->text());
 }
 
-void SegInspector::on_browseButton_clicked()
+void SegmentationInspector::on_browseButton_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
                                                     "", QFileDialog::ShowDirsOnly);
@@ -198,7 +198,7 @@ void SegInspector::on_browseButton_clicked()
     }
 }
 
-QDir SegInspector::getDir()
+QDir SegmentationInspector::getDir()
 {
     QString regex = patternEdit->text();
     QDir dir( directoryEdit->text() );
@@ -212,19 +212,19 @@ QDir SegInspector::getDir()
     return dir;
 }
 
-QStringList SegInspector::getFileList()
+QStringList SegmentationInspector::getFileList()
 {
     QStringList files = getDir().entryList();
     return SortHelpers::SortNaturally( files );
 }
 
-QFileInfoList SegInspector::getFileInfoList()
+QFileInfoList SegmentationInspector::getFileInfoList()
 {
     QFileInfoList files = getDir().entryInfoList();
     return SortHelpers::SortNaturally( files );
 }
 
-void SegInspector::updateFileList()
+void SegmentationInspector::updateFileList()
 {
     listWidget->clear();
 
@@ -236,17 +236,17 @@ void SegInspector::updateFileList()
     listWidget->update();
 }
 
-void SegInspector::on_patternEdit_textChanged()
+void SegmentationInspector::on_patternEdit_textChanged()
 {
     updateFileList();
 }
 
-void SegInspector::on_notesEdit_textChanged()
+void SegmentationInspector::on_notesEdit_textChanged()
 {
     sdw_.GetSegmentation().SetNote(notesEdit->toPlainText());
 }
 
-void SegInspector::populateSegmentationInspector()
+void SegmentationInspector::populateSegmentationInspector()
 {
     nameEdit->setText(sdw_.GetName());
     nameEdit->setMinimumWidth(200);

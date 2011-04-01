@@ -1,10 +1,11 @@
 #ifndef OM_MOUSE_EVENT_PRESS_HPP
 #define OM_MOUSE_EVENT_PRESS_HPP
 
-#include "gui/widgets/omTellInfo.hpp"
 #include "actions/omActions.h"
 #include "gui/widgets/omSegmentContextMenu.h"
+#include "gui/widgets/omTellInfo.hpp"
 #include "view2d/brush/omBrushSelect.hpp"
+#include "view2d/omFillTool.hpp"
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
@@ -39,14 +40,17 @@ public:
 
         state_->SetMousePanStartingPt(Vector2f(event->x(), event->y()));
 
-        if(leftMouseButton_){
-            if(om::tool::SPLIT == tool_){
+        if(leftMouseButton_)
+        {
+            if(om::tool::SPLIT == tool_)
+            {
                 doFindAndSplitSegment();
                 v2d_->doRedraw2d();
                 return;
             }
 
-            if(om::tool::CUT == tool_){
+            if(om::tool::CUT == tool_)
+            {
                 doFindAndCutSegment();
                 v2d_->doRedraw2d();
                 return;
@@ -72,7 +76,7 @@ public:
     }
 
 private:
-    inline void setState(QMouseEvent* event)
+    void setState(QMouseEvent* event)
     {
         event_ = event;
 
@@ -131,7 +135,8 @@ private:
     {
         switch(tool_){
         case om::tool::SELECT:
-            if(controlKey_){
+            if(controlKey_)
+            {
                 state_->AmPanningInSelectMode(true);
                 return;
             } else {
@@ -154,7 +159,10 @@ private:
             break;
         case om::tool::ERASE:
             state_->setScribbling(true);
-            paint();
+            erase();
+            break;
+        case om::tool::FILL:
+            fill();
             break;
         default:
             return;
@@ -162,7 +170,7 @@ private:
 
         state_->SetLastDataPoint(dataClickPoint_);
 
-        v2d_->myUpdate();
+        v2d_->Redraw();
     }
 
     void selectSegments()
@@ -176,23 +184,27 @@ private:
                                      addOrSubtractSegments);
     }
 
+    void erase()
+    {
+        OmBrushPaint::PaintByClick(state_,
+                                   dataClickPoint_,
+                                   0);
+    }
+
     void paint()
     {
-        SegmentDataWrapper sdw = OmSegmentSelected::Get();
+        SegmentDataWrapper sdw = OmSegmentSelected::GetSegmentForPainting();
         if(!sdw.IsSegmentValid())
         {
-            OmTellInfo("Please select a segment");
+            tellUserToSelectSegment("painting");
             return;
         }
 
-        OmSegID segmentValueToPaint = 0;
-        if(om::tool::PAINT == tool_){
-            segmentValueToPaint = sdw.getID();
-        }
+        state_->SetSegIDForPainting(sdw.getID());
 
         OmBrushPaint::PaintByClick(state_,
                                    dataClickPoint_,
-                                   segmentValueToPaint);
+                                   sdw.getID());
     }
 
     void mouseSelectSegment()
@@ -226,7 +238,8 @@ private:
         sel.sendEvent();
 
         state_->touchFreshnessAndRedraw2d();
-        v2d_->myUpdate();
+
+        v2d_->Redraw();
     }
 
     void mouseShowSegmentContextMenu()
@@ -283,6 +296,36 @@ private:
 
         SegmentDataWrapper ret(segmentation, segmentID);
         return boost::optional<SegmentDataWrapper>(ret);
+    }
+
+    void fill()
+    {
+        SegmentDataWrapper sdwUnknownDepth = OmSegmentSelected::GetSegmentForPainting();
+
+        if (!sdwUnknownDepth.IsValidWrapper() )
+        {
+            tellUserToSelectSegment("filling");
+            return;
+        }
+
+        SegmentDataWrapper sdw(sdwUnknownDepth.FindRoot());
+
+        OmView2dManager::AddTaskBack(
+            zi::run_fn(
+                zi::bind(&OmMouseEventPress::doFill, this, sdw)));
+    }
+
+    void doFill(const SegmentDataWrapper sdw)
+    {
+        OmFillTool fillTool(sdw, state_->getViewType());
+        fillTool.Fill(dataClickPoint_);
+    }
+
+    void tellUserToSelectSegment(const QString& func)
+    {
+        OmTellInfo("Please choose a color for " +
+                   func +
+                   " by right-clicking and selecting \n\"Set As Segment Palette Color\"");
     }
 };
 

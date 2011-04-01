@@ -3,7 +3,7 @@
 
 /*
  *
- *	Brett Warne - bwarne@mit.edu - 3/14/09
+ * Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
 #include "events/details/omEvent.h"
@@ -26,6 +26,8 @@ public:
     static const QEvent::Type VIEW_POS_CHANGE = (QEvent::Type) (CLASS + 2);
 
     static const QEvent::Type REDRAW = (QEvent::Type) (CLASS + 3);
+    static const QEvent::Type REDRAW_BLOCKING = (QEvent::Type) (CLASS + 4);
+
 };
 
 /*
@@ -42,6 +44,7 @@ public:
     virtual void ViewCenterChangeEvent() = 0;
     virtual void ViewPosChangeEvent() = 0;
     virtual void ViewRedrawEvent() = 0;
+    virtual void ViewBlockingRedrawEvent() = 0;
 };
 
 #endif

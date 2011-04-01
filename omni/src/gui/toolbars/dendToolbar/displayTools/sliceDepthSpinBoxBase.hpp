@@ -64,10 +64,9 @@ private:
     void ViewCenterChangeEvent(){
         update();
     }
-    void ViewPosChangeEvent()
-    {}
-    void ViewRedrawEvent()
-    {}
+    void ViewPosChangeEvent(){}
+    void ViewRedrawEvent(){}
+    void ViewBlockingRedrawEvent(){}
 };
 
 #endif

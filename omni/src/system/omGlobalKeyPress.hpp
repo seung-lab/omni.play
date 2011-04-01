@@ -23,6 +23,7 @@ private:
     boost::scoped_ptr<QShortcut> less_;
     boost::scoped_ptr<QShortcut> m_;
     boost::scoped_ptr<QShortcut> n_;
+    boost::scoped_ptr<QShortcut> period_;
     boost::scoped_ptr<QShortcut> r_;
     boost::scoped_ptr<QShortcut> v_;
 
@@ -67,6 +68,10 @@ private Q_SLOTS:
         setTool(om::tool::ERASE);
     }
 
+    void keyPeriod(){
+        setTool(om::tool::FILL);
+    }
+
     void keyR(){
         OmSegmentSelected::RandomizeColor();
     }
@@ -94,6 +99,7 @@ public:
         setShortcut(less_,    QKeySequence(Qt::Key_Less),    SLOT(keyLess()));
         setShortcut(m_,       QKeySequence(Qt::Key_M),       SLOT(keyM()));
         setShortcut(n_,       QKeySequence(Qt::Key_N),       SLOT(keyN()));
+        setShortcut(period_,  QKeySequence(Qt::Key_Period),  SLOT(keyPeriod()));
         setShortcut(r_,       QKeySequence(Qt::Key_R),       SLOT(keyR()));
         setShortcut(v_,       QKeySequence(Qt::Key_V),       SLOT(keyV()));
     }

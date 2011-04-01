@@ -241,6 +241,16 @@ public:
         return ret;
     }
 
+    void copyInto(void* dst) const
+    {
+        if(!d_.data_){
+            return;
+        }
+
+        const int numBytes = d_.data_->num_elements()*sizeof(T);
+        memcpy(dst, d_.data_->data(), numBytes);
+    }
+
     void copyFrom(OmImage<T,D> src, OmDimension<D> targetPos,
                   OmDimension<D> srcPos, OmDimension<D> size)
     {

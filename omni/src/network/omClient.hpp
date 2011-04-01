@@ -13,7 +13,7 @@ public:
 
     void Send(const std::string& cmd)
     {
-        connectToHost(QHostAddress::Any, 8585);
+        connectToHost(QHostAddress::Any, 8584);
 
         if(!waitForConnected(om::networkQT::timeoutMS)){
             std::cout << "failed to connect\n";
@@ -24,7 +24,7 @@ public:
         const boost::optional<QString> inStr = om::networkQT::ReadString(this);
 
         if(inStr){
-            std::cout << "\"" << inStr->toStdString() << "\"" << "\n";
+            std::cout << inStr->toStdString() << "\n";
         }
     }
 };

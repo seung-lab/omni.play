@@ -1,8 +1,6 @@
 #ifndef ELEMENT_LIST_BOX_IMPL_H
 #define ELEMENT_LIST_BOX_IMPL_H
 
-#include "segment/omSegmentUtils.hpp"
-#include "gui/segmentLists/omSegmentListWidget.h"
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/omDebug.h"
 #include "events/details/omSegmentEvent.h"
@@ -10,8 +8,11 @@
 #include "gui/segmentLists/details/segmentListUncertain.h"
 #include "gui/segmentLists/details/segmentListValid.h"
 #include "gui/segmentLists/details/segmentListWorking.h"
+#include "gui/segmentLists/omSegmentListWidget.h"
 #include "gui/segmentLists/segmentListKeyPressEventListener.h"
 #include "gui/widgets/omProgressBar.hpp"
+#include "segment/omSegmentCenter.hpp"
+#include "segment/omSegmentUtils.hpp"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
 
@@ -35,7 +36,7 @@ private:
 
     QTabWidget* mDataElementsTabs;
     QVBoxLayout* mOverallContainer;
-    OmProgressBar<uint64_t>* mValidProgress;
+    OmProgressBar<uint64_t>* percentValidated_;
 
     int mCurrentlyActiveTab;
 
@@ -101,17 +102,20 @@ private:
             updateValidBar(sdw_);
 
             if(params.autoCenter){
-                OmSegmentUtils::CenterSegment(vgs_, sdw_);
+                OmSegmentCenter::CenterSegment(vgs_, sdw_);
             }
         }
     }
+
+    void SegmentSelectedEvent(OmSegmentEvent*)
+    {}
 
     void updateValidBar(const SegmentationDataWrapper& sdw)
     {
         const uint64_t valid = sdw.SegmentLists()->NumVoxels(om::VALID);
 
-        mValidProgress->setMaximum(sdw.SegmentLists()->TotalNumVoxels());
-        mValidProgress->setValue(valid);
+        percentValidated_->setMaximum(sdw.SegmentLists()->TotalNumVoxels());
+        percentValidated_->setValue(valid);
     }
 
     QString GetSegmentationGroupBoxTitle(SegmentationDataWrapper sdw) {
@@ -135,8 +139,8 @@ public:
         mOverallContainer = new QVBoxLayout( this );
         mOverallContainer->addWidget( mDataElementsTabs );
 
-        mValidProgress = new OmProgressBar<uint64_t>(this);
-        mOverallContainer->addWidget(mValidProgress);
+        percentValidated_ = new OmProgressBar<uint64_t>(this);
+        mOverallContainer->addWidget(percentValidated_);
     }
 
     void reset()

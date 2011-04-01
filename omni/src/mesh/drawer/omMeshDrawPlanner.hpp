@@ -18,7 +18,7 @@ private:
     OmMeshSegmentList *const rootSegList_;
 
     OmSegPtrList rootSegs_;
-    boost::shared_ptr<std::list<OmSegChunkPtr> > chunks_;
+    boost::shared_ptr<std::deque<OmSegChunkPtr> > chunks_;
     boost::shared_ptr<OmMeshPlan> sortedSegments_;
 
     bool notAllSegmentsFound_;
@@ -39,7 +39,7 @@ public:
     {}
 
     boost::shared_ptr<OmMeshPlan>
-    BuildPlan(boost::shared_ptr<std::list<OmSegChunkPtr> > chunks)
+    BuildPlan(boost::shared_ptr<std::deque<OmSegChunkPtr> > chunks)
     {
         chunks_ = chunks;
         sortedSegments_ = boost::make_shared<OmMeshPlan>();
@@ -47,7 +47,7 @@ public:
         return sortedSegments_;
     }
 
-    boost::shared_ptr<std::list<OmSegChunkPtr> > GetChunkList(){
+    boost::shared_ptr<std::deque<OmSegChunkPtr> > GetChunkList(){
         return chunks_;
     }
 

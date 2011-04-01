@@ -36,9 +36,15 @@ void OmSegmentEvent::Dispatch(OmEventListener * pListener)
     case OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION:
         p_cast_listener->SegmentModificationEvent(this);
         return;
+
     case OmSegmentEvent::SEGMENT_GUI_LIST:
         p_cast_listener->SegmentGUIlistEvent(this);
         return;
+
+    case OmSegmentEvent::SEGMENT_SELECTED:
+        p_cast_listener->SegmentSelectedEvent(this);
+        return;
+
     default:
         throw OmArgException("unknown event type");
     }

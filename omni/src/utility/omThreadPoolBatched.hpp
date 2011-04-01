@@ -4,60 +4,113 @@
 #include "utility/omThreadPool.hpp"
 
 template <class ARG, class T>
+struct IndivArgPolicy {
+
+    boost::function<void (T*, const ARG& arg)> func;
+    T* classInstantiation;
+
+    void run(boost::shared_ptr<std::vector<ARG> > argsPtr)
+    {
+        const std::vector<ARG>& args = *argsPtr;
+
+        const size_t size = args.size();
+
+        for(size_t i = 0; i < size; ++i)
+        {
+            func(classInstantiation, args[i]);
+        }
+    }
+};
+
+template <class ARG, class T>
+struct VectorArgPolicy {
+
+    boost::function<void (T*, const std::vector<ARG>& args)> func;
+    T* classInstantiation;
+
+    void run(boost::shared_ptr<std::vector<ARG> > argsPtr)
+    {
+        const std::vector<ARG>& args = *argsPtr;
+
+        func(classInstantiation, args);
+    }
+};
+
+template <class ARG, class T,
+          template <class,class> class ARG_RUNNER>
 class OmThreadPoolBatched {
 private:
-    boost::function<void (T*, const ARG& arg)> func_;
-    T* classInstantiation_;
+    const size_t taskVecSize_;
+
+    ARG_RUNNER<ARG, T> runner_;
 
     OmThreadPool pool_;
 
-    static const size_t TaskVecSize = 1000;
-    std::vector<ARG> tasks_;
+    typedef std::vector<ARG> args_t;
+    boost::shared_ptr<args_t> args_;
+
+    void resetArgs()
+    {
+        args_ = boost::make_shared<args_t>();
+        args_->reserve(taskVecSize_);
+    }
 
 public:
     OmThreadPoolBatched()
-    {
-        pool_.start(1);
-        tasks_.reserve(TaskVecSize);
-    }
+        : taskVecSize_(1000)
+    {}
 
-    ~OmThreadPoolBatched()
-    {
+    OmThreadPoolBatched(const int taskVecSize)
+        : taskVecSize_(taskVecSize)
+    {}
+
+    ~OmThreadPoolBatched(){
         JoinPool();
     }
 
-    void SetFunc(boost::function<void (T*, const ARG& arg)> func,
-                 T* classInstantiation)
+    template <typename U>
+    void Start(U func, T* classInstantiation)
     {
-        func_ = func;
-        classInstantiation_ = classInstantiation;
+        const int numWokers = OmSystemInformation::get_num_cores();
+        Start(func, classInstantiation, numWokers);
+    }
+
+    template <typename U>
+    void Start(U func, T* classInstantiation, const int numThreads)
+    {
+        runner_.func = func;
+        runner_.classInstantiation = classInstantiation;
+
+        pool_.start(numThreads);
+
+        resetArgs();
     }
 
     inline void AddOrSpawnTasks(const ARG& t)
     {
-        if(tasks_.size() >= TaskVecSize)
+        if(args_->size() >= taskVecSize_)
         {
             pool_.push_back(
                 zi::run_fn(
                     zi::bind(&OmThreadPoolBatched::worker,
-                             this, tasks_)));
+                             this, args_)));
 
-            tasks_.clear();
-            tasks_.reserve(TaskVecSize);
+            resetArgs();
         }
 
-        tasks_.push_back(t);
+        args_->push_back(t);
     }
 
     void JoinPool()
     {
-        if(!tasks_.empty())
+        if(!args_->empty())
         {
             pool_.push_back(
                 zi::run_fn(
                     zi::bind(&OmThreadPoolBatched::worker,
-                             this, tasks_)));
-            tasks_.clear();
+                             this, args_)));
+
+            resetArgs();
         }
 
         pool_.join();
@@ -65,15 +118,8 @@ public:
 
 private:
 
-    // work on copy of tasks vec
-    void worker(std::vector<ARG> tasks)
-    {
-        const size_t size = tasks.size();
-
-        for(size_t i = 0; i < size; ++i)
-        {
-            func_(classInstantiation_, tasks[i]);
-        }
+    void worker(boost::shared_ptr<args_t> argsPtr){
+        runner_.run(argsPtr);
     }
 };
 

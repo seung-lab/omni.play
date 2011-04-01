@@ -9,6 +9,7 @@ OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
                            OmViewGroupState * vgs, const ViewType viewType,
                            const std::string& name)
     : QWidget(parent)
+    , blockingRedraw_(false)
     , viewType_(viewType)
     , name_(name)
     , state_(boost::make_shared<OmView2dState>(vol, vgs, viewType, size(), name))
@@ -38,7 +39,8 @@ QImage OmView2dCore::FullRedraw2d()
 
     setupMainGLpaintOp();
     {
-        tileDrawer_->FullRedraw2d();
+        tileDrawer_->FullRedraw2d(blockingRedraw_);
+        blockingRedraw_ = false;
     }
     teardownMainGLpaintOp();
 

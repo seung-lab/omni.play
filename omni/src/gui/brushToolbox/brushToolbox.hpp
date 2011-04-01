@@ -1,74 +1,66 @@
 #ifndef BRUSH_TOOLBOX_HPP
 #define BRUSH_TOOLBOX_HPP
 
-#include "system/omStateManager.h"
+#include "events/details/omSegmentEvent.h"
 #include "events/details/omToolModeEvent.h"
-#include "gui/brushToolbox/brushToolboxImpl.hpp"
+#include "gui/brushToolbox/brushToolboxImpl.h"
+#include "system/omStateManager.h"
 
-class BrushToolbox : public OmToolModeEventListener {
+class BrushToolbox : public OmToolModeEventListener,
+                     public OmSegmentEventListener {
 private:
-    QWidget *const mainWindow_;
-
+    QWidget *const parent_;
     boost::scoped_ptr<BrushToolboxImpl> dock_;
 
-    void makeToolbox()
-    {
-        dock_.reset(new BrushToolboxImpl(mainWindow_));
+    bool alreadyPoppedMenu_;
 
-        dock_->show();
-        dock_->raise();
-    }
-
-    void showPaintBox()
+    void showForFirstTime()
     {
-        if(dock_)
-        {
-            // dock_->show();
+        if(alreadyPoppedMenu_){
             return;
         }
 
-        // makeToolbox();
+        Show();
     }
 
-    void showEraseBox()
+    void SegmentModificationEvent(OmSegmentEvent*){}
+    void SegmentGUIlistEvent(OmSegmentEvent*){}
+    void SegmentSelectedEvent(OmSegmentEvent*){
+        showForFirstTime();
+    }
+
+    void ToolModeChangeEvent()
     {
-        if(dock_)
-        {
-            // dock_->show();
+        if(alreadyPoppedMenu_){
             return;
         }
 
-        // makeToolbox();
-    }
-
-    void hideBox()
-    {
-        if(dock_)
-        {
-            dock_->hide();
-            return;
+        switch(OmStateManager::GetToolMode()){
+        case om::tool::ERASE:
+        case om::tool::FILL:
+        case om::tool::PAINT:
+            Show();
+            break;
+        default:
+            break;
         }
     }
 
 public:
-    BrushToolbox(QWidget* mainWindow)
-        : mainWindow_(mainWindow)
+    BrushToolbox(QWidget* parent)
+        : parent_(parent)
+        , dock_(new BrushToolboxImpl(parent_))
+        , alreadyPoppedMenu_(false)
     {}
 
-    void ToolModeChangeEvent()
+    void Show()
     {
-        const om::tool::mode tool = OmStateManager::GetToolMode();
+        dock_->show();
+        alreadyPoppedMenu_ = true;
+    }
 
-        switch(tool){
-        case om::tool::PAINT:
-            showPaintBox();
-            break;
-        case om::tool::ERASE:
-            showEraseBox();
-            break;
-        default:
-            hideBox();
-        }
+    void Hide(){
+        dock_->hide();
     }
 };
 

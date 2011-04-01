@@ -7,7 +7,6 @@
  * Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
-#include "chunks/omChunkCache.hpp"
 #include "chunks/omChunkTypes.hpp"
 #include "common/omStd.h"
 #include "system/omManageableObject.h"
@@ -15,6 +14,7 @@
 #include "volume/omMipVolume.h"
 
 class OmVolumeData;
+template <typename,typename> class OmChunkCache;
 
 class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
@@ -30,6 +30,7 @@ public:
     }
 
     std::string GetName();
+    std::string GetNameHyphen();
     std::string GetDirectoryPath();
     void loadVolData();
     void loadVolDataIfFoldersExist();
@@ -57,6 +58,10 @@ public:
 
     inline std::vector<OmFilter2d*> GetFilters() const {
         return filterManager_.GetFilters();
+    }
+
+    OmChunkCache<OmChannelImpl, OmChunk>* ChunkCache(){
+        return chunkCache_.get();
     }
 
 protected:

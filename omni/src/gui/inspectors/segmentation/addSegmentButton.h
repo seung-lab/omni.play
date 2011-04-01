@@ -1,17 +1,17 @@
 #ifndef ADD_SEGMENT_BUTTON_H
 #define ADD_SEGMENT_BUTTON_H
 
-#include "gui/inspectors/segmentation/segInspector.h"
+#include "gui/inspectors/segmentation/segmentationInspector.h"
 #include "gui/segmentLists/elementListBox.hpp"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
 
-class AddSegmentButton : public OmButton<SegInspector> {
+class AddSegmentButton : public OmButton<SegmentationInspector> {
 public:
-    AddSegmentButton(SegInspector* d)
-        : OmButton<SegInspector>(d,
+    AddSegmentButton(SegmentationInspector* d)
+        : OmButton<SegmentationInspector>(d,
                                  "Add Segment",
                                  "Add Segment",
                                  false)

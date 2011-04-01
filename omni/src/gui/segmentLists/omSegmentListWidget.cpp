@@ -1,6 +1,6 @@
 #include "common/omCommon.h"
 #include "gui/guiUtils.hpp"
-#include "gui/inspectors/segObjectInspector.h"
+#include "gui/inspectors/segmentInspector.h"
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/segmentLists/omSegmentListWidget.h"
@@ -25,7 +25,7 @@ OmSegmentListWidget::OmSegmentListWidget(SegmentListBase* slist,
     setAlternatingRowColors(true);
 
     QStringList headers;
-    headers << tr("ID") << tr("NumChlidren") << tr("Total Size");
+    headers << tr("ID") << tr("Num Pieces") << tr("Total Size");
     setColumnCount(headers.size());
     setHeaderLabels(headers);
 
@@ -60,9 +60,9 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
         SegmentDataWrapper segDW(seg);
         row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(segDW));
 
-        const uint32_t numChildren = iter->numChildren;
-        row->setText(NUM_CHILD_COL, OmStringHelpers::HumanizeNumQT(numChildren));
-        row->setTextAlignment(NUM_CHILD_COL, Qt::AlignHCenter);
+        const uint32_t numPieces = iter->numChildren + 1;
+        row->setText(NUM_PIECES_COL, OmStringHelpers::HumanizeNumQT(numPieces));
+        row->setTextAlignment(NUM_PIECES_COL, Qt::AlignHCenter);
 
         const int64_t sizeWithChildren = iter->sizeIncludingChildren;
         row->setText(SIZE_COL, OmStringHelpers::HumanizeNumQT(sizeWithChildren));

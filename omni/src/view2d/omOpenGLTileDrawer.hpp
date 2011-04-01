@@ -83,14 +83,16 @@ private:
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-        const GLint format = texture->GetGLformat();
-        glTexImage2D(GL_TEXTURE_2D, 0,
-                     format,
-                     texture->GetWidth(), texture->GetHeight(),
-                     0,
-                     format,
-                     GL_UNSIGNED_BYTE,
-                     texture->GetTileData());
+        glTexImage2D(GL_TEXTURE_2D,
+                     0, // mipmap 0
+                     texture->GetGLinternalFormat(),
+                     texture->GetWidth(),
+                     texture->GetHeight(),
+                     0, // no border
+                     texture->GetGLdataFormat(),
+                     texture->GetPixelDataType(),
+                     texture->GetTileData()
+            );
 
         texture->TextureBindComplete(textureID);
     }

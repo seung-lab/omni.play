@@ -10,46 +10,46 @@ OmSegmentIterator::OmSegmentIterator(OmSegments* cache)
 
 void OmSegmentIterator::iterOverSegmentID(const OmSegID segID)
 {
-    mSegs.push_back(mCache->GetSegment(segID));
+    segs_.push_back(mCache->GetSegment(segID));
 }
 
 void OmSegmentIterator::iterOverSelectedIDs()
 {
     FOR_EACH(iter, mCache->GetSelectedSegmentIds()){
-        mSegs.push_back( mCache->GetSegment( *iter ));
+        segs_.push_back( mCache->GetSegment( *iter ));
     }
 }
 
 void OmSegmentIterator::iterOverEnabledIDs()
 {
     FOR_EACH(iter, mCache->GetEnabledSegmentIds()){
-        mSegs.push_back( mCache->GetSegment( *iter ) );
+        segs_.push_back( mCache->GetSegment( *iter ) );
     }
 }
 
 void OmSegmentIterator::iterOverSegmentIDs(const OmSegIDsSet & set)
 {
     FOR_EACH(iter, set){
-        mSegs.push_back( mCache->GetSegment( *iter ) );
+        segs_.push_back( mCache->GetSegment( *iter ) );
     }
 }
 
 bool OmSegmentIterator::empty()
 {
-    return mSegs.empty();
+    return segs_.empty();
 }
 
 OmSegment* OmSegmentIterator::getNextSegment()
 {
-    if( mSegs.empty() ){
+    if( segs_.empty() ){
         return NULL;
     }
 
-    OmSegment* segRet = mSegs.back();
-    mSegs.pop_back();
+    OmSegment* segRet = segs_.back();
+    segs_.pop_back();
 
     FOR_EACH(iter, segRet->GetChildren() ){
-        mSegs.push_back(*iter);
+        segs_.push_back(*iter);
     }
 
     return segRet;
@@ -62,7 +62,7 @@ OmSegmentIterator & OmSegmentIterator::operator = (const OmSegmentIterator & oth
     }
 
     mCache = other.mCache;
-    mSegs = other.mSegs;
+    segs_ = other.segs_;
 
     return *this;
 }

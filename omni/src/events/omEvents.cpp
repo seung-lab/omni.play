@@ -17,8 +17,16 @@ void OmEvents::Redraw2d(){
     POST(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
+void OmEvents::Redraw2dBlocking(){
+    POST(new OmViewEvent(OmViewEvent::REDRAW_BLOCKING));
+}
+
 void OmEvents::Redraw3d(){
     POST(new OmView3dEvent(OmView3dEvent::REDRAW));
+}
+
+void OmEvents::SegmentSelected(){
+    POST(new OmSegmentEvent(OmSegmentEvent::SEGMENT_SELECTED));
 }
 
 void OmEvents::SegmentGUIlist(const SegmentationDataWrapper& sdw){

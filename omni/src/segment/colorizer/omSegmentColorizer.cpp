@@ -1,3 +1,4 @@
+#include "tiles/omPooledTile.hpp"
 #include "segment/colorizer/omSegmentColorizer.h"
 #include "segment/colorizer/omSegmentColorizerImpl.hpp"
 #include "segment/colorizer/omSegmentColors.hpp"
@@ -12,7 +13,6 @@ OmSegmentColorizer::OmSegmentColorizer(OmSegments* cache,
                                        const OmSegmentColorCacheType sccType,
                                        const Vector2i& dims,
                                        OmViewGroupState* vgs)
-    : cacheSegments_(new OmCacheSegments(cache))
 {
     freshness_.set(0);
 
@@ -21,7 +21,6 @@ OmSegmentColorizer::OmSegmentColorizer(OmSegments* cache,
         dims.x * dims.y,
         vgs,
         cache,
-        cacheSegments_.get()
     };
 
     params_ = p;
@@ -36,14 +35,12 @@ void OmSegmentColorizer::setup()
 
     const OmSegID curSize = params_.segments->getMaxValue() + 1;
 
-    cacheSegments_->CheckSizeAndMSTfreshness(curSize);
-
     if(curSize != colorCache_.Size()){
         colorCache_.Resize(curSize);
     }
 }
 
-boost::shared_ptr<OmColorRGBA>
+OmPooledTile<OmColorARGB>*
 OmSegmentColorizer::ColorTile(uint32_t const* imageData)
 {
     setup();
@@ -51,16 +48,14 @@ OmSegmentColorizer::ColorTile(uint32_t const* imageData)
     {
         //prevent vectors from being resized while we're reading
         zi::rwmutex::read_guard g(colorCache_);
-        zi::rwmutex::read_guard g2(*cacheSegments_);
 
-        boost::shared_ptr<OmColorRGBA> colorMappedDataPtr
-            = OmSmartPtr<OmColorRGBA>::MallocNumElements(params_.numElements,
-                                                         om::DONT_ZERO_FILL);
+        OmPooledTile<OmColorARGB>* colorMappedDataPtr
+            = new OmPooledTile<OmColorARGB>();
 
         // OmTimer timer;
 
         OmSegmentColorizerImpl c(params_, colorCache_, freshness_.get());
-        c.ColorTile(imageData, colorMappedDataPtr.get());
+        c.ColorTile(imageData, colorMappedDataPtr->GetData());
 
         // timer.PrintV("done coloring tile");
 

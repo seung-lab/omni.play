@@ -60,7 +60,7 @@ void OmTile::load8bitChannelTile()
         chunk->Data()->ExtractDataSlice8bit(key_.getViewType(),
                                             getChunkSliceNum());
 
-    boost::shared_ptr<uint8_t> vData = OmImageFilter::FilterChannel(slice);
+    OmPooledTile<uint8_t>* vData = OmImageFilter::FilterChannel(slice);
 
     texture_ = boost::make_shared<OmTextureID>(dims_, vData);
 }
@@ -76,7 +76,7 @@ void OmTile::load32bitSegmentationTile()
         chunk->SegData()->ExtractDataSlice32bit(key_.getViewType(),
                                                 getChunkSliceNum());
 
-    boost::shared_ptr<OmColorRGBA> colorMappedData =
+    OmPooledTile<OmColorARGB>* colorMappedData =
         key_.getViewGroupState()->ColorTile(imageData.get(),
                                             dims_,
                                             key_);

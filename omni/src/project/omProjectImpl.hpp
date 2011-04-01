@@ -13,6 +13,7 @@
 #include "common/om.hpp"
 #include "common/omCommon.h"
 #include "datalayer/archive/omDataArchiveProject.h"
+#include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPath.h"
@@ -29,9 +30,9 @@
 #include "tiles/cache/omTileCache.h"
 #include "utility/omFileHelpers.h"
 
-#include <QFileInfo>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 
 class OmProjectImpl {
 private:

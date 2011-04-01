@@ -1,13 +1,14 @@
 #include "actions/omActions.h"
 #include "common/omDebug.h"
+#include "events/omEvents.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "mesh/omDrawOptions.h"
 #include "project/omProject.h"
-#include "segment/omSegments.h"
+#include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
-#include "events/omEvents.h"
+#include "segment/omSegments.h"
 #include "system/omStateManager.h"
 #include "view3d/omCamera.h"
 #include "view3d/omMacOSXgestures.hpp"
@@ -68,7 +69,7 @@ void OmView3dUi::KeyPress(QKeyEvent* event)
     case Qt::Key_C:
     {
         SegmentationDataWrapper sdw(1);
-        OmSegmentUtils::CenterSegment(vgs_, sdw);
+        OmSegmentCenter::CenterSegment(vgs_, sdw);
         break;
     }
     case Qt::Key_Escape:

@@ -1,3 +1,4 @@
+#include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omCutting.hpp"
 #include "segment/omFindCommonEdge.hpp"
 #include "actions/omSelectSegmentParams.hpp"

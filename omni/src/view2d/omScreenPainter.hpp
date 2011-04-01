@@ -140,9 +140,12 @@ private:
 
         di.paint(state_->getZoomScale(), "zoomFactor", 2);
 
-        const QString depthStr =
-            QString::number(state_->Location()->ScaledDepth()) + " Slice Depth" +
-            + " (" + QString::number(state_->Location()->DataDepth()) + " data)";
+        const int scaledDepth = state_->Location()->ScaledDepth();
+        const int dataDepth = state_->Location()->DataDepth();
+        QString depthStr = QString::number(scaledDepth) + " Slice Depth";
+        if(scaledDepth != dataDepth){
+            depthStr += " (" + QString::number(dataDepth) + " data)";
+        }
         di.paint(depthStr);
 
         printTileCount(di);

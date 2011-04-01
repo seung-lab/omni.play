@@ -16,14 +16,16 @@
 #include "common/omGl.h"
 #include "common/omCommon.h"
 
-#include <boost/variant.hpp>
 #include <QImage>
+
+class OmPooledTileWrapper;
+template <class> class OmPooledTile;
 
 class OmTextureID {
 public:
     OmTextureID();
-    OmTextureID(const Vector2i&, boost::shared_ptr<uint8_t>);
-    OmTextureID(const Vector2i&, boost::shared_ptr<OmColorRGBA>);
+    OmTextureID(const Vector2i&, OmPooledTile<uint8_t>*);
+    OmTextureID(const Vector2i&, OmPooledTile<OmColorARGB>*);
     virtual ~OmTextureID();
 
     int GetWidth() const {
@@ -48,6 +50,8 @@ public:
 
     void* GetTileData() const;
 
+    uchar* GetTileDataUChar() const;
+
     bool NeedToBuildTexture() const
     {
         return (flag_ == OMTILE_NEEDTEXTUREBUILT ||
@@ -58,7 +62,7 @@ public:
     {
         switch(flag_){
         case OMTILE_NEEDCOLORMAP:
-            return QImage::Format_ARGB32;
+            return QImage::Format_ARGB32_Premultiplied;
         case OMTILE_NEEDTEXTUREBUILT:
             return QImage::Format_Indexed8;
         default:
@@ -66,13 +70,37 @@ public:
         }
     }
 
-    GLint GetGLformat() const
+    GLint GetGLinternalFormat() const
     {
         switch(flag_){
         case OMTILE_NEEDCOLORMAP:
-            return GL_RGBA;
+            return GL_RGBA8;
         case OMTILE_NEEDTEXTUREBUILT:
             return GL_LUMINANCE;
+        default:
+            throw OmArgException("unknown flag");
+        }
+    }
+
+    GLenum GetGLdataFormat() const
+    {
+        switch(flag_){
+        case OMTILE_NEEDCOLORMAP:
+            return GL_BGRA;
+        case OMTILE_NEEDTEXTUREBUILT:
+            return GL_LUMINANCE;
+        default:
+            throw OmArgException("unknown flag");
+        }
+    }
+
+    GLenum GetPixelDataType() const
+    {
+        switch(flag_){
+        case OMTILE_NEEDCOLORMAP:
+            return GL_UNSIGNED_INT_8_8_8_8;
+        case OMTILE_NEEDTEXTUREBUILT:
+            return GL_UNSIGNED_BYTE;
         default:
             throw OmArgException("unknown flag");
         }
@@ -98,12 +126,9 @@ private:
     OmTileFlag flag_;
     const uint64_t numBytes_;
 
+    OmPooledTileWrapper* pooledTile_;
+
     void deleteTileData();
-
-    // free data once texture is built
-    boost::variant<boost::shared_ptr<uint8_t>,
-                   boost::shared_ptr<OmColorRGBA> > tileData_;
-
 };
 
 #endif

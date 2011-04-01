@@ -1,3 +1,4 @@
+#include "chunks/omChunkCache.hpp"
 #include "chunks/omSegChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "common/omCommon.h"
@@ -8,8 +9,8 @@
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/io/omValidGroupNum.hpp"
-#include "segment/omSegments.h"
 #include "segment/lists/omSegmentLists.h"
+#include "segment/omSegments.h"
 #include "system/cache/omVolSliceCache.hpp"
 #include "system/omGroups.h"
 #include "volume/build/omVolumeAllocater.hpp"
@@ -49,6 +50,7 @@ OmSegmentation::OmSegmentation(OmID id)
     , volData_(new OmVolumeData())
     , volSliceCache_(new OmVolSliceCache(this))
 {
+    segments_->StartCaches();
     segments_->refreshTree();
 }
 
@@ -57,7 +59,9 @@ OmSegmentation::~OmSegmentation()
 
 void OmSegmentation::loadVolData()
 {
-    if(IsBuilt()){
+    if(IsBuilt())
+    {
+        chunkCache_->UpdateFromVolResize();
         volData_->load(this);
         volSliceCache_->Load();
     }
@@ -65,6 +69,10 @@ void OmSegmentation::loadVolData()
 
 std::string OmSegmentation::GetName(){
     return "segmentation" + om::string::num(GetID());
+}
+
+std::string OmSegmentation::GetNameHyphen(){
+    return "segmentation-" + om::string::num(GetID());
 }
 
 std::string OmSegmentation::GetDirectoryPath(){

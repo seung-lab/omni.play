@@ -4,6 +4,8 @@
 /*
  * Segment Object
  *
+ * Stored in object pool; values are initialized to 0, except for edgeNumber_
+ *
  * Brett Warne - bwarne@mit.edu - 3/9/09
  * Michael Purcaro - purcaro@gmail.com
  */
@@ -46,12 +48,14 @@ public:
                          data_->color.blue  / 255. );
     }
 
-    void SetColor(const Vector3f &);
+    void SetColor(const OmColor&);
+    void SetColor(const Vector3i&);
+    void SetColor(const Vector3f&);
 
     QString GetNote();
-    void SetNote(const QString &);
+    void SetNote(const QString&);
     QString GetName();
-    void SetName(const QString &);
+    void SetName(const QString&);
     bool IsSelected();
     void SetSelected(const bool, const bool);
     bool IsEnabled();
@@ -91,7 +95,7 @@ public:
 
     const segChildCont_t& GetChildren();
 
-    OmSegID getRootSegID();
+    OmSegID RootID();
 
     OmID GetSegmentationID();
 
@@ -103,15 +107,19 @@ public:
         threshold_ = thres;
     }
 
-    inline const DataBbox& getBounds() const {
+    inline const DataBbox BoundingBox() const
+    {
+        zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
         return data_->bounds;
     }
 
-    inline void clearBounds() {
+    inline void ClearBoundingBox()
+    {
+        zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
         data_->bounds = DataBbox();
     }
 
-    inline void addToBounds(const DataBbox& box)
+    inline void AddToBoundingBox(const DataBbox& box)
     {
         zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
         data_->bounds.merge(box);
@@ -160,10 +168,11 @@ private:
     struct segment_bounds_mutex_pool_tag;
     struct segment_size_mutex_pool_tag;
 
-    friend class OmPagingPtrStore;
-    friend class OmSegmentPage;
+    friend class OmCacheSegStore;
     friend class OmDataArchiveSegment;
     friend class OmFindCommonEdge;
+    friend class OmPagingPtrStore;
+    friend class OmSegmentPage;
 };
 
 #endif

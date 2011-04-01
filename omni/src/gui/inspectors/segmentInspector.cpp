@@ -1,13 +1,13 @@
 #include "system/omConnect.hpp"
 #include "common/omDebug.h"
 #include "events/omEvents.h"
-#include "segObjectInspector.h"
+#include "segmentInspector.h"
 #include "segment/omSegmentUtils.hpp"
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
 #include "utility/omStringHelpers.h"
 
-SegObjectInspector::SegObjectInspector(const SegmentDataWrapper& sdw, QWidget* parent)
+SegmentInspector::SegmentInspector(const SegmentDataWrapper& sdw, QWidget* parent)
     : QWidget(parent)
     , sdw_(sdw)
 {
@@ -24,7 +24,7 @@ SegObjectInspector::SegObjectInspector(const SegmentDataWrapper& sdw, QWidget* p
             this, SLOT(nameEditChanged()));
 }
 
-void SegObjectInspector::set_initial_values()
+void SegmentInspector::set_initial_values()
 {
     segmentIDEdit->setReadOnly(true);
 
@@ -36,14 +36,8 @@ void SegObjectInspector::set_initial_values()
 
     notesEdit->setPlainText( sdw_.getNote() );
 
-    const Vector3f& color = sdw_.getColorFloat();
-
-    QPixmap pixm(40, 30);
-    QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);
-    pixm.fill(newcolor);
-
+    const QPixmap pixm = OmSegmentUtils::SegColorAsQPixmap(sdw_);
     colorButton->setIcon(QIcon(pixm));
-    current_color = newcolor;
 
     sizeNoChildren->setText( OmStringHelpers::HumanizeNumQT(sdw_.getSize()));
     sizeWithChildren->setText(OmStringHelpers::HumanizeNumQT(sdw_.GetSizeWithChildren()));
@@ -55,37 +49,38 @@ void SegObjectInspector::set_initial_values()
     chunkList->setText( "disabled" );
 }
 
-void SegObjectInspector::nameEditChanged()
+void SegmentInspector::nameEditChanged()
 {
     sdw_.setName( nameEdit->text() );
     OmEvents::SegmentModified();
 }
 
-void SegObjectInspector::setSegObjColor()
+void SegmentInspector::setSegObjColor()
 {
-    QColor color = QColorDialog::getColor(current_color, this);
+    const QColor currentColor = OmSegmentUtils::SegColorAsQColor(sdw_);
+
+    QColor color = QColorDialog::getColor(currentColor, this);
+
     if (!color.isValid()) {
         return;
     }
 
-    QPixmap pixm(40, 30);
-    pixm.fill(color);
+    color = OmSegmentUtils::SetSegColor(sdw_, color);
 
+    std::cout << "set color to " << color << "\n";
+
+    const QPixmap pixm = OmSegmentUtils::SegColorAsQPixmap(sdw_);
     colorButton->setIcon(QIcon(pixm));
+
     colorButton->update();
-    current_color = color;
 
-    Vector3f color_vector(color.redF()/2, color.greenF()/2, color.blueF()/2);
-    sdw_.setColor(color_vector);
-
-    std::cout << "set color to " << color_vector << "\n";
-
+    OmSegmentSelected::Set(sdw_);
     OmCacheManager::TouchFreshness();
     OmEvents::Redraw2d();
     OmEvents::Redraw3d();
 }
 
-QGroupBox* SegObjectInspector::makeSourcesBox()
+QGroupBox* SegmentInspector::makeSourcesBox()
 {
     QGroupBox* sourceBox = new QGroupBox("Source Properties");
     QGridLayout *grid = new QGridLayout( sourceBox );
@@ -179,7 +174,7 @@ QGroupBox* SegObjectInspector::makeSourcesBox()
     return sourceBox;
 }
 
-QGroupBox* SegObjectInspector::makeNotesBox()
+QGroupBox* SegmentInspector::makeNotesBox()
 {
     QGroupBox* notesBox = new QGroupBox("Notes");
 

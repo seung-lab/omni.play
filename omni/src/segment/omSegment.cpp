@@ -16,7 +16,7 @@ void OmSegment::setParent(OmSegment* parent, const double threshold)
 }
 
 /////////////////////////////////
-///////         Color
+///////     Color
 void OmSegment::RandomizeColor()
 {
     data_->color = OmColorUtils::GetRandomColor(data_->color);
@@ -32,11 +32,22 @@ void OmSegment::reRandomizeColor()
     RandomizeColor();
 }
 
+void OmSegment::SetColor(const OmColor& color){
+    data_->color = color;
+}
+
+void OmSegment::SetColor(const Vector3i& color)
+{
+    data_->color.red  = static_cast<uint8_t>(color.x);
+    data_->color.green = static_cast<uint8_t>(color.y);
+    data_->color.blue = static_cast<uint8_t>(color.z);
+}
+
 void OmSegment::SetColor(const Vector3f& color)
 {
-    data_->color.red   = static_cast<uint8_t>(color.x * 255);
+    data_->color.red  = static_cast<uint8_t>(color.x * 255);
     data_->color.green = static_cast<uint8_t>(color.y * 255);
-    data_->color.blue  = static_cast<uint8_t>(color.z * 255);
+    data_->color.blue = static_cast<uint8_t>(color.z * 255);
 }
 
 QString OmSegment::GetNote()
@@ -50,60 +61,50 @@ QString OmSegment::GetNote()
     }
 
     // if( !segmentsJoinedIntoMe_.empty() ){
-    //     customNote += "Number of Children: "
-    //         + QString::number( segmentsJoinedIntoMe_.size() )
-    //         + "; ";
+    //   customNote += "Number of Children: "
+    //     + QString::number( segmentsJoinedIntoMe_.size() )
+    //     + "; ";
     // }
 
     return customNote;
 }
 
-void OmSegment::SetNote(const QString & note)
-{
+void OmSegment::SetNote(const QString& note){
     segments_->setSegmentNote( data_->value, note );
 }
 
-QString OmSegment::GetName()
-{
+QString OmSegment::GetName(){
     return segments_->getSegmentName( data_->value );
 }
 
-void OmSegment::SetName(const QString & name)
-{
+void OmSegment::SetName(const QString& name){
     segments_->setSegmentName( data_->value, name );
 }
 
-bool OmSegment::IsSelected()
-{
+bool OmSegment::IsSelected(){
     return segments_->IsSegmentSelected( data_->value );
 }
 
-void OmSegment::SetSelected( const bool isSelected, const bool addToRecentList )
-{
+void OmSegment::SetSelected( const bool isSelected, const bool addToRecentList ){
     segments_->setSegmentSelected( data_->value, isSelected, addToRecentList );
 }
 
-bool OmSegment::IsEnabled()
-{
+bool OmSegment::IsEnabled(){
     return segments_->isSegmentEnabled( data_->value );
 }
 
-void OmSegment::SetEnabled( const bool isEnabled)
-{
+void OmSegment::SetEnabled( const bool isEnabled){
     segments_->setSegmentEnabled( data_->value, isEnabled );
 }
 
-OmID OmSegment::GetSegmentationID()
-{
+OmID OmSegment::GetSegmentationID(){
     return segments_->GetSegmentationID();
 }
 
-OmSegID OmSegment::getRootSegID()
-{
-    return segments_->findRoot(this)->data_->value;
+OmSegID OmSegment::RootID(){
+    return segments_->findRootIDcached(data_->value);
 }
 
-const segChildCont_t& OmSegment::GetChildren()
-{
+const segChildCont_t& OmSegment::GetChildren(){
     return segments_->Children()->GetChildren(this);
 }

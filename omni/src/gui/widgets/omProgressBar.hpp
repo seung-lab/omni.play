@@ -32,7 +32,11 @@ public:
 
     void setValue(const T value)
     {
-        curPerc_ = 100.0 * (value - min_) / max_;
+        if(!value || !max_){
+            curPerc_ = 0;
+        } else {
+            curPerc_ = 100.0 * (value - min_) / max_;
+        }
 
         progressBar_->setValue(curPerc_);
 

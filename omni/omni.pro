@@ -145,10 +145,12 @@ HEADERS +=  \
 	src/chunks/uniqueValues/omThresholdsInChunk.hpp \
 	src/common/om.hpp \
 	src/common/omBoost.h \
+	src/common/omColors.h \
 	src/common/omCommon.h \
 	src/common/omDebug.h \
 	src/common/omException.h \
 	src/common/omGl.h \
+	src/common/omQt.h \
 	src/common/omSet.hpp \
 	src/common/omStd.h \
 	src/common/omString.hpp \
@@ -197,7 +199,7 @@ HEADERS +=  \
 	src/events/details/omViewEvent.h \
 	src/events/omEvents.h \
 	src/gui/brushToolbox/brushToolbox.hpp \
-	src/gui/brushToolbox/brushToolboxImpl.hpp \
+	src/gui/brushToolbox/brushToolboxImpl.h \
 	src/gui/cacheMonitorDialog.h \
 	src/gui/cacheMonitorWidget.h \
 	src/gui/groupsTable/dropdownMenuButton.hpp \
@@ -206,7 +208,7 @@ HEADERS +=  \
 	src/gui/inspectors/chanInspector.h \
 	src/gui/inspectors/filObjectInspector.h \
 	src/gui/inspectors/inspectorProperties.h \
-	src/gui/inspectors/segObjectInspector.h \
+	src/gui/inspectors/segmentInspector.h \
 	src/gui/inspectors/segmentation/addSegmentButton.h \
 	src/gui/inspectors/segmentation/buildButton.hpp \
 	src/gui/inspectors/segmentation/exportButton.hpp \
@@ -214,8 +216,8 @@ HEADERS +=  \
 	src/gui/inspectors/segmentation/exportMST.hpp \
 	src/gui/inspectors/segmentation/exportSegmentList.hpp \
 	src/gui/inspectors/segmentation/meshPreviewButton.hpp \
-	src/gui/inspectors/segmentation/segInspector.h \
-	src/gui/inspectors/segmentation/segInspectorButtons.hpp \
+	src/gui/inspectors/segmentation/segmentationInspector.h \
+	src/gui/inspectors/segmentation/segmentationInspectorButtons.hpp \
 	src/gui/inspectors/ui_chanInspector.h \
 	src/gui/inspectors/volInspector.h \
 	src/gui/mainWindow/inspectorWidget.h \
@@ -280,6 +282,7 @@ HEADERS +=  \
 	src/gui/toolbars/mainToolbar/openViewGroupButton.hpp \
 	src/gui/toolbars/mainToolbar/refreshVolumeButton.h \
 	src/gui/toolbars/mainToolbar/saveButton.h \
+	src/gui/toolbars/mainToolbar/showPaintTools.hpp \
 	src/gui/toolbars/mainToolbar/toolButton.h \
 	src/gui/toolbars/toolbarManager.h \
 	src/gui/updateSegmentProperties.h \
@@ -340,6 +343,7 @@ HEADERS +=  \
 	src/mesh/omVolumeCuller.h \
 	src/mesh/ziMesher.hpp \
 	src/network/details/omJsonTypes.hpp \
+	src/network/omAssembleTilesIntoSlice.hpp \
 	src/network/omClient.hpp \
 	src/network/omJson.h \
 	src/network/omNetworkQT.hpp \
@@ -355,7 +359,6 @@ HEADERS +=  \
 	src/project/omProject.h \
 	src/project/omProjectGlobals.h \
 	src/project/omProjectImpl.hpp \
-	src/segment/colorizer/omCacheSegments.hpp \
 	src/segment/colorizer/omSegmentColorizer.h \
 	src/segment/colorizer/omSegmentColorizerColorCache.hpp \
 	src/segment/colorizer/omSegmentColorizerImpl.hpp \
@@ -388,10 +391,16 @@ HEADERS +=  \
 	src/segment/lowLevel/omSegmentChildren.hpp \
 	src/segment/lowLevel/omSegmentGraph.h \
 	src/segment/lowLevel/omSegmentGraphInitialLoad.hpp \
+	src/segment/lowLevel/omSegmentLowLevelTypes.h \
 	src/segment/lowLevel/omSegmentSelection.hpp \
 	src/segment/lowLevel/omSegmentsImplLowLevel.h \
+	src/segment/lowLevel/store/omCacheSegRootIDs.hpp \
+	src/segment/lowLevel/store/omCacheSegStore.hpp \
+	src/segment/lowLevel/store/omSegmentStore.hpp \
+	src/segment/omFindClosestSegment.hpp \
 	src/segment/omFindCommonEdge.hpp \
 	src/segment/omSegment.h \
+	src/segment/omSegmentCenter.hpp \
 	src/segment/omSegmentChildrenTypes.h \
 	src/segment/omSegmentEdge.h \
 	src/segment/omSegmentIterator.h \
@@ -437,10 +446,12 @@ HEADERS +=  \
 	src/tiles/cache/omTileCacheChannel.hpp \
 	src/tiles/cache/omTileCacheImpl.hpp \
 	src/tiles/cache/omTileCacheSegmentation.hpp \
+	src/tiles/omPooledTile.hpp \
 	src/tiles/omTextureID.h \
 	src/tiles/omTile.h \
 	src/tiles/omTileCoord.h \
 	src/tiles/omTileDumper.hpp \
+	src/tiles/omTilePool.hpp \
 	src/tiles/omTilePreFetcher.h \
 	src/tiles/omTilePreFetcherTask.hpp \
 	src/tiles/omTileTypes.hpp \
@@ -461,6 +472,7 @@ HEADERS +=  \
 	src/utility/omFileHelpers.h \
 	src/utility/omLockedObjects.h \
 	src/utility/omLockedPODs.hpp \
+	src/utility/omPrimeNumbers.hpp \
 	src/utility/omRand.hpp \
 	src/utility/omRandColorFile.hpp \
 	src/utility/omSimpleProgress.hpp \
@@ -477,6 +489,11 @@ HEADERS +=  \
 	src/utility/segmentationDataWrapper.hpp \
 	src/utility/setUtilities.h \
 	src/utility/sortHelpers.h \
+	src/view2d/brush/omBrushErase.hpp \
+	src/view2d/brush/omBrushEraseCircle.hpp \
+	src/view2d/brush/omBrushEraseLine.hpp \
+	src/view2d/brush/omBrushEraseLineTask.hpp \
+	src/view2d/brush/omBrushEraseUtils.hpp \
 	src/view2d/brush/omBrushOppCircle.hpp \
 	src/view2d/brush/omBrushOppInfo.hpp \
 	src/view2d/brush/omBrushOppLine.hpp \
@@ -492,6 +509,7 @@ HEADERS +=  \
 	src/view2d/brush/omBrushSelectLine.hpp \
 	src/view2d/brush/omBrushSelectLineTask.hpp \
 	src/view2d/brush/omBrushSelectUtils.hpp \
+	src/view2d/brush/omChunksAndPts.hpp \
 	src/view2d/om2dPreferences.hpp \
 	src/view2d/omBlockingGetTiles.hpp \
 	src/view2d/omCalcTileCoordsDownsampled.hpp \
@@ -612,6 +630,7 @@ HEADERS +=  \
 	tests/segment/segmentTests1.hpp \
 	tests/testUtils.hpp \
 	tests/tests.hpp \
+	tests/tiles/omTilePoolTests.hpp \
 	tests/utility/stringHelpersTest.h
 
 SOURCES +=  \
@@ -636,8 +655,10 @@ SOURCES +=  \
 	src/chunks/omChunkData.cpp \
 	src/chunks/omSegChunk.cpp \
 	src/chunks/omSegChunkData.cpp \
+	src/common/omColors.cpp \
 	src/common/omCommon.cpp \
 	src/common/omGl.cpp \
+	src/common/omQt.cpp \
 	src/datalayer/archive/omDataArchiveBoost.cpp \
 	src/datalayer/archive/omDataArchiveProject.cpp \
 	src/datalayer/archive/omDataArchiveSegment.cpp \
@@ -660,14 +681,15 @@ SOURCES +=  \
 	src/events/details/omView3dEvent.cpp \
 	src/events/details/omViewEvent.cpp \
 	src/events/omEvents.cpp \
+	src/gui/brushToolbox/brushToolboxImpl.cpp \
 	src/gui/cacheMonitorDialog.cpp \
 	src/gui/cacheMonitorWidget.cpp \
 	src/gui/groupsTable/groupsTable.cpp \
 	src/gui/inspectors/chanInspector.cpp \
 	src/gui/inspectors/filObjectInspector.cpp \
 	src/gui/inspectors/inspectorProperties.cpp \
-	src/gui/inspectors/segObjectInspector.cpp \
-	src/gui/inspectors/segmentation/segInspector.cpp \
+	src/gui/inspectors/segmentInspector.cpp \
+	src/gui/inspectors/segmentation/segmentationInspector.cpp \
 	src/gui/mainWindow/inspectorWidget.cpp \
 	src/gui/mainWindow/mainWindow.cpp \
 	src/gui/menubar.cpp \
@@ -733,11 +755,12 @@ SOURCES +=  \
 	src/segment/lowLevel/omPagingPtrStore.cpp \
 	src/segment/lowLevel/omSegmentGraph.cpp \
 	src/segment/lowLevel/omSegmentsImplLowLevel.cpp \
+	src/segment/lowLevel/store/omSegmentStore.cpp \
 	src/segment/omSegment.cpp \
-	src/segment/omSegmentImpl.cpp \
 	src/segment/omSegmentIterator.cpp \
 	src/segment/omSegmentSelector.cpp \
 	src/segment/omSegments.cpp \
+	src/segment/omSegmentsImpl.cpp \
 	src/system/cache/omCacheGroup.cpp \
 	src/system/cache/omCacheManager.cpp \
 	src/system/cache/omMeshCache.cpp \
@@ -758,6 +781,7 @@ SOURCES +=  \
 	src/tiles/omTileTypes.cpp \
 	src/utility/channelDataWrapper.cpp \
 	src/utility/omFileHelpers.cpp \
+	src/utility/omPrimeNumbers.cpp \
 	src/utility/omSystemInformation.cpp \
 	src/utility/omThreadPoolManager.cpp \
 	src/view2d/brush/omBrushOppTypes.cpp \
@@ -897,5 +921,5 @@ exists(../external/libs/Boost) {
      QMAKE_CXXFLAGS += -DBOOST_FILESYSTEM_NO_DEPRECATED
 
 }else {
-    error(please run bootstrap and install Boost)
+    error(please run bootstrap.pl and install Boost)
 }

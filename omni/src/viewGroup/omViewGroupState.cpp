@@ -65,9 +65,9 @@ void OmViewGroupState::AddXYView(const OmID channelID, const OmID segmentationID
     mViewGroup->AddXYView(channelID, segmentationID);
 }
 
-boost::shared_ptr<OmColorRGBA> OmViewGroupState::ColorTile(uint32_t const* imageData,
-                                                           const Vector2i& dims,
-                                                           const OmTileCoord& key)
+OmPooledTile<OmColorARGB>* OmViewGroupState::ColorTile(uint32_t const* imageData,
+                                                       const Vector2i& dims,
+                                                       const OmTileCoord& key)
 {
     return colorizers_->ColorTile(imageData, dims, key);
 }

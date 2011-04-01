@@ -1,53 +1,48 @@
-#include "network/omProcessRequestFromClient.h"
-#include "utility/dataWrappers.h"
+#include "network/omAssembleTilesIntoSlice.hpp"
+
 #include "common/omString.hpp"
 #include "network/omJson.h"
 #include "network/omProcessJSONAction.hpp"
+#include "network/omProcessRequestFromClient.h"
+#include "utility/omStringHelpers.h"
+
+#include <QPainter>
 
 OmProcessRequestFromClient::OmProcessRequestFromClient()
+    : tileAssembler_(new OmAssembleTilesIntoSlice())
 {
-    actionProcessors_["listProjects"] = OmJSONListProjects::CreateInstance;
+    actionProcessors_["get_projects"] = OmJSONListProjects::CreateInstance;
+    actionProcessors_["get_slice"] = OmJSONGetSlice::CreateInstance;
 }
 
-template <typename T>
-void getParamVec(const OmJson& json)
-{
-    boost::optional<std::vector<T> > params = json.Params<T>();
-    if(!params){
-        return;
-    }
-
-    std::vector<T>& paramsRef = *params;
-
-    FOR_EACH(iter, paramsRef){
-        std::cout << "param: " << *iter << "\n";
-    }
-}
+OmProcessRequestFromClient::~OmProcessRequestFromClient()
+{}
 
 QString OmProcessRequestFromClient::Process(const QString& cmd)
 {
-    std::cout << "processing cmd: \"" << cmd.toStdString() << "\"...\n";
+    // std::cout << "processing cmd: \"" << cmd.toStdString() << "\"...\n";
 
-    OmJson json;
-    json.Read(cmd.toStdString());
-    boost::optional<std::string> action = json.GetAction();
-    if(!action){
-        return "fail";
-    }
+    // OmJson json;
+    // json.Read(cmd.toStdString());
+    // boost::optional<std::string> action = json.GetAction();
+    // if(!action){
+    //     return "fail";
+    // }
 
-    std::cout << "action: " << *action << "\n";
+    // std::cout << "action: " << *action << "\n";
 
-    try {
-        getParamVec<int>(json);
-    } catch(...){
-    }
 
-    boost::scoped_ptr<OmProcessJSONAction> process(createActionProcessor(*action));
-    if(!process){
-        return "fail";
-    }
+    // boost::scoped_ptr<OmProcessJSONAction> process(createActionProcessor(*action));
+    // if(!process){
+    //     return "fail";
+    // }
 
-    return QString::fromStdString(process->Process(*action));
+    // return QString::fromStdString(process->Process(json));
+
+    const int sliceNum = OmStringHelpers::getUInt(cmd);
+    std::cout << "slice_num: " << sliceNum << "\n";
+
+    return makeImgFiles(sliceNum);
 }
 
 OmProcessJSONAction*
@@ -59,3 +54,14 @@ OmProcessRequestFromClient::createActionProcessor(const std::string& action)
 
     return actionProcessors_[action]();
 }
+
+/** returns UUID
+ *
+ * creates
+ *   /var/www/temp_omni_imgs/channel-1/UUID.png
+ *   /var/www/temp_omni_imgs/segmenation-1/UUID.png
+ **/
+QString OmProcessRequestFromClient::makeImgFiles(const int sliceNum){
+    return tileAssembler_->MakeImgFiles(sliceNum);
+}
+

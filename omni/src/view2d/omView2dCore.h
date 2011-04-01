@@ -27,6 +27,7 @@ class OmView2dCore : public QWidget {
     int GetTileCount();
     int GetTileCountIncomplete();
 
+
 public Q_SLOTS:
     void dockVisibilityChanged(const bool visible);
 
@@ -41,6 +42,8 @@ protected:
     inline OmView2dState* State() {
         return state_.get();
     }
+
+    bool blockingRedraw_;
 
 private:
     const ViewType viewType_;

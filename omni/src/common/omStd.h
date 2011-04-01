@@ -87,4 +87,31 @@ inline T ROUNDUP(T numToRound, T multiple)
     return ROUNDDOWN( numToRound, multiple );
 }
 
+namespace om {
+namespace math {
+
+// from http://stackoverflow.com/questions/485525/round-for-float-in-c
+
+inline float SymmetricalRound(const float r){
+    return (r > 0.0) ? floor(r + 0.5) : ceil(r - 0.5);
+}
+
+inline double SymmetricalRound(const double r){
+    return (r > 0.0) ? floor(r + 0.5) : ceil(r - 0.5);
+}
+
+} // namespace math
+} // namespace om
+
+namespace om {
+namespace vec {
+
+template <typename T>
+void eraseRemove(std::vector<T>& v, const T val){
+    v.erase(std::remove(v.begin(), v.end(), val), v.end());
+}
+
+} // namespace vec
+} // namespace om
+
 #endif

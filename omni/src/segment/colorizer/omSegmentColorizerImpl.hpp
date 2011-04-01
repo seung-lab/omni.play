@@ -2,7 +2,6 @@
 #define OM_SEGEMNT_COLORIZER_IMPL_HPP
 
 #include "segment/colorizer/omSegmentColors.hpp"
-#include "segment/colorizer/omCacheSegments.hpp"
 #include "segment/colorizer/omSegmentColorizerColorCache.hpp"
 #include "segment/colorizer/omSegmentColorizerTypes.h"
 #include "segment/omSegments.h"
@@ -15,6 +14,9 @@ static const OmColor blackColor = {0, 0, 0};
 class OmSegmentColorizerImpl {
 private:
     SegmentColorParams& params_;
+
+    OmSegments *const segments_;
+
     OmSegmentColorizerColorCache& colorCache_;
     const uint64_t freshness_;
     const float breakThreshold_;
@@ -23,14 +25,12 @@ private:
     boost::unordered_set<OmSegID> selectedSegIDs_;
     boost::unordered_set<OmSegID> enabledSegIDs_;
 
-    boost::unordered_map<OmSegment*, OmSegment*> rootSegMap_;
-    boost::unordered_map<OmSegID, OmSegment*> segMap_;
-
 public:
     OmSegmentColorizerImpl(SegmentColorParams& params,
                            OmSegmentColorizerColorCache& colorCache,
                            const uint64_t freshness)
         : params_(params)
+        , segments_(params_.segments)
         , colorCache_(colorCache)
         , freshness_(freshness)
         , breakThreshold_(params_.vgs->getBreakThreshold())
@@ -46,7 +46,7 @@ public:
         anySegmentsSelected_ = !selectedSegIDs_.empty() || !enabledSegIDs_.empty();
     }
 
-    void ColorTile(uint32_t const*const d, OmColorRGBA* colorMappedData)
+    void ColorTile(uint32_t const*const d, OmColorARGB* colorMappedData)
     {
         OmColor prevColor = blackColor;
         OmSegID lastVal = 0;
@@ -72,7 +72,8 @@ public:
 
                 colorCache_.Get( d[i], curFreshness, curColor);
 
-                if(freshness_ > curFreshness){
+                if(freshness_ > curFreshness)
+                {
                     curColor = getVoxelColorForView2d( d[i] );
                     colorCache_.Set( d[i], curFreshness, curColor);
                 }
@@ -89,37 +90,15 @@ public:
     }
 
 private:
-    inline OmSegment* getSegment(const OmSegID val)
+
+    OmColor getVoxelColorForView2d(const OmSegID segID)
     {
-        OmSegment* seg = segMap_[val];
-        if(seg){
-            return seg;
+        OmSegment* seg = segments_->GetSegmentUnsafe(segID);
+
+        OmSegment* segRoot = seg;
+        if(segRoot->getParent()){
+            segRoot = segments_->GetSegmentUnsafe(segments_->findRootIDcached(segID));
         }
-        return segMap_[val] = params_.cacheSegments->GetSegment(val);
-    }
-
-    inline OmSegment* getRootSegment(OmSegment* seg)
-    {
-        OmSegment* rootSeg = rootSegMap_[seg];
-        if(rootSeg){
-            return rootSeg;
-        }
-        return rootSegMap_[seg] = params_.cacheSegments->GetRootSegment(seg);
-    }
-
-    inline OmColor getVoxelColorForView2d(const OmSegID val)
-    {
-        OmSegment* seg = getSegment(val);
-        if(!seg){
-            return blackColor;
-        }
-
-        return getVoxelColorForView2d(seg);
-    }
-
-    OmColor getVoxelColorForView2d(OmSegment* seg)
-    {
-        OmSegment* segRoot = getRootSegment(seg);
 
         const OmColor segRootColor = segRoot->GetColorInt();
 
@@ -187,6 +166,7 @@ private:
         }
     }
 
+    // TODO: might be faster to compute: lookup could affect cache lines
     static inline OmColor makeMutedColor(const OmColor& color)
     {
         const OmColor ret =
@@ -197,6 +177,7 @@ private:
         return ret;
     }
 
+    // TODO: might be faster to compute: lookup could affect cache lines
     static inline OmColor makeSelectedColor(const OmColor& color)
     {
         const OmColor ret =

@@ -25,23 +25,36 @@ public:
     {}
 
     void SegmentModificationEvent(OmSegmentEvent*){
-        v2d_->myUpdate();
+        v2d_->Redraw();
     }
 
+    void SegmentGUIlistEvent(OmSegmentEvent*)
+    {}
+
+    void SegmentSelectedEvent(OmSegmentEvent*)
+    {}
+
     void ViewBoxChangeEvent(){
-        v2d_->myUpdate();
+        v2d_->Redraw();
     }
+
     void ViewPosChangeEvent(){
-        v2d_->myUpdate();
+        v2d_->Redraw();
     }
+
     void ViewCenterChangeEvent()
     {
         state_->ChangeViewCenter();
-        v2d_->myUpdate();
+        v2d_->Redraw();
         OmEvents::Redraw3d();
     }
+
     void ViewRedrawEvent(){
-        v2d_->myUpdate();
+        v2d_->Redraw();
+    }
+
+    void ViewBlockingRedrawEvent(){
+        v2d_->RedrawBlocking();
     }
 
     void ToolModeChangeEvent(){

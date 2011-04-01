@@ -3,7 +3,7 @@
 #include "gui/inspectors/chanInspector.h"
 #include "gui/inspectors/filObjectInspector.h"
 #include "gui/inspectors/inspectorProperties.h"
-#include "gui/inspectors/segmentation/segInspector.h"
+#include "gui/inspectors/segmentation/segmentationInspector.h"
 #include "gui/mainWindow/inspectorWidget.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/mstViewer.hpp"
@@ -37,7 +37,7 @@ InspectorWidget::InspectorWidget(QWidget* parent, MainWindow* mainWindow, OmView
     verticalLayout->addWidget(ElementListBox::Widget());
 
     channelInspectorWidget = NULL;
-    segInspectorWidget = NULL;
+    segmentationInspectorWidget = NULL;
 
     QMetaObject::connectSlotsByName(this);
 
@@ -160,15 +160,15 @@ void InspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 
 void InspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 {
-    segInspectorWidget = new SegInspector(this, vgs_, sdw);
+    segmentationInspectorWidget = new SegmentationInspector(this, vgs_, sdw);
 
-    om::connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
+    om::connect(segmentationInspectorWidget->nameEdit, SIGNAL(editingFinished()),
                 this, SLOT(nameEditChanged()));
 
-    om::connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
+    om::connect(segmentationInspectorWidget->nameEdit, SIGNAL(editingFinished()),
                 this, SLOT(nameEditChanged()));
 
-    inspectorProperties->setOrReplaceWidget(segInspectorWidget,
+    inspectorProperties->setOrReplaceWidget(segmentationInspectorWidget,
                                             QString("Segmentation %1 Inspector").arg(sdw.getID()));
 }
 
@@ -262,9 +262,9 @@ void InspectorWidget::nameEditChanged()
       if(item_type == CHANNEL)
       proxyModel->setData(view->currentIndex(), QVariant(channelInspectorWidget->nameEdit->text()), Qt::EditRole);
       else if(item_type == SEGMENTATION)
-      proxyModel->setData(view->currentIndex(), QVariant(segInspectorWidget->nameEdit->text()), Qt::EditRole);
+      proxyModel->setData(view->currentIndex(), QVariant(segmentationInspectorWidget->nameEdit->text()), Qt::EditRole);
       else if(item_type == SEGMENT)
-      proxyModel->setData(view->currentIndex(), QVariant(segObjectInspectorWidget->nameEdit->text()), Qt::EditRole);
+      proxyModel->setData(view->currentIndex(), QVariant(segmentInspectorWidget->nameEdit->text()), Qt::EditRole);
       else if(FILTER == item_type)
       proxyModel->setData(view->currentIndex(), QVariant(filObjectInspectorWidget->nameEdit->text()), Qt::EditRole);
     */

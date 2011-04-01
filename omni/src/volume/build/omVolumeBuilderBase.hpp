@@ -1,6 +1,7 @@
 #ifndef OM_VOLUME_BUILDER_BASE_HPP
 #define OM_VOLUME_BUILDER_BASE_HPP
 
+#include "chunks/omChunkCache.hpp"
 #include "common/omDebug.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPath.h"
@@ -8,9 +9,9 @@
 #include "datalayer/omDataWrapper.h"
 #include "utility/omTimer.hpp"
 #include "utility/sortHelpers.h"
+#include "volume/build/omVolumeProcessor.h"
 #include "volume/io/omVolumeData.h"
 #include "volume/omMipVolume.h"
-#include "volume/build/omVolumeProcessor.h"
 
 #include <QFileInfo>
 
@@ -137,6 +138,8 @@ private:
         }
 
         vol_->Coords().UpdateRootLevel();
+
+        vol_->ChunkCache()->UpdateFromVolResize();
     }
 };
 

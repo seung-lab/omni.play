@@ -20,7 +20,7 @@ public:
     OmServerImpl(QObject *parent = 0)
         : QTcpServer(parent)
     {
-        listen(QHostAddress::Any, 8585);
+        listen(QHostAddress::Any, 8584);
 
         const std::string addr = serverAddress().toString().toStdString();
 

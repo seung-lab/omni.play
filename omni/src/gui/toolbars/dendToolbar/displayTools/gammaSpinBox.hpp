@@ -26,7 +26,7 @@ private:
     {
         OmImageFilter::SetGamma(threshold);
         OmTileCache::ClearChannel();
-        std::cout << "gamma changed to " << threshold << "\n";
+        OmEvents::Redraw2dBlocking();
     }
 
     void setInitialGUIThresholdValue(){

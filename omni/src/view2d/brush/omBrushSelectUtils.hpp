@@ -3,7 +3,7 @@
 
 #include "events/omEvents.h"
 #include "segment/omSegmentSelector.h"
-#include "view2d/omSliceCache.hpp"
+#include "view2d/brush/omChunksAndPts.hpp"
 
 class OmBrushSelectUtils {
 public:
@@ -11,35 +11,14 @@ public:
     static FindSegIDsFromPoints(OmBrushOppInfo* info,
                                 om::pt3d_list_t* pts)
     {
-        const int chunkDim = info->chunkDim;
-        const int depth = info->depth;
-        const DataBbox& segDataExtent = info->segmentation->Coords().GetDataExtent();
 
-        std::map<OmChunkCoord, std::set<Vector3i> > ptsInChunks;
+        const int depthInChunk = info->depth % info->chunkDim;
 
-        FOR_EACH(iter, *pts)
-        {
-            if(!segDataExtent.contains(*iter)){
-                continue;
-            }
+        OmChunksAndPts chunksAndPts(info->segmentation, info->viewType);
 
-            const OmChunkCoord chunkCoord(0,
-                                          iter->x / chunkDim,
-                                          iter->y / chunkDim,
-                                          iter->z / chunkDim);
+        chunksAndPts.AddAllPtsThatIntersectVol(pts);
 
-            const Vector3i chunkPos(iter->x % chunkDim,
-                                    iter->y % chunkDim,
-                                    iter->z % chunkDim);
-
-
-            ptsInChunks[chunkCoord].insert(chunkPos);
-        }
-
-        OmSliceCache sliceCache(info->segmentation,
-                                info->viewType);
-
-        return sliceCache.GetSegIDs(ptsInChunks, depth % chunkDim);
+        return chunksAndPts.GetSegIDs(depthInChunk);
     }
 
     void static SendEvent(OmBrushOppInfo* info, boost::unordered_set<OmSegID>* segIDs)

@@ -6,12 +6,12 @@
 #include <QtGui>
 #include <QWidget>
 
-class SegObjectInspector : public QWidget
+class SegmentInspector : public QWidget
 {
     Q_OBJECT
 
 public:
-    SegObjectInspector(const SegmentDataWrapper& sdw, QWidget* parent);
+    SegmentInspector(const SegmentDataWrapper& sdw, QWidget* parent);
 
 private Q_SLOTS:
     void setSegObjColor();
@@ -19,8 +19,6 @@ private Q_SLOTS:
 
 private:
     const SegmentDataWrapper sdw_;
-
-    QColor current_color;
 
     QLineEdit* nameEdit;
     QLineEdit* segmentIDEdit;
