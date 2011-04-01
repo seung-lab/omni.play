@@ -2,10 +2,10 @@
 #define OM_MIP_MESH_H
 
 /**
- *	The mesh data associated with the region of a segment enclosed
+ *  The mesh data associated with the region of a segment enclosed
  *   by a specific MipChunk.
  *
- *	Brett Warne - bwarne@mit.edu - 3/7/09
+ *  Brett Warne - bwarne@mit.edu - 3/7/09
  */
 
 #include "common/omCommon.h"
@@ -20,42 +20,41 @@ class OmSegmentation;
 
 class OmMipMesh {
 public:
-	OmMipMesh(OmSegmentation*, const OmMipMeshCoord&,
-			  OmMipMeshManager*, OmMeshCache*);
+    OmMipMesh(OmSegmentation*, const OmMipMeshCoord&,
+              OmMipMeshManager*, OmMeshCache*);
 
-	virtual ~OmMipMesh();
+    virtual ~OmMipMesh();
 
-	void Load();
-	void Flush(){}
+    void Load();
 
-	bool HasData() const;
-	uint64_t NumBytes() const;
+    bool HasData() const;
+    uint64_t NumBytes() const;
 
-	void Draw();
+    void Draw();
 
 private:
-	OmSegmentation *const segmentation_;
-	OmMeshCache *const cache_;
-	OmMipMeshManager *const meshMan_;
+    OmSegmentation *const segmentation_;
+    OmMeshCache *const cache_;
+    OmMipMeshManager *const meshMan_;
 
-	const OmMipMeshCoord mMeshCoordinate;
+    const OmMipMeshCoord meshCoord_;
 
-	boost::shared_ptr<OmDataForMeshLoad> data_;
+    boost::shared_ptr<OmDataForMeshLoad> data_;
 
-	GLuint mVertexDataVboId;
-	GLuint mVertexIndexDataVboId;
-	bool isVbo();
-	void createVbo();
-	void deleteVbo();
-	GLuint createVbo(const void *data, int dataSize,
-					 GLenum target, GLenum usage);
+    GLuint mVertexDataVboId;
+    GLuint mVertexIndexDataVboId;
+    bool isVbo();
+    void createVbo();
+    void deleteVbo();
+    GLuint createVbo(const void *data, int dataSize,
+                     GLenum target, GLenum usage);
 
- 	GLuint displayList_;
-	bool hasDisplayList_;
-	void makeDisplayList();
+    GLuint displayList_;
+    bool hasDisplayList_;
+    void makeDisplayList();
 
-	uint64_t numBytes_;
-	bool hasData_;
+    uint64_t numBytes_;
+    bool hasData_;
 };
 
 #endif

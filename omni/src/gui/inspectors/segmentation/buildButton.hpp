@@ -4,7 +4,7 @@
 #include "gui/widgets/omButton.hpp"
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "utility/dataWrappers.h"
-#include "segment/omSegmentCache.h"
+#include "segment/omSegments.h"
 #include "volume/build/omBuildSegmentation.hpp"
 
 class BuildButton : public OmButton<SegInspector> {
@@ -19,7 +19,7 @@ public:
 private:
 	void doAction()
 	{
-		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
+		const SegmentationDataWrapper& sdw = mParent->GetSDW();
 
 		OmBuildSegmentation* bs = new OmBuildSegmentation(sdw);
 

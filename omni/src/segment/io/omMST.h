@@ -1,71 +1,89 @@
 #ifndef OM_MST_H
 #define OM_MST_H
 
-#include "datalayer/omDataWrapper.h"
-#include "datalayer/fs/omFileNames.hpp"
-#include "datalayer/fs/omIOnDiskFile.h"
-#include "datalayer/fs/omFileQT.hpp"
 #include "segment/io/omMSTtypes.h"
+#include "zi/omMutex.h"
+
+#include <boost/shared_ptr.hpp>
+#include <QString>
 
 class OmSegmentation;
+template <class> class OmIOnDiskFile;
+template <class> class OmMemMappedFileReadQT;
+template <class> class OmMemMappedFileWriteQT;
+template <class> class OmFileReadQT;
+template <class> class OmFileWriteQT;
+class QDataStream;
 
 class OmMST {
 private:
-	static const double defaultThresholdSize_ = 0.9;
+    static const double defaultThreshold_ = 0.9;
 
 public:
-	OmMST(OmSegmentation* segmentation);
-	~OmMST(){}
+    OmMST(OmSegmentation* segmentation);
 
-	static double DefaultThresholdSize(){
-		return defaultThresholdSize_;
-	}
+    ~OmMST()
+    {}
 
-	void Read();
-	void Flush();
+    static double DefaultThreshold(){
+        return defaultThreshold_;
+    }
 
-	void Import(const std::vector<OmMSTImportEdge>& edges);
+    void Read();
+    void Flush();
 
-	bool isValid(){
-		return numEdges_ > 0;
-	}
+    void Import(const std::vector<OmMSTImportEdge>& edges);
 
-	uint32_t NumEdges() const {
-		return numEdges_;
-	}
+    inline bool IsValid() const {
+        return numEdges_ > 0;
+    }
 
-	double UserThreshold() const {
-		return userThreshold_;
-	}
+    inline uint32_t NumEdges() const {
+        return numEdges_;
+    }
 
-	void SetUserThreshold(const double t) {
-		userThreshold_ = t;
-	}
+    inline double UserThreshold() const {
+        return userThreshold_;
+    }
 
-	OmMSTEdge* Edges(){
-		return edges_;
-	}
+    void SetUserThreshold(const double t);
+
+    inline OmMSTEdge* Edges(){
+        return edges_;
+    }
 
 private:
-	OmSegmentation *const segmentation_;
-	uint32_t numEdges_;
-	double userThreshold_;
+    OmSegmentation *const segmentation_;
+    const QString fnpActual_;
+    // const QString fnpWorking_;
 
-	boost::shared_ptr<OmIOnDiskFile<OmMSTEdge> > edgesPtr_;
-	OmMSTEdge* edges_;
+    uint32_t numEdges_;
+    double userThreshold_;
 
-	void create();
-	void convert();
+    zi::rwmutex thresholdLock_;
 
-	typedef OmFileReadQT<OmMSTEdge> reader_t;
-	typedef OmFileWriteQT<OmMSTEdge> writer_t;
+    boost::shared_ptr<OmIOnDiskFile<OmMSTEdge> > edgesPtr_;
+    OmMSTEdge* edges_;
 
-	std::string memMapPath();
+    void create();
+    void convert();
+    // void writeToActualFile();
 
-	friend class SegmentTests1;
+    // read MST via full load into memory
+    typedef OmFileReadQT<OmMSTEdge> reader_t;
+    typedef OmFileWriteQT<OmMSTEdge> writer_t;
 
-	friend class OmDataArchiveProject;
-	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg);
+    // read MST via mem map
+    // typedef OmMemMappedFileReadQT<OmMSTEdge> reader_t;
+    // typedef OmMemMappedFileWriteQT<OmMSTEdge> writer_t;
+
+    QString filePathActual();
+    // QString filePathWorking();
+
+    friend class SegmentTests1;
+
+    friend class OmDataArchiveProject;
+    friend QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg);
 };
 
 #endif

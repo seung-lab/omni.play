@@ -12,29 +12,35 @@ class OmCacheManagerImpl;
 
 class OmCacheManager : private om::singletonBase<OmCacheManager> {
 private:
-	boost::shared_ptr<OmCacheManagerImpl> impl_;
+    boost::scoped_ptr<OmCacheManagerImpl> impl_;
+
+    inline static OmCacheManagerImpl* impl(){
+        return instance().impl_.get();
+    }
 
 public:
-	static QList<OmCacheInfo> GetCacheInfo(const OmCacheGroupEnum group);
-	static void AddCache(const OmCacheGroupEnum group, OmCacheBase* base);
-	static void RemoveCache(const OmCacheGroupEnum group, OmCacheBase* base);
+    static QList<OmCacheInfo> GetCacheInfo(const om::CacheGroup group);
+    static void AddCache(const om::CacheGroup group, OmCacheBase* base);
+    static void RemoveCache(const om::CacheGroup group, OmCacheBase* base);
 
-	static void SignalCachesToCloseDown();
-	static void UpdateCacheSizeFromLocalPrefs();
+    static void SignalCachesToCloseDown();
+    static void UpdateCacheSizeFromLocalPrefs();
 
-	static void Delete();
-	static void Reset();
+    static void Delete();
+    static void Reset();
 
-	static void TouchFresheness();
-	static uint64_t GetFreshness();
+    static void TouchFreshness();
+    static uint64_t GetFreshness();
 
-	static bool AmClosingDown();
+    static void ClearCacheContents();
+
+    static bool AmClosingDown();
 
 private:
-	OmCacheManager();
-	~OmCacheManager(){}
+    OmCacheManager();
+    ~OmCacheManager();
 
- 	friend class zi::singleton<OmCacheManager>;
+    friend class zi::singleton<OmCacheManager>;
 };
 
 #endif

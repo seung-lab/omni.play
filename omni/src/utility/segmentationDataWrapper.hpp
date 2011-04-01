@@ -1,156 +1,172 @@
 #ifndef SEGMENTATION_DATA_WRAPPER_HPP
 #define SEGMENTATION_DATA_WRAPPER_HPP
 
-#include "project/omSegmentationManager.h"
+#include "project/details/omSegmentationManager.h"
 #include "project/omProject.h"
-#include "project/omProjectVolumes.h"
+#include "project//details/omProjectVolumes.h"
 #include "segment/omSegment.h"
-#include "segment/omSegmentCache.h"
+#include "segment/omSegments.h"
 #include "volume/omSegmentation.h"
 
 class SegmentationDataWrapper {
+public:
+    static const OmIDsSet& ValidIDs(){
+        return OmProject::Volumes().Segmentations().GetValidSegmentationIds();
+    }
+
+    static void Remove(const OmID id){
+        OmProject::Volumes().Segmentations().RemoveSegmentation(id);
+    }
+
 private:
-	OmID id_;
-	mutable boost::optional<OmSegmentation&> segmentation_;
+    OmID id_;
+    mutable boost::optional<OmSegmentation&> segmentation_;
 
 public:
-	SegmentationDataWrapper()
-		: id_(0)
-	{}
+    SegmentationDataWrapper()
+        : id_(0)
+    {}
 
-	explicit SegmentationDataWrapper(const OmID ID)
-		: id_(ID)
-	{}
+    explicit SegmentationDataWrapper(const OmID ID)
+        : id_(ID)
+    {}
 
-	SegmentationDataWrapper(const SegmentationDataWrapper& sdw)
-		: id_(sdw.id_)
-	{}
+    SegmentationDataWrapper(const SegmentationDataWrapper& sdw)
+        : id_(sdw.id_)
+    {}
 
-	explicit SegmentationDataWrapper(OmSegment* seg)
-		: id_(seg->GetSegmentationID())
-	{}
+    explicit SegmentationDataWrapper(OmSegment* seg)
+        : id_(seg->GetSegmentationID())
+    {}
 
-	inline void set(const SegmentationDataWrapper& sdw){
-		id_ = sdw.id_;
-	}
+    inline void set(const SegmentationDataWrapper& sdw){
+        id_ = sdw.id_;
+    }
 
-	SegmentationDataWrapper& operator =(const SegmentationDataWrapper& sdw)
-	{
-		if (this != &sdw){
-			id_ = sdw.id_;
-			segmentation_ = sdw.segmentation_;
-		}
-		return *this;
-	}
+    SegmentationDataWrapper& operator =(const SegmentationDataWrapper& sdw)
+    {
+        if (this != &sdw){
+            id_ = sdw.id_;
+            segmentation_ = sdw.segmentation_;
+        }
+        return *this;
+    }
 
-	bool operator ==(const SegmentationDataWrapper& sdw) const {
-		return id_ == sdw.id_;
-	}
+    bool operator ==(const SegmentationDataWrapper& sdw) const {
+        return id_ == sdw.id_;
+    }
 
-	bool operator !=(const SegmentationDataWrapper& sdw) const {
-		return !(*this == sdw);
-	}
+    bool operator !=(const SegmentationDataWrapper& sdw) const {
+        return !(*this == sdw);
+    }
 
-	inline OmID GetSegmentationID() const {
-		return id_;
-	}
+    inline OmID GetSegmentationID() const {
+        return id_;
+    }
 
-	inline OmID getID() const {
-		return id_;
-	}
+    inline OmID getID() const {
+        return id_;
+    }
 
-	OmSegmentation& Create()
-	{
-		OmSegmentation& s = OmProject::Volumes().Segmentations().AddSegmentation();
-		id_ = s.GetID();
-		printf("create segmentation %d\n", id_);
-		segmentation_ =	boost::optional<OmSegmentation&>(s);
-		return s;
-	}
+    OmSegmentation& Create()
+    {
+        OmSegmentation& s = OmProject::Volumes().Segmentations().AddSegmentation();
+        id_ = s.GetID();
+        printf("create segmentation %d\n", id_);
+        segmentation_ =	boost::optional<OmSegmentation&>(s);
+        return s;
+    }
 
-	inline ObjectType getType() const {
-		return SEGMENTATION;
-	}
+    void Remove()
+    {
+        Remove(id_);
+        id_ = 0;
+        segmentation_.reset();
+    }
 
-	inline bool IsSegmentationValid() const
-	{
-		if(!id_){
-			return false;
-		}
+    inline ObjectType getType() const {
+        return SEGMENTATION;
+    }
 
-		return OmProject::Volumes().Segmentations().IsSegmentationValid(id_);
-	}
+    inline bool IsSegmentationValid() const
+    {
+        if(!id_){
+            return false;
+        }
 
-	inline OmSegmentation& GetSegmentation() const
-	{
-		if(!segmentation_){
-			//printf("cached segmentation...\n");
-			segmentation_ =
-				boost::optional<OmSegmentation&>(OmProject::Volumes().Segmentations().GetSegmentation(id_));
-		}
-		return *segmentation_;
-	}
+        return OmProject::Volumes().Segmentations().IsSegmentationValid(id_);
+    }
 
-	inline OmSegmentation* GetSegmentationPtr() const
-	{
-		OmSegmentation& seg = GetSegmentation();
-		return &seg;
-	}
+    inline OmSegmentation& GetSegmentation() const
+    {
+        if(!segmentation_){
+            //printf("cached segmentation...\n");
+            segmentation_ =
+                boost::optional<OmSegmentation&>(OmProject::Volumes().Segmentations().GetSegmentation(id_));
+        }
+        return *segmentation_;
+    }
 
-	inline QString GetName() const {
-		return QString::fromStdString(GetSegmentation().GetName());
-	}
+    inline OmSegmentation* GetSegmentationPtr() const
+    {
+        OmSegmentation& seg = GetSegmentation();
+        return &seg;
+    }
 
-	inline bool isEnabled() const {
-		return OmProject::Volumes().Segmentations().IsSegmentationEnabled(id_);
-	}
+    inline QString GetName() const {
+        return QString::fromStdString(GetSegmentation().GetName());
+    }
 
-	inline QString getNote() const {
-		return GetSegmentation().GetNote();
-	}
+    inline bool isEnabled() const {
+        return OmProject::Volumes().Segmentations().IsSegmentationEnabled(id_);
+    }
 
-	inline uint32_t getNumberOfSegments() const {
-		return SegmentCache()->GetNumSegments();
-	}
+    inline QString getNote() const {
+        return GetSegmentation().GetNote();
+    }
 
-	inline uint32_t getNumberOfTopSegments() const {
-		return SegmentCache()->GetNumTopSegments();
-	}
+    inline uint32_t getNumberOfSegments() const {
+        return Segments()->GetNumSegments();
+    }
 
-	inline OmSegmentCache* SegmentCache() const {
-		return GetSegmentation().SegmentCache();
-	}
+    inline uint32_t getNumberOfTopSegments() const {
+        return Segments()->GetNumTopSegments();
+    }
 
-	inline OmMST* MST() const {
-		return GetSegmentation().MST();
-	}
+    inline OmSegments* Segments() const {
+        return GetSegmentation().Segments();
+    }
 
-	inline uint32_t getMaxSegmentValue() const {
-		return SegmentCache()->getMaxValue();
-	}
+    inline OmMST* MST() const {
+        return GetSegmentation().MST();
+    }
 
-	inline OmSegmentLists* SegmentLists() const {
-		return GetSegmentation().SegmentLists();
-	}
+    inline uint32_t getMaxSegmentValue() const {
+        return Segments()->getMaxValue();
+    }
 
-	inline OmValidGroupNum* ValidGroupNum() const {
-		return GetSegmentation().ValidGroupNum();
-	}
+    inline OmSegmentLists* SegmentLists() const {
+        return GetSegmentation().SegmentLists();
+    }
 
-	inline const Vector3f& GetDataResolution() const {
-		return GetSegmentation().Coords().GetDataResolution();
-	}
+    inline OmValidGroupNum* ValidGroupNum() const {
+        return GetSegmentation().ValidGroupNum();
+    }
 
-	inline const OmSegIDsSet& GetSelectedSegmentIds() const {
-		return SegmentCache()->GetSelectedSegmentIds();
-	}
+    inline const Vector3f& GetDataResolution() const {
+        return GetSegmentation().Coords().GetDataResolution();
+    }
 
-	inline OmGroups* Groups() const {
-		return GetSegmentation().Groups();
-	}
+    inline const OmSegIDsSet& GetSelectedSegmentIds() const {
+        return Segments()->GetSelectedSegmentIds();
+    }
 
-	inline bool IsBuilt() const {
-		return GetSegmentation().IsBuilt();
-	}
+    inline OmGroups* Groups() const {
+        return GetSegmentation().Groups();
+    }
+
+    inline bool IsBuilt() const {
+        return GetSegmentation().IsBuilt();
+    }
 };
 #endif

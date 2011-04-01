@@ -4,133 +4,129 @@
 #include "datalayer/archive/omDataArchiveStd.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/omLockedPODs.hpp"
-#include "segment/omSegmentCache.h"
+#include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
 
 #include <QVector> //TODO: switch to mem-mapped file...
 
 class OmValidGroupNum {
 private:
-	OmSegmentation* segmentation_;
-	int version_;
-	LockedUint32 maxGroupNum_;
-	std::vector<uint32_t> segToGroupNum_;
+    OmSegmentation* segmentation_;
+    int version_;
+    LockedUint32 maxGroupNum_;
+    std::vector<uint32_t> segToGroupNum_;
 
 public:
-	OmValidGroupNum(OmSegmentation* segmentation)
-		: segmentation_(segmentation)
-		, version_(1)
-	{
-		maxGroupNum_.set(1);
-	}
+    OmValidGroupNum(OmSegmentation* segmentation)
+        : segmentation_(segmentation)
+        , version_(1)
+    {
+        maxGroupNum_.set(1);
+    }
 
-	void Load() {
-		load();
-	}
+    void Load() {
+        load();
+    }
 
-	void Save() const {
-		save();
-	}
+    void Save() const {
+        save();
+    }
 
-	void Set(const SegmentationDataWrapper& sdw,
-			 boost::shared_ptr<std::set<OmSegment*> > segs,
-			 const bool isValid)
-	{
-		const uint32_t size = sdw.SegmentCache()->getMaxValue();
-		if(segToGroupNum_.size() <= size){
-			segToGroupNum_.resize(size*1.5, 0);
-		}
+    void Resize(const size_t size){
+        segToGroupNum_.resize(size, 0);
+    }
 
-		if(isValid){
-			const uint32_t groupNum = maxGroupNum_.inc();
-			FOR_EACH(iter, *segs){
-				OmSegment* seg = *iter;
-				const OmSegID segID = seg->value();
-				segToGroupNum_[segID] = groupNum;
-			}
-		} else {
-			FOR_EACH(iter, *segs){
-				OmSegment* seg = *iter;
-				const OmSegID segID = seg->value();
-				segToGroupNum_[segID] = 0;
-			}
-		}
-	}
+    void Set(boost::shared_ptr<std::set<OmSegment*> > segs,
+             const bool isValid)
+    {
+        if(isValid){
+            const uint32_t groupNum = maxGroupNum_.inc();
+            FOR_EACH(iter, *segs){
+                OmSegment* seg = *iter;
+                const OmSegID segID = seg->value();
+                segToGroupNum_[segID] = groupNum;
+            }
+        } else {
+            FOR_EACH(iter, *segs){
+                OmSegment* seg = *iter;
+                const OmSegID segID = seg->value();
+                segToGroupNum_[segID] = 0;
+            }
+        }
+    }
 
-	inline uint32_t Get(const OmSegID segID) const
-	{
-		//TODO: memmap, so no worry about OmSegIDs > int_max
-		const uint32_t size = segID;
-		if(segToGroupNum_.size() <= size){
-			return 0;
-		}
-		return segToGroupNum_[segID];
-	}
+    inline bool InSameValidGroup(const OmSegID segID1, const OmSegID segID2) const {
+        return segToGroupNum_[segID1] == segToGroupNum_[segID2];
+    }
 
-	inline uint32_t Get(OmSegment* seg) const {
-		return Get(seg->value());
-	}
+    inline uint32_t Get(const OmSegID segID) const {
+          return segToGroupNum_[segID];
+    }
+
+    inline uint32_t Get(OmSegment* seg) const {
+        return Get(seg->value());
+    }
 
 private:
-	QString filePathV1() const
-	{
-		const QString volPath =	OmFileNames::MakeVolSegmentsPath(segmentation_);
-		const QString fullPath = QString("%1valid_group_num.data.ver1")
-			.arg(volPath);
+    QString filePathV1() const
+    {
+        const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
+        const QString fullPath = QString("%1valid_group_num.data.ver1")
+            .arg(volPath);
 
-		return fullPath;
-	}
+        return fullPath;
+    }
 
-	void load()
-	{
-		const QString filePath = filePathV1();
+    void load()
+    {
+        const QString filePath = filePathV1();
 
-		QFile file(filePath);
+        QFile file(filePath);
 
-		if(!file.exists()){
-			return;
-		}
+        if(!file.exists()){
+            return;
+        }
 
-		if(!file.open(QIODevice::ReadOnly)){
-			throw OmIoException("error reading file", filePath);
-		}
+        if(!file.open(QIODevice::ReadOnly)){
+            throw OmIoException("error reading file", filePath);
+        }
 
-		QDataStream in(&file);
-		in.setByteOrder( QDataStream::LittleEndian );
-		in.setVersion(QDataStream::Qt_4_6);
+        QDataStream in(&file);
+        in.setByteOrder( QDataStream::LittleEndian );
+        in.setVersion(QDataStream::Qt_4_6);
 
-		in >> version_;
-		in >> segToGroupNum_;
+        in >> version_;
+        in >> segToGroupNum_;
 
-		quint64 maxGroupNum;
-		in >> maxGroupNum;
-		maxGroupNum_.set(maxGroupNum);
+        quint64 maxGroupNum;
+        in >> maxGroupNum;
+        maxGroupNum_.set(maxGroupNum);
 
-		if(!in.atEnd()){
-			throw OmIoException("corrupt file?", filePath);
-		}
-	}
+        if(!in.atEnd()){
+            throw OmIoException("corrupt file?", filePath);
+        }
+    }
 
-	void save() const
-	{
-		const QString filePath = filePathV1();
+    void save() const
+    {
+        const QString filePath = filePathV1();
 
-		QFile file(filePath);
+        QFile file(filePath);
 
-		if (!file.open(QIODevice::WriteOnly)) {
-			throw OmIoException("could not write file", filePath);
-		}
+        if (!file.open(QIODevice::WriteOnly)) {
+            throw OmIoException("could not write file", filePath);
+        }
 
-		QDataStream out(&file);
-		out.setByteOrder( QDataStream::LittleEndian );
-		out.setVersion(QDataStream::Qt_4_6);
+        QDataStream out(&file);
+        out.setByteOrder( QDataStream::LittleEndian );
+        out.setVersion(QDataStream::Qt_4_6);
 
-		out << version_;
-		out <<segToGroupNum_;
+        out << version_;
+        out <<segToGroupNum_;
 
-		const quint64 maxGroupNum = maxGroupNum_.get();
-		out << maxGroupNum;
-	}
+        const quint64 maxGroupNum = maxGroupNum_.get();
+        out << maxGroupNum;
+    }
 
 };
 

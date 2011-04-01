@@ -4,8 +4,8 @@
 #include "view2d/omView2dState.hpp"
 #include "view2d/omView2dCore.h"
 #include "system/omStateManager.h"
-#include "view2d/omView2dKeyPressEventListener.h"
 
+#include <boost/scoped_ptr.hpp>
 
 class OmView2dEvents;
 class OmScreenPainter;
@@ -15,71 +15,72 @@ class OmMouseEvents;
 class OmKeyEvents;
 class OmView2dZoom;
 
-class OmView2d : public OmView2dCore, public OmView2dKeyPressEventListener {
-Q_OBJECT
+class OmView2d : public OmView2dCore {
+    Q_OBJECT
 
 public:
-	OmView2d(const ViewType, QWidget*, OmViewGroupState*, OmMipVolume*,
-			 const std::string& name);
- 	~OmView2d();
+    OmView2d(const ViewType, QWidget*, OmViewGroupState*, OmMipVolume*,
+             const std::string& name);
+    ~OmView2d();
 
-	void SetComplimentaryDockWidget(QDockWidget* dock){
-		complimentaryDock_ = dock;
-	}
+    void SetComplimentaryDockWidget(QDockWidget* dock){
+        complimentaryDock_ = dock;
+    }
 
-	void ShowComplimentaryDock(){
-		if(complimentaryDock_){
-			complimentaryDock_->raise();
-			complimentaryDock_->widget()->setFocus(Qt::OtherFocusReason);
-		}
-	}
+    void ShowComplimentaryDock(){
+        if(complimentaryDock_){
+            complimentaryDock_->raise();
+            complimentaryDock_->widget()->setFocus(Qt::OtherFocusReason);
+        }
+    }
 
-	bool amInFillMode(){
-		return OmStateManager::GetToolMode() == FILL_MODE;
-	}
+    inline bool amInFillMode(){
+        return om::tool::FILL == OmStateManager::GetToolMode();
+    }
 
-	boost::shared_ptr<OmScreenShotSaver> GetScreenShotSaver(){
-		return mScreenShotSaver;
-	}
+    inline OmScreenShotSaver* GetScreenShotSaver(){
+        return screenShotSaver_.get();
+    }
 
-	boost::shared_ptr<OmView2dZoom>& Zoom(){
-		return zoom_;
-	}
+    inline OmView2dZoom* Zoom(){
+        return zoom_.get();
+    }
 
-	void resetWindow();
-	void doRedraw2d();
-	void SetDepth(QMouseEvent *event);
+    void resetWindow();
+    void doRedraw2d();
 
-	void myUpdate();
+    void myUpdate();
 
 protected:
-	// GL event methods
-	void resizeGL(const QSize&);
-	void resizeEvent (QResizeEvent * event);
+    // GL event methods
+    void resizeGL(const QSize&);
+    void resizeEvent (QResizeEvent * event);
 
-	void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *);
 
-	void keyPressEvent (QKeyEvent *event);
+    void keyPressEvent (QKeyEvent *event);
 
-	// mouse events
-	void mouseMoveEvent(QMouseEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void wheelEvent(QWheelEvent * event);
+    // mouse events
+    void mouseMoveEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent * event);
+    void enterEvent(QEvent*);
 
-	QSize sizeHint () const;
+    QSize sizeHint () const;
 
 private:
-	QDockWidget* complimentaryDock_;
+    OmView2dState *const state_;
+    QDockWidget* complimentaryDock_;
 
-	boost::shared_ptr<OmScreenShotSaver> mScreenShotSaver;
-	boost::shared_ptr<OmScreenPainter> screenPainter_;
-	boost::shared_ptr<OmMouseEvents> mouseEvents_;
-	boost::shared_ptr<OmKeyEvents> keyEvents_;
-	boost::shared_ptr<OmView2dEvents> events_;
-	boost::shared_ptr<OmView2dZoom> zoom_;
+    boost::scoped_ptr<OmScreenShotSaver> screenShotSaver_;
+    boost::scoped_ptr<OmScreenPainter> screenPainter_;
+    boost::scoped_ptr<OmMouseEvents> mouseEvents_;
+    boost::scoped_ptr<OmKeyEvents> keyEvents_;
+    boost::scoped_ptr<OmView2dEvents> events_;
+    boost::scoped_ptr<OmView2dZoom> zoom_;
 
-	void unlinkComplimentaryDock();
+    void unlinkComplimentaryDock();
 };
 
 #endif

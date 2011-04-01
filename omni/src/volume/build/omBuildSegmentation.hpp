@@ -5,8 +5,8 @@
 #include "mesh/omMipMeshManagers.hpp"
 #include "project/omProject.h"
 #include "segment/io/omMST.h"
-#include "segment/omSegmentCache.h"
-#include "system/omEvents.h"
+#include "segment/omSegments.h"
+#include "events/omEvents.h"
 #include "utility/dataWrappers.h"
 #include "utility/omThreadPool.hpp"
 #include "volume/build/omBuildVolumes.hpp"
@@ -88,7 +88,7 @@ public:
 
 		seg_.BuildBlankVolume(chann.Coords().MipLevelDataDimensions(0));
 		seg_.loadVolData();
-		seg_.SegmentCache()->refreshTree();
+		seg_.Segments()->refreshTree();
 
 		printf("allocated blank volume\n");
 	}

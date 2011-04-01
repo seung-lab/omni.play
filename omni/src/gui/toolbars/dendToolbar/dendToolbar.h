@@ -14,38 +14,44 @@ class ValidationGroup;
 class DisplayTools;
 
 class DendToolBar : public QToolBar {
- Q_OBJECT
- public:
-	DendToolBar( MainWindow* mw, OmViewGroupState* vgs );
+Q_OBJECT
+public:
+    DendToolBar( MainWindow* mw, OmViewGroupState* vgs );
 
-	void updateToolBarsPos(QPoint oldPos);
+    void updateToolBarsPos(QPoint oldPos);
 
-	void updateGui();
+    void updateGui();
 
-        void SetSplittingOff();
-        void SetCuttingOff();
+    void SetSplittingOff();
+    void ShowSplitterBusy(const bool showBusy);
+    void SetCuttingOff();
 
-	OmViewGroupState * getViewGroupState(){ return mViewGroupState; }
-	SegmentationDataWrapper GetSegmentationDataWrapper();
-	static bool GetShowGroupsMode();
+    void RefreshThreshold();
 
- private:
-	MainWindow *const mMainWindow;
+    inline OmViewGroupState* getViewGroupState(){
+        return vgs_;
+    }
 
-	OmViewGroupState * mViewGroupState;
+    SegmentationDataWrapper GetSDW();
 
-	GraphTools* graphTools;
-	ValidationGroup* validationGroup;
-	DisplayTools* displayTools;
+    static bool GetShowGroupsMode();
 
-	QDockWidget* graphToolsDock;
-	QDockWidget* validationGroupDock;
-	QDockWidget* displayToolsDock;
+private:
+    MainWindow *const mainWindow_;
+    OmViewGroupState* vgs_;
 
-	QWidget* wrapWithGroupBox(OmWidget* widget);
-	QDockWidget* makeDockWidget(OmWidget* widget);
-	int moveToolDock(QDockWidget* toolDock, QPoint );
-	QPoint recalcPos(QPoint oldPos, const int height);
+    GraphTools* graphTools;
+    ValidationGroup* validationGroup;
+    DisplayTools* displayTools;
+
+    QDockWidget* graphToolsDock;
+    QDockWidget* validationGroupDock;
+    QDockWidget* displayToolsDock;
+
+    QWidget* wrapWithGroupBox(OmWidget* widget);
+    QDockWidget* makeDockWidget(OmWidget* widget);
+    int moveToolDock(QDockWidget* toolDock, QPoint );
+    QPoint recalcPos(QPoint oldPos, const int height);
 };
 
 #endif

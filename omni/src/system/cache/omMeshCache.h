@@ -9,12 +9,12 @@ class OmMipMeshManager;
 
 class OmMeshCache : public OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr> {
 public:
-	OmMeshCache(OmMipMeshManager * parent);
+    OmMeshCache(OmMipMeshManager * parent);
 
-	OmMipMeshPtr HandleCacheMiss(const OmMipMeshCoord &meshCoord);
+    OmMipMeshPtr HandleCacheMiss(const OmMipMeshCoord &meshCoord);
 
 private:
-	OmMipMeshManager *const mOmMipMeshManager;
+    OmMipMeshManager *const meshMan_;
 };
 
 #endif

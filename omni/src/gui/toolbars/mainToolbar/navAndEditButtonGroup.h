@@ -1,34 +1,42 @@
 #ifndef NAV_AND_EDIT_BUTTON_GROUP_H
 #define NAV_AND_EDIT_BUTTON_GROUP_H
 
-#include "gui/toolbars/mainToolbar/toolButton.h"
+#include "common/omCommon.h"
 
 #include <QButtonGroup>
-#include <QHash>
+
+class ToolButton;
 
 class NavAndEditButtonGroup : public QButtonGroup {
- Q_OBJECT
- public:
-	explicit NavAndEditButtonGroup( QWidget * );
-	virtual ~NavAndEditButtonGroup(){}
+Q_OBJECT
 
-	void setReadOnlyWidgetsEnabled(const bool toBeEnabled);
-	void setModifyWidgetsEnabled(const bool toBeEnabled);
-	void setTool(const OmToolMode tool);
+public:
+    explicit NavAndEditButtonGroup(QWidget*);
 
- private slots:
-	void buttonWasClicked(const int id);
+    virtual ~NavAndEditButtonGroup()
+    {}
 
- private:
-	int addButton(ToolButton* button);
-	void addNavButton(ToolButton* button);
-	void addModifyButton(ToolButton* button);
-	void makeToolActive(ToolButton* button);
+    void SetReadOnlyWidgetsEnabled(const bool toBeEnabled);
+    void SetModifyWidgetsEnabled(const bool toBeEnabled);
+    void SetTool(const om::tool::mode tool);
 
-	QHash<int,ToolButton*> mAllToolsByID;
+private Q_SLOTS:
+    void buttonWasClicked(const int id);
+    void findAndSetTool(const om::tool::mode tool);
 
-	QHash<OmToolMode,int> mNavToolIDsByToolType;
-	QHash<OmToolMode,int> mModifyToolIDsByToolType;
+Q_SIGNALS:
+    void signalSetTool(const om::tool::mode tool);
+
+private:
+    int addButton(ToolButton* button);
+    void addNavButton(ToolButton* button);
+    void addModifyButton(ToolButton* button);
+    void makeToolActive(ToolButton* button);
+
+    std::map<int, ToolButton*> allToolsByID_;
+
+    std::map<om::tool::mode, int> navToolIDsByToolMode_;
+    std::map<om::tool::mode, int> modifyToolIDsByToolMode_;
 };
 
 #endif

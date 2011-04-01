@@ -4,21 +4,22 @@
 #include <zi/system.hpp>
 
 OmMeshCache::OmMeshCache(OmMipMeshManager* parent)
-	: OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr>(VRAM_CACHE_GROUP,
-													"Meshes",
-													zi::system::cpu_count,
-													om::THROTTLE,
-													om::FIFO)
-	, mOmMipMeshManager(parent)
+    : OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr>(om::MESH_CACHE,
+                                                    "Meshes",
+                                                    zi::system::cpu_count,
+                                                    om::THROTTLE,
+                                                    om::FIFO,
+                                                    0)
+    , meshMan_(parent)
 {}
 
 OmMipMeshPtr
 OmMeshCache::HandleCacheMiss(const OmMipMeshCoord& coord)
 {
-	OmMipMeshPtr mesh = mOmMipMeshManager->Produce(coord);
+    OmMipMeshPtr mesh = meshMan_->Produce(coord);
 
-	//load data from disk
-	mesh->Load();
+    //load data from disk
+    mesh->Load();
 
-	return mesh;
+    return mesh;
 }

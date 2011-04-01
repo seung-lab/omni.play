@@ -17,127 +17,127 @@
 template <typename VOL>
 class OmVolumeBuilderBase {
 private:
-	VOL *const vol_;
+    VOL *const vol_;
 
 public:
-	OmVolumeBuilderBase(VOL* vol)
-		: vol_(vol)
-	{}
+    OmVolumeBuilderBase(VOL* vol)
+        : vol_(vol)
+    {}
 
-	void Build(){
-		build(vol_);
-	}
+    void Build(){
+        build(vol_);
+    }
 
 private:
-	void build(OmChannel*)
-	{
-		setVolAsBuilding();
+    void build(OmChannel*)
+    {
+        setVolAsBuilding();
 
-		checkChunkDims();
-		updateMipProperties();
-		importSourceData();
-		memMapFiles();
+        checkChunkDims();
+        updateMipProperties();
+        importSourceData();
+        memMapFiles();
 
-		setVolAsBuilt();
+        setVolAsBuilt();
 
-		downsample();
-	}
+        downsample();
+    }
 
-	void build(OmSegmentation*)
-	{
-		setVolAsBuilding();
+    void build(OmSegmentation*)
+    {
+        setVolAsBuilding();
 
-		checkChunkDims();
-		updateMipProperties();
-		importSourceData();
-		memMapFiles();
+        checkChunkDims();
+        updateMipProperties();
+        importSourceData();
+        memMapFiles();
 
-		rewriteMip0VolumeWrapper(vol_);
-		downsample();
-		processVol();
-		loadDendrogramWrapper(vol_);
+        rewriteMip0VolumeWrapper(vol_);
+        downsample();
+        processVol();
+        loadDendrogramWrapper(vol_);
 
-		setVolAsBuilt();
-	}
+        setVolAsBuilt();
+    }
 
 protected:
-	virtual void importSourceData() = 0;
+    virtual void importSourceData() = 0;
 
-	virtual Vector3i getMip0Dims() = 0;
+    virtual Vector3i getMip0Dims() = 0;
 
-	virtual bool loadDendrogram(OmSegmentation*){
-		return false;
-	}
+    virtual bool loadDendrogram(OmSegmentation*){
+        return false;
+    }
 
-	virtual void rewriteMip0Volume(OmSegmentation*)
-	{}
+    virtual void rewriteMip0Volume(OmSegmentation*)
+    {}
 
-	virtual void memMapFiles(){
-		vol_->VolData()->load(vol_);
-	}
+    virtual void memMapFiles(){
+        vol_->VolData()->load(vol_);
+    }
 
-	virtual void downsample(){
-		vol_->VolData()->downsample(vol_);
-	}
+    virtual void downsample(){
+        vol_->VolData()->downsample(vol_);
+    }
 
-	virtual void processVol()
-	{
-		OmVolumeProcessor processor;
-		processor.BuildThreadedVolume(vol_);
-	}
+    virtual void processVol()
+    {
+        OmVolumeProcessor processor;
+        processor.BuildThreadedVolume(vol_);
+    }
 
 private:
-	void rewriteMip0VolumeWrapper(OmSegmentation* vol)
-	{
-		printf("rewriting segment IDs...\n");
-		rewriteMip0Volume(vol);
-		printf("done!\n");
-	}
+    void rewriteMip0VolumeWrapper(OmSegmentation* vol)
+    {
+        printf("rewriting segment IDs...\n");
+        rewriteMip0Volume(vol);
+        printf("done!\n");
+    }
 
-	void loadDendrogramWrapper(OmSegmentation* vol)
-	{
-		printf("************************\n");
-		printf("loading MST...\n");
+    void loadDendrogramWrapper(OmSegmentation* vol)
+    {
+        printf("************************\n");
+        printf("loading MST...\n");
 
-		if(!loadDendrogram(vol)){
-			printf("no MST found\n");
-			printf("************************\n");
-			return;
-		}
+        if(!loadDendrogram(vol)){
+            printf("no MST found\n");
+            printf("************************\n");
+            return;
+        }
 
-		printf("Segmentation MST load done\n");
-		printf("************************\n");
+        printf("Segmentation MST load done\n");
+        printf("************************\n");
 
-		OmActions::ChangeMSTthreshold(vol->GetID(),
-									  vol->MST()->DefaultThresholdSize());
-		OmEvents::SegmentModified();
-	}
+        OmActions::ChangeMSTthreshold(vol->GetSDW(),
+                                      vol->MST()->DefaultThreshold());
+        OmEvents::SegmentModified();
+    }
 
-	void setVolAsBuilding(){
-		vol_->SetBuildState(MIPVOL_BUILDING);
-	}
+    void setVolAsBuilding(){
+        vol_->SetBuildState(MIPVOL_BUILDING);
+    }
 
-	void setVolAsBuilt(){
-		vol_->SetBuildState(MIPVOL_BUILT);
-	}
+    void setVolAsBuilt(){
+        vol_->SetBuildState(MIPVOL_BUILT);
+    }
 
-	void checkChunkDims()
-	{
-		if(vol_->Coords().GetChunkDimension() % 2){
-			throw OmFormatException("chunk dimensions must be even");
-		}
-	}
+    void checkChunkDims()
+    {
+        if(vol_->Coords().GetChunkDimension() % 2){
+            throw OmFormatException("chunk dimensions must be even");
+        }
+    }
 
-	void updateMipProperties()
-	{
-		const Vector3i source_dims = getMip0Dims();
+    void updateMipProperties()
+    {
+        const Vector3i source_dims = getMip0Dims();
 
-		if(vol_->Coords().GetDataDimensions() != source_dims){
-			vol_->Coords().SetDataDimensions(source_dims);
-		}
+        if(vol_->Coords().GetDataDimensions() != source_dims){
+            vol_->Coords().SetDataDimensions(source_dims);
+        }
 
-		vol_->Coords().UpdateRootLevel();
-	}
+        vol_->Coords().UpdateRootLevel();
+    }
 };
 
 #endif

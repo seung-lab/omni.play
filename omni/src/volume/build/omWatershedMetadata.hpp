@@ -11,197 +11,197 @@
 
 class OmWatershedMetadata {
 private:
-	QString fnp_;
+    QString fnp_;
 
-	QStringList lines_;
-	int segmentationCounter_;
-	int dendCounter_;
+    QStringList lines_;
+    int segmentationCounter_;
+    int dendCounter_;
 
-	struct SegmentationLine{
-		QString fnp;
-		int bpp;
-		int xSize;
-		int ySize;
-		int zSize;
-	};
-	std::map<int, SegmentationLine> segmentationFiles_;
+    struct SegmentationLine{
+        QString fnp;
+        int bpp;
+        int xSize;
+        int ySize;
+        int zSize;
+    };
+    std::map<int, SegmentationLine> segmentationFiles_;
 
-	struct DendLine{
-		QString fnp;
-		int bpp;
-		int numEdges;
-	};
-	DendLine dendLine_;
+    struct DendLine{
+        QString fnp;
+        int bpp;
+        int numEdges;
+    };
+    DendLine dendLine_;
 
 public:
-	OmWatershedMetadata()
-		: segmentationCounter_(0)
-		, dendCounter_(0)
-	{}
+    OmWatershedMetadata()
+        : segmentationCounter_(0)
+        , dendCounter_(0)
+    {}
 
-	void ReadMetata(const QString& fnp)
-	{
-		fnp_ = fnp;
+    void ReadMetata(const QString& fnp)
+    {
+        fnp_ = fnp;
 
-		readFile();
-		extractMetadata();
-	}
+        readFile();
+        extractMetadata();
+    }
 
-	Vector3i GetMip0Dims() const
-	{
-		if(!segmentationFiles_.count(0)){
-			throw OmIoException("no mip zero vol defined");
-		}
-		const SegmentationLine& segLine = segmentationFiles_.at(0);
+    Vector3i GetMip0Dims() const
+    {
+        if(!segmentationFiles_.count(0)){
+            throw OmIoException("no mip zero vol defined");
+        }
+        const SegmentationLine& segLine = segmentationFiles_.at(0);
 
-		return Vector3i(segLine.xSize,
-						segLine.ySize,
-						segLine.zSize);
-	}
+        return Vector3i(segLine.xSize,
+                        segLine.ySize,
+                        segLine.zSize);
+    }
 
-	int GetColorDepth() const
-	{
-		if(!segmentationFiles_.count(0)){
-			throw OmIoException("no mip zero vol defined");
-		}
-		const SegmentationLine& segLine = segmentationFiles_.at(0);
+    int GetColorDepth() const
+    {
+        if(!segmentationFiles_.count(0)){
+            throw OmIoException("no mip zero vol defined");
+        }
+        const SegmentationLine& segLine = segmentationFiles_.at(0);
 
-		return segLine.bpp;
-	}
+        return segLine.bpp;
+    }
 
-	std::vector<int> GetMipLevels() const
-	{
-		std::vector<int> mipLevels;
+    std::vector<int> GetMipLevels() const
+    {
+        std::vector<int> mipLevels;
 
-		FOR_EACH(iter, segmentationFiles_){
-			const int mipLevel = iter->first;
-			mipLevels.push_back(mipLevel);
-		}
+        FOR_EACH(iter, segmentationFiles_){
+            const int mipLevel = iter->first;
+            mipLevels.push_back(mipLevel);
+        }
 
-		return mipLevels;
-	}
+        return mipLevels;
+    }
 
-	QString GetMipLevelFileName(const int mipLevel) const {
-		return segmentationFiles_.at(mipLevel).fnp;
-	}
+    QString GetMipLevelFileName(const int mipLevel) const {
+        return segmentationFiles_.at(mipLevel).fnp;
+    }
 
-	QString MstFileName() const
-	{
-		if(!dendCounter_){
-			throw OmIoException("no MST found");
-		}
+    QString MstFileName() const
+    {
+        if(!dendCounter_){
+            throw OmIoException("no MST found");
+        }
 
-		return dendLine_.fnp;
-	}
+        return dendLine_.fnp;
+    }
 
-	int MstBitsPerNode() const
-	{
-		if(!dendCounter_){
-			throw OmIoException("no MST found");
-		}
+    int MstBitsPerNode() const
+    {
+        if(!dendCounter_){
+            throw OmIoException("no MST found");
+        }
 
-		return dendLine_.bpp;
-	}
+        return dendLine_.bpp;
+    }
 
-	int MstNumEdges() const
-	{
-		if(!dendCounter_){
-			throw OmIoException("no MST found");
-		}
+    int MstNumEdges() const
+    {
+        if(!dendCounter_){
+            throw OmIoException("no MST found");
+        }
 
-		return dendLine_.numEdges;
-	}
+        return dendLine_.numEdges;
+    }
 
 private:
-	void extractMetadata()
-	{
-		FOR_EACH(iter, lines_){
-			parseLine(*iter);
-		}
-	}
+    void extractMetadata()
+    {
+        FOR_EACH(iter, lines_){
+            parseLine(*iter);
+        }
+    }
 
-	void parseLine(const QString& line)
-	{
-		const QStringList tokens = line.split(':', QString::SkipEmptyParts);
+    void parseLine(const QString& line)
+    {
+        const QStringList tokens = line.split(':', QString::SkipEmptyParts);
 
-		if(!tokens.size()){
-			return;
-		}
+        if(!tokens.size()){
+            return;
+        }
 
-		if(2 != tokens.size()){
-			throw OmIoException("invalid line", line);
-		}
+        if(2 != tokens.size()){
+            throw OmIoException("invalid line", line);
+        }
 
-		if("segmentation" == tokens[0]){
-			parseLineSegmentation(tokens[1]);
+        if("segmentation" == tokens[0]){
+            parseLineSegmentation(tokens[1]);
 
-		} else if("dendrogram" == tokens[0]){
-			parseLineDend(tokens[1]);
+        } else if("dendrogram" == tokens[0]){
+            parseLineDend(tokens[1]);
 
-		} else {
-			throw OmIoException("invalid line", line);
-		}
-	}
+        } else {
+            throw OmIoException("invalid line", line);
+        }
+    }
 
-	// example:  segmentation: seg.raw 32 123 123 123
-	void parseLineSegmentation(const QString& tokens)
-	{
-		const QStringList args = tokens.split(' ', QString::SkipEmptyParts);
-		if(5 != args.size()){
-			throw OmIoException("invalid line args", tokens);
-		}
+    // example:  segmentation: seg.raw 32 123 123 123
+    void parseLineSegmentation(const QString& tokens)
+    {
+        const QStringList args = tokens.split(' ', QString::SkipEmptyParts);
+        if(5 != args.size()){
+            throw OmIoException("invalid line args", tokens);
+        }
 
-		SegmentationLine segInfo = { args[0],
-									 OmStringHelpers::getUInt(args[1]),
-									 OmStringHelpers::getUInt(args[2]),
-									 OmStringHelpers::getUInt(args[3]),
-									 OmStringHelpers::getUInt(args[4]) };
+        SegmentationLine segInfo = { args[0],
+                                     OmStringHelpers::getUInt(args[1]),
+                                     OmStringHelpers::getUInt(args[2]),
+                                     OmStringHelpers::getUInt(args[3]),
+                                     OmStringHelpers::getUInt(args[4]) };
 
-		segmentationFiles_[segmentationCounter_++] = segInfo;
-	}
+        segmentationFiles_[segmentationCounter_++] = segInfo;
+    }
 
-	// example:   dendrogram: dend.raw 32 1
-	void parseLineDend(const QString& tokens)
-	{
-		const QStringList args = tokens.split(' ', QString::SkipEmptyParts);
-		if(3 != args.size()){
-			throw OmIoException("invalid line args", tokens);
-		}
+    // example:   dendrogram: dend.raw 32 1
+    void parseLineDend(const QString& tokens)
+    {
+        const QStringList args = tokens.split(' ', QString::SkipEmptyParts);
+        if(3 != args.size()){
+            throw OmIoException("invalid line args", tokens);
+        }
 
-		if(dendCounter_){
-			throw OmIoException("more than one dend found");
-		}
+        if(dendCounter_){
+            throw OmIoException("more than one dend found");
+        }
 
-		DendLine dendInfo = { args[0],
-							  OmStringHelpers::getUInt(args[1]),
-							  OmStringHelpers::getUInt(args[2]) };
+        DendLine dendInfo = { args[0],
+                              OmStringHelpers::getUInt(args[1]),
+                              OmStringHelpers::getUInt(args[2]) };
 
-		dendLine_ = dendInfo;
+        dendLine_ = dendInfo;
 
-		++dendCounter_;
-	}
+        ++dendCounter_;
+    }
 
-	void readFile()
-	{
-		QFile file(fnp_);
-		if(!file.open(QIODevice::ReadOnly)){
-			throw OmIoException("could not open", fnp_);
-		}
+    void readFile()
+    {
+        QFile file(fnp_);
+        if(!file.open(QIODevice::ReadOnly)){
+            throw OmIoException("could not open", fnp_);
+        }
 
-		QTextStream in(&file);
+        QTextStream in(&file);
 
-		while(1){
-			const QString line = in.readLine();
-			if(NULL == line ||
-			   ""   == line ||
-			   line.startsWith("#"))
-			{
-				break;
-			}
+        while(1){
+            const QString line = in.readLine();
+            if(NULL == line ||
+               ""   == line ||
+               line.startsWith("#"))
+            {
+                break;
+            }
 
-			lines_ << line;
-		}
-	}
+            lines_ << line;
+        }
+    }
 };
 
 #endif

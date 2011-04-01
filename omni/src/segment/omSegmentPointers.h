@@ -3,6 +3,6 @@
 
 #include "segment/omSegment.h"
 
-typedef std::deque<OmSegment*> OmSegPtrList;
+typedef std::list<OmSegment*> OmSegPtrList;
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef OM_UTILITY_HPP
 #define OM_UTILITY_HPP
 
+#include <zi/system.hpp>
+
 #include <zi/singleton.hpp>
 #include <zi/utility/enable_singleton_of_this.hpp>
 #include <zi/for_each.hpp>
@@ -10,8 +12,11 @@
 #include <zi/parallel/numeric.hpp>
 
 namespace om {
-	template <typename T>
-	class singletonBase : public zi::enable_singleton_of_this<T> {};
-};
+
+template <typename T>
+class singletonBase : public zi::enable_singleton_of_this<T>
+{};
+
+}; // om
 
 #endif

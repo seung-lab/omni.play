@@ -1,14 +1,16 @@
 #ifndef OM_ACTION_OPERATORS_H
 #define OM_ACTION_OPERATORS_H
 
-class OmSegmentSplitActionImpl;
+class OmProjectCloseActionImpl;
+class OmProjectSaveActionImpl;
 class OmSegmentGroupActionImpl;
 class OmSegmentJoinActionImpl;
 class OmSegmentSelectActionImpl;
-class OmSegmentValidateActionImpl;
+class OmSegmentSplitActionImpl;
 class OmSegmentUncertainActionImpl;
-class OmProjectSaveActionImpl;
-class OmProjectCloseActionImpl;
+class OmSegmentValidateActionImpl;
+class OmSegmentationThresholdChangeActionImpl;
+class OmVoxelSetValueActionImpl;
 
 #include <QDataStream>
 

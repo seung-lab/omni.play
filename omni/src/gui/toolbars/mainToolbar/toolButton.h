@@ -6,17 +6,20 @@
 
 class ToolButton : public OmButton<QWidget> {
 public:
-	ToolButton(QWidget*,
-			   const QString & title,
-			   const QString & statusTip,
-			   const OmToolMode tool,
-			   const QString & iconPath);
+    ToolButton(QWidget*,
+               const QString& title,
+               const QString& statusTip,
+               const om::tool::mode tool,
+               const QString& iconPath);
 
-	OmToolMode getToolMode(){ return mTool; }
+    inline om::tool::mode getToolMode() const {
+        return mTool;
+    }
+
 private:
-	OmToolMode mTool;
+    om::tool::mode mTool;
 
-	void doAction();
+    void doAction();
 };
 
 #endif

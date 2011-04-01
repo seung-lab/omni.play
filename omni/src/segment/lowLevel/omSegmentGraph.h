@@ -1,54 +1,76 @@
 #ifndef OM_SEGMENT_GRAPH_H
 #define OM_SEGMENT_GRAPH_H
 
+#include "segment/lowLevel/omDynamicForestCache.hpp"
 #include "common/omCommon.h"
 
-class OmDynamicForestCache;
-class OmSegment;
-class OmSegmentCacheImplLowLevel;
-class OmSegmentLists;
 class OmMST;
+class OmPagingPtrStore;
+class OmSegment;
+class OmSegmentsImplLowLevel;
+class OmSegmentChildren;
+class OmSegmentListLowLevel;
+class OmSegmentation;
 class OmValidGroupNum;
+class OmThreadPool;
 
 class OmSegmentGraph {
 public:
-	OmSegmentGraph();
-	~OmSegmentGraph();
+    OmSegmentGraph();
+    ~OmSegmentGraph();
 
-	void initialize(OmSegmentCacheImplLowLevel* cache);
-	void growGraphIfNeeded(OmSegment* newSeg);
+    void Initialize(OmSegmentation* segmentation,
+                    OmSegmentsImplLowLevel* cache);
+    bool DoesGraphNeedToBeRefreshed(const uint32_t maxValue);
+    void GrowGraphIfNeeded(OmSegment* newSeg);
 
-	bool graph_doesGraphNeedToBeRefreshed(const quint32 maxValue);
-	OmSegID graph_getRootID(const OmSegID segID);
-	void graph_cut(const OmSegID segID);
-	void graph_join(const OmSegID childRootID, const OmSegID parentRootID);
+    void RefreshGUIlists();
 
-	quint32 getNumTopLevelSegs();
+    inline uint64_t MSTfreshness() const {
+        return forest_->Freshness();
+    }
+    inline OmSegID Root(const OmSegID segID){
+        return forest_->Root(segID);
+    }
+    inline void Cut(const OmSegID segID){
+        forest_->Cut(segID);
+    }
+    inline void Join(const OmSegID childRootID, const OmSegID parentRootID){
+        forest_->Join(childRootID, parentRootID);
+    }
 
-	void setGlobalThreshold(OmMST* mst);
-	void resetGlobalThreshold(OmMST* mst);
+    uint32_t GetNumTopLevelSegs();
 
-	void updateSizeListsFromJoin(OmSegment* root, OmSegment* child);
-	void updateSizeListsFromSplit(OmSegment* parent, OmSegment* child);
+    void SetGlobalThreshold(OmMST* mst);
+    void ResetGlobalThreshold(OmMST* mst);
 
+    void UpdateSizeListsFromJoin(OmSegment* root, OmSegment* child);
+    void UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* child);
+
+    OmSegmentChildren* Children(){
+        return children_.get();
+    }
 
 private:
-	OmDynamicForestCache* mGraph;
-	OmSegmentCacheImplLowLevel* mCache;
+    OmSegmentation* segmentation_;
+    OmValidGroupNum* validGroupNum_;
+    OmSegmentsImplLowLevel* mCache;
+    OmPagingPtrStore* segmentPages_;
 
-	void buildSegmentSizeLists();
+    boost::scoped_ptr<OmDynamicForestCache> forest_;
+    boost::scoped_ptr<OmSegmentChildren> children_;
+    OmSegmentListLowLevel* segmentListsLL_;
 
-	bool JoinInternal(const OmSegID parentID,
-					  const OmSegID childUnknownDepthID,
-					  const double threshold,
-					  const int edgeNumber);
+    void buildSegmentSizeLists();
 
-	bool splitChildFromParentInternal(const OmSegID childID);
+    bool joinInternal(const OmSegID parentID,
+                      const OmSegID childUnknownDepthID,
+                      const double threshold,
+                      const int edgeNumber);
 
-	quint64 computeSegmentSizeWithChildren(const OmSegID segID);
+    bool splitChildFromParentInternal(const OmSegID childID);
 
-	OmValidGroupNum* getValidGroupNum();
-	OmSegmentLists* getSegmentLists();
+    std::pair<int64_t, int32_t> computeSegmentSizeWithChildren(OmSegment* seg);
 };
 
 #endif

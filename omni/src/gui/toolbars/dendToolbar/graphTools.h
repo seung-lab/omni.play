@@ -1,36 +1,52 @@
 #ifndef GRAPH_TOOLS_H
 #define GRAPH_TOOLS_H
 
-#include <QtGui>
 #include "gui/widgets/omWidget.hpp"
 
-class DendToolBar;
-class SplitButton;
+#include <QtGui>
+
 class CutButton;
+class DendToolBar;
 class OmViewGroupState;
 class SegmentationDataWrapper;
+class SplitButton;
+class ThresholdGroup;
 
 class GraphTools : public OmWidget {
- Q_OBJECT
- public:
-	GraphTools(DendToolBar *);
-	void SetSplittingOff();
-	void SetCuttingOff();
+Q_OBJECT
+public:
+    GraphTools(DendToolBar *);
 
-	OmViewGroupState * getViewGroupState();
-	SegmentationDataWrapper GetSegmentationDataWrapper();
-	void updateGui();
+    void ShowSplitterBusy(const bool showBusy);
+    void SetSplittingOff();
+    void SetCuttingOff();
+    void RefreshThreshold();
 
-	QString getName(){ return "Graph Tools"; }
+    OmViewGroupState* getViewGroupState();
+    SegmentationDataWrapper GetSDW();
+    void updateGui();
 
- private:
-	DendToolBar *const mParent;
-	SplitButton * splitButton;
-	CutButton * cutButton;
+    QString getName(){ return "Graph Tools"; }
 
-	QWidget* thresholdBox();
-	QWidget* breakThresholdBox();
+private Q_SLOTS:
+    void showSplitterBusy(const bool showBusy);
+    void setSplittingOff();
+    void setCutButtonOff();
 
+Q_SIGNALS:
+    void signalSplitterBusy(bool showBusy);
+    void signalSplittingOff();
+    void signalSetCutButtonOff();
+
+private:
+    DendToolBar *const mParent;
+    SplitButton* splitButton;
+    CutButton* cutButton;
+
+    ThresholdGroup* threshold_;
+
+    QWidget* thresholdBox();
+    QWidget* breakThresholdBox();
 };
 
 #endif

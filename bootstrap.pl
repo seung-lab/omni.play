@@ -29,12 +29,23 @@ my $globalMakeOptions = "";
 my $hostname = `hostname`;
 my $profileOn = "";
 
+my $NumCores;
+
+##
+# source tar-ball versions
+##
+my $BOOST_VER = "boost_1_46_0";
+my $QT_VER = "qt-everywhere-opensource-src-4.7.2";
+my $HDF5_VER = "hdf5-1.8.6";
+my $ZLIB_VER = "zlib-1.2.5";
+
 # from http://stackoverflow.com/questions/334686/how-can-i-detect-the-operating-system-in-perl
 sub isMac {
     return ("darwin" eq $^O);
 }
 
-sub getMacOSXversionNum {
+sub getMacOSXversionNum
+{
     my $versionStr = `/usr/sbin/system_profiler SPSoftwareDataType | grep 'System Version'`;
     my $ret = 0;
     if ($versionStr =~ m/.*10\.([\d])\..*/){
@@ -51,7 +62,8 @@ sub isMacSnowLeopard {
     return isMac() && (6 == getMacOSXversionNum());
 }
 
-sub checkForMac {
+sub checkForMac
+{
     if(isMac()){
 	print "Mac OS X version is: ".getMacOSXversionNum();
 	if(isMacLeopard()){
@@ -81,7 +93,8 @@ sub onCluster {
     return ($hostname =~ /brainiac/);
 }
 
-sub dealWithCluster {
+sub dealWithCluster
+{
     if ( onCluster() ) {
 	my $nodes = `cat $basePath/scripts/cluster/distcchosts`;
 	$ENV{DISTCC_HOSTS} = $nodes;
@@ -91,7 +104,8 @@ sub dealWithCluster {
     }
 }
 
-sub makeDirPaths {
+sub makeDirPaths
+{
     if( !-e $buildPath && !-l $buildPath){
 	mkpath($buildPath) or die "could not create $buildPath";
     }
@@ -101,7 +115,8 @@ sub makeDirPaths {
     }
 }
 
-sub genOmniScript {
+sub genOmniScript
+{
     my $script = "";
     $script .= "cd $basePath/omni;";
 
@@ -128,7 +143,8 @@ sub genOmniScript {
     $script .= "make $globalMakeOptions";
 
     if(isMac()) {
-	$script .= "; cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.1/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
+        my $nigOutPath = "$basePath/omni/bin/omni.app/Contents/Resources/";
+	$script .= "; cp -r ../external/$QT_VER/src/gui/mac/qt_menu.nib $nigOutPath\n";
     }
 
     open (SCRIPT, ">", $omniScriptFile) or die $!;
@@ -137,7 +153,8 @@ sub genOmniScript {
     `chmod +x $omniScriptFile`;
 }
 
-sub setupBuildFolder {
+sub setupBuildFolder
+{
     my $baseFileName = $_[0];
 
     print "==> creating new build folder...";
@@ -145,7 +162,8 @@ sub setupBuildFolder {
     print "done\n";
 }
 
-sub nukeSrcsFolder {
+sub nukeSrcsFolder
+{
     my $baseFileName = $_[0];
 
     print "==> removing old srcs folder...";
@@ -153,7 +171,8 @@ sub nukeSrcsFolder {
     print "done\n";
 }
 
-sub nukeBuildFolder {
+sub nukeBuildFolder
+{
     my $baseFileName = $_[0];
 
     print "==> removing old build folder...";
@@ -161,7 +180,8 @@ sub nukeBuildFolder {
     print "done\n";
 }
 
-sub nukeLibraryFolder {
+sub nukeLibraryFolder
+{
     my $libFolderName = $_[0];
 
     print "==> removing old library folder...";
@@ -169,7 +189,8 @@ sub nukeLibraryFolder {
     print "done\n";
 }
 
-sub untar {
+sub untar
+{
     my $baseFileName = $_[0];
 
     if (-e "$srcPath/$baseFileName" ){
@@ -184,7 +205,8 @@ sub untar {
     print "done\n";
 }
 
-sub prepare {
+sub prepare
+{
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
 
@@ -195,7 +217,8 @@ sub prepare {
     setupBuildFolder(  $baseFileName );
 }
 
-sub prepareNukeSrcsFolder {
+sub prepareNukeSrcsFolder
+{
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
 
@@ -207,7 +230,8 @@ sub prepareNukeSrcsFolder {
     setupBuildFolder(  $baseFileName );
 }
 
-sub build {
+sub build
+{
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
     my $buildOptions  = $_[2];
@@ -221,7 +245,8 @@ sub build {
     chdir( $basePath );
 }
 
-sub buildInSourceFolder {
+sub buildInSourceFolder
+{
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
     my $buildOptions  = $_[2];
@@ -235,7 +260,8 @@ sub buildInSourceFolder {
     chdir( $basePath );
 }
 
-sub configure {
+sub configure
+{
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
     my $buildOptions  = $_[2];
@@ -251,7 +277,8 @@ sub configure {
     print "done with configure\n\n";
 }
 
-sub make {
+sub make
+{
     my $cmd = "make $globalMakeOptions";
     print "==> running make...";
     print "($cmd)\n";
@@ -260,7 +287,8 @@ sub make {
     print "done with make\n\n";
 }
 
-sub makeInstall {
+sub makeInstall
+{
     my $cmd = "make install";
     print "==> running make install...";
     print "($cmd)\n";
@@ -269,7 +297,8 @@ sub makeInstall {
     print "done with make install\n";
 }
 
-sub prepareAndBuild {
+sub prepareAndBuild
+{
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
 
@@ -282,7 +311,8 @@ sub prepareAndBuild {
     build(   $baseFileName, $libFolderName, $buildOptions );
 }
 
-sub prepareNukeSrcsAndBuild {
+sub prepareNukeSrcsAndBuild
+{
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
 
@@ -295,11 +325,8 @@ sub prepareNukeSrcsAndBuild {
     build(   $baseFileName, $libFolderName, $buildOptions );
 }
 
-sub hdf5 {
-    hdf5_18();
-}
-
-sub hdf5_18 {
+sub hdf5
+{
     my $args = " --enable-threadsafe ";
     if( isWindowsNative() || isWindowsCygwin() ){
 
@@ -307,20 +334,62 @@ sub hdf5_18 {
 	$args .= " --with-pthread=/usr/lib ";
     }
 
-    prepareAndBuild( "hdf5-1.8.4-patch1", "HDF5", $args );
+    prepareAndBuild( $HDF5_VER, "HDF5", $args );
 }
 
-sub qt {
-    qt47();
+sub boost
+{
+#./bjam --show-libraries
+    #The following libraries require building:
+    #- date_time
+    #- filesystem
+    #- graph
+    #- graph_parallel
+    #- iostreams
+    #- math
+    #- mpi
+    #- program_options
+    #- python
+    #- random
+    #- regex
+    #- serialization
+    #- signals
+    #- system
+    #- test
+    #- thread
+    #- wave
+
+    my $baseFileName = $BOOST_VER;
+    my $libFolderName = "Boost";
+    prepareNukeSrcsFolder( $baseFileName, $libFolderName );
+
+    untar($ZLIB_VER);
+
+    my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName ";
+    $cmd .= " --with-libraries=filesystem,thread,system,iostreams";
+
+    print "configuring ($cmd)\n";
+
+    `($cmd)`;
+    print "done\n";
+
+    my $bjamFlags = "-j$NumCores ";
+    $bjamFlags .= " -sNO_BZIP2=1 -sZLIB_SOURCE=$srcPath/$ZLIB_VER ";
+    $bjamFlags .= " --disable-filesystem2 ";
+    $cmd = "cd $srcPath/$baseFileName; ./bjam $bjamFlags install";
+    print "building and installing ($cmd)\n";
+    `($cmd)`;
+    print "done\n";
 }
 
-sub qt47 {
-    # new qt buidls has several messages:
+sub qt
+{
+# new qt buidls has several messages:
     # requires zlib;
     # suggests --no-excpetion to reduce gcc-induced memory footprint increases
     # disable postgres/sqlite
     # debug not enabled?
-    my $baseFileName = "qt-everywhere-opensource-src-4.7.1";
+    my $baseFileName = $QT_VER;
     my @argsList = qw( -release -opensource -no-glib -v
  -no-exceptions
  -no-fast -make libs -make tools
@@ -342,7 +411,8 @@ sub qt47 {
     prepareAndBuild( $baseFileName, "Qt", $args );
 }
 
-sub omni {
+sub omni
+{
     printTitle("omni");
     genOmniScript(@_);
 
@@ -356,7 +426,8 @@ sub omni {
     print "done\n";
 }
 
-sub printTitle {
+sub printTitle
+{
     my $title = $_[0];
     printLine();
     print $title.":\n";
@@ -366,10 +437,12 @@ sub printLine {
     print "\n**********************************************\n";
 }
 
-sub menu {
+sub menu
+{
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
     print "1 -- Build hdf5\n";
+    print "2 -- Build boost\n";
     print "3 -- Build qt\n";
     print "5 -- Build omni\n";
     print "6 -- [Do 1 through 5]\n";
@@ -395,13 +468,16 @@ sub menu {
     }
 }
 
-sub buildAll {
+sub buildAll
+{
     hdf5();
+    boost();
     qt();
     omni();
 }
 
-sub runMenuEntry {
+sub runMenuEntry
+{
     my $entry = $_[0];
 
     if( 0 == $entry ){
@@ -409,7 +485,7 @@ sub runMenuEntry {
     }elsif( 1 == $entry ){
 	hdf5();
     }elsif( 2 == $entry ){
-
+        boost();
     }elsif( 3 == $entry ){
 	qt();
     }elsif( 4 == $entry ){
@@ -435,44 +511,46 @@ sub runMenuEntry {
     }
 }
 
-sub numberOfCores {
-
-    my $numCores = 2;
+sub numberOfCores
+{
+    $NumCores = 2;
     if (-e "/proc/cpuinfo") {
-	$numCores =`cat /proc/cpuinfo  | grep processor | wc -l`;
+	$NumCores =`cat /proc/cpuinfo  | grep processor | wc -l`;
     }
 
     if( isMac() ){
 	my $numCoreStr = `/usr/sbin/system_profiler SPHardwareDataType | grep 'Total Number Of Cores'`;
 	if ($numCoreStr =~ m/.*:.*([\d*])/) {
-	    $numCores = $1;
+	    $NumCores = $1;
 	}
     }
 
-    if( $numCores < 2 ){
-	$numCores = 2;
+    if( $NumCores < 2 ){
+	$NumCores = 2;
     }
 
-    return $numCores;
+    return $NumCores;
 }
 
-sub setupParallelBuildOption {
-
-    my $numCores = numberOfCores();
+sub setupParallelBuildOption
+{
+    $NumCores = numberOfCores();
     if( scalar(@_) > 0 ) {
-	$numCores = $_[0];
+	$NumCores = $_[0];
     }
-
     if (onCluster()) {
-        $globalMakeOptions .=  " -j60 ";
-    } else {
-        $globalMakeOptions .=  " -j$numCores ";
+        $NumCores = 60;
     }
 
-    print "number of parallel builds (override with \"-j n\" switch to bootstrap.pl): $numCores\n";
+    chomp($NumCores);
+
+    $globalMakeOptions .=  " -j$NumCores ";
+
+    print "number of parallel builds (override with \"-j n\" switch to bootstrap.pl): $NumCores\n";
 }
 
-sub experimentalMenu {
+sub experimentalMenu
+{
     print "experimental build menu:\n";
     print "0 -- exit\n";
     print "1 -- Build Omni no debug\n";
@@ -493,7 +571,8 @@ sub experimentalMenu {
     }
 }
 
-sub runExperimentalMenuEntry {
+sub runExperimentalMenuEntry
+{
     my $entry = $_[0];
 
     if( 0 == $entry ){
@@ -505,11 +584,12 @@ sub runExperimentalMenuEntry {
 	genOmniScript();
 	omni();
     } elsif( 2 == $entry ){
-	qt47();
+	qt();
     }
 }
 
-sub checkCmdLineArgs {
+sub checkCmdLineArgs
+{
     if ( 1 == @ARGV ) {
 	setupParallelBuildOption();
 	runMenuEntry( $ARGV[0] );
@@ -522,11 +602,12 @@ sub checkCmdLineArgs {
     }
 }
 
-sub doUbuntuAptGets{
+sub doUbuntuAptGets
+{
     my @packages = qw( libxrender-dev libxext-dev freeglut3-dev g++
 	libfreetype6-dev libxml2 libxml2-dev mesa-common-dev
 	libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
-	libgl1-mesa-glx-dbg libboost-dev flex bison);
+	libgl1-mesa-glx-dbg flex bison);
 
     my $args = concatStrList(@packages);
 
@@ -534,7 +615,8 @@ sub doUbuntuAptGets{
     print "Done with the Ubuntu apt-gets! \n\n";
 }
 
-sub concatStrList{
+sub concatStrList
+{
     my (@array) = @_;
     my $args = "";
     foreach (@array){
@@ -543,7 +625,8 @@ sub concatStrList{
     return $args;
 }
 
-sub omniClean {
+sub omniClean
+{
     `(cd $omniPath; make clean)`;
     omni();
 }

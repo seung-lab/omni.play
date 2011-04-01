@@ -3,7 +3,7 @@
 
 /*
  *
- *	Brett Warne - bwarne@mit.edu - 3/9/09
+ * Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
 #include "chunks/omChunkCache.hpp"
@@ -14,126 +14,133 @@
 #include "system/omManageableObject.h"
 #include "volume/omMipVolume.h"
 
+class OmChunkUniqueValuesManager;
 class OmGroups;
 class OmMST;
 class OmMeshDrawer;
 class OmMipMeshManager;
 class OmMipMeshManagers;
 class OmSegment;
-class OmSegmentCache;
+class OmSegments;
 class OmSegmentLists;
 class OmUserEdges;
 class OmValidGroupNum;
 class OmViewGroupState;
+class OmVolSliceCache;
 class OmVolumeCuller;
 class OmVolumeData;
 class SegmentationDataWrapper;
-class OmChunkUniqueValuesManager;
 
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
 public:
-	OmSegmentation();
-	OmSegmentation(OmID id);
-	virtual ~OmSegmentation();
+    OmSegmentation();
+    OmSegmentation(OmID id);
+    virtual ~OmSegmentation();
 
-	std::string GetName();
+    std::string GetName();
 
-	std::string GetDirectoryPath();
+    std::string GetDirectoryPath();
 
-	void loadVolData();
-	void loadVolDataIfFoldersExist();
+    void loadVolData();
+    void loadVolDataIfFoldersExist();
 
-	ObjectType getVolumeType(){
-		return SEGMENTATION;
-	}
+    inline ObjectType getVolumeType() const {
+        return SEGMENTATION;
+    }
 
-	OmID getID(){
-		return GetID();
-	}
+    inline OmID getID() const {
+        return GetID();
+    }
 
-	int GetBytesPerVoxel() const;
+    virtual int GetBytesPerVoxel() const;
+    virtual int GetBytesPerSlice() const;
 
-	SegmentationDataWrapper getSDW() const;
+    SegmentationDataWrapper GetSDW() const;
 
-	void CloseDownThreads();
+    void CloseDownThreads();
 
-	void Flush();
+    void Flush();
 
-	void SetDendThreshold( double t );
-	double GetDendThreshold();
+    void SetDendThreshold( double t );
+    double GetDendThreshold();
 
-	OmMipMeshManager* MeshManager(const double threshold);
+    OmMipMeshManager* MeshManager(const double threshold);
 
-	void UpdateVoxelBoundingData();
+    void UpdateVoxelBoundingData();
 
-	void SetVolDataType(const OmVolDataType);
+    void SetVolDataType(const OmVolDataType);
 
-	void BuildBlankVolume(const Vector3i & dims);
+    void BuildBlankVolume(const Vector3i & dims);
 
-	void GetChunk(OmChunkPtr& ptr, const OmChunkCoord& coord);
-	void GetChunk(OmSegChunkPtr& ptr, const OmChunkCoord& coord);
+    void GetChunk(OmChunkPtr& ptr, const OmChunkCoord& coord);
+    void GetChunk(OmSegChunkPtr& ptr, const OmChunkCoord& coord);
 
-	uint32_t GetVoxelValue(const DataCoord &vox);
-	void SetVoxelValue(const DataCoord &vox, const uint32_t value);
+    uint32_t GetVoxelValue(const DataCoord &vox);
+    void SetVoxelValue(const DataCoord &vox, const uint32_t value);
 
 public:
-	OmChunkUniqueValuesManager* ChunkUniqueValues(){
-		return uniqueChunkValues_.get();
-	}
-	OmGroups* Groups(){
-		return groups_.get();
-	}
-	OmMST* MST(){
-		return mst_.get();
-	}
-	OmMeshDrawer* MeshDrawer(){
-		return meshDrawer_.get();
-	}
-	OmMipMeshManagers* MeshManagers(){
-		return meshManagers_.get();
-	}
-	OmSegmentCache* SegmentCache(){
-		return segmentCache_.get();
-	}
-	OmSegmentLists* SegmentLists(){
-		return segmentLists_.get();
-	}
-	OmUserEdges* MSTUserEdges(){
-		return mstUserEdges_.get();
-	}
-	OmValidGroupNum* ValidGroupNum(){
-		return validGroupNum_.get();
-	}
-	OmVolumeData* VolData(){
-		return volData_.get();
-	}
+    inline OmChunkUniqueValuesManager* ChunkUniqueValues(){
+        return uniqueChunkValues_.get();
+    }
+    inline OmGroups* Groups(){
+        return groups_.get();
+    }
+    inline OmMST* MST(){
+        return mst_.get();
+    }
+    inline OmMeshDrawer* MeshDrawer(){
+        return meshDrawer_.get();
+    }
+    inline OmMipMeshManagers* MeshManagers(){
+        return meshManagers_.get();
+    }
+    inline OmSegments* Segments(){
+        return segments_.get();
+    }
+    inline OmSegmentLists* SegmentLists(){
+        return segmentLists_.get();
+    }
+    inline OmUserEdges* MSTUserEdges(){
+        return mstUserEdges_.get();
+    }
+    inline OmValidGroupNum* ValidGroupNum(){
+        return validGroupNum_.get();
+    }
+    inline OmVolumeData* VolData(){
+        return volData_.get();
+    }
+    inline OmVolSliceCache* SliceCache(){
+        return volSliceCache_.get();
+    }
 
 private:
-	boost::scoped_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
-	boost::scoped_ptr<OmGroups> groups_;
-	boost::scoped_ptr<OmMST> mst_;
-	boost::scoped_ptr<OmMeshDrawer> meshDrawer_;
-	boost::scoped_ptr<OmMipMeshManagers> meshManagers_;
-	boost::scoped_ptr<OmChunkCache<OmSegmentation, OmSegChunk> > chunkCache_;
-	boost::scoped_ptr<OmSegmentCache> segmentCache_;
-	boost::scoped_ptr<OmSegmentLists> segmentLists_;
-	boost::scoped_ptr<OmUserEdges> mstUserEdges_;
-	boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
-	boost::scoped_ptr<OmVolumeData> volData_;
+    boost::scoped_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
+    boost::scoped_ptr<OmGroups> groups_;
+    boost::scoped_ptr<OmMST> mst_;
+    boost::scoped_ptr<OmMeshDrawer> meshDrawer_;
+    boost::scoped_ptr<OmMipMeshManagers> meshManagers_;
+    boost::scoped_ptr<OmChunkCache<OmSegmentation, OmSegChunk> > chunkCache_;
+    boost::scoped_ptr<OmSegments> segments_;
+    boost::scoped_ptr<OmSegmentLists> segmentLists_;
+    boost::scoped_ptr<OmUserEdges> mstUserEdges_;
+    boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
+    boost::scoped_ptr<OmVolumeData> volData_;
+    boost::scoped_ptr<OmVolSliceCache> volSliceCache_;
 
-	template <class T> friend class OmVolumeBuilder;
-	template <class T> friend class OmVolumeBuilderHdf5;
-	template <class T> friend class OmVolumeBuilderImages;
-	template <class T> friend class OmVolumeImporter;
+    template <class T> friend class OmVolumeBuilder;
+    template <class T> friend class OmVolumeBuilderHdf5;
+    template <class T> friend class OmVolumeBuilderImages;
+    template <class T> friend class OmVolumeImporter;
 
-	friend class OmSegmentCacheImpl;
-	friend class OmSegmentCacheImplLowLevel;
-	friend class OmSegmentIterator;
-	friend class OmSegmentationChunkBuildTask;
-	friend class SegmentTests1;
+    friend class OmSegmentsImpl;
+    friend class OmSegmentsImplLowLevel;
+    friend class OmSegmentIterator;
+    friend class OmSegmentationChunkBuildTask;
+    friend class SegmentTests1;
 
-	friend class OmDataArchiveProject;
-	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
+    friend class OmDataArchiveProject;
+    friend QDataStream &operator>>(QDataStream& in, OmSegmentation&);
+    friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
 };
 
 #endif

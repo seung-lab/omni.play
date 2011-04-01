@@ -21,12 +21,12 @@ class ValidationGroup : public OmWidget {
 	QString getGroupNameFromGUI();
 	bool isShowValidChecked();
 
-	SegmentationDataWrapper GetSegmentationDataWrapper();
+	SegmentationDataWrapper GetSDW();
 	OmViewGroupState * getViewGroupState();
 
 	QString getName(){ return "Validation"; }
 
-private slots:
+private Q_SLOTS:
 	void changeMapColors();
 
 private:

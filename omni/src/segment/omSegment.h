@@ -2,165 +2,168 @@
 #define OM_SEGMENT_H
 
 /*
- *	Segment Object
+ * Segment Object
  *
- *	Brett Warne - bwarne@mit.edu - 3/9/09
+ * Brett Warne - bwarne@mit.edu - 3/9/09
+ * Michael Purcaro - purcaro@gmail.com
  */
 
-#include "common/omCommon.h"
+#include "segment/omSegmentTypes.h"
+#include "segment/omSegmentChildrenTypes.h"
 #include "segment/omSegmentEdge.h"
 #include "zi/omMutex.h"
 
-class OmSegmentCache;
-
-struct OmSegmentDataV2 {
-	OmSegID value;
-	OmColor color;
-	bool immutable;
-	uint64_t size;
-	DataBbox bounds;
-};
-
-struct OmSegmentDataV3 {
-	OmSegID value;
-	OmColor color;
-	om::OmSegListType listType;
-	uint64_t size;
-	DataBbox bounds;
-};
+class OmSegments;
 
 class OmSegment {
 public:
-	OmSegment()
-		: data_(NULL)
-		, cache_(NULL)
-		, parent_(NULL)
-		, threshold_(0)
-		, edgeNumber_(-1)
-		, freshnessForMeshes_(0)
-	{}
+    OmSegment()
+        : data_(NULL)
+        , segments_(NULL)
+        , parent_(NULL)
+        , threshold_(0)
+        , edgeNumber_(-1)
+        , freshnessForMeshes_(0)
+    {}
 
-	inline OmSegID value() const {
-		return data_->value;
-	}
+    inline OmSegID value() const {
+        return data_->value;
+    }
 
-	// color
-	void RandomizeColor();
-	void reRandomizeColor();
-	OmColor GetColorInt() const {
-		return data_->color;
-	}
-	Vector3f GetColorFloat() const
-	{
-		return Vector3f( data_->color.red   / 255.,
-						 data_->color.green / 255.,
-						 data_->color.blue  / 255. );
-	}
-	void SetColor(const Vector3f &);
+    // color
+    void RandomizeColor();
 
-	QString GetNote();
-	void SetNote(const QString &);
-	QString GetName();
-	void SetName(const QString &);
-	bool IsSelected();
-	void SetSelected(const bool, const bool);
-	bool IsEnabled();
-	void SetEnabled( const bool);
+    void reRandomizeColor();
 
-	uint64_t size() const { return data_->size; }
-	void addToSize(const uint64_t inc){
-		zi::spinlock::pool<segment_size_mutex_pool_tag>::guard g(data_->value);
-		data_->size += inc;
-	}
+    inline OmColor GetColorInt() const {
+        return data_->color;
+    }
 
-	uint64_t getSizeWithChildren();
+    inline Vector3f GetColorFloat() const
+    {
+        return Vector3f( data_->color.red   / 255.,
+                         data_->color.green / 255.,
+                         data_->color.blue  / 255. );
+    }
 
-	bool IsValidListType() const {
-		return om::VALID == data_->listType;
-	}
-	om::OmSegListType GetListType() const {
-		return data_->listType;
-	}
-	void SetListType(const om::OmSegListType type) {
-		data_->listType = type;
-	}
+    void SetColor(const Vector3f &);
 
-	OmSegment* getParent() const {
-		return parent_;
-	}
-	void setParent(OmSegment* seg){
-		parent_ = seg;
-	}
-	void setParent(OmSegment* segment, const double);
+    QString GetNote();
+    void SetNote(const QString &);
+    QString GetName();
+    void SetName(const QString &);
+    bool IsSelected();
+    void SetSelected(const bool, const bool);
+    bool IsEnabled();
+    void SetEnabled( const bool);
 
-	OmSegID getRootSegID();
+    uint64_t size() const {
+        return data_->size;
+    }
 
-	OmID GetSegmentationID();
+    inline void addToSize(const uint64_t inc)
+    {
+        zi::spinlock::pool<segment_size_mutex_pool_tag>::guard g(data_->value);
+        data_->size += inc;
+    }
 
-	double getThreshold() const { return threshold_; }
-	void setThreshold(const double thres){ threshold_ = thres; }
+    inline bool IsValidListType() const {
+        return om::VALID == static_cast<om::SegListType>(*listType_);
+    }
 
-	const DataBbox& getBounds() const {
-		return data_->bounds;
-	}
-	void clearBounds() {
-		data_->bounds = DataBbox();
-	}
-	void addToBounds(const DataBbox& box)
-	{
-		zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
-		data_->bounds.merge(box);
-	}
+    inline om::SegListType GetListType() const {
+        return static_cast<om::SegListType>(*listType_);
+    }
 
-	uint32_t getFreshnessForMeshes() const {return freshnessForMeshes_;}
-	void touchFreshnessForMeshes(){++freshnessForMeshes_;}
+    inline void SetListType(const om::SegListType type){
+        (*listType_) = static_cast<uint8_t>(type);
+    }
 
-	const std::set<OmSegment*>& getChildren() const {
-		return segmentsJoinedIntoMe_;
-	}
-	void addChild(OmSegment* child){
-		segmentsJoinedIntoMe_.insert(child);
-	}
-	void removeChild(OmSegment* child){
-		segmentsJoinedIntoMe_.erase(child);
-	}
+    inline OmSegment* getParent() const {
+        return parent_;
+    }
 
-	int getEdgeNumber() const {
-		return edgeNumber_;
-	}
-	void setEdgeNumber(const int num){
-		edgeNumber_ = num;
-	}
+    inline void setParent(OmSegment* seg){
+        parent_ = seg;
+    }
 
-	const OmSegmentEdge& getCustomMergeEdge() const {
-		return customMergeEdge_;
-	}
-	void setCustomMergeEdge(const OmSegmentEdge& e){
-		customMergeEdge_ = e;
-	}
+    void setParent(OmSegment* segment, const double);
 
-	OmSegmentCache* SegmentCache(){
-		return cache_;
-	}
+    const segChildCont_t& GetChildren();
+
+    OmSegID getRootSegID();
+
+    OmID GetSegmentationID();
+
+    inline double getThreshold() const {
+        return threshold_;
+    }
+
+    inline void setThreshold(const double thres){
+        threshold_ = thres;
+    }
+
+    inline const DataBbox& getBounds() const {
+        return data_->bounds;
+    }
+
+    inline void clearBounds() {
+        data_->bounds = DataBbox();
+    }
+
+    inline void addToBounds(const DataBbox& box)
+    {
+        zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
+        data_->bounds.merge(box);
+    }
+
+    inline uint64_t getFreshnessForMeshes() const {
+        return freshnessForMeshes_;
+    }
+
+    inline void touchFreshnessForMeshes(){
+        ++freshnessForMeshes_;
+    }
+
+    inline int getEdgeNumber() const {
+        return edgeNumber_;
+    }
+
+    inline void setEdgeNumber(const int num){
+        edgeNumber_ = num;
+    }
+
+    inline const OmSegmentEdge& getCustomMergeEdge() const {
+        return customMergeEdge_;
+    }
+
+    inline void setCustomMergeEdge(const OmSegmentEdge& e){
+        customMergeEdge_ = e;
+    }
+
+    inline OmSegments* Segments(){
+        return segments_;
+    }
 
 private:
-	OmSegmentDataV3* data_;
+    OmSegmentDataV4* data_;
+    uint8_t* listType_;
 
-	OmSegmentCache* cache_;
-	OmSegment* parent_;
-	std::set<OmSegment*> segmentsJoinedIntoMe_;
-	double threshold_;
+    OmSegments* segments_;
+    OmSegment* parent_;
+    double threshold_;
 
-	int edgeNumber_; // index of edge in main edge list
-	OmSegmentEdge customMergeEdge_;
-	uint32_t freshnessForMeshes_;
+    int edgeNumber_; // index of edge in main edge list
+    OmSegmentEdge customMergeEdge_;
+    uint64_t freshnessForMeshes_;
 
-	struct segment_bounds_mutex_pool_tag;
-	struct segment_size_mutex_pool_tag;
+    struct segment_bounds_mutex_pool_tag;
+    struct segment_size_mutex_pool_tag;
 
-	friend class OmPagingPtrStore;
-	friend class OmSegmentPage;
-	friend class OmDataArchiveSegment;
+    friend class OmPagingPtrStore;
+    friend class OmSegmentPage;
+    friend class OmDataArchiveSegment;
+    friend class OmFindCommonEdge;
 };
 
 #endif

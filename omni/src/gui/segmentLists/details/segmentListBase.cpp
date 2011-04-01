@@ -1,243 +1,268 @@
-#include "segment/omSegmentSearched.hpp"
-#include "utility/dataWrappers.h"
-#include "segment/omSegmentLists.hpp"
+#include "system/omConnect.hpp"
+#include "actions/omSelectSegmentParams.hpp"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
-#include "gui/segmentLists/elementListBox.hpp"
-#include "gui/widgets/omSegmentListWidget.h"
 #include "gui/segmentLists/details/segmentListBase.h"
+#include "gui/segmentLists/elementListBox.hpp"
+#include "gui/segmentLists/omSegmentListWidget.h"
 #include "project/omProject.h"
-#include "segment/omSegmentCache.h"
-#include "system/events/omSegmentEvent.h"
-#include "volume/omSegmentation.h"
+#include "segment/omSegments.h"
+#include "segment/lists/omSegmentLists.h"
+#include "segment/omSegmentSearched.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
+#include "events/details/omSegmentEvent.h"
+#include "utility/dataWrappers.h"
+#include "volume/omSegmentation.h"
+#include "segment/lists/omSegmentListsTypes.hpp"
 
-SegmentListBase::SegmentListBase( QWidget * parent,
-								  OmViewGroupState* vgs)
-	: QWidget(parent)
-	, haveValidSDW(false)
-	, currentPageNum(0)
-	, vgs_(vgs)
+SegmentListBase::SegmentListBase(QWidget* parent,
+                                  OmViewGroupState* vgs)
+    : QWidget(parent)
+    , haveValidSDW(false)
+    , currentPageNum(0)
+    , vgs_(vgs)
 {
-	layout = new QVBoxLayout(this);
+    layout = new QVBoxLayout(this);
 
-	segmentListWidget = new OmSegmentListWidget(this, vgs);
-	layout->addWidget(segmentListWidget);
+    segmentListWidget = new OmSegmentListWidget(this, vgs);
+    layout->addWidget(segmentListWidget);
 
-	setupPageButtons();
+    setupPageButtons();
 }
 
 int SegmentListBase::getNumSegmentsPerPage()
 {
-	return 100;
+    return 100;
 }
 
 quint32 SegmentListBase::getTotalNumberOfSegments()
 {
-	assert( haveValidSDW );
-	return Size();
+    assert(haveValidSDW);
+    return Size();
 }
 
-boost::shared_ptr<OmSegIDsListWithPage>
-SegmentListBase::getSegmentsToDisplay( const unsigned int in_offset,
-									   const bool useOffset)
+void SegmentListBase::populateByPage(const int offset)
 {
-	assert( haveValidSDW );
+    assert(haveValidSDW);
 
-	const unsigned int offset = in_offset - (in_offset % getNumSegmentsPerPage() );
-	OmSegID startSeg = 0;
-	if(!useOffset){
-		startSeg = in_offset;
-	}
+    GUIPageRequest request;
+    request.offset = offset;
+    request.numToGet = getNumSegmentsPerPage();
+    request.startSeg = 0;
 
-	boost::shared_ptr<OmSegIDsListWithPage> ids =
-		getPageSegments(offset, getNumSegmentsPerPage(), startSeg);
+    boost::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
 
-	currentPageNum = ids->Offset();
+    currentPageNum = segIDs->pageNum;
 
-	return ids;
+    const bool shouldThisTabBeMadeActive =
+        segmentListWidget->populate(false,
+                                    SegmentDataWrapper(),
+                                    segIDs);
+
+    debug(segmentlist, "bye!\n");
+
+    if(shouldThisTabBeMadeActive){
+        makeTabActiveIfContainsJumpedToSegment();
+    }
+
+    ElementListBox::AddTab(getPreferredTabIndex(), this, getTabTitle());
 }
 
-void SegmentListBase::populate(const bool doScrollToSelectedSegment,
-							   const OmSegID segmentJustSelectedID,
-							   const bool useOffset)
+void SegmentListBase::populateBySegment(const bool doScrollToSelectedSegment,
+                                        const SegmentDataWrapper segmentJustSelected)
 {
-	assert( haveValidSDW );
+    assert(haveValidSDW);
 
-	boost::shared_ptr<OmSegIDsListWithPage> segIDs =
-		getSegmentsToDisplay( segmentJustSelectedID, useOffset);
+    GUIPageRequest request;
+    request.offset = 0;
+    request.numToGet = getNumSegmentsPerPage();
+    request.startSeg = segmentJustSelected.GetSegmentID();
 
-	const bool shouldThisTabBeMadeActive =
-		segmentListWidget->populate(doScrollToSelectedSegment,
-									segmentJustSelectedID,
-									sdw_,
-									segIDs);
+    boost::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
 
-	debug(segmentlist, "bye!\n");
+    currentPageNum = segIDs->pageNum;
 
-	if(shouldThisTabBeMadeActive){
-		makeTabActiveIfContainsJumpedToSegment();
-	}
+    const bool shouldThisTabBeMadeActive =
+        segmentListWidget->populate(doScrollToSelectedSegment,
+                                    segmentJustSelected,
+                                    segIDs);
 
-	ElementListBox::AddTab(getPreferredTabIndex(), this, getTabTitle());
+    debug(segmentlist, "bye!\n");
+
+    if(shouldThisTabBeMadeActive){
+        makeTabActiveIfContainsJumpedToSegment();
+    }
+
+    ElementListBox::AddTab(getPreferredTabIndex(), this, getTabTitle());
 }
 
 void SegmentListBase::setupPageButtons()
 {
-	int x = 30, y = 30;
-	startButton = new QPushButton("|<<");
-	startButton->setFixedSize(x, y);
-	prevButton = new QPushButton("<");
-	prevButton->setFixedSize(x, y);
-	nextButton = new QPushButton(">");
-	nextButton->setFixedSize(x, y);
-	endButton = new QPushButton(">>|");
-	endButton->setFixedSize(x, y);
+    int x = 30, y = 30;
+    startButton = new QPushButton("|<<");
+    startButton->setFixedSize(x, y);
+    prevButton = new QPushButton("<");
+    prevButton->setFixedSize(x, y);
+    nextButton = new QPushButton(">");
+    nextButton->setFixedSize(x, y);
+    endButton = new QPushButton(">>|");
+    endButton->setFixedSize(x, y);
 
-	searchEdit = new QLineEdit();
-	connect(searchEdit, SIGNAL(returnPressed()),
-			this, SLOT(searchChanged()));
+    searchEdit = new QLineEdit();
 
-	connect( startButton, SIGNAL( released()  ),
-			 this, SLOT( goToStartPage() ), Qt::DirectConnection);
+    om::connect(searchEdit, SIGNAL(returnPressed()),
+            this, SLOT(searchChanged()));
 
-	connect( prevButton, SIGNAL( released()  ),
-			 this, SLOT( goToPrevPage() ), Qt::DirectConnection);
+    om::connect(startButton, SIGNAL(released() ), this, SLOT(goToStartPage()));
 
-	connect( nextButton, SIGNAL( released()  ),
-			 this, SLOT( goToNextPage() ), Qt::DirectConnection);
+    om::connect(prevButton, SIGNAL(released() ), this, SLOT(goToPrevPage()));
 
-	connect( endButton, SIGNAL( released()  ),
-			 this, SLOT( goToEndPage() ), Qt::DirectConnection);
+    om::connect(nextButton, SIGNAL(released() ), this, SLOT(goToNextPage()));
 
-	connect( endButton, SIGNAL( released()  ),
-			 this, SLOT( goToEndPage() ), Qt::DirectConnection);
+    om::connect(endButton, SIGNAL(released() ), this, SLOT(goToEndPage()));
 
-	QGroupBox * buttonBox = new QGroupBox("");
-	buttonBox->setFlat(true);
-	QHBoxLayout * buttons = new QHBoxLayout( buttonBox );
+    om::connect(endButton, SIGNAL(released() ), this, SLOT(goToEndPage()));
 
-	buttons->addWidget(startButton);
-	buttons->addWidget(prevButton);
-	buttons->addWidget(nextButton);
-	buttons->addWidget(endButton);
-	layout->addWidget( buttonBox );
+    QGroupBox* buttonBox = new QGroupBox("");
+    buttonBox->setFlat(true);
+    QHBoxLayout* buttons = new QHBoxLayout(buttonBox);
 
-	QGroupBox * searchBox = new QGroupBox("");
-	searchBox->setFlat(true);
-	QHBoxLayout * searchLayout = new QHBoxLayout( searchBox );
-	searchLayout->addWidget(searchEdit);
-	layout->addWidget( searchBox );
+    buttons->addWidget(startButton);
+    buttons->addWidget(prevButton);
+    buttons->addWidget(nextButton);
+    buttons->addWidget(endButton);
+    layout->addWidget(buttonBox);
+
+    QGroupBox* searchBox = new QGroupBox("");
+    searchBox->setFlat(true);
+    QHBoxLayout* searchLayout = new QHBoxLayout(searchBox);
+    searchLayout->addWidget(searchEdit);
+    layout->addWidget(searchBox);
 }
 
 void SegmentListBase::goToStartPage()
 {
-	currentPageNum = 0;
-	int offset = currentPageNum * getNumSegmentsPerPage();
-	populate( false, offset, true);
+    currentPageNum = 0;
+    int offset = currentPageNum* getNumSegmentsPerPage();
+    populateByPage(offset);
 }
 
 void SegmentListBase::goToNextPage()
 {
-	++currentPageNum;
-	unsigned int offset = currentPageNum * getNumSegmentsPerPage();
-	if( offset > getTotalNumberOfSegments() ){
-		--currentPageNum;
-		offset = currentPageNum * getNumSegmentsPerPage();
-	}
-	populate( false, offset, true);
+    ++currentPageNum;
+    unsigned int offset = currentPageNum* getNumSegmentsPerPage();
+    if(offset > getTotalNumberOfSegments()){
+        --currentPageNum;
+        offset = currentPageNum* getNumSegmentsPerPage();
+    }
+    populateByPage(offset);
 }
 
 void SegmentListBase::goToPrevPage()
 {
-	--currentPageNum;
-	if( currentPageNum < 0 ){
-		currentPageNum = 0;
-	}
-	int offset = currentPageNum * getNumSegmentsPerPage();
-	populate( false, offset, true);
+    --currentPageNum;
+    if(currentPageNum < 0){
+        currentPageNum = 0;
+    }
+    int offset = currentPageNum* getNumSegmentsPerPage();
+    populateByPage(offset);
 }
 
 void SegmentListBase::goToEndPage()
 {
-	currentPageNum = (getTotalNumberOfSegments() / getNumSegmentsPerPage());
-	if(currentPageNum < 0) {
-		currentPageNum = 0;
-	}
-	int offset = currentPageNum * getNumSegmentsPerPage();
-	populate( false, offset, true);
+    currentPageNum = (getTotalNumberOfSegments() / getNumSegmentsPerPage());
+    if(currentPageNum < 0) {
+        currentPageNum = 0;
+    }
+    int offset = currentPageNum* getNumSegmentsPerPage();
+    populateByPage(offset);
 }
 
 void SegmentListBase::makeSegmentationActive(const SegmentDataWrapper& sdw,
-											 const bool doScroll )
+                                             const bool doScroll)
 {
-	sdw_ = sdw.MakeSegmentationDataWrapper();
-	haveValidSDW = true;
-	populate(doScroll, sdw.GetSegmentID());
+    sdw_ = sdw.MakeSegmentationDataWrapper();
+    haveValidSDW = true;
+    populateBySegment(doScroll, sdw);
 }
 
 void SegmentListBase::rebuildSegmentList(const SegmentDataWrapper& sdw)
 {
-	makeSegmentationActive(sdw, true);
+    makeSegmentationActive(sdw, true);
 }
 
-SegmentationDataWrapper
-SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent* event)
+void SegmentListBase::MakeSegmentationActive(const SegmentationDataWrapper& sdw)
 {
-	SegmentationDataWrapper newsdw;
-	bool doScroll = event->getDoScroll();
-
-	// if we sent event, don't scroll
-	if( event->getComment() == OmSegmentListWidget::eventSenderName() ){
-		doScroll = false;
-	}
-
-	const SegmentDataWrapper& sdw = event->GetSegmentDataWrapper();
-
-	if(sdw.IsSegmentationValid()){
-		makeSegmentationActive(sdw, doScroll );
-		newsdw = sdw.MakeSegmentationDataWrapper();
-	} else {
-		if( haveValidSDW ){
-			populate();
-			newsdw = sdw_;
-		} else {
-			newsdw = SegmentationDataWrapper();
-		}
-	}
-
- 	if(newsdw.IsSegmentationValid()){
-		//printf("centering... %i, scroll %i\n", event->getCenter(), doScroll);
-		if(event->getCenter() || !doScroll){
-			OmSegmentUtils::CenterSegment(vgs_, newsdw);
-		}
-	}
-
-	return newsdw;
+    sdw_ = sdw;
+    haveValidSDW = true;
+    populateByPage(0);
 }
 
 void SegmentListBase::searchChanged()
 {
-	const OmSegID segID = searchEdit->text().toInt();
-	SegmentDataWrapper sdw(sdw_, segID);
+    const QString text = searchEdit->text();
 
-	if(!sdw.IsSegmentValid()){
-		return;
-	}
+    if(text.contains(","))
+    {
+        const QStringList args = text.split(",", QString::SkipEmptyParts);
+        searchMany(args);
+        return;
+    }
 
-	OmSegmentSearched::Set(sdw);
+    const QStringList args = text.split(" ", QString::SkipEmptyParts);
 
-	OmSegmentSelector sel(sdw_, NULL, "segmentlistbase");
-	sel.selectJustThisSegment(segID, true);
-	sel.sendEvent();
+    if(1 == args.size()){
+        searchOne(text);
+        return;
+    }
 
-	makeSegmentationActive(sdw, true);
+    searchMany(args);
+}
 
-	OmSegmentUtils::CenterSegment(vgs_, sdw);
+void SegmentListBase::searchOne(const QString& text)
+{
+    const OmSegID segID = text.toInt();
+    SegmentDataWrapper sdw(sdw_, segID);
+
+    if(!sdw.IsSegmentValid()){
+        return;
+    }
+
+    OmSegmentSearched::Set(sdw);
+
+    OmSegmentSelector sel(sdw_, NULL, "segmentlistbase");
+    sel.selectJustThisSegment(segID, true);
+    sel.sendEvent();
+
+    makeSegmentationActive(sdw, true);
+
+    OmSegmentUtils::CenterSegment(vgs_, sdw);
+}
+
+void SegmentListBase::searchMany(const QStringList& args)
+{
+    OmSegmentSelector sel(sdw_, NULL, "segmentlistbase");
+
+    FOR_EACH(iter, args)
+    {
+        const OmSegID segID = iter->toInt();
+        SegmentDataWrapper sdw(sdw_, segID);
+
+        if(!sdw.IsSegmentValid()){
+            continue;
+        }
+
+        sel.augmentSelectedSet(segID, true);
+    }
+
+    sel.sendEvent();
+    // makeSegmentationActive(sdw_, true);
+
+    OmSegmentUtils::CenterSegment(vgs_, sdw_);
 }
 
 void SegmentListBase::userJustClickedInThisSegmentList()
 {
-	ElementListBox::SetActiveTab(this);
+    ElementListBox::SetActiveTab(this);
 }

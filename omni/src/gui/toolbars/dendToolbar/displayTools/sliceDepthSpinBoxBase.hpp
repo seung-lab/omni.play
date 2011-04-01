@@ -2,67 +2,72 @@
 #define SLICE_DEPTH_SPIN_BOX_BASE_HPP
 
 #include "common/omDebug.h"
+#include "events/details/omViewEvent.h"
 #include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
 #include "gui/widgets/omIntSpinBox.hpp"
-#include "system/events/omViewEvent.h"
 #include "viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupView2dState.hpp"
 
 #include <limits>
 
 class SliceDepthSpinBoxBase : public OmIntSpinBox,
-							  public OmViewEventListener {
+                              public OmViewEventListener {
 Q_OBJECT
 
 public:
-	SliceDepthSpinBoxBase(DisplayTools* d)
-		: OmIntSpinBox(d, om::UPDATE_AS_TYPE)
-		, mParent(d)
-	{
-		setValue(0);
-		setSingleStep(1);
-		setMaximum(std::numeric_limits<int32_t>::max());
-	}
+    SliceDepthSpinBoxBase(DisplayTools* d)
+        : OmIntSpinBox(d, om::UPDATE_AS_TYPE)
+        , mParent(d)
+    {
+        setValue(0);
+        setSingleStep(1);
+        setMaximum(std::numeric_limits<int32_t>::max());
+    }
 
-	QSize sizeHint () const {
-		return QSize(50, height());
-	}
+    QSize sizeHint () const {
+        return QSize(50, height());
+    }
 
 private:
-	DisplayTools *const mParent;
+    DisplayTools *const mParent;
 
-	virtual ViewType viewType() const = 0;
+    virtual ViewType viewType() const = 0;
 
-	void actUponSpinboxChange(const int depth)
-	{
-		if(NULL == vgs()){
-			return;
-		}
+    void actUponSpinboxChange(const int depth)
+    {
+        if(NULL == vgs()){
+            return;
+        }
 
-		vgs()->SetViewSliceDepth(viewType(), depth);
-		OmEvents::Redraw2d();
-	}
+        vgs()->SetScaledSliceDepth(viewType(), depth);
+        OmEvents::Redraw2d();
+    }
 
-	void update()
-	{
-		blockSignals(true);
+    void update()
+    {
+        blockSignals(true);
 
-		const int depth = vgs()->GetViewSliceDepth(viewType());
-		setValue(depth);
+        const int depth = vgs()->GetScaledSliceDepth(viewType());
+        setValue(depth);
 
-		blockSignals(false);
-	}
+        blockSignals(false);
+    }
 
-	inline OmViewGroupState* vgs() const {
-		return mParent->getViewGroupState();
-	}
+    inline OmViewGroupView2dState* vgs() const {
+        return mParent->getViewGroupState()->View2dState();
+    }
 
-// OmViewEventListener stuff
-	void ViewBoxChangeEvent(){
-		update();
-	}
-	void ViewPosChangeEvent(){}
-	void ViewCenterChangeEvent(){}
-	void ViewRedrawEvent(){}
+    // OmViewEventListener
+    void ViewBoxChangeEvent(){
+        update();
+    }
+    void ViewCenterChangeEvent(){
+        update();
+    }
+    void ViewPosChangeEvent()
+    {}
+    void ViewRedrawEvent()
+    {}
 };
 
 #endif

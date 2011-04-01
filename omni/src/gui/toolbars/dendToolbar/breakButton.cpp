@@ -5,17 +5,14 @@
 #include "gui/toolbars/dendToolbar/graphTools.h"
 
 BreakButton::BreakButton(GraphTools * d)
-	: OmButton<GraphTools>( d,
-				 "Break",
-				 "Shatter object mode",
-				 true)
-{
-}
+    : OmButton<GraphTools>( d,
+                            "Break",
+                            "Shatter object mode",
+                            true)
+{}
 
 void BreakButton::doAction()
 {
-	OmCacheManager::TouchFresheness();
-	mParent->getViewGroupState()->ToggleShatterMode();
-
-	mParent->updateGui();
+    mParent->getViewGroupState()->ToggleShatterMode();
+    mParent->updateGui();
 }

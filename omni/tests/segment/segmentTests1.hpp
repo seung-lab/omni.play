@@ -2,10 +2,10 @@
 #define SEGMENT_TESTS_1_HPP
 
 #include "segment/io/omMST.h"
-#include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
+#include "segment/lowLevel/omSegmentsImplLowLevel.h"
 #include "segment/lowLevel/omSegmentGraph.h"
-#include "segment/omSegmentCache.h"
-#include "segment/omSegmentCacheImpl.h"
+#include "segment/omSegments.h"
+#include "segment/omSegmentsImpl.h"
 #include "segment/omSegmentColorizer.h"
 #include "tests/fakeMemMapFile.hpp"
 #include "volume/omSegmentation.h"
@@ -26,7 +26,7 @@ private:
 	OmSegment* s8_;
 	OmSegment* s9_;
 	OmSegment* s10_;
-	OmSegmentCache* cache_;
+	OmSegments* cache_;
 	std::vector<OmSegment*> segs_;
 	static const uint32_t MaxSegID_ = 10;
 

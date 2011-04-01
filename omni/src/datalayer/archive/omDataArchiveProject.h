@@ -2,7 +2,7 @@
 #define OM_DATA_ARCHIVE_PROJECT_H
 
 #include "common/omCommon.h"
-#include "system/omGenericManager.h"
+#include "system/omGenericManager.hpp"
 #include "system/omGroups.h"
 #include "segment/lowLevel/omPagingPtrStore.h"
 
@@ -17,8 +17,8 @@ class OmMipVolume;
 class OmPreferences;
 class OmProjectImpl;
 class OmSegment;
-class OmSegmentCache;
-class OmSegmentCacheImpl;
+class OmSegments;
+class OmSegmentsImpl;
 class OmSegmentEdge;
 class OmSegmentation;
 class OmSegmentationManager;
@@ -26,20 +26,20 @@ class OmVolume;
 
 class OmDataArchiveProject {
 public:
-	static void ArchiveRead(const QString& fnp, OmProjectImpl* project);
-	static void ArchiveWrite(const QString& fnp, OmProjectImpl* project );
+    static void ArchiveRead(const QString& fnp, OmProjectImpl* project);
+    static void ArchiveWrite(const QString& fnp, OmProjectImpl* project );
 
-	static void moveOldMeshMetadataFile(OmSegmentation* segmentation);
+    static void moveOldMeshMetadataFile(OmSegmentation* segmentation);
 
-	// public for access by QDataStream operators
-	static void LoadOldChannel(QDataStream& in, OmChannel& chan);
-	static void LoadNewChannel(QDataStream& in, OmChannel& chan);
+    // public for access by QDataStream operators
+    static void LoadOldChannel(QDataStream& in, OmChannel& chan);
+    static void LoadNewChannel(QDataStream& in, OmChannel& chan);
 
-	static void LoadOldSegmentation(QDataStream& in, OmSegmentation& seg);
-	static void LoadNewSegmentation(QDataStream& in, OmSegmentation& seg);
+    static void LoadOldSegmentation(QDataStream& in, OmSegmentation& seg);
+    static void LoadNewSegmentation(QDataStream& in, OmSegmentation& seg);
 
 private:
-	static void Upgrade(const QString& fnp, OmProjectImpl* project);
+    static void Upgrade(const QString& fnp, OmProjectImpl* project);
 };
 
 QDataStream &operator<<(QDataStream & out, const OmProject & project );
@@ -79,11 +79,11 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );
 QDataStream &operator<<(QDataStream & out, const OmMipMeshManager & mm );
 QDataStream &operator>>(QDataStream & in, OmMipMeshManager & mm );
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc );
-QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );
+QDataStream &operator<<(QDataStream & out, const OmSegments & sc );
+QDataStream &operator>>(QDataStream & in, OmSegments & sc );
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
-QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
+QDataStream &operator<<(QDataStream & out, const OmSegmentsImpl & sc );
+QDataStream &operator>>(QDataStream & in, OmSegmentsImpl & sc );
 
 QDataStream &operator<<(QDataStream & out, const OmPagingPtrStore & ps );
 QDataStream &operator>>(QDataStream & in, OmPagingPtrStore & ps );

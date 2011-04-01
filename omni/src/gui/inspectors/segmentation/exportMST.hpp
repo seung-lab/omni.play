@@ -4,7 +4,7 @@
 #include "segment/io/omMST.h"
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/widgets/omButton.hpp"
-#include "segment/omSegmentCache.h"
+#include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 
@@ -33,8 +33,8 @@ private:
 
 		QTextStream out(&data);
 
-		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
-		OmSegmentCache* segmentCache = sdw.SegmentCache();
+		const SegmentationDataWrapper& sdw = mParent->GetSDW();
+		OmSegments* segments = sdw.Segments();
 		OmMST* mst = sdw.MST();
 		OmMSTEdge* edges = mst->Edges();
 
@@ -45,8 +45,8 @@ private:
 		out << "\n";
 
 		for(uint32_t i = 0; i < mst->NumEdges(); ++i){
-			OmSegment* node1 = segmentCache->GetSegment(edges[i].node1ID);
-			OmSegment* node2 = segmentCache->GetSegment(edges[i].node2ID);
+			OmSegment* node1 = segments->GetSegment(edges[i].node1ID);
+			OmSegment* node2 = segments->GetSegment(edges[i].node2ID);
 
 			out << i << ",";
 			out << edges[i].node1ID << ",";

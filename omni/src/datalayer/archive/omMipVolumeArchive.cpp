@@ -2,8 +2,8 @@
 
 QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c)
 {
-	out << c.normToSpaceMat_;
-	out << c.normToSpaceInvMat_;
+	out << c.normToDataMat_;
+	out << c.normToDataInvMat_;
 	out << c.dataExtent_;
 	out << c.dataResolution_;
 	out << c.chunkDim_;
@@ -18,8 +18,8 @@ QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c)
 
 QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c)
 {
-	in >> c.normToSpaceMat_;
-	in >> c.normToSpaceInvMat_;
+	in >> c.normToDataMat_;
+	in >> c.normToDataInvMat_;
 	in >> c.dataExtent_;
 	in >> c.dataResolution_;
 	in >> c.chunkDim_;

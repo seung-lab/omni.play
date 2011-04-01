@@ -1,234 +1,32 @@
-#include "common/omDebug.h"
-#include "gui/mainwindow.h"
-#include "gui/myInspectorWidget.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
-#include "project/omProject.h"
-#include "system/omEvents.h"
-#include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
-
-#include <zi/system.hpp>
-
-//undostack
-#include <QUndoStack>
-#include <QApplication>
-
-//view3d context
-#include <QtOpenGL/qgl.h>
-#include <QtOpenGL/QGLFormat>
-
-//init instance pointer
-OmStateManager *OmStateManager::mspInstance = 0;
+#include "system/omStateManagerImpl.hpp"
 
 OmStateManager::OmStateManager()
-{
-	//view3d
-	mpPrimaryView3dWidget = NULL;
-	mpUndoStack = NULL;
-
-	mPrevToolMode = PAN_MODE;
-	mCurToolMode = PAN_MODE;
-
-	inspectorWidget = NULL;
-	mainWindow = NULL;
-	dendToolBar = NULL;
-}
+{}
 
 OmStateManager::~OmStateManager()
-{
-	//undostack
-	if (mpUndoStack) {
-		delete mpUndoStack;
-		mpUndoStack = NULL;
-	}
+{}
 
-	//view3d
-	if (mpPrimaryView3dWidget) {
-		delete mpPrimaryView3dWidget;
-		mpPrimaryView3dWidget = NULL;
-	}
+om::tool::mode OmStateManager::GetToolMode(){
+    return impl().GetToolMode();
 }
 
-/*
- * Static accessor
- */
-OmStateManager *OmStateManager::Instance()
-{
-	if (NULL == mspInstance) {
-		mspInstance = new OmStateManager();
-	}
-	return mspInstance;
+void OmStateManager::SetToolModeAndSendEvent(const om::tool::mode tool){
+    impl().SetToolModeAndSendEvent(tool);
 }
 
-/*
- *	Static destructor
- */
-void OmStateManager::Delete()
-{
-	if (mspInstance) {
-		delete mspInstance;
-		mspInstance = NULL;
-	}
+void OmStateManager::SetOldToolModeAndSendEvent(){
+    impl().SetOldToolModeAndSendEvent();
 }
 
-void OmStateManager::setOmniExecutableAbsolutePath( QString abs_path )
-{
-	Instance()->omniExecPathAbsolute = abs_path;
+OmUndoStack& OmStateManager::UndoStack(){
+    return impl().UndoStack();
 }
 
-QString OmStateManager::getOmniExecutableAbsolutePath()
-{
-	return Instance()->omniExecPathAbsolute;
+const QGLWidget* OmStateManager::GetPrimaryView3dWidget(){
+    return impl().GetPrimaryView3dWidget();
 }
 
-QString OmStateManager::getPID()
-{
-#if WIN32
-	return QString::number(0);
-#else
-	static char pidstr[6] = {0};
-	pid_t pid;
-	int i;
-
-	if (pidstr[0] == 0) {
-		pid = getpid();
-		for(i = 0; i < 5; i++) {
-			pidstr[4 - i] = (pid % 10) + '0';
-			pid /= 10;
-		}
-		pidstr[5] = 0;
-	}
-
-	return QString(pidstr);
-#endif
-}
-
-QString OmStateManager::getHostname()
-{
-	return QString::fromStdString(zi::system::hostname);
-}
-
-/////////////////////////////////
-///////          Tool Mode
-
-OmToolMode OmStateManager::GetToolMode()
-{
-	return Instance()->mCurToolMode;
-}
-
-void OmStateManager::SetToolModeAndSendEvent(const OmToolMode tool)
-{
-	if (tool == Instance()->mCurToolMode){
-		return;
-	}
-
-	Instance()->mPrevToolMode = Instance()->mCurToolMode;
-	Instance()->mCurToolMode = tool;
-
-	OmEvents::ToolChange();
-}
-
-void OmStateManager::SetOldToolModeAndSendEvent()
-{
-	std::swap(Instance()->mPrevToolMode, Instance()->mCurToolMode );
-
-	OmEvents::ToolChange();
-}
-
-/////////////////////////////////
-///////          UndoStack
-
-QUndoStack *OmStateManager::GetUndoStack()
-{
-	if (NULL == Instance()->mpUndoStack) {
-		Instance()->mpUndoStack = new QUndoStack();
-	}
-
-	return Instance()->mpUndoStack;
-}
-
-void OmStateManager::PushUndoCommand(QUndoCommand * cmd)
-{
-	GetUndoStack()->push(cmd);
-}
-
-void OmStateManager::ClearUndoStack()
-{
-	GetUndoStack()->clear();
-}
-
-void OmStateManager::UndoUndoCommand()
-{
-	GetUndoStack()->undo();
-}
-
-/////////////////////////////////
-///////          View3d Context
-
-/*
- *	Create the primary QGLContext for the View3d system.
- */
-void OmStateManager::CreatePrimaryView3dWidget()
-{
-	//create primary widget
-	Instance()->mpPrimaryView3dWidget = new QGLWidget();
-
-	//set primary widget gl format properties
-	Instance()->mpPrimaryView3dWidget->setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
-}
-
-/*
- *	Returns pointer to the primary widget.
- */
-const QGLWidget *OmStateManager::GetPrimaryView3dWidget()
-{
-	//create if primary widget does not yet exist
-	if (Instance()->mpPrimaryView3dWidget == NULL)
-		CreatePrimaryView3dWidget();
-
-	return Instance()->mpPrimaryView3dWidget;
-}
-
-void OmStateManager::setInspector( MyInspectorWidget * miw )
-{
-	Instance()->inspectorWidget = miw;
-}
-
-void OmStateManager::setMainWindow( MainWindow * mw )
-{
-	Instance()->mainWindow = mw;
-}
-
-QSize OmStateManager::getViewBoxSizeHint()
-{
-	QWidget * mw = Instance()->mainWindow;
-	if(NULL == mw){
-		mw = QApplication::activeWindow();
-		if(NULL == mw){
-			printf("warning: assuming window size is 1000x640\n");
-			return QSize(1000, 640);
-		}
-	}
-	int w = mw->width();
-	int h = mw->height();
-
-	if( Instance()->inspectorWidget != NULL ){
-		w -= Instance()->inspectorWidget->width();
-	}
-
-	if( Instance()->dendToolBar != NULL ){
-		w -= Instance()->dendToolBar->width();
-	}
-
-	return QSize( w, h );
-}
-
-void OmStateManager::setDendToolBar( DendToolBar * dtb)
-{
-	Instance()->dendToolBar = dtb;
-}
-
-void OmStateManager::UpdateStatusBar( const QString & msg )
-{
-	Instance()->mainWindow->updateStatusBar( msg );
+OmBrushSize* OmStateManager::BrushSize() {
+    return impl().BrushSize();
 }

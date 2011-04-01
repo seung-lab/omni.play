@@ -2,23 +2,23 @@
 #define PREFERENCES_H
 
 #include <QtGui>
-#include <QWidget> 
+#include <QWidget>
 
 class Preferences : public QDialog
 {
-	Q_OBJECT
+Q_OBJECT
 
 public:
-	Preferences(QWidget *parent);
-	void showProjectPreferences();
-	void showLocalPreferences();
+    Preferences(QWidget *parent);
+    void showProjectPreferences();
+    void showLocalPreferences();
 
-private slots:
-	void closeDialog();
-	
+private Q_SLOTS:
+    void closeDialog();
+
 private:
-	QTabWidget *tabs;
-	QPushButton *closeButton;
+    QTabWidget *tabs;
+    QPushButton *closeButton;
 
 };
 

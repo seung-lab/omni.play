@@ -2,33 +2,28 @@
 #define OM_PROJECT_CLOSE_IMPL_HPP
 
 #include "common/omCommon.h"
-#include "project/omProject.h"
 
 class OmProjectCloseActionImpl {
 public:
-	OmProjectCloseActionImpl()
-	{}
+    OmProjectCloseActionImpl()
+    {}
 
-	void Execute()
-	{
-		//OmProject::Close();
-	}
+    void Execute()
+    {}
 
-	void Undo()
-	{}
+    void Undo()
+    {}
 
-	std::string Description() const
-	{
-		QString lineItem = QString("Closed");
-		return lineItem.toStdString();
-	}
+    std::string Description() const {
+        return "Closed";
+    }
 
-	QString classNameForLogFile() const {
-		return "OmProjectCloseAction";
-	}
+    QString classNameForLogFile() const {
+        return "OmProjectCloseAction";
+    }
 
 private:
-	template <typename T> friend class OmActionLoggerThread;
+    template <typename T> friend class OmActionLoggerThread;
 };
 
 #endif

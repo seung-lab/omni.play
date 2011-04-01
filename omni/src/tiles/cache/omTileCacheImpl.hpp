@@ -8,7 +8,7 @@
 #include "tiles/cache/omTileCacheSegmentation.hpp"
 #include "tiles/omTilePreFetcher.h"
 #include "utility/omLockedPODs.hpp"
-#include "view2d/omTileDrawer.h"
+#include "view2d/omTileDrawer.hpp"
 #include "view2d/omView2dState.hpp"
 
 #include <QApplication>
@@ -23,152 +23,163 @@ DECLARE_ZiARG_bool(noTilePrefetch);
 
 class OmTileCacheImpl {
 public:
-	~OmTileCacheImpl(){
-		preFetcher_->Shutdown();
-	}
+    ~OmTileCacheImpl(){
+        preFetcher_->Shutdown();
+    }
 
-	void RegisterDrawer(OmTileDrawer* d){
-		drawersActive_[d] = false;
-	}
+    void RegisterDrawer(OmTileDrawer* d){
+        drawersActive_[d] = false;
+    }
 
-	void UnRegisterDrawer(OmTileDrawer* d)
-	{
-		if(drawersActive_[d]){
-			--numDrawersActive_;
-		}
-		drawersActive_.erase(d);
-		runIdleThreadTask();
-	}
+    void UnRegisterDrawer(OmTileDrawer* d)
+    {
+        if(drawersActive_[d]){
+            --numDrawersActive_;
+        }
+        drawersActive_.erase(d);
+        runIdleThreadTask();
+    }
 
-	void SetDrawerDone(OmTileDrawer* d)
-	{
-		if(!drawersActive_[d]){
-			return;
-		}
+    void SetDrawerDone(OmTileDrawer* d)
+    {
+        if(!drawersActive_[d]){
+            return;
+        }
 
-		drawersActive_[d] = false;
-		--numDrawersActive_;
-		runIdleThreadTask();
-	}
+        drawersActive_[d] = false;
+        --numDrawersActive_;
+        runIdleThreadTask();
+    }
 
-	void WidgetVisibilityChanged(boost::shared_ptr<OmTileDrawer> drawer,
-								 const bool visible)
-	{
-		if(visible){
-			setDrawerActive(drawer.get());
-		}else{
-			SetDrawerDone(drawer.get());
-		}
-	}
+    void WidgetVisibilityChanged(OmTileDrawer* drawer,
+                                 const bool visible)
+    {
+        if(visible){
+            setDrawerActive(drawer);
+        }else{
+            SetDrawerDone(drawer);
+        }
+    }
 
-	void Get(OmTileDrawer* drawer,
-			 OmTilePtr& tile,
-			 const OmTileCoord& key,
-			 const om::Blocking blocking)
-	{
-		setDrawerActive(drawer);
-		doGet(tile, key, blocking);
-	}
+    void Get(OmTileDrawer* drawer,
+             OmTilePtr& tile,
+             const OmTileCoord& key,
+             const om::Blocking blocking)
+    {
+        setDrawerActive(drawer);
+        doGet(tile, key, blocking);
+    }
 
-	void Prefetch(const OmTileCoord& key)
-	{
-		if(isChannel(key)){
-			cacheChannel_->Prefetch(key);
-		} else {
-			cacheSegmentation_->Prefetch(key);
-		}
-	}
+    void BlockingCreate(OmTileDrawer*,
+                        OmTilePtr& tile,
+                        const OmTileCoord& key)
+    {
+        cacheSegmentation_->BlockingCreate(tile, key);
+    }
 
-	void RemoveSpaceCoord(const SpaceCoord & coord){
-		cacheSegmentation_->RemoveSpaceCoord(coord);
-	}
+    void Prefetch(const OmTileCoord& key)
+    {
+        if(isChannel(key)){
+            cacheChannel_->Prefetch(key);
+        } else {
+            cacheSegmentation_->Prefetch(key);
+        }
+    }
 
-	bool AreDrawersActive()
-	{
-		return numDrawersActive_.get() > 0 ||
-			OmCacheManager::AmClosingDown() ||
-			QApplication::mouseButtons() != Qt::NoButton;
-	}
+    void RemoveDataCoord(const DataCoord & coord){
+        cacheSegmentation_->RemoveDataCoord(coord);
+    }
 
-	void Clear()
-	{
-		cacheChannel_->Clear();
-		cacheSegmentation_->Clear();
-	}
+    bool AreDrawersActive()
+    {
+        return numDrawersActive_.get() > 0 ||
+            OmCacheManager::AmClosingDown() ||
+            QApplication::mouseButtons() != Qt::NoButton;
+    }
 
-	void ClearChannel(){
-		cacheChannel_->Clear();
-	}
+    void ClearAll()
+    {
+        cacheChannel_->Clear();
+        cacheSegmentation_->Clear();
+    }
+
+    void ClearChannel(){
+        cacheChannel_->Clear();
+    }
+
+    void ClearSegmentation(){
+        cacheSegmentation_->Clear();
+    }
 
 private:
-	boost::shared_ptr<OmTileCacheChannel> cacheChannel_;
-	boost::shared_ptr<OmTileCacheSegmentation> cacheSegmentation_;
-	boost::shared_ptr<OmTilePreFetcher> preFetcher_;
+    boost::shared_ptr<OmTileCacheChannel> cacheChannel_;
+    boost::shared_ptr<OmTileCacheSegmentation> cacheSegmentation_;
+    boost::shared_ptr<OmTilePreFetcher> preFetcher_;
 
-	std::map<OmTileDrawer*, bool> drawersActive_;
-	LockedInt32 numDrawersActive_;
+    std::map<OmTileDrawer*, bool> drawersActive_;
+    LockedInt32 numDrawersActive_;
 
-	OmTileCacheImpl()
-		: cacheChannel_(boost::make_shared<OmTileCacheChannel>())
-		, cacheSegmentation_(boost::make_shared<OmTileCacheSegmentation>())
-		, preFetcher_(boost::make_shared<OmTilePreFetcher>())
-	{
-		numDrawersActive_.set(0);
-	}
+    OmTileCacheImpl()
+        : cacheChannel_(boost::make_shared<OmTileCacheChannel>())
+        , cacheSegmentation_(boost::make_shared<OmTileCacheSegmentation>())
+        , preFetcher_(boost::make_shared<OmTilePreFetcher>())
+    {
+        numDrawersActive_.set(0);
+    }
 
-	bool isChannel(const OmTileCoord& key){
-		return CHANNEL == key.getVolume()->getVolumeType();
-	}
+    bool isChannel(const OmTileCoord& key){
+        return CHANNEL == key.getVolume()->getVolumeType();
+    }
 
-	void setDrawerActive(OmTileDrawer* d)
-	{
-		if(drawersActive_[d]){
-			return;
-		}
+    void setDrawerActive(OmTileDrawer* d)
+    {
+        if(drawersActive_[d]){
+            return;
+        }
 
-		drawersActive_[d] = true;
-		++numDrawersActive_;
-		stopIdleThreadTask();
-	}
+        drawersActive_[d] = true;
+        ++numDrawersActive_;
+        stopIdleThreadTask();
+    }
 
-	void runIdleThreadTask()
-	{
-		if(ZiARG_noTilePrefetch){
-			return;
-		}
+    void runIdleThreadTask()
+    {
+        if(ZiARG_noTilePrefetch){
+            return;
+        }
 
-		if(AreDrawersActive()){
-			return;
-		}
+        if(AreDrawersActive()){
+            return;
+        }
 
-		std::list<OmTileDrawer*> drawers;
-		FOR_EACH(iter, drawersActive_){
-			drawers.push_back(iter->first);
-		}
-		preFetcher_->RunTasks(drawers);
-	}
+        std::list<OmTileDrawer*> drawers;
+        FOR_EACH(iter, drawersActive_){
+            drawers.push_back(iter->first);
+        }
+        preFetcher_->RunTasks(drawers);
+    }
 
-	void stopIdleThreadTask()
-	{
-		if(!AreDrawersActive()){
-			return;
-		}
+    void stopIdleThreadTask()
+    {
+        if(!AreDrawersActive()){
+            return;
+        }
 
-		preFetcher_->ClearTasks();
-	}
+        preFetcher_->ClearTasks();
+    }
 
-	void doGet(OmTilePtr& tile,
-			   const OmTileCoord& key,
-			   const om::Blocking blocking)
-	{
-		if(isChannel(key)){
-			cacheChannel_->Get(tile, key, blocking);
-		} else {
-			cacheSegmentation_->Get(tile, key, blocking);
-		}
-	}
+    void doGet(OmTilePtr& tile,
+               const OmTileCoord& key,
+               const om::Blocking blocking)
+    {
+        if(isChannel(key)){
+            cacheChannel_->Get(tile, key, blocking);
+        } else {
+            cacheSegmentation_->Get(tile, key, blocking);
+        }
+    }
 
-	friend class OmTileCache;
+    friend class OmTileCache;
 };
 
 #endif

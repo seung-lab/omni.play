@@ -4,17 +4,17 @@
 #include "gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxBase.hpp"
 
 class SliceDepthSpinBoxX : public SliceDepthSpinBoxBase {
-	Q_OBJECT
+Q_OBJECT
 
 public:
-	SliceDepthSpinBoxX(DisplayTools* d)
-		: SliceDepthSpinBoxBase(d)
-	{}
+    SliceDepthSpinBoxX(DisplayTools* d)
+        : SliceDepthSpinBoxBase(d)
+    {}
 
 private:
-	virtual ViewType viewType() const {
-		return YZ_VIEW;
-	}
+    virtual ViewType viewType() const {
+        return YZ_VIEW;
+    }
 };
 
 #endif

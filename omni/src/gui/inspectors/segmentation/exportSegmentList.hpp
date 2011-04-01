@@ -3,7 +3,7 @@
 
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/widgets/omButton.hpp"
-#include "segment/omSegmentCache.h"
+#include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
 
 #include <QTextStream>
@@ -20,9 +20,9 @@ class ExportSegmentList : public OmButton<SegInspector> {
  private:
 	void doAction()
 	{
-		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
+		const SegmentationDataWrapper& sdw = mParent->GetSDW();
 
-		OmSegmentCache* segmentCache = sdw.SegmentCache();
+		OmSegments* segments = sdw.Segments();
 
 		const QString outFile = OmProject::OmniFile() + ".segments.txt";
 
@@ -36,8 +36,8 @@ class ExportSegmentList : public OmButton<SegInspector> {
 		QTextStream out(&data);
 		out << "segID,isValid\n";
 
-		for(OmSegID i = 1; i <= segmentCache->getMaxValue(); ++i){
-			OmSegment* seg = segmentCache->GetSegment(i);
+		for(OmSegID i = 1; i <= segments->getMaxValue(); ++i){
+			OmSegment* seg = segments->GetSegment(i);
 			if(!seg){
 				continue;
 			}

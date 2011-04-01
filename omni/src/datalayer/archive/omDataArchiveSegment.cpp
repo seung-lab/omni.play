@@ -1,7 +1,7 @@
 #include "common/omException.h"
 #include "datalayer/archive/omDataArchiveSegment.h"
 #include "segment/omSegment.h"
-#include "segment/omSegmentCache.h"
+#include "segment/omSegments.h"
 #include "segment/io/omSegmentPage.hpp"
 #include "project/omProject.h"
 #include "datalayer/hdf5/omHdf5.h"

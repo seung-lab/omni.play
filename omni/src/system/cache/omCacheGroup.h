@@ -2,32 +2,39 @@
 #define OM_CACHE_GROUP_H
 
 #include "common/omCommon.h"
+#include "zi/omMutex.h"
 
 #include <QList>
-#include "zi/omMutex.h"
 
 class OmCacheBase;
 class OmCacheInfo;
 
 class OmCacheGroup {
 public:
-	OmCacheGroup();
+    OmCacheGroup(const om::CacheGroup cacheGroup);
 
-	void AddCache(OmCacheBase* cache);
-	void RemoveCache(OmCacheBase* cache);
-	void Clear();
+    void AddCache(OmCacheBase* cache);
+    void RemoveCache(OmCacheBase* cache);
+    void DeleteCaches();
 
-	void SetMaxSizeMB(const qint64 size);
+    void SetMaxSizeMB(const int64_t size);
 
-	int Clean();
-	void SignalCachesToCloseDown();
+    void Clean();
+    void ClearCacheContents();
+    void SignalCachesToCloseDown();
 
-	QList<OmCacheInfo> GetCacheInfo();
+    QList<OmCacheInfo> GetCacheInfo();
 
 private:
-	uint64_t mMaxSize;
-	zi::rwmutex mRWLock;
-	std::set<OmCacheBase*> mCacheSet;
+    const om::CacheGroup cacheGroup_;
+    int64_t maxAllowedSize_;
+
+    zi::rwmutex lock_;
+    std::set<OmCacheBase*> caches_;
+
+    void clearDeadItems();
+    int64_t currentSize();
+    int64_t removeOldest(const int64_t currentSize);
 };
 
 #endif

@@ -2,7 +2,7 @@
 #define _OM_GROUPS_H_
 
 #include "common/omCommon.h"
-#include "system/omGenericManager.h"
+#include "system/omGenericManager.hpp"
 #include <QVector>
 #include <QHash>
 

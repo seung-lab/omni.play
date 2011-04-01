@@ -2,82 +2,58 @@
 #define STRING_HELPERS_H
 
 #include "common/omCommon.h"
+#include "common/omString.hpp"
 #include "zi/omUtility.h"
-
-#include <QStringList>
 
 class OmStringHelpers{
 public:
-	static QString getStringFromSegmentSet( const OmSegIDsSet & data_set );
-	static QString getStringFromIDset( const OmIDsSet & data_set );
-	static QString getStringFromStringList( const QStringList & data_set );
 
-	template <typename T>
-	inline static std::string CommaDeliminateNum(const T num){
-		return CommaDeliminateNumQT(num).toStdString();
-	}
+    template <typename T>
+    inline static QString HumanizeNumQT(const T num, const char sep = ','){
+        return QString::fromStdString(om::string::humanizeNum(num, sep));
+    }
 
-	template <typename T>
-	inline static QString CommaDeliminateNumQT(const T num)
-	{
-		const std::string rawNumAsStr = QString::number(num).toStdString();
+    static uint32_t getUInt(const QString& arg)
+    {
+        bool ok;
+        uint32_t ret = arg.toUInt(&ok, 10);
+        if(ok){
+            return ret;
+        }
+        throw OmIoException("could not parse to uint32_t", arg);
+    }
 
-		size_t counter = 0;
-		QString ret;
-		FOR_EACH_R(i, rawNumAsStr){
-			++counter;
-			ret.prepend( (*i) );
-			if( 0 == ( counter % 3 ) &&
-				counter != rawNumAsStr.size() )
-			{
-				ret.prepend(',');
-			}
-		}
+    static bool getBool(const QString& arg)
+    {
+        if("true" == arg){
+            return true;
+        }
+        if("false" == arg){
+            return false;
+        }
 
-		return ret;
-	}
+        return getUInt(arg);
+    }
 
-	static unsigned int getUInt(const QString& arg)
-	{
-		bool ok;
-		unsigned int ret = arg.toUInt(&ok, 10);
-		if( ok ){
-			return ret;
-		}
-		throw OmIoException("could not parse to unsigned int", arg);
-	}
+    static double getDouble(const QString& arg)
+    {
+        bool ok;
+        double ret = arg.toDouble(&ok);
+        if( ok ){
+            return ret;
+        }
+        throw OmIoException("could not parse to double", arg);
+    }
 
-	static bool getBool(const QString& arg)
-	{
-		if("true" == arg){
-			return true;
-		}
-		if("false" == arg){
-			return false;
-		}
-
-		return getUInt(arg);
-	}
-
-	static double getDouble(const QString& arg)
-	{
-		bool ok;
-		double ret = arg.toDouble(&ok);
-		if( ok ){
-			return ret;
-		}
-		throw OmIoException("could not parse to double", arg);
-	}
-
-	static float getFloat(const QString& arg)
-	{
-		bool ok;
-		double ret = arg.toFloat(&ok);
-		if( ok ){
-			return ret;
-		}
-		throw OmIoException("could not parse to float", arg);
-	}
+    static float getFloat(const QString& arg)
+    {
+        bool ok;
+        float ret = arg.toFloat(&ok);
+        if( ok ){
+            return ret;
+        }
+        throw OmIoException("could not parse to float", arg);
+    }
 };
 
 #endif

@@ -9,47 +9,55 @@ class MainWindow;
 
 class MenuBar : public QWidget
 {
-	Q_OBJECT
-		
- public:
-	MenuBar( MainWindow * mw );
-	void updateReadOnlyRelatedWidgets();
-	QMenu * getWindowMenu();
-	QAction * getOpenCacheMonitorAct();
-	void addRecentFile( QString fname );
+Q_OBJECT
 
- private:
-	MainWindow * mMainWindow;
+public:
+    MenuBar(MainWindow* mw);
 
-	void createActions();
-	void createMenus();
+    void UpdateReadOnlyRelatedWidgets();
+    void AddRecentFile(const QString& fnp);
 
-	QMenu *fileMenu;
-	QMenu *editMenu;
-	QMenu *projectMenu;
-	QMenu *toolMenu;
-	QMenu *windowMenu;
-	
-	QAction *newAct;
-	QAction *openAct;
-	QAction *saveAct;
-	QAction *closeAct;
-	QAction *quitAct;
-		
-	QAction *editPreferencesAct;
-	QAction *editLocalPreferencesAct;
+    inline QMenu* GetWindowMenu() const {
+        return windowMenu_;
+    }
 
-	QAction *addChannelAct;
-	QAction *addSegmentationAct;
-		
-	QAction *openOmniInspector;
-	QAction *openUndoViewAct;
-	QAction *openCacheMonitorAct;
-	QAction *openGroupsTableAct;
-		
-	QAction *open3DAct;
+    inline QAction* GetOpenCacheMonitorAct(){
+        return openCacheMonitorAct_;
+    }
 
-	RecentFileList recentFiles;
+private:
+    MainWindow *const mainWindow_;
+
+    void createActions();
+    void createMenus();
+
+    QMenu* fileMenu_;
+    QMenu* editMenu_;
+    QMenu* projectMenu_;
+    QMenu* toolMenu_;
+    QMenu* windowMenu_;
+
+    QAction* newAct_;
+    QAction* openAct_;
+    QAction* saveAct_;
+    QAction* closeAct_;
+    QAction* quitAct_;
+
+    QAction* editPreferencesAct_;
+    QAction* editLocalPreferencesAct_;
+
+    QAction* addChannelAct_;
+    QAction* addSegmentationAct_;
+    QAction* dumpActionLogAct_;
+
+    QAction* openOmniInspector_;
+    QAction* openUndoViewAct_;
+    QAction* openCacheMonitorAct_;
+    QAction* openGroupsTableAct_;
+
+    QAction* open3DAct_;
+
+    RecentFileList recentFiles_;
 };
 
 #endif

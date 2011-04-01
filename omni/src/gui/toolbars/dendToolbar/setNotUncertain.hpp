@@ -5,30 +5,30 @@
 #include "gui/toolbars/dendToolbar/validationGroup.h"
 #include "gui/widgets/omButton.hpp"
 #include "actions/omActions.h"
-#include "system/omEvents.h"
+#include "events/omEvents.h"
 
 class SetNotUncertain : public OmButton<ValidationGroup> {
 public:
-	SetNotUncertain(ValidationGroup *d)
-		: OmButton<ValidationGroup>( d,
-									 "Not Uncertain",
-									 "Not uncertain about selected objects",
-									 false)
-	{}
+    SetNotUncertain(ValidationGroup *d)
+        : OmButton<ValidationGroup>( d,
+                                     "Not Uncertain",
+                                     "Not uncertain about selected objects",
+                                     false)
+    {}
 
 private:
-	void doAction()
-	{
-		//debug(dendbar, "ValidationGroup::addGroup\n");
-		SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
-		if(!sdw.IsSegmentationValid()){
-			return;
-		}
+    void doAction()
+    {
+        //debug(dendbar, "ValidationGroup::addGroup\n");
+        SegmentationDataWrapper sdw = mParent->GetSDW();
+        if(!sdw.IsSegmentationValid()){
+            return;
+        }
 
-		OmActions::UncertainSegment(sdw, false);
+        OmActions::UncertainSegmentation(sdw, false);
 
-		OmEvents::SegmentModified();
-	}
+        OmEvents::SegmentModified();
+    }
 };
 
 #endif

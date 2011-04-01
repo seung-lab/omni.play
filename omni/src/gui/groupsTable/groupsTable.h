@@ -23,30 +23,31 @@ class OmViewGroupState;
 class GroupsTable : public QWidget {
 Q_OBJECT
 public:
-	static void Repopulate(OmSegID id = 0);
-	GroupsTable(OmViewGroupState * vgs);
+    static void Repopulate(OmSegID id = 0);
 
-	void populateGroupTable(OmGroupID id);
+    GroupsTable(OmViewGroupState* vgs);
 
-	void SetSegmentID(OmSegID seg);
+    void populateGroupTable(OmGroupID id);
 
-private slots:
-	void doDeleteAction();
+    void SetSegmentID(OmSegID seg);
+
+private Q_SLOTS:
+    void doDeleteAction();
 
 private:
-	SegmentationDataWrapper sdw_;
+    SegmentationDataWrapper sdw_;
 
-	OmSegID seg_;
-	OmGroupID groupid_;
+    OmSegID seg_;
+    OmGroupID groupid_;
 
-	void populateGroupsList();
+    void populateGroupsList();
 
-	OmViewGroupState * mViewGroupState;
+    OmViewGroupState * mViewGroupState;
 
-	QGridLayout * mLayout;
-	OmGroupListWidget * mGroupsList;
-	QTableWidget * mGroupsTable;
-	QMenu * mMenu;
+    QGridLayout * mLayout;
+    OmGroupListWidget * mGroupsList;
+    QTableWidget * mGroupsTable;
+    QMenu * mMenu;
 };
 #endif
 

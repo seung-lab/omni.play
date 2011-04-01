@@ -9,22 +9,21 @@ class OmThreadPool;
 
 class OmThreadPoolManager : private om::singletonBase<OmThreadPoolManager> {
 private:
-	zi::mutex lock_;
-	std::set<OmThreadPool*> pools_;
+    zi::mutex lock_;
+    std::set<OmThreadPool*> pools_;
 
 public:
-	static void StopAll();
-	static void Add(OmThreadPool*);
-	static void Remove(OmThreadPool*);
+    static void StopAll();
+    static void Add(OmThreadPool*);
+    static void Remove(OmThreadPool*);
 
 private:
-	OmThreadPoolManager()
-	{}
+    OmThreadPoolManager()
+    {}
 
-	~OmThreadPoolManager()
-	{}
+    ~OmThreadPoolManager();
 
-	friend class zi::singleton<OmThreadPoolManager>;
+    friend class zi::singleton<OmThreadPoolManager>;
 };
 
 #endif

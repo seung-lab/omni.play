@@ -4,7 +4,7 @@
 #include "actions/omActions.h"
 #include "common/omCommon.h"
 #include "system/cache/omCacheManager.h"
-#include "system/omEvents.h"
+#include "events/omEvents.h"
 #include "utility/dataWrappers.h"
 #include "zi/omUtility.h"
 

@@ -6,30 +6,37 @@
 #include <QtGui>
 
 class MainWindow;
-class MainToolbar;
+class MainToolBar;
 class DendToolBar;
 class OmViewGroupState;
 
-class ToolBarManager : public QWidget
-{
-	Q_OBJECT
+class ToolBarManager : public QWidget {
+Q_OBJECT
 
 public:
-	ToolBarManager( MainWindow * mw );
-	void setupToolbarInitially();
-	void updateReadOnlyRelatedWidgets();
-	void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
-	void windowResized(QPoint oldPos);
-	void windowMoved(QPoint oldPos);
+    ToolBarManager(MainWindow* mw);
+    ~ToolBarManager();
 
-	void SetSplittingOff();
-	void SetCuttingOff();
-	void setTool(const OmToolMode tool);
+    void UpdateReadOnlyRelatedWidgets();
+    void UpdateGuiFromProjectLoadOrOpen(OmViewGroupState *);
+    void UpdateGuiFromProjectClose();
+    void WindowResized(QPoint oldPos);
+    void WindowMoved(QPoint oldPos);
 
- private:
-	MainWindow * mMainWindow;
-	MainToolbar * mainToolbar;
-	DendToolBar * dendToolBar;
+    void SetSplittingOff();
+    void ShowSplitterBusy(const bool showBusy);
+
+    void SetCuttingOff();
+    void SetTool(const om::tool::mode tool);
+
+private:
+    MainWindow *const mainWindow_;
+
+    boost::scoped_ptr<MainToolBar> mainToolBar_;
+    boost::scoped_ptr<DendToolBar> dendToolBar_;
+
+    void deleteDendBar();
+    void deleteMainBar();
 };
 
 #endif

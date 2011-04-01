@@ -1,46 +1,53 @@
 #include "inspectorProperties.h"
 #include "viewGroup/omViewGroupState.h"
-#include "gui/updateSegmentProperties.hpp"
+#include "gui/updateSegmentProperties.h"
 
 InspectorProperties::InspectorProperties(QWidget* parent,
-										 OmViewGroupState* vgs)
-	: QDialog(parent)
-	, mViewGroupState(vgs)
-	, mWidget(NULL)
+                                         OmViewGroupState* vgs)
+    : QDialog(parent)
+    , vgs_(vgs)
+    , widget_(NULL)
 {
-	mainLayout = new QVBoxLayout();
-	setLayout(mainLayout);
+    mainLayout = new QVBoxLayout();
+    setLayout(mainLayout);
 
-	mViewGroupState->SetInspectorProperties(this);
+    vgs_->SetInspectorProperties(this);
 
-	UpdateSegmentPropertiesDialog::SetInspectorProperties(this);
+    UpdateSegmentPropertiesDialog::SetInspectorProperties(this);
+}
+
+InspectorProperties::~InspectorProperties()
+{
+    UpdateSegmentPropertiesDialog::Delete();
 }
 
 void InspectorProperties::setOrReplaceWidget(QWidget *incomingWidget,
-											 const QString title)
+                                             const QString title)
 {
-	if( mWidget != NULL ){
-		mainLayout->removeWidget( mWidget );
-		mWidget->close();
-		delete( mWidget );
-		mWidget = NULL;
-	}
+    if(widget_)
+    {
+        mainLayout->removeWidget( widget_ );
+        widget_->close();
+        delete( widget_ );
+        widget_ = NULL;
+    }
 
-	mWidget = incomingWidget;
-	mainLayout->addWidget( mWidget );
-	setWindowTitle(title);
+    widget_ = incomingWidget;
+    mainLayout->addWidget(widget_);
+    setWindowTitle(title);
 
-	if( !isVisible() ){
-		show();
-		raise();
-		activateWindow();
-	}
+    if(!isVisible())
+    {
+        show();
+        raise();
+        activateWindow();
+    }
 }
 
 void InspectorProperties::closeDialog(){
-	QDialog::done(0);
+    QDialog::done(0);
 }
 
 OmViewGroupState* InspectorProperties::getViewGroupState(){
-	return mViewGroupState;
+    return vgs_;
 }

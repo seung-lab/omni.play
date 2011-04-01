@@ -53,7 +53,7 @@ public:
 		throw OmArgException("uninitialized");
 	}
 
-	SegmentationDataWrapper GetSegmentationDataWrapper() const {
+	SegmentationDataWrapper GetSDW() const {
 		return *sdw_;
 	}
 

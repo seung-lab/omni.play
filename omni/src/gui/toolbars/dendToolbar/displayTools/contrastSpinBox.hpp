@@ -11,36 +11,36 @@
 #include <limits>
 
 class ContrastSpinBox : public OmDoubleSpinBox {
-Q_OBJECT
+    Q_OBJECT
 
-public:
-	ContrastSpinBox(DisplayTools* d)
-		: OmDoubleSpinBox(d, om::UPDATE_AS_TYPE)
-		, mParent(d)
-	{
-		setSingleStep(0.05);
-		setRange(-5, 5);
-		setInitialGUIThresholdValue();
-	}
+    public:
+    ContrastSpinBox(DisplayTools* d)
+        : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE)
+        , mParent(d)
+    {
+        setSingleStep(0.05);
+        setRange(-5, 5);
+        setInitialGUIThresholdValue();
+    }
 
 private:
-	DisplayTools *const mParent;
+    DisplayTools *const mParent;
 
-	void actUponThresholdChange(float threshold)
-	{
-		OmImageFilter::SetContrastValue(threshold);
-		OmTileCache::ClearChannel();
-		std::cout << "contrast changed to " << threshold << "\n";
-	}
+    void actUponValueChange(const double threshold)
+    {
+        OmImageFilter::SetContrastValue(threshold);
+        OmTileCache::ClearChannel();
+        std::cout << "contrast changed to " << threshold << "\n";
+    }
 
-	void setInitialGUIThresholdValue()
-	{
+    void setInitialGUIThresholdValue()
+    {
         setValue(OmImageFilter::GetContrastValue());
-	}
+    }
 
-	OmViewGroupState* vgs() const {
-		return mParent->getViewGroupState();
-	}
+    OmViewGroupState* vgs() const {
+        return mParent->getViewGroupState();
+    }
 };
 
 #endif
