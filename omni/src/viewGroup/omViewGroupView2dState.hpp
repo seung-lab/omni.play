@@ -5,6 +5,10 @@
 #include "common/omCommon.h"
 #include "events/omEvents.h"
 
+/**
+ * Global viewing location across all volumes
+ **/
+
 class OmViewGroupView2dState {
 private:
     struct ViewPlanInfo
@@ -46,37 +50,44 @@ private:
         }
     }
 
+    zi::spinlock lock_;
+
 public:
     OmViewGroupView2dState()
-    {
-        xy_.depth = 0;
-        xz_.depth = 0;
-        yz_.depth = 0;
-    }
+    {}
 
-    inline Vector3f GetScaledSliceDepth() const {
+    ~OmViewGroupView2dState()
+    {}
+
+    inline Vector3f GetScaledSliceDepth() const
+    {
+        zi::guard g(lock_);
         return Vector3f(yz_.depth, xz_.depth, xy_.depth);
     }
 
-    inline float GetScaledSliceDepth(const ViewType plane) const {
+    inline float GetScaledSliceDepth(const ViewType plane) const
+    {
+        zi::guard g(lock_);
         return getPlane(plane).depth;
     }
 
     inline void SetScaledSliceDepth(const Vector3f& depths)
     {
-        yz_.depth = depths.x;
-        xz_.depth = depths.y;
-        xy_.depth = depths.z;
+        {
+            zi::guard g(lock_);
+            yz_.depth = depths.x;
+            xz_.depth = depths.y;
+            xy_.depth = depths.z;
+        }
+        OmEvents::ViewBoxChanged();
     }
 
     inline void SetScaledSliceDepth(const ViewType plane, const float depth)
     {
-        if(std::isnan(depth)){
-            throw OmArgException("depth was not a number");
+        {
+            zi::guard g(lock_);
+            getPlane(plane).depth = depth;
         }
-
-        getPlane(plane).depth = depth;
-
         OmEvents::ViewBoxChanged();
     }
 
@@ -84,26 +95,38 @@ public:
     inline void SetViewSliceMin(const ViewType plane, const float x, const float y)
     {
         const om::point2df pts = { x, y };
-        getPlane(plane).min = pts;
+        {
+            zi::guard g(lock_);
+            getPlane(plane).min = pts;
+        }
     }
 
     inline Vector2f GetViewSliceMin(ViewType plane) const
     {
         const om::point2df& pts = getPlane(plane).min;
-        return Vector2f(pts.x, pts.y);
+        {
+            zi::guard g(lock_);
+            return Vector2f(pts.x, pts.y);
+        }
     }
 
 // maximum coordiante of view slice
     inline void SetViewSliceMax(const ViewType plane, const float x, const float y)
     {
         const om::point2df pts = { x, y };
-        getPlane(plane).max = pts;
+        {
+            zi::guard g(lock_);
+            getPlane(plane).max = pts;
+        }
     }
 
     inline Vector2f GetViewSliceMax(const ViewType plane) const
     {
         const om::point2df& pts = getPlane(plane).max;
-        return Vector2f(pts.x, pts.y);
+        {
+            zi::guard g(lock_);
+            return Vector2f(pts.x, pts.y);
+        }
     }
 };
 

@@ -26,10 +26,6 @@ public:
 
     void growGraphIfNeeded(OmSegment* newSeg);
 
-    inline OmSegment* GetSegment(const OmSegID value){
-        return segmentPages_->GetSegment(value);
-    }
-
     inline OmSegID GetNumSegments() const {
         return mNumSegs;
     }
@@ -48,7 +44,7 @@ public:
             return segment;
         }
 
-        return GetSegment(segmentGraph_.Root(segment->value()));
+        return store_->GetSegment(segmentGraph_.Root(segment->value()));
     }
 
     inline OmSegID FindRootID(OmSegment* segment)
@@ -70,7 +66,7 @@ public:
             return 0;
         }
 
-        return GetSegment(segmentGraph_.Root(segID));
+        return store_->GetSegment(segmentGraph_.Root(segID));
     }
 
     inline OmSegID FindRootID(const OmSegID segID)
@@ -89,8 +85,6 @@ public:
     void setSegmentNote(OmSegID segID, QString note);
 
     void turnBatchModeOn(const bool batchMode);
-
-    uint32_t getPageSize();
 
     inline uint32_t getMaxValue() const {
         return maxValue_.get();
@@ -111,12 +105,12 @@ public:
     SegmentationDataWrapper GetSDW() const;
 
     OmSegmentsStore* SegmentStore(){
-        return segmentPages_;
+        return store_;
     }
 
 protected:
     OmSegmentation *const segmentation_;
-    OmSegmentsStore *const segmentPages_;
+    OmSegmentsStore *const store_;
     const boost::scoped_ptr<OmSegmentSelection> segmentSelection_;
     const boost::scoped_ptr<OmEnabledSegments> enabledSegments_;
 

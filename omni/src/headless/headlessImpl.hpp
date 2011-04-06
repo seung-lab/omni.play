@@ -289,43 +289,6 @@ public:
         std::cout << megsPerSec << " MB/sec\n";
     }
 
-    static void RefindUniqueChunkValues(const OmID segmentationID_)
-    {
-        OmTimer timer;
-
-        SegmentationDataWrapper sdw(segmentationID_);
-        OmSegmentation& vol = sdw.GetSegmentation();
-
-        OmFileHelpers::RemoveDir(OmFileNames::GetChunksFolder(&vol));
-
-        boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
-            vol.GetMipChunkCoords();
-
-        const uint32_t numChunks = coordsPtr->size();
-
-        int counter = 0;
-        FOR_EACH(iter, *coordsPtr){
-            const OmChunkCoord& coord = *iter;
-
-            ++counter;
-            printf("\rfinding values in chunk %d of %d...", counter, numChunks);
-            fflush(stdout);
-
-            OmTimer timer;
-            const ChunkUniqueValues segIDs =
-                vol.ChunkUniqueValues()->Values(coord, 1);
-
-            const double time = timer.s_elapsed();
-            std::cout << " (done in " << time << " secs, "
-                      << 1. / time << " chunks per sec)"
-                      << std::flush;
-
-            vol.ChunkUniqueValues()->Clear();
-        }
-
-        timer.PrintDone();
-    }
-
     static void Mesh(const OmID segmentationID)
     {
         const SegmentationDataWrapper sdw(segmentationID);

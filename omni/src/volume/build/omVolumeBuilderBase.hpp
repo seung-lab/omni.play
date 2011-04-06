@@ -139,7 +139,7 @@ private:
 
         vol_->Coords().UpdateRootLevel();
 
-        vol_->ChunkCache()->UpdateFromVolResize();
+        vol_->UpdateFromVolResize();
     }
 };
 

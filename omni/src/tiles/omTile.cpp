@@ -96,14 +96,19 @@ int OmTile::getDepth()
                                                 key_.getViewType()) / factor;
 }
 
-ObjectType OmTile::getVolType(){
+ObjectType OmTile::getVolType() const {
     return getVol()->getVolumeType();
 }
 
 uint32_t OmTile::NumBytes() const
 {
-    if(!texture_){
-        return 0;
+    if(getVolType() == CHANNEL) {
+        return 128*128;
     }
-    return texture_->NumBytes();
+
+    return 128*128*4;
+}
+
+bool OmTile::IsMip0(){
+    return 0 == key_.getLevel();
 }

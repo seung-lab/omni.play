@@ -622,7 +622,7 @@ void Headless::processLine(const QString& line, const QString&)
             printf("Please choose segmentation first!\n");
             return;
         }
-        HeadlessImpl::RefindUniqueChunkValues(segmentationID_);
+        OmChunkUtils::RefindUniqueChunkValues(segmentationID_);
 
     } else if(line.startsWith("importWatershed:")){
         const QStringList args = line.split(':',QString::SkipEmptyParts);

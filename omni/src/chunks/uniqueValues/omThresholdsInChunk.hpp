@@ -6,31 +6,49 @@
 
 class OmThresholdsInChunk {
 private:
-	OmSegmentation *const segmentation_;
-	const OmChunkCoord coord_;
-	zi::rwmutex lock_;
+    OmSegmentation *const segmentation_;
+    const OmChunkCoord coord_;
 
-	DoubleFuzzyStdMap<boost::shared_ptr<OmChunkUniqueValuesPerThreshold> > valByThres_;
+    typedef DoubleFuzzyStdMap<OmChunkUniqueValuesPerThreshold*> map_t;
+    typedef map_t::iterator iterator;
+    typedef map_t::value_type value_t;
+
+    map_t valByThres_;
+    zi::mutex lock_;
 
 public:
-	OmThresholdsInChunk(OmSegmentation* segmentation,
-						const OmChunkCoord& coord)
-		: segmentation_(segmentation)
-		, coord_(coord)
-	{}
+    OmThresholdsInChunk(OmSegmentation* segmentation,
+                        const OmChunkCoord& coord)
+        : segmentation_(segmentation)
+        , coord_(coord)
+    {}
 
-	boost::shared_ptr<OmChunkUniqueValuesPerThreshold> Get(const double threshold)
-	{
-		zi::rwmutex::write_guard g(lock_);
+    ~OmThresholdsInChunk()
+    {
+        zi::guard g(lock_);
+        FOR_EACH(iter, valByThres_){
+            delete iter->second;
+        }
+    }
 
-		if(!valByThres_.count(threshold)){
-			return valByThres_[threshold] =
-				boost::make_shared<OmChunkUniqueValuesPerThreshold>(segmentation_,
-																   coord_,
-																   threshold);
-		}
-		return valByThres_[threshold];
-	}
+    OmChunkUniqueValuesPerThreshold* Get(const double threshold)
+    {
+        zi::guard g(lock_);
+
+        iterator iter = valByThres_.lower_bound(threshold);
+
+        if(iter != valByThres_.end() && !(valByThres_.key_comp()(threshold, iter->first)))
+        {
+            return iter->second;
+        }
+
+        iterator p = valByThres_.insert(iter,
+                                        value_t(threshold,
+                                                new OmChunkUniqueValuesPerThreshold(segmentation_,
+                                                                                    coord_,
+                                                                                    threshold)));
+        return p->second;
+    }
 };
 
 #endif

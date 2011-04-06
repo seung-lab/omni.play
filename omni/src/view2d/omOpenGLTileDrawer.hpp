@@ -41,7 +41,7 @@ private:
 
         const OmTextureIDPtr& texture = tv.tile->GetTexture();
         if(texture->NeedToBuildTexture()){
-            doBindTileDataToGLid(texture);
+            doBindTileDataToGLid(texture, tv.tile->IsMip0());
         }
 
         glBindTexture(GL_TEXTURE_2D, texture->GetTextureID());
@@ -71,16 +71,25 @@ private:
         glEnd();
     }
 
-    void doBindTileDataToGLid(const OmTextureIDPtr& texture)
+    void doBindTileDataToGLid(const OmTextureIDPtr& texture, const bool isMip0)
     {
         GLuint textureID;
         glGenTextures(1, &textureID);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        if(isMip0){
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        } else {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        }
+
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
         glTexImage2D(GL_TEXTURE_2D,

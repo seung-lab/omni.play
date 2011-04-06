@@ -1,13 +1,21 @@
 
 	var omni = {};
 	omni.sliceNum = 75;
-	omni.totNumSlices = 150;
+	omni.totNumChannels = 150;
 
 	omni.viewHeight = null;
 	omni.viewWidth = null;
 	omni.scaleRatio = 1;
 
+	// currently selected segment
+	omni.selectedSeg = {
+		x: null,
+		y: null,
+		selected: false
+	};
+
 	var altScroll = false;
+	var shiftKey = false;
 
 	function init() {
 		showCurrentSlice();
@@ -24,36 +32,73 @@
 
 		// altScroll
 		// use command for mac (224) and alt for windows (18)
-		// var altKeyCode = 224;
-                var altKeyCode = 18;
-		// if windows
+		var altKeyCode;
+		if(navigator.appVersion.indexOf("Mac")!=-1) {
+			altKeyCode = 224;
+		} else {
+			// all else
+			altKeyCode = 18;
+		}
+
+		// shift key
+		var shiftKeyCode = 16;
 
 		$(document).keydown(function(event) {
 			// alert(event.keyCode);
 			if(event.keyCode == altKeyCode) {
 				altScroll = true;
 			}
+			if(event.keyCode == shiftKeyCode) {
+				shiftKey = true;
+				$('#viewCanvasContainer').css('cursor', 'default');
+			}
 		});
 		$(document).keyup(function(event) {
 			if(event.keyCode == altKeyCode) {
 				altScroll = false;
 			}
+			if(event.keyCode == shiftKeyCode) {
+				shiftKey = false;
+				$('#viewCanvasContainer').css('cursor', 'move');
+			}
+		});
+
+		// w or s
+		var wKeyCode = 119;
+		var sKeyCode = 115;
+		$(document).keypress(function(event) {
+			// AlertPropertyNames(event);
+			// AlertPropertyNames(event.originalEvent);
+			// alert(event.which);
+			if(event.which == wKeyCode) {
+				displayNextSlice();
+			}
+			if(event.which == sKeyCode) {
+				displayPrevSlice();
+			}
 		});
 
 		// segmentation slider
 		$('#segmentationSlider').slider({
-			'value': 75,
+			'value': 80,
 			'slide': handleSegmentationAlphaSlide,
 			'stop': handleSegmentationAlphaSlide
 		});
-		$('#segmentationCanvas').css({
-			'opacity': 0.75,
-			'filter': 'alpha(opacity=' + 75 + ');'
-		});
-
 
 		$('#thresholdSlider').slider({
-			'value': 50
+			'value': 80
+		});
+
+		$('#segmentationCanvas').css({
+		        'opacity': 0.80,
+			'filter': 'alpha(opacity=' + 80 + ');'
+		});
+
+		// select segmentation
+		$('#segmentationCanvas').click(function(event) {
+			if(shiftKey) {
+				handleSelectSegment(event);
+			}
 		});
 
 	}
@@ -72,21 +117,33 @@
 	function handleChannelScroll(event, delta) {
 		if(delta > 0) {
 			// up
-			if(omni.sliceNum >= (omni.totNumSlices - 1)) {
-				omni.sliceNum = omni.totNumSlices - 1;
-			} else {
-				omni.sliceNum += 1;
-			}
+			displayNextSlice();
 		} else if (delta < 0) {
 			// down
-			if(omni.sliceNum == 0) {
-                                omni.sliceNum = 0;
-			} else {
-				omni.sliceNum -= 1;
-			}
+			displayPrevSlice();
+		}
+		return false; // prevent default
+	}
+
+	// next slice
+	function displayNextSlice() {
+	       if(omni.sliceNum >= (omni.totNumChannels - 1)) {
+		        return;
+		} else {
+			omni.sliceNum += 1;
 		}
 		showCurrentSlice();
-		return false; // prevent default
+	}
+
+	// prev slice
+	function displayPrevSlice() {
+		// down
+		if(omni.sliceNum == 0) {
+		        return;
+		} else {
+			omni.sliceNum -= 1;
+		}
+		showCurrentSlice();
 	}
 
 	// handle zoom scroll
@@ -95,21 +152,18 @@
 		// change the scaling ratio and redisplay
 		if(delta > 0) {
 			// zoom in
-			omni.scaleRatio += 0.05;
+			omni.scaleRatio *= 1.125;
 		} else if(delta < 0) {
 			// zoom out
-			omni.scaleRatio -= 0.05;
+			omni.scaleRatio /= 1.125;
 		}
 		showCurrentSlice();
 	}
 
 	// display the current channel
 	function showCurrentSlice() {
-		var channelImgUrl = './engine/channel.php?slice_num=' + omni.sliceNum // + '&zoom_scale=' + omni.scaleRatio;
-		$('#channelCanvas').css('background-image', 'url(' + channelImgUrl + ')');
-
-		var segmentationImgUrl = './engine/segmentation.php?slice_num=' + omni.sliceNum // + '&zoom_scale=' + omni.scaleRatio;
-		$('#segmentationCanvas').css('background-image', 'url(' + segmentationImgUrl + ')');
+	       var channelImgUrl = './engine/channel.php?slice_num=' + omni.sliceNum;
+	       var segmentationImgUrl = './engine/segmentation.php?slice_num=' + omni.sliceNum;
 
 		// set dimensions
 		var img = new Image();
@@ -125,10 +179,40 @@
 
 			omni.viewHeight = this.height;
 			omni.viewWidth = this.width;
+
+			$('#segmentationCanvas').css('background-image', 'url(' + segmentationImgUrl + ')');
 		}
-		img.src = channelImgUrl;
+
+		img.src = segmentationImgUrl;
+
+		var channelImg = new Image();
+		channelImg.onload = function() {
+			$('#channelCanvas').css('background-image', 'url(' + channelImgUrl + ')');
+		}
+		channelImg.src = channelImgUrl;
 	}
 
+	// handle selecting segment
+	function handleSelectSegment(event) {
+	        // AlertPropertyNames(event);
+	        // AlertPropertyNames(event.originalEvent);
+                $.get('./server/select_segment.php',
+                      { x: event.offsetX,//event.layerX,
+                        y: event.offsetY,//event.layerY,
+                        slice_num: omni.sliceNum,
+                        h: $('#segmentationCanvas').height(),
+                        w: $('#segmentationCanvas').width()
+                      },
+                      function(uuid){
+	                  var segmentationImgUrl = './engine/segmentation.php?get_uuid=' + uuid;
+                          $('<img />')
+                              .attr('src', segmentationImgUrl )
+                              .load(function(){
+			          $('#segmentationCanvas').css('background-image', 'url(' + segmentationImgUrl + ')');
+                              });
+                      }
+                     );
+	}
 
 	// segmentation slider
 	function handleSegmentationAlphaSlide(event, ui) {
@@ -142,6 +226,7 @@
 		});
 	}
 
+
 	// toggle loading new view
 	function loadNewView(load) {
 		if(load) {
@@ -151,3 +236,36 @@
 			$('#viewCanvas').show();
 		}
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -22,6 +22,8 @@ public:
     static void ViewBoxChanged();
     static void ViewPosChanged();
     static void PreferenceChange(const int key);
+
+    static void UpdateSegmentPropBox(QWidget* widget, const QString& title);
 };
 
 #endif

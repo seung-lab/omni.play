@@ -1,10 +1,11 @@
 #ifndef OM_CHUNK_UTILS_HPP
 #define OM_CHUNK_UTILS_HPP
 
+#include "chunks/omChunkCoord.h"
+#include "chunks/omSegChunk.h"
+#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "utility/image/omImage.hpp"
 #include "utility/segmentationDataWrapper.hpp"
-#include "chunks/omSegChunk.h"
-#include "chunks/omChunkCoord.h"
 
 class OmChunkUtils{
 public:
@@ -80,6 +81,29 @@ public:
         return retImage;
     }
 
+    static void RefindUniqueChunkValues(const OmID segmentationID_)
+    {
+        SegmentationDataWrapper sdw(segmentationID_);
+        OmSegmentation& vol = sdw.GetSegmentation();
+
+        boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+            vol.GetMipChunkCoords();
+
+        const uint32_t numChunks = coordsPtr->size();
+
+        int counter = 0;
+
+        FOR_EACH(iter, *coordsPtr)
+        {
+            const OmChunkCoord& coord = *iter;
+
+            ++counter;
+            printf("\rfinding values in chunk %d of %d...", counter, numChunks);
+            fflush(stdout);
+
+            vol.ChunkUniqueValues()->RereadChunk(coord, 1);
+        }
+    }
 };
 
 #endif

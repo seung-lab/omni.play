@@ -83,7 +83,7 @@ public:
     }
 
     bool IsDrawComplete(){
-        return !tileCountIncomplete_;
+        return 0 == tileCountIncomplete_;
     }
 
     const boost::shared_ptr<OmView2dState>& GetState(){

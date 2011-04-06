@@ -9,7 +9,7 @@
 OmSegmentsImplLowLevel::OmSegmentsImplLowLevel(OmSegmentation* segmentation,
                                                OmSegmentsStore* segmentPages)
     : segmentation_(segmentation)
-    , segmentPages_(segmentPages)
+    , store_(segmentPages)
     , segmentSelection_(new OmSegmentSelection(this))
     , enabledSegments_(new OmEnabledSegments(this))
     , mNumSegs(0)
@@ -52,10 +52,6 @@ QString OmSegmentsImplLowLevel::getSegmentNote(OmSegID segID)
 
 void OmSegmentsImplLowLevel::setSegmentNote(OmSegID segID, QString note){
     segmentNotes[ segID ] = note;
-}
-
-quint32 OmSegmentsImplLowLevel::getPageSize(){
-    return segmentPages_->PageSize();
 }
 
 void OmSegmentsImplLowLevel::touchFreshness(){

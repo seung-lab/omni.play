@@ -29,8 +29,8 @@ void OmSegments::refreshTree()
 
 uint32_t OmSegments::getPageSize()
 {
-    zi::guard g(mutex_);
-    return impl_->getPageSize();
+    // locked internally
+    return store_->PageSize();
 }
 
 OmSegment* OmSegments::AddSegment()
@@ -53,22 +53,19 @@ OmSegment* OmSegments::GetOrAddSegment(const OmSegID val)
 
 bool OmSegments::IsSegmentValid(OmSegID seg)
 {
-    zi::guard g(mutex_);
-    return (NULL != impl_->GetSegment(seg));
+    // locked internally
+    return (NULL != store_->GetSegment(seg));
 }
 
 OmSegment* OmSegments::GetSegment(const OmSegID value)
 {
-    // zi::guard g(mutex_);
-    // return impl_->GetSegment(value);
-
-    // no locking
+    // locked internally
     return store_->GetSegment(value);
 }
 
 OmSegment* OmSegments::GetSegmentUnsafe(const OmSegID value)
 {
-    // no locking
+    // locked internally
     return store_->GetSegmentUnsafe(value);
 }
 
@@ -80,6 +77,8 @@ OmSegID OmSegments::GetNumSegments()
 
 uint32_t OmSegments::GetNumTopSegments()
 {
+    // locked internally
+
     if(segmentation_){
         return segmentation_->SegmentLists()->GetNumTopLevelSegs();
     }
@@ -169,25 +168,19 @@ QString OmSegments::getSegmentNote(OmSegID segID)
 
 OmSegment* OmSegments::findRoot(OmSegment* segment)
 {
-    zi::guard g(mutex_);
-    return impl_->FindRoot(segment);
+    // locked internally
+    return store_->GetSegment(store_->Root(segment->value()));
 }
 
 OmSegment* OmSegments::findRoot(const OmSegID segID)
 {
-    zi::guard g(mutex_);
-    return impl_->FindRoot(segID);
+    // locked internally
+    return store_->GetSegment(store_->Root(segID));
 }
 
 OmSegID OmSegments::findRootID(const OmSegID segID)
 {
-    zi::guard g(mutex_);
-    return impl_->FindRootID(segID);
-}
-
-OmSegID OmSegments::findRootIDcached(const OmSegID segID)
-{
-    // no locking
+    // locked internally
 
     if(!segID){
         return 0;
@@ -198,8 +191,14 @@ OmSegID OmSegments::findRootIDcached(const OmSegID segID)
 
 OmSegID OmSegments::findRootID(OmSegment* segment)
 {
+    // locked internally
+    return findRootID(segment->value());
+}
+
+OmSegID OmSegments::findRootIDnoCache(const OmSegID segID)
+{
     zi::guard g(mutex_);
-    return impl_->FindRootID(segment);
+    return impl_->FindRootID(segID);
 }
 
 OmSegIDsSet OmSegments::JoinTheseSegments(const OmSegIDsSet & segmentList)
@@ -283,6 +282,6 @@ uint64_t OmSegments::MSTfreshness() const
 
 OmSegmentChildren* OmSegments::Children()
 {
-    // no locking
+    // TODO: needs locking!
     return impl_->Children();
 }

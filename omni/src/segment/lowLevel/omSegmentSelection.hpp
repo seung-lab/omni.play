@@ -19,7 +19,7 @@ private:
 
     inline void addToRecentMap(const OmSegID segID)
     {
-        OmSegment* seg = cache_->GetSegment(segID);
+        OmSegment* seg = cache_->SegmentStore()->GetSegment(segID);
         cache_->segmentation_->SegmentLists()->TouchRecent(seg);
     }
 

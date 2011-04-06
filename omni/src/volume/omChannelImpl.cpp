@@ -51,7 +51,7 @@ void OmChannelImpl::loadVolData()
 {
     if(IsBuilt())
     {
-        chunkCache_->UpdateFromVolResize();
+        UpdateFromVolResize();
         volData_->load(this);
     }
 }
@@ -81,5 +81,9 @@ void OmChannelImpl::SetVolDataType(const OmVolDataType type)
 }
 
 void OmChannelImpl::GetChunk(OmChunkPtr& ptr, const OmChunkCoord& coord){
-    chunkCache_->Get(ptr, coord);
+    chunkCache_->GetChunk(ptr, coord);
+}
+
+void OmChannelImpl::UpdateFromVolResize(){
+    chunkCache_->UpdateFromVolResize();
 }

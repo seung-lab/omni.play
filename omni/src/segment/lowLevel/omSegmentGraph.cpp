@@ -171,7 +171,7 @@ bool OmSegmentGraph::joinInternal(const OmSegID parentID,
 
 bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 {
-    OmSegment* child = mCache->GetSegment( childID );
+    OmSegment* child = mCache->SegmentStore()->GetSegment( childID );
 
     if( child->getThreshold() > 1 ){
         return false;

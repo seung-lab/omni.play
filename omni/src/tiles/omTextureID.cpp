@@ -7,7 +7,6 @@
 OmTextureID::OmTextureID()
     : dims_(Vector2i(0,0))
     , flag_(OMTILE_COORDINVALID)
-    , numBytes_(0)
     , pooledTile_(NULL)
 {}
 
@@ -15,7 +14,6 @@ OmTextureID::OmTextureID(const Vector2i& dims,
                          OmPooledTile<uint8_t>* data)
     : dims_(dims)
     , flag_(OMTILE_NEEDTEXTUREBUILT)
-    , numBytes_(dims_.x * dims_.y * sizeof(uint8_t))
     , pooledTile_(data)
 {}
 
@@ -23,7 +21,6 @@ OmTextureID::OmTextureID(const Vector2i& dims,
                          OmPooledTile<OmColorARGB>* data)
     : dims_(dims)
     , flag_(OMTILE_NEEDCOLORMAP)
-    , numBytes_(dims_.x * dims_.y * sizeof(OmColorARGB))
     , pooledTile_(data)
 {}
 

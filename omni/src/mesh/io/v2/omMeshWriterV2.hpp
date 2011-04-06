@@ -6,34 +6,60 @@
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
-#include "mesh/io/v2/threads/omMeshWriterTaskV2.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
+#include "mesh/io/v2/threads/omMeshWriterTaskV2.hpp"
 #include "mesh/omMipMeshCoord.h"
 #include "mesh/omMipMeshManager.h"
 
 class OmMeshWriterV2{
 private:
-    OmSegmentation *const seg_;
+    OmSegmentation *const segmentation_;
     const double threshold_;
     OmMeshFilePtrCache* filePtrCache_;
 
 public:
-    OmMeshWriterV2(OmSegmentation* seg, const double threshold)
-        : seg_(seg)
+    OmMeshWriterV2(OmSegmentation* segmentation, const double threshold)
+        : segmentation_(segmentation)
         , threshold_(threshold)
-        , filePtrCache_(seg->MeshManager(threshold_)->FilePtrCache())
+        , filePtrCache_(segmentation->MeshManager(threshold_)->FilePtrCache())
     {}
 
     ~OmMeshWriterV2(){
-        Stop();
+        Join();
     }
 
     void Join(){
         filePtrCache_->Join();
     }
 
-    void Stop(){
-        filePtrCache_->Stop();
+    bool CheckEverythingWasMeshed()
+    {
+        boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+            segmentation_->GetMipChunkCoords();
+
+        bool allGood = true;
+
+        std::cout << "\nchecking that all segments were meshed...\n";
+
+        FOR_EACH(iter, *coordsPtr)
+        {
+            OmMeshChunkAllocTableV2* chunk_table =
+                filePtrCache_->GetAllocTable(*iter);
+
+            if(!chunk_table->CheckEverythingWasMeshed()){
+                allGood = false;
+            }
+        }
+
+        if(allGood){
+            std::cout << "all segments meshed!\n";
+        } else {
+
+            std::cout << "\nERROR: some segments not meshed!\n";
+            throw OmIoException("some segments not meshed");
+        }
+
+        return allGood;
     }
 
     bool Contains(const OmSegID segID, const OmChunkCoord& coord)
@@ -82,7 +108,7 @@ public:
               const om::AllowOverwrite allowOverwrite)
     {
         boost::shared_ptr<OmMeshWriterTaskV2<U> > task =
-            boost::make_shared<OmMeshWriterTaskV2<U> >(seg_,
+            boost::make_shared<OmMeshWriterTaskV2<U> >(segmentation_,
                                                        filePtrCache_,
                                                        segID,
                                                        coord,

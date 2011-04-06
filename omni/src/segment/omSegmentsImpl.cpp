@@ -39,7 +39,7 @@ OmSegment* OmSegmentsImpl::AddSegment(const OmSegID value)
         return NULL;
     }
 
-    OmSegment* seg = segmentPages_->AddSegment(value);
+    OmSegment* seg = store_->AddSegment(value);
     seg->RandomizeColor();
 
     ++mNumSegs;
@@ -56,7 +56,7 @@ OmSegment* OmSegmentsImpl::GetOrAddSegment(const OmSegID val)
         return NULL;
     }
 
-    OmSegment* seg = GetSegment(val);
+    OmSegment* seg = store_->GetSegment(val);
     if(NULL == seg){
         seg = AddSegment(val);
     }
@@ -69,7 +69,7 @@ OmSegmentEdge OmSegmentsImpl::SplitEdgeUserAction(const OmSegmentEdge& e)
     if(!e.isValid()){
         return OmSegmentEdge();
     }
-    return splitChildFromParent(GetSegment(e.childID));
+    return splitChildFromParent(store_->GetSegment(e.childID));
 }
 
 OmSegmentEdge OmSegmentsImpl::splitChildFromParent(OmSegment * child)
@@ -141,8 +141,8 @@ std::pair<bool, OmSegmentEdge>
 OmSegmentsImpl::JoinEdgeFromUser(const OmSegmentEdge& e)
 {
     const OmSegID childRootID = segmentGraph_.Root(e.childID);
-    OmSegment* childRoot = GetSegment(childRootID);
-    OmSegment* parent = GetSegment(e.parentID);
+    OmSegment* childRoot = store_->GetSegment(childRootID);
+    OmSegment* parent = store_->GetSegment(e.parentID);
     OmSegment* parentRoot = FindRoot(parent);
 
     if(childRoot == parentRoot){
@@ -245,7 +245,7 @@ OmSegIDsSet OmSegmentsImpl::UnJoinTheseSegments(const OmSegIDsSet& segmentList)
     while (iter != set.end()) {
         const OmSegID segID = *iter;
         OmSegmentEdge edge =
-            splitChildFromParent(GetSegment(segID));
+            splitChildFromParent(store_->GetSegment(segID));
 
         if(edge.isValid()){
             printf("WARNING: could not split edge; was a segment validated?\n");
@@ -317,13 +317,14 @@ void OmSegmentsImpl::resetGlobalThreshold(OmMST* mst)
 }
 
 void OmSegmentsImpl::Flush(){
-    segmentPages_->Flush();
+    store_->Flush();
 }
 
 bool OmSegmentsImpl::AreAnySegmentsInValidList(const OmSegIDsSet& ids)
 {
-    FOR_EACH(iter, ids){
-        OmSegment* seg = GetSegment(*iter);
+    FOR_EACH(iter, ids)
+    {
+        OmSegment* seg = store_->GetSegment(*iter);
         if(!seg){
             continue;
         }

@@ -47,7 +47,7 @@ public:
     }
 private:
     std::vector<VAL> vector_;
-    zi::mutex mutex_;
+    zi::spinlock mutex_;
 };
 
 template <typename KEY, typename VAL>
@@ -80,7 +80,7 @@ public:
 
 private:
     boost::unordered_map<KEY, VAL> map_;
-    zi::mutex mutex_;
+    zi::spinlock mutex_;
 };
 
 template <typename KEY>
@@ -126,7 +126,7 @@ public:
 
 private:
     boost::unordered_set<KEY> set_;
-    zi::mutex mutex_;
+    zi::spinlock mutex_;
 };
 
 
@@ -173,7 +173,7 @@ public:
 
 private:
     std::set<KEY> set_;
-    zi::mutex mutex_;
+    zi::spinlock mutex_;
 };
 
 template <typename KEY>

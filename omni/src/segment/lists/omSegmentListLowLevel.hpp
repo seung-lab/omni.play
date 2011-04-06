@@ -132,7 +132,7 @@ private:
     void doBuildInitialSegmentList()
     {
         const std::vector<OmSegmentPage*> pages = cache_->SegmentStore()->Pages();
-        const uint32_t pageSize = cache_->getPageSize();
+        const uint32_t pageSize = cache_->SegmentStore()->PageSize();
 
         uint32_t numSegs = 0;
 

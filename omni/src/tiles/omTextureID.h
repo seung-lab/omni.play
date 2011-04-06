@@ -26,6 +26,7 @@ public:
     OmTextureID();
     OmTextureID(const Vector2i&, OmPooledTile<uint8_t>*);
     OmTextureID(const Vector2i&, OmPooledTile<OmColorARGB>*);
+
     virtual ~OmTextureID();
 
     int GetWidth() const {
@@ -42,10 +43,6 @@ public:
             throw OmIoException("texture not yet built");
         }
         return *textureID_;
-    }
-
-    uint64_t NumBytes() const {
-        return numBytes_;
     }
 
     void* GetTileData() const;
@@ -109,7 +106,7 @@ public:
     void TextureBindComplete(const GLuint textureID)
     {
         flag_ = OMTILE_GOOD;
-        textureID_ = boost::optional<GLuint>(textureID);
+        textureID_ = textureID;
         deleteTileData();
     }
 
@@ -124,7 +121,6 @@ private:
     boost::optional<GLuint> textureID_;
     const Vector2i dims_;
     OmTileFlag flag_;
-    const uint64_t numBytes_;
 
     OmPooledTileWrapper* pooledTile_;
 

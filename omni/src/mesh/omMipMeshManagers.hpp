@@ -60,11 +60,11 @@ public:
         return thresholds_;
     }
 
-    void FullMesh(const double threshold)
+    void FullMesh(const double threshold, const bool redownsample)
     {
         CreateManager(threshold);
         ziMesher mesher(segmentation_, threshold);
-        mesher.MeshFullVolume();
+        mesher.MeshFullVolume(redownsample);
     }
 
 /*

@@ -131,6 +131,7 @@ HEADERS +=  \
 	src/chunks/omChunkCache.hpp \
 	src/chunks/omChunkCoord.h \
 	src/chunks/omChunkData.h \
+	src/chunks/omChunkItemContainer.hpp \
 	src/chunks/omChunkMipping.hpp \
 	src/chunks/omChunkTypes.hpp \
 	src/chunks/omChunkUtils.hpp \
@@ -195,6 +196,7 @@ HEADERS +=  \
 	src/events/details/omPreferenceEvent.h \
 	src/events/details/omSegmentEvent.h \
 	src/events/details/omToolModeEvent.h \
+	src/events/details/omUserInterfaceEvent.h \
 	src/events/details/omView3dEvent.h \
 	src/events/details/omViewEvent.h \
 	src/events/omEvents.h \
@@ -285,10 +287,10 @@ HEADERS +=  \
 	src/gui/toolbars/mainToolbar/showPaintTools.hpp \
 	src/gui/toolbars/mainToolbar/toolButton.h \
 	src/gui/toolbars/toolbarManager.h \
-	src/gui/updateSegmentProperties.h \
 	src/gui/updateSegmentPropertiesImpl.hpp \
-	src/gui/viewGroup.h \
-	src/gui/viewGroupWidgetInfo.h \
+	src/gui/viewGroup/viewGroup.h \
+	src/gui/viewGroup/viewGroupUtils.hpp \
+	src/gui/viewGroup/viewGroupWidgetInfo.h \
 	src/gui/widgets/omAskQuestion.hpp \
 	src/gui/widgets/omButton.hpp \
 	src/gui/widgets/omCheckBoxWidget.hpp \
@@ -352,6 +354,7 @@ HEADERS +=  \
 	src/network/omServer.h \
 	src/network/omServerImpl.hpp \
 	src/network/omServerImplThread.hpp \
+	src/network/omServiceObjects.hpp \
 	src/project/details/omAffinityGraphManager.h \
 	src/project/details/omChannelManager.h \
 	src/project/details/omProjectVolumes.h \
@@ -421,7 +424,6 @@ HEADERS +=  \
 	src/system/cache/omCacheManagerImpl.hpp \
 	src/system/cache/omCacheObjects.hpp \
 	src/system/cache/omGetSetCache.hpp \
-	src/system/cache/omHandleCacheMissTask.hpp \
 	src/system/cache/omLockedCacheObjects.hpp \
 	src/system/cache/omMeshCache.h \
 	src/system/cache/omThreadedCache.h \
@@ -444,6 +446,7 @@ HEADERS +=  \
 	src/system/omUndoStack.hpp \
 	src/tiles/cache/omTileCache.h \
 	src/tiles/cache/omTileCacheChannel.hpp \
+	src/tiles/cache/omTileCacheEventListener.hpp \
 	src/tiles/cache/omTileCacheImpl.hpp \
 	src/tiles/cache/omTileCacheSegmentation.hpp \
 	src/tiles/omPooledTile.hpp \
@@ -469,7 +472,9 @@ HEADERS +=  \
 	src/utility/omChunkVoxelWalker.hpp \
 	src/utility/omColorUtils.hpp \
 	src/utility/omCopyFirstN.hpp \
+	src/utility/omDataTime.hpp \
 	src/utility/omFileHelpers.h \
+	src/utility/omFileWriter.hpp \
 	src/utility/omLockedObjects.h \
 	src/utility/omLockedPODs.hpp \
 	src/utility/omPrimeNumbers.hpp \
@@ -678,6 +683,7 @@ SOURCES +=  \
 	src/events/details/omPreferenceEvent.cpp \
 	src/events/details/omSegmentEvent.cpp \
 	src/events/details/omToolModeEvent.cpp \
+	src/events/details/omUserInterfaceEvent.cpp \
 	src/events/details/omView3dEvent.cpp \
 	src/events/details/omViewEvent.cpp \
 	src/events/omEvents.cpp \
@@ -722,8 +728,8 @@ SOURCES +=  \
 	src/gui/toolbars/mainToolbar/saveButton.cpp \
 	src/gui/toolbars/mainToolbar/toolButton.cpp \
 	src/gui/toolbars/toolbarManager.cpp \
-	src/gui/updateSegmentProperties.cpp \
-	src/gui/viewGroup.cpp \
+	src/gui/viewGroup/viewGroup.cpp \
+	src/gui/viewGroup/viewGroupUtils.cpp \
 	src/gui/widgets/omCursors.cpp \
 	src/gui/widgets/omGroupListWidget.cpp \
 	src/gui/widgets/omSegmentContextMenu.cpp \
@@ -764,14 +770,13 @@ SOURCES +=  \
 	src/system/cache/omCacheGroup.cpp \
 	src/system/cache/omCacheManager.cpp \
 	src/system/cache/omMeshCache.cpp \
-	src/system/cache/omThreadedCache.cpp \
 	src/system/omAppState.cpp \
 	src/system/omGroups.cpp \
 	src/system/omPreferenceDefinitions.cpp \
 	src/system/omStateManager.cpp \
 	src/system/omStateManagerImpl.cpp \
-	src/system/templatedClasses.cpp \
 	src/tiles/cache/omTileCache.cpp \
+	src/tiles/cache/omTileCacheEventListener.cpp \
 	src/tiles/omTextureID.cpp \
 	src/tiles/omTile.cpp \
 	src/tiles/omTileCoord.cpp \
@@ -874,7 +879,8 @@ mac {
 }
 CONFIG(release, debug|release) {
     message ( in release mode; adding NDEBUG and no-strict-aliasing )
-    QMAKE_CXXFLAGS += -DNDEBUG  -fno-strict-aliasing
+    QMAKE_CXXFLAGS_RELEASE -= -O2
+    QMAKE_CXXFLAGS += -DNDEBUG  -fno-strict-aliasing -O3 -fno-omit-frame-pointer
     QMAKE_LFLAGS   += -DNDEBUG
 }
 

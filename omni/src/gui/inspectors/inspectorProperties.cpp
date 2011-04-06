@@ -1,39 +1,35 @@
-#include "inspectorProperties.h"
+#include "gui/inspectors/segmentInspector.h"
+#include "actions/omSelectSegmentParams.hpp"
+#include "gui/inspectors/inspectorProperties.h"
 #include "viewGroup/omViewGroupState.h"
-#include "gui/updateSegmentProperties.h"
 
-InspectorProperties::InspectorProperties(QWidget* parent,
-                                         OmViewGroupState* vgs)
+InspectorProperties::InspectorProperties(QWidget* parent, OmViewGroupState* vgs)
     : QDialog(parent)
     , vgs_(vgs)
-    , widget_(NULL)
 {
-    mainLayout = new QVBoxLayout();
-    setLayout(mainLayout);
-
-    vgs_->SetInspectorProperties(this);
-
-    UpdateSegmentPropertiesDialog::SetInspectorProperties(this);
+    mainLayout_ = new QVBoxLayout();
+    setLayout(mainLayout_);
 }
 
 InspectorProperties::~InspectorProperties()
-{
-    UpdateSegmentPropertiesDialog::Delete();
+{}
+
+void InspectorProperties::closeDialog(){
+    QDialog::done(0);
 }
 
-void InspectorProperties::setOrReplaceWidget(QWidget *incomingWidget,
-                                             const QString title)
+void InspectorProperties::SetOrReplaceWidget(QWidget* newWidget, const QString& title)
 {
     if(widget_)
     {
-        mainLayout->removeWidget( widget_ );
+        mainLayout_->removeWidget( widget_.get() );
         widget_->close();
-        delete( widget_ );
-        widget_ = NULL;
     }
 
-    widget_ = incomingWidget;
-    mainLayout->addWidget(widget_);
+    widget_.reset(newWidget);
+
+    mainLayout_->addWidget(newWidget);
+
     setWindowTitle(title);
 
     if(!isVisible())
@@ -44,10 +40,25 @@ void InspectorProperties::setOrReplaceWidget(QWidget *incomingWidget,
     }
 }
 
-void InspectorProperties::closeDialog(){
-    QDialog::done(0);
+void InspectorProperties::UpdateSegmentPropWidgetEvent(OmUserInterfaceEvent* event){
+    SetOrReplaceWidget(event->Widget(), event->Title());
 }
 
-OmViewGroupState* InspectorProperties::getViewGroupState(){
-    return vgs_;
+void InspectorProperties::SegmentModificationEvent(OmSegmentEvent* event)
+{
+    if(!isVisible()){
+        return;
+    }
+
+    const SegmentDataWrapper& sdw = event->Params().sdw;
+
+    if(!sdw.IsValidWrapper()){
+        return;
+    }
+
+    SetOrReplaceWidget( new SegmentInspector(sdw, this),
+                        QString("Segmentation %1: Segment %2")
+                        .arg(sdw.GetSegmentationID())
+                        .arg(sdw.GetSegmentID()));
 }
+

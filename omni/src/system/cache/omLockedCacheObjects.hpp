@@ -9,60 +9,137 @@
 template <typename KEY, typename VAL>
 class LockedCacheMap {
 public:
+    LockedCacheMap()
+    {}
+
     virtual ~LockedCacheMap()
     {}
-    inline bool setIfHadKey(const KEY & k, VAL & ptr)
+
+    inline bool assignIfHadKey(const KEY& k, VAL& v)
     {
-        zi::rwmutex::read_guard g(mutex_);
-        if(0 == map_.count(k)){
+        zi::guard g(lock_);
+        iterator iter = map_.find(k);
+        if(iter == map_.end()){
             return false;
         }
-        ptr = map_[k];
+        v = iter->second;
         return true;
     }
-    inline void set(const KEY& k, const VAL& v)
+
+    inline VAL remove_oldest()
     {
-        zi::rwmutex::write_guard g(mutex_);
-        map_[k] = v;
+        zi::guard g(lock_);
+        const KEY k = list_.remove_oldest();
+
+        iterator iter = map_.find(k);
+        if(iter == map_.end()){
+            return VAL();
+        }
+        VAL ret = iter->second;
+        map_.erase(iter);
+        return ret;
     }
+
+    inline bool set(const KEY& k, const VAL& v)
+    {
+        zi::guard g(lock_);
+
+        list_.touch(k);
+
+        iterator iter = map_.lower_bound(k);
+
+        if(iter != map_.end() && !(map_.key_comp()(k, iter->first)))
+        {
+            iter->second = v;
+            return false;
+        }
+
+        map_.insert(iter, std::pair<KEY,VAL>(k,v));
+
+        return true;
+    }
+
+    inline bool setPrefetch(const KEY& k, const VAL& v)
+    {
+        zi::guard g(lock_);
+
+        list_.touchPrefetch(k);
+
+        iterator iter = map_.lower_bound(k);
+
+        if(iter != map_.end() && !(map_.key_comp()(k, iter->first)))
+        {
+            iter->second = v;
+            return false;
+        }
+
+        map_.insert(iter, std::pair<KEY,VAL>(k,v));
+
+        return true;
+    }
+
     inline VAL get(const KEY& k)
     {
-        zi::rwmutex::read_guard g(mutex_);
+        zi::guard g(lock_);
+        list_.touch(k);
         return map_[k];
     }
-    inline size_t erase(const KEY& k)
+
+    inline VAL erase(const KEY& k)
     {
-        zi::rwmutex::write_guard g(mutex_);
-        return map_.erase(k);
+        zi::guard g(lock_);
+
+        // list_.erase(k); // TODO: fixme!
+
+        iterator iter = map_.find(k);
+        if(iter == map_.end()){
+            return VAL();
+        }
+        VAL ret = iter->second;
+        map_.erase(iter);
+        return ret;
     }
+
     inline size_t size() const
     {
-        zi::rwmutex::read_guard g(mutex_);
+        zi::guard g(lock_);
         return map_.size();
     }
+
     inline bool empty()
     {
-        zi::rwmutex::read_guard g(mutex_);
+        zi::guard g(lock_);
         return map_.empty();
     }
+
     inline void clear()
     {
-        zi::rwmutex::write_guard g(mutex_);
+        zi::guard g(lock_);
         map_.clear();
+        list_.clear();
     }
-    inline void swap(std::map<KEY, VAL>& newMap)
+
+    inline void swap(std::map<KEY, VAL>& newMap,
+                     KeyMultiIndex<KEY>& newList)
     {
-        zi::rwmutex::write_guard g(mutex_);
+        zi::guard g(lock_);
         map_.swap(newMap);
+        list_.swap(newList);
     }
+
     inline bool contains(const KEY& key)
     {
-        zi::rwmutex::read_guard g(mutex_);
+        zi::guard g(lock_);
         return map_.count(key);
     }
+
 private:
     std::map<KEY, VAL> map_;
-    zi::rwmutex mutex_;
+    typedef typename std::map<KEY,VAL>::iterator iterator;
+
+    KeyMultiIndex<KEY> list_;
+
+    zi::spinlock lock_;
 };
 
 template <typename KEY>
@@ -70,69 +147,37 @@ class LockedKeySet{
 public:
     virtual ~LockedKeySet()
     {}
+
     inline bool insertSinceDidNotHaveKey(const KEY k)
     {
-        zi::rwmutex::write_guard g(mutex_);
-        if(set_.count(k) > 0){
-            return false;
-        }
-        set_.insert(k);
-        return true;
+        zi::guard g(lock_);
+        std::pair<iterator, bool> p = set_.insert(k);
+        return p.second;
     }
+
     inline void insert(const KEY& k)
     {
-        zi::rwmutex::write_guard g(mutex_);
+        zi::guard g(lock_);
         set_.insert(k);
     }
+
     inline void erase(const KEY& k)
     {
-        zi::rwmutex::write_guard g(mutex_);
+        zi::guard g(lock_);
         set_.erase(k);
     }
+
     inline void clear()
     {
-        zi::rwmutex::write_guard g(mutex_);
+        zi::guard g(lock_);
         set_.clear();
     }
+
 private:
     std::set<KEY> set_;
-    zi::rwmutex mutex_;
-};
+    typedef typename std::set<KEY>::iterator iterator;
 
-template <typename KEY>
-class LockedKeyList{
-public:
-    virtual ~LockedKeyList()
-    {}
-    inline KEY remove_oldest()
-    {
-        zi::rwmutex::write_guard g(mutex_);
-        if(list_.empty()){
-            return KEY();
-        }
-        const KEY ret = list_.back();
-        list_.pop_back();
-        return ret;
-    }
-    inline void touch(const KEY& key)
-    {
-        zi::rwmutex::write_guard g(mutex_);
-        list_.remove(key);
-        list_.push_front(key);
-    }
-    inline bool empty() const
-    {
-        zi::rwmutex::read_guard g(mutex_);
-        return list_.empty();
-    }
-    inline void clear()
-    {
-        zi::rwmutex::write_guard g(mutex_);
-        list_.clear();
-    }
-private:
-    std::list<KEY> list_;
-    zi::rwmutex mutex_;
+    zi::spinlock lock_;
 };
 
 /**
@@ -148,46 +193,54 @@ private:
 template <typename KEY>
 class LockedKeyMultiIndex {
 public:
+
     virtual ~LockedKeyMultiIndex()
     {}
+
     inline KEY remove_oldest()
     {
-        zi::rwmutex::write_guard g(mutex_);
+        zi::guard g(lock_);
         return list_.remove_oldest();
     }
+
     inline void touch(const KEY& key)
     {
-        zi::rwmutex::write_guard g(mutex_);
+        zi::guard g(lock_);
         list_.touch(key);
     }
+
     inline void touch(const std::list<KEY>& keys)
     {
-        zi::rwmutex::write_guard g(mutex_);
+        zi::guard g(lock_);
         list_.touch(keys);
     }
+
     inline void touch(const std::deque<KEY>& keys)
     {
-        zi::rwmutex::write_guard g(mutex_);
+        zi::guard g(lock_);
         list_.touch(keys);
     }
+
     inline void touchPrefetch(const KEY& key)
     {
-        zi::rwmutex::write_guard g(mutex_);
+        zi::guard g(lock_);
         list_.touchPrefetch(key);
     }
+
     inline bool empty() const
     {
-        zi::rwmutex::read_guard g(mutex_);
+        zi::guard g(lock_);
         return list_.empty();
     }
+
     inline void clear()
     {
-        zi::rwmutex::write_guard g(mutex_);
+        zi::guard g(lock_);
         list_.clear();
     }
 
 private:
-    zi::rwmutex mutex_;
+    zi::spinlock lock_;
 
     KeyMultiIndex<KEY> list_;
 };

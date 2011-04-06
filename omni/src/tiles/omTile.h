@@ -26,6 +26,8 @@ public:
     void LoadData();
     uint32_t NumBytes() const;
 
+    bool IsMip0();
+
     inline const OmTextureIDPtr& GetTexture() const {
         return texture_;
     }
@@ -54,11 +56,11 @@ private:
     int getChunkSliceNum();
     void setVertices(const int x, const int y, const float zoomFactor);
 
-    inline OmMipVolume* getVol(){
+    inline OmMipVolume* getVol() const {
         return key_.getVolume();
     }
 
-    ObjectType getVolType();
+    ObjectType getVolType() const;
 };
 
 #endif

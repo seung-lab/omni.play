@@ -42,12 +42,12 @@ private:
         zi::spinlock lock;
     };
 
-    std::vector<FreeTileList*> freeTilesLists_; // size is fixed
+    std::vector<FreeTileList*> freeTileLists_; // size is fixed
 
     LockedUint32 curIndex_;
 
     // needs to return prime number
-    uint64_t computeNumBuckets()
+    static uint64_t computeNumBuckets()
     {
         const int numCores = OmSystemInformation::get_num_cores();
         return om::constants::getNextBiggestPrime(2 * numCores);
@@ -67,9 +67,9 @@ public:
             throw OmArgException("invalid size");
         }
 
-        freeTilesLists_.resize(numBuckets_);
+        freeTileLists_.resize(numBuckets_);
         for(uint32_t i = 0; i < numBuckets_; ++i){
-            freeTilesLists_[i] = new FreeTileList();
+            freeTileLists_[i] = new FreeTileList();
         }
 
         curIndex_.set(0);
@@ -78,7 +78,7 @@ public:
     ~OmTilePool()
     {
         for(uint32_t i = 0; i < numBuckets_; ++i){
-            delete freeTilesLists_[i];
+            delete freeTileLists_[i];
         }
     }
 
@@ -97,7 +97,7 @@ public:
     {
         const int index = reinterpret_cast<uint64_t>(tile) % numBuckets_;
 
-        FreeTileList* ftl = freeTilesLists_[ index ];
+        FreeTileList* ftl = freeTileLists_[ index ];
 
         {
             zi::guard g(ftl->lock);
@@ -109,6 +109,7 @@ private:
     T* allocatePage()
     {
         T* newPage = static_cast<T*>(malloc(numBytesPerPage_));
+
         if(!newPage){
             throw std::bad_alloc();
         }
@@ -126,7 +127,7 @@ private:
 
             const int index = reinterpret_cast<uint64_t>(tile) % numBuckets_;
 
-            FreeTileList* ftl = freeTilesLists_[ index ];
+            FreeTileList* ftl = freeTileLists_[ index ];
 
             {
                 zi::guard g(ftl->lock);
@@ -139,7 +140,7 @@ private:
 
     T* doGet()
     {
-        FreeTileList* ftl = freeTilesLists_[ curIndex_.inc() % numBuckets_ ];
+        FreeTileList* ftl = freeTileLists_[ curIndex_.inc() % numBuckets_ ];
 
         T* tile = NULL;
         {

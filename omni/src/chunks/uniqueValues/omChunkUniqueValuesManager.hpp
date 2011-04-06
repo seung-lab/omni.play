@@ -3,47 +3,43 @@
 
 #include "chunks/uniqueValues/omChunkUniqueValuesPerThreshold.hpp"
 #include "chunks/uniqueValues/omThresholdsInChunk.hpp"
+#include "chunks/omChunkItemContainer.hpp"
 
 class OmChunkUniqueValuesManager {
 private:
-	OmSegmentation *const segmentation_;
-	zi::rwmutex lock_;
+    typedef OmChunkItemContainer<OmSegmentation, OmThresholdsInChunk> cont_t;
+    boost::scoped_ptr<cont_t> chunks_;
 
-	std::map<OmChunkCoord, boost::shared_ptr<OmThresholdsInChunk> > chunks_;
+    void UpdateFromVolResize(){
+        chunks_->UpdateFromVolResize();
+    }
+
+    friend class OmSegmentation;
 
 public:
-	OmChunkUniqueValuesManager(OmSegmentation* segmentation)
-		: segmentation_(segmentation)
-	{}
+    OmChunkUniqueValuesManager(OmSegmentation* segmentation)
+        : chunks_(new cont_t(segmentation))
+    {}
 
-	ChunkUniqueValues Values(const OmChunkCoord& coord,
-							 const double threshold)
-	{
-		boost::shared_ptr<OmThresholdsInChunk> chunk = get(coord);
-		boost::shared_ptr<OmChunkUniqueValuesPerThreshold> chunkPerThres =
-			chunk->Get(threshold);
+    ChunkUniqueValues Values(const OmChunkCoord& coord, const double threshold)
+    {
+        boost::shared_ptr<OmThresholdsInChunk> thresholdsInChunk;
+        chunks_->Get(thresholdsInChunk, coord);
 
-		return chunkPerThres->Values();
-	}
+        return thresholdsInChunk->Get(threshold)->Values();
+    }
 
-	void Clear()
-	{
-		zi::rwmutex::write_guard g(lock_);
-		chunks_.clear();
-	}
+    void RereadChunk(const OmChunkCoord& coord, const double threshold)
+    {
+        boost::shared_ptr<OmThresholdsInChunk> thresholdsInChunk;
+        chunks_->Get(thresholdsInChunk, coord);
 
-private:
-	boost::shared_ptr<OmThresholdsInChunk> get(const OmChunkCoord& coord)
-	{
-		zi::rwmutex::write_guard g(lock_);
+        thresholdsInChunk->Get(threshold)->RereadChunk();
+    }
 
-		if(!chunks_.count(coord)){
-			return chunks_[coord] =
-				boost::make_shared<OmThresholdsInChunk>(segmentation_,
-														 coord);
-		}
-		return chunks_[coord];
-	}
+    void Clear(){
+        chunks_->Clear();
+    }
 };
 
 #endif

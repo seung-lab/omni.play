@@ -1,26 +1,10 @@
 <?php
 
-$slice_num = $_GET['slice_num'];
+include('omni_server.php');
 
-$output = array();
-$command = '/home/purcaro.local/omni.dev/omni/bin/omni --client --clientCMD ' . $slice_num;
-exec($command, $output);
+$jsonArray = array(
+    "action" => $_GET['action'],
+    "slice_num" => intval($_GET['slice_num'])
+    );
 
-
-// $url = 'http://192.168.1.71/temp_omni_imgs/chann'$output[0];
-print $output[0];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-?>
+print talk_omni_server($jsonArray);

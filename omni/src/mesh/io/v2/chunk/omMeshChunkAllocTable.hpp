@@ -10,9 +10,9 @@ class OmMeshFilePtrCache;
 class OmMeshChunkAllocTableV2 {
 private:
     OmMeshFilePtrCache *const filePtrCache_;
-    boost::shared_ptr<OmMemMappedAllocFile> file_;
+    boost::scoped_ptr<OmMemMappedAllocFile> file_;
 
-    LockedBoostSet<OmSegID> segsBeingSaved_;
+    LockedSet<OmSegID> segsBeingSaved_;
     zi::rwmutex lock_;
 
 public:
@@ -21,7 +21,7 @@ public:
                             const OmChunkCoord& coord,
                             const double threshold)
         : filePtrCache_(filePtrCache)
-        , file_(boost::make_shared<OmMemMappedAllocFile>(seg, coord, threshold))
+        , file_(new OmMemMappedAllocFile(seg, coord, threshold))
     {
         zi::rwmutex::write_guard g(lock_);
 
@@ -104,6 +104,15 @@ public:
         }
 
         return *entry;
+    }
+
+    bool CheckEverythingWasMeshed()
+    {
+        zi::rwmutex::write_guard g(lock_);
+
+        map();
+
+        return file_->CheckEverythingWasMeshed();
     }
 
 private:

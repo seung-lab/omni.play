@@ -24,11 +24,11 @@ OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
  *  Dispatch event based on event type.
  */
 
-void OmSegmentEvent::Dispatch(OmEventListener * pListener)
+void OmSegmentEvent::Dispatch(OmEventListener* pListener)
 {
     //cast to proper listener
     OmSegmentEventListener *p_cast_listener =
-        dynamic_cast < OmSegmentEventListener * >(pListener);
+        dynamic_cast<OmSegmentEventListener*>(pListener);
 
     assert(p_cast_listener);
 

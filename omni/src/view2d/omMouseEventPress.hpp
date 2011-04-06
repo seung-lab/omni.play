@@ -45,14 +45,14 @@ public:
             if(om::tool::SPLIT == tool_)
             {
                 doFindAndSplitSegment();
-                v2d_->doRedraw2d();
+                v2d_->Redraw();
                 return;
             }
 
             if(om::tool::CUT == tool_)
             {
                 doFindAndCutSegment();
-                v2d_->doRedraw2d();
+                v2d_->Redraw();
                 return;
             }
 
@@ -117,7 +117,7 @@ private:
 
     void mouseSetCrosshair()
     {
-        v2d_->doRedraw2d();
+        v2d_->Redraw();
         setDepth();
         state_->getViewGroupState()->setTool(om::tool::PAN);
     }
@@ -236,8 +236,6 @@ private:
             sel.selectJustThisSegment_toggle( segmentID );
         }
         sel.sendEvent();
-
-        state_->touchFreshnessAndRedraw2d();
 
         v2d_->Redraw();
     }
