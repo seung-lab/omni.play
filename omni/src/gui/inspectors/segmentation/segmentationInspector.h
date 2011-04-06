@@ -10,11 +10,11 @@ class AddSegmentButton;
 class OmSegmentation;
 class OmViewGroupState;
 
-class SegInspector : public QWidget {
+class SegmentationInspector : public QWidget {
 Q_OBJECT
 
 public:
-    SegInspector(QWidget* parent, OmViewGroupState* vgs, const SegmentationDataWrapper& sdw);
+    SegmentationInspector(QWidget* parent, OmViewGroupState* vgs, const SegmentationDataWrapper& sdw);
 
     const SegmentationDataWrapper& GetSDW() const {
         return sdw_;

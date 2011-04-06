@@ -3,6 +3,7 @@
 
 #include "segment/lists/omSegmentLists.h"
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
+#include "volume/omSegmentation.h"
 #include "zi/omUtility.h"
 
 class OmSegmentsImpl;

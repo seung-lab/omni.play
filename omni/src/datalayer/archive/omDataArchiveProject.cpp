@@ -1,25 +1,27 @@
-#include "datalayer/archive/omGenericManagerArchive.hpp"
-#include "segment/lowLevel/omSegmentSelection.hpp"
-#include "segment/lowLevel/omEnabledSegments.hpp"
-#include "datalayer/archive/omMipVolumeArchive.h"
-#include "datalayer/archive/omMipVolumeArchiveOld.h"
 #include "common/omException.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "datalayer/archive/omDataArchiveProject.h"
+#include "datalayer/archive/omGenericManagerArchive.hpp"
+#include "datalayer/archive/omMipVolumeArchive.h"
+#include "datalayer/archive/omMipVolumeArchiveOld.h"
 #include "datalayer/upgraders/omUpgraders.hpp"
 #include "mesh/omMipMeshManagers.hpp"
 #include "project/omProjectImpl.hpp"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/io/omValidGroupNum.hpp"
+#include "segment/lowLevel/omEnabledSegments.hpp"
+#include "segment/lowLevel/omPagingPtrStore.h"
+#include "segment/lowLevel/omSegmentSelection.hpp"
+#include "segment/omSegmentEdge.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentsImpl.h"
-#include "segment/omSegmentEdge.h"
 #include "system/omGroup.h"
 #include "system/omGroups.h"
 #include "system/omPreferences.h"
 
 #include <QDataStream>
+#include <QSet>
 
 static const int Omni_Version = 25;
 static const QString Omni_Postfix("OMNI");
@@ -40,7 +42,8 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp, OmProjectImpl* projec
     OmProject::setFileVersion(fileVersion_);
     printf("Omni file version is %d\n", fileVersion_);
 
-    if(fileVersion_ < 10 || fileVersion_ > Omni_Version){
+    if(fileVersion_ < 10 || fileVersion_ > Omni_Version)
+    {
         const QString err =
             QString("can not open file: file version is (%1), but Omni expecting (%2)")
             .arg(fileVersion_)
@@ -393,6 +396,7 @@ void OmDataArchiveProject::LoadOldSegmentation(QDataStream& in,
 
     seg.mst_->Read();
     seg.validGroupNum_->Load();
+    seg.segments_->StartCaches();
     seg.segments_->refreshTree();
 
     if(fileVersion_ < 23){
@@ -415,26 +419,29 @@ void OmDataArchiveProject::LoadNewSegmentation(QDataStream& in,
 
     seg.mst_->Read();
     seg.validGroupNum_->Load();
+    seg.segments_->StartCaches();
     seg.segments_->refreshTree();
 }
 
 QDataStream &operator<<(QDataStream& out, const OmSegments& sc)
 {
-    out << (*sc.mImpl);
+    out << (*sc.impl_);
 
     return out;
 }
 
 QDataStream &operator>>(QDataStream& in, OmSegments& sc)
 {
-    in >> (*sc.mImpl);
+    in >> (*sc.impl_);
 
     return in;
 }
 
 QDataStream &operator<<(QDataStream& out, const OmSegmentsImpl& sc)
 {
-    out << (*sc.segmentPages_);
+    OmSegmentsStore* store = sc.segmentPages_;
+    OmPagingPtrStore* segmentPages = store->segmentPages_;
+    out << (*segmentPages);
 
     out << false; // TODO: DEAD: was sc.segmentSelection_->allSelected_;
     out << false; //TODO: DEAD: was sc.mAllEnabled;
@@ -453,7 +460,9 @@ QDataStream &operator<<(QDataStream& out, const OmSegmentsImpl& sc)
 
 QDataStream &operator>>(QDataStream& in, OmSegmentsImpl& sc)
 {
-    in >> (*sc.segmentPages_);
+    OmSegmentsStore* store = sc.segmentPages_;
+    OmPagingPtrStore* segmentPages = store->segmentPages_;
+    in >> (*segmentPages);
 
     bool dead;
     in >> dead;
@@ -513,7 +522,8 @@ QDataStream &operator>>(QDataStream& in, OmPagingPtrStore& ps)
     in >> validPageNumbers;
     in >> size;
 
-    if(fileVersion_ < 17){
+    if(fileVersion_ < 17)
+    {
         ps.pageSize_ = size;
 
         FOR_EACH(iter, validPageNumbers){

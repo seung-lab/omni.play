@@ -1,11 +1,12 @@
 #ifndef OM_SEGMENT_GRAPH_H
 #define OM_SEGMENT_GRAPH_H
 
-#include "segment/lowLevel/omDynamicForestCache.hpp"
 #include "common/omCommon.h"
+#include "segment/lowLevel/omDynamicForestCache.hpp"
+#include "segment/lowLevel/omSegmentLowLevelTypes.h"
 
 class OmMST;
-class OmPagingPtrStore;
+class OmSegmentsStore;
 class OmSegment;
 class OmSegmentsImplLowLevel;
 class OmSegmentChildren;
@@ -39,8 +40,6 @@ public:
         forest_->Join(childRootID, parentRootID);
     }
 
-    uint32_t GetNumTopLevelSegs();
-
     void SetGlobalThreshold(OmMST* mst);
     void ResetGlobalThreshold(OmMST* mst);
 
@@ -55,7 +54,7 @@ private:
     OmSegmentation* segmentation_;
     OmValidGroupNum* validGroupNum_;
     OmSegmentsImplLowLevel* mCache;
-    OmPagingPtrStore* segmentPages_;
+    OmSegmentsStore* segmentPages_;
 
     boost::scoped_ptr<OmDynamicForestCache> forest_;
     boost::scoped_ptr<OmSegmentChildren> children_;
@@ -70,7 +69,8 @@ private:
 
     bool splitChildFromParentInternal(const OmSegID childID);
 
-    std::pair<int64_t, int32_t> computeSegmentSizeWithChildren(OmSegment* seg);
+    SizeAndNumPieces computeSegmentSizeWithChildren(OmSegment* seg);
+    std::vector<OmSegment*> segsTempVec_;
 };
 
 #endif

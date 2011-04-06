@@ -1,20 +1,21 @@
-#include "system/omConnect.hpp"
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
+#include "events/details/omSegmentEvent.h"
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/segmentLists/elementListBox.hpp"
 #include "gui/segmentLists/omSegmentListWidget.h"
 #include "project/omProject.h"
-#include "segment/omSegments.h"
 #include "segment/lists/omSegmentLists.h"
+#include "segment/lists/omSegmentListsTypes.hpp"
+#include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSearched.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
-#include "events/details/omSegmentEvent.h"
+#include "segment/omSegments.h"
+#include "system/omConnect.hpp"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
-#include "segment/lists/omSegmentListsTypes.hpp"
 
 SegmentListBase::SegmentListBase(QWidget* parent,
                                   OmViewGroupState* vgs)
@@ -237,7 +238,7 @@ void SegmentListBase::searchOne(const QString& text)
 
     makeSegmentationActive(sdw, true);
 
-    OmSegmentUtils::CenterSegment(vgs_, sdw);
+    OmSegmentCenter::CenterSegment(vgs_, sdw);
 }
 
 void SegmentListBase::searchMany(const QStringList& args)
@@ -259,7 +260,7 @@ void SegmentListBase::searchMany(const QStringList& args)
     sel.sendEvent();
     // makeSegmentationActive(sdw_, true);
 
-    OmSegmentUtils::CenterSegment(vgs_, sdw_);
+    OmSegmentCenter::CenterSegment(vgs_, sdw_);
 }
 
 void SegmentListBase::userJustClickedInThisSegmentList()

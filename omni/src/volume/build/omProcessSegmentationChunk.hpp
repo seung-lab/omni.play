@@ -19,11 +19,12 @@ public:
 
     ~OmProcessSegmentationChunk()
     {
-        FOR_EACH(iter, cacheSegments_){
+        FOR_EACH(iter, cacheSegments_)
+        {
             const OmSegID val = iter->first;
             OmSegment* seg = iter->second;
             seg->addToSize(sizes_[val]);
-            seg->addToBounds(bounds_[val]);
+            seg->AddToBoundingBox(bounds_[val]);
         }
     }
 

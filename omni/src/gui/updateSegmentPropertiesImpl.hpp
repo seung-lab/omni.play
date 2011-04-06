@@ -4,7 +4,7 @@
 #include "actions/omSelectSegmentParams.hpp"
 #include "events/details/omSegmentEvent.h"
 #include "gui/mainWindow/inspectorWidget.h"
-#include "gui/inspectors/segObjectInspector.h"
+#include "gui/inspectors/segmentInspector.h"
 #include "gui/inspectors/inspectorProperties.h"
 
 class UpdateSegmentPropertiesDialogImpl : public OmSegmentEventListener {
@@ -19,6 +19,12 @@ public:
     ~UpdateSegmentPropertiesDialogImpl()
     {}
 
+    void SegmentGUIlistEvent(OmSegmentEvent*)
+    {}
+
+    void SegmentSelectedEvent(OmSegmentEvent*)
+    {}
+
     void SegmentModificationEvent(OmSegmentEvent* event)
     {
         if(!ip_ || !ip_->WidgetIsViewable()){
@@ -31,7 +37,7 @@ public:
             return;
         }
 
-        ip_->setOrReplaceWidget( new SegObjectInspector(sdw, ip_),
+        ip_->setOrReplaceWidget( new SegmentInspector(sdw, ip_),
                                  QString("Segmentation %1: Segment %2")
                                  .arg(sdw.GetSegmentationID())
                                  .arg(sdw.GetSegmentID()));

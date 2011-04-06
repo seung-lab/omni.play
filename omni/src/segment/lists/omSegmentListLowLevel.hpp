@@ -2,6 +2,7 @@
 #define OM_SEGMENT_LIST_LOW_LEVEL_HPP
 
 #include "events/omEvents.h"
+#include "segment/io/omSegmentPage.hpp"
 #include "segment/lists/omSegmentListForGUI.hpp"
 #include "segment/lists/omSegmentListGlobal.hpp"
 #include "segment/lists/omSegmentLists.h"
@@ -66,13 +67,12 @@ public:
     }
 
     inline void UpdateSizeListsFromSplit(OmSegment* root, OmSegment* child,
-                                         const int32_t newChildSize,
-                                         const int32_t numChildren)
+                                         const SizeAndNumPieces& childInfo)
     {
         threadPool_.push_back(
             zi::run_fn(
                 zi::bind(&OmSegmentListLowLevel::doUpdateSizeListsFromSplit,
-                         this, root, child, newChildSize, numChildren)));
+                         this, root, child, childInfo)));
     }
 
     void AddSegment(OmSegment* seg)
@@ -120,25 +120,33 @@ private:
 
     inline void addSegment(OmSegment* seg)
     {
-        assert(seg->size() > 0);
+        uint64_t size = seg->size();
+        if(!size){
+            size = 1; // for newly-added segment
+        }
 
-        const SegInfo info = { seg, seg->value(), seg->size(), 0 };
+        const SegInfo info = { seg, seg->value(), size, 0 };
         list_[seg->value()] = info;
     }
 
     void doBuildInitialSegmentList()
     {
-        std::vector<OmSegmentPage>& pages = cache_->Pages();
-        const std::set<PageNum>& validPageNums = cache_->ValidPageNums();
+        const std::vector<OmSegmentPage*> pages = cache_->SegmentStore()->Pages();
         const uint32_t pageSize = cache_->getPageSize();
 
         uint32_t numSegs = 0;
 
-        FOR_EACH(iter, validPageNums)
+        FOR_EACH(iter, pages)
         {
+            OmSegmentPage* pagePtr = *iter;
+            if(!pagePtr){
+                continue;
+            }
+
+            OmSegmentPage& page = *pagePtr;
+
             for(uint32_t i = 0; i < pageSize; ++i)
             {
-                OmSegmentPage& page = pages[*iter];
                 OmSegment* seg = &(page[i]);
                 if(seg->value()) //seg will never be NULL
                 {
@@ -180,26 +188,28 @@ private:
     }
 
     void doUpdateSizeListsFromSplit(OmSegment* root, OmSegment* child,
-                                    const int64_t newChildSize,
-                                    const int32_t numChildren)
+                                    const SizeAndNumPieces childSizes)
     {
+        const int64_t newChildSize = childSizes.numVoxels;
+        const int32_t numPiecesInChild = childSizes.numPieces;
+
         assert(newChildSize > 0);
-        assert(numChildren > 0);
+        assert(numPiecesInChild > 0);
 
         SegInfo& rootInfo = list_[root->value()];
         SegInfo& childInfo = list_[child->value()];
 
-        assert(rootInfo.sizeIncludingChildren >= newChildSize);
-        assert(rootInfo.numChildren >= numChildren);
+        assert(rootInfo.sizeIncludingChildren > newChildSize);
+        assert(rootInfo.numChildren >= numPiecesInChild);
 
         assert(!childInfo.sizeIncludingChildren);
         assert(!childInfo.numChildren);
 
         rootInfo.sizeIncludingChildren -= newChildSize;
-        rootInfo.numChildren -= numChildren;
+        rootInfo.numChildren -= numPiecesInChild;
 
         childInfo.sizeIncludingChildren = newChildSize;
-        childInfo.numChildren = numChildren - 1;
+        childInfo.numChildren = numPiecesInChild - 1; // don't include root in child count
 
         recreateGUIlists_ = true;
     }

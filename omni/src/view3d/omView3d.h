@@ -60,6 +60,8 @@ protected:
 
     //omni events
     void SegmentModificationEvent(OmSegmentEvent *event);
+    void SegmentGUIlistEvent(OmSegmentEvent*) {}
+    void SegmentSelectedEvent(OmSegmentEvent*) {}
     void PreferenceChangeEvent(OmPreferenceEvent *event);
     void ViewBoxChangeEvent();
     void View3dRedrawEvent();
@@ -68,6 +70,7 @@ protected:
     void View3dRecenter();
     void ViewPosChangeEvent() {}
     void ViewRedrawEvent() {}
+    void ViewBlockingRedrawEvent() {}
 
     //edit actions
     void SelectSegment(QMouseEvent *event);

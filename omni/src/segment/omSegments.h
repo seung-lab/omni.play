@@ -8,20 +8,23 @@
 
 class OmChunkCoord;
 class OmSegment;
-class OmSegmentsImpl;
-class OmSegmentation;
 class OmSegmentChildren;
+class OmSegmentation;
+class OmSegmentsImpl;
+class OmSegmentsStore;
 
 class OmSegments {
 public:
     OmSegments(OmSegmentation* segmentation);
     ~OmSegments();
 
+    void StartCaches();
     void Flush();
 
     OmSegment* AddSegment();
     OmSegment* AddSegment(OmSegID value);
     OmSegment* GetSegment(const OmSegID);
+    OmSegment* GetSegmentUnsafe(const OmSegID);
     OmSegment* GetOrAddSegment(const OmSegID);
 
     bool IsSegmentValid(OmSegID seg);
@@ -40,7 +43,7 @@ public:
     bool IsSegmentSelected(OmSegment* seg);
     void setSegmentSelected(OmSegID segID, const bool, const bool);
     const OmSegIDsSet& GetSelectedSegmentIds();
-    quint32 numberOfSelectedSegments();
+    uint32_t numberOfSelectedSegments();
     bool AreSegmentsSelected();
     void UpdateSegmentSelection(const OmSegIDsSet& idsToSelect, const bool);
     void AddToSegmentSelection(const OmSegIDsSet& idsToSelect);
@@ -58,6 +61,7 @@ public:
     OmSegment* findRoot(const OmSegID segID);
     OmSegID findRootID(const OmSegID segID);
     OmSegID findRootID(OmSegment* segment);
+    OmSegID findRootIDcached(const OmSegID segID);
 
     std::pair<bool, OmSegmentEdge> JoinEdge(const OmSegmentEdge& e);
     OmSegmentEdge SplitEdge(const OmSegmentEdge& e);
@@ -87,8 +91,11 @@ public:
 
 private:
     zi::mutex mutex_;
+
     OmSegmentation *const segmentation_;
-    boost::scoped_ptr<OmSegmentsImpl> mImpl;
+
+    boost::scoped_ptr<OmSegmentsStore> store_;
+    boost::scoped_ptr<OmSegmentsImpl> impl_;
 
     friend class OmSegmentColorizer;
     friend class SegmentTests;

@@ -2,13 +2,13 @@
 #define SEG_INSPECTOR_EXPORT_BUTTON_RAW_HPP
 
 #include "gui/widgets/omButton.hpp"
-#include "gui/inspectors/segmentation/segInspector.h"
-#include "gui/inspectors/segmentation/segInspector.h"
+#include "gui/inspectors/segmentation/segmentationInspector.h"
+#include "gui/inspectors/segmentation/segmentationInspector.h"
 
-class ExportButtonRaw : public OmButton<SegInspector> {
+class ExportButtonRaw : public OmButton<SegmentationInspector> {
 public:
-	ExportButtonRaw(SegInspector * d)
-		: OmButton<SegInspector>( d,
+	ExportButtonRaw(SegmentationInspector * d)
+		: OmButton<SegmentationInspector>( d,
 								  "Export Raw",
 								  "Export Raw",
 								  false)

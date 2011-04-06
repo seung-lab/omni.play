@@ -1,13 +1,13 @@
-#include "gui/brushToolbox/brushToolbox.hpp"
 #include "gui/mainWindow/mainWindow.h"
+#include "gui/toolbars/mainToolbar/filterToBlackCheckbox.hpp"
 #include "gui/toolbars/mainToolbar/filterWidget.hpp"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
-#include "gui/toolbars/mainToolbar/openViewGroupButton.hpp"
+#include "gui/toolbars/mainToolbar/navAndEditButtonGroup.h"
 #include "gui/toolbars/mainToolbar/openSingleViewButton.hpp"
+#include "gui/toolbars/mainToolbar/openViewGroupButton.hpp"
 #include "gui/toolbars/mainToolbar/refreshVolumeButton.h"
 #include "gui/toolbars/mainToolbar/saveButton.h"
-#include "gui/toolbars/mainToolbar/filterToBlackCheckbox.hpp"
-#include "gui/toolbars/mainToolbar/navAndEditButtonGroup.h"
+#include "gui/toolbars/mainToolbar/showPaintTools.hpp"
 
 MainToolBar::MainToolBar(MainWindow* mainWindow)
     : QToolBar("Tools", mainWindow)
@@ -17,7 +17,6 @@ MainToolBar::MainToolBar(MainWindow* mainWindow)
     , openSingleViewButton_(new OpenSingleViewButton(mainWindow))
     , volumeRefreshButton(new VolumeRefreshButton(mainWindow))
     , navEditButtons_(new NavAndEditButtonGroup(mainWindow))
-    , brushToolbox_(new BrushToolbox(mainWindow))
 {
     mainWindow_->addToolbarTop(this);
 
@@ -37,6 +36,8 @@ MainToolBar::MainToolBar(MainWindow* mainWindow)
     addWidget(FilterWidget::Widget());
 
     addWidget(new FilterToBlackCheckbox(this));
+
+    addWidget(new ShowPaintTools(this));
 }
 
 void MainToolBar::setReadOnlyWidgetsEnabled()

@@ -20,6 +20,7 @@ public:
                  const ViewType viewType)
         : state_(state)
         , viewType_(viewType)
+        , blockingRedraw_(false)
         , tileCount_(0)
         , tileCountIncomplete_(0)
         , openglTileDrawer_(new OmOpenGLTileDrawer(viewType))
@@ -38,9 +39,11 @@ public:
         OmTileCache::UnRegisterDrawer(this);
     }
 
-    void FullRedraw2d()
+    void FullRedraw2d(const bool blockingRedraw)
     {
         reset();
+
+        blockingRedraw_ = blockingRedraw;
 
         OmMipVolume* vol = state_->getVol();
 
@@ -91,6 +94,8 @@ private:
     boost::shared_ptr<OmView2dState> state_;
     const ViewType viewType_;
 
+    bool blockingRedraw_;
+
     int tileCount_;
     int tileCountIncomplete_;
     boost::scoped_ptr<OmOpenGLTileDrawer> openglTileDrawer_;
@@ -104,8 +109,8 @@ private:
     {
         // keep old tiles around to make sure tiles are not destoryed before opengl is
         //  done using their texture IDs...
-        oldTilesToDraw_ = tilesToDraw_;
-        tilesToDraw_.clear();
+        oldTilesToDraw_.swap(tilesToDraw_);
+        tilesToDraw_ = std::deque<OmTileAndVertices>();
 
         tileCount_ = 0;
         tileCountIncomplete_ = 0;
@@ -129,7 +134,12 @@ private:
 
         tileCount_ += tileCoordsAndLocations->size();
 
-        getTilesNonBlocking(tileCoordsAndLocations);
+        if(blockingRedraw_){
+            getTilesBlocking(tileCoordsAndLocations);
+
+        } else {
+            getTilesNonBlocking(tileCoordsAndLocations);
+        }
     }
 
     void determineWhichTilesToDraw(OmSegmentation* vol)
@@ -141,6 +151,7 @@ private:
 
         if(state_->getScribbling()){
             getTilesBlocking(tileCoordsAndLocations);
+
         } else {
             getTilesNonBlocking(tileCoordsAndLocations);
         }

@@ -15,7 +15,7 @@ class FilObjectInspector;
 class InspectorProperties;
 class MainWindow;
 class OmViewGroupState;
-class SegInspector;
+class SegmentationInspector;
 class SegmentationDataWrapper;
 
 class InspectorWidget : public QWidget {
@@ -107,7 +107,7 @@ private:
     QMenu *contextMenu;
     QMenu *contextMenuDataSrc;
 
-    SegInspector *segInspectorWidget;
+    SegmentationInspector *segmentationInspectorWidget;
     ChanInspector *channelInspectorWidget;
     FilObjectInspector *filObjectInspectorWidget;
 

@@ -3,12 +3,12 @@
 
 #include "datalayer/hdf5/omExportVolToHdf5.hpp"
 #include "gui/widgets/omButton.hpp"
-#include "gui/inspectors/segmentation/segInspector.h"
+#include "gui/inspectors/segmentation/segmentationInspector.h"
 
-class ExportButton : public OmButton<SegInspector> {
+class ExportButton : public OmButton<SegmentationInspector> {
 public:
-    ExportButton(SegInspector * d)
-        : OmButton<SegInspector>( d,
+    ExportButton(SegmentationInspector * d)
+        : OmButton<SegmentationInspector>( d,
                                   "Export and reroot segments",
                                   "Export",
                                   false)

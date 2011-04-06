@@ -1,8 +1,10 @@
 #ifndef OM_SLICE_CACHE_HPP
 #define OM_SLICE_CACHE_HPP
 
-#include "system/cache/omVolSliceCache.hpp"
 #include "chunks/omRawChunkMemMapped.hpp"
+#include "system/cache/omVolSliceCache.hpp"
+#include "view2d/brush/omChunksAndPts.hpp"
+#include "utility/omSmartPtr.hpp"
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -10,7 +12,7 @@
 /**
  * unmanaged cache of slices to speed-up brush select tool
  *
- * NOT thred-safe
+ * NOT thread-safe
  *
  * for transient-use only
  *
@@ -20,9 +22,7 @@
 
 class OmSliceCacheBase {
 public:
-    virtual boost::shared_ptr<boost::unordered_set<OmSegID> >
-    GetSegIDs(const std::map<OmChunkCoord, std::set<Vector3i> >& ptsInChunks,
-              const int depth) = 0;
+    virtual boost::shared_ptr<uint32_t> GetSlice(const OmChunkCoord& chunkCoord, const int depth) = 0;
 
     virtual OmSegID GetVoxelValue(const OmChunkCoord& chunkCoord,
                                   const Vector3i& chunkPos) = 0;
@@ -48,38 +48,6 @@ public:
         , chunkDim_(vol->Coords().GetChunkDimension())
     {}
 
-    boost::shared_ptr<boost::unordered_set<OmSegID> >
-    GetSegIDs(const std::map<OmChunkCoord, std::set<Vector3i> >& ptsInChunks,
-              const int depth)
-    {
-        boost::shared_ptr<boost::unordered_set<OmSegID> > ret =
-            boost::make_shared<boost::unordered_set<OmSegID> >();
-
-        FOR_EACH(iter, ptsInChunks)
-        {
-            boost::shared_ptr<T> slicePtr = getSlice(iter->first, depth);
-            T const*const sliceData = slicePtr.get();
-
-            FOR_EACH(vec, iter->second)
-            {
-                const Vector2i loc =
-                    OmView2dConverters::Get2PtsInPlane(*vec, viewType_);
-
-                OmSegID segID = 0;
-                if(YZ_VIEW == viewType_){
-                    segID = sliceData[chunkDim_ * loc.x + loc.y];
-                } else {
-                    segID = sliceData[chunkDim_ * loc.y + loc.x];
-                }
-
-                if(segID){
-                    ret->insert(segID);
-                }
-            }
-        }
-
-        return ret;
-    }
 
     OmSegID GetVoxelValue(const OmChunkCoord& chunkCoord,
                           const Vector3i& chunkPos)
@@ -100,7 +68,29 @@ public:
         return sliceData[offset];
     }
 
+    boost::shared_ptr<uint32_t> GetSlice(const OmChunkCoord& chunkCoord, const int depth)
+    {
+        return recast<uint32_t>(getSlice(chunkCoord, depth));
+    }
+
 private:
+    template <typename U, typename>
+    boost::shared_ptr<U> recast(boost::shared_ptr<uint32_t> ptr){
+        return ptr;
+    }
+
+    template <typename RET, typename X>
+    boost::shared_ptr<RET> recast(boost::shared_ptr<X> ptr)
+    {
+        const uint32_t numElements = chunkDim_*chunkDim_;
+
+        boost::shared_ptr<RET> ret = OmSmartPtr<RET>::MallocNumElements(numElements, om::DONT_ZERO_FILL);
+
+        std::copy(ptr.get(), ptr.get() + numElements, ret.get());
+
+        return ret;
+    }
+
     boost::shared_ptr<T> getSlice(const OmChunkCoord& chunkCoord, const int depth)
     {
         const OmSliceKey key(chunkCoord.Coordinate.x,
@@ -166,11 +156,9 @@ public:
         return cache_->GetVoxelValue(chunkCoord, chunkPos);
     }
 
-    boost::shared_ptr<boost::unordered_set<OmSegID> >
-    GetSegIDs(const std::map<OmChunkCoord, std::set<Vector3i> >& ptsInChunks,
-              const int depth)
+    boost::shared_ptr<uint32_t> GetSlice(const OmChunkCoord& chunkCoord, const int depth)
     {
-        return cache_->GetSegIDs(ptsInChunks, depth);
+        return cache_->GetSlice(chunkCoord, depth);
     }
 
 private:

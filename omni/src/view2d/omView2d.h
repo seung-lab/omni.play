@@ -49,7 +49,8 @@ public:
     void resetWindow();
     void doRedraw2d();
 
-    void myUpdate();
+    void Redraw();
+    void RedrawBlocking();
 
 protected:
     // GL event methods

@@ -3,7 +3,6 @@
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/lowLevel/omEnabledSegments.hpp"
-#include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omSegmentSelection.hpp"
 #include "segment/omSegmentsImpl.h"
 #include "segment/omSegmentEdge.h"
@@ -13,8 +12,9 @@
 
 // entry into this class via OmSegments hopefully guarantees proper locking...
 
-OmSegmentsImpl::OmSegmentsImpl(OmSegmentation* segmentation)
-    : OmSegmentsImplLowLevel(segmentation)
+OmSegmentsImpl::OmSegmentsImpl(OmSegmentation* segmentation,
+                               OmSegmentsStore* segmentPages)
+    : OmSegmentsImplLowLevel(segmentation, segmentPages)
     , userEdges_(NULL)
 {}
 
@@ -24,7 +24,11 @@ OmSegmentsImpl::~OmSegmentsImpl()
 
 OmSegment* OmSegmentsImpl::AddSegment()
 {
-    OmSegment* newSeg = AddSegment(getNextValue());
+    const OmSegID newValue = getNextValue();
+
+    assert(newValue);
+
+    OmSegment* newSeg = AddSegment(newValue);
     growGraphIfNeeded(newSeg);
     return newSeg;
 }
@@ -273,7 +277,6 @@ void OmSegmentsImpl::refreshTree()
 
     if(!mst->IsValid()){
         printf("no graph found...\n");
-        return;
     }
 
     if(segmentGraph_.DoesGraphNeedToBeRefreshed(maxValue_.get()))

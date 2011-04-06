@@ -1,15 +1,23 @@
+#include "segment/omSegment.h"
+#include "segment/io/omSegmentPage.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "utility/omSimpleProgress.hpp"
 #include "volume/omSegmentation.h"
 
-static const uint32_t DEFAULT_PAGE_SIZE = 100000; // about 4.8 MB on disk
-static const uint32_t DEFAULT_PAGE_VECTOR_SIZE = 20;
+#include <QSet>
 
-OmPagingPtrStore::OmPagingPtrStore(OmSegmentation * segmentation)
+static const uint32_t DEFAULT_PAGE_SIZE = 100000; // about 4.8 MB on disk
+
+OmPagingPtrStore::OmPagingPtrStore(OmSegmentation* segmentation)
     : segmentation_(segmentation)
     , pageSize_(DEFAULT_PAGE_SIZE)
+{}
+
+OmPagingPtrStore::~OmPagingPtrStore()
 {
-    pages_.resize(DEFAULT_PAGE_VECTOR_SIZE);
+    FOR_EACH(iter, validPageNums_){
+        delete pages_[*iter];
+    }
 }
 
 void OmPagingPtrStore::loadAllSegmentPages()
@@ -19,7 +27,6 @@ void OmPagingPtrStore::loadAllSegmentPages()
     const PageNum maxNum = *std::max_element(validPageNums_.begin(),
                                              validPageNums_.end());
     resizeVectorIfNeeded(maxNum);
-    std::cout << "max pageNum: " << maxNum << "\n";
 
     OmSimpleProgress prog(validPageNums_.size(), "Segment page load");
 
@@ -42,32 +49,34 @@ void OmPagingPtrStore::loadAllSegmentPages()
 
 void OmPagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
 {
-    pages_[pageNum] = OmSegmentPage(segmentation_,
-                                    pageNum,
-                                    pageSize_);
-    pages_[pageNum].Load();
+    pages_[pageNum] = new OmSegmentPage(segmentation_,
+                                        pageNum,
+                                        pageSize_);
+    pages_[pageNum]->Load();
 
     prog->DidOne();
 }
 
 OmSegment* OmPagingPtrStore::AddSegment(const OmSegID value)
 {
-    const PageNum pageNum = getValuePageNum(value);
+    const PageNum pageNum = value / pageSize_;
 
     if(!validPageNums_.count(pageNum))
     {
         resizeVectorIfNeeded(pageNum);
         validPageNums_.insert(pageNum);
 
-        pages_[pageNum] = OmSegmentPage(segmentation_,
-                                        pageNum,
-                                        pageSize_);
-        pages_[pageNum].Create();
+        pages_[pageNum] = new OmSegmentPage(segmentation_,
+                                            pageNum,
+                                            pageSize_);
+        pages_[pageNum]->Create();
 
         storeMetadata();
     }
 
-    OmSegment* ret = &(pages_[pageNum][ value % pageSize_]);
+    OmSegmentPage& page = *pages_[pageNum];
+    OmSegment* ret = &(page[ value % pageSize_]);
+
     ret->data_->value = value;
 
     return ret;
@@ -76,7 +85,7 @@ OmSegment* OmPagingPtrStore::AddSegment(const OmSegID value)
 void OmPagingPtrStore::resizeVectorIfNeeded(const PageNum pageNum)
 {
     if( pageNum >= pages_.size() ){
-        pages_.resize(pageNum*2);
+        pages_.resize( (1+pageNum) * 2 );
     }
 }
 
@@ -140,7 +149,12 @@ void OmPagingPtrStore::storeMetadata()
 
 void OmPagingPtrStore::Flush()
 {
-    FOR_EACH(iter, validPageNums_){
-        pages_[*iter].Flush();
+    if(validPageNums_.empty()){
+        storeMetadata();
+
+    } else {
+        FOR_EACH(iter, validPageNums_){
+            pages_[*iter]->Flush();
+        }
     }
 }

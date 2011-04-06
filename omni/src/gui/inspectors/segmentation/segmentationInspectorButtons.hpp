@@ -3,12 +3,12 @@
 
 #include "headless/headlessImpl.hpp"
 #include "gui/widgets/omButton.hpp"
-#include "gui/inspectors/segmentation/segInspector.h"
+#include "gui/inspectors/segmentation/segmentationInspector.h"
 
-class RebuildCenterOfSegmentDataButton : public OmButton<SegInspector> {
+class RebuildCenterOfSegmentDataButton : public OmButton<SegmentationInspector> {
 public:
-    RebuildCenterOfSegmentDataButton(SegInspector * d)
-        : OmButton<SegInspector>( d,
+    RebuildCenterOfSegmentDataButton(SegmentationInspector * d)
+        : OmButton<SegmentationInspector>( d,
                                   "Rebuild segment center data",
                                   "Rebuild",
                                   false)
@@ -21,7 +21,7 @@ private:
 };
 
 
-class SegInspectorButtons {
+class SegmentationInspectorButtons {
 private:
 
 public:

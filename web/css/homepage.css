@@ -1,0 +1,83 @@
+/* HOMEPAGE */
+
+.wrapper-splash {
+	width: 100%;
+	height: 100%;
+}
+
+.wrapper-splash .page_header {
+	padding-top: 40px;
+	padding-bottom: 60px;
+}
+
+.logo-large {
+	background: url("../images/logo-large.png") no-repeat scroll 0 0 transparent;
+	height: 109px;
+	width:652px;
+	display: block;
+	
+	margin-left: auto;
+	margin-right: auto;
+	
+	cursor: pointer;
+}
+
+.wrapper-splash .page_header .subtitle {
+	color: #3B3B3B;
+	font-size: 63px;
+	padding-top: 25px;
+	
+	margin-left: auto;
+	margin-right: auto;
+	
+	text-align: center;
+}
+
+.login_container {
+	text-align: center;
+}
+
+.login {
+	
+}
+
+.login .input-text {
+	color: #666666;
+	font-size: 20px;
+	padding: 5px;
+	
+	border: 2px solid #AAAAAA;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.login .input-submit {
+	font-size: 23px;
+}
+
+.login .input-text,
+.login .input-submit {
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

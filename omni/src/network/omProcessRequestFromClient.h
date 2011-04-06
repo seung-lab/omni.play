@@ -4,6 +4,7 @@
 #include "common/omCommon.h"
 
 class OmProcessJSONAction;
+class OmAssembleTilesIntoSlice;
 
 class OmProcessRequestFromClient {
 private:
@@ -12,11 +13,15 @@ private:
 
 public:
     OmProcessRequestFromClient();
+    ~OmProcessRequestFromClient();
 
     QString Process(const QString& cmd);
 
 private:
+    boost::scoped_ptr<OmAssembleTilesIntoSlice> tileAssembler_;
+
     OmProcessJSONAction* createActionProcessor(const std::string& action);
+    QString makeImgFiles(const int sliceNum);
 };
 
 #endif

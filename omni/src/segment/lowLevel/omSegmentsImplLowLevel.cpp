@@ -6,9 +6,10 @@
 #include "system/cache/omCacheManager.h"
 #include "volume/omSegmentation.h"
 
-OmSegmentsImplLowLevel::OmSegmentsImplLowLevel(OmSegmentation* segmentation)
+OmSegmentsImplLowLevel::OmSegmentsImplLowLevel(OmSegmentation* segmentation,
+                                               OmSegmentsStore* segmentPages)
     : segmentation_(segmentation)
-    , segmentPages_(new OmPagingPtrStore(segmentation))
+    , segmentPages_(segmentPages)
     , segmentSelection_(new OmSegmentSelection(this))
     , enabledSegments_(new OmEnabledSegments(this))
     , mNumSegs(0)
@@ -18,10 +19,6 @@ OmSegmentsImplLowLevel::OmSegmentsImplLowLevel(OmSegmentation* segmentation)
 
 OmSegmentsImplLowLevel::~OmSegmentsImplLowLevel()
 {}
-
-OmSegID OmSegmentsImplLowLevel::GetNumTopSegments(){
-    return segmentGraph_.GetNumTopLevelSegs();
-}
 
 QString OmSegmentsImplLowLevel::getSegmentName(OmSegID segID)
 {
@@ -58,24 +55,15 @@ void OmSegmentsImplLowLevel::setSegmentNote(OmSegID segID, QString note){
 }
 
 quint32 OmSegmentsImplLowLevel::getPageSize(){
-    return segmentPages_->getPageSize();
+    return segmentPages_->PageSize();
 }
 
 void OmSegmentsImplLowLevel::touchFreshness(){
     OmCacheManager::TouchFreshness();
 }
 
-void OmSegmentsImplLowLevel::growGraphIfNeeded(OmSegment* newSeg)
-{
+void OmSegmentsImplLowLevel::growGraphIfNeeded(OmSegment* newSeg){
     segmentGraph_.GrowGraphIfNeeded(newSeg);
-}
-
-std::vector<OmSegmentPage>& OmSegmentsImplLowLevel::Pages(){
-    return segmentPages_->Pages();
-}
-
-const std::set<PageNum> OmSegmentsImplLowLevel::ValidPageNums() const {
-    return segmentPages_->ValidPageNums();
 }
 
 SegmentationDataWrapper OmSegmentsImplLowLevel::GetSDW() const {

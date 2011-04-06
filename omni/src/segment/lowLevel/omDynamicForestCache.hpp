@@ -3,12 +3,13 @@
 
 #include "common/omCommon.h"
 #include "segment/lowLevel/DynamicForestPool.hpp"
+#include "utility/omLockedPODs.hpp"
 
 class OmDynamicForestCache {
 private:
     boost::scoped_ptr<zi::DynamicForestPool<OmSegID> > graph_;
 
-    uint64_t freshness_;
+    LockedUint64 freshness_;
 
     bool batchMode_;
 
@@ -24,20 +25,21 @@ private:
 public:
     OmDynamicForestCache(const size_t size)
         : graph_(new zi::DynamicForestPool<OmSegID>(size))
-        , freshness_(1)
         , batchMode_(false)
-    {}
+    {
+        freshness_.set(1);
+    }
 
     ~OmDynamicForestCache()
     {}
 
     inline uint64_t Freshness() const {
-        return freshness_;
+        return freshness_.get();
     }
 
     inline void SetBatch(const bool batchModeOn)
     {
-        ++freshness_;
+        ClearCache();
         batchMode_ = batchModeOn;
     }
 

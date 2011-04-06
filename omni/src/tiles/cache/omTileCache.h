@@ -49,6 +49,7 @@ private:
                       const om::Blocking blocking);
 
     friend class OmTileDumper; // access doGet(...)
+    friend class OmAssembleTilesIntoSlice;
 
     friend class zi::singleton<OmTileCache>;
 };

@@ -9,6 +9,7 @@ class OmStateManagerImpl;
 class OmEventManagerImpl;
 class OmActionsImpl;
 class OmActionLogger;
+template <class> class OmTilePool;
 
 class OmProjectGlobals {
 private:
@@ -18,6 +19,9 @@ private:
     boost::scoped_ptr<OmEventManagerImpl> eventMan_;
     boost::scoped_ptr<OmActionsImpl> actions_;
     boost::scoped_ptr<OmActionLogger> actionLogger_;
+
+    boost::scoped_ptr<OmTilePool<uint8_t> > tilePoolUint8_;
+    boost::scoped_ptr<OmTilePool<OmColorARGB> > tilePoolARGB_;
 
 public:
     OmProjectGlobals();
@@ -45,6 +49,19 @@ public:
 
     inline OmActionLogger& ActionLogger(){
         return *actionLogger_;
+    }
+
+    template <typename T> OmTilePool<T>& TilePool(){
+        return getTilePool(static_cast<T*>(0));
+    }
+
+private:
+    inline OmTilePool<uint8_t>& getTilePool(uint8_t*){
+        return *tilePoolUint8_;
+    }
+
+    inline OmTilePool<OmColorARGB>& getTilePool(OmColorARGB*){
+        return *tilePoolARGB_;
     }
 };
 

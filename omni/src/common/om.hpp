@@ -77,6 +77,11 @@ enum Direction {
     DOWN
 };
 
+enum Safe {
+    SAFE,
+    NOT_SAFE
+};
+
 // WARNING: used for serialization by OmSegmentPage,
 //  and values should fit inside uint8_t
 enum SegListType {

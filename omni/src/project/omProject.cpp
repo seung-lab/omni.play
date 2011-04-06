@@ -100,6 +100,8 @@ void OmProject::Close()
     OmThreadPoolManager::StopAll();
     zi::all_threads::join_all();
 
+    OmTileCache::Delete();
+
     // OmProject must be deleted here, remaining singletons close cleanly
     instance().impl_.reset();
 
@@ -110,7 +112,6 @@ void OmProject::Close()
     //OmLocalPreferences
 
     //close project data
-    OmTileCache::Delete();
     OmCacheManager::Delete();
 
     OmHdf5Manager::Delete();

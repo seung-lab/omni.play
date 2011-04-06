@@ -114,6 +114,10 @@ private:
 
         // objectPool_ = objectPoolPtr_->MakeSegmentObjectPoolInMemory();
         objectPool_ = objectPoolPtr_->MakeSegmentObjectPoolOnDisk();
+
+        for(uint32_t i = 0; i < pageSize_; ++i){
+            objectPool_[i].edgeNumber_ = -1;
+        }
     }
 
     void loadSegmentsData()

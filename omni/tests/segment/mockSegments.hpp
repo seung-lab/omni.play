@@ -86,7 +86,7 @@ private:
         {
             verify(segs_[i]);
             verify(segs_[i]->value() == i);
-            verify(segs_[i]->getBounds().isEmpty());
+            verify(segs_[i]->BoundingBox().isEmpty());
         }
 
         OmSegment* dup = segments_->GetOrAddSegment(10);

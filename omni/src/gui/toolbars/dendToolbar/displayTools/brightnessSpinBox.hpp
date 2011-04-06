@@ -8,30 +8,31 @@
 #include "utility/image/omFilterImage.hpp"
 
 class BrightnessSpinBox : public OmIntSpinBox {
-Q_OBJECT
+    Q_OBJECT
 
-public:
-	BrightnessSpinBox(DisplayTools* d)
-		: OmIntSpinBox(d, om::UPDATE_AS_TYPE)
-		, mParent(d)
-	{
-		setSingleStep(1);
-		setRange(-255, 255);
-		setInitialGUIThresholdValue();
-	}
+    public:
+    BrightnessSpinBox(DisplayTools* d)
+        : OmIntSpinBox(d, om::UPDATE_AS_TYPE)
+        , mParent(d)
+    {
+        setSingleStep(1);
+        setRange(-255, 255);
+        setInitialGUIThresholdValue();
+    }
 
 private:
-	DisplayTools *const mParent;
+    DisplayTools *const mParent;
 
-	void actUponSpinboxChange(const int val)
-	{
-		OmImageFilter::SetBrightnessShift(val);
-		OmTileCache::ClearChannel();
-	}
+    void actUponSpinboxChange(const int val)
+    {
+        OmImageFilter::SetBrightnessShift(val);
+        OmTileCache::ClearChannel();
+        OmEvents::Redraw2dBlocking();
+    }
 
-	void setInitialGUIThresholdValue(){
+    void setInitialGUIThresholdValue(){
         setValue(OmImageFilter::GetBrightnessShift());
-	}
+    }
 };
 
 #endif

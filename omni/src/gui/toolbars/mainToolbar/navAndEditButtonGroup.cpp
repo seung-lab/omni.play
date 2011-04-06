@@ -32,9 +32,9 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
                                    "Paint Black Voxel", om::tool::ERASE,
                                    ":/toolbars/mainToolbar/icons/1277962354_package-purge.png"));
 
-    // addModifyButton(new ToolButton(parent, "Fill",
-    //                                "Paint Can", om::tool::FILL,
-    //                                ":/toolbars/mainToolbar/icons/1278015539_color_fill.png"));
+    addModifyButton(new ToolButton(parent, "Fill",
+                                   "Paint Can", om::tool::FILL,
+                                   ":/toolbars/mainToolbar/icons/1278015539_color_fill.png"));
 
     om::connect( this, SIGNAL(buttonClicked(int)),
                  this, SLOT(buttonWasClicked(int)));

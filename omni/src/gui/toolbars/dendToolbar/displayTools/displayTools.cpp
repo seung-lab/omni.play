@@ -100,7 +100,7 @@ QWidget* DisplayTools::thresholdBox()
     return widget;
 }
 
-OmViewGroupState * DisplayTools::getViewGroupState()
+OmViewGroupState* DisplayTools::getViewGroupState()
 {
     return mParent->getViewGroupState();
 }

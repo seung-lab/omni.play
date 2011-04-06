@@ -4,6 +4,7 @@
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/omMipMeshManager.h"
 #include "mesh/omVolumeCuller.h"
+#include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentUtils.hpp"
 #include "system/omAppState.hpp"
@@ -282,9 +283,10 @@ void OmView3d::View3dRedrawEventFromCache()
 void OmView3d::View3dRecenter()
 {
     const boost::optional<float> distance =
-        OmSegmentUtils::ComputeCameraDistanceForSelectedSegments();
+        OmSegmentCenter::ComputeCameraDistanceForSelectedSegments();
 
-    if(distance){
+    if(distance)
+    {
         mCamera.SetDistance(*distance);
 
         const DataCoord coord = vgs_->View2dState()->GetScaledSliceDepth();

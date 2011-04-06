@@ -1,16 +1,17 @@
-#include "datalayer/fs/omFileNames.hpp"
+#include "actions/omActions.h"
+#include "chunks/omChunk.h"
+#include "chunks/omChunkCache.hpp"
+#include "chunks/omChunkCache.hpp"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
+#include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "project/omProject.h"
-#include "actions/omActions.h"
-#include "chunks/omChunkCache.hpp"
 #include "utility/omThreadPool.hpp"
+#include "volume/io/omVolumeData.h"
 #include "volume/omChannelImpl.h"
 #include "volume/omFilter2d.h"
-#include "chunks/omChunk.h"
-#include "volume/io/omVolumeData.h"
 #include "zi/omThreads.h"
 
 #include <float.h>
@@ -35,6 +36,10 @@ std::string OmChannelImpl::GetName(){
     return "channel" + om::string::num(GetID());
 }
 
+std::string OmChannelImpl::GetNameHyphen(){
+    return "channel-" + om::string::num(GetID());
+}
+
 std::string OmChannelImpl::GetDirectoryPath() {
     return OmDataPaths::getDirectoryPath(this);
 }
@@ -44,7 +49,9 @@ void OmChannelImpl::CloseDownThreads()
 
 void OmChannelImpl::loadVolData()
 {
-    if(IsBuilt()){
+    if(IsBuilt())
+    {
+        chunkCache_->UpdateFromVolResize();
         volData_->load(this);
     }
 }

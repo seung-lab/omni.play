@@ -3,7 +3,6 @@
 
 #include "common/omCommon.h"
 
-class OmCacheSegments;
 class OmViewGroupState;
 class OmSegments;
 
@@ -12,7 +11,6 @@ struct SegmentColorParams {
     uint32_t numElements;
     OmViewGroupState* vgs;
     OmSegments* segments;
-    OmCacheSegments* cacheSegments;
 };
 
 #endif

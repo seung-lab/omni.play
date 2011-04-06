@@ -23,6 +23,16 @@ public:
         return instance().sdw_;
     }
 
+    static SegmentDataWrapper GetSegmentForPainting(){
+        return instance().sdwForPainting_;
+    }
+
+    static void SetSegmentForPainting(const SegmentDataWrapper& sdw)
+    {
+        instance().sdwForPainting_ = sdw;
+        OmEvents::SegmentSelected();
+    }
+
     static void RandomizeColor()
     {
         if(!instance().sdw_.IsSegmentValid()){
@@ -62,6 +72,7 @@ private:
     ~OmSegmentSelected(){}
 
     SegmentDataWrapper sdw_;
+    SegmentDataWrapper sdwForPainting_;
 
     friend class zi::singleton<OmSegmentSelected>;
 };

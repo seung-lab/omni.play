@@ -7,8 +7,8 @@
 class OmSegmentation;
 
 namespace om {
-typedef std::list<point2di> pt2d_list_t;
-typedef std::list<Vector3i> pt3d_list_t;
+typedef std::deque<point2di> pt2d_list_t;
+typedef std::deque<Vector3i> pt3d_list_t;
 }; //namespace om
 
 struct OmBrushOppInfo

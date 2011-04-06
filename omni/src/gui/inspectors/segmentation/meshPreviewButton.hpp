@@ -2,13 +2,13 @@
 #define SEG_INSPECTOR_MESH_PREVIEW_BUTTON_H
 
 #include "gui/widgets/omButton.hpp"
-#include "gui/inspectors/segmentation/segInspector.h"
+#include "gui/inspectors/segmentation/segmentationInspector.h"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 
-class MeshPreviewButton : public OmButton<SegInspector> {
+class MeshPreviewButton : public OmButton<SegmentationInspector> {
 public:
-	MeshPreviewButton(SegInspector * d)
-		: OmButton<SegInspector>( d,
+	MeshPreviewButton(SegmentationInspector * d)
+		: OmButton<SegmentationInspector>( d,
 								  "Mesh Preview",
 								  "preview mesh",
 								  false)

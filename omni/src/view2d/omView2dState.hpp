@@ -46,6 +46,7 @@ public:
         , location_(boost::make_shared<OmView2dVolLocation>(vol, vgs, viewType))
         , brushSize_(OmStateManager::BrushSize())
         , amPanningInSelectMode_(false)
+        , segIDforPainting_(0)
     {
         setTotalViewport(size);
         zoomLevel_->Update(getMaxMipLevel());
@@ -407,6 +408,14 @@ public:
         amPanningInSelectMode_ = b;
     }
 
+    inline OmSegID GetSegIDForPainting(){
+        return segIDforPainting_;
+    }
+
+    inline void SetSegIDForPainting(const OmSegID segID){
+        segIDforPainting_ = segID;
+    }
+
 private:
     OmMipVolume* vol_;
     const ObjectType objType_;
@@ -431,6 +440,8 @@ private:
     OmBrushSize *const brushSize_;
 
     bool amPanningInSelectMode_;
+
+    OmSegID segIDforPainting_;
 };
 
 #endif

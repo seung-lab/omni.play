@@ -23,7 +23,7 @@ public:
 
 private:
     OmSegments* mCache;
-    std::list<OmSegment*> mSegs;
+    std::deque<OmSegment*> segs_;
 };
 
 #endif

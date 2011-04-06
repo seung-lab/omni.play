@@ -34,7 +34,19 @@ public:
 
     inline void touch(const std::list<KEY>& keys)
     {
-        FOR_EACH(iter, keys){
+        FOR_EACH(iter, keys)
+        {
+            std::pair<iterator, bool> p = list_.push_back(*iter);
+            if(!p.second){ // key already in list
+                list_.relocate(list_.end(), p.first);
+            }
+        }
+    }
+
+    inline void touch(const std::deque<KEY>& keys)
+    {
+        FOR_EACH(iter, keys)
+        {
             std::pair<iterator, bool> p = list_.push_back(*iter);
             if(!p.second){ // key already in list
                 list_.relocate(list_.end(), p.first);

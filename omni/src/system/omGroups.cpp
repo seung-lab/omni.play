@@ -69,7 +69,8 @@ OmGroup & OmGroups::GetGroup(OmGroupID id)
 OmGroupIDsSet OmGroups::GetGroups()
 {
     OmGroupIDsSet set;
-    FOR_EACH(iter, mGroupsByName) {
+    FOR_EACH(iter, mGroupsByName)
+    {
         set.insert(*iter);
         printf("got\n");
     }
@@ -79,7 +80,9 @@ OmGroupIDsSet OmGroups::GetGroups()
 OmGroupIDsSet OmGroups::GetGroups(OmSegID seg)
 {
     OmGroupIDsSet set;
-    FOR_EACH(iter, mGroupsByName) {
+
+    FOR_EACH(iter, mGroupsByName)
+    {
         OmGroup& group = GetGroup(*iter);
         OmSegIDsSet ids = group.GetIDs();
         if(ids.count(seg) > 0) {

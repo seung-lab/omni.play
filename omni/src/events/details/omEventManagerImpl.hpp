@@ -24,7 +24,7 @@ private:
 
     std::map<OmEventClass, listeners_t> classListeners_;
 
-    zi::rwmutex lock_;
+    zi::mutex lock_;
 
 public:
     OmEventManagerImpl()
@@ -36,14 +36,14 @@ public:
     void AddListener(OmEventClass eventClass,
                      OmEventListener* listener)
     {
-        zi::rwmutex::write_guard g(lock_);
+        zi::guard g(lock_);
         classListeners_[eventClass].insert(listener);
     }
 
     void RemoveListener(OmEventClass eventClass,
                         OmEventListener* listener)
     {
-        zi::rwmutex::write_guard g(lock_);
+        zi::guard g(lock_);
         classListeners_[eventClass].erase(listener);
     }
 
@@ -67,7 +67,7 @@ private:
         const OmEventClass eventKlass = omEvent->ChildClass;
 
         {
-            zi::rwmutex::read_guard g(lock_);
+            zi::guard g(lock_);
 
             if(!classListeners_.count(eventKlass)){
                 return true;

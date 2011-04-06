@@ -19,9 +19,9 @@ public:
         colorizers_.resize(SCC_NUMBER_OF_ENUMS);
     }
 
-    inline boost::shared_ptr<OmColorRGBA> ColorTile(uint32_t const* imageData,
-                                                    const Vector2i& dims,
-                                                    const OmTileCoord& key)
+    inline OmPooledTile<OmColorARGB>* ColorTile(uint32_t const* imageData,
+                                                const Vector2i& dims,
+                                                const OmTileCoord& key)
     {
         const OmSegmentColorCacheType sccType =
             key.getSegmentColorCacheType();

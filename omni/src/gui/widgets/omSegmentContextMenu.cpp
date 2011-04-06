@@ -2,7 +2,7 @@
 #include "common/omDebug.h"
 #include "events/omEvents.h"
 #include "gui/inspectors/inspectorProperties.h"
-#include "gui/inspectors/segObjectInspector.h"
+#include "gui/inspectors/segmentInspector.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "project/omProject.h"
 #include "segment/omSegmentIterator.h"
@@ -150,10 +150,8 @@ void OmSegmentContextMenu::addGroupActions()
     addAction("Set Segment Not Valid", this, SLOT(setNotValid()));
 }
 
-void OmSegmentContextMenu::setSelectedColor()
-{
-    OmSegmentSelected::Set(sdw_);
-    OmSegmentSelected::AugmentSelection(sdw_);
+void OmSegmentContextMenu::setSelectedColor(){
+    OmSegmentSelected::SetSegmentForPainting(sdw_);
 }
 
 void OmSegmentContextMenu::randomizeColor()
@@ -200,7 +198,7 @@ void OmSegmentContextMenu::showProperties()
         .arg(rootSegID);
 
     mViewGroupState->GetInspectorProperties()->
-        setOrReplaceWidget( new SegObjectInspector(sdw, this), title);
+        setOrReplaceWidget( new SegmentInspector(sdw, this), title);
 }
 
 void OmSegmentContextMenu::addPropertiesActions()

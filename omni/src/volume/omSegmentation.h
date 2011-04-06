@@ -6,7 +6,6 @@
  * Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
-#include "chunks/omChunkCache.hpp"
 #include "chunks/omChunkTypes.hpp"
 #include "common/om.hpp"
 #include "datalayer/omDataWrapper.h"
@@ -30,6 +29,7 @@ class OmVolSliceCache;
 class OmVolumeCuller;
 class OmVolumeData;
 class SegmentationDataWrapper;
+template <typename,typename> class OmChunkCache;
 
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
 public:
@@ -38,6 +38,7 @@ public:
     virtual ~OmSegmentation();
 
     std::string GetName();
+    std::string GetNameHyphen();
 
     std::string GetDirectoryPath();
 
@@ -111,6 +112,9 @@ public:
     }
     inline OmVolSliceCache* SliceCache(){
         return volSliceCache_.get();
+    }
+    inline OmChunkCache<OmSegmentation, OmSegChunk>* ChunkCache(){
+        return chunkCache_.get();
     }
 
 private:

@@ -38,7 +38,8 @@ public:
 
         state_->SetMousePoint(event);
 
-        if(leftMouseButton_){
+        if(leftMouseButton_)
+        {
             switch(tool_){
             case om::tool::SPLIT:
             case om::tool::CUT:
@@ -67,16 +68,22 @@ public:
                 break;
 
             case om::tool::PAINT:
-            case om::tool::ERASE:
                 if (state_->getScribbling()) {
-                    // keep painting
                     paint();
                 }
+                state_->SetLastDataPoint(dataClickPoint_);
+                break;
+
+            case om::tool::ERASE:
+                if (state_->getScribbling()) {
+                    erase();
+                }
+                state_->SetLastDataPoint(dataClickPoint_);
                 break;
             }
         }
 
-        v2d_->myUpdate();
+        v2d_->Redraw();
     }
 
 private:
@@ -99,6 +106,7 @@ private:
     {
         if(altKey_){
             OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::SUBTRACT);
+
         } else {
             OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::ADD);
         }
@@ -106,27 +114,21 @@ private:
         state_->SetLastDataPoint(dataClickPoint_);
     }
 
+    void erase()
+    {
+        OmBrushPaint::PaintByClick(state_, dataClickPoint_, 0);
+        OmBrushPaint::PaintByLine(state_, dataClickPoint_, 0);
+    }
+
     void paint()
     {
-        SegmentDataWrapper sdw = OmSegmentSelected::Get();
-        if (!sdw.IsSegmentValid()){
-            return;
-        }
+        const OmSegID segmentValueToPaint = state_->GetSegIDForPainting();
 
-        OmSegID segmentValueToPaint = 0;
-        if(om::tool::PAINT == tool_){
-            segmentValueToPaint = sdw.getID();
-        }
+        assert(segmentValueToPaint);
 
-        OmBrushPaint::PaintByClick(state_,
-                                   dataClickPoint_,
-                                   segmentValueToPaint);
+        OmBrushPaint::PaintByClick(state_, dataClickPoint_, segmentValueToPaint);
 
-        OmBrushPaint::PaintByLine(state_,
-                                  dataClickPoint_,
-                                  segmentValueToPaint);
-
-        state_->SetLastDataPoint(dataClickPoint_);
+        OmBrushPaint::PaintByLine(state_, dataClickPoint_, segmentValueToPaint);
     }
 
     inline void mousePan(){

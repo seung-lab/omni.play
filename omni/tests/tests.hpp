@@ -2,6 +2,7 @@
 #define TESTS_HPP
 
 // #include "tests/onDiskTests.hpp"
+#include "tiles/omTilePoolTests.hpp"
 #include "utility/omSmartPtr.hpp"
 #include "utility/stringHelpersTest.h"
 #include "segment/lowLevel/DynamicForestPool.hpp"
@@ -55,6 +56,11 @@ public:
         // }
 
         //dynamicForest();
+
+        {
+            OmTilePoolTests tilePoolTests;
+            tilePoolTests.Run();
+        }
 
         return;
 

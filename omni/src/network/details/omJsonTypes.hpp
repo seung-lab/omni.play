@@ -1,8 +1,11 @@
 #ifndef OM_JSON_IMPL_HPP
 #define OM_JSON_IMPL_HPP
 
-#include <boost/utility.hpp>
+
+#include "common/omException.h"
 #include "json_spirit.h"
+
+#include <boost/utility.hpp>
 
 // uses http://www.codeproject.com/KB/recipes/JSON_Spirit.aspx
 

@@ -2,30 +2,29 @@
 #include "omPreferenceEvent.h"
 
 OmPreferenceEvent::OmPreferenceEvent(QEvent::Type type, int pref)
-:OmEvent(type, CLASS)
+    : OmEvent(type, CLASS)
 {
-	mPreference = pref;
+    mPreference = pref;
 }
 
 /*
- *	Dispatch event based on event type.
+ * Dispatch event based on event type.
  */
 
 void OmPreferenceEvent::Dispatch(OmEventListener * pListener)
 {
 
-	//cast to proper listener
-	OmPreferenceEventListener *p_cast_listener = dynamic_cast < OmPreferenceEventListener * >(pListener);
-	assert(p_cast_listener);
+    //cast to proper listener
+    OmPreferenceEventListener *p_cast_listener = dynamic_cast < OmPreferenceEventListener * >(pListener);
+    assert(p_cast_listener);
 
-	switch (type()) {
+    switch (type()) {
 
-	case OmPreferenceEvent::PREFERENCE_CHANGE:
-		p_cast_listener->PreferenceChangeEvent(this);
-		return;
+    case OmPreferenceEvent::PREFERENCE_CHANGE:
+        p_cast_listener->PreferenceChangeEvent(this);
+        return;
 
-	default:
-		assert(false);
-	}
-
+    default:
+        throw OmArgException("unknown event type");
+    }
 }

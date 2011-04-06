@@ -1,11 +1,11 @@
 #ifndef OM_SEGMENT_CACHE_IMPL_LOW_LEVEL_H
 #define OM_SEGMENT_CACHE_IMPL_LOW_LEVEL_H
 
-#include "utility/omLockedPODs.hpp"
 #include "common/omCommon.h"
-#include "segment/lowLevel/omPagingPtrStore.h"
+#include "segment/lowLevel/store/omSegmentStore.hpp"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"
+#include "utility/omLockedPODs.hpp"
 
 #include <QHash>
 
@@ -17,7 +17,7 @@ class SegmentationDataWrapper;
 
 class OmSegmentsImplLowLevel {
 public:
-    OmSegmentsImplLowLevel(OmSegmentation *);
+    OmSegmentsImplLowLevel(OmSegmentation*, OmSegmentsStore*);
     virtual ~OmSegmentsImplLowLevel();
 
     inline void RefreshGUIlists(){
@@ -33,11 +33,10 @@ public:
     inline OmSegID GetNumSegments() const {
         return mNumSegs;
     }
+
     void SetNumSegments(const uint32_t num){
         mNumSegs = num;
     }
-
-    OmSegID GetNumTopSegments();
 
     inline OmSegment* FindRoot(OmSegment* segment)
     {
@@ -109,22 +108,19 @@ public:
         return *enabledSegments_;
     }
 
-    std::vector<OmSegmentPage>& Pages();
-    const std::set<PageNum> ValidPageNums() const;
-
     SegmentationDataWrapper GetSDW() const;
 
-    OmPagingPtrStore* PagingPtrStore(){
-        return segmentPages_.get();
+    OmSegmentsStore* SegmentStore(){
+        return segmentPages_;
     }
 
 protected:
     OmSegmentation *const segmentation_;
-    const boost::scoped_ptr<OmPagingPtrStore> segmentPages_;
+    OmSegmentsStore *const segmentPages_;
     const boost::scoped_ptr<OmSegmentSelection> segmentSelection_;
     const boost::scoped_ptr<OmEnabledSegments> enabledSegments_;
 
-    LockedUint32 maxValue_;
+    OmLockedUint32 maxValue_;
     uint32_t mNumSegs;
 
     QHash< OmID, QString > segmentCustomNames;
@@ -133,6 +129,7 @@ protected:
     inline OmSegID getNextValue(){
         return maxValue_.inc();
     }
+
     void touchFreshness();
 
     OmSegmentGraph segmentGraph_;

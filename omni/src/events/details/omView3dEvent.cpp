@@ -20,10 +20,12 @@ void OmView3dEvent::Dispatch(OmEventListener * pListener)
     case OmView3dEvent::REDRAW:
         p_cast_listener->View3dRedrawEvent();
         return;
+
     case OmView3dEvent::RECENTER:
         p_cast_listener->View3dRecenter();
         return;
+
     default:
-        assert(false);
+        throw OmArgException("unknown event type");
     }
 }

@@ -1,38 +1,12 @@
 #ifndef OM_COMMON_H
 #define OM_COMMON_H
 
-#define QT_USE_FAST_CONCATENATION
-#define QT_USE_FAST_OPERATOR_PLUS
-#include <QString>
-
+#include "common/omQt.h"
 #include "common/omBoost.h"
 
 #include "common/omStd.h"
 #include "common/omException.h"
 #include <cassert>
-
-class QTextStream;
-
-/**
- * color structs
- **/
-struct OmColor {
-    uint8_t red;
-    uint8_t green;
-    uint8_t blue;
-};
-std::ostream& operator<<(std::ostream &out, const OmColor& c);
-bool operator<(const OmColor& a, const OmColor& b);
-QTextStream &operator<<(QTextStream& out, const OmColor& c);
-
-struct OmColorRGBA {
-    uint8_t red;
-    uint8_t green;
-    uint8_t blue;
-    uint8_t alpha;
-};
-std::ostream& operator<<(std::ostream &out, const OmColorRGBA& c);
-
 
 /**
  * vmml-related

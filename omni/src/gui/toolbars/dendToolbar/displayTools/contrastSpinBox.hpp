@@ -30,7 +30,7 @@ private:
     {
         OmImageFilter::SetContrastValue(threshold);
         OmTileCache::ClearChannel();
-        std::cout << "contrast changed to " << threshold << "\n";
+        OmEvents::Redraw2dBlocking();
     }
 
     void setInitialGUIThresholdValue()

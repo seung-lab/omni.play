@@ -62,7 +62,8 @@ public:
         //modified voxels
         std::set<DataCoord> edited_voxels;
 
-        FOR_EACH(itr, mOldVoxelValues){
+        FOR_EACH(itr, mOldVoxelValues)
+        {
             //set voxel to new value
             r_segmentation.SetVoxelValue(itr->first, mNewValue);
             edited_voxels.insert(itr->first);

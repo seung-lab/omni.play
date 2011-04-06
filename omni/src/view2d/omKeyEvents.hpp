@@ -1,6 +1,7 @@
 #ifndef OM_KEY_EVENTS_HPP
 #define OM_KEY_EVENTS_HPP
 
+#include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentUtils.hpp"
 #include "system/cache/omCacheManager.h"
@@ -37,7 +38,7 @@ public:
 
         case Qt::Key_L:
             state_->ToggleLevelLock();
-            v2d_->myUpdate();
+            v2d_->Redraw();
             break;
 
         case Qt::Key_Escape:
@@ -66,8 +67,8 @@ public:
             break;
 
         case Qt::Key_C:
-            OmSegmentUtils::CenterSegment(state_->getViewGroupState(),
-                                          state_->GetSDW());
+            OmSegmentCenter::CenterSegment(state_->getViewGroupState(),
+                                           state_->GetSDW());
             break;
 
         case Qt::Key_W:

@@ -30,6 +30,8 @@ public:
     static const QEvent::Type SEGMENT_OBJECT_MODIFICATION = (QEvent::Type) (CLASS + 1);
     static const QEvent::Type SEGMENT_GUI_LIST = (QEvent::Type) (CLASS + 2);
 
+    static const QEvent::Type SEGMENT_SELECTED = (QEvent::Type) (CLASS + 3);
+
     inline const OmSelectSegmentsParams& Params(){
         return *params_;
     }
@@ -53,8 +55,9 @@ public:
     //add/remove segment, change state, change selection
     virtual void SegmentModificationEvent(OmSegmentEvent* event) = 0;
 
-    virtual void SegmentGUIlistEvent(OmSegmentEvent*)
-    {}
+    virtual void SegmentGUIlistEvent(OmSegmentEvent*) = 0;
+
+    virtual void SegmentSelectedEvent(OmSegmentEvent*) = 0;
 };
 
 #endif

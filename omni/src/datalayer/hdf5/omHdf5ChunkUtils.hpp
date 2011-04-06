@@ -7,6 +7,7 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
+#include "project/omProject.h"
 
 class OmHdf5ChunkUtils {
 public:
