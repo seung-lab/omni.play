@@ -7,7 +7,6 @@
  * Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
-#include "chunks/omChunkTypes.hpp"
 #include "common/omStd.h"
 #include "system/omManageableObject.h"
 #include "volume/omFilter2dManager.h"
@@ -56,7 +55,7 @@ public:
 
     void SetVolDataType(const OmVolDataType);
 
-    void GetChunk(OmChunkPtr& ptr, const OmChunkCoord& coord);
+    OmChunk* GetChunk(const OmChunkCoord& coord);
 
     inline std::vector<OmFilter2d*> GetFilters() const {
         return filterManager_.GetFilters();

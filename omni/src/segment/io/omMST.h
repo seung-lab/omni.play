@@ -2,9 +2,9 @@
 #define OM_MST_H
 
 #include "segment/io/omMSTtypes.h"
+#include "utility/omSharedPtr.hpp"
 #include "zi/omMutex.h"
 
-#include <boost/shared_ptr.hpp>
 #include <QString>
 
 class OmSegmentation;
@@ -62,7 +62,7 @@ private:
 
     zi::rwmutex thresholdLock_;
 
-    boost::shared_ptr<OmIOnDiskFile<OmMSTEdge> > edgesPtr_;
+    om::shared_ptr<OmIOnDiskFile<OmMSTEdge> > edgesPtr_;
     OmMSTEdge* edges_;
 
     void create();

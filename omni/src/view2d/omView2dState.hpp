@@ -43,7 +43,7 @@ public:
         , mousePoint_(0,0)
         , isLevelLocked_(false)
         , lastDataPoint_(0,0)
-        , location_(boost::make_shared<OmView2dVolLocation>(vol, vgs, viewType))
+        , location_(om::make_shared<OmView2dVolLocation>(vol, vgs, viewType))
         , brushSize_(OmStateManager::BrushSize())
         , amPanningInSelectMode_(false)
         , segIDforPainting_(0)
@@ -104,7 +104,7 @@ private:
         case XZ_VIEW:
             return ScreenCoord((int)((float)(datac.x/factor+panDistance.x)*zoomScale*stretch.x),
                                (int)((float)(datac.z/factor+panDistance.y)*zoomScale*stretch.y));
-        case YZ_VIEW:
+        case ZY_VIEW:
             return ScreenCoord((int)((float)(datac.z/factor+panDistance.x)*zoomScale*stretch.x),
                                (int)((float)(datac.y/factor+panDistance.y)*zoomScale*stretch.y));
         };
@@ -428,7 +428,7 @@ private:
     // (x,y) coordinates only (no depth); needed for Bresenham
     DataCoord lastDataPoint_;
 
-    boost::shared_ptr<OmView2dVolLocation> location_;
+    om::shared_ptr<OmView2dVolLocation> location_;
 
     OmBrushSize *const brushSize_;
 

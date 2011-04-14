@@ -71,6 +71,14 @@ public:
         doGet(tile, key, blocking);
     }
 
+    void GetDontQueue(OmTileDrawer* drawer,
+                      OmTilePtr& tile,
+                      const OmTileCoord& key)
+    {
+        setDrawerActive(drawer);
+        doGetDontQueue(tile, key);
+    }
+
     void BlockingCreate(OmTileDrawer*,
                         OmTilePtr& tile,
                         const OmTileCoord& key)
@@ -182,6 +190,17 @@ private:
 
         } else {
             cacheSegmentation_->Get(tile, key, blocking);
+        }
+    }
+
+    void doGetDontQueue(OmTilePtr& tile,
+                        const OmTileCoord& key)
+    {
+        if(isChannel(key)){
+            cacheChannel_->GetDontQueue(tile, key);
+
+        } else {
+            cacheSegmentation_->GetDontQueue(tile, key);
         }
     }
 

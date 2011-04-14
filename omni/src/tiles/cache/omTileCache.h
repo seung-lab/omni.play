@@ -3,6 +3,7 @@
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
+#include "tiles/omTileTypes.hpp"
 #include "zi/omUtility.h"
 
 class OmTileCoord;
@@ -28,6 +29,10 @@ public:
                     OmTilePtr& tile,
                     const OmTileCoord& key,
                     const om::Blocking blocking);
+
+    static void GetDontQueue(OmTileDrawer* drawer,
+                             OmTilePtr& tile,
+                             const OmTileCoord& key);
 
     static void BlockingCreate(OmTileDrawer* drawer,
                                OmTilePtr& tile,

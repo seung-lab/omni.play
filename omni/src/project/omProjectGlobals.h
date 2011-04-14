@@ -1,15 +1,17 @@
 #ifndef OM_PROJECT_GLOBALS_HPP
 #define OM_PROJECT_GLOBALS_HPP
 
+#include <zi/concurrency/semaphore.hpp>
+
 #include <boost/scoped_ptr.hpp>
 
-class OmRandColorFile;
-class OmView2dManagerImpl;
-class OmStateManagerImpl;
-class OmEventManagerImpl;
-class OmActionsImpl;
 class OmActionLogger;
-template <class> class OmTilePool;
+class OmActionsImpl;
+class OmEventManagerImpl;
+class OmRandColorFile;
+class OmStateManagerImpl;
+class OmTilePools;
+class OmView2dManagerImpl;
 
 class OmProjectGlobals {
 private:
@@ -20,8 +22,9 @@ private:
     boost::scoped_ptr<OmActionsImpl> actions_;
     boost::scoped_ptr<OmActionLogger> actionLogger_;
 
-    boost::scoped_ptr<OmTilePool<uint8_t> > tilePoolUint8_;
-    boost::scoped_ptr<OmTilePool<OmColorARGB> > tilePoolARGB_;
+    boost::scoped_ptr<OmTilePools> tilePools_;
+
+    zi::semaphore fileReadThrottle_;
 
 public:
     OmProjectGlobals();
@@ -51,17 +54,12 @@ public:
         return *actionLogger_;
     }
 
-    template <typename T> OmTilePool<T>& TilePool(){
-        return getTilePool(static_cast<T*>(0));
+    inline OmTilePools& TilePools(){
+        return *tilePools_;
     }
 
-private:
-    inline OmTilePool<uint8_t>& getTilePool(uint8_t*){
-        return *tilePoolUint8_;
-    }
-
-    inline OmTilePool<OmColorARGB>& getTilePool(OmColorARGB*){
-        return *tilePoolARGB_;
+    inline zi::semaphore& FileReadSemaphore(){
+        return fileReadThrottle_;
     }
 };
 

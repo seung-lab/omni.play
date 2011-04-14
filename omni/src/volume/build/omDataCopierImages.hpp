@@ -12,7 +12,7 @@ private:
 	VOL *const vol_;
 	const std::vector<QFileInfo>& files_;
 
-	std::vector<boost::shared_ptr<QFile> > volFiles_;
+	std::vector<om::shared_ptr<QFile> > volFiles_;
 
 public:
 	OmDataCopierImages(VOL* vol,
@@ -28,7 +28,7 @@ protected:
 	{
 		allocateData(determineDataType());
 
-		boost::shared_ptr<QFile> mip0volFile = volFiles_[0];
+		om::shared_ptr<QFile> mip0volFile = volFiles_[0];
 
 		OmLoadImage<VOL> imageLoader(vol_, mip0volFile, files_);
 

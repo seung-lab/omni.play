@@ -5,7 +5,7 @@
 #include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
 #include "tiles/cache/omTileCache.h"
-#include "utility/image/omFilterImage.hpp"
+#include "tiles/omChannelTileFilter.hpp"
 #include "viewGroup/omViewGroupState.h"
 
 #include <limits>
@@ -28,14 +28,14 @@ private:
 
     void actUponValueChange(const double threshold)
     {
-        OmImageFilter::SetContrastValue(threshold);
+        OmChannelTileFilter::SetContrastValue(threshold);
         OmTileCache::ClearChannel();
         OmEvents::Redraw2dBlocking();
     }
 
     void setInitialGUIThresholdValue()
     {
-        setValue(OmImageFilter::GetContrastValue());
+        setValue(OmChannelTileFilter::GetContrastValue());
     }
 
     OmViewGroupState* vgs() const {

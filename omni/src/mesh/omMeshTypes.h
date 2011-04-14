@@ -1,9 +1,9 @@
 #ifndef OM_MESH_TYPES_H
 #define OM_MESH_TYPES_H
 
-#include <boost/shared_ptr.hpp>
+#include "utility/omSharedPtr.hpp"
 
-class OmMipMesh;
-typedef boost::shared_ptr<OmMipMesh> OmMipMeshPtr;
+class OmMesh;
+typedef om::shared_ptr<OmMesh> OmMeshPtr;
 
 #endif

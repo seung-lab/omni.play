@@ -22,6 +22,12 @@ public:
         OmThreadedCache<OmTileCoord, OmTilePtr>::Get(ptr, key, isBlocking);
     }
 
+    inline void GetDontQueue(OmTilePtr& ptr, const OmTileCoord& key)
+    {
+        // no need to check freshness--method used for fetching downssampled images
+        OmThreadedCache<OmTileCoord, OmTilePtr>::GetDontQueue(ptr, key);
+    }
+
     inline void BlockingCreate(OmTilePtr& tile, const OmTileCoord& key)
     {
         OmThreadedCache<OmTileCoord, OmTilePtr>::BlockingCreate(tile, key);

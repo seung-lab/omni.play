@@ -14,7 +14,7 @@ class OmSegmentColorizer {
 public:
     OmSegmentColorizer(OmSegments*,
                        const OmSegmentColorCacheType,
-                       const Vector2i& dims,
+                       const int tileDim,
                        OmViewGroupState* vgs);
 
     ~OmSegmentColorizer();

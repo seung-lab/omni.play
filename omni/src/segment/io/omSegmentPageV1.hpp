@@ -24,11 +24,11 @@ public:
         , pageSize_(pageSize)
     {}
 
-    boost::shared_ptr<OmSegmentDataV3> Read()
+    om::shared_ptr<OmSegmentDataV3> Read()
     {
         printf("rewriting segment page %d from HDF5\n", pageNum_);
 
-        boost::shared_ptr<OmSegmentDataV2> oldSegmentDataPtr =
+        om::shared_ptr<OmSegmentDataV2> oldSegmentDataPtr =
             OmSmartPtr<OmSegmentDataV2>::MallocNumElements(pageSize_,
                                                            om::ZERO_FILL);
 
@@ -38,7 +38,7 @@ public:
                                           oldSegmentData,
                                           pageSize_);
 
-        boost::shared_ptr<OmSegmentDataV3> ret =
+        om::shared_ptr<OmSegmentDataV3> ret =
             OmSmartPtr<OmSegmentDataV3>::MallocNumElements(pageSize_, om::ZERO_FILL);
         OmSegmentDataV3* newSegmentData = ret.get();
 

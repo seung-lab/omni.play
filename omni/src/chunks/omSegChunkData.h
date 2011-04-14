@@ -2,9 +2,9 @@
 #define OM_SEG_CHUNK_DATA_H
 
 #include "chunks/omChunkCoord.h"
-#include "chunks/omChunkTypes.hpp"
 #include "volume/omVolumeTypes.hpp"
 
+class OmSegChunk;
 class OmSegments;
 class OmSegmentation;
 
@@ -22,8 +22,8 @@ public:
 
     void RefreshBoundingData(OmSegments* segments);
 
-    boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);
-    boost::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32();
+    om::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);
+    om::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32();
 
     void RewriteChunk(const boost::unordered_map<uint32_t, uint32_t>&);
 

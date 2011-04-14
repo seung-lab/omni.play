@@ -7,7 +7,7 @@
 #include "segment/lists/omSegmentListGlobal.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
-#include "utility/omThreadPool.hpp"
+#include "threads/omThreadPool.hpp"
 #include "utility/omTimer.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 
@@ -256,15 +256,15 @@ private:
 
     void copyGlobalList()
     {
-        boost::shared_ptr<OmSegmentListGlobal> globalList =
-            boost::make_shared<OmSegmentListGlobal>(list_);
+        om::shared_ptr<OmSegmentListGlobal> globalList =
+            om::make_shared<OmSegmentListGlobal>(list_);
         segmentLists_->Swap(globalList);
     }
 
     void buildGUIlist(const om::SegListType listType)
     {
-        boost::shared_ptr<OmSegmentListForGUI> guiList =
-            boost::make_shared<OmSegmentListForGUI>(listType);
+        om::shared_ptr<OmSegmentListForGUI> guiList =
+            om::make_shared<OmSegmentListForGUI>(listType);
         guiList->Build(list_);
         segmentLists_->Swap(guiList);
     }

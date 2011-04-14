@@ -2,13 +2,13 @@
 #define OM_BUILD_SEGMENTATION_H
 
 #include "actions/omActions.h"
-#include "mesh/omMipMeshManagers.hpp"
+#include "mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
 #include "segment/io/omMST.h"
 #include "segment/omSegments.h"
 #include "events/omEvents.h"
 #include "utility/dataWrappers.h"
-#include "utility/omThreadPool.hpp"
+#include "threads/omThreadPool.hpp"
 #include "volume/build/omBuildVolumes.hpp"
 #include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omChannel.h"

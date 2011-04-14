@@ -3,18 +3,18 @@
 
 #include "system/cache/omThreadedCache.h"
 #include "mesh/omMeshTypes.h"
-#include "mesh/omMipMeshCoord.h"
+#include "mesh/omMeshCoord.h"
 
-class OmMipMeshManager;
+class OmMeshManager;
 
-class OmMeshCache : public OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr> {
+class OmMeshCache : public OmThreadedCache<OmMeshCoord, OmMeshPtr> {
 public:
-    OmMeshCache(OmMipMeshManager * parent);
+    OmMeshCache(OmMeshManager * parent);
 
-    OmMipMeshPtr HandleCacheMiss(const OmMipMeshCoord &meshCoord);
+    OmMeshPtr HandleCacheMiss(const OmMeshCoord &meshCoord);
 
 private:
-    OmMipMeshManager *const meshMan_;
+    OmMeshManager *const meshMan_;
 };
 
 #endif

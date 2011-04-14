@@ -24,7 +24,7 @@ public:
         : extent_(extent)
         , data_()
     {
-        data_ = boost::shared_ptr<container_t>
+        data_ = om::shared_ptr<container_t>
             (new container_t(extent.getBoostExtent()));
     }
 
@@ -32,12 +32,12 @@ public:
         : extent_(extent)
         , data_()
     {
-        data_ = boost::shared_ptr<container_t>
+        data_ = om::shared_ptr<container_t>
             (new container_t(extent.getBoostExtent()));
         data_->assign(data, data+data_->num_elements());
     }
 
-    OmImageCopiedData(boost::shared_ptr<container_t> data, OmDimension<D> extent)
+    OmImageCopiedData(om::shared_ptr<container_t> data, OmDimension<D> extent)
         : extent_(extent)
         , data_(data)
     {}
@@ -46,7 +46,7 @@ public:
     {}
 
     OmDimension<D>                 extent_;
-    boost::shared_ptr<container_t> data_;
+    om::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D>
@@ -67,11 +67,11 @@ public:
         : extent_(extent)
         , data_()
     {
-        data_ = boost::shared_ptr<container_t>
+        data_ = om::shared_ptr<container_t>
             (new container_t(data, extent.getBoostExtent()));
     }
 
-    OmImageRefData(boost::shared_ptr<container_t> data, OmDimension<D> extent)
+    OmImageRefData(om::shared_ptr<container_t> data, OmDimension<D> extent)
         : extent_(extent)
         , data_(data)
     {}
@@ -80,7 +80,7 @@ public:
     {}
 
     OmDimension<D>                 extent_;
-    boost::shared_ptr<container_t> data_;
+    om::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D>
@@ -101,11 +101,11 @@ public:
         : extent_(extent)
         , data_()
     {
-        data_ = boost::shared_ptr<container_t>
+        data_ = om::shared_ptr<container_t>
             (new container_t(data, extent.getBoostExtent()));
     }
 
-    OmImageConstRefData(boost::shared_ptr<container_t> data, OmDimension<D> extent)
+    OmImageConstRefData(om::shared_ptr<container_t> data, OmDimension<D> extent)
         : extent_(extent)
         , data_(data)
     {}
@@ -114,7 +114,7 @@ public:
     {}
 
     OmDimension<D>                 extent_;
-    boost::shared_ptr<container_t> data_;
+    om::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D,
@@ -134,7 +134,7 @@ public:
         : d_(container_t<T,D>(extent, data))
     {}
 
-    OmImage(boost::shared_ptr<boost::multi_array<T,D> > data, OmDimension<D> extent)
+    OmImage(om::shared_ptr<boost::multi_array<T,D> > data, OmDimension<D> extent)
         : d_(container_t<T,D>(data, extent))
     {}
 
@@ -149,7 +149,7 @@ public:
         OmDimension<3> extent = d_.extent_;
 
         switch(plane) {
-        case YZ_VIEW:
+        case ZY_VIEW:
             assert(to.get<2>() > offset);
             from.set<2>(offset); to.set<2>(offset);
             break;
@@ -168,8 +168,8 @@ public:
             throw OmArgException("unknown plane");
         }
 
-        boost::shared_ptr<boost::multi_array<T,2> > data;
-        data = boost::shared_ptr<boost::multi_array<T,2> >
+        om::shared_ptr<boost::multi_array<T,2> > data;
+        data = om::shared_ptr<boost::multi_array<T,2> >
             (new boost::multi_array<T,2>
              (extent.stripDimension<0>().getBoostExtent()));
         (*data) = (*d_.data_)[MakeBoostRange<3,2>::make(from, to)];
@@ -228,14 +228,14 @@ public:
         }
     }
 
-    boost::shared_ptr<T> getMallocCopyOfData() const
+    om::shared_ptr<T> getMallocCopyOfData() const
     {
         if(!d_.data_){
-            return boost::shared_ptr<T>();
+            return om::shared_ptr<T>();
         }
 
         const int numBytes = d_.data_->num_elements()*sizeof(T);
-        boost::shared_ptr<T> ret =
+        om::shared_ptr<T> ret =
             OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
         memcpy(ret.get(), d_.data_->data(), numBytes);
         return ret;
@@ -308,30 +308,6 @@ public:
         d_.data_->resize(boost::extents[dims.x][dims.y][dims.z]);
     }
 
-    void Brightness(const T absMax, const int32_t shift)
-    {
-        zi::transform(d_.data_->data(),
-                      d_.data_->data() + d_.data_->num_elements(),
-                      d_.data_->data(),
-                      ChangeBrightness<T>(absMax, shift));
-    }
-
-    void Contrast(const T absMax, const float contrast)
-    {
-        zi::transform(d_.data_->data(),
-                      d_.data_->data() + d_.data_->num_elements(),
-                      d_.data_->data(),
-                      ChangeContrast<T>(absMax, contrast));
-    }
-
-    void Gamma(const double gamma)
-    {
-        zi::transform(d_.data_->data(),
-                      d_.data_->data() + d_.data_->num_elements(),
-                      d_.data_->data(),
-                      ChangeGamma<T>(gamma));
-    }
-
     template <typename T1, std::size_t D1,
               template <typename DATATYPE1, std::size_t DATASIZE1> class container_t1>
 
@@ -353,73 +329,6 @@ private:
         }
     private:
         const U rangeMin_, rangeMax_, absMax_;
-    };
-
-    // brightness, contrast, and gamma based on
-    // http://pippin.gimp.org/image_processing/chap_point.html#id2556807
-
-    template<typename U>
-    static T clamp(T absMax, U val) {
-        if(val > absMax) {
-            //std::cout << "max: " << val << std::endl;
-            return absMax;
-        }
-        if(val < 0) {
-            //std::cout << "0: " << val << std::endl;
-            return 0;
-        }
-        return val;
-    }
-
-    template <typename U>
-    class ChangeBrightness {
-    public:
-        ChangeBrightness(const U absMax, const int32_t shift)
-            : absMax_(absMax)
-            , shift_(shift)
-        {}
-        U operator()(U val) const
-        {
-            if(!val){
-                return 0;
-            }
-
-            return clamp(absMax_, val + shift_);
-        }
-    private:
-        const U absMax_;
-        int32_t shift_;
-    };
-
-    template <typename U>
-    class ChangeContrast {
-    public:
-        ChangeContrast(const U absMax, const float contrast)
-            : absMax_(absMax)
-            , halfAbsMax_(absMax_/2.0)
-            , contrast_(contrast)
-        {}
-        U operator()(U val) const {
-            return clamp(255, ((float)val - (float)halfAbsMax_) * (float)contrast_ + (float)halfAbsMax_);
-        }
-    private:
-        const float absMax_;
-        const float halfAbsMax_;
-        const float contrast_;
-    };
-
-    template <typename U>
-    class ChangeGamma {
-    public:
-        ChangeGamma(const double gamma)
-            : gamma_(gamma)
-        {}
-        U operator()(U val) const {
-            //printf("%f\n", pow(static_cast<double>(val), gamma_));
-            return clamp(255, 255.0*pow(static_cast<double>(val/255.0), gamma_));
-        }
-    private:
-        const double gamma_;
     };
 };
 

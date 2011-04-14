@@ -1,7 +1,7 @@
 #ifndef OM_VIEW2D_MANAGER_IMPL_HPP
 #define OM_VIEW2D_MANAGER_IMPL_HPP
 
-#include "utility/omThreadPool.hpp"
+#include "threads/omThreadPool.hpp"
 
 class OmView2dManagerImpl {
 private:

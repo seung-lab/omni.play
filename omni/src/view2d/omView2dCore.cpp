@@ -12,7 +12,7 @@ OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
     , blockingRedraw_(false)
     , viewType_(viewType)
     , name_(name)
-    , state_(boost::make_shared<OmView2dState>(vol, vgs, viewType, size(), name))
+    , state_(om::make_shared<OmView2dState>(vol, vgs, viewType, size(), name))
     , tileDrawer_(new OmTileDrawer(state_, viewType))
     , nearClip_(0)
     , farClip_(0)

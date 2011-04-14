@@ -5,7 +5,7 @@
 #include "datalayer/archive/omMipVolumeArchive.h"
 #include "datalayer/archive/omMipVolumeArchiveOld.h"
 #include "datalayer/upgraders/omUpgraders.hpp"
-#include "mesh/omMipMeshManagers.hpp"
+#include "mesh/omMeshManagers.hpp"
 #include "project/omProjectImpl.hpp"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"

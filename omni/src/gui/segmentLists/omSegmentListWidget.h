@@ -22,7 +22,7 @@ public:
 
     bool populate(const bool doScrollToSelectedSegment,
                   const SegmentDataWrapper segmentJustSelected,
-                  boost::shared_ptr<GUIPageOfSegments>);
+                  om::shared_ptr<GUIPageOfSegments>);
 
     static std::string eventSenderName();
 

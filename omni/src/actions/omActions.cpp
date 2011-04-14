@@ -1,7 +1,7 @@
 #include "actions/omActions.h"
 #include "actions/omActionsImpl.h"
 #include "utility/dataWrappers.h"
-#include "utility/omThreadPool.hpp"
+#include "threads/omThreadPool.hpp"
 
 OmThreadPool& OmActions::pool(){
     return OmProject::Globals().Actions().ThreadPool();
@@ -140,7 +140,7 @@ void OmActions::FindAndCutSegments(const SegmentDataWrapper& sdw,
                      sdw, vgs)));
 }
 
-void OmActions::SelectSegments(boost::shared_ptr<OmSelectSegmentsParams> params)
+void OmActions::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params)
 {
     pool().push_back(
         zi::run_fn(

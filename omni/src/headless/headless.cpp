@@ -6,7 +6,7 @@
 #include "gui/recentFileList.h"
 #include "headless/headless.h"
 #include "headless/headlessImpl.hpp"
-#include "mesh/omMipMesh.h"
+#include "mesh/omMesh.h"
 #include "segment/omSegments.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
@@ -21,7 +21,6 @@
 #include "volume/omCompareVolumes.hpp"
 #include "volume/omFilter2d.h"
 #include "volume/omSegmentation.h"
-#include "zi/base/base.h"
 
 #include <QFileInfo>
 
@@ -463,8 +462,8 @@ void Headless::processLine(const QString& line, const QString&)
         SegmentationDataWrapper sdw(segmentationID_);
         OmSegmentation& segmen = sdw.GetSegmentation();
         OmChunkCoord chunk_coord(0,0,0,0);
-        OmChunkPtr p_chunk;
-        segmen.GetChunk(p_chunk, chunk_coord);
+        OmChunk* chunk = segmen.GetChunk(chunk_coord);
+        assert(chunk);
 
     } else if(line.startsWith("removeChann:")){
         QStringList args = line.split(':',QString::SkipEmptyParts);

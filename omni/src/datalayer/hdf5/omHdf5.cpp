@@ -14,7 +14,7 @@ void OmHdf5::open()
 {
 	zi::rwmutex::write_guard g(fileLock);
 
-	hdf5_ = boost::make_shared<OmHdf5Impl>(fnp_, readOnly_);
+	hdf5_ = om::make_shared<OmHdf5Impl>(fnp_, readOnly_);
 
 	std::cout << "opened hdf5 file " << fnp_ << "\n";
 }

@@ -31,3 +31,10 @@ bool operator<(const OmColor& a, const OmColor& b)
 
     return a.blue < b.blue;
 }
+
+bool operator==(const OmColor& a, const OmColor& b)
+{
+    return a.red == b.red &&
+        a.green == b.green &&
+        a.blue == b.blue;
+}

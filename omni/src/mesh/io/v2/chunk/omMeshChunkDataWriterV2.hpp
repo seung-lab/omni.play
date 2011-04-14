@@ -41,7 +41,7 @@ public:
     }
 
     template <typename T>
-    void Append(const OmMipMeshCoord meshCoord,
+    void Append(const OmMeshCoord meshCoord,
                 std::vector<T>& data,
                 OmMeshFilePart& entry,
                 const int64_t count)
@@ -62,8 +62,8 @@ public:
     }
 
     template <typename T>
-    void Append(const OmMipMeshCoord meshCoord,
-                boost::shared_ptr<T> data,
+    void Append(const OmMeshCoord meshCoord,
+                om::shared_ptr<T> data,
                 OmMeshFilePart& entry,
                 const int64_t count,
                 const int64_t numBytes)

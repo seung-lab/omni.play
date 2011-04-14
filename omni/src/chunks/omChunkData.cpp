@@ -1,6 +1,9 @@
 #include "chunks/omChunk.h"
 #include "chunks/omChunkData.h"
 #include "chunks/omRawChunk.hpp"
+#include "chunks/omRawChunkSlicer.hpp"
+#include "tiles/omTileFilters.hpp"
+#include "utility/image/omImage.hpp"
 #include "utility/omChunkVoxelWalker.hpp"
 #include "volume/io/omVolumeData.h"
 
@@ -15,45 +18,58 @@ OmRawDataPtrs& OmChunkData::getRawData(){
 }
 
 class ExtractDataSlice8bitVisitor
-    : public boost::static_visitor<OmImage<uint8_t, 2> >{
+    : public boost::static_visitor<OmPooledTile<uint8_t>*>{
 public:
-    ExtractDataSlice8bitVisitor(const ViewType plane, int offset)
-        : plane(plane)
-        , offset(offset)
+    ExtractDataSlice8bitVisitor(const ViewType plane, const int depth)
+        : plane_(plane)
+        , depth_(depth)
     {}
 
     template <typename T>
-    OmImage<uint8_t, 2> operator()(T* d) const
+    OmPooledTile<uint8_t>* operator()(T* d) const
     {
-        OmImage<T, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
-        OmImage<T, 2> sliceT = chunk.getSlice(plane, offset);
-        OmImage<uint8_t, 2> slice = sliceT.recastToUint8();
-        return slice;
+        boost::scoped_ptr<OmPooledTile<T> > rawTile(getRawSlice(d));
+        OmTileFilters<T> filter(128);
+        return filter.recastToUint8(rawTile.get());
     }
 
-    OmImage<uint8_t, 2> operator()(uint8_t* d) const
-    {
-        OmImage<uint8_t, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
-        OmImage<uint8_t, 2> slice = chunk.getSlice(plane, offset);
-        return slice;
+    OmPooledTile<uint8_t>* operator()(uint8_t* d) const {
+        return getRawSlice(d);
     }
 
-    OmImage<uint8_t, 2> operator()(float* d) const
+    OmPooledTile<uint8_t>* operator()(float* d) const
     {
-        OmImage<float, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
-        OmImage<float, 2> sliceFloat = chunk.getSlice(plane, offset);
+        boost::scoped_ptr<OmPooledTile<float> > rawTile(getRawSlice(d));
+
+        OmTileFilters<float> filter(128);
+
         float mn = 0.0;
         float mx = 1.0;
-        //	  mpMipVolume->GetBounds(mx, mn);
-        OmImage<uint8_t, 2> slice =
-            sliceFloat.rescaleAndCast<uint8_t>(mn, mx, 255.0);
-        return slice;
+
+        // TODO: use actual range in channel data
+        // mpMipVolume->GetBounds(mx, mn);
+
+        return filter.rescaleAndCast<uint8_t>(rawTile.get(), mn, mx, 255.0);
     }
+
 private:
-    const ViewType plane;
-    const int offset;
+    const ViewType plane_;
+    const int depth_;
+
+    template <typename T>
+    inline OmPooledTile<T>* getRawSlice(T* d) const
+    {
+        OmRawChunkSlicer<T> slicer(128, d);
+
+        OmProject::Globals().FileReadSemaphore().acquire(1);
+        OmPooledTile<T>* tile = slicer.GetCopyAsPooledTile(plane_, depth_);
+        OmProject::Globals().FileReadSemaphore().release(1);
+
+        return tile;
+    }
+
 };
-OmImage<uint8_t, 2> OmChunkData::ExtractDataSlice8bit(const ViewType plane,
+OmPooledTile<uint8_t>* OmChunkData::ExtractDataSlice8bit(const ViewType plane,
                                                       const int offset)
 {
     return boost::apply_visitor(ExtractDataSlice8bitVisitor(plane, offset),
@@ -193,7 +209,7 @@ public:
     {
         OmRawChunk<T> rawChunk(vol_, chunk_->GetCoordinate());
 
-        boost::shared_ptr<T> data = rawChunk.SharedPtr();
+        om::shared_ptr<T> data = rawChunk.SharedPtr();
         return om::ptrs::Wrap(data);
     }
 

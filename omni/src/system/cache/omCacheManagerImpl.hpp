@@ -66,8 +66,8 @@ private:
     boost::scoped_ptr<OmCacheGroup> meshCaches_;
     boost::scoped_ptr<OmCacheGroup> tileCaches_;
 
-    boost::shared_ptr<zi::periodic_function> cleaner_;
-    boost::shared_ptr<zi::thread> cleanerThread_;
+    om::shared_ptr<zi::periodic_function> cleaner_;
+    om::shared_ptr<zi::thread> cleanerThread_;
 
     LockedBool amClosingDown;
     LockedUint64 freshness_;
@@ -111,11 +111,11 @@ private:
         const int64_t loopTimeSecs= CLEANER_THREAD_LOOP_TIME_SECS;
 
         cleaner_ =
-            boost::make_shared<zi::periodic_function>(
+            om::make_shared<zi::periodic_function>(
                 &OmCacheManagerImpl::cacheManagerCleaner, this,
                 zi::interval::secs(loopTimeSecs));
 
-        cleanerThread_ = boost::make_shared<zi::thread>(*cleaner_);
+        cleanerThread_ = om::make_shared<zi::thread>(*cleaner_);
         cleanerThread_->start();
     }
 

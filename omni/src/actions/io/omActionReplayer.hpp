@@ -21,7 +21,7 @@ private:
     template <typename ACTION, typename IMPL>
     void doReplayFile(QDataStream& in)
     {
-        boost::shared_ptr<IMPL> impl(new IMPL());
+        om::shared_ptr<IMPL> impl(new IMPL());
         in >> (*impl);
 
         // action will be deleted by QUndoState...

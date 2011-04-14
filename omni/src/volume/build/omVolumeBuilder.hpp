@@ -47,20 +47,20 @@ public:
 
     void Build()
     {
-        boost::shared_ptr<OmVolumeBuilderBase<VOL> > builder;
+        om::shared_ptr<OmVolumeBuilderBase<VOL> > builder;
 
         switch(importType_){
         case HDF5:
-            builder = boost::make_shared<OmVolumeBuilderHdf5<VOL> >(vol_,
+            builder = om::make_shared<OmVolumeBuilderHdf5<VOL> >(vol_,
                                                                     files_[0],
                                                                     hdf5path_);
             break;
         case IMAGES:
-            builder = boost::make_shared<OmVolumeBuilderImages<VOL> >(vol_,
+            builder = om::make_shared<OmVolumeBuilderImages<VOL> >(vol_,
                                                                       files_);
             break;
         case WATERSHED:
-            builder = boost::make_shared<OmVolumeBuilderWatershed<VOL> >(vol_,
+            builder = om::make_shared<OmVolumeBuilderWatershed<VOL> >(vol_,
                                                                          files_[0]);
             break;
         default:

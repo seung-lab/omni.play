@@ -6,13 +6,13 @@
 
 class OmSegmentPageConverter {
 public:
-    boost::shared_ptr<OmSegmentDataV4>
-    static ConvertPageV3toV4(boost::shared_ptr<OmSegmentDataV3> dataV3,
+    om::shared_ptr<OmSegmentDataV4>
+    static ConvertPageV3toV4(om::shared_ptr<OmSegmentDataV3> dataV3,
                              const uint32_t pageSize)
     {
         OmSegmentDataV3* rawV3 = dataV3.get();
 
-        boost::shared_ptr<OmSegmentDataV4> ret =
+        om::shared_ptr<OmSegmentDataV4> ret =
             OmSmartPtr<OmSegmentDataV4>::MallocNumElements(pageSize, om::ZERO_FILL);
         OmSegmentDataV4* rawV4 = ret.get();
 
@@ -27,13 +27,13 @@ public:
         return ret;
     }
 
-    boost::shared_ptr<uint8_t>
-    static ConvertPageV3toV4ListType(boost::shared_ptr<OmSegmentDataV3> dataV3,
+    om::shared_ptr<uint8_t>
+    static ConvertPageV3toV4ListType(om::shared_ptr<OmSegmentDataV3> dataV3,
                                      const uint32_t pageSize)
     {
         OmSegmentDataV3* rawV3 = dataV3.get();
 
-        boost::shared_ptr<uint8_t> ret =
+        om::shared_ptr<uint8_t> ret =
             OmSmartPtr<uint8_t>::MallocNumElements(pageSize, om::ZERO_FILL);
         uint8_t* raw = ret.get();
 

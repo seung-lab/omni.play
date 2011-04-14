@@ -5,6 +5,7 @@
 #include "system/cache/omVolSliceCache.hpp"
 #include "view2d/brush/omChunksAndPts.hpp"
 #include "utility/omSmartPtr.hpp"
+#include "utility/image/omImage.hpp"
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -22,7 +23,7 @@
 
 class OmSliceCacheBase {
 public:
-    virtual boost::shared_ptr<uint32_t> GetSlice(const OmChunkCoord& chunkCoord, const int depth) = 0;
+    virtual om::shared_ptr<uint32_t> GetSlice(const OmChunkCoord& chunkCoord, const int depth) = 0;
 
     virtual OmSegID GetVoxelValue(const OmChunkCoord& chunkCoord,
                                   const Vector3i& chunkPos) = 0;
@@ -39,7 +40,7 @@ private:
     // x, y, z, depth
     typedef boost::tuple<int, int, int, int> OmSliceKey;
 
-    std::map<OmSliceKey, boost::shared_ptr<T> > cache_;
+    std::map<OmSliceKey, om::shared_ptr<T> > cache_;
 
 public:
     OmSliceCacheImpl(OmSegmentation* vol, const ViewType viewType)
@@ -59,7 +60,7 @@ public:
                              chunkCoord.Coordinate.z,
                              depth);
 
-        boost::shared_ptr<T> slicePtr = getCacheSlice(key, chunkCoord, depth);
+        om::shared_ptr<T> slicePtr = getCacheSlice(key, chunkCoord, depth);
 
         T const*const sliceData = slicePtr.get();
 
@@ -68,30 +69,30 @@ public:
         return sliceData[offset];
     }
 
-    boost::shared_ptr<uint32_t> GetSlice(const OmChunkCoord& chunkCoord, const int depth)
+    om::shared_ptr<uint32_t> GetSlice(const OmChunkCoord& chunkCoord, const int depth)
     {
         return recast<uint32_t>(getSlice(chunkCoord, depth));
     }
 
 private:
     template <typename U, typename>
-    boost::shared_ptr<U> recast(boost::shared_ptr<uint32_t> ptr){
+    om::shared_ptr<U> recast(om::shared_ptr<uint32_t> ptr){
         return ptr;
     }
 
     template <typename RET, typename X>
-    boost::shared_ptr<RET> recast(boost::shared_ptr<X> ptr)
+    om::shared_ptr<RET> recast(om::shared_ptr<X> ptr)
     {
         const uint32_t numElements = chunkDim_*chunkDim_;
 
-        boost::shared_ptr<RET> ret = OmSmartPtr<RET>::MallocNumElements(numElements, om::DONT_ZERO_FILL);
+        om::shared_ptr<RET> ret = OmSmartPtr<RET>::MallocNumElements(numElements, om::DONT_ZERO_FILL);
 
         std::copy(ptr.get(), ptr.get() + numElements, ret.get());
 
         return ret;
     }
 
-    boost::shared_ptr<T> getSlice(const OmChunkCoord& chunkCoord, const int depth)
+    om::shared_ptr<T> getSlice(const OmChunkCoord& chunkCoord, const int depth)
     {
         const OmSliceKey key(chunkCoord.Coordinate.x,
                              chunkCoord.Coordinate.y,
@@ -101,7 +102,7 @@ private:
         return getCacheSlice(key, chunkCoord, depth);
     }
 
-    inline boost::shared_ptr<T> getCacheSlice(const OmSliceKey& key,
+    inline om::shared_ptr<T> getCacheSlice(const OmSliceKey& key,
                                               const OmChunkCoord& chunkCoord,
                                               const int depth)
     {
@@ -109,7 +110,7 @@ private:
             return cache_[key];
         }
 
-        boost::shared_ptr<T> ret =
+        om::shared_ptr<T> ret =
             vol_->SliceCache()->Get<T>(chunkCoord, depth, viewType_);
 
         if(ret){
@@ -123,13 +124,13 @@ private:
         return ret;
     }
 
-    boost::shared_ptr<T> loadSlice(const OmChunkCoord& chunkCoord, const int depth)
+    om::shared_ptr<T> loadSlice(const OmChunkCoord& chunkCoord, const int depth)
     {
         OmRawChunkMemMapped<T> chunk(vol_, chunkCoord);
         return getSlice(chunk.Data(), depth);
     }
 
-    boost::shared_ptr<T> getSlice(T* d, const int depth) const
+    om::shared_ptr<T> getSlice(T* d, const int depth) const
     {
         OmImage<T, 3, OmImageRefData> chunk(OmExtents[chunkDim_][chunkDim_][chunkDim_], d);
         OmImage<T, 2> slice = chunk.getSlice(viewType_, depth);
@@ -156,7 +157,7 @@ public:
         return cache_->GetVoxelValue(chunkCoord, chunkPos);
     }
 
-    boost::shared_ptr<uint32_t> GetSlice(const OmChunkCoord& chunkCoord, const int depth)
+    om::shared_ptr<uint32_t> GetSlice(const OmChunkCoord& chunkCoord, const int depth)
     {
         return cache_->GetSlice(chunkCoord, depth);
     }

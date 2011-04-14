@@ -38,7 +38,7 @@ public:
 template <typename T>
 class OmVolSliceCacheImpl : public OmVolSliceCacheBase {
 private:
-    typedef OmGetSetCache<OmVolSliceKey, boost::shared_ptr<T> > cache_t;
+    typedef OmGetSetCache<OmVolSliceKey, om::shared_ptr<T> > cache_t;
 
     boost::scoped_ptr<cache_t> cache_;
 
@@ -80,7 +80,7 @@ public:
     }
 
     template <typename T>
-    boost::shared_ptr<T> Get(const OmChunkCoord& chunkCoord,
+    om::shared_ptr<T> Get(const OmChunkCoord& chunkCoord,
                              const int sliceDepth,
                              const ViewType viewType)
     {
@@ -91,7 +91,7 @@ public:
     template <typename T>
     void Set(const OmChunkCoord& chunkCoord,
              const int sliceDepth,
-             const ViewType viewType, boost::shared_ptr<T> slice)
+             const ViewType viewType, om::shared_ptr<T> slice)
     {
         const OmVolSliceKey key(chunkCoord, sliceDepth, viewType);
         cache_->Set(key, om::ptrs::Wrap(slice));

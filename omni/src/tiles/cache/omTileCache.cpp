@@ -27,6 +27,13 @@ void OmTileCache::Get(OmTileDrawer* drawer,
     instance().impl_->Get(drawer, tile, key, blocking);
 }
 
+void OmTileCache::GetDontQueue(OmTileDrawer* drawer,
+                               OmTilePtr& tile,
+                               const OmTileCoord& key)
+{
+    instance().impl_->GetDontQueue(drawer, tile, key);
+}
+
 void OmTileCache::BlockingCreate(OmTileDrawer* drawer,
                                  OmTilePtr& tile,
                                  const OmTileCoord& key)

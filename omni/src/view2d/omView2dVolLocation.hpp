@@ -47,7 +47,7 @@ public:
         const DataCoord min = minData * resVec_;
         const DataCoord max = maxData * resVec_;
 
-        if(viewType_ == YZ_VIEW) {
+        if(viewType_ == ZY_VIEW) {
             v2dState_->SetViewSliceMax(viewType_, max.y, max.x);
             v2dState_->SetViewSliceMin(viewType_, min.y, min.x);
         } else {

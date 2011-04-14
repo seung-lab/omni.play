@@ -6,8 +6,8 @@
 #include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
 #include "mesh/io/v2/omRingBuffer.hpp"
-#include "mesh/omMipMeshCoord.h"
-#include "utility/omThreadPool.hpp"
+#include "mesh/omMeshCoord.h"
+#include "threads/omThreadPool.hpp"
 #include "zi/omMutex.h"
 
 class OmChunkCoord;
@@ -19,8 +19,8 @@ private:
     OmSegmentation *const segmentation_;
     const double threshold_;
 
-    std::map<OmChunkCoord, boost::shared_ptr<OmMeshChunkAllocTableV2> > tables_;
-    std::map<OmChunkCoord, boost::shared_ptr<OmMeshChunkDataWriterV2> > data_;
+    std::map<OmChunkCoord, om::shared_ptr<OmMeshChunkAllocTableV2> > tables_;
+    std::map<OmChunkCoord, om::shared_ptr<OmMeshChunkDataWriterV2> > data_;
     zi::rwmutex lock_;
 
     OmThreadPool threadPool_;
@@ -47,7 +47,7 @@ public:
         threadPool_.stop();
     }
 
-    void AddTaskBack(const boost::shared_ptr<zi::runnable> job){
+    void AddTaskBack(const om::shared_ptr<zi::runnable> job){
         threadPool_.addTaskBack(job);
     }
 
@@ -65,7 +65,7 @@ public:
 
         if(!tables_.count(coord)){
             tables_[coord] =
-                boost::make_shared<OmMeshChunkAllocTableV2>(this, segmentation_, coord, threshold_);
+                om::make_shared<OmMeshChunkAllocTableV2>(this, segmentation_, coord, threshold_);
         }
         return tables_[coord].get();
     }
@@ -76,7 +76,7 @@ public:
 
         if(!data_.count(coord)){
             data_[coord] =
-                boost::make_shared<OmMeshChunkDataWriterV2>(segmentation_, coord, threshold_);
+                om::make_shared<OmMeshChunkDataWriterV2>(segmentation_, coord, threshold_);
         }
         return data_[coord].get();
     }

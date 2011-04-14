@@ -10,7 +10,7 @@ public:
     static void PaintByClick(OmView2dState* state, const DataCoord& coord,
                              const OmSegID segIDtoPaint)
     {
-        boost::shared_ptr<OmBrushOppInfo> info =
+        om::shared_ptr<OmBrushOppInfo> info =
             OmBrushOppInfoFactory::MakeOppInfo(state, coord, om::ADD);
 
         OmBrushPaintCircle circle(info, segIDtoPaint);
@@ -23,11 +23,11 @@ public:
     {
         const DataCoord& first = state->GetLastDataPoint();
 
-        boost::shared_ptr<OmBrushOppInfo> info =
+        om::shared_ptr<OmBrushOppInfo> info =
             OmBrushOppInfoFactory::MakeOppInfo(state, first, om::ADD);
 
-        boost::shared_ptr<OmBrushPaintLineTask> task =
-            boost::make_shared<OmBrushPaintLineTask>(info, first, second, segIDtoPaint);
+        om::shared_ptr<OmBrushPaintLineTask> task =
+            om::make_shared<OmBrushPaintLineTask>(info, first, second, segIDtoPaint);
 
         OmView2dManager::AddTaskBack(task);
     }

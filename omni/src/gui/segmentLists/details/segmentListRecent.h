@@ -24,7 +24,7 @@ private:
         return sdw_.SegmentLists()->SizeRecent();
     }
 
-    boost::shared_ptr<GUIPageOfSegments>
+    om::shared_ptr<GUIPageOfSegments>
     getPageSegments(const GUIPageRequest& request)
     {
         return sdw_.SegmentLists()->GetSegmentGUIPageRecent(request);

@@ -12,7 +12,7 @@ private:
     const uint32_t pageSize_;
     const std::string fnp_;
 
-    boost::shared_ptr<OmIOnDiskFile<OmSegmentDataV3> > segmentsDataPtr_;
+    om::shared_ptr<OmIOnDiskFile<OmSegmentDataV3> > segmentsDataPtr_;
 
 public:
     OmSegmentPageV3(OmSegmentation* segmentation, const PageNum pageNum,
@@ -33,18 +33,18 @@ public:
     OmSegmentDataV3* Load()
     {
         segmentsDataPtr_ =
-            boost::make_shared<OmMemMappedFileQTNew<OmSegmentDataV3> >(fnp_);
+            om::make_shared<OmMemMappedFileQTNew<OmSegmentDataV3> >(fnp_);
         return segmentsDataPtr_->GetPtr();
     }
 
-    OmSegmentDataV3* Import(boost::shared_ptr<OmSegmentDataV3> data)
+    OmSegmentDataV3* Import(om::shared_ptr<OmSegmentDataV3> data)
     {
         segmentsDataPtr_ =
             OmMemMappedFileQTNew<OmSegmentDataV3>::CreateFromData(fnp_, data, pageSize_);
         return segmentsDataPtr_->GetPtr();
     }
 
-    boost::shared_ptr<OmSegmentDataV3> Read() const
+    om::shared_ptr<OmSegmentDataV3> Read() const
     {
         QFile file(memMapPathQStrV3());
 

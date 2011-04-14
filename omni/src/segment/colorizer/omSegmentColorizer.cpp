@@ -11,14 +11,14 @@ const std::vector<uint8_t> OmSegmentColorizer::SelectedColorLookupTable =
 
 OmSegmentColorizer::OmSegmentColorizer(OmSegments* cache,
                                        const OmSegmentColorCacheType sccType,
-                                       const Vector2i& dims,
+                                       const int tileDim,
                                        OmViewGroupState* vgs)
 {
     freshness_.set(0);
 
     SegmentColorParams p = {
         sccType,
-        dims.x * dims.y,
+        tileDim * tileDim,
         vgs,
         cache,
     };

@@ -18,7 +18,7 @@ template <typename VOL>
 class OmLoadImage {
 private:
 	VOL *const vol_;
-	const boost::shared_ptr<QFile> mip0volFile_;
+	const om::shared_ptr<QFile> mip0volFile_;
 	const Vector3i mip0dims_;
 	const int totalNumImages_;
 	const int totalTilesInSlice_;
@@ -30,7 +30,7 @@ private:
 	QString mMsg;
 
 public:
-	OmLoadImage(VOL* vol, boost::shared_ptr<QFile> mip0volFile,
+	OmLoadImage(VOL* vol, om::shared_ptr<QFile> mip0volFile,
 				const std::vector<QFileInfo>& files)
 		: vol_(vol)
 		, mip0volFile_(mip0volFile)

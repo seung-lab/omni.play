@@ -16,7 +16,7 @@
 #include "system/omLocalPreferences.hpp"
 #include "viewGroup/omSplitting.hpp"
 
-#include "utility/omThreadPool.hpp"
+#include "threads/omThreadPool.hpp"
 
 OmActionsImpl::OmActionsImpl()
     : threadPool_(new OmThreadPool())
@@ -166,7 +166,7 @@ void OmActionsImpl::setUncertain(const SegmentDataWrapper& sdw,
     OmSegIDsSet set;
     set.insert(sdw.FindRootID());
 
-    boost::shared_ptr<std::set<OmSegment*> > children =
+    om::shared_ptr<std::set<OmSegment*> > children =
         OmSegmentUtils::GetAllChildrenSegments(sdw.Segments(), set);
 
     (new OmSegmentUncertainAction(sdw.MakeSegmentationDataWrapper(),
@@ -177,7 +177,7 @@ void OmActionsImpl::setUncertain(const SegmentationDataWrapper& sdw,
                                  const bool uncertain)
 {
     OmSegments* segments = sdw.Segments();
-    boost::shared_ptr<std::set<OmSegment*> > children =
+    om::shared_ptr<std::set<OmSegment*> > children =
         OmSegmentUtils::GetAllChildrenSegments(segments,
                                                segments->GetSelectedSegmentIds());
 
@@ -294,7 +294,7 @@ void OmActionsImpl::FindAndCutSegments(const SegmentDataWrapper sdw,
     doFindAndCutSegment(sdw, vgs);
 }
 
-void OmActionsImpl::SelectSegments(boost::shared_ptr<OmSelectSegmentsParams> params){
+void OmActionsImpl::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params){
     (new OmSegmentSelectAction(params))->Run();
 }
 

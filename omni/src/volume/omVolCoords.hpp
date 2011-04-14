@@ -74,7 +74,7 @@ public:
         switch(plane){
         case XY_VIEW:
             return Vector2f(dataStretchValues_.x, dataStretchValues_.y);
-        case YZ_VIEW:
+        case ZY_VIEW:
             return Vector2f(dataStretchValues_.z, dataStretchValues_.y);
         case XZ_VIEW:
             return Vector2f(dataStretchValues_.x, dataStretchValues_.z);

@@ -24,7 +24,7 @@ public:
 
 	void Load()
 	{
-		boost::shared_ptr<OmFileReadQT<T> > reader =
+		om::shared_ptr<OmFileReadQT<T> > reader =
 			OmFileReadQT<T>::Reader(fnp_.toStdString());
 
 		const uint64_t numBytes = reader->FileSizeBytes();
@@ -38,7 +38,7 @@ public:
 		const uint32_t numElements = vec_.size();
 		const uint64_t numBytes = numElements * sizeof(T);
 
-		boost::shared_ptr<OmFileWriteQT<T> > writer =
+		om::shared_ptr<OmFileWriteQT<T> > writer =
 			OmFileWriteQT<T>::WriterNumBytes(fnp_.toStdString(),
 											 numBytes,
 											 om::DONT_ZERO_FILL);

@@ -239,7 +239,7 @@ ViewType InspectorWidget::getViewType(QAction* act)
     } else if (act == xzAct) {
         return XZ_VIEW;
     } else if (act == yzAct) {
-        return YZ_VIEW;
+        return ZY_VIEW;
     } else {
         throw OmFormatException("could not match QAction type...\n");
     }

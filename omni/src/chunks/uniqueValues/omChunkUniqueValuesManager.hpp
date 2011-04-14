@@ -23,16 +23,14 @@ public:
 
     ChunkUniqueValues Values(const OmChunkCoord& coord, const double threshold)
     {
-        boost::shared_ptr<OmThresholdsInChunk> thresholdsInChunk;
-        chunks_->Get(thresholdsInChunk, coord);
+        OmThresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
 
         return thresholdsInChunk->Get(threshold)->Values();
     }
 
     void RereadChunk(const OmChunkCoord& coord, const double threshold)
     {
-        boost::shared_ptr<OmThresholdsInChunk> thresholdsInChunk;
-        chunks_->Get(thresholdsInChunk, coord);
+        OmThresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
 
         thresholdsInChunk->Get(threshold)->RereadChunk();
     }

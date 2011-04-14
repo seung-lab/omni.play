@@ -30,7 +30,7 @@ void OmAffinityGraph::ImportSingleChannel(const QString& hdf5fnp,
     OmChannel& chan = cdw.Create();
 
     channels_[aff] =
-        boost::make_shared<OmAffinityChannel>(&chan, aff);
+        om::make_shared<OmAffinityChannel>(&chan, aff);
 
     OmAffinityChannel* affChan = channels_[aff].get();
 
@@ -40,22 +40,19 @@ void OmAffinityGraph::ImportSingleChannel(const QString& hdf5fnp,
 }
 
 // use to just read data
-boost::shared_ptr<OmRawChunk<float> >
+om::shared_ptr<OmRawChunk<float> >
 OmAffinityGraph::RawChunk(const om::AffinityGraph aff,
                           const OmChunkCoord& coord)
 {
     OmAffinityChannel* affChan = channels_[aff].get();
 
-    return boost::make_shared<OmRawChunk<float> >(affChan->Channel(), coord);
+    return om::make_shared<OmRawChunk<float> >(affChan->Channel(), coord);
 }
 
-OmChunkPtr OmAffinityGraph::MipChunk(const om::AffinityGraph aff,
+OmChunk* OmAffinityGraph::MipChunk(const om::AffinityGraph aff,
                                      const OmChunkCoord& coord)
 {
     OmAffinityChannel* affChan = channels_[aff].get();
 
-    OmChunkPtr ret;
-    affChan->Channel()->GetChunk(ret, coord);
-
-    return ret;
+    return affChan->Channel()->GetChunk(coord);
 }

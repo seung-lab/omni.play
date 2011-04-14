@@ -18,7 +18,7 @@ private:
     // 2 == per-chunk files
     int meshVersion_;
 
-    zi::mutex lock_;
+    zi::spinlock lock_;
 
 public:
     OmMeshMetadata(OmSegmentation *segmentation, const double threshold)

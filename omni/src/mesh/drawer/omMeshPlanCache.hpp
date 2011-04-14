@@ -12,15 +12,15 @@ private:
 
 	struct CachedDataEnry
 	{
-		boost::shared_ptr<OmMeshPlan> sortedSegments;
+		om::shared_ptr<OmMeshPlan> sortedSegments;
 		uint64_t freshness;
 		uint64_t dustThreshold;
 	};
 
 	struct CachedData
 	{
-		boost::shared_ptr<OmVolumeCuller> culler;
-		boost::shared_ptr<std::deque<OmSegChunkPtr> > chunks;
+		om::shared_ptr<OmVolumeCuller> culler;
+		om::shared_ptr<std::deque<OmSegChunk*> > chunks;
 		std::map<OmBitfield, CachedDataEnry> dataByBitfield;
 	};
 
@@ -33,12 +33,12 @@ public:
 		, rootSegLists_(rootSegLists)
 	{}
 
-	boost::shared_ptr<OmMeshPlan>
+	om::shared_ptr<OmMeshPlan>
 	GetSegmentsToDraw(OmViewGroupState* vgs,
-					  boost::shared_ptr<OmVolumeCuller> culler,
+					  om::shared_ptr<OmVolumeCuller> culler,
 					  const OmBitfield drawOptions)
 	{
-		boost::shared_ptr<OmMeshPlan> sortedSegments =
+		om::shared_ptr<OmMeshPlan> sortedSegments =
 			getCachedSegments(vgs, culler, drawOptions);
 
 		if(sortedSegments){
@@ -57,24 +57,24 @@ private:
 	 *
 	 *  a list gets cached ONLY once all segments have been added to the list
 	 **/
-	boost::shared_ptr<OmMeshPlan>
+	om::shared_ptr<OmMeshPlan>
 	getCachedSegments(OmViewGroupState* vgs,
-					  boost::shared_ptr<OmVolumeCuller> culler,
+					  om::shared_ptr<OmVolumeCuller> culler,
 					  const OmBitfield drawOptions)
 	{
 		if(!cachedData_.culler){
-			return boost::shared_ptr<OmMeshPlan>();
+			return om::shared_ptr<OmMeshPlan>();
 		}
 
 		if(!cachedData_.culler->equals(culler))
 		{
 			cachedData_.dataByBitfield.clear();
 			cachedData_.chunks.reset();
-			return boost::shared_ptr<OmMeshPlan>();
+			return om::shared_ptr<OmMeshPlan>();
 		}
 
 		if(!cachedData_.dataByBitfield.count(drawOptions)){
-			return boost::shared_ptr<OmMeshPlan>();
+			return om::shared_ptr<OmMeshPlan>();
 		}
 
 		const CachedDataEnry& entry = cachedData_.dataByBitfield[drawOptions];
@@ -85,18 +85,18 @@ private:
 			return entry.sortedSegments;
 		}
 
-		return boost::shared_ptr<OmMeshPlan>();
+		return om::shared_ptr<OmMeshPlan>();
 	}
 
-	boost::shared_ptr<OmMeshPlan>
+	om::shared_ptr<OmMeshPlan>
 	buildPlan(OmViewGroupState* vgs,
-			  boost::shared_ptr<OmVolumeCuller> culler,
+			  om::shared_ptr<OmVolumeCuller> culler,
 			  const OmBitfield drawOptions)
 	{
 		OmMeshDrawPlanner planner(segmentation_, vgs, culler, drawOptions,
 								  rootSegLists_);
 
-		boost::shared_ptr<OmMeshPlan> sortedSegments =
+		om::shared_ptr<OmMeshPlan> sortedSegments =
 			planner.BuildPlan(cachedData_.chunks);
 
 		if(!planner.SegmentsMissing()){

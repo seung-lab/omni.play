@@ -15,7 +15,7 @@ public:
             return Vector3<T>(x, y, z);
         case XZ_VIEW:
             return Vector3<T>(x, z, y);
-        case YZ_VIEW:
+        case ZY_VIEW:
             return Vector3<T>(z, y, x);
         default:
             throw OmArgException("invalid viewType");
@@ -31,7 +31,7 @@ public:
             return vec;
         case XZ_VIEW:
             return Vector3<T>(vec.x, vec.z, vec.y);
-        case YZ_VIEW:
+        case ZY_VIEW:
             return Vector3<T>(vec.z, vec.y, vec.x);
         default:
             throw OmArgException("invalid viewType");
@@ -47,7 +47,7 @@ public:
             return vec.z;
         case XZ_VIEW:
             return vec.y;
-        case YZ_VIEW:
+        case ZY_VIEW:
             return vec.x;
         default:
             throw OmArgException("invalid viewType");
@@ -65,7 +65,7 @@ public:
         case XZ_VIEW:
             vec.y = val;
             break;
-        case YZ_VIEW:
+        case ZY_VIEW:
             vec.x = val;
             break;
         default:
@@ -95,7 +95,7 @@ public:
             return Vector3<T>(x / scale.x,
                               0,
                               y / scale.z);
-        case YZ_VIEW:
+        case ZY_VIEW:
             return Vector3<T>(0,
                               y / scale.y,
                               x / scale.z);
@@ -113,7 +113,7 @@ public:
             return Vector2<T>(vec.x, vec.y);
         case XZ_VIEW:
             return Vector2<T>(vec.x, vec.z);
-        case YZ_VIEW:
+        case ZY_VIEW:
             return Vector2<T>(vec.z, vec.y);
         default:
             throw OmArgException("unknown viewType");
@@ -132,7 +132,7 @@ private:
         case XZ_VIEW:
             vec.x += val;
             break;
-        case YZ_VIEW:
+        case ZY_VIEW:
             vec.z += val;
             break;
         default:
@@ -151,7 +151,7 @@ private:
         case XZ_VIEW:
             vec.z += val;
             break;
-        case YZ_VIEW:
+        case ZY_VIEW:
             vec.y += val;
             break;
         default:
@@ -191,7 +191,7 @@ public:
             return Vector3<T>(vec.x + x, vec.y + y, vec.z);
         case XZ_VIEW:
             return Vector3<T>(vec.x + x, vec.y, vec.z + y);
-        case YZ_VIEW:
+        case ZY_VIEW:
             return Vector3<T>(vec.x, vec.y + y, vec.z + x);
         default:
             throw OmArgException("invalid viewType");

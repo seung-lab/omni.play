@@ -5,7 +5,7 @@
 #include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "tiles/cache/omTileCache.h"
-#include "utility/image/omFilterImage.hpp"
+#include "tiles/omChannelTileFilter.hpp"
 
 class BrightnessSpinBox : public OmIntSpinBox {
     Q_OBJECT
@@ -25,13 +25,13 @@ private:
 
     void actUponSpinboxChange(const int val)
     {
-        OmImageFilter::SetBrightnessShift(val);
+        OmChannelTileFilter::SetBrightnessShift(val);
         OmTileCache::ClearChannel();
         OmEvents::Redraw2dBlocking();
     }
 
     void setInitialGUIThresholdValue(){
-        setValue(OmImageFilter::GetBrightnessShift());
+        setValue(OmChannelTileFilter::GetBrightnessShift());
     }
 };
 

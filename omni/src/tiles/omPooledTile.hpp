@@ -4,6 +4,7 @@
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "tiles/omTilePool.hpp"
+#include "tiles/omTilePools.hpp"
 
 class OmPooledTileWrapper {
 public:
@@ -16,15 +17,15 @@ public:
 template <typename T>
 class OmPooledTile : public OmPooledTileWrapper {
 private:
-    T* tile_;
+    T *const tile_;
 
 public:
     OmPooledTile()
-        : tile_(OmProject::Globals().TilePool<T>().GetTile())
+        : tile_(OmProject::Globals().TilePools().GetPool<T>().GetTile())
     {}
 
     virtual ~OmPooledTile(){
-        OmProject::Globals().TilePool<T>().FreeTile(tile_);
+        OmProject::Globals().TilePools().GetPool<T>().FreeTile(tile_);
     }
 
     T* GetData(){

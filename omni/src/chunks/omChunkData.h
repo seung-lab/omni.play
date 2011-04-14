@@ -2,33 +2,33 @@
 #define OM_CHUNK_DATA_HPP
 
 #include "chunks/omChunkCoord.h"
-#include "chunks/omChunkTypes.hpp"
 #include "datalayer/omDataWrapper.h"
-#include "utility/image/omImage.hpp"
 #include "volume/omVolumeTypes.hpp"
 
+class OmChunk;
 class OmMipVolume;
+template <class> class OmPooledTile;
 
 class OmChunkData {
 public:
-	OmChunkData(OmMipVolume*, OmChunk*);
+    OmChunkData(OmMipVolume*, OmChunk*);
 
-	OmImage<uint8_t, 2> ExtractDataSlice8bit(const ViewType, const int);
+    OmPooledTile<uint8_t>* ExtractDataSlice8bit(const ViewType, const int);
 
-	void copyInTile(const int sliceOffset, uchar* bits);
-	void CopyInChunkData(OmDataWrapperPtr hdf5);
-	OmDataWrapperPtr CopyOutChunkData();
+    void copyInTile(const int sliceOffset, uchar* bits);
+    void CopyInChunkData(OmDataWrapperPtr hdf5);
+    OmDataWrapperPtr CopyOutChunkData();
 
-	double GetMinValue();
-	double GetMaxValue();
+    double GetMinValue();
+    double GetMaxValue();
 
-	bool Compare(OmChunkData* other);
+    bool Compare(OmChunkData* other);
 
 private:
-	OmMipVolume *const vol_;
-	OmChunk *const chunk_;
+    OmMipVolume *const vol_;
+    OmChunk *const chunk_;
 
-	OmRawDataPtrs& getRawData();
+    OmRawDataPtrs& getRawData();
 };
 
 #endif

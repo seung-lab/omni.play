@@ -8,8 +8,8 @@
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
 #include "mesh/io/v2/threads/omMeshWriterTaskV2.hpp"
-#include "mesh/omMipMeshCoord.h"
-#include "mesh/omMipMeshManager.h"
+#include "mesh/omMeshCoord.h"
+#include "mesh/omMeshManager.h"
 
 class OmMeshWriterV2{
 private:
@@ -34,7 +34,7 @@ public:
 
     bool CheckEverythingWasMeshed()
     {
-        boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
             segmentation_->GetMipChunkCoords();
 
         bool allGood = true;
@@ -107,8 +107,8 @@ public:
               const U data, const om::ShouldBufferWrites buffferWrites,
               const om::AllowOverwrite allowOverwrite)
     {
-        boost::shared_ptr<OmMeshWriterTaskV2<U> > task =
-            boost::make_shared<OmMeshWriterTaskV2<U> >(segmentation_,
+        om::shared_ptr<OmMeshWriterTaskV2<U> > task =
+            om::make_shared<OmMeshWriterTaskV2<U> >(segmentation_,
                                                        filePtrCache_,
                                                        segID,
                                                        coord,

@@ -27,7 +27,7 @@ public:
     }
 
     static OmDataWrapperPtr ReadChunkData(OmMipVolume* vol,
-                                          OmChunkPtr chunk)
+                                          OmChunk* chunk)
     {
         if(!OmProject::HasOldHDF5()){
             throw OmIoException("no hdf5 to read from!");

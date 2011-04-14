@@ -3,7 +3,8 @@
 
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omTileTypes.hpp"
-#include "utility/omThreadPool.hpp"
+#include "tiles/omTileImplTypes.hpp"
+#include "threads/omThreadPool.hpp"
 #include "zi/omMutex.h"
 
 class OmBlockingGetTiles {

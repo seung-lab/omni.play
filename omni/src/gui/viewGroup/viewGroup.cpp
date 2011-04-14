@@ -9,7 +9,7 @@
 #include "viewGroup/omViewGroupState.h"
 
 static const ViewType UpperLeft  = XY_VIEW;
-static const ViewType UpperRight = YZ_VIEW;
+static const ViewType UpperRight = ZY_VIEW;
 static const ViewType LowerLeft  = XZ_VIEW;
 
 ViewGroup::ViewGroup(MainWindow* mw, OmViewGroupState* vgs)

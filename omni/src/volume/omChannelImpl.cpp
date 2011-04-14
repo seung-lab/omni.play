@@ -8,7 +8,7 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "project/omProject.h"
-#include "utility/omThreadPool.hpp"
+#include "threads/omThreadPool.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omChannelImpl.h"
 #include "volume/omFilter2d.h"
@@ -80,8 +80,8 @@ void OmChannelImpl::SetVolDataType(const OmVolDataType type)
     volData_->SetDataType(this);
 }
 
-void OmChannelImpl::GetChunk(OmChunkPtr& ptr, const OmChunkCoord& coord){
-    chunkCache_->GetChunk(ptr, coord);
+OmChunk* OmChannelImpl::GetChunk(const OmChunkCoord& coord){
+    return chunkCache_->GetChunk(coord);
 }
 
 void OmChannelImpl::UpdateFromVolResize(){

@@ -12,6 +12,7 @@
 
 #include "common/omCommon.h"
 #include "common/omException.h"
+#include "common/omContainer.hpp"
 
 class OmChannel;
 class OmSegmentation;
@@ -69,8 +70,9 @@ public:
         enabledSet_.erase(id);
 
         T* t = vec_[id];
-        vecValidPtrs_.erase(std::remove(vecValidPtrs_.begin(), vecValidPtrs_.end(), t),
-                            vecValidPtrs_.end());
+
+        om::container::eraseRemove(vecValidPtrs_, t);
+
         delete t;
         vec_[id] = NULL;
 

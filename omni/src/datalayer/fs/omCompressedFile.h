@@ -1,9 +1,10 @@
 #ifndef OM_COMPRESSED_FILE_HPP
 #define OM_COMPRESSED_FILE_HPP
 
-#include <string>
+#include "utility/omSharedPtr.hpp"
 #include <zi/bits/cstdint.hpp>
-#include <boost/shared_ptr.hpp>
+
+#include <string>
 
 namespace om {
 namespace file {
@@ -23,7 +24,7 @@ void compressToFileNumElements(T const*const data, const int64_t numElements,
 }
 
 template <class T>
-void compressToFileNumElements(const boost::shared_ptr<T>& data,
+void compressToFileNumElements(const om::shared_ptr<T>& data,
                                const int64_t numElements,
                                const std::string& out_fnp)
 {

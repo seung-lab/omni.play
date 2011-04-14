@@ -49,7 +49,7 @@ private:
     const ViewType viewType_;
     const std::string name_;
 
-    boost::shared_ptr<OmView2dState> state_;
+    om::shared_ptr<OmView2dState> state_;
     boost::scoped_ptr<QGLPixelBuffer> pbuffer_;
     boost::scoped_ptr<OmTileDrawer> tileDrawer_;
 

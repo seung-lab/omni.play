@@ -72,7 +72,7 @@ private:
                 continue;
             }
 
-            boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+            om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
                 vol.GetMipChunkCoords(level);
 
             FOR_EACH(iter, *coordsPtr)
@@ -89,11 +89,11 @@ private:
     template <typename T>
     void copyChunk(T& vol, const OmChunkCoord& coord)
     {
-        OmChunkPtr chunk;
-        vol.GetChunk(chunk, coord);
+        OmChunk* chunk = vol.GetChunk(coord);
 
         OmDataWrapperPtr hdf5 =
             OmHdf5ChunkUtils::ReadChunkData(&vol, chunk);
+
         chunk->Data()->CopyInChunkData(hdf5);
     }
 };

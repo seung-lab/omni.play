@@ -8,7 +8,7 @@
 #include "tiles/omTile.h"
 #include "tiles/omTileCoord.h"
 #include "utility/dataWrappers.h"
-#include "utility/omThreadPool.hpp"
+#include "threads/omThreadPool.hpp"
 #include "utility/omTimer.hpp"
 #include "utility/omUUID.hpp"
 #include "viewGroup/omViewGroupState.h"
@@ -74,7 +74,7 @@ private:
     {
         return QString::fromStdString(
             "/var/www/temp_omni_imgs/" + volNameHyphen + "/" +
-            uuid.Str() + ".png");
+            uuid.Str() + ".jpg");
     }
 
     QImage::Format getQTimageFormat(OmChannel*) const {
@@ -100,9 +100,8 @@ private:
         }
     }
 
-    void processImage(OmSegmentation*, QImage& img){
-        img.colorTable(); // fixes colors
-    }
+    void processImage(OmSegmentation*, QImage&)
+    {}
 
     template <typename T, typename U>
     struct CopyTileTask {
@@ -117,11 +116,11 @@ private:
     };
 
     template <typename T, typename U>
-    void getAndCopyTile(boost::shared_ptr<CopyTileTask<T,U> > params)
+    void getAndCopyTile(om::shared_ptr<CopyTileTask<T,U> > params)
     {
         OmTilePtr tile = getTile(params->vol, params->dataCoord);
-        const OmTextureIDPtr& texture = tile->GetTexture();
-        U* tileData = reinterpret_cast<U*>(texture->GetTileData());
+        const OmTextureID& texture = tile->GetTexture();
+        U* tileData = reinterpret_cast<U*>(texture.GetTileData());
 
         int j = 0;
         for(int i = params->y; i < params->y+128; ++i)
@@ -194,8 +193,8 @@ private:
 
                 const DataCoord dataCoord(x, y, sliceNum);
 
-                boost::shared_ptr<CopyTileTask<T,U> > task =
-                    boost::make_shared<CopyTileTask<T,U> >();
+                om::shared_ptr<CopyTileTask<T,U> > task =
+                    om::make_shared<CopyTileTask<T,U> >();
 
                 task->vol = vol;
                 task->x = x;
@@ -226,10 +225,11 @@ private:
 
         const QString fname = fileName(vol, uuid);
 
-        if(!scaled.save(fname)){
-            throw OmIoException("could not write file", fname);
-        }
+        writeJPEG(scaled.width(), scaled.height(), scaled.bits(), fname.toStdString());
     }
+
+    void writeJPEG(const uint32_t width, const uint32_t height,
+                   uint8_t const*const data, const std::string& fileName);
 
     template <typename T>
     OmTilePtr getTile(T* vol, const DataCoord& dataCoord)

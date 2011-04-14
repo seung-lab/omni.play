@@ -26,7 +26,7 @@ public:
      * DataCoord is just used to determine slice depth
      *
      **/
-    static boost::shared_ptr<OmBrushOppInfo>
+    static om::shared_ptr<OmBrushOppInfo>
     MakeOppInfo(OmView2dState* state, const DataCoord& coord,
                 const om::AddOrSubtract addOrSubract)
     {
@@ -41,7 +41,7 @@ public:
 
         const int chunkDim = segmentation->Coords().GetChunkDimension();
 
-        return boost::make_shared<OmBrushOppInfo>(segmentation,
+        return om::make_shared<OmBrushOppInfo>(segmentation,
                                                   viewType,
                                                   brushSize,
                                                   depth,

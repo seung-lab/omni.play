@@ -25,8 +25,8 @@ public:
         : chunks_(new OmChunkItemContainer<VOL, CHUNK>(vol))
     {}
 
-    void GetChunk(boost::shared_ptr<CHUNK>& ptr, const OmChunkCoord& coord){
-        chunks_->Get(ptr, coord);
+    CHUNK* GetChunk(const OmChunkCoord& coord){
+        return chunks_->Get(coord);
     }
 };
 

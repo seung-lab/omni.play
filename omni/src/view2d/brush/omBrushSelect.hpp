@@ -10,7 +10,7 @@ public:
     static void SelectByClick(OmView2dState* state, const DataCoord& coord,
                               const om::AddOrSubtract addSegments)
     {
-        boost::shared_ptr<OmBrushOppInfo> info =
+        om::shared_ptr<OmBrushOppInfo> info =
             OmBrushOppInfoFactory::MakeOppInfo(state, coord, addSegments);
 
         // std::cout << *info << ", " << coord << "\n";
@@ -25,13 +25,13 @@ public:
     {
         const DataCoord& first = state->GetLastDataPoint();
 
-        boost::shared_ptr<OmBrushOppInfo> info =
+        om::shared_ptr<OmBrushOppInfo> info =
             OmBrushOppInfoFactory::MakeOppInfo(state, first, addSegments);
 
         // std::cout << *info << ", " << first << ", " << second << "\n";
 
-        boost::shared_ptr<OmBrushSelectLineTask> task =
-            boost::make_shared<OmBrushSelectLineTask>(info, first, second);
+        om::shared_ptr<OmBrushSelectLineTask> task =
+            om::make_shared<OmBrushSelectLineTask>(info, first, second);
 
         OmView2dManager::AddTaskBack(task);
     }

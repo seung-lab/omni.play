@@ -12,13 +12,13 @@
 
 class OmSegmentSelectActionImpl {
 private:
-    boost::shared_ptr<OmSelectSegmentsParams> params_;
+    om::shared_ptr<OmSelectSegmentsParams> params_;
 
 public:
     OmSegmentSelectActionImpl()
     {}
 
-    OmSegmentSelectActionImpl(boost::shared_ptr<OmSelectSegmentsParams> params)
+    OmSegmentSelectActionImpl(om::shared_ptr<OmSelectSegmentsParams> params)
         : params_(params)
     {}
 

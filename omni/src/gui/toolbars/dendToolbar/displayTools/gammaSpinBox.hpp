@@ -4,7 +4,7 @@
 #include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
 #include "tiles/cache/omTileCache.h"
-#include "utility/image/omFilterImage.hpp"
+#include "tiles/omChannelTileFilter.hpp"
 
 class GammaSpinBox : public OmDoubleSpinBox {
 Q_OBJECT
@@ -24,13 +24,13 @@ private:
 
     void actUponValueChange(const double threshold)
     {
-        OmImageFilter::SetGamma(threshold);
+        OmChannelTileFilter::SetGamma(threshold);
         OmTileCache::ClearChannel();
         OmEvents::Redraw2dBlocking();
     }
 
     void setInitialGUIThresholdValue(){
-        setValue(OmImageFilter::GetGamma());
+        setValue(OmChannelTileFilter::GetGamma());
     }
 };
 

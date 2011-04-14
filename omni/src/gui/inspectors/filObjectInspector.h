@@ -23,7 +23,7 @@ private Q_SLOTS:
 private:
     QSlider *alphaSlider;
 
-	boost::shared_ptr<FilterDataWrapper> fdw_;
+	om::shared_ptr<FilterDataWrapper> fdw_;
 
     QLineEdit *chanEdit;
     QLineEdit *segEdit;

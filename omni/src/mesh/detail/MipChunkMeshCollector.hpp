@@ -3,8 +3,8 @@
 
 #include "TriStripCollector.hpp"
 #include "mesh/io/v2/omMeshWriterV2.hpp"
-#include "mesh/omMipMesh.h"
-#include "mesh/omMipMeshCoord.h"
+#include "mesh/omMesh.h"
+#include "mesh/omMeshCoord.h"
 
 #include <zi/bits/cstdint.hpp>
 #include <zi/bits/unordered_map.hpp>

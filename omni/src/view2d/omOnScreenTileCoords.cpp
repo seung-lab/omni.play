@@ -7,7 +7,7 @@
 #include "volume/omFilter2d.h"
 #include "volume/omMipVolume.h"
 
-OmOnScreenTileCoords::OmOnScreenTileCoords(const boost::shared_ptr<OmView2dState>& state)
+OmOnScreenTileCoords::OmOnScreenTileCoords(const om::shared_ptr<OmView2dState>& state)
     : state_(state)
     , vol_(state->getVol())
     , viewType_(state->getViewType())
@@ -18,7 +18,7 @@ OmOnScreenTileCoords::OmOnScreenTileCoords(const boost::shared_ptr<OmView2dState
     , stretch_(vol_->Coords().GetStretchValues(state->getViewType()))
     , totalViewport_(state->getTotalViewport())
     , translateVector_(state->ComputePanDistance())
-    , tileCoordsAndLocations_(boost::make_shared<OmTileCoordsAndLocations>())
+    , tileCoordsAndLocations_(om::make_shared<OmTileCoordsAndLocations>())
 {
     freshness_ = 0;
     if(SEGMENTATION == vol_->getVolumeType()){
@@ -63,7 +63,7 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
     }
 
     OmTileCoordsAndLocationsPtr ret = tileCoordsAndLocations_;
-    tileCoordsAndLocations_ = boost::make_shared<OmTileCoordsAndLocations>();
+    tileCoordsAndLocations_ = om::make_shared<OmTileCoordsAndLocations>();
     return ret;
 }
 
@@ -212,17 +212,17 @@ GLfloatBox OmOnScreenTileCoords::computeVertices(const float xRaw,
     glBox.lowerLeft.y  = minY;
     glBox.upperRight.y = maxY;
 
-    switch(viewType_){
-    case XY_VIEW:
-    case XZ_VIEW:
+    // switch(viewType_){
+    // case XY_VIEW:
+    // case XZ_VIEW:
         glBox.lowerLeft.x  = minX;
         glBox.upperRight.x = maxX;
-        break;
-    case YZ_VIEW:
-        glBox.lowerLeft.x  = maxX;
-        glBox.upperRight.x = minX;
-        break;
-    }
+        // break;
+    // case ZY_VIEW:
+    //     glBox.lowerLeft.x  = maxX;
+    //     glBox.upperRight.x = minX;
+    //     break;
+    // }
 
     glBox.lowerRight.x = glBox.upperRight.x;
     glBox.lowerRight.y = glBox.lowerLeft.y;

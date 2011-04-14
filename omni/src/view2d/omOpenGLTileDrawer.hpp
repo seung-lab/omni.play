@@ -9,83 +9,79 @@
 #include "zi/omUtility.h"
 
 class OmOpenGLTileDrawer {
-private:
-    const ViewType viewType_;
-
 public:
-    OmOpenGLTileDrawer(const ViewType viewType)
-        : viewType_(viewType)
-    {}
-
-    ~OmOpenGLTileDrawer()
-    {}
-
-    void DrawTiles(const std::deque<OmTileAndVertices>& tilesToDraw)
+    void DrawTiles(std::deque<OmTileAndVertices>& tilesToDraw)
     {
-        FOR_EACH(it, tilesToDraw){
-            drawTile(*it);
+        FOR_EACH(iter, tilesToDraw)
+        {
+            drawTile(iter->tile->GetTexture(),
+                     iter->vertices,
+                     iter->textureVectices);
         }
     }
 
 private:
-    void drawTile(const OmTileAndVertices& tv)
+    void drawTile(OmTextureID& texture,
+                  const GLfloatBox& vertices,
+                  const TextureVectices& textureVectices)
     {
-        if(viewType_ == YZ_VIEW) {
-            glMatrixMode(GL_TEXTURE);
-            glLoadIdentity();
-            glTranslatef(0.5, 0.5, 0.0);
-            glRotatef(-90, 0.0, 0.0, 1.0);
-            glTranslatef(-0.5, -0.5, 0.0);
-            glMatrixMode(GL_MODELVIEW);
+        if(texture.NeedToBuildTexture()){
+            doBindTileDataToGLid(texture);
         }
 
-        const OmTextureIDPtr& texture = tv.tile->GetTexture();
-        if(texture->NeedToBuildTexture()){
-            doBindTileDataToGLid(texture, tv.tile->IsMip0());
-        }
+        glBindTexture(GL_TEXTURE_2D, texture.GetTextureID());
 
-        glBindTexture(GL_TEXTURE_2D, texture->GetTextureID());
-
-        const TextureVectices& textureVectices = tv.textureVectices;
+        // std::cout << "drawing: " << tv.tile->GetTileCoord() << "\n";
 
         glBegin(GL_QUADS);
         glTexCoord2f(textureVectices.upperLeft.x,
                      textureVectices.lowerRight.y);  /* lower left corner */
-        glVertex2f(tv.vertices.lowerLeft.x,
-                   tv.vertices.lowerLeft.y);
+        glVertex2f(vertices.lowerLeft.x,
+                   vertices.lowerLeft.y);
+        // std::cout << "\ttex: " << textureVectices.upperLeft.x
+        //           << ", " << textureVectices.lowerRight.y << "\n";
+        // std::cout << "\tvertex: " << vertices.lowerLeft.x
+        //           << ", " << vertices.lowerLeft.y << "\n";
 
         glTexCoord2f(textureVectices.lowerRight.x,
                      textureVectices.lowerRight.y);  /* lower right corner */
-        glVertex2f(tv.vertices.lowerRight.x,
-                   tv.vertices.lowerRight.y);
+        glVertex2f(vertices.lowerRight.x,
+                   vertices.lowerRight.y);
+        // std::cout << "\ttex: " << textureVectices.lowerRight.x
+        //           << ", " << textureVectices.lowerRight.y << "\n";
+        // std::cout << "\tvertex: " << vertices.lowerRight.x
+        //           << ", " << vertices.lowerRight.y << "\n";
 
         glTexCoord2f(textureVectices.lowerRight.x,
                      textureVectices.upperLeft.y);  /* upper right corner */
-        glVertex2f(tv.vertices.upperRight.x,
-                   tv.vertices.upperRight.y);
+        glVertex2f(vertices.upperRight.x,
+                   vertices.upperRight.y);
+        // std::cout << "\ttex: " << textureVectices.lowerRight.x
+        //           << ", " << textureVectices.upperLeft.y << "\n";
+        // std::cout << "\tvertex: " << vertices.upperRight.x
+        //           << ", " << vertices.upperRight.y << "\n";
 
         glTexCoord2f(textureVectices.upperLeft.x,
                      textureVectices.upperLeft.y);  /* upper left corner */
-        glVertex2f(tv.vertices.upperLeft.x,
-                   tv.vertices.upperLeft.y);
+        glVertex2f(vertices.upperLeft.x,
+                   vertices.upperLeft.y);
+        // std::cout << "\ttex: " << textureVectices.upperLeft.x
+        //           << ", " << textureVectices.upperLeft.y << "\n";
+        // std::cout << "\tvertex: " << vertices.upperLeft.x
+        //           << ", " << vertices.upperLeft.y << "\n";
+
         glEnd();
     }
 
-    void doBindTileDataToGLid(const OmTextureIDPtr& texture, const bool isMip0)
+    void doBindTileDataToGLid(OmTextureID& texture)
     {
         GLuint textureID;
         glGenTextures(1, &textureID);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glBindTexture(GL_TEXTURE_2D, textureID);
 
-        if(isMip0){
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        } else {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        }
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
@@ -94,16 +90,16 @@ private:
 
         glTexImage2D(GL_TEXTURE_2D,
                      0, // mipmap 0
-                     texture->GetGLinternalFormat(),
-                     texture->GetWidth(),
-                     texture->GetHeight(),
+                     texture.GetGLinternalFormat(),
+                     texture.GetWidth(),
+                     texture.GetHeight(),
                      0, // no border
-                     texture->GetGLdataFormat(),
-                     texture->GetPixelDataType(),
-                     texture->GetTileData()
+                     texture.GetGLdataFormat(),
+                     texture.GetPixelDataType(),
+                     texture.GetTileData()
             );
 
-        texture->TextureBindComplete(textureID);
+        texture.TextureBindComplete(textureID);
     }
 };
 

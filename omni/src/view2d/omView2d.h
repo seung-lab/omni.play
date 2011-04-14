@@ -10,7 +10,6 @@
 class OmView2dEvents;
 class OmScreenPainter;
 class SegmentDataWrapper;
-class OmScreenShotSaver;
 class OmMouseEvents;
 class OmKeyEvents;
 class OmView2dZoom;
@@ -36,10 +35,6 @@ public:
 
     inline bool amInFillMode(){
         return om::tool::FILL == OmStateManager::GetToolMode();
-    }
-
-    inline OmScreenShotSaver* GetScreenShotSaver(){
-        return screenShotSaver_.get();
     }
 
     inline OmView2dZoom* Zoom(){
@@ -73,7 +68,6 @@ private:
     OmView2dState *const state_;
     QDockWidget* complimentaryDock_;
 
-    boost::scoped_ptr<OmScreenShotSaver> screenShotSaver_;
     boost::scoped_ptr<OmScreenPainter> screenPainter_;
     boost::scoped_ptr<OmMouseEvents> mouseEvents_;
     boost::scoped_ptr<OmKeyEvents> keyEvents_;

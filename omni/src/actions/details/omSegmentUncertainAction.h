@@ -12,12 +12,12 @@ class OmSegmentUncertainActionImpl;
 class OmSegmentUncertainAction : public OmUndoCommand {
 
 public:
-    OmSegmentUncertainAction(boost::shared_ptr<OmSegmentUncertainActionImpl> impl)
+    OmSegmentUncertainAction(om::shared_ptr<OmSegmentUncertainActionImpl> impl)
         : impl_(impl)
     {}
 
     OmSegmentUncertainAction(const SegmentationDataWrapper& sdw,
-                             boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                             om::shared_ptr<std::set<OmSegment*> > selectedSegments,
                              const bool valid);
 private:
     void Action();
@@ -25,7 +25,7 @@ private:
     std::string Description();
     void save(const std::string&);
 
-    boost::shared_ptr<OmSegmentUncertainActionImpl> impl_;
+    om::shared_ptr<OmSegmentUncertainActionImpl> impl_;
 
 };
 

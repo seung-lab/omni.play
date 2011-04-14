@@ -7,8 +7,9 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
+#include "threads/omThreadPool.hpp"
+#include "utility/image/omImage.hpp"
 #include "utility/omSimpleProgress.hpp"
-#include "utility/omThreadPool.hpp"
 #include "volume/omVolumeTypes.hpp"
 #include "zi/omThreads.h"
 
@@ -29,7 +30,7 @@ private:
 
     OmSimpleProgress* prog_;
 
-    OmChunkPtr chunk_;
+    OmChunk* chunk_;
     bool resizedChunk_;
 
 public:
@@ -51,7 +52,7 @@ public:
         , prog_(prog)
         , resizedChunk_(false)
     {
-        vol_->GetChunk(chunk_, coord_);
+        chunk_ = vol_->GetChunk(coord_);
     }
 
     virtual ~OmDataCopierHdf5Task()

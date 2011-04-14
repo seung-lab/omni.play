@@ -46,8 +46,8 @@ QDataStream& operator>>(QDataStream& in, OmSegmentValidateActionImpl& a)
 
     OmSegments* cache = a.sdw_.Segments();
 
-    boost::shared_ptr<std::set<OmSegment*> > segs =
-        boost::make_shared<std::set<OmSegment*> >();
+    om::shared_ptr<std::set<OmSegment*> > segs =
+        om::make_shared<std::set<OmSegment*> >();
 
     FOR_EACH(iter, ids){
         OmSegment* seg = cache->GetSegment(*iter);
@@ -90,8 +90,8 @@ QDataStream& operator>>(QDataStream& in, OmSegmentUncertainActionImpl& a)
 
     OmSegments* cache = a.sdw_.Segments();
 
-    boost::shared_ptr<std::set<OmSegment*> > segs =
-        boost::make_shared<std::set<OmSegment*> >();
+    om::shared_ptr<std::set<OmSegment*> > segs =
+        om::make_shared<std::set<OmSegment*> >();
 
     FOR_EACH(iter, ids){
         OmSegment* seg = cache->GetSegment(*iter);
@@ -201,8 +201,8 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentSelectActionImpl& a)
     int version;
     in >> version;
 
-    boost::shared_ptr<OmSelectSegmentsParams> params =
-        boost::make_shared<OmSelectSegmentsParams>();
+    om::shared_ptr<OmSelectSegmentsParams> params =
+        om::make_shared<OmSelectSegmentsParams>();
 
     OmID segmentationID;
     in >> segmentationID;

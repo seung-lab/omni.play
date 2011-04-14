@@ -14,8 +14,8 @@ template <typename T>
 class OmFileQTbase : public OmIOnDiskFile<T> {
 protected:
     const std::string fnp_;
-    boost::shared_ptr<QFile> file_;
-    boost::shared_ptr<T> data_;
+    om::shared_ptr<QFile> file_;
+    om::shared_ptr<T> data_;
     zi::mutex mutex_;
 
     OmFileQTbase(const std::string& fnp)
@@ -32,7 +32,7 @@ protected:
 
     void open()
     {
-        file_ = boost::make_shared<QFile>(QString::fromStdString(fnp_));
+        file_ = om::make_shared<QFile>(QString::fromStdString(fnp_));
 
         if( !file_->open(QIODevice::ReadWrite)) {
             throw OmIoException("could not open", fnp_);
@@ -96,11 +96,11 @@ template <typename T>
 class OmFileReadQT : public OmFileQTbase<T> {
 public:
 
-    static boost::shared_ptr<OmFileReadQT<T> >
+    static om::shared_ptr<OmFileReadQT<T> >
     Reader(const std::string& fnp)
     {
         OmFileReadQT* ret = new OmFileReadQT(fnp, 0);
-        return boost::shared_ptr<OmFileReadQT<T> >(ret);
+        return om::shared_ptr<OmFileReadQT<T> >(ret);
     }
 
 private:
@@ -134,21 +134,21 @@ private:
 template <typename T>
 class OmFileWriteQT : public OmFileQTbase<T> {
 public:
-    static boost::shared_ptr<OmFileWriteQT<T> >
+    static om::shared_ptr<OmFileWriteQT<T> >
     WriterNumBytes(const std::string& fnp, const int64_t numBytes,
                    const om::ZeroMem shouldZeroFill)
     {
         OmFileWriteQT<T>* ret = new OmFileWriteQT(fnp, numBytes, shouldZeroFill);
-        return boost::shared_ptr<OmFileWriteQT<T> >(ret);
+        return om::shared_ptr<OmFileWriteQT<T> >(ret);
     }
 
-    static boost::shared_ptr<OmFileWriteQT<T> >
+    static om::shared_ptr<OmFileWriteQT<T> >
     WriterNumElements(const std::string& fnp, const int64_t numElements,
                       const om::ZeroMem shouldZeroFill)
     {
         const uint64_t numBytes = numElements*sizeof(T);
         OmFileWriteQT<T>* ret = new OmFileWriteQT(fnp, numBytes, shouldZeroFill);
-        return boost::shared_ptr<OmFileWriteQT<T> >(ret);
+        return om::shared_ptr<OmFileWriteQT<T> >(ret);
     }
 
 private:

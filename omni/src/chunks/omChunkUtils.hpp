@@ -35,7 +35,7 @@ public:
      *      voxel of data is included on each dimensions.
      */
     static OmImage<uint32_t, 3> GetMeshOmImageData(OmSegmentation* vol,
-                                                   OmSegChunkPtr chunk)
+                                                   OmSegChunk* chunk)
     {
         OmImage<uint32_t, 3> retImage(OmExtents[129][129][129]);
 
@@ -60,10 +60,9 @@ public:
                     //skip invalid mip coord
                     if(vol->Coords().ContainsMipChunkCoord(mip_coord))
                     {
-                        OmSegChunkPtr chunk;
-                        vol->GetChunk(chunk, mip_coord);
+                        OmSegChunk* chunk = vol->GetChunk(mip_coord);
 
-                        boost::shared_ptr<uint32_t> rawDataPtr =
+                        om::shared_ptr<uint32_t> rawDataPtr =
                             chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
                         OmImage<uint32_t, 3> chunkImage(OmExtents[128][128][128],
@@ -86,7 +85,7 @@ public:
         SegmentationDataWrapper sdw(segmentationID_);
         OmSegmentation& vol = sdw.GetSegmentation();
 
-        boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
             vol.GetMipChunkCoords();
 
         const uint32_t numChunks = coordsPtr->size();

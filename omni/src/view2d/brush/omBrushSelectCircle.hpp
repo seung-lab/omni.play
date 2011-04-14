@@ -6,10 +6,10 @@
 
 class OmBrushSelectCircle {
 private:
-    const boost::shared_ptr<OmBrushOppInfo> info_;
+    const om::shared_ptr<OmBrushOppInfo> info_;
 
 public:
-    OmBrushSelectCircle(boost::shared_ptr<OmBrushOppInfo> info)
+    OmBrushSelectCircle(om::shared_ptr<OmBrushOppInfo> info)
         : info_(info)
     {}
 
@@ -20,9 +20,9 @@ public:
     {
         OmBrushOppCircle circleOpp(info_);
 
-        boost::shared_ptr<om::pt3d_list_t> pts = circleOpp.GetPts(coord);
+        om::shared_ptr<om::pt3d_list_t> pts = circleOpp.GetPts(coord);
 
-        boost::shared_ptr<boost::unordered_set<OmSegID> > segIDs =
+        om::shared_ptr<boost::unordered_set<OmSegID> > segIDs =
             OmBrushSelectUtils::FindSegIDsFromPoints(info_.get(), pts.get());
 
         OmBrushSelectUtils::SendEvent(info_.get(), segIDs.get());

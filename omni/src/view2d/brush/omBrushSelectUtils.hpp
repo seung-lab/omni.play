@@ -7,7 +7,7 @@
 
 class OmBrushSelectUtils {
 public:
-    boost::shared_ptr<boost::unordered_set<OmSegID> >
+    om::shared_ptr<boost::unordered_set<OmSegID> >
     static FindSegIDsFromPoints(OmBrushOppInfo* info,
                                 om::pt3d_list_t* pts)
     {

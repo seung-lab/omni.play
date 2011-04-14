@@ -5,12 +5,12 @@
 
 class ChunkUniqueValues {
 private:
-    const boost::shared_ptr<uint32_t> segIDsPtr_;
+    const om::shared_ptr<uint32_t> segIDsPtr_;
     const size_t size_;
     uint32_t const*const segIDs_;
 
 public:
-    ChunkUniqueValues(boost::shared_ptr<uint32_t> segIDsPtr, const size_t size)
+    ChunkUniqueValues(om::shared_ptr<uint32_t> segIDsPtr, const size_t size)
         : segIDsPtr_(segIDsPtr)
         , size_(size)
         , segIDs_(segIDsPtr_.get())

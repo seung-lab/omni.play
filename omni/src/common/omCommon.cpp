@@ -67,8 +67,8 @@ std::ostream& operator<<(std::ostream &out, const ViewType& vt)
     case XZ_VIEW:
         out << "XZ_VIEW";
         break;
-    case YZ_VIEW:
-        out << "YZ_VIEW";
+    case ZY_VIEW:
+        out << "ZY_VIEW";
         break;
     default:
         throw OmArgException("unknown viewtype");

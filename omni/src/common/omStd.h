@@ -103,15 +103,4 @@ inline double SymmetricalRound(const double r){
 } // namespace math
 } // namespace om
 
-namespace om {
-namespace vec {
-
-template <typename T>
-void eraseRemove(std::vector<T>& v, const T val){
-    v.erase(std::remove(v.begin(), v.end(), val), v.end());
-}
-
-} // namespace vec
-} // namespace om
-
 #endif

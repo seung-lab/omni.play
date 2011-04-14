@@ -32,7 +32,7 @@ public:
         OmSliceCache sliceCache(info->segmentation,
                                 info->viewType);
 
-        virtual boost::shared_ptr<boost::unordered_set<OmSegID> > segIDsAndPts =
+        virtual om::shared_ptr<boost::unordered_set<OmSegID> > segIDsAndPts =
             sliceCache.GetSegIDs(chunksAndPts, info->depth % info->chunkDim);
 
 

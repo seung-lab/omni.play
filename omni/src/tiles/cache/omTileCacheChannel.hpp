@@ -3,8 +3,9 @@
 
 #include "common/om.hpp"
 #include "system/cache/omThreadedCache.h"
-#include "tiles/omTileCoord.h"
 #include "tiles/omTile.h"
+#include "tiles/omTileCoord.h"
+#include "tiles/omTileTypes.hpp"
 
 class OmTileCacheChannel : public OmThreadedCache<OmTileCoord, OmTilePtr> {
 public:

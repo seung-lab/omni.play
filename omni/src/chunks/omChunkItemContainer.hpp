@@ -1,47 +1,39 @@
 #ifndef OM_CHUNK_ITEM_CONTAINER_HPP
 #define OM_CHUNK_ITEM_CONTAINER_HPP
 
+#include "common/omContainer.hpp"
+#include "src/chunks/omChunkItemContainerMatrix.hpp"
 #include "zi/omMutex.h"
-#include <boost/multi_array.hpp>
 
 template <typename VOL, typename T>
 class OmChunkItemContainer {
 private:
     VOL *const vol_;;
 
-    int rootMipLevel_;
-
     zi::spinlock lock_;
 
-    typedef boost::multi_array<boost::shared_ptr<T>, 3> array_t;
-    typedef typename array_t::index index;
-
-    std::vector<array_t*> mips_;
-    std::vector<Vector3i> mipDims_;
+    typedef OmChunkItemContainerMatrix<VOL,T> matrix_t;
+    std::vector<matrix_t*> mips_;
 
     void setup()
     {
-        zi::guard g(lock_);
+        const int rootMipLevel = vol_->Coords().GetRootMipLevel();
 
-        for(size_t i = 0; i < mips_.size(); ++i){
-            delete mips_[i];
-        }
+        std::vector<matrix_t*> newMips;
+        newMips.resize(rootMipLevel + 1);
 
-        rootMipLevel_ = vol_->Coords().GetRootMipLevel();
-
-        mips_ = std::vector<array_t*>();
-        mips_.resize(rootMipLevel_ + 1);
-
-        mipDims_ = std::vector<Vector3i>();
-        mipDims_.resize(rootMipLevel_ + 1);
-
-        for(int level = 0; level <= rootMipLevel_; ++level)
+        for(int mipLevel = 0; mipLevel <= rootMipLevel; ++mipLevel)
         {
-            const Vector3i dims = vol_->Coords().MipLevelDimensionsInMipChunks(level);
-            mipDims_[level] = dims;
-
-            mips_[level] = new array_t(boost::extents[dims.x][dims.y][dims.z]);
+            const Vector3i dims = vol_->Coords().MipLevelDimensionsInMipChunks(mipLevel);
+            newMips[mipLevel] = new matrix_t(vol_, dims.x, dims.y, dims.z);
         }
+
+        {
+            zi::guard g(lock_);
+            mips_.swap(newMips);
+        }
+
+        om::container::clearPtrVec(newMips);
     }
 
 public:
@@ -51,11 +43,8 @@ public:
         setup();
     }
 
-    ~OmChunkItemContainer()
-    {
-        for(size_t i = 0; i < mips_.size(); ++i){
-            delete mips_[i];
-        }
+    ~OmChunkItemContainer(){
+        om::container::clearPtrVec(mips_);
     }
 
     void UpdateFromVolResize(){
@@ -66,31 +55,17 @@ public:
         setup();
     }
 
-    void Get(boost::shared_ptr<T>& ptr, const OmChunkCoord& coord)
+    T* Get(const OmChunkCoord& coord)
     {
-        const size_t level = coord.Level;
-        const index x = coord.Coordinate.x;
-        const index y = coord.Coordinate.y;
-        const index z = coord.Coordinate.z;
+        zi::guard g(lock_);
 
-        {
-            zi::guard g(lock_);
+        const std::size_t mipLevel = coord.Level;
 
-            assert(level < mipDims_.size());
-
-            const Vector3i& dims = mipDims_[level];
-            assert(x < dims.x);
-            assert(y < dims.y);
-            assert(z < dims.z);
-
-            array_t& array = *mips_[level];
-
-            if(!array[x][y][z]){
-                array[x][y][z] = boost::make_shared<T>(vol_, coord);
-            }
-
-            ptr = array[x][y][z];
+        if(mipLevel >= mips_.size()){
+            throw OmArgException("invalid mip level");
         }
+
+        return mips_[mipLevel]->Get(coord);
     }
 };
 

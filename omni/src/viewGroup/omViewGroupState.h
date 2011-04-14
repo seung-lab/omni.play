@@ -80,8 +80,8 @@ public:
 
     OmSegmentColorCacheType determineColorizationType(const ObjectType);
 
-    OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*,
-                                         const Vector2i&,
+    OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*const,
+                                         const int tileDim,
                                          const OmTileCoord&);
 private:
     boost::scoped_ptr<ViewGroup> viewGroup_;

@@ -68,7 +68,7 @@ public:
     static void FindAndCutSegments(const SegmentDataWrapper& sdw,
                                    OmViewGroupState* vgs);
 
-    static void SelectSegments(boost::shared_ptr<OmSelectSegmentsParams> params);
+    static void SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params);
 
 // group-related
     static void CreateOrDeleteSegmentGroup(const OmID segmentationID,

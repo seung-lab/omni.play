@@ -14,7 +14,7 @@ void OmSegmentValidateAction::Validate(const SegmentDataWrapper& sdw,
     OmSegIDsSet set;
     set.insert(sdw.FindRootID());
 
-    boost::shared_ptr<std::set<OmSegment*> > children =
+    om::shared_ptr<std::set<OmSegment*> > children =
         OmSegmentUtils::GetAllChildrenSegments(sdw.Segments(), set);
 
     (new OmSegmentValidateAction(sdw.MakeSegmentationDataWrapper(),
@@ -30,7 +30,7 @@ void OmSegmentValidateAction::Validate(const SegmentationDataWrapper& sdw,
     }
 
     OmSegments* segments = sdw.Segments();
-    boost::shared_ptr<std::set<OmSegment*> > children =
+    om::shared_ptr<std::set<OmSegment*> > children =
         OmSegmentUtils::GetAllChildrenSegments(segments,
                                                segments->GetSelectedSegmentIds());
 
@@ -38,9 +38,9 @@ void OmSegmentValidateAction::Validate(const SegmentationDataWrapper& sdw,
 }
 
 OmSegmentValidateAction::OmSegmentValidateAction(const SegmentationDataWrapper& sdw,
-                                                 boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                                                 om::shared_ptr<std::set<OmSegment*> > selectedSegments,
                                                  const bool valid)
-    : impl_(boost::make_shared<OmSegmentValidateActionImpl>(sdw,
+    : impl_(om::make_shared<OmSegmentValidateActionImpl>(sdw,
                                                             selectedSegments,
                                                             valid))
 {

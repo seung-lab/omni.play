@@ -72,11 +72,11 @@ private:
 
     onDiskHash_t* hash_;
 
-    boost::shared_ptr<bi::managed_mapped_file> file_;
+    om::shared_ptr<bi::managed_mapped_file> file_;
 
     void create()
     {
-        file_ = boost::make_shared<bi::managed_mapped_file>(bi::create_only,
+        file_ = om::make_shared<bi::managed_mapped_file>(bi::create_only,
                                                             fnp_.c_str(),
                                                             InitialNumBytes);
 
@@ -89,7 +89,7 @@ private:
 
     void open()
     {
-        file_ = boost::make_shared<bi::managed_mapped_file>(bi::open_only,
+        file_ = om::make_shared<bi::managed_mapped_file>(bi::open_only,
                                                             fnp_.c_str());
 
         hash_ = file_->find_or_construct<onDiskHash_t>("MyHashMap")

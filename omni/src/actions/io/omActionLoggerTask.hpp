@@ -30,7 +30,7 @@ private:
 template <typename T>
 class OmActionLoggerTask : public zi::runnable {
 public:
-    OmActionLoggerTask(boost::shared_ptr<T> action,
+    OmActionLoggerTask(om::shared_ptr<T> action,
                        const std::string& doOrUndo,
                        QDir& logFolder)
         : action_(action)
@@ -61,7 +61,7 @@ public:
     }
 
 private:
-    const boost::shared_ptr<T> action_;
+    const om::shared_ptr<T> action_;
     const std::string doOrUndo_;
     QDir logFolder_;
 

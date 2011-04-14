@@ -30,7 +30,7 @@ public:
         dirty_ = true;
     }
 
-    boost::shared_ptr<GUIPageOfSegments>
+    om::shared_ptr<GUIPageOfSegments>
     GetSegmentGUIPage(const GUIPageRequest& request)
     {
         zi::guard g(lock_);

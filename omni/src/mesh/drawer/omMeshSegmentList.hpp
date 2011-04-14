@@ -7,7 +7,7 @@
 #include "common/omDebug.h"
 #include "mesh/drawer/omMeshSegmentListTask.h"
 #include "mesh/drawer/omMeshSegmentListTypes.hpp"
-#include "utility/omThreadPool.hpp"
+#include "threads/omThreadPool.hpp"
 #include "volume/omMipVolume.h"
 #include "zi/omMutex.h"
 
@@ -30,7 +30,7 @@ public:
 	}
 
 	boost::optional<OmSegPtrList>
-	GetFromCacheIfReady(OmSegChunkPtr chunk, OmSegment* rootSeg)
+	GetFromCacheIfReady(OmSegChunk* chunk, OmSegment* rootSeg)
 	{
 		zi::guard g(lock_);
 
@@ -53,8 +53,8 @@ public:
 		{ // add coord to list to be fetched
 			spList = OmSegPtrListValid(true);
 
-			boost::shared_ptr<OmMeshSegmentListTask> task
-				= boost::make_shared<OmMeshSegmentListTask>(chunk,
+			om::shared_ptr<OmMeshSegmentListTask> task
+				= om::make_shared<OmMeshSegmentListTask>(chunk,
 															rootSeg,
 															this,
 															segmentation_);
@@ -67,7 +67,7 @@ public:
 		return boost::optional<OmSegPtrList>(spList.list);
 	}
 
-	void AddToCache(OmSegChunkPtr chunk, OmSegment* rootSeg,
+	void AddToCache(OmSegChunk* chunk, OmSegment* rootSeg,
 					const OmSegPtrList & segmentsToDraw)
 	{
 		zi::guard g(lock_);
@@ -82,7 +82,7 @@ private:
 	OmThreadPool threadPool_;
 	zi::mutex lock_;
 
-	OmMeshSegListKey makeKey(OmSegChunkPtr chunk, OmSegment* rootSeg)
+	OmMeshSegListKey makeKey(OmSegChunk* chunk, OmSegment* rootSeg)
 	{
 		const OmChunkCoord& c = chunk->GetCoordinate();
 		return OmMeshSegListKey(rootSeg->GetSegmentationID(),

@@ -3,6 +3,35 @@
 
 class OmZoomLevel {
 private:
+    /**
+     * for n = mipLevel:
+     *
+     *  for zoom out:  imageSize                  imageSize
+     *                ---------- * zoomFactor == ----------- * newZoomFactor
+     *                   2^n                       2^(n+1)
+     *
+     *   ==> newZoomFactor = 2*zoomFactor
+     *
+     *
+     *  for zoom in:  imageSize                   imageSize
+     *               ----------- * zoomFactor == ----------- * newZoomFactor
+     *                   2^n                       2^(n-1)
+     *
+     *   ==> newZoomFactor = zoomFactor/2
+     *
+     **/
+
+    /**
+     * pivot point that determines when mip level changes during zoom in/out
+     *
+     *   --decrease to use lower (less downsampled) mip levels at a given viewing distance
+     *       (and increase number of tiles needed to display slice)
+     *
+     *   --increase to use higher (more downsampled) mip levels at a given viewing distance
+     *       (and decrease the number of tiles needed to display slice)
+     **/
+    static const double zoomPivotPoint_ = 2.5;
+
     bool valid;
     int mipLevel_;
     float zoomFactor_;
@@ -41,18 +70,20 @@ public:
     {
         if (numSteps >= 0){
             mouseWheelZoomIn(numSteps, isLevelLocked);
+
         } else{
             mouseWheelZoomOut(numSteps, isLevelLocked, maxMipLevel);
         }
     }
 
 private:
+
     void mouseWheelZoomOut(const int numSteps, const bool isLevelLocked,
                            const int maxMipLevel)
     {
         zoomFactor_ /= std::pow(1.125, -numSteps); // numSteps is negative!
 
-        if( zoomFactor_ < 0.1 ){
+        if( zoomFactor_ < 0.1 ){  // mipLevel == 0
             zoomFactor_ = 0.1;
         }
 
@@ -60,10 +91,11 @@ private:
             return;
         }
 
-        if(zoomFactor_ <= 0.6 && mipLevel_ < maxMipLevel)
+        if(zoomFactor_ <= (zoomPivotPoint_ / 2.0) && mipLevel_ < maxMipLevel)
         {
-            mipLevel_ += 1; // move to next mip level
-            zoomFactor_ = 1.0;
+            // move to next mip level
+            mipLevel_ += 1;
+            zoomFactor_ = zoomPivotPoint_;
         }
     }
 
@@ -76,10 +108,11 @@ private:
             return;
         }
 
-        if(zoomFactor_ >= 1 && mipLevel_ > 0)
+        if(zoomFactor_ >= zoomPivotPoint_ && mipLevel_ > 0)
         {
-            mipLevel_ -= 1; //move to previous mip level
-            zoomFactor_ = 0.6;
+            // move to previous mip level
+            mipLevel_ -= 1;
+            zoomFactor_ = zoomPivotPoint_ / 2.0;
         }
     }
 };

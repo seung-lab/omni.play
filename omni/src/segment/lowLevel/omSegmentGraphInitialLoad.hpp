@@ -7,7 +7,7 @@
 #include "segment/lowLevel/omDynamicForestCache.hpp"
 #include "segment/lowLevel/store/omSegmentStore.hpp"
 #include "segment/lowLevel/omSegmentChildren.hpp"
-#include "utility/omThreadPoolBatched.hpp"
+#include "threads/omThreadPoolBatched.hpp"
 #include "utility/omTimer.hpp"
 
 class OmSegmentGraphInitialLoad {

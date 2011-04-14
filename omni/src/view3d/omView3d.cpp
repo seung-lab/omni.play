@@ -2,7 +2,7 @@
 #include "common/omGl.h"
 #include "mesh/drawer/omMeshDrawer.h"
 #include "mesh/io/omMeshMetadata.hpp"
-#include "mesh/omMipMeshManager.h"
+#include "mesh/omMeshManager.h"
 #include "mesh/omVolumeCuller.h"
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSelected.hpp"
@@ -501,7 +501,7 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
             continue;
         }
 
-        boost::shared_ptr<OmVolumeCuller> newCuller =
+        om::shared_ptr<OmVolumeCuller> newCuller =
             culler.GetTransformedCuller(seg.Coords().GetNormToDataMatrix(),
                                         seg.Coords().GetNormToDataInvMatrix());
 

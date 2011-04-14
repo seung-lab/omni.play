@@ -7,7 +7,7 @@ class OmVoxelSetValueActionImpl;
 
 class OmVoxelSetValueAction : public OmUndoCommand {
 public:
-    OmVoxelSetValueAction(boost::shared_ptr<OmVoxelSetValueActionImpl> impl)
+    OmVoxelSetValueAction(om::shared_ptr<OmVoxelSetValueActionImpl> impl)
         : impl_(impl)
     {}
 
@@ -25,7 +25,7 @@ private:
     std::string Description();
     void save(const std::string&);
 
-    boost::shared_ptr<OmVoxelSetValueActionImpl> impl_;
+    om::shared_ptr<OmVoxelSetValueActionImpl> impl_;
 };
 
 #endif

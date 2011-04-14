@@ -36,11 +36,11 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
 OmViewGroupState::~OmViewGroupState()
 {}
 
-OmPooledTile<OmColorARGB>* OmViewGroupState::ColorTile(uint32_t const* imageData,
-                                                       const Vector2i& dims,
+OmPooledTile<OmColorARGB>* OmViewGroupState::ColorTile(uint32_t const*const imageData,
+                                                       const int tileDim,
                                                        const OmTileCoord& key)
 {
-    return colorizers_->ColorTile(imageData, dims, key);
+    return colorizers_->ColorTile(imageData, tileDim, key);
 }
 
 OmSegmentColorCacheType

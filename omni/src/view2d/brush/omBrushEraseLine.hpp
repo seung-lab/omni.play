@@ -6,11 +6,11 @@
 
 class OmBrushEraseLine {
 private:
-    const boost::shared_ptr<OmBrushOppInfo> info_;
+    const om::shared_ptr<OmBrushOppInfo> info_;
     const OmSegID segIDtoErase_;
 
 public:
-    OmBrushEraseLine(boost::shared_ptr<OmBrushOppInfo> info,
+    OmBrushEraseLine(om::shared_ptr<OmBrushOppInfo> info,
                      const OmSegID segIDtoErase)
         : info_(info)
         , segIDtoErase_(segIDtoErase)
@@ -23,7 +23,7 @@ public:
     {
         OmBrushOppLine lineOpp(info_);
 
-        boost::shared_ptr<om::pt3d_list_t> pts = lineOpp.GetPts(first, second);
+        om::shared_ptr<om::pt3d_list_t> pts = lineOpp.GetPts(first, second);
 
         OmBrushEraseUtils::ErasePts(info_.get(), pts.get(), segIDtoErase_);
     }

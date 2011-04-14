@@ -44,7 +44,7 @@ class OmHdf5Impl
 	OmDataWrapperPtr GetChunkDataType(const OmDataPath& path);
 
  private:
-	boost::shared_ptr<OmHdf5LowLevel> hdf_;
+	om::shared_ptr<OmHdf5LowLevel> hdf_;
 	const bool mReadOnly;
 	int fileId;
 };
