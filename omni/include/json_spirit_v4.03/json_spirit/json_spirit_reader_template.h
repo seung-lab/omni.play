@@ -210,6 +210,7 @@ namespace json_spirit
         void begin_obj( Char_type c )
         {
             assert( c == '{' );
+            static_cast<void>(c);
 
             begin_compound< Object_type >();
         }
@@ -217,6 +218,7 @@ namespace json_spirit
         void end_obj( Char_type c )
         {
             assert( c == '}' );
+            static_cast<void>(c);
 
             end_compound();
         }
@@ -224,6 +226,7 @@ namespace json_spirit
         void begin_array( Char_type c )
         {
             assert( c == '[' );
+            static_cast<void>(c);
 
             begin_compound< Array_type >();
         }
@@ -231,6 +234,7 @@ namespace json_spirit
         void end_array( Char_type c )
         {
             assert( c == ']' );
+            static_cast<void>(c);
 
             end_compound();
         }
@@ -250,6 +254,8 @@ namespace json_spirit
         void new_true( Iter_type begin, Iter_type end )
         {
             assert( is_eq( begin, end, "true" ) );
+            static_cast<void>(begin);
+            static_cast<void>(end);
 
             add_to_current( true );
         }
@@ -257,6 +263,8 @@ namespace json_spirit
         void new_false( Iter_type begin, Iter_type end )
         {
             assert( is_eq( begin, end, "false" ) );
+            static_cast<void>(begin);
+            static_cast<void>(end);
 
             add_to_current( false );
         }
@@ -264,6 +272,8 @@ namespace json_spirit
         void new_null( Iter_type begin, Iter_type end )
         {
             assert( is_eq( begin, end, "null" ) );
+            static_cast<void>(begin);
+            static_cast<void>(end);
 
             add_to_current( Value_type() );
         }

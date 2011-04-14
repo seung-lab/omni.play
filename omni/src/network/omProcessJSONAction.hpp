@@ -1,55 +1,105 @@
 #ifndef OM_PROCESS_JSON_ACTION_HPP
 #define OM_PROCESS_JSON_ACTION_HPP
 
-template <typename T>
-std::vector<T> getParamVec(const OmJson& json, const std::string name)
-{
-    boost::optional<std::vector<T> > params = json.Params<T>(name);
-    if(!params){
-        return std::vector<T>();;
-    }
-
-    return *params;
-}
+#include "network/omServiceObjects.hpp"
 
 class OmProcessJSONAction {
 public:
-    virtual std::string Process(const OmJson& json) = 0;
-};
-
-class OmJSONListProjects : public OmProcessJSONAction {
-public:
-    std::string Process(const OmJson&){
-        return "{ \"name\": \"hi from list projcets\", \"id\": 123 }";
-    }
-
-    static OmProcessJSONAction* CreateInstance(){
-        return new OmJSONListProjects();
-    }
-};
-
-class OmJSONGetSlice : public OmProcessJSONAction {
-public:
-    std::string Process(const OmJson& json)
+    std::string Process(const OmJson& json, OmServiceObjects* serviceObjects)
     {
         try {
-            std::vector<int> params = getParamVec<int>(json, "slice_num");
-            if(params.size() != 1){
-                return "fail vector size";
-            }
-
-            const int sliceNum = params[0];
-            std::cout << "sliceNum: " << sliceNum << "\n";
-
-            return "good";
+            return doProcess(json, serviceObjects);
 
         } catch(...){
             return "fail exception";
         }
     }
 
+private:
+    virtual std::string doProcess(const OmJson&, OmServiceObjects*) = 0;
+};
+
+class OmJSONGetSliceChannel : public OmProcessJSONAction {
+private:
+    std::string doProcess(const OmJson& json, OmServiceObjects* serviceObjects)
+    {
+        boost::optional<int> sliceNum = json.GetValue<int>("slice_num");
+
+        if(!sliceNum){
+            return "fail";
+        }
+
+        return serviceObjects->MakeImgFileChannel(*sliceNum);
+    }
+
+public:
     static OmProcessJSONAction* CreateInstance(){
-        return new OmJSONGetSlice();
+        return new OmJSONGetSliceChannel();
+    }
+};
+
+class OmJSONGetSliceSegmentation : public OmProcessJSONAction {
+private:
+    std::string doProcess(const OmJson& json, OmServiceObjects* serviceObjects)
+    {
+        boost::optional<int> sliceNum = json.GetValue<int>("slice_num");
+
+        if(!sliceNum){
+            return "fail";
+        }
+
+        return serviceObjects->MakeImgFileSegmentation(*sliceNum);
+    }
+
+public:
+    static OmProcessJSONAction* CreateInstance(){
+        return new OmJSONGetSliceSegmentation();
+    }
+};
+
+class OmJSONSelectSegment : public OmProcessJSONAction {
+private:
+    std::string doProcess(const OmJson& json, OmServiceObjects* serviceObjects)
+    {
+        boost::optional<int> sliceNum = json.GetValue<int>("slice_num");
+        boost::optional<int> x = json.GetValue<int>("x");
+        boost::optional<int> y = json.GetValue<int>("y");
+        boost::optional<int> h = json.GetValue<int>("h");
+        boost::optional<int> w = json.GetValue<int>("w");
+
+        if(!sliceNum || !x || !y || !w || !h){
+            return "fail";
+        }
+
+        return serviceObjects->SelectSegment(1, *sliceNum, *x, *y, *w, *h);
+    }
+
+public:
+    static OmProcessJSONAction* CreateInstance(){
+        return new OmJSONSelectSegment();
+    }
+};
+
+class OmJSONGetMeshData : public OmProcessJSONAction {
+private:
+    std::string doProcess(const OmJson& json, OmServiceObjects* serviceObjects)
+    {
+        boost::optional<int> segID = json.GetValue<int>("segID");
+        boost::optional<int> mipLevel = json.GetValue<int>("mip");
+        boost::optional<int> x = json.GetValue<int>("x");
+        boost::optional<int> y = json.GetValue<int>("y");
+        boost::optional<int> z = json.GetValue<int>("z");
+
+        if(!segID || !mipLevel || !x || !y || !z){
+            return "fail";
+        }
+
+        return serviceObjects->GetMeshData(1, *segID, *mipLevel, *x, *y, *z);
+    }
+
+public:
+    static OmProcessJSONAction* CreateInstance(){
+        return new OmJSONSelectSegment();
     }
 };
 

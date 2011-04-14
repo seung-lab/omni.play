@@ -3,25 +3,26 @@
 #include "common/omException.h"
 #include "gui/cacheMonitorDialog.h"
 #include "gui/groupsTable/groupsTable.h"
+#include "gui/mainWindow/inspectorWidget.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/menubar.h"
-#include "gui/mainWindow/inspectorWidget.h"
 #include "gui/preferences/preferences.h"
 #include "gui/recentFileList.h"
 #include "gui/toolbars/toolbarManager.h"
+#include "gui/viewGroup/viewGroup.h"
 #include "gui/widgets/omNewFileDialog.hpp"
 #include "gui/widgets/omTellInfo.hpp"
 #include "gui/widgets/omTellInfo.hpp"
 #include "project/omProject.h"
 #include "system/omAppState.hpp"
 #include "system/omConnect.hpp"
+#include "system/omGlobalKeyPress.hpp"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
 #include "system/omUndoStack.hpp"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
-#include "system/omGlobalKeyPress.hpp"
 
 MainWindow::MainWindow()
     : inspector_(NULL)
@@ -375,7 +376,7 @@ void MainWindow::open3dView()
             return;
         }
 
-        vgs_->addView3D();
+        vgs_->GetViewGroup()->AddView3D();
 
     } catch(OmException& e) {
         spawnErrorDialog(e);

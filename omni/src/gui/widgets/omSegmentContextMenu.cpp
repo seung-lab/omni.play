@@ -197,8 +197,7 @@ void OmSegmentContextMenu::showProperties()
         .arg(sdw.GetSegmentationID())
         .arg(rootSegID);
 
-    mViewGroupState->GetInspectorProperties()->
-        setOrReplaceWidget( new SegmentInspector(sdw, this), title);
+    OmEvents::UpdateSegmentPropBox(new SegmentInspector(sdw, this), title);
 }
 
 void OmSegmentContextMenu::addPropertiesActions()

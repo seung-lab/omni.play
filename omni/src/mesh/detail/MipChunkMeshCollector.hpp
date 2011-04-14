@@ -1,11 +1,10 @@
 #ifndef OMNI_SRC_MESH_DETAIL_MIP_CHUNK_MESH_COLLECTOR_HPP
 #define OMNI_SRC_MESH_DETAIL_MIP_CHUNK_MESH_COLLECTOR_HPP 1
 
+#include "TriStripCollector.hpp"
+#include "mesh/io/v2/omMeshWriterV2.hpp"
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshCoord.h"
-#include "TriStripCollector.hpp"
-
-#include "mesh/io/v2/omMeshWriterV2.hpp"
 
 #include <zi/bits/cstdint.hpp>
 #include <zi/bits/unordered_map.hpp>
@@ -18,42 +17,56 @@
 class MipChunkMeshCollector
 {
 private:
-    OmChunkCoord    mipCoordinate_ ;
-	boost::shared_ptr<OmMeshWriterV2> meshIO_;
-    zi::rwmutex        lock_   ;
+    const OmChunkCoord coord_ ;
+    OmMeshWriterV2 *const meshIO_;
 
-    zi::unordered_map< OmSegID, zi::shared_ptr< TriStripCollector > > meshes_;
+    zi::spinlock lock_;
+
+    typedef zi::unordered_map< OmSegID, TriStripCollector* > map_t;
+    map_t meshes_;
 
 public:
     MipChunkMeshCollector( const OmChunkCoord& coord,
-						   boost::shared_ptr<OmMeshWriterV2> meshIO )
-        : mipCoordinate_( coord ),
+                           OmMeshWriterV2* meshIO )
+        : coord_( coord ),
           meshIO_( meshIO ),
           lock_(),
           meshes_()
+    {}
+
+    ~MipChunkMeshCollector()
     {
+        FOR_EACH(iter, meshes_){
+            delete iter->second;
+        }
     }
 
     void registerMeshPart( const OmSegID segID )
     {
-        zi::rwmutex::write_guard g( lock_ );
-        if ( meshes_.count( segID ) == 0 )
+        TriStripCollector* tsc = NULL;
+
         {
-            meshes_.insert( std::make_pair
-                            ( segID, zi::shared_ptr< TriStripCollector >
-                              ( new TriStripCollector )));
+            zi::guard g( lock_ );
+
+            if ( 0 == meshes_.count( segID ) )
+            {
+                tsc = meshes_[ segID ] = new TriStripCollector();
+
+            } else {
+                tsc = meshes_[ segID ];
+            }
         }
 
-        meshes_[ segID ]->registerPart();
+        tsc->registerPart();
     }
 
-    zi::shared_ptr< TriStripCollector > getMesh( const OmSegID segID )
+    TriStripCollector* getMesh( const OmSegID segID )
     {
-        zi::rwmutex::read_guard g( lock_ );
+        zi::guard g( lock_ );
 
         if ( meshes_.count( segID ) == 0 )
         {
-            return zi::shared_ptr< TriStripCollector >();
+            return NULL;
         }
 
         return meshes_[ segID ];
@@ -61,21 +74,17 @@ public:
 
     void save( const OmSegID segID )
     {
-        zi::shared_ptr< TriStripCollector > mesh;
+        TriStripCollector* mesh = getMesh( segID );
+
+        if(!mesh)
         {
-            zi::rwmutex::read_guard g( lock_ );
-            if ( meshes_.count( segID ) )
-            {
-                mesh = meshes_[ segID ];
-            }
-            else
-            {
-                return;
-            }
+            std::cout << "skipping save for segID " << segID
+                      << " in coord " << coord_ << "\n";
+            return;
         }
 
-		meshIO_->Save(segID, mipCoordinate_, mesh,
-					  om::BUFFER_WRITES, om::OVERWRITE);
+        meshIO_->Save(segID, coord_, mesh,
+                      om::BUFFER_WRITES, om::OVERWRITE);
     }
 };
 

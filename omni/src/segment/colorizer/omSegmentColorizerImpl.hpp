@@ -97,7 +97,7 @@ private:
 
         OmSegment* segRoot = seg;
         if(segRoot->getParent()){
-            segRoot = segments_->GetSegmentUnsafe(segments_->findRootIDcached(segID));
+            segRoot = segments_->GetSegmentUnsafe(segments_->findRootID(segID));
         }
 
         const OmColor segRootColor = segRoot->GetColorInt();

@@ -66,7 +66,7 @@ public:
             }
         }
 
-        const OmSegID rootSegID = segments_->findRootID(segID);
+        const OmSegID rootSegID = segments_->findRootIDnoCache(segID);
 
         {
             zi::spinlock::pool<cache_root_segment_id_initial_tag>::guard g(segID);

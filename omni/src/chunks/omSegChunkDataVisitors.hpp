@@ -4,11 +4,11 @@
 #include "chunks/omRawChunk.hpp"
 #include "chunks/omSegChunk.h"
 #include "segment/omSegments.h"
+#include "system/cache/omVolSliceCache.hpp"
 #include "utility/omChunkVoxelWalker.hpp"
 #include "volume/build/omProcessSegmentationChunk.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omSegmentation.h"
-#include "system/cache/omVolSliceCache.hpp"
 
 class ExtractDataSlice32bitVisitor
     : public boost::static_visitor<boost::shared_ptr<uint32_t> >{
@@ -41,12 +41,19 @@ private:
     template <typename T>
     inline boost::shared_ptr<T> getCachedRawSlice(T* d) const
     {
+        static zi::semaphore throttleReads(2);
+
         boost::shared_ptr<T> dataPtr =
             vol_->SliceCache()->Get<T>(coord_, depth_, plane_);
 
-        if(!dataPtr){
+        if(!dataPtr)
+        {
             OmImage<T, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
+
+            throttleReads.acquire(1);
             OmImage<T, 2> slice = chunk.getSlice(plane_, depth_);
+            throttleReads.release(1);
+
             dataPtr = slice.getMallocCopyOfData();
             vol_->SliceCache()->Set(coord_, depth_, plane_, dataPtr);
         }

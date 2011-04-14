@@ -142,7 +142,8 @@ void OmMipMesh::makeDisplayList()
     glEnableClientState(GL_VERTEX_ARRAY);
 
     // draw mesh elements
-    if(data_->StripDataCount()) {
+    if(data_->StripDataCount())
+    {
         uint32_t* stripOffsetSizeData = data_->StripData();
         for (uint32_t idx = 0; idx < data_->StripDataCount(); ++idx) {
             glDrawElements(GL_TRIANGLE_STRIP, //triangle strip
@@ -152,7 +153,9 @@ void OmMipMesh::makeDisplayList()
         }
     }
 
-    if(data_->TrianDataCount()) {
+    // old, VTK-based meshes
+    if(data_->TrianDataCount())
+    {
         uint32_t* trianOffsetSizeData = data_->TrianData();
         for (uint32_t idx = 0; idx < data_->TrianDataCount(); ++idx) {
             glDrawElements(GL_TRIANGLES, //triangle trian

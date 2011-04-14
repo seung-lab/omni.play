@@ -1,21 +1,21 @@
 #ifndef OM_MEM_MAPPED_ALLOC_FILE_HPP
 #define OM_MEM_MAPPED_ALLOC_FILE_HPP
 
-#include "utility/omStringHelpers.h"
-#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "chunks/omChunk.h"
-#include "volume/omSegmentation.h"
 #include "chunks/omChunkCoord.h"
+#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
+#include "utility/omStringHelpers.h"
+#include "volume/omSegmentation.h"
 
 class OmMemMappedAllocFile {
 private:
-    OmSegmentation* segmentation_;
+    OmSegmentation *const segmentation_;
     const OmChunkCoord coord_;
     const double threshold_;
     const QString fnp_;
 
-    boost::shared_ptr<QFile> file_;
+    boost::scoped_ptr<QFile> file_;
     OmMeshDataEntry* table_;
     uint32_t numEntries_;
 
@@ -38,6 +38,26 @@ public:
 
         setupFile();
         return true;
+    }
+
+    bool CheckEverythingWasMeshed()
+    {
+        bool allGood = true;
+
+        for(uint32_t i = 0; i < numEntries_; ++i)
+        {
+            if(!table_[i].wasMeshed)
+            {
+                allGood = false;
+
+                std::cout << "missing mesh: "
+                          << "segID " << table_[i].segID
+                          << " in coord " << coord_
+                          << "\n";
+            }
+        }
+
+        return allGood;
     }
 
     OmMeshDataEntry* Find(const OmMeshDataEntry& entry)
@@ -79,7 +99,8 @@ private:
 
     void map()
     {
-        file_ = boost::make_shared<QFile>(fnp_);
+        file_.reset(new QFile(fnp_));
+
         if(!file_->exists()){
             throw OmIoException("file doesn't exist", fnp_);
         }
@@ -104,7 +125,8 @@ private:
         const ChunkUniqueValues segIDs =
             segmentation_->ChunkUniqueValues()->Values(coord_, threshold_);
 
-        file_ = boost::make_shared<QFile>(fnp_);
+        file_.reset(new QFile(fnp_));
+
         if(!file_->open(QIODevice::ReadWrite)) {
             throw OmIoException("could not open", fnp_);
         }
@@ -124,10 +146,10 @@ private:
         resetTable(segIDs);
         sortTable();
 
-        std::cout << "in chunk " << coord_
-                  << ", found "
-                  << om::string::humanizeNum(numEntries_)
-                  << " segment IDs\n";
+        // std::cout << "in chunk " << coord_
+        //           << ", found "
+        //           << om::string::humanizeNum(numEntries_)
+        //           << " segment IDs\n";
     }
 
     struct ResetEntry {

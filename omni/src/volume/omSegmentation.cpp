@@ -61,7 +61,7 @@ void OmSegmentation::loadVolData()
 {
     if(IsBuilt())
     {
-        chunkCache_->UpdateFromVolResize();
+        UpdateFromVolResize();
         volData_->load(this);
         volSliceCache_->Load();
     }
@@ -183,10 +183,16 @@ void OmSegmentation::SetVoxelValue(const DataCoord& vox, const uint32_t val)
 void OmSegmentation::GetChunk(OmChunkPtr& ptr, const OmChunkCoord& coord)
 {
     OmSegChunkPtr seg;
-    chunkCache_->Get(seg, coord);
+    chunkCache_->GetChunk(seg, coord);
     ptr = seg;
 }
 
 void OmSegmentation::GetChunk(OmSegChunkPtr& ptr, const OmChunkCoord& coord){
-    chunkCache_->Get(ptr, coord);
+    chunkCache_->GetChunk(ptr, coord);
+}
+
+void OmSegmentation::UpdateFromVolResize()
+{
+    chunkCache_->UpdateFromVolResize();
+    uniqueChunkValues_->UpdateFromVolResize();
 }

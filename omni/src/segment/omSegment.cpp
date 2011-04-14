@@ -102,7 +102,7 @@ OmID OmSegment::GetSegmentationID(){
 }
 
 OmSegID OmSegment::RootID(){
-    return segments_->findRootIDcached(data_->value);
+    return segments_->findRootID(data_->value);
 }
 
 const segChildCont_t& OmSegment::GetChildren(){

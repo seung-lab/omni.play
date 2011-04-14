@@ -169,7 +169,7 @@ public:
 
     T inc()
     {
-        return static_cast< T >( zi::atomic::increment_swap( &val_ ) );
+        return static_cast< T >( zi::atomic::increment_swap( &val_ ) ) + 1;
     }
 
     LockedIntegralNumber& operator+= ( const T &val )

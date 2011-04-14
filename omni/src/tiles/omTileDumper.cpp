@@ -80,9 +80,9 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel,
     OmTileCache::doGet(tile, tileCoord, om::BLOCKING);
 
     const OmTextureIDPtr& texture = tile->GetTexture();
+    const int numBytes = tile->NumBytes();
 
     const char* tileData = (const char*)texture->GetTileData();
-    const int numBytes = texture->NumBytes();
     const QImage::Format qimageFormat = texture->GetQTimageFormat();
 
     QImage img = QImage((const uchar*)tileData,

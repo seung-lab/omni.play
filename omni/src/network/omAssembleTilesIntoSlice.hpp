@@ -25,9 +25,6 @@ private:
 
     OmThreadPool pool_;
 
-    std::map<int, std::string> sliceNumToFileUUID_;
-    zi::spinlock mapLock_;
-
 public:
     OmAssembleTilesIntoSlice()
         : vgs_(NULL)
@@ -37,40 +34,37 @@ public:
         pool_.start();
     }
 
-    QString MakeImgFiles(const int sliceNum){
-        return QString::fromStdString(makeImgFiles(sliceNum));
-    }
-
-private:
-
-    std::string makeImgFiles(const int sliceNum)
+    std::string MakeImgFileChannel(const int sliceNum)
     {
         const OmUUID uuid;
-
-        {
-            zi::guard g(mapLock_);
-            if(sliceNumToFileUUID_.count(sliceNum)){
-                return sliceNumToFileUUID_[sliceNum];
-            }
-        }
 
         {
             OmTimer timer;
 
             makeImgFile(sliceNum, uuid, cdw_);
-            makeImgFile(sliceNum, uuid, sdw_);
 
-            timer.Print("\tdone making image pair");
-        }
-
-        {
-            zi::guard g(mapLock_);
-            sliceNumToFileUUID_[sliceNum] = uuid.Str();
+            timer.Print("\tdone making channel image");
         }
 
         return uuid.Str();
     }
 
+    std::string MakeImgFileSegmentation(const int sliceNum)
+    {
+        const OmUUID uuid;
+
+        {
+            OmTimer timer;
+
+            makeImgFile(sliceNum, uuid, sdw_);
+
+            timer.Print("\tdone making segmentation image");
+        }
+
+        return uuid.Str();
+    }
+
+private:
     template <typename T>
     QString fileName(T* vol, const OmUUID& uuid){
         return doMakeFileName(vol->GetNameHyphen(), uuid);
@@ -246,7 +240,7 @@ private:
                                     freshness(vol),
                                     &vgs_,
                                     XY_VIEW,
-                                    vol->getVolumeType());
+                                    CHANNEL);
 
         OmTilePtr tile;
         OmTileCache::doGet(tile, tileCoord, om::BLOCKING);

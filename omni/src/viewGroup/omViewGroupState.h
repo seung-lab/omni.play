@@ -3,7 +3,6 @@
 
 #include "system/omManageableObject.h"
 
-class FilterWidget;
 class InspectorProperties;
 class MainWindow;
 class OmColorizers;
@@ -23,26 +22,9 @@ public:
     OmViewGroupState(MainWindow* mw);
     virtual ~OmViewGroupState();
 
-    void SetInspectorProperties(InspectorProperties* ip) {
-        mInspectorProperties = ip;
+    ViewGroup* GetViewGroup(){
+        return viewGroup_.get();
     }
-    InspectorProperties* GetInspectorProperties() {
-        return mInspectorProperties;
-    }
-
-    void SetFilterWidget(FilterWidget* f){
-        mFilterWidget = f;
-    }
-    FilterWidget* GetFilterWidget(){
-        return mFilterWidget;
-    }
-
-    // GUI state
-    void addView2Dchannel(OmID chan_id, ViewType vtype);
-    void addView2Dsegmentation(OmID segmentation_id, ViewType vtype);
-    void addView3D();
-    void AddAllViews(OmID channelID, OmID segmentationID);
-    void AddXYView(const OmID channelID, const OmID segmentationID);
 
     //viewbox state
     inline OmViewGroupView2dState* View2dState() {
@@ -102,16 +84,10 @@ public:
                                          const Vector2i&,
                                          const OmTileCoord&);
 private:
-    MainWindow* mMainWindow;
-    FilterWidget* mFilterWidget;
-    boost::scoped_ptr<ViewGroup> mViewGroup;
-    InspectorProperties* mInspectorProperties;
-
+    boost::scoped_ptr<ViewGroup> viewGroup_;
     boost::scoped_ptr<OmViewGroupView2dState> view2dState_;
     boost::scoped_ptr<OmColorizers> colorizers_;
-
     boost::scoped_ptr<OmZoomLevel> zoomLevel_;
-
     boost::scoped_ptr<OmSplitting> splitting_;
     boost::scoped_ptr<OmCutting> cutting_;
 

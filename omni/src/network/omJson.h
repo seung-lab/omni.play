@@ -38,6 +38,11 @@ public:
         return om::json::TypeStr(value_);
     }
 
+    template <typename T>
+    boost::optional<T> GetValue(const std::string& name) const {
+        return om::json::GetValue<T>(value_, name);
+    }
+
     std::string Write(/*type....*/)
     {
         om::json::writer_t out;

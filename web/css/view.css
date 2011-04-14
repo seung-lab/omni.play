@@ -101,14 +101,17 @@
 .view_canvas,
 .channel_canvas,
 .segmentation_canvas {
-	width: 600px;
-	height: 600px;
+/*	width: 600px;
+	height: 600px;*/
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
 	
 	position: relative;
+	
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .channel_canvas,

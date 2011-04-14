@@ -1,7 +1,7 @@
 #include "common/omDebug.h"
 #include "events/omEvents.h"
 #include "gui/toolbars/toolbarManager.h"
-#include "gui/viewGroup.h"
+#include "gui/viewGroup/viewGroup.h"
 #include "segment/colorizer/omSegmentColorizer.h"
 #include "segment/omSegment.h"
 #include "system/cache/omCacheManager.h"
@@ -15,11 +15,9 @@
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
 
-OmViewGroupState::OmViewGroupState(MainWindow* mw)
+OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     : OmManageableObject()
-    , mMainWindow(mw)
-    , mFilterWidget(NULL)
-    , mViewGroup(new ViewGroup(mMainWindow, this))
+    , viewGroup_(new ViewGroup(mainWindow, this))
     , view2dState_(new OmViewGroupView2dState())
     , colorizers_(new OmColorizers(this))
     , zoomLevel_(new OmZoomLevel())
@@ -33,37 +31,10 @@ OmViewGroupState::OmViewGroupState(MainWindow* mw)
     mShowValid = false;
     mShowValidInColor = false;
     mShowFilterInColor = false;
-
-    //debug(viewgroupstate, "constructed viewGroupState\n");
 }
 
 OmViewGroupState::~OmViewGroupState()
 {}
-
-// GUI state
-void OmViewGroupState::addView2Dchannel(OmID chan_id, ViewType vtype)
-{
-    mViewGroup->AddView2Dchannel(chan_id, vtype);
-}
-
-void OmViewGroupState::addView2Dsegmentation(OmID segmentation_id,
-                                             ViewType vtype)
-{
-    mViewGroup->AddView2Dsegmentation(segmentation_id, vtype);
-}
-
-void OmViewGroupState::addView3D()
-{
-    mViewGroup->AddView3D();
-}
-
-void OmViewGroupState::AddAllViews(OmID channelID, OmID segmentationID){
-    mViewGroup->AddAllViews(channelID, segmentationID);
-}
-
-void OmViewGroupState::AddXYView(const OmID channelID, const OmID segmentationID){
-    mViewGroup->AddXYView(channelID, segmentationID);
-}
 
 OmPooledTile<OmColorARGB>* OmViewGroupState::ColorTile(uint32_t const* imageData,
                                                        const Vector2i& dims,
@@ -147,5 +118,3 @@ bool OmViewGroupState::shouldVolumeBeShownBroken()
 void OmViewGroupState::setTool(const om::tool::mode tool){
     toolBarManager_->SetTool(tool);
 }
-
-

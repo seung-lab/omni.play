@@ -15,8 +15,8 @@
 enum OmEventClass { OM_VIEW_EVENT_CLASS = 2000,
                     OM_SEGMENT_EVENT_CLASS = 3000,
                     OM_VIEW_3D_EVENT_CLASS = 4000,
+                    OM_USER_INTERFACE_EVENT_CLASS = 5000,
                     OM_TOOL_MODE_EVENT_CLASS = 6000,
-                    OM_PROGRESS_EVENT_CLASS = 7000,
                     OM_PREFERENCE_EVENT_CLASS = 8000};
 
 class OmEventListener;

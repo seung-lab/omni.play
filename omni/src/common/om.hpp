@@ -69,19 +69,20 @@ enum ShouldForce {
     FORCE,
     DONT_FORCE
 };
-
 enum Direction {
     LEFT,
     RIGHT,
     UP,
     DOWN
 };
-
 enum Safe {
     SAFE,
     NOT_SAFE
 };
-
+enum ReadOrReread {
+    READ,
+    REREAD
+};
 // WARNING: used for serialization by OmSegmentPage,
 //  and values should fit inside uint8_t
 enum SegListType {

@@ -52,13 +52,12 @@ void OmView2d::resizeEvent(QResizeEvent* event)
     OmEvents::ViewCenterChanged();
 
     resizeGL(event->size());
+
     Redraw();
 }
 
 void OmView2d::resizeGL(const QSize& size)
 {
-    state_->touchFreshnessAndRedraw2d();
-
     resetPbuffer(size);
 
     state_->setTotalViewport(size.width(), size.height());
@@ -66,7 +65,7 @@ void OmView2d::resizeGL(const QSize& size)
     state_->SetViewSliceOnPan();
 }
 
-void OmView2d::paintEvent(QPaintEvent *){
+void OmView2d::paintEvent(QPaintEvent*){
     screenPainter_->FullRedraw2d();
 }
 
@@ -86,12 +85,6 @@ QSize OmView2d::sizeHint() const {
 
 void OmView2d::mousePressEvent(QMouseEvent* event){
     mouseEvents_->Press(event);
-}
-
-void OmView2d::doRedraw2d()
-{
-    state_->touchFreshnessAndRedraw2d();
-    Redraw();
 }
 
 void OmView2d::wheelEvent(QWheelEvent* event){
@@ -117,7 +110,7 @@ void OmView2d::resetWindow()
 {
     state_->ResetWindowState();
     OmEvents::ViewCenterChanged();
-    doRedraw2d();
+    Redraw();
 }
 
 void OmView2d::enterEvent(QEvent*)

@@ -32,8 +32,10 @@ public:
     std::string GetName();
     std::string GetNameHyphen();
     std::string GetDirectoryPath();
+
     void loadVolData();
     void loadVolDataIfFoldersExist();
+    void UpdateFromVolResize();
 
     ObjectType getVolumeType() const {
         return CHANNEL;

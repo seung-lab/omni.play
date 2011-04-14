@@ -2,74 +2,216 @@
 #define OM_THREADED_CACHE_H
 
 #include "common/om.hpp"
-#include "utility/omLockedPODs.hpp"
-#include "system/cache/omLockedCacheObjects.hpp"
-#include "utility/omThreadPool.hpp"
 #include "system/cache/omCacheBase.h"
+#include "system/cache/omCacheManager.h"
+#include "system/cache/omLockedCacheObjects.hpp"
+#include "utility/omLockedObjects.h"
+#include "utility/omLockedPODs.hpp"
+#include "utility/omThreadPool.hpp"
 #include "zi/omMutex.h"
 
-template <typename T> class LockedList;
+#include <zi/system.hpp>
 
 /**
  *  Brett Warne - bwarne@mit.edu - 3/12/09
  */
 
-template <typename KEY, typename PTR> class OmHandleCacheMissTask;
-
 template <typename KEY, typename PTR>
 class OmThreadedCache : public OmCacheBase {
+private:
+    const om::ShouldThrottle throttle_;
+
+    OmThreadPool threadPool_;
+    LockedInt64 curSize_;
+
+    LockedCacheMap<KEY, PTR> cache_;
+    LockedKeySet<KEY> currentlyFetching_;
+    LockedBool killingCache_;
+
+    struct OldCache {
+        std::map<KEY,PTR> map;
+        KeyMultiIndex<KEY> list;
+    };
+    LockedList<boost::shared_ptr<OldCache> > cachesToClean_;
+
+    int numThreads()
+    {
+        int num = zi::system::cpu_count;
+        if(num > 8){
+            return 8;
+        }
+        if(num < 2){
+            return 2;
+        }
+        return num;
+    }
+
 public:
     OmThreadedCache(const om::CacheGroup group,
                     const std::string& name,
-                    const int numThreads,
-                    const om::ShouldThrottle,
-                    const om::ShouldFifo,
-                    const int64_t entrySize);
+                    const om::ShouldThrottle throttle)
+        : OmCacheBase(name, group)
+        , throttle_(throttle)
+    {
+        OmCacheManager::AddCache(group, this);
+        threadPool_.start(numThreads());
+    }
 
-    virtual ~OmThreadedCache();
+    virtual ~OmThreadedCache()
+    {
+        closeDownThreads();
+        OmCacheManager::RemoveCache(cacheGroup_, this);
+    }
 
-    virtual void Get(PTR&, const KEY&, const om::Blocking);
+    virtual void Get(PTR& ptr, const KEY& key, const om::Blocking blocking)
+    {
+        if(cache_.assignIfHadKey(key, ptr)){
+            return;
+        }
+
+        if(om::BLOCKING == blocking)
+        {
+            ptr = loadItem(key);
+            return;
+        }
+
+        if(om::THROTTLE == throttle_ &&
+           zi::system::cpu_count == threadPool_.getTaskCount())
+        {
+            return; // restrict number of tasks to process
+        }
+
+        if(currentlyFetching_.insertSinceDidNotHaveKey(key))
+        {
+            threadPool_.addTaskBack(
+                zi::run_fn(
+                    zi::bind(&OmThreadedCache<KEY,PTR>::handleCacheMissThread,
+                             this, key)));
+        }
+    }
+
     virtual PTR HandleCacheMiss(const KEY& key) = 0;
 
-    void BlockingCreate(PTR&, const KEY&);
-    void Prefetch(const KEY& key);
+    void BlockingCreate(PTR& ptr, const KEY& key){
+        ptr = loadItem(key);
+    }
 
-    size_t Remove(const KEY& key);
-    void RemoveOldest(const int64_t numBytesToRemove);
-    void Clean();
-    void Clear();
-    void InvalidateCache();
+    void Prefetch(const KEY& key){
+        prefetchItem(key);
+    }
 
-    int64_t GetCacheSize() const;
+    void Remove(const KEY& key)
+    {
+        PTR ptr = cache_.erase(key);
+        if(!ptr){
+            return;
+        }
+        curSize_.sub(ptr->NumBytes());
+    }
 
-    void closeDownThreads();
+    void RemoveOldest(const int64_t numBytesToRemove)
+    {
+        int64_t numBytesRemoved = 0;
+
+        while(numBytesRemoved < numBytesToRemove)
+        {
+            if(cache_.empty()){
+                return;
+            }
+
+            const PTR ptr = cache_.remove_oldest();
+
+            if(!ptr){
+                continue;
+            }
+
+            const int64_t removedBytes = ptr->NumBytes();
+            numBytesRemoved += removedBytes;
+            curSize_.sub(removedBytes);
+        }
+    }
+
+    void Clean()
+    {
+        if(cachesToClean_.empty()){
+            return;
+        }
+
+        // avoid contention on cacheToClean by swapping in new, empty list
+        std::list<boost::shared_ptr<OldCache> > oldCaches;
+        cachesToClean_.swap(oldCaches);
+    }
+
+    void Clear()
+    {
+        cache_.clear();
+        currentlyFetching_.clear();
+        curSize_.set(0);
+    }
+
+    void ClearFetchQueue()
+    {
+        threadPool_.clear();
+        currentlyFetching_.clear();
+    }
+
+    void InvalidateCache()
+    {
+        ClearFetchQueue();
+
+        // add current cache to list to be cleaned later by OmCacheMan thread
+        boost::shared_ptr<OldCache> cache(new OldCache());
+
+        cache_.swap(cache->map, cache->list);
+        cachesToClean_.push_back(cache);
+
+        curSize_.set(0);
+    }
+
+    int64_t GetCacheSize() const {
+        return curSize_.get();
+    }
+
+    void closeDownThreads()
+    {
+        killingCache_.set(true);
+        threadPool_.stop();
+        cache_.clear();
+        currentlyFetching_.clear();
+    }
 
 private:
-    typedef OmHandleCacheMissTask<KEY, PTR> CacheMissHandler;
-    typedef boost::shared_ptr<CacheMissHandler> CacheMissHandlerPtr;
-    typedef boost::shared_ptr<std::map<KEY,PTR> > OldCachePtr;
+    void handleCacheMissThread(const KEY key)
+    {
+        if(killingCache_.get()){
+            return;
+        }
 
-    const int numThreads_;
-    const om::ShouldThrottle throttle_;
-    const om::ShouldFifo fifo_;
-    const int64_t entrySize_;
+        loadItem(key);
+    }
 
-    LockedInt64 curSize_;
-    OmThreadPool threadPool_;
+    PTR loadItem(const KEY& key)
+    {
+        PTR ptr = HandleCacheMiss(key);
+        const bool wasInserted = cache_.set(key, ptr);
+        if(wasInserted){
+            curSize_.add(ptr->NumBytes());
+        }
+        return ptr;
+    }
 
-    zi::rwmutex mutex_;
-    LockedKeySet<KEY> currentlyFetching_;
-    LockedCacheMap<KEY, PTR> cache_;
-    LockedKeyMultiIndex<KEY> keyAccessList_;
-    LockedBool killingCache_;
+    void prefetchItem(const KEY& key)
+    {
+        if(cache_.contains(key)){
+            return;
+        }
 
-    boost::scoped_ptr<LockedList<OldCachePtr> > cachesToClean_;
-
-    void get(PTR&, const KEY&, const bool);
-    void updateSize(const int64_t delta);
-    int64_t doRemoveOldest();
-
-    template <typename T1, typename T2> friend class OmHandleCacheMissTask;
+        PTR ptr = HandleCacheMiss(key);
+        const bool wasInserted = cache_.setPrefetch(key, ptr);
+        if(wasInserted){
+            curSize_.add(ptr->NumBytes());
+        }
+    }
 };
 
 #endif

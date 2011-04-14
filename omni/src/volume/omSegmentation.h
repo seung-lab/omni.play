@@ -44,6 +44,7 @@ public:
 
     void loadVolData();
     void loadVolDataIfFoldersExist();
+    void UpdateFromVolResize();
 
     inline ObjectType getVolumeType() const {
         return SEGMENTATION;

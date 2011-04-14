@@ -1,6 +1,7 @@
 #ifndef OM_CHUNK_UNIQUE_VALUES_PER_THRESHOLD_HPP
 #define OM_CHUNK_UNIQUE_VALUES_PER_THRESHOLD_HPP
 
+#include "common/om.hpp"
 #include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/image/omImage.hpp"
@@ -19,7 +20,7 @@ private:
     boost::shared_ptr<uint32_t> values_;
     size_t numElements_;
 
-    zi::rwmutex lock_;
+    zi::rwmutex mutex_;
 
 public:
     OmChunkUniqueValuesPerThreshold(OmSegmentation* segmentation,
@@ -34,12 +35,20 @@ public:
 
     ChunkUniqueValues Values()
     {
-        zi::rwmutex::write_guard g(lock_);
+        zi::rwmutex::write_guard g(mutex_);
 
         if(!values_){
             load();
         }
+
         return ChunkUniqueValues(values_, numElements_);
+    }
+
+    void RereadChunk()
+    {
+        zi::rwmutex::write_guard g(mutex_);
+
+        findValues();
     }
 
 private:
@@ -109,6 +118,7 @@ private:
     void store()
     {
         QFile file(fnp_);
+
         if(!file.open(QIODevice::WriteOnly)) {
             throw OmIoException("could not open", fnp_);
         }

@@ -6,10 +6,7 @@
 OmMeshCache::OmMeshCache(OmMipMeshManager* parent)
     : OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr>(om::MESH_CACHE,
                                                     "Meshes",
-                                                    zi::system::cpu_count,
-                                                    om::THROTTLE,
-                                                    om::FIFO,
-                                                    0)
+                                                    om::THROTTLE)
     , meshMan_(parent)
 {}
 

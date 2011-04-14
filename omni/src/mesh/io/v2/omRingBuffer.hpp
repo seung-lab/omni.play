@@ -2,7 +2,6 @@
 #define OM_RING_BUFFER_HPP
 
 #include "common/omCommon.h"
-#include "utility/omTimer.hpp"
 #include "zi/omUtility.h"
 #include "zi/omMutex.h"
 
@@ -28,16 +27,14 @@ public:
     {
         zi::rwmutex::write_guard g(lock_);
 
-        OmTimer timer;
-
         if(item == buffer_[curPos_]){
             return;
         }
 
-        if(buffer_[curPos_]){
+        if(buffer_[curPos_])
+        {
             //printf("ring buffer is unmapping file...");
             buffer_[curPos_]->Unmap();
-            timer.PrintDone();
         }
 
         buffer_[curPos_] = item;

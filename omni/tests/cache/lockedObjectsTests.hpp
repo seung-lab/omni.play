@@ -13,7 +13,6 @@ public:
     void RunAll()
     {
         testMuiltiIndex<LockedKeyMultiIndex<int> >();
-        testMuiltiIndex<LockedKeyList<int> >();
 
         //runPerfTests();
     }
@@ -24,7 +23,6 @@ private:
     {
         const uint64_t num = 200;
         runNtimes<LockedKeyMultiIndex<int> >(num);
-        runNtimes<LockedKeyList<int> >(num);
     }
 
     template <typename T>

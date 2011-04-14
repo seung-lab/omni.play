@@ -281,13 +281,6 @@ public:
         return vol_->Coords().GetRootMipLevel();
     }
 
-    //refresh
-    static void touchFreshnessAndRedraw2d()
-    {
-        OmCacheManager::TouchFreshness();
-        OmEvents::Redraw2d();
-    }
-
     // depth-related computation helpers
     template <typename T>
     inline Vector3<T> makeViewTypeVector3(const Vector3<T>& vec) const {

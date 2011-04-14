@@ -35,7 +35,7 @@ public:
         }
 
         const OmSegID segIDtoReplace =
-            segments_->findRootIDcached(vol_.GetVoxelValue(v));
+            segments_->findRootID(vol_.GetVoxelValue(v));
 
         vol_.SetVoxelValue(v, newSegID_);
 
@@ -59,6 +59,8 @@ public:
         semaphore_.acquire(voxels.size());
 
         clearCaches();
+
+        OmEvents::Redraw2d();
     }
 
 private:
@@ -86,7 +88,7 @@ private:
             }
 
             if(segIDtoReplace != curSegID &&
-               segIDtoReplace != segments_->findRootIDcached(curSegID))
+               segIDtoReplace != segments_->findRootID(curSegID))
             {
                 continue;
             }

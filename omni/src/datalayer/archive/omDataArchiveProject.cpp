@@ -439,8 +439,7 @@ QDataStream &operator>>(QDataStream& in, OmSegments& sc)
 
 QDataStream &operator<<(QDataStream& out, const OmSegmentsImpl& sc)
 {
-    OmSegmentsStore* store = sc.segmentPages_;
-    OmPagingPtrStore* segmentPages = store->segmentPages_;
+    OmPagingPtrStore* segmentPages = sc.store_->segmentPages_;
     out << (*segmentPages);
 
     out << false; // TODO: DEAD: was sc.segmentSelection_->allSelected_;
@@ -460,8 +459,7 @@ QDataStream &operator<<(QDataStream& out, const OmSegmentsImpl& sc)
 
 QDataStream &operator>>(QDataStream& in, OmSegmentsImpl& sc)
 {
-    OmSegmentsStore* store = sc.segmentPages_;
-    OmPagingPtrStore* segmentPages = store->segmentPages_;
+    OmPagingPtrStore* segmentPages =  sc.store_->segmentPages_;
     in >> (*segmentPages);
 
     bool dead;

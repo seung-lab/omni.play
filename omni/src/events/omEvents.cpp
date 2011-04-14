@@ -1,10 +1,11 @@
+#include "events/details/omEvent.h"
+#include "events/details/omEventManager.h"
 #include "events/details/omPreferenceEvent.h"
 #include "events/details/omSegmentEvent.h"
 #include "events/details/omToolModeEvent.h"
+#include "events/details/omUserInterfaceEvent.h"
 #include "events/details/omView3dEvent.h"
 #include "events/details/omViewEvent.h"
-#include "events/details/omEvent.h"
-#include "events/details/omEventManager.h"
 #include "events/omEvents.h"
 
 #define POST OmEventManager::PostEvent
@@ -59,6 +60,10 @@ void OmEvents::ViewPosChanged(){
 
 void OmEvents::PreferenceChange(const int key){
     POST(new OmPreferenceEvent(OmPreferenceEvent::PREFERENCE_CHANGE, key));
+}
+
+void OmEvents::UpdateSegmentPropBox(QWidget* widget, const QString& title){
+    POST(new OmUserInterfaceEvent(widget, title));
 }
 
 #undef POST

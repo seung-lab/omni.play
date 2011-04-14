@@ -41,10 +41,6 @@ void OmTileCache::doGet(OmTilePtr& tile,
     instance().impl_->doGet(tile, key, blocking);
 }
 
-void OmTileCache::RemoveDataCoord(const DataCoord & coord){
-    instance().impl_->RemoveDataCoord(coord);
-}
-
 void OmTileCache::RegisterDrawer(OmTileDrawer* d){
     instance().impl_->RegisterDrawer(d);
 }

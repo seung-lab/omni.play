@@ -47,7 +47,6 @@ public:
     }
 
     void resetWindow();
-    void doRedraw2d();
 
     void Redraw();
     void RedrawBlocking();

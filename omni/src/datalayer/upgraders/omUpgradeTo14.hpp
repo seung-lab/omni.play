@@ -55,6 +55,8 @@ private:
 
         // allocate mem-mapped files...
         vol.VolData()->create(&vol, levelsAndDims);
+
+        vol.UpdateFromVolResize();
     }
 
     template <typename T>
@@ -73,7 +75,8 @@ private:
             boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
                 vol.GetMipChunkCoords(level);
 
-            FOR_EACH(iter, *coordsPtr){
+            FOR_EACH(iter, *coordsPtr)
+            {
                 ++counter;
                 printf("\rcopying chunk %d of %d...", counter, numChunks);
                 fflush(stdout);

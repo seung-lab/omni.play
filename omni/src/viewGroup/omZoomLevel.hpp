@@ -50,37 +50,37 @@ private:
     void mouseWheelZoomOut(const int numSteps, const bool isLevelLocked,
                            const int maxMipLevel)
     {
-        if(!isLevelLocked && zoomFactor_ <= 0.6 && mipLevel_ < maxMipLevel){
-            // move to next mip level
-            mipLevel_ += 1;
-            zoomFactor_ = 1.0;
+        zoomFactor_ /= std::pow(1.125, -numSteps); // numSteps is negative!
+
+        if( zoomFactor_ < 0.1 ){
+            zoomFactor_ = 0.1;
+        }
+
+        if(isLevelLocked){
             return;
         }
 
-        zoomFactor_ += numSteps / 10.0; // numSteps is negative!
-        if( zoomFactor_ < 0.1 ){
-            zoomFactor_ = 0.1;
+        if(zoomFactor_ <= 0.6 && mipLevel_ < maxMipLevel)
+        {
+            mipLevel_ += 1; // move to next mip level
+            zoomFactor_ = 1.0;
         }
     }
 
     void mouseWheelZoomIn(const int numSteps, const bool isLevelLocked)
     {
-        if(!isLevelLocked && zoomFactor_ >= 1 && mipLevel_ > 0){
-            //move to previous mip level
-            mipLevel_ -= 1;
-            zoomFactor_ = 0.6;
+        // Blanchette/Summerfield second edition page 482
+        zoomFactor_ *= std::pow(1.125, numSteps);
+
+        if(isLevelLocked){
             return;
         }
 
-        zoomFactor_ += numSteps / 10.0;
-
-        /*
-          TODO: increase factor further zoom
-          from Daniel Berger
-          *= exp(log(2.0)/8*factor)
-
-          */
-
+        if(zoomFactor_ >= 1 && mipLevel_ > 0)
+        {
+            mipLevel_ -= 1; //move to previous mip level
+            zoomFactor_ = 0.6;
+        }
     }
 };
 

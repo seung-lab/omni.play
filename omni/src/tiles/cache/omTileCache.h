@@ -35,7 +35,6 @@ public:
 
     static void Prefetch(const OmTileCoord& key);
 
-    static void RemoveDataCoord(const DataCoord & coord);
     static void ClearAll();
     static void ClearChannel();
     static void ClearSegmentation();

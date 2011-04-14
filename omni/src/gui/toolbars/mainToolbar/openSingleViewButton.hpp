@@ -4,6 +4,7 @@
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/widgets/omButton.hpp"
 #include "viewGroup/omViewGroupState.h"
+#include "gui/viewGroup/viewGroup.h"
 
 class OpenSingleViewButton : public OmButton<MainWindow> {
 public:
@@ -23,7 +24,7 @@ private:
         const OmID channelID = 1;
         const OmID segmentationID = 1;
 
-        mParent->getViewGroupState()->AddXYView( channelID, segmentationID );
+        mParent->getViewGroupState()->GetViewGroup()->AddXYView( channelID, segmentationID );
     }
 };
 

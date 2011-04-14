@@ -14,6 +14,10 @@ public:
     virtual ~KeyMultiIndex()
     {}
 
+    inline void swap(KeyMultiIndex<KEY>& newList){
+        list_.swap(newList.list_);
+    }
+
     inline KEY remove_oldest()
     {
         if(list_.empty()){
@@ -27,7 +31,8 @@ public:
     inline void touch(const KEY& key)
     {
         std::pair<iterator, bool> p = list_.push_back(key);
-        if(!p.second){ // key already in list
+        if(!p.second) // key already in list
+        {
             list_.relocate(list_.end(), p.first);
         }
     }

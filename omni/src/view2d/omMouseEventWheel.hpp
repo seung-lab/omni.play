@@ -20,15 +20,19 @@ public:
 
     void Wheel(QWheelEvent* event)
     {
+        // Blanchette/Summerfield second edition page 482
         const int numDegrees = event->delta() / 8;
         const int numSteps = numDegrees / 15;
 
-        const bool move_through_stack = event->modifiers() & Qt::ControlModifier;
-        const bool change_alpha = event->modifiers() & Qt::ShiftModifier;
-        const bool changeBrushSize = move_through_stack && change_alpha;
+        const bool controlKey = event->modifiers() & Qt::ControlModifier;;
+        const bool shiftKey = event->modifiers() & Qt::ShiftModifier;
 
-        if(changeBrushSize){
+        const bool moveThroughStack = controlKey;
+        const bool changeAlpha = shiftKey;
+        const bool changeBrushSize = controlKey && shiftKey;
 
+        if(changeBrushSize)
+        {
             static const int BrushInc = 4;
 
             if (numSteps >= 0) {
@@ -37,14 +41,16 @@ public:
                  OmStateManager::BrushSize()->DecreaseSize(BrushInc);
             }
 
-        } else if (move_through_stack) {
+        } else if (moveThroughStack) {
+
             if (numSteps >= 0) {
                 state_->MoveUpStackCloserToViewer();
             } else {
                 state_->MoveDownStackFartherFromViewer();
             }
 
-        } else if(change_alpha){
+        } else if(changeAlpha){
+
             if (numSteps >= 0) {
                 FilterWidget::IncreaseAlpha();
             } else{

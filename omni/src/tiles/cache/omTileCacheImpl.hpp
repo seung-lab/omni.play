@@ -5,6 +5,7 @@
 #include "common/omCommon.h"
 #include "system/omStateManager.h"
 #include "tiles/cache/omTileCacheChannel.hpp"
+#include "tiles/cache/omTileCacheEventListener.hpp"
 #include "tiles/cache/omTileCacheSegmentation.hpp"
 #include "tiles/omTilePreFetcher.h"
 #include "utility/omLockedPODs.hpp"
@@ -86,10 +87,6 @@ public:
         }
     }
 
-    void RemoveDataCoord(const DataCoord & coord){
-        cacheSegmentation_->RemoveDataCoord(coord);
-    }
-
     bool AreDrawersActive()
     {
         return numDrawersActive_.get() > 0 ||
@@ -111,18 +108,26 @@ public:
         cacheSegmentation_->Clear();
     }
 
+    void ClearFetchQueues()
+    {
+        cacheChannel_->ClearFetchQueue();
+        cacheSegmentation_->ClearFetchQueue();
+    }
+
 private:
-    boost::shared_ptr<OmTileCacheChannel> cacheChannel_;
-    boost::shared_ptr<OmTileCacheSegmentation> cacheSegmentation_;
-    boost::shared_ptr<OmTilePreFetcher> preFetcher_;
+    boost::scoped_ptr<OmTileCacheChannel> cacheChannel_;
+    boost::scoped_ptr<OmTileCacheSegmentation> cacheSegmentation_;
+    boost::scoped_ptr<OmTilePreFetcher> preFetcher_;
+    boost::scoped_ptr<OmTileCacheEventListener> listener_;
 
     std::map<OmTileDrawer*, bool> drawersActive_;
     LockedInt32 numDrawersActive_;
 
     OmTileCacheImpl()
-        : cacheChannel_(boost::make_shared<OmTileCacheChannel>())
-        , cacheSegmentation_(boost::make_shared<OmTileCacheSegmentation>())
-        , preFetcher_(boost::make_shared<OmTilePreFetcher>())
+        : cacheChannel_(new OmTileCacheChannel())
+        , cacheSegmentation_(new OmTileCacheSegmentation())
+        , preFetcher_(new OmTilePreFetcher())
+        , listener_(new OmTileCacheEventListener(this))
     {
         numDrawersActive_.set(0);
     }
@@ -174,6 +179,7 @@ private:
     {
         if(isChannel(key)){
             cacheChannel_->Get(tile, key, blocking);
+
         } else {
             cacheSegmentation_->Get(tile, key, blocking);
         }

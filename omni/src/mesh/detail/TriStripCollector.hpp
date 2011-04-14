@@ -4,32 +4,31 @@
 #include <zi/bits/cstdint.hpp>
 #include <zi/vl/vec.hpp>
 #include <zi/concurrency/rwmutex.hpp>
+#include <zi/utility/container_utilities.hpp>
 
 #include <vector>
 
 class TriStripCollector
 {
 private:
-	std::vector<float>    data_;
+    std::vector<float>    data_;
     std::vector<uint32_t> indices_;
     std::vector<uint32_t> strips_ ;
     std::size_t           missing_;
     zi::rwmutex           lock_   ;
 
-	template <typename T> friend class OmMeshWriterTaskV2;
+    template <typename T> friend class OmMeshWriterTaskV2;
 
 public:
 
     TriStripCollector()
-		: missing_( 0 ),
+        : missing_( 0 ),
           lock_()
     {
     }
 
-    // just testing
     ~TriStripCollector()
     {
-        zi::rwmutex::write_guard g( lock_ );
     }
 
     bool isComplete() const
@@ -77,7 +76,6 @@ public:
         {
             zi::vl::vec3d p = ( points[ i ] * scale ) + trans;
             zi::vl::vec3d n = zi::vl::norm( normals[ i ] );
-            //zi::vl::vec3d n = normals[ i ];
 
             data_.push_back( static_cast< float >( p.at( 2 ) ));
             data_.push_back( static_cast< float >( p.at( 1 ) ));
@@ -93,13 +91,14 @@ public:
         return missing_;
     }
 
-	void clear()
-	{
+    void clear()
+    {
         zi::rwmutex::write_guard g( lock_ );
-        data_.clear();
-        indices_.clear();
-        strips_.clear();
-	}
+
+        zi::containers::clear( data_ );
+        zi::containers::clear( indices_ );
+        zi::containers::clear( strips_ );
+    }
 };
 
 #endif

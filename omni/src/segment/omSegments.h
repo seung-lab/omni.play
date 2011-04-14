@@ -61,7 +61,7 @@ public:
     OmSegment* findRoot(const OmSegID segID);
     OmSegID findRootID(const OmSegID segID);
     OmSegID findRootID(OmSegment* segment);
-    OmSegID findRootIDcached(const OmSegID segID);
+    OmSegID findRootIDnoCache(const OmSegID segID);
 
     std::pair<bool, OmSegmentEdge> JoinEdge(const OmSegmentEdge& e);
     OmSegmentEdge SplitEdge(const OmSegmentEdge& e);

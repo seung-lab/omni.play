@@ -69,9 +69,9 @@ public:
     void BuildMesh(const om::Blocking block)
     {
         if(om::BLOCKING == block){
-            do_build_seg_mesh();
+            do_build_seg_mesh(true);
         } else {
-            threadPool_.addTaskBack(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_mesh, this)));
+            threadPool_.addTaskBack(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_mesh, this, true)));
         }
     }
 
@@ -83,8 +83,12 @@ public:
     void buildBlankVolume()
     {
         printf("assuming channel 1\n");
-        assert(OmProject::Volumes().Channels().IsChannelValid(1));
-        OmChannel& chann = OmProject::Volumes().Channels().GetChannel(1);
+        ChannelDataWrapper cdw(1);
+        if(!cdw.IsValidWrapper()){
+            throw OmIoException("no channel 1");
+        }
+
+        OmChannel& chann = cdw.GetChannel();
 
         seg_.BuildBlankVolume(chann.Coords().MipLevelDataDimensions(0));
         seg_.loadVolData();
@@ -103,7 +107,7 @@ private:
     void do_build_seg_image_and_mesh()
     {
         do_build_seg_image();
-        do_build_seg_mesh();
+        do_build_seg_mesh(false);
     }
 
     void do_build_seg_image()
@@ -128,28 +132,28 @@ private:
         printf("************************\n");
     }
 
-    void do_build_seg_mesh()
+    void do_build_seg_mesh(const bool redownsample)
     {
         const QString type = "segmentation mesh";
 
         OmTimer build_timer;
         startTiming(type, build_timer);
 
-        seg_.MeshManagers()->FullMesh(1);
+        seg_.MeshManagers()->FullMesh(1, redownsample);
 // seg_.MeshManagers()->FullMesh(.9);
 // seg_.MeshManagers()->FullMesh(.8);
 
         stopTimingAndSave(type, build_timer);
     }
 
-    void do_build_seg_mesh(const double threshold)
+    void do_build_seg_mesh(const double threshold, const bool redownsample)
     {
         const QString type = "segmentation mesh";
 
         OmTimer build_timer;
         startTiming(type, build_timer);
 
-        seg_.MeshManagers()->FullMesh(threshold);
+        seg_.MeshManagers()->FullMesh(threshold, redownsample);
 
         stopTimingAndSave(type, build_timer);
     }
