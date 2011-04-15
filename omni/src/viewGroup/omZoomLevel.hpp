@@ -30,7 +30,8 @@ private:
      *   --increase to use higher (more downsampled) mip levels at a given viewing distance
      *       (and decrease the number of tiles needed to display slice)
      **/
-    static const double zoomPivotPoint_ = 2.5;
+    // static const double zoomPivotPoint_ = 2.5;
+    static const double zoomPivotPoint_ = 1.0;
 
     bool valid;
     int mipLevel_;
