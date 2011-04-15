@@ -33,6 +33,7 @@ void resizeFileNumElements(QFile* file, const int64_t numElements){
 
 void rmFile(const std::string& fnp);
 void mvFile(const std::string& old_fnp, const std::string& new_fnp);
+void cpFile(const std::string& old_fnp, const std::string& new_fnp);
 
 bool exists(const std::string& fnp);
 

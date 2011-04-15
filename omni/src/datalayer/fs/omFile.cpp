@@ -70,3 +70,14 @@ void om::file::mvFile(const std::string& old_fnp, const std::string& new_fnp)
         throw OmIoException("could not mv file", old_fnp);
     }
 }
+
+void om::file::cpFile(const std::string& from_fnp, const std::string& to_fnp)
+{
+    try {
+        rmFile(to_fnp);
+        boost::filesystem::copy_file(from_fnp, to_fnp);
+
+    } catch(...){
+        throw OmIoException("could not mv file", from_fnp);
+    }
+}

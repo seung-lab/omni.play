@@ -56,7 +56,7 @@ public:
         const std::string tmpFileName = fnp_ + ".tmp";
         om::file::compressToFileNumBytes(dataChar_, tmpFile_.NumBytes(),
                                          tmpFileName);
-        om::file::mvFile(tmpFileName, fnp_);
+        om::file::cpFile(tmpFileName, fnp_);
     }
 
     virtual T* GetPtr() const {
