@@ -2,7 +2,7 @@
 #define EXPORT_MST_HPP
 
 #include "segment/io/omMST.h"
-#include "gui/inspectors/segmentation/segmentationInspector.h"
+#include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
@@ -10,10 +10,13 @@
 
 #include <QTextStream>
 
-class ExportMST : public OmButton<SegmentationInspector> {
+namespace om {
+namespace segmentationInspector {
+
+class ExportMST : public OmButton<PageExport> {
 public:
-    ExportMST(SegmentationInspector * d)
-        : OmButton<SegmentationInspector>( d,
+    ExportMST(PageExport * d)
+        : OmButton<PageExport>( d,
                                            "Export MST as text file",
                                            "export MST",
                                            false)
@@ -63,5 +66,8 @@ private:
     }
 
 };
+
+} // namespace segmentationInspector
+} // namespace om
 
 #endif

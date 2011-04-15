@@ -59,6 +59,9 @@ public:
     task_t get_front()
     {
         zi::guard g(lock_);
+        if(queue_.empty()){
+            return task_t();
+        }
         task_t ret = queue_.front();
         queue_.pop_front();
         return ret;

@@ -52,7 +52,7 @@ public:
         const uint32_t pageNum = segID / pageSize_;
 
         if(pageNum >= numInitialPages_){ // not caching those pages, yet
-            return segments_->findRootID(segID);
+            return segments_->findRootIDnoCache(segID);
         }
 
         const uint64_t mstFreshness = segments_->MSTfreshness();

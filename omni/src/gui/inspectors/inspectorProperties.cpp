@@ -14,7 +14,7 @@ InspectorProperties::InspectorProperties(QWidget* parent, OmViewGroupState* vgs)
 InspectorProperties::~InspectorProperties()
 {}
 
-void InspectorProperties::closeDialog(){
+void InspectorProperties::CloseDialog(){
     QDialog::done(0);
 }
 

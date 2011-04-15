@@ -1,19 +1,20 @@
 #ifndef OM_SEG_CHUNK_DATA_VISITORS_HPP
 #define OM_SEG_CHUNK_DATA_VISITORS_HPP
 
-#include "chunks/omRawChunkSlicer.hpp"
 #include "chunks/omRawChunk.hpp"
+#include "chunks/omRawChunkSlicer.hpp"
 #include "chunks/omSegChunk.h"
 #include "segment/omSegments.h"
 #include "system/cache/omVolSliceCache.hpp"
+#include "tiles/omTileFilters.hpp"
+#include "utility/image/omImage.hpp"
 #include "utility/omChunkVoxelWalker.hpp"
 #include "volume/build/omProcessSegmentationChunk.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omSegmentation.h"
-#include "utility/image/omImage.hpp"
 
 class ExtractDataSlice32bitVisitor
-    : public boost::static_visitor<om::shared_ptr<uint32_t> >{
+    : public boost::static_visitor<PooledTile32Ptr>{
 public:
     ExtractDataSlice32bitVisitor(OmSegmentation* vol, const OmChunkCoord& coord,
                                  const ViewType plane, int depth)
@@ -24,40 +25,56 @@ public:
     {}
 
     template <typename T>
-    inline om::shared_ptr<uint32_t> operator()(T* d) const
-    {
-        om::shared_ptr<T> dataPtr = getCachedRawSlice(d);
-        OmImage<T, 2, OmImageRefData> slice(OmExtents[128][128], dataPtr.get());
-        return slice.recastToUint32().getMallocCopyOfData();
+    inline PooledTile32Ptr operator()(T* d) const {
+        return getCachedTile(d);
     }
 
-    inline om::shared_ptr<uint32_t> operator()(uint32_t* d) const {
-        return getCachedRawSlice(d);
-    }
-
-    om::shared_ptr<uint32_t> operator()(float*) const {
+    PooledTile32Ptr operator()(float*) const {
         throw OmIoException("segmentation data shouldn't be float");
     }
 
 private:
     template <typename T>
-    inline om::shared_ptr<T> getCachedRawSlice(T* d) const
+    PooledTile32Ptr getCachedTile(T* d) const
     {
-        om::shared_ptr<T> dataPtr =
-            vol_->SliceCache()->Get<T>(coord_, depth_, plane_);
+        PooledTile32Ptr dataPtr = vol_->SliceCache()->Get(coord_, depth_, plane_);
 
         if(!dataPtr)
         {
-            OmRawChunkSlicer<T> slicer(128, d);
-
-            OmProject::Globals().FileReadSemaphore().acquire(1);
-            dataPtr = slicer.GetCopyOfTile(plane_, depth_);
-            OmProject::Globals().FileReadSemaphore().release(1);
-
+            dataPtr = getTile(d);
             vol_->SliceCache()->Set(coord_, depth_, plane_, dataPtr);
         }
 
         return dataPtr;
+    }
+
+    PooledTile32Ptr getTile(uint32_t* d) const
+    {
+        OmRawChunkSlicer<uint32_t> slicer(128, d);
+
+        OmProject::Globals().FileReadSemaphore().acquire(1);
+        OmPooledTile<uint32_t>* tile = slicer.GetCopyAsPooledTile(plane_, depth_);
+        OmProject::Globals().FileReadSemaphore().release(1);
+
+        return PooledTile32Ptr(tile);
+    }
+
+    template <typename T>
+    PooledTile32Ptr getTile(T* d) const
+    {
+        OmRawChunkSlicer<T> slicer(128, d);
+
+        OmProject::Globals().FileReadSemaphore().acquire(1);
+
+        boost::scoped_ptr<OmPooledTile<T> > rawTile(slicer.GetCopyAsPooledTile(plane_, depth_));
+
+        OmProject::Globals().FileReadSemaphore().release(1);
+
+        OmTileFilters<T> filter(128);
+
+        OmPooledTile<uint32_t>* tile = filter.recastToUint32(rawTile.get());
+
+        return PooledTile32Ptr(tile);
     }
 
     OmSegmentation *const vol_;

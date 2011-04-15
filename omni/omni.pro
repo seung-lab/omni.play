@@ -213,15 +213,19 @@ HEADERS +=  \
 	src/gui/inspectors/filObjectInspector.h \
 	src/gui/inspectors/inspectorProperties.h \
 	src/gui/inspectors/segmentInspector.h \
-	src/gui/inspectors/segmentation/addSegmentButton.h \
-	src/gui/inspectors/segmentation/buildButton.hpp \
-	src/gui/inspectors/segmentation/exportButton.hpp \
-	src/gui/inspectors/segmentation/exportButtonRaw.hpp \
-	src/gui/inspectors/segmentation/exportMST.hpp \
-	src/gui/inspectors/segmentation/exportSegmentList.hpp \
-	src/gui/inspectors/segmentation/meshPreviewButton.hpp \
-	src/gui/inspectors/segmentation/segmentationInspector.h \
-	src/gui/inspectors/segmentation/segmentationInspectorButtons.hpp \
+	src/gui/inspectors/segmentation/buildPage/pageBuilder.hpp \
+	src/gui/inspectors/segmentation/buildPage/sourceBox.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/addSegmentButton.h \
+	src/gui/inspectors/segmentation/exportPage/buttons/exportButton.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/exportButtonRaw.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/exportMST.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/exportSegmentList.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/meshPreviewButton.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/segmentationInspectorButtons.hpp \
+	src/gui/inspectors/segmentation/exportPage/pageExport.h \
+	src/gui/inspectors/segmentation/pageSelector.hpp \
+	src/gui/inspectors/segmentation/pagesWidget.h \
+	src/gui/inspectors/segmentation/segmentationInspector.hpp \
 	src/gui/inspectors/ui_chanInspector.h \
 	src/gui/inspectors/volInspector.h \
 	src/gui/mainWindow/inspectorWidget.h \
@@ -430,6 +434,7 @@ HEADERS +=  \
 	src/system/cache/omMeshCache.h \
 	src/system/cache/omThreadedCache.h \
 	src/system/cache/omVolSliceCache.hpp \
+	src/system/cache/omVolSliceCacheTypes.hpp \
 	src/system/omAlphaVegasMode.hpp \
 	src/system/omAppState.hpp \
 	src/system/omConnect.hpp \
@@ -696,7 +701,8 @@ SOURCES +=  \
 	src/gui/inspectors/filObjectInspector.cpp \
 	src/gui/inspectors/inspectorProperties.cpp \
 	src/gui/inspectors/segmentInspector.cpp \
-	src/gui/inspectors/segmentation/segmentationInspector.cpp \
+	src/gui/inspectors/segmentation/exportPage/pageExport.cpp \
+	src/gui/inspectors/segmentation/pagesWidget.cpp \
 	src/gui/mainWindow/inspectorWidget.cpp \
 	src/gui/mainWindow/mainWindow.cpp \
 	src/gui/menubar.cpp \

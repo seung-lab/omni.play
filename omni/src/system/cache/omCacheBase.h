@@ -32,8 +32,7 @@ public:
 
     virtual int64_t GetCacheSize() const = 0;
 
-    virtual void closeDownThreads()
-    {}
+    virtual void CloseDownThreads() = 0;
 
     virtual const std::string& GetName() const {
         return cacheName_;

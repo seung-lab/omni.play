@@ -1,17 +1,20 @@
 #ifndef ADD_SEGMENT_BUTTON_H
 #define ADD_SEGMENT_BUTTON_H
 
-#include "gui/inspectors/segmentation/segmentationInspector.h"
+#include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "gui/segmentLists/elementListBox.hpp"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
 
-class AddSegmentButton : public OmButton<SegmentationInspector> {
+namespace om {
+namespace segmentationInspector {
+
+class AddSegmentButton : public OmButton<PageExport> {
 public:
-    AddSegmentButton(SegmentationInspector* d)
-        : OmButton<SegmentationInspector>(d,
+    AddSegmentButton(PageExport* d)
+        : OmButton<PageExport>(d,
                                  "Add Segment",
                                  "Add Segment",
                                  false)
@@ -31,5 +34,8 @@ private:
         sel.sendEvent();
     }
 };
+
+} // namespace segmentationInspector
+} // namespace om
 
 #endif

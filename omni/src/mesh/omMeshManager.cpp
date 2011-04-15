@@ -105,7 +105,7 @@ void OmMeshManager::UncacheMesh(const OmMeshCoord & coord){
 }
 
 void OmMeshManager::CloseDownThreads(){
-    dataCache_->closeDownThreads();
+    dataCache_->CloseDownThreads();
 }
 
 void OmMeshManager::ActivateConversionFromV1ToV2()

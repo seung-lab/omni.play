@@ -3,12 +3,15 @@
 
 #include "datalayer/hdf5/omExportVolToHdf5.hpp"
 #include "gui/widgets/omButton.hpp"
-#include "gui/inspectors/segmentation/segmentationInspector.h"
+#include "gui/inspectors/segmentation/exportPage/pageExport.h"
 
-class ExportButton : public OmButton<SegmentationInspector> {
+namespace om {
+namespace segmentationInspector {
+
+class ExportButton : public OmButton<PageExport> {
 public:
-    ExportButton(SegmentationInspector * d)
-        : OmButton<SegmentationInspector>( d,
+    ExportButton(PageExport * d)
+        : OmButton<PageExport>( d,
                                   "Export and reroot segments",
                                   "Export",
                                   false)
@@ -29,5 +32,8 @@ private:
         OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, true);
     }
 };
+
+} // namespace segmentationInspector
+} // namespace om
 
 #endif

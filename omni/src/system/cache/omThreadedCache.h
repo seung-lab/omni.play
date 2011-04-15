@@ -59,7 +59,7 @@ public:
 
     virtual ~OmThreadedCache()
     {
-        closeDownThreads();
+        CloseDownThreads();
         OmCacheManager::RemoveCache(cacheGroup_, this);
     }
 
@@ -177,7 +177,7 @@ public:
         return curSize_.get();
     }
 
-    void closeDownThreads()
+    void CloseDownThreads()
     {
         killingCache_.set(true);
         threadPool_.stop();

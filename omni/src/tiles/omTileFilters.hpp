@@ -51,8 +51,12 @@ public:
         return ret;
     }
 
-    OmPooledTile<uint8_t>* recastToUint8(OmPooledTile<T>* oldTile) const {
+    inline OmPooledTile<uint8_t>* recastToUint8(OmPooledTile<T>* oldTile) const {
         return recast<uint8_t>(oldTile);
+    }
+
+    inline OmPooledTile<uint32_t>* recastToUint32(OmPooledTile<T>* oldTile) const {
+        return recast<uint32_t>(oldTile);
     }
 
     template <typename C>

@@ -109,6 +109,10 @@ public:
         }
         return numSlices * entrySize_;
     }
+
+    void CloseDownThreads(){
+        Clear();
+    }
 };
 
 #endif

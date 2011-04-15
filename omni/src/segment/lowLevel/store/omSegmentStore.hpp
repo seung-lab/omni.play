@@ -23,7 +23,6 @@ private:
     boost::scoped_ptr<OmCacheSegStore> cachedStore_;
     boost::scoped_ptr<OmCacheSegRootIDs> cacheRootIDs_;
 
-
 public:
     OmSegmentsStore(OmSegmentation* segmentation);
     ~OmSegmentsStore();

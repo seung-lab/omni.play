@@ -59,8 +59,8 @@ public:
         {
             const OmChunkCoord& coord = iter->first;
 
-            om::shared_ptr<uint32_t> slicePtr = sliceCache.GetSlice(coord, depth);
-            uint32_t const*const sliceData = slicePtr.get();
+            PooledTile32Ptr slicePtr = sliceCache.GetSlice(coord, depth);
+            uint32_t const*const sliceData = slicePtr->GetData();
 
             const std::set<Vector3i>& pts = iter->second;
 

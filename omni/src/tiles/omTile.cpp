@@ -52,12 +52,12 @@ void OmTile::load32bitSegmentationTile()
     OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(getVol());
     OmSegChunk* chunk = seg->GetChunk(mipChunkCoord_);
 
-    om::shared_ptr<uint32_t> imageData =
+    PooledTile32Ptr imageData =
         chunk->SegData()->ExtractDataSlice32bit(key_.getViewType(),
                                                 getChunkSliceNum());
 
     OmPooledTile<OmColorARGB>* colorMappedData =
-        key_.getViewGroupState()->ColorTile(imageData.get(),
+        key_.getViewGroupState()->ColorTile(imageData->GetData(),
                                             tileLength_,
                                             key_);
 

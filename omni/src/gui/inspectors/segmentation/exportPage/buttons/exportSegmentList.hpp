@@ -1,7 +1,7 @@
 #ifndef EXPORT_SEGMENT_LIST_HPP
 #define EXPORT_SEGMENT_LIST_HPP
 
-#include "gui/inspectors/segmentation/segmentationInspector.h"
+#include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegments.h"
 #include "system/omGroup.h"
@@ -10,10 +10,13 @@
 
 #include <QTextStream>
 
-class ExportSegmentList : public OmButton<SegmentationInspector> {
+namespace om {
+namespace segmentationInspector {
+
+class ExportSegmentList : public OmButton<PageExport> {
 public:
-    ExportSegmentList(SegmentationInspector * d)
-        : OmButton<SegmentationInspector>( d,
+    ExportSegmentList(PageExport * d)
+        : OmButton<PageExport>( d,
                                            "Export Segment Info (Valid)",
                                            "export segment info",
                                            false)
@@ -94,5 +97,8 @@ private:
         return 0;
     }
 };
+
+} // namespace segmentationInspector
+} // namespace om
 
 #endif
