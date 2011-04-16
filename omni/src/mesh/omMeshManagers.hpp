@@ -119,7 +119,8 @@ private:
         dir.setNameFilters(filters);
 
         const QStringList dirNames = dir.entryList(QDir::Dirs);
-        FOR_EACH(iter, dirNames){
+        FOR_EACH(iter, dirNames)
+        {
             const QString& str = *iter;
             const double threshold = OmStringHelpers::getDouble(str);
             thresholds_.insert(threshold);

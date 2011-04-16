@@ -5,7 +5,8 @@
 #include "actions/omActions.h"
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
+#include "threads/omTaskManagerTypes.h"
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
 
@@ -35,7 +36,7 @@ public:
                                            str,
                                            impl().logFolder_));
 
-        impl().threadPool_.addTaskBack(task);
+        impl().threadPool_.push_back(task);
     }
 
 private:

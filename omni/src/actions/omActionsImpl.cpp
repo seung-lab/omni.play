@@ -16,7 +16,7 @@
 #include "system/omLocalPreferences.hpp"
 #include "viewGroup/omSplitting.hpp"
 
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 
 OmActionsImpl::OmActionsImpl()
     : threadPool_(new OmThreadPool())

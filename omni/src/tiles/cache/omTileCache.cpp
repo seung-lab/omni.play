@@ -19,33 +19,24 @@ void OmTileCache::Prefetch(const OmTileCoord& key){
     instance().impl_->Prefetch(key);
 }
 
-void OmTileCache::Get(OmTileDrawer* drawer,
-                      OmTilePtr& tile,
-                      const OmTileCoord& key,
-                      const om::Blocking blocking)
+void OmTileCache::QueueUp(const OmTileCoord& key)
 {
-    instance().impl_->Get(drawer, tile, key, blocking);
+    instance().impl_->QueueUp(key);
 }
 
-void OmTileCache::GetDontQueue(OmTileDrawer* drawer,
-                               OmTilePtr& tile,
-                               const OmTileCoord& key)
+void OmTileCache::Get(OmTilePtr& tile, const OmTileCoord& key, const om::Blocking blocking)
 {
-    instance().impl_->GetDontQueue(drawer, tile, key);
+    instance().impl_->Get(tile, key, blocking);
 }
 
-void OmTileCache::BlockingCreate(OmTileDrawer* drawer,
-                                 OmTilePtr& tile,
-                                 const OmTileCoord& key)
+void OmTileCache::GetDontQueue(OmTilePtr& tile, const OmTileCoord& key)
 {
-    instance().impl_->BlockingCreate(drawer, tile, key);
+    instance().impl_->GetDontQueue(tile, key);
 }
 
-void OmTileCache::doGet(OmTilePtr& tile,
-                        const OmTileCoord& key,
-                        const om::Blocking blocking)
+void OmTileCache::BlockingCreate(OmTilePtr& tile, const OmTileCoord& key)
 {
-    instance().impl_->doGet(tile, key, blocking);
+    instance().impl_->BlockingCreate(tile, key);
 }
 
 void OmTileCache::RegisterDrawer(OmTileDrawer* d){
@@ -58,6 +49,10 @@ void OmTileCache::UnRegisterDrawer(OmTileDrawer* d){
 
 void OmTileCache::SetDrawerDone(OmTileDrawer* d){
     instance().impl_->SetDrawerDone(d);
+}
+
+void OmTileCache::SetDrawerActive(OmTileDrawer* d){
+    instance().impl_->SetDrawerActive(d);
 }
 
 void OmTileCache::WidgetVisibilityChanged(OmTileDrawer* drawer,

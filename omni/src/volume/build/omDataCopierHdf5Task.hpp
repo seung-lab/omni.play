@@ -7,7 +7,7 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "utility/image/omImage.hpp"
 #include "utility/omSimpleProgress.hpp"
 #include "volume/omVolumeTypes.hpp"

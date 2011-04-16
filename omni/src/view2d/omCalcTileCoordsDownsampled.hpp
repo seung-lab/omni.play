@@ -10,13 +10,10 @@
 class OmCalcTileCoordsDownsampled {
 private:
     const ViewType viewType_;
-    OmTileDrawer *const drawer_;
 
 public:
-    OmCalcTileCoordsDownsampled(const ViewType viewType,
-                                OmTileDrawer* drawer)
+    OmCalcTileCoordsDownsampled(const ViewType viewType)
         : viewType_(viewType)
-        , drawer_(drawer)
     {}
 
     void TryDownsample(const OmTileCoordAndVertices& tcv,
@@ -24,51 +21,69 @@ public:
     {
         OmMipVolume* vol = tcv.tileCoord.getVolume();
         const int rootMipLevel = vol->Coords().GetRootMipLevel();
-
         const int initialMipLevel = tcv.tileCoord.getLevel();
-        const DataCoord& initialDataCoord = tcv.tileCoord.getDataCoord();
 
-        OmTileCoord oldTileCoord = tcv.tileCoord;
-        const GLfloatBox& vertices = tcv.vertices;
+        if(initialMipLevel == rootMipLevel){
+            return;
+        }
+
+        const OmTileCoord& initialTileCoord = tcv.tileCoord;
 
         for(int mipLevel = initialMipLevel + 1; mipLevel <= rootMipLevel; ++mipLevel)
         {
-            const int newTileSize = 128 * om::pow2int(mipLevel);
-
-            const DataCoord& oldDataCoord = oldTileCoord.getDataCoord();
-
-            const DataCoord newDataCoord = makeNewDataCoord(oldDataCoord, newTileSize);
-
-            OmTileCoord downsampledTileCoord(mipLevel,
-                                             newDataCoord,
-                                             oldTileCoord.getVolume(),
-                                             oldTileCoord.getFreshness(),
-                                             oldTileCoord.getViewGroupState(),
-                                             oldTileCoord.getViewType(),
-                                             oldTileCoord.getSegmentColorCacheType());
+            const OmTileCoord downsampledTileCoord = makeNewTileCoord(initialTileCoord, mipLevel);
 
             OmTilePtr downsampledTile;
-            OmTileCache::GetDontQueue(drawer_, downsampledTile, downsampledTileCoord);
+            OmTileCache::GetDontQueue(downsampledTile, downsampledTileCoord);
 
             if(downsampledTile)
             {
-                OmTileAndVertices tv = {downsampledTile,
-                                        vertices,
-                                        getTextureVertices(initialDataCoord, initialMipLevel,
-                                                           mipLevel)
-                };
-
-                tilesToDraw.push_back(tv);
-
+                addTile(downsampledTile, mipLevel, tcv, tilesToDraw);
                 return;
             }
+        }
 
-            oldTileCoord = downsampledTileCoord;
+        // just queue up downsampled tile
+        int mipLevel = initialMipLevel + 1;
+
+        OmTileCache::QueueUp(makeNewTileCoord(initialTileCoord, mipLevel));
+
+        if(rootMipLevel != mipLevel){
+            OmTileCache::QueueUp(makeNewTileCoord(initialTileCoord, rootMipLevel));
         }
     }
 
-    DataCoord makeNewDataCoord(const DataCoord& oldDataCoord, const int newTileSize)
+    void addTile(OmTilePtr& downsampledTile, const int mipLevel,
+                 const OmTileCoordAndVertices& tcv, std::deque<OmTileAndVertices>& tilesToDraw)
     {
+        const int initialMipLevel = tcv.tileCoord.getLevel();
+        const DataCoord& initialDataCoord = tcv.tileCoord.getDataCoord();
+        const GLfloatBox& vertices = tcv.vertices;
+
+        OmTileAndVertices tv = {downsampledTile,
+                                vertices,
+                                getTextureVertices(initialDataCoord, initialMipLevel,
+                                                   mipLevel)
+        };
+
+        tilesToDraw.push_back(tv);
+    }
+
+    OmTileCoord makeNewTileCoord(const OmTileCoord& initialTileCoord, const int mipLevel)
+    {
+        return OmTileCoord(mipLevel,
+                           makeNewDataCoord(initialTileCoord.getDataCoord(), mipLevel),
+                           initialTileCoord.getVolume(),
+                           initialTileCoord.getFreshness(),
+                           initialTileCoord.getViewGroupState(),
+                           initialTileCoord.getViewType(),
+                           initialTileCoord.getSegmentColorCacheType());
+    }
+
+    DataCoord makeNewDataCoord(const DataCoord& oldDataCoord, const int mipLevel)
+    {
+        const int newTileSize = 128 * om::pow2int(mipLevel);
+
         const Vector2i ptsInPlane = OmView2dConverters::Get2PtsInPlane(oldDataCoord, viewType_);
 
         const int depth = OmView2dConverters::GetViewTypeDepth(oldDataCoord, viewType_);
@@ -95,25 +110,10 @@ public:
 
         TextureVectices ret;
 
-        // switch(viewType_){
-        // case XY_VIEW:
-        // case XZ_VIEW:
-            ret.upperLeft.x = textureRet.x;
-            ret.upperLeft.y = textureRet.y + inc;
-            ret.lowerRight.x = textureRet.x + inc;
-            ret.lowerRight.y = textureRet.y;
-            // break;
-        // case ZY_VIEW:
-        //     ret.upperLeft.x = textureRet.x;
-        //     ret.upperLeft.y = textureRet.y + inc;
-        //     ret.lowerRight.x = textureRet.x + inc;
-        //     ret.lowerRight.y = textureRet.y;
-        //     break;
-        // default:
-        //     throw OmArgException("unknown viewType_");
-        // }
-
-        // std::cout << "returning: " << ret << "\n";
+        ret.upperLeft.x = textureRet.x;
+        ret.upperLeft.y = textureRet.y + inc;
+        ret.lowerRight.x = textureRet.x + inc;
+        ret.lowerRight.y = textureRet.y;
 
         return ret;
     }

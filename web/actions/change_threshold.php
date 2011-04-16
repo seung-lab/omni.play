@@ -1,6 +1,6 @@
 <?php
 
-include('../server/omni_server.php');
+include_once('../server/omni_server.php');
 
 $jsonArray = array('action' => "change_threshold",
                    'segmentationID' => intval($_GET['segmentationID']),

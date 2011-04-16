@@ -6,12 +6,12 @@
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "zi/omUtility.h"
+#include "threads/omTaskManagerTypes.h"
 
 class OmActionsImpl;
 class OmSegment;
 class OmSegments;
 class OmSelectSegmentsParams;
-class OmThreadPool;
 class OmViewGroupState;
 class SegmentDataWrapper;
 class SegmentationDataWrapper;

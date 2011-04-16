@@ -6,7 +6,7 @@
 #include "tiles/cache/omTileCache.h"
 #include "view2d/brush/omBrushOppTypes.h"
 
-#include "system/cache/omVolSliceCache.hpp"
+#include "system/cache/omRawSegTileCache.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 
 class OmBrushEraseUtils {
@@ -91,7 +91,7 @@ private:
         {
             SegmentationDataWrapper sdw(*iter);
             OmSegmentation& seg = sdw.GetSegmentation();
-            OmVolSliceCache* sliceCache = seg.SliceCache();
+            OmRawSegTileCache* sliceCache = seg.SliceCache();
             sliceCache->Clear();
         }
 

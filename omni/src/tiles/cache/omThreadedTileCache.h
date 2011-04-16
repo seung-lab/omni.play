@@ -1,13 +1,17 @@
-#ifndef OM_THREADED_CACHE_H
-#define OM_THREADED_CACHE_H
+#ifndef OM_THREADED_TILE_CACHE_H
+#define OM_THREADED_TILE_CACHE_H
 
 #include "common/om.hpp"
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheManager.h"
 #include "system/cache/omLockedCacheObjects.hpp"
+#include "threads/omTaskManager.hpp"
+#include "tiles/cache/omTaskManagerContainerMipSorted.hpp"
+#include "tiles/omTile.h"
+#include "tiles/omTileCoord.h"
+#include "tiles/omTileTypes.hpp"
 #include "utility/omLockedObjects.h"
 #include "utility/omLockedPODs.hpp"
-#include "threads/omThreadPool.hpp"
 #include "zi/omMutex.h"
 
 #include <zi/system.hpp>
@@ -16,21 +20,21 @@
  *  Brett Warne - bwarne@mit.edu - 3/12/09
  */
 
-template <typename KEY, typename PTR>
-class OmThreadedCache : public OmCacheBase {
+class OmThreadedTileCache : public OmCacheBase {
 private:
-    const om::ShouldThrottle throttle_;
+    typedef OmTileCoord key_t;
+    typedef OmTilePtr ptr_t;
 
-    OmThreadPool threadPool_;
+    OmTaskManager<OmTaskManagerContainerMipSorted> threadPool_;
     LockedInt64 curSize_;
 
-    LockedCacheMap<KEY, PTR> cache_;
-    LockedKeySet<KEY> currentlyFetching_;
+    LockedCacheMap<key_t, ptr_t> cache_;
+    LockedKeySet<key_t> currentlyFetching_;
     LockedBool killingCache_;
 
     struct OldCache {
-        std::map<KEY,PTR> map;
-        KeyMultiIndex<KEY> list;
+        std::map<key_t,ptr_t> map;
+        KeyMultiIndex<key_t> list;
     };
     LockedList<om::shared_ptr<OldCache> > cachesToClean_;
 
@@ -38,7 +42,7 @@ private:
     {
         int num = zi::system::cpu_count;
         if(num > 8){
-            return 8;
+            return 4;
         }
         if(num < 2){
             return 2;
@@ -47,23 +51,22 @@ private:
     }
 
 public:
-    OmThreadedCache(const om::CacheGroup group,
-                    const std::string& name,
-                    const om::ShouldThrottle throttle)
-        : OmCacheBase(name, group)
-        , throttle_(throttle)
+    OmThreadedTileCache(const std::string& name)
+        : OmCacheBase(name, om::TILE_CACHE)
     {
-        OmCacheManager::AddCache(group, this);
+        OmCacheManager::AddCache(om::TILE_CACHE, this);
         threadPool_.start(numThreads());
     }
 
-    virtual ~OmThreadedCache()
+    virtual ~OmThreadedTileCache()
     {
         CloseDownThreads();
         OmCacheManager::RemoveCache(cacheGroup_, this);
     }
 
-    virtual void Get(PTR& ptr, const KEY& key, const om::Blocking blocking)
+    virtual ptr_t HandleCacheMiss(const key_t& key) = 0;
+
+    virtual void Get(ptr_t& ptr, const key_t& key, const om::Blocking blocking)
     {
         if(cache_.assignIfHadKey(key, ptr)){
             return;
@@ -75,39 +78,45 @@ public:
             return;
         }
 
-        if(om::THROTTLE == throttle_ &&
-           zi::system::cpu_count == threadPool_.getTaskCount())
+        if(currentlyFetching_.insertSinceDidNotHaveKey(key))
         {
-            return; // restrict number of tasks to process
+            threadPool_.insert(key,
+                               zi::run_fn(
+                                   zi::bind(&OmThreadedTileCache::handleCacheMissThread,
+                                            this, key)));
+        }
+    }
+
+    void GetDontQueue(ptr_t& ptr, const key_t& key){
+        cache_.assignIfHadKey(key, ptr);
+    }
+
+    void QueueUp(const key_t& key)
+    {
+        if(cache_.contains(key)){
+            return;
         }
 
         if(currentlyFetching_.insertSinceDidNotHaveKey(key))
         {
-            threadPool_.addTaskBack(
-                zi::run_fn(
-                    zi::bind(&OmThreadedCache<KEY,PTR>::handleCacheMissThread,
-                             this, key)));
+            threadPool_.insert(key,
+                               zi::run_fn(
+                                   zi::bind(&OmThreadedTileCache::handleCacheMissThread,
+                                            this, key)));
         }
     }
 
-    void GetDontQueue(PTR& ptr, const KEY& key)
-    {
-        cache_.assignIfHadKey(key, ptr);
-    }
-
-    virtual PTR HandleCacheMiss(const KEY& key) = 0;
-
-    void BlockingCreate(PTR& ptr, const KEY& key){
+    void BlockingCreate(ptr_t& ptr, const key_t& key){
         ptr = loadItem(key);
     }
 
-    void Prefetch(const KEY& key){
+    void Prefetch(const key_t& key){
         prefetchItem(key);
     }
 
-    void Remove(const KEY& key)
+    void Remove(const key_t& key)
     {
-        PTR ptr = cache_.erase(key);
+        ptr_t ptr = cache_.erase(key);
         if(!ptr){
             return;
         }
@@ -124,7 +133,7 @@ public:
                 return;
             }
 
-            const PTR ptr = cache_.remove_oldest();
+            const ptr_t ptr = cache_.remove_oldest();
 
             if(!ptr){
                 continue;
@@ -186,7 +195,7 @@ public:
     }
 
 private:
-    void handleCacheMissThread(const KEY key)
+    void handleCacheMissThread(const key_t key)
     {
         if(killingCache_.get()){
             return;
@@ -195,9 +204,9 @@ private:
         loadItem(key);
     }
 
-    PTR loadItem(const KEY& key)
+    ptr_t loadItem(const key_t& key)
     {
-        PTR ptr = HandleCacheMiss(key);
+        ptr_t ptr = HandleCacheMiss(key);
         const bool wasInserted = cache_.set(key, ptr);
         if(wasInserted){
             curSize_.add(ptr->NumBytes());
@@ -205,13 +214,13 @@ private:
         return ptr;
     }
 
-    void prefetchItem(const KEY& key)
+    void prefetchItem(const key_t& key)
     {
         if(cache_.contains(key)){
             return;
         }
 
-        PTR ptr = HandleCacheMiss(key);
+        ptr_t ptr = HandleCacheMiss(key);
         const bool wasInserted = cache_.setPrefetch(key, ptr);
         if(wasInserted){
             curSize_.add(ptr->NumBytes());

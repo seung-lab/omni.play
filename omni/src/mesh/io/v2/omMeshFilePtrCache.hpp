@@ -7,7 +7,7 @@
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
 #include "mesh/io/v2/omRingBuffer.hpp"
 #include "mesh/omMeshCoord.h"
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "zi/omMutex.h"
 
 class OmChunkCoord;
@@ -48,7 +48,7 @@ public:
     }
 
     void AddTaskBack(const om::shared_ptr<zi::runnable> job){
-        threadPool_.addTaskBack(job);
+        threadPool_.push_back(job);
     }
 
     uint32_t NumTasks() const {

@@ -1,7 +1,7 @@
 #ifndef OM_THREAD_POOL_BATCHED_HPP
 #define OM_THREAD_POOL_BATCHED_HPP
 
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 
 template <class ARG, class T>
 struct IndivArgPolicy {

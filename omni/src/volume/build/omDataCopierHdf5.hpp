@@ -8,7 +8,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "chunks/omChunk.h"
 #include "utility/omStringHelpers.h"
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "volume/build/omDataCopierBase.hpp"
 #include "volume/build/omDataCopierHdf5Task.hpp"
@@ -77,7 +77,7 @@ private:
                                                                mip0fnp_,
                                                                coord,
                                                                &prog);
-            threadPool.addTaskBack(task);
+            threadPool.push_back(task);
         }
 
         threadPool.join();

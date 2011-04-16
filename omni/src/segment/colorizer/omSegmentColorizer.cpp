@@ -1,4 +1,4 @@
-#include "tiles/omPooledTile.hpp"
+#include "tiles/pools/omPooledTile.hpp"
 #include "segment/colorizer/omSegmentColorizer.h"
 #include "segment/colorizer/omSegmentColorizerImpl.hpp"
 #include "segment/colorizer/omSegmentColors.hpp"

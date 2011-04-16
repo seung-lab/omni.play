@@ -3,7 +3,6 @@
 #include "events/details/omEventManagerImpl.hpp"
 #include "project/omProjectGlobals.h"
 #include "system/omStateManagerImpl.hpp"
-#include "tiles/omTilePools.hpp"
 #include "utility/omRandColorFile.hpp"
 #include "view2d/omView2dManagerImpl.hpp"
 
@@ -14,7 +13,6 @@ OmProjectGlobals::OmProjectGlobals()
     , eventMan_(new OmEventManagerImpl())
     , actions_(new OmActionsImpl())
     , actionLogger_(new OmActionLogger())
-    , tilePools_(new OmTilePools())
 {
     fileReadThrottle_.set(4);
 

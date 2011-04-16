@@ -11,7 +11,7 @@
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegments.h"
-#include "system/cache/omVolSliceCache.hpp"
+#include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "system/omGroups.h"
 #include "volume/build/omVolumeAllocater.hpp"
 #include "volume/io/omVolumeData.h"
@@ -31,7 +31,7 @@ OmSegmentation::OmSegmentation()
     , mstUserEdges_(new OmUserEdges(this))
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new OmVolumeData())
-    , volSliceCache_(new OmVolSliceCache(this))
+    , volSliceCache_(new OmRawSegTileCache(this))
 {}
 
 // used by OmGenericManager
@@ -48,7 +48,7 @@ OmSegmentation::OmSegmentation(OmID id)
     , mstUserEdges_(new OmUserEdges(this))
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new OmVolumeData())
-    , volSliceCache_(new OmVolSliceCache(this))
+    , volSliceCache_(new OmRawSegTileCache(this))
 {
     segments_->StartCaches();
     segments_->refreshTree();

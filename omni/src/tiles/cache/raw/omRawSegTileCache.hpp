@@ -3,8 +3,8 @@
 
 #include "volume/omMipVolume.h"
 #include "system/cache/omGetSetCache.hpp"
-#include "tiles/omPooledTile.hpp"
-#include "system/cache/omVolSliceCacheTypes.hpp"
+#include "tiles/pools/omPooledTile.hpp"
+#include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -29,7 +29,7 @@ struct OmVolSliceKey : public OmVolSliceKey_t {
     {}
 };
 
-class OmVolSliceCache {
+class OmRawSegTileCache {
 private:
     OmMipVolume *const vol_;
 
@@ -37,7 +37,7 @@ private:
     boost::scoped_ptr<cache_t> cache_;
 
 public:
-    OmVolSliceCache(OmMipVolume* vol)
+    OmRawSegTileCache(OmMipVolume* vol)
         : vol_(vol)
     {}
 

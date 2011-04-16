@@ -3,7 +3,7 @@
 
 #include "common/om.hpp"
 #include "utility/omSystemInformation.h"
-#include "threads/omThreadPoolManager.h"
+#include "threads/omTaskManagerManager.h"
 #include "zi/omThreads.h"
 #include "tiles/cache/omMipLevelContainer.hpp"
 

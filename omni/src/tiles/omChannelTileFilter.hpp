@@ -1,11 +1,11 @@
 #ifndef OM_IMAGE_FILTER_HPP
 #define OM_IMAGE_FILTER_HPP
 
-#include "tiles/omPooledTile.hpp"
+#include "tiles/pools/omPooledTile.hpp"
 #include "tiles/omTileFilters.hpp"
 #include "zi/omUtility.h"
 
-class OmChannelTileFilter : private om::singletonBase<OmChannelTileFilter>{
+class OmChannelTileFilter : private om::singletonBase<OmChannelTileFilter> {
 private:
     static const uint8_t absMax_ = 255;
     static const int32_t defaultBrightness_ = 0;
@@ -15,6 +15,7 @@ private:
 public:
     static void Filter(OmPooledTile<uint8_t>* slice)
     {
+        // TODO: don't recreate filter every time
         OmTileFilters<uint8_t> filter(128);
 
         if(defaultBrightness_ != instance().brightnessShift_){

@@ -2,7 +2,7 @@
 #define OM_SEG_CHUNK_DATA_H
 
 #include "chunks/omChunkCoord.h"
-#include "system/cache/omVolSliceCacheTypes.hpp"
+#include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
 #include "volume/omVolumeTypes.hpp"
 
 class OmSegChunk;

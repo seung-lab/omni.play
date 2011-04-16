@@ -53,10 +53,15 @@ public:
 
     virtual void Flush()
     {
+        // make compressed copy to temp file
         const std::string tmpFileName = fnp_ + ".tmp";
         om::file::compressToFileNumBytes(dataChar_, tmpFile_.NumBytes(),
                                          tmpFileName);
+
+        // overwrite old version (don't use mvFile: temp file could be on different volume...)
         om::file::cpFile(tmpFileName, fnp_);
+
+        om::file::rmFile(tmpFileName);
     }
 
     virtual T* GetPtr() const {

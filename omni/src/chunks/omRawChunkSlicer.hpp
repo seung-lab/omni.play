@@ -3,8 +3,8 @@
 
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
-#include "tiles/omPooledTile.hpp"
-#include "tiles/omTilePool.hpp"
+#include "tiles/pools/omPooledTile.hpp"
+#include "tiles/pools/omTilePool.hpp"
 #include "utility/omSmartPtr.hpp"
 
 template <typename T>

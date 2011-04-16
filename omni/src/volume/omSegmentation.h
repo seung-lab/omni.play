@@ -26,7 +26,7 @@ class OmSegments;
 class OmUserEdges;
 class OmValidGroupNum;
 class OmViewGroupState;
-class OmVolSliceCache;
+class OmRawSegTileCache;
 class OmVolumeCuller;
 class OmVolumeData;
 class SegmentationDataWrapper;
@@ -111,7 +111,7 @@ public:
     inline OmVolumeData* VolData(){
         return volData_.get();
     }
-    inline OmVolSliceCache* SliceCache(){
+    inline OmRawSegTileCache* SliceCache(){
         return volSliceCache_.get();
     }
     inline OmChunkCache<OmSegmentation, OmSegChunk>* ChunkCache(){
@@ -130,7 +130,7 @@ private:
     boost::scoped_ptr<OmUserEdges> mstUserEdges_;
     boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
     boost::scoped_ptr<OmVolumeData> volData_;
-    boost::scoped_ptr<OmVolSliceCache> volSliceCache_;
+    boost::scoped_ptr<OmRawSegTileCache> volSliceCache_;
 
     template <class T> friend class OmVolumeBuilder;
     template <class T> friend class OmVolumeBuilderHdf5;

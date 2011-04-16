@@ -1,21 +1,20 @@
 #ifndef OM_THREAD_POOL_MANAGER_HPP
 #define OM_THREAD_POOL_MANAGER_HPP
 
+#include "common/omStoppable.h"
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
 #include "zi/omMutex.h"
 
-class OmThreadPool;
-
 class OmThreadPoolManager : private om::singletonBase<OmThreadPoolManager> {
 private:
     zi::mutex lock_;
-    std::set<OmThreadPool*> pools_;
+    std::set<om::stoppable*> pools_;
 
 public:
     static void StopAll();
-    static void Add(OmThreadPool*);
-    static void Remove(OmThreadPool*);
+    static void Add(om::stoppable*);
+    static void Remove(om::stoppable*);
 
 private:
     OmThreadPoolManager()

@@ -1,4 +1,4 @@
-#include "tiles/omPooledTile.hpp"
+#include "tiles/pools/omPooledTile.hpp"
 #include "common/omDebug.h"
 #include "tiles/cache/omTileCache.h"
 #include "system/omGarbage.h"

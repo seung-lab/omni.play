@@ -4,9 +4,7 @@
 #include <zi/system.hpp>
 
 OmMeshCache::OmMeshCache(OmMeshManager* parent)
-    : OmThreadedCache<OmMeshCoord, OmMeshPtr>(om::MESH_CACHE,
-                                                    "Meshes",
-                                                    om::THROTTLE)
+    : OmThreadedMeshCache(om::MESH_CACHE, "Meshes")
     , meshMan_(parent)
 {}
 

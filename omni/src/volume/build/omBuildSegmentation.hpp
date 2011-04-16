@@ -8,7 +8,7 @@
 #include "segment/omSegments.h"
 #include "events/omEvents.h"
 #include "utility/dataWrappers.h"
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "volume/build/omBuildVolumes.hpp"
 #include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omChannel.h"
@@ -53,7 +53,7 @@ public:
         if(om::BLOCKING == block){
             do_build_seg_image_and_mesh();
         } else {
-            threadPool_.addTaskBack(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_image_and_mesh, this)));
+            threadPool_.push_back(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_image_and_mesh, this)));
         }
     }
 
@@ -62,7 +62,7 @@ public:
         if(om::BLOCKING == block){
             do_build_seg_image();
         } else {
-            threadPool_.addTaskBack(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_image, this)));
+            threadPool_.push_back(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_image, this)));
         }
     }
 
@@ -71,7 +71,7 @@ public:
         if(om::BLOCKING == block){
             do_build_seg_mesh(true);
         } else {
-            threadPool_.addTaskBack(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_mesh, this, true)));
+            threadPool_.push_back(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_mesh, this, true)));
         }
     }
 

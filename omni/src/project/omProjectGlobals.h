@@ -10,7 +10,6 @@ class OmActionsImpl;
 class OmEventManagerImpl;
 class OmRandColorFile;
 class OmStateManagerImpl;
-class OmTilePools;
 class OmView2dManagerImpl;
 
 class OmProjectGlobals {
@@ -21,8 +20,6 @@ private:
     boost::scoped_ptr<OmEventManagerImpl> eventMan_;
     boost::scoped_ptr<OmActionsImpl> actions_;
     boost::scoped_ptr<OmActionLogger> actionLogger_;
-
-    boost::scoped_ptr<OmTilePools> tilePools_;
 
     zi::semaphore fileReadThrottle_;
 
@@ -52,10 +49,6 @@ public:
 
     inline OmActionLogger& ActionLogger(){
         return *actionLogger_;
-    }
-
-    inline OmTilePools& TilePools(){
-        return *tilePools_;
     }
 
     inline zi::semaphore& FileReadSemaphore(){

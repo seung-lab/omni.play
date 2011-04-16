@@ -1,7 +1,7 @@
 #ifndef OM_TILE_POOL_TESTS_HPP
 #define OM_TILE_POOL_TESTS_HPP
 
-#include "src/tiles/omTilePool.hpp"
+#include "src/tiles/pools/omTilePool.hpp"
 #include "tests/testUtils.hpp"
 
 class OmTilePoolTests {

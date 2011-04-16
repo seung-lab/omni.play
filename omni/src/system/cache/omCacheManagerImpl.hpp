@@ -40,6 +40,7 @@ public:
     {
         amClosingDown.set(true);
         cleaner_->stop();
+
         meshCaches_->SignalCachesToCloseDown();
         tileCaches_->SignalCachesToCloseDown();
     }

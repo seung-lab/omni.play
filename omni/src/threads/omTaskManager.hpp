@@ -19,7 +19,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "common/om.hpp"
 #include "threads/omTaskManagerImpl.hpp"
+#include "threads/omTaskManagerTypes.h"
+#include "utility/omSystemInformation.h"
 
 #include <zi/bits/type_traits.hpp>
 #include <zi/meta/enable_if.hpp>
@@ -27,21 +30,21 @@
 template< class TaskContainer >
 class OmTaskManager {
 private:
-    typedef zi::shared_ptr< zi::concurrency_::runnable > task_t;
+    typedef om::shared_ptr< zi::concurrency_::runnable > task_t;
 
     TaskContainer tasks_;
 
     // shared_ptr to support enable_shared_from_this
-    zi::shared_ptr<OmTaskManagerImpl<TaskContainer> > manager_;
+    typedef OmTaskManagerImpl<TaskContainer> manager_t;
+    om::shared_ptr<manager_t> manager_;
 
 public:
-    OmTaskManager( std::size_t worker_limit,
-                   std::size_t max_size = std::numeric_limits< std::size_t >::max() )
-        : manager_(new OmTaskManagerImpl<TaskContainer>(worker_limit, max_size, tasks_))
+    OmTaskManager()
     {}
 
-    ~OmTaskManager()
-    {}
+    ~OmTaskManager(){
+        join();
+    }
 
     std::size_t empty()
     {
@@ -73,19 +76,44 @@ public:
         return manager_->idle_workers();
     }
 
-    bool start()
+    void start()
     {
-        return manager_->start();
+        int numWokers = OmSystemInformation::get_num_cores();
+        if(numWokers < 2){
+            numWokers = 2;
+        }
+        start(numWokers);
     }
 
-    void stop( bool and_join = false )
+    void start(const uint32_t numWorkerThreads)
     {
-        return manager_->stop( and_join );
+        if(!numWorkerThreads){
+            throw OmIoException("please specify more than 0 threads");
+        }
+
+        const uint32_t max_size = std::numeric_limits<uint32_t>::max();
+
+        manager_.reset(new manager_t(numWorkerThreads, max_size, tasks_));
+        manager_->start();
+    }
+
+    void stop()
+    {
+        if(!manager_){
+            return;
+        }
+        clear();
+        manager_->stop();
+        manager_.reset();
     }
 
     void join()
     {
+        if(!manager_){
+            return;
+        }
         manager_->join();
+        manager_.reset();
     }
 
     void clear()
@@ -103,67 +131,90 @@ public:
         manager_->remove_workers( count );
     }
 
+//status
+    bool wasStarted()
+    {
+        return manager_;
+    }
+
+    inline int getTaskCount() const
+    {
+        return tasks_.size();
+    }
+
+    inline int getNumWorkerThreads() const
+    {
+        assert(manager_ && "pool not started");
+        return manager_->worker_count();
+    }
+
+    inline int getMaxSimultaneousTaskCount() const
+    {
+        assert(manager_ && "pool not started");
+        return getNumWorkerThreads();
+    }
+
 //push_front
     void push_front(task_t task)
     {
         tasks_.push_front(task);
-        manager_->wake_all();
+        wake_manager();
     }
 
     template< class Runnable >
-    void push_front( zi::shared_ptr< Runnable > task)
+    void push_front( om::shared_ptr< Runnable > task)
     {
         tasks_.push_front(task);
-        manager_->wake_all();
+        wake_manager();
     }
 
     template< class Function >
     void push_front(const Function& task)
     {
         tasks_.push_front(task);
-        manager_->wake_all();
+        wake_manager();
     }
 
 //push_back
     void push_back(task_t task)
     {
         tasks_.push_back(task);
-        manager_->wake_all();
+        wake_manager();
     }
 
     template< class Runnable >
-    void push_back( zi::shared_ptr< Runnable > task)
+    void push_back( om::shared_ptr< Runnable > task)
     {
         tasks_.push_back(task);
-        manager_->wake_all();
+        wake_manager();
     }
 
     template< class Function >
     void push_back(const Function& task)
     {
         tasks_.push_back(task);
-        manager_->wake_all();
+        wake_manager();
     }
 
 //insert
     void insert(task_t task)
     {
         tasks_.insert(task);
-        manager_->wake_all();
+        wake_manager();
     }
 
     template< class Runnable >
-    void insert( zi::shared_ptr< Runnable > task)
+    void insert( om::shared_ptr< Runnable > task)
     {
         tasks_.insert(task);
-        manager_->wake_all();
+        wake_manager();
     }
 
     template< class Function >
     void insert(const Function& task)
     {
         tasks_.insert(task);
-        manager_->wake_all();
+        wake_manager();
     }
 
 //insert w/ arg
@@ -171,20 +222,27 @@ public:
     void insert(const ARG& arg, task_t task)
     {
         tasks_.insert(arg, task);
-        manager_->wake_all();
+        wake_manager();
     }
 
     template <typename ARG, class Runnable>
-    void insert(const ARG& arg, zi::shared_ptr< Runnable > task)
+    void insert(const ARG& arg, om::shared_ptr< Runnable > task)
     {
         tasks_.insert(arg, task);
-        manager_->wake_all();
+        wake_manager();
     }
 
     template <typename ARG, class Function>
     void insert(const ARG& arg, const Function& task)
     {
         tasks_.insert(arg, task);
+        wake_manager();
+    }
+
+private:
+    void wake_manager()
+    {
+        assert(manager_ && "pool not started");
         manager_->wake_all();
     }
 };

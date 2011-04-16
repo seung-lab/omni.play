@@ -13,11 +13,12 @@ OmProcessRequestFromClient::OmProcessRequestFromClient()
     actionProcessors_["change_threshold"] = OmJSONChangeThreshold::CreateInstance;
     actionProcessors_["get_mesh_data"] = OmJSONGetMeshData::CreateInstance;
     actionProcessors_["get_project_info"] = OmJSONProjectInfo::CreateInstance;
+    actionProcessors_["get_segmentation_dim"] = OmJSONSegmentationDim::CreateInstance;
     actionProcessors_["get_slice_channel"] = OmJSONGetSliceChannel::CreateInstance;
     actionProcessors_["get_slice_segmentation"] = OmJSONGetSliceSegmentation::CreateInstance;
+    actionProcessors_["get_tile_channel"] = OmJSONGetTileChannel::CreateInstance;
     actionProcessors_["get_tile_segmentation"] = OmJSONGetTileSegmentation::CreateInstance;
     actionProcessors_["select_segment"] = OmJSONSelectSegment::CreateInstance;
-    actionProcessors_["get_segmentation_dim"] = OmJSONSegmentationDim::CreateInstance;
 }
 
 OmProcessRequestFromClient::~OmProcessRequestFromClient()

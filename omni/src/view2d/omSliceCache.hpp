@@ -2,7 +2,7 @@
 #define OM_SLICE_CACHE_HPP
 
 #include "chunks/omSegChunk.h"
-#include "system/cache/omVolSliceCache.hpp"
+#include "tiles/cache/raw/omRawSegTileCache.hpp"
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -39,9 +39,9 @@ public:
 
     OmSegID GetVoxelValue(const OmChunkCoord& chunkCoord, const Vector3i& chunkPos)
     {
-        const int depth = chunkPos.z;
+        const int depthInChunk = chunkPos.z;
 
-        PooledTile32Ptr slicePtr = GetSlice(chunkCoord, depth);
+        PooledTile32Ptr slicePtr = GetSlice(chunkCoord, depthInChunk);
 
         uint32_t const*const sliceData = slicePtr->GetData();
 
@@ -50,12 +50,12 @@ public:
         return sliceData[offset];
     }
 
-    PooledTile32Ptr GetSlice(const OmChunkCoord& chunkCoord, const int depth)
+    PooledTile32Ptr GetSlice(const OmChunkCoord& chunkCoord, const int depthInChunk)
     {
         const OmSliceKey key(chunkCoord.Coordinate.x,
                              chunkCoord.Coordinate.y,
                              chunkCoord.Coordinate.z,
-                             depth);
+                             depthInChunk);
 
         if(cache_.count(key)){
             return cache_[key];
@@ -63,7 +63,7 @@ public:
 
         OmSegChunk* chunk = vol_->GetChunk(chunkCoord);
 
-        return cache_[key] = chunk->SegData()->ExtractDataSlice32bit(viewType_, depth);
+        return cache_[key] = chunk->SegData()->ExtractDataSlice32bit(viewType_, depthInChunk);
     }
 };
 

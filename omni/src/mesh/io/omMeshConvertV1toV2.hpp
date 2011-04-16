@@ -3,7 +3,7 @@
 
 #include "mesh/io/v2/omMeshReaderV2.hpp"
 #include "mesh/io/omMeshConvertV1toV2Task.hpp"
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 
 class OmMeshConvertV1toV2 {
 private:
@@ -34,7 +34,7 @@ public:
         threadPool_.start(1);
         om::shared_ptr<OmMeshConvertV1toV2Task> task =
             om::make_shared<OmMeshConvertV1toV2Task>(segmentation_);
-        threadPool_.addTaskBack(task);
+        threadPool_.push_back(task);
     }
 
     om::shared_ptr<OmDataForMeshLoad>

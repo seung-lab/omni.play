@@ -2,47 +2,22 @@
 #define OM_TILE_CACHE_SEGMENTATION_HPP
 
 #include "common/om.hpp"
-#include "system/cache/omThreadedCache.h"
+#include "tiles/cache/omThreadedTileCache.h"
 #include "tiles/omTile.h"
 #include "tiles/omTileCoord.h"
 #include "utility/omLockedObjects.h"
 
-class OmTileCacheSegmentation : private OmThreadedCache<OmTileCoord, OmTilePtr> {
+class OmTileCacheSegmentation : public OmThreadedTileCache {
 public:
     OmTileCacheSegmentation()
-        : OmThreadedCache<OmTileCoord, OmTilePtr>(om::TILE_CACHE,
-                                                  "Segmentation Tiles",
-                                                  om::DONT_THROTTLE)
+        : OmThreadedTileCache("Segmentation Tiles")
     {}
 
-    inline void Get(OmTilePtr& ptr, const OmTileCoord& key,
-                    const om::Blocking isBlocking)
+    virtual void Get(OmTilePtr& ptr, const OmTileCoord& key,
+                     const om::Blocking isBlocking)
     {
         checkCacheFreshness(key);
-        OmThreadedCache<OmTileCoord, OmTilePtr>::Get(ptr, key, isBlocking);
-    }
-
-    inline void GetDontQueue(OmTilePtr& ptr, const OmTileCoord& key)
-    {
-        // no need to check freshness--method used for fetching downssampled images
-        OmThreadedCache<OmTileCoord, OmTilePtr>::GetDontQueue(ptr, key);
-    }
-
-    inline void BlockingCreate(OmTilePtr& tile, const OmTileCoord& key)
-    {
-        OmThreadedCache<OmTileCoord, OmTilePtr>::BlockingCreate(tile, key);
-    }
-
-    void Clear(){
-        OmThreadedCache<OmTileCoord, OmTilePtr>::Clear();
-    }
-
-    inline void Prefetch(const OmTileCoord& key){
-        OmThreadedCache<OmTileCoord, OmTilePtr>::Prefetch(key);
-    }
-
-    inline void ClearFetchQueue(){
-        OmThreadedCache<OmTileCoord, OmTilePtr>::ClearFetchQueue();
+        OmThreadedTileCache::Get(ptr, key, isBlocking);
     }
 
 private:
@@ -55,7 +30,7 @@ private:
 
         if(key.getFreshness() > freshness_.get())
         {
-            OmThreadedCache<OmTileCoord, OmTilePtr>::InvalidateCache();
+            OmThreadedTileCache::InvalidateCache();
             freshness_.set(key.getFreshness());
         }
     }

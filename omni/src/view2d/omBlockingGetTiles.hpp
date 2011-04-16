@@ -4,13 +4,12 @@
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omTileTypes.hpp"
 #include "tiles/omTileImplTypes.hpp"
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "zi/omMutex.h"
 
 class OmBlockingGetTiles {
 private:
     std::deque<OmTileAndVertices>& tilesToDraw_;
-    OmTileDrawer *const drawer_;
 
     zi::spinlock lock_;
 
@@ -18,10 +17,8 @@ private:
     zi::semaphore semaphore_;
 
 public:
-    OmBlockingGetTiles(std::deque<OmTileAndVertices>& tilesToDraw,
-                       OmTileDrawer* drawer)
+    OmBlockingGetTiles(std::deque<OmTileAndVertices>& tilesToDraw)
         : tilesToDraw_(tilesToDraw)
-        , drawer_(drawer)
     {
         pool_.start(3);
     }
@@ -50,7 +47,7 @@ private:
             { {0.f, 1.f}, {1.f, 0.f} };
 
         OmTilePtr tile;
-        OmTileCache::BlockingCreate(drawer_, tile, tileCL.tileCoord);
+        OmTileCache::BlockingCreate(tile, tileCL.tileCoord);
 
         OmTileAndVertices tv = {tile,
                                 tileCL.vertices,

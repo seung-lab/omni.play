@@ -1,3 +1,6 @@
+#include "network/omJpeg.h"
+#include "common/omException.h"
+
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
@@ -22,8 +25,6 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include "network/omAssembleTilesIntoSlice.hpp"
-
 extern "C"
 {
 #include <jpeglib.h>
@@ -31,8 +32,8 @@ extern "C"
 }
 
 // from https://github.com/LaurentGomila/SFML/blob/cb1f9385825c4645dae1c233684699c6fcb6c0a7/src/SFML/Graphics/ImageLoader.cpp
-void OmAssembleTilesIntoSlice::writeJPEG(const uint32_t width, const uint32_t height,
-                                         uint8_t const*const pixels, const std::string& filename)
+void om::jpeg::writeRGB(const uint32_t width, const uint32_t height,
+                     uint8_t const*const pixels, const std::string& filename)
 {
     // Open the file to write in
     FILE* file = fopen(filename.c_str(), "wb");
@@ -53,25 +54,69 @@ void OmAssembleTilesIntoSlice::writeJPEG(const uint32_t width, const uint32_t he
     compressInfos.in_color_space   = JCS_RGB;
     jpeg_stdio_dest(&compressInfos, file);
     jpeg_set_defaults(&compressInfos);
-    jpeg_set_quality(&compressInfos, 90, TRUE);
+    jpeg_set_quality(&compressInfos, 90, false);
 
     // Get rid of the aplha channel
-    std::vector<uint8_t> buffer(width * height * 3);
+    boost::scoped_ptr<uint8_t> bufferPtr(new uint8_t[width * height * 3]);
+    uint8_t* ptr = bufferPtr.get();
+
     for (uint64_t i = 0; i < width * height; ++i)
     {
-        buffer[i * 3 + 0] = pixels[i * 4 + 1];
-        buffer[i * 3 + 1] = pixels[i * 4 + 2];
-        buffer[i * 3 + 2] = pixels[i * 4 + 3];
+        ptr[i * 3 + 0] = pixels[i * 4 + 1];  // index 0 would be alpha
+        ptr[i * 3 + 1] = pixels[i * 4 + 2];
+        ptr[i * 3 + 2] = pixels[i * 4 + 3];
     }
-    uint8_t* ptr = &buffer[0];
 
     // Start compression
-    jpeg_start_compress(&compressInfos, TRUE);
+    jpeg_start_compress(&compressInfos, true);
 
     // Write each row of the image_height
     while (compressInfos.next_scanline < compressInfos.image_height)
     {
         JSAMPROW rawPointer = ptr + (compressInfos.next_scanline * width * 3);
+        jpeg_write_scanlines(&compressInfos, &rawPointer, 1);
+    }
+
+    // Finish compression
+    jpeg_finish_compress(&compressInfos);
+    jpeg_destroy_compress(&compressInfos);
+
+    fclose(file);
+}
+
+void om::jpeg::write8bit(const uint32_t width, const uint32_t height,
+                         uint8_t const*const pixels, const std::string& filename)
+{
+    // Open the file to write in
+    FILE* file = fopen(filename.c_str(), "wb");
+    if (!file){
+        throw OmIoException("could not create file");
+    }
+
+    // Initialize the error handlers
+    jpeg_compress_struct compressInfos;
+    jpeg_error_mgr errorManager;
+    compressInfos.err = jpeg_std_error(&errorManager);
+
+    // Initialize all the writing and compression infos
+    jpeg_create_compress(&compressInfos);
+    compressInfos.image_width      = width;
+    compressInfos.image_height     = height;
+    compressInfos.input_components = 1;
+    compressInfos.in_color_space   = JCS_GRAYSCALE;
+    jpeg_stdio_dest(&compressInfos, file);
+    jpeg_set_defaults(&compressInfos);
+    jpeg_set_quality(&compressInfos, 50, true);
+
+    uint8_t* ptr = const_cast<uint8_t*>(pixels);
+
+    // Start compression
+    jpeg_start_compress(&compressInfos, true);
+
+    // Write each row of the image_height
+    while (compressInfos.next_scanline < compressInfos.image_height)
+    {
+        JSAMPROW rawPointer = ptr + (compressInfos.next_scanline * width);
         jpeg_write_scanlines(&compressInfos, &rawPointer, 1);
     }
 

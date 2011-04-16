@@ -19,6 +19,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "common/omStoppable.h"
+#include "threads/omThreadPoolManager.h"
+
 #include <zi/concurrency/config.hpp>
 #include <zi/concurrency/thread.hpp>
 #include <zi/concurrency/mutex.hpp>
@@ -36,7 +39,8 @@
 template< class TaskContainer >
 class OmTaskManagerImpl
     : public zi::runnable,
-      public zi::enable_shared_from_this< OmTaskManagerImpl<TaskContainer> >
+      public zi::enable_shared_from_this< OmTaskManagerImpl<TaskContainer> >,
+      public om::stoppable
 {
     typedef zi::shared_ptr< zi::concurrency_::runnable > task_t;
 
@@ -63,8 +67,8 @@ class OmTaskManagerImpl
     TaskContainer& tasks_;
 
 public:
-    OmTaskManagerImpl( std::size_t worker_limit, std::size_t max_size,
-                       TaskContainer& tasks)
+    OmTaskManagerImpl(const uint32_t worker_limit, const uint32_t max_size,
+                      TaskContainer& tasks)
         : worker_count_(0)
         , worker_limit_(worker_limit)
         , idle_workers_(0)
@@ -72,10 +76,15 @@ public:
         , max_size_(max_size)
         , state_(IDLE)
         , tasks_(tasks)
-    {}
+    {
+        OmThreadPoolManager::Add(this);
+    }
 
     ~OmTaskManagerImpl()
     {
+        // remove before stopping (else OmThreadPoolManager may also attempt to
+        //   stop pool during its own shutdown...)
+        OmThreadPoolManager::Remove(this);
         stop();
     }
 
@@ -97,7 +106,13 @@ public:
         return idle_workers_;
     }
 
+    void StoppableStop()
+    {
+        join();
+    }
+
 private:
+
     void create_workers_nl( std::size_t count )
     {
         if ( count <= 0 || active_workers_ >= worker_limit_ )

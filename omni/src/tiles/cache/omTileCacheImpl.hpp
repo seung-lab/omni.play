@@ -41,6 +41,17 @@ public:
         runIdleThreadTask();
     }
 
+    void SetDrawerActive(OmTileDrawer* d)
+    {
+        if(drawersActive_[d]){
+            return;
+        }
+
+        drawersActive_[d] = true;
+        ++numDrawersActive_;
+        stopIdleThreadTask();
+    }
+
     void SetDrawerDone(OmTileDrawer* d)
     {
         if(!drawersActive_[d]){
@@ -52,36 +63,46 @@ public:
         runIdleThreadTask();
     }
 
-    void WidgetVisibilityChanged(OmTileDrawer* drawer,
-                                 const bool visible)
+    void WidgetVisibilityChanged(OmTileDrawer* drawer, const bool visible)
     {
         if(visible){
-            setDrawerActive(drawer);
+            SetDrawerActive(drawer);
         }else{
             SetDrawerDone(drawer);
         }
     }
 
-    void Get(OmTileDrawer* drawer,
-             OmTilePtr& tile,
-             const OmTileCoord& key,
-             const om::Blocking blocking)
+    void Get(OmTilePtr& tile, const OmTileCoord& key, const om::Blocking blocking)
     {
-        setDrawerActive(drawer);
-        doGet(tile, key, blocking);
+        if(isChannel(key)){
+            cacheChannel_->Get(tile, key, blocking);
+
+        } else {
+            cacheSegmentation_->Get(tile, key, blocking);
+        }
     }
 
-    void GetDontQueue(OmTileDrawer* drawer,
-                      OmTilePtr& tile,
-                      const OmTileCoord& key)
+    void GetDontQueue(OmTilePtr& tile, const OmTileCoord& key)
     {
-        setDrawerActive(drawer);
-        doGetDontQueue(tile, key);
+        if(isChannel(key)){
+            cacheChannel_->GetDontQueue(tile, key);
+
+        } else {
+            cacheSegmentation_->GetDontQueue(tile, key);
+        }
     }
 
-    void BlockingCreate(OmTileDrawer*,
-                        OmTilePtr& tile,
-                        const OmTileCoord& key)
+    void QueueUp(const OmTileCoord& key)
+    {
+        if(isChannel(key)){
+            cacheChannel_->QueueUp(key);
+
+        } else {
+            cacheSegmentation_->QueueUp(key);
+        }
+    }
+
+    void BlockingCreate(OmTilePtr& tile, const OmTileCoord& key)
     {
         cacheSegmentation_->BlockingCreate(tile, key);
     }
@@ -144,17 +165,6 @@ private:
         return CHANNEL == key.getVolume()->getVolumeType();
     }
 
-    void setDrawerActive(OmTileDrawer* d)
-    {
-        if(drawersActive_[d]){
-            return;
-        }
-
-        drawersActive_[d] = true;
-        ++numDrawersActive_;
-        stopIdleThreadTask();
-    }
-
     void runIdleThreadTask()
     {
         if(ZiARG_noTilePrefetch){
@@ -179,29 +189,6 @@ private:
         }
 
         preFetcher_->ClearTasks();
-    }
-
-    void doGet(OmTilePtr& tile,
-               const OmTileCoord& key,
-               const om::Blocking blocking)
-    {
-        if(isChannel(key)){
-            cacheChannel_->Get(tile, key, blocking);
-
-        } else {
-            cacheSegmentation_->Get(tile, key, blocking);
-        }
-    }
-
-    void doGetDontQueue(OmTilePtr& tile,
-                        const OmTileCoord& key)
-    {
-        if(isChannel(key)){
-            cacheChannel_->GetDontQueue(tile, key);
-
-        } else {
-            cacheSegmentation_->GetDontQueue(tile, key);
-        }
     }
 
     friend class OmTileCache;

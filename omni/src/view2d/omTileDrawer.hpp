@@ -24,8 +24,8 @@ public:
         , tileCount_(0)
         , tileCountIncomplete_(0)
         , openglTileDrawer_(new OmOpenGLTileDrawer())
-        , tileCalcDownsampled_(new OmCalcTileCoordsDownsampled(viewType, this))
-        , blockingGetTiles_(new OmBlockingGetTiles(tilesToDraw_, this))
+        , tileCalcDownsampled_(new OmCalcTileCoordsDownsampled(viewType))
+        , blockingGetTiles_(new OmBlockingGetTiles(tilesToDraw_))
     {
         OmTileCache::RegisterDrawer(this);
     }
@@ -61,9 +61,12 @@ public:
             draw(seg);
         }
 
-        if(IsDrawComplete() && !state_->getScribbling())
-        {
+        if(!IsDrawComplete() || state_->getScribbling()){
+            OmTileCache::SetDrawerActive(this);
+
+        } else {
             OmTileCache::SetDrawerDone(this);
+
             if(!OmTileCache::AreDrawersActive()){
                 OmGarbage::safeCleanTextureIds();
             }
@@ -103,8 +106,8 @@ private:
 
     void reset()
     {
-        // keep old tiles around to make sure tiles are not destoryed before opengl is
-        //  done using their texture IDs...
+        // keep old tiles around to make sure OpenGL texture IDs are not cleared until
+        //   the card is done with them...
         oldTilesToDraw_.swap(tilesToDraw_);
         tilesToDraw_ = std::deque<OmTileAndVertices>();
 
@@ -161,7 +164,7 @@ private:
         FOR_EACH(tileCL, *tileCoordsAndLocations)
         {
             OmTilePtr tile;
-            OmTileCache::Get(this, tile, tileCL->tileCoord, om::NON_BLOCKING);
+            OmTileCache::Get(tile, tileCL->tileCoord, om::NON_BLOCKING);
 
             if(tile)
             {

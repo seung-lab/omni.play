@@ -1,7 +1,7 @@
 #ifndef OM_DOWNSAMPLER_HPP
 #define OM_DOWNSAMPLER_HPP
 
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "utility/omTimer.hpp"
 #include "volume/build/omDownsamplerTypes.hpp"
 #include "volume/build/omDownsamplerVoxelTask.hpp"
@@ -64,7 +64,7 @@ public:
                                                             mippingInfo_,
                                                             coord,
                                                             files_);
-            threadPool.addTaskBack(task);
+            threadPool.push_back(task);
         }
 
         threadPool.join();

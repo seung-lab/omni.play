@@ -7,7 +7,6 @@
 #include "mesh/omMesh.h"
 #include "mesh/omMeshManager.h"
 #include "system/cache/omMeshCache.h"
-#include "system/cache/omThreadedCache.h"
 #include "utility/omFileHelpers.h"
 #include "volume/omSegmentation.h"
 
@@ -95,7 +94,7 @@ OmMeshPtr OmMeshManager::Produce(const OmMeshCoord& coord)
 }
 
 void OmMeshManager::GetMesh(OmMeshPtr& ptr, const OmMeshCoord& coord,
-                               const om::Blocking blocking)
+                            const om::Blocking blocking)
 {
     dataCache_->Get(ptr, coord, blocking);
 }

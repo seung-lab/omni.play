@@ -156,6 +156,7 @@ HEADERS +=  \
 	src/common/omQt.h \
 	src/common/omSet.hpp \
 	src/common/omStd.h \
+	src/common/omStoppable.h \
 	src/common/omString.hpp \
 	src/datalayer/archive/omDataArchiveBoost.h \
 	src/datalayer/archive/omDataArchiveProject.h \
@@ -356,8 +357,10 @@ HEADERS +=  \
 	src/network/omAssembleTilesIntoSlice.hpp \
 	src/network/omExtractMesh.h \
 	src/network/omJSONActions.hpp \
+	src/network/omJpeg.h \
 	src/network/omProcessRequestFromClient.h \
 	src/network/omServiceObjects.hpp \
+	src/network/omWriteTile.hpp \
 	src/network/server/omNetworkQT.hpp \
 	src/network/server/omServer.h \
 	src/network/server/omServerImpl.hpp \
@@ -432,9 +435,7 @@ HEADERS +=  \
 	src/system/cache/omGetSetCache.hpp \
 	src/system/cache/omLockedCacheObjects.hpp \
 	src/system/cache/omMeshCache.h \
-	src/system/cache/omThreadedCache.h \
-	src/system/cache/omVolSliceCache.hpp \
-	src/system/cache/omVolSliceCacheTypes.hpp \
+	src/system/cache/omThreadedMeshCache.h \
 	src/system/omAlphaVegasMode.hpp \
 	src/system/omAppState.hpp \
 	src/system/omConnect.hpp \
@@ -452,30 +453,34 @@ HEADERS +=  \
 	src/system/omStateManagerImpl.hpp \
 	src/system/omUndoStack.hpp \
 	src/threads/omTaskManager.hpp \
-	src/threads/omTaskManagerContainer.hpp \
+	src/threads/omTaskManagerContainerDeque.hpp \
 	src/threads/omTaskManagerImpl.hpp \
-	src/threads/omThreadPool.hpp \
+	src/threads/omTaskManagerTypes.h \
 	src/threads/omThreadPoolBatched.hpp \
 	src/threads/omThreadPoolByMipLevel.hpp \
 	src/threads/omThreadPoolManager.h \
+	src/tiles/cache/omTaskManagerContainerMipSorted.hpp \
+	src/tiles/cache/omThreadedTileCache.h \
 	src/tiles/cache/omTileCache.h \
 	src/tiles/cache/omTileCacheChannel.hpp \
 	src/tiles/cache/omTileCacheEventListener.hpp \
 	src/tiles/cache/omTileCacheImpl.hpp \
 	src/tiles/cache/omTileCacheSegmentation.hpp \
+	src/tiles/cache/raw/omRawSegTileCache.hpp \
+	src/tiles/cache/raw/omRawSegTileCacheTypes.hpp \
 	src/tiles/omChannelTileFilter.hpp \
-	src/tiles/omPooledTile.hpp \
 	src/tiles/omTextureID.h \
 	src/tiles/omTile.h \
 	src/tiles/omTileCoord.h \
 	src/tiles/omTileDumper.hpp \
 	src/tiles/omTileFilters.hpp \
 	src/tiles/omTileImplTypes.hpp \
-	src/tiles/omTilePool.hpp \
-	src/tiles/omTilePools.hpp \
 	src/tiles/omTilePreFetcher.h \
 	src/tiles/omTilePreFetcherTask.hpp \
 	src/tiles/omTileTypes.hpp \
+	src/tiles/pools/omPooledTile.hpp \
+	src/tiles/pools/omTilePool.hpp \
+	src/tiles/pools/omTilePools.hpp \
 	src/utility/affinityGraphDataWrapper.hpp \
 	src/utility/channelDataWrapper.hpp \
 	src/utility/dataWrapperContainer.hpp \
@@ -749,8 +754,8 @@ SOURCES +=  \
 	src/mesh/omMeshCoord.cpp \
 	src/mesh/omMeshManager.cpp \
 	src/mesh/omVolumeCuller.cpp \
-	src/network/omAssembleTilesIntoSlice.cpp \
 	src/network/omExtractMesh.cpp \
+	src/network/omJpeg.cpp \
 	src/network/omProcessRequestFromClient.cpp \
 	src/network/omServiceObjects.cpp \
 	src/network/server/omNetworkQT.cpp \

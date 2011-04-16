@@ -141,42 +141,6 @@ public:
     virtual ~OmImage()
     {}
 
-    OmImage<T,2> getSlice(const ViewType plane, const int offset)
-    {
-        assert(D == 3);
-        OmDimension<3> from = OmDimension<3>();
-        OmDimension<3> to   = d_.extent_;
-        OmDimension<3> extent = d_.extent_;
-
-        switch(plane) {
-        case ZY_VIEW:
-            assert(to.get<2>() > offset);
-            from.set<2>(offset); to.set<2>(offset);
-            break;
-
-        case XZ_VIEW:
-            assert(to.get<1>() > offset);
-            from.set<1>(offset); to.set<1>(offset);
-            break;
-
-        case XY_VIEW:
-            assert(to.get<0>() > offset);
-            from.set<0>(offset); to.set<0>(offset);
-            break;
-
-        default:
-            throw OmArgException("unknown plane");
-        }
-
-        om::shared_ptr<boost::multi_array<T,2> > data;
-        data = om::shared_ptr<boost::multi_array<T,2> >
-            (new boost::multi_array<T,2>
-             (extent.stripDimension<0>().getBoostExtent()));
-        (*data) = (*d_.data_)[MakeBoostRange<3,2>::make(from, to)];
-        return OmImage<T,2>(data, extent.stripDimension<0>());
-
-    }
-
     OmDimension<D> getExtent() const {
         return d_.extent_;
     }
@@ -266,44 +230,6 @@ public:
         return (*d_.data_)[x][y][z];
     }
 
-    void rescale(const T rangeMin, const T rangeMax, const T absMax)
-    {
-        zi::transform(d_.data_->data(),
-                      d_.data_->data()+d_.data_->num_elements(),
-                      d_.data_->data(),
-                      Rescale<T,T>(rangeMin, rangeMax, absMax));
-    }
-
-    template <typename C>
-    OmImage<C,D> rescaleAndCast(const T rangeMin, const T rangeMax,
-                                const T absMax) const
-    {
-        OmImage<C,D> out(d_.extent_);
-        zi::transform(d_.data_->data(),
-                      d_.data_->data()+d_.data_->num_elements(),
-                      out.d_.data_->data(),
-                      Rescale<T,C>(rangeMin, rangeMax, absMax));
-        return out;
-    }
-
-    template <typename C>
-    OmImage<C,D> recast() const
-    {
-        OmImage<C,D> out(d_.extent_);
-        std::copy(d_.data_->begin(),
-                  d_.data_->end(),
-                  out.d_.data_->begin());
-        return out;
-    }
-
-    OmImage<uint8_t,D> recastToUint8() const {
-        return recast<uint8_t>();
-    }
-
-    OmImage<uint32_t,D> recastToUint32() const {
-        return recast<uint32_t>();
-    }
-
     void resize(const Vector3i& dims) {
         d_.data_->resize(boost::extents[dims.x][dims.y][dims.z]);
     }
@@ -315,21 +241,6 @@ public:
 
 private:
     container_t<T,D> d_;
-
-    template <typename U, typename C>
-    class Rescale {
-    public:
-        Rescale(const U rangeMin, const U rangeMax, const U absMax)
-            : rangeMin_(rangeMin)
-            , rangeMax_(rangeMax)
-            , absMax_(absMax)
-        {}
-        C operator()(U val) const {
-            return (val-rangeMin_) * ((double)absMax_/(rangeMax_-rangeMin_));
-        }
-    private:
-        const U rangeMin_, rangeMax_, absMax_;
-    };
 };
 
 #endif

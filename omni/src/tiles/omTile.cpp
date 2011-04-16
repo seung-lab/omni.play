@@ -4,7 +4,6 @@
 #include "tiles/omTile.h"
 #include "utility/dataWrappers.h"
 #include "tiles/omChannelTileFilter.hpp"
-#include "utility/image/omImage.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omMipVolume.h"
 #include "view2d/omView2dConverters.hpp"

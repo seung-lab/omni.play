@@ -1,7 +1,7 @@
 #ifndef OM_TILE_FILTERS_HPP
 #define OM_TILE_FILTERS_HPP
 
-#include "tiles/omPooledTile.hpp"
+#include "tiles/pools/omPooledTile.hpp"
 
 template <typename T>
 class OmTileFilters {
@@ -97,16 +97,17 @@ private:
 
     // TODO: clamp should not be needed
 
-    template<typename U>
-    static T clamp(T absMax, U val) {
+    template <typename U>
+    inline static T clamp(T absMax, U val)
+    {
         if(val > absMax) {
-            //std::cout << "max: " << val << std::endl;
             return absMax;
         }
+
         if(val < 0) {
-            //std::cout << "0: " << val << std::endl;
             return 0;
         }
+
         return val;
     }
 
@@ -117,6 +118,7 @@ private:
             : absMax_(absMax)
             , shift_(shift)
         {}
+
         U operator()(U val) const
         {
             if(!val){
@@ -133,18 +135,20 @@ private:
     template <typename U>
     class ChangeContrast {
     public:
-        ChangeContrast(const U absMax, const float contrast)
+        ChangeContrast(const double absMax, const double contrast)
             : absMax_(absMax)
             , halfAbsMax_(absMax_/2.0)
             , contrast_(contrast)
         {}
+
         U operator()(U val) const {
-            return clamp(255, ((float)val - (float)halfAbsMax_) * (float)contrast_ + (float)halfAbsMax_);
+            return clamp(255, (static_cast<double>(val) - halfAbsMax_) * contrast_ + halfAbsMax_);
         }
+
     private:
-        const float absMax_;
-        const float halfAbsMax_;
-        const float contrast_;
+        const double absMax_;
+        const double halfAbsMax_;
+        const double contrast_;
     };
 
     template <typename U>
@@ -153,9 +157,9 @@ private:
         ChangeGamma(const double gamma)
             : gamma_(gamma)
         {}
+
         U operator()(U val) const {
-            //printf("%f\n", pow(static_cast<double>(val), gamma_));
-            return clamp(255, 255.0*pow(static_cast<double>(val/255.0), gamma_));
+            return clamp(255, 255.0*std::pow(static_cast<double>(val)/255.0, gamma_));
         }
     private:
         const double gamma_;

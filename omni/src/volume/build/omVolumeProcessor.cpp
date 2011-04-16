@@ -1,5 +1,5 @@
 #include "volume/build/omVolumeProcessor.h"
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "chunks/omChunkCoord.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
@@ -60,7 +60,7 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol)
             om::make_shared<OmSegmentationChunkBuildTask>(coord,
                                                              vol->Segments(),
                                                              vol);
-        threadPool.addTaskBack(task);
+        threadPool.push_back(task);
     }
 
     threadPool.join();
@@ -105,7 +105,7 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmChannel* vol)
 
         om::shared_ptr<OmChannelImplChunkBuildTask> task =
             om::make_shared<OmChannelImplChunkBuildTask>(coord, vol);
-        threadPool.addTaskBack(task);
+        threadPool.push_back(task);
     }
 
     threadPool.join();

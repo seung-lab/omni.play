@@ -1,6 +1,5 @@
 #include "gui/cacheMonitorDialog.h"
 #include "gui/cacheMonitorWidget.h"
-#include "system/cache/omThreadedCache.h"
 #include "system/omConnect.hpp"
 
 CacheMonitorDialog::CacheMonitorDialog( QWidget * parent)
@@ -24,6 +23,8 @@ CacheMonitorDialog::~CacheMonitorDialog()
 
 void CacheMonitorDialog::Refresh()
 {
+    //TODO: just refresh, don't delete and reconstruct!
+
     if (mDying){
         mTimer->stop();
     } else {

@@ -1,3 +1,4 @@
+#include "network/omWriteTile.hpp"
 #include "network/omAssembleTilesIntoSlice.hpp"
 #include "network/omExtractMesh.h"
 #include "network/omServiceObjects.hpp"
@@ -7,6 +8,7 @@
 OmServiceObjects::OmServiceObjects()
     : tileAssembler_(new OmAssembleTilesIntoSlice())
     , meshExtractor_(new OmExtractMesh())
+    , tileWriter_(new OmWriteTile())
 {}
 
 OmServiceObjects::~OmServiceObjects()
@@ -57,7 +59,13 @@ std::string OmServiceObjects::GetMeshData(const OmID segmentationID, const OmSeg
 
 std::string OmServiceObjects::GetProjectData()
 {
-    return "{ \"fileName\": \"" + OmProject::OmniFile().toStdString() + "\"}";
+    json_spirit::Object obj;
+    obj.push_back(json_spirit::Pair("fileName", OmProject::OmniFile().toStdString()));
+
+    json_spirit::Array array;
+    array.push_back(obj);
+
+    return json_spirit::write_formatted(array);
 }
 
 std::string OmServiceObjects::ChangeThreshold(const OmID segmentationID, const float threshold)
@@ -72,13 +80,6 @@ std::string OmServiceObjects::ChangeThreshold(const OmID segmentationID, const f
     vol.SetDendThreshold( threshold );
 
     return "threshold changed to " + om::string::num(threshold);
-}
-
-std::string OmServiceObjects::MakeTileFileSegmentation(const int sliceNum, const int tileX, const int tileY)
-{
-
-    assert(sliceNum && tileY && tileX);
-    return "fixme";
 }
 
 std::string OmServiceObjects::GetSegmentationDim()
@@ -112,3 +113,18 @@ std::string OmServiceObjects::GetSegmentationDim()
 
     return json_spirit::write_formatted(array);
 }
+
+std::string OmServiceObjects::MakeTileFileChannel(const int sliceNum,
+                                                  const int tileX, const int tileY)
+{
+    const DataCoord dataCoord(tileX * 128, tileY * 128, sliceNum);
+    return tileWriter_->MakeTileFileChannel(dataCoord);
+}
+
+std::string OmServiceObjects::MakeTileFileSegmentation(const int sliceNum,
+                                                       const int tileX, const int tileY)
+{
+    const DataCoord dataCoord(tileX * 128, tileY * 128, sliceNum);
+    return tileWriter_->MakeTileFileSegmentation(dataCoord);
+}
+

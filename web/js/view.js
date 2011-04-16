@@ -200,7 +200,7 @@ function showCurrentSlice() {
 function handleSelectSegment(event) {
     // AlertPropertyNames(event);
     // AlertPropertyNames(event.originalEvent);
-    $.get('./engine/select_segment.php',
+    $.get('./actions/select_segment.php',
           { x: event.offsetX,//event.layerX,
             y: event.offsetY,//event.layerY,
             slice_num: omni.sliceNum,

@@ -1,6 +1,6 @@
 <?php
 
-include('../server/omni_server.php');
+include_once('../server/omni_server.php');
 
 $json = array('action' => "select_segment",
               'segmentationID' => intval(1),

@@ -4,6 +4,7 @@
 #include "common/omCommon.h"
 #include "segment/lowLevel/omDynamicForestCache.hpp"
 #include "segment/lowLevel/omSegmentLowLevelTypes.h"
+#include "threads/omTaskManagerTypes.h"
 
 class OmMST;
 class OmSegmentsStore;
@@ -13,7 +14,6 @@ class OmSegmentChildren;
 class OmSegmentListLowLevel;
 class OmSegmentation;
 class OmValidGroupNum;
-class OmThreadPool;
 
 class OmSegmentGraph {
 public:

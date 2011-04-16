@@ -78,6 +78,27 @@ public:
     }
 };
 
+class OmJSONGetTileChannel : public OmProcessJSONAction {
+private:
+    std::string doProcess(const OmJson& json, OmServiceObjects* serviceObjects)
+    {
+        boost::optional<int> sliceNum = json.GetValue<int>("slice_num");
+        boost::optional<int> tileX = json.GetValue<int>("tileX");
+        boost::optional<int> tileY = json.GetValue<int>("tileY");
+
+        if(!sliceNum || !tileX || !tileY){
+            return "fail";
+        }
+
+        return serviceObjects->MakeTileFileChannel(*sliceNum, *tileX, *tileY);
+    }
+
+public:
+    static OmProcessJSONAction* CreateInstance(){
+        return new OmJSONGetTileChannel();
+    }
+};
+
 class OmJSONSelectSegment : public OmProcessJSONAction {
 private:
     std::string doProcess(const OmJson& json, OmServiceObjects* serviceObjects)

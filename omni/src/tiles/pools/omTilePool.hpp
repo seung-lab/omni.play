@@ -1,6 +1,7 @@
 #ifndef OM_TILE_POOL_HPP
 #define OM_TILE_POOL_HPP
 
+#include "common/omCommon.h"
 #include "utility/omLockedPODs.hpp"
 #include "utility/omPrimeNumbers.hpp"
 #include "utility/omSystemInformation.h"

@@ -1,7 +1,7 @@
 <?php
 
-include('show_dynamic_image.php');
-include('../server/omni_server.php');
+include_once('show_dynamic_image.php');
+include_once('../server/omni_server.php');
 
 define('MEMCACHED_PORT', 11211);
 $memcache = new Memcached;

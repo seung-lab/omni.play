@@ -1,7 +1,7 @@
 #ifndef OM_TILE_PRE_FETCHER_HPP
 #define OM_TILE_PRE_FETCHER_HPP
 
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include <list>
 
 class OmTileDrawer;

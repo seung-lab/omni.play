@@ -1,3 +1,4 @@
+#include "tiles/pools/omTilePools.hpp"
 #include "project/omProject.h"
 #include "project/omProjectImpl.hpp"
 
@@ -115,4 +116,6 @@ void OmProject::Close()
     OmCacheManager::Delete();
 
     OmHdf5Manager::Delete();
+
+    OmTilePools::Reset();
 }

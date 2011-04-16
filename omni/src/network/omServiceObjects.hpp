@@ -3,11 +3,13 @@
 
 class OmAssembleTilesIntoSlice;
 class OmExtractMesh;
+class OmWriteTile;
 
 class OmServiceObjects {
 private:
     boost::scoped_ptr<OmAssembleTilesIntoSlice> tileAssembler_;
     boost::scoped_ptr<OmExtractMesh> meshExtractor_;
+    boost::scoped_ptr<OmWriteTile> tileWriter_;
 
 public:
     OmServiceObjects();
@@ -42,8 +44,9 @@ public:
     std::string GetProjectData();
     std::string ChangeThreshold(const OmID segmentationID, const float threshold);
 
-    std::string MakeTileFileSegmentation(const int sliceNum, const int tileX, const int tileY);
     std::string GetSegmentationDim();
+    std::string MakeTileFileChannel(const int sliceNum, const int tileX, const int tileY);
+    std::string MakeTileFileSegmentation(const int sliceNum, const int tileX, const int tileY);
 };
 
 #endif

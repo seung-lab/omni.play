@@ -7,7 +7,7 @@
 #include "segment/lists/omSegmentListGlobal.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "utility/omTimer.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 

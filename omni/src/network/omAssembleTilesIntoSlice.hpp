@@ -2,18 +2,21 @@
 #define OM_ASSEMBLE_TILES_INTO_SLICE_HPP
 
 #include "common/omDebug.h"
+#include "network/omJpeg.h"
 #include "system/cache/omCacheManager.h"
+#include "threads/omTaskManager.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
 #include "tiles/omTileCoord.h"
 #include "utility/dataWrappers.h"
-#include "threads/omThreadPool.hpp"
 #include "utility/omTimer.hpp"
 #include "utility/omUUID.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omMipVolume.h"
 #include "zi/omMutex.h"
+
+#include <zi/concurrency/semaphore.hpp>
 
 #include <QPainter>
 
@@ -225,11 +228,17 @@ private:
 
         const QString fname = fileName(vol, uuid);
 
-        writeJPEG(scaled.width(), scaled.height(), scaled.bits(), fname.toStdString());
+        writeJPEG(vol, scaled, fname);
     }
 
-    void writeJPEG(const uint32_t width, const uint32_t height,
-                   uint8_t const*const data, const std::string& fileName);
+    void writeJPEG(OmChannel*, const QImage& scaled, const QString& fname){
+        //scaled.save(fname);
+        om::jpeg::write8bit(scaled.width(), scaled.height(), scaled.bits(), fname.toStdString());
+    }
+
+    void writeJPEG(OmSegmentation*, const QImage& scaled, const QString& fname){
+        om::jpeg::writeRGB(scaled.width(), scaled.height(), scaled.bits(), fname.toStdString());
+    }
 
     template <typename T>
     OmTilePtr getTile(T* vol, const DataCoord& dataCoord)
@@ -243,7 +252,7 @@ private:
                                     CHANNEL);
 
         OmTilePtr tile;
-        OmTileCache::doGet(tile, tileCoord, om::BLOCKING);
+        OmTileCache::Get(tile, tileCoord, om::BLOCKING);
 
         return tile;
     }

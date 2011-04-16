@@ -3,7 +3,6 @@
 
 #include "chunks/omSegChunk.h"
 #include "datalayer/hdf5/omHdf5ChunkUtils.hpp"
-#include "system/cache/omVolSliceCache.hpp"
 #include "utility/dataWrappers.h"
 #include "volume/io/omVolumeData.h"
 #include "volume/omVolumeTypes.hpp"
@@ -33,7 +32,7 @@ private:
             SegmentationDataWrapper sdw(*iter);
             OmSegmentation& seg = sdw.GetSegmentation();
             convertVolume(seg);
-            seg.SliceCache()->Load();
+            seg.loadVolData();
         }
     }
 

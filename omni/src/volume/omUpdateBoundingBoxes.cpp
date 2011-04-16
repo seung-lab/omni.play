@@ -1,4 +1,4 @@
-#include "threads/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "volume/omUpdateBoundingBoxes.h"
 #include "chunks/omSegChunk.h"
 #include "chunks/omChunkCoord.h"
