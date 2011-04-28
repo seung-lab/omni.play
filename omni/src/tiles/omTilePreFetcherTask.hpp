@@ -1,6 +1,7 @@
 #ifndef OM_TILE_PRE_FETCHER_TASK_HPP
 #define OM_TILE_PRE_FETCHER_TASK_HPP
 
+#include "utility/omSharedPtr.hpp"
 #include "zi/omThreads.h"
 
 class OmView2dState;
@@ -8,18 +9,18 @@ class OmOnScreenTileCoords;
 
 class OmTilePreFetcherTask : public zi::runnable {
 public:
-	OmTilePreFetcherTask(const boost::shared_ptr<OmView2dState>& state)
-		: state_(state) {}
+    OmTilePreFetcherTask(const om::shared_ptr<OmView2dState>& state)
+        : state_(state) {}
 
-	void run();
+    void run();
 
 private:
-	const boost::shared_ptr<OmView2dState> state_;
-	boost::shared_ptr<OmOnScreenTileCoords> onScreenTileCoords_;
+    const om::shared_ptr<OmView2dState> state_;
+    om::shared_ptr<OmOnScreenTileCoords> onScreenTileCoords_;
 
-	void preLoadDepth(const int depth);
+    void preLoadDepth(const int depth);
 
-	bool shouldExitEarly();
+    bool shouldExitEarly();
 };
 
 #endif

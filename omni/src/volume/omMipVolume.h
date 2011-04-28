@@ -39,8 +39,8 @@ public:
         return MIPVOL_BUILT == mBuildState;
     }
 
-    boost::shared_ptr<std::deque<OmChunkCoord> > GetMipChunkCoords() const;
-    boost::shared_ptr<std::deque<OmChunkCoord> > GetMipChunkCoords(const int mipLevel) const;
+    om::shared_ptr<std::deque<OmChunkCoord> > GetMipChunkCoords() const;
+    om::shared_ptr<std::deque<OmChunkCoord> > GetMipChunkCoords(const int mipLevel) const;
 
     //mip data accessors
     bool ContainsVoxel(const DataCoord &vox);

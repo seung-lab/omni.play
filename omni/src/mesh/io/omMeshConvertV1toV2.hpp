@@ -3,16 +3,16 @@
 
 #include "mesh/io/v2/omMeshReaderV2.hpp"
 #include "mesh/io/omMeshConvertV1toV2Task.hpp"
-#include "utility/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 
 class OmMeshConvertV1toV2 {
 private:
     OmSegmentation* segmentation_;
     const double threshold_;
 
-    boost::shared_ptr<OmMeshReaderV1> hdf5Reader_;
-    boost::shared_ptr<OmMeshReaderV2> meshReader_;
-    boost::shared_ptr<OmMeshWriterV2> meshWriter_;
+    om::shared_ptr<OmMeshReaderV1> hdf5Reader_;
+    om::shared_ptr<OmMeshReaderV2> meshReader_;
+    om::shared_ptr<OmMeshWriterV2> meshWriter_;
 
     OmThreadPool threadPool_;
 
@@ -32,13 +32,13 @@ public:
     void Start()
     {
         threadPool_.start(1);
-        boost::shared_ptr<OmMeshConvertV1toV2Task> task =
-            boost::make_shared<OmMeshConvertV1toV2Task>(segmentation_);
-        threadPool_.addTaskBack(task);
+        om::shared_ptr<OmMeshConvertV1toV2Task> task =
+            om::make_shared<OmMeshConvertV1toV2Task>(segmentation_);
+        threadPool_.push_back(task);
     }
 
-    boost::shared_ptr<OmDataForMeshLoad>
-    ReadAndConvert(const OmMipMeshCoord& meshCoord)
+    om::shared_ptr<OmDataForMeshLoad>
+    ReadAndConvert(const OmMeshCoord& meshCoord)
     {
         const OmSegID segID = meshCoord.SegID();
         const OmChunkCoord& coord = meshCoord.Coord();
@@ -46,14 +46,14 @@ public:
         if(!meshWriter_->Contains(segID, coord)){
             std::cout << "did not find segID " << segID
                       << " in chunk " << coord << "\n";
-            return boost::make_shared<OmDataForMeshLoad>();
+            return om::make_shared<OmDataForMeshLoad>();
         }
 
         if(meshWriter_->WasMeshed(segID, coord)){
             return meshReader_->Read(segID, coord);
         }
 
-        boost::shared_ptr<OmDataForMeshLoad> mesh =
+        om::shared_ptr<OmDataForMeshLoad> mesh =
             hdf5Reader_->Read(segID, coord);
 
         meshWriter_->Save(segID, coord, mesh,

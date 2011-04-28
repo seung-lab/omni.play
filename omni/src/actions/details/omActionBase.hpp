@@ -8,14 +8,14 @@
 template <typename IMPL>
 class OmActionBase : public OmUndoCommand {
 protected:
-    boost::shared_ptr<IMPL> impl_;
+    om::shared_ptr<IMPL> impl_;
 
 public:
     OmActionBase()
-        : impl_(boost::make_shared<IMPL>())
+        : impl_(om::make_shared<IMPL>())
     {}
 
-    OmActionBase(boost::shared_ptr<IMPL> impl)
+    OmActionBase(om::shared_ptr<IMPL> impl)
         : impl_(impl)
     {}
 

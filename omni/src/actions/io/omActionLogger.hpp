@@ -5,7 +5,8 @@
 #include "actions/omActions.h"
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
-#include "utility/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
+#include "threads/omTaskManagerTypes.h"
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
 
@@ -27,15 +28,15 @@ public:
     }
 
     template <typename T>
-    static void save(boost::shared_ptr<T> actionImpl,
+    static void save(om::shared_ptr<T> actionImpl,
                      const std::string& str)
     {
-        boost::shared_ptr<OmActionLoggerTask<T> >
+        om::shared_ptr<OmActionLoggerTask<T> >
             task(new OmActionLoggerTask<T>(actionImpl,
                                            str,
                                            impl().logFolder_));
 
-        impl().threadPool_.addTaskBack(task);
+        impl().threadPool_.push_back(task);
     }
 
 private:

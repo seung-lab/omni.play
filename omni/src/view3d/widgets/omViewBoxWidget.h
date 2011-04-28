@@ -1,6 +1,7 @@
 #ifndef OM_VIEW_BOX_WIDGET_H
 #define OM_VIEW_BOX_WIDGET_H
 
+#include "tiles/omTileTypes.hpp"
 #include "view3d/omCamera.h"
 #include "view3d/omView3dWidget.h"
 
@@ -9,7 +10,7 @@ class OmViewGroupView2dState;
 
 class OmViewBoxWidget : public OmView3dWidget {
 public:
-    OmViewBoxWidget(OmView3d *view3d, OmViewGroupState * vgs);
+    OmViewBoxWidget(OmView3d *view3d, OmViewGroupState* vgs);
     virtual void Draw();
 
 private:

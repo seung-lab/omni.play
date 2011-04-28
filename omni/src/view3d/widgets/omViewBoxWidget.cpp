@@ -35,7 +35,7 @@ void OmViewBoxWidget::Draw()
     {
         draw2dBoxWrapper(view2dState, XY_VIEW);
         draw2dBoxWrapper(view2dState, XZ_VIEW);
-        draw2dBoxWrapper(view2dState, YZ_VIEW);
+        draw2dBoxWrapper(view2dState, ZY_VIEW);
     }
 
     if(Om3dPreferences::getDrawCrosshairsIn3D()){
@@ -128,7 +128,7 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
         v3 = DataCoord(max.x, depth, min.y);
         break;
 
-    case YZ_VIEW:
+    case ZY_VIEW:
         glColor3fv(OMGL_RED);
         v0 = DataCoord(depth, min.x, min.y);
         v1 = DataCoord(depth, max.x, min.y);
@@ -172,7 +172,7 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
             channel.Coords().DataToNormCoord(d->GetTileCoord().getDataCoord());
 
         //debug ("FIXME", "normCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(normCoord));
-        glBindTexture(GL_TEXTURE_2D, d->GetTexture()->GetTextureID());
+        glBindTexture(GL_TEXTURE_2D, d->GetTexture().GetTextureID());
         glBegin(GL_QUADS);
 
         if (plane == XY_VIEW) {
@@ -225,7 +225,7 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
             glTexCoord2f(dataMin.x, dataMax.y);  /* upper left corner of image */
             glVertex3f(spaceMin.x, thisCoord.y,spaceMax.y);
             glEnd();
-        } else if (plane == YZ_VIEW) {
+        } else if (plane == ZY_VIEW) {
             if (getTextureMax(thisCoord, plane, dataMax, spaceMax)){
                 spaceMax.x = thisCoord.z + tileLength.z;
                 spaceMax.y = thisCoord.y + tileLength.y;
@@ -295,7 +295,7 @@ bool OmViewBoxWidget::getTextureMax(Vector3f coord,
         result = ((coord.x + tileLength.x) < spaceMax.x);
         result = result && ((coord.z + tileLength.z) < spaceMax.y);
         break;
-    case YZ_VIEW:
+    case ZY_VIEW:
         if (maxLimit.z>maxScreen.y) spaceMax.y=maxScreen.y; else spaceMax.y=maxLimit.z;
         if (maxLimit.y>maxScreen.x) spaceMax.x=maxScreen.x; else spaceMax.x=maxLimit.y;
         dataMax.x = (spaceMax.x-coord.y)/tileLength.y;
@@ -341,7 +341,7 @@ OmViewBoxWidget::getTextureMin(Vector3f coord,ViewType plane, Vector2f & dataMin
         result = (coord.x > spaceMin.x);
         result = result && (coord.z > spaceMin.y);
         break;
-    case YZ_VIEW:
+    case ZY_VIEW:
         if (minLimit.z<minScreen.y) spaceMin.y=minScreen.y; else spaceMin.y=minLimit.z;
         if (minLimit.y<minScreen.x) spaceMin.x=minScreen.x; else spaceMin.x=minLimit.y;
         dataMin.x = (spaceMin.x - coord.y)/tileLength.y;

@@ -1,20 +1,20 @@
 #ifndef OM_MESH_CACHE_H
 #define OM_MESH_CACHE_H
 
-#include "system/cache/omThreadedCache.h"
+#include "system/cache/omThreadedMeshCache.h"
 #include "mesh/omMeshTypes.h"
-#include "mesh/omMipMeshCoord.h"
+#include "mesh/omMeshCoord.h"
 
-class OmMipMeshManager;
+class OmMeshManager;
 
-class OmMeshCache : public OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr> {
+class OmMeshCache : public OmThreadedMeshCache {
 public:
-    OmMeshCache(OmMipMeshManager * parent);
+    OmMeshCache(OmMeshManager * parent);
 
-    OmMipMeshPtr HandleCacheMiss(const OmMipMeshCoord &meshCoord);
+    OmMeshPtr HandleCacheMiss(const OmMeshCoord &meshCoord);
 
 private:
-    OmMipMeshManager *const meshMan_;
+    OmMeshManager *const meshMan_;
 };
 
 #endif

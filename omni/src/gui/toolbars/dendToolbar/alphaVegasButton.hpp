@@ -15,14 +15,14 @@ class AlphaVegasButton : public OmButton<DisplayTools> {
 	{}
 
  private:
-	boost::shared_ptr<OmAlphaVegasMode> vegas_;
+	om::shared_ptr<OmAlphaVegasMode> vegas_;
 
 	void doAction()
 	{
 		if(vegas_){
 			vegas_.reset();
 		} else {
-			vegas_ = boost::make_shared<OmAlphaVegasMode>();
+			vegas_ = om::make_shared<OmAlphaVegasMode>();
 		}
 	}
 };

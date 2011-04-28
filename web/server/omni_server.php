@@ -1,6 +1,6 @@
 <?php
 
-include('tcp_socket.php');
+include_once('tcp_socket.php');
 
 function talk_omni_server($jsonArray)
 {

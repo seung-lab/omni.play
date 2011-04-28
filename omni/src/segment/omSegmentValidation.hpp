@@ -14,7 +14,7 @@
 class OmSegmentValidation {
 public:
     static void SetAsValidated(const SegmentationDataWrapper& sdw,
-                               boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                               om::shared_ptr<std::set<OmSegment*> > selectedSegments,
                                const bool valid)
     {
         OmSegmentValidation validator(sdw, selectedSegments, valid);
@@ -23,12 +23,12 @@ public:
 
 private:
     const SegmentationDataWrapper& sdw_;
-    const boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+    const om::shared_ptr<std::set<OmSegment*> > selectedSegments_;
     const bool valid_;
     OmMSTEdge *const edges_;
 
     OmSegmentValidation(const SegmentationDataWrapper& sdw,
-                        boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                        om::shared_ptr<std::set<OmSegment*> > selectedSegments,
                         const bool valid)
         : sdw_(sdw)
         , selectedSegments_(selectedSegments)

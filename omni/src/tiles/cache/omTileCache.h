@@ -3,6 +3,7 @@
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
+#include "tiles/omTileTypes.hpp"
 #include "zi/omUtility.h"
 
 class OmTileCoord;
@@ -19,19 +20,19 @@ public:
 
     static void RegisterDrawer(OmTileDrawer*);
     static void UnRegisterDrawer(OmTileDrawer*);
+    static void SetDrawerActive(OmTileDrawer*);
     static void SetDrawerDone(OmTileDrawer*);
     static bool AreDrawersActive();
     static void WidgetVisibilityChanged(OmTileDrawer* drawer,
                                         const bool visible);
 
-    static void Get(OmTileDrawer* drawer,
-                    OmTilePtr& tile,
-                    const OmTileCoord& key,
-                    const om::Blocking blocking);
+    static void Get(OmTilePtr& tile, const OmTileCoord& key, const om::Blocking blocking);
 
-    static void BlockingCreate(OmTileDrawer* drawer,
-                               OmTilePtr& tile,
-                               const OmTileCoord& key);
+    static void QueueUp(const OmTileCoord& key);
+
+    static void GetDontQueue(OmTilePtr& tile, const OmTileCoord& key);
+
+    static void BlockingCreate(OmTilePtr& tile, const OmTileCoord& key);
 
     static void Prefetch(const OmTileCoord& key);
 
@@ -42,13 +43,6 @@ public:
 private:
     OmTileCache();
     ~OmTileCache();
-
-    static void doGet(OmTilePtr& tile,
-                      const OmTileCoord& key,
-                      const om::Blocking blocking);
-
-    friend class OmTileDumper; // access doGet(...)
-    friend class OmAssembleTilesIntoSlice;
 
     friend class zi::singleton<OmTileCache>;
 };

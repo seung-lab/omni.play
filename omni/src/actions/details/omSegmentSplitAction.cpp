@@ -6,14 +6,14 @@
 
 OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
                                             const OmSegmentEdge & edge )
-    : impl_(boost::make_shared<OmSegmentSplitActionImpl>(sdw, edge))
+    : impl_(om::make_shared<OmSegmentSplitActionImpl>(sdw, edge))
 {
     SetUndoable(true);
 }
 
 OmSegmentSplitAction::OmSegmentSplitAction( const SegmentDataWrapper & sdw,
                                             const DataCoord coord1, const DataCoord coord2)
-    : impl_(boost::make_shared<OmSegmentSplitActionImpl>(sdw, coord1, coord2))
+    : impl_(om::make_shared<OmSegmentSplitActionImpl>(sdw, coord1, coord2))
 {
     SetUndoable(true);
 }

@@ -39,6 +39,12 @@ my $QT_VER = "qt-everywhere-opensource-src-4.7.2";
 my $HDF5_VER = "hdf5-1.8.6";
 my $ZLIB_VER = "zlib-1.2.5";
 
+#my $JPEG_VER = "libjpeg-turbo-1.1.0";
+#if(isMac()){
+#    $JPEG_VER = "jpeg-8c";
+#}
+my $JPEG_VER = "jpeg-8c";
+
 # from http://stackoverflow.com/questions/334686/how-can-i-detect-the-operating-system-in-perl
 sub isMac {
     return ("darwin" eq $^O);
@@ -90,7 +96,8 @@ sub isWindowsCygwin {
 }
 
 sub onCluster {
-    return ($hostname =~ /brainiac/);
+#    return ($hostname =~ /brainiac/);
+    return 0;
 }
 
 sub dealWithCluster
@@ -325,6 +332,11 @@ sub prepareNukeSrcsAndBuild
     build(   $baseFileName, $libFolderName, $buildOptions );
 }
 
+sub libjpeg
+{
+    prepareAndBuild( $JPEG_VER, "libjpeg" );
+}
+
 sub hdf5
 {
     my $args = " --enable-threadsafe ";
@@ -444,6 +456,7 @@ sub menu
     print "1 -- Build hdf5\n";
     print "2 -- Build boost\n";
     print "3 -- Build qt\n";
+    print "4 -- Build libjpeg\n";
     print "5 -- Build omni\n";
     print "6 -- [Do 1 through 5]\n";
     print "7 -- Build one of the small libraries...\n";
@@ -473,6 +486,7 @@ sub buildAll
     hdf5();
     boost();
     qt();
+    libjpeg();
     omni();
 }
 
@@ -489,7 +503,7 @@ sub runMenuEntry
     }elsif( 3 == $entry ){
 	qt();
     }elsif( 4 == $entry ){
-
+        libjpeg();
     }elsif( 5 == $entry ){
 	omni();
     }elsif( 6 == $entry ){
@@ -607,7 +621,7 @@ sub doUbuntuAptGets
     my @packages = qw( libxrender-dev libxext-dev freeglut3-dev g++
 	libfreetype6-dev libxml2 libxml2-dev mesa-common-dev
 	libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
-	libgl1-mesa-glx-dbg flex bison);
+	libgl1-mesa-glx-dbg);
 
     my $args = concatStrList(@packages);
 

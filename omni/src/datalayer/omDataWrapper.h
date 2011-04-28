@@ -44,7 +44,7 @@ class OmDataWrapperBase {
 public:
     OmDataWrapperBase() {}
     virtual ~OmDataWrapperBase() {}
-    typedef boost::shared_ptr<OmDataWrapperBase> ptr_type;
+    typedef om::shared_ptr<OmDataWrapperBase> ptr_type;
 
     template <class C> C* getPtr() {
         return (C*) getVoidPtr();
@@ -66,14 +66,14 @@ public:
     template <class T> friend class OmDataWrapper;
 };
 
-typedef boost::shared_ptr<OmDataWrapperBase> OmDataWrapperPtr;
+typedef om::shared_ptr<OmDataWrapperBase> OmDataWrapperPtr;
 
 template <class T>
 class OmDataWrapper : public OmDataWrapperBase {
 public:
-    typedef boost::shared_ptr<OmDataWrapper< T > > ptr_type;
+    typedef om::shared_ptr<OmDataWrapper< T > > ptr_type;
 
-    explicit OmDataWrapper(boost::shared_ptr<T> sptr)
+    explicit OmDataWrapper(om::shared_ptr<T> sptr)
         : ptr_(sptr) {}
 
     static OmDataWrapperPtr produceNull() {
@@ -126,7 +126,7 @@ public:
         return ptr_.get();
     }
 
-    boost::shared_ptr<T> Ptr(){
+    om::shared_ptr<T> Ptr(){
         return ptr_;
     }
 
@@ -151,9 +151,9 @@ public:
     }
 
 private:
-    const boost::shared_ptr<T> ptr_;
+    const om::shared_ptr<T> ptr_;
 
-    static boost::shared_ptr<T> wrapRawPtr(T* rawPtr, const om::OmDataAllocType d){
+    static om::shared_ptr<T> wrapRawPtr(T* rawPtr, const om::OmDataAllocType d){
         switch(d){
         case om::MALLOC:
             return OmSmartPtr<T>::WrapMalloc(rawPtr);
@@ -184,12 +184,12 @@ namespace om {
 namespace ptrs {
 
 template <typename T>
-static OmDataWrapperPtr Wrap(boost::shared_ptr<T> sptr){
-    return boost::make_shared<OmDataWrapper<T> >(sptr);
+static OmDataWrapperPtr Wrap(om::shared_ptr<T> sptr){
+    return om::make_shared<OmDataWrapper<T> >(sptr);
 }
 
 template <typename T>
-boost::shared_ptr<T> UnWrap(const OmDataWrapperPtr wrap)
+om::shared_ptr<T> UnWrap(const OmDataWrapperPtr wrap)
 {
     OmDataWrapper<T>* dataPtrReint =
         reinterpret_cast<OmDataWrapper<T>*>(wrap.get());

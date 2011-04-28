@@ -17,7 +17,7 @@ private:
     const double threshold_;
     const QString fnp_;
 
-    boost::shared_ptr<uint32_t> values_;
+    om::shared_ptr<uint32_t> values_;
     size_t numElements_;
 
     zi::rwmutex mutex_;
@@ -76,10 +76,9 @@ private:
 
     void findValues()
     {
-        OmSegChunkPtr chunk;
-        segmentation_->GetChunk(chunk, coord_);
+        OmSegChunk* chunk = segmentation_->GetChunk(coord_);
 
-        boost::shared_ptr<uint32_t> rawDataPtr =
+        om::shared_ptr<uint32_t> rawDataPtr =
             chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
         uint32_t const*const rawData = rawDataPtr.get();

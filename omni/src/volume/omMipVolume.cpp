@@ -10,7 +10,7 @@ bool OmMipVolume::ContainsVoxel(const DataCoord & vox){
     return coords_.GetDataExtent().contains(vox);
 }
 
-boost::shared_ptr<std::deque<OmChunkCoord> >
+om::shared_ptr<std::deque<OmChunkCoord> >
 OmMipVolume::GetMipChunkCoords() const
 {
     std::deque<OmChunkCoord>* coords = new std::deque<OmChunkCoord>();
@@ -19,15 +19,15 @@ OmMipVolume::GetMipChunkCoords() const
         coords_.addChunkCoordsForLevel(level, coords);
     }
 
-    return boost::shared_ptr<std::deque<OmChunkCoord> >(coords);
+    return om::shared_ptr<std::deque<OmChunkCoord> >(coords);
 }
 
-boost::shared_ptr<std::deque<OmChunkCoord> >
+om::shared_ptr<std::deque<OmChunkCoord> >
 OmMipVolume::GetMipChunkCoords(const int mipLevel) const
 {
     std::deque<OmChunkCoord>* coords = new std::deque<OmChunkCoord>();
 
     coords_.addChunkCoordsForLevel(mipLevel, coords);
 
-    return boost::shared_ptr<std::deque<OmChunkCoord> >(coords);
+    return om::shared_ptr<std::deque<OmChunkCoord> >(coords);
 }

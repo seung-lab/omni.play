@@ -6,26 +6,27 @@
  * Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
-#include "chunks/omChunkTypes.hpp"
 #include "common/om.hpp"
 #include "datalayer/omDataWrapper.h"
 #include "mesh/omMeshTypes.h"
 #include "system/omManageableObject.h"
 #include "volume/omMipVolume.h"
 
+class OmChunk;
 class OmChunkUniqueValuesManager;
 class OmGroups;
 class OmMST;
 class OmMeshDrawer;
-class OmMipMeshManager;
-class OmMipMeshManagers;
+class OmMeshManager;
+class OmMeshManagers;
+class OmSegChunk;
 class OmSegment;
-class OmSegments;
 class OmSegmentLists;
+class OmSegments;
 class OmUserEdges;
 class OmValidGroupNum;
 class OmViewGroupState;
-class OmVolSliceCache;
+class OmRawSegTileCache;
 class OmVolumeCuller;
 class OmVolumeData;
 class SegmentationDataWrapper;
@@ -66,7 +67,7 @@ public:
     void SetDendThreshold( double t );
     double GetDendThreshold();
 
-    OmMipMeshManager* MeshManager(const double threshold);
+    OmMeshManager* MeshManager(const double threshold);
 
     void UpdateVoxelBoundingData();
 
@@ -74,8 +75,7 @@ public:
 
     void BuildBlankVolume(const Vector3i & dims);
 
-    void GetChunk(OmChunkPtr& ptr, const OmChunkCoord& coord);
-    void GetChunk(OmSegChunkPtr& ptr, const OmChunkCoord& coord);
+    OmSegChunk* GetChunk(const OmChunkCoord& coord);
 
     uint32_t GetVoxelValue(const DataCoord &vox);
     void SetVoxelValue(const DataCoord &vox, const uint32_t value);
@@ -93,7 +93,7 @@ public:
     inline OmMeshDrawer* MeshDrawer(){
         return meshDrawer_.get();
     }
-    inline OmMipMeshManagers* MeshManagers(){
+    inline OmMeshManagers* MeshManagers(){
         return meshManagers_.get();
     }
     inline OmSegments* Segments(){
@@ -111,7 +111,7 @@ public:
     inline OmVolumeData* VolData(){
         return volData_.get();
     }
-    inline OmVolSliceCache* SliceCache(){
+    inline OmRawSegTileCache* SliceCache(){
         return volSliceCache_.get();
     }
     inline OmChunkCache<OmSegmentation, OmSegChunk>* ChunkCache(){
@@ -123,14 +123,14 @@ private:
     boost::scoped_ptr<OmGroups> groups_;
     boost::scoped_ptr<OmMST> mst_;
     boost::scoped_ptr<OmMeshDrawer> meshDrawer_;
-    boost::scoped_ptr<OmMipMeshManagers> meshManagers_;
+    boost::scoped_ptr<OmMeshManagers> meshManagers_;
     boost::scoped_ptr<OmChunkCache<OmSegmentation, OmSegChunk> > chunkCache_;
     boost::scoped_ptr<OmSegments> segments_;
     boost::scoped_ptr<OmSegmentLists> segmentLists_;
     boost::scoped_ptr<OmUserEdges> mstUserEdges_;
     boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
     boost::scoped_ptr<OmVolumeData> volData_;
-    boost::scoped_ptr<OmVolSliceCache> volSliceCache_;
+    boost::scoped_ptr<OmRawSegTileCache> volSliceCache_;
 
     template <class T> friend class OmVolumeBuilder;
     template <class T> friend class OmVolumeBuilderHdf5;

@@ -16,22 +16,18 @@
 
 class OmTileDrawer{
 public:
-    OmTileDrawer(boost::shared_ptr<OmView2dState> state,
+    OmTileDrawer(om::shared_ptr<OmView2dState> state,
                  const ViewType viewType)
         : state_(state)
         , viewType_(viewType)
         , blockingRedraw_(false)
         , tileCount_(0)
         , tileCountIncomplete_(0)
-        , openglTileDrawer_(new OmOpenGLTileDrawer(viewType))
-        , tileCalcDownsampled_(new OmCalcTileCoordsDownsampled(viewType, this))
-        , blockingGetTiles_(new OmBlockingGetTiles(tilesToDraw_, this))
+        , openglTileDrawer_(new OmOpenGLTileDrawer())
+        , tileCalcDownsampled_(new OmCalcTileCoordsDownsampled(viewType))
+        , blockingGetTiles_(new OmBlockingGetTiles(tilesToDraw_))
     {
         OmTileCache::RegisterDrawer(this);
-
-#ifdef WIN32
-        mGlBlendColorFunction = (GLCOLOR) wglGetProcAddress("glBlendColor");
-#endif
     }
 
     ~OmTileDrawer()
@@ -65,9 +61,12 @@ public:
             draw(seg);
         }
 
-        if(IsDrawComplete() && !state_->getScribbling())
-        {
+        if(!IsDrawComplete() || state_->getScribbling()){
+            OmTileCache::SetDrawerActive(this);
+
+        } else {
             OmTileCache::SetDrawerDone(this);
+
             if(!OmTileCache::AreDrawersActive()){
                 OmGarbage::safeCleanTextureIds();
             }
@@ -86,12 +85,12 @@ public:
         return 0 == tileCountIncomplete_;
     }
 
-    const boost::shared_ptr<OmView2dState>& GetState(){
+    const om::shared_ptr<OmView2dState>& GetState(){
         return state_;
     }
 
 private:
-    boost::shared_ptr<OmView2dState> state_;
+    om::shared_ptr<OmView2dState> state_;
     const ViewType viewType_;
 
     bool blockingRedraw_;
@@ -107,8 +106,8 @@ private:
 
     void reset()
     {
-        // keep old tiles around to make sure tiles are not destoryed before opengl is
-        //  done using their texture IDs...
+        // keep old tiles around to make sure OpenGL texture IDs are not cleared until
+        //   the card is done with them...
         oldTilesToDraw_.swap(tilesToDraw_);
         tilesToDraw_ = std::deque<OmTileAndVertices>();
 
@@ -165,11 +164,10 @@ private:
         FOR_EACH(tileCL, *tileCoordsAndLocations)
         {
             OmTilePtr tile;
-            OmTileCache::Get(this, tile, tileCL->tileCoord, om::NON_BLOCKING);
+            OmTileCache::Get(tile, tileCL->tileCoord, om::NON_BLOCKING);
 
             if(tile)
             {
-
                 OmTileAndVertices tv = {tile,
                                         tileCL->vertices,
                                         defaultTextureVectices};
@@ -180,9 +178,7 @@ private:
             } else
             {
                 ++tileCountIncomplete_;
-                // TODO
-                // tileCalcDownsampled_->TryDownsample(vol, tileCL->tileCoord,
-                //                                     tileCL->vertices, tilesToDraw_);
+                tileCalcDownsampled_->TryDownsample(*tileCL, tilesToDraw_);
             }
         }
     }
@@ -210,7 +206,9 @@ private:
     {
         const om::FilterType filterType = filter->FilterType();
 
-        if(om::OVERLAY_NONE == filterType){
+        if(om::OVERLAY_NONE == filterType ||
+           filter->GetAlpha() < 0.05) // don't bother drawing segmentation if user won't see it
+        {
             return false;
 
         } else if (om::OVERLAY_CHANNEL == filterType) {
@@ -229,11 +227,6 @@ private:
         const bool shouldBrightenAlpha = drawFromFilter(filter);
         om::opengl_::SetupGLblendColor(filter->GetAlpha(), shouldBrightenAlpha);
     }
-
-#ifdef WIN32
-    typedef void (*GLCOLOR)(GLfloat, GLfloat, GLfloat, GLfloat);
-    GLCOLOR mGlBlendColorFunction;
-#endif
 };
 
 #endif

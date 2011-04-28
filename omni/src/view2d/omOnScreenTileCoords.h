@@ -2,20 +2,20 @@
 #define OM_ON_SCREEN_TILE_COORDS_H
 
 #include "common/omCommon.h"
-#include "tiles/omTileTypes.hpp"
+#include "tiles/omTileImplTypes.hpp"
 
 class OmView2dState;
 class OmFilter2d;
 
 class OmOnScreenTileCoords {
 public:
-    OmOnScreenTileCoords(const boost::shared_ptr<OmView2dState>&);
+    OmOnScreenTileCoords(const om::shared_ptr<OmView2dState>&);
 
     OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations();
     OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations(const int);
 
 private:
-    const boost::shared_ptr<OmView2dState> state_;
+    const om::shared_ptr<OmView2dState> state_;
     OmMipVolume *const vol_;
     const ViewType viewType_;
     OmViewGroupState *const vgs_;

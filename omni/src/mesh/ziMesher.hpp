@@ -85,7 +85,7 @@ private:
 
     void init()
     {
-        boost::shared_ptr<std::deque<OmChunkCoord> > levelZeroChunks =
+        om::shared_ptr<std::deque<OmChunkCoord> > levelZeroChunks =
             segmentation_->GetMipChunkCoords(0);
 
         numChunksTotal_ = levelZeroChunks->size();
@@ -230,7 +230,7 @@ private:
     }
 
     void setupMarchingCube(zi::mesh::marching_cubes< int >& cube_marcher,
-                           OmSegChunkPtr& chunk)
+                           OmSegChunk* chunk)
     {
         OmImage< uint32_t, 3 > image =
             OmChunkUtils::GetMeshOmImageData(segmentation_, chunk);
@@ -246,8 +246,7 @@ private:
     {
         static const int chunkDim = segmentation_->Coords().GetChunkDimension();
 
-        OmSegChunkPtr chunk;
-        segmentation_->GetChunk( chunk, coord );
+        OmSegChunk* chunk = segmentation_->GetChunk(coord);
 
         const NormBbox& dstBbox = chunk->Mipping().GetNormExtent();
 

@@ -14,7 +14,7 @@ template <typename T>
 class OmMemMappedFileQTbase : public OmIOnDiskFile<T> {
 protected:
     const std::string fnp_;
-    boost::shared_ptr<QFile> file_;
+    om::shared_ptr<QFile> file_;
     uchar* map_;
 
     OmMemMappedFileQTbase(const std::string& fnp)
@@ -33,7 +33,7 @@ protected:
 
     void open()
     {
-        file_ = boost::make_shared<QFile>(QString::fromStdString(fnp_));
+        file_ = om::make_shared<QFile>(QString::fromStdString(fnp_));
 
         if(!file_->open(QIODevice::ReadWrite)) {
             throw OmIoException("could not open", fnp_);
@@ -72,11 +72,11 @@ template <typename T>
 class OmMemMappedFileReadQT : public OmMemMappedFileQTbase<T> {
 public:
 
-    static boost::shared_ptr<OmMemMappedFileReadQT<T> >
+    static om::shared_ptr<OmMemMappedFileReadQT<T> >
     Reader(const std::string& fnp)
     {
         OmMemMappedFileReadQT* ret = new OmMemMappedFileReadQT(fnp, 0);
-        return boost::shared_ptr<OmMemMappedFileReadQT<T> >(ret);
+        return om::shared_ptr<OmMemMappedFileReadQT<T> >(ret);
     }
 
 private:
@@ -111,23 +111,23 @@ template <typename T>
 class OmMemMappedFileWriteQT : public OmMemMappedFileQTbase<T> {
 public:
 
-    static boost::shared_ptr<OmMemMappedFileWriteQT<T> >
+    static om::shared_ptr<OmMemMappedFileWriteQT<T> >
     WriterNumBytes(const std::string& fnp, const int64_t numBytes,
                    const om::ZeroMem shouldZeroFill)
     {
         OmMemMappedFileWriteQT* ret = new OmMemMappedFileWriteQT(fnp, numBytes,
                                                                  shouldZeroFill);
-        return boost::shared_ptr<OmMemMappedFileWriteQT<T> >(ret);
+        return om::shared_ptr<OmMemMappedFileWriteQT<T> >(ret);
     }
 
-    static boost::shared_ptr<OmMemMappedFileWriteQT<T> >
+    static om::shared_ptr<OmMemMappedFileWriteQT<T> >
     WriterNumElements(const std::string& fnp, const int64_t numElements,
                       const om::ZeroMem shouldZeroFill)
     {
         const uint64_t numBytes = numElements * sizeof(T);
         OmMemMappedFileWriteQT* ret = new OmMemMappedFileWriteQT(fnp, numBytes,
                                                                  shouldZeroFill);
-        return boost::shared_ptr<OmMemMappedFileWriteQT<T> >(ret);
+        return om::shared_ptr<OmMemMappedFileWriteQT<T> >(ret);
     }
 
 private:

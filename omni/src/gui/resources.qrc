@@ -16,5 +16,7 @@
 <file>toolbars/mainToolbar/icons/1278008555_agt_softwareD.png</file>
 <file>toolbars/mainToolbar/icons/1301504581_emblem-art2.png</file>
 <file>toolbars/mainToolbar/icons/ajax-loader.gif</file>
+<file>inspectors/segmentation/icons/1302814771_advancedsettings.png</file>
+<file>inspectors/segmentation/icons/1302822648_filesaveas.png</file>
 </qresource>
 </RCC>

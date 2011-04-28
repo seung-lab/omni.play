@@ -32,7 +32,7 @@ private Q_SLOTS:
     void nameEditChanged();
 
 private:
-    boost::shared_ptr<ChannelDataWrapper> cdw;
+    om::shared_ptr<ChannelDataWrapper> cdw;
     void updateFileList();
     void populateChannelInspector();
 

@@ -6,7 +6,7 @@
 #include "tiles/cache/omTileCache.h"
 #include "view2d/brush/omBrushOppTypes.h"
 
-#include "system/cache/omVolSliceCache.hpp"
+#include "system/cache/omRawSegTileCache.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 
 class OmBrushEraseUtils {
@@ -32,7 +32,7 @@ public:
         OmSliceCache sliceCache(info->segmentation,
                                 info->viewType);
 
-        virtual boost::shared_ptr<boost::unordered_set<OmSegID> > segIDsAndPts =
+        virtual om::shared_ptr<boost::unordered_set<OmSegID> > segIDsAndPts =
             sliceCache.GetSegIDs(chunksAndPts, info->depth % info->chunkDim);
 
 
@@ -91,7 +91,7 @@ private:
         {
             SegmentationDataWrapper sdw(*iter);
             OmSegmentation& seg = sdw.GetSegmentation();
-            OmVolSliceCache* sliceCache = seg.SliceCache();
+            OmRawSegTileCache* sliceCache = seg.SliceCache();
             sliceCache->Clear();
         }
 

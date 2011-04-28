@@ -44,7 +44,7 @@ private:
         downsample();
     }
 
-    void build(OmSegmentation*)
+    void build(OmSegmentation* vol)
     {
         setVolAsBuilding();
 
@@ -59,6 +59,8 @@ private:
         loadDendrogramWrapper(vol_);
 
         setVolAsBuilt();
+
+        vol->loadVolData();
     }
 
 protected:

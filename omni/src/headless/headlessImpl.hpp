@@ -247,7 +247,7 @@ public:
 
         double timeSecs = 0;
 
-        boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
             vol.GetMipChunkCoords();
         std::deque<OmChunkCoord>& coords = *coordsPtr;
         const uint32_t numChunks = coords.size();

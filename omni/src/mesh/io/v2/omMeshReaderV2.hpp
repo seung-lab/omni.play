@@ -5,7 +5,7 @@
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
-#include "mesh/omMipMeshManager.h"
+#include "mesh/omMeshManager.h"
 
 class OmMeshReaderV2{
 private:
@@ -23,12 +23,12 @@ public:
 	~OmMeshReaderV2()
 	{}
 
-	inline boost::shared_ptr<OmDataForMeshLoad>
-	Read(const OmMipMeshCoord& meshCoord){
+	inline om::shared_ptr<OmDataForMeshLoad>
+	Read(const OmMeshCoord& meshCoord){
 		return Read(meshCoord.SegID(), meshCoord.Coord());
 	}
 
-	boost::shared_ptr<OmDataForMeshLoad>
+	om::shared_ptr<OmDataForMeshLoad>
 	Read(const OmSegID segID, const OmChunkCoord& coord)
 	{
 		OmMeshChunkAllocTableV2* chunk_table =
@@ -36,8 +36,8 @@ public:
 
 		OmMeshChunkDataReaderV2 chunk_data(segmentation_, coord, threshold_);
 
-		boost::shared_ptr<OmDataForMeshLoad> ret =
-			boost::make_shared<OmDataForMeshLoad>();
+		om::shared_ptr<OmDataForMeshLoad> ret =
+			om::make_shared<OmDataForMeshLoad>();
 
 		if(!chunk_table->Contains(segID)){
 			return ret;

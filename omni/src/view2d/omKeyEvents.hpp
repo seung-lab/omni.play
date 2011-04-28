@@ -5,7 +5,6 @@
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentUtils.hpp"
 #include "system/cache/omCacheManager.h"
-#include "view2d/omScreenShotSaver.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "view2d/omView2dZoom.hpp"
@@ -27,10 +26,6 @@ public:
     bool Press(QKeyEvent* event)
     {
         switch (event->key()) {
-
-        // case Qt::Key_M:
-        //     v2d_->GetScreenShotSaver()->toggleEmitMovie();
-        //     break;
 
         case Qt::Key_J:
             Join();

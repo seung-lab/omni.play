@@ -23,18 +23,17 @@ template <class> class OmPooledTile;
 
 class OmTextureID {
 public:
-    OmTextureID();
-    OmTextureID(const Vector2i&, OmPooledTile<uint8_t>*);
-    OmTextureID(const Vector2i&, OmPooledTile<OmColorARGB>*);
+    OmTextureID(const int tileDim, OmPooledTile<uint8_t>*);
+    OmTextureID(const int tileDim, OmPooledTile<OmColorARGB>*);
 
     virtual ~OmTextureID();
 
     int GetWidth() const {
-        return dims_.x;
+        return tileDim_;
     }
 
     int GetHeight() const {
-        return dims_.y;
+        return tileDim_;
     }
 
     GLuint GetTextureID() const
@@ -103,28 +102,20 @@ public:
         }
     }
 
-    void TextureBindComplete(const GLuint textureID)
-    {
-        flag_ = OMTILE_GOOD;
-        textureID_ = textureID;
-        deleteTileData();
-    }
+    void TextureBindComplete(const GLuint textureID);
 
 private:
+    const int tileDim_;
+    boost::scoped_ptr<OmPooledTileWrapper> pooledTile_;
+
     enum OmTileFlag {
-        OMTILE_COORDINVALID = 0,
         OMTILE_NEEDCOLORMAP,
         OMTILE_NEEDTEXTUREBUILT,
         OMTILE_GOOD
     };
-
-    boost::optional<GLuint> textureID_;
-    const Vector2i dims_;
     OmTileFlag flag_;
 
-    OmPooledTileWrapper* pooledTile_;
-
-    void deleteTileData();
+    boost::optional<GLuint> textureID_;
 };
 
 #endif

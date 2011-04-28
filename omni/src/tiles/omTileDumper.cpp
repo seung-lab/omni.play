@@ -51,7 +51,7 @@ void OmTileDumper::DumpTiles()
         for (int z = 0; z < mip_coord_dims.z; z+=chunkDim){
             for (int y = 0; y < mip_coord_dims.y; y+=chunkDim){
                 for (int x = 0; x < mip_coord_dims.x; ++x){
-                    saveTile(out, mipLevel, x, y, z, YZ_VIEW);
+                    saveTile(out, mipLevel, x, y, z, ZY_VIEW);
                 }
             }
         }
@@ -77,17 +77,17 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel,
                                 SEGMENTATION);
 
     OmTilePtr tile;
-    OmTileCache::doGet(tile, tileCoord, om::BLOCKING);
+    OmTileCache::Get(tile, tileCoord, om::BLOCKING);
 
-    const OmTextureIDPtr& texture = tile->GetTexture();
+    const OmTextureID& texture = tile->GetTexture();
     const int numBytes = tile->NumBytes();
 
-    const char* tileData = (const char*)texture->GetTileData();
-    const QImage::Format qimageFormat = texture->GetQTimageFormat();
+    const char* tileData = (const char*)texture.GetTileData();
+    const QImage::Format qimageFormat = texture.GetQTimageFormat();
 
     QImage img = QImage((const uchar*)tileData,
-                        texture->GetWidth(),
-                        texture->GetHeight(),
+                        texture.GetWidth(),
+                        texture.GetHeight(),
                         qimageFormat);
 
     QGLWidget::convertToGLFormat(img);

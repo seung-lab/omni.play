@@ -14,7 +14,7 @@
 
 class OmSegmentUtils {
 public:
-    boost::shared_ptr<std::set<OmSegment*> >
+    om::shared_ptr<std::set<OmSegment*> >
     static GetAllChildrenSegments(OmSegments* segments,
                                   const OmSegIDsSet& set)
     {
@@ -29,7 +29,7 @@ public:
             seg = iter.getNextSegment();
         }
 
-        return boost::shared_ptr<std::set<OmSegment*> >(children);
+        return om::shared_ptr<std::set<OmSegment*> >(children);
     }
 
     static OmSegment* GetSegmentBasedOnThreshold(OmSegment* seg, const float breakThreshold)
@@ -108,7 +108,7 @@ public:
             OmSegIDsSet set;
             set.insert(i);
 
-            boost::shared_ptr<std::set<OmSegment*> > children =
+            om::shared_ptr<std::set<OmSegment*> > children =
                 OmSegmentUtils::GetAllChildrenSegments(segments, set);
 
             validGroupNum->Set(children, true);

@@ -8,6 +8,8 @@
 #include "common/omException.h"
 #include <cassert>
 
+#include "utility/omSharedPtr.hpp"
+
 /**
  * vmml-related
  */
@@ -35,7 +37,7 @@ typedef boost::unordered_set< OmID > OmIDsSet;
 typedef unsigned int OmBitfield;
 
 //slices
-enum ViewType { XY_VIEW, XZ_VIEW, YZ_VIEW };
+enum ViewType { XY_VIEW, XZ_VIEW, ZY_VIEW };
 std::ostream& operator<<(std::ostream &out, const ViewType& vt);
 
 //objects
@@ -112,8 +114,5 @@ enum CacheGroup {
 
 } // om
 std::ostream& operator<<(std::ostream &out, const om::CacheGroup& c);
-
-class OmTile;
-typedef boost::shared_ptr<OmTile> OmTilePtr;
 
 #endif

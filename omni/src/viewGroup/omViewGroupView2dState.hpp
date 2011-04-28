@@ -29,7 +29,7 @@ private:
             return xy_;
         case XZ_VIEW:
             return xz_;
-        case YZ_VIEW:
+        case ZY_VIEW:
             return yz_;
         default:
             throw OmArgException("unknown plane");
@@ -43,7 +43,7 @@ private:
             return xy_;
         case XZ_VIEW:
             return xz_;
-        case YZ_VIEW:
+        case ZY_VIEW:
             return yz_;
         default:
             throw OmArgException("unknown plane");

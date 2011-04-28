@@ -13,7 +13,7 @@ class OmSegmentValidateActionImpl;
 class OmSegmentValidateAction : public OmUndoCommand {
 
 public:
-    OmSegmentValidateAction(boost::shared_ptr<OmSegmentValidateActionImpl> impl)
+    OmSegmentValidateAction(om::shared_ptr<OmSegmentValidateActionImpl> impl)
         : impl_(impl)
     {}
 
@@ -25,14 +25,14 @@ public:
 
 private:
     OmSegmentValidateAction(const SegmentationDataWrapper& sdw,
-                            boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                            om::shared_ptr<std::set<OmSegment*> > selectedSegments,
                             const bool valid);
     void Action();
     void UndoAction();
     std::string Description();
     void save(const std::string&);
 
-    boost::shared_ptr<OmSegmentValidateActionImpl> impl_;
+    om::shared_ptr<OmSegmentValidateActionImpl> impl_;
 };
 
 #endif

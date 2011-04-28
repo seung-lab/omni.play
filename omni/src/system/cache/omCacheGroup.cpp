@@ -69,7 +69,7 @@ void OmCacheGroup::SignalCachesToCloseDown()
     zi::rwmutex::read_guard lock(lock_);
     FOR_EACH(iter, caches_){
         OmCacheBase* cache = *iter;
-        cache->closeDownThreads();
+        cache->CloseDownThreads();
     }
 }
 

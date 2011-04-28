@@ -1,12 +1,12 @@
 #ifndef MYINSPECTORWIDGET_H
 #define MYINSPECTORWIDGET_H
 
+#include "common/omCommon.h"
+#include "zi/omUtility.h"
+
 #include <QtCore/QVariant>
 #include <QtGui>
 #include <QWidget>
-
-#include "common/omCommon.h"
-#include "zi/omUtility.h"
 
 class ChanInspector;
 class ChannelDataWrapper;
@@ -15,11 +15,10 @@ class FilObjectInspector;
 class InspectorProperties;
 class MainWindow;
 class OmViewGroupState;
-class SegmentationInspector;
 class SegmentationDataWrapper;
 
 class InspectorWidget : public QWidget {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     InspectorWidget(QWidget* parent, MainWindow* mainWindow, OmViewGroupState* vgs);
@@ -51,25 +50,25 @@ private Q_SLOTS:
     void nameEditChanged();
 
     void showDataSrcContextMenu(const QPoint & menuPoint);
-    void leftClickOnDataSourceItem(QTreeWidgetItem * current);
-    void leftClickOnFilterItem(QTreeWidgetItem * current);
+    void leftClickOnDataSourceItem(QTreeWidgetItem* current);
+    void leftClickOnFilterItem(QTreeWidgetItem* current);
 
-    void selectChannelView(QAction * act);
-    void selectSegmentationView(QAction * act);
-    void addToSplitterDataElementFilter(QTreeWidgetItem * current);
-    void addToSplitterDataSource(QTreeWidgetItem * current);
+    void selectChannelView(QAction* act);
+    void selectSegmentationView(QAction* act);
+    void addToSplitterDataElementFilter(QTreeWidgetItem* current);
+    void addToSplitterDataSource(QTreeWidgetItem* current);
 
-    void doDataSrcContextMenuVolAdd(QAction * act);
+    void doDataSrcContextMenuVolAdd(QAction* act);
 
     void openChannelView(OmID chan_id, ViewType vtype);
     void openSegmentationView(OmID primary_id, ViewType vtype);
 
 private:
-    MainWindow *const mainWindow_;
-    OmViewGroupState *const vgs_;
+    MainWindow* const mainWindow_;
+    OmViewGroupState* const vgs_;
 
-    QTreeWidget *dataSrcListWidget;
-    QTreeWidget *filterListWidget;
+    QTreeWidget* dataSrcListWidget;
+    QTreeWidget* filterListWidget;
 
     void deleteSegmentation(SegmentationDataWrapper sdw);
     void deleteChannel(ChannelDataWrapper cdw);
@@ -80,47 +79,45 @@ private:
 
     void showChannelContextMenu();
     void showSegmentationContextMenu();
-    void doShowDataSrcContextMenu( QTreeWidgetItem *dataSrcItem );
-    QMenu* makeContextMenuBase(QTreeWidget * parent);
+    void doShowDataSrcContextMenu( QTreeWidgetItem* dataSrcItem );
+    QMenu* makeContextMenuBase(QTreeWidget* parent);
     QMenu* makeSegmentationContextMenu(QTreeWidget* parent);
 
     void populateFilterListWidget(ChannelDataWrapper cdw);
 
-    QTreeWidget * setupDataSrcList();
-    QTreeWidget * setupFilterList();
+    QTreeWidget* setupDataSrcList();
+    QTreeWidget* setupFilterList();
     ChannelDataWrapper getCurrentlySelectedChannel();
     SegmentationDataWrapper getCurrentlySelectedSegmentation();
-    void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
+    void setRowFlagsAndCheckState(QTreeWidgetItem* row, Qt::CheckState checkState);
 
-    QMenu *makeDataSrcContextMenu(QTreeWidget * parent);
+    QMenu* makeDataSrcContextMenu(QTreeWidget* parent);
 
-    QAction *xyAct;
-    QAction *xzAct;
-    QAction *yzAct;
-    QAction *propAct;
-    QAction *delAct;
-    QAction *examMSTAct;
+    QAction* xyAct;
+    QAction* xzAct;
+    QAction* yzAct;
+    QAction* propAct;
+    QAction* delAct;
+    QAction* examMSTAct;
 
-    QAction *addChannelAct;
-    QAction *addSegmentationAct;
+    QAction* addChannelAct;
+    QAction* addSegmentationAct;
 
-    QMenu *contextMenu;
-    QMenu *contextMenuDataSrc;
+    QMenu* contextMenu;
+    QMenu* contextMenuDataSrc;
 
-    SegmentationInspector *segmentationInspectorWidget;
-    ChanInspector *channelInspectorWidget;
-    FilObjectInspector *filObjectInspectorWidget;
+    ChanInspector* channelInspectorWidget;
+    FilObjectInspector* filObjectInspectorWidget;
 
     void populateChannelInspector(OmID c_id);
     void populateSegmentationInspector( SegmentationDataWrapper sdw);
 
-    InspectorProperties * inspectorProperties;
+    InspectorProperties* inspectorProperties_;
 
-    ViewType getViewType(QAction * act);
+    ViewType getViewType(QAction* act);
 
-    QVBoxLayout * verticalLayout;
+    QVBoxLayout* verticalLayout;
     void updateSegmentListBox( SegmentationDataWrapper sdw );
-
 
     void showMSTtable(SegmentationDataWrapper sdw);
 };

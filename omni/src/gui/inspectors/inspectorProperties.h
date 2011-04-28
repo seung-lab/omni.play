@@ -26,7 +26,7 @@ public:
     }
 
 public Q_SLOTS:
-    void closeDialog();
+    void CloseDialog();
 
 private:
     OmViewGroupState *const vgs_;

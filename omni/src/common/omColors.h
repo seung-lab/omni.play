@@ -13,6 +13,7 @@ struct OmColor {
 };
 std::ostream& operator<<(std::ostream &out, const OmColor& c);
 bool operator<(const OmColor& a, const OmColor& b);
+bool operator==(const OmColor& a, const OmColor& b);
 
 struct OmColorARGB {
     uint8_t alpha;

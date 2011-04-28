@@ -9,9 +9,9 @@ class OmSegmentPageObjects {
 private:
     const uint32_t pageSize_;
 
-    boost::shared_ptr<OmSegment> segmentsPtr_;
+    om::shared_ptr<OmSegment> segmentsPtr_;
 
-    boost::shared_ptr<OmTempFile<OmSegment> > tmpFile_;
+    om::shared_ptr<OmTempFile<OmSegment> > tmpFile_;
 
 public:
     OmSegmentPageObjects(const uint32_t pageSize)

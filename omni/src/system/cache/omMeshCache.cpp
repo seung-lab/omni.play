@@ -1,19 +1,17 @@
-#include "mesh/omMipMesh.h"
+#include "mesh/omMesh.h"
 #include "system/cache/omMeshCache.h"
-#include "mesh/omMipMeshManager.h"
+#include "mesh/omMeshManager.h"
 #include <zi/system.hpp>
 
-OmMeshCache::OmMeshCache(OmMipMeshManager* parent)
-    : OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr>(om::MESH_CACHE,
-                                                    "Meshes",
-                                                    om::THROTTLE)
+OmMeshCache::OmMeshCache(OmMeshManager* parent)
+    : OmThreadedMeshCache(om::MESH_CACHE, "Meshes")
     , meshMan_(parent)
 {}
 
-OmMipMeshPtr
-OmMeshCache::HandleCacheMiss(const OmMipMeshCoord& coord)
+OmMeshPtr
+OmMeshCache::HandleCacheMiss(const OmMeshCoord& coord)
 {
-    OmMipMeshPtr mesh = meshMan_->Produce(coord);
+    OmMeshPtr mesh = meshMan_->Produce(coord);
 
     //load data from disk
     mesh->Load();

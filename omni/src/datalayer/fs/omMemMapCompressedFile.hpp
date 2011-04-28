@@ -9,23 +9,23 @@
 template <typename T>
 class OmMemMapCompressedFile : public OmIOnDiskFile<T> {
 public:
-    static boost::shared_ptr<OmMemMapCompressedFile<T> >
+    static om::shared_ptr<OmMemMapCompressedFile<T> >
     CreateNumElements(const std::string& fnp, const int64_t numElements)
     {
-        boost::shared_ptr<T> d = OmSmartPtr<T>::MallocNumElements(numElements,
+        om::shared_ptr<T> d = OmSmartPtr<T>::MallocNumElements(numElements,
                                                                   om::ZERO_FILL);
         om::file::compressToFileNumElements(d, numElements, fnp);
 
-        return boost::make_shared<OmMemMapCompressedFile<T> >(fnp);
+        return om::make_shared<OmMemMapCompressedFile<T> >(fnp);
     }
 
-    static boost::shared_ptr<OmMemMapCompressedFile<T> >
-    CreateFromData(const std::string& fnp, boost::shared_ptr<T> d,
+    static om::shared_ptr<OmMemMapCompressedFile<T> >
+    CreateFromData(const std::string& fnp, om::shared_ptr<T> d,
                    const int64_t numElements)
     {
         om::file::compressToFileNumElements(d, numElements, fnp);
 
-        return boost::make_shared<OmMemMapCompressedFile<T> >(fnp);
+        return om::make_shared<OmMemMapCompressedFile<T> >(fnp);
     }
 
 private:
@@ -53,10 +53,15 @@ public:
 
     virtual void Flush()
     {
+        // make compressed copy to temp file
         const std::string tmpFileName = fnp_ + ".tmp";
         om::file::compressToFileNumBytes(dataChar_, tmpFile_.NumBytes(),
                                          tmpFileName);
-        om::file::mvFile(tmpFileName, fnp_);
+
+        // overwrite old version (don't use mvFile: temp file could be on different volume...)
+        om::file::cpFile(tmpFileName, fnp_);
+
+        om::file::rmFile(tmpFileName);
     }
 
     virtual T* GetPtr() const {

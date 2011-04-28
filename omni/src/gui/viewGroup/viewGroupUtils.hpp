@@ -52,8 +52,8 @@ public:
             return "XY";
         case XZ_VIEW:
             return "XZ";
-        case YZ_VIEW:
-            return "YZ";
+        case ZY_VIEW:
+            return "ZY";
         default:
             throw OmArgException("unknown viewtype");
         }

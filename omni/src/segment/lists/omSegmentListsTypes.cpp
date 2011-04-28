@@ -1,12 +1,12 @@
 #include "segment/lists/omSegmentListsTypes.hpp"
 
-boost::shared_ptr<GUIPageOfSegments>
+om::shared_ptr<GUIPageOfSegments>
 om::segLists::getPage(const std::vector<SegInfo> list,
                       const uint32_t startIndex,
                       const uint32_t numToGet)
 {
-    boost::shared_ptr<GUIPageOfSegments> ret =
-        boost::make_shared<GUIPageOfSegments>();
+    om::shared_ptr<GUIPageOfSegments> ret =
+        om::make_shared<GUIPageOfSegments>();
 
     if(list.empty()){
         return ret;

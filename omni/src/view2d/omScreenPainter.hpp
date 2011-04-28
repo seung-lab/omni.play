@@ -4,10 +4,8 @@
 #include "events/omEvents.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
-#include "utility/omTimer.hpp"
 #include "view2d/om2dPreferences.hpp"
 #include "view2d/omDisplayInfo.hpp"
-#include "view2d/omScreenShotSaver.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 
@@ -15,24 +13,17 @@
 
 class OmScreenPainter{
 public:
-    OmScreenPainter(OmView2d* v2d,
-                    OmView2dState* state,
-                    OmScreenShotSaver* s)
+    OmScreenPainter(OmView2d* v2d, OmView2dState* state)
         : v2d_(v2d)
         , state_(state)
-        , screenShotSaver_(s)
         , viewType_(v2d->GetViewType())
         , shouldDisplayInfo_(OmPreferences::GetBoolean(om::PREF_VIEW2D_SHOW_INFO_BOOL))
     {}
 
     void FullRedraw2d()
     {
-        elapsed_.restart();
-
         const QImage screenImage = v2d_->FullRedraw2d();
         paintScreen(screenImage);
-
-        screenShotSaver_->saveTiles(screenImage);
 
         state_->SetViewSliceOnPan();
 
@@ -42,10 +33,9 @@ public:
     }
 
 private:
-    OmView2d* v2d_;
-    OmView2dState* state_;
-    OmScreenShotSaver* screenShotSaver_;
-    OmTimer elapsed_;
+    OmView2d *const v2d_;
+    OmView2dState *const state_;
+
     const ViewType viewType_;
     const bool shouldDisplayInfo_;
 
@@ -66,8 +56,18 @@ private:
                                           20,
                                           20),
                                     5, 5);
-        }else if(showBrushSize()){
-            showBrush(painter, mousePoint);
+        }else if(showBrushSize())
+        {
+            const bool eraseTool = (om::tool::ERASE == OmStateManager::GetToolMode());
+            if(eraseTool)
+            {
+                painter.setPen(Qt::DotLine);
+                showBrush(painter, mousePoint);
+                painter.setPen(Qt::SolidLine);
+
+            } else {
+                showBrush(painter, mousePoint);
+            }
         }
 
         if(v2d_->hasFocus()){
@@ -111,7 +111,7 @@ private:
             return QColor(Qt::blue);
         case XZ_VIEW:
             return QColor(Qt::green);
-        case YZ_VIEW:
+        case ZY_VIEW:
             return QColor(Qt::red);
         default:
             throw OmArgException("invalid view type");
@@ -120,12 +120,7 @@ private:
 
     void displayInformation(QPainter& painter, QPen& pen)
     {
-        const bool showTimingInfo = false;
-
         int yTop = 45;
-        if(showTimingInfo){
-            yTop = 65;
-        }
 
         const int xoffset = 10;
         const int yTopOfText = state_->getTotalViewport().height - yTop;
@@ -149,10 +144,6 @@ private:
         di.paint(depthStr);
 
         printTileCount(di);
-
-        if(showTimingInfo){
-            printTimingInfo(di);
-        }
     }
 
     void printTileCount(OmDisplayInfo& di)
@@ -166,19 +157,6 @@ private:
         }else{
             di.paint(tileCount, "tiles");
         }
-    }
-
-    void printTimingInfo(OmDisplayInfo& di)
-    {
-        const double timeMS = elapsed_.ms_elapsed();
-
-        /*
-          if(!state_->getScribbling()) {
-          di.paint(timeMS, "ms", 1);
-          }
-        */
-
-        di.paint(1000.0 / timeMS, "fps", 0);
     }
 
     void drawCursors(QPainter& painter)
@@ -208,7 +186,7 @@ private:
             return std::make_pair(Qt::red, Qt::green);
         case XZ_VIEW:
             return std::make_pair(Qt::red, Qt::blue);
-        case YZ_VIEW:
+        case ZY_VIEW:
             return std::make_pair(Qt::blue, Qt::green);
         default:
             throw OmArgException("invalid viewtype");

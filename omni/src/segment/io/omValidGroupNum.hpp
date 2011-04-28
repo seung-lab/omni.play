@@ -36,7 +36,7 @@ public:
         segToGroupNum_.resize(size, 0);
     }
 
-    void Set(boost::shared_ptr<std::set<OmSegment*> > segs,
+    void Set(om::shared_ptr<std::set<OmSegment*> > segs,
              const bool isValid)
     {
         if(isValid){

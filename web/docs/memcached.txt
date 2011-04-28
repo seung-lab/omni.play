@@ -1,9 +1,8 @@
-sudo apt-get install memcached
-sudo apt-get install php-pear
-sudo apt-get install php5-dev
+sudo apt-get install memcached php-pear php5-dev libcurl3-dev libmemcache-dev libmemcached-dev
 sudo pecl install pecl_http
 sudo pecl install memcached-1.0.1
 You should add "extension=memcached.so" to php.ini
-sudo emacs /etc/php5/apache2/php.ini 
+You should add "extension=http.so" to php.ini
+sudo emacs /etc/php5/apache2/php.ini
 and /etc/php5/cli/php.ini
 memcached -m 4000m -d

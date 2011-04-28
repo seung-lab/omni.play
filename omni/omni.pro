@@ -132,11 +132,12 @@ HEADERS +=  \
 	src/chunks/omChunkCoord.h \
 	src/chunks/omChunkData.h \
 	src/chunks/omChunkItemContainer.hpp \
+	src/chunks/omChunkItemContainerMatrix.hpp \
 	src/chunks/omChunkMipping.hpp \
-	src/chunks/omChunkTypes.hpp \
 	src/chunks/omChunkUtils.hpp \
 	src/chunks/omRawChunk.hpp \
 	src/chunks/omRawChunkMemMapped.hpp \
+	src/chunks/omRawChunkSlicer.hpp \
 	src/chunks/omSegChunk.h \
 	src/chunks/omSegChunkData.h \
 	src/chunks/omSegChunkDataVisitors.hpp \
@@ -148,12 +149,14 @@ HEADERS +=  \
 	src/common/omBoost.h \
 	src/common/omColors.h \
 	src/common/omCommon.h \
+	src/common/omContainer.hpp \
 	src/common/omDebug.h \
 	src/common/omException.h \
 	src/common/omGl.h \
 	src/common/omQt.h \
 	src/common/omSet.hpp \
 	src/common/omStd.h \
+	src/common/omStoppable.h \
 	src/common/omString.hpp \
 	src/datalayer/archive/omDataArchiveBoost.h \
 	src/datalayer/archive/omDataArchiveProject.h \
@@ -211,15 +214,19 @@ HEADERS +=  \
 	src/gui/inspectors/filObjectInspector.h \
 	src/gui/inspectors/inspectorProperties.h \
 	src/gui/inspectors/segmentInspector.h \
-	src/gui/inspectors/segmentation/addSegmentButton.h \
-	src/gui/inspectors/segmentation/buildButton.hpp \
-	src/gui/inspectors/segmentation/exportButton.hpp \
-	src/gui/inspectors/segmentation/exportButtonRaw.hpp \
-	src/gui/inspectors/segmentation/exportMST.hpp \
-	src/gui/inspectors/segmentation/exportSegmentList.hpp \
-	src/gui/inspectors/segmentation/meshPreviewButton.hpp \
-	src/gui/inspectors/segmentation/segmentationInspector.h \
-	src/gui/inspectors/segmentation/segmentationInspectorButtons.hpp \
+	src/gui/inspectors/segmentation/buildPage/pageBuilder.hpp \
+	src/gui/inspectors/segmentation/buildPage/sourceBox.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/addSegmentButton.h \
+	src/gui/inspectors/segmentation/exportPage/buttons/exportButton.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/exportButtonRaw.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/exportMST.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/exportSegmentList.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/meshPreviewButton.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/segmentationInspectorButtons.hpp \
+	src/gui/inspectors/segmentation/exportPage/pageExport.h \
+	src/gui/inspectors/segmentation/pageSelector.hpp \
+	src/gui/inspectors/segmentation/pagesWidget.h \
+	src/gui/inspectors/segmentation/segmentationInspector.hpp \
 	src/gui/inspectors/ui_chanInspector.h \
 	src/gui/inspectors/volInspector.h \
 	src/gui/mainWindow/inspectorWidget.h \
@@ -336,25 +343,28 @@ HEADERS +=  \
 	src/mesh/io/v2/omRingBuffer.hpp \
 	src/mesh/io/v2/threads/omMeshWriterTaskV2.hpp \
 	src/mesh/omDrawOptions.h \
+	src/mesh/omMesh.h \
+	src/mesh/omMeshCoord.h \
+	src/mesh/omMeshManager.h \
+	src/mesh/omMeshManagers.hpp \
 	src/mesh/omMeshParams.hpp \
 	src/mesh/omMeshTypes.h \
-	src/mesh/omMipMesh.h \
-	src/mesh/omMipMeshCoord.h \
-	src/mesh/omMipMeshManager.h \
-	src/mesh/omMipMeshManagers.hpp \
 	src/mesh/omVolumeCuller.h \
 	src/mesh/ziMesher.hpp \
-	src/network/details/omJsonTypes.hpp \
+	src/network/client/omClient.hpp \
+	src/network/json/omJson.h \
+	src/network/json/omJsonTypes.hpp \
 	src/network/omAssembleTilesIntoSlice.hpp \
-	src/network/omClient.hpp \
-	src/network/omJson.h \
-	src/network/omNetworkQT.hpp \
-	src/network/omProcessJSONAction.hpp \
+	src/network/omExtractMesh.h \
+	src/network/omJSONActions.hpp \
+	src/network/omJpeg.h \
 	src/network/omProcessRequestFromClient.h \
-	src/network/omServer.h \
-	src/network/omServerImpl.hpp \
-	src/network/omServerImplThread.hpp \
 	src/network/omServiceObjects.hpp \
+	src/network/omWriteTile.hpp \
+	src/network/server/omNetworkQT.hpp \
+	src/network/server/omServer.h \
+	src/network/server/omServerImpl.hpp \
+	src/network/server/omServerImplThread.hpp \
 	src/project/details/omAffinityGraphManager.h \
 	src/project/details/omChannelManager.h \
 	src/project/details/omProjectVolumes.h \
@@ -400,7 +410,6 @@ HEADERS +=  \
 	src/segment/lowLevel/store/omCacheSegRootIDs.hpp \
 	src/segment/lowLevel/store/omCacheSegStore.hpp \
 	src/segment/lowLevel/store/omSegmentStore.hpp \
-	src/segment/omFindClosestSegment.hpp \
 	src/segment/omFindCommonEdge.hpp \
 	src/segment/omSegment.h \
 	src/segment/omSegmentCenter.hpp \
@@ -426,8 +435,7 @@ HEADERS +=  \
 	src/system/cache/omGetSetCache.hpp \
 	src/system/cache/omLockedCacheObjects.hpp \
 	src/system/cache/omMeshCache.h \
-	src/system/cache/omThreadedCache.h \
-	src/system/cache/omVolSliceCache.hpp \
+	src/system/cache/omThreadedMeshCache.h \
 	src/system/omAlphaVegasMode.hpp \
 	src/system/omAppState.hpp \
 	src/system/omConnect.hpp \
@@ -444,20 +452,35 @@ HEADERS +=  \
 	src/system/omStateManager.h \
 	src/system/omStateManagerImpl.hpp \
 	src/system/omUndoStack.hpp \
+	src/threads/omTaskManager.hpp \
+	src/threads/omTaskManagerContainerDeque.hpp \
+	src/threads/omTaskManagerImpl.hpp \
+	src/threads/omTaskManagerTypes.h \
+	src/threads/omThreadPoolBatched.hpp \
+	src/threads/omThreadPoolByMipLevel.hpp \
+	src/threads/omThreadPoolManager.h \
+	src/tiles/cache/omTaskManagerContainerMipSorted.hpp \
+	src/tiles/cache/omThreadedTileCache.h \
 	src/tiles/cache/omTileCache.h \
 	src/tiles/cache/omTileCacheChannel.hpp \
 	src/tiles/cache/omTileCacheEventListener.hpp \
 	src/tiles/cache/omTileCacheImpl.hpp \
 	src/tiles/cache/omTileCacheSegmentation.hpp \
-	src/tiles/omPooledTile.hpp \
+	src/tiles/cache/raw/omRawSegTileCache.hpp \
+	src/tiles/cache/raw/omRawSegTileCacheTypes.hpp \
+	src/tiles/omChannelTileFilter.hpp \
 	src/tiles/omTextureID.h \
 	src/tiles/omTile.h \
 	src/tiles/omTileCoord.h \
 	src/tiles/omTileDumper.hpp \
-	src/tiles/omTilePool.hpp \
+	src/tiles/omTileFilters.hpp \
+	src/tiles/omTileImplTypes.hpp \
 	src/tiles/omTilePreFetcher.h \
 	src/tiles/omTilePreFetcherTask.hpp \
 	src/tiles/omTileTypes.hpp \
+	src/tiles/pools/omPooledTile.hpp \
+	src/tiles/pools/omTilePool.hpp \
+	src/tiles/pools/omTilePools.hpp \
 	src/utility/affinityGraphDataWrapper.hpp \
 	src/utility/channelDataWrapper.hpp \
 	src/utility/dataWrapperContainer.hpp \
@@ -465,7 +488,6 @@ HEADERS +=  \
 	src/utility/filterDataWrapper.hpp \
 	src/utility/fuzzyStdObjs.hpp \
 	src/utility/image/bits/omImage_traits.hpp \
-	src/utility/image/omFilterImage.hpp \
 	src/utility/image/omImage.hpp \
 	src/utility/localPrefFiles.h \
 	src/utility/localPrefFilesImpl.hpp \
@@ -474,20 +496,18 @@ HEADERS +=  \
 	src/utility/omCopyFirstN.hpp \
 	src/utility/omDataTime.hpp \
 	src/utility/omFileHelpers.h \
-	src/utility/omFileWriter.hpp \
+	src/utility/omFileLogger.hpp \
 	src/utility/omLockedObjects.h \
 	src/utility/omLockedPODs.hpp \
 	src/utility/omPrimeNumbers.hpp \
 	src/utility/omRand.hpp \
 	src/utility/omRandColorFile.hpp \
+	src/utility/omSharedPtr.hpp \
 	src/utility/omSimpleProgress.hpp \
 	src/utility/omSmartPtr.hpp \
 	src/utility/omStringHelpers.h \
 	src/utility/omSystemInformation.h \
 	src/utility/omTempFile.hpp \
-	src/utility/omThreadPool.hpp \
-	src/utility/omThreadPoolBatched.hpp \
-	src/utility/omThreadPoolManager.h \
 	src/utility/omTimer.hpp \
 	src/utility/omUUID.hpp \
 	src/utility/segmentDataWrapper.hpp \
@@ -533,7 +553,6 @@ HEADERS +=  \
 	src/view2d/omOpenGLUtils.h \
 	src/view2d/omPointsInCircle.hpp \
 	src/view2d/omScreenPainter.hpp \
-	src/view2d/omScreenShotSaver.hpp \
 	src/view2d/omSliceCache.hpp \
 	src/view2d/omTileDrawer.hpp \
 	src/view2d/omView2d.h \
@@ -606,14 +625,6 @@ HEADERS +=  \
 	src/volume/omVolCoords.hpp \
 	src/volume/omVolCoordsMipped.hpp \
 	src/volume/omVolumeTypes.hpp \
-	src/zi/base/base.h \
-	src/zi/base/bash.h \
-	src/zi/base/bits/system.h \
-	src/zi/base/strings.h \
-	src/zi/base/system.h \
-	src/zi/base/thrift.h \
-	src/zi/base/time.h \
-	src/zi/base/usages.h \
 	src/zi/matlab/zmex.hpp \
 	src/zi/omMutex.h \
 	src/zi/omThreads.h \
@@ -695,7 +706,8 @@ SOURCES +=  \
 	src/gui/inspectors/filObjectInspector.cpp \
 	src/gui/inspectors/inspectorProperties.cpp \
 	src/gui/inspectors/segmentInspector.cpp \
-	src/gui/inspectors/segmentation/segmentationInspector.cpp \
+	src/gui/inspectors/segmentation/exportPage/pageExport.cpp \
+	src/gui/inspectors/segmentation/pagesWidget.cpp \
 	src/gui/mainWindow/inspectorWidget.cpp \
 	src/gui/mainWindow/mainWindow.cpp \
 	src/gui/menubar.cpp \
@@ -738,14 +750,17 @@ SOURCES +=  \
 	src/mesh/drawer/omMeshDrawer.cpp \
 	src/mesh/drawer/omMeshSegmentListTask.cpp \
 	src/mesh/io/v2/chunk/omMeshChunkAllocTable.cpp \
-	src/mesh/omMipMesh.cpp \
-	src/mesh/omMipMeshCoord.cpp \
-	src/mesh/omMipMeshManager.cpp \
+	src/mesh/omMesh.cpp \
+	src/mesh/omMeshCoord.cpp \
+	src/mesh/omMeshManager.cpp \
 	src/mesh/omVolumeCuller.cpp \
-	src/network/omNetworkQT.cpp \
+	src/network/omExtractMesh.cpp \
+	src/network/omJpeg.cpp \
 	src/network/omProcessRequestFromClient.cpp \
-	src/network/omServer.cpp \
-	src/network/omServerImplThread.cpp \
+	src/network/omServiceObjects.cpp \
+	src/network/server/omNetworkQT.cpp \
+	src/network/server/omServer.cpp \
+	src/network/server/omServerImplThread.cpp \
 	src/project/details/omAffinityGraphManager.cpp \
 	src/project/details/omChannelManager.cpp \
 	src/project/details/omProjectVolumes.cpp \
@@ -775,20 +790,20 @@ SOURCES +=  \
 	src/system/omPreferenceDefinitions.cpp \
 	src/system/omStateManager.cpp \
 	src/system/omStateManagerImpl.cpp \
+	src/threads/omThreadPoolManager.cpp \
 	src/tiles/cache/omTileCache.cpp \
 	src/tiles/cache/omTileCacheEventListener.cpp \
 	src/tiles/omTextureID.cpp \
 	src/tiles/omTile.cpp \
 	src/tiles/omTileCoord.cpp \
 	src/tiles/omTileDumper.cpp \
+	src/tiles/omTileImplTypes.cpp \
 	src/tiles/omTilePreFetcher.cpp \
 	src/tiles/omTilePreFetcherTask.cpp \
-	src/tiles/omTileTypes.cpp \
 	src/utility/channelDataWrapper.cpp \
 	src/utility/omFileHelpers.cpp \
 	src/utility/omPrimeNumbers.cpp \
 	src/utility/omSystemInformation.cpp \
-	src/utility/omThreadPoolManager.cpp \
 	src/view2d/brush/omBrushOppTypes.cpp \
 	src/view2d/omOnScreenTileCoords.cpp \
 	src/view2d/omOpenGLUtils.cpp \
@@ -824,6 +839,7 @@ RESOURCES += src/gui/resources.qrc
 
 INCLUDEPATH = src include lib tests
 INCLUDEPATH += ../external/zi_lib
+INCLUDEPATH += ../external/libs/libjpeg/include
 INCLUDEPATH +=  include/json_spirit_v4.03/json_spirit
 
 #### Windows
@@ -835,6 +851,7 @@ win32 {
 #### Linux or MacOS
    INCLUDEPATH +=  ../external/libs/HDF5/include
    LIBS += ../external/libs/HDF5/lib/libhdf5.a
+   LIBS += ../external/libs/libjpeg/lib/libjpeg.a
    LIBS += -lz
 }
 
@@ -911,6 +928,10 @@ CONFIG += no_keywords
   QMAKE_CXXFLAGS += -fno-omit-frame-pointer
 }
 
+!exists(../external/libs/libjpeg/lib/libjpeg.a){
+    error(please run 'bootstrap.pl 4' to install libjpeg)
+}
+
 #### Boost
 exists(../external/libs/Boost) {
      INCLUDEPATH += ../external/libs/Boost/include
@@ -927,5 +948,5 @@ exists(../external/libs/Boost) {
      QMAKE_CXXFLAGS += -DBOOST_FILESYSTEM_NO_DEPRECATED
 
 }else {
-    error(please run bootstrap.pl and install Boost)
+    error(please run 'bootstrap.pl  2' to install Boost)
 }

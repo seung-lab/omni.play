@@ -1,7 +1,7 @@
 #ifndef OM_VIEW2D_MANAGER_IMPL_HPP
 #define OM_VIEW2D_MANAGER_IMPL_HPP
 
-#include "utility/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 
 class OmView2dManagerImpl {
 private:
@@ -18,7 +18,7 @@ public:
 
     template <typename T>
     inline void AddTaskBack(const T& task){
-        threadPool_.addTaskBack(task);
+        threadPool_.push_back(task);
     }
 };
 

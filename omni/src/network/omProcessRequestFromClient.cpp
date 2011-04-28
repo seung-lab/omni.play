@@ -1,6 +1,6 @@
 #include "common/omString.hpp"
-#include "network/omJson.h"
-#include "network/omProcessJSONAction.hpp"
+#include "network/json/omJson.h"
+#include "network/omJSONActions.hpp"
 #include "network/omProcessRequestFromClient.h"
 #include "utility/omDataTime.hpp"
 #include "utility/omStringHelpers.h"
@@ -10,11 +10,15 @@
 OmProcessRequestFromClient::OmProcessRequestFromClient()
     : serviceObjects_(new OmServiceObjects)
 {
-    // actionProcessors_["get_projects"] = OmJSONListProjects::CreateInstance;
+    actionProcessors_["change_threshold"] = OmJSONChangeThreshold::CreateInstance;
+    actionProcessors_["get_mesh_data"] = OmJSONGetMeshData::CreateInstance;
+    actionProcessors_["get_project_info"] = OmJSONProjectInfo::CreateInstance;
+    actionProcessors_["get_segmentation_dim"] = OmJSONSegmentationDim::CreateInstance;
     actionProcessors_["get_slice_channel"] = OmJSONGetSliceChannel::CreateInstance;
     actionProcessors_["get_slice_segmentation"] = OmJSONGetSliceSegmentation::CreateInstance;
+    actionProcessors_["get_tile_channel"] = OmJSONGetTileChannel::CreateInstance;
+    actionProcessors_["get_tile_segmentation"] = OmJSONGetTileSegmentation::CreateInstance;
     actionProcessors_["select_segment"] = OmJSONSelectSegment::CreateInstance;
-    actionProcessors_["get_mesh_data"] = OmJSONGetMeshData::CreateInstance;
 }
 
 OmProcessRequestFromClient::~OmProcessRequestFromClient()

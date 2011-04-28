@@ -1,7 +1,7 @@
 #ifndef OM_DOWNSAMPLER_HPP
 #define OM_DOWNSAMPLER_HPP
 
-#include "utility/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "utility/omTimer.hpp"
 #include "volume/build/omDownsamplerTypes.hpp"
 #include "volume/build/omDownsamplerVoxelTask.hpp"
@@ -52,19 +52,19 @@ public:
         OmThreadPool threadPool;
         threadPool.start(3);
 
-        boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
             vol_->GetMipChunkCoords(0);
 
         FOR_EACH(iter, *coordsPtr){
             const OmChunkCoord& coord = *iter;
 
-            boost::shared_ptr<DownsampleVoxelTask<T> > task =
-                boost::make_shared<DownsampleVoxelTask<T> >(vol_,
+            om::shared_ptr<DownsampleVoxelTask<T> > task =
+                om::make_shared<DownsampleVoxelTask<T> >(vol_,
                                                             mips_,
                                                             mippingInfo_,
                                                             coord,
                                                             files_);
-            threadPool.addTaskBack(task);
+            threadPool.push_back(task);
         }
 
         threadPool.join();

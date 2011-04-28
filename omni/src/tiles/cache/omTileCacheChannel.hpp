@@ -2,16 +2,15 @@
 #define OM_TILE_CACHE_CHANNEL_HPP
 
 #include "common/om.hpp"
-#include "system/cache/omThreadedCache.h"
-#include "tiles/omTileCoord.h"
+#include "tiles/cache/omThreadedTileCache.h"
 #include "tiles/omTile.h"
+#include "tiles/omTileCoord.h"
+#include "tiles/omTileTypes.hpp"
 
-class OmTileCacheChannel : public OmThreadedCache<OmTileCoord, OmTilePtr> {
+class OmTileCacheChannel : public OmThreadedTileCache {
 public:
     OmTileCacheChannel()
-        : OmThreadedCache<OmTileCoord, OmTilePtr>(om::TILE_CACHE,
-                                                  "Channel Tiles",
-                                                  om::DONT_THROTTLE)
+        : OmThreadedTileCache("Channel Tiles")
     {}
 
 private:

@@ -3,7 +3,7 @@
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type)
     : OmEvent(type, CLASS)
-    , params_(boost::make_shared<OmSelectSegmentsParams>())
+    , params_(om::make_shared<OmSelectSegmentsParams>())
 {}
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
@@ -15,7 +15,7 @@ OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
 }
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
-                               boost::shared_ptr<OmSelectSegmentsParams> params)
+                               om::shared_ptr<OmSelectSegmentsParams> params)
     : OmEvent(type, CLASS)
     , params_(params)
 {}

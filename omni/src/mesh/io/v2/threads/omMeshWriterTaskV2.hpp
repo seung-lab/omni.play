@@ -8,8 +8,8 @@
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
-#include "mesh/omMipMeshCoord.h"
-#include "mesh/omMipMeshManager.h"
+#include "mesh/omMeshCoord.h"
+#include "mesh/omMeshManager.h"
 #include "zi/omThreads.h"
 
 template <typename U>
@@ -66,7 +66,7 @@ public:
             filePtrCache_->GetWriter(coord_);
 
         const OmMeshDataEntry entry =
-            writeOutData(chunk_data, mesh_, OmMipMeshCoord(coord_, segID_));
+            writeOutData(chunk_data, mesh_, OmMeshCoord(coord_, segID_));
 
         chunk_table->Set(entry);
 
@@ -76,8 +76,8 @@ public:
 private:
     OmMeshDataEntry
     writeOutData(OmMeshChunkDataWriterV2* chunk_data,
-                 boost::shared_ptr<OmDataForMeshLoad> data,
-                 const OmMipMeshCoord& meshCoord)
+                 om::shared_ptr<OmDataForMeshLoad> data,
+                 const OmMeshCoord& meshCoord)
     {
         OmMeshDataEntry entry =
             om::meshio_::MakeEmptyEntry(meshCoord.SegID());
@@ -124,7 +124,7 @@ private:
     OmMeshDataEntry
     writeOutData(OmMeshChunkDataWriterV2* chunk_data,
                  TriStripCollector* triStrips,
-                 const OmMipMeshCoord& meshCoord)
+                 const OmMeshCoord& meshCoord)
     {
         std::vector<float>& data = triStrips->data_;
         std::vector<uint32_t>& indices = triStrips->indices_;
@@ -161,7 +161,7 @@ private:
         return entry;
     }
 
-    void printInfoAboutSkippedSegment(boost::shared_ptr<OmDataForMeshLoad>)
+    void printInfoAboutSkippedSegment(om::shared_ptr<OmDataForMeshLoad>)
     {
         std::cout << "skipping segID " << segID_
                   << " in chunk " << coord_

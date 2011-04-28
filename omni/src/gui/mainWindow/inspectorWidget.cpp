@@ -3,7 +3,7 @@
 #include "gui/inspectors/chanInspector.h"
 #include "gui/inspectors/filObjectInspector.h"
 #include "gui/inspectors/inspectorProperties.h"
-#include "gui/inspectors/segmentation/segmentationInspector.h"
+#include "gui/inspectors/segmentation/segmentationInspector.hpp"
 #include "gui/mainWindow/inspectorWidget.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/mstViewer.hpp"
@@ -32,13 +32,12 @@ InspectorWidget::InspectorWidget(QWidget* parent, MainWindow* mainWindow, OmView
 
     verticalLayout->addWidget(setupDataSrcList());
 
-    inspectorProperties = new InspectorProperties(this, vgs_);
+    inspectorProperties_ = new InspectorProperties(this, vgs_);
 
     ElementListBox::Create(vgs_);
     verticalLayout->addWidget(ElementListBox::Widget());
 
     channelInspectorWidget = NULL;
-    segmentationInspectorWidget = NULL;
 
     QMetaObject::connectSlotsByName(this);
 
@@ -161,16 +160,8 @@ void InspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 
 void InspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 {
-    segmentationInspectorWidget = new SegmentationInspector(this, vgs_, sdw);
-
-    om::connect(segmentationInspectorWidget->nameEdit, SIGNAL(editingFinished()),
-                this, SLOT(nameEditChanged()));
-
-    om::connect(segmentationInspectorWidget->nameEdit, SIGNAL(editingFinished()),
-                this, SLOT(nameEditChanged()));
-
-    inspectorProperties->SetOrReplaceWidget(segmentationInspectorWidget,
-                                            QString("Segmentation %1 Inspector").arg(sdw.getID()));
+    SegmentationInspector* w = new SegmentationInspector(this, inspectorProperties_, sdw);
+    inspectorProperties_->SetOrReplaceWidget(w, w->Title());
 }
 
 void InspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem* current)
@@ -180,7 +171,7 @@ void InspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem* current)
 
     filObjectInspectorWidget = new FilObjectInspector(this, fdw);
 
-    inspectorProperties->SetOrReplaceWidget(filObjectInspectorWidget,
+    inspectorProperties_->SetOrReplaceWidget(filObjectInspectorWidget,
                                             QString("Filter %1 Inspector").arg(fdw.getID()));
 }
 
@@ -239,7 +230,7 @@ ViewType InspectorWidget::getViewType(QAction* act)
     } else if (act == xzAct) {
         return XZ_VIEW;
     } else if (act == yzAct) {
-        return YZ_VIEW;
+        return ZY_VIEW;
     } else {
         throw OmFormatException("could not match QAction type...\n");
     }
@@ -469,7 +460,7 @@ void InspectorWidget::addChannelToSplitter(ChannelDataWrapper cdw)
     om::connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()),
                 this, SLOT(addFilter()));
 
-    inspectorProperties->SetOrReplaceWidget(channelInspectorWidget,
+    inspectorProperties_->SetOrReplaceWidget(channelInspectorWidget,
                                             QString("Channel %1 Inspector").arg(cdw.getID()));
 }
 
@@ -509,7 +500,7 @@ void InspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
 
         mainWindow_->cleanViewsOnVolumeChange(SEGMENTATION, segmentationID);
 
-        inspectorProperties->closeDialog();
+        inspectorProperties_->CloseDialog();
 
         sdw.Remove();
         populateDataSrcListWidget();
@@ -524,7 +515,7 @@ void InspectorWidget::deleteChannel(ChannelDataWrapper cdw)
 
     if(confirmDelete.Ask())
     {
-        inspectorProperties->closeDialog();
+        inspectorProperties_->CloseDialog();
         ElementListBox::Reset();
         mainWindow_->cleanViewsOnVolumeChange(CHANNEL, cdw.getID());
         cdw.Remove();

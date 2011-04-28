@@ -13,7 +13,7 @@ class OmDataPath;
 class OmFilter2d;
 class OmFilter2dManager;
 class OmManageableObject;
-class OmMipMeshManager;
+class OmMeshManager;
 class OmMipVolume;
 class OmPreferences;
 class OmProject;
@@ -78,8 +78,8 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & );
 QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
 QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );
 
-QDataStream &operator<<(QDataStream & out, const OmMipMeshManager & mm );
-QDataStream &operator>>(QDataStream & in, OmMipMeshManager & mm );
+QDataStream &operator<<(QDataStream & out, const OmMeshManager & mm );
+QDataStream &operator>>(QDataStream & in, OmMeshManager & mm );
 
 QDataStream &operator<<(QDataStream & out, const OmSegments & sc );
 QDataStream &operator>>(QDataStream & in, OmSegments & sc );

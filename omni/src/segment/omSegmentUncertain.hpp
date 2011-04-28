@@ -12,7 +12,7 @@
 class OmSegmentUncertain {
 public:
     static void SetAsUncertain(const SegmentationDataWrapper& sdw,
-                               boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                               om::shared_ptr<std::set<OmSegment*> > selectedSegments,
                                const bool uncertain)
     {
         OmSegmentUncertain uncertainer(sdw, selectedSegments, uncertain);
@@ -21,11 +21,11 @@ public:
 
 private:
     const SegmentationDataWrapper& sdw_;
-    const boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+    const om::shared_ptr<std::set<OmSegment*> > selectedSegments_;
     const bool uncertain_;
 
     OmSegmentUncertain(const SegmentationDataWrapper& sdw,
-                       boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                       om::shared_ptr<std::set<OmSegment*> > selectedSegments,
                        const bool uncertain)
         : sdw_(sdw)
         , selectedSegments_(selectedSegments)

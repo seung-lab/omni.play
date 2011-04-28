@@ -47,20 +47,20 @@ public:
         ptsInChunks_[chunkCoord].insert(chunkPos);
     }
 
-    boost::shared_ptr<boost::unordered_set<OmSegID> >
+    om::shared_ptr<boost::unordered_set<OmSegID> >
     GetSegIDs(const int depth)
     {
         OmSliceCache sliceCache(vol_, viewType_);
 
-        boost::shared_ptr<boost::unordered_set<OmSegID> > ret =
-            boost::make_shared<boost::unordered_set<OmSegID> >();
+        om::shared_ptr<boost::unordered_set<OmSegID> > ret =
+            om::make_shared<boost::unordered_set<OmSegID> >();
 
         FOR_EACH(iter, ptsInChunks_)
         {
             const OmChunkCoord& coord = iter->first;
 
-            boost::shared_ptr<uint32_t> slicePtr = sliceCache.GetSlice(coord, depth);
-            uint32_t const*const sliceData = slicePtr.get();
+            PooledTile32Ptr slicePtr = sliceCache.GetSlice(coord, depth);
+            uint32_t const*const sliceData = slicePtr->GetData();
 
             const std::set<Vector3i>& pts = iter->second;
 
@@ -70,7 +70,7 @@ public:
                     OmView2dConverters::Get2PtsInPlane(*vec, viewType_);
 
                 OmSegID segID = 0;
-                if(YZ_VIEW == viewType_){
+                if(ZY_VIEW == viewType_){
                     segID = sliceData[chunkDim_ * loc.x + loc.y];
                 } else {
                     segID = sliceData[chunkDim_ * loc.y + loc.x];

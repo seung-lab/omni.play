@@ -1,5 +1,5 @@
 #include "volume/build/omVolumeProcessor.h"
-#include "utility/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "chunks/omChunkCoord.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
@@ -24,8 +24,7 @@ public:
 
     void run()
     {
-        OmSegChunkPtr chunk;
-        vol_->GetChunk(chunk, coord_);
+        OmSegChunk* chunk = vol_->GetChunk(coord_);
 
         const bool isMIPzero = (0 == coord_.Level);
 
@@ -50,18 +49,18 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol)
     OmThreadPool threadPool;
     threadPool.start();
 
-    boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+    om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
         vol->GetMipChunkCoords();
 
     FOR_EACH(iter, *coordsPtr)
     {
         const OmChunkCoord& coord = *iter;
 
-        boost::shared_ptr<OmSegmentationChunkBuildTask> task =
-            boost::make_shared<OmSegmentationChunkBuildTask>(coord,
+        om::shared_ptr<OmSegmentationChunkBuildTask> task =
+            om::make_shared<OmSegmentationChunkBuildTask>(coord,
                                                              vol->Segments(),
                                                              vol);
-        threadPool.addTaskBack(task);
+        threadPool.push_back(task);
     }
 
     threadPool.join();
@@ -82,15 +81,14 @@ public:
 
     void run()
     {
-        OmChunkPtr chunk;
-        vol_->GetChunk(chunk, coord_);
+        // OmChunk* chunk = vol_->GetChunk(coord_);
 
-        const bool isMIPzero = (0 == coord_.Level);
+        // const bool isMIPzero = (0 == coord_.Level);
 
-        if(isMIPzero){
-            //vol_->updateMinMax(chunk->GetMinValue(),
-            //				   chunk->GetMaxValue());
-        }
+        // if(isMIPzero){
+        //     vol_->updateMinMax(chunk->GetMinValue(),
+        //                        chunk->GetMaxValue());
+        // }
     }
 };
 
@@ -99,15 +97,15 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmChannel* vol)
     OmThreadPool threadPool;
     threadPool.start();
 
-    boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+    om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
         vol->GetMipChunkCoords();
 
     FOR_EACH(iter, *coordsPtr){
         const OmChunkCoord& coord = *iter;
 
-        boost::shared_ptr<OmChannelImplChunkBuildTask> task =
-            boost::make_shared<OmChannelImplChunkBuildTask>(coord, vol);
-        threadPool.addTaskBack(task);
+        om::shared_ptr<OmChannelImplChunkBuildTask> task =
+            om::make_shared<OmChannelImplChunkBuildTask>(coord, vol);
+        threadPool.push_back(task);
     }
 
     threadPool.join();

@@ -34,7 +34,7 @@ OmSegmentListWidget::OmSegmentListWidget(SegmentListBase* slist,
 
 bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
                                    const SegmentDataWrapper segmentJustSelected,
-                                   boost::shared_ptr<GUIPageOfSegments> segIDs )
+                                   om::shared_ptr<GUIPageOfSegments> segIDs )
 {
     bool makeTabActive = false;
     const OmSegID segIDjustSelected = segmentJustSelected.GetSegmentID();

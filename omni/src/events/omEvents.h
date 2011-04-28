@@ -15,7 +15,7 @@ public:
     static void Redraw3d();
     static void SegmentGUIlist(const SegmentationDataWrapper& sdw);
     static void SegmentModified();
-    static void SegmentModified(boost::shared_ptr<OmSelectSegmentsParams> params);
+    static void SegmentModified(om::shared_ptr<OmSelectSegmentsParams> params);
     static void SegmentSelected();
     static void ViewCenterChanged();
     static void View3dRecenter();

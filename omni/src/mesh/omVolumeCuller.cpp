@@ -16,11 +16,11 @@ const NormCoord& OmVolumeCuller::GetPosition() const {
 	return mPosition;
 }
 
-boost::shared_ptr<OmVolumeCuller>
+om::shared_ptr<OmVolumeCuller>
 OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat,
 									 const Matrix4f & matInv)
 {
-	return boost::make_shared<OmVolumeCuller>(mProjModelView * mat,
+	return om::make_shared<OmVolumeCuller>(mProjModelView * mat,
 											  matInv * mPosition,
 											  matInv * mFocus);
 }

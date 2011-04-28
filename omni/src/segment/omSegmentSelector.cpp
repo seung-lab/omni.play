@@ -13,7 +13,7 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
                                      void* sender,
                                      const std::string& cmt )
     : segments_(sdw.Segments())
-    , params_(boost::make_shared<OmSelectSegmentsParams>())
+    , params_(om::make_shared<OmSelectSegmentsParams>())
 {
     params_->sdw = SegmentDataWrapper(sdw, 0);
     params_->sender = sender;

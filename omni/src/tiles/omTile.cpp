@@ -1,11 +1,9 @@
-#include "chunks/omChunkTypes.hpp"
 #include "chunks/omSegChunk.h"
 #include "system/cache/omCacheBase.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
 #include "utility/dataWrappers.h"
-#include "utility/image/omFilterImage.hpp"
-#include "utility/image/omImage.hpp"
+#include "tiles/omChannelTileFilter.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omMipVolume.h"
 #include "view2d/omView2dConverters.hpp"
@@ -14,28 +12,13 @@ OmTile::OmTile(OmCacheBase* cache, const OmTileCoord& key)
     : cache_(cache)
     , key_(key)
     , tileLength_(key.getVolume()->Coords().GetChunkDimension())
-    , dims_(Vector2i(tileLength_, tileLength_))
     , mipChunkCoord_(tileToMipCoord())
 {}
 
+OmTile::~OmTile()
+{}
+
 void OmTile::LoadData()
-{
-    if(isMipChunkCoordValid()){
-        doLoadData();
-    } else {
-        makeNullTextureID();
-    }
-}
-
-bool OmTile::isMipChunkCoordValid(){
-    return getVol()->Coords().ContainsMipChunkCoord(mipChunkCoord_);
-}
-
-void OmTile::makeNullTextureID(){
-    texture_ = boost::make_shared<OmTextureID>();
-}
-
-void OmTile::doLoadData()
 {
     if(getVolType() == CHANNEL) {
         load8bitChannelTile();
@@ -51,37 +34,33 @@ int OmTile::getChunkSliceNum(){
 
 void OmTile::load8bitChannelTile()
 {
-    OmChunkPtr chunk;
-
     OmChannel* chan = reinterpret_cast<OmChannel*>(getVol());
-    chan->GetChunk(chunk, mipChunkCoord_);
+    OmChunk* chunk = chan->GetChunk(mipChunkCoord_);
 
-    OmImage<uint8_t, 2> slice =
+    OmPooledTile<uint8_t>* tileData =
         chunk->Data()->ExtractDataSlice8bit(key_.getViewType(),
                                             getChunkSliceNum());
 
-    OmPooledTile<uint8_t>* vData = OmImageFilter::FilterChannel(slice);
+    OmChannelTileFilter::Filter(tileData);
 
-    texture_ = boost::make_shared<OmTextureID>(dims_, vData);
+    texture_.reset(new OmTextureID(tileLength_, tileData));
 }
 
 void OmTile::load32bitSegmentationTile()
 {
-    OmSegChunkPtr chunk;
-
     OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(getVol());
-    seg->GetChunk(chunk, mipChunkCoord_);
+    OmSegChunk* chunk = seg->GetChunk(mipChunkCoord_);
 
-    boost::shared_ptr<uint32_t> imageData =
+    PooledTile32Ptr imageData =
         chunk->SegData()->ExtractDataSlice32bit(key_.getViewType(),
                                                 getChunkSliceNum());
 
     OmPooledTile<OmColorARGB>* colorMappedData =
-        key_.getViewGroupState()->ColorTile(imageData.get(),
-                                            dims_,
+        key_.getViewGroupState()->ColorTile(imageData->GetData(),
+                                            tileLength_,
                                             key_);
 
-    texture_ = boost::make_shared<OmTextureID>(dims_, colorMappedData);
+    texture_.reset(new OmTextureID(tileLength_, colorMappedData));
 }
 
 OmChunkCoord OmTile::tileToMipCoord(){
@@ -107,8 +86,4 @@ uint32_t OmTile::NumBytes() const
     }
 
     return 128*128*4;
-}
-
-bool OmTile::IsMip0(){
-    return 0 == key_.getLevel();
 }

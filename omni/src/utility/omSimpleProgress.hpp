@@ -2,7 +2,7 @@
 #define OM_SIMPLE_PROGRESS_HPP
 
 #include "utility/omLockedPODs.hpp"
-#include "utility/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include "utility/omTimer.hpp"
 
 class OmSimpleProgress {

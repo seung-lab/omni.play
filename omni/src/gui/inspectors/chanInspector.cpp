@@ -14,7 +14,7 @@ ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent)
 {
     setupUi(this);
 
-    cdw = boost::make_shared<ChannelDataWrapper>(incoming_cdw);
+    cdw = om::make_shared<ChannelDataWrapper>(incoming_cdw);
     directoryEdit->setReadOnly(true);
 
     populateChannelInspector();

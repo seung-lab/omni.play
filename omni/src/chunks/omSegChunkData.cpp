@@ -19,9 +19,8 @@ OmRawDataPtrs& OmSegChunkData::getRawData()
     return rawData_;
 }
 
-boost::shared_ptr<uint32_t>
-OmSegChunkData::ExtractDataSlice32bit(const ViewType plane,
-                                      const int offset)
+PooledTile32Ptr OmSegChunkData::ExtractDataSlice32bit(const ViewType plane,
+                                                      const int offset)
 {
     return boost::apply_visitor(ExtractDataSlice32bitVisitor(vol_, coord_,
                                                              plane, offset),
@@ -61,7 +60,7 @@ void OmSegChunkData::RewriteChunk(const boost::unordered_map<uint32_t, uint32_t>
                          getRawData());
 }
 
-boost::shared_ptr<uint32_t> OmSegChunkData::GetCopyOfChunkDataAsUint32()
+om::shared_ptr<uint32_t> OmSegChunkData::GetCopyOfChunkDataAsUint32()
 {
     return boost::apply_visitor(GetOmImage32ChunkVisitor(vol_, chunk_),
                                 getRawData());

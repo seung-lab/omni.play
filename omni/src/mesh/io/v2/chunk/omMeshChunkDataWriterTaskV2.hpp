@@ -1,17 +1,17 @@
 #ifndef OM_MESH_CHUNK_DATA_WRITER_TASK_V2_HPP
 #define OM_MESH_CHUNK_DATA_WRITER_TASK_V2_HPP
 
-#include "mesh/omMipMeshCoord.h"
+#include "mesh/omMeshCoord.h"
 
 class OmMeshChunkDataWriterTaskV2{
 private:
-    const OmMipMeshCoord meshCoord_;
+    const OmMeshCoord meshCoord_;
     const QString fnp_;
     const int64_t offsetIntoFile_;
     const int64_t numBytes_;
 
 public:
-    OmMeshChunkDataWriterTaskV2(const OmMipMeshCoord& meshCoord,
+    OmMeshChunkDataWriterTaskV2(const OmMeshCoord& meshCoord,
                                 const QString fnp,
                                 const uint64_t offsetIntoFile,
                                 const uint64_t numBytes)
@@ -30,7 +30,7 @@ public:
     }
 
     template <typename T>
-    void Write(boost::shared_ptr<T> dataRawPtr)
+    void Write(om::shared_ptr<T> dataRawPtr)
     {
         const char* dataCharPtr =
             reinterpret_cast<const char*>(dataRawPtr.get());

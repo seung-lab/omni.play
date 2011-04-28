@@ -3,7 +3,6 @@
 
 #include "chunks/omSegChunk.h"
 #include "datalayer/hdf5/omHdf5ChunkUtils.hpp"
-#include "system/cache/omVolSliceCache.hpp"
 #include "utility/dataWrappers.h"
 #include "volume/io/omVolumeData.h"
 #include "volume/omVolumeTypes.hpp"
@@ -33,7 +32,7 @@ private:
             SegmentationDataWrapper sdw(*iter);
             OmSegmentation& seg = sdw.GetSegmentation();
             convertVolume(seg);
-            seg.SliceCache()->Load();
+            seg.loadVolData();
         }
     }
 
@@ -72,7 +71,7 @@ private:
                 continue;
             }
 
-            boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+            om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
                 vol.GetMipChunkCoords(level);
 
             FOR_EACH(iter, *coordsPtr)
@@ -89,11 +88,11 @@ private:
     template <typename T>
     void copyChunk(T& vol, const OmChunkCoord& coord)
     {
-        OmChunkPtr chunk;
-        vol.GetChunk(chunk, coord);
+        OmChunk* chunk = vol.GetChunk(coord);
 
         OmDataWrapperPtr hdf5 =
             OmHdf5ChunkUtils::ReadChunkData(&vol, chunk);
+
         chunk->Data()->CopyInChunkData(hdf5);
     }
 };

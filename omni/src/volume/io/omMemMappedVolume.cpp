@@ -1,7 +1,7 @@
 #include "volume/io/omMemMappedVolume.h"
 #include "chunks/omChunk.h"
 #include "volume/build/omDownsampler.hpp"
-#include "utility/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 
 class LoadMemMapFilesVisitor : public boost::static_visitor<> {
 public:

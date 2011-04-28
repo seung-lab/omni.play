@@ -6,7 +6,7 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "mesh/io/omDataForMeshLoad.hpp"
-#include "mesh/omMipMeshCoord.h"
+#include "mesh/omMeshCoord.h"
 #include "chunks/omChunk.h"
 #include "volume/omSegmentation.h"
 #include "project/omProject.h"
@@ -39,18 +39,18 @@ public:
         return false;
     }
 
-    inline boost::shared_ptr<OmDataForMeshLoad>
-    Read(const OmMipMeshCoord& meshCoord){
+    inline om::shared_ptr<OmDataForMeshLoad>
+    Read(const OmMeshCoord& meshCoord){
         return Read(meshCoord.SegID(), meshCoord.Coord());
     }
 
-    inline boost::shared_ptr<OmDataForMeshLoad>
+    inline om::shared_ptr<OmDataForMeshLoad>
     Read(const OmSegID segID, const OmChunkCoord& coord)
     {
         try{
             return doRead(segID, coord);
         } catch(...){
-            return boost::make_shared<OmDataForMeshLoad>();
+            return om::make_shared<OmDataForMeshLoad>();
         }
     }
 
@@ -67,7 +67,7 @@ private:
 
     bool doIsMeshDataPresent(const OmSegID segID, const OmChunkCoord& coord)
     {
-        const OmMipMeshCoord meshCoord(coord, segID);
+        const OmMeshCoord meshCoord(coord, segID);
 
         const std::string path = getDirectoryPath(meshCoord);
 
@@ -85,13 +85,13 @@ private:
         return true;
     }
 
-    boost::shared_ptr<OmDataForMeshLoad>
+    om::shared_ptr<OmDataForMeshLoad>
     doRead(const OmSegID segID, const OmChunkCoord& coord)
     {
-        boost::shared_ptr<OmDataForMeshLoad> ret =
-            boost::make_shared<OmDataForMeshLoad>();
+        om::shared_ptr<OmDataForMeshLoad> ret =
+            om::make_shared<OmDataForMeshLoad>();
 
-        const OmMipMeshCoord meshCoord(coord, segID);
+        const OmMeshCoord meshCoord(coord, segID);
 
         const std::string path = getDirectoryPath(meshCoord);
 
@@ -108,7 +108,7 @@ private:
 
         ret->HasData(true);
 
-        std::pair<int, boost::shared_ptr<uint32_t> > trian =
+        std::pair<int, om::shared_ptr<uint32_t> > trian =
             copyOutData<uint32_t>(path, "trianoffset.dat" );
         if(trian.first){
             ret->SetTrianData(trian.second,
@@ -116,7 +116,7 @@ private:
                               trian.first);
         }
 
-        std::pair<int, boost::shared_ptr<uint32_t> > strips =
+        std::pair<int, om::shared_ptr<uint32_t> > strips =
             copyOutData<uint32_t>(path, "stripoffset.dat" );
         if(strips.first){
             ret->SetStripData(strips.second,
@@ -124,7 +124,7 @@ private:
                               strips.first);
         }
 
-        std::pair<int, boost::shared_ptr<uint32_t> > vertexIndex =
+        std::pair<int, om::shared_ptr<uint32_t> > vertexIndex =
             copyOutData<uint32_t>(path, "vertexoffset.dat" );
         if(vertexIndex.first){
             ret->SetVertexIndex(vertexIndex.second,
@@ -132,7 +132,7 @@ private:
                                 vertexIndex.first);
         }
 
-        std::pair<int, boost::shared_ptr<float> > vertexData =
+        std::pair<int, om::shared_ptr<float> > vertexData =
             copyOutData<float>(path, "vertex.dat" );
         if(vertexData.first){
             ret->SetVertexData(vertexData.second,
@@ -143,7 +143,7 @@ private:
         return ret;
     }
 
-    std::string getDirectoryPath(const OmMipMeshCoord& meshCoord)
+    std::string getDirectoryPath(const OmMeshCoord& meshCoord)
     {
         const std::string p = str( boost::format("%1%/%2%_%3%_%4%/mesh/%5%/")
                                    % meshCoord.MipChunkCoord.Level
@@ -156,7 +156,7 @@ private:
     }
 
     template <typename T>
-    std::pair<int, boost::shared_ptr<T> >
+    std::pair<int, om::shared_ptr<T> >
     copyOutData(const std::string& path, const std::string& fileName)
     {
         const OmDataPath fpath( path + fileName );
@@ -164,7 +164,7 @@ private:
         int size;
         OmDataWrapperPtr wrappedData = reader_->readDataset(fpath, &size);
 
-        boost::shared_ptr<T> data;
+        om::shared_ptr<T> data;
         if(size){
             data = om::ptrs::UnWrap<T>(wrappedData);
         }

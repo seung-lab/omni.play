@@ -3,24 +3,34 @@
 
 #include "zi/omMutex.h"
 
+#include <boost/array.hpp>
+
 class OmViewGroupState;
 
 class OmColorizers {
 private:
     OmViewGroupState *const vgs_;
 
-    zi::mutex lock_;
-    std::vector<boost::shared_ptr<OmSegmentColorizer> > colorizers_;
+    zi::spinlock lock_;
+    boost::array<OmSegmentColorizer*, SCC_NUMBER_OF_ENUMS> colorizers_;
 
 public:
     OmColorizers(OmViewGroupState* vgs)
         : vgs_(vgs)
     {
-        colorizers_.resize(SCC_NUMBER_OF_ENUMS);
+        std::fill(colorizers_.begin(), colorizers_.end(),
+                  static_cast<OmSegmentColorizer*>(NULL));
     }
 
-    inline OmPooledTile<OmColorARGB>* ColorTile(uint32_t const* imageData,
-                                                const Vector2i& dims,
+    ~OmColorizers()
+    {
+        FOR_EACH(iter, colorizers_){
+            delete *iter;
+        }
+    }
+
+    inline OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*const imageData,
+                                                const int tileDim,
                                                 const OmTileCoord& key)
     {
         const OmSegmentColorCacheType sccType =
@@ -29,7 +39,7 @@ public:
         {
             zi::guard g(lock_);
             if(!colorizers_[sccType]){
-                setupColorizer(dims, key, sccType);
+                setupColorizer(tileDim, key, sccType);
             }
         }
 
@@ -37,7 +47,7 @@ public:
     }
 
 private:
-    void setupColorizer(const Vector2i& dims,
+    void setupColorizer(const int tileDim,
                         const OmTileCoord& key,
                         const OmSegmentColorCacheType sccType)
     {
@@ -47,11 +57,10 @@ private:
 
         SegmentationDataWrapper sdw(key.getVolume()->getID());
 
-        colorizers_[ sccType ] =
-            boost::make_shared<OmSegmentColorizer>(sdw.Segments(),
-                                                   sccType,
-                                                   dims,
-                                                   vgs_);
+        colorizers_[ sccType ] = new OmSegmentColorizer(sdw.Segments(),
+                                                        sccType,
+                                                        tileDim,
+                                                        vgs_);
     }
 };
 

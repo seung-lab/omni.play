@@ -23,7 +23,7 @@ template <typename T>
 class OmMemMappedVolumeImpl : public OmIDataVolume<T> {
 private:
     OmMipVolume* vol_;
-    std::vector<boost::shared_ptr<OmIOnDiskFile<T> > > maps_;
+    std::vector<om::shared_ptr<OmIOnDiskFile<T> > > maps_;
 
     typedef OmMemMappedFileReadQT<T> reader_t;
     typedef OmMemMappedFileWriteQT<T> writer_t;

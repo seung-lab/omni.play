@@ -14,78 +14,73 @@
 class OmVolInspector : public QGroupBox {
 Q_OBJECT
 
+private:
+    OmMipVolume& vol_;
+    QGridLayout* grid_;
+    QLineEdit* resX_;
+    QLineEdit* resY_;
+    QLineEdit* resZ_;
+
 private Q_SLOTS:
     void apply()
     {
-        const Vector3f dims(mResX->text().toFloat(),
-                            mResY->text().toFloat(),
-                            mResZ->text().toFloat());
+        const Vector3f dims(resX_->text().toFloat(),
+                            resY_->text().toFloat(),
+                            resZ_->text().toFloat());
 
-        mVol.Coords().SetDataResolution(dims);
+        vol_.Coords().SetDataResolution(dims);
     }
 
-private:
-    OmMipVolume& mVol;
-    QGridLayout* mGrid;
-    QLineEdit* mResX;
-    QLineEdit* mResY;
-    QLineEdit* mResZ;
-
 public:
-    virtual ~OmVolInspector()
-    {}
-
-    OmVolInspector(OmMipVolume& vol, QWidget * parent)
+    OmVolInspector(OmMipVolume& vol, QWidget* parent)
         : QGroupBox(parent)
-        , mVol(vol)
+        , vol_(vol)
     {
-        this->setTitle("Volume");
+        setTitle("Volume Resolution");
 
-        const Vector3i dims = mVol.Coords().GetDataDimensions();
+        const Vector3i dims = vol_.Coords().GetDataDimensions();
 
-        const QString extStr =
-            QString("%1 x %2 x %3").arg(dims.x).arg(dims.y).arg(dims.z);
-        mGrid = new QGridLayout(this);
+        const QString extStr = QString("%1 x %2 x %3").arg(dims.x).arg(dims.y).arg(dims.z);
+        grid_ = new QGridLayout(this);
 
-        QLabel *labelVolume = new QLabel(this);
-        labelVolume->setText("Volume extents:");
-        mGrid->addWidget(labelVolume, 0, 0);
+        QLabel* labelVolume = new QLabel(this);
+        labelVolume->setText("Chunk size:");
+        grid_->addWidget(labelVolume, 0, 0);
 
-        QLabel *labelVolumeNums = new QLabel(this);
+        QLabel* labelVolumeNums = new QLabel(this);
         labelVolumeNums->setText(extStr);
-        mGrid->addWidget(labelVolumeNums, 0, 1);
+        grid_->addWidget(labelVolumeNums, 0, 1);
 
         // Data
         labelVolume = new QLabel(this);
         labelVolume->setText("X Resolution:");
-        mGrid->addWidget(labelVolume, 1, 0);
+        grid_->addWidget(labelVolume, 1, 0);
 
         labelVolume = new QLabel(this);
         labelVolume->setText("Y Resolution:");
-        mGrid->addWidget(labelVolume, 2, 0);
+        grid_->addWidget(labelVolume, 2, 0);
 
         labelVolume = new QLabel(this);
         labelVolume->setText("Z Resolution:");
-        mGrid->addWidget(labelVolume, 3, 0);
+        grid_->addWidget(labelVolume, 3, 0);
 
-        Vector3f resf = mVol.Coords().GetDataResolution();
+        const Vector3f resf = vol_.Coords().GetDataResolution();
 
-        QLineEdit * res = new QLineEdit(this);
-        mResX = res;
-        res->setText(QString::number(resf.x));
-        mGrid->addWidget(res, 1, 1);
+        resX_ = new QLineEdit(this);
+        resX_->setText(QString::number(resf.x));
+        grid_->addWidget(resX_, 1, 1);
 
-        mResY = res = new QLineEdit(this);
-        res->setText(QString::number(resf.y));
-        mGrid->addWidget(res, 2, 1);
+        resY_ = new QLineEdit(this);
+        resY_->setText(QString::number(resf.y));
+        grid_->addWidget(resY_, 2, 1);
 
-        mResZ = res = new QLineEdit(this);
-        res->setText(QString::number(resf.z));
-        mGrid->addWidget(res, 3, 1);
+        resZ_ = new QLineEdit(this);
+        resZ_->setText(QString::number(resf.z));
+        grid_->addWidget(resZ_, 3, 1);
 
-        QPushButton * apply = new QPushButton("Apply");
+        QPushButton* apply = new QPushButton("Apply");
         om::connect(apply, SIGNAL(clicked()), this, SLOT(apply()));
-        mGrid->addWidget(apply, 4, 1);
+        grid_->addWidget(apply, 4, 1);
     }
 };
 

@@ -1,14 +1,15 @@
 #ifndef OM_EXPORT_VOLUME_TO_HDF5_HPP
 #define OM_EXPORT_VOLUME_TO_HDF5_HPP
 
-#include "chunks/omSegChunk.h"
 #include "chunks/omChunkCoord.h"
-#include "datalayer/omDataPaths.h"
+#include "chunks/omSegChunk.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
+#include "datalayer/omDataPath.h"
+#include "datalayer/omDataPaths.h"
+#include "segment/omSegments.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "segment/omSegments.h"
 
 /**
  * Export MIP 0 to HDF5
@@ -32,7 +33,7 @@ private:
     OmExportVolToHdf5()
     {}
 
-    virtual ~OmExportVolToHdf5()
+    ~OmExportVolToHdf5()
     {}
 
     template <typename VOL>
@@ -58,7 +59,7 @@ private:
             hdfExport->open();
         }
 
-        boost::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
             vol->GetMipChunkCoords(0);
 
         FOR_EACH(iter, *coordsPtr){
@@ -81,8 +82,7 @@ private:
     OmDataWrapperPtr exportChunk(OmChannel* vol, const OmChunkCoord& coord,
                                  const bool)
     {
-        OmChunkPtr chunk;
-        vol->GetChunk(chunk, coord);
+        OmChunk* chunk = vol->GetChunk(coord);
         return chunk->Data()->CopyOutChunkData();
     }
 
@@ -92,10 +92,9 @@ private:
     {
         std::cout << "\r\texporting " << coord << std::flush;
 
-        OmSegChunkPtr chunk;
-        vol->GetChunk(chunk, coord);
+        OmSegChunk* chunk = vol->GetChunk(coord);
 
-        boost::shared_ptr<uint32_t> rawDataPtr =
+        om::shared_ptr<uint32_t> rawDataPtr =
             chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
         if(rerootSegments)

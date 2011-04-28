@@ -1,4 +1,4 @@
-#include "mesh/omMipMeshManagers.hpp"
+#include "mesh/omMeshManagers.hpp"
 #include "gui/meshPreviewer/scaleFactorLineEdit.hpp"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 #include "gui/meshPreviewer/previewButton.hpp"
@@ -46,7 +46,7 @@ void MeshPreviewerImpl::mesh()
 /*
     segmentation.MeshManagers()->MeshChunk(coord);
 
-    OmChunkPtr chunk;
+    OmChunk* chunk;
     segmentation.GetChunk(chunk, coord);
 // select all segments
 OmSegmentSelector sel(sdw_, this, "meshPreviewer");

@@ -1,7 +1,7 @@
 #ifndef OM_TILE_PRE_FETCHER_HPP
 #define OM_TILE_PRE_FETCHER_HPP
 
-#include "utility/omThreadPool.hpp"
+#include "threads/omTaskManager.hpp"
 #include <list>
 
 class OmTileDrawer;
@@ -19,7 +19,7 @@ public:
 
 private:
 	OmThreadPool mThreadPool;
-	boost::shared_ptr<OmView2dState> cloneState(OmTileDrawer*);
+	om::shared_ptr<OmView2dState> cloneState(OmTileDrawer*);
 };
 
 #endif

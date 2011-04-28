@@ -8,7 +8,7 @@ OmHdf5Impl::OmHdf5Impl(const std::string& fileName, const bool readOnly)
 	: mReadOnly(readOnly)
 {
 	fileId = OmHdf5FileUtils::file_open(fileName, mReadOnly);
-	hdf_ = boost::make_shared<OmHdf5LowLevel>(fileId);
+	hdf_ = om::make_shared<OmHdf5LowLevel>(fileId);
 }
 
 OmHdf5Impl::~OmHdf5Impl(){

@@ -3,8 +3,8 @@
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
-#include "mesh/omMipMeshCoord.h"
-#include "mesh/omMipMeshManager.h"
+#include "mesh/omMeshCoord.h"
+#include "mesh/omMeshManager.h"
 #include "project/omProject.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
@@ -33,7 +33,7 @@ OmDataPath OmDataPaths::getSegmentPagePath(const OmID segmentationID,
     return OmDataPath(p);
 }
 
-std::string OmDataPaths::getMeshFileName( const OmMipMeshCoord & meshCoord )
+std::string OmDataPaths::getMeshFileName( const OmMeshCoord & meshCoord )
 {
     return str( boost::format("mesh.%1%.dat")
                 %meshCoord.DataValue);

@@ -5,8 +5,8 @@
 #include "common/omDebug.h"
 #include "common/omGl.h"
 #include "mesh/drawer/omMeshPlan.h"
-#include "mesh/omMipMesh.h"
-#include "mesh/omMipMeshManagers.hpp"
+#include "mesh/omMesh.h"
+#include "mesh/omMeshManagers.hpp"
 #include "mesh/omVolumeCuller.h"
 #include "segment/omSegmentPointers.h"
 #include "segment/omSegmentUtils.hpp"
@@ -131,7 +131,7 @@ private:
 
     void drawSegment(OmSegment* seg, const OmChunkCoord& coord)
     {
-        OmMipMeshPtr mesh;
+        OmMeshPtr mesh;
         segmentation_->MeshManagers()->GetMesh(mesh, coord, seg->value(), 1);
 
         if(!mesh){
@@ -160,7 +160,7 @@ private:
     }
 
     // draw chunk bounding box--broken? (purcaro)
-    void drawClippedExtent(OmChunkPtr chunk)
+    void drawClippedExtent(OmChunk* chunk)
     {
         return; // FIXME!
 

@@ -1,3 +1,4 @@
+#include "tiles/pools/omTilePools.hpp"
 #include "project/omProject.h"
 #include "project/omProjectImpl.hpp"
 
@@ -85,7 +86,7 @@ bool OmProject::IsOpen(){
 #include "segment/omSegmentSelected.hpp"
 #include "events/details/omEventManager.h"
 #include "system/omGarbage.h"
-#include "utility/omThreadPoolManager.h"
+#include "threads/omThreadPoolManager.h"
 #include "zi/omThreads.h"
 
 void OmProject::Close()
@@ -115,4 +116,6 @@ void OmProject::Close()
     OmCacheManager::Delete();
 
     OmHdf5Manager::Delete();
+
+    OmTilePools::Reset();
 }

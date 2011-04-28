@@ -28,13 +28,13 @@ public:
 
     // no locking needed
     template <typename T>
-    boost::shared_ptr<T> Read(const OmMeshFilePart& entry)
+    om::shared_ptr<T> Read(const OmMeshFilePart& entry)
     {
         const int64_t numBytes = entry.totalBytes;
 
         assert(numBytes);
 
-        boost::shared_ptr<T> ret =
+        om::shared_ptr<T> ret =
             OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
 
         char* dataCharPtr = reinterpret_cast<char*>(ret.get());

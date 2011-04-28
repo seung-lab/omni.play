@@ -13,7 +13,7 @@ private:
 
     const std::string fnp_;
 
-    boost::shared_ptr<QFile> file_;
+    om::shared_ptr<QFile> file_;
     OmColor* values_;
     int64_t numEntries_;
 

@@ -3,8 +3,7 @@
 function show_dynamic_image($fileContents)
 {
     if ($fileContents) {
-        header("Content-type: image/png"); // add here more headers for diff. extensions
-        header("Content-: image/png"); // add here more headers for diff. extensions
+        header("Content-type: image/jpg");
         //header("Content-encoding: gzip");
         //$data = gzencode($fileContents);
         header("Content-length: " . strlen($fileContents) );

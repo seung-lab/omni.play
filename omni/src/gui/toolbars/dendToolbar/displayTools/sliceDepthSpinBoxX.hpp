@@ -13,7 +13,7 @@ public:
 
 private:
     virtual ViewType viewType() const {
-        return YZ_VIEW;
+        return ZY_VIEW;
     }
 };
 

@@ -33,6 +33,7 @@ void resizeFileNumElements(QFile* file, const int64_t numElements){
 
 void rmFile(const std::string& fnp);
 void mvFile(const std::string& old_fnp, const std::string& new_fnp);
+void cpFile(const std::string& old_fnp, const std::string& new_fnp);
 
 bool exists(const std::string& fnp);
 
@@ -95,7 +96,7 @@ T* mapFile(PTR& file)
 }
 
 template <class T>
-boost::shared_ptr<T> readAll(QFile* file)
+om::shared_ptr<T> readAll(QFile* file)
 {
     const int64_t numBytes = file->size();
 
@@ -103,7 +104,7 @@ boost::shared_ptr<T> readAll(QFile* file)
         throw OmIoException("file size not even multiple of sizeof(type)");
     }
 
-    boost::shared_ptr<T> ret =
+    om::shared_ptr<T> ret =
         OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
 
     char* dataChar = reinterpret_cast<char*>(ret.get());
@@ -119,7 +120,7 @@ boost::shared_ptr<T> readAll(QFile* file)
 
 
 template <class T>
-boost::shared_ptr<T> readAll(QFile& file) {
+om::shared_ptr<T> readAll(QFile& file) {
     return readAll<T>(&file);
 }
 
@@ -140,7 +141,7 @@ void writeVec(QFile& file, const std::vector<T>& vec)
 }
 
 template <class T>
-void writeNumElements(QFile& file, const boost::shared_ptr<T> ptr,
+void writeNumElements(QFile& file, const om::shared_ptr<T> ptr,
                       const int64_t numElements)
 {
     const int64_t numBytes = numElements * sizeof(T);
@@ -163,14 +164,14 @@ void createFileNumElements(const std::string& fnp, const int64_t numElements)
 
     openFileWO(file);
 
-    boost::shared_ptr<T> empty = OmSmartPtr<T>::MallocNumElements(numElements,
+    om::shared_ptr<T> empty = OmSmartPtr<T>::MallocNumElements(numElements,
                                                                   om::ZERO_FILL);
 
     writeNumElements(file, empty, numElements);
 }
 
 template <class T>
-void createFileFromData(const std::string& fnp, const boost::shared_ptr<T> ptr,
+void createFileFromData(const std::string& fnp, const om::shared_ptr<T> ptr,
                         const int64_t numElements)
 {
     QFile file(QString::fromStdString(fnp));

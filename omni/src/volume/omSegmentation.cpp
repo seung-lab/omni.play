@@ -5,13 +5,13 @@
 #include "common/omDebug.h"
 #include "datalayer/omDataPaths.h"
 #include "mesh/drawer/omMeshDrawer.h"
-#include "mesh/omMipMeshManagers.hpp"
+#include "mesh/omMeshManagers.hpp"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegments.h"
-#include "system/cache/omVolSliceCache.hpp"
+#include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "system/omGroups.h"
 #include "volume/build/omVolumeAllocater.hpp"
 #include "volume/io/omVolumeData.h"
@@ -24,14 +24,14 @@ OmSegmentation::OmSegmentation()
     , groups_(new OmGroups(this))
     , mst_(new OmMST(this))
     , meshDrawer_(new OmMeshDrawer(this))
-    , meshManagers_(new OmMipMeshManagers(this))
+    , meshManagers_(new OmMeshManagers(this))
     , chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this))
     , segments_(new OmSegments(this))
     , segmentLists_(new OmSegmentLists())
     , mstUserEdges_(new OmUserEdges(this))
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new OmVolumeData())
-    , volSliceCache_(new OmVolSliceCache(this))
+    , volSliceCache_(new OmRawSegTileCache(this))
 {}
 
 // used by OmGenericManager
@@ -41,14 +41,14 @@ OmSegmentation::OmSegmentation(OmID id)
     , groups_(new OmGroups(this))
     , mst_(new OmMST(this))
     , meshDrawer_(new OmMeshDrawer(this))
-    , meshManagers_(new OmMipMeshManagers(this))
+    , meshManagers_(new OmMeshManagers(this))
     , chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this))
     , segments_(new OmSegments(this))
     , segmentLists_(new OmSegmentLists())
     , mstUserEdges_(new OmUserEdges(this))
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new OmVolumeData())
-    , volSliceCache_(new OmVolSliceCache(this))
+    , volSliceCache_(new OmRawSegTileCache(this))
 {
     segments_->StartCaches();
     segments_->refreshTree();
@@ -146,7 +146,7 @@ void OmSegmentation::BuildBlankVolume(const Vector3i& dims)
     SetBuildState(MIPVOL_BUILT);
 }
 
-OmMipMeshManager* OmSegmentation::MeshManager(const double threshold){
+OmMeshManager* OmSegmentation::MeshManager(const double threshold){
     return meshManagers_->GetManager(threshold);
 }
 
@@ -159,8 +159,7 @@ quint32 OmSegmentation::GetVoxelValue(const DataCoord & vox)
     //find mip_coord and offset
     const OmChunkCoord mip0coord = coords_.DataToMipCoord(vox, 0);
 
-    OmSegChunkPtr chunk;
-    GetChunk(chunk, mip0coord);
+    OmSegChunk* chunk = GetChunk(mip0coord);
 
     //get voxel data
     return chunk->GetVoxelValue(vox);
@@ -174,21 +173,13 @@ void OmSegmentation::SetVoxelValue(const DataCoord& vox, const uint32_t val)
     //find mip_coord and offset
     OmChunkCoord leaf_mip_coord = coords_.DataToMipCoord(vox, 0);
 
-    OmSegChunkPtr chunk;
-    GetChunk(chunk, leaf_mip_coord);
+    OmSegChunk* chunk = GetChunk(leaf_mip_coord);
 
     chunk->SetVoxelValue(vox, val);
 }
 
-void OmSegmentation::GetChunk(OmChunkPtr& ptr, const OmChunkCoord& coord)
-{
-    OmSegChunkPtr seg;
-    chunkCache_->GetChunk(seg, coord);
-    ptr = seg;
-}
-
-void OmSegmentation::GetChunk(OmSegChunkPtr& ptr, const OmChunkCoord& coord){
-    chunkCache_->GetChunk(ptr, coord);
+OmSegChunk* OmSegmentation::GetChunk(const OmChunkCoord& coord){
+    return chunkCache_->GetChunk(coord);
 }
 
 void OmSegmentation::UpdateFromVolResize()

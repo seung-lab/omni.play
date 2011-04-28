@@ -51,7 +51,7 @@ protected:
     virtual uint64_t Size() = 0;
     virtual int getPreferredTabIndex() = 0;
     virtual void makeTabActiveIfContainsJumpedToSegment() = 0;
-    virtual boost::shared_ptr<GUIPageOfSegments>
+    virtual om::shared_ptr<GUIPageOfSegments>
     getPageSegments(const GUIPageRequest& request) = 0;
 
     QVBoxLayout* layout;
