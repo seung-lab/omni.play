@@ -9,13 +9,13 @@ class OmFilter2d;
 
 class OmOnScreenTileCoords {
 public:
-    OmOnScreenTileCoords(const om::shared_ptr<OmView2dState>&);
+    OmOnScreenTileCoords(OmView2dState*);
 
     OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations();
     OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations(const int);
 
 private:
-    const om::shared_ptr<OmView2dState> state_;
+    OmView2dState *const state_;
     OmMipVolume *const vol_;
     const ViewType viewType_;
     OmViewGroupState *const vgs_;

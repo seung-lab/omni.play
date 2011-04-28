@@ -17,11 +17,12 @@ class OmDataForMeshLoad;
 class OmMeshCache;
 class OmMeshManager;
 class OmSegmentation;
+class QGLContext;
 
 class OmMesh {
 public:
     OmMesh(OmSegmentation*, const OmMeshCoord&,
-              OmMeshManager*, OmMeshCache*);
+           OmMeshManager*, OmMeshCache*);
 
     virtual ~OmMesh();
 
@@ -30,7 +31,7 @@ public:
     bool HasData() const;
     uint64_t NumBytes() const;
 
-    void Draw();
+    void Draw(QGLContext const* context);
 
     OmDataForMeshLoad* Data(){
         return data_.get();
@@ -43,18 +44,20 @@ private:
 
     const OmMeshCoord meshCoord_;
 
+    QGLContext const* context_;
+
     om::shared_ptr<OmDataForMeshLoad> data_;
 
     GLuint vertexDataVboId_;
     GLuint vertexIndexDataVboId_;
     bool isVbo();
-    void createVbo();
+    bool createVbo();
     void deleteVbo();
     GLuint createVbo(const void *data, int dataSize,
                      GLenum target, GLenum usage);
 
     boost::optional<GLuint> displayList_;
-    void makeDisplayList();
+    void makeDisplayList(QGLContext const* context);
 
     uint64_t numBytes_;
     bool hasData_;

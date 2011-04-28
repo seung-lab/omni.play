@@ -14,6 +14,10 @@ public:
         return OmProject::Volumes().Segmentations().GetValidSegmentationIds();
     }
 
+    static inline const std::vector<OmSegmentation*> GetPtrVec(){
+        return OmProject::Volumes().Segmentations().GetPtrVec();
+    }
+
     static void Remove(const OmID id){
         OmProject::Volumes().Segmentations().RemoveSegmentation(id);
     }

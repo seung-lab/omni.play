@@ -1,5 +1,7 @@
+#include "system/omOpenGLGarbageCollector.hpp"
 #include "system/omStateManager.h"
 #include "tiles/cache/omTileCache.h"
+#include "view2d/omScreenPainter.hpp"
 #include "view2d/omTileDrawer.hpp"
 #include "view2d/omView2dCore.h"
 #include "view2d/omView2dState.hpp"
@@ -8,81 +10,45 @@
 OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
                            OmViewGroupState * vgs, const ViewType viewType,
                            const std::string& name)
-    : QWidget(parent)
+    : QGLWidget(parent)
     , blockingRedraw_(false)
     , viewType_(viewType)
     , name_(name)
-    , state_(om::make_shared<OmView2dState>(vol, vgs, viewType, size(), name))
-    , tileDrawer_(new OmTileDrawer(state_, viewType))
-    , nearClip_(0)
-    , farClip_(0)
-{
-    resetPbuffer(size());
-}
+    , state_(new OmView2dState(vol, vgs, viewType, size(), name))
+    , tileDrawer_(new OmTileDrawer(state_.get(), viewType))
+    , screenPainter_(new OmScreenPainter(this, state_.get()))
+{}
 
 OmView2dCore::~OmView2dCore()
 {}
 
-void OmView2dCore::resetPbuffer(const QSize& size)
-{
-    pbuffer_.reset(new QGLPixelBuffer(size,
-                                      QGLFormat::defaultFormat(),
-                                      (QGLWidget*)OmStateManager::GetPrimaryView3dWidget()));
-}
-
-// pbuffered paint
-QImage OmView2dCore::FullRedraw2d()
-{
-    reset();
-
-    pbuffer_->makeCurrent();
-
-    setupMainGLpaintOp();
-    {
-        tileDrawer_->FullRedraw2d(blockingRedraw_);
-        blockingRedraw_ = false;
-    }
-    teardownMainGLpaintOp();
-
-    pbuffer_->doneCurrent();
-
-    return pbuffer_->toImage();
-}
-
-void OmView2dCore::reset()
-{
-    state_->setTotalViewport(size());
-
-    nearClip_ = -1;
-    farClip_ = 1;
-}
-
 void OmView2dCore::setupMainGLpaintOp()
 {
+    const Vector4i& vp = state_->getTotalViewport();
+
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glPushMatrix(); {
+    glPushMatrix();
 
+    {
         glMatrixMode(GL_PROJECTION);
 
-        const Vector4i& vp = state_->getTotalViewport();
-
-        glViewport(vp.lowerLeftX,
-                   vp.lowerLeftY,
-                   vp.width,
-                   vp.height);
         glLoadIdentity();
 
-        glOrtho(vp.lowerLeftX, /* left */
-                vp.width,      /* right */
-                vp.height,     /* bottom */
-                vp.lowerLeftY, /* top */
-                nearClip_,
-                farClip_);
+        glOrtho(vp.lowerLeftX, // left
+                vp.width,      // right
+                vp.height,     // bottom
+                vp.lowerLeftY, // top
+                -1,            // nearClip
+                1              // farClip
+            );
 
         glMatrixMode(GL_MODELVIEW);
+
         glLoadIdentity();
+
+        glDisable(GL_DEPTH_TEST);
 
         glEnable(GL_TEXTURE_2D);
 
@@ -94,9 +60,9 @@ void OmView2dCore::setupMainGLpaintOp()
 
 void OmView2dCore::teardownMainGLpaintOp()
 {
-    glPopMatrix();
-
     glDisable(GL_TEXTURE_2D);
+
+    glPopMatrix();
 }
 
 int OmView2dCore::GetTileCount(){
@@ -113,4 +79,43 @@ bool OmView2dCore::IsDrawComplete(){
 
 void OmView2dCore::dockVisibilityChanged(const bool visible){
     OmTileCache::WidgetVisibilityChanged(tileDrawer_.get(), visible);
+}
+
+void OmView2dCore::initializeGL(){
+    state_->setTotalViewport(size());
+}
+
+void OmView2dCore::resizeGL(int width, int height)
+{
+    OmEvents::ViewCenterChanged();
+
+    state_->setTotalViewport(width, height);
+    state_->SetViewSliceOnPan();
+}
+
+void OmView2dCore::paintGL()
+{
+    setupMainGLpaintOp();
+    {
+        tileDrawer_->FullRedraw2d(blockingRedraw_);
+        blockingRedraw_ = false;
+    }
+    teardownMainGLpaintOp();
+
+    screenPainter_->PaintExtras();
+
+    if(!IsDrawComplete() || state_->getScribbling()){
+        OmTileCache::SetDrawerActive(tileDrawer_.get());
+
+    } else {
+        OmTileCache::SetDrawerDone(tileDrawer_.get());
+
+        if(!OmTileCache::AreDrawersActive()){
+            OmOpenGLGarbageCollector::CleanTextureIDs(QGLContext::currentContext());
+        }
+    }
+
+    if(!IsDrawComplete()){
+        OmEvents::Redraw2d();
+    }
 }

@@ -7,19 +7,19 @@
 #include "tiles/omTileCoord.h"
 #include "tiles/omTileTypes.hpp"
 
+class OmChannelImpl;
+
 class OmTileCacheChannel : public OmThreadedTileCache {
 public:
     OmTileCacheChannel()
-        : OmThreadedTileCache("Channel Tiles")
+        : OmThreadedTileCache("Channel Tiles", 128*128)
     {}
 
-private:
-    OmTilePtr HandleCacheMiss(const OmTileCoord& key)
-    {
-        OmTile* tile = new OmTile(this, key);
-        tile->LoadData();
-        return OmTilePtr(tile);
-    }
+    virtual ~OmTileCacheChannel()
+    {}
+
+    void Load(OmChannelImpl*)
+    {}
 };
 
 #endif

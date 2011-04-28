@@ -13,8 +13,6 @@
 #include "zi/omUtility.h"
 
 #include <QSize>
-#include <QGLWidget>
-#include <QGLContext>
 
 class OmUndoStack;
 class OmBrushSize;
@@ -36,9 +34,6 @@ public:
 
     //undostack
     static OmUndoStack& UndoStack();
-
-    //view3d context
-    static const QGLWidget* GetPrimaryView3dWidget();
 
 private:
     OmStateManager();

@@ -58,21 +58,21 @@ public:
     void insert(const ARG& arg, task_t task)
     {
         zi::guard g(lock_);
-        queue_.insert(std::make_pair(arg.getLevel(), task));
+        queue_.insert(std::make_pair(arg, task));
     }
 
     template <typename ARG, class Runnable >
     void insert(const ARG& arg, om::shared_ptr<Runnable> task)
     {
         zi::guard g(lock_);
-        queue_.insert(std::make_pair(arg.getLevel(), task));
+        queue_.insert(std::make_pair(arg, task));
     }
 
     template <typename ARG, class Function >
     void insert(const ARG& arg, const Function& task)
     {
         zi::guard g(lock_);
-        queue_.insert(std::make_pair(arg.getLevel(), task));
+        queue_.insert(std::make_pair(arg, task));
     }
 };
 

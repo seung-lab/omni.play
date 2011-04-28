@@ -6,10 +6,14 @@
 
 class OmSegment;
 class OmSegments;
+class SegmentDataWrapper;
+class SegmentationDataWrapper;
 
 class OmSegmentIterator {
 public:
     explicit OmSegmentIterator(OmSegments*);
+    explicit OmSegmentIterator(const SegmentationDataWrapper& sdw);
+    explicit OmSegmentIterator(const SegmentDataWrapper& sdw);
 
     void iterOverSegmentID(const OmSegID segID);
     void iterOverSegmentIDs(const OmSegIDsSet& set);
@@ -22,7 +26,7 @@ public:
     OmSegmentIterator & operator = (const OmSegmentIterator & other);
 
 private:
-    OmSegments* mCache;
+    OmSegments* segments_;
     std::deque<OmSegment*> segs_;
 };
 

@@ -1,3 +1,4 @@
+#include "tiles/cache/omTileCacheChannel.hpp"
 #include "actions/omActions.h"
 #include "chunks/omChunk.h"
 #include "chunks/omChunkCache.hpp"
@@ -19,12 +20,14 @@
 OmChannelImpl::OmChannelImpl()
     : chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this))
     , volData_(new OmVolumeData())
+    , tileCache_(new OmTileCacheChannel())
 {}
 
 OmChannelImpl::OmChannelImpl(OmID id)
     : OmManageableObject(id)
     , chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this))
     , volData_(new OmVolumeData())
+    , tileCache_(new OmTileCacheChannel())
 {
     filterManager_.AddFilter();
 }
@@ -53,6 +56,7 @@ void OmChannelImpl::loadVolData()
     {
         UpdateFromVolResize();
         volData_->load(this);
+        tileCache_->Load(this);
     }
 }
 

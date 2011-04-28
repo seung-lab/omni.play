@@ -218,7 +218,7 @@ private:
         return doSelectSegment(*sdw, augment_selection );
     }
 
-    void doSelectSegment(const SegmentDataWrapper& sdw, bool augment_selection )
+    void doSelectSegment(const SegmentDataWrapper& sdw, const bool augment_selection)
     {
         if( !sdw.IsSegmentValid() ){
             printf("not valid\n");

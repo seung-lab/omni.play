@@ -9,6 +9,7 @@
 
 class OmMeshConvertV1toV2Task : public zi::runnable{
 private:
+    OmMeshManager *const meshManager_;
     OmSegmentation *const segmentation_;
     const double threshold_;
 
@@ -16,11 +17,12 @@ private:
     boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
 
 public:
-    OmMeshConvertV1toV2Task(OmSegmentation* segmentation)
-        : segmentation_(segmentation)
-        , threshold_(1)
+    OmMeshConvertV1toV2Task(OmMeshManager* meshManager)
+        : meshManager_(meshManager)
+        , segmentation_(meshManager->GetSegmentation())
+        , threshold_(meshManager->Threshold())
         , hdf5Reader_(new OmMeshReaderV1(segmentation_))
-        , meshWriter_(new OmMeshWriterV2(segmentation_, threshold_))
+        , meshWriter_(new OmMeshWriterV2(meshManager))
     {}
 
     void run()
@@ -41,7 +43,7 @@ public:
 
         meshWriter_->Join();
 
-        segmentation_->MeshManager(threshold_)->Metadata()->SetMeshedAndStorageAsChunkFiles();
+        meshManager_->Metadata()->SetMeshedAndStorageAsChunkFiles();
 
         printf("mesh conversion done!\n");
     }
@@ -52,9 +54,11 @@ private:
         const ChunkUniqueValues segIDs =
             segmentation_->ChunkUniqueValues()->Values(coord, 1);
 
-        FOR_EACH(segID, segIDs){
-
-            if(OmCacheManager::AmClosingDown()){
+        FOR_EACH(segID, segIDs)
+        {
+            if(OmCacheManager::AmClosingDown())
+            {
+                // TODO: note that mesh conversion was not done?
                 return false;
             }
 

@@ -17,7 +17,6 @@ Q_OBJECT
 public:
     GraphTools(DendToolBar *);
 
-    void ShowSplitterBusy(const bool showBusy);
     void SetSplittingOff();
     void SetCuttingOff();
     void RefreshThreshold();
@@ -29,12 +28,10 @@ public:
     QString getName(){ return "Graph Tools"; }
 
 private Q_SLOTS:
-    void showSplitterBusy(const bool showBusy);
     void setSplittingOff();
     void setCutButtonOff();
 
 Q_SIGNALS:
-    void signalSplitterBusy(bool showBusy);
     void signalSplittingOff();
     void signalSetCutButtonOff();
 

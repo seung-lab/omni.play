@@ -124,9 +124,9 @@ public:
     inline DataCoord NormToDataCoord(const NormCoord& norm) const
     {
         const Vector3f scale = dataExtent_.getUnitDimensions();
-        return DataCoord(om::math::SymmetricalRound(norm.x * scale.x),
-                         om::math::SymmetricalRound(norm.y * scale.y),
-                         om::math::SymmetricalRound(norm.z * scale.z));
+        return DataCoord(om::math::symmetricalRound(norm.x * scale.x),
+                         om::math::symmetricalRound(norm.y * scale.y),
+                         om::math::symmetricalRound(norm.z * scale.z));
     }
 
     /**

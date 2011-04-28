@@ -33,7 +33,7 @@ public:
         mips_.resize(mippingInfo_.maxMipLevel + 1);
 
         for(int i=0; i <= mippingInfo_.maxMipLevel; ++i){
-            mips_[i].factor = om::pow2int(i);
+            mips_[i].factor = om::math::pow2int(i);
 
             const Vector3i dims = vol_->Coords().getDimsRoundedToNearestChunk(i);
             mips_[i].volDims = dims;

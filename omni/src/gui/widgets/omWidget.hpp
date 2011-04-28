@@ -5,11 +5,11 @@
 
 class OmWidget : public QWidget {
 public:
-	OmWidget(QWidget* p)
-		: QWidget(p)
-	{}
+    OmWidget(QWidget* p)
+        : QWidget(p)
+    {}
 
-	virtual QString getName() = 0;
+    virtual QString getName() = 0;
 };
 
 #endif

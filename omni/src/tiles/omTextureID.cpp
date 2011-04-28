@@ -1,25 +1,27 @@
 #include "tiles/pools/omPooledTile.hpp"
 #include "common/omDebug.h"
 #include "tiles/cache/omTileCache.h"
-#include "system/omGarbage.h"
+#include "system/omOpenGLGarbageCollector.hpp"
 #include "tiles/omTextureID.h"
 
 OmTextureID::OmTextureID(const int tileDim, OmPooledTile<uint8_t>* data)
     : tileDim_(tileDim)
     , pooledTile_(data)
     , flag_(OMTILE_NEEDTEXTUREBUILT)
+    , context_(NULL)
 {}
 
 OmTextureID::OmTextureID(const int tileDim, OmPooledTile<OmColorARGB>* data)
     : tileDim_(tileDim)
     , pooledTile_(data)
     , flag_(OMTILE_NEEDCOLORMAP)
+    , context_(NULL)
 {}
 
 OmTextureID::~OmTextureID()
 {
     if(textureID_){
-        OmGarbage::assignOmTextureId(*textureID_);
+        OmOpenGLGarbageCollector::AddTextureID(context_, *textureID_);
     }
 
     // data now in OpenGL texture; will be garbage collected via
@@ -39,9 +41,12 @@ uchar* OmTextureID::GetTileDataUChar() const {
     return static_cast<uchar*>(GetTileData());
 }
 
-void OmTextureID::TextureBindComplete(const GLuint textureID)
+void OmTextureID::TextureBindComplete(QGLContext const* context, const GLuint textureID)
 {
     flag_ = OMTILE_GOOD;
     textureID_ = textureID;
+
+    assert(context && "context should never be 0");
+    context_ = context;
     pooledTile_.reset();
 }

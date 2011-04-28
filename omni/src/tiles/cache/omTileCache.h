@@ -1,6 +1,7 @@
 #ifndef OM_TILE_CACHE_H
 #define OM_TILE_CACHE_H
 
+#include "threads/omTaskManagerTypes.h"
 #include "common/om.hpp"
 #include "common/omCommon.h"
 #include "tiles/omTileTypes.hpp"
@@ -13,6 +14,10 @@ class OmTileDrawer;
 class OmTileCache : private om::singletonBase<OmTileCache>{
 private:
     boost::scoped_ptr<OmTileCacheImpl> impl_;
+
+    static inline OmTileCacheImpl* impl(){
+        return instance().impl_.get();
+    }
 
 public:
     static void Delete();
@@ -34,11 +39,13 @@ public:
 
     static void BlockingCreate(OmTilePtr& tile, const OmTileCoord& key);
 
-    static void Prefetch(const OmTileCoord& key);
+    static void Prefetch(const OmTileCoord& key, const int depthOffset);
 
     static void ClearAll();
     static void ClearChannel();
     static void ClearSegmentation();
+
+    static OmTaskManager<OmTaskManagerContainerMipSorted>& ThreadPool();
 
 private:
     OmTileCache();

@@ -101,7 +101,8 @@ OmSegmentEdge OmSegmentsImpl::splitChildFromParent(OmSegment * child)
         SegmentSelection().doSelectedSetRemove(child->value());
     }
 
-    if(-1 != child->getEdgeNumber()){
+    if(-1 != child->getEdgeNumber())
+    {
         const int e = child->getEdgeNumber();
         OmMSTEdge* edges = segmentation_->MST()->Edges();
 
@@ -111,7 +112,8 @@ OmSegmentEdge OmSegmentsImpl::splitChildFromParent(OmSegment * child)
         child->setEdgeNumber(-1);
     }
 
-    if(child->getCustomMergeEdge().isValid()){
+    if(child->getCustomMergeEdge().isValid())
+    {
         userEdges_->RemoveEdge(child->getCustomMergeEdge());
         child->setCustomMergeEdge(OmSegmentEdge());
     }
@@ -145,13 +147,15 @@ OmSegmentsImpl::JoinEdgeFromUser(const OmSegmentEdge& e)
     OmSegment* parent = store_->GetSegment(e.parentID);
     OmSegment* parentRoot = FindRoot(parent);
 
-    if(childRoot == parentRoot){
+    if(childRoot == parentRoot)
+    {
         printf("cycle found in user manual edge; skipping edge %d, %d, %f\n",
                e.childID, e.parentID, e.threshold);
         return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
     }
 
-    if(childRoot->IsValidListType() != parent->IsValidListType()){
+    if(childRoot->IsValidListType() != parent->IsValidListType())
+    {
         printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
                childRoot->value(), parent->value(), childRoot->IsValidListType(), parent->IsValidListType());
         return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
@@ -204,7 +208,8 @@ OmSegIDsSet OmSegmentsImpl::JoinTheseSegments(const OmSegIDsSet& segmentList)
 
     // We then iterate through the Segment Ids and join
     // each one to the parent
-    while (iter != set.end()) {
+    while (iter != set.end())
+    {
         const OmSegID segID = *iter;
 
         std::pair<bool, OmSegmentEdge> edge =
@@ -242,7 +247,8 @@ OmSegIDsSet OmSegmentsImpl::UnJoinTheseSegments(const OmSegIDsSet& segmentList)
 
     // We then iterate through the Segment Ids and split
     // each one from the parent
-    while (iter != set.end()) {
+    while (iter != set.end())
+    {
         const OmSegID segID = *iter;
         OmSegmentEdge edge =
             splitChildFromParent(store_->GetSegment(segID));
@@ -325,9 +331,11 @@ bool OmSegmentsImpl::AreAnySegmentsInValidList(const OmSegIDsSet& ids)
     FOR_EACH(iter, ids)
     {
         OmSegment* seg = store_->GetSegment(*iter);
+
         if(!seg){
             continue;
         }
+
         if(seg->IsValidListType()){
             return true;
         }

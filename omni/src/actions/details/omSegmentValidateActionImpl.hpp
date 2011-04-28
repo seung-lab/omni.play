@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 #include "system/cache/omCacheManager.h"
-#include "segment/omSegmentValidation.hpp"
+#include "segment/actions/omSetSegmentValid.hpp"
 
 class OmSegmentValidateActionImpl {
 private:
@@ -24,17 +24,17 @@ public:
 
     void Execute()
     {
-        OmSegmentValidation::SetAsValidated(sdw_,
-                                            selectedSegments_,
-                                            valid_);
+        OmSetSegmentValid validator(sdw_);
+        validator.Set(*selectedSegments_, valid_);
+
         OmCacheManager::TouchFreshness();
     }
 
     void Undo()
     {
-        OmSegmentValidation::SetAsValidated(sdw_,
-                                            selectedSegments_,
-                                            !valid_);
+        OmSetSegmentValid validator(sdw_);
+        validator.Set(*selectedSegments_, !valid_);
+
         OmCacheManager::TouchFreshness();
     }
 

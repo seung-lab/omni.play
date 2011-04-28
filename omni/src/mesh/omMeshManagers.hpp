@@ -1,11 +1,11 @@
 #ifndef OM_MIP_MESH_MANAGERS_HPP
 #define OM_MIP_MESH_MANAGERS_HPP
 
-#include "mesh/omMeshManager.h"
 #include "mesh/io/omMeshMetadata.hpp"
+#include "mesh/omMeshManager.h"
+#include "mesh/ziMesher.hpp"
 #include "utility/fuzzyStdObjs.hpp"
 #include "utility/omStringHelpers.h"
-#include "mesh/ziMesher.hpp"
 
 class OmMeshManagers {
 private:
@@ -16,7 +16,14 @@ public:
         : segmentation_(segmentation)
     {}
 
-    ~OmMeshManagers(){}
+    ~OmMeshManagers()
+    {
+        zi::guard g(managersLock_);
+
+        FOR_EACH(iter, managers_){
+            delete iter->second;
+        }
+    }
 
     void Load()
     {
@@ -28,8 +35,11 @@ public:
 
     void CloseDownThreads()
     {
-        FOR_EACH(iter, managers_){
-            om::shared_ptr<OmMeshManager> man = iter->second;
+        zi::guard g(managersLock_);
+
+        FOR_EACH(iter, managers_)
+        {
+            OmMeshManager* man = iter->second;
             man->CloseDownThreads();
         }
     }
@@ -40,19 +50,22 @@ public:
 
     OmMeshManager* GetManager(const double threshold)
     {
-        if(!managers_.count(threshold)){
-            managers_[threshold] =
-                om::make_shared<OmMeshManager>(segmentation_, threshold);
+        zi::guard g(managersLock_);
+
+        if(!managers_.count(threshold))
+        {
+            managers_[threshold] = new OmMeshManager(segmentation_, threshold);
             managers_[threshold]->Load();
         }
 
-        return managers_[threshold].get();
+        return managers_[threshold];
     }
 
     void CreateManager(const double threshold)
     {
-        managers_[threshold] =
-            om::make_shared<OmMeshManager>(segmentation_, threshold);
+        zi::guard g(managersLock_);
+
+        managers_[threshold] = new OmMeshManager(segmentation_, threshold);
         managers_[threshold]->Create();
     }
 
@@ -60,11 +73,22 @@ public:
         return thresholds_;
     }
 
-    void FullMesh(const double threshold, const bool redownsample)
+    void FullMesh(const double threshold)
     {
         CreateManager(threshold);
         ziMesher mesher(segmentation_, threshold);
-        mesher.MeshFullVolume(redownsample);
+        mesher.MeshFullVolume();
+    }
+
+    void ClearMeshCaches()
+    {
+        zi::guard g(managersLock_);
+
+        FOR_EACH(iter, managers_)
+        {
+            OmMeshManager* man = iter->second;
+            man->ClearCache();
+        }
     }
 
 /*
@@ -105,13 +129,14 @@ OmEvents::Redraw3d();
     }
 
 private:
-    DoubleFuzzyStdMap<om::shared_ptr<OmMeshManager> > managers_;
+    DoubleFuzzyStdMap<OmMeshManager*> managers_;
+    zi::spinlock managersLock_;
+
     DoubleFuzzyStdSet thresholds_;
 
     void findMeshThresholds()
     {
-        const QString meshFolder =
-            OmFileNames::GetMeshFolderPath(segmentation_);
+        const QString meshFolder = OmFileNames::GetMeshFolderPath(segmentation_);
         QDir dir(meshFolder);
 
         QStringList filters;
@@ -119,6 +144,7 @@ private:
         dir.setNameFilters(filters);
 
         const QStringList dirNames = dir.entryList(QDir::Dirs);
+
         FOR_EACH(iter, dirNames)
         {
             const QString& str = *iter;

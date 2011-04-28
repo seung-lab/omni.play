@@ -15,63 +15,67 @@ void OmTileCache::Reset(){
     instance().impl_.reset(new OmTileCacheImpl());
 }
 
-void OmTileCache::Prefetch(const OmTileCoord& key){
-    instance().impl_->Prefetch(key);
+void OmTileCache::Prefetch(const OmTileCoord& key, const int depthOffset){
+    impl()->Prefetch(key, depthOffset);
 }
 
 void OmTileCache::QueueUp(const OmTileCoord& key)
 {
-    instance().impl_->QueueUp(key);
+    impl()->QueueUp(key);
 }
 
 void OmTileCache::Get(OmTilePtr& tile, const OmTileCoord& key, const om::Blocking blocking)
 {
-    instance().impl_->Get(tile, key, blocking);
+    impl()->Get(tile, key, blocking);
 }
 
 void OmTileCache::GetDontQueue(OmTilePtr& tile, const OmTileCoord& key)
 {
-    instance().impl_->GetDontQueue(tile, key);
+    impl()->GetDontQueue(tile, key);
 }
 
 void OmTileCache::BlockingCreate(OmTilePtr& tile, const OmTileCoord& key)
 {
-    instance().impl_->BlockingCreate(tile, key);
+    impl()->BlockingCreate(tile, key);
 }
 
 void OmTileCache::RegisterDrawer(OmTileDrawer* d){
-    instance().impl_->RegisterDrawer(d);
+    impl()->RegisterDrawer(d);
 }
 
 void OmTileCache::UnRegisterDrawer(OmTileDrawer* d){
-    instance().impl_->UnRegisterDrawer(d);
+    impl()->UnRegisterDrawer(d);
 }
 
 void OmTileCache::SetDrawerDone(OmTileDrawer* d){
-    instance().impl_->SetDrawerDone(d);
+    impl()->SetDrawerDone(d);
 }
 
 void OmTileCache::SetDrawerActive(OmTileDrawer* d){
-    instance().impl_->SetDrawerActive(d);
+    impl()->SetDrawerActive(d);
 }
 
 void OmTileCache::WidgetVisibilityChanged(OmTileDrawer* drawer,
                                           const bool visible){
-    instance().impl_->WidgetVisibilityChanged(drawer, visible);
+    impl()->WidgetVisibilityChanged(drawer, visible);
 }
 
 bool OmTileCache::AreDrawersActive(){
-    return instance().impl_->AreDrawersActive();
+    return impl()->AreDrawersActive();
 }
 
 void OmTileCache::ClearAll(){
-    instance().impl_->ClearAll();
+    impl()->ClearAll();
 }
 
 void OmTileCache::ClearSegmentation(){
-    instance().impl_->ClearSegmentation();
+    impl()->ClearSegmentation();
 }
 
 void OmTileCache::ClearChannel(){
-    instance().impl_->ClearChannel();
+    impl()->ClearChannel();
+}
+
+OmTaskManager<OmTaskManagerContainerMipSorted>& OmTileCache::ThreadPool(){
+    return impl()->ThreadPool();
 }

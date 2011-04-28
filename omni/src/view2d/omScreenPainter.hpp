@@ -6,102 +6,106 @@
 #include "system/omPreferences.h"
 #include "view2d/om2dPreferences.hpp"
 #include "view2d/omDisplayInfo.hpp"
-#include "view2d/omView2d.h"
+#include "view2d/omView2dCore.h"
 #include "view2d/omView2dState.hpp"
+#include "viewGroup/omBrushSize.hpp"
 
 #include <QPainter>
 
 class OmScreenPainter{
 public:
-    OmScreenPainter(OmView2d* v2d, OmView2dState* state)
+    OmScreenPainter(OmView2dCore* v2d, OmView2dState* state)
         : v2d_(v2d)
         , state_(state)
         , viewType_(v2d->GetViewType())
         , shouldDisplayInfo_(OmPreferences::GetBoolean(om::PREF_VIEW2D_SHOW_INFO_BOOL))
     {}
 
-    void FullRedraw2d()
+    void PaintExtras()
     {
-        const QImage screenImage = v2d_->FullRedraw2d();
-        paintScreen(screenImage);
+        toolMode_ = OmStateManager::GetToolMode();
+        mousePoint_ = state_->GetMousePoint();
 
-        state_->SetViewSliceOnPan();
-
-        if(!v2d_->IsDrawComplete()){
-            OmEvents::Redraw2d();
-        }
-    }
-
-private:
-    OmView2d *const v2d_;
-    OmView2dState *const state_;
-
-    const ViewType viewType_;
-    const bool shouldDisplayInfo_;
-
-    void paintScreen(const QImage& screenImage)
-    {
         QPainter painter(v2d_);
-        painter.drawImage(QPoint(0, 0), screenImage);
 
         QPen pen;
         pen.setColor(getPenColor());
         painter.setPen(pen);
 
-        const Vector2i& mousePoint = state_->GetMousePoint();
-
-        if(v2d_->amInFillMode()) {
-            painter.drawRoundedRect(QRect(mousePoint.x,
-                                          mousePoint.y,
-                                          20,
-                                          20),
-                                    5, 5);
-        }else if(showBrushSize())
+        if(amFilling())
         {
-            const bool eraseTool = (om::tool::ERASE == OmStateManager::GetToolMode());
-            if(eraseTool)
+            drawFillTool(painter);
+
+        } else if(showBrushSize())
+        {
+            if(amErasing())
             {
                 painter.setPen(Qt::DotLine);
-                showBrush(painter, mousePoint);
+                showBrush(painter);
                 painter.setPen(Qt::SolidLine);
 
             } else {
-                showBrush(painter, mousePoint);
+                showBrush(painter);
             }
         }
-
-        if(v2d_->hasFocus()){
-            pen.setWidth(5);
-        }
-
-        const Vector4i& vp = state_->getTotalViewport();
-        painter.drawRect(vp.lowerLeftX,
-                         vp.lowerLeftY,
-                         vp.width - 1,
-                         vp.height - 1);
 
         if(shouldDisplayInfo_){
             displayInformation(painter, pen);
         }
+
+        drawBoundingBox(painter);
 
         if(Om2dPreferences::ShowCrosshairs()){
             drawCursors(painter);
         }
     }
 
-    void showBrush(QPainter& painter, const Vector2i& mousePoint)
-    {
-        const float zoomFactor = state_->getZoomScale();
-        const int brushDiamater = zoomFactor *
-            state_->getBrushSize()->Diameter();
-        const double offset = 0.5 * brushDiamater;
-        const double width = 1.0 * brushDiamater;
+private:
+    OmView2dCore *const v2d_;
+    OmView2dState *const state_;
 
-        painter.drawEllipse(QRectF
-                            (mousePoint.x - offset,
-                             mousePoint.y - offset,
-                             width,
-                             width ));
+    const ViewType viewType_;
+    const bool shouldDisplayInfo_;
+
+    // current state
+    om::tool::mode toolMode_;
+    Vector2i mousePoint_;
+
+    inline bool amFilling(){
+        return om::tool::FILL == toolMode_;
+    }
+
+    inline bool amErasing(){
+        return om::tool::ERASE == toolMode_;
+    }
+
+    void drawFillTool(QPainter& painter)
+    {
+        painter.drawRoundedRect(QRect(mousePoint_.x,
+                                      mousePoint_.y,
+                                      20,
+                                      20),
+                                5, 5);
+    }
+
+    void drawBoundingBox(QPainter& painter)
+    {
+        const Vector4i& vp = state_->getTotalViewport();
+        painter.drawRect(vp.lowerLeftX,
+                         vp.lowerLeftY,
+                         vp.width - 1,
+                         vp.height - 1);
+    }
+
+    void showBrush(QPainter& painter)
+    {
+        const int brushDiamater = state_->getZoomScale() * state_->getBrushSize()->Diameter();
+        const double offset = 0.5 * brushDiamater;
+
+        painter.drawEllipse(QRectF(mousePoint_.x - offset,
+                                   mousePoint_.y - offset,
+                                   brushDiamater,
+                                   brushDiamater));
     }
 
     QColor getPenColor() const
@@ -151,9 +155,11 @@ private:
         const int tileCountIncomplete = v2d_->GetTileCountIncomplete();
         const int tileCount = v2d_->GetTileCount();
 
-        if(tileCountIncomplete){
+        if(tileCountIncomplete)
+        {
             di.paint(tileCountIncomplete, "tiles incomplete of",
                      tileCount, "tiles");
+
         }else{
             di.paint(tileCount, "tiles");
         }
@@ -166,17 +172,23 @@ private:
         const int halfHeight = fullHeight/2;
         const int fullWidth = vp.width;
         const int halfWidth = fullWidth/2;
-        const int a = Om2dPreferences::CrosshairHoleSize();
+        const int crosshairHoleSize = Om2dPreferences::CrosshairHoleSize();
 
         std::pair<QColor, QColor> colors = getCursorColors();
 
         painter.setPen(colors.first);
-        painter.drawLine(halfWidth, 0, halfWidth, halfHeight - a);
-        painter.drawLine(halfWidth, halfHeight + a, halfWidth, fullHeight);
+
+        painter.drawLine(halfWidth, 0,
+                         halfWidth, halfHeight - crosshairHoleSize);
+        painter.drawLine(halfWidth, halfHeight + crosshairHoleSize,
+                         halfWidth, fullHeight);
 
         painter.setPen(colors.second);
-        painter.drawLine(0, halfHeight, halfWidth - a, halfHeight);
-        painter.drawLine(fullWidth, halfHeight, halfWidth + a, halfHeight);
+
+        painter.drawLine(0, halfHeight,
+                         halfWidth - crosshairHoleSize, halfHeight);
+        painter.drawLine(fullWidth, halfHeight,
+                         halfWidth + crosshairHoleSize, halfHeight);
     }
 
     std::pair<QColor, QColor> getCursorColors() const
@@ -195,7 +207,7 @@ private:
 
     bool showBrushSize() const
     {
-        switch(OmStateManager::GetToolMode()){
+        switch(toolMode_){
         case om::tool::PAINT:
         case om::tool::ERASE:
         case om::tool::FILL:

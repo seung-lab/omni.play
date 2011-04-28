@@ -8,6 +8,8 @@
 #include "common/omException.h"
 #include <cassert>
 
+#include "common/omMath.hpp"
+
 #include "utility/omSharedPtr.hpp"
 
 /**

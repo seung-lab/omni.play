@@ -24,7 +24,6 @@ public:
     void WindowMoved(QPoint oldPos);
 
     void SetSplittingOff();
-    void ShowSplitterBusy(const bool showBusy);
 
     void SetCuttingOff();
     void SetTool(const om::tool::mode tool);

@@ -1,3 +1,4 @@
+#include "view3d/omSegmentPickPoint.h"
 #include "actions/omActions.h"
 #include "common/omDebug.h"
 #include "events/omEvents.h"
@@ -19,13 +20,35 @@
 /////////////////////////////////
 ///////          Context Menu Methods
 
-void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
-                                   OmViewGroupState* vgs, const DataCoord coord)
+void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs)
 {
     sdw_ = sdw;
-    coord_ = coord;
-    mViewGroupState = vgs;
+    vgs_ = vgs;
 
+    doRefresh();
+}
+
+void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs,
+                                   const DataCoord coord)
+{
+    sdw_ = sdw;
+    vgs_ = vgs;
+    coord_ = coord;
+
+    doRefresh();
+}
+
+void OmSegmentContextMenu::Refresh(const OmSegmentPickPoint& pickPoint, OmViewGroupState* vgs)
+{
+    sdw_ = pickPoint.sdw;
+    coord_ = pickPoint.voxel;
+    vgs_ = vgs;
+
+    doRefresh();
+}
+
+void OmSegmentContextMenu::doRefresh()
+{
     //clear old menu actions
     clear();
 
@@ -129,12 +152,12 @@ void OmSegmentContextMenu::mergeSegments(){
 
 void OmSegmentContextMenu::splitSegments()
 {
-    mViewGroupState->Splitting()->EnterSplitMode();
-    mViewGroupState->Splitting()->SetFirstSplitPoint(sdw_, coord_);
+    vgs_->Splitting()->EnterSplitMode();
+    vgs_->Splitting()->SetFirstSplitPoint(sdw_, coord_);
 }
 
 void OmSegmentContextMenu::cutSegments() {
-    OmActions::FindAndCutSegments(sdw_, mViewGroupState);
+    OmActions::FindAndCutSegments(sdw_, vgs_);
 }
 
 void OmSegmentContextMenu::addColorActions()

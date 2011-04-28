@@ -1,3 +1,4 @@
+
 /* VIEW */
 
 
@@ -50,11 +51,11 @@
 }
 
 .view .left_panel {
-	
+
 }
 
 .view .right_panel {
-	
+
 }
 
 .view_canvas_container {
@@ -62,11 +63,11 @@
 	border: 1px solid #DEDEDE;
 	-moz-border-radius: 2px;
 	border-radius: 2px;
-	
+
 	width: 600px;
 	height: 600px;
 	background: #DEDEDE;
-	
+
 	cursor: move;
 	overflow: hidden;
 }
@@ -107,9 +108,9 @@
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
-	
+
 	position: relative;
-	
+
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -123,7 +124,7 @@
 
 .segmentation_canvas {
 /*	background: pink;*/
-	
+
 	opacity: 0.0;
 	filter: alpha(opacity=0);
 }
@@ -134,6 +135,25 @@
 	margin-left: auto;
 	margin-right: auto;
 	font-size: 18px;
+}
+
+
+.tiles table {
+	padding: 0;
+	margin: 0;
+}
+
+
+.tile {
+/*	background-image: url("http://www.cutekittycats.com/wp-content/uploads/2010/03/cutecat1.jpg");
+	background-position: 260px 395px;
+*/
+}
+
+.tile_bg {
+/*	background-image: url("http://www.davidmack.pro/blog/wp-content/uploads/2011/02/cute_droopy_bunny.jpg");
+	background-position: 300px 270px;
+*/
 }
 
 

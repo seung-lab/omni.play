@@ -23,10 +23,6 @@ OmUndoStack& OmStateManager::UndoStack(){
     return impl().UndoStack();
 }
 
-const QGLWidget* OmStateManager::GetPrimaryView3dWidget(){
-    return impl().GetPrimaryView3dWidget();
-}
-
 OmBrushSize* OmStateManager::BrushSize() {
     return impl().BrushSize();
 }

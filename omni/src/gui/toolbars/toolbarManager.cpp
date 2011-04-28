@@ -62,13 +62,6 @@ void ToolBarManager::SetSplittingOff()
     }
 }
 
-void ToolBarManager::ShowSplitterBusy(const bool showBusy)
-{
-    if(dendToolBar_){
-        dendToolBar_->ShowSplitterBusy(showBusy);
-    }
-}
-
 void ToolBarManager::SetCuttingOff()
 {
     if(dendToolBar_){

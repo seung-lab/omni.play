@@ -54,12 +54,40 @@ private:
         return om::constants::getNextBiggestPrime(2 * numCores);
     }
 
+    void checkForLeaks()
+    {
+        uint32_t numPages;
+        {
+            zi::guard g(pagesLock_);
+            numPages = pages_.size();
+        }
+
+        const uint32_t numExpectedFreeTiles = numPages * numTilesPerPage_;
+
+        if(!numExpectedFreeTiles){
+            return;
+        }
+
+        uint32_t numTilesPresent = 0;
+        for(uint32_t i = 0; i < numBuckets_; ++i)
+        {
+            zi::guard g(freeTileLists_[i]->lock);
+            numTilesPresent += freeTileLists_[i]->freeTiles.size();
+        }
+
+        if(numExpectedFreeTiles != numTilesPresent)
+        {
+            std::cout << "missing tiles: expected " << numExpectedFreeTiles
+                      << ", but only have " << numTilesPresent << "\n";
+        }
+    }
+
 public:
     OmTilePool(const int megsPerPage,
                const int numElementsPerTile)
         : numElementsPerTile_(numElementsPerTile)
         , numBytesPerTile_(sizeof(T) * numElementsPerTile)
-        , numBytesPerPage_(megsPerPage * BYTES_PER_MB)
+        , numBytesPerPage_(megsPerPage * om::math::bytesPerMB)
         , numTilesPerPage_(numBytesPerPage_ / numBytesPerTile_)
         , numElementsPerPage_(numTilesPerPage_ * numElementsPerTile)
         , numBuckets_(computeNumBuckets())
@@ -78,6 +106,8 @@ public:
 
     ~OmTilePool()
     {
+        checkForLeaks();
+
         for(uint32_t i = 0; i < numBuckets_; ++i){
             delete freeTileLists_[i];
         }

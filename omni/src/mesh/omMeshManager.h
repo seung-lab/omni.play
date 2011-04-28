@@ -20,7 +20,7 @@ class OmSegmentation;
 class OmMeshManager {
 public:
     OmMeshManager(OmSegmentation* segmentation,
-                     const double threshold);
+                  const double threshold);
     ~OmMeshManager();
 
     void Create();
@@ -30,12 +30,19 @@ public:
         return segmentation_;
     }
 
+    double Threshold() const {
+        return threshold_;
+    }
+
     void CloseDownThreads();
 
     OmMeshPtr Produce(const OmMeshCoord&);
-    void GetMesh(OmMeshPtr& mesh, const OmMeshCoord& coord,
-                 const om::Blocking blocking);
+
+    void GetMesh(OmMeshPtr&, const OmMeshCoord&, const om::Blocking);
+
     void UncacheMesh(const OmMeshCoord& coord);
+
+    void ClearCache();
 
     OmMeshReaderV2* Reader(){
         return reader_.get();
@@ -62,6 +69,7 @@ private:
     const boost::scoped_ptr<OmMeshCache> dataCache_;
     const boost::scoped_ptr<OmMeshFilePtrCache> filePtrCache_;
     const boost::scoped_ptr<OmMeshMetadata> metadata_;
+
     boost::scoped_ptr<OmMeshReaderV2> reader_;
     boost::scoped_ptr<OmMeshConvertV1toV2> converter_;
 

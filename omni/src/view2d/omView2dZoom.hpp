@@ -42,9 +42,7 @@ public:
 private:
     void doMouseZoom(const int numSteps)
     {
-        zoomLevel_->MouseWheelZoom(numSteps,
-                                   state_->IsLevelLocked(),
-                                   state_->getMaxMipLevel());
+        zoomLevel_->MouseWheelZoom(numSteps, state_->IsLevelLocked());
 
         OmEvents::ViewPosChanged();
         state_->SetViewSliceOnPan();

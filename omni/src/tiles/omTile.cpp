@@ -69,7 +69,7 @@ OmChunkCoord OmTile::tileToMipCoord(){
 
 int OmTile::getDepth()
 {
-    const uint32_t factor = om::pow2int(key_.getLevel());
+    const uint32_t factor = om::math::pow2int(key_.getLevel());
 
     return OmView2dConverters::GetViewTypeDepth(key_.getDataCoord(),
                                                 key_.getViewType()) / factor;

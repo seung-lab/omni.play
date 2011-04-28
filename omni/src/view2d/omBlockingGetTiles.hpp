@@ -4,7 +4,6 @@
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omTileTypes.hpp"
 #include "tiles/omTileImplTypes.hpp"
-#include "threads/omTaskManager.hpp"
 #include "zi/omMutex.h"
 
 class OmBlockingGetTiles {
@@ -13,31 +12,16 @@ private:
 
     zi::spinlock lock_;
 
-    OmThreadPool pool_;
-    zi::semaphore semaphore_;
-
 public:
     OmBlockingGetTiles(std::deque<OmTileAndVertices>& tilesToDraw)
         : tilesToDraw_(tilesToDraw)
-    {
-        pool_.start(3);
-    }
+    {}
 
     void GetAll(OmTileCoordsAndLocationsPtr tileCoordsAndLocations)
     {
-        const int64_t size = tileCoordsAndLocations->size();
-
-        semaphore_.set(0);
-
-        FOR_EACH(tileCL, *tileCoordsAndLocations)
-        {
-            pool_.push_back(
-                zi::run_fn(
-                    zi::bind(&OmBlockingGetTiles::getTile,
-                             this, *tileCL)));
-        }
-
-        semaphore_.acquire(size);
+        zi::for_each(tileCoordsAndLocations->begin(),
+                     tileCoordsAndLocations->end(),
+                     boost::bind(&OmBlockingGetTiles::getTile, this, _1));
     }
 
 private:
@@ -56,8 +40,6 @@ private:
             zi::guard g(lock_);
             tilesToDraw_.push_back(tv);
         }
-
-        semaphore_.release(1);
     }
 };
 

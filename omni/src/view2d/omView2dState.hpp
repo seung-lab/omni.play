@@ -55,7 +55,7 @@ public:
     // coord convertors
 
 private:
-    inline Vector2f screenToPanShift(const Vector2i& screenshift) const
+    inline Vector2f screenToPanShift(const Vector2f screenshift) const
     {
         const Vector2f stretch= vol_->Coords().GetStretchValues(viewType_);
         const float zoomScale = getZoomScale();
@@ -68,7 +68,7 @@ public:
     inline DataCoord ScreenToDataCoord(const ScreenCoord& screenc) const
     {
         const Vector2f panDistance = ComputePanDistance();
-        const float factor = om::pow2int(getMipLevel());
+        const float factor = om::math::pow2int(getMipLevel());
 
         const Vector2f unscaleNorm =
             (screenToPanShift(screenc) - panDistance) * factor;
@@ -82,6 +82,17 @@ public:
 
         setViewTypeDepth(result, depth);
 
+        // std::cout << "ScreenToDataCoord: screenc: " << screenc
+        //           << "\n\tpanDistance: " << panDistance
+        //           << "\n\t factor: " << factor
+        //           << "\n\t screenToPanShift(screenc): " << screenToPanShift(screenc)
+        //           << "\n\t unscaleNorm: " << unscaleNorm
+        //           << "\n\t dataScale: " << dataScale
+        //           << "\n\t normc: " << normc
+        //           << "\n\t result: " << result
+        //           << "\n\t depth: " << depth
+        //           << "\n";
+
         return result;
     }
 
@@ -94,7 +105,7 @@ private:
 
         const Vector2f panDistance = ComputePanDistance();
         const Vector2f stretch = vol_->Coords().GetStretchValues(viewType_);
-        const float factor = om::pow2int(getMipLevel());
+        const float factor = om::math::pow2int(getMipLevel());
         const float zoomScale = getZoomScale();
 
         switch(viewType_){
@@ -116,7 +127,7 @@ public:
     void Shift(const om::Direction dir)
     {
         Vector3f curLocation = location_->DataLocation();
-        const float numberOfSlicestoAdvance = 2 * om::pow2int(getMipLevel());
+        const float numberOfSlicestoAdvance = 2 * om::math::pow2int(getMipLevel());
         OmView2dConverters::ShiftPanDirection(curLocation, numberOfSlicestoAdvance, dir, viewType_);
         location_->SetDataLocation(curLocation);
         OmEvents::Redraw2d();
@@ -125,13 +136,13 @@ public:
     inline Vector2f ComputePanDistance() const
     {
         const Vector2f stretch = vol_->Coords().GetStretchValues(viewType_);
-        const float factor = om::pow2int(getMipLevel());
+        const float factor = om::math::pow2int(getMipLevel());
 
         const Vector3f curLocation = location_->DataLocation();
 
         const float zoomScale = getZoomScale();
-        const float panx = (totalViewport_.width/2.0)/(zoomScale*stretch.x);
-        const float pany = (totalViewport_.height/2.0)/(zoomScale*stretch.y);
+        const float panx = (totalViewport_.width/2.0) / (zoomScale*stretch.x);
+        const float pany = (totalViewport_.height/2.0) / (zoomScale*stretch.y);
 
         Vector2f oldPts = OmView2dConverters::Get2PtsInPlane(curLocation, viewType_);
         oldPts /= factor;
@@ -146,7 +157,7 @@ public:
     {
         const Vector2f translateVector = ComputePanDistance();
 
-        const float pl = om::pow2int(getMipLevel());
+        const float pl = om::math::pow2int(getMipLevel());
         const float zoomFactor = getZoomScale();
 
         const DataCoord minDCoord(totalViewport_.lowerLeftX - translateVector.x * pl,
@@ -192,14 +203,14 @@ public:
 
     inline void MoveUpStackCloserToViewer()
     {
-        const int numberOfSlicestoAdvance = om::pow2int(getMipLevel());
+        const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel());
         const int depth = location_->DataDepth();
         location_->SetDataDepth(depth + numberOfSlicestoAdvance);
     }
 
     inline void MoveDownStackFartherFromViewer()
     {
-        const int numberOfSlicestoAdvance = om::pow2int(getMipLevel());
+        const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel());
         const int depth = location_->DataDepth();
         location_->SetDataDepth(depth - numberOfSlicestoAdvance);
     }
@@ -225,7 +236,19 @@ public:
 
         OmEvents::ViewCenterChanged();
 
-        mousePanStartingPt_ = cursorLocation;
+        // std::cout << "cursorLocation: " << cursorLocation
+        //           << "\n\t mousePanStartingPt_: " << *mousePanStartingPt_
+        //           << "\n\t drag: " << drag
+        //           << "\n\t dragCoord: " << dragCoord
+        //           << "\n\t zeroCoord: " << zeroCoord
+        //           << "\n\t difference: " << difference
+        //           << "\n\t oldLocation: " << oldLocation
+        //           << "\n\t newLocation: " << newLocation
+        //           << "\n";
+
+        if(oldLocation != newLocation){
+            mousePanStartingPt_ = cursorLocation;
+        }
     }
 
     // name

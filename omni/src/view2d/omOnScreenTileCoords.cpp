@@ -7,7 +7,7 @@
 #include "volume/omFilter2d.h"
 #include "volume/omMipVolume.h"
 
-OmOnScreenTileCoords::OmOnScreenTileCoords(const om::shared_ptr<OmView2dState>& state)
+OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state)
     : state_(state)
     , vol_(state->getVol())
     , viewType_(state->getViewType())
@@ -69,7 +69,7 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 {
-    const int levelFactor = om::pow2int(mipLevel_);
+    const int levelFactor = om::math::pow2int(mipLevel_);
     const int dataDim = tileLength_ * levelFactor;
     float xval;
     float yval;

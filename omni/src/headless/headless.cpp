@@ -315,7 +315,7 @@ void Headless::processLine(const QString& line, const QString&)
         Q_FOREACH(QFileInfo f, entrylist){
             QString line = QString("%1%2")
                 .arg(f.fileName(), -20, ' ')
-                .arg(QString::number((double)f.size()/BYTES_PER_MB, 'f', 3));
+                .arg(QString::number((double)f.size()/om::math::bytesPerMB, 'f', 3));
             printf("%s\n", qPrintable(line));
         }
 

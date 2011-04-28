@@ -33,10 +33,6 @@ public:
         return coordBeingSplit_;
     }
 
-    void ShowBusy(const bool showBusy){
-        toolBarManager_->ShowSplitterBusy(showBusy);
-    }
-
     void SetToolBarManager(ToolBarManager* tbm){
         toolBarManager_ = tbm;
     }

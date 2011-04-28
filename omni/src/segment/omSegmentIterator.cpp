@@ -1,36 +1,45 @@
-#include "zi/omUtility.h"
-#include "segment/omSegmentIterator.h"
 #include "segment/omSegment.h"
+#include "segment/omSegmentIterator.h"
 #include "segment/omSegments.h"
+#include "utility/segmentDataWrapper.hpp"
+#include "utility/segmentationDataWrapper.hpp"
+#include "zi/omUtility.h"
 
 OmSegmentIterator::OmSegmentIterator(OmSegments* cache)
-    : mCache(cache)
-{
-}
+    : segments_(cache)
+{}
+
+OmSegmentIterator::OmSegmentIterator(const SegmentationDataWrapper& sdw)
+    : segments_(sdw.Segments())
+{}
+
+OmSegmentIterator::OmSegmentIterator(const SegmentDataWrapper& sdw)
+    : segments_(sdw.Segments())
+{}
 
 void OmSegmentIterator::iterOverSegmentID(const OmSegID segID)
 {
-    segs_.push_back(mCache->GetSegment(segID));
+    segs_.push_back(segments_->GetSegment(segID));
 }
 
 void OmSegmentIterator::iterOverSelectedIDs()
 {
-    FOR_EACH(iter, mCache->GetSelectedSegmentIds()){
-        segs_.push_back( mCache->GetSegment( *iter ));
+    FOR_EACH(iter, segments_->GetSelectedSegmentIds()){
+        segs_.push_back( segments_->GetSegment( *iter ));
     }
 }
 
 void OmSegmentIterator::iterOverEnabledIDs()
 {
-    FOR_EACH(iter, mCache->GetEnabledSegmentIds()){
-        segs_.push_back( mCache->GetSegment( *iter ) );
+    FOR_EACH(iter, segments_->GetEnabledSegmentIds()){
+        segs_.push_back( segments_->GetSegment( *iter ) );
     }
 }
 
 void OmSegmentIterator::iterOverSegmentIDs(const OmSegIDsSet & set)
 {
     FOR_EACH(iter, set){
-        segs_.push_back( mCache->GetSegment( *iter ) );
+        segs_.push_back( segments_->GetSegment( *iter ) );
     }
 }
 
@@ -61,7 +70,7 @@ OmSegmentIterator & OmSegmentIterator::operator = (const OmSegmentIterator & oth
         return *this;
     }
 
-    mCache = other.mCache;
+    segments_ = other.segments_;
     segs_ = other.segs_;
 
     return *this;

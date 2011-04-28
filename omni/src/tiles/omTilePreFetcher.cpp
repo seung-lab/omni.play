@@ -20,19 +20,15 @@ OmTilePreFetcher::~OmTilePreFetcher()
     Shutdown();
 }
 
-// make a shallow copy of state information to avoid any locking issues
-//  with mTotalViewport
-om::shared_ptr<OmView2dState> OmTilePreFetcher::cloneState(OmTileDrawer* d)
-{
-    return om::make_shared<OmView2dState>(*(d->GetState()));
-}
-
 void OmTilePreFetcher::RunTasks(const std::list<OmTileDrawer*>& drawers)
 {
-    //init the map
-    FOR_EACH(iter, drawers){
+    FOR_EACH(iter, drawers)
+    {
+        OmTileDrawer* drawer = *iter;
+
         om::shared_ptr<OmTilePreFetcherTask> task =
-            om::make_shared<OmTilePreFetcherTask>(cloneState(*iter));
+            om::make_shared<OmTilePreFetcherTask>(drawer->GetState());
+
         mThreadPool.push_front(task);
     }
 }

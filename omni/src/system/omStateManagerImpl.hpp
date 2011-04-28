@@ -7,11 +7,7 @@
 #include "viewGroup/omBrushSize.hpp"
 #include "system/omUndoStack.hpp"
 
-#include <QtOpenGL/qgl.h>
-#include <QtOpenGL/QGLFormat>
-
 #include <QSize>
-#include <QGLWidget>
 
 class OmStateManagerImpl {
 private:
@@ -20,9 +16,6 @@ private:
 
     OmBrushSize brushSize_;
     OmUndoStack undoStack_;
-
-    //view3d context
-    boost::scoped_ptr<QGLWidget> view3dWidget_;
 
 public:
     OmStateManagerImpl()
@@ -67,26 +60,6 @@ public:
 
     inline OmUndoStack& UndoStack(){
         return undoStack_;
-    }
-
-/////////////////////////////////
-///////          View3d Context
-
-    const QGLWidget* GetPrimaryView3dWidget()
-    {
-        if(!view3dWidget_){
-            createPrimaryView3dWidget();
-        }
-
-        return view3dWidget_.get();
-    }
-
-private:
-    void createPrimaryView3dWidget()
-    {
-        view3dWidget_.reset(new QGLWidget());
-        view3dWidget_->setFormat(QGLFormat(QGL::DoubleBuffer |
-                                           QGL::DepthBuffer));
     }
 };
 

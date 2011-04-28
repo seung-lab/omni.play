@@ -16,6 +16,10 @@ public:
         return OmProject::Volumes().Channels().GetValidChannelIds();
     }
 
+    static inline const std::vector<OmChannel*> GetPtrVec(){
+        return OmProject::Volumes().Channels().GetPtrVec();
+    }
+
     static void Remove(const OmID id){
         OmProject::Volumes().Channels().RemoveChannel(id);
     }

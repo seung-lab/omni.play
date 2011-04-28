@@ -71,10 +71,10 @@ int stopPicking()
 }
 
 /*
- *	Process pickings hits.
+ * Process pickings hits.
  *
- *	Given number of hits in selection buffer and selection buffer,
- *	return ptr to closest hit in buffer.
+ * Given number of hits in selection buffer and selection buffer,
+ * return ptr to closest hit in buffer.
  */
 void processHits(GLint hits, int **ppNamesRet, int *pNumNamesRet)
 {
@@ -108,15 +108,14 @@ void processHits(GLint hits, int **ppNamesRet, int *pNumNamesRet)
 }
 
 /*
- *	Uses the depth buffer to unproject a pixel.  Can be given a z_scale factor
- *	to scale the value returned from the depth buffer.
+ * Uses the depth buffer to unproject a pixel.  Can be given a z_scale factor
+ * to scale the value returned from the depth buffer.
  *
- *	Returns 0 on success
- *	Returns -1 on error (no depth value)
+ * Returns 0 on success
+ * Returns -1 on error (no depth value)
  */
-int unprojectPixel(int x, int y, GLdouble point[], GLfloat z_scale)
+int unprojectPixel(int x, int y, GLdouble point[])
 {
-
     GLint viewport[4];
     GLdouble modelview[16];
     GLdouble projection[16];
@@ -135,9 +134,6 @@ int unprojectPixel(int x, int y, GLdouble point[], GLfloat z_scale)
     if (winZ > 1.0f - 0.0000001)
         return -1;
 
-    //offset
-    winZ *= z_scale;
-
     //valid depth buffer value, so unproject
     gluUnProject(winX, winY, winZ, modelview, projection, viewport, &point[0], &point[1], &point[2]);
 
@@ -146,7 +142,7 @@ int unprojectPixel(int x, int y, GLdouble point[], GLfloat z_scale)
 }
 
 /*
- *	From Qt OpenGl examples.
+ * From Qt OpenGl examples.
  */
 void pushGlState()
 {

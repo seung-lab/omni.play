@@ -31,7 +31,8 @@ public:
         , rootMipLevel_(segmentation->Coords().GetRootMipLevel())
         , threshold_(threshold)
         , chunkCollectors_()
-        , meshWriter_(new OmMeshWriterV2(segmentation_, threshold_))
+        , meshManager_(segmentation->MeshManager(threshold))
+        , meshWriter_(new OmMeshWriterV2(meshManager_))
         , numChunksTotal_(0)
         , numParallelChunks_(numberParallelChunks())
         , numThreadsPerChunk_(zi::system::cpu_count / 2)
@@ -50,12 +51,8 @@ public:
         }
     }
 
-    void MeshFullVolume(const bool redownsample)
+    void MeshFullVolume()
     {
-        if(redownsample){
-            segmentation_->VolData()->downsample(segmentation_);
-        }
-
         OmChunkUtils::RefindUniqueChunkValues(segmentation_->GetID());
 
         init();
@@ -63,7 +60,7 @@ public:
         meshWriter_->Join();
         meshWriter_->CheckEverythingWasMeshed();
 
-        segmentation_->MeshManager(threshold_)->Metadata()->SetMeshedAndStorageAsChunkFiles();
+        meshManager_->Metadata()->SetMeshedAndStorageAsChunkFiles();
     }
 
 private:
@@ -75,6 +72,7 @@ private:
     std::map< OmChunkCoord, std::vector< MipChunkMeshCollector* > > occurances_;
     std::map< OmChunkCoord, MipChunkMeshCollector* > chunkCollectors_;
 
+    OmMeshManager* meshManager_;
     OmMeshWriterV2* meshWriter_;
 
     LockedInt32 numOfChunksToProcess_;
@@ -103,7 +101,9 @@ private:
 
         FOR_EACH( it, *levelZeroChunks )
         {
-            manager.push_back( zi::run_fn( zi::bind( &ziMesher::processChunk, this, *it ) ));
+            manager.push_back(
+                zi::run_fn(
+                    zi::bind( &ziMesher::processChunk, this, *it ) ));
         }
 
         manager.join();
@@ -275,20 +275,28 @@ private:
 
         FOR_EACH( it, cube_marcher.meshes() )
         {
-            const int segm_id = it->first;
+            const OmSegID segID = it->first;
 
-            if( segIDs.contains( segm_id ) )
+            if(segIDs.contains(segID))
             {
                 zi::shared_ptr< zi::mesh::simplifier< double > >
                     spfy( new zi::mesh::simplifier< double >( 0 ) );
 
-                cube_marcher.fill_simplifier< double >( *spfy, segm_id,
+                cube_marcher.fill_simplifier< double >( *spfy, segID,
                                                         0, 0, 0,
-                                                        scale.at( 2 ), scale.at( 1 ), scale.at( 0 ) );
+                                                        scale.at( 2 ),
+                                                        scale.at( 1 ),
+                                                        scale.at( 0 ) );
 
-                manager.push_back( zi::run_fn( zi::bind( &ziMesher::processSingleSegment, this,
-                                                         segm_id, maxScale, translate,
-                                                         spfy, &occurances_[ coord ] ) ));
+                manager.push_back(
+                    zi::run_fn(
+                        zi::bind( &ziMesher::processSingleSegment, this,
+                                  segID,
+                                  maxScale,
+                                  translate,
+                                  spfy,
+                                  &occurances_[ coord ]
+                            )));
             }
         }
 

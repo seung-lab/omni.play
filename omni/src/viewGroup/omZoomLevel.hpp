@@ -21,6 +21,11 @@ private:
      *
      **/
 
+    bool valid;
+    int mipLevel_;
+    int maxMipLevel_;
+    double zoomFactor_;
+
     /**
      * pivot point that determines when mip level changes during zoom in/out
      *
@@ -30,24 +35,26 @@ private:
      *   --increase to use higher (more downsampled) mip levels at a given viewing distance
      *       (and decrease the number of tiles needed to display slice)
      **/
-    // static const double zoomPivotPoint_ = 2.5;
-    static const double zoomPivotPoint_ = 1.0;
-
-    bool valid;
-    int mipLevel_;
-    float zoomFactor_;
+    double zoomPivotPoint_;
 
 public:
     OmZoomLevel()
         : valid(false)
         , mipLevel_(0)
+        , maxMipLevel_(0)
         , zoomFactor_(0.6)
+        , zoomPivotPoint_(1.0)
     {}
 
-    void Update(const int defaultMipLevel)
+    void Update(const int maxMipLevel)
     {
         if(!valid){
-            Reset(defaultMipLevel);
+            Reset(maxMipLevel);
+        }
+
+        if(maxMipLevel > maxMipLevel_){
+            maxMipLevel_ = maxMipLevel;
+            resetZoomPivotPoint();
         }
     }
 
@@ -58,7 +65,7 @@ public:
         valid = true;
     }
 
-    float GetZoomScale() const {
+    double GetZoomScale() const {
         return zoomFactor_;
     }
 
@@ -66,21 +73,28 @@ public:
         return mipLevel_;
     }
 
-    void MouseWheelZoom(const int numSteps, const bool isLevelLocked,
-                        const int maxMipLevel)
+    void MouseWheelZoom(const int numSteps, const bool isLevelLocked)
     {
         if (numSteps >= 0){
             mouseWheelZoomIn(numSteps, isLevelLocked);
 
         } else{
-            mouseWheelZoomOut(numSteps, isLevelLocked, maxMipLevel);
+            mouseWheelZoomOut(numSteps, isLevelLocked);
         }
     }
 
 private:
 
-    void mouseWheelZoomOut(const int numSteps, const bool isLevelLocked,
-                           const int maxMipLevel)
+    void resetZoomPivotPoint()
+    {
+        if(maxMipLevel_ > 1){
+            zoomPivotPoint_ = 2.55;
+        } else {
+            zoomPivotPoint_ = 1.0;
+        }
+    }
+
+    void mouseWheelZoomOut(const int numSteps, const bool isLevelLocked)
     {
         zoomFactor_ /= std::pow(1.125, -numSteps); // numSteps is negative!
 
@@ -92,7 +106,7 @@ private:
             return;
         }
 
-        if(zoomFactor_ <= (zoomPivotPoint_ / 2.0) && mipLevel_ < maxMipLevel)
+        if(zoomFactor_ <= (zoomPivotPoint_ / 2.0) && mipLevel_ < maxMipLevel_)
         {
             // move to next mip level
             mipLevel_ += 1;

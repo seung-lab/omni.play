@@ -1,6 +1,7 @@
 #ifndef TESTS_HPP
 #define TESTS_HPP
 
+// #include "src/utility/yaml/omYaml.hpp"
 // #include "tests/onDiskTests.hpp"
 #include "tiles/omTilePoolTests.hpp"
 #include "utility/omSmartPtr.hpp"
@@ -27,6 +28,7 @@
 #include <QTextStream>
 
 class Tests{
+private:
     const bool runPerfTests_;
     const bool justRunSegments_;
 
@@ -44,6 +46,8 @@ public:
 
     void Run()
     {
+        // yaml();
+
         setDiffTests();
         setUnionTests();
         stringCommaTests();
@@ -57,10 +61,10 @@ public:
 
         //dynamicForest();
 
-        {
-            OmTilePoolTests tilePoolTests;
-            tilePoolTests.Run();
-        }
+        // {
+        //     OmTilePoolTests tilePoolTests;
+        //     tilePoolTests.Run();
+        // }
 
         return;
 
@@ -134,24 +138,24 @@ private:
     void rounding()
     {
         // corner case?
-        //verify( 1 == ROUNDUP(0,1));
+        //verify( 1 == om::math::roundUp(0,1));
 
-        verify( 10 == ROUNDUP(1,10) );
-        verify( 0 == ROUNDUP(0,10));
+        verify( 10 == om::math::roundUp(1,10) );
+        verify( 0 == om::math::roundUp(0,10));
 
-        verify(128 == ROUNDUP(127,128));
+        verify(128 == om::math::roundUp(127,128));
 
-        verify(0 == ROUNDDOWN(5,10));
-        verify(10 == ROUNDDOWN(11,10));
-        verify(128 == ROUNDDOWN(129,128));
+        verify(0 == om::math::roundDown(5,10));
+        verify(10 == om::math::roundDown(11,10));
+        verify(128 == om::math::roundDown(129,128));
 
-        // ROUNDDOWN and ROUNDUP not yet valid for negative numbers...
+        // om::math::roundDown and om::math::roundUp not yet valid for negative numbers...
         /*
-          std::cout << ROUNDDOWN(-8,128) << "\n";
+          std::cout << om::math::roundDown(-8,128) << "\n";
           std::cout << -8 % 128 << "\n";
           std::cout << abs(-8) % 128 << "\n";
-          verify(-128 == ROUNDDOWN(-8,128));
-          verify(0 == ROUNDUP(-8,128));
+          verify(-128 == om::math::roundDown(-8,128));
+          verify(0 == om::math::roundUp(-8,128));
         */
 
         printf("rounding OK\n");
@@ -203,9 +207,9 @@ private:
     {
         for(int i = 0; i < 32; ++i){
             if(std::pow(static_cast<float>(2),
-                        static_cast<float>(i)) != om::pow2int(i)){
+                        static_cast<float>(i)) != om::math::pow2int(i)){
                 std::cout << "pow2 fail at i==" << i
-                          << "; was " << om::pow2int(i)
+                          << "; was " << om::math::pow2int(i)
                           << ", but should be: "
                           << std::pow(static_cast<float>(2),
                                       static_cast<float>(i))
@@ -219,7 +223,7 @@ private:
             const uint64_t max = 2000000;
             uint64_t sum = 0;
             for(uint64_t i = 0; i < max; ++i){
-                sum += om::pow2int(8);
+                sum += om::math::pow2int(8);
 
             }
             std::cout << "\t" << max << " pow2 lookups in " << timer.s_elapsed() << " secs\n";
@@ -543,6 +547,12 @@ private:
 
         printf("enum tests OK\n");
     }
+
+    // void yaml()
+    // {
+    //     om::yaml::parser yamlParser;
+    //     yamlParser.Test();
+    // }
 };
 
 #endif

@@ -1,3 +1,4 @@
+#include "tiles/cache/omTileCacheSegmentation.hpp"
 #include "chunks/omChunkCache.hpp"
 #include "chunks/omSegChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
@@ -32,6 +33,7 @@ OmSegmentation::OmSegmentation()
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new OmVolumeData())
     , volSliceCache_(new OmRawSegTileCache(this))
+    , tileCache_(new OmTileCacheSegmentation())
 {}
 
 // used by OmGenericManager
@@ -49,6 +51,7 @@ OmSegmentation::OmSegmentation(OmID id)
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new OmVolumeData())
     , volSliceCache_(new OmRawSegTileCache(this))
+    , tileCache_(new OmTileCacheSegmentation())
 {
     segments_->StartCaches();
     segments_->refreshTree();
@@ -64,6 +67,7 @@ void OmSegmentation::loadVolData()
         UpdateFromVolResize();
         volData_->load(this);
         volSliceCache_->Load();
+        tileCache_->Load(this);
     }
 }
 

@@ -40,7 +40,7 @@ void OmMeshManager::Load()
         loadThreadholdNon1();
     }
 
-    reader_.reset(new OmMeshReaderV2(segmentation_, threshold_));
+    reader_.reset(new OmMeshReaderV2(this));
 }
 
 void OmMeshManager::loadThreadhold1()
@@ -49,11 +49,14 @@ void OmMeshManager::loadThreadhold1()
         inferMeshMetadata();
     }
 
-    if(metadata_->IsBuilt()){
-        if(metadata_->IsHDF5()) {
+    if(metadata_->IsBuilt())
+    {
+        if(metadata_->IsHDF5())
+        {
             if(OmProject::HasOldHDF5()){
                 ActivateConversionFromV1ToV2();
             }
+            // TODO: else? mesh conversion probably wasn't finished...
         }
     }
 }
@@ -109,7 +112,10 @@ void OmMeshManager::CloseDownThreads(){
 
 void OmMeshManager::ActivateConversionFromV1ToV2()
 {
-    converter_.reset(new OmMeshConvertV1toV2(segmentation_));
+    converter_.reset(new OmMeshConvertV1toV2(this));
     converter_->Start();
 }
 
+void OmMeshManager::ClearCache(){
+    dataCache_->Clear();
+}

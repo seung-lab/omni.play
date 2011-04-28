@@ -2,13 +2,13 @@
 #define OM_BUILD_SEGMENTATION_H
 
 #include "actions/omActions.h"
+#include "events/omEvents.h"
 #include "mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
 #include "segment/io/omMST.h"
 #include "segment/omSegments.h"
-#include "events/omEvents.h"
-#include "utility/dataWrappers.h"
 #include "threads/omTaskManager.hpp"
+#include "utility/dataWrappers.h"
 #include "volume/build/omBuildVolumes.hpp"
 #include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omChannel.h"
@@ -53,7 +53,9 @@ public:
         if(om::BLOCKING == block){
             do_build_seg_image_and_mesh();
         } else {
-            threadPool_.push_back(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_image_and_mesh, this)));
+            threadPool_.push_back(
+                zi::run_fn(
+                    zi::bind(&OmBuildSegmentation::do_build_seg_image_and_mesh, this)));
         }
     }
 
@@ -62,16 +64,20 @@ public:
         if(om::BLOCKING == block){
             do_build_seg_image();
         } else {
-            threadPool_.push_back(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_image, this)));
+            threadPool_.push_back(
+                zi::run_fn(
+                    zi::bind(&OmBuildSegmentation::do_build_seg_image, this)));
         }
     }
 
     void BuildMesh(const om::Blocking block)
     {
         if(om::BLOCKING == block){
-            do_build_seg_mesh(true);
+            do_build_seg_mesh();
         } else {
-            threadPool_.push_back(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_mesh, this, true)));
+            threadPool_.push_back(
+                zi::run_fn(
+                    zi::bind(&OmBuildSegmentation::do_build_seg_mesh, this)));
         }
     }
 
@@ -132,28 +138,28 @@ private:
         printf("************************\n");
     }
 
-    void do_build_seg_mesh(const bool redownsample)
+    void do_build_seg_mesh()
     {
-        const QString type = "segmentation mesh";
+        const QString type = "segmentation mesh (threshold 1)";
 
         OmTimer build_timer;
         startTiming(type, build_timer);
 
-        seg_.MeshManagers()->FullMesh(1, redownsample);
+        seg_.MeshManagers()->FullMesh(1);
 // seg_.MeshManagers()->FullMesh(.9);
 // seg_.MeshManagers()->FullMesh(.8);
 
         stopTimingAndSave(type, build_timer);
     }
 
-    void do_build_seg_mesh(const double threshold, const bool redownsample)
+    void do_build_seg_mesh(const double threshold)
     {
-        const QString type = "segmentation mesh";
+        const QString type = "segmentation mesh (threshold)";
 
         OmTimer build_timer;
         startTiming(type, build_timer);
 
-        seg_.MeshManagers()->FullMesh(threshold, redownsample);
+        seg_.MeshManagers()->FullMesh(threshold);
 
         stopTimingAndSave(type, build_timer);
     }

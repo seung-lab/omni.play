@@ -11,13 +11,15 @@
 #include "segment/omSegmentPointers.h"
 #include "segment/omSegmentUtils.hpp"
 #include "events/omEvents.h"
-#include "system/omGarbage.h"
+#include "system/omOpenGLGarbageCollector.hpp"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "utility/omTimer.hpp"
 #include "view3d/om3dPreferences.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "chunks/omChunk.h"
+
+#include <QGLContext>
 
 class OmMeshDrawerImpl {
 private:
@@ -34,6 +36,8 @@ private:
     uint32_t numSegsDrawn_;
     uint64_t numVoxelsDrawn_;
 
+    QGLContext const* context_;
+
 public:
     OmMeshDrawerImpl(OmSegmentation* seg, OmViewGroupState* vgs,
                      const OmBitfield drawOptions,
@@ -47,7 +51,10 @@ public:
         , redrawNeeded_(false)
         , numSegsDrawn_(0)
         , numVoxelsDrawn_(0)
-    {}
+        , context_(QGLContext::currentContext())
+    {
+        assert(context_ && "context should never be 0");
+    }
 
     /**
      * Draw the mesh plan. Filters for relevant data values to be
@@ -55,7 +62,7 @@ public:
      */
     void Draw(const int allowedDrawTime)
     {
-        OmGarbage::CleanGenlists();
+        OmOpenGLGarbageCollector::CleanDisplayLists(context_);
 
         //transform to normal frame
         glPushMatrix();
@@ -153,7 +160,7 @@ private:
         glPushName(seg->value());
         glPushName(OMGL_NAME_MESH);
 
-        mesh->Draw();
+        mesh->Draw(context_);
 
         glPopName();
         glPopName();

@@ -97,6 +97,56 @@ HEADERS +=  \
 	include/vmmlib/vmmlib.h \
 	include/vmmlib/vmmlib.hpp \
 	include/vmmlib/vmmlib_config.hpp \
+	include/yaml-cpp/include/yaml-cpp/aliasmanager.h \
+	include/yaml-cpp/include/yaml-cpp/anchor.h \
+	include/yaml-cpp/include/yaml-cpp/contrib/anchordict.h \
+	include/yaml-cpp/include/yaml-cpp/contrib/graphbuilder.h \
+	include/yaml-cpp/include/yaml-cpp/conversion.h \
+	include/yaml-cpp/include/yaml-cpp/dll.h \
+	include/yaml-cpp/include/yaml-cpp/emitfromevents.h \
+	include/yaml-cpp/include/yaml-cpp/emitter.h \
+	include/yaml-cpp/include/yaml-cpp/emittermanip.h \
+	include/yaml-cpp/include/yaml-cpp/eventhandler.h \
+	include/yaml-cpp/include/yaml-cpp/exceptions.h \
+	include/yaml-cpp/include/yaml-cpp/iterator.h \
+	include/yaml-cpp/include/yaml-cpp/ltnode.h \
+	include/yaml-cpp/include/yaml-cpp/mark.h \
+	include/yaml-cpp/include/yaml-cpp/node.h \
+	include/yaml-cpp/include/yaml-cpp/nodeimpl.h \
+	include/yaml-cpp/include/yaml-cpp/nodereadimpl.h \
+	include/yaml-cpp/include/yaml-cpp/nodeutil.h \
+	include/yaml-cpp/include/yaml-cpp/noncopyable.h \
+	include/yaml-cpp/include/yaml-cpp/null.h \
+	include/yaml-cpp/include/yaml-cpp/ostream.h \
+	include/yaml-cpp/include/yaml-cpp/parser.h \
+	include/yaml-cpp/include/yaml-cpp/stlemitter.h \
+	include/yaml-cpp/include/yaml-cpp/stlnode.h \
+	include/yaml-cpp/include/yaml-cpp/traits.h \
+	include/yaml-cpp/include/yaml-cpp/yaml.h \
+	include/yaml-cpp/src/collectionstack.h \
+	include/yaml-cpp/src/contrib/graphbuilderadapter.h \
+	include/yaml-cpp/src/directives.h \
+	include/yaml-cpp/src/emitterstate.h \
+	include/yaml-cpp/src/emitterutils.h \
+	include/yaml-cpp/src/exp.h \
+	include/yaml-cpp/src/indentation.h \
+	include/yaml-cpp/src/iterpriv.h \
+	include/yaml-cpp/src/nodebuilder.h \
+	include/yaml-cpp/src/nodeownership.h \
+	include/yaml-cpp/src/ptr_stack.h \
+	include/yaml-cpp/src/ptr_vector.h \
+	include/yaml-cpp/src/regex.h \
+	include/yaml-cpp/src/regeximpl.h \
+	include/yaml-cpp/src/scanner.h \
+	include/yaml-cpp/src/scanscalar.h \
+	include/yaml-cpp/src/scantag.h \
+	include/yaml-cpp/src/setting.h \
+	include/yaml-cpp/src/singledocparser.h \
+	include/yaml-cpp/src/stream.h \
+	include/yaml-cpp/src/streamcharsource.h \
+	include/yaml-cpp/src/stringsource.h \
+	include/yaml-cpp/src/tag.h \
+	include/yaml-cpp/src/token.h \
 	lib/strnatcmp.h \
 	src/actions/details/omActionBase.hpp \
 	src/actions/details/omActionImpls.hpp \
@@ -153,13 +203,16 @@ HEADERS +=  \
 	src/common/omDebug.h \
 	src/common/omException.h \
 	src/common/omGl.h \
+	src/common/omMath.hpp \
 	src/common/omQt.h \
 	src/common/omSet.hpp \
 	src/common/omStd.h \
 	src/common/omStoppable.h \
 	src/common/omString.hpp \
+	src/datalayer/archive/omChannelMetadata.h \
 	src/datalayer/archive/omDataArchiveBoost.h \
 	src/datalayer/archive/omDataArchiveProject.h \
+	src/datalayer/archive/omDataArchiveProjectImpl.h \
 	src/datalayer/archive/omDataArchiveSegment.h \
 	src/datalayer/archive/omDataArchiveStd.hpp \
 	src/datalayer/archive/omDataArchiveWrappers.h \
@@ -372,6 +425,10 @@ HEADERS +=  \
 	src/project/omProject.h \
 	src/project/omProjectGlobals.h \
 	src/project/omProjectImpl.hpp \
+	src/segment/actions/omJoinSegments.hpp \
+	src/segment/actions/omJoinSegmentsRunner.hpp \
+	src/segment/actions/omSetSegmentValid.hpp \
+	src/segment/actions/omSetSegmentValidRunner.hpp \
 	src/segment/colorizer/omSegmentColorizer.h \
 	src/segment/colorizer/omSegmentColorizerColorCache.hpp \
 	src/segment/colorizer/omSegmentColorizerImpl.hpp \
@@ -423,7 +480,6 @@ HEADERS +=  \
 	src/segment/omSegmentTypes.h \
 	src/segment/omSegmentUncertain.hpp \
 	src/segment/omSegmentUtils.hpp \
-	src/segment/omSegmentValidation.hpp \
 	src/segment/omSegments.h \
 	src/segment/omSegmentsImpl.h \
 	src/system/cache/omCacheBase.h \
@@ -439,13 +495,13 @@ HEADERS +=  \
 	src/system/omAlphaVegasMode.hpp \
 	src/system/omAppState.hpp \
 	src/system/omConnect.hpp \
-	src/system/omGarbage.h \
 	src/system/omGenericManager.hpp \
 	src/system/omGlobalKeyPress.hpp \
 	src/system/omGroup.h \
 	src/system/omGroups.h \
 	src/system/omLocalPreferences.hpp \
 	src/system/omManageableObject.h \
+	src/system/omOpenGLGarbageCollector.hpp \
 	src/system/omPreferenceDefinitions.h \
 	src/system/omPreferences.h \
 	src/system/omQTApp.hpp \
@@ -464,8 +520,10 @@ HEADERS +=  \
 	src/tiles/cache/omTileCache.h \
 	src/tiles/cache/omTileCacheChannel.hpp \
 	src/tiles/cache/omTileCacheEventListener.hpp \
+	src/tiles/cache/omTileCacheFrameContainer.hpp \
 	src/tiles/cache/omTileCacheImpl.hpp \
 	src/tiles/cache/omTileCacheSegmentation.hpp \
+	src/tiles/cache/omTilesToPrefetch.hpp \
 	src/tiles/cache/raw/omRawSegTileCache.hpp \
 	src/tiles/cache/raw/omRawSegTileCacheTypes.hpp \
 	src/tiles/omChannelTileFilter.hpp \
@@ -514,6 +572,7 @@ HEADERS +=  \
 	src/utility/segmentationDataWrapper.hpp \
 	src/utility/setUtilities.h \
 	src/utility/sortHelpers.h \
+	src/utility/yaml/omYaml.hpp \
 	src/view2d/brush/omBrushErase.hpp \
 	src/view2d/brush/omBrushEraseCircle.hpp \
 	src/view2d/brush/omBrushEraseLine.hpp \
@@ -568,6 +627,7 @@ HEADERS +=  \
 	src/view3d/omCamera.h \
 	src/view3d/omCameraMovement.h \
 	src/view3d/omMacOSXgestures.hpp \
+	src/view3d/omSegmentPickPoint.h \
 	src/view3d/omView3d.h \
 	src/view3d/omView3dUi.h \
 	src/view3d/omView3dWidget.h \
@@ -653,6 +713,32 @@ SOURCES +=  \
 	include/json_spirit_v4.03/json_spirit/json_spirit_reader.cpp \
 	include/json_spirit_v4.03/json_spirit/json_spirit_value.cpp \
 	include/json_spirit_v4.03/json_spirit/json_spirit_writer.cpp \
+	include/yaml-cpp/src/aliasmanager.cpp \
+	include/yaml-cpp/src/contrib/graphbuilder.cpp \
+	include/yaml-cpp/src/contrib/graphbuilderadapter.cpp \
+	include/yaml-cpp/src/conversion.cpp \
+	include/yaml-cpp/src/directives.cpp \
+	include/yaml-cpp/src/emitfromevents.cpp \
+	include/yaml-cpp/src/emitter.cpp \
+	include/yaml-cpp/src/emitterstate.cpp \
+	include/yaml-cpp/src/emitterutils.cpp \
+	include/yaml-cpp/src/exp.cpp \
+	include/yaml-cpp/src/iterator.cpp \
+	include/yaml-cpp/src/node.cpp \
+	include/yaml-cpp/src/nodebuilder.cpp \
+	include/yaml-cpp/src/nodeownership.cpp \
+	include/yaml-cpp/src/null.cpp \
+	include/yaml-cpp/src/ostream.cpp \
+	include/yaml-cpp/src/parser.cpp \
+	include/yaml-cpp/src/regex.cpp \
+	include/yaml-cpp/src/scanner.cpp \
+	include/yaml-cpp/src/scanscalar.cpp \
+	include/yaml-cpp/src/scantag.cpp \
+	include/yaml-cpp/src/scantoken.cpp \
+	include/yaml-cpp/src/simplekey.cpp \
+	include/yaml-cpp/src/singledocparser.cpp \
+	include/yaml-cpp/src/stream.cpp \
+	include/yaml-cpp/src/tag.cpp \
 	lib/strnatcmp.cpp \
 	src/actions/details/omSegmentSplitAction.cpp \
 	src/actions/details/omSegmentUncertainAction.cpp \
@@ -675,8 +761,10 @@ SOURCES +=  \
 	src/common/omCommon.cpp \
 	src/common/omGl.cpp \
 	src/common/omQt.cpp \
+	src/datalayer/archive/omChannelMetadata.cpp \
 	src/datalayer/archive/omDataArchiveBoost.cpp \
 	src/datalayer/archive/omDataArchiveProject.cpp \
+	src/datalayer/archive/omDataArchiveProjectImpl.cpp \
 	src/datalayer/archive/omDataArchiveSegment.cpp \
 	src/datalayer/archive/omDataArchiveWrappers.cpp \
 	src/datalayer/archive/omMetadataSegmentation.cpp \
@@ -841,6 +929,7 @@ INCLUDEPATH = src include lib tests
 INCLUDEPATH += ../external/zi_lib
 INCLUDEPATH += ../external/libs/libjpeg/include
 INCLUDEPATH +=  include/json_spirit_v4.03/json_spirit
+INCLUDEPATH +=  include/yaml-cpp/include
 
 #### Windows
 win32 {

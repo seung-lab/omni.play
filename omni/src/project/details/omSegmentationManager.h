@@ -23,9 +23,10 @@ public:
     const OmIDsSet & GetValidSegmentationIds();
     bool IsSegmentationEnabled(const OmID id);
     void SetSegmentationEnabled(const OmID id, const bool enable);
+    const std::vector<OmSegmentation*> GetPtrVec() const;
 
 private:
-    OmGenericManager<OmSegmentation> mSegmentationManager;
+    OmGenericManager<OmSegmentation> manager_;
 
     friend QDataStream&operator<<(QDataStream& out, const OmSegmentationManager&);
     friend QDataStream&operator>>(QDataStream& in, OmSegmentationManager&);

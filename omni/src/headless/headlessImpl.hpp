@@ -276,7 +276,7 @@ public:
             static_cast<double>(chunkDims.z) *
             static_cast<double>(vol.GetBytesPerVoxel()) *
             static_cast<double>(numChunks) /
-            static_cast<double>(BYTES_PER_MB);
+            static_cast<double>(om::math::bytesPerMB);
         const double megsPerSec = totalMegs / timeSecs;
 
         std::cout << "raw chunk read ";

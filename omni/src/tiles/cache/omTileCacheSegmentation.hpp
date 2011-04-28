@@ -7,10 +7,18 @@
 #include "tiles/omTileCoord.h"
 #include "utility/omLockedObjects.h"
 
+class OmSegmentation;
+
 class OmTileCacheSegmentation : public OmThreadedTileCache {
 public:
     OmTileCacheSegmentation()
-        : OmThreadedTileCache("Segmentation Tiles")
+        : OmThreadedTileCache("Segmentation Tiles", 128*128*4)
+    {}
+
+    virtual ~OmTileCacheSegmentation()
+    {}
+
+    void Load(OmSegmentation*)
     {}
 
     virtual void Get(OmTilePtr& ptr, const OmTileCoord& key,
@@ -21,25 +29,15 @@ public:
     }
 
 private:
-    zi::spinlock mutex_;
     LockedUint64 freshness_;
 
     inline void checkCacheFreshness(const OmTileCoord& key)
     {
-        zi::guard g(mutex_); // locked so changes across structures are atomic
-
         if(key.getFreshness() > freshness_.get())
         {
             OmThreadedTileCache::InvalidateCache();
             freshness_.set(key.getFreshness());
         }
-    }
-
-    OmTilePtr HandleCacheMiss(const OmTileCoord& key)
-    {
-        OmTile* tile = new OmTile(this, key);
-        tile->LoadData();
-        return OmTilePtr(tile);
     }
 
     friend class OmCacheManager;

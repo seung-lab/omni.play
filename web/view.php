@@ -202,12 +202,12 @@
 											</div>
 											<div class="section">
 												<div class="header">
-													<input type="button" value="Join" class="input-join" />
+													<input id="joinButton" type="button" value="Join" class="input-join" />
 												</div>
 											</div>
 											<div class="section">
 												<div class="header">
-													<input type="button" value="Split" class="input-split" />
+													<input id="splitButton" type="button" value="Split" class="input-split" />
 												</div>
 											</div>
 										</div>
@@ -217,7 +217,10 @@
 						</table>
 
 					</div>
-
+					
+					<input id="__top" value="" />
+					<input id="__left" value="" />
+					<input id="__visibles" value="" style="width: 300px;"/>
 				</div>
 			</div>
 

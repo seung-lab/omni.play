@@ -7,6 +7,8 @@
 #include "system/cache/omLockedCacheObjects.hpp"
 #include "threads/omTaskManager.hpp"
 #include "tiles/cache/omTaskManagerContainerMipSorted.hpp"
+#include "tiles/cache/omTileCache.h"
+#include "tiles/cache/omTilesToPrefetch.hpp"
 #include "tiles/omTile.h"
 #include "tiles/omTileCoord.h"
 #include "tiles/omTileTypes.hpp"
@@ -25,8 +27,8 @@ private:
     typedef OmTileCoord key_t;
     typedef OmTilePtr ptr_t;
 
-    OmTaskManager<OmTaskManagerContainerMipSorted> threadPool_;
-    LockedInt64 curSize_;
+    const int bytesPerTile_;
+    OmTaskManager<OmTaskManagerContainerMipSorted>& threadPool_;
 
     LockedCacheMap<key_t, ptr_t> cache_;
     LockedKeySet<key_t> currentlyFetching_;
@@ -38,33 +40,21 @@ private:
     };
     LockedList<om::shared_ptr<OldCache> > cachesToClean_;
 
-    int numThreads()
-    {
-        int num = zi::system::cpu_count;
-        if(num > 8){
-            return 4;
-        }
-        if(num < 2){
-            return 2;
-        }
-        return num;
-    }
+    OmTilesToPrefetch tilesToPrefetch_;
 
 public:
-    OmThreadedTileCache(const std::string& name)
+    OmThreadedTileCache(const std::string& name, const int bytesPerTile)
         : OmCacheBase(name, om::TILE_CACHE)
+        , bytesPerTile_(bytesPerTile)
+        , threadPool_(OmTileCache::ThreadPool())
     {
         OmCacheManager::AddCache(om::TILE_CACHE, this);
-        threadPool_.start(numThreads());
     }
 
     virtual ~OmThreadedTileCache()
     {
-        CloseDownThreads();
         OmCacheManager::RemoveCache(cacheGroup_, this);
     }
-
-    virtual ptr_t HandleCacheMiss(const key_t& key) = 0;
 
     virtual void Get(ptr_t& ptr, const key_t& key, const om::Blocking blocking)
     {
@@ -80,7 +70,7 @@ public:
 
         if(currentlyFetching_.insertSinceDidNotHaveKey(key))
         {
-            threadPool_.insert(key,
+            threadPool_.insert(key.getLevel(),
                                zi::run_fn(
                                    zi::bind(&OmThreadedTileCache::handleCacheMissThread,
                                             this, key)));
@@ -99,7 +89,7 @@ public:
 
         if(currentlyFetching_.insertSinceDidNotHaveKey(key))
         {
-            threadPool_.insert(key,
+            threadPool_.insert(key.getLevel(),
                                zi::run_fn(
                                    zi::bind(&OmThreadedTileCache::handleCacheMissThread,
                                             this, key)));
@@ -110,17 +100,15 @@ public:
         ptr = loadItem(key);
     }
 
-    void Prefetch(const key_t& key){
-        prefetchItem(key);
+    void Prefetch(const key_t& key, const int depthOffset)
+    {
+        tilesToPrefetch_.insert(key, depthOffset);
+
+        prefetchItem(tilesToPrefetch_.get_front());
     }
 
-    void Remove(const key_t& key)
-    {
-        ptr_t ptr = cache_.erase(key);
-        if(!ptr){
-            return;
-        }
-        curSize_.sub(ptr->NumBytes());
+    void Remove(const key_t& key){
+        cache_.erase(key);
     }
 
     void RemoveOldest(const int64_t numBytesToRemove)
@@ -139,9 +127,7 @@ public:
                 continue;
             }
 
-            const int64_t removedBytes = ptr->NumBytes();
-            numBytesRemoved += removedBytes;
-            curSize_.sub(removedBytes);
+            numBytesRemoved += ptr->NumBytes();
         }
     }
 
@@ -160,7 +146,6 @@ public:
     {
         cache_.clear();
         currentlyFetching_.clear();
-        curSize_.set(0);
     }
 
     void ClearFetchQueue()
@@ -178,12 +163,10 @@ public:
 
         cache_.swap(cache->map, cache->list);
         cachesToClean_.push_back(cache);
-
-        curSize_.set(0);
     }
 
     int64_t GetCacheSize() const {
-        return curSize_.get();
+        return cache_.size() * bytesPerTile_;
     }
 
     void CloseDownThreads()
@@ -206,11 +189,8 @@ private:
 
     ptr_t loadItem(const key_t& key)
     {
-        ptr_t ptr = HandleCacheMiss(key);
-        const bool wasInserted = cache_.set(key, ptr);
-        if(wasInserted){
-            curSize_.add(ptr->NumBytes());
-        }
+        ptr_t ptr = handleCacheMiss(key);
+        cache_.set(key, ptr);
         return ptr;
     }
 
@@ -220,11 +200,15 @@ private:
             return;
         }
 
-        ptr_t ptr = HandleCacheMiss(key);
-        const bool wasInserted = cache_.setPrefetch(key, ptr);
-        if(wasInserted){
-            curSize_.add(ptr->NumBytes());
-        }
+        ptr_t ptr = handleCacheMiss(key);
+        cache_.setPrefetch(key, ptr);
+    }
+
+    ptr_t handleCacheMiss(const key_t& key)
+    {
+        OmTile* tile = new OmTile(this, key);
+        tile->LoadData();
+        return ptr_t(tile);
     }
 };
 

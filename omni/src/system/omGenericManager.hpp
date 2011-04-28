@@ -19,6 +19,8 @@ class OmSegmentation;
 class OmFilter2d;
 class OmGroup;
 
+//TODO: lock correctly
+
 template <typename T>
 class OmGenericManager {
 private:

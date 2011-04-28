@@ -3,7 +3,6 @@
 #include "view2d/omMouseEvents.hpp"
 #include "view2d/omView2dZoom.hpp"
 #include "view2d/omKeyEvents.hpp"
-#include "view2d/omScreenPainter.hpp"
 #include "view2d/omView2d.h"
 
 OmView2d::OmView2d(const ViewType viewtype, QWidget* parent,
@@ -12,7 +11,6 @@ OmView2d::OmView2d(const ViewType viewtype, QWidget* parent,
     : OmView2dCore(parent, vol, vgs, viewtype, name)
     , state_(State())
     , complimentaryDock_(NULL)
-    , screenPainter_(new OmScreenPainter(this, state_))
     , mouseEvents_(new OmMouseEvents(this, state_))
     , keyEvents_(new OmKeyEvents(this, state_))
     , events_(new OmView2dEvents(this, state_))
@@ -40,38 +38,19 @@ void OmView2d::unlinkComplimentaryDock()
     }
 
     QWidget* compWidget = complimentaryDock_->widget();
-    if(compWidget){
+    if(compWidget)
+    {
         OmView2d* v2d = static_cast<OmView2d*>(compWidget);
         v2d->SetComplimentaryDockWidget(NULL);
     }
 }
 
-void OmView2d::resizeEvent(QResizeEvent* event)
-{
-    OmEvents::ViewCenterChanged();
-
-    resizeGL(event->size());
-
-    Redraw();
-}
-
-void OmView2d::resizeGL(const QSize& size)
-{
-    resetPbuffer(size);
-
-    state_->setTotalViewport(size.width(), size.height());
-
-    state_->SetViewSliceOnPan();
-}
-
-void OmView2d::paintEvent(QPaintEvent*){
-    screenPainter_->FullRedraw2d();
-}
-
+// have QT redraw the widget
 void OmView2d::Redraw(){
     update();
 }
 
+// have QT redraw the widget
 void OmView2d::RedrawBlocking()
 {
     blockingRedraw_ = true;
@@ -105,7 +84,7 @@ void OmView2d::keyPressEvent(QKeyEvent* event)
     }
 }
 
-void OmView2d::resetWindow()
+void OmView2d::ResetWidget()
 {
     state_->ResetWindowState();
     OmEvents::ViewCenterChanged();

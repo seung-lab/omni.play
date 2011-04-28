@@ -8,12 +8,12 @@
 
 OmSegmentation& OmSegmentationManager::GetSegmentation(const OmID id)
 {
-    return mSegmentationManager.Get(id);
+    return manager_.Get(id);
 }
 
 OmSegmentation& OmSegmentationManager::AddSegmentation()
 {
-    OmSegmentation& r_segmentation = mSegmentationManager.Add();
+    OmSegmentation& r_segmentation = manager_.Add();
     OmActions::Save();
     return r_segmentation;
 }
@@ -47,27 +47,27 @@ void OmSegmentationManager::RemoveSegmentation(const OmID id)
     //OmDataPath path(GetSegmentation(id).GetDirectoryPath());
     //OmProjectData::DeleteInternalData(path);
 
-    mSegmentationManager.Remove(id);
+    manager_.Remove(id);
 
     OmActions::Save();
 }
 
-bool OmSegmentationManager::IsSegmentationValid(const OmID id)
-{
-    return mSegmentationManager.IsValid(id);
+bool OmSegmentationManager::IsSegmentationValid(const OmID id){
+    return manager_.IsValid(id);
 }
 
-const OmIDsSet& OmSegmentationManager::GetValidSegmentationIds()
-{
-    return mSegmentationManager.GetValidIds();
+const OmIDsSet& OmSegmentationManager::GetValidSegmentationIds(){
+    return manager_.GetValidIds();
 }
 
-bool OmSegmentationManager::IsSegmentationEnabled(const OmID id)
-{
-    return mSegmentationManager.IsEnabled(id);
+bool OmSegmentationManager::IsSegmentationEnabled(const OmID id){
+    return manager_.IsEnabled(id);
 }
 
-void OmSegmentationManager::SetSegmentationEnabled(const OmID id, const bool enable)
-{
-    mSegmentationManager.SetEnabled(id, enable);
+void OmSegmentationManager::SetSegmentationEnabled(const OmID id, const bool enable){
+    manager_.SetEnabled(id, enable);
+}
+
+const std::vector<OmSegmentation*> OmSegmentationManager::GetPtrVec() const{
+    return manager_.GetPtrVec();
 }

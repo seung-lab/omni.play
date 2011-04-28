@@ -15,9 +15,10 @@ public:
     const OmIDsSet & GetValidChannelIds();
     bool IsChannelEnabled(const OmID id);
     void SetChannelEnabled(const OmID id, const bool enable);
+    const std::vector<OmChannel*> GetPtrVec() const;
 
 private:
-    OmGenericManager<OmChannel> mChannelManager;
+    OmGenericManager<OmChannel> manager_;
 
     friend QDataStream&operator<<(QDataStream& out, const OmChannelManager&);
     friend QDataStream&operator>>(QDataStream& in, OmChannelManager&);

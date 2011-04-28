@@ -4,7 +4,7 @@
 namespace om {
 namespace opengl_ {
 
-void SetupGLblendColor(const float alpha,
+void SetupGLblendColor(const bool haveAlphaGoBlack, const float alpha,
                        const bool shouldBrightenAlpha);
 
 } //namespace opengl_

@@ -31,7 +31,7 @@ void OmCacheGroup::RemoveCache(OmCacheBase* cache)
 void OmCacheGroup::SetMaxSizeMB(const int64_t size)
 {
     zi::rwmutex::write_guard lock(lock_);
-    maxAllowedSize_ = size * static_cast<int64_t>(BYTES_PER_MB);
+    maxAllowedSize_ = size * static_cast<int64_t>(om::math::bytesPerMB);
 }
 
 QList<OmCacheInfo> OmCacheGroup::GetCacheInfo()

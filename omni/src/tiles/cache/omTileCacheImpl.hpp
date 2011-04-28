@@ -1,6 +1,8 @@
 #ifndef OM_TILE_CACHE_IMPL_HPP
 #define OM_TILE_CACHE_IMPL_HPP
 
+#include "threads/omTaskManager.hpp"
+#include "tiles/cache/omTaskManagerContainerMipSorted.hpp"
 #include "common/om.hpp"
 #include "common/omCommon.h"
 #include "system/omStateManager.h"
@@ -23,6 +25,23 @@ DECLARE_ZiARG_bool(noTilePrefetch);
  **/
 
 class OmTileCacheImpl {
+private:
+    boost::scoped_ptr<OmTilePreFetcher> preFetcher_;
+    boost::scoped_ptr<OmTileCacheEventListener> listener_;
+
+    OmTaskManager<OmTaskManagerContainerMipSorted> threadPool_;
+
+    std::map<OmTileDrawer*, bool> drawersActive_;
+    LockedInt32 numDrawersActive_;
+
+    OmTileCacheImpl()
+        : preFetcher_(new OmTilePreFetcher())
+        , listener_(new OmTileCacheEventListener(this))
+    {
+        threadPool_.start(numThreads());
+        numDrawersActive_.set(0);
+    }
+
 public:
     ~OmTileCacheImpl(){
         preFetcher_->Shutdown();
@@ -67,6 +86,7 @@ public:
     {
         if(visible){
             SetDrawerActive(drawer);
+
         }else{
             SetDrawerDone(drawer);
         }
@@ -75,44 +95,50 @@ public:
     void Get(OmTilePtr& tile, const OmTileCoord& key, const om::Blocking blocking)
     {
         if(isChannel(key)){
-            cacheChannel_->Get(tile, key, blocking);
+            getChanVol(key)->Get(tile, key, blocking);
 
         } else {
-            cacheSegmentation_->Get(tile, key, blocking);
+            getSegVol(key)->Get(tile, key, blocking);
         }
     }
 
     void GetDontQueue(OmTilePtr& tile, const OmTileCoord& key)
     {
         if(isChannel(key)){
-            cacheChannel_->GetDontQueue(tile, key);
+            getChanVol(key)->GetDontQueue(tile, key);
 
         } else {
-            cacheSegmentation_->GetDontQueue(tile, key);
+            getSegVol(key)->GetDontQueue(tile, key);
         }
     }
 
     void QueueUp(const OmTileCoord& key)
     {
         if(isChannel(key)){
-            cacheChannel_->QueueUp(key);
+            getChanVol(key)->QueueUp(key);
 
         } else {
-            cacheSegmentation_->QueueUp(key);
+            getSegVol(key)->QueueUp(key);
         }
     }
 
     void BlockingCreate(OmTilePtr& tile, const OmTileCoord& key)
     {
-        cacheSegmentation_->BlockingCreate(tile, key);
+        if(isChannel(key)){
+            getChanVol(key)->BlockingCreate(tile, key);
+
+        } else {
+            getSegVol(key)->BlockingCreate(tile, key);
+        }
     }
 
-    void Prefetch(const OmTileCoord& key)
+    void Prefetch(const OmTileCoord& key, const int depthOffset)
     {
         if(isChannel(key)){
-            cacheChannel_->Prefetch(key);
+            getChanVol(key)->Prefetch(key, depthOffset);
+
         } else {
-            cacheSegmentation_->Prefetch(key);
+            getSegVol(key)->Prefetch(key, depthOffset);
         }
     }
 
@@ -125,42 +151,53 @@ public:
 
     void ClearAll()
     {
-        cacheChannel_->Clear();
-        cacheSegmentation_->Clear();
+        ClearChannel();
+        ClearSegmentation();
     }
 
-    void ClearChannel(){
-        cacheChannel_->Clear();
+    void ClearChannel()
+    {
+        std::vector<OmChannel*> vols = ChannelDataWrapper::GetPtrVec();
+        FOR_EACH(iter, vols){
+            (*iter)->TileCache()->Clear();
+        }
     }
 
-    void ClearSegmentation(){
-        cacheSegmentation_->Clear();
+    void ClearSegmentation()
+    {
+        std::vector<OmSegmentation*> vols = SegmentationDataWrapper::GetPtrVec();
+        FOR_EACH(iter, vols){
+            (*iter)->TileCache()->Clear();
+        }
     }
 
     void ClearFetchQueues()
     {
-        cacheChannel_->ClearFetchQueue();
-        cacheSegmentation_->ClearFetchQueue();
+        ClearChannelFetchQueues();
+        ClearSegmentationFetchQueues();
+    }
+
+    void ClearChannelFetchQueues()
+    {
+        std::vector<OmChannel*> vols = ChannelDataWrapper::GetPtrVec();
+        FOR_EACH(iter, vols){
+            (*iter)->TileCache()->ClearFetchQueue();
+        }
+    }
+
+    void ClearSegmentationFetchQueues()
+    {
+        std::vector<OmSegmentation*> vols = SegmentationDataWrapper::GetPtrVec();
+        FOR_EACH(iter, vols){
+            (*iter)->TileCache()->ClearFetchQueue();
+        }
+    }
+
+    OmTaskManager<OmTaskManagerContainerMipSorted>& ThreadPool(){
+        return threadPool_;
     }
 
 private:
-    boost::scoped_ptr<OmTileCacheChannel> cacheChannel_;
-    boost::scoped_ptr<OmTileCacheSegmentation> cacheSegmentation_;
-    boost::scoped_ptr<OmTilePreFetcher> preFetcher_;
-    boost::scoped_ptr<OmTileCacheEventListener> listener_;
-
-    std::map<OmTileDrawer*, bool> drawersActive_;
-    LockedInt32 numDrawersActive_;
-
-    OmTileCacheImpl()
-        : cacheChannel_(new OmTileCacheChannel())
-        , cacheSegmentation_(new OmTileCacheSegmentation())
-        , preFetcher_(new OmTilePreFetcher())
-        , listener_(new OmTileCacheEventListener(this))
-    {
-        numDrawersActive_.set(0);
-    }
-
     bool isChannel(const OmTileCoord& key){
         return CHANNEL == key.getVolume()->getVolumeType();
     }
@@ -179,6 +216,7 @@ private:
         FOR_EACH(iter, drawersActive_){
             drawers.push_back(iter->first);
         }
+
         preFetcher_->RunTasks(drawers);
     }
 
@@ -189,6 +227,28 @@ private:
         }
 
         preFetcher_->ClearTasks();
+    }
+
+    int numThreads()
+    {
+        int num = zi::system::cpu_count;
+        if(num > 8){
+            return 4;
+        }
+        if(num < 2){
+            return 2;
+        }
+        return num;
+    }
+
+    // TODO: refactor OmTile to contain real vol ptrs...
+
+    inline OmTileCacheChannel* getChanVol(const OmTileCoord& key) const {
+        return reinterpret_cast<OmChannel*>(key.getVolume())->TileCache();
+    }
+
+    inline OmTileCacheSegmentation* getSegVol(const OmTileCoord& key) const {
+        return reinterpret_cast<OmSegmentation*>(key.getVolume())->TileCache();
     }
 
     friend class OmTileCache;

@@ -1,22 +1,20 @@
-#include "viewGroup/omViewGroupState.h"
-#include "viewGroup/omCutting.hpp"
-#include "segment/omFindCommonEdge.hpp"
-#include "actions/omSelectSegmentParams.hpp"
-#include "segment/omSegmentSelector.h"
-#include "segment/omSegmentUtils.hpp"
-
 #include "actions/details/omActionImpls.hpp"
 #include "actions/details/omSegmentSplitAction.h"
 #include "actions/details/omSegmentUncertainAction.h"
 #include "actions/details/omSegmentValidateAction.h"
 #include "actions/details/omVoxelSetValueAction.h"
-
 #include "actions/omActionsImpl.h"
-#include "utility/dataWrappers.h"
+#include "actions/omSelectSegmentParams.hpp"
+#include "segment/actions/omJoinSegmentsRunner.hpp"
+#include "segment/actions/omSetSegmentValidRunner.hpp"
+#include "segment/omFindCommonEdge.hpp"
+#include "segment/omSegmentSelector.h"
 #include "system/omLocalPreferences.hpp"
-#include "viewGroup/omSplitting.hpp"
-
 #include "threads/omTaskManager.hpp"
+#include "utility/dataWrappers.h"
+#include "viewGroup/omCutting.hpp"
+#include "viewGroup/omSplitting.hpp"
+#include "viewGroup/omViewGroupState.h"
 
 OmActionsImpl::OmActionsImpl()
     : threadPool_(new OmThreadPool())
@@ -48,8 +46,8 @@ void OmActionsImpl::ChangeMSTthreshold(const SegmentationDataWrapper sdw,
 
 //painting-related
 void OmActionsImpl::SetVoxel(const OmID segmentationID,
-                         const DataCoord voxel,
-                         const OmSegID segmentID)
+                             const DataCoord voxel,
+                             const OmSegID segmentID)
 {
     (new OmVoxelSetValueAction(segmentationID,
                                voxel,
@@ -57,8 +55,8 @@ void OmActionsImpl::SetVoxel(const OmID segmentationID,
 }
 
 void OmActionsImpl::SetVoxels(const OmID segmentationID,
-                          const std::set<DataCoord> voxels,
-                          const OmSegID segmentID)
+                              const std::set<DataCoord> voxels,
+                              const OmSegID segmentID)
 {
     (new OmVoxelSetValueAction(segmentationID,
                                voxels,
@@ -67,61 +65,23 @@ void OmActionsImpl::SetVoxels(const OmID segmentationID,
 
 // segment-related
 void OmActionsImpl::ValidateSegment(const SegmentDataWrapper sdw,
-                                const om::SetValid valid, const bool dontCenter)
+                                    const om::SetValid valid, const bool dontCenter)
 {
-    const OmSegID nextSegmentIDtoJumpTo =
-        OmSegmentUtils::GetNextSegIDinWorkingList(sdw);
-
-    OmSegmentValidateAction::Validate(sdw, valid);
-
-    OmSegments* segments = sdw.Segments();
-
-    const bool segmentGettingSetAsValid = om::SET_VALID == valid;
-    const bool shouldJump =
-        OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
-    const bool justOneSegmentSelected =
-        (1 == segments->GetSelectedSegmentIds().size());
-
-    if( justOneSegmentSelected &&
-        segmentGettingSetAsValid &&
-        shouldJump &&
-        nextSegmentIDtoJumpTo &&
-        !dontCenter)
-    {
-        OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(),
-                              NULL,
-                              "jump after validate");
-        sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
-        sel.AutoCenter(true);
-        sel.sendEvent();
-    }
+    OmSetSegmentValidRunner validator(sdw, valid);
+    validator.Validate();
+    validator.JumpToNextSegment(dontCenter);
 }
 
 void OmActionsImpl::ValidateSelectedSegments(const SegmentationDataWrapper sdw,
-                                         const om::SetValid valid)
+                                             const om::SetValid valid)
 {
-    const OmSegID nextSegmentIDtoJumpTo =
-        OmSegmentUtils::GetNextSegIDinWorkingList(sdw);
-
-    OmSegmentValidateAction::Validate(sdw, valid);
-
-    const bool segmentGettingSetAsValid = om::SET_VALID == valid;
-    const bool shouldJump =
-        OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
-
-    if(shouldJump &&
-       segmentGettingSetAsValid &&
-       nextSegmentIDtoJumpTo)
-    {
-        OmSegmentSelector sel(sdw, NULL, "jump after validate");
-        sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
-        sel.AutoCenter(true);
-        sel.sendEvent();
-    }
+    OmSetSegmentsValidRunner validator(sdw, valid);
+    validator.Validate();
+    validator.JumpToNextSegment();
 }
 
 void OmActionsImpl::UncertainSegment(const SegmentDataWrapper sdw,
-                                 const bool uncertain)
+                                     const bool uncertain)
 {
     bool shouldJump = OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
     const OmSegID nextSegmentIDtoJumpTo =
@@ -184,75 +144,23 @@ void OmActionsImpl::setUncertain(const SegmentationDataWrapper& sdw,
     (new OmSegmentUncertainAction(sdw, children, uncertain))->Run();
 }
 
-OmSegPtrSet OmActionsImpl::setNotValid(OmSegments* cache, const OmSegIDsSet& ids)
-{
-    OmSegPtrSet ret;
-
-    FOR_EACH(iter, ids){
-        OmSegment* seg = cache->GetSegment(*iter);
-        if(!seg){
-            continue;
-        }
-        if(seg->IsValidListType()){
-            OmActionsImpl::ValidateSegment(SegmentDataWrapper(seg), om::SET_NOT_VALID);
-            ret.insert(seg);
-        }
-    }
-    return ret;
-}
-
-void OmActionsImpl::setAsValid(const OmSegPtrSet& segs)
-{
-    FOR_EACH(iter, segs){
-        OmActionsImpl::ValidateSegment(SegmentDataWrapper(*iter), om::SET_VALID, true);
-    }
-}
-
 void OmActionsImpl::JoinSegmentsID(const OmID segmentationID)
 {
-    SegmentationDataWrapper sdw(segmentationID);
-    if(!sdw.IsSegmentationValid()){
-        return;
-    }
-
-    OmSegmentation & seg = sdw.GetSegmentation();
-    const OmSegIDsSet ids = seg.Segments()->GetSelectedSegmentIds();
-    doJoinSegments(sdw, ids);
+    OmJoinSegmentsRunner joiner(segmentationID);
+    joiner.Join();
 }
 
 void OmActionsImpl::JoinSegmentsWrapper(const SegmentationDataWrapper sdw)
 {
-    OmSegmentation & seg = sdw.GetSegmentation();
-    const OmSegIDsSet ids = seg.Segments()->GetSelectedSegmentIds();
-    doJoinSegments(sdw, ids);
+    OmJoinSegmentsRunner joiner(sdw);
+    joiner.Join();
 }
 
 void OmActionsImpl::JoinSegmentsSet(const OmID segmentationID,
                                     const OmSegIDsSet ids)
 {
-    SegmentationDataWrapper sdw(segmentationID);
-    if(!sdw.IsSegmentationValid()){
-        return;
-    }
-
-    doJoinSegments(sdw, ids);
-}
-
-void OmActionsImpl::doJoinSegments(const SegmentationDataWrapper& sdw,
-                                   const OmSegIDsSet& ids)
-{
-    OmSegPtrSet oldValidSet;
-
-    if(sdw.Segments()->AreAnySegmentsInValidList(ids)){
-        // valid segment are present in list
-        oldValidSet = setNotValid(sdw.Segments(), ids);
-    }
-
-    (new OmSegmentJoinAction(sdw, ids))->Run();
-
-    if(oldValidSet.size()){
-        setAsValid(oldValidSet);
-    }
+    OmJoinSegmentsRunner joiner(segmentationID, ids);
+    joiner.Join();
 }
 
 void OmActionsImpl::FindAndSplitSegments(const SegmentDataWrapper curSDW,
@@ -272,12 +180,9 @@ void OmActionsImpl::FindAndSplitSegments(const SegmentDataWrapper curSDW,
             return;
         }
 
-        vgs->Splitting()->ShowBusy(true);
         vgs->Splitting()->ExitSplitModeFixButton();
 
         runIfSplittable(seg1, seg2, *prevClickPt, curClickPt);
-
-        vgs->Splitting()->ShowBusy(false);
 
     } else {
         if(curSDW.IsSegmentValid())
@@ -289,7 +194,7 @@ void OmActionsImpl::FindAndSplitSegments(const SegmentDataWrapper curSDW,
 }
 
 void OmActionsImpl::FindAndCutSegments(const SegmentDataWrapper sdw,
-                                   OmViewGroupState* vgs)
+                                       OmViewGroupState* vgs)
 {
     doFindAndCutSegment(sdw, vgs);
 }
@@ -300,9 +205,9 @@ void OmActionsImpl::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params
 
 // group-related
 void OmActionsImpl::CreateOrDeleteSegmentGroup(const OmID segmentationID,
-                                           const OmSegIDsSet selectedSegmentIDs,
-                                           const OmGroupName name,
-                                           const bool create)
+                                               const OmSegIDsSet selectedSegmentIDs,
+                                               const OmGroupName name,
+                                               const bool create)
 {
     (new OmSegmentGroupAction(segmentationID,
                               selectedSegmentIDs,

@@ -5,12 +5,12 @@
 
 OmChannel& OmChannelManager::GetChannel(const OmID id)
 {
-    return mChannelManager.Get(id);
+    return manager_.Get(id);
 }
 
 OmChannel& OmChannelManager::AddChannel()
 {
-    OmChannel& r_channel = mChannelManager.Add();
+    OmChannel& r_channel = manager_.Add();
     OmActions::Save();
     return r_channel;
 }
@@ -23,27 +23,31 @@ void OmChannelManager::RemoveChannel(const OmID id)
     //OmDataPath path(GetChannel(id).GetDirectoryPath());
     //OmProjectData::DeleteInternalData(path);
 
-    mChannelManager.Remove(id);
+    manager_.Remove(id);
 
     OmActions::Save();
 }
 
 bool OmChannelManager::IsChannelValid(const OmID id)
 {
-    return mChannelManager.IsValid(id);
+    return manager_.IsValid(id);
 }
 
 const OmIDsSet& OmChannelManager::GetValidChannelIds()
 {
-    return mChannelManager.GetValidIds();
+    return manager_.GetValidIds();
 }
 
 bool OmChannelManager::IsChannelEnabled(const OmID id)
 {
-    return mChannelManager.IsEnabled(id);
+    return manager_.IsEnabled(id);
 }
 
 void OmChannelManager::SetChannelEnabled(const OmID id, bool enable)
 {
-    mChannelManager.SetEnabled(id, enable);
+    manager_.SetEnabled(id, enable);
+}
+
+const std::vector<OmChannel*> OmChannelManager::GetPtrVec() const {
+    return manager_.GetPtrVec();
 }

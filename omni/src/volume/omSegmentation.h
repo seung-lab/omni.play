@@ -19,14 +19,15 @@ class OmMST;
 class OmMeshDrawer;
 class OmMeshManager;
 class OmMeshManagers;
+class OmRawSegTileCache;
 class OmSegChunk;
 class OmSegment;
 class OmSegmentLists;
 class OmSegments;
+class OmTileCacheSegmentation;
 class OmUserEdges;
 class OmValidGroupNum;
 class OmViewGroupState;
-class OmRawSegTileCache;
 class OmVolumeCuller;
 class OmVolumeData;
 class SegmentationDataWrapper;
@@ -117,6 +118,9 @@ public:
     inline OmChunkCache<OmSegmentation, OmSegChunk>* ChunkCache(){
         return chunkCache_.get();
     }
+    inline OmTileCacheSegmentation* TileCache(){
+        return tileCache_.get();
+    }
 
 private:
     boost::scoped_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
@@ -131,6 +135,7 @@ private:
     boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
     boost::scoped_ptr<OmVolumeData> volData_;
     boost::scoped_ptr<OmRawSegTileCache> volSliceCache_;
+    boost::scoped_ptr<OmTileCacheSegmentation> tileCache_;
 
     template <class T> friend class OmVolumeBuilder;
     template <class T> friend class OmVolumeBuilderHdf5;
@@ -143,7 +148,7 @@ private:
     friend class OmSegmentationChunkBuildTask;
     friend class SegmentTests1;
 
-    friend class OmDataArchiveProject;
+    friend class OmDataArchiveProjectImpl;
     friend QDataStream &operator>>(QDataStream& in, OmSegmentation&);
     friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
 };

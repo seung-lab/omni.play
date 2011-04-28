@@ -24,9 +24,7 @@ class OmView3d : public QGLWidget,
                  public OmViewEventListener
 {
 Q_OBJECT
-
 public:
-
     OmView3d(QWidget *, OmViewGroupState * );
     ~OmView3d();
 
@@ -81,9 +79,8 @@ protected:
     void SelectVoxel(DataCoord &voxel, bool append);
 
     //gl actions
-    SegmentDataWrapper PickPoint(const Vector2i& point2di, int& pickName);
-    bool UnprojectPoint(Vector2i point2di, Vector3f &point3d,
-                        float depth_scale_factor = 1.0f);
+    SegmentDataWrapper PickPoint(const Vector2i& point2di);
+    bool UnprojectPoint(Vector2i point2di, Vector3f &point3d);
 
     //draw methods
     void Draw(OmBitfield option);
@@ -122,6 +119,8 @@ private:
     std::list<std::pair<float,float> > percVolDone_;
 
     bool meshesFound_;
+
+    const std::vector<OmSegmentation*> segmentations_;
 
     friend class OmMacOSXGestures;
     friend class OmView3dUi;

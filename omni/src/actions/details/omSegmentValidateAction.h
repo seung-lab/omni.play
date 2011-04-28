@@ -17,16 +17,11 @@ public:
         : impl_(impl)
     {}
 
-    static void Validate(const SegmentDataWrapper& sdw,
-                         const om::SetValid valid);
-
-    static void Validate(const SegmentationDataWrapper& sdw,
-                         const om::SetValid valid);
-
-private:
     OmSegmentValidateAction(const SegmentationDataWrapper& sdw,
                             om::shared_ptr<std::set<OmSegment*> > selectedSegments,
                             const bool valid);
+
+private:
     void Action();
     void UndoAction();
     std::string Description();

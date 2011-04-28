@@ -8,6 +8,12 @@ public:
     OmTellInfo()
     {}
 
+    OmTellInfo(const std::string& text)
+    {
+        setText(QString::fromStdString(text));
+        exec();
+    }
+
     OmTellInfo(const QString& text)
     {
         setText(text);

@@ -13,6 +13,7 @@
 class OmView3d;
 class OmViewGroupState;
 class OmMacOSXGestures;
+class OmSegmentPickPoint;
 
 class OmView3dUi {
 public:
@@ -46,8 +47,7 @@ public:
     void CameraMovementMouseWheel(QWheelEvent *event);
 
     //segment picking
-    SegmentDataWrapper PickSegmentMouse(QMouseEvent *event, bool drag,
-                                        int *pickName = NULL);
+    SegmentDataWrapper PickSegmentMouse(QMouseEvent *event, bool drag);
 
     //segment actions
     void SegmentSelectToggleMouse(QMouseEvent *event, bool drag);
@@ -56,26 +56,24 @@ public:
     void ShowSegmentContextMenu(QMouseEvent *event);
 
 private:
-    OmView3d *const mpView3d;
+    OmView3d *const view3d_;
     OmViewGroupState* vgs_;
 
     boost::scoped_ptr<OmMacOSXGestures> macGestures_;
 
-    OmSegmentContextMenu mSegmentContextMenu;
-
-    bool mPrevSelectionState;
-    DataCoord mPrevMouseSelectVoxel;
+    OmSegmentContextMenu segmentContextMenu_;
 
     void crosshair(QMouseEvent* event);
     void CenterAxisOfRotation(QMouseEvent* event);
-    SegmentDataWrapper PickVoxelMouseCrosshair(QMouseEvent* event,
-                                               DataCoord& rVoxel);
+    OmSegmentPickPoint PickVoxelMouseCrosshair(QMouseEvent* event);
     void CutModeMouseReleased(QMouseEvent* event);
 
     SegmentDataWrapper prevSDW_;
     void resetWindow();
 
-    bool mCPressed;
+    bool cPressed_;
+
+    void doSelectSegment(const SegmentDataWrapper& sdw, const bool);
 };
 
 #endif

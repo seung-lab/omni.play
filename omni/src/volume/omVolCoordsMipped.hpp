@@ -59,7 +59,7 @@ public:
         Vector3f source_dims = source_extent.getUnitDimensions();
 
         //dims in fraction of pixels
-        Vector3f mip_level_dims = source_dims / om::pow2int(level);
+        Vector3f mip_level_dims = source_dims / om::math::pow2int(level);
 
         return Vector3i(ceil(mip_level_dims.x),
                         ceil(mip_level_dims.y),
@@ -105,7 +105,7 @@ public:
             return OmChunkCoord::NULL_COORD;
         }
 
-        const int factor = om::pow2int(level);
+        const int factor = om::math::pow2int(level);
         return OmChunkCoord(level,
                             dataCoord.x / factor / chunkDimensions.x,
                             dataCoord.y / factor / chunkDimensions.y,
@@ -125,8 +125,8 @@ public:
                                        const int newLevel) const
     {
 
-        int old_level_factor = om::pow2int(rMipCoord.Level);
-        int new_level_factor = om::pow2int(newLevel);
+        int old_level_factor = om::math::pow2int(rMipCoord.Level);
+        int new_level_factor = om::math::pow2int(newLevel);
 
         //convert to leaf level dimensions
         int leaf_dim = GetChunkDimension() * old_level_factor;
@@ -205,9 +205,9 @@ public:
     {
         const Vector3i data_dims = MipLevelDataDimensions(level);
 
-        return Vector3i(ROUNDUP(data_dims.x, GetChunkDimension()),
-                        ROUNDUP(data_dims.y, GetChunkDimension()),
-                        ROUNDUP(data_dims.z, GetChunkDimension()));
+        return Vector3i(om::math::roundUp(data_dims.x, GetChunkDimension()),
+                        om::math::roundUp(data_dims.y, GetChunkDimension()),
+                        om::math::roundUp(data_dims.z, GetChunkDimension()));
     }
 
     inline uint32_t ComputeTotalNumChunks() const

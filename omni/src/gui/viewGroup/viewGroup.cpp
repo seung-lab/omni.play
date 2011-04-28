@@ -3,7 +3,6 @@
 #include "gui/menubar.h"
 #include "gui/viewGroup/viewGroup.h"
 #include "project/omProject.h"
-#include "utility/dataWrappers.h"
 #include "view2d/omView2d.h"
 #include "view3d/omView3d.h"
 #include "viewGroup/omViewGroupState.h"
@@ -231,17 +230,11 @@ void ViewGroup::AddXYView(const OmID channelID, const OmID segmentationID)
         delete w;
     }
 
-    ChannelDataWrapper cdw(channelID);
-    SegmentationDataWrapper sdw(segmentationID);
-
-    const bool validChan = cdw.IsChannelValid() && cdw.IsBuilt();
-    const bool validSeg = sdw.IsSegmentationValid() && sdw.IsBuilt();
-
-    if(validChan){
+    if(canShowChannel(channelID)){
         AddView2Dchannel(channelID, XY_VIEW);
     }
 
-    if(validSeg){
+    if(canShowSegmentation(segmentationID)){
         AddView2Dsegmentation(segmentationID, XY_VIEW);
     }
 }
@@ -252,13 +245,11 @@ void ViewGroup::AddAllViews(const OmID channelID, const OmID segmentationID)
         delete w;
     }
 
-    ChannelDataWrapper cdw(channelID);
-    SegmentationDataWrapper sdw(segmentationID);
+    const bool validChan = canShowChannel(channelID);
+    const bool validSeg = canShowSegmentation(segmentationID);
 
-    const bool validChan = cdw.IsChannelValid() && cdw.IsBuilt();
-    const bool validSeg = sdw.IsSegmentationValid() && sdw.IsBuilt();
-
-    if( validChan && validSeg){
+    if( validChan && validSeg)
+    {
         AddView2Dchannel(channelID, UpperLeft);
         AddView2Dchannel(channelID, UpperRight);
         AddView2Dchannel(channelID, LowerLeft);

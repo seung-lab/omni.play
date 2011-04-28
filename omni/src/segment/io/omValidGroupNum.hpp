@@ -36,18 +36,22 @@ public:
         segToGroupNum_.resize(size, 0);
     }
 
-    void Set(om::shared_ptr<std::set<OmSegment*> > segs,
-             const bool isValid)
+    template <typename C>
+    void Set(C& segs, const bool isValid)
     {
-        if(isValid){
+        if(isValid)
+        {
             const uint32_t groupNum = maxGroupNum_.inc();
-            FOR_EACH(iter, *segs){
+            FOR_EACH(iter, segs)
+            {
                 OmSegment* seg = *iter;
                 const OmSegID segID = seg->value();
                 segToGroupNum_[segID] = groupNum;
             }
+
         } else {
-            FOR_EACH(iter, *segs){
+            FOR_EACH(iter, segs)
+            {
                 OmSegment* seg = *iter;
                 const OmSegID segID = seg->value();
                 segToGroupNum_[segID] = 0;
@@ -122,7 +126,7 @@ private:
         out.setVersion(QDataStream::Qt_4_6);
 
         out << version_;
-        out <<segToGroupNum_;
+        out << segToGroupNum_;
 
         const quint64 maxGroupNum = maxGroupNum_.get();
         out << maxGroupNum;

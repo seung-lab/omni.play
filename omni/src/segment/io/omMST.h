@@ -82,7 +82,7 @@ private:
 
     friend class SegmentTests1;
 
-    friend class OmDataArchiveProject;
+    friend class OmDataArchiveProjectImpl;
     friend QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg);
 };
 

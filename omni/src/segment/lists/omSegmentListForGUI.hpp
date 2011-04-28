@@ -88,7 +88,7 @@ private:
         }
 
         const int indexIntoSizeList = index_[segID];
-        const uint32_t roundedOffset = ROUNDDOWN(indexIntoSizeList, numToGet);
+        const uint32_t roundedOffset = om::math::roundDown(indexIntoSizeList, numToGet);
 
         return om::segLists::getPage(bySize_, roundedOffset, numToGet);
     }
@@ -103,8 +103,9 @@ private:
 
     void makeSizeList(const std::vector<SegInfo>& globalList)
     {
-        std::for_each(globalList.begin(), globalList.end(),
-                      boost::bind(&OmSegmentListForGUI::processSegInfo, this, _1));
+        FOR_EACH(iter, globalList){
+            processSegInfo(*iter);
+        }
 
         zi::sort(bySize_.begin(), bySize_.end(), om::segLists::CmpSegInfo);
     }

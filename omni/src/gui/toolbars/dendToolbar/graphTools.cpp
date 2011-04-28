@@ -31,9 +31,6 @@ GraphTools::GraphTools(DendToolBar * d)
 
     box->addWidget(breakThresholdBox());
 
-    om::connect(this, SIGNAL(signalSplitterBusy(bool)),
-                this, SLOT(showSplitterBusy(bool)));
-
     om::connect(this, SIGNAL(signalSplittingOff()),
                 this, SLOT(setSplittingOff()));
 
@@ -85,25 +82,12 @@ SegmentationDataWrapper GraphTools::GetSDW(){
     return mParent->GetSDW();
 }
 
-void GraphTools::ShowSplitterBusy(const bool showBusy){
-    signalSplitterBusy(showBusy);
-}
-
 void GraphTools::SetSplittingOff(){
     signalSplittingOff();
 }
 
 void GraphTools::setSplittingOff(){
     splitButton->setChecked(false);
-}
-
-void GraphTools::showSplitterBusy(const bool showBusy)
-{
-    if(showBusy){
-        splitButton->SetIcon(":/toolbars/mainToolbar/icons/ajax-loader.gif");
-    } else {
-        splitButton->SetIcon();
-    }
 }
 
 void GraphTools::RefreshThreshold(){

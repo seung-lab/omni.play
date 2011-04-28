@@ -5,6 +5,7 @@
 #include "gui/toolbars/dendToolbar/displayTools/displayTools.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/toolbars/dendToolbar/validationGroup.h"
+#include "gui/widgets/omWidget.hpp"
 #include "system/omAppState.hpp"
 #include "utility/dataWrappers.h"
 
@@ -23,18 +24,20 @@ DendToolBar::DendToolBar(MainWindow* mw, OmViewGroupState* vgs)
     displayTools = new DisplayTools(this);
 
     mainWindow_->addToolbarRight(this);
-    addWidget(wrapWithGroupBox(graphTools));
-    addWidget(wrapWithGroupBox(validationGroup));
-    addWidget(wrapWithGroupBox(displayTools));
 
-    //addWidget(new BreakThresholdGroup(this));
+    if(1)
+    {
+        addWidget(wrapWithGroupBox(graphTools));
+        addWidget(wrapWithGroupBox(validationGroup));
+        addWidget(wrapWithGroupBox(displayTools));
 
-    /*
-      graphToolsDock = makeDockWidget(graphTools);
-      validationGroupDock = makeDockWidget(validationGroup);
-      displayToolsDock = makeDockWidget(displayTools);
+    } else {
+        graphToolsDock = makeDockWidget(graphTools);
+        validationGroupDock = makeDockWidget(validationGroup);
+        displayToolsDock = makeDockWidget(displayTools);
+    }
+
       updateToolBarsPos(QPoint(0,0));
-    */
 }
 
 QDockWidget* DendToolBar::makeDockWidget(OmWidget* widget)
@@ -101,10 +104,6 @@ void DendToolBar::updateGui(){
 
 void DendToolBar::SetSplittingOff(){
     graphTools->SetSplittingOff();
-}
-
-void DendToolBar::ShowSplitterBusy(const bool showBusy){
-    graphTools->ShowSplitterBusy(showBusy);
 }
 
 void DendToolBar::SetCuttingOff(){

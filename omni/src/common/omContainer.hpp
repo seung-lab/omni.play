@@ -1,6 +1,8 @@
 #ifndef OM_CONTAINER_HPP
 #define OM_CONTAINER_HPP
 
+#include "common/omStd.h"
+
 #include <zi/for_each.hpp>
 #include <zi/utility/container_utilities.hpp>
 

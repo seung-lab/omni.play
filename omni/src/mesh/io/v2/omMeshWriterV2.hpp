@@ -18,10 +18,10 @@ private:
     OmMeshFilePtrCache* filePtrCache_;
 
 public:
-    OmMeshWriterV2(OmSegmentation* segmentation, const double threshold)
-        : segmentation_(segmentation)
-        , threshold_(threshold)
-        , filePtrCache_(segmentation->MeshManager(threshold_)->FilePtrCache())
+    OmMeshWriterV2(OmMeshManager* meshManager)
+        : segmentation_(meshManager->GetSegmentation())
+        , threshold_(meshManager->Threshold())
+        , filePtrCache_(meshManager->FilePtrCache())
     {}
 
     ~OmMeshWriterV2(){

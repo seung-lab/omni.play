@@ -1,13 +1,12 @@
 #include "view2d/omOpenGLUtils.h"
 #include "common/omGl.h"
-#include "view2d/om2dPreferences.hpp"
 
-void om::opengl_::SetupGLblendColor(const float alpha,
+void om::opengl_::SetupGLblendColor(const bool haveAlphaGoBlack, const float alpha,
                                     const bool shouldBrightenAlpha)
 {
     glEnable(GL_BLEND);  // enable blending for transparency
 
-    if(Om2dPreferences::HaveAlphaGoToBlack()){
+    if(haveAlphaGoBlack){
         glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
         glBlendColor(1.f, 1.f, 1.f, (1.f - alpha));
 

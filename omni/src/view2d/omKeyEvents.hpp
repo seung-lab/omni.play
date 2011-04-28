@@ -37,7 +37,7 @@ public:
             break;
 
         case Qt::Key_Escape:
-            v2d_->resetWindow();
+            v2d_->ResetWidget();
             OmCacheManager::ClearCacheContents();
             break;
 

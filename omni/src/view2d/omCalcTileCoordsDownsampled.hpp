@@ -82,14 +82,14 @@ public:
 
     DataCoord makeNewDataCoord(const DataCoord& oldDataCoord, const int mipLevel)
     {
-        const int newTileSize = 128 * om::pow2int(mipLevel);
+        const int newTileSize = 128 * om::math::pow2int(mipLevel);
 
         const Vector2i ptsInPlane = OmView2dConverters::Get2PtsInPlane(oldDataCoord, viewType_);
 
         const int depth = OmView2dConverters::GetViewTypeDepth(oldDataCoord, viewType_);
 
-        return OmView2dConverters::MakeViewTypeVector3(ROUNDDOWN(ptsInPlane.x, newTileSize),
-                                                       ROUNDDOWN(ptsInPlane.y, newTileSize),
+        return OmView2dConverters::MakeViewTypeVector3(om::math::roundDown(ptsInPlane.x, newTileSize),
+                                                       om::math::roundDown(ptsInPlane.y, newTileSize),
                                                        depth,
                                                        viewType_);
     }
@@ -98,8 +98,8 @@ public:
                                        const int curMipLevel)
     {
         const Vector2i initialPtsInPlane = OmView2dConverters::Get2PtsInPlane(oldDC, viewType_);
-        const int initialTileSize = 128 * om::pow2int(initialMipLevel);
-        const int finalTileSize = 128 * om::pow2int(curMipLevel);
+        const int initialTileSize = 128 * om::math::pow2int(initialMipLevel);
+        const int finalTileSize = 128 * om::math::pow2int(curMipLevel);
 
         const Vector2f pts(initialPtsInPlane.x % finalTileSize,
                            initialPtsInPlane.y % finalTileSize);

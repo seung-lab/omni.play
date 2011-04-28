@@ -15,21 +15,52 @@
 class OmSegmentUtils {
 public:
     om::shared_ptr<std::set<OmSegment*> >
-    static GetAllChildrenSegments(OmSegments* segments,
-                                  const OmSegIDsSet& set)
+    static GetAllChildrenSegments(OmSegments* segments, const OmSegIDsSet& set)
     {
         OmSegmentIterator iter(segments);
         iter.iterOverSegmentIDs(set);
 
-        OmSegment * seg = iter.getNextSegment();
+        OmSegment* seg = iter.getNextSegment();
+
         std::set<OmSegment*>* children = new std::set<OmSegment*>();
 
-        while(NULL != seg) {
+        while(NULL != seg)
+        {
             children->insert(seg);
             seg = iter.getNextSegment();
         }
 
         return om::shared_ptr<std::set<OmSegment*> >(children);
+    }
+
+    template <class A, class B>
+    static void GetAllChildrenSegments(const SegmentationDataWrapper& sdw, const A& segsIn, B& ret)
+    {
+        OmSegmentIterator iter(sdw);
+        iter.iterOverSegmentIDs(segsIn);
+
+        OmSegment* seg = iter.getNextSegment();
+
+        while(NULL != seg)
+        {
+            ret.push_back(seg);
+            seg = iter.getNextSegment();
+        }
+    }
+
+    template <class B>
+    static void GetAllChildrenSegments(OmSegments* segments, const OmSegID segID, B& ret)
+    {
+        OmSegmentIterator iter(segments);
+        iter.iterOverSegmentID(segID);
+
+        OmSegment* seg = iter.getNextSegment();
+
+        while(NULL != seg)
+        {
+            ret.push_back(seg);
+            seg = iter.getNextSegment();
+        }
     }
 
     static OmSegment* GetSegmentBasedOnThreshold(OmSegment* seg, const float breakThreshold)
@@ -62,30 +93,31 @@ public:
         // 2 is the manual merge threshold
     }
 
-
     static void PrintChildren(const SegmentDataWrapper& sdw)
     {
         if(!sdw.IsSegmentValid()){
             return;
         }
 
-        OmSegments* segments = sdw.Segments();
-        OmSegmentIterator iter(segments);
+        OmSegmentIterator iter(sdw);
         iter.iterOverSegmentID(sdw.FindRootID());
 
-        OmSegment * seg = iter.getNextSegment();
-        while(NULL != seg) {
+        OmSegment* seg = iter.getNextSegment();
+
+        while(NULL != seg)
+        {
             OmSegment* parent = seg->getParent();
-            OmSegID parentID = 0;
-            if(parent){
-                parentID = parent->value();
-            }
+
+            const OmSegID parentID = parent ? parent->value() : 0;
+
             const QString str = QString("%1 : %2, %3, %4")
                 .arg(seg->value())
                 .arg(parentID)
                 .arg(seg->getThreshold())
                 .arg(seg->size());
+
             printf("%s\n", qPrintable(str));
+
             seg = iter.getNextSegment();
         }
     }
@@ -105,11 +137,8 @@ public:
                 continue;
             }
 
-            OmSegIDsSet set;
-            set.insert(i);
-
-            om::shared_ptr<std::set<OmSegment*> > children =
-                OmSegmentUtils::GetAllChildrenSegments(segments, set);
+            std::deque<OmSegment*> children;
+            OmSegmentUtils::GetAllChildrenSegments(segments, i, children);
 
             validGroupNum->Set(children, true);
         }
@@ -165,6 +194,23 @@ public:
         QPixmap pixm(width, height);
         pixm.fill(newcolor);
         return pixm;
+    }
+
+    template <class A, class B>
+    static void GetSegPtrs(const SegmentationDataWrapper& sdw, const A& ids, B& segPtrs)
+    {
+        OmSegments* cache = sdw.Segments();
+
+        FOR_EACH(iter, ids)
+        {
+            OmSegment* seg = cache->GetSegment(*iter);
+
+            if(!seg){
+                continue;
+            }
+
+            segPtrs.push_back(seg);
+        }
     }
 };
 #endif

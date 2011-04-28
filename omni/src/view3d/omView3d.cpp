@@ -3,6 +3,7 @@
 #include "mesh/drawer/omMeshDrawer.h"
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/omMeshManager.h"
+#include "mesh/omMeshManagers.hpp"
 #include "mesh/omVolumeCuller.h"
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSelected.hpp"
@@ -40,10 +41,11 @@ enum widgets {
  *  Constructs View3d widget that shares with the primary widget.
  */
 OmView3d::OmView3d(QWidget* parent, OmViewGroupState* vgs)
-    : QGLWidget(parent, OmStateManager::GetPrimaryView3dWidget())
+    : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent)
     , mView3dUi(this, vgs)
     , vgs_(vgs)
     , meshesFound_(false)
+    , segmentations_(SegmentationDataWrapper::GetPtrVec())
 {
     //set keyboard policy
     setFocusPolicy(Qt::ClickFocus);
@@ -72,8 +74,14 @@ OmView3d::OmView3d(QWidget* parent, OmViewGroupState* vgs)
 
 OmView3d::~OmView3d()
 {
-    if (mDrawTimer.isActive()) {
+    if(mDrawTimer.isActive()) {
         mDrawTimer.stop();
+    }
+
+    FOR_EACH(iter, segmentations_)
+    {
+        OmSegmentation* vol = *iter;
+        vol->MeshManagers()->ClearMeshCaches();
     }
 }
 
@@ -167,12 +175,12 @@ void OmView3d::myUpdate()
 
 void OmView3d::doTimedDraw()
 {
-    if (mElapsed->elapsed() > 1000) {
+    if(mElapsed->elapsed() > 1000) {
         mElapsed->restart();
         updateGL();
     }
 
-    if (mDrawTimer.isActive()) {
+    if(mDrawTimer.isActive()) {
         mDrawTimer.stop();
         mDrawTimer.start(100);
         mDrawTimer.setSingleShot(true);
@@ -301,9 +309,11 @@ void OmView3d::View3dRecenter()
 
 /*
  *  Returns a vector names of closest picked result for given draw options.
+ *
+ * causes localized redraw (but all depth info stored in selection buffer)
+ *
  */
-bool OmView3d::pickPoint(const Vector2i& point2di,
-                         std::vector<uint32_t>& rNamesVec)
+bool OmView3d::pickPoint(const Vector2i& point2di, std::vector<uint32_t>& rNamesVec)
 {
     //clear name vector
     rNamesVec.clear();
@@ -319,14 +329,16 @@ bool OmView3d::pickPoint(const Vector2i& point2di,
     int hits = stopPicking();
 
     //if hits < 0, then buffer overflow
-    if (hits < 0) {
+    if(hits < 0)
+    {
         printf("OmView3d::PickPoint: hit buffer overflow: %d\n", hits);
         return false;
     }
 
     //if no hits, success
-    if (hits == 0)
+    if(hits == 0){
         return true;
+    }
 
     //number of names in closest hit
     int numNames;
@@ -336,7 +348,7 @@ bool OmView3d::pickPoint(const Vector2i& point2di,
     processHits(hits, &pNames, &numNames);
 
     //add names from array to names vec
-    for (int i = 0; i < numNames; i++) {
+    for(int i = 0; i < numNames; i++) {
         rNamesVec.push_back(pNames[i]);
     }
 
@@ -344,13 +356,13 @@ bool OmView3d::pickPoint(const Vector2i& point2di,
     return true;
 }
 
-SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2di, int& pickName)
+SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2di)
 {
     std::vector<uint32_t> result;
     const bool valid_pick = pickPoint(point2di, result);
 
     //if valid and return count
-    if (!valid_pick || (result.size() != 3)){
+    if(!valid_pick || (result.size() != 3)){
         return SegmentDataWrapper();
     }
 
@@ -359,11 +371,10 @@ SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2di, int& pickName)
     const OmSegID segmentID = result[1];
     SegmentDataWrapper sdw(segmentationID, segmentID);
 
-    if (!sdw.IsSegmentValid()){
+    if(!sdw.IsSegmentValid()){
         return SegmentDataWrapper();
     }
 
-    pickName = result[2];
     return sdw;
 }
 
@@ -372,14 +383,14 @@ SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2di, int& pickName)
  *  Returns if unproject is valid (not valid if no depth value at pixel).
  */
 
-bool OmView3d::UnprojectPoint(Vector2i point2di, Vector3f & point3d, float z_scale_factor)
+bool OmView3d::UnprojectPoint(Vector2i point2di, Vector3f & point3d)
 {
     //apply camera modelview matrix
     mCamera.ApplyModelview();
 
     //unproject point2di
     double point3dv[3];
-    if (unprojectPixel(point2di.x, point2di.y, point3dv, z_scale_factor) < 0)
+    if(unprojectPixel(point2di.x, point2di.y, point3dv) < 0)
         return false;
 
     //return point3d
@@ -432,11 +443,11 @@ void OmView3d::Draw(OmBitfield cullerOptions)
     percVolDone_.clear();
 
     //if drawing volumes
-    if (cullerOptions & DRAWOP_LEVEL_VOLUME) {
-
+    if(cullerOptions & DRAWOP_LEVEL_VOLUME)
+    {
         //if in rendering mode
-        if (cullerOptions & DRAWOP_RENDERMODE_RENDER) {
-
+        if(cullerOptions & DRAWOP_RENDERMODE_RENDER)
+        {
             //draw selected and write to stencil (for use with highlighting outline)
             glEnable(GL_STENCIL_TEST);
             glStencilFunc(GL_ALWAYS, 1, 0xFFFF);
@@ -446,7 +457,7 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 
             //draw unselected (i.e. enabled) segments
             //if transparent unselected, disable writing to depth buffer
-            if (OmPreferences::GetBoolean(om::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
+            if(OmPreferences::GetBoolean(om::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
                 glDepthMask(GL_FALSE);
             }
 
@@ -456,13 +467,14 @@ void OmView3d::Draw(OmBitfield cullerOptions)
             //always renable writing to depth buffer
             glDepthMask(GL_TRUE);
         }
+
         //if in selection mode
-        if (cullerOptions & DRAWOP_RENDERMODE_SELECTION) {
+        if(cullerOptions & DRAWOP_RENDERMODE_SELECTION) {
             DrawVolumes(cullerOptions);
         }
     }
 
-    if (cullerOptions & DRAWOP_DRAW_WIDGETS) {
+    if(cullerOptions & DRAWOP_DRAW_WIDGETS) {
         DrawWidgets();
     }
 
@@ -487,25 +499,25 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
     meshesFound_ = false;
 
     // Draw meshes!
-    FOR_EACH(iter, SegmentationDataWrapper::ValidIDs())
+    FOR_EACH(iter, segmentations_)
     {
-        SegmentationDataWrapper sdw(*iter);
-        if(!sdw.IsBuilt()){
+        OmSegmentation* vol = *iter;
+
+        if(!vol->IsBuilt()){
             continue;
         }
 
-        OmSegmentation& seg = sdw.GetSegmentation();
-        if(seg.MeshManager(1)->Metadata()->IsBuilt()){
+        if(vol->MeshManager(1)->Metadata()->IsBuilt()){
             meshesFound_ = true;
         } else {
             continue;
         }
 
         om::shared_ptr<OmVolumeCuller> newCuller =
-            culler.GetTransformedCuller(seg.Coords().GetNormToDataMatrix(),
-                                        seg.Coords().GetNormToDataInvMatrix());
+            culler.GetTransformedCuller(vol->Coords().GetNormToDataMatrix(),
+                                        vol->Coords().GetNormToDataInvMatrix());
 
-        OmMeshDrawer* meshDrawer = seg.MeshDrawer();
+        OmMeshDrawer* meshDrawer = vol->MeshDrawer();
 
         boost::optional<std::pair<float,float> > percVolDone =
             meshDrawer->Draw(vgs_, newCuller, cullerOptions);
@@ -539,7 +551,7 @@ void OmView3d::SetCameraPerspective()
 
 void OmView3d::SetBlending()
 {
-    if (OmPreferences::GetBoolean(om::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
+    if(OmPreferences::GetBoolean(om::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
         glEnable(GL_BLEND);
     } else {
         glDisable(GL_BLEND);
@@ -601,7 +613,7 @@ QSize OmView3d::sizeHint () const
 
 bool OmView3d::event(QEvent *e)
 {
-    if (e->type() == QEvent::Gesture) {
+    if(e->type() == QEvent::Gesture) {
         return mView3dUi.gestureEvent(static_cast<QGestureEvent*>(e));
     }
 

@@ -18,6 +18,7 @@
 
 #include <QImage>
 
+class QGLContext;
 class OmPooledTileWrapper;
 template <class> class OmPooledTile;
 
@@ -102,7 +103,11 @@ public:
         }
     }
 
-    void TextureBindComplete(const GLuint textureID);
+    void TextureBindComplete(QGLContext const* context, const GLuint textureID);
+
+    QGLContext const* Context() const {
+        return context_;
+    }
 
 private:
     const int tileDim_;
@@ -116,6 +121,8 @@ private:
     OmTileFlag flag_;
 
     boost::optional<GLuint> textureID_;
+
+    QGLContext const* context_;
 };
 
 #endif

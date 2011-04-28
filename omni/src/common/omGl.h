@@ -8,6 +8,8 @@
 #ifndef OM_GL_H
 #define OM_GL_H
 
+#include "common/omStd.h"
+
 #define GL_GLEXT_PROTOTYPES
 
 #if defined(__APPLE_CC__)
@@ -28,6 +30,22 @@ static const float OMGL_BLACK[3] = {0, 0, 0};
 static const float OMGL_RED[3] = {1, 0, 0};
 static const float OMGL_GREEN[3] = {0, 1, 0};
 static const float OMGL_BLUE[3] = {0, 0, 1};
+
+/*
+ * Macro to check for silent errors that OpenGL builds up.
+ * Can't be used inside of glBegin() / glEnd()
+ * http://www.performanceopengl.com/s2002PerfOGL.ppt (in /docs folder)
+ */
+inline void CHECK_OPENGL_ERROR()
+{
+    GLenum  error;
+    while( (error = glGetError()) != GL_NO_ERROR)
+    {
+        printf( "[%s:%d] '%s' failed with error %s\n",
+                __FILE__, __LINE__, "asfd",
+                gluErrorString(error) );
+   }
+}
 
 /*
  * gl* Macros
@@ -56,7 +74,7 @@ void popGlState();
 void startPicking(int x, int y, float perspective[4]);
 int stopPicking();
 void processHits(GLint hits, int **ppNamesRet, int *pNumNamesRet);
-int unprojectPixel(int x, int y, GLdouble point[], GLfloat z_scale = 1.0f);
+int unprojectPixel(int x, int y, GLdouble point[]);
 
 /*
  *  Axis Drawing

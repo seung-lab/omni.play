@@ -69,12 +69,7 @@ public:
                 const Vector2i loc =
                     OmView2dConverters::Get2PtsInPlane(*vec, viewType_);
 
-                OmSegID segID = 0;
-                if(ZY_VIEW == viewType_){
-                    segID = sliceData[chunkDim_ * loc.x + loc.y];
-                } else {
-                    segID = sliceData[chunkDim_ * loc.y + loc.x];
-                }
+                const OmSegID segID = sliceData[chunkDim_ * loc.y + loc.x];
 
                 if(segID){
                     ret->insert(segID);

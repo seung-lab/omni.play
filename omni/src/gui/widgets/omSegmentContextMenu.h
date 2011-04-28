@@ -7,14 +7,16 @@
 #include <QMenu>
 
 class OmViewGroupState;
+class OmSegmentPickPoint;
 
 class OmSegmentContextMenu : public QMenu {
 
 Q_OBJECT
 
 public:
-    void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs,
-                 const DataCoord coord = 0);
+    void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs);
+    void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs, const DataCoord coord);
+    void Refresh(const OmSegmentPickPoint& pickPoint, OmViewGroupState* vgs);
 
 protected:
     void addSelectionNames();
@@ -52,7 +54,9 @@ private:
     bool isValid() const;
     bool isUncertain() const;
 
-    OmViewGroupState * mViewGroupState;
+    void doRefresh();
+
+    OmViewGroupState* vgs_;
 };
 
 #endif

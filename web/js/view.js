@@ -7,29 +7,65 @@ omni.viewHeight = null;
 omni.viewWidth = null;
 omni.scaleRatio = 1;
 
+// the view canvas and window
+omni.canvas = {
+    windowWidth: 600,
+    windowHeight: 600,
+    canvasWidth: 1500,
+    canvasHeight: 1500
+}
+
+// current dimensions and information for tiles
+omni.tile = {
+    height: null,
+    width: null,
+    numRows: null,
+    numCols: null,
+    mip: null
+};
+
+// fake values
+omni.tile = {
+    height: 128,
+    width: 128,
+    numRows: 10,
+    numCols: 10,
+    mip: null
+};
+
+// omni project
+omni.project = {}
+
 var altScroll = false;
 var shiftKey = false;
 
 function init() {
-    getProjectData();
-
-    showCurrentSlice();
-
+    // getProjectData(loadProject);
+    loadProject();
     // add event handlers
     addViewEventHandlers();
-
 }
 
-function getProjectData() {
-    $.get('./metadata/project.php',
-          function(data){
-              omni.project = jQuery.parseJSON(data);
-          }
-         );
+function loadProject() {
+    // create the tiles for the current mip level
+    buildTilesTable();
+    showCurrentSlice();
+}
+
+function getProjectData(callback) {
+    $.post('./metadata/project.php', function(data){
+	omni.project = $.parseJSON(data);
+	if(callback) {
+	    callback.call();
+	}
+    }
+	  );
 }
 
 function addViewEventHandlers() {
-    $('#viewCanvas').draggable();
+    $('#viewCanvas').draggable({
+	drag: updateTiles
+    });
 
     $('#viewCanvasContainer').mousewheel(handleScroll);
 
@@ -54,6 +90,13 @@ function addViewEventHandlers() {
 	if(event.keyCode == shiftKeyCode) {
 	    shiftKey = true;
 	    $('#viewCanvasContainer').css('cursor', 'default');
+	    $('#joinButton').click(function(event) {
+		displayNextSlice();
+	    });
+	    $('#splitButton').click(function(event) {
+		displayPrevSlice();
+	    });
+
 	}
     });
     $(document).keyup(function(event) {
@@ -166,56 +209,167 @@ function handleZoomScroll(event, delta) {
 
 // display the current channel
 function showCurrentSlice() {
+	return;
     var channelImgUrl = './engine/channel.php?slice_num=' + omni.sliceNum;
     var segmentationImgUrl = './engine/segmentation.php?slice_num=' + omni.sliceNum;
 
     // set dimensions
     var img = new Image();
     img.onload = function() {
-	$('#viewCanvas').css('width', this.width * omni.scaleRatio);
-	$('#viewCanvas').css('height', this.height * omni.scaleRatio);
+		$('#viewCanvas').css('width', this.width * omni.scaleRatio);
+		$('#viewCanvas').css('height', this.height * omni.scaleRatio);
 
-	$('#channelCanvas').css('width', this.width * omni.scaleRatio);
-	$('#channelCanvas').css('height', this.height * omni.scaleRatio);
+		$('#channelCanvas').css('width', this.width * omni.scaleRatio);
+		$('#channelCanvas').css('height', this.height * omni.scaleRatio);
 
-	$('#segmentationCanvas').css('width', this.width * omni.scaleRatio);
-	$('#segmentationCanvas').css('height', this.height * omni.scaleRatio);
+		$('#segmentationCanvas').css('width', this.width * omni.scaleRatio);
+		$('#segmentationCanvas').css('height', this.height * omni.scaleRatio);
 
-	omni.viewHeight = this.height;
-	omni.viewWidth = this.width;
+		$('#tile').css('width', this.width * omni.scaleRatio);
+		$('#tile').css('height', this.height * omni.scaleRatio);
 
-	$('#segmentationCanvas').css('background-image', 'url(' + segmentationImgUrl + ')');
+		omni.viewHeight = this.height;
+		omni.viewWidth = this.width;
+
+		$('#segmentationCanvas').css('background-image', 'url(' + segmentationImgUrl + ')');
     }
 
     img.src = segmentationImgUrl;
 
     var channelImg = new Image();
     channelImg.onload = function() {
-	$('#channelCanvas').css('background-image', 'url(' + channelImgUrl + ')');
+		$('#channelCanvas').css('background-image', 'url(' + channelImgUrl + ')');
     }
     channelImg.src = channelImgUrl;
 }
+
+
+// build a tiles table
+function buildTilesTable() {
+    if(!isSet(omni.tile.height) || !isSet(omni.tile.width) || !isSet(omni.tile.numRows) || !isSet(omni.tile.numCols)) {
+		return false;
+    }
+    var channelHtml = '<div class="tiles"><table cellpadding="0" cellspacing="0"><tbody>';
+    var segmentationHtml = '<div class="tiles"><table cellpadding="0" cellspacing="0"><tbody>';
+    for(var i = 1; i <= omni.tile.numRows; i++) {
+		channelHtml += '<tr>';
+		segmentationHtml += '<tr>';
+		for(var j = 1; j <= omni.tile.numCols; j++) {
+			channelHtml += '<td><div id="channel-tile-' + i + '-' + j + '" class="tile"></div></td>';
+			segmentationHtml += '<td><div id="segmentation-tile-' + i + '-' + j + '" class="tile"></div></td>';
+		}
+		channelHtml += '</tr>';
+		segmentationHtml + '</tr>';
+    }
+    channelHtml += '</tbody></table></div>';
+    segmentationHtml += '</tbody></table></div>';
+    // put it in channelCanvas and segmentationCanvas
+    $('#channelCanvas').html(channelHtml);
+    $('#segmentationCanvas').html(segmentationHtml);
+
+    $('.tile').css('width', omni.tile.width + 'px');
+    $('.tile').css('height', omni.tile.height + 'px');
+}
+
+
+// updates the tiles as the user moves the draggable canvas
+function updateTiles(event, ui) {
+    var ids = getVisibleTileIds(event, ui);
+	// AlertPropertyNames(ids);
+    $('#__visibles').val(ids);
+    var channelIds = '';
+    var segmentationIds = '';
+	var x, y;    
+	for(var key in ids) {
+//	channelIds += '#channel-tile-' + ids[key] + ',';
+//	segmentationIds += '#segmentation-tile-' + ids[key] + ',';
+        channelId = '#channel-tile-' + ids[key].top + '-' + ids[key].left;
+		// PrintText(channelId);
+        segmentationId = '#segmentation-tile-' + ids[key].top + '-' + ids[key].left;
+		x = ids[key].left - 1;
+		y = ids[key].top - 1;
+        $(channelId).css('background-image', 'url(engine/channel_tile.php?slice_num=75&tileX=' + x + '&tileY=' + y + ')');
+        $(segmentationId).css('background-image', 'url(engine/segmentation_tile.php?slice_num=75&tileX=' + x + '&tileY=' + y + ')');
+    }
+//    $(channelIds).addClass('tile_bg');
+//    $(segmentationIds).addClass('tile_bg');
+}
+
+
+
+// get a list of tile ids that are visible based on the current position of the canvas
+function getVisibleTileIds() {
+    var canvasPos = {
+	top: parseInt($('#viewCanvas')[0].style.top),
+	left: parseInt($('#viewCanvas')[0].style.left)
+    };
+    var top = Math.ceil(-canvasPos.top / omni.tile.height);
+    // $('#__top').val(canvasPos.top + ' : ' + top);
+    // if(top < 0) {
+    // 	top = 0;
+    // }
+    var left = Math.ceil(-canvasPos.left / omni.tile.width);
+    // $('#__left').val(canvasPos.left + ' : ' + left);
+    // if(left < 0) {
+    // 	left = 0;
+    // }
+    var bottom = Math.floor((omni.canvas.canvasHeight - omni.canvas.windowHeight - (-canvasPos.top)) / omni.tile.height)
+    // $('#__top').val(bottom);
+	if(bottom < 0) {
+		bottom = omni.tile.numRows;
+	}
+    var right = Math.floor((omni.canvas.canvasWidth - omni.canvas.windowWidth - (-canvasPos.left)) / omni.tile.width)
+	if(right < 0) {
+		right = omni.tile.numCols;
+	}
+    // $('#__left').val(right);
+
+    $('#__top').val(top + ' : ' + left);
+    $('#__left').val(bottom + ' : ' + right);
+
+    var ids= [];
+
+    for(var i = 0; i <= (bottom - top); i++) {
+		for(var j = 0; j <= (right - left); j++) {
+			ids.push({
+				top: top + i,
+				left: left + j
+			})
+		}
+    }
+
+    return ids;
+}
+
+
+// converts tile coordinates to tile id
+function tileCoordToId(top, left) {
+    var id = (top - 1) * omni.tile.numCols + left;
+    return id;
+}
+
+
 
 // handle selecting segment
 function handleSelectSegment(event) {
     // AlertPropertyNames(event);
     // AlertPropertyNames(event.originalEvent);
     $.get('./actions/select_segment.php',
-          { x: event.offsetX,//event.layerX,
-            y: event.offsetY,//event.layerY,
-            slice_num: omni.sliceNum,
-            h: $('#segmentationCanvas').height(),
-            w: $('#segmentationCanvas').width()
-          },
-          function(uuid){
+	  { x: event.offsetX,//event.layerX,
+	    y: event.offsetY,//event.layerY,
+	    slice_num: omni.sliceNum,
+	    h: $('#segmentationCanvas').height(),
+	    w: $('#segmentationCanvas').width()
+	  },
+	  function(uuid){
 	      var segmentationImgUrl = './engine/segmentation.php?get_uuid=' + uuid;
-              $('<img />')
-                  .attr('src', segmentationImgUrl )
-                  .load(function(){
+	      $('<img />')
+		  .attr('src', segmentationImgUrl )
+		  .load(function(){
 		      $('#segmentationCanvas').css('background-image', 'url(' + segmentationImgUrl + ')');
-                  });
-          }
-         );
+		  });
+	  }
+	 );
 }
 
 // segmentation slider
@@ -234,13 +388,13 @@ function handleSegmentationAlphaSlide(event, ui) {
 function handleThresholdSlide(event, ui) {
     var thresholdVal = $(this).slider('option', 'value');
     $.get('./actions/change_threshold.php',
-          { segmentationID: 1,
-            threshold: thresholdVal
-          },
-          function(data){
-              alert(data);
-          }
-         );
+	  { segmentationID: 1,
+	    threshold: thresholdVal
+	  },
+	  function(data){
+	      alert(data);
+	  }
+	 );
 }
 
 // toggle loading new view

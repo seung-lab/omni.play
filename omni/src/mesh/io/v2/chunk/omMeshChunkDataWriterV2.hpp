@@ -100,7 +100,7 @@ private:
         }
 
         if(fileDidNotExist){
-            file.resize(defaultFileSizeMB * BYTES_PER_MB);
+            file.resize(defaultFileSizeMB * om::math::bytesPerMB);
         }
 
         curEndOfFile_ = file.size();

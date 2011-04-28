@@ -8,10 +8,20 @@
 #include "tiles/omTileTypes.hpp"
 #include "zi/omUtility.h"
 
+#include <QGLContext>
+
 class OmOpenGLTileDrawer {
+private:
+    QGLContext const* context_;
+
 public:
+    OmOpenGLTileDrawer()
+    {}
+
     void DrawTiles(std::deque<OmTileAndVertices>& tilesToDraw)
     {
+        context_ = QGLContext::currentContext();
+
         FOR_EACH(iter, tilesToDraw)
         {
             drawTile(iter->tile->GetTexture(),
@@ -27,6 +37,11 @@ private:
     {
         if(texture.NeedToBuildTexture()){
             doBindTileDataToGLid(texture);
+
+        } else {
+            // if contexts are different, textureID contained in OmTextureID is
+            //   for the WRONG OpenGL context
+            assert(context_ == texture.Context());
         }
 
         glBindTexture(GL_TEXTURE_2D, texture.GetTextureID());
@@ -99,7 +114,7 @@ private:
                      texture.GetTileData()
             );
 
-        texture.TextureBindComplete(textureID);
+        texture.TextureBindComplete(context_, textureID);
     }
 };
 

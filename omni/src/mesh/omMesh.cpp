@@ -6,14 +6,14 @@
 #include "mesh/omMesh.h"
 #include "mesh/omMeshManager.h"
 #include "system/cache/omMeshCache.h"
-#include "system/omGarbage.h"
+#include "system/omOpenGLGarbageCollector.hpp"
 
 static const GLuint NULL_VBO_ID = 0;
 
 OmMesh::OmMesh(OmSegmentation* seg,
-                     const OmMeshCoord& coord,
-                     OmMeshManager* pMipMeshManager,
-                     OmMeshCache* cache)
+               const OmMeshCoord& coord,
+               OmMeshManager* pMipMeshManager,
+               OmMeshCache* cache)
     : segmentation_(seg)
     , cache_(cache)
     , meshMan_(pMipMeshManager)
@@ -28,7 +28,7 @@ OmMesh::OmMesh(OmSegmentation* seg,
 OmMesh::~OmMesh()
 {
     if(displayList_){
-        OmGarbage::assignOmGenlistId(*displayList_);
+        OmOpenGLGarbageCollector::AddDisplayListID(context_, *displayList_);
     }
 }
 
@@ -49,10 +49,10 @@ bool OmMesh::isVbo()
         (NULL_VBO_ID != vertexIndexDataVboId_);
 }
 
-void OmMesh::createVbo()
+bool OmMesh::createVbo()
 {
     if(!hasData_){
-        return;
+        return false;
     }
 
     if(isVbo()){
@@ -65,11 +65,21 @@ void OmMesh::createVbo()
                                  GL_ARRAY_BUFFER_ARB,
                                  GL_STATIC_DRAW_ARB);
 
+    if(!vertexDataVboId_){
+        return false;
+    }
+
     //create VBO for the vertex index data
     vertexIndexDataVboId_ = createVbo(data_->VertexIndex(),
                                       data_->VertexIndexNumBytes(),
                                       GL_ARRAY_BUFFER_ARB,
                                       GL_STATIC_DRAW_ARB);
+
+    if(!vertexIndexDataVboId_){
+        return false;
+    }
+
+    return true;
 }
 
 void OmMesh::deleteVbo()
@@ -85,12 +95,17 @@ void OmMesh::deleteVbo()
     vertexIndexDataVboId_ = NULL_VBO_ID;
 }
 
-void OmMesh::makeDisplayList()
+void OmMesh::makeDisplayList(QGLContext const* context)
 {
+    context_ = context;
+
     displayList_ = glGenLists(1);
+
     glNewList(*displayList_, GL_COMPILE);
 
-    createVbo();
+    if(!createVbo()){
+        return;
+    }
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -158,14 +173,14 @@ void OmMesh::makeDisplayList()
     data_.reset();
 }
 
-void OmMesh::Draw()
+void OmMesh::Draw(QGLContext const* context)
 {
     if(!hasData_){
         return;
     }
 
     if(!displayList_){
-        makeDisplayList();
+        makeDisplayList(context);
     }
 
     glCallList(*displayList_);

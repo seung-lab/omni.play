@@ -53,9 +53,9 @@ OmChunkCoord OmChunkCoord::ParentCoord() const
 /* Primary coordinate in the sibling octal */
 OmChunkCoord OmChunkCoord::PrimarySiblingCoord() const
 {
-    int prim_x = ROUNDDOWN(Coordinate.x, 2);
-    int prim_y = ROUNDDOWN(Coordinate.y, 2);
-    int prim_z = ROUNDDOWN(Coordinate.z, 2);
+    int prim_x = om::math::roundDown(Coordinate.x, 2);
+    int prim_y = om::math::roundDown(Coordinate.y, 2);
+    int prim_z = om::math::roundDown(Coordinate.z, 2);
 
     return OmChunkCoord(Level, prim_x, prim_y, prim_z);
 }

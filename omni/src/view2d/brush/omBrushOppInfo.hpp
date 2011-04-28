@@ -11,7 +11,7 @@ class OmBrushOppInfoFactory {
 private:
     static int brushDiameterForMip(OmView2dState* state)
     {
-        const int factor = om::pow2int(state->getMipLevel());
+        const int factor = om::math::pow2int(state->getMipLevel());
         const int brushDia = state->getBrushSize()->Diameter();
         return brushDia * factor;
     }

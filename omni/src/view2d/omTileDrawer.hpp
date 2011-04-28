@@ -2,8 +2,8 @@
 #define OM_TILE_DRAWER_H
 
 #include "common/om.hpp"
-#include "system/omGarbage.h"
 #include "tiles/omTileTypes.hpp"
+#include "view2d/om2dPreferences.hpp"
 #include "view2d/omBlockingGetTiles.hpp"
 #include "view2d/omCalcTileCoordsDownsampled.hpp"
 #include "view2d/omOnScreenTileCoords.h"
@@ -16,8 +16,7 @@
 
 class OmTileDrawer{
 public:
-    OmTileDrawer(om::shared_ptr<OmView2dState> state,
-                 const ViewType viewType)
+    OmTileDrawer(OmView2dState* state, const ViewType viewType)
         : state_(state)
         , viewType_(viewType)
         , blockingRedraw_(false)
@@ -43,33 +42,13 @@ public:
 
         OmMipVolume* vol = state_->getVol();
 
-        if(CHANNEL == vol->getVolumeType())
-        {
-            OmChannel* chan = reinterpret_cast<OmChannel*>(vol);
-
-            const std::vector<OmFilter2d*> filters = chan->GetFilters();
-
-            FOR_EACH(iter, filters){
-                filterDraw(*iter);
-            }
-
-            draw(chan);
+        if(CHANNEL == vol->getVolumeType()){
+            drawChannelAndFilters(vol);
 
         } else {
 
             OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(vol);
             draw(seg);
-        }
-
-        if(!IsDrawComplete() || state_->getScribbling()){
-            OmTileCache::SetDrawerActive(this);
-
-        } else {
-            OmTileCache::SetDrawerDone(this);
-
-            if(!OmTileCache::AreDrawersActive()){
-                OmGarbage::safeCleanTextureIds();
-            }
         }
     }
 
@@ -85,12 +64,12 @@ public:
         return 0 == tileCountIncomplete_;
     }
 
-    const om::shared_ptr<OmView2dState>& GetState(){
+    OmView2dState* GetState(){
         return state_;
     }
 
 private:
-    om::shared_ptr<OmView2dState> state_;
+    OmView2dState* state_;
     const ViewType viewType_;
 
     bool blockingRedraw_;
@@ -106,8 +85,9 @@ private:
 
     void reset()
     {
-        // keep old tiles around to make sure OpenGL texture IDs are not cleared until
-        //   the card is done with them...
+        // keep tiles from previous draw around; this ensures we don't clear
+        //  their OpenGL texture IDs before the card is done drawing the textures
+        //  (this can occur if other threads clear the cache of all tiles...)
         oldTilesToDraw_.swap(tilesToDraw_);
         tilesToDraw_ = std::deque<OmTileAndVertices>();
 
@@ -118,10 +98,6 @@ private:
     template <typename V>
     void draw(V* vol)
     {
-        if(!vol->IsBuilt()){
-            return;
-        }
-
         determineWhichTilesToDraw(vol);
         openglTileDrawer_->DrawTiles(tilesToDraw_);
     }
@@ -202,30 +178,55 @@ private:
         return ret;
     }
 
-    bool drawFromFilter(OmFilter2d* filter)
+    void drawChannelAndFilters(OmMipVolume* vol)
     {
-        const om::FilterType filterType = filter->FilterType();
+        const bool haveAlphaGoToBlack = Om2dPreferences::HaveAlphaGoToBlack();
 
-        if(om::OVERLAY_NONE == filterType ||
-           filter->GetAlpha() < 0.05) // don't bother drawing segmentation if user won't see it
+        OmChannel* chan = reinterpret_cast<OmChannel*>(vol);
+
+        bool drawChannel = false;
+
+        const std::vector<OmFilter2d*> filters = chan->GetFilters();
+
+        FOR_EACH(iter, filters)
         {
-            return false;
+            OmFilter2d* filter = *iter;
 
-        } else if (om::OVERLAY_CHANNEL == filterType) {
-            OmChannel* chann = filter->GetChannel();
-            draw(chann);
-            return false;
+            const om::FilterType filterType = filter->FilterType();
+
+            if(om::OVERLAY_NONE == filterType ||
+               filter->GetAlpha() < 0.05) // don't bother drawing segmentation if user won't see it
+            {
+                drawChannel = true;
+                continue;
+
+            }
+
+            if (om::OVERLAY_CHANNEL == filterType)
+            {
+                drawChannel = true;
+                OmChannel* chann = filter->GetChannel();
+                draw(chann);
+                continue;
+            }
+
+            OmSegmentation* seg = filter->GetSegmentation();
+            draw(seg);
+            const bool shouldBrightenAlpha = seg->Segments()->GetSelectedSegmentIds().empty();
+            om::opengl_::SetupGLblendColor(haveAlphaGoToBlack, filter->GetAlpha(),
+                                           shouldBrightenAlpha);
+
+            if(filter->GetAlpha() < 0.95 || !haveAlphaGoToBlack)
+            {
+                // only draw channel if user can see it (low enough alpha,
+                //     or user wants channel to disappear at high alpha)
+                drawChannel = true;
+            }
         }
 
-        OmSegmentation* seg = filter->GetSegmentation();
-        draw(seg);
-        return seg->Segments()->GetSelectedSegmentIds().empty();
-    }
-
-    void filterDraw(OmFilter2d* filter)
-    {
-        const bool shouldBrightenAlpha = drawFromFilter(filter);
-        om::opengl_::SetupGLblendColor(filter->GetAlpha(), shouldBrightenAlpha);
+        if(drawChannel){
+            draw(chan);
+        }
     }
 };
 

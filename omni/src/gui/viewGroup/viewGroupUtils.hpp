@@ -3,6 +3,8 @@
 
 #include "common/omCommon.h"
 #include "gui/viewGroup/viewGroupWidgetInfo.h"
+#include "gui/widgets/omTellInfo.hpp"
+#include "utility/dataWrappers.h"
 
 #include <QtGui>
 
@@ -164,6 +166,39 @@ public:
         }
 
         return biggest;
+    }
+
+    bool canShowChannel(const OmID channelID)
+    {
+        ChannelDataWrapper cdw(channelID);
+        if(cdw.IsChannelValid())
+        {
+            if(cdw.IsBuilt()){
+                return true;
+
+            } else {
+                OmTellInfo("channel " + om::string::num(channelID) + " is not built");
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    bool canShowSegmentation(const OmID segmentationID)
+    {
+        SegmentationDataWrapper sdw(segmentationID);
+        if(sdw.IsSegmentationValid())
+        {
+            if(sdw.IsBuilt()){
+                return true;
+            } else {
+                OmTellInfo("segmentation " + om::string::num(segmentationID) + " is not built");
+                return false;
+            }
+        }
+
+        return false;
     }
 
     void wireDockWithView2d(OmView2d* w,

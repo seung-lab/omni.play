@@ -17,7 +17,7 @@
 namespace bi = boost::interprocess;
 
 static const uint64_t InitialNumMB = 10;
-static const uint64_t InitialNumBytes = BYTES_PER_MB * InitialNumMB;
+static const uint64_t InitialNumBytes = om::math::bytesPerMB * InitialNumMB;
 static const uint64_t MinNumBytesBeforeGrowing = 20000;
 
 template <class KEY, class VAL>

@@ -2,7 +2,6 @@
 #define DEND_TOOLBAR_H
 
 #include "common/omCommon.h"
-#include "gui/widgets/omWidget.hpp"
 
 #include <QtGui>
 
@@ -12,6 +11,7 @@ class SegmentationDataWrapper;
 class GraphTools;
 class ValidationGroup;
 class DisplayTools;
+class OmWidget;
 
 class DendToolBar : public QToolBar {
 Q_OBJECT
@@ -23,7 +23,6 @@ public:
     void updateGui();
 
     void SetSplittingOff();
-    void ShowSplitterBusy(const bool showBusy);
     void SetCuttingOff();
 
     void RefreshThreshold();
