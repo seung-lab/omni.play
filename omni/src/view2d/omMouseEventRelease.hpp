@@ -33,13 +33,16 @@ public:
         case om::tool::PAN:
         case om::tool::ZOOM:
         case om::tool::FILL:
+            break;
+
         case om::tool::PAINT:
         case om::tool::ERASE:
+            state_->OverrideToolModeForPan(false);
             break;
 
         case om::tool::SELECT:
             ElementListBox::PopulateLists();
-            state_->AmPanningInSelectMode(false);
+            state_->OverrideToolModeForPan(false);
             break;
         }
     }

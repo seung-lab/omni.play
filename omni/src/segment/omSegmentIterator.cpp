@@ -57,7 +57,10 @@ OmSegment* OmSegmentIterator::getNextSegment()
     OmSegment* segRet = segs_.back();
     segs_.pop_back();
 
-    FOR_EACH(iter, segRet->GetChildren() ){
+    const segChildCont_t& children = segRet->GetChildren();
+
+    FOR_EACH(iter, children)
+    {
         segs_.push_back(*iter);
     }
 

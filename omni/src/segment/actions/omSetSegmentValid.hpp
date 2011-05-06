@@ -67,9 +67,7 @@ private:
     {
         const int edgeNum = seg->getEdgeNumber();
 
-        if(-1 == edgeNum &&
-           !seg->getCustomMergeEdge().isValid())
-        {
+        if(-1 == edgeNum){
             return;
         }
 

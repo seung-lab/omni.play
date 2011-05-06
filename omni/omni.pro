@@ -268,6 +268,7 @@ HEADERS +=  \
 	src/gui/inspectors/inspectorProperties.h \
 	src/gui/inspectors/segmentInspector.h \
 	src/gui/inspectors/segmentation/buildPage/pageBuilder.hpp \
+	src/gui/inspectors/segmentation/buildPage/segVolBuilder.hpp \
 	src/gui/inspectors/segmentation/buildPage/sourceBox.hpp \
 	src/gui/inspectors/segmentation/exportPage/buttons/addSegmentButton.h \
 	src/gui/inspectors/segmentation/exportPage/buttons/exportButton.hpp \
@@ -282,7 +283,7 @@ HEADERS +=  \
 	src/gui/inspectors/segmentation/segmentationInspector.hpp \
 	src/gui/inspectors/ui_chanInspector.h \
 	src/gui/inspectors/volInspector.h \
-	src/gui/mainWindow/inspectorWidget.h \
+	src/gui/mainWindow/centralWidget.hpp \
 	src/gui/mainWindow/mainWindow.h \
 	src/gui/menubar.h \
 	src/gui/meshPreviewer/meshPreviewer.hpp \
@@ -310,36 +311,41 @@ HEADERS +=  \
 	src/gui/segmentLists/elementListBoxImpl.hpp \
 	src/gui/segmentLists/omSegmentListWidget.h \
 	src/gui/segmentLists/segmentListKeyPressEventListener.h \
-	src/gui/toolbars/dendToolbar/alphaVegasButton.hpp \
-	src/gui/toolbars/dendToolbar/breakButton.h \
-	src/gui/toolbars/dendToolbar/breakThresholdGroup.h \
-	src/gui/toolbars/dendToolbar/cutButton.h \
-	src/gui/toolbars/dendToolbar/dendToolbar.h \
-	src/gui/toolbars/dendToolbar/displayTools/brightnessSpinBox.hpp \
-	src/gui/toolbars/dendToolbar/displayTools/contrastSpinBox.hpp \
-	src/gui/toolbars/dendToolbar/displayTools/displayTools.h \
-	src/gui/toolbars/dendToolbar/displayTools/dust3DthresholdGroup.hpp \
-	src/gui/toolbars/dendToolbar/displayTools/gammaSpinBox.hpp \
-	src/gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxBase.hpp \
-	src/gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxX.hpp \
-	src/gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxY.hpp \
-	src/gui/toolbars/dendToolbar/displayTools/sliceDepthSpinBoxZ.hpp \
-	src/gui/toolbars/dendToolbar/graphTools.h \
-	src/gui/toolbars/dendToolbar/groupButtonTag.h \
-	src/gui/toolbars/dendToolbar/joinButton.h \
-	src/gui/toolbars/dendToolbar/setNotUncertain.hpp \
-	src/gui/toolbars/dendToolbar/setNotValid.hpp \
-	src/gui/toolbars/dendToolbar/setUncertain.hpp \
-	src/gui/toolbars/dendToolbar/setValid.hpp \
-	src/gui/toolbars/dendToolbar/showValidatedButton.h \
-	src/gui/toolbars/dendToolbar/splitButton.h \
-	src/gui/toolbars/dendToolbar/thresholdGroup.h \
-	src/gui/toolbars/dendToolbar/validationGroup.h \
+	src/gui/sidebars/left/inspectorWidget.h \
+	src/gui/sidebars/right.hpp \
+	src/gui/sidebars/right/alphaVegasButton.hpp \
+	src/gui/sidebars/right/breakButton.h \
+	src/gui/sidebars/right/breakThresholdGroup.h \
+	src/gui/sidebars/right/cutButton.h \
+	src/gui/sidebars/right/dendToolbar.h \
+	src/gui/sidebars/right/displayTools/2d/2dpage.hpp \
+	src/gui/sidebars/right/displayTools/2d/brightnessSpinBox.hpp \
+	src/gui/sidebars/right/displayTools/2d/contrastSpinBox.hpp \
+	src/gui/sidebars/right/displayTools/2d/gammaSpinBox.hpp \
+	src/gui/sidebars/right/displayTools/3d/3dpage.hpp \
+	src/gui/sidebars/right/displayTools/3d/dust3DthresholdGroup.hpp \
+	src/gui/sidebars/right/displayTools/displayTools.h \
+	src/gui/sidebars/right/displayTools/sliceDepthSpinBoxBase.hpp \
+	src/gui/sidebars/right/displayTools/sliceDepthSpinBoxX.hpp \
+	src/gui/sidebars/right/displayTools/sliceDepthSpinBoxY.hpp \
+	src/gui/sidebars/right/displayTools/sliceDepthSpinBoxZ.hpp \
+	src/gui/sidebars/right/graphTools.h \
+	src/gui/sidebars/right/groupButtonTag.h \
+	src/gui/sidebars/right/joinButton.h \
+	src/gui/sidebars/right/setNotUncertain.hpp \
+	src/gui/sidebars/right/setNotValid.hpp \
+	src/gui/sidebars/right/setUncertain.hpp \
+	src/gui/sidebars/right/setValid.hpp \
+	src/gui/sidebars/right/showValidatedButton.h \
+	src/gui/sidebars/right/splitButton.h \
+	src/gui/sidebars/right/thresholdGroup.h \
+	src/gui/sidebars/right/validationGroup.h \
 	src/gui/toolbars/mainToolbar/filterToBlackCheckbox.hpp \
 	src/gui/toolbars/mainToolbar/filterWidget.hpp \
 	src/gui/toolbars/mainToolbar/filterWidgetImpl.hpp \
 	src/gui/toolbars/mainToolbar/mainToolbar.h \
 	src/gui/toolbars/mainToolbar/navAndEditButtonGroup.h \
+	src/gui/toolbars/mainToolbar/openDualViewButton.hpp \
 	src/gui/toolbars/mainToolbar/openSingleViewButton.hpp \
 	src/gui/toolbars/mainToolbar/openViewGroupButton.hpp \
 	src/gui/toolbars/mainToolbar/refreshVolumeButton.h \
@@ -349,6 +355,7 @@ HEADERS +=  \
 	src/gui/toolbars/toolbarManager.h \
 	src/gui/updateSegmentPropertiesImpl.hpp \
 	src/gui/viewGroup/viewGroup.h \
+	src/gui/viewGroup/viewGroupMainWindowUtils.hpp \
 	src/gui/viewGroup/viewGroupUtils.hpp \
 	src/gui/viewGroup/viewGroupWidgetInfo.h \
 	src/gui/widgets/omAskQuestion.hpp \
@@ -368,8 +375,6 @@ HEADERS +=  \
 	src/headless/headless.h \
 	src/headless/headlessImpl.hpp \
 	src/mainpage.h \
-	src/mesh/detail/MipChunkMeshCollector.hpp \
-	src/mesh/detail/TriStripCollector.hpp \
 	src/mesh/drawer/omFindChunksToDraw.hpp \
 	src/mesh/drawer/omMeshDrawPlanner.hpp \
 	src/mesh/drawer/omMeshDrawer.h \
@@ -395,6 +400,11 @@ HEADERS +=  \
 	src/mesh/io/v2/omMeshWriterV2.hpp \
 	src/mesh/io/v2/omRingBuffer.hpp \
 	src/mesh/io/v2/threads/omMeshWriterTaskV2.hpp \
+	src/mesh/mesher/MeshCollector.hpp \
+	src/mesh/mesher/TriStripCollector.hpp \
+	src/mesh/mesher/omMesherProgress.hpp \
+	src/mesh/mesher/omMesherSetup.hpp \
+	src/mesh/mesher/ziMesher.hpp \
 	src/mesh/omDrawOptions.h \
 	src/mesh/omMesh.h \
 	src/mesh/omMeshCoord.h \
@@ -403,7 +413,6 @@ HEADERS +=  \
 	src/mesh/omMeshParams.hpp \
 	src/mesh/omMeshTypes.h \
 	src/mesh/omVolumeCuller.h \
-	src/mesh/ziMesher.hpp \
 	src/network/client/omClient.hpp \
 	src/network/json/omJson.h \
 	src/network/json/omJsonTypes.hpp \
@@ -796,7 +805,6 @@ SOURCES +=  \
 	src/gui/inspectors/segmentInspector.cpp \
 	src/gui/inspectors/segmentation/exportPage/pageExport.cpp \
 	src/gui/inspectors/segmentation/pagesWidget.cpp \
-	src/gui/mainWindow/inspectorWidget.cpp \
 	src/gui/mainWindow/mainWindow.cpp \
 	src/gui/menubar.cpp \
 	src/gui/meshPreviewer/meshPreviewer.cpp \
@@ -812,16 +820,17 @@ SOURCES +=  \
 	src/gui/segmentLists/details/segmentListBase.cpp \
 	src/gui/segmentLists/elementListBox.cpp \
 	src/gui/segmentLists/omSegmentListWidget.cpp \
-	src/gui/toolbars/dendToolbar/breakButton.cpp \
-	src/gui/toolbars/dendToolbar/cutButton.cpp \
-	src/gui/toolbars/dendToolbar/dendToolbar.cpp \
-	src/gui/toolbars/dendToolbar/displayTools/displayTools.cpp \
-	src/gui/toolbars/dendToolbar/graphTools.cpp \
-	src/gui/toolbars/dendToolbar/groupButtonTag.cpp \
-	src/gui/toolbars/dendToolbar/joinButton.cpp \
-	src/gui/toolbars/dendToolbar/showValidatedButton.cpp \
-	src/gui/toolbars/dendToolbar/splitButton.cpp \
-	src/gui/toolbars/dendToolbar/validationGroup.cpp \
+	src/gui/sidebars/left/inspectorWidget.cpp \
+	src/gui/sidebars/right/breakButton.cpp \
+	src/gui/sidebars/right/cutButton.cpp \
+	src/gui/sidebars/right/dendToolbar.cpp \
+	src/gui/sidebars/right/displayTools/displayTools.cpp \
+	src/gui/sidebars/right/graphTools.cpp \
+	src/gui/sidebars/right/groupButtonTag.cpp \
+	src/gui/sidebars/right/joinButton.cpp \
+	src/gui/sidebars/right/showValidatedButton.cpp \
+	src/gui/sidebars/right/splitButton.cpp \
+	src/gui/sidebars/right/validationGroup.cpp \
 	src/gui/toolbars/mainToolbar/mainToolbar.cpp \
 	src/gui/toolbars/mainToolbar/navAndEditButtonGroup.cpp \
 	src/gui/toolbars/mainToolbar/refreshVolumeButton.cpp \

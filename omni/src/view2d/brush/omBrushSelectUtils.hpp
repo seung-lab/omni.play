@@ -40,7 +40,7 @@ public:
 
         selector.sendEvent();
 
-        // OmEvents::Redraw2d();
+        OmEvents::Redraw3d();
     }
 };
 

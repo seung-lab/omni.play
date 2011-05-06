@@ -45,6 +45,8 @@ private:
                 {
                     om::point2di p = {x,y};
                     pts.push_back(p);
+
+                    // std::cout << "adding pt: " << x << ", " << y << "\n";
                 }
             }
         }

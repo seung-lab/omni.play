@@ -2,12 +2,12 @@
 #define OM_MESH_IO_V2_HPP
 
 #include "common/omCommon.h"
-#include "mesh/detail/TriStripCollector.hpp"
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
 #include "mesh/io/v2/threads/omMeshWriterTaskV2.hpp"
+#include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/omMeshCoord.h"
 #include "mesh/omMeshManager.h"
 
@@ -24,8 +24,10 @@ public:
         , filePtrCache_(meshManager->FilePtrCache())
     {}
 
-    ~OmMeshWriterV2(){
+    ~OmMeshWriterV2()
+    {
         Join();
+        filePtrCache_->FlushMappedFiles();
     }
 
     void Join(){
@@ -53,8 +55,8 @@ public:
 
         if(allGood){
             std::cout << "all segments meshed!\n";
-        } else {
 
+        } else {
             std::cout << "\nERROR: some segments not meshed!\n";
             throw OmIoException("some segments not meshed");
         }

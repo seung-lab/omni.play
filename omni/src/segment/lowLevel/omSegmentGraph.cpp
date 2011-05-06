@@ -236,11 +236,11 @@ OmSegmentGraph::computeSegmentSizeWithChildren(OmSegment* inSeg)
 
         const int64_t segSize = segRet->size();
 
-        assert(segSize > 0);
+        assert(segSize >= 0);
 
         numVoxels += segSize;
 
-        assert(numVoxels > 0);
+        assert(numVoxels >= 0);
 
         ++numPieces;
     }

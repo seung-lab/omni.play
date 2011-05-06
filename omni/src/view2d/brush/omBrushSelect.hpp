@@ -10,10 +10,10 @@ public:
     static void SelectByClick(OmView2dState* state, const DataCoord& coord,
                               const om::AddOrSubtract addSegments)
     {
+        // std::cout << "mouse click data coord: " << coord << "\n";
+
         om::shared_ptr<OmBrushOppInfo> info =
             OmBrushOppInfoFactory::MakeOppInfo(state, coord, addSegments);
-
-        // std::cout << *info << ", " << coord << "\n";
 
         OmBrushSelectCircle circle(info);
 

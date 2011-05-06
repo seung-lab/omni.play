@@ -45,7 +45,7 @@ public:
         , lastDataPoint_(0,0)
         , location_(om::make_shared<OmView2dVolLocation>(vol, vgs, viewType))
         , brushSize_(OmStateManager::BrushSize())
-        , amPanningInSelectMode_(false)
+        , overrideToolModeForPan_(false)
         , segIDforPainting_(0)
     {
         setTotalViewport(size);
@@ -188,7 +188,21 @@ public:
         SetViewSliceOnPan();
     }
 
-    inline void ResetWindowState()
+    void SetIntialWindowState()
+    {
+        OmViewGroupView2dState* v2dstate = vgs_->View2dState();
+
+        if(v2dstate->GetInitialized())
+        {
+            OmTileCache::ClearAll(); // tile opengl contexts may have changed
+            return;
+        }
+
+        ResetWindowState();
+        v2dstate->SetInitialized();
+    }
+
+    void ResetWindowState()
     {
         static const NormCoord midPoint(0.5, 0.5, 0.5);
         const DataCoord depth = vol_->Coords().NormToDataCoord(midPoint);
@@ -416,12 +430,12 @@ public:
         return location_.get();
     }
 
-    inline bool AmPanningInSelectMode(){
-        return amPanningInSelectMode_;
+    inline bool OverrideToolModeForPan(){
+        return overrideToolModeForPan_;
     }
 
-    inline void AmPanningInSelectMode(const bool b){
-        amPanningInSelectMode_ = b;
+    inline void OverrideToolModeForPan(const bool b){
+        overrideToolModeForPan_ = b;
     }
 
     inline OmSegID GetSegIDForPainting(){
@@ -455,7 +469,7 @@ private:
 
     OmBrushSize *const brushSize_;
 
-    bool amPanningInSelectMode_;
+    bool overrideToolModeForPan_;
 
     OmSegID segIDforPainting_;
 };

@@ -50,14 +50,26 @@ private:
         }
     }
 
+    // Get() methods could be called from threads while main GUI thread is calling Set(...) methods
     zi::spinlock lock_;
+
+    bool wasInitialized_;
 
 public:
     OmViewGroupView2dState()
+        : wasInitialized_(false)
     {}
 
     ~OmViewGroupView2dState()
     {}
+
+    void SetInitialized(){
+        wasInitialized_ = true;
+    }
+
+    bool GetInitialized() const {
+        return wasInitialized_;
+    }
 
     inline Vector3f GetScaledSliceDepth() const
     {

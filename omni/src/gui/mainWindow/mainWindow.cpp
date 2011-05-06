@@ -3,7 +3,7 @@
 #include "common/omException.h"
 #include "gui/cacheMonitorDialog.h"
 #include "gui/groupsTable/groupsTable.h"
-#include "gui/mainWindow/inspectorWidget.h"
+#include "gui/sidebars/left/inspectorWidget.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/menubar.h"
 #include "gui/preferences/preferences.h"
@@ -23,6 +23,7 @@
 #include "system/omUndoStack.hpp"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
+#include "gui/mainWindow/centralWidget.hpp"
 
 MainWindow::MainWindow()
     : inspector_(NULL)
@@ -38,6 +39,11 @@ MainWindow::MainWindow()
     setDockOptions(QMainWindow::AllowNestedDocks | QMainWindow::AllowTabbedDocks);
     setAnimated(false);
 
+    setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
+    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+    setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
+    setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+
     setFocusPolicy(Qt::ClickFocus);
 
     loadingDock_ = new QFrame();
@@ -50,6 +56,9 @@ MainWindow::MainWindow()
 
     windowTitleClear();
     resize(1000, 1000);
+
+    om::mainwindow::centralWidget* centralWidget = new om::mainwindow::centralWidget(this);
+    setCentralWidget(centralWidget);
 
     updateReadOnlyRelatedWidgets();
 
@@ -294,11 +303,12 @@ void MainWindow::openInspector()
         inspector_->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
 
         inspectorDock_->setAllowedAreas(Qt::AllDockWidgetAreas);
+        inspectorDock_->setFeatures(QDockWidget::NoDockWidgetFeatures);
 
         inspector_->setParent(inspectorDock_.get());
         inspectorDock_->setWidget(inspector_);
 
-        addDockWidget(Qt::TopDockWidgetArea, inspectorDock_.get());
+        addDockWidget(Qt::LeftDockWidgetArea, inspectorDock_.get());
         mMenuBar->GetWindowMenu()->addAction(inspectorDock_->toggleViewAction());
 
     } catch(OmException& e) {
@@ -516,19 +526,4 @@ void MainWindow::addToolbarRight(QToolBar* b){
 
 void MainWindow::addToolbarTop(QToolBar* b){
     addToolBar(Qt::TopToolBarArea, b);
-}
-
-void MainWindow::resizeEvent(QResizeEvent* event)
-{
-    if(toolBarManager_){
-        toolBarManager_->WindowResized(QPoint(event->oldSize().width(),
-                                              event->oldSize().height()));
-    }
-}
-
-void MainWindow::moveEvent(QMoveEvent* event)
-{
-    if(toolBarManager_){
-        toolBarManager_->WindowMoved(event->oldPos());
-    }
 }

@@ -46,7 +46,7 @@ public:
                 break;
 
             case om::tool::SELECT:
-                if(controlKey_ || state_->AmPanningInSelectMode())
+                if(controlKey_ || state_->OverrideToolModeForPan())
                 {
                     // pan in select-mode
                     mousePan();
@@ -68,17 +68,33 @@ public:
                 break;
 
             case om::tool::PAINT:
-                if (state_->getScribbling()) {
-                    paint();
+                if(controlKey_ || state_->OverrideToolModeForPan())
+                {
+                    // pan in select-mode
+                    mousePan();
+                    OmEvents::Redraw3d();
+
+                } else{
+                    if (state_->getScribbling()) {
+                        paint();
+                    }
+                    state_->SetLastDataPoint(dataClickPoint_);
                 }
-                state_->SetLastDataPoint(dataClickPoint_);
                 break;
 
             case om::tool::ERASE:
-                if (state_->getScribbling()) {
-                    erase();
+                if(controlKey_ || state_->OverrideToolModeForPan())
+                {
+                    // pan in select-mode
+                    mousePan();
+                    OmEvents::Redraw3d();
+
+                } else{
+                    if (state_->getScribbling()) {
+                        erase();
+                    }
+                    state_->SetLastDataPoint(dataClickPoint_);
                 }
-                state_->SetLastDataPoint(dataClickPoint_);
                 break;
             }
         }

@@ -3,7 +3,7 @@
 
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/omMeshManager.h"
-#include "mesh/ziMesher.hpp"
+#include "mesh/mesher/ziMesher.hpp"
 #include "utility/fuzzyStdObjs.hpp"
 #include "utility/omStringHelpers.h"
 

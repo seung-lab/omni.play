@@ -25,6 +25,7 @@ private:
 
     OmThreadPool threadPool_;
 
+    // limit number of memory-mapped files
     OmRingBuffer<OmMeshChunkAllocTableV2> mappedFiles_;
 
 public:
@@ -47,6 +48,13 @@ public:
         threadPool_.stop();
     }
 
+    void FlushMappedFiles()
+    {
+        std::cout << "flushing mesh allocation tables..." << std::flush;
+        mappedFiles_.Clear();
+        std::cout << "done\n";
+    }
+
     void AddTaskBack(const om::shared_ptr<zi::runnable> job){
         threadPool_.push_back(job);
     }
@@ -63,10 +71,12 @@ public:
     {
         zi::rwmutex::write_guard g(lock_);
 
-        if(!tables_.count(coord)){
-            tables_[coord] =
-                om::make_shared<OmMeshChunkAllocTableV2>(this, segmentation_, coord, threshold_);
+        if(!tables_.count(coord))
+        {
+            tables_[coord] = om::make_shared<OmMeshChunkAllocTableV2>(this, segmentation_,
+                                                                      coord, threshold_);
         }
+
         return tables_[coord].get();
     }
 
@@ -74,10 +84,12 @@ public:
     {
         zi::rwmutex::write_guard g(lock_);
 
-        if(!data_.count(coord)){
-            data_[coord] =
-                om::make_shared<OmMeshChunkDataWriterV2>(segmentation_, coord, threshold_);
+        if(!data_.count(coord))
+        {
+            data_[coord] = om::make_shared<OmMeshChunkDataWriterV2>(segmentation_,
+                                                                    coord, threshold_);
         }
+
         return data_[coord].get();
     }
 };

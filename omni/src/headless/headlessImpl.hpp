@@ -52,7 +52,7 @@ public:
 
         OmBuildSegmentation bs;
         bs.addFileNameAndPath(file);
-        bs.BuildAndMeshSegmentation(om::BLOCKING);
+        bs.BuildAndMeshSegmentation();
     }
 
     static void importHDF5seg(const std::string& file) {
@@ -67,14 +67,14 @@ public:
 
         OmBuildSegmentation bs;
         bs.addFileNameAndPath(file);
-        bs.BuildImage(om::BLOCKING);
+        bs.BuildImage();
     }
 
     static void loadHDF5seg(const QString file, OmID& segmentationID_)
     {
         OmBuildSegmentation bs;
         bs.addFileNameAndPath(file);
-        bs.BuildImage(om::BLOCKING);
+        bs.BuildImage();
 
         segmentationID_ = bs.GetDataWrapper().getID();
     }
@@ -293,7 +293,7 @@ public:
     {
         const SegmentationDataWrapper sdw(segmentationID);
         OmBuildSegmentation bs(sdw);
-        bs.BuildMesh(om::BLOCKING);
+        bs.BuildMesh();
     }
 
     static void ImportWatershed(const QString& fnp)

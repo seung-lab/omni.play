@@ -27,15 +27,12 @@ public:
         }
     }
 
-    void updateGui(){
-        OmEvents::Redraw2d();
-    }
-
 private Q_SLOTS:
     void valueChanged()
     {
         actUponValueChange(getGUIvalue());
-        updateGui();
+        OmEvents::Redraw2d();
+        OmEvents::Redraw3d();
     }
 
 protected:

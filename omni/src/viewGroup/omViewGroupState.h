@@ -13,6 +13,7 @@ class OmTileCoord;
 class OmViewGroupView2dState;
 class OmZoomLevel;
 class SegmentDataWrapper;
+class SegmentationDataWrapper;
 class ToolBarManager;
 class ViewGroup;
 template <class> class OmPooledTile;
@@ -20,7 +21,8 @@ template <class> class OmPooledTile;
 class OmViewGroupState : public OmManageableObject {
 public:
     OmViewGroupState(MainWindow* mw);
-    virtual ~OmViewGroupState();
+
+    ~OmViewGroupState();
 
     ViewGroup* GetViewGroup(){
         return viewGroup_.get();
@@ -83,6 +85,9 @@ public:
     OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*const,
                                          const int tileDim,
                                          const OmTileCoord&);
+
+    SegmentationDataWrapper Segmentation() const;
+
 private:
     boost::scoped_ptr<ViewGroup> viewGroup_;
     boost::scoped_ptr<OmViewGroupView2dState> view2dState_;
@@ -90,6 +95,8 @@ private:
     boost::scoped_ptr<OmZoomLevel> zoomLevel_;
     boost::scoped_ptr<OmSplitting> splitting_;
     boost::scoped_ptr<OmCutting> cutting_;
+
+    boost::scoped_ptr<SegmentationDataWrapper> sdw_;
 
     float mBreakThreshold;
     uint64_t mDustThreshold;

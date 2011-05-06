@@ -37,25 +37,15 @@ public:
     }
 
     template <typename C>
-    void Set(C& segs, const bool isValid)
+    void Set(const C& segs, const bool isValid)
     {
-        if(isValid)
-        {
-            const uint32_t groupNum = maxGroupNum_.inc();
-            FOR_EACH(iter, segs)
-            {
-                OmSegment* seg = *iter;
-                const OmSegID segID = seg->value();
-                segToGroupNum_[segID] = groupNum;
-            }
+        const uint32_t groupNum = isValid ? maxGroupNum_.inc() : 0;
 
-        } else {
-            FOR_EACH(iter, segs)
-            {
-                OmSegment* seg = *iter;
-                const OmSegID segID = seg->value();
-                segToGroupNum_[segID] = 0;
-            }
+        FOR_EACH(iter, segs)
+        {
+            OmSegment* seg = *iter;
+            const OmSegID segID = seg->value();
+            segToGroupNum_[segID] = groupNum;
         }
     }
 

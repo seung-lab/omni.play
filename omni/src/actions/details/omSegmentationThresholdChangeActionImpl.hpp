@@ -6,7 +6,7 @@
 #include "common/omString.hpp"
 #include "events/details/omSegmentEvent.h"
 #include "events/omEvents.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "gui/sidebars/right/dendToolbar.h"
 #include "system/omAppState.hpp"
 #include "utility/dataWrappers.h"
 

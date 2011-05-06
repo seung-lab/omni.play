@@ -1,16 +1,15 @@
-#ifndef VIEW_GROUP_UTILS_HPP
-#define VIEW_GROUP_UTILS_HPP
+#pragma once
 
 #include "common/omCommon.h"
+#include "gui/mainWindow/mainWindow.h"
 #include "gui/viewGroup/viewGroupWidgetInfo.h"
 #include "gui/widgets/omTellInfo.hpp"
 #include "utility/dataWrappers.h"
+#include "view2d/omView2d.h"
+#include "view3d/omView3d.h"
+#include "viewGroup/omViewGroupState.h"
 
 #include <QtGui>
-
-class MainWindow;
-class OmViewGroupState;
-class OmView2d;
 
 class ViewGroupUtils {
 private:
@@ -23,7 +22,7 @@ public:
         , vgs_(vgs)
     {}
 
-    virtual ~ViewGroupUtils()
+    ~ViewGroupUtils()
     {}
 
     int getID();
@@ -39,17 +38,17 @@ public:
         return "3d_" + viewGroupName();
     }
 
-    QString getViewName(const std::string& volName, const ViewType vtype)
+    QString getViewName(const std::string& volName, const ViewType viewType)
     {
         return QString::fromStdString(volName)
             + " -- "
-            + getViewTypeAsStr(vtype)
+            + getViewTypeAsStr(viewType)
             + " View";
     }
 
-    QString getViewTypeAsStr(const ViewType vtype)
+    QString getViewTypeAsStr(const ViewType viewType)
     {
-        switch(vtype){
+        switch(viewType){
         case XY_VIEW:
             return "XY";
         case XZ_VIEW:
@@ -61,7 +60,7 @@ public:
         }
     }
 
-    QString makeObjectName(const ObjectType voltype, const ViewType vtype)
+    QString makeObjectName(const ObjectType voltype, const ViewType viewType)
     {
         QString name;
 
@@ -71,7 +70,7 @@ public:
             name = "segmentation_";
         }
 
-        name += getViewTypeAsStr(vtype) + "_" + viewGroupName();
+        name += getViewTypeAsStr(viewType) + "_" + viewGroupName();
 
         return name;
     }
@@ -79,11 +78,11 @@ public:
     QString makeObjectName(ViewGroupWidgetInfo& vgw)
     {
         if( VIEW2D_CHAN == vgw.widgetType ) {
-            return makeObjectName( CHANNEL, vgw.vtype );
+            return makeObjectName( CHANNEL, vgw.viewType );
         }
 
         if (VIEW2D_SEG  == vgw.widgetType ){
-            return makeObjectName( SEGMENTATION, vgw.vtype );
+            return makeObjectName( SEGMENTATION, vgw.viewType );
         }
 
         return makeObjectName();
@@ -92,18 +91,18 @@ public:
     QString makeComplimentaryObjectName(ViewGroupWidgetInfo& vgw)
     {
         if( VIEW2D_CHAN == vgw.widgetType ){
-            return makeObjectName( SEGMENTATION, vgw.vtype );
+            return makeObjectName( SEGMENTATION, vgw.viewType );
         }
 
         if( VIEW2D_SEG == vgw.widgetType ){
-            return makeObjectName( CHANNEL, vgw.vtype );
+            return makeObjectName( CHANNEL, vgw.viewType );
         }
 
         return "";
     }
 
-    QDockWidget* getDockWidget(const ObjectType voltype, const ViewType vtype){
-        return getDockWidget(makeObjectName(voltype, vtype));
+    QDockWidget* getDockWidget(const ObjectType voltype, const ViewType viewType){
+        return getDockWidget(makeObjectName(voltype, viewType));
     }
 
     QDockWidget* getDockWidget(const QString& objName)
@@ -119,8 +118,8 @@ public:
         return widgets[0];
     }
 
-    bool doesDockWidgetExist(const ObjectType voltype, const ViewType vtype){
-        return doesDockWidgetExist(makeObjectName(voltype, vtype));
+    bool doesDockWidgetExist(const ObjectType voltype, const ViewType viewType){
+        return doesDockWidgetExist(makeObjectName(voltype, viewType));
     }
 
     bool doesDockWidgetExist(const QString& objName )
@@ -140,12 +139,6 @@ public:
         QList<QDockWidget*> widgets = findDockWidgets(rx);
 
         return widgets;
-    }
-
-    int getNumDockWidgets()
-    {
-        QList<QDockWidget*> widgets = getAllDockWidgets();
-        return widgets.size();
     }
 
     QDockWidget* getBiggestDockWidget()
@@ -201,9 +194,11 @@ public:
         return false;
     }
 
-    void wireDockWithView2d(OmView2d* w,
+    void wireDockWithView2d(QWidget* widget,
                             const std::pair<QDockWidget*,QDockWidget*>& dockAndCompliment)
     {
+        OmView2d* w = reinterpret_cast<OmView2d*>(widget);
+
         QDockWidget* dock = dockAndCompliment.first;
         QDockWidget* complimentaryDock = dockAndCompliment.second;
 
@@ -216,6 +211,56 @@ public:
     void setComplimentaryDockWidget(OmView2d* w,
                                     QDockWidget* dock,
                                     QDockWidget* complimentaryDock);
-};
 
-#endif
+    ViewGroupWidgetInfo CreateView3d()
+    {
+        QString name = "3D View";
+
+        ViewGroupWidgetInfo vgw(name, VIEW3D);
+
+        if(doesDockWidgetExist(makeObjectName(vgw))){
+            delete getDockWidget(makeObjectName(vgw));
+        }
+
+        vgw.widget = new OmView3d(mainWindow_, vgs_);
+
+        return vgw;
+    }
+
+    ViewGroupWidgetInfo CreateView2dChannel(const OmID chanID, const ViewType viewType)
+    {
+        ChannelDataWrapper cdw(chanID);
+        OmChannel& chan = cdw.GetChannel();
+
+        const QString name = getViewName(chan.GetName(), viewType);
+
+        ViewGroupWidgetInfo vgw(name, VIEW2D_CHAN, viewType);
+
+        if(doesDockWidgetExist(makeObjectName(vgw))){
+            delete getDockWidget(makeObjectName(vgw));
+        }
+
+        vgw.widget = new OmView2d(viewType, mainWindow_, vgs_,
+                                  &chan, name.toStdString());
+
+        return vgw;
+    }
+
+    ViewGroupWidgetInfo CreateView2dSegmentation(const OmID segmentationID, const ViewType viewType)
+    {
+        SegmentationDataWrapper sdw(segmentationID);
+
+        const QString name = getViewName(sdw.GetName().toStdString(), viewType);
+
+        ViewGroupWidgetInfo vgw(name, VIEW2D_SEG, viewType);
+
+        if(doesDockWidgetExist(makeObjectName(vgw))){
+            delete getDockWidget(makeObjectName(vgw));
+        }
+
+        vgw.widget = new OmView2d(viewType, mainWindow_, vgs_,
+                                  sdw.GetSegmentationPtr(), name.toStdString());
+
+        return vgw;
+    }
+};

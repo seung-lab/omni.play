@@ -23,6 +23,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     , zoomLevel_(new OmZoomLevel())
     , splitting_(new OmSplitting())
     , cutting_(new OmCutting())
+    , sdw_(new SegmentationDataWrapper(1))
     , toolBarManager_(NULL)
 {
     mBreakThreshold = 0;
@@ -117,4 +118,8 @@ bool OmViewGroupState::shouldVolumeBeShownBroken()
 
 void OmViewGroupState::setTool(const om::tool::mode tool){
     toolBarManager_->SetTool(tool);
+}
+
+SegmentationDataWrapper OmViewGroupState::Segmentation() const {
+    return *sdw_;
 }

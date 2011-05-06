@@ -9,13 +9,6 @@
 
 class OmBrushOppInfoFactory {
 private:
-    static int brushDiameterForMip(OmView2dState* state)
-    {
-        const int factor = om::math::pow2int(state->getMipLevel());
-        const int brushDia = state->getBrushSize()->Diameter();
-        return brushDia * factor;
-    }
-
     static int getDepth(const DataCoord& coord, const ViewType viewType){
         return OmView2dConverters::GetViewTypeDepth(coord, viewType);
     }
@@ -34,8 +27,9 @@ public:
         OmSegmentation* segmentation = sdw.GetSegmentationPtr();
 
         const ViewType viewType = state->getViewType();
-        const int brushSize = brushDiameterForMip(state);
+        const int brushSize = state->getBrushSize()->Diameter();
         const int depth = getDepth(coord, viewType);
+
         const std::vector<om::point2di>& ptsInCircle =
             state->getBrushSize()->GetPtsInCircle();
 

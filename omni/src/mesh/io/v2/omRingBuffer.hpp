@@ -23,6 +23,14 @@ public:
         buffer_.resize(maxSize_, NULL);
     }
 
+    void Clear()
+    {
+        zi::rwmutex::write_guard g(lock_);
+        om::container::clear(buffer_);
+        buffer_.resize(maxSize_, NULL);
+        curPos_ = 0;
+    }
+
     void Put(T* item)
     {
         zi::rwmutex::write_guard g(lock_);

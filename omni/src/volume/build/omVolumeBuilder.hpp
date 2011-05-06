@@ -47,26 +47,7 @@ public:
 
     void Build()
     {
-        om::shared_ptr<OmVolumeBuilderBase<VOL> > builder;
-
-        switch(importType_){
-        case HDF5:
-            builder = om::make_shared<OmVolumeBuilderHdf5<VOL> >(vol_,
-                                                                    files_[0],
-                                                                    hdf5path_);
-            break;
-        case IMAGES:
-            builder = om::make_shared<OmVolumeBuilderImages<VOL> >(vol_,
-                                                                      files_);
-            break;
-        case WATERSHED:
-            builder = om::make_shared<OmVolumeBuilderWatershed<VOL> >(vol_,
-                                                                         files_[0]);
-            break;
-        default:
-            throw OmArgException("unknown type");
-        };
-
+        boost::scoped_ptr<OmVolumeBuilderBase<VOL> > builder(produceBuilder());
         builder->Build();
     }
 
@@ -91,6 +72,20 @@ public:
     }
 
 private:
+    OmVolumeBuilderBase<VOL>* produceBuilder()
+    {
+        switch(importType_){
+        case HDF5:
+            return new OmVolumeBuilderHdf5<VOL>(vol_, files_[0], hdf5path_);
+        case IMAGES:
+            return new OmVolumeBuilderImages<VOL>(vol_, files_);
+        case WATERSHED:
+            return new OmVolumeBuilderWatershed<VOL>(vol_, files_[0]);
+        default:
+            throw OmArgException("unknown type");
+        };
+    }
+
     void setup()
     {
         sortNaturally();

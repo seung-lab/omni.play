@@ -24,7 +24,7 @@ private:
         const OmID channelID = 1;
         const OmID segmentationID = 1;
 
-        mParent->getViewGroupState()->GetViewGroup()->AddAllViews( channelID, segmentationID );
+        mParent->GetViewGroupState()->GetViewGroup()->AddAllViews(channelID, segmentationID);
     }
 };
 

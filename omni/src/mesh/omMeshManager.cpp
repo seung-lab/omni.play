@@ -11,7 +11,7 @@
 #include "volume/omSegmentation.h"
 
 OmMeshManager::OmMeshManager(OmSegmentation* segmentation,
-                                   const double threshold)
+                             const double threshold)
     : segmentation_(segmentation)
     , threshold_(threshold)
     , dataCache_(new OmMeshCache(this))
@@ -36,6 +36,7 @@ void OmMeshManager::Load()
 {
     if(qFuzzyCompare(1, threshold_)){
         loadThreadhold1();
+
     }else {
         loadThreadholdNon1();
     }
@@ -91,9 +92,9 @@ void OmMeshManager::inferMeshMetadata()
 OmMeshPtr OmMeshManager::Produce(const OmMeshCoord& coord)
 {
     return om::make_shared<OmMesh>(segmentation_,
-                                         coord,
-                                         this,
-                                         dataCache_.get());
+                                   coord,
+                                   this,
+                                   dataCache_.get());
 }
 
 void OmMeshManager::GetMesh(OmMeshPtr& ptr, const OmMeshCoord& coord,

@@ -20,13 +20,12 @@ OmView2d::OmView2d(const ViewType viewtype, QWidget* parent,
     setMouseTracking(true); // necessary for mouse-centered zooming
     setAutoFillBackground(false); // necessary for proper QPainter functionality
 
-    state_->ResetWindowState();
+    state_->SetIntialWindowState();
     OmCursors::setToolCursor(this);
     OmEvents::ViewCenterChanged();
 }
 
-OmView2d::~OmView2d()
-{
+OmView2d::~OmView2d(){
     unlinkComplimentaryDock();
 }
 

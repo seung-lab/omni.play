@@ -13,34 +13,25 @@
 #include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "zi/omThreads.h"
 
 class OmBuildSegmentation : public OmBuildVolumes {
 private:
     SegmentationDataWrapper sdw_;
-
     OmSegmentation& seg_;
-    OmThreadPool threadPool_;
 
 public:
     OmBuildSegmentation()
         : OmBuildVolumes()
         , seg_(sdw_.Create())
-    {
-        threadPool_.start(1);
-    }
+    {}
 
     OmBuildSegmentation(const SegmentationDataWrapper& sdw)
         : OmBuildVolumes()
         , sdw_(sdw)
         , seg_(sdw_.GetSegmentation())
-    {
-        threadPool_.start(1);
-    }
+    {}
 
-    virtual ~OmBuildSegmentation()
-    {
-        threadPool_.join();
+    virtual ~OmBuildSegmentation(){
         printf("OmBuildSegmentation done!\n");
     }
 
@@ -48,42 +39,16 @@ public:
         return sdw_;
     }
 
-    void BuildAndMeshSegmentation(const om::Blocking block)
-    {
-        if(om::BLOCKING == block){
+    void BuildAndMeshSegmentation(){
             do_build_seg_image_and_mesh();
-        } else {
-            threadPool_.push_back(
-                zi::run_fn(
-                    zi::bind(&OmBuildSegmentation::do_build_seg_image_and_mesh, this)));
-        }
     }
 
-    void BuildImage(const om::Blocking block)
-    {
-        if(om::BLOCKING == block){
+    void BuildImage(){
             do_build_seg_image();
-        } else {
-            threadPool_.push_back(
-                zi::run_fn(
-                    zi::bind(&OmBuildSegmentation::do_build_seg_image, this)));
-        }
-    }
+	}
 
-    void BuildMesh(const om::Blocking block)
-    {
-        if(om::BLOCKING == block){
-            do_build_seg_mesh();
-        } else {
-            threadPool_.push_back(
-                zi::run_fn(
-                    zi::bind(&OmBuildSegmentation::do_build_seg_mesh, this)));
-        }
-    }
-
-    void BuildMesh(const double threshold)
-    {
-        do_build_seg_mesh(threshold);
+    void BuildMesh(){
+		do_build_seg_mesh();
     }
 
     void buildBlankVolume()
@@ -113,7 +78,7 @@ private:
     void do_build_seg_image_and_mesh()
     {
         do_build_seg_image();
-        do_build_seg_mesh(false);
+        do_build_seg_mesh();
     }
 
     void do_build_seg_image()
@@ -148,18 +113,6 @@ private:
         seg_.MeshManagers()->FullMesh(1);
 // seg_.MeshManagers()->FullMesh(.9);
 // seg_.MeshManagers()->FullMesh(.8);
-
-        stopTimingAndSave(type, build_timer);
-    }
-
-    void do_build_seg_mesh(const double threshold)
-    {
-        const QString type = "segmentation mesh (threshold)";
-
-        OmTimer build_timer;
-        startTiming(type, build_timer);
-
-        seg_.MeshManagers()->FullMesh(threshold);
 
         stopTimingAndSave(type, build_timer);
     }

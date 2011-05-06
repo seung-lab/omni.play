@@ -137,8 +137,9 @@ private:
         case om::tool::SELECT:
             if(controlKey_)
             {
-                state_->AmPanningInSelectMode(true);
+                state_->OverrideToolModeForPan(true);
                 return;
+
             } else {
                 state_->setScribbling(true);
                 selectSegments();
@@ -154,10 +155,20 @@ private:
             OmEvents::Redraw3d();
             return;
         case om::tool::PAINT:
+            if(controlKey_)
+            { // pan
+                state_->OverrideToolModeForPan(true);
+                return;
+            }
             state_->setScribbling(true);
             paint();
             break;
         case om::tool::ERASE:
+            if(controlKey_)
+            { // pan
+                state_->OverrideToolModeForPan(true);
+                return;
+            }
             state_->setScribbling(true);
             erase();
             break;
@@ -180,8 +191,7 @@ private:
             addOrSubtractSegments = om::SUBTRACT;
         }
 
-        OmBrushSelect::SelectByClick(state_, dataClickPoint_,
-                                     addOrSubtractSegments);
+        OmBrushSelect::SelectByClick(state_, dataClickPoint_, addOrSubtractSegments);
     }
 
     void erase()

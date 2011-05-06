@@ -1,7 +1,7 @@
 #include "actions/omActions.h"
 #include "common/omDebug.h"
 #include "events/omEvents.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "gui/sidebars/right/dendToolbar.h"
 #include "mesh/omDrawOptions.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCenter.hpp"

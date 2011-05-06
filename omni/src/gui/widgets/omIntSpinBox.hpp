@@ -15,10 +15,14 @@ public:
                  const om::ShouldUpdateAsType updateAsType)
         : QSpinBox(d)
     {
-        if(om::UPDATE_AS_TYPE == updateAsType){
-            om::connect(this, SIGNAL(valueChanged(int)), this, SLOT(spinboxChanged()));
+        if(om::UPDATE_AS_TYPE == updateAsType)
+        {
+            om::connect(this, SIGNAL(valueChanged(int)),
+                        this, SLOT(spinboxChanged()));
+
         } else {
-            om::connect(this, SIGNAL(editingFinished()), this, SLOT(spinboxChanged()) );
+            om::connect(this, SIGNAL(editingFinished()),
+                        this, SLOT(spinboxChanged()) );
         }
     }
 

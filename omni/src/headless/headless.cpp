@@ -104,11 +104,12 @@ void Headless::processLine(const QString& line, const QString&)
             return;
         }
 
-        const double threshold = OmStringHelpers::getDouble(args[1]);
+        // const double threshold = OmStringHelpers::getDouble(args[1]);
 
         const SegmentationDataWrapper sdw(segmentationID_);
         OmBuildSegmentation bs(sdw);
-        bs.BuildMesh(threshold);
+        // bs.BuildMesh(threshold);
+        assert(0 && "threshold option disabled");
 
     } else if("clearMST" == line) {
         if(0 == segmentationID_ ){
@@ -441,7 +442,7 @@ void Headless::processLine(const QString& line, const QString&)
             bs.addFileNameAndPath(f.canonicalFilePath());
         }
 
-        bs.BuildImage(om::BLOCKING);
+        bs.BuildImage();
 
     } else if(line.startsWith("buildHDF5:")){
         QStringList args = line.split(':',QString::SkipEmptyParts);

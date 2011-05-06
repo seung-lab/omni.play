@@ -2,14 +2,16 @@
 #define VIEW_GROUP_H
 
 #include "common/omCommon.h"
-#include "gui/viewGroup/viewGroupUtils.hpp"
 
-class OmView2d;
-class OmView3d;
+class ViewGroupUtils;
+class ViewGroupWidgetInfo;
+class ViewGroupMainWindowUtils;
+class OmViewGroupState;
 
-class ViewGroup : private ViewGroupUtils {
+class ViewGroup {
 public:
     ViewGroup(MainWindow*, OmViewGroupState*);
+    ~ViewGroup();
 
     QDockWidget* AddView2Dchannel(const OmID chan_id,
                                   const ViewType vtype);
@@ -18,21 +20,20 @@ public:
     AddView2Dsegmentation(const OmID segmentation_id, const ViewType vtype);
 
     void AddView3D();
+    void AddView3D4View();
+
     void AddAllViews(const OmID channelID, const OmID segmentationID);
     void AddXYView(const OmID channelID, const OmID segmentationID);
+    void AddXYViewAndView3d(const OmID channelID, const OmID segmentationID);
 
 private:
     MainWindow *const mainWindow_;
     OmViewGroupState *const vgs_;
 
-    QDockWidget *makeDockWidget(ViewGroupWidgetInfo&);
+    boost::scoped_ptr<ViewGroupUtils> utils_;
+    boost::scoped_ptr<ViewGroupMainWindowUtils> mainWindowUtils_;
 
-    std::pair<QDockWidget*,QDockWidget*> insertDockIntoGroup(ViewGroupWidgetInfo&);
-    QDockWidget* insertBySplitting(ViewGroupWidgetInfo&, QDockWidget* );
-    QDockWidget* insertByTabbing(ViewGroupWidgetInfo&, QDockWidget*);
-
-    QDockWidget* chooseDockToSplit(ViewGroupWidgetInfo&);
-    QDockWidget* chooseDockToTabify(ViewGroupWidgetInfo&);
+    void addView3D2View(QDockWidget* widget);
 };
 
 #endif

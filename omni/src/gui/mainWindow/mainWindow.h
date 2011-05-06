@@ -33,14 +33,14 @@ public:
     void cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId);
     void updateStatusBar( QString msg );
 
-    inline OmViewGroupState* getViewGroupState(){
+    inline OmViewGroupState* GetViewGroupState(){
         return vgs_.get();
     }
 
     void addToolbarTop(QToolBar* b);
     void addToolbarRight(QToolBar* b);
 
-    friend class ViewGroup;
+    friend class ViewGroupMainWindowUtils;
 
 protected:
     void closeEvent(QCloseEvent* event);
@@ -101,9 +101,8 @@ private:
     bool closeProjectIfOpen();
     int checkForSave();
     void createStatusBar();
-    void moveEvent(QMoveEvent* event);
     void resetViewGroup();
-    void resizeEvent(QResizeEvent* event);
+
     void updateGuiFromProjectLoadOrOpen( QString fileName );
     void updateReadOnlyRelatedWidgets();
     void windowTitleClear();

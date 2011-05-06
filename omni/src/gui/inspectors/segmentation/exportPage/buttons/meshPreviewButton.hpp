@@ -22,7 +22,7 @@ private:
     {
         // const SegmentationDataWrapper& sdw = mParent->GetSDW();
 
-        // new MeshPreviewer(this, sdw, mParent->getViewGroupState());
+        // new MeshPreviewer(this, sdw, mParent->GetViewGroupState());
     }
 };
 

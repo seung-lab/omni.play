@@ -78,7 +78,8 @@ OmSegmentEdge OmSegmentsImpl::splitChildFromParent(OmSegment * child)
     assert(parent);
 
     if(child->IsValidListType() == parent->IsValidListType() &&
-       1 == child->IsValidListType()){
+       1 == child->IsValidListType())
+    {
         printf("could not split %d from %d (one or more was valid!)\n", child->value(), parent->value());
         return OmSegmentEdge();
     }
@@ -250,10 +251,10 @@ OmSegIDsSet OmSegmentsImpl::UnJoinTheseSegments(const OmSegIDsSet& segmentList)
     while (iter != set.end())
     {
         const OmSegID segID = *iter;
-        OmSegmentEdge edge =
-            splitChildFromParent(store_->GetSegment(segID));
 
-        if(edge.isValid()){
+        OmSegmentEdge edge = splitChildFromParent(store_->GetSegment(segID));
+
+        if(!edge.isValid()){
             printf("WARNING: could not split edge; was a segment validated?\n");
         } else {
             ret.insert(segID);

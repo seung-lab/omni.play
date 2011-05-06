@@ -3,6 +3,7 @@
 #include "gui/toolbars/mainToolbar/filterWidget.hpp"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
 #include "gui/toolbars/mainToolbar/navAndEditButtonGroup.h"
+#include "gui/toolbars/mainToolbar/openDualViewButton.hpp"
 #include "gui/toolbars/mainToolbar/openSingleViewButton.hpp"
 #include "gui/toolbars/mainToolbar/openViewGroupButton.hpp"
 #include "gui/toolbars/mainToolbar/refreshVolumeButton.h"
@@ -15,6 +16,7 @@ MainToolBar::MainToolBar(MainWindow* mainWindow)
     , saveButton(new SaveButton(this))
     , openViewGroupButton_(new OpenViewGroupButton(mainWindow))
     , openSingleViewButton_(new OpenSingleViewButton(mainWindow))
+    , openDoubleViewButton_(new OpenDualViewButton(mainWindow))
     , volumeRefreshButton(new VolumeRefreshButton(mainWindow))
     , navEditButtons_(new NavAndEditButtonGroup(mainWindow))
 {
@@ -27,6 +29,7 @@ MainToolBar::MainToolBar(MainWindow* mainWindow)
     addSeparator();
 
     addWidget(openSingleViewButton_);
+    addWidget(openDoubleViewButton_);
     addWidget(openViewGroupButton_);
     // addWidget(volumeRefreshButton);
     addSeparator();
@@ -48,7 +51,10 @@ void MainToolBar::setReadOnlyWidgetsEnabled()
 
     navEditButtons_->SetReadOnlyWidgetsEnabled(toBeEnabled);
 
+    openSingleViewButton_->setEnabled(toBeEnabled);
+    openDoubleViewButton_->setEnabled(toBeEnabled);
     openViewGroupButton_->setEnabled(toBeEnabled);
+
     volumeRefreshButton->setEnabled(toBeEnabled);
 
     FilterWidget::Widget()->setEnabled(toBeEnabled);

@@ -1,9 +1,8 @@
-#ifndef PAGE_BUILDER_HPP
-#define PAGE_BUILDER_HPP
+#pragma once
 
+#include "gui/inspectors/segmentation/buildPage/segVolBuilder.hpp"
 #include "gui/inspectors/segmentation/buildPage/sourceBox.hpp"
 #include "gui/inspectors/volInspector.h"
-#include "volume/build/omBuildSegmentation.hpp"
 
 namespace om {
 namespace segmentationInspector {
@@ -33,30 +32,10 @@ public:
 private Q_SLOTS:
     void build()
     {
-        OmBuildSegmentation* bs = new OmBuildSegmentation(sdw_);
-
-        bs->setFileNamesAndPaths(sourceBox_->GetFilesToBuild());
-
-        const QString whatOrHowToBuild = buildComboBox_->currentText();
-
-        if ("Data" == whatOrHowToBuild ){
-            bs->BuildImage(om::NON_BLOCKING);
-
-        } else if ( "Mesh" == whatOrHowToBuild ){
-            bs->BuildMesh(om::NON_BLOCKING);
-
-        } else if ("Data & Mesh" == whatOrHowToBuild){
-            bs->BuildAndMeshSegmentation(om::NON_BLOCKING);
-
-        } else if ("Load Dendrogram" == whatOrHowToBuild){
-            bs->loadDendrogram();
-
-        } else if( "Blank Volume" == whatOrHowToBuild ){
-            bs->buildBlankVolume();
-
-        } else {
-            throw OmArgException("unknown option", whatOrHowToBuild);
-        }
+		segVolBuilder builder;
+		builder.Build(sdw_,
+					  buildComboBox_->currentText(),
+					  sourceBox_->GetFilesToBuild());
     }
 
 private:
@@ -96,5 +75,3 @@ private:
 
 } // namespace segmentationInspector
 } // namespace om
-
-#endif

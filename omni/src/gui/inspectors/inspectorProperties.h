@@ -21,7 +21,7 @@ public:
 
     void SetOrReplaceWidget(QWidget *incomingWidget, const QString& title);
 
-    OmViewGroupState* getViewGroupState(){
+    OmViewGroupState* GetViewGroupState(){
         return vgs_;
     }
 

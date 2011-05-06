@@ -22,9 +22,8 @@ protected:
         : fnp_(fnp)
     {}
 
-    virtual ~OmFileQTbase(){
-        debug(file, "closing file %s\n", GetBaseFileName().c_str());
-    }
+    virtual ~OmFileQTbase()
+    {}
 
     uint64_t Size() const {
         return file_->size();

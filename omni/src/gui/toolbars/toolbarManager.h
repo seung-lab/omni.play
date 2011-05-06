@@ -10,6 +10,8 @@ class MainToolBar;
 class DendToolBar;
 class OmViewGroupState;
 
+namespace om { namespace sidebars { class right; } }
+
 class ToolBarManager : public QWidget {
 Q_OBJECT
 
@@ -20,21 +22,18 @@ public:
     void UpdateReadOnlyRelatedWidgets();
     void UpdateGuiFromProjectLoadOrOpen(OmViewGroupState *);
     void UpdateGuiFromProjectClose();
-    void WindowResized(QPoint oldPos);
-    void WindowMoved(QPoint oldPos);
 
     void SetSplittingOff();
-
     void SetCuttingOff();
+
     void SetTool(const om::tool::mode tool);
 
 private:
     MainWindow *const mainWindow_;
 
     boost::scoped_ptr<MainToolBar> mainToolBar_;
-    boost::scoped_ptr<DendToolBar> dendToolBar_;
+    boost::scoped_ptr<om::sidebars::right> rightSideBar_;
 
-    void deleteDendBar();
     void deleteMainBar();
 };
 

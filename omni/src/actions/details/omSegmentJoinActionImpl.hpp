@@ -2,8 +2,7 @@
 #define OM_SEGMENT_JOIN_ACTION_IMPL_HPP
 
 #include "common/omCommon.h"
-#include "utility/dataWrappers.h"
-#include "segment/lists/omSegmentLists.h"
+#include "segment/actions/omJoinSegments.hpp"
 
 class OmSegmentJoinActionImpl {
 private:
@@ -20,19 +19,21 @@ public:
         , segIDs_(segIDs)
     {}
 
-    void Execute(){
-        segIDs_ = sdw_.Segments()->JoinTheseSegments(segIDs_);
-        sdw_.SegmentLists()->RefreshGUIlists();
+    void Execute()
+    {
+        OmJoinSegments joiner(sdw_, segIDs_);
+        segIDs_ = joiner.Join();
     }
 
-    void Undo(){
-        segIDs_ = sdw_.Segments()->UnJoinTheseSegments(segIDs_);
-        sdw_.SegmentLists()->RefreshGUIlists();
+    void Undo()
+    {
+        OmJoinSegments joiner(sdw_, segIDs_);
+        segIDs_ = joiner.UnJoin();
     }
 
     std::string Description()
     {
-        if(!segIDs_.size()){
+        if(segIDs_.empty()){
             return "did not join segments";
         }
 

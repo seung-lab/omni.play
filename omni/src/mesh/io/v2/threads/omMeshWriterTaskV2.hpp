@@ -3,7 +3,7 @@
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
-#include "mesh/detail/TriStripCollector.hpp"
+#include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"

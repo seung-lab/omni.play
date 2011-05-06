@@ -1,6 +1,6 @@
 #include "gui/mainWindow/mainWindow.h"
-#include "gui/mainWindow/inspectorWidget.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "gui/sidebars/left/inspectorWidget.h"
+#include "gui/sidebars/right/dendToolbar.h"
 #include "system/omAppState.hpp"
 #include "zi/omUtility.h"
 
@@ -33,7 +33,8 @@ void OmAppState::UpdateStatusBar(const QString& msg){
 QSize OmAppState::GetViewBoxSizeHint()
 {
     QWidget* mw = instance().mainWindow_;
-    if(!mw){
+    if(!mw)
+    {
         mw = QApplication::activeWindow();
         if(!mw){
             printf("warning: assuming window size is 1000x640\n");

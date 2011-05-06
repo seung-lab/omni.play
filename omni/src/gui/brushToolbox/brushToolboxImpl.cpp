@@ -67,6 +67,10 @@ private:
 
         OmSegment* newSeg = sdw.Segments()->AddSegment();
 
+        // save new segment IDs; if we don't do this, and the user paints,
+        //  the segment metadata will be out of sync with the data on disk...
+        OmActions::Save();
+
         ElementListBox::RebuildLists(SegmentDataWrapper(newSeg));
 
         OmSegmentSelector sel(sdw, this, "addSegmentButton" );

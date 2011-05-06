@@ -27,6 +27,8 @@ public:
         , coord_(coord)
         , threshold_(threshold)
         , fnp_(filePath())
+        , table_(NULL)
+        , numEntries_(0)
     {}
 
     bool CreateIfNeeded()
@@ -62,6 +64,10 @@ public:
 
     OmMeshDataEntry* Find(const OmMeshDataEntry& entry)
     {
+        if(!table_){
+            return NULL;
+        }
+
         OmMeshDataEntry* iter =
             std::lower_bound(table_,
                              table_ + numEntries_,
@@ -102,7 +108,7 @@ private:
         file_.reset(new QFile(fnp_));
 
         if(!file_->exists()){
-            throw OmIoException("file doesn't exist", fnp_);
+            return;
         }
 
         if(!file_->open(QIODevice::ReadWrite)) {
@@ -124,6 +130,10 @@ private:
     {
         const ChunkUniqueValues segIDs =
             segmentation_->ChunkUniqueValues()->Values(coord_, threshold_);
+
+        if(!segIDs.size()){
+            return;
+        }
 
         file_.reset(new QFile(fnp_));
 
@@ -160,6 +170,8 @@ private:
 
     void resetTable(const ChunkUniqueValues& segIDs)
     {
+        assert(table_);
+
         zi::transform(segIDs.begin(),
                       segIDs.end(),
                       table_,
@@ -168,6 +180,8 @@ private:
 
     void sortTable()
     {
+        assert(table_);
+
         zi::sort(table_,
                  table_ + numEntries_,
                  compareBySegID);

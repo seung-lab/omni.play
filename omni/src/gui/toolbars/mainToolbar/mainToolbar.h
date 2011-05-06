@@ -10,6 +10,7 @@ class NavAndEditButtonGroup;
 class OmViewGroupState;
 class OpenViewGroupButton;
 class OpenSingleViewButton;
+class OpenDualViewButton;
 class SaveButton;
 class VolumeRefreshButton;
 
@@ -28,6 +29,7 @@ private:
     SaveButton *const saveButton;
     OpenViewGroupButton *const openViewGroupButton_;
     OpenSingleViewButton *const openSingleViewButton_;
+    OpenDualViewButton *const openDoubleViewButton_;
     VolumeRefreshButton *const volumeRefreshButton;
     NavAndEditButtonGroup *const navEditButtons_;
 
