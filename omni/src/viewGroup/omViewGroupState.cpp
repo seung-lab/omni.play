@@ -113,7 +113,7 @@ void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(const bool in
 
 bool OmViewGroupState::shouldVolumeBeShownBroken()
 {
-    return mShatter || (splitting_->ShowSplit());
+    return mShatter || splitting_->ShowSplit();
 }
 
 void OmViewGroupState::setTool(const om::tool::mode tool){

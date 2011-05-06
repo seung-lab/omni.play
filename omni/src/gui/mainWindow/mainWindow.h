@@ -96,8 +96,6 @@ private:
     QAction* panAct;
     QAction* zoomAct;
 
-    QFrame* loadingDock_;
-
     bool closeProjectIfOpen();
     int checkForSave();
     void createStatusBar();

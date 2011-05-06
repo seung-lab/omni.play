@@ -176,11 +176,11 @@ void OmActionsImpl::FindAndSplitSegments(const SegmentDataWrapper curSDW,
         OmSegment* seg1 = prevSDW.GetSegment();
         OmSegment* seg2 = curSDW.GetSegment();
 
+        vgs->Splitting()->ExitSplitModeFixButton();
+
         if(!seg1 || !seg2) {
             return;
         }
-
-        vgs->Splitting()->ExitSplitModeFixButton();
 
         runIfSplittable(seg1, seg2, *prevClickPt, curClickPt);
 

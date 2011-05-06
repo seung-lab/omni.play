@@ -3,11 +3,12 @@
 #include "common/omException.h"
 #include "gui/cacheMonitorDialog.h"
 #include "gui/groupsTable/groupsTable.h"
-#include "gui/sidebars/left/inspectorWidget.h"
+#include "gui/mainWindow/centralWidget.hpp"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/menubar.h"
 #include "gui/preferences/preferences.h"
 #include "gui/recentFileList.h"
+#include "gui/sidebars/left/inspectorWidget.h"
 #include "gui/toolbars/toolbarManager.h"
 #include "gui/viewGroup/viewGroup.h"
 #include "gui/widgets/omNewFileDialog.hpp"
@@ -23,7 +24,6 @@
 #include "system/omUndoStack.hpp"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
-#include "gui/mainWindow/centralWidget.hpp"
 
 MainWindow::MainWindow()
     : inspector_(NULL)
@@ -45,12 +45,6 @@ MainWindow::MainWindow()
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
     setFocusPolicy(Qt::ClickFocus);
-
-    loadingDock_ = new QFrame();
-    loadingDock_->setFrameStyle(QFrame::Box | QFrame::Raised);
-
-    QGridLayout* dockLayout = new QGridLayout(loadingDock_);
-    loadingDock_->setLayout(dockLayout);
 
     createStatusBar();
 

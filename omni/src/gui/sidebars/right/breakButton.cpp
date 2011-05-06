@@ -25,6 +25,7 @@ void BreakButton::showOrHideBreakThresholdBox(const bool show)
 {
     if(show){
         mParent->ShowBreakThreasholdBox();
+
     } else {
         mParent->HideBreakThreasholdBox();
     }

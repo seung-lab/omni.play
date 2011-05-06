@@ -6,11 +6,17 @@
 class GraphTools;
 
 class CutButton : public OmButton<GraphTools> {
- public:
-	CutButton(GraphTools *);
+Q_OBJECT
 
- private:
-	void doAction();
+public:
+    CutButton(GraphTools *);
+
+private:
+    void doAction()
+    {}
+
+private Q_SLOTS:
+    void enableCutMode(const bool show);
 };
 
 #endif

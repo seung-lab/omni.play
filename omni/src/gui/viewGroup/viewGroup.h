@@ -1,20 +1,19 @@
-#ifndef VIEW_GROUP_H
-#define VIEW_GROUP_H
+#pragma once
 
 #include "common/omCommon.h"
 
-class ViewGroupUtils;
-class ViewGroupWidgetInfo;
-class ViewGroupMainWindowUtils;
+#include <QtGui>
+
+class MainWindow;
 class OmViewGroupState;
+namespace om { namespace gui { class viewGroupImpl; } }
 
 class ViewGroup {
 public:
     ViewGroup(MainWindow*, OmViewGroupState*);
     ~ViewGroup();
 
-    QDockWidget* AddView2Dchannel(const OmID chan_id,
-                                  const ViewType vtype);
+    QDockWidget* AddView2Dchannel(const OmID chan_id, const ViewType vtype);
 
     std::pair<QDockWidget*,QDockWidget*>
     AddView2Dsegmentation(const OmID segmentation_id, const ViewType vtype);
@@ -28,12 +27,6 @@ public:
 
 private:
     MainWindow *const mainWindow_;
-    OmViewGroupState *const vgs_;
 
-    boost::scoped_ptr<ViewGroupUtils> utils_;
-    boost::scoped_ptr<ViewGroupMainWindowUtils> mainWindowUtils_;
-
-    void addView3D2View(QDockWidget* widget);
+    boost::scoped_ptr<om::gui::viewGroupImpl> impl_;
 };
-
-#endif

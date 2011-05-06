@@ -1,5 +1,4 @@
-#ifndef BREAK_BUTTON_H
-#define BREAK_BUTTON_H
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 
@@ -17,5 +16,3 @@ private:
 private Q_SLOTS:
     void showOrHideBreakThresholdBox(const bool show);
 };
-
-#endif

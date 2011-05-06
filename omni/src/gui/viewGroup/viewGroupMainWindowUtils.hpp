@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gui/menubar.h"
 #include "gui/viewGroup/viewGroupUtils.hpp"
 
 class ViewGroupMainWindowUtils {
@@ -28,7 +29,7 @@ public:
         if(0 == getNumDockWidgets())
         {
             dock = makeDockWidget(vgw);
-            mainWindow_->addDockWidget(Qt::TopDockWidgetArea, dock);
+            mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, dock);
 
         } else {
             dockToTabify = chooseDockToTabify(vgw);

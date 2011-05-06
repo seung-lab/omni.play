@@ -4,6 +4,7 @@
 #include "gui/sidebars/right/splitButton.h"
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omSplitting.hpp"
+#include "system/omConnect.hpp"
 
 SplitButton::SplitButton(GraphTools * d)
     : OmButton<GraphTools>( d,
@@ -11,11 +12,13 @@ SplitButton::SplitButton(GraphTools * d)
                             "Split object mode",
                             true)
 {
+    om::connect(this, SIGNAL(clicked(bool)),
+                this, SLOT(enterOrExitSplitMode(bool)));
 }
 
-void SplitButton::doAction()
+void SplitButton::enterOrExitSplitMode(const bool inSplitMode)
 {
-    if(!isChecked()) {
+    if(inSplitMode){
         mParent->GetViewGroupState()->Splitting()->EnterSplitMode();
 
     } else {

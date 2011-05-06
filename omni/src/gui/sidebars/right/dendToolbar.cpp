@@ -26,6 +26,8 @@ DendToolBar::DendToolBar(MainWindow* mainWindow, OmViewGroupState* vgs)
     vbox->addWidget(wrapWithGroupBox(validationGroup));
     vbox->addWidget(wrapWithGroupBox(displayTools));
     vbox->addStretch(1);
+
+    setMaximumSize(250, 2000);
 }
 
 SegmentationDataWrapper DendToolBar::GetSDW(){

@@ -355,6 +355,7 @@ HEADERS +=  \
 	src/gui/toolbars/toolbarManager.h \
 	src/gui/updateSegmentPropertiesImpl.hpp \
 	src/gui/viewGroup/viewGroup.h \
+	src/gui/viewGroup/viewGroupImpl.hpp \
 	src/gui/viewGroup/viewGroupMainWindowUtils.hpp \
 	src/gui/viewGroup/viewGroupUtils.hpp \
 	src/gui/viewGroup/viewGroupWidgetInfo.h \
