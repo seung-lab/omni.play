@@ -17,23 +17,23 @@ void ViewGroup::AddView3D4View(){
     impl_->AddView3D4View();
 }
 
-QDockWidget* ViewGroup::AddView2Dchannel(const OmID chanID, const ViewType viewType){
+QDockWidget* ViewGroup::AddView2Dchannel(const ChannelDataWrapper& chanID, const ViewType viewType){
     return impl_->AddView2Dchannel(chanID, viewType);
 }
 
 std::pair<QDockWidget*, QDockWidget*>
-ViewGroup::AddView2Dsegmentation(const OmID segmentationID, const ViewType viewType){
-    return impl_->AddView2Dsegmentation(segmentationID, viewType);
+ViewGroup::AddView2Dsegmentation(const SegmentationDataWrapper& sdw, const ViewType viewType){
+    return impl_->AddView2Dsegmentation(sdw, viewType);
 }
 
-void ViewGroup::AddXYView(const OmID channelID, const OmID segmentationID){
-    return impl_->AddXYView(channelID, segmentationID);
+void ViewGroup::AddXYView(){
+    return impl_->AddXYView();
 }
 
-void ViewGroup::AddAllViews(const OmID channelID, const OmID segmentationID){
-    return impl_->AddAllViews(channelID, segmentationID);
+void ViewGroup::AddAllViews(){
+    return impl_->AddAllViews();
 }
 
-void ViewGroup::AddXYViewAndView3d(const OmID channelID, const OmID segmentationID){
-    return impl_->AddXYViewAndView3d(channelID, segmentationID);
+void ViewGroup::AddXYViewAndView3d(){
+    return impl_->AddXYViewAndView3d();
 }

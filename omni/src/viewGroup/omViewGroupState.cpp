@@ -23,6 +23,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     , zoomLevel_(new OmZoomLevel())
     , splitting_(new OmSplitting())
     , cutting_(new OmCutting())
+    , cdw_(new ChannelDataWrapper(1))
     , sdw_(new SegmentationDataWrapper(1))
     , toolBarManager_(NULL)
 {
@@ -122,4 +123,8 @@ void OmViewGroupState::setTool(const om::tool::mode tool){
 
 SegmentationDataWrapper OmViewGroupState::Segmentation() const {
     return *sdw_;
+}
+
+ChannelDataWrapper OmViewGroupState::Channel() const{
+    return *cdw_;
 }

@@ -76,7 +76,7 @@ public:
         bs.addFileNameAndPath(file);
         bs.BuildImage();
 
-        segmentationID_ = bs.GetDataWrapper().getID();
+        segmentationID_ = bs.GetDataWrapper().GetID();
     }
 
     static void ClearMST(const OmID segmentationID)
@@ -98,7 +98,9 @@ public:
         sdw.GetSegmentation().MSTUserEdges()->Save();
 
         OmSegments* segments = sdw.Segments();
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i){
+
+        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
+        {
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){
                 continue;

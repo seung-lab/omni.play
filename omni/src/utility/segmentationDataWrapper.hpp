@@ -68,7 +68,7 @@ public:
         return id_;
     }
 
-    inline OmID getID() const {
+    inline OmID GetID() const {
         return id_;
     }
 

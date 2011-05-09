@@ -3,7 +3,7 @@
 
 /* Widget for editing and inspecting groups.
  *
- * Author(s): Matt Wimer
+* Author(s): Matt Wimer
  */
 
 #include "common/omCommon.h"
@@ -23,31 +23,32 @@ class OmViewGroupState;
 class GroupsTable : public QWidget {
 Q_OBJECT
 public:
-    static void Repopulate(OmSegID id = 0);
-
     GroupsTable(OmViewGroupState* vgs);
+
+    static void Repopulate(OmSegID id = 0);
 
     void populateGroupTable(OmGroupID id);
 
-    void SetSegmentID(OmSegID seg);
+    void SetSegmentID(const OmSegID seg){
+        seg_ = seg;
+    }
 
 private Q_SLOTS:
     void doDeleteAction();
 
 private:
-    SegmentationDataWrapper sdw_;
+    OmViewGroupState *const vgs_;
+    const SegmentationDataWrapper sdw_;
 
     OmSegID seg_;
     OmGroupID groupid_;
 
     void populateGroupsList();
 
-    OmViewGroupState * mViewGroupState;
-
-    QGridLayout * mLayout;
-    OmGroupListWidget * mGroupsList;
-    QTableWidget * mGroupsTable;
-    QMenu * mMenu;
+    QGridLayout* mLayout;
+    OmGroupListWidget* mGroupsList;
+    QTableWidget* mGroupsTable;
+    QMenu* mMenu;
 };
 #endif
 

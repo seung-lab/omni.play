@@ -19,12 +19,8 @@ public:
     }
 
 private:
-    void doAction()
-    {
-        const OmID channelID = 1;
-        const OmID segmentationID = 1;
-
-        mParent->GetViewGroupState()->GetViewGroup()->AddXYView( channelID, segmentationID );
+    void doAction(){
+        mParent->GetViewGroupState()->GetViewGroup()->AddXYView();
     }
 };
 

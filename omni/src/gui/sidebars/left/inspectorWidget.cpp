@@ -56,12 +56,16 @@ InspectorWidget::~InspectorWidget()
     OmAppState::SetInspector(NULL);
 }
 
-void InspectorWidget::openChannelView(OmID chanID, ViewType vtype){
-    vgs_->GetViewGroup()->AddView2Dchannel(chanID, vtype);
+void InspectorWidget::openChannelView(OmID chanID, ViewType vtype)
+{
+    const ChannelDataWrapper cdw(chanID);
+    vgs_->GetViewGroup()->AddView2Dchannel(cdw, vtype);
 }
 
-void InspectorWidget::openSegmentationView(OmID segmentationID, ViewType vtype){
-    vgs_->GetViewGroup()->AddView2Dsegmentation(segmentationID, vtype);
+void InspectorWidget::openSegmentationView(OmID segmentationID, ViewType vtype)
+{
+    const SegmentationDataWrapper sdw(segmentationID);
+    vgs_->GetViewGroup()->AddView2Dsegmentation(sdw, vtype);
 }
 
 QTreeWidget* InspectorWidget::setupFilterList()
@@ -95,7 +99,7 @@ void InspectorWidget::populateDataSrcListWidget()
         ChannelDataWrapper cdw = dwc.getChannelDataWrapper();
         QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget_);
         row->setText(NAME_COL, cdw.getName());
-        row->setText(ID_COL, QString("%1").arg(cdw.getID()));
+        row->setText(ID_COL, QString("%1").arg(cdw.GetID()));
         row->setText(NOTE_COL, cdw.getNote());
         row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
         setRowFlagsAndCheckState(row, GuiUtils::getCheckState(cdw.isEnabled()));
@@ -109,7 +113,7 @@ void InspectorWidget::populateDataSrcListWidget()
         SegmentationDataWrapper sdw = dwc.GetSDW();
         QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget_);
         row->setText(NAME_COL, sdw.GetName());
-        row->setText(ID_COL, QString("%1").arg(sdw.getID()));
+        row->setText(ID_COL, QString("%1").arg(sdw.GetID()));
         row->setText(NOTE_COL, sdw.getNote());
         row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
         setRowFlagsAndCheckState(row, GuiUtils::getCheckState(sdw.isEnabled()));
@@ -128,7 +132,7 @@ void InspectorWidget::populateDataSrcListWidget()
 void InspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 {
     ElementListBox::Reset();
-    ElementListBox::SetTitle(QString("Channel %1").arg(cdw.getID()));
+    ElementListBox::SetTitle(QString("Channel %1").arg(cdw.GetID()));
     ElementListBox::AddTab(0, setupFilterList(), "Filters");
 
     filterListWidget_->clear();
@@ -141,10 +145,10 @@ void InspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
     FOR_EACH(iter, filters)
     {
         OmFilter2d* filterPtr = *iter;
-        FilterDataWrapper filter(cdw.getID(), filterPtr->GetID());
+        FilterDataWrapper filter(cdw.GetID(), filterPtr->GetID());
         QTreeWidgetItem *row = new QTreeWidgetItem(filterListWidget_);
         row->setText(NAME_COL, filter.getName());
-        row->setText(ID_COL, QString("%1").arg(filter.getID()));
+        row->setText(ID_COL, QString("%1").arg(filter.GetID()));
         row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(filter));
         //row->setText(NOTE_COL, filter->getNote());
         row->setText(NOTE_COL, "");
@@ -177,7 +181,7 @@ void InspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem* current)
     filObjectInspectorWidget_ = new FilObjectInspector(this, fdw);
 
     inspectorProperties_->SetOrReplaceWidget(filObjectInspectorWidget_,
-                                             QString("Filter %1 Inspector").arg(fdw.getID()));
+                                             QString("Filter %1 Inspector").arg(fdw.GetID()));
 }
 
 void InspectorWidget::addChannelToVolume()
@@ -414,7 +418,7 @@ void InspectorWidget::selectChannelView(QAction* act)
         deleteChannel(cdw);
 
     } else {
-        triggerChannelView(cdw.getID(), getViewType(act));
+        triggerChannelView(cdw.GetID(), getViewType(act));
     }
 }
 
@@ -465,7 +469,7 @@ void InspectorWidget::selectSegmentationView(QAction* act)
         showMSTtable(sdw);
 
     } else {
-        triggerSegmentationView(sdw.getID(), getViewType(act));
+        triggerSegmentationView(sdw.GetID(), getViewType(act));
     }
 }
 
@@ -477,7 +481,7 @@ void InspectorWidget::addChannelToSplitter(ChannelDataWrapper cdw)
                 this, SLOT(addFilter()));
 
     inspectorProperties_->SetOrReplaceWidget(channelInspectorWidget_,
-                                             QString("Channel %1 Inspector").arg(cdw.getID()));
+                                             QString("Channel %1 Inspector").arg(cdw.GetID()));
 }
 
 void InspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
@@ -492,7 +496,7 @@ void InspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
 
     ElementListBox::Reset();
 
-    const OmID segmentationID = sdw.getID();
+    const OmID segmentationID = sdw.GetID();
 
     mainWindow_->cleanViewsOnVolumeChange(CHANNEL, segmentationID);
 
@@ -509,7 +513,7 @@ void InspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
             {
                 OmSegmentation* segmentation = filter->GetSegmentation();
 
-                if(segmentation->getID() == segmentationID){
+                if(segmentation->GetID() == segmentationID){
                     mainWindow_->cleanViewsOnVolumeChange(CHANNEL, *channelID);
                 }
             }
@@ -534,7 +538,7 @@ void InspectorWidget::deleteChannel(ChannelDataWrapper cdw)
     {
         inspectorProperties_->CloseDialog();
         ElementListBox::Reset();
-        mainWindow_->cleanViewsOnVolumeChange(CHANNEL, cdw.getID());
+        mainWindow_->cleanViewsOnVolumeChange(CHANNEL, cdw.GetID());
         cdw.Remove();
         populateDataSrcListWidget();
     }

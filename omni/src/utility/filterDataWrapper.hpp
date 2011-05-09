@@ -13,8 +13,8 @@ public:
     FilterDataWrapper()
     {}
 
-    FilterDataWrapper(const OmID channelID, const OmID ID)
-        : mID(ID)
+    FilterDataWrapper(const OmID channelID, const OmID id)
+        : mID(id)
         , mChannelID(channelID)
     {}
 
@@ -22,7 +22,7 @@ public:
         return mChannelID;
     }
 
-    OmID getID() const {
+    OmID GetID() const {
         return mID;
     }
 

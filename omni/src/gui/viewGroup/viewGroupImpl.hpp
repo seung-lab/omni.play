@@ -44,9 +44,9 @@ public:
         mainWindowUtils_->InsertDockIntoGroup4View(vgw);
     }
 
-    QDockWidget* AddView2Dchannel(const OmID chanID, const ViewType viewType)
+    QDockWidget* AddView2Dchannel(const ChannelDataWrapper& cdw, const ViewType viewType)
     {
-        ViewGroupWidgetInfo vgw = utils_->CreateView2dChannel(chanID, viewType);
+        ViewGroupWidgetInfo vgw = utils_->CreateView2dChannel(cdw, viewType);
 
         std::pair<QDockWidget*, QDockWidget*> dockAndCompliment =
             mainWindowUtils_->InsertDockIntoGroup4View(vgw);
@@ -57,9 +57,9 @@ public:
     }
 
     std::pair<QDockWidget*, QDockWidget*>
-    AddView2Dsegmentation(const OmID segmentationID, const ViewType viewType)
+    AddView2Dsegmentation(const SegmentationDataWrapper& sdw, const ViewType viewType)
     {
-        ViewGroupWidgetInfo vgw = utils_->CreateView2dSegmentation(segmentationID, viewType);
+        ViewGroupWidgetInfo vgw = utils_->CreateView2dSegmentation(sdw, viewType);
 
         std::pair<QDockWidget*, QDockWidget*> dockAndCompliment =
             mainWindowUtils_->InsertDockIntoGroup4View(vgw);
@@ -69,42 +69,48 @@ public:
         return dockAndCompliment;
     }
 
-    void AddXYView(const OmID channelID, const OmID segmentationID)
+    void AddXYView()
     {
         Q_FOREACH(QDockWidget* w, utils_->getAllDockWidgets()){
             delete w;
         }
 
-        if(utils_->canShowChannel(channelID)){
-            AddView2Dchannel(channelID, XY_VIEW);
+        const ChannelDataWrapper cdw = vgs_->Channel();
+        const SegmentationDataWrapper sdw = vgs_->Segmentation();
+
+        if(utils_->canShowChannel(cdw)){
+            AddView2Dchannel(cdw, XY_VIEW);
         }
 
-        if(utils_->canShowSegmentation(segmentationID)){
-            AddView2Dsegmentation(segmentationID, XY_VIEW);
+        if(utils_->canShowSegmentation(sdw)){
+            AddView2Dsegmentation(sdw, XY_VIEW);
         }
     }
 
-    void AddAllViews(const OmID channelID, const OmID segmentationID)
+    void AddAllViews()
     {
         Q_FOREACH(QDockWidget* w, utils_->getAllDockWidgets()){
             delete w;
         }
 
-        const bool validChan = utils_->canShowChannel(channelID);
-        const bool validSeg = utils_->canShowSegmentation(segmentationID);
+        const ChannelDataWrapper cdw = vgs_->Channel();
+        const SegmentationDataWrapper sdw = vgs_->Segmentation();
+
+        const bool validChan = utils_->canShowChannel(cdw);
+        const bool validSeg = utils_->canShowSegmentation(sdw);
 
         if(validChan && validSeg)
         {
-            AddView2Dchannel(channelID, mainWindowUtils_->UpperLeft());
-            AddView2Dchannel(channelID, mainWindowUtils_->UpperRight());
-            AddView2Dchannel(channelID, mainWindowUtils_->LowerLeft());
+            AddView2Dchannel(cdw, mainWindowUtils_->UpperLeft());
+            AddView2Dchannel(cdw, mainWindowUtils_->UpperRight());
+            AddView2Dchannel(cdw, mainWindowUtils_->LowerLeft());
 
-            AddView2Dsegmentation(segmentationID, mainWindowUtils_->UpperLeft());
+            AddView2Dsegmentation(sdw, mainWindowUtils_->UpperLeft());
 
             std::pair<QDockWidget*, QDockWidget*> dockAndCompliment =
-                AddView2Dsegmentation(segmentationID, mainWindowUtils_->UpperRight());
+                AddView2Dsegmentation(sdw, mainWindowUtils_->UpperRight());
 
-            AddView2Dsegmentation(segmentationID, mainWindowUtils_->LowerLeft());
+            AddView2Dsegmentation(sdw, mainWindowUtils_->LowerLeft());
 
             AddView3D4View();
 
@@ -113,45 +119,49 @@ public:
 
         } else {
             if(validChan){
-                AddView2Dchannel(channelID, mainWindowUtils_->UpperLeft());
-                AddView2Dchannel(channelID, mainWindowUtils_->UpperRight());
-                AddView2Dchannel(channelID, mainWindowUtils_->LowerLeft());
+                AddView2Dchannel(cdw, mainWindowUtils_->UpperLeft());
+                AddView2Dchannel(cdw, mainWindowUtils_->UpperRight());
+                AddView2Dchannel(cdw, mainWindowUtils_->LowerLeft());
             }
             if(validSeg){
-                AddView2Dsegmentation(segmentationID, mainWindowUtils_->UpperLeft());
-                AddView2Dsegmentation(segmentationID, mainWindowUtils_->UpperRight());
-                AddView2Dsegmentation(segmentationID, mainWindowUtils_->LowerLeft());
+                AddView2Dsegmentation(sdw, mainWindowUtils_->UpperLeft());
+                AddView2Dsegmentation(sdw, mainWindowUtils_->UpperRight());
+                AddView2Dsegmentation(sdw, mainWindowUtils_->LowerLeft());
                 AddView3D4View();
             }
         }
     }
 
-    void AddXYViewAndView3d(const OmID channelID, const OmID segmentationID)
+    void AddXYViewAndView3d()
     {
         Q_FOREACH(QDockWidget* w, utils_->getAllDockWidgets()){
             delete w;
         }
 
-        const bool showChannel = utils_->canShowChannel(channelID);
+        const ChannelDataWrapper cdw = vgs_->Channel();
+        const SegmentationDataWrapper sdw = vgs_->Segmentation();
+
+        const bool showChannel = utils_->canShowChannel(cdw);
         const ViewType viewType = XY_VIEW;
 
         QDockWidget* dockToSplit = NULL;
         if(showChannel){
-            dockToSplit = AddView2Dchannel(channelID, viewType);
+            dockToSplit = AddView2Dchannel(cdw, viewType);
         }
 
-        if(!utils_->canShowSegmentation(segmentationID)){
+        if(!utils_->canShowSegmentation(sdw)){
             return;
         }
 
         if(dockToSplit)
         {
             addView3D2View(dockToSplit);
-            AddView2Dsegmentation(segmentationID, viewType);
+            AddView2Dsegmentation(sdw, viewType);
 
         } else {
             std::pair<QDockWidget*, QDockWidget*> dockAndCompliment =
-                AddView2Dsegmentation(segmentationID, viewType);
+                AddView2Dsegmentation(sdw, viewType);
+
             dockToSplit = dockAndCompliment.first;
             addView3D2View(dockToSplit);
         }

@@ -111,9 +111,8 @@ void ChanInspector::on_notesEdit_textChanged()
     cdw->GetChannel().SetNote(notesEdit->toPlainText());
 }
 
-OmID ChanInspector::getChannelID()
-{
-    return cdw->getID();
+OmID ChanInspector::getChannelID(){
+    return cdw->GetID();
 }
 
 void ChanInspector::populateChannelInspector()

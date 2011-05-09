@@ -299,7 +299,7 @@ void Headless::processLine(const QString& line, const QString&)
             return;
         }
         QString path = args[0];
-        if (!QDir::QDir(path).exists()){
+        if (!QDir(path).exists()){
             printf("Directory does not exist.\n");
             return;
         }
@@ -431,10 +431,12 @@ void Headless::processLine(const QString& line, const QString&)
         }
 
         OmBuildSegmentation bs;
-        segmentationID_ = bs.GetDataWrapper().getID();
+        segmentationID_ = bs.GetDataWrapper().GetID();
 
         QDir dir(args[1]);
-        Q_FOREACH(QFileInfo f, dir.entryInfoList()){
+
+        Q_FOREACH(QFileInfo f, dir.entryInfoList())
+        {
             if(!f.isFile()){
                 continue;
             }

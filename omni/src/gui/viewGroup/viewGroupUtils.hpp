@@ -161,37 +161,33 @@ public:
         return biggest;
     }
 
-    bool canShowChannel(const OmID channelID)
+    bool canShowChannel(const ChannelDataWrapper& cdw)
     {
-        ChannelDataWrapper cdw(channelID);
-        if(cdw.IsChannelValid())
-        {
-            if(cdw.IsBuilt()){
-                return true;
-
-            } else {
-                OmTellInfo("channel " + om::string::num(channelID) + " is not built");
-                return false;
-            }
+        if(!cdw.IsChannelValid()){
+            return false;
         }
 
+        if(cdw.IsBuilt()){
+            return true;
+        }
+
+        OmTellInfo("channel " + om::string::num(cdw.GetID()) + " is not built");
         return false;
     }
 
-    bool canShowSegmentation(const OmID segmentationID)
+    bool canShowSegmentation(const SegmentationDataWrapper& sdw)
     {
-        SegmentationDataWrapper sdw(segmentationID);
-        if(sdw.IsSegmentationValid())
-        {
-            if(sdw.IsBuilt()){
-                return true;
-            } else {
-                OmTellInfo("segmentation " + om::string::num(segmentationID) + " is not built");
-                return false;
-            }
+        if(!sdw.IsSegmentationValid()){
+            return false;
         }
 
+        if(sdw.IsBuilt()){
+            return true;
+        }
+
+        OmTellInfo("segmentation " + om::string::num(sdw.GetID()) + " is not built");
         return false;
+
     }
 
     void wireDockWithView2d(QWidget* widget,
@@ -227,9 +223,8 @@ public:
         return vgw;
     }
 
-    ViewGroupWidgetInfo CreateView2dChannel(const OmID chanID, const ViewType viewType)
+    ViewGroupWidgetInfo CreateView2dChannel(const ChannelDataWrapper& cdw, const ViewType viewType)
     {
-        ChannelDataWrapper cdw(chanID);
         OmChannel& chan = cdw.GetChannel();
 
         const QString name = getViewName(chan.GetName(), viewType);
@@ -246,10 +241,8 @@ public:
         return vgw;
     }
 
-    ViewGroupWidgetInfo CreateView2dSegmentation(const OmID segmentationID, const ViewType viewType)
+    ViewGroupWidgetInfo CreateView2dSegmentation(const SegmentationDataWrapper& sdw, const ViewType viewType)
     {
-        SegmentationDataWrapper sdw(segmentationID);
-
         const QString name = getViewName(sdw.GetName().toStdString(), viewType);
 
         ViewGroupWidgetInfo vgw(name, VIEW2D_SEG, viewType);

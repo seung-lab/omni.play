@@ -38,7 +38,7 @@ public:
     }
 
     QString Title(){
-        return QString("Segmentation %1 Inspector").arg(sdw_.getID());
+        return QString("Segmentation %1 Inspector").arg(sdw_.GetID());
     }
 
 private Q_SLOTS:

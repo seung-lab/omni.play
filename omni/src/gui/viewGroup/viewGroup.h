@@ -6,6 +6,8 @@
 
 class MainWindow;
 class OmViewGroupState;
+class ChannelDataWrapper;
+class SegmentationDataWrapper;
 namespace om { namespace gui { class viewGroupImpl; } }
 
 class ViewGroup {
@@ -13,17 +15,17 @@ public:
     ViewGroup(MainWindow*, OmViewGroupState*);
     ~ViewGroup();
 
-    QDockWidget* AddView2Dchannel(const OmID chan_id, const ViewType vtype);
+    QDockWidget* AddView2Dchannel(const ChannelDataWrapper& cdw, const ViewType vtype);
 
     std::pair<QDockWidget*,QDockWidget*>
-    AddView2Dsegmentation(const OmID segmentation_id, const ViewType vtype);
+    AddView2Dsegmentation(const SegmentationDataWrapper& sdw, const ViewType vtype);
 
     void AddView3D();
     void AddView3D4View();
 
-    void AddAllViews(const OmID channelID, const OmID segmentationID);
-    void AddXYView(const OmID channelID, const OmID segmentationID);
-    void AddXYViewAndView3d(const OmID channelID, const OmID segmentationID);
+    void AddAllViews();
+    void AddXYView();
+    void AddXYViewAndView3d();
 
 private:
     MainWindow *const mainWindow_;

@@ -11,18 +11,12 @@
 #include <QMenu>
 
 // TODO: fixme!
-static const int SegmentationID = 1;
 static GroupsTable* gTable = NULL;
-
-void GroupsTable::SetSegmentID(OmSegID seg)
-{
-    seg_ = seg;
-}
 
 GroupsTable::GroupsTable(OmViewGroupState* vgs)
     : QWidget()
-    , sdw_(SegmentationID)
-    , mViewGroupState(vgs)
+    , vgs_(vgs)
+    , sdw_(vgs->Segmentation())
 {
     mLayout = new QGridLayout();
     this->setLayout(mLayout);
@@ -36,11 +30,11 @@ GroupsTable::GroupsTable(OmViewGroupState* vgs)
     mGroupsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     mLayout->addWidget(mGroupsTable,0,1,1,1);
 
-    mMenu = new QMenu ();
+    mMenu = new QMenu();
     mMenu->addSeparator();
     QAction* delAction = new QAction(QString("Remove"), this);
     om::connect(delAction, SIGNAL(triggered(bool)),
-            this, SLOT(doDeleteAction()));
+                this, SLOT(doDeleteAction()));
 
     mMenu->addAction(delAction);
 
@@ -76,6 +70,7 @@ void GroupsTable::Repopulate(OmSegID id)
     if(!gTable) {
         return;
     }
+
     gTable->populateGroupsList();
 
     if(id) {
@@ -98,7 +93,8 @@ void GroupsTable::populateGroupTable(OmGroupID id)
     mGroupsTable->setRowCount(set.size());
     int count = 0;
 
-    FOR_EACH(iter, set) {
+    FOR_EACH(iter, set)
+    {
         const OmSegID id = *iter;
         ++count;
 
@@ -121,4 +117,3 @@ void GroupsTable::populateGroupTable(OmGroupID id)
         mGroupsTable->setItem(count, 3, new QTableWidgetItem(QString::number(segment->size()), 0));
     }
 }
-

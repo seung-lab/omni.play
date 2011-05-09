@@ -32,8 +32,7 @@ SegmentListBase::SegmentListBase(QWidget* parent,
     setupPageButtons();
 }
 
-int SegmentListBase::getNumSegmentsPerPage()
-{
+int SegmentListBase::getNumSegmentsPerPage(){
     return 100;
 }
 
@@ -238,7 +237,7 @@ void SegmentListBase::searchOne(const QString& text)
 
     makeSegmentationActive(sdw, true);
 
-    OmSegmentCenter::CenterSegment(vgs_, sdw);
+    OmSegmentCenter::CenterSegment(vgs_);
 }
 
 void SegmentListBase::searchMany(const QStringList& args)
@@ -258,12 +257,10 @@ void SegmentListBase::searchMany(const QStringList& args)
     }
 
     sel.sendEvent();
-    // makeSegmentationActive(sdw_, true);
 
-    OmSegmentCenter::CenterSegment(vgs_, sdw_);
+    OmSegmentCenter::CenterSegment(vgs_);
 }
 
-void SegmentListBase::userJustClickedInThisSegmentList()
-{
+void SegmentListBase::userJustClickedInThisSegmentList(){
     ElementListBox::SetActiveTab(this);
 }

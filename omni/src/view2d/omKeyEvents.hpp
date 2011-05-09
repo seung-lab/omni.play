@@ -62,8 +62,7 @@ public:
             break;
 
         case Qt::Key_C:
-            OmSegmentCenter::CenterSegment(state_->getViewGroupState(),
-                                           state_->GetSDW());
+            OmSegmentCenter::CenterSegment(state_->getViewGroupState());
             break;
 
         case Qt::Key_W:

@@ -36,7 +36,7 @@ public:
         : id_(ID)
     {}
 
-    inline OmID getID() const {
+    inline OmID GetID() const {
         return id_;
     }
 

@@ -105,7 +105,7 @@ private:
         dock->setAllowedAreas(Qt::AllDockWidgetAreas);
         dock->setAttribute(Qt::WA_DeleteOnClose);
 
-        mainWindow_->mMenuBar->GetWindowMenu()->addAction(dock->toggleViewAction());
+        // mainWindow_->mMenuBar->GetWindowMenu()->addAction(dock->toggleViewAction());
 
         return dock;
     }

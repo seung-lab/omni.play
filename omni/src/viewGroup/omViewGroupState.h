@@ -3,6 +3,7 @@
 
 #include "system/omManageableObject.h"
 
+class ChannelDataWrapper;
 class InspectorProperties;
 class MainWindow;
 class OmColorizers;
@@ -86,6 +87,7 @@ public:
                                          const int tileDim,
                                          const OmTileCoord&);
 
+    ChannelDataWrapper Channel() const;
     SegmentationDataWrapper Segmentation() const;
 
 private:
@@ -96,6 +98,7 @@ private:
     boost::scoped_ptr<OmSplitting> splitting_;
     boost::scoped_ptr<OmCutting> cutting_;
 
+    boost::scoped_ptr<ChannelDataWrapper> cdw_;
     boost::scoped_ptr<SegmentationDataWrapper> sdw_;
 
     float mBreakThreshold;

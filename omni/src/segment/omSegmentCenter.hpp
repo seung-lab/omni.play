@@ -71,9 +71,10 @@ private:
     }
 
 public:
-    template <typename T>
-    static void CenterSegment(OmViewGroupState* vgs, const T& sdw)
+    static void CenterSegment(OmViewGroupState* vgs)
     {
+        const SegmentationDataWrapper sdw = vgs->Segmentation();
+
         const boost::optional<DataCoord> voxelDC
             = findCenterOfSelectedSegments(sdw);
 

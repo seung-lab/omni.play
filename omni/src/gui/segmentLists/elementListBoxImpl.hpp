@@ -79,7 +79,8 @@ private:
 
         const SegmentDataWrapper& sdw = params.sdw;
 
-        if(sdw.IsSegmentationValid()){
+        if(sdw.IsSegmentationValid())
+        {
             sdw_ = sdw.MakeSegmentationDataWrapper();
             haveValidSDW_ = true;
 
@@ -89,7 +90,8 @@ private:
             recentList_->makeSegmentationActive(sdw, doScroll);
 
         } else {
-            if(haveValidSDW_){
+            if(haveValidSDW_)
+            {
                 workingList_->populate();
                 validList_->populate();
                 uncertainList_->populate();
@@ -97,12 +99,13 @@ private:
             }
         }
 
-        if(sdw_.IsSegmentationValid()){
+        if(sdw_.IsSegmentationValid())
+        {
             setTitle(GetSegmentationGroupBoxTitle(sdw_));
             updateValidBar(sdw_);
 
             if(params.autoCenter){
-                OmSegmentCenter::CenterSegment(vgs_, sdw_);
+                OmSegmentCenter::CenterSegment(vgs_);
             }
         }
     }
@@ -119,7 +122,7 @@ private:
     }
 
     QString GetSegmentationGroupBoxTitle(SegmentationDataWrapper sdw) {
-        return QString("Segmentation %1: Segments").arg(sdw.getID());
+        return QString("Segmentation %1: Segments").arg(sdw.GetID());
     }
 
 public:

@@ -68,11 +68,8 @@ void OmView3dUi::KeyPress(QKeyEvent* event)
 {
     switch(event->key()){
     case Qt::Key_C:
-    {
-        SegmentationDataWrapper sdw(1);
-        OmSegmentCenter::CenterSegment(vgs_, sdw);
+        OmSegmentCenter::CenterSegment(vgs_);
         break;
-    }
     case Qt::Key_Escape:
         resetWindow();
         break;
