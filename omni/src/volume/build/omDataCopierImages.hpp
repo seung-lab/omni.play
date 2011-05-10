@@ -1,5 +1,4 @@
-#ifndef OM_DATA_COPIED_IMAGES_HPP
-#define OM_DATA_COPIED_IMAGES_HPP
+#pragma once
 
 #include "volume/build/omDataCopierBase.hpp"
 #include "volume/build/omLoadImage.h"
@@ -58,4 +57,3 @@ protected:
 	}
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_PERC_DONE_WIDGET_HPP
-#define OM_PERC_DONE_WIDGET_HPP
+#pragma once
 
 #include "view3d/omView3dWidget.h"
 #include "common/omGl.h"
@@ -84,4 +83,3 @@ private:
     }
 };
 
-#endif

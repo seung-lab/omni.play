@@ -1,5 +1,4 @@
-#ifndef OM_MESH_DRAW_PLANNER_HPP
-#define OM_MESH_DRAW_PLANNER_HPP
+#pragma once
 
 #include "chunks/omSegChunk.h"
 #include "mesh/drawer/omFindChunksToDraw.hpp"
@@ -131,4 +130,3 @@ private:
     }
 };
 
-#endif

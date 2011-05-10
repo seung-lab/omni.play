@@ -1,5 +1,4 @@
-#ifndef OM_RAW_CHUNK_MEM_MAPPED_HPP
-#define OM_RAW_CHUNK_MEM_MAPPED_HPP
+#pragma once
 
 #include "chunks/omChunkCoord.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -67,4 +66,3 @@ private:
     }
 };
 
-#endif

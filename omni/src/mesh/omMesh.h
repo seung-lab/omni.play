@@ -1,5 +1,4 @@
-#ifndef OM_MIP_MESH_H
-#define OM_MIP_MESH_H
+#pragma once
 
 /**
  *  The mesh data associated with the region of a segment enclosed
@@ -63,4 +62,3 @@ private:
     bool hasData_;
 };
 
-#endif

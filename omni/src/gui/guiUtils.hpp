@@ -1,5 +1,4 @@
-#ifndef GUI_UTILS_HPP
-#define GUI_UTILS_HPP
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -40,4 +39,3 @@ public:
 	}
 };
 
-#endif

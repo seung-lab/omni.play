@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_LIST_GLOBAL_HPP
-#define OM_SEGMENT_LIST_GLOBAL_HPP
+#pragma once
 
 #include "segment/lists/omSegmentListsTypes.hpp"
 
@@ -51,4 +50,3 @@ public:
     }
 };
 
-#endif

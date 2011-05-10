@@ -1,5 +1,4 @@
-#ifndef OM_TILE_POOLS_HPP
-#define OM_TILE_POOLS_HPP
+#pragma once
 
 #include "tiles/pools/omTilePool.hpp"
 #include "zi/omUtility.h"
@@ -66,4 +65,3 @@ private:
     friend class zi::singleton<OmTilePools>;
 };
 
-#endif

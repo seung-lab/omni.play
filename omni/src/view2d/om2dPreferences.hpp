@@ -1,5 +1,4 @@
-#ifndef OM_2D_PREFERENCES_HPP
-#define OM_2D_PREFERENCES_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
@@ -76,4 +75,3 @@ private:
     friend class zi::singleton<Om2dPreferences>;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_TASK_MANAGER_CONTAINER_MIP_SORTED_HPP
-#define OM_TASK_MANAGER_CONTAINER_MIP_SORTED_HPP
+#pragma once
 
 #include "zi/omMutex.h"
 #include "utility/omSharedPtr.hpp"
@@ -76,4 +75,3 @@ public:
     }
 };
 
-#endif

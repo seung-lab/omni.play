@@ -1,5 +1,4 @@
-#ifndef OM_UNDO_COMMAND_HPP
-#define OM_UNDO_COMMAND_HPP
+#pragma once
 
 #include "system/omStateManager.h"
 #include "system/omUndoStack.hpp"
@@ -117,4 +116,3 @@ private:
     }
 };
 
-#endif

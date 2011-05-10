@@ -1,5 +1,4 @@
-#ifndef OM_MEM_MAPPED_VOLUME_IMPL_HPP
-#define OM_MEM_MAPPED_VOLUME_IMPL_HPP
+#pragma once
 
 #include "chunks/omChunkCoord.h"
 #include "common/omDebug.h"
@@ -111,4 +110,3 @@ private:
     }
 };
 
-#endif

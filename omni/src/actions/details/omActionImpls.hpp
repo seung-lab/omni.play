@@ -1,5 +1,4 @@
-#ifndef OM_ACTION_IMPLS_HPP
-#define OM_ACTION_IMPLS_HPP
+#pragma once
 
 #include "actions/details/omActionBase.hpp"
 
@@ -100,4 +99,3 @@ public:
     }
 };
 
-#endif

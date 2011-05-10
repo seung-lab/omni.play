@@ -1,5 +1,4 @@
-#ifndef OM_SEG_CHUNK_DATA_VISITORS_HPP
-#define OM_SEG_CHUNK_DATA_VISITORS_HPP
+#pragma once
 
 #include "chunks/omRawChunk.hpp"
 #include "chunks/omRawChunkSlicer.hpp"
@@ -297,4 +296,3 @@ private:
     const int numVoxelsInChunk_;
 };
 
-#endif

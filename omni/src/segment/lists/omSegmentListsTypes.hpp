@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_LISTS_TYPES_HPP
-#define OM_SEGMENT_LISTS_TYPES_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -55,4 +54,3 @@ om::shared_ptr<GUIPageOfSegments> getPage(const std::vector<SegInfo> list,
 } // gui
 } // om
 
-#endif

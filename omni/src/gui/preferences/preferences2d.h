@@ -1,5 +1,4 @@
-#ifndef PREFERENCES2D_H
-#define PREFERENCES2D_H
+#pragma once
 
 #include <QWidget>
 #include <QtGui>
@@ -34,6 +33,3 @@ private:
     QLineEdit *sideEdit;
     QLineEdit *mipEdit;
 };
-#endif
-
-

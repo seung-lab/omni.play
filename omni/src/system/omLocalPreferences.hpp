@@ -1,5 +1,4 @@
-#ifndef OM_LOCAL_CONFIGURATION_HPP
-#define OM_LOCAL_CONFIGURATION_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
@@ -103,4 +102,3 @@ private:
     friend class zi::singleton<OmLocalPreferences>;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef LOCAL_PREFERENCES_SYSTEM_H
-#define LOCAL_PREFERENCES_SYSTEM_H
+#pragma once
 
 #include <QtGui>
 
@@ -28,4 +27,3 @@ private:
     QGroupBox* makeCachePropBox();
     void init_cache_prop_values();
 };
-#endif

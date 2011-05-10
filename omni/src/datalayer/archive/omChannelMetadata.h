@@ -1,5 +1,4 @@
-#ifndef OM_CHANNEL_METADATA_HPP
-#define OM_CHANNEL_METADATA_HPP
+#pragma once
 
 class OmChannelMetadata {
 private:
@@ -8,4 +7,3 @@ public:
 
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_SMART_PTR_HPP
-#define OM_SMART_PTR_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omString.hpp"
@@ -77,4 +76,3 @@ private:
     };
 };
 
-#endif

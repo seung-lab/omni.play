@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_OPP_TYPES_HPP
-#define OM_BRUSH_OPP_TYPES_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -40,4 +39,3 @@ struct OmBrushOppInfo
     friend std::ostream& operator<<(std::ostream &out, const OmBrushOppInfo& i);
 };
 
-#endif

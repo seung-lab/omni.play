@@ -1,5 +1,4 @@
-#ifndef OM_MESH_DRAWER_H
-#define OM_MESH_DRAWER_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -34,4 +33,3 @@ private:
     void updateNumPrevRedraws(om::shared_ptr<OmVolumeCuller> culler);
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_CHUNK_VOXEL_ITERATOR_HPP
-#define OM_CHUNK_VOXEL_ITERATOR_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/omException.h"
@@ -87,4 +86,3 @@ private:
 	friend class boost::iterator_core_access;
 };
 
-#endif

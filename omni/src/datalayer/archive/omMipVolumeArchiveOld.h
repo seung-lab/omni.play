@@ -1,5 +1,4 @@
-#ifndef OM_MIP_VOLUME_ARCHIVE_OLD_H
-#define OM_MIP_VOLUME_ARCHIVE_OLD_H
+#pragma once
 
 #include "volume/omSegmentation.h"
 #include "volume/omChannel.h"
@@ -98,4 +97,3 @@ private:
 };
 
 
-#endif

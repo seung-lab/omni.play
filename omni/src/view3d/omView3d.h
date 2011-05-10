@@ -1,5 +1,4 @@
-#ifndef OM_VIEW3D_H
-#define OM_VIEW3D_H
+#pragma once
 
 #include "omCamera.h"
 #include "omView3dWidget.h"
@@ -128,4 +127,3 @@ private:
     friend class OmChunkExtentWidget;
 };
 
-#endif

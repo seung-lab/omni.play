@@ -1,5 +1,4 @@
-#ifndef VIEW_GROUP_WIDGET_INFO_H
-#define VIEW_GROUP_WIDGET_INFO_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -44,4 +43,3 @@ private:
     Qt::Orientation dir_;
 };
 
-#endif

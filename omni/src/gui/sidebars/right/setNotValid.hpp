@@ -1,5 +1,4 @@
-#ifndef SET_NOT_VALID_HPP
-#define SET_NOT_VALID_HPP
+#pragma once
 
 #include "common/omDebug.h"
 #include "gui/sidebars/right/validationGroup.h"
@@ -31,4 +30,3 @@ private:
 	}
 };
 
-#endif

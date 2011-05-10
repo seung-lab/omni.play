@@ -1,5 +1,4 @@
-#ifndef OM_MOUSE_EVENT_STATE_HPP
-#define OM_MOUSE_EVENT_STATE_HPP
+#pragma once
 
 class OmMouseEventState {
 public:
@@ -20,4 +19,3 @@ public:
     }
 };
 
-#endif

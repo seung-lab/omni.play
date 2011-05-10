@@ -1,5 +1,4 @@
-#ifndef OM_VOXEL_SET_VALUE_ACTION_H
-#define OM_VOXEL_SET_VALUE_ACTION_H
+#pragma once
 
 #include "actions/details/omUndoCommand.hpp"
 
@@ -28,4 +27,3 @@ private:
     om::shared_ptr<OmVoxelSetValueActionImpl> impl_;
 };
 
-#endif

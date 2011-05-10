@@ -1,5 +1,4 @@
-#ifndef OM_MATH_HPP
-#define OM_MATH_HPP
+#pragma once
 
 namespace om {
 namespace math {
@@ -76,4 +75,3 @@ inline double symmetricalRound(const double r){
 } // namespace math
 } // namespace om
 
-#endif

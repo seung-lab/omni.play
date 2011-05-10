@@ -1,5 +1,4 @@
-#ifndef GROUPS_TABLE_DROP_DOWN_MENU_BUTTON_HPP
-#define GROUPS_TABLE_DROP_DOWN_MENU_BUTTON_HPP
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 #include "gui/groupsTable/groupsTable.h"
@@ -26,4 +25,3 @@ private:
 
 };
 
-#endif

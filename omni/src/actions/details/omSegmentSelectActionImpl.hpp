@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_SELECT_ACTION_IMPL_HPP
-#define OM_SEGMENT_SELECT_ACTION_IMPL_HPP
+#pragma once
 
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/omCommon.h"
@@ -92,4 +91,3 @@ private:
     friend QTextStream& operator<<(QTextStream& out, const OmSegmentSelectActionImpl&);
 };
 
-#endif

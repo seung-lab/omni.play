@@ -1,5 +1,4 @@
-#ifndef OM_FILTER2D_H
-#define OM_FILTER2D_H
+#pragma once
 
 /*
  * Filter Object
@@ -89,4 +88,3 @@ private:
     friend QDataStream &operator>>(QDataStream&, OmFilter2d&);
 };
 
-#endif

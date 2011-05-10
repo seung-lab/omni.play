@@ -1,5 +1,4 @@
-#ifndef OM_GENERIC_MANAGER_H
-#define OM_GENERIC_MANAGER_H
+#pragma once
 
 /*
  * Templated generic manager for a objects that have an
@@ -157,6 +156,4 @@ private:
 
     friend class OmGenericManagerArchive;
 };
-
-#endif
 

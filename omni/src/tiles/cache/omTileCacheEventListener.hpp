@@ -1,5 +1,4 @@
-#ifndef OM_TILE_CACHE_EVENT_LISTENER_HPP
-#define OM_TILE_CACHE_EVENT_LISTENER_HPP
+#pragma once
 
 #include "events/details/omViewEvent.h"
 
@@ -19,4 +18,3 @@ public:
     OmTileCacheEventListener(OmTileCacheImpl* cache);
 };
 
-#endif

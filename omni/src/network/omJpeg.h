@@ -1,5 +1,4 @@
-#ifndef OM_JPEG_H
-#define OM_JPEG_H
+#pragma once
 
 #include "common/omStd.h"
 
@@ -15,4 +14,3 @@ void write8bit(const uint32_t width, const uint32_t height,
 } // namespace jpeg
 } // namespace om
 
-#endif

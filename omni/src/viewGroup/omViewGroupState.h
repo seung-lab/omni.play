@@ -1,5 +1,4 @@
-#ifndef OM_VIEW_GROUP_STATE_H
-#define OM_VIEW_GROUP_STATE_H
+#pragma once
 
 #include "system/omManageableObject.h"
 
@@ -113,4 +112,3 @@ private:
     bool mShowFilterInColor;
 };
 
-#endif

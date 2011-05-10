@@ -1,5 +1,4 @@
-#ifndef GROUP_BUTTON_TAG_H
-#define GROUP_BUTTON_TAG_H
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 #include "gui/sidebars/right/validationGroup.h"
@@ -12,4 +11,3 @@ class GroupButtonTag : public OmButton<ValidationGroup> {
 	void doAction();
 };
 
-#endif

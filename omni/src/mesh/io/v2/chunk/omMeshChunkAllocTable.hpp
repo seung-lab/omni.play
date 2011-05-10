@@ -1,5 +1,4 @@
-#ifndef OM_MESH_CHUNK_ALLOC_TABLE_V2_HPP
-#define OM_MESH_CHUNK_ALLOC_TABLE_V2_HPP
+#pragma once
 
 #include "datalayer/fs/omFileNames.hpp"
 #include "mesh/io/v2/chunk/omMemMappedAllocFile.hpp"
@@ -126,4 +125,3 @@ private:
     void registerMappedFile();
 };
 
-#endif

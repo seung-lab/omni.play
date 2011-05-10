@@ -1,5 +1,4 @@
-#ifndef OM_PTS_IN_CHUNK_HPP
-#define OM_PTS_IN_CHUNK_HPP
+#pragma once
 
 #include "view2d/omSliceCache.hpp"
 
@@ -81,4 +80,3 @@ public:
     }
 };
 
-#endif

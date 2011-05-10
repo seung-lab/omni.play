@@ -1,5 +1,4 @@
-#ifndef OPEN_VIEW_GROUP_BUTTON_H
-#define OPEN_VIEW_GROUP_BUTTON_H
+#pragma once
 
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/widgets/omButton.hpp"
@@ -24,4 +23,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_VIEW2D_MANAGER_HPP
-#define OM_VIEW2D_MANAGER_HPP
+#pragma once
 
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
@@ -18,4 +17,3 @@ public:
     }
 };
 
-#endif

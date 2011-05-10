@@ -1,5 +1,4 @@
-#ifndef OM_DATA_PATHS_H
-#define OM_DATA_PATHS_H
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -29,4 +28,3 @@ public:
 								   const int level);
 };
 
-#endif

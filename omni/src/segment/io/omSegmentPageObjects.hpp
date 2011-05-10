@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_PAGE_OBJECTS_HPP
-#define OM_SEGMENT_PAGE_OBJECTS_HPP
+#pragma once
 
 #include "segment/omSegment.h"
 #include "utility/omSmartPtr.hpp"
@@ -34,4 +33,3 @@ public:
     }
 };
 
-#endif

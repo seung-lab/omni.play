@@ -1,5 +1,4 @@
-#ifndef OM_STRING_HPP
-#define OM_STRING_HPP
+#pragma once
 
 #include <zi/for_each.hpp>
 
@@ -66,4 +65,3 @@ inline static std::string bytesToMB(const T num)
 };
 };
 
-#endif

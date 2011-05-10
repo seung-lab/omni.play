@@ -1,5 +1,4 @@
-#ifndef OM_COPY_FIST_N_HPP
-#define OM_COPY_FIST_N_HPP
+#pragma once
 
 namespace om {
 namespace utils {
@@ -36,4 +35,3 @@ static std::string MakeShortStrList(const C& src, const uint32_t max)
 } // namespace utils
 } // namespace om
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_TILE_CACHE_FRAME_CONTAINER_HPP
-#define OM_TILE_CACHE_FRAME_CONTAINER_HPP
+#pragma once
 
 
 class OmTileCacheFrameContainer {
@@ -13,4 +12,3 @@ public:
 
 };
 
-#endif

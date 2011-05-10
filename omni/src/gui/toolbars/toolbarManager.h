@@ -1,5 +1,4 @@
-#ifndef TOOLBAR_MANAGER_H
-#define TOOLBAR_MANAGER_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -37,4 +36,3 @@ private:
     void deleteMainBar();
 };
 
-#endif

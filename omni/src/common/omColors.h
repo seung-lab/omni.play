@@ -1,5 +1,4 @@
-#ifndef OM_COLORS_H
-#define OM_COLORS_H
+#pragma once
 
 #include "common/omStd.h"
 
@@ -23,4 +22,3 @@ struct OmColorARGB {
 };
 std::ostream& operator<<(std::ostream &out, const OmColorARGB& c);
 
-#endif

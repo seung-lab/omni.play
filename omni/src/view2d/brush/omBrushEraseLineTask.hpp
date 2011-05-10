@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_ERASE_LINE_TASK_HPP
-#define OM_BRUSH_ERASE_LINE_TASK_HPP
+#pragma once
 
 #include "zi/omThreads.h"
 #include "view2d/brush/omBrushEraseLine.hpp"
@@ -29,4 +28,3 @@ public:
     }
 };
 
-#endif

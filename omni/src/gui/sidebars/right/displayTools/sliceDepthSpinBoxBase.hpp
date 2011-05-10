@@ -1,5 +1,4 @@
-#ifndef SLICE_DEPTH_SPIN_BOX_BASE_HPP
-#define SLICE_DEPTH_SPIN_BOX_BASE_HPP
+#pragma once
 
 #include "common/omDebug.h"
 #include "events/details/omViewEvent.h"
@@ -68,4 +67,3 @@ private:
     void ViewBlockingRedrawEvent(){}
 };
 
-#endif

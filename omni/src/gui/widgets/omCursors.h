@@ -1,5 +1,4 @@
-#ifndef OM_CURSORS_H
-#define OM_CURSORS_H
+#pragma once
 
 #include <QtGui>
 
@@ -21,4 +20,3 @@ private:
     static QCursor figureOutCursor();
 };
 
-#endif

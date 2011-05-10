@@ -1,5 +1,4 @@
-#ifndef OM_MESH_READER_V1_HPP
-#define OM_MESH_READER_V1_HPP
+#pragma once
 
 #include "common/omDebug.h"
 #include "datalayer/hdf5/omHdf5.h"
@@ -173,4 +172,3 @@ private:
     }
 };
 
-#endif

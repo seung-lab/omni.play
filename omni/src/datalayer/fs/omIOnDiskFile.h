@@ -1,5 +1,4 @@
-#ifndef OM_I_ON_DISK_FILE_H
-#define OM_I_ON_DISK_FILE_H
+#pragma once
 
 template <typename T>
 class OmIOnDiskFile {
@@ -13,4 +12,3 @@ public:
     virtual std::string GetBaseFileName() const = 0;
 };
 
-#endif

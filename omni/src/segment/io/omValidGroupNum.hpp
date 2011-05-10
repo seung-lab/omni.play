@@ -1,5 +1,4 @@
-#ifndef OM_VALID_GROUP_NUM_HPP
-#define OM_VALID_GROUP_NUM_HPP
+#pragma once
 
 #include "datalayer/archive/omDataArchiveStd.hpp"
 #include "datalayer/fs/omFileNames.hpp"
@@ -124,4 +123,3 @@ private:
 
 };
 
-#endif

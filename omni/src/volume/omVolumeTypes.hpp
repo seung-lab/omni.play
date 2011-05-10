@@ -1,5 +1,4 @@
-#ifndef OM_VOLUME_TYPES_HPP
-#define OM_VOLUME_TYPES_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "boost/variant.hpp"
@@ -41,4 +40,3 @@ public:
     static int getHDF5MemoryType(const OmVolDataType type);
 };
 
-#endif

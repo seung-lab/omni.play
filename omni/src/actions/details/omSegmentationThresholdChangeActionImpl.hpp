@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENTATION_THRESHOLD_CHANGE_IMPL_HPP
-#define OM_SEGMENTATION_THRESHOLD_CHANGE_IMPL_HPP
+#pragma once
 
 #include "actions/io/omActionLogger.hpp"
 #include "common/omCommon.h"
@@ -71,4 +70,3 @@ private:
     friend class QTextStream &operator<<(QTextStream& out, const OmSegmentationThresholdChangeActionImpl& a);
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_POOLED_TILE_HPP
-#define OM_POOLED_TILE_HPP
+#pragma once
 
 #include "tiles/pools/omTilePool.hpp"
 #include "tiles/pools/omTilePools.hpp"
@@ -35,4 +34,3 @@ public:
     }
 };
 
-#endif

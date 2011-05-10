@@ -1,5 +1,4 @@
-#ifndef WATERSHED_LIB_RAW_CC_BINARY_H_
-#define WATERSHED_LIB_RAW_CC_BINARY_H_
+#pragma once
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/unordered_map.hpp>
@@ -18,6 +17,4 @@ rawQuickieWS(const float* connections,
              std::vector<std::pair<float, int64_t> >   &dendQueue,
              std::vector<int> &sizes);
 
-
-#endif
 

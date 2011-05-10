@@ -1,5 +1,4 @@
-#ifndef OM_ALPHA_VEGA_MODE_HPP
-#define OM_ALPHA_VEGA_MODE_HPP
+#pragma once
 
 #include "common/omDebug.h"
 #include "events/details/omView3dEvent.h"
@@ -37,4 +36,3 @@ private:
     bool stop_;
 };
 
-#endif

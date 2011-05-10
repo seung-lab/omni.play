@@ -1,5 +1,4 @@
-#ifndef OM_MESH_SEGMENT_LIST_TASK_HPP
-#define OM_MESH_SEGMENT_LIST_TASK_HPP
+#pragma once
 
 #include "zi/omThreads.h"
 
@@ -28,4 +27,3 @@ public:
     void run();
 };
 
-#endif

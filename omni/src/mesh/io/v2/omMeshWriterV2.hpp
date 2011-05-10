@@ -1,5 +1,4 @@
-#ifndef OM_MESH_IO_V2_HPP
-#define OM_MESH_IO_V2_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "mesh/io/omDataForMeshLoad.hpp"
@@ -134,4 +133,3 @@ public:
     }
 };
 
-#endif

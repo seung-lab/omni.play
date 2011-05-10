@@ -1,5 +1,4 @@
-#ifndef OM_FIND_CHUNKS_TO_DRAW_HPP
-#define OM_FIND_CHUNKS_TO_DRAW_HPP
+#pragma once
 
 #include "chunks/omSegChunk.h"
 #include "volume/omSegmentation.h"
@@ -92,4 +91,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef SAVE_BUTTON_H
-#define SAVE_BUTTON_H
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
@@ -11,4 +10,3 @@ private:
     void doAction();
 };
 
-#endif

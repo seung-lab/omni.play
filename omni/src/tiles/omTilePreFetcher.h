@@ -1,5 +1,4 @@
-#ifndef OM_TILE_PRE_FETCHER_HPP
-#define OM_TILE_PRE_FETCHER_HPP
+#pragma once
 
 #include "threads/omTaskManager.hpp"
 
@@ -21,4 +20,3 @@ private:
     OmThreadPool mThreadPool;
 };
 
-#endif

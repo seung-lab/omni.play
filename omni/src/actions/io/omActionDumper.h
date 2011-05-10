@@ -1,5 +1,4 @@
-#ifndef OM_ACTION_DUMPER_HPP
-#define OM_ACTION_DUMPER_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "actions/io/omActionTypes.h"
@@ -48,4 +47,3 @@ private:
     }
 };
 
-#endif

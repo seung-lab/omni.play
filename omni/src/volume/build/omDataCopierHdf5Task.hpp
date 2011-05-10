@@ -1,5 +1,4 @@
-#ifndef OM_DATA_COPIED_HDF5_TASK_HPP
-#define OM_DATA_COPIED_HDF5_TASK_HPP
+#pragma once
 
 #include "chunks/omChunk.h"
 #include "common/omCommon.h"
@@ -168,4 +167,3 @@ private:
     }
 };
 
-#endif

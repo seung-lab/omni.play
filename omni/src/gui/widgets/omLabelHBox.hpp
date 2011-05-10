@@ -1,5 +1,4 @@
-#ifndef OM_LABEL_HPP
-#define OM_LABEL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -47,4 +46,3 @@ public:
 	}
 };
 
-#endif

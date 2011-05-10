@@ -1,5 +1,4 @@
-#ifndef OM_CHUNK_UNIQUE_VALUES_MANAGER_HPP
-#define OM_CHUNK_UNIQUE_VALUES_MANAGER_HPP
+#pragma once
 
 #include "chunks/uniqueValues/omChunkUniqueValuesPerThreshold.hpp"
 #include "chunks/uniqueValues/omThresholdsInChunk.hpp"
@@ -40,4 +39,3 @@ public:
     }
 };
 
-#endif

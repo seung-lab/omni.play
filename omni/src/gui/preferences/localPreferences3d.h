@@ -1,5 +1,4 @@
-#ifndef LOCAL_PREFERENCES3D_H
-#define LOCAL_PREFERENCES3D_H
+#pragma once
 
 #include <QtGui>
 
@@ -27,4 +26,3 @@ private:
     QCheckBox* crosshairCheckBox;
     QCheckBox* discoCheckBox;
 };
-#endif

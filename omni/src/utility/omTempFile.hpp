@@ -1,5 +1,4 @@
-#ifndef OM_TEMP_FILE_HPP
-#define OM_TEMP_FILE_HPP
+#pragma once
 
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
@@ -68,4 +67,3 @@ private:
     }
 };
 
-#endif

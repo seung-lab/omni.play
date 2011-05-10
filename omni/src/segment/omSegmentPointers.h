@@ -1,8 +1,6 @@
-#ifndef OM_SEGMENT_POINTERS_H
-#define OM_SEGMENT_POINTERS_H
+#pragma once
 
 #include "segment/omSegment.h"
 
 typedef std::deque<OmSegment*> OmSegPtrList;
 
-#endif

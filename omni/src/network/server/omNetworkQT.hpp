@@ -1,5 +1,4 @@
-#ifndef OM_NEWTORK_QT_HPP
-#define OM_NEWTORK_QT_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include <QTcpSocket>
@@ -16,4 +15,3 @@ void WriteString(QTcpSocket* socket, const QString& str);
 } // namespace networkQT
 } // namespace om
 
-#endif

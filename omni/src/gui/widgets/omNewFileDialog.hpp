@@ -1,5 +1,4 @@
-#ifndef OM_NEW_FILE_DIALOG_HPP
-#define OM_NEW_FILE_DIALOG_HPP
+#pragma once
 
 #include "datalayer/fs/omFileNames.hpp"
 
@@ -77,4 +76,3 @@ private:
     }
 };
 
-#endif

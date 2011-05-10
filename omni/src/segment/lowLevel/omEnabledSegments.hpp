@@ -1,5 +1,4 @@
-#ifndef OM_ENABLED_SEGMENTS_HPP
-#define OM_ENABLED_SEGMENTS_HPP
+#pragma once
 
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
 #include "zi/omUtility.h"
@@ -64,4 +63,3 @@ public:
     }
 };
 
-#endif

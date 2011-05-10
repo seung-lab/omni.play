@@ -1,5 +1,4 @@
-#ifndef CHANINSPECTOR_H
-#define CHANINSPECTOR_H
+#pragma once
 
 #include "ui_chanInspector.h"
 #include "volume/omChannel.h"
@@ -40,4 +39,3 @@ private:
     QStringList getFileList();
     QFileInfoList getFileInfoList();
 };
-#endif

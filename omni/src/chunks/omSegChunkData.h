@@ -1,5 +1,4 @@
-#ifndef OM_SEG_CHUNK_DATA_H
-#define OM_SEG_CHUNK_DATA_H
+#pragma once
 
 #include "chunks/omChunkCoord.h"
 #include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
@@ -42,4 +41,3 @@ private:
     OmRawDataPtrs& getRawData();
 };
 
-#endif

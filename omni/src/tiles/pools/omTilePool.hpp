@@ -1,5 +1,4 @@
-#ifndef OM_TILE_POOL_HPP
-#define OM_TILE_POOL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "utility/omLockedPODs.hpp"
@@ -187,4 +186,3 @@ private:
     }
 };
 
-#endif

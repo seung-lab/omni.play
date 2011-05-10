@@ -1,5 +1,4 @@
-#ifndef SEG_INSPECTOR_EXPORT_BUTTON_H
-#define SEG_INSPECTOR_EXPORT_BUTTON_H
+#pragma once
 
 #include "datalayer/hdf5/omExportVolToHdf5.hpp"
 #include "gui/widgets/omButton.hpp"
@@ -36,4 +35,3 @@ private:
 } // namespace segmentationInspector
 } // namespace om
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _ZI_TREES_DISJOINT_SETS_HPP_
-#define _ZI_TREES_DISJOINT_SETS_HPP_
+#pragma once
 
 #include <cstring>
 #include <cassert>
@@ -63,4 +62,3 @@ public:
 
 }
 
-#endif

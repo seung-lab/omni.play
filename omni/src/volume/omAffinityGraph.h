@@ -1,5 +1,4 @@
-#ifndef OM_AFFINITY_GRAPH_H
-#define OM_AFFINITY_GRAPH_H
+#pragma once
 
 /**
  * TODO: serialize!! (purcaro)
@@ -34,4 +33,3 @@ public:
 
 };
 
-#endif

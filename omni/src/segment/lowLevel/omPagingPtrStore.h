@@ -1,5 +1,4 @@
-#ifndef OM_PAGING_PTR_STORE_H
-#define OM_PAGING_PTR_STORE_H
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -54,4 +53,3 @@ private:
     friend QDataStream &operator>> (QDataStream& in, OmPagingPtrStore&);
 };
 
-#endif

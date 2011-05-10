@@ -1,5 +1,4 @@
-#ifndef PAGE_EXPORTER_HPP
-#define PAGE_EXPORTER_HPP
+#pragma once
 
 #include "utility/segmentationDataWrapper.hpp"
 
@@ -31,4 +30,3 @@ private:
 } // namespace segmentationInspector
 } // namespace om
 
-#endif

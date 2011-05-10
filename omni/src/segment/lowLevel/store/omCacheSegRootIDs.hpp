@@ -1,5 +1,4 @@
-#ifndef OM_CACHE_SEG_ROOT_IDS_HPP
-#define OM_CACHE_SEG_ROOT_IDS_HPP
+#pragma once
 
 #include "segment/lowLevel/store/omSegmentStore.hpp"
 #include "segment/omSegments.h"
@@ -78,4 +77,3 @@ public:
     }
 };
 
-#endif

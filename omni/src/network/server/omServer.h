@@ -1,5 +1,4 @@
-#ifndef OM_SERVER_HPP
-#define OM_SERVER_HPP
+#pragma once
 
 #include <boost/scoped_ptr.hpp>
 
@@ -16,4 +15,3 @@ public:
     void Start();
 };
 
-#endif

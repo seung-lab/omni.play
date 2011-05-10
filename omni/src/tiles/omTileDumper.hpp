@@ -1,5 +1,4 @@
-#ifndef OM_TILE_DUMPER_HPP
-#define OM_TILE_DUMPER_HPP
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -23,4 +22,3 @@ private:
                   const ViewType);
 };
 
-#endif

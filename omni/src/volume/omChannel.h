@@ -1,5 +1,4 @@
-#ifndef OM_CHANNEL_H
-#define OM_CHANNEL_H
+#pragma once
 
 /*
  * OmChannel is the MIP data structure for a raw data volume
@@ -32,4 +31,3 @@ private:
     friend QDataStream& operator>>(QDataStream& in, OmChannel&);
 };
 
-#endif

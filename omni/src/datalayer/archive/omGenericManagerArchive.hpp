@@ -1,5 +1,4 @@
-#ifndef OM_GENERIC_MANAGER_ARCHIVE_HPP
-#define OM_GENERIC_MANAGER_ARCHIVE_HPP
+#pragma once
 
 #include "system/omGenericManager.hpp"
 #include "zi/omUtility.h"
@@ -42,4 +41,3 @@ public:
     }
 };
 
-#endif

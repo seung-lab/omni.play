@@ -1,5 +1,4 @@
-#ifndef OM_HDF_H
-#define OM_HDF_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/om.hpp"
@@ -67,4 +66,3 @@ private:
 	friend class OmHdf5Manager;
 };
 
-#endif

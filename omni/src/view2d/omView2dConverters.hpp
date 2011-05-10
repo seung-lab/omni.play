@@ -1,5 +1,4 @@
-#ifndef OM_VIEW2D_CONVERTERS_HPP
-#define OM_VIEW2D_CONVERTERS_HPP
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -199,4 +198,3 @@ public:
     }
 };
 
-#endif

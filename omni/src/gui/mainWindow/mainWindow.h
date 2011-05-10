@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -111,4 +110,3 @@ private:
     boost::scoped_ptr<OmGlobalKeyPress> globalKeys_;
 };
 
-#endif

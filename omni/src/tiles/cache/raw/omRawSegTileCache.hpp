@@ -1,5 +1,4 @@
-#ifndef OM_VOL_SLICE_CACHE_HPP
-#define OM_VOL_SLICE_CACHE_HPP
+#pragma once
 
 #include "volume/omMipVolume.h"
 #include "system/cache/omGetSetCache.hpp"
@@ -65,4 +64,3 @@ public:
     }
 };
 
-#endif

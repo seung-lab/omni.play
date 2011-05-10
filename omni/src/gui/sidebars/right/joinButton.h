@@ -1,5 +1,4 @@
-#ifndef JOIN_BUTTON_H
-#define JOIN_BUTTON_H
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 class GraphTools;
@@ -12,4 +11,3 @@ private:
     void doAction();
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_PREFERENCE_EVENT_H
-#define OM_PREFERENCE_EVENT_H
+#pragma once
 
 /*
  *
@@ -39,4 +38,3 @@ public:
 
 
 
-#endif

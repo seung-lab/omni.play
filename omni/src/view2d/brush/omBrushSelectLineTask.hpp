@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_SELECT_LINE_TASK_HPP
-#define OM_BRUSH_SELECT_LINE_TASK_HPP
+#pragma once
 
 #include "zi/omThreads.h"
 #include "view2d/brush/omBrushSelectLine.hpp"
@@ -26,4 +25,3 @@ public:
     }
 };
 
-#endif

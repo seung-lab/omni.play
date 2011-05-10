@@ -1,5 +1,4 @@
-#ifndef OM_LOCKED_OBJECTS_H
-#define OM_LOCKED_OBJECTS_H
+#pragma once
 
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
@@ -245,4 +244,3 @@ private:
     zi::mutex mutex_;
 };
 
-#endif

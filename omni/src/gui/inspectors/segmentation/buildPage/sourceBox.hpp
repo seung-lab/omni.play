@@ -1,5 +1,4 @@
-#ifndef SOURCE_BOX_HPP
-#define SOURCE_BOX_HPP
+#pragma once
 
 #include "system/omConnect.hpp"
 #include "utility/sortHelpers.h"
@@ -216,4 +215,3 @@ private:
 } // namespace segmentationInspector
 } // namespace om
 
-#endif

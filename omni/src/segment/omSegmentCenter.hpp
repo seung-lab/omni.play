@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_CENTER_HPP
-#define OM_SEGMENT_CENTER_HPP
+#pragma once
 
 #include "utility/segmentDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
@@ -146,4 +145,3 @@ public:
     }
 };
 
-#endif

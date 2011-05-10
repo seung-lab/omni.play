@@ -1,5 +1,4 @@
-#ifndef OM_SEGEMNT_COLORIZER_TYPES_H
-#define OM_SEGEMNT_COLORIZER_TYPES_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -13,4 +12,3 @@ struct SegmentColorParams {
     OmSegments* segments;
 };
 
-#endif

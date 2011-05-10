@@ -1,5 +1,4 @@
-#ifndef MENUBAR_H
-#define MENUBAR_H
+#pragma once
 
 #include <QtGui>
 
@@ -60,4 +59,3 @@ private:
     RecentFileList recentFiles_;
 };
 
-#endif

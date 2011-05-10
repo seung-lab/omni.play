@@ -1,5 +1,4 @@
-#ifndef OM_TILE_CACHE_CHANNEL_HPP
-#define OM_TILE_CACHE_CHANNEL_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "tiles/cache/omThreadedTileCache.h"
@@ -22,4 +21,3 @@ public:
     {}
 };
 
-#endif

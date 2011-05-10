@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENTATION_H
-#define OM_SEGMENTATION_H
+#pragma once
 
 /*
  *
@@ -153,4 +152,3 @@ private:
     friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
 };
 
-#endif

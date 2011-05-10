@@ -1,5 +1,4 @@
-#ifndef OM_CHUNK_UTILS_HPP
-#define OM_CHUNK_UTILS_HPP
+#pragma once
 
 #include "chunks/omChunkCoord.h"
 #include "chunks/omSegChunk.h"
@@ -105,4 +104,3 @@ public:
     }
 };
 
-#endif

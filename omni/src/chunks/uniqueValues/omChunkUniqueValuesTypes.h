@@ -1,5 +1,4 @@
-#ifndef OM_CHUNK_UNIQUE_VALUES_TYPES_HPP
-#define OM_CHUNK_UNIQUE_VALUES_TYPES_HPP
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -53,4 +52,3 @@ public:
     }
 };
 
-#endif

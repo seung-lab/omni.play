@@ -1,5 +1,4 @@
-#ifndef OM_PROJECT_VOLUMES_HPP
-#define OM_PROJECT_VOLUMES_HPP
+#pragma once
 
 /*
  *  Manages data structures that are shared between various parts of the system.  Making centralized
@@ -41,4 +40,3 @@ private:
     friend QDataStream&operator>>(QDataStream& in, OmProjectVolumes& p );
 };
 
-#endif

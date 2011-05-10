@@ -1,5 +1,4 @@
-#ifndef _OM_GROUP_H_
-#define _OM_GROUP_H_
+#pragma once
 
 #include "common/omCommon.h"
 #include "system/omManageableObject.h"
@@ -58,4 +57,3 @@ private:
 
 };
 
-#endif

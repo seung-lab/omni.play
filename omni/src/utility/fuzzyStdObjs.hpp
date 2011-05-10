@@ -1,5 +1,4 @@
-#ifndef FUZZY_STD_MAP_HPP
-#define FUZZY_STD_MAP_HPP
+#pragma once
 
 namespace om {
 namespace fuzzymap_ {
@@ -24,4 +23,3 @@ class DoubleFuzzyStdSet :
     public std::set<double, om::fuzzymap_::CompareDoubles>
 {};
 
-#endif

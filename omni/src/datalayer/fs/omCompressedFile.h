@@ -1,5 +1,4 @@
-#ifndef OM_COMPRESSED_FILE_HPP
-#define OM_COMPRESSED_FILE_HPP
+#pragma once
 
 #include "utility/omSharedPtr.hpp"
 #include <zi/bits/cstdint.hpp>
@@ -36,4 +35,3 @@ void compressToFileNumElements(const om::shared_ptr<T>& data,
 } // namespace file
 } // namespace om
 
-#endif

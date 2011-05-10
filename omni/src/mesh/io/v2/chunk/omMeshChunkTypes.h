@@ -1,5 +1,4 @@
-#ifndef OM_MESH_CHUNK_TYPES_H
-#define OM_MESH_CHUNK_TYPES_H
+#pragma once
 
 struct OmMeshFilePart{
     uint64_t offsetIntoFile;
@@ -40,4 +39,3 @@ static OmMeshDataEntry MakeEmptyEntry(const OmSegID segID)
 } // namespace meshio_
 } // namespace om
 
-#endif

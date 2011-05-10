@@ -1,5 +1,4 @@
-#ifndef OM_VIEW_3D_EVENT_CLASS_H
-#define OM_VIEW_3D_EVENT_CLASS_H
+#pragma once
 
 /*
  *
@@ -35,4 +34,3 @@ public:
     virtual void View3dRecenter() = 0;
 };
 
-#endif

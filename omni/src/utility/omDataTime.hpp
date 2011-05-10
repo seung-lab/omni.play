@@ -1,5 +1,4 @@
-#ifndef OM_DATE_TIME_HPP
-#define OM_DATE_TIME_HPP
+#pragma once
 
 #include <QDateTime>
 
@@ -13,4 +12,3 @@ std::string cur(){
 } // namespace datetime
 } // namespace om
 
-#endif

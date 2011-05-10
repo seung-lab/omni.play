@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_LIST_FOR_GUI_HPP
-#define OM_SEGMENT_LIST_FOR_GUI_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/lists/omSegmentListsTypes.hpp"
@@ -125,4 +124,3 @@ private:
     }
 };
 
-#endif

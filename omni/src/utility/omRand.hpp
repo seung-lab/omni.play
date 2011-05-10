@@ -1,5 +1,4 @@
-#ifndef OM_RAND_HPP
-#define OM_RAND_HPP
+#pragma once
 
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
@@ -33,4 +32,3 @@ private:
     friend class zi::singleton<OmRand>;
 };
 
-#endif

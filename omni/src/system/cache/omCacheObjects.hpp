@@ -1,5 +1,4 @@
-#ifndef OM_CACHE_OBJECTS_HPP
-#define OM_CACHE_OBJECTS_HPP
+#pragma once
 
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/identity.hpp>
@@ -100,4 +99,3 @@ private:
     lru_list list_;
 };
 
-#endif

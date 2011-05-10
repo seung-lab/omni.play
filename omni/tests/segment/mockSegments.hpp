@@ -1,5 +1,4 @@
-#ifndef MOCK_SEGMENTS_HPP
-#define MOCK_SEGMENTS_HPP
+#pragma once
 
 #include "segment/io/omMST.h"
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
@@ -94,4 +93,3 @@ private:
     }
 };
 
-#endif

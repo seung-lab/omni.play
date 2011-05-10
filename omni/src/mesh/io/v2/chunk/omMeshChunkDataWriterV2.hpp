@@ -1,5 +1,4 @@
-#ifndef OM_MESH_CHUNK_DATA_V2_HPP
-#define OM_MESH_CHUNK_DATA_V2_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -144,4 +143,3 @@ private:
     }
 };
 
-#endif

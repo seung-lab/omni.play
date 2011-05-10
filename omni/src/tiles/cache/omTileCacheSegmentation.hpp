@@ -1,5 +1,4 @@
-#ifndef OM_TILE_CACHE_SEGMENTATION_HPP
-#define OM_TILE_CACHE_SEGMENTATION_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "tiles/cache/omThreadedTileCache.h"
@@ -43,4 +42,3 @@ private:
     friend class OmCacheManager;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_HDF5_IMPL_H
-#define OM_HDF5_IMPL_H
+#pragma once
 
 #include "datalayer/hdf5/omHdf5LowLevel.h"
 #include "datalayer/omDataWrapper.h"
@@ -49,4 +48,3 @@ class OmHdf5Impl
 	int fileId;
 };
 
-#endif

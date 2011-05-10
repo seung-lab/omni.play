@@ -1,5 +1,4 @@
-#ifndef RECENT_FILE_LIST_H
-#define RECENT_FILE_LIST_H
+#pragma once
 
 #include <QAction>
 #include <QStringList>
@@ -30,4 +29,3 @@ private:
     void writeRecentlyUsedFileListToFS();
 };
 
-#endif

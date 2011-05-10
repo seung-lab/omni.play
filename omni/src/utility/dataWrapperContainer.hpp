@@ -1,5 +1,4 @@
-#ifndef DATA_WRAPPER_CONTAINER_HPP
-#define DATA_WRAPPER_CONTAINER_HPP
+#pragma once
 
 #include <boost/optional.hpp>
 
@@ -62,4 +61,3 @@ public:
 	}
 };
 
-#endif

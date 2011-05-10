@@ -1,5 +1,4 @@
-#ifndef CUT_BUTTON_H
-#define CUT_BUTTON_H
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 
@@ -19,4 +18,3 @@ private Q_SLOTS:
     void enableCutMode(const bool show);
 };
 
-#endif

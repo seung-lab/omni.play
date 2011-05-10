@@ -1,5 +1,4 @@
-#ifndef OM_VIEW2D_STATE_HPP
-#define OM_VIEW2D_STATE_HPP
+#pragma once
 
 #include "common/omDebug.h"
 #include "events/omEvents.h"
@@ -474,4 +473,3 @@ private:
     OmSegID segIDforPainting_;
 };
 
-#endif

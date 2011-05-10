@@ -1,5 +1,4 @@
-#ifndef OM_PROCESS_JSON_ACTION_HPP
-#define OM_PROCESS_JSON_ACTION_HPP
+#pragma once
 
 #include "network/omServiceObjects.hpp"
 
@@ -194,4 +193,3 @@ public:
     }
 };
 
-#endif

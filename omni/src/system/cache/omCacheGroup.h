@@ -1,5 +1,4 @@
-#ifndef OM_CACHE_GROUP_H
-#define OM_CACHE_GROUP_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "zi/omMutex.h"
@@ -37,4 +36,3 @@ private:
     int64_t removeOldest(const int64_t currentSize);
 };
 
-#endif

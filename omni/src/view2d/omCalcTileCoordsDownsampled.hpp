@@ -1,5 +1,4 @@
-#ifndef OM_CALC_TILE_COORDS_DOWNSAMPLED_HPP
-#define OM_CALC_TILE_COORDS_DOWNSAMPLED_HPP
+#pragma once
 
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omTileTypes.hpp"
@@ -119,4 +118,3 @@ public:
     }
 };
 
-#endif

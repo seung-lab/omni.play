@@ -1,5 +1,4 @@
-#ifndef VALIDATION_GROUP_H
-#define VALIDATION_GROUP_H
+#pragma once
 
 #include "gui/widgets/omWidget.hpp"
 
@@ -53,4 +52,3 @@ private:
     QWidget* addSelectedSegmentButtons();
 };
 
-#endif

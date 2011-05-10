@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_CHILDREN_HPP
-#define OM_SEGMENT_CHILDREN_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/omSegment.h"
@@ -44,4 +43,3 @@ public:
     }
 };
 
-#endif

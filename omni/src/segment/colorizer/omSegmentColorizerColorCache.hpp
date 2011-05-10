@@ -1,5 +1,4 @@
-#ifndef OM_SEGEMNT_COLORIZER_COLOR_CACHE_HPP
-#define OM_SEGEMNT_COLORIZER_COLOR_CACHE_HPP
+#pragma once
 
 #include "utility/omLockedPODs.hpp"
 #include "zi/omMutex.h"
@@ -52,4 +51,3 @@ public:
     }
 };
 
-#endif

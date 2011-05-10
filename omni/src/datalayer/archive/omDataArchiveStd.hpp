@@ -1,5 +1,4 @@
-#ifndef OM_DATA_ARCHIVE_STD_HPP
-#define OM_DATA_ARCHIVE_STD_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
@@ -34,4 +33,3 @@ QDataStream &operator>>(QDataStream & in, std::vector<T>& vec)
 	return in;
 }
 
-#endif

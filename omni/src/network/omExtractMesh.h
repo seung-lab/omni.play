@@ -1,5 +1,4 @@
-#ifndef OM_EXTRACT_MESH_H
-#define OM_EXTRACT_MESH_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -28,4 +27,3 @@ private:
     }
 };
 
-#endif

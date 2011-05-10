@@ -1,5 +1,4 @@
-#ifndef VEC_IN_FILES_TESES_HPP
-#define VEC_IN_FILES_TESES_HPP
+#pragma once
 
 #include "datalayer/fs/omVecInFile.hpp"
 
@@ -38,4 +37,3 @@ private:
 
 };
 
-#endif

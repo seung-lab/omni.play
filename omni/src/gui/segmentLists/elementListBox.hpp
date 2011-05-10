@@ -1,5 +1,4 @@
-#ifndef ELEMENT_LIST_BOX_H
-#define ELEMENT_LIST_BOX_H
+#pragma once
 
 #include "zi/omUtility.h"
 
@@ -39,4 +38,3 @@ private:
     friend class zi::singleton<ElementListBox>;
 };
 
-#endif

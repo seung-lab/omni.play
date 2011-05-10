@@ -1,5 +1,4 @@
-#ifndef FAKE_MEM_MAP_FILE_HPP
-#define FAKE_MEM_MAP_FILE_HPP
+#pragma once
 
 #include "utility/omSmartPtr.hpp"
 #include "datalayer/fs/omIOnDiskFile.h"
@@ -41,4 +40,3 @@ public:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_MST_H
-#define OM_MST_H
+#pragma once
 
 #include "segment/io/omMSTtypes.h"
 #include "utility/omSharedPtr.hpp"
@@ -86,4 +85,3 @@ private:
     friend QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg);
 };
 
-#endif

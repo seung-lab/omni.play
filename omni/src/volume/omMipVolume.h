@@ -1,5 +1,4 @@
-#ifndef OM_MIP_VOLUME_H
-#define OM_MIP_VOLUME_H
+#pragma once
 
 /*
  *  OmMipVolume is composed of sub-volumes cubes call OmChunks.
@@ -88,6 +87,4 @@ private:
     friend class OmUpgradeTo14;
     friend class OmWatershedImporter;
 };
-
-#endif
 

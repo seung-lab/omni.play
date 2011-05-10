@@ -1,5 +1,4 @@
-#ifndef OM_VOLUME_DATA_HPP
-#define OM_VOLUME_DATA_HPP
+#pragma once
 
 #include "volume/io/omMemMappedVolume.h"
 
@@ -42,4 +41,3 @@ public:
     }
 };
 
-#endif

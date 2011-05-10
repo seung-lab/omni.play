@@ -1,5 +1,4 @@
-#ifndef MEM_MAP_HPP
-#define MEM_MAP_HPP
+#pragma once
 
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -109,4 +108,3 @@ private:
 };
 
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_LIST_WIDGET_H
-#define OM_SEGMENT_LIST_WIDGET_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
@@ -52,4 +51,3 @@ private:
     void centerSegment(const SegmentationDataWrapper&);
 };
 
-#endif

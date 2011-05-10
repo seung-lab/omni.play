@@ -1,5 +1,4 @@
-#ifndef OM_FILE_LOGGER_HPP
-#define OM_FILE_LOGGER_HPP
+#pragma once
 
 #include <QTextStream>
 
@@ -51,4 +50,3 @@ public:
     }
 };
 
-#endif

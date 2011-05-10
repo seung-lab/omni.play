@@ -94,3 +94,11 @@ void OmView2d::enterEvent(QEvent*)
 {
     // steal focus when mouse hovers over widget
 }
+
+void OmView2d::paintGL()
+{
+    if(keyEvents_->IsBlockingKeyDown()){
+        blockingRedraw_ = true;
+    }
+    OmView2dCore::paintGL();
+}

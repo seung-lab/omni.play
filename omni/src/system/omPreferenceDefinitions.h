@@ -1,5 +1,4 @@
-#ifndef OM_PREFERENCES_DEFINITIONS_H
-#define OM_PREFERENCES_DEFINITIONS_H
+#pragma once
 
 /**
  *Preference Naming Convetion:
@@ -59,4 +58,3 @@ private:
     static void setDefaultView3dPreferences();
 };
 
-#endif

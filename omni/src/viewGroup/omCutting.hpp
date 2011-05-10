@@ -1,5 +1,4 @@
-#ifndef OM_CUTTING_HPP
-#define OM_CUTTING_HPP
+#pragma once
 
 #include "system/omStateManager.h"
 #include "events/omEvents.h"
@@ -47,4 +46,3 @@ public:
     }
 };
 
-#endif

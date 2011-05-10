@@ -1,5 +1,4 @@
-#ifndef OM_DATA_COPIED_HDF5_HPP
-#define OM_DATA_COPIED_HDF5_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "volume/omVolumeTypes.hpp"
@@ -99,4 +98,3 @@ private:
     }
 };
 
-#endif

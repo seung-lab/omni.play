@@ -1,5 +1,4 @@
-#ifndef OM_EVENT_MANAGER_H
-#define OM_EVENT_MANAGER_H
+#pragma once
 
 /*
  * OmEventManager is a hybrid event notification system using Qt's event system to
@@ -37,4 +36,3 @@ private:
     friend class zi::singleton<OmEventManager>;
 };
 
-#endif

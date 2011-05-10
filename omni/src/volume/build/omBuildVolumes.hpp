@@ -1,5 +1,4 @@
-#ifndef OM_BUILD_VOLUMES_H
-#define OM_BUILD_VOLUMES_H
+#pragma once
 
 #include "utility/omTimer.hpp"
 #include "common/omDebug.h"
@@ -88,4 +87,3 @@ private:
     }
 };
 
-#endif

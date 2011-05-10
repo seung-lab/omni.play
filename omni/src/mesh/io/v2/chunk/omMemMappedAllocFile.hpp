@@ -1,5 +1,4 @@
-#ifndef OM_MEM_MAPPED_ALLOC_FILE_HPP
-#define OM_MEM_MAPPED_ALLOC_FILE_HPP
+#pragma once
 
 #include "chunks/omChunk.h"
 #include "chunks/omChunkCoord.h"
@@ -209,4 +208,3 @@ private:
     }
 };
 
-#endif

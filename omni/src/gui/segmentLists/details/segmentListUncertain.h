@@ -1,5 +1,4 @@
-#ifndef SEGMENT_LIST_UNCERTAIN_H
-#define SEGMENT_LIST_UNCERTAIN_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "gui/segmentLists/details/segmentListBase.h"
@@ -43,4 +42,3 @@ private:
     }
 };
 
-#endif

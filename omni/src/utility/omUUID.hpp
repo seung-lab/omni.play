@@ -1,5 +1,4 @@
-#ifndef OM_UUID_HPP
-#define OM_UUID_HPP
+#pragma once
 
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -53,4 +52,3 @@ public:
     }
 };
 
-#endif

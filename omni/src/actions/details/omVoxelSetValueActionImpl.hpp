@@ -1,5 +1,4 @@
-#ifndef OM_VOXEL_SET_VALUE_ACTION_IMPL_HPP
-#define OM_VOXEL_SET_VALUE_ACTION_IMPL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/omCommon.h"
@@ -112,4 +111,3 @@ private:
 
 };
 
-#endif

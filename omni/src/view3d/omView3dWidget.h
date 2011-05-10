@@ -1,5 +1,4 @@
-#ifndef OM_VIEW_3D_WIDGET_H
-#define OM_VIEW_3D_WIDGET_H
+#pragma once
 
 /*
  * An interface for widgets belonging to the OmView3d viewing system.
@@ -34,4 +33,3 @@ public:
     bool enabled;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_YAML_HPP
-#define OM_YAML_HPP
+#pragma once
 
 #include "yaml-cpp/yaml.h"
 
@@ -80,4 +79,3 @@ public:
 } // namespace yaml
 } // namespace om
 
-#endif

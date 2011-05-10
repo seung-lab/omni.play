@@ -1,5 +1,4 @@
-#ifndef OM_MEM_MAPPED_FILE_QT_NEW_HPP
-#define OM_MEM_MAPPED_FILE_QT_NEW_HPP
+#pragma once
 
 #include "datalayer/fs/omIOnDiskFile.h"
 #include "datalayer/fs/omFile.hpp"
@@ -74,4 +73,3 @@ private:
     }
 };
 
-#endif

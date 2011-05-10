@@ -1,5 +1,4 @@
-#ifndef OM_DATA_ARCHIVE_SEGMENT_H
-#define OM_DATA_ARCHIVE_SEGMENT_H
+#pragma once
 
 #include "datalayer/omDataWrapper.h"
 
@@ -33,4 +32,3 @@ private:
 	void readSegmentsNew();
 };
 
-#endif

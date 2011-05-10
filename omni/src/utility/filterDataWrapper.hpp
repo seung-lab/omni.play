@@ -1,5 +1,4 @@
-#ifndef FILTER_DATA_WRAPPER_HPP
-#define FILTER_DATA_WRAPPER_HPP
+#pragma once
 
 #include "volume/omFilter2d.h"
 #include "project/details/omChannelManager.h"
@@ -64,4 +63,3 @@ public:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef LOCAL_PREFERENCES_MESHING_H
-#define LOCAL_PREFERENCES_MESHING_H
+#pragma once
 
 #include <QtGui>
 
@@ -21,4 +20,3 @@ private:
 
     QGroupBox* makeMeshBox();
 };
-#endif

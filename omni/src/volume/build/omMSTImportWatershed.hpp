@@ -1,5 +1,4 @@
-#ifndef OM_MST_IMPORT_WATERSHED_HPP
-#define OM_MST_IMPORT_WATERSHED_HPP
+#pragma once
 
 #include "segment/io/omMST.h"
 #include "volume/omSegmentation.h"
@@ -38,4 +37,3 @@ public:
 	}
 };
 
-#endif

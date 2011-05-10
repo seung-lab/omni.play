@@ -1,5 +1,4 @@
-#ifndef OM_VOLUME_BUILDER_HDF5_HPP
-#define OM_VOLUME_BUILDER_HDF5_HPP
+#pragma once
 
 #include "volume/build/omMSTImportHdf5.hpp"
 #include "events/omEvents.h"
@@ -81,4 +80,3 @@ private:
 	}
 };
 
-#endif

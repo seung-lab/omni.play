@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_PAGE_CONVERTER_HPP
-#define OM_SEGMENT_PAGE_CONVERTER_HPP
+#pragma once
 
 #include "utility/omSmartPtr.hpp"
 #include "segment/omSegmentTypes.h"
@@ -46,4 +45,3 @@ public:
     }
 };
 
-#endif

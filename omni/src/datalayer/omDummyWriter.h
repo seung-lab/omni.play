@@ -1,5 +1,4 @@
-#ifndef OM_DUMMY_WRITER_H
-#define OM_DUMMY_WRITER_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "datalayer/omIDataWriter.h"
@@ -50,4 +49,3 @@ public:
 	}
 };
 
-#endif

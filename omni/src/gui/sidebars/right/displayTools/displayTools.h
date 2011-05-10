@@ -1,5 +1,4 @@
-#ifndef DISPLAY_TOOLS_H
-#define DISPLAY_TOOLS_H
+#pragma once
 
 #include <QtGui>
 
@@ -29,4 +28,3 @@ private:
     QWidget* thresholdBox();
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_VOL_COORDS_HPP
-#define OM_VOL_COORDS_HPP
+#pragma once
 
 /*
  * OmVolume is the abstract represntation of multiple forms of data enclosed by
@@ -237,4 +236,3 @@ private:
     }
 };
 
-#endif

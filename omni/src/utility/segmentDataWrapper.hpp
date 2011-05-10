@@ -1,5 +1,4 @@
-#ifndef SEGMENT_DATA_WRAPPER_HPP
-#define SEGMENT_DATA_WRAPPER_HPP
+#pragma once
 
 #include "project/details/omSegmentationManager.h"
 #include "project/omProject.h"
@@ -217,4 +216,3 @@ public:
     }
 };
 
-#endif

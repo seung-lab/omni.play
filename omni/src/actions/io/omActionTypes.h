@@ -1,5 +1,4 @@
-#ifndef OM_ACTION_TYPES_H
-#define OM_ACTION_TYPES_H
+#pragma once
 
 #include <map>
 #include <QString>
@@ -30,4 +29,3 @@ static const typeMap_t actionStrToType_ = registerActionTypes();
 } // namespace actions_
 } // namespace om
 
-#endif

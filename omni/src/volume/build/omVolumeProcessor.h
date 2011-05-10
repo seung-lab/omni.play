@@ -1,5 +1,4 @@
-#ifndef OM_VOLUME_PROCESSOR_HPP
-#define OM_VOLUME_PROCESSOR_HPP
+#pragma once
 
 #include "utility/omTimer.hpp"
 
@@ -31,4 +30,3 @@ private:
     void doBuildThreadedVolume(OmChannel* vol);
 };
 
-#endif

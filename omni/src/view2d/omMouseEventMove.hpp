@@ -1,5 +1,4 @@
-#ifndef OM_MOUSE_EVENT_MOVE_HPP
-#define OM_MOUSE_EVENT_MOVE_HPP
+#pragma once
 
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
@@ -152,4 +151,3 @@ private:
     }
 };
 
-#endif

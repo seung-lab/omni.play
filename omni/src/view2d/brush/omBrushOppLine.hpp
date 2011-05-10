@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_OPP_LINE_HPP
-#define OM_BRUSH_OPP_LINE_HPP
+#pragma once
 
 #include "view2d/brush/omBrushOppTypes.h"
 #include "view2d/brush/omBrushOppUtils.hpp"
@@ -131,4 +130,3 @@ private:
     }
 };
 
-#endif

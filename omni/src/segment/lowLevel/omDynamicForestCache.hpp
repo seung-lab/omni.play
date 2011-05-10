@@ -1,5 +1,4 @@
-#ifndef OM_DYNAMIC_FOREST_CACHE_HPP
-#define OM_DYNAMIC_FOREST_CACHE_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/lowLevel/DynamicForestPool.hpp"
@@ -72,4 +71,3 @@ public:
     }
 };
 
-#endif

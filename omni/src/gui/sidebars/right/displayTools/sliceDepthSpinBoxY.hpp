@@ -1,5 +1,4 @@
-#ifndef SLICE_DEPTH_SPIN_BOX_Y_HPP
-#define SLICE_DEPTH_SPIN_BOX_Y_HPP
+#pragma once
 
 #include "gui/sidebars/right/displayTools/sliceDepthSpinBoxBase.hpp"
 
@@ -17,4 +16,3 @@ private:
     }
 };
 
-#endif

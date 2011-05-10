@@ -1,5 +1,4 @@
-#ifndef OM_I_DATA_VOLUME_HPP
-#define OM_I_DATA_VOLUME_HPP
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -17,4 +16,3 @@ public:
 	virtual int GetBytesPerVoxel() const = 0;
 };
 
-#endif

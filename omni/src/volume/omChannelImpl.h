@@ -1,5 +1,4 @@
-#ifndef OM_CHANNEL_IMPL_H
-#define OM_CHANNEL_IMPL_H
+#pragma once
 
 /*
  * OmChannel is the MIP data structure for a raw data volume
@@ -86,4 +85,3 @@ private:
     friend class OmDataArchiveProjectImpl;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef SEGOBJECTINSPECTOR_H
-#define SEGOBJECTINSPECTOR_H
+#pragma once
 
 #include "utility/dataWrappers.h"
 
@@ -35,4 +34,3 @@ private:
     QGroupBox* makeNotesBox();
     void set_initial_values();
 };
-#endif

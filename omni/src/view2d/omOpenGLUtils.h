@@ -1,5 +1,4 @@
-#ifndef OM_OPEN_GL_UTILS_HPP
-#define OM_OPEN_GL_UTILS_HPP
+#pragma once
 
 namespace om {
 namespace opengl_ {
@@ -10,4 +9,3 @@ void SetupGLblendColor(const bool haveAlphaGoBlack, const float alpha,
 } //namespace opengl_
 } //namespace om
 
-#endif

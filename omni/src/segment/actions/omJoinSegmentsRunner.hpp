@@ -1,5 +1,4 @@
-#ifndef OM_JOIN_SEGMENTS_RUNNER_HPP
-#define OM_JOIN_SEGMENTS_RUNNER_HPP
+#pragma once
 
 #include "utility/segmentationDataWrapper.hpp"
 
@@ -35,4 +34,3 @@ public:
     }
 };
 
-#endif

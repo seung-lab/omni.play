@@ -1,5 +1,4 @@
-#ifndef OM_CACHE_SEG_STORE_HPP
-#define OM_CACHE_SEG_STORE_HPP
+#pragma once
 
 #include "segment/lowLevel/store/omSegmentStore.hpp"
 #include "segment/io/omSegmentPage.hpp"
@@ -94,4 +93,3 @@ private:
     }
 };
 
-#endif

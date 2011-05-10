@@ -1,5 +1,4 @@
-#ifndef OM_FILTER_MANAGER_H
-#define OM_FILTER_MANAGER_H
+#pragma once
 
 /*
  *  Matt Wimer mwimer@mit.edu Oct13, 2009
@@ -43,4 +42,3 @@ private:
     friend QDataStream &operator>>(QDataStream&, OmFilter2dManager& );
 };
 
-#endif

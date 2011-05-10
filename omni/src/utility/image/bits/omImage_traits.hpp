@@ -1,5 +1,4 @@
-#ifndef UTILITY_IMAGE_TRAIT_OM_IMAGE_TRAITS_HPP
-#define UTILITY_IMAGE_TRAIT_OM_IMAGE_TRAITS_HPP 1
+#pragma once
 
 #include <boost/multi_array.hpp>
 
@@ -163,4 +162,3 @@ static OmDimension<0> OmExtents;
 }
 
 
-#endif

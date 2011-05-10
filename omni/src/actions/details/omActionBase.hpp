@@ -1,5 +1,4 @@
-#ifndef OM_ACTION_BASE_HPP
-#define OM_ACTION_BASE_HPP
+#pragma once
 
 #include "actions/details/omUndoCommand.hpp"
 #include "actions/io/omActionLogger.hpp"
@@ -40,4 +39,3 @@ protected:
     }
 };
 
-#endif

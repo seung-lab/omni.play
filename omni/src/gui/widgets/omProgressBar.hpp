@@ -1,5 +1,4 @@
-#ifndef OM_PROGRESS_BAR_HPP
-#define OM_PROGRESS_BAR_HPP
+#pragma once
 
 template <typename T>
 class OmProgressBar : public QGroupBox {
@@ -54,4 +53,3 @@ private:
     QHBoxLayout* overallContainer_;
 };
 
-#endif

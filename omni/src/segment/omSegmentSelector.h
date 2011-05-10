@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_SELECTOR_H
-#define OM_SEGMENT_SELECTOR_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -39,4 +38,3 @@ private:
     void setSelectedSegment(const OmSegID segID);
 };
 
-#endif

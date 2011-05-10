@@ -1,5 +1,4 @@
-#ifndef OM_TASK_MANAGER_TYPES_HPP
-#define OM_TASK_MANAGER_TYPES_HPP
+#pragma once
 
 #include "threads/omTaskManagerContainerDeque.hpp"
 
@@ -8,4 +7,3 @@ template <class> class OmTaskManager;
 
 typedef OmTaskManager<OmTaskManagerContainerDeque> OmThreadPool;
 
-#endif

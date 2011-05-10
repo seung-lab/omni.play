@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_LISTS_HPP
-#define OM_SEGMENT_LISTS_HPP
+#pragma once
 
 #include "segment/lists/omSegmentListsTypes.hpp"
 #include "zi/omMutex.h"
@@ -77,4 +76,3 @@ public:
     int64_t GetNumChildren(OmSegment* seg);
 };
 
-#endif

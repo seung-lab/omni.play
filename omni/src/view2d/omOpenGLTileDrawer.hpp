@@ -1,6 +1,6 @@
-#ifndef OM_OPENGL_TILE_DRAWER_HPP
-#define OM_OPENGL_TILE_DRAWER_HPP
+#pragma once
 
+#include "utility/omTimer.hpp"
 #include "common/om.hpp"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
@@ -12,22 +12,41 @@
 
 class OmOpenGLTileDrawer {
 private:
+    const int allowedDrawTimeMS_;
+
     QGLContext const* context_;
+    OmTimer elapsed_;
 
 public:
     OmOpenGLTileDrawer()
+        : allowedDrawTimeMS_(20) // 30 fps goal
     {}
 
-    void DrawTiles(std::deque<OmTileAndVertices>& tilesToDraw)
+    /**
+     * return number of tiles that were not drawn if time ran out...
+     */
+    boost::optional<int> DrawTiles(std::deque<OmTileAndVertices>& tilesToDraw)
     {
         context_ = QGLContext::currentContext();
+        elapsed_.restart();
+        int counter = 0;
 
         FOR_EACH(iter, tilesToDraw)
         {
+            if(elapsed_.ms_elapsed() > allowedDrawTimeMS_)
+            {
+                std::cout << "tile draw took too long...\n";
+                return tilesToDraw.size() - counter;
+            }
+
             drawTile(iter->tile->GetTexture(),
                      iter->vertices,
                      iter->textureVectices);
+
+            ++counter;
         }
+
+        return boost::optional<int>();
     }
 
 private:
@@ -118,4 +137,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_MST_TYPES_H
-#define OM_MST_TYPES_H
+#pragma once
 
 #include "common/omStd.h"
 
@@ -19,4 +18,3 @@ struct OmMSTImportEdge {
     float threshold;
 };
 
-#endif

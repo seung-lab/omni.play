@@ -1,5 +1,4 @@
-#ifndef MAIN_TOOLBAR_H
-#define MAIN_TOOLBAR_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -38,4 +37,3 @@ private:
     void setModifyWidgetsEnabled();
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_SIZE_HPP
-#define OM_BRUSH_SIZE_HPP
+#pragma once
 
 #include "view2d/omPointsInCircle.hpp"
 
@@ -109,4 +108,3 @@ private:
     }
 };
 
-#endif

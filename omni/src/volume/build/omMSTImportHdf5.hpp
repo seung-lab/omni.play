@@ -1,5 +1,4 @@
-#ifndef OM_MST_IMPORT_HDF5_HPP
-#define OM_MST_IMPORT_HDF5_HPP
+#pragma once
 
 #include "segment/io/omMST.h"
 #include "datalayer/hdf5/omHdf5.h"
@@ -117,4 +116,3 @@ private:
 	}
 };
 
-#endif

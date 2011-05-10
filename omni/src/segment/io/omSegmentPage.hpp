@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_PAGE_HPP
-#define OM_SEGMENT_PAGE_HPP
+#pragma once
 
 #include "segment/io/omSegmentPageV1.hpp"
 #include "segment/io/omSegmentPageV2.hpp"
@@ -184,4 +183,3 @@ private:
     }
 };
 
-#endif

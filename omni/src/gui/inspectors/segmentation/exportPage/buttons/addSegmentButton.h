@@ -1,5 +1,4 @@
-#ifndef ADD_SEGMENT_BUTTON_H
-#define ADD_SEGMENT_BUTTON_H
+#pragma once
 
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "gui/segmentLists/elementListBox.hpp"
@@ -38,4 +37,3 @@ private:
 } // namespace segmentationInspector
 } // namespace om
 
-#endif

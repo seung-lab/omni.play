@@ -1,5 +1,4 @@
-#ifndef OM_IMAGE_FILTER_HPP
-#define OM_IMAGE_FILTER_HPP
+#pragma once
 
 #include "tiles/pools/omPooledTile.hpp"
 #include "tiles/omTileFilters.hpp"
@@ -66,4 +65,3 @@ private:
     friend class zi::singleton<OmChannelTileFilter>;
 };
 
-#endif

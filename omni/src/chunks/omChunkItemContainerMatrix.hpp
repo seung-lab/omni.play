@@ -1,5 +1,4 @@
-#ifndef OM_CHUNK_ITEM_CONTAINER_MATRIX_HPP
-#define OM_CHUNK_ITEM_CONTAINER_MATRIX_HPP
+#pragma once
 
 #include <boost/multi_array.hpp>
 
@@ -56,4 +55,3 @@ public:
     }
 };
 
-#endif

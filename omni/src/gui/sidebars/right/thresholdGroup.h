@@ -1,5 +1,4 @@
-#ifndef THRESHOLD_GROUP_H
-#define THRESHOLD_GROUP_H
+#pragma once
 
 #include "actions/omActions.h"
 #include "common/omDebug.h"
@@ -85,4 +84,3 @@ private:
     }
 };
 
-#endif

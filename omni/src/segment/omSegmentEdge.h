@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_EDGE_H
-#define OM_SEGMENT_EDGE_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -40,4 +39,3 @@ public:
     friend class QDataStream &operator>>(QDataStream & in,  OmSegmentEdge & e );
 };
 
-#endif

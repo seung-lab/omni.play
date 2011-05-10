@@ -1,5 +1,4 @@
-#ifndef OM_DATA_WRAPPER_H
-#define OM_DATA_WRAPPER_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "volume/omVolumeTypes.hpp"
@@ -200,4 +199,3 @@ om::shared_ptr<T> UnWrap(const OmDataWrapperPtr wrap)
 } // ptrs
 } // om
 
-#endif

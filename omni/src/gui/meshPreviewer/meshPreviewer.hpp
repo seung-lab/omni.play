@@ -1,5 +1,4 @@
-#ifndef MESH_PREVIEWER_HPP
-#define MESH_PREVIEWER_HPP
+#pragma once
 
 #include "utility/dataWrappers.h"
 
@@ -42,4 +41,3 @@ public:
  	}
 };
 
-#endif

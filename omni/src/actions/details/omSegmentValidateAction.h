@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_VALIDATE_ACTION_H
-#define OM_SEGMENT_VALIDATE_ACTION_H
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -30,4 +29,3 @@ private:
     om::shared_ptr<OmSegmentValidateActionImpl> impl_;
 };
 
-#endif

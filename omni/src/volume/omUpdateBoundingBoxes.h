@@ -1,5 +1,4 @@
-#ifndef OM_UPDATE_BOUNDING_BOXES_H
-#define OM_UPDATE_BOUNDING_BOXES_H
+#pragma once
 
 class OmSegmentation;
 class OmSegments;
@@ -18,4 +17,3 @@ private:
     void doUpdate(const OmChunkCoord& coord);
 };
 
-#endif

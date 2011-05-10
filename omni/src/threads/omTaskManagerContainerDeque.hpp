@@ -1,5 +1,4 @@
-#ifndef OM_TASK_MANAGER_CONTAINER_DEQUE_HPP
-#define OM_TASK_MANAGER_CONTAINER_DEQUE_HPP
+#pragma once
 
 //
 // Copyright (C) 2010  Aleksandar Zlateski <zlateski@mit.edu>
@@ -112,4 +111,3 @@ public:
     }
 };
 
-#endif

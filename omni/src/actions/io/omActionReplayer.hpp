@@ -1,5 +1,4 @@
-#ifndef OM_ACTION_REPLAYER_HPP
-#define OM_ACTION_REPLAYER_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "actions/io/omActionTypes.h"
@@ -30,4 +29,3 @@ private:
     }
 };
 
-#endif

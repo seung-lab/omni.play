@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_LIST_TYPE_PAGE_HPP
-#define OM_SEGMENT_LIST_TYPE_PAGE_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "datalayer/fs/omFile.hpp"
@@ -67,4 +66,3 @@ private:
     }
 };
 
-#endif

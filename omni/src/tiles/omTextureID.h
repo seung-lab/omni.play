@@ -1,5 +1,4 @@
-#ifndef OM_TEXTURE_ID_H
-#define OM_TEXTURE_ID_H
+#pragma once
 
 /*
  * OmTextureIDs are a wrapper for GLuint texture IDs.
@@ -125,4 +124,3 @@ private:
     QGLContext const* context_;
 };
 
-#endif

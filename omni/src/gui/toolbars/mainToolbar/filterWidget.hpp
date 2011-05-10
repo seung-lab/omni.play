@@ -1,5 +1,4 @@
-#ifndef FILTER_WIDGET_HPP
-#define FILTER_WIDGET_HPP
+#pragma once
 
 #include "gui/toolbars/mainToolbar/filterWidgetImpl.hpp"
 #include "zi/omUtility.h"
@@ -38,4 +37,3 @@ private:
     friend class zi::singleton<FilterWidget>;
 };
 
-#endif

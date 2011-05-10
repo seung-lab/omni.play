@@ -1,5 +1,4 @@
-#ifndef OM_LOCKED_PODS_HPP
-#define OM_LOCKED_PODS_HPP
+#pragma once
 
 #include <zi/atomic/atomic.hpp>
 #include <zi/bits/type_traits.hpp>
@@ -318,4 +317,3 @@ typedef OmLockedNumber<uint32_t> OmLockedUint32;
 typedef OmLockedNumber<int64_t>  OmLockedInt64;
 typedef OmLockedNumber<uint64_t> OmLockedUint64;
 
-#endif

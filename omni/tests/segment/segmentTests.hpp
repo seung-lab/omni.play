@@ -1,5 +1,4 @@
-#ifndef SEGMENT_TESTS_HPP
-#define SEGMENT_TESTS_HPP
+#pragma once
 
 #include "segment/io/omMST.h"
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
@@ -29,4 +28,3 @@ private:
     }
 };
 
-#endif

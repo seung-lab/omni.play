@@ -1,5 +1,4 @@
-#ifndef GRAPH_TOOLS_H
-#define GRAPH_TOOLS_H
+#pragma once
 
 #include "gui/widgets/omWidget.hpp"
 
@@ -57,4 +56,3 @@ private:
     QWidget* breakThresholdBox_;
 };
 
-#endif

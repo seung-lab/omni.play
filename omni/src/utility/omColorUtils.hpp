@@ -1,5 +1,4 @@
-#ifndef OM_COLOR_UTILS_HPP
-#define OM_COLOR_UTILS_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "project/omProjectGlobals.h"
@@ -53,4 +52,3 @@ public:
     }
 };
 
-#endif

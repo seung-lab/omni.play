@@ -1,5 +1,4 @@
-#ifndef OM_AFFINITY_GRAPH_MANAGER_H
-#define OM_AFFINITY_GRAPH_MANAGER_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/om.hpp"
@@ -23,4 +22,3 @@ private:
     friend QDataStream&operator>>(QDataStream& in, OmAffinityGraphManager&);
 };
 
-#endif

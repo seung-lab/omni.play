@@ -1,12 +1,13 @@
+#include "chunks/omChunkData.hpp"
 #include "chunks/omSegChunk.h"
 #include "system/cache/omCacheBase.h"
+#include "tiles/omChannelTileFilter.hpp"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
 #include "utility/dataWrappers.h"
-#include "tiles/omChannelTileFilter.hpp"
+#include "view2d/omView2dConverters.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omMipVolume.h"
-#include "view2d/omView2dConverters.hpp"
 
 OmTile::OmTile(OmCacheBase* cache, const OmTileCoord& key)
     : cache_(cache)

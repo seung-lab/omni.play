@@ -1,5 +1,4 @@
-#ifndef OM_SERVICE_OBJECTS_HPP
-#define OM_SERVICE_OBJECTS_HPP
+#pragma once
 
 class OmAssembleTilesIntoSlice;
 class OmExtractMesh;
@@ -49,4 +48,3 @@ public:
     std::string MakeTileFileSegmentation(const int sliceNum, const int tileX, const int tileY);
 };
 
-#endif

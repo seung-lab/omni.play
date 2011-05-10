@@ -1,5 +1,4 @@
-#ifndef OM_MESH_CONVERT_V1_TO_V2_TASK_HPP
-#define OM_MESH_CONVERT_V1_TO_V2_TASK_HPP
+#pragma once
 
 #include "mesh/io/v1/omMeshReaderV1.hpp"
 #include "mesh/io/v2/omMeshWriterV2.hpp"
@@ -77,4 +76,3 @@ private:
     }
 };
 
-#endif

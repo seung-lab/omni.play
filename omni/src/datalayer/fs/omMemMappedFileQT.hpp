@@ -1,5 +1,4 @@
-#ifndef OM_MEM_MAPPED_FILE_QT_HPP
-#define OM_MEM_MAPPED_FILE_QT_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -164,4 +163,3 @@ private:
     }
 };
 
-#endif

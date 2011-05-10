@@ -1,5 +1,4 @@
-#ifndef OM_ZOOM_LEVEL_HPP
-#define OM_ZOOM_LEVEL_HPP
+#pragma once
 
 class OmZoomLevel {
 private:
@@ -132,4 +131,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_TELL_INFO_HPP
-#define OM_TELL_INFO_HPP
+#pragma once
 
 #include <QMessageBox>
 
@@ -21,4 +20,3 @@ public:
     }
 };
 
-#endif

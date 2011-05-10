@@ -1,5 +1,4 @@
-#ifndef OM_WIDGET_HPP
-#define OM_WIDGET_HPP
+#pragma once
 
 #include <QtGui>
 
@@ -12,4 +11,3 @@ public:
     virtual QString getName() = 0;
 };
 
-#endif

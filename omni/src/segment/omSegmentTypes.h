@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_TYPES_H
-#define OM_SEGMENT_TYPES_H
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -27,4 +26,3 @@ struct OmSegmentDataV4 {
     DataBbox bounds;
 };
 
-#endif

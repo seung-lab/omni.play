@@ -1,5 +1,4 @@
-#ifndef FILTER_WIDGET_IMPL_HPP
-#define FILTER_WIDGET_IMPL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "events/omEvents.h"
@@ -187,4 +186,3 @@ private:
     }
 };
 
-#endif

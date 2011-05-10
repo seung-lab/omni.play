@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_CACHE_H
-#define OM_SEGMENT_CACHE_H
+#pragma once
 
 #include "volume/omVolumeTypes.hpp"
 #include "segment/omSegmentPointers.h"
@@ -104,4 +103,3 @@ private:
     friend QDataStream &operator>>(QDataStream& in, OmSegments& sc);
 };
 
-#endif

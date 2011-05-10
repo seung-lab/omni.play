@@ -1,5 +1,4 @@
-#ifndef OM_IMAGE_DIALOG_H
-#define OM_IMAGE_DIALOG_H
+#pragma once
 
 #include <QtGui>
 
@@ -35,4 +34,3 @@ private:
 	
 };
 
-#endif

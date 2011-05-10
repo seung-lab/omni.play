@@ -1,5 +1,4 @@
-#ifndef OM_ACTION_LOGGER_THREAD_H
-#define OM_ACTION_LOGGER_THREAD_H
+#pragma once
 
 #include "actions/io/omActionOperators.h"
 #include "project/omProject.h"
@@ -88,4 +87,3 @@ private:
     }
 };
 
-#endif

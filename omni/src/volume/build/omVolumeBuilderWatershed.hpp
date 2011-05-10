@@ -1,5 +1,4 @@
-#ifndef OM_VOLUME_BUILDER_WATERSHED_HPP
-#define OM_VOLUME_BUILDER_WATERSHED_HPP
+#pragma once
 
 #include "datalayer/omDataWrapper.h"
 #include "utility/omFileHelpers.h"
@@ -86,4 +85,3 @@ private:
 	}
 };
 
-#endif

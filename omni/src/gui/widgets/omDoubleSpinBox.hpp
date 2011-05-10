@@ -1,5 +1,4 @@
-#ifndef OM_DOUBLE_SPIN_BOX_HPP
-#define OM_DOUBLE_SPIN_BOX_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omDebug.h"
@@ -48,4 +47,3 @@ protected:
     virtual void actUponValueChange(const double threshold) = 0;
 };
 
-#endif

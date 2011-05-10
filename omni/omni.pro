@@ -180,7 +180,9 @@ HEADERS +=  \
 	src/chunks/omChunk.h \
 	src/chunks/omChunkCache.hpp \
 	src/chunks/omChunkCoord.h \
-	src/chunks/omChunkData.h \
+	src/chunks/omChunkData.hpp \
+	src/chunks/omChunkDataImpl.hpp \
+	src/chunks/omChunkDataInterface.hpp \
 	src/chunks/omChunkItemContainer.hpp \
 	src/chunks/omChunkItemContainerMatrix.hpp \
 	src/chunks/omChunkMipping.hpp \
@@ -764,7 +766,6 @@ SOURCES +=  \
 	src/chunks/details/omPtrToChunkDataMemMapVol.cpp \
 	src/chunks/omChunk.cpp \
 	src/chunks/omChunkCoord.cpp \
-	src/chunks/omChunkData.cpp \
 	src/chunks/omSegChunk.cpp \
 	src/chunks/omSegChunkData.cpp \
 	src/common/omColors.cpp \

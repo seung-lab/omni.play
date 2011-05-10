@@ -1,5 +1,4 @@
-#ifndef OM_VOLUME_BUILDER_IMAGES_HPP
-#define OM_VOLUME_BUILDER_IMAGES_HPP
+#pragma once
 
 #include "volume/build/omCompactVolValues.hpp"
 #include "volume/build/omVolumeBuilderBase.hpp"
@@ -42,4 +41,3 @@ private:
     }
 };
 
-#endif

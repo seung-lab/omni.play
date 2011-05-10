@@ -1,5 +1,4 @@
-#ifndef OM_CLIENT_HPP
-#define OM_CLIENT_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "network/server/omNetworkQT.hpp"
@@ -29,4 +28,3 @@ public:
     }
 };
 
-#endif

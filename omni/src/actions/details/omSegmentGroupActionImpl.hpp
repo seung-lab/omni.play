@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_GROUP_ACTION_IMPL_HPP
-#define OM_SEGMENT_GROUP_ACTION_IMPL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/omString.hpp"
@@ -74,4 +73,3 @@ private:
     friend class QDataStream &operator>>(QDataStream&,  OmSegmentGroupActionImpl&);
 };
 
-#endif

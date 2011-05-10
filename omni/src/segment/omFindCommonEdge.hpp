@@ -1,5 +1,4 @@
-#ifndef OM_FIND_COMMON_EDGE_HPP
-#define OM_FIND_COMMON_EDGE_HPP
+#pragma once
 
 #include "segment/omSegments.h"
 
@@ -113,4 +112,3 @@ public:
     }
 };
 
-#endif

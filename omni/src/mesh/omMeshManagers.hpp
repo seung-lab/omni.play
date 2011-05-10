@@ -1,5 +1,4 @@
-#ifndef OM_MIP_MESH_MANAGERS_HPP
-#define OM_MIP_MESH_MANAGERS_HPP
+#pragma once
 
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/omMeshManager.h"
@@ -155,4 +154,3 @@ private:
     }
 };
 
-#endif

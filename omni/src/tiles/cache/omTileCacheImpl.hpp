@@ -1,5 +1,4 @@
-#ifndef OM_TILE_CACHE_IMPL_HPP
-#define OM_TILE_CACHE_IMPL_HPP
+#pragma once
 
 #include "threads/omTaskManager.hpp"
 #include "tiles/cache/omTaskManagerContainerMipSorted.hpp"
@@ -254,4 +253,3 @@ private:
     friend class OmTileCache;
 };
 
-#endif

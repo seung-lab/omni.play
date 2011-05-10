@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_PAINT_HPP
-#define OM_BRUSH_PAINT_HPP
+#pragma once
 
 #include "view2d/brush/omBrushOppInfo.hpp"
 #include "view2d/brush/omBrushPaintCircle.hpp"
@@ -33,4 +32,3 @@ public:
     }
 };
 
-#endif

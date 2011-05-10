@@ -1,5 +1,4 @@
-#ifndef OM_LINE_EDIT_HPP
-#define OM_LINE_EDIT_HPP
+#pragma once
 
 #include <QtGui>
 #include "system/omConnect.hpp"
@@ -24,4 +23,3 @@ private:
 
 };
 
-#endif

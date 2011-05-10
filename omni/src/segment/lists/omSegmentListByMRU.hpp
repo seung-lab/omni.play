@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_LIST_BY_MRU_HPP
-#define OM_SEGMENT_LIST_BY_MRU_HPP
+#pragma once
 
 #include "segment/omSegment.h"
 #include "system/cache/omCacheObjects.hpp"
@@ -52,4 +51,3 @@ private:
     void rebuildList();
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OPEN_SINGLE_VIEW_BUTTON_HPP
-#define OPEN_SINGLE_VIEW_BUTTON_HPP
+#pragma once
 
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/widgets/omButton.hpp"
@@ -24,4 +23,3 @@ private:
     }
 };
 
-#endif

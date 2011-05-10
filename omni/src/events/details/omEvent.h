@@ -1,5 +1,4 @@
-#ifndef OM_EVENT_H
-#define OM_EVENT_H
+#pragma once
 
 /*
  *
@@ -72,4 +71,3 @@ private:
     OmEventClass eventClass_;
 };
 
-#endif

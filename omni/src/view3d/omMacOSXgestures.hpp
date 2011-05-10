@@ -1,5 +1,4 @@
-#ifndef OM_MAC_OSX_GESTURES_HPP
-#define OM_MAC_OSX_GESTURES_HPP
+#pragma once
 
 #include "omView3d.h"
 
@@ -92,4 +91,3 @@ private:
     }
 };
 
-#endif

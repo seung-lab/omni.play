@@ -1,5 +1,4 @@
-#ifndef OM_MESH_SEGMENT_LIST_TYPES_HPP
-#define OM_MESH_SEGMENT_LIST_TYPES_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
@@ -35,4 +34,3 @@ public:
 	bool isFetching;
 };
 
-#endif

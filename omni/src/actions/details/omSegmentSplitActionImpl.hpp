@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_SPLIT_ACTION_IMPL_HPP
-#define OM_SEGMENT_SPLIT_ACTION_IMPL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "events/omEvents.h"
@@ -115,4 +114,3 @@ private:
     friend QTextStream& operator<<(QTextStream& out, const OmSegmentSplitActionImpl&);
 };
 
-#endif

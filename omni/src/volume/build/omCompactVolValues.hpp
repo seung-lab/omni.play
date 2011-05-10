@@ -1,5 +1,4 @@
-#ifndef OM_COMPACT_VOL_VALUES_HPP
-#define OM_COMPACT_VOL_VALUES_HPP
+#pragma once
 
 #include "chunks/omSegChunk.h"
 #include "volume/omSegmentation.h"
@@ -88,4 +87,3 @@ private:
     }
 };
 
-#endif

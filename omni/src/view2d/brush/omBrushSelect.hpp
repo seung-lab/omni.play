@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_SELECT_HPP
-#define OM_BRUSH_SELECT_HPP
+#pragma once
 
 #include "view2d/brush/omBrushOppInfo.hpp"
 #include "view2d/brush/omBrushSelectCircle.hpp"
@@ -37,4 +36,3 @@ public:
     }
 };
 
-#endif

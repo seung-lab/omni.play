@@ -1,5 +1,4 @@
-#ifndef OM_COMMON_H
-#define OM_COMMON_H
+#pragma once
 
 #include "common/omQt.h"
 #include "common/omBoost.h"
@@ -117,4 +116,3 @@ enum CacheGroup {
 } // om
 std::ostream& operator<<(std::ostream &out, const om::CacheGroup& c);
 
-#endif

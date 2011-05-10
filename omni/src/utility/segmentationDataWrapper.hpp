@@ -1,5 +1,4 @@
-#ifndef SEGMENTATION_DATA_WRAPPER_HPP
-#define SEGMENTATION_DATA_WRAPPER_HPP
+#pragma once
 
 #include "project/details/omSegmentationManager.h"
 #include "project/omProject.h"
@@ -177,4 +176,3 @@ public:
         return GetSegmentation().IsBuilt();
     }
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef BRIGHTNESS_SPIN_BOX_HPP
-#define BRIGHTNESS_SPIN_BOX_HPP
+#pragma once
 
 #include "common/omDebug.h"
 #include "gui/widgets/omIntSpinBox.hpp"
@@ -32,4 +31,3 @@ private:
     }
 };
 
-#endif

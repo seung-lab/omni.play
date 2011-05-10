@@ -1,5 +1,4 @@
-#ifndef OM_PROJECT_GLOBALS_HPP
-#define OM_PROJECT_GLOBALS_HPP
+#pragma once
 
 #include <zi/concurrency/semaphore.hpp>
 
@@ -56,4 +55,3 @@ public:
     }
 };
 
-#endif

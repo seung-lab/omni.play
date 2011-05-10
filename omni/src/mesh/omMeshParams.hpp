@@ -1,5 +1,4 @@
-#ifndef OM_MESH_PARAMS_HPP
-#define OM_MESH_PARAMS_HPP
+#pragma once
 
 #include "zi/omUtility.h"
 
@@ -22,4 +21,3 @@ private:
     friend class zi::singleton<OmMeshParams>;
 };
 
-#endif

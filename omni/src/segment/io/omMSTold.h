@@ -1,5 +1,4 @@
-#ifndef OM_MST_OLD_H
-#define OM_MST_OLD_H
+#pragma once
 
 #include "datalayer/omDataWrapper.h"
 
@@ -31,4 +30,3 @@ private:
 	OmDataPath getEdgeForceJoinPath();
 };
 
-#endif

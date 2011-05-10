@@ -1,5 +1,4 @@
-#ifndef OM_SCREEN_PAINTER_HPP
-#define OM_SCREEN_PAINTER_HPP
+#pragma once
 
 #include "events/omEvents.h"
 #include "system/omPreferenceDefinitions.h"
@@ -219,4 +218,3 @@ private:
     }
 };
 
-#endif

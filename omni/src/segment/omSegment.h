@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_H
-#define OM_SEGMENT_H
+#pragma once
 
 /*
  * Segment Object
@@ -175,4 +174,3 @@ private:
     friend class OmSegmentPage;
 };
 
-#endif

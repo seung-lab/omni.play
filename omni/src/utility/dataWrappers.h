@@ -1,5 +1,4 @@
-#ifndef DATA_WRAPPERS_H
-#define DATA_WRAPPERS_H
+#pragma once
 
 #include "utility/segmentDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
@@ -8,4 +7,3 @@
 #include "utility/dataWrapperContainer.hpp"
 #include "utility/affinityGraphDataWrapper.hpp"
 
-#endif

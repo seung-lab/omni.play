@@ -1,5 +1,4 @@
-#ifndef OM_ACTIONS_HPP
-#define OM_ACTIONS_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -82,4 +81,3 @@ private:
     friend class zi::singleton<OmActions>;
 };
 
-#endif

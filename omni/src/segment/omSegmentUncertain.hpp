@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_UNCERTAIN_HPP
-#define OM_SEGMENT_UNCERTAIN_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/omSegments.h"
@@ -66,4 +65,3 @@ private:
     }
 };
 
-#endif

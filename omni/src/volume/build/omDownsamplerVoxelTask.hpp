@@ -1,5 +1,4 @@
-#ifndef OM_DOWNSAMPLER_VOXEL_TASK
-#define OM_DOWNSAMPLER_VOXEL_TASK
+#pragma once
 
 #include "chunks/omRawChunk.hpp"
 #include "volume/io/omMemMappedVolumeImpl.hpp"
@@ -86,4 +85,3 @@ public:
     }
 };
 
-#endif

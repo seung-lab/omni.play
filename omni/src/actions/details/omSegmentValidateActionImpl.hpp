@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_VALIDATE_ACTION_IMPL_HPP
-#define OM_SEGMENT_VALIDATE_ACTION_IMPL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "system/cache/omCacheManager.h"
@@ -71,4 +70,3 @@ private:
     friend QDataStream &operator>>(QDataStream&, OmSegmentValidateActionImpl&);
 };
 
-#endif

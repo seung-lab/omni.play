@@ -1,5 +1,4 @@
-#ifndef OM_MESH_METADATA_HPP
-#define OM_MESH_METADATA_HPP
+#pragma once
 
 #include "volume/omSegmentation.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -118,4 +117,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_UPGRADERS_HPP
-#define OM_UPGRADERS_HPP
+#pragma once
 
 #include "datalayer/upgraders/omUpgradeTo14.hpp"
 #include "datalayer/upgraders/omUpgradeTo20.hpp"
@@ -27,4 +26,3 @@ public:
     }
 };
 
-#endif

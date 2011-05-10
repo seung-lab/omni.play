@@ -1,5 +1,4 @@
-#ifndef OM_GLOBAL_KEY_PRESS_H
-#define OM_GLOBAL_KEY_PRESS_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "gui/toolbars/toolbarManager.h"
@@ -105,4 +104,3 @@ public:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_SHARED_PTR_HPP
-#define OM_SHARED_PTR_HPP
+#pragma once
 
 //
 // Copyright (C) 2010  Aleksandar Zlateski <zlateski@mit.edu>
@@ -39,4 +38,3 @@ using ZI_SHARED_PTR_NAMESPACE::weak_ptr;
 } //namespace om
 
 #undef ZI_SHARED_PTR_NAMESPACE
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_SET_SEGMENT_VALID_HPP
-#define OM_SET_SEGMENT_VALID_HPP
+#pragma once
 
 #include "segment/omSegmentUtils.hpp"
 #include "system/omLocalPreferences.hpp"
@@ -111,4 +110,3 @@ public:
         }
     }
 };
-#endif

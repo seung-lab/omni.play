@@ -1,5 +1,4 @@
-#ifndef SEGMENT_LIST_BASE_H
-#define SEGMENT_LIST_BASE_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "utility/dataWrappers.h"
@@ -80,4 +79,3 @@ protected:
     void searchMany(const QStringList& args);
 };
 
-#endif

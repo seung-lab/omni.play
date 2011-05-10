@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_PAGE_VERSION_HPP
-#define OM_SEGMENT_PAGE_VERSION_HPP
+#pragma once
 
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
@@ -96,4 +95,3 @@ private:
     }
 };
 
-#endif

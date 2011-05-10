@@ -1,5 +1,4 @@
-#ifndef OM_VOL_COORDS_MIPPED_HPP
-#define OM_VOL_COORDS_MIPPED_HPP
+#pragma once
 
 #include "volume/omVolCoords.hpp"
 
@@ -248,4 +247,3 @@ public:
     }
 };
 
-#endif

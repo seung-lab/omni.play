@@ -1,5 +1,4 @@
-#ifndef OM_CONTAINER_HPP
-#define OM_CONTAINER_HPP
+#pragma once
 
 #include "common/omStd.h"
 
@@ -27,4 +26,3 @@ void clearPtrVec(std::vector<U*>& vec)
 } // namespace container
 } // namespace om
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_VIEW2D_MANAGER_IMPL_HPP
-#define OM_VIEW2D_MANAGER_IMPL_HPP
+#pragma once
 
 #include "threads/omTaskManager.hpp"
 
@@ -22,4 +21,3 @@ public:
     }
 };
 
-#endif

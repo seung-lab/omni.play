@@ -1,5 +1,4 @@
-#ifndef OM_DISPLAY_INFO_HPP
-#define OM_DISPLAY_INFO_HPP
+#pragma once
 
 #include "common/omException.h"
 
@@ -73,4 +72,3 @@ private:
     }
 };
 
-#endif

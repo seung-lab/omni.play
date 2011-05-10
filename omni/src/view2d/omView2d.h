@@ -1,5 +1,4 @@
-#ifndef OM_VIEW2D_H
-#define OM_VIEW2D_H
+#pragma once
 
 #include "view2d/omView2dState.hpp"
 #include "view2d/omView2dCore.h"
@@ -55,6 +54,8 @@ protected:
 
     QSize sizeHint () const;
 
+    virtual void paintGL();
+
 private:
     OmView2dState *const state_;
     QDockWidget* complimentaryDock_;
@@ -67,4 +68,3 @@ private:
     void unlinkComplimentaryDock();
 };
 
-#endif

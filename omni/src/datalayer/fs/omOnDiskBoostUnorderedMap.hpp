@@ -1,5 +1,4 @@
-#ifndef omOnDiskBoostUnorderedMap_hpp
-#define omOnDiskBoostUnorderedMap_hpp
+#pragma once
 
 // based on http://www.boost.org/doc/libs/1_38_0/doc/html/interprocess/allocators_containers.html#interprocess.allocators_containers.additional_containers.unordered
 
@@ -128,4 +127,3 @@ private:
     }
 };
 
-#endif

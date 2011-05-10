@@ -1,5 +1,4 @@
-#ifndef OM_CHUNK_CACHE_HPP
-#define OM_CHUNK_CACHE_HPP
+#pragma once
 
 #include "chunks/omChunkCoord.h"
 #include "chunks/omChunkItemContainer.hpp"
@@ -30,4 +29,3 @@ public:
     }
 };
 
-#endif

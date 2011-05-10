@@ -1,5 +1,4 @@
-#ifndef TESTS_HPP
-#define TESTS_HPP
+#pragma once
 
 // #include "src/utility/yaml/omYaml.hpp"
 // #include "tests/onDiskTests.hpp"
@@ -555,4 +554,3 @@ private:
     // }
 };
 
-#endif

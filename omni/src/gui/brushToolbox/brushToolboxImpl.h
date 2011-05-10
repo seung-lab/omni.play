@@ -1,5 +1,4 @@
-#ifndef BRUSH_TOOLBOX_IMPL_H
-#define BRUSH_TOOLBOX_IMPL_H
+#pragma once
 
 #include <QDialog>
 
@@ -11,4 +10,3 @@ public:
     {}
 };
 
-#endif

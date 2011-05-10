@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_SEARCHED_H
-#define OM_SEGMENT_SEARCHED_H
+#pragma once
 
 #include "actions/omActions.h"
 #include "common/omCommon.h"
@@ -32,4 +31,3 @@ private:
 	friend class zi::singleton<OmSegmentSearched>;
 };
 
-#endif

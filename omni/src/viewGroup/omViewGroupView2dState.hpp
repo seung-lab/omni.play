@@ -1,5 +1,4 @@
-#ifndef OM_VIEW_GROUP_VIEW2D_STATE_HPP
-#define OM_VIEW_GROUP_VIEW2D_STATE_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -142,4 +141,3 @@ public:
     }
 };
 
-#endif

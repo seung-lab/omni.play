@@ -1,5 +1,4 @@
-#ifndef OM_THREAD_POOL_MANAGER_HPP
-#define OM_THREAD_POOL_MANAGER_HPP
+#pragma once
 
 #include "common/omStoppable.h"
 #include "common/omCommon.h"
@@ -25,4 +24,3 @@ private:
     friend class zi::singleton<OmThreadPoolManager>;
 };
 
-#endif

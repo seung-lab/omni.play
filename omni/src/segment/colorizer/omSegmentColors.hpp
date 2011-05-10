@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_COLORS_HPP
-#define OM_SEGMENT_COLORS_HPP
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -29,4 +28,3 @@ public:
     }
 };
 
-#endif

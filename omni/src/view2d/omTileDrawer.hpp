@@ -1,5 +1,4 @@
-#ifndef OM_TILE_DRAWER_H
-#define OM_TILE_DRAWER_H
+#pragma once
 
 #include "common/om.hpp"
 #include "tiles/omTileTypes.hpp"
@@ -99,7 +98,10 @@ private:
     void draw(V* vol)
     {
         determineWhichTilesToDraw(vol);
-        openglTileDrawer_->DrawTiles(tilesToDraw_);
+        const boost::optional<int> didNotFinish = openglTileDrawer_->DrawTiles(tilesToDraw_);
+        if(didNotFinish){
+            tileCountIncomplete_ += *didNotFinish;
+        }
     }
 
     void determineWhichTilesToDraw(OmChannel* vol)
@@ -124,7 +126,7 @@ private:
 
         tileCount_ += tileCoordsAndLocations->size();
 
-        if(state_->getScribbling()){
+        if(state_->getScribbling() || blockingRedraw_){
             getTilesBlocking(tileCoordsAndLocations);
 
         } else {
@@ -229,6 +231,4 @@ private:
         }
     }
 };
-
-#endif
 

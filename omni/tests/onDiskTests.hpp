@@ -1,5 +1,4 @@
-#ifndef ON_DISK_TESTS_HPP
-#define ON_DISK_TESTS_HPP
+#pragma once
 
 #include "datalayer/fs/omOnDiskBoostUnorderedMap.hpp"
 #include "tests/testUtils.hpp"
@@ -85,4 +84,3 @@ public:
     }
 };
 
-#endif

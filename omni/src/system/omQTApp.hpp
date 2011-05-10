@@ -1,5 +1,4 @@
-#ifndef OM_QT_APP_HPP
-#define OM_QT_APP_HPP
+#pragma once
 
 #include "system/omLocalPreferences.hpp"
 
@@ -34,4 +33,3 @@ public:
     }
 };
 
-#endif

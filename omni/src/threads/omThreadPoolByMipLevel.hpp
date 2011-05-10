@@ -1,5 +1,4 @@
-#ifndef OM_THREAD_POOL_BY_MIP_LEVEL_HPP
-#define OM_THREAD_POOL_BY_MIP_LEVEL_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "utility/omSystemInformation.h"
@@ -104,4 +103,3 @@ public:
     }
 };
 
-#endif

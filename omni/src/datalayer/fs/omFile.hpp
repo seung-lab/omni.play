@@ -1,5 +1,4 @@
-#ifndef OM_FILE_HPP
-#define OM_FILE_HPP
+#pragma once
 
 #include "common/omException.h"
 #include "utility/omSmartPtr.hpp"
@@ -184,4 +183,3 @@ void createFileFromData(const std::string& fnp, const om::shared_ptr<T> ptr,
 } // namespace file
 } // namespace om
 
-#endif

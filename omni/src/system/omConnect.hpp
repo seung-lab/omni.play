@@ -1,5 +1,4 @@
-#ifndef OM_CONNECT_HPP
-#define OM_CONNECT_HPP
+#pragma once
 
 #include <iostream>
 #include <QObject>
@@ -16,4 +15,3 @@ inline static void connect(const QObject* sender,   const char* signal,
 
 } //namespace om
 
-#endif

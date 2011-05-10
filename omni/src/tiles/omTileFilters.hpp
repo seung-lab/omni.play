@@ -1,5 +1,4 @@
-#ifndef OM_TILE_FILTERS_HPP
-#define OM_TILE_FILTERS_HPP
+#pragma once
 
 #include "tiles/pools/omPooledTile.hpp"
 
@@ -166,4 +165,3 @@ private:
     };
 };
 
-#endif

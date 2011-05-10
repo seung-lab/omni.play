@@ -1,5 +1,4 @@
-#ifndef PAGES_WIDGET_H
-#define PAGES_WIDGET_H
+#pragma once
 
 #include <QtGui>
 
@@ -16,4 +15,3 @@ public:
 } // namespace segmentationInspector
 } // namespace om
 
-#endif

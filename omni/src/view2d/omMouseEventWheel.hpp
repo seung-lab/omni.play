@@ -1,5 +1,4 @@
-#ifndef OM_MOUSE_EVENT_WHEEL_HPP
-#define OM_MOUSE_EVENT_WHEEL_HPP
+#pragma once
 
 #include "gui/toolbars/mainToolbar/filterWidget.hpp"
 #include "view2d/omView2d.h"
@@ -66,4 +65,3 @@ public:
         OmEvents::Redraw3d();
     }
 };
-#endif

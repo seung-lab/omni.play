@@ -1,5 +1,4 @@
-#ifndef OM_CHUNK_ITEM_CONTAINER_HPP
-#define OM_CHUNK_ITEM_CONTAINER_HPP
+#pragma once
 
 #include "common/omContainer.hpp"
 #include "src/chunks/omChunkItemContainerMatrix.hpp"
@@ -69,4 +68,3 @@ public:
     }
 };
 
-#endif

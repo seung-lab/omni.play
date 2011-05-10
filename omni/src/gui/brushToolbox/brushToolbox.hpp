@@ -1,5 +1,4 @@
-#ifndef BRUSH_TOOLBOX_HPP
-#define BRUSH_TOOLBOX_HPP
+#pragma once
 
 #include "events/details/omSegmentEvent.h"
 #include "events/details/omToolModeEvent.h"
@@ -64,4 +63,3 @@ public:
     }
 };
 
-#endif

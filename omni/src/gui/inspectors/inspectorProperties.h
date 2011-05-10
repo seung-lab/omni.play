@@ -1,5 +1,4 @@
-#ifndef INSPECTOR_PROPERTIES_H
-#define INSPECTOR_PROPERTIES_H
+#pragma once
 
 #include "events/details/omUserInterfaceEvent.h"
 #include "events/details/omSegmentEvent.h"
@@ -46,4 +45,3 @@ private:
     void SegmentModificationEvent(OmSegmentEvent* event);
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_CHECK_BOX_WIDGET_HPP
-#define OM_CHECK_BOX_WIDGET_HPP
+#pragma once
 
 #include "system/omConnect.hpp"
 #include <QtGui>
@@ -36,4 +35,3 @@ private:
     virtual void doAction(const bool isChecked) = 0;
 };
 
-#endif

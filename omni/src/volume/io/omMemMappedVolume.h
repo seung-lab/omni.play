@@ -1,5 +1,4 @@
-#ifndef OM_MEM_MAPPED_VOLUME_HPP
-#define OM_MEM_MAPPED_VOLUME_HPP
+#pragma once
 
 #include "volume/io/omMemMappedVolumeImpl.hpp"
 #include "volume/omMipVolume.h"
@@ -34,8 +33,10 @@ public:
     {
         printf("setting up volume data...\n");
 
-        if(OmVolDataType::UNKNOWN == vol->mVolDataType.index()){
+        if(OmVolDataType::UNKNOWN == vol->mVolDataType.index())
+        {
             printf("unknown data type--old file? attempting to infer type...\n");
+
             if(OmProject::HasOldHDF5()){
                 vol->mVolDataType = OmHdf5ChunkUtils::DetermineOldVolType(vol);
             } else {
@@ -74,4 +75,3 @@ private:
     }
 };
 
-#endif

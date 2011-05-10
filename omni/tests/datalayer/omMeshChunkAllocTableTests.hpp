@@ -1,5 +1,4 @@
-#ifndef OM_MESH_CHUNK_ALLOC_TABLE_TESTS_HPP
-#define OM_MESH_CHUNK_ALLOC_TABLE_TESTS_HPP
+#pragma once
 
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
 #include "tests/testUtils.hpp"
@@ -78,4 +77,3 @@ private:
 	}
 };
 
-#endif

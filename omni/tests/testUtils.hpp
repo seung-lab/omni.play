@@ -1,5 +1,4 @@
-#ifndef TEST_UTILS_HPP
-#define TEST_UTILS_HPP
+#pragma once
 
 #include "common/omException.h"
 
@@ -18,4 +17,3 @@ inline void verify0(const bool result)
     }
 }
 
-#endif

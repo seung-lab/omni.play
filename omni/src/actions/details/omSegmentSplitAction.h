@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_SPLIT_ACTION_H
-#define OM_SEGMENT_SPLIT_ACTION_H
+#pragma once
 
 #include "actions/details/omUndoCommand.hpp"
 #include "segment/omSegmentEdge.h"
@@ -32,4 +31,3 @@ private:
     om::shared_ptr<OmSegmentSplitActionImpl> impl_;
 };
 
-#endif

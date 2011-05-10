@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_PAINT_UTILS_HPP
-#define OM_BRUSH_PAINT_UTILS_HPP
+#pragma once
 
 #include "events/omEvents.h"
 #include "actions/omActions.h"
@@ -81,4 +80,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_TILE_PRE_FETCHER_TASK_HPP
-#define OM_TILE_PRE_FETCHER_TASK_HPP
+#pragma once
 
 #include "utility/omSharedPtr.hpp"
 #include "zi/omThreads.h"
@@ -24,4 +23,3 @@ private:
     bool shouldExitEarly();
 };
 
-#endif

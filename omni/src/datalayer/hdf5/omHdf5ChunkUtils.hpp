@@ -1,5 +1,4 @@
-#ifndef OM_HDF5_CHUNK_HPP
-#define OM_HDF5_CHUNK_HPP
+#pragma once
 
 #include "chunks/omChunk.h"
 #include "chunks/omChunkCoord.h"
@@ -61,4 +60,3 @@ public:
     }
 };
 
-#endif

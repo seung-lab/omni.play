@@ -1,5 +1,4 @@
-#ifndef SET_UNCERTAIN_H
-#define SET_UNCERTAIN_H
+#pragma once
 
 #include "common/omDebug.h"
 #include "gui/sidebars/right/validationGroup.h"
@@ -31,4 +30,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_BUILD_AFFINITY_CHANNEL_HPP
-#define OM_BUILD_AFFINITY_CHANNEL_HPP
+#pragma once
 
 #include "datalayer/omDataPath.h"
 #include "volume/build/omBuildVolumes.hpp"
@@ -52,4 +51,3 @@ public:
 	}
 };
 
-#endif

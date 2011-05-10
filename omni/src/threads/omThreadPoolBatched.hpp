@@ -1,5 +1,4 @@
-#ifndef OM_THREAD_POOL_BATCHED_HPP
-#define OM_THREAD_POOL_BATCHED_HPP
+#pragma once
 
 #include "threads/omTaskManager.hpp"
 
@@ -123,4 +122,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_BOOST_H
-#define OM_BOOST_H
+#pragma once
 
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
@@ -10,4 +9,3 @@
 #include <boost/tr1/unordered_set.hpp>
 #include <boost/utility.hpp>
 
-#endif

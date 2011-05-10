@@ -1,5 +1,4 @@
-#ifndef LOCAL_PREF_FILES_H
-#define LOCAL_PREF_FILES_H
+#pragma once
 
 #include "utility/localPrefFilesImpl.hpp"
 
@@ -102,4 +101,3 @@ private:
 	friend class zi::singleton<LocalPrefFiles>;
 };
 
-#endif

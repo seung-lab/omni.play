@@ -1,5 +1,4 @@
-#ifndef OM_SELECT_SEGMENT_PARAMS_HPP
-#define OM_SELECT_SEGMENT_PARAMS_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -25,4 +24,3 @@ struct OmSegmentGUIparams
     SegmentationDataWrapper sdw;
 };
 
-#endif

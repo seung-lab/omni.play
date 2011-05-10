@@ -1,5 +1,4 @@
-#ifndef OM_JSON_H
-#define OM_JSON_H
+#pragma once
 
 #include "network/json/omJsonTypes.hpp"
 
@@ -53,4 +52,3 @@ public:
     }
 };
 
-#endif

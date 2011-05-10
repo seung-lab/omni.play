@@ -1,5 +1,4 @@
-#ifndef OM_FILL_TOOL_HPP
-#define OM_FILL_TOOL_HPP
+#pragma once
 
 #include "view2d/omView2dConverters.hpp"
 #include "volume/omSegmentation.h"
@@ -112,4 +111,3 @@ private:
     }
 };
 
-#endif

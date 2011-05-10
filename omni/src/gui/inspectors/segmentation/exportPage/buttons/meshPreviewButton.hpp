@@ -1,5 +1,4 @@
-#ifndef SEG_INSPECTOR_MESH_PREVIEW_BUTTON_H
-#define SEG_INSPECTOR_MESH_PREVIEW_BUTTON_H
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
@@ -29,4 +28,3 @@ private:
 } // namespace segmentationInspector
 } // namespace om
 
-#endif

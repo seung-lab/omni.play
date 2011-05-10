@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_VALIDATION_HPP
-#define OM_SEGMENT_VALIDATION_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/io/omMST.h"
@@ -76,4 +75,3 @@ private:
     }
 };
 
-#endif

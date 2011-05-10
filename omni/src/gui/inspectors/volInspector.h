@@ -1,5 +1,4 @@
-#ifndef VOL_INSPECTOR_H
-#define VOL_INSPECTOR_H
+#pragma once
 
 #include "system/omConnect.hpp"
 #include "project/omProject.h"
@@ -84,4 +83,3 @@ public:
     }
 };
 
-#endif

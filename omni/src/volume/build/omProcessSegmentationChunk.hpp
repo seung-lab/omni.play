@@ -1,5 +1,4 @@
-#ifndef OM_PROCESS_SEGMENTATION_CHUNK_HPP
-#define OM_PROCESS_SEGMENTATION_CHUNK_HPP
+#pragma once
 
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
@@ -59,4 +58,3 @@ private:
     }
 };
 
-#endif

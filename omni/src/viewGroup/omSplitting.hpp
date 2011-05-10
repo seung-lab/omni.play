@@ -1,5 +1,4 @@
-#ifndef OM_SPLITTING_HPP
-#define OM_SPLITTING_HPP
+#pragma once
 
 #include "utility/dataWrappers.h"
 #include "system/omStateManager.h"
@@ -69,4 +68,3 @@ public:
     }
 };
 
-#endif

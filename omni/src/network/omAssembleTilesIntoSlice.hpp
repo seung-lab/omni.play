@@ -1,5 +1,4 @@
-#ifndef OM_ASSEMBLE_TILES_INTO_SLICE_HPP
-#define OM_ASSEMBLE_TILES_INTO_SLICE_HPP
+#pragma once
 
 #include "common/omDebug.h"
 #include "network/omJpeg.h"
@@ -258,4 +257,3 @@ private:
     }
 };
 
-#endif

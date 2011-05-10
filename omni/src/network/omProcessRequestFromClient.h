@@ -1,5 +1,4 @@
-#ifndef OM_PROCESS_REQUEST_FROM_CLIENT_HPP
-#define OM_PROCESS_REQUEST_FROM_CLIENT_HPP
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -25,4 +24,3 @@ private:
     OmProcessJSONAction* createActionProcessor(const std::string& action);
 };
 
-#endif

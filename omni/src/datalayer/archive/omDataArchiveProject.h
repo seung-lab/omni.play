@@ -1,5 +1,4 @@
-#ifndef OM_DATA_ARCHIVE_PROJECT_H
-#define OM_DATA_ARCHIVE_PROJECT_H
+#pragma once
 
 #include <QString>
 
@@ -15,4 +14,3 @@ private:
     static void postLoad();
 };
 
-#endif

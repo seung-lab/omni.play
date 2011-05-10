@@ -1,5 +1,4 @@
-#ifndef OM_MESH_DRAWER_IMPL_HPP
-#define OM_MESH_DRAWER_IMPL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/omDebug.h"
@@ -60,7 +59,7 @@ public:
      * Draw the mesh plan. Filters for relevant data values to be
      *   drawn depending on culler draw options
      */
-    void Draw(const int allowedDrawTime)
+    void Draw(const int allowedDrawTimeMS)
     {
         OmOpenGLGarbageCollector::CleanDisplayLists(context_);
 
@@ -86,7 +85,7 @@ public:
 
         glPushName(segmentation_->GetID());
 
-        drawPlan(allowedDrawTime);
+        drawPlan(allowedDrawTimeMS);
 
         glPopName();
 
@@ -123,11 +122,11 @@ private:
         return drawOptions_ & option;
     }
 
-    void drawPlan(const int allowedDrawTime)
+    void drawPlan(const int allowedDrawTimeMS)
     {
         FOR_EACH(iter, *sortedSegments_){
 
-            if(elapsed_.ms_elapsed() > allowedDrawTime) {
+            if(elapsed_.ms_elapsed() > allowedDrawTimeMS) {
                 redrawNeeded_ = true;
                 return;
             }
@@ -278,4 +277,3 @@ private:
         glMaterialf(GL_FRONT, GL_SHININESS, 100-s);
     }
 };
-#endif

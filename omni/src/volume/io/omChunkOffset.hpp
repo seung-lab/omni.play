@@ -1,5 +1,4 @@
-#ifndef OM_CHUNK_OFFSET_HPP
-#define OM_CHUNK_OFFSET_HPP
+#pragma once
 
 #include "volume/omMipVolume.h"
 
@@ -30,4 +29,3 @@ public:
 	}
 };
 
-#endif

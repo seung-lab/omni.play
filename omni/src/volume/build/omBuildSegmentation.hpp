@@ -1,5 +1,4 @@
-#ifndef OM_BUILD_SEGMENTATION_H
-#define OM_BUILD_SEGMENTATION_H
+#pragma once
 
 #include "actions/omActions.h"
 #include "events/omEvents.h"
@@ -118,4 +117,3 @@ private:
     }
 };
 
-#endif

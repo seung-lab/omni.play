@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_LIST_KEY_PRESS_EVENT_LISTENER_H
-#define OM_SEGMENT_LIST_KEY_PRESS_EVENT_LISTENER_H
+#pragma once
 
 #include "segment/omSegmentSelected.hpp"
 
@@ -21,4 +20,3 @@ public:
     }
 };
 
-#endif

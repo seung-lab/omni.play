@@ -1,5 +1,4 @@
-#ifndef HEADLESS_H
-#define HEADLESS_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -19,4 +18,3 @@ private:
     void runScript(const QString scriptFileName, const QString& fName);
 };
 
-#endif

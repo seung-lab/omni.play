@@ -1,5 +1,4 @@
-#ifndef OM_BUTTON_HPP
-#define OM_BUTTON_HPP
+#pragma once
 
 #include <QtGui>
 
@@ -52,4 +51,3 @@ private:
     }
 };
 
-#endif

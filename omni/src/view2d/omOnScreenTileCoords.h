@@ -1,5 +1,4 @@
-#ifndef OM_ON_SCREEN_TILE_COORDS_H
-#define OM_ON_SCREEN_TILE_COORDS_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "tiles/omTileImplTypes.hpp"
@@ -47,4 +46,3 @@ private:
     friend std::ostream& operator<<(std::ostream &out, const OmOnScreenTileCoords& c);
 };
 
-#endif

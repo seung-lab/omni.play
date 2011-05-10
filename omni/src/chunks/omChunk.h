@@ -1,5 +1,4 @@
-#ifndef OM_CHUNK_H
-#define OM_CHUNK_H
+#pragma once
 
 /**
  *  OmChunk encapsulates a 3D-matrix of image data (typically 128^3) and
@@ -10,21 +9,19 @@
  */
 
 #include "chunks/omChunkCoord.h"
-#include "chunks/omChunkData.h"
 #include "chunks/omChunkMipping.hpp"
-#include "chunks/details/omPtrToChunkDataMemMapVol.h"
 #include "volume/omVolumeTypes.hpp"
+
+class OmChannel;
+class OmChannelImpl;
+class OmSegmentation;
+namespace om { namespace chunk { class dataInterface; } }
 
 class OmChunk {
 public:
-    template <typename VOL>
-    OmChunk(VOL* vol, const OmChunkCoord& coord)
-        : coord_(coord)
-        , chunkData_(new OmChunkData(vol, this))
-        , ptrToChunkData_(new OmPtrToChunkDataMemMapVol(vol, coord))
-    {
-        mipping_.Init(vol, coord);
-    }
+    OmChunk(OmChannel* vol, const OmChunkCoord& coord);
+    OmChunk(OmChannelImpl* vol, const OmChunkCoord& coord);
+    OmChunk(OmSegmentation* vol, const OmChunkCoord& coord);
 
     virtual ~OmChunk();
 
@@ -43,22 +40,18 @@ public:
         return mipping_.GetExtent().getUnitDimensions();
     }
 
-    OmChunkData* Data(){
+    om::chunk::dataInterface* Data(){
         return chunkData_.get();
     }
-    OmPtrToChunkDataBase* DataPtr(){
-        return ptrToChunkData_.get();
-    }
+
     OmChunkMipping& Mipping(){
         return mipping_;
     }
 
 protected:
     const OmChunkCoord coord_;
-    const boost::scoped_ptr<OmChunkData> chunkData_;
-    const boost::scoped_ptr<OmPtrToChunkDataBase> ptrToChunkData_;
+    const boost::scoped_ptr<om::chunk::dataInterface> chunkData_;
 
     OmChunkMipping mipping_;
 };
 
-#endif

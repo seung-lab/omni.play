@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_UTILS_HPP
-#define OM_SEGMENT_UTILS_HPP
+#pragma once
 
 #include "utility/dataWrappers.h"
 #include "segment/io/omValidGroupNum.hpp"
@@ -213,4 +212,3 @@ public:
         }
     }
 };
-#endif

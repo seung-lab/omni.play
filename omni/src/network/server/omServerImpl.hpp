@@ -1,5 +1,4 @@
-#ifndef OM_SERVER_IMPL_HPP
-#define OM_SERVER_IMPL_HPP
+#pragma once
 
 // based off QT FortuneServer example
 
@@ -43,4 +42,3 @@ protected:
     }
 };
 
-#endif

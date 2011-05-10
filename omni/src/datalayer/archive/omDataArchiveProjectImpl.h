@@ -1,5 +1,4 @@
-#ifndef OM_DATA_ARCHIVE_PROJECT_IMPL_HPP
-#define OM_DATA_ARCHIVE_PROJECT_IMPL_HPP
+#pragma once
 
 #include <QString>
 #include <QDataStream>
@@ -86,4 +85,3 @@ QDataStream &operator>>(QDataStream& in, OmSegmentEdge& sc);
 QDataStream &operator<<(QDataStream& out, const OmGroups& g);
 QDataStream &operator>>(QDataStream& in, OmGroups& g);
 
-#endif

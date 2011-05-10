@@ -1,5 +1,4 @@
-#ifndef OM_ACTION_OPERATORS_TEXT_H
-#define OM_ACTION_OPERATORS_TEXT_H
+#pragma once
 
 class OmProjectCloseActionImpl;
 class OmProjectSaveActionImpl;
@@ -25,4 +24,3 @@ QTextStream& operator<<(QTextStream& out, const OmSegmentUncertainActionImpl&);
 QTextStream& operator<<(QTextStream& out, const OmSegmentValidateActionImpl&);
 QTextStream& operator<<(QTextStream& out, const OmSegmentationThresholdChangeActionImpl&);
 
-#endif

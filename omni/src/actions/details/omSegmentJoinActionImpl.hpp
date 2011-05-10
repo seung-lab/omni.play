@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_JOIN_ACTION_IMPL_HPP
-#define OM_SEGMENT_JOIN_ACTION_IMPL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/actions/omJoinSegments.hpp"
@@ -58,4 +57,3 @@ private:
     friend QTextStream& operator<<(QTextStream&, const OmSegmentJoinActionImpl&);
 };
 
-#endif

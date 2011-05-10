@@ -1,5 +1,4 @@
-#ifndef OM_INT_SPIN_BOX_HPP
-#define OM_INT_SPIN_BOX_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omDebug.h"
@@ -39,4 +38,3 @@ protected:
     virtual void actUponSpinboxChange(const int value) = 0;
 };
 
-#endif

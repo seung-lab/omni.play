@@ -1,5 +1,4 @@
-#ifndef ELEMENT_LIST_BOX_IMPL_H
-#define ELEMENT_LIST_BOX_IMPL_H
+#pragma once
 
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/omDebug.h"
@@ -214,4 +213,3 @@ private:
     }
 };
 
-#endif

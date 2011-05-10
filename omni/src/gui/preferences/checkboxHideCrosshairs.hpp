@@ -1,5 +1,4 @@
-#ifndef SHOW_CROSSHAIRS_CHECKBOX_HPP
-#define SHOW_CROSSHAIRS_CHECKBOX_HPP
+#pragma once
 
 #include "view2d/om2dPreferences.hpp"
 #include "gui/widgets/omCheckBoxWidget.hpp"
@@ -21,4 +20,3 @@ private:
 	}
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_LIST_BY_SIZE_TESTS_HPP
-#define OM_SEGMENT_LIST_BY_SIZE_TESTS_HPP
+#pragma once
 
 #include "utility/omTimer.hpp"
 #include "segment/mockSegments.hpp"
@@ -174,4 +173,3 @@ private:
     //TODO: test for multiple inserts of same segment??
 };
 
-#endif

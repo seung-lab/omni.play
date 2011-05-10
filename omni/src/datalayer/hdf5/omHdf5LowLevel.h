@@ -1,5 +1,4 @@
-#ifndef OM_HDF5_LOW_LEVEL_H
-#define OM_HDF5_LOW_LEVEL_H
+#pragma once
 
 #ifdef WIN32
 #include <windows.h>
@@ -42,4 +41,3 @@ private:
     const int fileId;
     OmDataPath path;
 };
-#endif

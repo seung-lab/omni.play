@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_GRAPH_INITIAL_LOAD_HPP
-#define OM_SEGMENT_GRAPH_INITIAL_LOAD_HPP
+#pragma once
 
 #include "segment/io/omMST.h"
 #include "segment/io/omValidGroupNum.hpp"
@@ -150,4 +149,3 @@ private:
     }
 };
 
-#endif

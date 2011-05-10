@@ -1,5 +1,4 @@
-#ifndef OM_PROJECT_IMPL_HPP
-#define OM_PROJECT_IMPL_HPP
+#pragma once
 
 /*
  *  Manages data structures that are shared between various parts of the
@@ -263,4 +262,3 @@ private:
     friend QDataStream &operator>>(QDataStream & in, OmProjectImpl & p );
 };
 
-#endif

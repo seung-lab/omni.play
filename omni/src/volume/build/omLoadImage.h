@@ -1,5 +1,4 @@
-#ifndef OM_LOAD_IMAGE_H
-#define OM_LOAD_IMAGE_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/omDebug.h"
@@ -138,4 +137,3 @@ private:
 	}
 };
 
-#endif

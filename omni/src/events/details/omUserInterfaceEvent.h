@@ -1,5 +1,4 @@
-#ifndef OM_USER_INTERFACE_EVENT_CLASS_H
-#define OM_USER_INTERFACE_EVENT_CLASS_H
+#pragma once
 
 #include "events/details/omEvent.h"
 #include "common/omStd.h"
@@ -57,4 +56,3 @@ public:
     // virtual void ViewBlockingRedrawEvent() = 0;
 };
 
-#endif

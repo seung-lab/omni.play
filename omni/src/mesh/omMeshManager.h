@@ -1,5 +1,4 @@
-#ifndef OM_MIP_MESH_MANAGER_H
-#define OM_MIP_MESH_MANAGER_H
+#pragma once
 
 #include "common/om.hpp"
 #include "mesh/omMeshTypes.h"
@@ -84,4 +83,3 @@ private:
     friend QDataStream &operator>>(QDataStream&, OmMeshManager&);
 };
 
-#endif

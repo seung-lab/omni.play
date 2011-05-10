@@ -1,5 +1,4 @@
-#ifndef OM_MOUSE_EVENT_RELEASE_HPP
-#define OM_MOUSE_EVENT_RELEASE_HPP
+#pragma once
 
 #include "gui/segmentLists/elementListBox.hpp"
 #include "view2d/omMouseEventUtils.hpp"
@@ -54,4 +53,3 @@ private:
     }
 };
 
-#endif

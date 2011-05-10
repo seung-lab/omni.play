@@ -1,5 +1,4 @@
-#ifndef FILE_HELPERS_H
-#define FILE_HELPERS_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -16,4 +15,3 @@ private:
     static bool removeDir(const QString &dirName); // rm -rf
 };
 
-#endif

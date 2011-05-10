@@ -1,5 +1,4 @@
-#ifndef OM_DATA_COPIED_BASE_HPP
-#define OM_DATA_COPIED_BASE_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "volume/build/omVolumeAllocater.hpp"
@@ -30,4 +29,3 @@ protected:
 	virtual void doImport() = 0;
 };
 
-#endif

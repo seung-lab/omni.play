@@ -1,5 +1,4 @@
-#ifndef OM_GET_SET_CACHE_HPP
-#define OM_GET_SET_CACHE_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "system/cache/omCacheBase.h"
@@ -115,4 +114,3 @@ public:
     }
 };
 
-#endif

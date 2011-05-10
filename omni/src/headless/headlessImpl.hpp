@@ -1,5 +1,4 @@
-#ifndef HEADLESS_IMPL_HPP
-#define HEADLESS_IMPL_HPP
+#pragma once
 
 #include "actions/io/omActionDumper.h"
 #include "actions/omActions.h"
@@ -321,4 +320,3 @@ public:
     }
 };
 
-#endif

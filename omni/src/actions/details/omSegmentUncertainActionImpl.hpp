@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_UNCERTAIN_ACTION_IMPL_HPP
-#define OM_SEGMENT_UNCERTAIN_ACTION_IMPL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "project/omProject.h"
@@ -69,4 +68,3 @@ private:
 								   OmSegmentUncertainActionImpl&);
 };
 
-#endif

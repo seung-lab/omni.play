@@ -1,5 +1,4 @@
-#ifndef CACHE_MONITOR_WIDGET_H
-#define CACHE_MONITOR_WIDGET_H
+#pragma once
 
 #include "common/omCommon.h"
 #include <QtGui>
@@ -17,4 +16,3 @@ private:
     QGroupBox* showDisplay(const QString&, const om::CacheGroup);
 };
 
-#endif

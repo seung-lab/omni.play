@@ -1,5 +1,4 @@
-#ifndef OM_PROJECT_H
-#define OM_PROJECT_H
+#pragma once
 
 /*
  *  Manages data structures that are shared between various parts of the system.  Making centralized
@@ -60,4 +59,3 @@ private:
     friend class zi::singleton<OmProject>;
 };
 
-#endif

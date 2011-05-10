@@ -1,5 +1,4 @@
-#ifndef OM_RAND_COLOR_FILE_HPP
-#define OM_RAND_COLOR_FILE_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/omString.hpp"
@@ -107,4 +106,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef	OM_SIMPLE_PROGRESS_HPP
-#define OM_SIMPLE_PROGRESS_HPP
+#pragma once
 
 #include "utility/omLockedPODs.hpp"
 #include "threads/omTaskManager.hpp"
@@ -80,4 +79,3 @@ private:
     }
 };
 
-#endif

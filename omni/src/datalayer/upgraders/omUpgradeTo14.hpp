@@ -1,6 +1,6 @@
-#ifndef OM_UPGRADE_TO_14_HPP
-#define OM_UPGRADE_TO_14_HPP
+#pragma once
 
+#include "chunks/omChunkData.hpp"
 #include "chunks/omSegChunk.h"
 #include "datalayer/hdf5/omHdf5ChunkUtils.hpp"
 #include "utility/dataWrappers.h"
@@ -97,4 +97,3 @@ private:
     }
 };
 
-#endif

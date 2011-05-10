@@ -1,5 +1,4 @@
-#ifndef OM_RAW_CHUNK_HPP
-#define OM_RAW_CHUNK_HPP
+#pragma once
 
 #include "chunks/omChunkCoord.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -54,7 +53,8 @@ public:
 
     void Flush()
     {
-        if(dirty_){
+        if(dirty_)
+        {
             std::cout << "flushing " << coord_ << "\n";
             writeData();
             dirty_ = false;
@@ -126,4 +126,3 @@ private:
     }
 };
 
-#endif

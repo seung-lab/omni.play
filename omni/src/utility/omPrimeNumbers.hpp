@@ -1,5 +1,4 @@
-#ifndef OM_PRIME_NUMBERS_HPP
-#define OM_PRIME_NUMBERS_HPP
+#pragma once
 
 #include <boost/array.hpp>
 
@@ -14,4 +13,3 @@ int getNextBiggestPrime(const int num);
 } // namespace constants
 } // namespace om
 
-#endif

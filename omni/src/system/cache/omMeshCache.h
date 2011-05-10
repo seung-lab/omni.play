@@ -1,5 +1,4 @@
-#ifndef OM_MESH_CACHE_H
-#define OM_MESH_CACHE_H
+#pragma once
 
 #include "system/cache/omThreadedMeshCache.h"
 #include "mesh/omMeshTypes.h"
@@ -17,4 +16,3 @@ private:
     OmMeshManager *const meshMan_;
 };
 
-#endif

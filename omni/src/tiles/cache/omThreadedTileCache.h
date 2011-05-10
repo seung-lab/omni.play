@@ -1,5 +1,4 @@
-#ifndef OM_THREADED_TILE_CACHE_H
-#define OM_THREADED_TILE_CACHE_H
+#pragma once
 
 #include "common/om.hpp"
 #include "system/cache/omCacheBase.h"
@@ -212,4 +211,3 @@ private:
     }
 };
 
-#endif

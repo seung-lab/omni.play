@@ -1,5 +1,4 @@
-#ifndef NAV_AND_EDIT_BUTTON_GROUP_H
-#define NAV_AND_EDIT_BUTTON_GROUP_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -39,4 +38,3 @@ private:
     std::map<om::tool::mode, int> modifyToolIDsByToolMode_;
 };
 
-#endif

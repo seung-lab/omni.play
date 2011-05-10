@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_UNCERTAIN_ACTION_H
-#define OM_SEGMENT_UNCERTAIN_ACTION_H
+#pragma once
 
 #include "actions/details/omUndoCommand.hpp"
 #include "common/omCommon.h"
@@ -29,4 +28,3 @@ private:
 
 };
 
-#endif

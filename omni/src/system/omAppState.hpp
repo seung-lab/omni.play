@@ -1,5 +1,4 @@
-#ifndef OM_APP_STATE_HPP
-#define OM_APP_STATE_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
@@ -55,4 +54,3 @@ private:
     friend class zi::singleton<OmAppState>;
 };
 
-#endif

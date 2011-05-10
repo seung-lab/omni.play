@@ -1,5 +1,4 @@
-#ifndef OM_VIEW2D_EVENTS_HPP
-#define OM_VIEW2D_EVENTS_HPP
+#pragma once
 
 #include "events/details/omSegmentEvent.h"
 #include "events/details/omToolModeEvent.h"
@@ -61,4 +60,3 @@ public:
         OmCursors::setToolCursor(v2d_);
     }
 };
-#endif

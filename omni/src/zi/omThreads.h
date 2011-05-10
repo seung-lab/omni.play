@@ -1,6 +1,4 @@
-#ifndef OM_THREADS_HPP
-#define OM_THREADS_HPP
+#pragma once
 
 #include <zi/concurrency.hpp>
 
-#endif

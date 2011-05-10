@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_PAGE_V4_HPP
-#define OM_SEGMENT_PAGE_V4_HPP
+#pragma once
 
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/fs/omMemMappedFileQTNew.hpp"
@@ -66,4 +65,3 @@ private:
     }
 };
 
-#endif

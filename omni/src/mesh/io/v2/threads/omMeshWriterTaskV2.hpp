@@ -1,5 +1,4 @@
-#ifndef OM_MESH_WRITER_V2_TASK_HPP
-#define OM_MESH_WRITER_V2_TASK_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -185,4 +184,3 @@ private:
     }
 };
 
-#endif

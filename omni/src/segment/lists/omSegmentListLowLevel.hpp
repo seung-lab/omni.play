@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_LIST_LOW_LEVEL_HPP
-#define OM_SEGMENT_LIST_LOW_LEVEL_HPP
+#pragma once
 
 #include "events/omEvents.h"
 #include "segment/io/omSegmentPage.hpp"
@@ -270,4 +269,3 @@ private:
     }
 };
 
-#endif

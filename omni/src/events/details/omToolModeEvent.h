@@ -1,5 +1,4 @@
-#ifndef OM_TOOL_MODE_EVENT_H
-#define OM_TOOL_MODE_EVENT_H
+#pragma once
 
 /*
  *
@@ -34,4 +33,3 @@ public:
     virtual void ToolModeChangeEvent() = 0;
 };
 
-#endif

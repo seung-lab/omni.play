@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_EVENT_CLASS_H
-#define OM_SEGMENT_EVENT_CLASS_H
+#pragma once
 
 /*
  *
@@ -60,4 +59,3 @@ public:
     virtual void SegmentSelectedEvent(OmSegmentEvent*) = 0;
 };
 
-#endif

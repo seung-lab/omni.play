@@ -1,5 +1,4 @@
-#ifndef OM_FILE_QT_HPP
-#define OM_FILE_QT_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omDebug.h"
@@ -182,4 +181,3 @@ private:
     }
 };
 
-#endif

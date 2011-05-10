@@ -1,5 +1,4 @@
-#ifndef PREFERENCES3D_H
-#define PREFERENCES3D_H
+#pragma once
 
 #include <QWidget>
 #include "ui_preferences3d.h"
@@ -33,4 +32,3 @@ private Q_SLOTS:
     void alphaSliderValueChanged(int val);
 };
 
-#endif

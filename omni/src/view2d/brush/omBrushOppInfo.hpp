@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_OPP_HPP
-#define OM_BRUSH_OPP_HPP
+#pragma once
 
 #include "view2d/brush/omBrushOppTypes.h"
 #include "utility/dataWrappers.h"
@@ -45,4 +44,3 @@ public:
     }
 };
 
-#endif

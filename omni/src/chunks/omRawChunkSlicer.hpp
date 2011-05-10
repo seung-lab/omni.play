@@ -1,5 +1,4 @@
-#ifndef OM_RAW_CHUNK_SLICER_HPP
-#define OM_RAW_CHUNK_SLICER_HPP
+#pragma once
 
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
@@ -88,4 +87,3 @@ private:
     }
 };
 
-#endif

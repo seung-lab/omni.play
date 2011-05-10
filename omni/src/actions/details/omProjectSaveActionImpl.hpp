@@ -1,5 +1,4 @@
-#ifndef OM_PROJECT_SAVE_IMPL_HPP
-#define OM_PROJECT_SAVE_IMPL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "project/omProject.h"
@@ -28,4 +27,3 @@ private:
     template <typename T> friend class OmActionLoggerThread;
 };
 
-#endif

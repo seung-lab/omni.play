@@ -1,5 +1,4 @@
-#ifndef SHOW_PAINT_TOOLS_HPP
-#define SHOW_PAINT_TOOLS_HPP
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 #include "gui/brushToolbox/brushToolbox.hpp"
@@ -29,4 +28,3 @@ private:
 
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_H
-#define PREFERENCES_H
+#pragma once
 
 #include <QtGui>
 #include <QWidget>
@@ -22,4 +21,3 @@ private:
 
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_COLORIZERS_HPP
-#define OM_COLORIZERS_HPP
+#pragma once
 
 #include "zi/omMutex.h"
 
@@ -64,4 +63,3 @@ private:
     }
 };
 
-#endif

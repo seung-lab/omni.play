@@ -1,5 +1,4 @@
-#ifndef OM_MESH_PLAN_H
-#define OM_MESH_PLAN_H
+#pragma once
 
 #include "segment/omSegment.h"
 #include "chunks/omChunkCoord.h"
@@ -34,4 +33,3 @@ public:
     }
 };
 
-#endif

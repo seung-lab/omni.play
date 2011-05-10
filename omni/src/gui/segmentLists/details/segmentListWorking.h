@@ -1,5 +1,4 @@
-#ifndef SEGMENT_LIST_WORKING_H
-#define SEGMENT_LIST_WORKING_H
+#pragma once
 
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/segmentLists/elementListBox.hpp"
@@ -43,4 +42,3 @@ private:
     }
 };
 
-#endif

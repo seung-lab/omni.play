@@ -1,5 +1,4 @@
-#ifndef OM_PREFERENCES_H
-#define OM_PREFERENCES_H
+#pragma once
 
 /*
  * Preferences model adopted from:
@@ -100,4 +99,3 @@ private:
     friend QDataStream& operator>>(QDataStream&, OmProjectImpl&);
 };
 
-#endif

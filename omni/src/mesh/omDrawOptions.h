@@ -1,5 +1,4 @@
-#ifndef OM_DRAW_OPTIONS_H
-#define OM_DRAW_OPTIONS_H
+#pragma once
 
 /*
  *	DrawOptions for use with a Bitfield.  Primarily used to set options for 
@@ -36,4 +35,3 @@
 #define OMGL_NAME_MESH	0
 #define OMGL_NAME_VOXEL	1
 
-#endif

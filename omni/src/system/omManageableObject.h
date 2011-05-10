@@ -1,5 +1,4 @@
-#ifndef OM_MANAGEABLE_OBJECT_H
-#define OM_MANAGEABLE_OBJECT_H
+#pragma once
 
 /*
  *
@@ -48,4 +47,3 @@ protected:
     friend class OmMipVolumeArchiveOld;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_CHUNK_UNIQUE_VALUES_HPP
-#define OM_CHUNK_UNIQUE_VALUES_HPP
+#pragma once
 
 #include "chunks/uniqueValues/omChunkUniqueValuesPerThreshold.hpp"
 #include "utility/fuzzyStdObjs.hpp"
@@ -51,4 +50,3 @@ public:
     }
 };
 
-#endif

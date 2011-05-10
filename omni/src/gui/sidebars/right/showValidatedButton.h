@@ -1,5 +1,4 @@
-#ifndef SHOW_VALIDATED_BUTTON_H
-#define SHOW_VALIDATED_BUTTON_H
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 #include "gui/sidebars/right/validationGroup.h"
@@ -12,4 +11,3 @@ class ShowValidatedButton : public OmButton<ValidationGroup> {
 	void doAction();
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_VIEW2D_ZOOM_HPP
-#define OM_VIEW2D_ZOOM_HPP
+#pragma once
 
 #include "view2d/omView2dState.hpp"
 
@@ -50,4 +49,3 @@ private:
     }
 };
 
-#endif

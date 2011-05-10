@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_CACHE_IMPL_LOW_LEVEL_H
-#define OM_SEGMENT_CACHE_IMPL_LOW_LEVEL_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/lowLevel/store/omSegmentStore.hpp"
@@ -134,4 +133,3 @@ private:
     friend class SegmentTests;
 };
 
-#endif

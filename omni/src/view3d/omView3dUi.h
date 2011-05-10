@@ -1,5 +1,4 @@
-#ifndef OM_VIEW3D_UI_H
-#define OM_VIEW3D_UI_H
+#pragma once
 
 /*
  *
@@ -76,4 +75,3 @@ private:
     void doSelectSegment(const SegmentDataWrapper& sdw, const bool);
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_SEG_CHUNK_H
-#define OM_SEG_CHUNK_H
+#pragma once
 
 /**
  * OmSegChunk extends OmChunk with extra funtionality specific to
@@ -10,6 +9,7 @@
 
 #include "chunks/omChunk.h"
 #include "chunks/omSegChunkData.h"
+#include "zi/omMutex.h"
 
 class OmSegmentation;
 
@@ -33,4 +33,3 @@ public:
     }
 };
 
-#endif

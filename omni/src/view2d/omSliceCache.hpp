@@ -1,5 +1,4 @@
-#ifndef OM_SLICE_CACHE_HPP
-#define OM_SLICE_CACHE_HPP
+#pragma once
 
 #include "chunks/omSegChunk.h"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
@@ -67,4 +66,3 @@ public:
     }
 };
 
-#endif

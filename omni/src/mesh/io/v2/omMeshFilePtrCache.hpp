@@ -1,5 +1,4 @@
-#ifndef OM_MESH_FILE_PTR_CACHE_HPP
-#define OM_MESH_FILE_PTR_CACHE_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
@@ -94,4 +93,3 @@ public:
     }
 };
 
-#endif

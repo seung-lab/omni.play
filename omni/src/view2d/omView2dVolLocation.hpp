@@ -1,5 +1,4 @@
-#ifndef OM_VIEW2D_VOL_LOCATION_HPP
-#define OM_VIEW2D_VOL_LOCATION_HPP
+#pragma once
 
 #include "view2d/omView2dConverters.hpp"
 #include "viewGroup/omViewGroupState.h"
@@ -75,4 +74,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_SEGEMNT_COLORIZER_IMPL_HPP
-#define OM_SEGEMNT_COLORIZER_IMPL_HPP
+#pragma once
 
 #include "segment/colorizer/omSegmentColors.hpp"
 #include "segment/colorizer/omSegmentColorizerColorCache.hpp"
@@ -189,4 +188,3 @@ private:
     }
 };
 
-#endif

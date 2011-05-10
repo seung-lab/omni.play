@@ -1,5 +1,4 @@
-#ifndef OM_HPP
-#define OM_HPP
+#pragma once
 
 namespace om {
 
@@ -93,4 +92,3 @@ enum SegListType {
 
 }; // om
 
-#endif

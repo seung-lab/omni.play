@@ -1,5 +1,4 @@
-#ifndef OM_DOWNSAMPLER_TYPES
-#define OM_DOWNSAMPLER_TYPES
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -21,4 +20,3 @@ struct MippingInfo {
 	uint64_t tileSize;
 };
 
-#endif

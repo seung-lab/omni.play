@@ -1,5 +1,4 @@
-#ifndef OM_TIMER_H
-#define OM_TIMER_H
+#pragma once
 
 /*
  *  OmTimer provides a simple cross-platform high-resolution timer for use in
@@ -69,4 +68,3 @@ public:
     }
 };
 
-#endif

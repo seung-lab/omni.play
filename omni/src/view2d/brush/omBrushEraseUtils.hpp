@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_ERASE_UTILS_HPP
-#define OM_BRUSH_ERASE_UTILS_HPP
+#pragma once
 
 #include "events/omEvents.h"
 #include "actions/omActions.h"
@@ -99,4 +98,3 @@ private:
     }
 };
 
-#endif

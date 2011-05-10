@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_SELECTION_HPP
-#define OM_SEGMENT_SELECTION_HPP
+#pragma once
 
 #include "segment/lists/omSegmentLists.h"
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
@@ -129,4 +128,3 @@ public:
     }
 };
 
-#endif

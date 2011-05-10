@@ -1,5 +1,4 @@
-#ifndef OM_TILES_TO_PREFETCH_HPP
-#define OM_TILES_TO_PREFETCH_HPP
+#pragma once
 
 #include "tiles/omTileCoord.h"
 #include "zi/omMutex.h"
@@ -51,4 +50,3 @@ public:
     }
 };
 
-#endif

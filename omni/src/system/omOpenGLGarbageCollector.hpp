@@ -1,5 +1,4 @@
-#ifndef OM_GARBAGE_H
-#define OM_GARBAGE_H
+#pragma once
 
 /**
  * Collect OpengL texture IDs (View2d) and Display List IDs (View3d) of tiles/meshes
@@ -100,4 +99,3 @@ private:
     friend class zi::singleton<OmOpenGLGarbageCollector>;
 };
 
-#endif

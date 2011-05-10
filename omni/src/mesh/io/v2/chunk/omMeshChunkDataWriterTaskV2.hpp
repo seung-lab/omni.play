@@ -1,5 +1,4 @@
-#ifndef OM_MESH_CHUNK_DATA_WRITER_TASK_V2_HPP
-#define OM_MESH_CHUNK_DATA_WRITER_TASK_V2_HPP
+#pragma once
 
 #include "mesh/omMeshCoord.h"
 
@@ -62,4 +61,3 @@ private:
     }
 };
 
-#endif

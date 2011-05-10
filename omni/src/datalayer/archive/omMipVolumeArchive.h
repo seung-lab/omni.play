@@ -1,5 +1,4 @@
-#ifndef OM_MIP_VOLUME_ARCHIVE_H
-#define OM_MIP_VOLUME_ARCHIVE_H
+#pragma once
 
 #include "volume/omMipVolume.h"
 #include "volume/omVolCoordsMipped.hpp"
@@ -46,4 +45,3 @@ public:
 QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c);
 QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c);
 
-#endif

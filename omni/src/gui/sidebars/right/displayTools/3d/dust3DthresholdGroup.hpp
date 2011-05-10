@@ -1,5 +1,4 @@
-#ifndef DUST_3D_THRESHOLD_GROUP_HPP
-#define DUST_3D_THRESHOLD_GROUP_HPP
+#pragma once
 
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "events/omEvents.h"
@@ -36,4 +35,3 @@ private:
     }
 };
 
-#endif

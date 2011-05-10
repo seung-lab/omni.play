@@ -1,5 +1,4 @@
-#ifndef OM_SERVER_IMPL_THREAD_HPP
-#define OM_SERVER_IMPL_THREAD_HPP
+#pragma once
 
 // based off QT FortuneServer example
 
@@ -50,4 +49,3 @@ public:
     }
 };
 
-#endif

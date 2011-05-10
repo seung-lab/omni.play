@@ -1,9 +1,7 @@
-#ifndef STRING_HELPERS_TEST_H
-#define STRING_HELPERS_TEST_H
+#pragma once
 
 class StringHelpersTest {
 public:
     static void testCommaDeliminateNumber(const bool perfTest);
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_GRAPH_H
-#define OM_SEGMENT_GRAPH_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/lowLevel/omDynamicForestCache.hpp"
@@ -73,4 +72,3 @@ private:
     std::vector<OmSegment*> segsTempVec_;
 };
 
-#endif

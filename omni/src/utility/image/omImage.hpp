@@ -1,5 +1,4 @@
-#ifndef UTILITY_IMAGE_OM_IMAGE_HPP
-#define UTILITY_IMAGE_OM_IMAGE_HPP
+#pragma once
 
 #include "bits/omImage_traits.hpp"
 #include "common/omCommon.h"
@@ -243,4 +242,3 @@ private:
     container_t<T,D> d_;
 };
 
-#endif

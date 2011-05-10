@@ -1,5 +1,4 @@
-#ifndef OM_GROUP_LIST_WIDGET_H
-#define OM_GROUP_LIST_WIDGET_H
+#pragma once
 
 #include <QtGui>
 #include "common/omCommon.h"
@@ -25,4 +24,3 @@ class OmGroupListWidget : public QTreeWidget {
 	void populateTable();
 };
 
-#endif

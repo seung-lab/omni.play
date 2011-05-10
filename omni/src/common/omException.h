@@ -1,5 +1,4 @@
-#ifndef OMEXCEPTION_H
-#define OMEXCEPTION_H
+#pragma once
 
 /**
  *	Exception handeling for the Omni System.
@@ -92,4 +91,3 @@ public:
         : OmException("OmVerifyException", msg) { }
 };
 
-#endif

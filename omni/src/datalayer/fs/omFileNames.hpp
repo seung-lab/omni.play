@@ -1,5 +1,4 @@
-#ifndef OM_FILE_NAMES_HPP
-#define OM_FILE_NAMES_HPP
+#pragma once
 
 #include "chunks/omChunkCoord.h"
 #include "common/omDebug.h"
@@ -277,4 +276,3 @@ public:
     }
 };
 
-#endif

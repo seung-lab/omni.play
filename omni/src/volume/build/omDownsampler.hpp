@@ -1,5 +1,4 @@
-#ifndef OM_DOWNSAMPLER_HPP
-#define OM_DOWNSAMPLER_HPP
+#pragma once
 
 #include "threads/omTaskManager.hpp"
 #include "utility/omTimer.hpp"
@@ -72,4 +71,3 @@ public:
     }
 };
 
-#endif

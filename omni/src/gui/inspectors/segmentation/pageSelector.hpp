@@ -1,5 +1,4 @@
-#ifndef PAGE_SELECTOR_HPP
-#define PAGE_SELECTOR_HPP
+#pragma once
 
 #include "system/omConnect.hpp"
 
@@ -66,4 +65,3 @@ private:
 } // namespace segmentationInspector
 } // namespace om
 
-#endif

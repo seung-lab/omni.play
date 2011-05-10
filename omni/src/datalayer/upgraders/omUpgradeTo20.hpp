@@ -1,5 +1,4 @@
-#ifndef OM_UPGRADE_TO_20_HPP
-#define OM_UPGRADE_TO_20_HPP
+#pragma once
 
 #include "segment/omSegmentUtils.hpp"
 #include "utility/dataWrappers.h"
@@ -19,4 +18,3 @@ private:
     }
 };
 
-#endif

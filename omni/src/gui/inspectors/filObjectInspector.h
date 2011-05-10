@@ -1,5 +1,4 @@
-#ifndef FILOBJECTINSPECTOR_H
-#define FILOBJECTINSPECTOR_H
+#pragma once
 
 #include <QtGui>
 #include <QWidget>
@@ -37,4 +36,3 @@ private:
     int GetSegmentationIDtoFilter();
     int getChannelIDtoFilter();
 };
-#endif

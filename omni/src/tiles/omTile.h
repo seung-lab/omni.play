@@ -1,5 +1,4 @@
-#ifndef OM_TILE_H
-#define OM_TILE_H
+#pragma once
 
 /*
  *  OmTile allows access to 2D image data from the source volume.
@@ -55,4 +54,3 @@ private:
     ObjectType getVolType() const;
 };
 
-#endif

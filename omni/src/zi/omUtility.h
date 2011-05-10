@@ -1,5 +1,4 @@
-#ifndef OM_UTILITY_HPP
-#define OM_UTILITY_HPP
+#pragma once
 
 #include <zi/system.hpp>
 
@@ -19,4 +18,3 @@ class singletonBase : public zi::enable_singleton_of_this<T>
 
 }; // om
 
-#endif

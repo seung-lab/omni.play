@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_ERASE_CIRCLE_HPP
-#define OM_BRUSH_ERASE_CIRCLE_HPP
+#pragma once
 
 #include "view2d/brush/omBrushEraseUtils.hpp"
 #include "view2d/brush/omBrushOppCircle.hpp"
@@ -29,4 +28,3 @@ public:
     }
 };
 
-#endif

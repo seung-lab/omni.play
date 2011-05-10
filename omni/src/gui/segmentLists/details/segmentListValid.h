@@ -1,5 +1,4 @@
-#ifndef SEGMENT_LIST_VALID_H
-#define SEGMENT_LIST_VALID_H
+#pragma once
 
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/segmentLists/elementListBox.hpp"
@@ -45,4 +44,3 @@ private:
     }
 };
 
-#endif

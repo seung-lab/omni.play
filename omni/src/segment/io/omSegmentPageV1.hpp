@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_PAGE_V1_HPP
-#define OM_SEGMENT_PAGE_V1_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "datalayer/archive/omDataArchiveSegment.h"
@@ -66,4 +65,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_RING_BUFFER_HPP
-#define OM_RING_BUFFER_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
@@ -55,4 +54,3 @@ public:
     }
 };
 
-#endif

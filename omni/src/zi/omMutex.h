@@ -1,6 +1,4 @@
-#ifndef OM_MUTEX_HPP
-#define OM_MUTEX_HPP
+#pragma once
 
 #include <zi/mutex.hpp>
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_CACHE_MANAGER_IMPL_HPP
-#define OM_CACHE_MANAGER_IMPL_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/omDebug.h"
@@ -131,4 +130,3 @@ private:
     friend class OmCacheManager;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_HDF5_UTILS_HPP
-#define OM_HDF5_UTILS_HPP
+#pragma once
 
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataWrapper.h"
@@ -25,4 +24,3 @@ public:
 
 };
 
-#endif

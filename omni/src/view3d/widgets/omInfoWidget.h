@@ -1,5 +1,4 @@
-#ifndef OM_INFO_WIDGET_H
-#define OM_INFO_WIDGET_H
+#pragma once
 
 #include "view3d/omView3dWidget.h"
 #include <QFont>
@@ -16,4 +15,3 @@ private:
 	void renderCameraText(int x, int y);
 };
 
-#endif

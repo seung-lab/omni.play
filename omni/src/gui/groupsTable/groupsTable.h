@@ -1,5 +1,4 @@
-#ifndef __GROUPS_TABLE_H__
-#define __GROUPS_TABLE_H__
+#pragma once
 
 /* Widget for editing and inspecting groups.
  *
@@ -50,5 +49,3 @@ private:
     QTableWidget* mGroupsTable;
     QMenu* mMenu;
 };
-#endif
-

@@ -1,5 +1,4 @@
-#ifndef OM_ACTIONS_IMPL_H
-#define OM_ACTIONS_IMPL_H
+#pragma once
 
 #include "common/om.hpp"
 #include "common/omCommon.h"
@@ -87,4 +86,3 @@ private:
 
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef EXPORT_MST_HPP
-#define EXPORT_MST_HPP
+#pragma once
 
 #include "segment/io/omMST.h"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
@@ -70,4 +69,3 @@ private:
 } // namespace segmentationInspector
 } // namespace om
 
-#endif

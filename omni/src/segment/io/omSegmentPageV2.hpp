@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_PAGE_V2_HPP
-#define OM_SEGMENT_PAGE_V2_HPP
+#pragma once
 
 #include "datalayer/fs/omFileNames.hpp"
 #include "segment/omSegmentTypes.h"
@@ -66,4 +65,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef STRING_HELPERS_H
-#define STRING_HELPERS_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/omString.hpp"
@@ -56,4 +55,3 @@ public:
     }
 };
 
-#endif

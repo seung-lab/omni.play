@@ -1,5 +1,4 @@
-#ifndef OM_SET_OPP_HPP
-#define OM_SET_OPP_HPP
+#pragma once
 
 #include <zi/for_each.hpp>
 #include <zi/parallel/algorithm.hpp>
@@ -58,4 +57,3 @@ inline void mergeBintoA(boost::unordered_set<T>& a,
 } //set
 } //om
 
-#endif

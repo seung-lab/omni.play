@@ -1,5 +1,4 @@
-#ifndef AFFINITY_GRAPH_DATA_WRAPPER_HPP
-#define AFFINITY_GRAPH_DATA_WRAPPER_HPP
+#pragma once
 
 #include "project/omProject.h"
 #include "project/details/omProjectVolumes.h"
@@ -36,4 +35,3 @@ public:
     }
 };
 
-#endif

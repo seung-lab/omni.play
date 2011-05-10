@@ -1,5 +1,4 @@
-#ifndef OM_EVENTS_H
-#define OM_EVENTS_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -26,4 +25,3 @@ public:
     static void UpdateSegmentPropBox(QWidget* widget, const QString& title);
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_VOLUME_ALLOCATER_HPP
-#define OM_VOLUME_ALLOCATER_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "volume/omMipVolume.h"
@@ -66,4 +65,3 @@ private:
 	}
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_STOPPABLE_H
-#define OM_STOPPABLE_H
+#pragma once
 
 namespace om {
 
@@ -9,4 +8,3 @@ struct stoppable {
 
 } // namespace om
 
-#endif

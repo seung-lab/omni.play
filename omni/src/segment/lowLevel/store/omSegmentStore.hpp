@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_STORE_HPP
-#define OM_SEGMENT_STORE_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "zi/omMutex.h"
@@ -49,4 +48,3 @@ private:
     friend QDataStream &operator>> (QDataStream& in, OmSegmentsImpl&);
 };
 
-#endif

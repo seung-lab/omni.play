@@ -1,5 +1,4 @@
-#ifndef MESH_PREVIEW_FACTOR_LINEEDIT_HPP
-#define MESH_PREVIEW_FACTOR_LINEEDIT_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "gui/widgets/omLineEdit.hpp"
@@ -23,6 +22,4 @@ private:
         }
     }
 };
-
-#endif
 

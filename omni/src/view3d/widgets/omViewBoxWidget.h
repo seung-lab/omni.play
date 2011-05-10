@@ -1,5 +1,4 @@
-#ifndef OM_VIEW_BOX_WIDGET_H
-#define OM_VIEW_BOX_WIDGET_H
+#pragma once
 
 #include "tiles/omTileTypes.hpp"
 #include "view3d/omCamera.h"
@@ -46,4 +45,3 @@ private:
 
 };
 
-#endif

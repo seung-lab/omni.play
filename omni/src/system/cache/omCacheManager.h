@@ -1,5 +1,4 @@
-#ifndef OM_CACHE_MANAGER_H
-#define OM_CACHE_MANAGER_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
@@ -43,4 +42,3 @@ private:
     friend class zi::singleton<OmCacheManager>;
 };
 
-#endif

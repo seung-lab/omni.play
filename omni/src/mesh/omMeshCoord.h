@@ -1,5 +1,4 @@
-#ifndef OM_MIP_MESH_COORD_H
-#define OM_MIP_MESH_COORD_H
+#pragma once
 
 /*
  *
@@ -33,4 +32,3 @@ class OmMeshCoord {
 	friend std::ostream& operator<<(std::ostream &out, const OmMeshCoord &in);
 };
 
-#endif

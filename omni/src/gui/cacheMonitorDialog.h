@@ -1,5 +1,4 @@
-#ifndef CACHE_MONITOR_DIALOG_H
-#define CACHE_MONITOR_DIALOG_H
+#pragma once
 
 #include <QtGui>
 
@@ -26,4 +25,3 @@ private:
     bool mDying;
 };
 
-#endif

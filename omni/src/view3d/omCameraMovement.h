@@ -1,5 +1,4 @@
-#ifndef OM_CAMERA_MOVEMENT_H
-#define OM_CAMERA_MOVEMENT_H
+#pragma once
 
 /*
  *	
@@ -80,4 +79,3 @@ private:
 };
 
 
-#endif

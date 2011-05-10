@@ -1,5 +1,4 @@
-#ifndef OM_UNDO_STACK_HPP
-#define OM_UNDO_STACK_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "system/omConnect.hpp"
@@ -78,4 +77,3 @@ public:
     }
 };
 
-#endif

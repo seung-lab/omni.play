@@ -1,5 +1,4 @@
-#ifndef OM_WATERSHED_METADATA_HPP
-#define OM_WATERSHED_METADATA_HPP
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -204,4 +203,3 @@ private:
     }
 };
 
-#endif

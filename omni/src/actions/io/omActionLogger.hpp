@@ -1,5 +1,4 @@
-#ifndef OM_ACTION_LOGGER_HPP
-#define OM_ACTION_LOGGER_HPP
+#pragma once
 
 #include "actions/io/omActionLoggerTask.hpp"
 #include "actions/omActions.h"
@@ -73,4 +72,3 @@ private:
     friend class zi::singleton<OmActionLogger>;
 };
 
-#endif

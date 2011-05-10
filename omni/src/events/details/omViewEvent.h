@@ -1,5 +1,4 @@
-#ifndef OM_VIEW_EVENT_CLASS_H
-#define OM_VIEW_EVENT_CLASS_H
+#pragma once
 
 /*
  *
@@ -47,4 +46,3 @@ public:
     virtual void ViewBlockingRedrawEvent() = 0;
 };
 
-#endif

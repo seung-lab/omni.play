@@ -1,5 +1,4 @@
-#ifndef OM_VIEW_2D_IMPL_H
-#define OM_VIEW_2D_IMPL_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "view2d/omOnScreenTileCoords.h"
@@ -43,7 +42,7 @@ protected:
     // QT QGLWidget overrides
     void initializeGL();
     void resizeGL(int width, int height);
-    void paintGL();
+    virtual void paintGL();
 
     bool blockingRedraw_;
 
@@ -59,4 +58,3 @@ private:
     void teardownMainGLpaintOp();
 };
 
-#endif

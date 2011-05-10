@@ -1,5 +1,4 @@
-#ifndef OM_STATE_MANAGER_H
-#define OM_STATE_MANAGER_H
+#pragma once
 
 /*
  * Manages data structures that are shared between various parts of the system.
@@ -42,4 +41,3 @@ private:
     friend class zi::singleton<OmStateManager>;
 };
 
-#endif

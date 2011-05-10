@@ -1,5 +1,4 @@
-#ifndef OM_SEGEMNT_COLORIZER_H
-#define OM_SEGEMNT_COLORIZER_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/colorizer/omSegmentColorizerColorCache.hpp"
@@ -35,4 +34,3 @@ private:
     friend class SegmentTests1;
 };
 
-#endif

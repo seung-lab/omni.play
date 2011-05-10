@@ -1,5 +1,4 @@
-#ifndef VOLUME_REFRESH_BUTTON_H
-#define VOLUME_REFRESH_BUTTON_H
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 
@@ -14,4 +13,3 @@ class VolumeRefreshButton : public OmButton<MainWindow> {
 	void doAction();
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_BUILD_CHANNEL_H
-#define OM_BUILD_CHANNEL_H
+#pragma once
 
 #include "datalayer/omDataPath.h"
 #include "volume/build/omBuildVolumes.hpp"
@@ -49,4 +48,3 @@ public:
 
 };
 
-#endif

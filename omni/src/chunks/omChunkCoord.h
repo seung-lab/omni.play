@@ -1,5 +1,4 @@
-#ifndef OM_MIP_CHUNK_COORD_H
-#define OM_MIP_CHUNK_COORD_H
+#pragma once
 
 /*
  * OmChunkCoord represents a location in Mip Space given by a level (or mip resolution),
@@ -60,4 +59,3 @@ public:
     friend std::ostream& operator<<(std::ostream &out, const OmChunkCoord &in);
 };
 
-#endif

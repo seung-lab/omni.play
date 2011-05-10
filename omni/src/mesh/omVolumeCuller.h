@@ -1,5 +1,4 @@
-#ifndef OM_VOLUME_CULLER_H
-#define OM_VOLUME_CULLER_H
+#pragma once
 
 /*
  * A FrustumCuller wrapper specifically used to cull objects in a volume.  Rather than extracting the
@@ -38,4 +37,3 @@ private:
     FrustumCullerf mFrustumCuller;
 };
 
-#endif

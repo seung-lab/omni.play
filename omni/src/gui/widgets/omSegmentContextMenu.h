@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_CONTEXT_MENU_H
-#define OM_SEGMENT_CONTEXT_MENU_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "utility/dataWrappers.h"
@@ -59,4 +58,3 @@ private:
     OmViewGroupState* vgs_;
 };
 
-#endif

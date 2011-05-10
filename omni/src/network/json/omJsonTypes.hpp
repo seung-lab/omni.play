@@ -1,5 +1,4 @@
-#ifndef OM_JSON_IMPL_HPP
-#define OM_JSON_IMPL_HPP
+#pragma once
 
 #include "common/omException.h"
 #include "json_spirit.h"
@@ -131,4 +130,3 @@ std::string Write(/*type....*/)
 } // namespace json
 } // namespace om
 
-#endif

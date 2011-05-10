@@ -1,5 +1,4 @@
-#ifndef OM_TILE_CACHE_H
-#define OM_TILE_CACHE_H
+#pragma once
 
 #include "threads/omTaskManagerTypes.h"
 #include "common/om.hpp"
@@ -54,4 +53,3 @@ private:
     friend class zi::singleton<OmTileCache>;
 };
 
-#endif

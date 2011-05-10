@@ -1,5 +1,4 @@
-#ifndef OM_ACTION_OPERATORS_H
-#define OM_ACTION_OPERATORS_H
+#pragma once
 
 class OmProjectCloseActionImpl;
 class OmProjectSaveActionImpl;
@@ -38,4 +37,3 @@ QDataStream& operator>>(QDataStream& in,  OmProjectSaveActionImpl&);
 QDataStream& operator<<(QDataStream& out, const OmProjectCloseActionImpl&);
 QDataStream& operator>>(QDataStream& in,  OmProjectCloseActionImpl&);
 
-#endif

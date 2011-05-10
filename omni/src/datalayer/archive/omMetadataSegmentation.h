@@ -1,5 +1,4 @@
-#ifndef OM_METADATA_SEGMENTATION_HPP
-#define OM_METADATA_SEGMENTATION_HPP
+#pragma once
 
 #include <QDataStream>
 
@@ -18,4 +17,3 @@ public:
 //	void Write(QDataStream& out, const OmSegmentation& seg);
 };
 
-#endif

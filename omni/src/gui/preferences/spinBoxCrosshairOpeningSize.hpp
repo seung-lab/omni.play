@@ -1,5 +1,4 @@
-#ifndef CROSSHAIR_OPENING_SIZE_SPIN_BOX_HPP
-#define CROSSHAIR_OPENING_SIZE_SPIN_BOX_HPP
+#pragma once
 
 #include "view2d/om2dPreferences.hpp"
 #include "gui/widgets/omIntSpinBox.hpp"
@@ -24,4 +23,3 @@ private:
 	}
 };
 
-#endif

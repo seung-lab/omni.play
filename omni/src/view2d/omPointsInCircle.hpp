@@ -1,5 +1,4 @@
-#ifndef OM_POINTS_IN_CIRCLE_HPP
-#define OM_POINTS_IN_CIRCLE_HPP
+#pragma once
 
 #include "common/om.hpp"
 #include "zi/omMutex.h"
@@ -55,4 +54,3 @@ private:
     }
 };
 
-#endif

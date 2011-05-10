@@ -1,5 +1,4 @@
-#ifndef OM_AFFINITY_CHANNEL_H
-#define OM_AFFINITY_CHANNEL_H
+#pragma once
 
 #include "volume/omChannel.h"
 
@@ -27,4 +26,3 @@ public:
 	}
 };
 
-#endif

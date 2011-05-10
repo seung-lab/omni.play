@@ -1,5 +1,4 @@
-#ifndef SORT_HELPERS_H
-#define SORT_HELPERS_H
+#pragma once
 
 #include <strnatcmp.h>
 
@@ -54,4 +53,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef MYINSPECTORWIDGET_H
-#define MYINSPECTORWIDGET_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
@@ -121,4 +120,3 @@ private:
     void showMSTtable(SegmentationDataWrapper sdw);
 };
 
-#endif

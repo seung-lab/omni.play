@@ -1,5 +1,4 @@
-#ifndef OM_TASK_MANAGER_HPP
-#define OM_TASK_MANAGER_HPP
+#pragma once
 
 //
 // Copyright (C) 2010  Aleksandar Zlateski <zlateski@mit.edu>
@@ -246,6 +245,4 @@ private:
         manager_->wake_all();
     }
 };
-
-#endif
 

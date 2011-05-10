@@ -1,5 +1,4 @@
-#ifndef OM_MESH_PLAN_CACHE_HPP
-#define OM_MESH_PLAN_CACHE_HPP
+#pragma once
 
 #include "mesh/drawer/omMeshPlan.h"
 #include "mesh/drawer/omMeshDrawPlanner.hpp"
@@ -115,4 +114,3 @@ private:
     }
 };
 
-#endif

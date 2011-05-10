@@ -1,5 +1,4 @@
-#ifndef LOCKED_OBJECTS_TESTS_HPP
-#define LOCKED_OBJECTS_TESTS_HPP
+#pragma once
 
 #include "tests/testUtils.hpp"
 #include "utility/omTimer.hpp"
@@ -82,4 +81,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_MESH_SEGMENT_LIST_HPP
-#define OM_MESH_SEGMENT_LIST_HPP
+#pragma once
 
 #include "chunks/omChunkCoord.h"
 #include "chunks/omSegChunk.h"
@@ -94,4 +93,3 @@ private:
     }
 };
 
-#endif

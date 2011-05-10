@@ -1,5 +1,4 @@
-#ifndef OM_BLOCKING_GET_TILES_HPP
-#define OM_BLOCKING_GET_TILES_HPP
+#pragma once
 
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omTileTypes.hpp"
@@ -43,4 +42,3 @@ private:
     }
 };
 
-#endif

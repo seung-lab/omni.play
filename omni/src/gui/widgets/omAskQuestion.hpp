@@ -1,5 +1,4 @@
-#ifndef OM_ASK_QUESTION_HPP
-#define OM_ASK_QUESTION_HPP
+#pragma once
 
 #include <QMessageBox>
 
@@ -25,4 +24,3 @@ public:
     }
 };
 
-#endif

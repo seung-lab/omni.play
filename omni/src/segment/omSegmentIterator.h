@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_ITERATOR_H
-#define OM_SEGMENT_ITERATOR_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
@@ -30,4 +29,3 @@ private:
     std::deque<OmSegment*> segs_;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _OM_GROUPS_H_
-#define _OM_GROUPS_H_
+#pragma once
 
 #include "common/omCommon.h"
 #include "system/omGenericManager.hpp"
@@ -39,6 +38,4 @@ private:
 	friend QDataStream &operator<<(QDataStream & out, const OmGroups &);
 	friend QDataStream &operator>>(QDataStream & in, OmGroups &);
 };
-
-#endif
 

@@ -1,5 +1,4 @@
-#ifndef OM_USER_EDGES_HPP
-#define OM_USER_EDGES_HPP
+#pragma once
 
 #include "segment/omSegmentEdge.h"
 #include "volume/omSegmentation.h"
@@ -122,4 +121,3 @@ private:
     }
 };
 
-#endif

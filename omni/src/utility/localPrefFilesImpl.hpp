@@ -1,5 +1,4 @@
-#ifndef LOCAL_PREF_FILES_IMPL_HPP
-#define LOCAL_PREF_FILES_IMPL_HPP
+#pragma once
 
 #include "common/omString.hpp"
 #include "common/omCommon.h"
@@ -158,4 +157,3 @@ private:
     friend class LocalPrefFiles;
 };
 
-#endif

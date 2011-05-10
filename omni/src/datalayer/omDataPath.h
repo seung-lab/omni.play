@@ -1,5 +1,4 @@
-#ifndef OM_DATA_PATH_H
-#define OM_DATA_PATH_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -50,4 +49,3 @@ public:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_VEC_IN_FILE_HPP
-#define OM_VEC_IN_FILE_HPP
+#pragma once
 
 #include "datalayer/fs/omFileQT.hpp"
 
@@ -47,4 +46,3 @@ public:
 	}
 };
 
-#endif

@@ -1,6 +1,6 @@
-#ifndef OM_COMPARE_VOLUMES_HPP
-#define OM_COMPARE_VOLUMES_HPP
+#pragma once
 
+#include "chunks/omChunkDataInterface.hpp"
 #include "utility/dataWrappers.h"
 #include "chunks/omChunk.h"
 
@@ -88,4 +88,3 @@ private:
     }
 };
 
-#endif

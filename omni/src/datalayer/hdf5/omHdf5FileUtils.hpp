@@ -1,5 +1,4 @@
-#ifndef OM_HDF5_FILE_UTILS_HPP
-#define OM_HDF5_FILE_UTILS_HPP
+#pragma once
 
 #include <string>
 #include "hdf5.h"
@@ -12,4 +11,3 @@ public:
 	static void flush(const hid_t fileId);
 };
 
-#endif

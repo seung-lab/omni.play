@@ -1,5 +1,4 @@
-#ifndef SEG_INSPECTOR_BUTTONS_HPP
-#define SEG_INSPECTOR_BUTTONS_HPP
+#pragma once
 
 #include "actions/omActions.h"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
@@ -30,4 +29,3 @@ private:
 } // namespace segmentationInspector
 } // namespace om
 
-#endif

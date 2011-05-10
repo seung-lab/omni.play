@@ -1,5 +1,4 @@
-#ifndef OM_DATA_FOR_MESH_LOAD_HPP
-#define OM_DATA_FOR_MESH_LOAD_HPP
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -157,4 +156,3 @@ private:
     uint64_t trianDataNumBytes_;
 };
 
-#endif

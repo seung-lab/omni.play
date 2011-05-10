@@ -1,5 +1,4 @@
-#ifndef SPLIT_BUTTON_H
-#define SPLIT_BUTTON_H
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 
@@ -19,4 +18,3 @@ private Q_SLOTS:
     void enterOrExitSplitMode(const bool show);
 };
 
-#endif

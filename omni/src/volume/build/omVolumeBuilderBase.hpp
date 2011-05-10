@@ -1,5 +1,4 @@
-#ifndef OM_VOLUME_BUILDER_BASE_HPP
-#define OM_VOLUME_BUILDER_BASE_HPP
+#pragma once
 
 #include "chunks/omChunkCache.hpp"
 #include "common/omDebug.h"
@@ -145,4 +144,3 @@ private:
     }
 };
 
-#endif

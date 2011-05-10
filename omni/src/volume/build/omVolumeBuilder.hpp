@@ -1,5 +1,4 @@
-#ifndef OM_VOLUME_BUILDER_HPP
-#define OM_VOLUME_BUILDER_HPP
+#pragma once
 
 #include "utility/sortHelpers.h"
 #include "volume/build/omVolumeBuilderHdf5.hpp"
@@ -140,4 +139,3 @@ private:
     }
 };
 
-#endif

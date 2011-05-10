@@ -1,5 +1,4 @@
-#ifndef OM_MOUSE_EVENT_UTILS_HPP
-#define OM_MOUSE_EVENT_UTILS_HPP
+#pragma once
 
 #include "view2d/omView2dZoom.hpp"
 #include "view2d/omMouseEventState.hpp"
@@ -23,4 +22,3 @@ public:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_CHANNEL_MANAGER_H
-#define OM_CHANNEL_MANAGER_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/om.hpp"
@@ -24,4 +23,3 @@ private:
     friend QDataStream&operator>>(QDataStream& in, OmChannelManager&);
 };
 
-#endif

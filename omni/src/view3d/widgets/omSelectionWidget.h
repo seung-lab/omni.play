@@ -1,5 +1,4 @@
-#ifndef OM_SELECTION_WIDGET_H
-#define OM_SELECTION_WIDGET_H
+#pragma once
 
 /*
  *
@@ -21,4 +20,3 @@ private:
 
 
 
-#endif

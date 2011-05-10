@@ -1,5 +1,4 @@
-#ifndef OM_HDF5_MANAGER_H
-#define OM_HDF5_MANAGER_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "common/om.hpp"
@@ -58,4 +57,3 @@ class OmHdf5Manager : private om::singletonBase<OmHdf5Manager> {
  	friend class zi::singleton<OmHdf5Manager>;
 };
 
-#endif

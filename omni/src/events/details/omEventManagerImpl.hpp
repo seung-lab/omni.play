@@ -1,5 +1,4 @@
-#ifndef OM_EVENT_MANAGER_IMPL_HPP
-#define OM_EVENT_MANAGER_IMPL_HPP
+#pragma once
 
 /*
  * OmEventManager is a hybrid event notification system using Qt's event system to
@@ -84,4 +83,3 @@ private:
     }
 };
 
-#endif

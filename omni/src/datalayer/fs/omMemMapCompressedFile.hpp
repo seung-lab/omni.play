@@ -1,5 +1,4 @@
-#ifndef OM_MEM_MAP_BACKUP_FILE_HPP
-#define OM_MEM_MAP_BACKUP_FILE_HPP
+#pragma once
 
 #include "datalayer/fs/omCompressedFile.h"
 #include "datalayer/fs/omIOnDiskFile.h"
@@ -87,4 +86,3 @@ private:
     }
 };
 
-#endif

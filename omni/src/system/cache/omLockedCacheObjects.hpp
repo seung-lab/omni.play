@@ -1,5 +1,4 @@
-#ifndef OM_LOCKED_CACHE_OBJECTS_HPP
-#define OM_LOCKED_CACHE_OBJECTS_HPP
+#pragma once
 
 #include "common/omCommon.h"
 #include "zi/omMutex.h"
@@ -245,4 +244,3 @@ private:
     KeyMultiIndex<KEY> list_;
 };
 
-#endif

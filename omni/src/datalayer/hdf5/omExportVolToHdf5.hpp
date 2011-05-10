@@ -1,7 +1,7 @@
-#ifndef OM_EXPORT_VOLUME_TO_HDF5_HPP
-#define OM_EXPORT_VOLUME_TO_HDF5_HPP
+#pragma once
 
 #include "chunks/omChunkCoord.h"
+#include "chunks/omChunkDataImpl.hpp"
 #include "chunks/omSegChunk.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
@@ -113,4 +113,3 @@ private:
         return om::ptrs::Wrap(rawDataPtr);
     }
 };
-#endif

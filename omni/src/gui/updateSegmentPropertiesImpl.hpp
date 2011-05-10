@@ -1,5 +1,4 @@
-#ifndef UPDATE_SEGMENT_PROPERTIES_DIALOG_IMPL_HPP
-#define UPDATE_SEGMENT_PROPERTIES_DIALOG_IMPL_HPP
+#pragma once
 
 #include "actions/omSelectSegmentParams.hpp"
 #include "events/details/omSegmentEvent.h"
@@ -44,4 +43,3 @@ public:
     }
 };
 
-#endif

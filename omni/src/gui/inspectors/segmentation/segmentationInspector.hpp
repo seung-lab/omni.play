@@ -1,5 +1,4 @@
-#ifndef NEW_SEGMENTATION_INSPECTOR_HPP
-#define NEW_SEGMENTATION_INSPECTOR_HPP
+#pragma once
 
 #include "utility/segmentationDataWrapper.hpp"
 #include "gui/inspectors/inspectorProperties.h"
@@ -74,4 +73,3 @@ private:
     }
 };
 
-#endif

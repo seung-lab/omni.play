@@ -1,5 +1,4 @@
-#ifndef MST_VIEWER_HPP
-#define MST_VIEWER_HPP
+#pragma once
 
 #include "utility/segmentationDataWrapper.hpp"
 #include <QtGui>
@@ -43,4 +42,3 @@ public:
     }
 };
 
-#endif

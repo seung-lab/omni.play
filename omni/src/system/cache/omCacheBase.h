@@ -1,5 +1,4 @@
-#ifndef OM_CACHE_BASE_H
-#define OM_CACHE_BASE_H
+#pragma once
 
 /**
  * Base class of all caches.
@@ -48,4 +47,3 @@ public:
     }
 };
 
-#endif

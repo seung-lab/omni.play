@@ -1,5 +1,4 @@
-#ifndef OM_JOIN_SEGMENTS_HPP
-#define OM_JOIN_SEGMENTS_HPP
+#pragma once
 
 #include "utility/dataWrappers.h"
 #include "segment/omSegmentUtils.hpp"
@@ -80,4 +79,3 @@ private:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENTATION_MANAGER_H
-#define OM_SEGMENTATION_MANAGER_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "system/omGenericManager.hpp"
@@ -32,4 +31,3 @@ private:
     friend QDataStream&operator>>(QDataStream& in, OmSegmentationManager&);
 };
 
-#endif

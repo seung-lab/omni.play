@@ -1,5 +1,4 @@
-#ifndef OM_TILE_COORD_H
-#define OM_TILE_COORD_H
+#pragma once
 
 #include "common/omCommon.h"
 #include <boost/tuple/tuple.hpp>
@@ -58,4 +57,3 @@ public:
     friend std::ostream& operator<<(std::ostream &, const OmTileCoord &);
 };
 
-#endif

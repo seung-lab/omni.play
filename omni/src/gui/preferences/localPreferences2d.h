@@ -1,5 +1,4 @@
-#ifndef LOCAL_PREFERENCES2D_H
-#define LOCAL_PREFERENCES2D_H
+#pragma once
 
 #include <QtGui>
 
@@ -11,4 +10,3 @@ public:
 private:
  	QGroupBox* makeGeneralPropBox();
 };
-#endif

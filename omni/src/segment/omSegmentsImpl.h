@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_CACHE_IMPL_H
-#define OM_SEGMENT_CACHE_IMPL_H
+#pragma once
 
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
 
@@ -48,4 +47,3 @@ private:
     friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);
 };
 
-#endif

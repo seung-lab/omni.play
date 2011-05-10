@@ -1,5 +1,4 @@
-#ifndef OMNI_SRC_MESH_DETAIL_TRI_STRIP_COLLECTOR_HPP
-#define OMNI_SRC_MESH_DETAIL_TRI_STRIP_COLLECTOR_HPP 1
+#pragma once
 
 #include <zi/bits/cstdint.hpp>
 #include <zi/vl/vec.hpp>
@@ -101,4 +100,3 @@ public:
     }
 };
 
-#endif

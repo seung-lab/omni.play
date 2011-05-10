@@ -1,5 +1,4 @@
-#ifndef OM_MOUSE_EVENTS_HPP
-#define OM_MOUSE_EVENTS_HPP
+#pragma once
 
 #include "view2d/omMouseEventMove.hpp"
 #include "view2d/omMouseEventPress.hpp"
@@ -41,4 +40,3 @@ public:
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef DEND_TOOLBAR_H
-#define DEND_TOOLBAR_H
+#pragma once
 
 #include "common/omCommon.h"
 
@@ -44,4 +43,3 @@ private:
     }
 };
 
-#endif

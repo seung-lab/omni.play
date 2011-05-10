@@ -1,5 +1,4 @@
-#ifndef OM_SEGMENT_EDITOR_H
-#define OM_SEGMENT_EDITOR_H
+#pragma once
 
 #include "actions/omActions.h"
 #include "common/omCommon.h"
@@ -77,4 +76,3 @@ private:
     friend class zi::singleton<OmSegmentSelected>;
 };
 
-#endif

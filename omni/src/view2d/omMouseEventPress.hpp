@@ -1,5 +1,4 @@
-#ifndef OM_MOUSE_EVENT_PRESS_HPP
-#define OM_MOUSE_EVENT_PRESS_HPP
+#pragma once
 
 #include "actions/omActions.h"
 #include "gui/widgets/omSegmentContextMenu.h"
@@ -337,4 +336,3 @@ private:
     }
 };
 
-#endif

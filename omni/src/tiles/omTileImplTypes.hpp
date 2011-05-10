@@ -1,5 +1,4 @@
-#ifndef OM_TILE_IMPL_TYPES_HPP
-#define OM_TILE_IMPL_TYPES_HPP
+#pragma once
 
 #include "common/omGl.h"
 #include "tiles/omTileCoord.h"
@@ -44,4 +43,3 @@ typedef om::shared_ptr<OmTileCoordsAndLocations> OmTileCoordsAndLocationsPtr;
 
 std::ostream& operator<<(std::ostream &out, const TextureVectices& v);
 
-#endif

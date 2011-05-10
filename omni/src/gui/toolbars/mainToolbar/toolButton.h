@@ -1,5 +1,4 @@
-#ifndef TOOL_BUTTON_H
-#define TOOL_BUTTON_H
+#pragma once
 
 #include "common/omCommon.h"
 #include "gui/widgets/omButton.hpp"
@@ -22,4 +21,3 @@ private:
     void doAction();
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef OM_WRITE_TILE_HPP
-#define OM_WRITE_TILE_HPP
+#pragma once
 
 #include "common/omDebug.h"
 #include "network/omJpeg.h"
@@ -153,6 +152,4 @@ private:
         return tile;
     }
 };
-
-#endif
 

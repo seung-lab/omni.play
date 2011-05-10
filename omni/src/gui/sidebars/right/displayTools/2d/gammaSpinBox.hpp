@@ -1,5 +1,4 @@
-#ifndef GAMMA_SPIN_BOX_HPP
-#define GAMMA_SPIN_BOX_HPP
+#pragma once
 
 #include "gui/widgets/omDoubleSpinBox.hpp"
 #include "tiles/cache/omTileCache.h"
@@ -30,4 +29,3 @@ private:
     }
 };
 
-#endif

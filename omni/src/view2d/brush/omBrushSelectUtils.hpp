@@ -1,5 +1,4 @@
-#ifndef OM_BRUSH_SELECT_UTILS_HPP
-#define OM_BRUSH_SELECT_UTILS_HPP
+#pragma once
 
 #include "events/omEvents.h"
 #include "segment/omSegmentSelector.h"
@@ -44,4 +43,3 @@ public:
     }
 };
 
-#endif

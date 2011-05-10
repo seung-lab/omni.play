@@ -1,5 +1,4 @@
-#ifndef CONTRAST_SPIN_BOX_HPP
-#define CONTRAST_SPIN_BOX_HPP
+#pragma once
 
 #include "common/omDebug.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
@@ -34,4 +33,3 @@ private:
     }
 };
 
-#endif

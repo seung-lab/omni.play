@@ -1,5 +1,4 @@
-#ifndef OM_TILE_POOL_TESTS_HPP
-#define OM_TILE_POOL_TESTS_HPP
+#pragma once
 
 #include "src/tiles/pools/omTilePool.hpp"
 #include "tests/testUtils.hpp"
@@ -160,4 +159,3 @@ private:
     }
 };
 
-#endif
