@@ -10,6 +10,13 @@ public:
         setDefaultButton(QMessageBox::Cancel);
     }
 
+    OmAskQuestion(const QString& text)
+    {
+        setText(text);
+        setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+        setDefaultButton(QMessageBox::Cancel);
+    }
+
     OmAskQuestion(const QString& text,
                   const QString& infoText)
     {

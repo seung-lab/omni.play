@@ -49,25 +49,25 @@ public:
     inline void Cut(const OmSegID segID)
     {
         clearCacheIfNotBatch();
-        graph_->cut(segID);
+        graph_->Cut(segID);
     }
 
     inline OmSegID Root(const OmSegID segID){
-        return graph_->root(segID);
+        return graph_->Root(segID);
     }
 
     inline void Join(const OmSegID childRootID, const OmSegID parentRootID)
     {
         clearCacheIfNotBatch();
-        graph_->join(childRootID, parentRootID);
+        graph_->Join(childRootID, parentRootID);
     }
 
     inline size_t Size() const {
-        return graph_->size();
+        return graph_->Size();
     }
 
     inline void Resize(const size_t size){
-        graph_->resize(size);
+        graph_->Resize(size);
     }
 };
 

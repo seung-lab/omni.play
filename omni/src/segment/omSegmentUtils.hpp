@@ -92,16 +92,21 @@ public:
         // 2 is the manual merge threshold
     }
 
-    static void PrintChildren(const SegmentDataWrapper& sdw)
+    om::shared_ptr<std::deque<std::string> >
+    static GetChildrenInfo(const SegmentDataWrapper& sdw)
     {
+        om::shared_ptr<std::deque<std::string> > ret =
+            om::make_shared<std::deque<std::string> >();
+
         if(!sdw.IsSegmentValid()){
-            return;
+            return ret;
         }
 
         OmSegmentIterator iter(sdw);
         iter.iterOverSegmentID(sdw.FindRootID());
 
         OmSegment* seg = iter.getNextSegment();
+
 
         while(NULL != seg)
         {
@@ -115,10 +120,13 @@ public:
                 .arg(seg->getThreshold())
                 .arg(seg->size());
 
-            printf("%s\n", qPrintable(str));
+            std::string line = str.toStdString();
+            ret->push_back(line);
 
             seg = iter.getNextSegment();
         }
+
+        return ret;
     }
 
     static void ReValidateEveryObject(const SegmentationDataWrapper& sdw)

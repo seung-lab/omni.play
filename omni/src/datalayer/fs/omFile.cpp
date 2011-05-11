@@ -27,7 +27,7 @@ void om::file::openFileRW(QFile& file)
 
 void om::file::openFileWO(QFile& file)
 {
-    if(!file.open(QIODevice::WriteOnly)){
+    if(!file.open(QIODevice::WriteOnly | QFile::Truncate)){
         throw OmIoException("could not open file for write", file.fileName());
     }
 }

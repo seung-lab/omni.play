@@ -362,6 +362,7 @@ HEADERS +=  \
 	src/gui/viewGroup/viewGroupUtils.hpp \
 	src/gui/viewGroup/viewGroupWidgetInfo.h \
 	src/gui/widgets/omAskQuestion.hpp \
+	src/gui/widgets/omAskYesNoQuestion.hpp \
 	src/gui/widgets/omButton.hpp \
 	src/gui/widgets/omCheckBoxWidget.hpp \
 	src/gui/widgets/omCursors.h \
@@ -371,10 +372,12 @@ HEADERS +=  \
 	src/gui/widgets/omLabelHBox.hpp \
 	src/gui/widgets/omLineEdit.hpp \
 	src/gui/widgets/omNewFileDialog.hpp \
-	src/gui/widgets/omProgressBar.hpp \
 	src/gui/widgets/omSegmentContextMenu.h \
 	src/gui/widgets/omTellInfo.hpp \
 	src/gui/widgets/omWidget.hpp \
+	src/gui/widgets/progress.hpp \
+	src/gui/widgets/progressBar.hpp \
+	src/gui/widgets/progressBarDialog.hpp \
 	src/headless/headless.h \
 	src/headless/headlessImpl.hpp \
 	src/mainpage.h \

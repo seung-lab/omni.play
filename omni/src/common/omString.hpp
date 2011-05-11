@@ -2,14 +2,25 @@
 
 #include <zi/for_each.hpp>
 
-#include <boost/range/adaptor/transformed.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+
 #include <string>
 
 namespace om {
 namespace string {
+
+inline void downcase(std::string& str){
+    boost::to_lower(str);
+}
+
+inline bool startsWith(const std::string& str, const std::string& prefix){
+    return boost::starts_with(str, prefix);
+}
 
 template <typename T>
 static std::string num(const T& num){

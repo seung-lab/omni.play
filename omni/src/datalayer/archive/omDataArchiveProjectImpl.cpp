@@ -1,6 +1,6 @@
-#include "datalayer/archive/omDataArchiveProjectImpl.h"
 #include "common/omCommon.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
+#include "datalayer/archive/omDataArchiveProjectImpl.h"
 #include "datalayer/archive/omGenericManagerArchive.hpp"
 #include "datalayer/archive/omMipVolumeArchive.h"
 #include "datalayer/archive/omMipVolumeArchiveOld.h"
@@ -21,6 +21,7 @@
 #include "system/omGroup.h"
 #include "system/omGroups.h"
 #include "system/omPreferences.h"
+#include "volume/build/omVolumeProcessor.h"
 
 #include <QSet>
 
@@ -354,10 +355,12 @@ QDataStream &operator>>(QDataStream& in, OmSegmentsImpl& sc)
 
     OmUserEdges* userEdges = sc.segmentation_->MSTUserEdges();
 
-    if(OmProject::GetFileVersion() < 19){
+    if(OmProject::GetFileVersion() < 19)
+    {
         int size;
         in >> size;
-        for(int i = 0; i < size; ++i){
+        for(int i = 0; i < size; ++i)
+        {
             OmSegmentEdge e;
             in >> e;
             userEdges->AddEdgeFromProjectLoad(e);
@@ -399,8 +402,40 @@ QDataStream &operator>>(QDataStream& in, OmPagingPtrStore& ps)
         ps.storeMetadata();
     }
 
-    if(ps.segmentation_->IsBuilt()){
-        ps.loadAllSegmentPages();
+    OmSegmentation* vol = ps.segmentation_;
+
+    if(vol->IsBuilt())
+    {
+        const QString fullPath = OmFileNames::GetVolSegmentsPath(vol);
+
+        if(OmFileHelpers::IsFolderEmpty(fullPath))
+        {
+            std::cout << "no segment folder; rebuild segment data?\n==> (y/N)  " << std::flush;
+
+            std::string answer;
+            std::getline(std::cin, answer);
+
+            om::string::downcase(answer);
+
+            if(om::string::startsWith(answer, "y"))
+            {
+                vol->loadVolData();
+
+                vol->VolData()->downsample(vol);
+
+                vol->Segments()->StartCaches();
+
+                OmVolumeProcessor processor;
+                processor.BuildThreadedVolume(vol);
+
+                vol->Segments()->Flush();
+
+                vol->MSTUserEdges()->Save();
+            }
+
+        } else {
+            ps.loadAllSegmentPages();
+        }
     }
 
     return in;

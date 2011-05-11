@@ -9,7 +9,7 @@
 #include "gui/segmentLists/details/segmentListWorking.h"
 #include "gui/segmentLists/omSegmentListWidget.h"
 #include "gui/segmentLists/segmentListKeyPressEventListener.h"
-#include "gui/widgets/omProgressBar.hpp"
+#include "gui/widgets/progressBar.hpp"
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentUtils.hpp"
 #include "utility/dataWrappers.h"
@@ -35,7 +35,7 @@ private:
 
     QTabWidget* mDataElementsTabs;
     QVBoxLayout* mOverallContainer;
-    OmProgressBar<uint64_t>* percentValidated_;
+    om::gui::progressBar<uint64_t>* percentValidated_;
 
     int mCurrentlyActiveTab;
 
@@ -116,8 +116,8 @@ private:
     {
         const uint64_t valid = sdw.SegmentLists()->NumVoxels(om::VALID);
 
-        percentValidated_->setMaximum(sdw.SegmentLists()->TotalNumVoxels());
-        percentValidated_->setValue(valid);
+        percentValidated_->SetMaximum(sdw.SegmentLists()->TotalNumVoxels());
+        percentValidated_->SetValue(valid);
     }
 
     QString GetSegmentationGroupBoxTitle(SegmentationDataWrapper sdw) {
@@ -141,7 +141,7 @@ public:
         mOverallContainer = new QVBoxLayout( this );
         mOverallContainer->addWidget( mDataElementsTabs );
 
-        percentValidated_ = new OmProgressBar<uint64_t>(this);
+        percentValidated_ = new om::gui::progressBar<uint64_t>(this);
         mOverallContainer->addWidget(percentValidated_);
     }
 

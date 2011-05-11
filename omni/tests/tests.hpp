@@ -487,7 +487,7 @@ private:
         zi::DynamicForestPool<uint32_t> forest(1000);
 
         for(int i = 1; i < 1000; ++i){
-            std::cout << i << ", " << forest.root(i) << "\n";
+            std::cout << i << ", " << forest.Root(i) << "\n";
         }
 
         std::cout << "dynamicForest\n";

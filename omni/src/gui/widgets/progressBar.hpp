@@ -1,9 +1,14 @@
 #pragma once
 
+#include <QtGui>
+
+namespace om {
+namespace gui {
+
 template <typename T>
-class OmProgressBar : public QGroupBox {
+class progressBar : public QGroupBox {
 public:
-    OmProgressBar(QWidget* parent)
+    progressBar(QWidget* parent)
         : QGroupBox(parent)
         , max_(0)
         , min_(0)
@@ -21,15 +26,15 @@ public:
         overallContainer_->addWidget(label_);
     }
 
-    void setMaximum(const T max){
+    void SetMaximum(const T max){
         max_ = max;
     }
 
-    void setMinimum(const T min){
+    void SetMinimum(const T min){
         min_ = min;
     }
 
-    void setValue(const T value)
+    void SetValue(const T value)
     {
         if(!value || !max_){
             curPerc_ = 0;
@@ -53,3 +58,5 @@ private:
     QHBoxLayout* overallContainer_;
 };
 
+} // namespace gui
+} // namespace om

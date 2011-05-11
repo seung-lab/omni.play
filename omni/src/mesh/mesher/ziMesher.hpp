@@ -35,7 +35,6 @@ public:
         , numParallelChunks_(numberParallelChunks())
         , numThreadsPerChunk_(zi::system::cpu_count / 2)
         , downScallingFactor_(OmMeshParams::GetDownScallingFactor())
-        , progress_(new om::mesher::progress())
     {
         printf("ziMesher: will process %d chunks at a time\n", numParallelChunks_);
         printf("ziMesher: will use %d threads per chunk\n", numThreadsPerChunk_);
@@ -60,12 +59,14 @@ public:
 
     // void RemeshFullVolume()
     // {
-    //     downample(....);
+    // if(redownsample){
+    //     segmentation_->VolData()->downsample(segmentation_);
+    // }
     //     OmChunkUtils::RefindUniqueChunkValues(segmentation_->GetID());
     // }
 
-    om::mesher::progress* Progress(){
-        return progress_.get();
+    om::shared_ptr<om::gui::progress> Progress(){
+        return progress_.Progress();
     }
 
 private:
@@ -84,14 +85,14 @@ private:
     const int numThreadsPerChunk_;
     const double downScallingFactor_;
 
-    boost::scoped_ptr<om::mesher::progress> progress_;
+    om::mesher::progress progress_;
 
     void init()
     {
         om::shared_ptr<std::deque<OmChunkCoord> > levelZeroChunks =
             segmentation_->GetMipChunkCoords(0);
 
-        progress_->SetTotalNumChunks(levelZeroChunks->size());
+        progress_.SetTotalNumChunks(levelZeroChunks->size());
 
         FOR_EACH( it, *levelZeroChunks ){
             addValuesFromChunkAndDownsampledChunks(*it);
@@ -307,7 +308,7 @@ private:
 
         manager.join();
 
-        progress_->ChunkCompleted(coord);
+        progress_.ChunkCompleted(coord);
     }
 
     static int numberParallelChunks()

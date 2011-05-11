@@ -26,10 +26,10 @@
 #include <zi/bits/type_traits.hpp>
 #include <zi/meta/enable_if.hpp>
 
-template< class TaskContainer >
+template <typename TaskContainer>
 class OmTaskManager {
 private:
-    typedef om::shared_ptr< zi::concurrency_::runnable > task_t;
+    typedef om::shared_ptr<zi::concurrency_::runnable> task_t;
 
     TaskContainer tasks_;
 
@@ -78,7 +78,7 @@ public:
     void start()
     {
         int numWokers = OmSystemInformation::get_num_cores();
-        if(numWokers < 2){
+        if(numWokers <2){
             numWokers = 2;
         }
         start(numWokers);
@@ -120,14 +120,14 @@ public:
         tasks_.clear();
     }
 
-    void add_workers( std::size_t count )
+    void add_workers(std::size_t count)
     {
-        manager_->add_workers( count );
+        manager_->add_workers(count);
     }
 
-    void remove_workers( std::size_t count )
+    void remove_workers(std::size_t count)
     {
-        manager_->remove_workers( count );
+        manager_->remove_workers(count);
     }
 
 //status
@@ -160,14 +160,14 @@ public:
         wake_manager();
     }
 
-    template< class Runnable >
-    void push_front( om::shared_ptr< Runnable > task)
+    template <typename Runnable>
+    void push_front(om::shared_ptr<Runnable> task)
     {
         tasks_.push_front(task);
         wake_manager();
     }
 
-    template< class Function >
+    template <typename Function>
     void push_front(const Function& task)
     {
         tasks_.push_front(task);
@@ -181,14 +181,14 @@ public:
         wake_manager();
     }
 
-    template< class Runnable >
-    void push_back( om::shared_ptr< Runnable > task)
+    template <typename Runnable>
+    void push_back(om::shared_ptr<Runnable> task)
     {
         tasks_.push_back(task);
         wake_manager();
     }
 
-    template< class Function >
+    template <typename Function>
     void push_back(const Function& task)
     {
         tasks_.push_back(task);
@@ -202,14 +202,14 @@ public:
         wake_manager();
     }
 
-    template< class Runnable >
-    void insert( om::shared_ptr< Runnable > task)
+    template <typename Runnable>
+    void insert(om::shared_ptr<Runnable> task)
     {
         tasks_.insert(task);
         wake_manager();
     }
 
-    template< class Function >
+    template <typename Function>
     void insert(const Function& task)
     {
         tasks_.insert(task);
@@ -225,7 +225,7 @@ public:
     }
 
     template <typename ARG, class Runnable>
-    void insert(const ARG& arg, om::shared_ptr< Runnable > task)
+    void insert(const ARG& arg, om::shared_ptr<Runnable> task)
     {
         tasks_.insert(arg, task);
         wake_manager();

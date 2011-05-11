@@ -131,6 +131,7 @@ private:
         qRegisterMetaType<om::tool::mode>("om::tool::mode");
         qRegisterMetaType<OmID>("OmID");
         qRegisterMetaType<ViewType>("ViewType");
+        qRegisterMetaType<uint32_t>("uint32_t");
     }
 
     int runHeadless()

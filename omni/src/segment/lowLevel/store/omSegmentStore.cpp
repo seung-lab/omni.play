@@ -14,10 +14,13 @@ OmSegmentsStore::~OmSegmentsStore()
 
 void OmSegmentsStore::StartCaches()
 {
-    assert(!cachedStore_);
-    cachedStore_.reset(new OmCacheSegStore(this));
+    if(cachedStore_)
+    {
+        std::cout << "not restarting caches\n";
+        return;
+    }
 
-    assert(!cacheRootIDs_);
+    cachedStore_.reset(new OmCacheSegStore(this));
     cacheRootIDs_.reset(new OmCacheSegRootIDs(segmentation_, this));
 }
 

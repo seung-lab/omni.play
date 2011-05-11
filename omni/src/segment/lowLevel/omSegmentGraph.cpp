@@ -36,13 +36,7 @@ void OmSegmentGraph::Initialize(OmSegmentation* segmentation,
     // maxValue is a valid segment id, so array needs to be 1 bigger
     const uint32_t size = 1 + mCache->getMaxValue();
 
-    // DynamicForestPool dies if size == 1 during root()
-    if(size <= 10){
-        forest_.reset(new OmDynamicForestCache(10));
-    } else {
-        forest_.reset(new OmDynamicForestCache(size));
-    }
-
+    forest_.reset(new OmDynamicForestCache(size));
     children_.reset(new OmSegmentChildren(size));
 
     validGroupNum_->Resize(size);
@@ -59,11 +53,7 @@ void OmSegmentGraph::GrowGraphIfNeeded(OmSegment* seg)
     // maxValue is a valid segment id, so array needs to be 1 bigger
     const uint32_t size = 1 + mCache->getMaxValue();
 
-    // DynamicForestPool dies if newSize == oldSize during resize()
-    if(size > 10){
-        forest_->Resize(size);
-    }
-
+    forest_->Resize(size);
     children_->Resize(size);
     segmentListsLL_->Resize(size);
     segmentListsLL_->AddSegment(seg);

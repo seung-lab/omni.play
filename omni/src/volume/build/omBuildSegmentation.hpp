@@ -39,15 +39,15 @@ public:
     }
 
     void BuildAndMeshSegmentation(){
-            do_build_seg_image_and_mesh();
+        do_build_seg_image_and_mesh();
     }
 
     void BuildImage(){
-            do_build_seg_image();
-	}
+        do_build_seg_image();
+    }
 
     void BuildMesh(){
-		do_build_seg_mesh();
+        do_build_seg_mesh();
     }
 
     void buildBlankVolume()

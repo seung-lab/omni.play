@@ -1,50 +1,44 @@
 #pragma once
 
 #include "chunks/omChunkCoord.h"
-#include "utility/omLockedPODs.hpp"
-
-#include <QObject>
+#include "gui/widgets/progress.hpp"
 
 namespace om {
 namespace mesher {
 
-class progress : public QObject {
-Q_OBJECT
-
+class progress {
 private:
-    LockedUint32 totalNumChunks_;
-    LockedUint32 numChunksDone_;
+    om::shared_ptr<om::gui::progress> progress_;
 
 public:
     progress()
-    {
-        totalNumChunks_.set(0);
-        numChunksDone_.set(0);
+        : progress_(om::make_shared<om::gui::progress>())
+    {}
+
+    om::shared_ptr<om::gui::progress> Progress(){
+        return progress_;
     }
 
     void SetTotalNumChunks(const uint32_t totalNumChunks){
-        totalNumChunks_.set(totalNumChunks);
+        progress_->SetTotal(totalNumChunks);
     }
 
     uint32_t GetTotalNumChunks() const {
-        return totalNumChunks_.get();
+        return progress_->GetTotal();
     }
 
     void ChunkCompleted(const OmChunkCoord& coord)
     {
-        ++numChunksDone_;
-        chunkDone(numChunksDone_.get());
+        progress_->SetDone(1);
 
-        const uint32_t chunksLeft = totalNumChunks_.get() - numChunksDone_.get();
+        const uint32_t total = progress_->GetTotal();
+        const uint32_t chunksLeft = total - progress_->GetDone();
 
         std::cout << "finished chunk: " << coord << "; "
                   << chunksLeft << " chunks left "
-                  << "(" << totalNumChunks_.get() << " total)\n";
+                  << "(" << total << " total)\n";
 
     }
-
-Q_SIGNALS:
-    void chunkDone(const uint32_t numDone);
 };
 
 } // namespace mesher

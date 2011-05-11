@@ -1,5 +1,6 @@
 #pragma once
 
+#include "datalayer/fs/omFile.hpp"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegments.h"
@@ -16,9 +17,9 @@ class ExportSegmentList : public OmButton<PageExport> {
 public:
     ExportSegmentList(PageExport * d)
         : OmButton<PageExport>( d,
-                                           "Export Segment Info (Valid)",
-                                           "export segment info",
-                                           false)
+                                "Export Segment Info (Valid)",
+                                "export segment info",
+                                false)
         , groups_(NULL)
     {}
 
@@ -35,14 +36,12 @@ private:
 
         const QString outFile = OmProject::OmniFile() + ".segments.txt";
 
-        QFile data(outFile);
-        if(data.open(QFile::WriteOnly | QFile::Truncate)) {
-            printf("writing segment file %s\n", qPrintable(outFile));
-        } else{
-            throw OmIoException("could not open file", outFile);
-        }
+        QFile file(outFile);
+        om::file::openFileWO(file);
 
-        QTextStream out(&data);
+        printf("writing segment file %s\n", qPrintable(outFile));
+
+        QTextStream out(&file);
         out << "segID, 1 == working, 2 == valid, 3 == uncertain, isGlia\n";
         out << "example: 100,2,0\n";
 

@@ -1,10 +1,13 @@
-#include "view3d/omSegmentPickPoint.h"
 #include "actions/omActions.h"
 #include "common/omDebug.h"
 #include "events/omEvents.h"
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/inspectors/segmentInspector.h"
+#include "gui/widgets/omAskYesNoQuestion.hpp"
 #include "gui/widgets/omSegmentContextMenu.h"
+#include "gui/widgets/omTellInfo.hpp"
+#include "gui/widgets/progress.hpp"
+#include "gui/widgets/progressBarDialog.hpp"
 #include "project/omProject.h"
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentSelector.h"
@@ -14,6 +17,7 @@
 #include "system/omGroups.h"
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
+#include "view3d/omSegmentPickPoint.h"
 #include "viewGroup/omSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 
@@ -229,8 +233,48 @@ void OmSegmentContextMenu::addPropertiesActions()
     addAction("List Children", this, SLOT(printChildren()));
 }
 
-void OmSegmentContextMenu::printChildren(){
-    OmSegmentUtils::PrintChildren(sdw_);
+void OmSegmentContextMenu::printChildren()
+{
+    om::shared_ptr<std::deque<std::string> > children = OmSegmentUtils::GetChildrenInfo(sdw_);
+
+    OmAskYesNoQuestion fileExport("Export children list to file?");
+
+    if(fileExport.Ask())
+    {
+        const QString fnp = QFileDialog::getSaveFileName(this, "Children list file name");
+
+        if(NULL == fnp){
+            return;
+        }
+
+        om::gui::progressBarDialog* dialog = new om::gui::progressBarDialog(NULL);
+        dialog->push_back(
+            zi::run_fn(
+                zi::bind(OmSegmentContextMenu::writeChildrenFile,
+                         fnp, dialog, children)));
+
+    } else
+    {
+        FOR_EACH(iter, *children){
+            std::cout << iter->c_str() << "\n";
+        }
+    }
+}
+
+void OmSegmentContextMenu::writeChildrenFile(const QString fnp, om::gui::progressBarDialog* dialog,
+                                             om::shared_ptr<std::deque<std::string> > children)
+{
+    try
+    {
+        QFile file(fnp);
+        om::file::openFileWO(file);
+        om::file::writeStrings(file, *children, dialog);
+
+        dialog->TellDone("wrote file " + fnp);
+
+    } catch(...){
+        dialog->TellDone("failed writing file " + fnp);
+    }
 }
 
 void OmSegmentContextMenu::addGroups()

@@ -20,12 +20,12 @@ inline void resizeFileNumBytes(QFile& file, const int64_t newSize){
     resizeFileNumBytes(&file, newSize);
 }
 
-template <class T>
+template <typename T>
 void resizeFileNumElements(QFile& file, const int64_t numElements){
     resizeFileNumBytes(&file, sizeof(T) * numElements);
 }
 
-template <class T>
+template <typename T>
 void resizeFileNumElements(QFile* file, const int64_t numElements){
     resizeFileNumBytes(file, sizeof(T) * numElements);
 }
@@ -66,7 +66,7 @@ void openFileWO(PTR& file, const std::string& fnp)
     }
 }
 
-template <class T>
+template <typename T>
 T* mapFile(QFile* file)
 {
     uchar* map = file->map(0, file->size());
@@ -80,7 +80,7 @@ T* mapFile(QFile* file)
     return reinterpret_cast<T*>(map);
 }
 
-template <class T, class PTR>
+template <typename T, class PTR>
 T* mapFile(PTR& file)
 {
     uchar* map = file->map(0, file->size());
@@ -94,7 +94,7 @@ T* mapFile(PTR& file)
     return reinterpret_cast<T*>(map);
 }
 
-template <class T>
+template <typename T>
 om::shared_ptr<T> readAll(QFile* file)
 {
     const int64_t numBytes = file->size();
@@ -118,12 +118,12 @@ om::shared_ptr<T> readAll(QFile* file)
 }
 
 
-template <class T>
+template <typename T>
 om::shared_ptr<T> readAll(QFile& file) {
     return readAll<T>(&file);
 }
 
-template <class T>
+template <typename T>
 void writeVec(QFile& file, const std::vector<T>& vec)
 {
     resizeFileNumElements<T>(file, vec.size());
@@ -139,7 +139,7 @@ void writeVec(QFile& file, const std::vector<T>& vec)
     }
 }
 
-template <class T>
+template <typename T>
 void writeNumElements(QFile& file, const om::shared_ptr<T> ptr,
                       const int64_t numElements)
 {
@@ -156,7 +156,7 @@ void writeNumElements(QFile& file, const om::shared_ptr<T> ptr,
     }
 }
 
-template <class T>
+template <typename T>
 void createFileNumElements(const std::string& fnp, const int64_t numElements)
 {
     QFile file(QString::fromStdString(fnp));
@@ -169,7 +169,7 @@ void createFileNumElements(const std::string& fnp, const int64_t numElements)
     writeNumElements(file, empty, numElements);
 }
 
-template <class T>
+template <typename T>
 void createFileFromData(const std::string& fnp, const om::shared_ptr<T> ptr,
                         const int64_t numElements)
 {
@@ -178,6 +178,31 @@ void createFileFromData(const std::string& fnp, const om::shared_ptr<T> ptr,
     openFileWO(file);
 
     writeNumElements(file, ptr, numElements);
+}
+
+template <typename T>
+void writeStrings(QFile& file, const T& strings)
+{
+    QTextStream out(&file);
+
+    FOR_EACH(iter, strings)
+    {
+        out << QString::fromStdString(*iter) << "\n";
+    }
+}
+
+template <typename T, typename PROGRESS>
+void writeStrings(QFile& file, const T& strings, PROGRESS* progress)
+{
+    progress->SetTotal(strings.size());
+
+    QTextStream out(&file);
+
+    FOR_EACH(iter, strings)
+    {
+        out << QString::fromStdString(*iter) << "\n";
+        progress->SetDone(1);
+    }
 }
 
 } // namespace file

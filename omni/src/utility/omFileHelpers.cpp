@@ -1,6 +1,8 @@
 #include "common/omDebug.h"
 #include "utility/omFileHelpers.h"
 
+#include <boost/filesystem.hpp>
+
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -104,4 +106,16 @@ void OmFileHelpers::CopyFile(const QString& from_fnp, const QString& to_fnp)
     if(!QFile::copy(from_fnp, to_fnp)){
         throw OmIoException("could not copy to file", to_fnp);
     }
+}
+
+bool OmFileHelpers::IsFolderEmpty(const QString& dirNameQT)
+{
+    const std::string dirName = dirNameQT.toStdString();
+
+    if(!boost::filesystem::exists(dirName)){
+        return true;
+    }
+
+    return boost::filesystem::directory_iterator(dirName) ==
+        boost::filesystem::directory_iterator();
 }

@@ -7,6 +7,7 @@
 
 class OmViewGroupState;
 class OmSegmentPickPoint;
+namespace om { namespace gui { class progressBarDialog; } }
 
 class OmSegmentContextMenu : public QMenu {
 
@@ -49,12 +50,13 @@ private Q_SLOTS:
 private:
     SegmentDataWrapper sdw_;
     DataCoord coord_;
+    OmViewGroupState* vgs_;
 
     bool isValid() const;
     bool isUncertain() const;
 
     void doRefresh();
 
-    OmViewGroupState* vgs_;
+    static void writeChildrenFile(const QString fnp, om::gui::progressBarDialog* dialog,
+                                  om::shared_ptr<std::deque<std::string> > children);
 };
-
