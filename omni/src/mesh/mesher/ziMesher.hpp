@@ -69,6 +69,10 @@ public:
         return progress_.Progress();
     }
 
+    void Progress(om::shared_ptr<om::gui::progress> p){
+        progress_.Progress(p);
+    }
+
 private:
 
     OmSegmentation *const segmentation_;

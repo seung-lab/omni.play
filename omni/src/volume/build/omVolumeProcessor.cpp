@@ -28,10 +28,10 @@ public:
 
         const bool isMIPzero = (0 == coord_.Level);
 
-        chunk->SegData()->RefreshDirectDataValues(isMIPzero, segments_);
+        chunk->SegData()->ProcessChunk(isMIPzero, segments_);
 
         const ChunkUniqueValues segIDs =
-            vol_->ChunkUniqueValues()->Values(coord_, 1);
+            vol_->ChunkUniqueValues()->RereadChunk(coord_, 1);
 
         std::cout << "chunk " << coord_
                   << " has " << segIDs.size()
@@ -58,8 +58,8 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol)
 
         om::shared_ptr<OmSegmentationChunkBuildTask> task =
             om::make_shared<OmSegmentationChunkBuildTask>(coord,
-                                                             vol->Segments(),
-                                                             vol);
+                                                          vol->Segments(),
+                                                          vol);
         threadPool.push_back(task);
     }
 

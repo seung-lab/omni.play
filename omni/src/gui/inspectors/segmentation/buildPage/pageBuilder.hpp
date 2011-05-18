@@ -1,8 +1,8 @@
 #pragma once
 
+#include "gui/widgets/progressBarDialog.hpp"
 #include "gui/inspectors/segmentation/buildPage/segVolBuilder.hpp"
 #include "gui/inspectors/segmentation/buildPage/sourceBox.hpp"
-#include "gui/inspectors/volInspector.h"
 
 namespace om {
 namespace segmentationInspector {
@@ -25,22 +25,31 @@ public:
         QVBoxLayout* overallContainer = new QVBoxLayout(this);
         overallContainer->addWidget(sourceBox_);
         overallContainer->addLayout(makeActionsBox());
-        overallContainer->addWidget(makeVolBox());
         overallContainer->addStretch(1);
     }
 
 private Q_SLOTS:
     void build()
     {
-		segVolBuilder builder;
-		builder.Build(sdw_,
-					  buildComboBox_->currentText(),
-					  sourceBox_->GetFilesToBuild());
+        om::gui::progressBarDialog* dialog = new om::gui::progressBarDialog(NULL);
+
+        dialog->push_back(
+            zi::run_fn(
+                zi::bind(PageBuilder::doBuild,
+                         sdw_,
+                         buildComboBox_->currentText(),
+                         sourceBox_->GetFilesToBuild(),
+                         dialog)));
     }
 
 private:
-    QGroupBox* makeVolBox(){
-        return new OmVolInspector(sdw_.GetSegmentation(), this);
+    static void doBuild(const SegmentationDataWrapper sdw,
+                        const QString whatOrHowToBuild,
+                        const QFileInfoList fileNamesAndPaths,
+                        om::gui::progressBarDialog* dialog)
+    {
+        segVolBuilder builder(sdw, whatOrHowToBuild, fileNamesAndPaths);
+        builder.Build(dialog->Progress());
     }
 
     QGridLayout* makeActionsBox()
@@ -51,11 +60,11 @@ private:
         buildComboBox_->setObjectName(QString::fromUtf8("buildComboBox_"));
         buildComboBox_->clear();
         buildComboBox_->insertItems(0, QStringList()
-                                   << "Data"
-                                   << "Mesh"
-                                   << "Data & Mesh"
-                                   << "Load Dendrogram"
-                                   << "Blank Volume"
+                                    << "Data"
+                                    << "Mesh"
+                                    << "Data & Mesh"
+                                    << "Load Dendrogram"
+                                    << "Blank Volume"
             );
         gridAction->addWidget(buildComboBox_, 1, 0);
 

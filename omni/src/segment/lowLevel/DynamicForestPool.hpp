@@ -13,7 +13,7 @@
 #include <utility>
 
 //#define DYNAMIC_FOREST_ASSERT(x) (assert(x))
-#define DYNAMIC_FOREST_ASSERT(x) (static_cast<void>(0))
+#define DYNAMIC_FOREST_ASSERT(x) (static_cast<void>(sizeof(x)))
 
 namespace zi {
 
@@ -33,6 +33,19 @@ private:
 
     Node* x_;
     size_t size_;
+
+public:
+    DynamicForestPool(size_t s)
+        : size_(s+1)
+    {
+        init();
+    }
+
+    ~DynamicForestPool() {
+        free(x_);
+    }
+
+private:
 
     uint64_t numBytes() const {
         return numBytes(size_);
@@ -62,7 +75,7 @@ private:
 
     void resize(const size_t newSize)
     {
-        if(size_ == newSize){
+        if(newSize == size_){
             return;
         }
 
@@ -87,19 +100,6 @@ private:
 
         memset(&x_[size_], 0, newSizeBytes - oldSizeBytes);
     }
-
-public:
-    DynamicForestPool(size_t s)
-        : size_(s+1)
-    {
-        init();
-    }
-
-    ~DynamicForestPool() {
-        free(x_);
-    }
-
-private:
 
     inline void left(const T n)
     {

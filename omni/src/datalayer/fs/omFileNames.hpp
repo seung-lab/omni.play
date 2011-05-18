@@ -4,6 +4,7 @@
 #include "common/omDebug.h"
 #include "datalayer/fs/omFile.hpp"
 #include "project/omProject.h"
+#include "utility/omFileHelpers.h"
 #include "utility/omUUID.hpp"
 #include "volume/omSegmentation.h"
 #include "zi/omMutex.h"
@@ -13,8 +14,7 @@
 
 class OmFileNames {
 private:
-    static inline void createFolder(const QString& fullPath,
-                                    zi::rwmutex& lock)
+    static inline void createFolder(const QString& fullPath, zi::rwmutex& lock)
     {
         if(QDir(fullPath).exists()){
             return;
@@ -24,9 +24,7 @@ private:
             zi::rwmutex::write_guard g(lock);
 
             if(!QDir(fullPath).exists()){
-                if(!QDir().mkpath(fullPath)){
-                    throw OmIoException("could not create folder", fullPath);
-                }
+                OmFileHelpers::MkDir(fullPath);
             }
         }
     }
@@ -61,10 +59,9 @@ public:
     }
 
     template <typename T>
-    static QString GetVolPath(T* vol)
+    static QString GetVolPath(T const*const vol)
     {
-        const QString subPath = QString("%1/")
-            .arg(QString::fromStdString(vol->GetDirectoryPath()));
+        const QString subPath = QString::fromStdString(vol->GetDirectoryPath());
 
         if(subPath.startsWith("/")){
             throw OmIoException("not a relative path", subPath);
@@ -74,7 +71,7 @@ public:
     }
 
     template <typename T>
-    static QString MakeVolPath(T* vol)
+    static QString MakeVolFolder(T* vol)
     {
         static zi::rwmutex lock;
 

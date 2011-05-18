@@ -176,10 +176,14 @@ public:
     static QColor SetSegColor(const SegmentDataWrapper& sdw, const QColor& color)
     {
         // max allowed color val is 128 to allow color to be highlighted
+        // const OmColor c = { std::min(128, color.red()),
+        //                     std::min(128, color.green()),
+        //                     std::min(128, color.blue()) };
 
-        const OmColor c = { std::min(128, color.red()),
-                            std::min(128, color.green()),
-                            std::min(128, color.blue()) };
+        const OmColor c = { color.red(),
+                            color.green(),
+                            color.blue() };
+
         sdw.SetColor(c);
 
         return OmColorToQColor(c);
@@ -193,11 +197,16 @@ public:
         return qRgb(color.red, color.green, color.blue);
     }
 
-    static QPixmap SegColorAsQPixmap(const SegmentDataWrapper& sdw,
-                                     const int width = 40,
-                                     const int height = 30)
+    static QPixmap SegColorAsQPixmap(const SegmentDataWrapper& sdw)
     {
         const QColor newcolor = SegColorAsQColor(sdw);
+        return MakePixMap(newcolor);
+    }
+
+    static QPixmap MakePixMap(const QColor newcolor,
+                              const int width = 40,
+                              const int height = 30)
+    {
         QPixmap pixm(width, height);
         pixm.fill(newcolor);
         return pixm;

@@ -40,7 +40,7 @@ MainToolBar::MainToolBar(MainWindow* mainWindow)
 
     addWidget(new FilterToBlackCheckbox(this));
 
-    addWidget(new ShowPaintTools(this));
+    addWidget(new ShowPaintTools(this, mainWindow_->GetViewGroupState()));
 }
 
 void MainToolBar::setReadOnlyWidgetsEnabled()

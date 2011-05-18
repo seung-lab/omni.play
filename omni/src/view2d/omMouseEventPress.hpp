@@ -3,6 +3,7 @@
 #include "actions/omActions.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/widgets/omTellInfo.hpp"
+#include "gui/widgets/omAskYesNoQuestion.hpp"
 #include "view2d/brush/omBrushSelect.hpp"
 #include "view2d/omFillTool.hpp"
 #include "view2d/omMouseEventUtils.hpp"
@@ -309,13 +310,20 @@ private:
     {
         SegmentDataWrapper sdwUnknownDepth = OmSegmentSelected::GetSegmentForPainting();
 
-        if (!sdwUnknownDepth.IsValidWrapper() )
-        {
-            tellUserToSelectSegment("filling");
-            return;
-        }
+        SegmentDataWrapper sdw;
 
-        SegmentDataWrapper sdw(sdwUnknownDepth.FindRoot());
+        if(sdwUnknownDepth.IsValidWrapper()){
+            sdw = SegmentDataWrapper(sdwUnknownDepth.FindRoot());
+
+        } else
+        {
+            OmAskYesNoQuestion q("Are you sure you wish to fill using black?");
+            if(!q.Ask()){
+                return;
+            }
+
+            sdw = SegmentDataWrapper(state_->GetSegmentationID(), 0);
+        }
 
         OmView2dManager::AddTaskBack(
             zi::run_fn(

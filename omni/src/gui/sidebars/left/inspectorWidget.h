@@ -7,7 +7,7 @@
 #include <QtGui>
 #include <QWidget>
 
-class ChanInspector;
+class ChannelInspector;
 class ChannelDataWrapper;
 class ElementListBox;
 class FilObjectInspector;
@@ -45,7 +45,6 @@ protected:
     static const int USER_DATA_COL = 4;
 
 private Q_SLOTS:
-    void addFilter();
     void nameEditChanged();
 
     void showDataSrcContextMenu(const QPoint & menuPoint);
@@ -105,7 +104,7 @@ private:
     QMenu* contextMenu_;
     QMenu* contextMenuDataSrc_;
 
-    ChanInspector* channelInspectorWidget_;
+    ChannelInspector* channelInspectorWidget_;
     FilObjectInspector* filObjectInspectorWidget_;
 
     void populateChannelInspector(OmID c_id);

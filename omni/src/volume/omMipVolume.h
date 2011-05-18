@@ -27,7 +27,7 @@ public:
     OmMipVolume();
     virtual ~OmMipVolume(){}
 
-    virtual std::string GetDirectoryPath() = 0;
+    virtual std::string GetDirectoryPath() const = 0;
     virtual std::string GetName() = 0;
     virtual void loadVolData() = 0;
     virtual OmVolumeData* VolData() = 0;
@@ -78,9 +78,9 @@ private:
     template <class T> friend class OmVolumeBuilderBase;
     template <class T> friend class OmVolumeBuilderHdf5;
     template <class T> friend class OmVolumeBuilderImages;
+    template <class T> friend class OmMipVolumeArchive;
 
     friend class OmChunk;
-    friend class OmMipVolumeArchive;
     friend class OmMipVolumeArchiveOld;
     friend class OmVolumeData;
     friend class OmMemMappedVolume;

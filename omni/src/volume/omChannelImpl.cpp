@@ -43,7 +43,7 @@ std::string OmChannelImpl::GetNameHyphen(){
     return "channel-" + om::string::num(GetID());
 }
 
-std::string OmChannelImpl::GetDirectoryPath() {
+std::string OmChannelImpl::GetDirectoryPath() const {
     return OmDataPaths::getDirectoryPath(this);
 }
 

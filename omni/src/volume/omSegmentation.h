@@ -41,7 +41,7 @@ public:
     std::string GetName();
     std::string GetNameHyphen();
 
-    std::string GetDirectoryPath();
+    std::string GetDirectoryPath() const;
 
     void loadVolData();
     void loadVolDataIfFoldersExist();

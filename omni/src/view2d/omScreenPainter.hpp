@@ -138,15 +138,27 @@ private:
 
         di.paint(state_->getZoomScale(), "zoomFactor", 2);
 
-        const int scaledDepth = state_->Location()->ScaledDepth();
+        di.paint(depthString());
+
+        printTileCount(di);
+    }
+
+    QString depthString()
+    {
         const int dataDepth = state_->Location()->DataDepth();
-        QString depthStr = QString::number(scaledDepth) + " Slice Depth";
+
+        const int scaledDepth = state_->Location()->ScaledDepth();
+
+        // TODO: remove: hack for abs coords
+        const Vector3i absOffsetVec = state_->getVol()->Coords().GetAbsOffset();
+        const int absOffset = OmView2dConverters::GetViewTypeDepth(absOffsetVec, state_->getViewType());
+
+        QString depthStr = QString::number(scaledDepth + absOffset) + " Slice Depth";
         if(scaledDepth != dataDepth){
             depthStr += " (" + QString::number(dataDepth) + " data)";
         }
-        di.paint(depthStr);
 
-        printTileCount(di);
+        return depthStr;
     }
 
     void printTileCount(OmDisplayInfo& di)

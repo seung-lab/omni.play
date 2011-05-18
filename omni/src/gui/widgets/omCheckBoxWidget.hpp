@@ -17,6 +17,7 @@ protected:
     void set(const bool val){
         if(val){
             setCheckState(Qt::Checked);
+
         } else {
             setCheckState(Qt::Unchecked);
         }
@@ -26,6 +27,7 @@ private Q_SLOTS:
     void action(int state){
         if (state == Qt::Checked) {
             doAction(true);
+
         } else {
             doAction(false);
         }

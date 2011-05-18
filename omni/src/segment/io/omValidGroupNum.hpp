@@ -120,6 +120,5 @@ private:
         const quint64 maxGroupNum = maxGroupNum_.get();
         out << maxGroupNum;
     }
-
 };
 

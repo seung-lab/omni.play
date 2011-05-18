@@ -1,10 +1,11 @@
 #include "actions/omActions.h"
 #include "common/omCommon.h"
+#include "datalayer/fs/omFileNames.hpp"
 #include "project/details/omChannelManager.h"
 #include "project/details/omProjectVolumes.h"
 #include "project/details/omSegmentationManager.h"
-#include "volume/omFilter2d.h"
 #include "utility/dataWrappers.h"
+#include "volume/omFilter2d.h"
 
 OmSegmentation& OmSegmentationManager::GetSegmentation(const OmID id)
 {
@@ -13,9 +14,10 @@ OmSegmentation& OmSegmentationManager::GetSegmentation(const OmID id)
 
 OmSegmentation& OmSegmentationManager::AddSegmentation()
 {
-    OmSegmentation& r_segmentation = manager_.Add();
+    OmSegmentation& vol = manager_.Add();
+    OmFileNames::MakeVolFolder(&vol);
     OmActions::Save();
-    return r_segmentation;
+    return vol;
 }
 
 void OmSegmentationManager::RemoveSegmentation(const OmID id)

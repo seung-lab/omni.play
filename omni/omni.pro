@@ -187,12 +187,16 @@ HEADERS +=  \
 	src/chunks/omChunkItemContainerMatrix.hpp \
 	src/chunks/omChunkMipping.hpp \
 	src/chunks/omChunkUtils.hpp \
+	src/chunks/omExtractChanTile.hpp \
+	src/chunks/omExtractSegTile.hpp \
+	src/chunks/omProcessChunkVoxelBoundingData.hpp \
 	src/chunks/omRawChunk.hpp \
 	src/chunks/omRawChunkMemMapped.hpp \
 	src/chunks/omRawChunkSlicer.hpp \
 	src/chunks/omSegChunk.h \
-	src/chunks/omSegChunkData.h \
-	src/chunks/omSegChunkDataVisitors.hpp \
+	src/chunks/omSegChunkData.hpp \
+	src/chunks/omSegChunkDataImpl.hpp \
+	src/chunks/omSegChunkDataInterface.hpp \
 	src/chunks/uniqueValues/omChunkUniqueValuesManager.hpp \
 	src/chunks/uniqueValues/omChunkUniqueValuesPerThreshold.hpp \
 	src/chunks/uniqueValues/omChunkUniqueValuesTypes.h \
@@ -265,7 +269,17 @@ HEADERS +=  \
 	src/gui/groupsTable/dropdownMenuButton.hpp \
 	src/gui/groupsTable/groupsTable.h \
 	src/gui/guiUtils.hpp \
-	src/gui/inspectors/chanInspector.h \
+	src/gui/inspectors/absCoordBox.hpp \
+	src/gui/inspectors/channel/buildPage/chanVolBuilder.hpp \
+	src/gui/inspectors/channel/buildPage/pageBuilderChannel.hpp \
+	src/gui/inspectors/channel/buildPage/sourceBoxChannel.hpp \
+	src/gui/inspectors/channel/channelInspector.hpp \
+	src/gui/inspectors/channel/exportPage/buttons/channelInspectorButtons.hpp \
+	src/gui/inspectors/channel/exportPage/buttons/exportButtonChannel.hpp \
+	src/gui/inspectors/channel/exportPage/pageExportChannel.h \
+	src/gui/inspectors/channel/metadata/metadataPageChannel.hpp \
+	src/gui/inspectors/channel/pageSelectorChannel.hpp \
+	src/gui/inspectors/channel/pagesWidgetChannel.h \
 	src/gui/inspectors/filObjectInspector.h \
 	src/gui/inspectors/inspectorProperties.h \
 	src/gui/inspectors/segmentInspector.h \
@@ -280,10 +294,10 @@ HEADERS +=  \
 	src/gui/inspectors/segmentation/exportPage/buttons/meshPreviewButton.hpp \
 	src/gui/inspectors/segmentation/exportPage/buttons/segmentationInspectorButtons.hpp \
 	src/gui/inspectors/segmentation/exportPage/pageExport.h \
+	src/gui/inspectors/segmentation/metadata/metadataPage.hpp \
 	src/gui/inspectors/segmentation/pageSelector.hpp \
 	src/gui/inspectors/segmentation/pagesWidget.h \
 	src/gui/inspectors/segmentation/segmentationInspector.hpp \
-	src/gui/inspectors/ui_chanInspector.h \
 	src/gui/inspectors/volInspector.h \
 	src/gui/mainWindow/centralWidget.hpp \
 	src/gui/mainWindow/mainWindow.h \
@@ -321,6 +335,7 @@ HEADERS +=  \
 	src/gui/sidebars/right/cutButton.h \
 	src/gui/sidebars/right/dendToolbar.h \
 	src/gui/sidebars/right/displayTools/2d/2dpage.hpp \
+	src/gui/sidebars/right/displayTools/2d/brightenSelected.hpp \
 	src/gui/sidebars/right/displayTools/2d/brightnessSpinBox.hpp \
 	src/gui/sidebars/right/displayTools/2d/contrastSpinBox.hpp \
 	src/gui/sidebars/right/displayTools/2d/gammaSpinBox.hpp \
@@ -770,7 +785,6 @@ SOURCES +=  \
 	src/chunks/omChunk.cpp \
 	src/chunks/omChunkCoord.cpp \
 	src/chunks/omSegChunk.cpp \
-	src/chunks/omSegChunkData.cpp \
 	src/common/omColors.cpp \
 	src/common/omCommon.cpp \
 	src/common/omGl.cpp \
@@ -804,7 +818,8 @@ SOURCES +=  \
 	src/gui/cacheMonitorDialog.cpp \
 	src/gui/cacheMonitorWidget.cpp \
 	src/gui/groupsTable/groupsTable.cpp \
-	src/gui/inspectors/chanInspector.cpp \
+	src/gui/inspectors/channel/exportPage/pageExportChannel.cpp \
+	src/gui/inspectors/channel/pagesWidgetChannel.cpp \
 	src/gui/inspectors/filObjectInspector.cpp \
 	src/gui/inspectors/inspectorProperties.cpp \
 	src/gui/inspectors/segmentInspector.cpp \

@@ -18,6 +18,8 @@ private:
     SegmentationDataWrapper sdw_;
     OmSegmentation& seg_;
 
+    typedef om::shared_ptr<om::gui::progress> prog_t;
+
 public:
     OmBuildSegmentation()
         : OmBuildVolumes()
@@ -39,7 +41,11 @@ public:
     }
 
     void BuildAndMeshSegmentation(){
-        do_build_seg_image_and_mesh();
+        do_build_seg_image_and_mesh(prog_t());
+    }
+
+    void BuildAndMeshSegmentation(prog_t p){
+        do_build_seg_image_and_mesh(p);
     }
 
     void BuildImage(){
@@ -47,10 +53,14 @@ public:
     }
 
     void BuildMesh(){
-        do_build_seg_mesh();
+        do_build_seg_mesh(prog_t());
     }
 
-    void buildBlankVolume()
+    void BuildMesh(prog_t p){
+        do_build_seg_mesh(p);
+    }
+
+    void BuildBlankVolume()
     {
         printf("assuming channel 1\n");
         ChannelDataWrapper cdw(1);
@@ -69,15 +79,15 @@ public:
         printf("allocated blank volume\n");
     }
 
-    void loadDendrogram(){
+    void LoadDendrogram(){
         throw OmIoException("not implemented");
     }
 
 private:
-    void do_build_seg_image_and_mesh()
+    void do_build_seg_image_and_mesh(prog_t p)
     {
         do_build_seg_image();
-        do_build_seg_mesh();
+        do_build_seg_mesh(p);
     }
 
     void do_build_seg_image()
@@ -102,16 +112,21 @@ private:
         printf("************************\n");
     }
 
-    void do_build_seg_mesh()
+    void do_build_seg_mesh(prog_t p)
     {
         const QString type = "segmentation mesh (threshold 1)";
 
         OmTimer build_timer;
         startTiming(type, build_timer);
 
-        seg_.MeshManagers()->FullMesh(1);
-// seg_.MeshManagers()->FullMesh(.9);
-// seg_.MeshManagers()->FullMesh(.8);
+        if(p){
+            seg_.MeshManagers()->FullMesh(1, p);
+
+        } else {
+            seg_.MeshManagers()->FullMesh(1);
+            // seg_.MeshManagers()->FullMesh(.9);
+            // seg_.MeshManagers()->FullMesh(.8);
+        }
 
         stopTimingAndSave(type, build_timer);
     }

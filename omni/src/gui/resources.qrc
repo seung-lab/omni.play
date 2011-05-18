@@ -19,5 +19,9 @@
 <file>toolbars/mainToolbar/icons/1304368359_MyNetworkPlaces.png</file>
 <file>inspectors/segmentation/icons/1302814771_advancedsettings.png</file>
 <file>inspectors/segmentation/icons/1302822648_filesaveas.png</file>
+<file>inspectors/segmentation/icons/1305228725_package_graphics.png</file>
+<file>inspectors/channel/icons/1302814771_advancedsettings.png</file>
+<file>inspectors/channel/icons/1302822648_filesaveas.png</file>
+<file>inspectors/channel/icons/1305228725_package_graphics.png</file>
 </qresource>
 </RCC>

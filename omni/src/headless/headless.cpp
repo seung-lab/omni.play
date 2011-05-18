@@ -139,7 +139,7 @@ void Headless::processLine(const QString& line, const QString&)
         }
         const SegmentationDataWrapper sdw(segmentationID_);
         OmBuildSegmentation bs(sdw);
-        bs.loadDendrogram();
+        bs.LoadDendrogram();
 
     } else if(line.startsWith("compareChanns:")) {
         // format: compareChanns:id1,id2[:verbose]
@@ -384,7 +384,7 @@ void Headless::processLine(const QString& line, const QString&)
 
         OmBuildChannel bc(&chann);
         bc.addFileNameAndPath(hdf5fnp);
-        bc.BuildBlocking();
+        bc.Build();
 
     } else if(line.startsWith("loadHDF5affgraph:")){
         QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -413,14 +413,15 @@ void Headless::processLine(const QString& line, const QString&)
         OmBuildChannel bc(&chann);
 
         QDir dir(args[1]);
-        Q_FOREACH(QFileInfo f, dir.entryInfoList()){
+        Q_FOREACH(QFileInfo f, dir.entryInfoList())
+        {
             if(!f.isFile()){
                 continue;
             }
             //printf("adding %s/\n", qPrintable(f.canonicalFilePath()));
             bc.addFileNameAndPath(f.canonicalFilePath());
         }
-        bc.BuildBlocking();
+        bc.Build();
 
     } else if(line.startsWith("loadTIFFseg:")){
         QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -506,14 +507,18 @@ void Headless::processLine(const QString& line, const QString&)
 
     } else if("lsChann" == line){
         const OmIDsSet& channset = ChannelDataWrapper::ValidIDs();
+
         if (channset.empty()){
             printf("No channels present.\n");
             return;
         }
+
         printf("ID\tName\n");
-        FOR_EACH(iter,channset){
+
+        FOR_EACH(iter,channset)
+        {
             ChannelDataWrapper cdw(*iter);
-            printf("%i\t%s\n", *iter, qPrintable(cdw.getName()));
+            printf("%i\t%s\n", *iter, qPrintable(cdw.GetName()));
         }
 
     } else if("lsSeg" == line){
@@ -585,6 +590,70 @@ void Headless::processLine(const QString& line, const QString&)
         }
 
         HeadlessImpl::ChangeVolResolution(sdw.GetSegmentation(), xRes, yRes, zRes);
+
+    } else if(line.startsWith("setChanAbsOffset:")){
+        const QStringList args = line.split(':',QString::SkipEmptyParts);
+
+        if (args.size() != 2)
+        {
+            printf("format is setChanAbsOffset:channID,xRes,yRes,zRes\n");
+            return;
+        }
+
+        const QStringList res = args[1].split(',', QString::SkipEmptyParts);
+
+        if (res.size() != 4)
+        {
+            printf("format is setChanAbsOffset:segID,xRes,yRes,zRes\n");
+            return;
+        }
+
+        const OmID segID = OmStringHelpers::getUInt(res[0]);
+        const int xRes = OmStringHelpers::getUInt(res[1]);
+        const int yRes = OmStringHelpers::getUInt(res[2]);
+        const int zRes = OmStringHelpers::getUInt(res[3]);
+
+        ChannelDataWrapper cdw(segID);
+
+        if (!cdw.IsValidWrapper())
+        {
+            printf("Channel %i is not a valid channel\n", segID);
+            return;
+        }
+
+        HeadlessImpl::ChangeVolAbsOffset(cdw.GetChannel(), xRes, yRes, zRes);
+
+    } else if(line.startsWith("setSegAbsOffset:")){
+        const QStringList args = line.split(':',QString::SkipEmptyParts);
+
+        if (args.size() != 2)
+        {
+            printf("format is setSegAbsOffset:channID,xRes,yRes,zRes\n");
+            return;
+        }
+
+        const QStringList res = args[1].split(',', QString::SkipEmptyParts);
+
+        if (res.size() != 4)
+        {
+            printf("format is setSegAbsOffset:segID,xRes,yRes,zRes\n");
+            return;
+        }
+
+        const OmID segID = OmStringHelpers::getUInt(res[0]);
+        const int xRes = OmStringHelpers::getUInt(res[1]);
+        const int yRes = OmStringHelpers::getUInt(res[2]);
+        const int zRes = OmStringHelpers::getUInt(res[3]);
+
+        SegmentationDataWrapper sdw(segID);
+
+        if(!sdw.IsValidWrapper())
+        {
+            printf("Segmentation %i is not a valid segmentation\n", segID);
+            return;
+        }
+
+        HeadlessImpl::ChangeVolAbsOffset(sdw.GetSegmentation(), xRes, yRes, zRes);
 
     } else if(line.startsWith("setMeshDownScallingFactor:")){
         const QStringList args = line.split(':',QString::SkipEmptyParts);

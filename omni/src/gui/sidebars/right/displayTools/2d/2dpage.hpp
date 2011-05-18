@@ -1,14 +1,15 @@
 #pragma once
 
-#include "system/omConnect.hpp"
+#include "events/omEvents.h"
 #include "gui/sidebars/right/alphaVegasButton.hpp"
 #include "gui/sidebars/right/dendToolbar.h"
+#include "gui/sidebars/right/displayTools/2d/brightenSelected.hpp"
 #include "gui/sidebars/right/displayTools/2d/brightnessSpinBox.hpp"
 #include "gui/sidebars/right/displayTools/2d/contrastSpinBox.hpp"
 #include "gui/sidebars/right/displayTools/2d/gammaSpinBox.hpp"
 #include "gui/sidebars/right/displayTools/displayTools.h"
 #include "gui/widgets/omLabelHBox.hpp"
-#include "events/omEvents.h"
+#include "system/omConnect.hpp"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
 
@@ -34,6 +35,7 @@ public:
     {
         QVBoxLayout* box = new QVBoxLayout(this);
         box->addWidget(filterShowNonSelectedSegmentsBox());
+        box->addWidget(new BrightenSelected(this, vgs_));
         box->addWidget(imageFilterControls());
         box->addWidget(new AlphaVegasButton(this));
     }

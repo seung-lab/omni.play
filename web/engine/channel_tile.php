@@ -18,9 +18,8 @@ if(isset($_GET['get_uuid'])){
     $uuid = talk_omni_server($jsonArray);
 }
 
-$slice_url = 'http://localhost:8585/temp_omni_imgs/channel-1/' . $uuid . '.tile.jpg';
-$full_path = $slice_url;
+$path = '../images/data/channel-1/' . $uuid . '.tile.jpg';
 
-$fc = file_get_contents($full_path);
+$fc = file_get_contents($path);
 
 show_dynamic_image($fc);

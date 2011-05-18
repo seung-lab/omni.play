@@ -36,8 +36,12 @@ private:
 
     virtual void rewriteMip0Volume(OmSegmentation* vol)
     {
+        printf("rewriting segment IDs...\n");
+
         OmCompactVolValues rewriter(vol);
         rewriter.Rewrite();
+
+        printf("done!\n");
     }
 };
 

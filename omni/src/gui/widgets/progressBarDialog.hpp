@@ -19,13 +19,10 @@ private:
 
     OmThreadPool threadPool_;
 
-public:
-    progressBarDialog(QWidget* parent)
-        : QDialog(parent)
+    void init()
     {
         threadPool_.start(1);
 
-        progress_ = om::make_shared<progress>();
         progressBar_= new progressBar<uint64_t>(this);
 
         QVBoxLayout* box = new QVBoxLayout(this);
@@ -42,8 +39,27 @@ public:
         activateWindow();
     }
 
+public:
+    progressBarDialog(QWidget* parent)
+        : QDialog(parent)
+        , progress_(om::make_shared<progress>())
+    {
+        init();
+    }
+
+    progressBarDialog(QWidget* parent, om::shared_ptr<progress> progress)
+        : QDialog(parent)
+        , progress_(progress)
+    {
+        init();
+    }
+
     ~progressBarDialog()
     {}
+
+    om::shared_ptr<progress> Progress(){
+        return progress_;
+    }
 
     void SetTotal(const uint32_t total){
         progress_->SetTotal(total);

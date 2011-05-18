@@ -63,15 +63,14 @@ private:
     OmSegmentContextMenu segmentContextMenu_;
 
     void crosshair(QMouseEvent* event);
-    void CenterAxisOfRotation(QMouseEvent* event);
-    OmSegmentPickPoint PickVoxelMouseCrosshair(QMouseEvent* event);
-    void CutModeMouseReleased(QMouseEvent* event);
+    void centerAxisOfRotation(QMouseEvent* event);
+    OmSegmentPickPoint pickVoxelMouseCrosshair(QMouseEvent* event);
+    void cutModeMouseReleased(QMouseEvent* event);
 
     SegmentDataWrapper prevSDW_;
     void resetWindow();
 
-    bool cPressed_;
-
+    void deselectSegment(const SegmentDataWrapper& sdw);
     void doSelectSegment(const SegmentDataWrapper& sdw, const bool);
 };
 

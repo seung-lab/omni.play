@@ -3,6 +3,7 @@
 #include "chunks/omChunkCoord.h"
 #include "chunks/omChunkDataImpl.hpp"
 #include "chunks/omSegChunk.h"
+#include "chunks/omSegChunkDataInterface.hpp"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"

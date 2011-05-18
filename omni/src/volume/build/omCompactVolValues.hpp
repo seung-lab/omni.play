@@ -2,6 +2,7 @@
 
 #include "chunks/omSegChunk.h"
 #include "volume/omSegmentation.h"
+#include "chunks/omSegChunkDataInterface.hpp"
 
 /**
  * Rewrite MIP 0 in segmentation so that all segment values are

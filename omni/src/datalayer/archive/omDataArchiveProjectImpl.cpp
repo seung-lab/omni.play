@@ -93,7 +93,8 @@ QDataStream &operator>>(QDataStream& in, OmChannelManager& cm)
 
 QDataStream& operator<<(QDataStream& out, const OmChannel& chan)
 {
-    OmMipVolumeArchive::Store(out, chan);
+    OmMipVolumeArchive<const OmChannel> volArchive(chan);
+    volArchive.Store(out);
 
     out << chan.filterManager_;
 
@@ -138,7 +139,8 @@ void OmDataArchiveProjectImpl::LoadOldChannel(QDataStream& in, OmChannel& chan)
 
 void OmDataArchiveProjectImpl::LoadNewChannel(QDataStream& in, OmChannel& chan)
 {
-    OmMipVolumeArchive::Load(in, chan);
+    OmMipVolumeArchive<OmChannel> volArchive(chan);
+    volArchive.Load(in);
 
     in >> chan.filterManager_;
     chan.loadVolDataIfFoldersExist();
@@ -198,7 +200,8 @@ QDataStream &operator>>(QDataStream & in, OmSegmentationManager& m)
 
 QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg)
 {
-    OmMipVolumeArchive::Store(out, seg);
+    OmMipVolumeArchive<const OmSegmentation> volArchive(seg);
+    volArchive.Store(out);
 
     out << (*seg.segments_);
     out << seg.mst_->numEdges_;
@@ -220,7 +223,7 @@ QDataStream &operator>>(QDataStream& in, OmSegmentation& seg)
 }
 
 void OmDataArchiveProjectImpl::LoadOldSegmentation(QDataStream& in,
-                                               OmSegmentation& seg)
+                                                   OmSegmentation& seg)
 {
     OmMipVolumeArchiveOld::Load(in, seg, OmProject::GetFileVersion());
 
@@ -231,7 +234,8 @@ void OmDataArchiveProjectImpl::LoadOldSegmentation(QDataStream& in,
 
     in >> (*seg.segments_);
 
-    if(OmProject::GetFileVersion() < 24){
+    if(OmProject::GetFileVersion() < 24)
+    {
         int dead;
         in >> dead;
         in >> dead;
@@ -275,9 +279,10 @@ void OmDataArchiveProjectImpl::moveOldMeshMetadataFile(OmSegmentation* segmentat
 }
 
 void OmDataArchiveProjectImpl::LoadNewSegmentation(QDataStream& in,
-                                               OmSegmentation& seg)
+                                                   OmSegmentation& seg)
 {
-    OmMipVolumeArchive::Load(in, seg);
+    OmMipVolumeArchive<OmSegmentation> volArchive(seg);
+    volArchive.Load(in);
 
     in >> (*seg.segments_);
 

@@ -89,6 +89,10 @@ public:
     ChannelDataWrapper Channel() const;
     SegmentationDataWrapper Segmentation() const;
 
+    void BrightenSelected(const bool brigthen){
+        brightenSelected_ = brigthen;
+    }
+
 private:
     boost::scoped_ptr<ViewGroup> viewGroup_;
     boost::scoped_ptr<OmViewGroupView2dState> view2dState_;
@@ -108,7 +112,8 @@ private:
     bool mShatter;
     bool mShowValid;
     bool mShowValidInColor;
-
     bool mShowFilterInColor;
+
+    bool brightenSelected_;
 };
 

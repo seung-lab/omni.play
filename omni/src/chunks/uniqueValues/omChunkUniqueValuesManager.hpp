@@ -23,15 +23,13 @@ public:
     ChunkUniqueValues Values(const OmChunkCoord& coord, const double threshold)
     {
         OmThresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
-
         return thresholdsInChunk->Get(threshold)->Values();
     }
 
-    void RereadChunk(const OmChunkCoord& coord, const double threshold)
+    ChunkUniqueValues RereadChunk(const OmChunkCoord& coord, const double threshold)
     {
         OmThresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
-
-        thresholdsInChunk->Get(threshold)->RereadChunk();
+        return thresholdsInChunk->Get(threshold)->RereadChunk();
     }
 
     void Clear(){

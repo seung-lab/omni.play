@@ -148,6 +148,21 @@ public:
                   << "\n";
     }
 
+    template <typename T>
+    static void ChangeVolAbsOffset(T& vol,
+                                   const int xRes,
+                                   const int yRes,
+                                   const int zRes)
+    {
+        const Vector3i dims(xRes, yRes, zRes);
+
+        vol.Coords().SetAbsOffset(dims);
+
+        std::cout << "\tvolume data abs offset set to "
+                  << vol.Coords().GetAbsOffset()
+                  << "\n";
+    }
+
     static void SetMeshDownScallingFactor(const double factor)
     {
         OmMeshParams::SetDownScallingFactor(factor);

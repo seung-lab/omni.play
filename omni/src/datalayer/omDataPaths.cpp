@@ -12,18 +12,15 @@
 #include "chunks/omChunkCoord.h"
 #include "volume/omSegmentation.h"
 
-OmDataPath OmDataPaths::getDefaultDatasetName()
-{
+OmDataPath OmDataPaths::getDefaultDatasetName(){
     return OmDataPath("main");
 }
 
-OmDataPath OmDataPaths::getProjectArchiveNameQT()
-{
+OmDataPath OmDataPaths::getProjectArchiveNameQT(){
     return OmDataPath("project.qt.dat");
 }
 
-OmDataPath OmDataPaths::getSegmentPagePath(const OmID segmentationID,
-                                           const quint32 pageNum)
+OmDataPath OmDataPaths::getSegmentPagePath(const OmID segmentationID, const uint32_t pageNum)
 {
     const std::string p =
         str( boost::format("segmentations/segmentation%1%/segment_page%2%")
@@ -33,25 +30,25 @@ OmDataPath OmDataPaths::getSegmentPagePath(const OmID segmentationID,
     return OmDataPath(p);
 }
 
-std::string OmDataPaths::getMeshFileName( const OmMeshCoord & meshCoord )
+std::string OmDataPaths::getMeshFileName(const OmMeshCoord& meshCoord)
 {
     return str( boost::format("mesh.%1%.dat")
-                %meshCoord.DataValue);
+                % meshCoord.DataValue);
 }
 
-std::string OmDataPaths::getDirectoryPath(OmSegmentation* seg)
+std::string OmDataPaths::getDirectoryPath(OmSegmentation const*const seg)
 {
     return str( boost::format("segmentations/segmentation%1%/")
                 % seg->GetID());
 }
 
-std::string OmDataPaths::getDirectoryPath(OmChannelImpl* chan)
+std::string OmDataPaths::getDirectoryPath(OmChannelImpl const*const chan)
 {
     return str( boost::format("channels/channel%1%/")
                 % chan->GetID());
 }
 
-std::string OmDataPaths::Hdf5VolData(const std::string & dirPath,
+std::string OmDataPaths::Hdf5VolData(const std::string& dirPath,
                                      const int level)
 {
     return dirPath

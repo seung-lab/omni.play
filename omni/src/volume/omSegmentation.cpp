@@ -79,7 +79,7 @@ std::string OmSegmentation::GetNameHyphen(){
     return "segmentation-" + om::string::num(GetID());
 }
 
-std::string OmSegmentation::GetDirectoryPath(){
+std::string OmSegmentation::GetDirectoryPath() const {
     return OmDataPaths::getDirectoryPath(this);
 }
 

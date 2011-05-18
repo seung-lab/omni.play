@@ -1,10 +1,11 @@
 #include "chunks/omSegChunk.h"
 #include "volume/omSegmentation.h"
+#include "chunks/omSegChunkData.hpp"
 
 OmSegChunk::OmSegChunk(OmSegmentation* vol, const OmChunkCoord& coord)
     : OmChunk(vol, coord)
     , vol_(vol)
-    , segChunkData_(new OmSegChunkData(vol, this, coord))
+    , segChunkData_(om::segchunk::dataFactory::Produce(vol, this, coord))
 {}
 
 OmSegChunk::~OmSegChunk()

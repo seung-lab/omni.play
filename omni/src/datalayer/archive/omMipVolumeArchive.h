@@ -1,44 +1,111 @@
 #pragma once
 
+#include "datalayer/fs/omFileNames.hpp"
 #include "volume/omMipVolume.h"
 #include "volume/omVolCoordsMipped.hpp"
 #include "volume/omVolumeTypes.hpp"
 
 #include <QDataStream>
 
+template <typename VOL>
 class OmMipVolumeArchive {
+private:
+    VOL& vol_;
+
 public:
-    template <typename VOL>
-    static void Store(QDataStream& out, const VOL& v)
+    OmMipVolumeArchive(VOL& vol)
+        : vol_(vol)
+    {}
+
+    void Store(QDataStream& out) const
     {
-        out << v.id_;
-        out << v.customName_;
-        out << v.note_;
+        out << vol_.id_;
+        out << vol_.customName_;
+        out << vol_.note_;
 
-        out << v.Coords();
+        out << vol_.Coords();
 
-        out << v.mBuildState;
+        out << vol_.mBuildState;
 
         const QString type =
-            OmVolumeTypeHelpers::GetTypeAsQString(v.mVolDataType);
+            OmVolumeTypeHelpers::GetTypeAsQString(vol_.mVolDataType);
         out << type;
         std::cout << "saved type as " << type.toStdString() << "\n";
+
+        save();
     }
 
-    template <typename VOL>
-    static void Load(QDataStream& in, VOL& v)
+    void Load(QDataStream& in)
     {
-        in >> v.id_;
-        in >> v.customName_;
-        in >> v.note_;
+        in >> vol_.id_;
+        in >> vol_.customName_;
+        in >> vol_.note_;
 
-        in >> v.Coords();
+        in >> vol_.Coords();
 
-        in >> v.mBuildState;
+        in >> vol_.mBuildState;
 
         QString volDataType;
         in >> volDataType;
-        v.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+        vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+
+        load();
+    }
+
+private:
+    QString filePathV1() const
+    {
+        const QString volPath = OmFileNames::GetVolPath(&vol_);
+        const QString fullPath = QString("%1abs_coord.ver1")
+            .arg(volPath);
+
+        return fullPath;
+    }
+
+    void load()
+    {
+        const QString filePath = filePathV1();
+
+        QFile file(filePath);
+
+        if(!file.exists()){
+            return;
+        }
+
+        if(!file.open(QIODevice::ReadOnly)){
+            throw OmIoException("error reading file", filePath);
+        }
+
+        QDataStream in(&file);
+        in.setByteOrder(QDataStream::LittleEndian);
+        in.setVersion(QDataStream::Qt_4_6);
+
+        int version;
+        in >> version;
+
+        in >> vol_.Coords().absOffset_;
+
+        if(!in.atEnd()){
+            throw OmIoException("corrupt file?", filePath);
+        }
+    }
+
+    void save() const
+    {
+        const QString filePath = filePathV1();
+
+        QFile file(filePath);
+
+        om::file::openFileWO(file);
+
+        QDataStream out(&file);
+        out.setByteOrder(QDataStream::LittleEndian);
+        out.setVersion(QDataStream::Qt_4_6);
+
+        const int version = 1;
+        out << version;
+
+        out << vol_.Coords().absOffset_;
     }
 };
 

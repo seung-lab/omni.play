@@ -1,13 +1,13 @@
 #include "common/omDebug.h"
 #include "gui/guiUtils.hpp"
-#include "gui/inspectors/chanInspector.h"
+#include "gui/inspectors/channel/channelInspector.hpp"
 #include "gui/inspectors/filObjectInspector.h"
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/inspectors/segmentation/segmentationInspector.hpp"
-#include "gui/sidebars/left/inspectorWidget.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/mstViewer.hpp"
 #include "gui/segmentLists/elementListBox.hpp"
+#include "gui/sidebars/left/inspectorWidget.h"
 #include "gui/viewGroup/viewGroup.h"
 #include "gui/widgets/omAskQuestion.hpp"
 #include "segment/omSegment.h"
@@ -98,7 +98,7 @@ void InspectorWidget::populateDataSrcListWidget()
         DataWrapperContainer dwc = DataWrapperContainer(CHANNEL, channID);
         ChannelDataWrapper cdw = dwc.getChannelDataWrapper();
         QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget_);
-        row->setText(NAME_COL, cdw.getName());
+        row->setText(NAME_COL, cdw.GetName());
         row->setText(ID_COL, QString("%1").arg(cdw.GetID()));
         row->setText(NOTE_COL, cdw.getNote());
         row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
@@ -243,14 +243,6 @@ ViewType InspectorWidget::getViewType(QAction* act)
     } else {
         throw OmFormatException("could not match QAction type...\n");
     }
-}
-
-void InspectorWidget::addFilter()
-{
-    ChannelDataWrapper cdw = channelInspectorWidget_->getChannelDataWrapper();
-    cdw.GetChannel().FilterManager().AddFilter();
-    populateDataSrcListWidget();
-    populateFilterListWidget(cdw);
 }
 
 void InspectorWidget::nameEditChanged()
@@ -475,13 +467,10 @@ void InspectorWidget::selectSegmentationView(QAction* act)
 
 void InspectorWidget::addChannelToSplitter(ChannelDataWrapper cdw)
 {
-    channelInspectorWidget_ = new ChanInspector(cdw, this);
-
-    om::connect(channelInspectorWidget_->addFilterButton, SIGNAL(clicked()),
-                this, SLOT(addFilter()));
+    channelInspectorWidget_ = new ChannelInspector(this, inspectorProperties_, cdw);
 
     inspectorProperties_->SetOrReplaceWidget(channelInspectorWidget_,
-                                             QString("Channel %1 Inspector").arg(cdw.GetID()));
+                                             channelInspectorWidget_->Title());
 }
 
 void InspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)

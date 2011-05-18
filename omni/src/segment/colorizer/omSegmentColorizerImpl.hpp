@@ -105,7 +105,8 @@ private:
             selectedSegIDs_.count(segRoot->value()) ||
             enabledSegIDs_.count(segRoot->value());
 
-        switch(params_.sccType){
+        switch(params_.sccType)
+        {
         case SCC_SEGMENTATION_VALID:
         case SCC_FILTER_VALID:
             if(seg->IsValidListType()) {
@@ -152,15 +153,25 @@ private:
             return seg->GetColorInt();
 
         default:
-            if(isSelected){
+            if(isSelected)
+            {
+                if(SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT == params_.sccType ||
+                   SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT == params_.sccType)
+                {
+                    return segRootColor;
+                }
+
                 return makeSelectedColor(segRootColor);
             }
 
-            if(SCC_FILTER_BLACK == params_.sccType &&
-               anySegmentsSelected_)
+            if(SCC_FILTER_BLACK_BRIGHTEN_SELECT == params_.sccType ||
+               SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT == params_.sccType)
             {
-                return blackColor;
+                if(anySegmentsSelected_){
+                    return blackColor;
+                }
             }
+
             return segRootColor;
         }
     }

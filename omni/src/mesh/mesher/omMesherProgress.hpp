@@ -19,6 +19,10 @@ public:
         return progress_;
     }
 
+    void Progress(om::shared_ptr<om::gui::progress> p){
+        progress_ = p;
+    }
+
     void SetTotalNumChunks(const uint32_t totalNumChunks){
         progress_->SetTotal(totalNumChunks);
     }

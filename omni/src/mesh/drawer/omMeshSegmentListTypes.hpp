@@ -11,26 +11,26 @@ typedef boost::tuple<OmID,OmSegID,int,int,int,int> OmMeshSegListKey;
 
 class OmSegPtrListValid {
 public:
-	OmSegPtrListValid()
-		: isValid(false)
-		, freshness(0)
-		, isFetching(false)
-	{}
-	explicit OmSegPtrListValid(const bool isFetching)
-		: isValid(false)
-		, freshness(0)
-		, isFetching(isFetching)
-	{}
-	OmSegPtrListValid( const OmSegPtrList & L, const uint32_t f )
-		: isValid(true)
-		, list(L)
-		, freshness(f)
-		, isFetching(false)
-	{}
+    OmSegPtrListValid()
+        : isValid(false)
+        , freshness(0)
+        , isFetching(false)
+    {}
+    explicit OmSegPtrListValid(const bool isFetching)
+        : isValid(false)
+        , freshness(0)
+        , isFetching(isFetching)
+    {}
+    OmSegPtrListValid( const OmSegPtrList & L, const uint32_t f )
+        : isValid(true)
+        , list(L)
+        , freshness(f)
+        , isFetching(false)
+    {}
 
-	bool isValid;
-	OmSegPtrList list;
-	uint32_t freshness;
-	bool isFetching;
+    bool isValid;
+    OmSegPtrList list;
+    uint32_t freshness;
+    bool isFetching;
 };
 

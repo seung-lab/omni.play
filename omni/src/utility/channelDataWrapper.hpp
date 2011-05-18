@@ -57,7 +57,7 @@ public:
         id_ = 0;
     }
 
-    inline QString getName() const {
+    inline QString GetName() const {
         return QString::fromStdString(GetChannel().GetName());
     }
 

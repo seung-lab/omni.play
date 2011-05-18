@@ -46,7 +46,9 @@ private:
 
 public:
     Omni(int argc, char **argv)
-        : argc_(argc), argv_(argv) {}
+        : argc_(argc)
+        , argv_(argv)
+    {}
 
     int Run()
     {
@@ -110,9 +112,11 @@ private:
 #endif
         const bool headless = ZiARG_headless;
 
-        if(!useGUI && !headless){
+        if(!useGUI && !headless)
+        {
             printf("No GUI detected; Running headless....\n");
             return true;
+
         } else if(headless){
             return true;
         }
@@ -164,7 +168,8 @@ private:
 
     void checkRemainingArgs()
     {
-        if( argc_ > 2){
+        if( argc_ > 2)
+        {
             printf("too many arguments given:\n");
             for(int i = 1; i < argc_; ++i){
                 printf("\t(%d) %s\n", i, argv_[i]);

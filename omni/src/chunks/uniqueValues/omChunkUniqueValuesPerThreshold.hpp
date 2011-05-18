@@ -8,6 +8,7 @@
 #include "chunks/omSegChunk.h"
 #include "chunks/omChunkCoord.h"
 #include "volume/omSegmentation.h"
+#include "chunks/omSegChunkDataInterface.hpp"
 
 class OmChunkUniqueValuesPerThreshold {
 private:
@@ -43,11 +44,13 @@ public:
         return ChunkUniqueValues(values_, numElements_);
     }
 
-    void RereadChunk()
+    ChunkUniqueValues RereadChunk()
     {
         zi::rwmutex::write_guard g(mutex_);
 
         findValues();
+
+        return ChunkUniqueValues(values_, numElements_);
     }
 
 private:

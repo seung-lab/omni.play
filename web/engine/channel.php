@@ -18,13 +18,12 @@ $query = http_build_query($jsonArray);
 
 $fc = $memcache->get($query);
 
-if ( !$fc )
+if(!$fc)
 {
     $uuid = talk_omni_server($jsonArray);
 
-    $slice_url = 'http://localhost:8585/temp_omni_imgs/channel-1/' . $uuid . '.jpg';
-    $full_path = $slice_url;
-    $fc = file_get_contents($full_path);
+    $path = '../images/data/channel-1/' . $uuid . '.jpg';
+    $fc = file_get_contents($path);
     $memcache->set($query, $fc);
 }
 

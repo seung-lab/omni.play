@@ -88,6 +88,7 @@ private:
     {
         std::vector<om::shared_ptr<QFile> > volFiles =
             OmVolumeAllocater::AllocateData(vol_, type);
+
         mip0fnp_ = QFileInfo(*volFiles[0]).absoluteFilePath();
     }
 

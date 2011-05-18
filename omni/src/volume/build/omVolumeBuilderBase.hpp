@@ -36,7 +36,6 @@ private:
         checkChunkDims();
         updateMipProperties();
         importSourceData();
-        memMapFiles();
 
         setVolAsBuilt();
 
@@ -50,9 +49,8 @@ private:
         checkChunkDims();
         updateMipProperties();
         importSourceData();
-        memMapFiles();
 
-        rewriteMip0VolumeWrapper(vol_);
+        rewriteMip0Volume(vol_);
         downsample();
         processVol();
         loadDendrogramWrapper(vol_);
@@ -74,10 +72,6 @@ protected:
     virtual void rewriteMip0Volume(OmSegmentation*)
     {}
 
-    virtual void memMapFiles(){
-        vol_->VolData()->load(vol_);
-    }
-
     virtual void downsample(){
         vol_->VolData()->downsample(vol_);
     }
@@ -89,19 +83,13 @@ protected:
     }
 
 private:
-    void rewriteMip0VolumeWrapper(OmSegmentation* vol)
-    {
-        printf("rewriting segment IDs...\n");
-        rewriteMip0Volume(vol);
-        printf("done!\n");
-    }
-
     void loadDendrogramWrapper(OmSegmentation* vol)
     {
         printf("************************\n");
         printf("loading MST...\n");
 
-        if(!loadDendrogram(vol)){
+        if(!loadDendrogram(vol))
+        {
             printf("no MST found\n");
             printf("************************\n");
             return;

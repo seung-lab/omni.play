@@ -43,7 +43,8 @@ protected:
     QString note_;
     QString customName_;
 
-    friend class OmMipVolumeArchive;
+    template <class T> friend class OmMipVolumeArchive;
+
     friend class OmMipVolumeArchiveOld;
 };
 

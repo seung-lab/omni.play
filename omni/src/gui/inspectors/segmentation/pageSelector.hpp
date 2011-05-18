@@ -35,6 +35,7 @@ public:
         setSpacing(12);
 
         addPageLink("Builder", "1302814771_advancedsettings.png");
+        addPageLink("Metadata", "1305228725_package_graphics.png");
         addPageLink("Export", "1302822648_filesaveas.png");
 
         setCurrentRow(0);

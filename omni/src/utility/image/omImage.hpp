@@ -144,14 +144,6 @@ public:
         return d_.extent_;
     }
 
-    const T getMin() {
-        return *std::min_element(getScalarPtr(), getScalarPtr()+size());
-    }
-
-    const T getMax() {
-        return *std::max_element(getScalarPtr(), getScalarPtr()+size());
-    }
-
     T const* getScalarPtr() const
     {
         if(d_.data_) {
@@ -219,14 +211,6 @@ public:
     {
         (*d_.data_)[MakeBoostRange<D,D>::makeLen(targetPos, size)]
             = (*src.d_.data_)[MakeBoostRange<D,D>::makeLen(srcPos, size)];
-    }
-
-    void setVoxel(const int x, const int y, const int z, const T val) {
-        (*d_.data_)[x][y][z] = val;
-    }
-
-    T getVoxel(const int x, const int y, const int z) const {
-        return (*d_.data_)[x][y][z];
     }
 
     void resize(const Vector3i& dims) {

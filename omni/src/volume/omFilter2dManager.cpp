@@ -5,9 +5,6 @@
 OmFilter2dManager::OmFilter2dManager()
 {}
 
-OmFilter2d& OmFilter2dManager::AddFilter()
-{
-    OmFilter2d &r_filter = filters_.Add();
-    OmActions::Save();
-    return r_filter;
+OmFilter2d& OmFilter2dManager::AddFilter(){
+    return filters_.Add();
 }

@@ -26,6 +26,8 @@ protected:
     int chunkDim_;
     QString unitString_;
 
+    Vector3i absOffset_;
+
 public:
 //transform methods
     inline Vector3f GetScale() const
@@ -160,6 +162,15 @@ public:
         return normToDataInvMat_;
     }
 
+// absolute offset
+    inline Vector3i GetAbsOffset() const {
+        return absOffset_;
+    }
+
+    void SetAbsOffset(const Vector3i& absOffset){
+        absOffset_ = absOffset;
+    }
+
 protected:
     static const int DefaultChunkDim = 128;
 
@@ -171,6 +182,7 @@ protected:
         , dataResolution_(Vector3f::ONE)
         , chunkDim_(DefaultChunkDim)
         , unitString_("")
+        , absOffset_(0,0,0)
     {
         SetDataDimensions(Vector3i(DefaultChunkDim,
                                    DefaultChunkDim,

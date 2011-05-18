@@ -9,8 +9,9 @@ private:
     //inferred from leaf dim and source data extent
     int mMipRootLevel;
 
+    template <class T> friend class OmMipVolumeArchive;
+
     friend class OmDataArchiveProject;
-    friend class OmMipVolumeArchive;
     friend class OmMipVolumeArchiveOld;
 
     friend QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c);

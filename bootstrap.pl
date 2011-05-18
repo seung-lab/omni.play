@@ -38,6 +38,7 @@ my $BOOST_VER = "boost_1_46_1";
 my $QT_VER = "qt-everywhere-opensource-src-4.7.3";
 my $HDF5_VER = "hdf5-1.8.6";
 my $ZLIB_VER = "zlib-1.2.5";
+my $INTEL_TBB_VER = "tbb30_20110315oss";
 
 #my $JPEG_VER = "libjpeg-turbo-1.1.0";
 #if(isMac()){
@@ -337,6 +338,11 @@ sub libjpeg
     prepareAndBuild( $JPEG_VER, "libjpeg" );
 }
 
+sub intel_tbb
+{
+    prepareAndBuild( $INTEL_TBB_VER, "intel_tbb" );
+}
+
 sub hdf5
 {
     my $args = " --enable-threadsafe ";
@@ -569,8 +575,9 @@ sub experimentalMenu
     print "0 -- exit\n";
     print "1 -- Build Omni no debug\n";
     print "2 -- Build qt 4.7\n";
+    print "3 -- Build Intel TBB\n";
     print "\n";
-    my $max_answer = 2;
+    my $max_answer = 3;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -599,6 +606,8 @@ sub runExperimentalMenuEntry
 	omni();
     } elsif( 2 == $entry ){
 	qt();
+    } elsif( 3 == $entry ){
+	intel_tbb();
     }
 }
 

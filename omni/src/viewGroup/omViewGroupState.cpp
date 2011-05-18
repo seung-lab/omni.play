@@ -26,6 +26,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     , cdw_(new ChannelDataWrapper(1))
     , sdw_(new SegmentationDataWrapper(1))
     , toolBarManager_(NULL)
+    , brightenSelected_(true)
 {
     mBreakThreshold = 0;
     mDustThreshold = 90;
@@ -62,11 +63,20 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
             return SCC_FILTER_BREAK;
         }
 
-        if(mShowFilterInColor){
-            return SCC_FILTER_COLOR;
+        if(brightenSelected_)
+        {
+            if(mShowFilterInColor){
+                return SCC_FILTER_COLOR_BRIGHTEN_SELECT;
+            }
+
+            return SCC_FILTER_BLACK_BRIGHTEN_SELECT;
         }
 
-        return SCC_FILTER_BLACK;
+        if(mShowFilterInColor){
+            return SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT;
+        }
+
+        return SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT;
 
     case SEGMENTATION:
         if(mShowValid)

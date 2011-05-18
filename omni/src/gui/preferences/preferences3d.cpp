@@ -83,7 +83,9 @@ void Preferences3d::on_highlightCheckBox_stateChanged()
 void Preferences3d::on_highlightColorPicker_clicked()
 {
     QColor color = QColorDialog::getColor(Qt::white, this);
-    if (color.isValid()) {
+
+    if (color.isValid())
+    {
         QPixmap *pixm = new QPixmap(40, 30);
         pixm->fill(color);
 

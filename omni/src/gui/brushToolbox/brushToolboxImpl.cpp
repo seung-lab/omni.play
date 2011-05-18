@@ -5,11 +5,12 @@
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
-#include "segment/omSegments.h"
 #include "segment/omSegmentUtils.hpp"
+#include "segment/omSegments.h"
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omBrushSize.hpp"
+#include "viewGroup/omViewGroupState.h"
 
 #include <limits>
 
@@ -36,16 +37,19 @@ private:
 
     void update()
     {
-        SegmentDataWrapper sdwUnknownDepth =
-            OmSegmentSelected::GetSegmentForPainting();
+        SegmentDataWrapper sdwUnknownDepth = OmSegmentSelected::GetSegmentForPainting();
 
-        if(!sdwUnknownDepth.IsValidWrapper()){
-            return;
+        QPixmap pixmap;
+
+        if(sdwUnknownDepth.IsValidWrapper())
+        {
+            SegmentDataWrapper sdw = SegmentDataWrapper(sdwUnknownDepth.FindRoot());
+            pixmap = OmSegmentUtils::SegColorAsQPixmap(sdw);
+
+        } else {
+            pixmap = OmSegmentUtils::MakePixMap(QColor(0,0,0));
         }
 
-        SegmentDataWrapper sdw(sdwUnknownDepth.FindRoot());
-
-        const QPixmap pixmap = OmSegmentUtils::SegColorAsQPixmap(sdw);
 
         setIcon(QIcon(pixmap));
     }
@@ -105,7 +109,27 @@ public:
     }
 };
 
-BrushToolboxImpl::BrushToolboxImpl(QWidget* parent)
+class SetBlackColorButton : public OmButton<QWidget> {
+public:
+    SetBlackColorButton(QWidget* d, OmViewGroupState* vgs)
+        : OmButton<QWidget>(d,
+                            "Set No Segment for Color",
+                            "Set No Segment for Color",
+                            false)
+        , vgs_(vgs)
+    {}
+
+private:
+    OmViewGroupState *const vgs_;
+
+    void doAction()
+    {
+        SegmentDataWrapper sdw(vgs_->Segmentation().GetID(), 0);
+        OmSegmentSelected::SetSegmentForPainting(sdw);
+    }
+};
+
+BrushToolboxImpl::BrushToolboxImpl(QWidget* parent, OmViewGroupState* vgs)
     : QDialog(parent, Qt::Tool)
 {
     setAttribute(Qt::WA_ShowWithoutActivating);
@@ -115,6 +139,7 @@ BrushToolboxImpl::BrushToolboxImpl(QWidget* parent)
     layout->addWidget(new BrushColor(this));
     layout->addWidget(new OmBrushSizeSpinBox(this));
     layout->addWidget(new AddSegmentButton(this));
+    layout->addWidget(new SetBlackColorButton(this, vgs));
 
     setLayout(layout);
 }

@@ -8,43 +8,40 @@
 
 class OmBuildChannel : public OmBuildVolumes {
 private:
-	OmChannel *const mChann;
+    OmChannel *const chan_;
 
 public:
-	OmBuildChannel(OmChannel* chan)
-		: OmBuildVolumes()
-		, mChann(chan)
-	{}
+    OmBuildChannel(OmChannel* chan)
+        : OmBuildVolumes()
+        , chan_(chan)
+    {}
 
-	void BuildBlocking()
-	{
-		do_build_channel();
-	}
+    void BuildNonBlocking()
+    {
+        zi::thread th(
+            zi::run_fn(
+                zi::bind(&OmBuildChannel::Build, this)));
 
-	void BuildNonBlocking()
-	{
-		zi::thread th( zi::run_fn( zi::bind( &OmBuildChannel::do_build_channel, this)));
-		th.start();
-	}
+        th.start();
+    }
 
-	void do_build_channel()
-	{
-		const QString type = "channel";
+    void Build()
+    {
+        const QString type = "channel";
 
-		if( !checkSettings() ){
-			return;
-		}
+        if(!checkSettings()){
+            return;
+        }
 
-		OmTimer build_timer;
-		startTiming(type, build_timer);
+        OmTimer build_timer;
+        startTiming(type, build_timer);
 
-		OmVolumeBuilder<OmChannel> builder(mChann,
-										   mFileNamesAndPaths,
-										   mChann->GetDefaultHDF5DatasetName());
-		builder.Build();
+        OmVolumeBuilder<OmChannel> builder(chan_,
+                                           mFileNamesAndPaths,
+                                           chan_->GetDefaultHDF5DatasetName());
+        builder.Build();
 
-		stopTimingAndSave(type, build_timer);
-	}
-
+        stopTimingAndSave(type, build_timer);
+    }
 };
 

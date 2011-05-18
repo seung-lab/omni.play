@@ -1,6 +1,8 @@
+#include "chunks/omSegChunkDataInterface.hpp"
 #include "chunks/omChunkData.hpp"
 #include "chunks/omSegChunk.h"
 #include "system/cache/omCacheBase.h"
+#include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
 #include "tiles/omChannelTileFilter.hpp"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"

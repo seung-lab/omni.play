@@ -2,16 +2,18 @@
 #include "utility/omFileHelpers.h"
 
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QFileInfoList>
 
-bool OmFileHelpers::isFileReadOnly(const std::string& fileNameAndPath)
+bool OmFileHelpers::IsFileReadOnly(const std::string& fileNameAndPath)
 {
     QFileInfo file(QString::fromStdString(fileNameAndPath));
-    if (file.exists() && !file.isWritable() ){
+
+    if (file.exists() && !file.isWritable()){
         return true;
     }
 
@@ -21,7 +23,8 @@ bool OmFileHelpers::isFileReadOnly(const std::string& fileNameAndPath)
 void OmFileHelpers::RemoveDir(const QString &folder)
 {
     QDir filesDir(folder);
-    if(filesDir.exists()){
+    if(filesDir.exists())
+    {
         printf("removing folder %s...", qPrintable(folder));
         fflush(stdout);
         if(removeDir(folder)){
@@ -45,13 +48,15 @@ bool OmFileHelpers::removeDir(const QString &dirName)
     bool result = true;
     QDir dir(dirName);
 
-    if (dir.exists(dirName)) {
+    if (dir.exists(dirName))
+    {
         Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot |
                                                     QDir::System |
                                                     QDir::Hidden  |
                                                     QDir::AllDirs |
                                                     QDir::Files,
-                                                    QDir::DirsFirst)) {
+                                                    QDir::DirsFirst))
+        {
             if (info.isDir()) {
                 result = removeDir(info.absoluteFilePath());
             }
@@ -76,7 +81,8 @@ void OmFileHelpers::MoveFile(const QString& from_fnp, const QString& to_fnp)
         throw OmIoException("could not find file", from_fnp);
     }
 
-    if(QFile::exists(to_fnp)){
+    if(QFile::exists(to_fnp))
+    {
         if(!QFile::remove(to_fnp)){
             throw OmIoException("could not remove previous file", to_fnp);
         }
@@ -84,6 +90,7 @@ void OmFileHelpers::MoveFile(const QString& from_fnp, const QString& to_fnp)
 
     if(!file.rename(to_fnp)){
         throw OmIoException("could not rename file to", to_fnp);
+
     } else {
         std::cout << "moved file from " << from_fnp.toStdString()
                   << "\n\tto " << to_fnp.toStdString() << "\n";
@@ -97,7 +104,8 @@ void OmFileHelpers::CopyFile(const QString& from_fnp, const QString& to_fnp)
         throw OmIoException("could not find file", from_fnp);
     }
 
-    if(QFile::exists(to_fnp)){
+    if(QFile::exists(to_fnp))
+    {
         if(!QFile::remove(to_fnp)){
             throw OmIoException("could not remove previous file", to_fnp);
         }
@@ -118,4 +126,42 @@ bool OmFileHelpers::IsFolderEmpty(const QString& dirNameQT)
 
     return boost::filesystem::directory_iterator(dirName) ==
         boost::filesystem::directory_iterator();
+}
+
+void OmFileHelpers::MoveAllFiles(const QString& fromDirQT, const QString& toDirQT)
+{
+    boost::filesystem::path fromDir(fromDirQT.toStdString());
+
+    if(!boost::filesystem::exists(fromDir) || !boost::filesystem::is_directory(fromDir)){
+        throw OmIoException("invalid folder name", fromDirQT);
+    }
+
+    boost::filesystem::path toDir(toDirQT.toStdString());
+
+    if(!boost::filesystem::exists(toDir) || !boost::filesystem::is_directory(toDir)){
+        throw OmIoException("invalid folder name", toDirQT);
+    }
+
+    boost::filesystem::directory_iterator iter(fromDir);
+    boost::filesystem::directory_iterator dir_end;
+
+    for( ; iter != dir_end; ++iter)
+    {
+        boost::filesystem::path path = *iter;
+
+        std::cout << "moving file/folder: " << path.string() << "\n";
+        boost::filesystem::rename(path, toDir);
+    }
+}
+
+void OmFileHelpers::MkDir(const QString& dirNameQT)
+{
+    boost::filesystem::path path(dirNameQT.toStdString());
+
+    try{
+        boost::filesystem::create_directories(path);
+
+    } catch(...){
+        throw OmIoException("could not create directory", dirNameQT);
+    }
 }

@@ -37,8 +37,6 @@ public:
             return "OM_VIEW_3D_EVENT_CLASS";
         case 6000:
             return "OM_TOOL_MODE_EVENT_CLASS";
-        case 7000:
-            return "OM_PROGRESS_EVENT_CLASS";
         case 8000:
             return "OM_PREFERENCE_EVENT_CLASS";
         default:

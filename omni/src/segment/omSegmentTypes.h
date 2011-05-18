@@ -3,6 +3,9 @@
 #include "common/om.hpp"
 #include "common/omCommon.h"
 
+// for Microsft Windows compiler compatibility, may need #pragma pack
+// see http://gcc.gnu.org/onlinedocs/gcc/Structure_002dPacking-Pragmas.html
+
 struct OmSegmentDataV2 {
     OmSegID value;
     OmColor color;

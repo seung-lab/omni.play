@@ -1,9 +1,10 @@
-#include "threads/omTaskManager.hpp"
-#include "volume/omUpdateBoundingBoxes.h"
-#include "chunks/omSegChunk.h"
 #include "chunks/omChunkCoord.h"
+#include "chunks/omSegChunk.h"
+#include "chunks/omSegChunkDataInterface.hpp"
 #include "segment/omSegments.h"
+#include "threads/omTaskManager.hpp"
 #include "volume/omSegmentation.h"
+#include "volume/omUpdateBoundingBoxes.h"
 
 OmUpdateBoundingBoxes::OmUpdateBoundingBoxes(OmSegmentation* vol)
     : vol_(vol)

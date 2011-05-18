@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/omStd.h"
 #include "utility/omSharedPtr.hpp"
 
 template <class> class OmPooledTile;
