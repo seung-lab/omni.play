@@ -51,11 +51,11 @@ public:
     static void MakeFilesFolder()
     {
         static zi::rwmutex lock;
-        createFolder(OmProject::FilesFolder(), lock);
+        createFolder(FilesFolder(), lock);
     }
 
     static std::string GetRandColorFileName() {
-        return OmProject::FilesFolder().toStdString() + "/rand_colors.raw";
+        return FilesFolder().toStdString() + "/rand_colors.raw";
     }
 
     template <typename T>
@@ -67,7 +67,7 @@ public:
             throw OmIoException("not a relative path", subPath);
         }
 
-        return OmProject::FilesFolder() + QLatin1String("/") + subPath;
+        return FilesFolder() + QLatin1String("/") + subPath;
     }
 
     template <typename T>
@@ -84,10 +84,7 @@ public:
     static QString GetVolSegmentsPath(OmSegmentation* vol)
     {
         const QDir filesDir(GetVolPath(vol));
-
-        const QString subPath("segments/");
-
-        return filesDir.absolutePath() + QLatin1String("/") + subPath;
+        return filesDir.absolutePath() + QLatin1String("/segments/");
     }
 
     static QString MakeVolSegmentsPath(OmSegmentation* vol)
@@ -210,7 +207,7 @@ public:
             throw OmIoException("not a relative path: " + subPath.toStdString());
         }
 
-        return OmProject::FilesFolder() + QLatin1String("/") + subPath;
+        return FilesFolder() + QLatin1String("/") + subPath;
     }
 
     template <typename T>
@@ -270,6 +267,22 @@ public:
         const QString fullPath = GetChunkFolderPath(vol, coord);
         createFolder(fullPath, lock);
         return fullPath;
+    }
+
+    static QString LogFolderPath(){
+        return FilesFolder() + "/logFiels/";
+    }
+
+    static QString ProjectMetadataFile(){
+        return FilesFolder() + "/projectMetadata.qt";
+    }
+
+    static QString OldHDF5projectFileName(){
+        return FilesFolder() + "/oldProjectFile.hdf5";
+    }
+
+    static QString FilesFolder(){
+        return OmProject::FilesFolder();
     }
 };
 

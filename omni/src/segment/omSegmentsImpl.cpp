@@ -1,13 +1,15 @@
-#include "segment/lowLevel/omSegmentChildren.hpp"
 #include "common/omDebug.h"
+#include "project/omProjectGlobals.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
-#include "segment/lowLevel/omEnabledSegments.hpp"
-#include "segment/lowLevel/omSegmentSelection.hpp"
-#include "segment/omSegmentsImpl.h"
-#include "segment/omSegmentEdge.h"
 #include "segment/lists/omSegmentLists.h"
+#include "segment/lowLevel/omEnabledSegments.hpp"
+#include "segment/lowLevel/omSegmentChildren.hpp"
+#include "segment/lowLevel/omSegmentSelection.hpp"
+#include "segment/omSegmentEdge.h"
+#include "segment/omSegmentsImpl.h"
 #include "system/cache/omCacheManager.h"
+#include "utility/omRandColorFile.hpp"
 #include "volume/omSegmentation.h"
 
 // entry into this class via OmSegments hopefully guarantees proper locking...
@@ -40,7 +42,7 @@ OmSegment* OmSegmentsImpl::AddSegment(const OmSegID value)
     }
 
     OmSegment* seg = store_->AddSegment(value);
-    seg->RandomizeColor();
+    seg->SetColor(OmProject::Globals().RandColorFile().GetRandomColor(value));
 
     ++mNumSegs;
     if(maxValue_.get() < value) {

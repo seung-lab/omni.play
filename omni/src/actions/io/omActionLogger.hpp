@@ -2,10 +2,12 @@
 
 #include "actions/io/omActionLoggerTask.hpp"
 #include "actions/omActions.h"
+#include "datalayer/fs/omFileNames.hpp"
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "threads/omTaskManager.hpp"
 #include "threads/omTaskManagerTypes.h"
+#include "utility/omFileHelpers.h"
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
 
@@ -50,22 +52,15 @@ private:
 
     void setupLogDir()
     {
-        const QString logFolderPath =
-            OmProject::FilesFolder() +
-            QDir::separator() +
-            "logFiles" +
-            QDir::separator();
+        const QString logFolderPath = OmFileNames::LogFolderPath();
 
         logFolder_ = QDir(logFolderPath);
+
         if(logFolder_.exists()){
             return;
         }
 
-        if(QDir::home().mkdir(logFolderPath)){
-            printf("made folder %s\n", qPrintable(logFolderPath));
-        } else {
-            throw OmIoException("could not make folder", logFolderPath);
-        }
+        OmFileHelpers::MkDir(logFolderPath);
     }
 
     friend class OmProjectGlobals;

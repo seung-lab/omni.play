@@ -12,6 +12,10 @@ class OmValidGroupNum {
 private:
     OmSegmentation* segmentation_;
     int version_;
+
+    const uint32_t noGroupNum_;
+    const uint32_t initialGroupNum_;
+
     LockedUint32 maxGroupNum_;
     std::vector<uint32_t> segToGroupNum_;
 
@@ -19,8 +23,10 @@ public:
     OmValidGroupNum(OmSegmentation* segmentation)
         : segmentation_(segmentation)
         , version_(1)
+        , noGroupNum_(0)
+        , initialGroupNum_(1)
     {
-        maxGroupNum_.set(1);
+        maxGroupNum_.set(initialGroupNum_);
     }
 
     void Load() {
@@ -32,13 +38,19 @@ public:
     }
 
     void Resize(const size_t size){
-        segToGroupNum_.resize(size, 0);
+        segToGroupNum_.resize(size, noGroupNum_);
+    }
+
+    void Clear()
+    {
+        std::fill(segToGroupNum_.begin(), segToGroupNum_.end(), noGroupNum_);
+        maxGroupNum_.set(initialGroupNum_);
     }
 
     template <typename C>
     void Set(const C& segs, const bool isValid)
     {
-        const uint32_t groupNum = isValid ? maxGroupNum_.inc() : 0;
+        const uint32_t groupNum = isValid ? maxGroupNum_.inc() : noGroupNum_;
 
         FOR_EACH(iter, segs)
         {
@@ -80,12 +92,10 @@ private:
             return;
         }
 
-        if(!file.open(QIODevice::ReadOnly)){
-            throw OmIoException("error reading file", filePath);
-        }
+        om::file::openFileRO(file);
 
         QDataStream in(&file);
-        in.setByteOrder( QDataStream::LittleEndian );
+        in.setByteOrder(QDataStream::LittleEndian);
         in.setVersion(QDataStream::Qt_4_6);
 
         in >> version_;
@@ -106,12 +116,10 @@ private:
 
         QFile file(filePath);
 
-        if (!file.open(QIODevice::WriteOnly)) {
-            throw OmIoException("could not write file", filePath);
-        }
+        om::file::openFileWO(file);
 
         QDataStream out(&file);
-        out.setByteOrder( QDataStream::LittleEndian );
+        out.setByteOrder(QDataStream::LittleEndian);
         out.setVersion(QDataStream::Qt_4_6);
 
         out << version_;

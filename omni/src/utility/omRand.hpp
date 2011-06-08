@@ -11,12 +11,13 @@ class OmRand : private om::singletonBase<OmRand> {
 private:
     boost::mt19937 gen_;
 
+    zi::spinlock lock_;
+
 public:
     // return rand int in range [min, max]
     static inline int GetRandomInt(const int min, const int max)
     {
-        static zi::mutex lock;
-        zi::guard g(lock);
+        zi::guard g(instance().lock_);
 
         boost::uniform_int<> dist(min, max);
         boost::variate_generator<boost::mt19937&,

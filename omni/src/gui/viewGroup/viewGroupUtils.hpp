@@ -11,6 +11,14 @@
 
 #include <QtGui>
 
+namespace om {
+namespace gui {
+
+struct DockWidgetPair {
+    QDockWidget* dock;
+    QDockWidget* dockToTabify;
+};
+
 class ViewGroupUtils {
 private:
     MainWindow *const mainWindow_;
@@ -190,16 +198,13 @@ public:
 
     }
 
-    void wireDockWithView2d(QWidget* widget,
-                            const std::pair<QDockWidget*,QDockWidget*>& dockAndCompliment)
+    void wireDockWithView2d(QWidget* widget, DockWidgetPair d)
     {
         OmView2d* w = reinterpret_cast<OmView2d*>(widget);
 
-        QDockWidget* dock = dockAndCompliment.first;
-        QDockWidget* complimentaryDock = dockAndCompliment.second;
+        setComplimentaryDockWidget(w, d.dock, d.dockToTabify);
 
-        connectVisibilityChange(w, dock);
-        setComplimentaryDockWidget(w, dock, complimentaryDock);
+        connectVisibilityChange(w, d.dock);
     }
 
     void connectVisibilityChange(OmView2d* w, QDockWidget* dock);
@@ -257,3 +262,6 @@ public:
         return vgw;
     }
 };
+
+} // namespace gui
+} // namespace om

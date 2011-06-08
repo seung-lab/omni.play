@@ -4,28 +4,28 @@
 #include "viewGroup/omViewGroupState.h"
 #include "view2d/omView2d.h"
 
-int ViewGroupUtils::getID(){
+int om::gui::ViewGroupUtils::getID(){
     return vgs_->GetID();
 }
 
-QList<QDockWidget*> ViewGroupUtils::findDockWidgets(const QString& name){
+QList<QDockWidget*> om::gui::ViewGroupUtils::findDockWidgets(const QString& name){
     return mainWindow_->findChildren<QDockWidget*>(name);
 }
 
-QList<QDockWidget*> ViewGroupUtils::findDockWidgets(const QRegExp& regExp){
+QList<QDockWidget*> om::gui::ViewGroupUtils::findDockWidgets(const QRegExp& regExp){
     return mainWindow_->findChildren<QDockWidget*>(regExp);
 }
 
-void ViewGroupUtils::connectVisibilityChange(OmView2d* w, QDockWidget* dock)
+void om::gui::ViewGroupUtils::connectVisibilityChange(OmView2d* w, QDockWidget* dock)
 {
     // used to let tile cache know when view2d visibilty changes
     om::connect(dock, SIGNAL(visibilityChanged(bool)),
                 w, SLOT(dockVisibilityChanged(bool)));
 }
 
-void ViewGroupUtils::setComplimentaryDockWidget(OmView2d* w,
-                                                QDockWidget* dock,
-                                                QDockWidget* complimentaryDock)
+void om::gui::ViewGroupUtils::setComplimentaryDockWidget(OmView2d* w,
+                                                         QDockWidget* dock,
+                                                         QDockWidget* complimentaryDock)
 {
     // used for cntrl+tab key in view2d
 

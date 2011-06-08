@@ -65,3 +65,21 @@ void OmSegmentsStore::Flush()
     zi::guard g(pagesLock_);
     segmentPages_->Flush();
 }
+
+/**
+ * a segment ptr is invalid if it is NULL, or has an ID of 0
+ **/
+bool OmSegmentsStore::IsSegmentValid(const OmSegID value)
+{
+    if(!value){
+        return false;
+    }
+
+    OmSegment* seg = GetSegment(value);
+
+    if(!seg){
+        return false;
+    }
+
+    return value == seg->value();
+}

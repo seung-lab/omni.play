@@ -147,7 +147,15 @@ function addViewEventHandlers() {
 	    handleSelectSegment(event);
 	}
     });
-
+	
+	// fade in and out for segmentation alpha slider
+	$('#viewCanvasContainer').bind('mouseenter', function(event) {
+		$('#toolboxContainer').fadeIn('fast');
+	})
+	$('#viewCanvasContainer').bind('mouseleave', function(event) {
+		$('#toolboxContainer').fadeOut('slow');
+	})
+	
 }
 
 // handle scrolling

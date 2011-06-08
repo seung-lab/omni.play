@@ -54,7 +54,7 @@ OmSegment* OmSegments::GetOrAddSegment(const OmSegID val)
 bool OmSegments::IsSegmentValid(OmSegID seg)
 {
     // locked internally
-    return (NULL != store_->GetSegment(seg));
+    return store_->IsSegmentValid(seg);
 }
 
 OmSegment* OmSegments::GetSegment(const OmSegID value)

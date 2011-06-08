@@ -35,6 +35,13 @@ public:
         return values_[index];
     }
 
+    OmColor GetRandomColor(const uint32_t segID)
+    {
+        assert(values_);
+        const int index = segID % numEntries_;
+        return values_[index];
+    }
+
 private:
     void createOrLoad()
     {
@@ -90,6 +97,9 @@ private:
                 }
             }
         }
+
+        zi::random_shuffle(colorTable.begin(),
+                           colorTable.end());
     }
 
     void setupFile()

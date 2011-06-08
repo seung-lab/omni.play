@@ -550,7 +550,6 @@ HEADERS +=  \
 	src/tiles/cache/omTileCache.h \
 	src/tiles/cache/omTileCacheChannel.hpp \
 	src/tiles/cache/omTileCacheEventListener.hpp \
-	src/tiles/cache/omTileCacheFrameContainer.hpp \
 	src/tiles/cache/omTileCacheImpl.hpp \
 	src/tiles/cache/omTileCacheSegmentation.hpp \
 	src/tiles/cache/omTilesToPrefetch.hpp \
@@ -569,6 +568,7 @@ HEADERS +=  \
 	src/tiles/pools/omPooledTile.hpp \
 	src/tiles/pools/omTilePool.hpp \
 	src/tiles/pools/omTilePools.hpp \
+	src/users/omUsers.hpp \
 	src/utility/affinityGraphDataWrapper.hpp \
 	src/utility/channelDataWrapper.hpp \
 	src/utility/dataWrapperContainer.hpp \
@@ -887,6 +887,7 @@ SOURCES +=  \
 	src/segment/colorizer/omSegmentColorizer.cpp \
 	src/segment/io/omMST.cpp \
 	src/segment/io/omMSTold.cpp \
+	src/segment/io/omMSTtypes.cpp \
 	src/segment/lists/omSegmentListByMRU.cpp \
 	src/segment/lists/omSegmentLists.cpp \
 	src/segment/lists/omSegmentListsTypes.cpp \
@@ -1015,7 +1016,7 @@ mac {
 CONFIG(release, debug|release) {
     message ( in release mode; adding NDEBUG and no-strict-aliasing )
     QMAKE_CXXFLAGS_RELEASE -= -O2
-    QMAKE_CXXFLAGS += -DNDEBUG  -fno-strict-aliasing -O3 -fno-omit-frame-pointer
+    QMAKE_CXXFLAGS += -DNDEBUG  -fno-strict-aliasing -O3 -fno-omit-frame-pointer -g
     QMAKE_LFLAGS   += -DNDEBUG
 }
 

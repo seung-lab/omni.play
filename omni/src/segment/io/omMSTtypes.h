@@ -12,9 +12,11 @@ struct OmMSTEdge {
     uint8_t wasJoined; // transient state
 };
 
-struct OmMSTImportEdge {
+struct OmMSTImportEdge
+{
     uint32_t node1ID;
     uint32_t node2ID;
     float threshold;
 };
+std::ostream& operator<<(std::ostream&, const OmMSTImportEdge&);
 

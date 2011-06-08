@@ -136,6 +136,8 @@ private:
         qRegisterMetaType<OmID>("OmID");
         qRegisterMetaType<ViewType>("ViewType");
         qRegisterMetaType<uint32_t>("uint32_t");
+        qRegisterMetaType<ChannelDataWrapper>("ChannelDataWrapper");
+        qRegisterMetaType<SegmentationDataWrapper>("SegmentationDataWrapper");
     }
 
     int runHeadless()

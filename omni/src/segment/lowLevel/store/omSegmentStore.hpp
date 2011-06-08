@@ -34,6 +34,7 @@ public:
 
 // segments
     OmSegment* AddSegment(const OmSegID value);
+    bool IsSegmentValid(const OmSegID value);
 
 // caching
     void StartCaches();

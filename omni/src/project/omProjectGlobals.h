@@ -10,6 +10,9 @@ class OmEventManagerImpl;
 class OmRandColorFile;
 class OmStateManagerImpl;
 class OmView2dManagerImpl;
+class OmUsers;
+
+namespace om { class users; }
 
 class OmProjectGlobals {
 private:
@@ -19,6 +22,7 @@ private:
     boost::scoped_ptr<OmEventManagerImpl> eventMan_;
     boost::scoped_ptr<OmActionsImpl> actions_;
     boost::scoped_ptr<OmActionLogger> actionLogger_;
+    boost::scoped_ptr<om::users> users_;
 
     zi::semaphore fileReadThrottle_;
 
@@ -52,6 +56,10 @@ public:
 
     inline zi::semaphore& FileReadSemaphore(){
         return fileReadThrottle_;
+    }
+
+    inline om::users& Users(){
+        return *users_;
     }
 };
 

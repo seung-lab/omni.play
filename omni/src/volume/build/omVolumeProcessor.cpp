@@ -33,9 +33,9 @@ public:
         const ChunkUniqueValues segIDs =
             vol_->ChunkUniqueValues()->RereadChunk(coord_, 1);
 
-        std::cout << "chunk " << coord_
-                  << " has " << segIDs.size()
-                  << " values\n";
+        // std::cout << "chunk " << coord_
+        //           << " has " << segIDs.size()
+        //           << " values\n";
 
         if(isMIPzero){
             // vol_->updateMinMax(chunk->GetMinValue(),

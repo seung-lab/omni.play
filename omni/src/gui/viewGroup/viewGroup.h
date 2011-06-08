@@ -15,16 +15,14 @@ public:
     ViewGroup(MainWindow*, OmViewGroupState*);
     ~ViewGroup();
 
-    QDockWidget* AddView2Dchannel(const ChannelDataWrapper& cdw, const ViewType vtype);
-
-    std::pair<QDockWidget*,QDockWidget*>
-    AddView2Dsegmentation(const SegmentationDataWrapper& sdw, const ViewType vtype);
+    void AddView2Dchannel(const ChannelDataWrapper& cdw, const ViewType vtype);
+    void AddView2Dsegmentation(const SegmentationDataWrapper& sdw, const ViewType vtype);
 
     void AddView3D();
     void AddView3D4View();
 
-    void AddAllViews();
     void AddXYView();
+    void AddAllViews();
     void AddXYViewAndView3d();
 
 private:

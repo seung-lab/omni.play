@@ -35,43 +35,11 @@ void OmFileHelpers::RemoveDir(const QString &folder)
     }
 }
 
-/*!
-  Delete a directory along with all of its contents.
-
-  \param dirName Path of directory to remove.
-  \return true on success; false on error.
-
-  from http://john.nachtimwald.com/2010/06/08/qt-remove-directory-and-its-contents/
-*/
-bool OmFileHelpers::removeDir(const QString &dirName)
+bool OmFileHelpers::removeDir(const QString &dirNameQT)
 {
-    bool result = true;
-    QDir dir(dirName);
+    boost::filesystem::path dir(dirNameQT.toStdString());
 
-    if (dir.exists(dirName))
-    {
-        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot |
-                                                    QDir::System |
-                                                    QDir::Hidden  |
-                                                    QDir::AllDirs |
-                                                    QDir::Files,
-                                                    QDir::DirsFirst))
-        {
-            if (info.isDir()) {
-                result = removeDir(info.absoluteFilePath());
-            }
-            else {
-                result = QFile::remove(info.absoluteFilePath());
-            }
-
-            if (!result) {
-                return result;
-            }
-        }
-        result = dir.rmdir(dirName);
-    }
-
-    return result;
+    return boost::filesystem::remove_all(dir);
 }
 
 void OmFileHelpers::MoveFile(const QString& from_fnp, const QString& to_fnp)
@@ -164,4 +132,33 @@ void OmFileHelpers::MkDir(const QString& dirNameQT)
     } catch(...){
         throw OmIoException("could not create directory", dirNameQT);
     }
+}
+
+bool OmFileHelpers::IsFolder(const QString& dirNameQT)
+{
+    boost::filesystem::path path(dirNameQT.toStdString());
+
+    return boost::filesystem::is_directory(path);
+}
+
+void OmFileHelpers::Symlink(const QString& fromDirQT, const QString& toDirQT)
+{
+    boost::filesystem::path fromDir(fromDirQT.toStdString());
+    boost::filesystem::path toDir(toDirQT.toStdString());
+
+    boost::filesystem::create_symlink(fromDir, toDir);
+}
+
+bool OmFileHelpers::SymlinkExists(const QString& fileNameQT)
+{
+    boost::filesystem::path path(fileNameQT.toStdString());
+
+    return boost::filesystem::exists(path);
+}
+
+void OmFileHelpers::RmFile(const QString& fileNameQT)
+{
+    boost::filesystem::path path(fileNameQT.toStdString());
+
+    boost::filesystem::remove(path);
 }

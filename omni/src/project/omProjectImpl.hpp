@@ -102,7 +102,7 @@ public:
 
     void Save()
     {
-        FOR_EACH(iter, volumes_.Segmentations().GetValidSegmentationIds() ){
+        FOR_EACH(iter, volumes_.Segmentations().GetValidSegmentationIds()){
             volumes_.Segmentations().GetSegmentation(*iter).Flush();
         }
 
@@ -135,8 +135,8 @@ private:
     {
         omniFile_ = fnp;
         filesFolder_ = fnp + ".files";
-        projectMetadataFile_ =
-            filesFolder_ + QDir::separator() + "projectMetadata.qt";
+
+        projectMetadataFile_ = OmFileNames::ProjectMetadataFile();
         oldHDF5projectFile_ = "";
 
         makeParentFolder();
@@ -156,9 +156,12 @@ private:
     void makeParentFolder()
     {
         const QString dirStr = QFileInfo(omniFile_).absolutePath();
+
         QDir dir(dirStr);
-        if( !dir.exists() ){
-            if( !dir.mkpath(dirStr) ){
+
+        if(!dir.exists())
+        {
+            if(!dir.mkpath(dirStr)){
                 throw OmIoException("could not make path", dirStr);
             }
         }
@@ -172,10 +175,9 @@ private:
 
         omniFile_ = fnp;
         filesFolder_ = fnp + ".files";
-        projectMetadataFile_ =
-            filesFolder_ + QDir::separator() + "projectMetadata.qt";
-        oldHDF5projectFile_ =
-            filesFolder_ + QDir::separator() + "oldProjectFile.hdf5";
+
+        projectMetadataFile_ = OmFileNames::ProjectMetadataFile();
+        oldHDF5projectFile_ = OmFileNames::OldHDF5projectFileName();
 
         migrateFromHdf5();
 
@@ -192,7 +194,7 @@ private:
     void doCreate()
     {
         QFile projectFile(omniFile_);
-        if( projectFile.exists() ){
+        if(projectFile.exists()){
             projectFile.remove();
         }
 
@@ -246,9 +248,11 @@ private:
         char const*const data = dw->getPtr<const char>();
 
         QFile newProjectMetadafile(projectMetadataFile_);
+
         if(!newProjectMetadafile.open(QIODevice::WriteOnly)) {
             throw OmIoException("could not open", projectMetadataFile_);
         }
+
         newProjectMetadafile.write(data, size);
     }
 
@@ -258,7 +262,7 @@ private:
 
     friend class OmProject;
 
-    friend QDataStream &operator<<(QDataStream & out, const OmProjectImpl & p );
-    friend QDataStream &operator>>(QDataStream & in, OmProjectImpl & p );
+    friend QDataStream &operator<<(QDataStream & out, const OmProjectImpl & p);
+    friend QDataStream &operator>>(QDataStream & in, OmProjectImpl & p);
 };
 

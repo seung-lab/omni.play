@@ -67,6 +67,8 @@ public:
         OmBuildSegmentation bs;
         bs.addFileNameAndPath(file);
         bs.BuildImage();
+
+        OmProject::Save();
     }
 
     static void loadHDF5seg(const QString file, OmID& segmentationID_)
@@ -85,7 +87,8 @@ public:
         OmMST* mst = sdw.MST();
         OmMSTEdge* edges = mst->Edges();
 
-        for(uint32_t i = 0; i < mst->NumEdges(); ++i){
+        for(uint32_t i = 0; i < mst->NumEdges(); ++i)
+        {
             edges[i].userSplit = 0;
             edges[i].userJoin = 0;
             edges[i].wasJoined = 0;
@@ -107,6 +110,9 @@ public:
             seg->SetListType(om::WORKING);
         }
 
+        sdw.ValidGroupNum()->Clear();
+        sdw.ValidGroupNum()->Save();
+
         OmActions::Save();
     }
 
@@ -115,7 +121,9 @@ public:
         SegmentationDataWrapper sdw(segmentationID);
 
         OmSegments* segments = sdw.Segments();
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i){
+
+        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
+        {
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){
                 continue;

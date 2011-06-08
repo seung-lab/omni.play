@@ -38,20 +38,22 @@ public:
     {
         if(!value || !max_){
             curPerc_ = 0;
+
         } else {
             curPerc_ = 100.0 * (value - min_) / max_;
         }
 
         progressBar_->setValue(curPerc_);
 
-        const QString percentStr = QString("%1%").arg(curPerc_);
+        const QString percentStr = QString("%1%")
+            .arg(QString::number(curPerc_, 'f', 1));
         label_->setText(percentStr);
     }
 
 private:
     T max_;
     T min_;
-    int curPerc_;
+    double curPerc_;
 
     QProgressBar* progressBar_;
     QLabel* label_;

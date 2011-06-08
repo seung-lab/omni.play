@@ -8,12 +8,17 @@
 .wrapper-splash .page_header {
 	padding-top: 40px;
 	padding-bottom: 60px;
+	width: 100%;
+}
+
+.logo_container {
+	
 }
 
 .logo-large {
-	background: url("../images/logo-large.png") no-repeat scroll 0 0 transparent;
-	height: 109px;
-	width:652px;
+	background: url("../images/logo-large-with-subtitle.png") no-repeat scroll 0 0 transparent;
+	height: 140px;
+	width:655px;
 	display: block;
 	
 	margin-left: auto;
@@ -60,7 +65,6 @@
 	margin-left: 10px;
 	margin-right: 10px;
 }
-
 
 
 

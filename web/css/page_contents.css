@@ -10,3 +10,15 @@
 	width: 100%;
 	height: 100%;
 }
+
+.left_contents {
+	float: left;
+/*	width: 680px;
+	padding-right: 20px;*/
+}
+
+.right_contents {
+	float: right;
+/*	width: 300px;
+	min-height: 400px;*/
+}

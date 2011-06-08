@@ -3,6 +3,9 @@
 #include "gui/menubar.h"
 #include "gui/viewGroup/viewGroupUtils.hpp"
 
+namespace om {
+namespace gui {
+
 class ViewGroupMainWindowUtils {
 private:
     MainWindow *const mainWindow_;
@@ -20,8 +23,31 @@ public:
         , utils_(utils)
     {}
 
-    std::pair<QDockWidget*, QDockWidget*>
-    InsertDockIntoGroup4View(ViewGroupWidgetInfo& vgw)
+    void InsertDockIntoGroup2View(ViewGroupWidgetInfo& vgw, const ViewType viewType)
+    {
+        if(0 == getNumDockWidgets())
+        {
+            QDockWidget* dock = makeDockWidget(vgw);
+            mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, dock);
+            return;
+        }
+
+        QDockWidget* dockToSplit = NULL;
+
+        if(utils_->doesDockWidgetExist(CHANNEL, viewType)){
+            dockToSplit = utils_->getDockWidget(CHANNEL, viewType);
+
+        } else if(utils_->doesDockWidgetExist(SEGMENTATION, viewType)){
+            dockToSplit = utils_->getDockWidget(SEGMENTATION, viewType);
+
+        } else {
+            throw OmArgException("don't know where to put dock");
+        }
+
+        InsertBySplitting(vgw, dockToSplit);
+    }
+
+    DockWidgetPair InsertDockIntoGroup4View(ViewGroupWidgetInfo& vgw)
     {
         QDockWidget* dock = NULL;
         QDockWidget* dockToTabify = NULL;
@@ -39,11 +65,12 @@ public:
 
             } else {
                 dock = InsertBySplitting(vgw, chooseDockToSplit(vgw));
-                QApplication::processEvents();
             }
         }
 
-        return std::make_pair(dock, dockToTabify);
+        DockWidgetPair ret = { dock, dockToTabify };
+
+        return ret;
     }
 
     QDockWidget* InsertBySplitting(ViewGroupWidgetInfo& vgw, QDockWidget* biggest)
@@ -187,3 +214,6 @@ public:
         return lowerLeft_;
     }
 };
+
+} // namespace gui
+} // namespace om

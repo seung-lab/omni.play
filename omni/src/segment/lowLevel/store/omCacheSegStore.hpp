@@ -11,10 +11,6 @@ private:
     const std::vector<OmSegmentPage*> initialPages_;
     const uint32_t numInitialPages_;
 
-    std::vector<OmSegmentPage*> initialAndAddedPages_;
-
-    zi::mutex initialAndAddedPagesLock_;
-
 public:
     OmCacheSegStore(OmSegmentsStore* store)
         : store_(store)
@@ -39,22 +35,16 @@ private:
     {
         const uint32_t pageNum = segID / pageSize_;
 
-        if(pageNum < numInitialPages_){
+        if(pageNum < numInitialPages_)
+        {
             // no locking needed--initialPages_ will never change
             return doGetSegment(initialPages_, pageNum, segID, isSafe);
 
         } else {
-            zi::guard g(initialAndAddedPagesLock_);
 
-            if(pageNum >= initialAndAddedPages_.size())
-            {
-                if(store_->NumPages() != initialAndAddedPages_.size())
-                {
-                    initialAndAddedPages_ = store_->Pages();
-                }
-            }
+            const std::vector<OmSegmentPage*> curPages = store_->Pages();
 
-            return doGetSegment(initialAndAddedPages_, pageNum, segID, isSafe);
+            return doGetSegment(curPages, pageNum, segID, isSafe);
         }
     }
 

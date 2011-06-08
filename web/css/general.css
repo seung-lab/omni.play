@@ -35,10 +35,13 @@ a:hover {
 	text-decoration: none;
 	outline-style:none;
 	outline-width:0;
+	color: #000000;
+	font-weight: bold;
 }
 
 a:hover {
-/*	text-decoration: underline;*/
+	text-decoration: underline;
+	cursor: pointer;
 }
 
 
@@ -63,6 +66,18 @@ textarea {
 }
 
 
+
+.header-2 {
+	font-size: 26px;
+	font-weight: bold;
+	padding-bottom: 15px;
+}
+
+.paragraph {
+	font-size: 16px;
+	padding-bottom: 15px;
+	line-height: 20px;
+}
 
 
 

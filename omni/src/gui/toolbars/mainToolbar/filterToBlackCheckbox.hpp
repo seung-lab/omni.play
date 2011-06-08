@@ -9,7 +9,10 @@ public:
     FilterToBlackCheckbox(QWidget* p)
         : OmCheckBoxWidget(p, "Fade To Black")
     {
-        set(Om2dPreferences::HaveAlphaGoToBlack());
+        // set initial state of checkbox without having doAction called...
+        blockSignals(true);
+        setChecked(Om2dPreferences::HaveAlphaGoToBlack());
+        blockSignals(false);
     }
 
 private:

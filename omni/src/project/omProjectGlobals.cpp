@@ -1,3 +1,4 @@
+#include "users/omUsers.hpp"
 #include "actions/io/omActionLogger.hpp"
 #include "actions/omActionsImpl.h"
 #include "events/details/omEventManagerImpl.hpp"
@@ -13,6 +14,7 @@ OmProjectGlobals::OmProjectGlobals()
     , eventMan_(new OmEventManagerImpl())
     , actions_(new OmActionsImpl())
     , actionLogger_(new OmActionLogger())
+    , users_(new om::users())
 {
     fileReadThrottle_.set(4);
 
