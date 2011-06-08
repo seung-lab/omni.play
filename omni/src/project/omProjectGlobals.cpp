@@ -1,4 +1,4 @@
-#include "users/omUsers.hpp"
+#include "users/omUsers.h"
 #include "actions/io/omActionLogger.hpp"
 #include "actions/omActionsImpl.h"
 #include "events/details/omEventManagerImpl.hpp"
@@ -9,17 +9,22 @@
 
 OmProjectGlobals::OmProjectGlobals()
     : randColorFile_(new OmRandColorFile())
+    , users_(new om::users())
     , v2dManagerImpl_(new OmView2dManagerImpl())
     , stateMan_(new OmStateManagerImpl())
     , eventMan_(new OmEventManagerImpl())
     , actions_(new OmActionsImpl())
     , actionLogger_(new OmActionLogger())
-    , users_(new om::users())
+{}
+
+OmProjectGlobals::~OmProjectGlobals()
+{}
+
+void OmProjectGlobals::Init()
 {
     fileReadThrottle_.set(4);
 
     randColorFile_->createOrLoad();
+    actionLogger_->Init();
+    users_->SetupFolders();
 }
-
-OmProjectGlobals::~OmProjectGlobals()
-{}

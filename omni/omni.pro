@@ -235,6 +235,7 @@ HEADERS +=  \
 	src/datalayer/fs/omMemMappedFileQT.hpp \
 	src/datalayer/fs/omMemMappedFileQTNew.hpp \
 	src/datalayer/fs/omOnDiskBoostUnorderedMap.hpp \
+	src/datalayer/fs/omSegmentationFolders.hpp \
 	src/datalayer/fs/omVecInFile.hpp \
 	src/datalayer/hdf5/omExportVolToHdf5.hpp \
 	src/datalayer/hdf5/omHdf5.h \
@@ -568,7 +569,8 @@ HEADERS +=  \
 	src/tiles/pools/omPooledTile.hpp \
 	src/tiles/pools/omTilePool.hpp \
 	src/tiles/pools/omTilePools.hpp \
-	src/users/omUsers.hpp \
+	src/users/omUsers.h \
+	src/users/omUsersImpl.hpp \
 	src/utility/affinityGraphDataWrapper.hpp \
 	src/utility/channelDataWrapper.hpp \
 	src/utility/dataWrapperContainer.hpp \
@@ -918,6 +920,7 @@ SOURCES +=  \
 	src/tiles/omTileImplTypes.cpp \
 	src/tiles/omTilePreFetcher.cpp \
 	src/tiles/omTilePreFetcherTask.cpp \
+	src/users/omUsers.cpp \
 	src/utility/channelDataWrapper.cpp \
 	src/utility/omFileHelpers.cpp \
 	src/utility/omPrimeNumbers.cpp \

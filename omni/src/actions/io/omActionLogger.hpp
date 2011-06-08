@@ -40,15 +40,18 @@ public:
         impl().threadPool_.push_back(task);
     }
 
+    void Init()
+    {
+        setupLogDir();
+        threadPool_.start(1);
+    }
+
 private:
     QDir logFolder_;
     OmThreadPool threadPool_;
 
     OmActionLogger()
-    {
-        setupLogDir();
-        threadPool_.start(1);
-    }
+    {}
 
     void setupLogDir()
     {

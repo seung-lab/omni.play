@@ -4,6 +4,8 @@
 #include "common/omDebug.h"
 #include "datalayer/fs/omFile.hpp"
 #include "project/omProject.h"
+#include "project/omProjectGlobals.h"
+#include "users/omUsers.h"
 #include "utility/omFileHelpers.h"
 #include "utility/omUUID.hpp"
 #include "volume/omSegmentation.h"
@@ -62,11 +64,6 @@ public:
     static QString GetVolPath(T const*const vol)
     {
         const QString subPath = QString::fromStdString(vol->GetDirectoryPath());
-
-        if(subPath.startsWith("/")){
-            throw OmIoException("not a relative path", subPath);
-        }
-
         return FilesFolder() + QLatin1String("/") + subPath;
     }
 
@@ -81,10 +78,8 @@ public:
         return fullPath;
     }
 
-    static QString GetVolSegmentsPath(OmSegmentation* vol)
-    {
-        const QDir filesDir(GetVolPath(vol));
-        return filesDir.absolutePath() + QLatin1String("/segments/");
+    static QString GetVolSegmentsPath(OmSegmentation* vol){
+        return OmProject::Globals().Users().GetVolSegmentsPathAbs(vol);
     }
 
     static QString MakeVolSegmentsPath(OmSegmentation* vol)
@@ -270,7 +265,7 @@ public:
     }
 
     static QString LogFolderPath(){
-        return FilesFolder() + "/logFiels/";
+        return OmProject::Globals().Users().LogFolderPath();
     }
 
     static QString ProjectMetadataFile(){

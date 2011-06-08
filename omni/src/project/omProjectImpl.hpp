@@ -7,6 +7,7 @@
  *  Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
+#include "actions/io/omActionLogger.hpp"
 #include "actions/io/omActionReplayer.hpp"
 #include "actions/omActions.h"
 #include "common/om.hpp"
@@ -143,7 +144,7 @@ private:
         doCreate();
         touchEmptyProjectFile();
 
-        globals_.reset(new OmProjectGlobals());
+        setupGlobals();
 
         OmCacheManager::Reset();
         OmTileCache::Reset();
@@ -181,7 +182,7 @@ private:
 
         migrateFromHdf5();
 
-        globals_.reset(new OmProjectGlobals());
+        setupGlobals();
 
         OmCacheManager::Reset();
         OmTileCache::Reset();
@@ -258,6 +259,12 @@ private:
 
     void setFileVersion(const int v){
         fileVersion_ = v;
+    }
+
+    void setupGlobals()
+    {
+        globals_.reset(new OmProjectGlobals());
+        globals_->Init();
     }
 
     friend class OmProject;

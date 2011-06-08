@@ -16,9 +16,8 @@ static int fileVersion_;
 void OmDataArchiveProject::ArchiveRead(const QString& fnp, OmProjectImpl* project)
 {
     QFile file(fnp);
-    if(!file.open(QIODevice::ReadOnly)) {
-        throw OmIoException("could not open", fnp);
-    }
+
+    om::file::openFileRO(file);
 
     QDataStream in(&file);
     in.setByteOrder(QDataStream::LittleEndian);
