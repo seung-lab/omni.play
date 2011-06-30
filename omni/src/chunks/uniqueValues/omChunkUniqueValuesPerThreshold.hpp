@@ -1,14 +1,15 @@
 #pragma once
 
-#include "common/om.hpp"
+#include "chunks/omChunkCoord.h"
+#include "chunks/omSegChunk.h"
+#include "chunks/omSegChunkDataInterface.hpp"
 #include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
+#include "common/om.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/image/omImage.hpp"
 #include "utility/segmentationDataWrapper.hpp"
-#include "chunks/omSegChunk.h"
-#include "chunks/omChunkCoord.h"
 #include "volume/omSegmentation.h"
-#include "chunks/omSegChunkDataInterface.hpp"
+#include "volume/omSegmentationFolder.h"
 
 class OmChunkUniqueValuesPerThreshold {
 private:
@@ -134,11 +135,10 @@ private:
 
     QString filePath()
     {
-        const QString volPath =
-            OmFileNames::GetChunkFolderPath(segmentation_, coord_);
+        const QString volPath = segmentation_->Folder()->GetChunkFolderPath(coord_);
 
         if(!QDir(volPath).exists()){
-            OmFileNames::MakeChunkFolderPath(segmentation_, coord_);
+            segmentation_->Folder()->MakeChunkFolderPath(coord_);
         }
 
         const QString fullPath = QString("%1uniqeValues.%2.ver1")

@@ -59,6 +59,7 @@ OmSegment* OmSegmentsImpl::GetOrAddSegment(const OmSegID val)
     }
 
     OmSegment* seg = store_->GetSegment(val);
+
     if(NULL == seg){
         seg = AddSegment(val);
     }
@@ -71,7 +72,16 @@ OmSegmentEdge OmSegmentsImpl::SplitEdgeUserAction(const OmSegmentEdge& e)
     if(!e.isValid()){
         return OmSegmentEdge();
     }
-    return splitChildFromParent(store_->GetSegment(e.childID));
+
+    OmSegment* seg = store_->GetSegment(e.childID);
+
+    if(!seg->getParent())
+    {
+        std::cout << "can't split root\n";
+        return OmSegmentEdge();
+    }
+
+    return splitChildFromParent(seg);
 }
 
 OmSegmentEdge OmSegmentsImpl::splitChildFromParent(OmSegment * child)
@@ -82,7 +92,8 @@ OmSegmentEdge OmSegmentsImpl::splitChildFromParent(OmSegment * child)
     if(child->IsValidListType() == parent->IsValidListType() &&
        1 == child->IsValidListType())
     {
-        printf("could not split %d from %d (one or more was valid!)\n", child->value(), parent->value());
+        printf("could not split %d from %d (one or more was valid!)\n",
+               child->value(), parent->value());
         return OmSegmentEdge();
     }
 

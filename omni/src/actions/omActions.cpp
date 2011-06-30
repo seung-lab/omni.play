@@ -96,14 +96,6 @@ void OmActions::UncertainSegmentation(const SegmentationDataWrapper& sdw,
                      sdw, uncertain)));
 }
 
-void OmActions::JoinSegments(const OmID segmentationID)
-{
-    pool().push_back(
-        zi::run_fn(
-            zi::bind(&OmActionsImpl::JoinSegmentsID, impl(),
-                     segmentationID)));
-}
-
 void OmActions::JoinSegments(const SegmentationDataWrapper& sdw)
 {
     pool().push_back(
@@ -112,32 +104,29 @@ void OmActions::JoinSegments(const SegmentationDataWrapper& sdw)
                      sdw)));
 }
 
-void OmActions::JoinSegments(const OmID segmentationID,
+void OmActions::JoinSegments(const SegmentationDataWrapper& sdw,
                              const OmSegIDsSet& ids)
 {
     pool().push_back(
         zi::run_fn(
             zi::bind(&OmActionsImpl::JoinSegmentsSet, impl(),
-                     segmentationID, ids)));
+                     sdw, ids)));
 }
 
-void OmActions::FindAndSplitSegments(const SegmentDataWrapper& curSDW,
-                                     OmViewGroupState* vgs,
-                                     const DataCoord curClickPt)
+void OmActions::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2)
 {
     pool().push_back(
         zi::run_fn(
             zi::bind(&OmActionsImpl::FindAndSplitSegments, impl(),
-                     curSDW, vgs, curClickPt)));
+                     seg1, seg2)));
 }
 
-void OmActions::FindAndCutSegments(const SegmentDataWrapper& sdw,
-                                   OmViewGroupState* vgs)
+void OmActions::FindAndCutSegments(const SegmentDataWrapper& sdw)
 {
     pool().push_back(
         zi::run_fn(
             zi::bind(&OmActionsImpl::FindAndCutSegments, impl(),
-                     sdw, vgs)));
+                     sdw)));
 }
 
 void OmActions::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params)

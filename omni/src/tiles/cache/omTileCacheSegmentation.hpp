@@ -20,25 +20,6 @@ public:
     void Load(OmSegmentation*)
     {}
 
-    virtual void Get(OmTilePtr& ptr, const OmTileCoord& key,
-                     const om::Blocking isBlocking)
-    {
-        checkCacheFreshness(key);
-        OmThreadedTileCache::Get(ptr, key, isBlocking);
-    }
-
-private:
-    LockedUint64 freshness_;
-
-    inline void checkCacheFreshness(const OmTileCoord& key)
-    {
-        if(key.getFreshness() > freshness_.get())
-        {
-            OmThreadedTileCache::InvalidateCache();
-            freshness_.set(key.getFreshness());
-        }
-    }
-
     friend class OmCacheManager;
 };
 

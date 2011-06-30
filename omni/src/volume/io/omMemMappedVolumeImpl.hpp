@@ -33,7 +33,7 @@ public:
     OmMemMappedVolumeImpl()
     {}
 
-    OmMemMappedVolumeImpl(OmMipVolume* vol)
+   OmMemMappedVolumeImpl(OmMipVolume* vol)
         : vol_(vol)
     {}
 
@@ -61,7 +61,8 @@ public:
 
         const int64_t bps = GetBytesPerVoxel();
 
-        FOR_EACH(it, levelsAndDims){
+        FOR_EACH(it, levelsAndDims)
+        {
             const int level = it->first;
             const Vector3<int64_t> dims = it->second;
             const int64_t size = dims.x * dims.y * dims.z * bps;

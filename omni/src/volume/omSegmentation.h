@@ -32,6 +32,10 @@ class OmVolumeData;
 class SegmentationDataWrapper;
 template <typename,typename> class OmChunkCache;
 
+namespace om { namespace segmentation { class folder; } }
+namespace om { namespace segmentation { class loader; } }
+namespace om { namespace annotation { class manager; } }
+
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
 public:
     OmSegmentation();
@@ -42,9 +46,10 @@ public:
     std::string GetNameHyphen();
 
     std::string GetDirectoryPath() const;
+    void LoadPath();
 
-    void loadVolData();
-    void loadVolDataIfFoldersExist();
+    bool LoadVolData();
+    bool LoadVolDataIfFoldersExist();
     void UpdateFromVolResize();
 
     inline ObjectType getVolumeType() const {
@@ -79,6 +84,8 @@ public:
 
     uint32_t GetVoxelValue(const DataCoord &vox);
     void SetVoxelValue(const DataCoord &vox, const uint32_t value);
+
+    void RebuildSegments();
 
 public:
     inline OmChunkUniqueValuesManager* ChunkUniqueValues(){
@@ -120,8 +127,19 @@ public:
     inline OmTileCacheSegmentation* TileCache(){
         return tileCache_.get();
     }
+    inline om::segmentation::folder* Folder() const {
+        return folder_.get();
+    }
+    inline om::annotation::manager* Annotations() const {
+        return annotations_.get();
+    }
+    inline om::segmentation::loader* Loader() const {
+        return loader_.get();
+    }
 
 private:
+    boost::scoped_ptr<om::segmentation::folder> folder_;
+    boost::scoped_ptr<om::segmentation::loader> loader_;
     boost::scoped_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
     boost::scoped_ptr<OmGroups> groups_;
     boost::scoped_ptr<OmMST> mst_;
@@ -135,6 +153,7 @@ private:
     boost::scoped_ptr<OmVolumeData> volData_;
     boost::scoped_ptr<OmRawSegTileCache> volSliceCache_;
     boost::scoped_ptr<OmTileCacheSegmentation> tileCache_;
+    boost::scoped_ptr<om::annotation::manager> annotations_;
 
     template <class T> friend class OmVolumeBuilder;
     template <class T> friend class OmVolumeBuilderHdf5;

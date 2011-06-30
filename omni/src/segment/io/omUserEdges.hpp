@@ -1,5 +1,6 @@
 #pragma once
 
+#include "volume/omSegmentationFolder.h"
 #include "segment/omSegmentEdge.h"
 #include "volume/omSegmentation.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -13,12 +14,12 @@ private:
     // version 1: initial move from HDF5
     static const int CurrentFileVersion = 1;
 
-    OmSegmentation *const segmentation_;
+    OmSegmentation *const vol_;
     QList<OmSegmentEdge> edges_;
 
 public:
-    OmUserEdges(OmSegmentation* segmentation)
-        : segmentation_(segmentation)
+    OmUserEdges(OmSegmentation* vol)
+        : vol_(vol)
     {}
 
     void Load()
@@ -116,8 +117,9 @@ public:
 private:
     QString filePathQStr()
     {
-        const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
-        return QString("%1mstUserEdges.data").arg(volPath);
+        return QString::fromStdString(
+            vol_->Folder()->GetVolSegmentsPathAbs("mstUserEdges.data")
+            );
     }
 };
 

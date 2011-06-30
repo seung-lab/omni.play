@@ -23,5 +23,8 @@ public:
     static void PreferenceChange(const int key);
 
     static void UpdateSegmentPropBox(QWidget* widget, const QString& title);
+
+    // used to update GUI spin box value from do/undo action
+    static void RefreshMSTthreshold();
 };
 

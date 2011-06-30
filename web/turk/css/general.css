@@ -1,0 +1,72 @@
+/* GENERAL */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    color: #333333;
+    font-family: Helvetica, Arial, sans-serif;
+    /* font-family: "lucida grande","Segoe UI",arial,verdana,"lucida sans unicode",tahoma,sans-serif;*/
+    font-size: 12px;
+
+    /* height:auto !important;*/
+    height: 100%;
+}
+
+.wrapper-internal {
+    height: 100%;
+    width: 100%;
+}
+
+
+/* ANCHORS */
+
+a,
+a:link,
+a:visited,
+a:active,
+a:hover {
+    text-decoration: none;
+    outline-style:none;
+    outline-width:0;
+}
+
+a:hover {
+/* text-decoration: underline;*/
+}
+
+
+/* FORM ELEMENTS */
+
+input[type=text],
+input[type=password],
+textarea {
+    border: 1px solid #AAAAAA;
+}
+
+
+/* LOGO */
+
+.logo {
+    background: url("../images/logo.png") no-repeat scroll 0 0 transparent;
+    height: 80px;
+    width:353px;
+    display: block;
+
+    cursor: pointer;
+}
+
+.turk {
+    color: #333333;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 40px;
+
+    /* height:auto !important;*/
+    height: 100%;
+}

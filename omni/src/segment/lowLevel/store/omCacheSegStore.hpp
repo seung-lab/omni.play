@@ -42,6 +42,11 @@ private:
 
         } else {
 
+            // TODO: keep a copy of this vector as a member variable; some freshness value,
+            //   though, could need to be kept by OmSegmentStore to avoid repeated copy;
+            //   comparing vector sizes is NOT sufficient, as segments can be added in any order,
+            //   thus there may be NULL pages in the copy of the vector that don't get updated
+            //   when initialized in the sgemtn store
             const std::vector<OmSegmentPage*> curPages = store_->Pages();
 
             return doGetSegment(curPages, pageNum, segID, isSafe);

@@ -145,7 +145,7 @@ private:
         const QString headlessCMD = QString::fromStdString(ZiARG_cmdfile);
 
         Headless h;
-        h.runHeadless(headlessCMD, fileToOpen_);
+        h.RunHeadless(headlessCMD, fileToOpen_);
         return 0;
     }
 

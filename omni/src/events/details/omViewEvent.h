@@ -14,7 +14,7 @@
 class OmViewEvent : public OmEvent {
 
 public:
-    OmViewEvent(QEvent::Type type);
+    explicit OmViewEvent(QEvent::Type type);
     void Dispatch(OmEventListener *);
 
     //class

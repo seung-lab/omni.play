@@ -36,12 +36,6 @@ std::string OmDataPaths::getMeshFileName(const OmMeshCoord& meshCoord)
                 % meshCoord.DataValue);
 }
 
-std::string OmDataPaths::getDirectoryPath(OmSegmentation const*const seg)
-{
-    return str( boost::format("segmentations/segmentation%1%/")
-                % seg->GetID());
-}
-
 std::string OmDataPaths::getDirectoryPath(OmChannelImpl const*const chan)
 {
     return str( boost::format("channels/channel%1%/")

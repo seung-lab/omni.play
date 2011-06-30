@@ -60,6 +60,7 @@ public:
         DATA* data = dataWrapper.Data();
 
         OmChunkVoxelWalker iter(128);
+
         for(iter.begin(); iter < iter.end(); ++iter)
         {
             const OmSegID val = static_cast<OmSegID>(*data++);

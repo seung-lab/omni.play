@@ -164,8 +164,8 @@ public:
         return GetSegmentation().Coords().GetDataResolution();
     }
 
-    inline const OmSegIDsSet& GetSelectedSegmentIds() const {
-        return Segments()->GetSelectedSegmentIds();
+    inline const OmSegIDsSet GetSelectedSegmentIDs() const {
+        return Segments()->GetSelectedSegmentIDs();
     }
 
     inline OmGroups* Groups() const {

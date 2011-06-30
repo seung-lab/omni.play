@@ -57,7 +57,7 @@ private:
 
         setVolAsBuilt();
 
-        vol->loadVolData();
+        vol->LoadVolData();
     }
 
 protected:

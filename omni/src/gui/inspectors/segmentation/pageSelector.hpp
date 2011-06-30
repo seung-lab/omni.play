@@ -37,7 +37,9 @@ public:
         addPageLink("Builder", "1302814771_advancedsettings.png");
         addPageLink("Metadata", "1305228725_package_graphics.png");
         addPageLink("Export", "1302822648_filesaveas.png");
-
+	addPageLink("Tools", "1308789372_Service_Manager.png");
+	addPageLink("Stats", "1308786126_kchart_chrt.png");
+	addPageLink("Notes","1308789338_file_doc.png"); 
         setCurrentRow(0);
 
         om::connect(this, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),

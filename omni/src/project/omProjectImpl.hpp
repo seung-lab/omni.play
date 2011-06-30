@@ -28,6 +28,7 @@
 #include "system/omStateManager.h"
 #include "system/omUndoStack.hpp"
 #include "tiles/cache/omTileCache.h"
+#include "users/omGuiUserChooser.h"
 #include "utility/omFileHelpers.h"
 
 #include <QDir>
@@ -95,10 +96,10 @@ public:
         return fnp;
     }
 
-    void Load(const QString& fileNameAndPath)
+    void Load(const QString& fileNameAndPath, QWidget* guiParent)
     {
         const QFileInfo projectFile(fileNameAndPath);
-        doLoad(projectFile.absoluteFilePath());
+        doLoad(projectFile.absoluteFilePath(), guiParent);
     }
 
     void Save()
@@ -168,7 +169,7 @@ private:
         }
     }
 
-    void doLoad(const QString& fnp)
+    void doLoad(const QString& fnp, QWidget* guiParent)
     {
         if(!QFile::exists(fnp)){
             throw OmIoException("Project file not found at", fnp);
@@ -186,6 +187,12 @@ private:
 
         OmCacheManager::Reset();
         OmTileCache::Reset();
+
+        if(guiParent)
+        {
+            OmGuiUserChooser* chooser = new OmGuiUserChooser(guiParent);
+            chooser->exec();
+        }
 
         OmDataArchiveProject::ArchiveRead(projectMetadataFile_, this);
 

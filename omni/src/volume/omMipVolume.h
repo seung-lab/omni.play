@@ -29,7 +29,7 @@ public:
 
     virtual std::string GetDirectoryPath() const = 0;
     virtual std::string GetName() = 0;
-    virtual void loadVolData() = 0;
+    virtual bool LoadVolData() = 0;
     virtual OmVolumeData* VolData() = 0;
     virtual ObjectType getVolumeType() const = 0;
     virtual OmID getID() const = 0;

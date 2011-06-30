@@ -1,12 +1,11 @@
 #pragma once
 
 #include "events/omEvents.h"
-#include "gui/sidebars/right/alphaVegasButton.hpp"
-#include "gui/sidebars/right/dendToolbar.h"
 #include "gui/sidebars/right/displayTools/2d/brightenSelected.hpp"
 #include "gui/sidebars/right/displayTools/2d/brightnessSpinBox.hpp"
 #include "gui/sidebars/right/displayTools/2d/contrastSpinBox.hpp"
 #include "gui/sidebars/right/displayTools/2d/gammaSpinBox.hpp"
+#include "gui/sidebars/right/displayTools/2d/alphaVegasButton.hpp"
 #include "gui/sidebars/right/displayTools/displayTools.h"
 #include "gui/widgets/omLabelHBox.hpp"
 #include "system/omConnect.hpp"
@@ -75,25 +74,30 @@ private:
     QWidget* imageFilterControls()
     {
         QGroupBox* widget = new QGroupBox("Image Filters", this);
-        QVBoxLayout* layout = new QVBoxLayout(widget);
+        QVBoxLayout* box = new QVBoxLayout(widget);
 
-        layout->addWidget(new OmLabelHBox(widget,
-                                          new BrightnessSpinBox(this),
-                                          om::LEFT_SIDE,
-                                          "Brightness"));
+        box->addWidget(makeWidget(new BrightnessSpinBox(widget)));
+        box->addWidget(makeWidget(new ContrastSpinBox(widget)));
+        box->addWidget(makeWidget(new GammaSpinBox(widget)));
 
-        layout->addWidget(new OmLabelHBox(widget,
-                                          new ContrastSpinBox(this),
-                                          om::LEFT_SIDE,
-                                          "Contrast"));
+        box->setContentsMargins(10,0,5,0);
 
-        layout->addWidget(new OmLabelHBox(widget,
-                                          new GammaSpinBox(this),
-                                          om::LEFT_SIDE,
-                                          "Gamma"));
         return widget;
     }
 
+    template <typename W>
+    QWidget* makeWidget(W* w)
+    {
+        QWidget* ret = new QWidget(this);
+        QHBoxLayout* box = new QHBoxLayout(ret);
+
+        box->addWidget(new QLabel(w->Label(), ret));
+        box->addWidget(w);
+
+        box->setContentsMargins(0,0,0,0);
+
+        return ret;
+    }
 };
 
 } // namespace displayTools

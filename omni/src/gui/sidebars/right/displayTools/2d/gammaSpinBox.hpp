@@ -16,6 +16,10 @@ public:
         setInitialGUIThresholdValue();
     }
 
+    QString Label() const {
+        return "Gamma";
+    }
+
 private:
     void actUponValueChange(const double threshold)
     {

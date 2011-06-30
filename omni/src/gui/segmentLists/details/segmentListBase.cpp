@@ -212,7 +212,8 @@ void SegmentListBase::searchChanged()
 
     const QStringList args = text.split(" ", QString::SkipEmptyParts);
 
-    if(1 == args.size()){
+    if(1 == args.size())
+    {
         searchOne(text);
         return;
     }
@@ -233,16 +234,17 @@ void SegmentListBase::searchOne(const QString& text)
 
     OmSegmentSelector sel(sdw_, NULL, "segmentlistbase");
     sel.selectJustThisSegment(segID, true);
+    sel.AutoCenter(true);
     sel.sendEvent();
 
     makeSegmentationActive(sdw, true);
-
-    OmSegmentCenter::CenterSegment(vgs_);
 }
 
 void SegmentListBase::searchMany(const QStringList& args)
 {
     OmSegmentSelector sel(sdw_, NULL, "segmentlistbase");
+
+    // TODO: allow modifiers (like "-" to remove a segment from the selection)
 
     FOR_EACH(iter, args)
     {
@@ -256,9 +258,8 @@ void SegmentListBase::searchMany(const QStringList& args)
         sel.augmentSelectedSet(segID, true);
     }
 
+    sel.AutoCenter(true);
     sel.sendEvent();
-
-    OmSegmentCenter::CenterSegment(vgs_);
 }
 
 void SegmentListBase::userJustClickedInThisSegmentList(){

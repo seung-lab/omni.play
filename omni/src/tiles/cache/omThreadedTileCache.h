@@ -1,19 +1,16 @@
 #pragma once
 
+#include "tiles/cache/omTileCacheThreadPool.hpp"
 #include "common/om.hpp"
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheManager.h"
 #include "system/cache/omLockedCacheObjects.hpp"
-#include "threads/omTaskManager.hpp"
-#include "tiles/cache/omTaskManagerContainerMipSorted.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/cache/omTilesToPrefetch.hpp"
 #include "tiles/omTile.h"
-#include "tiles/omTileCoord.h"
 #include "tiles/omTileTypes.hpp"
 #include "utility/omLockedObjects.h"
 #include "utility/omLockedPODs.hpp"
-#include "zi/omMutex.h"
 
 #include <zi/system.hpp>
 
@@ -27,11 +24,11 @@ private:
     typedef OmTilePtr ptr_t;
 
     const int bytesPerTile_;
-    OmTaskManager<OmTaskManagerContainerMipSorted>& threadPool_;
 
     LockedCacheMap<key_t, ptr_t> cache_;
-    LockedKeySet<key_t> currentlyFetching_;
     LockedBool killingCache_;
+
+    OmTileCacheThreadPool& threadPool_;
 
     struct OldCache {
         std::map<key_t,ptr_t> map;
@@ -41,12 +38,16 @@ private:
 
     OmTilesToPrefetch tilesToPrefetch_;
 
+    LockedInt64 freshness_;
+
 public:
     OmThreadedTileCache(const std::string& name, const int bytesPerTile)
         : OmCacheBase(name, om::TILE_CACHE)
         , bytesPerTile_(bytesPerTile)
         , threadPool_(OmTileCache::ThreadPool())
     {
+        freshness_.set(0);
+
         OmCacheManager::AddCache(om::TILE_CACHE, this);
     }
 
@@ -57,6 +58,12 @@ public:
 
     virtual void Get(ptr_t& ptr, const key_t& key, const om::Blocking blocking)
     {
+        if(freshness_.get() < key.getFreshness())
+        {
+            InvalidateCache();
+            freshness_.set(key.getFreshness());
+        }
+
         if(cache_.assignIfHadKey(key, ptr)){
             return;
         }
@@ -67,13 +74,9 @@ public:
             return;
         }
 
-        if(currentlyFetching_.insertSinceDidNotHaveKey(key))
-        {
-            threadPool_.insert(key.getLevel(),
-                               zi::run_fn(
-                                   zi::bind(&OmThreadedTileCache::handleCacheMissThread,
-                                            this, key)));
-        }
+        threadPool_.QueueUpIfKeyNotPresent(key,
+                                           &OmThreadedTileCache::handleCacheMissThread,
+                                           this);
     }
 
     void GetDontQueue(ptr_t& ptr, const key_t& key){
@@ -86,13 +89,9 @@ public:
             return;
         }
 
-        if(currentlyFetching_.insertSinceDidNotHaveKey(key))
-        {
-            threadPool_.insert(key.getLevel(),
-                               zi::run_fn(
-                                   zi::bind(&OmThreadedTileCache::handleCacheMissThread,
-                                            this, key)));
-        }
+        threadPool_.QueueUpIfKeyNotPresent(key,
+                                           &OmThreadedTileCache::handleCacheMissThread,
+                                           this);
     }
 
     void BlockingCreate(ptr_t& ptr, const key_t& key){
@@ -144,13 +143,11 @@ public:
     void Clear()
     {
         cache_.clear();
-        currentlyFetching_.clear();
+        threadPool_.clear();
     }
 
-    void ClearFetchQueue()
-    {
+    void ClearFetchQueue(){
         threadPool_.clear();
-        currentlyFetching_.clear();
     }
 
     void InvalidateCache()
@@ -173,7 +170,6 @@ public:
         killingCache_.set(true);
         threadPool_.stop();
         cache_.clear();
-        currentlyFetching_.clear();
     }
 
 private:

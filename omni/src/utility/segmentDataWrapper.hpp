@@ -53,13 +53,24 @@ public:
         segmentID_ = segID;
     }
 
-    SegmentDataWrapper& operator =(const SegmentDataWrapper& sdw)
+    SegmentDataWrapper& operator=(const SegmentDataWrapper& sdw)
     {
-        if (this != &sdw){
+        if (this != &sdw)
+        {
             segmentID_ = sdw.segmentID_;
             segmentationID_ = sdw.segmentationID_;
         }
+
         return *this;
+    }
+
+    bool operator<(const SegmentDataWrapper& rhs) const
+    {
+        if(segmentationID_ != rhs.segmentationID_){
+            return segmentationID_ < rhs.segmentationID_;
+        }
+
+        return segmentID_ < rhs.segmentID_;
     }
 
     inline OmSegID GetSegmentID() const {
@@ -205,6 +216,10 @@ public:
 
     inline int64_t GetSizeWithChildren() const {
         return GetSegmentation().SegmentLists()->GetSizeWithChildren(segmentID_);
+    }
+
+    inline SegmentDataWrapper FindRootSDW() const {
+        return SegmentDataWrapper(segmentationID_, FindRootID());
     }
 
     friend std::ostream& operator<<(std::ostream &out,

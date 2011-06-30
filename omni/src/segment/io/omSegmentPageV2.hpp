@@ -1,20 +1,20 @@
 #pragma once
 
+#include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "segment/omSegmentTypes.h"
 #include "utility/omSmartPtr.hpp"
-#include "datalayer/fs/omFile.hpp"
+#include "volume/omSegmentationFolder.h"
 
 class OmSegmentPageV2 {
 private:
-    OmSegmentation *const segmentation_;
+    OmSegmentation *const vol_;
     const PageNum pageNum_;
     const uint32_t pageSize_;
 
 public:
-    OmSegmentPageV2(OmSegmentation* segmentation, const PageNum pageNum,
-                    const uint32_t pageSize)
-        : segmentation_(segmentation)
+    OmSegmentPageV2(OmSegmentation* vol, const PageNum pageNum, const uint32_t pageSize)
+        : vol_(vol)
         , pageNum_(pageNum)
         , pageSize_(pageSize)
     {}
@@ -54,14 +54,15 @@ private:
         return memMapPathQStrV2().toStdString();
     }
 
-    QString memMapPathQStrV2(){
-        const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
-        const QString fullPath = QString("%1segment_page%2.%3")
-            .arg(volPath)
+    QString memMapPathQStrV2()
+    {
+        const QString fname = QString("segment_page%2.%3")
             .arg(pageNum_)
             .arg("data");
 
-        return fullPath;
+        return QString::fromStdString(
+            vol_->Folder()->GetVolSegmentsPathAbs(fname.toStdString())
+            );
     }
 };
 

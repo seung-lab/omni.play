@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/omCommon.h"
+#include "gui/widgets/omAskYesNoQuestion.hpp"
 #include "system/omConnect.hpp"
 
 #include <QUndoStack>
@@ -24,9 +25,11 @@ private Q_SLOTS:
 
     void undo()
     {
-        std::cout << "undoing action...\n";
-        undoStack_.undo();
-        std::cout << "done undoing action\n";
+        OmAskYesNoQuestion asker("Undo the following action?:\n" + undoStack_.undoText());
+
+        if(asker.Ask()){
+            undoStack_.undo();
+        }
     }
 
 Q_SIGNALS:

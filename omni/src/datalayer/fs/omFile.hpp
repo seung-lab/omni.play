@@ -12,6 +12,7 @@ namespace file {
 void openFileRO(QFile& file);
 void openFileRW(QFile& file);
 void openFileWO(QFile& file);
+void openFileAppend(QFile& file);
 
 int64_t numBytes(const std::string& fnp);
 
@@ -44,6 +45,15 @@ void openFileRO(PTR& file, const std::string& fnp)
     file.reset(new QFile(QString::fromStdString(fnp)));
     if(!file->open(QIODevice::ReadOnly)){
         throw OmIoException("could not open file read only", fnp);
+    }
+}
+
+template <class PTR>
+void openFileAppend(PTR& file, const std::string& fnp)
+{
+    file.reset(new QFile(QString::fromStdString(fnp)));
+    if(!file->open(QIODevice::Append)){
+        throw OmIoException("could not open file read/write append", fnp);
     }
 }
 

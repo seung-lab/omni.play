@@ -6,7 +6,6 @@
 
 class MainWindow;
 class MainToolBar;
-class DendToolBar;
 class OmViewGroupState;
 
 namespace om { namespace sidebars { class right; } }
@@ -23,7 +22,6 @@ public:
     void UpdateGuiFromProjectClose();
 
     void SetSplittingOff();
-    void SetCuttingOff();
 
     void SetTool(const om::tool::mode tool);
 

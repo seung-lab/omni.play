@@ -1,8 +1,9 @@
 #include "actions/omActions.h"
 #include "events/omEvents.h"
-#include "gui/sidebars/right/dendToolbar.h"
+#include "landmarks/omLandmarks.hpp"
 #include "mesh/omDrawOptions.h"
 #include "project/omProject.h"
+#include "segment/actions/omSplitSegmentRunner.hpp"
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
@@ -27,22 +28,11 @@ OmView3dUi::~OmView3dUi()
 {}
 
 void OmView3dUi::MousePressed(QMouseEvent* event){
-    NavigationModeMousePressed(event);
+    navigationModeMousePressed(event);
 }
 
-void OmView3dUi::MouseRelease(QMouseEvent* event)
-{
-    if(om::tool::SPLIT == OmStateManager::GetToolMode())
-    {
-        DendModeMouseReleased(event);
-        return;
-
-    } else if(om::tool::CUT == OmStateManager::GetToolMode()){
-        cutModeMouseReleased(event);
-        return;
-    }
-
-    NavigationModeMouseRelease(event);
+void OmView3dUi::MouseRelease(QMouseEvent* event){
+    navigationModeMouseRelease(event);
 }
 
 void OmView3dUi::MouseMove(QMouseEvent* event)
@@ -51,17 +41,16 @@ void OmView3dUi::MouseMove(QMouseEvent* event)
     if(!event->buttons())
         return;
 
-    NavigationModeMouseMove(event);
+    navigationModeMouseMove(event);
 }
 
 void OmView3dUi::MouseDoubleClick(QMouseEvent* event)
 {
-    NavigationModeMouseDoubleClick(event);
+    navigationModeMouseDoubleClick(event);
 }
 
-void OmView3dUi::MouseWheel(QWheelEvent* event)
-{
-    NavigationModeMouseWheel(event);
+void OmView3dUi::MouseWheel(QWheelEvent* event){
+    navigationModeMouseWheel(event);
 }
 
 void OmView3dUi::KeyPress(QKeyEvent* event)
@@ -82,7 +71,7 @@ void OmView3dUi::KeyPress(QKeyEvent* event)
     }
 }
 
-void OmView3dUi::DendModeMouseReleased(QMouseEvent* event)
+void OmView3dUi::splitModeMouseReleased(QMouseEvent* event)
 {
     const OmSegmentPickPoint pickPoint = pickVoxelMouseCrosshair(event);
 
@@ -92,28 +81,29 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent* event)
         return;
     }
 
-    OmActions::FindAndSplitSegments(pickPoint.sdw, vgs_, pickPoint.voxel);
+    OmSplitSegmentRunner::FindAndSplitSegments(pickPoint.sdw, vgs_, pickPoint.coord);
 }
 
-void OmView3dUi::cutModeMouseReleased(QMouseEvent* event)
+bool OmView3dUi::cutSegment(QMouseEvent* event)
 {
-    const SegmentDataWrapper sdw = PickSegmentMouse(event, false);
-
-    if(!sdw.IsSegmentValid())
-    {
-        view3d_->updateGL();
-        return;
-    }
+    const SegmentDataWrapper sdw = pickSegmentMouse(event, false);
 
     view3d_->updateGL();
-    OmActions::FindAndCutSegments(sdw, vgs_);
+
+    if(!sdw.IsSegmentValid()){
+        return false;
+    }
+
+    OmActions::FindAndCutSegments(sdw);
+    return true;
 }
 
 /////////////////////////////////
 ///////          Navigation Mode Methods
 
-void OmView3dUi::NavigationModeMousePressed(QMouseEvent* event)
+void OmView3dUi::navigationModeMousePressed(QMouseEvent* event)
 {
+    const bool leftMouseButton = event->buttons() & Qt::LeftButton;
     const bool rightMouseButton = event->buttons() & Qt::RightButton;
     const bool noModifiers = !event->modifiers();
     const bool controlModifier = event->modifiers() & Qt::ControlModifier;
@@ -122,7 +112,7 @@ void OmView3dUi::NavigationModeMousePressed(QMouseEvent* event)
     if(rightMouseButton)
     {
         if(noModifiers){
-            ShowSegmentContextMenu(event);
+            showSegmentContextMenu(event);
 
         } else if(controlModifier)
         {
@@ -131,23 +121,49 @@ void OmView3dUi::NavigationModeMousePressed(QMouseEvent* event)
             doSelectSegment(pickPoint.sdw, shiftModifier);
 
         } else {
-            CameraMovementMouseStart(event);
+            cameraMovementMouseStart(event);
         }
 
         return;
     }
 
-    if(altModifier)
+    if(leftMouseButton)
     {
-        const OmSegmentPickPoint pickPoint = pickVoxelMouseCrosshair(event);
-        deselectSegment(pickPoint.sdw);
+        if(om::tool::LANDMARK == OmStateManager::GetToolMode())
+        {
+            const OmSegmentPickPoint pickPoint = pickVoxelMouseCrosshair(event);
+            vgs_->Landmarks().Add(pickPoint.sdw, pickPoint.coord);
+            return;
+        }
 
-    } else if(controlModifier){
-        crosshair(event);
+        if(om::tool::SPLIT == OmStateManager::GetToolMode())
+        {
+            splitModeMouseReleased(event);
+            return;
+        }
 
-    } else {
-        CameraMovementMouseStart(event);
+        if(om::tool::CUT == OmStateManager::GetToolMode())
+        {
+            if(cutSegment(event)){
+                return;
+            }
+        }
+
+        if(altModifier)
+        {
+            const OmSegmentPickPoint pickPoint = pickVoxelMouseCrosshair(event);
+            deselectSegment(pickPoint.sdw);
+            return;
+        }
+
+        if(controlModifier)
+        {
+            crosshair(event);
+            return;
+        }
     }
+
+    cameraMovementMouseStart(event);
 }
 
 void OmView3dUi::deselectSegment(const SegmentDataWrapper& sdw)
@@ -186,26 +202,26 @@ void OmView3dUi::doSelectSegment(const SegmentDataWrapper& sdw, const bool augme
     sel.sendEvent();
 }
 
-void OmView3dUi::NavigationModeMouseRelease(QMouseEvent* event){
-    CameraMovementMouseEnd(event);
+void OmView3dUi::navigationModeMouseRelease(QMouseEvent* event){
+    cameraMovementMouseEnd(event);
 }
 
-void OmView3dUi::NavigationModeMouseMove(QMouseEvent* event){
-    CameraMovementMouseUpdate(event);
+void OmView3dUi::navigationModeMouseMove(QMouseEvent* event){
+    cameraMovementMouseUpdate(event);
 }
 
-void OmView3dUi::NavigationModeMouseDoubleClick(QMouseEvent* event){
+void OmView3dUi::navigationModeMouseDoubleClick(QMouseEvent* event){
     centerAxisOfRotation(event);
 }
 
-void OmView3dUi::NavigationModeMouseWheel(QWheelEvent* event){
-    CameraMovementMouseWheel(event);
+void OmView3dUi::navigationModeMouseWheel(QWheelEvent* event){
+    cameraMovementMouseWheel(event);
 }
 
 /////////////////////////////////
 ///////          Camera Movement Methods
 
-void OmView3dUi::CameraMovementMouseStart(QMouseEvent* event)
+void OmView3dUi::cameraMovementMouseStart(QMouseEvent* event)
 {
     //get point and modifier
     Vector2f point = Vector2f(event->x(), event->y());
@@ -229,23 +245,21 @@ void OmView3dUi::CameraMovementMouseStart(QMouseEvent* event)
     }
 }
 
-void OmView3dUi::CameraMovementMouseEnd(QMouseEvent* event)
+void OmView3dUi::cameraMovementMouseEnd(QMouseEvent* event)
 {
     Vector2f point = Vector2f(event->x(), event->y());
     view3d_->mCamera.MovementEnd(point);
 }
 
-void OmView3dUi::CameraMovementMouseUpdate(QMouseEvent* event)
+void OmView3dUi::cameraMovementMouseUpdate(QMouseEvent* event)
 {
     Vector2f point = Vector2f(event->x(), event->y());
     view3d_->mCamera.MovementUpdate(point);
     view3d_->updateGL();
 }
 
-void OmView3dUi::CameraMovementMouseWheel(QWheelEvent* event)
+void OmView3dUi::cameraMovementMouseWheel(QWheelEvent* event)
 {
-    //assert(0);
-    //printf("wheel\n");
     Vector2f point = Vector2f(event->x(), event->y());
     view3d_->mCamera.MovementStart(CAMERA_ZOOM, point);
 
@@ -266,7 +280,7 @@ void OmView3dUi::CameraMovementMouseWheel(QWheelEvent* event)
 /////////////////////////////////
 ///////          Segment Picking
 
-SegmentDataWrapper OmView3dUi::PickSegmentMouse(QMouseEvent* event, const bool drag)
+SegmentDataWrapper OmView3dUi::pickSegmentMouse(QMouseEvent* event, const bool drag)
 {
     //extract event properties
     Vector2i point2di(event->x(), event->y());
@@ -287,34 +301,9 @@ SegmentDataWrapper OmView3dUi::PickSegmentMouse(QMouseEvent* event, const bool d
 }
 
 /////////////////////////////////
-///////           Segment Actions
-
-void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent* event, bool drag)
-{
-    //augment if shift pressed
-    bool augment_selection = event->modifiers() & Qt::ShiftModifier;
-
-    //get ids
-    SegmentDataWrapper sdw = PickSegmentMouse(event, drag);
-    if(!sdw.IsSegmentValid()){
-        return;
-    }
-
-    //get segment state
-    OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), this, "view3dUi");
-    if(augment_selection){
-        sel.augmentSelectedSet_toggle(sdw.getID());
-    } else {
-        sel.selectJustThisSegment_toggle(sdw.getID());
-    }
-
-    sel.sendEvent();
-}
-
-/////////////////////////////////
 ///////           Segment Context Menu
 
-void OmView3dUi::ShowSegmentContextMenu(QMouseEvent* event)
+void OmView3dUi::showSegmentContextMenu(QMouseEvent* event)
 {
     const OmSegmentPickPoint pickPoint = pickVoxelMouseCrosshair(event);
 
@@ -339,7 +328,7 @@ void OmView3dUi::centerAxisOfRotation(QMouseEvent* event)
         return;
     }
 
-    view3d_->mCamera.SetFocus(pickPoint.voxel);
+    view3d_->mCamera.SetFocus(pickPoint.coord);
     view3d_->updateGL();
 }
 
@@ -353,7 +342,7 @@ void OmView3dUi::crosshair(QMouseEvent* event)
         return;
     }
 
-    vgs_->View2dState()->SetScaledSliceDepth(pickPoint.voxel);
+    vgs_->View2dState()->SetScaledSliceDepth(pickPoint.coord);
 
     OmEvents::ViewCenterChanged();
 }
@@ -390,6 +379,6 @@ void OmView3dUi::resetWindow()
     view3d_->updateGL();
 }
 
-bool OmView3dUi::gestureEvent(QGestureEvent *event) {
+bool OmView3dUi::GestureEvent(QGestureEvent *event) {
     return macGestures_->GestureEvent(event);
 }

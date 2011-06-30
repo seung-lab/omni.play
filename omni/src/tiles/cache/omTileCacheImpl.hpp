@@ -1,7 +1,6 @@
 #pragma once
 
-#include "threads/omTaskManager.hpp"
-#include "tiles/cache/omTaskManagerContainerMipSorted.hpp"
+#include "tiles/cache/omTileCacheThreadPool.hpp"
 #include "common/om.hpp"
 #include "common/omCommon.h"
 #include "system/omStateManager.h"
@@ -28,7 +27,7 @@ private:
     boost::scoped_ptr<OmTilePreFetcher> preFetcher_;
     boost::scoped_ptr<OmTileCacheEventListener> listener_;
 
-    OmTaskManager<OmTaskManagerContainerMipSorted> threadPool_;
+    OmTileCacheThreadPool threadPool_;
 
     std::map<OmTileDrawer*, bool> drawersActive_;
     LockedInt32 numDrawersActive_;
@@ -37,7 +36,7 @@ private:
         : preFetcher_(new OmTilePreFetcher())
         , listener_(new OmTileCacheEventListener(this))
     {
-        threadPool_.start(numThreads());
+        threadPool_.start();
         numDrawersActive_.set(0);
     }
 
@@ -192,7 +191,7 @@ public:
         }
     }
 
-    OmTaskManager<OmTaskManagerContainerMipSorted>& ThreadPool(){
+    OmTileCacheThreadPool& ThreadPool(){
         return threadPool_;
     }
 

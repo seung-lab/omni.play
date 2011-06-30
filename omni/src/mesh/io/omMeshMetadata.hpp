@@ -1,6 +1,7 @@
 #pragma once
 
 #include "volume/omSegmentation.h"
+#include "volume/omSegmentationFolder.h"
 #include "datalayer/fs/omFileNames.hpp"
 
 class OmMeshMetadata {
@@ -68,8 +69,7 @@ public:
 
 private:
     QString filePath(){
-        return OmFileNames::MeshMetadataFilePerThreshold(segmentation_,
-                                                         threshold_);
+        return segmentation_->Folder()->MeshMetadataFilePerThreshold(threshold_);
     }
 
     bool load()

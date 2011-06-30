@@ -29,14 +29,15 @@ void OmProject::Commit(){
     instance().impl_->Commit();
 }
 
-void OmProject::Load(const QString& fnp)
+void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent)
 {
     instance().impl_.reset(new OmProjectImpl());
 
     try{
-        instance().impl_->Load(fnp);
+        instance().impl_->Load(fileNameAndPath, guiParent);
 
-    } catch(...){
+    } catch(...)
+    {
         instance().impl_.reset();
         throw;
     }

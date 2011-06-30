@@ -8,132 +8,195 @@
 #include "chunks/omChunkCoord.h"
 #include "volume/omMipVolume.h"
 #include "utility/omTimer.hpp"
+#include "threads/omTaskManager.hpp"
+#include "threads/omTaskManagerTypes.h"
 
 #include <QFile>
 #include <QFileInfoList>
 #include <QImage>
 
-template <typename VOL>
+template <typename VOL, typename T>
 class OmLoadImage {
 private:
-	VOL *const vol_;
-	const om::shared_ptr<QFile> mip0volFile_;
-	const Vector3i mip0dims_;
-	const int totalNumImages_;
-	const int totalTilesInSlice_;
-	const uint64_t sliceWidth_;
-	const uint64_t sliceHeight_;
-	const uint64_t slicesPerChunk_;
-	const uint64_t sliceSizeBytes_;
-	const uint64_t chunkSizeBytes_;
-	QString mMsg;
+    VOL *const vol_;
+    const om::shared_ptr<QFile> mip0volFile_;
+    const Vector3i mip0dims_;
+    const std::vector<QFileInfo>& files_;
+    const int totalNumImages_;
+    const int totalTilesInSlice_;
+    const uint64_t tileWidth_;
+    const uint64_t tileHeight_;
+    const uint64_t tilesPerChunk_;
+    const uint64_t tileSizeBytes_;
+    const uint64_t chunkSizeBytes_;
+    QString msg_;
+
+    LockedUint32 tileNum_;
+
+    OmThreadPool taskMan_;
+
+    const uint32_t numTilesToWrite_;
+    zi::semaphore limit_;
+
+    std::map<OmChunkCoord, uint64_t> chunkOffsets_;
+
+    bool shouldPreallocate_;
 
 public:
-	OmLoadImage(VOL* vol, om::shared_ptr<QFile> mip0volFile,
-				const std::vector<QFileInfo>& files)
-		: vol_(vol)
-		, mip0volFile_(mip0volFile)
-		, mip0dims_(vol_->Coords().MipLevelDimensionsInMipChunks(0))
-		, totalNumImages_(files.size())
-		, totalTilesInSlice_(mip0dims_.x * mip0dims_.y)
-		, sliceWidth_(vol_->Coords().GetChunkDimension())
-		, sliceHeight_(vol_->Coords().GetChunkDimension())
-		, slicesPerChunk_(vol_->Coords().GetChunkDimension())
-		, sliceSizeBytes_(sliceWidth_*sliceHeight_*vol_->GetBytesPerVoxel())
-		, chunkSizeBytes_(sliceSizeBytes_*slicesPerChunk_)
-	{}
+    OmLoadImage(VOL* vol, om::shared_ptr<QFile> mip0volFile,
+                const std::vector<QFileInfo>& files)
+        : vol_(vol)
+        , mip0volFile_(mip0volFile)
+        , mip0dims_(vol_->Coords().MipLevelDimensionsInMipChunks(0))
+        , files_(files)
+        , totalNumImages_(files.size())
+        , totalTilesInSlice_(mip0dims_.x * mip0dims_.y)
+        , tileWidth_(vol_->Coords().GetChunkDimension())
+        , tileHeight_(vol_->Coords().GetChunkDimension())
+        , tilesPerChunk_(vol_->Coords().GetChunkDimension())
+        , tileSizeBytes_(tileWidth_*tileHeight_*sizeof(T))
+        , chunkSizeBytes_(tileSizeBytes_*tilesPerChunk_)
+        , numTilesToWrite_(10000)
+        , shouldPreallocate_(true)
+    {
+        tileNum_.set(0);
+        limit_.set(numTilesToWrite_);
+    }
 
-	void processSlice(const QString & fn, const int sliceNum )
-	{
-		OmTimer timer;
+    void Process()
+    {
+        taskMan_.start(1);
 
-		mMsg = QString("\r(%1 of %2) loading image %3...").arg(sliceNum+1).arg(totalNumImages_).arg(fn);
-		printf("\n%s", qPrintable(fn));
-		fflush(stdout);
+        for(size_t i = 0; i < files_.size(); ++i)
+        {
+            const QString fnp = files_[i].absoluteFilePath();
+            processSlice(fnp, i);
+        }
 
-		QFile file(fn);
-		if(!file.open(QIODevice::ReadOnly)){
-			printf("could not open file %s; skipping\n", qPrintable(fn));
-			return;
-		}
+        std::cout << "\nwaiting for tile writes to complete..." << std::flush;
 
-		const QByteArray data = file.readAll();
-		QImage img;
-		img.loadFromData(data);
-		if(img.isNull()){
-			printf("could not read image data for %s; skipping...\n",
-				   qPrintable(fn));
-			return;
-		}
+        limit_.acquire(numTilesToWrite_);
 
-		doProcessSlice(img, sliceNum);
+        taskMan_.join();
 
-		printf("; completed in %.2f secs", timer.s_elapsed());
+        mip0volFile_->flush();
 
-		mip0volFile_->flush();
-	}
+        std::cout << "done\n";
+    }
+
+    void ReplaceSlice(const int sliceNum)
+    {
+        shouldPreallocate_ = false;
+
+        taskMan_.start(1);
+
+        processSlice(files_[0].absoluteFilePath(), sliceNum);
+
+        std::cout << "\nwaiting for tile writes to complete..." << std::flush;
+
+        limit_.acquire(numTilesToWrite_);
+
+        taskMan_.join();
+
+        std::cout << "done\n";
+    }
 
 private:
+    void processSlice(const QString& fn, const int sliceNum )
+    {
+        msg_ = QString("(%1 of %2) loading image %3...")
+            .arg(sliceNum+1)
+            .arg(totalNumImages_)
+            .arg(fn);
+        printf("\n%s", qPrintable(fn));
 
-	std::map<OmChunkCoord, uint64_t> chunkOffsets_;
+        QImage img(fn);
 
-	uint64_t getChunkOffset(const OmChunkCoord& coord)
-	{
-		if(chunkOffsets_.count(coord)){
-			return chunkOffsets_[coord];
-		}
+        if(img.isNull())
+        {
+            printf("\tcould not read image data for %s; skipping...\n",
+                   qPrintable(fn));
+            return;
+        }
 
-		//if chunk was not in map, assume chunk is unallocated...
-		//TODO: just use OmRawChunk...
-		const uint64_t offset =
-			OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
+        doProcessSlice(img, sliceNum);
+    }
 
-		debugs(io) << "preallocating chunk: " << coord << "\n";
-		preallocateChunk(offset);
+    uint64_t getChunkOffset(const OmChunkCoord& coord)
+    {
+        if(chunkOffsets_.count(coord)){
+            return chunkOffsets_[coord];
+        }
 
-		return chunkOffsets_[coord] = offset;
-	}
+        //if chunk was not in map, assume chunk is unallocated...
+        //TODO: just use OmRawChunk...
+        const uint64_t offset =
+            OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
 
-	void preallocateChunk(const uint64_t offset)
-	{
-		static const uint64_t pageSize = 4096;
-		for(uint64_t i = 0; i < chunkSizeBytes_; i += pageSize){
-			mip0volFile_->seek(offset + i);
-			mip0volFile_->putChar(0);
-		}
-		mip0volFile_->flush();
-	}
+        if(shouldPreallocate_){
+            preallocateChunk(offset);
+        }
 
-	void doProcessSlice(const QImage & img, const int sliceNum)
-	{
-		int tileNum = 0;
+        return chunkOffsets_[coord] = offset;
+    }
 
-		const int z = sliceNum / slicesPerChunk_;
+    void preallocateChunk(const uint64_t offset)
+    {
+        static const uint64_t pageSize = 4096;
 
-		for(int y = 0; y < mip0dims_.y; ++y) {
-			for(int x = 0; x < mip0dims_.x; ++x) {
+        for(uint64_t i = 0; i < chunkSizeBytes_; i += pageSize)
+        {
+            mip0volFile_->seek(offset + i);
+            mip0volFile_->putChar(0);
+        }
 
-				const OmChunkCoord coord = OmChunkCoord(0, x, y, z);
-				const DataBbox chunk_bbox = vol_->Coords().MipCoordToDataBbox(coord, 0);
+        mip0volFile_->flush();
+    }
 
-				const int startX = chunk_bbox.getMin().x;
-				const int startY = chunk_bbox.getMin().y;
+    void doProcessSlice(const QImage& img, const int sliceNum)
+    {
+        const int z = sliceNum / tilesPerChunk_;
 
-				QImage tile = img.copy(startX, startY, sliceWidth_, sliceHeight_);
+        for(int y = 0; y < mip0dims_.y; ++y)
+        {
+            for(int x = 0; x < mip0dims_.x; ++x)
+            {
+                const OmChunkCoord coord = OmChunkCoord(0, x, y, z);
+                const DataBbox chunk_bbox = vol_->Coords().MipCoordToDataBbox(coord, 0);
 
-				const uint64_t chunkOffset = getChunkOffset(coord);
-				const uint64_t sliceOffset = (sliceNum % slicesPerChunk_) * sliceSizeBytes_;
-				mip0volFile_->seek(chunkOffset+sliceOffset);
-				mip0volFile_->write(reinterpret_cast<const char*>(tile.bits()),
-									sliceSizeBytes_);
+                const int startX = chunk_bbox.getMin().x;
+                const int startY = chunk_bbox.getMin().y;
 
-				++tileNum;
-				printf("%s %s of %s tiles copied",
-					   qPrintable(mMsg),
-					   om::string::humanizeNum(tileNum).c_str(),
-					   om::string::humanizeNum(totalTilesInSlice_).c_str());
-			}
-		}
-	}
+                QImage tileQT = img.copy(startX, startY, tileWidth_, tileHeight_);
+                uint8_t const*const tileDataQT = tileQT.bits();
+
+                om::shared_ptr<T> tile = OmSmartPtr<T>::MallocNumBytes(tileSizeBytes_,
+                                                                       om::DONT_ZERO_FILL);
+
+                std::copy(tileDataQT, tileDataQT + tileSizeBytes_, tile.get());
+
+                limit_.acquire(1);
+
+                taskMan_.push_back(
+                    zi::run_fn(
+                        zi::bind(&OmLoadImage<VOL,T>::tileWriterTask, this,
+                                 tile, coord, sliceNum)));
+            }
+        }
+    }
+
+    void tileWriterTask(om::shared_ptr<T> tile, const OmChunkCoord coord, const int sliceNum)
+    {
+        const uint64_t chunkOffset = getChunkOffset(coord);
+
+        const uint64_t sliceOffset = (sliceNum % tilesPerChunk_) * tileSizeBytes_;
+
+        mip0volFile_->seek(chunkOffset+sliceOffset);
+
+        mip0volFile_->write(reinterpret_cast<const char*>(tile.get()),
+                            tileSizeBytes_);
+
+        limit_.release(1);
+    }
 };
 

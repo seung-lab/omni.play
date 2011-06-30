@@ -32,7 +32,7 @@ private:
             SegmentationDataWrapper sdw(*iter);
             OmSegmentation& seg = sdw.GetSegmentation();
             convertVolume(seg);
-            seg.loadVolData();
+            seg.LoadVolData();
         }
     }
 

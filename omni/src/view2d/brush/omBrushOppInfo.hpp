@@ -35,12 +35,12 @@ public:
         const int chunkDim = segmentation->Coords().GetChunkDimension();
 
         return om::make_shared<OmBrushOppInfo>(segmentation,
-                                                  viewType,
-                                                  brushSize,
-                                                  depth,
-                                                  ptsInCircle,
-                                                  chunkDim,
-                                                  addOrSubract);
+                                               viewType,
+                                               brushSize,
+                                               depth,
+                                               ptsInCircle,
+                                               chunkDim,
+                                               addOrSubract);
     }
 };
 

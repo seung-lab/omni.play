@@ -17,21 +17,22 @@ OmSegmentIterator::OmSegmentIterator(const SegmentDataWrapper& sdw)
     : segments_(sdw.Segments())
 {}
 
-void OmSegmentIterator::iterOverSegmentID(const OmSegID segID)
-{
+void OmSegmentIterator::iterOverSegmentID(const OmSegID segID){
     segs_.push_back(segments_->GetSegment(segID));
 }
 
 void OmSegmentIterator::iterOverSelectedIDs()
 {
-    FOR_EACH(iter, segments_->GetSelectedSegmentIds()){
+    const OmSegIDsSet ids = segments_->GetSelectedSegmentIDs();
+    FOR_EACH(iter, ids){
         segs_.push_back( segments_->GetSegment( *iter ));
     }
 }
 
 void OmSegmentIterator::iterOverEnabledIDs()
 {
-    FOR_EACH(iter, segments_->GetEnabledSegmentIds()){
+    const OmSegIDsSet ids = segments_->GetEnabledSegmentIDs();
+    FOR_EACH(iter, ids){
         segs_.push_back( segments_->GetSegment( *iter ) );
     }
 }
@@ -43,8 +44,7 @@ void OmSegmentIterator::iterOverSegmentIDs(const OmSegIDsSet & set)
     }
 }
 
-bool OmSegmentIterator::empty()
-{
+bool OmSegmentIterator::empty(){
     return segs_.empty();
 }
 

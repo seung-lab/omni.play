@@ -18,5 +18,10 @@ public:
         setText(text);
         exec();
     }
-};
 
+    OmTellInfo(const char* text)
+    {
+        setText(QString(text));
+        exec();
+    }
+};

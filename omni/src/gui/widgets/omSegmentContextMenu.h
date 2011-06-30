@@ -2,11 +2,12 @@
 
 #include "common/omCommon.h"
 #include "utility/dataWrappers.h"
+#include "view3d/omSegmentPickPoint.h"
 
 #include <QMenu>
 
 class OmViewGroupState;
-class OmSegmentPickPoint;
+
 namespace om { namespace gui { class progressBarDialog; } }
 
 class OmSegmentContextMenu : public QMenu {

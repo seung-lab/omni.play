@@ -22,9 +22,6 @@ private:
     QPlainTextEdit* notesEdit_;
 
     QGroupBox* makeActionsBox();
-    QGroupBox* makeStatsBox();
-    QGroupBox* makeNotesBox();
-    QGroupBox* makeToolsBox();
 };
 
 } // namespace segmentationInspector

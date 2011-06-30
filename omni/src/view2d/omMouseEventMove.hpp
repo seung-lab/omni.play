@@ -42,6 +42,10 @@ public:
             switch(tool_){
             case om::tool::SPLIT:
             case om::tool::CUT:
+            case om::tool::CROSSHAIR:
+            case om::tool::ZOOM:
+            case om::tool::FILL:
+            case om::tool::LANDMARK:
                 break;
 
             case om::tool::SELECT:
@@ -58,12 +62,6 @@ public:
             case om::tool::PAN:
                 mousePan();
                 OmEvents::Redraw3d();
-
-                break;
-
-            case om::tool::CROSSHAIR:
-            case om::tool::ZOOM:
-            case om::tool::FILL:
                 break;
 
             case om::tool::PAINT:

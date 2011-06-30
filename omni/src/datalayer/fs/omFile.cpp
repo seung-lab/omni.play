@@ -32,6 +32,13 @@ void om::file::openFileWO(QFile& file)
     }
 }
 
+void om::file::openFileAppend(QFile& file)
+{
+    if(!file.open(QIODevice::Append)){
+        throw OmIoException("could not open file for write", file.fileName());
+    }
+}
+
 void om::file::resizeFileNumBytes(QFile* file, const int64_t numBytes)
 {
     if(!file->resize(numBytes))

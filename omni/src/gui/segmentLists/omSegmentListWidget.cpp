@@ -115,13 +115,15 @@ void OmSegmentListWidget::segmentLeftClick()
 
     sel.selectNoSegments();
 
-    Q_FOREACH(QTreeWidgetItem * item, selectedItems()) {
+    Q_FOREACH(QTreeWidgetItem * item, selectedItems())
+    {
         QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
         SegmentDataWrapper item_sdw = result.value < SegmentDataWrapper > ();
 
         if (QApplication::keyboardModifiers() & Qt::ControlModifier ||
             QApplication::keyboardModifiers() & Qt::ShiftModifier ){
             sel.augmentSelectedSet( item_sdw.getID(), true );
+
         } else {
             if( selectedItems().size() > 1 ){
                 if( item_sdw.getID() == sdw.getID() ){

@@ -52,16 +52,13 @@ public:
     void UncertainSegmentation(const SegmentationDataWrapper sdw,
                                const bool uncertain);
 
-    void JoinSegmentsSet(const OmID segmentationID,
+    void JoinSegmentsWrapper(const SegmentationDataWrapper sdw);
+    void JoinSegmentsSet(const SegmentationDataWrapper sdw,
                          const OmSegIDsSet ids);
 
-    void JoinSegmentsID(const OmID segmentationID);
-    void JoinSegmentsWrapper(const SegmentationDataWrapper sdw);
+    void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
 
-    void FindAndSplitSegments(const SegmentDataWrapper sdw,
-                              OmViewGroupState* vgs, const DataCoord coord);
-    void FindAndCutSegments(const SegmentDataWrapper sdw,
-                            OmViewGroupState* vgs);
+    void FindAndCutSegments(const SegmentDataWrapper sdw);
 
     void SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params);
 
@@ -72,11 +69,7 @@ public:
                                     const bool create);
 
 private:
-    void runIfSplittable(OmSegment* seg1, OmSegment* seg2,
-                         const DataCoord& coord1, const DataCoord& coord2);
-
-    void doFindAndCutSegment(const SegmentDataWrapper& sdw,
-                             OmViewGroupState* vgs);
+    void runIfSplittable(OmSegment* seg1, OmSegment* seg2);
 
     void setUncertain(const SegmentDataWrapper& sdw,
                       const bool uncertain);

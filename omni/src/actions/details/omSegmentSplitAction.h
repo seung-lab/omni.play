@@ -19,8 +19,6 @@ public:
 
     OmSegmentSplitAction(const SegmentationDataWrapper& sdw,
                           const OmSegmentEdge& edge);
-    OmSegmentSplitAction(const SegmentDataWrapper & sdw,
-                         const DataCoord coord1, const DataCoord coord2);
 
 private:
     void Action();

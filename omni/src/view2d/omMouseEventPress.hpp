@@ -1,9 +1,11 @@
 #pragma once
 
 #include "actions/omActions.h"
+#include "gui/widgets/omAskYesNoQuestion.hpp"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/widgets/omTellInfo.hpp"
-#include "gui/widgets/omAskYesNoQuestion.hpp"
+#include "landmarks/omLandmarks.hpp"
+#include "segment/actions/omSplitSegmentRunner.hpp"
 #include "view2d/brush/omBrushSelect.hpp"
 #include "view2d/omFillTool.hpp"
 #include "view2d/omMouseEventUtils.hpp"
@@ -45,13 +47,6 @@ public:
             if(om::tool::SPLIT == tool_)
             {
                 doFindAndSplitSegment();
-                v2d_->Redraw();
-                return;
-            }
-
-            if(om::tool::CUT == tool_)
-            {
-                doFindAndCutSegment();
                 v2d_->Redraw();
                 return;
             }
@@ -99,9 +94,9 @@ private:
             return;
         }
 
-        OmActions::FindAndSplitSegments(*sdw,
-                                        state_->getViewGroupState(),
-                                        dataClickPoint_);
+        OmSplitSegmentRunner::FindAndSplitSegments(*sdw,
+                                                state_->getViewGroupState(),
+                                                dataClickPoint_);
     }
 
     void doFindAndCutSegment()
@@ -112,7 +107,7 @@ private:
             return;
         }
 
-        OmActions::FindAndCutSegments(*sdw, state_->getViewGroupState());
+        OmActions::FindAndCutSegments(*sdw);
     }
 
     void mouseSetCrosshair()
@@ -174,6 +169,12 @@ private:
             break;
         case om::tool::FILL:
             fill();
+            break;
+        case om::tool::LANDMARK:
+            state_->getViewGroupState()->Landmarks().Add(getSelectedSegment(), dataClickPoint_);
+            break;
+        case om::tool::CUT:
+            doFindAndCutSegment();
             break;
         default:
             return;

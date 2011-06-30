@@ -1,9 +1,10 @@
 #pragma once
 
-#include "utility/omStringHelpers.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/fs/omSegmentationFolders.hpp"
+#include "utility/omStringHelpers.h"
 #include "volume/omSegmentation.h"
+#include "volume/omSegmentationFolder.h"
 
 #include <QDir>
 
@@ -23,10 +24,8 @@ public:
         userFolder_ = QDir(usersFolderRoot_ + "_default").absolutePath();
     }
 
-    QString GetVolSegmentsPathAbs(OmSegmentation* vol)
-    {
-        const QString subPath = QString::fromStdString(vol->GetDirectoryPath());
-        return userFolder_ + QLatin1String("/") + subPath + QLatin1String("/segments/");
+    void SwitchToUser(const std::string& userName){
+        userFolder_ = QDir(usersFolderRoot_ + QString::fromStdString(userName)).absolutePath();
     }
 
     QString LogFolderPath(){
@@ -38,6 +37,14 @@ public:
         OmFileHelpers::MkDir(userFolder_);
 
         fixSegmentationFolderSymlinks();
+    }
+
+    inline std::string UsersFolder() const {
+        return userFolder_.toStdString();
+    }
+
+    inline std::string UsersRootFolder() const {
+        return usersFolderRoot_.toStdString();
     }
 
 private:
@@ -75,7 +82,7 @@ private:
         const QString oldSegmentsFolder = folder + "/segments";
         const QString userSegmentsFolder = makeUserSegmentsFolder(folder);
 
-        if(OmFileHelpers::SymlinkExists(oldSegmentsFolder))
+        if(OmFileHelpers::IsSymlink(oldSegmentsFolder))
         {
             OmFileHelpers::RmFile(oldSegmentsFolder);
             OmFileHelpers::Symlink(userSegmentsFolder, oldSegmentsFolder);
@@ -94,7 +101,7 @@ private:
 
     QString oldGetVolSegmentsPathAbs(OmSegmentation* vol)
     {
-        const QDir filesDir(OmFileNames::GetVolPath(vol));
+        const QDir filesDir(vol->Folder()->GetVolPath());
         return filesDir.absolutePath() + QLatin1String("/segments/");
     }
 };

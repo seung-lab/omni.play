@@ -175,6 +175,8 @@ HEADERS +=  \
 	src/actions/omActions.h \
 	src/actions/omActionsImpl.h \
 	src/actions/omSelectSegmentParams.hpp \
+	src/annotation/omAnnotation.hpp \
+	src/annotation/omAnnotationYaml.hpp \
 	src/chunks/details/omPtrToChunkDataBase.hpp \
 	src/chunks/details/omPtrToChunkDataMemMapVol.h \
 	src/chunks/omChunk.h \
@@ -257,6 +259,7 @@ HEADERS +=  \
 	src/events/details/omEventManager.h \
 	src/events/details/omEventManagerImpl.hpp \
 	src/events/details/omPreferenceEvent.h \
+	src/events/details/omRefreshMSTthreshold.h \
 	src/events/details/omSegmentEvent.h \
 	src/events/details/omToolModeEvent.h \
 	src/events/details/omUserInterfaceEvent.h \
@@ -287,18 +290,22 @@ HEADERS +=  \
 	src/gui/inspectors/segmentation/buildPage/pageBuilder.hpp \
 	src/gui/inspectors/segmentation/buildPage/segVolBuilder.hpp \
 	src/gui/inspectors/segmentation/buildPage/sourceBox.hpp \
-	src/gui/inspectors/segmentation/exportPage/buttons/addSegmentButton.h \
 	src/gui/inspectors/segmentation/exportPage/buttons/exportButton.hpp \
 	src/gui/inspectors/segmentation/exportPage/buttons/exportButtonRaw.hpp \
+	src/gui/inspectors/segmentation/exportPage/buttons/exportDescendantList.hpp \
 	src/gui/inspectors/segmentation/exportPage/buttons/exportMST.hpp \
 	src/gui/inspectors/segmentation/exportPage/buttons/exportSegmentList.hpp \
 	src/gui/inspectors/segmentation/exportPage/buttons/meshPreviewButton.hpp \
 	src/gui/inspectors/segmentation/exportPage/buttons/segmentationInspectorButtons.hpp \
 	src/gui/inspectors/segmentation/exportPage/pageExport.h \
 	src/gui/inspectors/segmentation/metadata/metadataPage.hpp \
+	src/gui/inspectors/segmentation/notesPage/pageNotes.h \
 	src/gui/inspectors/segmentation/pageSelector.hpp \
 	src/gui/inspectors/segmentation/pagesWidget.h \
 	src/gui/inspectors/segmentation/segmentationInspector.hpp \
+	src/gui/inspectors/segmentation/statsPage/pageStats.h \
+	src/gui/inspectors/segmentation/toolsPage/buttons/addSegmentButton.h \
+	src/gui/inspectors/segmentation/toolsPage/pageTools.h \
 	src/gui/inspectors/volInspector.h \
 	src/gui/mainWindow/centralWidget.hpp \
 	src/gui/mainWindow/mainWindow.h \
@@ -329,13 +336,8 @@ HEADERS +=  \
 	src/gui/segmentLists/omSegmentListWidget.h \
 	src/gui/segmentLists/segmentListKeyPressEventListener.h \
 	src/gui/sidebars/left/inspectorWidget.h \
-	src/gui/sidebars/right.hpp \
-	src/gui/sidebars/right/alphaVegasButton.hpp \
-	src/gui/sidebars/right/breakButton.h \
-	src/gui/sidebars/right/breakThresholdGroup.h \
-	src/gui/sidebars/right/cutButton.h \
-	src/gui/sidebars/right/dendToolbar.h \
 	src/gui/sidebars/right/displayTools/2d/2dpage.hpp \
+	src/gui/sidebars/right/displayTools/2d/alphaVegasButton.hpp \
 	src/gui/sidebars/right/displayTools/2d/brightenSelected.hpp \
 	src/gui/sidebars/right/displayTools/2d/brightnessSpinBox.hpp \
 	src/gui/sidebars/right/displayTools/2d/contrastSpinBox.hpp \
@@ -343,21 +345,26 @@ HEADERS +=  \
 	src/gui/sidebars/right/displayTools/3d/3dpage.hpp \
 	src/gui/sidebars/right/displayTools/3d/dust3DthresholdGroup.hpp \
 	src/gui/sidebars/right/displayTools/displayTools.h \
-	src/gui/sidebars/right/displayTools/sliceDepthSpinBoxBase.hpp \
-	src/gui/sidebars/right/displayTools/sliceDepthSpinBoxX.hpp \
-	src/gui/sidebars/right/displayTools/sliceDepthSpinBoxY.hpp \
-	src/gui/sidebars/right/displayTools/sliceDepthSpinBoxZ.hpp \
-	src/gui/sidebars/right/graphTools.h \
-	src/gui/sidebars/right/groupButtonTag.h \
-	src/gui/sidebars/right/joinButton.h \
-	src/gui/sidebars/right/setNotUncertain.hpp \
-	src/gui/sidebars/right/setNotValid.hpp \
-	src/gui/sidebars/right/setUncertain.hpp \
-	src/gui/sidebars/right/setValid.hpp \
-	src/gui/sidebars/right/showValidatedButton.h \
-	src/gui/sidebars/right/splitButton.h \
-	src/gui/sidebars/right/thresholdGroup.h \
-	src/gui/sidebars/right/validationGroup.h \
+	src/gui/sidebars/right/displayTools/location/pageLocation.hpp \
+	src/gui/sidebars/right/displayTools/location/sliceDepthSpinBoxBase.hpp \
+	src/gui/sidebars/right/displayTools/location/sliceDepthSpinBoxX.hpp \
+	src/gui/sidebars/right/displayTools/location/sliceDepthSpinBoxY.hpp \
+	src/gui/sidebars/right/displayTools/location/sliceDepthSpinBoxZ.hpp \
+	src/gui/sidebars/right/graphTools/breakButton.h \
+	src/gui/sidebars/right/graphTools/breakThresholdGroup.h \
+	src/gui/sidebars/right/graphTools/graphTools.h \
+	src/gui/sidebars/right/graphTools/joinButton.h \
+	src/gui/sidebars/right/graphTools/mstThresholdSpinBox.hpp \
+	src/gui/sidebars/right/graphTools/splitButton.h \
+	src/gui/sidebars/right/right.hpp \
+	src/gui/sidebars/right/rightImpl.h \
+	src/gui/sidebars/right/validationGroup/groupButtonTag.h \
+	src/gui/sidebars/right/validationGroup/setNotUncertain.hpp \
+	src/gui/sidebars/right/validationGroup/setNotValid.hpp \
+	src/gui/sidebars/right/validationGroup/setUncertain.hpp \
+	src/gui/sidebars/right/validationGroup/setValid.hpp \
+	src/gui/sidebars/right/validationGroup/showValidatedButton.h \
+	src/gui/sidebars/right/validationGroup/validationGroup.h \
 	src/gui/toolbars/mainToolbar/filterToBlackCheckbox.hpp \
 	src/gui/toolbars/mainToolbar/filterWidget.hpp \
 	src/gui/toolbars/mainToolbar/filterWidgetImpl.hpp \
@@ -396,6 +403,11 @@ HEADERS +=  \
 	src/gui/widgets/progressBarDialog.hpp \
 	src/headless/headless.h \
 	src/headless/headlessImpl.hpp \
+	src/landmarks/omLandmarks.hpp \
+	src/landmarks/omLandmarksDialog.h \
+	src/landmarks/omLandmarksTypes.h \
+	src/landmarks/omLandmarksWidget.h \
+	src/landmarks/omLandmarksWidgetButtons.hpp \
 	src/mainpage.h \
 	src/mesh/drawer/omFindChunksToDraw.hpp \
 	src/mesh/drawer/omMeshDrawPlanner.hpp \
@@ -460,6 +472,7 @@ HEADERS +=  \
 	src/segment/actions/omJoinSegmentsRunner.hpp \
 	src/segment/actions/omSetSegmentValid.hpp \
 	src/segment/actions/omSetSegmentValidRunner.hpp \
+	src/segment/actions/omSplitSegmentRunner.hpp \
 	src/segment/colorizer/omSegmentColorizer.h \
 	src/segment/colorizer/omSegmentColorizerColorCache.hpp \
 	src/segment/colorizer/omSegmentColorizerImpl.hpp \
@@ -553,6 +566,7 @@ HEADERS +=  \
 	src/tiles/cache/omTileCacheEventListener.hpp \
 	src/tiles/cache/omTileCacheImpl.hpp \
 	src/tiles/cache/omTileCacheSegmentation.hpp \
+	src/tiles/cache/omTileCacheThreadPool.hpp \
 	src/tiles/cache/omTilesToPrefetch.hpp \
 	src/tiles/cache/raw/omRawSegTileCache.hpp \
 	src/tiles/cache/raw/omRawSegTileCacheTypes.hpp \
@@ -569,6 +583,9 @@ HEADERS +=  \
 	src/tiles/pools/omPooledTile.hpp \
 	src/tiles/pools/omTilePool.hpp \
 	src/tiles/pools/omTilePools.hpp \
+	src/users/omGuiUserChooser.h \
+	src/users/omGuiUserChooserWidget.h \
+	src/users/omGuiUserChooserWidgetButtons.hpp \
 	src/users/omUsers.h \
 	src/users/omUsersImpl.hpp \
 	src/utility/affinityGraphDataWrapper.hpp \
@@ -671,11 +688,11 @@ HEADERS +=  \
 	src/view3d/widgets/omVolumeAxisWidget.h \
 	src/viewGroup/omBrushSize.hpp \
 	src/viewGroup/omColorizers.hpp \
-	src/viewGroup/omCutting.hpp \
 	src/viewGroup/omSplitting.hpp \
 	src/viewGroup/omViewGroupState.h \
 	src/viewGroup/omViewGroupView2dState.hpp \
 	src/viewGroup/omZoomLevel.hpp \
+	src/volume/OmSimpleRawVol.hpp \
 	src/volume/build/omBuildAffinityChannel.hpp \
 	src/volume/build/omBuildChannel.hpp \
 	src/volume/build/omBuildSegmentation.hpp \
@@ -707,12 +724,15 @@ HEADERS +=  \
 	src/volume/omAffinityChannel.h \
 	src/volume/omAffinityGraph.h \
 	src/volume/omChannel.h \
+	src/volume/omChannelFolder.h \
 	src/volume/omChannelImpl.h \
 	src/volume/omCompareVolumes.hpp \
 	src/volume/omFilter2d.h \
 	src/volume/omFilter2dManager.h \
 	src/volume/omMipVolume.h \
 	src/volume/omSegmentation.h \
+	src/volume/omSegmentationFolder.h \
+	src/volume/omSegmentationLoader.h \
 	src/volume/omUpdateBoundingBoxes.h \
 	src/volume/omVolCoords.hpp \
 	src/volume/omVolCoordsMipped.hpp \
@@ -783,6 +803,7 @@ SOURCES +=  \
 	src/actions/io/omActionTypes.cpp \
 	src/actions/omActions.cpp \
 	src/actions/omActionsImpl.cpp \
+	src/annotation/omAnnotation.cpp \
 	src/chunks/details/omPtrToChunkDataMemMapVol.cpp \
 	src/chunks/omChunk.cpp \
 	src/chunks/omChunkCoord.cpp \
@@ -810,6 +831,7 @@ SOURCES +=  \
 	src/events/details/omEvent.cpp \
 	src/events/details/omEventManager.cpp \
 	src/events/details/omPreferenceEvent.cpp \
+	src/events/details/omRefreshMSTthreshold.cpp \
 	src/events/details/omSegmentEvent.cpp \
 	src/events/details/omToolModeEvent.cpp \
 	src/events/details/omUserInterfaceEvent.cpp \
@@ -826,7 +848,10 @@ SOURCES +=  \
 	src/gui/inspectors/inspectorProperties.cpp \
 	src/gui/inspectors/segmentInspector.cpp \
 	src/gui/inspectors/segmentation/exportPage/pageExport.cpp \
+	src/gui/inspectors/segmentation/notesPage/pageNotes.cpp \
 	src/gui/inspectors/segmentation/pagesWidget.cpp \
+	src/gui/inspectors/segmentation/statsPage/pageStats.cpp \
+	src/gui/inspectors/segmentation/toolsPage/pageTools.cpp \
 	src/gui/mainWindow/mainWindow.cpp \
 	src/gui/menubar.cpp \
 	src/gui/meshPreviewer/meshPreviewer.cpp \
@@ -843,16 +868,15 @@ SOURCES +=  \
 	src/gui/segmentLists/elementListBox.cpp \
 	src/gui/segmentLists/omSegmentListWidget.cpp \
 	src/gui/sidebars/left/inspectorWidget.cpp \
-	src/gui/sidebars/right/breakButton.cpp \
-	src/gui/sidebars/right/cutButton.cpp \
-	src/gui/sidebars/right/dendToolbar.cpp \
 	src/gui/sidebars/right/displayTools/displayTools.cpp \
-	src/gui/sidebars/right/graphTools.cpp \
-	src/gui/sidebars/right/groupButtonTag.cpp \
-	src/gui/sidebars/right/joinButton.cpp \
-	src/gui/sidebars/right/showValidatedButton.cpp \
-	src/gui/sidebars/right/splitButton.cpp \
-	src/gui/sidebars/right/validationGroup.cpp \
+	src/gui/sidebars/right/graphTools/breakButton.cpp \
+	src/gui/sidebars/right/graphTools/graphTools.cpp \
+	src/gui/sidebars/right/graphTools/joinButton.cpp \
+	src/gui/sidebars/right/graphTools/splitButton.cpp \
+	src/gui/sidebars/right/rightImpl.cpp \
+	src/gui/sidebars/right/validationGroup/groupButtonTag.cpp \
+	src/gui/sidebars/right/validationGroup/showValidatedButton.cpp \
+	src/gui/sidebars/right/validationGroup/validationGroup.cpp \
 	src/gui/toolbars/mainToolbar/mainToolbar.cpp \
 	src/gui/toolbars/mainToolbar/navAndEditButtonGroup.cpp \
 	src/gui/toolbars/mainToolbar/refreshVolumeButton.cpp \
@@ -865,6 +889,9 @@ SOURCES +=  \
 	src/gui/widgets/omGroupListWidget.cpp \
 	src/gui/widgets/omSegmentContextMenu.cpp \
 	src/headless/headless.cpp \
+	src/landmarks/omLandmarksDialog.cpp \
+	src/landmarks/omLandmarksTypes.cpp \
+	src/landmarks/omLandmarksWidget.cpp \
 	src/main.cpp \
 	src/mesh/drawer/omMeshDrawer.cpp \
 	src/mesh/drawer/omMeshSegmentListTask.cpp \
@@ -920,6 +947,8 @@ SOURCES +=  \
 	src/tiles/omTileImplTypes.cpp \
 	src/tiles/omTilePreFetcher.cpp \
 	src/tiles/omTilePreFetcherTask.cpp \
+	src/users/omGuiUserChooser.cpp \
+	src/users/omGuiUserChooserWidget.cpp \
 	src/users/omUsers.cpp \
 	src/utility/channelDataWrapper.cpp \
 	src/utility/omFileHelpers.cpp \
@@ -944,11 +973,14 @@ SOURCES +=  \
 	src/volume/io/omVolumeData.cpp \
 	src/volume/omAffinityGraph.cpp \
 	src/volume/omChannel.cpp \
+	src/volume/omChannelFolder.cpp \
 	src/volume/omChannelImpl.cpp \
 	src/volume/omFilter2d.cpp \
 	src/volume/omFilter2dManager.cpp \
 	src/volume/omMipVolume.cpp \
 	src/volume/omSegmentation.cpp \
+	src/volume/omSegmentationFolder.cpp \
+	src/volume/omSegmentationLoader.cpp \
 	src/volume/omUpdateBoundingBoxes.cpp \
 	src/volume/omVolumeTypes.cpp \
 	src/zi/watershed/RawQuickieWS.cpp \
@@ -1068,6 +1100,8 @@ exists(../external/libs/Boost) {
      QMAKE_CXXFLAGS += -DBOOST_SYSTEM_NO_DEPRECATED
      QMAKE_CXXFLAGS += -DBOOST_FILESYSTEM_VERSION=3
      QMAKE_CXXFLAGS += -DBOOST_FILESYSTEM_NO_DEPRECATED
+
+#BOOST_DISABLE_ASSERTS
 
 }else {
     error(please run 'bootstrap.pl  2' to install Boost)

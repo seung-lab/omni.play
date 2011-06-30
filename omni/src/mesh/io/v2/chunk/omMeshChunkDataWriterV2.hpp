@@ -14,7 +14,7 @@ private:
     static const int defaultFileExpansionFactor = 5;
 
 private:
-    OmSegmentation *const seg_;
+    OmSegmentation *const vol_;
     const OmChunkCoord& coord_;
     const double threshold_;
     const QString fnp_;
@@ -26,7 +26,7 @@ private:
 public:
     OmMeshChunkDataWriterV2(OmSegmentation* seg, const OmChunkCoord& coord,
                             const double threshold)
-        : seg_(seg)
+        : vol_(seg)
         , coord_(coord)
         , threshold_(threshold)
         , fnp_(filePath())
@@ -130,16 +130,13 @@ private:
 
     QString filePath()
     {
-        const QString volPath =
-            OmFileNames::GetMeshChunkFolderPath(seg_, threshold_, coord_);
+        const QString volPath = vol_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
 
         if(!QDir(volPath).exists()){
-            OmFileNames::MakeMeshChunkFolderPath(seg_, threshold_, coord_);
+            vol_->Folder()->MakeMeshChunkFolderPath(threshold_, coord_);
         }
 
-        const QString fullPath = QString("%1meshData.ver2")
-            .arg(volPath);
-        return fullPath;
+        return volPath + "meshData.ver2";
     }
 };
 

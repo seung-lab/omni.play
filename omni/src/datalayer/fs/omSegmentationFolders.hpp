@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utility/omStringHelpers.h"
+
 namespace om {
 namespace fs {
 

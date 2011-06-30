@@ -32,6 +32,7 @@ public:
         case om::tool::PAN:
         case om::tool::ZOOM:
         case om::tool::FILL:
+        case om::tool::LANDMARK:
             break;
 
         case om::tool::PAINT:

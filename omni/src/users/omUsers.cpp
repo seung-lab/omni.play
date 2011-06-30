@@ -13,8 +13,8 @@ void om::users::SwitchToDefaultUser(){
     impl_->SwitchToDefaultUser();
 }
 
-QString om::users::GetVolSegmentsPathAbs(OmSegmentation* vol){
-    return impl_->GetVolSegmentsPathAbs(vol);
+void om::users::SwitchToUser(const std::string& userName){
+    impl_->SwitchToUser(userName);
 }
 
 QString om::users::LogFolderPath(){
@@ -23,4 +23,12 @@ QString om::users::LogFolderPath(){
 
 void om::users::SetupFolders(){
     impl_->SetupFolders();
+}
+
+std::string om::users::UsersFolder(){
+    return impl_->UsersFolder();
+}
+
+std::string om::users::UsersRootFolder(){
+    return impl_->UsersRootFolder();
 }

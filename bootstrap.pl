@@ -39,6 +39,8 @@ my $QT_VER = "qt-everywhere-opensource-src-4.7.3";
 my $HDF5_VER = "hdf5-1.8.6";
 my $ZLIB_VER = "zlib-1.2.5";
 my $INTEL_TBB_VER = "tbb30_20110315oss";
+my $THRIFT_VER = "thrift-0.6.1";
+my $RE2C = "re2c-0.13.5";
 
 #my $JPEG_VER = "libjpeg-turbo-1.1.0";
 #if(isMac()){
@@ -333,6 +335,22 @@ sub prepareNukeSrcsAndBuild
     build(   $baseFileName, $libFolderName, $buildOptions );
 }
 
+sub thrift
+{
+#    prepareAndBuild( $RE2C, "re2c");
+
+    my @argsList = qw( CXXFLAGS='-g -O2' CFLAGS='-g -O2'
+--without-ruby
+--without-erlang
+--enable-gen-cpp
+);
+
+    my $args = concatStrList(@argsList);
+    $args .= " --with-boost=$libPath/Boost";
+
+    prepareAndBuild( $THRIFT_VER, "thrift", $args);
+}
+
 sub libjpeg
 {
     prepareAndBuild( $JPEG_VER, "libjpeg" );
@@ -465,7 +483,7 @@ sub menu
     print "4 -- Build libjpeg\n";
     print "5 -- Build omni\n";
     print "6 -- [Do 1 through 5]\n";
-    print "7 -- Build one of the small libraries...\n";
+    print "7 -- Build thrift\n";
     print "8 -- Generate scripts\n";
     print "10 -- Experimental builds...\n";
     print "11 -- Ubuntu library apt-gets...\n";
@@ -493,6 +511,7 @@ sub buildAll
     boost();
     qt();
     libjpeg();
+    thrift();
     omni();
 }
 
@@ -515,6 +534,7 @@ sub runMenuEntry
     }elsif( 6 == $entry ){
 	buildAll();
     }elsif( 7 == $entry ){
+        thrift();
     }elsif( 8 == $entry ){
 	genOmniScript();
     }elsif( 9 == $entry ){

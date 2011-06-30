@@ -15,6 +15,8 @@ class OmTileCacheChannel;
 class OmVolumeData;
 template <typename,typename> class OmChunkCache;
 
+namespace om { namespace channel { class folder; } }
+
 class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
 public:
@@ -31,9 +33,10 @@ public:
     std::string GetName();
     std::string GetNameHyphen();
     std::string GetDirectoryPath() const;
+    void LoadPath();
 
-    void loadVolData();
-    void loadVolDataIfFoldersExist();
+    bool LoadVolData();
+    bool LoadVolDataIfFoldersExist();
     void UpdateFromVolResize();
 
     ObjectType getVolumeType() const {
@@ -69,11 +72,16 @@ public:
         return tileCache_.get();
     }
 
+    inline om::channel::folder* Folder() const {
+        return folder_.get();
+    }
+
 protected:
     //protected copy constructor and assignment operator to prevent copy
     OmChannelImpl(const OmChannelImpl&);
     OmChannelImpl& operator= (const OmChannelImpl&);
 
+    boost::scoped_ptr<om::channel::folder> folder_;
     boost::scoped_ptr<OmChunkCache<OmChannelImpl, OmChunk> > chunkCache_;
     boost::scoped_ptr<OmVolumeData> volData_;
     boost::scoped_ptr<OmTileCacheChannel> tileCache_;

@@ -2,48 +2,49 @@
 
 #include "yaml-cpp/yaml.h"
 
+#include <fstream>
+
 namespace om {
 namespace yaml {
 
+// // our data types
+// struct Vec3 {
+//    float x, y, z;
+// };
 
-// our data types
-struct Vec3 {
-   float x, y, z;
-};
+// struct Power {
+//    std::string name;
+//    int damage;
+// };
 
-struct Power {
-   std::string name;
-   int damage;
-};
+// struct Monster {
+//    std::string name;
+//    Vec3 position;
+//    std::vector <Power> powers;
+// };
 
-struct Monster {
-   std::string name;
-   Vec3 position;
-   std::vector <Power> powers;
-};
+// // now the extraction operators for these types
+// void operator >> (const YAML::Node& node, Vec3& v) {
+//    node[0] >> v.x;
+//    node[1] >> v.y;
+//    node[2] >> v.z;
+// }
 
-// now the extraction operators for these types
-void operator >> (const YAML::Node& node, Vec3& v) {
-   node[0] >> v.x;
-   node[1] >> v.y;
-   node[2] >> v.z;
-}
+// void operator >> (const YAML::Node& node, Power& power) {
+//    node["name"] >> power.name;
+//    node["damage"] >> power.damage;
+// }
 
-void operator >> (const YAML::Node& node, Power& power) {
-   node["name"] >> power.name;
-   node["damage"] >> power.damage;
-}
-
-void operator >> (const YAML::Node& node, Monster& monster) {
-   node["name"] >> monster.name;
-   node["position"] >> monster.position;
-   const YAML::Node& powers = node["powers"];
-   for(unsigned i=0;i<powers.size();i++) {
-      Power power;
-      powers[i] >> power;
-      monster.powers.push_back(power);
-   }
-}
+// void operator >> (const YAML::Node& node, Monster& monster) {
+//    node["name"] >> monster.name;
+//    node["position"] >> monster.position;
+//    const YAML::Node& powers = node["powers"];
+//    for(unsigned i=0;i<powers.size();i++) {
+//       Power power;
+//       powers[i] >> power;
+//       monster.powers.push_back(power);
+//    }
+// }
 
 template <typename T>
 class parser {

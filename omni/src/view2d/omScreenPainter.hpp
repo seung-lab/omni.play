@@ -48,6 +48,10 @@ public:
             }
         }
 
+        if(om::tool::LANDMARK == toolMode_){
+            // showLandmark(painter);
+        }
+
         if(shouldDisplayInfo_){
             displayInformation(painter, pen);
         }
@@ -111,11 +115,11 @@ private:
     {
         switch(viewType_) {
         case XY_VIEW:
-            return QColor(Qt::blue);
+            return QColor(Qt::white);
         case XZ_VIEW:
-            return QColor(Qt::green);
+            return QColor(Qt::white);
         case ZY_VIEW:
-            return QColor(Qt::red);
+            return QColor(Qt::white);
         default:
             throw OmArgException("invalid view type");
         }
@@ -206,11 +210,11 @@ private:
     {
         switch (viewType_) {
         case XY_VIEW:
-            return std::make_pair(Qt::red, Qt::green);
+            return std::make_pair(Qt::green, Qt::red);
         case XZ_VIEW:
-            return std::make_pair(Qt::red, Qt::blue);
+            return std::make_pair(Qt::blue, Qt::red);
         case ZY_VIEW:
-            return std::make_pair(Qt::blue, Qt::green);
+            return std::make_pair(Qt::green, Qt::blue);
         default:
             throw OmArgException("invalid viewtype");
         }
@@ -227,6 +231,15 @@ private:
         default:
             return false;
         }
+    }
+
+    void showLandmark(QPainter& painter)
+    {
+        const QImage star(":/toolbars/mainToolbar/icons/1308021634_keditbookmarks.png");
+
+        const QPoint point(mousePoint_.x, mousePoint_.y);
+
+        painter.drawImage(point, star);
     }
 };
 

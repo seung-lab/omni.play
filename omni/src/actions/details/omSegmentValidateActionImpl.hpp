@@ -66,7 +66,8 @@ public:
 private:
     template <typename T> friend class OmActionLoggerThread;
 
-    friend QDataStream &operator<<(QDataStream&, const OmSegmentValidateActionImpl&);
-    friend QDataStream &operator>>(QDataStream&, OmSegmentValidateActionImpl&);
+    friend QDataStream& operator<<(QDataStream&, const OmSegmentValidateActionImpl&);
+    friend QDataStream& operator>>(QDataStream&, OmSegmentValidateActionImpl&);
+    friend QTextStream& operator<<(QTextStream&, const OmSegmentValidateActionImpl&);
 };
 

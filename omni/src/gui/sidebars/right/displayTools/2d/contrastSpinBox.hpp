@@ -20,6 +20,10 @@ public:
         setInitialGUIThresholdValue();
     }
 
+    QString Label() const {
+        return "Contrast";
+    }
+
 private:
     void actUponValueChange(const double threshold)
     {

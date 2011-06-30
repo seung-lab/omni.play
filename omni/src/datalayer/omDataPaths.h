@@ -22,7 +22,6 @@ public:
     static std::string getMeshFileName(const OmMeshCoord& meshCoord);
 
     static std::string getDirectoryPath(OmChannelImpl const*const chan);
-    static std::string getDirectoryPath(OmSegmentation const*const seg);
 
     static std::string Hdf5VolData(const std::string& dirPath,
                                    const int level);

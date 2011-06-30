@@ -1,5 +1,6 @@
 #pragma once
 
+#include "volume/omSegmentationFolder.h"
 #include "datalayer/archive/omDataArchiveStd.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/omLockedPODs.hpp"
@@ -10,7 +11,7 @@
 
 class OmValidGroupNum {
 private:
-    OmSegmentation* segmentation_;
+    OmSegmentation* vol_;
     int version_;
 
     const uint32_t noGroupNum_;
@@ -21,7 +22,7 @@ private:
 
 public:
     OmValidGroupNum(OmSegmentation* segmentation)
-        : segmentation_(segmentation)
+        : vol_(segmentation)
         , version_(1)
         , noGroupNum_(0)
         , initialGroupNum_(1)
@@ -75,11 +76,9 @@ public:
 private:
     QString filePathV1() const
     {
-        const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
-        const QString fullPath = QString("%1valid_group_num.data.ver1")
-            .arg(volPath);
-
-        return fullPath;
+        return QString::fromStdString(
+            vol_->Folder()->GetVolSegmentsPathAbs("valid_group_num.data.ver1")
+            );
     }
 
     void load()

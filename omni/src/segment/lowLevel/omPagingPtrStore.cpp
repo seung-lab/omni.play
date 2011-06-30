@@ -8,8 +8,8 @@
 
 static const uint32_t DEFAULT_PAGE_SIZE = 100000; // about 4.8 MB on disk
 
-OmPagingPtrStore::OmPagingPtrStore(OmSegmentation* segmentation)
-    : segmentation_(segmentation)
+OmPagingPtrStore::OmPagingPtrStore(OmSegmentation* vol)
+    : vol_(vol)
     , pageSize_(DEFAULT_PAGE_SIZE)
 {}
 
@@ -49,7 +49,7 @@ void OmPagingPtrStore::loadAllSegmentPages()
 
 void OmPagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
 {
-    pages_[pageNum] = new OmSegmentPage(segmentation_,
+    pages_[pageNum] = new OmSegmentPage(vol_,
                                         pageNum,
                                         pageSize_);
     pages_[pageNum]->Load();
@@ -66,7 +66,7 @@ OmSegment* OmPagingPtrStore::AddSegment(const OmSegID value)
         resizeVectorIfNeeded(pageNum);
         validPageNums_.insert(pageNum);
 
-        pages_[pageNum] = new OmSegmentPage(segmentation_,
+        pages_[pageNum] = new OmSegmentPage(vol_,
                                             pageNum,
                                             pageSize_);
         pages_[pageNum]->Create();
@@ -91,8 +91,9 @@ void OmPagingPtrStore::resizeVectorIfNeeded(const PageNum pageNum)
 
 QString OmPagingPtrStore::metadataPathQStr()
 {
-    const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
-    return QString("%1/segment_pages.data").arg(volPath);
+    return QString::fromStdString(
+        vol_->Folder()->GetVolSegmentsPathAbs("segment_pages.data")
+        );
 }
 
 void OmPagingPtrStore::loadMetadata()
@@ -125,11 +126,11 @@ void OmPagingPtrStore::loadMetadata()
 
 void OmPagingPtrStore::storeMetadata()
 {
-    QFile file(metadataPathQStr());
+    const QString path = metadataPathQStr();
 
-    if (!file.open(QIODevice::WriteOnly)) {
-        throw OmIoException("could not write file", metadataPathQStr());
-    }
+    QFile file(path);
+
+    om::file::openFileWO(file);
 
     QDataStream out(&file);
     out.setByteOrder( QDataStream::LittleEndian );

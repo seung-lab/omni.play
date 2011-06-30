@@ -197,7 +197,7 @@ public:
     }
 private:
     std::list<KEY> list_;
-    zi::mutex mutex_;
+    zi::spinlock mutex_;
 };
 
 template <typename KEY, typename VAL>
@@ -241,6 +241,6 @@ public:
     }
 private:
     std::multimap<KEY, VAL> mmap_;
-    zi::mutex mutex_;
+    zi::spinlock mutex_;
 };
 

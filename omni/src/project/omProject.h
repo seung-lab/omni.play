@@ -25,7 +25,7 @@ private:
 public:
     //project IO
     static QString New(const QString& fileNameAndPath);
-    static void Load(const QString& fileNameAndPath);
+    static void Load(const QString& fileNameAndPath, QWidget* guiParent = NULL);
     static void Save();
     static void Commit();
     static void Close();

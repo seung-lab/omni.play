@@ -105,14 +105,11 @@ QDataStream& operator>>(QDataStream& in, OmSegmentUncertainActionImpl& a)
 
 QDataStream& operator<<(QDataStream& out, const OmSegmentSplitActionImpl& a)
 {
-    int version = 2;
+    int version = 3;
     out << version;
     out << a.mEdge;
     out << a.mSegmentationID;
     out << a.desc;
-    out << a.mSegID;
-    out << a.mCoord1;
-    out << a.mCoord2;
 
     return out;
 }
@@ -126,14 +123,14 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentSplitActionImpl& a)
     in >> a.mSegmentationID;
     in >> a.desc;
 
-    if(1 == version) {
-        a.mSegID = 0;
-        a.mCoord1 = DataCoord();
-        a.mCoord2 = DataCoord();
-    } else {
-        in >> a.mSegID;
-        in >> a.mCoord1;
-        in >> a.mCoord2;
+    if(2 == version)
+    {
+        OmSegID deadSeg;
+        in >> deadSeg;
+
+        DataCoord dc;
+        in >> dc;
+        in >> dc;
     }
 
     return in;
@@ -261,8 +258,8 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentationThresholdChangeAct
 {
     int version = 2;
     out << version;
-    out << a.mThreshold;
-    out << a.mOldThreshold;
+    out << a.threshold_;
+    out << a.oldThreshold_;
     out << a.sdw_;
 
     return out;
@@ -272,8 +269,8 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentationThresholdChangeActionImp
 {
     int version;
     in >> version;
-    in >> a.mThreshold;
-    in >> a.mOldThreshold;
+    in >> a.threshold_;
+    in >> a.oldThreshold_;
 
     OmID id = 1;
 

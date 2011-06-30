@@ -34,11 +34,11 @@ public:
         , freshness_(freshness)
         , breakThreshold_(params_.vgs->getBreakThreshold())
     {
-        const OmSegIDsSet& selected = params.segments->GetSelectedSegmentIds();
+        const OmSegIDsSet selected = params.segments->GetSelectedSegmentIDs();
         selectedSegIDs_ = boost::unordered_set<OmSegID>(selected.begin(),
                                                         selected.end());
 
-        const OmSegIDsSet& enabled = params.segments->GetEnabledSegmentIds();
+        const OmSegIDsSet enabled = params.segments->GetEnabledSegmentIDs();
         enabledSegIDs_ = boost::unordered_set<OmSegID>(enabled.begin(),
                                                        enabled.end());
 
@@ -47,48 +47,52 @@ public:
 
     void ColorTile(uint32_t const*const d, OmColorARGB* colorMappedData)
     {
-        OmColor prevColor = blackColor;
-        OmSegID lastVal = 0;
+        PrevSegAndColor prev = { 0, blackColor };
 
         for(uint32_t i = 0; i < params_.numElements; ++i )
         {
-            colorMappedData[i].alpha = 255;
+            colorMappedData[i].alpha = 255; // required for Mac OS X?
 
-            if( d[i] == lastVal ){ // memoized previous, non-zero color
-                colorMappedData[i].red   = prevColor.red;
-                colorMappedData[i].green = prevColor.green;
-                colorMappedData[i].blue  = prevColor.blue;
+            if( d[i] == prev.segID )
+            { // use memoized previous, non-zero color
+                colorMappedData[i].red   = prev.color.red;
+                colorMappedData[i].green = prev.color.green;
+                colorMappedData[i].blue  = prev.color.blue;
 
-            } else if( 0 == d[i] ){ // black
+            } else if( 0 == d[i] )
+            { // black
                 colorMappedData[i].red   = 0;
                 colorMappedData[i].green = 0;
                 colorMappedData[i].blue  = 0;
 
-            } else { // get color from cache
+            } else
+            { // get color from cache
 
                 uint64_t curFreshness;
-                OmColor curColor;
 
-                colorCache_.Get( d[i], curFreshness, curColor);
+                colorCache_.Get( d[i], curFreshness, prev.color);
 
                 if(freshness_ > curFreshness)
-                {
-                    curColor = getVoxelColorForView2d( d[i] );
-                    colorCache_.Set( d[i], curFreshness, curColor);
+                { // figure out color and update cache
+                    prev.color = getVoxelColorForView2d( d[i] );
+                    colorCache_.Set( d[i], curFreshness, prev.color);
                 }
 
                 // memoize
-                prevColor = curColor;
-                lastVal = d[i];
+                prev.segID = d[i];
 
-                colorMappedData[i].red   = prevColor.red;
-                colorMappedData[i].green = prevColor.green;
-                colorMappedData[i].blue  = prevColor.blue;
+                colorMappedData[i].red   = prev.color.red;
+                colorMappedData[i].green = prev.color.green;
+                colorMappedData[i].blue  = prev.color.blue;
             }
         }
     }
 
 private:
+    struct PrevSegAndColor {
+        OmSegID segID;
+        OmColor color;
+    };
 
     OmColor getVoxelColorForView2d(const OmSegID segID)
     {

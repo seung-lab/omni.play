@@ -30,7 +30,8 @@ public:
     {
         rawChunks_.resize(mippingInfo.maxMipLevel + 1);
 
-        for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i){
+        for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i)
+        {
             const DataCoord dstCoord = coord_.Coordinate / mips_[i].factor;
             const OmChunkCoord coord(i, dstCoord);
 
@@ -68,7 +69,8 @@ public:
 
     inline void pushVoxelIntoMips(const DataCoord& srcCoord, const T srcVoxel)
     {
-        for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i){
+        for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i)
+        {
             if( 0 != srcCoord.z % mips_[i].factor ||
                 0 != srcCoord.y % mips_[i].factor ||
                 0 != srcCoord.x % mips_[i].factor ){

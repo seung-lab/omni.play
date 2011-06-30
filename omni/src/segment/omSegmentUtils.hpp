@@ -107,7 +107,6 @@ public:
 
         OmSegment* seg = iter.getNextSegment();
 
-
         while(NULL != seg)
         {
             OmSegment* parent = seg->getParent();

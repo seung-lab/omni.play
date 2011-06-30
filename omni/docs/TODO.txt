@@ -1,0 +1,43 @@
+May 18, 2011:
+--only erase selected segment
+--don't erase valid segments
+--update segment sizes from paint
+--right-click optimizations in view3d
+--remember brush size
+--cut brush
+--paint in non-mip 0
+--join uncertain and non-uncertain segments
+--context menu position near edge of screen
+--ctrl pan in paint mode
+--update selected color if randomize segment color
+--escape key in segmenation properties
+--when split, change root color
+--width of segment list
+--width of widgets
+--paint undo
+--remember brigthness, contrast, and gamma
+--send to edge of bounding box
+--paint in other views
+--long rnage connection
+--find 2 closest points
+--fix threshold change in edge list
+--3d frame shift
+--annotate segments
+
+--right-click view2d actions
+--2 click "long range edge"
+--threshold change
+--php omni build
+--faster tiles/downsampled
+--faster mesh load
+--shared channel
+--tile cache frames
+--don't nuke all tiles when painting
+--use slice cache for fill
+--convert from boost::Varient to inheritance
+--pan bug on close zoom
+
+--finish converting meshes if closed
+
+--undo/redo
+--double check segment sizes in seg list

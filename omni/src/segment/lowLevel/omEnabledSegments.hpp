@@ -29,7 +29,7 @@ public:
         }
     }
 
-    inline OmSegIDsSet& GetEnabledSegmentIdsRef(){
+    inline OmSegIDsSet GetEnabledSegmentIDs(){
         return enabled_;
     }
 

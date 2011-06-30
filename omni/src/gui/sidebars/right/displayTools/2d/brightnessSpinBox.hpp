@@ -17,6 +17,10 @@ public:
         setInitialGUIThresholdValue();
     }
 
+    QString Label() const {
+        return "Brightness";
+    }
+
 private:
 
     void actUponSpinboxChange(const int val)

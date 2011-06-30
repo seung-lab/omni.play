@@ -1,6 +1,6 @@
-#include "gui/inspectors/segmentation/exportPage/buttons/addSegmentButton.h"
 #include "gui/inspectors/segmentation/exportPage/buttons/exportButton.hpp"
 #include "gui/inspectors/segmentation/exportPage/buttons/exportButtonRaw.hpp"
+#include "gui/inspectors/segmentation/exportPage/buttons/exportDescendantList.hpp"
 #include "gui/inspectors/segmentation/exportPage/buttons/exportMST.hpp"
 #include "gui/inspectors/segmentation/exportPage/buttons/exportSegmentList.hpp"
 #include "gui/inspectors/segmentation/exportPage/buttons/meshPreviewButton.hpp"
@@ -14,9 +14,6 @@ om::segmentationInspector::PageExport::PageExport(QWidget* parent, const Segment
 {
     QVBoxLayout* overallContainer = new QVBoxLayout(this);
     overallContainer->addWidget(makeActionsBox());
-    overallContainer->addWidget(makeToolsBox());
-    overallContainer->addWidget(makeStatsBox());
-    overallContainer->addWidget(makeNotesBox());
 }
 
 QGroupBox* om::segmentationInspector::PageExport::makeActionsBox()
@@ -43,54 +40,8 @@ QGroupBox* om::segmentationInspector::PageExport::makeActionsBox()
         new RebuildCenterOfSegmentDataButton(this);
     gridAction->addWidget(rebuildSegmentButton, 5, 1, 1, 1 );
 
+    ExportDescendantList* exportSegmentList = new ExportDescendantList(this);
+    gridAction->addWidget(exportSegmentList, 6, 0, 1, 1 );
+
     return actionsBox;
-}
-
-QGroupBox* om::segmentationInspector::PageExport::makeStatsBox()
-{
-    QGroupBox* statsBox = new QGroupBox("Stats");
-    QGridLayout *grid = new QGridLayout( statsBox );
-
-    QLabel *labelNumSegments = new QLabel(statsBox);
-    labelNumSegments->setText("number of segments:");
-    grid->addWidget( labelNumSegments, 0, 0 );
-    QLabel *labelNumSegmentsNum = new QLabel(statsBox);
-
-    QString commaNumSegs = OmStringHelpers::HumanizeNumQT(sdw_.getNumberOfSegments());
-    labelNumSegmentsNum->setText( commaNumSegs );
-    grid->addWidget( labelNumSegmentsNum, 0, 1 );
-
-    QLabel *labelNumTopSegments = new QLabel(statsBox);
-    labelNumTopSegments->setText("number of top-level segments:");
-    grid->addWidget( labelNumTopSegments, 1, 0 );
-    QLabel *labelNumTopSegmentsNum = new QLabel(statsBox);
-
-    QString commaNumTopSegs = OmStringHelpers::HumanizeNumQT(sdw_.getNumberOfTopSegments());
-    labelNumTopSegmentsNum->setText( commaNumTopSegs );
-    grid->addWidget( labelNumTopSegmentsNum, 1, 1 );
-
-    return statsBox;
-}
-
-QGroupBox* om::segmentationInspector::PageExport::makeNotesBox()
-{
-    QGroupBox* notesBox = new QGroupBox("Notes");
-    QGridLayout *gridNotes = new QGridLayout( notesBox );
-
-    notesEdit_ = new QPlainTextEdit(notesBox);
-    notesEdit_->setObjectName(QString::fromUtf8("notesEdit_"));
-    gridNotes->addWidget(notesEdit_, 0, 1);
-
-    return notesBox;
-}
-
-QGroupBox* om::segmentationInspector::PageExport::makeToolsBox()
-{
-    QGroupBox* segmentBox = new QGroupBox("Tools");
-    QGridLayout *gridSegment = new QGridLayout( segmentBox );
-
-    AddSegmentButton* addSegmentButton = new AddSegmentButton(this);
-    gridSegment->addWidget(addSegmentButton, 0, 0);
-
-    return segmentBox;
 }

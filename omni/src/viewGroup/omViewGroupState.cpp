@@ -1,7 +1,9 @@
 #include "common/omDebug.h"
 #include "events/omEvents.h"
+#include "gui/mainWindow/mainWindow.h"
 #include "gui/toolbars/toolbarManager.h"
 #include "gui/viewGroup/viewGroup.h"
+#include "landmarks/omLandmarks.hpp"
 #include "segment/colorizer/omSegmentColorizer.h"
 #include "segment/omSegment.h"
 #include "system/cache/omCacheManager.h"
@@ -9,7 +11,6 @@
 #include "tiles/omTileCoord.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omColorizers.hpp"
-#include "viewGroup/omCutting.hpp"
 #include "viewGroup/omSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
@@ -22,7 +23,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     , colorizers_(new OmColorizers(this))
     , zoomLevel_(new OmZoomLevel())
     , splitting_(new OmSplitting())
-    , cutting_(new OmCutting())
+    , landmarks_(new OmLandmarks(mainWindow))
     , cdw_(new ChannelDataWrapper(1))
     , sdw_(new SegmentationDataWrapper(1))
     , toolBarManager_(NULL)
@@ -104,7 +105,6 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
 void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm)
 {
     toolBarManager_ = tbm;
-    cutting_->SetToolBarManager(tbm);
     splitting_->SetToolBarManager(tbm);
 }
 

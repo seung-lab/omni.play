@@ -6,7 +6,7 @@ class ChannelDataWrapper;
 class InspectorProperties;
 class MainWindow;
 class OmColorizers;
-class OmCutting;
+class OmLandmarks;
 class OmSegmentColorizer;
 class OmSplitting;
 class OmTileCoord;
@@ -70,10 +70,6 @@ public:
         return splitting_.get();
     }
 
-    inline OmCutting* Cutting(){
-        return cutting_.get();
-    }
-
     void SetHowNonSelectedSegmentsAreColoredInFilter(const bool);
 
     inline bool ShowNonSelectedSegmentsInColorInFilter() const {
@@ -93,13 +89,17 @@ public:
         brightenSelected_ = brigthen;
     }
 
+    inline OmLandmarks& Landmarks() {
+        return *landmarks_;
+    }
+
 private:
     boost::scoped_ptr<ViewGroup> viewGroup_;
     boost::scoped_ptr<OmViewGroupView2dState> view2dState_;
     boost::scoped_ptr<OmColorizers> colorizers_;
     boost::scoped_ptr<OmZoomLevel> zoomLevel_;
     boost::scoped_ptr<OmSplitting> splitting_;
-    boost::scoped_ptr<OmCutting> cutting_;
+    boost::scoped_ptr<OmLandmarks> landmarks_;
 
     boost::scoped_ptr<ChannelDataWrapper> cdw_;
     boost::scoped_ptr<SegmentationDataWrapper> sdw_;

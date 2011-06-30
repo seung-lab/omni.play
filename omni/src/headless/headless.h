@@ -8,7 +8,7 @@ public:
         : segmentationID_(0)
     {}
 
-    void runHeadless(const QString& headlessCMD, const QString& fName);
+    void RunHeadless(const QString& headlessCMD, const QString& fName);
 
 private:
     OmID segmentationID_;

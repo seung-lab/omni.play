@@ -2,9 +2,8 @@
 
 /*
  *
- *	Brett Warne - bwarne@mit.edu - 3/14/09
+ * Brett Warne - bwarne@mit.edu - 3/14/09
  */
-
 
 #include <common/omStd.h>
 
@@ -14,6 +13,7 @@ class OmPreferenceEvent : public OmEvent {
 
 public:
     OmPreferenceEvent(QEvent::Type type, int preference);
+
     void Dispatch(OmEventListener *);
 
     //class
@@ -22,7 +22,9 @@ public:
     //events
     static const QEvent::Type PREFERENCE_CHANGE = (QEvent::Type) (CLASS);
 
-    int GetPreference() { return mPreference; }
+    int GetPreference(){
+        return mPreference;
+    }
 
 private:
     int mPreference;

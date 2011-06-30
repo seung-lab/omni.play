@@ -17,8 +17,8 @@ public:
         }
         OmHdf5* reader = OmProject::OldHDF5();
 
-        const OmDataPath path =
-            OmDataPaths::Hdf5VolData(vol->GetDirectoryPath(), 0);
+        const OmDataPath path = OmDataPaths::Hdf5VolData(vol->GetDirectoryPath(),
+                                                         0);
 
         OmDataWrapperPtr data =	reader->GetChunkDataType(path);
 
@@ -33,14 +33,12 @@ public:
         }
         OmHdf5* reader = OmProject::OldHDF5();
 
-        const OmDataPath path =
-            OmDataPaths::Hdf5VolData(vol->GetDirectoryPath(),
-                                     chunk->GetLevel());
+        const OmDataPath path = OmDataPaths::Hdf5VolData(vol->GetDirectoryPath(),
+                                                         chunk->GetLevel());
 
-        OmDataWrapperPtr data =
-            reader->readChunk(path,
-                              chunk->Mipping().GetExtent(),
-                              om::NO_AFFINITY);
+        OmDataWrapperPtr data = reader->readChunk(path,
+                                                  chunk->Mipping().GetExtent(),
+                                                  om::NO_AFFINITY);
 
         return data;
     }
@@ -53,8 +51,8 @@ public:
         }
         OmHdf5* reader = OmProject::OldHDF5();
 
-        const OmDataPath path =
-            OmDataPaths::Hdf5VolData(vol->GetDirectoryPath(), mipLevel);
+        const OmDataPath path = OmDataPaths::Hdf5VolData(vol->GetDirectoryPath(),
+                                                         mipLevel);
 
         return reader->dataset_exists(path);
     }

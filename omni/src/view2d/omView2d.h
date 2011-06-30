@@ -6,11 +6,11 @@
 
 #include <boost/scoped_ptr.hpp>
 
-class OmView2dEvents;
-class SegmentDataWrapper;
-class OmMouseEvents;
 class OmKeyEvents;
+class OmMouseEvents;
+class OmView2dEvents;
 class OmView2dZoom;
+class SegmentDataWrapper;
 
 class OmView2d : public OmView2dCore {
     Q_OBJECT

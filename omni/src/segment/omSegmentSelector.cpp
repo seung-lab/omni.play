@@ -18,7 +18,7 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
     params_->sdw = SegmentDataWrapper(sdw, 0);
     params_->sender = sender;
     params_->comment = cmt;
-    params_->oldSelectedIDs = segments_->GetSelectedSegmentIds();
+    params_->oldSelectedIDs = segments_->GetSelectedSegmentIDs();
     params_->newSelectedIDs = params_->oldSelectedIDs;
     params_->autoCenter = false;
     params_->shouldScroll = true;
@@ -119,7 +119,8 @@ void OmSegmentSelector::augmentSelectedSet_toggle(const OmSegID segIDunknownLeve
 
 bool OmSegmentSelector::sendEvent()
 {
-    if(params_->augmentListOnly){
+    if(params_->augmentListOnly)
+    {
         if(om::ADD == params_->addOrSubtract){
             if(om::set::SetAContainsB(params_->oldSelectedIDs,
                                       params_->newSelectedIDs))

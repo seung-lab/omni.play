@@ -100,7 +100,7 @@ private:
     void createStatusBar();
     void resetViewGroup();
 
-    void updateGuiFromProjectLoadOrOpen( QString fileName );
+    void updateGuiFromProjectCreateOrOpen( QString fileName );
     void updateReadOnlyRelatedWidgets();
     void windowTitleClear();
     void windowTitleSet(QString title);

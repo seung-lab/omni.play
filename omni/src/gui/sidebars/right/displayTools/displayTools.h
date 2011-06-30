@@ -2,14 +2,15 @@
 
 #include <QtGui>
 
-class DendToolBar;
 class OmViewGroupState;
 class SegmentationDataWrapper;
+
+namespace om { namespace sidebars { class rightImpl; } }
 
 class DisplayTools : public QWidget {
 Q_OBJECT
 public:
-    DisplayTools(DendToolBar*, OmViewGroupState* vgs);
+    DisplayTools(om::sidebars::rightImpl*, OmViewGroupState* vgs);
 
     OmViewGroupState* GetViewGroupState(){
         return vgs_;

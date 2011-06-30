@@ -12,31 +12,16 @@ class OmSegmentSplitActionImpl {
 private:
     OmSegmentEdge mEdge;
     OmID mSegmentationID;
-    OmSegID mSegID;
-    DataCoord mCoord1;
-    DataCoord mCoord2;
     QString desc;
 
 public:
-    OmSegmentSplitActionImpl() {}
+    OmSegmentSplitActionImpl()
+    {}
+
     OmSegmentSplitActionImpl(const SegmentationDataWrapper& sdw,
                              const OmSegmentEdge& edge)
         : mEdge(edge)
         , mSegmentationID(sdw.GetSegmentationID())
-        , mSegID(0)
-        , mCoord1()
-        , mCoord2()
-        , desc("Splitting: ")
-    {}
-
-    OmSegmentSplitActionImpl(const SegmentDataWrapper& sdw,
-                             const DataCoord& coord1,
-                             const DataCoord& coord2)
-        : mEdge(0,0,0.0)
-        , mSegmentationID(sdw.GetSegmentationID())
-        , mSegID(sdw.GetSegmentID())
-        , mCoord1(coord1)
-        , mCoord2(coord2)
         , desc("Splitting: ")
     {}
 
@@ -44,59 +29,53 @@ public:
     {
         SegmentationDataWrapper sdw(mSegmentationID);
 
-        if(!mSegID)
-        {
-            mEdge = sdw.Segments()->SplitEdge(mEdge);
+        mEdge = sdw.Segments()->SplitEdge(mEdge);
 
-            desc = QString("Split seg %1 from %2")
-                .arg(mEdge.childID)
-                .arg(mEdge.parentID);
+        desc = QString("Split seg %1 from %2")
+            .arg(mEdge.childID)
+            .arg(mEdge.parentID);
 
-            std::cout << desc.toStdString() << "\n";
+        std::cout << desc.toStdString() << "\n";
 
-            OmEvents::SegmentModified();
+        OmEvents::SegmentModified();
 
-            sdw.SegmentLists()->RefreshGUIlists();
+        sdw.SegmentLists()->RefreshGUIlists();
 
-        } else {
-            mEdge = sdw.Segments()->SplitSegment(mSegID, mCoord1, mCoord2);
-        }
-
+        OmCacheManager::TouchFreshness();
         OmEvents::Redraw2d();
         OmEvents::Redraw3d();
-        OmCacheManager::TouchFreshness();
     }
 
     void Undo()
     {
         SegmentationDataWrapper sdw(mSegmentationID);
-        if(!mSegID)
-        {
-            std::pair<bool, OmSegmentEdge> edge = sdw.Segments()->JoinEdge(mEdge);
 
-            if(!mEdge.childID || !mEdge.parentID) {
-                printf("Can't undo a join that probably failed.\n");
-                return;
-            }
+        std::pair<bool, OmSegmentEdge> edge = sdw.Segments()->JoinEdge(mEdge);
 
-            assert(edge.first && "edge could not be rejoined...");
-            mEdge = edge.second;
-
-            desc = QString("Joined seg %1 to %2")
-                .arg(mEdge.childID)
-                .arg(mEdge.parentID);
-
-            OmEvents::SegmentModified();
-
-            sdw.SegmentLists()->RefreshGUIlists();
-
-        } else {
-            sdw.Segments()->UnSplitSegment(mEdge);
+        if(!mEdge.childID || !mEdge.parentID) {
+            printf("Can't undo a join that probably failed.\n");
+            return;
         }
 
+        if(!edge.first)
+        {
+            std::cout << "edge could not be rejoined...\n";
+            return;
+        }
+
+        mEdge = edge.second;
+
+        desc = QString("Joined seg %1 to %2")
+            .arg(mEdge.childID)
+            .arg(mEdge.parentID);
+
+        OmEvents::SegmentModified();
+
+        sdw.SegmentLists()->RefreshGUIlists();
+
+        OmCacheManager::TouchFreshness();
         OmEvents::Redraw2d();
         OmEvents::Redraw3d();
-        OmCacheManager::TouchFreshness();
     }
 
     std::string Description() const {

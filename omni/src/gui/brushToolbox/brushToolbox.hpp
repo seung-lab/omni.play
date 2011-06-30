@@ -9,7 +9,7 @@ class BrushToolbox : public OmToolModeEventListener,
                      public OmSegmentEventListener {
 private:
     QWidget *const parent_;
-    boost::scoped_ptr<BrushToolboxImpl> dock_;
+    boost::scoped_ptr<BrushToolboxImpl> impl_;
     OmViewGroupState *const vgs_;
 
     bool alreadyPoppedMenu_;
@@ -49,19 +49,19 @@ private:
 public:
     BrushToolbox(QWidget* parent, OmViewGroupState* vgs)
         : parent_(parent)
-        , dock_(new BrushToolboxImpl(parent_, vgs))
+        , impl_(new BrushToolboxImpl(parent_, vgs))
         , vgs_(vgs)
         , alreadyPoppedMenu_(false)
     {}
 
     void Show()
     {
-        dock_->show();
+        impl_->show();
         alreadyPoppedMenu_ = true;
     }
 
     void Hide(){
-        dock_->hide();
+        impl_->hide();
     }
 };
 

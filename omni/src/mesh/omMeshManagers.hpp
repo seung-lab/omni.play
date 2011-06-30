@@ -1,10 +1,11 @@
 #pragma once
 
 #include "mesh/io/omMeshMetadata.hpp"
-#include "mesh/omMeshManager.h"
 #include "mesh/mesher/ziMesher.hpp"
+#include "mesh/omMeshManager.h"
 #include "utility/fuzzyStdObjs.hpp"
 #include "utility/omStringHelpers.h"
+#include "volume/omSegmentationFolder.h"
 
 class OmMeshManagers {
 private:
@@ -143,7 +144,7 @@ private:
 
     void findMeshThresholds()
     {
-        const QString meshFolder = OmFileNames::GetMeshFolderPath(segmentation_);
+        const QString meshFolder = segmentation_->Folder()->GetMeshFolderPath();
         QDir dir(meshFolder);
 
         QStringList filters;

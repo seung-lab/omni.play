@@ -14,10 +14,11 @@ public:
     static void MoveAllFiles(const QString& fromDirQT, const QString& toDirQT);
     static void CopyFile(const QString& from, const QString& to);
 
-    static void MkDir(const QString& dirNameQT);
+    static bool MkDir(const QString& dirNameQT);
+    static bool MkDir(const std::string& dirName);
 
     static void Symlink(const QString& fromDirQT, const QString& toDirQT);
-    static bool SymlinkExists(const QString& fileNameQT);
+    static bool IsSymlink(const QString& fileNameQT);
 
 private:
     static bool removeDir(const QString &dirName); // rm -rf

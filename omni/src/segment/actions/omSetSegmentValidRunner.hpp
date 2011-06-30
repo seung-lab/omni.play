@@ -43,8 +43,8 @@ public:
         const bool segmentGettingSetAsValid = om::SET_VALID == validEnum_;
         const bool shouldJump =
             OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
-        const bool justOneSegmentSelected =
-            (1 == segments->GetSelectedSegmentIds().size());
+
+        const bool justOneSegmentSelected = (1 == segments->NumberOfSelectedSegments());
 
         if( justOneSegmentSelected &&
             segmentGettingSetAsValid &&
@@ -86,9 +86,10 @@ public:
         }
 
         OmSegments* segments = sdw_.Segments();
+
         om::shared_ptr<std::set<OmSegment*> > children =
             OmSegmentUtils::GetAllChildrenSegments(segments,
-                                                   segments->GetSelectedSegmentIds());
+                                                   segments->GetSelectedSegmentIDs());
 
         (new OmSegmentValidateAction(sdw_, children, valid))->Run();
     }

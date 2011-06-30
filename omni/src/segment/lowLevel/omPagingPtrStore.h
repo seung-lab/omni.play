@@ -5,6 +5,9 @@
 
 class OmSegmentPage;
 class OmSimpleProgress;
+class OmSegmentation;
+
+namespace om { namespace segmentation { class loader; } }
 
 class OmPagingPtrStore {
 public:
@@ -32,8 +35,12 @@ public:
         return validPageNums_;
     }
 
+    OmSegmentation* Vol() const {
+        return vol_;
+    }
+
 private:
-    OmSegmentation *const segmentation_;
+    OmSegmentation *const vol_;
 
     uint32_t pageSize_;
     std::vector<OmSegmentPage*> pages_;
@@ -49,7 +56,6 @@ private:
 
     void loadPage(const PageNum page, OmSimpleProgress* prog);
 
-    friend QDataStream &operator<< (QDataStream& out, const OmPagingPtrStore&);
-    friend QDataStream &operator>> (QDataStream& in, OmPagingPtrStore&);
+    friend class om::segmentation::loader;
 };
 

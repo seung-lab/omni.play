@@ -122,15 +122,19 @@ void OmFileHelpers::MoveAllFiles(const QString& fromDirQT, const QString& toDirQ
     }
 }
 
-void OmFileHelpers::MkDir(const QString& dirNameQT)
+bool OmFileHelpers::MkDir(const QString& dirNameQT){
+    return MkDir(dirNameQT.toStdString());
+}
+
+bool OmFileHelpers::MkDir(const std::string& dirName)
 {
-    boost::filesystem::path path(dirNameQT.toStdString());
+    boost::filesystem::path path(dirName);
 
     try{
-        boost::filesystem::create_directories(path);
+        return boost::filesystem::create_directories(path);
 
     } catch(...){
-        throw OmIoException("could not create directory", dirNameQT);
+        throw OmIoException("could not create directory", dirName);
     }
 }
 
@@ -149,11 +153,8 @@ void OmFileHelpers::Symlink(const QString& fromDirQT, const QString& toDirQT)
     boost::filesystem::create_symlink(fromDir, toDir);
 }
 
-bool OmFileHelpers::SymlinkExists(const QString& fileNameQT)
-{
-    boost::filesystem::path path(fileNameQT.toStdString());
-
-    return boost::filesystem::exists(path);
+bool OmFileHelpers::IsSymlink(const QString& fileNameQT){
+    return QFileInfo(fileNameQT).isSymLink();
 }
 
 void OmFileHelpers::RmFile(const QString& fileNameQT)

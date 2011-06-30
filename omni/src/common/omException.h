@@ -1,16 +1,17 @@
 #pragma once
 
 /**
- *	Exception handeling for the Omni System.
+ * Exception handeling.
  *
- *	OmException is the parent exception class. Subclasses can be
- *	formed as described in the example code below.
+ * OmException is the parent exception class. Subclasses can be
+ * formed as described in the example code below.
  *
- *	Brett Warne - bwarne@mit.edu - 2/6/09
+ * Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
 #include "common/omCommon.h"
 
+#include <boost/lexical_cast.hpp>
 #include <cstdarg>
 #include <exception>
 
@@ -70,13 +71,23 @@ public:
     OmIoException(const QString& str1,
                   const QString& str2)
         : OmException("OmIoException",
-                      QString(str1+" "+str2).toStdString())
+                      QString(str1 + " " + str2).toStdString())
     {}
     OmIoException(const QString& str1,
                   const std::string& str2)
         : OmException("OmIoException",
-                      str1.toStdString()+" "+str2)
+                      str1.toStdString() + " " + str2)
     {}
+
+    // TODO: what if string conversion throws exception? (purcaro)
+    template <typename T>
+    OmIoException(const QString& str1,
+                  const T num)
+        : OmException("OmIoException",
+                      str1.toStdString() + " " +
+                      boost::lexical_cast<std::string>(num))
+    {}
+
 };
 
 class OmModificationException : public OmException {

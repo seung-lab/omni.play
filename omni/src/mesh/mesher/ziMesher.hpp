@@ -135,8 +135,8 @@ private:
             chunkCollectors_[ mip0coord ]->registerMeshPart( *cid );
         }
 
-        // downsampleSegThroughAllMipLevels(mip0coord, segIDs);
-        downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
+        downsampleSegThroughAllMipLevels(mip0coord, segIDs);
+        //downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
     }
 
     void downsampleSegThroughAllMipLevels(const OmChunkCoord& mip0coord,

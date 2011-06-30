@@ -24,12 +24,11 @@ OmMeshManager::~OmMeshManager()
 
 void OmMeshManager::Create()
 {
-    const QString path =
-        OmFileNames::GetMeshThresholdFolderPath(segmentation_, threshold_);
+    const QString path = segmentation_->Folder()->GetMeshThresholdFolderPath(threshold_);
 
     OmFileHelpers::RemoveDir(path);
 
-    OmFileNames::MakeMeshThresholdFolderPath(segmentation_, threshold_);
+    segmentation_->Folder()->MakeMeshThresholdFolderPath(threshold_);
 }
 
 void OmMeshManager::Load()

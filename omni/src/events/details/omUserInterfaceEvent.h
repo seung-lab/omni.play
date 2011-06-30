@@ -9,7 +9,7 @@
 class OmUserInterfaceEvent : public OmEvent {
 
 public:
-    OmUserInterfaceEvent(QEvent::Type type);
+    explicit OmUserInterfaceEvent(QEvent::Type type);
     OmUserInterfaceEvent(QWidget* widget, const QString& title);
 
     void Dispatch(OmEventListener *);
@@ -19,10 +19,6 @@ public:
 
     //events
     static const QEvent::Type UPDATE_SEGMENT_PROP_WIDGET = (QEvent::Type) (CLASS);
-    // static const QEvent::Type VIEW_CENTER_CHANGE = (QEvent::Type) (CLASS + 1);
-    // static const QEvent::Type VIEW_POS_CHANGE = (QEvent::Type) (CLASS + 2);
-    // static const QEvent::Type REDRAW = (QEvent::Type) (CLASS + 3);
-    // static const QEvent::Type REDRAW_BLOCKING = (QEvent::Type) (CLASS + 4);
 
     QWidget* Widget(){
         return widget_;
@@ -49,10 +45,5 @@ public:
 
     virtual void UpdateSegmentPropWidgetEvent(OmUserInterfaceEvent*)
     {}
-
-    // virtual void ViewCenterChangeEvent() = 0;
-    // virtual void ViewPosChangeEvent() = 0;
-    // virtual void ViewRedrawEvent() = 0;
-    // virtual void ViewBlockingRedrawEvent() = 0;
 };
 

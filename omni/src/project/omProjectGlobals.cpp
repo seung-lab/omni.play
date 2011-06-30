@@ -1,9 +1,9 @@
-#include "users/omUsers.h"
 #include "actions/io/omActionLogger.hpp"
 #include "actions/omActionsImpl.h"
 #include "events/details/omEventManagerImpl.hpp"
 #include "project/omProjectGlobals.h"
 #include "system/omStateManagerImpl.hpp"
+#include "users/omUsers.h"
 #include "utility/omRandColorFile.hpp"
 #include "view2d/omView2dManagerImpl.hpp"
 

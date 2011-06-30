@@ -56,16 +56,13 @@ public:
     static void UncertainSegmentation(const SegmentationDataWrapper& sdw,
                                  const bool uncertain);
 
-    static void JoinSegments(const OmID segmentationID,
+    static void JoinSegments(const SegmentationDataWrapper& sdw);
+    static void JoinSegments(const SegmentationDataWrapper& sdw,
                              const OmSegIDsSet& ids);
 
-    static void JoinSegments(const OmID segmentationID);
-    static void JoinSegments(const SegmentationDataWrapper& sdw);
+    static void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
 
-    static void FindAndSplitSegments(const SegmentDataWrapper& sdw,
-                                     OmViewGroupState* vgs, const DataCoord coord);
-    static void FindAndCutSegments(const SegmentDataWrapper& sdw,
-                                   OmViewGroupState* vgs);
+    static void FindAndCutSegments(const SegmentDataWrapper& sdw);
 
     static void SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params);
 

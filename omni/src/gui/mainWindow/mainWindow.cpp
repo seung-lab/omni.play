@@ -79,7 +79,7 @@ void MainWindow::newProject()
         }
 
         const QString fileNameAndPath = OmProject::New(fnp);
-        updateGuiFromProjectLoadOrOpen(fileNameAndPath);
+        updateGuiFromProjectCreateOrOpen(fileNameAndPath);
 
     } catch(OmException& e) {
         spawnErrorDialog(e);
@@ -251,8 +251,8 @@ void MainWindow::openProject()
 void MainWindow::openProject(QString fileNameAndPath)
 {
     try {
-        OmProject::Load(fileNameAndPath);
-        updateGuiFromProjectLoadOrOpen(fileNameAndPath);
+        OmProject::Load(fileNameAndPath, this);
+        updateGuiFromProjectCreateOrOpen(fileNameAndPath);
 
     } catch(OmException& e) {
         spawnErrorDialog(e);
@@ -442,7 +442,7 @@ void MainWindow::windowTitleClear(){
     setWindowTitle(tr("Omni"));
 }
 
-void MainWindow::updateGuiFromProjectLoadOrOpen(QString fileName)
+void MainWindow::updateGuiFromProjectCreateOrOpen(QString fileName)
 {
     vgs_.reset(new OmViewGroupState(this));
 

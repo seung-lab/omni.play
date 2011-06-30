@@ -17,6 +17,7 @@ public:
 
         try{
             doBuildThreadedVolume(vol);
+
         } catch(...){
             throw OmIoException("volume build failed");
         }

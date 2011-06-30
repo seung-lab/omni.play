@@ -71,7 +71,7 @@ public:
         OmChannel& chann = cdw.GetChannel();
 
         seg_.BuildBlankVolume(chann.Coords().MipLevelDataDimensions(0));
-        seg_.loadVolData();
+        seg_.LoadVolData();
         seg_.Segments()->refreshTree();
 
         OmActions::Save();

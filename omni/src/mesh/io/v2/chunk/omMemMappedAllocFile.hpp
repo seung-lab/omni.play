@@ -193,17 +193,15 @@ private:
 
     QString filePath()
     {
-        const QString volPath =
-            OmFileNames::GetMeshChunkFolderPath(segmentation_,
-                                                threshold_, coord_);
+        const QString volPath = segmentation_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
 
         if(!QDir(volPath).exists()){
-            OmFileNames::MakeMeshChunkFolderPath(segmentation_,
-                                                 threshold_, coord_);
+            segmentation_->Folder()->MakeMeshChunkFolderPath(threshold_, coord_);
         }
 
         const QString fullPath = QString("%1meshAllocTable.ver2")
             .arg(volPath);
+
         return fullPath;
     }
 };

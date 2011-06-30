@@ -1,10 +1,5 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "utility/segmentDataWrapper.hpp"
+#include "landmarks/omLandmarksTypes.h"
 
-struct OmSegmentPickPoint {
-    SegmentDataWrapper sdw;
-    DataCoord voxel;
-};
-
+typedef om::landmarks::sdwAndPt OmSegmentPickPoint;

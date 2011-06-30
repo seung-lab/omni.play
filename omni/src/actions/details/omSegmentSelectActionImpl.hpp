@@ -25,9 +25,11 @@ public:
     {
         OmSegments* segments = params_->sdw.Segments();
 
-        if(params_->augmentListOnly){
+        if(params_->augmentListOnly)
+		{
             if(om::ADD == params_->addOrSubtract){
                 segments->AddToSegmentSelection(params_->newSelectedIDs);
+
             } else {
                 segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
             }
@@ -44,9 +46,11 @@ public:
     {
         OmSegments* segments = params_->sdw.Segments();
 
-        if(params_->augmentListOnly){
+        if(params_->augmentListOnly)
+		{
             if(om::ADD == params_->addOrSubtract){
                 segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
+
             } else {
                 segments->AddToSegmentSelection(params_->newSelectedIDs);
             }

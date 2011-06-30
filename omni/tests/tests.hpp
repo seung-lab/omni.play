@@ -286,8 +286,8 @@ private:
     {
         OmSegmentation seg1(1);
 
-        verify("segmentations/segmentation1/" ==
-               OmDataPaths::getDirectoryPath(&seg1));
+        // verify("segmentations/segmentation1/" ==
+        //        OmDataPaths::getDirectoryPath(&seg1));
 
         const QString basePath = OmProject::FilesFolder();
         const QString fullPathToVolData =

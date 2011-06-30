@@ -1,4 +1,4 @@
-#include "tiles/cache/omTileCacheSegmentation.hpp"
+#include "annotation/omAnnotation.hpp"
 #include "chunks/omChunkCache.hpp"
 #include "chunks/omSegChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
@@ -12,33 +12,18 @@
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegments.h"
-#include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "system/omGroups.h"
+#include "tiles/cache/omTileCacheSegmentation.hpp"
+#include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "volume/build/omVolumeAllocater.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omSegmentation.h"
+#include "volume/omSegmentationLoader.h"
 #include "volume/omUpdateBoundingBoxes.h"
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
-    : uniqueChunkValues_(new OmChunkUniqueValuesManager(this))
-    , groups_(new OmGroups(this))
-    , mst_(new OmMST(this))
-    , meshDrawer_(new OmMeshDrawer(this))
-    , meshManagers_(new OmMeshManagers(this))
-    , chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this))
-    , segments_(new OmSegments(this))
-    , segmentLists_(new OmSegmentLists())
-    , mstUserEdges_(new OmUserEdges(this))
-    , validGroupNum_(new OmValidGroupNum(this))
-    , volData_(new OmVolumeData())
-    , volSliceCache_(new OmRawSegTileCache(this))
-    , tileCache_(new OmTileCacheSegmentation())
-{}
-
-// used by OmGenericManager
-OmSegmentation::OmSegmentation(OmID id)
-    : OmManageableObject(id)
+    : loader_(new om::segmentation::loader(this))
     , uniqueChunkValues_(new OmChunkUniqueValuesManager(this))
     , groups_(new OmGroups(this))
     , mst_(new OmMST(this))
@@ -52,7 +37,30 @@ OmSegmentation::OmSegmentation(OmID id)
     , volData_(new OmVolumeData())
     , volSliceCache_(new OmRawSegTileCache(this))
     , tileCache_(new OmTileCacheSegmentation())
+    , annotations_(new om::annotation::manager(this))
+{}
+
+// used by OmGenericManager
+OmSegmentation::OmSegmentation(OmID id)
+    : OmManageableObject(id)
+    , loader_(new om::segmentation::loader(this))
+    , uniqueChunkValues_(new OmChunkUniqueValuesManager(this))
+    , groups_(new OmGroups(this))
+    , mst_(new OmMST(this))
+    , meshDrawer_(new OmMeshDrawer(this))
+    , meshManagers_(new OmMeshManagers(this))
+    , chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this))
+    , segments_(new OmSegments(this))
+    , segmentLists_(new OmSegmentLists())
+    , mstUserEdges_(new OmUserEdges(this))
+    , validGroupNum_(new OmValidGroupNum(this))
+    , volData_(new OmVolumeData())
+    , volSliceCache_(new OmRawSegTileCache(this))
+    , tileCache_(new OmTileCacheSegmentation())
+    , annotations_(new om::annotation::manager(this))
 {
+    LoadPath();
+
     segments_->StartCaches();
     segments_->refreshTree();
 }
@@ -60,7 +68,11 @@ OmSegmentation::OmSegmentation(OmID id)
 OmSegmentation::~OmSegmentation()
 {}
 
-void OmSegmentation::loadVolData()
+void OmSegmentation::LoadPath(){
+    folder_.reset(new om::segmentation::folder(this));
+}
+
+bool OmSegmentation::LoadVolData()
 {
     if(IsBuilt())
     {
@@ -68,7 +80,11 @@ void OmSegmentation::loadVolData()
         volData_->load(this);
         volSliceCache_->Load();
         tileCache_->Load(this);
+        annotations_->Load();
+        return true;
     }
+
+    return false;
 }
 
 std::string OmSegmentation::GetName(){
@@ -79,10 +95,6 @@ std::string OmSegmentation::GetNameHyphen(){
     return "segmentation-" + om::string::num(GetID());
 }
 
-std::string OmSegmentation::GetDirectoryPath() const {
-    return OmDataPaths::getDirectoryPath(this);
-}
-
 void OmSegmentation::SetDendThreshold(const double t){
     mst_->SetUserThreshold(t);
 }
@@ -91,14 +103,16 @@ void OmSegmentation::CloseDownThreads() {
     meshManagers_->CloseDownThreads();
 }
 
-void OmSegmentation::loadVolDataIfFoldersExist()
+bool OmSegmentation::LoadVolDataIfFoldersExist()
 {
     //assume level 0 data always present
     const QString path = OmFileNames::GetVolDataFolderPath(this, 0);
 
     if(QDir(path).exists()){
-        loadVolData();
+        return LoadVolData();
     }
+
+    return false;
 }
 
 double OmSegmentation::GetDendThreshold() {
@@ -131,10 +145,13 @@ SegmentationDataWrapper OmSegmentation::GetSDW() const {
 
 void OmSegmentation::Flush()
 {
+    folder_->MakeUserSegmentsFolder();
+
     segments_->Flush();
     mst_->Flush();
     validGroupNum_->Save();
     mstUserEdges_->Save();
+    annotations_->Save();
 }
 
 //TODO: make OmVolumeBuildBlank class, and move this in there (purcaro)
@@ -190,4 +207,8 @@ void OmSegmentation::UpdateFromVolResize()
 {
     chunkCache_->UpdateFromVolResize();
     uniqueChunkValues_->UpdateFromVolResize();
+}
+
+std::string OmSegmentation::GetDirectoryPath() const {
+    return folder_->RelativeVolPath().toStdString();
 }

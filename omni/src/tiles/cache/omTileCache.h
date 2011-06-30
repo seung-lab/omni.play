@@ -1,11 +1,11 @@
 #pragma once
 
-#include "threads/omTaskManagerTypes.h"
 #include "common/om.hpp"
 #include "common/omCommon.h"
 #include "tiles/omTileTypes.hpp"
 #include "zi/omUtility.h"
 
+class OmTileCacheThreadPool;
 class OmTileCoord;
 class OmTileCacheImpl;
 class OmTileDrawer;
@@ -44,7 +44,7 @@ public:
     static void ClearChannel();
     static void ClearSegmentation();
 
-    static OmTaskManager<OmTaskManagerContainerMipSorted>& ThreadPool();
+    static OmTileCacheThreadPool& ThreadPool();
 
 private:
     OmTileCache();

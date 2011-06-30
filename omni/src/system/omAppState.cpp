@@ -1,6 +1,6 @@
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/sidebars/left/inspectorWidget.h"
-#include "gui/sidebars/right/dendToolbar.h"
+#include "gui/sidebars/right/rightImpl.h"
 #include "system/omAppState.hpp"
 #include "zi/omUtility.h"
 
@@ -20,10 +20,6 @@ void OmAppState::SetInspector(InspectorWidget* miw){
 
 void OmAppState::SetMainWindow(MainWindow* mw){
     instance().mainWindow_ = mw;
-}
-
-void OmAppState::SetDendToolBar(DendToolBar* dtb){
-    instance().dendToolBar_ = dtb;
 }
 
 void OmAppState::UpdateStatusBar(const QString& msg){
@@ -49,8 +45,8 @@ QSize OmAppState::GetViewBoxSizeHint()
         w -= instance().inspectorWidget_->width();
     }
 
-    if(instance().dendToolBar_){
-        w -= instance().dendToolBar_->width();
+    if(instance().rightToolbar_){
+        w -= instance().rightToolbar_->width();
     }
 
     return QSize(w, h);

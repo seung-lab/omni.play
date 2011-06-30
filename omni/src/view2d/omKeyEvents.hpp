@@ -33,10 +33,6 @@ public:
     {
         switch (event->key()) {
 
-        case Qt::Key_J:
-            Join();
-            break;
-
         case Qt::Key_L:
             state_->ToggleLevelLock();
             v2d_->Redraw();
@@ -100,13 +96,6 @@ public:
         }
 
         return true; // we handled event
-    }
-
-private:
-    void Join()
-    {
-        OmActions::JoinSegments(state_->GetSegmentationID());
-        OmEvents::Redraw2d();
     }
 };
 

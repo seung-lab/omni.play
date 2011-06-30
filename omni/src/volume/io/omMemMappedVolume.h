@@ -10,14 +10,16 @@ public:
     OmMemMappedVolume()
     {}
 
-    void load(OmMipVolume* vol)
+    template <typename VOL>
+    void load(VOL* vol)
     {
         SetDataType(vol);
         loadMemMapFiles();
         printf("loaded data\n");
     }
 
-    void create(OmMipVolume* vol, const std::map<int, Vector3i>& levDims)
+    template <typename VOL>
+    void create(VOL* vol, const std::map<int, Vector3i>& levDims)
     {
         SetDataType(vol);
         allocMemMapFiles(levDims);
@@ -25,11 +27,12 @@ public:
 
     int GetBytesPerVoxel() const;
     OmRawDataPtrs GetVolPtr(const int level);
-    OmRawDataPtrs getChunkPtrRaw(const OmChunkCoord & coord);
+    OmRawDataPtrs getChunkPtrRaw(const OmChunkCoord& coord);
 
     void downsample(OmMipVolume* vol);
 
-    void SetDataType(OmMipVolume* vol)
+    template <typename VOL>
+    void SetDataType(VOL* vol)
     {
         printf("setting up volume data...\n");
 
@@ -39,6 +42,7 @@ public:
 
             if(OmProject::HasOldHDF5()){
                 vol->mVolDataType = OmHdf5ChunkUtils::DetermineOldVolType(vol);
+
             } else {
                 throw OmIoException("can not resolve volume type");
             }

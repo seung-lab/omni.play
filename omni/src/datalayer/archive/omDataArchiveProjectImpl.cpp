@@ -21,7 +21,7 @@
 #include "system/omGroup.h"
 #include "system/omGroups.h"
 #include "system/omPreferences.h"
-#include "volume/build/omVolumeProcessor.h"
+#include "volume/omSegmentationLoader.h"
 
 #include <QSet>
 
@@ -133,7 +133,7 @@ void OmDataArchiveProjectImpl::LoadOldChannel(QDataStream& in, OmChannel& chan)
     }
 
     if(OmProject::GetFileVersion() > 13){
-        chan.loadVolDataIfFoldersExist();
+        chan.LoadVolDataIfFoldersExist();
     }
 }
 
@@ -143,7 +143,7 @@ void OmDataArchiveProjectImpl::LoadNewChannel(QDataStream& in, OmChannel& chan)
     volArchive.Load(in);
 
     in >> chan.filterManager_;
-    chan.loadVolDataIfFoldersExist();
+    chan.LoadVolDataIfFoldersExist();
 }
 
 /**
@@ -215,6 +215,7 @@ QDataStream &operator>>(QDataStream& in, OmSegmentation& seg)
 {
     if(OmProject::GetFileVersion() < 25){
         OmDataArchiveProjectImpl::LoadOldSegmentation(in, seg);
+
     } else {
         OmDataArchiveProjectImpl::LoadNewSegmentation(in, seg);
     }
@@ -227,7 +228,8 @@ void OmDataArchiveProjectImpl::LoadOldSegmentation(QDataStream& in,
 {
     OmMipVolumeArchiveOld::Load(in, seg, OmProject::GetFileVersion());
 
-    if(OmProject::GetFileVersion() < 22){
+    if(OmProject::GetFileVersion() < 22)
+    {
         QString dead;
         in >> dead;
     }
@@ -246,7 +248,7 @@ void OmDataArchiveProjectImpl::LoadOldSegmentation(QDataStream& in,
     in >> (*seg.groups_);
 
     if(OmProject::GetFileVersion() > 13){
-        seg.loadVolDataIfFoldersExist();
+        seg.LoadVolDataIfFoldersExist();
     }
 
     if(OmProject::GetFileVersion() < 18){
@@ -263,23 +265,19 @@ void OmDataArchiveProjectImpl::LoadOldSegmentation(QDataStream& in,
     }
 }
 
-void OmDataArchiveProjectImpl::moveOldMeshMetadataFile(OmSegmentation* segmentation)
+void OmDataArchiveProjectImpl::moveOldMeshMetadataFile(OmSegmentation* vol)
 {
-    const QString oldFileName =
-        OmFileNames::MeshMetadataFileOld(segmentation);
+    const QString oldFileName = vol->Folder()->MeshMetadataFileOld();
 
-    QFile oldFile(oldFileName);
-    if(oldFile.exists())
+    if(QFile::exists(oldFileName))
     {
-        const QString newFileName =
-            OmFileNames::MeshMetadataFilePerThreshold(segmentation, 1);
+        const QString newFileName = vol->Folder()->MeshMetadataFilePerThreshold(1);
 
         OmFileHelpers::MoveFile(oldFileName, newFileName);
     }
 }
 
-void OmDataArchiveProjectImpl::LoadNewSegmentation(QDataStream& in,
-                                                   OmSegmentation& seg)
+void OmDataArchiveProjectImpl::LoadNewSegmentation(QDataStream& in, OmSegmentation& seg)
 {
     OmMipVolumeArchive<OmSegmentation> volArchive(seg);
     volArchive.Load(in);
@@ -290,7 +288,7 @@ void OmDataArchiveProjectImpl::LoadNewSegmentation(QDataStream& in,
     in >> seg.mst_->userThreshold_;
     in >> (*seg.groups_);
 
-    seg.loadVolDataIfFoldersExist();
+    seg.LoadVolDataIfFoldersExist();
 
     seg.mst_->Read();
     seg.validGroupNum_->Load();
@@ -397,51 +395,7 @@ QDataStream &operator>>(QDataStream& in, OmPagingPtrStore& ps)
     in >> validPageNumbers;
     in >> size;
 
-    if(OmProject::GetFileVersion() < 17)
-    {
-        ps.pageSize_ = size;
-
-        FOR_EACH(iter, validPageNumbers){
-            ps.validPageNums_.insert(*iter);
-        }
-        ps.storeMetadata();
-    }
-
-    OmSegmentation* vol = ps.segmentation_;
-
-    if(vol->IsBuilt())
-    {
-        const QString fullPath = OmFileNames::GetVolSegmentsPath(vol);
-
-        if(OmFileHelpers::IsFolderEmpty(fullPath))
-        {
-            std::cout << "no segment folder; rebuild segment data?\n==> (y/N)  " << std::flush;
-
-            std::string answer;
-            std::getline(std::cin, answer);
-
-            om::string::downcase(answer);
-
-            if(om::string::startsWith(answer, "y"))
-            {
-                vol->loadVolData();
-
-                vol->VolData()->downsample(vol);
-
-                vol->Segments()->StartCaches();
-
-                OmVolumeProcessor processor;
-                processor.BuildThreadedVolume(vol);
-
-                vol->Segments()->Flush();
-
-                vol->MSTUserEdges()->Save();
-            }
-
-        } else {
-            ps.loadAllSegmentPages();
-        }
-    }
+    ps.Vol()->Loader()->LoadSegmentPages(ps, validPageNumbers, size);
 
     return in;
 }

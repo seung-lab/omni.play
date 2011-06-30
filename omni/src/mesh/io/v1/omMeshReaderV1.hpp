@@ -151,7 +151,7 @@ private:
                                    % meshCoord.MipChunkCoord.Coordinate.z
                                    % meshCoord.DataValue);
 
-        return segmentation_->GetDirectoryPath() + p;
+        return segmentation_->Folder()->RelativeVolPath().toStdString() + p;
     }
 
     template <typename T>

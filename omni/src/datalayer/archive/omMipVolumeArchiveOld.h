@@ -50,38 +50,46 @@ private:
         loadOldOmMipVolume(in, seg);
     }
 
-    void loadOldOmMipVolume(QDataStream& in, OmMipVolume& m)
+    template <typename VOL>
+    void loadOldOmMipVolume(QDataStream& in, VOL& vol)
     {
-        if(fileVersion_ < 24){
+        if(fileVersion_ < 24)
+        {
             QString dead;
             in >> dead;
         }
 
-        in >> m.Coords().mMipLeafDim;
-        in >> m.Coords().mMipRootLevel;
+        in >> vol.Coords().mMipLeafDim;
+        in >> vol.Coords().mMipRootLevel;
 
-        if(fileVersion_ < 24){
+        if(fileVersion_ < 24)
+        {
             qint32 dead;
             in >> dead;
         }
 
-        in >> m.mBuildState;
+        in >> vol.mBuildState;
 
         bool dead;
         in >> dead;
 
-        if(fileVersion_ < 24){
+        if(fileVersion_ < 24)
+        {
             qint32 dead;
             in >> dead;
         }
 
-        if(fileVersion_ > 13){
+        if(fileVersion_ > 13)
+        {
             QString volDataType;
             in >> volDataType;
-            m.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+            vol.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+
         } else {
-            m.mVolDataType = OmVolDataType::UNKNOWN;
+            vol.mVolDataType = OmVolDataType::UNKNOWN;
         }
+
+        vol.LoadPath();
     }
 
     static void loadOldOmVolume(QDataStream& in, OmMipVolCoords& v)

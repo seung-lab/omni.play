@@ -6,7 +6,7 @@
 
 class OmSegmentPageV3 {
 private:
-    OmSegmentation *const segmentation_;
+    OmSegmentation *const vol_;
     const PageNum pageNum_;
     const uint32_t pageSize_;
     const std::string fnp_;
@@ -14,9 +14,8 @@ private:
     om::shared_ptr<OmIOnDiskFile<OmSegmentDataV3> > segmentsDataPtr_;
 
 public:
-    OmSegmentPageV3(OmSegmentation* segmentation, const PageNum pageNum,
-                    const uint32_t pageSize)
-        : segmentation_(segmentation)
+    OmSegmentPageV3(OmSegmentation* vol, const PageNum pageNum, const uint32_t pageSize)
+        : vol_(vol)
         , pageNum_(pageNum)
         , pageSize_(pageSize)
         , fnp_(path())
@@ -64,13 +63,11 @@ private:
 
     QString memMapPathQStrV3() const
     {
-        const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
-        const QString fullPath = QString("%1segment_page%2.%3.ver3")
-            .arg(volPath)
-            .arg(pageNum_)
-            .arg("data");
+        const std::string fname = str( boost::format("segment_page%1%.data.ver3")
+                                       % pageNum_);
 
-        return fullPath;
+        return QString::fromStdString(
+            vol_->Folder()->GetVolSegmentsPathAbs(fname)
+            );
     }
 };
-

@@ -35,14 +35,14 @@ public:
 
     bool isSegmentEnabled(OmSegID segID);
     void setSegmentEnabled(OmSegID segID, bool isEnabled);
-    OmSegIDsSet & GetEnabledSegmentIds();
+    OmSegIDsSet GetEnabledSegmentIDs();
     bool AreSegmentsEnabled();
 
     bool IsSegmentSelected(OmSegID segID);
     bool IsSegmentSelected(OmSegment* seg);
     void setSegmentSelected(OmSegID segID, const bool, const bool);
-    const OmSegIDsSet& GetSelectedSegmentIds();
-    uint32_t numberOfSelectedSegments();
+    const OmSegIDsSet GetSelectedSegmentIDs();
+    uint32_t NumberOfSelectedSegments();
     bool AreSegmentsSelected();
     void UpdateSegmentSelection(const OmSegIDsSet& idsToSelect, const bool);
     void AddToSegmentSelection(const OmSegIDsSet& idsToSelect);
@@ -76,17 +76,6 @@ public:
     bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
 
     uint64_t MSTfreshness() const;
-
-    OmSegmentEdge SplitSegment(const OmSegID, const DataCoord, const DataCoord)
-    {
-        printf("Watershed-based split segment is NYI.\n");
-        return OmSegmentEdge();
-    }
-
-    void UnSplitSegment(const OmSegmentEdge &)
-    {
-        printf("Watershed-based unsplitSegment is NYI.\n");
-    }
 
 private:
     zi::mutex mutex_;

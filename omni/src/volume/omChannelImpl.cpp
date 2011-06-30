@@ -1,3 +1,4 @@
+#include "volume/omChannelFolder.h"
 #include "tiles/cache/omTileCacheChannel.hpp"
 #include "actions/omActions.h"
 #include "chunks/omChunk.h"
@@ -29,11 +30,17 @@ OmChannelImpl::OmChannelImpl(OmID id)
     , volData_(new OmVolumeData())
     , tileCache_(new OmTileCacheChannel())
 {
+    LoadPath();
+
     filterManager_.AddFilter();
 }
 
 OmChannelImpl::~OmChannelImpl()
 {}
+
+void OmChannelImpl::LoadPath(){
+    folder_.reset(new om::channel::folder(this));
+}
 
 std::string OmChannelImpl::GetName(){
     return "channel" + om::string::num(GetID());
@@ -44,30 +51,36 @@ std::string OmChannelImpl::GetNameHyphen(){
 }
 
 std::string OmChannelImpl::GetDirectoryPath() const {
-    return OmDataPaths::getDirectoryPath(this);
+    return folder_->RelativeVolPath().toStdString();
 }
 
 void OmChannelImpl::CloseDownThreads()
 {}
 
-void OmChannelImpl::loadVolData()
+bool OmChannelImpl::LoadVolData()
 {
     if(IsBuilt())
     {
         UpdateFromVolResize();
         volData_->load(this);
         tileCache_->Load(this);
+        return true;
     }
+
+    return false;
 }
 
-void OmChannelImpl::loadVolDataIfFoldersExist()
+bool OmChannelImpl::LoadVolDataIfFoldersExist()
 {
     //assume level 0 data always present
     const QString path = OmFileNames::GetVolDataFolderPath(this, 0);
 
-    if(QDir(path).exists()){
-        loadVolData();
+    if(QDir(path).exists())
+    {
+        return LoadVolData();
     }
+
+    return false;
 }
 
 int OmChannelImpl::GetBytesPerVoxel() const{

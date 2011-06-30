@@ -1,6 +1,7 @@
 #pragma once
 
 #include "datalayer/fs/omFileNames.hpp"
+#include "volume/omChannelFolder.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolCoordsMipped.hpp"
 #include "volume/omVolumeTypes.hpp"
@@ -49,17 +50,14 @@ public:
         in >> volDataType;
         vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
 
+        vol_.LoadPath();
+
         load();
     }
 
 private:
-    QString filePathV1() const
-    {
-        const QString volPath = OmFileNames::GetVolPath(&vol_);
-        const QString fullPath = QString("%1abs_coord.ver1")
-            .arg(volPath);
-
-        return fullPath;
+    QString filePathV1() const {
+        return vol_.Folder()->GetVolPath() + "abs_coord.ver1";
     }
 
     void load()
@@ -82,6 +80,8 @@ private:
 
         int version;
         in >> version;
+
+        assert(1 == version);
 
         in >> vol_.Coords().absOffset_;
 

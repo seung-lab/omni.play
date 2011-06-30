@@ -12,15 +12,15 @@ private:
     // version 4: split om::SegListType off into seperate file
     static const int CurrentFileVersion = 4;
 
-    OmSegmentation *const segmentation_;
+    OmSegmentation *const vol_;
     const PageNum pageNum_;
     const QString fnp_;
 
     int version_;
 
 public:
-    OmSegmentPageVersion(OmSegmentation* segmentation, const PageNum pageNum)
-        : segmentation_(segmentation)
+    OmSegmentPageVersion(OmSegmentation* vol, const PageNum pageNum)
+        : vol_(vol)
         , pageNum_(pageNum)
         , fnp_(versionFilePath())
         , version_(0)
@@ -85,13 +85,12 @@ private:
 
     QString memMapPathQStrV2()
     {
-        const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
-        const QString fullPath = QString("%1segment_page%2.%3")
-            .arg(volPath)
-            .arg(pageNum_)
-            .arg("data");
+        const std::string fname = str( boost::format("segment_page%1%.data")
+                                       % pageNum_);
 
-        return fullPath;
+        return QString::fromStdString(
+            vol_->Folder()->GetVolSegmentsPathAbs(fname)
+            );
     }
 };
 

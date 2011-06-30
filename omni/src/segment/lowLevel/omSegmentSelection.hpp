@@ -27,11 +27,11 @@ public:
         : cache_(cache)
     {}
 
-    inline const OmSegIDsSet& GetSelectedSegmentIds() const {
+    inline const OmSegIDsSet GetSelectedSegmentIDs() const {
         return selected_;
     }
 
-    inline uint32_t numberOfSelectedSegments() const {
+    inline uint32_t NumberOfSelectedSegments() const {
         return selected_.size();
     }
 
@@ -50,7 +50,7 @@ public:
     }
 
     inline bool AreSegmentsSelected() const {
-        return selected_.size();
+        return !selected_.empty();
     }
 
     inline bool isSegmentSelected(const OmSegID segID) const

@@ -8,50 +8,41 @@
 #include "segment/omSegments.h"
 #include "utility/omSmartPtr.hpp"
 #include "utility/omStringHelpers.h"
+#include "volume/omSegmentationFolder.h"
 
 OmMST::OmMST(OmSegmentation* segmentation)
-    : segmentation_(segmentation)
-    , fnpActual_(filePathActual())
-    // , fnpWorking_(filePathWorking())
+    : vol_(segmentation)
     , numEdges_(0)
     , userThreshold_(defaultThreshold_)
     , edges_(NULL)
 {}
 
-QString OmMST::filePathActual()
-{
-    return OmFileNames::MakeVolSegmentsPath(segmentation_)
-        + "mst.data";
+std::string OmMST::filePathActual(){
+    return vol_->Folder()->GetVolSegmentsPathAbs("mst.data");
 }
-
-// QString OmMST::filePathWorking() {
-//     return filePathActual() + ".working";
-// }
 
 void OmMST::Read()
 {
-    if(!numEdges_){
+    if(!numEdges_)
+    {
         printf("no MST found\n");
         return;
     }
 
-    // we will mem-map "working" version to avoid changing the actual MST w/o saving
-    // std::cout << "backing up MST..." << std::flush;
-    // OmFileHelpers::CopyFile(fnpActual_, fnpWorking_);
-    // std::cout << "done\n";
-
-    // edgesPtr_ = reader_t::Reader(fnpWorking_.toStdString());
-    edgesPtr_ = reader_t::Reader(fnpActual_.toStdString());
+    edgesPtr_ = reader_t::Reader(filePathActual());
     edges_ = edgesPtr_->GetPtr();
 
-    const uint64_t expectedSize = numEdges_*sizeof(OmMSTEdge);
+    const uint64_t expectedSize = numEdges_ * sizeof(OmMSTEdge);
 
-    if( expectedSize != edgesPtr_->Size()){
+    if( expectedSize != edgesPtr_->Size())
+    {
         const QString err =
             QString("mst sizes did not match: file was %1, but expected %2")
             .arg(edgesPtr_->Size())
             .arg(expectedSize);
+
         const QString is32bit("; is Omni running on a 32-bit OS?");
+
         throw OmIoException(err + is32bit);
     }
 
@@ -64,13 +55,9 @@ void OmMST::create()
 {
     assert(numEdges_);
 
-    // edgesPtr_ = writer_t::WriterNumElements(fnpWorking_.toStdString(),
-    //                                         numEdges_,
-    //                                         om::ZERO_FILL);
-
-     edgesPtr_ = writer_t::WriterNumElements(fnpActual_.toStdString(),
-                                             numEdges_,
-                                             om::ZERO_FILL);
+    edgesPtr_ = writer_t::WriterNumElements(filePathActual(),
+                                            numEdges_,
+                                            om::ZERO_FILL);
 
     edges_ = edgesPtr_->GetPtr();
 }
@@ -81,7 +68,8 @@ void OmMST::Import(const std::vector<OmMSTImportEdge>& importEdges)
 
     create();
 
-    for(uint32_t i = 0; i < numEdges_; ++i){
+    for(uint32_t i = 0; i < numEdges_; ++i)
+    {
         edges_[i].number    = i;
         edges_[i].node1ID   = importEdges[i].node1ID;
         edges_[i].node2ID   = importEdges[i].node2ID;
@@ -97,16 +85,17 @@ void OmMST::Import(const std::vector<OmMSTImportEdge>& importEdges)
 void OmMST::convert()
 {
     // numEdges_ already set by OmDataArchiveProject
-
-    if(!numEdges_){
+    if(!numEdges_)
+    {
         printf("no MST found\n");
         return;
     }
 
-    OmMSTold old(segmentation_);
+    OmMSTold old(vol_);
     old.ReadOld();
 
-    if(!old.IsPopulated()){
+    if(!old.IsPopulated())
+    {
         printf("old MST not populated\n");
         return;
     }
@@ -123,26 +112,7 @@ void OmMST::Flush()
     if(numEdges_){
         edgesPtr_->Flush();
     }
-
-    // writeToActualFile();
 }
-
-// void OmMST::writeToActualFile()
-// {
-//     QFile file(fnpActual_);
-//     if(!file.open(QIODevice::ReadWrite)){
-//         throw OmIoException("could not open", fnpActual_);
-//     }
-
-//     const int64_t numBytes = sizeof(OmMSTEdge) * numEdges_;
-
-//     const int64_t writeSize =
-//         file.write(reinterpret_cast<const char*>(edges_), numBytes);
-
-//     if( writeSize != numBytes) {
-//         throw OmIoException("write failed for", fnpActual_);
-//     }
-// }
 
 void OmMST::SetUserThreshold(const double t)
 {
@@ -153,5 +123,5 @@ void OmMST::SetUserThreshold(const double t)
     }
     userThreshold_ = t;
 
-    segmentation_->Segments()->refreshTree();
+    vol_->Segments()->refreshTree();
 }

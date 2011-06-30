@@ -92,22 +92,22 @@ bool OmSegments::AreSegmentsSelected()
     return impl_->SegmentSelection().AreSegmentsSelected();
 }
 
-uint32_t OmSegments::numberOfSelectedSegments()
+uint32_t OmSegments::NumberOfSelectedSegments()
 {
     zi::guard g(mutex_);
-    return impl_->SegmentSelection().numberOfSelectedSegments();
+    return impl_->SegmentSelection().NumberOfSelectedSegments();
 }
 
-const OmSegIDsSet& OmSegments::GetSelectedSegmentIds()
+const OmSegIDsSet OmSegments::GetSelectedSegmentIDs()
 {
     zi::guard g(mutex_);
-    return impl_->SegmentSelection().GetSelectedSegmentIds();
+    return impl_->SegmentSelection().GetSelectedSegmentIDs();
 }
 
-OmSegIDsSet & OmSegments::GetEnabledSegmentIds()
+OmSegIDsSet OmSegments::GetEnabledSegmentIDs()
 {
     zi::guard g(mutex_);
-    return impl_->EnabledSegments().GetEnabledSegmentIdsRef();
+    return impl_->EnabledSegments().GetEnabledSegmentIDs();
 }
 
 bool OmSegments::isSegmentEnabled(OmSegID segID)

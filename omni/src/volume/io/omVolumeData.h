@@ -2,8 +2,6 @@
 
 #include "volume/io/omMemMappedVolume.h"
 
-class OmMipVolume;
-
 class OmVolumeData {
 private:
     OmMemMappedVolume memMapped_;
@@ -12,11 +10,13 @@ public:
     OmVolumeData()
     {}
 
-    void load(OmMipVolume* vol){
+    template <typename VOL>
+    void load(VOL* vol){
         memMapped_.load(vol);
     }
 
-    void create(OmMipVolume* vol, const std::map<int, Vector3i>& levDims){
+    template <typename VOL>
+    void create(VOL* vol, const std::map<int, Vector3i>& levDims){
         memMapped_.create(vol, levDims);
     }
 
@@ -32,11 +32,13 @@ public:
         return memMapped_.getChunkPtrRaw(coord);
     }
 
-    void downsample(OmMipVolume* vol){
+    template <typename VOL>
+    void downsample(VOL* vol){
         memMapped_.downsample(vol);
     }
 
-    void SetDataType(OmMipVolume* vol){
+    template <typename VOL>
+    void SetDataType(VOL* vol){
         memMapped_.SetDataType(vol);
     }
 };

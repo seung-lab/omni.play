@@ -135,7 +135,7 @@ OmSegID OmSegmentLists::GetNextSegIDinWorkingList(const SegmentationDataWrapper&
         return 0;
     }
 
-    const OmSegIDsSet selectedIDs = sdw.GetSelectedSegmentIds();
+    const OmSegIDsSet selectedIDs = sdw.GetSelectedSegmentIDs();
     std::vector<SegInfo> infos;
     infos.reserve(selectedIDs.size());
 

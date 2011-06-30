@@ -98,9 +98,11 @@ private:
     void draw(V* vol)
     {
         determineWhichTilesToDraw(vol);
-        const boost::optional<int> didNotFinish = openglTileDrawer_->DrawTiles(tilesToDraw_);
-        if(didNotFinish){
-            tileCountIncomplete_ += *didNotFinish;
+
+        const bool finished = openglTileDrawer_->DrawTiles(tilesToDraw_);
+
+        if(!finished){
+            OmEvents::Redraw2d();
         }
     }
 
@@ -196,8 +198,10 @@ private:
 
             const om::FilterType filterType = filter->FilterType();
 
+            const double alpha = filter->GetAlpha();
+
             if(om::OVERLAY_NONE == filterType ||
-               filter->GetAlpha() < 0.05) // don't bother drawing segmentation if user won't see it
+               alpha < 0.05) // don't bother drawing segmentation if user won't see it
             {
                 drawChannel = true;
                 continue;
@@ -213,12 +217,15 @@ private:
             }
 
             OmSegmentation* seg = filter->GetSegmentation();
+
             draw(seg);
-            const bool shouldBrightenAlpha = seg->Segments()->GetSelectedSegmentIds().empty();
+
+            const bool shouldBrightenAlpha = seg->Segments()->AreSegmentsSelected();
+
             om::opengl_::SetupGLblendColor(haveAlphaGoToBlack, filter->GetAlpha(),
                                            shouldBrightenAlpha);
 
-            if(filter->GetAlpha() < 0.95 || !haveAlphaGoToBlack)
+            if(alpha < 0.95 || !haveAlphaGoToBlack)
             {
                 // only draw channel if user can see it (low enough alpha,
                 //     or user wants channel to disappear at high alpha)

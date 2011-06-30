@@ -76,7 +76,8 @@ private:
 public:
     OmChannelImplChunkBuildTask(const OmChunkCoord& coord,
                                 OmChannelImpl* vol)
-        :coord_(coord), vol_(vol)
+        : coord_(coord)
+        , vol_(vol)
     {}
 
     void run()
@@ -100,11 +101,13 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmChannel* vol)
     om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
         vol->GetMipChunkCoords();
 
-    FOR_EACH(iter, *coordsPtr){
+    FOR_EACH(iter, *coordsPtr)
+    {
         const OmChunkCoord& coord = *iter;
 
         om::shared_ptr<OmChannelImplChunkBuildTask> task =
             om::make_shared<OmChannelImplChunkBuildTask>(coord, vol);
+
         threadPool.push_back(task);
     }
 

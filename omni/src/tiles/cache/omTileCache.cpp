@@ -55,8 +55,7 @@ void OmTileCache::SetDrawerActive(OmTileDrawer* d){
     impl()->SetDrawerActive(d);
 }
 
-void OmTileCache::WidgetVisibilityChanged(OmTileDrawer* drawer,
-                                          const bool visible){
+void OmTileCache::WidgetVisibilityChanged(OmTileDrawer* drawer, const bool visible){
     impl()->WidgetVisibilityChanged(drawer, visible);
 }
 
@@ -76,6 +75,6 @@ void OmTileCache::ClearChannel(){
     impl()->ClearChannel();
 }
 
-OmTaskManager<OmTaskManagerContainerMipSorted>& OmTileCache::ThreadPool(){
+OmTileCacheThreadPool& OmTileCache::ThreadPool(){
     return impl()->ThreadPool();
 }

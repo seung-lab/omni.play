@@ -614,7 +614,7 @@ QSize OmView3d::sizeHint () const
 bool OmView3d::event(QEvent *e)
 {
     if(e->type() == QEvent::Gesture) {
-        return mView3dUi.gestureEvent(static_cast<QGestureEvent*>(e));
+        return mView3dUi.GestureEvent(static_cast<QGestureEvent*>(e));
     }
 
     return QGLWidget::event(e);

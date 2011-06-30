@@ -38,6 +38,7 @@ public:
 
 private:
     static void moveOldMeshMetadataFile(OmSegmentation* segmentation);
+    static void rebuildSegments(OmSegmentation* vol);
 };
 
 QDataStream &operator<<(QDataStream& out, const OmProjectImpl& project);

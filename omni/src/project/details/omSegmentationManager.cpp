@@ -6,6 +6,7 @@
 #include "project/details/omSegmentationManager.h"
 #include "utility/dataWrappers.h"
 #include "volume/omFilter2d.h"
+#include "volume/omSegmentationFolder.h"
 
 OmSegmentation& OmSegmentationManager::GetSegmentation(const OmID id)
 {
@@ -15,7 +16,7 @@ OmSegmentation& OmSegmentationManager::GetSegmentation(const OmID id)
 OmSegmentation& OmSegmentationManager::AddSegmentation()
 {
     OmSegmentation& vol = manager_.Add();
-    OmFileNames::MakeVolFolder(&vol);
+    vol.Folder()->MakeVolFolder();
     OmActions::Save();
     return vol;
 }

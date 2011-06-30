@@ -52,9 +52,7 @@ public:
     }
 
 private:
-    OmSegmentation *const segmentation_;
-    const QString fnpActual_;
-    // const QString fnpWorking_;
+    OmSegmentation *const vol_;
 
     uint32_t numEdges_;
     double userThreshold_;
@@ -66,7 +64,6 @@ private:
 
     void create();
     void convert();
-    // void writeToActualFile();
 
     // read MST via full load into memory
     typedef OmFileReadQT<OmMSTEdge> reader_t;
@@ -76,8 +73,7 @@ private:
     // typedef OmMemMappedFileReadQT<OmMSTEdge> reader_t;
     // typedef OmMemMappedFileWriteQT<OmMSTEdge> writer_t;
 
-    QString filePathActual();
-    // QString filePathWorking();
+    std::string filePathActual();
 
     friend class SegmentTests1;
 

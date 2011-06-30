@@ -11,6 +11,7 @@ class OmRandColorFile;
 class OmStateManagerImpl;
 class OmView2dManagerImpl;
 class OmUsers;
+class QWidget;
 
 namespace om { class users; }
 
@@ -31,6 +32,7 @@ public:
     ~OmProjectGlobals();
 
     void Init();
+    void GUIinit(QWidget* widget);
 
     inline OmRandColorFile& RandColorFile(){
         return *randColorFile_;

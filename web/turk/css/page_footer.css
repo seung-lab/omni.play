@@ -1,0 +1,74 @@
+/* PAGE FOOTER */
+
+.page_footer {
+	border-top: 1px solid #DEDEDE;
+	margin-top: 50px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-bottom: 50px;
+	width: 1000px;
+}
+
+
+
+/* HEADER - BOTTOM NAV*/
+
+.bottom_nav {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 10px;
+	height: 22px;
+}
+
+.bottom_nav ul {
+	list-style: none outside none;
+	margin: 0;
+	padding: 0;
+}
+
+.bottom_nav ul.left {
+	float: left;
+}
+
+.bottom_nav ul.right {
+	float: right;
+}
+
+.bottom_nav ul .item {
+	float: left;
+	color: #AAAAAA;
+}
+
+.bottom_nav .text {
+	float: right;
+	color: #FFFFFF;
+	border: none;
+	padding-left: 20px;
+}
+
+.bottom_nav ul.left .item div {
+	padding: 0 25px 0 0;
+}
+
+.bottom_nav ul.right .item div {
+	padding: 0 0 0 25px;
+}
+
+.bottom_nav ul .item div.active a {
+	color: #FFFFFF;
+}
+
+.bottom_nav ul .item a,
+.bottom_nav ul .item a:link,
+.bottom_nav ul .item a:visited,
+.bottom_nav ul .item a:active {
+	color: #AAAAAA;
+	text-decoration: none;
+}
+
+.bottom_nav ul .item a:hover {
+	color: inherit;
+	text-decoration: underline;
+	cursor: pointer;
+}

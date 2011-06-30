@@ -12,7 +12,6 @@
 #include "system/omLocalPreferences.hpp"
 #include "threads/omTaskManager.hpp"
 #include "utility/dataWrappers.h"
-#include "viewGroup/omCutting.hpp"
 #include "viewGroup/omSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 
@@ -137,17 +136,12 @@ void OmActionsImpl::setUncertain(const SegmentationDataWrapper& sdw,
                                  const bool uncertain)
 {
     OmSegments* segments = sdw.Segments();
+
     om::shared_ptr<std::set<OmSegment*> > children =
         OmSegmentUtils::GetAllChildrenSegments(segments,
-                                               segments->GetSelectedSegmentIds());
+                                               segments->GetSelectedSegmentIDs());
 
     (new OmSegmentUncertainAction(sdw, children, uncertain))->Run();
-}
-
-void OmActionsImpl::JoinSegmentsID(const OmID segmentationID)
-{
-    OmJoinSegmentsRunner joiner(segmentationID);
-    joiner.Join();
 }
 
 void OmActionsImpl::JoinSegmentsWrapper(const SegmentationDataWrapper sdw)
@@ -156,47 +150,23 @@ void OmActionsImpl::JoinSegmentsWrapper(const SegmentationDataWrapper sdw)
     joiner.Join();
 }
 
-void OmActionsImpl::JoinSegmentsSet(const OmID segmentationID,
+void OmActionsImpl::JoinSegmentsSet(const SegmentationDataWrapper sdw,
                                     const OmSegIDsSet ids)
 {
-    OmJoinSegmentsRunner joiner(segmentationID, ids);
+    OmJoinSegmentsRunner joiner(sdw, ids);
     joiner.Join();
 }
 
-void OmActionsImpl::FindAndSplitSegments(const SegmentDataWrapper curSDW,
-                                         OmViewGroupState* vgs,
-                                         const DataCoord curClickPt)
-{
-    const boost::optional<DataCoord> prevClickPt = vgs->Splitting()->Coord();
-
-    if(prevClickPt)
-    {
-        const SegmentDataWrapper prevSDW = vgs->Splitting()->Segment();
-
-        OmSegment* seg1 = prevSDW.GetSegment();
-        OmSegment* seg2 = curSDW.GetSegment();
-
-        vgs->Splitting()->ExitSplitModeFixButton();
-
-        if(!seg1 || !seg2) {
-            return;
-        }
-
-        runIfSplittable(seg1, seg2, *prevClickPt, curClickPt);
-
-    } else {
-        if(curSDW.IsSegmentValid())
-        {
-            // set segment to be split later...
-            vgs->Splitting()->SetFirstSplitPoint(curSDW, curClickPt);
-        }
-    }
+void OmActionsImpl::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2){
+    runIfSplittable(seg1, seg2);
 }
 
-void OmActionsImpl::FindAndCutSegments(const SegmentDataWrapper sdw,
-                                       OmViewGroupState* vgs)
+void OmActionsImpl::FindAndCutSegments(const SegmentDataWrapper sdw)
 {
-    doFindAndCutSegment(sdw, vgs);
+    OmSegment* seg1 = sdw.GetSegment();
+    OmSegment* seg2 = seg1->getParent();
+
+    runIfSplittable(seg1, seg2);
 }
 
 void OmActionsImpl::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params){
@@ -215,22 +185,11 @@ void OmActionsImpl::CreateOrDeleteSegmentGroup(const OmID segmentationID,
                               create))->Run();
 }
 
-void OmActionsImpl::doFindAndCutSegment(const SegmentDataWrapper& sdw,
-                                        OmViewGroupState* vgs)
+void OmActionsImpl::runIfSplittable(OmSegment* seg1, OmSegment* seg2)
 {
-    OmSegment* seg1 = sdw.GetSegment();
-    OmSegment* seg2 = seg1->getParent();
-
-    runIfSplittable(seg1, seg2, DataCoord(), DataCoord());
-
-    vgs->Cutting()->ExitCutModeFixButton();
-}
-
-void OmActionsImpl::runIfSplittable(OmSegment* seg1, OmSegment* seg2,
-                                    const DataCoord& coord1, const DataCoord& coord2)
-{
-    if(seg1 == seg2) {
-        (new OmSegmentSplitAction(SegmentDataWrapper(seg1), coord1, coord2))->Run();
+    if(seg1 == seg2)
+    {
+        std::cout << "can't split--same segment\n";
         return;
     }
 
@@ -239,10 +198,12 @@ void OmActionsImpl::runIfSplittable(OmSegment* seg1, OmSegment* seg2,
     OmSegmentEdge edge =
         OmFindCommonEdge::FindClosestCommonEdge(sdw.Segments(), seg1, seg2);
 
-    if(!edge.isValid()){
+    if(!edge.isValid())
+    {
         printf("edge was not splittable\n");
         return;
     }
 
     (new OmSegmentSplitAction(sdw, edge))->Run();
 }
+

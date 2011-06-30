@@ -1,5 +1,6 @@
 #pragma once
 
+#include "datalayer/hdf5/omExportVolToHdf5.hpp"
 #include "actions/io/omActionDumper.h"
 #include "actions/omActions.h"
 #include "chunks/omRawChunk.hpp"
@@ -15,6 +16,7 @@
 #include "utility/omColorUtils.hpp"
 #include "utility/omFileHelpers.h"
 #include "volume/build/omBuildSegmentation.hpp"
+#include "volume/build/omDataCopierImages.hpp"
 #include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omSegmentation.h"
 
@@ -341,5 +343,43 @@ public:
         dumper.Dump(fnp);
         std::cout << "wrote action log to " << fnp.toStdString() << "\n";
     }
-};
 
+    static void DownsampleChannel(const ChannelDataWrapper& cdw)
+    {
+        OmChannel* vol = cdw.GetChannelPtr();
+        vol->VolData()->downsample(vol);
+    }
+
+    static void CheckMeshes(const SegmentationDataWrapper& sdw)
+    {
+        OmMeshManagers* meshManagers = sdw.GetSegmentation().MeshManagers();
+        OmMeshManager* meshManager = meshManagers->GetManager(1);
+
+        boost::scoped_ptr<OmMeshWriterV2> meshWriter(new OmMeshWriterV2(meshManager));
+
+        meshWriter->CheckEverythingWasMeshed();
+    }
+
+    template <typename VOL>
+    static void ReplaceSlice(VOL* vol, const QString fnp, const int sliceNum)
+    {
+        std::vector<QFileInfo> file;
+        file.push_back(QFileInfo(fnp));
+
+        OmDataCopierImages<VOL> importer(vol, file);
+        importer.ReplaceSlice(sliceNum);
+    }
+
+    static void ExportAndRerootSegments(const SegmentationDataWrapper& sdw,
+                                        const QString fileName)
+    {
+        OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, true);
+    }
+
+    static void ExportSegmentationRaw(const SegmentationDataWrapper& sdw,
+                                      const QString fileName)
+    {
+        OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, false);
+    }
+
+};

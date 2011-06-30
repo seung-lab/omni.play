@@ -1,11 +1,11 @@
 #pragma once
 
-#include "utility/omTimer.hpp"
 #include "common/om.hpp"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
 #include "tiles/omTileCoord.h"
 #include "tiles/omTileTypes.hpp"
+#include "utility/omTimer.hpp"
 #include "zi/omUtility.h"
 
 #include <QGLContext>
@@ -25,28 +25,28 @@ public:
     /**
      * return number of tiles that were not drawn if time ran out...
      */
-    boost::optional<int> DrawTiles(std::deque<OmTileAndVertices>& tilesToDraw)
+    bool DrawTiles(std::deque<OmTileAndVertices>& tilesToDraw)
     {
         context_ = QGLContext::currentContext();
-        elapsed_.restart();
-        int counter = 0;
+        // elapsed_.restart();
+        // int counter = 0;
 
         FOR_EACH(iter, tilesToDraw)
         {
-            if(elapsed_.ms_elapsed() > allowedDrawTimeMS_)
-            {
-                std::cout << "tile draw took too long...\n";
-                return tilesToDraw.size() - counter;
-            }
+            // if(elapsed_.ms_elapsed() > allowedDrawTimeMS_)
+            // {
+            //     std::cout << "tile draw took too long...\n";
+            //     return false;
+            // }
 
             drawTile(iter->tile->GetTexture(),
                      iter->vertices,
                      iter->textureVectices);
 
-            ++counter;
+            // ++counter;
         }
 
-        return boost::optional<int>();
+        return true;
     }
 
 private:
@@ -58,8 +58,7 @@ private:
             doBindTileDataToGLid(texture);
 
         } else {
-            // if contexts are different, textureID contained in OmTextureID is
-            //   for the WRONG OpenGL context
+            // if contexts are different, the text is for the WRONG OpenGL context
             assert(context_ == texture.Context());
         }
 
@@ -68,6 +67,7 @@ private:
         // std::cout << "drawing: " << tv.tile->GetTileCoord() << "\n";
 
         glBegin(GL_QUADS);
+
         glTexCoord2f(textureVectices.upperLeft.x,
                      textureVectices.lowerRight.y);  /* lower left corner */
         glVertex2f(vertices.lowerLeft.x,

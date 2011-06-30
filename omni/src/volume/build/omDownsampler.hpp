@@ -31,7 +31,8 @@ public:
 
         mips_.resize(mippingInfo_.maxMipLevel + 1);
 
-        for(int i=0; i <= mippingInfo_.maxMipLevel; ++i){
+        for(int i=0; i <= mippingInfo_.maxMipLevel; ++i)
+        {
             mips_[i].factor = om::math::pow2int(i);
 
             const Vector3i dims = vol_->Coords().getDimsRoundedToNearestChunk(i);
@@ -54,7 +55,8 @@ public:
         om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
             vol_->GetMipChunkCoords(0);
 
-        FOR_EACH(iter, *coordsPtr){
+        FOR_EACH(iter, *coordsPtr)
+        {
             const OmChunkCoord& coord = *iter;
 
             om::shared_ptr<DownsampleVoxelTask<T> > task =

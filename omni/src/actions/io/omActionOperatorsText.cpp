@@ -67,16 +67,19 @@ QTextStream& operator<<(QTextStream& out, const OmSegmentUncertainActionImpl&){
     return out;
 }
 
-QTextStream& operator<<(QTextStream& out, const OmSegmentValidateActionImpl&){
+QTextStream& operator<<(QTextStream& out, const OmSegmentValidateActionImpl& a)
+{
+    out << a.sdw_;
+    out << a.valid_;
     return out;
 }
 
 QTextStream& operator<<(QTextStream& out, const OmSegmentationThresholdChangeActionImpl& a)
 {
     out << "(new: ";
-    out << a.mThreshold;
+    out << a.threshold_;
     out << ", old: ";
-    out << a.mOldThreshold;
+    out << a.oldThreshold_;
     out << ", segmentation: ";
     out << a.sdw_;
     out << ")";

@@ -1,6 +1,7 @@
 #include "events/details/omEvent.h"
 #include "events/details/omEventManager.h"
 #include "events/details/omPreferenceEvent.h"
+#include "events/details/omRefreshMSTthreshold.h"
 #include "events/details/omSegmentEvent.h"
 #include "events/details/omToolModeEvent.h"
 #include "events/details/omUserInterfaceEvent.h"
@@ -64,6 +65,10 @@ void OmEvents::PreferenceChange(const int key){
 
 void OmEvents::UpdateSegmentPropBox(QWidget* widget, const QString& title){
     POST(new OmUserInterfaceEvent(widget, title));
+}
+
+void OmEvents::RefreshMSTthreshold(){
+    POST(new OmRefreshMSTthresholdEvent());
 }
 
 #undef POST

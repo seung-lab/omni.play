@@ -1,5 +1,6 @@
 #pragma once
 
+#include "volume/omSegmentationFolder.h"
 #include "common/omCommon.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "chunks/omChunk.h"
@@ -8,7 +9,7 @@
 
 class OmMeshChunkDataReaderV2{
 private:
-    OmSegmentation *const seg_;
+    OmSegmentation *const vol_;
     const OmChunkCoord& coord_;
     const double threshold_;
     const QString fnp_;
@@ -16,7 +17,7 @@ private:
 public:
     OmMeshChunkDataReaderV2(OmSegmentation* seg, const OmChunkCoord& coord,
                             const double threshold)
-        : seg_(seg)
+        : vol_(seg)
         , coord_(coord)
         , threshold_(threshold)
         , fnp_(filePath())
@@ -39,17 +40,19 @@ public:
         char* dataCharPtr = reinterpret_cast<char*>(ret.get());
 
         QFile reader(fnp_);
-        if( !reader.open(QIODevice::ReadOnly)) {
-            throw OmIoException("could not open", fnp_);
-        }
 
-        if(!reader.seek(entry.offsetIntoFile)){
+        om::file::openFileRO(reader);
+
+        if(!reader.seek(entry.offsetIntoFile))
+        {
             throw OmIoException("could not seek to " +
                                 om::string::num(entry.offsetIntoFile));
         }
 
         const int64_t bytesRead = reader.read(dataCharPtr, numBytes);
-        if(bytesRead != numBytes){
+
+        if(bytesRead != numBytes)
+        {
             std::cout << "could not read data; numBytes is " << numBytes
                       << ", but only read " << bytesRead << "\n"
                       << std::flush;
@@ -62,12 +65,9 @@ public:
 private:
     QString filePath()
     {
-        const QString volPath =
-            OmFileNames::GetMeshChunkFolderPath(seg_, threshold_, coord_);
+        const QString volPath = vol_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
 
-        const QString fullPath = QString("%1meshData.ver2")
-            .arg(volPath);
-        return fullPath;
+        return volPath + "meshData.ver2";
     }
 };
 

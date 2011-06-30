@@ -36,6 +36,14 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
                                    "Paint Can", om::tool::FILL,
                                    ":/toolbars/mainToolbar/icons/1278015539_color_fill.png"));
 
+    addModifyButton(new ToolButton(parent, "Landmarks",
+                                   "Landmarks", om::tool::LANDMARK,
+                                   ":/toolbars/mainToolbar/icons/1308021634_keditbookmarks.png"));
+
+    addModifyButton(new ToolButton(parent, "Cut",
+                                   "Cut", om::tool::CUT,
+                                   ":/toolbars/mainToolbar/icons/1308183310_Scissors.png"));
+
     om::connect( this, SIGNAL(buttonClicked(int)),
                  this, SLOT(buttonWasClicked(int)));
 

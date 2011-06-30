@@ -80,7 +80,8 @@ enum mode { SELECT,
             ERASE,
             FILL,
             SPLIT,
-            CUT
+            CUT,
+            LANDMARK
 };
 
 } //namespace tool

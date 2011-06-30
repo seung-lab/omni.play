@@ -1,9 +1,9 @@
 #include "system/omAppState.hpp"
-#include "view2d/omView2dEvents.hpp"
-#include "view2d/omMouseEvents.hpp"
-#include "view2d/omView2dZoom.hpp"
 #include "view2d/omKeyEvents.hpp"
+#include "view2d/omMouseEvents.hpp"
 #include "view2d/omView2d.h"
+#include "view2d/omView2dEvents.hpp"
+#include "view2d/omView2dZoom.hpp"
 
 OmView2d::OmView2d(const ViewType viewtype, QWidget* parent,
                    OmViewGroupState* vgs, OmMipVolume* vol,

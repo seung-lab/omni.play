@@ -5,15 +5,15 @@
 #include "common/omString.hpp"
 #include "events/details/omSegmentEvent.h"
 #include "events/omEvents.h"
-#include "gui/sidebars/right/dendToolbar.h"
+#include "gui/sidebars/right/rightImpl.h"
 #include "system/omAppState.hpp"
 #include "utility/dataWrappers.h"
 
 class OmSegmentationThresholdChangeActionImpl {
 private:
     SegmentationDataWrapper sdw_;
-    float mThreshold;
-    float mOldThreshold;
+    float threshold_;
+    float oldThreshold_;
 
 public:
     OmSegmentationThresholdChangeActionImpl()
@@ -22,40 +22,35 @@ public:
     OmSegmentationThresholdChangeActionImpl(const SegmentationDataWrapper sdw,
                                             const double threshold)
         : sdw_(sdw)
-        , mThreshold(threshold)
+        , threshold_(threshold)
     {}
 
     void Execute()
     {
-        OmSegmentation & seg = sdw_.GetSegmentation();
+        OmSegmentation& seg = sdw_.GetSegmentation();
 
-        mOldThreshold = seg.GetDendThreshold();
-        seg.SetDendThreshold(mThreshold);
+        oldThreshold_ = seg.GetDendThreshold();
 
-        //TODO: don't access view-level directly
-        if(OmAppState::GetDendToolBar()){
-            OmAppState::GetDendToolBar()->RefreshThreshold();
-        }
+        seg.SetDendThreshold(threshold_);
+
+        OmEvents::RefreshMSTthreshold();
 
         OmEvents::SegmentModified();
     }
 
     void Undo()
     {
-        OmSegmentation & seg = sdw_.GetSegmentation();
+        OmSegmentation& seg = sdw_.GetSegmentation();
 
-        seg.SetDendThreshold(mOldThreshold);
+        seg.SetDendThreshold(oldThreshold_);
 
-        //TODO: don't access view-level directly
-        if(OmAppState::GetDendToolBar()){
-            OmAppState::GetDendToolBar()->RefreshThreshold();
-        }
+        OmEvents::RefreshMSTthreshold();
 
         OmEvents::SegmentModified();
     }
 
     std::string Description() const {
-        return "Threshold: " + om::string::num(mThreshold);
+        return "Threshold: " + om::string::num(threshold_);
     }
 
     QString classNameForLogFile() const {

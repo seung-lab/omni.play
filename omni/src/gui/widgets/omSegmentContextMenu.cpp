@@ -45,7 +45,7 @@ void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw, OmViewGroupSta
 void OmSegmentContextMenu::Refresh(const OmSegmentPickPoint& pickPoint, OmViewGroupState* vgs)
 {
     sdw_ = pickPoint.sdw;
-    coord_ = pickPoint.voxel;
+    coord_ = pickPoint.coord;
     vgs_ = vgs;
 
     doRefresh();
@@ -161,7 +161,7 @@ void OmSegmentContextMenu::splitSegments()
 }
 
 void OmSegmentContextMenu::cutSegments() {
-    OmActions::FindAndCutSegments(sdw_, vgs_);
+    OmActions::FindAndCutSegments(sdw_);
 }
 
 void OmSegmentContextMenu::addColorActions()

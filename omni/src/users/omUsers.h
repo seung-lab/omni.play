@@ -20,9 +20,13 @@ public:
     ~users();
 
     void SwitchToDefaultUser();
-    QString GetVolSegmentsPathAbs(OmSegmentation* vol);
+    void SwitchToUser(const std::string& userName);
+
     QString LogFolderPath();
     void SetupFolders();
+
+    std::string UsersFolder();
+    std::string UsersRootFolder();
 };
 
 } // namespace om

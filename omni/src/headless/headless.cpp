@@ -55,7 +55,7 @@ void Headless::runScript(const QString scriptFileName, const QString& fName)
     }
 }
 
-void Headless::runHeadless(const QString& headlessCMD, const QString& fName)
+void Headless::RunHeadless(const QString& headlessCMD, const QString& fName)
 {
     if(fName != ""){
         HeadlessImpl::OpenProject(fName);
@@ -515,7 +515,7 @@ void Headless::processLine(const QString& line, const QString&)
 
         printf("ID\tName\n");
 
-        FOR_EACH(iter,channset)
+        FOR_EACH(iter, channset)
         {
             ChannelDataWrapper cdw(*iter);
             printf("%i\t%s\n", *iter, qPrintable(cdw.GetName()));
@@ -523,12 +523,16 @@ void Headless::processLine(const QString& line, const QString&)
 
     } else if("lsSeg" == line){
         const OmIDsSet& segset = SegmentationDataWrapper::ValidIDs();
+
         if (segset.empty()){
             printf("No segmentations present.\n");
             return;
         }
+
         printf("ID\tName\n");
-        FOR_EACH(iter,segset){
+
+        FOR_EACH(iter,segset)
+        {
             SegmentationDataWrapper sdw(*iter);
             printf("%i\t%s\n", *iter, qPrintable(sdw.GetName()));
         }
@@ -695,6 +699,7 @@ void Headless::processLine(const QString& line, const QString&)
         }
         OmChunkUtils::RefindUniqueChunkValues(segmentationID_);
 
+
     } else if(line.startsWith("importWatershed:")){
         const QStringList args = line.split(':',QString::SkipEmptyParts);
 
@@ -718,6 +723,141 @@ void Headless::processLine(const QString& line, const QString&)
         const bool useRawChunk = OmStringHelpers::getBool(args[3]);
 
         HeadlessImpl::TimeSegChunkReads(segID, randomizeOrder, useRawChunk);
+
+    } else if(line.startsWith("downsampleChan:")){
+        QStringList args = line.split(':',QString::SkipEmptyParts);
+
+        if (args.size() < 2)
+        {
+            printf("Please enter a channel id.\n");
+            return;
+        }
+
+        int channID = OmStringHelpers::getUInt(args[1]);
+
+        if (!ChannelDataWrapper(channID).IsChannelValid())
+        {
+            printf("Channel %i is not a valid channel.\n",channID);
+            return;
+        }
+
+        ChannelDataWrapper cdw(channID);
+        if(cdw.IsValidWrapper()){
+            HeadlessImpl::DownsampleChannel(cdw);
+        }
+
+    } else if(line.startsWith("checkMeshes:")){
+        QStringList args = line.split(':',QString::SkipEmptyParts);
+
+        if (args.size() < 2)
+        {
+            printf("Please enter a segmentation id.\n");
+            return;
+        }
+
+        const OmID segID = OmStringHelpers::getUInt(args[1]);
+
+        SegmentationDataWrapper sdw(segID);
+
+        if (!sdw.IsValidWrapper())
+        {
+            printf("segmentation id %i is not a valid segmentation.\n", segID);
+            return;
+        }
+
+        HeadlessImpl::CheckMeshes(sdw);
+
+    } else if (line.startsWith("replaceChanSlice:")){
+
+        QStringList args = line.split(':',QString::SkipEmptyParts);
+
+        if (args.size() < 4)
+        {
+            printf("Please enter as replaceChanSlice::channelID::fileName::sliceNum.\n");
+            return;
+        }
+
+        const OmID channelID = OmStringHelpers::getUInt(args[1]);
+
+        ChannelDataWrapper cdw(channelID);
+
+        if (!cdw.IsValidWrapper())
+        {
+            printf("channel id %i is not a valid channel.\n", channelID);
+            return;
+        }
+
+        const QString fname = args[2];
+        const int sliceNum = OmStringHelpers::getUInt(args[3]);
+
+        HeadlessImpl::ReplaceSlice(cdw.GetChannelPtr(), fname, sliceNum);
+
+   } else if (line.startsWith("replaceSegSlice:")){
+
+        QStringList args = line.split(':',QString::SkipEmptyParts);
+
+        if (args.size() < 4)
+        {
+            printf("Please enter as replaceSegSlice::segmentationID::fileName::sliceNum.\n");
+            return;
+        }
+
+        const OmID segmentationID = OmStringHelpers::getUInt(args[1]);
+
+        SegmentationDataWrapper sdw(segmentationID);
+
+        if(!sdw.IsValidWrapper())
+        {
+            printf("segmentation id %i is not a valid segmentation.\n", segmentationID);
+            return;
+        }
+
+        const QString fname = args[2];
+        const int sliceNum = OmStringHelpers::getUInt(args[3]);
+
+        HeadlessImpl::ReplaceSlice(sdw.GetSegmentationPtr(), fname, sliceNum);
+
+    } else if(line.startsWith("exportSegRaw:")){
+        QStringList args = line.split(':',QString::SkipEmptyParts);
+
+        if (args.size() < 3)
+        {
+            printf("Please enter a segmentation id and export file name.\n");
+            return;
+        }
+
+        const OmID segID = OmStringHelpers::getUInt(args[1]);
+
+        SegmentationDataWrapper sdw(segID);
+
+        if (!sdw.IsValidWrapper())
+        {
+            printf("segmentation id %i is not a valid segmentation.\n", segID);
+            return;
+        }
+
+        HeadlessImpl::ExportSegmentationRaw(sdw, args[2]);
+
+    } else if(line.startsWith("exportSegReroot:")){
+        QStringList args = line.split(':',QString::SkipEmptyParts);
+
+        if (args.size() < 3)
+        {
+            printf("Please enter a segmentation id and export file name.\n");
+            return;
+        }
+
+        const OmID segID = OmStringHelpers::getUInt(args[1]);
+
+        SegmentationDataWrapper sdw(segID);
+
+        if (!sdw.IsValidWrapper())
+        {
+            printf("segmentation id %i is not a valid segmentation.\n", segID);
+            return;
+        }
+
+        HeadlessImpl::ExportAndRerootSegments(sdw, args[2]);
 
     } else {
         printf("Could not parse \"%s\".\n", qPrintable(line));

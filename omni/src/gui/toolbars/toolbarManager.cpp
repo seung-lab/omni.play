@@ -1,5 +1,5 @@
 #include "gui/mainWindow/mainWindow.h"
-#include "gui/sidebars/right.hpp"
+#include "gui/sidebars/right/right.hpp"
 #include "gui/toolbars/toolbarManager.h"
 #include "system/omAppState.hpp"
 #include "viewGroup/omViewGroupState.h"
@@ -46,10 +46,6 @@ void ToolBarManager::UpdateGuiFromProjectClose(){
 
 void ToolBarManager::SetSplittingOff(){
     rightSideBar_->SetSplittingOff();
-}
-
-void ToolBarManager::SetCuttingOff(){
-    rightSideBar_->SetCuttingOff();
 }
 
 void ToolBarManager::SetTool(const om::tool::mode tool){

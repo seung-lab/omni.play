@@ -81,13 +81,17 @@ private:
     void findRootSegments()
     {
         //check to filter for relevant data values
-        if(checkDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED)){
-            FOR_EACH(iter, segments_->GetSelectedSegmentIds()){
+        if(checkDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED))
+        {
+            const OmSegIDsSet ids = segments_->GetSelectedSegmentIDs();
+            FOR_EACH(iter, ids){
                 rootSegs_.push_back(segments_->GetSegment(*iter));
             }
 
-        } else if (checkDrawOption(DRAWOP_SEGMENT_FILTER_UNSELECTED)){
-            FOR_EACH(iter, segments_->GetEnabledSegmentIds()){
+        } else if (checkDrawOption(DRAWOP_SEGMENT_FILTER_UNSELECTED))
+        {
+            const OmSegIDsSet ids = segments_->GetEnabledSegmentIDs();
+            FOR_EACH(iter, ids){
                 rootSegs_.push_back(segments_->GetSegment(*iter));
             }
         }

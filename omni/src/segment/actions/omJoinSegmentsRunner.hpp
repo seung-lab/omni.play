@@ -8,24 +8,16 @@ private:
     OmSegIDsSet ids_;
 
 public:
-    OmJoinSegmentsRunner(const OmID segmentationID)
-        : sdw_(segmentationID)
-    {
-        if(sdw_.IsSegmentationValid()){
-            ids_ = sdw_.Segments()->GetSelectedSegmentIds();
-        }
-    }
-
-    OmJoinSegmentsRunner(const SegmentationDataWrapper& sdw)
+    explicit OmJoinSegmentsRunner(const SegmentationDataWrapper& sdw)
         : sdw_(sdw)
     {
         if(sdw_.IsSegmentationValid()){
-            ids_ = sdw_.Segments()->GetSelectedSegmentIds();
+            ids_ = sdw_.Segments()->GetSelectedSegmentIDs();
         }
     }
 
-    OmJoinSegmentsRunner(const OmID segmentationID, const OmSegIDsSet& ids)
-        : sdw_(segmentationID)
+    OmJoinSegmentsRunner(const SegmentationDataWrapper& sdw, const OmSegIDsSet& ids)
+        : sdw_(sdw)
         , ids_(ids)
     {}
 

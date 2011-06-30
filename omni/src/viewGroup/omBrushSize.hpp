@@ -17,9 +17,9 @@ Q_SIGNALS:
     void SignalBrushSizeChange(int);
 
 public:
-    OmBrushSize(){
-        setDiameter(defaultBrushDia);
-    }
+    OmBrushSize()
+      : diameter_(8)
+  {}
 
     virtual ~OmBrushSize()
     {}

@@ -8,16 +8,17 @@
 #include <QGLWidget>
 #include <QGLContext>
 
-class DendToolBar;
 class MainWindow;
 class InspectorWidget;
 class ToolBarManager;
+
+namespace om { namespace sidebars { class rightImpl; } }
 
 class OmAppState : private om::singletonBase<OmAppState> {
 private:
     InspectorWidget* inspectorWidget_;
     MainWindow* mainWindow_;
-    DendToolBar* dendToolBar_;
+    om::sidebars::rightImpl* rightToolbar_;
     ToolBarManager* toolBarManager_;
 
 public:
@@ -26,10 +27,9 @@ public:
 
     static void SetInspector(InspectorWidget* miw);
     static void SetMainWindow(MainWindow* mw);
-    static void SetDendToolBar(DendToolBar* dtb);
 
-    static DendToolBar* GetDendToolBar(){
-        return instance().dendToolBar_;
+    static void SetRightToolBar(om::sidebars::rightImpl* rightToolbar){
+        instance().rightToolbar_ = rightToolbar;
     }
 
     static ToolBarManager* GetToolBarManager(){
@@ -45,7 +45,7 @@ private:
     OmAppState()
         : inspectorWidget_(NULL)
         , mainWindow_(NULL)
-        , dendToolBar_(NULL)
+        , rightToolbar_(NULL)
         , toolBarManager_(NULL)
     {}
 
