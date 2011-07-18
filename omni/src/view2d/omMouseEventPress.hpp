@@ -107,7 +107,7 @@ private:
             return;
         }
 
-        OmActions::FindAndCutSegments(*sdw);
+        OmActions::CutSegment(*sdw);
     }
 
     void mouseSetCrosshair()

@@ -57,8 +57,7 @@ public:
                          const OmSegIDsSet ids);
 
     void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
-
-    void FindAndCutSegments(const SegmentDataWrapper sdw);
+    void CutSegment(const SegmentDataWrapper sdw);
 
     void SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params);
 
@@ -69,8 +68,6 @@ public:
                                     const bool create);
 
 private:
-    void runIfSplittable(OmSegment* seg1, OmSegment* seg2);
-
     void setUncertain(const SegmentDataWrapper& sdw,
                       const bool uncertain);
 

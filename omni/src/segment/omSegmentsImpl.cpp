@@ -21,8 +21,7 @@ OmSegmentsImpl::OmSegmentsImpl(OmSegmentation* segmentation,
 {}
 
 OmSegmentsImpl::~OmSegmentsImpl()
-{
-}
+{}
 
 OmSegment* OmSegmentsImpl::AddSegment()
 {
@@ -69,33 +68,50 @@ OmSegment* OmSegmentsImpl::GetOrAddSegment(const OmSegID val)
 
 OmSegmentEdge OmSegmentsImpl::SplitEdgeUserAction(const OmSegmentEdge& e)
 {
-    if(!e.isValid()){
-        return OmSegmentEdge();
-    }
-
-    OmSegment* seg = store_->GetSegment(e.childID);
-
-    if(!seg->getParent())
+    boost::optional<std::string> splittableTest = IsEdgeSplittable(e);
+    if(splittableTest)
     {
-        std::cout << "can't split root\n";
+        std::cout << "Split error: " << *splittableTest << "\n";
         return OmSegmentEdge();
     }
 
-    return splitChildFromParent(seg);
+    OmSegment* child = store_->GetSegment(e.childID);
+
+    return splitChildFromParentNoTest(child);
 }
 
-OmSegmentEdge OmSegmentsImpl::splitChildFromParent(OmSegment * child)
+boost::optional<std::string> OmSegmentsImpl::IsEdgeSplittable(const OmSegmentEdge& e)
 {
+   if(!e.isValid()){
+       return std::string("invalid edge");
+    }
+
+   OmSegment* child = store_->GetSegment(e.childID);
+
+   return IsSegmentSplittable(child);
+}
+
+boost::optional<std::string> OmSegmentsImpl::IsSegmentSplittable(OmSegment* child)
+{
+   if(!child->getParent()){
+       return std::string("segment is the root");
+   }
+
     OmSegment* parent = child->getParent();
     assert(parent);
 
     if(child->IsValidListType() == parent->IsValidListType() &&
        1 == child->IsValidListType())
     {
-        printf("could not split %d from %d (one or more was valid!)\n",
-               child->value(), parent->value());
-        return OmSegmentEdge();
+        return std::string("segments are valid");
     }
+
+    return boost::optional<std::string>();
+}
+
+OmSegmentEdge OmSegmentsImpl::splitChildFromParentNoTest(OmSegment* child)
+{
+    OmSegment* parent = child->getParent();
 
     OmSegmentEdge edgeThatGotBroken(parent->value(),
                                     child->value(),
@@ -265,12 +281,17 @@ OmSegIDsSet OmSegmentsImpl::UnJoinTheseSegments(const OmSegIDsSet& segmentList)
     {
         const OmSegID segID = *iter;
 
-        OmSegmentEdge edge = splitChildFromParent(store_->GetSegment(segID));
+        OmSegment* child= store_->GetSegment(segID);
 
-        if(!edge.isValid()){
-            printf("WARNING: could not split edge; was a segment validated?\n");
-        } else {
+        boost::optional<std::string> splittableTest = IsSegmentSplittable(child);
+
+        if(!splittableTest)
+        {
+            splitChildFromParentNoTest(child);
             ret.insert(segID);
+
+        } else {
+            std::cout << "Split error: " << *splittableTest << "\n";
         }
 
         ++iter;

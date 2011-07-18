@@ -25,6 +25,8 @@ public:
     OmSegmentEdge SplitEdgeUserAction(const OmSegmentEdge& e);
     OmSegIDsSet JoinTheseSegments(const OmSegIDsSet& segmentList);
     OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
+    boost::optional<std::string> IsEdgeSplittable(const OmSegmentEdge& e);
+    boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
 
     void refreshTree();
 
@@ -33,7 +35,7 @@ public:
 private:
     OmUserEdges* userEdges_;
 
-    OmSegmentEdge splitChildFromParent(OmSegment* child);
+    OmSegmentEdge splitChildFromParentNoTest(OmSegment* child);
 
     std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(const OmSegmentEdge& e);
     std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmID, const OmID);

@@ -94,7 +94,7 @@ bool OmView3dUi::cutSegment(QMouseEvent* event)
         return false;
     }
 
-    OmActions::FindAndCutSegments(sdw);
+    OmActions::CutSegment(sdw);
     return true;
 }
 

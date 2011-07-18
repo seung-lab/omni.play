@@ -121,11 +121,11 @@ void OmActions::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2)
                      seg1, seg2)));
 }
 
-void OmActions::FindAndCutSegments(const SegmentDataWrapper& sdw)
+void OmActions::CutSegment(const SegmentDataWrapper& sdw)
 {
     pool().push_back(
         zi::run_fn(
-            zi::bind(&OmActionsImpl::FindAndCutSegments, impl(),
+            zi::bind(&OmActionsImpl::CutSegment, impl(),
                      sdw)));
 }
 

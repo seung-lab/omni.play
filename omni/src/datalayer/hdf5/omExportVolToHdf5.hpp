@@ -46,15 +46,16 @@ private:
         OmHdf5* hdfExport = OmHdf5Manager::Get(fileNameAndPath, false);
         OmDataPath fpath("main");
 
-        if(!QFile::exists(fileNameAndPath)){
+        if(!QFile::exists(fileNameAndPath))
+        {
             hdfExport->create();
             hdfExport->open();
-            const Vector3i full = vol->Coords().MipLevelDataDimensions(0);
+            const Vector3i chunkSize = vol->Coords().GetChunkDimensions();
             const Vector3i rounded_data_dims =
                 vol->Coords().getDimsRoundedToNearestChunk(0);
             hdfExport->allocateChunkedDataset(fpath,
                                               rounded_data_dims,
-                                              full,
+                                              chunkSize,
                                               vol->getVolDataType());
         } else {
             hdfExport->open();

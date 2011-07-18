@@ -46,6 +46,10 @@ public:
         threadPool_.start(1);
     }
 
+    static void Reset(){
+      impl().setupLogDir();
+    }
+
 private:
     QDir logFolder_;
     OmThreadPool threadPool_;

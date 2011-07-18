@@ -5,6 +5,7 @@
 #include "actions/details/omVoxelSetValueAction.h"
 #include "actions/omActionsImpl.h"
 #include "actions/omSelectSegmentParams.hpp"
+#include "segment/actions/omCutSegmentRunner.hpp"
 #include "segment/actions/omJoinSegmentsRunner.hpp"
 #include "segment/actions/omSetSegmentValidRunner.hpp"
 #include "segment/omFindCommonEdge.hpp"
@@ -157,35 +158,7 @@ void OmActionsImpl::JoinSegmentsSet(const SegmentationDataWrapper sdw,
     joiner.Join();
 }
 
-void OmActionsImpl::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2){
-    runIfSplittable(seg1, seg2);
-}
-
-void OmActionsImpl::FindAndCutSegments(const SegmentDataWrapper sdw)
-{
-    OmSegment* seg1 = sdw.GetSegment();
-    OmSegment* seg2 = seg1->getParent();
-
-    runIfSplittable(seg1, seg2);
-}
-
-void OmActionsImpl::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params){
-    (new OmSegmentSelectAction(params))->Run();
-}
-
-// group-related
-void OmActionsImpl::CreateOrDeleteSegmentGroup(const OmID segmentationID,
-                                               const OmSegIDsSet selectedSegmentIDs,
-                                               const OmGroupName name,
-                                               const bool create)
-{
-    (new OmSegmentGroupAction(segmentationID,
-                              selectedSegmentIDs,
-                              name,
-                              create))->Run();
-}
-
-void OmActionsImpl::runIfSplittable(OmSegment* seg1, OmSegment* seg2)
+void OmActionsImpl::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2)
 {
     if(seg1 == seg2)
     {
@@ -207,3 +180,27 @@ void OmActionsImpl::runIfSplittable(OmSegment* seg1, OmSegment* seg2)
     (new OmSegmentSplitAction(sdw, edge))->Run();
 }
 
+void OmActionsImpl::CutSegment(const SegmentDataWrapper sdw)
+{
+    const boost::optional<OmSegmentEdge> edge = OmCutSegmentRunner::CutSegmentFromParent(sdw);
+
+    if(edge){
+        (new OmSegmentSplitAction(sdw.MakeSegmentationDataWrapper(), *edge))->Run();
+    }
+}
+
+void OmActionsImpl::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params){
+    (new OmSegmentSelectAction(params))->Run();
+}
+
+// group-related
+void OmActionsImpl::CreateOrDeleteSegmentGroup(const OmID segmentationID,
+                                               const OmSegIDsSet selectedSegmentIDs,
+                                               const OmGroupName name,
+                                               const bool create)
+{
+    (new OmSegmentGroupAction(segmentationID,
+                              selectedSegmentIDs,
+                              name,
+                              create))->Run();
+}

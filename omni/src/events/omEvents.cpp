@@ -1,5 +1,6 @@
 #include "events/details/omEvent.h"
 #include "events/details/omEventManager.h"
+#include "events/details/omNonFatalEvent.h"
 #include "events/details/omPreferenceEvent.h"
 #include "events/details/omRefreshMSTthreshold.h"
 #include "events/details/omSegmentEvent.h"
@@ -69,6 +70,10 @@ void OmEvents::UpdateSegmentPropBox(QWidget* widget, const QString& title){
 
 void OmEvents::RefreshMSTthreshold(){
     POST(new OmRefreshMSTthresholdEvent());
+}
+
+void OmEvents::NonFatalEvent(const QString err){
+    POST(new OmNonFatalEvent(err));
 }
 
 #undef POST

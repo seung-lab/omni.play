@@ -62,7 +62,7 @@ public:
 
     static void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
 
-    static void FindAndCutSegments(const SegmentDataWrapper& sdw);
+    static void CutSegment(const SegmentDataWrapper& sdw);
 
     static void SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params);
 

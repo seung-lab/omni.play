@@ -23,7 +23,7 @@ private:
 
     std::map<OmEventClass, listeners_t> classListeners_;
 
-    zi::mutex lock_;
+    zi::spinlock lock_;
 
 public:
     OmEventManagerImpl()
@@ -65,18 +65,19 @@ private:
 
         const OmEventClass eventKlass = omEvent->ChildClass;
 
+        listeners_t listeners;
+
         {
             zi::guard g(lock_);
+            listeners = classListeners_[eventKlass];
+        }
 
-            if(!classListeners_.count(eventKlass)){
-                return true;
-            }
+        if(listeners.empty()){
+            return true;
+        }
 
-            listeners_t& listeners = classListeners_[eventKlass];
-
-            FOR_EACH(it, listeners){
-                omEvent->Dispatch(*it);
-            }
+        FOR_EACH(it, listeners){
+            omEvent->Dispatch(*it);
         }
 
         return true;

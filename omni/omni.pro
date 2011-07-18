@@ -258,6 +258,7 @@ HEADERS +=  \
 	src/events/details/omEvent.h \
 	src/events/details/omEventManager.h \
 	src/events/details/omEventManagerImpl.hpp \
+	src/events/details/omNonFatalEvent.h \
 	src/events/details/omPreferenceEvent.h \
 	src/events/details/omRefreshMSTthreshold.h \
 	src/events/details/omSegmentEvent.h \
@@ -309,6 +310,7 @@ HEADERS +=  \
 	src/gui/inspectors/volInspector.h \
 	src/gui/mainWindow/centralWidget.hpp \
 	src/gui/mainWindow/mainWindow.h \
+	src/gui/mainWindow/mainWindowEvents.hpp \
 	src/gui/menubar.h \
 	src/gui/meshPreviewer/meshPreviewer.hpp \
 	src/gui/meshPreviewer/previewButton.hpp \
@@ -468,6 +470,7 @@ HEADERS +=  \
 	src/project/omProject.h \
 	src/project/omProjectGlobals.h \
 	src/project/omProjectImpl.hpp \
+	src/segment/actions/omCutSegmentRunner.hpp \
 	src/segment/actions/omJoinSegments.hpp \
 	src/segment/actions/omJoinSegmentsRunner.hpp \
 	src/segment/actions/omSetSegmentValid.hpp \
@@ -643,6 +646,9 @@ HEADERS +=  \
 	src/view2d/brush/omBrushSelectLineTask.hpp \
 	src/view2d/brush/omBrushSelectUtils.hpp \
 	src/view2d/brush/omChunksAndPts.hpp \
+	src/view2d/details/omView2dWidgetBase.hpp \
+	src/view2d/details/omView2dWidgetLinux.hpp \
+	src/view2d/details/omView2dWidgetMac.hpp \
 	src/view2d/om2dPreferences.hpp \
 	src/view2d/omBlockingGetTiles.hpp \
 	src/view2d/omCalcTileCoordsDownsampled.hpp \
@@ -830,6 +836,7 @@ SOURCES +=  \
 	src/datalayer/omDataPaths.cpp \
 	src/events/details/omEvent.cpp \
 	src/events/details/omEventManager.cpp \
+	src/events/details/omNonFatalEvent.cpp \
 	src/events/details/omPreferenceEvent.cpp \
 	src/events/details/omRefreshMSTthreshold.cpp \
 	src/events/details/omSegmentEvent.cpp \

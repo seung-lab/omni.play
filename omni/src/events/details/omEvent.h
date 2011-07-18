@@ -18,6 +18,7 @@ enum OmEventClass { OM_VIEW_EVENT_CLASS = 2000,
                     OM_TOOL_MODE_EVENT_CLASS = 6000,
                     OM_REFRESH_MST_THRESHOLD_EVENT_CLASS = 7000,
                     OM_PREFERENCE_EVENT_CLASS = 8000,
+                    OM_NON_FATAL_EVENT_CLASS = 9000
 };
 
 class OmEventListener;
@@ -37,10 +38,16 @@ public:
             return "OM_SEGMENT_EVENT_CLASS";
         case 4000:
             return "OM_VIEW_3D_EVENT_CLASS";
+        case 5000:
+            return "OM_USER_INTERFACE_EVENT_CLASS";
         case 6000:
             return "OM_TOOL_MODE_EVENT_CLASS";
+        case 7000:
+            return "OM_REFRESH_MST_THRESHOLD_EVENT_CLASS";
         case 8000:
             return "OM_PREFERENCE_EVENT_CLASS";
+        case 9000:
+            return "OM_NON_FATAL_EVENT_CLASS";
         default:
             throw OmArgException("unknown event class");
         }

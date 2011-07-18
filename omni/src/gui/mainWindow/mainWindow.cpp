@@ -5,6 +5,7 @@
 #include "gui/groupsTable/groupsTable.h"
 #include "gui/mainWindow/centralWidget.hpp"
 #include "gui/mainWindow/mainWindow.h"
+#include "gui/mainWindow/mainWindowEvents.hpp"
 #include "gui/menubar.h"
 #include "gui/preferences/preferences.h"
 #include "gui/recentFileList.h"
@@ -12,7 +13,6 @@
 #include "gui/toolbars/toolbarManager.h"
 #include "gui/viewGroup/viewGroup.h"
 #include "gui/widgets/omNewFileDialog.hpp"
-#include "gui/widgets/omTellInfo.hpp"
 #include "gui/widgets/omTellInfo.hpp"
 #include "project/omProject.h"
 #include "system/omAppState.hpp"
@@ -197,6 +197,8 @@ bool MainWindow::closeProjectIfOpen()
     }
 
     toolBarManager_->UpdateGuiFromProjectClose();
+
+    events_.reset(); // reset before project close
 
     OmProject::Close();
     windowTitleClear();
@@ -444,6 +446,8 @@ void MainWindow::windowTitleClear(){
 
 void MainWindow::updateGuiFromProjectCreateOrOpen(QString fileName)
 {
+    events_.reset(new MainWindowEvents());
+
     vgs_.reset(new OmViewGroupState(this));
 
     if(!toolBarManager_){

@@ -30,6 +30,7 @@
 #include "tiles/cache/omTileCache.h"
 #include "users/omGuiUserChooser.h"
 #include "utility/omFileHelpers.h"
+#include "utility/segmentationDataWrapper.hpp"
 
 #include <QDir>
 #include <QFile>
@@ -98,25 +99,26 @@ public:
 
     void Load(const QString& fileNameAndPath, QWidget* guiParent)
     {
-        const QFileInfo projectFile(fileNameAndPath);
-        doLoad(projectFile.absoluteFilePath(), guiParent);
+        try {
+            const QFileInfo projectFile(fileNameAndPath);
+            doLoad(projectFile.absoluteFilePath(), guiParent);
+
+        } catch(...)
+        {
+            globals_.reset();
+            throw;
+        }
     }
 
     void Save()
     {
-        FOR_EACH(iter, volumes_.Segmentations().GetValidSegmentationIds()){
-            volumes_.Segmentations().GetSegmentation(*iter).Flush();
+        FOR_EACH(iter, SegmentationDataWrapper::ValidIDs()){
+            SegmentationDataWrapper(*iter).GetSegmentation().Flush();
         }
 
         OmDataArchiveProject::ArchiveWrite(projectMetadataFile_, this);
 
         printf("omni project saved!\n");
-    }
-
-    void Commit()
-    {
-        Save();
-        OmStateManager::UndoStack().Clear();
     }
 
     int GetFileVersion() const {
@@ -185,14 +187,19 @@ private:
 
         setupGlobals();
 
-        OmCacheManager::Reset();
-        OmTileCache::Reset();
-
         if(guiParent)
         {
             OmGuiUserChooser* chooser = new OmGuiUserChooser(guiParent);
-            chooser->exec();
+            const int userWasSelected = chooser->exec();
+
+            if(!userWasSelected){
+                throw OmIoException("user not choosen");
+            }
         }
+
+        OmCacheManager::Reset();
+        OmTileCache::Reset();
+        OmActionLogger::Reset();
 
         OmDataArchiveProject::ArchiveRead(projectMetadataFile_, this);
 
@@ -232,7 +239,8 @@ private:
 
     void migrateFromHdf5()
     {
-        if(!QFileInfo(omniFile_).size()){
+        if(!QFileInfo(omniFile_).size())
+        {
             oldHDF5projectFile_ = "";
             return;
         }
@@ -246,6 +254,8 @@ private:
         openHDF5();
 
         moveProjectMetadata();
+
+        // TODO: Save()?
     }
 
     void moveProjectMetadata()

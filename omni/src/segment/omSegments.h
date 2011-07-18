@@ -56,6 +56,9 @@ public:
 
     OmSegID GetSegmentationID();
 
+    boost::optional<std::string> IsEdgeSplittable(const OmSegmentEdge& e);
+    boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
+
     OmSegment* findRoot(OmSegment* segment);
     OmSegment* findRoot(const OmSegID segID);
     OmSegID findRootID(const OmSegID segID);

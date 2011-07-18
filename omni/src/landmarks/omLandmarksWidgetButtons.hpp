@@ -109,7 +109,6 @@ private:
             }
 
             SegmentationDataWrapper sdw(segmentationID);
-            OmSegmentation* vol = sdw.GetSegmentationPtr();
 
             OmActions::JoinSegments(sdw, set);
         }

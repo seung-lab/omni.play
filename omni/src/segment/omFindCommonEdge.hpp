@@ -3,20 +3,19 @@
 #include "segment/omSegments.h"
 
 class OmFindCommonEdge {
-private:
-    static OmSegmentEdge makeEdge()
-    {
+public:
+    static OmSegmentEdge MakeEdge(){
         return OmSegmentEdge();
     }
 
-    static OmSegmentEdge makeEdge(OmSegment* childSeg)
+    static OmSegmentEdge MakeEdge(OmSegment* childSeg)
     {
         return OmSegmentEdge(childSeg->parent_->value(),
                              childSeg->value(),
                              childSeg->threshold_);
     }
 
-    static OmSegmentEdge makeEdge(OmSegment* parentSeg, OmSegment* childSeg,
+    static OmSegmentEdge MakeEdge(OmSegment* parentSeg, OmSegment* childSeg,
                                   const double t)
     {
         return OmSegmentEdge(parentSeg->value(),
@@ -24,45 +23,47 @@ private:
                              t);
     }
 
-public:
     static OmSegmentEdge FindClosestCommonEdge(OmSegments* segments,
                                                OmSegment* seg1,
                                                OmSegment* seg2)
     {
         if(!seg1 || !seg2){
-            return makeEdge();
+            return MakeEdge();
         }
 
-        if( segments->findRoot(seg1) != segments->findRoot(seg2) ){
+        if( segments->findRoot(seg1) != segments->findRoot(seg2) )
+        {
             printf("can't split disconnected objects\n");
-            return makeEdge();
-        }
-        if( seg1 == seg2 ){
-            printf("can't split object from self\n");
-            return makeEdge();
+            return MakeEdge();
         }
 
-        OmSegment * s1 = seg1;
+        if( seg1 == seg2 )
+        {
+            printf("can't split object from self\n");
+            return MakeEdge();
+        }
+
+        OmSegment* s1 = seg1;
         while (0 != s1->parent_)
         {
             if(s1->parent_ == seg2) {
                 //debug(split, "splitting child from a direct parent\n");
-                return makeEdge(s1);
+                return MakeEdge(s1);
             }
             s1 = s1->parent_;
         }
 
-        OmSegment * s2 = seg2;
+        OmSegment* s2 = seg2;
         while (0 != s2->parent_)
         {
             if(s2->parent_ == seg1) {
                 //debug(split, "splitting child from a direct parent\n");
-                return makeEdge(s2);
+                return MakeEdge(s2);
             }
             s2 = s2->parent_;
         }
 
-        OmSegment * nearestCommonPred = 0;
+        OmSegment* nearestCommonPred = 0;
 
         OmSegment* one;
 
@@ -86,7 +87,7 @@ public:
         assert(nearestCommonPred != 0);
 
         double minThresh = 100.0;
-        OmSegment * minChild = 0;
+        OmSegment* minChild = 0;
         for (one = seg1;
              one != nearestCommonPred;
              one = one->parent_)
@@ -108,7 +109,7 @@ public:
         }
 
         assert(minChild != 0);
-        return makeEdge(minChild);
+        return MakeEdge(minChild);
     }
 };
 

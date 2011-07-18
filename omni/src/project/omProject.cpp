@@ -25,10 +25,6 @@ void OmProject::Save(){
     instance().impl_->Save();
 }
 
-void OmProject::Commit(){
-    instance().impl_->Commit();
-}
-
 void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent)
 {
     instance().impl_.reset(new OmProjectImpl());

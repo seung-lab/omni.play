@@ -160,8 +160,8 @@ void OmSegmentContextMenu::splitSegments()
     vgs_->Splitting()->SetFirstSplitPoint(sdw_, coord_);
 }
 
-void OmSegmentContextMenu::cutSegments() {
-    OmActions::FindAndCutSegments(sdw_);
+void OmSegmentContextMenu::cutSegments(){
+    OmActions::CutSegment(sdw_);
 }
 
 void OmSegmentContextMenu::addColorActions()

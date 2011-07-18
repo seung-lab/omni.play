@@ -1,20 +1,31 @@
 #pragma once
 
 #include "actions/details/omSegmentSplitAction.h"
+#include "events/omEvents.h"
 #include "segment/omFindCommonEdge.hpp"
+#include "utility/segmentDataWrapper.hpp"
 
 class OmCutSegmentRunner {
 public:
-    static bool CutSegmentFromParent(const SegmentDataWrapper& sdw)
+    static boost::optional<OmSegmentEdge> CutSegmentFromParent(const SegmentDataWrapper& sdw)
     {
         OmSegment* seg = sdw.GetSegment();
 
-        if(!seg->getParent()){
-            return false;
+        if(!seg->getParent())
+        {
+            OmEvents::NonFatalEvent("segment is root--not yet spltitable");
+            return boost::optional<OmSegmentEdge>();
         }
 
-        const OmSegmentEdge edge = OmFindCommonEdge::MakeEdge(seg);
+        boost::optional<std::string> notSplittable = sdw.Segments()->IsSegmentSplittable(seg);
 
-        (new OmSegmentSplitAction(sdw, edge))->Run();
+        if(notSplittable)
+        {
+            const QString err = QString::fromStdString(*notSplittable);
+            OmEvents::NonFatalEvent(err);
+            return boost::optional<OmSegmentEdge>();
+        }
+
+        return OmFindCommonEdge::MakeEdge(seg);
     }
 };

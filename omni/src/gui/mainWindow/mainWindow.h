@@ -7,17 +7,18 @@
 #include <QUndoView>
 #include <QLabel>
 
-class GroupsTable;
 class CacheMonitorDialog;
-class MenuBar;
+class GroupsTable;
 class InspectorWidget;
+class MainWindowEvents;
+class MenuBar;
 class OmException;
+class OmGlobalKeyPress;
 class OmSegmentEvent;
 class OmViewGroupState;
 class Preferences;
 class ToolBarManager;
 class ViewGroup;
-class OmGlobalKeyPress;
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -108,5 +109,6 @@ private:
     QToolBar* fakeToolbarForMac_;
 
     boost::scoped_ptr<OmGlobalKeyPress> globalKeys_;
+    boost::scoped_ptr<MainWindowEvents> events_;
 };
 

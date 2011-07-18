@@ -7,7 +7,9 @@ std::string om::landmarks::outputPt(const sdwAndPt& d)
 
     std::stringstream s;
     s << "segmentation: " << sdw.GetSegmentationID() << ", "
-      << "segment: " << sdw.GetSegmentID() << ", "
+      << "segment: " << sdw.GetSegmentID()
+      << " (root: " << sdw.FindRootID() << ") "
+      << ", "
       << "pt: (" << coord.x << ", " << coord.y << ", " << coord.z << ")\n";
 
     return s.str();

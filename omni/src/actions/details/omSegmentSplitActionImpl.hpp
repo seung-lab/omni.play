@@ -52,7 +52,8 @@ public:
 
         std::pair<bool, OmSegmentEdge> edge = sdw.Segments()->JoinEdge(mEdge);
 
-        if(!mEdge.childID || !mEdge.parentID) {
+        if(!mEdge.childID || !mEdge.parentID)
+        {
             printf("Can't undo a join that probably failed.\n");
             return;
         }

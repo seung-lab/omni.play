@@ -61,5 +61,5 @@ std::vector<std::string> om::gui::userChooserWidget::findUsers()
 }
 
 void om::gui::userChooserWidget::Done(){
-    chooser_->deleteLater();
+    chooser_->done(1);
 }

@@ -291,7 +291,7 @@ void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
                                             const OmVolDataType type)
 {
     herr_t ret;
-    int rank = 3;
+    const int rank = 3;
     debug(hdf5verbose, "OmHDF5LowLevel: in %s...i\n", __FUNCTION__);
 
     //Creates a new property as an instance of a property list class.

@@ -285,3 +285,15 @@ OmSegmentChildren* OmSegments::Children()
     // TODO: needs locking!
     return impl_->Children();
 }
+
+boost::optional<std::string> OmSegments::IsEdgeSplittable(const OmSegmentEdge& e)
+{
+    zi::guard g(mutex_);
+    return impl_->IsEdgeSplittable(e);
+}
+
+boost::optional<std::string> OmSegments::IsSegmentSplittable(OmSegment* child)
+{
+    zi::guard g(mutex_);
+    return impl_->IsSegmentSplittable(child);
+}

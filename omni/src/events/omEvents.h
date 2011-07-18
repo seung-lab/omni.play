@@ -26,5 +26,7 @@ public:
 
     // used to update GUI spin box value from do/undo action
     static void RefreshMSTthreshold();
+
+    static void NonFatalEvent(const QString err);
 };
 
