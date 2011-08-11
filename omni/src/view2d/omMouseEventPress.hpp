@@ -171,7 +171,15 @@ private:
             fill();
             break;
         case om::tool::LANDMARK:
-            state_->getViewGroupState()->Landmarks().Add(getSelectedSegment(), dataClickPoint_);
+              if(controlKey_)
+            {
+                state_->OverrideToolModeForPan(true);
+                return;
+
+            } else {
+                  state_->getViewGroupState()->Landmarks().Add(getSelectedSegment(),
+                                                               dataClickPoint_);
+              }
             break;
         case om::tool::CUT:
             doFindAndCutSegment();

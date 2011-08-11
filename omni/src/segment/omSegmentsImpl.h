@@ -1,6 +1,7 @@
 #pragma once
 
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
+#include "datalayer/archive/segmentation.h"
 
 class OmChunkCoord;
 class OmSegmentEdge;
@@ -27,10 +28,14 @@ public:
     OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
     boost::optional<std::string> IsEdgeSplittable(const OmSegmentEdge& e);
     boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
+	boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
 
     void refreshTree();
 
     bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
+
+	std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
+	bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
 
 private:
     OmUserEdges* userEdges_;
@@ -45,6 +50,8 @@ private:
     void resetGlobalThreshold(OmMST* mst);
 
     friend class OmSegmentColorizer;
+    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
+    friend void om::data::archive::operator>>(const YAML::Node&, OmSegmentsImpl&);
     friend QDataStream& operator<<(QDataStream&, const OmSegmentsImpl&);
     friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);
 };

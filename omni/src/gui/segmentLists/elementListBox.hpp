@@ -24,8 +24,8 @@ public:
 
     static void SetActiveTab(QWidget* tab);
     static void SetTitle(const QString& title);
-    static void AddTab( const int preferredIndex, QWidget* tab,
-                        const QString& tabTitle);
+    static void AddTab(const int preferredIndex, QWidget* tab,
+                       const QString& tabTitle);
 
     static void PopulateLists();
     static void RebuildLists(const SegmentDataWrapper& sdw);

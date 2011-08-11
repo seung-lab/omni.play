@@ -22,6 +22,8 @@ public:
     void LoadSegmentPages(OmPagingPtrStore& ps,
                           QSet<PageNum>& validPageNumbers,
                           uint32_t size);
+    
+    void LoadSegmentPages(OmPagingPtrStore& ps);
 
 private:
     void rebuildSegments();

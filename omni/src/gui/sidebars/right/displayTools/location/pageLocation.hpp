@@ -3,6 +3,7 @@
 #include "gui/sidebars/right/displayTools/location/sliceDepthSpinBoxX.hpp"
 #include "gui/sidebars/right/displayTools/location/sliceDepthSpinBoxY.hpp"
 #include "gui/sidebars/right/displayTools/location/sliceDepthSpinBoxZ.hpp"
+#include "gui/sidebars/right/displayTools/location/saveLocationButton.hpp"
 
 #include <QtGui>
 
@@ -27,6 +28,7 @@ public:
         box->addWidget(makeWidget(new SliceDepthSpinBoxX(this, vgs_)));
         box->addWidget(makeWidget(new SliceDepthSpinBoxY(this, vgs_)));
         box->addWidget(makeWidget(new SliceDepthSpinBoxZ(this, vgs_)));
+        box->addWidget(new saveLocationButton(this, vgs_));
         box->addStretch(1);
     }
 

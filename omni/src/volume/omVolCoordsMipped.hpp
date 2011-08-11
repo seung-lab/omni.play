@@ -1,6 +1,7 @@
 #pragma once
 
 #include "volume/omVolCoords.hpp"
+#include "datalayer/archive/channel.h"
 
 class OmMipVolCoords : public OmVolCoords {
 private:
@@ -14,8 +15,11 @@ private:
     friend class OmDataArchiveProject;
     friend class OmMipVolumeArchiveOld;
 
+    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter& out, const OmMipVolCoords& c);
+    friend void om::data::archive::operator>>(const YAML::Node& in, OmMipVolCoords& c);
     friend QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c);
     friend QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c);
+    
 
 public:
     OmMipVolCoords()

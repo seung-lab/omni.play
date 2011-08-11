@@ -1,7 +1,7 @@
 #pragma once
 
 #include "volume/omSegmentationFolder.h"
-#include "datalayer/archive/omDataArchiveStd.hpp"
+#include "datalayer/archive/old/omDataArchiveStd.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/omLockedPODs.hpp"
 #include "segment/omSegments.h"

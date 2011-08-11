@@ -1,6 +1,5 @@
 #pragma once
 
-#include "gui/segmentLists/elementListBox.hpp"
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
@@ -32,24 +31,19 @@ public:
         case om::tool::PAN:
         case om::tool::ZOOM:
         case om::tool::FILL:
-        case om::tool::LANDMARK:
             break;
 
         case om::tool::PAINT:
         case om::tool::ERASE:
-            state_->OverrideToolModeForPan(false);
-            break;
-
         case om::tool::SELECT:
-            ElementListBox::PopulateLists();
+        case om::tool::LANDMARK:
             state_->OverrideToolModeForPan(false);
             break;
         }
     }
 
 private:
-    void setState(QMouseEvent* event)
-    {
+    void setState(QMouseEvent* event){
         dataClickPoint_ = state_->ComputeMouseClickPointDataCoord(event);
     }
 };

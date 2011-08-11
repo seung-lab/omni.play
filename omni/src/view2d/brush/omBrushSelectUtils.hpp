@@ -33,6 +33,7 @@ public:
 
         if(om::ADD == info->addOrSubract){
             selector.InsertSegments(segIDs);
+
         } else {
             selector.RemoveSegments(segIDs);
         }

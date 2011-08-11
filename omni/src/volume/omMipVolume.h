@@ -18,6 +18,13 @@ class OmChunk;
 class OmVolume;
 class OmVolumeData;
 
+namespace om {
+namespace data {
+namespace archive {
+template <class T>
+class mipVolume;
+};};};
+
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
                            MIPVOL_BUILT,
                            MIPVOL_BUILDING };
@@ -79,6 +86,7 @@ private:
     template <class T> friend class OmVolumeBuilderHdf5;
     template <class T> friend class OmVolumeBuilderImages;
     template <class T> friend class OmMipVolumeArchive;
+    template <class T> friend class om::data::archive::mipVolume;
 
     friend class OmChunk;
     friend class OmMipVolumeArchiveOld;

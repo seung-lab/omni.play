@@ -6,6 +6,7 @@
 
 #include "common/omCommon.h"
 #include "system/omGenericManager.hpp"
+#include "datalayer/archive/filter.h"
 
 class OmFilter2d;
 
@@ -38,6 +39,8 @@ public:
 private:
     OmGenericManager<OmFilter2d> filters_;
 
+    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter&, const OmFilter2dManager&);
+    friend void om::data::archive::operator>>(const YAML::Node&, OmFilter2dManager& );
     friend QDataStream &operator<<(QDataStream&, const OmFilter2dManager&);
     friend QDataStream &operator>>(QDataStream&, OmFilter2dManager& );
 };

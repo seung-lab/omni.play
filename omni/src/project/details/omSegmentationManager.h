@@ -3,6 +3,7 @@
 #include "common/omCommon.h"
 #include "system/omGenericManager.hpp"
 #include "volume/omSegmentation.h"
+#include "datalayer/archive/segmentation.h"
 
 class OmProjectVolumes;
 
@@ -27,7 +28,9 @@ public:
 private:
     OmGenericManager<OmSegmentation> manager_;
 
-    friend QDataStream&operator<<(QDataStream& out, const OmSegmentationManager&);
-    friend QDataStream&operator>>(QDataStream& in, OmSegmentationManager&);
+    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter& out, const OmSegmentationManager&);
+    friend void om::data::archive::operator>>(const YAML::Node& in, OmSegmentationManager&);
+    friend QDataStream& operator<<(QDataStream& out, const OmSegmentationManager&);
+    friend QDataStream& operator>>(QDataStream& in, OmSegmentationManager&);
 };
 

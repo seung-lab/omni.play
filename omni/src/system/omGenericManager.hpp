@@ -18,6 +18,12 @@ class OmSegmentation;
 class OmFilter2d;
 class OmGroup;
 
+namespace om { 
+namespace data { 
+namespace archive {
+class genericManager;
+};};};
+
 //TODO: lock correctly
 
 template <typename T>
@@ -155,5 +161,6 @@ private:
     }
 
     friend class OmGenericManagerArchive;
+    friend class om::data::archive::genericManager;
 };
 

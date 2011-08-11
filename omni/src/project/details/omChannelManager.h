@@ -4,6 +4,7 @@
 #include "common/om.hpp"
 #include "system/omGenericManager.hpp"
 #include "volume/omChannel.h"
+#include "datalayer/archive/channel.h"
 
 class OmChannelManager {
 public:
@@ -19,7 +20,9 @@ public:
 private:
     OmGenericManager<OmChannel> manager_;
 
-    friend QDataStream&operator<<(QDataStream& out, const OmChannelManager&);
-    friend QDataStream&operator>>(QDataStream& in, OmChannelManager&);
+    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter& out, const OmChannelManager&);
+    friend void om::data::archive::operator>>(const YAML::Node& in, OmChannelManager&);
+    friend QDataStream& operator<<(QDataStream& out, const OmChannelManager&);
+    friend QDataStream& operator>>(QDataStream& in, OmChannelManager&);
 };
 

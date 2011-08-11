@@ -28,6 +28,10 @@ public:
         build(vol_);
     }
 
+    void BuildEmpty(){
+        buildEmpty(vol_);
+    }
+
 private:
     void build(OmChannel*)
     {
@@ -58,6 +62,17 @@ private:
         setVolAsBuilt();
 
         vol->LoadVolData();
+    }
+
+    void buildEmpty(OmChannel*)
+    {
+        setVolAsBuilding();
+
+        checkChunkDims();
+        updateMipProperties();
+        importSourceData();
+
+        setVolAsBuilt();
     }
 
 protected:

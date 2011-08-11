@@ -17,7 +17,8 @@ class OmSegmentEvent : public OmEvent {
 
 public:
     OmSegmentEvent(QEvent::Type type);
-    OmSegmentEvent(QEvent::Type type, const SegmentationDataWrapper& sdw);
+    OmSegmentEvent(QEvent::Type type, const SegmentationDataWrapper& sdw,
+                   const bool stayOnPage);
     OmSegmentEvent(QEvent::Type type, om::shared_ptr<OmSelectSegmentsParams> params);
 
     void Dispatch(OmEventListener *);

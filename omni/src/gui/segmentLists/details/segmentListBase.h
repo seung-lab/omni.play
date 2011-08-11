@@ -36,6 +36,8 @@ public:
     void userJustClickedInThisSegmentList();
     void rebuildSegmentList(const SegmentDataWrapper& sdw);
 
+    void RefreshPage(const SegmentationDataWrapper& sdw);
+
     virtual bool shouldSelectedSegmentsBeAddedToRecentList() = 0;
 
 public Q_SLOTS:
@@ -70,7 +72,7 @@ protected:
     int getNumSegmentsPerPage();
     void setupPageButtons();
 
-    int currentPageNum;
+    int currentPageNum_;
     quint32 getTotalNumberOfSegments();
 
     OmViewGroupState * vgs_;

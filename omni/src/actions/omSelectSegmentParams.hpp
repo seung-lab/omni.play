@@ -22,5 +22,6 @@ struct OmSelectSegmentsParams
 struct OmSegmentGUIparams
 {
     SegmentationDataWrapper sdw;
+    bool stayOnPage;
 };
 

@@ -1,4 +1,4 @@
-#include "datalayer/archive/omChannelMetadata.h"
+#include "datalayer/archive/old/omChannelMetadata.h"
 
 /**
  * Channel

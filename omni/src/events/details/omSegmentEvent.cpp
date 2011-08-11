@@ -7,11 +7,13 @@ OmSegmentEvent::OmSegmentEvent(QEvent::Type type)
 {}
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
-                               const SegmentationDataWrapper& sdw)
+                               const SegmentationDataWrapper& sdw,
+                               const bool stayOnPage)
     : OmEvent(type, CLASS)
     , guiParams_(new OmSegmentGUIparams())
 {
     guiParams_->sdw = sdw;
+    guiParams_->stayOnPage = stayOnPage;
 }
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,

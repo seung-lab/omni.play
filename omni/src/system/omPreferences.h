@@ -11,6 +11,7 @@
 #include "events/omEvents.h"
 #include "system/omPreferenceDefinitions.h"
 #include "zi/omUtility.h"
+#include "datalayer/archive/project.h"
 
 #include <QHash>
 
@@ -93,6 +94,10 @@ private:
 
     friend class zi::singleton<OmPreferences>;
 
+    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter&, const OmPreferences&);
+    friend void om::data::archive::operator>>(const YAML::Node&, OmPreferences&);
+    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter&, const OmProjectImpl&);
+    friend void om::data::archive::operator>>(const YAML::Node&, OmProjectImpl&);
     friend QDataStream& operator<<(QDataStream&, const OmPreferences&);
     friend QDataStream& operator>>(QDataStream&, OmPreferences&);
     friend QDataStream& operator<<(QDataStream&, const OmProjectImpl&);

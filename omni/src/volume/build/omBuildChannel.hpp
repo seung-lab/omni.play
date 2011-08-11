@@ -25,6 +25,12 @@ public:
         th.start();
     }
 
+    void BuildEmptyChannel()
+    {
+        OmVolumeBuilder<OmChannel> builder(chan_);
+        builder.BuildEmptyChannel();
+    }
+
     void Build()
     {
         const QString type = "channel";

@@ -1,5 +1,5 @@
 #include "common/omException.h"
-#include "datalayer/archive/omDataArchiveSegment.h"
+#include "datalayer/archive/old/omDataArchiveSegment.h"
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
 #include "segment/io/omSegmentPage.hpp"

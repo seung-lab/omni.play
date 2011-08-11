@@ -50,7 +50,13 @@ private:
     virtual void SegmentGUIlistEvent(OmSegmentEvent* event)
     {
         const SegmentationDataWrapper& sdw = event->GUIparams().sdw;
-        makeSegmentationActive(sdw);
+
+        if(event->GUIparams().stayOnPage){
+            RefreshPage(sdw);
+
+        } else {
+            makeSegmentationActive(sdw);
+        }
     }
 
     bool shouldScroll(const OmSelectSegmentsParams& params)
@@ -196,6 +202,16 @@ public:
         reset();
         setTitle(GetSegmentationGroupBoxTitle(sdw));
         makeSegmentationActive(sdw);
+
+        updateValidBar(sdw);
+    }
+
+    void RefreshPage(const SegmentationDataWrapper& sdw)
+    {
+        workingList_->RefreshPage(sdw);
+        validList_->RefreshPage(sdw);
+        recentList_->RefreshPage(sdw);
+        uncertainList_->RefreshPage(sdw);
 
         updateValidBar(sdw);
     }

@@ -32,8 +32,10 @@ void OmEvents::SegmentSelected(){
     POST(new OmSegmentEvent(OmSegmentEvent::SEGMENT_SELECTED));
 }
 
-void OmEvents::SegmentGUIlist(const SegmentationDataWrapper& sdw){
-    POST(new OmSegmentEvent(OmSegmentEvent::SEGMENT_GUI_LIST, sdw));
+void OmEvents::SegmentGUIlist(const SegmentationDataWrapper& sdw,
+                              const bool stayOnPage)
+{
+    POST(new OmSegmentEvent(OmSegmentEvent::SEGMENT_GUI_LIST, sdw, stayOnPage));
 }
 
 void OmEvents::SegmentModified(){

@@ -297,3 +297,21 @@ boost::optional<std::string> OmSegments::IsSegmentSplittable(OmSegment* child)
     zi::guard g(mutex_);
     return impl_->IsSegmentSplittable(child);
 }
+
+boost::optional<std::string> OmSegments::IsSegmentCuttable(OmSegment* seg)
+{
+    zi::guard g(mutex_);
+    return impl_->IsSegmentCuttable(seg);
+}
+
+std::vector<OmSegmentEdge> OmSegments::CutSegment(OmSegment* seg)
+{
+    zi::guard g(mutex_);
+    return impl_->CutSegment(seg);
+}
+
+bool OmSegments::JoinEdges(const std::vector<OmSegmentEdge>& edges)
+{
+    zi::guard g(mutex_);
+    return impl_->JoinEdges(edges);
+}

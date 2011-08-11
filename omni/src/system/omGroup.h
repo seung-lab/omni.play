@@ -3,6 +3,7 @@
 #include "common/omCommon.h"
 #include "system/omManageableObject.h"
 #include "utility/omColorUtils.hpp"
+#include "datalayer/archive/segmentation.h"
 
 class OmGroup : public OmManageableObject {
 public:
@@ -52,8 +53,9 @@ private:
     OmGroupName mName;
     friend class OmGroups;
 
+    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter & out, const OmGroup & g );
+    friend void om::data::archive::operator>>(const YAML::Node & in, OmGroup & g );
     friend QDataStream &operator<<(QDataStream & out, const OmGroup & g );
     friend QDataStream &operator>>(QDataStream & in, OmGroup & g );
-
 };
 

@@ -12,7 +12,8 @@
 #include "actions/omActions.h"
 #include "common/om.hpp"
 #include "common/omCommon.h"
-#include "datalayer/archive/omDataArchiveProject.h"
+#include "datalayer/archive/old/omDataArchiveProject.h"
+#include "datalayer/archive/project.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
@@ -30,7 +31,9 @@
 #include "tiles/cache/omTileCache.h"
 #include "users/omGuiUserChooser.h"
 #include "utility/omFileHelpers.h"
+#include "datalayer/fs/omFile.hpp"
 #include "utility/segmentationDataWrapper.hpp"
+#include "datalayer/archive/project.h"
 
 #include <QDir>
 #include <QFile>
@@ -116,7 +119,7 @@ public:
             SegmentationDataWrapper(*iter).GetSegmentation().Flush();
         }
 
-        OmDataArchiveProject::ArchiveWrite(projectMetadataFile_, this);
+        om::data::archive::project::Write(projectMetadataFile_, this);
 
         printf("omni project saved!\n");
     }
@@ -180,10 +183,14 @@ private:
         omniFile_ = fnp;
         filesFolder_ = fnp + ".files";
 
-        projectMetadataFile_ = OmFileNames::ProjectMetadataFile();
+        
         oldHDF5projectFile_ = OmFileNames::OldHDF5projectFileName();
-
-        migrateFromHdf5();
+        projectMetadataFile_ = OmFileNames::ProjectMetadataFile();
+        
+        if(!QFileInfo(omniFile_).size())
+            oldHDF5projectFile_ = "";
+        else 
+            migrateFromHdf5();
 
         setupGlobals();
 
@@ -201,8 +208,12 @@ private:
         OmTileCache::Reset();
         OmActionLogger::Reset();
 
-        OmDataArchiveProject::ArchiveRead(projectMetadataFile_, this);
-
+        
+        if (om::file::exists(projectMetadataFile_.toStdString()))
+            om::data::archive::project::Read(projectMetadataFile_, this);
+        else
+            OmDataArchiveProject::ArchiveRead(OmFileNames::ProjectMetadataFileOld(), this);
+        
         OmActionReplayer::Replay();
     }
 
@@ -239,12 +250,6 @@ private:
 
     void migrateFromHdf5()
     {
-        if(!QFileInfo(omniFile_).size())
-        {
-            oldHDF5projectFile_ = "";
-            return;
-        }
-
         OmFileNames::MakeFilesFolder();
 
         OmFileHelpers::MoveFile(omniFile_, oldHDF5projectFile_);
@@ -265,7 +270,7 @@ private:
         OmDataWrapperPtr dw = oldHDF5_->readDataset(path, &size);
         char const*const data = dw->getPtr<const char>();
 
-        QFile newProjectMetadafile(projectMetadataFile_);
+        QFile newProjectMetadafile(OmFileNames::ProjectMetadataFileOld());
 
         if(!newProjectMetadafile.open(QIODevice::WriteOnly)) {
             throw OmIoException("could not open", projectMetadataFile_);
@@ -286,6 +291,8 @@ private:
 
     friend class OmProject;
 
+    friend YAML::Emitter & om::data::archive::operator<<(YAML::Emitter & out, const OmProjectImpl & p);
+    friend void om::data::archive::operator>>(const YAML::Node & in, OmProjectImpl & p);
     friend QDataStream &operator<<(QDataStream & out, const OmProjectImpl & p);
     friend QDataStream &operator>>(QDataStream & in, OmProjectImpl & p);
 };

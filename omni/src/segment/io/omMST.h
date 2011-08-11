@@ -3,6 +3,7 @@
 #include "segment/io/omMSTtypes.h"
 #include "utility/omSharedPtr.hpp"
 #include "zi/omMutex.h"
+#include "datalayer/archive/segmentation.h"
 
 #include <QString>
 
@@ -13,6 +14,7 @@ template <class> class OmMemMappedFileWriteQT;
 template <class> class OmFileReadQT;
 template <class> class OmFileWriteQT;
 class QDataStream;
+
 
 class OmMST {
 private:
@@ -79,5 +81,7 @@ private:
 
     friend class OmDataArchiveProjectImpl;
     friend QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg);
+    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter& out, const OmSegmentation& seg);
+    friend void om::data::archive::operator>>(const YAML::Node& in, OmSegmentation& seg);
 };
 

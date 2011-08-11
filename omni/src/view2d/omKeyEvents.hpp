@@ -85,6 +85,7 @@ public:
         case Qt::Key_Tab:
         {
             const bool control = event->modifiers() & Qt::ControlModifier;
+
             if(control){
                 v2d_->ShowComplimentaryDock();
             }

@@ -10,6 +10,7 @@
 
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
+#include "datalayer/archive/project.h"
 
 class OmChannel;
 class OmSegmentation;
@@ -51,7 +52,8 @@ private:
 
     static void setFileVersion(const int fileVersion);
     friend class OmDataArchiveProject;
-
+    friend class om::data::archive::project;
+    
     friend QDataStream &operator<<(QDataStream & out, const OmProject & p );
     friend QDataStream &operator>>(QDataStream & in, OmProject & p );
 

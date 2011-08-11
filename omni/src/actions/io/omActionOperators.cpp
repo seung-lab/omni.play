@@ -1,14 +1,15 @@
 #include "actions/io/omActionOperators.h"
-#include "datalayer/archive/omDataArchiveBoost.h"
+#include "datalayer/archive/old/omDataArchiveBoost.h"
 #include "segment/omSegment.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
-#include "datalayer/archive/omDataArchiveWrappers.h"
+#include "datalayer/archive/old/omDataArchiveWrappers.h"
 
 #include "actions/details/omSegmentGroupActionImpl.hpp"
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
+#include "actions/details/omSegmentCutActionImpl.hpp"
 #include "actions/details/omSegmentValidateActionImpl.hpp"
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
 #include "actions/details/omSegmentationThresholdChangeActionImpl.hpp"
@@ -307,3 +308,24 @@ QDataStream& operator>>(QDataStream& in,  OmVoxelSetValueActionImpl& a)
     return in;
 }
 
+QDataStream& operator<<(QDataStream& out, const OmSegmentCutActionImpl& a)
+{
+    int version = 1;
+    out << version;
+
+	out << a.sdw_;
+    out << a.edges_;
+
+    return out;
+}
+
+QDataStream& operator>>(QDataStream& in,  OmSegmentCutActionImpl& a)
+{
+    int version;
+    in >> version;
+
+	in >> a.sdw_;
+    in >> a.edges_;
+
+    return in;
+}

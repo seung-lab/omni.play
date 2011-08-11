@@ -14,6 +14,7 @@
 
 #include "common/omString.hpp"
 #include "system/omManageableObject.h"
+#include "datalayer/archive/project.h"
 
 class OmChannel;
 class OmSegmentation;
@@ -84,6 +85,8 @@ private:
 
     void reset();
 
+    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter&, const OmFilter2d&);
+    friend void om::data::archive::operator>>(const YAML::Node&, OmFilter2d&);
     friend QDataStream &operator<<(QDataStream&, const OmFilter2d&);
     friend QDataStream &operator>>(QDataStream&, OmFilter2d&);
 };

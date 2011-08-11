@@ -1,46 +1,28 @@
 #pragma once
 
 #include "segment/omSegments.h"
+#include "segment/omSegmentEdgeUtils.hpp"
 
 class OmFindCommonEdge {
 public:
-    static OmSegmentEdge MakeEdge(){
-        return OmSegmentEdge();
-    }
-
-    static OmSegmentEdge MakeEdge(OmSegment* childSeg)
-    {
-        return OmSegmentEdge(childSeg->parent_->value(),
-                             childSeg->value(),
-                             childSeg->threshold_);
-    }
-
-    static OmSegmentEdge MakeEdge(OmSegment* parentSeg, OmSegment* childSeg,
-                                  const double t)
-    {
-        return OmSegmentEdge(parentSeg->value(),
-                             childSeg->value(),
-                             t);
-    }
-
     static OmSegmentEdge FindClosestCommonEdge(OmSegments* segments,
                                                OmSegment* seg1,
                                                OmSegment* seg2)
     {
         if(!seg1 || !seg2){
-            return MakeEdge();
+            return om::segmentEdge::MakeEdge();
         }
 
         if( segments->findRoot(seg1) != segments->findRoot(seg2) )
         {
             printf("can't split disconnected objects\n");
-            return MakeEdge();
+            return om::segmentEdge::MakeEdge();
         }
 
         if( seg1 == seg2 )
         {
             printf("can't split object from self\n");
-            return MakeEdge();
+            return om::segmentEdge::MakeEdge();
         }
 
         OmSegment* s1 = seg1;
@@ -48,7 +30,7 @@ public:
         {
             if(s1->parent_ == seg2) {
                 //debug(split, "splitting child from a direct parent\n");
-                return MakeEdge(s1);
+                return om::segmentEdge::MakeEdge(s1);
             }
             s1 = s1->parent_;
         }
@@ -58,7 +40,7 @@ public:
         {
             if(s2->parent_ == seg1) {
                 //debug(split, "splitting child from a direct parent\n");
-                return MakeEdge(s2);
+                return om::segmentEdge::MakeEdge(s2);
             }
             s2 = s2->parent_;
         }
@@ -109,7 +91,7 @@ public:
         }
 
         assert(minChild != 0);
-        return MakeEdge(minChild);
+        return om::segmentEdge::MakeEdge(minChild);
     }
 };
 

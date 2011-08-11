@@ -4,6 +4,7 @@
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
 #include "volume/omSegmentation.h"
 #include "zi/omUtility.h"
+#include "datalayer/archive/segmentation.h"
 
 class OmSegmentsImpl;
 
@@ -13,9 +14,11 @@ private:
 
     OmSegIDsSet selected_;
 
+    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
+    friend void om::data::archive::operator>>(const YAML::Node&, OmSegmentsImpl&);
     friend QDataStream& operator<<(QDataStream&, const OmSegmentsImpl&);
     friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);
-
+    
     inline void addToRecentMap(const OmSegID segID)
     {
         OmSegment* seg = cache_->SegmentStore()->GetSegment(segID);

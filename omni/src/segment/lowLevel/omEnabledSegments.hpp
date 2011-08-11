@@ -2,6 +2,7 @@
 
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
 #include "zi/omUtility.h"
+#include "datalayer/archive/segmentation.h"
 
 class OmSegmentsImpl;
 
@@ -11,9 +12,11 @@ private:
 
     OmSegIDsSet enabled_;
 
+    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
+    friend void om::data::archive::operator>>(const YAML::Node&, OmSegmentsImpl&);
     friend QDataStream& operator<<(QDataStream&, const OmSegmentsImpl&);
     friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);
-
+    
 public:
     OmEnabledSegments(OmSegmentsImplLowLevel* cache)
         : cache_(cache)

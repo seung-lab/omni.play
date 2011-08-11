@@ -2,6 +2,7 @@
 
 #include "common/omCommon.h"
 #include "zi/omMutex.h"
+#include "datalayer/archive/segmentation.h"
 
 class OmCacheSegRootIDs;
 class OmCacheSegStore;
@@ -45,7 +46,9 @@ public:
     OmSegID Root(const OmSegID segID);
 
 private:
-    friend QDataStream &operator<< (QDataStream& out, const OmSegmentsImpl&);
-    friend QDataStream &operator>> (QDataStream& in, OmSegmentsImpl&);
+    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter& out, const OmSegmentsImpl&);
+    friend void om::data::archive::operator>>(const YAML::Node& in, OmSegmentsImpl&);
+    friend QDataStream &operator<<(QDataStream& out, const OmSegmentsImpl&);
+    friend QDataStream &operator>>(QDataStream& in, OmSegmentsImpl&);
 };
 

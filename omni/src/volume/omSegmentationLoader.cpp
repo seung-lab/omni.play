@@ -39,6 +39,21 @@ void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps,
     }
 }
 
+void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps)
+{
+    if(vol_->IsBuilt())
+    {
+        const QString fullPath = QString::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
+        
+        if(OmFileHelpers::IsFolderEmpty(fullPath)){
+            rebuildSegments();
+            
+        } else {
+            ps.loadAllSegmentPages();
+        }
+    }
+}
+
 void om::segmentation::loader::rebuildSegments()
 {
     std::cout << "no segment folder; rebuild segment data?\n==> (y/N)  " << std::flush;

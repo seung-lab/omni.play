@@ -152,6 +152,8 @@ HEADERS +=  \
 	src/actions/details/omActionImpls.hpp \
 	src/actions/details/omProjectCloseActionImpl.hpp \
 	src/actions/details/omProjectSaveActionImpl.hpp \
+	src/actions/details/omSegmentCutAction.h \
+	src/actions/details/omSegmentCutActionImpl.hpp \
 	src/actions/details/omSegmentGroupActionImpl.hpp \
 	src/actions/details/omSegmentJoinActionImpl.hpp \
 	src/actions/details/omSegmentSelectActionImpl.hpp \
@@ -217,17 +219,24 @@ HEADERS +=  \
 	src/common/omStd.h \
 	src/common/omStoppable.h \
 	src/common/omString.hpp \
-	src/datalayer/archive/omChannelMetadata.h \
-	src/datalayer/archive/omDataArchiveBoost.h \
-	src/datalayer/archive/omDataArchiveProject.h \
-	src/datalayer/archive/omDataArchiveProjectImpl.h \
-	src/datalayer/archive/omDataArchiveSegment.h \
-	src/datalayer/archive/omDataArchiveStd.hpp \
-	src/datalayer/archive/omDataArchiveWrappers.h \
-	src/datalayer/archive/omGenericManagerArchive.hpp \
-	src/datalayer/archive/omMetadataSegmentation.h \
-	src/datalayer/archive/omMipVolumeArchive.h \
-	src/datalayer/archive/omMipVolumeArchiveOld.h \
+	src/datalayer/archive/baseTypes.hpp \
+	src/datalayer/archive/channel.h \
+	src/datalayer/archive/filter.h \
+	src/datalayer/archive/genericManager.hpp \
+	src/datalayer/archive/mipVolume.hpp \
+	src/datalayer/archive/old/omChannelMetadata.h \
+	src/datalayer/archive/old/omDataArchiveBoost.h \
+	src/datalayer/archive/old/omDataArchiveProject.h \
+	src/datalayer/archive/old/omDataArchiveProjectImpl.h \
+	src/datalayer/archive/old/omDataArchiveSegment.h \
+	src/datalayer/archive/old/omDataArchiveStd.hpp \
+	src/datalayer/archive/old/omDataArchiveWrappers.h \
+	src/datalayer/archive/old/omGenericManagerArchive.hpp \
+	src/datalayer/archive/old/omMetadataSegmentation.h \
+	src/datalayer/archive/old/omMipVolumeArchive.h \
+	src/datalayer/archive/old/omMipVolumeArchiveOld.h \
+	src/datalayer/archive/project.h \
+	src/datalayer/archive/segmentation.h \
 	src/datalayer/fs/omCompressedFile.h \
 	src/datalayer/fs/omFile.hpp \
 	src/datalayer/fs/omFileNames.hpp \
@@ -348,6 +357,7 @@ HEADERS +=  \
 	src/gui/sidebars/right/displayTools/3d/dust3DthresholdGroup.hpp \
 	src/gui/sidebars/right/displayTools/displayTools.h \
 	src/gui/sidebars/right/displayTools/location/pageLocation.hpp \
+	src/gui/sidebars/right/displayTools/location/saveLocationButton.hpp \
 	src/gui/sidebars/right/displayTools/location/sliceDepthSpinBoxBase.hpp \
 	src/gui/sidebars/right/displayTools/location/sliceDepthSpinBoxX.hpp \
 	src/gui/sidebars/right/displayTools/location/sliceDepthSpinBoxY.hpp \
@@ -519,6 +529,7 @@ HEADERS +=  \
 	src/segment/omSegmentCenter.hpp \
 	src/segment/omSegmentChildrenTypes.h \
 	src/segment/omSegmentEdge.h \
+	src/segment/omSegmentEdgeUtils.hpp \
 	src/segment/omSegmentIterator.h \
 	src/segment/omSegmentPointers.h \
 	src/segment/omSegmentSearched.hpp \
@@ -718,6 +729,7 @@ HEADERS +=  \
 	src/volume/build/omVolumeAllocater.hpp \
 	src/volume/build/omVolumeBuilder.hpp \
 	src/volume/build/omVolumeBuilderBase.hpp \
+	src/volume/build/omVolumeBuilderEmpty.hpp \
 	src/volume/build/omVolumeBuilderHdf5.hpp \
 	src/volume/build/omVolumeBuilderImages.hpp \
 	src/volume/build/omVolumeBuilderWatershed.hpp \
@@ -798,6 +810,7 @@ SOURCES +=  \
 	include/yaml-cpp/src/stream.cpp \
 	include/yaml-cpp/src/tag.cpp \
 	lib/strnatcmp.cpp \
+	src/actions/details/omSegmentCutAction.cpp \
 	src/actions/details/omSegmentSplitAction.cpp \
 	src/actions/details/omSegmentUncertainAction.cpp \
 	src/actions/details/omSegmentValidateAction.cpp \
@@ -818,14 +831,18 @@ SOURCES +=  \
 	src/common/omCommon.cpp \
 	src/common/omGl.cpp \
 	src/common/omQt.cpp \
-	src/datalayer/archive/omChannelMetadata.cpp \
-	src/datalayer/archive/omDataArchiveBoost.cpp \
-	src/datalayer/archive/omDataArchiveProject.cpp \
-	src/datalayer/archive/omDataArchiveProjectImpl.cpp \
-	src/datalayer/archive/omDataArchiveSegment.cpp \
-	src/datalayer/archive/omDataArchiveWrappers.cpp \
-	src/datalayer/archive/omMetadataSegmentation.cpp \
-	src/datalayer/archive/omMipVolumeArchive.cpp \
+	src/datalayer/archive/channel.cpp \
+	src/datalayer/archive/filter.cpp \
+	src/datalayer/archive/old/omChannelMetadata.cpp \
+	src/datalayer/archive/old/omDataArchiveBoost.cpp \
+	src/datalayer/archive/old/omDataArchiveProject.cpp \
+	src/datalayer/archive/old/omDataArchiveProjectImpl.cpp \
+	src/datalayer/archive/old/omDataArchiveSegment.cpp \
+	src/datalayer/archive/old/omDataArchiveWrappers.cpp \
+	src/datalayer/archive/old/omMetadataSegmentation.cpp \
+	src/datalayer/archive/old/omMipVolumeArchive.cpp \
+	src/datalayer/archive/project.cpp \
+	src/datalayer/archive/segmentation.cpp \
 	src/datalayer/fs/omCompressedFile.cpp \
 	src/datalayer/fs/omFile.cpp \
 	src/datalayer/hdf5/omHdf5.cpp \

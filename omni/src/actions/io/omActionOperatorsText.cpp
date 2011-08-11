@@ -4,6 +4,7 @@
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
+#include "actions/details/omSegmentCutActionImpl.hpp"
 #include "actions/details/omSegmentValidateActionImpl.hpp"
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
 #include "actions/details/omSegmentationThresholdChangeActionImpl.hpp"
@@ -60,6 +61,16 @@ QTextStream& operator<<(QTextStream& out, const OmSegmentSelectActionImpl& a)
 QTextStream& operator<<(QTextStream& out, const OmSegmentSplitActionImpl& a)
 {
     out << a.mEdge;
+    return out;
+}
+
+QTextStream& operator<<(QTextStream& out, const OmSegmentCutActionImpl& a)
+{
+	out << "segment " << a.sdw_ << ": ";
+
+	FOR_EACH(iter, a.edges_){
+		out << *iter << ";";
+	}
     return out;
 }
 

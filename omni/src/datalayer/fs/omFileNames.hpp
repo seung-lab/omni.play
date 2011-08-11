@@ -110,10 +110,14 @@ public:
         return OmProject::Globals().Users().LogFolderPath();
     }
 
-    static QString ProjectMetadataFile(){
+    static QString ProjectMetadataFileOld(){
         return FilesFolder() + "/projectMetadata.qt";
     }
 
+    static QString ProjectMetadataFile(){
+        return FilesFolder() + "/projectMetadata.yaml";
+    }
+    
     static QString OldHDF5projectFileName(){
         return FilesFolder() + "/oldProjectFile.hdf5";
     }

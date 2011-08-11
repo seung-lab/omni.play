@@ -10,6 +10,7 @@
 #include "mesh/omMeshTypes.h"
 #include "system/omManageableObject.h"
 #include "volume/omMipVolume.h"
+#include "datalayer/archive/segmentation.h"
 
 class OmChunk;
 class OmChunkUniqueValuesManager;
@@ -167,6 +168,8 @@ private:
     friend class SegmentTests1;
 
     friend class OmDataArchiveProjectImpl;
+    friend void om::data::archive::operator>>(const YAML::Node& in, OmSegmentation&);
+    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter& out, const OmSegmentation&);
     friend QDataStream &operator>>(QDataStream& in, OmSegmentation&);
     friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
 };

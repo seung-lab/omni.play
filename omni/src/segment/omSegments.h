@@ -2,6 +2,7 @@
 
 #include "volume/omVolumeTypes.hpp"
 #include "segment/omSegmentPointers.h"
+#include "datalayer/archive/segmentation.h"
 
 #include <zi/mutex.hpp>
 
@@ -58,6 +59,7 @@ public:
 
     boost::optional<std::string> IsEdgeSplittable(const OmSegmentEdge& e);
     boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
+	boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
 
     OmSegment* findRoot(OmSegment* segment);
     OmSegment* findRoot(const OmSegID segID);
@@ -69,6 +71,9 @@ public:
     OmSegmentEdge SplitEdge(const OmSegmentEdge& e);
     OmSegIDsSet JoinTheseSegments(const OmSegIDsSet& segmentList);
     OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
+
+	std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
+	bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
 
     uint32_t getPageSize();
 
@@ -91,6 +96,8 @@ private:
     friend class OmSegmentColorizer;
     friend class SegmentTests;
 
+    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter& out, const OmSegments& sc);
+    friend void om::data::archive::operator>>(const YAML::Node& in, OmSegments& sc);
     friend QDataStream &operator<<(QDataStream& out, const OmSegments& sc);
     friend QDataStream &operator>>(QDataStream& in, OmSegments& sc);
 };

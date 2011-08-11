@@ -17,6 +17,7 @@
 #include "volume/build/omBuildAffinityChannel.hpp"
 #include "volume/build/omBuildChannel.hpp"
 #include "volume/build/omBuildSegmentation.hpp"
+#include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omAffinityGraph.h"
 #include "volume/omCompareVolumes.hpp"
 #include "volume/omFilter2d.h"
@@ -858,6 +859,13 @@ void Headless::processLine(const QString& line, const QString&)
         }
 
         HeadlessImpl::ExportAndRerootSegments(sdw, args[2]);
+
+    } else if(line.startsWith("buildEmptyChannel")){
+        ChannelDataWrapper cdw;
+        OmChannel& chann = cdw.Create();
+
+        OmBuildChannel bc(&chann);
+        bc.BuildEmptyChannel();
 
     } else {
         printf("Could not parse \"%s\".\n", qPrintable(line));

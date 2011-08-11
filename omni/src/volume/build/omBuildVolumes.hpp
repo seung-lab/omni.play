@@ -63,7 +63,8 @@ private:
             return false;
         }
 
-        FOR_EACH(iter, mFileNamesAndPaths ){
+        FOR_EACH(iter, mFileNamesAndPaths )
+        {
             if(!iter->exists() ){
                 printf("file does not exist: %s\n", qPrintable(iter->filePath()) );
                 return false;

@@ -10,6 +10,7 @@
 #include "common/omMath.hpp"
 
 #include "utility/omSharedPtr.hpp"
+#include <zi/for_each.hpp>
 
 /**
  * vmml-related

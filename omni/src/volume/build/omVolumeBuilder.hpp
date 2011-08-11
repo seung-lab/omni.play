@@ -4,6 +4,7 @@
 #include "volume/build/omVolumeBuilderHdf5.hpp"
 #include "volume/build/omVolumeBuilderImages.hpp"
 #include "volume/build/omVolumeBuilderWatershed.hpp"
+#include "volume/build/omVolumeBuilderEmpty.hpp"
 
 #include <QFileInfo>
 
@@ -44,6 +45,13 @@ public:
         setup();
     }
 
+    OmVolumeBuilder(VOL* vol)
+        : vol_(vol)
+        , files_()
+        , hdf5path_("")
+        , importType_(UNKNOWN)
+    {}
+
     void Build()
     {
         boost::scoped_ptr<OmVolumeBuilderBase<VOL> > builder(produceBuilder());
@@ -68,6 +76,12 @@ public:
 
         OmVolumeBuilderWatershed<VOL> builder(vol_, files_[0]);
         builder.Build();
+    }
+
+    void BuildEmptyChannel()
+    {
+        OmVolumeBuilderEmpty<VOL> builder(vol_);
+        builder.BuildEmpty();
     }
 
 private:

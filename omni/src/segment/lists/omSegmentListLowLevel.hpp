@@ -250,7 +250,7 @@ private:
 
         timer.Print("Rebuilt segment GUI lists");
 
-        OmEvents::SegmentGUIlist(cache_->GetSDW());
+        OmEvents::SegmentGUIlist(cache_->GetSDW(), true);
     }
 
     void copyGlobalList()

@@ -182,11 +182,7 @@ void OmActionsImpl::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2)
 
 void OmActionsImpl::CutSegment(const SegmentDataWrapper sdw)
 {
-    const boost::optional<OmSegmentEdge> edge = OmCutSegmentRunner::CutSegmentFromParent(sdw);
-
-    if(edge){
-        (new OmSegmentSplitAction(sdw.MakeSegmentationDataWrapper(), *edge))->Run();
-    }
+    OmCutSegmentRunner::CutSegmentFromParent(sdw);
 }
 
 void OmActionsImpl::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params){

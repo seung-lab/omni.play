@@ -1,6 +1,6 @@
 #include "common/omCommon.h"
-#include "datalayer/archive/omDataArchiveProject.h"
-#include "datalayer/archive/omDataArchiveProjectImpl.h"
+#include "datalayer/archive/old/omDataArchiveProject.h"
+#include "datalayer/archive/old/omDataArchiveProjectImpl.h"
 #include "datalayer/upgraders/omUpgraders.hpp"
 #include "mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
@@ -101,10 +101,16 @@ void OmDataArchiveProject::upgrade()
 
 void OmDataArchiveProject::ArchiveWrite(const QString& fnp, OmProjectImpl* project)
 {
+    const QString fnpOld = fnp + ".old";
+
+    try {
+        OmFileHelpers::CopyFile(fnp, fnpOld);
+    } catch(...)
+    {}
+
     QFile file(fnp);
-    if(!file.open(QIODevice::WriteOnly)){
-        throw OmIoException("could not open", fnp);
-    }
+
+    om::file::openFileWO(file);
 
     QDataStream out(&file);
     out.setByteOrder(QDataStream::LittleEndian);

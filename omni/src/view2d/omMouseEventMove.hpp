@@ -46,33 +46,29 @@ public:
             case om::tool::ZOOM:
             case om::tool::FILL:
             case om::tool::LANDMARK:
+                if(shouldPan()){
+                    doPan();
+                }
                 break;
 
             case om::tool::SELECT:
-                if(controlKey_ || state_->OverrideToolModeForPan())
-                {
-                    // pan in select-mode
-                    mousePan();
-                    OmEvents::Redraw3d();
+                if(shouldPan()){
+                    doPan();
                 } else {
                     selectSegments();
                 }
                 break;
 
             case om::tool::PAN:
-                mousePan();
-                OmEvents::Redraw3d();
+                doPan();
                 break;
 
             case om::tool::PAINT:
-                if(controlKey_ || state_->OverrideToolModeForPan())
+                if(shouldPan()){
+                    doPan();
+                } else
                 {
-                    // pan in select-mode
-                    mousePan();
-                    OmEvents::Redraw3d();
-
-                } else{
-                    if (state_->getScribbling()) {
+                    if(state_->getScribbling()) {
                         paint();
                     }
                     state_->SetLastDataPoint(dataClickPoint_);
@@ -80,13 +76,10 @@ public:
                 break;
 
             case om::tool::ERASE:
-                if(controlKey_ || state_->OverrideToolModeForPan())
+                if(shouldPan()){
+                    doPan();
+                } else
                 {
-                    // pan in select-mode
-                    mousePan();
-                    OmEvents::Redraw3d();
-
-                } else{
                     if (state_->getScribbling()) {
                         erase();
                     }
@@ -100,6 +93,16 @@ public:
     }
 
 private:
+    inline bool shouldPan() const {
+        return controlKey_ || state_->OverrideToolModeForPan();
+    }
+
+    inline void doPan()
+    {
+        mousePan();
+        OmEvents::Redraw3d();
+    }
+
     inline void setState(QMouseEvent* event)
     {
         event_ = event;

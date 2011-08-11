@@ -21,7 +21,7 @@ SegmentListBase::SegmentListBase(QWidget* parent,
                                   OmViewGroupState* vgs)
     : QWidget(parent)
     , haveValidSDW(false)
-    , currentPageNum(0)
+    , currentPageNum_(0)
     , vgs_(vgs)
 {
     layout = new QVBoxLayout(this);
@@ -42,6 +42,7 @@ quint32 SegmentListBase::getTotalNumberOfSegments()
     return Size();
 }
 
+// offset == number of segments in
 void SegmentListBase::populateByPage(const int offset)
 {
     assert(haveValidSDW);
@@ -53,7 +54,7 @@ void SegmentListBase::populateByPage(const int offset)
 
     om::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
 
-    currentPageNum = segIDs->pageNum;
+    currentPageNum_ = segIDs->pageNum;
 
     const bool shouldThisTabBeMadeActive =
         segmentListWidget->populate(false,
@@ -81,7 +82,7 @@ void SegmentListBase::populateBySegment(const bool doScrollToSelectedSegment,
 
     om::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
 
-    currentPageNum = segIDs->pageNum;
+    currentPageNum_ = segIDs->pageNum;
 
     const bool shouldThisTabBeMadeActive =
         segmentListWidget->populate(doScrollToSelectedSegment,
@@ -143,39 +144,39 @@ void SegmentListBase::setupPageButtons()
 
 void SegmentListBase::goToStartPage()
 {
-    currentPageNum = 0;
-    int offset = currentPageNum* getNumSegmentsPerPage();
+    currentPageNum_ = 0;
+    int offset = currentPageNum_* getNumSegmentsPerPage();
     populateByPage(offset);
 }
 
 void SegmentListBase::goToNextPage()
 {
-    ++currentPageNum;
-    unsigned int offset = currentPageNum* getNumSegmentsPerPage();
+    ++currentPageNum_;
+    unsigned int offset = currentPageNum_* getNumSegmentsPerPage();
     if(offset > getTotalNumberOfSegments()){
-        --currentPageNum;
-        offset = currentPageNum* getNumSegmentsPerPage();
+        --currentPageNum_;
+        offset = currentPageNum_* getNumSegmentsPerPage();
     }
     populateByPage(offset);
 }
 
 void SegmentListBase::goToPrevPage()
 {
-    --currentPageNum;
-    if(currentPageNum < 0){
-        currentPageNum = 0;
+    --currentPageNum_;
+    if(currentPageNum_ < 0){
+        currentPageNum_ = 0;
     }
-    int offset = currentPageNum* getNumSegmentsPerPage();
+    int offset = currentPageNum_* getNumSegmentsPerPage();
     populateByPage(offset);
 }
 
 void SegmentListBase::goToEndPage()
 {
-    currentPageNum = (getTotalNumberOfSegments() / getNumSegmentsPerPage());
-    if(currentPageNum < 0) {
-        currentPageNum = 0;
+    currentPageNum_ = (getTotalNumberOfSegments() / getNumSegmentsPerPage());
+    if(currentPageNum_ < 0) {
+        currentPageNum_ = 0;
     }
-    int offset = currentPageNum* getNumSegmentsPerPage();
+    int offset = currentPageNum_* getNumSegmentsPerPage();
     populateByPage(offset);
 }
 
@@ -197,6 +198,13 @@ void SegmentListBase::MakeSegmentationActive(const SegmentationDataWrapper& sdw)
     sdw_ = sdw;
     haveValidSDW = true;
     populateByPage(0);
+}
+
+void SegmentListBase::RefreshPage(const SegmentationDataWrapper& sdw)
+{
+    sdw_ = sdw;
+    haveValidSDW = true;
+    populateByPage(currentPageNum_ * getNumSegmentsPerPage());
 }
 
 void SegmentListBase::searchChanged()

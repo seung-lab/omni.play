@@ -81,16 +81,16 @@ public:
 
         setViewTypeDepth(result, depth);
 
-        // std::cout << "ScreenToDataCoord: screenc: " << screenc
-        //           << "\n\tpanDistance: " << panDistance
-        //           << "\n\t factor: " << factor
-        //           << "\n\t screenToPanShift(screenc): " << screenToPanShift(screenc)
-        //           << "\n\t unscaleNorm: " << unscaleNorm
-        //           << "\n\t dataScale: " << dataScale
-        //           << "\n\t normc: " << normc
-        //           << "\n\t result: " << result
-        //           << "\n\t depth: " << depth
-        //           << "\n";
+//         std::cout << "ScreenToDataCoord: screenc: " << screenc
+//                   << "\n\tpanDistance: " << panDistance
+//                   << "\n\t factor: " << factor
+//                   << "\n\t screenToPanShift(screenc): " << screenToPanShift(screenc)
+//                   << "\n\t unscaleNorm: " << unscaleNorm
+//                   << "\n\t dataScale: " << dataScale
+//                   << "\n\t normc: " << normc
+//                   << "\n\t result: " << result
+//                   << "\n\t depth: " << depth
+//                   << "\n";
 
         return result;
     }
@@ -234,30 +234,21 @@ public:
         if(!mousePanStartingPt_){
             return;
         }
-
-        const Vector2i drag = *mousePanStartingPt_ - cursorLocation;
-
-        const DataCoord dragCoord = ScreenToDataCoord(drag);
-        const DataCoord zeroCoord = ScreenToDataCoord(Vector2i(0,0));
-
-        const DataCoord difference = zeroCoord - dragCoord;
+	const DataCoord difference = ScreenToDataCoord(*mousePanStartingPt_) - ScreenToDataCoord(cursorLocation);
 
         const DataCoord oldLocation = location_->DataLocation();
-        const DataCoord newLocation = oldLocation - difference;
+        const DataCoord newLocation = oldLocation + difference;
 
         location_->SetDataLocation(newLocation);
 
         OmEvents::ViewCenterChanged();
 
-        // std::cout << "cursorLocation: " << cursorLocation
-        //           << "\n\t mousePanStartingPt_: " << *mousePanStartingPt_
-        //           << "\n\t drag: " << drag
-        //           << "\n\t dragCoord: " << dragCoord
-        //           << "\n\t zeroCoord: " << zeroCoord
-        //           << "\n\t difference: " << difference
-        //           << "\n\t oldLocation: " << oldLocation
-        //           << "\n\t newLocation: " << newLocation
-        //           << "\n";
+//         std::cout << "cursorLocation: " << cursorLocation
+//                   << "\n\t mousePanStartingPt_: " << *mousePanStartingPt_
+//                   << "\n\t difference: " << difference
+//                   << "\n\t oldLocation: " << oldLocation
+//                   << "\n\t newLocation: " << newLocation
+//                   << "\n";
 
         if(oldLocation != newLocation){
             mousePanStartingPt_ = cursorLocation;
