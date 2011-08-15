@@ -70,7 +70,11 @@ void operator>>(const YAML::Node& in, OmMipVolCoords& c)
     in["dataStretchValues"] >> c.dataStretchValues_;
     in["mMipLeafDim"] >> c.mMipLeafDim;
     in["mMipRootLevel"] >> c.mMipRootLevel;
-    in["absOffset"] >> c.absOffset_;
+    if(in.FindValue("absOffset")) {
+        in["absOffset"] >> c.absOffset_;
+    } else {
+        c.absOffset_ = Vector3i::ZERO;
+    }
 }
 
 }; // namespace archive

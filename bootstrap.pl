@@ -41,6 +41,7 @@ my $ZLIB_VER = "zlib-1.2.5";
 my $INTEL_TBB_VER = "tbb30_20110315oss";
 my $THRIFT_VER = "thrift-0.6.1";
 my $RE2C = "re2c-0.13.5";
+my $LIBEDIT_VER = "libedit-20110709-3.0";
 
 #my $JPEG_VER = "libjpeg-turbo-1.1.0";
 #if(isMac()){
@@ -356,6 +357,11 @@ sub libjpeg
     prepareAndBuild( $JPEG_VER, "libjpeg" );
 }
 
+sub libedit
+{
+    prepareNukeSrcsAndBuild( $LIBEDIT_VER, "libedit" );
+}
+
 sub intel_tbb
 {
     prepareAndBuild( $INTEL_TBB_VER, "intel_tbb" );
@@ -485,6 +491,7 @@ sub menu
     print "6 -- [Do 1 through 5]\n";
     print "7 -- Build thrift\n";
     print "8 -- Generate scripts\n";
+    print "9 -- Build libedit\n";
     print "10 -- Experimental builds...\n";
     print "11 -- Ubuntu library apt-gets...\n";
     print "12 -- build omni (make clean first)...\n";
@@ -512,6 +519,7 @@ sub buildAll
     qt();
     libjpeg();
     thrift();
+    libedit();
     omni();
 }
 
@@ -538,6 +546,7 @@ sub runMenuEntry
     }elsif( 8 == $entry ){
 	genOmniScript();
     }elsif( 9 == $entry ){
+        libedit();
     }elsif( 10 == $entry ){
         experimentalMenu();
     }elsif( 11 == $entry ){
@@ -650,7 +659,7 @@ sub doUbuntuAptGets
     my @packages = qw( libxrender-dev libxext-dev freeglut3-dev g++
 	libfreetype6-dev libxml2 libxml2-dev mesa-common-dev
 	libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
-	libgl1-mesa-glx-dbg);
+	libgl1-mesa-glx-dbg libncurses5-dev);
 
     my $args = concatStrList(@packages);
 

@@ -200,29 +200,20 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const DataCoord& coord,
 GLfloatBox OmOnScreenTileCoords::computeVertices(const float xRaw,
                                                  const float yRaw)
 {
-    const float x = xRaw * stretch_.x;
-    const float y = yRaw * stretch_.y;
+    const float x = xRaw;
+    const float y = yRaw;
 
     const GLfloat minX = x * zoomFactor_;
     const GLfloat minY = y * zoomFactor_;
     const GLfloat maxX = (x + tileLength_*stretch_.x) * zoomFactor_;
-    const GLfloat maxY = (y + tileLength_*stretch_.y) * zoomFactor_;
+    const GLfloat maxY = (y + tileLength_ *stretch_.y) * zoomFactor_;
 
     GLfloatBox glBox;
     glBox.lowerLeft.y  = minY;
     glBox.upperRight.y = maxY;
-
-    // switch(viewType_){
-    // case XY_VIEW:
-    // case XZ_VIEW:
-        glBox.lowerLeft.x  = minX;
-        glBox.upperRight.x = maxX;
-        // break;
-    // case ZY_VIEW:
-    //     glBox.lowerLeft.x  = maxX;
-    //     glBox.upperRight.x = minX;
-    //     break;
-    // }
+    glBox.lowerLeft.x  = minX;
+    glBox.upperRight.x = maxX;
+        
 
     glBox.lowerRight.x = glBox.upperRight.x;
     glBox.lowerRight.y = glBox.lowerLeft.y;
