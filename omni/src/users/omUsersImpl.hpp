@@ -5,6 +5,7 @@
 #include "utility/omStringHelpers.h"
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationFolder.h"
+#include "users/userSettings.h"
 
 #include <QDir>
 
@@ -14,18 +15,22 @@ class usersImpl {
 private:
     const QString usersFolderRoot_;
     QString userFolder_;
+    boost::scoped_ptr<userSettings> settings_;
 
 public:
     usersImpl()
         : usersFolderRoot_(usersFolderRoot())
+        , settings_(NULL)
     {}
 
     void SwitchToDefaultUser(){
         userFolder_ = QDir(usersFolderRoot_ + "_default").absolutePath();
+        loadUserSettings();
     }
 
     void SwitchToUser(const std::string& userName){
         userFolder_ = QDir(usersFolderRoot_ + QString::fromStdString(userName)).absolutePath();
+        loadUserSettings();
     }
 
     QString LogFolderPath(){
@@ -45,6 +50,10 @@ public:
 
     inline std::string UsersRootFolder() const {
         return usersFolderRoot_.toStdString();
+    }
+    
+    inline userSettings& UserSettings() {
+        return *settings_;
     }
 
 private:
@@ -103,6 +112,20 @@ private:
     {
         const QDir filesDir(vol->Folder()->GetVolPath());
         return filesDir.absolutePath() + QLatin1String("/segments/");
+    }
+    
+    void loadUserSettings()
+    {
+        if(settings_.get() == NULL || settings_->getFilename() != settingsFilename())
+        {
+            std::cout << "Reloading User Settings...\n";
+            settings_.reset(new userSettings(settingsFilename()));
+            settings_->Load();
+        }
+    }
+    
+    inline std::string settingsFilename() {
+        return userFolder_.toStdString() + "/settings.yaml";
     }
 };
 

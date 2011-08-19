@@ -44,7 +44,6 @@ YAML::Emitter &operator<<(YAML::Emitter& out, const OmSegmentation& seg)
     
     out << YAML::Key << "Segments" << YAML::Value << (*seg.segments_);
     out << YAML::Key << "Num Edges" << YAML::Value << seg.mst_->numEdges_;
-    out << YAML::Key << "User Threshold" << YAML::Value << seg.mst_->userThreshold_;
     out << YAML::Key << "Groups" << YAML::Value << (*seg.groups_);
     out << YAML::EndMap;
     
@@ -58,7 +57,6 @@ void operator>>(const YAML::Node& in, OmSegmentation& seg)
     
     in["Segments"] >> (*seg.segments_);
     in["Num Edges"] >> seg.mst_->numEdges_;
-    in["User Threshold"] >> seg.mst_->userThreshold_;
     in["Groups"] >> (*seg.groups_);
     
     seg.LoadVolDataIfFoldersExist();

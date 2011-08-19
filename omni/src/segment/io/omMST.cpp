@@ -13,7 +13,6 @@
 OmMST::OmMST(OmSegmentation* segmentation)
     : vol_(segmentation)
     , numEdges_(0)
-    , userThreshold_(defaultThreshold_)
     , edges_(NULL)
 {}
 
@@ -118,10 +117,10 @@ void OmMST::SetUserThreshold(const double t)
 {
     zi::rwmutex::write_guard g(thresholdLock_);
 
-    if(qFuzzyCompare(t, userThreshold_)){
+    if(qFuzzyCompare(t, UserThreshold())){
         return;
     }
-    userThreshold_ = t;
+    OmProject::Globals().Users().UserSettings().setThreshold(t);
 
     vol_->Segments()->refreshTree();
 }

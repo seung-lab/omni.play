@@ -205,7 +205,6 @@ QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg)
 
     out << (*seg.segments_);
     out << seg.mst_->numEdges_;
-    out << seg.mst_->userThreshold_;
     out << (*seg.groups_);
 
     return out;
@@ -244,7 +243,6 @@ void OmDataArchiveProjectImpl::LoadOldSegmentation(QDataStream& in,
     }
 
     in >> seg.mst_->numEdges_;
-    in >> seg.mst_->userThreshold_;
     in >> (*seg.groups_);
 
     if(OmProject::GetFileVersion() > 13){
@@ -285,7 +283,6 @@ void OmDataArchiveProjectImpl::LoadNewSegmentation(QDataStream& in, OmSegmentati
     in >> (*seg.segments_);
 
     in >> seg.mst_->numEdges_;
-    in >> seg.mst_->userThreshold_;
     in >> (*seg.groups_);
 
     seg.LoadVolDataIfFoldersExist();

@@ -4,6 +4,9 @@
 #include "utility/omSharedPtr.hpp"
 #include "zi/omMutex.h"
 #include "datalayer/archive/segmentation.h"
+#include "project/omProject.h"
+#include "project/omProjectGlobals.h"
+#include "users/omUsers.h"
 
 #include <QString>
 
@@ -44,7 +47,7 @@ public:
     }
 
     inline double UserThreshold() const {
-        return userThreshold_;
+        return OmProject::Globals().Users().UserSettings().getThreshold();
     }
 
     void SetUserThreshold(const double t);
@@ -57,7 +60,6 @@ private:
     OmSegmentation *const vol_;
 
     uint32_t numEdges_;
-    double userThreshold_;
 
     zi::rwmutex thresholdLock_;
 

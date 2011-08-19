@@ -602,6 +602,7 @@ HEADERS +=  \
 	src/users/omGuiUserChooserWidgetButtons.hpp \
 	src/users/omUsers.h \
 	src/users/omUsersImpl.hpp \
+	src/users/userSettings.h \
 	src/utility/affinityGraphDataWrapper.hpp \
 	src/utility/channelDataWrapper.hpp \
 	src/utility/dataWrapperContainer.hpp \
@@ -974,6 +975,7 @@ SOURCES +=  \
 	src/users/omGuiUserChooser.cpp \
 	src/users/omGuiUserChooserWidget.cpp \
 	src/users/omUsers.cpp \
+	src/users/userSettings.cpp \
 	src/utility/channelDataWrapper.cpp \
 	src/utility/omFileHelpers.cpp \
 	src/utility/omPrimeNumbers.cpp \

@@ -1,58 +1,20 @@
 #pragma once
 
 #include "yaml-cpp/yaml.h"
+#include "datalayer/fs/omFile.hpp"
 
 #include <fstream>
 
 namespace om {
 namespace yaml {
 
-// // our data types
-// struct Vec3 {
-//    float x, y, z;
-// };
-
-// struct Power {
-//    std::string name;
-//    int damage;
-// };
-
-// struct Monster {
-//    std::string name;
-//    Vec3 position;
-//    std::vector <Power> powers;
-// };
-
-// // now the extraction operators for these types
-// void operator >> (const YAML::Node& node, Vec3& v) {
-//    node[0] >> v.x;
-//    node[1] >> v.y;
-//    node[2] >> v.z;
-// }
-
-// void operator >> (const YAML::Node& node, Power& power) {
-//    node["name"] >> power.name;
-//    node["damage"] >> power.damage;
-// }
-
-// void operator >> (const YAML::Node& node, Monster& monster) {
-//    node["name"] >> monster.name;
-//    node["position"] >> monster.position;
-//    const YAML::Node& powers = node["powers"];
-//    for(unsigned i=0;i<powers.size();i++) {
-//       Power power;
-//       powers[i] >> power;
-//       monster.powers.push_back(power);
-//    }
-// }
-
-template <typename T>
-class parser {
+class yamlUtil {
 public:
     // based on http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
-    std::vector<T> Parse(const std::string& fnp)
+    template <typename T>
+    static std::vector<T> Parse(const std::string& fnp)
     {
-        if(!QFile::exists(QString::fromStdString(fnp))){
+        if(!om::file::exists(fnp)){
             throw OmIoException("could not find file", fnp);
         }
 
@@ -74,6 +36,40 @@ public:
         }
 
         return ret;
+    }
+    
+    // based on http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
+    static void Read(const std::string& fnp, YAML::Node& node)
+    {
+        if(!om::file::exists(fnp)){
+            throw OmIoException("File Missing", fnp);
+        }
+        
+        std::ifstream fin(fnp.c_str());
+        
+        YAML::Parser parser(fin);
+        
+        parser.GetNextDocument(node);
+    }
+    
+    // based on http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
+    static void Write(const std::string& fnp, YAML::Emitter& emitter)
+    {
+        std::ofstream fout(fnp.c_str());
+        
+        fout << emitter.c_str();
+        
+        fout.close();
+    }
+    
+    template <typename T>
+    static void OptionalRead(const YAML::Node& n, const std::string& name, T &data, const T &defaultValue)
+    {
+        if(n.FindValue(name)) {
+            n[name] >> data;
+        } else {
+            data = defaultValue;
+        }
     }
 };
 

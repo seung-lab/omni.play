@@ -120,6 +120,8 @@ public:
         }
 
         om::data::archive::project::Write(projectMetadataFile_, this);
+        
+        globals_->Users().UserSettings().Save();
 
         printf("omni project saved!\n");
     }
@@ -213,6 +215,8 @@ private:
             om::data::archive::project::Read(projectMetadataFile_, this);
         else
             OmDataArchiveProject::ArchiveRead(OmFileNames::ProjectMetadataFileOld(), this);
+        
+        globals_->Users().UserSettings().Load();
         
         OmActionReplayer::Replay();
     }

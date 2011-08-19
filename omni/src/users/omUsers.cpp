@@ -32,3 +32,7 @@ std::string om::users::UsersFolder(){
 std::string om::users::UsersRootFolder(){
     return impl_->UsersRootFolder();
 }
+
+om::userSettings& om::users::UserSettings() {
+    return impl_->UserSettings();
+}

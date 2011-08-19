@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/scoped_ptr.hpp>
+#include "users/userSettings.h"
 
 #include <QString>
 
@@ -27,6 +28,7 @@ public:
 
     std::string UsersFolder();
     std::string UsersRootFolder();
+    userSettings& UserSettings();
 };
 
 } // namespace om
