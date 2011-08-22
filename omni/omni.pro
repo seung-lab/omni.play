@@ -1040,6 +1040,8 @@ MOC_DIR = build
 RCC_DIR = build
 DESTDIR = bin
 
+QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN/../external/libs/Qt/libs\''
+
 #### for static build
 #CONFIG += qt warn_on static
 #QMAKE_LFLAGS += -static

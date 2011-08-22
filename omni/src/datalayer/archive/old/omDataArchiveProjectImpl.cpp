@@ -205,6 +205,7 @@ QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg)
 
     out << (*seg.segments_);
     out << seg.mst_->numEdges_;
+    out << seg.mst_->UserThreshold();
     out << (*seg.groups_);
 
     return out;
@@ -281,8 +282,10 @@ void OmDataArchiveProjectImpl::LoadNewSegmentation(QDataStream& in, OmSegmentati
     volArchive.Load(in);
 
     in >> (*seg.segments_);
-
     in >> seg.mst_->numEdges_;
+    double userThreshold;
+    in >> userThreshold;
+    OmProject::Globals().Users().UserSettings().setThreshold(userThreshold);
     in >> (*seg.groups_);
 
     seg.LoadVolDataIfFoldersExist();
