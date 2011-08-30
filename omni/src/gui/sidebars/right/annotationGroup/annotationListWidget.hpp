@@ -80,12 +80,15 @@ public:
 private Q_SLOTS:
     void selectionChanged()
     {
-        QTreeWidgetItem & selected = *selectedItems()[0];
-        DataCoord coord = selected.data(POSITION_COL, Qt::UserRole).value<DataCoord>();
-        
-        vgs_->View2dState()->SetScaledSliceDepth(coord);
-        OmEvents::ViewCenterChanged();
-        OmEvents::View3dRecenter();
+        QList<QTreeWidgetItem*> items = selectedItems();
+        if(items.length() > 0) {
+            QTreeWidgetItem & selected = *items[0];
+            DataCoord coord = selected.data(POSITION_COL, Qt::UserRole).value<DataCoord>();
+            
+            vgs_->View2dState()->SetScaledSliceDepth(coord);
+            OmEvents::ViewCenterChanged();
+            OmEvents::View3dRecenter();
+        }
     }
     
 private:
