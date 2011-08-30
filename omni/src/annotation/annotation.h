@@ -43,6 +43,8 @@ public:
         d.comment = comment;
         d.color = color;
         OmEvents::AnnotationEvent();
+        OmEvents::Redraw2d();
+        OmEvents::Redraw3d();
     }
     
     void Load();
