@@ -5,15 +5,22 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/color.hpp"
 #include "annotation/annotation.h"
+#include "events/details/omEventManager.h"
+#include "events/details/annotationEvent.h"
+#include "viewGroup/omViewGroupView2dState.hpp"
 
 #include <QtGui>
 #include <sstream>
+#include <system/omConnect.hpp>
 
+
+Q_DECLARE_METATYPE(DataCoord);
 
 namespace om {
 namespace sidebars {
     
-class AnnotationListWidget : public QTreeWidget {
+class AnnotationListWidget : public QTreeWidget,
+                             public om::events::annotationEventListener {
 Q_OBJECT
 
 public:
@@ -32,10 +39,15 @@ public:
         
         setFocusPolicy(Qt::StrongFocus);
         populate();
+        
+        OmEventManager::AddListener(OM_ANNOTATION_EVENT_CLASS, this);
+        om::connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
     }
     
     void populate()
     {
+        clear();
+        
         FOR_EACH(it, SegmentationDataWrapper::ValidIDs())
         {
             SegmentationDataWrapper sdw(*it);
@@ -56,13 +68,28 @@ public:
                 std::stringstream ss;
                 ss << a.coord.x << ", " << a.coord.y << ", " << a.coord.z;
                 row->setText(POSITION_COL, QString::fromStdString(ss.str()));
+                row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue(a.coord));
             }
         }
     }
     
+    void AnnotationModificationEvent(om::events::annotationEvent*) {
+        populate();
+    }
+    
+private Q_SLOTS:
+    void selectionChanged()
+    {
+        QTreeWidgetItem & selected = *selectedItems()[0];
+        DataCoord coord = selected.data(POSITION_COL, Qt::UserRole).value<DataCoord>();
+        
+        vgs_->View2dState()->SetScaledSliceDepth(coord);
+        OmEvents::ViewCenterChanged();
+        OmEvents::View3dRecenter();
+    }
     
 private:
-    const OmViewGroupState *vgs_;
+    OmViewGroupState *vgs_;
     
     static const int COLOR_COL = 0;
     static const int TEXT_COL = 1;

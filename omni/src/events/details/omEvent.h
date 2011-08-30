@@ -18,7 +18,8 @@ enum OmEventClass { OM_VIEW_EVENT_CLASS = 2000,
                     OM_TOOL_MODE_EVENT_CLASS = 6000,
                     OM_REFRESH_MST_THRESHOLD_EVENT_CLASS = 7000,
                     OM_PREFERENCE_EVENT_CLASS = 8000,
-                    OM_NON_FATAL_EVENT_CLASS = 9000
+                    OM_NON_FATAL_EVENT_CLASS = 9000,
+                    OM_ANNOTATION_EVENT_CLASS = 10000
 };
 
 class OmEventListener;

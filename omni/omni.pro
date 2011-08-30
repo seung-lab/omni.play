@@ -264,6 +264,7 @@ HEADERS +=  \
 	src/datalayer/upgraders/omUpgradeTo14.hpp \
 	src/datalayer/upgraders/omUpgradeTo20.hpp \
 	src/datalayer/upgraders/omUpgraders.hpp \
+	src/events/details/annotationEvent.h \
 	src/events/details/omEvent.h \
 	src/events/details/omEventManager.h \
 	src/events/details/omEventManagerImpl.hpp \
@@ -860,6 +861,7 @@ SOURCES +=  \
 	src/datalayer/hdf5/omHdf5LowLevel.cpp \
 	src/datalayer/hdf5/omHdf5Utils.cpp \
 	src/datalayer/omDataPaths.cpp \
+	src/events/details/annotationEvent.cpp \
 	src/events/details/omEvent.cpp \
 	src/events/details/omEventManager.cpp \
 	src/events/details/omNonFatalEvent.cpp \

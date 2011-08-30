@@ -3,6 +3,7 @@
 #include "common/omCommon.h"
 #include "datalayer/fs/omFile.hpp"
 #include "system/omGenericManager.hpp"
+#include "events/omEvents.h"
 
 #include <QDataStream>
 #include <QFile>
@@ -41,6 +42,7 @@ public:
         d.coord = coord;
         d.comment = comment;
         d.color = color;
+        OmEvents::AnnotationEvent();
     }
     
     void Load();

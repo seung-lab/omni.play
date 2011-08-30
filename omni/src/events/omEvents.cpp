@@ -11,6 +11,7 @@
 #include "events/omEvents.h"
 
 #define POST OmEventManager::PostEvent
+#include "events/details/annotationEvent.h"
 
 void OmEvents::ToolChange(){
     POST(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
@@ -76,6 +77,10 @@ void OmEvents::RefreshMSTthreshold(){
 
 void OmEvents::NonFatalEvent(const QString err){
     POST(new OmNonFatalEvent(err));
+}
+
+void OmEvents::AnnotationEvent() {
+    POST(new om::events::annotationEvent(om::events::annotationEvent::ANNOTATION_OBJECT_MODIFICATION));
 }
 
 #undef POST
