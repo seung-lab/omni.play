@@ -5,15 +5,11 @@
 class OmFilter2dManager;
 class OmFilter2d;
 
-namespace om {
-namespace data {
-namespace archive {
+namespace YAML {
 
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmFilter2dManager& fm);
-void operator>>(const YAML::Node& in, OmFilter2dManager& fm);
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmFilter2d& f);
-void operator>>(const YAML::Node& in, OmFilter2d& f);
+Emitter &operator<<(Emitter& out, const OmFilter2dManager& fm);
+void operator>>(const Node& in, OmFilter2dManager& fm);
+Emitter &operator<<(Emitter& out, const OmFilter2d& f);
+void operator>>(const Node& in, OmFilter2d& f);
 
-}; // namespace archive
-}; // namespace data
-}; // namespace om
+} // namespace YAML

@@ -177,8 +177,8 @@ HEADERS +=  \
 	src/actions/omActions.h \
 	src/actions/omActionsImpl.h \
 	src/actions/omSelectSegmentParams.hpp \
-	src/annotation/omAnnotation.hpp \
-	src/annotation/omAnnotationYaml.hpp \
+	src/annotation/annotation.h \
+	src/annotation/annotationYaml.hpp \
 	src/chunks/details/omPtrToChunkDataBase.hpp \
 	src/chunks/details/omPtrToChunkDataMemMapVol.h \
 	src/chunks/omChunk.h \
@@ -276,6 +276,7 @@ HEADERS +=  \
 	src/events/details/omView3dEvent.h \
 	src/events/details/omViewEvent.h \
 	src/events/omEvents.h \
+	src/gui/annotationToolbox/annotationToolbox.h \
 	src/gui/brushToolbox/brushToolbox.hpp \
 	src/gui/brushToolbox/brushToolboxImpl.h \
 	src/gui/cacheMonitorDialog.h \
@@ -347,6 +348,8 @@ HEADERS +=  \
 	src/gui/segmentLists/omSegmentListWidget.h \
 	src/gui/segmentLists/segmentListKeyPressEventListener.h \
 	src/gui/sidebars/left/inspectorWidget.h \
+	src/gui/sidebars/right/annotationGroup/annotationGroup.h \
+	src/gui/sidebars/right/annotationGroup/annotationListWidget.hpp \
 	src/gui/sidebars/right/displayTools/2d/2dpage.hpp \
 	src/gui/sidebars/right/displayTools/2d/alphaVegasButton.hpp \
 	src/gui/sidebars/right/displayTools/2d/brightenSelected.hpp \
@@ -387,6 +390,7 @@ HEADERS +=  \
 	src/gui/toolbars/mainToolbar/openViewGroupButton.hpp \
 	src/gui/toolbars/mainToolbar/refreshVolumeButton.h \
 	src/gui/toolbars/mainToolbar/saveButton.h \
+	src/gui/toolbars/mainToolbar/showAnnotationsTools.hpp \
 	src/gui/toolbars/mainToolbar/showPaintTools.hpp \
 	src/gui/toolbars/mainToolbar/toolButton.h \
 	src/gui/toolbars/toolbarManager.h \
@@ -605,6 +609,7 @@ HEADERS +=  \
 	src/users/userSettings.h \
 	src/utility/affinityGraphDataWrapper.hpp \
 	src/utility/channelDataWrapper.hpp \
+	src/utility/color.hpp \
 	src/utility/dataWrapperContainer.hpp \
 	src/utility/dataWrappers.h \
 	src/utility/filterDataWrapper.hpp \
@@ -614,7 +619,6 @@ HEADERS +=  \
 	src/utility/localPrefFiles.h \
 	src/utility/localPrefFilesImpl.hpp \
 	src/utility/omChunkVoxelWalker.hpp \
-	src/utility/omColorUtils.hpp \
 	src/utility/omCopyFirstN.hpp \
 	src/utility/omDataTime.hpp \
 	src/utility/omFileHelpers.h \
@@ -636,6 +640,9 @@ HEADERS +=  \
 	src/utility/segmentationDataWrapper.hpp \
 	src/utility/setUtilities.h \
 	src/utility/sortHelpers.h \
+	src/utility/yaml/baseTypes.hpp \
+	src/utility/yaml/genericManager.hpp \
+	src/utility/yaml/mipVolume.hpp \
 	src/utility/yaml/omYaml.hpp \
 	src/view2d/brush/omBrushErase.hpp \
 	src/view2d/brush/omBrushEraseCircle.hpp \
@@ -698,6 +705,7 @@ HEADERS +=  \
 	src/view3d/omView3d.h \
 	src/view3d/omView3dUi.h \
 	src/view3d/omView3dWidget.h \
+	src/view3d/widgets/annotationsWidget.h \
 	src/view3d/widgets/omChunkExtentWidget.h \
 	src/view3d/widgets/omInfoWidget.h \
 	src/view3d/widgets/omPercDone.hpp \
@@ -823,7 +831,7 @@ SOURCES +=  \
 	src/actions/io/omActionTypes.cpp \
 	src/actions/omActions.cpp \
 	src/actions/omActionsImpl.cpp \
-	src/annotation/omAnnotation.cpp \
+	src/annotation/annotation.cpp \
 	src/chunks/details/omPtrToChunkDataMemMapVol.cpp \
 	src/chunks/omChunk.cpp \
 	src/chunks/omChunkCoord.cpp \
@@ -863,6 +871,7 @@ SOURCES +=  \
 	src/events/details/omView3dEvent.cpp \
 	src/events/details/omViewEvent.cpp \
 	src/events/omEvents.cpp \
+	src/gui/annotationToolbox/annotationToolbox.cpp \
 	src/gui/brushToolbox/brushToolboxImpl.cpp \
 	src/gui/cacheMonitorDialog.cpp \
 	src/gui/cacheMonitorWidget.cpp \
@@ -893,6 +902,7 @@ SOURCES +=  \
 	src/gui/segmentLists/elementListBox.cpp \
 	src/gui/segmentLists/omSegmentListWidget.cpp \
 	src/gui/sidebars/left/inspectorWidget.cpp \
+	src/gui/sidebars/right/annotationGroup/annotationGroup.cpp \
 	src/gui/sidebars/right/displayTools/displayTools.cpp \
 	src/gui/sidebars/right/graphTools/breakButton.cpp \
 	src/gui/sidebars/right/graphTools/graphTools.cpp \
@@ -989,6 +999,7 @@ SOURCES +=  \
 	src/view3d/omCameraMovement.cpp \
 	src/view3d/omView3d.cpp \
 	src/view3d/omView3dUi.cpp \
+	src/view3d/widgets/annotationsWidget.cpp \
 	src/view3d/widgets/omChunkExtentWidget.cpp \
 	src/view3d/widgets/omInfoWidget.cpp \
 	src/view3d/widgets/omSelectionWidget.cpp \

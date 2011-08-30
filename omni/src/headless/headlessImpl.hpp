@@ -13,7 +13,7 @@
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentUtils.hpp"
 #include "utility/dataWrappers.h"
-#include "utility/omColorUtils.hpp"
+#include "utility/color.hpp"
 #include "utility/omFileHelpers.h"
 #include "volume/build/omBuildSegmentation.hpp"
 #include "volume/build/omDataCopierImages.hpp"

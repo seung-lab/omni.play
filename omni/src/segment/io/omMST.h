@@ -83,7 +83,7 @@ private:
 
     friend class OmDataArchiveProjectImpl;
     friend QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg);
-    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter& out, const OmSegmentation& seg);
-    friend void om::data::archive::operator>>(const YAML::Node& in, OmSegmentation& seg);
+    friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const OmSegmentation& seg);
+    friend void YAML::operator>>(const YAML::Node& in, OmSegmentation& seg);
 };
 

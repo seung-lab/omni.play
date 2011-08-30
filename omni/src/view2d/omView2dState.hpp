@@ -26,6 +26,33 @@ class OmBrushSize;
  */
 
 class OmView2dState{
+private:
+    OmMipVolume* vol_;
+    const ObjectType objType_;
+    OmViewGroupState *const vgs_;
+    OmZoomLevel *const zoomLevel_;
+    
+    const ViewType viewType_;
+    const std::string name_;
+    
+    Vector4i totalViewport_; //lower left x, lower left y, width, height
+    bool scribbling_;
+    Vector2i mousePoint_;
+    bool isLevelLocked_;
+    
+    boost::optional<Vector2f> mousePanStartingPt_;
+    
+    // (x,y) coordinates only (no depth); needed for Bresenham
+    DataCoord lastDataPoint_;
+    
+    om::shared_ptr<OmView2dVolLocation> location_;
+    
+    OmBrushSize *const brushSize_;
+    
+    bool overrideToolModeForPan_;
+    
+    OmSegID segIDforPainting_;
+    
 public:
     OmView2dState(OmMipVolume* vol,
                   OmViewGroupState* vgs,
@@ -95,8 +122,7 @@ public:
         return result;
     }
 
-private:
-    inline ScreenCoord dataToScreenCoord(const DataCoord& inc) const
+    inline ScreenCoord DataToScreenCoord(const DataCoord& inc) const
     {
         const NormCoord normCoord = vol_->Coords().DataToNormCoord(inc);
         const Vector3f scale = vol_->Coords().GetDataDimensions();
@@ -122,7 +148,6 @@ private:
         throw OmArgException("invalid viewType");
     }
 
-public:
     void Shift(const om::Direction dir)
     {
         Vector3f curLocation = location_->DataLocation();
@@ -176,7 +201,7 @@ public:
     {
         const Vector3f depth = location_->ScaledLocation();
 
-        const ScreenCoord crossCoord = dataToScreenCoord(depth);
+        const ScreenCoord crossCoord = DataToScreenCoord(depth);
 
         const ScreenCoord centerCoord(totalViewport_.width/2,
                                       totalViewport_.height/2);
@@ -404,12 +429,12 @@ public:
 
     // TODO: get from viewgroup state (purcaro)
     inline OmID GetSegmentationID() const {
-        return 1;
+        return vgs_->Segmentation().GetID();
     }
 
     // TODO: get from viewgroup state (purcaro)
     inline SegmentationDataWrapper GetSDW() const {
-        return SegmentationDataWrapper(GetSegmentationID());
+        return vgs_->Segmentation();
     }
 
     inline OmZoomLevel* ZoomLevel() {
@@ -435,32 +460,5 @@ public:
     inline void SetSegIDForPainting(const OmSegID segID){
         segIDforPainting_ = segID;
     }
-
-private:
-    OmMipVolume* vol_;
-    const ObjectType objType_;
-    OmViewGroupState *const vgs_;
-    OmZoomLevel *const zoomLevel_;
-
-    const ViewType viewType_;
-    const std::string name_;
-
-    Vector4i totalViewport_; //lower left x, lower left y, width, height
-    bool scribbling_;
-    Vector2i mousePoint_;
-    bool isLevelLocked_;
-
-    boost::optional<Vector2f> mousePanStartingPt_;
-
-    // (x,y) coordinates only (no depth); needed for Bresenham
-    DataCoord lastDataPoint_;
-
-    om::shared_ptr<OmView2dVolLocation> location_;
-
-    OmBrushSize *const brushSize_;
-
-    bool overrideToolModeForPan_;
-
-    OmSegID segIDforPainting_;
 };
 

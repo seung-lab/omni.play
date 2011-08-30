@@ -42,7 +42,7 @@ public:
     static void Read(const std::string& fnp, YAML::Node& node)
     {
         if(!om::file::exists(fnp)){
-            throw OmIoException("File Missing", fnp);
+            throw OmIoException("could not find file", fnp);
         }
         
         std::ifstream fin(fnp.c_str());

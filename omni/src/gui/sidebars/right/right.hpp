@@ -21,7 +21,8 @@ public:
         dock->setAllowedAreas(Qt::RightDockWidgetArea);
         dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
         dock->setWidget(impl_);
-
+        dock->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
+        
         impl_->setParent(dock);
 
         mainWindow->addDockWidget(Qt::RightDockWidgetArea, dock);

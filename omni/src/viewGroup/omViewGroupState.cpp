@@ -28,6 +28,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     , sdw_(new SegmentationDataWrapper(1))
     , toolBarManager_(NULL)
     , brightenSelected_(true)
+    , annotationVisible_(true)
 {
     mBreakThreshold = 0;
     mDustThreshold = 90;

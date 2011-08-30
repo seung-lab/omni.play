@@ -8,8 +8,10 @@
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentSearched.hpp"
 #include "segment/omSegmentSelected.hpp"
+#include "utility/color.hpp"
 
 #include <QPixmap>
+
 
 class OmSegmentUtils {
 public:
@@ -185,30 +187,11 @@ public:
 
         sdw.SetColor(c);
 
-        return OmColorToQColor(c);
+        return om::utils::color::OmColorToQColor(c);
     }
 
     static QColor SegColorAsQColor(const SegmentDataWrapper& sdw){
-        return OmColorToQColor(sdw.GetColorInt());
-    }
-
-    static QColor OmColorToQColor(const OmColor color){
-        return qRgb(color.red, color.green, color.blue);
-    }
-
-    static QPixmap SegColorAsQPixmap(const SegmentDataWrapper& sdw)
-    {
-        const QColor newcolor = SegColorAsQColor(sdw);
-        return MakePixMap(newcolor);
-    }
-
-    static QPixmap MakePixMap(const QColor newcolor,
-                              const int width = 40,
-                              const int height = 30)
-    {
-        QPixmap pixm(width, height);
-        pixm.fill(newcolor);
-        return pixm;
+        return om::utils::color::OmColorToQColor(sdw.GetColorInt());
     }
 
     template <class A, class B>

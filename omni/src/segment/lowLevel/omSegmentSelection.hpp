@@ -14,8 +14,8 @@ private:
 
     OmSegIDsSet selected_;
 
-    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
-    friend void om::data::archive::operator>>(const YAML::Node&, OmSegmentsImpl&);
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
+    friend void YAML::operator>>(const YAML::Node&, OmSegmentsImpl&);
     friend QDataStream& operator<<(QDataStream&, const OmSegmentsImpl&);
     friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);
     

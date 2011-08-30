@@ -82,7 +82,8 @@ enum mode { SELECT,
             FILL,
             SPLIT,
             CUT,
-            LANDMARK
+            LANDMARK,
+            ANNOTATE
 };
 
 } //namespace tool

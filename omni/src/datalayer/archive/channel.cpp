@@ -1,39 +1,38 @@
 #include "yaml-cpp/yaml.h"
+#include "utility/yaml/omYaml.hpp"
 #include "project/details/omChannelManager.h"
-#include "genericManager.hpp"
-#include "mipVolume.hpp"
-#include "datalayer/archive/baseTypes.hpp"
+#include "utility/yaml/mipVolume.hpp"
+#include "utility/yaml/baseTypes.hpp"
 #include "datalayer/archive/filter.h"
+#include "utility/yaml/genericManager.hpp"
 
-namespace om {
-namespace data {
-namespace archive {
+namespace YAML {
     
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmChannelManager& cm)
+Emitter &operator<<(Emitter& out, const OmChannelManager& cm)
 {
-    out << YAML::BeginMap;
+    out << BeginMap;
     genericManager::Save(out, cm.manager_);
-    out << YAML::EndMap;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmChannelManager& cm)
+void operator>>(const Node& in, OmChannelManager& cm)
 {
     genericManager::Load(in, cm.manager_);
 }
 
-YAML::Emitter& operator<<(YAML::Emitter& out, const OmChannel& chan)
+Emitter& operator<<(Emitter& out, const OmChannel& chan)
 {
-    out << YAML::BeginMap;
+    out << BeginMap;
     mipVolume<const OmChannel> volArchive(chan);
     volArchive.Store(out);
     
-    out << YAML::Key << "Filters" << YAML::Value << chan.filterManager_;
-    out << YAML::EndMap;
+    out << Key << "Filters" << Value << chan.filterManager_;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmChannel& chan)
+void operator>>(const Node& in, OmChannel& chan)
 {
     mipVolume<OmChannel> volArchive(chan);
     volArchive.Load(in);
@@ -42,24 +41,24 @@ void operator>>(const YAML::Node& in, OmChannel& chan)
     chan.LoadVolDataIfFoldersExist();
 }
 
-YAML::Emitter& operator<<(YAML::Emitter& out, const OmMipVolCoords& c)
+Emitter& operator<<(Emitter& out, const OmMipVolCoords& c)
 {
-    out << YAML::BeginMap;
-    out << YAML::Key << "normToDataMat" << YAML::Value << c.normToDataMat_;
-    out << YAML::Key << "normToDataInvMat" << YAML::Value << c.normToDataInvMat_;
-    out << YAML::Key << "dataExtent" << YAML::Value << c.dataExtent_;
-    out << YAML::Key << "dataResolution" << YAML::Value << c.dataResolution_;
-    out << YAML::Key << "chunkDim" << YAML::Value << c.chunkDim_;
-    out << YAML::Key << "unitString" << YAML::Value << c.unitString_;
-    out << YAML::Key << "dataStretchValues" << YAML::Value << c.dataStretchValues_;
-    out << YAML::Key << "mMipLeafDim" << YAML::Value << c.mMipLeafDim;
-    out << YAML::Key << "mMipRootLevel" << YAML::Value << c.mMipRootLevel;
-    out << YAML::Key << "absOffset" << YAML::Value << c.absOffset_;
-    out << YAML::EndMap;
+    out << BeginMap;
+    out << Key << "normToDataMat" << Value << c.normToDataMat_;
+    out << Key << "normToDataInvMat" << Value << c.normToDataInvMat_;
+    out << Key << "dataExtent" << Value << c.dataExtent_;
+    out << Key << "dataResolution" << Value << c.dataResolution_;
+    out << Key << "chunkDim" << Value << c.chunkDim_;
+    out << Key << "unitString" << Value << c.unitString_;
+    out << Key << "dataStretchValues" << Value << c.dataStretchValues_;
+    out << Key << "mMipLeafDim" << Value << c.mMipLeafDim;
+    out << Key << "mMipRootLevel" << Value << c.mMipRootLevel;
+    out << Key << "absOffset" << Value << c.absOffset_;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmMipVolCoords& c)
+void operator>>(const Node& in, OmMipVolCoords& c)
 {
     in["normToDataMat"] >> c.normToDataMat_;
     in["normToDataInvMat"] >> c.normToDataInvMat_;
@@ -70,13 +69,7 @@ void operator>>(const YAML::Node& in, OmMipVolCoords& c)
     in["dataStretchValues"] >> c.dataStretchValues_;
     in["mMipLeafDim"] >> c.mMipLeafDim;
     in["mMipRootLevel"] >> c.mMipRootLevel;
-    if(in.FindValue("absOffset")) {
-        in["absOffset"] >> c.absOffset_;
-    } else {
-        c.absOffset_ = Vector3i::ZERO;
-    }
+    om::yaml::yamlUtil::OptionalRead(in, "absOffset", c.absOffset_, Vector3i::ZERO);
 }
 
-}; // namespace archive
-}; // namespace data
-}; // namespace om
+} // namespace YAML

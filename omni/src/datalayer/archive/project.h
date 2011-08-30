@@ -21,6 +21,12 @@ private:
     static void postLoad();    
 };
 
+} // namespace archive
+} // namespace data
+} // namespace om
+
+namespace YAML {
+    
 YAML::Emitter &operator<<(YAML::Emitter& out, const OmProjectImpl& p);
 void operator>>(const YAML::Node& in, OmProjectImpl& p);
 YAML::Emitter &operator<<(YAML::Emitter& out, const OmPreferences& p);
@@ -28,6 +34,4 @@ void operator>>(const YAML::Node& in, OmPreferences& p);
 YAML::Emitter &operator<<(YAML::Emitter& out, const OmProjectVolumes& p);
 void operator>>(const YAML::Node& in, OmProjectVolumes& p);
 
-}; // namespace archive
-}; // namespace data
-}; // namespace om
+} // namespace YAML

@@ -295,8 +295,8 @@ private:
 
     friend class OmProject;
 
-    friend YAML::Emitter & om::data::archive::operator<<(YAML::Emitter & out, const OmProjectImpl & p);
-    friend void om::data::archive::operator>>(const YAML::Node & in, OmProjectImpl & p);
+    friend YAML::Emitter & YAML::operator<<(YAML::Emitter & out, const OmProjectImpl & p);
+    friend void YAML::operator>>(const YAML::Node & in, OmProjectImpl & p);
     friend QDataStream &operator<<(QDataStream & out, const OmProjectImpl & p);
     friend QDataStream &operator>>(QDataStream & in, OmProjectImpl & p);
 };

@@ -36,27 +36,19 @@ public:
         setState(event);
 
         state_->SetMousePoint(event);
-
+        
         if(leftMouseButton_)
         {
-            switch(tool_){
-            case om::tool::SPLIT:
-            case om::tool::CUT:
-            case om::tool::CROSSHAIR:
-            case om::tool::ZOOM:
-            case om::tool::FILL:
-            case om::tool::LANDMARK:
-                if(shouldPan()){
-                    doPan();
-                }
-                break;
-
+            if(shouldPan()){
+                doPan();
+                v2d_->Redraw();
+                return;
+            }
+            
+            switch(tool_)
+            {
             case om::tool::SELECT:
-                if(shouldPan()){
-                    doPan();
-                } else {
-                    selectSegments();
-                }
+                selectSegments();
                 break;
 
             case om::tool::PAN:
@@ -64,27 +56,19 @@ public:
                 break;
 
             case om::tool::PAINT:
-                if(shouldPan()){
-                    doPan();
-                } else
-                {
-                    if(state_->getScribbling()) {
-                        paint();
-                    }
-                    state_->SetLastDataPoint(dataClickPoint_);
+                if(state_->getScribbling()) {
+                    paint();
                 }
+                state_->SetLastDataPoint(dataClickPoint_);
                 break;
 
             case om::tool::ERASE:
-                if(shouldPan()){
-                    doPan();
-                } else
-                {
-                    if (state_->getScribbling()) {
-                        erase();
-                    }
-                    state_->SetLastDataPoint(dataClickPoint_);
+                if (state_->getScribbling()) {
+                    erase();
                 }
+                state_->SetLastDataPoint(dataClickPoint_);
+                break;
+            default:
                 break;
             }
         }

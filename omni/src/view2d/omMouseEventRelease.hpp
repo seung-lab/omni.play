@@ -24,20 +24,15 @@ public:
         state_->setScribbling(false);
         state_->SetLastDataPoint(dataClickPoint_);
 
-        switch (OmStateManager::GetToolMode()) {
-        case om::tool::SPLIT:
-        case om::tool::CUT:
-        case om::tool::CROSSHAIR:
-        case om::tool::PAN:
-        case om::tool::ZOOM:
-        case om::tool::FILL:
-            break;
-
+        switch (OmStateManager::GetToolMode()) 
+        {
         case om::tool::PAINT:
         case om::tool::ERASE:
         case om::tool::SELECT:
         case om::tool::LANDMARK:
             state_->OverrideToolModeForPan(false);
+            break;
+        default:
             break;
         }
     }

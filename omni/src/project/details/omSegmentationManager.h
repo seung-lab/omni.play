@@ -28,8 +28,8 @@ public:
 private:
     OmGenericManager<OmSegmentation> manager_;
 
-    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter& out, const OmSegmentationManager&);
-    friend void om::data::archive::operator>>(const YAML::Node& in, OmSegmentationManager&);
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmSegmentationManager&);
+    friend void YAML::operator>>(const YAML::Node& in, OmSegmentationManager&);
     friend QDataStream& operator<<(QDataStream& out, const OmSegmentationManager&);
     friend QDataStream& operator>>(QDataStream& in, OmSegmentationManager&);
 };

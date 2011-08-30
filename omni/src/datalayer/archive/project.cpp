@@ -7,7 +7,7 @@
 #include "project/omProject.h"
 #include "system/omPreferences.h"
 #include "project/omProjectImpl.hpp"
-#include "datalayer/archive/baseTypes.hpp"
+#include "utility/yaml/baseTypes.hpp"
 #include "utility/channelDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/segmentDataWrapper.hpp"
@@ -23,13 +23,15 @@ namespace data {
 namespace archive {
     
 void project::Read(const QString& fnp, OmProjectImpl* project) {
+    using namespace YAML;
+    
     std::ifstream fin(fnp.toStdString().c_str());
     
     try
     {
-        YAML::Parser parser(fin);
+        Parser parser(fin);
         
-        YAML::Node doc;
+        Node doc;
         parser.GetNextDocument(doc);
         
         int ver;
@@ -39,7 +41,7 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
         parser.GetNextDocument(doc);
         doc >> (*project);
     }
-    catch(YAML::Exception e)
+    catch(Exception e)
     {
         std::stringstream ss;
         ss << e.msg << "\n"; 
@@ -53,15 +55,17 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
 }
 
 void project::Write(const QString& fnp, OmProjectImpl* project) {
-    YAML::Emitter emitter;
+    using namespace YAML;
     
-    emitter << YAML::BeginDoc << YAML::BeginMap;
-    emitter << YAML::Key << "version" << YAML::Value << Latest_Project_Version;
-    emitter << YAML::EndMap << YAML::EndDoc;
+    Emitter emitter;
     
-    emitter << YAML::BeginDoc;
+    emitter << BeginDoc << BeginMap;
+    emitter << Key << "version" << Value << Latest_Project_Version;
+    emitter << EndMap << EndDoc;
+    
+    emitter << BeginDoc;
     emitter << *project;
-    emitter << YAML::EndDoc;
+    emitter << EndDoc;
     
     const QString fnpOld = fnp + ".old";
     
@@ -108,34 +112,40 @@ void project::postLoad()
     }
 }
 
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmProjectImpl& p)
+} // namespace archive
+} // namespace data
+} // namespace om
+
+namespace YAML {
+    
+Emitter &operator<<(Emitter& out, const OmProjectImpl& p)
 {
-    out << YAML::BeginMap;
-    out << YAML::Key << "Preferences" << YAML::Value << OmPreferences::instance();
-    out << YAML::Key << "Volumes" << YAML::Value << p.volumes_;
-    out << YAML::EndMap;
+    out << BeginMap;
+    out << Key << "Preferences" << Value << OmPreferences::instance();
+    out << Key << "Volumes" << Value << p.volumes_;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmProjectImpl& p)
+void operator>>(const Node& in, OmProjectImpl& p)
 {
     in["Preferences"] >> OmPreferences::instance();
     in["Volumes"] >> p.volumes_;
 }
 
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmPreferences& p)
+Emitter &operator<<(Emitter& out, const OmPreferences& p)
 {
-    out << YAML::BeginMap;
-    out << YAML::Key << "String Preferences" << YAML::Value << p.stringPrefs_;
-    out << YAML::Key << "Float Preferences" << YAML::Value << p.floatPrefs_;
-    out << YAML::Key << "Int Preferences" << YAML::Value << p.intPrefs_;
-    out << YAML::Key << "Bool Preferences" << YAML::Value << p.boolPrefs_;
-    out << YAML::Key << "V3f Preferences" << YAML::Value << p.v3fPrefs_;
-    out << YAML::EndMap;
+    out << BeginMap;
+    out << Key << "String Preferences" << Value << p.stringPrefs_;
+    out << Key << "Float Preferences" << Value << p.floatPrefs_;
+    out << Key << "Int Preferences" << Value << p.intPrefs_;
+    out << Key << "Bool Preferences" << Value << p.boolPrefs_;
+    out << Key << "V3f Preferences" << Value << p.v3fPrefs_;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmPreferences& p)
+void operator>>(const Node& in, OmPreferences& p)
 {
     in["String Preferences"] >> p.stringPrefs_;
     in["Float Preferences"] >> p.floatPrefs_;
@@ -144,22 +154,19 @@ void operator>>(const YAML::Node& in, OmPreferences& p)
     in["V3f Preferences"] >> p.v3fPrefs_;
 }
 
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmProjectVolumes& p)
+Emitter &operator<<(Emitter& out, const OmProjectVolumes& p)
 {
-    out << YAML::BeginMap;
-    out << YAML::Key << "Channels" << YAML::Value << *p.channels_;
-    out << YAML::Key << "Segmentations" << YAML::Value << *p.segmentations_;
-    out << YAML::EndMap;
+    out << BeginMap;
+    out << Key << "Channels" << Value << *p.channels_;
+    out << Key << "Segmentations" << Value << *p.segmentations_;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmProjectVolumes& p)
+void operator>>(const Node& in, OmProjectVolumes& p)
 {
     in["Channels"] >> *p.channels_;
     in["Segmentations"] >> *p.segmentations_;
 }
 
-
-}; // namespace archive
-}; // namespace data
-}; // namespace om
+} // namespace YAML

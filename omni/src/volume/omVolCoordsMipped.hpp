@@ -15,8 +15,8 @@ private:
     friend class OmDataArchiveProject;
     friend class OmMipVolumeArchiveOld;
 
-    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter& out, const OmMipVolCoords& c);
-    friend void om::data::archive::operator>>(const YAML::Node& in, OmMipVolCoords& c);
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmMipVolCoords& c);
+    friend void YAML::operator>>(const YAML::Node& in, OmMipVolCoords& c);
     friend QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c);
     friend QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c);
     

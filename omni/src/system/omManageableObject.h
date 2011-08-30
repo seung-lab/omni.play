@@ -10,7 +10,7 @@
 #include "datalayer/archive/segmentation.h"
 #include "datalayer/archive/filter.h"
 
-namespace om { namespace data { namespace archive { template<class T> class mipVolume; } } }
+namespace YAML { template<class T> class mipVolume; }
 
 class OmManageableObject {
 public:
@@ -49,8 +49,8 @@ protected:
 
     template <class T> friend class OmMipVolumeArchive;
     friend class OmMipVolumeArchiveOld;
-    template <class T> friend class om::data::archive::mipVolume;
-    friend void om::data::archive::operator>>(const YAML::Node& in, OmGroup& g);
-    friend void om::data::archive::operator>>(const YAML::Node& in, OmFilter2d& f);
+    template <class T> friend class YAML::mipVolume;
+    friend void YAML::operator>>(const YAML::Node& in, OmGroup& g);
+    friend void YAML::operator>>(const YAML::Node& in, OmFilter2d& f);
 };
 

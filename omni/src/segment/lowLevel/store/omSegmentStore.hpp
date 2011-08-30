@@ -46,8 +46,8 @@ public:
     OmSegID Root(const OmSegID segID);
 
 private:
-    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter& out, const OmSegmentsImpl&);
-    friend void om::data::archive::operator>>(const YAML::Node& in, OmSegmentsImpl&);
+    friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const OmSegmentsImpl&);
+    friend void YAML::operator>>(const YAML::Node& in, OmSegmentsImpl&);
     friend QDataStream &operator<<(QDataStream& out, const OmSegmentsImpl&);
     friend QDataStream &operator>>(QDataStream& in, OmSegmentsImpl&);
 };

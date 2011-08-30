@@ -11,6 +11,7 @@
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
+#include <annotation/annotation.h>
 
 class OmMouseEventPress{
 private:
@@ -128,17 +129,16 @@ private:
 
     void mouseLeftButton()
     {
+        if(controlKey_)
+        {
+            state_->OverrideToolModeForPan(true);
+            return;
+        }
+        
         switch(tool_){
         case om::tool::SELECT:
-            if(controlKey_)
-            {
-                state_->OverrideToolModeForPan(true);
-                return;
-
-            } else {
-                state_->setScribbling(true);
-                selectSegments();
-            }
+            state_->setScribbling(true);
+            selectSegments();
             break;
         case om::tool::PAN:
             return;
@@ -150,20 +150,10 @@ private:
             OmEvents::Redraw3d();
             return;
         case om::tool::PAINT:
-            if(controlKey_)
-            { // pan
-                state_->OverrideToolModeForPan(true);
-                return;
-            }
             state_->setScribbling(true);
             paint();
             break;
         case om::tool::ERASE:
-            if(controlKey_)
-            { // pan
-                state_->OverrideToolModeForPan(true);
-                return;
-            }
             state_->setScribbling(true);
             erase();
             break;
@@ -171,18 +161,13 @@ private:
             fill();
             break;
         case om::tool::LANDMARK:
-              if(controlKey_)
-            {
-                state_->OverrideToolModeForPan(true);
-                return;
-
-            } else {
-                  state_->getViewGroupState()->Landmarks().Add(getSelectedSegment(),
-                                                               dataClickPoint_);
-              }
+            state_->getViewGroupState()->Landmarks().Add(getSelectedSegment(), dataClickPoint_);
             break;
         case om::tool::CUT:
             doFindAndCutSegment();
+            break;
+        case om::tool::ANNOTATE:
+            addAnnotation();
             break;
         default:
             return;
@@ -351,5 +336,13 @@ private:
                    func +
                    " by right-clicking and selecting \n\"Set As Segment Palette Color\"");
     }
-};
+    
+    void addAnnotation()
+    {
+        om::annotation::manager& manager = *state_->GetSDW().GetSegmentationPtr()->Annotations();
+        OmViewGroupState *vgs = state_->getViewGroupState();
+        
+        manager.Add(dataClickPoint_, vgs->getAnnotationString(), vgs->getAnnotationColor());
+    }
+}; 
 

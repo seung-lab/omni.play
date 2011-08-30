@@ -85,8 +85,8 @@ private:
 
     void reset();
 
-    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter&, const OmFilter2d&);
-    friend void om::data::archive::operator>>(const YAML::Node&, OmFilter2d&);
+    friend YAML::Emitter &YAML::operator<<(YAML::Emitter&, const OmFilter2d&);
+    friend void YAML::operator>>(const YAML::Node&, OmFilter2d&);
     friend QDataStream &operator<<(QDataStream&, const OmFilter2d&);
     friend QDataStream &operator>>(QDataStream&, OmFilter2d&);
 };

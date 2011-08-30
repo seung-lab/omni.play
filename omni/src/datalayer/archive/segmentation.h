@@ -10,9 +10,7 @@ class OmSegmentEdge;
 class OmGroups;
 class OmGroup;
 
-namespace om {
-namespace data {
-namespace archive {
+namespace YAML {
 
 YAML::Emitter &operator<<(YAML::Emitter & out, const OmSegmentationManager& m);
 void operator>>(const YAML::Node& in, OmSegmentationManager& m);
@@ -30,6 +28,4 @@ YAML::Emitter &operator<<(YAML::Emitter& out, const OmGroup& g);
 void operator>>(const YAML::Node& in, OmGroup& g);
 
 
-}; // namespace archive
-}; // namespace data
-}; // namespace om
+} // namespace YAML

@@ -96,8 +96,8 @@ private:
     friend class OmSegmentColorizer;
     friend class SegmentTests;
 
-    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter& out, const OmSegments& sc);
-    friend void om::data::archive::operator>>(const YAML::Node& in, OmSegments& sc);
+    friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const OmSegments& sc);
+    friend void YAML::operator>>(const YAML::Node& in, OmSegments& sc);
     friend QDataStream &operator<<(QDataStream& out, const OmSegments& sc);
     friend QDataStream &operator>>(QDataStream& in, OmSegments& sc);
 };

@@ -3,8 +3,13 @@
 #include "common/omCommon.h"
 #include "project/omProjectGlobals.h"
 #include "utility/omRandColorFile.hpp"
+#include <QColor>
+#include <QPixmap>
 
-class OmColorUtils {
+namespace om {
+namespace utils {
+
+class color {
 private:
     enum ColorIndexInternal {RED, GREEN, BLUE};
 
@@ -50,5 +55,28 @@ public:
 
         return ret;
     }
+    
+    static QColor OmColorToQColor(const OmColor color){
+        return qRgb(color.red, color.green, color.blue);
+    }
+    
+    static OmColor QColorToOmColor(const QColor color){
+        OmColor c = { color.red(), color.green(), color.blue() };
+        return c;
+    }
+    
+    static QPixmap OmColorAsQPixmap(const OmColor& color)
+    {
+        return MakeQPixmap(OmColorToQColor(color));
+    }
+    
+    static QPixmap MakeQPixmap(const QColor& color)
+    {
+        QPixmap pixm(40, 30);
+        pixm.fill(color);
+        return pixm;
+    }
 };
 
+} // namespace utils
+} // namespace om

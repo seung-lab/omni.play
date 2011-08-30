@@ -12,24 +12,30 @@
 #include "common/omCommon.h"
 #include "common/omException.h"
 #include "common/omContainer.hpp"
+#include "zi/mutex.hpp"
 
 class OmChannel;
 class OmSegmentation;
 class OmFilter2d;
 class OmGroup;
 
-namespace om { 
-namespace data { 
-namespace archive {
-class genericManager;
-};};};
+namespace YAML { class genericManager; }
 
-//TODO: lock correctly
-
-template <typename T>
+template <typename T, typename Lock = zi::spinlock>
 class OmGenericManager {
 private:
     static const uint32_t DEFAULT_MAP_SIZE = 10;
+
+    OmID nextId_;
+    uint32_t size_;
+
+    std::vector<T*> vec_;
+    std::vector<T*> vecValidPtrs_;
+
+    OmIDsSet validSet_;  // keys in map (fast iteration)
+    OmIDsSet enabledSet_; // enabled keys in map
+
+    Lock lock_;
 
 public:
     OmGenericManager()
@@ -49,6 +55,8 @@ public:
     //managed accessors
     inline T& Add()
     {
+        zi::guard g(lock_);
+
         const OmID id = nextId_;
 
         T* t = new T(id);
@@ -65,12 +73,16 @@ public:
 
     inline T& Get(const OmID id) const
     {
+        zi::guard g(lock_);
+
         throwIfInvalidID(id);
         return *vec_[id];
     }
 
     void Remove(const OmID id)
     {
+        zi::guard g(lock_);
+
         throwIfInvalidID(id);
 
         validSet_.erase(id);
@@ -87,23 +99,30 @@ public:
     }
 
     //valid
-    inline bool IsValid(const OmID id) const{
+    inline bool IsValid(const OmID id) const
+    {
+        zi::guard g(lock_);
         return !isIDinvalid(id);
     }
 
-    inline const OmIDsSet& GetValidIds() const{
+    // TODO: Remove return of ref to ensure locking of vector is not circumvented
+    inline const OmIDsSet& GetValidIds() const
+    {
+        zi::guard g(lock_);
         return validSet_;
     }
 
     //enabled
     inline bool IsEnabled(const OmID id) const
     {
+        zi::guard g(lock_);
         throwIfInvalidID(id);
         return enabledSet_.count(id);
     }
 
     inline void SetEnabled(const OmID id, const bool enable)
     {
+        zi::guard g(lock_);
         throwIfInvalidID(id);
 
         if(enable) {
@@ -113,24 +132,23 @@ public:
         }
     }
 
-    inline const OmIDsSet& GetEnabledIds() const{
+    // TODO: Remove return of ref to ensure locking of vector is not circumvented
+    inline const OmIDsSet& GetEnabledIds() const
+    {
+        zi::guard g(lock_);
         return enabledSet_;
     }
 
-    inline const std::vector<T*> GetPtrVec() const {
+    // This does not circumvent locking of vector; there is a possible race when deleting an object,
+    //  but the deletion process must ensure all widgets, etc. are done w/ the object before
+    //  proceeding
+    inline const std::vector<T*> GetPtrVec() const
+    {
+        zi::guard g(lock_);
         return vecValidPtrs_;
     }
 
 private:
-    OmID nextId_;
-    uint32_t size_;
-
-    std::vector<T*> vec_;
-    std::vector<T*> vecValidPtrs_;
-
-    OmIDsSet validSet_;  // keys in map (fast iteration)
-    OmIDsSet enabledSet_; // enabled keys in map
-
     inline bool isIDinvalid(const OmID id) const {
         return id < 1 || id >= size_ || NULL == vec_[id];
     }
@@ -161,6 +179,5 @@ private:
     }
 
     friend class OmGenericManagerArchive;
-    friend class om::data::archive::genericManager;
+    friend class YAML::genericManager;
 };
-

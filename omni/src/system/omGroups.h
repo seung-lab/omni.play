@@ -36,8 +36,8 @@ private:
     OmGenericManager<OmGroup> mGroupManager;
     QHash<OmGroupName, OmGroupID> mGroupsByName;
 
-   friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter & out, const OmGroups &);
-   friend void om::data::archive::operator>>(const YAML::Node & in, OmGroups &);
+    friend YAML::Emitter &YAML::operator<<(YAML::Emitter & out, const OmGroups &);
+    friend void YAML::operator>>(const YAML::Node & in, OmGroups &);
     friend QDataStream &operator<<(QDataStream & out, const OmGroups &);
     friend QDataStream &operator>>(QDataStream & in, OmGroups &);
 };

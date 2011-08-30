@@ -30,7 +30,7 @@ private:
 
     friend QDataStream& operator<<(QDataStream& out, const OmChannel&);
     friend QDataStream& operator>>(QDataStream& in, OmChannel&);
-    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter& out, const OmChannel& chan);
-    friend void om::data::archive::operator>>(const YAML::Node& in, OmChannel& chan);
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmChannel& chan);
+    friend void YAML::operator>>(const YAML::Node& in, OmChannel& chan);
 };
 

@@ -1,42 +1,39 @@
 
 #include "datalayer/archive/filter.h"
-#include "datalayer/archive/genericManager.hpp"
 #include "volume/omFilter2dManager.h"
 #include "volume/omFilter2d.h"
+#include "utility/yaml/genericManager.hpp"
 
-namespace om {
-namespace data {
-namespace archive {
+namespace YAML {
 
-
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmFilter2dManager& fm)
+Emitter &operator<<(Emitter& out, const OmFilter2dManager& fm)
 {
-    out << YAML::BeginMap;
+    out << BeginMap;
     genericManager::Save(out, fm.filters_);
-    out << YAML::EndMap;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmFilter2dManager& fm)
+void operator>>(const Node& in, OmFilter2dManager& fm)
 {
     genericManager::Load(in, fm.filters_);
 }
 
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmFilter2d& f)
+Emitter &operator<<(Emitter& out, const OmFilter2d& f)
 {
-    out << YAML::BeginMap;
-    out << YAML::Key << "id" << YAML::Value << f.GetID();
-    out << YAML::Key << "note" << YAML::Value << f.GetNote().toStdString();
-    out << YAML::Key << "custom name" << YAML::Value << f.GetCustomName().toStdString();
-    out << YAML::Key << "alpha" << YAML::Value << f.alpha_;
-    out << YAML::Key << "chan id" << YAML::Value << f.chanID_;
-    out << YAML::Key << "seg id" << YAML::Value << f.segID_;
-    out << YAML::EndMap;
+    out << BeginMap;
+    out << Key << "id" << Value << f.GetID();
+    out << Key << "note" << Value << f.GetNote().toStdString();
+    out << Key << "custom name" << Value << f.GetCustomName().toStdString();
+    out << Key << "alpha" << Value << f.alpha_;
+    out << Key << "chan id" << Value << f.chanID_;
+    out << Key << "seg id" << Value << f.segID_;
+    out << EndMap;
     
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmFilter2d& f)
+void operator>>(const Node& in, OmFilter2d& f)
 {
     in["id"] >> f.id_;
     in["note"] >> f.note_;
@@ -46,6 +43,4 @@ void operator>>(const YAML::Node& in, OmFilter2d& f)
     in["seg id"] >> f.segID_;
 }
 
-}; // namespace archive
-}; // namespace data
-}; // namespace om
+} // namespace YAML

@@ -9,6 +9,7 @@
 #include "gui/toolbars/mainToolbar/refreshVolumeButton.h"
 #include "gui/toolbars/mainToolbar/saveButton.h"
 #include "gui/toolbars/mainToolbar/showPaintTools.hpp"
+#include "gui/toolbars/mainToolbar/showAnnotationsTools.hpp"
 
 MainToolBar::MainToolBar(MainWindow* mainWindow)
     : QToolBar("Tools", mainWindow)
@@ -41,6 +42,7 @@ MainToolBar::MainToolBar(MainWindow* mainWindow)
     addWidget(new FilterToBlackCheckbox(this));
 
     addWidget(new ShowPaintTools(this, mainWindow_->GetViewGroupState()));
+    addWidget(new ShowAnnotationsTools(this, mainWindow_->GetViewGroupState()));
 }
 
 void MainToolBar::setReadOnlyWidgetsEnabled()

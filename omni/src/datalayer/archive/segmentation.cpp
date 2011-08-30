@@ -1,7 +1,6 @@
 
 #include "datalayer/archive/segmentation.h"
-#include "datalayer/archive/genericManager.hpp"
-#include "datalayer/archive/mipVolume.hpp"
+#include "utility/yaml/mipVolume.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omEnabledSegments.hpp"
 #include "segment/lowLevel/omSegmentSelection.hpp"
@@ -16,41 +15,40 @@
 #include "system/omGroups.h"
 #include "system/omGroup.h"
 #include "volume/omSegmentationLoader.h"
+#include "utility/yaml/genericManager.hpp"
 
 #include <QSet>
 
-namespace om {
-namespace data {
-namespace archive {
 
-YAML::Emitter &operator<<(YAML::Emitter & out, const OmSegmentationManager& m)
+namespace YAML {
+
+Emitter &operator<<(Emitter & out, const OmSegmentationManager& m)
 {
-    out << YAML::BeginMap;
+    out << BeginMap;
     genericManager::Save(out, m.manager_);
-    out << YAML::EndMap;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmSegmentationManager& m)
-{
+void operator>>(const Node& in, OmSegmentationManager& m) {
     genericManager::Load(in, m.manager_);
 }
 
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmSegmentation& seg)
+Emitter &operator<<(Emitter& out, const OmSegmentation& seg)
 {
-    out << YAML::BeginMap;
+    out << BeginMap;
     mipVolume<const OmSegmentation> volArchive(seg);
     volArchive.Store(out);
     
-    out << YAML::Key << "Segments" << YAML::Value << (*seg.segments_);
-    out << YAML::Key << "Num Edges" << YAML::Value << seg.mst_->numEdges_;
-    out << YAML::Key << "Groups" << YAML::Value << (*seg.groups_);
-    out << YAML::EndMap;
+    out << Key << "Segments" << Value << (*seg.segments_);
+    out << Key << "Num Edges" << Value << seg.mst_->numEdges_;
+    out << Key << "Groups" << Value << (*seg.groups_);
+    out << EndMap;
     
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmSegmentation& seg)
+void operator>>(const Node& in, OmSegmentation& seg)
 {
     mipVolume<OmSegmentation> volArchive(seg);
     volArchive.Load(in);
@@ -67,34 +65,34 @@ void operator>>(const YAML::Node& in, OmSegmentation& seg)
     seg.segments_->refreshTree();
 }
 
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmSegments& sc)
+Emitter &operator<<(Emitter& out, const OmSegments& sc)
 {
     out << (*sc.impl_);
     
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmSegments& sc)
+void operator>>(const Node& in, OmSegments& sc)
 {
     in >> (*sc.impl_);
 }
 
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmSegmentsImpl& sc)
+Emitter &operator<<(Emitter& out, const OmSegmentsImpl& sc)
 {
-    out << YAML::BeginMap;
-    out << YAML::Key << "Num Segments" << YAML::Value << sc.mNumSegs;
-    out << YAML::Key << "Max Value" << YAML::Value << sc.maxValue_.get();
+    out << BeginMap;
+    out << Key << "Num Segments" << Value << sc.mNumSegs;
+    out << Key << "Max Value" << Value << sc.maxValue_.get();
     
-    out << YAML::Key << "Enabled Segments" << YAML::Value << sc.enabledSegments_->enabled_;
-    out << YAML::Key << "Selected Segments" << YAML::Value << sc.segmentSelection_->selected_;
+    out << Key << "Enabled Segments" << Value << sc.enabledSegments_->enabled_;
+    out << Key << "Selected Segments" << Value << sc.segmentSelection_->selected_;
     
-    out << YAML::Key << "Segment Custom Names" << YAML::Value << sc.segmentCustomNames;
-    out << YAML::Key << "Segment Notes" << YAML::Value << sc.segmentNotes;
-    out << YAML::EndMap;
+    out << Key << "Segment Custom Names" << Value << sc.segmentCustomNames;
+    out << Key << "Segment Notes" << Value << sc.segmentNotes;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmSegmentsImpl& sc)
+void operator>>(const Node& in, OmSegmentsImpl& sc)
 {
     uint32_t maxValue;
     in["Num Segments"] >> sc.mNumSegs;
@@ -114,51 +112,51 @@ void operator>>(const YAML::Node& in, OmSegmentsImpl& sc)
     userEdges->Load();
 }
 
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmSegmentEdge& se)
+Emitter &operator<<(Emitter& out, const OmSegmentEdge& se)
 {
-    out << YAML::BeginMap;
-    out << YAML::Key << "Parent Id" << YAML::Value << se.parentID;
-    out << YAML::Key << "Child Id" << YAML::Value << se.childID;
-    out << YAML::Key << "Threshold" << YAML::Value << se.threshold;
-    out << YAML::EndMap;
+    out << BeginMap;
+    out << Key << "Parent Id" << Value << se.parentID;
+    out << Key << "Child Id" << Value << se.childID;
+    out << Key << "Threshold" << Value << se.threshold;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmSegmentEdge& se)
+void operator>>(const Node& in, OmSegmentEdge& se)
 {
     in["Parent Id"] >> se.parentID;
     in["Child Id"] >> se.childID;
     in["Threshold"] >> se.threshold;
 }
 
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmGroups& g)
+Emitter &operator<<(Emitter& out, const OmGroups& g)
 {
-    out << YAML::BeginMap;
+    out << BeginMap;
     genericManager::Save(out, g.mGroupManager);
-    out << YAML::Key << "Group Names" << YAML::Value << g.mGroupsByName;
-    out << YAML::EndMap;
+    out << Key << "Group Names" << Value << g.mGroupsByName;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmGroups& g)
+void operator>>(const Node& in, OmGroups& g)
 {
     genericManager::Load(in, g.mGroupManager);
     in["Group Names"] >> g.mGroupsByName;
 }
 
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmGroup& g)
+Emitter &operator<<(Emitter& out, const OmGroup& g)
 {
-    out << YAML::BeginMap;
-    out << YAML::Key << "Id" << YAML::Value << g.GetID();
-    out << YAML::Key << "Note" << YAML::Value << g.GetNote();
-    out << YAML::Key << "Custom Name" << YAML::Value << g.GetCustomName();
-    out << YAML::Key << "Name" << YAML::Value << g.mName;
-    out << YAML::Key << "Ids" << YAML::Value << g.mIDs;
-    out << YAML::EndMap;
+    out << BeginMap;
+    out << Key << "Id" << Value << g.GetID();
+    out << Key << "Note" << Value << g.GetNote();
+    out << Key << "Custom Name" << Value << g.GetCustomName();
+    out << Key << "Name" << Value << g.mName;
+    out << Key << "Ids" << Value << g.mIDs;
+    out << EndMap;
     return out;
 }
 
-void operator>>(const YAML::Node& in, OmGroup& g)
+void operator>>(const Node& in, OmGroup& g)
 {
     in["Id"] >> g.id_;
     in["Note"] >> g.note_;
@@ -168,6 +166,4 @@ void operator>>(const YAML::Node& in, OmGroup& g)
 }
 
 
-}; // namespace archive
-}; // namespace data
-}; // namespace om
+} // namespace YAML

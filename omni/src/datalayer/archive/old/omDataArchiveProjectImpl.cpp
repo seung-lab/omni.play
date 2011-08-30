@@ -205,7 +205,6 @@ QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg)
 
     out << (*seg.segments_);
     out << seg.mst_->numEdges_;
-    out << seg.mst_->UserThreshold();
     out << (*seg.groups_);
 
     return out;

@@ -94,10 +94,10 @@ private:
 
     friend class zi::singleton<OmPreferences>;
 
-    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter&, const OmPreferences&);
-    friend void om::data::archive::operator>>(const YAML::Node&, OmPreferences&);
-    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter&, const OmProjectImpl&);
-    friend void om::data::archive::operator>>(const YAML::Node&, OmProjectImpl&);
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmPreferences&);
+    friend void YAML::operator>>(const YAML::Node&, OmPreferences&);
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmProjectImpl&);
+    friend void YAML::operator>>(const YAML::Node&, OmProjectImpl&);
     friend QDataStream& operator<<(QDataStream&, const OmPreferences&);
     friend QDataStream& operator>>(QDataStream&, OmPreferences&);
     friend QDataStream& operator<<(QDataStream&, const OmProjectImpl&);

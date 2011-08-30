@@ -20,6 +20,7 @@
 #include "widgets/omPercDone.hpp"
 #include "widgets/omSelectionWidget.h"
 #include "widgets/omViewBoxWidget.h"
+#include "widgets/annotationsWidget.h"
 
 DECLARE_ZiARG_bool(noView3dThrottle);
 
@@ -31,7 +32,8 @@ enum widgets {
     viewbox,
     info,
     chunk_extent,
-    perc_done
+    perc_done,
+    annotations
 };
 
 } // namespace v3d
@@ -57,6 +59,7 @@ OmView3d::OmView3d(QWidget* parent, OmViewGroupState* vgs)
     widgets_.push_back(new OmInfoWidget(this));
     widgets_.push_back(new OmChunkExtentWidget(this));
     widgets_.push_back(new OmPercDone(this));
+    widgets_.push_back(new AnnotationsWidget(this, vgs));
 
     //update enabled state of widgets
     UpdateEnabledWidgets();
@@ -417,6 +420,7 @@ void OmView3d::UpdateEnabledWidgets()
     widgets_[om::v3d::chunk_extent].enabled = extent_widget;
 
     widgets_[om::v3d::perc_done].enabled = true;
+    widgets_[om::v3d::annotations].enabled = true;
 }
 
 /////////////////////////////////

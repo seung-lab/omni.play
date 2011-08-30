@@ -37,8 +37,8 @@ private:
     const boost::scoped_ptr<OmSegmentationManager> segmentations_;
     const boost::scoped_ptr<OmAffinityGraphManager> affGraphs_;
 
-    friend YAML::Emitter& om::data::archive::operator<<(YAML::Emitter& out, const OmProjectVolumes& p );
-    friend void om::data::archive::operator>>(const YAML::Node& in, OmProjectVolumes& p );
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmProjectVolumes& p );
+    friend void YAML::operator>>(const YAML::Node& in, OmProjectVolumes& p );
     friend QDataStream& operator<<(QDataStream& out, const OmProjectVolumes& p );
     friend QDataStream& operator>>(QDataStream& in, OmProjectVolumes& p );
 };

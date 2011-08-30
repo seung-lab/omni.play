@@ -2,7 +2,7 @@
 
 #include "common/omCommon.h"
 #include "system/omManageableObject.h"
-#include "utility/omColorUtils.hpp"
+#include "utility/color.hpp"
 #include "datalayer/archive/segmentation.h"
 
 class OmGroup : public OmManageableObject {
@@ -12,12 +12,12 @@ public:
     OmGroup(OmID id)
         : OmManageableObject(id)
     {
-        mColor = OmColorUtils::GetRandomColor();
+        mColor =  om::utils::color::GetRandomColor();
     }
 
     OmGroup(const OmSegIDsSet& ids)
     {
-        mColor = OmColorUtils::GetRandomColor();
+        mColor =  om::utils::color::GetRandomColor();
         AddIds(ids);
     }
 
@@ -53,8 +53,8 @@ private:
     OmGroupName mName;
     friend class OmGroups;
 
-    friend YAML::Emitter &om::data::archive::operator<<(YAML::Emitter & out, const OmGroup & g );
-    friend void om::data::archive::operator>>(const YAML::Node & in, OmGroup & g );
+    friend YAML::Emitter &YAML::operator<<(YAML::Emitter & out, const OmGroup & g );
+    friend void YAML::operator>>(const YAML::Node & in, OmGroup & g );
     friend QDataStream &operator<<(QDataStream & out, const OmGroup & g );
     friend QDataStream &operator>>(QDataStream & in, OmGroup & g );
 };

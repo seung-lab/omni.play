@@ -44,12 +44,12 @@ private:
         if(sdwUnknownDepth.IsValidWrapper())
         {
             SegmentDataWrapper sdw = SegmentDataWrapper(sdwUnknownDepth.FindRoot());
-            pixmap = OmSegmentUtils::SegColorAsQPixmap(sdw);
+            pixmap = om::utils::color::OmColorAsQPixmap(sdw.GetColorInt());
 
         } else {
-            pixmap = OmSegmentUtils::MakePixMap(QColor(0,0,0));
+            OmColor black = { 0, 0, 0 };
+            pixmap = om::utils::color::OmColorAsQPixmap(black);
         }
-
 
         setIcon(QIcon(pixmap));
     }
