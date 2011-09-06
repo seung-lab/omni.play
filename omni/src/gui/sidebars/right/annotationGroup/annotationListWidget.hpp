@@ -8,10 +8,13 @@
 #include "events/details/omEventManager.h"
 #include "events/details/annotationEvent.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
+#include "view2d/omView2dConverters.hpp"
+#include "utility/dataWrappers.h"
+#include "system/omConnect.hpp"
+#include "events/details/omViewEvent.h"
 
 #include <QtGui>
 #include <sstream>
-#include <system/omConnect.hpp>
 
 
 Q_DECLARE_METATYPE(DataCoord);
@@ -20,7 +23,8 @@ namespace om {
 namespace sidebars {
     
 class AnnotationListWidget : public QTreeWidget,
-                             public om::events::annotationEventListener {
+                             public om::events::annotationEventListener,
+                             public OmViewEventListener {
 Q_OBJECT
 
 public:
@@ -40,13 +44,14 @@ public:
         setFocusPolicy(Qt::StrongFocus);
         populate();
         
-        OmEventManager::AddListener(OM_ANNOTATION_EVENT_CLASS, this);
         om::connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
     }
     
     void populate()
     {
         clear();
+        
+        Vector3i offsets = getOffsets();
         
         FOR_EACH(it, SegmentationDataWrapper::ValidIDs())
         {
@@ -66,16 +71,29 @@ public:
                 row->setIcon(COLOR_COL, om::utils::color::OmColorAsQPixmap(a.color));
                 row->setText(TEXT_COL, QString::fromStdString(a.comment));
                 std::stringstream ss;
-                ss << a.coord.x << ", " << a.coord.y << ", " << a.coord.z;
+                ss << a.coord.x + offsets.x << ", " 
+                   << a.coord.y + offsets.y << ", " 
+                   << a.coord.z + offsets.z;
                 row->setText(POSITION_COL, QString::fromStdString(ss.str()));
                 row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue(a.coord));
             }
         }
     }
     
+    
+    
     void AnnotationModificationEvent(om::events::annotationEvent*) {
         populate();
     }
+    
+    // View Event Listener Implementation
+    void ViewBoxChangeEvent() {}
+    void ViewCenterChangeEvent() {}
+    void ViewPosChangeEvent() {}
+    void ViewRedrawEvent() {}
+    void ViewBlockingRedrawEvent() {}
+    void AbsOffsetChangeEvent() 
+    { populate(); }
     
 private Q_SLOTS:
     void selectionChanged()
@@ -91,7 +109,45 @@ private Q_SLOTS:
         }
     }
     
+    void keyPressed()
+    {
+        
+    }
+    
 private:
+    // TODO: remove: hack for abs coords
+    OmMipVolume* getVol()
+    {
+        {
+            const ChannelDataWrapper cdw = vgs_->Channel();
+            if(cdw.IsValidWrapper()){
+                return cdw.GetChannelPtr();
+            }
+        }
+        
+        {
+            const SegmentationDataWrapper sdw = vgs_->Segmentation();
+            if(sdw.IsValidWrapper()){
+                return sdw.GetSegmentationPtr();
+            }
+        }
+        
+        return NULL;
+    }
+    
+    // TODO: remove: hack for abs coords
+    Vector3i getOffsets()
+    {
+        OmMipVolume* vol = getVol();
+        
+        if(vol)
+        {
+            return vol->Coords().GetAbsOffset();
+        }
+        
+        return Vector3i(0,0,0);
+    }
+    
     OmViewGroupState *vgs_;
     
     static const int COLOR_COL = 0;

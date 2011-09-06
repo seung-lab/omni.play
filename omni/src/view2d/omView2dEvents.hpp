@@ -59,4 +59,6 @@ public:
     void ToolModeChangeEvent(){
         OmCursors::setToolCursor(v2d_);
     }
+    
+    void AbsOffsetChangeEvent() {}
 };

@@ -41,6 +41,10 @@ void OmViewEvent::Dispatch(OmEventListener * pListener)
     case OmViewEvent::REDRAW_BLOCKING:
         p_cast_listener->ViewBlockingRedrawEvent();
         return;
+        
+    case OmViewEvent::ABS_OFFSET_CHANGE:
+        p_cast_listener->AbsOffsetChangeEvent();
+        return;
 
     default:
         throw OmArgException("unknown event type");

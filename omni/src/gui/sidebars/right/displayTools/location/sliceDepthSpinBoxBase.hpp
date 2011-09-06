@@ -108,6 +108,9 @@ private:
     void ViewCenterChangeEvent(){
         update();
     }
+    void AbsOffsetChangeEvent() {
+        update();
+    }
     void ViewPosChangeEvent(){}
     void ViewRedrawEvent(){}
     void ViewBlockingRedrawEvent(){}

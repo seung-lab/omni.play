@@ -12,6 +12,7 @@ private:
     virtual void ViewPosChangeEvent() {}
     virtual void ViewRedrawEvent() {}
     virtual void ViewBlockingRedrawEvent() {}
+    virtual void AbsOffsetChangeEvent() {}
     virtual void ViewCenterChangeEvent();
 
 public:

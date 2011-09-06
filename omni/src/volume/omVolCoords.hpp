@@ -8,6 +8,7 @@
  */
 
 #include "common/omCommon.h"
+#include "events/omEvents.h"
 
 class OmVolCoords {
 protected:
@@ -169,6 +170,7 @@ public:
 
     void SetAbsOffset(const Vector3i& absOffset){
         absOffset_ = absOffset;
+        OmEvents::AbsOffsetChanged();
     }
 
 protected:
