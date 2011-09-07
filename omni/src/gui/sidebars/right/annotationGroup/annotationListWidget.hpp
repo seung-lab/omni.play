@@ -109,11 +109,6 @@ private Q_SLOTS:
         }
     }
     
-    void keyPressed()
-    {
-        
-    }
-    
 private:
     // TODO: remove: hack for abs coords
     OmMipVolume* getVol()

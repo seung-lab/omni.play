@@ -200,8 +200,8 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const DataCoord& coord,
 GLfloatBox OmOnScreenTileCoords::computeVertices(const float xRaw,
                                                  const float yRaw)
 {
-    const float x = xRaw;
-    const float y = yRaw;
+    const float x = xRaw * stretch_.x;
+    const float y = yRaw * stretch_.y;
 
     const GLfloat minX = x * zoomFactor_;
     const GLfloat minY = y * zoomFactor_;

@@ -165,8 +165,8 @@ public:
         const Vector3f curLocation = location_->DataLocation();
 
         const float zoomScale = getZoomScale();
-        const float panx = (totalViewport_.width/2.0) / zoomScale;
-        const float pany = (totalViewport_.height/2.0) / zoomScale;
+        const float panx = (totalViewport_.width/2.0) / (zoomScale * stretch.x);
+        const float pany = (totalViewport_.height/2.0) / (zoomScale * stretch.y);
 
         Vector2f oldPts = OmView2dConverters::Get2PtsInPlane(curLocation, viewType_);
         oldPts /= factor;
