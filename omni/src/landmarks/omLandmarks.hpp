@@ -7,6 +7,7 @@
 
 class OmLandmarks {
 private:
+    QWidget* parent_;
     boost::scoped_ptr<om::landmarks::dialog> dialog_;
 
     std::set<SegmentDataWrapper> segments_;
@@ -14,7 +15,8 @@ private:
 
 public:
     OmLandmarks(QWidget* parent)
-        : dialog_(new om::landmarks::dialog(parent, this))
+        : parent_(parent)
+        , dialog_(NULL)
     {}
 
     void Add(boost::optional<SegmentDataWrapper> sdwIn,
@@ -55,6 +57,9 @@ public:
 private:
     void showMenu()
     {
+        if(dialog_ == NULL) {
+            dialog_.reset(new om::landmarks::dialog(parent_, this));   
+        }
         dialog_->Reset(pts_);
         dialog_->show();
     }
