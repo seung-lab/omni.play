@@ -327,7 +327,6 @@ void OmSegmentsImpl::refreshTree()
 
     if(!mst->IsValid()){
         printf("no graph found...\n");
-        return;
     }
 
     if(segmentGraph_.DoesGraphNeedToBeRefreshed(maxValue_.get()))
