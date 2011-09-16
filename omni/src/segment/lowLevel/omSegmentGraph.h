@@ -59,8 +59,6 @@ private:
     boost::scoped_ptr<OmSegmentChildren> children_;
     OmSegmentListLowLevel* segmentListsLL_;
 
-    void buildSegmentSizeLists();
-
     bool joinInternal(const OmSegID parentID,
                       const OmSegID childUnknownDepthID,
                       const double threshold,
@@ -70,5 +68,7 @@ private:
 
     SizeAndNumPieces computeSegmentSizeWithChildren(OmSegment* seg);
     std::vector<OmSegment*> segsTempVec_;
+    
+    bool sizeCheck(const OmSegID a, const OmSegID b, const double threshold);
 };
 

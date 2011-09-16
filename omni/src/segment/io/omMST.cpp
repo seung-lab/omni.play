@@ -124,3 +124,15 @@ void OmMST::SetUserThreshold(const double t)
 
     vol_->Segments()->refreshTree();
 }
+
+void OmMST::SetUserSizeThreshold(const double t)
+{
+    zi::rwmutex::write_guard g(thresholdLock_);
+    
+    if(qFuzzyCompare(t, UserSizeThreshold())){
+        return;
+    }
+    OmProject::Globals().Users().UserSettings().setSizeThreshold(t);
+    
+    vol_->Segments()->refreshTree();
+}

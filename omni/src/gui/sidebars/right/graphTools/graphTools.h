@@ -5,6 +5,7 @@
 #include <QtGui>
 
 class MSTThresholdSpinBox;
+class SizeThresholdSpinBox;
 class OmViewGroupState;
 class SegmentationDataWrapper;
 class SplitButton;
@@ -45,6 +46,7 @@ private:
     SplitButton* splitButton;
 
     MSTThresholdSpinBox* threshold_;
+    SizeThresholdSpinBox* sizeThreshold_;
 
     QWidget* thresholdBox();
     QWidget* makeBreakThresholdBox();

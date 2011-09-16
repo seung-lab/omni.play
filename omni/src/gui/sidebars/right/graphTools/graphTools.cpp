@@ -3,6 +3,7 @@
 #include "gui/sidebars/right/graphTools/breakThresholdGroup.h"
 #include "gui/sidebars/right/rightImpl.h"
 #include "gui/sidebars/right/graphTools/mstThresholdSpinBox.hpp"
+#include "gui/sidebars/right/graphTools/sizeThresholdSpinBox.hpp"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/sidebars/right/graphTools/joinButton.h"
 #include "gui/sidebars/right/graphTools/splitButton.h"
@@ -50,9 +51,11 @@ QWidget* GraphTools::thresholdBox()
 {
     QGroupBox* widget = new QGroupBox("Overall Threshold", this);
     threshold_ = new MSTThresholdSpinBox(this);
+    sizeThreshold_ = new SizeThresholdSpinBox(this);
 
-    QHBoxLayout* layout = new QHBoxLayout(widget);
+    QVBoxLayout* layout = new QVBoxLayout(widget);
     layout->addWidget(threshold_);
+    layout->addWidget(sizeThreshold_);    
 
     return widget;
 }

@@ -8,6 +8,7 @@
 #include "actions/details/omSegmentValidateActionImpl.hpp"
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
 #include "actions/details/omSegmentationThresholdChangeActionImpl.hpp"
+#include "actions/details/omSegmentationSizeThresholdChangeActionImpl.hpp"
 #include "actions/details/omVoxelSetValueActionImpl.hpp"
 #include "actions/details/omProjectCloseActionImpl.hpp"
 
@@ -95,5 +96,18 @@ QTextStream& operator<<(QTextStream& out, const OmSegmentationThresholdChangeAct
     out << a.sdw_;
     out << ")";
 
+    return out;
+}
+
+QTextStream& operator<<(QTextStream& out, const OmSegmentationSizeThresholdChangeActionImpl& a)
+{
+    out << "(new: ";
+    out << a.threshold_;
+    out << ", old: ";
+    out << a.oldThreshold_;
+    out << ", segmentation: ";
+    out << a.sdw_;
+    out << ")";
+    
     return out;
 }

@@ -43,18 +43,20 @@ public:
 
     void Resize(const size_t size)
     {
-        threadPool_.push_back(
-            zi::run_fn(
-                zi::bind(&OmSegmentListLowLevel::doResize,
-                         this, size)));
+        doResize(size);
+//         threadPool_.push_back(
+//             zi::run_fn(
+//                 zi::bind(&OmSegmentListLowLevel::doResize,
+//                          this, size)));
     }
 
     void BuildInitialSegmentList()
     {
-        threadPool_.push_back(
-            zi::run_fn(
-                zi::bind(&OmSegmentListLowLevel::doBuildInitialSegmentList,
-                         this)));
+        doBuildInitialSegmentList();
+//         threadPool_.push_back(
+//             zi::run_fn(
+//                 zi::bind(&OmSegmentListLowLevel::doBuildInitialSegmentList,
+//                          this)));
     }
 
     inline void UpdateSizeListsFromJoin(OmSegment* root, OmSegment* child)
@@ -88,6 +90,18 @@ public:
 
     inline void ForceRefreshGUIlists(){
         runRefreshGUIlists(om::FORCE);
+    }
+    
+    inline int64_t GetSizeWithChildren(const OmSegID segID) {
+        if(segID >= list_.size()){
+            std::cout << "segment " << segID << "not found\n";
+            return 0;
+        }
+        return list_[segID].sizeIncludingChildren;
+    }
+    
+    inline int64_t GetSizeWithChildren(OmSegment* seg){
+        return GetSizeWithChildren(seg->value());
     }
 
 private:

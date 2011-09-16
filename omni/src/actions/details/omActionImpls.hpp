@@ -35,6 +35,23 @@ public:
     }
 };
 
+#include "actions/details/omSegmentationSizeThresholdChangeActionImpl.hpp"
+class OmSegmentationSizeThresholdChangeAction
+    : public OmActionBase<OmSegmentationSizeThresholdChangeActionImpl>{
+public:
+    OmSegmentationSizeThresholdChangeAction(om::shared_ptr<OmSegmentationSizeThresholdChangeActionImpl> impl)
+    {
+        impl_ = impl;
+    }
+    
+    OmSegmentationSizeThresholdChangeAction(const SegmentationDataWrapper sdw,
+                                            const double threshold)
+    {
+        impl_ = om::make_shared<OmSegmentationSizeThresholdChangeActionImpl>(sdw, threshold);
+        SetUndoable(true);
+    }
+};
+
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 class OmSegmentSelectAction : public OmActionBase<OmSegmentSelectActionImpl>{
 public:

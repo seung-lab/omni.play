@@ -99,6 +99,10 @@ void OmSegmentation::SetDendThreshold(const double t){
     mst_->SetUserThreshold(t);
 }
 
+void OmSegmentation::SetSizeThreshold(const double t){
+    mst_->SetUserSizeThreshold(t);
+}
+
 void OmSegmentation::CloseDownThreads() {
     meshManagers_->CloseDownThreads();
 }
@@ -117,6 +121,10 @@ bool OmSegmentation::LoadVolDataIfFoldersExist()
 
 double OmSegmentation::GetDendThreshold() {
     return mst_->UserThreshold();
+}
+
+double OmSegmentation::GetSizeThreshold() {
+    return mst_->UserSizeThreshold();
 }
 
 void OmSegmentation::UpdateVoxelBoundingData()

@@ -34,12 +34,12 @@ private:
 public:
     OmSegmentGraphInitialLoad(OmDynamicForestCache* forest,
                               OmValidGroupNum* validGroupNum,
-                              OmSegmentListLowLevel* segmentListsLL,
+                              OmSegmentListLowLevel* segmentListLL,
                               OmSegmentsStore* segmentPages,
                               OmSegmentChildren* children)
         : forest_(forest)
         , validGroupNum_(validGroupNum)
-        , segmentListsLL_(segmentListsLL)
+        , segmentListsLL_(segmentListLL)
         , segmentPages_(segmentPages)
         , children_(children)
     {
@@ -59,13 +59,18 @@ public:
         forest_->ClearCache();
 
         const double stopThreshold = mst->UserThreshold();
+        const double sizeThreshold = mst->UserSizeThreshold();
         OmMSTEdge* edges = mst->Edges();
 
         for(uint32_t i = 0; i < mst->NumEdges(); ++i) {
             if( 1 == edges[i].userSplit ){
                 continue;
             }
-
+            
+            if ( !sizeCheck(edges[i].node1ID, edges[i].node2ID, sizeThreshold) ) {
+                continue;
+            }
+            
             if( edges[i].threshold >= stopThreshold ||
                 1 == edges[i].userJoin)
             { // join
@@ -100,6 +105,12 @@ private:
 
     inline void Join(const OmSegID childRootID, const OmSegID parentRootID){
         forest_->Join(childRootID, parentRootID);
+    }
+    
+    bool sizeCheck(const OmSegID a, const OmSegID b, const double threshold)
+    {
+        return (segmentListsLL_->GetSizeWithChildren(Root(a)) + 
+                segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold;
     }
 
     bool initialJoinInternal(const OmSegID parentID,

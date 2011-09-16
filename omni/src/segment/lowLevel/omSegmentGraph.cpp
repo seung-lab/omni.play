@@ -45,7 +45,7 @@ void OmSegmentGraph::Initialize(OmSegmentation* segmentation,
     segmentListsLL_->SetCache(mCache);
     segmentListsLL_->Resize(size);
 
-    buildSegmentSizeLists();
+    segmentListsLL_->BuildInitialSegmentList();
 }
 
 void OmSegmentGraph::GrowGraphIfNeeded(OmSegment* seg)
@@ -58,10 +58,6 @@ void OmSegmentGraph::GrowGraphIfNeeded(OmSegment* seg)
     segmentListsLL_->Resize(size);
     segmentListsLL_->AddSegment(seg);
     segmentListsLL_->ForceRefreshGUIlists();
-}
-
-void OmSegmentGraph::buildSegmentSizeLists() {
-    segmentListsLL_->BuildInitialSegmentList();
 }
 
 void OmSegmentGraph::SetGlobalThreshold(OmMST* mst)
@@ -86,10 +82,15 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
     forest_->ClearCache();
 
     const double stopThreshold = mst->UserThreshold();
+    const double sizeThreshold = mst->UserSizeThreshold();
     OmMSTEdge* edges = mst->Edges();
 
     for(uint32_t i = 0; i < mst->NumEdges(); ++i) {
         if( 1 == edges[i].userSplit ){
+            continue;
+        }
+
+        if ( !sizeCheck(edges[i].node1ID, edges[i].node2ID, sizeThreshold) ) {
             continue;
         }
 
@@ -121,6 +122,12 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
     forest_->SetBatch(false);
 
     timer.PrintDone();
+}
+
+bool OmSegmentGraph::sizeCheck(const OmSegID a, const OmSegID b, const double threshold)
+{
+    return (segmentListsLL_->GetSizeWithChildren(Root(a)) + 
+            segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold;
 }
 
 bool OmSegmentGraph::joinInternal(const OmSegID parentID,

@@ -49,8 +49,13 @@ public:
     inline double UserThreshold() const {
         return OmProject::Globals().Users().UserSettings().getThreshold();
     }
+    
+    inline double UserSizeThreshold() const {
+        return OmProject::Globals().Users().UserSettings().getSizeThreshold();
+    }
 
     void SetUserThreshold(const double t);
+    void SetUserSizeThreshold(const double t);
 
     inline OmMSTEdge* Edges(){
         return edges_;

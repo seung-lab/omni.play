@@ -163,6 +163,7 @@ HEADERS +=  \
 	src/actions/details/omSegmentUncertainActionImpl.hpp \
 	src/actions/details/omSegmentValidateAction.h \
 	src/actions/details/omSegmentValidateActionImpl.hpp \
+	src/actions/details/omSegmentationSizeThresholdChangeActionImpl.hpp \
 	src/actions/details/omSegmentationThresholdChangeActionImpl.hpp \
 	src/actions/details/omUndoCommand.hpp \
 	src/actions/details/omVoxelSetValueAction.h \
@@ -371,6 +372,7 @@ HEADERS +=  \
 	src/gui/sidebars/right/graphTools/graphTools.h \
 	src/gui/sidebars/right/graphTools/joinButton.h \
 	src/gui/sidebars/right/graphTools/mstThresholdSpinBox.hpp \
+	src/gui/sidebars/right/graphTools/sizeThresholdSpinBox.hpp \
 	src/gui/sidebars/right/graphTools/splitButton.h \
 	src/gui/sidebars/right/right.hpp \
 	src/gui/sidebars/right/rightImpl.h \

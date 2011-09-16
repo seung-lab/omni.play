@@ -327,6 +327,7 @@ void OmSegmentsImpl::refreshTree()
 
     if(!mst->IsValid()){
         printf("no graph found...\n");
+        return;
     }
 
     if(segmentGraph_.DoesGraphNeedToBeRefreshed(maxValue_.get()))
@@ -353,6 +354,7 @@ void OmSegmentsImpl::refreshTree()
 void OmSegmentsImpl::setGlobalThreshold(OmMST* mst)
 {
     printf("setting global threshold to %f...\n", mst->UserThreshold());
+    printf("setting size threshold to %f...\n", mst->UserSizeThreshold());
 
     segmentGraph_.SetGlobalThreshold(mst);
     SegmentSelection().Clear();
@@ -361,6 +363,7 @@ void OmSegmentsImpl::setGlobalThreshold(OmMST* mst)
 void OmSegmentsImpl::resetGlobalThreshold(OmMST* mst)
 {
     printf("resetting global threshold to %f...\n", mst->UserThreshold());
+    printf("resetting size threshold to %f...\n", mst->UserSizeThreshold());
 
     segmentGraph_.ResetGlobalThreshold(mst);
     rerootSegmentLists();
