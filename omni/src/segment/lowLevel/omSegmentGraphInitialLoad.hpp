@@ -67,12 +67,9 @@ public:
                 continue;
             }
             
-            if ( !sizeCheck(edges[i].node1ID, edges[i].node2ID, sizeThreshold) ) {
-                continue;
-            }
-            
-            if( edges[i].threshold >= stopThreshold ||
-                1 == edges[i].userJoin)
+            if( (edges[i].threshold >= stopThreshold && // prob threshold
+                sizeCheck(edges[i].node1ID, edges[i].node2ID, sizeThreshold)) || // size threshold
+                1 == edges[i].userJoin )
             { // join
                 if( 1 == edges[i].wasJoined ){
                     continue;
