@@ -36,7 +36,7 @@ public:
 
         removeModifiedTiles(info, voxelCoords);
 
-        OmEvents::Redraw2d();
+        OmEvents::Redraw2dBlocking();
     }
 
 private:
