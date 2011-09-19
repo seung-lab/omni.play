@@ -203,11 +203,27 @@ void OmSegmentation::SetVoxelValue(const DataCoord& vox, const uint32_t val)
     {
         int factor = om::math::pow2int(level);
         OmChunkCoord leaf_mip_coord = coords_.DataToMipCoord(vox, level);
-
         OmSegChunk* chunk = GetChunk(leaf_mip_coord);
-        
         chunk->SetVoxelValue(vox / factor, val);
     }
+}
+
+bool OmSegmentation::SetVoxelValueIfSelected(const DataCoord& vox, const uint32_t val)
+{
+    const OmSegIDsSet selection = Segments()->GetSelectedSegmentIDs();
+    if(selection.size() > 0)
+    {
+        OmChunkCoord leaf_mip_coord = coords_.DataToMipCoord(vox, 0);
+        OmSegChunk* chunk = GetChunk(leaf_mip_coord);
+        OmSegID target = Segments()->findRootID(chunk->GetVoxelValue(vox));
+        
+        if(selection.count(target) == 0) {
+            return false;  
+        }
+    }
+    
+    SetVoxelValue(vox, val);
+    return true;
 }
 
 OmSegChunk* OmSegmentation::GetChunk(const OmChunkCoord& coord){

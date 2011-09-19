@@ -88,6 +88,7 @@ public:
 
     uint32_t GetVoxelValue(const DataCoord &vox);
     void SetVoxelValue(const DataCoord &vox, const uint32_t value);
+    bool SetVoxelValueIfSelected(const DataCoord &vox, const uint32_t value);
 
     void RebuildSegments();
 

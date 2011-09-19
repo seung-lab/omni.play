@@ -64,8 +64,17 @@ public:
         FOR_EACH(itr, mOldVoxelValues)
         {
             //set voxel to new value
-            r_segmentation.SetVoxelValue(itr->first, mNewValue);
-            edited_voxels.insert(itr->first);
+            if(mNewValue == 0) // erasing
+            {
+                if(r_segmentation.SetVoxelValueIfSelected(itr->first, mNewValue)) {
+                    edited_voxels.insert(itr->first);
+                }
+            } 
+            else 
+            {
+                r_segmentation.SetVoxelValue(itr->first, mNewValue);
+                edited_voxels.insert(itr->first);
+            }
         }
     }
 
