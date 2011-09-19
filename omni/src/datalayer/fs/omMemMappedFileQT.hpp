@@ -44,7 +44,7 @@ protected:
         //std::cout << "file size is " << file_->size() << "\n";
         map_ = file_->map(0, file_->size());
         if(!map_){
-            throw OmIoException("could not map file");
+            throw OmIoException("could not map file", file_->fileName());
         }
         file_->close();
     }

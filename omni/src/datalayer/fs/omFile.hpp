@@ -82,7 +82,7 @@ T* mapFile(QFile* file)
     uchar* map = file->map(0, file->size());
 
     if(!map){
-        throw OmIoException("could not map file");
+        throw OmIoException("could not map file", file->fileName());
     }
 
     file->close();
@@ -96,7 +96,7 @@ T* mapFile(PTR& file)
     uchar* map = file->map(0, file->size());
 
     if(!map){
-        throw OmIoException("could not map file");
+        throw OmIoException("could not map file", file->fileName());
     }
 
     file->close();
