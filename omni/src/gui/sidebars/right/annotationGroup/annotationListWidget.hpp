@@ -44,7 +44,12 @@ public:
         setFocusPolicy(Qt::StrongFocus);
         populate();
         
-        om::connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
+        om::connect(this, SIGNAL(itemSelectionChanged()), 
+                    this, SLOT(highlightSelected()));
+        om::connect(this, SIGNAL(itemClicked(QTreeWidgetItem *, int)), 
+                    this, SLOT(highlightClicked(QTreeWidgetItem *, int)));
+        om::connect(this, SIGNAL(itemChanged(QTreeWidgetItem *, int)), 
+                    this, SLOT(itemEdited(QTreeWidgetItem *, int)));
     }
     
     void populate()
@@ -75,7 +80,8 @@ public:
                    << a.coord.y + offsets.y << ", " 
                    << a.coord.z + offsets.z;
                 row->setText(POSITION_COL, QString::fromStdString(ss.str()));
-                row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue(a.coord));
+                row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue<void *>(&a));
+                row->setData(TEXT_COL, Qt::UserRole, QVariant::fromValue<void *>(&annotations));
             }
         }
     }
@@ -96,20 +102,73 @@ public:
     { populate(); }
     
 private Q_SLOTS:
-    void selectionChanged()
+    
+    void highlightSelected()
     {
-        QList<QTreeWidgetItem*> items = selectedItems();
-        if(items.length() > 0) {
-            QTreeWidgetItem & selected = *items[0];
-            DataCoord coord = selected.data(POSITION_COL, Qt::UserRole).value<DataCoord>();
-            
-            vgs_->View2dState()->SetScaledSliceDepth(coord);
-            OmEvents::ViewCenterChanged();
-            OmEvents::View3dRecenter();
+        highlight(getSelected());
+    }
+    
+    void highlightClicked(QTreeWidgetItem* item, int) {
+        highlight(item);
+    }
+    
+    void itemEdited(QTreeWidgetItem* item, int column) 
+    {
+        if(column == TEXT_COL)
+        {
+            om::annotation::data& annotation = getAnnotation(item);
+            annotation.comment = item->text(TEXT_COL).toStdString();
+            OmEvents::Redraw2d();
+            OmEvents::Redraw3d();
+        }
+    }
+protected:
+    void keyReleaseEvent(QKeyEvent * event)
+    {
+        if(event->key() == Qt::Key_Backspace ||
+           event->key() == Qt::Key_Delete)
+        {
+            QTreeWidgetItem* selectedItem = getSelected();
+            om::annotation::data& selected = getAnnotation(selectedItem);
+            om::annotation::manager& manager = getManager(selectedItem);
+            manager.Remove(selected.id);
+            delete selectedItem;
+            OmEvents::Redraw2d();
+            OmEvents::Redraw3d();
         }
     }
     
 private:
+    void highlight(QTreeWidgetItem* item)
+    {
+        om::annotation::data& annotation = getAnnotation(item);
+        
+        vgs_->View2dState()->SetScaledSliceDepth(annotation.coord);
+        OmEvents::ViewCenterChanged();
+        OmEvents::View3dRecenter();    
+    }
+    
+    om::annotation::data& getAnnotation(QTreeWidgetItem* item)
+    {
+        return *static_cast<om::annotation::data*>(
+            item->data(POSITION_COL, Qt::UserRole).value<void *>());
+    }
+    
+    om::annotation::manager& getManager(QTreeWidgetItem* item)
+    {
+        return *static_cast<om::annotation::manager*>(
+        item->data(TEXT_COL, Qt::UserRole).value<void *>());
+    }
+    
+    QTreeWidgetItem* getSelected()
+    {
+        QList<QTreeWidgetItem*> items = selectedItems();
+        if(items.length() > 0) {
+            return items[0];
+        }
+        return NULL;
+    }
+    
     // TODO: remove: hack for abs coords
     OmMipVolume* getVol()
     {
