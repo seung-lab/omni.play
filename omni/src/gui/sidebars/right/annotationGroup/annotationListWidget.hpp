@@ -105,7 +105,10 @@ private Q_SLOTS:
     
     void highlightSelected()
     {
-        highlight(getSelected());
+        QTreeWidgetItem* selected = getSelected();
+        if(selected) {
+            highlight(selected);
+        }
     }
     
     void highlightClicked(QTreeWidgetItem* item, int) {
@@ -129,12 +132,15 @@ protected:
            event->key() == Qt::Key_Delete)
         {
             QTreeWidgetItem* selectedItem = getSelected();
-            om::annotation::data& selected = getAnnotation(selectedItem);
-            om::annotation::manager& manager = getManager(selectedItem);
-            manager.Remove(selected.id);
-            delete selectedItem;
-            OmEvents::Redraw2d();
-            OmEvents::Redraw3d();
+            if(selectedItem) 
+            {
+                om::annotation::data& selected = getAnnotation(selectedItem);
+                om::annotation::manager& manager = getManager(selectedItem);
+                manager.Remove(selected.id);
+                delete selectedItem;
+                OmEvents::Redraw2d();
+                OmEvents::Redraw3d();
+            }
         }
     }
     
