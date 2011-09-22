@@ -49,10 +49,15 @@ protected:
     void stopTimingAndSave(const QString & type, OmTimer & timer)
     {
         OmActions::Save();
+        stopTiming(type, timer);
+    }
+    
+    void stopTiming(const QString & type, OmTimer & timer)
+    {
         const double time = timer.s_elapsed();
         printf("done: %s build performed in (%.6f secs)\n",
                qPrintable(type), time);
-        printf("************\n");
+               printf("************\n");
     }
 
 private:

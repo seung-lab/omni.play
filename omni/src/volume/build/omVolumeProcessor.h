@@ -4,6 +4,7 @@
 
 class OmChannel;
 class OmSegmentation;
+class OmAffinityChannel;
 
 class OmVolumeProcessor {
 public:
@@ -27,7 +28,8 @@ public:
     }
 
 private:
-    void doBuildThreadedVolume(OmSegmentation* vol);
-    void doBuildThreadedVolume(OmChannel* vol);
+    void doBuildThreadedVolume(OmSegmentation*);
+    void doBuildThreadedVolume(OmChannel*);
+    void doBuildThreadedVolume(OmAffinityChannel*);
 };
 

@@ -71,6 +71,14 @@ public:
             data = defaultValue;
         }
     }
+    
+    template <typename T>
+    static void OptionalRead(const YAML::Node& n, const std::string& name, T &data)
+    {
+        if(n.FindValue(name)) {
+            n[name] >> data;  
+        } 
+    }
 };
 
 } // namespace yaml

@@ -42,10 +42,7 @@ void OmSegmentGraph::Initialize(OmSegmentation* segmentation,
     validGroupNum_->Resize(size);
 
     segmentListsLL_ = segmentation->SegmentLists()->LowLevelList();
-    segmentListsLL_->SetCache(mCache);
-    segmentListsLL_->Resize(size);
-
-    segmentListsLL_->BuildInitialSegmentList();
+    segmentListsLL_->Init(cache, size);
 }
 
 void OmSegmentGraph::GrowGraphIfNeeded(OmSegment* seg)

@@ -46,7 +46,7 @@ private:
         downsample();
     }
 
-    void build(OmSegmentation* vol)
+    void build(OmSegmentation*)
     {
         setVolAsBuilding();
 
@@ -61,7 +61,21 @@ private:
 
         setVolAsBuilt();
 
-        vol->LoadVolData();
+        vol_->LoadVolData();
+    }
+    
+    void build(OmAffinityChannel*)
+    {
+        // TODO: Check this process for completeness
+        setVolAsBuilding();
+        
+        checkChunkDims();
+        updateMipProperties();
+        importSourceData();
+        
+        setVolAsBuilt();
+        
+        downsample();
     }
 
     void buildEmpty(OmChannel*)

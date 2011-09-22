@@ -3,6 +3,7 @@
 #include "chunks/omChunkCoord.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
+#include "volume/omAffinityChannel.h"
 #include "segment/omSegments.h"
 #include "chunks/omChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
@@ -67,50 +68,12 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol)
     //printf("max is %g\n", mMaxVal);
 }
 
-
-class OmChannelImplChunkBuildTask : public zi::runnable {
-private:
-    const OmChunkCoord coord_;
-    OmChannelImpl* vol_;
-
-public:
-    OmChannelImplChunkBuildTask(const OmChunkCoord& coord,
-                                OmChannelImpl* vol)
-        : coord_(coord)
-        , vol_(vol)
-    {}
-
-    void run()
-    {
-        // OmChunk* chunk = vol_->GetChunk(coord_);
-
-        // const bool isMIPzero = (0 == coord_.Level);
-
-        // if(isMIPzero){
-        //     vol_->updateMinMax(chunk->GetMinValue(),
-        //                        chunk->GetMaxValue());
-        // }
-    }
-};
-
-void OmVolumeProcessor::doBuildThreadedVolume(OmChannel* vol)
+void OmVolumeProcessor::doBuildThreadedVolume(OmChannel*)
 {
-    OmThreadPool threadPool;
-    threadPool.start();
 
-    om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
-        vol->GetMipChunkCoords();
+}
 
-    FOR_EACH(iter, *coordsPtr)
-    {
-        const OmChunkCoord& coord = *iter;
-
-        om::shared_ptr<OmChannelImplChunkBuildTask> task =
-            om::make_shared<OmChannelImplChunkBuildTask>(coord, vol);
-
-        threadPool.push_back(task);
-    }
-
-    threadPool.join();
-    //printf("max is %g\n", mMaxVal);
+void OmVolumeProcessor::doBuildThreadedVolume(OmAffinityChannel*)
+{
+    
 }

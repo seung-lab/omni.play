@@ -495,6 +495,9 @@ void MainWindow::cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId)
     case SEGMENTATION:
         unwantedView2DTitle = "segmentation" + QString::number(objectId);
         break;
+    case AFFINITY:
+        unwantedView2DTitle = "affinity" + QString::number(objectId);
+        break;
     default:
         return;
     }

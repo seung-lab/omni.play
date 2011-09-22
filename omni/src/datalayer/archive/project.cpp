@@ -1,6 +1,7 @@
 #include "datalayer/archive/project.h"
 #include "datalayer/archive/channel.h"
 #include "datalayer/archive/segmentation.h"
+#include "datalayer/archive/affinity.h"
 #include "common/omCommon.h"
 #include "utility/omFileHelpers.h"
 #include "datalayer/fs/omFile.hpp"
@@ -157,8 +158,9 @@ void operator>>(const Node& in, OmPreferences& p)
 Emitter &operator<<(Emitter& out, const OmProjectVolumes& p)
 {
     out << BeginMap;
-    out << Key << "Channels" << Value << *p.channels_;
-    out << Key << "Segmentations" << Value << *p.segmentations_;
+    out << Key << "Channels" << Value << p.Channels();
+    out << Key << "Segmentations" << Value << p.Segmentations();
+    out << Key << "Affinity Graphs" << Value << p.AffinityGraphs();
     out << EndMap;
     return out;
 }
@@ -167,6 +169,7 @@ void operator>>(const Node& in, OmProjectVolumes& p)
 {
     in["Channels"] >> *p.channels_;
     in["Segmentations"] >> *p.segmentations_;
+    om::yaml::yamlUtil::OptionalRead(in, "Affinity Graphs", p.AffinityGraphs());
 }
 
 } // namespace YAML

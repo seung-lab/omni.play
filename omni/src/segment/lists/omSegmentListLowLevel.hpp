@@ -26,37 +26,31 @@ public:
         : segmentLists_(segmentLists)
         , cache_(NULL)
         , recreateGUIlists_(true)
+    { }
+
+    ~OmSegmentListLowLevel(){
+        threadPool_.join();
+    }
+    
+    void Init(OmSegmentsImplLowLevel* cache, const size_t size)
     {
+        cache_ = cache;
+        
+        doResize(size);
+        doBuildInitialSegmentList();
+        
         // use threadPool as serial job queue;
         // more than 1 thread requires locking, and dealing w/ out-of-order
         //  manipulations of tree modifiations that are order-sensative
         threadPool_.start(1);
     }
 
-    ~OmSegmentListLowLevel(){
-        threadPool_.join();
-    }
-
-    void SetCache(OmSegmentsImplLowLevel* cache) {
-        cache_ = cache;
-    }
-
     void Resize(const size_t size)
     {
-        doResize(size);
-//         threadPool_.push_back(
-//             zi::run_fn(
-//                 zi::bind(&OmSegmentListLowLevel::doResize,
-//                          this, size)));
-    }
-
-    void BuildInitialSegmentList()
-    {
-        doBuildInitialSegmentList();
-//         threadPool_.push_back(
-//             zi::run_fn(
-//                 zi::bind(&OmSegmentListLowLevel::doBuildInitialSegmentList,
-//                          this)));
+        threadPool_.push_back(
+            zi::run_fn(
+                zi::bind(&OmSegmentListLowLevel::doResize,
+                         this, size)));
     }
 
     inline void UpdateSizeListsFromJoin(OmSegment* root, OmSegment* child)
@@ -93,10 +87,10 @@ public:
     }
     
     inline int64_t GetSizeWithChildren(const OmSegID segID) {
-        if(segID >= list_.size()){
-            std::cout << "segment " << segID << "not found\n";
-            return 0;
-        }
+//         if(segID >= list_.size()){
+//             std::cout << "segment " << segID << "not found\n";
+//             return 0;
+//         }
         return list_[segID].sizeIncludingChildren;
     }
     

@@ -220,6 +220,7 @@ HEADERS +=  \
 	src/common/omStd.h \
 	src/common/omStoppable.h \
 	src/common/omString.hpp \
+	src/datalayer/archive/affinity.h \
 	src/datalayer/archive/baseTypes.hpp \
 	src/datalayer/archive/channel.h \
 	src/datalayer/archive/filter.h \
@@ -843,6 +844,7 @@ SOURCES +=  \
 	src/common/omCommon.cpp \
 	src/common/omGl.cpp \
 	src/common/omQt.cpp \
+	src/datalayer/archive/affinity.cpp \
 	src/datalayer/archive/channel.cpp \
 	src/datalayer/archive/filter.cpp \
 	src/datalayer/archive/old/omChannelMetadata.cpp \

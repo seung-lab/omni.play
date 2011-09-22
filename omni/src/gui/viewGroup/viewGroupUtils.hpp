@@ -76,6 +76,8 @@ public:
             name = "channel_";
         } else if ( SEGMENTATION == voltype ) {
             name = "segmentation_";
+        } else if ( AFFINITY == voltype ) {
+            name = "affinity_";
         }
 
         name += getViewTypeAsStr(viewType) + "_" + viewGroupName();

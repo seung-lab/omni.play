@@ -29,6 +29,7 @@ public:
 
     void addChannelToVolume();
     void addSegmentationToVolume();
+    void addAffinityToVolume();
 
     void refreshWidgetData();
     void rebuildSegmentLists(const OmID segmentationID, const OmSegID segID);
@@ -77,6 +78,7 @@ private:
 
     void showChannelContextMenu();
     void showSegmentationContextMenu();
+    void showAffinityContextMenu();
     void doShowDataSrcContextMenu( QTreeWidgetItem* dataSrcItem );
     QMenu* makeContextMenuBase(QTreeWidget* parent);
     QMenu* makeSegmentationContextMenu(QTreeWidget* parent);
@@ -100,6 +102,7 @@ private:
 
     QAction* addChannelAct_;
     QAction* addSegmentationAct_;
+    QAction* addAffinityAct_;
 
     QMenu* contextMenu_;
     QMenu* contextMenuDataSrc_;

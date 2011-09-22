@@ -118,6 +118,20 @@ void InspectorWidget::populateDataSrcListWidget()
         row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
         setRowFlagsAndCheckState(row, GuiUtils::getCheckState(sdw.isEnabled()));
     }
+    
+    const OmIDsSet& validAffIDs = AffinityGraphDataWrapper::ValidIDs();
+    FOR_EACH(iter, validAffIDs)
+    {
+        const OmID affID = *iter;
+        DataWrapperContainer dwc = DataWrapperContainer(AFFINITY, affID);
+        AffinityGraphDataWrapper adw = dwc.GetADW();
+        QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget_);
+        row->setText(NAME_COL, adw.GetName());
+        row->setText(ID_COL, QString("%1").arg(adw.GetID()));
+        //row->setText(NOTE_COL, adw.getNote());
+        row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
+        setRowFlagsAndCheckState(row, GuiUtils::getCheckState(adw.isEnabled()));
+    }
 
     dataSrcListWidget_->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
 
@@ -203,6 +217,14 @@ void InspectorWidget::addSegmentationToVolume()
     updateSegmentListBox(sdw);
 
     addSegmentationToSplitter(sdw);
+}
+
+void InspectorWidget::addAffinityToVolume()
+{
+    AffinityGraphDataWrapper adw;
+    adw.Create();
+    
+    populateDataSrcListWidget();
 }
 
 void InspectorWidget::doDataSrcContextMenuVolAdd(QAction* act)
@@ -321,10 +343,13 @@ QMenu *InspectorWidget::makeDataSrcContextMenu(QTreeWidget* parent)
     addChannelAct_ = new QAction(tr("Add Channel"), parent);
 
     addSegmentationAct_ = new QAction(tr("Add Segmentation"), parent);
+    
+    //addAffinityAct_ = new QAction(tr("Add Affinity"), parent);
 
     contextMenuDataSrc_ = new QMenu(parent);
     contextMenuDataSrc_->addAction(addChannelAct_);
     contextMenuDataSrc_->addAction(addSegmentationAct_);
+    //contextMenuDataSrc_->addAction(addAffinityAct_);
 
     return contextMenuDataSrc_;
 }
@@ -342,6 +367,9 @@ void InspectorWidget::doShowDataSrcContextMenu(QTreeWidgetItem *dataSrcItem)
     case SEGMENTATION:
         showSegmentationContextMenu();
         break;
+        
+    case AFFINITY:
+        showAffinityContextMenu();
     }
 }
 
@@ -359,6 +387,10 @@ void InspectorWidget::showSegmentationContextMenu()
                 this, SLOT(selectSegmentationView(QAction *)));
 
     contextMenu_->exec(QCursor::pos());
+}
+
+void InspectorWidget::showAffinityContextMenu()
+{
 }
 
 QMenu *InspectorWidget::makeContextMenuBase(QTreeWidget* parent)
@@ -426,6 +458,10 @@ void InspectorWidget::addToSplitterDataSource(QTreeWidgetItem* current)
 
     case SEGMENTATION:
         updateSegmentListBox(dwc.GetSDW());
+        break;
+        
+    case AFFINITY:
+        // TODO: something
         break;
     }
 }

@@ -20,15 +20,27 @@ public:
     OmProjectVolumes();
     ~OmProjectVolumes();
 
-    OmChannelManager& Channels(){
+    OmChannelManager& Channels() {
         return *channels_;
     }
+    
+    const OmChannelManager& Channels() const {
+        return *channels_;
+    }
+    
+    OmSegmentationManager& Segmentations() {
+        return *segmentations_;
+    }
 
-    OmSegmentationManager& Segmentations(){
+    const OmSegmentationManager& Segmentations() const {
         return *segmentations_;
     }
 
     OmAffinityGraphManager& AffinityGraphs(){
+        return *affGraphs_;
+    }
+    
+    const OmAffinityGraphManager& AffinityGraphs() const {
         return *affGraphs_;
     }
 

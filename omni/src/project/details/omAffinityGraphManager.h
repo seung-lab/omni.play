@@ -18,7 +18,9 @@ public:
 private:
     OmGenericManager<OmAffinityGraph> graphs_;
 
-    friend QDataStream&operator<<(QDataStream& out, const OmAffinityGraphManager&);
-    friend QDataStream&operator>>(QDataStream& in, OmAffinityGraphManager&);
+    friend QDataStream& operator<<(QDataStream& out, const OmAffinityGraphManager&);
+    friend QDataStream& operator>>(QDataStream& in, OmAffinityGraphManager&);
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmAffinityGraphManager&);
+    friend void YAML::operator>>(const YAML::Node& in, OmAffinityGraphManager&);
 };
 
