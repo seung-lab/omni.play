@@ -1,25 +1,6 @@
 TEMPLATE = app
 CONFIG = console
 
-server.target = src/thrift/server.cpp
-server.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server
-
-server_types.target = src/thrift/server_types.cpp
-server_types.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_types.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_types
-
-server_constants.target = src/thrift/server_constants.cpp
-server_constants.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_constants.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_constants
-
-GENERATED_SOURCES += src/thrift/server.cpp \
-                     src/thrift/server_types.cpp \
-                     src/thrift/server_constants.cpp
-
 ; PREPROCESS_FILES = if/server.thrift
 ; thrift.name = Thrift Code Generation
 ; thrift.input = PREPROCESS_FILES
@@ -30,8 +11,46 @@ GENERATED_SOURCES += src/thrift/server.cpp \
 
 ## start of section to be rewritten using Perl
 HEADERS +=  \
+	src/thrift/server.h \
+	src/thrift/server_constants.h \
+	src/thrift/server_types.h
 
-SOURCES += src/main.cpp 
+SOURCES +=  \
+	src/main.cpp \
+	src/thrift/server.cpp \
+	src/thrift/server_constants.cpp \
+	src/thrift/server_types.cpp
+
+server_cpp.target = src/thrift/server.cpp
+server_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_cpp.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_cpp
+
+server_h.target = src/thrift/server.h
+server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_h
+
+server_constants_cpp.target = src/thrift/server_constants.cpp
+server_constants_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_constants_cpp.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_constants_cpp
+
+server_constants_h.target = src/thrift/server_constants.h
+server_constants_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_constants_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_constants_h
+
+server_types_cpp.target = src/thrift/server_types.cpp
+server_types_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_types_cpp.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_types_cpp
+
+server_types_h.target = src/thrift/server_types.h
+server_types_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_types_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_types_h
+
 
 ## end of section to be rewritten using Perl
 
