@@ -10,7 +10,7 @@ using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
-using namespace om::server;
+using namespace ::om::server;
 
 int main(int argc, char *argv[])
 {

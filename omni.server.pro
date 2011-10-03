@@ -1,14 +1,6 @@
 TEMPLATE = app
 CONFIG = console
 
-; PREPROCESS_FILES = if/server.thrift
-; thrift.name = Thrift Code Generation
-; thrift.input = PREPROCESS_FILES
-; thrift.commands = 
-; thrift.clean_commands = rm src/thrift/*
-; thrift.variable_out = SOURCES
-; QMAKE_EXTRA_COMPILERS += thrift
-
 ## start of section to be rewritten using Perl
 HEADERS +=  \
 	src/serverHandler.hpp \
@@ -55,7 +47,7 @@ QMAKE_EXTRA_TARGETS += server_types_h
 
 ## end of section to be rewritten using Perl
 
-INCLUDEPATH = src include lib tests 
+INCLUDEPATH = src include lib
 
 OBJECTS_DIR = build
 MOC_DIR = build

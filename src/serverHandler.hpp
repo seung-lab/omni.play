@@ -24,7 +24,7 @@ class serverHandler : virtual public serverIf {
     printf("click\n");
   }
 
-  double compare_results(const std::vector<result> & old_results, const std::vector<result> & new_result) {
+  double compare_results(const std::vector<result> & old_results, const result & new_result) {
     // Your implementation goes here
     printf("compare_results\n");
     return 0;

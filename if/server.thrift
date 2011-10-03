@@ -28,5 +28,5 @@ service server
     tile get_chan_tile( 1: vector3d point ),
     tile get_seg_tile( 1: vector3d point ),
     click_info click( 1: vector3d point ),
-    double compare_results( 1: list<result> old_results, 2: list<result> new_result)
+    double compare_results( 1: list<result> old_results, 2: result new_result)
 }
