@@ -11,6 +11,7 @@ CONFIG = console
 
 ## start of section to be rewritten using Perl
 HEADERS +=  \
+	src/serverHandler.hpp \
 	src/thrift/server.h \
 	src/thrift/server_constants.h \
 	src/thrift/server_types.h
