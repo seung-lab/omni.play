@@ -3,6 +3,44 @@ CONFIG = staticlib
 
 ## start of section to be rewritten using Perl
 HEADERS +=  \
+	lib/include/common/boost.h \
+	lib/include/common/colors.h \
+	lib/include/common/common.h \
+	lib/include/common/container.hpp \
+	lib/include/common/coordinates/chunkCoord.h \
+	lib/include/common/coordinates/coordinates.h \
+	lib/include/common/coordinates/dataCoord.h \
+	lib/include/common/coordinates/globalCoord.h \
+	lib/include/common/coordinates/normCoord.h \
+	lib/include/common/coordinates/screenCoord.h \
+	lib/include/common/coordinates/screenSystem.h \
+	lib/include/common/coordinates/volumeSystem.h \
+	lib/include/common/coordinates/yaml.h \
+	lib/include/common/debug.h \
+	lib/include/common/enums.hpp \
+	lib/include/common/exception.h \
+	lib/include/common/gl.h \
+	lib/include/common/math.hpp \
+	lib/include/common/set.hpp \
+	lib/include/common/std.h \
+	lib/include/common/stoppable.h \
+	lib/include/common/string.hpp \
+	lib/include/common/utility/image/bits/image_traits.hpp \
+	lib/include/common/utility/image/image.hpp \
+	lib/include/common/utility/yaml/baseTypes.hpp \
+	lib/include/common/utility/yaml/genericManager.hpp \
+	lib/include/common/utility/yaml/mipVolume.hpp \
+	lib/include/common/utility/yaml/yaml.hpp \
+	lib/include/common/zi/matlab/zmex.hpp \
+	lib/include/common/zi/omMutex.h \
+	lib/include/common/zi/omThreads.h \
+	lib/include/common/zi/omUtility.h \
+	lib/include/common/zi/trees/DisjointSets.hpp \
+	lib/include/common/zi/trees/lib/DynaTree.hpp \
+	lib/include/common/zi/trees/lib/DynamicTree.hpp \
+	lib/include/common/zi/trees/lib/FHeap.hpp \
+	lib/include/common/zi/watershed/MemMap.hpp \
+	lib/include/common/zi/watershed/RawQuickieWS.h \
 	src/boost.h \
 	src/colors.h \
 	src/common.h \
@@ -25,8 +63,9 @@ HEADERS +=  \
 	src/std.h \
 	src/stoppable.h \
 	src/string.hpp \
-	src/utility/image/bits/image_traits.hpp \
-	src/utility/image/image.hpp \
+	src/thrift/server.h \
+	src/thrift/server_constants.h \
+	src/thrift/server_types.h \
 	src/utility/yaml/baseTypes.hpp \
 	src/utility/yaml/genericManager.hpp \
 	src/utility/yaml/mipVolume.hpp \
@@ -54,7 +93,40 @@ SOURCES +=  \
 	src/coordinates/volumeSystem.cpp \
 	src/coordinates/yaml.cpp \
 	src/gl.cpp \
+	src/thrift/server.cpp \
+	src/thrift/server_constants.cpp \
+	src/thrift/server_types.cpp \
 	src/zi/watershed/RawQuickieWS.cpp
+
+server_cpp.target = src/thrift/server.cpp
+server_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_cpp.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_cpp
+
+server_h.target = src/thrift/server.h
+server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_h
+
+server_constants_cpp.target = src/thrift/server_constants.cpp
+server_constants_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_constants_cpp.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_constants_cpp
+
+server_constants_h.target = src/thrift/server_constants.h
+server_constants_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_constants_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_constants_h
+
+server_types_cpp.target = src/thrift/server_types.cpp
+server_types_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_types_cpp.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_types_cpp
+
+server_types_h.target = src/thrift/server_types.h
+server_types_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_types_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_types_h
 
 
 ## end of section to be rewritten using Perl
