@@ -25,8 +25,8 @@ HEADERS +=  \
 	src/std.h \
 	src/stoppable.h \
 	src/string.hpp \
-	src/utility/image/bits/omImage_traits.hpp \
-	src/utility/image/omImage.hpp \
+	src/utility/image/bits/image_traits.hpp \
+	src/utility/image/image.hpp \
 	src/utility/yaml/baseTypes.hpp \
 	src/utility/yaml/genericManager.hpp \
 	src/utility/yaml/mipVolume.hpp \
@@ -66,8 +66,13 @@ INCLUDEPATH += include/yaml-cpp/include
 OBJECTS_DIR = build
 MOC_DIR = build
 RCC_DIR = build
-DESTDIR = lib/bin
+DESTDIR = bin
 TARGET = omni.common
+
+inst.path = lib/bin
+inst.files = bin/*
+inst.extra = cd src; find -regex \".*\.h\\\(pp\\\)?\" -print0 | cpio --null -pvd ../lib/include/common/
+INSTALLS += inst
 
 #### for static build
 #CONFIG += qt warn_on static
