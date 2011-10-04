@@ -66,8 +66,8 @@ INCLUDEPATH += include/yaml-cpp/include
 OBJECTS_DIR = build
 MOC_DIR = build
 RCC_DIR = build
-DESTDIR = bin
-TARGET = omni.server
+DESTDIR = lib/bin
+TARGET = omni.common
 
 #### for static build
 #CONFIG += qt warn_on static
