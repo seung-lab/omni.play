@@ -1,4 +1,4 @@
-#include "thrift/server.h"
+#include "common/thrift/server.h"
 
 #include <transport/TSocket.h>
 #include <transport/TBufferTransports.h>
@@ -8,7 +8,7 @@ using namespace apache::thrift;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
 
-using namespace om::server;
+using namespace om::common;
 
 int main(int argc, char **argv) {
     boost::shared_ptr<TSocket> socket(new TSocket("localhost", 9090));

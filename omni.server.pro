@@ -11,7 +11,10 @@ SOURCES +=  \
 
 ## end of section to be rewritten using Perl
 
-INCLUDEPATH = src include lib
+INCLUDEPATH = src include lib 
+
+INCLUDEPATH += ../omni.common/lib/include
+LIBS += ../omni.common/lib/bin/libomni.common.a
 
 OBJECTS_DIR = build
 MOC_DIR = build

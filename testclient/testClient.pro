@@ -1,16 +1,12 @@
 TEMPLATE = app
 CONFIG = console
 
-HEADERS += ../src/thrift/server.h\
-           ../src/thrift/server_constants.h \
-           ../src/thrift/server_types.h
-
-SOURCES += src/main.cpp \
-           ../src/thrift/server.cpp \
-           ../src/thrift/server_constants.cpp \
-           ../src/thrift/server_types.cpp
+SOURCES += src/main.cpp
 
 INCLUDEPATH = src ../src
+
+INCLUDEPATH += ../../omni.common/lib/include
+LIBS += ../../omni.common/lib/bin/libomni.common.a
 
 OBJECTS_DIR = build
 MOC_DIR = build
