@@ -8,7 +8,7 @@
 #ifndef OM_GL_H
 #define OM_GL_H
 
-#include "common/std.h"
+#include "std.h"
 
 #define GL_GLEXT_PROTOTYPES
 
@@ -28,11 +28,11 @@ namespace common {
 /*
  * Standard Colors
  */
-static const float GL_WHITE[3] = {1, 1, 1};
-static const float GL_BLACK[3] = {0, 0, 0};
-static const float GL_RED[3] = {1, 0, 0};
-static const float GL_GREEN[3] = {0, 1, 0};
-static const float GL_BLUE[3] = {0, 0, 1};
+static const float WHITE[3] = {1, 1, 1};
+static const float BLACK[3] = {0, 0, 0};
+static const float RED[3] = {1, 0, 0};
+static const float GREEN[3] = {0, 1, 0};
+static const float BLUE[3] = {0, 0, 1};
 
 /*
  * Macro to check for silent errors that OpenGL builds up.

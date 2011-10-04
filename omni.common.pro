@@ -25,39 +25,8 @@ HEADERS +=  \
 	src/std.h \
 	src/stoppable.h \
 	src/string.hpp \
-	src/utility/affinityGraphDataWrapper.hpp \
-	src/utility/channelDataWrapper.hpp \
-	src/utility/color.hpp \
-	src/utility/dataWrapperContainer.hpp \
-	src/utility/dataWrappers.h \
-	src/utility/filterDataWrapper.hpp \
-	src/utility/fuzzyStdObjs.hpp \
 	src/utility/image/bits/omImage_traits.hpp \
 	src/utility/image/omImage.hpp \
-	src/utility/localPrefFiles.h \
-	src/utility/localPrefFilesImpl.hpp \
-	src/utility/omChunkVoxelWalker.hpp \
-	src/utility/omCopyFirstN.hpp \
-	src/utility/omDataTime.hpp \
-	src/utility/omFileHelpers.h \
-	src/utility/omFileLogger.hpp \
-	src/utility/omLockedObjects.h \
-	src/utility/omLockedPODs.hpp \
-	src/utility/omPrimeNumbers.hpp \
-	src/utility/omRand.hpp \
-	src/utility/omRandColorFile.hpp \
-	src/utility/omSharedPtr.hpp \
-	src/utility/omSimpleProgress.hpp \
-	src/utility/omSmartPtr.hpp \
-	src/utility/omStringHelpers.h \
-	src/utility/omSystemInformation.h \
-	src/utility/omTempFile.hpp \
-	src/utility/omTimer.hpp \
-	src/utility/omUUID.hpp \
-	src/utility/segmentDataWrapper.hpp \
-	src/utility/segmentationDataWrapper.hpp \
-	src/utility/setUtilities.h \
-	src/utility/sortHelpers.h \
 	src/utility/yaml/baseTypes.hpp \
 	src/utility/yaml/genericManager.hpp \
 	src/utility/yaml/mipVolume.hpp \
@@ -85,10 +54,6 @@ SOURCES +=  \
 	src/coordinates/volumeSystem.cpp \
 	src/coordinates/yaml.cpp \
 	src/gl.cpp \
-	src/utility/channelDataWrapper.cpp \
-	src/utility/omFileHelpers.cpp \
-	src/utility/omPrimeNumbers.cpp \
-	src/utility/omSystemInformation.cpp \
 	src/zi/watershed/RawQuickieWS.cpp
 
 
