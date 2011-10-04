@@ -4,6 +4,5 @@ builds
 lib
 libs
 omni.server.kdev4
-src/thrift
 external/srcs
 *~
