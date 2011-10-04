@@ -1,4 +1,4 @@
-namespace cpp om.server
+namespace cpp om.common
 
 struct vector3d
 {
