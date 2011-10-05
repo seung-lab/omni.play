@@ -9,7 +9,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "mesh/omMeshTypes.h"
 #include "system/omManageableObject.h"
-#include "volume/omMipVolume.h"
+#include "volume/mipVolume.h"
 #include "datalayer/archive/segmentation.h"
 
 class OmChunk;

@@ -71,7 +71,7 @@ private:
 
     onDiskHash_t* hash_;
 
-    om::shared_ptr<bi::managed_mapped_file> file_;
+    boost::shared_ptr<bi::managed_mapped_file> file_;
 
     void create()
     {

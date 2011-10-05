@@ -1,6 +1,6 @@
 #pragma once
 
-#include "volume/omMipVolume.h"
+#include "volume/mipVolume.h"
 
 class OmChunkOffset {
 public:

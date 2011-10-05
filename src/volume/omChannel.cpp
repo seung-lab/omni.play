@@ -1,4 +1,4 @@
-#include "volume/omChannel.h"
+#include "volume/channel.h"
 
 OmChannel::OmChannel()
 	: OmChannelImpl()

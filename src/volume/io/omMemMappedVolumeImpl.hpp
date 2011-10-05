@@ -8,7 +8,7 @@
 #include "project/omProject.h"
 #include "utility/omStringHelpers.h"
 #include "volume/io/omChunkOffset.hpp"
-#include "volume/omChannel.h"
+#include "volume/channel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolumeTypes.hpp"
 
@@ -21,7 +21,7 @@ template <typename T>
 class OmMemMappedVolumeImpl : public OmIDataVolume<T> {
 private:
     OmMipVolume* vol_;
-    std::vector<om::shared_ptr<OmIOnDiskFile<T> > > maps_;
+    std::vector<boost::shared_ptr<OmIOnDiskFile<T> > > maps_;
 
     typedef OmMemMappedFileReadQT<T> reader_t;
     typedef OmMemMappedFileWriteQT<T> writer_t;

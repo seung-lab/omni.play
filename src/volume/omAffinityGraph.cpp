@@ -1,38 +1,38 @@
 #include "chunks/omRawChunk.hpp"
 #include "volume/build/omBuildAffinityChannel.hpp"
-#include "volume/omAffinityChannel.h"
-#include "volume/omAffinityGraph.h"
-#include "volume/omChannel.h"
+#include "volume/affinityChannel.h"
+#include "volume/affinityGraph.h"
+#include "volume/channel.h"
 #include "utility/channelDataWrapper.hpp"
 
-OmAffinityGraph::OmAffinityGraph()
+affinityGraph::affinityGraph()
 {}
 
 // used by OmGenericManager
-OmAffinityGraph::OmAffinityGraph(const OmID id)
+affinityGraph::affinityGraph(const OmID id)
     : OmManageableObject(id)
 {}
 
-OmAffinityGraph::~OmAffinityGraph()
+affinityGraph::~affinityGraph()
 {}
 
-void OmAffinityGraph::ImportAllChannels(const QString& hdf5fnp)
+void affinityGraph::ImportAllChannels(const QString& hdf5fnp)
 {
     ImportSingleChannel(hdf5fnp, om::X_AFFINITY);
     ImportSingleChannel(hdf5fnp, om::Y_AFFINITY);
     ImportSingleChannel(hdf5fnp, om::Z_AFFINITY);
 }
 
-void OmAffinityGraph::ImportSingleChannel(const QString& hdf5fnp,
-                                          const om::AffinityGraph aff)
+void affinityGraph::ImportSingleChannel(const QString& hdf5fnp,
+                                          const affinityGraph aff)
 {
     ChannelDataWrapper cdw;
     OmChannel& chan = cdw.Create();
 
     channels_[aff] =
-        om::make_shared<OmAffinityChannel>(&chan, aff);
+        om::make_shared<affinityChannel>(&chan, aff);
 
-    OmAffinityChannel* affChan = channels_[aff].get();
+    affinityChannel* affChan = channels_[aff].get();
 
     OmBuildAffinityChannel bc(affChan, aff);
     bc.addFileNameAndPath(hdf5fnp);
@@ -40,19 +40,19 @@ void OmAffinityGraph::ImportSingleChannel(const QString& hdf5fnp,
 }
 
 // use to just read data
-om::shared_ptr<OmRawChunk<float> >
-OmAffinityGraph::RawChunk(const om::AffinityGraph aff,
+boost::shared_ptr<OmRawChunk<float> >
+affinityGraph::RawChunk(const affinityGraph aff,
                           const om::chunkCoord& coord)
 {
-    OmAffinityChannel* affChan = channels_[aff].get();
+    affinityChannel* affChan = channels_[aff].get();
 
     return om::make_shared<OmRawChunk<float> >(affChan->Channel(), coord);
 }
 
-OmChunk* OmAffinityGraph::MipChunk(const om::AffinityGraph aff,
+OmChunk* affinityGraph::MipChunk(const affinityGraph aff,
                                    const om::chunkCoord& coord)
 {
-    OmAffinityChannel* affChan = channels_[aff].get();
+    affinityChannel* affChan = channels_[aff].get();
 
     return affChan->Channel()->GetChunk(coord);
 }

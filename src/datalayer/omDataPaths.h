@@ -3,7 +3,7 @@
 #include "common/om.hpp"
 #include "common/common.h"
 
-class OmAffinityChannel;
+class affinityChannel;
 class OmChannelImpl;
 class OmDataPath;
 class OmMeshCoord;

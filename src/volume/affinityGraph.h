@@ -7,27 +7,27 @@
 #include "system/omManageableObject.h"
 
 class OmChunk;
-class OmAffinityChannel;
+class affinityChannel;
 template <typename T> class OmRawChunk;
 
-class OmAffinityGraph : public OmManageableObject {
+class affinityGraph : public OmManageableObject {
 private:
-    std::map<om::AffinityGraph, om::shared_ptr<OmAffinityChannel> > channels_;
+    std::map<affinityGraph, boost::shared_ptr<affinityChannel> > channels_;
 
 public:
-    OmAffinityGraph();
-    OmAffinityGraph(const OmID id);
-    virtual ~OmAffinityGraph();
+    affinityGraph();
+    affinityGraph(const OmID id);
+    virtual ~affinityGraph();
 
     void ImportAllChannels(const QString& hdf5fnp);
 
     void ImportSingleChannel(const QString& hdf5fnp,
-                             const om::AffinityGraph aff);
+                             const affinityGraph aff);
 
-    OmChunk* MipChunk(const om::AffinityGraph aff,
+    OmChunk* MipChunk(const affinityGraph aff,
                       const om::chunkCoord& coord);
 
-    om::shared_ptr<OmRawChunk<float> > RawChunk(const om::AffinityGraph aff,
+    boost::shared_ptr<OmRawChunk<float> > RawChunk(const affinityGraph aff,
                                                 const class om::chunkCoord& coord);
 
 };

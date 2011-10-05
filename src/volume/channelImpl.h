@@ -9,7 +9,7 @@
 #include "common/omStd.h"
 #include "system/omManageableObject.h"
 #include "volume/omFilter2dManager.h"
-#include "volume/omMipVolume.h"
+#include "volume/mipVolume.h"
 
 class OmTileCacheChannel;
 class OmVolumeData;

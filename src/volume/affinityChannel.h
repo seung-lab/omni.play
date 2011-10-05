@@ -1,19 +1,19 @@
 #pragma once
 
-#include "volume/omChannel.h"
+#include "volume/channel.h"
 
-class OmAffinityChannel {
+class affinityChannel {
 private:
 	OmChannel *const chan_;
-	const om::AffinityGraph affinity_;
+	const affinityGraph affinity_;
 
 public:
-	OmAffinityChannel(OmChannel* chan, const om::AffinityGraph aff)
+	affinityChannel(OmChannel* chan, const affinityGraph aff)
 		: chan_(chan)
 		, affinity_(aff)
 	{}
 
-	om::AffinityGraph GetAffinity() const {
+	affinityGraph GetAffinity() const {
 		return affinity_;
 	}
 

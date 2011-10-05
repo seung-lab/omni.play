@@ -1,7 +1,7 @@
 #pragma once
 
 #include "volume/io/omMemMappedVolumeImpl.hpp"
-#include "volume/omMipVolume.h"
+#include "volume/mipVolume.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/hdf5/omHdf5ChunkUtils.hpp"
 
