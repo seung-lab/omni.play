@@ -4,7 +4,7 @@
 #include "chunks/omChunk.h"
 #include "chunks/omChunkCache.hpp"
 #include "chunks/omChunkCache.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omDebug.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/omDataPath.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/debug.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/fs/omMemMappedFileQT.hpp"
 #include "datalayer/omIDataVolume.hpp"

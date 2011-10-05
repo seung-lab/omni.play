@@ -2,7 +2,7 @@
 
 class OmSegmentation;
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include <QString>
 
 namespace om {

@@ -3,7 +3,7 @@
 /**
  * TODO: serialize!! (purcaro)
  **/
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "system/omManageableObject.h"
 
 class OmChunk;
