@@ -1,9 +1,9 @@
 #pragma once
 
 template <typename T>
-class OmIOnDiskFile {
+class IOnDiskFile {
 public:
-    virtual ~OmIOnDiskFile(){}
+    virtual ~IOnDiskFile(){}
 
     virtual uint64_t Size() const = 0;
     virtual void Flush(){}

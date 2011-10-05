@@ -1,7 +1,7 @@
 #pragma once
 
 #include "datalayer/fs/omFileNames.hpp"
-#include "datalayer/fs/omMemMappedFileQTNew.hpp"
+#include "datalayer/fs/memMappedFileQTNew.hpp"
 #include "segment/omSegmentTypes.h"
 
 class OmSegmentPageV4 {
@@ -11,7 +11,7 @@ private:
     const uint32_t pageSize_;
     const std::string fnp_;
 
-    om::shared_ptr<OmIOnDiskFile<OmSegmentDataV4> > data_;
+    om::shared_ptr<IOnDiskFile<OmSegmentDataV4> > data_;
 
 public:
     OmSegmentPageV4(segmentation* vol, const PageNum pageNum, const uint32_t pageSize)
@@ -24,21 +24,21 @@ public:
     OmSegmentDataV4* Create()
     {
         data_ =
-            OmMemMappedFileQTNew<OmSegmentDataV4>::CreateNumElements(fnp_, pageSize_);
+            memMappedFileQTNew<OmSegmentDataV4>::CreateNumElements(fnp_, pageSize_);
         return data_->GetPtr();
     }
 
     OmSegmentDataV4* Load()
     {
         data_ =
-            om::make_shared<OmMemMappedFileQTNew<OmSegmentDataV4> >(fnp_);
+            om::make_shared<memMappedFileQTNew<OmSegmentDataV4> >(fnp_);
         return data_->GetPtr();
     }
 
     OmSegmentDataV4* Import(om::shared_ptr<OmSegmentDataV4> data)
     {
         data_ =
-            OmMemMappedFileQTNew<OmSegmentDataV4>::CreateFromData(fnp_, data, pageSize_);
+            memMappedFileQTNew<OmSegmentDataV4>::CreateFromData(fnp_, data, pageSize_);
         return data_->GetPtr();
     }
 

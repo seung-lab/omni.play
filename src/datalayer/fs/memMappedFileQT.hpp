@@ -4,23 +4,23 @@
 #include "common/common.h"
 #include "common/omDebug.h"
 #include "common/omString.hpp"
-#include "datalayer/fs/omIOnDiskFile.h"
+#include "datalayer/fs/IOnDiskFile.h"
 
 #include <QFile>
 #include <QFileInfo>
 
 template <typename T>
-class OmMemMappedFileQTbase : public OmIOnDiskFile<T> {
+class memMappedFileQTbase : public IOnDiskFile<T> {
 protected:
     const std::string fnp_;
     boost::shared_ptr<QFile> file_;
     uchar* map_;
 
-    OmMemMappedFileQTbase(const std::string& fnp)
+    memMappedFileQTbase(const std::string& fnp)
         : fnp_(fnp)
     {}
 
-    virtual ~OmMemMappedFileQTbase()
+    virtual ~memMappedFileQTbase()
     {
         file_->unmap(map_);
         debugs(memmap) << "closing file " << GetBaseFileName() << "\n";
@@ -68,7 +68,7 @@ public:
 };
 
 template <typename T>
-class OmMemMappedFileReadQT : public OmMemMappedFileQTbase<T> {
+class OmMemMappedFileReadQT : public memMappedFileQTbase<T> {
 public:
 
     static boost::shared_ptr<OmMemMappedFileReadQT<T> >
@@ -80,7 +80,7 @@ public:
 
 private:
     OmMemMappedFileReadQT(const std::string& fnp, const int64_t numBytes)
-        : OmMemMappedFileQTbase<T>(fnp)
+        : memMappedFileQTbase<T>(fnp)
     {
         this->open();
         checkFileSize(numBytes);
@@ -107,7 +107,7 @@ private:
 };
 
 template <typename T>
-class OmMemMappedFileWriteQT : public OmMemMappedFileQTbase<T> {
+class OmMemMappedFileWriteQT : public memMappedFileQTbase<T> {
 public:
 
     static boost::shared_ptr<OmMemMappedFileWriteQT<T> >
@@ -132,7 +132,7 @@ public:
 private:
     OmMemMappedFileWriteQT(const std::string& fnp, const int64_t numBytes,
                            const om::ZeroMem shouldZeroFill)
-        : OmMemMappedFileQTbase<T>(fnp)
+        : memMappedFileQTbase<T>(fnp)
     {
         checkFileSize(numBytes);
 

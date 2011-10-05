@@ -2,7 +2,7 @@
 
 #include "common/om.hpp"
 #include "common/omDebug.h"
-#include "datalayer/fs/omIOnDiskFile.h"
+#include "datalayer/fs/IOnDiskFile.h"
 #include "utility/omSmartPtr.hpp"
 
 #include <QFile>
@@ -10,18 +10,18 @@
 #include <boost/make_shared.hpp>
 
 template <typename T>
-class OmFileQTbase : public OmIOnDiskFile<T> {
+class fileQTbase : public IOnDiskFile<T> {
 protected:
     const std::string fnp_;
     boost::shared_ptr<QFile> file_;
     boost::shared_ptr<T> data_;
     zi::mutex mutex_;
 
-    OmFileQTbase(const std::string& fnp)
+    fileQTbase(const std::string& fnp)
         : fnp_(fnp)
     {}
 
-    virtual ~OmFileQTbase()
+    virtual ~fileQTbase()
     {}
 
     uint64_t Size() const {
@@ -91,7 +91,7 @@ public:
 };
 
 template <typename T>
-class OmFileReadQT : public OmFileQTbase<T> {
+class OmFileReadQT : public fileQTbase<T> {
 public:
 
     static boost::shared_ptr<OmFileReadQT<T> >
@@ -103,7 +103,7 @@ public:
 
 private:
     OmFileReadQT(const std::string& fnp, const int64_t numBytes)
-        : OmFileQTbase<T>(fnp)
+        : fileQTbase<T>(fnp)
     {
         this->open();
         checkFileSize(numBytes);
@@ -130,7 +130,7 @@ private:
 };
 
 template <typename T>
-class OmFileWriteQT : public OmFileQTbase<T> {
+class OmFileWriteQT : public fileQTbase<T> {
 public:
     static boost::shared_ptr<OmFileWriteQT<T> >
     WriterNumBytes(const std::string& fnp, const int64_t numBytes,
@@ -152,7 +152,7 @@ public:
 private:
     OmFileWriteQT(const std::string& fnp, const int64_t numBytes,
                   const om::ZeroMem shouldZeroFill)
-        : OmFileQTbase<T>(fnp)
+        : fileQTbase<T>(fnp)
     {
         checkFileSize(numBytes);
 

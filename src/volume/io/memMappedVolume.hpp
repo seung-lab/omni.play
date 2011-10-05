@@ -2,7 +2,7 @@
 
 #include "common/debug.h"
 #include "datalayer/fs/omFileNames.hpp"
-#include "datalayer/fs/omMemMappedFileQT.hpp"
+#include "datalayer/fs/memMappedFileQT.hpp"
 #include "datalayer/IDataVolume.hpp"
 #include "datalayer/IDataVolume.hpp"
 #include "project/project.h"
@@ -15,13 +15,13 @@
 #include <zi/mutex.hpp>
 #include <QFile>
 
-template <typename T> class OmIOnDiskFile;
+template <typename T> class IOnDiskFile;
 
 template <typename T>
 class memMappedVolumeImpl : public IDataVolume<T> {
 private:
     mipVolume* vol_;
-    std::vector<boost::shared_ptr<OmIOnDiskFile<T> > > maps_;
+    std::vector<boost::shared_ptr<IOnDiskFile<T> > > maps_;
 
     typedef OmMemMappedFileReadQT<T> reader_t;
     typedef OmMemMappedFileWriteQT<T> writer_t;

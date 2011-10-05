@@ -1,30 +1,30 @@
 #pragma once
 
 #include "datalayer/fs/omCompressedFile.h"
-#include "datalayer/fs/omIOnDiskFile.h"
+#include "datalayer/fs/IOnDiskFile.h"
 #include "datalayer/fs/omFile.hpp"
 #include "utility/omTempFile.hpp"
 
 template <typename T>
-class OmMemMapCompressedFile : public OmIOnDiskFile<T> {
+class memMapCompressedFile : public IOnDiskFile<T> {
 public:
-    static boost::shared_ptr<OmMemMapCompressedFile<T> >
+    static boost::shared_ptr<memMapCompressedFile<T> >
     CreateNumElements(const std::string& fnp, const int64_t numElements)
     {
         boost::shared_ptr<T> d = OmSmartPtr<T>::MallocNumElements(numElements,
                                                                   om::ZERO_FILL);
         om::file::compressToFileNumElements(d, numElements, fnp);
 
-        return om::make_shared<OmMemMapCompressedFile<T> >(fnp);
+        return om::make_shared<memMapCompressedFile<T> >(fnp);
     }
 
-    static boost::shared_ptr<OmMemMapCompressedFile<T> >
+    static boost::shared_ptr<memMapCompressedFile<T> >
     CreateFromData(const std::string& fnp, boost::shared_ptr<T> d,
                    const int64_t numElements)
     {
         om::file::compressToFileNumElements(d, numElements, fnp);
 
-        return om::make_shared<OmMemMapCompressedFile<T> >(fnp);
+        return om::make_shared<memMapCompressedFile<T> >(fnp);
     }
 
 private:
@@ -35,7 +35,7 @@ private:
     char* dataChar_;
 
 public:
-    OmMemMapCompressedFile(const std::string& fnp)
+    memMapCompressedFile(const std::string& fnp)
         : fnp_(fnp)
         , data_(NULL)
         , dataChar_(NULL)
@@ -43,7 +43,7 @@ public:
         uncompressAndMap();
     }
 
-    virtual ~OmMemMapCompressedFile()
+    virtual ~memMapCompressedFile()
     {}
 
     virtual uint64_t Size() const {

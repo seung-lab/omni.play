@@ -3,7 +3,7 @@
 #include "common/common.h"
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
-#include "datalayer/fs/omMemMapCompressedFile.hpp"
+#include "datalayer/fs/memMapCompressedFile.hpp"
 
 class OmSegmentListTypePage {
 private:
@@ -12,7 +12,7 @@ private:
     const uint32_t pageSize_;
     const std::string fnp_;
 
-    om::shared_ptr<OmIOnDiskFile<uint8_t> > data_;
+    om::shared_ptr<IOnDiskFile<uint8_t> > data_;
 
 public:
     OmSegmentListTypePage(segmentation* vol, const PageNum pageNum, const uint32_t pageSize)
@@ -25,21 +25,21 @@ public:
     uint8_t* Create()
     {
         data_ =
-            OmMemMapCompressedFile<uint8_t>::CreateNumElements(fnp_, pageSize_);
+            memMapCompressedFile<uint8_t>::CreateNumElements(fnp_, pageSize_);
         return data_->GetPtr();
     }
 
     uint8_t* Load()
     {
         data_ =
-            om::make_shared<OmMemMapCompressedFile<uint8_t> >(fnp_);
+            om::make_shared<memMapCompressedFile<uint8_t> >(fnp_);
         return data_->GetPtr();
     }
 
     uint8_t* Import(om::shared_ptr<uint8_t> data)
     {
         data_ =
-            OmMemMapCompressedFile<uint8_t>::CreateFromData(fnp_, data, pageSize_);
+            memMapCompressedFile<uint8_t>::CreateFromData(fnp_, data, pageSize_);
         return data_->GetPtr();
     }
 
