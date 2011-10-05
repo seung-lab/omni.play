@@ -5,7 +5,7 @@
 
 class OmSegChunk;
 class OmSegments;
-class OmSegmentation;
+class segmentation;
 
 namespace om {
 namespace segchunk {

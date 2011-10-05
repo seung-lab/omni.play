@@ -12,20 +12,20 @@ class OmMeshMetadata;
 class OmMeshReaderV2;
 class OmMesh;
 class OmMeshCoord;
-class OmSegmentation;
+class segmentation;
 
 #include <QDataStream>
 
 class OmMeshManager {
 public:
-    OmMeshManager(OmSegmentation* segmentation,
+    OmMeshManager(segmentation* segmentation,
                   const double threshold);
     ~OmMeshManager();
 
     void Create();
     void Load();
 
-    OmSegmentation* GetSegmentation() const{
+    segmentation* GetSegmentation() const{
         return segmentation_;
     }
 
@@ -62,7 +62,7 @@ public:
     }
 
 private:
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     const double threshold_;
 
     const boost::scoped_ptr<OmMeshCache> dataCache_;

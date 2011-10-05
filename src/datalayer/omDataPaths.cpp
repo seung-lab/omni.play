@@ -8,8 +8,8 @@
 #include "project/omProject.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
-#include "volume/omChannelImpl.h"
-#include "volume/omSegmentation.h"
+#include "volume/channelImpl.h"
+#include "volume/segmentation.h"
 
 OmDataPath OmDataPaths::getDefaultDatasetName(){
     return OmDataPath("main");
@@ -35,7 +35,7 @@ std::string OmDataPaths::getMeshFileName(const OmMeshCoord& meshCoord)
                 % meshCoord.DataValue);
 }
 
-std::string OmDataPaths::getDirectoryPath(OmChannelImpl const*const chan)
+std::string OmDataPaths::getDirectoryPath(channelImpl const*const chan)
 {
     return str( boost::format("channels/channel%1%/")
                 % chan->GetID());

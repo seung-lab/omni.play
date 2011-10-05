@@ -4,13 +4,13 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 
-class OmMipVolume;
+class mipVolume;
 class OmViewGroupState;
 
-// Level, Coordinate, OmMipVolume*, freshness, OmViewGroupState*,
+// Level, Coordinate, mipVolume*, freshness, OmViewGroupState*,
 //  ViewType, OmSegmentColorCacheType
 typedef boost::tuple<int, om::globalCoord,
-                     OmMipVolume*, uint32_t,
+                     mipVolume*, uint32_t,
                      OmViewGroupState*, ViewType,
                      OmSegmentColorCacheType> OmTileCoordKey;
 
@@ -19,12 +19,12 @@ public:
     OmTileCoord();
 
     OmTileCoord(const int, const om::globalCoord&,
-                OmMipVolume*, const uint32_t,
+                mipVolume*, const uint32_t,
                 OmViewGroupState*, const ViewType,
                 const ObjectType);
 
     OmTileCoord(const int, const om::globalCoord&,
-                OmMipVolume*, const uint32_t,
+                mipVolume*, const uint32_t,
                 OmViewGroupState*, const ViewType,
                 const OmSegmentColorCacheType);
 
@@ -37,7 +37,7 @@ public:
     inline const om::globalCoord& getCoord() const {
         return this->get<1>();
     }
-    inline OmMipVolume* getVolume() const {
+    inline mipVolume* getVolume() const {
         return this->get<2>();
     }
     inline uint32_t getFreshness() const {

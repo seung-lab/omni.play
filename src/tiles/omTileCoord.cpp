@@ -1,6 +1,6 @@
 #include "common/omDebug.h"
 #include "tiles/omTileCoord.h"
-#include "volume/omMipVolume.h"
+#include "volume/mipVolume.h"
 #include "viewGroup/omViewGroupState.h"
 
 OmTileCoord::OmTileCoord()
@@ -14,7 +14,7 @@ OmTileCoord::OmTileCoord()
 {}
 
 OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
-                         OmMipVolume* vol, const uint32_t freshness,
+                         mipVolume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
                          const ObjectType objType)
     : OmTileCoordKey(level,
@@ -27,7 +27,7 @@ OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
 {}
 
 OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
-                         OmMipVolume* vol, const uint32_t freshness,
+                         mipVolume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
                          const OmSegmentColorCacheType segColorType)
     : OmTileCoordKey(level,

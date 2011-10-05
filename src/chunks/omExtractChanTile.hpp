@@ -2,20 +2,20 @@
 
 #include "tiles/omTileFilters.hpp"
 #include "chunks/omRawChunkSlicer.hpp"
-#include "volume/omMipVolume.h"
+#include "volume/mipVolume.h"
 
 namespace om {
 namespace chunk {
 
 class extractChanTile{
 private:
-    OmMipVolume *const vol_;
+    mipVolume *const vol_;
     const om::chunkCoord coord_;
     const ViewType plane_;
     const int depth_;
 
 public:
-    extractChanTile(OmMipVolume* vol, const om::chunkCoord& coord, const ViewType plane, int depth)
+    extractChanTile(mipVolume* vol, const om::chunkCoord& coord, const ViewType plane, int depth)
         : vol_(vol)
         , coord_(coord)
         , plane_(plane)

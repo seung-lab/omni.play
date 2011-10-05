@@ -5,14 +5,14 @@
 #include "mesh/omMeshManager.h"
 #include "utility/fuzzyStdObjs.hpp"
 #include "utility/omStringHelpers.h"
-#include "volume/omSegmentationFolder.h"
+#include "volume/segmentationFolder.h"
 
 class OmMeshManagers {
 private:
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
 
 public:
-    OmMeshManagers(OmSegmentation* segmentation)
+    OmMeshManagers(segmentation* segmentation)
         : segmentation_(segmentation)
     {}
 
@@ -112,7 +112,7 @@ public:
     {
         assert(0);
 //build chunk volume data and analyze data
-//	OmMipVolume::BuildChunk(mipCoord);
+//	mipVolume::BuildChunk(mipCoord);
 
 //rebuild mesh data only if entire volume data has been built
 if (IsVolumeDataBuilt()) {

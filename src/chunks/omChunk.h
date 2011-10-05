@@ -11,16 +11,16 @@
 #include "chunks/omChunkMipping.hpp"
 #include "volume/omVolumeTypes.hpp"
 
-class OmChannel;
-class OmChannelImpl;
-class OmSegmentation;
+class channel;
+class channelImpl;
+class segmentation;
 namespace om { namespace chunk { class dataInterface; } }
 
 class OmChunk {
 public:
-    OmChunk(OmChannel* vol, const om::chunkCoord& coord);
-    OmChunk(OmChannelImpl* vol, const om::chunkCoord& coord);
-    OmChunk(OmSegmentation* vol, const om::chunkCoord& coord);
+    OmChunk(channel* vol, const om::chunkCoord& coord);
+    OmChunk(channelImpl* vol, const om::chunkCoord& coord);
+    OmChunk(segmentation* vol, const om::chunkCoord& coord);
 
     virtual ~OmChunk();
 
@@ -52,7 +52,7 @@ public:
 protected:
     const om::chunkCoord coord_;
     const boost::scoped_ptr<om::chunk::dataInterface> chunkData_;
-    const OmMipVolume * const vol_;
+    const mipVolume * const vol_;
 
     OmChunkMipping mipping_;
 };

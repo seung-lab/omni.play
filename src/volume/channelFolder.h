@@ -1,6 +1,6 @@
 #pragma once
 
-class OmChannelImpl;
+class channelImpl;
 
 #include <QString>
 
@@ -9,10 +9,10 @@ namespace channel {
 
 class folder {
 private:
-    OmChannelImpl *const vol_;
+    channelImpl *const vol_;
 
 public:
-    folder(OmChannelImpl* chan);
+    folder(channelImpl* chan);
 
     QString GetVolPath() const;
     QString RelativeVolPath() const;

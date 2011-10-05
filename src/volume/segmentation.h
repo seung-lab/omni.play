@@ -29,7 +29,7 @@ class OmUserEdges;
 class OmValidGroupNum;
 class OmViewGroupState;
 class OmVolumeCuller;
-class OmVolumeData;
+class volumeData;
 class SegmentationDataWrapper;
 template <typename,typename> class OmChunkCache;
 
@@ -37,11 +37,11 @@ namespace om { namespace segmentation { class folder; } }
 namespace om { namespace segmentation { class loader; } }
 namespace om { namespace annotation { class manager; } }
 
-class OmSegmentation : public OmMipVolume, public OmManageableObject {
+class segmentation : public mipVolume, public OmManageableObject {
 public:
-    OmSegmentation();
-    OmSegmentation(OmID id);
-    virtual ~OmSegmentation();
+    segmentation();
+    segmentation(OmID id);
+    virtual ~segmentation();
 
     std::string GetName();
     std::string GetNameHyphen();
@@ -120,13 +120,13 @@ public:
     inline OmValidGroupNum* ValidGroupNum(){
         return validGroupNum_.get();
     }
-    inline OmVolumeData* VolData(){
+    inline volumeData* VolData(){
         return volData_.get();
     }
     inline OmRawSegTileCache* SliceCache(){
         return volSliceCache_.get();
     }
-    inline OmChunkCache<OmSegmentation, OmSegChunk>* ChunkCache(){
+    inline OmChunkCache<segmentation, OmSegChunk>* ChunkCache(){
         return chunkCache_.get();
     }
     inline OmTileCacheSegmentation* TileCache(){
@@ -150,12 +150,12 @@ private:
     boost::scoped_ptr<OmMST> mst_;
     boost::scoped_ptr<OmMeshDrawer> meshDrawer_;
     boost::scoped_ptr<OmMeshManagers> meshManagers_;
-    boost::scoped_ptr<OmChunkCache<OmSegmentation, OmSegChunk> > chunkCache_;
+    boost::scoped_ptr<OmChunkCache<segmentation, OmSegChunk> > chunkCache_;
     boost::scoped_ptr<OmSegments> segments_;
     boost::scoped_ptr<OmSegmentLists> segmentLists_;
     boost::scoped_ptr<OmUserEdges> mstUserEdges_;
     boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
-    boost::scoped_ptr<OmVolumeData> volData_;
+    boost::scoped_ptr<volumeData> volData_;
     boost::scoped_ptr<OmRawSegTileCache> volSliceCache_;
     boost::scoped_ptr<OmTileCacheSegmentation> tileCache_;
     boost::scoped_ptr<om::annotation::manager> annotations_;
@@ -168,13 +168,13 @@ private:
     friend class OmSegmentsImpl;
     friend class OmSegmentsImplLowLevel;
     friend class OmSegmentIterator;
-    friend class OmSegmentationChunkBuildTask;
+    friend class segmentationChunkBuildTask;
     friend class SegmentTests1;
 
     friend class OmDataArchiveProjectImpl;
-    friend void YAML::operator>>(const YAML::Node& in, OmSegmentation&);
-    friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const OmSegmentation&);
-    friend QDataStream &operator>>(QDataStream& in, OmSegmentation&);
-    friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
+    friend void YAML::operator>>(const YAML::Node& in, segmentation&);
+    friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const segmentation&);
+    friend QDataStream &operator>>(QDataStream& in, segmentation&);
+    friend QDataStream &operator<<(QDataStream& out, const segmentation&);
 };
 

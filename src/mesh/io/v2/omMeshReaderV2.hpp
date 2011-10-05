@@ -8,7 +8,7 @@
 
 class OmMeshReaderV2{
 private:
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     const double threshold_;
     OmMeshFilePtrCache *const filePtrCache_;
 

@@ -3,13 +3,13 @@
 #include "chunks/omSegChunk.h"
 #include "system/cache/omCacheBase.h"
 #include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
-#include "tiles/omChannelTileFilter.hpp"
+#include "tiles/channelTileFilter.hpp"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
 #include "utility/dataWrappers.h"
 #include "view2d/omView2dConverters.hpp"
 #include "viewGroup/omViewGroupState.h"
-#include "volume/omMipVolume.h"
+#include "volume/mipVolume.h"
 
 OmTile::OmTile(OmCacheBase* cache, const OmTileCoord& key)
     : cache_(cache)
@@ -37,21 +37,21 @@ int OmTile::getChunkSliceNum(){
 
 void OmTile::load8bitChannelTile()
 {
-    OmChannel* chan = reinterpret_cast<OmChannel*>(getVol());
+    channel* chan = reinterpret_cast<channel*>(getVol());
     OmChunk* chunk = chan->GetChunk(mipChunkCoord_);
 
     OmPooledTile<uint8_t>* tileData =
         chunk->Data()->ExtractDataSlice8bit(key_.getViewType(),
                                             getChunkSliceNum());
 
-    OmChannelTileFilter::Filter(tileData);
+    channelTileFilter::Filter(tileData);
 
     texture_.reset(new OmTextureID(tileLength_, tileData));
 }
 
 void OmTile::load32bitSegmentationTile()
 {
-    OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(getVol());
+    segmentation* seg = reinterpret_cast<segmentation*>(getVol());
     OmSegChunk* chunk = seg->GetChunk(mipChunkCoord_);
 
     PooledTile32Ptr imageData =

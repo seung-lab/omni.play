@@ -9,7 +9,7 @@ class OmDataPath;
 class OmHdf5;
 class OmChunk;
 class OmVolume;
-class OmVolumeData;
+class volumeData;
 
 namespace YAML { template <class T> class mipVolume; }
 
@@ -28,7 +28,7 @@ public:
     virtual std::string GetDirectoryPath() const = 0;
     virtual std::string GetName() = 0;
     virtual bool LoadVolData() = 0;
-    virtual OmVolumeData* VolData() = 0;
+    virtual volumeData* VolData() = 0;
     virtual common::objectType getVolumeType() const = 0;
     virtual common::id getID() const = 0;
 
@@ -79,13 +79,13 @@ private:
 //     template <class T> friend class OmVolumeBuilderBase;
 //     template <class T> friend class OmVolumeBuilderHdf5;
 //     template <class T> friend class OmVolumeBuilderImages;
-//     template <class T> friend class OmMipVolumeArchive;
+//     template <class T> friend class mipVolumeArchive;
 //     template <class T> friend class YAML::mipVolume;
 // 
 //     friend class OmChunk;
-//     friend class OmMipVolumeArchiveOld;
-//     friend class OmVolumeData;
-//     friend class OmMemMappedVolume;
+//     friend class mipVolumeArchiveOld;
+//     friend class volumeData;
+//     friend class memMappedVolume;
 //     friend class OmUpgradeTo14;
 //     friend class OmWatershedImporter;
 };

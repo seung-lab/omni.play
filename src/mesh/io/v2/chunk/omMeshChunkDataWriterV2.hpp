@@ -13,7 +13,7 @@ private:
     static const int defaultFileExpansionFactor = 5;
 
 private:
-    OmSegmentation *const vol_;
+    segmentation *const vol_;
     const om::chunkCoord& coord_;
     const double threshold_;
     const QString fnp_;
@@ -23,7 +23,7 @@ private:
     zi::rwmutex lock_;
 
 public:
-    OmMeshChunkDataWriterV2(OmSegmentation* seg, const om::chunkCoord& coord,
+    OmMeshChunkDataWriterV2(segmentation* seg, const om::chunkCoord& coord,
                             const double threshold)
         : vol_(seg)
         , coord_(coord)

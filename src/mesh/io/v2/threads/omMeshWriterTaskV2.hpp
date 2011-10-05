@@ -14,7 +14,7 @@
 template <typename U>
 class OmMeshWriterTaskV2 : public zi::runnable{
 private:
-    OmSegmentation *const seg_;
+    segmentation *const seg_;
     OmMeshFilePtrCache *const  filePtrCache_;
     const OmSegID segID_;
     const om::chunkCoord coord_;
@@ -22,7 +22,7 @@ private:
     const om::AllowOverwrite allowOverwrite_;
 
 public:
-    OmMeshWriterTaskV2(OmSegmentation* seg,
+    OmMeshWriterTaskV2(segmentation* seg,
                        OmMeshFilePtrCache* filePtrCache,
                        const OmSegID segID,
                        const om::chunkCoord& coord,

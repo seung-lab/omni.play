@@ -3,8 +3,8 @@
 #include "yaml-cpp/yaml.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/fs/omFileNames.hpp"
-#include "volume/omChannelFolder.h"
-#include "volume/omSegmentationFolder.h"
+#include "volume/channelFolder.h"
+#include "volume/segmentationFolder.h"
 
 #include <QString>
 #include <QFile>

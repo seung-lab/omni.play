@@ -3,8 +3,8 @@
 #include "common/omCommon.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/omSmartPtr.hpp"
-#include "volume/io/omVolumeData.h"
-#include "volume/omMipVolume.h"
+#include "volume/io/volumeData.h"
+#include "volume/mipVolume.h"
 #include "volume/omVolumeTypes.hpp"
 #include "zi/omMutex.h"
 #include "zi/omThreads.h"
@@ -14,7 +14,7 @@
 template <typename T>
 class OmRawChunk {
 private:
-    OmMipVolume *const vol_;
+    mipVolume *const vol_;
     const om::chunkCoord coord_;
     const uint64_t chunkOffset_;
     const QString memMapFileName_;
@@ -29,7 +29,7 @@ private:
     typedef typename zi::spinlock::pool<raw_chunk_mutex_pool_tag>::guard mutex_guard_t;
 
 public:
-    OmRawChunk(OmMipVolume* vol, const om::chunkCoord& coord)
+    OmRawChunk(mipVolume* vol, const om::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
         , chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))

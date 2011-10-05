@@ -3,26 +3,26 @@
 #include "common/omCommon.h"
 #include "common/om.hpp"
 #include "system/omGenericManager.hpp"
-#include "volume/omChannel.h"
+#include "volume/channel.h"
 #include "datalayer/archive/channel.h"
 
-class OmChannelManager {
+class channelManager {
 public:
-    OmChannel& GetChannel(const OmID id);
-    OmChannel& AddChannel();
+    channel& GetChannel(const OmID id);
+    channel& AddChannel();
     void RemoveChannel(const OmID id);
     bool IsChannelValid(const OmID id);
     const OmIDsSet & GetValidChannelIds();
     bool IsChannelEnabled(const OmID id);
     void SetChannelEnabled(const OmID id, const bool enable);
-    const std::vector<OmChannel*> GetPtrVec() const;
+    const std::vector<channel*> GetPtrVec() const;
 
 private:
-    OmGenericManager<OmChannel> manager_;
+    OmGenericManager<channel> manager_;
 
-    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmChannelManager&);
-    friend void YAML::operator>>(const YAML::Node& in, OmChannelManager&);
-    friend QDataStream& operator<<(QDataStream& out, const OmChannelManager&);
-    friend QDataStream& operator>>(QDataStream& in, OmChannelManager&);
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const channelManager&);
+    friend void YAML::operator>>(const YAML::Node& in, channelManager&);
+    friend QDataStream& operator<<(QDataStream& out, const channelManager&);
+    friend QDataStream& operator>>(QDataStream& in, channelManager&);
 };
 

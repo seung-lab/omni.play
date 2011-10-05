@@ -11,7 +11,7 @@ class OmSegment;
 class OmSegmentsImplLowLevel;
 class OmSegmentChildren;
 class OmSegmentListLowLevel;
-class OmSegmentation;
+class segmentation;
 class OmValidGroupNum;
 
 class OmSegmentGraph {
@@ -19,7 +19,7 @@ public:
     OmSegmentGraph();
     ~OmSegmentGraph();
 
-    void Initialize(OmSegmentation* segmentation,
+    void Initialize(segmentation* segmentation,
                     OmSegmentsImplLowLevel* cache);
     bool DoesGraphNeedToBeRefreshed(const uint32_t maxValue);
     void GrowGraphIfNeeded(OmSegment* newSeg);
@@ -50,7 +50,7 @@ public:
     }
 
 private:
-    OmSegmentation* segmentation_;
+    segmentation* segmentation_;
     OmValidGroupNum* validGroupNum_;
     OmSegmentsImplLowLevel* mCache;
     OmSegmentsStore* segmentPages_;

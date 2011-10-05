@@ -2,13 +2,13 @@
 #include "segment/io/omSegmentPage.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "utility/omSimpleProgress.hpp"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 
 #include <QSet>
 
 static const uint32_t DEFAULT_PAGE_SIZE = 100000; // about 4.8 MB on disk
 
-OmPagingPtrStore::OmPagingPtrStore(OmSegmentation* vol)
+OmPagingPtrStore::OmPagingPtrStore(segmentation* vol)
     : vol_(vol)
     , pageSize_(DEFAULT_PAGE_SIZE)
 {}

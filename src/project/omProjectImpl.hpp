@@ -21,7 +21,7 @@
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
 #include "project/details/omProjectVolumes.h"
-#include "project/details/omSegmentationManager.h"
+#include "project/details/segmentationManager.h"
 #include "project/omProjectGlobals.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omGenericManager.hpp"

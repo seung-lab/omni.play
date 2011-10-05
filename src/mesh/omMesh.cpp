@@ -10,7 +10,7 @@
 
 static const GLuint NULL_VBO_ID = 0;
 
-OmMesh::OmMesh(OmSegmentation* seg,
+OmMesh::OmMesh(segmentation* seg,
                const OmMeshCoord& coord,
                OmMeshManager* pMipMeshManager,
                OmMeshCache* cache)

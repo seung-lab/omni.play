@@ -1,6 +1,6 @@
 #include "yaml-cpp/yaml.h"
 #include "utility/yaml/omYaml.hpp"
-#include "project/details/omChannelManager.h"
+#include "project/details/channelManager.h"
 #include "utility/yaml/mipVolume.hpp"
 #include "utility/yaml/baseTypes.hpp"
 #include "datalayer/archive/filter.h"
@@ -8,7 +8,7 @@
 
 namespace YAML {
     
-Emitter &operator<<(Emitter& out, const OmChannelManager& cm)
+Emitter &operator<<(Emitter& out, const channelManager& cm)
 {
     out << BeginMap;
     genericManager::Save(out, cm.manager_);
@@ -16,15 +16,15 @@ Emitter &operator<<(Emitter& out, const OmChannelManager& cm)
     return out;
 }
 
-void operator>>(const Node& in, OmChannelManager& cm)
+void operator>>(const Node& in, channelManager& cm)
 {
     genericManager::Load(in, cm.manager_);
 }
 
-Emitter& operator<<(Emitter& out, const OmChannel& chan)
+Emitter& operator<<(Emitter& out, const channel& chan)
 {
     out << BeginMap;
-    mipVolume<const OmChannel> volArchive(chan);
+    mipVolume<const channel> volArchive(chan);
     volArchive.Store(out);
     
     out << Key << "Filters" << Value << chan.filterManager_;
@@ -32,9 +32,9 @@ Emitter& operator<<(Emitter& out, const OmChannel& chan)
     return out;
 }
 
-void operator>>(const Node& in, OmChannel& chan)
+void operator>>(const Node& in, channel& chan)
 {
-    mipVolume<OmChannel> volArchive(chan);
+    mipVolume<channel> volArchive(chan);
     volArchive.Load(in);
     
     in["Filters"] >> chan.filterManager_;

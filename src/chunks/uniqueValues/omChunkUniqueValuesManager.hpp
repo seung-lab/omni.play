@@ -6,17 +6,17 @@
 
 class OmChunkUniqueValuesManager {
 private:
-    typedef OmChunkItemContainer<OmSegmentation, OmThresholdsInChunk> cont_t;
+    typedef OmChunkItemContainer<segmentation, OmThresholdsInChunk> cont_t;
     boost::scoped_ptr<cont_t> chunks_;
 
     void UpdateFromVolResize(){
         chunks_->UpdateFromVolResize();
     }
 
-    friend class OmSegmentation;
+    friend class segmentation;
 
 public:
-    OmChunkUniqueValuesManager(OmSegmentation* segmentation)
+    OmChunkUniqueValuesManager(segmentation* segmentation)
         : chunks_(new cont_t(segmentation))
     {}
 

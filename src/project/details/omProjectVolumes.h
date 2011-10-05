@@ -11,31 +11,31 @@
 #include "common/omCommon.h"
 #include "datalayer/archive/project.h"
 
-class OmAffinityGraphManager;
-class OmChannelManager;
-class OmSegmentationManager;
+class affinityGraphManager;
+class channelManager;
+class segmentationManager;
 
 class OmProjectVolumes {
 public:
     OmProjectVolumes();
     ~OmProjectVolumes();
 
-    OmChannelManager& Channels(){
+    channelManager& Channels(){
         return *channels_;
     }
 
-    OmSegmentationManager& Segmentations(){
+    segmentationManager& Segmentations(){
         return *segmentations_;
     }
 
-    OmAffinityGraphManager& AffinityGraphs(){
+    affinityGraphManager& AffinityGraphs(){
         return *affGraphs_;
     }
 
 private:
-    const boost::scoped_ptr<OmChannelManager> channels_;
-    const boost::scoped_ptr<OmSegmentationManager> segmentations_;
-    const boost::scoped_ptr<OmAffinityGraphManager> affGraphs_;
+    const boost::scoped_ptr<channelManager> channels_;
+    const boost::scoped_ptr<segmentationManager> segmentations_;
+    const boost::scoped_ptr<affinityGraphManager> affGraphs_;
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmProjectVolumes& p );
     friend void YAML::operator>>(const YAML::Node& in, OmProjectVolumes& p );

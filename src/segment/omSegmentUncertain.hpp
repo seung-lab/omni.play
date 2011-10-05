@@ -5,7 +5,7 @@
 #include "segment/lists/omSegmentLists.h"
 #include "utility/dataWrappers.h"
 #include "utility/omTimer.hpp"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 #include "zi/omMutex.h"
 
 class OmSegmentUncertain {

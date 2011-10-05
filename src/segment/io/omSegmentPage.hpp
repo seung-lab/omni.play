@@ -11,7 +11,7 @@
 
 class OmSegmentPage {
 private:
-    OmSegmentation* segmentation_;
+    segmentation* segmentation_;
     OmSegments* segments_;
     PageNum pageNum_;
     uint32_t pageSize_;
@@ -38,7 +38,7 @@ public:
         , listTypePage_(NULL)
     {}
 
-    OmSegmentPage(OmSegmentation* segmentation, const PageNum pageNum,
+    OmSegmentPage(segmentation* segmentation, const PageNum pageNum,
                   const uint32_t pageSize)
         : segmentation_(segmentation)
         , segments_(segmentation_->Segments())

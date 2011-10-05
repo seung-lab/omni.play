@@ -5,13 +5,13 @@
 
 class OmSegmentPage;
 class OmSimpleProgress;
-class OmSegmentation;
+class segmentation;
 
 namespace om { namespace segmentation { class loader; } }
 
 class OmPagingPtrStore {
 public:
-    OmPagingPtrStore(OmSegmentation*);
+    OmPagingPtrStore(segmentation*);
 
     ~OmPagingPtrStore();
 
@@ -35,12 +35,12 @@ public:
         return validPageNums_;
     }
 
-    OmSegmentation* Vol() const {
+    segmentation* Vol() const {
         return vol_;
     }
 
 private:
-    OmSegmentation *const vol_;
+    segmentation *const vol_;
 
     uint32_t pageSize_;
     std::vector<OmSegmentPage*> pages_;

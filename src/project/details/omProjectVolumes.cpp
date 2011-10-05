@@ -1,12 +1,12 @@
 #include "project/details/omAffinityGraphManager.h"
-#include "project/details/omChannelManager.h"
+#include "project/details/channelManager.h"
 #include "project/details/omProjectVolumes.h"
-#include "project/details/omSegmentationManager.h"
+#include "project/details/segmentationManager.h"
 
 OmProjectVolumes::OmProjectVolumes()
-    : channels_(new OmChannelManager())
-    , segmentations_(new OmSegmentationManager(this))
-    , affGraphs_(new OmAffinityGraphManager())
+    : channels_(new channelManager())
+    , segmentations_(new segmentationManager(this))
+    , affGraphs_(new affinityGraphManager())
 {}
 
 OmProjectVolumes::~OmProjectVolumes()

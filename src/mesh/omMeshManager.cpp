@@ -7,9 +7,9 @@
 #include "mesh/omMeshManager.h"
 #include "system/cache/omMeshCache.h"
 #include "utility/omFileHelpers.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 
-OmMeshManager::OmMeshManager(OmSegmentation* segmentation,
+OmMeshManager::OmMeshManager(segmentation* segmentation,
                              const double threshold)
     : segmentation_(segmentation)
     , threshold_(threshold)

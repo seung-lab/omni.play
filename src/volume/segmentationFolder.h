@@ -1,6 +1,6 @@
 #pragma once
 
-class OmSegmentation;
+class segmentation;
 
 #include "common/common.h"
 #include <QString>
@@ -10,10 +10,10 @@ namespace segmentation {
 
 class folder {
 private:
-    OmSegmentation *const vol_;
+    segmentation *const vol_;
 
 public:
-    folder(OmSegmentation* vol);
+    folder(segmentation* vol);
 
     QString GetVolPath();
     QString MakeVolFolder();

@@ -2,7 +2,7 @@
 
 #include "common/omCommon.h"
 
-class OmSegmentation;
+class segmentation;
 class OmSegments;
 class OmSelectSegmentsParams;
 class SegmentationDataWrapper;

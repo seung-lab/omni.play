@@ -7,7 +7,7 @@
 #include "users/omUsers.h"
 #include "utility/omFileHelpers.h"
 #include "utility/omUUID.hpp"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 #include "zi/omMutex.h"
 
 #include <QFile>

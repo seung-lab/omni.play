@@ -5,14 +5,14 @@
 #include "chunks/omSegChunkDataImpl.hpp"
 
 class OmSegChunk;
-class OmSegmentation;
+class segmentation;
 
 namespace om {
 namespace segchunk {
 
 class dataFactory {
 public:
-    static dataInterface* Produce(OmSegmentation* vol, OmSegChunk* chunk,
+    static dataInterface* Produce(segmentation* vol, OmSegChunk* chunk,
                                   const om::chunkCoord& coord)
     {
         switch(vol->getVolDataType().index()){

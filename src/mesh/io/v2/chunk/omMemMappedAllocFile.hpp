@@ -4,11 +4,11 @@
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
 #include "utility/omStringHelpers.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 
 class OmMemMappedAllocFile {
 private:
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     const om::chunkCoord coord_;
     const double threshold_;
     const QString fnp_;
@@ -18,7 +18,7 @@ private:
     uint32_t numEntries_;
 
 public:
-    OmMemMappedAllocFile(OmSegmentation* segmentation,
+    OmMemMappedAllocFile(segmentation* segmentation,
                          const om::chunkCoord& coord,
                          const double threshold)
         : segmentation_(segmentation)

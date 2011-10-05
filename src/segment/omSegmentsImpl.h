@@ -10,7 +10,7 @@ class OmSegmentsStore;
 
 class OmSegmentsImpl : public OmSegmentsImplLowLevel {
 public:
-    OmSegmentsImpl(OmSegmentation*, OmSegmentsStore*);
+    OmSegmentsImpl(segmentation*, OmSegmentsStore*);
     virtual ~OmSegmentsImpl();
 
     void Flush();

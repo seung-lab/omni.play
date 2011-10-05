@@ -1,13 +1,13 @@
 #pragma once
 
-#include "volume/io/omMemMappedVolume.h"
+#include "volume/io/memMappedVolume.h"
 
-class OmVolumeData {
+class volumeData {
 private:
-    OmMemMappedVolume memMapped_;
+    memMappedVolume memMapped_;
 
 public:
-    OmVolumeData()
+    volumeData()
     {}
 
     template <typename VOL>

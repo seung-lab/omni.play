@@ -1,27 +1,27 @@
 #include "actions/omActions.h"
 #include "common/omCommon.h"
 #include "datalayer/fs/omFileNames.hpp"
-#include "project/details/omChannelManager.h"
+#include "project/details/channelManager.h"
 #include "project/details/omProjectVolumes.h"
-#include "project/details/omSegmentationManager.h"
+#include "project/details/segmentationManager.h"
 #include "utility/dataWrappers.h"
 #include "volume/omFilter2d.h"
-#include "volume/omSegmentationFolder.h"
+#include "volume/segmentationFolder.h"
 
-OmSegmentation& OmSegmentationManager::GetSegmentation(const OmID id)
+segmentation& segmentationManager::GetSegmentation(const OmID id)
 {
     return manager_.Get(id);
 }
 
-OmSegmentation& OmSegmentationManager::AddSegmentation()
+segmentation& segmentationManager::AddSegmentation()
 {
-    OmSegmentation& vol = manager_.Add();
+    segmentation& vol = manager_.Add();
     vol.Folder()->MakeVolFolder();
     OmActions::Save();
     return vol;
 }
 
-void OmSegmentationManager::RemoveSegmentation(const OmID id)
+void segmentationManager::RemoveSegmentation(const OmID id)
 {
     FOR_EACH(channelID, volumes_->Channels().GetValidChannelIds())
     {
@@ -35,7 +35,7 @@ void OmSegmentationManager::RemoveSegmentation(const OmID id)
 
             if(om::OVERLAY_SEGMENTATION == filter->FilterType())
             {
-                OmSegmentation* segmentation = filter->GetSegmentation();
+                segmentation* segmentation = filter->GetSegmentation();
 
                 if(segmentation->getID() == id){
                     filter->SetSegmentation(0);
@@ -55,22 +55,22 @@ void OmSegmentationManager::RemoveSegmentation(const OmID id)
     OmActions::Save();
 }
 
-bool OmSegmentationManager::IsSegmentationValid(const OmID id){
+bool segmentationManager::IsSegmentationValid(const OmID id){
     return manager_.IsValid(id);
 }
 
-const OmIDsSet& OmSegmentationManager::GetValidSegmentationIds(){
+const OmIDsSet& segmentationManager::GetValidSegmentationIds(){
     return manager_.GetValidIds();
 }
 
-bool OmSegmentationManager::IsSegmentationEnabled(const OmID id){
+bool segmentationManager::IsSegmentationEnabled(const OmID id){
     return manager_.IsEnabled(id);
 }
 
-void OmSegmentationManager::SetSegmentationEnabled(const OmID id, const bool enable){
+void segmentationManager::SetSegmentationEnabled(const OmID id, const bool enable){
     manager_.SetEnabled(id, enable);
 }
 
-const std::vector<OmSegmentation*> OmSegmentationManager::GetPtrVec() const{
+const std::vector<segmentation*> segmentationManager::GetPtrVec() const{
     return manager_.GetPtrVec();
 }

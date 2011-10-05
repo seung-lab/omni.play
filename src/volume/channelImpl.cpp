@@ -1,4 +1,4 @@
-#include "volume/omChannelFolder.h"
+#include "volume/channelFolder.h"
 #include "tiles/cache/omTileCacheChannel.hpp"
 #include "actions/omActions.h"
 #include "chunks/omChunk.h"
@@ -11,23 +11,23 @@
 #include "datalayer/omDataPaths.h"
 #include "project/omProject.h"
 #include "threads/omTaskManager.hpp"
-#include "volume/io/omVolumeData.h"
-#include "volume/omChannelImpl.h"
+#include "volume/io/volumeData.h"
+#include "volume/channelImpl.h"
 #include "volume/omFilter2d.h"
 #include "zi/omThreads.h"
 
 #include <float.h>
 
-OmChannelImpl::OmChannelImpl()
-    : chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this))
-    , volData_(new OmVolumeData())
+channelImpl::channelImpl()
+    : chunkCache_(new OmChunkCache<channelImpl, OmChunk>(this))
+    , volData_(new volumeData())
     , tileCache_(new OmTileCacheChannel())
 {}
 
-OmChannelImpl::OmChannelImpl(OmID id)
+channelImpl::channelImpl(OmID id)
     : OmManageableObject(id)
-    , chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this))
-    , volData_(new OmVolumeData())
+    , chunkCache_(new OmChunkCache<channelImpl, OmChunk>(this))
+    , volData_(new volumeData())
     , tileCache_(new OmTileCacheChannel())
 {
     LoadPath();
@@ -35,29 +35,29 @@ OmChannelImpl::OmChannelImpl(OmID id)
     filterManager_.AddFilter();
 }
 
-OmChannelImpl::~OmChannelImpl()
+channelImpl::~channelImpl()
 {}
 
-void OmChannelImpl::LoadPath(){
+void channelImpl::LoadPath(){
     folder_.reset(new om::channel::folder(this));
 }
 
-std::string OmChannelImpl::GetName(){
+std::string channelImpl::GetName(){
     return "channel" + om::string::num(GetID());
 }
 
-std::string OmChannelImpl::GetNameHyphen(){
+std::string channelImpl::GetNameHyphen(){
     return "channel-" + om::string::num(GetID());
 }
 
-std::string OmChannelImpl::GetDirectoryPath() const {
+std::string channelImpl::GetDirectoryPath() const {
     return folder_->RelativeVolPath().toStdString();
 }
 
-void OmChannelImpl::CloseDownThreads()
+void channelImpl::CloseDownThreads()
 {}
 
-bool OmChannelImpl::LoadVolData()
+bool channelImpl::LoadVolData()
 {
     if(IsBuilt())
     {
@@ -70,7 +70,7 @@ bool OmChannelImpl::LoadVolData()
     return false;
 }
 
-bool OmChannelImpl::LoadVolDataIfFoldersExist()
+bool channelImpl::LoadVolDataIfFoldersExist()
 {
     //assume level 0 data always present
     const QString path = OmFileNames::GetVolDataFolderPath(this, 0);
@@ -83,24 +83,24 @@ bool OmChannelImpl::LoadVolDataIfFoldersExist()
     return false;
 }
 
-int OmChannelImpl::GetBytesPerVoxel() const{
+int channelImpl::GetBytesPerVoxel() const{
     return volData_->GetBytesPerVoxel();
 }
 
-int OmChannelImpl::GetBytesPerSlice() const {
+int channelImpl::GetBytesPerSlice() const {
     return GetBytesPerVoxel()*128*128;
 }
 
-void OmChannelImpl::SetVolDataType(const OmVolDataType type)
+void channelImpl::SetVolDataType(const OmVolDataType type)
 {
     mVolDataType = type;
     volData_->SetDataType(this);
 }
 
-OmChunk* OmChannelImpl::GetChunk(const om::chunkCoord& coord){
+OmChunk* channelImpl::GetChunk(const om::chunkCoord& coord){
     return chunkCache_->GetChunk(coord);
 }
 
-void OmChannelImpl::UpdateFromVolResize(){
+void channelImpl::UpdateFromVolResize(){
     chunkCache_->UpdateFromVolResize();
 }

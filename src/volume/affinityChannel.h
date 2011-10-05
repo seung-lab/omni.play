@@ -4,11 +4,11 @@
 
 class affinityChannel {
 private:
-	OmChannel *const chan_;
+	channel *const chan_;
 	const affinityGraph affinity_;
 
 public:
-	affinityChannel(OmChannel* chan, const affinityGraph aff)
+	affinityChannel(channel* chan, const affinityGraph aff)
 		: chan_(chan)
 		, affinity_(aff)
 	{}
@@ -17,7 +17,7 @@ public:
 		return affinity_;
 	}
 
-	OmChannel* Channel() {
+	channel* Channel() {
 		return chan_;
 	}
 

@@ -1,7 +1,7 @@
 #pragma once
 
 /*
- * OmChannel is the MIP data structure for a raw data volume
+ * channel is the MIP data structure for a raw data volume
  *
  * Brett Warne - bwarne@mit.edu - 2/6/09
  */
@@ -12,21 +12,21 @@
 #include "volume/mipVolume.h"
 
 class OmTileCacheChannel;
-class OmVolumeData;
+class volumeData;
 template <typename,typename> class OmChunkCache;
 
 namespace om { namespace channel { class folder; } }
 
-class OmChannelImpl : public OmMipVolume, public OmManageableObject {
+class channelImpl : public mipVolume, public OmManageableObject {
 
 public:
-    OmChannelImpl();
-    OmChannelImpl(OmID id);
-    virtual ~OmChannelImpl();
+    channelImpl();
+    channelImpl(OmID id);
+    virtual ~channelImpl();
 
     virtual QString GetDefaultHDF5DatasetName() = 0;
 
-    OmVolumeData* VolData() {
+    volumeData* VolData() {
         return volData_.get();
     }
 
@@ -64,7 +64,7 @@ public:
         return filterManager_.GetFilters();
     }
 
-    OmChunkCache<OmChannelImpl, OmChunk>* ChunkCache(){
+    OmChunkCache<channelImpl, OmChunk>* ChunkCache(){
         return chunkCache_.get();
     }
 
@@ -78,18 +78,18 @@ public:
 
 protected:
     //protected copy constructor and assignment operator to prevent copy
-    OmChannelImpl(const OmChannelImpl&);
-    OmChannelImpl& operator= (const OmChannelImpl&);
+    channelImpl(const channelImpl&);
+    channelImpl& operator= (const channelImpl&);
 
     boost::scoped_ptr<om::channel::folder> folder_;
-    boost::scoped_ptr<OmChunkCache<OmChannelImpl, OmChunk> > chunkCache_;
-    boost::scoped_ptr<OmVolumeData> volData_;
+    boost::scoped_ptr<OmChunkCache<channelImpl, OmChunk> > chunkCache_;
+    boost::scoped_ptr<volumeData> volData_;
     boost::scoped_ptr<OmTileCacheChannel> tileCache_;
 
     OmFilter2dManager filterManager_;
 
 private:
-    friend class OmChannelImplChunkBuildTask;
+    friend class channelImplChunkBuildTask;
     friend class OmDataArchiveProjectImpl;
 };
 

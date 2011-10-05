@@ -2,7 +2,7 @@
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "utility/omStringHelpers.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 
 OmSegmentGraph::OmSegmentGraph()
     : segmentation_(NULL)
@@ -25,7 +25,7 @@ bool OmSegmentGraph::DoesGraphNeedToBeRefreshed( const uint32_t maxValue )
     return !forest_ || forest_->Size() != maxValue+1;
 }
 
-void OmSegmentGraph::Initialize(OmSegmentation* segmentation,
+void OmSegmentGraph::Initialize(segmentation* segmentation,
                                 OmSegmentsImplLowLevel* cache)
 {
     segmentation_ = segmentation;

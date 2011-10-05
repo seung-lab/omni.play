@@ -1,6 +1,6 @@
 #pragma once
 
-#include "volume/omSegmentationFolder.h"
+#include "volume/segmentationFolder.h"
 #include "datalayer/archive/old/omDataArchiveStd.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/omLockedPODs.hpp"
@@ -11,7 +11,7 @@
 
 class OmValidGroupNum {
 private:
-    OmSegmentation* vol_;
+    segmentation* vol_;
     int version_;
 
     const uint32_t noGroupNum_;
@@ -21,7 +21,7 @@ private:
     std::vector<uint32_t> segToGroupNum_;
 
 public:
-    OmValidGroupNum(OmSegmentation* segmentation)
+    OmValidGroupNum(segmentation* segmentation)
         : vol_(segmentation)
         , version_(1)
         , noGroupNum_(0)

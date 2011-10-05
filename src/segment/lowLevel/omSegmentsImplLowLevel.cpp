@@ -4,9 +4,9 @@
 #include "segment/lowLevel/omSegmentSelection.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "system/cache/omCacheManager.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 
-OmSegmentsImplLowLevel::OmSegmentsImplLowLevel(OmSegmentation* segmentation,
+OmSegmentsImplLowLevel::OmSegmentsImplLowLevel(segmentation* segmentation,
                                                OmSegmentsStore* segmentPages)
     : segmentation_(segmentation)
     , store_(segmentPages)

@@ -9,7 +9,7 @@
 class OmMeshConvertV1toV2Task : public zi::runnable{
 private:
     OmMeshManager *const meshManager_;
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     const double threshold_;
 
     boost::scoped_ptr<OmMeshReaderV1> hdf5Reader_;

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "volume/io/omMemMappedVolumeImpl.hpp"
+#include "volume/io/memMappedVolumeImpl.hpp"
 #include "volume/mipVolume.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/hdf5/omHdf5ChunkUtils.hpp"
 
-class OmMemMappedVolume {
+class memMappedVolume {
 public:
-    OmMemMappedVolume()
+    memMappedVolume()
     {}
 
     template <typename VOL>
@@ -29,7 +29,7 @@ public:
     OmRawDataPtrs GetVolPtr(const int level);
     OmRawDataPtrs getChunkPtrRaw(const om::chunkCoord& coord);
 
-    void downsample(OmMipVolume* vol);
+    void downsample(mipVolume* vol);
 
     template <typename VOL>
     void SetDataType(VOL* vol)
@@ -52,25 +52,25 @@ public:
     }
 
 private:
-    OmVolDataSrcs volData_;
+    volDataSrcs volData_;
 
     void loadMemMapFiles();
     void allocMemMapFiles(const std::map<int, Vector3i>& levDims);
     OmRawDataPtrs GetVolPtrType();
 
-    OmVolDataSrcs makeVolData(OmMipVolume* vol)
+    volDataSrcs makeVolData(mipVolume* vol)
     {
         switch(vol->mVolDataType.index()){
         case OmVolDataType::INT8:
-            return OmMemMappedVolumeImpl<int8_t>(vol);
+            return memMappedVolumeImpl<int8_t>(vol);
         case OmVolDataType::UINT8:
-            return OmMemMappedVolumeImpl<uint8_t>(vol);
+            return memMappedVolumeImpl<uint8_t>(vol);
         case OmVolDataType::INT32:
-            return OmMemMappedVolumeImpl<int32_t>(vol);
+            return memMappedVolumeImpl<int32_t>(vol);
         case OmVolDataType::UINT32:
-            return OmMemMappedVolumeImpl<uint32_t>(vol);
+            return memMappedVolumeImpl<uint32_t>(vol);
         case OmVolDataType::FLOAT:
-            return OmMemMappedVolumeImpl<float>(vol);
+            return memMappedVolumeImpl<float>(vol);
         case OmVolDataType::UNKNOWN:
             throw OmIoException("unknown data type--probably old file?");
         }

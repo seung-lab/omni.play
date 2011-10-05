@@ -9,7 +9,7 @@
 #include "utility/omStringHelpers.h"
 #include "volume/io/omChunkOffset.hpp"
 #include "volume/channel.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 #include "volume/omVolumeTypes.hpp"
 
 #include <zi/mutex.hpp>
@@ -18,9 +18,9 @@
 template <typename T> class OmIOnDiskFile;
 
 template <typename T>
-class OmMemMappedVolumeImpl : public OmIDataVolume<T> {
+class memMappedVolumeImpl : public OmIDataVolume<T> {
 private:
-    OmMipVolume* vol_;
+    mipVolume* vol_;
     std::vector<boost::shared_ptr<OmIOnDiskFile<T> > > maps_;
 
     typedef OmMemMappedFileReadQT<T> reader_t;
@@ -29,14 +29,14 @@ private:
 public:
 
     // for boost::varient
-    OmMemMappedVolumeImpl()
+    memMappedVolumeImpl()
     {}
 
-   OmMemMappedVolumeImpl(OmMipVolume* vol)
+   memMappedVolumeImpl(mipVolume* vol)
         : vol_(vol)
     {}
 
-    virtual ~OmMemMappedVolumeImpl()
+    virtual ~memMappedVolumeImpl()
     {}
 
     OmRawDataPtrs GetType() const {
@@ -78,7 +78,7 @@ public:
                                                    om::DONT_ZERO_FILL);
         }
 
-        printf("OmMemMappedVolume: done allocating data\n");
+        printf("memMappedVolume: done allocating data\n");
     }
 
     T* GetPtr(const int level) const {

@@ -2,11 +2,11 @@
 
 #include "segment/lowLevel/store/omSegmentStore.hpp"
 #include "segment/omSegments.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 
 class OmCacheSegRootIDs {
 private:
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     OmSegments *const segments_;
     OmSegmentsStore *const segmentPages_;
 
@@ -24,7 +24,7 @@ private:
     struct cache_root_segment_id_initial_tag;
 
 public:
-    OmCacheSegRootIDs(OmSegmentation* segmentation,
+    OmCacheSegRootIDs(segmentation* segmentation,
                       OmSegmentsStore* segmentPages)
         : segmentation_(segmentation)
         , segments_(segmentation->Segments())

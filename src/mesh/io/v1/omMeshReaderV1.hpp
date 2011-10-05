@@ -7,16 +7,16 @@
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/omMeshCoord.h"
 #include "chunks/omChunk.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 #include "project/omProject.h"
 
 class OmMeshReaderV1{
 private:
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     OmHdf5* reader_;
 
 public:
-    OmMeshReaderV1(OmSegmentation* segmentation)
+    OmMeshReaderV1(segmentation* segmentation)
         : segmentation_(segmentation)
     {
         reader_ = OmProject::OldHDF5();

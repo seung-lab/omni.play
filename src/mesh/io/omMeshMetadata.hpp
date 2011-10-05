@@ -1,12 +1,12 @@
 #pragma once
 
-#include "volume/omSegmentation.h"
-#include "volume/omSegmentationFolder.h"
+#include "volume/segmentation.h"
+#include "volume/segmentationFolder.h"
 #include "datalayer/fs/omFileNames.hpp"
 
 class OmMeshMetadata {
 private:
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     const double threshold_;
     const QString fnp_;
 
@@ -21,7 +21,7 @@ private:
     zi::spinlock lock_;
 
 public:
-    OmMeshMetadata(OmSegmentation *segmentation, const double threshold)
+    OmMeshMetadata(segmentation *segmentation, const double threshold)
         : segmentation_(segmentation)
         , threshold_(threshold)
         , fnp_(filePath())

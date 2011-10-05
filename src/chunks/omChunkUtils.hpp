@@ -7,7 +7,7 @@
 
 class OmChunkUtils{
 public:
-    static void	RewriteChunkAtThreshold(OmSegmentation* segmentation,
+    static void	RewriteChunkAtThreshold(segmentation* segmentation,
                                         OmImage< uint32_t, 3 >& chunkData,
                                         const double threshold)
     {
@@ -32,7 +32,7 @@ public:
      *      to form continuous meshes with adjacent MipChunks.  This means an extra
      *      voxel of data is included on each dimensions.
      */
-    static OmImage<uint32_t, 3> GetMeshOmImageData(OmSegmentation* vol,
+    static OmImage<uint32_t, 3> GetMeshOmImageData(segmentation* vol,
                                                    OmSegChunk* chunk)
     {
         OmImage<uint32_t, 3> retImage(OmExtents[129][129][129]);
@@ -81,7 +81,7 @@ public:
     static void RefindUniqueChunkValues(const OmID segmentationID_)
     {
         SegmentationDataWrapper sdw(segmentationID_);
-        OmSegmentation& vol = sdw.GetSegmentation();
+        segmentation& vol = sdw.GetSegmentation();
 
         om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol.GetMipChunkCoords();

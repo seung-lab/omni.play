@@ -1,8 +1,8 @@
 #pragma once
 
-#include "volume/omSegmentationFolder.h"
+#include "volume/segmentationFolder.h"
 #include "segment/omSegmentEdge.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 #include "datalayer/fs/omFileNames.hpp"
 
 #include <QList>
@@ -14,11 +14,11 @@ private:
     // version 1: initial move from HDF5
     static const int CurrentFileVersion = 1;
 
-    OmSegmentation *const vol_;
+    segmentation *const vol_;
     QList<OmSegmentEdge> edges_;
 
 public:
-    OmUserEdges(OmSegmentation* vol)
+    OmUserEdges(segmentation* vol)
         : vol_(vol)
     {}
 

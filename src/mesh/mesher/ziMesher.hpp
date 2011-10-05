@@ -8,8 +8,8 @@
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/omMeshParams.hpp"
 #include "utility/omLockedPODs.hpp"
-#include "volume/io/omVolumeData.h"
-#include "volume/omSegmentation.h"
+#include "volume/io/volumeData.h"
+#include "volume/segmentation.h"
 #include "mesh/mesher/omMesherProgress.hpp"
 
 #include <zi/vl/vec.hpp>
@@ -25,7 +25,7 @@
 
 class ziMesher {
 public:
-    ziMesher(OmSegmentation* segmentation, const double threshold)
+    ziMesher(segmentation* segmentation, const double threshold)
         : segmentation_(segmentation)
         , rootMipLevel_(segmentation->Coords().GetRootMipLevel())
         , threshold_(threshold)
@@ -75,7 +75,7 @@ public:
 
 private:
 
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     const int rootMipLevel_;
     const double threshold_;
 

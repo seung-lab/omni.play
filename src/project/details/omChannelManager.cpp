@@ -1,24 +1,24 @@
 #include "actions/omActions.h"
 #include "common/omCommon.h"
 #include "datalayer/fs/omFileNames.hpp"
-#include "project/details/omChannelManager.h"
-#include "volume/omChannelFolder.h"
+#include "project/details/channelManager.h"
+#include "volume/channelFolder.h"
 #include "volume/omFilter2d.h"
 
-OmChannel& OmChannelManager::GetChannel(const OmID id)
+channel& channelManager::GetChannel(const OmID id)
 {
     return manager_.Get(id);
 }
 
-OmChannel& OmChannelManager::AddChannel()
+channel& channelManager::AddChannel()
 {
-    OmChannel& vol = manager_.Add();
+    channel& vol = manager_.Add();
     vol.Folder()->MakeVolFolder();
     OmActions::Save();
     return vol;
 }
 
-void OmChannelManager::RemoveChannel(const OmID id)
+void channelManager::RemoveChannel(const OmID id)
 {
     GetChannel(id).CloseDownThreads();
 
@@ -31,22 +31,22 @@ void OmChannelManager::RemoveChannel(const OmID id)
     OmActions::Save();
 }
 
-bool OmChannelManager::IsChannelValid(const OmID id){
+bool channelManager::IsChannelValid(const OmID id){
     return manager_.IsValid(id);
 }
 
-const OmIDsSet& OmChannelManager::GetValidChannelIds(){
+const OmIDsSet& channelManager::GetValidChannelIds(){
     return manager_.GetValidIds();
 }
 
-bool OmChannelManager::IsChannelEnabled(const OmID id){
+bool channelManager::IsChannelEnabled(const OmID id){
     return manager_.IsEnabled(id);
 }
 
-void OmChannelManager::SetChannelEnabled(const OmID id, bool enable){
+void channelManager::SetChannelEnabled(const OmID id, bool enable){
     manager_.SetEnabled(id, enable);
 }
 
-const std::vector<OmChannel*> OmChannelManager::GetPtrVec() const {
+const std::vector<channel*> channelManager::GetPtrVec() const {
     return manager_.GetPtrVec();
 }

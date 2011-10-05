@@ -1,6 +1,6 @@
 #pragma once
 
-#include "volume/omMipVolume.h"
+#include "volume/mipVolume.h"
 
 class OmChunkMipping {
 private:
@@ -15,7 +15,7 @@ private:
     uint32_t numBytes_;
 
 public:
-    OmChunkMipping(OmMipVolume* vol, const om::chunkCoord& coord)
+    OmChunkMipping(mipVolume* vol, const om::chunkCoord& coord)
         : dataExtent_(coord.chunkBoundingBox(vol))
         , normExtent_(dataExtent_.toNormBbox())
         , clippedNormExtent_(dataExtent_.toNormBbox())

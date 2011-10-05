@@ -14,7 +14,7 @@ class OmMeshChunkDataWriterV2;
 
 class OmMeshFilePtrCache {
 private:
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     const double threshold_;
 
     std::map<om::chunkCoord, om::shared_ptr<OmMeshChunkAllocTableV2> > tables_;
@@ -27,7 +27,7 @@ private:
     OmRingBuffer<OmMeshChunkAllocTableV2> mappedFiles_;
 
 public:
-    OmMeshFilePtrCache(OmSegmentation* segmentation, const double threshold)
+    OmMeshFilePtrCache(segmentation* segmentation, const double threshold)
         : segmentation_(segmentation)
         , threshold_(threshold)
     {

@@ -8,12 +8,12 @@
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/image/omImage.hpp"
 #include "utility/segmentationDataWrapper.hpp"
-#include "volume/omSegmentation.h"
-#include "volume/omSegmentationFolder.h"
+#include "volume/segmentation.h"
+#include "volume/segmentationFolder.h"
 
 class OmChunkUniqueValuesPerThreshold {
 private:
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     const om::chunkCoord coord_;
     const double threshold_;
     const QString fnp_;
@@ -24,7 +24,7 @@ private:
     zi::rwmutex mutex_;
 
 public:
-    OmChunkUniqueValuesPerThreshold(OmSegmentation* segmentation,
+    OmChunkUniqueValuesPerThreshold(segmentation* segmentation,
                                     const om::chunkCoord& coord,
                                     const double threshold)
         : segmentation_(segmentation)

@@ -1,11 +1,11 @@
-#include "volume/omSegmentationFolder.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentationFolder.h"
+#include "volume/segmentation.h"
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "users/omUsers.h"
 #include "datalayer/fs/omFileNames.hpp"
 
-om::segmentation::folder::folder(OmSegmentation* vol)
+om::segmentation::folder::folder(segmentation* vol)
     : vol_(vol)
 {}
 

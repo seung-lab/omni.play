@@ -1,6 +1,6 @@
 #pragma once
 
-#include "volume/omSegmentationFolder.h"
+#include "volume/segmentationFolder.h"
 #include "common/omCommon.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "chunks/omChunk.h"
@@ -8,13 +8,13 @@
 
 class OmMeshChunkDataReaderV2{
 private:
-    OmSegmentation *const vol_;
+    segmentation *const vol_;
     const om::chunkCoord& coord_;
     const double threshold_;
     const QString fnp_;
 
 public:
-    OmMeshChunkDataReaderV2(OmSegmentation* seg, const om::chunkCoord& coord,
+    OmMeshChunkDataReaderV2(segmentation* seg, const om::chunkCoord& coord,
                             const double threshold)
         : vol_(seg)
         , coord_(coord)

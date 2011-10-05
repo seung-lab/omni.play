@@ -27,7 +27,7 @@ void affinityGraph::ImportSingleChannel(const QString& hdf5fnp,
                                           const affinityGraph aff)
 {
     ChannelDataWrapper cdw;
-    OmChannel& chan = cdw.Create();
+    channel& chan = cdw.Create();
 
     channels_[aff] =
         om::make_shared<affinityChannel>(&chan, aff);

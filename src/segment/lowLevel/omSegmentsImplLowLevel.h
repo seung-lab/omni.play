@@ -11,12 +11,12 @@
 class OmEnabledSegments;
 class OmSegmentSelection;
 class OmSegments;
-class OmSegmentation;
+class segmentation;
 class SegmentationDataWrapper;
 
 class OmSegmentsImplLowLevel {
 public:
-    OmSegmentsImplLowLevel(OmSegmentation*, OmSegmentsStore*);
+    OmSegmentsImplLowLevel(segmentation*, OmSegmentsStore*);
     virtual ~OmSegmentsImplLowLevel();
 
     inline void RefreshGUIlists(){
@@ -108,7 +108,7 @@ public:
     }
 
 protected:
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     OmSegmentsStore *const store_;
     const boost::scoped_ptr<OmSegmentSelection> segmentSelection_;
     const boost::scoped_ptr<OmEnabledSegments> enabledSegments_;

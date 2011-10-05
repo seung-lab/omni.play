@@ -15,12 +15,12 @@
 class OmDataForMeshLoad;
 class OmMeshCache;
 class OmMeshManager;
-class OmSegmentation;
+class segmentation;
 class QGLContext;
 
 class OmMesh {
 public:
-    OmMesh(OmSegmentation*, const OmMeshCoord&,
+    OmMesh(segmentation*, const OmMeshCoord&,
            OmMeshManager*, OmMeshCache*);
 
     virtual ~OmMesh();
@@ -37,7 +37,7 @@ public:
     }
 
 private:
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
     OmMeshCache *const cache_;
     OmMeshManager *const meshMan_;
 

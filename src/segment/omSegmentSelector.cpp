@@ -7,7 +7,7 @@
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
 #include "utility/dataWrappers.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 
 OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
                                      void* sender,

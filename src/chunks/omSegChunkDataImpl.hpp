@@ -7,7 +7,7 @@
 #include "segment/omSegments.h"
 #include "utility/omChunkVoxelWalker.hpp"
 #include "volume/build/omProcessSegmentationChunk.hpp"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 #include "chunks/details/omPtrToChunkDataMemMapVol.h"
 
 namespace om {
@@ -20,7 +20,7 @@ using om::chunk::ptrToChunkDataMemMapVol;
 template <typename DATA>
 class dataImpl : public dataInterface {
 private:
-    OmSegmentation *const vol_;
+    segmentation *const vol_;
     OmSegChunk *const chunk_;
     const om::chunkCoord coord_;
 
@@ -30,7 +30,7 @@ private:
     const int elementsPerSlice_;
 
 public:
-    dataImpl(OmSegmentation* vol, OmSegChunk* chunk, const om::chunkCoord& coord)
+    dataImpl(segmentation* vol, OmSegChunk* chunk, const om::chunkCoord& coord)
         : vol_(vol)
         , chunk_(chunk)
         , coord_(coord)

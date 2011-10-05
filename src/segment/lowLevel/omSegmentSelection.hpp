@@ -2,7 +2,7 @@
 
 #include "segment/lists/omSegmentLists.h"
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 #include "zi/omUtility.h"
 #include "datalayer/archive/segmentation.h"
 

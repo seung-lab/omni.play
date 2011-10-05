@@ -1,8 +1,8 @@
-#include "volume/omChannelFolder.h"
-#include "volume/omChannelImpl.h"
+#include "volume/channelFolder.h"
+#include "volume/channelImpl.h"
 #include "datalayer/fs/omFileNames.hpp"
 
-om::channel::folder::folder(OmChannelImpl* vol)
+om::channel::folder::folder(channelImpl* vol)
     : vol_(vol)
 {}
 

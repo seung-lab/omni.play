@@ -3,7 +3,7 @@
 #include "segment/lowLevel/store/omCacheSegStore.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
 
-OmSegmentsStore::OmSegmentsStore(OmSegmentation* segmentation)
+OmSegmentsStore::OmSegmentsStore(segmentation* segmentation)
     : segmentation_(segmentation)
     , segmentPagesPtr_(new OmPagingPtrStore(segmentation))
     , segmentPages_(segmentPagesPtr_.get())

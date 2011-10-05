@@ -8,13 +8,13 @@
 
 class OmSegment;
 class OmSegmentChildren;
-class OmSegmentation;
+class segmentation;
 class OmSegmentsImpl;
 class OmSegmentsStore;
 
 class OmSegments {
 public:
-    OmSegments(OmSegmentation* segmentation);
+    OmSegments(segmentation* segmentation);
     ~OmSegments();
 
     void StartCaches();
@@ -84,14 +84,14 @@ public:
 
     uint64_t MSTfreshness() const;
 
-    inline const OmSegmentation * getSegmentation() const {
+    inline const segmentation * getSegmentation() const {
         return segmentation_;
     }
     
 private:
     zi::mutex mutex_;
 
-    OmSegmentation *const segmentation_;
+    segmentation *const segmentation_;
 
     boost::scoped_ptr<OmSegmentsStore> store_;
     boost::scoped_ptr<OmSegmentsImpl> impl_;

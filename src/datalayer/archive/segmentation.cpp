@@ -11,10 +11,10 @@
 #include "segment/omSegmentsImpl.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omValidGroupNum.hpp"
-#include "project/details/omSegmentationManager.h"
+#include "project/details/segmentationManager.h"
 #include "system/omGroups.h"
 #include "system/omGroup.h"
-#include "volume/omSegmentationLoader.h"
+#include "volume/segmentationLoader.h"
 #include "utility/yaml/genericManager.hpp"
 
 #include <QSet>
@@ -22,7 +22,7 @@
 
 namespace YAML {
 
-Emitter &operator<<(Emitter & out, const OmSegmentationManager& m)
+Emitter &operator<<(Emitter & out, const segmentationManager& m)
 {
     out << BeginMap;
     genericManager::Save(out, m.manager_);
@@ -30,14 +30,14 @@ Emitter &operator<<(Emitter & out, const OmSegmentationManager& m)
     return out;
 }
 
-void operator>>(const Node& in, OmSegmentationManager& m) {
+void operator>>(const Node& in, segmentationManager& m) {
     genericManager::Load(in, m.manager_);
 }
 
-Emitter &operator<<(Emitter& out, const OmSegmentation& seg)
+Emitter &operator<<(Emitter& out, const segmentation& seg)
 {
     out << BeginMap;
-    mipVolume<const OmSegmentation> volArchive(seg);
+    mipVolume<const segmentation> volArchive(seg);
     volArchive.Store(out);
     
     out << Key << "Segments" << Value << (*seg.segments_);
@@ -48,9 +48,9 @@ Emitter &operator<<(Emitter& out, const OmSegmentation& seg)
     return out;
 }
 
-void operator>>(const Node& in, OmSegmentation& seg)
+void operator>>(const Node& in, segmentation& seg)
 {
-    mipVolume<OmSegmentation> volArchive(seg);
+    mipVolume<segmentation> volArchive(seg);
     volArchive.Load(in);
     
     in["Segments"] >> (*seg.segments_);

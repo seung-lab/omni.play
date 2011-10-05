@@ -2,7 +2,7 @@
 
 #include "common/common.h"
 
-class OmSegmentation;
+class segmentation;
 class OmPagingPtrStore;
 
 #include <QSet>
@@ -12,10 +12,10 @@ namespace segmentation {
 
 class loader {
 private:
-    OmSegmentation *const vol_;
+    segmentation *const vol_;
 
 public:
-    loader(OmSegmentation* vol)
+    loader(segmentation* vol)
         : vol_(vol)
     {}
 

@@ -2,15 +2,15 @@
 
 #include "common/omCommon.h"
 #include "datalayer/fs/omFileNames.hpp"
-#include "volume/io/omVolumeData.h"
-#include "volume/omMipVolume.h"
+#include "volume/io/volumeData.h"
+#include "volume/mipVolume.h"
 
 #include <QFile>
 
 template <typename T>
 class OmRawChunkMemMapped {
 private:
-    OmMipVolume *const vol_;
+    mipVolume *const vol_;
     const om::chunkCoord coord_;
     const uint64_t chunkOffset_;
     const QString fnp_;
@@ -20,7 +20,7 @@ private:
     T* dataRaw_;
 
 public:
-    OmRawChunkMemMapped(OmMipVolume* vol, const om::chunkCoord& coord)
+    OmRawChunkMemMapped(mipVolume* vol, const om::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
         , chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))

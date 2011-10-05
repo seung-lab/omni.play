@@ -12,8 +12,8 @@
 #include "zi/omUtility.h"
 #include "datalayer/archive/project.h"
 
-class OmChannel;
-class OmSegmentation;
+class channel;
+class segmentation;
 class OmHdf5;
 class OmProjectImpl;
 class OmProjectVolumes;

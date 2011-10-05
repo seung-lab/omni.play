@@ -6,7 +6,7 @@
 
 class OmSegmentPageV4 {
 private:
-    OmSegmentation *const vol_;
+    segmentation *const vol_;
     const PageNum pageNum_;
     const uint32_t pageSize_;
     const std::string fnp_;
@@ -14,7 +14,7 @@ private:
     om::shared_ptr<OmIOnDiskFile<OmSegmentDataV4> > data_;
 
 public:
-    OmSegmentPageV4(OmSegmentation* vol, const PageNum pageNum, const uint32_t pageSize)
+    OmSegmentPageV4(segmentation* vol, const PageNum pageNum, const uint32_t pageSize)
         : vol_(vol)
         , pageNum_(pageNum)
         , pageSize_(pageSize)

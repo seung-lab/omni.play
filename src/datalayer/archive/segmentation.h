@@ -2,8 +2,8 @@
 
 #include "yaml-cpp/yaml.h"
 
-class OmSegmentationManager;
-class OmSegmentation;
+class segmentationManager;
+class segmentation;
 class OmSegments;
 class OmSegmentsImpl;
 class OmSegmentEdge;
@@ -12,10 +12,10 @@ class OmGroup;
 
 namespace YAML {
 
-YAML::Emitter &operator<<(YAML::Emitter & out, const OmSegmentationManager& m);
-void operator>>(const YAML::Node& in, OmSegmentationManager& m);
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmSegmentation& seg);
-void operator>>(const YAML::Node& in, OmSegmentation& seg);
+YAML::Emitter &operator<<(YAML::Emitter & out, const segmentationManager& m);
+void operator>>(const YAML::Node& in, segmentationManager& m);
+YAML::Emitter &operator<<(YAML::Emitter& out, const segmentation& seg);
+void operator>>(const YAML::Node& in, segmentation& seg);
 YAML::Emitter &operator<<(YAML::Emitter& out, const OmSegments& sc);
 void operator>>(const YAML::Node& in, OmSegments& sc);
 YAML::Emitter &operator<<(YAML::Emitter& out, const OmSegmentsImpl& sc);

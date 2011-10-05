@@ -10,11 +10,11 @@
 #include "segment/omSegmentsImpl.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/omRandColorFile.hpp"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 
 // entry into this class via OmSegments hopefully guarantees proper locking...
 
-OmSegmentsImpl::OmSegmentsImpl(OmSegmentation* segmentation,
+OmSegmentsImpl::OmSegmentsImpl(segmentation* segmentation,
                                OmSegmentsStore* segmentPages)
     : OmSegmentsImplLowLevel(segmentation, segmentPages)
     , userEdges_(NULL)

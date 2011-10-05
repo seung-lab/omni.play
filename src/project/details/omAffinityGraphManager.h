@@ -3,12 +3,12 @@
 #include "common/omCommon.h"
 #include "common/om.hpp"
 #include "system/omGenericManager.hpp"
-#include "volume/omAffinityGraph.h"
+#include "volume/affinityGraph.h"
 
-class OmAffinityGraphManager{
+class affinityGraphManager{
 public:
-    OmAffinityGraph& Get(const OmID id);
-    OmAffinityGraph& Add();
+    affinityGraph& Get(const OmID id);
+    affinityGraph& Add();
     void Remove(const OmID id);
     bool IsValid(const OmID id);
     const OmIDsSet& GetValidIds();
@@ -16,9 +16,9 @@ public:
     void SetEnabled(const OmID id, const bool enable);
 
 private:
-    OmGenericManager<OmAffinityGraph> graphs_;
+    OmGenericManager<affinityGraph> graphs_;
 
-    friend QDataStream&operator<<(QDataStream& out, const OmAffinityGraphManager&);
-    friend QDataStream&operator>>(QDataStream& in, OmAffinityGraphManager&);
+    friend QDataStream&operator<<(QDataStream& out, const affinityGraphManager&);
+    friend QDataStream&operator>>(QDataStream& in, affinityGraphManager&);
 };
 

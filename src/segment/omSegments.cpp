@@ -6,9 +6,9 @@
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentsImpl.h"
-#include "volume/omSegmentation.h"
+#include "volume/segmentation.h"
 
-OmSegments::OmSegments(OmSegmentation* segmentation)
+OmSegments::OmSegments(segmentation* segmentation)
     : segmentation_(segmentation)
     , store_(new OmSegmentsStore(segmentation))
     , impl_(new OmSegmentsImpl(segmentation, store_.get()))
