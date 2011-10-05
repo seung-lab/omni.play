@@ -6,7 +6,7 @@
 #include "datalayer/omDataPaths.h"
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/omMeshCoord.h"
-#include "chunks/omChunk.h"
+#include "chunks/chunk.h"
 #include "volume/segmentation.h"
 #include "project/project.h"
 
@@ -44,7 +44,7 @@ public:
     }
 
     inline om::shared_ptr<OmDataForMeshLoad>
-    Read(const OmSegID segID, const om::chunkCoord& coord)
+    Read(const segId segID, const om::chunkCoord& coord)
     {
         try{
             return doRead(segID, coord);
@@ -55,7 +55,7 @@ public:
 
 private:
 
-    bool isMeshDataPresent(const OmSegID segID, const om::chunkCoord& coord)
+    bool isMeshDataPresent(const segId segID, const om::chunkCoord& coord)
     {
         try{
             return doIsMeshDataPresent(segID, coord);
@@ -64,7 +64,7 @@ private:
         }
     }
 
-    bool doIsMeshDataPresent(const OmSegID segID, const om::chunkCoord& coord)
+    bool doIsMeshDataPresent(const segId segID, const om::chunkCoord& coord)
     {
         const OmMeshCoord meshCoord(coord, segID);
 
@@ -85,7 +85,7 @@ private:
     }
 
     om::shared_ptr<OmDataForMeshLoad>
-    doRead(const OmSegID segID, const om::chunkCoord& coord)
+    doRead(const segId segID, const om::chunkCoord& coord)
     {
         om::shared_ptr<OmDataForMeshLoad> ret =
             om::make_shared<OmDataForMeshLoad>();

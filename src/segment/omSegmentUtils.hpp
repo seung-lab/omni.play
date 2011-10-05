@@ -4,7 +4,7 @@
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegment.h"
-#include "segment/omSegments.h"
+#include "segment/segments.h"
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentSearched.hpp"
 #include "segment/omSegmentSelected.hpp"
@@ -16,7 +16,7 @@
 class OmSegmentUtils {
 public:
     om::shared_ptr<std::set<OmSegment*> >
-    static GetAllChildrenSegments(OmSegments* segments, const OmSegIDsSet& set)
+    static GetAllChildrenSegments(segments* segments, const segIdsSet& set)
     {
         OmSegmentIterator iter(segments);
         iter.iterOverSegmentIDs(set);
@@ -50,7 +50,7 @@ public:
     }
 
     template <class B>
-    static void GetAllChildrenSegments(OmSegments* segments, const OmSegID segID, B& ret)
+    static void GetAllChildrenSegments(segments* segments, const segId segID, B& ret)
     {
         OmSegmentIterator iter(segments);
         iter.iterOverSegmentID(segID);
@@ -113,7 +113,7 @@ public:
         {
             OmSegment* parent = seg->getParent();
 
-            const OmSegID parentID = parent ? parent->value() : 0;
+            const segId parentID = parent ? parent->value() : 0;
 
             const QString str = QString("%1 : %2, %3, %4")
                 .arg(seg->value())
@@ -132,7 +132,7 @@ public:
 
     static void ReValidateEveryObject(const SegmentationDataWrapper& sdw)
     {
-        OmSegments* segments = sdw.Segments();
+        segments* segments = sdw.Segments();
 
         OmValidGroupNum* validGroupNum = sdw.ValidGroupNum();
 
@@ -152,11 +152,11 @@ public:
         }
     }
 
-    static OmSegID GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw){
+    static segId GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw){
         return sdw.GetSegmentation().SegmentLists()->GetNextSegIDinWorkingList(sdw);
     }
 
-    static OmSegID GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw){
+    static segId GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw){
         return sdw.SegmentLists()->GetNextSegIDinWorkingList(sdw);
     }
 
@@ -197,7 +197,7 @@ public:
     template <class A, class B>
     static void GetSegPtrs(const SegmentationDataWrapper& sdw, const A& ids, B& segPtrs)
     {
-        OmSegments* cache = sdw.Segments();
+        segments* cache = sdw.Segments();
 
         FOR_EACH(iter, ids)
         {

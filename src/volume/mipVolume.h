@@ -7,7 +7,7 @@
 
 class OmDataPath;
 class OmHdf5;
-class OmChunk;
+class chunk;
 class OmVolume;
 class volumeData;
 
@@ -82,7 +82,7 @@ private:
 //     template <class T> friend class mipVolumeArchive;
 //     template <class T> friend class YAML::mipVolume;
 // 
-//     friend class OmChunk;
+//     friend class chunk;
 //     friend class mipVolumeArchiveOld;
 //     friend class volumeData;
 //     friend class memMappedVolume;

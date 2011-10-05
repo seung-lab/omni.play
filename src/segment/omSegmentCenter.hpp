@@ -118,9 +118,9 @@ public:
     {
         printf("rebuilding segment bounding box data...\n");
 
-        OmSegments* segments = sdw.Segments();
+        segments* segments = sdw.Segments();
 
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
+        for(segId i = 1; i <= segments->getMaxValue(); ++i)
         {
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){

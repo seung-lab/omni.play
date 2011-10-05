@@ -5,14 +5,14 @@
 
 class OmCacheSegStore {
 private:
-    OmSegmentsStore *const store_;
+    segmentsStore *const store_;
     const uint32_t pageSize_;
 
     const std::vector<OmSegmentPage*> initialPages_;
     const uint32_t numInitialPages_;
 
 public:
-    OmCacheSegStore(OmSegmentsStore* store)
+    OmCacheSegStore(segmentsStore* store)
         : store_(store)
         , pageSize_(store->PageSize())
         , initialPages_(store->Pages())
@@ -22,16 +22,16 @@ public:
     /**
      * returns NULL if segment was never instantiated;
      **/
-    OmSegment* GetSegment(const OmSegID segID){
+    OmSegment* GetSegment(const segId segID){
         return getSegment(segID, om::SAFE);
     }
 
-    OmSegment* GetSegmentUnsafe(const OmSegID segID){
+    OmSegment* GetSegmentUnsafe(const segId segID){
         return getSegment(segID, om::NOT_SAFE);
     }
 
 private:
-    inline OmSegment* getSegment(const OmSegID segID, const om::Safe isSafe)
+    inline OmSegment* getSegment(const segId segID, const om::Safe isSafe)
     {
         const uint32_t pageNum = segID / pageSize_;
 
@@ -54,7 +54,7 @@ private:
     }
 
     inline OmSegment* doGetSegment(const std::vector<OmSegmentPage*>& pages,
-                                   const uint32_t pageNum, const OmSegID segID,
+                                   const uint32_t pageNum, const segId segID,
                                    const om::Safe isSafe)
     {
         if(om::NOT_SAFE == isSafe)
@@ -74,7 +74,7 @@ private:
         OmSegmentPage& page = *pages[pageNum];
         OmSegment* ret = &(page[segID % pageSize_]);
 
-        const OmSegID loadedID = ret->data_->value;
+        const segId loadedID = ret->data_->value;
 
         if(!loadedID){
             return NULL;

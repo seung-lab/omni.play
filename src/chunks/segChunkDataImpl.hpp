@@ -1,11 +1,11 @@
 #pragma once
 
-#include "chunks/omRawChunk.hpp"
+#include "chunks/rawChunk.hpp"
 #include "chunks/omProcessChunkVoxelBoundingData.hpp"
 #include "chunks/omExtractSegTile.hpp"
-#include "chunks/omSegChunk.h"
-#include "segment/omSegments.h"
-#include "utility/omChunkVoxelWalker.hpp"
+#include "chunks/segChunk.h"
+#include "segment/segments.h"
+#include "utility/chunkVoxelWalker.hpp"
 #include "volume/build/omProcessSegmentationChunk.hpp"
 #include "volume/segmentation.h"
 #include "chunks/details/omPtrToChunkDataMemMapVol.h"
@@ -21,7 +21,7 @@ template <typename DATA>
 class dataImpl : public dataInterface {
 private:
     segmentation *const vol_;
-    OmSegChunk *const chunk_;
+    segChunk *const chunk_;
     const om::chunkCoord coord_;
 
     ptrToChunkDataBase *const ptrToChunkData_;
@@ -30,7 +30,7 @@ private:
     const int elementsPerSlice_;
 
 public:
-    dataImpl(segmentation* vol, OmSegChunk* chunk, const om::chunkCoord& coord)
+    dataImpl(segmentation* vol, segChunk* chunk, const om::chunkCoord& coord)
         : vol_(vol)
         , chunk_(chunk)
         , coord_(coord)
@@ -52,18 +52,18 @@ public:
         return extractor.Extract(data);
     }
 
-    void ProcessChunk(const bool computeSizes, OmSegments* segments)
+    void ProcessChunk(const bool computeSizes, segments* segments)
     {
         OmProcessSegmentationChunk p(chunk_, computeSizes, segments);
 
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();
 
-        OmChunkVoxelWalker iter(128);
+        chunkVoxelWalker iter(128);
 
         for(iter.begin(); iter < iter.end(); ++iter)
         {
-            const OmSegID val = static_cast<OmSegID>(*data++);
+            const segId val = static_cast<segId>(*data++);
 
             if(val){
                 p.processVoxel(val, *iter);
@@ -71,17 +71,17 @@ public:
         }
     }
 
-    void RefreshBoundingData(OmSegments* segments)
+    void RefreshBoundingData(segments* segments)
     {
         ProcessChunkVoxelBoundingData p(chunk_, segments);
 
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();
 
-        OmChunkVoxelWalker iter(128);
+        chunkVoxelWalker iter(128);
         for(iter.begin(); iter < iter.end(); ++iter)
         {
-            const OmSegID val = static_cast<OmSegID>(*data++);
+            const segId val = static_cast<segId>(*data++);
             if(val){
                 p.processVoxel(val, *iter);
             }
@@ -111,7 +111,7 @@ public:
 
     void RewriteChunk(const boost::unordered_map<uint32_t, uint32_t>& vals)
     {
-        OmRawChunk<DATA> rawChunk(vol_, chunk_->GetCoordinate());
+        rawChunk<DATA> rawChunk(vol_, chunk_->GetCoordinate());
         rawChunk.SetDirty();
 
         DATA* d = rawChunk.Data();
@@ -135,7 +135,7 @@ private:
     template <typename T>
     om::shared_ptr<uint32_t> getChunkAs32bit(T*) const
     {
-        OmRawChunk<T> rawChunk(vol_, chunk_->GetCoordinate());
+        rawChunk<T> rawChunk(vol_, chunk_->GetCoordinate());
 
         om::shared_ptr<T> data = rawChunk.SharedPtr();
         T* dataRaw = data.get();
@@ -153,7 +153,7 @@ private:
 
     om::shared_ptr<uint32_t> getChunkAs32bit(uint32_t*) const
     {
-        OmRawChunk<uint32_t> rawChunk(vol_, chunk_->GetCoordinate());
+        rawChunk<uint32_t> rawChunk(vol_, chunk_->GetCoordinate());
         return rawChunk.SharedPtr();
     }
 

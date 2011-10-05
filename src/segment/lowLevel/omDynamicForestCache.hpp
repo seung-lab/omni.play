@@ -6,7 +6,7 @@
 
 class OmDynamicForestCache {
 private:
-    boost::scoped_ptr<zi::DynamicForestPool<OmSegID> > graph_;
+    boost::scoped_ptr<zi::DynamicForestPool<segId> > graph_;
 
     LockedUint64 freshness_;
 
@@ -23,7 +23,7 @@ private:
 
 public:
     OmDynamicForestCache(const size_t size)
-        : graph_(new zi::DynamicForestPool<OmSegID>(size))
+        : graph_(new zi::DynamicForestPool<segId>(size))
         , batchMode_(false)
     {
         freshness_.set(1);
@@ -46,17 +46,17 @@ public:
         ++freshness_;
     }
 
-    inline void Cut(const OmSegID segID)
+    inline void Cut(const segId segID)
     {
         clearCacheIfNotBatch();
         graph_->Cut(segID);
     }
 
-    inline OmSegID Root(const OmSegID segID){
+    inline segId Root(const segId segID){
         return graph_->Root(segID);
     }
 
-    inline void Join(const OmSegID childRootID, const OmSegID parentRootID)
+    inline void Join(const segId childRootID, const segId parentRootID)
     {
         clearCacheIfNotBatch();
         graph_->Join(childRootID, parentRootID);

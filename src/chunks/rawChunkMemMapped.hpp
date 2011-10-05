@@ -8,7 +8,7 @@
 #include <QFile>
 
 template <typename T>
-class OmRawChunkMemMapped {
+class rawChunkMemMapped {
 private:
     mipVolume *const vol_;
     const om::chunkCoord coord_;
@@ -20,10 +20,10 @@ private:
     T* dataRaw_;
 
 public:
-    OmRawChunkMemMapped(mipVolume* vol, const om::chunkCoord& coord)
+    rawChunkMemMapped(mipVolume* vol, const om::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
-        , chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))
+        , chunkOffset_(chunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))
         , fnp_(OmFileNames::GetMemMapFileNameQT(vol, coord.Level))
         , numBytes_(128*128*128*vol_->GetBytesPerVoxel())
         , dataRaw_(NULL)
@@ -31,7 +31,7 @@ public:
         mapData();
     }
 
-    ~OmRawChunkMemMapped()
+    ~rawChunkMemMapped()
     {}
 
     inline T Get(const uint64_t index) const {

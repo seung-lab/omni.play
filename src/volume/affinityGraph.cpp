@@ -1,4 +1,4 @@
-#include "chunks/omRawChunk.hpp"
+#include "chunks/rawChunk.hpp"
 #include "volume/build/omBuildAffinityChannel.hpp"
 #include "volume/affinityChannel.h"
 #include "volume/affinityGraph.h"
@@ -8,7 +8,7 @@
 affinityGraph::affinityGraph()
 {}
 
-// used by OmGenericManager
+// used by genericManager
 affinityGraph::affinityGraph(const OmID id)
     : OmManageableObject(id)
 {}
@@ -40,16 +40,16 @@ void affinityGraph::ImportSingleChannel(const QString& hdf5fnp,
 }
 
 // use to just read data
-boost::shared_ptr<OmRawChunk<float> >
+boost::shared_ptr<rawChunk<float> >
 affinityGraph::RawChunk(const affinityGraph aff,
                           const om::chunkCoord& coord)
 {
     affinityChannel* affChan = channels_[aff].get();
 
-    return om::make_shared<OmRawChunk<float> >(affChan->Channel(), coord);
+    return om::make_shared<rawChunk<float> >(affChan->Channel(), coord);
 }
 
-OmChunk* affinityGraph::MipChunk(const affinityGraph aff,
+chunk* affinityGraph::MipChunk(const affinityGraph aff,
                                    const om::chunkCoord& coord)
 {
     affinityChannel* affChan = channels_[aff].get();

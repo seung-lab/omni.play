@@ -13,7 +13,7 @@
 
 class OmTileCacheChannel;
 class volumeData;
-template <typename,typename> class OmChunkCache;
+template <typename,typename> class chunkCache;
 
 namespace om { namespace channel { class folder; } }
 
@@ -58,13 +58,13 @@ public:
 
     void SetVolDataType(const OmVolDataType);
 
-    OmChunk* GetChunk(const om::chunkCoord& coord);
+    chunk* GetChunk(const om::chunkCoord& coord);
 
     inline std::vector<OmFilter2d*> GetFilters() const {
         return filterManager_.GetFilters();
     }
 
-    OmChunkCache<channelImpl, OmChunk>* ChunkCache(){
+    chunkCache<channelImpl, chunk>* ChunkCache(){
         return chunkCache_.get();
     }
 
@@ -82,7 +82,7 @@ protected:
     channelImpl& operator= (const channelImpl&);
 
     boost::scoped_ptr<om::channel::folder> folder_;
-    boost::scoped_ptr<OmChunkCache<channelImpl, OmChunk> > chunkCache_;
+    boost::scoped_ptr<chunkCache<channelImpl, chunk> > chunkCache_;
     boost::scoped_ptr<volumeData> volData_;
     boost::scoped_ptr<OmTileCacheChannel> tileCache_;
 

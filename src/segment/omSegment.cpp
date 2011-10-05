@@ -1,7 +1,7 @@
 #include "segment/lowLevel/omSegmentChildren.hpp"
 #include "common/omDebug.h"
 #include "segment/omSegment.h"
-#include "segment/omSegments.h"
+#include "segment/segments.h"
 #include "segment/omSegmentIterator.h"
 #include "utility/color.hpp"
 
@@ -101,7 +101,7 @@ OmID OmSegment::GetSegmentationID(){
     return segments_->GetSegmentationID();
 }
 
-OmSegID OmSegment::RootID(){
+segId OmSegment::RootID(){
     return segments_->findRootID(data_->value);
 }
 

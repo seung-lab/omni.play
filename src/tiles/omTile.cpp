@@ -1,6 +1,6 @@
-#include "chunks/omSegChunkDataInterface.hpp"
-#include "chunks/omChunkData.hpp"
-#include "chunks/omSegChunk.h"
+#include "chunks/segChunkDataInterface.hpp"
+#include "chunks/chunkData.hpp"
+#include "chunks/segChunk.h"
 #include "system/cache/omCacheBase.h"
 #include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
 #include "tiles/channelTileFilter.hpp"
@@ -38,7 +38,7 @@ int OmTile::getChunkSliceNum(){
 void OmTile::load8bitChannelTile()
 {
     channel* chan = reinterpret_cast<channel*>(getVol());
-    OmChunk* chunk = chan->GetChunk(mipChunkCoord_);
+    chunk* chunk = chan->GetChunk(mipChunkCoord_);
 
     OmPooledTile<uint8_t>* tileData =
         chunk->Data()->ExtractDataSlice8bit(key_.getViewType(),
@@ -52,7 +52,7 @@ void OmTile::load8bitChannelTile()
 void OmTile::load32bitSegmentationTile()
 {
     segmentation* seg = reinterpret_cast<segmentation*>(getVol());
-    OmSegChunk* chunk = seg->GetChunk(mipChunkCoord_);
+    segChunk* chunk = seg->GetChunk(mipChunkCoord_);
 
     PooledTile32Ptr imageData =
         chunk->SegData()->ExtractDataSlice32bit(key_.getViewType(),

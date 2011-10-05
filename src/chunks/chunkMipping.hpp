@@ -2,7 +2,7 @@
 
 #include "volume/mipVolume.h"
 
-class OmChunkMipping {
+class chunkMipping {
 private:
     //octree properties
     om::dataBbox dataExtent_;
@@ -15,7 +15,7 @@ private:
     uint32_t numBytes_;
 
 public:
-    OmChunkMipping(mipVolume* vol, const om::chunkCoord& coord)
+    chunkMipping(mipVolume* vol, const om::chunkCoord& coord)
         : dataExtent_(coord.chunkBoundingBox(vol))
         , normExtent_(dataExtent_.toNormBbox())
         , clippedNormExtent_(dataExtent_.toNormBbox())

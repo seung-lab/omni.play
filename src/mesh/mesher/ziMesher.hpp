@@ -1,7 +1,7 @@
 #pragma once
 
-#include "chunks/omChunkUtils.hpp"
-#include "chunks/omSegChunk.h"
+#include "chunks/chunkUtils.hpp"
+#include "chunks/segChunk.h"
 #include "common/common.h"
 #include "mesh/mesher/MeshCollector.hpp"
 #include "mesh/mesher/TriStripCollector.hpp"
@@ -62,7 +62,7 @@ public:
     // if(redownsample){
     //     segmentation_->VolData()->downsample(segmentation_);
     // }
-    //     OmChunkUtils::RefindUniqueChunkValues(segmentation_->GetID());
+    //     chunkUtils::RefindUniqueChunkValues(segmentation_->GetID());
     // }
 
     om::shared_ptr<om::gui::progress> Progress(){
@@ -99,7 +99,7 @@ private:
         progress_.SetTotalNumChunks(levelZeroChunks->size());
 
         FOR_EACH( it, *levelZeroChunks ){
-            addValuesFromChunkAndDownsampledChunks(*it);
+            addValuesFrchunkAndDownsampledChunks(*it);
         }
 
         std::cout << "\nstarting meshing...\n";
@@ -119,7 +119,7 @@ private:
         std::cout << "\ndone meshing...\n";
     }
 
-    void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord)
+    void addValuesFrchunkAndDownsampledChunks(const om::chunkCoord& mip0coord)
     {
         const ChunkUniqueValues segIDs =
             segmentation_->ChunkUniqueValues()->Values(mip0coord, threshold_);
@@ -161,7 +161,7 @@ private:
         // corner case: no MIP levels >0
         while (c.getLevel() <= rootMipLevel_)
         {
-            std::deque<OmSegID> commonIDs;
+            std::deque<segId> commonIDs;
 
             const ChunkUniqueValues segIDs =
                 segmentation_->ChunkUniqueValues()->Values(c, threshold_);
@@ -238,14 +238,14 @@ private:
     }
 
     void setupMarchingCube(zi::mesh::marching_cubes< int >& cube_marcher,
-                           OmSegChunk* chunk)
+                           segChunk* chunk)
     {
         OmImage< uint32_t, 3 > chunkData =
-            OmChunkUtils::GetMeshOmImageData(segmentation_, chunk);
+            chunkUtils::GetMeshOmImageData(segmentation_, chunk);
 
-        OmChunkUtils::RewriteChunkAtThreshold(segmentation_, chunkData, threshold_);
+        chunkUtils::RewriteChunkAtThreshold(segmentation_, chunkData, threshold_);
 
-        const OmSegID* chunkDataRaw = static_cast< const OmSegID* >( chunkData.getScalarPtr() );
+        const segId* chunkDataRaw = static_cast< const segId* >( chunkData.getScalarPtr() );
 
         cube_marcher.marche( reinterpret_cast< const int* >(chunkDataRaw), 129, 129, 129 );
     }
@@ -254,7 +254,7 @@ private:
     {
         static const int chunkDim = segmentation_->Coords().GetChunkDimension();
 
-        OmSegChunk* chunk = segmentation_->GetChunk(coord);
+        segChunk* chunk = segmentation_->GetChunk(coord);
 
         const om::normBbox& dstBbox = chunk->Mipping().GetNormExtent();
 
@@ -283,7 +283,7 @@ private:
 
         FOR_EACH( it, cube_marcher.meshes() )
         {
-            const OmSegID segID = it->first;
+            const segId segID = it->first;
 
             if(segIDs.contains(segID))
             {

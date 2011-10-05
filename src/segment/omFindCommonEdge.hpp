@@ -1,11 +1,11 @@
 #pragma once
 
-#include "segment/omSegments.h"
+#include "segment/segments.h"
 #include "segment/omSegmentEdgeUtils.hpp"
 
 class OmFindCommonEdge {
 public:
-    static OmSegmentEdge FindClosestCommonEdge(OmSegments* segments,
+    static OmSegmentEdge FindClosestCommonEdge(segments* segments,
                                                OmSegment* seg1,
                                                OmSegment* seg2)
     {

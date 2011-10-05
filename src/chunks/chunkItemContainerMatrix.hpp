@@ -4,7 +4,7 @@
 #include <boost/multi_array.hpp>
 
 template <typename VOL, typename T>
-class OmChunkItemContainerMatrix {
+class chunkItemContainerMatrix {
 private:
     VOL *const vol_;
 
@@ -16,7 +16,7 @@ private:
     array_t array_;
 
 public:
-    OmChunkItemContainerMatrix(VOL* vol, const int x, const int y, const int z)
+    chunkItemContainerMatrix(VOL* vol, const int x, const int y, const int z)
         : vol_(vol)
         , x_(x)
         , y_(y)
@@ -24,7 +24,7 @@ public:
         , array_(array_t(boost::extents[x][y][z]))
     {}
 
-    ~OmChunkItemContainerMatrix()
+    ~chunkItemContainerMatrix()
     {
         for(int x = 0; x < x_; ++x){
             for(int y = 0; y < y_; ++y){

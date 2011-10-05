@@ -8,7 +8,7 @@ struct OmMeshFilePart{
 };
 
 struct OmMeshDataEntry {
-    OmSegID segID;
+    segId segID;
     bool wasMeshed;
     bool hasMeshData;
     OmMeshFilePart vertexIndex;
@@ -20,7 +20,7 @@ struct OmMeshDataEntry {
 namespace om {
 namespace meshio_ {
 
-static OmMeshDataEntry MakeEmptyEntry(const OmSegID segID)
+static OmMeshDataEntry MakeEmptyEntry(const segId segID)
 {
     static const OmMeshFilePart empty = {0, 0, 0, 0};
 

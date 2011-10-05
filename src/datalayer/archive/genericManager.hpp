@@ -1,7 +1,7 @@
 #pragma once
 
 #include <yaml-cpp/yaml.h>
-#include "system/omGenericManager.hpp"
+#include "system/genericManager.hpp"
 #include "datalayer/archive/baseTypes.hpp"
 
 namespace om {
@@ -11,7 +11,7 @@ namespace archive {
 class genericManager {
 public:
     template <class T>
-    static void Save(YAML::Emitter& out, const OmGenericManager<T>& gm)
+    static void Save(YAML::Emitter& out, const genericManager<T>& gm)
     {
         out << YAML::Key << "size" << YAML::Value << gm.size_;
         out << YAML::Key << "valid set" << YAML::Value << gm.validSet_;
@@ -26,7 +26,7 @@ public:
     }
     
     template <class T>
-    static void Load(const YAML::Node& in, OmGenericManager<T>& gm)
+    static void Load(const YAML::Node& in, genericManager<T>& gm)
     {
         in["size"] >> gm.size_;
         in["valid set"] >> gm.validSet_;

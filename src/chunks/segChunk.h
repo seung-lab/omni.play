@@ -1,29 +1,29 @@
 #pragma once
 
 /**
- * OmSegChunk extends OmChunk with extra funtionality specific to
+ * segChunk extends chunk with extra funtionality specific to
  *   manipulating segmentation data.
  *
  *  Michael Purcaro - purcaro@gmail.com - 1/29/11
  */
 
-#include "chunks/omChunk.h"
+#include "chunks/chunk.h"
 #include "zi/omMutex.h"
 
 class segmentation;
 namespace om { namespace segchunk { class dataInterface; } }
 
-class OmSegChunk : public OmChunk {
+class segChunk : public chunk {
 private:
     segmentation *const vol_;
     const boost::scoped_ptr<om::segchunk::dataInterface> segChunkData_;
 
-    std::set<OmSegID> modifiedSegIDs_;
+    std::set<segId> modifiedSegIDs_;
     zi::spinlock modifiedSegIDsLock_;
 
 public:
-    OmSegChunk(segmentation* vol, const om::chunkCoord& coord);
-    virtual ~OmSegChunk();
+    segChunk(segmentation* vol, const om::chunkCoord& coord);
+    virtual ~segChunk();
 
     uint32_t GetVoxelValue(const om::dataCoord& vox);
     void SetVoxelValue(const om::dataCoord& vox, const uint32_t value);

@@ -3,8 +3,8 @@
 #include "common/common.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
-#include "chunks/omChunkDataInterface.hpp"
-#include "chunks/omChunkDataImpl.hpp"
+#include "chunks/chunkDataInterface.hpp"
+#include "chunks/chunkDataImpl.hpp"
 
 namespace om {
 namespace chunk {

@@ -3,7 +3,7 @@
 #include "common/common.h"
 
 class segmentation;
-class OmSegments;
+class segments;
 class OmSelectSegmentsParams;
 class SegmentationDataWrapper;
 
@@ -13,14 +13,14 @@ public:
                       void* sender,
                       const std::string& cmt);
 
-    void selectJustThisSegment(const OmSegID segID, const bool isSelected);
-    void augmentSelectedSet(const OmSegID segID, const bool isSelected);
+    void selectJustThisSegment(const segId segID, const bool isSelected);
+    void augmentSelectedSet(const segId segID, const bool isSelected);
 
-    void InsertSegments(const boost::unordered_set<OmSegID>* segIDs);
-    void RemoveSegments(const boost::unordered_set<OmSegID>* segIDs);
+    void InsertSegments(const boost::unordered_set<segId>* segIDs);
+    void RemoveSegments(const boost::unordered_set<segId>* segIDs);
 
-    void selectJustThisSegment_toggle(const OmSegID segID);
-    void augmentSelectedSet_toggle(const OmSegID segID);
+    void selectJustThisSegment_toggle(const segId segID);
+    void augmentSelectedSet_toggle(const segId segID);
 
     bool sendEvent();
     void selectNoSegments();
@@ -32,9 +32,9 @@ public:
     void AddOrSubtract(const om::AddOrSubtract addSegments);
 
 private:
-    OmSegments* segments_;
+    segments* segments_;
     om::shared_ptr<OmSelectSegmentsParams> params_;
 
-    void setSelectedSegment(const OmSegID segID);
+    void setSelectedSegment(const segId segID);
 };
 

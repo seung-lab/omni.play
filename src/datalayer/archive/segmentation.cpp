@@ -7,8 +7,8 @@
 #include "segment/io/omUserEdges.hpp"
 #include "segment/omSegmentEdge.h"
 #include "segment/omSegment.h"
-#include "segment/omSegments.h"
-#include "segment/omSegmentsImpl.h"
+#include "segment/segments.h"
+#include "segment/segmentsImpl.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omValidGroupNum.hpp"
 #include "project/details/segmentationManager.h"
@@ -65,19 +65,19 @@ void operator>>(const Node& in, segmentation& seg)
     seg.segments_->refreshTree();
 }
 
-Emitter &operator<<(Emitter& out, const OmSegments& sc)
+Emitter &operator<<(Emitter& out, const segments& sc)
 {
     out << (*sc.impl_);
     
     return out;
 }
 
-void operator>>(const Node& in, OmSegments& sc)
+void operator>>(const Node& in, segments& sc)
 {
     in >> (*sc.impl_);
 }
 
-Emitter &operator<<(Emitter& out, const OmSegmentsImpl& sc)
+Emitter &operator<<(Emitter& out, const segmentsImpl& sc)
 {
     out << BeginMap;
     out << Key << "Num Segments" << Value << sc.mNumSegs;
@@ -92,7 +92,7 @@ Emitter &operator<<(Emitter& out, const OmSegmentsImpl& sc)
     return out;
 }
 
-void operator>>(const Node& in, OmSegmentsImpl& sc)
+void operator>>(const Node& in, segmentsImpl& sc)
 {
     uint32_t maxValue;
     in["Num Segments"] >> sc.mNumSegs;

@@ -10,7 +10,7 @@
 class OmMeshCoord {
  public:
 	OmMeshCoord();
-    OmMeshCoord( const om::chunkCoord&, OmSegID );
+    OmMeshCoord( const om::chunkCoord&, segId );
 
 	void operator=( const OmMeshCoord& rhs );
 	bool operator==( const OmMeshCoord& rhs ) const;
@@ -18,13 +18,13 @@ class OmMeshCoord {
 	bool operator<( const OmMeshCoord& rhs ) const;
 
     om::chunkCoord MipChunkCoord;
-	OmSegID DataValue;
+	segId DataValue;
 
     const om::chunkCoord& Coord() const {
 		return MipChunkCoord;
 	}
 
-	OmSegID SegID() const {
+	segId SegID() const {
 		return DataValue;
 	}
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "tiles/omTileFilters.hpp"
-#include "chunks/omRawChunkSlicer.hpp"
-#include "chunks/omSegChunk.h"
+#include "chunks/rawChunkSlicer.hpp"
+#include "chunks/segChunk.h"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "volume/segmentation.h"
 
@@ -45,7 +45,7 @@ private:
 
     PooledTile32Ptr getTile(uint32_t* d) const
     {
-        OmRawChunkSlicer<uint32_t> slicer(128, d);
+        rawChunkSlicer<uint32_t> slicer(128, d);
 
         project::Globals().FileReadSemaphore().acquire(1);
         OmPooledTile<uint32_t>* tile = slicer.GetCopyAsPooledTile(plane_, depth_);
@@ -57,7 +57,7 @@ private:
     template <typename T>
     PooledTile32Ptr getTile(T* d) const
     {
-        OmRawChunkSlicer<T> slicer(128, d);
+        rawChunkSlicer<T> slicer(128, d);
 
         project::Globals().FileReadSemaphore().acquire(1);
         boost::scoped_ptr<OmPooledTile<T> > rawTile(slicer.GetCopyAsPooledTile(plane_, depth_));

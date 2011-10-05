@@ -1,11 +1,11 @@
 #pragma once
 
-#include "chunks/omSegChunk.h"
-#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
+#include "chunks/segChunk.h"
+#include "chunks/uniqueValues/chunkUniqueValuesManager.hpp"
 #include "utility/image/omImage.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 
-class OmChunkUtils{
+class chunkUtils{
 public:
     static void	RewriteChunkAtThreshold(segmentation* segmentation,
                                         OmImage< uint32_t, 3 >& chunkData,
@@ -15,7 +15,7 @@ public:
             return;
         }
 
-        OmSegments* segments = segmentation->Segments();
+        segments* segments = segmentation->Segments();
         segmentation->SetDendThreshold(threshold);
 
         uint32_t* rawData = chunkData.getScalarPtrMutate();
@@ -33,7 +33,7 @@ public:
      *      voxel of data is included on each dimensions.
      */
     static OmImage<uint32_t, 3> GetMeshOmImageData(segmentation* vol,
-                                                   OmSegChunk* chunk)
+                                                   segChunk* chunk)
     {
         OmImage<uint32_t, 3> retImage(OmExtents[129][129][129]);
 
@@ -58,7 +58,7 @@ public:
                     //skip invalid mip coord
                     if(vol->Coords().ContainsMipChunkCoord(mip_coord))
                     {
-                        OmSegChunk* chunk = vol->GetChunk(mip_coord);
+                        segChunk* chunk = vol->GetChunk(mip_coord);
 
                         om::shared_ptr<uint32_t> rawDataPtr =
                             chunk->SegData()->GetCopyOfChunkDataAsUint32();

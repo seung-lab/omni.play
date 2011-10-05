@@ -2,7 +2,7 @@
 
 #include "common/common.h"
 #include "common/om.hpp"
-#include "system/omGenericManager.hpp"
+#include "system/genericManager.hpp"
 #include "volume/channel.h"
 #include "datalayer/archive/channel.h"
 
@@ -18,7 +18,7 @@ public:
     const std::vector<channel*> GetPtrVec() const;
 
 private:
-    OmGenericManager<channel> manager_;
+    genericManager<channel> manager_;
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const channelManager&);
     friend void YAML::operator>>(const YAML::Node& in, channelManager&);

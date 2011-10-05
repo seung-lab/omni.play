@@ -1,5 +1,5 @@
 #include "project/project.h"
-#include "segment/omSegments.h"
+#include "segment/segments.h"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "utility/omFileHelpers.h"
 #include "volume/segmentation.h"

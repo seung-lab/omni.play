@@ -14,15 +14,15 @@ private:
     OmDynamicForestCache *const forest_;
     OmValidGroupNum *const validGroupNum_;
     OmSegmentListLowLevel *const segmentListsLL_;
-    OmSegmentsStore *const segmentPages_;
+    segmentsStore *const segmentPages_;
     OmSegmentChildren *const children_;
 
     OmThreadPool pool_;
 
     struct TaskArgs {
-        OmSegID childRootID;
-        OmSegID parentID;
-        OmSegID parentRootID;
+        segId childRootID;
+        segId parentID;
+        segId parentRootID;
         double threshold;
         int edgeNumber;
     };
@@ -35,7 +35,7 @@ public:
     OmSegmentGraphInitialLoad(OmDynamicForestCache* forest,
                               OmValidGroupNum* validGroupNum,
                               OmSegmentListLowLevel* segmentListLL,
-                              OmSegmentsStore* segmentPages,
+                              segmentsStore* segmentPages,
                               OmSegmentChildren* children)
         : forest_(forest)
         , validGroupNum_(validGroupNum)
@@ -96,27 +96,27 @@ public:
 
 private:
 
-    inline OmSegID Root(const OmSegID segID){
+    inline segId Root(const segId segID){
         return forest_->Root(segID);
     }
 
-    inline void Join(const OmSegID childRootID, const OmSegID parentRootID){
+    inline void Join(const segId childRootID, const segId parentRootID){
         forest_->Join(childRootID, parentRootID);
     }
     
-    bool sizeCheck(const OmSegID a, const OmSegID b, const double threshold)
+    bool sizeCheck(const segId a, const segId b, const double threshold)
     {
         return (segmentListsLL_->GetSizeWithChildren(Root(a)) + 
                 segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold;
     }
 
-    bool initialJoinInternal(const OmSegID parentID,
-                             const OmSegID childUnknownDepthID,
+    bool initialJoinInternal(const segId parentID,
+                             const segId childUnknownDepthID,
                              const double threshold,
                              const int edgeNumber)
     {
-        const OmSegID childRootID = Root(childUnknownDepthID);
-        const OmSegID parentRootID = Root(parentID);
+        const segId childRootID = Root(childUnknownDepthID);
+        const segId parentRootID = Root(parentID);
 
         if(childRootID == parentRootID){
             return false;

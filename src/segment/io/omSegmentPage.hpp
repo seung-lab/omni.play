@@ -12,7 +12,7 @@
 class OmSegmentPage {
 private:
     segmentation* segmentation_;
-    OmSegments* segments_;
+    segments* segments_;
     PageNum pageNum_;
     uint32_t pageSize_;
 

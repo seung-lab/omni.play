@@ -1,7 +1,7 @@
 #pragma once
 
-#include "chunks/omChunk.h"
-#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
+#include "chunks/chunk.h"
+#include "chunks/uniqueValues/chunkUniqueValuesManager.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
 #include "utility/omStringHelpers.h"
 #include "volume/segmentation.h"
@@ -161,7 +161,7 @@ private:
     }
 
     struct ResetEntry {
-        OmMeshDataEntry operator()(const OmSegID segID) const {
+        OmMeshDataEntry operator()(const segId segID) const {
             return om::meshio_::MakeEmptyEntry(segID);
         }
     };

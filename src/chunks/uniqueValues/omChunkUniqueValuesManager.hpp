@@ -1,12 +1,12 @@
 #pragma once
 
-#include "chunks/uniqueValues/omChunkUniqueValuesPerThreshold.hpp"
+#include "chunks/uniqueValues/chunkUniqueValuesPerThreshold.hpp"
 #include "chunks/uniqueValues/omThresholdsInChunk.hpp"
-#include "chunks/omChunkItemContainer.hpp"
+#include "chunks/chunkItemContainer.hpp"
 
-class OmChunkUniqueValuesManager {
+class chunkUniqueValuesManager {
 private:
-    typedef OmChunkItemContainer<segmentation, OmThresholdsInChunk> cont_t;
+    typedef chunkItemContainer<segmentation, OmThresholdsInChunk> cont_t;
     boost::scoped_ptr<cont_t> chunks_;
 
     void UpdateFromVolResize(){
@@ -16,7 +16,7 @@ private:
     friend class segmentation;
 
 public:
-    OmChunkUniqueValuesManager(segmentation* segmentation)
+    chunkUniqueValuesManager(segmentation* segmentation)
         : chunks_(new cont_t(segmentation))
     {}
 

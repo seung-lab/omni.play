@@ -1,9 +1,9 @@
 #include "volume/channelFolder.h"
 #include "tiles/cache/omTileCacheChannel.hpp"
 #include "actions/omActions.h"
-#include "chunks/omChunk.h"
-#include "chunks/omChunkCache.hpp"
-#include "chunks/omChunkCache.hpp"
+#include "chunks/chunk.h"
+#include "chunks/chunkCache.hpp"
+#include "chunks/chunkCache.hpp"
 #include "common/common.h"
 #include "common/omDebug.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -19,14 +19,14 @@
 #include <float.h>
 
 channelImpl::channelImpl()
-    : chunkCache_(new OmChunkCache<channelImpl, OmChunk>(this))
+    : chunkCache_(new chunkCache<channelImpl, chunk>(this))
     , volData_(new volumeData())
     , tileCache_(new OmTileCacheChannel())
 {}
 
 channelImpl::channelImpl(OmID id)
     : OmManageableObject(id)
-    , chunkCache_(new OmChunkCache<channelImpl, OmChunk>(this))
+    , chunkCache_(new chunkCache<channelImpl, chunk>(this))
     , volData_(new volumeData())
     , tileCache_(new OmTileCacheChannel())
 {
@@ -97,7 +97,7 @@ void channelImpl::SetVolDataType(const OmVolDataType type)
     volData_->SetDataType(this);
 }
 
-OmChunk* channelImpl::GetChunk(const om::chunkCoord& coord){
+chunk* channelImpl::GetChunk(const om::chunkCoord& coord){
     return chunkCache_->GetChunk(coord);
 }
 

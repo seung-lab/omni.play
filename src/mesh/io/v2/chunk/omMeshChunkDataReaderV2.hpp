@@ -3,7 +3,7 @@
 #include "volume/segmentationFolder.h"
 #include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
-#include "chunks/omChunk.h"
+#include "chunks/chunk.h"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
 
 class OmMeshChunkDataReaderV2{

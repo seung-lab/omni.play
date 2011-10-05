@@ -1,30 +1,30 @@
 #pragma once
 
-#include "segment/lowLevel/omSegmentsImplLowLevel.h"
+#include "segment/lowLevel/segmentsImplLowLevel.h"
 #include "zi/omUtility.h"
 #include "datalayer/archive/segmentation.h"
 
-class OmSegmentsImpl;
+class segmentsImpl;
 
 class OmEnabledSegments {
 private:
-    OmSegmentsImplLowLevel *const cache_;
+    segmentsImplLowLevel *const cache_;
 
-    OmSegIDsSet enabled_;
+    segIdsSet enabled_;
 
-    friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
-    friend void YAML::operator>>(const YAML::Node&, OmSegmentsImpl&);
-    friend QDataStream& operator<<(QDataStream&, const OmSegmentsImpl&);
-    friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const segmentsImpl&);
+    friend void YAML::operator>>(const YAML::Node&, segmentsImpl&);
+    friend QDataStream& operator<<(QDataStream&, const segmentsImpl&);
+    friend QDataStream& operator>>(QDataStream&, segmentsImpl&);
     
 public:
-    OmEnabledSegments(OmSegmentsImplLowLevel* cache)
+    OmEnabledSegments(segmentsImplLowLevel* cache)
         : cache_(cache)
     {}
 
     inline void Reroot()
     {
-        OmSegIDsSet old = enabled_;
+        segIdsSet old = enabled_;
         enabled_.clear();
 
         FOR_EACH(iter, old){
@@ -32,7 +32,7 @@ public:
         }
     }
 
-    inline OmSegIDsSet GetEnabledSegmentIDs(){
+    inline segIdsSet GetEnabledSegmentIDs(){
         return enabled_;
     }
 
@@ -40,7 +40,7 @@ public:
         return enabled_.size();
     }
 
-    inline bool IsEnabled(const OmSegID segID) const
+    inline bool IsEnabled(const segId segID) const
     {
         if(enabled_.empty()){
             return false;
@@ -52,9 +52,9 @@ public:
         return enabled_.size();
     }
 
-    inline void SetEnabled(const OmSegID segID, const bool isEnabled)
+    inline void SetEnabled(const segId segID, const bool isEnabled)
     {
-        const OmSegID rootID = cache_->FindRootID(segID);
+        const segId rootID = cache_->FindRootID(segID);
 
         cache_->touchFreshness();
 

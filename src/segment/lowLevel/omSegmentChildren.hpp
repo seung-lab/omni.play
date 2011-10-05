@@ -18,7 +18,7 @@ public:
         list_.resize(size);
     }
 
-    inline const segChildCont_t& GetChildren(const OmSegID segID) const {
+    inline const segChildCont_t& GetChildren(const segId segID) const {
         return list_[segID];
     }
 
@@ -26,7 +26,7 @@ public:
         return list_[seg->value()];
     }
 
-    inline void AddChild(const OmSegID segID, OmSegment* child){
+    inline void AddChild(const segId segID, OmSegment* child){
         list_[segID].insert(child);
     }
 
@@ -34,7 +34,7 @@ public:
         list_[seg->value()].insert(child);
     }
 
-    inline void RemoveChild(const OmSegID segID, OmSegment* child){
+    inline void RemoveChild(const segId segID, OmSegment* child){
         list_[segID].erase(child);
     }
 

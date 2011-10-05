@@ -12,18 +12,18 @@
 #include "volume/mipVolume.h"
 #include "datalayer/archive/segmentation.h"
 
-class OmChunk;
-class OmChunkUniqueValuesManager;
+class chunk;
+class chunkUniqueValuesManager;
 class OmGroups;
 class OmMST;
 class OmMeshDrawer;
 class OmMeshManager;
 class OmMeshManagers;
 class OmRawSegTileCache;
-class OmSegChunk;
+class segChunk;
 class OmSegment;
 class OmSegmentLists;
-class OmSegments;
+class segments;
 class OmTileCacheSegmentation;
 class OmUserEdges;
 class OmValidGroupNum;
@@ -31,7 +31,7 @@ class OmViewGroupState;
 class OmVolumeCuller;
 class volumeData;
 class SegmentationDataWrapper;
-template <typename,typename> class OmChunkCache;
+template <typename,typename> class chunkCache;
 
 namespace om { namespace segmentation { class folder; } }
 namespace om { namespace segmentation { class loader; } }
@@ -84,7 +84,7 @@ public:
 
     void BuildBlankVolume(const Vector3i & dims);
 
-    OmSegChunk* GetChunk(const om::chunkCoord& coord);
+    segChunk* GetChunk(const om::chunkCoord& coord);
 
     uint32_t GetVoxelValue(const om::globalCoord &vox);
     void SetVoxelValue(const om::globalCoord &vox, const uint32_t value);
@@ -93,7 +93,7 @@ public:
     void RebuildSegments();
 
 public:
-    inline OmChunkUniqueValuesManager* ChunkUniqueValues(){
+    inline chunkUniqueValuesManager* ChunkUniqueValues(){
         return uniqueChunkValues_.get();
     }
     inline OmGroups* Groups(){
@@ -108,7 +108,7 @@ public:
     inline OmMeshManagers* MeshManagers(){
         return meshManagers_.get();
     }
-    inline OmSegments* Segments(){
+    inline segments* Segments(){
         return segments_.get();
     }
     inline OmSegmentLists* SegmentLists(){
@@ -126,7 +126,7 @@ public:
     inline OmRawSegTileCache* SliceCache(){
         return volSliceCache_.get();
     }
-    inline OmChunkCache<segmentation, OmSegChunk>* ChunkCache(){
+    inline chunkCache<segmentation, segChunk>* ChunkCache(){
         return chunkCache_.get();
     }
     inline OmTileCacheSegmentation* TileCache(){
@@ -145,13 +145,13 @@ public:
 private:
     boost::scoped_ptr<om::segmentation::folder> folder_;
     boost::scoped_ptr<om::segmentation::loader> loader_;
-    boost::scoped_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
+    boost::scoped_ptr<chunkUniqueValuesManager> uniqueChunkValues_;
     boost::scoped_ptr<OmGroups> groups_;
     boost::scoped_ptr<OmMST> mst_;
     boost::scoped_ptr<OmMeshDrawer> meshDrawer_;
     boost::scoped_ptr<OmMeshManagers> meshManagers_;
-    boost::scoped_ptr<OmChunkCache<segmentation, OmSegChunk> > chunkCache_;
-    boost::scoped_ptr<OmSegments> segments_;
+    boost::scoped_ptr<chunkCache<segmentation, segChunk> > chunkCache_;
+    boost::scoped_ptr<segments> segments_;
     boost::scoped_ptr<OmSegmentLists> segmentLists_;
     boost::scoped_ptr<OmUserEdges> mstUserEdges_;
     boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
@@ -165,8 +165,8 @@ private:
     template <class T> friend class OmVolumeBuilderImages;
     template <class T> friend class OmVolumeImporter;
 
-    friend class OmSegmentsImpl;
-    friend class OmSegmentsImplLowLevel;
+    friend class segmentsImpl;
+    friend class segmentsImplLowLevel;
     friend class OmSegmentIterator;
     friend class segmentationChunkBuildTask;
     friend class SegmentTests1;

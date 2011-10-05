@@ -7,7 +7,7 @@
 #include "utility/omSmartPtr.hpp"
 
 template <typename T>
-class OmRawChunkSlicer {
+class rawChunkSlicer {
 private:
     const int chunkDim_; // usually 128
     const int elementsPerTile_; // chunkDim^2
@@ -15,7 +15,7 @@ private:
     T const*const chunkPtr_;
 
 public:
-    OmRawChunkSlicer(const int chunkDim, T const*const chunkPtr)
+    rawChunkSlicer(const int chunkDim, T const*const chunkPtr)
         : chunkDim_(chunkDim)
         , elementsPerTile_(chunkDim*chunkDim)
         , chunkPtr_(chunkPtr)

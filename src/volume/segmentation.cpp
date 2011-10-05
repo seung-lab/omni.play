@@ -1,7 +1,7 @@
 #include "annotation/annotation.h"
-#include "chunks/omChunkCache.hpp"
-#include "chunks/omSegChunk.h"
-#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
+#include "chunks/chunkCache.hpp"
+#include "chunks/segChunk.h"
+#include "chunks/uniqueValues/chunkUniqueValuesManager.hpp"
 #include "common/common.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPaths.h"
@@ -11,7 +11,7 @@
 #include "segment/io/omUserEdges.hpp"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
-#include "segment/omSegments.h"
+#include "segment/segments.h"
 #include "system/omGroups.h"
 #include "tiles/cache/omTileCacheSegmentation.hpp"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
@@ -24,13 +24,13 @@
 // used by OmDataArchiveProject
 segmentation::segmentation()
     : loader_(new om::segmentation::loader(this))
-    , uniqueChunkValues_(new OmChunkUniqueValuesManager(this))
+    , uniqueChunkValues_(new chunkUniqueValuesManager(this))
     , groups_(new OmGroups(this))
     , mst_(new OmMST(this))
     , meshDrawer_(new OmMeshDrawer(this))
     , meshManagers_(new OmMeshManagers(this))
-    , chunkCache_(new OmChunkCache<segmentation, OmSegChunk>(this))
-    , segments_(new OmSegments(this))
+    , chunkCache_(new chunkCache<segmentation, segChunk>(this))
+    , segments_(new segments(this))
     , segmentLists_(new OmSegmentLists())
     , mstUserEdges_(new OmUserEdges(this))
     , validGroupNum_(new OmValidGroupNum(this))
@@ -40,17 +40,17 @@ segmentation::segmentation()
     , annotations_(new om::annotation::manager(this))
 {}
 
-// used by OmGenericManager
+// used by genericManager
 segmentation::segmentation(OmID id)
     : OmManageableObject(id)
     , loader_(new om::segmentation::loader(this))
-    , uniqueChunkValues_(new OmChunkUniqueValuesManager(this))
+    , uniqueChunkValues_(new chunkUniqueValuesManager(this))
     , groups_(new OmGroups(this))
     , mst_(new OmMST(this))
     , meshDrawer_(new OmMeshDrawer(this))
     , meshManagers_(new OmMeshManagers(this))
-    , chunkCache_(new OmChunkCache<segmentation, OmSegChunk>(this))
-    , segments_(new OmSegments(this))
+    , chunkCache_(new chunkCache<segmentation, segChunk>(this))
+    , segments_(new segments(this))
     , segmentLists_(new OmSegmentLists())
     , mstUserEdges_(new OmUserEdges(this))
     , validGroupNum_(new OmValidGroupNum(this))
@@ -188,7 +188,7 @@ quint32 segmentation::GetVoxelValue(const om::globalCoord & vox)
     //find mip_coord and offset
     const om::chunkCoord mip0coord = vox.toChunkCoord(this, 0);
 
-    OmSegChunk* chunk = GetChunk(mip0coord);
+    segChunk* chunk = GetChunk(mip0coord);
 
     //get voxel data
     return chunk->GetVoxelValue(vox.toDataCoord(this, 0));
@@ -202,19 +202,19 @@ void segmentation::SetVoxelValue(const om::globalCoord& vox, const uint32_t val)
     for(int level = 0; level <= coords_.GetRootMipLevel(); level++)
     {
         om::chunkCoord leaf_mip_coord = vox.toChunkCoord(this, level);
-        OmSegChunk* chunk = GetChunk(leaf_mip_coord);
+        segChunk* chunk = GetChunk(leaf_mip_coord);
         chunk->SetVoxelValue(vox.toDataCoord(this, level), val);
     }
 }
 
 bool segmentation::SetVoxelValueIfSelected(const om::globalCoord& vox, const uint32_t val)
 {
-    const OmSegIDsSet selection = Segments()->GetSelectedSegmentIDs();
+    const segIdsSet selection = Segments()->GetSelectedSegmentIDs();
     if(selection.size() > 0)
     {
         om::chunkCoord leaf_mip_coord = vox.toChunkCoord(this, 0);
-        OmSegChunk* chunk = GetChunk(leaf_mip_coord);
-        OmSegID target = Segments()->findRootID(
+        segChunk* chunk = GetChunk(leaf_mip_coord);
+        segId target = Segments()->findRootID(
             chunk->GetVoxelValue(vox.toDataCoord(this, 0)));
         
         if(selection.count(target) == 0) {
@@ -226,7 +226,7 @@ bool segmentation::SetVoxelValueIfSelected(const om::globalCoord& vox, const uin
     return true;
 }
 
-OmSegChunk* segmentation::GetChunk(const om::chunkCoord& coord){
+segChunk* segmentation::GetChunk(const om::chunkCoord& coord){
     return chunkCache_->GetChunk(coord);
 }
 

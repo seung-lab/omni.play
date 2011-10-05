@@ -2,9 +2,9 @@
 
 #include "common/common.h"
 #include "chunks/details/omPtrToChunkDataMemMapVol.h"
-#include "chunks/omChunkDataInterface.hpp"
+#include "chunks/chunkDataInterface.hpp"
 #include "chunks/omExtractChanTile.hpp"
-#include "chunks/omRawChunk.hpp"
+#include "chunks/rawChunk.hpp"
 #include "datalayer/omDataWrapper.h"
 
 namespace om {
@@ -94,7 +94,7 @@ public:
 
     OmDataWrapperPtr CopyOutChunkData()
     {
-        OmRawChunk<DATA> rawChunk(vol_, coord_);
+        rawChunk<DATA> rawChunk(vol_, coord_);
         return om::ptrs::Wrap(rawChunk.SharedPtr());
     }
 

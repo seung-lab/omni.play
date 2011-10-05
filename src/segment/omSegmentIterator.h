@@ -4,18 +4,18 @@
 #include "segment/omSegmentPointers.h"
 
 class OmSegment;
-class OmSegments;
+class segments;
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
 
 class OmSegmentIterator {
 public:
-    explicit OmSegmentIterator(OmSegments*);
+    explicit OmSegmentIterator(segments*);
     explicit OmSegmentIterator(const SegmentationDataWrapper& sdw);
     explicit OmSegmentIterator(const SegmentDataWrapper& sdw);
 
-    void iterOverSegmentID(const OmSegID segID);
-    void iterOverSegmentIDs(const OmSegIDsSet& set);
+    void iterOverSegmentID(const segId segID);
+    void iterOverSegmentIDs(const segIdsSet& set);
     void iterOverSelectedIDs();
     void iterOverEnabledIDs();
 
@@ -25,7 +25,7 @@ public:
     OmSegmentIterator & operator = (const OmSegmentIterator & other);
 
 private:
-    OmSegments* segments_;
+    segments* segments_;
     std::deque<OmSegment*> segs_;
 };
 

@@ -7,7 +7,7 @@
 #include "datalayer/omIDataVolume.hpp"
 #include "project/project.h"
 #include "utility/omStringHelpers.h"
-#include "volume/io/omChunkOffset.hpp"
+#include "volume/io/chunkOffset.hpp"
 #include "volume/channel.h"
 #include "volume/segmentation.h"
 #include "volume/omVolumeTypes.hpp"
@@ -89,7 +89,7 @@ public:
     {
         const int level = coord.Level;
         const uint64_t offset =
-            OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
+            chunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
         T* ret = maps_[level]->GetPtrWithOffset(offset);
         assert(ret);
         return ret;

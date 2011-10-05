@@ -3,7 +3,7 @@
 #include "common/omDebug.h"
 #include "common/omSet.hpp"
 #include "project/project.h"
-#include "segment/omSegments.h"
+#include "segment/segments.h"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
 #include "utility/dataWrappers.h"
@@ -33,12 +33,12 @@ void OmSegmentSelector::selectNoSegments()
     params_->newSelectedIDs.clear();
 }
 
-void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel,
+void OmSegmentSelector::selectJustThisSegment( const segId segIDunknownLevel,
                                                const bool isSelected)
 {
     selectNoSegments();
 
-    const OmSegID segID = segments_->findRootID( segIDunknownLevel );
+    const segId segID = segments_->findRootID( segIDunknownLevel );
     if(!segID){
         return;
     }
@@ -54,20 +54,20 @@ void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel,
     setSelectedSegment(segID);
 }
 
-void OmSegmentSelector::setSelectedSegment(const OmSegID segID)
+void OmSegmentSelector::setSelectedSegment(const segId segID)
 {
     params_->sdw.SetSegmentID(segID);
     OmSegmentSelected::Set(params_->sdw);
 }
 
-void OmSegmentSelector::InsertSegments(const boost::unordered_set<OmSegID>* segIDs)
+void OmSegmentSelector::InsertSegments(const boost::unordered_set<segId>* segIDs)
 {
     FOR_EACH(iter, *segIDs){
         params_->newSelectedIDs.insert(segments_->findRootID(*iter));
     }
 }
 
-void OmSegmentSelector::RemoveSegments(const boost::unordered_set<OmSegID>* segIDs)
+void OmSegmentSelector::RemoveSegments(const boost::unordered_set<segId>* segIDs)
 {
     params_->newSelectedIDs.clear();
 
@@ -76,10 +76,10 @@ void OmSegmentSelector::RemoveSegments(const boost::unordered_set<OmSegID>* segI
     }
 }
 
-void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
+void OmSegmentSelector::augmentSelectedSet( const segId segIDunknownLevel,
                                             const bool isSelected)
 {
-    const OmSegID segID = segments_->findRootID( segIDunknownLevel );
+    const segId segID = segments_->findRootID( segIDunknownLevel );
 
     if(!segID){
         return;
@@ -94,9 +94,9 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
     setSelectedSegment(segID);
 }
 
-void OmSegmentSelector::selectJustThisSegment_toggle(const OmSegID segIDunknownLevel)
+void OmSegmentSelector::selectJustThisSegment_toggle(const segId segIDunknownLevel)
 {
-    const OmSegID segID = segments_->findRootID( segIDunknownLevel );
+    const segId segID = segments_->findRootID( segIDunknownLevel );
     if(!segID){
         return;
     }
@@ -105,9 +105,9 @@ void OmSegmentSelector::selectJustThisSegment_toggle(const OmSegID segIDunknownL
     selectJustThisSegment( segID, !isSelected );
 }
 
-void OmSegmentSelector::augmentSelectedSet_toggle(const OmSegID segIDunknownLevel)
+void OmSegmentSelector::augmentSelectedSet_toggle(const segId segIDunknownLevel)
 {
-    const OmSegID segID = segments_->findRootID( segIDunknownLevel );
+    const segId segID = segments_->findRootID( segIDunknownLevel );
     if(!segID){
         return;
     }
@@ -148,7 +148,7 @@ bool OmSegmentSelector::sendEvent()
 
     if(params_->augmentListOnly){
         // disable undo option for now
-        OmSegments* segments = params_->sdw.Segments();
+        segments* segments = params_->sdw.Segments();
 
         if(om::ADD == params_->addOrSubtract){
             segments->AddToSegmentSelection(params_->newSelectedIDs);

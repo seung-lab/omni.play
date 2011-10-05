@@ -4,7 +4,7 @@
 #include "datalayer/archive/old/omDataArchiveStd.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/omLockedPODs.hpp"
-#include "segment/omSegments.h"
+#include "segment/segments.h"
 #include "utility/dataWrappers.h"
 
 #include <QVector> //TODO: switch to mem-mapped file...
@@ -56,16 +56,16 @@ public:
         FOR_EACH(iter, segs)
         {
             OmSegment* seg = *iter;
-            const OmSegID segID = seg->value();
+            const segId segID = seg->value();
             segToGroupNum_[segID] = groupNum;
         }
     }
 
-    inline bool InSameValidGroup(const OmSegID segID1, const OmSegID segID2) const {
+    inline bool InSameValidGroup(const segId segID1, const segId segID2) const {
         return segToGroupNum_[segID1] == segToGroupNum_[segID2];
     }
 
-    inline uint32_t Get(const OmSegID segID) const {
+    inline uint32_t Get(const segId segID) const {
           return segToGroupNum_[segID];
     }
 

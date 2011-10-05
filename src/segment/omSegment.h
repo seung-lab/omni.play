@@ -14,7 +14,7 @@
 #include "segment/omSegmentEdge.h"
 #include "zi/omMutex.h"
 
-class OmSegments;
+class segments;
 
 class OmSegment {
 public:
@@ -27,7 +27,7 @@ public:
         , freshnessForMeshes_(0)
     {}
 
-    inline OmSegID value() const {
+    inline segId value() const {
         return data_->value;
     }
 
@@ -94,7 +94,7 @@ public:
 
     const segChildCont_t& GetChildren();
 
-    OmSegID RootID();
+    segId RootID();
 
     OmID GetSegmentationID();
 
@@ -144,7 +144,7 @@ public:
         customMergeEdge_ = e;
     }
 
-    inline OmSegments* Segments(){
+    inline segments* Segments(){
         return segments_;
     }
 
@@ -152,7 +152,7 @@ private:
     OmSegmentDataV4* data_;
     uint8_t* listType_;
 
-    OmSegments* segments_;
+    segments* segments_;
     OmSegment* parent_;
     double threshold_;
 

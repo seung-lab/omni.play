@@ -1,10 +1,10 @@
 #pragma once
 
 #include "common/common.h"
-#include "chunks/omSegChunkDataInterface.hpp"
-#include "chunks/omSegChunkDataImpl.hpp"
+#include "chunks/segChunkDataInterface.hpp"
+#include "chunks/segChunkDataImpl.hpp"
 
-class OmSegChunk;
+class segChunk;
 class segmentation;
 
 namespace om {
@@ -12,7 +12,7 @@ namespace segchunk {
 
 class dataFactory {
 public:
-    static dataInterface* Produce(segmentation* vol, OmSegChunk* chunk,
+    static dataInterface* Produce(segmentation* vol, segChunk* chunk,
                                   const om::chunkCoord& coord)
     {
         switch(vol->getVolDataType().index()){

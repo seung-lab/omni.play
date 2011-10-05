@@ -5,7 +5,7 @@
 #include "segment/lists/omSegmentListForGUI.hpp"
 #include "segment/lists/omSegmentListGlobal.hpp"
 #include "segment/lists/omSegmentLists.h"
-#include "segment/lowLevel/omSegmentsImplLowLevel.h"
+#include "segment/lowLevel/segmentsImplLowLevel.h"
 #include "threads/omTaskManager.hpp"
 #include "utility/omTimer.hpp"
 #include "utility/segmentationDataWrapper.hpp"
@@ -16,7 +16,7 @@ private:
 
     OmSegmentLists *const segmentLists_;
 
-    OmSegmentsImplLowLevel* cache_;
+    segmentsImplLowLevel* cache_;
 
     std::vector<SegInfo> list_;
     bool recreateGUIlists_;
@@ -37,7 +37,7 @@ public:
         threadPool_.join();
     }
 
-    void SetCache(OmSegmentsImplLowLevel* cache) {
+    void SetCache(segmentsImplLowLevel* cache) {
         cache_ = cache;
     }
 
@@ -92,7 +92,7 @@ public:
         runRefreshGUIlists(om::FORCE);
     }
     
-    inline int64_t GetSizeWithChildren(const OmSegID segID) {
+    inline int64_t GetSizeWithChildren(const segId segID) {
         if(segID >= list_.size()){
             std::cout << "segment " << segID << "not found\n";
             return 0;
@@ -120,7 +120,7 @@ private:
 
     void doAddSegment(OmSegment* seg)
     {
-        const OmSegID segID = seg->value();
+        const segId segID = seg->value();
 
         if(segID >= list_.size()){
             list_.resize(segID + 10);

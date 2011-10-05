@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tiles/omTileFilters.hpp"
-#include "chunks/omRawChunkSlicer.hpp"
+#include "chunks/rawChunkSlicer.hpp"
 #include "volume/mipVolume.h"
 
 namespace om {
@@ -58,7 +58,7 @@ private:
     template <typename T>
     inline OmPooledTile<T>* getRawSlice(T* d) const
     {
-        OmRawChunkSlicer<T> slicer(128, d);
+        rawChunkSlicer<T> slicer(128, d);
 
         project::Globals().FileReadSemaphore().acquire(1);
         OmPooledTile<T>* tile = slicer.GetCopyAsPooledTile(plane_, depth_);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "segment/omSegments.h"
+#include "segment/segments.h"
 #include "segment/lists/omSegmentLists.h"
 #include "utility/dataWrappers.h"
 #include "utility/omTimer.hpp"

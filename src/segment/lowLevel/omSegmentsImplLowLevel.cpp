@@ -1,13 +1,13 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "segment/lowLevel/omEnabledSegments.hpp"
-#include "segment/lowLevel/omSegmentsImplLowLevel.h"
+#include "segment/lowLevel/segmentsImplLowLevel.h"
 #include "segment/lowLevel/omSegmentSelection.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "system/cache/omCacheManager.h"
 #include "volume/segmentation.h"
 
-OmSegmentsImplLowLevel::OmSegmentsImplLowLevel(segmentation* segmentation,
-                                               OmSegmentsStore* segmentPages)
+segmentsImplLowLevel::segmentsImplLowLevel(segmentation* segmentation,
+                                               segmentsStore* segmentPages)
     : segmentation_(segmentation)
     , store_(segmentPages)
     , segmentSelection_(new OmSegmentSelection(this))
@@ -17,10 +17,10 @@ OmSegmentsImplLowLevel::OmSegmentsImplLowLevel(segmentation* segmentation,
     maxValue_.set(0);
 }
 
-OmSegmentsImplLowLevel::~OmSegmentsImplLowLevel()
+segmentsImplLowLevel::~segmentsImplLowLevel()
 {}
 
-QString OmSegmentsImplLowLevel::getSegmentName(OmSegID segID)
+QString segmentsImplLowLevel::getSegmentName(segId segID)
 {
     if(segmentCustomNames.empty()){
         return "";
@@ -33,11 +33,11 @@ QString OmSegmentsImplLowLevel::getSegmentName(OmSegID segID)
     return ""; //QString("segment%1").arg(segID);
 }
 
-void OmSegmentsImplLowLevel::setSegmentName(OmSegID segID, QString name){
+void segmentsImplLowLevel::setSegmentName(segId segID, QString name){
     segmentCustomNames[ segID ] = name;
 }
 
-QString OmSegmentsImplLowLevel::getSegmentNote(OmSegID segID)
+QString segmentsImplLowLevel::getSegmentNote(segId segID)
 {
     if(segmentNotes.empty()){
         return "";
@@ -50,18 +50,18 @@ QString OmSegmentsImplLowLevel::getSegmentNote(OmSegID segID)
     return "";
 }
 
-void OmSegmentsImplLowLevel::setSegmentNote(OmSegID segID, QString note){
+void segmentsImplLowLevel::setSegmentNote(segId segID, QString note){
     segmentNotes[ segID ] = note;
 }
 
-void OmSegmentsImplLowLevel::touchFreshness(){
+void segmentsImplLowLevel::touchFreshness(){
     OmCacheManager::TouchFreshness();
 }
 
-void OmSegmentsImplLowLevel::growGraphIfNeeded(OmSegment* newSeg){
+void segmentsImplLowLevel::growGraphIfNeeded(OmSegment* newSeg){
     segmentGraph_.GrowGraphIfNeeded(newSeg);
 }
 
-SegmentationDataWrapper OmSegmentsImplLowLevel::GetSDW() const {
+SegmentationDataWrapper segmentsImplLowLevel::GetSDW() const {
     return segmentation_->GetSDW();
 }

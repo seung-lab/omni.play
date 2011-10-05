@@ -3,16 +3,16 @@
 #include "segment/lowLevel/store/omCacheSegStore.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
 
-OmSegmentsStore::OmSegmentsStore(segmentation* segmentation)
+segmentsStore::segmentsStore(segmentation* segmentation)
     : segmentation_(segmentation)
     , segmentPagesPtr_(new OmPagingPtrStore(segmentation))
     , segmentPages_(segmentPagesPtr_.get())
 {}
 
-OmSegmentsStore::~OmSegmentsStore()
+segmentsStore::~segmentsStore()
 {}
 
-void OmSegmentsStore::StartCaches()
+void segmentsStore::StartCaches()
 {
     if(cachedStore_)
     {
@@ -24,43 +24,43 @@ void OmSegmentsStore::StartCaches()
     cacheRootIDs_.reset(new OmCacheSegRootIDs(segmentation_, this));
 }
 
-uint32_t OmSegmentsStore::NumPages()
+uint32_t segmentsStore::NumPages()
 {
     zi::guard g(pagesLock_);
     return segmentPages_->NumPages();
 }
 
-uint32_t OmSegmentsStore::PageSize()
+uint32_t segmentsStore::PageSize()
 {
     zi::guard g(pagesLock_);
     return segmentPages_->PageSize();
 }
 
-std::vector<OmSegmentPage*> OmSegmentsStore::Pages()
+std::vector<OmSegmentPage*> segmentsStore::Pages()
 {
     zi::guard g(pagesLock_);
     return segmentPages_->Pages();
 }
 
-OmSegment* OmSegmentsStore::GetSegment(const OmSegID value){
+OmSegment* segmentsStore::GetSegment(const segId value){
     return cachedStore_->GetSegment(value);
 }
 
-OmSegment* OmSegmentsStore::GetSegmentUnsafe(const OmSegID value){
+OmSegment* segmentsStore::GetSegmentUnsafe(const segId value){
     return cachedStore_->GetSegmentUnsafe(value);
 }
 
-OmSegID OmSegmentsStore::Root(const OmSegID segID){
+segId segmentsStore::Root(const segId segID){
     return cacheRootIDs_->Root(segID);
 }
 
-OmSegment* OmSegmentsStore::AddSegment(const OmSegID value)
+OmSegment* segmentsStore::AddSegment(const segId value)
 {
     zi::guard g(pagesLock_);
     return segmentPages_->AddSegment(value);
 }
 
-void OmSegmentsStore::Flush()
+void segmentsStore::Flush()
 {
     zi::guard g(pagesLock_);
     segmentPages_->Flush();
@@ -69,7 +69,7 @@ void OmSegmentsStore::Flush()
 /**
  * a segment ptr is invalid if it is NULL, or has an ID of 0
  **/
-bool OmSegmentsStore::IsSegmentValid(const OmSegID value)
+bool segmentsStore::IsSegmentValid(const segId value)
 {
     if(!value){
         return false;

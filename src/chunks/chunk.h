@@ -1,14 +1,14 @@
 #pragma once
 
 /**
- *  OmChunk encapsulates a 3D-matrix of image data (typically 128^3) and
+ *  chunk encapsulates a 3D-matrix of image data (typically 128^3) and
  *    its associated size/positioning metadata.
  *
  *  Brett Warne - bwarne@mit.edu - 2/24/09
  *  Michael Purcaro - purcaro@gmail.com - 1/29/11
  */
 
-#include "chunks/omChunkMipping.hpp"
+#include "chunks/chunkMipping.hpp"
 #include "volume/omVolumeTypes.hpp"
 
 class channel;
@@ -16,13 +16,13 @@ class channelImpl;
 class segmentation;
 namespace om { namespace chunk { class dataInterface; } }
 
-class OmChunk {
+class chunk {
 public:
-    OmChunk(channel* vol, const om::chunkCoord& coord);
-    OmChunk(channelImpl* vol, const om::chunkCoord& coord);
-    OmChunk(segmentation* vol, const om::chunkCoord& coord);
+    chunk(channel* vol, const om::chunkCoord& coord);
+    chunk(channelImpl* vol, const om::chunkCoord& coord);
+    chunk(segmentation* vol, const om::chunkCoord& coord);
 
-    virtual ~OmChunk();
+    virtual ~chunk();
 
     bool ContainsVoxel(const om::dataCoord& vox) const {
         return vox.volume() == vol_ &&  
@@ -45,7 +45,7 @@ public:
         return chunkData_.get();
     }
 
-    OmChunkMipping& Mipping(){
+    chunkMipping& Mipping(){
         return mipping_;
     }
 
@@ -54,6 +54,6 @@ protected:
     const boost::scoped_ptr<om::chunk::dataInterface> chunkData_;
     const mipVolume * const vol_;
 
-    OmChunkMipping mipping_;
+    chunkMipping mipping_;
 };
 

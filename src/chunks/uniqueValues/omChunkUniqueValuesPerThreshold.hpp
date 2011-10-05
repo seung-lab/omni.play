@@ -1,9 +1,9 @@
 #pragma once
 
 #include "common/common.h"
-#include "chunks/omSegChunk.h"
-#include "chunks/omSegChunkDataInterface.hpp"
-#include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
+#include "chunks/segChunk.h"
+#include "chunks/segChunkDataInterface.hpp"
+#include "chunks/uniqueValues/chunkUniqueValuesTypes.h"
 #include "common/om.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/image/omImage.hpp"
@@ -11,7 +11,7 @@
 #include "volume/segmentation.h"
 #include "volume/segmentationFolder.h"
 
-class OmChunkUniqueValuesPerThreshold {
+class chunkUniqueValuesPerThreshold {
 private:
     segmentation *const segmentation_;
     const om::chunkCoord coord_;
@@ -24,7 +24,7 @@ private:
     zi::rwmutex mutex_;
 
 public:
-    OmChunkUniqueValuesPerThreshold(segmentation* segmentation,
+    chunkUniqueValuesPerThreshold(segmentation* segmentation,
                                     const om::chunkCoord& coord,
                                     const double threshold)
         : segmentation_(segmentation)
@@ -79,7 +79,7 @@ private:
 
     void findValues()
     {
-        OmSegChunk* chunk = segmentation_->GetChunk(coord_);
+        segChunk* chunk = segmentation_->GetChunk(coord_);
 
         om::shared_ptr<uint32_t> rawDataPtr =
             chunk->SegData()->GetCopyOfChunkDataAsUint32();
@@ -90,7 +90,7 @@ private:
 
         if(!qFuzzyCompare(1, threshold_))
         {
-            OmSegments* segments = segmentation_->Segments();
+            segments* segments = segmentation_->Segments();
             segmentation_->SetDendThreshold(threshold_);
 
             for(size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){

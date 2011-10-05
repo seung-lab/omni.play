@@ -3,8 +3,8 @@
 #include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
 #include "volume/omVolumeTypes.hpp"
 
-class OmSegChunk;
-class OmSegments;
+class segChunk;
+class segments;
 class segmentation;
 
 namespace om {
@@ -12,9 +12,9 @@ namespace segchunk {
 
 class dataInterface {
 public:
-    virtual void ProcessChunk(const bool, OmSegments* segments) = 0;
+    virtual void ProcessChunk(const bool, segments* segments) = 0;
 
-    virtual void RefreshBoundingData(OmSegments* segments) = 0;
+    virtual void RefreshBoundingData(segments* segments) = 0;
 
     virtual PooledTile32Ptr ExtractDataSlice32bit(const ViewType, const int) = 0;
     virtual om::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32() = 0;

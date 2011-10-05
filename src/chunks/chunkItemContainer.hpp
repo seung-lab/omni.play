@@ -2,17 +2,17 @@
 
 #include "common/common.h"
 #include "common/omContainer.hpp"
-#include "src/chunks/omChunkItemContainerMatrix.hpp"
+#include "src/chunks/chunkItemContainerMatrix.hpp"
 #include "zi/omMutex.h"
 
 template <typename VOL, typename T>
-class OmChunkItemContainer {
+class chunkItemContainer {
 private:
     VOL *const vol_;;
 
     zi::spinlock lock_;
 
-    typedef OmChunkItemContainerMatrix<VOL,T> matrix_t;
+    typedef chunkItemContainerMatrix<VOL,T> matrix_t;
     std::vector<matrix_t*> mips_;
 
     void setup()
@@ -37,13 +37,13 @@ private:
     }
 
 public:
-    OmChunkItemContainer(VOL* vol)
+    chunkItemContainer(VOL* vol)
         : vol_(vol)
     {
         setup();
     }
 
-    ~OmChunkItemContainer(){
+    ~chunkItemContainer(){
         om::container::clearPtrVec(mips_);
     }
 

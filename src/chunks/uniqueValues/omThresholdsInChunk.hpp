@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chunks/uniqueValues/omChunkUniqueValuesPerThreshold.hpp"
+#include "chunks/uniqueValues/chunkUniqueValuesPerThreshold.hpp"
 #include "utility/fuzzyStdObjs.hpp"
 
 class OmThresholdsInChunk {
@@ -8,7 +8,7 @@ private:
     segmentation *const segmentation_;
     const om::chunkCoord coord_;
 
-    typedef DoubleFuzzyStdMap<OmChunkUniqueValuesPerThreshold*> map_t;
+    typedef DoubleFuzzyStdMap<chunkUniqueValuesPerThreshold*> map_t;
     typedef map_t::iterator iterator;
     typedef map_t::value_type value_t;
 
@@ -30,7 +30,7 @@ public:
         }
     }
 
-    OmChunkUniqueValuesPerThreshold* Get(const double threshold)
+    chunkUniqueValuesPerThreshold* Get(const double threshold)
     {
         zi::guard g(lock_);
 
@@ -43,7 +43,7 @@ public:
 
         iterator p = valByThres_.insert(iter,
                                         value_t(threshold,
-                                                new OmChunkUniqueValuesPerThreshold(segmentation_,
+                                                new chunkUniqueValuesPerThreshold(segmentation_,
                                                                                     coord_,
                                                                                     threshold)));
         return p->second;

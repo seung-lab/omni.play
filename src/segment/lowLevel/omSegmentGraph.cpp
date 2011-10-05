@@ -1,5 +1,5 @@
 #include "segment/lowLevel/omSegmentGraphInitialLoad.hpp"
-#include "segment/lowLevel/omSegmentsImplLowLevel.h"
+#include "segment/lowLevel/segmentsImplLowLevel.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "utility/omStringHelpers.h"
 #include "volume/segmentation.h"
@@ -26,7 +26,7 @@ bool OmSegmentGraph::DoesGraphNeedToBeRefreshed( const uint32_t maxValue )
 }
 
 void OmSegmentGraph::Initialize(segmentation* segmentation,
-                                OmSegmentsImplLowLevel* cache)
+                                segmentsImplLowLevel* cache)
 {
     segmentation_ = segmentation;
     validGroupNum_ = segmentation->ValidGroupNum();
@@ -121,19 +121,19 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
     timer.PrintDone();
 }
 
-bool OmSegmentGraph::sizeCheck(const OmSegID a, const OmSegID b, const double threshold)
+bool OmSegmentGraph::sizeCheck(const segId a, const segId b, const double threshold)
 {
     return (segmentListsLL_->GetSizeWithChildren(Root(a)) + 
             segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold;
 }
 
-bool OmSegmentGraph::joinInternal(const OmSegID parentID,
-                                  const OmSegID childUnknownDepthID,
+bool OmSegmentGraph::joinInternal(const segId parentID,
+                                  const segId childUnknownDepthID,
                                   const double threshold,
                                   const int edgeNumber)
 {
-    const OmSegID childRootID = Root(childUnknownDepthID);
-    const OmSegID parentRootID = Root(parentID);
+    const segId childRootID = Root(childUnknownDepthID);
+    const segId parentRootID = Root(parentID);
 
     if(childRootID == parentRootID){
         return false;
@@ -163,7 +163,7 @@ bool OmSegmentGraph::joinInternal(const OmSegID parentID,
 }
 
 
-bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
+bool OmSegmentGraph::splitChildFromParentInternal( const segId childID )
 {
     OmSegment* child = mCache->SegmentStore()->GetSegment( childID );
 

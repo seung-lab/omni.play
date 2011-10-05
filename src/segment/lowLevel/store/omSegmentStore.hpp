@@ -10,9 +10,9 @@ class OmPagingPtrStore;
 class OmSegment;
 class OmSegmentPage;
 class segmentation;
-class OmSegmentsImpl;
+class segmentsImpl;
 
-class OmSegmentsStore {
+class segmentsStore {
 private:
     segmentation *const segmentation_;
 
@@ -24,8 +24,8 @@ private:
     boost::scoped_ptr<OmCacheSegRootIDs> cacheRootIDs_;
 
 public:
-    OmSegmentsStore(segmentation* segmentation);
-    ~OmSegmentsStore();
+    segmentsStore(segmentation* segmentation);
+    ~segmentsStore();
 
 // pages
     uint32_t PageSize();
@@ -34,21 +34,21 @@ public:
     void Flush();
 
 // segments
-    OmSegment* AddSegment(const OmSegID value);
-    bool IsSegmentValid(const OmSegID value);
+    OmSegment* AddSegment(const segId value);
+    bool IsSegmentValid(const segId value);
 
 // caching
     void StartCaches();
-    OmSegment* GetSegment(const OmSegID value);
-    OmSegment* GetSegmentUnsafe(const OmSegID value);
+    OmSegment* GetSegment(const segId value);
+    OmSegment* GetSegmentUnsafe(const segId value);
 
-    // WARNING: do not call from inside OmSegmentsImpl or OmSegmentsImplLowLevel
-    OmSegID Root(const OmSegID segID);
+    // WARNING: do not call from inside segmentsImpl or segmentsImplLowLevel
+    segId Root(const segId segID);
 
 private:
-    friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const OmSegmentsImpl&);
-    friend void YAML::operator>>(const YAML::Node& in, OmSegmentsImpl&);
-    friend QDataStream &operator<<(QDataStream& out, const OmSegmentsImpl&);
-    friend QDataStream &operator>>(QDataStream& in, OmSegmentsImpl&);
+    friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const segmentsImpl&);
+    friend void YAML::operator>>(const YAML::Node& in, segmentsImpl&);
+    friend QDataStream &operator<<(QDataStream& out, const segmentsImpl&);
+    friend QDataStream &operator>>(QDataStream& in, segmentsImpl&);
 };
 

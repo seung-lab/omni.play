@@ -11,7 +11,7 @@ public:
         , valid(false)
     {}
 
-    OmSegmentEdge(const OmSegID p, const OmSegID c, const double t)
+    OmSegmentEdge(const segId p, const segId c, const double t)
         : parentID(p)
         , childID(c)
         , threshold(t)
@@ -30,8 +30,8 @@ public:
                 valid == rhs.valid );
     }
 
-    OmSegID parentID;
-    OmSegID childID;
+    segId parentID;
+    segId childID;
     double threshold;
     bool valid;
 

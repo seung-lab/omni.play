@@ -1,14 +1,14 @@
 #pragma once
 
 #include "segment/lowLevel/store/omSegmentStore.hpp"
-#include "segment/omSegments.h"
+#include "segment/segments.h"
 #include "volume/segmentation.h"
 
 class OmCacheSegRootIDs {
 private:
     segmentation *const segmentation_;
-    OmSegments *const segments_;
-    OmSegmentsStore *const segmentPages_;
+    segments *const segments_;
+    segmentsStore *const segmentPages_;
 
     const uint32_t numInitialPages_;
     const int pageSize_;
@@ -25,7 +25,7 @@ private:
 
 public:
     OmCacheSegRootIDs(segmentation* segmentation,
-                      OmSegmentsStore* segmentPages)
+                      segmentsStore* segmentPages)
         : segmentation_(segmentation)
         , segments_(segmentation->Segments())
         , segmentPages_(segmentPages)
@@ -46,7 +46,7 @@ public:
         }
     }
 
-    OmSegID Root(const OmSegID segID)
+    segId Root(const segId segID)
     {
         const uint32_t pageNum = segID / pageSize_;
 
@@ -65,7 +65,7 @@ public:
             }
         }
 
-        const OmSegID rootSegID = segments_->findRootIDnoCache(segID);
+        const segId rootSegID = segments_->findRootIDnoCache(segID);
 
         {
             zi::spinlock::pool<cache_root_segment_id_initial_tag>::guard g(segID);

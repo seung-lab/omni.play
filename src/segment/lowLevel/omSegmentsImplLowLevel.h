@@ -10,14 +10,14 @@
 
 class OmEnabledSegments;
 class OmSegmentSelection;
-class OmSegments;
+class segments;
 class segmentation;
 class SegmentationDataWrapper;
 
-class OmSegmentsImplLowLevel {
+class segmentsImplLowLevel {
 public:
-    OmSegmentsImplLowLevel(segmentation*, OmSegmentsStore*);
-    virtual ~OmSegmentsImplLowLevel();
+    segmentsImplLowLevel(segmentation*, segmentsStore*);
+    virtual ~segmentsImplLowLevel();
 
     inline void RefreshGUIlists(){
         segmentGraph_.RefreshGUIlists();
@@ -25,7 +25,7 @@ public:
 
     void growGraphIfNeeded(OmSegment* newSeg);
 
-    inline OmSegID GetNumSegments() const {
+    inline segId GetNumSegments() const {
         return mNumSegs;
     }
 
@@ -46,7 +46,7 @@ public:
         return store_->GetSegment(segmentGraph_.Root(segment->value()));
     }
 
-    inline OmSegID FindRootID(OmSegment* segment)
+    inline segId FindRootID(OmSegment* segment)
     {
         if(!segment){
             return 0;
@@ -59,7 +59,7 @@ public:
         return segmentGraph_.Root(segment->value());
     }
 
-    inline OmSegment* FindRoot(const OmSegID segID)
+    inline OmSegment* FindRoot(const segId segID)
     {
         if(!segID){
             return 0;
@@ -68,7 +68,7 @@ public:
         return store_->GetSegment(segmentGraph_.Root(segID));
     }
 
-    inline OmSegID FindRootID(const OmSegID segID)
+    inline segId FindRootID(const segId segID)
     {
         if(!segID){
             return 0;
@@ -77,11 +77,11 @@ public:
         return segmentGraph_.Root(segID);
     }
 
-    QString getSegmentName(OmSegID segID);
-    void setSegmentName(OmSegID segID, QString name);
+    QString getSegmentName(segId segID);
+    void setSegmentName(segId segID, QString name);
 
-    QString getSegmentNote(OmSegID segID);
-    void setSegmentNote(OmSegID segID, QString note);
+    QString getSegmentNote(segId segID);
+    void setSegmentNote(segId segID, QString note);
 
     void turnBatchModeOn(const bool batchMode);
 
@@ -103,13 +103,13 @@ public:
 
     SegmentationDataWrapper GetSDW() const;
 
-    OmSegmentsStore* SegmentStore(){
+    segmentsStore* SegmentStore(){
         return store_;
     }
 
 protected:
     segmentation *const segmentation_;
-    OmSegmentsStore *const store_;
+    segmentsStore *const store_;
     const boost::scoped_ptr<OmSegmentSelection> segmentSelection_;
     const boost::scoped_ptr<OmEnabledSegments> enabledSegments_;
 
@@ -119,7 +119,7 @@ protected:
     QHash< OmID, QString > segmentCustomNames;
     QHash< OmID, QString > segmentNotes;
 
-    inline OmSegID getNextValue(){
+    inline segId getNextValue(){
         return maxValue_.inc();
     }
 

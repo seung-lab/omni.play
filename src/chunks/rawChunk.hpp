@@ -12,7 +12,7 @@
 #include <QFile>
 
 template <typename T>
-class OmRawChunk {
+class rawChunk {
 private:
     mipVolume *const vol_;
     const om::chunkCoord coord_;
@@ -29,10 +29,10 @@ private:
     typedef typename zi::spinlock::pool<raw_chunk_mutex_pool_tag>::guard mutex_guard_t;
 
 public:
-    OmRawChunk(mipVolume* vol, const om::chunkCoord& coord)
+    rawChunk(mipVolume* vol, const om::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
-        , chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))
+        , chunkOffset_(chunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))
         , memMapFileName_(OmFileNames::GetMemMapFileNameQT(vol,
                                                            coord.Level))
         , numBytes_(128*128*128*vol_->GetBytesPerVoxel())
@@ -42,7 +42,7 @@ public:
         readData();
     }
 
-    ~OmRawChunk()
+    ~rawChunk()
     {
         Flush();
     }
