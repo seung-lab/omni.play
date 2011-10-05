@@ -1,6 +1,6 @@
 #pragma once
 
-#include "segment/omSegment.h"
+#include "segment/segment.h"
 
-typedef std::deque<OmSegment*> OmSegPtrList;
+typedef std::deque<segment*> OmSegPtrList;
 

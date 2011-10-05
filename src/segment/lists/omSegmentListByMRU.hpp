@@ -1,28 +1,28 @@
 #pragma once
 
-#include "segment/omSegment.h"
+#include "segment/segment.h"
 #include "system/cache/omCacheObjects.hpp"
-#include "segment/lists/omSegmentListsTypes.hpp"
+#include "segment/lists/segmentListsTypes.hpp"
 
-class OmSegmentLists;
+class segmentLists;
 
-class OmSegmentListByMRU {
+class segmentListByMRU {
 private:
-    OmSegmentLists *const segmentLists_;
+    segmentLists *const segmentLists_;
 
-    KeyMultiIndex<OmSegment*> lru_;
+    KeyMultiIndex<segment*> lru_;
     std::vector<SegInfo> vec_;
     bool dirty_;
 
     zi::mutex lock_;
 
 public:
-    OmSegmentListByMRU(OmSegmentLists* segmentLists)
+    segmentListByMRU(segmentLists* segmentLists)
         : segmentLists_(segmentLists)
         , dirty_(true)
     {}
 
-    void Touch(OmSegment* seg)
+    void Touch(segment* seg)
     {
         zi::guard g(lock_);
         lru_.touch(seg);

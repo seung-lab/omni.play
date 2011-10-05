@@ -2,27 +2,27 @@
 
 #include "common/common.h"
 #include "segment/lowLevel/omDynamicForestCache.hpp"
-#include "segment/lowLevel/omSegmentLowLevelTypes.h"
+#include "segment/lowLevel/segmentLowLevelTypes.h"
 #include "threads/omTaskManagerTypes.h"
 
 class OmMST;
 class segmentsStore;
-class OmSegment;
+class segment;
 class segmentsImplLowLevel;
-class OmSegmentChildren;
-class OmSegmentListLowLevel;
+class segmentChildren;
+class segmentListLowLevel;
 class segmentation;
 class OmValidGroupNum;
 
-class OmSegmentGraph {
+class segmentGraph {
 public:
-    OmSegmentGraph();
-    ~OmSegmentGraph();
+    segmentGraph();
+    ~segmentGraph();
 
     void Initialize(segmentation* segmentation,
                     segmentsImplLowLevel* cache);
     bool DoesGraphNeedToBeRefreshed(const uint32_t maxValue);
-    void GrowGraphIfNeeded(OmSegment* newSeg);
+    void GrowGraphIfNeeded(segment* newSeg);
 
     void RefreshGUIlists();
 
@@ -42,10 +42,10 @@ public:
     void SetGlobalThreshold(OmMST* mst);
     void ResetGlobalThreshold(OmMST* mst);
 
-    void UpdateSizeListsFromJoin(OmSegment* root, OmSegment* child);
-    void UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* child);
+    void UpdateSizeListsFromJoin(segment* root, segment* child);
+    void UpdateSizeListsFromSplit(segment* parent, segment* child);
 
-    OmSegmentChildren* Children(){
+    segmentChildren* Children(){
         return children_.get();
     }
 
@@ -56,8 +56,8 @@ private:
     segmentsStore* segmentPages_;
 
     boost::scoped_ptr<OmDynamicForestCache> forest_;
-    boost::scoped_ptr<OmSegmentChildren> children_;
-    OmSegmentListLowLevel* segmentListsLL_;
+    boost::scoped_ptr<segmentChildren> children_;
+    segmentListLowLevel* segmentListsLL_;
 
     bool joinInternal(const segId parentID,
                       const segId childUnknownDepthID,
@@ -66,8 +66,8 @@ private:
 
     bool splitChildFromParentInternal(const segId childID);
 
-    SizeAndNumPieces computeSegmentSizeWithChildren(OmSegment* seg);
-    std::vector<OmSegment*> segsTempVec_;
+    SizeAndNumPieces computeSegmentSizeWithChildren(segment* seg);
+    std::vector<segment*> segsTempVec_;
     
     bool sizeCheck(const segId a, const segId b, const double threshold);
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "volume/omVolumeTypes.hpp"
+#include "volume/volumeTypes.hpp"
 
 #define dataWrapperRaw(c) (dataWrapper<int8_t>::produceNoFree(c))
 #define dataWrapperInvalid() (dataWrapper<int8_t>::produceNull())

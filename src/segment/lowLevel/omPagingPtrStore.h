@@ -3,7 +3,7 @@
 #include "common/om.hpp"
 #include "common/common.h"
 
-class OmSegmentPage;
+class segmentPage;
 class OmSimpleProgress;
 class segmentation;
 
@@ -21,9 +21,9 @@ public:
         return pageSize_;
     }
 
-    OmSegment* AddSegment(const segId value);
+    segment* AddSegment(const segId value);
 
-    std::vector<OmSegmentPage*> Pages(){
+    std::vector<segmentPage*> Pages(){
         return pages_;
     }
 
@@ -43,7 +43,7 @@ private:
     segmentation *const vol_;
 
     uint32_t pageSize_;
-    std::vector<OmSegmentPage*> pages_;
+    std::vector<segmentPage*> pages_;
 
     std::set<PageNum> validPageNums_;
 

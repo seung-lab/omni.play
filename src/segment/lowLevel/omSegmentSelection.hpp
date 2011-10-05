@@ -1,6 +1,6 @@
 #pragma once
 
-#include "segment/lists/omSegmentLists.h"
+#include "segment/lists/segmentLists.h"
 #include "segment/lowLevel/segmentsImplLowLevel.h"
 #include "volume/segmentation.h"
 #include "zi/omUtility.h"
@@ -8,7 +8,7 @@
 
 class segmentsImpl;
 
-class OmSegmentSelection {
+class segmentSelection {
 private:
     segmentsImplLowLevel *const cache_;
 
@@ -21,12 +21,12 @@ private:
     
     inline void addToRecentMap(const segId segID)
     {
-        OmSegment* seg = cache_->SegmentStore()->GetSegment(segID);
+        segment* seg = cache_->SegmentStore()->GetSegment(segID);
         cache_->segmentation_->SegmentLists()->TouchRecent(seg);
     }
 
 public:
-    OmSegmentSelection(segmentsImplLowLevel* cache)
+    segmentSelection(segmentsImplLowLevel* cache)
         : cache_(cache)
     {}
 

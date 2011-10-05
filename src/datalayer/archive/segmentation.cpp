@@ -3,14 +3,14 @@
 #include "utility/yaml/mipVolume.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omEnabledSegments.hpp"
-#include "segment/lowLevel/omSegmentSelection.hpp"
+#include "segment/lowLevelsegmentSelection.hpp"
 #include "segment/io/omUserEdges.hpp"
-#include "segment/omSegmentEdge.h"
-#include "segment/omSegment.h"
+#include "segmentsegmentEdge.h"
+#include "segmentsegment.h"
 #include "segment/segments.h"
 #include "segment/segmentsImpl.h"
 #include "segment/io/omMST.h"
-#include "segment/io/omValidGroupNum.hpp"
+#include "segment/io/validGroupNum.hpp"
 #include "project/details/segmentationManager.h"
 #include "system/omGroups.h"
 #include "system/omGroup.h"
@@ -112,7 +112,7 @@ void operator>>(const Node& in, segmentsImpl& sc)
     userEdges->Load();
 }
 
-Emitter &operator<<(Emitter& out, const OmSegmentEdge& se)
+Emitter &operator<<(Emitter& out, const segmentEdge& se)
 {
     out << BeginMap;
     out << Key << "Parent Id" << Value << se.parentID;
@@ -122,7 +122,7 @@ Emitter &operator<<(Emitter& out, const OmSegmentEdge& se)
     return out;
 }
 
-void operator>>(const Node& in, OmSegmentEdge& se)
+void operator>>(const Node& in, segmentEdge& se)
 {
     in["Parent Id"] >> se.parentID;
     in["Child Id"] >> se.childID;

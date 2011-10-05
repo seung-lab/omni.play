@@ -1,15 +1,15 @@
 #pragma once
 
 #include "common/common.h"
-#include "segment/lowLevel/store/omSegmentStore.hpp"
-#include "segment/lowLevel/omSegmentGraph.h"
-#include "segment/omSegment.h"
+#include "segment/lowLevel/store/segmentStore.hpp"
+#include "segment/lowLevel/segmentGraph.h"
+#include "segment/segment.h"
 #include "utility/omLockedPODs.hpp"
 
 #include <QHash>
 
 class OmEnabledSegments;
-class OmSegmentSelection;
+class segmentSelection;
 class segments;
 class segmentation;
 class SegmentationDataWrapper;
@@ -23,7 +23,7 @@ public:
         segmentGraph_.RefreshGUIlists();
     }
 
-    void growGraphIfNeeded(OmSegment* newSeg);
+    void growGraphIfNeeded(segment* newSeg);
 
     inline segId GetNumSegments() const {
         return mNumSegs;
@@ -33,7 +33,7 @@ public:
         mNumSegs = num;
     }
 
-    inline OmSegment* FindRoot(OmSegment* segment)
+    inline segment* FindRoot(segment* segment)
     {
         if(!segment){
             return 0;
@@ -46,7 +46,7 @@ public:
         return store_->GetSegment(segmentGraph_.Root(segment->value()));
     }
 
-    inline segId FindRootID(OmSegment* segment)
+    inline segId FindRootID(segment* segment)
     {
         if(!segment){
             return 0;
@@ -59,7 +59,7 @@ public:
         return segmentGraph_.Root(segment->value());
     }
 
-    inline OmSegment* FindRoot(const segId segID)
+    inline segment* FindRoot(const segId segID)
     {
         if(!segID){
             return 0;
@@ -93,7 +93,7 @@ public:
         return segmentGraph_.MSTfreshness();
     }
 
-    inline OmSegmentSelection& SegmentSelection(){
+    inline segmentSelection& SegmentSelection(){
         return *segmentSelection_;
     }
 
@@ -110,7 +110,7 @@ public:
 protected:
     segmentation *const segmentation_;
     segmentsStore *const store_;
-    const boost::scoped_ptr<OmSegmentSelection> segmentSelection_;
+    const boost::scoped_ptr<segmentSelection> segmentSelection_;
     const boost::scoped_ptr<OmEnabledSegments> enabledSegments_;
 
     OmLockedUint32 maxValue_;
@@ -125,10 +125,10 @@ protected:
 
     void touchFreshness();
 
-    OmSegmentGraph segmentGraph_;
+    segmentGraph segmentGraph_;
 
 private:
-    friend class OmSegmentSelection;
+    friend class segmentSelection;
     friend class OmEnabledSegments;
     friend class SegmentTests;
 };

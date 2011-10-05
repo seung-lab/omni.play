@@ -3,9 +3,9 @@
 #include "segment/lowLevel/segmentsImplLowLevel.h"
 #include "datalayer/archive/segmentation.h"
 
-class OmSegmentEdge;
+class segmentEdge;
 class OmUserEdges;
-class OmSegmentChildren;
+class segmentChildren;
 class segmentsStore;
 
 class segmentsImpl : public segmentsImplLowLevel {
@@ -15,40 +15,40 @@ public:
 
     void Flush();
 
-    OmSegment* AddSegment();
-    OmSegment* AddSegment(segId value);
-    OmSegment* GetOrAddSegment(const segId val);
+    segment* AddSegment();
+    segment* AddSegment(segId value);
+    segment* GetOrAddSegment(const segId val);
 
-    OmSegmentChildren* Children();
+    segmentChildren* Children();
 
-    std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmSegmentEdge& e);
-    OmSegmentEdge SplitEdgeUserAction(const OmSegmentEdge& e);
+    std::pair<bool, segmentEdge> JoinFromUserAction(const segmentEdge& e);
+    segmentEdge SplitEdgeUserAction(const segmentEdge& e);
     segIdsSet JoinTheseSegments(const segIdsSet& segmentList);
     segIdsSet UnJoinTheseSegments(const segIdsSet& segmentList);
-    boost::optional<std::string> IsEdgeSplittable(const OmSegmentEdge& e);
-    boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
-	boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
+    boost::optional<std::string> IsEdgeSplittable(const segmentEdge& e);
+    boost::optional<std::string> IsSegmentSplittable(segment* child);
+	boost::optional<std::string> IsSegmentCuttable(segment* seg);
 
     void refreshTree();
 
     bool AreAnySegmentsInValidList(const segIdsSet& ids);
 
-	std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
-	bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
+	std::vector<segmentEdge> CutSegment(segment* seg);
+	bool JoinEdges(const std::vector<segmentEdge>& edges);
 
 private:
     OmUserEdges* userEdges_;
 
-    OmSegmentEdge splitChildFromParentNoTest(OmSegment* child);
+    segmentEdge splitChildFromParentNoTest(segment* child);
 
-    std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(const OmSegmentEdge& e);
-    std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmID, const OmID);
+    std::pair<bool, segmentEdge> JoinEdgeFromUser(const segmentEdge& e);
+    std::pair<bool, segmentEdge> JoinFromUserAction(const OmID, const OmID);
 
     void rerootSegmentLists();
     void setGlobalThreshold(OmMST* mst);
     void resetGlobalThreshold(OmMST* mst);
 
-    friend class OmSegmentColorizer;
+    friend class segmentColorizer;
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const segmentsImpl&);
     friend void YAML::operator>>(const YAML::Node&, segmentsImpl&);
     friend QDataStream& operator<<(QDataStream&, const segmentsImpl&);

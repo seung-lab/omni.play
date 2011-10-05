@@ -1,30 +1,30 @@
 #pragma once
 
-#include "segment/lists/omSegmentListsTypes.hpp"
+#include "segment/lists/segmentListsTypes.hpp"
 #include "zi/omMutex.h"
 
-class OmSegmentListLowLevel;
-class OmSegmentListGlobal;
-class OmSegmentListForGUI;
-class OmSegmentListByMRU;
+class segmentListLowLevel;
+class segmentListGlobal;
+class segmentListForGUI;
+class segmentListByMRU;
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
-class OmSegment;
+class segment;
 
-class OmSegmentLists {
+class segmentLists {
 private:
     zi::rwmutex lock_;
 
-    boost::scoped_ptr<OmSegmentListLowLevel> segmentListsLL_;
+    boost::scoped_ptr<segmentListLowLevel> segmentListsLL_;
 
-    om::shared_ptr<OmSegmentListGlobal> globalList_;
-    om::shared_ptr<OmSegmentListForGUI> working_;
-    om::shared_ptr<OmSegmentListForGUI> uncertain_;
-    om::shared_ptr<OmSegmentListForGUI> valid_;
+    om::shared_ptr<segmentListGlobal> globalList_;
+    om::shared_ptr<segmentListForGUI> working_;
+    om::shared_ptr<segmentListForGUI> uncertain_;
+    om::shared_ptr<segmentListForGUI> valid_;
 
-    boost::scoped_ptr<OmSegmentListByMRU> recent_;
+    boost::scoped_ptr<segmentListByMRU> recent_;
 
-    inline OmSegmentListForGUI* get(const om::SegListType type)
+    inline segmentListForGUI* get(const om::SegListType type)
     {
         switch(type){
         case om::VALID:
@@ -39,19 +39,19 @@ private:
     }
 
 public:
-    OmSegmentLists();
-    ~OmSegmentLists();
+    segmentLists();
+    ~segmentLists();
 
-    OmSegmentListLowLevel* LowLevelList() {
+    segmentListLowLevel* LowLevelList() {
         return segmentListsLL_.get();
     }
 
     void RefreshGUIlists();
 
-    void TouchRecent(OmSegment* seg);
+    void TouchRecent(segment* seg);
 
-    void Swap(om::shared_ptr<OmSegmentListForGUI>& list);
-    void Swap(om::shared_ptr<OmSegmentListGlobal>& globalList);
+    void Swap(om::shared_ptr<segmentListForGUI>& list);
+    void Swap(om::shared_ptr<segmentListGlobal>& globalList);
 
     size_t Size(const om::SegListType type);
     size_t SizeRecent();
@@ -70,9 +70,9 @@ public:
     segId GetNextSegIDinWorkingList(const SegmentationDataWrapper&);
 
     int64_t GetSizeWithChildren(const segId segID);
-    int64_t GetSizeWithChildren(OmSegment* seg);
+    int64_t GetSizeWithChildren(segment* seg);
 
     int64_t GetNumChildren(const segId segID);
-    int64_t GetNumChildren(OmSegment* seg);
+    int64_t GetNumChildren(segment* seg);
 };
 

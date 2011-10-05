@@ -2,20 +2,20 @@
 
 #include "segment/io/omMST.h"
 #include "segment/io/omValidGroupNum.hpp"
-#include "segment/lists/omSegmentListLowLevel.hpp"
+#include "segment/lists/segmentListLowLevel.hpp"
 #include "segment/lowLevel/omDynamicForestCache.hpp"
-#include "segment/lowLevel/store/omSegmentStore.hpp"
-#include "segment/lowLevel/omSegmentChildren.hpp"
+#include "segment/lowLevel/store/segmentStore.hpp"
+#include "segment/lowLevel/segmentChildren.hpp"
 #include "threads/omThreadPoolBatched.hpp"
 #include "utility/omTimer.hpp"
 
-class OmSegmentGraphInitialLoad {
+class segmentGraphInitialLoad {
 private:
     OmDynamicForestCache *const forest_;
     OmValidGroupNum *const validGroupNum_;
-    OmSegmentListLowLevel *const segmentListsLL_;
+    segmentListLowLevel *const segmentListsLL_;
     segmentsStore *const segmentPages_;
-    OmSegmentChildren *const children_;
+    segmentChildren *const children_;
 
     OmThreadPool pool_;
 
@@ -28,22 +28,22 @@ private:
     };
 
     OmThreadPoolBatched<TaskArgs,
-                        OmSegmentGraphInitialLoad,
+                        segmentGraphInitialLoad,
                         IndivArgPolicy> joinTaskPool_;
 
 public:
-    OmSegmentGraphInitialLoad(OmDynamicForestCache* forest,
+    segmentGraphInitialLoad(OmDynamicForestCache* forest,
                               OmValidGroupNum* validGroupNum,
-                              OmSegmentListLowLevel* segmentListLL,
+                              segmentListLowLevel* segmentListLL,
                               segmentsStore* segmentPages,
-                              OmSegmentChildren* children)
+                              segmentChildren* children)
         : forest_(forest)
         , validGroupNum_(validGroupNum)
         , segmentListsLL_(segmentListLL)
         , segmentPages_(segmentPages)
         , children_(children)
     {
-        joinTaskPool_.Start(&OmSegmentGraphInitialLoad::initialJoinInternalTask,
+        joinTaskPool_.Start(&segmentGraphInitialLoad::initialJoinInternalTask,
                             this,
                             1);
     }
@@ -141,14 +141,14 @@ private:
 
     void initialJoinInternalTask(const TaskArgs& t)
     {
-        OmSegment* childRoot = segmentPages_->GetSegmentUnsafe(t.childRootID);
-        OmSegment* parent = segmentPages_->GetSegmentUnsafe(t.parentID);
+        segment* childRoot = segmentPages_->GetSegmentUnsafe(t.childRootID);
+        segment* parent = segmentPages_->GetSegmentUnsafe(t.parentID);
 
         children_->AddChild(t.parentID, childRoot);
         childRoot->setParent(parent, t.threshold);
         childRoot->setEdgeNumber(t.edgeNumber);
 
-        OmSegment* parentRoot = parent;
+        segment* parentRoot = parent;
         if(t.parentRootID != t.parentID){
             parentRoot = segmentPages_->GetSegmentUnsafe(t.parentRootID);
         }

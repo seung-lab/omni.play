@@ -1,20 +1,20 @@
 #pragma once
 
 #include "events/omEvents.h"
-#include "segment/io/omSegmentPage.hpp"
-#include "segment/lists/omSegmentListForGUI.hpp"
-#include "segment/lists/omSegmentListGlobal.hpp"
-#include "segment/lists/omSegmentLists.h"
+#include "segment/io/segmentPage.hpp"
+#include "segment/lists/segmentListForGUI.hpp"
+#include "segment/lists/segmentListGlobal.hpp"
+#include "segment/lists/segmentLists.h"
 #include "segment/lowLevel/segmentsImplLowLevel.h"
 #include "threads/omTaskManager.hpp"
 #include "utility/omTimer.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 
-class OmSegmentListLowLevel {
+class segmentListLowLevel {
 private:
     OmThreadPool threadPool_;
 
-    OmSegmentLists *const segmentLists_;
+    segmentLists *const segmentLists_;
 
     segmentsImplLowLevel* cache_;
 
@@ -22,7 +22,7 @@ private:
     bool recreateGUIlists_;
 
 public:
-    OmSegmentListLowLevel(OmSegmentLists* segmentLists)
+    segmentListLowLevel(segmentLists* segmentLists)
         : segmentLists_(segmentLists)
         , cache_(NULL)
         , recreateGUIlists_(true)
@@ -33,7 +33,7 @@ public:
         threadPool_.start(1);
     }
 
-    ~OmSegmentListLowLevel(){
+    ~segmentListLowLevel(){
         threadPool_.join();
     }
 
@@ -46,7 +46,7 @@ public:
         doResize(size);
 //         threadPool_.push_back(
 //             zi::run_fn(
-//                 zi::bind(&OmSegmentListLowLevel::doResize,
+//                 zi::bind(&segmentListLowLevel::doResize,
 //                          this, size)));
     }
 
@@ -55,32 +55,32 @@ public:
         doBuildInitialSegmentList();
 //         threadPool_.push_back(
 //             zi::run_fn(
-//                 zi::bind(&OmSegmentListLowLevel::doBuildInitialSegmentList,
+//                 zi::bind(&segmentListLowLevel::doBuildInitialSegmentList,
 //                          this)));
     }
 
-    inline void UpdateSizeListsFromJoin(OmSegment* root, OmSegment* child)
+    inline void UpdateSizeListsFromJoin(segment* root, segment* child)
     {
         threadPool_.push_back(
             zi::run_fn(
-                zi::bind(&OmSegmentListLowLevel::doUpdateSizeListsFromJoin,
+                zi::bind(&segmentListLowLevel::doUpdateSizeListsFromJoin,
                          this, root, child)));
     }
 
-    inline void UpdateSizeListsFromSplit(OmSegment* root, OmSegment* child,
+    inline void UpdateSizeListsFromSplit(segment* root, segment* child,
                                          const SizeAndNumPieces& childInfo)
     {
         threadPool_.push_back(
             zi::run_fn(
-                zi::bind(&OmSegmentListLowLevel::doUpdateSizeListsFromSplit,
+                zi::bind(&segmentListLowLevel::doUpdateSizeListsFromSplit,
                          this, root, child, childInfo)));
     }
 
-    void AddSegment(OmSegment* seg)
+    void AddSegment(segment* seg)
     {
         threadPool_.push_back(
             zi::run_fn(
-                zi::bind(&OmSegmentListLowLevel::doAddSegment,
+                zi::bind(&segmentListLowLevel::doAddSegment,
                          this, seg)));
     }
 
@@ -100,7 +100,7 @@ public:
         return list_[segID].sizeIncludingChildren;
     }
     
-    inline int64_t GetSizeWithChildren(OmSegment* seg){
+    inline int64_t GetSizeWithChildren(segment* seg){
         return GetSizeWithChildren(seg->value());
     }
 
@@ -109,7 +109,7 @@ private:
     {
         threadPool_.push_back(
             zi::run_fn(
-                zi::bind(&OmSegmentListLowLevel::doRecreateGUIlists,
+                zi::bind(&segmentListLowLevel::doRecreateGUIlists,
                          this, force)));
     }
 
@@ -118,7 +118,7 @@ private:
         list_.resize(size);
     }
 
-    void doAddSegment(OmSegment* seg)
+    void doAddSegment(segment* seg)
     {
         const segId segID = seg->value();
 
@@ -131,7 +131,7 @@ private:
         recreateGUIlists_ = true;
     }
 
-    inline void addSegment(OmSegment* seg)
+    inline void addSegment(segment* seg)
     {
         uint64_t size = seg->size();
         if(!size){
@@ -144,23 +144,23 @@ private:
 
     void doBuildInitialSegmentList()
     {
-        const std::vector<OmSegmentPage*> pages = cache_->SegmentStore()->Pages();
+        const std::vector<segmentPage*> pages = cache_->SegmentStore()->Pages();
         const uint32_t pageSize = cache_->SegmentStore()->PageSize();
 
         uint32_t numSegs = 0;
 
         FOR_EACH(iter, pages)
         {
-            OmSegmentPage* pagePtr = *iter;
+            segmentPage* pagePtr = *iter;
             if(!pagePtr){
                 continue;
             }
 
-            OmSegmentPage& page = *pagePtr;
+            segmentPage& page = *pagePtr;
 
             for(uint32_t i = 0; i < pageSize; ++i)
             {
-                OmSegment* seg = &(page[i]);
+                segment* seg = &(page[i]);
                 if(seg->value()) //seg will never be NULL
                 {
                     ++numSegs;
@@ -182,7 +182,7 @@ private:
         recreateGUIlists_ = true;
     }
 
-    void doUpdateSizeListsFromJoin(OmSegment* root, OmSegment* child)
+    void doUpdateSizeListsFromJoin(segment* root, segment* child)
     {
         SegInfo& rootInfo = list_[root->value()];
         SegInfo& childInfo = list_[child->value()];
@@ -200,7 +200,7 @@ private:
         recreateGUIlists_ = true;
     }
 
-    void doUpdateSizeListsFromSplit(OmSegment* root, OmSegment* child,
+    void doUpdateSizeListsFromSplit(segment* root, segment* child,
                                     const SizeAndNumPieces childSizes)
     {
         const int64_t newChildSize = childSizes.numVoxels;
@@ -240,22 +240,22 @@ private:
 
         buildPool.push_back(
             zi::run_fn(
-                zi::bind(&OmSegmentListLowLevel::copyGlobalList,
+                zi::bind(&segmentListLowLevel::copyGlobalList,
                          this)));
 
         buildPool.push_back(
             zi::run_fn(
-                zi::bind(&OmSegmentListLowLevel::buildGUIlist,
+                zi::bind(&segmentListLowLevel::buildGUIlist,
                          this, om::WORKING)));
 
         buildPool.push_back(
             zi::run_fn(
-                zi::bind(&OmSegmentListLowLevel::buildGUIlist,
+                zi::bind(&segmentListLowLevel::buildGUIlist,
                          this, om::VALID)));
 
         buildPool.push_back(
             zi::run_fn(
-                zi::bind(&OmSegmentListLowLevel::buildGUIlist,
+                zi::bind(&segmentListLowLevel::buildGUIlist,
                          this, om::UNCERTAIN)));
 
         buildPool.join();
@@ -269,15 +269,15 @@ private:
 
     void copyGlobalList()
     {
-        om::shared_ptr<OmSegmentListGlobal> globalList =
-            om::make_shared<OmSegmentListGlobal>(list_);
+        om::shared_ptr<segmentListGlobal> globalList =
+            om::make_shared<segmentListGlobal>(list_);
         segmentLists_->Swap(globalList);
     }
 
     void buildGUIlist(const om::SegListType listType)
     {
-        om::shared_ptr<OmSegmentListForGUI> guiList =
-            om::make_shared<OmSegmentListForGUI>(listType);
+        om::shared_ptr<segmentListForGUI> guiList =
+            om::make_shared<segmentListForGUI>(listType);
         guiList->Build(list_);
         segmentLists_->Swap(guiList);
     }

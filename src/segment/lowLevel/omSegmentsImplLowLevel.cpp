@@ -1,8 +1,8 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "segment/lowLevel/omEnabledSegments.hpp"
 #include "segment/lowLevel/segmentsImplLowLevel.h"
-#include "segment/lowLevel/omSegmentSelection.hpp"
-#include "segment/lists/omSegmentLists.h"
+#include "segment/lowLevel/segmentSelection.hpp"
+#include "segment/lists/segmentLists.h"
 #include "system/cache/omCacheManager.h"
 #include "volume/segmentation.h"
 
@@ -10,7 +10,7 @@ segmentsImplLowLevel::segmentsImplLowLevel(segmentation* segmentation,
                                                segmentsStore* segmentPages)
     : segmentation_(segmentation)
     , store_(segmentPages)
-    , segmentSelection_(new OmSegmentSelection(this))
+    , segmentSelection_(new segmentSelection(this))
     , enabledSegments_(new OmEnabledSegments(this))
     , mNumSegs(0)
 {
@@ -58,7 +58,7 @@ void segmentsImplLowLevel::touchFreshness(){
     OmCacheManager::TouchFreshness();
 }
 
-void segmentsImplLowLevel::growGraphIfNeeded(OmSegment* newSeg){
+void segmentsImplLowLevel::growGraphIfNeeded(segment* newSeg){
     segmentGraph_.GrowGraphIfNeeded(newSeg);
 }
 

@@ -29,7 +29,7 @@ OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
 OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
                          mipVolume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
-                         const OmSegmentColorCacheType segColorType)
+                         const segmentColorCacheType segColorType)
     : OmTileCoordKey(level,
                      dataCoord,
                      vol,

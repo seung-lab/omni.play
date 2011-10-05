@@ -6,7 +6,7 @@
 // for Microsft Windows compiler compatibility, may need #pragma pack
 // see http://gcc.gnu.org/onlinedocs/gcc/Structure_002dPacking-Pragmas.html
 
-struct OmSegmentDataV2 {
+struct segmentDataV2 {
     segId value;
     OmColor color;
     bool immutable;
@@ -14,7 +14,7 @@ struct OmSegmentDataV2 {
     AxisAlignedBoundingBox<int> bounds;
 };
 
-struct OmSegmentDataV3 {
+struct segmentDataV3 {
     segId value;
     OmColor color;
     om::SegListType listType;
@@ -22,7 +22,7 @@ struct OmSegmentDataV3 {
     AxisAlignedBoundingBox<int> bounds;
 };
 
-struct OmSegmentDataV4 {
+struct segmentDataV4 {
     segId value;
     OmColor color;
     uint64_t size;

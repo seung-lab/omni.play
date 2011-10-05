@@ -1,7 +1,7 @@
 #pragma once
 
 #include "volume/segmentationFolder.h"
-#include "segment/omSegmentEdge.h"
+#include "segment/segmentEdge.h"
 #include "volume/segmentation.h"
 #include "datalayer/fs/omFileNames.hpp"
 
@@ -15,7 +15,7 @@ private:
     static const int CurrentFileVersion = 1;
 
     segmentation *const vol_;
-    QList<OmSegmentEdge> edges_;
+    QList<segmentEdge> edges_;
 
 public:
     OmUserEdges(segmentation* vol)
@@ -46,7 +46,7 @@ public:
         int size;
         in >> size;
         for(int i = 0; i < size; ++i){
-            OmSegmentEdge e;
+            segmentEdge e;
             in >> e;
             AddEdgeFrprojectLoad(e);
         }
@@ -83,7 +83,7 @@ public:
         printf("saved %s\n", qPrintable(path));
     }
 
-    void AddEdgeFrprojectLoad(OmSegmentEdge e)
+    void AddEdgeFrprojectLoad(segmentEdge e)
     {
         if(0 == e.childID  ||
            0 == e.parentID ||
@@ -98,15 +98,15 @@ public:
         edges_.push_back(e);
     }
 
-    void AddEdge(const OmSegmentEdge& e){
+    void AddEdge(const segmentEdge& e){
         edges_.push_back(e);
     }
 
-    int RemoveEdge(const OmSegmentEdge& edge){
+    int RemoveEdge(const segmentEdge& edge){
         return edges_.removeAll(edge);
     }
 
-    QList<OmSegmentEdge>& Edges(){
+    QList<segmentEdge>& Edges(){
         return edges_;
     }
 

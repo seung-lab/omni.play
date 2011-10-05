@@ -9,16 +9,16 @@
  * Michael Purcaro - purcaro@gmail.com
  */
 
-#include "segment/omSegmentTypes.h"
-#include "segment/omSegmentChildrenTypes.h"
-#include "segment/omSegmentEdge.h"
+#include "segment/segmentTypes.h"
+#include "segment/segmentChildrenTypes.h"
+#include "segment/segmentEdge.h"
 #include "zi/omMutex.h"
 
 class segments;
 
-class OmSegment {
+class segment {
 public:
-    OmSegment()
+    segment()
         : data_(NULL)
         , segments_(NULL)
         , parent_(NULL)
@@ -82,15 +82,15 @@ public:
         (*listType_) = static_cast<uint8_t>(type);
     }
 
-    inline OmSegment* getParent() const {
+    inline segment* getParent() const {
         return parent_;
     }
 
-    inline void setParent(OmSegment* seg){
+    inline void setParent(segment* seg){
         parent_ = seg;
     }
 
-    void setParent(OmSegment* segment, const double);
+    void setParent(segment* segment, const double);
 
     const segChildCont_t& GetChildren();
 
@@ -136,11 +136,11 @@ public:
         edgeNumber_ = num;
     }
 
-    inline const OmSegmentEdge& getCustomMergeEdge() const {
+    inline const segmentEdge& getCustomMergeEdge() const {
         return customMergeEdge_;
     }
 
-    inline void setCustomMergeEdge(const OmSegmentEdge& e){
+    inline void setCustomMergeEdge(const segmentEdge& e){
         customMergeEdge_ = e;
     }
 
@@ -149,15 +149,15 @@ public:
     }
 
 private:
-    OmSegmentDataV4* data_;
+    segmentDataV4* data_;
     uint8_t* listType_;
 
     segments* segments_;
-    OmSegment* parent_;
+    segment* parent_;
     double threshold_;
 
     int edgeNumber_; // index of edge in main edge list
-    OmSegmentEdge customMergeEdge_;
+    segmentEdge customMergeEdge_;
     uint64_t freshnessForMeshes_;
 
     struct segment_bounds_mutex_pool_tag;
@@ -167,6 +167,6 @@ private:
     friend class dataArchiveSegment;
     friend class OmFindCommonEdge;
     friend class OmPagingPtrStore;
-    friend class OmSegmentPage;
+    friend class segmentPage;
 };
 

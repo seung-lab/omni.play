@@ -1,6 +1,6 @@
 #pragma once
 
-#include "volume/omVolumeTypes.hpp"
+#include "volume/volumeTypes.hpp"
 
 namespace om {
 namespace chunk {

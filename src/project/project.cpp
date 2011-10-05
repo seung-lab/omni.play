@@ -80,7 +80,7 @@ bool project::IsOpen(){
 }
 
 #include "actions/omActions.h"
-#include "segment/omSegmentSelected.hpp"
+#include "segmentsegmentSelected.hpp"
 #include "events/details/omEventManager.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 #include "threads/omThreadPoolManager.h"
@@ -104,7 +104,7 @@ void project::Close()
     instance().impl_.reset();
 
     //delete all singletons
-    OmSegmentSelected::Delete();
+    segmentSelected::Delete();
     OmOpenGLGarbageCollector::Clear();
     OmPreferences::Delete();
     //OmLocalPreferences

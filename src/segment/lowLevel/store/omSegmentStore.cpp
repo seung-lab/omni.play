@@ -1,4 +1,4 @@
-#include "segment/lowLevel/store/omSegmentStore.hpp"
+#include "segment/lowLevel/store/segmentStore.hpp"
 #include "segment/lowLevel/store/omCacheSegRootIDs.hpp"
 #include "segment/lowLevel/store/omCacheSegStore.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
@@ -36,17 +36,17 @@ uint32_t segmentsStore::PageSize()
     return segmentPages_->PageSize();
 }
 
-std::vector<OmSegmentPage*> segmentsStore::Pages()
+std::vector<segmentPage*> segmentsStore::Pages()
 {
     zi::guard g(pagesLock_);
     return segmentPages_->Pages();
 }
 
-OmSegment* segmentsStore::GetSegment(const segId value){
+segment* segmentsStore::GetSegment(const segId value){
     return cachedStore_->GetSegment(value);
 }
 
-OmSegment* segmentsStore::GetSegmentUnsafe(const segId value){
+segment* segmentsStore::GetSegmentUnsafe(const segId value){
     return cachedStore_->GetSegmentUnsafe(value);
 }
 
@@ -54,7 +54,7 @@ segId segmentsStore::Root(const segId segID){
     return cacheRootIDs_->Root(segID);
 }
 
-OmSegment* segmentsStore::AddSegment(const segId value)
+segment* segmentsStore::AddSegment(const segId value)
 {
     zi::guard g(pagesLock_);
     return segmentPages_->AddSegment(value);
@@ -75,7 +75,7 @@ bool segmentsStore::IsSegmentValid(const segId value)
         return false;
     }
 
-    OmSegment* seg = GetSegment(value);
+    segment* seg = GetSegment(value);
 
     if(!seg){
         return false;

@@ -1,4 +1,4 @@
-#include "segment/lists/omSegmentListsTypes.hpp"
+#include "segment/lists/segmentListsTypes.hpp"
 
 om::shared_ptr<GUIPageOfSegments>
 om::segLists::getPage(const std::vector<SegInfo> list,

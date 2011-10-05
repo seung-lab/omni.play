@@ -1,7 +1,7 @@
 #pragma once
 
 #include "yaml-cpp/yaml.h"
-#include "volume/omVolumeTypes.hpp"
+#include "volume/volumeTypes.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/channelFolder.h"
 #include "volume/segmentationFolder.h"

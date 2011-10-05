@@ -9,8 +9,8 @@
 #include "mesh/meshManagers.hpp"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
-#include "segment/io/omValidGroupNum.hpp"
-#include "segment/lists/omSegmentLists.h"
+#include "segment/io/validGroupNum.hpp"
+#include "segment/listssegmentLists.h"
 #include "segment/segments.h"
 #include "system/omGroups.h"
 #include "tiles/cache/omTileCacheSegmentation.hpp"
@@ -31,7 +31,7 @@ segmentation::segmentation()
     , meshManagers_(new meshManagers(this))
     , chunkCache_(new chunkCache<segmentation, segChunk>(this))
     , segments_(new segments(this))
-    , segmentLists_(new OmSegmentLists())
+    , segmentLists_(new segmentLists())
     , mstUserEdges_(new OmUserEdges(this))
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new volumeData())
@@ -51,7 +51,7 @@ segmentation::segmentation(OmID id)
     , meshManagers_(new meshManagers(this))
     , chunkCache_(new chunkCache<segmentation, segChunk>(this))
     , segments_(new segments(this))
-    , segmentLists_(new OmSegmentLists())
+    , segmentLists_(new segmentLists())
     , mstUserEdges_(new OmUserEdges(this))
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new volumeData())

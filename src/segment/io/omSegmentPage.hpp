@@ -1,34 +1,34 @@
 #pragma once
 
-#include "segment/io/omSegmentPageV1.hpp"
-#include "segment/io/omSegmentPageV2.hpp"
-#include "segment/io/omSegmentPageV3.hpp"
-#include "segment/io/omSegmentPageV4.hpp"
-#include "segment/io/omSegmentPageVersion.hpp"
-#include "segment/io/omSegmentPageObjects.hpp"
-#include "segment/io/omSegmentPageConverter.hpp"
-#include "segment/io/omSegmentListTypePage.hpp"
+#include "segment/io/segmentPageV1.hpp"
+#include "segment/io/segmentPageV2.hpp"
+#include "segment/io/segmentPageV3.hpp"
+#include "segment/io/segmentPageV4.hpp"
+#include "segment/io/segmentPageVersion.hpp"
+#include "segment/io/segmentPageObjects.hpp"
+#include "segment/io/segmentPageConverter.hpp"
+#include "segment/io/segmentListTypePage.hpp"
 
-class OmSegmentPage {
+class segmentPage {
 private:
     segmentation* segmentation_;
     segments* segments_;
     PageNum pageNum_;
     uint32_t pageSize_;
 
-    om::shared_ptr<OmSegmentPageVersion> versionInfo_;
+    om::shared_ptr<segmentPageVersion> versionInfo_;
 
-    om::shared_ptr<OmSegmentPageObjects> objectPoolPtr_;
-    OmSegment* objectPool_;
+    om::shared_ptr<segmentPageObjects> objectPoolPtr_;
+    segment* objectPool_;
 
-    om::shared_ptr<OmSegmentPageV4> segmentsDataPtr_;
-    OmSegmentDataV4* segmentsData_;
+    om::shared_ptr<segmentPageV4> segmentsDataPtr_;
+    segmentDataV4* segmentsData_;
 
-    om::shared_ptr<OmSegmentListTypePage> listTypePagePtr_;
+    om::shared_ptr<segmentListTypePage> listTypePagePtr_;
     uint8_t* listTypePage_;
 
 public:
-    OmSegmentPage()
+    segmentPage()
         : segmentation_(NULL)
         , segments_(NULL)
         , pageNum_(0)
@@ -38,7 +38,7 @@ public:
         , listTypePage_(NULL)
     {}
 
-    OmSegmentPage(segmentation* segmentation, const PageNum pageNum,
+    segmentPage(segmentation* segmentation, const PageNum pageNum,
                   const uint32_t pageSize)
         : segmentation_(segmentation)
         , segments_(segmentation_->Segments())
@@ -48,14 +48,14 @@ public:
         , segmentsData_(NULL)
         , listTypePage_(NULL)
     {
-        versionInfo_ = om::make_shared<OmSegmentPageVersion>(segmentation_,
+        versionInfo_ = om::make_shared<segmentPageVersion>(segmentation_,
                                                                 pageNum_);
 
-        segmentsDataPtr_ = om::make_shared<OmSegmentPageV4>(segmentation_,
+        segmentsDataPtr_ = om::make_shared<segmentPageV4>(segmentation_,
                                                                pageNum_,
                                                                pageSize_);
 
-        listTypePagePtr_ = om::make_shared<OmSegmentListTypePage>(segmentation_,
+        listTypePagePtr_ = om::make_shared<segmentListTypePage>(segmentation_,
                                                                      pageNum_,
                                                                      pageSize_);
 
@@ -98,18 +98,18 @@ public:
         }
     }
 
-    inline OmSegment& operator[](const uint32_t index) {
+    inline segment& operator[](const uint32_t index) {
         return objectPool_[index];
     }
 
-    inline const OmSegment& operator[](const uint32_t index) const {
+    inline const segment& operator[](const uint32_t index) const {
         return objectPool_[index];
     }
 
 private:
     void makeSegmentObjectPool()
     {
-        objectPoolPtr_.reset(new OmSegmentPageObjects(pageSize_));
+        objectPoolPtr_.reset(new segmentPageObjects(pageSize_));
 
         // objectPool_ = objectPoolPtr_->MakeSegmentObjectPoolInMemory();
         objectPool_ = objectPoolPtr_->MakeSegmentObjectPoolOnDisk();
@@ -145,14 +145,14 @@ private:
     template <class C>
     void convert(C& page)
     {
-        om::shared_ptr<OmSegmentDataV3> dataV3 = page.Read();
+        om::shared_ptr<segmentDataV3> dataV3 = page.Read();
 
-        om::shared_ptr<OmSegmentDataV4> dataV4 =
-            OmSegmentPageConverter::ConvertPageV3toV4(dataV3, pageSize_);
+        om::shared_ptr<segmentDataV4> dataV4 =
+            segmentPageConverter::ConvertPageV3toV4(dataV3, pageSize_);
         segmentsData_ = segmentsDataPtr_->Import(dataV4);
 
         om::shared_ptr<uint8_t> listType =
-            OmSegmentPageConverter::ConvertPageV3toV4ListType(dataV3, pageSize_);
+            segmentPageConverter::ConvertPageV3toV4ListType(dataV3, pageSize_);
         listTypePage_ = listTypePagePtr_->Import(listType);
 
         versionInfo_->SetAsLatest();
@@ -160,19 +160,19 @@ private:
 
     void convertFromHDF5()
     {
-        OmSegmentPageV1 page(segmentation_, pageNum_, pageSize_);
+        segmentPageV1 page(segmentation_, pageNum_, pageSize_);
         convert(page);
     }
 
     void convertFromVersion2()
     {
-        OmSegmentPageV2 page(segmentation_, pageNum_, pageSize_);
+        segmentPageV2 page(segmentation_, pageNum_, pageSize_);
         convert(page);
     }
 
     void convertFromVersion3()
     {
-        OmSegmentPageV3 page(segmentation_, pageNum_, pageSize_);
+        segmentPageV3 page(segmentation_, pageNum_, pageSize_);
         convert(page);
     }
 

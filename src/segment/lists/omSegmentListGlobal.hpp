@@ -1,16 +1,16 @@
 #pragma once
 
-#include "segment/lists/omSegmentListsTypes.hpp"
+#include "segment/lists/segmentListsTypes.hpp"
 
-class OmSegmentListGlobal {
+class segmentListGlobal {
 private:
     const std::vector<SegInfo> list_;
 
 public:
-    OmSegmentListGlobal()
+    segmentListGlobal()
     {}
 
-    OmSegmentListGlobal(const std::vector<SegInfo>& list)
+    segmentListGlobal(const std::vector<SegInfo>& list)
         : list_(list)
     {}
 
@@ -23,7 +23,7 @@ public:
         return list_[segID].sizeIncludingChildren;
     }
 
-    inline int64_t GetSizeWithChildren(OmSegment* seg){
+    inline int64_t GetSizeWithChildren(segment* seg){
         return GetSizeWithChildren(seg->value());
     }
 
@@ -36,7 +36,7 @@ public:
         return list_[segID].numChildren;
     }
 
-    inline int64_t GetNumChildren(OmSegment* seg){
+    inline int64_t GetNumChildren(segment* seg){
         return GetNumChildren(seg->value());
     }
 

@@ -1,5 +1,5 @@
-#include "segment/omSegment.h"
-#include "segment/io/omSegmentPage.hpp"
+#include "segment/segment.h"
+#include "segment/io/segmentPage.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "utility/omSimpleProgress.hpp"
 #include "volume/segmentation.h"
@@ -49,7 +49,7 @@ void OmPagingPtrStore::loadAllSegmentPages()
 
 void OmPagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
 {
-    pages_[pageNum] = new OmSegmentPage(vol_,
+    pages_[pageNum] = new segmentPage(vol_,
                                         pageNum,
                                         pageSize_);
     pages_[pageNum]->Load();
@@ -57,7 +57,7 @@ void OmPagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
     prog->DidOne();
 }
 
-OmSegment* OmPagingPtrStore::AddSegment(const segId value)
+segment* OmPagingPtrStore::AddSegment(const segId value)
 {
     const PageNum pageNum = value / pageSize_;
 
@@ -66,7 +66,7 @@ OmSegment* OmPagingPtrStore::AddSegment(const segId value)
         resizeVectorIfNeeded(pageNum);
         validPageNums_.insert(pageNum);
 
-        pages_[pageNum] = new OmSegmentPage(vol_,
+        pages_[pageNum] = new segmentPage(vol_,
                                             pageNum,
                                             pageSize_);
         pages_[pageNum]->Create();
@@ -74,8 +74,8 @@ OmSegment* OmPagingPtrStore::AddSegment(const segId value)
         storeMetadata();
     }
 
-    OmSegmentPage& page = *pages_[pageNum];
-    OmSegment* ret = &(page[ value % pageSize_]);
+    segmentPage& page = *pages_[pageNum];
+    segment* ret = &(page[ value % pageSize_]);
 
     ret->data_->value = value;
 

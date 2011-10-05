@@ -1,45 +1,45 @@
-#include "segment/lists/omSegmentListByMRU.hpp"
-#include "segment/lists/omSegmentListForGUI.hpp"
-#include "segment/lists/omSegmentListGlobal.hpp"
+#include "segment/lists/segmentListByMRU.hpp"
+#include "segment/lists/segmentListForGUI.hpp"
+#include "segment/lists/segmentListGlobal.hpp"
 #include "utility/segmentDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
-#include "segment/lists/omSegmentLists.h"
-#include "segment/lists/omSegmentListLowLevel.hpp"
+#include "segment/lists/segmentLists.h"
+#include "segment/lists/segmentListLowLevel.hpp"
 
-OmSegmentLists::OmSegmentLists()
-    : segmentListsLL_(new OmSegmentListLowLevel(this))
-    , globalList_(new OmSegmentListGlobal())
-    , working_(new OmSegmentListForGUI(om::WORKING))
-    , uncertain_(new OmSegmentListForGUI(om::UNCERTAIN))
-    , valid_(new OmSegmentListForGUI(om::VALID))
-    , recent_(new OmSegmentListByMRU(this))
+segmentLists::segmentLists()
+    : segmentListsLL_(new segmentListLowLevel(this))
+    , globalList_(new segmentListGlobal())
+    , working_(new segmentListForGUI(om::WORKING))
+    , uncertain_(new segmentListForGUI(om::UNCERTAIN))
+    , valid_(new segmentListForGUI(om::VALID))
+    , recent_(new segmentListByMRU(this))
 {}
 
-OmSegmentLists::~OmSegmentLists()
+segmentLists::~segmentLists()
 {}
 
-void OmSegmentLists::TouchRecent(OmSegment* seg)
+void segmentLists::TouchRecent(segment* seg)
 {
     // recent is internally locked
     recent_->Touch(seg);
 }
 
-size_t OmSegmentLists::SizeRecent()
+size_t segmentLists::SizeRecent()
 {
     // recent is internally locked
     return recent_->Size();
 }
 
 om::shared_ptr<GUIPageOfSegments>
-OmSegmentLists::GetSegmentGUIPageRecent(const GUIPageRequest& request)
+segmentLists::GetSegmentGUIPageRecent(const GUIPageRequest& request)
 {
     // recent is internally locked
     return recent_->GetSegmentGUIPage(request);
 }
 
-void OmSegmentLists::Swap(om::shared_ptr<OmSegmentListForGUI>& list)
+void segmentLists::Swap(om::shared_ptr<segmentListForGUI>& list)
 {
     zi::rwmutex::write_guard g(lock_);
 
@@ -58,25 +58,25 @@ void OmSegmentLists::Swap(om::shared_ptr<OmSegmentListForGUI>& list)
     }
 }
 
-void OmSegmentLists::Swap(om::shared_ptr<OmSegmentListGlobal>& globalList)
+void segmentLists::Swap(om::shared_ptr<segmentListGlobal>& globalList)
 {
     zi::rwmutex::write_guard g(lock_);
     globalList_ = globalList;
 }
 
-size_t OmSegmentLists::Size(const om::SegListType type)
+size_t segmentLists::Size(const om::SegListType type)
 {
     zi::rwmutex::read_guard g(lock_);
     return get(type)->Size();
 }
 
-uint64_t OmSegmentLists::GetNumTopLevelSegs()
+uint64_t segmentLists::GetNumTopLevelSegs()
 {
     zi::rwmutex::read_guard g(lock_);
     return working_->Size() + valid_->Size() + uncertain_->Size();
 }
 
-int64_t OmSegmentLists::TotalNumVoxels()
+int64_t segmentLists::TotalNumVoxels()
 {
     zi::rwmutex::read_guard g(lock_);
 
@@ -85,33 +85,33 @@ int64_t OmSegmentLists::TotalNumVoxels()
         uncertain_->TotalNumVoxels();
 }
 
-int64_t OmSegmentLists::NumVoxels(const om::SegListType type)
+int64_t segmentLists::NumVoxels(const om::SegListType type)
 {
     zi::rwmutex::read_guard g(lock_);
     return get(type)->TotalNumVoxels();
 }
 
 om::shared_ptr<GUIPageOfSegments>
-OmSegmentLists::GetSegmentGUIPage(const om::SegListType type,
+segmentLists::GetSegmentGUIPage(const om::SegListType type,
                                   const GUIPageRequest& request)
 {
     zi::rwmutex::read_guard g(lock_);
     return get(type)->GetSegmentGUIPage(request);
 }
 
-int64_t OmSegmentLists::GetSizeWithChildren(const segId segID)
+int64_t segmentLists::GetSizeWithChildren(const segId segID)
 {
     zi::rwmutex::read_guard g(lock_);
     return globalList_->GetSizeWithChildren(segID);
 }
 
-int64_t OmSegmentLists::GetSizeWithChildren(OmSegment* seg)
+int64_t segmentLists::GetSizeWithChildren(segment* seg)
 {
     zi::rwmutex::read_guard g(lock_);
     return globalList_->GetSizeWithChildren(seg);
 }
 
-segId OmSegmentLists::GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw)
+segId segmentLists::GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw)
 {
     zi::rwmutex::read_guard g(lock_);
 
@@ -127,7 +127,7 @@ segId OmSegmentLists::GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw)
 }
 
 // choose largest segment
-segId OmSegmentLists::GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw)
+segId segmentLists::GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw)
 {
     zi::rwmutex::read_guard g(lock_);
 
@@ -159,17 +159,17 @@ segId OmSegmentLists::GetNextSegIDinWorkingList(const SegmentationDataWrapper& s
     return largest.segID;
 }
 
-void OmSegmentLists::RefreshGUIlists(){
+void segmentLists::RefreshGUIlists(){
     segmentListsLL_->ForceRefreshGUIlists();
 }
 
-int64_t OmSegmentLists::GetNumChildren(const segId segID)
+int64_t segmentLists::GetNumChildren(const segId segID)
 {
     zi::rwmutex::read_guard g(lock_);
     return globalList_->GetNumChildren(segID);
 }
 
-int64_t OmSegmentLists::GetNumChildren(OmSegment* seg)
+int64_t segmentLists::GetNumChildren(segment* seg)
 {
     zi::rwmutex::read_guard g(lock_);
     return globalList_->GetNumChildren(seg);

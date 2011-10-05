@@ -1,15 +1,15 @@
 #pragma once
 
 #include "common/common.h"
-#include "segment/omSegment.h"
-#include "segment/omSegmentChildrenTypes.h"
+#include "segment/segment.h"
+#include "segment/segmentChildrenTypes.h"
 
-class OmSegmentChildren {
+class segmentChildren {
 private:
     std::vector<segChildCont_t> list_;
 
 public:
-    OmSegmentChildren(const size_t size)
+    segmentChildren(const size_t size)
     {
         list_.resize(size);
     }
@@ -22,23 +22,23 @@ public:
         return list_[segID];
     }
 
-    inline const segChildCont_t& GetChildren(OmSegment* seg) const {
+    inline const segChildCont_t& GetChildren(segment* seg) const {
         return list_[seg->value()];
     }
 
-    inline void AddChild(const segId segID, OmSegment* child){
+    inline void AddChild(const segId segID, segment* child){
         list_[segID].insert(child);
     }
 
-    inline void AddChild(OmSegment* seg, OmSegment* child){
+    inline void AddChild(segment* seg, segment* child){
         list_[seg->value()].insert(child);
     }
 
-    inline void RemoveChild(const segId segID, OmSegment* child){
+    inline void RemoveChild(const segId segID, segment* child){
         list_[segID].erase(child);
     }
 
-    inline void RemoveChild(OmSegment* seg, OmSegment* child){
+    inline void RemoveChild(segment* seg, segment* child){
         list_[seg->value()].erase(child);
     }
 };

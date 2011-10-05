@@ -55,7 +55,7 @@ public:
 
         FOR_EACH(iter, segs)
         {
-            OmSegment* seg = *iter;
+            segment* seg = *iter;
             const segId segID = seg->value();
             segToGroupNum_[segID] = groupNum;
         }
@@ -69,7 +69,7 @@ public:
           return segToGroupNum_[segID];
     }
 
-    inline uint32_t Get(OmSegment* seg) const {
+    inline uint32_t Get(segment* seg) const {
         return Get(seg->value());
     }
 

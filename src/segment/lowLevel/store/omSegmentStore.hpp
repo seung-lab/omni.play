@@ -7,8 +7,8 @@
 class OmCacheSegRootIDs;
 class OmCacheSegStore;
 class OmPagingPtrStore;
-class OmSegment;
-class OmSegmentPage;
+class segment;
+class segmentPage;
 class segmentation;
 class segmentsImpl;
 
@@ -30,17 +30,17 @@ public:
 // pages
     uint32_t PageSize();
     uint32_t NumPages();
-    std::vector<OmSegmentPage*> Pages();
+    std::vector<segmentPage*> Pages();
     void Flush();
 
 // segments
-    OmSegment* AddSegment(const segId value);
+    segment* AddSegment(const segId value);
     bool IsSegmentValid(const segId value);
 
 // caching
     void StartCaches();
-    OmSegment* GetSegment(const segId value);
-    OmSegment* GetSegmentUnsafe(const segId value);
+    segment* GetSegment(const segId value);
+    segment* GetSegmentUnsafe(const segId value);
 
     // WARNING: do not call from inside segmentsImpl or segmentsImplLowLevel
     segId Root(const segId segID);

@@ -2,11 +2,11 @@
 #include "project/projectGlobals.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
-#include "segment/lists/omSegmentLists.h"
+#include "segment/lists/segmentLists.h"
 #include "segment/lowLevel/omEnabledSegments.hpp"
-#include "segment/lowLevel/omSegmentChildren.hpp"
-#include "segment/lowLevel/omSegmentSelection.hpp"
-#include "segment/omSegmentEdge.h"
+#include "segment/lowLevel/segmentChildren.hpp"
+#include "segment/lowLevel/segmentSelection.hpp"
+#include "segment/segmentEdge.h"
 #include "segment/segmentsImpl.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/omRandColorFile.hpp"
@@ -23,24 +23,24 @@ segmentsImpl::segmentsImpl(segmentation* segmentation,
 segmentsImpl::~segmentsImpl()
 {}
 
-OmSegment* segmentsImpl::AddSegment()
+segment* segmentsImpl::AddSegment()
 {
     const segId newValue = getNextValue();
 
     assert(newValue);
 
-    OmSegment* newSeg = AddSegment(newValue);
+    segment* newSeg = AddSegment(newValue);
     growGraphIfNeeded(newSeg);
     return newSeg;
 }
 
-OmSegment* segmentsImpl::AddSegment(const segId value)
+segment* segmentsImpl::AddSegment(const segId value)
 {
     if(0 == value){
         return NULL;
     }
 
-    OmSegment* seg = store_->AddSegment(value);
+    segment* seg = store_->AddSegment(value);
     seg->SetColor(project::Globals().RandColorFile().GetRandomColor(value));
 
     ++mNumSegs;
@@ -51,13 +51,13 @@ OmSegment* segmentsImpl::AddSegment(const segId value)
     return seg;
 }
 
-OmSegment* segmentsImpl::GetOrAddSegment(const segId val)
+segment* segmentsImpl::GetOrAddSegment(const segId val)
 {
     if(0 == val){
         return NULL;
     }
 
-    OmSegment* seg = store_->GetSegment(val);
+    segment* seg = store_->GetSegment(val);
 
     if(NULL == seg){
         seg = AddSegment(val);
@@ -66,38 +66,38 @@ OmSegment* segmentsImpl::GetOrAddSegment(const segId val)
     return seg;
 }
 
-OmSegmentEdge segmentsImpl::SplitEdgeUserAction(const OmSegmentEdge& e)
+segmentEdge segmentsImpl::SplitEdgeUserAction(const segmentEdge& e)
 {
     boost::optional<std::string> splittableTest = IsEdgeSplittable(e);
     if(splittableTest)
     {
         std::cout << "Split error: " << *splittableTest << "\n";
-        return OmSegmentEdge();
+        return segmentEdge();
     }
 
-    OmSegment* child = store_->GetSegment(e.childID);
+    segment* child = store_->GetSegment(e.childID);
 
     return splitChildFromParentNoTest(child);
 }
 
-boost::optional<std::string> segmentsImpl::IsEdgeSplittable(const OmSegmentEdge& e)
+boost::optional<std::string> segmentsImpl::IsEdgeSplittable(const segmentEdge& e)
 {
 	if(!e.isValid()){
 		return std::string("invalid edge");
     }
 
-	OmSegment* child = store_->GetSegment(e.childID);
+	segment* child = store_->GetSegment(e.childID);
 
 	return IsSegmentSplittable(child);
 }
 
-boost::optional<std::string> segmentsImpl::IsSegmentSplittable(OmSegment* child)
+boost::optional<std::string> segmentsImpl::IsSegmentSplittable(segment* child)
 {
 	if(!child->getParent()){
 		return std::string("segment is the root");
 	}
 
-    OmSegment* parent = child->getParent();
+    segment* parent = child->getParent();
     assert(parent);
 
     if(child->IsValidListType() == parent->IsValidListType() &&
@@ -109,7 +109,7 @@ boost::optional<std::string> segmentsImpl::IsSegmentSplittable(OmSegment* child)
     return boost::optional<std::string>();
 }
 
-boost::optional<std::string> segmentsImpl::IsSegmentCuttable(OmSegment* seg)
+boost::optional<std::string> segmentsImpl::IsSegmentCuttable(segment* seg)
 {
     if(seg->IsValidListType()) {
         return std::string("segment is valid");
@@ -118,11 +118,11 @@ boost::optional<std::string> segmentsImpl::IsSegmentCuttable(OmSegment* seg)
     return boost::optional<std::string>();
 }
 
-OmSegmentEdge segmentsImpl::splitChildFromParentNoTest(OmSegment* child)
+segmentEdge segmentsImpl::splitChildFromParentNoTest(segment* child)
 {
-    OmSegment* parent = child->getParent();
+    segment* parent = child->getParent();
 
-    OmSegmentEdge edgeThatGotBroken(parent->value(),
+    segmentEdge edgeThatGotBroken(parent->value(),
                                     child->value(),
                                     child->getThreshold());
 
@@ -154,7 +154,7 @@ OmSegmentEdge segmentsImpl::splitChildFromParentNoTest(OmSegment* child)
     if(child->getCustomMergeEdge().isValid())
     {
         userEdges_->RemoveEdge(child->getCustomMergeEdge());
-        child->setCustomMergeEdge(OmSegmentEdge());
+        child->setCustomMergeEdge(segmentEdge());
     }
 
     segmentGraph_.UpdateSizeListsFromSplit(parent, child);
@@ -164,40 +164,40 @@ OmSegmentEdge segmentsImpl::splitChildFromParentNoTest(OmSegment* child)
     return edgeThatGotBroken;
 }
 
-std::pair<bool, OmSegmentEdge>
-segmentsImpl::JoinFromUserAction(const OmSegmentEdge& e)
+std::pair<bool, segmentEdge>
+segmentsImpl::JoinFromUserAction(const segmentEdge& e)
 {
     if(!e.isValid()){
-        return std::make_pair(false, OmSegmentEdge());
+        return std::make_pair(false, segmentEdge());
     }
 
-    std::pair<bool, OmSegmentEdge> edge = JoinEdgeFromUser(e);
+    std::pair<bool, segmentEdge> edge = JoinEdgeFromUser(e);
     if(edge.first){
         userEdges_->AddEdge(edge.second);
     }
     return edge;
 }
 
-std::pair<bool, OmSegmentEdge>
-segmentsImpl::JoinEdgeFromUser(const OmSegmentEdge& e)
+std::pair<bool, segmentEdge>
+segmentsImpl::JoinEdgeFromUser(const segmentEdge& e)
 {
     const segId childRootID = segmentGraph_.Root(e.childID);
-    OmSegment* childRoot = store_->GetSegment(childRootID);
-    OmSegment* parent = store_->GetSegment(e.parentID);
-    OmSegment* parentRoot = FindRoot(parent);
+    segment* childRoot = store_->GetSegment(childRootID);
+    segment* parent = store_->GetSegment(e.parentID);
+    segment* parentRoot = FindRoot(parent);
 
     if(childRoot == parentRoot)
     {
         printf("cycle found in user manual edge; skipping edge %d, %d, %f\n",
                e.childID, e.parentID, e.threshold);
-        return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
+        return std::pair<bool, segmentEdge>(false, segmentEdge());
     }
 
     if(childRoot->IsValidListType() != parent->IsValidListType())
     {
         printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
                childRoot->value(), parent->value(), childRoot->IsValidListType(), parent->IsValidListType());
-        return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
+        return std::pair<bool, segmentEdge>(false, segmentEdge());
     }
 
     segmentGraph_.Join(childRootID, e.parentID);
@@ -215,18 +215,18 @@ segmentsImpl::JoinEdgeFromUser(const OmSegmentEdge& e)
 
     segmentGraph_.UpdateSizeListsFromJoin(FindRoot(parent), childRoot);
 
-    return std::pair<bool, OmSegmentEdge>(true,
-                                          OmSegmentEdge(parent->value(),
+    return std::pair<bool, segmentEdge>(true,
+                                          segmentEdge(parent->value(),
                                                         childRoot->value(),
                                                         e.threshold));
 }
 
-std::pair<bool, OmSegmentEdge>
+std::pair<bool, segmentEdge>
 segmentsImpl::JoinFromUserAction(const segId parentID,
 								   const segId childUnknownDepthID)
 {
     const double threshold = 2.0f;
-    return JoinFromUserAction(OmSegmentEdge(parentID, childUnknownDepthID,
+    return JoinFromUserAction(segmentEdge(parentID, childUnknownDepthID,
                                             threshold));
 }
 
@@ -251,7 +251,7 @@ segIdsSet segmentsImpl::JoinTheseSegments(const segIdsSet& segmentList)
     {
         const segId segID = *iter;
 
-        std::pair<bool, OmSegmentEdge> edge =
+        std::pair<bool, segmentEdge> edge =
             JoinFromUserAction(parentID, segID);
 
         if(edge.first){
@@ -290,7 +290,7 @@ segIdsSet segmentsImpl::UnJoinTheseSegments(const segIdsSet& segmentList)
     {
         const segId segID = *iter;
 
-        OmSegment* child= store_->GetSegment(segID);
+        segment* child= store_->GetSegment(segID);
 
         boost::optional<std::string> splittableTest = IsSegmentSplittable(child);
 
@@ -376,7 +376,7 @@ bool segmentsImpl::AreAnySegmentsInValidList(const segIdsSet& ids)
 {
     FOR_EACH(iter, ids)
     {
-        OmSegment* seg = store_->GetSegment(*iter);
+        segment* seg = store_->GetSegment(*iter);
 
         if(!seg){
             continue;
@@ -390,15 +390,15 @@ bool segmentsImpl::AreAnySegmentsInValidList(const segIdsSet& ids)
     return false;
 }
 
-OmSegmentChildren* segmentsImpl::Children()
+segmentChildren* segmentsImpl::Children()
 {
 	// TODO: lock?
     return segmentGraph_.Children();
 }
 
-std::vector<OmSegmentEdge> segmentsImpl::CutSegment(OmSegment* seg)
+std::vector<segmentEdge> segmentsImpl::CutSegment(segment* seg)
 {
-	std::vector<OmSegmentEdge> edges;
+	std::vector<segmentEdge> edges;
 
 	if(seg->getParent()){
 		edges.push_back(splitChildFromParentNoTest(seg));
@@ -417,13 +417,13 @@ std::vector<OmSegmentEdge> segmentsImpl::CutSegment(OmSegment* seg)
 	return edges;
 }
 
-bool segmentsImpl::JoinEdges(const std::vector<OmSegmentEdge>& edges)
+bool segmentsImpl::JoinEdges(const std::vector<segmentEdge>& edges)
 {
 	bool joinedAllEdges = true;
 
 	FOR_EACH(iter, edges)
 	{
-        std::pair<bool, OmSegmentEdge> edge = JoinEdgeFromUser(*iter);
+        std::pair<bool, segmentEdge> edge = JoinEdgeFromUser(*iter);
 
         if(!edge.first){
             joinedAllEdges = false;

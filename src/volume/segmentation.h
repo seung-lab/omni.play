@@ -21,8 +21,8 @@ class meshManager;
 class meshManagers;
 class OmRawSegTileCache;
 class segChunk;
-class OmSegment;
-class OmSegmentLists;
+class segment;
+class segmentLists;
 class segments;
 class OmTileCacheSegmentation;
 class OmUserEdges;
@@ -111,7 +111,7 @@ public:
     inline segments* Segments(){
         return segments_.get();
     }
-    inline OmSegmentLists* SegmentLists(){
+    inline segmentLists* SegmentLists(){
         return segmentLists_.get();
     }
     inline OmUserEdges* MSTUserEdges(){
@@ -152,7 +152,7 @@ private:
     boost::scoped_ptr<meshManagers> meshManagers_;
     boost::scoped_ptr<chunkCache<segmentation, segChunk> > chunkCache_;
     boost::scoped_ptr<segments> segments_;
-    boost::scoped_ptr<OmSegmentLists> segmentLists_;
+    boost::scoped_ptr<segmentLists> segmentLists_;
     boost::scoped_ptr<OmUserEdges> mstUserEdges_;
     boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
     boost::scoped_ptr<volumeData> volData_;
@@ -167,7 +167,7 @@ private:
 
     friend class segmentsImpl;
     friend class segmentsImplLowLevel;
-    friend class OmSegmentIterator;
+    friend class segmentIterator;
     friend class segmentationChunkBuildTask;
     friend class SegmentTests1;
 

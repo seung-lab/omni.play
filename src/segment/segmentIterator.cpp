@@ -1,27 +1,27 @@
-#include "segment/omSegment.h"
-#include "segment/omSegmentIterator.h"
+#include "segment/segment.h"
+#include "segment/segmentIterator.h"
 #include "segment/segments.h"
 #include "utility/segmentDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "zi/omUtility.h"
 
-OmSegmentIterator::OmSegmentIterator(segments* cache)
+segmentIterator::segmentIterator(segments* cache)
     : segments_(cache)
 {}
 
-OmSegmentIterator::OmSegmentIterator(const SegmentationDataWrapper& sdw)
+segmentIterator::segmentIterator(const SegmentationDataWrapper& sdw)
     : segments_(sdw.Segments())
 {}
 
-OmSegmentIterator::OmSegmentIterator(const SegmentDataWrapper& sdw)
+segmentIterator::segmentIterator(const SegmentDataWrapper& sdw)
     : segments_(sdw.Segments())
 {}
 
-void OmSegmentIterator::iterOverSegmentID(const segId segID){
+void segmentIterator::iterOverSegmentID(const segId segID){
     segs_.push_back(segments_->GetSegment(segID));
 }
 
-void OmSegmentIterator::iterOverSelectedIDs()
+void segmentIterator::iterOverSelectedIDs()
 {
     const segIdsSet ids = segments_->GetSelectedSegmentIDs();
     FOR_EACH(iter, ids){
@@ -29,7 +29,7 @@ void OmSegmentIterator::iterOverSelectedIDs()
     }
 }
 
-void OmSegmentIterator::iterOverEnabledIDs()
+void segmentIterator::iterOverEnabledIDs()
 {
     const segIdsSet ids = segments_->GetEnabledSegmentIDs();
     FOR_EACH(iter, ids){
@@ -37,24 +37,24 @@ void OmSegmentIterator::iterOverEnabledIDs()
     }
 }
 
-void OmSegmentIterator::iterOverSegmentIDs(const segIdsSet & set)
+void segmentIterator::iterOverSegmentIDs(const segIdsSet & set)
 {
     FOR_EACH(iter, set){
         segs_.push_back( segments_->GetSegment( *iter ) );
     }
 }
 
-bool OmSegmentIterator::empty(){
+bool segmentIterator::empty(){
     return segs_.empty();
 }
 
-OmSegment* OmSegmentIterator::getNextSegment()
+segment* segmentIterator::getNextSegment()
 {
     if( segs_.empty() ){
         return NULL;
     }
 
-    OmSegment* segRet = segs_.back();
+    segment* segRet = segs_.back();
     segs_.pop_back();
 
     const segChildCont_t& children = segRet->GetChildren();
@@ -67,7 +67,7 @@ OmSegment* OmSegmentIterator::getNextSegment()
     return segRet;
 }
 
-OmSegmentIterator & OmSegmentIterator::operator = (const OmSegmentIterator & other)
+segmentIterator & segmentIterator::operator = (const segmentIterator & other)
 {
     if (this == &other) {
         return *this;

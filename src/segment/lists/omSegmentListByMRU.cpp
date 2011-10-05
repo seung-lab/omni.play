@@ -1,9 +1,9 @@
-#include "segment/lists/omSegmentLists.h"
-#include "segment/lists/omSegmentListByMRU.hpp"
+#include "segment/lists/segmentLists.h"
+#include "segment/lists/segmentListByMRU.hpp"
 
-void OmSegmentListByMRU::rebuildList()
+void segmentListByMRU::rebuildList()
 {
-    std::vector<OmSegment*> segs;
+    std::vector<segment*> segs;
     lru_.Dump(segs);
 
     vec_.clear();
@@ -11,7 +11,7 @@ void OmSegmentListByMRU::rebuildList()
 
     FOR_EACH(iter, segs)
     {
-        OmSegment* seg = *iter;
+        segment* seg = *iter;
 
         const SegInfo info =
             { seg,

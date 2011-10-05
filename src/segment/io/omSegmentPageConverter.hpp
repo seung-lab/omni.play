@@ -1,19 +1,19 @@
 #pragma once
 
 #include "utility/omSmartPtr.hpp"
-#include "segment/omSegmentTypes.h"
+#include "segment/segmentTypes.h"
 
-class OmSegmentPageConverter {
+class segmentPageConverter {
 public:
-    om::shared_ptr<OmSegmentDataV4>
-    static ConvertPageV3toV4(om::shared_ptr<OmSegmentDataV3> dataV3,
+    om::shared_ptr<segmentDataV4>
+    static ConvertPageV3toV4(om::shared_ptr<segmentDataV3> dataV3,
                              const uint32_t pageSize)
     {
-        OmSegmentDataV3* rawV3 = dataV3.get();
+        segmentDataV3* rawV3 = dataV3.get();
 
-        om::shared_ptr<OmSegmentDataV4> ret =
-            OmSmartPtr<OmSegmentDataV4>::MallocNumElements(pageSize, om::ZERO_FILL);
-        OmSegmentDataV4* rawV4 = ret.get();
+        om::shared_ptr<segmentDataV4> ret =
+            OmSmartPtr<segmentDataV4>::MallocNumElements(pageSize, om::ZERO_FILL);
+        segmentDataV4* rawV4 = ret.get();
 
         for(uint32_t i = 0; i < pageSize; ++i)
         {
@@ -27,10 +27,10 @@ public:
     }
 
     om::shared_ptr<uint8_t>
-    static ConvertPageV3toV4ListType(om::shared_ptr<OmSegmentDataV3> dataV3,
+    static ConvertPageV3toV4ListType(om::shared_ptr<segmentDataV3> dataV3,
                                      const uint32_t pageSize)
     {
-        OmSegmentDataV3* rawV3 = dataV3.get();
+        segmentDataV3* rawV3 = dataV3.get();
 
         om::shared_ptr<uint8_t> ret =
             OmSmartPtr<uint8_t>::MallocNumElements(pageSize, om::ZERO_FILL);

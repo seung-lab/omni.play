@@ -1,14 +1,14 @@
 #pragma once
 
-#include "segment/lowLevel/store/omSegmentStore.hpp"
-#include "segment/io/omSegmentPage.hpp"
+#include "segment/lowLevel/store/segmentStore.hpp"
+#include "segment/io/segmentPage.hpp"
 
 class OmCacheSegStore {
 private:
     segmentsStore *const store_;
     const uint32_t pageSize_;
 
-    const std::vector<OmSegmentPage*> initialPages_;
+    const std::vector<segmentPage*> initialPages_;
     const uint32_t numInitialPages_;
 
 public:
@@ -22,16 +22,16 @@ public:
     /**
      * returns NULL if segment was never instantiated;
      **/
-    OmSegment* GetSegment(const segId segID){
+    segment* GetSegment(const segId segID){
         return getSegment(segID, om::SAFE);
     }
 
-    OmSegment* GetSegmentUnsafe(const segId segID){
+    segment* GetSegmentUnsafe(const segId segID){
         return getSegment(segID, om::NOT_SAFE);
     }
 
 private:
-    inline OmSegment* getSegment(const segId segID, const om::Safe isSafe)
+    inline segment* getSegment(const segId segID, const om::Safe isSafe)
     {
         const uint32_t pageNum = segID / pageSize_;
 
@@ -43,23 +43,23 @@ private:
         } else {
 
             // TODO: keep a copy of this vector as a member variable; some freshness value,
-            //   though, could need to be kept by OmSegmentStore to avoid repeated copy;
+            //   though, could need to be kept by segmentStore to avoid repeated copy;
             //   comparing vector sizes is NOT sufficient, as segments can be added in any order,
             //   thus there may be NULL pages in the copy of the vector that don't get updated
             //   when initialized in the sgemtn store
-            const std::vector<OmSegmentPage*> curPages = store_->Pages();
+            const std::vector<segmentPage*> curPages = store_->Pages();
 
             return doGetSegment(curPages, pageNum, segID, isSafe);
         }
     }
 
-    inline OmSegment* doGetSegment(const std::vector<OmSegmentPage*>& pages,
+    inline segment* doGetSegment(const std::vector<segmentPage*>& pages,
                                    const uint32_t pageNum, const segId segID,
                                    const om::Safe isSafe)
     {
         if(om::NOT_SAFE == isSafe)
         {
-            OmSegmentPage& page = *pages[pageNum];
+            segmentPage& page = *pages[pageNum];
             return &(page[segID % pageSize_]);
         }
 
@@ -71,8 +71,8 @@ private:
             return NULL;
         }
 
-        OmSegmentPage& page = *pages[pageNum];
-        OmSegment* ret = &(page[segID % pageSize_]);
+        segmentPage& page = *pages[pageNum];
+        segment* ret = &(page[segID % pageSize_]);
 
         const segId loadedID = ret->data_->value;
 

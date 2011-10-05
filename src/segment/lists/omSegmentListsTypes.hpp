@@ -3,11 +3,11 @@
 #include "common/om.hpp"
 #include "common/common.h"
 
-class OmSegment;
+class segment;
 
 struct SegInfo
 {
-    OmSegment* seg;
+    segment* seg;
     segId segID;
     int64_t sizeIncludingChildren;
     int32_t numChildren;

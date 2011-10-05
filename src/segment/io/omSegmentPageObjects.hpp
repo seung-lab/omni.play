@@ -1,31 +1,31 @@
 #pragma once
 
-#include "segment/omSegment.h"
+#include "segment/segment.h"
 #include "utility/omSmartPtr.hpp"
 #include "utility/omTempFile.hpp"
 
-class OmSegmentPageObjects {
+class segmentPageObjects {
 private:
     const uint32_t pageSize_;
 
-    om::shared_ptr<OmSegment> segmentsPtr_;
+    om::shared_ptr<segment> segmentsPtr_;
 
-    om::shared_ptr<OmTempFile<OmSegment> > tmpFile_;
+    om::shared_ptr<OmTempFile<segment> > tmpFile_;
 
 public:
-    OmSegmentPageObjects(const uint32_t pageSize)
+    segmentPageObjects(const uint32_t pageSize)
         : pageSize_(pageSize)
     {}
 
-    OmSegment* MakeSegmentObjectPoolInMemory()
+    segment* MakeSegmentObjectPoolInMemory()
     {
-        segmentsPtr_ = OmSmartPtr<OmSegment>::NewNumElements(pageSize_);
+        segmentsPtr_ = OmSmartPtr<segment>::NewNumElements(pageSize_);
         return segmentsPtr_.get();
     }
 
-    OmSegment* MakeSegmentObjectPoolOnDisk()
+    segment* MakeSegmentObjectPoolOnDisk()
     {
-        tmpFile_.reset(new OmTempFile<OmSegment>());
+        tmpFile_.reset(new OmTempFile<segment>());
 
         tmpFile_->ResizeNumElements(pageSize_);
 

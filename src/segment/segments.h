@@ -1,13 +1,13 @@
 #pragma once
 
-#include "volume/omVolumeTypes.hpp"
-#include "segment/omSegmentPointers.h"
+#include "volume/volumeTypes.hpp"
+#include "segment/segmentPointers.h"
 #include "datalayer/archive/segmentation.h"
 
 #include <zi/mutex.hpp>
 
-class OmSegment;
-class OmSegmentChildren;
+class segment;
+class segmentChildren;
 class segmentation;
 class segmentsImpl;
 class segmentsStore;
@@ -20,18 +20,18 @@ public:
     void StartCaches();
     void Flush();
 
-    OmSegment* AddSegment();
-    OmSegment* AddSegment(segId value);
-    OmSegment* GetSegment(const segId);
-    OmSegment* GetSegmentUnsafe(const segId);
-    OmSegment* GetOrAddSegment(const segId);
+    segment* AddSegment();
+    segment* AddSegment(segId value);
+    segment* GetSegment(const segId);
+    segment* GetSegmentUnsafe(const segId);
+    segment* GetOrAddSegment(const segId);
 
     bool IsSegmentValid(segId seg);
 
     segId GetNumSegments();
     segId GetNumTopSegments();
 
-    OmSegmentChildren* Children();
+    segmentChildren* Children();
 
     bool isSegmentEnabled(segId segID);
     void setSegmentEnabled(segId segID, bool isEnabled);
@@ -39,7 +39,7 @@ public:
     bool AreSegmentsEnabled();
 
     bool IsSegmentSelected(segId segID);
-    bool IsSegmentSelected(OmSegment* seg);
+    bool IsSegmentSelected(segment* seg);
     void setSegmentSelected(segId segID, const bool, const bool);
     const segIdsSet GetSelectedSegmentIDs();
     uint32_t NumberOfSelectedSegments();
@@ -56,23 +56,23 @@ public:
 
     segId GetSegmentationID();
 
-    boost::optional<std::string> IsEdgeSplittable(const OmSegmentEdge& e);
-    boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
-	boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
+    boost::optional<std::string> IsEdgeSplittable(const segmentEdge& e);
+    boost::optional<std::string> IsSegmentSplittable(segment* child);
+	boost::optional<std::string> IsSegmentCuttable(segment* seg);
 
-    OmSegment* findRoot(OmSegment* segment);
-    OmSegment* findRoot(const segId segID);
+    segment* findRoot(segment* segment);
+    segment* findRoot(const segId segID);
     segId findRootID(const segId segID);
-    segId findRootID(OmSegment* segment);
+    segId findRootID(segment* segment);
     segId findRootIDnoCache(const segId segID);
 
-    std::pair<bool, OmSegmentEdge> JoinEdge(const OmSegmentEdge& e);
-    OmSegmentEdge SplitEdge(const OmSegmentEdge& e);
+    std::pair<bool, segmentEdge> JoinEdge(const segmentEdge& e);
+    segmentEdge SplitEdge(const segmentEdge& e);
     segIdsSet JoinTheseSegments(const segIdsSet& segmentList);
     segIdsSet UnJoinTheseSegments(const segIdsSet& segmentList);
 
-	std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
-	bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
+	std::vector<segmentEdge> CutSegment(segment* seg);
+	bool JoinEdges(const std::vector<segmentEdge>& edges);
 
     uint32_t getPageSize();
 
@@ -96,7 +96,7 @@ private:
     boost::scoped_ptr<segmentsStore> store_;
     boost::scoped_ptr<segmentsImpl> impl_;
 
-    friend class OmSegmentColorizer;
+    friend class segmentColorizer;
     friend class SegmentTests;
 
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const segments& sc);

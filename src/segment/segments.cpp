@@ -1,9 +1,9 @@
 #include "datalayer/dataPath.h"
 #include "datalayer/dataPath.h"
 #include "segment/lowLevel/omEnabledSegments.hpp"
-#include "segment/lowLevel/omSegmentSelection.hpp"
-#include "segment/lowLevel/store/omSegmentStore.hpp"
-#include "segment/omSegment.h"
+#include "segment/lowLevel/segmentSelection.hpp"
+#include "segment/lowLevel/store/segmentStore.hpp"
+#include "segment/segment.h"
 #include "segment/segments.h"
 #include "segment/segmentsImpl.h"
 #include "volume/segmentation.h"
@@ -33,19 +33,19 @@ uint32_t segments::getPageSize()
     return store_->PageSize();
 }
 
-OmSegment* segments::AddSegment()
+segment* segments::AddSegment()
 {
     zi::guard g(mutex_);
     return impl_->AddSegment();
 }
 
-OmSegment* segments::AddSegment(segId value)
+segment* segments::AddSegment(segId value)
 {
     zi::guard g(mutex_);
     return impl_->AddSegment(value);
 }
 
-OmSegment* segments::GetOrAddSegment(const segId val)
+segment* segments::GetOrAddSegment(const segId val)
 {
     zi::guard g(mutex_);
     return impl_->GetOrAddSegment(val);
@@ -57,13 +57,13 @@ bool segments::IsSegmentValid(segId seg)
     return store_->IsSegmentValid(seg);
 }
 
-OmSegment* segments::GetSegment(const segId value)
+segment* segments::GetSegment(const segId value)
 {
     // locked internally
     return store_->GetSegment(value);
 }
 
-OmSegment* segments::GetSegmentUnsafe(const segId value)
+segment* segments::GetSegmentUnsafe(const segId value)
 {
     // locked internally
     return store_->GetSegmentUnsafe(value);
@@ -122,7 +122,7 @@ bool segments::IsSegmentSelected(segId segID)
     return impl_->SegmentSelection().isSegmentSelected(segID);
 }
 
-bool segments::IsSegmentSelected(OmSegment* seg)
+bool segments::IsSegmentSelected(segment* seg)
 {
     zi::guard g(mutex_);
     return impl_->SegmentSelection().isSegmentSelected(seg->value());
@@ -166,13 +166,13 @@ QString segments::getSegmentNote(segId segID)
     return impl_->getSegmentNote(segID);
 }
 
-OmSegment* segments::findRoot(OmSegment* segment)
+segment* segments::findRoot(segment* segment)
 {
     // locked internally
     return store_->GetSegment(store_->Root(segment->value()));
 }
 
-OmSegment* segments::findRoot(const segId segID)
+segment* segments::findRoot(const segId segID)
 {
     // locked internally
     return store_->GetSegment(store_->Root(segID));
@@ -189,7 +189,7 @@ segId segments::findRootID(const segId segID)
     return store_->Root(segID);
 }
 
-segId segments::findRootID(OmSegment* segment)
+segId segments::findRootID(segment* segment)
 {
     // locked internally
     return findRootID(segment->value());
@@ -238,13 +238,13 @@ void segments::RemoveFromSegmentSelection(const segIdsSet& idsToSelect)
     return impl_->SegmentSelection().RemoveFromSegmentSelection(idsToSelect);
 }
 
-std::pair<bool, OmSegmentEdge> segments::JoinEdge(const OmSegmentEdge& e)
+std::pair<bool, segmentEdge> segments::JoinEdge(const segmentEdge& e)
 {
     zi::guard g(mutex_);
     return impl_->JoinFromUserAction(e);
 }
 
-OmSegmentEdge segments::SplitEdge(const OmSegmentEdge & e)
+segmentEdge segments::SplitEdge(const segmentEdge & e)
 {
     zi::guard g(mutex_);
     return impl_->SplitEdgeUserAction(e);
@@ -280,37 +280,37 @@ uint64_t segments::MSTfreshness() const
     return impl_->MSTfreshness();
 }
 
-OmSegmentChildren* segments::Children()
+segmentChildren* segments::Children()
 {
     // TODO: needs locking!
     return impl_->Children();
 }
 
-boost::optional<std::string> segments::IsEdgeSplittable(const OmSegmentEdge& e)
+boost::optional<std::string> segments::IsEdgeSplittable(const segmentEdge& e)
 {
     zi::guard g(mutex_);
     return impl_->IsEdgeSplittable(e);
 }
 
-boost::optional<std::string> segments::IsSegmentSplittable(OmSegment* child)
+boost::optional<std::string> segments::IsSegmentSplittable(segment* child)
 {
     zi::guard g(mutex_);
     return impl_->IsSegmentSplittable(child);
 }
 
-boost::optional<std::string> segments::IsSegmentCuttable(OmSegment* seg)
+boost::optional<std::string> segments::IsSegmentCuttable(segment* seg)
 {
     zi::guard g(mutex_);
     return impl_->IsSegmentCuttable(seg);
 }
 
-std::vector<OmSegmentEdge> segments::CutSegment(OmSegment* seg)
+std::vector<segmentEdge> segments::CutSegment(segment* seg)
 {
     zi::guard g(mutex_);
     return impl_->CutSegment(seg);
 }
 
-bool segments::JoinEdges(const std::vector<OmSegmentEdge>& edges)
+bool segments::JoinEdges(const std::vector<segmentEdge>& edges)
 {
     zi::guard g(mutex_);
     return impl_->JoinEdges(edges);

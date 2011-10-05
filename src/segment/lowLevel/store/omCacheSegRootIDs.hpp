@@ -1,6 +1,6 @@
 #pragma once
 
-#include "segment/lowLevel/store/omSegmentStore.hpp"
+#include "segment/lowLevel/store/segmentStore.hpp"
 #include "segment/segments.h"
 #include "volume/segmentation.h"
 

@@ -1,10 +1,10 @@
-#include "segment/lowLevel/omSegmentGraphInitialLoad.hpp"
+#include "segment/lowLevel/segmentGraphInitialLoad.hpp"
 #include "segment/lowLevel/segmentsImplLowLevel.h"
-#include "segment/lowLevel/omSegmentGraph.h"
+#include "segment/lowLevel/segmentGraph.h"
 #include "utility/omStringHelpers.h"
 #include "volume/segmentation.h"
 
-OmSegmentGraph::OmSegmentGraph()
+segmentGraph::segmentGraph()
     : segmentation_(NULL)
     , mCache(NULL)
     , segmentPages_(NULL)
@@ -13,19 +13,19 @@ OmSegmentGraph::OmSegmentGraph()
     segsTempVec_.reserve(100);
 }
 
-OmSegmentGraph::~OmSegmentGraph()
+segmentGraph::~segmentGraph()
 {}
 
-void OmSegmentGraph::RefreshGUIlists(){
+void segmentGraph::RefreshGUIlists(){
     segmentListsLL_->RefreshGUIlists();
 }
 
-bool OmSegmentGraph::DoesGraphNeedToBeRefreshed( const uint32_t maxValue )
+bool segmentGraph::DoesGraphNeedToBeRefreshed( const uint32_t maxValue )
 {
     return !forest_ || forest_->Size() != maxValue+1;
 }
 
-void OmSegmentGraph::Initialize(segmentation* segmentation,
+void segmentGraph::Initialize(segmentation* segmentation,
                                 segmentsImplLowLevel* cache)
 {
     segmentation_ = segmentation;
@@ -37,7 +37,7 @@ void OmSegmentGraph::Initialize(segmentation* segmentation,
     const uint32_t size = 1 + mCache->getMaxValue();
 
     forest_.reset(new OmDynamicForestCache(size));
-    children_.reset(new OmSegmentChildren(size));
+    children_.reset(new segmentChildren(size));
 
     validGroupNum_->Resize(size);
 
@@ -48,7 +48,7 @@ void OmSegmentGraph::Initialize(segmentation* segmentation,
     segmentListsLL_->BuildInitialSegmentList();
 }
 
-void OmSegmentGraph::GrowGraphIfNeeded(OmSegment* seg)
+void segmentGraph::GrowGraphIfNeeded(segment* seg)
 {
     // maxValue is a valid segment id, so array needs to be 1 bigger
     const uint32_t size = 1 + mCache->getMaxValue();
@@ -60,9 +60,9 @@ void OmSegmentGraph::GrowGraphIfNeeded(OmSegment* seg)
     segmentListsLL_->ForceRefreshGUIlists();
 }
 
-void OmSegmentGraph::SetGlobalThreshold(OmMST* mst)
+void segmentGraph::SetGlobalThreshold(OmMST* mst)
 {
-    OmSegmentGraphInitialLoad loader(forest_.get(),
+    segmentGraphInitialLoad loader(forest_.get(),
                                      validGroupNum_,
                                      segmentListsLL_,
                                      segmentPages_,
@@ -71,7 +71,7 @@ void OmSegmentGraph::SetGlobalThreshold(OmMST* mst)
     loader.SetGlobalThreshold(mst);
 }
 
-void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
+void segmentGraph::ResetGlobalThreshold(OmMST* mst)
 {
     std::cout << "\t" << om::string::humanizeNum(mst->NumEdges())
               << " edges..." << std::flush;
@@ -121,13 +121,13 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
     timer.PrintDone();
 }
 
-bool OmSegmentGraph::sizeCheck(const segId a, const segId b, const double threshold)
+bool segmentGraph::sizeCheck(const segId a, const segId b, const double threshold)
 {
     return (segmentListsLL_->GetSizeWithChildren(Root(a)) + 
             segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold;
 }
 
-bool OmSegmentGraph::joinInternal(const segId parentID,
+bool segmentGraph::joinInternal(const segId parentID,
                                   const segId childUnknownDepthID,
                                   const double threshold,
                                   const int edgeNumber)
@@ -145,14 +145,14 @@ bool OmSegmentGraph::joinInternal(const segId parentID,
 
     Join(childRootID, parentID);
 
-    OmSegment* childRoot = segmentPages_->GetSegmentUnsafe(childRootID);
-    OmSegment* parent = segmentPages_->GetSegmentUnsafe(parentID);
+    segment* childRoot = segmentPages_->GetSegmentUnsafe(childRootID);
+    segment* parent = segmentPages_->GetSegmentUnsafe(parentID);
 
     children_->AddChild(parent, childRoot);
     childRoot->setParent(parent, threshold);
     childRoot->setEdgeNumber(edgeNumber);
 
-    OmSegment* parentRoot = mCache->FindRoot(parent);
+    segment* parentRoot = mCache->FindRoot(parent);
 
     parentRoot->touchFreshnessForMeshes();
 
@@ -163,15 +163,15 @@ bool OmSegmentGraph::joinInternal(const segId parentID,
 }
 
 
-bool OmSegmentGraph::splitChildFromParentInternal( const segId childID )
+bool segmentGraph::splitChildFromParentInternal( const segId childID )
 {
-    OmSegment* child = mCache->SegmentStore()->GetSegment( childID );
+    segment* child = mCache->SegmentStore()->GetSegment( childID );
 
     if( child->getThreshold() > 1 ){
         return false;
     }
 
-    OmSegment* parent = child->getParent();
+    segment* parent = child->getParent();
     if(!parent){ // user manually split?
         return false;
     }
@@ -185,7 +185,7 @@ bool OmSegmentGraph::splitChildFromParentInternal( const segId childID )
     child->setParent(NULL); // TODO: also set threshold??
     child->setEdgeNumber(-1);
 
-    OmSegment* parentRoot = mCache->FindRoot(parent);
+    segment* parentRoot = mCache->FindRoot(parent);
 
     parentRoot->touchFreshnessForMeshes();
     child->touchFreshnessForMeshes();
@@ -195,15 +195,15 @@ bool OmSegmentGraph::splitChildFromParentInternal( const segId childID )
     return true;
 }
 
-void OmSegmentGraph::UpdateSizeListsFromJoin(OmSegment* parent, OmSegment* child)
+void segmentGraph::UpdateSizeListsFromJoin(segment* parent, segment* child)
 {
-    OmSegment* root = mCache->FindRoot(parent);
+    segment* root = mCache->FindRoot(parent);
     segmentListsLL_->UpdateSizeListsFromJoin(root, child);
 }
 
-void OmSegmentGraph::UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* child)
+void segmentGraph::UpdateSizeListsFromSplit(segment* parent, segment* child)
 {
-    OmSegment* root = mCache->FindRoot(parent);
+    segment* root = mCache->FindRoot(parent);
 
     const SizeAndNumPieces childInfo =
         computeSegmentSizeWithChildren(child);
@@ -212,7 +212,7 @@ void OmSegmentGraph::UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* chil
 }
 
 SizeAndNumPieces
-OmSegmentGraph::computeSegmentSizeWithChildren(OmSegment* inSeg)
+segmentGraph::computeSegmentSizeWithChildren(segment* inSeg)
 {
     int64_t numVoxels = 0;
     int32_t numPieces = 0;
@@ -221,7 +221,7 @@ OmSegmentGraph::computeSegmentSizeWithChildren(OmSegment* inSeg)
 
     while(!segsTempVec_.empty())
     {
-        OmSegment* segRet = segsTempVec_.back();
+        segment* segRet = segsTempVec_.back();
         segsTempVec_.pop_back();
 
         FOR_EACH(iter, children_->GetChildren(segRet)){
