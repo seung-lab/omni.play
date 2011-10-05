@@ -6,7 +6,7 @@
  */
 
 #include "common/om.hpp"
-#include "datalayer/omDataWrapper.h"
+#include "datalayer/dataWrapper.h"
 #include "mesh/omMeshTypes.h"
 #include "system/omManageableObject.h"
 #include "volume/mipVolume.h"
@@ -171,7 +171,7 @@ private:
     friend class segmentationChunkBuildTask;
     friend class SegmentTests1;
 
-    friend class OmDataArchiveProjectImpl;
+    friend class dataArchiveProjectImpl;
     friend void YAML::operator>>(const YAML::Node& in, segmentation&);
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const segmentation&);
     friend QDataStream &operator>>(QDataStream& in, segmentation&);

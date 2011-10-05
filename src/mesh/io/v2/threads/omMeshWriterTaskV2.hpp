@@ -3,7 +3,7 @@
 #include "common/om.hpp"
 #include "common/common.h"
 #include "mesh/mesher/TriStripCollector.hpp"
-#include "mesh/io/omDataForMeshLoad.hpp"
+#include "mesh/io/dataForMeshLoad.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
@@ -75,7 +75,7 @@ public:
 private:
     OmMeshDataEntry
     writeOutData(OmMeshChunkDataWriterV2* chunk_data,
-                 om::shared_ptr<OmDataForMeshLoad> data,
+                 om::shared_ptr<dataForMeshLoad> data,
                  const OmMeshCoord& meshCoord)
     {
         OmMeshDataEntry entry =
@@ -160,7 +160,7 @@ private:
         return entry;
     }
 
-    void printInfoAboutSkippedSegment(om::shared_ptr<OmDataForMeshLoad>)
+    void printInfoAboutSkippedSegment(om::shared_ptr<dataForMeshLoad>)
     {
         std::cout << "skipping segID " << segID_
                   << " in chunk " << coord_

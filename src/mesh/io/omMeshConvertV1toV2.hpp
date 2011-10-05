@@ -41,7 +41,7 @@ public:
     }
 
     // migrate mesh
-    om::shared_ptr<OmDataForMeshLoad>
+    om::shared_ptr<dataForMeshLoad>
     ReadAndConvert(const OmMeshCoord& meshCoord)
     {
         const segId segID = meshCoord.SegID();
@@ -51,14 +51,14 @@ public:
         {
             std::cout << "did not find segID " << segID
                       << " in chunk " << coord << "\n";
-            return om::make_shared<OmDataForMeshLoad>();
+            return om::make_shared<dataForMeshLoad>();
         }
 
         if(meshWriter_->WasMeshed(segID, coord)){
             return meshReader_->Read(segID, coord);
         }
 
-        om::shared_ptr<OmDataForMeshLoad> mesh =
+        om::shared_ptr<dataForMeshLoad> mesh =
             hdf5Reader_->Read(segID, coord);
 
         meshWriter_->Save(segID, coord, mesh,

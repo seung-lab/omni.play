@@ -3,9 +3,9 @@
 #include "common/common.h"
 #include "boost/shared_ptr.hpp"
 #include "volume/volumeTypes.h"
-#include "datalayer/omDataWrapper.h"
+#include "datalayer/dataWrapper.h"
 
-class OmDataPath;
+class dataPath;
 class OmHdf5;
 class chunk;
 class OmVolume;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "datalayer/omDataWrapper.h"
+#include "datalayer/dataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
 #include "chunks/chunkDataInterface.hpp"
 #include "chunks/chunkDataImpl.hpp"

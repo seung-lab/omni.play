@@ -12,7 +12,7 @@
 #include "mesh/omMeshTypes.h"
 #include "mesh/omMeshCoord.h"
 
-class OmDataForMeshLoad;
+class dataForMeshLoad;
 class OmMeshCache;
 class OmMeshManager;
 class segmentation;
@@ -32,7 +32,7 @@ public:
 
     void Draw(QGLContext const* context);
 
-    OmDataForMeshLoad* Data(){
+    dataForMeshLoad* Data(){
         return data_.get();
     }
 
@@ -45,7 +45,7 @@ private:
 
     QGLContext const* context_;
 
-    om::shared_ptr<OmDataForMeshLoad> data_;
+    om::shared_ptr<dataForMeshLoad> data_;
 
     GLuint vertexDataVboId_;
     GLuint vertexIndexDataVboId_;

@@ -5,17 +5,17 @@
 
 class affinityChannel;
 class channelImpl;
-class OmDataPath;
+class dataPath;
 class OmMeshCoord;
 class OmMeshManager;
 class segmentation;
 
-class OmDataPaths {
+class dataPaths {
 public:
-    static OmDataPath getDefaultDatasetName();
-    static OmDataPath getProjectArchiveNameQT();
+    static dataPath getDefaultDatasetName();
+    static dataPath getProjectArchiveNameQT();
 
-    static OmDataPath getSegmentPagePath(const OmID segmentationID,
+    static dataPath getSegmentPagePath(const OmID segmentationID,
                                          const uint32_t pageNum );
 
     static std::string getMeshFileName(const OmMeshCoord& meshCoord);

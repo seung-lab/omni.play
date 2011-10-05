@@ -3,8 +3,8 @@
 #include "common/common.h"
 #include "volume/omVolumeTypes.hpp"
 
-#define OmDataWrapperRaw(c) (OmDataWrapper<int8_t>::produceNoFree(c))
-#define OmDataWrapperInvalid() (OmDataWrapper<int8_t>::produceNull())
+#define dataWrapperRaw(c) (dataWrapper<int8_t>::produceNoFree(c))
+#define dataWrapperInvalid() (dataWrapper<int8_t>::produceNull())
 
 template <class T> struct OmVolDataTypeImpl;
 template <> struct OmVolDataTypeImpl<uint32_t>{ static volDataType getType() { return OmVolDataType::UINT32;}};
@@ -14,7 +14,7 @@ template <> struct OmVolDataTypeImpl<int8_t>  { static OmVolDataType getType() {
 template <> struct OmVolDataTypeImpl<uint8_t> { static OmVolDataType getType() { return OmVolDataType::UINT8; }};
 
 namespace om {
-enum OmDataAllocType {
+enum dataAllocType {
     MALLOC,
     NEW_ARRAY,
     NONE,
@@ -23,10 +23,10 @@ enum OmDataAllocType {
 }
 
 /* TODO: fixme
-   struct malloc_tag    { operator OmDataAllocType() const { return MALLOC; } };
-   struct new_array_tag { operator OmDataAllocType() const { return NEW_ARRAY; } };
-   struct none_tag      { operator OmDataAllocType() const { return NONE; } };
-   struct invalid_tag   { operator OmDataAllocType() const { return INVALID; } };
+   struct malloc_tag    { operator dataAllocType() const { return MALLOC; } };
+   struct new_array_tag { operator dataAllocType() const { return NEW_ARRAY; } };
+   struct none_tag      { operator dataAllocType() const { return NONE; } };
+   struct invalid_tag   { operator dataAllocType() const { return INVALID; } };
 
    namespace om {
 
@@ -38,11 +38,11 @@ enum OmDataAllocType {
    } // namespace om
 */
 
-class OmDataWrapperBase {
+class dataWrapperBase {
 public:
-    OmDataWrapperBase() {}
-    virtual ~OmDataWrapperBase() {}
-    typedef boost::shared_ptr<OmDataWrapperBase> ptr_type;
+    dataWrapperBase() {}
+    virtual ~dataWrapperBase() {}
+    typedef boost::shared_ptr<dataWrapperBase> ptr_type;
 
     template <class C> C* getPtr() {
         return (C*) getVoidPtr();
@@ -52,7 +52,7 @@ public:
     virtual void * getVoidPtr() = 0;
 
     virtual int getSizeof() = 0;
-    virtual ptr_type newWrapper(void *, const om::OmDataAllocType) = 0;
+    virtual ptr_type newWrapper(void *, const om::dataAllocType) = 0;
 
     virtual std::string getTypeAsString() = 0;
     virtual OmVolDataType getVolDataType() = 0;
@@ -61,53 +61,53 @@ public:
 
     virtual void checkIfValid() = 0;
 
-    template <class T> friend class OmDataWrapper;
+    template <class T> friend class dataWrapper;
 };
 
-typedef boost::shared_ptr<OmDataWrapperBase> OmDataWrapperPtr;
+typedef boost::shared_ptr<dataWrapperBase> dataWrapperPtr;
 
 template <class T>
-class OmDataWrapper : public OmDataWrapperBase {
+class dataWrapper : public dataWrapperBase {
 public:
-    typedef boost::shared_ptr<OmDataWrapper< T > > ptr_type;
+    typedef boost::shared_ptr<dataWrapper< T > > ptr_type;
 
-    explicit OmDataWrapper(boost::shared_ptr<T> sptr)
+    explicit dataWrapper(boost::shared_ptr<T> sptr)
         : ptr_(sptr) {}
 
-    static OmDataWrapperPtr produceNull() {
-        return ptr_type(new OmDataWrapper());
+    static dataWrapperPtr produceNull() {
+        return ptr_type(new dataWrapper());
     };
 
-    static OmDataWrapperPtr produce(T* ptr, const om::OmDataAllocType t){
-        return ptr_type(new OmDataWrapper(ptr, t));
+    static dataWrapperPtr produce(T* ptr, const om::dataAllocType t){
+        return ptr_type(new dataWrapper(ptr, t));
     };
-    static OmDataWrapperPtr produce(void* ptr, const om::OmDataAllocType t){
+    static dataWrapperPtr produce(void* ptr, const om::dataAllocType t){
         return produce(static_cast<T*>(ptr), t);
     };
 
     template< class Tag, class AnyPtr >
-    static OmDataWrapperPtr produce( AnyPtr* ptr )
+    static dataWrapperPtr produce( AnyPtr* ptr )
     {
-        return ptr_type( new OmDataWrapper< T >( reinterpret_cast< T* >( ptr ), Tag() ) );
+        return ptr_type( new dataWrapper< T >( reinterpret_cast< T* >( ptr ), Tag() ) );
     }
 
-    static OmDataWrapperPtr produceNoFree(T* ptr) {
-        return ptr_type(new OmDataWrapper(ptr, om::NONE));
+    static dataWrapperPtr produceNoFree(T* ptr) {
+        return ptr_type(new dataWrapper(ptr, om::NONE));
     };
-    static OmDataWrapperPtr produceNoFree(const char* ptr) {
-        return ptr_type(new OmDataWrapper((T*)ptr, om::NONE));
+    static dataWrapperPtr produceNoFree(const char* ptr) {
+        return ptr_type(new dataWrapper((T*)ptr, om::NONE));
     };
 
-    OmDataWrapperPtr newWrapper(T* ptr, const om::OmDataAllocType dt){
-        OmDataWrapperPtr ret = ptr_type(new OmDataWrapper(ptr, dt));
+    dataWrapperPtr newWrapper(T* ptr, const om::dataAllocType dt){
+        dataWrapperPtr ret = ptr_type(new dataWrapper(ptr, dt));
         ret->checkIfValid();
         return ret;
     }
-    OmDataWrapperPtr newWrapper(void* ptr, const om::OmDataAllocType dt){
+    dataWrapperPtr newWrapper(void* ptr, const om::dataAllocType dt){
         return newWrapper(static_cast<T*>(ptr), dt);
     }
 
-    virtual ~OmDataWrapper(){}
+    virtual ~dataWrapper(){}
 
     virtual int getSizeof() {
         return sizeof(T);
@@ -151,7 +151,7 @@ public:
 private:
     const boost::shared_ptr<T> ptr_;
 
-    static boost::shared_ptr<T> wrapRawPtr(T* rawPtr, const om::OmDataAllocType d){
+    static boost::shared_ptr<T> wrapRawPtr(T* rawPtr, const om::dataAllocType d){
         switch(d){
         case om::MALLOC:
             return OmSmartPtr<T>::WrapMalloc(rawPtr);
@@ -165,15 +165,15 @@ private:
         };
     }
 
-    explicit OmDataWrapper()
+    explicit dataWrapper()
         : ptr_() {}
 
-    OmDataWrapper(T* ptr, const om::OmDataAllocType d)
+    dataWrapper(T* ptr, const om::dataAllocType d)
         : ptr_(wrapRawPtr(ptr, d)) {}
 
     void checkIfValid(){
         if(!ptr_){
-            throw OmIoException("OmDataWrapper: ptr not valid");
+            throw OmIoException("dataWrapper: ptr not valid");
         }
     }
 };
@@ -182,15 +182,15 @@ namespace om {
 namespace ptrs {
 
 template <typename T>
-static OmDataWrapperPtr Wrap(boost::shared_ptr<T> sptr){
-    return om::make_shared<OmDataWrapper<T> >(sptr);
+static dataWrapperPtr Wrap(boost::shared_ptr<T> sptr){
+    return om::make_shared<dataWrapper<T> >(sptr);
 }
 
 template <typename T>
-boost::shared_ptr<T> UnWrap(const OmDataWrapperPtr wrap)
+boost::shared_ptr<T> UnWrap(const dataWrapperPtr wrap)
 {
-    OmDataWrapper<T>* dataPtrReint =
-        reinterpret_cast<OmDataWrapper<T>*>(wrap.get());
+    dataWrapper<T>* dataPtrReint =
+        reinterpret_cast<dataWrapper<T>*>(wrap.get());
 
     return dataPtrReint->Ptr();
 }

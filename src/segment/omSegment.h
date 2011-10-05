@@ -164,7 +164,7 @@ private:
     struct segment_size_mutex_pool_tag;
 
     friend class OmCacheSegStore;
-    friend class OmDataArchiveSegment;
+    friend class dataArchiveSegment;
     friend class OmFindCommonEdge;
     friend class OmPagingPtrStore;
     friend class OmSegmentPage;

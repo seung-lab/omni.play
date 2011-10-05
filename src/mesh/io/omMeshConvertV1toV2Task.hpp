@@ -65,7 +65,7 @@ private:
                 continue;
             }
 
-            om::shared_ptr<OmDataForMeshLoad> mesh =
+            om::shared_ptr<dataForMeshLoad> mesh =
                 hdf5Reader_->Read(*segID, coord);
 
             meshWriter_->Save(*segID, coord, mesh,

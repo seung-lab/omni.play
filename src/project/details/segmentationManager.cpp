@@ -47,7 +47,7 @@ void segmentationManager::RemoveSegmentation(const OmID id)
     GetSegmentation(id).CloseDownThreads();
 
     //TODO: fixme
-    //OmDataPath path(GetSegmentation(id).GetDirectoryPath());
+    //dataPath path(GetSegmentation(id).GetDirectoryPath());
     //projectData::DeleteInternalData(path);
 
     manager_.Remove(id);

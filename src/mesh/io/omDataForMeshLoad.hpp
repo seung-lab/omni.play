@@ -2,9 +2,9 @@
 
 #include "common/common.h"
 
-class OmDataForMeshLoad{
+class dataForMeshLoad{
 public:
-    OmDataForMeshLoad()
+    dataForMeshLoad()
         : hasData_(false)
         , vertexIndexCount_(0)
         , vertexIndexNumBytes_(0)

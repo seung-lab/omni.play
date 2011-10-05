@@ -90,6 +90,6 @@ protected:
 
 private:
     friend class channelImplChunkBuildTask;
-    friend class OmDataArchiveProjectImpl;
+    friend class dataArchiveProjectImpl;
 };
 

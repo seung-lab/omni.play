@@ -51,7 +51,7 @@ private:
     ~project();
 
     static void setFileVersion(const int fileVersion);
-    friend class OmDataArchiveProject;
+    friend class dataArchiveProject;
     friend class om::data::archive::project;
     
     friend QDataStream &operator<<(QDataStream & out, const project & p );

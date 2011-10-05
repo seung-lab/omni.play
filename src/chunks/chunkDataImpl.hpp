@@ -5,7 +5,7 @@
 #include "chunks/chunkDataInterface.hpp"
 #include "chunks/omExtractChanTile.hpp"
 #include "chunks/rawChunk.hpp"
-#include "datalayer/omDataWrapper.h"
+#include "datalayer/dataWrapper.h"
 
 namespace om {
 namespace chunk {
@@ -44,7 +44,7 @@ public:
                numElementsPerSlice_ * sizeof(DATA));
     }
 
-    void CopyInChunkData(OmDataWrapperPtr hdf5)
+    void CopyInChunkData(dataWrapperPtr hdf5)
     {
         DATA const*const dataHDF5 = hdf5->getPtr<DATA>();
 
@@ -92,7 +92,7 @@ public:
         return *std::min_element(data, data + numElementsPerChunk_);
     }
 
-    OmDataWrapperPtr CopyOutChunkData()
+    dataWrapperPtr CopyOutChunkData()
     {
         rawChunk<DATA> rawChunk(vol_, coord_);
         return om::ptrs::Wrap(rawChunk.SharedPtr());

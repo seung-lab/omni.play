@@ -23,7 +23,7 @@ void channelManager::RemoveChannel(const OmID id)
     GetChannel(id).CloseDownThreads();
 
     //TODO: fixme
-    //OmDataPath path(GetChannel(id).GetDirectoryPath());
+    //dataPath path(GetChannel(id).GetDirectoryPath());
     //projectData::DeleteInternalData(path);
 
     manager_.Remove(id);

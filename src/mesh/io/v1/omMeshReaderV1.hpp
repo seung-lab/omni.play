@@ -2,9 +2,9 @@
 
 #include "common/omDebug.h"
 #include "datalayer/hdf5/omHdf5.h"
-#include "datalayer/omDataPath.h"
-#include "datalayer/omDataPaths.h"
-#include "mesh/io/omDataForMeshLoad.hpp"
+#include "datalayer/dataPath.h"
+#include "datalayer/dataPaths.h"
+#include "mesh/io/dataForMeshLoad.hpp"
 #include "mesh/omMeshCoord.h"
 #include "chunks/chunk.h"
 #include "volume/segmentation.h"
@@ -38,18 +38,18 @@ public:
         return false;
     }
 
-    inline om::shared_ptr<OmDataForMeshLoad>
+    inline om::shared_ptr<dataForMeshLoad>
     Read(const OmMeshCoord& meshCoord){
         return Read(meshCoord.SegID(), meshCoord.Coord());
     }
 
-    inline om::shared_ptr<OmDataForMeshLoad>
+    inline om::shared_ptr<dataForMeshLoad>
     Read(const segId segID, const om::chunkCoord& coord)
     {
         try{
             return doRead(segID, coord);
         } catch(...){
-            return om::make_shared<OmDataForMeshLoad>();
+            return om::make_shared<dataForMeshLoad>();
         }
     }
 
@@ -70,12 +70,12 @@ private:
 
         const std::string path = getDirectoryPath(meshCoord);
 
-        OmDataPath fpath( path + "metamesh.dat" );
+        dataPath fpath( path + "metamesh.dat" );
         if(!reader_->dataset_exists(fpath)){
             return false;
         }
 
-        OmDataWrapperPtr result = reader_->readDataset(fpath);
+        dataWrapperPtr result = reader_->readDataset(fpath);
         unsigned char noData = *(result->getPtr<unsigned char>());
         if ( 0 == noData ){
             return false;
@@ -84,22 +84,22 @@ private:
         return true;
     }
 
-    om::shared_ptr<OmDataForMeshLoad>
+    om::shared_ptr<dataForMeshLoad>
     doRead(const segId segID, const om::chunkCoord& coord)
     {
-        om::shared_ptr<OmDataForMeshLoad> ret =
-            om::make_shared<OmDataForMeshLoad>();
+        om::shared_ptr<dataForMeshLoad> ret =
+            om::make_shared<dataForMeshLoad>();
 
         const OmMeshCoord meshCoord(coord, segID);
 
         const std::string path = getDirectoryPath(meshCoord);
 
-        OmDataPath fpath( path + "metamesh.dat" );
+        dataPath fpath( path + "metamesh.dat" );
         if( !reader_->dataset_exists( fpath ) ){
             return ret;
         }
 
-        OmDataWrapperPtr result = reader_->readDataset(fpath);
+        dataWrapperPtr result = reader_->readDataset(fpath);
         unsigned char noData = *(result->getPtr<unsigned char>());
         if ( 0 == noData ){
             return ret;
@@ -158,10 +158,10 @@ private:
     std::pair<int, om::shared_ptr<T> >
     copyOutData(const std::string& path, const std::string& fileName)
     {
-        const OmDataPath fpath( path + fileName );
+        const dataPath fpath( path + fileName );
 
         int size;
-        OmDataWrapperPtr wrappedData = reader_->readDataset(fpath, &size);
+        dataWrapperPtr wrappedData = reader_->readDataset(fpath, &size);
 
         om::shared_ptr<T> data;
         if(size){

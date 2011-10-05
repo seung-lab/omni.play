@@ -3,8 +3,8 @@
 #include "common/debug.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/fs/omMemMappedFileQT.hpp"
-#include "datalayer/omIDataVolume.hpp"
-#include "datalayer/omIDataVolume.hpp"
+#include "datalayer/IDataVolume.hpp"
+#include "datalayer/IDataVolume.hpp"
 #include "project/project.h"
 #include "utility/omStringHelpers.h"
 #include "volume/io/chunkOffset.hpp"
@@ -18,7 +18,7 @@
 template <typename T> class OmIOnDiskFile;
 
 template <typename T>
-class memMappedVolumeImpl : public OmIDataVolume<T> {
+class memMappedVolumeImpl : public IDataVolume<T> {
 private:
     mipVolume* vol_;
     std::vector<boost::shared_ptr<OmIOnDiskFile<T> > > maps_;

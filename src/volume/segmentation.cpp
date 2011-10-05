@@ -4,7 +4,7 @@
 #include "chunks/uniqueValues/chunkUniqueValuesManager.hpp"
 #include "common/common.h"
 #include "common/omDebug.h"
-#include "datalayer/omDataPaths.h"
+#include "datalayer/dataPaths.h"
 #include "mesh/drawer/omMeshDrawer.h"
 #include "mesh/omMeshManagers.hpp"
 #include "segment/io/omMST.h"
@@ -21,7 +21,7 @@
 #include "volume/segmentationLoader.h"
 #include "volume/omUpdateBoundingBoxes.h"
 
-// used by OmDataArchiveProject
+// used by dataArchiveProject
 segmentation::segmentation()
     : loader_(new om::segmentation::loader(this))
     , uniqueChunkValues_(new chunkUniqueValuesManager(this))

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "mesh/io/omDataForMeshLoad.hpp"
+#include "mesh/io/dataForMeshLoad.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
 #include "mesh/omMeshManager.h"
@@ -22,12 +22,12 @@ public:
     ~OmMeshReaderV2()
     {}
 
-    inline om::shared_ptr<OmDataForMeshLoad>
+    inline om::shared_ptr<dataForMeshLoad>
     Read(const OmMeshCoord& meshCoord){
         return Read(meshCoord.SegID(), meshCoord.Coord());
     }
 
-    om::shared_ptr<OmDataForMeshLoad>
+    om::shared_ptr<dataForMeshLoad>
     Read(const segId segID, const om::chunkCoord& coord)
     {
         OmMeshChunkAllocTableV2* chunk_table =
@@ -35,8 +35,8 @@ public:
 
         OmMeshChunkDataReaderV2 chunk_data(segmentation_, coord, threshold_);
 
-        om::shared_ptr<OmDataForMeshLoad> ret =
-            om::make_shared<OmDataForMeshLoad>();
+        om::shared_ptr<dataForMeshLoad> ret =
+            om::make_shared<dataForMeshLoad>();
 
         if(!chunk_table->Contains(segID)){
             return ret;

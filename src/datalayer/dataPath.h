@@ -2,23 +2,23 @@
 
 #include "common/common.h"
 
-class OmDataPath {
+class dataPath {
 private:
     std::string path_;
 
 public:
-    OmDataPath()
+    dataPath()
     {}
 
-    OmDataPath(const char* str)
+    dataPath(const char* str)
         : path_(std::string(str))
     {}
 
-    OmDataPath(const std::string& str)
+    dataPath(const std::string& str)
         : path_(str)
     {}
 
-    OmDataPath(const QString& str)
+    dataPath(const QString& str)
         : path_(str.toStdString())
     {}
 
@@ -42,7 +42,7 @@ public:
         return QString::fromStdString(path_);
     }
 
-    friend std::ostream& operator<<(std::ostream& out, const OmDataPath& in)
+    friend std::ostream& operator<<(std::ostream& out, const dataPath& in)
     {
         out << "\"" << in.path_ << "\"";
         return out;

@@ -12,14 +12,14 @@
 #include "actions/omActions.h"
 #include "common/om.hpp"
 #include "common/common.h"
-#include "datalayer/archive/old/omDataArchiveProject.h"
+#include "datalayer/archive/old/dataArchiveProject.h"
 #include "datalayer/archive/project.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/hdf5/omHdf5Manager.h"
-#include "datalayer/omDataPath.h"
-#include "datalayer/omDataPath.h"
-#include "datalayer/omDataPaths.h"
-#include "datalayer/omDataWrapper.h"
+#include "datalayer/dataPath.h"
+#include "datalayer/dataPath.h"
+#include "datalayer/dataPaths.h"
+#include "datalayer/dataWrapper.h"
 #include "project/details/projectVolumes.h"
 #include "project/details/segmentationManager.h"
 #include "project/projectGlobals.h"
@@ -214,7 +214,7 @@ private:
         if (om::file::exists(projectMetadataFile_.toStdString()))
             om::data::archive::project::Read(projectMetadataFile_, this);
         else
-            OmDataArchiveProject::ArchiveRead(OmFileNames::ProjectMetadataFileOld(), this);
+            dataArchiveProject::ArchiveRead(OmFileNames::ProjectMetadataFileOld(), this);
         
         globals_->Users().UserSettings().Load();
         
@@ -269,9 +269,9 @@ private:
 
     void moveProjectMetadata()
     {
-        const OmDataPath path = OmDataPaths::getProjectArchiveNameQT();
+        const dataPath path = dataPaths::getProjectArchiveNameQT();
         int size;
-        OmDataWrapperPtr dw = oldHDF5_->readDataset(path, &size);
+        dataWrapperPtr dw = oldHDF5_->readDataset(path, &size);
         char const*const data = dw->getPtr<const char>();
 
         QFile newProjectMetadafile(OmFileNames::ProjectMetadataFileOld());
