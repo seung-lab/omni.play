@@ -36,7 +36,7 @@ void segmentGraph::Initialize(segmentation* segmentation,
     // maxValue is a valid segment id, so array needs to be 1 bigger
     const uint32_t size = 1 + mCache->getMaxValue();
 
-    forest_.reset(new OmDynamicForestCache(size));
+    forest_.reset(new dynamicForestCache(size));
     children_.reset(new segmentChildren(size));
 
     validGroupNum_->Resize(size);

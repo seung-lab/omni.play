@@ -55,7 +55,7 @@ private:
     segmentsImplLowLevel* mCache;
     segmentsStore* segmentPages_;
 
-    boost::scoped_ptr<OmDynamicForestCache> forest_;
+    boost::scoped_ptr<dynamicForestCache> forest_;
     boost::scoped_ptr<segmentChildren> children_;
     segmentListLowLevel* segmentListsLL_;
 

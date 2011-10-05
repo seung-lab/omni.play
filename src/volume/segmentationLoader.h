@@ -3,7 +3,7 @@
 #include "common/common.h"
 
 class segmentation;
-class OmPagingPtrStore;
+class pagingPtrStore;
 
 #include <QSet>
 
@@ -19,11 +19,11 @@ public:
         : vol_(vol)
     {}
 
-    void LoadSegmentPages(OmPagingPtrStore& ps,
+    void LoadSegmentPages(pagingPtrStore& ps,
                           QSet<PageNum>& validPageNumbers,
                           uint32_t size);
     
-    void LoadSegmentPages(OmPagingPtrStore& ps);
+    void LoadSegmentPages(pagingPtrStore& ps);
 
 private:
     void rebuildSegments();

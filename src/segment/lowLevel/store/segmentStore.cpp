@@ -5,7 +5,7 @@
 
 segmentsStore::segmentsStore(segmentation* segmentation)
     : segmentation_(segmentation)
-    , segmentPagesPtr_(new OmPagingPtrStore(segmentation))
+    , segmentPagesPtr_(new pagingPtrStore(segmentation))
     , segmentPages_(segmentPagesPtr_.get())
 {}
 

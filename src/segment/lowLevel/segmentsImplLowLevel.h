@@ -8,7 +8,7 @@
 
 #include <QHash>
 
-class OmEnabledSegments;
+class enabledSegments;
 class segmentSelection;
 class segments;
 class segmentation;
@@ -97,7 +97,7 @@ public:
         return *segmentSelection_;
     }
 
-    inline OmEnabledSegments& EnabledSegments(){
+    inline enabledSegments& EnabledSegments(){
         return *enabledSegments_;
     }
 
@@ -111,7 +111,7 @@ protected:
     segmentation *const segmentation_;
     segmentsStore *const store_;
     const boost::scoped_ptr<segmentSelection> segmentSelection_;
-    const boost::scoped_ptr<OmEnabledSegments> enabledSegments_;
+    const boost::scoped_ptr<enabledSegments> enabledSegments_;
 
     OmLockedUint32 maxValue_;
     uint32_t mNumSegs;
@@ -129,7 +129,7 @@ protected:
 
 private:
     friend class segmentSelection;
-    friend class OmEnabledSegments;
+    friend class enabledSegments;
     friend class SegmentTests;
 };
 

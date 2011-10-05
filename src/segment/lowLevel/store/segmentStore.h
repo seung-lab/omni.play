@@ -6,7 +6,7 @@
 
 class OmCacheSegRootIDs;
 class OmCacheSegStore;
-class OmPagingPtrStore;
+class pagingPtrStore;
 class segment;
 class segmentPage;
 class segmentation;
@@ -16,8 +16,8 @@ class segmentsStore {
 private:
     segmentation *const segmentation_;
 
-    const boost::scoped_ptr<OmPagingPtrStore> segmentPagesPtr_;
-    OmPagingPtrStore *const segmentPages_;
+    const boost::scoped_ptr<pagingPtrStore> segmentPagesPtr_;
+    pagingPtrStore *const segmentPages_;
     zi::spinlock pagesLock_;
 
     boost::scoped_ptr<OmCacheSegStore> cachedStore_;

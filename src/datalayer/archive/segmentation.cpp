@@ -2,7 +2,7 @@
 #include "datalayer/archive/segmentation.h"
 #include "utility/yaml/mipVolume.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
-#include "segment/lowLevel/omEnabledSegments.hpp"
+#include "segment/lowLevel/enabledSegments.hpp"
 #include "segment/lowLevelsegmentSelection.hpp"
 #include "segment/io/omUserEdges.hpp"
 #include "segmentsegmentEdge.h"
@@ -105,7 +105,7 @@ void operator>>(const Node& in, segmentsImpl& sc)
     in["Segment Custom Names"] >> sc.segmentCustomNames;
     in["Segment Notes"] >> sc.segmentNotes;
     
-    OmPagingPtrStore& segmentPages = *sc.store_->segmentPages_;
+    pagingPtrStore& segmentPages = *sc.store_->segmentPages_;
     segmentPages.Vol()->Loader()->LoadSegmentPages(segmentPages);
     
     OmUserEdges* userEdges = sc.segmentation_->MSTUserEdges();

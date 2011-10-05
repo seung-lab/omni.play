@@ -1,12 +1,12 @@
 #pragma once
 
 #include "common/common.h"
-#include "segment/lowLevel/DynamicForestPool.hpp"
+#include "segment/lowLevel/dynamicForestPool.hpp"
 #include "utility/omLockedPODs.hpp"
 
-class OmDynamicForestCache {
+class dynamicForestCache {
 private:
-    boost::scoped_ptr<zi::DynamicForestPool<segId> > graph_;
+    boost::scoped_ptr<zi::dynamicForestPool<segId> > graph_;
 
     LockedUint64 freshness_;
 
@@ -22,14 +22,14 @@ private:
     }
 
 public:
-    OmDynamicForestCache(const size_t size)
-        : graph_(new zi::DynamicForestPool<segId>(size))
+    dynamicForestCache(const size_t size)
+        : graph_(new zi::dynamicForestPool<segId>(size))
         , batchMode_(false)
     {
         freshness_.set(1);
     }
 
-    ~OmDynamicForestCache()
+    ~dynamicForestCache()
     {}
 
     inline uint64_t Freshness() const {

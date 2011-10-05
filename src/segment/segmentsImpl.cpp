@@ -3,7 +3,7 @@
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/lists/segmentLists.h"
-#include "segment/lowLevel/omEnabledSegments.hpp"
+#include "segment/lowLevel/enabledSegments.hpp"
 #include "segment/lowLevel/segmentChildren.hpp"
 #include "segment/lowLevel/segmentSelection.hpp"
 #include "segment/segmentEdge.h"

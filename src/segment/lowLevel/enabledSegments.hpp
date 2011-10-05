@@ -6,7 +6,7 @@
 
 class segmentsImpl;
 
-class OmEnabledSegments {
+class enabledSegments {
 private:
     segmentsImplLowLevel *const cache_;
 
@@ -18,7 +18,7 @@ private:
     friend QDataStream& operator>>(QDataStream&, segmentsImpl&);
     
 public:
-    OmEnabledSegments(segmentsImplLowLevel* cache)
+    enabledSegments(segmentsImplLowLevel* cache)
         : cache_(cache)
     {}
 

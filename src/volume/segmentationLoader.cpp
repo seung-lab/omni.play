@@ -9,7 +9,7 @@
 #include "volume/build/omVolumeProcessor.h"
 #include "segment/io/omUserEdges.hpp"
 
-void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps,
+void om::segmentation::loader::LoadSegmentPages(pagingPtrStore& ps,
                                                 QSet<PageNum>& validPageNumbers,
                                                 uint32_t size)
 {
@@ -39,7 +39,7 @@ void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps,
     }
 }
 
-void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps)
+void om::segmentation::loader::LoadSegmentPages(pagingPtrStore& ps)
 {
     if(vol_->IsBuilt())
     {

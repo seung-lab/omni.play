@@ -18,7 +18,7 @@
 namespace zi {
 
 template<typename T>
-class DynamicForestPool {
+class dynamicForestPool {
 private:
     struct Node {
         T l_, r_, p_, pp_;
@@ -35,13 +35,13 @@ private:
     size_t size_;
 
 public:
-    DynamicForestPool(size_t s)
+    dynamicForestPool(size_t s)
         : size_(s+1)
     {
         init();
     }
 
-    ~DynamicForestPool() {
+    ~dynamicForestPool() {
         free(x_);
     }
 

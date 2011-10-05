@@ -11,7 +11,7 @@
 
 class segmentGraphInitialLoad {
 private:
-    OmDynamicForestCache *const forest_;
+    dynamicForestCache *const forest_;
     OmValidGroupNum *const validGroupNum_;
     segmentListLowLevel *const segmentListsLL_;
     segmentsStore *const segmentPages_;
@@ -32,7 +32,7 @@ private:
                         IndivArgPolicy> joinTaskPool_;
 
 public:
-    segmentGraphInitialLoad(OmDynamicForestCache* forest,
+    segmentGraphInitialLoad(dynamicForestCache* forest,
                               OmValidGroupNum* validGroupNum,
                               segmentListLowLevel* segmentListLL,
                               segmentsStore* segmentPages,

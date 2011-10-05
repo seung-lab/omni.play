@@ -166,7 +166,7 @@ private:
     friend class OmCacheSegStore;
     friend class dataArchiveSegment;
     friend class OmFindCommonEdge;
-    friend class OmPagingPtrStore;
+    friend class pagingPtrStore;
     friend class segmentPage;
 };
 

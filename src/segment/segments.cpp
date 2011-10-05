@@ -1,6 +1,6 @@
 #include "datalayer/dataPath.h"
 #include "datalayer/dataPath.h"
-#include "segment/lowLevel/omEnabledSegments.hpp"
+#include "segment/lowLevel/enabledSegments.hpp"
 #include "segment/lowLevel/segmentSelection.hpp"
 #include "segment/lowLevel/store/segmentStore.hpp"
 #include "segment/segment.h"

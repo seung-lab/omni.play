@@ -9,11 +9,11 @@ class segmentation;
 
 namespace om { namespace segmentation { class loader; } }
 
-class OmPagingPtrStore {
+class pagingPtrStore {
 public:
-    OmPagingPtrStore(segmentation*);
+    pagingPtrStore(segmentation*);
 
-    ~OmPagingPtrStore();
+    ~pagingPtrStore();
 
     void Flush();
 

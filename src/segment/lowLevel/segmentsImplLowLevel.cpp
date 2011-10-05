@@ -1,5 +1,5 @@
 #include "utility/segmentationDataWrapper.hpp"
-#include "segment/lowLevel/omEnabledSegments.hpp"
+#include "segment/lowLevel/enabledSegments.hpp"
 #include "segment/lowLevel/segmentsImplLowLevel.h"
 #include "segment/lowLevel/segmentSelection.hpp"
 #include "segment/lists/segmentLists.h"
@@ -11,7 +11,7 @@ segmentsImplLowLevel::segmentsImplLowLevel(segmentation* segmentation,
     : segmentation_(segmentation)
     , store_(segmentPages)
     , segmentSelection_(new segmentSelection(this))
-    , enabledSegments_(new OmEnabledSegments(this))
+    , enabledSegments_(new enabledSegments(this))
     , mNumSegs(0)
 {
     maxValue_.set(0);

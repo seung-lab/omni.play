@@ -8,19 +8,19 @@
 
 static const uint32_t DEFAULT_PAGE_SIZE = 100000; // about 4.8 MB on disk
 
-OmPagingPtrStore::OmPagingPtrStore(segmentation* vol)
+pagingPtrStore::pagingPtrStore(segmentation* vol)
     : vol_(vol)
     , pageSize_(DEFAULT_PAGE_SIZE)
 {}
 
-OmPagingPtrStore::~OmPagingPtrStore()
+pagingPtrStore::~pagingPtrStore()
 {
     FOR_EACH(iter, validPageNums_){
         delete pages_[*iter];
     }
 }
 
-void OmPagingPtrStore::loadAllSegmentPages()
+void pagingPtrStore::loadAllSegmentPages()
 {
     loadMetadata();
 
@@ -39,7 +39,7 @@ void OmPagingPtrStore::loadAllSegmentPages()
 
         pool.push_back(
             zi::run_fn(
-                zi::bind(&OmPagingPtrStore::loadPage,
+                zi::bind(&pagingPtrStore::loadPage,
                          this, pageNum, &prog)));
     }
 
@@ -47,7 +47,7 @@ void OmPagingPtrStore::loadAllSegmentPages()
     prog.Join();
 }
 
-void OmPagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
+void pagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
 {
     pages_[pageNum] = new segmentPage(vol_,
                                         pageNum,
@@ -57,7 +57,7 @@ void OmPagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
     prog->DidOne();
 }
 
-segment* OmPagingPtrStore::AddSegment(const segId value)
+segment* pagingPtrStore::AddSegment(const segId value)
 {
     const PageNum pageNum = value / pageSize_;
 
@@ -82,21 +82,21 @@ segment* OmPagingPtrStore::AddSegment(const segId value)
     return ret;
 }
 
-void OmPagingPtrStore::resizeVectorIfNeeded(const PageNum pageNum)
+void pagingPtrStore::resizeVectorIfNeeded(const PageNum pageNum)
 {
     if( pageNum >= pages_.size() ){
         pages_.resize( (1+pageNum) * 2 );
     }
 }
 
-QString OmPagingPtrStore::metadataPathQStr()
+QString pagingPtrStore::metadataPathQStr()
 {
     return QString::fromStdString(
         vol_->Folder()->GetVolSegmentsPathAbs("segment_pages.data")
         );
 }
 
-void OmPagingPtrStore::loadMetadata()
+void pagingPtrStore::loadMetadata()
 {
     QFile file(metadataPathQStr());
 
@@ -124,7 +124,7 @@ void OmPagingPtrStore::loadMetadata()
     }
 }
 
-void OmPagingPtrStore::storeMetadata()
+void pagingPtrStore::storeMetadata()
 {
     const QString path = metadataPathQStr();
 
@@ -148,7 +148,7 @@ void OmPagingPtrStore::storeMetadata()
     out << validPageNumbers;
 }
 
-void OmPagingPtrStore::Flush()
+void pagingPtrStore::Flush()
 {
     if(validPageNums_.empty()){
         storeMetadata();
