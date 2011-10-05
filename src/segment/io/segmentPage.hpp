@@ -1,10 +1,5 @@
 #pragma once
 
-#include "segment/io/segmentPageV1.hpp"
-#include "segment/io/segmentPageV2.hpp"
-#include "segment/io/segmentPageV3.hpp"
-#include "segment/io/segmentPageV4.hpp"
-#include "segment/io/segmentPageVersion.hpp"
 #include "segment/io/segmentPageObjects.hpp"
 #include "segment/io/segmentPageConverter.hpp"
 #include "segment/io/segmentListTypePage.hpp"
@@ -15,8 +10,6 @@ private:
     segments* segments_;
     PageNum pageNum_;
     uint32_t pageSize_;
-
-    om::shared_ptr<segmentPageVersion> versionInfo_;
 
     om::shared_ptr<segmentPageObjects> objectPoolPtr_;
     segment* objectPool_;
@@ -48,9 +41,6 @@ public:
         , segmentsData_(NULL)
         , listTypePage_(NULL)
     {
-        versionInfo_ = om::make_shared<segmentPageVersion>(segmentation_,
-                                                                pageNum_);
-
         segmentsDataPtr_ = om::make_shared<segmentPageV4>(segmentation_,
                                                                pageNum_,
                                                                pageSize_);
