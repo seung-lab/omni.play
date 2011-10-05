@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tiles/omTileFilters.hpp"
+#include "tiles/tileFilters.hpp"
 #include "chunks/rawChunkSlicer.hpp"
 #include "chunks/segChunk.h"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
@@ -63,7 +63,7 @@ private:
         boost::scoped_ptr<OmPooledTile<T> > rawTile(slicer.GetCopyAsPooledTile(plane_, depth_));
         project::Globals().FileReadSemaphore().release(1);
 
-        OmTileFilters<T> filter(128);
+        tileFilters<T> filter(128);
 
         OmPooledTile<uint32_t>* tile = filter.recastToUint32(rawTile.get());
 

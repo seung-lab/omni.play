@@ -24,7 +24,7 @@ class segChunk;
 class segment;
 class segmentLists;
 class segments;
-class OmTileCacheSegmentation;
+class tileCacheSegmentation;
 class OmUserEdges;
 class OmValidGroupNum;
 class OmViewGroupState;
@@ -129,7 +129,7 @@ public:
     inline chunkCache<segmentation, segChunk>* ChunkCache(){
         return chunkCache_.get();
     }
-    inline OmTileCacheSegmentation* TileCache(){
+    inline tileCacheSegmentation* TileCache(){
         return tileCache_.get();
     }
     inline om::segmentation::folder* Folder() const {
@@ -157,7 +157,7 @@ private:
     boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
     boost::scoped_ptr<volumeData> volData_;
     boost::scoped_ptr<OmRawSegTileCache> volSliceCache_;
-    boost::scoped_ptr<OmTileCacheSegmentation> tileCache_;
+    boost::scoped_ptr<tileCacheSegmentation> tileCache_;
     boost::scoped_ptr<om::annotation::manager> annotations_;
 
     template <class T> friend class OmVolumeBuilder;

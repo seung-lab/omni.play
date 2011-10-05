@@ -28,7 +28,7 @@
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
 #include "system/omUndoStack.hpp"
-#include "tiles/cache/omTileCache.h"
+#include "tiles/cache/tileCache.h"
 #include "users/omGuiUserChooser.h"
 #include "utility/omFileHelpers.h"
 #include "datalayer/fs/omFile.hpp"
@@ -155,7 +155,7 @@ private:
         setupGlobals();
 
         OmCacheManager::Reset();
-        OmTileCache::Reset();
+        tileCache::Reset();
 
         OmPreferenceDefaults::SetDefaultAllPreferences();
 
@@ -207,7 +207,7 @@ private:
         }
 
         OmCacheManager::Reset();
-        OmTileCache::Reset();
+        tileCache::Reset();
         OmActionLogger::Reset();
 
         

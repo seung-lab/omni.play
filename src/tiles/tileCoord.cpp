@@ -1,10 +1,10 @@
 #include "common/omDebug.h"
-#include "tiles/omTileCoord.h"
+#include "tiles/tileCoord.h"
 #include "volume/mipVolume.h"
 #include "viewGroup/omViewGroupState.h"
 
-OmTileCoord::OmTileCoord()
-    : OmTileCoordKey(-1,
+tileCoord::tileCoord()
+    : tileCoordKey(-1,
                      om::globalCoord(),
                      NULL,
                      0,
@@ -13,11 +13,11 @@ OmTileCoord::OmTileCoord()
                      SCC_NUMBER_OF_ENUMS)
 {}
 
-OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
+tileCoord::tileCoord(const int level, const om::globalCoord& dataCoord,
                          mipVolume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
                          const ObjectType objType)
-    : OmTileCoordKey(level,
+    : tileCoordKey(level,
                      dataCoord,
                      vol,
                      freshness,
@@ -26,11 +26,11 @@ OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
                      vgs->determineColorizationType(objType))
 {}
 
-OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
+tileCoord::tileCoord(const int level, const om::globalCoord& dataCoord,
                          mipVolume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
                          const segmentColorCacheType segColorType)
-    : OmTileCoordKey(level,
+    : tileCoordKey(level,
                      dataCoord,
                      vol,
                      freshness,
@@ -39,11 +39,11 @@ OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
                      segColorType)
 {}
 
-ObjectType OmTileCoord::getVolType() const {
+ObjectType tileCoord::getVolType() const {
     return getVolume()->getVolumeType();
 }
 
-std::ostream& operator<<(std::ostream &out, const OmTileCoord &c)
+std::ostream& operator<<(std::ostream &out, const tileCoord &c)
 {
     out << "["
         << c.getLevel() << ", "

@@ -1,4 +1,4 @@
-#include "tiles/pools/omTilePools.hpp"
+#include "tiles/pools/tilePools.hpp"
 #include "project/project.h"
 #include "project/projectImpl.hpp"
 
@@ -98,7 +98,7 @@ void project::Close()
     OmThreadPoolManager::StopAll();
     zi::all_threads::join_all();
 
-    OmTileCache::Delete();
+    tileCache::Delete();
 
     // project must be deleted here, remaining singletons close cleanly
     instance().impl_.reset();
@@ -114,5 +114,5 @@ void project::Close()
 
     OmHdf5Manager::Delete();
 
-    OmTilePools::Reset();
+    tilePools::Reset();
 }

@@ -11,7 +11,7 @@
 #include "volume/omFilter2dManager.h"
 #include "volume/mipVolume.h"
 
-class OmTileCacheChannel;
+class tileCacheChannel;
 class volumeData;
 template <typename,typename> class chunkCache;
 
@@ -68,7 +68,7 @@ public:
         return chunkCache_.get();
     }
 
-    inline OmTileCacheChannel* TileCache(){
+    inline tileCacheChannel* TileCache(){
         return tileCache_.get();
     }
 
@@ -84,7 +84,7 @@ protected:
     boost::scoped_ptr<om::channel::folder> folder_;
     boost::scoped_ptr<chunkCache<channelImpl, chunk> > chunkCache_;
     boost::scoped_ptr<volumeData> volData_;
-    boost::scoped_ptr<OmTileCacheChannel> tileCache_;
+    boost::scoped_ptr<tileCacheChannel> tileCache_;
 
     OmFilter2dManager filterManager_;
 

@@ -5,23 +5,23 @@
 #include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
 #include "tiles/channelTileFilter.hpp"
 #include "tiles/omTextureID.h"
-#include "tiles/omTile.h"
+#include "tiles/tile.h"
 #include "utility/dataWrappers.h"
 #include "view2d/omView2dConverters.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/mipVolume.h"
 
-OmTile::OmTile(OmCacheBase* cache, const OmTileCoord& key)
+tile::tile(OmCacheBase* cache, const tileCoord& key)
     : cache_(cache)
     , key_(key)
     , tileLength_(key.getVolume()->Coords().GetChunkDimension())
     , mipChunkCoord_(tileToMipCoord())
 {}
 
-OmTile::~OmTile()
+tile::~tile()
 {}
 
-void OmTile::LoadData()
+void tile::LoadData()
 {
     if(getVolType() == CHANNEL) {
         load8bitChannelTile();
@@ -31,11 +31,11 @@ void OmTile::LoadData()
     }
 }
 
-int OmTile::getChunkSliceNum(){
+int tile::getChunkSliceNum(){
     return getDepth() % (getVol()->Coords().GetChunkDimension());
 }
 
-void OmTile::load8bitChannelTile()
+void tile::load8bitChannelTile()
 {
     channel* chan = reinterpret_cast<channel*>(getVol());
     chunk* chunk = chan->GetChunk(mipChunkCoord_);
@@ -49,7 +49,7 @@ void OmTile::load8bitChannelTile()
     texture_.reset(new OmTextureID(tileLength_, tileData));
 }
 
-void OmTile::load32bitSegmentationTile()
+void tile::load32bitSegmentationTile()
 {
     segmentation* seg = reinterpret_cast<segmentation*>(getVol());
     segChunk* chunk = seg->GetChunk(mipChunkCoord_);
@@ -66,11 +66,11 @@ void OmTile::load32bitSegmentationTile()
     texture_.reset(new OmTextureID(tileLength_, colorMappedData));
 }
 
-om::chunkCoord OmTile::tileToMipCoord(){
+om::chunkCoord tile::tileToMipCoord(){
     return key_.getCoord().toDataCoord(key_.getVolume(), key_.getLevel()).toChunkCoord();
 }
 
-int OmTile::getDepth()
+int tile::getDepth()
 {
     const uint32_t factor = om::math::pow2int(key_.getLevel());
 
@@ -78,11 +78,11 @@ int OmTile::getDepth()
                                                 key_.getViewType()) / factor;
 }
 
-ObjectType OmTile::getVolType() const {
+ObjectType tile::getVolType() const {
     return getVol()->getVolumeType();
 }
 
-uint32_t OmTile::NumBytes() const
+uint32_t tile::NumBytes() const
 {
     if(getVolType() == CHANNEL) {
         return 128*128;

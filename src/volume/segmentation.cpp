@@ -13,7 +13,7 @@
 #include "segment/listssegmentLists.h"
 #include "segment/segments.h"
 #include "system/omGroups.h"
-#include "tiles/cache/omTileCacheSegmentation.hpp"
+#include "tiles/cache/tileCacheSegmentation.hpp"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "volume/build/omVolumeAllocater.hpp"
 #include "volume/io/volumeData.h"
@@ -36,7 +36,7 @@ segmentation::segmentation()
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new volumeData())
     , volSliceCache_(new OmRawSegTileCache(this))
-    , tileCache_(new OmTileCacheSegmentation())
+    , tileCache_(new tileCacheSegmentation())
     , annotations_(new om::annotation::manager(this))
 {}
 
@@ -56,7 +56,7 @@ segmentation::segmentation(OmID id)
     , validGroupNum_(new OmValidGroupNum(this))
     , volData_(new volumeData())
     , volSliceCache_(new OmRawSegTileCache(this))
-    , tileCache_(new OmTileCacheSegmentation())
+    , tileCache_(new tileCacheSegmentation())
     , annotations_(new om::annotation::manager(this))
 {
     LoadPath();

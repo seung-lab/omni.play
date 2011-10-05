@@ -1,5 +1,5 @@
 #include "volume/channelFolder.h"
-#include "tiles/cache/omTileCacheChannel.hpp"
+#include "tiles/cache/tileCacheChannel.hpp"
 #include "actions/omActions.h"
 #include "chunks/chunk.h"
 #include "chunks/chunkCache.hpp"
@@ -21,14 +21,14 @@
 channelImpl::channelImpl()
     : chunkCache_(new chunkCache<channelImpl, chunk>(this))
     , volData_(new volumeData())
-    , tileCache_(new OmTileCacheChannel())
+    , tileCache_(new tileCacheChannel())
 {}
 
 channelImpl::channelImpl(OmID id)
     : OmManageableObject(id)
     , chunkCache_(new chunkCache<channelImpl, chunk>(this))
     , volData_(new volumeData())
-    , tileCache_(new OmTileCacheChannel())
+    , tileCache_(new tileCacheChannel())
 {
     LoadPath();
 

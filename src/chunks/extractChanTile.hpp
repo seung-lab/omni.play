@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tiles/omTileFilters.hpp"
+#include "tiles/tileFilters.hpp"
 #include "chunks/rawChunkSlicer.hpp"
 #include "volume/mipVolume.h"
 
@@ -32,7 +32,7 @@ private:
     OmPooledTile<uint8_t>* extractDataSlice8bit(T* d)
     {
         boost::scoped_ptr<OmPooledTile<T> > rawTile(getRawSlice(d));
-        OmTileFilters<T> filter(128);
+        tileFilters<T> filter(128);
         return filter.recastToUint8(rawTile.get());
     }
 
@@ -44,7 +44,7 @@ private:
     {
         boost::scoped_ptr<OmPooledTile<float> > rawTile(getRawSlice(d));
 
-        OmTileFilters<float> filter(128);
+        tileFilters<float> filter(128);
 
         float mn = 0.0;
         float mx = 1.0;

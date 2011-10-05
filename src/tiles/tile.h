@@ -1,23 +1,23 @@
 #pragma once
 
 /*
- *  OmTile allows access to 2D image data from the source volume.
+ *  tile allows access to 2D image data from the source volume.
  *
  *  Rachel Shearer - rshearer@mit.edu
  */
 
 #include "common/omStd.h"
-#include "tiles/omTileCoord.h"
+#include "tiles/tileCoord.h"
 
 class OmTextureID;
 class mipVolume;
 class OmCacheBase;
 class OmViewGroupState;
 
-class OmTile {
+class tile {
 public:
-    OmTile(OmCacheBase* cache, const OmTileCoord& key);
-    ~OmTile();
+    tile(OmCacheBase* cache, const tileCoord& key);
+    ~tile();
 
     void LoadData();
     uint32_t NumBytes() const;
@@ -26,13 +26,13 @@ public:
         return *texture_;
     }
 
-    inline const OmTileCoord& GetTileCoord() const {
+    inline const tileCoord& GetTileCoord() const {
         return key_;
     }
 
 private:
     OmCacheBase *const cache_;
-    const OmTileCoord key_;
+    const tileCoord key_;
     const int tileLength_;
     const om::chunkCoord mipChunkCoord_;
 

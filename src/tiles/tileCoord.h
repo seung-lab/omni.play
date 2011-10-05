@@ -12,18 +12,18 @@ class OmViewGroupState;
 typedef boost::tuple<int, om::globalCoord,
                      mipVolume*, uint32_t,
                      OmViewGroupState*, ViewType,
-                     segmentColorCacheType> OmTileCoordKey;
+                     segmentColorCacheType> tileCoordKey;
 
-class OmTileCoord : public OmTileCoordKey {
+class tileCoord : public tileCoordKey {
 public:
-    OmTileCoord();
+    tileCoord();
 
-    OmTileCoord(const int, const om::globalCoord&,
+    tileCoord(const int, const om::globalCoord&,
                 mipVolume*, const uint32_t,
                 OmViewGroupState*, const ViewType,
                 const ObjectType);
 
-    OmTileCoord(const int, const om::globalCoord&,
+    tileCoord(const int, const om::globalCoord&,
                 mipVolume*, const uint32_t,
                 OmViewGroupState*, const ViewType,
                 const segmentColorCacheType);
@@ -53,6 +53,6 @@ public:
         return this->get<6>();
     }
 
-    friend std::ostream& operator<<(std::ostream &, const OmTileCoord &);
+    friend std::ostream& operator<<(std::ostream &, const tileCoord &);
 };
 
