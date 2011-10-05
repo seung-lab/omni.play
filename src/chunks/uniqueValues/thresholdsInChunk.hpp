@@ -3,7 +3,7 @@
 #include "chunks/uniqueValues/chunkUniqueValuesPerThreshold.hpp"
 #include "utility/fuzzyStdObjs.hpp"
 
-class OmThresholdsInChunk {
+class thresholdsInChunk {
 private:
     segmentation *const segmentation_;
     const om::chunkCoord coord_;
@@ -16,13 +16,13 @@ private:
     zi::mutex lock_;
 
 public:
-    OmThresholdsInChunk(segmentation* segmentation,
+    thresholdsInChunk(segmentation* segmentation,
                         const om::chunkCoord& coord)
         : segmentation_(segmentation)
         , coord_(coord)
     {}
 
-    ~OmThresholdsInChunk()
+    ~thresholdsInChunk()
     {
         zi::guard g(lock_);
         FOR_EACH(iter, valByThres_){

@@ -1,12 +1,12 @@
 #pragma once
 
 #include "chunks/uniqueValues/chunkUniqueValuesPerThreshold.hpp"
-#include "chunks/uniqueValues/omThresholdsInChunk.hpp"
+#include "chunks/uniqueValues/thresholdsInChunk.hpp"
 #include "chunks/chunkItemContainer.hpp"
 
 class chunkUniqueValuesManager {
 private:
-    typedef chunkItemContainer<segmentation, OmThresholdsInChunk> cont_t;
+    typedef chunkItemContainer<segmentation, thresholdsInChunk> cont_t;
     boost::scoped_ptr<cont_t> chunks_;
 
     void UpdateFromVolResize(){
@@ -22,13 +22,13 @@ public:
 
     ChunkUniqueValues Values(const om::chunkCoord& coord, const double threshold)
     {
-        OmThresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
+        thresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
         return thresholdsInChunk->Get(threshold)->Values();
     }
 
     ChunkUniqueValues RereadChunk(const om::chunkCoord& coord, const double threshold)
     {
-        OmThresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
+        thresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
         return thresholdsInChunk->Get(threshold)->RereadChunk();
     }
 
