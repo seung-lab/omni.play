@@ -3,10 +3,36 @@ CONFIG = console
 
 ## start of section to be rewritten using Perl
 HEADERS +=  \
-	src/serverHandler.hpp
+	src/serverHandler.hpp \
+	src/volume/OmSimpleRawVol.hpp \
+	src/volume/io/omChunkOffset.hpp \
+	src/volume/io/omMemMappedVolume.h \
+	src/volume/io/omMemMappedVolumeImpl.hpp \
+	src/volume/io/omVolumeData.h \
+	src/volume/omAffinityChannel.h \
+	src/volume/omAffinityGraph.h \
+	src/volume/omChannel.h \
+	src/volume/omChannelFolder.h \
+	src/volume/omChannelImpl.h \
+	src/volume/omMipVolume.h \
+	src/volume/omSegmentation.h \
+	src/volume/omSegmentationFolder.h \
+	src/volume/omSegmentationLoader.h \
+	src/volume/volumeTypes.h
 
 SOURCES +=  \
-	src/main.cpp
+	src/main.cpp \
+	src/volume/io/omMemMappedVolume.cpp \
+	src/volume/io/omVolumeData.cpp \
+	src/volume/omAffinityGraph.cpp \
+	src/volume/omChannel.cpp \
+	src/volume/omChannelFolder.cpp \
+	src/volume/omChannelImpl.cpp \
+	src/volume/omMipVolume.cpp \
+	src/volume/omSegmentation.cpp \
+	src/volume/omSegmentationFolder.cpp \
+	src/volume/omSegmentationLoader.cpp \
+	src/volume/volumeTypes.cpp
 
 
 ## end of section to be rewritten using Perl
