@@ -1,7 +1,7 @@
 #include "volume/segmentationFolder.h"
 #include "volume/segmentation.h"
-#include "project/omProject.h"
-#include "project/omProjectGlobals.h"
+#include "project/project.h"
+#include "project/projectGlobals.h"
 #include "users/omUsers.h"
 #include "datalayer/fs/omFileNames.hpp"
 
@@ -12,7 +12,7 @@ om::segmentation::folder::folder(segmentation* vol)
 std::string om::segmentation::folder::GetVolSegmentsPathAbs()
 {
     return str( boost::format("%1%/segmentations/segmentation%2%/segments")
-                % OmProject::Globals().Users().UsersFolder()
+                % project::Globals().Users().UsersFolder()
                 % vol_->GetID());
 }
 
@@ -150,7 +150,7 @@ QString om::segmentation::folder::AnnotationFile()
 {
     return QString::fromStdString(
         str( boost::format("%1%/segmentations/segmentation%2%/annotations.yml")
-             % OmProject::Globals().Users().UsersFolder()
+             % project::Globals().Users().UsersFolder()
              % vol_->GetID())
         );
 }
@@ -163,7 +163,7 @@ QString om::segmentation::folder::LongRangeConnectionFile()
 {
     return QString::fromStdString(
         str( boost::format("%1%/segmentations/segmentation%2%/LongRangeConnections.txt")
-             % OmProject::Globals().Users().UsersFolder()
+             % project::Globals().Users().UsersFolder()
              % vol_->GetID())
         );
 }

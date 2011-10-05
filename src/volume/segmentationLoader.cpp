@@ -1,4 +1,4 @@
-#include "project/omProject.h"
+#include "project/project.h"
 #include "segment/omSegments.h"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "utility/omFileHelpers.h"
@@ -13,7 +13,7 @@ void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps,
                                                 QSet<PageNum>& validPageNumbers,
                                                 uint32_t size)
 {
-    if(OmProject::GetFileVersion() < 17)
+    if(project::GetFileVersion() < 17)
     {
         vol_->Folder()->MakeUserSegmentsFolder();
 

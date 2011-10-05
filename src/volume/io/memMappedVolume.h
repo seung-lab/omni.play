@@ -40,7 +40,7 @@ public:
         {
             printf("unknown data type--old file? attempting to infer type...\n");
 
-            if(OmProject::HasOldHDF5()){
+            if(project::HasOldHDF5()){
                 vol->mVolDataType = OmHdf5ChunkUtils::DetermineOldVolType(vol);
 
             } else {

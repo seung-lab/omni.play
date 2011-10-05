@@ -1,7 +1,7 @@
 #pragma once
 
-#include "project/omProject.h"
-#include "project/omProjectGlobals.h"
+#include "project/project.h"
+#include "project/projectGlobals.h"
 #include "tiles/pools/omPooledTile.hpp"
 #include "tiles/pools/omTilePool.hpp"
 #include "utility/omSmartPtr.hpp"

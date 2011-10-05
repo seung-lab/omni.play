@@ -5,7 +5,7 @@
  *	Brett Warne - bwarne@mit.edu - 2/24/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmMeshCoord {
  public:

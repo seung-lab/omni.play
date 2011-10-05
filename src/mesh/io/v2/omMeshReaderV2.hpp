@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"

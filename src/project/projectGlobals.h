@@ -15,7 +15,7 @@ class QWidget;
 
 namespace om { class users; }
 
-class OmProjectGlobals {
+class projectGlobals {
 private:
     boost::scoped_ptr<OmRandColorFile> randColorFile_;
     boost::scoped_ptr<om::users> users_;
@@ -28,8 +28,8 @@ private:
     zi::semaphore fileReadThrottle_;
 
 public:
-    OmProjectGlobals();
-    ~OmProjectGlobals();
+    projectGlobals();
+    ~projectGlobals();
 
     void Init();
     void GUIinit(QWidget* widget);

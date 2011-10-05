@@ -5,7 +5,7 @@
 #include "datalayer/fs/omMemMappedFileQT.hpp"
 #include "datalayer/omIDataVolume.hpp"
 #include "datalayer/omIDataVolume.hpp"
-#include "project/omProject.h"
+#include "project/project.h"
 #include "utility/omStringHelpers.h"
 #include "volume/io/omChunkOffset.hpp"
 #include "volume/channel.h"

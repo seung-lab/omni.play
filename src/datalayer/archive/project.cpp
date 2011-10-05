@@ -4,9 +4,9 @@
 #include "common/common.h"
 #include "utility/omFileHelpers.h"
 #include "datalayer/fs/omFile.hpp"
-#include "project/omProject.h"
+#include "project/project.h"
 #include "system/omPreferences.h"
-#include "project/omProjectImpl.hpp"
+#include "project/projectImpl.hpp"
 #include "utility/yaml/baseTypes.hpp"
 #include "utility/channelDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
@@ -22,7 +22,7 @@ namespace om {
 namespace data {
 namespace archive {
     
-void project::Read(const QString& fnp, OmProjectImpl* project) {
+void project::Read(const QString& fnp, projectImpl* project) {
     using namespace YAML;
     
     std::ifstream fin(fnp.toStdString().c_str());
@@ -36,7 +36,7 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
         
         int ver;
         doc["version"] >> ver;
-        OmProject::setFileVersion(ver);
+        project::setFileVersion(ver);
         
         parser.GetNextDocument(doc);
         doc >> (*project);
@@ -54,7 +54,7 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
     postLoad();
 }
 
-void project::Write(const QString& fnp, OmProjectImpl* project) {
+void project::Write(const QString& fnp, projectImpl* project) {
     using namespace YAML;
     
     Emitter emitter;
@@ -80,7 +80,7 @@ void project::Write(const QString& fnp, OmProjectImpl* project) {
     
     QTextStream out(&file);
     
-    OmProject::setFileVersion(Latest_Project_Version);
+    project::setFileVersion(Latest_Project_Version);
     
     out << emitter.c_str();
 }
@@ -118,7 +118,7 @@ void project::postLoad()
 
 namespace YAML {
     
-Emitter &operator<<(Emitter& out, const OmProjectImpl& p)
+Emitter &operator<<(Emitter& out, const projectImpl& p)
 {
     out << BeginMap;
     out << Key << "Preferences" << Value << OmPreferences::instance();
@@ -127,7 +127,7 @@ Emitter &operator<<(Emitter& out, const OmProjectImpl& p)
     return out;
 }
 
-void operator>>(const Node& in, OmProjectImpl& p)
+void operator>>(const Node& in, projectImpl& p)
 {
     in["Preferences"] >> OmPreferences::instance();
     in["Volumes"] >> p.volumes_;
@@ -154,7 +154,7 @@ void operator>>(const Node& in, OmPreferences& p)
     in["V3f Preferences"] >> p.v3fPrefs_;
 }
 
-Emitter &operator<<(Emitter& out, const OmProjectVolumes& p)
+Emitter &operator<<(Emitter& out, const projectVolumes& p)
 {
     out << BeginMap;
     out << Key << "Channels" << Value << *p.channels_;
@@ -163,7 +163,7 @@ Emitter &operator<<(Emitter& out, const OmProjectVolumes& p)
     return out;
 }
 
-void operator>>(const Node& in, OmProjectVolumes& p)
+void operator>>(const Node& in, projectVolumes& p)
 {
     in["Channels"] >> *p.channels_;
     in["Segmentations"] >> *p.segmentations_;

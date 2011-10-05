@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"

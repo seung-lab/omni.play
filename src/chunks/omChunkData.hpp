@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
 #include "chunks/omChunkDataInterface.hpp"

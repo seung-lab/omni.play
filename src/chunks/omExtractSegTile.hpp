@@ -47,9 +47,9 @@ private:
     {
         OmRawChunkSlicer<uint32_t> slicer(128, d);
 
-        OmProject::Globals().FileReadSemaphore().acquire(1);
+        project::Globals().FileReadSemaphore().acquire(1);
         OmPooledTile<uint32_t>* tile = slicer.GetCopyAsPooledTile(plane_, depth_);
-        OmProject::Globals().FileReadSemaphore().release(1);
+        project::Globals().FileReadSemaphore().release(1);
 
         return PooledTile32Ptr(tile);
     }
@@ -59,9 +59,9 @@ private:
     {
         OmRawChunkSlicer<T> slicer(128, d);
 
-        OmProject::Globals().FileReadSemaphore().acquire(1);
+        project::Globals().FileReadSemaphore().acquire(1);
         boost::scoped_ptr<OmPooledTile<T> > rawTile(slicer.GetCopyAsPooledTile(plane_, depth_));
-        OmProject::Globals().FileReadSemaphore().release(1);
+        project::Globals().FileReadSemaphore().release(1);
 
         OmTileFilters<T> filter(128);
 

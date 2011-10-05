@@ -1,18 +1,18 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "system/omGenericManager.hpp"
 #include "volume/segmentation.h"
 #include "datalayer/archive/segmentation.h"
 
-class OmProjectVolumes;
+class projectVolumes;
 
 class segmentationManager {
 private:
-    OmProjectVolumes *const volumes_;
+    projectVolumes *const volumes_;
 
 public:
-    segmentationManager(OmProjectVolumes* volumes)
+    segmentationManager(projectVolumes* volumes)
         : volumes_(volumes)
     {}
 

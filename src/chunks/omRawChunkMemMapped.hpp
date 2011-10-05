@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/io/volumeData.h"
 #include "volume/mipVolume.h"

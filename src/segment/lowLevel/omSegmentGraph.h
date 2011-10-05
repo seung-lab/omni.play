@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/lowLevel/omDynamicForestCache.hpp"
 #include "segment/lowLevel/omSegmentLowLevelTypes.h"
 #include "threads/omTaskManagerTypes.h"

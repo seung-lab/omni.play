@@ -48,7 +48,7 @@ public:
         for(int i = 0; i < size; ++i){
             OmSegmentEdge e;
             in >> e;
-            AddEdgeFromProjectLoad(e);
+            AddEdgeFrprojectLoad(e);
         }
 
         printf("loaded %d user edges\n", edges_.size());
@@ -83,7 +83,7 @@ public:
         printf("saved %s\n", qPrintable(path));
     }
 
-    void AddEdgeFromProjectLoad(OmSegmentEdge e)
+    void AddEdgeFrprojectLoad(OmSegmentEdge e)
     {
         if(0 == e.childID  ||
            0 == e.parentID ||

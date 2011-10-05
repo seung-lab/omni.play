@@ -11,7 +11,7 @@
 #include "actions/io/omActionReplayer.hpp"
 #include "actions/omActions.h"
 #include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/archive/old/omDataArchiveProject.h"
 #include "datalayer/archive/project.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -20,9 +20,9 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
-#include "project/details/omProjectVolumes.h"
+#include "project/details/projectVolumes.h"
 #include "project/details/segmentationManager.h"
-#include "project/omProjectGlobals.h"
+#include "project/projectGlobals.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omGenericManager.hpp"
 #include "system/omPreferences.h"
@@ -39,7 +39,7 @@
 #include <QFile>
 #include <QFileInfo>
 
-class OmProjectImpl {
+class projectImpl {
 private:
     QString projectMetadataFile_;
     QString oldHDF5projectFile_;
@@ -50,17 +50,17 @@ private:
     int fileVersion_;
     bool isReadOnly_;
 
-    OmProjectVolumes volumes_;
-    boost::scoped_ptr<OmProjectGlobals> globals_;
+    projectVolumes volumes_;
+    boost::scoped_ptr<projectGlobals> globals_;
 
 public:
-    OmProjectImpl()
+    projectImpl()
         : oldHDF5_(NULL)
         , fileVersion_(0)
         , isReadOnly_(false)
     {}
 
-    ~OmProjectImpl()
+    ~projectImpl()
     {}
 
     const QString& FilesFolder() {
@@ -84,7 +84,7 @@ public:
     }
 
     //volume management
-    OmProjectVolumes& Volumes(){
+    projectVolumes& Volumes(){
         return volumes_;
     }
 
@@ -134,7 +134,7 @@ public:
         return isReadOnly_;
     }
 
-    OmProjectGlobals& Globals(){
+    projectGlobals& Globals(){
         return *globals_;
     }
 
@@ -289,15 +289,15 @@ private:
 
     void setupGlobals()
     {
-        globals_.reset(new OmProjectGlobals());
+        globals_.reset(new projectGlobals());
         globals_->Init();
     }
 
-    friend class OmProject;
+    friend class project;
 
-    friend YAML::Emitter & YAML::operator<<(YAML::Emitter & out, const OmProjectImpl & p);
-    friend void YAML::operator>>(const YAML::Node & in, OmProjectImpl & p);
-    friend QDataStream &operator<<(QDataStream & out, const OmProjectImpl & p);
-    friend QDataStream &operator>>(QDataStream & in, OmProjectImpl & p);
+    friend YAML::Emitter & YAML::operator<<(YAML::Emitter & out, const projectImpl & p);
+    friend void YAML::operator>>(const YAML::Node & in, projectImpl & p);
+    friend QDataStream &operator<<(QDataStream & out, const projectImpl & p);
+    friend QDataStream &operator>>(QDataStream & in, projectImpl & p);
 };
 

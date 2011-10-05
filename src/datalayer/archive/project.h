@@ -3,9 +3,9 @@
 #include <QString>
 #include "yaml-cpp/yaml.h"
 
-class OmProjectImpl;
+class projectImpl;
 class OmPreferences;
-class OmProjectVolumes;
+class projectVolumes;
 
 namespace om {
 namespace data {
@@ -15,8 +15,8 @@ static const int Latest_Project_Version = 25;
 
 class project {
 public:
-    static void Read(const QString& fnp, OmProjectImpl* project);
-    static void Write(const QString& fnp, OmProjectImpl* project);
+    static void Read(const QString& fnp, projectImpl* project);
+    static void Write(const QString& fnp, projectImpl* project);
 private:
     static void postLoad();    
 };
@@ -27,11 +27,11 @@ private:
 
 namespace YAML {
     
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmProjectImpl& p);
-void operator>>(const YAML::Node& in, OmProjectImpl& p);
+YAML::Emitter &operator<<(YAML::Emitter& out, const projectImpl& p);
+void operator>>(const YAML::Node& in, projectImpl& p);
 YAML::Emitter &operator<<(YAML::Emitter& out, const OmPreferences& p);
 void operator>>(const YAML::Node& in, OmPreferences& p);
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmProjectVolumes& p);
-void operator>>(const YAML::Node& in, OmProjectVolumes& p);
+YAML::Emitter &operator<<(YAML::Emitter& out, const projectVolumes& p);
+void operator>>(const YAML::Node& in, projectVolumes& p);
 
 } // namespace YAML

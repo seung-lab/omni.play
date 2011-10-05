@@ -1,8 +1,8 @@
 #include "actions/omActions.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "project/details/channelManager.h"
-#include "project/details/omProjectVolumes.h"
+#include "project/details/projectVolumes.h"
 #include "project/details/segmentationManager.h"
 #include "utility/dataWrappers.h"
 #include "volume/omFilter2d.h"
@@ -48,7 +48,7 @@ void segmentationManager::RemoveSegmentation(const OmID id)
 
     //TODO: fixme
     //OmDataPath path(GetSegmentation(id).GetDirectoryPath());
-    //OmProjectData::DeleteInternalData(path);
+    //projectData::DeleteInternalData(path);
 
     manager_.Remove(id);
 

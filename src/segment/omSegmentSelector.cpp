@@ -2,7 +2,7 @@
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/omDebug.h"
 #include "common/omSet.hpp"
-#include "project/omProject.h"
+#include "project/project.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"

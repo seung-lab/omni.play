@@ -52,7 +52,7 @@ void OmMeshManager::loadThreadhold1()
     {
         if(metadata_->IsHDF5())
         {
-            if(OmProject::HasOldHDF5()){
+            if(project::HasOldHDF5()){
                 ActivateConversionFromV1ToV2();
             }
             // TODO: else? mesh conversion probably wasn't finished...
@@ -69,7 +69,7 @@ void OmMeshManager::loadThreadholdNon1()
 
 void OmMeshManager::inferMeshMetadata()
 {
-    if(!OmProject::HasOldHDF5())
+    if(!project::HasOldHDF5())
     {
         printf("no HDF5 file found\n");
         return;

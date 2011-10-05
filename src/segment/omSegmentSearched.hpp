@@ -1,7 +1,7 @@
 #pragma once
 
 #include "actions/omActions.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "system/cache/omCacheManager.h"
 #include "events/omEvents.h"
 #include "utility/dataWrappers.h"

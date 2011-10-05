@@ -8,20 +8,20 @@
  *  Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "zi/omUtility.h"
 #include "datalayer/archive/project.h"
 
 class channel;
 class segmentation;
 class OmHdf5;
-class OmProjectImpl;
-class OmProjectVolumes;
-class OmProjectGlobals;
+class projectImpl;
+class projectVolumes;
+class projectGlobals;
 
-class OmProject : private om::singletonBase<OmProject> {
+class project : private om::singletonBase<project> {
 private:
-    boost::scoped_ptr<OmProjectImpl> impl_;
+    boost::scoped_ptr<projectImpl> impl_;
 
 public:
     //project IO
@@ -40,23 +40,23 @@ public:
     static OmHdf5* OldHDF5();
 
     //volume management
-    static OmProjectVolumes& Volumes();
+    static projectVolumes& Volumes();
 
     static int GetFileVersion();
 
-    static OmProjectGlobals& Globals();
+    static projectGlobals& Globals();
 
 private:
-    OmProject();
-    ~OmProject();
+    project();
+    ~project();
 
     static void setFileVersion(const int fileVersion);
     friend class OmDataArchiveProject;
     friend class om::data::archive::project;
     
-    friend QDataStream &operator<<(QDataStream & out, const OmProject & p );
-    friend QDataStream &operator>>(QDataStream & in, OmProject & p );
+    friend QDataStream &operator<<(QDataStream & out, const project & p );
+    friend QDataStream &operator>>(QDataStream & in, project & p );
 
-    friend class zi::singleton<OmProject>;
+    friend class zi::singleton<project>;
 };
 

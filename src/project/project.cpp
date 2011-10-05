@@ -1,16 +1,16 @@
 #include "tiles/pools/omTilePools.hpp"
-#include "project/omProject.h"
-#include "project/omProjectImpl.hpp"
+#include "project/project.h"
+#include "project/projectImpl.hpp"
 
-OmProject::OmProject()
+project::project()
 {}
 
-OmProject::~OmProject()
+project::~project()
 {}
 
-QString OmProject::New(const QString& fnp)
+QString project::New(const QString& fnp)
 {
-    instance().impl_.reset(new OmProjectImpl());
+    instance().impl_.reset(new projectImpl());
 
     try{
         return instance().impl_->New(fnp);
@@ -21,13 +21,13 @@ QString OmProject::New(const QString& fnp)
     }
 }
 
-void OmProject::Save(){
+void project::Save(){
     instance().impl_->Save();
 }
 
-void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent)
+void project::Load(const QString& fileNameAndPath, QWidget* guiParent)
 {
-    instance().impl_.reset(new OmProjectImpl());
+    instance().impl_.reset(new projectImpl());
 
     try{
         instance().impl_->Load(fileNameAndPath, guiParent);
@@ -39,43 +39,43 @@ void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent)
     }
 }
 
-const QString& OmProject::FilesFolder(){
+const QString& project::FilesFolder(){
     return instance().impl_->FilesFolder();
 }
 
-const QString& OmProject::OmniFile(){
+const QString& project::OmniFile(){
     return instance().impl_->OmniFile();
 }
 
-bool OmProject::HasOldHDF5(){
+bool project::HasOldHDF5(){
     return instance().impl_->HasOldHDF5();
 }
 
-OmHdf5* OmProject::OldHDF5(){
+OmHdf5* project::OldHDF5(){
     return instance().impl_->OldHDF5();
 }
 
-OmProjectVolumes& OmProject::Volumes(){
+projectVolumes& project::Volumes(){
     return instance().impl_->Volumes();
 }
 
-int OmProject::GetFileVersion(){
+int project::GetFileVersion(){
     return instance().impl_->GetFileVersion();
 }
 
-void OmProject::setFileVersion(const int ver){
+void project::setFileVersion(const int ver){
     instance().impl_->setFileVersion(ver);
 }
 
-bool OmProject::IsReadOnly(){
+bool project::IsReadOnly(){
     return instance().impl_->IsReadOnly();
 }
 
-OmProjectGlobals& OmProject::Globals(){
+projectGlobals& project::Globals(){
     return instance().impl_->Globals();
 }
 
-bool OmProject::IsOpen(){
+bool project::IsOpen(){
     return instance().impl_;
 }
 
@@ -86,7 +86,7 @@ bool OmProject::IsOpen(){
 #include "threads/omThreadPoolManager.h"
 #include "zi/omThreads.h"
 
-void OmProject::Close()
+void project::Close()
 {
     if(!IsOpen()){
         return;
@@ -100,7 +100,7 @@ void OmProject::Close()
 
     OmTileCache::Delete();
 
-    // OmProject must be deleted here, remaining singletons close cleanly
+    // project must be deleted here, remaining singletons close cleanly
     instance().impl_.reset();
 
     //delete all singletons

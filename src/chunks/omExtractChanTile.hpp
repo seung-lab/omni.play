@@ -60,9 +60,9 @@ private:
     {
         OmRawChunkSlicer<T> slicer(128, d);
 
-        OmProject::Globals().FileReadSemaphore().acquire(1);
+        project::Globals().FileReadSemaphore().acquire(1);
         OmPooledTile<T>* tile = slicer.GetCopyAsPooledTile(plane_, depth_);
-        OmProject::Globals().FileReadSemaphore().release(1);
+        project::Globals().FileReadSemaphore().release(1);
 
         return tile;
     }

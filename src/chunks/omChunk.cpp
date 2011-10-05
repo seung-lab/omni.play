@@ -1,4 +1,4 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "chunks/omChunkData.hpp"
 
 OmChunk::OmChunk(channel* vol, const om::chunkCoord& coord)

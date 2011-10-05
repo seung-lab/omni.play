@@ -1,13 +1,13 @@
 #include "actions/io/omActionLogger.hpp"
 #include "actions/omActionsImpl.h"
 #include "events/details/omEventManagerImpl.hpp"
-#include "project/omProjectGlobals.h"
+#include "project/projectGlobals.h"
 #include "system/omStateManagerImpl.hpp"
 #include "users/omUsers.h"
 #include "utility/omRandColorFile.hpp"
 #include "view2d/omView2dManagerImpl.hpp"
 
-OmProjectGlobals::OmProjectGlobals()
+projectGlobals::projectGlobals()
     : randColorFile_(new OmRandColorFile())
     , users_(new om::users())
     , v2dManagerImpl_(new OmView2dManagerImpl())
@@ -17,10 +17,10 @@ OmProjectGlobals::OmProjectGlobals()
     , actionLogger_(new OmActionLogger())
 {}
 
-OmProjectGlobals::~OmProjectGlobals()
+projectGlobals::~projectGlobals()
 {}
 
-void OmProjectGlobals::Init()
+void projectGlobals::Init()
 {
     fileReadThrottle_.set(4);
 

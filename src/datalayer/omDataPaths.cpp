@@ -5,7 +5,7 @@
 #include "datalayer/omDataPaths.h"
 #include "mesh/omMeshCoord.h"
 #include "mesh/omMeshManager.h"
-#include "project/omProject.h"
+#include "project/project.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
 #include "volume/channelImpl.h"

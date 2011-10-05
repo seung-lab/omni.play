@@ -2,8 +2,8 @@
 
 #include "common/omDebug.h"
 #include "datalayer/fs/omFile.hpp"
-#include "project/omProject.h"
-#include "project/omProjectGlobals.h"
+#include "project/project.h"
+#include "project/projectGlobals.h"
 #include "users/omUsers.h"
 #include "utility/omFileHelpers.h"
 #include "utility/omUUID.hpp"
@@ -106,7 +106,7 @@ public:
     }
 
     static QString LogFolderPath(){
-        return OmProject::Globals().Users().LogFolderPath();
+        return project::Globals().Users().LogFolderPath();
     }
 
     static QString ProjectMetadataFileOld(){
@@ -122,7 +122,7 @@ public:
     }
 
     static QString FilesFolder(){
-        return OmProject::FilesFolder();
+        return project::FilesFolder();
     }
 };
 

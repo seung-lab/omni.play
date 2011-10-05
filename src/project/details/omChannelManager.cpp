@@ -1,5 +1,5 @@
 #include "actions/omActions.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "project/details/channelManager.h"
 #include "volume/channelFolder.h"
@@ -24,7 +24,7 @@ void channelManager::RemoveChannel(const OmID id)
 
     //TODO: fixme
     //OmDataPath path(GetChannel(id).GetDirectoryPath());
-    //OmProjectData::DeleteInternalData(path);
+    //projectData::DeleteInternalData(path);
 
     manager_.Remove(id);
 

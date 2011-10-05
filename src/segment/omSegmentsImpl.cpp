@@ -1,5 +1,5 @@
 #include "common/omDebug.h"
-#include "project/omProjectGlobals.h"
+#include "project/projectGlobals.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/lists/omSegmentLists.h"
@@ -41,7 +41,7 @@ OmSegment* OmSegmentsImpl::AddSegment(const OmSegID value)
     }
 
     OmSegment* seg = store_->AddSegment(value);
-    seg->SetColor(OmProject::Globals().RandColorFile().GetRandomColor(value));
+    seg->SetColor(project::Globals().RandColorFile().GetRandomColor(value));
 
     ++mNumSegs;
     if(maxValue_.get() < value) {

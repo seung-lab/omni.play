@@ -8,7 +8,7 @@
 #include "mesh/omMeshCoord.h"
 #include "chunks/omChunk.h"
 #include "volume/segmentation.h"
-#include "project/omProject.h"
+#include "project/project.h"
 
 class OmMeshReaderV1{
 private:
@@ -19,7 +19,7 @@ public:
     OmMeshReaderV1(segmentation* segmentation)
         : segmentation_(segmentation)
     {
-        reader_ = OmProject::OldHDF5();
+        reader_ = project::OldHDF5();
     }
 
     bool IsAnyMeshDataPresent()
