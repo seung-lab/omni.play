@@ -1,26 +1,26 @@
 #pragma once
 
 #include "datalayer/fs/omFileNames.hpp"
-#include "mesh/io/v2/chunk/omMemMappedAllocFile.hpp"
+#include "mesh/iochunk/memMappedAllocFile.hpp"
 #include "utility/omLockedObjects.h"
 
-class OmMeshFilePtrCache;
+class meshFilePtrCache;
 
-class OmMeshChunkAllocTableV2 {
+class meshChunkAllocTableV2 {
 private:
-    OmMeshFilePtrCache *const filePtrCache_;
-    boost::scoped_ptr<OmMemMappedAllocFile> file_;
+    meshFilePtrCache *const filePtrCache_;
+    boost::scoped_ptr<memMappedAllocFile> file_;
 
     LockedSet<segId> segsBeingSaved_;
     zi::rwmutex lock_;
 
 public:
-    OmMeshChunkAllocTableV2(OmMeshFilePtrCache* filePtrCache,
+    meshChunkAllocTableV2(meshFilePtrCache* filePtrCache,
                             segmentation* seg,
                             const om::chunkCoord& coord,
                             const double threshold)
         : filePtrCache_(filePtrCache)
-        , file_(new OmMemMappedAllocFile(seg, coord, threshold))
+        , file_(new memMappedAllocFile(seg, coord, threshold))
     {
         zi::rwmutex::write_guard g(lock_);
 
@@ -29,7 +29,7 @@ public:
         }
     }
 
-    ~OmMeshChunkAllocTableV2()
+    ~meshChunkAllocTableV2()
     {}
 
     // avoid over-lapping writes for meshes with same segment ID
@@ -52,13 +52,13 @@ public:
         file_->Unmap();
     }
 
-    bool Contains(const OmMeshDataEntry& newEntry)
+    bool Contains(const meshDataEntry& newEntry)
     {
         zi::rwmutex::write_guard g(lock_);
 
         map();
 
-        OmMeshDataEntry* entry = file_->Find(newEntry);
+        meshDataEntry* entry = file_->Find(newEntry);
         if(!entry){
             return false;
         }
@@ -67,18 +67,18 @@ public:
 
     inline bool Contains(const segId segID)
     {
-        OmMeshDataEntry e;
+        meshDataEntry e;
         e.segID = segID;
         return Contains(e);
     }
 
-    void Set(const OmMeshDataEntry& newEntry)
+    void Set(const meshDataEntry& newEntry)
     {
         zi::rwmutex::write_guard g(lock_);
 
         map();
 
-        OmMeshDataEntry* entry = file_->Find(newEntry);
+        meshDataEntry* entry = file_->Find(newEntry);
         if(!entry){
             throw OmIoException("unknown segment ID");
         }
@@ -88,16 +88,16 @@ public:
         (*entry) = newEntry;
     }
 
-    const OmMeshDataEntry Find(const segId segID)
+    const meshDataEntry Find(const segId segID)
     {
         zi::rwmutex::write_guard g(lock_);
 
         map();
 
-        OmMeshDataEntry e;
+        meshDataEntry e;
         e.segID = segID;
 
-        OmMeshDataEntry* entry = file_->Find(e);
+        meshDataEntry* entry = file_->Find(e);
         if(!entry){
             throw OmIoException("unknown segment ID");
         }

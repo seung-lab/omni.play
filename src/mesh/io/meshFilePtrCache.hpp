@@ -1,40 +1,40 @@
 #pragma once
 
 #include "common/common.h"
-#include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
-#include "mesh/io/v2/omRingBuffer.hpp"
-#include "mesh/omMeshCoord.h"
+#include "mesh/iochunk/meshChunkAllocTable.hpp"
+#include "mesh/iochunk/meshChunkDataReader.hpp"
+#include "mesh/iochunk/meshChunkDataWriter.hpp"
+#include "mesh/ioomRingBuffer.hpp"
+#include "mesh/meshCoord.h"
 #include "threads/omTaskManager.hpp"
 #include "zi/omMutex.h"
 
-class OmMeshChunkAllocTableV2;
-class OmMeshChunkDataWriterV2;
+class meshChunkAllocTableV2;
+class meshChunkDataWriter;
 
-class OmMeshFilePtrCache {
+class meshFilePtrCache {
 private:
     segmentation *const segmentation_;
     const double threshold_;
 
-    std::map<om::chunkCoord, om::shared_ptr<OmMeshChunkAllocTableV2> > tables_;
-    std::map<om::chunkCoord, om::shared_ptr<OmMeshChunkDataWriterV2> > data_;
+    std::map<om::chunkCoord, om::shared_ptr<meshChunkAllocTableV2> > tables_;
+    std::map<om::chunkCoord, om::shared_ptr<meshChunkDataWriter> > data_;
     zi::rwmutex lock_;
 
     OmThreadPool threadPool_;
 
     // limit number of memory-mapped files
-    OmRingBuffer<OmMeshChunkAllocTableV2> mappedFiles_;
+    OmRingBuffer<meshChunkAllocTableV2> mappedFiles_;
 
 public:
-    OmMeshFilePtrCache(segmentation* segmentation, const double threshold)
+    meshFilePtrCache(segmentation* segmentation, const double threshold)
         : segmentation_(segmentation)
         , threshold_(threshold)
     {
         threadPool_.start();
     }
 
-    ~OmMeshFilePtrCache(){
+    ~meshFilePtrCache(){
         Stop();
     }
 
@@ -61,30 +61,30 @@ public:
         return threadPool_.getTaskCount();
     }
 
-    void RegisterMappedFile(OmMeshChunkAllocTableV2* table){
+    void RegisterMappedFile(meshChunkAllocTableV2* table){
         mappedFiles_.Put(table);
     }
 
-    OmMeshChunkAllocTableV2* GetAllocTable(const om::chunkCoord& coord)
+    meshChunkAllocTableV2* GetAllocTable(const om::chunkCoord& coord)
     {
         zi::rwmutex::write_guard g(lock_);
 
         if(!tables_.count(coord))
         {
-            tables_[coord] = om::make_shared<OmMeshChunkAllocTableV2>(this, segmentation_,
+            tables_[coord] = om::make_shared<meshChunkAllocTableV2>(this, segmentation_,
                                                                       coord, threshold_);
         }
 
         return tables_[coord].get();
     }
 
-    OmMeshChunkDataWriterV2* GetWriter(const om::chunkCoord& coord)
+    meshChunkDataWriter* GetWriter(const om::chunkCoord& coord)
     {
         zi::rwmutex::write_guard g(lock_);
 
         if(!data_.count(coord))
         {
-            data_[coord] = om::make_shared<OmMeshChunkDataWriterV2>(segmentation_,
+            data_[coord] = om::make_shared<meshChunkDataWriter>(segmentation_,
                                                                     coord, threshold_);
         }
 

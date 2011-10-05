@@ -2,28 +2,28 @@
 
 #include "common/common.h"
 #include "mesh/io/dataForMeshLoad.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
-#include "mesh/io/v2/omMeshFilePtrCache.hpp"
-#include "mesh/io/v2/threads/omMeshWriterTaskV2.hpp"
+#include "mesh/iochunk/meshChunkAllocTable.hpp"
+#include "mesh/iochunk/meshChunkDataWriter.hpp"
+#include "mesh/iomeshFilePtrCache.hpp"
+#include "mesh/iothreads/meshWriterTask.hpp"
 #include "mesh/mesher/TriStripCollector.hpp"
-#include "mesh/omMeshCoord.h"
-#include "mesh/omMeshManager.h"
+#include "mesh/meshCoord.h"
+#include "mesh/meshManager.h"
 
-class OmMeshWriterV2{
+class meshWriter{
 private:
     segmentation *const segmentation_;
     const double threshold_;
-    OmMeshFilePtrCache* filePtrCache_;
+    meshFilePtrCache* filePtrCache_;
 
 public:
-    OmMeshWriterV2(OmMeshManager* meshManager)
+    meshWriter(meshManager* meshManager)
         : segmentation_(meshManager->GetSegmentation())
         , threshold_(meshManager->Threshold())
         , filePtrCache_(meshManager->FilePtrCache())
     {}
 
-    ~OmMeshWriterV2()
+    ~meshWriter()
     {
         Join();
         filePtrCache_->FlushMappedFiles();
@@ -44,7 +44,7 @@ public:
 
         FOR_EACH(iter, *coordsPtr)
         {
-            OmMeshChunkAllocTableV2* chunk_table =
+            meshChunkAllocTableV2* chunk_table =
                 filePtrCache_->GetAllocTable(*iter);
 
             if(!chunk_table->CheckEverythingWasMeshed()){
@@ -65,35 +65,35 @@ public:
 
     bool Contains(const segId segID, const om::chunkCoord& coord)
     {
-        OmMeshChunkAllocTableV2* chunk_table =
+        meshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);
         return chunk_table->Contains(segID);
     }
 
     bool WasMeshed(const segId segID, const om::chunkCoord& coord)
     {
-        OmMeshChunkAllocTableV2* chunk_table =
+        meshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);
 
         if(!chunk_table->Contains(segID)){
             throw OmIoException("segID not present");
         }
 
-        const OmMeshDataEntry entry = chunk_table->Find(segID);
+        const meshDataEntry entry = chunk_table->Find(segID);
 
         return entry.wasMeshed;
     }
 
     bool HasData(const segId segID, const om::chunkCoord& coord)
     {
-        OmMeshChunkAllocTableV2* chunk_table =
+        meshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);
 
         if(!chunk_table->Contains(segID)){
             throw OmIoException("segID not present");
         }
 
-        const OmMeshDataEntry entry = chunk_table->Find(segID);
+        const meshDataEntry entry = chunk_table->Find(segID);
 
         if(!entry.wasMeshed){
             throw OmIoException("was not yet meshed");
@@ -108,8 +108,8 @@ public:
               const U data, const om::ShouldBufferWrites buffferWrites,
               const om::AllowOverwrite allowOverwrite)
     {
-        om::shared_ptr<OmMeshWriterTaskV2<U> > task =
-            om::make_shared<OmMeshWriterTaskV2<U> >(segmentation_,
+        om::shared_ptr<meshWriterTask<U> > task =
+            om::make_shared<meshWriterTask<U> >(segmentation_,
                                                        filePtrCache_,
                                                        segID,
                                                        coord,

@@ -1,30 +1,30 @@
 #pragma once
 
-struct OmMeshFilePart{
+struct meshFilePart{
     uint64_t offsetIntoFile;
     uint64_t numElements;
     uint64_t totalBytes;
     uint64_t count;
 };
 
-struct OmMeshDataEntry {
+struct meshDataEntry {
     segId segID;
     bool wasMeshed;
     bool hasMeshData;
-    OmMeshFilePart vertexIndex;
-    OmMeshFilePart vertexData;
-    OmMeshFilePart stripData;
-    OmMeshFilePart trianData;
+    meshFilePart vertexIndex;
+    meshFilePart vertexData;
+    meshFilePart stripData;
+    meshFilePart trianData;
 };
 
 namespace om {
 namespace meshio_ {
 
-static OmMeshDataEntry MakeEmptyEntry(const segId segID)
+static meshDataEntry MakeEmptyEntry(const segId segID)
 {
-    static const OmMeshFilePart empty = {0, 0, 0, 0};
+    static const meshFilePart empty = {0, 0, 0, 0};
 
-    OmMeshDataEntry entry;
+    meshDataEntry entry;
     entry.segID = segID;
     entry.wasMeshed = false;
     entry.hasMeshData = false;

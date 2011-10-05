@@ -1,19 +1,19 @@
 #include "common/omDebug.h"
 #include "common/omGl.h"
-#include "mesh/io/omMeshConvertV1toV2.hpp"
-#include "mesh/io/omMeshMetadata.hpp"
-#include "mesh/io/v2/omMeshReaderV2.hpp"
-#include "mesh/omMesh.h"
-#include "mesh/omMeshManager.h"
-#include "system/cache/omMeshCache.h"
+#include "mesh/io/meshConvertV1toV2.hpp"
+#include "mesh/io/meshMetadata.hpp"
+#include "mesh/iomeshReader.hpp"
+#include "mesh/mesh.h"
+#include "mesh/meshManager.h"
+#include "system/cache/meshCache.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 
 static const GLuint NULL_VBO_ID = 0;
 
-OmMesh::OmMesh(segmentation* seg,
-               const OmMeshCoord& coord,
-               OmMeshManager* pMipMeshManager,
-               OmMeshCache* cache)
+mesh::mesh(segmentation* seg,
+               const meshCoord& coord,
+               meshManager* pMipMeshManager,
+               meshCache* cache)
     : segmentation_(seg)
     , cache_(cache)
     , meshMan_(pMipMeshManager)
@@ -25,31 +25,31 @@ OmMesh::OmMesh(segmentation* seg,
     vertexIndexDataVboId_ = NULL_VBO_ID;
 }
 
-OmMesh::~OmMesh()
+mesh::~mesh()
 {
     if(displayList_){
         OmOpenGLGarbageCollector::AddDisplayListID(context_, *displayList_);
     }
 }
 
-uint64_t OmMesh::NumBytes() const {
+uint64_t mesh::NumBytes() const {
     return numBytes_;
 }
 
-bool OmMesh::HasData() const {
+bool mesh::HasData() const {
     return hasData_;
 }
 
 /////////////////////////////////
 ///////          VBO Methods
 
-bool OmMesh::isVbo()
+bool mesh::isVbo()
 {
     return (NULL_VBO_ID != vertexDataVboId_) ||
         (NULL_VBO_ID != vertexIndexDataVboId_);
 }
 
-bool OmMesh::createVbo()
+bool mesh::createVbo()
 {
     if(!hasData_){
         return false;
@@ -82,7 +82,7 @@ bool OmMesh::createVbo()
     return true;
 }
 
-void OmMesh::deleteVbo()
+void mesh::deleteVbo()
 {
     if(!isVbo()){
         throw OmIoException("not a vbo");
@@ -95,7 +95,7 @@ void OmMesh::deleteVbo()
     vertexIndexDataVboId_ = NULL_VBO_ID;
 }
 
-void OmMesh::makeDisplayList(QGLContext const* context)
+void mesh::makeDisplayList(QGLContext const* context)
 {
     context_ = context;
 
@@ -173,7 +173,7 @@ void OmMesh::makeDisplayList(QGLContext const* context)
     data_.reset();
 }
 
-void OmMesh::Draw(QGLContext const* context)
+void mesh::Draw(QGLContext const* context)
 {
     if(!hasData_){
         return;
@@ -192,7 +192,7 @@ void OmMesh::Draw(QGLContext const* context)
  *
  * http://www.songho.ca/opengl/gl_vbo.html
  */
-GLuint OmMesh::createVbo(const void *data, int dataSize, GLenum target, GLenum usage)
+GLuint mesh::createVbo(const void *data, int dataSize, GLenum target, GLenum usage)
 {
     // 0 is reserved, glGenBuffersARB() will return non-zero id if success
     GLuint id = NULL_VBO_ID;
@@ -217,9 +217,9 @@ GLuint OmMesh::createVbo(const void *data, int dataSize, GLenum target, GLenum u
     return id;
 }
 
-void OmMesh::Load()
+void mesh::Load()
 {
-    OmMeshMetadata* metadata = meshMan_->Metadata();
+    meshMetadata* metadata = meshMan_->Metadata();
 
     if(!metadata->IsBuilt()){
         return;

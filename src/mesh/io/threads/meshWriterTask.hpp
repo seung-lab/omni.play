@@ -4,26 +4,26 @@
 #include "common/common.h"
 #include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/io/dataForMeshLoad.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
-#include "mesh/io/v2/omMeshFilePtrCache.hpp"
-#include "mesh/omMeshCoord.h"
-#include "mesh/omMeshManager.h"
+#include "mesh/iochunk/meshChunkAllocTable.hpp"
+#include "mesh/iochunk/meshChunkDataWriter.hpp"
+#include "mesh/iomeshFilePtrCache.hpp"
+#include "mesh/meshCoord.h"
+#include "mesh/meshManager.h"
 #include "zi/omThreads.h"
 
 template <typename U>
-class OmMeshWriterTaskV2 : public zi::runnable{
+class meshWriterTask : public zi::runnable{
 private:
     segmentation *const seg_;
-    OmMeshFilePtrCache *const  filePtrCache_;
+    meshFilePtrCache *const  filePtrCache_;
     const segId segID_;
     const om::chunkCoord coord_;
     const U mesh_;
     const om::AllowOverwrite allowOverwrite_;
 
 public:
-    OmMeshWriterTaskV2(segmentation* seg,
-                       OmMeshFilePtrCache* filePtrCache,
+    meshWriterTask(segmentation* seg,
+                       meshFilePtrCache* filePtrCache,
                        const segId segID,
                        const om::chunkCoord& coord,
                        const U mesh,
@@ -38,7 +38,7 @@ public:
 
     void run()
     {
-        OmMeshChunkAllocTableV2* chunk_table =
+        meshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord_);
 
         if(!chunk_table->Contains(segID_)){
@@ -54,18 +54,18 @@ public:
 
         if(om::WRITE_ONCE == allowOverwrite_)
         {
-            const OmMeshDataEntry entry = chunk_table->Find(segID_);
+            const meshDataEntry entry = chunk_table->Find(segID_);
             if(entry.wasMeshed){
                 chunk_table->SegmentMeshSaveDone(segID_);
                 return;
             }
         }
 
-        OmMeshChunkDataWriterV2* chunk_data =
+        meshChunkDataWriter* chunk_data =
             filePtrCache_->GetWriter(coord_);
 
-        const OmMeshDataEntry entry =
-            writeOutData(chunk_data, mesh_, OmMeshCoord(coord_, segID_));
+        const meshDataEntry entry =
+            writeOutData(chunk_data, mesh_, meshCoord(coord_, segID_));
 
         chunk_table->Set(entry);
 
@@ -73,12 +73,12 @@ public:
     }
 
 private:
-    OmMeshDataEntry
-    writeOutData(OmMeshChunkDataWriterV2* chunk_data,
+    meshDataEntry
+    writeOutData(meshChunkDataWriter* chunk_data,
                  om::shared_ptr<dataForMeshLoad> data,
-                 const OmMeshCoord& meshCoord)
+                 const meshCoord& meshCoord)
     {
-        OmMeshDataEntry entry =
+        meshDataEntry entry =
             om::meshio_::MakeEmptyEntry(meshCoord.SegID());
 
         entry.wasMeshed = true;
@@ -120,16 +120,16 @@ private:
         return entry;
     }
 
-    OmMeshDataEntry
-    writeOutData(OmMeshChunkDataWriterV2* chunk_data,
+    meshDataEntry
+    writeOutData(meshChunkDataWriter* chunk_data,
                  TriStripCollector* triStrips,
-                 const OmMeshCoord& meshCoord)
+                 const meshCoord& meshCoord)
     {
         std::vector<float>& data = triStrips->data_;
         std::vector<uint32_t>& indices = triStrips->indices_;
         std::vector<uint32_t>& strips = triStrips->strips_;
 
-        OmMeshDataEntry entry =
+        meshDataEntry entry =
             om::meshio_::MakeEmptyEntry(meshCoord.SegID());
         entry.wasMeshed = true;
 

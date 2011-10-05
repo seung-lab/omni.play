@@ -1,22 +1,22 @@
 #pragma once
 
-#include "mesh/io/omMeshMetadata.hpp"
+#include "mesh/io/meshMetadata.hpp"
 #include "mesh/mesher/ziMesher.hpp"
-#include "mesh/omMeshManager.h"
+#include "mesh/meshManager.h"
 #include "utility/fuzzyStdObjs.hpp"
 #include "utility/omStringHelpers.h"
 #include "volume/segmentationFolder.h"
 
-class OmMeshManagers {
+class meshManagers {
 private:
     segmentation *const segmentation_;
 
 public:
-    OmMeshManagers(segmentation* segmentation)
+    meshManagers(segmentation* segmentation)
         : segmentation_(segmentation)
     {}
 
-    ~OmMeshManagers()
+    ~meshManagers()
     {
         zi::guard g(managersLock_);
 
@@ -39,7 +39,7 @@ public:
 
         FOR_EACH(iter, managers_)
         {
-            OmMeshManager* man = iter->second;
+            meshManager* man = iter->second;
             man->CloseDownThreads();
         }
     }
@@ -48,13 +48,13 @@ public:
         return GetManager(1)->Metadata()->IsBuilt();
     }
 
-    OmMeshManager* GetManager(const double threshold)
+    meshManager* GetManager(const double threshold)
     {
         zi::guard g(managersLock_);
 
         if(!managers_.count(threshold))
         {
-            managers_[threshold] = new OmMeshManager(segmentation_, threshold);
+            managers_[threshold] = new meshManager(segmentation_, threshold);
             managers_[threshold]->Load();
         }
 
@@ -65,7 +65,7 @@ public:
     {
         zi::guard g(managersLock_);
 
-        managers_[threshold] = new OmMeshManager(segmentation_, threshold);
+        managers_[threshold] = new meshManager(segmentation_, threshold);
         managers_[threshold]->Create();
     }
 
@@ -94,7 +94,7 @@ public:
 
         FOR_EACH(iter, managers_)
         {
-            OmMeshManager* man = iter->second;
+            meshManager* man = iter->second;
             man->ClearCache();
         }
     }
@@ -120,7 +120,7 @@ if (IsVolumeDataBuilt()) {
 
 //remove mesh from cache to force it to reload
 foreach( const segId & val, rModifiedValues ){
-OmMeshCoord mip_mesh_coord = OmMeshCoord(mipCoord, val);
+meshCoord mip_mesh_coord = meshCoord(mipCoord, val);
 mMipMeshManager->UncacheMesh(mip_mesh_coord);
 }
 
@@ -129,15 +129,15 @@ OmEvents::Redraw3d();
     }
 */
 
-    void GetMesh(OmMeshPtr& ptr, const om::chunkCoord& coord,
+    void GetMesh(meshPtr& ptr, const om::chunkCoord& coord,
                  const segId segID, const double threshold,
                  const om::Blocking blocking = om::NON_BLOCKING)
     {
-        return GetManager(threshold)->GetMesh(ptr, OmMeshCoord(coord, segID), blocking);
+        return GetManager(threshold)->GetMesh(ptr, meshCoord(coord, segID), blocking);
     }
 
 private:
-    DoubleFuzzyStdMap<OmMeshManager*> managers_;
+    DoubleFuzzyStdMap<meshManager*> managers_;
     zi::spinlock managersLock_;
 
     DoubleFuzzyStdSet thresholds_;

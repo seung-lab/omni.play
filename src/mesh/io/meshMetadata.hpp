@@ -4,7 +4,7 @@
 #include "volume/segmentationFolder.h"
 #include "datalayer/fs/omFileNames.hpp"
 
-class OmMeshMetadata {
+class meshMetadata {
 private:
     segmentation *const segmentation_;
     const double threshold_;
@@ -21,7 +21,7 @@ private:
     zi::spinlock lock_;
 
 public:
-    OmMeshMetadata(segmentation *segmentation, const double threshold)
+    meshMetadata(segmentation *segmentation, const double threshold)
         : segmentation_(segmentation)
         , threshold_(threshold)
         , fnp_(filePath())

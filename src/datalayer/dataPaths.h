@@ -6,8 +6,8 @@
 class affinityChannel;
 class channelImpl;
 class dataPath;
-class OmMeshCoord;
-class OmMeshManager;
+class meshCoord;
+class meshManager;
 class segmentation;
 
 class dataPaths {
@@ -18,7 +18,7 @@ public:
     static dataPath getSegmentPagePath(const OmID segmentationID,
                                          const uint32_t pageNum );
 
-    static std::string getMeshFileName(const OmMeshCoord& meshCoord);
+    static std::string getMeshFileName(const meshCoord& meshCoord);
 
     static std::string getDirectoryPath(channelImpl const*const chan);
 

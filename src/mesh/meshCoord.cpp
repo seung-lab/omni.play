@@ -1,37 +1,37 @@
-#include "omMeshCoord.h"
+#include "meshCoord.h"
 #include "common/omDebug.h"
 
-OmMeshCoord::OmMeshCoord()
+meshCoord::meshCoord()
 {
     MipChunkCoord = om::chunkCoord();
     DataValue = -1;
 }
 
-OmMeshCoord::OmMeshCoord(const om::chunkCoord & rMipChunkCoord, segId dataValue)
+meshCoord::meshCoord(const om::chunkCoord & rMipChunkCoord, segId dataValue)
     : MipChunkCoord(rMipChunkCoord)
     , DataValue(dataValue)
 {
 
 }
 
-void OmMeshCoord::operator=(const OmMeshCoord & rhs)
+void meshCoord::operator=(const meshCoord & rhs)
 {
     MipChunkCoord = rhs.MipChunkCoord;
     DataValue = rhs.DataValue;
 }
 
-bool OmMeshCoord::operator==(const OmMeshCoord & rhs) const
+bool meshCoord::operator==(const meshCoord & rhs) const
 {
     return MipChunkCoord == rhs.MipChunkCoord && DataValue == rhs.DataValue;
 }
 
-bool OmMeshCoord::operator!=(const OmMeshCoord & rhs) const
+bool meshCoord::operator!=(const meshCoord & rhs) const
 {
     return MipChunkCoord != rhs.MipChunkCoord || DataValue != rhs.DataValue;
 }
 
 /* comparitor for key usage */
-bool OmMeshCoord::operator<(const OmMeshCoord & rhs) const
+bool meshCoord::operator<(const meshCoord & rhs) const
 {
     if (MipChunkCoord != rhs.MipChunkCoord) {
         return (MipChunkCoord < rhs.MipChunkCoord);
@@ -40,7 +40,7 @@ bool OmMeshCoord::operator<(const OmMeshCoord & rhs) const
     return (DataValue < rhs.DataValue);
 }
 
-std::ostream& operator<<(std::ostream &out, const OmMeshCoord &c)
+std::ostream& operator<<(std::ostream &out, const meshCoord &c)
 {
     out << "(" << c.DataValue << ", "
         << c.MipChunkCoord

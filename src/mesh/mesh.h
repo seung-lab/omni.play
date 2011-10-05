@@ -9,21 +9,21 @@
 
 #include "common/common.h"
 #include "common/omGl.h"
-#include "mesh/omMeshTypes.h"
-#include "mesh/omMeshCoord.h"
+#include "mesh/meshTypes.h"
+#include "mesh/meshCoord.h"
 
 class dataForMeshLoad;
-class OmMeshCache;
-class OmMeshManager;
+class meshCache;
+class meshManager;
 class segmentation;
 class QGLContext;
 
-class OmMesh {
+class mesh {
 public:
-    OmMesh(segmentation*, const OmMeshCoord&,
-           OmMeshManager*, OmMeshCache*);
+    mesh(segmentation*, const meshCoord&,
+           meshManager*, meshCache*);
 
-    virtual ~OmMesh();
+    virtual ~mesh();
 
     void Load();
 
@@ -38,10 +38,10 @@ public:
 
 private:
     segmentation *const segmentation_;
-    OmMeshCache *const cache_;
-    OmMeshManager *const meshMan_;
+    meshCache *const cache_;
+    meshManager *const meshMan_;
 
-    const OmMeshCoord meshCoord_;
+    const meshCoord meshCoord_;
 
     QGLContext const* context_;
 

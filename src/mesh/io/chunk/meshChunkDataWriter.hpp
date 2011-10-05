@@ -2,12 +2,12 @@
 
 #include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataWriterTaskV2.hpp"
+#include "mesh/iochunk/meshChunkDataWriterTask.hpp"
 #include "utility/omLockedPODs.hpp"
 #include "chunks/chunk.h"
 #include "zi/omMutex.h"
 
-class OmMeshChunkDataWriterV2{
+class meshChunkDataWriter{
 private:
     static const int defaultFileSizeMB = 2;
     static const int defaultFileExpansionFactor = 5;
@@ -23,7 +23,7 @@ private:
     zi::rwmutex lock_;
 
 public:
-    OmMeshChunkDataWriterV2(segmentation* seg, const om::chunkCoord& coord,
+    meshChunkDataWriter(segmentation* seg, const om::chunkCoord& coord,
                             const double threshold)
         : vol_(seg)
         , coord_(coord)
@@ -34,14 +34,14 @@ public:
         openOrCreateFile();
     }
 
-    ~OmMeshChunkDataWriterV2(){
+    ~meshChunkDataWriter(){
         shrinkFileIfNeeded();
     }
 
     template <typename T>
-    void Append(const OmMeshCoord meshCoord,
+    void Append(const meshCoord meshCoord,
                 std::vector<T>& data,
-                OmMeshFilePart& entry,
+                meshFilePart& entry,
                 const int64_t count)
     {
         const int64_t numBytes = sizeof(T) * data.size();
@@ -52,7 +52,7 @@ public:
 
         expandFileIfNeeded(entry, numBytes);
 
-        OmMeshChunkDataWriterTaskV2 task(meshCoord,
+        meshChunkDataWriterTask task(meshCoord,
                                          fnp_,
                                          entry.offsetIntoFile,
                                          numBytes);
@@ -60,9 +60,9 @@ public:
     }
 
     template <typename T>
-    void Append(const OmMeshCoord meshCoord,
+    void Append(const meshCoord meshCoord,
                 om::shared_ptr<T> data,
-                OmMeshFilePart& entry,
+                meshFilePart& entry,
                 const int64_t count,
                 const int64_t numBytes)
     {
@@ -78,7 +78,7 @@ public:
 
         expandFileIfNeeded(entry, numBytes);
 
-        OmMeshChunkDataWriterTaskV2 task(meshCoord,
+        meshChunkDataWriterTask task(meshCoord,
                                          fnp_,
                                          entry.offsetIntoFile,
                                          numBytes);
@@ -104,7 +104,7 @@ private:
         curEndOfFile_ = file.size();
     }
 
-    void expandFileIfNeeded(OmMeshFilePart& entry, const int64_t numBytes)
+    void expandFileIfNeeded(meshFilePart& entry, const int64_t numBytes)
     {
         zi::rwmutex::write_guard g(lock_);
 

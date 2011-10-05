@@ -16,7 +16,7 @@ private:
     std::size_t           missing_;
     zi::rwmutex           lock_   ;
 
-    template <typename T> friend class OmMeshWriterTaskV2;
+    template <typename T> friend class meshWriterTask;
 
 public:
 

@@ -4,9 +4,9 @@
 #include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "chunks/chunk.h"
-#include "mesh/io/v2/chunk/omMeshChunkTypes.h"
+#include "mesh/iochunk/meshChunkTypes.h"
 
-class OmMeshChunkDataReaderV2{
+class meshChunkDataReader{
 private:
     segmentation *const vol_;
     const om::chunkCoord& coord_;
@@ -14,7 +14,7 @@ private:
     const QString fnp_;
 
 public:
-    OmMeshChunkDataReaderV2(segmentation* seg, const om::chunkCoord& coord,
+    meshChunkDataReader(segmentation* seg, const om::chunkCoord& coord,
                             const double threshold)
         : vol_(seg)
         , coord_(coord)
@@ -22,12 +22,12 @@ public:
         , fnp_(filePath())
     {}
 
-    ~OmMeshChunkDataReaderV2()
+    ~meshChunkDataReader()
     {}
 
     // no locking needed
     template <typename T>
-    om::shared_ptr<T> Read(const OmMeshFilePart& entry)
+    om::shared_ptr<T> Read(const meshFilePart& entry)
     {
         const int64_t numBytes = entry.totalBytes;
 

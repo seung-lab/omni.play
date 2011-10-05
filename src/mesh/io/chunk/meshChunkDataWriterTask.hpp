@@ -1,16 +1,16 @@
 #pragma once
 
-#include "mesh/omMeshCoord.h"
+#include "mesh/meshCoord.h"
 
-class OmMeshChunkDataWriterTaskV2{
+class meshChunkDataWriterTask{
 private:
-    const OmMeshCoord meshCoord_;
+    const meshCoord meshCoord_;
     const QString fnp_;
     const int64_t offsetIntoFile_;
     const int64_t numBytes_;
 
 public:
-    OmMeshChunkDataWriterTaskV2(const OmMeshCoord& meshCoord,
+    meshChunkDataWriterTask(const meshCoord& meshCoord,
                                 const QString fnp,
                                 const uint64_t offsetIntoFile,
                                 const uint64_t numBytes)

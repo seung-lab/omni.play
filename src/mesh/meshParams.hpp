@@ -2,7 +2,7 @@
 
 #include "zi/omUtility.h"
 
-class OmMeshParams : private om::singletonBase<OmMeshParams> {
+class meshParams : private om::singletonBase<meshParams> {
 public:
     static void SetDownScallingFactor(const double factor){
         instance().factor_ = factor;
@@ -12,12 +12,12 @@ public:
     }
 
 private:
-    OmMeshParams()
+    meshParams()
         : factor_(2.5)
     {}
 
     double factor_;
 
-    friend class zi::singleton<OmMeshParams>;
+    friend class zi::singleton<meshParams>;
 };
 

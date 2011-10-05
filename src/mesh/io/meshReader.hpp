@@ -2,38 +2,38 @@
 
 #include "common/common.h"
 #include "mesh/io/dataForMeshLoad.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
-#include "mesh/io/v2/omMeshFilePtrCache.hpp"
-#include "mesh/omMeshManager.h"
+#include "mesh/iochunk/meshChunkDataReader.hpp"
+#include "mesh/iomeshFilePtrCache.hpp"
+#include "mesh/meshManager.h"
 
-class OmMeshReaderV2{
+class meshReader{
 private:
     segmentation *const segmentation_;
     const double threshold_;
-    OmMeshFilePtrCache *const filePtrCache_;
+    meshFilePtrCache *const filePtrCache_;
 
 public:
-    OmMeshReaderV2(OmMeshManager* meshManager)
+    meshReader(meshManager* meshManager)
         : segmentation_(meshManager->GetSegmentation())
         , threshold_(meshManager->Threshold())
         , filePtrCache_(meshManager->FilePtrCache())
     {}
 
-    ~OmMeshReaderV2()
+    ~meshReader()
     {}
 
     inline om::shared_ptr<dataForMeshLoad>
-    Read(const OmMeshCoord& meshCoord){
+    Read(const meshCoord& meshCoord){
         return Read(meshCoord.SegID(), meshCoord.Coord());
     }
 
     om::shared_ptr<dataForMeshLoad>
     Read(const segId segID, const om::chunkCoord& coord)
     {
-        OmMeshChunkAllocTableV2* chunk_table =
+        meshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);
 
-        OmMeshChunkDataReaderV2 chunk_data(segmentation_, coord, threshold_);
+        meshChunkDataReader chunk_data(segmentation_, coord, threshold_);
 
         om::shared_ptr<dataForMeshLoad> ret =
             om::make_shared<dataForMeshLoad>();
@@ -42,7 +42,7 @@ public:
             return ret;
         }
 
-        const OmMeshDataEntry entry = chunk_table->Find(segID);
+        const meshDataEntry entry = chunk_table->Find(segID);
 
         if(!entry.wasMeshed)
         {

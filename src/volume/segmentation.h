@@ -7,7 +7,7 @@
 
 #include "common/om.hpp"
 #include "datalayer/dataWrapper.h"
-#include "mesh/omMeshTypes.h"
+#include "mesh/meshTypes.h"
 #include "system/omManageableObject.h"
 #include "volume/mipVolume.h"
 #include "datalayer/archive/segmentation.h"
@@ -16,9 +16,9 @@ class chunk;
 class chunkUniqueValuesManager;
 class OmGroups;
 class OmMST;
-class OmMeshDrawer;
-class OmMeshManager;
-class OmMeshManagers;
+class meshDrawer;
+class meshManager;
+class meshManagers;
 class OmRawSegTileCache;
 class segChunk;
 class OmSegment;
@@ -76,7 +76,7 @@ public:
     void SetSizeThreshold( double t );
     double GetSizeThreshold();
 
-    OmMeshManager* MeshManager(const double threshold);
+    meshManager* MeshManager(const double threshold);
 
     void UpdateVoxelBoundingData();
 
@@ -102,10 +102,10 @@ public:
     inline OmMST* MST(){
         return mst_.get();
     }
-    inline OmMeshDrawer* MeshDrawer(){
+    inline meshDrawer* MeshDrawer(){
         return meshDrawer_.get();
     }
-    inline OmMeshManagers* MeshManagers(){
+    inline meshManagers* MeshManagers(){
         return meshManagers_.get();
     }
     inline segments* Segments(){
@@ -148,8 +148,8 @@ private:
     boost::scoped_ptr<chunkUniqueValuesManager> uniqueChunkValues_;
     boost::scoped_ptr<OmGroups> groups_;
     boost::scoped_ptr<OmMST> mst_;
-    boost::scoped_ptr<OmMeshDrawer> meshDrawer_;
-    boost::scoped_ptr<OmMeshManagers> meshManagers_;
+    boost::scoped_ptr<meshDrawer> meshDrawer_;
+    boost::scoped_ptr<meshManagers> meshManagers_;
     boost::scoped_ptr<chunkCache<segmentation, segChunk> > chunkCache_;
     boost::scoped_ptr<segments> segments_;
     boost::scoped_ptr<OmSegmentLists> segmentLists_;

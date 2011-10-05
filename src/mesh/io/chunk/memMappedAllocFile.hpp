@@ -2,11 +2,11 @@
 
 #include "chunks/chunk.h"
 #include "chunks/uniqueValues/chunkUniqueValuesManager.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkTypes.h"
+#include "mesh/iochunk/meshChunkTypes.h"
 #include "utility/omStringHelpers.h"
 #include "volume/segmentation.h"
 
-class OmMemMappedAllocFile {
+class memMappedAllocFile {
 private:
     segmentation *const segmentation_;
     const om::chunkCoord coord_;
@@ -14,11 +14,11 @@ private:
     const QString fnp_;
 
     boost::scoped_ptr<QFile> file_;
-    OmMeshDataEntry* table_;
+    meshDataEntry* table_;
     uint32_t numEntries_;
 
 public:
-    OmMemMappedAllocFile(segmentation* segmentation,
+    memMappedAllocFile(segmentation* segmentation,
                          const om::chunkCoord& coord,
                          const double threshold)
         : segmentation_(segmentation)
@@ -60,13 +60,13 @@ public:
         return allGood;
     }
 
-    OmMeshDataEntry* Find(const OmMeshDataEntry& entry)
+    meshDataEntry* Find(const meshDataEntry& entry)
     {
         if(!table_){
             return NULL;
         }
 
-        OmMeshDataEntry* iter =
+        meshDataEntry* iter =
             std::lower_bound(table_,
                              table_ + numEntries_,
                              entry,
@@ -120,8 +120,8 @@ private:
 
         file_->close();
 
-        table_ = reinterpret_cast<OmMeshDataEntry*>(map);
-        numEntries_ = file_->size() / sizeof(OmMeshDataEntry);
+        table_ = reinterpret_cast<meshDataEntry*>(map);
+        numEntries_ = file_->size() / sizeof(meshDataEntry);
     }
 
     void setupFile()
@@ -139,7 +139,7 @@ private:
             throw OmIoException("could not open", fnp_);
         }
 
-        file_->resize(segIDs.size() * sizeof(OmMeshDataEntry));
+        file_->resize(segIDs.size() * sizeof(meshDataEntry));
 
         uchar* map = file_->map(0, file_->size());
         if(!map){
@@ -148,7 +148,7 @@ private:
 
         file_->close();
 
-        table_ = reinterpret_cast<OmMeshDataEntry*>(map);
+        table_ = reinterpret_cast<meshDataEntry*>(map);
         numEntries_ = segIDs.size();
 
         resetTable(segIDs);
@@ -161,7 +161,7 @@ private:
     }
 
     struct ResetEntry {
-        OmMeshDataEntry operator()(const segId segID) const {
+        meshDataEntry operator()(const segId segID) const {
             return om::meshio_::MakeEmptyEntry(segID);
         }
     };
@@ -185,8 +185,8 @@ private:
                  compareBySegID);
     }
 
-    static bool compareBySegID(const OmMeshDataEntry& a,
-                               const OmMeshDataEntry& b){
+    static bool compareBySegID(const meshDataEntry& a,
+                               const meshDataEntry& b){
         return a.segID < b.segID;
     }
 

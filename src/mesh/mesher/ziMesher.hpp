@@ -5,12 +5,12 @@
 #include "common/common.h"
 #include "mesh/mesher/MeshCollector.hpp"
 #include "mesh/mesher/TriStripCollector.hpp"
-#include "mesh/io/omMeshMetadata.hpp"
-#include "mesh/omMeshParams.hpp"
+#include "mesh/io/meshMetadata.hpp"
+#include "mesh/meshParams.hpp"
 #include "utility/omLockedPODs.hpp"
 #include "volume/io/volumeData.h"
 #include "volume/segmentation.h"
-#include "mesh/mesher/omMesherProgress.hpp"
+#include "mesh/mesher/mesherProgress.hpp"
 
 #include <zi/vl/vec.hpp>
 #include <zi/system.hpp>
@@ -31,10 +31,10 @@ public:
         , threshold_(threshold)
         , chunkCollectors_()
         , meshManager_(segmentation->MeshManager(threshold))
-        , meshWriter_(new OmMeshWriterV2(meshManager_))
+        , meshWriter_(new meshWriter(meshManager_))
         , numParallelChunks_(numberParallelChunks())
         , numThreadsPerChunk_(zi::system::cpu_count / 2)
-        , downScallingFactor_(OmMeshParams::GetDownScallingFactor())
+        , downScallingFactor_(meshParams::GetDownScallingFactor())
     {
         printf("ziMesher: will process %d chunks at a time\n", numParallelChunks_);
         printf("ziMesher: will use %d threads per chunk\n", numThreadsPerChunk_);
@@ -82,8 +82,8 @@ private:
     std::map<om::chunkCoord, std::vector<MeshCollector*> > occurances_;
     std::map<om::chunkCoord, MeshCollector*> chunkCollectors_;
 
-    OmMeshManager *const meshManager_;
-    boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
+    meshManager *const meshManager_;
+    boost::scoped_ptr<meshWriter> meshWriter_;
 
     const int numParallelChunks_;
     const int numThreadsPerChunk_;

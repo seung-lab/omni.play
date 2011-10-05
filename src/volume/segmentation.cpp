@@ -5,8 +5,8 @@
 #include "common/common.h"
 #include "common/omDebug.h"
 #include "datalayer/dataPaths.h"
-#include "mesh/drawer/omMeshDrawer.h"
-#include "mesh/omMeshManagers.hpp"
+#include "mesh/drawer/meshDrawer.h"
+#include "mesh/meshManagers.hpp"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/io/omValidGroupNum.hpp"
@@ -27,8 +27,8 @@ segmentation::segmentation()
     , uniqueChunkValues_(new chunkUniqueValuesManager(this))
     , groups_(new OmGroups(this))
     , mst_(new OmMST(this))
-    , meshDrawer_(new OmMeshDrawer(this))
-    , meshManagers_(new OmMeshManagers(this))
+    , meshDrawer_(new meshDrawer(this))
+    , meshManagers_(new meshManagers(this))
     , chunkCache_(new chunkCache<segmentation, segChunk>(this))
     , segments_(new segments(this))
     , segmentLists_(new OmSegmentLists())
@@ -47,8 +47,8 @@ segmentation::segmentation(OmID id)
     , uniqueChunkValues_(new chunkUniqueValuesManager(this))
     , groups_(new OmGroups(this))
     , mst_(new OmMST(this))
-    , meshDrawer_(new OmMeshDrawer(this))
-    , meshManagers_(new OmMeshManagers(this))
+    , meshDrawer_(new meshDrawer(this))
+    , meshManagers_(new meshManagers(this))
     , chunkCache_(new chunkCache<segmentation, segChunk>(this))
     , segments_(new segments(this))
     , segmentLists_(new OmSegmentLists())
@@ -175,7 +175,7 @@ void segmentation::BuildBlankVolume(const Vector3i& dims)
     SetBuildState(MIPVOL_BUILT);
 }
 
-OmMeshManager* segmentation::MeshManager(const double threshold){
+meshManager* segmentation::MeshManager(const double threshold){
     return meshManagers_->GetManager(threshold);
 }
 

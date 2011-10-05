@@ -1,9 +1,9 @@
 #pragma once
 
 #include "TriStripCollector.hpp"
-#include "mesh/io/v2/omMeshWriterV2.hpp"
-#include "mesh/omMesh.h"
-#include "mesh/omMeshCoord.h"
+#include "mesh/iomeshWriter.hpp"
+#include "mesh/mesh.h"
+#include "mesh/meshCoord.h"
 
 #include <zi/bits/cstdint.hpp>
 #include <zi/bits/unordered_map.hpp>
@@ -17,7 +17,7 @@ class MeshCollector
 {
 private:
     const om::chunkCoord coord_ ;
-    OmMeshWriterV2 *const meshIO_;
+    meshWriter *const meshIO_;
 
     zi::spinlock lock_;
 
@@ -26,7 +26,7 @@ private:
 
 public:
     MeshCollector( const om::chunkCoord& coord,
-                           OmMeshWriterV2* meshIO )
+                           meshWriter* meshIO )
         : coord_( coord ),
           meshIO_( meshIO ),
           lock_(),

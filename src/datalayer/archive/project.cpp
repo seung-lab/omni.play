@@ -12,7 +12,7 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/segmentDataWrapper.hpp"
 #include "volume/omFilter2d.h"
-#include "mesh/omMeshManagers.hpp"
+#include "mesh/meshManagers.hpp"
 
 #include <qtextstream.h>
 #include <fstream>
