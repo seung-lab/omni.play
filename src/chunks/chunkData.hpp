@@ -2,7 +2,7 @@
 
 #include "common/common.h"
 #include "datalayer/dataWrapper.h"
-#include "volume/volumeTypes.hpp"
+#include "volume/volumeTypes.h"
 #include "chunks/chunkDataInterface.hpp"
 #include "chunks/chunkDataImpl.hpp"
 

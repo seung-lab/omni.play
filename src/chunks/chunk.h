@@ -9,7 +9,7 @@
  */
 
 #include "chunks/chunkMipping.hpp"
-#include "volume/volumeTypes.hpp"
+#include "volume/volumeTypes.h"
 
 class channel;
 class channelImpl;

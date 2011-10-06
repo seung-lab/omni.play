@@ -1,6 +1,6 @@
 #pragma once
 
-#include "volume/volumeTypes.hpp"
+#include "volume/volumeTypes.h"
 #include "segment/segmentPointers.h"
 #include "datalayer/archive/segmentation.h"
 

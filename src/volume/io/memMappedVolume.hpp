@@ -10,7 +10,7 @@
 #include "volume/io/chunkOffset.hpp"
 #include "volume/channel.h"
 #include "volume/segmentation.h"
-#include "volume/volumeTypes.hpp"
+#include "volume/volumeTypes.h"
 
 #include <zi/mutex.hpp>
 #include <QFile>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
-#include "volume/volumeTypes.hpp"
+#include "volume/volumeTypes.h"
 
 class segChunk;
 class segments;

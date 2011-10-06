@@ -2,7 +2,7 @@
 
 #include "volume/io/memMappedVolumeImpl.hpp"
 #include "volume/mipVolume.h"
-#include "volume/volumeTypes.hpp"
+#include "volume/volumeTypes.h"
 #include "datalayer/hdf5/omHdf5ChunkUtils.hpp"
 
 class memMappedVolume {

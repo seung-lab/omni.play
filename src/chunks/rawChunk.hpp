@@ -5,7 +5,7 @@
 #include "utility/omSmartPtr.hpp"
 #include "volume/io/volumeData.h"
 #include "volume/mipVolume.h"
-#include "volume/volumeTypes.hpp"
+#include "volume/volumeTypes.h"
 #include "zi/omMutex.h"
 #include "zi/omThreads.h"
 
