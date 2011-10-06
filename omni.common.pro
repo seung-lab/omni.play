@@ -44,6 +44,33 @@ HEADERS +=  \
 	lib/include/common/zi/trees/lib/FHeap.hpp \
 	lib/include/common/zi/watershed/MemMap.hpp \
 	lib/include/common/zi/watershed/RawQuickieWS.h \
+	lib/include/coordinates/chunkCoord.h \
+	lib/include/coordinates/coordinates.h \
+	lib/include/coordinates/dataCoord.h \
+	lib/include/coordinates/globalCoord.h \
+	lib/include/coordinates/normCoord.h \
+	lib/include/coordinates/screenCoord.h \
+	lib/include/coordinates/screenSystem.h \
+	lib/include/coordinates/volumeSystem.h \
+	lib/include/coordinates/yaml.h \
+	lib/include/thrift/server.h \
+	lib/include/thrift/server_constants.h \
+	lib/include/thrift/server_types.h \
+	lib/include/utility/stringHelpers.h \
+	lib/include/utility/yaml/baseTypes.hpp \
+	lib/include/utility/yaml/genericManager.hpp \
+	lib/include/utility/yaml/mipVolume.hpp \
+	lib/include/utility/yaml/yaml.hpp \
+	lib/include/zi/matlab/zmex.hpp \
+	lib/include/zi/omMutex.h \
+	lib/include/zi/omThreads.h \
+	lib/include/zi/omUtility.h \
+	lib/include/zi/trees/DisjointSets.hpp \
+	lib/include/zi/trees/lib/DynaTree.hpp \
+	lib/include/zi/trees/lib/DynamicTree.hpp \
+	lib/include/zi/trees/lib/FHeap.hpp \
+	lib/include/zi/watershed/MemMap.hpp \
+	lib/include/zi/watershed/RawQuickieWS.h \
 	src/common/boost.h \
 	src/common/colors.h \
 	src/common/common.h \
@@ -69,6 +96,38 @@ HEADERS +=  \
 	src/thrift/server.h \
 	src/thrift/server_constants.h \
 	src/thrift/server_types.h \
+	src/utility/affinityGraphDataWrapper.hpp \
+	src/utility/channelDataWrapper.hpp \
+	src/utility/color.hpp \
+	src/utility/dataWrapperContainer.hpp \
+	src/utility/dataWrappers.h \
+	src/utility/fileHelpers.h \
+	src/utility/filterDataWrapper.hpp \
+	src/utility/fuzzyStdObjs.hpp \
+	src/utility/localPrefFiles.h \
+	src/utility/localPrefFilesImpl.hpp \
+	src/utility/omChunkVoxelWalker.hpp \
+	src/utility/omCopyFirstN.hpp \
+	src/utility/omDataTime.hpp \
+	src/utility/omFileHelpers.h \
+	src/utility/omFileLogger.hpp \
+	src/utility/omLockedObjects.h \
+	src/utility/omLockedPODs.hpp \
+	src/utility/omPrimeNumbers.hpp \
+	src/utility/omRand.hpp \
+	src/utility/omRandColorFile.hpp \
+	src/utility/omSharedPtr.hpp \
+	src/utility/omSimpleProgress.hpp \
+	src/utility/omStringHelpers.h \
+	src/utility/omSystemInformation.h \
+	src/utility/omTempFile.hpp \
+	src/utility/omTimer.hpp \
+	src/utility/omUUID.hpp \
+	src/utility/segmentDataWrapper.hpp \
+	src/utility/segmentationDataWrapper.hpp \
+	src/utility/setUtilities.h \
+	src/utility/sortHelpers.h \
+	src/utility/stringHelpers.h \
 	src/utility/yaml/baseTypes.hpp \
 	src/utility/yaml/genericManager.hpp \
 	src/utility/yaml/mipVolume.hpp \
@@ -99,6 +158,10 @@ SOURCES +=  \
 	src/thrift/server.cpp \
 	src/thrift/server_constants.cpp \
 	src/thrift/server_types.cpp \
+	src/utility/channelDataWrapper.cpp \
+	src/utility/omFileHelpers.cpp \
+	src/utility/omPrimeNumbers.cpp \
+	src/utility/omSystemInformation.cpp \
 	src/zi/watershed/RawQuickieWS.cpp
 
 server_h.target = lib/include/common/thrift/server.h
@@ -112,6 +175,21 @@ server_constants_h.depends = if/server.thrift
 QMAKE_EXTRA_TARGETS += server_constants_h
 
 server_types_h.target = lib/include/common/thrift/server_types.h
+server_types_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_types_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_types_h
+
+server_h.target = lib/include/thrift/server.h
+server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_h
+
+server_constants_h.target = lib/include/thrift/server_constants.h
+server_constants_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_constants_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_constants_h
+
+server_types_h.target = lib/include/thrift/server_types.h
 server_types_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
 server_types_h.depends = if/server.thrift
 QMAKE_EXTRA_TARGETS += server_types_h
