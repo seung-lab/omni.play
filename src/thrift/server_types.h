@@ -13,7 +13,7 @@
 
 
 
-namespace om { namespace server {
+namespace om { namespace common {
 
 typedef struct _vector3d__isset {
   _vector3d__isset() : x(false), y(false), z(false) {}

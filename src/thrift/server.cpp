@@ -5,7 +5,7 @@
  */
 #include "server.h"
 
-namespace om { namespace server {
+namespace om { namespace common {
 
 uint32_t server_get_chan_tile_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 

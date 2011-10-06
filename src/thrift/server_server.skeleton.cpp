@@ -14,7 +14,7 @@ using namespace ::apache::thrift::server;
 
 using boost::shared_ptr;
 
-using namespace om::server;
+using namespace om::common;
 
 class serverHandler : virtual public serverIf {
  public:

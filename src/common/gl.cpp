@@ -10,7 +10,7 @@
 
 #include "gl.h"
 #include "std.h"
-#include "debug.h"
+#include "common/debug.h"
 
 #define SELEC_BUFF_SIZE 2560
 

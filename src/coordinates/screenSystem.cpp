@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common/common.h"
 #include "coordinates/screenSystem.h"
 #include "vmmlib/vmmlib.h"
 using namespace vmml;

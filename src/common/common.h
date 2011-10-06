@@ -3,7 +3,7 @@
 #include "boost.h"
 
 #include "std.h"
-#include "exception.h"
+#include "common/exception.h"
 #include <cassert>
 
 #include "math.hpp"

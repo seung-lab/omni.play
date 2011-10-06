@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common.h"
-#include "colors.h"
+#include "common/common.h"
+#include "common/colors.h"
 #include "yaml-cpp/yaml.h"
 
 class QString;

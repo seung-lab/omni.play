@@ -1,5 +1,5 @@
-#include "common.h"
-#include "exception.h"
+#include "common/common.h"
+#include "common/exception.h"
 
 using namespace om::common;
 

@@ -5,7 +5,7 @@
  */
 #include "server_types.h"
 
-namespace om { namespace server {
+namespace om { namespace common {
 
 const char* vector3d::ascii_fingerprint = "EFFAD640FBA2CA56C50155B2A4545897";
 const uint8_t vector3d::binary_fingerprint[16] = {0xEF,0xFA,0xD6,0x40,0xFB,0xA2,0xCA,0x56,0xC5,0x01,0x55,0xB2,0xA4,0x54,0x58,0x97};

@@ -1,5 +1,5 @@
-#include "common.h"
-#include "debug.h"
+#include "common/common.h"
+#include "common/debug.h"
 
 #include <sstream>
 

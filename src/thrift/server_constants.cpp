@@ -5,7 +5,7 @@
  */
 #include "server_constants.h"
 
-namespace om { namespace server {
+namespace om { namespace common {
 
 const serverConstants g_server_constants;
 

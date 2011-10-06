@@ -25,6 +25,9 @@ HEADERS +=  \
 	lib/include/common/std.h \
 	lib/include/common/stoppable.h \
 	lib/include/common/string.hpp \
+	lib/include/common/thrift/server.h \
+	lib/include/common/thrift/server_constants.h \
+	lib/include/common/thrift/server_types.h \
 	lib/include/common/utility/image/bits/image_traits.hpp \
 	lib/include/common/utility/image/image.hpp \
 	lib/include/common/utility/yaml/baseTypes.hpp \
@@ -41,10 +44,19 @@ HEADERS +=  \
 	lib/include/common/zi/trees/lib/FHeap.hpp \
 	lib/include/common/zi/watershed/MemMap.hpp \
 	lib/include/common/zi/watershed/RawQuickieWS.h \
-	src/boost.h \
-	src/colors.h \
-	src/common.h \
-	src/container.hpp \
+	src/common/boost.h \
+	src/common/colors.h \
+	src/common/common.h \
+	src/common/container.hpp \
+	src/common/debug.h \
+	src/common/enums.hpp \
+	src/common/exception.h \
+	src/common/gl.h \
+	src/common/math.hpp \
+	src/common/set.hpp \
+	src/common/std.h \
+	src/common/stoppable.h \
+	src/common/string.hpp \
 	src/coordinates/chunkCoord.h \
 	src/coordinates/coordinates.h \
 	src/coordinates/dataCoord.h \
@@ -54,15 +66,6 @@ HEADERS +=  \
 	src/coordinates/screenSystem.h \
 	src/coordinates/volumeSystem.h \
 	src/coordinates/yaml.h \
-	src/debug.h \
-	src/enums.hpp \
-	src/exception.h \
-	src/gl.h \
-	src/math.hpp \
-	src/set.hpp \
-	src/std.h \
-	src/stoppable.h \
-	src/string.hpp \
 	src/thrift/server.h \
 	src/thrift/server_constants.h \
 	src/thrift/server_types.h \
@@ -82,8 +85,9 @@ HEADERS +=  \
 	src/zi/watershed/RawQuickieWS.h
 
 SOURCES +=  \
-	src/colors.cpp \
-	src/common.cpp \
+	src/common/colors.cpp \
+	src/common/common.cpp \
+	src/common/gl.cpp \
 	src/coordinates/chunkCoord.cpp \
 	src/coordinates/dataCoord.cpp \
 	src/coordinates/globalCoord.cpp \
@@ -92,11 +96,25 @@ SOURCES +=  \
 	src/coordinates/screenSystem.cpp \
 	src/coordinates/volumeSystem.cpp \
 	src/coordinates/yaml.cpp \
-	src/gl.cpp \
 	src/thrift/server.cpp \
 	src/thrift/server_constants.cpp \
 	src/thrift/server_types.cpp \
 	src/zi/watershed/RawQuickieWS.cpp
+
+server_h.target = lib/include/common/thrift/server.h
+server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_h
+
+server_constants_h.target = lib/include/common/thrift/server_constants.h
+server_constants_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_constants_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_constants_h
+
+server_types_h.target = lib/include/common/thrift/server_types.h
+server_types_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
+server_types_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += server_types_h
 
 server_cpp.target = src/thrift/server.cpp
 server_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
@@ -143,7 +161,7 @@ TARGET = omni.common
 
 inst.path = lib/bin
 inst.files = bin/*
-inst.extra = cd src; find -regex \".*\.h\\\(pp\\\)?\" -print0 | cpio --null -pvd ../lib/include/common/
+inst.extra = cd src; find -regex \".*\.h\\\(pp\\\)?\" -print0 | cpio --null -pvd ../lib/include/
 INSTALLS += inst
 
 #### for static build

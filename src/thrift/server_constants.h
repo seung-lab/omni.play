@@ -8,7 +8,7 @@
 
 #include "server_types.h"
 
-namespace om { namespace server {
+namespace om { namespace common {
 
 class serverConstants {
  public:
