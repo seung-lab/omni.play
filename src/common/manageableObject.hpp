@@ -46,8 +46,6 @@ protected:
     std::string customName_;
 
     template <class T> friend class YAML::mipVolume;
-    friend void YAML::operator>>(const YAML::Node& in, group& g);
-    friend void YAML::operator>>(const YAML::Node& in, OmFilter2d& f);
 };
 
 } // namespace common
