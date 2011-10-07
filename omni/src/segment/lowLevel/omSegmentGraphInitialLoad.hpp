@@ -106,8 +106,9 @@ private:
     
     bool sizeCheck(const OmSegID a, const OmSegID b, const double threshold)
     {
-        return (segmentListsLL_->GetSizeWithChildren(Root(a)) + 
-                segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold;
+        return threshold == 0 ||
+               ((segmentListsLL_->GetSizeWithChildren(Root(a)) + 
+                 segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold);
     }
 
     bool initialJoinInternal(const OmSegID parentID,

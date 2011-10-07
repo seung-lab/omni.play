@@ -120,8 +120,9 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
 
 bool OmSegmentGraph::sizeCheck(const OmSegID a, const OmSegID b, const double threshold)
 {
-    return (segmentListsLL_->GetSizeWithChildren(Root(a)) + 
-            segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold;
+    return threshold == 0 ||
+           ((segmentListsLL_->GetSizeWithChildren(Root(a)) + 
+             segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold);
 }
 
 bool OmSegmentGraph::joinInternal(const OmSegID parentID,
