@@ -19,7 +19,9 @@ HEADERS +=  \
 	lib/include/common/debug.h \
 	lib/include/common/enums.hpp \
 	lib/include/common/exception.h \
+	lib/include/common/genericManager.hpp \
 	lib/include/common/gl.h \
+	lib/include/common/manageableObject.hpp \
 	lib/include/common/math.hpp \
 	lib/include/common/set.hpp \
 	lib/include/common/std.h \
@@ -56,7 +58,21 @@ HEADERS +=  \
 	lib/include/thrift/server.h \
 	lib/include/thrift/server_constants.h \
 	lib/include/thrift/server_types.h \
+	lib/include/utility/UUID.hpp \
+	lib/include/utility/chunkVoxelWalker.hpp \
+	lib/include/utility/copyFirstN.hpp \
+	lib/include/utility/dataTime.hpp \
+	lib/include/utility/fileHelpers.h \
+	lib/include/utility/fileLogger.hpp \
+	lib/include/utility/lockedObjects.hpp \
+	lib/include/utility/lockedPODs.hpp \
+	lib/include/utility/primeNumbers.h \
+	lib/include/utility/rand.hpp \
+	lib/include/utility/setUtilities.h \
 	lib/include/utility/stringHelpers.h \
+	lib/include/utility/systemInformation.h \
+	lib/include/utility/tempFile.hpp \
+	lib/include/utility/timer.hpp \
 	lib/include/utility/yaml/baseTypes.hpp \
 	lib/include/utility/yaml/genericManager.hpp \
 	lib/include/utility/yaml/mipVolume.hpp \
@@ -78,7 +94,9 @@ HEADERS +=  \
 	src/common/debug.h \
 	src/common/enums.hpp \
 	src/common/exception.h \
+	src/common/genericManager.hpp \
 	src/common/gl.h \
+	src/common/manageableObject.hpp \
 	src/common/math.hpp \
 	src/common/set.hpp \
 	src/common/std.h \
@@ -107,6 +125,7 @@ HEADERS +=  \
 	src/utility/primeNumbers.h \
 	src/utility/rand.hpp \
 	src/utility/setUtilities.h \
+	src/utility/smartPtr.hpp \
 	src/utility/systemInformation.h \
 	src/utility/tempFile.hpp \
 	src/utility/timer.hpp \
