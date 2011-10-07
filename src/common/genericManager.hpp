@@ -2,50 +2,48 @@
 
 /*
  * Templated generic manager for a objects that have an
- *   (OmID id) constructor.
+ *   (common::id id) constructor.
  *
  *  NOT thread-safe
  *
  * Brett Warne - bwarne@mit.edu - 2/20/09
  */
 
-#include "common/omCommon.h"
-#include "common/omException.h"
-#include "common/omContainer.hpp"
+#include "common/common.h"
+#include "common/exception.h"
+#include "common/container.hpp"
 #include "zi/mutex.hpp"
-
-class OmChannel;
-class OmSegmentation;
-class OmFilter2d;
-class OmGroup;
 
 namespace YAML { class genericManager; }
 
+namespace om {
+namespace common {
+
 template <typename T, typename Lock = zi::spinlock>
-class OmGenericManager {
+class genericManager {
 private:
     static const uint32_t DEFAULT_MAP_SIZE = 10;
 
-    OmID nextId_;
+    id nextId_;
     uint32_t size_;
 
     std::vector<T*> vec_;
     std::vector<T*> vecValidPtrs_;
 
-    OmIDsSet validSet_;  // keys in map (fast iteration)
-    OmIDsSet enabledSet_; // enabled keys in map
+    idsSet validSet_;  // keys in map (fast iteration)
+    idsSet enabledSet_; // enabled keys in map
 
     Lock lock_;
 
 public:
-    OmGenericManager()
+    genericManager()
         : nextId_(1)
         , size_(DEFAULT_MAP_SIZE)
     {
         vec_.resize(DEFAULT_MAP_SIZE, NULL);
     }
 
-    ~OmGenericManager()
+    ~genericManager()
     {
         for(uint32_t i = 1; i < size_; ++i){
             delete vec_[i];
@@ -57,7 +55,7 @@ public:
     {
         zi::guard g(lock_);
 
-        const OmID id = nextId_;
+        const id id = nextId_;
 
         T* t = new T(id);
         vec_[id] = t;
@@ -71,7 +69,7 @@ public:
         return *vec_[id];
     }
 
-    inline T& Get(const OmID id) const
+    inline T& Get(const id id) const
     {
         zi::guard g(lock_);
 
@@ -79,7 +77,7 @@ public:
         return *vec_[id];
     }
 
-    void Remove(const OmID id)
+    void Remove(const id id)
     {
         zi::guard g(lock_);
 
@@ -90,7 +88,7 @@ public:
 
         T* t = vec_[id];
 
-        om::container::eraseRemove(vecValidPtrs_, t);
+        container::eraseRemove(vecValidPtrs_, t);
 
         delete t;
         vec_[id] = NULL;
@@ -99,28 +97,28 @@ public:
     }
 
     //valid
-    inline bool IsValid(const OmID id) const
+    inline bool IsValid(const id id) const
     {
         zi::guard g(lock_);
         return !isIDinvalid(id);
     }
 
     // TODO: Remove return of ref to ensure locking of vector is not circumvented
-    inline const OmIDsSet& GetValidIds() const
+    inline const idSet& GetValidIds() const
     {
         zi::guard g(lock_);
         return validSet_;
     }
 
     //enabled
-    inline bool IsEnabled(const OmID id) const
+    inline bool IsEnabled(const id id) const
     {
         zi::guard g(lock_);
         throwIfInvalidID(id);
         return enabledSet_.count(id);
     }
 
-    inline void SetEnabled(const OmID id, const bool enable)
+    inline void SetEnabled(const id id, const bool enable)
     {
         zi::guard g(lock_);
         throwIfInvalidID(id);
@@ -133,7 +131,7 @@ public:
     }
 
     // TODO: Remove return of ref to ensure locking of vector is not circumvented
-    inline const OmIDsSet& GetEnabledIds() const
+    inline const idsSet& GetEnabledIds() const
     {
         zi::guard g(lock_);
         return enabledSet_;
@@ -149,11 +147,11 @@ public:
     }
 
 private:
-    inline bool isIDinvalid(const OmID id) const {
+    inline bool isIDinvalid(const id id) const {
         return id < 1 || id >= size_ || NULL == vec_[id];
     }
 
-    inline void throwIfInvalidID(const OmID id) const
+    inline void throwIfInvalidID(const id id) const
     {
         if(isIDinvalid(id)){
             assert(0 && "invalid ID");
@@ -178,6 +176,8 @@ private:
         vec_.resize(size_, NULL);
     }
 
-    friend class OmGenericManagerArchive;
     friend class YAML::genericManager;
 };
+
+} // namespace common
+} // namespace om
