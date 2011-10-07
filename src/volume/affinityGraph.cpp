@@ -9,21 +9,21 @@ affinityGraph::affinityGraph()
 {}
 
 // used by genericManager
-affinityGraph::affinityGraph(const OmID id)
+affinityGraph::affinityGraph(const common::id id)
     : OmManageableObject(id)
 {}
 
 affinityGraph::~affinityGraph()
 {}
 
-void affinityGraph::ImportAllChannels(const QString& hdf5fnp)
+void affinityGraph::ImportAllChannels(const std::string& hdf5fnp)
 {
     ImportSingleChannel(hdf5fnp, om::X_AFFINITY);
     ImportSingleChannel(hdf5fnp, om::Y_AFFINITY);
     ImportSingleChannel(hdf5fnp, om::Z_AFFINITY);
 }
 
-void affinityGraph::ImportSingleChannel(const QString& hdf5fnp,
+void affinityGraph::ImportSingleChannel(const std::string& hdf5fnp,
                                           const affinityGraph aff)
 {
     ChannelDataWrapper cdw;
@@ -42,7 +42,7 @@ void affinityGraph::ImportSingleChannel(const QString& hdf5fnp,
 // use to just read data
 boost::shared_ptr<rawChunk<float> >
 affinityGraph::RawChunk(const affinityGraph aff,
-                          const om::chunkCoord& coord)
+                          const coords::chunkCoord& coord)
 {
     affinityChannel* affChan = channels_[aff].get();
 
@@ -50,7 +50,7 @@ affinityGraph::RawChunk(const affinityGraph aff,
 }
 
 chunk* affinityGraph::MipChunk(const affinityGraph aff,
-                                   const om::chunkCoord& coord)
+                                   const coords::chunkCoord& coord)
 {
     affinityChannel* affChan = channels_[aff].get();
 

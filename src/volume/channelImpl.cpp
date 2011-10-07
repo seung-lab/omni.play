@@ -1,22 +1,20 @@
 #include "volume/channelFolder.h"
-#include "tiles/cache/tileCacheChannel.hpp"
-#include "actions/omActions.h"
 #include "chunks/chunk.h"
-#include "chunks/chunkCache.hpp"
-#include "chunks/chunkCache.hpp"
 #include "common/common.h"
-#include "common/omDebug.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "common/debug.h"
+#include "datalayer/fs/fileNames.hpp"
 #include "datalayer/dataPath.h"
 #include "datalayer/dataPaths.h"
 #include "project/project.h"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 #include "volume/io/volumeData.h"
 #include "volume/channelImpl.h"
-#include "volume/omFilter2d.h"
-#include "zi/omThreads.h"
+#include "zi/threads.h"
 
 #include <float.h>
+
+namespace om {
+namespace volume {
 
 channelImpl::channelImpl()
     : chunkCache_(new chunkCache<channelImpl, chunk>(this))
@@ -24,7 +22,7 @@ channelImpl::channelImpl()
     , tileCache_(new tileCacheChannel())
 {}
 
-channelImpl::channelImpl(OmID id)
+channelImpl::channelImpl(common::id id)
     : OmManageableObject(id)
     , chunkCache_(new chunkCache<channelImpl, chunk>(this))
     , volData_(new volumeData())
@@ -73,7 +71,7 @@ bool channelImpl::LoadVolData()
 bool channelImpl::LoadVolDataIfFoldersExist()
 {
     //assume level 0 data always present
-    const QString path = OmFileNames::GetVolDataFolderPath(this, 0);
+    const std::string path = fileNames::GetVolDataFolderPath(this, 0);
 
     if(QDir(path).exists())
     {
@@ -97,10 +95,13 @@ void channelImpl::SetVolDataType(const OmVolDataType type)
     volData_->SetDataType(this);
 }
 
-chunk* channelImpl::GetChunk(const om::chunkCoord& coord){
+chunk* channelImpl::GetChunk(const coords::chunkCoord& coord){
     return chunkCache_->GetChunk(coord);
 }
 
 void channelImpl::UpdateFromVolResize(){
     chunkCache_->UpdateFromVolResize();
 }
+
+} // namespace volume
+} // namespace om

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "volume/io/volumeData.h"
 #include "volume/mipVolume.h"
 
@@ -11,20 +11,20 @@ template <typename T>
 class rawChunkMemMapped {
 private:
     mipVolume *const vol_;
-    const om::chunkCoord coord_;
+    const coords::chunkCoord coord_;
     const uint64_t chunkOffset_;
-    const QString fnp_;
+    const std::string fnp_;
     const uint64_t numBytes_;
 
     boost::scoped_ptr<QFile> file_;
     T* dataRaw_;
 
 public:
-    rawChunkMemMapped(mipVolume* vol, const om::chunkCoord& coord)
+    rawChunkMemMapped(mipVolume* vol, const coords::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
         , chunkOffset_(chunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))
-        , fnp_(OmFileNames::GetMemMapFileNameQT(vol, coord.Level))
+        , fnp_(fileNames::GetMemMapFileNameQT(vol, coord.Level))
         , numBytes_(128*128*128*vol_->GetBytesPerVoxel())
         , dataRaw_(NULL)
     {

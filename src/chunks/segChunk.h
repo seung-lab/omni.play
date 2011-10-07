@@ -22,11 +22,11 @@ private:
     zi::spinlock modifiedSegIDsLock_;
 
 public:
-    segChunk(segmentation* vol, const om::chunkCoord& coord);
+    segChunk(segmentation* vol, const coords::chunkCoord& coord);
     virtual ~segChunk();
 
-    uint32_t GetVoxelValue(const om::dataCoord& vox);
-    void SetVoxelValue(const om::dataCoord& vox, const uint32_t value);
+    uint32_t GetVoxelValue(const coords::dataCoord& vox);
+    void SetVoxelValue(const coords::dataCoord& vox, const uint32_t value);
 
     om::segchunk::dataInterface* SegData(){
         return segChunkData_.get();

@@ -6,9 +6,7 @@
 #include "datalayer/dataWrapper.h"
 
 class dataPath;
-class OmHdf5;
 class chunk;
-class OmVolume;
 class volumeData;
 
 namespace YAML { template <class T> class mipVolume; }
@@ -35,9 +33,6 @@ public:
     inline bool IsBuilt(){
         return MIPVOL_BUILT == mBuildState;
     }
-
-    boost::shared_ptr<std::deque<coords::chunkCoord> > GetMipChunkCoords() const;
-    boost::shared_ptr<std::deque<coords::chunkCoord> > GetMipChunkCoords(const int mipLevel) const;
 
     //mip data accessors
     bool ContainsVoxel(const coords::globalCoord &vox);

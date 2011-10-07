@@ -1,4 +1,4 @@
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/fs/file.h"
 
 #include <QDir>
 #include <boost/filesystem.hpp>
@@ -8,7 +8,7 @@ int64_t om::file::numBytes(const std::string& fnp)
     if(!om::file::exists(fnp)){
         throw OmIoException("file not found", fnp);
     }
-    return QFile(QString::fromStdString(fnp)).size();
+    return QFile(std::string::fromStdString(fnp)).size();
 }
 
 void om::file::openFileRO(QFile& file)
@@ -51,7 +51,7 @@ void om::file::resizeFileNumBytes(QFile* file, const int64_t numBytes)
 
 void om::file::rmFile(const std::string& fnp)
 {
-    const QString f = QString::fromStdString(fnp);
+    const std::string f = std::string::fromStdString(fnp);
 
     if(QFile::exists(f)){
         if(!QFile::remove(f)){
@@ -61,7 +61,7 @@ void om::file::rmFile(const std::string& fnp)
 }
 
 bool om::file::exists(const std::string& fnp) {
-    return QFile::exists(QString::fromStdString(fnp));
+    return QFile::exists(std::string::fromStdString(fnp));
 }
 
 std::string om::file::tempPath(){

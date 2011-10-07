@@ -16,19 +16,19 @@ private:
 
 public:
     affinityGraph();
-    affinityGraph(const OmID id);
+    affinityGraph(const common::id id);
     virtual ~affinityGraph();
 
-    void ImportAllChannels(const QString& hdf5fnp);
+    void ImportAllChannels(const std::string& hdf5fnp);
 
-    void ImportSingleChannel(const QString& hdf5fnp,
+    void ImportSingleChannel(const std::string& hdf5fnp,
                              const affinityGraph aff);
 
     chunk* MipChunk(const affinityGraph aff,
-                      const om::chunkCoord& coord);
+                      const coords::chunkCoord& coord);
 
     boost::shared_ptr<rawChunk<float> > RawChunk(const affinityGraph aff,
-                                                const class om::chunkCoord& coord);
+                                                const class coords::chunkCoord& coord);
 
 };
 

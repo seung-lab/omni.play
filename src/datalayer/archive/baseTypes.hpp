@@ -6,24 +6,24 @@
 
 #include <QHash>
 
-class QString;
+class std::string;
 
 namespace om {
 namespace data {
 namespace archive {
 
-inline YAML::Emitter &operator<<(YAML::Emitter& out, const QString& s) {
+inline YAML::Emitter &operator<<(YAML::Emitter& out, const std::string& s) {
     return out << s.toStdString();
 }
 
-inline void operator>>(const YAML::Node& in, QString& s) {
+inline void operator>>(const YAML::Node& in, std::string& s) {
     std::string str;
     in >> str;
     
     if(str == "~") // NULL Value from YAML
         str = "";
     
-    s = QString::fromStdString(str);   
+    s = std::string::fromStdString(str);   
 }
 
 template<class T>

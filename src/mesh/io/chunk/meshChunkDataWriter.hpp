@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "mesh/iochunk/meshChunkDataWriterTask.hpp"
 #include "utility/omLockedPODs.hpp"
 #include "chunks/chunk.h"
@@ -14,16 +14,16 @@ private:
 
 private:
     segmentation *const vol_;
-    const om::chunkCoord& coord_;
+    const coords::chunkCoord& coord_;
     const double threshold_;
-    const QString fnp_;
+    const std::string fnp_;
 
     int64_t curEndOfFile_;
 
     zi::rwmutex lock_;
 
 public:
-    meshChunkDataWriter(segmentation* seg, const om::chunkCoord& coord,
+    meshChunkDataWriter(segmentation* seg, const coords::chunkCoord& coord,
                             const double threshold)
         : vol_(seg)
         , coord_(coord)
@@ -127,9 +127,9 @@ private:
         }
     }
 
-    QString filePath()
+    std::string filePath()
     {
-        const QString volPath = vol_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
+        const std::string volPath = vol_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
 
         if(!QDir(volPath).exists()){
             vol_->Folder()->MakeMeshChunkFolderPath(threshold_, coord_);

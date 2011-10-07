@@ -1,6 +1,6 @@
 #include "common/omString.hpp"
 #include "common/common.h"
-#include "common/omDebug.h"
+#include "common/debug.h"
 #include "datalayer/dataPath.h"
 #include "datalayer/dataPaths.h"
 #include "mesh/meshCoord.h"
@@ -19,7 +19,7 @@ dataPath dataPaths::getProjectArchiveNameQT(){
     return dataPath("project.qt.dat");
 }
 
-dataPath dataPaths::getSegmentPagePath(const OmID segmentationID, const uint32_t pageNum)
+dataPath dataPaths::getSegmentPagePath(const common::id segmentationID, const uint32_t pageNum)
 {
     const std::string p =
         str( boost::format("segmentations/segmentation%1%/segment_page%2%")

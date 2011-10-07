@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "chunks/details/omPtrToChunkDataMemMapVol.h"
+#include "chunks/details/ptrToChunkDataMemMapVol.h"
 #include "chunks/chunkDataInterface.hpp"
 #include "chunks/omExtractChanTile.hpp"
 #include "chunks/rawChunk.hpp"
@@ -14,13 +14,13 @@ template <typename DATA>
 class dataImpl : public dataInterface {
 private:
     mipVolume *const vol_;
-    const om::chunkCoord coord_;
+    const coords::chunkCoord coord_;
     const int numElementsPerSlice_;
     const int numElementsPerChunk_;
     ptrToChunkDataBase *const ptrToChunkData_;
 
 public:
-    dataImpl(mipVolume* vol, const om::chunkCoord& coord)
+    dataImpl(mipVolume* vol, const coords::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
         , numElementsPerSlice_(128*128)

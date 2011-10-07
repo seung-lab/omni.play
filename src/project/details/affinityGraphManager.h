@@ -7,13 +7,13 @@
 
 class affinityGraphManager{
 public:
-    affinityGraph& Get(const OmID id);
+    affinityGraph& Get(const common::id id);
     affinityGraph& Add();
-    void Remove(const OmID id);
-    bool IsValid(const OmID id);
-    const OmIDsSet& GetValidIds();
-    bool IsEnabled(const OmID id);
-    void SetEnabled(const OmID id, const bool enable);
+    void Remove(const common::id id);
+    bool IsValid(const common::id id);
+    const common::idsSet& GetValidIds();
+    bool IsEnabled(const common::id id);
+    void SetEnabled(const common::id id, const bool enable);
 
 private:
     genericManager<affinityGraph> graphs_;

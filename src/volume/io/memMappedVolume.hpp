@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/debug.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "datalayer/fs/memMappedFileQT.hpp"
 #include "datalayer/IDataVolume.hpp"
 #include "datalayer/IDataVolume.hpp"
@@ -85,7 +85,7 @@ public:
         return maps_[level]->GetPtr();
     }
 
-    T* GetChunkPtr(const om::chunkCoord& coord) const
+    T* GetChunkPtr(const coords::chunkCoord& coord) const
     {
         const int level = coord.Level;
         const uint64_t offset =
@@ -106,7 +106,7 @@ private:
     }
 
     std::string getFileName(const int level) const {
-        return OmFileNames::GetMemMapFileName(vol_, level);
+        return fileNames::GetMemMapFileName(vol_, level);
     }
 };
 

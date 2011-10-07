@@ -2,11 +2,11 @@
 
 #include "yaml-cpp/yaml.h"
 #include "volume/volumeTypes.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "volume/channelFolder.h"
 #include "volume/segmentationFolder.h"
 
-#include <QString>
+
 #include <QFile>
 
 namespace om {
@@ -48,7 +48,7 @@ public:
         
         in["build state"] >> vol_.mBuildState;
         
-        QString volDataType;
+        std::string volDataType;
         in["type"] >> volDataType;
         vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
         

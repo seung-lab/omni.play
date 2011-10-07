@@ -50,7 +50,7 @@ private:
     void loadAllSegmentPages();
     void resizeVectorIfNeeded(const PageNum pageNum);
 
-    QString metadataPathQStr();
+    std::string metadataPathQStr();
     void loadMetadata();
     void storeMetadata();
 

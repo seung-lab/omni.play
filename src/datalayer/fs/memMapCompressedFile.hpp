@@ -2,7 +2,7 @@
 
 #include "datalayer/fs/omCompressedFile.h"
 #include "datalayer/fs/IOnDiskFile.h"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/fs/file.h"
 #include "utility/omTempFile.hpp"
 
 template <typename T>

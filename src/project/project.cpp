@@ -8,7 +8,7 @@ project::project()
 project::~project()
 {}
 
-QString project::New(const QString& fnp)
+std::string project::New(const std::string& fnp)
 {
     instance().impl_.reset(new projectImpl());
 
@@ -25,7 +25,7 @@ void project::Save(){
     instance().impl_->Save();
 }
 
-void project::Load(const QString& fileNameAndPath, QWidget* guiParent)
+void project::Load(const std::string& fileNameAndPath, QWidget* guiParent)
 {
     instance().impl_.reset(new projectImpl());
 
@@ -39,11 +39,11 @@ void project::Load(const QString& fileNameAndPath, QWidget* guiParent)
     }
 }
 
-const QString& project::FilesFolder(){
+const std::string& project::FilesFolder(){
     return instance().impl_->FilesFolder();
 }
 
-const QString& project::OmniFile(){
+const std::string& project::OmniFile(){
     return instance().impl_->OmniFile();
 }
 

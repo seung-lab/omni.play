@@ -1,10 +1,10 @@
 #pragma once
 
-#include "common/omDebug.h"
-#include "datalayer/fs/omFile.hpp"
+#include "common/debug.h"
+#include "datalayer/fs/file.h"
 #include "project/project.h"
 #include "project/projectGlobals.h"
-#include "users/omUsers.h"
+
 #include "utility/omFileHelpers.h"
 #include "utility/omUUID.hpp"
 #include "volume/segmentation.h"
@@ -13,9 +13,9 @@
 #include <QFile>
 #include <QDir>
 
-class OmFileNames {
+class fileNames {
 public:
-    static inline void CreateFolder(const QString& fullPath, zi::rwmutex& lock)
+    static inline void CreateFolder(const std::string& fullPath, zi::rwmutex& lock)
     {
         if(QDir(fullPath).exists()){
             return;
@@ -25,7 +25,7 @@ public:
             zi::rwmutex::write_guard g(lock);
 
             if(!QDir(fullPath).exists()){
-                OmFileHelpers::MkDir(fullPath);
+                fileHelpers::MkDir(fullPath);
             }
         }
     }
@@ -34,13 +34,13 @@ public:
         return om::file::tempPath() + "/omni.temp." + uuid.Str();
     }
 
-    static QString AddOmniExtensionIfNeeded(const QString& str)
+    static std::string AddOmniExtensionIfNeeded(const std::string& str)
     {
         if(NULL == str){
             return NULL;
         }
 
-        QString fnp = str;
+        std::string fnp = str;
         if(!fnp.endsWith(".omni")) {
             fnp.append(".omni");
         }
@@ -65,10 +65,10 @@ public:
     }
 
     template <typename T>
-    static QString GetVolDataFolderPath(T* vol, const int level)
+    static std::string GetVolDataFolderPath(T* vol, const int level)
     {
-        const QString subPath = QString("%1/%2/")
-            .arg(QString::fromStdString(vol->GetDirectoryPath()))
+        const std::string subPath = std::string("%1/%2/")
+            .arg(std::string::fromStdString(vol->GetDirectoryPath()))
             .arg(level);
 
         if(subPath.startsWith("/")){
@@ -79,12 +79,12 @@ public:
     }
 
     template <typename T>
-    static QString GetMemMapFileNameQT(T* vol, const int level)
+    static std::string GetMemMapFileNameQT(T* vol, const int level)
     {
         static zi::rwmutex lock;
         zi::rwmutex::write_guard g(lock);
 
-        const QString fullPath = GetVolDataFolderPath(vol, level);
+        const std::string fullPath = GetVolDataFolderPath(vol, level);
 
         if(!QDir(fullPath).exists()){
             if(!QDir().mkpath(fullPath)){
@@ -94,34 +94,34 @@ public:
 
         const std::string volType = vol->getVolDataTypeAsStr();
 
-        const QString fnp = QString("/%1/volume.%2.raw")
+        const std::string fnp = std::string("/%1/volume.%2.raw")
             .arg(fullPath)
-            .arg(QString::fromStdString(volType));
+            .arg(std::string::fromStdString(volType));
 
-        const QString fnp_clean = QDir::cleanPath(fnp);
+        const std::string fnp_clean = QDir::cleanPath(fnp);
 
         ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
 
         return fnp_clean;
     }
 
-    static QString LogFolderPath(){
+    static std::string LogFolderPath(){
         return project::Globals().Users().LogFolderPath();
     }
 
-    static QString ProjectMetadataFileOld(){
+    static std::string ProjectMetadataFileOld(){
         return FilesFolder() + "/projectMetadata.qt";
     }
 
-    static QString ProjectMetadataFile(){
+    static std::string ProjectMetadataFile(){
         return FilesFolder() + "/projectMetadata.yaml";
     }
     
-    static QString OldHDF5projectFileName(){
+    static std::string OldHDF5projectFileName(){
         return FilesFolder() + "/oldProjectFile.hdf5";
     }
 
-    static QString FilesFolder(){
+    static std::string FilesFolder(){
         return project::FilesFolder();
     }
 };

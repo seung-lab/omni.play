@@ -42,7 +42,7 @@ private:
     segmentEdge splitChildFromParentNoTest(segment* child);
 
     std::pair<bool, segmentEdge> JoinEdgeFromUser(const segmentEdge& e);
-    std::pair<bool, segmentEdge> JoinFromUserAction(const OmID, const OmID);
+    std::pair<bool, segmentEdge> JoinFromUserAction(const common::id, const common::id);
 
     void rerootSegmentLists();
     void setGlobalThreshold(OmMST* mst);

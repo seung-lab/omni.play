@@ -89,9 +89,9 @@ void pagingPtrStore::resizeVectorIfNeeded(const PageNum pageNum)
     }
 }
 
-QString pagingPtrStore::metadataPathQStr()
+std::string pagingPtrStore::metadataPathQStr()
 {
-    return QString::fromStdString(
+    return std::string::fromStdString(
         vol_->Folder()->GetVolSegmentsPathAbs("segment_pages.data")
         );
 }
@@ -126,7 +126,7 @@ void pagingPtrStore::loadMetadata()
 
 void pagingPtrStore::storeMetadata()
 {
-    const QString path = metadataPathQStr();
+    const std::string path = metadataPathQStr();
 
     QFile file(path);
 

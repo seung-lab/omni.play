@@ -2,7 +2,7 @@
 
 #include "volume/segmentationFolder.h"
 #include "datalayer/archive/old/dataArchiveStd.hpp"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "utility/omLockedPODs.hpp"
 #include "segment/segments.h"
 #include "utility/dataWrappers.h"
@@ -74,16 +74,16 @@ public:
     }
 
 private:
-    QString filePathV1() const
+    std::string filePathV1() const
     {
-        return QString::fromStdString(
+        return std::string::fromStdString(
             vol_->Folder()->GetVolSegmentsPathAbs("valid_group_num.data.ver1")
             );
     }
 
     void load()
     {
-        const QString filePath = filePathV1();
+        const std::string filePath = filePathV1();
 
         QFile file(filePath);
 
@@ -111,7 +111,7 @@ private:
 
     void save() const
     {
-        const QString filePath = filePathV1();
+        const std::string filePath = filePathV1();
 
         QFile file(filePath);
 

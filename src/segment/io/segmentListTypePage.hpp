@@ -1,8 +1,8 @@
 #pragma once
 
 #include "common/common.h"
-#include "datalayer/fs/omFile.hpp"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/file.h"
+#include "datalayer/fs/fileNames.hpp"
 #include "datalayer/fs/omMemMapCompressedFile.hpp"
 
 class segmentListTypePage {
@@ -53,12 +53,12 @@ private:
         return pathQStr().toStdString();
     }
 
-    QString pathQStr() const
+    std::string pathQStr() const
     {
         const std::string fname = str( boost::format("segment_page%1%.list_types.ver4")
                                        % pageNum_);
 
-        return QString::fromStdString(
+        return std::string::fromStdString(
             vol_->Folder()->GetVolSegmentsPathAbs(fname)
             );
     }

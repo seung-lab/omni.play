@@ -5,13 +5,13 @@
 class meshChunkDataWriterTask{
 private:
     const meshCoord meshCoord_;
-    const QString fnp_;
+    const std::string fnp_;
     const int64_t offsetIntoFile_;
     const int64_t numBytes_;
 
 public:
     meshChunkDataWriterTask(const meshCoord& meshCoord,
-                                const QString fnp,
+                                const std::string fnp,
                                 const uint64_t offsetIntoFile,
                                 const uint64_t numBytes)
         : meshCoord_(meshCoord)

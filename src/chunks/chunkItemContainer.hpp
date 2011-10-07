@@ -55,7 +55,7 @@ public:
         setup();
     }
 
-    T* Get(const om::chunkCoord& coord)
+    T* Get(const coords::chunkCoord& coord)
     {
         zi::guard g(lock_);
 

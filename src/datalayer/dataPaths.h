@@ -15,7 +15,7 @@ public:
     static dataPath getDefaultDatasetName();
     static dataPath getProjectArchiveNameQT();
 
-    static dataPath getSegmentPagePath(const OmID segmentationID,
+    static dataPath getSegmentPagePath(const common::id segmentationID,
                                          const uint32_t pageNum );
 
     static std::string getMeshFileName(const meshCoord& meshCoord);

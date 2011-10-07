@@ -18,26 +18,26 @@ namespace om { namespace chunk { class dataInterface; } }
 
 class chunk {
 public:
-    chunk(channel* vol, const om::chunkCoord& coord);
-    chunk(channelImpl* vol, const om::chunkCoord& coord);
-    chunk(segmentation* vol, const om::chunkCoord& coord);
+    chunk(channel* vol, const coords::chunkCoord& coord);
+    chunk(channelImpl* vol, const coords::chunkCoord& coord);
+    chunk(segmentation* vol, const coords::chunkCoord& coord);
 
     virtual ~chunk();
 
-    bool ContainsVoxel(const om::dataCoord& vox) const {
+    bool ContainsVoxel(const coords::dataCoord& vox) const {
         return vox.volume() == vol_ &&  
                vox.level() == GetLevel() &&
                mipping_.GetExtent().contains(vox);
     }
 
 public:
-    const om::chunkCoord& GetCoordinate() const {
+    const coords::chunkCoord& GetCoordinate() const {
         return coord_;
     }
     int GetLevel() const {
         return coord_.Level;
     }
-    const om::dataCoord GetDimensions() const {
+    const coords::dataCoord GetDimensions() const {
         return mipping_.GetExtent().getUnitDimensions();
     }
 
@@ -50,7 +50,7 @@ public:
     }
 
 protected:
-    const om::chunkCoord coord_;
+    const coords::chunkCoord coord_;
     const boost::scoped_ptr<om::chunk::dataInterface> chunkData_;
     const mipVolume * const vol_;
 

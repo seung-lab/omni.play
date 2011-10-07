@@ -1,5 +1,5 @@
 #include "segment/lowLevel/segmentChildren.hpp"
-#include "common/omDebug.h"
+#include "common/debug.h"
 #include "segment/segment.h"
 #include "segment/segments.h"
 #include "segment/segmentIterator.h"
@@ -50,34 +50,34 @@ void segment::SetColor(const Vector3f& color)
     data_->color.blue = static_cast<uint8_t>(color.z * 255);
 }
 
-QString segment::GetNote()
+std::string segment::GetNote()
 {
-    QString customNote = segments_->getSegmentNote(data_->value);
+    std::string customNote = segments_->getSegmentNote(data_->value);
 
     if(parent_ ){
         customNote += "Parent: "
-            + QString::number(parent_->value())
+            + std::string::number(parent_->value())
             + "; ";
     }
 
     // if( !segmentsJoinedIntoMe_.empty() ){
     //   customNote += "Number of Children: "
-    //     + QString::number( segmentsJoinedIntoMe_.size() )
+    //     + std::string::number( segmentsJoinedIntoMe_.size() )
     //     + "; ";
     // }
 
     return customNote;
 }
 
-void segment::SetNote(const QString& note){
+void segment::SetNote(const std::string& note){
     segments_->setSegmentNote( data_->value, note );
 }
 
-QString segment::GetName(){
+std::string segment::GetName(){
     return segments_->getSegmentName( data_->value );
 }
 
-void segment::SetName(const QString& name){
+void segment::SetName(const std::string& name){
     segments_->setSegmentName( data_->value, name );
 }
 
@@ -97,7 +97,7 @@ void segment::SetEnabled( const bool isEnabled){
     segments_->setSegmentEnabled( data_->value, isEnabled );
 }
 
-OmID segment::GetSegmentationID(){
+common::id segment::GetSegmentationID(){
     return segments_->GetSegmentationID();
 }
 

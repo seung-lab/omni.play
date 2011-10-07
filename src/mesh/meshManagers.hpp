@@ -100,14 +100,14 @@ public:
     }
 
 /*
-    void MeshChunk(const om::chunkCoord& coord)
+    void MeshChunk(const coords::chunkCoord& coord)
     {
         ziMesher mesher(segmentation_, 1);
         mesher.addChunkCoord(coord);
         mesher.mesh();
     }
 
-    void RebuildChunk(const om::chunkCoord&,
+    void RebuildChunk(const coords::chunkCoord&,
                       const segIdsSet& )
     {
         assert(0);
@@ -129,7 +129,7 @@ OmEvents::Redraw3d();
     }
 */
 
-    void GetMesh(meshPtr& ptr, const om::chunkCoord& coord,
+    void GetMesh(meshPtr& ptr, const coords::chunkCoord& coord,
                  const segId segID, const double threshold,
                  const om::Blocking blocking = om::NON_BLOCKING)
     {
@@ -144,18 +144,18 @@ private:
 
     void findMeshThresholds()
     {
-        const QString meshFolder = segmentation_->Folder()->GetMeshFolderPath();
+        const std::string meshFolder = segmentation_->Folder()->GetMeshFolderPath();
         QDir dir(meshFolder);
 
-        QStringList filters;
+        std::stringList filters;
         filters << "?.????";
         dir.setNameFilters(filters);
 
-        const QStringList dirNames = dir.entryList(QDir::Dirs);
+        const std::stringList dirNames = dir.entryList(QDir::Dirs);
 
         FOR_EACH(iter, dirNames)
         {
-            const QString& str = *iter;
+            const std::string& str = *iter;
             const double threshold = OmStringHelpers::getDouble(str);
             thresholds_.insert(threshold);
             std::cout << "found mesh threshold " << threshold << "\n";

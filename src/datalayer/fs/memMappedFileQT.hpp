@@ -2,7 +2,7 @@
 
 #include "common/om.hpp"
 #include "common/common.h"
-#include "common/omDebug.h"
+#include "common/debug.h"
 #include "common/omString.hpp"
 #include "datalayer/fs/IOnDiskFile.h"
 
@@ -32,7 +32,7 @@ protected:
 
     void open()
     {
-        file_ = om::make_shared<QFile>(QString::fromStdString(fnp_));
+        file_ = om::make_shared<QFile>(std::string::fromStdString(fnp_));
 
         if(!file_->open(QIODevice::ReadWrite)) {
             throw OmIoException("could not open", fnp_);
@@ -97,8 +97,8 @@ private:
         }
 
         if ( this->file_->size() != numBytes ){
-            const QString err =
-                QString("error: input file size of %1 bytes doesn't match expected size %d")
+            const std::string err =
+                std::string("error: input file size of %1 bytes doesn't match expected size %d")
                 .arg(this->file_->size())
                 .arg(numBytes);
             throw OmIoException(err.toStdString());
@@ -136,7 +136,7 @@ private:
     {
         checkFileSize(numBytes);
 
-        QFile::remove(QString::fromStdString(fnp));
+        QFile::remove(std::string::fromStdString(fnp));
         this->open();
 
         if(!this->file_->resize(numBytes)){

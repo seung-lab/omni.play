@@ -16,13 +16,13 @@ public:
         : volumes_(volumes)
     {}
 
-    segmentation& GetSegmentation(const OmID id);
+    segmentation& GetSegmentation(const common::id id);
     segmentation& AddSegmentation();
-    void RemoveSegmentation(const OmID id);
-    bool IsSegmentationValid(const OmID id);
-    const OmIDsSet & GetValidSegmentationIds();
-    bool IsSegmentationEnabled(const OmID id);
-    void SetSegmentationEnabled(const OmID id, const bool enable);
+    void RemoveSegmentation(const common::id id);
+    bool IsSegmentationValid(const common::id id);
+    const common::idsSet & GetValidSegmentationIds();
+    bool IsSegmentationEnabled(const common::id id);
+    void SetSegmentationEnabled(const common::id id, const bool enable);
     const std::vector<segmentation*> GetPtrVec() const;
 
 private:

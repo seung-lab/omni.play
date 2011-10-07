@@ -9,9 +9,9 @@
 class memMappedAllocFile {
 private:
     segmentation *const segmentation_;
-    const om::chunkCoord coord_;
+    const coords::chunkCoord coord_;
     const double threshold_;
-    const QString fnp_;
+    const std::string fnp_;
 
     boost::scoped_ptr<QFile> file_;
     meshDataEntry* table_;
@@ -19,7 +19,7 @@ private:
 
 public:
     memMappedAllocFile(segmentation* segmentation,
-                         const om::chunkCoord& coord,
+                         const coords::chunkCoord& coord,
                          const double threshold)
         : segmentation_(segmentation)
         , coord_(coord)
@@ -190,15 +190,15 @@ private:
         return a.segID < b.segID;
     }
 
-    QString filePath()
+    std::string filePath()
     {
-        const QString volPath = segmentation_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
+        const std::string volPath = segmentation_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
 
         if(!QDir(volPath).exists()){
             segmentation_->Folder()->MakeMeshChunkFolderPath(threshold_, coord_);
         }
 
-        const QString fullPath = QString("%1meshAllocTable.ver2")
+        const std::string fullPath = std::string("%1meshAllocTable.ver2")
             .arg(volPath);
 
         return fullPath;

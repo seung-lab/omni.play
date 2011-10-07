@@ -10,17 +10,17 @@
 class meshCoord {
  public:
 	meshCoord();
-    meshCoord( const om::chunkCoord&, segId );
+    meshCoord( const coords::chunkCoord&, segId );
 
 	void operator=( const meshCoord& rhs );
 	bool operator==( const meshCoord& rhs ) const;
 	bool operator!=( const meshCoord& rhs ) const;
 	bool operator<( const meshCoord& rhs ) const;
 
-    om::chunkCoord MipChunkCoord;
+    coords::chunkCoord MipChunkCoord;
 	segId DataValue;
 
-    const om::chunkCoord& Coord() const {
+    const coords::chunkCoord& Coord() const {
 		return MipChunkCoord;
 	}
 

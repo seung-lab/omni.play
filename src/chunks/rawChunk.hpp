@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "utility/omSmartPtr.hpp"
 #include "volume/io/volumeData.h"
 #include "volume/mipVolume.h"
@@ -15,9 +15,9 @@ template <typename T>
 class rawChunk {
 private:
     mipVolume *const vol_;
-    const om::chunkCoord coord_;
+    const coords::chunkCoord coord_;
     const uint64_t chunkOffset_;
-    const QString memMapFileName_;
+    const std::string memMapFileName_;
     const uint64_t numBytes_;
 
     om::shared_ptr<T> data_;
@@ -29,11 +29,11 @@ private:
     typedef typename zi::spinlock::pool<raw_chunk_mutex_pool_tag>::guard mutex_guard_t;
 
 public:
-    rawChunk(mipVolume* vol, const om::chunkCoord& coord)
+    rawChunk(mipVolume* vol, const coords::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
         , chunkOffset_(chunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))
-        , memMapFileName_(OmFileNames::GetMemMapFileNameQT(vol,
+        , memMapFileName_(fileNames::GetMemMapFileNameQT(vol,
                                                            coord.Level))
         , numBytes_(128*128*128*vol_->GetBytesPerVoxel())
         , dataRaw_(NULL)

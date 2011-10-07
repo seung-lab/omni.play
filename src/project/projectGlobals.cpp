@@ -3,7 +3,7 @@
 #include "events/details/omEventManagerImpl.hpp"
 #include "project/projectGlobals.h"
 #include "system/omStateManagerImpl.hpp"
-#include "users/omUsers.h"
+
 #include "utility/omRandColorFile.hpp"
 #include "view2d/omView2dManagerImpl.hpp"
 

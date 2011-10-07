@@ -121,50 +121,10 @@ HEADERS +=  \
 	src/volume/volumeTypes.h
 
 SOURCES +=  \
-	src/chunks/chunk.cpp \
-	src/chunks/details/ptrToChunkDataMemMapVol.cpp \
-	src/chunks/segChunk.cpp \
-	src/datalayer/archive/channel.cpp \
-	src/datalayer/archive/filter.cpp \
-	src/datalayer/archive/project.cpp \
-	src/datalayer/archive/segmentation.cpp \
-	src/datalayer/dataPaths.cpp \
-	src/datalayer/fs/compressedFile.cpp \
-	src/datalayer/fs/file.cpp \
-	src/main.cpp \
-	src/mesh/io/chunk/meshChunkAllocTable.cpp \
-	src/mesh/mesh.cpp \
-	src/mesh/meshCoord.cpp \
-	src/mesh/meshManager.cpp \
-	src/project/details/affinityGraphManager.cpp \
-	src/project/details/channelManager.cpp \
-	src/project/details/projectVolumes.cpp \
-	src/project/details/segmentationManager.cpp \
-	src/project/project.cpp \
-	src/project/projectGlobals.cpp \
-	src/segment/lists/segmentList.cpp \
-	src/segment/lists/segmentListByMRU.cpp \
-	src/segment/lists/segmentListsTypes.cpp \
-	src/segment/lowLevel/pagingPtrStore.cpp \
-	src/segment/lowLevel/segmentGraph.cpp \
-	src/segment/lowLevel/segmentsImplLowLevel.cpp \
-	src/segment/lowLevel/store/segmentStore.cpp \
-	src/segment/segment.cpp \
-	src/segment/segmentIterator.cpp \
-	src/segment/segments.cpp \
-	src/segment/segmentsImpl.cpp \
-	src/tiles/tile.cpp \
-	src/tiles/tileCoord.cpp \
-	src/volume/affinityGraph.cpp \
 	src/volume/channel.cpp \
-	src/volume/channelFolder.cpp \
 	src/volume/channelImpl.cpp \
-	src/volume/io/memMappedVolume.cpp \
 	src/volume/io/volumeData.cpp \
 	src/volume/mipVolume.cpp \
-	src/volume/segmentation.cpp \
-	src/volume/segmentationFolder.cpp \
-	src/volume/segmentationLoader.cpp \
 	src/volume/volumeTypes.cpp
 
 

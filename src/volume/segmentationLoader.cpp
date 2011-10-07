@@ -28,9 +28,9 @@ void om::segmentation::loader::LoadSegmentPages(pagingPtrStore& ps,
 
     if(vol_->IsBuilt())
     {
-        const QString fullPath = QString::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
+        const std::string fullPath = std::string::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
 
-        if(OmFileHelpers::IsFolderEmpty(fullPath)){
+        if(fileHelpers::IsFolderEmpty(fullPath)){
             rebuildSegments();
 
         } else {
@@ -43,9 +43,9 @@ void om::segmentation::loader::LoadSegmentPages(pagingPtrStore& ps)
 {
     if(vol_->IsBuilt())
     {
-        const QString fullPath = QString::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
+        const std::string fullPath = std::string::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
         
-        if(OmFileHelpers::IsFolderEmpty(fullPath)){
+        if(fileHelpers::IsFolderEmpty(fullPath)){
             rebuildSegments();
             
         } else {

@@ -17,8 +17,8 @@ private:
     segmentation *const segmentation_;
     const double threshold_;
 
-    std::map<om::chunkCoord, om::shared_ptr<meshChunkAllocTableV2> > tables_;
-    std::map<om::chunkCoord, om::shared_ptr<meshChunkDataWriter> > data_;
+    std::map<coords::chunkCoord, om::shared_ptr<meshChunkAllocTableV2> > tables_;
+    std::map<coords::chunkCoord, om::shared_ptr<meshChunkDataWriter> > data_;
     zi::rwmutex lock_;
 
     OmThreadPool threadPool_;
@@ -65,7 +65,7 @@ public:
         mappedFiles_.Put(table);
     }
 
-    meshChunkAllocTableV2* GetAllocTable(const om::chunkCoord& coord)
+    meshChunkAllocTableV2* GetAllocTable(const coords::chunkCoord& coord)
     {
         zi::rwmutex::write_guard g(lock_);
 
@@ -78,7 +78,7 @@ public:
         return tables_[coord].get();
     }
 
-    meshChunkDataWriter* GetWriter(const om::chunkCoord& coord)
+    meshChunkDataWriter* GetWriter(const coords::chunkCoord& coord)
     {
         zi::rwmutex::write_guard g(lock_);
 

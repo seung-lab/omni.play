@@ -8,13 +8,13 @@
 
 class channelManager {
 public:
-    channel& GetChannel(const OmID id);
+    channel& GetChannel(const common::id id);
     channel& AddChannel();
-    void RemoveChannel(const OmID id);
-    bool IsChannelValid(const OmID id);
-    const OmIDsSet & GetValidChannelIds();
-    bool IsChannelEnabled(const OmID id);
-    void SetChannelEnabled(const OmID id, const bool enable);
+    void RemoveChannel(const common::id id);
+    bool IsChannelValid(const common::id id);
+    const common::idsSet & GetValidChannelIds();
+    bool IsChannelEnabled(const common::id id);
+    void SetChannelEnabled(const common::id id, const bool enable);
     const std::vector<channel*> GetPtrVec() const;
 
 private:

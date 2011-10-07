@@ -18,7 +18,7 @@ public:
         : path_(str)
     {}
 
-    dataPath(const QString& str)
+    dataPath(const std::string& str)
         : path_(str.toStdString())
     {}
 
@@ -30,7 +30,7 @@ public:
         path_ = str;
     }
 
-    void setPath(const QString& str){
+    void setPath(const std::string& str){
         path_ = str.toStdString();
     }
 
@@ -38,8 +38,8 @@ public:
         return path_;
     }
 
-    const QString getQString() const {
-        return QString::fromStdString(path_);
+    const std::string getstd::string() const {
+        return std::string::fromStdString(path_);
     }
 
     friend std::ostream& operator<<(std::ostream& out, const dataPath& in)

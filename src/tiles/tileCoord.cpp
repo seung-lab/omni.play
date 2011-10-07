@@ -1,11 +1,11 @@
-#include "common/omDebug.h"
+#include "common/debug.h"
 #include "tiles/tileCoord.h"
 #include "volume/mipVolume.h"
 #include "viewGroup/omViewGroupState.h"
 
 tileCoord::tileCoord()
     : tileCoordKey(-1,
-                     om::globalCoord(),
+                     coords::globalCoord(),
                      NULL,
                      0,
                      NULL,
@@ -13,7 +13,7 @@ tileCoord::tileCoord()
                      SCC_NUMBER_OF_ENUMS)
 {}
 
-tileCoord::tileCoord(const int level, const om::globalCoord& dataCoord,
+tileCoord::tileCoord(const int level, const coords::globalCoord& dataCoord,
                          mipVolume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
                          const ObjectType objType)
@@ -26,7 +26,7 @@ tileCoord::tileCoord(const int level, const om::globalCoord& dataCoord,
                      vgs->determineColorizationType(objType))
 {}
 
-tileCoord::tileCoord(const int level, const om::globalCoord& dataCoord,
+tileCoord::tileCoord(const int level, const coords::globalCoord& dataCoord,
                          mipVolume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
                          const segmentColorCacheType segColorType)

@@ -1,6 +1,6 @@
 #include "actions/omActions.h"
 #include "common/common.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "project/details/channelManager.h"
 #include "project/details/projectVolumes.h"
 #include "project/details/segmentationManager.h"
@@ -8,7 +8,7 @@
 #include "volume/omFilter2d.h"
 #include "volume/segmentationFolder.h"
 
-segmentation& segmentationManager::GetSegmentation(const OmID id)
+segmentation& segmentationManager::GetSegmentation(const common::id id)
 {
     return manager_.Get(id);
 }
@@ -21,7 +21,7 @@ segmentation& segmentationManager::AddSegmentation()
     return vol;
 }
 
-void segmentationManager::RemoveSegmentation(const OmID id)
+void segmentationManager::RemoveSegmentation(const common::id id)
 {
     FOR_EACH(channelID, volumes_->Channels().GetValidChannelIds())
     {
@@ -55,19 +55,19 @@ void segmentationManager::RemoveSegmentation(const OmID id)
     OmActions::Save();
 }
 
-bool segmentationManager::IsSegmentationValid(const OmID id){
+bool segmentationManager::IsSegmentationValid(const common::id id){
     return manager_.IsValid(id);
 }
 
-const OmIDsSet& segmentationManager::GetValidSegmentationIds(){
+const common::idsSet& segmentationManager::GetValidSegmentationIds(){
     return manager_.GetValidIds();
 }
 
-bool segmentationManager::IsSegmentationEnabled(const OmID id){
+bool segmentationManager::IsSegmentationEnabled(const common::id id){
     return manager_.IsEnabled(id);
 }
 
-void segmentationManager::SetSegmentationEnabled(const OmID id, const bool enable){
+void segmentationManager::SetSegmentationEnabled(const common::id id, const bool enable){
     manager_.SetEnabled(id, enable);
 }
 

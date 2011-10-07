@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QString>
+
 #include "yaml-cpp/yaml.h"
 
 class projectImpl;
@@ -15,8 +15,8 @@ static const int Latest_Project_Version = 25;
 
 class project {
 public:
-    static void Read(const QString& fnp, projectImpl* project);
-    static void Write(const QString& fnp, projectImpl* project);
+    static void Read(const std::string& fnp, projectImpl* project);
+    static void Write(const std::string& fnp, projectImpl* project);
 private:
     static void postLoad();    
 };

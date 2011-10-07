@@ -51,10 +51,10 @@ public:
     void SetColor(const Vector3i&);
     void SetColor(const Vector3f&);
 
-    QString GetNote();
-    void SetNote(const QString&);
-    QString GetName();
-    void SetName(const QString&);
+    std::string GetNote();
+    void SetNote(const std::string&);
+    std::string GetName();
+    void SetName(const std::string&);
     bool IsSelected();
     void SetSelected(const bool, const bool);
     bool IsEnabled();
@@ -96,7 +96,7 @@ public:
 
     segId RootID();
 
-    OmID GetSegmentationID();
+    common::id GetSegmentationID();
 
     inline double getThreshold() const {
         return threshold_;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "datalayer/fs/IOnDiskFile.h"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/fs/file.h"
 
 template <typename T>
 class memMappedFileQTNew : public IOnDiskFile<T> {

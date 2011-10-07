@@ -48,11 +48,11 @@ public:
     void AddToSegmentSelection(const segIdsSet& idsToSelect);
     void RemoveFromSegmentSelection(const segIdsSet& idsToSelect);
 
-    QString getSegmentName(segId segID);
-    void setSegmentName(segId segID, QString name);
+    std::string getSegmentName(segId segID);
+    void setSegmentName(segId segID, std::string name);
 
-    QString getSegmentNote(segId segID);
-    void setSegmentNote(segId segID, QString note);
+    std::string getSegmentNote(segId segID);
+    void setSegmentNote(segId segID, std::string note);
 
     segId GetSegmentationID();
 

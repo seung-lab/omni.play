@@ -2,7 +2,7 @@
 
 class channelImpl;
 
-#include <QString>
+
 
 namespace om {
 namespace channel {
@@ -14,9 +14,9 @@ private:
 public:
     folder(channelImpl* chan);
 
-    QString GetVolPath() const;
-    QString RelativeVolPath() const;
-    QString MakeVolFolder() const;
+    std::string GetVolPath() const;
+    std::string RelativeVolPath() const;
+    std::string MakeVolFolder() const;
 };
 
 } // namespace channel

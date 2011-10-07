@@ -1,13 +1,13 @@
 #include "meshCoord.h"
-#include "common/omDebug.h"
+#include "common/debug.h"
 
 meshCoord::meshCoord()
 {
-    MipChunkCoord = om::chunkCoord();
+    MipChunkCoord = coords::chunkCoord();
     DataValue = -1;
 }
 
-meshCoord::meshCoord(const om::chunkCoord & rMipChunkCoord, segId dataValue)
+meshCoord::meshCoord(const coords::chunkCoord & rMipChunkCoord, segId dataValue)
     : MipChunkCoord(rMipChunkCoord)
     , DataValue(dataValue)
 {

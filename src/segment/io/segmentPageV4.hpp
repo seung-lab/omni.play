@@ -1,6 +1,6 @@
 #pragma once
 
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "datalayer/fs/omMemMappedFileQTNew.hpp"
 #include "segment/segmentTypes.h"
 
@@ -52,12 +52,12 @@ private:
         return pathQStr().toStdString();
     }
 
-    QString pathQStr() const
+    std::string pathQStr() const
     {
         const std::string fname = str( boost::format("segment_page%1%.data.ver4")
                                        % pageNum_);
 
-        return QString::fromStdString(
+        return std::string::fromStdString(
             vol_->Folder()->GetVolSegmentsPathAbs(fname)
             );
     }

@@ -77,11 +77,11 @@ public:
         return segmentGraph_.Root(segID);
     }
 
-    QString getSegmentName(segId segID);
-    void setSegmentName(segId segID, QString name);
+    std::string getSegmentName(segId segID);
+    void setSegmentName(segId segID, std::string name);
 
-    QString getSegmentNote(segId segID);
-    void setSegmentNote(segId segID, QString note);
+    std::string getSegmentNote(segId segID);
+    void setSegmentNote(segId segID, std::string note);
 
     void turnBatchModeOn(const bool batchMode);
 
@@ -116,8 +116,8 @@ protected:
     OmLockedUint32 maxValue_;
     uint32_t mNumSegs;
 
-    QHash< OmID, QString > segmentCustomNames;
-    QHash< OmID, QString > segmentNotes;
+    QHash< common::id, std::string > segmentCustomNames;
+    QHash< common::id, std::string > segmentNotes;
 
     inline segId getNextValue(){
         return maxValue_.inc();

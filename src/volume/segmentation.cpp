@@ -3,7 +3,7 @@
 #include "chunks/segChunk.h"
 #include "chunks/uniqueValues/chunkUniqueValuesManager.hpp"
 #include "common/common.h"
-#include "common/omDebug.h"
+#include "common/debug.h"
 #include "datalayer/dataPaths.h"
 #include "mesh/drawer/meshDrawer.h"
 #include "mesh/meshManagers.hpp"
@@ -41,7 +41,7 @@ segmentation::segmentation()
 {}
 
 // used by genericManager
-segmentation::segmentation(OmID id)
+segmentation::segmentation(common::id id)
     : OmManageableObject(id)
     , loader_(new om::segmentation::loader(this))
     , uniqueChunkValues_(new chunkUniqueValuesManager(this))
@@ -110,7 +110,7 @@ void segmentation::CloseDownThreads() {
 bool segmentation::LoadVolDataIfFoldersExist()
 {
     //assume level 0 data always present
-    const QString path = OmFileNames::GetVolDataFolderPath(this, 0);
+    const std::string path = fileNames::GetVolDataFolderPath(this, 0);
 
     if(QDir(path).exists()){
         return LoadVolData();
@@ -179,14 +179,14 @@ meshManager* segmentation::MeshManager(const double threshold){
     return meshManagers_->GetManager(threshold);
 }
 
-quint32 segmentation::GetVoxelValue(const om::globalCoord & vox)
+quint32 segmentation::GetVoxelValue(const coords::globalCoord & vox)
 {
     if(!ContainsVoxel(vox)){
         return 0;
     }
 
     //find mip_coord and offset
-    const om::chunkCoord mip0coord = vox.toChunkCoord(this, 0);
+    const coords::chunkCoord mip0coord = vox.toChunkCoord(this, 0);
 
     segChunk* chunk = GetChunk(mip0coord);
 
@@ -194,25 +194,25 @@ quint32 segmentation::GetVoxelValue(const om::globalCoord & vox)
     return chunk->GetVoxelValue(vox.toDataCoord(this, 0));
 }
 
-void segmentation::SetVoxelValue(const om::globalCoord& vox, const uint32_t val)
+void segmentation::SetVoxelValue(const coords::globalCoord& vox, const uint32_t val)
 {
     if (!ContainsVoxel(vox))
         return;
     
     for(int level = 0; level <= coords_.GetRootMipLevel(); level++)
     {
-        om::chunkCoord leaf_mip_coord = vox.toChunkCoord(this, level);
+        coords::chunkCoord leaf_mip_coord = vox.toChunkCoord(this, level);
         segChunk* chunk = GetChunk(leaf_mip_coord);
         chunk->SetVoxelValue(vox.toDataCoord(this, level), val);
     }
 }
 
-bool segmentation::SetVoxelValueIfSelected(const om::globalCoord& vox, const uint32_t val)
+bool segmentation::SetVoxelValueIfSelected(const coords::globalCoord& vox, const uint32_t val)
 {
     const segIdsSet selection = Segments()->GetSelectedSegmentIDs();
     if(selection.size() > 0)
     {
-        om::chunkCoord leaf_mip_coord = vox.toChunkCoord(this, 0);
+        coords::chunkCoord leaf_mip_coord = vox.toChunkCoord(this, 0);
         segChunk* chunk = GetChunk(leaf_mip_coord);
         segId target = Segments()->findRootID(
             chunk->GetVoxelValue(vox.toDataCoord(this, 0)));
@@ -226,7 +226,7 @@ bool segmentation::SetVoxelValueIfSelected(const om::globalCoord& vox, const uin
     return true;
 }
 
-segChunk* segmentation::GetChunk(const om::chunkCoord& coord){
+segChunk* segmentation::GetChunk(const coords::chunkCoord& coord){
     return chunkCache_->GetChunk(coord);
 }
 

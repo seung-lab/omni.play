@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/om.hpp"
-#include "common/omDebug.h"
+#include "common/debug.h"
 #include "datalayer/fs/IOnDiskFile.h"
 #include "utility/omSmartPtr.hpp"
 
@@ -30,7 +30,7 @@ protected:
 
     void open()
     {
-        file_ = om::make_shared<QFile>(QString::fromStdString(fnp_));
+        file_ = om::make_shared<QFile>(std::string::fromStdString(fnp_));
 
         if( !file_->open(QIODevice::ReadWrite)) {
             throw OmIoException("could not open", fnp_);
@@ -91,18 +91,18 @@ public:
 };
 
 template <typename T>
-class OmFileReadQT : public fileQTbase<T> {
+class fileReadQT : public fileQTbase<T> {
 public:
 
-    static boost::shared_ptr<OmFileReadQT<T> >
+    static boost::shared_ptr<fileReadQT<T> >
     Reader(const std::string& fnp)
     {
-        OmFileReadQT* ret = new OmFileReadQT(fnp, 0);
-        return boost::shared_ptr<OmFileReadQT<T> >(ret);
+        fileReadQT* ret = new fileReadQT(fnp, 0);
+        return boost::shared_ptr<fileReadQT<T> >(ret);
     }
 
 private:
-    OmFileReadQT(const std::string& fnp, const int64_t numBytes)
+    fileReadQT(const std::string& fnp, const int64_t numBytes)
         : fileQTbase<T>(fnp)
     {
         this->open();
@@ -120,8 +120,8 @@ private:
         }
 
         if ( this->file_->size() != numBytes ){
-            const QString err =
-                QString("error: input file size of %1 bytes doesn't match expected size %d")
+            const std::string err =
+                std::string("error: input file size of %1 bytes doesn't match expected size %d")
                 .arg(this->file_->size())
                 .arg(numBytes);
             throw OmIoException(err.toStdString());
@@ -130,33 +130,33 @@ private:
 };
 
 template <typename T>
-class OmFileWriteQT : public fileQTbase<T> {
+class fileWriteQT : public fileQTbase<T> {
 public:
-    static boost::shared_ptr<OmFileWriteQT<T> >
+    static boost::shared_ptr<fileWriteQT<T> >
     WriterNumBytes(const std::string& fnp, const int64_t numBytes,
                    const om::ZeroMem shouldZeroFill)
     {
-        OmFileWriteQT<T>* ret = new OmFileWriteQT(fnp, numBytes, shouldZeroFill);
-        return boost::shared_ptr<OmFileWriteQT<T> >(ret);
+        fileWriteQT<T>* ret = new fileWriteQT(fnp, numBytes, shouldZeroFill);
+        return boost::shared_ptr<fileWriteQT<T> >(ret);
     }
 
-    static boost::shared_ptr<OmFileWriteQT<T> >
+    static boost::shared_ptr<fileWriteQT<T> >
     WriterNumElements(const std::string& fnp, const int64_t numElements,
                       const om::ZeroMem shouldZeroFill)
     {
         const uint64_t numBytes = numElements*sizeof(T);
-        OmFileWriteQT<T>* ret = new OmFileWriteQT(fnp, numBytes, shouldZeroFill);
-        return boost::shared_ptr<OmFileWriteQT<T> >(ret);
+        fileWriteQT<T>* ret = new fileWriteQT(fnp, numBytes, shouldZeroFill);
+        return boost::shared_ptr<fileWriteQT<T> >(ret);
     }
 
 private:
-    OmFileWriteQT(const std::string& fnp, const int64_t numBytes,
+    fileWriteQT(const std::string& fnp, const int64_t numBytes,
                   const om::ZeroMem shouldZeroFill)
         : fileQTbase<T>(fnp)
     {
         checkFileSize(numBytes);
 
-        QFile::remove(QString::fromStdString(fnp));
+        QFile::remove(std::string::fromStdString(fnp));
         this->open();
         this->file_->resize(numBytes);
         //TODO: allocate space??

@@ -8,14 +8,14 @@ private:
     om::dataBbox dataExtent_;
     om::normBbox normExtent_; // extent of chunk in norm space
     om::normBbox clippedNormExtent_; // extent of contained data in norm space
-    om::chunkCoord coord_;
-    std::set<om::chunkCoord> childrenCoordinates_;
+    coords::chunkCoord coord_;
+    std::set<coords::chunkCoord> childrenCoordinates_;
 
     uint32_t numVoxels_;
     uint32_t numBytes_;
 
 public:
-    chunkMipping(mipVolume* vol, const om::chunkCoord& coord)
+    chunkMipping(mipVolume* vol, const coords::chunkCoord& coord)
         : dataExtent_(coord.chunkBoundingBox(vol))
         , normExtent_(dataExtent_.toNormBbox())
         , clippedNormExtent_(dataExtent_.toNormBbox())
@@ -41,7 +41,7 @@ public:
         return clippedNormExtent_;
     }
 
-    inline const std::set<om::chunkCoord>& GetChildrenCoordinates() const {
+    inline const std::set<coords::chunkCoord>& GetChildrenCoordinates() const {
         return childrenCoordinates_;
     }
 

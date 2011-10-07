@@ -20,7 +20,7 @@ segmentsImplLowLevel::segmentsImplLowLevel(segmentation* segmentation,
 segmentsImplLowLevel::~segmentsImplLowLevel()
 {}
 
-QString segmentsImplLowLevel::getSegmentName(segId segID)
+std::string segmentsImplLowLevel::getSegmentName(segId segID)
 {
     if(segmentCustomNames.empty()){
         return "";
@@ -30,14 +30,14 @@ QString segmentsImplLowLevel::getSegmentName(segId segID)
         return segmentCustomNames.value(segID);
     }
 
-    return ""; //QString("segment%1").arg(segID);
+    return ""; //std::string("segment%1").arg(segID);
 }
 
-void segmentsImplLowLevel::setSegmentName(segId segID, QString name){
+void segmentsImplLowLevel::setSegmentName(segId segID, std::string name){
     segmentCustomNames[ segID ] = name;
 }
 
-QString segmentsImplLowLevel::getSegmentNote(segId segID)
+std::string segmentsImplLowLevel::getSegmentNote(segId segID)
 {
     if(segmentNotes.empty()){
         return "";
@@ -50,7 +50,7 @@ QString segmentsImplLowLevel::getSegmentNote(segId segID)
     return "";
 }
 
-void segmentsImplLowLevel::setSegmentNote(segId segID, QString note){
+void segmentsImplLowLevel::setSegmentNote(segId segID, std::string note){
     segmentNotes[ segID ] = note;
 }
 

@@ -42,7 +42,7 @@ std::string tempPath();
 template <class PTR>
 void openFileRO(PTR& file, const std::string& fnp)
 {
-    file.reset(new QFile(QString::fromStdString(fnp)));
+    file.reset(new QFile(std::string::fromStdString(fnp)));
     if(!file->open(QIODevice::ReadOnly)){
         throw OmIoException("could not open file read only", fnp);
     }
@@ -51,7 +51,7 @@ void openFileRO(PTR& file, const std::string& fnp)
 template <class PTR>
 void openFileAppend(PTR& file, const std::string& fnp)
 {
-    file.reset(new QFile(QString::fromStdString(fnp)));
+    file.reset(new QFile(std::string::fromStdString(fnp)));
     if(!file->open(QIODevice::Append)){
         throw OmIoException("could not open file read/write append", fnp);
     }
@@ -60,7 +60,7 @@ void openFileAppend(PTR& file, const std::string& fnp)
 template <class PTR>
 void openFileRW(PTR& file, const std::string& fnp)
 {
-    file.reset(new QFile(QString::fromStdString(fnp)));
+    file.reset(new QFile(std::string::fromStdString(fnp)));
     if(!file->open(QIODevice::ReadWrite)){
         throw OmIoException("could not open file read/write", fnp);
     }
@@ -69,7 +69,7 @@ void openFileRW(PTR& file, const std::string& fnp)
 template <class PTR>
 void openFileWO(PTR& file, const std::string& fnp)
 {
-    file.reset(new QFile(QString::fromStdString(fnp)));
+    file.reset(new QFile(std::string::fromStdString(fnp)));
 
     if(!file->open(QIODevice::WriteOnly)){
         throw OmIoException("could not open file for writing", fnp);
@@ -169,7 +169,7 @@ void writeNumElements(QFile& file, const boost::shared_ptr<T> ptr,
 template <typename T>
 void createFileNumElements(const std::string& fnp, const int64_t numElements)
 {
-    QFile file(QString::fromStdString(fnp));
+    QFile file(std::string::fromStdString(fnp));
 
     openFileWO(file);
 
@@ -183,7 +183,7 @@ template <typename T>
 void createFileFromData(const std::string& fnp, const boost::shared_ptr<T> ptr,
                         const int64_t numElements)
 {
-    QFile file(QString::fromStdString(fnp));
+    QFile file(std::string::fromStdString(fnp));
 
     openFileWO(file);
 
@@ -197,7 +197,7 @@ void writeStrings(QFile& file, const T& strings)
 
     FOR_EACH(iter, strings)
     {
-        out << QString::fromStdString(*iter) << "\n";
+        out << std::string::fromStdString(*iter) << "\n";
     }
 }
 
@@ -210,7 +210,7 @@ void writeStrings(QFile& file, const T& strings, PROGRESS* progress)
 
     FOR_EACH(iter, strings)
     {
-        out << QString::fromStdString(*iter) << "\n";
+        out << std::string::fromStdString(*iter) << "\n";
         progress->SetDone(1);
     }
 }

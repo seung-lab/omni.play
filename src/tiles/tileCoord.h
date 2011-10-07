@@ -9,7 +9,7 @@ class OmViewGroupState;
 
 // Level, Coordinate, mipVolume*, freshness, OmViewGroupState*,
 //  ViewType, segmentColorCacheType
-typedef boost::tuple<int, om::globalCoord,
+typedef boost::tuple<int, coords::globalCoord,
                      mipVolume*, uint32_t,
                      OmViewGroupState*, ViewType,
                      segmentColorCacheType> tileCoordKey;
@@ -18,23 +18,23 @@ class tileCoord : public tileCoordKey {
 public:
     tileCoord();
 
-    tileCoord(const int, const om::globalCoord&,
+    tileCoord(const int, const coords::globalCoord&,
                 mipVolume*, const uint32_t,
                 OmViewGroupState*, const ViewType,
                 const ObjectType);
 
-    tileCoord(const int, const om::globalCoord&,
+    tileCoord(const int, const coords::globalCoord&,
                 mipVolume*, const uint32_t,
                 OmViewGroupState*, const ViewType,
                 const segmentColorCacheType);
 
     ObjectType getVolType() const;
-    om::chunkCoord getChunkCoord() const;
+    coords::chunkCoord getChunkCoord() const;
 
     inline int getLevel() const {
         return this->get<0>();
     }
-    inline const om::globalCoord& getCoord() const {
+    inline const coords::globalCoord& getCoord() const {
         return this->get<1>();
     }
     inline mipVolume* getVolume() const {

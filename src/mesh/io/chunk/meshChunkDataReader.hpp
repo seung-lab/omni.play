@@ -2,19 +2,19 @@
 
 #include "volume/segmentationFolder.h"
 #include "common/common.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "chunks/chunk.h"
 #include "mesh/iochunk/meshChunkTypes.h"
 
 class meshChunkDataReader{
 private:
     segmentation *const vol_;
-    const om::chunkCoord& coord_;
+    const coords::chunkCoord& coord_;
     const double threshold_;
-    const QString fnp_;
+    const std::string fnp_;
 
 public:
-    meshChunkDataReader(segmentation* seg, const om::chunkCoord& coord,
+    meshChunkDataReader(segmentation* seg, const coords::chunkCoord& coord,
                             const double threshold)
         : vol_(seg)
         , coord_(coord)
@@ -62,9 +62,9 @@ public:
     }
 
 private:
-    QString filePath()
+    std::string filePath()
     {
-        const QString volPath = vol_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
+        const std::string volPath = vol_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
 
         return volPath + "meshData.ver2";
     }

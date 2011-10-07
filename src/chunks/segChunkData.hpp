@@ -13,7 +13,7 @@ namespace segchunk {
 class dataFactory {
 public:
     static dataInterface* Produce(segmentation* vol, segChunk* chunk,
-                                  const om::chunkCoord& coord)
+                                  const coords::chunkCoord& coord)
     {
         switch(vol->getVolDataType().index()){
         case OmVolDataType::INT8:

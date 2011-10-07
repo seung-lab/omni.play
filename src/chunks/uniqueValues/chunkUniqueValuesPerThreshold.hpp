@@ -5,7 +5,7 @@
 #include "chunks/segChunkDataInterface.hpp"
 #include "chunks/uniqueValues/chunkUniqueValuesTypes.h"
 #include "common/om.hpp"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "utility/image/omImage.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "volume/segmentation.h"
@@ -14,9 +14,9 @@
 class chunkUniqueValuesPerThreshold {
 private:
     segmentation *const segmentation_;
-    const om::chunkCoord coord_;
+    const coords::chunkCoord coord_;
     const double threshold_;
-    const QString fnp_;
+    const std::string fnp_;
 
     om::shared_ptr<uint32_t> values_;
     size_t numElements_;
@@ -25,7 +25,7 @@ private:
 
 public:
     chunkUniqueValuesPerThreshold(segmentation* segmentation,
-                                    const om::chunkCoord& coord,
+                                    const coords::chunkCoord& coord,
                                     const double threshold)
         : segmentation_(segmentation)
         , coord_(coord)
@@ -133,17 +133,17 @@ private:
         file.write(data, numBytes);
     }
 
-    QString filePath()
+    std::string filePath()
     {
-        const QString volPath = segmentation_->Folder()->GetChunkFolderPath(coord_);
+        const std::string volPath = segmentation_->Folder()->GetChunkFolderPath(coord_);
 
         if(!QDir(volPath).exists()){
             segmentation_->Folder()->MakeChunkFolderPath(coord_);
         }
 
-        const QString fullPath = QString("%1uniqeValues.%2.ver1")
+        const std::string fullPath = std::string("%1uniqeValues.%2.ver1")
             .arg(volPath)
-            .arg(QString::number(threshold_, 'f', 4));
+            .arg(std::string::number(threshold_, 'f', 4));
 
         return fullPath;
     }

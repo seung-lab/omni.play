@@ -2,6 +2,7 @@
 
 #include "common/common.h"
 #include "boost/variant.hpp"
+#include "enum/enum.hpp"
 
 namespace om {
 namespace volume {

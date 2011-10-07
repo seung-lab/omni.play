@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/debug.h"
 #include "common/omGl.h"
 #include "mesh/io/meshConvertV1toV2.hpp"
 #include "mesh/io/meshMetadata.hpp"

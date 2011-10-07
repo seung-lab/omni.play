@@ -2,7 +2,7 @@
 #include "volume/segmentation.h"
 #include "chunks/segChunkData.hpp"
 
-segChunk::segChunk(segmentation* vol, const om::chunkCoord& coord)
+segChunk::segChunk(segmentation* vol, const coords::chunkCoord& coord)
     : chunk(vol, coord)
     , vol_(vol)
     , segChunkData_(om::segchunk::dataFactory::Produce(vol, this, coord))
@@ -11,7 +11,7 @@ segChunk::segChunk(segmentation* vol, const om::chunkCoord& coord)
 segChunk::~segChunk()
 {}
 
-void segChunk::SetVoxelValue(const om::dataCoord& coord,
+void segChunk::SetVoxelValue(const coords::dataCoord& coord,
                                const uint32_t val)
 {
     assert(ContainsVoxel(coord));
@@ -25,7 +25,7 @@ void segChunk::SetVoxelValue(const om::dataCoord& coord,
     }
 }
 
-uint32_t segChunk::GetVoxelValue(const om::dataCoord& coord)
+uint32_t segChunk::GetVoxelValue(const coords::dataCoord& coord)
 {
     assert(ContainsVoxel(coord));
 

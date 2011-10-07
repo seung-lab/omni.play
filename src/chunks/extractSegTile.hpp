@@ -11,7 +11,7 @@ namespace segchunk {
 
 class OmExtractSegTile{
 public:
-    OmExtractSegTile(segmentation* vol, const om::chunkCoord& coord,
+    OmExtractSegTile(segmentation* vol, const coords::chunkCoord& coord,
                      const ViewType plane, int depth)
         : vol_(vol)
         , coord_(coord)
@@ -71,7 +71,7 @@ private:
     }
 
     segmentation *const vol_;
-    const om::chunkCoord coord_;
+    const coords::chunkCoord coord_;
     const ViewType plane_;
     const int depth_;
 };

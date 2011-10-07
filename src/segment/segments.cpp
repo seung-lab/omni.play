@@ -142,25 +142,25 @@ void segments::setSegmentSelected(segId segID,
     impl_->SegmentSelection().setSegmentSelected(segID, isSelected, addToRecentList);
 }
 
-void segments::setSegmentName(segId segID, QString name)
+void segments::setSegmentName(segId segID, std::string name)
 {
     zi::guard g(mutex_);
     impl_->setSegmentName(segID, name);
 }
 
-QString segments::getSegmentName(segId segID)
+std::string segments::getSegmentName(segId segID)
 {
     zi::guard g(mutex_);
     return impl_->getSegmentName(segID);
 }
 
-void segments::setSegmentNote(segId segID, QString note)
+void segments::setSegmentNote(segId segID, std::string note)
 {
     zi::guard g(mutex_);
     impl_->setSegmentNote(segID, note);
 }
 
-QString segments::getSegmentNote(segId segID)
+std::string segments::getSegmentNote(segId segID)
 {
     zi::guard g(mutex_);
     return impl_->getSegmentNote(segID);

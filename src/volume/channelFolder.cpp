@@ -1,31 +1,31 @@
 #include "volume/channelFolder.h"
 #include "volume/channelImpl.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 
 om::channel::folder::folder(channelImpl* vol)
     : vol_(vol)
 {}
 
-QString om::channel::folder::RelativeVolPath() const
+std::string om::channel::folder::RelativeVolPath() const
 {
-    return QString::fromStdString(str( boost::format("channels/channel%1%/")
+    return std::string::fromStdString(str( boost::format("channels/channel%1%/")
                                        % vol_->GetID()));
 }
 
-QString om::channel::folder::GetVolPath() const
+std::string om::channel::folder::GetVolPath() const
 {
-    return OmFileNames::FilesFolder()
+    return fileNames::FilesFolder()
         + QLatin1String("/")
         + RelativeVolPath();
 }
 
-QString om::channel::folder::MakeVolFolder() const
+std::string om::channel::folder::MakeVolFolder() const
 {
     static zi::rwmutex lock;
 
-    const QString fullPath = GetVolPath();
+    const std::string fullPath = GetVolPath();
 
-    OmFileNames::CreateFolder(fullPath, lock);
+    fileNames::CreateFolder(fullPath, lock);
 
     return fullPath;
 }

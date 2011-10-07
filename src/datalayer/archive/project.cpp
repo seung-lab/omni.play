@@ -3,7 +3,7 @@
 #include "datalayer/archive/segmentation.h"
 #include "common/common.h"
 #include "utility/omFileHelpers.h"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/fs/file.h"
 #include "project/project.h"
 #include "system/omPreferences.h"
 #include "project/projectImpl.hpp"
@@ -22,7 +22,7 @@ namespace om {
 namespace data {
 namespace archive {
     
-void project::Read(const QString& fnp, projectImpl* project) {
+void project::Read(const std::string& fnp, projectImpl* project) {
     using namespace YAML;
     
     std::ifstream fin(fnp.toStdString().c_str());
@@ -54,7 +54,7 @@ void project::Read(const QString& fnp, projectImpl* project) {
     postLoad();
 }
 
-void project::Write(const QString& fnp, projectImpl* project) {
+void project::Write(const std::string& fnp, projectImpl* project) {
     using namespace YAML;
     
     Emitter emitter;
@@ -67,10 +67,10 @@ void project::Write(const QString& fnp, projectImpl* project) {
     emitter << *project;
     emitter << EndDoc;
     
-    const QString fnpOld = fnp + ".old";
+    const std::string fnpOld = fnp + ".old";
     
     try {
-        OmFileHelpers::MoveFile(fnp, fnpOld);
+        fileHelpers::MoveFile(fnp, fnpOld);
     } catch(...)
     {}
     

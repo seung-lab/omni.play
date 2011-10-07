@@ -40,7 +40,7 @@ namespace om { namespace annotation { class manager; } }
 class segmentation : public mipVolume, public OmManageableObject {
 public:
     segmentation();
-    segmentation(OmID id);
+    segmentation(common::id id);
     virtual ~segmentation();
 
     std::string GetName();
@@ -57,7 +57,7 @@ public:
         return SEGMENTATION;
     }
 
-    inline OmID getID() const {
+    inline common::id getID() const {
         return GetID();
     }
 
@@ -84,11 +84,11 @@ public:
 
     void BuildBlankVolume(const Vector3i & dims);
 
-    segChunk* GetChunk(const om::chunkCoord& coord);
+    segChunk* GetChunk(const coords::chunkCoord& coord);
 
-    uint32_t GetVoxelValue(const om::globalCoord &vox);
-    void SetVoxelValue(const om::globalCoord &vox, const uint32_t value);
-    bool SetVoxelValueIfSelected(const om::globalCoord &vox, const uint32_t value);
+    uint32_t GetVoxelValue(const coords::globalCoord &vox);
+    void SetVoxelValue(const coords::globalCoord &vox, const uint32_t value);
+    bool SetVoxelValueIfSelected(const coords::globalCoord &vox, const uint32_t value);
 
     void RebuildSegments();
 

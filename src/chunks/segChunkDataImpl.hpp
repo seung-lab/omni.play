@@ -8,7 +8,7 @@
 #include "utility/chunkVoxelWalker.hpp"
 #include "volume/build/omProcessSegmentationChunk.hpp"
 #include "volume/segmentation.h"
-#include "chunks/details/omPtrToChunkDataMemMapVol.h"
+#include "chunks/details/ptrToChunkDataMemMapVol.h"
 
 namespace om {
 namespace segchunk {
@@ -22,7 +22,7 @@ class dataImpl : public dataInterface {
 private:
     segmentation *const vol_;
     segChunk *const chunk_;
-    const om::chunkCoord coord_;
+    const coords::chunkCoord coord_;
 
     ptrToChunkDataBase *const ptrToChunkData_;
 
@@ -30,7 +30,7 @@ private:
     const int elementsPerSlice_;
 
 public:
-    dataImpl(segmentation* vol, segChunk* chunk, const om::chunkCoord& coord)
+    dataImpl(segmentation* vol, segChunk* chunk, const coords::chunkCoord& coord)
         : vol_(vol)
         , chunk_(chunk)
         , coord_(coord)
@@ -88,7 +88,7 @@ public:
         }
     }
 
-    uint32_t SetVoxelValue(const om::dataCoord& voxel, const uint32_t val)
+    uint32_t SetVoxelValue(const coords::dataCoord& voxel, const uint32_t val)
     {
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();
@@ -101,7 +101,7 @@ public:
         return oldVal;
     }
 
-    uint32_t GetVoxelValue(const om::dataCoord& voxel)
+    uint32_t GetVoxelValue(const coords::dataCoord& voxel)
     {
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();

@@ -20,13 +20,13 @@ public:
         : chunks_(new cont_t(segmentation))
     {}
 
-    ChunkUniqueValues Values(const om::chunkCoord& coord, const double threshold)
+    ChunkUniqueValues Values(const coords::chunkCoord& coord, const double threshold)
     {
         thresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
         return thresholdsInChunk->Get(threshold)->Values();
     }
 
-    ChunkUniqueValues RereadChunk(const om::chunkCoord& coord, const double threshold)
+    ChunkUniqueValues RereadChunk(const coords::chunkCoord& coord, const double threshold)
     {
         thresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
         return thresholdsInChunk->Get(threshold)->RereadChunk();

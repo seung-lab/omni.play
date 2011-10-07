@@ -132,8 +132,8 @@ public:
         return OmVolumeTypeHelpers::GetTypeAsString(getVolDataType());
     }
 
-    QString getTypeAsQString(){
-        return QString::fromStdString(getTypeAsString());
+    std::string getTypeAsstd::string(){
+        return std::string::fromStdString(getTypeAsString());
     }
 
     OmVolDataType getVolDataType(){

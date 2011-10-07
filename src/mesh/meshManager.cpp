@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/debug.h"
 #include "mesh/io/meshConvertV1toV2.hpp"
 #include "mesh/io/meshMetadata.hpp"
 #include "mesh/iomeshFilePtrCache.hpp"
@@ -23,9 +23,9 @@ meshManager::~meshManager()
 
 void meshManager::Create()
 {
-    const QString path = segmentation_->Folder()->GetMeshThresholdFolderPath(threshold_);
+    const std::string path = segmentation_->Folder()->GetMeshThresholdFolderPath(threshold_);
 
-    OmFileHelpers::RemoveDir(path);
+    fileHelpers::RemoveDir(path);
 
     segmentation_->Folder()->MakeMeshThresholdFolderPath(threshold_);
 }

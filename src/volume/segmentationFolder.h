@@ -3,7 +3,7 @@
 class segmentation;
 
 #include "common/common.h"
-#include <QString>
+
 
 namespace om {
 namespace segmentation {
@@ -15,31 +15,31 @@ private:
 public:
     folder(segmentation* vol);
 
-    QString GetVolPath();
-    QString MakeVolFolder();
+    std::string GetVolPath();
+    std::string MakeVolFolder();
 
     std::string GetVolSegmentsPathAbs();
     std::string GetVolSegmentsPathAbs(const std::string& subFolder);
 
-    QString RelativeVolPath();
+    std::string RelativeVolPath();
 
-    QString GetMeshChunkFolderPath(const double threshold,
-                                   const om::chunkCoord& coord);
+    std::string GetMeshChunkFolderPath(const double threshold,
+                                   const coords::chunkCoord& coord);
 
-    QString MakeMeshChunkFolderPath(const double threshold,
-                                    const om::chunkCoord& coord);
-    QString GetMeshFolderPath();
-    QString MakeMeshFolderPath();
-    QString GetMeshThresholdFolderPath(const double threshold);
-    QString MakeMeshThresholdFolderPath(const double threshold);
-    QString MeshMetadataFileOld();
-    QString MeshMetadataFilePerThreshold(const double threshold);
-    QString GetChunksFolder();
-    QString GetChunkFolderPath(const om::chunkCoord& coord);
-    QString MakeChunkFolderPath(const om::chunkCoord& coord);
+    std::string MakeMeshChunkFolderPath(const double threshold,
+                                    const coords::chunkCoord& coord);
+    std::string GetMeshFolderPath();
+    std::string MakeMeshFolderPath();
+    std::string GetMeshThresholdFolderPath(const double threshold);
+    std::string MakeMeshThresholdFolderPath(const double threshold);
+    std::string MeshMetadataFileOld();
+    std::string MeshMetadataFilePerThreshold(const double threshold);
+    std::string GetChunksFolder();
+    std::string GetChunkFolderPath(const coords::chunkCoord& coord);
+    std::string MakeChunkFolderPath(const coords::chunkCoord& coord);
 
-    QString AnnotationFile();
-    QString LongRangeConnectionFile();
+    std::string AnnotationFile();
+    std::string LongRangeConnectionFile();
 
     void MakeUserSegmentsFolder();
 };

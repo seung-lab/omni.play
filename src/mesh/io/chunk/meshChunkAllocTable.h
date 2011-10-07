@@ -1,6 +1,6 @@
 #pragma once
 
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "mesh/iochunk/memMappedAllocFile.hpp"
 #include "utility/omLockedObjects.h"
 
@@ -17,7 +17,7 @@ private:
 public:
     meshChunkAllocTableV2(meshFilePtrCache* filePtrCache,
                             segmentation* seg,
-                            const om::chunkCoord& coord,
+                            const coords::chunkCoord& coord,
                             const double threshold)
         : filePtrCache_(filePtrCache)
         , file_(new memMappedAllocFile(seg, coord, threshold))

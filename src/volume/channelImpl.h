@@ -1,30 +1,24 @@
 #pragma once
 
-/*
- * channel is the MIP data structure for a raw data volume
- *
- * Brett Warne - bwarne@mit.edu - 2/6/09
- */
-
-#include "common/omStd.h"
-#include "system/omManageableObject.h"
-#include "volume/omFilter2dManager.h"
+#include "common/std.h"
+#include "common/manageableObject.hpp"
 #include "volume/mipVolume.h"
 
-class tileCacheChannel;
 class volumeData;
-template <typename,typename> class chunkCache;
 
 namespace om { namespace channel { class folder; } }
 
-class channelImpl : public mipVolume, public OmManageableObject {
+namespace om {
+namespace volume {
+
+class channelImpl : public volume, public common::manageableObject {
 
 public:
     channelImpl();
-    channelImpl(OmID id);
+    channelImpl(common::id id);
     virtual ~channelImpl();
 
-    virtual QString GetDefaultHDF5DatasetName() = 0;
+    virtual std::string GetDefaultHDF5DatasetName() = 0;
 
     volumeData* VolData() {
         return volData_.get();
@@ -39,11 +33,11 @@ public:
     bool LoadVolDataIfFoldersExist();
     void UpdateFromVolResize();
 
-    ObjectType getVolumeType() const {
-        return CHANNEL;
+    common::objectType getVolumeType() const {
+        return common::CHANNEL;
     }
 
-    OmID getID() const {
+    common::id getID() const {
         return GetID();
     }
 
@@ -52,25 +46,9 @@ public:
 
     void CloseDownThreads();
 
-    OmFilter2dManager& FilterManager(){
-        return filterManager_;
-    }
-
     void SetVolDataType(const OmVolDataType);
 
-    chunk* GetChunk(const om::chunkCoord& coord);
-
-    inline std::vector<OmFilter2d*> GetFilters() const {
-        return filterManager_.GetFilters();
-    }
-
-    chunkCache<channelImpl, chunk>* ChunkCache(){
-        return chunkCache_.get();
-    }
-
-    inline tileCacheChannel* TileCache(){
-        return tileCache_.get();
-    }
+    chunk* GetChunk(const coords::chunkCoord& coord);
 
     inline om::channel::folder* Folder() const {
         return folder_.get();
@@ -82,14 +60,8 @@ protected:
     channelImpl& operator= (const channelImpl&);
 
     boost::scoped_ptr<om::channel::folder> folder_;
-    boost::scoped_ptr<chunkCache<channelImpl, chunk> > chunkCache_;
-    boost::scoped_ptr<volumeData> volData_;
-    boost::scoped_ptr<tileCacheChannel> tileCache_;
-
-    OmFilter2dManager filterManager_;
-
-private:
-    friend class channelImplChunkBuildTask;
-    friend class dataArchiveProjectImpl;
+    boost::scoped_ptr<volumeData> volData_;   
 };
 
+} // namespace volume
+} // namespace om

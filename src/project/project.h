@@ -25,16 +25,16 @@ private:
 
 public:
     //project IO
-    static QString New(const QString& fileNameAndPath);
-    static void Load(const QString& fileNameAndPath, QWidget* guiParent = NULL);
+    static std::string New(const std::string& fileNameAndPath);
+    static void Load(const std::string& fileNameAndPath, QWidget* guiParent = NULL);
     static void Save();
     static void Close();
 
     static bool IsReadOnly();
     static bool IsOpen();
 
-    static const QString& FilesFolder();
-    static const QString& OmniFile();
+    static const std::string& FilesFolder();
+    static const std::string& OmniFile();
 
     static bool HasOldHDF5();
     static OmHdf5* OldHDF5();

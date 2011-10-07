@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/debug.h"
 #include "project/projectGlobals.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"

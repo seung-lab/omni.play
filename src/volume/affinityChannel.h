@@ -21,7 +21,7 @@ public:
 		return chan_;
 	}
 
-	virtual QString GetDefaultHDF5DatasetName(){
+	virtual std::string GetDefaultHDF5DatasetName(){
 		return "affGraphSingle";
 	}
 };

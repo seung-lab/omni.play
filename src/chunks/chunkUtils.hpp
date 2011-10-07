@@ -48,9 +48,9 @@ public:
                     const int lenX = x ? 1 : 128;
 
                     //form mip coord
-                    const om::chunkCoord& currentCoord = chunk->GetCoordinate();
+                    const coords::chunkCoord& currentCoord = chunk->GetCoordinate();
 
-                    const om::chunkCoord mip_coord(currentCoord.getLevel(),
+                    const coords::chunkCoord mip_coord(currentCoord.getLevel(),
                                                    currentCoord.X() + x,
                                                    currentCoord.Y() + y,
                                                    currentCoord.Z() + z);
@@ -78,12 +78,12 @@ public:
         return retImage;
     }
 
-    static void RefindUniqueChunkValues(const OmID segmentationID_)
+    static void RefindUniqueChunkValues(const common::id segmentationID_)
     {
         SegmentationDataWrapper sdw(segmentationID_);
         segmentation& vol = sdw.GetSegmentation();
 
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<coords::chunkCoord> > coordsPtr =
             vol.GetMipChunkCoords();
 
         const uint32_t numChunks = coordsPtr->size();
@@ -92,7 +92,7 @@ public:
 
         FOR_EACH(iter, *coordsPtr)
         {
-            const om::chunkCoord& coord = *iter;
+            const coords::chunkCoord& coord = *iter;
 
             ++counter;
             printf("\rfinding values in chunk %d of %d...", counter, numChunks);

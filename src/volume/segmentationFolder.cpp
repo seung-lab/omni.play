@@ -2,8 +2,8 @@
 #include "volume/segmentation.h"
 #include "project/project.h"
 #include "project/projectGlobals.h"
-#include "users/omUsers.h"
-#include "datalayer/fs/omFileNames.hpp"
+
+#include "datalayer/fs/fileNames.hpp"
 
 om::segmentation::folder::folder(segmentation* vol)
     : vol_(vol)
@@ -23,24 +23,24 @@ std::string om::segmentation::folder::GetVolSegmentsPathAbs(const std::string& s
                 % subFile);
 }
 
-QString om::segmentation::folder::RelativeVolPath()
+std::string om::segmentation::folder::RelativeVolPath()
 {
-    return QString::fromStdString(str( boost::format("segmentations/segmentation%1%/")
+    return std::string::fromStdString(str( boost::format("segmentations/segmentation%1%/")
                                        % vol_->GetID()));
 }
 
-QString om::segmentation::folder::GetVolPath(){
-    return OmFileNames::FilesFolder() + QLatin1String("/") + RelativeVolPath();
+std::string om::segmentation::folder::GetVolPath(){
+    return fileNames::FilesFolder() + QLatin1String("/") + RelativeVolPath();
 }
 
-QString om::segmentation::folder::GetMeshChunkFolderPath(const double threshold,
-                                                         const om::chunkCoord& coord)
+std::string om::segmentation::folder::GetMeshChunkFolderPath(const double threshold,
+                                                         const coords::chunkCoord& coord)
 {
     const QDir filesDir(GetVolPath());
 
-    const QString subPath =
-        QString("/meshes/%1/%2/%3/%4/%5/")
-        .arg(QString::number(threshold, 'f', 4))
+    const std::string subPath =
+        std::string("/meshes/%1/%2/%3/%4/%5/")
+        .arg(std::string::number(threshold, 'f', 4))
         .arg(coord.getLevel())
         .arg(coord.X())
         .arg(coord.Y())
@@ -49,73 +49,73 @@ QString om::segmentation::folder::GetMeshChunkFolderPath(const double threshold,
     return filesDir.absolutePath() + subPath;
 }
 
-QString om::segmentation::folder::MakeMeshChunkFolderPath(const double threshold,
-                                                          const om::chunkCoord& coord)
+std::string om::segmentation::folder::MakeMeshChunkFolderPath(const double threshold,
+                                                          const coords::chunkCoord& coord)
 {
     static zi::rwmutex lock;
 
-    const QString fullPath = GetMeshChunkFolderPath(threshold, coord);
+    const std::string fullPath = GetMeshChunkFolderPath(threshold, coord);
 
-    OmFileNames::CreateFolder(fullPath, lock);
+    fileNames::CreateFolder(fullPath, lock);
 
     return fullPath;
 }
 
-QString om::segmentation::folder::GetMeshFolderPath()
+std::string om::segmentation::folder::GetMeshFolderPath()
 {
     const QDir filesDir(GetVolPath());
     return filesDir.absolutePath() + QLatin1String("/meshes/");
 }
 
-QString om::segmentation::folder::MakeMeshFolderPath()
+std::string om::segmentation::folder::MakeMeshFolderPath()
 {
     static zi::rwmutex lock;
 
-    const QString fullPath = GetMeshFolderPath();
-    OmFileNames::CreateFolder(fullPath, lock);
+    const std::string fullPath = GetMeshFolderPath();
+    fileNames::CreateFolder(fullPath, lock);
     return fullPath;
 }
 
-QString om::segmentation::folder::GetMeshThresholdFolderPath(const double threshold)
+std::string om::segmentation::folder::GetMeshThresholdFolderPath(const double threshold)
 {
     const QDir filesDir(GetVolPath());
 
-    const QString subPath =
-        QString("/meshes/%1/")
-        .arg(QString::number(threshold, 'f', 4));
+    const std::string subPath =
+        std::string("/meshes/%1/")
+        .arg(std::string::number(threshold, 'f', 4));
 
     return filesDir.absolutePath() + subPath;
 }
 
-QString om::segmentation::folder::MakeMeshThresholdFolderPath(const double threshold)
+std::string om::segmentation::folder::MakeMeshThresholdFolderPath(const double threshold)
 {
     static zi::rwmutex lock;
 
-    const QString fullPath = GetMeshThresholdFolderPath(threshold);
-    OmFileNames::CreateFolder(fullPath, lock);
+    const std::string fullPath = GetMeshThresholdFolderPath(threshold);
+    fileNames::CreateFolder(fullPath, lock);
     return fullPath;
 }
 
-QString om::segmentation::folder::MeshMetadataFileOld(){
+std::string om::segmentation::folder::MeshMetadataFileOld(){
     return MakeMeshFolderPath() + "meshMetadata.ver1";
 }
 
-QString om::segmentation::folder::MeshMetadataFilePerThreshold(const double threshold){
+std::string om::segmentation::folder::MeshMetadataFilePerThreshold(const double threshold){
     return MakeMeshThresholdFolderPath(threshold) + "meshMetadata.ver1";
 }
 
-QString om::segmentation::folder::GetChunksFolder()
+std::string om::segmentation::folder::GetChunksFolder()
 {
     const QDir filesDir(GetVolPath());
     return filesDir.absolutePath() + QLatin1String("/chunks/");
 }
 
-QString om::segmentation::folder::GetChunkFolderPath(const om::chunkCoord& coord)
+std::string om::segmentation::folder::GetChunkFolderPath(const coords::chunkCoord& coord)
 {
     const QDir filesDir(GetVolPath());
 
-    const QString subPath =
-        QString("/chunks/%1/%2/%3/%4/")
+    const std::string subPath =
+        std::string("/chunks/%1/%2/%3/%4/")
         .arg(coord.getLevel())
         .arg(coord.X())
         .arg(coord.Y())
@@ -124,31 +124,31 @@ QString om::segmentation::folder::GetChunkFolderPath(const om::chunkCoord& coord
     return filesDir.absolutePath() + subPath;
 }
 
-QString om::segmentation::folder::MakeChunkFolderPath(const om::chunkCoord& coord)
+std::string om::segmentation::folder::MakeChunkFolderPath(const coords::chunkCoord& coord)
 {
     static zi::rwmutex lock;
 
-    const QString fullPath = GetChunkFolderPath(coord);
+    const std::string fullPath = GetChunkFolderPath(coord);
 
-    OmFileNames::CreateFolder(fullPath, lock);
+    fileNames::CreateFolder(fullPath, lock);
 
     return fullPath;
 }
 
-QString om::segmentation::folder::MakeVolFolder()
+std::string om::segmentation::folder::MakeVolFolder()
 {
     static zi::rwmutex lock;
 
-    const QString fullPath = GetVolPath();
+    const std::string fullPath = GetVolPath();
 
-    OmFileNames::CreateFolder(fullPath, lock);
+    fileNames::CreateFolder(fullPath, lock);
 
     return fullPath;
 }
 
-QString om::segmentation::folder::AnnotationFile()
+std::string om::segmentation::folder::AnnotationFile()
 {
-    return QString::fromStdString(
+    return std::string::fromStdString(
         str( boost::format("%1%/segmentations/segmentation%2%/annotations.yml")
              % project::Globals().Users().UsersFolder()
              % vol_->GetID())
@@ -156,12 +156,12 @@ QString om::segmentation::folder::AnnotationFile()
 }
 
 void om::segmentation::folder::MakeUserSegmentsFolder(){
-    OmFileHelpers::MkDir(GetVolSegmentsPathAbs());
+    fileHelpers::MkDir(GetVolSegmentsPathAbs());
 }
 
-QString om::segmentation::folder::LongRangeConnectionFile()
+std::string om::segmentation::folder::LongRangeConnectionFile()
 {
-    return QString::fromStdString(
+    return std::string::fromStdString(
         str( boost::format("%1%/segmentations/segmentation%2%/LongRangeConnections.txt")
              % project::Globals().Users().UsersFolder()
              % vol_->GetID())

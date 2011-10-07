@@ -12,7 +12,7 @@ namespace chunk {
 class dataFactory {
 public:
     template <typename VOL>
-    static dataInterface* Produce(VOL* vol, const om::chunkCoord& coord)
+    static dataInterface* Produce(VOL* vol, const coords::chunkCoord& coord)
     {
         switch(vol->getVolDataType().index()){
         case OmVolDataType::INT8:

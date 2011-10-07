@@ -2,13 +2,13 @@
 
 #include "volume/segmentation.h"
 #include "volume/segmentationFolder.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/fileNames.hpp"
 
 class meshMetadata {
 private:
     segmentation *const segmentation_;
     const double threshold_;
-    const QString fnp_;
+    const std::string fnp_;
 
     int fileVersion_;
 
@@ -68,7 +68,7 @@ public:
     }
 
 private:
-    QString filePath(){
+    std::string filePath(){
         return segmentation_->Folder()->MeshMetadataFilePerThreshold(threshold_);
     }
 
