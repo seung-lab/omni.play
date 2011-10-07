@@ -4,8 +4,6 @@
 #include "common/colors.h"
 #include "yaml-cpp/yaml.h"
 
-class QString;
-
 namespace YAML {
 
 inline Emitter& operator<<(Emitter& out, const om::common::color& c)

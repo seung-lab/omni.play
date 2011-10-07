@@ -7,7 +7,10 @@
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/variate_generator.hpp>
 
-class OmRand : private om::singletonBase<OmRand> {
+namespace om {
+namespace utility {
+
+class rand : private om::singletonBase<rand> {
 private:
     boost::mt19937 gen_;
 
@@ -26,10 +29,12 @@ public:
     }
 
 private:
-    OmRand()
+    rand()
         : gen_(boost::mt19937(std::time(0)))
     {}
 
-    friend class zi::singleton<OmRand>;
+    friend class zi::singleton<rand>;
 };
 
+} // namespace utility
+} // namespace om

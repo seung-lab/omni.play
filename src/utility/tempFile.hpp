@@ -2,7 +2,7 @@
 
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
-#include "utility/omUUID.hpp"
+#include "utility/UUID.hpp"
 
 /**
  * Auto-open a temporary, mem-mappable file;
@@ -11,10 +11,13 @@
  * Michael Purcaro (Feb 2011)
  */
 
+namespace om {
+namespace utility {
+
 template <class T>
 class OmTempFile {
 private:
-    const OmUUID uuid_;
+    const UUID uuid_;
     const std::string fnp_;
 
     boost::scoped_ptr<QFile> file_;
@@ -22,12 +25,12 @@ private:
 
 public:
     OmTempFile()
-        : uuid_(OmUUID())
+        : uuid_(UUID())
         , fnp_(makeFileName())
         , data_(NULL)
     {
         if(om::file::exists(fnp_)){ // should be VERY unlikely
-            throw OmIoException("unique file already found");
+            throw ioException("unique file already found");
         }
 
         // race here is possible, if VERY, VERY unlikely...
@@ -67,3 +70,5 @@ private:
     }
 };
 
+} // namespace utility
+} // namespace om

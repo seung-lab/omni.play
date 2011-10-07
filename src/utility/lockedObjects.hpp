@@ -13,6 +13,9 @@
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/tr1/unordered_set.hpp>
 
+namespace om {
+namespace utility {
+
 template <typename VAL>
 class LockedVector{
 public:
@@ -220,11 +223,11 @@ public:
         mmap_.clear();
     }
 
-    om::shared_ptr<valsCont> removeKey(const KEY& key)
+    boost::shared_ptr<valsCont> removeKey(const KEY& key)
     {
         zi::guard g(mutex_);
 
-        om::shared_ptr<valsCont> vals =
+        boost::shared_ptr<valsCont> vals =
             om::make_shared<valsCont>();
 
         std::pair<KViterator, KViterator> found =
@@ -244,3 +247,5 @@ private:
     zi::spinlock mutex_;
 };
 
+} // namespace utility
+} // namespace om

@@ -1,0 +1,1473 @@
+
+src/common/colors.cpp,198
+namespace om 3,28
+namespace common om::common4,43
+std::ostream& operator<<(om::common::operator<<6,71
+std::ostream& operator<<(15,261
+bool operator<(25,487
+bool operator==(operator==38,697
+
+src/common/colors.h,286
+struct color 11,97
+    uint8_t red;12,112
+    uint8_t green;13,129
+    uint8_t blue;14,148
+struct colorARGB 20,328
+    uint8_t alpha;colorARGB::alpha21,347
+    uint8_t red;colorARGB::red22,366
+    uint8_t green;colorARGB::green23,383
+    uint8_t blue;colorARGB::blue24,402
+
+src/common/common.cpp,174
+namespace om 5,76
+namespace common om::common6,91
+std::ostream& operator<<(om::common::operator<<8,111
+std::ostream& operator<<(16,283
+std::ostream& operator<<(26,470
+
+src/common/common.h,2951
+    enum viewType 13,182
+    enum viewType { XY_VIEW,13,182
+    enum viewType { XY_VIEW, XZ_VIEW,13,182
+    enum viewType { XY_VIEW, XZ_VIEW, ZY_VIEW 13,182
+namespace om 20,369
+namespace common om::common21,384
+typedef uint32_t id;om::common::id27,444
+typedef boost::unordered_set< id > idSet;om::common::idSet28,465
+typedef unsigned int bitfield;om::common::bitfield31,520
+enum objectType om::common::objectType37,573
+enum objectType { CHANNEL,om::common::objectType::CHANNEL37,573
+enum objectType { CHANNEL, SEGMENTATION om::common::objectType::SEGMENTATION37,573
+typedef uint32_t segID;om::common::segID42,644
+typedef std::deque<segID> segIdList;om::common::segIdList43,668
+typedef uint32_t pageNum;om::common::pageNum44,705
+typedef std::set<segment*> segPtrSet;om::common::segPtrSet47,747
+typedef std::set<segID> segIdSet;om::common::segIdSet48,785
+typedef uint32_t groupId;om::common::groupId54,910
+typedef std::string groupName;om::common::groupName55,936
+typedef boost::unordered_set<groupId> groupIdSet;om::common::groupIdSet56,967
+enum segmentColorCacheType om::common::segmentColorCacheType61,1046
+enum segmentColorCacheType { SCC_FILTER_BLACK_BRIGHTEN_SELECT om::common::segmentColorCacheType::SCC_FILTER_BLACK_BRIGHTEN_SELECT61,1046
+                             SCC_FILTER_COLOR_BRIGHTEN_SELECT,om::common::segmentColorCacheType::SCC_FILTER_COLOR_BRIGHTEN_SELECT62,1113
+                             SCC_FILTER_BREAK,om::common::segmentColorCacheType::SCC_FILTER_BREAK63,1176
+                             SCC_FILTER_VALID,om::common::segmentColorCacheType::SCC_FILTER_VALID64,1223
+                             SCC_FILTER_VALID_BLACK,om::common::segmentColorCacheType::SCC_FILTER_VALID_BLACK65,1270
+                             SCC_SEGMENTATION,om::common::segmentColorCacheType::SCC_SEGMENTATION66,1323
+                             SCC_SEGMENTATION_BREAK_BLACK,om::common::segmentColorCacheType::SCC_SEGMENTATION_BREAK_BLACK67,1370
+                             SCC_SEGMENTATION_BREAK_COLOR,om::common::segmentColorCacheType::SCC_SEGMENTATION_BREAK_COLOR68,1429
+                             SCC_SEGMENTATION_VALID,om::common::segmentColorCacheType::SCC_SEGMENTATION_VALID69,1488
+                             SCC_SEGMENTATION_VALID_BLACK,om::common::segmentColorCacheType::SCC_SEGMENTATION_VALID_BLACK70,1541
+                             SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT,om::common::segmentColorCacheType::SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT71,1600
+                             SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT,om::common::segmentColorCacheType::SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT72,1668
+                             SCC_NUMBER_OF_ENUMS om::common::segmentColorCacheType::SCC_NUMBER_OF_ENUMS73,1736
+enum cacheGroup om::common::cacheGroup78,1816
+    MESH_CACHE om::common::cacheGroup::MESH_CACHE79,1834
+    TILE_CACHEom::common::cacheGroup::TILE_CACHE80,1854
+
+src/common/container.hpp,211
+namespace om 8,113
+namespace container om::container9,128
+using zi::containers::clear;om::container::zi::containers::clear11,151
+void eraseRemove(om::container::eraseRemove14,203
+void clearPtrVec(19,338
+
+src/common/debug.h,64
+#define debugs(5,41
+#define debug(6,75
+#define DEBUGV3(8,145
+
+src/common/enums.hpp,2054
+namespace om 3,14
+namespace common om::common4,29
+enum ZeroMem om::common::ZeroMem6,49
+    ZERO_FILL,om::common::ZeroMem::ZERO_FILL7,64
+    DONT_ZERO_FILLom::common::ZeroMem::DONT_ZERO_FILL8,79
+enum Blocking 10,101
+    BLOCKING,Blocking::BLOCKING11,117
+    NON_BLOCKINGBlocking::NON_BLOCKING12,131
+enum ShouldUpdateAsType{ShouldUpdateAsType14,151
+    UPDATE_AS_TYPE,ShouldUpdateAsType::UPDATE_AS_TYPE15,176
+    DONT_UPDATE_AS_TYPEShouldUpdateAsType::DONT_UPDATE_AS_TYPE16,196
+enum SetValid{SetValid18,223
+    SET_VALID,SetValid::SET_VALID19,238
+    SET_NOT_VALIDSetValid::SET_NOT_VALID20,253
+enum ShouldThrottle 22,274
+    THROTTLE,ShouldThrottle::THROTTLE23,296
+    DONT_THROTTLEShouldThrottle::DONT_THROTTLE24,310
+enum ShouldFifo 26,331
+    FIFO,ShouldFifo::FIFO27,349
+    DONT_FIFOShouldFifo::DONT_FIFO28,359
+enum AffinityGraph 30,376
+    NO_AFFINITY,AffinityGraph::NO_AFFINITY31,397
+    X_AFFINITY,AffinityGraph::X_AFFINITY32,414
+    Y_AFFINITY,AffinityGraph::Y_AFFINITY33,430
+    Z_AFFINITYAffinityGraph::Z_AFFINITY34,446
+enum ShouldBufferWrites 36,464
+    BUFFER_WRITES,ShouldBufferWrites::BUFFER_WRITES37,490
+    DONT_BUFFER_WRITESShouldBufferWrites::DONT_BUFFER_WRITES38,509
+enum AllowOverwrite 40,535
+    WRITE_ONCE,AllowOverwrite::WRITE_ONCE41,557
+    OVERWRITEAllowOverwrite::OVERWRITE42,573
+enum AddOrSubtract 44,590
+    ADD,AddOrSubtract::ADD45,611
+    SUBTRACTAddOrSubtract::SUBTRACT46,620
+enum ShouldForce 48,636
+    FORCE,ShouldForce::FORCE49,655
+    DONT_FORCEShouldForce::DONT_FORCE50,666
+enum Direction 52,684
+    LEFT,Direction::LEFT53,701
+    RIGHT,Direction::RIGHT54,711
+    UP,Direction::UP55,722
+    DOWNDirection::DOWN56,730
+enum Safe 58,742
+    SAFE,Safe::SAFE59,754
+    NOT_SAFESafe::NOT_SAFE60,764
+enum ReadOrReread 62,780
+    READ,ReadOrReread::READ63,800
+    REREADReadOrReread::REREAD64,810
+enum SegListType 68,918
+    WORKING SegListType::WORKING69,937
+    VALID SegListType::VALID70,954
+    UNCERTAIN SegListType::UNCERTAIN71,969
+
+src/common/exception.h,780
+class exception 21,346
+    exception(23,396
+    virtual ~exception(28,525
+    virtual const char* what(30,562
+    const std::string fullMessage_;exception::fullMessage_36,668
+class accessException 39,708
+    accessException(accessException::accessException41,759
+class argException 45,855
+    argException(argException::argException47,903
+class formatException 51,993
+    formatException(formatException::formatException53,1044
+class ioException 57,1140
+    ioException(ioException::ioException59,1187
+    ioException(ioException::ioException62,1280
+class modificationException 67,1371
+    modificationException(modificationException::modificationException69,1428
+class verifyException 73,1536
+    verifyException(verifyException::verifyException75,1587
+
+src/common/gl.cpp,539
+#define OM_GL_UTILITY_H9,122
+#define SELEC_BUFF_SIZE 15,207
+namespace om 17,237
+namespace common om::common18,252
+static GLuint selectBuf[om::common::selectBuf20,272
+#define PICKING_WINDOW_DIM 32,493
+void startPicking(om::common::startPicking35,571
+int stopPicking(59,1262
+void processHits(83,1713
+int unprojectPixel(121,2608
+void pushGlState(151,3424
+void popGlState(160,3591
+static void drawBox(171,3801
+void omglWireCube(211,4862
+void omglSolidCube(216,4933
+void glDrawAxis(224,5074
+void glDrawPositiveAxis(263,5977
+
+src/common/gl.h,156
+#define OM_GL_H9,114
+#define GL_GLEXT_PROTOTYPES13,149
+inline void glTranslatefv(56,1091
+inline void glScalefv(60,1174
+inline void glColor3fva(64,1249
+
+src/common/math.hpp,212
+namespace om 3,14
+namespace math om::math4,29
+inline uint32_t pow2int(44,561
+inline T roundDown(52,724
+inline T roundUp(59,877
+inline float symmetricalRound(67,1098
+inline double symmetricalRound(71,1202
+
+src/common/set.hpp,234
+namespace om{om6,79
+namespace set{om::set7,93
+inline bool SetAContainsB(om::set::SetAContainsB10,131
+inline bool SetsAreDisjoint(21,403
+inline void merge(32,685
+inline void mergeBintoA(41,932
+inline void mergeBintoA(49,1075
+
+src/common/std.h,24
+#define OM_STD_H10,171
+
+src/common/stoppable.h,23
+struct stoppable 6,49
+
+src/common/string.hpp,316
+namespace om 13,299
+namespace string om::string14,314
+inline void downcase(om::string::downcase16,334
+inline bool startsWith(20,403
+static std::string num(25,547
+static T toNum(30,660
+static std::string join(36,865
+inline static std::string humanizeNum(45,1098
+inline static std::string bytesToMB(67,1562
+
+src/coordinates/chunkCoord.cpp,805
+namespace om 6,74
+namespace coords om::coords7,89
+chunkCoord::chunkCoord(om::coords::chunkCoord::chunkCoord14,233
+chunkCoord::chunkCoord(20,318
+chunkCoord::chunkCoord(29,538
+std::string chunkCoord::getCoordsAsString(38,749
+chunkCoord chunkCoord::ParentCoord(52,1084
+chunkCoord chunkCoord::PrimarySiblingCoord(66,1523
+void chunkCoord::SiblingCoords(76,1840
+chunkCoord chunkCoord::PrimaryChildCoord(111,3115
+void chunkCoord::ChildrenCoords(117,3317
+dataCoord chunkCoord::toDataCoord(125,3505
+dataBbox chunkCoord::chunkBoundingBox(129,3649
+void chunkCoord::operator=(chunkCoord::operator=139,3919
+bool chunkCoord::operator==(chunkCoord::operator==145,4031
+bool chunkCoord::operator!=(chunkCoord::operator!=150,4159
+bool chunkCoord::operator<(164,4397
+std::ostream& operator<<(173,4574
+
+src/coordinates/chunkCoord.h,443
+using namespace vmml;11,271
+class chunkCoord 22,404
+    chunkCoord(25,432
+    chunkCoord(26,450
+    chunkCoord(27,489
+    inline bool IsLeaf(chunkCoord::IsLeaf34,634
+    inline int getLevel(chunkCoord::getLevel46,976
+    inline int X(chunkCoord::X49,1038
+    inline int Y(chunkCoord::Y52,1100
+    inline int Z(chunkCoord::Z55,1162
+    int Level;chunkCoord::Level68,1551
+    Vector3i Coordinate;chunkCoord::Coordinate69,1566
+
+src/coordinates/coordinates.h,27
+using namespace vmml;4,41
+
+src/coordinates/dataCoord.cpp,651
+namespace om 6,87
+namespace coords om::coords7,102
+dataCoord::dataCoord(om::coords::dataCoord::dataCoord9,126
+dataCoord::dataCoord(19,373
+globalCoord dataCoord::toGlobalCoord(30,626
+normCoord dataCoord::toNormCoord(37,807
+chunkCoord dataCoord::toChunkCoord(42,899
+Vector3i dataCoord::toChunkVec(47,1017
+int dataCoord::toChunkOffset(53,1166
+int dataCoord::toTileOffset 60,1382
+dataCoord dataCoord::atDifferentLevel(78,1798
+dataBbox::dataBbox(92,2169
+dataBbox::dataBbox(106,2553
+dataBbox::dataBbox(112,2667
+globalBbox dataBbox::toGlobalBbox(119,2809
+normBbox dataBbox::toNormBbox(123,2931
+dataBbox dataBbox::atDifferentLevel(129,3044
+
+src/coordinates/dataCoord.h,1465
+using namespace vmml;4,41
+namespace om 8,84
+namespace coords om::coords9,99
+class dataCoord om::coords::dataCoord18,228
+    typedef Vector3i base_t;om::coords::dataCoord::base_t21,279
+    const volumeSystem *vol_;om::coords::dataCoord::vol_22,308
+    const int mipLevel_;om::coords::dataCoord::mipLevel_23,338
+    inline int level(om::coords::dataCoord::level36,752
+    inline volumeSystem const * volume(om::coords::dataCoord::volume42,868
+    dataCoord operator+(om::coords::dataCoord::operator+46,949
+    dataCoord operator*(om::coords::dataCoord::operator*50,1075
+    dataCoord operator/(om::coords::dataCoord::operator/54,1206
+    dataCoord operator/(om::coords::dataCoord::operator/58,1337
+class dataBbox 63,1462
+    typedef AxisAlignedBoundingBox<int> base_t;dataBbox::base_t66,1531
+    const volumeSystem * vol_;dataBbox::vol_67,1579
+    const int mipLevel_;dataBbox::mipLevel_68,1610
+    inline dataCoord getMin(dataBbox::getMin75,1812
+    inline dataCoord getMax(dataBbox::getMax79,1922
+    inline dataCoord getDimensions(dataBbox::getDimensions83,2032
+    inline dataCoord getUnitDimensions(dataBbox::getUnitDimensions87,2160
+    inline dataCoord getCenter(dataBbox::getCenter91,2292
+    inline void intersect(dataBbox::intersect95,2408
+    inline int level(dataBbox::level102,2579
+    inline volumeSystem const * volume(dataBbox::volume108,2688
+    inline dataBbox& operator=(dataBbox::operator=112,2769
+
+src/coordinates/globalCoord.cpp,445
+namespace om 3,28
+namespace coords om::coords4,43
+screenCoord globalCoord::toScreenCoord(om::coords::globalCoord::toScreenCoord6,63
+dataCoord globalCoord::toDataCoord(13,312
+chunkCoord globalCoord::toChunkCoord(20,552
+normCoord globalCoord::toNormCoord(26,694
+globalCoord globalCoord::fromOffsetCoords(33,902
+Vector3i globalCoord::withAbsOffset(38,1040
+normBbox globalBbox::toNormBbox(44,1154
+dataBbox globalBbox::toDataBbox(52,1348
+
+src/coordinates/globalCoord.h,638
+using namespace vmml;4,41
+namespace om 8,86
+namespace coords om::coords9,101
+class globalCoord om::coords::globalCoord20,265
+    typedef Vector3f base_t;om::coords::globalCoord::base_t23,312
+    globalCoord(om::coords::globalCoord::globalCoord26,354
+    globalCoord(om::coords::globalCoord::globalCoord27,386
+    globalCoord(om::coords::globalCoord::globalCoord28,427
+    globalCoord(om::coords::globalCoord::globalCoord29,473
+class globalBbox 40,926
+    typedef AxisAlignedBoundingBox<float> base_t;globalBbox::base_t43,993
+    globalBbox(globalBbox::globalBbox46,1056
+    globalBbox(globalBbox::globalBbox47,1087
+
+src/coordinates/normCoord.cpp,201
+namespace om 3,28
+namespace coords om::coords4,43
+globalCoord normCoord::toGlobalCoord(om::coords::normCoord::toGlobalCoord6,67
+dataCoord normCoord::toDataCoord(13,239
+normBbox::normBbox(18,353
+
+src/coordinates/normCoord.h,754
+class normCoord 12,138
+    typedef vmml::Vector3f base_t;normCoord::base_t15,190
+    const volumeSystem * vol_;normCoord::vol_16,225
+    normCoord(normCoord::normCoord19,269
+    normCoord(normCoord::normCoord24,373
+    inline const volumeSystem* volume(normCoord::volume32,582
+class normBbox 37,661
+    typedef AxisAlignedBoundingBox<float> base_t;normBbox::base_t40,732
+    volumeSystem const * const vol_;normBbox::vol_41,782
+    inline normCoord getMin(normBbox::getMin46,881
+    inline normCoord getMax(normBbox::getMax50,980
+    inline normCoord getDimensions(normBbox::getDimensions54,1079
+    inline normCoord getUnitDimensions(normBbox::getUnitDimensions58,1192
+    inline normCoord getCenter(normBbox::getCenter62,1313
+
+src/coordinates/screenCoord.cpp,137
+namespace om 3,28
+namespace coords om::coords4,43
+globalCoord screenCoord::toGlobalCoord(om::coords::screenCoord::toGlobalCoord6,67
+
+src/coordinates/screenCoord.h,297
+class screenCoord 11,125
+    typedef vmml::Vector2i base_t;screenCoord::base_t14,179
+    const screenSystem * system_;screenCoord::system_15,214
+    screenCoord(screenCoord::screenCoord18,261
+    screenCoord(screenCoord::screenCoord23,377
+    screenCoord(screenCoord::screenCoord28,498
+
+src/coordinates/screenSystem.cpp,240
+namespace om 7,143
+namespace coords om::coords8,158
+screenSystem::screenSystem(om::coords::screenSystem::screenSystem10,178
+void screenSystem::UpdateTransformationMatrices(om::coords::screenSystem::UpdateTransformationMatrices14,267
+
+src/coordinates/screenSystem.h,1065
+using namespace vmml;4,41
+class screenSystem11,119
+    common::viewType viewType_;screenSystem::viewType_14,149
+    Vector4i totalViewport_;screenSystem::totalViewport_15,181
+    Matrix4f screenToGlobalMat_;screenSystem::screenToGlobalMat_17,255
+    Matrix4f globalToScreenMat_;screenSystem::globalToScreenMat_18,288
+    double zoomScale_;screenSystem::zoomScale_20,322
+    globalCoord location_;screenSystem::location_21,345
+    inline Vector3<T> makeViewTypeVector3(screenSystem::makeViewTypeVector324,399
+    inline Vector3<T> makeViewTypeVector3(screenSystem::makeViewTypeVector337,793
+    inline const Matrix4f& ScreenToGlobalMat(screenSystem::ScreenToGlobalMat68,1877
+    inline const Matrix4f& GlobalToScreenMat(screenSystem::GlobalToScreenMat72,1974
+    inline const Vector4i& getTotalViewport(screenSystem::getTotalViewport77,2087
+    inline void setTotalViewport(screenSystem::setTotalViewport81,2179
+    inline void setZoomScale(screenSystem::setZoomScale85,2312
+    inline void setLocation(screenSystem::setLocation89,2398
+
+src/coordinates/volumeSystem.cpp,325
+namespace om 5,96
+namespace coords om::coords6,111
+volumeSystem::volumeSystem(om::coords::volumeSystem::volumeSystem8,135
+void volumeSystem::UpdateRootLevel(24,614
+globalBbox volumeSystem::GetDataExtent(38,1011
+bool volumeSystem::ContainsMipChunkCoord(44,1165
+chunkCoord volumeSystem::RootMipChunkCoordinate(64,1654
+
+src/coordinates/volumeSystem.h,1405
+class volumeSystem 12,152
+    Matrix4f dataToGlobal_;14,188
+    Matrix4f globalToData_;15,216
+    Matrix4f normToGlobal_;16,244
+    Matrix4f globalToNorm_;17,272
+    Vector3i dataDimensions_;20,327
+    int chunkDim_;22,362
+    int mMipLeafDim;23,381
+    int mMipRootLevel;24,402
+    volumeSystem(29,487
+    void UpdateRootLevel(31,512
+    inline int GetRootMipLevel(33,545
+    inline Vector3i MipedDataDimensions(37,627
+    inline Vector3i GetDataDimensions(volumeSystem::GetDataDimensions45,831
+    inline void SetDataDimensions(volumeSystem::SetDataDimensions49,918
+    inline int GetChunkDimension(volumeSystem::GetChunkDimension61,1265
+    inline void SetChunkDimension(volumeSystem::SetChunkDimension65,1341
+    inline Vector3i GetChunkDimensions(volumeSystem::GetChunkDimensions69,1428
+    inline Matrix4f DataToGlobalMat(volumeSystem::DataToGlobalMat77,1652
+    inline Matrix4f GlobalToDataMat(volumeSystem::GlobalToDataMat85,1907
+    inline const Matrix4f& NormToGlobalMat(volumeSystem::NormToGlobalMat92,2114
+    inline const Matrix4f& GlobalToNormMat(volumeSystem::GlobalToNormMat96,2208
+    inline Vector3i GetAbsOffset(volumeSystem::GetAbsOffset100,2302
+    inline void SetAbsOffset(volumeSystem::SetAbsOffset104,2403
+    inline Vector3i GetResolution(volumeSystem::GetResolution111,2661
+    inline void SetResolution(volumeSystem::SetResolution115,2798
+
+src/coordinates/yaml.cpp,141
+namespace YAML 6,95
+Emitter& operator<<(YAML::operator<<9,118
+void operator>>(15,214
+Emitter& operator<<(21,303
+void operator>>(27,422
+
+src/thrift/server.cpp,2195
+namespace om 8,144
+namespace om { namespace common om::common8,144
+uint32_t server_get_chan_tile_args::read(om::common::server_get_chan_tile_args::read10,179
+uint32_t server_get_chan_tile_args::write(50,1041
+uint32_t server_get_chan_tile_pargs::write(61,1464
+uint32_t server_get_chan_tile_result::read(72,1894
+uint32_t server_get_chan_tile_result::write(112,2762
+uint32_t server_get_chan_tile_presult::read(128,3237
+uint32_t server_get_seg_tile_args::read(168,4111
+uint32_t server_get_seg_tile_args::write(208,4972
+uint32_t server_get_seg_tile_pargs::write(219,5393
+uint32_t server_get_seg_tile_result::read(230,5821
+uint32_t server_get_seg_tile_result::write(270,6688
+uint32_t server_get_seg_tile_presult::read(286,7161
+uint32_t server_click_args::read(326,8034
+uint32_t server_click_args::write(366,8888
+uint32_t server_click_pargs::write(377,9295
+uint32_t server_click_result::read(388,9709
+uint32_t server_click_result::write(428,10569
+uint32_t server_click_presult::read(444,11028
+uint32_t server_compare_results_args::read(484,11894
+uint32_t server_compare_results_args::write(544,13407
+uint32_t server_compare_results_pargs::write(566,14325
+uint32_t server_compare_results_result::read(588,15265
+uint32_t server_compare_results_result::write(628,16142
+uint32_t server_compare_results_presult::read(644,16628
+void serverClient::get_chan_tile(684,17511
+void serverClient::send_get_chan_tile(690,17647
+void serverClient::recv_get_chan_tile(704,18009
+void serverClient::get_seg_tile(742,19174
+void serverClient::send_get_seg_tile(748,19307
+void serverClient::recv_get_seg_tile(762,19666
+void serverClient::click(800,20827
+void serverClient::send_click(806,20945
+void serverClient::recv_click(820,21283
+double serverClient::compare_results(858,22422
+void serverClient::send_compare_results(864,22613
+double serverClient::recv_compare_results(879,23070
+bool serverProcessor::process(917,24215
+bool serverProcessor::process_fn(943,25295
+void serverProcessor::process_get_chan_tile(962,26277
+void serverProcessor::process_get_seg_tile(1016,28034
+void serverProcessor::process_click(1070,29778
+void serverProcessor::process_compare_results(1124,31431
+
+src/thrift/server.h,12665
+#define server_H7,140
+class serverIf 14,244
+  virtual ~serverIf(16,270
+class serverNull 23,617
+  virtual ~serverNull(serverNull::~serverNull25,671
+  void get_chan_tile(serverNull::get_chan_tile26,698
+  void get_seg_tile(serverNull::get_seg_tile29,787
+  void click(serverNull::click32,875
+  double compare_results(serverNull::compare_results35,962
+typedef struct _server_get_chan_tile_args__isset 41,1128
+  _server_get_chan_tile_args__isset(_server_get_chan_tile_args__isset::_server_get_chan_tile_args__isset42,1179
+  bool point;_server_get_chan_tile_args__isset::point43,1235
+} _server_get_chan_tile_args__isset;44,1249
+class server_get_chan_tile_args 46,1287
+  server_get_chan_tile_args(server_get_chan_tile_args::server_get_chan_tile_args49,1331
+  virtual ~server_get_chan_tile_args(server_get_chan_tile_args::~server_get_chan_tile_args52,1368
+  vector3d point;server_get_chan_tile_args::point54,1419
+  _server_get_chan_tile_args__isset __isset;server_get_chan_tile_args::__isset56,1438
+  void __set_point(server_get_chan_tile_args::__set_point58,1484
+  bool operator == server_get_chan_tile_args::operator ==62,1548
+  bool operator != server_get_chan_tile_args::operator !=68,1689
+class server_get_chan_tile_pargs 80,1990
+  virtual ~server_get_chan_tile_pargs(server_get_chan_tile_pargs::~server_get_chan_tile_pargs84,2036
+  const vector3d* point;server_get_chan_tile_pargs::point86,2088
+typedef struct _server_get_chan_tile_result__isset 92,2189
+  _server_get_chan_tile_result__isset(_server_get_chan_tile_result__isset::_server_get_chan_tile_result__isset93,2242
+  bool success;_server_get_chan_tile_result__isset::success94,2302
+} _server_get_chan_tile_result__isset;95,2318
+class server_get_chan_tile_result 97,2358
+  server_get_chan_tile_result(server_get_chan_tile_result::server_get_chan_tile_result100,2404
+  virtual ~server_get_chan_tile_result(server_get_chan_tile_result::~server_get_chan_tile_result103,2443
+  tile success;server_get_chan_tile_result::success105,2496
+  _server_get_chan_tile_result__isset __isset;server_get_chan_tile_result::__isset107,2513
+  void __set_success(server_get_chan_tile_result::__set_success109,2561
+  bool operator == server_get_chan_tile_result::operator ==113,2625
+  bool operator != server_get_chan_tile_result::operator !=119,2772
+typedef struct _server_get_chan_tile_presult__isset 130,3076
+  _server_get_chan_tile_presult__isset(_server_get_chan_tile_presult__isset::_server_get_chan_tile_presult__isset131,3130
+  bool success;_server_get_chan_tile_presult__isset::success132,3191
+} _server_get_chan_tile_presult__isset;133,3207
+class server_get_chan_tile_presult 135,3248
+  virtual ~server_get_chan_tile_presult(server_get_chan_tile_presult::~server_get_chan_tile_presult139,3296
+  tile* success;server_get_chan_tile_presult::success141,3350
+  _server_get_chan_tile_presult__isset __isset;server_get_chan_tile_presult::__isset143,3368
+typedef struct _server_get_seg_tile_args__isset 149,3485
+  _server_get_seg_tile_args__isset(_server_get_seg_tile_args__isset::_server_get_seg_tile_args__isset150,3535
+  bool point;_server_get_seg_tile_args__isset::point151,3590
+} _server_get_seg_tile_args__isset;152,3604
+class server_get_seg_tile_args 154,3641
+  server_get_seg_tile_args(server_get_seg_tile_args::server_get_seg_tile_args157,3684
+  virtual ~server_get_seg_tile_args(server_get_seg_tile_args::~server_get_seg_tile_args160,3720
+  vector3d point;server_get_seg_tile_args::point162,3770
+  _server_get_seg_tile_args__isset __isset;server_get_seg_tile_args::__isset164,3789
+  void __set_point(server_get_seg_tile_args::__set_point166,3834
+  bool operator == server_get_seg_tile_args::operator ==170,3898
+  bool operator != server_get_seg_tile_args::operator !=176,4038
+class server_get_seg_tile_pargs 188,4337
+  virtual ~server_get_seg_tile_pargs(server_get_seg_tile_pargs::~server_get_seg_tile_pargs192,4382
+  const vector3d* point;server_get_seg_tile_pargs::point194,4433
+typedef struct _server_get_seg_tile_result__isset 200,4534
+  _server_get_seg_tile_result__isset(_server_get_seg_tile_result__isset::_server_get_seg_tile_result__isset201,4586
+  bool success;_server_get_seg_tile_result__isset::success202,4645
+} _server_get_seg_tile_result__isset;203,4661
+class server_get_seg_tile_result 205,4700
+  server_get_seg_tile_result(server_get_seg_tile_result::server_get_seg_tile_result208,4745
+  virtual ~server_get_seg_tile_result(server_get_seg_tile_result::~server_get_seg_tile_result211,4783
+  tile success;server_get_seg_tile_result::success213,4835
+  _server_get_seg_tile_result__isset __isset;server_get_seg_tile_result::__isset215,4852
+  void __set_success(server_get_seg_tile_result::__set_success217,4899
+  bool operator == server_get_seg_tile_result::operator ==221,4963
+  bool operator != server_get_seg_tile_result::operator !=227,5109
+typedef struct _server_get_seg_tile_presult__isset 238,5411
+  _server_get_seg_tile_presult__isset(_server_get_seg_tile_presult__isset::_server_get_seg_tile_presult__isset239,5464
+  bool success;_server_get_seg_tile_presult__isset::success240,5524
+} _server_get_seg_tile_presult__isset;241,5540
+class server_get_seg_tile_presult 243,5580
+  virtual ~server_get_seg_tile_presult(server_get_seg_tile_presult::~server_get_seg_tile_presult247,5627
+  tile* success;server_get_seg_tile_presult::success249,5680
+  _server_get_seg_tile_presult__isset __isset;server_get_seg_tile_presult::__isset251,5698
+typedef struct _server_click_args__isset 257,5814
+  _server_click_args__isset(_server_click_args__isset::_server_click_args__isset258,5857
+  bool point;_server_click_args__isset::point259,5905
+} _server_click_args__isset;260,5919
+class server_click_args 262,5949
+  server_click_args(server_click_args::server_click_args265,5985
+  virtual ~server_click_args(server_click_args::~server_click_args268,6014
+  vector3d point;server_click_args::point270,6057
+  _server_click_args__isset __isset;server_click_args::__isset272,6076
+  void __set_point(server_click_args::__set_point274,6114
+  bool operator == server_click_args::operator ==278,6178
+  bool operator != server_click_args::operator !=284,6311
+class server_click_pargs 296,6596
+  virtual ~server_click_pargs(server_click_pargs::~server_click_pargs300,6634
+  const vector3d* point;server_click_pargs::point302,6678
+typedef struct _server_click_result__isset 308,6779
+  _server_click_result__isset(_server_click_result__isset::_server_click_result__isset309,6824
+  bool success;_server_click_result__isset::success310,6876
+} _server_click_result__isset;311,6892
+class server_click_result 313,6924
+  server_click_result(server_click_result::server_click_result316,6962
+  virtual ~server_click_result(server_click_result::~server_click_result319,6993
+  click_info success;server_click_result::success321,7038
+  _server_click_result__isset __isset;server_click_result::__isset323,7061
+  void __set_success(server_click_result::__set_success325,7101
+  bool operator == server_click_result::operator ==329,7171
+  bool operator != server_click_result::operator !=335,7310
+typedef struct _server_click_presult__isset 346,7598
+  _server_click_presult__isset(_server_click_presult__isset::_server_click_presult__isset347,7644
+  bool success;_server_click_presult__isset::success348,7697
+} _server_click_presult__isset;349,7713
+class server_click_presult 351,7746
+  virtual ~server_click_presult(server_click_presult::~server_click_presult355,7786
+  click_info* success;server_click_presult::success357,7832
+  _server_click_presult__isset __isset;server_click_presult::__isset359,7856
+typedef struct _server_compare_results_args__isset 365,7965
+  _server_compare_results_args__isset(_server_compare_results_args__isset::_server_compare_results_args__isset366,8018
+  bool old_results;_server_compare_results_args__isset::old_results367,8101
+  bool new_result;_server_compare_results_args__isset::new_result368,8121
+} _server_compare_results_args__isset;369,8140
+class server_compare_results_args 371,8180
+  server_compare_results_args(server_compare_results_args::server_compare_results_args374,8226
+  virtual ~server_compare_results_args(server_compare_results_args::~server_compare_results_args377,8265
+  std::vector<result>  old_results;server_compare_results_args::old_results379,8318
+  result new_result;server_compare_results_args::new_result380,8354
+  _server_compare_results_args__isset __isset;server_compare_results_args::__isset382,8376
+  void __set_old_results(server_compare_results_args::__set_old_results384,8424
+  void __set_new_result(server_compare_results_args::__set_new_result388,8512
+  bool operator == server_compare_results_args::operator ==392,8584
+  bool operator != server_compare_results_args::operator !=400,8800
+class server_compare_results_pargs 412,9105
+  virtual ~server_compare_results_pargs(server_compare_results_pargs::~server_compare_results_pargs416,9153
+  const std::vector<result> * old_results;server_compare_results_pargs::old_results418,9207
+  const result* new_result;server_compare_results_pargs::new_result419,9250
+typedef struct _server_compare_results_result__isset 425,9354
+  _server_compare_results_result__isset(_server_compare_results_result__isset::_server_compare_results_result__isset426,9409
+  bool success;_server_compare_results_result__isset::success427,9471
+} _server_compare_results_result__isset;428,9487
+class server_compare_results_result 430,9529
+  server_compare_results_result(server_compare_results_result::server_compare_results_result433,9577
+  virtual ~server_compare_results_result(server_compare_results_result::~server_compare_results_result436,9631
+  double success;server_compare_results_result::success438,9686
+  _server_compare_results_result__isset __isset;server_compare_results_result::__isset440,9705
+  void __set_success(server_compare_results_result::__set_success442,9755
+  bool operator == server_compare_results_result::operator ==446,9820
+  bool operator != server_compare_results_result::operator !=452,9969
+typedef struct _server_compare_results_presult__isset 463,10277
+  _server_compare_results_presult__isset(_server_compare_results_presult__isset::_server_compare_results_presult__isset464,10333
+  bool success;_server_compare_results_presult__isset::success465,10396
+} _server_compare_results_presult__isset;466,10412
+class server_compare_results_presult 468,10455
+  virtual ~server_compare_results_presult(server_compare_results_presult::~server_compare_results_presult472,10505
+  double* success;server_compare_results_presult::success474,10561
+  _server_compare_results_presult__isset __isset;server_compare_results_presult::__isset476,10581
+class serverClient 482,10700
+  serverClient(serverClient::serverClient484,10756
+  serverClient(serverClient::serverClient490,10930
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getInputProtocol(serverClient::getInputProtocol496,11174
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol(serverClient::getOutputProtocol499,11279
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;serverClient::piprot_515,12060
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;serverClient::poprot_516,12129
+  ::apache::thrift::protocol::TProtocol* iprot_;serverClient::iprot_517,12198
+  ::apache::thrift::protocol::TProtocol* oprot_;serverClient::oprot_518,12247
+class serverProcessor 521,12300
+  boost::shared_ptr<serverIf> iface_;serverProcessor::iface_523,12382
+  std::map<serverProcessor::std::map526,12603
+  std::map<std::string, void (serverProcessor::*)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*)> processMap_;serverProcessor::processMap_526,12603
+  serverProcessor(serverProcessor::serverProcessor532,13389
+  virtual ~serverProcessor(serverProcessor::~serverProcessor541,13934
+class serverMultiface 544,13970
+  serverMultiface(serverMultiface::serverMultiface546,14029
+  virtual ~serverMultiface(serverMultiface::~serverMultiface548,14122
+  std::vector<boost::shared_ptr<serverIf> > ifaces_;serverMultiface::ifaces_550,14166
+  serverMultiface(serverMultiface::serverMultiface551,14219
+  void add(serverMultiface::add552,14242
+  void get_chan_tile(serverMultiface::get_chan_tile556,14333
+  void get_seg_tile(serverMultiface::get_seg_tile568,14641
+  void click(serverMultiface::click580,14946
+  double compare_results(serverMultiface::compare_results592,15236
+
+src/thrift/server_constants.cpp,236
+namespace om 8,154
+namespace om { namespace common om::common8,154
+const serverConstants g_server_constants;om::common::g_server_constants10,189
+serverConstants::serverConstants(om::common::serverConstants::serverConstants12,232
+
+src/thrift/server_constants.h,89
+#define server_CONSTANTS_H7,150
+class serverConstants 13,240
+  serverConstants(15,273
+
+src/thrift/server_server.skeleton.cpp,352
+using boost::shared_ptr;15,476
+class serverHandler 19,531
+  serverHandler(serverHandler::serverHandler21,588
+  void get_chan_tile(serverHandler::get_chan_tile25,650
+  void get_seg_tile(serverHandler::get_seg_tile30,784
+  void click(serverHandler::click35,916
+  double compare_results(serverHandler::compare_results40,1040
+int main(47,1213
+
+src/thrift/server_types.cpp,743
+namespace om 8,150
+namespace om { namespace common om::common8,150
+uint32_t vector3d::read(om::common::vector3d::read13,396
+uint32_t vector3d::write(69,1710
+const char* tile::ascii_fingerprint 86,2404
+const uint8_t tile::binary_fingerprint[tile::binary_fingerprint87,2478
+uint32_t tile::read(89,2607
+uint32_t tile::write(129,3453
+const char* click_info::ascii_fingerprint 140,3839
+const uint8_t click_info::binary_fingerprint[click_info::binary_fingerprint141,3919
+uint32_t click_info::read(143,4054
+uint32_t click_info::write(191,5146
+const char* result::ascii_fingerprint 205,5702
+const uint8_t result::binary_fingerprint[result::binary_fingerprint206,5778
+uint32_t result::read(208,5909
+uint32_t result::write(260,7142
+
+src/thrift/server_types.h,3021
+#define server_TYPES_H7,146
+typedef struct _vector3d__isset 18,329
+  _vector3d__isset(19,363
+  bool x;20,418
+  bool y;21,428
+  bool z;22,438
+} _vector3d__isset;23,448
+class vector3d 25,469
+  static const char* ascii_fingerprint;vector3d::ascii_fingerprint28,496
+  static const uint8_t binary_fingerprint[vector3d::binary_fingerprint29,577
+  vector3d(vector3d::vector3d31,713
+  virtual ~vector3d(vector3d::~vector3d34,752
+  double x;vector3d::x36,786
+  double y;vector3d::y37,798
+  double z;vector3d::z38,810
+  _vector3d__isset __isset;vector3d::__isset40,823
+  void __set_x(vector3d::__set_x42,852
+  void __set_y(vector3d::__set_y46,905
+  void __set_z(vector3d::__set_z50,958
+  bool operator == vector3d::operator ==54,1011
+  bool operator != vector3d::operator !=64,1213
+typedef struct _tile__isset 75,1479
+  _tile__isset(_tile__isset::_tile__isset76,1509
+  bool data;_tile__isset::data77,1543
+} _tile__isset;78,1556
+class tile 80,1573
+  static const char* ascii_fingerprint;tile::ascii_fingerprint83,1596
+  static const uint8_t binary_fingerprint[tile::binary_fingerprint84,1677
+  tile(tile::tile86,1813
+  virtual ~tile(tile::~tile89,1840
+  std::string data;tile::data91,1870
+  _tile__isset __isset;tile::__isset93,1891
+  void __set_data(tile::__set_data95,1916
+  bool operator == tile::operator ==99,1981
+  bool operator != tile::operator !=105,2099
+typedef struct _click_info__isset 116,2357
+  _click_info__isset(_click_info__isset::_click_info__isset117,2393
+  bool segId;_click_info__isset::segId118,2452
+  bool tile_data;_click_info__isset::tile_data119,2466
+} _click_info__isset;120,2484
+class click_info 122,2507
+  static const char* ascii_fingerprint;click_info::ascii_fingerprint125,2536
+  static const uint8_t binary_fingerprint[click_info::binary_fingerprint126,2617
+  click_info(click_info::click_info128,2753
+  virtual ~click_info(click_info::~click_info131,2786
+  int32_t segId;click_info::segId133,2822
+  tile tile_data;click_info::tile_data134,2839
+  _click_info__isset __isset;click_info::__isset136,2858
+  void __set_segId(click_info::__set_segId138,2889
+  void __set_tile_data(click_info::__set_tile_data142,2951
+  bool operator == click_info::operator ==146,3019
+  bool operator != click_info::operator !=154,3204
+typedef struct _result__isset 165,3474
+  _result__isset(_result__isset::_result__isset166,3506
+  bool selected;_result__isset::selected167,3546
+} _result__isset;168,3563
+class result 170,3582
+  static const char* ascii_fingerprint;result::ascii_fingerprint173,3607
+  static const uint8_t binary_fingerprint[result::binary_fingerprint174,3688
+  result(result::result176,3824
+  virtual ~result(result::~result179,3842
+  std::vector<int32_t>  selected;result::selected181,3874
+  _result__isset __isset;result::__isset183,3909
+  void __set_selected(result::__set_selected185,3936
+  bool operator == result::operator ==189,4019
+  bool operator != result::operator !=195,4147
+
+src/utility/UUID.hpp,411
+namespace om 12,251
+namespace uuid_ om::uuid_13,266
+inline boost::uuids::uuid get(om::uuid_::get16,352
+struct idAndStr25,506
+    boost::uuids::uuid tag_;idAndStr::tag_27,524
+    std::string str;idAndStr::str28,553
+inline idAndStr makePair(31,578
+class OmUUID 41,769
+    const om::uuid_::idAndStr id;OmUUID::id43,793
+    OmUUID(OmUUID::OmUUID46,836
+    const std::string& Str(OmUUID::Str50,893
+
+src/utility/affinityGraphDataWrapper.hpp,483
+class AffinityGraphDataWrapper 7,144
+    static const OmIDsSet& ValidIDs(AffinityGraphDataWrapper::ValidIDs9,185
+    OmID id_;AffinityGraphDataWrapper::id_14,308
+    AffinityGraphDataWrapper(AffinityGraphDataWrapper::AffinityGraphDataWrapper17,331
+    explicit AffinityGraphDataWrapper(AffinityGraphDataWrapper::AffinityGraphDataWrapper21,387
+    inline OmID GetID(AffinityGraphDataWrapper::GetID25,466
+    OmAffinityGraph& Create(AffinityGraphDataWrapper::Create29,525
+
+src/utility/chunkVoxelWalker.hpp,883
+class OmChunkVoxelWalker8,121
+	explicit OmChunkVoxelWalker(OmChunkVoxelWalker::OmChunkVoxelWalker13,266
+	OmChunkVoxelWalker(OmChunkVoxelWalker::OmChunkVoxelWalker19,394
+	OmChunkVoxelWalker begin(OmChunkVoxelWalker::begin26,558
+	OmChunkVoxelWalker end(OmChunkVoxelWalker::end30,638
+	bool operator <(OmChunkVoxelWalker::operator <37,785
+	int x,OmChunkVoxelWalker::x47,1004
+	int x, y,OmChunkVoxelWalker::y47,1004
+	int x, y, z;OmChunkVoxelWalker::z47,1004
+	const int chunkDim_;OmChunkVoxelWalker::chunkDim_48,1018
+	Vector3i curPos_;OmChunkVoxelWalker::curPos_49,1040
+	OmChunkVoxelWalker(OmChunkVoxelWalker::OmChunkVoxelWalker51,1060
+	void increment(OmChunkVoxelWalker::increment57,1185
+	bool equal(OmChunkVoxelWalker::equal71,1338
+	const Vector3i& dereference(OmChunkVoxelWalker::dereference78,1529
+	bool operator !=(OmChunkVoxelWalker::operator !=82,1590
+
+src/utility/color.hpp,905
+namespace om 9,158
+namespace utils om::utils10,173
+class color om::utils::color12,192
+    enum ColorIndexInternal om::utils::color::ColorIndexInternal14,215
+    enum ColorIndexInternal {RED,om::utils::color::ColorIndexInternal::RED14,215
+    enum ColorIndexInternal {RED, GREEN,om::utils::color::ColorIndexInternal::GREEN14,215
+    enum ColorIndexInternal {RED, GREEN, BLUE}om::utils::color::ColorIndexInternal::BLUE14,215
+    static inline OmColor GetRandomColor(om::utils::color::GetRandomColor18,273
+    static inline OmColor GetRandomColor(om::utils::color::GetRandomColor22,385
+    static QColor OmColorToQColor(om::utils::color::OmColorToQColor59,1391
+    static OmColor QColorToOmColor(om::utils::color::QColorToOmColor63,1515
+    static QPixmap OmColorAsQPixmap(om::utils::color::OmColorAsQPixmap68,1666
+    static QPixmap MakeQPixmap(om::utils::color::MakeQPixmap73,1793
+
+src/utility/copyFirstN.hpp,146
+namespace om 3,14
+namespace utils om::utils4,29
+static void CopyFirstN(om::utils::CopyFirstN7,76
+static std::string MakeShortStrList(19,310
+
+src/utility/dataTime.hpp,97
+namespace om 5,36
+namespace datetime om::datetime6,51
+std::string cur(om::datetime::cur8,73
+
+src/utility/dataWrapperContainer.hpp,831
+class DataWrapperContainer 5,45
+	boost::optional<SegmentationDataWrapper> sdw_;DataWrapperContainer::sdw_7,83
+	boost::optional<ChannelDataWrapper> cdw_;DataWrapperContainer::cdw_8,131
+	DataWrapperContainer(DataWrapperContainer::DataWrapperContainer11,183
+	DataWrapperContainer(DataWrapperContainer::DataWrapperContainer13,210
+	explicit DataWrapperContainer(DataWrapperContainer::DataWrapperContainer27,532
+	bool isValidContainer(DataWrapperContainer::isValidContainer32,655
+	bool isSegmentation(DataWrapperContainer::isSegmentation36,715
+	bool isChannel(DataWrapperContainer::isChannel40,765
+	ObjectType getType(DataWrapperContainer::getType44,810
+	SegmentationDataWrapper GetSDW(DataWrapperContainer::GetSDW55,959
+	ChannelDataWrapper getChannelDataWrapper(DataWrapperContainer::getChannelDataWrapper59,1021
+
+src/utility/fileHelpers.cpp,504
+bool OmFileHelpers::IsFileReadOnly(9,158
+void OmFileHelpers::RemoveDir(20,340
+bool OmFileHelpers::removeDir(35,703
+void OmFileHelpers::MoveFile(42,870
+void OmFileHelpers::CopyFile(65,1474
+bool OmFileHelpers::IsFolderEmpty(84,1942
+void OmFileHelpers::MoveAllFiles(96,2248
+bool OmFileHelpers::MkDir(122,3090
+bool OmFileHelpers::MkDir(126,3189
+bool OmFileHelpers::IsFolder(138,3452
+void OmFileHelpers::Symlink(145,3622
+bool OmFileHelpers::IsSymlink(153,3881
+void OmFileHelpers::RmFile(157,3988
+
+src/utility/fileHelpers.h,40
+class OmFileHelpers{OmFileHelpers5,44
+
+src/utility/fileLogger.hpp,481
+class OmFileLogger 5,38
+    QString outFile_;OmFileLogger::outFile_7,68
+    boost::scoped_ptr<QFile> file_;OmFileLogger::file_9,91
+    boost::scoped_ptr<QTextStream> out_;OmFileLogger::out_10,127
+    zi::spinlock lock_;OmFileLogger::lock_12,169
+    OmFileLogger(OmFileLogger::OmFileLogger15,202
+    ~OmFileLogger(OmFileLogger::~OmFileLogger18,229
+    void Start(OmFileLogger::Start24,307
+    void Log(OmFileLogger::Log40,696
+    void Log(OmFileLogger::Log46,802
+
+src/utility/fuzzyStdObjs.hpp,249
+namespace om 3,14
+namespace fuzzymap_ om::fuzzymap_4,29
+struct CompareDoubles om::fuzzymap_::CompareDoubles5,51
+    bool operator() om::fuzzymap_::CompareDoubles::operator()6,75
+class DoubleFuzzyStdMap 18,306
+class DoubleFuzzyStdSet 22,399
+
+src/utility/lockedObjects.hpp,2944
+class LockedVector{LockedVector17,318
+    virtual ~LockedVector(LockedVector::~LockedVector19,346
+    bool empty(LockedVector::empty22,382
+    void clear(LockedVector::clear27,472
+    void resize(LockedVector::resize32,555
+    void swap(LockedVector::swap42,770
+    std::vector<VAL> vector_;LockedVector::vector_48,884
+    zi::spinlock mutex_;LockedVector::mutex_49,914
+template <typename KEY,52,943
+class LockedBoostMap{LockedBoostMap53,981
+    virtual ~LockedBoostMap(LockedBoostMap::~LockedBoostMap55,1011
+    bool empty(LockedBoostMap::empty58,1049
+    void clear(LockedBoostMap::clear63,1136
+    size_t count(LockedBoostMap::count68,1216
+    boost::unordered_map<LockedBoostMap::boost::unordered_map81,1436
+    boost::unordered_map<KEY, VAL> map_;LockedBoostMap::map_81,1436
+    zi::spinlock mutex_;LockedBoostMap::mutex_82,1477
+class LockedBoostSet{LockedBoostSet86,1530
+    virtual ~LockedBoostSet(LockedBoostSet::~LockedBoostSet88,1560
+    bool empty(LockedBoostSet::empty91,1598
+    void insert(LockedBoostSet::insert97,1686
+    void erase(LockedBoostSet::erase103,1786
+    void clear(LockedBoostSet::clear109,1884
+    bool insertSinceWasntPresent(LockedBoostSet::insertSinceWasntPresent115,1965
+    boost::unordered_set<KEY> set_;LockedBoostSet::set_127,2200
+    zi::spinlock mutex_;LockedBoostSet::mutex_128,2236
+class LockedSet{LockedSet133,2290
+    virtual ~LockedSet(LockedSet::~LockedSet135,2315
+    bool empty(LockedSet::empty138,2348
+    void erase(LockedSet::erase144,2436
+    void insert(LockedSet::insert150,2534
+    void clear(LockedSet::clear156,2634
+    bool insertSinceWasntPresent(LockedSet::insertSinceWasntPresent162,2715
+    std::set<KEY> set_;LockedSet::set_174,2950
+    zi::spinlock mutex_;LockedSet::mutex_175,2974
+class LockedList{LockedList179,3027
+    virtual ~LockedList(LockedList::~LockedList181,3053
+    bool empty(LockedList::empty182,3081
+    void push_back(LockedList::push_back186,3164
+    void clear(LockedList::clear190,3265
+    void swap(LockedList::swap194,3341
+    std::list<KEY> list_;LockedList::list_199,3454
+    zi::spinlock mutex_;LockedList::mutex_200,3480
+template <typename KEY,203,3509
+class LockedMultiMap{LockedMultiMap204,3547
+    typedef typename std::multimap<LockedMultiMap::std::multimap206,3577
+    typedef typename std::multimap<KEY,VAL>::iterator KViterator;LockedMultiMap::KViterator206,3577
+    typedef std::list<VAL> valsCont;LockedMultiMap::valsCont207,3643
+    virtual ~LockedMultiMap(LockedMultiMap::~LockedMultiMap209,3681
+    void insert(LockedMultiMap::insert212,3719
+    void clear(LockedMultiMap::clear218,3860
+    om::shared_ptr<valsCont> removeKey(LockedMultiMap::removeKey223,3937
+    std::multimap<LockedMultiMap::std::multimap243,4392
+    std::multimap<KEY, VAL> mmap_;LockedMultiMap::mmap_243,4392
+    zi::spinlock mutex_;LockedMultiMap::mutex_244,4427
+
+src/utility/lockedPODs.hpp,4024
+class LockedBool 8,157
+    LockedBool(LockedBool::LockedBool10,184
+    virtual ~LockedBool(LockedBool::~LockedBool13,220
+    bool get(LockedBool::get16,254
+    void set(LockedBool::set20,342
+    volatile zi::atomic::atomic_word val_;LockedBool::val_25,452
+namespace om 39,877
+namespace locked_pods_ om::locked_pods_40,892
+template< class T > class LockedNumberDefaultom::locked_pods_::LockedNumberDefault44,981
+    LockedNumberDefault(om::locked_pods_::LockedNumberDefault::LockedNumberDefault47,1037
+    virtual ~LockedNumberDefault(om::locked_pods_::LockedNumberDefault::~LockedNumberDefault50,1102
+    T get(om::locked_pods_::LockedNumberDefault::get53,1145
+    void set(om::locked_pods_::LockedNumberDefault::set59,1263
+    void add(om::locked_pods_::LockedNumberDefault::add65,1391
+    void sub(om::locked_pods_::LockedNumberDefault::sub71,1520
+    LockedNumberDefault& operator+= om::locked_pods_::LockedNumberDefault::operator+=77,1649
+    LockedNumberDefault& operator-= om::locked_pods_::LockedNumberDefault::operator-=84,1824
+    LockedNumberDefault& operator= om::locked_pods_::LockedNumberDefault::operator=91,1999
+    LockedNumberDefault& operator++ om::locked_pods_::LockedNumberDefault::operator++98,2172
+    LockedNumberDefault& operator-- om::locked_pods_::LockedNumberDefault::operator--105,2328
+    T val_;om::locked_pods_::LockedNumberDefault::val_113,2493
+struct is_integral_with_lte_32_bits118,2530
+    static const bool value is_integral_with_lte_32_bits::value120,2568
+struct LockedIntegralNumber135,2964
+    LockedIntegralNumber(LockedIntegralNumber::LockedIntegralNumber138,3002
+    virtual ~LockedIntegralNumber(LockedIntegralNumber::~LockedIntegralNumber143,3081
+    T get(LockedIntegralNumber::get146,3125
+    void set(LockedIntegralNumber::set154,3313
+    void add(LockedIntegralNumber::add159,3423
+    void sub(LockedIntegralNumber::sub164,3543
+    T inc(LockedIntegralNumber::inc169,3664
+    LockedIntegralNumber& operator+= LockedIntegralNumber::operator+=174,3765
+    LockedIntegralNumber& operator-= LockedIntegralNumber::operator-=180,3932
+    LockedIntegralNumber& operator= LockedIntegralNumber::operator=186,4100
+    LockedIntegralNumber& operator++ LockedIntegralNumber::operator++192,4256
+    LockedIntegralNumber& operator-- LockedIntegralNumber::operator--198,4371
+    volatile zi::atomic::atomic_word val_;LockedIntegralNumber::val_205,4495
+template< class T, bool 212,4590
+struct LockedNumber< T, false > : om::locked_pods_::LockedNumberDefault<om::locked_pods_::LockedNumberDefault216,4722
+struct LockedNumber< T, true > : om::locked_pods_::LockedIntegralNumber<om::locked_pods_::LockedIntegralNumber219,4824
+typedef LockedNumber<int64_t>  LockedInt64;221,4906
+typedef LockedNumber<uint64_t> LockedUint64;222,4950
+typedef LockedNumber<int32_t>  LockedInt32;224,4996
+typedef LockedNumber<uint32_t> LockedUint32;225,5040
+class OmLockedNumber 228,5108
+    T val_;OmLockedNumber::val_230,5140
+    OmLockedNumber(OmLockedNumber::OmLockedNumber233,5161
+    OmLockedNumber(OmLockedNumber::OmLockedNumber237,5208
+    ~OmLockedNumber(OmLockedNumber::~OmLockedNumber241,5268
+    T get(OmLockedNumber::get244,5298
+    void set(OmLockedNumber::set250,5430
+    T inc(OmLockedNumber::inc256,5569
+    OmLockedNumber& operator+= OmLockedNumber::operator+=262,5697
+    OmLockedNumber& operator-= OmLockedNumber::operator-=269,5878
+    OmLockedNumber& operator= OmLockedNumber::operator=276,6059
+    OmLockedNumber& operator++ OmLockedNumber::operator++283,6238
+    OmLockedNumber& operator-- OmLockedNumber::operator--290,6403
+    OmLockedNumber operator++ OmLockedNumber::operator++297,6568
+    OmLockedNumber operator-- OmLockedNumber::operator--305,6770
+typedef OmLockedNumber<int32_t>  OmLockedInt32;314,6975
+typedef OmLockedNumber<uint32_t> OmLockedUint32;315,7023
+typedef OmLockedNumber<int64_t>  OmLockedInt64;317,7073
+typedef OmLockedNumber<uint64_t> OmLockedUint64;318,7121
+
+src/utility/primeNumbers.cpp,45
+int om::constants::getNextBiggestPrime(4,65
+
+src/utility/rand.hpp,209
+class OmRand 10,197
+    boost::mt19937 gen_;OmRand::gen_12,257
+    zi::spinlock lock_;OmRand::lock_14,283
+    static inline int GetRandomInt(OmRand::GetRandomInt18,359
+    OmRand(OmRand::OmRand29,670
+
+src/utility/randColorFile.hpp,895
+class OmRandColorFile 9,180
+    static const int version_ OmRandColorFile::version_11,213
+    const std::string fnp_;OmRandColorFile::fnp_13,249
+    om::shared_ptr<QFile> file_;OmRandColorFile::file_15,278
+    OmColor* values_;OmRandColorFile::values_16,311
+    int64_t numEntries_;OmRandColorFile::numEntries_17,333
+    OmRandColorFile(OmRandColorFile::OmRandColorFile22,403
+    ~OmRandColorFile(OmRandColorFile::~OmRandColorFile28,509
+    OmColor GetRandomColor(OmRandColorFile::GetRandomColor31,540
+    OmColor GetRandomColor(OmRandColorFile::GetRandomColor38,704
+    void createOrLoad(OmRandColorFile::createOrLoad46,878
+    void mapReadOnly(OmRandColorFile::mapReadOnly54,1010
+    std::string fileName(OmRandColorFile::fileName67,1312
+    static void buildColorTable(OmRandColorFile::buildColorTable76,1505
+    void setupFile(OmRandColorFile::setupFile105,2419
+
+src/utility/segmentDataWrapper.hpp,3370
+class SegmentDataWrapper 10,253
+    OmSegID segmentID_;SegmentDataWrapper::segmentID_12,289
+    OmID segmentationID_;SegmentDataWrapper::segmentationID_13,313
+    SegmentDataWrapper(SegmentDataWrapper::SegmentDataWrapper19,484
+    SegmentDataWrapper(SegmentDataWrapper::SegmentDataWrapper24,570
+    SegmentDataWrapper(SegmentDataWrapper::SegmentDataWrapper30,750
+    explicit SegmentDataWrapper(SegmentDataWrapper::SegmentDataWrapper36,946
+    SegmentDataWrapper(SegmentDataWrapper::SegmentDataWrapper41,1089
+    inline void set(SegmentDataWrapper::set46,1256
+    inline void SetSegmentID(SegmentDataWrapper::SetSegmentID52,1404
+    SegmentDataWrapper& operator=(SegmentDataWrapper::operator=56,1490
+    bool operator<(SegmentDataWrapper::operator<67,1729
+    inline OmSegID GetSegmentID(SegmentDataWrapper::GetSegmentID76,1963
+    bool operator ==(SegmentDataWrapper::operator ==80,2039
+    bool operator !=(SegmentDataWrapper::operator !=84,2193
+    SegmentationDataWrapper MakeSegmentationDataWrapper(SegmentDataWrapper::MakeSegmentationDataWrapper88,2292
+    inline bool IsSegmentationValid(SegmentDataWrapper::IsSegmentationValid92,2422
+    inline bool IsSegmentValid(SegmentDataWrapper::IsSegmentValid101,2636
+    inline bool IsValidWrapper(SegmentDataWrapper::IsValidWrapper110,2850
+    inline QString getName(SegmentDataWrapper::getName114,2931
+    inline QString GetSegmentationName(SegmentDataWrapper::GetSegmentationName118,3015
+    inline bool isSelected(SegmentDataWrapper::isSelected122,3139
+    inline void setSelected(SegmentDataWrapper::setSelected126,3241
+    inline bool isEnabled(SegmentDataWrapper::isEnabled131,3444
+    inline void setEnabled(SegmentDataWrapper::setEnabled135,3544
+    inline QString getNote(SegmentDataWrapper::getNote139,3667
+    inline void setNote(SegmentDataWrapper::setNote143,3751
+    inline QString getIDstr(SegmentDataWrapper::getIDstr147,3846
+    inline OmColor GetColorInt(SegmentDataWrapper::GetColorInt151,3934
+    inline Vector3f GetColorFloat(SegmentDataWrapper::GetColorFloat155,4026
+    inline void SetColor(SegmentDataWrapper::SetColor159,4123
+    inline void SetColor(SegmentDataWrapper::SetColor163,4224
+    inline void setName(SegmentDataWrapper::setName167,4326
+    inline OmSegmentation& GetSegmentation(SegmentDataWrapper::GetSegmentation171,4425
+    inline OmSegmentation* GetSegmentationPtr(SegmentDataWrapper::GetSegmentationPtr175,4571
+    inline OmSegment* GetSegment(SegmentDataWrapper::GetSegment181,4726
+    inline OmSegments* Segments(SegmentDataWrapper::Segments185,4829
+    inline uint64_t getSize(SegmentDataWrapper::getSize189,4923
+    inline OmID GetSegmentationID(SegmentDataWrapper::GetSegmentationID193,5005
+    inline OmSegID getID(SegmentDataWrapper::getID197,5088
+    inline OmSegID GetVoxelValue(SegmentDataWrapper::GetVoxelValue201,5157
+    inline OmSegID FindRootID(SegmentDataWrapper::FindRootID205,5308
+    inline OmSegment* FindRoot(SegmentDataWrapper::FindRoot209,5406
+    inline void RandomizeColor(SegmentDataWrapper::RandomizeColor213,5503
+    inline int64_t GetSizeWithChildren(SegmentDataWrapper::GetSizeWithChildren217,5593
+    inline SegmentDataWrapper FindRootSDW(SegmentDataWrapper::FindRootSDW221,5731
+    friend std::ostream& operator<<(SegmentDataWrapper::operator<<225,5856
+
+src/utility/segmentationDataWrapper.hpp,2943
+class SegmentationDataWrapper 10,242
+    static const OmIDsSet& ValidIDs(SegmentationDataWrapper::ValidIDs12,282
+    static inline const std::vector<OmSegmentation*> GetPtrVec(SegmentationDataWrapper::GetPtrVec16,407
+    static void Remove(SegmentationDataWrapper::Remove20,545
+    OmID id_;SegmentationDataWrapper::id_25,669
+    mutable boost::optional<OmSegmentation&> segmentation_;SegmentationDataWrapper::segmentation_26,683
+    SegmentationDataWrapper(SegmentationDataWrapper::SegmentationDataWrapper29,752
+    explicit SegmentationDataWrapper(SegmentationDataWrapper::SegmentationDataWrapper33,807
+    SegmentationDataWrapper(SegmentationDataWrapper::SegmentationDataWrapper37,885
+    explicit SegmentationDataWrapper(SegmentationDataWrapper::SegmentationDataWrapper41,980
+    inline void set(SegmentationDataWrapper::set45,1081
+    SegmentationDataWrapper& operator =(SegmentationDataWrapper::operator =49,1168
+    bool operator ==(SegmentationDataWrapper::operator ==58,1390
+    bool operator !=(SegmentationDataWrapper::operator !=62,1493
+    inline OmID GetSegmentationID(SegmentationDataWrapper::GetSegmentationID66,1597
+    inline OmID GetID(SegmentationDataWrapper::GetID70,1668
+    OmSegmentation& Create(SegmentationDataWrapper::Create74,1727
+    void Remove(SegmentationDataWrapper::Remove83,2006
+    inline ObjectType getType(SegmentationDataWrapper::getType90,2106
+    inline bool IsValidWrapper(SegmentationDataWrapper::IsValidWrapper94,2182
+    inline bool IsSegmentationValid(SegmentationDataWrapper::IsSegmentationValid98,2268
+    inline OmSegmentation& GetSegmentation(SegmentationDataWrapper::GetSegmentation107,2458
+    inline OmSegmentation* GetSegmentationPtr(SegmentationDataWrapper::GetSegmentationPtr117,2778
+    inline QString GetName(SegmentationDataWrapper::GetName123,2915
+    inline bool isEnabled(SegmentationDataWrapper::isEnabled127,3027
+    inline QString getNote(SegmentationDataWrapper::getNote131,3150
+    inline uint32_t getNumberOfSegments(SegmentationDataWrapper::getNumberOfSegments135,3238
+    inline uint32_t getNumberOfTopSegments(SegmentationDataWrapper::getNumberOfTopSegments139,3340
+    inline OmSegments* Segments(SegmentationDataWrapper::Segments143,3448
+    inline OmMST* MST(SegmentationDataWrapper::MST147,3542
+    inline uint32_t getMaxSegmentValue(SegmentationDataWrapper::getMaxSegmentValue151,3621
+    inline OmSegmentLists* SegmentLists(SegmentationDataWrapper::SegmentLists155,3719
+    inline OmValidGroupNum* ValidGroupNum(SegmentationDataWrapper::ValidGroupNum159,3825
+    inline const Vector3f GetDataResolution(SegmentationDataWrapper::GetDataResolution163,3934
+    inline const OmSegIDsSet GetSelectedSegmentIDs(SegmentationDataWrapper::GetSelectedSegmentIDs167,4054
+    inline OmGroups* Groups(SegmentationDataWrapper::Groups171,4174
+    inline bool IsBuilt(SegmentationDataWrapper::IsBuilt175,4262
+
+src/utility/setUtilities.h,240
+#define OM_UTILITY_H6,70
+class OmSetUtils{OmSetUtils11,141
+	static void setIntersection(OmSetUtils::setIntersection13,167
+	static void setDifference(OmSetUtils::setDifference35,784
+	static void setUnion(OmSetUtils::setUnion55,1238
+
+src/utility/simpleProgress.hpp,750
+class OmSimpleProgress 7,119
+    const int max_;OmSimpleProgress::max_9,153
+    const std::string title_;OmSimpleProgress::title_10,173
+    LockedInt32 cur_;OmSimpleProgress::cur_12,204
+    size_t lineLen_;OmSimpleProgress::lineLen_13,226
+    OmThreadPool threadPool_;OmSimpleProgress::threadPool_15,248
+    OmTimer timer_;OmSimpleProgress::timer_16,278
+    OmSimpleProgress(OmSimpleProgress::OmSimpleProgress19,307
+    ~OmSimpleProgress(OmSimpleProgress::~OmSimpleProgress30,536
+    void Join(OmSimpleProgress::Join36,654
+    void DidOne(OmSimpleProgress::DidOne40,706
+    void didOne(OmSimpleProgress::didOne49,920
+    void printDone(OmSimpleProgress::printDone60,1090
+    void coutLine(OmSimpleProgress::coutLine64,1164
+
+src/utility/sortHelpers.h,498
+class SortHelpers 12,148
+    static void SortNaturally(SortHelpers::SortNaturally14,176
+    static QStringList SortNaturally(SortHelpers::SortNaturally21,374
+    static QFileInfoList SortNaturally(SortHelpers::SortNaturally30,621
+    static bool naturalStringCaseInsensitiveCompareLessThan(SortHelpers::naturalStringCaseInsensitiveCompareLessThan41,889
+    static bool naturalStringCaseInsensitiveCompareLessThanQFile(SortHelpers::naturalStringCaseInsensitiveCompareLessThanQFile48,1151
+
+src/utility/stringHelpers.h,365
+class OmStringHelpers{OmStringHelpers7,101
+    inline static QString HumanizeNumQT(OmStringHelpers::HumanizeNumQT11,159
+    static uint32_t getUInt(OmStringHelpers::getUInt15,316
+    static bool getBool(OmStringHelpers::getBool25,551
+    static double getDouble(OmStringHelpers::getDouble37,764
+    static float getFloat(OmStringHelpers::getFloat47,995
+
+src/utility/systemInformation.cpp,120
+unsigned int systemInformation::get_num_cores(4,65
+unsigned int systemInformation::get_total_system_memory_megs(8,151
+
+src/utility/systemInformation.h,48
+class systemInformation{systemInformation3,14
+
+src/utility/tempFile.hpp,664
+class OmTempFile 15,267
+    const OmUUID uuid_;OmTempFile::uuid_17,295
+    const std::string fnp_;OmTempFile::fnp_18,319
+    boost::scoped_ptr<QFile> file_;OmTempFile::file_20,348
+    T* data_;OmTempFile::data_21,384
+    OmTempFile(OmTempFile::OmTempFile24,407
+    virtual ~OmTempFile(OmTempFile::~OmTempFile38,754
+    const std::string& FileName(OmTempFile::FileName44,848
+    void ResizeNumBytes(OmTempFile::ResizeNumBytes48,918
+    void ResizeNumElements(OmTempFile::ResizeNumElements52,1035
+    T* Map(OmTempFile::Map56,1146
+    int64_t NumBytes(OmTempFile::NumBytes60,1225
+    std::string makeFileName(OmTempFile::makeFileName65,1302
+
+src/utility/timer.hpp,539
+class OmTimer 12,226
+    zi::wall_timer timer_;OmTimer::timer_14,251
+    OmTimer(OmTimer::OmTimer17,287
+    ~OmTimer(OmTimer::~OmTimer21,328
+    void start(OmTimer::start24,351
+    void restart(OmTimer::restart28,400
+    void reset(OmTimer::reset32,453
+    double us_elapsed(OmTimer::us_elapsed36,504
+    double ms_elapsed(OmTimer::ms_elapsed40,585
+    double s_elapsed(OmTimer::s_elapsed44,666
+    void Print(OmTimer::Print48,757
+    void PrintV(OmTimer::PrintV57,989
+    void PrintDone(OmTimer::PrintDone66,1223
+
+src/utility/yaml/baseTypes.hpp,430
+namespace YAML 9,112
+inline Emitter& operator<<(YAML::operator<<11,130
+inline void operator>>(22,330
+Emitter &operator<<(operator<<35,617
+void operator>>(43,780
+Emitter &operator<<(operator<<51,905
+void operator>>(63,1118
+Emitter &operator<<(operator<<74,1282
+void operator>>(84,1527
+Emitter &operator<<(operator<<93,1726
+void operator>>(105,1934
+Emitter &operator<<(operator<<116,2111
+void operator>>(128,2307
+
+src/utility/yaml/genericManager.hpp,189
+namespace YAML{YAML8,146
+class genericManager YAML::genericManager10,163
+    static void Save(YAML::genericManager::Save13,220
+    static void Load(YAML::genericManager::Load28,724
+
+src/utility/yaml/mipVolume.hpp,246
+namespace YAML 12,232
+class mipVolume YAML::mipVolume15,278
+    VOL& vol_;YAML::mipVolume::vol_17,305
+    mipVolume(YAML::mipVolume::mipVolume20,333
+    void Store(YAML::mipVolume::Store24,385
+    void Load(YAML::mipVolume::Load39,901
+
+src/utility/yaml/yaml.hpp,411
+namespace om 8,97
+namespace yaml om::yaml9,112
+class yamlUtil om::yaml::yamlUtil11,130
+    static std::vector<T> Parse(om::yaml::yamlUtil::Parse15,275
+    static void Read(om::yaml::yamlUtil::Read42,893
+    static void Write(om::yaml::yamlUtil::Write56,1311
+    static void OptionalRead(om::yaml::yamlUtil::OptionalRead66,1538
+    static void OptionalRead(om::yaml::yamlUtil::OptionalRead76,1809
+
+src/zi/matlab/zmex.hpp,1018
+#define _ZI_MATLAB_ZMEX_9,136
+template <typename T> struct MexType 21,340
+  static mxClassID CLASS;MexType::CLASS22,379
+template<typename T> mxClassID MexType<T>::CLASS CLASS26,449
+bool MexType<T>::CHECK(CHECK28,538
+#define MEX_TYPE_SPEC_CLASS(30,599
+T getMexScalar(50,1630
+#define DECLARE_MEX(55,1739
+#define MEXINIT(60,1938
+#define MEXPRINTF(68,2357
+#define MEXPRINTFFLUSH(76,2769
+#define MEXFLUSH(82,3047
+#define DECLARE_MEX_ARRAY_VARS(84,3098
+#define DECLARE_MEX_SCALAR(93,3690
+#define DECLARE_MEX_DOUBLE(96,3816
+#define DECLARE_MEX_INT(99,3911
+#define MEX_ASSERT(102,4003
+#define DECLARE_MEX_RET_ARRAY(105,4094
+#define DECLARE_MEX_RET_ARRAY_V(113,4594
+#define MEX_RET_SCALAR(121,5021
+#define MEX_ASSERT_NDIM(124,5111
+#define MEX_ASSERT_DIM(128,5282
+#define MEX_ASSERT_NELEMENTS(132,5450
+#define MEX_ASSERT_EQ(137,5640
+#define DECLARE_MEX_RET_CELL(140,5754
+#define MAKE_MEX_ARRAY(149,6187
+#define MEX_RETURN 161,6909
+std::string getMexString(163,6972
+#define VEC2MEX_ARRAY(174,7265
+
+src/zi/omUtility.h,28
+class singletonBase 16,283
+
+src/zi/trees/DisjointSets.hpp,785
+namespace zi 9,93
+class DisjointSets zi::DisjointSets12,130
+  struct Node zi::DisjointSets::Node15,161
+  struct Node { T r,zi::DisjointSets::Node::r15,161
+  struct Node { T r, p;zi::DisjointSets::Node::p15,161
+  struct Node { T r, p; Node(zi::DisjointSets::Node::Node15,161
+  Node  *x_;zi::DisjointSets::x_16,210
+  size_t size_;zi::DisjointSets::size_17,223
+  size_t nSets_;zi::DisjointSets::nSets_18,239
+  DisjointSets(zi::DisjointSets::DisjointSets22,266
+  inline T findSet(zi::DisjointSets::findSet27,386
+  inline T join(zi::DisjointSets::join35,597
+  inline void clear(zi::DisjointSets::clear52,898
+  size_t size(zi::DisjointSets::size57,1012
+  size_t noOfSets(zi::DisjointSets::noOfSets58,1057
+  ~DisjointSets(zi::DisjointSets::~DisjointSets59,1102
+
+src/zi/trees/lib/DynaTree.hpp,3339
+#define DYNAMIC_TREE_HPP9,136
+namespace zi 15,221
+namespace zi { namespace Trees zi::Trees15,221
+class DynamicTree zi::Trees::DynamicTree25,371
+  typedef _T   value_t;zi::Trees::DynamicTree::value_t27,402
+  typedef _T*  value_ptr;zi::Trees::DynamicTree::value_ptr28,426
+  typedef _T&  value_ref;zi::Trees::DynamicTree::value_ref29,452
+  DynamicTree(zi::Trees::DynamicTree::DynamicTree33,501
+  bool operator < zi::Trees::DynamicTree::operator <42,679
+  bool operator == zi::Trees::DynamicTree::operator ==43,757
+  bool operator != zi::Trees::DynamicTree::operator !=44,835
+  Impl* impl_;zi::Trees::DynamicTree::impl_53,1072
+DynamicTree<_T>::DynamicTree(DynamicTree58,1135
+DynamicTree<_T>::DynamicTree(DynamicTree67,1278
+DynamicTree<_T>::DynamicTree(DynamicTree74,1388
+DynamicTree<_T>::~DynamicTree(~DynamicTree81,1485
+void DynamicTree<_T>::decRef(decRef87,1557
+void DynamicTree<_T>::incRef(incRef101,1775
+DynamicTree<_T> &DynamicTree<_T>::operator = operator =109,1885
+void DynamicTree<_T>::cut(cut120,2082
+void DynamicTree<_T>::join(join127,2177
+DynamicTree<_T> DynamicTree<_T>::findRoot(findRoot135,2332
+bool DynamicTree<_T>::isRoot(isRoot144,2514
+class DynamicTree<DynamicTree153,2646
+  typedef typename DynamicTree::Impl    self_t;DynamicTree::self_t155,2684
+  typedef typename DynamicTree::Impl*   self_ptr;DynamicTree::self_ptr156,2732
+  typedef typename DynamicTree::value_t value_t;DynamicTree::value_t157,2782
+  Impl(DynamicTree::Impl159,2832
+    ~Impl(DynamicTree::~Impl162,2955
+  void rotateLeft(DynamicTree::rotateLeft164,2971
+  void rotateRight(DynamicTree::rotateRight187,3427
+  void splay(DynamicTree::splay210,3881
+  void access(DynamicTree::access225,4283
+  void cut(DynamicTree::cut251,4782
+  void join(DynamicTree::join259,4905
+  self_ptr findRoot(DynamicTree::findRoot268,5038
+  bool isRoot(DynamicTree::isRoot278,5191
+  self_ptr left_,DynamicTree::left_285,5321
+  self_ptr left_, right_,DynamicTree::right_285,5321
+  self_ptr left_, right_, parent_,DynamicTree::parent_285,5321
+  self_ptr left_, right_, parent_, pathParent_;DynamicTree::pathParent_285,5321
+  value_t  value_;DynamicTree::value_286,5369
+  int      refCount_;DynamicTree::refCount_287,5388
+class DNMTREE 292,5437
+  virtual ~DNMTREE(DNMTREE::~DNMTREE295,5462
+  T& getKey(DNMTREE::getKey311,5766
+  T  getKey(DNMTREE::getKey312,5797
+  void setKey(DNMTREE::setKey313,5834
+  DNMTREE(DNMTREE::DNMTREE318,5933
+  DNMTREE(DNMTREE::DNMTREE320,6024
+  DNMTREE(DNMTREE::DNMTREE322,6128
+  DNMTREE *left_,DNMTREE::left_326,6297
+  DNMTREE *left_, *right_,DNMTREE::right_326,6297
+  DNMTREE *left_, *right_, *parent_,DNMTREE::parent_326,6297
+  DNMTREE *left_, *right_, *parent_, *pathParent_;DNMTREE::pathParent_326,6297
+  T key_;DNMTREE::key_327,6348
+DNMTREE<T>* DNMTREE<T>::makeTree(makeTree331,6383
+DNMTREE<T>* DNMTREE<T>::cut(cut337,6483
+void DNMTREE<T>::join(join350,6709
+DNMTREE<T>* DNMTREE<T>::findRoot(findRoot361,6861
+void DNMTREE<T>::access(access374,7033
+void DNMTREE<T>::rotateLeft(rotateLeft401,7521
+void DNMTREE<T>::rotateRight(rotateRight426,7971
+void DNMTREE<T>::splay(splay451,8419
+void DNMTREE<T>::printTree(printTree468,8826
+DNMTREE<T>* DNMTREE<T>::findMin(findMin477,9089
+DNMTREE<T>* DNMTREE<T>::findMax(findMax487,9241
+
+src/zi/trees/lib/DynamicTree.hpp,1503
+#define DYNAMIC_TREE_HPP9,136
+namespace Seung 15,221
+class DynamicTree Seung::DynamicTree18,262
+  virtual ~DynamicTree(Seung::DynamicTree::~DynamicTree21,291
+  T& getKey(Seung::DynamicTree::getKey37,699
+  T getKey(Seung::DynamicTree::getKey38,730
+  void setKey(Seung::DynamicTree::setKey39,766
+  virtual DynamicTree* getParent(Seung::DynamicTree::getParent40,810
+  DynamicTree(Seung::DynamicTree::DynamicTree45,924
+  DynamicTree(Seung::DynamicTree::DynamicTree46,1015
+  DynamicTree(Seung::DynamicTree::DynamicTree48,1123
+  DynamicTree *left_,Seung::DynamicTree::left_51,1294
+  DynamicTree *left_, *right_,Seung::DynamicTree::right_51,1294
+  DynamicTree *left_, *right_, *parent_,Seung::DynamicTree::parent_51,1294
+  DynamicTree *left_, *right_, *parent_, *pathParent_;Seung::DynamicTree::pathParent_51,1294
+  T key_;Seung::DynamicTree::key_52,1349
+DynamicTree<T>* DynamicTree<T>::makeTree(makeTree56,1384
+DynamicTree<T>* DynamicTree<T>::cut(cut62,1496
+DynamicTree<T>* DynamicTree<T>::join(join75,1729
+DynamicTree<T>* DynamicTree<T>::findRoot(findRoot88,1916
+DynamicTree<T>* DynamicTree<T>::access(access100,2095
+DynamicTree<T>* DynamicTree<T>::rotateLeft(rotateLeft127,2609
+DynamicTree<T>* DynamicTree<T>::rotateRight(rotateRight154,3094
+DynamicTree<T>* DynamicTree<T>::splay(splay181,3577
+void DynamicTree<T>::printTree(printTree199,4018
+DynamicTree<T>* DynamicTree<T>::findMin(findMin208,4285
+DynamicTree<T>* DynamicTree<T>::findMax(findMax217,4444
+
+src/zi/trees/lib/FHeap.hpp,2324
+#define FHEAP_HPP_9,130
+namespace zi 16,230
+namespace zi { namespace Trees zi::Trees16,230
+class FHeap zi::Trees::FHeap22,326
+  typedef T            value_t;zi::Trees::FHeap::value_t24,348
+  typedef FHeapable<T> heapable_t;zi::Trees::FHeap::heapable_t25,380
+  FHeap(zi::Trees::FHeap::FHeap26,415
+  ~FHeap(zi::Trees::FHeap::~FHeap27,462
+  C* topNode(zi::Trees::FHeap::topNode35,652
+  T top(zi::Trees::FHeap::top36,717
+  int size(zi::Trees::FHeap::size38,766
+  Node* rootList_;zi::Trees::FHeap::rootList_49,1070
+  Node* min_ zi::Trees::FHeap::min_50,1089
+  int   size_ zi::Trees::FHeap::size_51,1108
+void FHeap<T>::push(push55,1153
+void FHeap<T>::push(push62,1296
+void FHeap<T>::erase(erase72,1509
+void FHeap<T>::heapLink(heapLink86,1732
+void FHeap<T>::cut(cut93,1878
+void FHeap<T>::cascadingCut(cascadingCut100,2008
+void FHeap<T>::pop(pop114,2232
+void FHeap<T>::addToRootList(addToRootList143,2758
+void FHeap<T>::removeFromRootList(removeFromRootList157,3066
+void FHeap<T>::clear(clear166,3282
+void FHeap<T>::consolidate(consolidate182,3528
+struct FHeap<FHeap212,4178
+  typedef typename FHeap::Node        self_t;FHeap::self_t213,4202
+  typedef typename FHeap::Node*       self_ptr;FHeap::self_ptr214,4248
+  typedef typename FHeap::value_t     value_t;FHeap::value_t215,4296
+  typedef typename FHeap::heapable_t  heapable_t;FHeap::heapable_t216,4343
+  typedef typename FHeap::heapable_t* heapable_ptr;FHeap::heapable_ptr217,4393
+  value_t  value_;FHeap::value_218,4445
+  self_ptr left_,FHeap::left_219,4464
+  self_ptr left_, right_,FHeap::right_219,4464
+  self_ptr left_, right_, parent_,FHeap::parent_219,4464
+  self_ptr left_, right_, parent_, child_;FHeap::child_219,4464
+  int      degree_;FHeap::degree_220,4507
+  bool     mark_;FHeap::mark_221,4527
+  heapable_ptr heapable_;FHeap::heapable_222,4545
+  Node(FHeap::Node223,4571
+  void addChild(FHeap::addChild226,4705
+  void detach(FHeap::detach239,4988
+  void clearChildren(FHeap::clearChildren246,5163
+class FHeapable 260,5394
+  FHeapable(FHeapable::FHeapable262,5420
+  virtual ~FHeapable(FHeapable::~FHeapable263,5438
+  typedef typename FHeap<T>::Node node_t;FHeapable::node_t265,5476
+  FHeap<T>  *heap_;FHeapable::heap_267,5543
+  node_t    *node_;FHeapable::node_268,5563
+
+src/zi/watershed/MemMap.hpp,922
+void error(6,56
+class MemMappedFileRead{MemMappedFileRead13,238
+	MemMappedFileRead(MemMappedFileRead::MemMappedFileRead15,271
+	T* GetMapPtr(MemMappedFileRead::GetMapPtr36,784
+	~MemMappedFileRead(MemMappedFileRead::~MemMappedFileRead40,820
+	const std::string fileName_;MemMappedFileRead::fileName_48,954
+	const size_t numBytes_;MemMappedFileRead::numBytes_49,984
+	int fd_;MemMappedFileRead::fd_50,1009
+	T* map_;MemMappedFileRead::map_51,1019
+class MemMappedFileWrite{MemMappedFileWrite56,1056
+	MemMappedFileWrite(MemMappedFileWrite::MemMappedFileWrite58,1090
+	T* GetMapPtr(MemMappedFileWrite::GetMapPtr92,1907
+	~MemMappedFileWrite(MemMappedFileWrite::~MemMappedFileWrite96,1943
+	const std::string fileName_;MemMappedFileWrite::fileName_104,2078
+	const size_t numBytes_;MemMappedFileWrite::numBytes_105,2108
+	int fd_;MemMappedFileWrite::fd_106,2133
+	T* map_;MemMappedFileWrite::map_107,2143
+
+src/zi/watershed/QuickieWS.cpp,111
+#define typeof 19,329
+using boost::unordered_map;22,377
+#  define ARRAYSIZE(27,456
+void mexFunction(30,526
+
+src/zi/watershed/RawQuickieWS.cpp,21
+rawQuickieWS(27,456
+
+src/zi/watershed/RawQuickieWS.h,0
+
+src/zi/omThreads.h,0
+
+src/zi/omMutex.h,0
+
+src/utility/primeNumbers.h,0
+
+src/utility/dataWrappers.hpp,0
+
+src/coordinates/yaml.h,0
+
+src/common/boost.h,0

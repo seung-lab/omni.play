@@ -5,11 +5,14 @@
  *    performance testing by wrapping OS-specific timer functions.
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 #include <zi/time/time.hpp>
 
-class OmTimer {
+namespace om {
+namespace utility {
+
+class timer {
 private:
     zi::wall_timer timer_;
 
@@ -68,3 +71,5 @@ public:
     }
 };
 
+} // namespace utility
+} // namespace om

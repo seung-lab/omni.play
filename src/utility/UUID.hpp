@@ -36,19 +36,22 @@ inline idAndStr makePair()
 }
 
 } // namespace uuid_
+
+namespace utility {
+class UUID {
+    private:
+        const om::uuid_::idAndStr id;
+        
+    public:
+        UUID()
+        : id(om::uuid_::makePair())
+        {}
+        
+        const std::string& Str() const {
+            return id.str;
+        }
+};
+} // namespace utility
 } // namespace om
 
-class OmUUID {
-private:
-    const om::uuid_::idAndStr id;
-
-public:
-    OmUUID()
-        : id(om::uuid_::makePair())
-    {}
-
-    const std::string& Str() const {
-        return id.str;
-    }
-};
 

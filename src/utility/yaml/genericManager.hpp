@@ -2,7 +2,7 @@
 
 #include "common/common.h"
 #include "yaml-cpp/yaml.h"
-#include "system/omGenericManager.hpp"
+#include "system/genericManager.hpp"
 #include "utility/yaml/baseTypes.hpp"
 
 namespace YAML{
@@ -10,7 +10,7 @@ namespace YAML{
 class genericManager {
 public: 
     template<typename T>
-    static void Save(Emitter& out, const OmGenericManager<T>& gm)
+    static void Save(Emitter& out, const system::genericManager<T>& gm)
     {
         out << Key << "size" << Value << gm.size_;
         out << Key << "valid set" << Value << gm.validSet_;
@@ -25,7 +25,7 @@ public:
     }
 
     template<typename T>
-    static void Load(const Node& in, OmGenericManager<T>& gm)
+    static void Load(const Node& in, system::genericManager<T>& gm)
     {
         in["size"] >> gm.size_;
         in["valid set"] >> gm.validSet_;

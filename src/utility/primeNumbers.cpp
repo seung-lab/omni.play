@@ -1,7 +1,7 @@
-#include "utility/omPrimeNumbers.hpp"
-#include "common/omException.h"
+#include "utility/primeNumbers.h"
+#include "common/exception.h"
 
-int om::constants::getNextBiggestPrime(const int num)
+int om::utility::getNextBiggestPrime(const int num)
 {
     const int* nextBiggestPrime =
         std::lower_bound(first1000Primes.begin(),
@@ -9,7 +9,7 @@ int om::constants::getNextBiggestPrime(const int num)
                          num);
 
     if(nextBiggestPrime == first1000Primes.end()){
-        throw OmIoException("couldn't find next biggest prime");
+        throw common::ioException("couldn't find next biggest prime");
     }
 
     return *nextBiggestPrime;

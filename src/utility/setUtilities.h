@@ -1,14 +1,11 @@
-/*
- * Brett Warne - bwarne@mit.edu - 2/6/09
- */
+#pragma once
+#include "common/std.h"
 
-#ifndef OM_UTILITY_H
-#define OM_UTILITY_H
-
-#include "common/omStd.h"
+namespace om {
+namespace utility {
 
 template <typename T>
-class OmSetUtils{
+class setUtils{
 public:
 	static void setIntersection(const std::set<T>& source,
 				    const std::set<T>& target,
@@ -69,4 +66,6 @@ public:
 			       insert_itr);
 	}
 };
-#endif
+
+} // namespace utility
+} // namespace om

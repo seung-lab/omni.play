@@ -5,6 +5,9 @@
 #include <zi/concurrency/guard.hpp>
 #include <zi/concurrency/spinlock.hpp>
 
+namespace om {
+namespace utility {
+
 class LockedBool {
 public:
     LockedBool(): val_( 0 )
@@ -317,3 +320,5 @@ typedef OmLockedNumber<uint32_t> OmLockedUint32;
 typedef OmLockedNumber<int64_t>  OmLockedInt64;
 typedef OmLockedNumber<uint64_t> OmLockedUint64;
 
+} // namespace utility
+} // namespace om
