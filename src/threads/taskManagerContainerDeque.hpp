@@ -24,7 +24,7 @@
 #include <zi/concurrency/runnable.hpp>
 #include <deque>
 
-class OmTaskManagerContainerDeque {
+class taskManagerContainerDeque {
 private:
     typedef zi::shared_ptr< zi::concurrency_::runnable > task_t;
     std::deque<task_t> queue_;

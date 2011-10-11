@@ -19,7 +19,7 @@
 //
 
 #include "common/omStoppable.h"
-#include "threads/omThreadPoolManager.h"
+#include "threads/threadPoolManager.h"
 
 #include <zi/concurrency/config.hpp>
 #include <zi/concurrency/thread.hpp>
@@ -36,9 +36,9 @@
 #include <limits>
 
 template< class TaskContainer >
-class OmTaskManagerImpl
+class taskManagerImpl
     : public zi::runnable,
-      public zi::enable_shared_from_this< OmTaskManagerImpl<TaskContainer> >,
+      public zi::enable_shared_from_this< taskManagerImpl<TaskContainer> >,
       public om::stoppable
 {
     typedef zi::shared_ptr< zi::concurrency_::runnable > task_t;
@@ -66,7 +66,7 @@ class OmTaskManagerImpl
     TaskContainer& tasks_;
 
 public:
-    OmTaskManagerImpl(const uint32_t worker_limit, const uint32_t max_size,
+    taskManagerImpl(const uint32_t worker_limit, const uint32_t max_size,
                       TaskContainer& tasks)
         : worker_count_(0)
         , worker_limit_(worker_limit)
@@ -76,14 +76,14 @@ public:
         , state_(IDLE)
         , tasks_(tasks)
     {
-        OmThreadPoolManager::Add(this);
+        threadPoolManager::Add(this);
     }
 
-    ~OmTaskManagerImpl()
+    ~taskManagerImpl()
     {
-        // remove before stopping (else OmThreadPoolManager may also attempt to
+        // remove before stopping (else threadPoolManager may also attempt to
         //   stop pool during its own shutdown...)
-        OmThreadPoolManager::Remove(this);
+        threadPoolManager::Remove(this);
         stop();
     }
 

@@ -1,11 +1,11 @@
-#include "threads/omTaskManager.hpp"
-#include "threads/omThreadPoolManager.h"
+#include "threads/taskManager.hpp"
+#include "threads/threadPoolManager.h"
 
-OmThreadPoolManager::~OmThreadPoolManager() {
+threadPoolManager::~threadPoolManager() {
     StopAll();
 }
 
-void OmThreadPoolManager::StopAll()
+void threadPoolManager::StopAll()
 {
     // as threadpools close down, there are potential races on the pool mutex,
     //  so use copy of pools_
@@ -31,13 +31,13 @@ void OmThreadPoolManager::StopAll()
     }
 }
 
-void OmThreadPoolManager::Add(om::stoppable* p)
+void threadPoolManager::Add(om::stoppable* p)
 {
     zi::guard g(instance().lock_);
     instance().pools_.insert(p);
 }
 
-void OmThreadPoolManager::Remove(om::stoppable* p)
+void threadPoolManager::Remove(om::stoppable* p)
 {
     zi::guard g(instance().lock_);
     instance().pools_.erase(p);

@@ -19,29 +19,29 @@
 //
 
 #include "common/om.hpp"
-#include "threads/omTaskManagerImpl.hpp"
-#include "threads/omTaskManagerTypes.h"
+#include "threads/taskManagerImpl.hpp"
+#include "threads/taskManagerTypes.h"
 #include "utility/omSystemInformation.h"
 
 #include <zi/bits/type_traits.hpp>
 #include <zi/meta/enable_if.hpp>
 
 template <typename TaskContainer>
-class OmTaskManager {
+class taskManager {
 private:
     typedef om::shared_ptr<zi::concurrency_::runnable> task_t;
 
     TaskContainer tasks_;
 
     // shared_ptr to support enable_shared_from_this
-    typedef OmTaskManagerImpl<TaskContainer> manager_t;
+    typedef taskManagerImpl<TaskContainer> manager_t;
     om::shared_ptr<manager_t> manager_;
 
 public:
-    OmTaskManager()
+    taskManager()
     {}
 
-    ~OmTaskManager(){
+    ~taskManager(){
         join();
     }
 

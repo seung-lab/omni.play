@@ -1,6 +1,6 @@
 #pragma once
 
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 
 template <class ARG, class T>
 struct IndivArgPolicy {
@@ -37,13 +37,13 @@ struct VectorArgPolicy {
 
 template <class ARG, class T,
           template <class,class> class ARG_RUNNER>
-class OmThreadPoolBatched {
+class threadPoolBatched {
 private:
     const size_t taskVecSize_;
 
     ARG_RUNNER<ARG, T> runner_;
 
-    OmThreadPool pool_;
+    threadPool pool_;
 
     typedef std::vector<ARG> args_t;
     om::shared_ptr<args_t> args_;
@@ -55,15 +55,15 @@ private:
     }
 
 public:
-    OmThreadPoolBatched()
+    threadPoolBatched()
         : taskVecSize_(1000)
     {}
 
-    OmThreadPoolBatched(const int taskVecSize)
+    threadPoolBatched(const int taskVecSize)
         : taskVecSize_(taskVecSize)
     {}
 
-    ~OmThreadPoolBatched(){
+    ~threadPoolBatched(){
         JoinPool();
     }
 
@@ -91,7 +91,7 @@ public:
         {
             pool_.push_back(
                 zi::run_fn(
-                    zi::bind(&OmThreadPoolBatched::worker,
+                    zi::bind(&threadPoolBatched::worker,
                              this, args_)));
 
             resetArgs();
@@ -106,7 +106,7 @@ public:
         {
             pool_.push_back(
                 zi::run_fn(
-                    zi::bind(&OmThreadPoolBatched::worker,
+                    zi::bind(&threadPoolBatched::worker,
                              this, args_)));
 
             resetArgs();

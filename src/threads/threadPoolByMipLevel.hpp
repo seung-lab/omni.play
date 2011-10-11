@@ -2,25 +2,25 @@
 
 #include "common/om.hpp"
 #include "utility/omSystemInformation.h"
-#include "threads/omTaskManagerManager.h"
+#include "threads/taskManagerManager.h"
 #include "zi/omThreads.h"
 #include "tiles/cache/omMipLevelContainer.hpp"
 
-class OmThreadPoolByMipLevel {
+class threadPoolByMipLevel {
 private:
     typedef zi::concurrency_::task_manager_tpl<OmMipLevelContainer> task_man_t;
     boost::scoped_ptr<task_man_t> pool_;
 
 public:
-    OmThreadPoolByMipLevel(){
-        OmThreadPoolManager::Add(this);
+    threadPoolByMipLevel(){
+        threadPoolManager::Add(this);
     }
 
-    virtual ~OmThreadPoolByMipLevel()
+    virtual ~threadPoolByMipLevel()
     {
-        // remove before stopping (else OmThreadPoolManager may also attempt to
+        // remove before stopping (else threadPoolManager may also attempt to
         //   stop pool during its own shutdown...)
-        OmThreadPoolManager::Remove(this);
+        threadPoolManager::Remove(this);
         if(pool_){
             pool_->stop();
         }
