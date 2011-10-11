@@ -4,7 +4,7 @@
 #include "mesh/io/meshMetadata.hpp"
 #include "mesh/iomeshReader.hpp"
 #include "mesh/mesh.h"
-#include "mesh/meshManager.h"
+#include "mesh/mesh::manager.h"
 #include "system/cache/meshCache.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 
@@ -12,7 +12,7 @@ static const GLuint NULL_VBO_ID = 0;
 
 mesh::mesh(segmentation* seg,
                const meshCoord& coord,
-               meshManager* pMipMeshManager,
+               mesh::manager* pMipMeshManager,
                meshCache* cache)
     : segmentation_(seg)
     , cache_(cache)
@@ -56,7 +56,7 @@ bool mesh::createVbo()
     }
 
     if(isVbo()){
-        throw OmIoException("should not already be vbo");
+        throw common::ioException("should not already be vbo");
     }
 
     //create the VBO for the vertex data
@@ -85,7 +85,7 @@ bool mesh::createVbo()
 void mesh::deleteVbo()
 {
     if(!isVbo()){
-        throw OmIoException("not a vbo");
+        throw common::ioException("not a vbo");
     }
 
     glDeleteBuffersARB(1, &vertexDataVboId_);

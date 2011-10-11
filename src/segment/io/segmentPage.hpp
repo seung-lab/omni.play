@@ -41,11 +41,11 @@ public:
         , segmentsData_(NULL)
         , listTypePage_(NULL)
     {
-        segmentsDataPtr_ = om::make_shared<segmentPageV4>(segmentation_,
+        segmentsDataPtr_ = boost::make_shared<segmentPageV4>(segmentation_,
                                                                pageNum_,
                                                                pageSize_);
 
-        listTypePagePtr_ = om::make_shared<segmentListTypePage>(segmentation_,
+        listTypePagePtr_ = boost::make_shared<segmentListTypePage>(segmentation_,
                                                                      pageNum_,
                                                                      pageSize_);
 
@@ -70,7 +70,7 @@ public:
             objectPool_[i].segments_ = segments_;
             objectPool_[i].data_ = &segmentsData_[i];
             objectPool_[i].listType_ = &listTypePage_[i];
-            objectPool_[i].data_->bounds = om::dataBbox(segmentation_, 0);
+            objectPool_[i].data_->bounds = coords::dataBbox(segmentation_, 0);
         }
     }
 

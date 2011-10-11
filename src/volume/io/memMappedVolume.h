@@ -3,7 +3,6 @@
 #include "volume/io/memMappedVolumeImpl.hpp"
 #include "volume/mipVolume.h"
 #include "volume/volumeTypes.h"
-#include "datalayer/hdf5/omHdf5ChunkUtils.hpp"
 
 class memMappedVolume {
 public:
@@ -44,7 +43,7 @@ public:
                 vol->mVolDataType = OmHdf5ChunkUtils::DetermineOldVolType(vol);
 
             } else {
-                throw OmIoException("can not resolve volume type");
+                throw common::ioException("can not resolve volume type");
             }
         }
 
@@ -72,7 +71,7 @@ private:
         case OmVolDataType::FLOAT:
             return memMappedVolumeImpl<float>(vol);
         case OmVolDataType::UNKNOWN:
-            throw OmIoException("unknown data type--probably old file?");
+            throw common::ioException("unknown data type--probably old file?");
         }
 
         throw OmArgException("type not know");

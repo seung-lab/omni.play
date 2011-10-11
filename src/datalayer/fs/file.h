@@ -1,34 +1,32 @@
 #pragma once
 
-#include "common/omException.h"
-#include "utility/omSmartPtr.hpp"
+#include "common/exception.h"
+#include "utility/smartPtr.hpp"
 
 #include <vector>
-#include <QFile>
+#include <fstream>
+
+
+#include "boost/filesystem.hpp"
 
 namespace om {
 namespace file {
 
-void openFileRO(QFile& file);
-void openFileRW(QFile& file);
-void openFileWO(QFile& file);
-void openFileAppend(QFile& file);
-
 int64_t numBytes(const std::string& fnp);
 
-void resizeFileNumBytes(QFile* file, const int64_t newSize);
-inline void resizeFileNumBytes(QFile& file, const int64_t newSize){
-    resizeFileNumBytes(&file, newSize);
+void resizeFileNumBytes(std::string* fnp, const int64_t newSize);
+inline void resizeFileNumBytes(std::string& fnp, const int64_t newSize){
+    resizeFileNumBytes(&fnp, newSize);
 }
 
 template <typename T>
-void resizeFileNumElements(QFile& file, const int64_t numElements){
-    resizeFileNumBytes(&file, sizeof(T) * numElements);
+void resizeFileNumElements(std::string& fnp, const int64_t numElements){
+    resizeFileNumBytes(&fnp, sizeof(T) * numElements);
 }
 
 template <typename T>
-void resizeFileNumElements(QFile* file, const int64_t numElements){
-    resizeFileNumBytes(file, sizeof(T) * numElements);
+void resizeFileNumElements(std::string* fnp, const int64_t numElements){
+    resizeFileNumBytes(fnp, sizeof(T) * numElements);
 }
 
 void rmFile(const std::string& fnp);
@@ -39,89 +37,25 @@ bool exists(const std::string& fnp);
 
 std::string tempPath();
 
-template <class PTR>
-void openFileRO(PTR& file, const std::string& fnp)
-{
-    file.reset(new QFile(std::string::fromStdString(fnp)));
-    if(!file->open(QIODevice::ReadOnly)){
-        throw OmIoException("could not open file read only", fnp);
-    }
-}
-
-template <class PTR>
-void openFileAppend(PTR& file, const std::string& fnp)
-{
-    file.reset(new QFile(std::string::fromStdString(fnp)));
-    if(!file->open(QIODevice::Append)){
-        throw OmIoException("could not open file read/write append", fnp);
-    }
-}
-
-template <class PTR>
-void openFileRW(PTR& file, const std::string& fnp)
-{
-    file.reset(new QFile(std::string::fromStdString(fnp)));
-    if(!file->open(QIODevice::ReadWrite)){
-        throw OmIoException("could not open file read/write", fnp);
-    }
-}
-
-template <class PTR>
-void openFileWO(PTR& file, const std::string& fnp)
-{
-    file.reset(new QFile(std::string::fromStdString(fnp)));
-
-    if(!file->open(QIODevice::WriteOnly)){
-        throw OmIoException("could not open file for writing", fnp);
-    }
-}
-
 template <typename T>
-T* mapFile(QFile* file)
+boost::shared_ptr<T> readAll(std::string* fnp)
 {
-    uchar* map = file->map(0, file->size());
-    
-    if(!map){
-        throw OmIoException("could not map file", file->fileName());
-    }
+    const int64_t bytes = numBytes(*fnp);
 
-    file->close();
-
-    return reinterpret_cast<T*>(map);
-}
-
-template <typename T, class PTR>
-T* mapFile(PTR& file)
-{
-    uchar* map = file->map(0, file->size());
-
-    if(!map){
-        throw OmIoException("could not map file", file->fileName());
-    }
-
-    file->close();
-
-    return reinterpret_cast<T*>(map);
-}
-
-template <typename T>
-boost::shared_ptr<T> readAll(QFile* file)
-{
-    const int64_t numBytes = file->size();
-
-    if(0 != numBytes % sizeof(T)){
-        throw OmIoException("file size not even multiple of sizeof(type)");
+    if(0 != bytes % sizeof(T)){
+        throw common::ioException("file size not even multiple of sizeof(type)");
     }
 
     boost::shared_ptr<T> ret =
-        OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
+        utility::smartPtr<T>::MallocNumBytes(bytes, common::DONT_ZERO_FILL);
 
     char* dataChar = reinterpret_cast<char*>(ret.get());
 
-    const int64_t numBytesRead = file->read(dataChar, numBytes);
+    std::fstream file(*fnp, std::fstream::in | std::fstream::binary);
+    const int64_t bytesRead = file.read(dataChar, bytes);
 
-    if(numBytesRead != numBytes){
-        throw OmIoException("could not read entire file");
+    if(bytesRead != bytes){
+        throw common::ioException("could not read entire file");
     }
 
     return ret;
@@ -129,88 +63,66 @@ boost::shared_ptr<T> readAll(QFile* file)
 
 
 template <typename T>
-boost::shared_ptr<T> readAll(QFile& file) {
-    return readAll<T>(&file);
+boost::shared_ptr<T> readAll(std::string& fnp) {
+    return readAll<T>(&fnp);
 }
 
 template <typename T>
-void writeVec(QFile& file, const std::vector<T>& vec)
+void writeVec(std::string& fnp, const std::vector<T>& vec)
 {
-    resizeFileNumElements<T>(file, vec.size());
+    resizeFileNumElements<T>(fnp, vec.size());
 
     const char* data = reinterpret_cast<const char*>(&vec[0]);
 
-    const int64_t numBytes = vec.size() * sizeof(T);
+    const int64_t bytes = vec.size() * sizeof(T);
 
-    const int numBytesWritten = file.write(data, numBytes);
+    std::fstream file(fnp, std::fstream::out | std::fstream::binary);
+    const int bytesWritten = file.write(data, bytes);
 
-    if(numBytesWritten != numBytes){
-        throw OmIoException("could not fully write file", file.fileName());
+    if(bytesWritten != bytes){
+        throw common::ioException("could not fully write file", fnp);
     }
 }
 
 template <typename T>
-void writeNumElements(QFile& file, const boost::shared_ptr<T> ptr,
+void writeNumElements(std::string& fnp, const boost::shared_ptr<T> ptr,
                       const int64_t numElements)
 {
     const int64_t numBytes = numElements * sizeof(T);
 
-    resizeFileNumBytes(file, numBytes);
+    resizeFileNumBytes(fnp, numBytes);
 
     const char* data = reinterpret_cast<const char*>(ptr.get());
 
+    std::fstream file(fnp, std::fstream::out | std::fstream::binary);
     const int numBytesWritten = file.write(data, numBytes);
 
     if(numBytesWritten != numBytes){
-        throw OmIoException("could not fully write file", file.fileName());
+        throw common::ioException("could not fully write file", fnp);
     }
 }
 
 template <typename T>
-void createFileNumElements(const std::string& fnp, const int64_t numElements)
+void writeStrings(std::string& file, const T& strings)
 {
-    QFile file(std::string::fromStdString(fnp));
-
-    openFileWO(file);
-
-    boost::shared_ptr<T> empty = OmSmartPtr<T>::MallocNumElements(numElements,
-                                                                  om::ZERO_FILL);
-
-    writeNumElements(file, empty, numElements);
-}
-
-template <typename T>
-void createFileFromData(const std::string& fnp, const boost::shared_ptr<T> ptr,
-                        const int64_t numElements)
-{
-    QFile file(std::string::fromStdString(fnp));
-
-    openFileWO(file);
-
-    writeNumElements(file, ptr, numElements);
-}
-
-template <typename T>
-void writeStrings(QFile& file, const T& strings)
-{
-    QTextStream out(&file);
+    std::fstream out(file, std::fstream::out);
 
     FOR_EACH(iter, strings)
     {
-        out << std::string::fromStdString(*iter) << "\n";
+        out << *iter << "\n";
     }
 }
 
 template <typename T, typename PROGRESS>
-void writeStrings(QFile& file, const T& strings, PROGRESS* progress)
+void writeStrings(std::string& file, const T& strings, PROGRESS* progress)
 {
     progress->SetTotal(strings.size());
 
-    QTextStream out(&file);
+    std::fstream out(&file);
 
     FOR_EACH(iter, strings)
     {
-        out << std::string::fromStdString(*iter) << "\n";
+        out << *iter << "\n";
         progress->SetDone(1);
     }
 }

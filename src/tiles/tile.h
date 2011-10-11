@@ -50,6 +50,6 @@ private:
         return key_.getVolume();
     }
 
-    ObjectType getVolType() const;
+    common::objectType getVolType() const;
 };
 

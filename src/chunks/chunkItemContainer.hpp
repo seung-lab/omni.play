@@ -17,14 +17,14 @@ private:
 
     void setup()
     {
-        const int rootMipLevel = vol_->Coords().GetRootMipLevel();
+        const int rootMipLevel = vol_->CoordinateSystem()().GetRootMipLevel();
 
         std::vector<matrix_t*> newMips;
         newMips.resize(rootMipLevel + 1);
 
         for(int mipLevel = 0; mipLevel <= rootMipLevel; ++mipLevel)
         {
-            const Vector3i dims = vol_->Coords().MipLevelDimensionsInMipChunks(mipLevel);
+            const Vector3i dims = vol_->CoordinateSystem()().MipLevelDimensionsInMipChunks(mipLevel);
             newMips[mipLevel] = new matrix_t(vol_, dims.x, dims.y, dims.z);
         }
 

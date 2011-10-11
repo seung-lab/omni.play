@@ -14,14 +14,14 @@
 
 class dataForMeshLoad;
 class meshCache;
-class meshManager;
+class mesh::manager;
 class segmentation;
 class QGLContext;
 
 class mesh {
 public:
     mesh(segmentation*, const meshCoord&,
-           meshManager*, meshCache*);
+           mesh::manager*, meshCache*);
 
     virtual ~mesh();
 
@@ -39,7 +39,7 @@ public:
 private:
     segmentation *const segmentation_;
     meshCache *const cache_;
-    meshManager *const meshMan_;
+    mesh::manager *const meshMan_;
 
     const meshCoord meshCoord_;
 

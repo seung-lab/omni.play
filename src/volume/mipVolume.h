@@ -6,13 +6,18 @@
 #include "datalayer/dataWrapper.h"
 
 class dataPath;
-class chunk;
-class volumeData;
 
 namespace YAML { template <class T> class mipVolume; }
 
 namespace om {
+
+namespace chunk {
+class chunk;
+}
+
 namespace volume {
+
+class data;
 
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
                            MIPVOL_BUILT,
@@ -26,7 +31,7 @@ public:
     virtual std::string GetDirectoryPath() const = 0;
     virtual std::string GetName() = 0;
     virtual bool LoadVolData() = 0;
-    virtual volumeData* VolData() = 0;
+    virtual data* VolData() = 0;
     virtual common::objectType getVolumeType() const = 0;
     virtual common::id getID() const = 0;
 
@@ -37,15 +42,15 @@ public:
     //mip data accessors
     bool ContainsVoxel(const coords::globalCoord &vox);
 
-    volDataType getVolDataType(){
+    dataType getVolDataType(){
         return mVolDataType;
     }
 
     std::string getVolDataTypeAsStr(){
-        return volumeTypeHelpers::GetTypeAsString(mVolDataType);
+        return typeHelpers::GetTypeAsString(mVolDataType);
     }
 
-    virtual void SetVolDataType(const OmVolDataType) = 0;
+    virtual void SetVolDataType(const dataType) = 0;
 
     virtual int GetBytesPerVoxel() const = 0;
     virtual int GetBytesPerSlice() const = 0;
@@ -60,7 +65,7 @@ public:
 
 protected:
     coords::volumeSystem coords_;
-    volDataType mVolDataType;
+    dataType mVolDataType;
 
     int mBuildState;
     void SetBuildState(const MipVolumeBuildState s){
@@ -76,7 +81,7 @@ private:
 //     template <class T> friend class OmVolumeBuilderImages;
 //     template <class T> friend class mipVolumeArchive;
 //     template <class T> friend class YAML::mipVolume;
-// 
+//
 //     friend class chunk;
 //     friend class mipVolumeArchiveOld;
 //     friend class volumeData;

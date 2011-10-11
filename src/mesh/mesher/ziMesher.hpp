@@ -27,11 +27,11 @@ class ziMesher {
 public:
     ziMesher(segmentation* segmentation, const double threshold)
         : segmentation_(segmentation)
-        , rootMipLevel_(segmentation->Coords().GetRootMipLevel())
+        , rootMipLevel_(segmentation->CoordinateSystem()().GetRootMipLevel())
         , threshold_(threshold)
         , chunkCollectors_()
-        , meshManager_(segmentation->MeshManager(threshold))
-        , meshWriter_(new meshWriter(meshManager_))
+        , mesh::manager_(segmentation->MeshManager(threshold))
+        , meshWriter_(new meshWriter(mesh::manager_))
         , numParallelChunks_(numberParallelChunks())
         , numThreadsPerChunk_(zi::system::cpu_count / 2)
         , downScallingFactor_(meshParams::GetDownScallingFactor())
@@ -54,7 +54,7 @@ public:
         meshWriter_->Join();
         meshWriter_->CheckEverythingWasMeshed();
 
-        meshManager_->Metadata()->SetMeshedAndStorageAsChunkFiles();
+        mesh::manager_->Metadata()->SetMeshedAndStorageAsChunkFiles();
     }
 
     // void RemeshFullVolume()
@@ -82,7 +82,7 @@ private:
     std::map<coords::chunkCoord, std::vector<MeshCollector*> > occurances_;
     std::map<coords::chunkCoord, MeshCollector*> chunkCollectors_;
 
-    meshManager *const meshManager_;
+    mesh::manager *const mesh::manager_;
     boost::scoped_ptr<meshWriter> meshWriter_;
 
     const int numParallelChunks_;
@@ -94,7 +94,7 @@ private:
     void init()
     {
         om::shared_ptr<std::deque<coords::chunkCoord> > levelZeroChunks =
-            segmentation_->GetMipChunkCoords(0);
+            segmentation_->GetMipChunkCoordinateSystem()(0);
 
         progress_.SetTotalNumChunks(levelZeroChunks->size());
 
@@ -252,11 +252,11 @@ private:
 
     void processChunk( coords::chunkCoord coord )
     {
-        static const int chunkDim = segmentation_->Coords().GetChunkDimension();
+        static const int chunkDim = segmentation_->CoordinateSystem()().GetChunkDimension();
 
         segChunk* chunk = segmentation_->GetChunk(coord);
 
-        const om::normBbox& dstBbox = chunk->Mipping().GetNormExtent();
+        const coords::normBbox& dstBbox = chunk->Mipping().GetNormExtent();
 
         Vector3f dstDim = dstBbox.getDimensions();
 

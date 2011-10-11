@@ -110,12 +110,12 @@ private:
         }
 
         if(!file_->open(QIODevice::ReadWrite)) {
-            throw OmIoException("could not open", fnp_);
+            throw common::ioException("could not open", fnp_);
         }
 
         uchar* map = file_->map(0, file_->size());
         if(!map){
-            throw OmIoException("could not map", fnp_);
+            throw common::ioException("could not map", fnp_);
         }
 
         file_->close();
@@ -136,14 +136,14 @@ private:
         file_.reset(new QFile(fnp_));
 
         if(!file_->open(QIODevice::ReadWrite)) {
-            throw OmIoException("could not open", fnp_);
+            throw common::ioException("could not open", fnp_);
         }
 
         file_->resize(segIDs.size() * sizeof(meshDataEntry));
 
         uchar* map = file_->map(0, file_->size());
         if(!map){
-            throw OmIoException("could not map", fnp_);
+            throw common::ioException("could not map", fnp_);
         }
 
         file_->close();

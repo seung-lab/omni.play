@@ -7,7 +7,7 @@ public:
     {
         const std::string fname = fileNames::GetMemMapFileName(vol, mipLevel);
 
-        boost::shared_ptr<QFile> file = om::make_shared<QFile>(std::string::fromStdString(fname));
+        boost::shared_ptr<QFile> file = boost::make_shared<QFile>(std::string::fromStdString(fname));
 
         om::file::openFileRW(*file);
 

@@ -46,7 +46,7 @@ public:
 
     void CloseDownThreads();
 
-    void SetVolDataType(const OmVolDataType);
+    void SetVolDataType(const dataType);
 
     chunk* GetChunk(const coords::chunkCoord& coord);
 

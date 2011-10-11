@@ -2,7 +2,7 @@
 
 #include "common/debug.h"
 #include "datalayer/fs/fileNames.hpp"
-#include "datalayer/fs/memMappedFileQT.hpp"
+#include "datalayer/fs/memMappedFile.hpp"
 #include "datalayer/IDataVolume.hpp"
 #include "datalayer/IDataVolume.hpp"
 #include "project/project.h"
@@ -23,8 +23,8 @@ private:
     mipVolume* vol_;
     std::vector<boost::shared_ptr<IOnDiskFile<T> > > maps_;
 
-    typedef OmMemMappedFileReadQT<T> reader_t;
-    typedef OmMemMappedFileWriteQT<T> writer_t;
+    typedef memMappedFileRead<T> reader_t;
+    typedef memMappedFileWrite<T> writer_t;
 
 public:
 
@@ -102,7 +102,7 @@ public:
 private:
 
     void resizeMapsVector(){
-        maps_.resize(vol_->Coords().GetRootMipLevel() + 1);
+        maps_.resize(vol_->CoordinateSystem().GetRootMipLevel() + 1);
     }
 
     std::string getFileName(const int level) const {

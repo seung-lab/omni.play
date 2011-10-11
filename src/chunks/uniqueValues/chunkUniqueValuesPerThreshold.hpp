@@ -64,7 +64,7 @@ private:
         }
 
         if(!file.open(QIODevice::ReadOnly)) {
-            throw OmIoException("could not open", fnp_);
+            throw common::ioException("could not open", fnp_);
         }
 
         values_ = OmSmartPtr<uint32_t>::MallocNumBytes(file.size(),
@@ -122,7 +122,7 @@ private:
         QFile file(fnp_);
 
         if(!file.open(QIODevice::WriteOnly)) {
-            throw OmIoException("could not open", fnp_);
+            throw common::ioException("could not open", fnp_);
         }
 
         const int64_t numBytes = numElements_ * sizeof(uint32_t);

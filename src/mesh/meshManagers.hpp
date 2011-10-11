@@ -2,21 +2,21 @@
 
 #include "mesh/io/meshMetadata.hpp"
 #include "mesh/mesher/ziMesher.hpp"
-#include "mesh/meshManager.h"
+#include "mesh/mesh::manager.h"
 #include "utility/fuzzyStdObjs.hpp"
 #include "utility/omStringHelpers.h"
 #include "volume/segmentationFolder.h"
 
-class meshManagers {
+class mesh::managers {
 private:
     segmentation *const segmentation_;
 
 public:
-    meshManagers(segmentation* segmentation)
+    mesh::managers(segmentation* segmentation)
         : segmentation_(segmentation)
     {}
 
-    ~meshManagers()
+    ~mesh::managers()
     {
         zi::guard g(managersLock_);
 
@@ -39,7 +39,7 @@ public:
 
         FOR_EACH(iter, managers_)
         {
-            meshManager* man = iter->second;
+            mesh::manager* man = iter->second;
             man->CloseDownThreads();
         }
     }
@@ -48,13 +48,13 @@ public:
         return GetManager(1)->Metadata()->IsBuilt();
     }
 
-    meshManager* GetManager(const double threshold)
+    mesh::manager* GetManager(const double threshold)
     {
         zi::guard g(managersLock_);
 
         if(!managers_.count(threshold))
         {
-            managers_[threshold] = new meshManager(segmentation_, threshold);
+            managers_[threshold] = new mesh::manager(segmentation_, threshold);
             managers_[threshold]->Load();
         }
 
@@ -65,7 +65,7 @@ public:
     {
         zi::guard g(managersLock_);
 
-        managers_[threshold] = new meshManager(segmentation_, threshold);
+        managers_[threshold] = new mesh::manager(segmentation_, threshold);
         managers_[threshold]->Create();
     }
 
@@ -94,7 +94,7 @@ public:
 
         FOR_EACH(iter, managers_)
         {
-            meshManager* man = iter->second;
+            mesh::manager* man = iter->second;
             man->ClearCache();
         }
     }
@@ -137,7 +137,7 @@ OmEvents::Redraw3d();
     }
 
 private:
-    DoubleFuzzyStdMap<meshManager*> managers_;
+    DoubleFuzzyStdMap<mesh::manager*> managers_;
     zi::spinlock managersLock_;
 
     DoubleFuzzyStdSet thresholds_;

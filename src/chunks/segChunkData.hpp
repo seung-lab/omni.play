@@ -33,7 +33,7 @@ public:
 
         case OmVolDataType::UNKNOWN:
         default:
-            throw OmIoException("data type not handled");
+            throw common::ioException("data type not handled");
         };
     }
 };

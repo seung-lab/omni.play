@@ -12,12 +12,18 @@
 #include "zi/omUtility.h"
 #include "datalayer/archive/project.h"
 
+namespace om {
+
+namespace volume {
 class channel;
 class segmentation;
-class OmHdf5;
+}
+
+namespace project {
+
 class projectImpl;
-class projectVolumes;
-class projectGlobals;
+class volumes;
+class globals;
 
 class project : private om::singletonBase<project> {
 private:
@@ -26,7 +32,7 @@ private:
 public:
     //project IO
     static std::string New(const std::string& fileNameAndPath);
-    static void Load(const std::string& fileNameAndPath, QWidget* guiParent = NULL);
+    static void Load(const std::string& fileNameAndPath);
     static void Save();
     static void Close();
 
@@ -36,27 +42,22 @@ public:
     static const std::string& FilesFolder();
     static const std::string& OmniFile();
 
-    static bool HasOldHDF5();
-    static OmHdf5* OldHDF5();
-
     //volume management
-    static projectVolumes& Volumes();
+    static volumes& Volumes();
 
     static int GetFileVersion();
 
-    static projectGlobals& Globals();
+    static globals& Globals();
 
 private:
     project();
     ~project();
 
     static void setFileVersion(const int fileVersion);
-    friend class dataArchiveProject;
-    friend class om::data::archive::project;
-    
-    friend QDataStream &operator<<(QDataStream & out, const project & p );
-    friend QDataStream &operator>>(QDataStream & in, project & p );
+    friend class data::archive::project;
 
     friend class zi::singleton<project>;
 };
 
+} // namespace project
+} // namespace om

@@ -2,25 +2,33 @@
 
 #include "common/common.h"
 #include "volume/volumeTypes.h"
+#include "utility/smartPtr.hpp"
+#include "boost/make_shared.hpp"
 
 #define dataWrapperRaw(c) (dataWrapper<int8_t>::produceNoFree(c))
 #define dataWrapperInvalid() (dataWrapper<int8_t>::produceNull())
 
-template <class T> struct OmVolDataTypeImpl;
-template <> struct OmVolDataTypeImpl<uint32_t>{ static volDataType getType() { return OmVolDataType::UINT32;}};
-template <> struct OmVolDataTypeImpl<int32_t> { static OmVolDataType getType() { return OmVolDataType::INT32; }};
-template <> struct OmVolDataTypeImpl<float>   { static OmVolDataType getType() { return OmVolDataType::FLOAT; }};
-template <> struct OmVolDataTypeImpl<int8_t>  { static OmVolDataType getType() { return OmVolDataType::INT8;  }};
-template <> struct OmVolDataTypeImpl<uint8_t> { static OmVolDataType getType() { return OmVolDataType::UINT8; }};
-
 namespace om {
+namespace data {
+
+template <class T> struct volDataTypeImpl;
+template <> struct volDataTypeImpl<uint32_t>{ 
+    static volume::dataType getType() { return volume::dataType::UINT32;}};
+template <> struct volDataTypeImpl<int32_t> { 
+    static volume::dataType getType() { return volume::dataType::INT32; }};
+template <> struct volDataTypeImpl<float>   { 
+    static volume::dataType getType() { return volume::dataType::FLOAT; }};
+template <> struct volDataTypeImpl<int8_t>  { 
+    static volume::dataType getType() { return volume::dataType::INT8;  }};
+template <> struct volDataTypeImpl<uint8_t> { 
+    static volume::dataType getType() { return volume::dataType::UINT8; }};
+
 enum dataAllocType {
     MALLOC,
     NEW_ARRAY,
     NONE,
     INVALID
 };
-}
 
 /* TODO: fixme
    struct malloc_tag    { operator dataAllocType() const { return MALLOC; } };
@@ -52,10 +60,10 @@ public:
     virtual void * getVoidPtr() = 0;
 
     virtual int getSizeof() = 0;
-    virtual ptr_type newWrapper(void *, const om::dataAllocType) = 0;
+    virtual ptr_type newWrapper(void *, const dataAllocType) = 0;
 
     virtual std::string getTypeAsString() = 0;
-    virtual OmVolDataType getVolDataType() = 0;
+    virtual volume::dataType getVolDataType() = 0;
     virtual int getHdf5FileType() = 0;
     virtual int getHdf5MemoryType() = 0;
 
@@ -78,10 +86,10 @@ public:
         return ptr_type(new dataWrapper());
     };
 
-    static dataWrapperPtr produce(T* ptr, const om::dataAllocType t){
+    static dataWrapperPtr produce(T* ptr, const dataAllocType t){
         return ptr_type(new dataWrapper(ptr, t));
     };
-    static dataWrapperPtr produce(void* ptr, const om::dataAllocType t){
+    static dataWrapperPtr produce(void* ptr, const dataAllocType t){
         return produce(static_cast<T*>(ptr), t);
     };
 
@@ -92,18 +100,18 @@ public:
     }
 
     static dataWrapperPtr produceNoFree(T* ptr) {
-        return ptr_type(new dataWrapper(ptr, om::NONE));
+        return ptr_type(new dataWrapper(ptr, NONE));
     };
     static dataWrapperPtr produceNoFree(const char* ptr) {
-        return ptr_type(new dataWrapper((T*)ptr, om::NONE));
+        return ptr_type(new dataWrapper((T*)ptr, NONE));
     };
 
-    dataWrapperPtr newWrapper(T* ptr, const om::dataAllocType dt){
+    dataWrapperPtr newWrapper(T* ptr, const dataAllocType dt){
         dataWrapperPtr ret = ptr_type(new dataWrapper(ptr, dt));
         ret->checkIfValid();
         return ret;
     }
-    dataWrapperPtr newWrapper(void* ptr, const om::dataAllocType dt){
+    dataWrapperPtr newWrapper(void* ptr, const dataAllocType dt){
         return newWrapper(static_cast<T*>(ptr), dt);
     }
 
@@ -129,61 +137,54 @@ public:
     }
 
     std::string getTypeAsString(){
-        return OmVolumeTypeHelpers::GetTypeAsString(getVolDataType());
+        return volume::typeHelpers::GetTypeAsString(getVolDataType());
     }
 
-    std::string getTypeAsstd::string(){
-        return std::string::fromStdString(getTypeAsString());
-    }
-
-    OmVolDataType getVolDataType(){
-        return OmVolDataTypeImpl<T>::getType();
+    volume::dataType getVolDataType(){
+        return volDataTypeImpl<T>::getType();
     }
 
     int getHdf5FileType(){
-        return OmVolumeTypeHelpers::getHDF5FileType(getVolDataType());
+        return volume::typeHelpers::getHDF5FileType(getVolDataType());
     }
 
     int getHdf5MemoryType(){
-        return OmVolumeTypeHelpers::getHDF5MemoryType(getVolDataType());
+        return volume::typeHelpers::getHDF5MemoryType(getVolDataType());
     }
 
 private:
     const boost::shared_ptr<T> ptr_;
 
-    static boost::shared_ptr<T> wrapRawPtr(T* rawPtr, const om::dataAllocType d){
+    static boost::shared_ptr<T> wrapRawPtr(T* rawPtr, const dataAllocType d){
         switch(d){
-        case om::MALLOC:
-            return OmSmartPtr<T>::WrapMalloc(rawPtr);
-        case om::NEW_ARRAY:
-            return OmSmartPtr<T>::WrapNewArray(rawPtr);
-        case om::NONE:
-            return OmSmartPtr<T>::WrapNoFree(rawPtr);
-        case om::INVALID:
+        case MALLOC:
+            return utility::smartPtr<T>::WrapMalloc(rawPtr);
+        case NEW_ARRAY:
+            return utility::smartPtr<T>::WrapNewArray(rawPtr);
+        case NONE:
+            return utility::smartPtr<T>::WrapNoFree(rawPtr);
+        case INVALID:
         default:
-            throw OmArgException("can't wrap invalid ptr");
+            throw common::argException("can't wrap invalid ptr");
         };
     }
 
     explicit dataWrapper()
         : ptr_() {}
 
-    dataWrapper(T* ptr, const om::dataAllocType d)
+    dataWrapper(T* ptr, const dataAllocType d)
         : ptr_(wrapRawPtr(ptr, d)) {}
 
     void checkIfValid(){
         if(!ptr_){
-            throw OmIoException("dataWrapper: ptr not valid");
+            throw common::ioException("dataWrapper: ptr not valid");
         }
     }
 };
 
-namespace om {
-namespace ptrs {
-
 template <typename T>
 static dataWrapperPtr Wrap(boost::shared_ptr<T> sptr){
-    return om::make_shared<dataWrapper<T> >(sptr);
+    return boost::make_shared<dataWrapper<T> >(sptr);
 }
 
 template <typename T>
@@ -195,6 +196,6 @@ boost::shared_ptr<T> UnWrap(const dataWrapperPtr wrap)
     return dataPtrReint->Ptr();
 }
 
-} // ptrs
-} // om
 
+} // namespace ptrs
+} // namespace om

@@ -21,7 +21,7 @@ typedef boost::variant<memMappedVolumeImpl<int8_t>,
 typedef boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*> rawDataPtrs;
 
 // char* used for serialization (don't change!)
-BOOST_ENUM_VALUES(volDataType, std::string,
+BOOST_ENUM_VALUES(dataType, std::string,
                   (UNKNOWN)("unknown")
                   (INT8)("int8_t")
                   (UINT8)("uint8_t")
@@ -30,14 +30,14 @@ BOOST_ENUM_VALUES(volDataType, std::string,
                   (FLOAT)("float")
     )
 
-class volumeTypeHelpers {
+class typeHelpers {
 public:
-    static std::string GetTypeAsString(const volDataType type);
+    static std::string GetTypeAsString(const dataType type);
     
-    static volDataType GetTypeFromString(const std::string & type);
+    static dataType GetTypeFromString(const std::string & type);
 
-    static int getHDF5FileType(const volDataType type);
-    static int getHDF5MemoryType(const volDataType type);
+    static int getHDF5FileType(const dataType type);
+    static int getHDF5MemoryType(const dataType type);
 };
 
 } // namespace volume

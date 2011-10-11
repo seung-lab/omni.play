@@ -6,7 +6,7 @@
 #include "common/debug.h"
 #include "datalayer/dataPaths.h"
 #include "mesh/drawer/meshDrawer.h"
-#include "mesh/meshManagers.hpp"
+#include "mesh/mesh::managers.hpp"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/io/validGroupNum.hpp"
@@ -28,7 +28,7 @@ segmentation::segmentation()
     , groups_(new OmGroups(this))
     , mst_(new OmMST(this))
     , meshDrawer_(new meshDrawer(this))
-    , meshManagers_(new meshManagers(this))
+    , mesh::managers_(new mesh::managers(this))
     , chunkCache_(new chunkCache<segmentation, segChunk>(this))
     , segments_(new segments(this))
     , segmentLists_(new segmentLists())
@@ -48,7 +48,7 @@ segmentation::segmentation(common::id id)
     , groups_(new OmGroups(this))
     , mst_(new OmMST(this))
     , meshDrawer_(new meshDrawer(this))
-    , meshManagers_(new meshManagers(this))
+    , mesh::managers_(new mesh::managers(this))
     , chunkCache_(new chunkCache<segmentation, segChunk>(this))
     , segments_(new segments(this))
     , segmentLists_(new segmentLists())
@@ -104,7 +104,7 @@ void segmentation::SetSizeThreshold(const double t){
 }
 
 void segmentation::CloseDownThreads() {
-    meshManagers_->CloseDownThreads();
+    mesh::managers_->CloseDownThreads();
 }
 
 bool segmentation::LoadVolDataIfFoldersExist()
@@ -167,16 +167,16 @@ void segmentation::BuildBlankVolume(const Vector3i& dims)
 {
     SetBuildState(MIPVOL_BUILDING);
 
-    Coords().SetDataDimensions(dims);
-    Coords().UpdateRootLevel();
+    CoordinateSystem().SetDataDimensions(dims);
+    CoordinateSystem().UpdateRootLevel();
 
     OmVolumeAllocater::AllocateData(this, OmVolDataType::UINT32);
 
     SetBuildState(MIPVOL_BUILT);
 }
 
-meshManager* segmentation::MeshManager(const double threshold){
-    return meshManagers_->GetManager(threshold);
+mesh::manager* segmentation::MeshManager(const double threshold){
+    return mesh::managers_->GetManager(threshold);
 }
 
 quint32 segmentation::GetVoxelValue(const coords::globalCoord & vox)

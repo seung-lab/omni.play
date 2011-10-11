@@ -30,7 +30,7 @@ void affinityGraph::ImportSingleChannel(const std::string& hdf5fnp,
     channel& chan = cdw.Create();
 
     channels_[aff] =
-        om::make_shared<affinityChannel>(&chan, aff);
+        boost::make_shared<affinityChannel>(&chan, aff);
 
     affinityChannel* affChan = channels_[aff].get();
 
@@ -46,7 +46,7 @@ affinityGraph::RawChunk(const affinityGraph aff,
 {
     affinityChannel* affChan = channels_[aff].get();
 
-    return om::make_shared<rawChunk<float> >(affChan->Channel(), coord);
+    return boost::make_shared<rawChunk<float> >(affChan->Channel(), coord);
 }
 
 chunk* affinityGraph::MipChunk(const affinityGraph aff,

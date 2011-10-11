@@ -1,7 +1,7 @@
 #pragma once
 
-#include "utility/omSharedPtr.hpp"
+#include "utility/smartPtr.hpp"
 
 class mesh;
-typedef om::shared_ptr<mesh> meshPtr;
+typedef boost::shared_ptr<mesh> meshPtr;
 

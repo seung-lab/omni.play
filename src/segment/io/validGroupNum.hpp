@@ -105,7 +105,7 @@ private:
         maxGroupNum_.set(maxGroupNum);
 
         if(!in.atEnd()){
-            throw OmIoException("corrupt file?", filePath);
+            throw common::ioException("corrupt file?", filePath);
         }
     }
 

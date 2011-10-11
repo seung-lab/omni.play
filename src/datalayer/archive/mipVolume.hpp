@@ -29,7 +29,7 @@ public:
         out << YAML::Key << "custom name" << YAML::Value << vol_.customName_;
         out << YAML::Key << "note" << YAML::Value << vol_.note_;
         
-        out << YAML::Key << "coords" << YAML::Value << vol_.Coords();
+        out << YAML::Key << "coords" << YAML::Value << vol_.CoordinateSystem()();
         
         out << YAML::Key << "build state" << YAML::Value << vol_.mBuildState;
         
@@ -44,7 +44,7 @@ public:
         in["custom name"] >> vol_.customName_;
         in["note"] >> vol_.note_;
         
-        in["coords"] >> vol_.Coords();
+        in["coords"] >> vol_.CoordinateSystem()();
         
         in["build state"] >> vol_.mBuildState;
         

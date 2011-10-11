@@ -8,7 +8,7 @@
 #include "mesh/iothreads/meshWriterTask.hpp"
 #include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/meshCoord.h"
-#include "mesh/meshManager.h"
+#include "mesh/mesh::manager.h"
 
 class meshWriter{
 private:
@@ -17,10 +17,10 @@ private:
     meshFilePtrCache* filePtrCache_;
 
 public:
-    meshWriter(meshManager* meshManager)
-        : segmentation_(meshManager->GetSegmentation())
-        , threshold_(meshManager->Threshold())
-        , filePtrCache_(meshManager->FilePtrCache())
+    meshWriter(mesh::manager* mesh::manager)
+        : segmentation_(mesh::manager->GetSegmentation())
+        , threshold_(mesh::manager->Threshold())
+        , filePtrCache_(mesh::manager->FilePtrCache())
     {}
 
     ~meshWriter()
@@ -36,7 +36,7 @@ public:
     bool CheckEverythingWasMeshed()
     {
         om::shared_ptr<std::deque<coords::chunkCoord> > coordsPtr =
-            segmentation_->GetMipChunkCoords();
+            segmentation_->GetMipChunkCoordinateSystem()();
 
         bool allGood = true;
 
@@ -57,7 +57,7 @@ public:
 
         } else {
             std::cout << "\nERROR: some segments not meshed!\n";
-            throw OmIoException("some segments not meshed");
+            throw common::ioException("some segments not meshed");
         }
 
         return allGood;
@@ -76,7 +76,7 @@ public:
             filePtrCache_->GetAllocTable(coord);
 
         if(!chunk_table->Contains(segID)){
-            throw OmIoException("segID not present");
+            throw common::ioException("segID not present");
         }
 
         const meshDataEntry entry = chunk_table->Find(segID);
@@ -90,13 +90,13 @@ public:
             filePtrCache_->GetAllocTable(coord);
 
         if(!chunk_table->Contains(segID)){
-            throw OmIoException("segID not present");
+            throw common::ioException("segID not present");
         }
 
         const meshDataEntry entry = chunk_table->Find(segID);
 
         if(!entry.wasMeshed){
-            throw OmIoException("was not yet meshed");
+            throw common::ioException("was not yet meshed");
         }
 
         return entry.hasMeshData;
@@ -109,7 +109,7 @@ public:
               const om::AllowOverwrite allowOverwrite)
     {
         om::shared_ptr<meshWriterTask<U> > task =
-            om::make_shared<meshWriterTask<U> >(segmentation_,
+            boost::make_shared<meshWriterTask<U> >(segmentation_,
                                                        filePtrCache_,
                                                        segID,
                                                        coord,

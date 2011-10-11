@@ -12,7 +12,7 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/segmentDataWrapper.hpp"
 #include "volume/omFilter2d.h"
-#include "mesh/meshManagers.hpp"
+#include "mesh/mesh::managers.hpp"
 
 #include <qtextstream.h>
 #include <fstream>
@@ -49,7 +49,7 @@ void project::Read(const std::string& fnp, projectImpl* project) {
         ss << " line: " << e.mark.line;
         ss << " col: " << e.mark.column;
         ss << " pos: " << e.mark.pos;
-        throw OmIoException(ss.str());
+        throw common::ioException(ss.str());
     }
     postLoad();
 }

@@ -21,14 +21,14 @@ public:
     tileCoord(const int, const coords::globalCoord&,
                 mipVolume*, const uint32_t,
                 OmViewGroupState*, const ViewType,
-                const ObjectType);
+                const common::objectType);
 
     tileCoord(const int, const coords::globalCoord&,
                 mipVolume*, const uint32_t,
                 OmViewGroupState*, const ViewType,
                 const segmentColorCacheType);
 
-    ObjectType getVolType() const;
+    common::objectType getVolType() const;
     coords::chunkCoord getChunkCoord() const;
 
     inline int getLevel() const {

@@ -5,44 +5,40 @@
 #include "project/project.h"
 #include "project/projectGlobals.h"
 
-#include "utility/omFileHelpers.h"
-#include "utility/omUUID.hpp"
+#include "utility/fileHelpers.h"
+#include "utility/UUID.hpp"
 #include "volume/segmentation.h"
 #include "zi/omMutex.h"
 
-#include <QFile>
-#include <QDir>
+namespace om {
+namespace data {
 
 class fileNames {
 public:
     static inline void CreateFolder(const std::string& fullPath, zi::rwmutex& lock)
     {
-        if(QDir(fullPath).exists()){
+        if(file::exists(fullPath)){
             return;
         }
 
         {
             zi::rwmutex::write_guard g(lock);
 
-            if(!QDir(fullPath).exists()){
-                fileHelpers::MkDir(fullPath);
+            if(!file::exists(fullPath)){
+                utility::fileHelpers::MkDir(fullPath);
             }
         }
     }
 
-    static std::string TempFileName(const OmUUID& uuid){
-        return om::file::tempPath() + "/omni.temp." + uuid.Str();
+    static std::string TempFileName(const utility::UUID& uuid){
+        return file::tempPath() + "/omni.temp." + uuid.Str();
     }
 
     static std::string AddOmniExtensionIfNeeded(const std::string& str)
     {
-        if(NULL == str){
-            return NULL;
-        }
-
         std::string fnp = str;
-        if(!fnp.endsWith(".omni")) {
-            fnp.append(".omni");
+        if(fnp.rfind(".omni") == std::string::npos) {
+            fnp += ".omni";
         }
         return fnp;
     }
@@ -54,7 +50,7 @@ public:
     }
 
     static std::string GetRandColorFileName() {
-        return FilesFolder().toStdString() + "/rand_colors.raw";
+        return FilesFolder() + "/rand_colors.raw";
     }
 
     //TODO: cleanup!
@@ -67,15 +63,13 @@ public:
     template <typename T>
     static std::string GetVolDataFolderPath(T* vol, const int level)
     {
-        const std::string subPath = std::string("%1/%2/")
-            .arg(std::string::fromStdString(vol->GetDirectoryPath()))
-            .arg(level);
+        const std::string subPath = vol->GetDirectoryPath() + "/" + level + "/";
 
-        if(subPath.startsWith("/")){
-            throw OmIoException("not a relative path: " + subPath.toStdString());
+        if(subPath.find("/") == 0){
+            throw common::ioException("not a relative path: " + subPath.toStdString());
         }
 
-        return FilesFolder() + QLatin1String("/") + subPath;
+        return FilesFolder() + "/" + subPath;
     }
 
     template <typename T>
@@ -86,17 +80,15 @@ public:
 
         const std::string fullPath = GetVolDataFolderPath(vol, level);
 
-        if(!QDir(fullPath).exists()){
-            if(!QDir().mkpath(fullPath)){
-                throw OmIoException("could not create folder", fullPath);
+        if(!file::exists(fullPath)){
+            if(!utility::fileHelpers::MkDir(fullPath))){
+                throw common::ioException("could not create folder", fullPath);
             }
         }
 
         const std::string volType = vol->getVolDataTypeAsStr();
 
-        const std::string fnp = std::string("/%1/volume.%2.raw")
-            .arg(fullPath)
-            .arg(std::string::fromStdString(volType));
+        const std::string fnp = "/" + fullPath + "/volume." + volType + ".raw");
 
         const std::string fnp_clean = QDir::cleanPath(fnp);
 
@@ -116,7 +108,7 @@ public:
     static std::string ProjectMetadataFile(){
         return FilesFolder() + "/projectMetadata.yaml";
     }
-    
+
     static std::string OldHDF5projectFileName(){
         return FilesFolder() + "/oldProjectFile.hdf5";
     }
@@ -126,3 +118,5 @@ public:
     }
 };
 
+} // namespace data
+} // namespace om

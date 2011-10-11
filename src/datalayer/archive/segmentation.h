@@ -2,30 +2,29 @@
 
 #include "yaml-cpp/yaml.h"
 
+namespace om {
+namespace volume {
 class segmentationManager;
 class segmentation;
+}
+namespace segment {
 class segments;
 class segmentsImpl;
-class segmentEdge;
-class OmGroups;
-class OmGroup;
+class edge;
+}
+}
 
 namespace YAML {
 
-YAML::Emitter &operator<<(YAML::Emitter & out, const segmentationManager& m);
-void operator>>(const YAML::Node& in, segmentationManager& m);
-YAML::Emitter &operator<<(YAML::Emitter& out, const segmentation& seg);
-void operator>>(const YAML::Node& in, segmentation& seg);
-YAML::Emitter &operator<<(YAML::Emitter& out, const segments& sc);
-void operator>>(const YAML::Node& in, segments& sc);
-YAML::Emitter &operator<<(YAML::Emitter& out, const segmentsImpl& sc);
-void operator>>(const YAML::Node& in, segmentsImpl& sc);
-YAML::Emitter &operator<<(YAML::Emitter& out, const segmentEdge& se);
-void operator>>(const YAML::Node& in, segmentEdge& se);
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmGroups& g);
-void operator>>(const YAML::Node& in, OmGroups& g);
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmGroup& g);
-void operator>>(const YAML::Node& in, OmGroup& g);
-
+YAML::Emitter &operator<<(YAML::Emitter & out, const om::volume::segmentationManager& m);
+void operator>>(const YAML::Node& in, om::volume::segmentationManager& m);
+YAML::Emitter &operator<<(YAML::Emitter& out, const om::volume::segmentation& seg);
+void operator>>(const YAML::Node& in, om::volume::segmentation& seg);
+YAML::Emitter &operator<<(YAML::Emitter& out, const om::segment::segments& sc);
+void operator>>(const YAML::Node& in, om::segment::segments& sc);
+YAML::Emitter &operator<<(YAML::Emitter& out, const om::segment::segmentsImpl& sc);
+void operator>>(const YAML::Node& in, om::segment::segmentsImpl& sc);
+YAML::Emitter &operator<<(YAML::Emitter& out, const om::segment::edge& se);
+void operator>>(const YAML::Node& in, om::segment::edge& se);
 
 } // namespace YAML

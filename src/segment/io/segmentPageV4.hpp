@@ -24,21 +24,21 @@ public:
     segmentDataV4* Create()
     {
         data_ =
-            OmMemMappedFileQTNew<segmentDataV4>::CreateNumElements(fnp_, pageSize_);
+            memMappedFileNew<segmentDataV4>::CreateNumElements(fnp_, pageSize_);
         return data_->GetPtr();
     }
 
     segmentDataV4* Load()
     {
         data_ =
-            om::make_shared<OmMemMappedFileQTNew<segmentDataV4> >(fnp_);
+            boost::make_shared<memMappedFileNew<segmentDataV4> >(fnp_);
         return data_->GetPtr();
     }
 
     segmentDataV4* Import(om::shared_ptr<segmentDataV4> data)
     {
         data_ =
-            OmMemMappedFileQTNew<segmentDataV4>::CreateFromData(fnp_, data, pageSize_);
+            memMappedFileNew<segmentDataV4>::CreateFromData(fnp_, data, pageSize_);
         return data_->GetPtr();
     }
 

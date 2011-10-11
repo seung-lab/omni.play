@@ -71,7 +71,7 @@ public:
 
         if(!tables_.count(coord))
         {
-            tables_[coord] = om::make_shared<meshChunkAllocTableV2>(this, segmentation_,
+            tables_[coord] = boost::make_shared<meshChunkAllocTableV2>(this, segmentation_,
                                                                       coord, threshold_);
         }
 
@@ -84,7 +84,7 @@ public:
 
         if(!data_.count(coord))
         {
-            data_[coord] = om::make_shared<meshChunkDataWriter>(segmentation_,
+            data_[coord] = boost::make_shared<meshChunkDataWriter>(segmentation_,
                                                                     coord, threshold_);
         }
 

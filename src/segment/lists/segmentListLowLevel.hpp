@@ -270,14 +270,14 @@ private:
     void copyGlobalList()
     {
         om::shared_ptr<segmentListGlobal> globalList =
-            om::make_shared<segmentListGlobal>(list_);
+            boost::make_shared<segmentListGlobal>(list_);
         segmentLists_->Swap(globalList);
     }
 
     void buildGUIlist(const om::SegListType listType)
     {
         om::shared_ptr<segmentListForGUI> guiList =
-            om::make_shared<segmentListForGUI>(listType);
+            boost::make_shared<segmentListForGUI>(listType);
         guiList->Build(list_);
         segmentLists_->Swap(guiList);
     }

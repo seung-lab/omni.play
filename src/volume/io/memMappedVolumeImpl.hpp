@@ -2,27 +2,29 @@
 
 #include "common/debug.h"
 #include "datalayer/fs/fileNames.hpp"
-#include "datalayer/fs/memMappedFileQT.hpp"
+#include "datalayer/fs/memMappedFile.hpp"
 #include "datalayer/IDataVolume.hpp"
 #include "datalayer/IDataVolume.hpp"
 #include "project/project.h"
-#include "utility/stringHelpers.h"
 #include "volume/channel.h"
 #include "volume/segmentation.h"
 #include "volume/volumeTypes.h"
 
 #include <zi/mutex.hpp>
 
-template <typename T> class OmIOnDiskFile;
+namespace om {
+namespace volume {
+
+template <typename T> class IOnDiskFile;
 
 template <typename T>
 class memMappedVolumeImpl : public IDataVolume<T> {
 private:
-    mipVolume* vol_;
-    std::vector<om::shared_ptr<OmIOnDiskFile<T> > > maps_;
+    volume* vol_;
+    std::vector<boost::shared_ptr<IOnDiskFile<T> > > maps_;
 
-    typedef OmMemMappedFileReadQT<T> reader_t;
-    typedef OmMemMappedFileWriteQT<T> writer_t;
+    typedef memMappedFileRead<T> reader_t;
+    typedef memMappedFileWrite<T> writer_t;
 
 public:
 
@@ -30,7 +32,7 @@ public:
     memMappedVolumeImpl()
     {}
 
-    memMappedVolumeImpl(mipVolume* vol)
+    memMappedVolumeImpl(volume* vol)
         : vol_(vol)
     {}
 
@@ -100,11 +102,13 @@ public:
 private:
 
     void resizeMapsVector(){
-        maps_.resize(vol_->Coords().GetRootMipLevel() + 1);
+        maps_.resize(vol_->CoordinateSystem().GetRootMipLevel() + 1);
     }
 
     std::string getFileName(const int level) const {
-        return OmFileNames::GetMemMapFileName(vol_, level);
+        return fileNames::GetMemMapFileName(vol_, level);
     }
 };
 
+} // namespace volume
+} // namespace om

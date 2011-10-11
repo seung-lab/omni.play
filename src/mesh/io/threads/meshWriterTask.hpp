@@ -8,7 +8,7 @@
 #include "mesh/iochunk/meshChunkDataWriter.hpp"
 #include "mesh/iomeshFilePtrCache.hpp"
 #include "mesh/meshCoord.h"
-#include "mesh/meshManager.h"
+#include "mesh/mesh::manager.h"
 #include "zi/omThreads.h"
 
 template <typename U>

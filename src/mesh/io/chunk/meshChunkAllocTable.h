@@ -80,7 +80,7 @@ public:
 
         meshDataEntry* entry = file_->Find(newEntry);
         if(!entry){
-            throw OmIoException("unknown segment ID");
+            throw common::ioException("unknown segment ID");
         }
 
         assert(newEntry.segID == entry->segID);
@@ -99,7 +99,7 @@ public:
 
         meshDataEntry* entry = file_->Find(e);
         if(!entry){
-            throw OmIoException("unknown segment ID");
+            throw common::ioException("unknown segment ID");
         }
 
         return *entry;

@@ -1,43 +1,43 @@
 #pragma once
 
-/*
- *
- * Brett Warne - bwarne@mit.edu - 3/9/09
- */
-
-#include "common/om.hpp"
 #include "datalayer/dataWrapper.h"
 #include "mesh/meshTypes.h"
-#include "system/omManageableObject.h"
+#include "common/manageableObject.hpp"
 #include "volume/mipVolume.h"
 #include "datalayer/archive/segmentation.h"
 
+namespace om {
+
+namespace chunk {
 class chunk;
-class chunkUniqueValuesManager;
-class OmGroups;
-class OmMST;
-class meshDrawer;
-class meshManager;
-class meshManagers;
-class OmRawSegTileCache;
+class uniqueValuesManager;
 class segChunk;
-class segment;
-class segmentLists;
-class segments;
-class tileCacheSegmentation;
-class OmUserEdges;
-class OmValidGroupNum;
-class OmViewGroupState;
-class OmVolumeCuller;
-class volumeData;
-class SegmentationDataWrapper;
 template <typename,typename> class chunkCache;
+}
 
-namespace om { namespace segmentation { class folder; } }
-namespace om { namespace segmentation { class loader; } }
-namespace om { namespace annotation { class manager; } }
+namespace mesh {
+class manager;
+class managers;
+}
 
-class segmentation : public mipVolume, public OmManageableObject {
+namespace segment {
+class segment;
+class lists;
+class segments;
+}
+
+//class segmentationDataWrapper;
+
+namespace annotation { class manager; }
+
+namespace volume {
+
+class data;
+class dataType;
+class segFolder;
+class segLoader;
+
+class segmentation : public volume, public common::manageableObject {
 public:
     segmentation();
     segmentation(common::id id);
@@ -53,8 +53,8 @@ public:
     bool LoadVolDataIfFoldersExist();
     void UpdateFromVolResize();
 
-    inline ObjectType getVolumeType() const {
-        return SEGMENTATION;
+    inline common::objectType getVolumeType() const {
+        return common::SEGMENTATION;
     }
 
     inline common::id getID() const {
@@ -64,7 +64,7 @@ public:
     virtual int GetBytesPerVoxel() const;
     virtual int GetBytesPerSlice() const;
 
-    SegmentationDataWrapper GetSDW() const;
+//    SegmentationDataWrapper GetSDW() const;
 
     void CloseDownThreads();
 
@@ -72,19 +72,19 @@ public:
 
     void SetDendThreshold( double t );
     double GetDendThreshold();
-    
+
     void SetSizeThreshold( double t );
     double GetSizeThreshold();
 
-    meshManager* MeshManager(const double threshold);
+    mesh::manager* MeshManager(const double threshold);
 
     void UpdateVoxelBoundingData();
 
-    void SetVolDataType(const OmVolDataType);
+    void SetVolDataType(const dataType);
 
     void BuildBlankVolume(const Vector3i & dims);
 
-    segChunk* GetChunk(const coords::chunkCoord& coord);
+    chunk::segChunk* GetChunk(const coords::chunkCoord& coord);
 
     uint32_t GetVoxelValue(const coords::globalCoord &vox);
     void SetVoxelValue(const coords::globalCoord &vox, const uint32_t value);
@@ -93,88 +93,49 @@ public:
     void RebuildSegments();
 
 public:
-    inline chunkUniqueValuesManager* ChunkUniqueValues(){
+    inline chunk::uniqueValuesManager* ChunkUniqueValues() {
         return uniqueChunkValues_.get();
     }
-    inline OmGroups* Groups(){
-        return groups_.get();
+    inline mesh::managers* MeshManagers() {
+        return managers_.get();
     }
-    inline OmMST* MST(){
-        return mst_.get();
-    }
-    inline meshDrawer* MeshDrawer(){
-        return meshDrawer_.get();
-    }
-    inline meshManagers* MeshManagers(){
-        return meshManagers_.get();
-    }
-    inline segments* Segments(){
+    inline segment::segments* Segments() {
         return segments_.get();
     }
-    inline segmentLists* SegmentLists(){
+    inline segment::lists* SegmentLists() {
         return segmentLists_.get();
     }
-    inline OmUserEdges* MSTUserEdges(){
-        return mstUserEdges_.get();
-    }
-    inline OmValidGroupNum* ValidGroupNum(){
-        return validGroupNum_.get();
-    }
-    inline volumeData* VolData(){
+    inline data* VolData() {
         return volData_.get();
     }
-    inline OmRawSegTileCache* SliceCache(){
-        return volSliceCache_.get();
-    }
-    inline chunkCache<segmentation, segChunk>* ChunkCache(){
-        return chunkCache_.get();
-    }
-    inline tileCacheSegmentation* TileCache(){
-        return tileCache_.get();
-    }
-    inline om::segmentation::folder* Folder() const {
+    inline segFolder* Folder() const {
         return folder_.get();
     }
-    inline om::annotation::manager* Annotations() const {
+    inline annotation::manager* Annotations() const {
         return annotations_.get();
     }
-    inline om::segmentation::loader* Loader() const {
+    inline segLoader* Loader() const {
         return loader_.get();
     }
 
 private:
-    boost::scoped_ptr<om::segmentation::folder> folder_;
-    boost::scoped_ptr<om::segmentation::loader> loader_;
-    boost::scoped_ptr<chunkUniqueValuesManager> uniqueChunkValues_;
-    boost::scoped_ptr<OmGroups> groups_;
-    boost::scoped_ptr<OmMST> mst_;
-    boost::scoped_ptr<meshDrawer> meshDrawer_;
-    boost::scoped_ptr<meshManagers> meshManagers_;
-    boost::scoped_ptr<chunkCache<segmentation, segChunk> > chunkCache_;
-    boost::scoped_ptr<segments> segments_;
-    boost::scoped_ptr<segmentLists> segmentLists_;
-    boost::scoped_ptr<OmUserEdges> mstUserEdges_;
-    boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
-    boost::scoped_ptr<volumeData> volData_;
-    boost::scoped_ptr<OmRawSegTileCache> volSliceCache_;
-    boost::scoped_ptr<tileCacheSegmentation> tileCache_;
-    boost::scoped_ptr<om::annotation::manager> annotations_;
-
-    template <class T> friend class OmVolumeBuilder;
-    template <class T> friend class OmVolumeBuilderHdf5;
-    template <class T> friend class OmVolumeBuilderImages;
-    template <class T> friend class OmVolumeImporter;
+    boost::scoped_ptr<segFolder> folder_;
+    boost::scoped_ptr<segLoader> loader_;
+    boost::scoped_ptr<chunk::uniqueValuesManager> uniqueChunkValues_;
+    boost::scoped_ptr<mesh::managers> managers_;
+    boost::scoped_ptr<segment::segments> segments_;
+    boost::scoped_ptr<segment::lists> segmentLists_;
+    boost::scoped_ptr<data> volData_;
+    boost::scoped_ptr<annotation::manager> annotations_;
 
     friend class segmentsImpl;
     friend class segmentsImplLowLevel;
     friend class segmentIterator;
     friend class segmentationChunkBuildTask;
-    friend class SegmentTests1;
 
-    friend class dataArchiveProjectImpl;
     friend void YAML::operator>>(const YAML::Node& in, segmentation&);
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const segmentation&);
-    friend QDataStream &operator>>(QDataStream& in, segmentation&);
-    friend QDataStream &operator<<(QDataStream& out, const segmentation&);
 };
 
+} // namespace volume
+} // namespace om

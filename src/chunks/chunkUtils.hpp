@@ -56,7 +56,7 @@ public:
                                                    currentCoord.Z() + z);
 
                     //skip invalid mip coord
-                    if(vol->Coords().ContainsMipChunkCoord(mip_coord))
+                    if(vol->CoordinateSystem()().ContainsMipChunkCoord(mip_coord))
                     {
                         segChunk* chunk = vol->GetChunk(mip_coord);
 
@@ -84,7 +84,7 @@ public:
         segmentation& vol = sdw.GetSegmentation();
 
         om::shared_ptr<std::deque<coords::chunkCoord> > coordsPtr =
-            vol.GetMipChunkCoords();
+            vol.GetMipChunkCoordinateSystem()();
 
         const uint32_t numChunks = coordsPtr->size();
 

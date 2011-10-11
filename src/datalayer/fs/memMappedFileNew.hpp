@@ -4,23 +4,23 @@
 #include "datalayer/fs/file.h"
 
 template <typename T>
-class memMappedFileQTNew : public IOnDiskFile<T> {
+class memMappedFileNew : public IOnDiskFile<T> {
 public:
-    static boost::shared_ptr<memMappedFileQTNew<T> >
+    static boost::shared_ptr<memMappedFileNew<T> >
     CreateNumElements(const std::string& fnp, const int64_t numElements)
     {
         om::file::createFileNumElements<T>(fnp, numElements);
 
-        return om::make_shared<memMappedFileQTNew<T> >(fnp);
+        return boost::make_shared<memMappedFileNew<T> >(fnp);
     }
 
-    static boost::shared_ptr<memMappedFileQTNew<T> >
+    static boost::shared_ptr<memMappedFileNew<T> >
     CreateFromData(const std::string& fnp, boost::shared_ptr<T> d,
                    const int64_t numElements)
     {
         om::file::createFileFromData<T>(fnp, d, numElements);
 
-        return om::make_shared<memMappedFileQTNew<T> >(fnp);
+        return boost::make_shared<memMappedFileNew<T> >(fnp);
     }
 
 private:
@@ -33,7 +33,7 @@ private:
     int64_t numBytes_;
 
 public:
-    memMappedFileQTNew(const std::string& fnp)
+    memMappedFileNew(const std::string& fnp)
         : fnp_(fnp)
         , data_(NULL)
         , dataChar_(NULL)
@@ -42,7 +42,7 @@ public:
         map();
     }
 
-    virtual ~memMappedFileQTNew()
+    virtual ~memMappedFileNew()
     {}
 
     virtual uint64_t Size() const {

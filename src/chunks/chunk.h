@@ -11,21 +11,28 @@
 #include "chunks/chunkMipping.hpp"
 #include "volume/volumeTypes.h"
 
-class channel;
-class channelImpl;
-class segmentation;
-namespace om { namespace chunk { class dataInterface; } }
+namespace om { 
+    
+namespace volume {
+    class channel;
+    class channelImpl;
+    class segmentation;
+}
+    
+namespace chunks { 
+    
+class dataInterface;
 
 class chunk {
 public:
-    chunk(channel* vol, const coords::chunkCoord& coord);
-    chunk(channelImpl* vol, const coords::chunkCoord& coord);
-    chunk(segmentation* vol, const coords::chunkCoord& coord);
+    chunk(volume::channel* vol, const coords::chunkCoord& coord);
+    chunk(volume::channelImpl* vol, const coords::chunkCoord& coord);
+    chunk(volume::segmentation* vol, const coords::chunkCoord& coord);
 
     virtual ~chunk();
 
     bool ContainsVoxel(const coords::dataCoord& vox) const {
-        return vox.volume() == vol_ &&  
+        return vox.volume() == &vol_->CoordinateSystem() &&  
                vox.level() == GetLevel() &&
                mipping_.GetExtent().contains(vox);
     }
@@ -41,7 +48,7 @@ public:
         return mipping_.GetExtent().getUnitDimensions();
     }
 
-    om::chunk::dataInterface* Data(){
+    om::chunks::dataInterface* Data(){
         return chunkData_.get();
     }
 
@@ -51,9 +58,11 @@ public:
 
 protected:
     const coords::chunkCoord coord_;
-    const boost::scoped_ptr<om::chunk::dataInterface> chunkData_;
-    const mipVolume * const vol_;
+    const boost::scoped_ptr<dataInterface> chunkData_;
+    const volume::volume * const vol_;
 
     chunkMipping mipping_;
 };
 
+} // namespace chunks
+} // namespace om

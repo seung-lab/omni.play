@@ -16,7 +16,7 @@ tileCoord::tileCoord()
 tileCoord::tileCoord(const int level, const coords::globalCoord& dataCoord,
                          mipVolume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
-                         const ObjectType objType)
+                         const common::objectType objType)
     : tileCoordKey(level,
                      dataCoord,
                      vol,
@@ -39,7 +39,7 @@ tileCoord::tileCoord(const int level, const coords::globalCoord& dataCoord,
                      segColorType)
 {}
 
-ObjectType tileCoord::getVolType() const {
+common::objectType tileCoord::getVolType() const {
     return getVolume()->getVolumeType();
 }
 

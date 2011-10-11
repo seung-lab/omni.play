@@ -4,7 +4,7 @@
 #include "mesh/io/dataForMeshLoad.hpp"
 #include "mesh/iochunk/meshChunkDataReader.hpp"
 #include "mesh/iomeshFilePtrCache.hpp"
-#include "mesh/meshManager.h"
+#include "mesh/mesh::manager.h"
 
 class meshReader{
 private:
@@ -13,10 +13,10 @@ private:
     meshFilePtrCache *const filePtrCache_;
 
 public:
-    meshReader(meshManager* meshManager)
-        : segmentation_(meshManager->GetSegmentation())
-        , threshold_(meshManager->Threshold())
-        , filePtrCache_(meshManager->FilePtrCache())
+    meshReader(mesh::manager* mesh::manager)
+        : segmentation_(mesh::manager->GetSegmentation())
+        , threshold_(mesh::manager->Threshold())
+        , filePtrCache_(mesh::manager->FilePtrCache())
     {}
 
     ~meshReader()
@@ -36,7 +36,7 @@ public:
         meshChunkDataReader chunk_data(segmentation_, coord, threshold_);
 
         om::shared_ptr<dataForMeshLoad> ret =
-            om::make_shared<dataForMeshLoad>();
+            boost::make_shared<dataForMeshLoad>();
 
         if(!chunk_table->Contains(segID)){
             return ret;
@@ -48,7 +48,7 @@ public:
         {
             std::cout << "did not yet mesh " << segID
                       << " in coord " << coord << "\n" << std::flush;
-            throw OmIoException("mesh data not found");
+            throw common::ioException("mesh data not found");
         }
 
         ret->HasData(entry.hasMeshData);

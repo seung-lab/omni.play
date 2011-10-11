@@ -16,11 +16,11 @@ class segmentation;
 
 #include <QDataStream>
 
-class meshManager {
+class mesh::manager {
 public:
-    meshManager(segmentation* segmentation,
+    mesh::manager(segmentation* segmentation,
                   const double threshold);
-    ~meshManager();
+    ~mesh::manager();
 
     void Create();
     void Load();
@@ -79,7 +79,7 @@ private:
     void loadThreadholdNon1();
     void moveOldMetadataFile();
 
-    friend QDataStream &operator<<(QDataStream&, const meshManager&);
-    friend QDataStream &operator>>(QDataStream&, meshManager&);
+    friend QDataStream &operator<<(QDataStream&, const mesh::manager&);
+    friend QDataStream &operator>>(QDataStream&, mesh::manager&);
 };
 

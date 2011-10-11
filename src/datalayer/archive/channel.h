@@ -2,17 +2,20 @@
 
 #include "yaml-cpp/yaml.h"
 
-class channelManager;
-class channel;
-class OmMipVolCoords;
+namespace om 
+{ 
+namespace project { class channelManager; }
+namespace volume { class channel; }
+namespace coords { class volumeSystem; }
+}
 
 namespace YAML {
 
-Emitter &operator<<(Emitter& out, const channelManager& cm);
-void operator>>(const Node& in, channelManager& cm);
-Emitter& operator<<(Emitter& out, const channel& chan);
-void operator>>(const Node& in, channel& chan);
-Emitter& operator<<(Emitter& out, const OmMipVolCoords& c);
-void operator>>(const Node& in, OmMipVolCoords& c);
+Emitter &operator<<(Emitter& out, const om::project::channelManager& cm);
+void operator>>(const Node& in, om::project::channelManager& cm);
+Emitter& operator<<(Emitter& out, const om::volume::channel& chan);
+void operator>>(const Node& in, om::volume::channel& chan);
+Emitter& operator<<(Emitter& out, const om::coords::volumeSystem& c);
+void operator>>(const Node& in, om::coords::volumeSystem& c);
 
 } // namespace YAML

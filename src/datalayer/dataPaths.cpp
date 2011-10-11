@@ -4,7 +4,7 @@
 #include "datalayer/dataPath.h"
 #include "datalayer/dataPaths.h"
 #include "mesh/meshCoord.h"
-#include "mesh/meshManager.h"
+#include "mesh/mesh::manager.h"
 #include "project/project.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"

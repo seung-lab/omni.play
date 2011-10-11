@@ -14,7 +14,7 @@
 tile::tile(OmCacheBase* cache, const tileCoord& key)
     : cache_(cache)
     , key_(key)
-    , tileLength_(key.getVolume()->Coords().GetChunkDimension())
+    , tileLength_(key.getVolume()->CoordinateSystem()().GetChunkDimension())
     , mipChunkCoord_(tileToMipCoord())
 {}
 
@@ -32,7 +32,7 @@ void tile::LoadData()
 }
 
 int tile::getChunkSliceNum(){
-    return getDepth() % (getVol()->Coords().GetChunkDimension());
+    return getDepth() % (getVol()->CoordinateSystem()().GetChunkDimension());
 }
 
 void tile::load8bitChannelTile()
@@ -78,7 +78,7 @@ int tile::getDepth()
                                                 key_.getViewType()) / factor;
 }
 
-ObjectType tile::getVolType() const {
+common::objectType tile::getVolType() const {
     return getVol()->getVolumeType();
 }
 

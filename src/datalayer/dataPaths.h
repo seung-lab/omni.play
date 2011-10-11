@@ -1,13 +1,12 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "common/common.h"
 
 class affinityChannel;
 class channelImpl;
 class dataPath;
 class meshCoord;
-class meshManager;
+class mesh::manager;
 class segmentation;
 
 class dataPaths {

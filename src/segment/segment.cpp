@@ -109,8 +109,8 @@ const segChildCont_t& segment::GetChildren(){
     return segments_->Children()->GetChildren(this);
 }
 
-const om::dataBbox segment::BoundingBox() const
+const coords::dataBbox segment::BoundingBox() const
 {
     zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
-    return om::dataBbox(data_->bounds, segments_->getSegmentation(), 0);
+    return coords::dataBbox(data_->bounds, segments_->getSegmentation(), 0);
 }

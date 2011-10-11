@@ -1,5 +1,5 @@
 #include "yaml-cpp/yaml.h"
-#include "utility/yaml/omYaml.hpp"
+#include "utility/yaml/yaml.hpp"
 #include "project/details/channelManager.h"
 #include "utility/yaml/mipVolume.hpp"
 #include "utility/yaml/baseTypes.hpp"
@@ -41,7 +41,7 @@ void operator>>(const Node& in, channel& chan)
     chan.LoadVolDataIfFoldersExist();
 }
 
-Emitter& operator<<(Emitter& out, const OmMipVolCoords& c)
+Emitter& operator<<(Emitter& out, const om::coords::volumeSystem& c)
 {
     out << BeginMap;
     out << Key << "dataDimensions" << Value << c.GetDataDimensions();
@@ -54,9 +54,9 @@ Emitter& operator<<(Emitter& out, const OmMipVolCoords& c)
     return out;
 }
 
-void operator>>(const Node& in, OmMipVolCoords& c)
+void operator>>(const Node& in, om::coords::volumeSystem& c)
 {
-    boost::optional<om::globalBbox> extent;
+    boost::optional<om::coords::globalBbox> extent;
     om::yaml::yamlUtil::OptionalRead(in, "dataExtent", extent); // backwards compatibility
     if(extent) {
         c.SetDataDimensions(extent.get().getDimensions());
