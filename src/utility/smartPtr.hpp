@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "common/string.hpp"
 #include "common/common.h"
+#include "common/enums.hpp"
 
 namespace om {
 namespace utility {
@@ -12,7 +12,7 @@ class smartPtr {
 public:
     static boost::shared_ptr<T>
     inline MallocNumBytes(const uint64_t numBytes,
-                          const om::ZeroMem shouldZeroMem)
+                          const common::ZeroMem shouldZeroMem)
     {
         T* rawPtr = static_cast<T*>(malloc(numBytes));
 
@@ -25,7 +25,7 @@ public:
             throw std::bad_alloc();
         }
 
-        if(om::ZERO_FILL == shouldZeroMem){
+        if(common::ZERO_FILL == shouldZeroMem){
             memset(rawPtr, 0, numBytes);
         }
 
@@ -34,7 +34,7 @@ public:
 
     static boost::shared_ptr<T>
     inline MallocNumElements(const uint64_t numElements,
-                             const om::ZeroMem shouldZeroMem)
+                             const common::ZeroMem shouldZeroMem)
     {
         return MallocNumBytes(numElements * sizeof(T), shouldZeroMem);
     }
