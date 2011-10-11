@@ -1,19 +1,22 @@
 #pragma once
 
-#include "common/omStoppable.h"
-#include "common/omCommon.h"
-#include "zi/omUtility.h"
-#include "zi/omMutex.h"
+#include "common/stoppable.h"
+#include "common/common.h"
+#include "zi/utility.h"
+#include "zi/mutex.h"
+
+namespace om {
+namespace threads {
 
 class threadPoolManager : private om::singletonBase<threadPoolManager> {
 private:
     zi::mutex lock_;
-    std::set<om::stoppable*> pools_;
+    std::set<common::stoppable*> pools_;
 
 public:
     static void StopAll();
-    static void Add(om::stoppable*);
-    static void Remove(om::stoppable*);
+    static void Add(common::stoppable*);
+    static void Remove(common::stoppable*);
 
 private:
     threadPoolManager()
@@ -24,3 +27,5 @@ private:
     friend class zi::singleton<threadPoolManager>;
 };
 
+} // namespace threads
+} // namespace om

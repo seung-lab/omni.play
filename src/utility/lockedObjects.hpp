@@ -1,7 +1,7 @@
 #pragma once
 
-#include "zi/omMutex.h"
-#include "zi/omUtility.h"
+#include "zi/mutex.h"
+#include "zi/utility.h"
 
 #include <list>
 #include <map>

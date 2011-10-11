@@ -5,7 +5,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-#include "zi/omMutex.h"
+#include "zi/mutex.h"
 
 // based on http://www.boost.org/doc/libs/1_42_0/libs/uuid/uuid.html
 

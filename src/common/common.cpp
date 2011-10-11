@@ -1,6 +1,6 @@
 #include "common/common.h"
 #include "string.hpp"
-#include "zi/omUtility.h"
+#include "zi/utility.h"
 
 namespace om {
 namespace common {

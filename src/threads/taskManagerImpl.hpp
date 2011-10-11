@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "common/omStoppable.h"
+#include "common/stoppable.h"
 #include "threads/threadPoolManager.h"
 
 #include <zi/concurrency/config.hpp>
@@ -35,11 +35,14 @@
 #include <algorithm>
 #include <limits>
 
+namespace om {
+namespace threads {
+
 template< class TaskContainer >
 class taskManagerImpl
     : public zi::runnable,
       public zi::enable_shared_from_this< taskManagerImpl<TaskContainer> >,
-      public om::stoppable
+      public common::stoppable
 {
     typedef zi::shared_ptr< zi::concurrency_::runnable > task_t;
 
@@ -299,3 +302,5 @@ public:
 
 };
 
+} // namespace threads
+} // namespace om

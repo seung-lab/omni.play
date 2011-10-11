@@ -1,7 +1,7 @@
 #pragma once
 
 #include "yaml-cpp/yaml.h"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/fs/file.hpp"
 
 #include <fstream>
 

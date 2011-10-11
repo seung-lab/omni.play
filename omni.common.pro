@@ -7,15 +7,6 @@ HEADERS +=  \
 	lib/include/common/colors.h \
 	lib/include/common/common.h \
 	lib/include/common/container.hpp \
-	lib/include/common/coordinates/chunkCoord.h \
-	lib/include/common/coordinates/coordinates.h \
-	lib/include/common/coordinates/dataCoord.h \
-	lib/include/common/coordinates/globalCoord.h \
-	lib/include/common/coordinates/normCoord.h \
-	lib/include/common/coordinates/screenCoord.h \
-	lib/include/common/coordinates/screenSystem.h \
-	lib/include/common/coordinates/volumeSystem.h \
-	lib/include/common/coordinates/yaml.h \
 	lib/include/common/debug.h \
 	lib/include/common/enums.hpp \
 	lib/include/common/exception.h \
@@ -27,25 +18,6 @@ HEADERS +=  \
 	lib/include/common/std.h \
 	lib/include/common/stoppable.h \
 	lib/include/common/string.hpp \
-	lib/include/common/thrift/server.h \
-	lib/include/common/thrift/server_constants.h \
-	lib/include/common/thrift/server_types.h \
-	lib/include/common/utility/image/bits/image_traits.hpp \
-	lib/include/common/utility/image/image.hpp \
-	lib/include/common/utility/yaml/baseTypes.hpp \
-	lib/include/common/utility/yaml/genericManager.hpp \
-	lib/include/common/utility/yaml/mipVolume.hpp \
-	lib/include/common/utility/yaml/yaml.hpp \
-	lib/include/common/zi/matlab/zmex.hpp \
-	lib/include/common/zi/omMutex.h \
-	lib/include/common/zi/omThreads.h \
-	lib/include/common/zi/omUtility.h \
-	lib/include/common/zi/trees/DisjointSets.hpp \
-	lib/include/common/zi/trees/lib/DynaTree.hpp \
-	lib/include/common/zi/trees/lib/DynamicTree.hpp \
-	lib/include/common/zi/trees/lib/FHeap.hpp \
-	lib/include/common/zi/watershed/MemMap.hpp \
-	lib/include/common/zi/watershed/RawQuickieWS.h \
 	lib/include/coordinates/chunkCoord.h \
 	lib/include/coordinates/coordinates.h \
 	lib/include/coordinates/dataCoord.h \
@@ -69,13 +41,12 @@ HEADERS +=  \
 	lib/include/utility/primeNumbers.h \
 	lib/include/utility/rand.hpp \
 	lib/include/utility/setUtilities.h \
-	lib/include/utility/stringHelpers.h \
+	lib/include/utility/smartPtr.hpp \
 	lib/include/utility/systemInformation.h \
 	lib/include/utility/tempFile.hpp \
 	lib/include/utility/timer.hpp \
 	lib/include/utility/yaml/baseTypes.hpp \
 	lib/include/utility/yaml/genericManager.hpp \
-	lib/include/utility/yaml/mipVolume.hpp \
 	lib/include/utility/yaml/yaml.hpp \
 	lib/include/zi/matlab/zmex.hpp \
 	lib/include/zi/omMutex.h \
@@ -111,6 +82,13 @@ HEADERS +=  \
 	src/coordinates/screenSystem.h \
 	src/coordinates/volumeSystem.h \
 	src/coordinates/yaml.h \
+	src/threads/taskManager.hpp \
+	src/threads/taskManagerContainerDeque.hpp \
+	src/threads/taskManagerImpl.hpp \
+	src/threads/taskManagerTypes.h \
+	src/threads/threadPoolBatched.hpp \
+	src/threads/threadPoolByMipLevel.hpp \
+	src/threads/threadPoolManager.h \
 	src/thrift/server.h \
 	src/thrift/server_constants.h \
 	src/thrift/server_types.h \
@@ -155,6 +133,7 @@ SOURCES +=  \
 	src/coordinates/screenSystem.cpp \
 	src/coordinates/volumeSystem.cpp \
 	src/coordinates/yaml.cpp \
+	src/threads/threadPoolManager.cpp \
 	src/thrift/server.cpp \
 	src/thrift/server_constants.cpp \
 	src/thrift/server_types.cpp \
@@ -162,21 +141,6 @@ SOURCES +=  \
 	src/utility/primeNumbers.cpp \
 	src/utility/systemInformation.cpp \
 	src/zi/watershed/RawQuickieWS.cpp
-
-server_h.target = lib/include/common/thrift/server.h
-server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_h.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_h
-
-server_constants_h.target = lib/include/common/thrift/server_constants.h
-server_constants_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_constants_h.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_constants_h
-
-server_types_h.target = lib/include/common/thrift/server_types.h
-server_types_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_types_h.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_types_h
 
 server_h.target = lib/include/thrift/server.h
 server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift

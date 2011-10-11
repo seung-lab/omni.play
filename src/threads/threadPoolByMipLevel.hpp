@@ -1,10 +1,12 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "utility/omSystemInformation.h"
+#include "utility/systemInformation.h"
 #include "threads/taskManagerManager.h"
-#include "zi/omThreads.h"
-#include "tiles/cache/omMipLevelContainer.hpp"
+#include "zi/threads.h"
+#include "tiles/cache/mipLevelContainer.hpp"
+
+namespace om {
+namespace threads {
 
 class threadPoolByMipLevel {
 private:
@@ -32,7 +34,7 @@ public:
 
     void start()
     {
-        int numWokers = OmSystemInformation::get_num_cores();
+        int numWokers = systemInformation::get_num_cores();
         if(numWokers < 2){
             numWokers = 2;
         }
@@ -42,7 +44,7 @@ public:
     void start(const uint32_t numWorkerThreads)
     {
         if(!numWorkerThreads){
-            throw OmIoException("please specify more than 0 threads");
+            throw common::ioException("please specify more than 0 threads");
         }
 
         pool_.reset(new task_man_t(numWorkerThreads));
@@ -78,7 +80,7 @@ public:
         pool_.reset();
     }
 
-    inline void insert(const int mipLevel, const om::shared_ptr<zi::runnable>& job)
+    inline void insert(const int mipLevel, const boost::shared_ptr<zi::runnable>& job)
     {
         assert(pool_ && "pool not started");
         pool_->insert(mipLevel, job);
@@ -103,3 +105,5 @@ public:
     }
 };
 
+} // namespace threads
+} // namespace om

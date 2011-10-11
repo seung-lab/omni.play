@@ -1,7 +1,7 @@
 #pragma once
 
-#include "datalayer/fs/omFile.hpp"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/file.hpp"
+#include "datalayer/fs/fileNames.hpp"
 #include "utility/UUID.hpp"
 
 /**

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "zi/omMutex.h"
-#include "zi/omUtility.h"
+#include "zi/mutex.h"
+#include "zi/utility.h"
 
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int.hpp>

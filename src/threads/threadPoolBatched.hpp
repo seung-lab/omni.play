@@ -2,13 +2,16 @@
 
 #include "threads/taskManager.hpp"
 
+namespace om {
+namespace threads {
+
 template <class ARG, class T>
 struct IndivArgPolicy {
 
     boost::function<void (T*, const ARG& arg)> func;
     T* classInstantiation;
 
-    void run(om::shared_ptr<std::vector<ARG> > argsPtr)
+    void run(boost::shared_ptr<std::vector<ARG> > argsPtr)
     {
         const std::vector<ARG>& args = *argsPtr;
 
@@ -27,7 +30,7 @@ struct VectorArgPolicy {
     boost::function<void (T*, const std::vector<ARG>& args)> func;
     T* classInstantiation;
 
-    void run(om::shared_ptr<std::vector<ARG> > argsPtr)
+    void run(boost::shared_ptr<std::vector<ARG> > argsPtr)
     {
         const std::vector<ARG>& args = *argsPtr;
 
@@ -46,7 +49,7 @@ private:
     threadPool pool_;
 
     typedef std::vector<ARG> args_t;
-    om::shared_ptr<args_t> args_;
+    boost::shared_ptr<args_t> args_;
 
     void resetArgs()
     {
@@ -70,7 +73,7 @@ public:
     template <typename U>
     void Start(U func, T* classInstantiation)
     {
-        const int numWokers = OmSystemInformation::get_num_cores();
+        const int numWokers = systemInformation::get_num_cores();
         Start(func, classInstantiation, numWokers);
     }
 
@@ -117,8 +120,10 @@ public:
 
 private:
 
-    void worker(om::shared_ptr<args_t> argsPtr){
+    void worker(boost::shared_ptr<args_t> argsPtr){
         runner_.run(argsPtr);
     }
 };
 
+} // namespace threads
+} // namespace om
