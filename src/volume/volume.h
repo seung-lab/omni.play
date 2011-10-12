@@ -7,7 +7,7 @@
 
 class dataPath;
 
-namespace YAML { template <class T> class mipVolume; }
+namespace YAML { template <class T> class volume; }
 
 namespace om {
 
@@ -79,13 +79,13 @@ private:
 //     template <class T> friend class OmVolumeBuilderBase;
 //     template <class T> friend class OmVolumeBuilderHdf5;
 //     template <class T> friend class OmVolumeBuilderImages;
-//     template <class T> friend class mipVolumeArchive;
-//     template <class T> friend class YAML::mipVolume;
+//     template <class T> friend class volumeArchive;
+//     template <class T> friend class YAML::volume;
 //
 //     friend class chunk;
-//     friend class mipVolumeArchiveOld;
+//     friend class volumeArchiveOld;
 //     friend class volumeData;
-//     friend class memMappedVolume;
+     friend class memMappedVolume;
 //     friend class OmUpgradeTo14;
 //     friend class OmWatershedImporter;
 };

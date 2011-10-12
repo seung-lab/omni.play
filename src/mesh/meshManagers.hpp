@@ -112,7 +112,7 @@ public:
     {
         assert(0);
 //build chunk volume data and analyze data
-//	mipVolume::BuildChunk(mipCoord);
+//	volume::BuildChunk(mipCoord);
 
 //rebuild mesh data only if entire volume data has been built
 if (IsVolumeDataBuilt()) {

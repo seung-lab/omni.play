@@ -1,9 +1,9 @@
 #pragma once
 
 #include "volume/io/volumeData.h"
-#include "volume/mipVolume.h"
+#include "volume/volume.h"
 #include "chunks/details/omPtrToChunkDataBase.hpp"
-#include "zi/omMutex.h"
+#include "zi/mutex.h"
 
 namespace om {
 namespace chunk {
@@ -14,7 +14,7 @@ private:
     DATA *const rawData_;
 
 public:
-    ptrToChunkDataMemMapVol(mipVolume* vol, const coords::chunkCoord& coord)
+    ptrToChunkDataMemMapVol(volume* vol, const coords::chunkCoord& coord)
         : rawData_(boost::get<DATA*>(vol->VolData()->getChunkPtrRaw(coord)))
     {}
 

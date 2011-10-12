@@ -1,7 +1,7 @@
 #include "yaml-cpp/yaml.h"
 #include "utility/yaml/yaml.hpp"
 #include "project/details/channelManager.h"
-#include "utility/yaml/mipVolume.hpp"
+#include "utility/yaml/volume.hpp"
 #include "utility/yaml/baseTypes.hpp"
 #include "datalayer/archive/filter.h"
 #include "utility/yaml/genericManager.hpp"
@@ -24,7 +24,7 @@ void operator>>(const Node& in, channelManager& cm)
 Emitter& operator<<(Emitter& out, const channel& chan)
 {
     out << BeginMap;
-    mipVolume<const channel> volArchive(chan);
+    volume<const channel> volArchive(chan);
     volArchive.Store(out);
     
     out << Key << "Filters" << Value << chan.filterManager_;
@@ -34,7 +34,7 @@ Emitter& operator<<(Emitter& out, const channel& chan)
 
 void operator>>(const Node& in, channel& chan)
 {
-    mipVolume<channel> volArchive(chan);
+    volume<channel> volArchive(chan);
     volArchive.Load(in);
     
     in["Filters"] >> chan.filterManager_;

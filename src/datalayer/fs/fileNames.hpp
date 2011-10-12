@@ -3,15 +3,14 @@
 #include "common/debug.h"
 #include "datalayer/fs/file.h"
 #include "project/project.h"
-#include "project/projectGlobals.h"
 
 #include "utility/fileHelpers.h"
 #include "utility/UUID.hpp"
 #include "volume/segmentation.h"
-#include "zi/omMutex.h"
+#include "zi/mutex.h"
 
 namespace om {
-namespace data {
+namespace datalayer {
 
 class fileNames {
 public:
@@ -57,48 +56,44 @@ public:
     //ex:  /home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
     template <typename T>
     static std::string GetMemMapFileName(T* vol, const int level){
-        return GetMemMapFileNameQT(vol, level).toStdString();
-    }
-
-    template <typename T>
-    static std::string GetVolDataFolderPath(T* vol, const int level)
-    {
-        const std::string subPath = vol->GetDirectoryPath() + "/" + level + "/";
-
-        if(subPath.find("/") == 0){
-            throw common::ioException("not a relative path: " + subPath.toStdString());
-        }
-
-        return FilesFolder() + "/" + subPath;
-    }
-
-    template <typename T>
-    static std::string GetMemMapFileNameQT(T* vol, const int level)
-    {
         static zi::rwmutex lock;
         zi::rwmutex::write_guard g(lock);
 
         const std::string fullPath = GetVolDataFolderPath(vol, level);
 
         if(!file::exists(fullPath)){
-            if(!utility::fileHelpers::MkDir(fullPath))){
+            if(!utility::fileHelpers::MkDir(fullPath)){
                 throw common::ioException("could not create folder", fullPath);
             }
         }
 
         const std::string volType = vol->getVolDataTypeAsStr();
 
-        const std::string fnp = "/" + fullPath + "/volume." + volType + ".raw");
+        const std::string fnp = str(boost::format("/%1%/volume.%2%.raw")
+                                    % fullPath
+                                    % volType);
 
-        const std::string fnp_clean = QDir::cleanPath(fnp);
+        ZiLOG(DEBUG, io) << "file is " << fnp << "\n";
 
-        ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
+        return fnp;
+    }
 
-        return fnp_clean;
+    template <typename T>
+    static std::string GetVolDataFolderPath(T* vol, const int level)
+    {
+        const std::string subPath = str(boost::format("%1%/%2%/")
+            % vol->GetDirectoryPath()
+            % level);
+
+        if(subPath.find("/") == 0){
+            throw common::ioException("not a relative path: " + subPath);
+        }
+
+        return FilesFolder() + "/" + subPath;
     }
 
     static std::string LogFolderPath(){
-        return project::Globals().Users().LogFolderPath();
+        return FilesFolder() + "users/_default/logFiles/";
     }
 
     static std::string ProjectMetadataFileOld(){
@@ -109,14 +104,10 @@ public:
         return FilesFolder() + "/projectMetadata.yaml";
     }
 
-    static std::string OldHDF5projectFileName(){
-        return FilesFolder() + "/oldProjectFile.hdf5";
-    }
-
     static std::string FilesFolder(){
         return project::FilesFolder();
     }
 };
 
-} // namespace data
+} // namespace datalayer
 } // namespace om

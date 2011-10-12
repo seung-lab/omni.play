@@ -2,13 +2,15 @@
 
 #include "common/std.h"
 #include "common/manageableObject.hpp"
-#include "volume/mipVolume.h"
+#include "volume/volume.h"
 
 class volumeData;
 
-namespace om { namespace channel { class folder; } }
-
 namespace om {
+
+namespace channel { class folder; }
+namespace chunks { class chunk; }
+
 namespace volume {
 
 class channelImpl : public volume, public common::manageableObject {
@@ -20,7 +22,7 @@ public:
 
     virtual std::string GetDefaultHDF5DatasetName() = 0;
 
-    volumeData* VolData() {
+    data* VolData() {
         return volData_.get();
     }
 
@@ -48,7 +50,7 @@ public:
 
     void SetVolDataType(const dataType);
 
-    chunk* GetChunk(const coords::chunkCoord& coord);
+    chunks::chunk* GetChunk(const coords::chunkCoord& coord);
 
     inline om::channel::folder* Folder() const {
         return folder_.get();
@@ -60,7 +62,7 @@ protected:
     channelImpl& operator= (const channelImpl&);
 
     boost::scoped_ptr<om::channel::folder> folder_;
-    boost::scoped_ptr<volumeData> volData_;   
+    boost::scoped_ptr<data> volData_;
 };
 
 } // namespace volume

@@ -5,7 +5,7 @@
 #include "datalayer/archive/baseTypes.hpp"
 
 namespace om {
-namespace data {
+namespace datalayer {
 namespace archive {
 
 class genericManager {
@@ -47,5 +47,5 @@ public:
 };
 
 }; // namespace archive
-}; // namespace data
+}; // namespace datalayer
 }; // namespace om

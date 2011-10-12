@@ -7,7 +7,7 @@
 #include "mesh/ioomRingBuffer.hpp"
 #include "mesh/meshCoord.h"
 #include "threads/omTaskManager.hpp"
-#include "zi/omMutex.h"
+#include "zi/mutex.h"
 
 class meshChunkAllocTableV2;
 class meshChunkDataWriter;

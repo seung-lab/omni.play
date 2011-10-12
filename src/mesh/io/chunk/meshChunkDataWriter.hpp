@@ -5,7 +5,7 @@
 #include "mesh/iochunk/meshChunkDataWriterTask.hpp"
 #include "utility/omLockedPODs.hpp"
 #include "chunks/chunk.h"
-#include "zi/omMutex.h"
+#include "zi/mutex.h"
 
 class meshChunkDataWriter{
 private:

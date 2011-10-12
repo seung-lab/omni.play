@@ -4,44 +4,47 @@
 #include "datalayer/dataPath.h"
 #include "datalayer/dataPaths.h"
 #include "mesh/meshCoord.h"
-#include "mesh/mesh::manager.h"
+#include "mesh/meshManager.h"
 #include "project/project.h"
-#include "system/omLocalPreferences.hpp"
-#include "system/omStateManager.h"
+#include "system/localPreferences.hpp"
+#include "system/stateManager.h"
 #include "volume/channelImpl.h"
 #include "volume/segmentation.h"
 
-dataPath dataPaths::getDefaultDatasetName(){
-    return dataPath("main");
+namespace om {
+namespace datalayer {
+
+std::string paths::getDefaultDatasetName(){
+    return "main";
 }
 
-dataPath dataPaths::getProjectArchiveNameQT(){
-    return dataPath("project.qt.dat");
+std::string paths::getProjectArchiveNameQT(){
+    return "project.qt.dat";
 }
 
-dataPath dataPaths::getSegmentPagePath(const common::id segmentationID, const uint32_t pageNum)
+std::string paths::getSegmentPagePath(const common::id segmentationID, const uint32_t pageNum)
 {
     const std::string p =
         str( boost::format("segmentations/segmentation%1%/segment_page%2%")
              % segmentationID
              % pageNum );
 
-    return dataPath(p);
+    return p;
 }
 
-std::string dataPaths::getMeshFileName(const meshCoord& meshCoord)
+std::string paths::getMeshFileName(const mesh::coord& meshCoord)
 {
     return str( boost::format("mesh.%1%.dat")
                 % meshCoord.DataValue);
 }
 
-std::string dataPaths::getDirectoryPath(channelImpl const*const chan)
+std::string paths::getDirectoryPath(channelImpl const*const chan)
 {
     return str( boost::format("channels/channel%1%/")
                 % chan->GetID());
 }
 
-std::string dataPaths::Hdf5VolData(const std::string& dirPath,
+std::string paths::Hdf5VolData(const std::string& dirPath,
                                      const int level)
 {
     return dirPath
@@ -49,3 +52,6 @@ std::string dataPaths::Hdf5VolData(const std::string& dirPath,
         + "/"
         + "volume.dat";
 }
+
+} //namespace datalayer
+} //namespace om

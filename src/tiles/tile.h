@@ -10,7 +10,7 @@
 #include "tiles/tileCoord.h"
 
 class OmTextureID;
-class mipVolume;
+class volume;
 class OmCacheBase;
 class OmViewGroupState;
 
@@ -46,7 +46,7 @@ private:
     int getChunkSliceNum();
     void setVertices(const int x, const int y, const float zoomFactor);
 
-    inline mipVolume* getVol() const {
+    inline volume* getVol() const {
         return key_.getVolume();
     }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "segment/lowLevel/segmentsImplLowLevel.h"
-#include "zi/omUtility.h"
+#include "zi/utility.h"
 #include "datalayer/archive/segmentation.h"
 
 class segmentsImpl;

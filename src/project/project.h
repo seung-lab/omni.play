@@ -9,7 +9,7 @@
  */
 
 #include "common/common.h"
-#include "zi/omUtility.h"
+#include "zi/utility.h"
 #include "datalayer/archive/project.h"
 
 namespace om {
@@ -19,11 +19,8 @@ class channel;
 class segmentation;
 }
 
-namespace project {
-
 class projectImpl;
 class volumes;
-class globals;
 
 class project : private om::singletonBase<project> {
 private:
@@ -47,17 +44,14 @@ public:
 
     static int GetFileVersion();
 
-    static globals& Globals();
-
 private:
     project();
     ~project();
 
     static void setFileVersion(const int fileVersion);
-    friend class data::archive::project;
+    friend class datalayer::archive::project;
 
     friend class zi::singleton<project>;
 };
 
-} // namespace project
 } // namespace om

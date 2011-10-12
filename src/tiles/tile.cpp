@@ -9,7 +9,7 @@
 #include "utility/dataWrappers.h"
 #include "view2d/omView2dConverters.hpp"
 #include "viewGroup/omViewGroupState.h"
-#include "volume/mipVolume.h"
+#include "volume/volume.h"
 
 tile::tile(OmCacheBase* cache, const tileCoord& key)
     : cache_(cache)

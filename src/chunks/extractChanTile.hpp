@@ -2,20 +2,20 @@
 
 #include "tiles/tileFilters.hpp"
 #include "chunks/rawChunkSlicer.hpp"
-#include "volume/mipVolume.h"
+#include "volume/volume.h"
 
 namespace om {
 namespace chunk {
 
 class extractChanTile{
 private:
-    mipVolume *const vol_;
+    volume *const vol_;
     const coords::chunkCoord coord_;
     const ViewType plane_;
     const int depth_;
 
 public:
-    extractChanTile(mipVolume* vol, const coords::chunkCoord& coord, const ViewType plane, int depth)
+    extractChanTile(volume* vol, const coords::chunkCoord& coord, const ViewType plane, int depth)
         : vol_(vol)
         , coord_(coord)
         , plane_(plane)

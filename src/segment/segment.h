@@ -12,7 +12,7 @@
 #include "segment/segmentTypes.h"
 #include "segment/segmentChildrenTypes.h"
 #include "segment/segmentEdge.h"
-#include "zi/omMutex.h"
+#include "zi/mutex.h"
 
 class segments;
 

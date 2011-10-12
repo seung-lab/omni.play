@@ -3,7 +3,7 @@
 #include "segment/segments.h"
 #include "utility/segmentDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
-#include "zi/omUtility.h"
+#include "zi/utility.h"
 
 segmentIterator::segmentIterator(segments* cache)
     : segments_(cache)

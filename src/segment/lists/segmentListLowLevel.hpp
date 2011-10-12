@@ -85,7 +85,7 @@ public:
     }
 
     inline void RefreshGUIlists(){
-        runRefreshGUIlists(om::DONT_FORCE);
+        runRefreshGUIlists(common::DONT_FORCE);
     }
 
     inline void ForceRefreshGUIlists(){
@@ -229,7 +229,7 @@ private:
 
     void doRecreateGUIlists(const om::ShouldForce force)
     {
-        if(om::DONT_FORCE == force && !recreateGUIlists_){
+        if(common::DONT_FORCE == force && !recreateGUIlists_){
             return;
         }
 

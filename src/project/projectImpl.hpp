@@ -119,7 +119,7 @@ public:
             SegmentationDataWrapper(*iter).GetSegmentation().Flush();
         }
 
-        om::data::archive::project::Write(projectMetadataFile_, this);
+        datalayer::archive::project::Write(projectMetadataFile_, this);
         
         globals_->Users().UserSettings().Save();
 
@@ -212,7 +212,7 @@ private:
 
         
         if (om::file::exists(projectMetadataFile_.toStdString()))
-            om::data::archive::project::Read(projectMetadataFile_, this);
+            datalayer::archive::project::Read(projectMetadataFile_, this);
         else
             dataArchiveProject::ArchiveRead(fileNames::ProjectMetadataFileOld(), this);
         

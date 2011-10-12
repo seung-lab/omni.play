@@ -9,7 +9,7 @@
 class std::string;
 
 namespace om {
-namespace data {
+namespace datalayer {
 namespace archive {
 
 inline YAML::Emitter &operator<<(YAML::Emitter& out, const std::string& s) {
@@ -160,5 +160,5 @@ void operator>>(const YAML::Node& in, QHash<Key, T>& p)
 
 
 }; // namespace archive
-}; // namespace data
+}; // namespace datalayer
 }; // namespace om

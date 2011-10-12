@@ -8,7 +8,7 @@ class OmPreferences;
 class projectVolumes;
 
 namespace om {
-namespace data {
+namespace datalayer {
 namespace archive {
 
 static const int Latest_Project_Version = 25;
@@ -22,7 +22,7 @@ private:
 };
 
 } // namespace archive
-} // namespace data
+} // namespace datalayer
 } // namespace om
 
 namespace YAML {

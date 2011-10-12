@@ -3,8 +3,8 @@
 #include "segment/lists/segmentListGlobal.hpp"
 #include "utility/segmentDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
-#include "zi/omMutex.h"
-#include "zi/omUtility.h"
+#include "zi/mutex.h"
+#include "zi/utility.h"
 #include "segment/lists/segmentLists.h"
 #include "segment/lists/segmentListLowLevel.hpp"
 
@@ -54,7 +54,7 @@ void segmentLists::Swap(om::shared_ptr<segmentListForGUI>& list)
         uncertain_ = list;
         break;
     default:
-        throw OmArgException("unknown type");
+        throw common::argException("unknown type");
     }
 }
 

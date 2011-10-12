@@ -1,6 +1,6 @@
 #include "common/debug.h"
 #include "tiles/tileCoord.h"
-#include "volume/mipVolume.h"
+#include "volume/volume.h"
 #include "viewGroup/omViewGroupState.h"
 
 tileCoord::tileCoord()
@@ -14,7 +14,7 @@ tileCoord::tileCoord()
 {}
 
 tileCoord::tileCoord(const int level, const coords::globalCoord& dataCoord,
-                         mipVolume* vol, const uint32_t freshness,
+                         volume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
                          const common::objectType objType)
     : tileCoordKey(level,
@@ -27,7 +27,7 @@ tileCoord::tileCoord(const int level, const coords::globalCoord& dataCoord,
 {}
 
 tileCoord::tileCoord(const int level, const coords::globalCoord& dataCoord,
-                         mipVolume* vol, const uint32_t freshness,
+                         volume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
                          const segmentColorCacheType segColorType)
     : tileCoordKey(level,

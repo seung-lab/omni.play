@@ -9,7 +9,7 @@
 #include "mesh/iomeshFilePtrCache.hpp"
 #include "mesh/meshCoord.h"
 #include "mesh/mesh::manager.h"
-#include "zi/omThreads.h"
+#include "zi/threads.h"
 
 template <typename U>
 class meshWriterTask : public zi::runnable{

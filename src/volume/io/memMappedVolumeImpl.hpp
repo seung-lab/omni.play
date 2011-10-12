@@ -1,10 +1,9 @@
 #pragma once
 
+#include "datalayer/IDataVolume.hpp"
 #include "common/debug.h"
 #include "datalayer/fs/fileNames.hpp"
 #include "datalayer/fs/memMappedFile.hpp"
-#include "datalayer/IDataVolume.hpp"
-#include "datalayer/IDataVolume.hpp"
 #include "project/project.h"
 #include "volume/channel.h"
 #include "volume/segmentation.h"
@@ -18,13 +17,13 @@ namespace volume {
 template <typename T> class IOnDiskFile;
 
 template <typename T>
-class memMappedVolumeImpl : public IDataVolume<T> {
+class memMappedVolumeImpl : public datalayer::IDataVolume<T> {
 private:
     volume* vol_;
     std::vector<boost::shared_ptr<IOnDiskFile<T> > > maps_;
 
-    typedef memMappedFileRead<T> reader_t;
-    typedef memMappedFileWrite<T> writer_t;
+    typedef datalayer::memMappedFileRead<T> reader_t;
+    typedef datalayer::memMappedFileWrite<T> writer_t;
 
 public:
 
@@ -36,7 +35,7 @@ public:
         : vol_(vol)
     {}
 
-    virtual ~OmMemMappedVolumeImpl()
+    virtual ~memMappedVolumeImpl()
     {}
 
     rawDataPtrs GetType() const {
@@ -75,7 +74,7 @@ public:
 
             maps_[level] = writer_t::WriterNumBytes(getFileName(level),
                                                    size,
-                                                   om::DONT_ZERO_FILL);
+                                                   common::DONT_ZERO_FILL);
         }
 
         printf("OmMemMappedVolume: done allocating data\n");
@@ -83,16 +82,6 @@ public:
 
     T* GetPtr(const int level) const {
         return maps_[level]->GetPtr();
-    }
-
-    T* GetChunkPtr(const coords::chunkCoord& coord) const
-    {
-        const int level = coord.Level;
-        const uint64_t offset =
-            OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
-        T* ret = maps_[level]->GetPtrWithOffset(offset);
-        assert(ret);
-        return ret;
     }
 
     int GetBytesPerVoxel() const {
@@ -106,7 +95,7 @@ private:
     }
 
     std::string getFileName(const int level) const {
-        return fileNames::GetMemMapFileName(vol_, level);
+        return datalayer::fileNames::GetMemMapFileName(vol_, level);
     }
 };
 

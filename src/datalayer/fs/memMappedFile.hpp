@@ -7,6 +7,12 @@
 
 #include "boost/iostreams/device/mapped_file.hpp"
 #include "boost/filesystem.hpp"
+#include "boost/format.hpp"
+
+typedef boost::iostreams::mapped_file mapped_file;
+
+namespace om {
+namespace datalayer {
 
 template <typename T>
 class memMappedFilebase : public IOnDiskFile<T> {
@@ -20,36 +26,36 @@ protected:
 
     virtual ~memMappedFilebase()
     {
-        if (file_->is_open)() {
+        if (file_->is_open()) {
             file_->close();
         }
         debugs(memmap) << "closing file " << GetBaseFileName() << "\n";
     }
 
     uint64_t Size() const {
-        return file_->size();
+        return boost::filesystem::file_size(fnp_);
     }
 
     void open()
     {
-        file_ = boost::make_shared<mapped_file>(std::string::fromStdString(fnp_));
+        file_ = boost::make_shared<mapped_file>(fnp_);
     }
 
 public:
     T* GetPtr() const {
-        return reinterpret_cast< T* >( file_.data() );
+        return reinterpret_cast< T* >( file_->data() );
     }
 
     T* GetPtrWithOffset(const int64_t offset) const {
-        return reinterpret_cast< T* >( file_.data() + offset );
+        return reinterpret_cast< T* >( file_->data() + offset );
     }
 
     std::string GetBaseFileName() const {
-        return "\"" + boost::filesystem::path(fnp_).filename() + "\"";
+        return str(boost::format("\"%1%\"") % boost::filesystem::path(fnp_).filename());
     }
 
     std::string GetAbsFileName() const {
-        return "\"" + boost::filesystem::absolute(fnp_).filename() + "\"";
+        return str(boost::format("\"%1%\"") % boost::filesystem::absolute(fnp_).filename());
     }
 };
 
@@ -83,11 +89,11 @@ private:
         }
 
         if ( this->file_->size() != numBytes ){
-            const std::string err =
-                std::string("error: input file size of %1 bytes doesn't match expected size %d")
-                .arg(this->file_->size())
-                .arg(numBytes);
-            throw common::ioException(err.toStdString());
+            const std::string err = str(
+                boost::format("error: input file size of %1% bytes doesn't match expected size %2%")
+                % this->file_->size()
+                % numBytes);
+            throw common::ioException(err);
         }
     }
 };
@@ -98,7 +104,7 @@ public:
 
     static boost::shared_ptr<memMappedFileWrite<T> >
     WriterNumBytes(const std::string& fnp, const int64_t numBytes,
-                   const om::ZeroMem shouldZeroFill)
+                   const common::ZeroMem shouldZeroFill)
     {
         memMappedFileWrite* ret = new memMappedFileWrite(fnp, numBytes,
                                                                  shouldZeroFill);
@@ -107,7 +113,7 @@ public:
 
     static boost::shared_ptr<memMappedFileWrite<T> >
     WriterNumElements(const std::string& fnp, const int64_t numElements,
-                      const om::ZeroMem shouldZeroFill)
+                      const common::ZeroMem shouldZeroFill)
     {
         const uint64_t numBytes = numElements * sizeof(T);
         memMappedFileWrite* ret = new memMappedFileWrite(fnp, numBytes,
@@ -117,24 +123,22 @@ public:
 
 private:
     memMappedFileWrite(const std::string& fnp, const int64_t numBytes,
-                           const om::ZeroMem shouldZeroFill)
+                           const common::ZeroMem shouldZeroFill)
         : memMappedFilebase<T>(fnp)
     {
         checkFileSize(numBytes);
 
-        QFile::remove(std::string::fromStdString(fnp));
+        utility::fileHelpers::RmFile(fnp);
         this->open();
 
         if(!this->file_->resize(numBytes)){
-            throw common::ioException("could not resize file to "
-                                + om::string::num(numBytes)
-                                + " bytes");
+            throw common::ioException(str(boost::format("could not resize file to %1% bytes") % numBytes));
         }
 
         //TODO: allocate space??
         this->map();
 
-        if(om::ZERO_FILL == shouldZeroFill){
+        if(common::ZERO_FILL == shouldZeroFill){
             memset(this->map_, 0, numBytes);
         }
 
@@ -149,3 +153,5 @@ private:
     }
 };
 
+} // namespace datalayer
+} // namespace om

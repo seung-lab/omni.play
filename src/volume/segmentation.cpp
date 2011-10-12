@@ -141,7 +141,7 @@ int segmentation::GetBytesPerSlice() const {
     return GetBytesPerVoxel()*coords_.GetChunkDimension()*coords_.GetChunkDimension();
 }
 
-void segmentation::SetVolDataType(const OmVolDataType type)
+void segmentation::SetVolDataType(const volume::dataType type)
 {
     mVolDataType = type;
     volData_->SetDataType(this);
@@ -170,7 +170,7 @@ void segmentation::BuildBlankVolume(const Vector3i& dims)
     CoordinateSystem().SetDataDimensions(dims);
     CoordinateSystem().UpdateRootLevel();
 
-    OmVolumeAllocater::AllocateData(this, OmVolDataType::UINT32);
+    OmVolumeAllocater::AllocateData(this, volume::dataType::UINT32);
 
     SetBuildState(MIPVOL_BUILT);
 }

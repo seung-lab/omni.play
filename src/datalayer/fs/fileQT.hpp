@@ -3,7 +3,7 @@
 #include "common/om.hpp"
 #include "common/debug.h"
 #include "datalayer/fs/IOnDiskFile.h"
-#include "utility/omSmartPtr.hpp"
+#include "utility/smartPtr.hpp"
 
 #include <QFile>
 #include <QFileInfo>
@@ -41,7 +41,7 @@ protected:
     {
         const uint64_t numBytes = file_->size();
 
-        data_ = OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
+        data_ = OmSmartPtr<T>::MallocNumBytes(numBytes, common::DONT_ZERO_FILL);
         char* dataCharPtr = reinterpret_cast<char*>(data_.get());
         file_->seek(0);
         const uint64_t readBytes = file_->read(dataCharPtr, numBytes);

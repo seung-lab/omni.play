@@ -1,4 +1,4 @@
-#include "volume/mipVolume.h"
+#include "volume/volume.h"
 #include "volume/io/volumeData.h"
 
 using namespace om::coords;

@@ -19,7 +19,7 @@
 #include <sstream>
 
 namespace om {
-namespace data {
+namespace datalayer {
 namespace archive {
     
 void project::Read(const std::string& fnp, projectImpl* project) {
@@ -113,7 +113,7 @@ void project::postLoad()
 }
 
 } // namespace archive
-} // namespace data
+} // namespace datalayer
 } // namespace om
 
 namespace YAML {

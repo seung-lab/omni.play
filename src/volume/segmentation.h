@@ -3,7 +3,7 @@
 #include "datalayer/dataWrapper.h"
 #include "mesh/meshTypes.h"
 #include "common/manageableObject.hpp"
-#include "volume/mipVolume.h"
+#include "volume/volume.h"
 #include "datalayer/archive/segmentation.h"
 
 namespace om {

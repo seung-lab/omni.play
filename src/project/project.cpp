@@ -2,6 +2,8 @@
 #include "project/project.h"
 #include "project/projectImpl.hpp"
 
+namespace om {
+
 project::project()
 {}
 
@@ -71,10 +73,6 @@ bool project::IsReadOnly(){
     return instance().impl_->IsReadOnly();
 }
 
-projectGlobals& project::Globals(){
-    return instance().impl_->Globals();
-}
-
 bool project::IsOpen(){
     return instance().impl_;
 }
@@ -84,7 +82,7 @@ bool project::IsOpen(){
 #include "events/details/omEventManager.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 #include "threads/omThreadPoolManager.h"
-#include "zi/omThreads.h"
+#include "zi/threads.h"
 
 void project::Close()
 {
@@ -115,4 +113,6 @@ void project::Close()
     OmHdf5Manager::Delete();
 
     tilePools::Reset();
+}
+
 }

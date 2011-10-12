@@ -11,16 +11,14 @@
 #include "chunks/chunkMipping.hpp"
 #include "volume/volumeTypes.h"
 
-namespace om { 
-    
+namespace om {
 namespace volume {
     class channel;
     class channelImpl;
     class segmentation;
 }
-    
-namespace chunks { 
-    
+
+namespace chunks {
 class dataInterface;
 
 class chunk {
@@ -32,7 +30,7 @@ public:
     virtual ~chunk();
 
     bool ContainsVoxel(const coords::dataCoord& vox) const {
-        return vox.volume() == &vol_->CoordinateSystem() &&  
+        return vox.volume() == &vol_->CoordinateSystem() &&
                vox.level() == GetLevel() &&
                mipping_.GetExtent().contains(vox);
     }

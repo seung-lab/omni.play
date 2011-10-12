@@ -1,6 +1,6 @@
 
 #include "datalayer/archive/segmentation.h"
-#include "utility/yaml/mipVolume.hpp"
+#include "utility/yaml/volume.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/enabledSegments.hpp"
 #include "segment/lowLevelsegmentSelection.hpp"
@@ -37,7 +37,7 @@ void operator>>(const Node& in, segmentationManager& m) {
 Emitter &operator<<(Emitter& out, const segmentation& seg)
 {
     out << BeginMap;
-    mipVolume<const segmentation> volArchive(seg);
+    volume<const segmentation> volArchive(seg);
     volArchive.Store(out);
     
     out << Key << "Segments" << Value << (*seg.segments_);
@@ -50,7 +50,7 @@ Emitter &operator<<(Emitter& out, const segmentation& seg)
 
 void operator>>(const Node& in, segmentation& seg)
 {
-    mipVolume<segmentation> volArchive(seg);
+    volume<segmentation> volArchive(seg);
     volArchive.Load(in);
     
     in["Segments"] >> (*seg.segments_);

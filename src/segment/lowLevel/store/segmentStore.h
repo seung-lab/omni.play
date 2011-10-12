@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "zi/omMutex.h"
+#include "zi/mutex.h"
 #include "datalayer/archive/segmentation.h"
 
 class OmCacheSegRootIDs;

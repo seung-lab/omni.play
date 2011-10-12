@@ -1,6 +1,6 @@
 #pragma once
 
-#include "zi/omUtility.h"
+#include "zi/utility.h"
 
 class meshParams : private om::singletonBase<meshParams> {
 public:

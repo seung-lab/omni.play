@@ -19,10 +19,6 @@ public:
     channel(common::id id);
     virtual ~channel();
 
-    virtual std::string GetDefaultHDF5DatasetName(){
-        return "chanSingle";
-    }
-
 private:
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const channel& chan);
     friend void YAML::operator>>(const YAML::Node& in, channel& chan);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "segment/segment.h"
-#include "utility/omSmartPtr.hpp"
+#include "utility/smartPtr.hpp"
 #include "utility/omTempFile.hpp"
 
 class segmentPageObjects {

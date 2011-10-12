@@ -8,7 +8,7 @@
  */
 
 #include "chunks/chunk.h"
-#include "zi/omMutex.h"
+#include "zi/mutex.h"
 
 class segmentation;
 namespace om { namespace segchunk { class dataInterface; } }

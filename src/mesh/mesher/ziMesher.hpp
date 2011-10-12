@@ -21,7 +21,7 @@
 #include <zi/mesh/marching_cubes.hpp>
 #include <zi/shared_ptr.hpp>
 
-#include "zi/omThreads.h"
+#include "zi/threads.h"
 
 class ziMesher {
 public:

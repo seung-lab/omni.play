@@ -6,20 +6,17 @@
 #include "volume/channelFolder.h"
 #include "volume/segmentationFolder.h"
 
-
-#include <QFile>
-
 namespace om {
-namespace data {
+namespace datalayer {
 namespace archive {
     
 template <typename VOL>
-class mipVolume {
+class volume {
 private:
     VOL& vol_;
     
 public:
-    mipVolume(VOL& vol)
+    volume(VOL& vol)
     : vol_(vol)
     {}
     
@@ -57,5 +54,5 @@ public:
 };
 
 }; // namespace archive
-}; // namespace data
+}; // namespace datalayer
 }; // namespace om

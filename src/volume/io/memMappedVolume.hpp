@@ -20,7 +20,7 @@ template <typename T> class IOnDiskFile;
 template <typename T>
 class memMappedVolumeImpl : public IDataVolume<T> {
 private:
-    mipVolume* vol_;
+    volume* vol_;
     std::vector<boost::shared_ptr<IOnDiskFile<T> > > maps_;
 
     typedef memMappedFileRead<T> reader_t;
@@ -32,14 +32,14 @@ public:
     memMappedVolumeImpl()
     {}
 
-   memMappedVolumeImpl(mipVolume* vol)
+   memMappedVolumeImpl(volume* vol)
         : vol_(vol)
     {}
 
     virtual ~memMappedVolumeImpl()
     {}
 
-    OmRawDataPtrs GetType() const {
+    rawDataPtrs GetType() const {
         return (T*)0;
     }
 
@@ -75,7 +75,7 @@ public:
 
             maps_[level] = writer_t::WriterNumBytes(getFileName(level),
                                                    size,
-                                                   om::DONT_ZERO_FILL);
+                                                   common::DONT_ZERO_FILL);
         }
 
         printf("memMappedVolume: done allocating data\n");

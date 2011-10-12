@@ -2,12 +2,15 @@
 
 #include "volume/io/memMappedVolume.h"
 
-class volumeData {
+namespace om {
+namespace volume {
+
+class data {
 private:
     memMappedVolume memMapped_;
 
 public:
-    volumeData()
+    data()
     {}
 
     template <typename VOL>
@@ -24,11 +27,11 @@ public:
         return memMapped_.GetBytesPerVoxel();
     }
 
-    OmRawDataPtrs GetVolPtr(const int level){
+    rawDataPtrs GetVolPtr(const int level){
         return memMapped_.GetVolPtr(level);
     }
 
-    OmRawDataPtrs getChunkPtrRaw(const coords::chunkCoord& coord){
+    rawDataPtrs getChunkPtrRaw(const coords::chunkCoord& coord){
         return memMapped_.getChunkPtrRaw(coord);
     }
 
@@ -43,3 +46,5 @@ public:
     }
 };
 
+}
+}

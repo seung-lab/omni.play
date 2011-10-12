@@ -3,7 +3,6 @@
 #include "common/common.h"
 #include "common/debug.h"
 #include "datalayer/fs/fileNames.hpp"
-#include "datalayer/dataPath.h"
 #include "datalayer/dataPaths.h"
 #include "project/project.h"
 #include "threads/taskManager.hpp"
@@ -17,20 +16,14 @@ namespace om {
 namespace volume {
 
 channelImpl::channelImpl()
-    : chunkCache_(new chunkCache<channelImpl, chunk>(this))
-    , volData_(new volumeData())
-    , tileCache_(new tileCacheChannel())
+    : volData_(new data())
 {}
 
 channelImpl::channelImpl(common::id id)
-    : OmManageableObject(id)
-    , chunkCache_(new chunkCache<channelImpl, chunk>(this))
-    , volData_(new volumeData())
-    , tileCache_(new tileCacheChannel())
+    : manageableObject(id)
+    , volData_(new data())
 {
     LoadPath();
-
-    filterManager_.AddFilter();
 }
 
 channelImpl::~channelImpl()
@@ -49,7 +42,7 @@ std::string channelImpl::GetNameHyphen(){
 }
 
 std::string channelImpl::GetDirectoryPath() const {
-    return folder_->RelativeVolPath().toStdString();
+    return folder_->RelativeVolPath();
 }
 
 void channelImpl::CloseDownThreads()
@@ -61,7 +54,6 @@ bool channelImpl::LoadVolData()
     {
         UpdateFromVolResize();
         volData_->load(this);
-        tileCache_->Load(this);
         return true;
     }
 
@@ -71,9 +63,9 @@ bool channelImpl::LoadVolData()
 bool channelImpl::LoadVolDataIfFoldersExist()
 {
     //assume level 0 data always present
-    const std::string path = fileNames::GetVolDataFolderPath(this, 0);
+    const std::string path = datalayer::fileNames::GetVolDataFolderPath(this, 0);
 
-    if(QDir(path).exists())
+    if(file::exists(path))
     {
         return LoadVolData();
     }
@@ -89,18 +81,14 @@ int channelImpl::GetBytesPerSlice() const {
     return GetBytesPerVoxel()*128*128;
 }
 
-void channelImpl::SetVolDataType(const OmVolDataType type)
+void channelImpl::SetVolDataType(const dataType type)
 {
     mVolDataType = type;
     volData_->SetDataType(this);
 }
 
-chunk* channelImpl::GetChunk(const coords::chunkCoord& coord){
-    return chunkCache_->GetChunk(coord);
-}
-
-void channelImpl::UpdateFromVolResize(){
-    chunkCache_->UpdateFromVolResize();
+chunks::chunk* channelImpl::GetChunk(const coords::chunkCoord& coord) {
+    return new chunks::chunk(this, coord);
 }
 
 } // namespace volume

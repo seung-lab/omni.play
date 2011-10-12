@@ -3,7 +3,7 @@
 #include "common/common.h"
 #include "common/omContainer.hpp"
 #include "src/chunks/chunkItemContainerMatrix.hpp"
-#include "zi/omMutex.h"
+#include "zi/mutex.h"
 
 template <typename VOL, typename T>
 class chunkItemContainer {
@@ -62,7 +62,7 @@ public:
         const std::size_t mipLevel = coord.Level;
 
         if(mipLevel >= mips_.size()){
-            throw OmArgException("invalid mip level");
+            throw common::argException("invalid mip level");
         }
 
         return mips_[mipLevel]->Get(coord);

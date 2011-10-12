@@ -40,48 +40,48 @@ int memMappedVolume::GetBytesPerVoxel() const {
 }
 
 
-class GetChunkPtrVisitor : public boost::static_visitor<OmRawDataPtrs>{
+class GetChunkPtrVisitor : public boost::static_visitor<rawDataPtrs>{
 public:
     GetChunkPtrVisitor(const coords::chunkCoord& coord)
         : coord(coord) {}
 
     template <typename T>
-    OmRawDataPtrs operator()(T& d) const {
+    rawDataPtrs operator()(T& d) const {
         return d.GetChunkPtr(coord);
     }
 private:
     const coords::chunkCoord coord;
 };
-OmRawDataPtrs memMappedVolume::getChunkPtrRaw(const coords::chunkCoord& coord){
+rawDataPtrs memMappedVolume::getChunkPtrRaw(const coords::chunkCoord& coord){
     return boost::apply_visitor(GetChunkPtrVisitor(coord), volData_);
 }
 
 
-class GetVolPtrVisitor : public boost::static_visitor<OmRawDataPtrs>{
+class GetVolPtrVisitor : public boost::static_visitor<rawDataPtrs>{
 public:
     GetVolPtrVisitor(const int level) : level_(level) {}
 
     template <typename T>
-    OmRawDataPtrs operator()(T& d) const {
+    rawDataPtrs operator()(T& d) const {
         return d.GetPtr(level_);
     }
 private:
     const int level_;
 };
-OmRawDataPtrs memMappedVolume::GetVolPtr(const int level)
+rawDataPtrs memMappedVolume::GetVolPtr(const int level)
 {
     return boost::apply_visitor(GetVolPtrVisitor(level), volData_);
 }
 
 
-class GetVolPtrTypeVisitor : public boost::static_visitor<OmRawDataPtrs>{
+class GetVolPtrTypeVisitor : public boost::static_visitor<rawDataPtrs>{
 public:
     template <typename T>
-    OmRawDataPtrs operator()(T& d) const {
+    rawDataPtrs operator()(T& d) const {
         return d.GetType();
     }
 };
-OmRawDataPtrs memMappedVolume::GetVolPtrType()
+rawDataPtrs memMappedVolume::GetVolPtrType()
 {
     return boost::apply_visitor(GetVolPtrTypeVisitor(), volData_);
 }
@@ -89,7 +89,7 @@ OmRawDataPtrs memMappedVolume::GetVolPtrType()
 
 class DownsampleVisitor : public boost::static_visitor<>{
 public:
-    DownsampleVisitor(mipVolume* vol, volDataSrcs& volData)
+    DownsampleVisitor(volume* vol, volDataSrcs& volData)
         : vol_(vol)
         , volData_(volData)
     {}
@@ -105,13 +105,13 @@ public:
     }
 
 private:
-    mipVolume* vol_;
+    volume* vol_;
     volDataSrcs& volData_;
 };
 
-void memMappedVolume::downsample(mipVolume* vol)
+void memMappedVolume::downsample(volume* vol)
 {
-    OmRawDataPtrs dataType = GetVolPtrType();
+    rawDataPtrs dataType = GetVolPtrType();
     boost::apply_visitor(DownsampleVisitor(vol, volData_),
                          dataType);
 }

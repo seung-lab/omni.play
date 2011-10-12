@@ -2,19 +2,19 @@
 
 #include "common/common.h"
 #include "datalayer/fs/fileNames.hpp"
-#include "utility/omSmartPtr.hpp"
+#include "utility/smartPtr.hpp"
 #include "volume/io/volumeData.h"
-#include "volume/mipVolume.h"
+#include "volume/volume.h"
 #include "volume/volumeTypes.h"
-#include "zi/omMutex.h"
-#include "zi/omThreads.h"
+#include "zi/mutex.h"
+#include "zi/threads.h"
 
 #include <QFile>
 
 template <typename T>
 class rawChunk {
 private:
-    mipVolume *const vol_;
+    volume *const vol_;
     const coords::chunkCoord coord_;
     const uint64_t chunkOffset_;
     const std::string memMapFileName_;
@@ -29,7 +29,7 @@ private:
     typedef typename zi::spinlock::pool<raw_chunk_mutex_pool_tag>::guard mutex_guard_t;
 
 public:
-    rawChunk(mipVolume* vol, const coords::chunkCoord& coord)
+    rawChunk(volume* vol, const coords::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
         , chunkOffset_(chunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))
@@ -96,7 +96,7 @@ private:
 
         file.seek(chunkOffset_);
 
-        data_ = OmSmartPtr<T>::MallocNumBytes(numBytes_, om::DONT_ZERO_FILL);
+        data_ = OmSmartPtr<T>::MallocNumBytes(numBytes_, common::DONT_ZERO_FILL);
         char* dataAsCharPtr = (char*)(data_.get());
         const uint64_t readSize = file.read(dataAsCharPtr, numBytes_);
 

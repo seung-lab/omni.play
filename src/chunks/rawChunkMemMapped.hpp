@@ -3,14 +3,14 @@
 #include "common/common.h"
 #include "datalayer/fs/fileNames.hpp"
 #include "volume/io/volumeData.h"
-#include "volume/mipVolume.h"
+#include "volume/volume.h"
 
 #include <QFile>
 
 template <typename T>
 class rawChunkMemMapped {
 private:
-    mipVolume *const vol_;
+    volume *const vol_;
     const coords::chunkCoord coord_;
     const uint64_t chunkOffset_;
     const std::string fnp_;
@@ -20,7 +20,7 @@ private:
     T* dataRaw_;
 
 public:
-    rawChunkMemMapped(mipVolume* vol, const coords::chunkCoord& coord)
+    rawChunkMemMapped(volume* vol, const coords::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
         , chunkOffset_(chunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))

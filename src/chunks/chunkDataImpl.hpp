@@ -13,14 +13,14 @@ namespace chunk {
 template <typename DATA>
 class dataImpl : public dataInterface {
 private:
-    mipVolume *const vol_;
+    volume *const vol_;
     const coords::chunkCoord coord_;
     const int numElementsPerSlice_;
     const int numElementsPerChunk_;
     ptrToChunkDataBase *const ptrToChunkData_;
 
 public:
-    dataImpl(mipVolume* vol, const coords::chunkCoord& coord)
+    dataImpl(volume* vol, const coords::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
         , numElementsPerSlice_(128*128)

@@ -9,7 +9,7 @@
 #define dataWrapperInvalid() (dataWrapper<int8_t>::produceNull())
 
 namespace om {
-namespace data {
+namespace datalayer {
 
 template <class T> struct volDataTypeImpl;
 template <> struct volDataTypeImpl<uint32_t>{ 

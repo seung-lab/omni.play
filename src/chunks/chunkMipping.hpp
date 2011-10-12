@@ -1,6 +1,6 @@
 #pragma once
 
-#include "volume/mipVolume.h"
+#include "volume/volume.h"
 
 namespace om {
 namespace chunks {

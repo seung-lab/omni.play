@@ -2,19 +2,20 @@
 
 #include <string>
 
-class channelImpl;
+
 
 
 
 namespace om {
+namespace volume { class channelImpl; }
 namespace channel {
 
 class folder {
 private:
-    channelImpl *const vol_;
+    volume::channelImpl *const vol_;
 
 public:
-    folder(channelImpl* chan);
+    folder(volume::channelImpl* chan);
 
     std::string GetVolPath() const;
     std::string RelativeVolPath() const;

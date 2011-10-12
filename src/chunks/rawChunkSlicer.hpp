@@ -4,7 +4,7 @@
 #include "project/projectGlobals.h"
 #include "tiles/pools/omPooledTile.hpp"
 #include "tiles/pools/tilePool.hpp"
-#include "utility/omSmartPtr.hpp"
+#include "utility/smartPtr.hpp"
 
 template <typename T>
 class rawChunkSlicer {
@@ -33,7 +33,7 @@ public:
     om::shared_ptr<T> GetCopyOfTile(const ViewType viewType, const int offsetNumTiles)
     {
         om::shared_ptr<T> tilePtr = OmSmartPtr<T>::MallocNumElements(elementsPerTile_,
-                                                                     om::DONT_ZERO_FILL);
+                                                                     common::DONT_ZERO_FILL);
         sliceTile(viewType, offsetNumTiles, tilePtr.get());
 
         return tilePtr;
@@ -82,7 +82,7 @@ private:
         break;
 
         default:
-            throw OmArgException("unknown plane");
+            throw common::argException("unknown plane");
         };
     }
 };

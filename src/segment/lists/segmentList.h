@@ -1,7 +1,7 @@
 #pragma once
 
 #include "segment/lists/segmentListsTypes.hpp"
-#include "zi/omMutex.h"
+#include "zi/mutex.h"
 
 class segmentListLowLevel;
 class segmentListGlobal;
@@ -34,7 +34,7 @@ private:
         case om::UNCERTAIN:
             return uncertain_.get();
         default:
-            throw OmArgException("unknown type");
+            throw common::argException("unknown type");
         }
     }
 

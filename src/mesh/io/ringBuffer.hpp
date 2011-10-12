@@ -1,8 +1,8 @@
 #pragma once
 
 #include "common/common.h"
-#include "zi/omUtility.h"
-#include "zi/omMutex.h"
+#include "zi/utility.h"
+#include "zi/mutex.h"
 
 template <typename T>
 class OmRingBuffer {

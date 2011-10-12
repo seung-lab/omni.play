@@ -1,8 +1,11 @@
 #pragma once
 
 #include "volume/io/memMappedVolumeImpl.hpp"
-#include "volume/mipVolume.h"
+#include "volume/volume.h"
 #include "volume/volumeTypes.h"
+
+namespace om {
+namespace volume {
 
 class memMappedVolume {
 public:
@@ -25,27 +28,15 @@ public:
     }
 
     int GetBytesPerVoxel() const;
-    OmRawDataPtrs GetVolPtr(const int level);
-    OmRawDataPtrs getChunkPtrRaw(const coords::chunkCoord& coord);
+    rawDataPtrs GetVolPtr(const int level);
+    rawDataPtrs getChunkPtrRaw(const coords::chunkCoord& coord);
 
-    void downsample(mipVolume* vol);
+    void downsample(volume* vol);
 
     template <typename VOL>
     void SetDataType(VOL* vol)
     {
         printf("setting up volume data...\n");
-
-        if(OmVolDataType::UNKNOWN == vol->mVolDataType.index())
-        {
-            printf("unknown data type--old file? attempting to infer type...\n");
-
-            if(project::HasOldHDF5()){
-                vol->mVolDataType = OmHdf5ChunkUtils::DetermineOldVolType(vol);
-
-            } else {
-                throw common::ioException("can not resolve volume type");
-            }
-        }
 
         volData_ = makeVolData(vol);
     }
@@ -55,26 +46,28 @@ private:
 
     void loadMemMapFiles();
     void allocMemMapFiles(const std::map<int, Vector3i>& levDims);
-    OmRawDataPtrs GetVolPtrType();
+    rawDataPtrs GetVolPtrType();
 
-    volDataSrcs makeVolData(mipVolume* vol)
+    volDataSrcs makeVolData(volume* vol)
     {
         switch(vol->mVolDataType.index()){
-        case OmVolDataType::INT8:
+        case dataType::INT8:
             return memMappedVolumeImpl<int8_t>(vol);
-        case OmVolDataType::UINT8:
+        case dataType::UINT8:
             return memMappedVolumeImpl<uint8_t>(vol);
-        case OmVolDataType::INT32:
+        case dataType::INT32:
             return memMappedVolumeImpl<int32_t>(vol);
-        case OmVolDataType::UINT32:
+        case dataType::UINT32:
             return memMappedVolumeImpl<uint32_t>(vol);
-        case OmVolDataType::FLOAT:
+        case dataType::FLOAT:
             return memMappedVolumeImpl<float>(vol);
-        case OmVolDataType::UNKNOWN:
+        case dataType::UNKNOWN:
             throw common::ioException("unknown data type--probably old file?");
         }
 
-        throw OmArgException("type not know");
+        throw common::argException("type not know");
     }
 };
 
+} // namespace volume
+} // namespace om
