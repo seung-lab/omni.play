@@ -8,9 +8,9 @@ class OmAffinityGraph;
 class OmAffinityChannel : public OmChannelImpl {
 private:
     const om::AffinityGraph affinity_;
-    
+
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmAffinityGraph& chan);
-    
+
 public:
     OmAffinityChannel(const om::AffinityGraph aff)
         : OmChannelImpl()
@@ -23,12 +23,12 @@ public:
             throw OmArgException("Bad Affinity Type.");
         }
     }
-    
+
     OmAffinityChannel(OmID id, const om::AffinityGraph aff)
-    : OmChannelImpl(id)
-    , affinity_(aff)
+        : OmChannelImpl(id)
+        , affinity_(aff)
     {}
-    
+
     ~OmAffinityChannel()
     { }
 
@@ -39,8 +39,8 @@ public:
     virtual QString GetDefaultHDF5DatasetName(){
         return "affGraphSingle";
     }
-    
-    std::string GetDirectoryPath() const 
+
+    std::string GetDirectoryPath() const
     {
         switch(affinity_)
         {
@@ -51,6 +51,8 @@ public:
         case om::Z_AFFINITY:
             return str( boost::format("affinity/affinity%1%/Z") % GetID());
         }
+
+        throw OmArgException("unknown arg");
     }
 };
 
