@@ -1,3 +1,4 @@
+#include "network/omExtractMesh.h"
 #include "actions/omActions.h"
 #include "chunks/omChunk.h"
 #include "common/omDebug.h"
@@ -866,6 +867,19 @@ void Headless::processLine(const QString& line, const QString&)
 
         OmBuildChannel bc(&chann);
         bc.BuildEmptyChannel();
+
+    } else if(line.startsWith("dumpMesh")){
+
+        OmExtractMesh meshExtractor;
+
+        const OmID segmentationID = 1;
+        const OmSegID segID = 1;
+        const uint32_t mipLevel = 2;
+        const uint32_t x = 0;
+        const uint32_t y = 0;
+        const uint32_t z = 0;
+
+        meshExtractor.WriteOutMesh(segmentationID, segID, mipLevel, x, y, z);
 
     } else {
         printf("Could not parse \"%s\".\n", qPrintable(line));
