@@ -50,9 +50,9 @@ public:
             return str( boost::format("affinity/affinity%1%/Y") % GetID());
         case om::Z_AFFINITY:
             return str( boost::format("affinity/affinity%1%/Z") % GetID());
+        default:
+            throw OmArgException("unknown arg");
         }
-
-        throw OmArgException("unknown arg");
     }
 };
 
