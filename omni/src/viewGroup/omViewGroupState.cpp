@@ -98,9 +98,10 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
         }
 
         return SCC_SEGMENTATION;
-    }
 
-    throw OmArgException("unknown objType");
+    default:
+        throw OmArgException("unknown objType");
+    }
 }
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm)
