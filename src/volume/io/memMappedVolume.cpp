@@ -1,5 +1,5 @@
 #include "volume/io/memMappedVolume.h"
-#include "chunks/chunk.h"
+#include "chunks/chunk.hpp"
 #include "volume/build/omDownsampler.hpp"
 #include "threads/omTaskManager.hpp"
 

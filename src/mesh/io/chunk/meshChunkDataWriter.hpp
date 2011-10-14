@@ -4,7 +4,7 @@
 #include "datalayer/fs/fileNames.hpp"
 #include "mesh/iochunk/meshChunkDataWriterTask.hpp"
 #include "utility/omLockedPODs.hpp"
-#include "chunks/chunk.h"
+#include "chunks/chunk.hpp"
 #include "zi/mutex.h"
 
 class meshChunkDataWriter{

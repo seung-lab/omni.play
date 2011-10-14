@@ -7,7 +7,7 @@
  *  Michael Purcaro - purcaro@gmail.com - 1/29/11
  */
 
-#include "chunks/chunk.h"
+#include "chunks/chunk.hpp"
 #include "zi/mutex.h"
 
 class segmentation;

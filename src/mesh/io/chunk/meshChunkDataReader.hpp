@@ -3,7 +3,7 @@
 #include "volume/segmentationFolder.h"
 #include "common/common.h"
 #include "datalayer/fs/fileNames.hpp"
-#include "chunks/chunk.h"
+#include "chunks/chunk.hpp"
 #include "mesh/iochunk/meshChunkTypes.h"
 
 class meshChunkDataReader{
