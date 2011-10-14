@@ -6,3 +6,8 @@ libs
 omni.server.kdev4
 external/srcs
 *~
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+TAGS

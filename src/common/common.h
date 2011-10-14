@@ -30,10 +30,8 @@ typedef boost::unordered_set< id > idSet;
 //bit field
 typedef unsigned int bitfield;
 
-//slices
-
-
 //objects
+//slices
 enum objectType { CHANNEL, SEGMENTATION };
 
 /**

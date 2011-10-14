@@ -12,6 +12,7 @@
 #include "common/common.h"
 
 #include <boost/lexical_cast.hpp>
+#include <boost/format.hpp>
 #include <cstdarg>
 #include <exception>
 
@@ -61,6 +62,9 @@ public:
     {}
     ioException(const std::string& msg)
         : exception("ioException", msg)
+    {}
+    ioException(const char* msg, const std::string& fnp)
+        : exception("ioException", str(boost::format("%1%: %2%") % fnp))
     {}
 };
 
