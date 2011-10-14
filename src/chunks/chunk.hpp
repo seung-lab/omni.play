@@ -1,8 +1,9 @@
 #pragma once
 
-#include "chunks/chunkMipping.hpp"
+#include "chunks/mipping.hpp"
 #include "volume/volumeTypes.h"
-#include "chunks/rawChunkSlicer.h"
+#include "chunks/rawChunkSlicer.hpp"
+#include "tiles/tile.h"
 
 namespace om {
 namespace volume {
@@ -18,7 +19,7 @@ public:
         : vol_(vol)
         , coord_(coord)
         , chunkData_(vol->VolData()->GetChunkPtr())
-        , chunkMipping(vol, coord)
+        , mipping(vol, coord)
         , rawChunkSlicer(128, chunkData_)
     {}
 
@@ -41,7 +42,7 @@ public:
         return mipping_.GetExtent().getUnitDimensions();
     }
 
-    chunkMipping& Mipping(){
+    mipping& Mipping(){
         return mipping_;
     }
 
@@ -50,7 +51,10 @@ public:
     }
 
     inline boost::shared_ptr<tile<T>> GetTile(common::viewType vt, int depth) {
-        return slicer_.GetCopyOfTile(vt, depth);
+        T* tileData = slicer_.GetCopyOfTile(vt, depth);
+        boost::shared_ptr<tiles::tile<T>> ret =
+            boost::make_shared<tiles::tile<T>>(vol_, coord_, vt, depth, tileData);
+        return ret;
     }
 
 protected:
@@ -59,7 +63,7 @@ protected:
     const rawChunkSlicer slicer_;
 
     T* chunkData_;
-    chunkMipping mipping_;
+    mipping mipping_;
 };
 
 } // namespace chunks

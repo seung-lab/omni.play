@@ -1,25 +1,7 @@
-#include "chunks/segChunkDataInterface.hpp"
 #include "chunks/chunkData.hpp"
-#include "chunks/segChunk.h"
-#include "system/cache/omCacheBase.h"
-#include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
-#include "tiles/channelTileFilter.hpp"
-#include "tiles/omTextureID.h"
 #include "tiles/tile.h"
 #include "utility/dataWrappers.h"
-#include "view2d/omView2dConverters.hpp"
-#include "viewGroup/omViewGroupState.h"
 #include "volume/volume.h"
-
-tile::tile(OmCacheBase* cache, const tileCoord& key)
-    : cache_(cache)
-    , key_(key)
-    , tileLength_(key.getVolume()->CoordinateSystem()().GetChunkDimension())
-    , mipChunkCoord_(tileToMipCoord())
-{}
-
-tile::~tile()
-{}
 
 void tile::LoadData()
 {

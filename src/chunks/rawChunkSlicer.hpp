@@ -3,6 +3,9 @@
 #include "project/project.h"
 #include "utility/smartPtr.hpp"
 
+namespace om {
+namespace chunks {
+
 template <typename T>
 class rawChunkSlicer {
 private:
@@ -18,9 +21,9 @@ public:
         , chunkPtr_(chunkPtr)
     {}
 
-    boost::shared_ptr<T> GetCopyOfTile(const ViewType viewType, const int offsetNumTiles)
+    boost::shared_ptr<T> GetCopyOfTile(const common::viewType viewType, const int offsetNumTiles)
     {
-        boost::shared_ptr<T> tilePtr = common::smartPtr<T>::MallocNumElements(elementsPerTile_,
+        boost::shared_ptr<T> tilePtr = utility::smartPtr<T>::MallocNumElements(elementsPerTile_,
                                                                      common::DONT_ZERO_FILL);
         sliceTile(viewType, offsetNumTiles, tilePtr.get());
 
@@ -28,11 +31,11 @@ public:
     }
 
 private:
-    void sliceTile(const ViewType viewType, const int offsetNumTiles, T* tile)
+    void sliceTile(const common::viewType viewType, const int offsetNumTiles, T* tile)
     {
         switch(viewType){
 
-        case XY_VIEW:
+        case common::XY_VIEW:
         {
             // skip to requested XY plane, then copy entire plane
             T const*const start = chunkPtr_ + offsetNumTiles*elementsPerTile_;
@@ -41,7 +44,7 @@ private:
         }
         break;
 
-        case XZ_VIEW:
+        case common::XZ_VIEW:
         {
             // skip to first scanline, then copy every scanline in XZ plane
             T const* start = chunkPtr_ + chunkDim_*offsetNumTiles;
@@ -53,7 +56,7 @@ private:
         }
         break;
 
-        case ZY_VIEW:
+        case common::ZY_VIEW:
         {
             // skip to first voxel in plane, then copy every voxel,
             //   advancing each time to the next scanline
@@ -75,3 +78,5 @@ private:
     }
 };
 
+} // namespace chunks
+} // namespace om

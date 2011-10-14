@@ -10,11 +10,11 @@ class extractChanTile{
 private:
     volume *const vol_;
     const coords::chunkCoord coord_;
-    const ViewType plane_;
+    const common::viewType plane_;
     const int depth_;
 
 public:
-    extractChanTile(volume* vol, const coords::chunkCoord& coord, const ViewType plane, int depth)
+    extractChanTile(volume* vol, const coords::chunkCoord& coord, const common::viewType plane, int depth)
         : vol_(vol)
         , coord_(coord)
         , plane_(plane)

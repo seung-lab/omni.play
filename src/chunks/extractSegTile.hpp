@@ -12,7 +12,7 @@ namespace segchunk {
 class OmExtractSegTile{
 public:
     OmExtractSegTile(segmentation* vol, const coords::chunkCoord& coord,
-                     const ViewType plane, int depth)
+                     const common::viewType plane, int depth)
         : vol_(vol)
         , coord_(coord)
         , plane_(plane)
@@ -72,7 +72,7 @@ private:
 
     segmentation *const vol_;
     const coords::chunkCoord coord_;
-    const ViewType plane_;
+    const common::viewType plane_;
     const int depth_;
 };
 

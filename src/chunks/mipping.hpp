@@ -5,7 +5,7 @@
 namespace om {
 namespace chunks {
 
-class chunkMipping {
+class mipping {
 private:
     const volume::volume* vol_;
     
@@ -20,7 +20,7 @@ private:
     uint32_t numBytes_;
 
 public:
-    chunkMipping(volume::volume* vol, const coords::chunkCoord& coord)
+    mipping(volume::volume* vol, const coords::chunkCoord& coord)
         : vol_(vol)
         , dataExtent_(coord.chunkBoundingBox(&vol->CoordinateSystem()))
         , normExtent_(dataExtent_.toNormBbox())
