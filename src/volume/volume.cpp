@@ -6,7 +6,7 @@ using namespace om::coords;
 namespace om {
 namespace volume {
 
-volume::volume()
+volume::volume<T>()
     : mVolDataType(dataType::UNKNOWN)
     , coords_()
     , mBuildState(MIPVOL_UNBUILT)

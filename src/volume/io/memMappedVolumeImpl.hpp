@@ -9,6 +9,7 @@
 #include "volume/channel.h"
 #include "volume/segmentation.h"
 #include "volume/volumeTypes.h"
+#include "volume/io/chunkOffset.hpp"
 
 #include <zi/mutex.hpp>
 
@@ -21,7 +22,7 @@ namespace volume {
 template <typename T>
 class memMappedVolumeImpl : public datalayer::IDataVolume<T> {
 private:
-    volume* vol_;
+    volume<T>* vol_;
     std::vector<boost::shared_ptr<datalayer::memMappedFilebase<T> > > maps_;
 
     typedef datalayer::memMappedFileRead<T> reader_t;
@@ -33,7 +34,7 @@ public:
     memMappedVolumeImpl()
     {}
 
-    memMappedVolumeImpl(volume* vol)
+    memMappedVolumeImpl(volume<T>* vol)
         : vol_(vol)
     {}
 
@@ -89,9 +90,8 @@ public:
     T* GetChunkPtr(const coords::chunkCoord& coord) const
     {
         const int level = coord.Level;
-        coord.ComputeChunkPtrOffsetBytes
         const uint64_t offset =
-            OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
+            om::volume::ComputeChunkPtrOffsetBytes(vol_, coord);
         T* ret = maps_[level]->GetPtrWithOffset(offset);
         assert(ret);
     }

@@ -32,12 +32,12 @@ namespace annotation { class manager; }
 
 namespace volume {
 
-class data;
+template <typename T> class data;
 class dataType;
 class segFolder;
 class segLoader;
 
-class segmentation : public volume, public common::manageableObject {
+class segmentation : public volume<uint32_t>, public common::manageableObject {
 public:
     segmentation();
     segmentation(common::id id);
@@ -102,7 +102,7 @@ public:
     inline segment::segments* Segments() {
         return segments_.get();
     }
-    inline data* VolData() {
+    inline data<uint32_t>* VolData() {
         return volData_.get();
     }
     inline segFolder* Folder() const {
@@ -121,7 +121,7 @@ private:
     boost::scoped_ptr<chunk::uniqueValuesManager> uniqueChunkValues_;
     boost::scoped_ptr<mesh::managers> managers_;
     boost::scoped_ptr<segment::segments> segments_;
-    boost::scoped_ptr<data> volData_;
+    boost::scoped_ptr<data<uint32_t> > volData_;
     boost::scoped_ptr<annotation::manager> annotations_;
 
     friend class segmentsImpl;

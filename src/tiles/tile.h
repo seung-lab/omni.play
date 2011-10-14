@@ -4,7 +4,7 @@
 
 namespace om {
 namespace volume {
-class volume;
+template <typename T> class volume;
 }
 
 namespace om {
@@ -13,7 +13,7 @@ namespace tiles {
 template <typename T>
 class tile {
 public:
-    tile(const volume::volume* vol,
+    tile(const volume::volume<T>* vol,
          coords::chunkCoord coord,
          common::viewType view,
          int depth,
@@ -32,7 +32,7 @@ public:
         return data_;
     }
 
-    inline const volume::volume* volume() const {
+    inline const volume::volume<T><T>* volume() const {
         return vol_;
     }
 
@@ -48,7 +48,7 @@ public:
         return depth_;
     }
 private:
-    const volume::volume* vol_;
+    const volume::volume<T>* vol_;
     const coords::chunkCoord coord_;
     const common::viewType view_;
     const int depth_;

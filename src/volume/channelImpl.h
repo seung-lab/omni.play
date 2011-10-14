@@ -13,7 +13,7 @@ namespace chunks { class chunk; }
 
 namespace volume {
 
-class channelImpl : public volume, public common::manageableObject {
+class channelImpl : public volume<uint8_t>, public common::manageableObject {
 
 public:
     channelImpl();
@@ -22,7 +22,7 @@ public:
 
     virtual std::string GetDefaultHDF5DatasetName() = 0;
 
-    data* VolData() {
+    data<uint8_t>* VolData() {
         return volData_.get();
     }
 
@@ -62,7 +62,7 @@ protected:
     channelImpl& operator= (const channelImpl&);
 
     boost::scoped_ptr<om::channel::folder> folder_;
-    boost::scoped_ptr<data> volData_;
+    boost::scoped_ptr<data<uint8_t> > volData_;
 };
 
 } // namespace volume
