@@ -8,3 +8,7 @@ src/thrift
 external/srcs
 *~
 TAGS
+GPATH
+GRTAGS
+GSYMS
+GTAGS
