@@ -5,6 +5,7 @@
 namespace om {
 namespace volume {
 
+template<typename T>
 class data {
 private:
     memMappedVolume memMapped_;

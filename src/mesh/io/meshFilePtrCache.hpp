@@ -17,8 +17,8 @@ private:
     segmentation *const segmentation_;
     const double threshold_;
 
-    std::map<coords::chunkCoord, om::shared_ptr<meshChunkAllocTableV2> > tables_;
-    std::map<coords::chunkCoord, om::shared_ptr<meshChunkDataWriter> > data_;
+    std::map<coords::chunkCoord, boost::shared_ptr<meshChunkAllocTableV2> > tables_;
+    std::map<coords::chunkCoord, boost::shared_ptr<meshChunkDataWriter> > data_;
     zi::rwmutex lock_;
 
     OmThreadPool threadPool_;
@@ -53,7 +53,7 @@ public:
         std::cout << "done\n";
     }
 
-    void AddTaskBack(const om::shared_ptr<zi::runnable> job){
+    void AddTaskBack(const boost::shared_ptr<zi::runnable> job){
         threadPool_.push_back(job);
     }
 

@@ -17,7 +17,7 @@ public:
     virtual void RefreshBoundingData(segments* segments) = 0;
 
     virtual PooledTile32Ptr ExtractDataSlice32bit(const ViewType, const int) = 0;
-    virtual om::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32() = 0;
+    virtual boost::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32() = 0;
 
     virtual void RewriteChunk(const boost::unordered_map<uint32_t, uint32_t>&) = 0;
 

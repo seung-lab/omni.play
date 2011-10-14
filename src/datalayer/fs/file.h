@@ -14,18 +14,18 @@ namespace file {
 
 int64_t numBytes(const std::string& fnp);
 
-void resizeFileNumBytes(std::string* fnp, const int64_t newSize);
-inline void resizeFileNumBytes(std::string& fnp, const int64_t newSize){
+void resizeFileNumBytes(const std::string* fnp, const int64_t newSize);
+inline void resizeFileNumBytes(const std::string& fnp, const int64_t newSize){
     resizeFileNumBytes(&fnp, newSize);
 }
 
 template <typename T>
-void resizeFileNumElements(std::string& fnp, const int64_t numElements){
+void resizeFileNumElements(const std::string& fnp, const int64_t numElements){
     resizeFileNumBytes(&fnp, sizeof(T) * numElements);
 }
 
 template <typename T>
-void resizeFileNumElements(std::string* fnp, const int64_t numElements){
+void resizeFileNumElements(const std::string* fnp, const int64_t numElements){
     resizeFileNumBytes(fnp, sizeof(T) * numElements);
 }
 

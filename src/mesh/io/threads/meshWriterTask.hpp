@@ -75,7 +75,7 @@ public:
 private:
     meshDataEntry
     writeOutData(meshChunkDataWriter* chunk_data,
-                 om::shared_ptr<dataForMeshLoad> data,
+                 boost::shared_ptr<dataForMeshLoad> data,
                  const meshCoord& meshCoord)
     {
         meshDataEntry entry =
@@ -160,7 +160,7 @@ private:
         return entry;
     }
 
-    void printInfoAboutSkippedSegment(om::shared_ptr<dataForMeshLoad>)
+    void printInfoAboutSkippedSegment(boost::shared_ptr<dataForMeshLoad>)
     {
         std::cout << "skipping segID " << segID_
                   << " in chunk " << coord_

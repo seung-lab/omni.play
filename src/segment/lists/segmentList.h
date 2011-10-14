@@ -17,10 +17,10 @@ private:
 
     boost::scoped_ptr<segmentListLowLevel> segmentListsLL_;
 
-    om::shared_ptr<segmentListGlobal> globalList_;
-    om::shared_ptr<segmentListForGUI> working_;
-    om::shared_ptr<segmentListForGUI> uncertain_;
-    om::shared_ptr<segmentListForGUI> valid_;
+    boost::shared_ptr<segmentListGlobal> globalList_;
+    boost::shared_ptr<segmentListForGUI> working_;
+    boost::shared_ptr<segmentListForGUI> uncertain_;
+    boost::shared_ptr<segmentListForGUI> valid_;
 
     boost::scoped_ptr<segmentListByMRU> recent_;
 
@@ -50,8 +50,8 @@ public:
 
     void TouchRecent(segment* seg);
 
-    void Swap(om::shared_ptr<segmentListForGUI>& list);
-    void Swap(om::shared_ptr<segmentListGlobal>& globalList);
+    void Swap(boost::shared_ptr<segmentListForGUI>& list);
+    void Swap(boost::shared_ptr<segmentListGlobal>& globalList);
 
     size_t Size(const om::SegListType type);
     size_t SizeRecent();
@@ -60,10 +60,10 @@ public:
     int64_t TotalNumVoxels();
     int64_t NumVoxels(const om::SegListType type);
 
-    om::shared_ptr<GUIPageOfSegments>
+    boost::shared_ptr<GUIPageOfSegments>
     GetSegmentGUIPageRecent(const GUIPageRequest& request);
 
-    om::shared_ptr<GUIPageOfSegments>
+    boost::shared_ptr<GUIPageOfSegments>
     GetSegmentGUIPage(const om::SegListType type, const GUIPageRequest& request);
 
     segId GetNextSegIDinWorkingList(const SegmentDataWrapper&);

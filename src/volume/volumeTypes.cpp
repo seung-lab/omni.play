@@ -17,7 +17,7 @@ dataType typeHelpers::GetTypeFromString(const std::string & type)
         return *ret;
     }
 
-    throw common::ioException("invalid type", type);
+    throw common::ioException(str(boost::format("invalid type %1%") % type));
 }
 
 } // namespace volume

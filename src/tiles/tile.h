@@ -1,55 +1,70 @@
 #pragma once
 
-/*
- *  tile allows access to 2D image data from the source volume.
- *
- *  Rachel Shearer - rshearer@mit.edu
- */
-
-#include "common/omStd.h"
+#include "common/std.h"
 #include "tiles/tileCoord.h"
 
-class OmTextureID;
+namespace om {
+namespace volume {
 class volume;
-class OmCacheBase;
-class OmViewGroupState;
+}
 
+namespace om {
+namespace tiles {
+
+template <typename T>
 class tile {
 public:
-    tile(OmCacheBase* cache, const tileCoord& key);
-    ~tile();
+    tile(const om::volume::volume* vol,
+         coords::chunkCoord coord,
+         common::viewType view,
+         int depth)
+        : vol_(vol)
+        , coord_(coord)
+        , view_(view)
+        , depth_(depth)
+    {}
 
-    void LoadData();
-    uint32_t NumBytes() const;
+    void LoadData()
+    {
+        if(vol_->
+        channel* chan = reinterpret_cast<channel*>(getVol());
+        chunk* chunk = chan->GetChunk(mipChunkCoord_);
 
-    inline OmTextureID& GetTexture() {
-        return *texture_;
+        OmPooledTile<uint8_t>* tileData =
+            chunk->Data()->ExtractDataSlice8bit(key_.getViewType(),
+                                                getChunkSliceNum());
+
+        channelTileFilter::Filter(tileData);
+
+        texture_.reset(new OmTextureID(tileLength_, tileData));
+
+        segmentation* seg = reinterpret_cast<segmentation*>(getVol());
+        segChunk* chunk = seg->GetChunk(mipChunkCoord_);
+
+        PooledTile32Ptr imageData =
+            chunk->SegData()->ExtractDataSlice32bit(key_.getViewType(),
+                                                    getChunkSliceNum());
+
+        OmPooledTile<OmColorARGB>* colorMappedData =
+            key_.getViewGroupState()->ColorTile(imageData->GetData(),
+                                                tileLength_,
+                                                key_);
+
+        texture_.reset(new OmTextureID(tileLength_, colorMappedData));
     }
 
-    inline const tileCoord& GetTileCoord() const {
-        return key_;
+    const T* data() const {
+        return data_;
     }
 
 private:
-    OmCacheBase *const cache_;
-    const tileCoord key_;
-    const int tileLength_;
-    const coords::chunkCoord mipChunkCoord_;
+    const om::volume::volume* vol_;
+    const coords::chunkCoord coord_;
+    const common::viewType view_;
+    const int depth;
 
-    boost::scoped_ptr<OmTextureID> texture_;
-
-    void load8bitChannelTile();
-    void load32bitSegmentationTile();
-
-    coords::chunkCoord tileToMipCoord();
-    int getDepth();
-    int getChunkSliceNum();
-    void setVertices(const int x, const int y, const float zoomFactor);
-
-    inline volume* getVol() const {
-        return key_.getVolume();
-    }
-
-    common::objectType getVolType() const;
+    T* data_;
 };
 
+} // namespace tiles
+} // namespace om

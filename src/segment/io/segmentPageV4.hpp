@@ -11,7 +11,7 @@ private:
     const uint32_t pageSize_;
     const std::string fnp_;
 
-    om::shared_ptr<OmIOnDiskFile<segmentDataV4> > data_;
+    boost::shared_ptr<OmIOnDiskFile<segmentDataV4> > data_;
 
 public:
     segmentPageV4(segmentation* vol, const PageNum pageNum, const uint32_t pageSize)
@@ -35,7 +35,7 @@ public:
         return data_->GetPtr();
     }
 
-    segmentDataV4* Import(om::shared_ptr<segmentDataV4> data)
+    segmentDataV4* Import(boost::shared_ptr<segmentDataV4> data)
     {
         data_ =
             memMappedFileNew<segmentDataV4>::CreateFromData(fnp_, data, pageSize_);

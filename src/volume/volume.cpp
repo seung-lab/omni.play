@@ -7,8 +7,8 @@ namespace om {
 namespace volume {
 
 volume::volume()
-    : mVolDataType(volDataType::UNKNOWN)
-    , coords_(this)
+    : mVolDataType(dataType::UNKNOWN)
+    , coords_()
     , mBuildState(MIPVOL_UNBUILT)
 {}
 

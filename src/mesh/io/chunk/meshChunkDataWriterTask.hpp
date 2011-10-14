@@ -29,7 +29,7 @@ public:
     }
 
     template <typename T>
-    void Write(om::shared_ptr<T> dataRawPtr)
+    void Write(boost::shared_ptr<T> dataRawPtr)
     {
         const char* dataCharPtr =
             reinterpret_cast<const char*>(dataRawPtr.get());

@@ -123,7 +123,7 @@ public:
         }
     }
 
-    om::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32()
+    boost::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32()
     {
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();
@@ -133,16 +133,16 @@ public:
 
 private:
     template <typename T>
-    om::shared_ptr<uint32_t> getChunkAs32bit(T*) const
+    boost::shared_ptr<uint32_t> getChunkAs32bit(T*) const
     {
         rawChunk<T> rawChunk(vol_, chunk_->GetCoordinate());
 
-        om::shared_ptr<T> data = rawChunk.SharedPtr();
+        boost::shared_ptr<T> data = rawChunk.SharedPtr();
         T* dataRaw = data.get();
 
         const int numVoxelsInChunk = chunk_->Mipping().NumVoxels();
 
-        om::shared_ptr<uint32_t> ret = OmSmartPtr<uint32_t>::MallocNumElements(numVoxelsInChunk,
+        boost::shared_ptr<uint32_t> ret = OmSmartPtr<uint32_t>::MallocNumElements(numVoxelsInChunk,
                                                                                common::DONT_ZERO_FILL);
         std::copy(dataRaw,
                   dataRaw + numVoxelsInChunk,
@@ -151,13 +151,13 @@ private:
         return ret;
     }
 
-    om::shared_ptr<uint32_t> getChunkAs32bit(uint32_t*) const
+    boost::shared_ptr<uint32_t> getChunkAs32bit(uint32_t*) const
     {
         rawChunk<uint32_t> rawChunk(vol_, chunk_->GetCoordinate());
         return rawChunk.SharedPtr();
     }
 
-    om::shared_ptr<uint32_t> getChunkAs32bit(float*) const {
+    boost::shared_ptr<uint32_t> getChunkAs32bit(float*) const {
         throw common::ioException("can't deal with float data!");
     }
 };

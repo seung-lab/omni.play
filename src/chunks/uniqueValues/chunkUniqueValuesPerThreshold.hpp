@@ -18,7 +18,7 @@ private:
     const double threshold_;
     const std::string fnp_;
 
-    om::shared_ptr<uint32_t> values_;
+    boost::shared_ptr<uint32_t> values_;
     size_t numElements_;
 
     zi::rwmutex mutex_;
@@ -81,7 +81,7 @@ private:
     {
         segChunk* chunk = segmentation_->GetChunk(coord_);
 
-        om::shared_ptr<uint32_t> rawDataPtr =
+        boost::shared_ptr<uint32_t> rawDataPtr =
             chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
         uint32_t const*const rawData = rawDataPtr.get();

@@ -2,7 +2,7 @@
 
 #include "volume/io/volumeData.h"
 #include "volume/volume.h"
-#include "chunks/details/omPtrToChunkDataBase.hpp"
+#include "chunks/details/ptrToChunkDataBase.hpp"
 #include "zi/mutex.h"
 
 namespace om {

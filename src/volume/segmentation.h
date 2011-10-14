@@ -102,9 +102,6 @@ public:
     inline segment::segments* Segments() {
         return segments_.get();
     }
-    inline segment::lists* SegmentLists() {
-        return segmentLists_.get();
-    }
     inline data* VolData() {
         return volData_.get();
     }
@@ -124,7 +121,6 @@ private:
     boost::scoped_ptr<chunk::uniqueValuesManager> uniqueChunkValues_;
     boost::scoped_ptr<mesh::managers> managers_;
     boost::scoped_ptr<segment::segments> segments_;
-    boost::scoped_ptr<segment::lists> segmentLists_;
     boost::scoped_ptr<data> volData_;
     boost::scoped_ptr<annotation::manager> annotations_;
 

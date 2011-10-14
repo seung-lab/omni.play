@@ -63,7 +63,8 @@ public:
 
         if(!file::exists(fullPath)){
             if(!utility::fileHelpers::MkDir(fullPath)){
-                throw common::ioException("could not create folder", fullPath);
+                throw common::ioException(str(boost::format("could not create folder %1%")
+                                              % fullPath));
             }
         }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "datalayer/IDataVolume.hpp"
+#include "datalayer/fs/IOnDiskFile.h"
 #include "common/debug.h"
 #include "datalayer/fs/fileNames.hpp"
 #include "datalayer/fs/memMappedFile.hpp"
@@ -12,15 +13,16 @@
 #include <zi/mutex.hpp>
 
 namespace om {
-namespace volume {
-
+namespace datalayer {
 template <typename T> class IOnDiskFile;
+}
+namespace volume {
 
 template <typename T>
 class memMappedVolumeImpl : public datalayer::IDataVolume<T> {
 private:
     volume* vol_;
-    std::vector<boost::shared_ptr<IOnDiskFile<T> > > maps_;
+    std::vector<boost::shared_ptr<datalayer::memMappedFilebase<T> > > maps_;
 
     typedef datalayer::memMappedFileRead<T> reader_t;
     typedef datalayer::memMappedFileWrite<T> writer_t;
@@ -82,6 +84,16 @@ public:
 
     T* GetPtr(const int level) const {
         return maps_[level]->GetPtr();
+    }
+
+    T* GetChunkPtr(const coords::chunkCoord& coord) const
+    {
+        const int level = coord.Level;
+        coord.ComputeChunkPtrOffsetBytes
+        const uint64_t offset =
+            OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
+        T* ret = maps_[level]->GetPtrWithOffset(offset);
+        assert(ret);
     }
 
     int GetBytesPerVoxel() const {

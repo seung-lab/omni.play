@@ -61,7 +61,7 @@ public:
 
     template <typename T>
     void Append(const meshCoord meshCoord,
-                om::shared_ptr<T> data,
+                boost::shared_ptr<T> data,
                 meshFilePart& entry,
                 const int64_t count,
                 const int64_t numBytes)

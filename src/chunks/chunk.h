@@ -1,31 +1,26 @@
 #pragma once
 
-/**
- *  chunk encapsulates a 3D-matrix of image data (typically 128^3) and
- *    its associated size/positioning metadata.
- *
- *  Brett Warne - bwarne@mit.edu - 2/24/09
- *  Michael Purcaro - purcaro@gmail.com - 1/29/11
- */
-
 #include "chunks/chunkMipping.hpp"
 #include "volume/volumeTypes.h"
+#include "chunks/rawChunkSlicer.h"
 
 namespace om {
 namespace volume {
-    class channel;
-    class channelImpl;
-    class segmentation;
+    class volume;
 }
 
 namespace chunks {
-class dataInterface;
 
+template <typename T>
 class chunk {
 public:
-    chunk(volume::channel* vol, const coords::chunkCoord& coord);
-    chunk(volume::channelImpl* vol, const coords::chunkCoord& coord);
-    chunk(volume::segmentation* vol, const coords::chunkCoord& coord);
+    chunk(volume::volume* vol, const coords::chunkCoord& coord)
+        : vol_(vol)
+        , coord_(coord)
+        , chunkData_(vol->VolData()->GetChunkPtr())
+        , chunkMipping(vol, coord)
+        , rawChunkSlicer(128, chunkData_)
+    {}
 
     virtual ~chunk();
 
@@ -46,19 +41,24 @@ public:
         return mipping_.GetExtent().getUnitDimensions();
     }
 
-    om::chunks::dataInterface* Data(){
-        return chunkData_.get();
-    }
-
     chunkMipping& Mipping(){
         return mipping_;
     }
 
+    inline const T* Data() const {
+        return data_;
+    }
+
+    inline boost::shared_ptr<tile<T>> GetTile(common::viewType vt, int depth) {
+        return slicer_.GetCopyOfTile(vt, depth);
+    }
+
 protected:
     const coords::chunkCoord coord_;
-    const boost::scoped_ptr<dataInterface> chunkData_;
     const volume::volume * const vol_;
+    const rawChunkSlicer slicer_;
 
+    T* chunkData_;
     chunkMipping mipping_;
 };
 

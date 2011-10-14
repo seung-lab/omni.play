@@ -76,7 +76,6 @@ private:
     {
         this->open();
         checkFileSize(numBytes);
-        this->map();
 
         debug(memmap, "opened file %s\n", this->GetAbsFileName().c_str());
     }
@@ -131,15 +130,10 @@ private:
         utility::fileHelpers::RmFile(fnp);
         this->open();
 
-        if(!this->file_->resize(numBytes)){
-            throw common::ioException(str(boost::format("could not resize file to %1% bytes") % numBytes));
-        }
-
-        //TODO: allocate space??
-        this->map();
+        file::resizeFileNumBytes(fnp, numBytes);
 
         if(common::ZERO_FILL == shouldZeroFill){
-            memset(this->map_, 0, numBytes);
+            memset(this->file_->data(), 0, numBytes);
         }
 
         debugs(memmap) << "created file " << this->GetAbsFileName() << "\n";

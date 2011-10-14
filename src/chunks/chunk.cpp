@@ -1,26 +1,18 @@
 #include "common/common.h"
 #include "chunks/chunkData.hpp"
+#include "volume/volume.h"
+#include "volume/io/volumeData.h"
 
-chunk::chunk(channel* vol, const coords::chunkCoord& coord)
+namespace om {
+namespace chunks {
+
+template <typename T>
+chunk::chunk(volume::volume* vol, const coords::chunkCoord& coord)
     : coord_(coord)
-    , chunkData_(om::chunk::dataFactory::Produce(vol, coord))
+    , data_(vol->VolData()->getChunkPtrRaw<T>(coord))
     , vol_(vol)
     , mipping_(vol, coord)
 {}
 
-chunk::chunk(channelImpl* vol, const coords::chunkCoord& coord)
-    : coord_(coord)
-    , chunkData_(om::chunk::dataFactory::Produce(vol, coord))
-    , vol_(vol)
-    , mipping_(vol, coord)
-{}
-
-chunk::chunk(segmentation* vol, const coords::chunkCoord& coord)
-    : coord_(coord)
-    , chunkData_(om::chunk::dataFactory::Produce(vol, coord))
-    , vol_(vol)
-    , mipping_(vol, coord)
-{}
-
-chunk::~chunk()
-{}
+}
+}

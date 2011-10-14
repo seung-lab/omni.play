@@ -1,74 +1,49 @@
 #include "datalayer/fs/file.h"
 
-#include <QDir>
 #include <boost/filesystem.hpp>
 
-int64_t om::file::numBytes(const std::string& fnp)
+namespace om {
+namespace file {
+
+int64_t numBytes(const std::string& fnp)
 {
-    if(!om::file::exists(fnp)){
+    if(!exists(fnp)){
         throw common::ioException("file not found", fnp);
     }
-    return QFile(std::string::fromStdString(fnp)).size();
+    return boost::filesystem::file_size(fnp);
 }
 
-void om::file::openFileRO(QFile& file)
+void resizeFileNumBytes(const std::string* file, const int64_t numBytes)
 {
-    if(!file.open(QIODevice::ReadOnly)){
-        throw common::ioException("could not open file read only", file.fileName());
-    }
-}
-
-void om::file::openFileRW(QFile& file)
-{
-    if(!file.open(QIODevice::ReadWrite)){
-        throw common::ioException("could not open file read/write", file.fileName());
-    }
-}
-
-void om::file::openFileWO(QFile& file)
-{
-    if(!file.open(QIODevice::WriteOnly | QFile::Truncate)){
-        throw common::ioException("could not open file for write", file.fileName());
-    }
-}
-
-void om::file::openFileAppend(QFile& file)
-{
-    if(!file.open(QIODevice::Append)){
-        throw common::ioException("could not open file for write", file.fileName());
-    }
-}
-
-void om::file::resizeFileNumBytes(QFile* file, const int64_t numBytes)
-{
-    if(!file->resize(numBytes))
+    boost::system::error_code ec;
+    boost::filesystem::resize_file(*file, numBytes, ec);
+    if(ec)
     {
-        throw common::ioException("could not resize file to "
-                            + om::string::num(numBytes)
-                            + " bytes");
+        throw common::ioException(str(boost::format("could not resize file to %1% bytes")
+                                      % numBytes));
     }
 }
 
-void om::file::rmFile(const std::string& fnp)
+void rmFile(const std::string& fnp)
 {
-    const std::string f = std::string::fromStdString(fnp);
-
-    if(QFile::exists(f)){
-        if(!QFile::remove(f)){
-            throw common::ioException("could not remove previous file", f);
+    if(exists(fnp)){
+        boost::system::error_code ec;
+        boost::filesystem::remove(fnp, ec);
+        if (ec){
+            throw common::ioException("could not remove previous file", fnp);
         }
     }
 }
 
-bool om::file::exists(const std::string& fnp) {
-    return QFile::exists(std::string::fromStdString(fnp));
+bool exists(const std::string& fnp) {
+    return boost::filesystem::exists(fnp);
 }
 
-std::string om::file::tempPath(){
-    return QDir::tempPath().toStdString();
+std::string tempPath(){
+    return boost::filesystem::temp_directory_path().string();
 }
 
-void om::file::mvFile(const std::string& old_fnp, const std::string& new_fnp)
+void mvFile(const std::string& old_fnp, const std::string& new_fnp)
 {
     try {
         boost::filesystem::rename(old_fnp, new_fnp);
@@ -78,7 +53,7 @@ void om::file::mvFile(const std::string& old_fnp, const std::string& new_fnp)
     }
 }
 
-void om::file::cpFile(const std::string& from_fnp, const std::string& to_fnp)
+void cpFile(const std::string& from_fnp, const std::string& to_fnp)
 {
     try {
         rmFile(to_fnp);
@@ -88,3 +63,6 @@ void om::file::cpFile(const std::string& from_fnp, const std::string& to_fnp)
         throw common::ioException("could not mv file", from_fnp);
     }
 }
+
+} // namespace file
+} // namespace om

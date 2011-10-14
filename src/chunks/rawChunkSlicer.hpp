@@ -1,9 +1,6 @@
 #pragma once
 
 #include "project/project.h"
-#include "project/projectGlobals.h"
-#include "tiles/pools/omPooledTile.hpp"
-#include "tiles/pools/tilePool.hpp"
 #include "utility/smartPtr.hpp"
 
 template <typename T>
@@ -21,18 +18,9 @@ public:
         , chunkPtr_(chunkPtr)
     {}
 
-    OmPooledTile<T>* GetCopyAsPooledTile(const ViewType viewType, const int offsetNumTiles)
+    boost::shared_ptr<T> GetCopyOfTile(const ViewType viewType, const int offsetNumTiles)
     {
-        OmPooledTile<T>* pooledTile = new OmPooledTile<T>();
-
-        sliceTile(viewType, offsetNumTiles, pooledTile->GetData());
-
-        return pooledTile;
-    }
-
-    om::shared_ptr<T> GetCopyOfTile(const ViewType viewType, const int offsetNumTiles)
-    {
-        om::shared_ptr<T> tilePtr = OmSmartPtr<T>::MallocNumElements(elementsPerTile_,
+        boost::shared_ptr<T> tilePtr = common::smartPtr<T>::MallocNumElements(elementsPerTile_,
                                                                      common::DONT_ZERO_FILL);
         sliceTile(viewType, offsetNumTiles, tilePtr.get());
 

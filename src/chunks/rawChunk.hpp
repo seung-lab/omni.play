@@ -9,8 +9,6 @@
 #include "zi/mutex.h"
 #include "zi/threads.h"
 
-#include <QFile>
-
 template <typename T>
 class rawChunk {
 private:
@@ -20,7 +18,8 @@ private:
     const std::string memMapFileName_;
     const uint64_t numBytes_;
 
-    om::shared_ptr<T> data_;
+    boost::shared_ptr<T> data_;
+
     T* dataRaw_;
 
     bool dirty_;
@@ -80,7 +79,7 @@ public:
         return dataRaw_;
     }
 
-    om::shared_ptr<T> SharedPtr(){
+    boost::shared_ptr<T> SharedPtr(){
         return data_;
     }
 

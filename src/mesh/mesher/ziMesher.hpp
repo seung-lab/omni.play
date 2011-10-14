@@ -65,11 +65,11 @@ public:
     //     chunkUtils::RefindUniqueChunkValues(segmentation_->GetID());
     // }
 
-    om::shared_ptr<om::gui::progress> Progress(){
+    boost::shared_ptr<om::gui::progress> Progress(){
         return progress_.Progress();
     }
 
-    void Progress(om::shared_ptr<om::gui::progress> p){
+    void Progress(boost::shared_ptr<om::gui::progress> p){
         progress_.Progress(p);
     }
 
@@ -93,7 +93,7 @@ private:
 
     void init()
     {
-        om::shared_ptr<std::deque<coords::chunkCoord> > levelZeroChunks =
+        boost::shared_ptr<std::deque<coords::chunkCoord> > levelZeroChunks =
             segmentation_->GetMipChunkCoordinateSystem()(0);
 
         progress_.SetTotalNumChunks(levelZeroChunks->size());

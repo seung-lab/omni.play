@@ -32,14 +32,14 @@ size_t segmentLists::SizeRecent()
     return recent_->Size();
 }
 
-om::shared_ptr<GUIPageOfSegments>
+boost::shared_ptr<GUIPageOfSegments>
 segmentLists::GetSegmentGUIPageRecent(const GUIPageRequest& request)
 {
     // recent is internally locked
     return recent_->GetSegmentGUIPage(request);
 }
 
-void segmentLists::Swap(om::shared_ptr<segmentListForGUI>& list)
+void segmentLists::Swap(boost::shared_ptr<segmentListForGUI>& list)
 {
     zi::rwmutex::write_guard g(lock_);
 
@@ -58,7 +58,7 @@ void segmentLists::Swap(om::shared_ptr<segmentListForGUI>& list)
     }
 }
 
-void segmentLists::Swap(om::shared_ptr<segmentListGlobal>& globalList)
+void segmentLists::Swap(boost::shared_ptr<segmentListGlobal>& globalList)
 {
     zi::rwmutex::write_guard g(lock_);
     globalList_ = globalList;
@@ -91,7 +91,7 @@ int64_t segmentLists::NumVoxels(const om::SegListType type)
     return get(type)->TotalNumVoxels();
 }
 
-om::shared_ptr<GUIPageOfSegments>
+boost::shared_ptr<GUIPageOfSegments>
 segmentLists::GetSegmentGUIPage(const om::SegListType type,
                                   const GUIPageRequest& request)
 {
