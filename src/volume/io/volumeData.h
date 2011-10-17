@@ -8,7 +8,7 @@ namespace volume {
 template<typename T>
 class data {
 private:
-    memMappedVolume<T> memMapped_;
+    memMappedVolume memMapped_;
 
 public:
     data()

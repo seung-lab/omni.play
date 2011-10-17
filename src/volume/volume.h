@@ -17,14 +17,12 @@ class chunk;
 
 namespace volume {
 
-template <typename T> class memMappedVolume;
-template <typename T> class data;
+class data;
 
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
                            MIPVOL_BUILT,
                            MIPVOL_BUILDING };
 
-template <typename T>
 class volume {
 public:
     volume();
@@ -33,7 +31,7 @@ public:
     virtual std::string GetDirectoryPath() const = 0;
     virtual std::string GetName() = 0;
     virtual bool LoadVolData() = 0;
-    virtual data<T>* VolData() = 0;
+    virtual data* VolData() = 0;
     virtual common::objectType getVolumeType() const = 0;
     virtual common::id getID() const = 0;
 
@@ -87,7 +85,7 @@ private:
 //     friend class chunk;
 //     friend class volumeArchiveOld;
 //     friend class volumeData;
-    friend class memMappedVolume<T>;
+     friend class memMappedVolume;
 //     friend class OmUpgradeTo14;
 //     friend class OmWatershedImporter;
 };

@@ -7,20 +7,20 @@
 namespace om {
 namespace volume {
 
-template < typename T >
+template<typename T>
 class memMappedVolume {
 public:
     memMappedVolume()
     {}
 
-    void load(volume<T>* vol)
+    void load(volume* vol)
     {
         volData_ = memMappedVolume<T>(vol);
         loadMemMapFiles();
         printf("loaded data\n");
     }
 
-    void create(volume<T>* vol, const std::map<int, Vector3i>& levDims)
+    void create(volume* vol, const std::map<int, Vector3i>& levDims)
     {
         volData_ = memMappedVolume<T>(vol);
         allocMemMapFiles(levDims);
