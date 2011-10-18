@@ -41,7 +41,7 @@ public:
                       ChangeGamma<T>(gamma));
     }
 
-    template <typename C>
+    template <class C>
     boost::shared_ptr<C> recast(boost::shared_ptr<T> oldTile) const
     {
         boost::shared_ptr<C> ret = utility::smartPtr<C>::MallocNumElements(elementsPerTile_,
@@ -52,6 +52,10 @@ public:
                   ret.get());
 
         return ret;
+    }
+
+    boost::shared_ptr<T> recast(boost::shared_ptr<T> oldTile) const {
+        return oldTile;
     }
 
     template <typename C>
