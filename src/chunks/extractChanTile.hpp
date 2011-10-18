@@ -2,9 +2,10 @@
 
 #include "chunks/rawChunkSlicer.hpp"
 #include "volume/volume.h"
+#include "tiles/tileFilters.hpp"
 
 namespace om {
-namespace chunk {
+namespace chunks {
 
 class extractChanTile{
 private:
@@ -36,22 +37,19 @@ private:
     boost::shared_ptr<uint32_t> extractDataSlice8bit(T* d)
     {
         boost::shared_ptr<T> rawTile = getRawSlice(d);
-        boost::shared_ptr<uint32_t> ret =
-            utility::smartPtr<uint32_t>::MallocNumElements(chunkSize_, common::DONT_ZERO_FILL);
-
-        std::copy(rawTile.get(), rawTile.get() + chunkSize_, ret);
-        return ret;
+        tiles::filters<T> filter(128);
+        return filter.recast(rawTile);
     }
 
     boost::shared_ptr<uint32_t> extractDataSlice8bit(uint32_t* d){
         return getRawSlice(d);
     }
 
-    uint32_t* extractDataSlice8bit(float* d)
+    boost::shared_ptr<uint32_t> extractDataSlice8bit(float* d)
     {
         boost::shared_ptr<float> rawTile = getRawSlice(d);
 
-        tileFilters<float> filter(128);
+        tiles::filters<float> filter(128);
 
         float min = 0.0;
         float max = 1.0;
@@ -59,7 +57,7 @@ private:
         // TODO: use actual range in channel data
         // mpMipVolume->GetBounds(mx, mn);
 
-        return filter.rescaleAndCast<uint8_t>(rawTile.get(), mn, mx, 255.0);
+        return filter.rescaleAndCast<uint32_t>(rawTile, min, max, 255.0);
     }
 
     template <typename T>

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utility/smartPtr.hpp"
+
 namespace om {
 namespace tiles {
 
@@ -17,46 +19,38 @@ public:
 
     void Brightness(boost::shared_ptr<T> tile, const T absMax, const int32_t shift)
     {
-        zi::transform(tile->GetData(),
-                      tile->GetData() + elementsPerTile_,
-                      tile->GetData(),
+        zi::transform(tile->get(),
+                      tile->get() + elementsPerTile_,
+                      tile->get(),
                       ChangeBrightness<T>(absMax, shift));
     }
 
     void Contrast(boost::shared_ptr<T> tile, const T absMax, const double contrast)
     {
-        zi::transform(tile->GetData(),
-                      tile->GetData() + elementsPerTile_,
-                      tile->GetData(),
+        zi::transform(tile->get(),
+                      tile->get() + elementsPerTile_,
+                      tile->get(),
                       ChangeContrast<T>(absMax, contrast));
     }
 
     void Gamma(boost::shared_ptr<T> tile, const double gamma)
     {
-        zi::transform(tile->GetData(),
-                      tile->GetData() + elementsPerTile_,
-                      tile->GetData(),
+        zi::transform(tile->get(),
+                      tile->get() + elementsPerTile_,
+                      tile->get(),
                       ChangeGamma<T>(gamma));
     }
 
     template <typename C>
     boost::shared_ptr<C> recast(boost::shared_ptr<T> oldTile) const
     {
-        boost::shared_ptr<C> ret = new boost::shared_ptr<C>();
+        boost::shared_ptr<C> ret = utility::smartPtr<C>::MallocNumElements(elementsPerTile_);
 
-        std::copy(oldTile->GetData(),
-                  oldTile->GetData() + elementsPerTile_,
-                  ret->GetData());
+        std::copy(oldTile.get(),
+                  oldTile.get() + elementsPerTile_,
+                  ret.get());
 
         return ret;
-    }
-
-    inline boost::shared_ptr<uint8_t> recastToUint8(boost::shared_ptr<T> oldTile) const {
-        return recast<uint8_t>(oldTile);
-    }
-
-    inline boost::shared_ptr<uint32_t> recastToUint32(boost::shared_ptr<T> oldTile) const {
-        return recast<uint32_t>(oldTile);
     }
 
     template <typename C>
@@ -64,11 +58,11 @@ public:
                                         const T rangeMin, const T rangeMax,
                                         const T absMax) const
     {
-        boost::shared_ptr<C> ret = new boost::shared_ptr<C>();
+        boost::shared_ptr<C> ret = utility::smartPtr<C>::MallocNumElements(elementsPerTile_);
 
-        zi::transform(oldTile->GetData(),
-                      oldTile->GetData() + elementsPerTile_,
-                      ret->GetData(),
+        zi::transform(oldTile->get(),
+                      oldTile->get() + elementsPerTile_,
+                      ret->get(),
                       Rescale<T,C>(rangeMin, rangeMax, absMax));
 
         return ret;

@@ -98,7 +98,7 @@ public:
         return om::ptrs::Wrap(rawChunk.SharedPtr());
     }
 
-    OmPooledTile<uint8_t>* ExtractDataSlice8bit(const ViewType plane, const int depth)
+    boost::shared_ptr<uint32_t>* ExtractDataSlice8bit(const ViewType plane, const int depth)
     {
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();
