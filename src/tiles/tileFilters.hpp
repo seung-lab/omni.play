@@ -1,20 +1,21 @@
 #pragma once
 
-#include "tiles/pools/omPooledTile.hpp"
+namespace om {
+namespace tiles {
 
 template <typename T>
-class OmTileFilters {
+class filters {
 private:
     const int chunkDim_;
     const int elementsPerTile_;
 
 public:
-    OmTileFilters(const int chunkDim)
+    filters(const int chunkDim)
         : chunkDim_(chunkDim)
         , elementsPerTile_(chunkDim*chunkDim)
     {}
 
-    void Brightness(OmPooledTile<T>* tile, const T absMax, const int32_t shift)
+    void Brightness(boost::shared_ptr<T> tile, const T absMax, const int32_t shift)
     {
         zi::transform(tile->GetData(),
                       tile->GetData() + elementsPerTile_,
@@ -22,7 +23,7 @@ public:
                       ChangeBrightness<T>(absMax, shift));
     }
 
-    void Contrast(OmPooledTile<T>* tile, const T absMax, const double contrast)
+    void Contrast(boost::shared_ptr<T> tile, const T absMax, const double contrast)
     {
         zi::transform(tile->GetData(),
                       tile->GetData() + elementsPerTile_,
@@ -30,7 +31,7 @@ public:
                       ChangeContrast<T>(absMax, contrast));
     }
 
-    void Gamma(OmPooledTile<T>* tile, const double gamma)
+    void Gamma(boost::shared_ptr<T> tile, const double gamma)
     {
         zi::transform(tile->GetData(),
                       tile->GetData() + elementsPerTile_,
@@ -39,9 +40,9 @@ public:
     }
 
     template <typename C>
-    OmPooledTile<C>* recast(OmPooledTile<T>* oldTile) const
+    boost::shared_ptr<C> recast(boost::shared_ptr<T> oldTile) const
     {
-        OmPooledTile<C>* ret = new OmPooledTile<C>();
+        boost::shared_ptr<C> ret = new boost::shared_ptr<C>();
 
         std::copy(oldTile->GetData(),
                   oldTile->GetData() + elementsPerTile_,
@@ -50,20 +51,20 @@ public:
         return ret;
     }
 
-    inline OmPooledTile<uint8_t>* recastToUint8(OmPooledTile<T>* oldTile) const {
+    inline boost::shared_ptr<uint8_t> recastToUint8(boost::shared_ptr<T> oldTile) const {
         return recast<uint8_t>(oldTile);
     }
 
-    inline OmPooledTile<uint32_t>* recastToUint32(OmPooledTile<T>* oldTile) const {
+    inline boost::shared_ptr<uint32_t> recastToUint32(boost::shared_ptr<T> oldTile) const {
         return recast<uint32_t>(oldTile);
     }
 
     template <typename C>
-    OmPooledTile<C>* rescaleAndCast(OmPooledTile<T>* oldTile,
-                                    const T rangeMin, const T rangeMax,
-                                    const T absMax) const
+    boost::shared_ptr<C> rescaleAndCast(boost::shared_ptr<T> oldTile,
+                                        const T rangeMin, const T rangeMax,
+                                        const T absMax) const
     {
-        OmPooledTile<C>* ret = new OmPooledTile<C>();
+        boost::shared_ptr<C> ret = new boost::shared_ptr<C>();
 
         zi::transform(oldTile->GetData(),
                       oldTile->GetData() + elementsPerTile_,
@@ -165,3 +166,5 @@ private:
     };
 };
 
+}
+}
