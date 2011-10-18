@@ -10,14 +10,12 @@ class volume;
 namespace om {
 namespace tiles {
 
-template <typename T>
 class tile {
 public:
     tile(const volume::volume* vol,
          coords::chunkCoord coord,
          common::viewType view,
-         int depth,
-         T* data)
+         int depth)
         : vol_(vol)
         , coord_(coord)
         , view_(view)
@@ -28,7 +26,9 @@ public:
         delete data_;
     }
 
-    const T* data() const {
+    void loadData();
+
+    const uint32_t* data() const {
         return data_;
     }
 
@@ -53,7 +53,7 @@ private:
     const common::viewType view_;
     const int depth_;
 
-    T* data_;
+    uint32_t* data_;
 };
 
 } // namespace tiles

@@ -12,7 +12,8 @@ namespace volume {
 
 namespace chunks {
 
-template <typename T>
+class dataInterface;
+
 class chunk {
 public:
     chunk(volume::volume* vol, const coords::chunkCoord& coord)
@@ -50,19 +51,10 @@ public:
         return data_;
     }
 
-    inline boost::shared_ptr<tile<T>> GetTile(common::viewType vt, int depth) {
-        T* tileData = slicer_.GetCopyOfTile(vt, depth);
-        boost::shared_ptr<tiles::tile<T>> ret =
-            boost::make_shared<tiles::tile<T>>(vol_, coord_, vt, depth, tileData);
-        return ret;
-    }
-
 protected:
     const coords::chunkCoord coord_;
-    const volume::volume * const vol_;
-    const rawChunkSlicer slicer_;
-
-    T* chunkData_;
+    const volume::volume* const vol_;
+    boost::scoped_ptr<dataInterface> chunkData_;
     mipping mipping_;
 };
 
