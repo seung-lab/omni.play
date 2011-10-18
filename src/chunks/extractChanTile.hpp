@@ -8,45 +8,53 @@ namespace chunk {
 
 class extractChanTile{
 private:
-    volume *const vol_;
+    volume::volume *const vol_;
+    const int chunkDim_;
+    const int chunkSize_;
     const coords::chunkCoord coord_;
     const common::viewType plane_;
     const int depth_;
 
 public:
-    extractChanTile(volume* vol, const coords::chunkCoord& coord, const common::viewType plane, int depth)
+    extractChanTile(volume::volume* vol, const coords::chunkCoord& coord,
+                    const common::viewType plane, int depth)
         : vol_(vol)
+        , chunkDim_(vol->CoordinateSystem().GetChunkDimension())
+        , chunkSize_(chunkDim_ * chunkDim_)
         , coord_(coord)
         , plane_(plane)
         , depth_(depth)
     {}
 
     template <typename T>
-    OmPooledTile<uint8_t>* Extract(T* d){
+    boost::shared_ptr<uint32_t> Extract(T* d){
         return extractDataSlice8bit(d);
     }
 
 private:
     template <typename T>
-    OmPooledTile<uint8_t>* extractDataSlice8bit(T* d)
+    boost::shared_ptr<uint32_t> extractDataSlice8bit(T* d)
     {
-        boost::scoped_ptr<OmPooledTile<T> > rawTile(getRawSlice(d));
-        tileFilters<T> filter(128);
-        return filter.recastToUint8(rawTile.get());
+        boost::shared_ptr<T> rawTile = getRawSlice(d);
+        boost::shared_ptr<uint32_t> ret =
+            utility::smartPtr<uint32_t>::MallocNumElements(chunkSize_, common::DONT_ZERO_FILL);
+
+        std::copy(rawTile.get(), rawTile.get() + chunkSize_, ret);
+        return ret;
     }
 
-    OmPooledTile<uint8_t>* extractDataSlice8bit(uint8_t* d){
+    boost::shared_ptr<uint32_t> extractDataSlice8bit(uint32_t* d){
         return getRawSlice(d);
     }
 
-    OmPooledTile<uint8_t>* extractDataSlice8bit(float* d)
+    uint32_t* extractDataSlice8bit(float* d)
     {
-        boost::scoped_ptr<OmPooledTile<float> > rawTile(getRawSlice(d));
+        boost::shared_ptr<float> rawTile = getRawSlice(d);
 
         tileFilters<float> filter(128);
 
-        float mn = 0.0;
-        float mx = 1.0;
+        float min = 0.0;
+        float max = 1.0;
 
         // TODO: use actual range in channel data
         // mpMipVolume->GetBounds(mx, mn);
@@ -55,12 +63,12 @@ private:
     }
 
     template <typename T>
-    inline OmPooledTile<T>* getRawSlice(T* d) const
+    inline boost::shared_ptr<T> getRawSlice(T* d) const
     {
         rawChunkSlicer<T> slicer(128, d);
 
         project::Globals().FileReadSemaphore().acquire(1);
-        OmPooledTile<T>* tile = slicer.GetCopyAsPooledTile(plane_, depth_);
+        boost::shared_ptr<T> tile = slicer.GetCopyOfTile(plane_, depth_);
         project::Globals().FileReadSemaphore().release(1);
 
         return tile;

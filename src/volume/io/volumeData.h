@@ -32,12 +32,7 @@ public:
     }
 
     rawDataPtrs getChunkPtrRaw(const coords::chunkCoord& coord){
-        return memMapped_.getChunkPtrRaw(coord);
-    }
-
-    template <typename VOL>
-    void downsample(VOL* vol){
-        memMapped_.downsample(vol);
+        return memMapped_.GetChunkPtr(coord);
     }
 
     template <typename VOL>

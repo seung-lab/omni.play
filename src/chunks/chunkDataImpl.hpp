@@ -1,26 +1,25 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "chunks/details/omPtrToChunkDataMemMapVol.h"
-#include "chunks/omChunkDataInterface.hpp"
-#include "chunks/omExtractChanTile.hpp"
-#include "chunks/omRawChunk.hpp"
-#include "datalayer/omDataWrapper.h"
+#include "common/common.h"
+#include "chunks/details/ptrToChunkDataMemMapVol.h"
+#include "chunks/chunkDataInterface.hpp"
+#include "chunks/extractChanTile.hpp"
+#include "chunks/rawChunk.hpp"
 
 namespace om {
-namespace chunk {
+namespace chunks {
 
 template <typename DATA>
 class dataImpl : public dataInterface {
 private:
-    OmMipVolume *const vol_;
+    volume::volume *const vol_;
     const om::chunkCoord coord_;
     const int numElementsPerSlice_;
     const int numElementsPerChunk_;
     ptrToChunkDataBase *const ptrToChunkData_;
 
 public:
-    dataImpl(OmMipVolume* vol, const om::chunkCoord& coord)
+    dataImpl(volume::volume* vol, const om::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
         , numElementsPerSlice_(128*128)
@@ -72,6 +71,7 @@ public:
                 return false;
             }
         }
+
 
         return true;
     }

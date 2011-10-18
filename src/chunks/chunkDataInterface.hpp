@@ -1,19 +1,17 @@
 #pragma once
 
-#include "datalayer/omDataWrapper.h"
-
-template <class> class OmPooledTile;
+#include "common/common.h"
+#include "datalayer/dataWrapper.h"
 
 namespace om {
 namespace chunk {
 
 class dataInterface {
 public:
-    virtual OmPooledTile<uint8_t>* ExtractDataSlice8bit(const ViewType, const int) = 0;
+    virtual uint32_t* ExtractDataSlice8bit(const common::viewType, const int) = 0;
 
-    virtual void CopyInTile(const int sliceOffset, uchar const*const bits) = 0;
-    virtual void CopyInChunkData(OmDataWrapperPtr hdf5) = 0;
-    virtual OmDataWrapperPtr CopyOutChunkData() = 0;
+    virtual void CopyInTile(const int sliceOffset, char const*const bits) = 0;
+    virtual datalayer::dataWrapperPtr CopyOutChunkData() = 0;
 
     virtual double GetMinValue() = 0;
     virtual double GetMaxValue() = 0;
