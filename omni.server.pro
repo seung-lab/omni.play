@@ -124,11 +124,13 @@ SOURCES +=  \
 	src/volume/channel.cpp \
 	src/volume/channelImpl.cpp \
 	src/volume/io/volumeData.cpp \
+        src/volume/io/memMappedVolume.cpp\
 	src/volume/volume.cpp \
 	src/volume/volumeTypes.cpp \
         src/volume/channelFolder.cpp \
         src/datalayer/fs/file.cpp \
-        src/chunks/chunk.cpp
+        src/chunks/chunk.cpp \
+        src/main.cpp
 
 
 ## end of section to be rewritten using Perl

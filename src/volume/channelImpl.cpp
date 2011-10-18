@@ -52,7 +52,6 @@ bool channelImpl::LoadVolData()
 {
     if(IsBuilt())
     {
-        UpdateFromVolResize();
         volData_->load(this);
         return true;
     }

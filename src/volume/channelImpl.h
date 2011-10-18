@@ -33,7 +33,6 @@ public:
 
     bool LoadVolData();
     bool LoadVolDataIfFoldersExist();
-    void UpdateFromVolResize();
 
     common::objectType getVolumeType() const {
         return common::CHANNEL;

@@ -1,7 +1,5 @@
 #include "volume/io/memMappedVolume.h"
-#include "chunks/chunk.hpp"
-#include "volume/build/omDownsampler.hpp"
-#include "threads/omTaskManager.hpp"
+#include "chunks/chunk.h"
 
 namespace om {
 namespace volume {
