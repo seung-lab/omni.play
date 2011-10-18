@@ -8,7 +8,7 @@ namespace chunks {
 class mipping {
 private:
     const volume::volume* vol_;
-    
+
     //octree properties
     coords::dataBbox dataExtent_;
     coords::normBbox normExtent_; // extent of chunk in norm space
@@ -33,10 +33,10 @@ public:
 
         const Vector3i dims = vol->CoordinateSystem().GetChunkDimensions();
         numVoxels_ = dims.x * dims.y * dims.z;
-        
+
         clippedNormExtent_.intersect(AxisAlignedBoundingBox<float>::UNITBOX);
     }
-    
+
     inline const coords::dataBbox& GetExtent() const {
         return dataExtent_;
     }
@@ -60,18 +60,18 @@ public:
     inline uint32_t NumBytes() const {
         return numBytes_;
     }
-    
+
 private:
     inline void validMipChunkCoordChildren(const coords::chunkCoord & rMipCoord,
                                            std::set<coords::chunkCoord>& children) const
     {
         //clear set
         children.clear();
-        
+
         //get all possible children
         coords::chunkCoord possible_children[8];
         rMipCoord.ChildrenCoords(possible_children);
-        
+
         //for all possible children
         for (int i = 0; i < 8; i++) {
             if (vol_->CoordinateSystem().ContainsMipChunkCoord(possible_children[i])) {
@@ -79,7 +79,6 @@ private:
             }
         }
     }
-    
 };
 
 } // namespace volume

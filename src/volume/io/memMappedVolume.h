@@ -7,7 +7,6 @@
 namespace om {
 namespace volume {
 
-template<typename T>
 class memMappedVolume {
 public:
     memMappedVolume()
@@ -15,26 +14,56 @@ public:
 
     void load(volume* vol)
     {
-        volData_ = memMappedVolume<T>(vol);
+        SetDataType(vol);
         loadMemMapFiles();
         printf("loaded data\n");
     }
 
     void create(volume* vol, const std::map<int, Vector3i>& levDims)
     {
-        volData_ = memMappedVolume<T>(vol);
+        SetDataType(vol);
         allocMemMapFiles(levDims);
     }
 
     int GetBytesPerVoxel() const;
-    T* GetVolPtr(const int level);
-    T* GetChunkPtr(const coords::chunkCoord& coord);
+    rawDataPtrs GetVolPtr(const int level);
+    rawDataPtrs GetChunkPtr(const coords::chunkCoord& coord);
+
+    void SetDataType(volume* vol)
+    {
+        printf("setting up volume data...\n");
+
+        volData_ = makeVolData(vol);
+    }
 
 private:
-    memMappedVolumeImpl<T> volData_;
+    dataSrcs volData_;
 
     void loadMemMapFiles();
     void allocMemMapFiles(const std::map<int, Vector3i>& levDims);
+
+    dataSrcs makeVolData(volume* vol)
+    {
+        switch(vol->mVolDataType.index()){
+        case dataType::INT8:
+            return memMappedVolumeImpl<int8_t>(vol);
+        case dataType::UINT8:
+            return memMappedVolumeImpl<uint8_t>(vol);
+        case dataType::INT32:
+            return memMappedVolumeImpl<int32_t>(vol);
+        case dataType::UINT32:
+            return memMappedVolumeImpl<uint32_t>(vol);
+        case dataType::FLOAT:
+            return memMappedVolumeImpl<float>(vol);
+        case dataType::UNKNOWN:
+            throw common::ioException("unknown data type--probably old file?");
+        }
+
+        throw common::argException("type not know");
+    }
+
+
+
 };
 
 } // namespace volume

@@ -1,13 +1,12 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "datalayer/omDataWrapper.h"
-#include "volume/omVolumeTypes.hpp"
-#include "chunks/omChunkDataInterface.hpp"
-#include "chunks/omChunkDataImpl.hpp"
+#include "common/common.h"
+#include "volume/volumeTypes.hpp"
+#include "chunks/chunkDataInterface.hpp"
+#include "chunks/chunkDataImpl.hpp"
 
 namespace om {
-namespace chunk {
+namespace chunks {
 
 class dataFactory {
 public:
@@ -27,7 +26,7 @@ public:
             return new dataImpl<float>(vol, coord);
         case OmVolDataType::UNKNOWN:
         default:
-            throw OmIoException("data type not handled");
+            throw common::ioException("data type not handled");
         };
     }
 };

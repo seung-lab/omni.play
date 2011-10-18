@@ -2,10 +2,6 @@
 
 #include <string>
 
-
-
-
-
 namespace om {
 namespace volume { class channelImpl; }
 namespace channel {

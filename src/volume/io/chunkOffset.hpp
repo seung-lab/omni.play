@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/common.h"
 #include "volume/volume.h"
 
 namespace om {
@@ -9,8 +10,8 @@ static uint64_t ComputeChunkPtrOffsetBytes(volume* vol, const coords::chunkCoord
 {
     const int level = coord.Level;
     const Vector3<int64_t> volDims =
-        vol->Coords().getDimsRoundedToNearestChunk(level);
-    const Vector3<int64_t> chunkDims = vol->Coords().GetChunkDimensions();
+        vol->CoordinateSystem().getDimsRoundedToNearestChunk(level);
+    const Vector3<int64_t> chunkDims = vol->CoordinateSystem().GetChunkDimensions();
     const int64_t bps = vol->GetBytesPerVoxel();
 
     const int64_t slabSize  = volDims.x   * volDims.y   * chunkDims.z * bps;

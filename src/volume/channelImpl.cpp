@@ -1,5 +1,5 @@
 #include "volume/channelFolder.h"
-#include "chunks/chunk.hpp"
+#include "chunks/chunk.h"
 #include "common/common.h"
 #include "common/debug.h"
 #include "datalayer/fs/fileNames.hpp"

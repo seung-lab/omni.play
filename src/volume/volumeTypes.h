@@ -9,14 +9,11 @@ namespace volume {
 
 template <typename T> class memMappedVolumeImpl;
 
-class channel;
-class segmentation;
-
 typedef boost::variant<memMappedVolumeImpl<int8_t>,
                        memMappedVolumeImpl<uint8_t>,
                        memMappedVolumeImpl<int32_t>,
                        memMappedVolumeImpl<uint32_t>,
-                       memMappedVolumeImpl<float> > volDataSrcs;
+                       memMappedVolumeImpl<float> > dataSrcs;
 
 typedef boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*> rawDataPtrs;
 
@@ -33,7 +30,7 @@ BOOST_ENUM_VALUES(dataType, std::string,
 class typeHelpers {
 public:
     static std::string GetTypeAsString(const dataType type);
-    
+
     static dataType GetTypeFromString(const std::string & type);
 
     static int getHDF5FileType(const dataType type);

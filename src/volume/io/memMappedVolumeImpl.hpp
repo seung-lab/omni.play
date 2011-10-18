@@ -9,6 +9,7 @@
 #include "volume/channel.h"
 #include "volume/segmentation.h"
 #include "volume/volumeTypes.h"
+#include "volume/io/chunkOffset.hpp"
 
 #include <zi/mutex.hpp>
 
@@ -89,9 +90,7 @@ public:
     T* GetChunkPtr(const coords::chunkCoord& coord) const
     {
         const int level = coord.Level;
-        coord.ComputeChunkPtrOffsetBytes
-        const uint64_t offset =
-            OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
+        const uint64_t offset = ComputeChunkPtrOffsetBytes(vol_, coord);
         T* ret = maps_[level]->GetPtrWithOffset(offset);
         assert(ret);
     }

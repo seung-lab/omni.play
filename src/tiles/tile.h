@@ -22,21 +22,17 @@ public:
         , depth_(depth)
     {}
 
-    ~tile() {
-        delete data_;
-    }
-
     void loadData();
 
     const uint32_t* data() const {
-        return data_;
+        return data_.get();
     }
 
     inline const volume::volume* volume() const {
         return vol_;
     }
 
-    inline const coords::chunkCoord* coord() const {
+    inline const coords::chunkCoord coord() const {
         return coord_;
     }
 
@@ -53,7 +49,7 @@ private:
     const common::viewType view_;
     const int depth_;
 
-    uint32_t* data_;
+    boost::scoped_ptr<uint32_t> data_;
 };
 
 } // namespace tiles

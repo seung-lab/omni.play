@@ -1,6 +1,6 @@
 #pragma once
 
-#include "project/project.h"
+//#include "project/project.h"
 #include "utility/smartPtr.hpp"
 
 namespace om {
@@ -74,7 +74,6 @@ private:
 
         default:
             throw common::argException("unknown plane");
-        };
     }
 };
 
