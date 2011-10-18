@@ -6,7 +6,7 @@
 #include "zi/mutex.h"
 
 namespace om {
-namespace chunk {
+namespace chunks {
 
 template <typename DATA>
 class ptrToChunkDataMemMapVol : public ptrToChunkDataBase {

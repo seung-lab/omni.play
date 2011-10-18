@@ -1,4 +1,5 @@
 #include "common/common.h"
+#include "chunks/chunk.h"
 #include "chunks/chunkData.hpp"
 
 namespace om {
@@ -12,7 +13,7 @@ chunk::chunk(volume::volume* vol, const coords::chunkCoord& coord)
 {}
 
 coords::dataCoord chunk::GetDimensions() const {
-    mipping_->GetExtent().getUnitDimensions();
+    return mipping_->GetExtent().getUnitDimensions();
 }
 
 }

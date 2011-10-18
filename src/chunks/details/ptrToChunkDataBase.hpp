@@ -3,7 +3,7 @@
 #include "volume/volumeTypes.h"
 
 namespace om {
-namespace chunk {
+namespace chunks {
 
 class ptrToChunkDataBase {
 public:

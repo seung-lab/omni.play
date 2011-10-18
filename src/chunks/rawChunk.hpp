@@ -4,15 +4,21 @@
 #include "datalayer/fs/fileNames.hpp"
 #include "utility/smartPtr.hpp"
 #include "volume/io/volumeData.h"
+#include "volume/io/chunkOffset.hpp"
 #include "volume/volume.h"
 #include "volume/volumeTypes.h"
 #include "zi/mutex.h"
 #include "zi/threads.h"
 
+#include <fstream>
+
+namespace om {
+namespace chunks {
+
 template <typename T>
 class rawChunk {
 private:
-    volume *const vol_;
+    volume::volume *const vol_;
     const coords::chunkCoord coord_;
     const uint64_t chunkOffset_;
     const std::string memMapFileName_;
@@ -28,12 +34,12 @@ private:
     typedef typename zi::spinlock::pool<raw_chunk_mutex_pool_tag>::guard mutex_guard_t;
 
 public:
-    rawChunk(volume* vol, const coords::chunkCoord& coord)
+    rawChunk(volume::volume* vol, const coords::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
-        , chunkOffset_(chunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))
-        , memMapFileName_(fileNames::GetMemMapFileNameQT(vol,
-                                                           coord.Level))
+        , chunkOffset_(volume::ComputeChunkPtrOffsetBytes(vol, coord))
+        , memMapFileName_(datalayer::fileNames::GetMemMapFileName(vol,
+                                                                  coord.Level))
         , numBytes_(128*128*128*vol_->GetBytesPerVoxel())
         , dataRaw_(NULL)
         , dirty_(false)
@@ -88,18 +94,18 @@ private:
     {
         mutex_guard_t g(chunkOffset_); // prevent read-while-writing errors
 
-        QFile file(memMapFileName_);
-        if(!file.open(QIODevice::ReadOnly)){
+        std::fstream file(memMapFileName_, std::ios_base::in | std::ios_base::binary);
+        if(!file.is_open()){
             throw common::ioException("could not open", memMapFileName_);
         }
 
-        file.seek(chunkOffset_);
+        file.seekg(chunkOffset_);
 
-        data_ = OmSmartPtr<T>::MallocNumBytes(numBytes_, common::DONT_ZERO_FILL);
+        data_ = utility::smartPtr<T>::MallocNumBytes(numBytes_, common::DONT_ZERO_FILL);
         char* dataAsCharPtr = (char*)(data_.get());
-        const uint64_t readSize = file.read(dataAsCharPtr, numBytes_);
+        file.read(dataAsCharPtr, numBytes_);
 
-        if( readSize != numBytes_) {
+        if( file.gcount() != numBytes_) {
             throw common::ioException("read failed");
         }
 
@@ -110,18 +116,15 @@ private:
     {
         mutex_guard_t g(chunkOffset_); // prevent read-while-writing errors
 
-        QFile file(memMapFileName_);
-        if(!file.open(QIODevice::ReadWrite)){
+        std::fstream file(memMapFileName_, std::ios_base::out | std::ios_base::binary);
+        if(!file.is_open()){
             throw common::ioException("could not open", memMapFileName_);
         }
 
-        file.seek(chunkOffset_);
-        const uint64_t writeSize =
-            file.write(reinterpret_cast<const char*>(dataRaw_), numBytes_);
-
-        if( writeSize != numBytes_) {
-            throw common::ioException("write failed");
-        }
+        file.seekp(chunkOffset_);
+        file.write(reinterpret_cast<const char*>(dataRaw_), numBytes_);
     }
 };
 
+}
+}

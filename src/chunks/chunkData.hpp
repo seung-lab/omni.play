@@ -11,20 +11,20 @@ namespace chunks {
 class dataFactory {
 public:
     template <typename VOL>
-    static dataInterface* Produce(VOL* vol, const om::chunkCoord& coord)
+    static dataInterface* Produce(VOL* vol, const coords::chunkCoord& coord)
     {
         switch(vol->getVolDataType().index()){
-        case OmVolDataType::INT8:
+        case volume::dataType::INT8:
             return new dataImpl<int8_t>(vol, coord);
-        case OmVolDataType::UINT8:
+        case volume::dataType::UINT8:
             return new dataImpl<uint8_t>(vol, coord);
-        case OmVolDataType::INT32:
+        case volume::dataType::INT32:
             return new dataImpl<int32_t>(vol, coord);
-        case OmVolDataType::UINT32:
+        case volume::dataType::UINT32:
             return new dataImpl<uint32_t>(vol, coord);
-        case OmVolDataType::FLOAT:
+        case volume::dataType::FLOAT:
             return new dataImpl<float>(vol, coord);
-        case OmVolDataType::UNKNOWN:
+        case volume::dataType::UNKNOWN:
         default:
             throw common::ioException("data type not handled");
         };

@@ -49,14 +49,6 @@ const std::string& project::OmniFile(){
     return instance().impl_->OmniFile();
 }
 
-bool project::HasOldHDF5(){
-    return instance().impl_->HasOldHDF5();
-}
-
-OmHdf5* project::OldHDF5(){
-    return instance().impl_->OldHDF5();
-}
-
 projectVolumes& project::Volumes(){
     return instance().impl_->Volumes();
 }
@@ -77,10 +69,11 @@ bool project::IsOpen(){
     return instance().impl_;
 }
 
-#include "actions/omActions.h"
-#include "segmentsegmentSelected.hpp"
-#include "events/details/omEventManager.h"
-#include "system/omOpenGLGarbageCollector.hpp"
+zi::semaphore& FileReadSemaphore(){
+    return instance().impl_->FileReadSemaphore();
+}
+
+
 #include "threads/omThreadPoolManager.h"
 #include "zi/threads.h"
 
@@ -90,29 +83,11 @@ void project::Close()
         return;
     }
 
-    OmActions::Close();
-
-    OmCacheManager::SignalCachesToCloseDown();
-    OmThreadPoolManager::StopAll();
+    threadPoolManager::StopAll();
     zi::all_threads::join_all();
-
-    tileCache::Delete();
 
     // project must be deleted here, remaining singletons close cleanly
     instance().impl_.reset();
-
-    //delete all singletons
-    segmentSelected::Delete();
-    OmOpenGLGarbageCollector::Clear();
-    OmPreferences::Delete();
-    //OmLocalPreferences
-
-    //close project data
-    OmCacheManager::Delete();
-
-    OmHdf5Manager::Delete();
-
-    tilePools::Reset();
 }
 
 }

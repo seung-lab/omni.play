@@ -29,23 +29,23 @@ public:
 
     template <typename T>
     boost::shared_ptr<uint32_t> Extract(T* d){
-        return extractDataSlice8bit(d);
+        return extractDataSlice(d);
     }
 
 private:
     template <typename T>
-    boost::shared_ptr<uint32_t> extractDataSlice8bit(T* d)
+    boost::shared_ptr<uint32_t> extractDataSlice(T* d)
     {
         boost::shared_ptr<T> rawTile = getRawSlice(d);
         tiles::filters<T> filter(128);
         return filter.recast(rawTile);
     }
 
-    boost::shared_ptr<uint32_t> extractDataSlice8bit(uint32_t* d){
+    boost::shared_ptr<uint32_t> extractDataSlice(uint32_t* d){
         return getRawSlice(d);
     }
 
-    boost::shared_ptr<uint32_t> extractDataSlice8bit(float* d)
+    boost::shared_ptr<uint32_t> extractDataSlice(float* d)
     {
         boost::shared_ptr<float> rawTile = getRawSlice(d);
 
@@ -65,9 +65,9 @@ private:
     {
         rawChunkSlicer<T> slicer(128, d);
 
-        project::Globals().FileReadSemaphore().acquire(1);
+        project::project::FileReadSemaphore().acquire(1);
         boost::shared_ptr<T> tile = slicer.GetCopyOfTile(plane_, depth_);
-        project::Globals().FileReadSemaphore().release(1);
+        project::project::FileReadSemaphore().release(1);
 
         return tile;
     }

@@ -44,6 +44,8 @@ public:
 
     static int GetFileVersion();
 
+    static zi::semaphore& FileReadSemaphore();
+
 private:
     project();
     ~project();

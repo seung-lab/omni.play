@@ -4,14 +4,13 @@
 #include "datalayer/dataWrapper.h"
 
 namespace om {
-namespace chunk {
+namespace chunks {
 
 class dataInterface {
 public:
-    virtual uint32_t* ExtractDataSlice8bit(const common::viewType, const int) = 0;
+    virtual boost::shared_ptr<uint32_t> ExtractDataSlice8bit(const common::viewType, const int) = 0;
 
     virtual void CopyInTile(const int sliceOffset, char const*const bits) = 0;
-    virtual datalayer::dataWrapperPtr CopyOutChunkData() = 0;
 
     virtual double GetMinValue() = 0;
     virtual double GetMaxValue() = 0;

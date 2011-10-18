@@ -19,32 +19,33 @@ public:
 
     void Brightness(boost::shared_ptr<T> tile, const T absMax, const int32_t shift)
     {
-        zi::transform(tile->get(),
-                      tile->get() + elementsPerTile_,
-                      tile->get(),
+        zi::transform(tile.get(),
+                      tile.get() + elementsPerTile_,
+                      tile.get(),
                       ChangeBrightness<T>(absMax, shift));
     }
 
     void Contrast(boost::shared_ptr<T> tile, const T absMax, const double contrast)
     {
-        zi::transform(tile->get(),
-                      tile->get() + elementsPerTile_,
-                      tile->get(),
+        zi::transform(tile.get(),
+                      tile.get() + elementsPerTile_,
+                      tile.get(),
                       ChangeContrast<T>(absMax, contrast));
     }
 
     void Gamma(boost::shared_ptr<T> tile, const double gamma)
     {
-        zi::transform(tile->get(),
-                      tile->get() + elementsPerTile_,
-                      tile->get(),
+        zi::transform(tile.get(),
+                      tile.get() + elementsPerTile_,
+                      tile.get(),
                       ChangeGamma<T>(gamma));
     }
 
     template <typename C>
     boost::shared_ptr<C> recast(boost::shared_ptr<T> oldTile) const
     {
-        boost::shared_ptr<C> ret = utility::smartPtr<C>::MallocNumElements(elementsPerTile_);
+        boost::shared_ptr<C> ret = utility::smartPtr<C>::MallocNumElements(elementsPerTile_,
+                                                                           common::DONT_ZERO_FILL);
 
         std::copy(oldTile.get(),
                   oldTile.get() + elementsPerTile_,
@@ -58,11 +59,12 @@ public:
                                         const T rangeMin, const T rangeMax,
                                         const T absMax) const
     {
-        boost::shared_ptr<C> ret = utility::smartPtr<C>::MallocNumElements(elementsPerTile_);
+        boost::shared_ptr<C> ret = utility::smartPtr<C>::MallocNumElements(elementsPerTile_,
+                                                                           common::DONT_ZERO_FILL);
 
-        zi::transform(oldTile->get(),
-                      oldTile->get() + elementsPerTile_,
-                      ret->get(),
+        zi::transform(oldTile.get(),
+                      oldTile.get() + elementsPerTile_,
+                      ret.get(),
                       Rescale<T,C>(rangeMin, rangeMax, absMax));
 
         return ret;

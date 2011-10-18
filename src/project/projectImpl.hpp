@@ -7,16 +7,10 @@
  *  Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-#include "actions/io/omActionLogger.hpp"
-#include "actions/io/omActionReplayer.hpp"
-#include "actions/omActions.h"
 #include "common/om.hpp"
 #include "common/common.h"
-#include "datalayer/archive/old/dataArchiveProject.h"
 #include "datalayer/archive/project.h"
 #include "datalayer/fs/fileNames.hpp"
-#include "datalayer/hdf5/omHdf5Manager.h"
-#include "datalayer/dataPath.h"
 #include "datalayer/dataPath.h"
 #include "datalayer/dataPaths.h"
 #include "datalayer/dataWrapper.h"
@@ -35,15 +29,12 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "datalayer/archive/project.h"
 
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
+namespace om {
+namespace project
 
 class projectImpl {
 private:
     std::string projectMetadataFile_;
-    std::string oldHDF5projectFile_;
-    OmHdf5* oldHDF5_;
     std::string filesFolder_;
     std::string omniFile_;
 
@@ -51,14 +42,16 @@ private:
     bool isReadOnly_;
 
     projectVolumes volumes_;
-    boost::scoped_ptr<projectGlobals> globals_;
+    zi::semaphore fileReadThrottle_;
 
 public:
     projectImpl()
         : oldHDF5_(NULL)
         , fileVersion_(0)
         , isReadOnly_(false)
-    {}
+    {
+        fileReadThrottle_.set(4);
+    }
 
     ~projectImpl()
     {}
@@ -120,7 +113,7 @@ public:
         }
 
         datalayer::archive::project::Write(projectMetadataFile_, this);
-        
+
         globals_->Users().UserSettings().Save();
 
         printf("omni project saved!\n");
@@ -134,9 +127,10 @@ public:
         return isReadOnly_;
     }
 
-    projectGlobals& Globals(){
-        return *globals_;
+    zi::semaphore& FileReadSemaphore(){
+        return fileReadThrottle_;
     }
+
 
 private:
 
@@ -185,13 +179,13 @@ private:
         omniFile_ = fnp;
         filesFolder_ = fnp + ".files";
 
-        
+
         oldHDF5projectFile_ = fileNames::OldHDF5projectFileName();
         projectMetadataFile_ = fileNames::ProjectMetadataFile();
-        
+
         if(!QFileInfo(omniFile_).size())
             oldHDF5projectFile_ = "";
-        else 
+        else
             migrateFromHdf5();
 
         setupGlobals();
@@ -210,14 +204,14 @@ private:
         tileCache::Reset();
         OmActionLogger::Reset();
 
-        
+
         if (om::file::exists(projectMetadataFile_.toStdString()))
             datalayer::archive::project::Read(projectMetadataFile_, this);
         else
             dataArchiveProject::ArchiveRead(fileNames::ProjectMetadataFileOld(), this);
-        
+
         globals_->Users().UserSettings().Load();
-        
+
         OmActionReplayer::Replay();
     }
 
