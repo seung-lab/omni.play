@@ -30,7 +30,7 @@ public:
         , data_(NULL)
     {
         if(om::file::exists(fnp_)){ // should be VERY unlikely
-            throw ioException("unique file already found");
+            throw common::ioException("unique file already found");
         }
 
         // race here is possible, if VERY, VERY unlikely...

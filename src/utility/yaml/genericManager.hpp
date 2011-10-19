@@ -2,21 +2,21 @@
 
 #include "common/common.h"
 #include "yaml-cpp/yaml.h"
-#include "system/genericManager.hpp"
+#include "common/genericManager.hpp"
 #include "utility/yaml/baseTypes.hpp"
 
 namespace YAML{
 
 class genericManager {
-public: 
+public:
     template<typename T>
-    static void Save(Emitter& out, const system::genericManager<T>& gm)
+    static void Save(Emitter& out, const om::common::genericManager<T>& gm)
     {
         out << Key << "size" << Value << gm.size_;
         out << Key << "valid set" << Value << gm.validSet_;
         out << Key << "enabled set" << Value << gm.enabledSet_;
         out << Key << "next id" << Value << gm.nextId_;
-        
+
         out << Key << "values" << Value << BeginSeq;
         FOR_EACH(iter, gm.validSet_){
             out << *gm.vec_[*iter];
@@ -25,22 +25,22 @@ public:
     }
 
     template<typename T>
-    static void Load(const Node& in, system::genericManager<T>& gm)
+    static void Load(const Node& in, om::common::genericManager<T>& gm)
     {
         in["size"] >> gm.size_;
         in["valid set"] >> gm.validSet_;
         in["enabled set"] >> gm.enabledSet_;
         in["next id"] >> gm.nextId_;
-        
+
         gm.vec_.resize(gm.size_, NULL);
-        
+
         int idx = 0;
         FOR_EACH(i, gm.enabledSet_)
         {
             T* t = new T(*i);
             in["values"][idx] >> *t;
             gm.vec_[ t->GetID() ] = t;
-            
+
             gm.vecValidPtrs_.push_back(t);
             idx++;
         }
