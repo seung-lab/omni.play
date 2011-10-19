@@ -93,6 +93,7 @@ public:
         const uint64_t offset = ComputeChunkPtrOffsetBytes(vol_, coord);
         T* ret = maps_[level]->GetPtrWithOffset(offset);
         assert(ret);
+        return ret;
     }
 
     int GetBytesPerVoxel() const {
