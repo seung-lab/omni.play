@@ -129,6 +129,7 @@ SOURCES +=  \
 	src/volume/volumeTypes.cpp \
         src/volume/channelFolder.cpp \
         src/project/project.cpp \
+        src/project/details/projectVolumes.cpp \
         src/datalayer/fs/file.cpp \
         src/chunks/chunk.cpp \
         src/main.cpp

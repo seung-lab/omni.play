@@ -1,14 +1,16 @@
 #pragma once
 
 #include "common/common.h"
-#include "common/om.hpp"
-#include "system/genericManager.hpp"
+#include "common/genericManager.hpp"
 #include "volume/affinityGraph.h"
+
+namespace om {
+namespace proj {
 
 class affinityGraphManager{
 public:
-    affinityGraph& Get(const common::id id);
-    affinityGraph& Add();
+    volume::affinityGraph& Get(const common::id id);
+    volume::affinityGraph& Add();
     void Remove(const common::id id);
     bool IsValid(const common::id id);
     const common::idSet& GetValidIds();
@@ -16,9 +18,8 @@ public:
     void SetEnabled(const common::id id, const bool enable);
 
 private:
-    genericManager<affinityGraph> graphs_;
-
-    friend QDataStream&operator<<(QDataStream& out, const affinityGraphManager&);
-    friend QDataStream&operator>>(QDataStream& in, affinityGraphManager&);
+    common::genericManager<volume::affinityGraph> graphs_;
 };
 
+}
+}

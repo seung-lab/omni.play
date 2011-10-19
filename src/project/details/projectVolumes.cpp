@@ -1,14 +1,19 @@
-#include "project/details/omAffinityGraphManager.h"
+#include "project/details/affinityGraphManager.h"
 #include "project/details/channelManager.h"
 #include "project/details/projectVolumes.h"
 #include "project/details/segmentationManager.h"
 
-projectVolumes::projectVolumes()
+namespace om {
+namespace proj {
+
+volumes::volumes()
     : channels_(new channelManager())
     , segmentations_(new segmentationManager(this))
     , affGraphs_(new affinityGraphManager())
 {}
 
-projectVolumes::~projectVolumes()
+volumes::~volumes()
 {}
 
+}
+}
