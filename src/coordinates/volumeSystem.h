@@ -20,7 +20,6 @@ protected:
     Vector3i dataDimensions_;
 
     int chunkDim_;
-    int mMipLeafDim;
     int mMipRootLevel;
 
 public:

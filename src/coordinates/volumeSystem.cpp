@@ -4,30 +4,29 @@
 
 namespace om {
 namespace coords {
-    
+
 volumeSystem::volumeSystem()
     : dataToGlobal_(Matrix4f::IDENTITY)
     , globalToData_(Matrix4f::IDENTITY)
     , normToGlobal_(Matrix4f::IDENTITY)
     , globalToNorm_(Matrix4f::IDENTITY)
     , chunkDim_(DefaultChunkDim)
-    , mMipLeafDim(0)
     , mMipRootLevel(0)
 {
     SetDataDimensions(Vector3i(DefaultChunkDim,
                                 DefaultChunkDim,
                                 DefaultChunkDim));
-                                
+
     UpdateRootLevel();
 }
-    
+
 void volumeSystem::UpdateRootLevel()
 {
     //determine max level
     Vector3i source_dims = GetDataDimensions();
     int max_source_dim = source_dims.getMaxComponent();
     int mipchunk_dim = GetChunkDimension();
-    
+
     if (max_source_dim <= mipchunk_dim) {
         mMipRootLevel = 0;
     } else {
@@ -48,15 +47,15 @@ bool volumeSystem::ContainsMipChunkCoord(const chunkCoord & rMipCoord) const
         rMipCoord.Level > GetRootMipLevel()){
         return false;
     }
-    
+
     //convert to data box in leaf (MIP 0)
     globalBbox bbox = rMipCoord.chunkBoundingBox(this).toGlobalBbox();
-    
+
     bbox.intersect(GetDataExtent());
     if(bbox.isEmpty()){
         return false;
     }
-    
+
     //else valid mip coord
     return true;
 }
