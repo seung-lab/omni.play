@@ -1,0 +1,4 @@
+Refactoring:
+- Consolidate all "files" Functionality
+- add using namespace om::common to common/common.h to clean up exceptions
+
