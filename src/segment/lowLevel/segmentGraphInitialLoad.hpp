@@ -20,9 +20,9 @@ private:
     OmThreadPool pool_;
 
     struct TaskArgs {
-        segId childRootID;
-        segId parentID;
-        segId parentRootID;
+        common::segId childRootID;
+        common::segId parentID;
+        common::segId parentRootID;
         double threshold;
         int edgeNumber;
     };
@@ -96,27 +96,27 @@ public:
 
 private:
 
-    inline segId Root(const segId segID){
+    inline common::segId Root(const common::segId segID){
         return forest_->Root(segID);
     }
 
-    inline void Join(const segId childRootID, const segId parentRootID){
+    inline void Join(const common::segId childRootID, const common::segId parentRootID){
         forest_->Join(childRootID, parentRootID);
     }
     
-    bool sizeCheck(const segId a, const segId b, const double threshold)
+    bool sizeCheck(const common::segId a, const common::segId b, const double threshold)
     {
         return (segmentListsLL_->GetSizeWithChildren(Root(a)) + 
                 segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold;
     }
 
-    bool initialJoinInternal(const segId parentID,
-                             const segId childUnknownDepthID,
+    bool initialJoinInternal(const common::segId parentID,
+                             const common::segId childUnknownDepthID,
                              const double threshold,
                              const int edgeNumber)
     {
-        const segId childRootID = Root(childUnknownDepthID);
-        const segId parentRootID = Root(parentID);
+        const common::segId childRootID = Root(childUnknownDepthID);
+        const common::segId parentRootID = Root(parentID);
 
         if(childRootID == parentRootID){
             return false;

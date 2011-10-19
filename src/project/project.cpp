@@ -1,5 +1,6 @@
 #include "project/project.h"
 #include "project/projectImpl.hpp"
+#include "threads/threadPoolManager.h"
 
 namespace om {
 
@@ -11,7 +12,7 @@ project::~project()
 
 std::string project::New(const std::string& fnp)
 {
-    instance().impl_.reset(new projectImpl());
+    instance().impl_.reset(new proj::projectImpl());
 
     try{
         return instance().impl_->New(fnp);
@@ -26,12 +27,12 @@ void project::Save(){
     instance().impl_->Save();
 }
 
-void project::Load(const std::string& fileNameAndPath, QWidget* guiParent)
+void project::Load(const std::string& fileNameAndPath)
 {
-    instance().impl_.reset(new projectImpl());
+    instance().impl_.reset(new proj::projectImpl());
 
     try{
-        instance().impl_->Load(fileNameAndPath, guiParent);
+        instance().impl_->Load(fileNameAndPath);
 
     } catch(...)
     {
@@ -48,7 +49,7 @@ const std::string& project::OmniFile(){
     return instance().impl_->OmniFile();
 }
 
-projectVolumes& project::Volumes(){
+proj::volumes& project::Volumes(){
     return instance().impl_->Volumes();
 }
 
@@ -68,7 +69,7 @@ bool project::IsOpen(){
     return instance().impl_;
 }
 
-zi::semaphore& FileReadSemaphore(){
+zi::semaphore& project::FileReadSemaphore(){
     return instance().impl_->FileReadSemaphore();
 }
 
@@ -82,7 +83,7 @@ void project::Close()
         return;
     }
 
-    threadPoolManager::StopAll();
+    threads::threadPoolManager::StopAll();
     zi::all_threads::join_all();
 
     // project must be deleted here, remaining singletons close cleanly

@@ -56,16 +56,16 @@ public:
         FOR_EACH(iter, segs)
         {
             segment* seg = *iter;
-            const segId segID = seg->value();
+            const common::segId segID = seg->value();
             segToGroupNum_[segID] = groupNum;
         }
     }
 
-    inline bool InSameValidGroup(const segId segID1, const segId segID2) const {
+    inline bool InSameValidGroup(const common::segId segID1, const common::segId segID2) const {
         return segToGroupNum_[segID1] == segToGroupNum_[segID2];
     }
 
-    inline uint32_t Get(const segId segID) const {
+    inline uint32_t Get(const common::segId segID) const {
           return segToGroupNum_[segID];
     }
 

@@ -14,7 +14,7 @@ public:
         : list_(list)
     {}
 
-    inline int64_t GetSizeWithChildren(const segId segID)
+    inline int64_t GetSizeWithChildren(const common::segId segID)
     {
         if(segID >= list_.size()){
             std::cout << "segment " << segID << "not found\n";
@@ -27,7 +27,7 @@ public:
         return GetSizeWithChildren(seg->value());
     }
 
-    inline int64_t GetNumChildren(const segId segID)
+    inline int64_t GetNumChildren(const common::segId segID)
     {
         if(segID >= list_.size()){
             std::cout << "segment " << segID << "not found\n";
@@ -40,7 +40,7 @@ public:
         return GetNumChildren(seg->value());
     }
 
-    boost::optional<SegInfo> Get(const segId segID)
+    boost::optional<SegInfo> Get(const common::segId segID)
     {
         if(segID >= list_.size()){
             std::cout << "segment " << segID << "not found\n";

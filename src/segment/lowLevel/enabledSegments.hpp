@@ -10,7 +10,7 @@ class enabledSegments {
 private:
     segmentsImplLowLevel *const cache_;
 
-    segIdsSet enabled_;
+    common::segIdsSet enabled_;
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const segmentsImpl&);
     friend void YAML::operator>>(const YAML::Node&, segmentsImpl&);
@@ -24,7 +24,7 @@ public:
 
     inline void Reroot()
     {
-        segIdsSet old = enabled_;
+        common::segIdsSet old = enabled_;
         enabled_.clear();
 
         FOR_EACH(iter, old){
@@ -32,7 +32,7 @@ public:
         }
     }
 
-    inline segIdsSet GetEnabledSegmentIDs(){
+    inline common::segIdsSet GetEnabledSegmentIDs(){
         return enabled_;
     }
 
@@ -40,7 +40,7 @@ public:
         return enabled_.size();
     }
 
-    inline bool IsEnabled(const segId segID) const
+    inline bool IsEnabled(const common::segId segID) const
     {
         if(enabled_.empty()){
             return false;
@@ -52,9 +52,9 @@ public:
         return enabled_.size();
     }
 
-    inline void SetEnabled(const segId segID, const bool isEnabled)
+    inline void SetEnabled(const common::segId segID, const bool isEnabled)
     {
-        const segId rootID = cache_->FindRootID(segID);
+        const common::segId rootID = cache_->FindRootID(segID);
 
         cache_->touchFreshness();
 

@@ -16,22 +16,22 @@ public:
     void Flush();
 
     segment* AddSegment();
-    segment* AddSegment(segId value);
-    segment* GetOrAddSegment(const segId val);
+    segment* AddSegment(common::segId value);
+    segment* GetOrAddSegment(const common::segId val);
 
     segmentChildren* Children();
 
     std::pair<bool, segmentEdge> JoinFromUserAction(const segmentEdge& e);
     segmentEdge SplitEdgeUserAction(const segmentEdge& e);
-    segIdsSet JoinTheseSegments(const segIdsSet& segmentList);
-    segIdsSet UnJoinTheseSegments(const segIdsSet& segmentList);
+    common::segIdsSet JoinTheseSegments(const common::segIdsSet& segmentList);
+    common::segIdsSet UnJoinTheseSegments(const common::segIdsSet& segmentList);
     boost::optional<std::string> IsEdgeSplittable(const segmentEdge& e);
     boost::optional<std::string> IsSegmentSplittable(segment* child);
 	boost::optional<std::string> IsSegmentCuttable(segment* seg);
 
     void refreshTree();
 
-    bool AreAnySegmentsInValidList(const segIdsSet& ids);
+    bool AreAnySegmentsInValidList(const common::segIdsSet& ids);
 
 	std::vector<segmentEdge> CutSegment(segment* seg);
 	bool JoinEdges(const std::vector<segmentEdge>& edges);

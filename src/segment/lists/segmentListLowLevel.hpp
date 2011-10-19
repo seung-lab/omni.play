@@ -92,7 +92,7 @@ public:
         runRefreshGUIlists(om::FORCE);
     }
     
-    inline int64_t GetSizeWithChildren(const segId segID) {
+    inline int64_t GetSizeWithChildren(const common::segId segID) {
         if(segID >= list_.size()){
             std::cout << "segment " << segID << "not found\n";
             return 0;
@@ -120,7 +120,7 @@ private:
 
     void doAddSegment(segment* seg)
     {
-        const segId segID = seg->value();
+        const common::segId segID = seg->value();
 
         if(segID >= list_.size()){
             list_.resize(segID + 10);

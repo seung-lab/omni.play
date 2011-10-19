@@ -63,7 +63,7 @@ public:
 
         for(iter.begin(); iter < iter.end(); ++iter)
         {
-            const segId val = static_cast<segId>(*data++);
+            const common::segId val = static_cast<common::segId>(*data++);
 
             if(val){
                 p.processVoxel(val, *iter);
@@ -81,7 +81,7 @@ public:
         chunkVoxelWalker iter(128);
         for(iter.begin(); iter < iter.end(); ++iter)
         {
-            const segId val = static_cast<segId>(*data++);
+            const common::segId val = static_cast<common::segId>(*data++);
             if(val){
                 p.processVoxel(val, *iter);
             }

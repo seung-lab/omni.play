@@ -32,7 +32,7 @@ void segment::reRandomizeColor()
     RandomizeColor();
 }
 
-void segment::SetColor(const OmColor& color){
+void segment::SetColor(const common::color& color){
     data_->color = color;
 }
 
@@ -101,7 +101,7 @@ common::id segment::GetSegmentationID(){
     return segments_->GetSegmentationID();
 }
 
-segId segment::RootID(){
+common::segId segment::RootID(){
     return segments_->findRootID(data_->value);
 }
 

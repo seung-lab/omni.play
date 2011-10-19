@@ -6,7 +6,7 @@
 
 class dynamicForestCache {
 private:
-    boost::scoped_ptr<zi::dynamicForestPool<segId> > graph_;
+    boost::scoped_ptr<zi::dynamicForestPool<common::segId> > graph_;
 
     LockedUint64 freshness_;
 
@@ -23,7 +23,7 @@ private:
 
 public:
     dynamicForestCache(const size_t size)
-        : graph_(new zi::dynamicForestPool<segId>(size))
+        : graph_(new zi::dynamicForestPool<common::segId>(size))
         , batchMode_(false)
     {
         freshness_.set(1);
@@ -46,17 +46,17 @@ public:
         ++freshness_;
     }
 
-    inline void Cut(const segId segID)
+    inline void Cut(const common::segId segID)
     {
         clearCacheIfNotBatch();
         graph_->Cut(segID);
     }
 
-    inline segId Root(const segId segID){
+    inline common::segId Root(const common::segId segID){
         return graph_->Root(segID);
     }
 
-    inline void Join(const segId childRootID, const segId parentRootID)
+    inline void Join(const common::segId childRootID, const common::segId parentRootID)
     {
         clearCacheIfNotBatch();
         graph_->Join(childRootID, parentRootID);

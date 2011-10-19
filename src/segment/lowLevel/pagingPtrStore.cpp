@@ -57,7 +57,7 @@ void pagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
     prog->DidOne();
 }
 
-segment* pagingPtrStore::AddSegment(const segId value)
+segment* pagingPtrStore::AddSegment(const common::segId value)
 {
     const PageNum pageNum = value / pageSize_;
 

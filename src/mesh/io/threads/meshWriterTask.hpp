@@ -16,7 +16,7 @@ class meshWriterTask : public zi::runnable{
 private:
     segmentation *const seg_;
     meshFilePtrCache *const  filePtrCache_;
-    const segId segID_;
+    const common::segId segID_;
     const coords::chunkCoord coord_;
     const U mesh_;
     const om::AllowOverwrite allowOverwrite_;
@@ -24,7 +24,7 @@ private:
 public:
     meshWriterTask(segmentation* seg,
                        meshFilePtrCache* filePtrCache,
-                       const segId segID,
+                       const common::segId segID,
                        const coords::chunkCoord& coord,
                        const U mesh,
                        const om::AllowOverwrite allowOverwrite)

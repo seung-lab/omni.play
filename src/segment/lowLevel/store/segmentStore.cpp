@@ -42,19 +42,19 @@ std::vector<segmentPage*> segmentsStore::Pages()
     return segmentPages_->Pages();
 }
 
-segment* segmentsStore::GetSegment(const segId value){
+segment* segmentsStore::GetSegment(const common::segId value){
     return cachedStore_->GetSegment(value);
 }
 
-segment* segmentsStore::GetSegmentUnsafe(const segId value){
+segment* segmentsStore::GetSegmentUnsafe(const common::segId value){
     return cachedStore_->GetSegmentUnsafe(value);
 }
 
-segId segmentsStore::Root(const segId segID){
+common::segId segmentsStore::Root(const common::segId segID){
     return cacheRootIDs_->Root(segID);
 }
 
-segment* segmentsStore::AddSegment(const segId value)
+segment* segmentsStore::AddSegment(const common::segId value)
 {
     zi::guard g(pagesLock_);
     return segmentPages_->AddSegment(value);
@@ -69,7 +69,7 @@ void segmentsStore::Flush()
 /**
  * a segment ptr is invalid if it is NULL, or has an ID of 0
  **/
-bool segmentsStore::IsSegmentValid(const segId value)
+bool segmentsStore::IsSegmentValid(const common::segId value)
 {
     if(!value){
         return false;

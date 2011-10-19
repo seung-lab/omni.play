@@ -121,19 +121,19 @@ void segmentGraph::ResetGlobalThreshold(OmMST* mst)
     timer.PrintDone();
 }
 
-bool segmentGraph::sizeCheck(const segId a, const segId b, const double threshold)
+bool segmentGraph::sizeCheck(const common::segId a, const common::segId b, const double threshold)
 {
     return (segmentListsLL_->GetSizeWithChildren(Root(a)) + 
             segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold;
 }
 
-bool segmentGraph::joinInternal(const segId parentID,
-                                  const segId childUnknownDepthID,
+bool segmentGraph::joinInternal(const common::segId parentID,
+                                  const common::segId childUnknownDepthID,
                                   const double threshold,
                                   const int edgeNumber)
 {
-    const segId childRootID = Root(childUnknownDepthID);
-    const segId parentRootID = Root(parentID);
+    const common::segId childRootID = Root(childUnknownDepthID);
+    const common::segId parentRootID = Root(parentID);
 
     if(childRootID == parentRootID){
         return false;
@@ -163,7 +163,7 @@ bool segmentGraph::joinInternal(const segId parentID,
 }
 
 
-bool segmentGraph::splitChildFromParentInternal( const segId childID )
+bool segmentGraph::splitChildFromParentInternal( const common::segId childID )
 {
     segment* child = mCache->SegmentStore()->GetSegment( childID );
 

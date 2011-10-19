@@ -19,12 +19,14 @@ class channel;
 class segmentation;
 }
 
+namespace proj {
 class projectImpl;
 class volumes;
+}
 
 class project : private om::singletonBase<project> {
 private:
-    boost::scoped_ptr<projectImpl> impl_;
+    boost::scoped_ptr<proj::projectImpl> impl_;
 
 public:
     //project IO
@@ -40,7 +42,7 @@ public:
     static const std::string& OmniFile();
 
     //volume management
-    static volumes& Volumes();
+    static proj::volumes& Volumes();
 
     static int GetFileVersion();
 

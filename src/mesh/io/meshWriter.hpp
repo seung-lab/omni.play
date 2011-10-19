@@ -63,14 +63,14 @@ public:
         return allGood;
     }
 
-    bool Contains(const segId segID, const coords::chunkCoord& coord)
+    bool Contains(const common::segId segID, const coords::chunkCoord& coord)
     {
         meshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);
         return chunk_table->Contains(segID);
     }
 
-    bool WasMeshed(const segId segID, const coords::chunkCoord& coord)
+    bool WasMeshed(const common::segId segID, const coords::chunkCoord& coord)
     {
         meshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);
@@ -84,7 +84,7 @@ public:
         return entry.wasMeshed;
     }
 
-    bool HasData(const segId segID, const coords::chunkCoord& coord)
+    bool HasData(const common::segId segID, const coords::chunkCoord& coord)
     {
         meshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);
@@ -104,7 +104,7 @@ public:
 
     // Save will take ownership of mesh data
     template <typename U>
-    void Save(const segId segID, const coords::chunkCoord& coord,
+    void Save(const common::segId segID, const coords::chunkCoord& coord,
               const U data, const om::ShouldBufferWrites buffferWrites,
               const om::AllowOverwrite allowOverwrite)
     {

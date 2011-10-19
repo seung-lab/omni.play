@@ -34,16 +34,16 @@ public:
     void Flush();
 
 // segments
-    segment* AddSegment(const segId value);
-    bool IsSegmentValid(const segId value);
+    segment* AddSegment(const common::segId value);
+    bool IsSegmentValid(const common::segId value);
 
 // caching
     void StartCaches();
-    segment* GetSegment(const segId value);
-    segment* GetSegmentUnsafe(const segId value);
+    segment* GetSegment(const common::segId value);
+    segment* GetSegmentUnsafe(const common::segId value);
 
     // WARNING: do not call from inside segmentsImpl or segmentsImplLowLevel
-    segId Root(const segId segID);
+    common::segId Root(const common::segId segID);
 
 private:
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const segmentsImpl&);

@@ -11,7 +11,7 @@ private:
     meshFilePtrCache *const filePtrCache_;
     boost::scoped_ptr<memMappedAllocFile> file_;
 
-    LockedSet<segId> segsBeingSaved_;
+    LockedSet<common::segId> segsBeingSaved_;
     zi::rwmutex lock_;
 
 public:
@@ -33,7 +33,7 @@ public:
     {}
 
     // avoid over-lapping writes for meshes with same segment ID
-    bool CanContinueMeshSave(const segId segID)
+    bool CanContinueMeshSave(const common::segId segID)
     {
         if(segsBeingSaved_.insertSinceWasntPresent(segID)){
             return true;
@@ -42,7 +42,7 @@ public:
         return false;
     }
 
-    void SegmentMeshSaveDone(const segId segID){
+    void SegmentMeshSaveDone(const common::segId segID){
         segsBeingSaved_.erase(segID);
     }
 
@@ -65,7 +65,7 @@ public:
         return true;
     }
 
-    inline bool Contains(const segId segID)
+    inline bool Contains(const common::segId segID)
     {
         meshDataEntry e;
         e.segID = segID;
@@ -88,7 +88,7 @@ public:
         (*entry) = newEntry;
     }
 
-    const meshDataEntry Find(const segId segID)
+    const meshDataEntry Find(const common::segId segID)
     {
         zi::rwmutex::write_guard g(lock_);
 

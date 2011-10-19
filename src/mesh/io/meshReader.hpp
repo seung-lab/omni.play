@@ -28,7 +28,7 @@ public:
     }
 
     boost::shared_ptr<dataForMeshLoad>
-    Read(const segId segID, const coords::chunkCoord& coord)
+    Read(const common::segId segID, const coords::chunkCoord& coord)
     {
         meshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);

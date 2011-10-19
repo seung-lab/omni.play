@@ -1,31 +1,17 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "common/common.h"
+#include "common/colors.h"
 
-// for Microsft Windows compiler compatibility, may need #pragma pack
-// see http://gcc.gnu.org/onlinedocs/gcc/Structure_002dPacking-Pragmas.html
+namespace om {
+namespace segment {
 
-struct segmentDataV2 {
-    segId value;
-    OmColor color;
-    bool immutable;
+struct data {
+    common::segId value;
+    common::color color;
     uint64_t size;
     AxisAlignedBoundingBox<int> bounds;
 };
 
-struct segmentDataV3 {
-    segId value;
-    OmColor color;
-    om::SegListType listType;
-    uint64_t size;
-    AxisAlignedBoundingBox<int> bounds;
-};
-
-struct segmentDataV4 {
-    segId value;
-    OmColor color;
-    uint64_t size;
-    AxisAlignedBoundingBox<int> bounds;
-};
-
+}
+}

@@ -21,7 +21,7 @@ public:
         return pageSize_;
     }
 
-    segment* AddSegment(const segId value);
+    segment* AddSegment(const common::segId value);
 
     std::vector<segmentPage*> Pages(){
         return pages_;

@@ -11,8 +11,10 @@
 
 #include "segment/segmentTypes.h"
 #include "segment/segmentChildrenTypes.h"
-#include "segment/segmentEdge.h"
 #include "zi/mutex.h"
+
+namespace om {
+namespace segment {
 
 class segments;
 
@@ -27,7 +29,7 @@ public:
         , freshnessForMeshes_(0)
     {}
 
-    inline segId value() const {
+    inline common::segId value() const {
         return data_->value;
     }
 
@@ -36,7 +38,7 @@ public:
 
     void reRandomizeColor();
 
-    inline OmColor GetColorInt() const {
+    inline common::color GetColorInt() const {
         return data_->color;
     }
 
@@ -47,7 +49,7 @@ public:
                          data_->color.blue  / 255. );
     }
 
-    void SetColor(const OmColor&);
+    void SetColor(const common::color&);
     void SetColor(const Vector3i&);
     void SetColor(const Vector3f&);
 
@@ -94,7 +96,7 @@ public:
 
     const segChildCont_t& GetChildren();
 
-    segId RootID();
+    common::segId RootID();
 
     common::id GetSegmentationID();
 
@@ -170,3 +172,5 @@ private:
     friend class segmentPage;
 };
 
+} // namespace segment
+} // namespace om

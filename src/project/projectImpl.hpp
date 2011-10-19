@@ -18,6 +18,9 @@
 #include "utility/fileHelpers.h"
 #include "datalayer/fs/file.h"
 #include "datalayer/archive/project.h"
+//#include "volume/segmentationDataWrapper.hpp"
+
+#include <fstream>
 
 namespace om {
 namespace proj {
@@ -84,13 +87,13 @@ public:
 
     void Save()
     {
-        FOR_EACH(iter, SegmentationDataWrapper::ValidIDs()){
-            SegmentationDataWrapper(*iter).GetSegmentation().Flush();
-        }
+//        FOR_EACH(iter, volume::SegmentationDataWrapper::ValidIDs()){
+//            SegmentationDataWrapper(*iter).GetSegmentation().Flush();
+//        }
 
         datalayer::archive::project::Write(projectMetadataFile_, this);
 
-        globals_->Users().UserSettings().Save();
+//        globals_->Users().UserSettings().Save();
 
         printf("omni project saved!\n");
     }
@@ -115,34 +118,22 @@ private:
         omniFile_ = fnp;
         filesFolder_ = fnp + ".files";
 
-        projectMetadataFile_ = fileNames::ProjectMetadataFile();
-        oldHDF5projectFile_ = "";
+        projectMetadataFile_ = datalayer::fileNames::ProjectMetadataFile();
 
         makeParentFolder();
         doCreate();
         touchEmptyProjectFile();
-
-        setupGlobals();
-
-        OmCacheManager::Reset();
-        tileCache::Reset();
-
-        OmPreferenceDefaults::SetDefaultAllPreferences();
 
         Save();
     }
 
     void makeParentFolder()
     {
-        const std::string dirStr = QFileInfo(omniFile_).absolutePath();
+        const std::string dirStr = file::absolute(omniFile_);
 
-        QDir dir(dirStr);
-
-        if(!dir.exists())
+        if(!file::exists(dirStr))
         {
-            if(!dir.mkpath(dirStr)){
-                throw common::ioException("could not make path", dirStr);
-            }
+            utility::fileHelpers::MkDir(dirStr);
         }
     }
 
@@ -155,97 +146,33 @@ private:
         omniFile_ = fnp;
         filesFolder_ = fnp + ".files";
 
+        projectMetadataFile_ = datalayer::fileNames::ProjectMetadataFile();
 
-        oldHDF5projectFile_ = fileNames::OldHDF5projectFileName();
-        projectMetadataFile_ = fileNames::ProjectMetadataFile();
+        datalayer::archive::project::Read(projectMetadataFile_, this);
 
-        if(!QFileInfo(omniFile_).size())
-            oldHDF5projectFile_ = "";
-        else
-            migrateFromHdf5();
-
-        setupGlobals();
-
-        if(guiParent)
-        {
-            OmGuiUserChooser* chooser = new OmGuiUserChooser(guiParent);
-            const int userWasSelected = chooser->exec();
-
-            if(!userWasSelected){
-                throw common::ioException("user not choosen");
-            }
-        }
-
-        OmCacheManager::Reset();
-        tileCache::Reset();
-        OmActionLogger::Reset();
-
-
-        if (om::file::exists(projectMetadataFile_.toStdString()))
-            datalayer::archive::project::Read(projectMetadataFile_, this);
-        else
-            dataArchiveProject::ArchiveRead(fileNames::ProjectMetadataFileOld(), this);
-
-        globals_->Users().UserSettings().Load();
-
-        OmActionReplayer::Replay();
+//        globals_->Users().UserSettings().Load();
     }
 
     void doCreate()
     {
-        QFile projectFile(omniFile_);
-        if(projectFile.exists()){
-            projectFile.remove();
+        if(file::exists(omniFile_)) {
+            utility::fileHelpers::RmFile(omniFile_);
         }
 
-        fileHelpers::RemoveDir(filesFolder_);
-        fileNames::MakeFilesFolder();
+        utility::fileHelpers::RemoveDir(filesFolder_);
+        datalayer::fileNames::MakeFilesFolder();
     }
 
     void touchEmptyProjectFile()
     {
-        QFile file(omniFile_);
-        if(!file.open(QIODevice::WriteOnly)) {
-            throw common::ioException("could not open", omniFile_);
-        }
-    }
-
-    void migrateFromHdf5()
-    {
-        fileNames::MakeFilesFolder();
-
-        fileHelpers::MoveFile(omniFile_, oldHDF5projectFile_);
-
-        touchEmptyProjectFile();
-
-        openHDF5();
-
-        moveProjectMetadata();
-
-        // TODO: Save()?
-    }
-
-    void moveProjectMetadata()
-    {
-        const dataPath path = dataPaths::getProjectArchiveNameQT();
-        int size;
-        dataWrapperPtr dw = oldHDF5_->readDataset(path, &size);
-        char const*const data = dw->getPtr<const char>();
-
-        QFile newProjectMetadafile(fileNames::ProjectMetadataFileOld());
-
-        if(!newProjectMetadafile.open(QIODevice::WriteOnly)) {
-            throw common::ioException("could not open", projectMetadataFile_);
-        }
-
-        newProjectMetadafile.write(data, size);
+        std::ofstream file(omniFile_.c_str());
     }
 
     void setFileVersion(const int v){
         fileVersion_ = v;
     }
 
-    friend class project;
+    friend class om::project;
 
     friend YAML::Emitter & YAML::operator<<(YAML::Emitter & out, const projectImpl & p);
     friend void YAML::operator>>(const YAML::Node & in, projectImpl & p);

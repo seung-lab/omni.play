@@ -161,7 +161,7 @@ private:
     }
 
     struct ResetEntry {
-        meshDataEntry operator()(const segId segID) const {
+        meshDataEntry operator()(const common::segId segID) const {
             return om::meshio_::MakeEmptyEntry(segID);
         }
     };

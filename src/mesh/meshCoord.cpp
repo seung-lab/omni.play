@@ -7,7 +7,7 @@ meshCoord::meshCoord()
     DataValue = -1;
 }
 
-meshCoord::meshCoord(const coords::chunkCoord & rMipChunkCoord, segId dataValue)
+meshCoord::meshCoord(const coords::chunkCoord & rMipChunkCoord, common::segId dataValue)
     : MipChunkCoord(rMipChunkCoord)
     , DataValue(dataValue)
 {

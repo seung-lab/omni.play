@@ -17,13 +17,13 @@ segmentIterator::segmentIterator(const SegmentDataWrapper& sdw)
     : segments_(sdw.Segments())
 {}
 
-void segmentIterator::iterOverSegmentID(const segId segID){
+void segmentIterator::iterOverSegmentID(const common::segId segID){
     segs_.push_back(segments_->GetSegment(segID));
 }
 
 void segmentIterator::iterOverSelectedIDs()
 {
-    const segIdsSet ids = segments_->GetSelectedSegmentIDs();
+    const common::segIdsSet ids = segments_->GetSelectedSegmentIDs();
     FOR_EACH(iter, ids){
         segs_.push_back( segments_->GetSegment( *iter ));
     }
@@ -31,13 +31,13 @@ void segmentIterator::iterOverSelectedIDs()
 
 void segmentIterator::iterOverEnabledIDs()
 {
-    const segIdsSet ids = segments_->GetEnabledSegmentIDs();
+    const common::segIdsSet ids = segments_->GetEnabledSegmentIDs();
     FOR_EACH(iter, ids){
         segs_.push_back( segments_->GetSegment( *iter ) );
     }
 }
 
-void segmentIterator::iterOverSegmentIDs(const segIdsSet & set)
+void segmentIterator::iterOverSegmentIDs(const common::segIdsSet & set)
 {
     FOR_EACH(iter, set){
         segs_.push_back( segments_->GetSegment( *iter ) );

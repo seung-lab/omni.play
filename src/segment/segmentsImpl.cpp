@@ -25,7 +25,7 @@ segmentsImpl::~segmentsImpl()
 
 segment* segmentsImpl::AddSegment()
 {
-    const segId newValue = getNextValue();
+    const common::segId newValue = getNextValue();
 
     assert(newValue);
 
@@ -34,7 +34,7 @@ segment* segmentsImpl::AddSegment()
     return newSeg;
 }
 
-segment* segmentsImpl::AddSegment(const segId value)
+segment* segmentsImpl::AddSegment(const common::segId value)
 {
     if(0 == value){
         return NULL;
@@ -51,7 +51,7 @@ segment* segmentsImpl::AddSegment(const segId value)
     return seg;
 }
 
-segment* segmentsImpl::GetOrAddSegment(const segId val)
+segment* segmentsImpl::GetOrAddSegment(const common::segId val)
 {
     if(0 == val){
         return NULL;
@@ -181,7 +181,7 @@ segmentsImpl::JoinFromUserAction(const segmentEdge& e)
 std::pair<bool, segmentEdge>
 segmentsImpl::JoinEdgeFromUser(const segmentEdge& e)
 {
-    const segId childRootID = segmentGraph_.Root(e.childID);
+    const common::segId childRootID = segmentGraph_.Root(e.childID);
     segment* childRoot = store_->GetSegment(childRootID);
     segment* parent = store_->GetSegment(e.parentID);
     segment* parentRoot = FindRoot(parent);
@@ -222,34 +222,34 @@ segmentsImpl::JoinEdgeFromUser(const segmentEdge& e)
 }
 
 std::pair<bool, segmentEdge>
-segmentsImpl::JoinFromUserAction(const segId parentID,
-								   const segId childUnknownDepthID)
+segmentsImpl::JoinFromUserAction(const common::segId parentID,
+								   const common::segId childUnknownDepthID)
 {
     const double threshold = 2.0f;
     return JoinFromUserAction(segmentEdge(parentID, childUnknownDepthID,
                                             threshold));
 }
 
-segIdsSet segmentsImpl::JoinTheseSegments(const segIdsSet& segmentList)
+common::segIdsSet segmentsImpl::JoinTheseSegments(const common::segIdsSet& segmentList)
 {
     if(segmentList.size() < 2){
-        return segIdsSet();
+        return common::segIdsSet();
     }
 
-    segIdsSet set = segmentList; // Join() could modify list
+    common::segIdsSet set = segmentList; // Join() could modify list
 
-    segIdsSet ret; // segments actually joined
+    common::segIdsSet ret; // segments actually joined
 
     // The first Segment Id is the parent we join to
-    segIdsSet::const_iterator iter = set.begin();
-    const segId parentID = *iter;
+    common::segIdsSet::const_iterator iter = set.begin();
+    const common::segId parentID = *iter;
     ++iter;
 
     // We then iterate through the Segment Ids and join
     // each one to the parent
     while (iter != set.end())
     {
-        const segId segID = *iter;
+        const common::segId segID = *iter;
 
         std::pair<bool, segmentEdge> edge =
             JoinFromUserAction(parentID, segID);
@@ -270,25 +270,25 @@ segIdsSet segmentsImpl::JoinTheseSegments(const segIdsSet& segmentList)
     return ret;
 }
 
-segIdsSet segmentsImpl::UnJoinTheseSegments(const segIdsSet& segmentList)
+common::segIdsSet segmentsImpl::UnJoinTheseSegments(const common::segIdsSet& segmentList)
 {
     if(segmentList.size() < 2){
-        return segIdsSet();
+        return common::segIdsSet();
     }
 
-    segIdsSet set = segmentList; // split() could modify list
-    segIdsSet ret;
+    common::segIdsSet set = segmentList; // split() could modify list
+    common::segIdsSet ret;
 
     // The first Segment Id is the parent we split from
-    segIdsSet::const_iterator iter = set.begin();
-    const segId parentID = *iter;
+    common::segIdsSet::const_iterator iter = set.begin();
+    const common::segId parentID = *iter;
     ++iter;
 
     // We then iterate through the Segment Ids and split
     // each one from the parent
     while (iter != set.end())
     {
-        const segId segID = *iter;
+        const common::segId segID = *iter;
 
         segment* child= store_->GetSegment(segID);
 
@@ -372,7 +372,7 @@ void segmentsImpl::Flush(){
     store_->Flush();
 }
 
-bool segmentsImpl::AreAnySegmentsInValidList(const segIdsSet& ids)
+bool segmentsImpl::AreAnySegmentsInValidList(const common::segIdsSet& ids)
 {
     FOR_EACH(iter, ids)
     {

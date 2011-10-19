@@ -25,7 +25,7 @@ public:
 
     void growGraphIfNeeded(segment* newSeg);
 
-    inline segId GetNumSegments() const {
+    inline common::segId GetNumSegments() const {
         return mNumSegs;
     }
 
@@ -46,7 +46,7 @@ public:
         return store_->GetSegment(segmentGraph_.Root(segment->value()));
     }
 
-    inline segId FindRootID(segment* segment)
+    inline common::segId FindRootID(segment* segment)
     {
         if(!segment){
             return 0;
@@ -59,7 +59,7 @@ public:
         return segmentGraph_.Root(segment->value());
     }
 
-    inline segment* FindRoot(const segId segID)
+    inline segment* FindRoot(const common::segId segID)
     {
         if(!segID){
             return 0;
@@ -68,7 +68,7 @@ public:
         return store_->GetSegment(segmentGraph_.Root(segID));
     }
 
-    inline segId FindRootID(const segId segID)
+    inline common::segId FindRootID(const common::segId segID)
     {
         if(!segID){
             return 0;
@@ -77,11 +77,11 @@ public:
         return segmentGraph_.Root(segID);
     }
 
-    std::string getSegmentName(segId segID);
-    void setSegmentName(segId segID, std::string name);
+    std::string getSegmentName(common::segId segID);
+    void setSegmentName(common::segId segID, std::string name);
 
-    std::string getSegmentNote(segId segID);
-    void setSegmentNote(segId segID, std::string note);
+    std::string getSegmentNote(common::segId segID);
+    void setSegmentNote(common::segId segID, std::string note);
 
     void turnBatchModeOn(const bool batchMode);
 
@@ -119,7 +119,7 @@ protected:
     QHash< common::id, std::string > segmentCustomNames;
     QHash< common::id, std::string > segmentNotes;
 
-    inline segId getNextValue(){
+    inline common::segId getNextValue(){
         return maxValue_.inc();
     }
 

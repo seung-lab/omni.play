@@ -10,7 +10,7 @@
 class meshCoord {
  public:
 	meshCoord();
-    meshCoord( const coords::chunkCoord&, segId );
+    meshCoord( const coords::chunkCoord&, common::segId );
 
 	void operator=( const meshCoord& rhs );
 	bool operator==( const meshCoord& rhs ) const;
@@ -18,13 +18,13 @@ class meshCoord {
 	bool operator<( const meshCoord& rhs ) const;
 
     coords::chunkCoord MipChunkCoord;
-	segId DataValue;
+	common::segId DataValue;
 
     const coords::chunkCoord& Coord() const {
 		return MipChunkCoord;
 	}
 
-	segId SegID() const {
+	common::segId SegID() const {
 		return DataValue;
 	}
 

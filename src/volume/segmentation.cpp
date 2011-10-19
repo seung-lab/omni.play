@@ -209,12 +209,12 @@ void segmentation::SetVoxelValue(const coords::globalCoord& vox, const uint32_t 
 
 bool segmentation::SetVoxelValueIfSelected(const coords::globalCoord& vox, const uint32_t val)
 {
-    const segIdsSet selection = Segments()->GetSelectedSegmentIDs();
+    const common::segIdsSet selection = Segments()->GetSelectedSegmentIDs();
     if(selection.size() > 0)
     {
         coords::chunkCoord leaf_mip_coord = vox.toChunkCoord(this, 0);
         segChunk* chunk = GetChunk(leaf_mip_coord);
-        segId target = Segments()->findRootID(
+        common::segId target = Segments()->findRootID(
             chunk->GetVoxelValue(vox.toDataCoord(this, 0)));
         
         if(selection.count(target) == 0) {

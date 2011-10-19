@@ -66,13 +66,13 @@ public:
     boost::shared_ptr<GUIPageOfSegments>
     GetSegmentGUIPage(const om::SegListType type, const GUIPageRequest& request);
 
-    segId GetNextSegIDinWorkingList(const SegmentDataWrapper&);
-    segId GetNextSegIDinWorkingList(const SegmentationDataWrapper&);
+    common::segId GetNextSegIDinWorkingList(const SegmentDataWrapper&);
+    common::segId GetNextSegIDinWorkingList(const SegmentationDataWrapper&);
 
-    int64_t GetSizeWithChildren(const segId segID);
+    int64_t GetSizeWithChildren(const common::segId segID);
     int64_t GetSizeWithChildren(segment* seg);
 
-    int64_t GetNumChildren(const segId segID);
+    int64_t GetNumChildren(const common::segId segID);
     int64_t GetNumChildren(segment* seg);
 };
 

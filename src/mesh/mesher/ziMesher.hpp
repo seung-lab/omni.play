@@ -161,7 +161,7 @@ private:
         // corner case: no MIP levels >0
         while (c.getLevel() <= rootMipLevel_)
         {
-            std::deque<segId> commonIDs;
+            std::deque<common::segId> commonIDs;
 
             const ChunkUniqueValues segIDs =
                 segmentation_->ChunkUniqueValues()->Values(c, threshold_);
@@ -245,7 +245,7 @@ private:
 
         chunkUtils::RewriteChunkAtThreshold(segmentation_, chunkData, threshold_);
 
-        const segId* chunkDataRaw = static_cast< const segId* >( chunkData.getScalarPtr() );
+        const common::segId* chunkDataRaw = static_cast< const common::segId* >( chunkData.getScalarPtr() );
 
         cube_marcher.marche( reinterpret_cast< const int* >(chunkDataRaw), 129, 129, 129 );
     }
@@ -283,7 +283,7 @@ private:
 
         FOR_EACH( it, cube_marcher.meshes() )
         {
-            const segId segID = it->first;
+            const common::segId segID = it->first;
 
             if(segIDs.contains(segID))
             {

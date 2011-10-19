@@ -108,7 +108,7 @@ public:
     }
 
     void RebuildChunk(const coords::chunkCoord&,
-                      const segIdsSet& )
+                      const common::segIdsSet& )
     {
         assert(0);
 //build chunk volume data and analyze data
@@ -119,7 +119,7 @@ if (IsVolumeDataBuilt()) {
 }
 
 //remove mesh from cache to force it to reload
-foreach( const segId & val, rModifiedValues ){
+foreach( const common::segId & val, rModifiedValues ){
 meshCoord mip_mesh_coord = meshCoord(mipCoord, val);
 mMipMeshManager->UncacheMesh(mip_mesh_coord);
 }
@@ -130,7 +130,7 @@ OmEvents::Redraw3d();
 */
 
     void GetMesh(meshPtr& ptr, const coords::chunkCoord& coord,
-                 const segId segID, const double threshold,
+                 const common::segId segID, const double threshold,
                  const om::Blocking blocking = om::NON_BLOCKING)
     {
         return GetManager(threshold)->GetMesh(ptr, meshCoord(coord, segID), blocking);
