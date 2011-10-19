@@ -30,8 +30,8 @@ private:
     std::vector<T*> vec_;
     std::vector<T*> vecValidPtrs_;
 
-    idsSet validSet_;  // keys in map (fast iteration)
-    idsSet enabledSet_; // enabled keys in map
+    idSet validSet_;  // keys in map (fast iteration)
+    idSet enabledSet_; // enabled keys in map
 
     Lock lock_;
 
@@ -131,7 +131,7 @@ public:
     }
 
     // TODO: Remove return of ref to ensure locking of vector is not circumvented
-    inline const idsSet& GetEnabledIds() const
+    inline const idSet& GetEnabledIds() const
     {
         zi::guard g(lock_);
         return enabledSet_;
@@ -155,7 +155,7 @@ private:
     {
         if(isIDinvalid(id)){
             assert(0 && "invalid ID");
-            throw OmAccessException("Cannot get object with id: " + id);
+            throw common::accessException("Cannot get object with id: " + id);
         }
     }
 

@@ -37,13 +37,13 @@ enum objectType { CHANNEL, SEGMENTATION };
 /**
  * "segment" types
  */
-typedef uint32_t segID;
-typedef std::deque<segID> segIdList;
+typedef uint32_t segId;
+typedef std::deque<segId> segIdList;
 typedef uint32_t pageNum;
 
 class segment;
 typedef std::set<segment*> segPtrSet;
-typedef std::set<segID> segIdSet;
+typedef std::set<segId> segIdSet;
 std::ostream& operator<<(std::ostream& out, const segIdSet& in);
 
 /**
