@@ -35,7 +35,7 @@ bool channelManager::IsChannelValid(const common::id id){
     return manager_.IsValid(id);
 }
 
-const common::idsSet& channelManager::GetValidChannelIds(){
+const common::idSet& channelManager::GetValidChannelIds(){
     return manager_.GetValidIds();
 }
 

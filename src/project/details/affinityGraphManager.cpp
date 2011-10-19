@@ -16,7 +16,7 @@ bool affinityGraphManager::IsValid(const common::id id){
     return graphs_.IsValid(id);
 }
 
-const common::idsSet& affinityGraphManager::GetValidIds(){
+const common::idSet& affinityGraphManager::GetValidIds(){
     return graphs_.GetValidIds();
 }
 

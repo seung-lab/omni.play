@@ -39,6 +39,10 @@ bool exists(const std::string& fnp) {
     return boost::filesystem::exists(fnp);
 }
 
+std::string absolute(const std::string& fnp) {
+    return boost::filesystem::absolute(fnp).string();
+}
+
 std::string tempPath(){
     return boost::filesystem::temp_directory_path().string();
 }

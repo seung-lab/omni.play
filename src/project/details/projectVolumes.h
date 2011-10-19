@@ -11,14 +11,17 @@
 #include "common/common.h"
 #include "datalayer/archive/project.h"
 
+namespace om {
+namespace proj {
+
 class affinityGraphManager;
 class channelManager;
 class segmentationManager;
 
-class projectVolumes {
+class volumes {
 public:
-    projectVolumes();
-    ~projectVolumes();
+    volumes();
+    ~volumes();
 
     channelManager& Channels(){
         return *channels_;
@@ -37,9 +40,9 @@ private:
     const boost::scoped_ptr<segmentationManager> segmentations_;
     const boost::scoped_ptr<affinityGraphManager> affGraphs_;
 
-    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const projectVolumes& p );
-    friend void YAML::operator>>(const YAML::Node& in, projectVolumes& p );
-    friend QDataStream& operator<<(QDataStream& out, const projectVolumes& p );
-    friend QDataStream& operator>>(QDataStream& in, projectVolumes& p );
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const volumes& p );
+    friend void YAML::operator>>(const YAML::Node& in, volumes& p );
 };
 
+}
+}

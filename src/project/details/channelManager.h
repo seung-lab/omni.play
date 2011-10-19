@@ -12,7 +12,7 @@ public:
     channel& AddChannel();
     void RemoveChannel(const common::id id);
     bool IsChannelValid(const common::id id);
-    const common::idsSet & GetValidChannelIds();
+    const common::idSet & GetValidChannelIds();
     bool IsChannelEnabled(const common::id id);
     void SetChannelEnabled(const common::id id, const bool enable);
     const std::vector<channel*> GetPtrVec() const;

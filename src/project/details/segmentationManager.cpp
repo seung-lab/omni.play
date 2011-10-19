@@ -59,7 +59,7 @@ bool segmentationManager::IsSegmentationValid(const common::id id){
     return manager_.IsValid(id);
 }
 
-const common::idsSet& segmentationManager::GetValidSegmentationIds(){
+const common::idSet& segmentationManager::GetValidSegmentationIds(){
     return manager_.GetValidIds();
 }
 

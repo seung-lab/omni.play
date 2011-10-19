@@ -34,6 +34,7 @@ void mvFile(const std::string& old_fnp, const std::string& new_fnp);
 void cpFile(const std::string& old_fnp, const std::string& new_fnp);
 
 bool exists(const std::string& fnp);
+std::string absolute(const std::string& fnp);
 
 std::string tempPath();
 

@@ -7,30 +7,20 @@
  *  Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-#include "common/om.hpp"
 #include "common/common.h"
 #include "datalayer/archive/project.h"
 #include "datalayer/fs/fileNames.hpp"
-#include "datalayer/dataPath.h"
 #include "datalayer/dataPaths.h"
 #include "datalayer/dataWrapper.h"
 #include "project/details/projectVolumes.h"
 #include "project/details/segmentationManager.h"
-#include "project/projectGlobals.h"
-#include "system/cache/omCacheManager.h"
-#include "system/genericManager.hpp"
-#include "system/omPreferences.h"
-#include "system/omStateManager.h"
-#include "system/omUndoStack.hpp"
-#include "tiles/cache/tileCache.h"
-#include "users/omGuiUserChooser.h"
-#include "utility/omFileHelpers.h"
+#include "common/genericManager.hpp"
+#include "utility/fileHelpers.h"
 #include "datalayer/fs/file.h"
-#include "utility/segmentationDataWrapper.hpp"
 #include "datalayer/archive/project.h"
 
 namespace om {
-namespace project
+namespace proj {
 
 class projectImpl {
 private:
@@ -41,13 +31,12 @@ private:
     int fileVersion_;
     bool isReadOnly_;
 
-    projectVolumes volumes_;
+    volumes volumes_;
     zi::semaphore fileReadThrottle_;
 
 public:
     projectImpl()
-        : oldHDF5_(NULL)
-        , fileVersion_(0)
+        : fileVersion_(0)
         , isReadOnly_(false)
     {
         fileReadThrottle_.set(4);
@@ -64,20 +53,8 @@ public:
         return omniFile_;
     }
 
-    bool HasOldHDF5() const {
-        return NULL != oldHDF5_;
-    }
-
-    OmHdf5* OldHDF5()
-    {
-        if(!oldHDF5_){
-            throw common::ioException("no old hdf5 file present");
-        }
-        return oldHDF5_;
-    }
-
     //volume management
-    projectVolumes& Volumes(){
+    volumes& Volumes(){
         return volumes_;
     }
 
@@ -85,23 +62,22 @@ public:
     std::string New(const std::string& fileNameAndPathIn)
     {
         const std::string fnp_rel =
-            fileNames::AddOmniExtensionIfNeeded(fileNameAndPathIn);
-        const std::string fnp = QFileInfo(fnp_rel).absoluteFilePath();
+            datalayer::fileNames::AddOmniExtensionIfNeeded(fileNameAndPathIn);
+        const std::string fnp = file::absolute(fnp_rel);
 
         doNew(fnp);
 
         return fnp;
     }
 
-    void Load(const std::string& fileNameAndPath, QWidget* guiParent)
+    void Load(const std::string& fileNameAndPath)
     {
         try {
-            const QFileInfo projectFile(fileNameAndPath);
-            doLoad(projectFile.absoluteFilePath(), guiParent);
+            std::string path = file::absolute(fileNameAndPath);
+            doLoad(path);
 
         } catch(...)
         {
-            globals_.reset();
             throw;
         }
     }
@@ -170,9 +146,9 @@ private:
         }
     }
 
-    void doLoad(const std::string& fnp, QWidget* guiParent)
+    void doLoad(const std::string& fnp)
     {
-        if(!QFile::exists(fnp)){
+        if(!file::exists(fnp)){
             throw common::ioException("Project file not found at", fnp);
         }
 
@@ -226,18 +202,6 @@ private:
         fileNames::MakeFilesFolder();
     }
 
-    void openHDF5()
-    {
-        if(!QFile::exists(oldHDF5projectFile_)){
-            return;
-        }
-
-        const bool isReadOnly = true;
-
-        oldHDF5_ = OmHdf5Manager::Get(oldHDF5projectFile_, isReadOnly);
-        oldHDF5_->open();
-    }
-
     void touchEmptyProjectFile()
     {
         QFile file(omniFile_);
@@ -281,17 +245,11 @@ private:
         fileVersion_ = v;
     }
 
-    void setupGlobals()
-    {
-        globals_.reset(new projectGlobals());
-        globals_->Init();
-    }
-
     friend class project;
 
     friend YAML::Emitter & YAML::operator<<(YAML::Emitter & out, const projectImpl & p);
     friend void YAML::operator>>(const YAML::Node & in, projectImpl & p);
-    friend QDataStream &operator<<(QDataStream & out, const projectImpl & p);
-    friend QDataStream &operator>>(QDataStream & in, projectImpl & p);
 };
 
+} // namespace proj
+} // namespace om

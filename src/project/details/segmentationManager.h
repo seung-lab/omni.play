@@ -1,36 +1,39 @@
 #pragma once
 
 #include "common/common.h"
-#include "system/genericManager.hpp"
+#include "common/genericManager.hpp"
 #include "volume/segmentation.h"
 #include "datalayer/archive/segmentation.h"
 
-class projectVolumes;
+namespace om {
+namespace proj {
+
+class volumes;
 
 class segmentationManager {
 private:
-    projectVolumes *const volumes_;
+    volumes *const volumes_;
 
 public:
-    segmentationManager(projectVolumes* volumes)
-        : volumes_(volumes)
+    segmentationManager(volumes* vols)
+        : volumes_(vols)
     {}
 
-    segmentation& GetSegmentation(const common::id id);
-    segmentation& AddSegmentation();
+    volume::segmentation& GetSegmentation(const common::id id);
+    volume::segmentation& AddSegmentation();
     void RemoveSegmentation(const common::id id);
     bool IsSegmentationValid(const common::id id);
-    const common::idsSet & GetValidSegmentationIds();
+    const common::idSet & GetValidSegmentationIds();
     bool IsSegmentationEnabled(const common::id id);
     void SetSegmentationEnabled(const common::id id, const bool enable);
-    const std::vector<segmentation*> GetPtrVec() const;
+    const std::vector<volume::segmentation*> GetPtrVec() const;
 
 private:
-    genericManager<segmentation> manager_;
+    common::genericManager<volume::segmentation> manager_;
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const segmentationManager&);
     friend void YAML::operator>>(const YAML::Node& in, segmentationManager&);
-    friend QDataStream& operator<<(QDataStream& out, const segmentationManager&);
-    friend QDataStream& operator>>(QDataStream& in, segmentationManager&);
 };
 
+}
+}

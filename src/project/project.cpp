@@ -1,4 +1,3 @@
-#include "tiles/pools/tilePools.hpp"
 #include "project/project.h"
 #include "project/projectImpl.hpp"
 
@@ -74,7 +73,7 @@ zi::semaphore& FileReadSemaphore(){
 }
 
 
-#include "threads/omThreadPoolManager.h"
+#include "threads/threadPoolManager.h"
 #include "zi/threads.h"
 
 void project::Close()

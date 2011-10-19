@@ -11,7 +11,7 @@ public:
     affinityGraph& Add();
     void Remove(const common::id id);
     bool IsValid(const common::id id);
-    const common::idsSet& GetValidIds();
+    const common::idSet& GetValidIds();
     bool IsEnabled(const common::id id);
     void SetEnabled(const common::id id, const bool enable);
 
