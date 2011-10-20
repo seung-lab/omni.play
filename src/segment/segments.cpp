@@ -98,13 +98,13 @@ uint32_t segments::NumberOfSelectedSegments()
     return impl_->SegmentSelection().NumberOfSelectedSegments();
 }
 
-const common::segIdsSet segments::GetSelectedSegmentIDs()
+const common::segIdSet segments::GetSelectedSegmentIDs()
 {
     zi::guard g(mutex_);
     return impl_->SegmentSelection().GetSelectedSegmentIDs();
 }
 
-common::segIdsSet segments::GetEnabledSegmentIDs()
+common::segIdSet segments::GetEnabledSegmentIDs()
 {
     zi::guard g(mutex_);
     return impl_->EnabledSegments().GetEnabledSegmentIDs();
@@ -201,13 +201,13 @@ common::segId segments::findRootIDnoCache(const common::segId segID)
     return impl_->FindRootID(segID);
 }
 
-common::segIdsSet segments::JoinTheseSegments(const common::segIdsSet & segmentList)
+common::segIdSet segments::JoinTheseSegments(const common::segIdSet & segmentList)
 {
     zi::guard g(mutex_);
     return impl_->JoinTheseSegments(segmentList);
 }
 
-common::segIdsSet segments::UnJoinTheseSegments(const common::segIdsSet & segmentList)
+common::segIdSet segments::UnJoinTheseSegments(const common::segIdSet & segmentList)
 {
     zi::guard g(mutex_);
     return impl_->UnJoinTheseSegments(segmentList);
@@ -219,20 +219,20 @@ uint32_t segments::getMaxValue()
     return impl_->getMaxValue();
 }
 
-void segments::UpdateSegmentSelection(const common::segIdsSet & idsToSelect,
+void segments::UpdateSegmentSelection(const common::segIdSet & idsToSelect,
                                              const bool addToRecentList)
 {
     zi::guard g(mutex_);
     return impl_->SegmentSelection().UpdateSegmentSelection(idsToSelect, addToRecentList);
 }
 
-void segments::AddToSegmentSelection(const common::segIdsSet& idsToSelect)
+void segments::AddToSegmentSelection(const common::segIdSet& idsToSelect)
 {
     zi::guard g(mutex_);
     return impl_->SegmentSelection().AddToSegmentSelection(idsToSelect);
 }
 
-void segments::RemoveFromSegmentSelection(const common::segIdsSet& idsToSelect)
+void segments::RemoveFromSegmentSelection(const common::segIdSet& idsToSelect)
 {
     zi::guard g(mutex_);
     return impl_->SegmentSelection().RemoveFromSegmentSelection(idsToSelect);
@@ -268,7 +268,7 @@ void segments::Flush()
     return impl_->Flush();
 }
 
-bool segments::AreAnySegmentsInValidList(const common::segIdsSet& ids)
+bool segments::AreAnySegmentsInValidList(const common::segIdSet& ids)
 {
     zi::guard g(mutex_);
     return impl_->AreAnySegmentsInValidList(ids);

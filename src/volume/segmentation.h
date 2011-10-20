@@ -5,14 +5,13 @@
 #include "common/manageableObject.hpp"
 #include "volume/volume.h"
 #include "datalayer/archive/segmentation.h"
+#include "volume/segmentationFolder.h"
 
 namespace om {
 
-namespace chunk {
+namespace chunks {
 class chunk;
-class uniqueValuesManager;
 class segChunk;
-template <typename,typename> class chunkCache;
 }
 
 namespace mesh {
@@ -51,7 +50,6 @@ public:
 
     bool LoadVolData();
     bool LoadVolDataIfFoldersExist();
-    void UpdateFromVolResize();
 
     inline common::objectType getVolumeType() const {
         return common::SEGMENTATION;
@@ -61,58 +59,30 @@ public:
         return GetID();
     }
 
+    void SetVolDataType(const dataType type);
+
     virtual int GetBytesPerVoxel() const;
     virtual int GetBytesPerSlice() const;
 
-//    SegmentationDataWrapper GetSDW() const;
-
-    void CloseDownThreads();
-
     void Flush();
 
-    void SetDendThreshold( double t );
-    double GetDendThreshold();
-
-    void SetSizeThreshold( double t );
-    double GetSizeThreshold();
-
-    mesh::manager* MeshManager(const double threshold);
-
-    void UpdateVoxelBoundingData();
-
-    void SetVolDataType(const dataType);
-
-    void BuildBlankVolume(const Vector3i & dims);
-
-    chunk::segChunk* GetChunk(const coords::chunkCoord& coord);
+    boost::shared_ptr<chunks::segChunk> GetChunk(const coords::chunkCoord& coord);
 
     uint32_t GetVoxelValue(const coords::globalCoord &vox);
     void SetVoxelValue(const coords::globalCoord &vox, const uint32_t value);
-    bool SetVoxelValueIfSelected(const coords::globalCoord &vox, const uint32_t value);
 
     void RebuildSegments();
 
 public:
-    inline chunk::uniqueValuesManager* ChunkUniqueValues() {
-        return uniqueChunkValues_.get();
-    }
-    inline mesh::managers* MeshManagers() {
-        return managers_.get();
-    }
-    inline segment::segments* Segments() {
+
+inline segment::segments* Segments() {
         return segments_.get();
     }
     inline data* VolData() {
         return volData_.get();
     }
-    inline segFolder* Folder() const {
+    inline om::segmentation::folder* Folder() const {
         return folder_.get();
-    }
-    inline annotation::manager* Annotations() const {
-        return annotations_.get();
-    }
-    inline segLoader* Loader() const {
-        return loader_.get();
     }
 
 private:
@@ -120,13 +90,9 @@ private:
         id_ = id;
     }
 
-    boost::scoped_ptr<segFolder> folder_;
-    boost::scoped_ptr<segLoader> loader_;
-    boost::scoped_ptr<chunk::uniqueValuesManager> uniqueChunkValues_;
-    boost::scoped_ptr<mesh::managers> managers_;
+    boost::scoped_ptr<om::segmentation::folder> folder_;
     boost::scoped_ptr<segment::segments> segments_;
     boost::scoped_ptr<data> volData_;
-    boost::scoped_ptr<annotation::manager> annotations_;
 
     friend class segmentsImpl;
     friend class segmentsImplLowLevel;

@@ -135,7 +135,7 @@ common::segId segmentLists::GetNextSegIDinWorkingList(const SegmentationDataWrap
         return 0;
     }
 
-    const common::segIdsSet selectedIDs = sdw.GetSelectedSegmentIDs();
+    const common::segIdSet selectedIDs = sdw.GetSelectedSegmentIDs();
     std::vector<SegInfo> infos;
     infos.reserve(selectedIDs.size());
 

@@ -1,11 +1,10 @@
 #pragma once
 
-class segmentation;
-
 #include "common/common.h"
 
-
 namespace om {
+namespace volume { class segmentation; }
+
 namespace segmentation {
 
 class folder {

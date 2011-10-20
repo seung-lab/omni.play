@@ -10,26 +10,30 @@
 #include "chunks/chunk.h"
 #include "zi/mutex.h"
 
-class segmentation;
-namespace om { namespace segchunk { class dataInterface; } }
+namespace om {
+namespace volume { class segmentation; }
+namespace segchunk { class dataInterface; }
 
+namespace chunks {
 class segChunk : public chunk {
 private:
-    segmentation *const vol_;
-    const boost::scoped_ptr<om::segchunk::dataInterface> segChunkData_;
+    volume::segmentation *const vol_;
+    const boost::scoped_ptr<segchunk::dataInterface> segChunkData_;
 
     std::set<common::segId> modifiedSegIDs_;
     zi::spinlock modifiedSegIDsLock_;
 
 public:
-    segChunk(segmentation* vol, const coords::chunkCoord& coord);
+    segChunk(volume::segmentation* vol, const coords::chunkCoord& coord);
     virtual ~segChunk();
 
     uint32_t GetVoxelValue(const coords::dataCoord& vox);
     void SetVoxelValue(const coords::dataCoord& vox, const uint32_t value);
 
-    om::segchunk::dataInterface* SegData(){
+    segchunk::dataInterface* SegData(){
         return segChunkData_.get();
     }
 };
 
+}
+}

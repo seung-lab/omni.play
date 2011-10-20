@@ -15,7 +15,7 @@ public:
     explicit segmentIterator(const SegmentDataWrapper& sdw);
 
     void iterOverSegmentID(const common::segId segID);
-    void iterOverSegmentIDs(const common::segIdsSet& set);
+    void iterOverSegmentIDs(const common::segIdSet& set);
     void iterOverSelectedIDs();
     void iterOverEnabledIDs();
 

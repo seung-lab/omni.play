@@ -111,7 +111,7 @@ public:
     }
 
     void RebuildChunk(const coords::chunkCoord&,
-                      const common::segIdsSet& )
+                      const common::segIdSet& )
     {
         assert(0);
 //build chunk volume data and analyze data

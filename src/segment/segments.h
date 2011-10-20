@@ -6,15 +6,19 @@
 
 #include <zi/mutex.hpp>
 
+namespace om {
+namespace volume { class segmentation; }
+
+namespace segment {
+
 class segment;
 class segmentChildren;
-class segmentation;
 class segmentsImpl;
 class segmentsStore;
 
 class segments {
 public:
-    segments(segmentation* segmentation);
+    segments(volume::segmentation* segmentation);
     ~segments();
 
     void StartCaches();
@@ -35,18 +39,18 @@ public:
 
     bool isSegmentEnabled(common::segId segID);
     void setSegmentEnabled(common::segId segID, bool isEnabled);
-    common::segIdsSet GetEnabledSegmentIDs();
+    common::segIdSet GetEnabledSegmentIDs();
     bool AreSegmentsEnabled();
 
-    bool IsSegmentSelected(common::segId segID);
-    bool IsSegmentSelected(segment* seg);
-    void setSegmentSelected(common::segId segID, const bool, const bool);
-    const common::segIdsSet GetSelectedSegmentIDs();
-    uint32_t NumberOfSelectedSegments();
-    bool AreSegmentsSelected();
-    void UpdateSegmentSelection(const common::segIdsSet& idsToSelect, const bool);
-    void AddToSegmentSelection(const common::segIdsSet& idsToSelect);
-    void RemoveFromSegmentSelection(const common::segIdsSet& idsToSelect);
+//    bool IsSegmentSelected(common::segId segID);
+//    bool IsSegmentSelected(segment* seg);
+//    void setSegmentSelected(common::segId segID, const bool, const bool);
+//    const common::segIdSet GetSelectedSegmentIDs();
+//    uint32_t NumberOfSelectedSegments();
+//    bool AreSegmentsSelected();
+//    void UpdateSegmentSelection(const common::segIdSet& idsToSelect, const bool);
+//    void AddToSegmentSelection(const common::segIdSet& idsToSelect);
+//    void RemoveFromSegmentSelection(const common::segIdSet& idsToSelect);
 
     std::string getSegmentName(common::segId segID);
     void setSegmentName(common::segId segID, std::string name);
@@ -56,9 +60,9 @@ public:
 
     common::segId GetSegmentationID();
 
-    boost::optional<std::string> IsEdgeSplittable(const segmentEdge& e);
-    boost::optional<std::string> IsSegmentSplittable(segment* child);
-	boost::optional<std::string> IsSegmentCuttable(segment* seg);
+//    boost::optional<std::string> IsEdgeSplittable(const segmentEdge& e);
+//    boost::optional<std::string> IsSegmentSplittable(segment* child);
+//    boost::optional<std::string> IsSegmentCuttable(segment* seg);
 
     segment* findRoot(segment* segment);
     segment* findRoot(const common::segId segID);
@@ -66,32 +70,32 @@ public:
     common::segId findRootID(segment* segment);
     common::segId findRootIDnoCache(const common::segId segID);
 
-    std::pair<bool, segmentEdge> JoinEdge(const segmentEdge& e);
-    segmentEdge SplitEdge(const segmentEdge& e);
-    common::segIdsSet JoinTheseSegments(const common::segIdsSet& segmentList);
-    common::segIdsSet UnJoinTheseSegments(const common::segIdsSet& segmentList);
+//    std::pair<bool, segmentEdge> JoinEdge(const segmentEdge& e);
+//    segmentEdge SplitEdge(const segmentEdge& e);
+    common::segIdSet JoinTheseSegments(const common::segIdSet& segmentList);
+    common::segIdSet UnJoinTheseSegments(const common::segIdSet& segmentList);
 
-	std::vector<segmentEdge> CutSegment(segment* seg);
-	bool JoinEdges(const std::vector<segmentEdge>& edges);
+//    std::vector<segmentEdge> CutSegment(segment* seg);
+//    bool JoinEdges(const std::vector<segmentEdge>& edges);
 
     uint32_t getPageSize();
 
     uint32_t getMaxValue();
 
-    void refreshTree();
+//    void refreshTree();
 
-    bool AreAnySegmentsInValidList(const common::segIdsSet& ids);
+    bool AreAnySegmentsInValidList(const common::segIdSet& ids);
 
-    uint64_t MSTfreshness() const;
+//    uint64_t MSTfreshness() const;
 
-    inline const segmentation * getSegmentation() const {
+    inline const volume::segmentation * getSegmentation() const {
         return segmentation_;
     }
-    
+
 private:
     zi::mutex mutex_;
 
-    segmentation *const segmentation_;
+    volume::segmentation *const segmentation_;
 
     boost::scoped_ptr<segmentsStore> store_;
     boost::scoped_ptr<segmentsImpl> impl_;
@@ -101,7 +105,7 @@ private:
 
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const segments& sc);
     friend void YAML::operator>>(const YAML::Node& in, segments& sc);
-    friend QDataStream &operator<<(QDataStream& out, const segments& sc);
-    friend QDataStream &operator>>(QDataStream& in, segments& sc);
 };
 
+} // namespace segment
+} // namespace om

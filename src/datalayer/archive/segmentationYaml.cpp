@@ -41,7 +41,7 @@ void operator>>(const Node& in, om::volume::segmentation& seg)
     volume<om::volume::segmentation> volArchive(seg);
     volArchive.Load(in);
 
-    in["Segments"] >> (*seg.segments_);
+//    in["Segments"] >> (*seg.segments_);
 //    in["Num Edges"] >> seg.mst_->numEdges_;
 //    in["Groups"] >> (*seg.groups_);
 

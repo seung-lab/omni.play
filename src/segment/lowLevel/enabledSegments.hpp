@@ -10,7 +10,7 @@ class enabledSegments {
 private:
     segmentsImplLowLevel *const cache_;
 
-    common::segIdsSet enabled_;
+    common::segIdSet enabled_;
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const segmentsImpl&);
     friend void YAML::operator>>(const YAML::Node&, segmentsImpl&);
@@ -24,7 +24,7 @@ public:
 
     inline void Reroot()
     {
-        common::segIdsSet old = enabled_;
+        common::segIdSet old = enabled_;
         enabled_.clear();
 
         FOR_EACH(iter, old){
@@ -32,7 +32,7 @@ public:
         }
     }
 
-    inline common::segIdsSet GetEnabledSegmentIDs(){
+    inline common::segIdSet GetEnabledSegmentIDs(){
         return enabled_;
     }
 

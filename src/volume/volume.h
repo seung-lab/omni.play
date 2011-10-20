@@ -63,6 +63,13 @@ public:
         return coords_;
     }
 
+    inline operator coords::volumeSystem*() {
+        return &coords_;
+    }
+
+    inline operator const coords::volumeSystem*() {
+        return &coords_;
+    }
 protected:
     coords::volumeSystem coords_;
     dataType mVolDataType;

@@ -26,7 +26,6 @@ public:
         , parent_(NULL)
         , threshold_(0)
         , edgeNumber_(-1)
-        , freshnessForMeshes_(0)
     {}
 
     inline common::segId value() const {
@@ -72,10 +71,6 @@ public:
         data_->size += inc;
     }
 
-    inline bool IsValidListType() const {
-        return om::VALID == static_cast<om::SegListType>(*listType_);
-    }
-
     inline segment* getParent() const {
         return parent_;
     }
@@ -114,14 +109,6 @@ public:
         data_->bounds.merge(box);
     }
 
-    inline uint64_t getFreshnessForMeshes() const {
-        return freshnessForMeshes_;
-    }
-
-    inline void touchFreshnessForMeshes(){
-        ++freshnessForMeshes_;
-    }
-
     inline int getEdgeNumber() const {
         return edgeNumber_;
     }
@@ -135,15 +122,13 @@ public:
     }
 
 private:
-    segmentDataV4* data_;
+    data* data_;
 
     segments* segments_;
     segment* parent_;
     double threshold_;
 
     int edgeNumber_; // index of edge in main edge list
-    segmentEdge customMergeEdge_;
-    uint64_t freshnessForMeshes_;
 
     struct segment_bounds_mutex_pool_tag;
     struct segment_size_mutex_pool_tag;

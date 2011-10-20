@@ -23,15 +23,15 @@ public:
 
     std::pair<bool, segmentEdge> JoinFromUserAction(const segmentEdge& e);
     segmentEdge SplitEdgeUserAction(const segmentEdge& e);
-    common::segIdsSet JoinTheseSegments(const common::segIdsSet& segmentList);
-    common::segIdsSet UnJoinTheseSegments(const common::segIdsSet& segmentList);
+    common::segIdSet JoinTheseSegments(const common::segIdSet& segmentList);
+    common::segIdSet UnJoinTheseSegments(const common::segIdSet& segmentList);
     boost::optional<std::string> IsEdgeSplittable(const segmentEdge& e);
     boost::optional<std::string> IsSegmentSplittable(segment* child);
     boost::optional<std::string> IsSegmentCuttable(segment* seg);
 
     void refreshTree();
 
-    bool AreAnySegmentsInValidList(const common::segIdsSet& ids);
+    bool AreAnySegmentsInValidList(const common::segIdSet& ids);
 
     std::vector<segmentEdge> CutSegment(segment* seg);
     bool JoinEdges(const std::vector<segmentEdge>& edges);

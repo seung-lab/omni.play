@@ -230,18 +230,18 @@ segmentsImpl::JoinFromUserAction(const common::segId parentID,
                                             threshold));
 }
 
-common::segIdsSet segmentsImpl::JoinTheseSegments(const common::segIdsSet& segmentList)
+common::segIdSet segmentsImpl::JoinTheseSegments(const common::segIdSet& segmentList)
 {
     if(segmentList.size() < 2){
-        return common::segIdsSet();
+        return common::segIdSet();
     }
 
-    common::segIdsSet set = segmentList; // Join() could modify list
+    common::segIdSet set = segmentList; // Join() could modify list
 
-    common::segIdsSet ret; // segments actually joined
+    common::segIdSet ret; // segments actually joined
 
     // The first Segment Id is the parent we join to
-    common::segIdsSet::const_iterator iter = set.begin();
+    common::segIdSet::const_iterator iter = set.begin();
     const common::segId parentID = *iter;
     ++iter;
 
@@ -270,17 +270,17 @@ common::segIdsSet segmentsImpl::JoinTheseSegments(const common::segIdsSet& segme
     return ret;
 }
 
-common::segIdsSet segmentsImpl::UnJoinTheseSegments(const common::segIdsSet& segmentList)
+common::segIdSet segmentsImpl::UnJoinTheseSegments(const common::segIdSet& segmentList)
 {
     if(segmentList.size() < 2){
-        return common::segIdsSet();
+        return common::segIdSet();
     }
 
-    common::segIdsSet set = segmentList; // split() could modify list
-    common::segIdsSet ret;
+    common::segIdSet set = segmentList; // split() could modify list
+    common::segIdSet ret;
 
     // The first Segment Id is the parent we split from
-    common::segIdsSet::const_iterator iter = set.begin();
+    common::segIdSet::const_iterator iter = set.begin();
     const common::segId parentID = *iter;
     ++iter;
 
@@ -372,7 +372,7 @@ void segmentsImpl::Flush(){
     store_->Flush();
 }
 
-bool segmentsImpl::AreAnySegmentsInValidList(const common::segIdsSet& ids)
+bool segmentsImpl::AreAnySegmentsInValidList(const common::segIdSet& ids)
 {
     FOR_EACH(iter, ids)
     {

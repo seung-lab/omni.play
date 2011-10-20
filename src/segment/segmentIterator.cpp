@@ -23,7 +23,7 @@ void segmentIterator::iterOverSegmentID(const common::segId segID){
 
 void segmentIterator::iterOverSelectedIDs()
 {
-    const common::segIdsSet ids = segments_->GetSelectedSegmentIDs();
+    const common::segIdSet ids = segments_->GetSelectedSegmentIDs();
     FOR_EACH(iter, ids){
         segs_.push_back( segments_->GetSegment( *iter ));
     }
@@ -31,13 +31,13 @@ void segmentIterator::iterOverSelectedIDs()
 
 void segmentIterator::iterOverEnabledIDs()
 {
-    const common::segIdsSet ids = segments_->GetEnabledSegmentIDs();
+    const common::segIdSet ids = segments_->GetEnabledSegmentIDs();
     FOR_EACH(iter, ids){
         segs_.push_back( segments_->GetSegment( *iter ) );
     }
 }
 
-void segmentIterator::iterOverSegmentIDs(const common::segIdsSet & set)
+void segmentIterator::iterOverSegmentIDs(const common::segIdSet & set)
 {
     FOR_EACH(iter, set){
         segs_.push_back( segments_->GetSegment( *iter ) );

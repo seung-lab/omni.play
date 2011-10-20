@@ -10,7 +10,7 @@ namespace segmentation {
 
 class loader {
 private:
-    segmentation *const vol_;
+    om::volume::segmentation *const vol_;
 
 public:
     loader(segmentation* vol)
