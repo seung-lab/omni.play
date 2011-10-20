@@ -3,11 +3,8 @@
 #include "common/std.h"
 
 namespace om {
-namespace volume {
-class volume;
-}
+namespace volume { class volume; }
 
-namespace om {
 namespace tiles {
 
 class tile {

@@ -6,6 +6,7 @@
 #include "project/details/segmentationManager.h"
 #include "volume/channel.h"
 #include "volume/segmentation.h"
+#include "tiles/tile.h"
 
 using namespace om::common;
 
@@ -29,8 +30,10 @@ public:
     void get_chan_tile(tile& _return, const vector3d& point)
     {
         coords::globalCoord global(point.x, point.y, point.z);
-        coords::chunkCoord cc = global.toChunkCoord(*chan, 0);
-        boost::shared_ptr<chunks::chunk> chunk = chan->GetChunk(cc);
+        coords::dataCoord dc = global.toDataCoord(*chan, 0);
+        coords::chunkCoord cc = dc.toChunkCoord();
+        common::viewType vt = common::XY_VIEW;
+        tiles::tile t(chan, cc, vt, dc.toTileOffset(vt));
     }
 
     void get_seg_tile(tile& _return, const vector3d& point)
