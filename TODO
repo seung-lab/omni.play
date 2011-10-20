@@ -2,4 +2,5 @@ Refactoring:
 - Consolidate all "files" Functionality
 - add using namespace om::common to common/common.h to clean up exceptions
 - Rename so that types don't share names with namespaces
-Add segments functionality back in
+- Add segments functionality back in
+- refactor coords::dataCoord into coord::data etc.
