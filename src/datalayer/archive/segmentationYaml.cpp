@@ -1,24 +1,12 @@
 
 #include "datalayer/archive/segmentation.h"
-#include "utility/yaml/volume.hpp"
-#include "segment/lowLevel/omPagingPtrStore.h"
-#include "segment/lowLevel/enabledSegments.hpp"
-#include "segment/lowLevelsegmentSelection.hpp"
-#include "segment/io/omUserEdges.hpp"
-#include "segmentsegmentEdge.h"
-#include "segmentsegment.h"
+#include "datalayer/archive/volume.hpp"
+#include "segment/segment.h"
 #include "segment/segments.h"
 #include "segment/segmentsImpl.h"
-#include "segment/io/omMST.h"
-#include "segment/io/validGroupNum.hpp"
 #include "project/details/segmentationManager.h"
-#include "system/omGroups.h"
-#include "system/omGroup.h"
 #include "volume/segmentationLoader.h"
 #include "utility/yaml/genericManager.hpp"
-
-#include <QSet>
-
 
 namespace YAML {
 
@@ -39,12 +27,12 @@ Emitter &operator<<(Emitter& out, const segmentation& seg)
     out << BeginMap;
     volume<const segmentation> volArchive(seg);
     volArchive.Store(out);
-    
+
     out << Key << "Segments" << Value << (*seg.segments_);
     out << Key << "Num Edges" << Value << seg.mst_->numEdges_;
     out << Key << "Groups" << Value << (*seg.groups_);
     out << EndMap;
-    
+
     return out;
 }
 
@@ -52,13 +40,13 @@ void operator>>(const Node& in, segmentation& seg)
 {
     volume<segmentation> volArchive(seg);
     volArchive.Load(in);
-    
+
     in["Segments"] >> (*seg.segments_);
     in["Num Edges"] >> seg.mst_->numEdges_;
     in["Groups"] >> (*seg.groups_);
-    
+
     seg.LoadVolDataIfFoldersExist();
-    
+
     seg.mst_->Read();
     seg.validGroupNum_->Load();
     seg.segments_->StartCaches();
@@ -68,7 +56,7 @@ void operator>>(const Node& in, segmentation& seg)
 Emitter &operator<<(Emitter& out, const segments& sc)
 {
     out << (*sc.impl_);
-    
+
     return out;
 }
 
@@ -82,10 +70,10 @@ Emitter &operator<<(Emitter& out, const segmentsImpl& sc)
     out << BeginMap;
     out << Key << "Num Segments" << Value << sc.mNumSegs;
     out << Key << "Max Value" << Value << sc.maxValue_.get();
-    
+
     out << Key << "Enabled Segments" << Value << sc.enabledSegments_->enabled_;
     out << Key << "Selected Segments" << Value << sc.segmentSelection_->selected_;
-    
+
     out << Key << "Segment Custom Names" << Value << sc.segmentCustomNames;
     out << Key << "Segment Notes" << Value << sc.segmentNotes;
     out << EndMap;
@@ -98,16 +86,16 @@ void operator>>(const Node& in, segmentsImpl& sc)
     in["Num Segments"] >> sc.mNumSegs;
     in["Max Value"] >> maxValue;
     sc.maxValue_.set(maxValue);
-    
+
     in["Enabled Segments"] >> sc.enabledSegments_->enabled_;
     in["Selected Segments"] >> sc.segmentSelection_->selected_;
-    
+
     in["Segment Custom Names"] >> sc.segmentCustomNames;
     in["Segment Notes"] >> sc.segmentNotes;
-    
+
     pagingPtrStore& segmentPages = *sc.store_->segmentPages_;
     segmentPages.Vol()->Loader()->LoadSegmentPages(segmentPages);
-    
+
     OmUserEdges* userEdges = sc.segmentation_->MSTUserEdges();
     userEdges->Load();
 }

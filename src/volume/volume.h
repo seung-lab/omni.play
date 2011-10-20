@@ -80,7 +80,7 @@ private:
 //     template <class T> friend class OmVolumeBuilderHdf5;
 //     template <class T> friend class OmVolumeBuilderImages;
 //     template <class T> friend class volumeArchive;
-//     template <class T> friend class YAML::volume;
+     template <class T> friend class YAML::volume;
 //
 //     friend class chunk;
 //     friend class volumeArchiveOld;

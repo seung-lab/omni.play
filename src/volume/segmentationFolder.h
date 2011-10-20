@@ -10,10 +10,10 @@ namespace segmentation {
 
 class folder {
 private:
-    segmentation *const vol_;
+    volume::segmentation *const vol_;
 
 public:
-    folder(segmentation* vol);
+    folder(volume::segmentation* vol);
 
     std::string GetVolPath();
     std::string MakeVolFolder();

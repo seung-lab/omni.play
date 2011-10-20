@@ -1,22 +1,23 @@
 #pragma once
 
-#include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
 #include "volume/volumeTypes.h"
 
+namespace om {
+namespace segmet {
 class segChunk;
 class segments;
-class segmentation;
+}
+namespace volume { class segmentation; }
 
-namespace om {
 namespace segchunk {
 
 class dataInterface {
 public:
-    virtual void ProcessChunk(const bool, segments* segments) = 0;
+    virtual void ProcessChunk(const bool, segment::segments* segments) = 0;
 
-    virtual void RefreshBoundingData(segments* segments) = 0;
+    virtual void RefreshBoundingData(segment::segments* segments) = 0;
 
-    virtual PooledTile32Ptr ExtractDataSlice32bit(const common::viewType, const int) = 0;
+    virtual boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const common::viewType, const int) = 0;
     virtual boost::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32() = 0;
 
     virtual void RewriteChunk(const boost::unordered_map<uint32_t, uint32_t>&) = 0;

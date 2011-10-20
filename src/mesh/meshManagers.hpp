@@ -7,7 +7,10 @@
 #include "utility/omStringHelpers.h"
 #include "volume/segmentationFolder.h"
 
-class mesh::managers {
+namespace om {
+namespace mesh {
+
+class meshManagers {
 private:
     segmentation *const segmentation_;
 
@@ -163,3 +166,5 @@ private:
     }
 };
 
+} // namespace mesh
+} // namespace om

@@ -1,12 +1,9 @@
 #pragma once
 
 #include "common/common.h"
-#include "segment/lowLevel/store/segmentStore.hpp"
 #include "segment/lowLevel/segmentGraph.h"
 #include "segment/segment.h"
 #include "utility/omLockedPODs.hpp"
-
-#include <QHash>
 
 class enabledSegments;
 class segmentSelection;

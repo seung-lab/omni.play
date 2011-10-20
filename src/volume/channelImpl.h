@@ -6,6 +6,8 @@
 
 class volumeData;
 
+namespace YAML { template<typename T> class volume; }
+
 namespace om {
 
 namespace channel { class folder; }
@@ -19,8 +21,6 @@ public:
     channelImpl();
     channelImpl(common::id id);
     virtual ~channelImpl();
-
-    virtual std::string GetDefaultHDF5DatasetName() = 0;
 
     data* VolData() {
         return volData_.get();
@@ -56,12 +56,18 @@ public:
     }
 
 protected:
+    inline void setId(int id) {
+        id_ = id;
+    }
+
     //protected copy constructor and assignment operator to prevent copy
     channelImpl(const channelImpl&);
     channelImpl& operator= (const channelImpl&);
 
     boost::scoped_ptr<om::channel::folder> folder_;
     boost::scoped_ptr<data> volData_;
+
+    template<typename T> friend class YAML::volume;
 };
 
 } // namespace volume

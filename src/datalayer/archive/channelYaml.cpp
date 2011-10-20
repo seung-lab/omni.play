@@ -1,14 +1,16 @@
 #include "yaml-cpp/yaml.h"
 #include "utility/yaml/yaml.hpp"
 #include "project/details/channelManager.h"
-#include "utility/yaml/volume.hpp"
+#include "datalayer/archive/volume.hpp"
 #include "utility/yaml/baseTypes.hpp"
 #include "datalayer/archive/filter.h"
 #include "utility/yaml/genericManager.hpp"
 
+using namespace om;
+
 namespace YAML {
-    
-Emitter &operator<<(Emitter& out, const channelManager& cm)
+
+Emitter &operator<<(Emitter& out, const proj::channelManager& cm)
 {
     out << BeginMap;
     genericManager::Save(out, cm.manager_);
@@ -16,48 +18,45 @@ Emitter &operator<<(Emitter& out, const channelManager& cm)
     return out;
 }
 
-void operator>>(const Node& in, channelManager& cm)
+void operator>>(const Node& in, proj::channelManager& cm)
 {
     genericManager::Load(in, cm.manager_);
 }
 
-Emitter& operator<<(Emitter& out, const channel& chan)
+Emitter& operator<<(Emitter& out, const om::volume::channel& chan)
 {
     out << BeginMap;
-    volume<const channel> volArchive(chan);
+    YAML::volume<const om::volume::channel> volArchive(chan);
     volArchive.Store(out);
-    
-    out << Key << "Filters" << Value << chan.filterManager_;
     out << EndMap;
     return out;
 }
 
-void operator>>(const Node& in, channel& chan)
+void operator>>(const Node& in, om::volume::channel& chan)
 {
-    volume<channel> volArchive(chan);
+    YAML::volume<om::volume::channel> volArchive(chan);
     volArchive.Load(in);
-    
-    in["Filters"] >> chan.filterManager_;
+
     chan.LoadVolDataIfFoldersExist();
 }
 
-Emitter& operator<<(Emitter& out, const om::coords::volumeSystem& c)
+Emitter& operator<<(Emitter& out, const coords::volumeSystem& c)
 {
     out << BeginMap;
-    out << Key << "dataDimensions" << Value << c.GetDataDimensions();
-    out << Key << "dataResolution" << Value << c.GetResolution();
-    out << Key << "chunkDim" << Value << c.chunkDim_;
-    out << Key << "mMipLeafDim" << Value << c.mMipLeafDim;
-    out << Key << "mMipRootLevel" << Value << c.mMipRootLevel;
-    out << Key << "absOffset" << Value << c.GetAbsOffset();
+    // out << Key << "dataDimensions" << Value << c.GetDataDimensions();
+    // out << Key << "dataResolution" << Value << c.GetResolution();
+    // out << Key << "chunkDim" << Value << c.chunkDim_;
+    // out << Key << "mMipLeafDim" << Value << c.mMipLeafDim;
+    // out << Key << "mMipRootLevel" << Value << c.mMipRootLevel;
+    // out << Key << "absOffset" << Value << c.GetAbsOffset();
     out << EndMap;
     return out;
 }
 
-void operator>>(const Node& in, om::coords::volumeSystem& c)
+void operator>>(const Node& in, coords::volumeSystem& c)
 {
-    boost::optional<om::coords::globalBbox> extent;
-    om::yaml::yamlUtil::OptionalRead(in, "dataExtent", extent); // backwards compatibility
+    boost::optional<coords::globalBbox> extent;
+    yaml::yamlUtil::OptionalRead(in, "dataExtent", extent); // backwards compatibility
     if(extent) {
         c.SetDataDimensions(extent.get().getDimensions());
     } else {
@@ -65,16 +64,18 @@ void operator>>(const Node& in, om::coords::volumeSystem& c)
         in["dataDimensions"] >> dims;
         c.SetDataDimensions(dims);
     }
-    
+
     Vector3i resolution;
     in["dataResolution"] >> resolution;
     c.SetResolution(resolution);
-    
-    in["chunkDim"] >> c.chunkDim_;
-    in["mMipLeafDim"] >> c.mMipLeafDim;
-    in["mMipRootLevel"] >> c.mMipRootLevel;
+
+    int chunkDim;
+    in["chunkDim"] >> chunkDim;
+    c.SetChunkDimension(chunkDim);
+
+    c.UpdateRootLevel();
     Vector3i offset;
-    om::yaml::yamlUtil::OptionalRead(in, "absOffset", offset, Vector3i::ZERO);
+    yaml::yamlUtil::OptionalRead(in, "absOffset", offset, Vector3i::ZERO);
     c.SetAbsOffset(offset);
 }
 
