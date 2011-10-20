@@ -42,6 +42,9 @@ bool segmentation::LoadVolData()
     return false;
 }
 
+segmentation::~segmentation()
+{}
+
 std::string segmentation::GetName(){
     return "segmentation" + string::num(GetID());
 }

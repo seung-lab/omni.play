@@ -147,12 +147,12 @@ SOURCES +=  \
 	include/yaml-cpp/src/singledocparser.cpp \
 	include/yaml-cpp/src/stream.cpp \
 	include/yaml-cpp/src/tag.cpp \
+	src/volume/volume.cpp \
+	src/volume/volumeTypes.cpp \
 	src/volume/channel.cpp \
 	src/volume/channelImpl.cpp \
 	src/volume/io/volumeData.cpp \
         src/volume/io/memMappedVolume.cpp\
-	src/volume/volume.cpp \
-	src/volume/volumeTypes.cpp \
         src/volume/channelFolder.cpp \
         src/volume/segmentation.cpp \
         src/volume/segmentationFolder.cpp \
@@ -163,6 +163,7 @@ SOURCES +=  \
         src/datalayer/archive/channelYaml.cpp \
         src/datalayer/archive/segmentationYaml.cpp \
         src/chunks/chunk.cpp \
+        src/chunks/segChunk.cpp \
         src/main.cpp
 
 

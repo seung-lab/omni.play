@@ -1,8 +1,14 @@
+#include "common/common.h"
+#include "chunks/chunkDataInterface.hpp"
 #include "chunks/segChunk.h"
 #include "volume/segmentation.h"
+#include "chunks/segChunkDataInterface.hpp"
 #include "chunks/segChunkData.hpp"
 
-segChunk::segChunk(segmentation* vol, const coords::chunkCoord& coord)
+namespace om {
+namespace chunks {
+
+segChunk::segChunk(volume::segmentation* vol, const coords::chunkCoord& coord)
     : chunk(vol, coord)
     , vol_(vol)
     , segChunkData_(om::segchunk::dataFactory::Produce(vol, this, coord))
@@ -30,4 +36,7 @@ uint32_t segChunk::GetVoxelValue(const coords::dataCoord& coord)
     assert(ContainsVoxel(coord));
 
     return segChunkData_->GetVoxelValue(coord);
+}
+
+}
 }

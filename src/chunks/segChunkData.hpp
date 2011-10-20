@@ -12,7 +12,7 @@ namespace segchunk {
 
 class dataFactory {
 public:
-    static dataInterface* Produce(segmentation* vol, segChunk* chunk,
+    static dataInterface* Produce(volume::segmentation* vol, chunks::segChunk* chunk,
                                   const coords::chunkCoord& coord)
     {
         switch(vol->getVolDataType().index()){

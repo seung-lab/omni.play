@@ -34,6 +34,12 @@ public:
         return chunkData_.get();
     }
 
+    inline bool ContainsVoxel(const coords::dataCoord& vox) const {
+        return vox.volume() == &vol_->CoordinateSystem() &&
+               vox.level() == GetLevel() &&
+               mipping_->GetExtent().contains(vox);
+    }
+
 protected:
     const coords::chunkCoord coord_;
     const volume::volume* const vol_;
