@@ -116,6 +116,10 @@ public:
     }
 
 private:
+    inline void setId(int id) {
+        id_ = id;
+    }
+
     boost::scoped_ptr<segFolder> folder_;
     boost::scoped_ptr<segLoader> loader_;
     boost::scoped_ptr<chunk::uniqueValuesManager> uniqueChunkValues_;
@@ -128,6 +132,7 @@ private:
     friend class segmentsImplLowLevel;
     friend class segmentIterator;
     friend class segmentationChunkBuildTask;
+    template<typename T> friend class YAML::volume;
 
     friend void YAML::operator>>(const YAML::Node& in, segmentation&);
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const segmentation&);

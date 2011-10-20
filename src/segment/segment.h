@@ -76,14 +76,6 @@ public:
         return om::VALID == static_cast<om::SegListType>(*listType_);
     }
 
-    inline om::SegListType GetListType() const {
-        return static_cast<om::SegListType>(*listType_);
-    }
-
-    inline void SetListType(const om::SegListType type){
-        (*listType_) = static_cast<uint8_t>(type);
-    }
-
     inline segment* getParent() const {
         return parent_;
     }
@@ -138,21 +130,12 @@ public:
         edgeNumber_ = num;
     }
 
-    inline const segmentEdge& getCustomMergeEdge() const {
-        return customMergeEdge_;
-    }
-
-    inline void setCustomMergeEdge(const segmentEdge& e){
-        customMergeEdge_ = e;
-    }
-
     inline segments* Segments(){
         return segments_;
     }
 
 private:
     segmentDataV4* data_;
-    uint8_t* listType_;
 
     segments* segments_;
     segment* parent_;
@@ -164,12 +147,6 @@ private:
 
     struct segment_bounds_mutex_pool_tag;
     struct segment_size_mutex_pool_tag;
-
-    friend class OmCacheSegStore;
-    friend class dataArchiveSegment;
-    friend class OmFindCommonEdge;
-    friend class pagingPtrStore;
-    friend class segmentPage;
 };
 
 } // namespace segment

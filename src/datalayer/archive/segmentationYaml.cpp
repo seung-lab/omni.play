@@ -1,16 +1,16 @@
 
 #include "datalayer/archive/segmentation.h"
 #include "datalayer/archive/volume.hpp"
-#include "segment/segment.h"
-#include "segment/segments.h"
-#include "segment/segmentsImpl.h"
+//#include "segment/segment.h"
+//#include "segment/segments.h"
+//#include "segment/segmentsImpl.h"
 #include "project/details/segmentationManager.h"
-#include "volume/segmentationLoader.h"
+//#include "volume/segmentationLoader.h"
 #include "utility/yaml/genericManager.hpp"
 
 namespace YAML {
 
-Emitter &operator<<(Emitter & out, const segmentationManager& m)
+Emitter &operator<<(Emitter & out, const om::proj::segmentationManager& m)
 {
     out << BeginMap;
     genericManager::Save(out, m.manager_);
@@ -18,41 +18,36 @@ Emitter &operator<<(Emitter & out, const segmentationManager& m)
     return out;
 }
 
-void operator>>(const Node& in, segmentationManager& m) {
+void operator>>(const Node& in, om::proj::segmentationManager& m) {
     genericManager::Load(in, m.manager_);
 }
 
-Emitter &operator<<(Emitter& out, const segmentation& seg)
+Emitter &operator<<(Emitter& out, const om::volume::segmentation& seg)
 {
     out << BeginMap;
-    volume<const segmentation> volArchive(seg);
+    volume<const om::volume::segmentation> volArchive(seg);
     volArchive.Store(out);
 
-    out << Key << "Segments" << Value << (*seg.segments_);
-    out << Key << "Num Edges" << Value << seg.mst_->numEdges_;
-    out << Key << "Groups" << Value << (*seg.groups_);
+//    out << Key << "Segments" << Value << (*seg.segments_);
+//    out << Key << "Num Edges" << Value << seg.mst_->numEdges_;
+//    out << Key << "Groups" << Value << (*seg.groups_);
     out << EndMap;
 
     return out;
 }
 
-void operator>>(const Node& in, segmentation& seg)
+void operator>>(const Node& in, om::volume::segmentation& seg)
 {
-    volume<segmentation> volArchive(seg);
+    volume<om::volume::segmentation> volArchive(seg);
     volArchive.Load(in);
 
     in["Segments"] >> (*seg.segments_);
-    in["Num Edges"] >> seg.mst_->numEdges_;
-    in["Groups"] >> (*seg.groups_);
+//    in["Num Edges"] >> seg.mst_->numEdges_;
+//    in["Groups"] >> (*seg.groups_);
 
     seg.LoadVolDataIfFoldersExist();
-
-    seg.mst_->Read();
-    seg.validGroupNum_->Load();
-    seg.segments_->StartCaches();
-    seg.segments_->refreshTree();
 }
-
+/*
 Emitter &operator<<(Emitter& out, const segments& sc)
 {
     out << (*sc.impl_);
@@ -152,6 +147,6 @@ void operator>>(const Node& in, OmGroup& g)
     in["Name"] >> g.mName;
     in["Ids"] >> g.mIDs;
 }
-
+*/
 
 } // namespace YAML

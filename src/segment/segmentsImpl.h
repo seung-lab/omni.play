@@ -27,14 +27,14 @@ public:
     common::segIdsSet UnJoinTheseSegments(const common::segIdsSet& segmentList);
     boost::optional<std::string> IsEdgeSplittable(const segmentEdge& e);
     boost::optional<std::string> IsSegmentSplittable(segment* child);
-	boost::optional<std::string> IsSegmentCuttable(segment* seg);
+    boost::optional<std::string> IsSegmentCuttable(segment* seg);
 
     void refreshTree();
 
     bool AreAnySegmentsInValidList(const common::segIdsSet& ids);
 
-	std::vector<segmentEdge> CutSegment(segment* seg);
-	bool JoinEdges(const std::vector<segmentEdge>& edges);
+    std::vector<segmentEdge> CutSegment(segment* seg);
+    bool JoinEdges(const std::vector<segmentEdge>& edges);
 
 private:
     OmUserEdges* userEdges_;
@@ -51,7 +51,5 @@ private:
     friend class segmentColorizer;
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const segmentsImpl&);
     friend void YAML::operator>>(const YAML::Node&, segmentsImpl&);
-    friend QDataStream& operator<<(QDataStream&, const segmentsImpl&);
-    friend QDataStream& operator>>(QDataStream&, segmentsImpl&);
 };
 

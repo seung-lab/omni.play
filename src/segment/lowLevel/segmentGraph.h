@@ -1,18 +1,13 @@
 #pragma once
 
 #include "common/common.h"
-#include "segment/lowLevel/omDynamicForestCache.hpp"
 #include "segment/lowLevel/segmentLowLevelTypes.h"
-#include "threads/omTaskManagerTypes.h"
+#include "threads/taskManagerTypes.h"
 
-class OmMST;
-class segmentsStore;
 class segment;
 class segmentsImplLowLevel;
 class segmentChildren;
-class segmentListLowLevel;
 class segmentation;
-class OmValidGroupNum;
 
 class segmentGraph {
 public:
@@ -68,7 +63,7 @@ private:
 
     SizeAndNumPieces computeSegmentSizeWithChildren(segment* seg);
     std::vector<segment*> segsTempVec_;
-    
+
     bool sizeCheck(const common::segId a, const common::segId b, const double threshold);
 };
 

@@ -5,8 +5,6 @@
 class segmentation;
 class pagingPtrStore;
 
-#include <QSet>
-
 namespace om {
 namespace segmentation {
 
@@ -22,7 +20,7 @@ public:
     void LoadSegmentPages(pagingPtrStore& ps,
                           QSet<PageNum>& validPageNumbers,
                           uint32_t size);
-    
+
     void LoadSegmentPages(pagingPtrStore& ps);
 
 private:
