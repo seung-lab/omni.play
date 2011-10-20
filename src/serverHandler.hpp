@@ -1,4 +1,5 @@
 #include "thrift/server.h"
+#include "project/project.h"
 
 using namespace om::common;
 

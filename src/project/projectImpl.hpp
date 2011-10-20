@@ -85,17 +85,18 @@ public:
         }
     }
 
+    // TODO: enable saving
     void Save()
     {
 //        FOR_EACH(iter, volume::SegmentationDataWrapper::ValidIDs()){
 //            SegmentationDataWrapper(*iter).GetSegmentation().Flush();
 //        }
 
-        datalayer::archive::project::Write(projectMetadataFile_, this);
+//        datalayer::archive::project::Write(projectMetadataFile_, this);
 
 //        globals_->Users().UserSettings().Save();
 
-        printf("omni project saved!\n");
+//        printf("omni project saved!\n");
     }
 
     int GetFileVersion() const {
