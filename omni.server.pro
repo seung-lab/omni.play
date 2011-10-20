@@ -158,6 +158,8 @@ SOURCES +=  \
         src/volume/segmentationFolder.cpp \
         src/project/project.cpp \
         src/project/details/projectVolumes.cpp \
+        src/project/details/segmentationManager.cpp \
+        src/project/details/channelManager.cpp \
         src/datalayer/fs/file.cpp \
         src/datalayer/archive/projectYaml.cpp \
         src/datalayer/archive/channelYaml.cpp \

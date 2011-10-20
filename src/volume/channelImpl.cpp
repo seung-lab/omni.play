@@ -8,6 +8,7 @@
 #include "threads/taskManager.hpp"
 #include "volume/io/volumeData.h"
 #include "volume/channelImpl.h"
+#include "chunks/chunkDataInterface.hpp"
 #include "zi/threads.h"
 
 #include <float.h>
@@ -86,8 +87,8 @@ void channelImpl::SetVolDataType(const dataType type)
     volData_->SetDataType(this);
 }
 
-chunks::chunk* channelImpl::GetChunk(const coords::chunkCoord& coord) {
-    return new chunks::chunk(this, coord);
+boost::shared_ptr<chunks::chunk> channelImpl::GetChunk(const coords::chunkCoord& coord) {
+    return boost::make_shared<chunks::chunk>(this, coord);
 }
 
 } // namespace volume

@@ -49,7 +49,7 @@ public:
 
     void SetVolDataType(const dataType);
 
-    chunks::chunk* GetChunk(const coords::chunkCoord& coord);
+    boost::shared_ptr<chunks::chunk> GetChunk(const coords::chunkCoord& coord);
 
     inline om::channel::folder* Folder() const {
         return folder_.get();
