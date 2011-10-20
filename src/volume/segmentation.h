@@ -75,9 +75,6 @@ public:
 
 public:
 
-inline segment::segments* Segments() {
-        return segments_.get();
-    }
     inline data* VolData() {
         return volData_.get();
     }
@@ -91,7 +88,6 @@ private:
     }
 
     boost::scoped_ptr<om::segmentation::folder> folder_;
-    boost::scoped_ptr<segment::segments> segments_;
     boost::scoped_ptr<data> volData_;
 
     friend class segmentsImpl;

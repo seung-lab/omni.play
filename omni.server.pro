@@ -155,6 +155,7 @@ SOURCES +=  \
 	src/volume/volumeTypes.cpp \
         src/volume/channelFolder.cpp \
         src/volume/segmentation.cpp \
+        src/volume/segmentationFolder.cpp \
         src/project/project.cpp \
         src/project/details/projectVolumes.cpp \
         src/datalayer/fs/file.cpp \

@@ -14,8 +14,7 @@ namespace volume {
 
 // used by dataArchiveProject
 segmentation::segmentation()
-    : segments_(new segment::segments(this))
-    , volData_(new data())
+    : volData_(new data())
 {}
 
 // used by genericManager
@@ -23,7 +22,6 @@ segmentation::segmentation(common::id id)
     : common::manageableObject(id)
 //    , loader_(new om::segmentation::loader(this))
 //    , mesh::managers_(new mesh::managers(this))
-    , segments_(new segment::segments(this))
     , volData_(new data())
 {
     LoadPath();
@@ -81,8 +79,6 @@ void segmentation::SetVolDataType(const dataType type)
 void segmentation::Flush()
 {
     folder_->MakeUserSegmentsFolder();
-
-    segments_->Flush();
 }
 
 uint32_t segmentation::GetVoxelValue(const coords::globalCoord & vox)
