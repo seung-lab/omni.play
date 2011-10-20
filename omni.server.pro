@@ -121,6 +121,32 @@ HEADERS +=  \
 	src/volume/volumeTypes.h
 
 SOURCES +=  \
+	include/yaml-cpp/src/aliasmanager.cpp \
+	include/yaml-cpp/src/contrib/graphbuilder.cpp \
+	include/yaml-cpp/src/contrib/graphbuilderadapter.cpp \
+	include/yaml-cpp/src/conversion.cpp \
+	include/yaml-cpp/src/directives.cpp \
+	include/yaml-cpp/src/emitfromevents.cpp \
+	include/yaml-cpp/src/emitter.cpp \
+	include/yaml-cpp/src/emitterstate.cpp \
+	include/yaml-cpp/src/emitterutils.cpp \
+	include/yaml-cpp/src/exp.cpp \
+	include/yaml-cpp/src/iterator.cpp \
+	include/yaml-cpp/src/node.cpp \
+	include/yaml-cpp/src/nodebuilder.cpp \
+	include/yaml-cpp/src/nodeownership.cpp \
+	include/yaml-cpp/src/null.cpp \
+	include/yaml-cpp/src/ostream.cpp \
+	include/yaml-cpp/src/parser.cpp \
+	include/yaml-cpp/src/regex.cpp \
+	include/yaml-cpp/src/scanner.cpp \
+	include/yaml-cpp/src/scanscalar.cpp \
+	include/yaml-cpp/src/scantag.cpp \
+	include/yaml-cpp/src/scantoken.cpp \
+	include/yaml-cpp/src/simplekey.cpp \
+	include/yaml-cpp/src/singledocparser.cpp \
+	include/yaml-cpp/src/stream.cpp \
+	include/yaml-cpp/src/tag.cpp \
 	src/volume/channel.cpp \
 	src/volume/channelImpl.cpp \
 	src/volume/io/volumeData.cpp \
