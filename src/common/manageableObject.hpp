@@ -2,10 +2,6 @@
 
 #include "common/std.h"
 #include "common/exception.h"
-#include "datalayer/archive/segmentation.h"
-#include "datalayer/archive/filter.h"
-
-namespace YAML { template<class T> class mipVolume; }
 
 namespace om {
 namespace common {
@@ -44,8 +40,6 @@ protected:
     id id_;
     std::string note_;
     std::string customName_;
-
-    template <class T> friend class YAML::mipVolume;
 };
 
 } // namespace common

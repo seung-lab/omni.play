@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/common.h"
 #include "yaml-cpp/yaml.h"
 #include "boost/filesystem.hpp"
 #include "boost/optional.hpp"
