@@ -37,6 +37,7 @@ my $NumCores;
 my $BOOST_VER = "boost_1_46_1";
 my $THRIFT_VER = "thrift-0.7.0";
 my $ZLIB_VER = "zlib-1.2.5";
+my $JPEG_VER = "libjpeg-turbo-1.1.0";
 
 # from http://stackoverflow.com/questions/334686/how-can-i-detect-the-operating-system-in-perl
 sub isMac {
@@ -265,7 +266,7 @@ sub configure
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
     my $buildOptions  = $_[2];
-    
+
     my $cmd = "chmod +x $srcPath/$baseFileName/configure;$srcPath/$baseFileName/configure --prefix=$libPath/$libFolderName $buildOptions;";
     if( "Qt" eq $libFolderName ){
 	$cmd = 'echo "yes" | '.$cmd;
@@ -339,6 +340,11 @@ sub thrift
     $args .= " --with-boost=$libPath/Boost";
 
     prepareAndBuild( $THRIFT_VER, "thrift", $args);
+}
+
+sub libjpeg
+{
+    prepareAndBuild( $JPEG_VER, "libjpeg" );
 }
 
 sub boost
@@ -418,13 +424,14 @@ sub menu
     print "0 -- exit\n";
     print "1 -- Build boost\n";
     print "2 -- Build thrift\n";
-    print "3 -- Build omni.server\n";
-    print "4 -- [Do 1 through 3]\n";
-    print "5 -- Generate scripts\n";
-    print "6 -- Ubuntu library apt-gets...\n";
-    print "7 -- build omni.server (make clean first)...\n";
-    print "8 -- build omni.server in debug mode...\n";
-    print "9 -- build omni.server in release mode...\n\n";
+    print "3 -- Build libjpeg\n";
+    print "4 -- Build omni.server\n";
+    print "5 -- [Do 1 through 4]\n";
+    print "6 -- Generate scripts\n";
+    print "7 -- Ubuntu library apt-gets...\n";
+    print "8 -- build omni.server (make clean first)...\n";
+    print "9 -- build omni.server in debug mode...\n";
+    print "10 -- build omni.server in release mode...\n\n";
     my $max_answer = 9;
 
     while( 1 ){
@@ -444,6 +451,7 @@ sub buildAll
 {
     boost();
     thrift();
+    libjpeg();
     omniServer();
 }
 
@@ -458,18 +466,20 @@ sub runMenuEntry
     }elsif( 2 == $entry ){
         thrift();
     }elsif( 3 == $entry ){
-        omniServer();
+        libjpeg();
     }elsif( 4 == $entry ){
-        buildAll();
+        omniServer();
     }elsif( 5 == $entry ){
-        genOmniScript();
+        buildAll();
     }elsif( 6 == $entry ){
-        doUbuntuAptGets();
+        genOmniScript();
     }elsif( 7 == $entry ){
-        omniClean();
+        doUbuntuAptGets();
     }elsif( 8 == $entry ){
-        omniServer(1);
+        omniClean();
     }elsif( 9 == $entry ){
+        omniServer(1);
+    }elsif( 10 == $entry ){
         omniServer(0);
     }
 }
