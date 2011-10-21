@@ -1,6 +1,10 @@
 TEMPLATE = app
 CONFIG = console
 
+!exists($$[COMMON_PATH]/omni.common.pro) {
+   error(unable to find omni.common.  Please set the path using: qmake -set COMMON_PATH [path to omni.common])
+}
+
 ## start of section to be rewritten using Perl
 HEADERS +=  \
 	src/chunks/chunk.h \
@@ -174,8 +178,8 @@ SOURCES +=  \
 INCLUDEPATH = src include lib
 INCLUDEPATH += external/zi_lib
 INCLUDEPATH += include/yaml-cpp/include
-INCLUDEPATH += ../omni.common/lib/include
-LIBS += ../omni.common/lib/bin/libomni.common.a
+INCLUDEPATH += $$[COMMON_PATH]/lib/include
+LIBS += $$[COMMON_PATH]/lib/bin/libomni.common.a
 
 OBJECTS_DIR = build
 MOC_DIR = build
