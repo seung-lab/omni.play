@@ -7,6 +7,14 @@
 #include <transport/TServerSocket.h>
 #include <transport/TBufferTransports.h>
 
+#include "project/project.h"
+#include "project/details/projectVolumes.h"
+#include "project/details/channelManager.h"
+#include "project/details/segmentationManager.h"
+#include "volume/channel.h"
+
+#include "jpeg/jpeg.h"
+
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
@@ -20,47 +28,65 @@ namespace om {
 namespace server {
 
 class serverHandler : virtual public serverIf {
- public:
-  serverHandler() {
-    // Your initialization goes here
-  }
+private:
+    volume::channel * chan_;
+    volume::segmentation * seg_;
+    jpeg::writer imageWriter_;
 
-  void get_volume_bounds(bbox& _return) {
-    // Your implementation goes here
-    printf("get_volume_bounds\n");
-  }
+public:
+    serverHandler() {
+        project::Load("/Users/balkamm/omniData/FirstValidatedVolume.omni");
+        chan_ = &project::Volumes().Channels().GetChannel(1);
+        seg_ = &project::Volumes().Segmentations().GetSegmentation(1);
+    }
 
-  void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel) {
-    // Your implementation goes here
-    printf("get_chan_tile\n");
-  }
+    void get_volume_bounds(bbox& _return) {
+        coords::globalBbox bounds = chan_->CoordinateSystem().GetDataExtent();
+        _return.min.x = bounds.getMin().x;
+        _return.min.y = bounds.getMin().y;
+        _return.min.z = bounds.getMin().z;
+        _return.max.x = bounds.getMax().x;
+        _return.max.y = bounds.getMax().y;
+        _return.max.z = bounds.getMax().z;
+    }
 
-  void get_seg_tile(tile& _return, const vector3d& point, const int32_t mipLevel, const int32_t segId) {
-    // Your implementation goes here
-    printf("get_seg_tile\n");
-  }
+    void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel) {
+        coords::globalCoord coord(point.x, point.y, point.z);
+        coords::chunkCoord ccord = coord.toChunkCoord(chan_, mipLeve);
+        tiles::tile t(chan_, ccord, common::XY_VIEW, point.z);
+        Vector3i dims = chan_->CoordinateSystem().MipedDataDimensions();
+        long unsigned int size;
 
-  void get_seg_bbox(bbox& _return, const int32_t segId) {
-    // Your implementation goes here
-    printf("get_seg_bbox\n");
-  }
+        boost::shared_ptr<char> image = imageWriter_.write32(t.data(), dims.x, dims.y, size);
+        _return.
+    }
 
-  int32_t get_seg_id(const vector3d& point) {
-    // Your implementation goes here
-    printf("get_seg_id\n");
-    return 0;
-  }
+    void get_seg_tile(tile& _return, const vector3d& point, const int32_t mipLevel, const int32_t segId) {
+        // Your implementation goes here
+        printf("get_seg_tile\n");
+    }
 
-  void get_seg_ids(std::vector<int32_t> & _return, const vector3d& point, const double radius) {
-    // Your implementation goes here
-    printf("get_seg_ids\n");
-  }
+    void get_seg_bbox(bbox& _return, const int32_t segId) {
+        // Your implementation goes here
+        printf("get_seg_bbox\n");
+    }
 
-  double compare_results(const std::vector<result> & old_results, const result& new_result) {
-    // Your implementation goes here
-    printf("compare_results\n");
-    return 0;
-  }
+    int32_t get_seg_id(const vector3d& point) {
+        // Your implementation goes here
+        printf("get_seg_id\n");
+        return 0;
+    }
+
+    void get_seg_ids(std::vector<int32_t> & _return, const vector3d& point, const double radius) {
+        // Your implementation goes here
+        printf("get_seg_ids\n");
+    }
+
+    double compare_results(const std::vector<result> & old_results, const result& new_result) {
+        // Your implementation goes here
+        printf("compare_results\n");
+        return 0;
+    }
 
 };
 
