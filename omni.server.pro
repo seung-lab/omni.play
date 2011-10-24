@@ -170,6 +170,7 @@ SOURCES +=  \
         src/datalayer/archive/segmentationYaml.cpp \
         src/chunks/chunk.cpp \
         src/chunks/segChunk.cpp \
+        src/jpeg/jpeg.cpp \
         src/main.cpp
 
 
@@ -283,4 +284,13 @@ exists(external/libs/thrift) {
     LIBS += external/libs/thrift/lib/libthrift.a
 } else {
     error(please run 'bootstrap.pl 2' to install thrift)
+}
+
+#### libjpeg
+exists(external/libs/libjpeg) {
+    INCLUDEPATH += external/libs/libjpeg/include
+
+    LIBS += external/libs/libjpeg/lib/libturbojpeg.a
+} else {
+    error(please run 'bootstrap.pl 3' to install libjpeg)
 }
