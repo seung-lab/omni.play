@@ -22,19 +22,34 @@ class serverHandler : virtual public serverIf {
     // Your initialization goes here
   }
 
-  void get_chan_tile(tile& _return, const vector3d& point) {
+  void get_volume_bounds(bbox& _return) {
+    // Your implementation goes here
+    printf("get_volume_bounds\n");
+  }
+
+  void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel) {
     // Your implementation goes here
     printf("get_chan_tile\n");
   }
 
-  void get_seg_tile(tile& _return, const vector3d& point) {
+  void get_seg_tile(tile& _return, const vector3d& point, const int32_t mipLevel, const int32_t segId) {
     // Your implementation goes here
     printf("get_seg_tile\n");
   }
 
-  void click(click_info& _return, const vector3d& point) {
+  void get_seg_bbox(bbox& _return, const int32_t segId) {
     // Your implementation goes here
-    printf("click\n");
+    printf("get_seg_bbox\n");
+  }
+
+  int32_t get_seg_id(const vector3d& point) {
+    // Your implementation goes here
+    printf("get_seg_id\n");
+  }
+
+  void get_seg_ids(std::vector<int32_t> & _return, const vector3d& point, const double radius) {
+    // Your implementation goes here
+    printf("get_seg_ids\n");
   }
 
   double compare_results(const std::vector<result> & old_results, const result& new_result) {

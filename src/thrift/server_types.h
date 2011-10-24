@@ -72,6 +72,55 @@ class vector3d {
 
 };
 
+typedef struct _bbox__isset {
+  _bbox__isset() : min(false), max(false) {}
+  bool min;
+  bool max;
+} _bbox__isset;
+
+class bbox {
+ public:
+
+  static const char* ascii_fingerprint; // = "EFD57E86E580906F433F480C60E1C408";
+  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xD5,0x7E,0x86,0xE5,0x80,0x90,0x6F,0x43,0x3F,0x48,0x0C,0x60,0xE1,0xC4,0x08};
+
+  bbox() {
+  }
+
+  virtual ~bbox() throw() {}
+
+  vector3d min;
+  vector3d max;
+
+  _bbox__isset __isset;
+
+  void __set_min(const vector3d& val) {
+    min = val;
+  }
+
+  void __set_max(const vector3d& val) {
+    max = val;
+  }
+
+  bool operator == (const bbox & rhs) const
+  {
+    if (!(min == rhs.min))
+      return false;
+    if (!(max == rhs.max))
+      return false;
+    return true;
+  }
+  bool operator != (const bbox &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const bbox & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
 typedef struct _tile__isset {
   _tile__isset() : data(false) {}
   bool data;
@@ -107,55 +156,6 @@ class tile {
   }
 
   bool operator < (const tile & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _click_info__isset {
-  _click_info__isset() : segId(false), tile_data(false) {}
-  bool segId;
-  bool tile_data;
-} _click_info__isset;
-
-class click_info {
- public:
-
-  static const char* ascii_fingerprint; // = "023FCF385EF954E87275FD4CD13D624E";
-  static const uint8_t binary_fingerprint[16]; // = {0x02,0x3F,0xCF,0x38,0x5E,0xF9,0x54,0xE8,0x72,0x75,0xFD,0x4C,0xD1,0x3D,0x62,0x4E};
-
-  click_info() : segId(0) {
-  }
-
-  virtual ~click_info() throw() {}
-
-  int32_t segId;
-  tile tile_data;
-
-  _click_info__isset __isset;
-
-  void __set_segId(const int32_t val) {
-    segId = val;
-  }
-
-  void __set_tile_data(const tile& val) {
-    tile_data = val;
-  }
-
-  bool operator == (const click_info & rhs) const
-  {
-    if (!(segId == rhs.segId))
-      return false;
-    if (!(tile_data == rhs.tile_data))
-      return false;
-    return true;
-  }
-  bool operator != (const click_info &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const click_info & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;

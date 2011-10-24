@@ -14,22 +14,35 @@ namespace om { namespace common {
 class serverIf {
  public:
   virtual ~serverIf() {}
-  virtual void get_chan_tile(tile& _return, const vector3d& point) = 0;
-  virtual void get_seg_tile(tile& _return, const vector3d& point) = 0;
-  virtual void click(click_info& _return, const vector3d& point) = 0;
+  virtual void get_volume_bounds(bbox& _return) = 0;
+  virtual void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel) = 0;
+  virtual void get_seg_tile(tile& _return, const vector3d& point, const int32_t mipLevel, const int32_t segId) = 0;
+  virtual void get_seg_bbox(bbox& _return, const int32_t segId) = 0;
+  virtual int32_t get_seg_id(const vector3d& point) = 0;
+  virtual void get_seg_ids(std::vector<int32_t> & _return, const vector3d& point, const double radius) = 0;
   virtual double compare_results(const std::vector<result> & old_results, const result& new_result) = 0;
 };
 
 class serverNull : virtual public serverIf {
  public:
   virtual ~serverNull() {}
-  void get_chan_tile(tile& /* _return */, const vector3d& /* point */) {
+  void get_volume_bounds(bbox& /* _return */) {
     return;
   }
-  void get_seg_tile(tile& /* _return */, const vector3d& /* point */) {
+  void get_chan_tile(tile& /* _return */, const vector3d& /* point */, const int32_t /* mipLevel */) {
     return;
   }
-  void click(click_info& /* _return */, const vector3d& /* point */) {
+  void get_seg_tile(tile& /* _return */, const vector3d& /* point */, const int32_t /* mipLevel */, const int32_t /* segId */) {
+    return;
+  }
+  void get_seg_bbox(bbox& /* _return */, const int32_t /* segId */) {
+    return;
+  }
+  int32_t get_seg_id(const vector3d& /* point */) {
+    int32_t _return = 0;
+    return _return;
+  }
+  void get_seg_ids(std::vector<int32_t> & /* _return */, const vector3d& /* point */, const double /* radius */) {
     return;
   }
   double compare_results(const std::vector<result> & /* old_results */, const result& /* new_result */) {
@@ -38,20 +51,116 @@ class serverNull : virtual public serverIf {
   }
 };
 
+
+class server_get_volume_bounds_args {
+ public:
+
+  server_get_volume_bounds_args() {
+  }
+
+  virtual ~server_get_volume_bounds_args() throw() {}
+
+
+  bool operator == (const server_get_volume_bounds_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const server_get_volume_bounds_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_volume_bounds_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_volume_bounds_pargs {
+ public:
+
+
+  virtual ~server_get_volume_bounds_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_volume_bounds_result__isset {
+  _server_get_volume_bounds_result__isset() : success(false) {}
+  bool success;
+} _server_get_volume_bounds_result__isset;
+
+class server_get_volume_bounds_result {
+ public:
+
+  server_get_volume_bounds_result() {
+  }
+
+  virtual ~server_get_volume_bounds_result() throw() {}
+
+  bbox success;
+
+  _server_get_volume_bounds_result__isset __isset;
+
+  void __set_success(const bbox& val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_volume_bounds_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_volume_bounds_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_volume_bounds_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_volume_bounds_presult__isset {
+  _server_get_volume_bounds_presult__isset() : success(false) {}
+  bool success;
+} _server_get_volume_bounds_presult__isset;
+
+class server_get_volume_bounds_presult {
+ public:
+
+
+  virtual ~server_get_volume_bounds_presult() throw() {}
+
+  bbox* success;
+
+  _server_get_volume_bounds_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 typedef struct _server_get_chan_tile_args__isset {
-  _server_get_chan_tile_args__isset() : point(false) {}
+  _server_get_chan_tile_args__isset() : point(false), mipLevel(false) {}
   bool point;
+  bool mipLevel;
 } _server_get_chan_tile_args__isset;
 
 class server_get_chan_tile_args {
  public:
 
-  server_get_chan_tile_args() {
+  server_get_chan_tile_args() : mipLevel(0) {
   }
 
   virtual ~server_get_chan_tile_args() throw() {}
 
   vector3d point;
+  int32_t mipLevel;
 
   _server_get_chan_tile_args__isset __isset;
 
@@ -59,9 +168,15 @@ class server_get_chan_tile_args {
     point = val;
   }
 
+  void __set_mipLevel(const int32_t val) {
+    mipLevel = val;
+  }
+
   bool operator == (const server_get_chan_tile_args & rhs) const
   {
     if (!(point == rhs.point))
+      return false;
+    if (!(mipLevel == rhs.mipLevel))
       return false;
     return true;
   }
@@ -84,6 +199,7 @@ class server_get_chan_tile_pargs {
   virtual ~server_get_chan_tile_pargs() throw() {}
 
   const vector3d* point;
+  const int32_t* mipLevel;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -147,19 +263,23 @@ class server_get_chan_tile_presult {
 };
 
 typedef struct _server_get_seg_tile_args__isset {
-  _server_get_seg_tile_args__isset() : point(false) {}
+  _server_get_seg_tile_args__isset() : point(false), mipLevel(false), segId(false) {}
   bool point;
+  bool mipLevel;
+  bool segId;
 } _server_get_seg_tile_args__isset;
 
 class server_get_seg_tile_args {
  public:
 
-  server_get_seg_tile_args() {
+  server_get_seg_tile_args() : mipLevel(0), segId(0) {
   }
 
   virtual ~server_get_seg_tile_args() throw() {}
 
   vector3d point;
+  int32_t mipLevel;
+  int32_t segId;
 
   _server_get_seg_tile_args__isset __isset;
 
@@ -167,9 +287,21 @@ class server_get_seg_tile_args {
     point = val;
   }
 
+  void __set_mipLevel(const int32_t val) {
+    mipLevel = val;
+  }
+
+  void __set_segId(const int32_t val) {
+    segId = val;
+  }
+
   bool operator == (const server_get_seg_tile_args & rhs) const
   {
     if (!(point == rhs.point))
+      return false;
+    if (!(mipLevel == rhs.mipLevel))
+      return false;
+    if (!(segId == rhs.segId))
       return false;
     return true;
   }
@@ -192,6 +324,8 @@ class server_get_seg_tile_pargs {
   virtual ~server_get_seg_tile_pargs() throw() {}
 
   const vector3d* point;
+  const int32_t* mipLevel;
+  const int32_t* segId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -254,38 +388,38 @@ class server_get_seg_tile_presult {
 
 };
 
-typedef struct _server_click_args__isset {
-  _server_click_args__isset() : point(false) {}
-  bool point;
-} _server_click_args__isset;
+typedef struct _server_get_seg_bbox_args__isset {
+  _server_get_seg_bbox_args__isset() : segId(false) {}
+  bool segId;
+} _server_get_seg_bbox_args__isset;
 
-class server_click_args {
+class server_get_seg_bbox_args {
  public:
 
-  server_click_args() {
+  server_get_seg_bbox_args() : segId(0) {
   }
 
-  virtual ~server_click_args() throw() {}
+  virtual ~server_get_seg_bbox_args() throw() {}
 
-  vector3d point;
+  int32_t segId;
 
-  _server_click_args__isset __isset;
+  _server_get_seg_bbox_args__isset __isset;
 
-  void __set_point(const vector3d& val) {
-    point = val;
+  void __set_segId(const int32_t val) {
+    segId = val;
   }
 
-  bool operator == (const server_click_args & rhs) const
+  bool operator == (const server_get_seg_bbox_args & rhs) const
   {
-    if (!(point == rhs.point))
+    if (!(segId == rhs.segId))
       return false;
     return true;
   }
-  bool operator != (const server_click_args &rhs) const {
+  bool operator != (const server_get_seg_bbox_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_click_args & ) const;
+  bool operator < (const server_get_seg_bbox_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -293,11 +427,119 @@ class server_click_args {
 };
 
 
-class server_click_pargs {
+class server_get_seg_bbox_pargs {
  public:
 
 
-  virtual ~server_click_pargs() throw() {}
+  virtual ~server_get_seg_bbox_pargs() throw() {}
+
+  const int32_t* segId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seg_bbox_result__isset {
+  _server_get_seg_bbox_result__isset() : success(false) {}
+  bool success;
+} _server_get_seg_bbox_result__isset;
+
+class server_get_seg_bbox_result {
+ public:
+
+  server_get_seg_bbox_result() {
+  }
+
+  virtual ~server_get_seg_bbox_result() throw() {}
+
+  bbox success;
+
+  _server_get_seg_bbox_result__isset __isset;
+
+  void __set_success(const bbox& val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_seg_bbox_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seg_bbox_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seg_bbox_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seg_bbox_presult__isset {
+  _server_get_seg_bbox_presult__isset() : success(false) {}
+  bool success;
+} _server_get_seg_bbox_presult__isset;
+
+class server_get_seg_bbox_presult {
+ public:
+
+
+  virtual ~server_get_seg_bbox_presult() throw() {}
+
+  bbox* success;
+
+  _server_get_seg_bbox_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _server_get_seg_id_args__isset {
+  _server_get_seg_id_args__isset() : point(false) {}
+  bool point;
+} _server_get_seg_id_args__isset;
+
+class server_get_seg_id_args {
+ public:
+
+  server_get_seg_id_args() {
+  }
+
+  virtual ~server_get_seg_id_args() throw() {}
+
+  vector3d point;
+
+  _server_get_seg_id_args__isset __isset;
+
+  void __set_point(const vector3d& val) {
+    point = val;
+  }
+
+  bool operator == (const server_get_seg_id_args & rhs) const
+  {
+    if (!(point == rhs.point))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seg_id_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seg_id_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_seg_id_pargs {
+ public:
+
+
+  virtual ~server_get_seg_id_pargs() throw() {}
 
   const vector3d* point;
 
@@ -305,58 +547,175 @@ class server_click_pargs {
 
 };
 
-typedef struct _server_click_result__isset {
-  _server_click_result__isset() : success(false) {}
+typedef struct _server_get_seg_id_result__isset {
+  _server_get_seg_id_result__isset() : success(false) {}
   bool success;
-} _server_click_result__isset;
+} _server_get_seg_id_result__isset;
 
-class server_click_result {
+class server_get_seg_id_result {
  public:
 
-  server_click_result() {
+  server_get_seg_id_result() : success(0) {
   }
 
-  virtual ~server_click_result() throw() {}
+  virtual ~server_get_seg_id_result() throw() {}
 
-  click_info success;
+  int32_t success;
 
-  _server_click_result__isset __isset;
+  _server_get_seg_id_result__isset __isset;
 
-  void __set_success(const click_info& val) {
+  void __set_success(const int32_t val) {
     success = val;
   }
 
-  bool operator == (const server_click_result & rhs) const
+  bool operator == (const server_get_seg_id_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_click_result &rhs) const {
+  bool operator != (const server_get_seg_id_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_click_result & ) const;
+  bool operator < (const server_get_seg_id_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_click_presult__isset {
-  _server_click_presult__isset() : success(false) {}
+typedef struct _server_get_seg_id_presult__isset {
+  _server_get_seg_id_presult__isset() : success(false) {}
   bool success;
-} _server_click_presult__isset;
+} _server_get_seg_id_presult__isset;
 
-class server_click_presult {
+class server_get_seg_id_presult {
  public:
 
 
-  virtual ~server_click_presult() throw() {}
+  virtual ~server_get_seg_id_presult() throw() {}
 
-  click_info* success;
+  int32_t* success;
 
-  _server_click_presult__isset __isset;
+  _server_get_seg_id_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _server_get_seg_ids_args__isset {
+  _server_get_seg_ids_args__isset() : point(false), radius(false) {}
+  bool point;
+  bool radius;
+} _server_get_seg_ids_args__isset;
+
+class server_get_seg_ids_args {
+ public:
+
+  server_get_seg_ids_args() : radius(0) {
+  }
+
+  virtual ~server_get_seg_ids_args() throw() {}
+
+  vector3d point;
+  double radius;
+
+  _server_get_seg_ids_args__isset __isset;
+
+  void __set_point(const vector3d& val) {
+    point = val;
+  }
+
+  void __set_radius(const double val) {
+    radius = val;
+  }
+
+  bool operator == (const server_get_seg_ids_args & rhs) const
+  {
+    if (!(point == rhs.point))
+      return false;
+    if (!(radius == rhs.radius))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seg_ids_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seg_ids_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_seg_ids_pargs {
+ public:
+
+
+  virtual ~server_get_seg_ids_pargs() throw() {}
+
+  const vector3d* point;
+  const double* radius;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seg_ids_result__isset {
+  _server_get_seg_ids_result__isset() : success(false) {}
+  bool success;
+} _server_get_seg_ids_result__isset;
+
+class server_get_seg_ids_result {
+ public:
+
+  server_get_seg_ids_result() {
+  }
+
+  virtual ~server_get_seg_ids_result() throw() {}
+
+  std::vector<int32_t>  success;
+
+  _server_get_seg_ids_result__isset __isset;
+
+  void __set_success(const std::vector<int32_t> & val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_seg_ids_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seg_ids_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seg_ids_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seg_ids_presult__isset {
+  _server_get_seg_ids_presult__isset() : success(false) {}
+  bool success;
+} _server_get_seg_ids_presult__isset;
+
+class server_get_seg_ids_presult {
+ public:
+
+
+  virtual ~server_get_seg_ids_presult() throw() {}
+
+  std::vector<int32_t> * success;
+
+  _server_get_seg_ids_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -499,15 +858,24 @@ class serverClient : virtual public serverIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void get_chan_tile(tile& _return, const vector3d& point);
-  void send_get_chan_tile(const vector3d& point);
+  void get_volume_bounds(bbox& _return);
+  void send_get_volume_bounds();
+  void recv_get_volume_bounds(bbox& _return);
+  void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel);
+  void send_get_chan_tile(const vector3d& point, const int32_t mipLevel);
   void recv_get_chan_tile(tile& _return);
-  void get_seg_tile(tile& _return, const vector3d& point);
-  void send_get_seg_tile(const vector3d& point);
+  void get_seg_tile(tile& _return, const vector3d& point, const int32_t mipLevel, const int32_t segId);
+  void send_get_seg_tile(const vector3d& point, const int32_t mipLevel, const int32_t segId);
   void recv_get_seg_tile(tile& _return);
-  void click(click_info& _return, const vector3d& point);
-  void send_click(const vector3d& point);
-  void recv_click(click_info& _return);
+  void get_seg_bbox(bbox& _return, const int32_t segId);
+  void send_get_seg_bbox(const int32_t segId);
+  void recv_get_seg_bbox(bbox& _return);
+  int32_t get_seg_id(const vector3d& point);
+  void send_get_seg_id(const vector3d& point);
+  int32_t recv_get_seg_id();
+  void get_seg_ids(std::vector<int32_t> & _return, const vector3d& point, const double radius);
+  void send_get_seg_ids(const vector3d& point, const double radius);
+  void recv_get_seg_ids(std::vector<int32_t> & _return);
   double compare_results(const std::vector<result> & old_results, const result& new_result);
   void send_compare_results(const std::vector<result> & old_results, const result& new_result);
   double recv_compare_results();
@@ -524,16 +892,22 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
   virtual bool process_fn(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, std::string& fname, int32_t seqid, void* callContext);
  private:
   std::map<std::string, void (serverProcessor::*)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*)> processMap_;
+  void process_get_volume_bounds(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_chan_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_click(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_seg_bbox(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_seg_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_seg_ids(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_compare_results(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   serverProcessor(boost::shared_ptr<serverIf> iface) :
     iface_(iface) {
+    processMap_["get_volume_bounds"] = &serverProcessor::process_get_volume_bounds;
     processMap_["get_chan_tile"] = &serverProcessor::process_get_chan_tile;
     processMap_["get_seg_tile"] = &serverProcessor::process_get_seg_tile;
-    processMap_["click"] = &serverProcessor::process_click;
+    processMap_["get_seg_bbox"] = &serverProcessor::process_get_seg_bbox;
+    processMap_["get_seg_id"] = &serverProcessor::process_get_seg_id;
+    processMap_["get_seg_ids"] = &serverProcessor::process_get_seg_ids;
     processMap_["compare_results"] = &serverProcessor::process_compare_results;
   }
 
@@ -553,38 +927,73 @@ class serverMultiface : virtual public serverIf {
     ifaces_.push_back(iface);
   }
  public:
-  void get_chan_tile(tile& _return, const vector3d& point) {
+  void get_volume_bounds(bbox& _return) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
-        ifaces_[i]->get_chan_tile(_return, point);
+        ifaces_[i]->get_volume_bounds(_return);
         return;
       } else {
-        ifaces_[i]->get_chan_tile(_return, point);
+        ifaces_[i]->get_volume_bounds(_return);
       }
     }
   }
 
-  void get_seg_tile(tile& _return, const vector3d& point) {
+  void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
-        ifaces_[i]->get_seg_tile(_return, point);
+        ifaces_[i]->get_chan_tile(_return, point, mipLevel);
         return;
       } else {
-        ifaces_[i]->get_seg_tile(_return, point);
+        ifaces_[i]->get_chan_tile(_return, point, mipLevel);
       }
     }
   }
 
-  void click(click_info& _return, const vector3d& point) {
+  void get_seg_tile(tile& _return, const vector3d& point, const int32_t mipLevel, const int32_t segId) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
-        ifaces_[i]->click(_return, point);
+        ifaces_[i]->get_seg_tile(_return, point, mipLevel, segId);
         return;
       } else {
-        ifaces_[i]->click(_return, point);
+        ifaces_[i]->get_seg_tile(_return, point, mipLevel, segId);
+      }
+    }
+  }
+
+  void get_seg_bbox(bbox& _return, const int32_t segId) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_seg_bbox(_return, segId);
+        return;
+      } else {
+        ifaces_[i]->get_seg_bbox(_return, segId);
+      }
+    }
+  }
+
+  int32_t get_seg_id(const vector3d& point) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        return ifaces_[i]->get_seg_id(point);
+      } else {
+        ifaces_[i]->get_seg_id(point);
+      }
+    }
+  }
+
+  void get_seg_ids(std::vector<int32_t> & _return, const vector3d& point, const double radius) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_seg_ids(_return, point, radius);
+        return;
+      } else {
+        ifaces_[i]->get_seg_ids(_return, point, radius);
       }
     }
   }
