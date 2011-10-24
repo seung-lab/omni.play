@@ -12,6 +12,7 @@
 #include "project/details/channelManager.h"
 #include "project/details/segmentationManager.h"
 #include "volume/channel.h"
+#include "b64/encode.h"
 
 #include "jpeg/jpeg.h"
 
@@ -52,7 +53,7 @@ public:
 
     void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel) {
         coords::globalCoord coord(point.x, point.y, point.z);
-        coords::chunkCoord ccord = coord.toChunkCoord(chan_, mipLeve);
+        coords::chunkCoord ccord = coord.toChunkCoord(chan_, mipLevel);
         tiles::tile t(chan_, ccord, common::XY_VIEW, point.z);
         Vector3i dims = chan_->CoordinateSystem().MipedDataDimensions();
         long unsigned int size;

@@ -151,6 +151,12 @@ SOURCES +=  \
 	include/yaml-cpp/src/singledocparser.cpp \
 	include/yaml-cpp/src/stream.cpp \
 	include/yaml-cpp/src/tag.cpp \
+        include/libb64/src/b64dec.c \
+        include/libb64/src/b64enc.c \
+        include/libb64/src/cdecode.c \
+        include/libb64/src/cencode.c \
+        include/libb64/src/decoder.cc \
+        include/libb64/src/encoder.cc \
 	src/volume/volume.cpp \
 	src/volume/volumeTypes.cpp \
 	src/volume/channel.cpp \
@@ -179,6 +185,7 @@ SOURCES +=  \
 INCLUDEPATH = src include lib
 INCLUDEPATH += external/zi_lib
 INCLUDEPATH += include/yaml-cpp/include
+INCLUDEPATH += include/libb64/include
 INCLUDEPATH += $$[COMMON_PATH]/lib/include
 LIBS += $$[COMMON_PATH]/lib/bin/libomni.common.a
 
