@@ -38,7 +38,7 @@ private:
 
 public:
     serverHandler() {
-        project::Load("/Users/balkamm/omniData/FirstValidatedVolume.omni");
+        project::Load("project.omni");
         chan_ = &project::Volumes().Channels().GetChannel(1);
         seg_ = &project::Volumes().Segmentations().GetSegmentation(1);
     }

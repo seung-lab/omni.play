@@ -19,38 +19,36 @@ public:
     {}
 
     template <typename T>
-    inline boost::shared_ptr<uint32_t> Extract(T* d) const {
+    inline boost::shared_ptr<char> Extract(T* d) const {
         return getTile(d);
     }
 
-    boost::shared_ptr<uint32_t> Extract(float*) const {
+    boost::shared_ptr<char> Extract(float*) const {
         throw common::ioException("segmentation data shouldn't be float");
     }
 
 private:
-    boost::shared_ptr<uint32_t> getTile(uint32_t* d) const
+    boost::shared_ptr<char> getTile(char* d) const
     {
-        rawChunkSlicer<uint32_t> slicer(128, d);
+        rawChunkSlicer<char> slicer(128, d);
 
         project::project::FileReadSemaphore().acquire(1);
-        boost::shared_ptr<uint32_t> tile = slicer.GetCopyOfTile(plane_, depth_);
+        char* tile = slicer.GetCopyOfTile(plane_, depth_);
         project::project::FileReadSemaphore().release(1);
 
-        return tile;
+        return boost::shared_ptr<char>(tile);
     }
 
     template <typename T>
-    boost::shared_ptr<uint32_t> getTile(T* d) const
+    boost::shared_ptr<char> getTile(T* d) const
     {
         rawChunkSlicer<T> slicer(128, d);
 
         project::project::FileReadSemaphore().acquire(1);
-        boost::shared_ptr<T> rawTile(slicer.GetCopyOfTile(plane_, depth_));
+        T* rawTile(slicer.GetCopyOfTile(plane_, depth_));
         project::project::FileReadSemaphore().release(1);
 
-        tiles::filters<T> filter(128);
-
-        return filter.template recast<uint32_t>(rawTile);
+        return boost::shared_ptr<char>(reinterpret_cast<char*>(rawTile));
     }
 
     volume::segmentation *const vol_;
