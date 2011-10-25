@@ -200,8 +200,8 @@ RCC_DIR = build
 DESTDIR = bin
 TARGET = omni.common
 
-inst.path = lib/bin
-inst.files = bin/*
+inst.path = ./lib/bin
+inst.files = ./bin/*
 inst.extra = /bin/rm -Rf lib/include/; cd src; find -regex \".*\.h\\\(pp\\\)?\" -print0 | cpio --null -pvd ../lib/include/
 INSTALLS += inst
 
