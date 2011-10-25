@@ -11,6 +11,7 @@
 #include "project/details/projectVolumes.h"
 #include "project/details/channelManager.h"
 #include "project/details/segmentationManager.h"
+#include "tiles/tile.h"
 #include "volume/channel.h"
 #include "b64/encode.h"
 
@@ -33,6 +34,7 @@ private:
     volume::channel * chan_;
     volume::segmentation * seg_;
     jpeg::writer imageWriter_;
+    base64::encoder e;
 
 public:
     serverHandler() {
@@ -53,16 +55,22 @@ public:
 
     void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel) {
         coords::globalCoord coord(point.x, point.y, point.z);
-        coords::chunkCoord ccord = coord.toChunkCoord(chan_, mipLevel);
+        coords::chunkCoord ccord = coord.toChunkCoord(*chan_, mipLevel);
         tiles::tile t(chan_, ccord, common::XY_VIEW, point.z);
-        Vector3i dims = chan_->CoordinateSystem().MipedDataDimensions();
-        long unsigned int size;
+        t.loadData();
+
+        Vector3i dims = chan_->CoordinateSystem().MipedDataDimensions(mipLevel);
+        int size;
 
         boost::shared_ptr<char> image = imageWriter_.write32(t.data(), dims.x, dims.y, size);
-        _return.
+        char encoded[4 * (size / 3 + 1)]; // allocate enough space for the encoded data.
+
+        e.encode(image.get(), size, encoded);
+        _return.data = std::string(encoded);
     }
 
-    void get_seg_tile(tile& _return, const vector3d& point, const int32_t mipLevel, const int32_t segId) {
+    void get_seg_tile(tile& _return, const vector3d& point,
+                      const int32_t mipLevel, const int32_t segId) {
         // Your implementation goes here
         printf("get_seg_tile\n");
     }

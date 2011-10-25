@@ -9,7 +9,7 @@ namespace tiles {
 
 class tile {
 public:
-    tile(const volume::volume* vol,
+    tile(volume::volume* vol,
          coords::chunkCoord coord,
          common::viewType view,
          int depth)
@@ -21,7 +21,11 @@ public:
 
     void loadData();
 
-    const uint32_t* data() const {
+    char* data() {
+        return data_.get();
+    }
+
+    const char* data() const {
         return data_.get();
     }
 
@@ -41,12 +45,12 @@ public:
         return depth_;
     }
 private:
-    const volume::volume* vol_;
+    volume::volume* vol_;
     const coords::chunkCoord coord_;
     const common::viewType view_;
     const int depth_;
 
-    boost::scoped_ptr<uint32_t> data_;
+    boost::shared_ptr<char> data_;
 };
 
 } // namespace tiles

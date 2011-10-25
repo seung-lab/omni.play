@@ -59,16 +59,13 @@ public:
     }
 
     template <typename C>
-    boost::shared_ptr<C> rescaleAndCast(boost::shared_ptr<T> oldTile,
-                                        const T rangeMin, const T rangeMax,
-                                        const T absMax) const
+    C* rescaleAndCast(T* oldTile, const T rangeMin, const T rangeMax, const T absMax) const
     {
-        boost::shared_ptr<C> ret = utility::smartPtr<C>::MallocNumElements(elementsPerTile_,
-                                                                           common::DONT_ZERO_FILL);
+        C* ret = new C[elementsPerTile_];
 
-        zi::transform(oldTile.get(),
-                      oldTile.get() + elementsPerTile_,
-                      ret.get(),
+        zi::transform(oldTile,
+                      oldTile + elementsPerTile_,
+                      ret,
                       Rescale<T,C>(rangeMin, rangeMax, absMax));
 
         return ret;
@@ -79,6 +76,7 @@ private:
     class Rescale {
     private:
         const U rangeMin_, rangeMax_, absMax_;
+
 
     public:
         Rescale(const U rangeMin, const U rangeMax, const U absMax)

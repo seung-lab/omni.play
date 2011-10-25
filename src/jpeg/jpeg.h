@@ -19,24 +19,19 @@ public:
     writer();
     ~writer();
 
-    inline boost::shared_ptr<char> write32(unsigned char * src,
-                                           const int width, const int height,
-                                           long unsigned int& size)
+    inline boost::shared_ptr<char> write32(char * src, const int width, const int height, int& size)
     {
         return write(src, width, height, 4, size);
     }
 
-    inline boost::shared_ptr<char> write8(unsigned char * src,
-                                          const int width, const int height,
-                                          long unsigned int& size)
+    inline boost::shared_ptr<char> write8(char * src, const int width, const int height, int& size)
     {
         return write(src, width, height, 1, size);
     }
 
 private:
-    boost::shared_ptr<char> write(unsigned char * src,
-                                  const int width, const int height,
-                                  const int pixelFormat, long unsigned int& size);
+    boost::shared_ptr<char> write(char * src, const int width, const int height,
+                                  const int pixelFormat, int& size);
 };
 
 } // namespace jpeg

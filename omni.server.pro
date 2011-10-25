@@ -151,12 +151,8 @@ SOURCES +=  \
 	include/yaml-cpp/src/singledocparser.cpp \
 	include/yaml-cpp/src/stream.cpp \
 	include/yaml-cpp/src/tag.cpp \
-        include/libb64/src/b64dec.c \
-        include/libb64/src/b64enc.c \
         include/libb64/src/cdecode.c \
         include/libb64/src/cencode.c \
-        include/libb64/src/decoder.cc \
-        include/libb64/src/encoder.cc \
 	src/volume/volume.cpp \
 	src/volume/volumeTypes.cpp \
 	src/volume/channel.cpp \
@@ -176,6 +172,7 @@ SOURCES +=  \
         src/datalayer/archive/segmentationYaml.cpp \
         src/chunks/chunk.cpp \
         src/chunks/segChunk.cpp \
+        src/tiles/tile.cpp \
         src/jpeg/jpeg.cpp \
         src/main.cpp
 

@@ -37,23 +37,25 @@ writer::~writer() {
     tjDestroy(handle);
 }
 
-boost::shared_ptr<char> writer::write(unsigned char * src,
-                                      const int width, const int height,
-                                      const int pixelFormat, long unsigned int& size)
+boost::shared_ptr<char> writer::write(char * src, const int width, const int height,
+                                      const int pixelFormat, int& size)
 {
+    long unsigned int longSize;
     unsigned char * buff = NULL; // turbojpeg will choose the right size for the buffer.
 
     tjCompress(handle,
-               src,
+               reinterpret_cast<unsigned char*>(src),
                width,
                width * pixelFormat,
                height,
                pixelFormat,
                buff,
-               &size,
+               &longSize,
                TJ_GRAYSCALE,
                75, //quality
                0); // flags
+
+    size = longSize;
 
     char* err = tjGetErrorStr();
     if (err) {
@@ -63,6 +65,7 @@ boost::shared_ptr<char> writer::write(unsigned char * src,
     boost::shared_ptr<char> image =
         utility::smartPtr<char>::MallocNumElements(size, common::DONT_ZERO_FILL);
 
+    // TODO: see if this extra memcpy is hurting performance
     std::memcpy(image.get(), buff, size * sizeof(char));
 
     tjDestroy(buff);

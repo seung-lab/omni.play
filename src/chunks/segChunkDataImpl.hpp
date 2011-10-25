@@ -39,7 +39,7 @@ public:
         delete ptrToChunkData_;
     }
 
-    boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const common::viewType plane, const int depth)
+    boost::shared_ptr<char> ExtractDataSlice32bit(const common::viewType plane, const int depth)
     {
         chunks::dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();

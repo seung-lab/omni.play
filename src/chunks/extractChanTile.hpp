@@ -28,26 +28,25 @@ public:
     {}
 
     template <typename T>
-    boost::shared_ptr<uint32_t> Extract(T* d){
+    boost::shared_ptr<char> Extract(T* d){
         return extractDataSlice(d);
     }
 
 private:
     template <typename T>
-    boost::shared_ptr<uint32_t> extractDataSlice(T* d)
+    boost::shared_ptr<char> extractDataSlice(T* d)
     {
-        boost::shared_ptr<T> rawTile = getRawSlice(d);
-        tiles::filters<T> filter(128);
-        return filter.template recast<uint32_t>(rawTile);
+        T* rawTile = getRawSlice(d);
+        return boost::shared_ptr<char>(reinterpret_cast<char*>(rawTile));
     }
 
-    boost::shared_ptr<uint32_t> extractDataSlice(uint32_t* d){
-        return getRawSlice(d);
+    boost::shared_ptr<char> extractDataSlice(char* d){
+        return boost::shared_ptr<char>(getRawSlice(d));
     }
 
-    boost::shared_ptr<uint32_t> extractDataSlice(float* d)
+    boost::shared_ptr<char> extractDataSlice(float* d)
     {
-        boost::shared_ptr<float> rawTile = getRawSlice(d);
+        float* rawTile = getRawSlice(d);
 
         tiles::filters<float> filter(128);
 
@@ -57,16 +56,19 @@ private:
         // TODO: use actual range in channel data
         // mpMipVolume->GetBounds(mx, mn);
 
-        return filter.rescaleAndCast<uint32_t>(rawTile, min, max, 255.0);
+        char* ret = filter.rescaleAndCast<char>(rawTile, min, max, 255.0);
+        delete rawTile;
+
+        return boost::shared_ptr<char>(ret);
     }
 
     template <typename T>
-    inline boost::shared_ptr<T> getRawSlice(T* d) const
+    inline T* getRawSlice(T* d) const
     {
         rawChunkSlicer<T> slicer(128, d);
 
         project::project::FileReadSemaphore().acquire(1);
-        boost::shared_ptr<T> tile = slicer.GetCopyOfTile(plane_, depth_);
+        T* tile = slicer.GetCopyOfTile(plane_, depth_);
         project::project::FileReadSemaphore().release(1);
 
         return tile;

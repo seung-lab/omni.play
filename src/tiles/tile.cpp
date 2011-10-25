@@ -1,22 +1,28 @@
 #include "chunks/chunkData.hpp"
 #include "tiles/tile.h"
-#include "utility/dataWrappers.h"
 #include "volume/volume.h"
+#include "chunks/chunk.h"
+#include "chunks/segChunk.h"
+#include "chunks/segChunkDataInterface.hpp"
+
+namespace om {
+namespace tiles {
 
 void tile::loadData()
 {
-    if(getVolType() == CHANNEL) {
-        channel* chan = reinterpret_cast<channel*>(vol_);
-        chunk* chunk = chan->GetChunk(mipChunkCoord_);
+    if(vol_->getVolumeType() == common::CHANNEL) {
+        volume::channel* chan = reinterpret_cast<volume::channel*>(vol_);
+        boost::shared_ptr<chunks::chunk> chunk = chan->GetChunk(coord_);
 
-        data_ = chunk->Data()->ExtractDataSlice8bit(key_.getViewType(),
-                                                    getChunkSliceNum());
+        data_ = chunk->Data()->ExtractDataSlice8bit(view_, depth_);
 
     } else {
-        segmentation* seg = reinterpret_cast<segmentation*>(vol_);
-        segChunk* chunk = seg->GetChunk(mipChunkCoord_);
+        volume::segmentation* seg = reinterpret_cast<volume::segmentation*>(vol_);
+        boost::shared_ptr<chunks::segChunk> chunk = seg->GetChunk(coord_);
 
-        data_ = chunk->SegData()->ExtractDataSlice32bit(viewType_,
-                                                        getChunkSliceNum());
+        data_ = chunk->SegData()->ExtractDataSlice32bit(view_, depth_);
     }
+}
+
+}
 }
