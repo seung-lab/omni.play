@@ -344,7 +344,8 @@ sub thrift
 
 sub libjpeg
 {
-    prepareAndBuild( $JPEG_VER, "libjpeg" );
+    prepare( $JPEG_VER, "libjpeg" );
+    buildInSourceFolder( $JPEG_VER, "libjpeg" );
 }
 
 sub boost
