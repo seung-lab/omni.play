@@ -228,20 +228,20 @@ typedef LockedNumber<int32_t>  LockedInt32;
 typedef LockedNumber<uint32_t> LockedUint32;
 
 template <typename T>
-class OmLockedNumber {
+class lockedNumber {
 private:
     T val_;
 
 public:
-    OmLockedNumber()
+    lockedNumber()
         : val_(0)
     {}
 
-    OmLockedNumber(const T val)
+    lockedNumber(const T val)
         : val_(val)
     {}
 
-    ~OmLockedNumber()
+    ~lockedNumber()
     {}
 
     T get() const
@@ -262,63 +262,63 @@ public:
         return ++val_;
     }
 
-    OmLockedNumber& operator+= (const T val)
+    lockedNumber& operator+= (const T val)
     {
         zi::spinlock::pool<om::locked_pods_::locked_number_tag>::guard g(this);
         val_ += val;
         return *this;
     }
 
-    OmLockedNumber& operator-= (const T val)
+    lockedNumber& operator-= (const T val)
     {
         zi::spinlock::pool<om::locked_pods_::locked_number_tag>::guard g(this);
         val_ -= val;
         return *this;
     }
 
-    OmLockedNumber& operator= (const T val)
+    lockedNumber& operator= (const T val)
     {
         zi::spinlock::pool<om::locked_pods_::locked_number_tag>::guard g(this);
         val_ = val;
         return *this;
     }
 
-    OmLockedNumber& operator++ ()
+    lockedNumber& operator++ ()
     {
         zi::spinlock::pool<om::locked_pods_::locked_number_tag>::guard g(this);
         ++val_;
         return *this;
     }
 
-    OmLockedNumber& operator-- ()
+    lockedNumber& operator-- ()
     {
         zi::spinlock::pool<om::locked_pods_::locked_number_tag>::guard g(this);
         --val_;
         return *this;
     }
 
-    OmLockedNumber operator++ (int)
+    lockedNumber operator++ (int)
     {
         zi::spinlock::pool<om::locked_pods_::locked_number_tag>::guard g(this);
-        OmLockedNumber<T> ret(val_);
+        lockedNumber<T> ret(val_);
         ++val_;
         return ret;
     }
 
-    OmLockedNumber operator-- (int)
+    lockedNumber operator-- (int)
     {
         zi::spinlock::pool<om::locked_pods_::locked_number_tag>::guard g(this);
-        OmLockedNumber<T> ret(val_);
+        lockedNumber<T> ret(val_);
         --val_;
         return ret;
     }
 };
 
-typedef OmLockedNumber<int32_t>  OmLockedInt32;
-typedef OmLockedNumber<uint32_t> OmLockedUint32;
+typedef lockedNumber<int32_t>  lockedInt32;
+typedef lockedNumber<uint32_t> lockedUint32;
 
-typedef OmLockedNumber<int64_t>  OmLockedInt64;
-typedef OmLockedNumber<uint64_t> OmLockedUint64;
+typedef lockedNumber<int64_t>  lockedInt64;
+typedef lockedNumber<uint64_t> lockedUint64;
 
 } // namespace utility
 } // namespace om
