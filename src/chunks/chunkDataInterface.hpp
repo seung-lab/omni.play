@@ -8,7 +8,7 @@ namespace chunks {
 
 class dataInterface {
 public:
-    virtual boost::shared_ptr<char> ExtractDataSlice8bit(const common::viewType, const int) = 0;
+    virtual char* ExtractDataSlice8bit(const common::viewType, const int) = 0;
 
     virtual void CopyInTile(const int sliceOffset, char const*const bits) = 0;
 

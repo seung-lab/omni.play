@@ -1,22 +1,18 @@
 #pragma once
 
-#include "common/omDebug.h"
-#include "network/omJpeg.h"
-#include "system/cache/omCacheManager.h"
-#include "tiles/cache/omTileCache.h"
-#include "tiles/omTextureID.h"
-#include "tiles/omTile.h"
-#include "tiles/omTileCoord.h"
+#include "common/debug.h"
+#include "network/jpeg.h"
+#include "tiles/tile.h"
+#include "tiles/tileCoord.h"
 #include "utility/dataWrappers.h"
-#include "utility/omTimer.hpp"
-#include "utility/omUUID.hpp"
-#include "viewGroup/omViewGroupState.h"
-#include "volume/omMipVolume.h"
-#include "zi/omMutex.h"
+#include "utility/timer.hpp"
+#include "utility/UUID.hpp"
+#include "volume/volume.h"
+#include "zi/mutex.h"
 
-#include <QPainter>
+namespace
 
-class OmWriteTile {
+class writeTile {
 private:
     OmViewGroupState vgs_;
     const ChannelDataWrapper cdw_;

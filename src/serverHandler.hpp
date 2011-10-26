@@ -13,9 +13,11 @@
 #include "project/details/segmentationManager.h"
 #include "tiles/tile.h"
 #include "volume/channel.h"
-#include "b64/encode.h"
 
-#include "jpeg/jpeg.h"
+#include "pipeline/getTileData.h"
+#include "pipeline/encode.hpp"
+
+//#include "network/jpeg.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -34,8 +36,7 @@ class serverHandler : virtual public serverIf
 private:
     volume::channel * chan_;
     volume::segmentation * seg_;
-    jpeg::writer imageWriter_;
-    base64::encoder e;
+//    jpeg::writer imageWriter_;
 
 public:
     serverHandler()
@@ -63,27 +64,34 @@ public:
                   << std::endl;
 
         coords::globalCoord coord(point.x, point.y, point.z);
-        coords::chunkCoord ccord = coord.toChunkCoord(*chan_, mipLevel);
-        std::cout << "slicing" << std::endl;
+        coords::chunkCoord ccoord = coord.toChunkCoord(*chan_, mipLevel);
+/*        std::cout << "slicing" << std::endl;
         tiles::tile t(chan_, ccord, common::XY_VIEW, point.z);
         t.loadData();
 
         Vector3i dims = chan_->CoordinateSystem().MipedDataDimensions(mipLevel);
         int size;
         std::cout << "compressing" << std::endl;
-        boost::shared_ptr<char> image = imageWriter_.write8(t.data(), dims.x, dims.y, size);
-        char encoded[4 * (size / 3 + 1)]; // allocate enough space for the encoded data.
+        std::vector<JOCTET> image;
+        jpeg::write8bit(dims.x, dims.y, reinterpret_cast<uint8_t*>(t.data()), image);
+
         std::cout << "encoding" << std::endl;
-        e.encode(image.get(), size, encoded);
+
         std::string encStr(encoded);
         std::cout << "sending: " << encStr << std::endl;
-        _return.data.swap(encStr);
+        _return.data.swap(encStr);*/
+
+        pipeline::getTileData slicer(chan_, ccoord, common::XY_VIEW, point.z);
+        pipeline::encode encoder(&slicer);
+        char * encoded = encoder.operator()();
+        std::string resp(encoded);
+        _return.data = resp;
     }
 
     void get_seg_tile(tile& _return, const vector3d& point,
                       const int32_t mipLevel, const int32_t segId)
     {
-        std::cout << "Called get_seg_tile:"
+/*        std::cout << "Called get_seg_tile:"
                   << point.x << "," << point.y << "," << point.z
                   << std::endl;
 
@@ -101,7 +109,7 @@ public:
         std::cout << "encoding" << std::endl;
         e.encode(image.get(), size, encoded);
         _return.data = std::string(encoded);
-        std::cout << "sending: " << _return.data << std::endl;
+        std::cout << "sending: " << _return.data << std::endl;*/
     }
 
     void get_seg_bbox(bbox& _return, const int32_t segId)

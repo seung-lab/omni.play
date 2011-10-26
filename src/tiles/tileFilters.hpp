@@ -19,59 +19,55 @@ public:
 
     void Brightness(boost::shared_ptr<T> tile, const T absMax, const int32_t shift)
     {
-        zi::transform(tile.get(),
-                      tile.get() + elementsPerTile_,
-                      tile.get(),
+        zi::transform(tile,
+                      tile + elementsPerTile_,
+                      tile,
                       ChangeBrightness<T>(absMax, shift));
     }
 
     void Contrast(boost::shared_ptr<T> tile, const T absMax, const double contrast)
     {
-        zi::transform(tile.get(),
-                      tile.get() + elementsPerTile_,
-                      tile.get(),
+        zi::transform(tile,
+                      tile + elementsPerTile_,
+                      tile,
                       ChangeContrast<T>(absMax, contrast));
     }
 
     void Gamma(boost::shared_ptr<T> tile, const double gamma)
     {
-        zi::transform(tile.get(),
-                      tile.get() + elementsPerTile_,
-                      tile.get(),
+        zi::transform(tile,
+                      tile + elementsPerTile_,
+                      tile,
                       ChangeGamma<T>(gamma));
     }
 
     template <class C>
-    boost::shared_ptr<C> recast(boost::shared_ptr<T> oldTile) const
+    C* recast(T* oldTile) const
     {
-        boost::shared_ptr<C> ret =
-            utility::smartPtr<C>::MallocNumBytes(elementsPerTile_ * sizeof(C),
-                                                    common::DONT_ZERO_FILL);
+        C* ret = new C[elementsPerTile_];
 
-        std::copy(oldTile.get(),
-                  oldTile.get() + elementsPerTile_,
-                  ret.get());
+        std::copy(oldTile,
+                  oldTile + elementsPerTile_,
+                  ret);
 
         return ret;
     }
 
-    boost::shared_ptr<T> recast(boost::shared_ptr<T> oldTile) const {
+    T* recast(T* oldTile) const {
         return oldTile;
     }
 
     template <typename C>
-    boost::shared_ptr<C> rescaleAndCast(boost::shared_ptr<T> oldTile,
-                                        const T rangeMin,
-                                        const T rangeMax,
-                                        const T absMax) const
+    C* rescaleAndCast(T* oldTile,
+                      const T rangeMin,
+                      const T rangeMax,
+                      const T absMax) const
     {
-        boost::shared_ptr<C> ret =
-            utility::smartPtr<C>::MallocNumBytes(elementsPerTile_ * sizeof(C),
-                                                 common::DONT_ZERO_FILL);
+        C* ret = new C[elementsPerTile_];
 
-        zi::transform(oldTile.get(),
-                      oldTile.get() + elementsPerTile_,
-                      ret.get(),
+        zi::transform(oldTile,
+                      oldTile + elementsPerTile_,
+                      ret,
                       Rescale<T,C>(rangeMin, rangeMax, absMax));
 
         return ret;

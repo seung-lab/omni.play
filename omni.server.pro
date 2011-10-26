@@ -175,7 +175,9 @@ SOURCES +=  \
         src/chunks/chunk.cpp \
         src/chunks/segChunk.cpp \
         src/tiles/tile.cpp \
-        src/jpeg/jpeg.cpp \
+#        src/jpeg/jpeg.cpp \
+#        src/network/jpeg.cpp \
+        src/pipeline/getTileData.cpp\
         src/main.cpp
 
 
