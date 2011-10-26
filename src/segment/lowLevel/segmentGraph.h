@@ -46,7 +46,6 @@ public:
 
 private:
     segmentation* segmentation_;
-    OmValidGroupNum* validGroupNum_;
     segmentsImplLowLevel* mCache;
     segmentsStore* segmentPages_;
 

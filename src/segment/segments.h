@@ -2,6 +2,7 @@
 
 #include "volume/volumeTypes.h"
 #include "segment/segmentPointers.h"
+#include "segment/lowLevel/store/segmentStore.h"
 #include "datalayer/archive/segmentation.h"
 
 #include <zi/mutex.hpp>
@@ -97,8 +98,8 @@ private:
 
     volume::segmentation *const segmentation_;
 
-    boost::scoped_ptr<segmentsStore> store_;
     boost::scoped_ptr<segmentsImpl> impl_;
+    boost::scoped_ptr<segmentsStore> store_;
 
     friend class segmentColorizer;
     friend class SegmentTests;

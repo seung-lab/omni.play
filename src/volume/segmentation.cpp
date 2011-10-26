@@ -3,7 +3,7 @@
 #include "common/debug.h"
 #include "datalayer/dataPaths.h"
 //#include "mesh/meshManagers.hpp"
-#include "segment/segments.h"
+//#include "segment/segments.h"
 #include "volume/io/volumeData.h"
 #include "volume/segmentation.h"
 #include "volume/segmentationFolder.h"
@@ -15,6 +15,7 @@ namespace volume {
 // used by dataArchiveProject
 segmentation::segmentation()
     : volData_(new data())
+//    , segments_(new segment::segments(this))
 {}
 
 // used by genericManager

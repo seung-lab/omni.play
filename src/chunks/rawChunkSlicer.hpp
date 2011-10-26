@@ -21,10 +21,13 @@ public:
         , chunkPtr_(chunkPtr)
     {}
 
-    T* GetCopyOfTile(const common::viewType viewType, const int offsetNumTiles)
+    boost::shared_ptr<T> GetCopyOfTile(const common::viewType viewType, const int offsetNumTiles)
     {
-        T* tilePtr = new T[elementsPerTile_];
-        sliceTile(viewType, offsetNumTiles, tilePtr);
+        boost::shared_ptr<T> tilePtr =
+            utility::smartPtr<T>::MallocNumBytes(elementsPerTile_ * sizeof(T),
+                                                 common::DONT_ZERO_FILL);
+
+        sliceTile(viewType, offsetNumTiles, tilePtr.get());
 
         return tilePtr;
     }

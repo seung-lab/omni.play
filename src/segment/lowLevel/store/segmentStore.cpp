@@ -1,6 +1,4 @@
 #include "segment/lowLevel/store/segmentStore.hpp"
-#include "segment/lowLevel/store/omCacheSegRootIDs.hpp"
-#include "segment/lowLevel/store/omCacheSegStore.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
 
 segmentsStore::segmentsStore(segmentation* segmentation)
@@ -11,18 +9,6 @@ segmentsStore::segmentsStore(segmentation* segmentation)
 
 segmentsStore::~segmentsStore()
 {}
-
-void segmentsStore::StartCaches()
-{
-    if(cachedStore_)
-    {
-        std::cout << "not restarting caches\n";
-        return;
-    }
-
-    cachedStore_.reset(new OmCacheSegStore(this));
-    cacheRootIDs_.reset(new OmCacheSegRootIDs(segmentation_, this));
-}
 
 uint32_t segmentsStore::NumPages()
 {
@@ -48,10 +34,6 @@ segment* segmentsStore::GetSegment(const common::segId value){
 
 segment* segmentsStore::GetSegmentUnsafe(const common::segId value){
     return cachedStore_->GetSegmentUnsafe(value);
-}
-
-common::segId segmentsStore::Root(const common::segId segID){
-    return cacheRootIDs_->Root(segID);
 }
 
 segment* segmentsStore::AddSegment(const common::segId value)

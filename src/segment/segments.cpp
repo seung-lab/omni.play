@@ -1,16 +1,14 @@
-#include "datalayer/dataPath.h"
-#include "datalayer/dataPath.h"
-#include "segment/lowLevel/enabledSegments.hpp"
-#include "segment/lowLevel/segmentSelection.hpp"
-#include "segment/lowLevel/store/segmentStore.hpp"
+#include "datalayer/dataPaths.h"
 #include "segment/segment.h"
 #include "segment/segments.h"
 #include "segment/segmentsImpl.h"
 #include "volume/segmentation.h"
 
+namespace om {
+namespace segment {
+
 segments::segments(segmentation* segmentation)
     : segmentation_(segmentation)
-    , store_(new segmentsStore(segmentation))
     , impl_(new segmentsImpl(segmentation, store_.get()))
 {}
 
@@ -315,3 +313,6 @@ bool segments::JoinEdges(const std::vector<segmentEdge>& edges)
     zi::guard g(mutex_);
     return impl_->JoinEdges(edges);
 }
+
+} // namespace segment
+} // namespace om

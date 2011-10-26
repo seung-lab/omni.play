@@ -6,6 +6,7 @@
 #include "volume/volume.h"
 #include "datalayer/archive/segmentation.h"
 #include "volume/segmentationFolder.h"
+//#include "segment/segments.h"
 
 namespace om {
 
@@ -78,6 +79,11 @@ public:
     inline data* VolData() {
         return volData_.get();
     }
+
+//    inline segment::segments * Segments() {
+//        return segments_.get();
+//    }
+
     inline om::segmentation::folder* Folder() const {
         return folder_.get();
     }
@@ -89,6 +95,7 @@ private:
 
     boost::scoped_ptr<om::segmentation::folder> folder_;
     boost::scoped_ptr<data> volData_;
+//    boost::scoped_ptr<segment::segments> segments_;
 
     friend class segmentsImpl;
     friend class segmentsImplLowLevel;

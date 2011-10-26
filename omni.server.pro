@@ -170,6 +170,8 @@ SOURCES +=  \
         src/datalayer/archive/projectYaml.cpp \
         src/datalayer/archive/channelYaml.cpp \
         src/datalayer/archive/segmentationYaml.cpp \
+#        src/segment/segments.cpp \
+#        src/segment/segment.cpp \
         src/chunks/chunk.cpp \
         src/chunks/segChunk.cpp \
         src/tiles/tile.cpp \

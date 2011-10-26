@@ -33,10 +33,10 @@ private:
         rawChunkSlicer<char> slicer(128, d);
 
         project::project::FileReadSemaphore().acquire(1);
-        char* tile = slicer.GetCopyOfTile(plane_, depth_);
+        boost::shared_ptr<char> tile = slicer.GetCopyOfTile(plane_, depth_);
         project::project::FileReadSemaphore().release(1);
 
-        return boost::shared_ptr<char>(tile);
+        return tile;
     }
 
     template <typename T>
@@ -45,10 +45,12 @@ private:
         rawChunkSlicer<T> slicer(128, d);
 
         project::project::FileReadSemaphore().acquire(1);
-        T* rawTile(slicer.GetCopyOfTile(plane_, depth_));
+        boost::shared_ptr<T> rawTile = slicer.GetCopyOfTile(plane_, depth_);
         project::project::FileReadSemaphore().release(1);
 
-        return boost::shared_ptr<char>(reinterpret_cast<char*>(rawTile));
+        tiles::filters<T> filter(128);
+
+        return filter.template recast<char>(rawTile);
     }
 
     volume::segmentation *const vol_;

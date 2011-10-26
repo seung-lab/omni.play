@@ -3,10 +3,11 @@
 #include "segment/lowLevel/segmentsImplLowLevel.h"
 #include "datalayer/archive/segmentation.h"
 
-class segmentEdge;
-class OmUserEdges;
-class segmentChildren;
+namespace om {
+namespace segment {
+
 class segmentsStore;
+class segment;
 
 class segmentsImpl : public segmentsImplLowLevel {
 public:
@@ -19,37 +20,10 @@ public:
     segment* AddSegment(common::segId value);
     segment* GetOrAddSegment(const common::segId val);
 
-    segmentChildren* Children();
-
-    std::pair<bool, segmentEdge> JoinFromUserAction(const segmentEdge& e);
-    segmentEdge SplitEdgeUserAction(const segmentEdge& e);
-    common::segIdSet JoinTheseSegments(const common::segIdSet& segmentList);
-    common::segIdSet UnJoinTheseSegments(const common::segIdSet& segmentList);
-    boost::optional<std::string> IsEdgeSplittable(const segmentEdge& e);
-    boost::optional<std::string> IsSegmentSplittable(segment* child);
-    boost::optional<std::string> IsSegmentCuttable(segment* seg);
-
-    void refreshTree();
-
-    bool AreAnySegmentsInValidList(const common::segIdSet& ids);
-
-    std::vector<segmentEdge> CutSegment(segment* seg);
-    bool JoinEdges(const std::vector<segmentEdge>& edges);
-
-private:
-    OmUserEdges* userEdges_;
-
-    segmentEdge splitChildFromParentNoTest(segment* child);
-
-    std::pair<bool, segmentEdge> JoinEdgeFromUser(const segmentEdge& e);
-    std::pair<bool, segmentEdge> JoinFromUserAction(const common::id, const common::id);
-
-    void rerootSegmentLists();
-    void setGlobalThreshold(OmMST* mst);
-    void resetGlobalThreshold(OmMST* mst);
-
-    friend class segmentColorizer;
-    friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const segmentsImpl&);
-    friend void YAML::operator>>(const YAML::Node&, segmentsImpl&);
+//private:
+//    friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const segmentsImpl&);
+//    friend void YAML::operator>>(const YAML::Node&, segmentsImpl&);
 };
 
+} // namespace segment
+} // namespace om
