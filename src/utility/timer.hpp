@@ -17,11 +17,11 @@ private:
     zi::wall_timer timer_;
 
 public:
-    OmTimer()
+    timer()
         : timer_()
     {}
 
-    ~OmTimer()
+    ~timer()
     {}
 
     void start(){

@@ -27,6 +27,13 @@ HEADERS +=  \
 	lib/include/coordinates/screenSystem.h \
 	lib/include/coordinates/volumeSystem.h \
 	lib/include/coordinates/yaml.h \
+	lib/include/threads/taskManager.hpp \
+	lib/include/threads/taskManagerContainerDeque.hpp \
+	lib/include/threads/taskManagerImpl.hpp \
+	lib/include/threads/taskManagerTypes.h \
+	lib/include/threads/threadPoolBatched.hpp \
+	lib/include/threads/threadPoolByMipLevel.hpp \
+	lib/include/threads/threadPoolManager.h \
 	lib/include/thrift/server.h \
 	lib/include/thrift/server_constants.h \
 	lib/include/thrift/server_types.h \
@@ -48,14 +55,13 @@ HEADERS +=  \
 	lib/include/utility/yaml/baseTypes.hpp \
 	lib/include/utility/yaml/genericManager.hpp \
 	lib/include/utility/yaml/yaml.hpp \
-	lib/include/zi/matlab/zmex.hpp \
-	lib/include/zi/omMutex.h \
-	lib/include/zi/omThreads.h \
-	lib/include/zi/omUtility.h \
+	lib/include/zi/mutex.h \
+	lib/include/zi/threads.h \
 	lib/include/zi/trees/DisjointSets.hpp \
 	lib/include/zi/trees/lib/DynaTree.hpp \
 	lib/include/zi/trees/lib/DynamicTree.hpp \
 	lib/include/zi/trees/lib/FHeap.hpp \
+	lib/include/zi/utility.h \
 	lib/include/zi/watershed/MemMap.hpp \
 	lib/include/zi/watershed/RawQuickieWS.h \
 	src/common/boost.h \
@@ -110,14 +116,13 @@ HEADERS +=  \
 	src/utility/yaml/baseTypes.hpp \
 	src/utility/yaml/genericManager.hpp \
 	src/utility/yaml/yaml.hpp \
-	src/zi/matlab/zmex.hpp \
-	src/zi/omMutex.h \
-	src/zi/omThreads.h \
-	src/zi/omUtility.h \
+	src/zi/mutex.h \
+	src/zi/threads.h \
 	src/zi/trees/DisjointSets.hpp \
 	src/zi/trees/lib/DynaTree.hpp \
 	src/zi/trees/lib/DynamicTree.hpp \
 	src/zi/trees/lib/FHeap.hpp \
+	src/zi/utility.h \
 	src/zi/watershed/MemMap.hpp \
 	src/zi/watershed/RawQuickieWS.h
 
@@ -202,7 +207,11 @@ TARGET = omni.common
 
 inst.path = ./lib/bin
 inst.files = ./bin/*
-inst.extra = /bin/rm -Rf lib/include/; cd src; find -regex \".*\.h\\\(pp\\\)?\" -print0 | cpio --null -pvd ../lib/include/
+inst.extra = /bin/rm -Rf lib/include/;\
+	     cd src;\
+	     find -regex \".*\.h\\\(pp\\\)?\" -print0 | cpio --null -pvd ../lib/include/;\
+	     cd ../external/srcs/thrift-0.7.0/lib/php/src/;\
+	     find -regex \".*\.php\" -print0 | cpio --null -pvd ../../../../../../php/;
 INSTALLS += inst
 
 #### for static build
