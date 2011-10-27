@@ -11,7 +11,7 @@ char* getTileData::operator()()
 {
     boost::shared_ptr<chunks::chunk> chunk = chan_->GetChunk(coord_);
     std::cout << chunk << chunk->Data() << std::endl;
-    data_ = chunk->Data()->ExtractDataSlice8bit(view_, depth_);
+    data_ = reinterpret_cast<char*>(chunk->Data()->ExtractDataSlice8bit(view_, depth_).get());
     return data_;
 }
 

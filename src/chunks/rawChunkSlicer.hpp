@@ -23,8 +23,8 @@ public:
 
     boost::shared_ptr<T> GetCopyOfTile(const common::viewType viewType, const int offsetNumTiles)
     {
-        boost::shared_ptr<T> tilePtr = utility::smartPtr::MallocNumElements(elementsPerTile_,
-                                                                            common::DONT_ZERO_MEM);
+        boost::shared_ptr<T> tilePtr =
+            utility::smartPtr<T>::MallocNumElements(elementsPerTile_, common::DONT_ZERO_FILL);
 
         sliceTile(viewType, offsetNumTiles, tilePtr.get());
 

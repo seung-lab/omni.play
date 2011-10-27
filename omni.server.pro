@@ -174,10 +174,10 @@ SOURCES +=  \
 #        src/segment/segment.cpp \
         src/chunks/chunk.cpp \
         src/chunks/segChunk.cpp \
-        src/tiles/tile.cpp \
+#        src/tiles/tile.cpp \
 #        src/jpeg/jpeg.cpp \
         src/network/jpeg.cpp \
-        src/pipeline/getTileData.cpp\
+#        src/pipeline/getTileData.cpp\
         src/main.cpp
 
 

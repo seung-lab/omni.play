@@ -92,8 +92,9 @@ private:
     void makeImgFileValid(const coords::globalCoord& coord, const utility::UUID& uuid,
                           T* vol, int mipLevel)
     {
-        boost::shared_ptr<tiles::tile<U> > tilePtr = getTile<T,U>(vol, coord, mipLevel);
-        U const*const tileData = tilePtr->data();
+        boost::shared_ptr<tiles::tile> tilePtr = getTile(vol, coord, mipLevel);
+        tilePtr->loadData();
+        U const*const tileData = tilePtr->data<U>();
 
         const std::string fname = fileName(vol, uuid);
 
@@ -108,13 +109,13 @@ private:
         om::jpeg::writeRGB(128, 128, reinterpret_cast<uint8_t const*const>(data), fname);
     }
 
-    template <typename T, typename U>
-    boost::shared_ptr<tiles::tile<U> > getTile(T* vol,
+    template <typename T>
+    boost::shared_ptr<tiles::tile> getTile(T* vol,
                                               const coords::globalCoord& coord,
                                               int mipLevel)
     {
         coords::chunkCoord chunkCoord = coord.toChunkCoord(*vol, mipLevel);
-        return boost::make_shared<tiles::tile<U> >(vol, chunkCoord, common::XY_VIEW, coord.z);
+        return boost::make_shared<tiles::tile>(vol, chunkCoord, common::XY_VIEW, coord.z);
         // TODO: Generalize to different views
     }
 };

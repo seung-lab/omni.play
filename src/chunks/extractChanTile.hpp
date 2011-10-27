@@ -38,7 +38,7 @@ private:
     {
         boost::shared_ptr<T> rawTile = getRawSlice(d);
         tiles::filters<T> filter(128);
-        return filter.recast<uint8_t>(rawTile);
+        return filter.template recast<uint8_t>(rawTile);
     }
 
     boost::shared_ptr<uint8_t> extractDataSlice(uint8_t* d){

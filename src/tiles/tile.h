@@ -1,13 +1,17 @@
 #pragma once
 
 #include "common/std.h"
+#include "chunks/chunk.h"
+#include "chunks/segChunk.h"
+#include "chunks/chunkDataInterface.hpp"
+#include "chunks/segChunkDataInterface.hpp"
+#include "tiles/tileData.hpp"
 
 namespace om {
 namespace volume { class volume; }
 
 namespace tiles {
 
-template <typename T>
 class tile {
 public:
     tile(volume::volume* vol,
@@ -20,14 +24,38 @@ public:
         , depth_(depth)
     {}
 
-    void loadData();
+    void loadData()
+    {
+        if(vol_->getVolumeType() == common::CHANNEL) {
+            volume::channel* chan = reinterpret_cast<volume::channel*>(vol_);
+            boost::shared_ptr<chunks::chunk> chunk = chan->GetChunk(coord_);
 
-    T* data() {
-        return data_.get();
+            data_.reset(new tileData<uint8_t>(chunk->Data()->ExtractDataSlice8bit(view_, depth_)));
+
+        } else {
+            volume::segmentation* seg = reinterpret_cast<volume::segmentation*>(vol_);
+            boost::shared_ptr<chunks::segChunk> chunk = seg->GetChunk(coord_);
+
+            data_.reset(new tileData<uint32_t>(chunk->SegData()->ExtractDataSlice32bit(view_, depth_)));
+        }
     }
 
+    void* data() {
+        return data_->data();
+    }
+
+    const void* data() const {
+        return data_->data();
+    }
+
+    template<typename T>
+    T* data() {
+        return reinterpret_cast<T*>(data_->data());
+    }
+
+    template<typename T>
     const T* data() const {
-        return data.get();
+        return reinterpret_cast<const T*>(data_->data());
     }
 
     inline const volume::volume* volume() const {
@@ -51,7 +79,7 @@ private:
     const common::viewType view_;
     const int depth_;
 
-    boost::shared_ptr<T> data_;
+    boost::scoped_ptr<tileDataInterface> data_;
 };
 
 } // namespace tiles

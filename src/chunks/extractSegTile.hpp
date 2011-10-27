@@ -19,28 +19,28 @@ public:
     {}
 
     template <typename T>
-    inline boost::shared_ptr<char> Extract(T* d) const {
+    inline boost::shared_ptr<uint32_t> Extract(T* d) const {
         return getTile(d);
     }
 
-    boost::shared_ptr<char> Extract(float*) const {
+    boost::shared_ptr<uint32_t> Extract(float*) const {
         throw common::ioException("segmentation data shouldn't be float");
     }
 
 private:
-    boost::shared_ptr<char> getTile(char* d) const
+    boost::shared_ptr<uint32_t> getTile(uint32_t* d) const
     {
-        rawChunkSlicer<char> slicer(128, d);
+        rawChunkSlicer<uint32_t> slicer(128, d);
 
         project::project::FileReadSemaphore().acquire(1);
-        boost::shared_ptr<char> tile = slicer.GetCopyOfTile(plane_, depth_);
+        boost::shared_ptr<uint32_t> tile = slicer.GetCopyOfTile(plane_, depth_);
         project::project::FileReadSemaphore().release(1);
 
         return tile;
     }
 
     template <typename T>
-    boost::shared_ptr<char> getTile(T* d) const
+    boost::shared_ptr<uint32_t> getTile(T* d) const
     {
         rawChunkSlicer<T> slicer(128, d);
 
@@ -50,7 +50,7 @@ private:
 
         tiles::filters<T> filter(128);
 
-        return filter.template recast<char>(rawTile);
+        return filter.template recast<uint32_t>(rawTile);
     }
 
     volume::segmentation *const vol_;
