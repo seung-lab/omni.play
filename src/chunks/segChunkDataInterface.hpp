@@ -11,7 +11,7 @@ namespace segchunk {
 
 class dataInterface {
 public:
-    virtual boost::shared_ptr<char> ExtractDataSlice32bit(const common::viewType, const int) = 0;
+    virtual boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const common::viewType, const int) = 0;
 
     virtual uint32_t SetVoxelValue(const coords::dataCoord& voxel, const uint32_t val) = 0;
     virtual uint32_t GetVoxelValue(const coords::dataCoord& voxel) = 0;

@@ -3,36 +3,35 @@
 #include "common/debug.h"
 #include "network/jpeg.h"
 #include "tiles/tile.h"
-#include "tiles/tileCoord.h"
-#include "utility/dataWrappers.h"
+#include "volume/segmentationDataWrapper.hpp"
+#include "volume/channelDataWrapper.hpp"
 #include "utility/timer.hpp"
 #include "utility/UUID.hpp"
 #include "volume/volume.h"
 #include "zi/mutex.h"
 
-namespace
+namespace om {
+namespace network {
 
 class writeTile {
 private:
-    OmViewGroupState vgs_;
-    const ChannelDataWrapper cdw_;
-    const SegmentationDataWrapper sdw_;
+    const volume::ChannelDataWrapper cdw_;
+    const volume::SegmentationDataWrapper sdw_;
 
 public:
-    OmWriteTile()
-        : vgs_(NULL)
-        , cdw_(1)
+    writeTile()
+        : cdw_(1)
         , sdw_(1)
     {}
 
-    std::string MakeTileFileChannel(const om::globalCoord& coord)
+    std::string MakeTileFileChannel(const coords::globalCoord& coord, int mipLevel)
     {
-        const OmUUID uuid;
+        const utility::UUID uuid;
 
         {
-            OmTimer timer;
+            utility::timer timer;
 
-            makeImgFile(coord, uuid, cdw_);
+            makeImgFile(coord, uuid, cdw_, mipLevel);
 
             timer.Print("\tdone making channel tile");
         }
@@ -40,14 +39,14 @@ public:
         return uuid.Str();
     }
 
-    std::string MakeTileFileSegmentation(const om::globalCoord& coord)
+    std::string MakeTileFileSegmentation(const coords::globalCoord& coord, int mipLevel)
     {
-        const OmUUID uuid;
+        const utility::UUID uuid;
 
         {
-            OmTimer timer;
+            utility::timer timer;
 
-            makeImgFile(coord, uuid, sdw_);
+            makeImgFile(coord, uuid, sdw_, mipLevel);
 
             timer.Print("\tdone making segmentation tile");
         }
@@ -57,95 +56,68 @@ public:
 
 private:
     template <typename T>
-    QString fileName(T* vol, const OmUUID& uuid){
+    std::string fileName(T* vol, const utility::UUID& uuid){
         return doMakeFileName(vol->GetNameHyphen(), uuid);
     }
 
-    QString doMakeFileName(const std::string volNameHyphen, const OmUUID& uuid)
+    std::string doMakeFileName(const std::string volNameHyphen, const utility::UUID& uuid)
     {
-        return QString::fromStdString(
-            "/var/www/temp_omni_imgs/" + volNameHyphen + "/" +
-            uuid.Str() + ".tile.jpg");
+        return "/var/www/temp_omni_imgs/" + volNameHyphen + "/" +
+            uuid.Str() + ".tile.jpg";
     }
 
-    uint32_t freshness(OmChannel*){
-        return 0;
-    }
-
-    uint32_t freshness(OmSegmentation*){
-        return OmCacheManager::GetFreshness();
-    }
-
-    void makeImgFile(const om::globalCoord& coord, const OmUUID& uuid,
-                     const ChannelDataWrapper& wrapper)
+    void makeImgFile(const coords::globalCoord& coord, const utility::UUID& uuid,
+                     const volume::ChannelDataWrapper& wrapper, int mipLevel)
     {
         if(wrapper.IsValidWrapper()){
-            makeImgFileValid<OmChannel, uint8_t>(coord, uuid,
-                                                 wrapper.GetChannelPtr());
+            makeImgFileValid<volume::channel, uint8_t>(coord, uuid,
+                                                       wrapper.GetChannelPtr(), mipLevel);
         } else {
-            makeBlankImage("channel-1", uuid);
+            throw common::argException("bad data wrapper.");
         }
     }
 
-    void makeImgFile(const om::globalCoord& coord, const OmUUID& uuid,
-                     const SegmentationDataWrapper& wrapper)
+    void makeImgFile(const coords::globalCoord& coord, const utility::UUID& uuid,
+                     const volume::SegmentationDataWrapper& wrapper, int mipLevel)
     {
         if(wrapper.IsValidWrapper()){
-            makeImgFileValid<OmSegmentation, OmColorARGB>(coord, uuid,
-                                                          wrapper.GetSegmentationPtr());
+            makeImgFileValid<volume::segmentation, common::colorARGB>
+                (coord, uuid, wrapper.GetSegmentationPtr(), mipLevel);
         } else {
-            makeBlankImage("segmentation-1", uuid);
-        }
-    }
-
-    void makeBlankImage(const QString volName, const OmUUID& uuid)
-    {
-        const QString fname = doMakeFileName(volName.toStdString(), uuid);
-
-        QImage blank(128, 128, QImage::Format_ARGB32_Premultiplied);
-        blank.fill(QColor(Qt::gray).rgb());
-
-        if(!blank.save(fname)){
-            throw OmIoException("could not write file", fname);
+            throw common::argException("bad data wrapper.");
         }
     }
 
     template <typename T, typename U>
-    void makeImgFileValid(const om::globalCoord& coord, const OmUUID& uuid, T* vol)
+    void makeImgFileValid(const coords::globalCoord& coord, const utility::UUID& uuid,
+                          T* vol, int mipLevel)
     {
-        OmTilePtr tilePtr = getTile(vol, coord);
-        const OmTextureID& texture = tilePtr->GetTexture();
-        U const*const tileData = reinterpret_cast<U const*const>(texture.GetTileData());
+        boost::shared_ptr<tiles::tile<U> > tilePtr = getTile<T,U>(vol, coord, mipLevel);
+        U const*const tileData = tilePtr->data();
 
-        const QString fname = fileName(vol, uuid);
+        const std::string fname = fileName(vol, uuid);
 
         writeJPEG(tileData, fname);
     }
 
-    void writeJPEG(uint8_t const*const data, const QString& fname) const {
-        om::jpeg::write8bit(128, 128, data, fname.toStdString());
+    void writeJPEG(uint8_t const*const data, const std::string& fname) const {
+        om::jpeg::write8bit(128, 128, data, fname);
     }
 
-    void writeJPEG(OmColorARGB const*const data, const QString& fname) const {
-        om::jpeg::writeRGB(128, 128, reinterpret_cast<uint8_t const*const>(data),
-                           fname.toStdString());
+    void writeJPEG(common::colorARGB const*const data, const std::string& fname) const {
+        om::jpeg::writeRGB(128, 128, reinterpret_cast<uint8_t const*const>(data), fname);
     }
 
-    template <typename T>
-    OmTilePtr getTile(T* vol, const om::globalCoord& coord)
+    template <typename T, typename U>
+    boost::shared_ptr<tiles::tile<U> > getTile(T* vol,
+                                              const coords::globalCoord& coord,
+                                              int mipLevel)
     {
-        const OmTileCoord tileCoord(0,
-                                    coord,
-                                    vol,
-                                    freshness(vol),
-                                    &vgs_,
-                                    XY_VIEW,
-                                    CHANNEL);
-
-        OmTilePtr tile;
-        OmTileCache::Get(tile, tileCoord, om::BLOCKING);
-
-        return tile;
+        coords::chunkCoord chunkCoord = coord.toChunkCoord(*vol, mipLevel);
+        return boost::make_shared<tiles::tile<U> >(vol, chunkCoord, common::XY_VIEW, coord.z);
+        // TODO: Generalize to different views
     }
 };
 
+}
+}

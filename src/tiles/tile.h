@@ -7,6 +7,7 @@ namespace volume { class volume; }
 
 namespace tiles {
 
+template <typename T>
 class tile {
 public:
     tile(volume::volume* vol,
@@ -21,12 +22,12 @@ public:
 
     void loadData();
 
-    char* data() {
+    T* data() {
         return data_.get();
     }
 
-    const char* data() const {
-        return data_.get();
+    const T* data() const {
+        return data.get();
     }
 
     inline const volume::volume* volume() const {
@@ -50,7 +51,7 @@ private:
     const common::viewType view_;
     const int depth_;
 
-    boost::shared_ptr<char> data_;
+    boost::shared_ptr<T> data_;
 };
 
 } // namespace tiles

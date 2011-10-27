@@ -95,7 +95,7 @@ private:
 
     boost::scoped_ptr<om::segmentation::folder> folder_;
     boost::scoped_ptr<data> volData_;
-//    boost::scoped_ptr<segment::segments> segments_;
+    boost::scoped_ptr<segment::segments> segments_;
 
     friend class segmentsImpl;
     friend class segmentsImplLowLevel;

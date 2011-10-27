@@ -80,7 +80,8 @@ public:
         return *std::min_element(data, data + numElementsPerChunk_);
     }
 
-    char* ExtractDataSlice8bit(const common::viewType plane, const int depth)
+    boost::shared_ptr<uint8_t> ExtractDataSlice8bit(const common::viewType plane,
+                                                    const int depth)
     {
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();

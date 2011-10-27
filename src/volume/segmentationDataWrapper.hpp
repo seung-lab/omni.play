@@ -12,7 +12,7 @@ namespace volume {
 
 class SegmentationDataWrapper {
 public:
-    static const idset& ValidIDs(){
+    static const common::idSet& ValidIDs(){
         return project::Volumes().Segmentations().GetValidSegmentationIds();
     }
 
@@ -41,7 +41,7 @@ public:
         : id_(sdw.id_)
     {}
 
-    explicit SegmentationDataWrapper(segment* seg)
+    explicit SegmentationDataWrapper(segment::segment* seg)
         : id_(seg->GetSegmentationID())
     {}
 
@@ -90,8 +90,8 @@ public:
         segmentation_.reset();
     }
 
-    inline ObjectType getType() const {
-        return SEGMENTATION;
+    inline common::objectType getType() const {
+        return common::SEGMENTATION;
     }
 
     inline bool IsValidWrapper() const {
@@ -123,19 +123,19 @@ public:
         return &seg;
     }
 
-    inline QString GetName() const {
-        return QString::fromStdString(GetSegmentation().GetName());
+    inline std::string GetName() const {
+        return GetSegmentation().GetName();
     }
 
     inline bool isEnabled() const {
         return project::Volumes().Segmentations().IsSegmentationEnabled(id_);
     }
 
-    inline QString getNote() const {
+    inline std::string getNote() const {
         return GetSegmentation().GetNote();
     }
 
-    inline uint32_t getNumberOfSegments() const {
+/*    inline uint32_t getNumberOfSegments() const {
         return Segments()->GetNumSegments();
     }
 
@@ -143,36 +143,16 @@ public:
         return Segments()->GetNumTopSegments();
     }
 
-    inline OmSegments* Segments() const {
+    inline segment::segments* Segments() const {
         return GetSegmentation().Segments();
-    }
-
-    inline OmMST* MST() const {
-        return GetSegmentation().MST();
     }
 
     inline uint32_t getMaxSegmentValue() const {
         return Segments()->getMaxValue();
-    }
-
-    inline OmSegmentLists* SegmentLists() const {
-        return GetSegmentation().SegmentLists();
-    }
-
-    inline OmValidGroupNum* ValidGroupNum() const {
-        return GetSegmentation().ValidGroupNum();
-    }
+        }*/
 
     inline const Vector3f GetDataResolution() const {
-        return GetSegmentation().Coords().GetResolution();
-    }
-
-    inline const OmSegIDsSet GetSelectedSegmentIDs() const {
-        return Segments()->GetSelectedSegmentIDs();
-    }
-
-    inline OmGroups* Groups() const {
-        return GetSegmentation().Groups();
+        return GetSegmentation().CoordinateSystem().GetResolution();
     }
 
     inline bool IsBuilt() const {

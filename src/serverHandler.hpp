@@ -14,10 +14,11 @@
 #include "tiles/tile.h"
 #include "volume/channel.h"
 
-#include "pipeline/getTileData.h"
-#include "pipeline/encode.hpp"
+//#include "pipeline/getTileData.h"
+//#include "pipeline/encode.hpp"
 
-//#include "network/jpeg.h"
+#include "network/writeTile.hpp"
+#include "network/jpeg.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -64,7 +65,14 @@ public:
                   << std::endl;
 
         coords::globalCoord coord(point.x, point.y, point.z);
-        coords::chunkCoord ccoord = coord.toChunkCoord(*chan_, mipLevel);
+
+        network::writeTile writeTile;
+        writeTile.MakeTileFileChannel(coord, mipLevel);
+
+
+
+
+//        coords::chunkCoord ccoord = coord.toChunkCoord(*chan_, mipLevel);
 /*        std::cout << "slicing" << std::endl;
         tiles::tile t(chan_, ccord, common::XY_VIEW, point.z);
         t.loadData();
@@ -80,12 +88,6 @@ public:
         std::string encStr(encoded);
         std::cout << "sending: " << encStr << std::endl;
         _return.data.swap(encStr);*/
-
-        pipeline::getTileData slicer(chan_, ccoord, common::XY_VIEW, point.z);
-        pipeline::encode encoder(&slicer);
-        char * encoded = encoder.operator()();
-        std::string resp(encoded);
-        _return.data = resp;
     }
 
     void get_seg_tile(tile& _return, const vector3d& point,
