@@ -20,6 +20,11 @@
 #include "network/writeTile.hpp"
 #include "network/jpeg.h"
 
+#include <fstream>
+#include <sstream>
+
+#include "b64/encode.h"
+
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
@@ -67,10 +72,13 @@ public:
         coords::globalCoord coord(point.x, point.y, point.z);
 
         network::writeTile writeTile;
-        writeTile.MakeTileFileChannel(coord, mipLevel);
-
-
-
+        std::string uuid = writeTile.MakeTileFileChannel(coord, mipLevel);
+        std::string path = writeTile.FileName(chan_, uuid);
+        std::ifstream in(path.c_str());
+        std::stringstream ss;
+        base64::encoder e;
+        e.encode(in, ss);
+        _return.data = ss.str();
 
 //        coords::chunkCoord ccoord = coord.toChunkCoord(*chan_, mipLevel);
 /*        std::cout << "slicing" << std::endl;

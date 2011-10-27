@@ -31,7 +31,7 @@ public:
         {
             utility::timer timer;
 
-            makeImgFile(coord, uuid, cdw_, mipLevel);
+            makeImgFile(coord, uuid.Str(), cdw_, mipLevel);
 
             timer.Print("\tdone making channel tile");
         }
@@ -46,7 +46,7 @@ public:
         {
             utility::timer timer;
 
-            makeImgFile(coord, uuid, sdw_, mipLevel);
+            makeImgFile(coord, uuid.Str(), sdw_, mipLevel);
 
             timer.Print("\tdone making segmentation tile");
         }
@@ -54,19 +54,20 @@ public:
         return uuid.Str();
     }
 
-private:
     template <typename T>
-    std::string fileName(T* vol, const utility::UUID& uuid){
+    std::string FileName(T* vol, const std::string& uuid){
         return doMakeFileName(vol->GetNameHyphen(), uuid);
     }
 
-    std::string doMakeFileName(const std::string volNameHyphen, const utility::UUID& uuid)
+private:
+
+    std::string doMakeFileName(const std::string volNameHyphen, const std::string& uuid)
     {
         return "/var/www/temp_omni_imgs/" + volNameHyphen + "/" +
-            uuid.Str() + ".tile.jpg";
+            uuid + ".tile.jpg";
     }
 
-    void makeImgFile(const coords::globalCoord& coord, const utility::UUID& uuid,
+    void makeImgFile(const coords::globalCoord& coord, const std::string& uuid,
                      const volume::ChannelDataWrapper& wrapper, int mipLevel)
     {
         if(wrapper.IsValidWrapper()){
@@ -77,7 +78,7 @@ private:
         }
     }
 
-    void makeImgFile(const coords::globalCoord& coord, const utility::UUID& uuid,
+    void makeImgFile(const coords::globalCoord& coord, const std::string& uuid,
                      const volume::SegmentationDataWrapper& wrapper, int mipLevel)
     {
         if(wrapper.IsValidWrapper()){
@@ -89,14 +90,14 @@ private:
     }
 
     template <typename T, typename U>
-    void makeImgFileValid(const coords::globalCoord& coord, const utility::UUID& uuid,
+    void makeImgFileValid(const coords::globalCoord& coord, const std::string& uuid,
                           T* vol, int mipLevel)
     {
         boost::shared_ptr<tiles::tile> tilePtr = getTile(vol, coord, mipLevel);
         tilePtr->loadData();
         U const*const tileData = tilePtr->data<U>();
 
-        const std::string fname = fileName(vol, uuid);
+        const std::string fname = FileName(vol, uuid);
 
         writeJPEG(tileData, fname);
     }
