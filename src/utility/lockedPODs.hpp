@@ -28,7 +28,7 @@ private:
     volatile zi::atomic::atomic_word val_;
 };
 
-
+} // namespace utility
 /*
  * Operations on val_ are so fast that it is probably the best
  * to use spinlock ( or the adaptive pthread mutex in the worst case )
@@ -39,7 +39,7 @@ private:
  * collisions, but we don't care
  */
 
-namespace om {
+
 namespace locked_pods_ {
 
 struct locked_number_tag;  // used to get it's own mutex pool
@@ -210,8 +210,8 @@ private:
 };
 
 } // namespace locked_pods_
-} // namespace om
 
+namespace utility {
 template< class T, bool = om::locked_pods_::is_integral_with_lte_32_bits< T >::value >
 struct LockedNumber {};
 

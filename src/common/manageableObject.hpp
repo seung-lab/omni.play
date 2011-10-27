@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/std.h"
+#include "common/common.h"
 #include "common/exception.h"
 
 namespace om {
