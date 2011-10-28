@@ -15,7 +15,7 @@ namespace om {
 namespace utility {
 
 template <class T>
-class OmTempFile {
+class tempFile {
 private:
     const UUID uuid_;
     const std::string fnp_;
@@ -24,7 +24,7 @@ private:
     T* data_;
 
 public:
-    OmTempFile()
+    tempFile()
         : uuid_(UUID())
         , fnp_(makeFileName())
         , data_(NULL)
@@ -38,7 +38,7 @@ public:
         om::file::openFileRW(file_, fnp_);
     }
 
-    virtual ~OmTempFile()
+    virtual ~tempFile()
     {
         file_.reset();
         om::file::rmFile(fnp_);
