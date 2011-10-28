@@ -79,52 +79,16 @@ public:
         base64::encoder e;
         e.encode(in, ss);
         _return.data = ss.str();
-
-//        coords::chunkCoord ccoord = coord.toChunkCoord(*chan_, mipLevel);
-/*        std::cout << "slicing" << std::endl;
-        tiles::tile t(chan_, ccord, common::XY_VIEW, point.z);
-        t.loadData();
-
-        Vector3i dims = chan_->CoordinateSystem().MipedDataDimensions(mipLevel);
-        int size;
-        std::cout << "compressing" << std::endl;
-        std::vector<JOCTET> image;
-        jpeg::write8bit(dims.x, dims.y, reinterpret_cast<uint8_t*>(t.data()), image);
-
-        std::cout << "encoding" << std::endl;
-
-        std::string encStr(encoded);
-        std::cout << "sending: " << encStr << std::endl;
-        _return.data.swap(encStr);*/
     }
 
     void get_seg_tile(tile& _return, const vector3d& point,
                       const int32_t mipLevel, const int32_t segId)
     {
-/*        std::cout << "Called get_seg_tile:"
-                  << point.x << "," << point.y << "," << point.z
-                  << std::endl;
-
-        coords::globalCoord coord(point.x, point.y, point.z);
-        coords::chunkCoord ccord = coord.toChunkCoord(*chan_, mipLevel);
-        std::cout << "slicing" << std::endl;
-        tiles::tile t(seg_, ccord, common::XY_VIEW, point.z);
-        t.loadData();
-
-        Vector3i dims = chan_->CoordinateSystem().MipedDataDimensions(mipLevel);
-        int size;
-        std::cout << "compressing" << std::endl;
-        boost::shared_ptr<char> image = imageWriter_.write32(t.data(), dims.x, dims.y, size);
-        char encoded[4 * (size / 3 + 1)]; // allocate enough space for the encoded data.
-        std::cout << "encoding" << std::endl;
-        e.encode(image.get(), size, encoded);
-        _return.data = std::string(encoded);
-        std::cout << "sending: " << _return.data << std::endl;*/
     }
 
     void get_seg_bbox(bbox& _return, const int32_t segId)
     {
-//        segment::segment* s = seg_->Segments()->GetSegmentUnsafe(segId);
+        segment::segment s = seg_->Segments()->GetSegmentUnsafe(segId);
     }
 
     int32_t get_seg_id(const vector3d& point)

@@ -1,11 +1,10 @@
 #pragma once
 
-#include "datalayer/dataWrapper.h"
-#include "mesh/meshTypes.h"
+//#include "mesh/meshTypes.h"
 #include "common/manageableObject.hpp"
 #include "volume/volume.h"
-#include "datalayer/archive/segmentation.h"
 #include "volume/segmentationFolder.h"
+#include "datalayer/archive/segmentation.h"
 //#include "segment/segments.h"
 
 namespace om {
@@ -26,8 +25,6 @@ class lists;
 class segments;
 }
 
-//class segmentationDataWrapper;
-
 namespace annotation { class manager; }
 
 namespace volume {
@@ -36,6 +33,7 @@ class data;
 class dataType;
 class segFolder;
 class segLoader;
+class SegmentationDataWrapper;
 
 class segmentation : public volume, public common::manageableObject {
 public:
@@ -74,19 +72,19 @@ public:
 
     void RebuildSegments();
 
-public:
-
     inline data* VolData() {
         return volData_.get();
     }
 
-//    inline segment::segments * Segments() {
-//        return segments_.get();
-//    }
+    inline segment::segments * Segments() {
+        return segments_.get();
+    }
 
     inline om::segmentation::folder* Folder() const {
         return folder_.get();
     }
+
+    SegmentationDataWrapper GetSDW();
 
 private:
     inline void setId(int id) {
@@ -95,7 +93,7 @@ private:
 
     boost::scoped_ptr<om::segmentation::folder> folder_;
     boost::scoped_ptr<data> volData_;
-//    boost::scoped_ptr<segment::segments> segments_;
+    boost::scoped_ptr<segment::segments> segments_;
 
     friend class segmentsImpl;
     friend class segmentsImplLowLevel;

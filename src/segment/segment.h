@@ -23,43 +23,21 @@ public:
     segment()
         : data_(NULL)
         , segments_(NULL)
-        , parent_(NULL)
-        , threshold_(0)
-        , edgeNumber_(-1)
+    {}
+
+    segment(data* data, segments* segments)
+        : data_(data)
+        , segments_(segments)
     {}
 
     inline common::segId value() const {
         return data_->value;
     }
 
-    // color
-    void RandomizeColor();
-
-    void reRandomizeColor();
-
-    inline common::color GetColorInt() const {
-        return data_->color;
-    }
-
-    inline Vector3f GetColorFloat() const
-    {
-        return Vector3f( data_->color.red   / 255.,
-                         data_->color.green / 255.,
-                         data_->color.blue  / 255. );
-    }
-
-    void SetColor(const common::color&);
-    void SetColor(const Vector3i&);
-    void SetColor(const Vector3f&);
-
     std::string GetNote();
     void SetNote(const std::string&);
     std::string GetName();
     void SetName(const std::string&);
-    bool IsSelected();
-    void SetSelected(const bool, const bool);
-    bool IsEnabled();
-    void SetEnabled( const bool);
 
     uint64_t size() const {
         return data_->size;
@@ -71,29 +49,7 @@ public:
         data_->size += inc;
     }
 
-    inline segment* getParent() const {
-        return parent_;
-    }
-
-    inline void setParent(segment* seg){
-        parent_ = seg;
-    }
-
-    void setParent(segment* segment, const double);
-
-    const segChildCont_t& GetChildren();
-
-    common::segId RootID();
-
     common::id GetSegmentationID();
-
-    inline double getThreshold() const {
-        return threshold_;
-    }
-
-    inline void setThreshold(const double thres){
-        threshold_ = thres;
-    }
 
     const coords::dataBbox BoundingBox() const;
 
@@ -109,26 +65,13 @@ public:
         data_->bounds.merge(box);
     }
 
-    inline int getEdgeNumber() const {
-        return edgeNumber_;
-    }
-
-    inline void setEdgeNumber(const int num){
-        edgeNumber_ = num;
-    }
-
     inline segments* Segments(){
         return segments_;
     }
 
 private:
     data* data_;
-
     segments* segments_;
-    segment* parent_;
-    double threshold_;
-
-    int edgeNumber_; // index of edge in main edge list
 
     struct segment_bounds_mutex_pool_tag;
     struct segment_size_mutex_pool_tag;

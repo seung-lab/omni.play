@@ -11,14 +11,13 @@ class segment;
 
 class segmentsImpl : public segmentsImplLowLevel {
 public:
-    segmentsImpl(segmentation*, segmentsStore*);
+    segmentsImpl(volume::segmentation*, segmentsStore*);
     virtual ~segmentsImpl();
 
     void Flush();
 
-    segment* AddSegment();
-    segment* AddSegment(common::segId value);
-    segment* GetOrAddSegment(const common::segId val);
+    segment AddSegment();
+    segment AddSegment(common::segId value);
 
 //private:
 //    friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const segmentsImpl&);

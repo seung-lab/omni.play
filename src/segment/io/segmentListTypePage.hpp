@@ -3,7 +3,7 @@
 #include "common/common.h"
 #include "datalayer/fs/file.h"
 #include "datalayer/fs/fileNames.hpp"
-#include "datalayer/fs/omMemMapCompressedFile.hpp"
+#include "datalayer/fs/memMapCompressedFile.hpp"
 
 class segmentListTypePage {
 private:

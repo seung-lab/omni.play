@@ -78,15 +78,22 @@ void writeVec(std::string& fnp, const std::vector<T>& vec)
     const int64_t bytes = vec.size() * sizeof(T);
 
     std::fstream file(fnp, std::fstream::out | std::fstream::binary);
-    const int bytesWritten = file.write(data, bytes);
 
-    if(bytesWritten != bytes){
+    if(!file.good()){
         throw common::ioException("could not fully write file", fnp);
     }
 }
 
 template <typename T>
-void writeNumElements(std::string& fnp, const boost::shared_ptr<T> ptr,
+void createFileNumElements(const std::string& fnp, const int64_t numElements)
+{
+    const int64_t numBytes = numElements * sizeof(T);
+
+    resizeFileNumBytes(fnp, numBytes);
+}
+
+template <typename T>
+void writeNumElements(const std::string& fnp, const boost::shared_ptr<T> ptr,
                       const int64_t numElements)
 {
     const int64_t numBytes = numElements * sizeof(T);
@@ -95,10 +102,9 @@ void writeNumElements(std::string& fnp, const boost::shared_ptr<T> ptr,
 
     const char* data = reinterpret_cast<const char*>(ptr.get());
 
-    std::fstream file(fnp, std::fstream::out | std::fstream::binary);
-    const int numBytesWritten = file.write(data, numBytes);
+    std::fstream file(fnp.c_str(), std::fstream::out | std::fstream::binary);
 
-    if(numBytesWritten != numBytes){
+    if(!file.good()){
         throw common::ioException("could not fully write file", fnp);
     }
 }

@@ -7,17 +7,19 @@
 #include "boost/unordered_map.hpp"
 
 namespace om {
-namespace volume { class segmentation; }
+namespace volume {
+class segmentation;
+class SegmentationDataWrapper;
+}
 
 namespace segment {
 
 class segments;
-class SegmentationDataWrapper;
-class segmentStore;
+class segmentsStore;
 
 class segmentsImplLowLevel {
 public:
-    segmentsImplLowLevel(segmentation*, segmentStore*);
+    segmentsImplLowLevel(volume::segmentation*, segmentsStore*);
     virtual ~segmentsImplLowLevel();
 
     void growGraphIfNeeded(segment* newSeg);
@@ -40,19 +42,20 @@ public:
         return maxValue_.get();
     }
 
-    SegmentationDataWrapper GetSDW() const;
+    volume::SegmentationDataWrapper GetSDW() const;
 
     segmentsStore* SegmentStore(){
         return store_;
     }
 
 protected:
-    segmentation *const segmentation_;
+    volume::segmentation *const segmentation_;
     segmentsStore *const store_;
 
     utility::lockedUint32 maxValue_;
     uint32_t mNumSegs;
 
+    typedef boost::unordered_map<common::id, std::string>::iterator map_it;
     boost::unordered_map< common::id, std::string > segmentCustomNames;
     boost::unordered_map< common::id, std::string > segmentNotes;
 
@@ -66,3 +69,5 @@ private:
     friend class SegmentTests;
 };
 
+} // namespace segment
+} // namespace om

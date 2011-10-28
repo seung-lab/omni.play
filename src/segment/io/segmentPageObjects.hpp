@@ -2,15 +2,12 @@
 
 #include "segment/segment.h"
 #include "utility/smartPtr.hpp"
-#include "utility/omTempFile.hpp"
 
 class segmentPageObjects {
 private:
     const uint32_t pageSize_;
 
     boost::shared_ptr<segment> segmentsPtr_;
-
-    boost::shared_ptr<OmTempFile<segment> > tmpFile_;
 
 public:
     segmentPageObjects(const uint32_t pageSize)
@@ -19,17 +16,8 @@ public:
 
     segment* MakeSegmentObjectPoolInMemory()
     {
-        segmentsPtr_ = OmSmartPtr<segment>::NewNumElements(pageSize_);
+        segmentsPtr_ = utility::smartPtr<segment>::NewNumElements(pageSize_);
         return segmentsPtr_.get();
-    }
-
-    segment* MakeSegmentObjectPoolOnDisk()
-    {
-        tmpFile_.reset(new OmTempFile<segment>());
-
-        tmpFile_->ResizeNumElements(pageSize_);
-
-        return tmpFile_->Map();
     }
 };
 

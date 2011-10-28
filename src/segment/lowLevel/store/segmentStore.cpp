@@ -1,7 +1,11 @@
-#include "segment/lowLevel/store/segmentStore.hpp"
-#include "segment/lowLevel/omPagingPtrStore.h"
+#include "segment/lowLevel/store/segmentStore.h"
+#include "segment/lowLevel/pagingPtrStore.h"
+#include "segment/io/segmentPage.hpp"
 
-segmentsStore::segmentsStore(segmentation* segmentation)
+namespace om {
+namespace segment {
+
+segmentsStore::segmentsStore(volume::segmentation* segmentation)
     : segmentation_(segmentation)
     , segmentPagesPtr_(new pagingPtrStore(segmentation))
     , segmentPages_(segmentPagesPtr_.get())
@@ -22,21 +26,21 @@ uint32_t segmentsStore::PageSize()
     return segmentPages_->PageSize();
 }
 
-std::vector<segmentPage*> segmentsStore::Pages()
+std::vector<page*> segmentsStore::Pages()
 {
     zi::guard g(pagesLock_);
     return segmentPages_->Pages();
 }
 
-segment* segmentsStore::GetSegment(const common::segId value){
-    return cachedStore_->GetSegment(value);
+segment segmentsStore::GetSegmentUnsafe(const common::segId value){
+    const uint32_t pageSize = PageSize();
+    const uint32_t pageNum = value / pageSize;
+    page& page = *(Pages()[pageNum]);
+    const uint32_t idx = value % pageSize;
+    return page[idx];
 }
 
-segment* segmentsStore::GetSegmentUnsafe(const common::segId value){
-    return cachedStore_->GetSegmentUnsafe(value);
-}
-
-segment* segmentsStore::AddSegment(const common::segId value)
+segment segmentsStore::AddSegment(const common::segId value)
 {
     zi::guard g(pagesLock_);
     return segmentPages_->AddSegment(value);
@@ -57,11 +61,10 @@ bool segmentsStore::IsSegmentValid(const common::segId value)
         return false;
     }
 
-    segment* seg = GetSegment(value);
+    segment seg = GetSegmentUnsafe(value);
 
-    if(!seg){
-        return false;
-    }
-
-    return value == seg->value();
+    return value == seg.value();
 }
+
+} // namespace segment
+} // namespace om

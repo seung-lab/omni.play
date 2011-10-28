@@ -23,10 +23,7 @@ template <typename T>
 class memMappedVolumeImpl : public datalayer::IDataVolume<T> {
 private:
     volume* vol_;
-    std::vector<boost::shared_ptr<datalayer::memMappedFilebase<T> > > maps_;
-
-    typedef datalayer::memMappedFileRead<T> reader_t;
-    typedef datalayer::memMappedFileWrite<T> writer_t;
+    std::vector<boost::shared_ptr<datalayer::memMappedFile<T> > > maps_;
 
 public:
 
@@ -52,7 +49,7 @@ public:
         resizeMapsVector();
 
         for(size_t level = 0; level < maps_.size(); ++level) {
-            maps_[level] = reader_t::Reader(getFileName(level));
+            maps_[level] = boost::make_shared<datalayer::memMappedFile<T> >(getFileName(level));
         }
     }
 
@@ -75,9 +72,8 @@ public:
                       << "," << dims.z
                       << ")\n";
 
-            maps_[level] = writer_t::WriterNumBytes(getFileName(level),
-                                                   size,
-                                                   common::DONT_ZERO_FILL);
+            maps_[level] = datalayer::memMappedFile<T>::CreateNumBytes(getFileName(level),
+                                                                       size);
         }
 
         printf("OmMemMappedVolume: done allocating data\n");

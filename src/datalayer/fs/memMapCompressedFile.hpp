@@ -1,9 +1,9 @@
 #pragma once
 
-#include "datalayer/fs/omCompressedFile.h"
+#include "datalayer/fs/compressedFile.h"
 #include "datalayer/fs/IOnDiskFile.h"
 #include "datalayer/fs/file.h"
-#include "utility/omTempFile.hpp"
+#include "utility/tempFile.hpp"
 
 template <typename T>
 class memMapCompressedFile : public IOnDiskFile<T> {

@@ -1,17 +1,18 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "common/common.h"
 
-class segmentPage;
-class OmSimpleProgress;
-class segmentation;
+namespace om {
+namespace segmentation { class loader; }
+namespace volume { class segmentation; }
 
-namespace om { namespace segmentation { class loader; } }
+namespace segment {
+
+class page;
 
 class pagingPtrStore {
 public:
-    pagingPtrStore(segmentation*);
+    pagingPtrStore(volume::segmentation*);
 
     ~pagingPtrStore();
 
@@ -21,9 +22,9 @@ public:
         return pageSize_;
     }
 
-    segment* AddSegment(const common::segId value);
+    segment AddSegment(const common::segId value);
 
-    std::vector<segmentPage*> Pages(){
+    std::vector<page*> Pages(){
         return pages_;
     }
 
@@ -31,31 +32,33 @@ public:
         return pages_.size();
     }
 
-    const std::set<PageNum> ValidPageNums() const {
+    const std::set<common::pageNum> ValidPageNums() const {
         return validPageNums_;
     }
 
-    segmentation* Vol() const {
+    volume::segmentation* Vol() const {
         return vol_;
     }
 
 private:
-    segmentation *const vol_;
+    volume::segmentation *const vol_;
 
     uint32_t pageSize_;
-    std::vector<segmentPage*> pages_;
+    std::vector<page*> pages_;
 
-    std::set<PageNum> validPageNums_;
+    std::set<common::pageNum> validPageNums_;
 
     void loadAllSegmentPages();
-    void resizeVectorIfNeeded(const PageNum pageNum);
+    void resizeVectorIfNeeded(const common::pageNum pageNum);
 
     std::string metadataPathQStr();
     void loadMetadata();
     void storeMetadata();
 
-    void loadPage(const PageNum page, OmSimpleProgress* prog);
+    void loadPage(const common::pageNum page);
 
     friend class om::segmentation::loader;
 };
 
+} // namespace segment
+} // namespace om

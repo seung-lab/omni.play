@@ -7,6 +7,7 @@
 #include "volume/io/volumeData.h"
 #include "volume/segmentation.h"
 #include "volume/segmentationFolder.h"
+#include "volume/segmentationDataWrapper.hpp"
 //#include "volume/segmentationLoader.h"
 
 namespace om {
@@ -119,6 +120,10 @@ boost::shared_ptr<chunks::segChunk> segmentation::GetChunk(const coords::chunkCo
 
 std::string segmentation::GetDirectoryPath() const {
     return folder_->RelativeVolPath();
+}
+
+SegmentationDataWrapper segmentation::GetSDW() {
+    return SegmentationDataWrapper(id_);
 }
 
 } // namespace volume

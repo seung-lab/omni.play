@@ -1,5 +1,8 @@
 #pragma once
 
+namespace om {
+namespace datalayer {
+
 template <typename T>
 class IOnDiskFile {
 public:
@@ -12,3 +15,5 @@ public:
     virtual std::string GetBaseFileName() const = 0;
 };
 
+}
+}

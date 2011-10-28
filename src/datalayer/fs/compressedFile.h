@@ -1,6 +1,5 @@
 #pragma once
 
-#include "utility/omSharedPtr.hpp"
 #include <zi/bits/cstdint.hpp>
 
 #include <string>

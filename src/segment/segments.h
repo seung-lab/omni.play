@@ -19,17 +19,15 @@ class segmentsStore;
 
 class segments {
 public:
-    segments(volume::segmentation* segmentation);
+    segments(volume::segmentation* segmentation, segmentsStore* store);
     ~segments();
 
     void StartCaches();
     void Flush();
 
-    segment* AddSegment();
-    segment* AddSegment(common::segId value);
-    segment* GetSegment(const common::segId);
-    segment* GetSegmentUnsafe(const common::segId);
-    segment* GetOrAddSegment(const common::segId);
+    segment AddSegment();
+    segment AddSegment(common::segId value);
+    segment GetSegmentUnsafe(const common::segId);
 
     bool IsSegmentValid(common::segId seg);
 

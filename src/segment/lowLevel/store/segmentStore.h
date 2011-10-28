@@ -5,12 +5,13 @@
 #include "datalayer/archive/segmentation.h"
 
 namespace om {
+namespace volume { class segmentation; }
+
 namespace segment {
 
 class pagingPtrStore;
 class segment;
-class segmentPage;
-class segmentation;
+class page;
 class segmentsImpl;
 
 class segmentsStore {
@@ -22,22 +23,22 @@ private:
     zi::spinlock pagesLock_;
 
 public:
-    segmentsStore(segmentation* segmentation);
+    segmentsStore(volume::segmentation* segmentation);
     ~segmentsStore();
 
 // pages
     uint32_t PageSize();
     uint32_t NumPages();
-    std::vector<segmentPage*> Pages();
+    std::vector<page*> Pages();
     void Flush();
 
 // segments
-    segment* AddSegment(const common::segId value);
+    segment AddSegment(const common::segId value);
     bool IsSegmentValid(const common::segId value);
 
 // caching
-    segment* GetSegment(const common::segId value);
-    segment* GetSegmentUnsafe(const common::segId value);
+//    segment* GetSegment(const common::segId value);
+    segment GetSegmentUnsafe(const common::segId value);
 
 private:
 //    friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const segmentsImpl&);

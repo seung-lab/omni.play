@@ -67,7 +67,7 @@ public:
         return &coords_;
     }
 
-    inline operator const coords::volumeSystem*() {
+    inline operator const coords::volumeSystem*() const {
         return &coords_;
     }
 protected:

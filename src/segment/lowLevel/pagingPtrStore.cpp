@@ -1,14 +1,16 @@
 #include "segment/segment.h"
 #include "segment/io/segmentPage.hpp"
-#include "segment/lowLevel/omPagingPtrStore.h"
-#include "utility/omSimpleProgress.hpp"
+#include "segment/lowLevel/pagingPtrStore.h"
 #include "volume/segmentation.h"
+#include "threads/taskManagerTypes.h"
+#include "threads/taskManager.hpp"
 
-#include <QSet>
+namespace om {
+namespace segment {
 
 static const uint32_t DEFAULT_PAGE_SIZE = 100000; // about 4.8 MB on disk
 
-pagingPtrStore::pagingPtrStore(segmentation* vol)
+pagingPtrStore::pagingPtrStore(volume::segmentation* vol)
     : vol_(vol)
     , pageSize_(DEFAULT_PAGE_SIZE)
 {}
@@ -24,65 +26,60 @@ void pagingPtrStore::loadAllSegmentPages()
 {
     loadMetadata();
 
-    const PageNum maxNum = *std::max_element(validPageNums_.begin(),
-                                             validPageNums_.end());
+    const common::pageNum maxNum = *std::max_element(validPageNums_.begin(),
+                                                     validPageNums_.end());
     resizeVectorIfNeeded(maxNum);
 
-    OmSimpleProgress prog(validPageNums_.size(), "Segment page load");
-
-    OmThreadPool pool;
+    threads::threadPool pool;
     pool.start();
 
     FOR_EACH(iter, validPageNums_)
     {
-        const PageNum pageNum = *iter;
+        const common::pageNum pageNum = *iter;
 
         pool.push_back(
             zi::run_fn(
                 zi::bind(&pagingPtrStore::loadPage,
-                         this, pageNum, &prog)));
+                         this, pageNum)));
     }
 
     pool.join();
-    prog.Join();
 }
 
-void pagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
+void pagingPtrStore::loadPage(const common::pageNum pageNum)
 {
-    pages_[pageNum] = new segmentPage(vol_,
-                                        pageNum,
-                                        pageSize_);
+    pages_[pageNum] = new page(vol_,
+                               pageNum,
+                               pageSize_);
     pages_[pageNum]->Load();
-
-    prog->DidOne();
 }
 
-segment* pagingPtrStore::AddSegment(const common::segId value)
+segment pagingPtrStore::AddSegment(const common::segId value)
 {
-    const PageNum pageNum = value / pageSize_;
+    const common::pageNum pageNum = value / pageSize_;
 
     if(!validPageNums_.count(pageNum))
     {
         resizeVectorIfNeeded(pageNum);
         validPageNums_.insert(pageNum);
 
-        pages_[pageNum] = new segmentPage(vol_,
-                                            pageNum,
-                                            pageSize_);
+        pages_[pageNum] = new page(vol_,
+                                   pageNum,
+                                   pageSize_);
         pages_[pageNum]->Create();
 
         storeMetadata();
     }
 
-    segmentPage& page = *pages_[pageNum];
-    segment* ret = &(page[ value % pageSize_]);
+    page& page = *pages_[pageNum];
+    segment ret = page[ value % pageSize_];
 
-    ret->data_->value = value;
+    //ret.data_->value = value;
 
     return ret;
 }
 
-void pagingPtrStore::resizeVectorIfNeeded(const PageNum pageNum)
+void pagingPtrStore::resizeVectorIfNeeded(const common::pageNum pageNum)
 {
     if( pageNum >= pages_.size() ){
         pages_.resize( (1+pageNum) * 2 );
@@ -91,61 +88,16 @@ void pagingPtrStore::resizeVectorIfNeeded(const PageNum pageNum)
 
 std::string pagingPtrStore::metadataPathQStr()
 {
-    return std::string::fromStdString(
-        vol_->Folder()->GetVolSegmentsPathAbs("segment_pages.data")
-        );
+    return vol_->Folder()->GetVolSegmentsPathAbs("segment_pages.data");
 }
 
 void pagingPtrStore::loadMetadata()
 {
-    QFile file(metadataPathQStr());
-
-    if(!file.open(QIODevice::ReadOnly)){
-        throw common::ioException("error reading file", metadataPathQStr());
-    }
-
-    QDataStream in(&file);
-    in.setByteOrder( QDataStream::LittleEndian );
-    in.setVersion(QDataStream::Qt_4_6);
-
-    int version;
-
-    in >> version;
-    in >> pageSize_;
-
-    QSet<PageNum> validPageNumbers;
-    in >> validPageNumbers;
-    FOR_EACH(iter, validPageNumbers){
-        validPageNums_.insert(*iter);
-    }
-
-    if(!in.atEnd()){
-        throw common::ioException("corrupt file?", metadataPathQStr());
-    }
+    pageSize_ = 100000; // default page size.  TODO: read from disk.
 }
 
 void pagingPtrStore::storeMetadata()
 {
-    const std::string path = metadataPathQStr();
-
-    QFile file(path);
-
-    om::file::openFileWO(file);
-
-    QDataStream out(&file);
-    out.setByteOrder( QDataStream::LittleEndian );
-    out.setVersion(QDataStream::Qt_4_6);
-
-    static const int version = 1;
-
-    out << version;
-    out << pageSize_;
-
-    QSet<PageNum> validPageNumbers;
-    FOR_EACH(iter, validPageNums_){
-        validPageNumbers.insert(*iter);
-    }
-    out << validPageNumbers;
 }
 
 void pagingPtrStore::Flush()
@@ -159,3 +111,6 @@ void pagingPtrStore::Flush()
         }
     }
 }
+
+} // namespace segment
+} // namespace om

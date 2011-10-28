@@ -1,17 +1,14 @@
-#include "utility/segmentationDataWrapper.hpp"
-#include "segment/lowLevel/enabledSegments.hpp"
+#include "volume/segmentationDataWrapper.hpp"
 #include "segment/lowLevel/segmentsImplLowLevel.h"
-#include "segment/lowLevel/segmentSelection.hpp"
-#include "segment/lists/segmentLists.h"
-#include "system/cache/omCacheManager.h"
 #include "volume/segmentation.h"
 
-segmentsImplLowLevel::segmentsImplLowLevel(segmentation* segmentation,
-                                               segmentsStore* segmentPages)
+namespace om {
+namespace segment {
+
+segmentsImplLowLevel::segmentsImplLowLevel(volume::segmentation* segmentation,
+                                           segmentsStore* segmentPages)
     : segmentation_(segmentation)
     , store_(segmentPages)
-    , segmentSelection_(new segmentSelection(this))
-    , enabledSegments_(new enabledSegments(this))
     , mNumSegs(0)
 {
     maxValue_.set(0);
@@ -26,8 +23,10 @@ std::string segmentsImplLowLevel::getSegmentName(common::segId segID)
         return "";
     }
 
-    if(segmentCustomNames.contains(segID)){
-        return segmentCustomNames.value(segID);
+    map_it it = segmentCustomNames.find(segID);
+
+    if(it != segmentCustomNames.end()){
+        return it->second;
     }
 
     return ""; //std::string("segment%1").arg(segID);
@@ -43,8 +42,10 @@ std::string segmentsImplLowLevel::getSegmentNote(common::segId segID)
         return "";
     }
 
-    if(segmentNotes.contains(segID)){
-        return segmentNotes.value(segID);
+    map_it it = segmentCustomNames.find(segID);
+
+    if(it != segmentCustomNames.end()){
+        return it->second;
     }
 
     return "";
@@ -54,14 +55,9 @@ void segmentsImplLowLevel::setSegmentNote(common::segId segID, std::string note)
     segmentNotes[ segID ] = note;
 }
 
-void segmentsImplLowLevel::touchFreshness(){
-    OmCacheManager::TouchFreshness();
-}
-
-void segmentsImplLowLevel::growGraphIfNeeded(segment* newSeg){
-    segmentGraph_.GrowGraphIfNeeded(newSeg);
-}
-
-SegmentationDataWrapper segmentsImplLowLevel::GetSDW() const {
+volume::SegmentationDataWrapper segmentsImplLowLevel::GetSDW() const {
     return segmentation_->GetSDW();
 }
+
+} // namespace segment
+} // namespace om
