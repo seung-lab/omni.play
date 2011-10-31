@@ -1,7 +1,14 @@
 #include "common/common.h"
+#include "thrift/server_types.h"
 
 namespace om {
 namespace coords {
+
+globalCoord::globalCoord(common::vector3d v) {
+    x = v.x;
+    y = v.y;
+    z = v.z;
+}
 
 screenCoord globalCoord::toScreenCoord(screenSystem *state) const
 {
@@ -40,6 +47,18 @@ Vector3i globalCoord::withAbsOffset(const volumeSystem * vol) const
     return *this + vol->GetAbsOffset();
 }
 
+globalCoord::operator common::vector3d () const {
+    common::vector3d out;
+    out.x = x;
+    out.y = y;
+    out.z = z;
+    return out;
+}
+
+globalBbox::globalBbox(common::bbox b) {
+    _min = globalCoord(b.min);
+    _max = globalCoord(b.max);
+}
 
 normBbox globalBbox::toNormBbox(const volumeSystem *vol) const
 {
@@ -55,6 +74,14 @@ dataBbox globalBbox::toDataBbox(const volumeSystem *vol, int mipLevel) const
     globalCoord max = _max;
 
     return dataBbox(min.toDataCoord(vol, mipLevel), max.toDataCoord(vol, mipLevel));
+}
+
+globalBbox::operator common::bbox() const{
+    common::bbox out;
+
+    out.min = globalCoord(_min);
+    out.max = globalCoord(_max);
+    return out;
 }
 
 } // namespace coords
