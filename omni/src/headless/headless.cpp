@@ -868,12 +868,17 @@ void Headless::processLine(const QString& line, const QString&)
         OmBuildChannel bc(&chann);
         bc.BuildEmptyChannel();
 
-    } else if(line.startsWith("dumpMesh")){
+    } else if(line.startsWith("dumpMesh:")){
+        QStringList args = line.split(':',QString::SkipEmptyParts);
+        if (args.size() < 2) {
+            printf("specify which segment to export.");
+            return;
+        }
 
         OmExtractMesh meshExtractor;
 
         const OmID segmentationID = 1;
-        const OmSegID segID = 1;
+        const OmSegID segID = OmStringHelpers::getUInt(args[1]);
         const uint32_t mipLevel = 2;
         const uint32_t x = 0;
         const uint32_t y = 0;

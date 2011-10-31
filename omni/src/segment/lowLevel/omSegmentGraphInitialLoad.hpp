@@ -59,16 +59,14 @@ public:
         forest_->ClearCache();
 
         const double stopThreshold = mst->UserThreshold();
-        const double sizeThreshold = mst->UserSizeThreshold();
         OmMSTEdge* edges = mst->Edges();
 
         for(uint32_t i = 0; i < mst->NumEdges(); ++i) {
             if( 1 == edges[i].userSplit ){
                 continue;
             }
-            
-            if( (edges[i].threshold >= stopThreshold && // prob threshold
-                sizeCheck(edges[i].node1ID, edges[i].node2ID, sizeThreshold)) || // size threshold
+
+            if(edges[i].threshold >= stopThreshold ||
                 1 == edges[i].userJoin )
             { // join
                 if( 1 == edges[i].wasJoined ){
@@ -103,11 +101,11 @@ private:
     inline void Join(const OmSegID childRootID, const OmSegID parentRootID){
         forest_->Join(childRootID, parentRootID);
     }
-    
+
     bool sizeCheck(const OmSegID a, const OmSegID b, const double threshold)
     {
         return threshold == 0 ||
-               ((segmentListsLL_->GetSizeWithChildren(Root(a)) + 
+               ((segmentListsLL_->GetSizeWithChildren(Root(a)) +
                  segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold);
     }
 

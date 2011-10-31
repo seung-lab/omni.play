@@ -79,7 +79,6 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
     forest_->ClearCache();
 
     const double stopThreshold = mst->UserThreshold();
-    const double sizeThreshold = mst->UserSizeThreshold();
     OmMSTEdge* edges = mst->Edges();
 
     for(uint32_t i = 0; i < mst->NumEdges(); ++i) {
@@ -87,8 +86,7 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
             continue;
         }
 
-        if( (edges[i].threshold >= stopThreshold && // prob threshold
-            sizeCheck(edges[i].node1ID, edges[i].node2ID, sizeThreshold)) || // size threshold
+        if(edges[i].threshold >= stopThreshold ||
             1 == edges[i].userJoin )
         { // join
             if( 1 == edges[i].wasJoined ){
@@ -121,7 +119,7 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
 bool OmSegmentGraph::sizeCheck(const OmSegID a, const OmSegID b, const double threshold)
 {
     return threshold == 0 ||
-           ((segmentListsLL_->GetSizeWithChildren(Root(a)) + 
+           ((segmentListsLL_->GetSizeWithChildren(Root(a)) +
              segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold);
 }
 
