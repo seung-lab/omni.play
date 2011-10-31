@@ -76,6 +76,18 @@ public:
     void get_seg_tile(tile& _return, const vector3d& point,
                       const int32_t mipLevel, const int32_t segId)
     {
+        std::cout << "Called get_seg_tile:"
+                  << point.x << "," << point.y << "," << point.z << ":" << mipLevel
+                  << std::endl;
+
+        network::writeTile writeTile;
+        std::string uuid = writeTile.MakeTileFileSegmentation(point, mipLevel);
+        std::string path = writeTile.FileName(seg_, uuid);
+        std::ifstream in(path.c_str());
+        std::stringstream ss;
+        base64::encoder e;
+        e.encode(in, ss);
+        _return.data = ss.str();
     }
 
     void get_seg_bbox(bbox& _return, const int32_t segId)

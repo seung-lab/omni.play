@@ -112,8 +112,8 @@ private:
 
     template <typename T>
     boost::shared_ptr<tiles::tile> getTile(T* vol,
-                                              const coords::globalCoord& coord,
-                                              int mipLevel)
+                                           const coords::globalCoord& coord,
+                                           int mipLevel)
     {
         coords::chunkCoord chunkCoord = coord.toChunkCoord(*vol, mipLevel);
         return boost::make_shared<tiles::tile>(vol, chunkCoord, common::XY_VIEW, coord.z);

@@ -106,7 +106,7 @@ void om::jpeg::write8bit(const uint32_t width, const uint32_t height,
     compressInfos.in_color_space   = JCS_GRAYSCALE;
     jpeg_stdio_dest(&compressInfos, file);
     jpeg_set_defaults(&compressInfos);
-    jpeg_set_quality(&compressInfos, 50, true);
+    jpeg_set_quality(&compressInfos, 90, true);
 
     uint8_t* ptr = const_cast<uint8_t*>(pixels);
 
