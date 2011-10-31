@@ -54,13 +54,7 @@ public:
 
     void get_volume_bounds(bbox& _return)
     {
-        coords::globalBbox bounds = chan_->CoordinateSystem().GetDataExtent();
-        _return.min.x = bounds.getMin().x;
-        _return.min.y = bounds.getMin().y;
-        _return.min.z = bounds.getMin().z;
-        _return.max.x = bounds.getMax().x;
-        _return.max.y = bounds.getMax().y;
-        _return.max.z = bounds.getMax().z;
+        _return = chan_->CoordinateSystem().GetDataExtent();
     }
 
     void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel)
@@ -69,10 +63,8 @@ public:
                   << point.x << "," << point.y << "," << point.z << ":" << mipLevel
                   << std::endl;
 
-        coords::globalCoord coord(point.x, point.y, point.z);
-
         network::writeTile writeTile;
-        std::string uuid = writeTile.MakeTileFileChannel(coord, mipLevel);
+        std::string uuid = writeTile.MakeTileFileChannel(point, mipLevel);
         std::string path = writeTile.FileName(chan_, uuid);
         std::ifstream in(path.c_str());
         std::stringstream ss;
@@ -89,13 +81,12 @@ public:
     void get_seg_bbox(bbox& _return, const int32_t segId)
     {
         segment::segment s = seg_->Segments()->GetSegmentUnsafe(segId);
+        _return = s.BoundingBox().toGlobalBbox();
     }
 
     int32_t get_seg_id(const vector3d& point)
     {
-        // Your implementation goes here
-        printf("get_seg_id\n");
-        return 0;
+        return seg_->GetVoxelValue(point);
     }
 
     void get_seg_ids(std::vector<int32_t> & _return, const vector3d& point,
