@@ -14,7 +14,7 @@ folder::folder(volume::segmentation* vol)
 std::string folder::GetVolSegmentsPathAbs()
 {
     return str( boost::format("%1%/users/_default/segmentations/segmentation%2%/segments")
-                % file::absolute(GetVolPath())
+                % datalayer::fileNames::FilesFolder()
                 % vol_->GetID());
 }
 

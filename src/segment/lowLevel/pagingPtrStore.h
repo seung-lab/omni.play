@@ -25,6 +25,11 @@ public:
     segment AddSegment(const common::segId value);
 
     std::vector<page*> Pages(){
+        if(!loaded_) {
+            loadAllSegmentPages();
+            loaded_ = true;
+        }
+
         return pages_;
     }
 
@@ -45,6 +50,7 @@ private:
 
     uint32_t pageSize_;
     std::vector<page*> pages_;
+    bool loaded_;
 
     std::set<common::pageNum> validPageNums_;
 

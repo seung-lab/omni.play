@@ -276,6 +276,7 @@ exists(external/libs/Boost) {
      LIBS += external/libs/Boost/lib/libboost_iostreams.a
      LIBS += external/libs/Boost/lib/libboost_system.a
      LIBS += external/libs/Boost/lib/libboost_thread.a
+     LIBS += external/libs/Boost/lib/libboost_regex.a
 
      QMAKE_CXXFLAGS += -DBOOST_MULTI_INDEX_DISABLE_SERIALIZATION
      QMAKE_CXXFLAGS += -DBOOST_SPIRIT_THREADSAFE

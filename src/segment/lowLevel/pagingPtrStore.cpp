@@ -4,6 +4,10 @@
 #include "volume/segmentation.h"
 #include "threads/taskManagerTypes.h"
 #include "threads/taskManager.hpp"
+#include "common/string.hpp"
+
+#include "boost/filesystem.hpp"
+#include "boost/regex.hpp"
 
 namespace om {
 namespace segment {
@@ -13,6 +17,7 @@ static const uint32_t DEFAULT_PAGE_SIZE = 100000; // about 4.8 MB on disk
 pagingPtrStore::pagingPtrStore(volume::segmentation* vol)
     : vol_(vol)
     , pageSize_(DEFAULT_PAGE_SIZE)
+    , loaded_(false)
 {}
 
 pagingPtrStore::~pagingPtrStore()
@@ -93,7 +98,24 @@ std::string pagingPtrStore::metadataPathQStr()
 
 void pagingPtrStore::loadMetadata()
 {
+    using namespace boost::filesystem;
     pageSize_ = 100000; // default page size.  TODO: read from disk.
+    path p = vol_->Folder()->GetVolSegmentsPathAbs();
+
+    boost::regex e("segment_page([0-9]+).data.ver4");
+
+    if (exists(p))
+    {
+        for(directory_iterator it = directory_iterator(p); it != directory_iterator(); it++)
+        {
+            boost::smatch what;
+            if( boost::regex_search(it->path().string(), what, e))
+            {
+                uint32_t num = string::toNum<uint32_t>(what[1].str());
+                validPageNums_.insert(num);
+            }
+        }
+    }
 }
 
 void pagingPtrStore::storeMetadata()

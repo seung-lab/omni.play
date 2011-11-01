@@ -8,9 +8,9 @@
 namespace om {
 namespace segment {
 
-segments::segments(volume::segmentation* segmentation, segmentsStore* store)
+segments::segments(volume::segmentation* segmentation)
     : segmentation_(segmentation)
-    , store_(store)
+    , store_(new segmentsStore(segmentation))
     , impl_(new segmentsImpl(segmentation, store_.get()))
 {}
 

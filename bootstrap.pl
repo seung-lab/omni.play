@@ -377,7 +377,7 @@ sub boost
     untar($ZLIB_VER);
 
     my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName ";
-    $cmd .= " --with-libraries=filesystem,thread,system,iostreams";
+    $cmd .= " --with-libraries=filesystem,thread,system,iostreams,regex";
 
     print "configuring ($cmd)\n";
 

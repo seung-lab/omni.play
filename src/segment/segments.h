@@ -19,7 +19,7 @@ class segmentsStore;
 
 class segments {
 public:
-    segments(volume::segmentation* segmentation, segmentsStore* store);
+    segments(volume::segmentation* segmentation);
     ~segments();
 
     void StartCaches();
