@@ -307,3 +307,12 @@ exists(external/libs/libjpeg) {
 } else {
     error(please run 'bootstrap.pl 3' to install libjpeg)
 }
+
+#### libpng
+exists(external/libs/libpng) {
+    INCLUDEPATH += external/libs/libpng/include
+
+    LIBS += external/libs/libpng/lib/libpng.a
+} else {
+    error(please run 'bootstrap.pl 4' to install libpng)
+}
