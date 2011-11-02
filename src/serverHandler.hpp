@@ -17,6 +17,7 @@
 #include "pipeline/jpeg.h"
 #include "pipeline/encode.hpp"
 #include "pipeline/utility.hpp"
+#include "pipeline/filter.hpp"
 
 //#include "network/writeTile.hpp"
 //#include "network/jpeg.h"
@@ -67,6 +68,11 @@ public:
     void get_seg_tile(tile& _return, const vector3d& point,
                       const int32_t mipLevel, const int32_t segId)
     {
+        coords::chunkCoord coord(mipLevel, point.x, point.y, point.z);
+        Vector3i dims = chan_->CoordinateSystem().GetDataDimensions();
+        int depth = (int)point.z % dims.z;
+        pipeline::getTileData<uint32_t> getter(chan_, coord, common::XY_VIEW, depth);
+        pipeline::seg_filter segFilter(&getter, segId);
     }
 
     void get_seg_bbox(bbox& _return, const int32_t segId)
