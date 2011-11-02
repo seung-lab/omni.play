@@ -10,17 +10,15 @@
 #include "project/details/segmentationManager.h"
 #include "tiles/tile.h"
 #include "volume/channel.h"
+#include "segment/segment.h"
+#include "segment/segments.h"
 
-//#include "pipeline/getTileData.h"
-//#include "pipeline/encode.hpp"
+#include "pipeline/getTileData.hpp"
+#include "pipeline/jpeg.h"
+#include "pipeline/encode.hpp"
 
-#include "network/writeTile.hpp"
-#include "network/jpeg.h"
-
-#include <fstream>
-#include <sstream>
-
-#include "b64/encode.h"
+//#include "network/writeTile.hpp"
+//#include "network/jpeg.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -56,35 +54,18 @@ public:
 
     void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel)
     {
-        std::cout << "Called get_chan_tile:"
-                  << point.x << "," << point.y << "," << point.z << ":" << mipLevel
-                  << std::endl;
-
-        network::writeTile writeTile;
-        std::string uuid = writeTile.MakeTileFileChannel(point, mipLevel);
-        std::string path = writeTile.FileName(chan_, uuid);
-        std::ifstream in(path.c_str());
-        std::stringstream ss;
-        base64::encoder e;
-        e.encode(in, ss);
-        _return.data = ss.str();
+        coords::chunkCoord coord(mipLevel, point.x, point.y, point.z);
+        Vector3i dims = chan_->CoordinateSystem().GetDataDimensions();
+        int depth = (int)point.z % dims.z;
+        pipeline::getTileData<uint8_t> getter(chan_, coord, common::XY_VIEW, depth);
+        pipeline::jpeg8bit jpegger(&getter, dims.x, dims.y);
+        pipeline::encode encoder(&jpegger);
+        _return.data = std::string(encoder());
     }
 
     void get_seg_tile(tile& _return, const vector3d& point,
                       const int32_t mipLevel, const int32_t segId)
     {
-        std::cout << "Called get_seg_tile:"
-                  << point.x << "," << point.y << "," << point.z << ":" << mipLevel
-                  << std::endl;
-
-        network::writeTile writeTile;
-        std::string uuid = writeTile.MakeTileFileSegmentation(point, mipLevel);
-        std::string path = writeTile.FileName(seg_, uuid);
-        std::ifstream in(path.c_str());
-        std::stringstream ss;
-        base64::encoder e;
-        e.encode(in, ss);
-        _return.data = ss.str();
     }
 
     void get_seg_bbox(bbox& _return, const int32_t segId)

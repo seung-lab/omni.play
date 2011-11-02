@@ -3,13 +3,15 @@
 #include "pipeline/stage.hpp"
 #include "b64/encode.h"
 
+#include "boost/scoped_ptr.hpp"
+
 namespace om {
 namespace pipeline {
 
 class encode : public stage<char, char>
 {
 private:
-    char* data_;
+    boost::scoped_ptr<char> data_;
     int outSize_;
     base64::encoder e;
 
@@ -18,12 +20,14 @@ public:
         : stage<char, char>(pred)
     { }
 
+    ~encode() {}
+
     inline char* operator()(char* input)
     {
-        outSize_ = 4 * (predecessor_->out_size() / 3 + 1);
-        data_ = new char[outSize_];
-        e.encode(input, predecessor_->out_size(), data_);
-        return data_;
+        outSize_ = 2 * predecessor_->out_size();
+        data_.reset(new char[outSize_]);
+        e.encode(input, predecessor_->out_size(), data_.get());
+        return data_.get();
     }
 
     inline char* operator()(){
@@ -31,7 +35,7 @@ public:
     }
 
     inline void cleanup() {
-        delete data_;
+//        data_.reset();
     }
 
     inline int out_size() {

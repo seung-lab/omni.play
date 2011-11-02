@@ -1,5 +1,7 @@
 #pragma once
 
+#include "boost/scoped_ptr.hpp"
+
 namespace om {
 namespace pipeline {
 
@@ -15,11 +17,14 @@ public:
 template <typename Tin, typename Tout>
 class stage : public out_stage<Tout>
 {
+public:
+    typedef out_stage<Tin> pred_t;
+
 protected:
-    out_stage<Tin>* predecessor_;
+    pred_t* predecessor_;
 
 public:
-    stage(out_stage<Tin>* predecessor)
+    stage(pred_t* predecessor)
         : predecessor_(predecessor)
     {}
 

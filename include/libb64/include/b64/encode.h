@@ -33,6 +33,7 @@ struct encoder
     }
     int encode(const char* code_in, const int length_in, char* plaintext_out)
     {
+        base64_init_encodestate(&_state);
         return base64_encode_block(code_in, length_in, plaintext_out, &_state);
     }
     int encode_end(char* plaintext_out)

@@ -6,6 +6,8 @@
 #include "chunks/chunkDataInterface.hpp"
 #include "chunks/segChunkDataInterface.hpp"
 #include "tiles/tileData.hpp"
+#include "volume/channel.h"
+#include "volume/segmentation.h"
 
 namespace om {
 namespace volume { class volume; }
