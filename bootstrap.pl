@@ -38,6 +38,7 @@ my $BOOST_VER = "boost_1_46_1";
 my $THRIFT_VER = "thrift-0.7.0";
 my $ZLIB_VER = "zlib-1.2.5";
 my $JPEG_VER = "libjpeg-turbo-1.1.0";
+my $PNG_VER = "libpng-1.5.5";
 
 # from http://stackoverflow.com/questions/334686/how-can-i-detect-the-operating-system-in-perl
 sub isMac {
@@ -348,6 +349,11 @@ sub libjpeg
     buildInSourceFolder( $JPEG_VER, "libjpeg" );
 }
 
+sub libpng
+{
+    prepareAndBuild( $PNG_VER, "libpng" );
+}
+
 sub boost
 {
 #./bjam --show-libraries
@@ -426,14 +432,15 @@ sub menu
     print "1 -- Build boost\n";
     print "2 -- Build thrift\n";
     print "3 -- Build libjpeg\n";
-    print "4 -- Build omni.server\n";
-    print "5 -- [Do 1 through 4]\n";
-    print "6 -- Generate scripts\n";
-    print "7 -- Ubuntu library apt-gets...\n";
-    print "8 -- build omni.server (make clean first)...\n";
-    print "9 -- build omni.server in debug mode...\n";
-    print "10 -- build omni.server in release mode...\n\n";
-    my $max_answer = 9;
+    print "4 -- Build libpng\n";
+    print "5 -- Build omni.server\n";
+    print "6 -- [Do 1 through 5]\n";
+    print "7 -- Generate scripts\n";
+    print "8 -- Ubuntu library apt-gets...\n";
+    print "9 -- build omni.server (make clean first)...\n";
+    print "10 -- build omni.server in debug mode...\n";
+    print "11 -- build omni.server in release mode...\n\n";
+    my $max_answer = 11;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -453,6 +460,7 @@ sub buildAll
     boost();
     thrift();
     libjpeg();
+    libpng();
     omniServer();
 }
 
@@ -469,18 +477,20 @@ sub runMenuEntry
     }elsif( 3 == $entry ){
         libjpeg();
     }elsif( 4 == $entry ){
-        omniServer();
+        libpng();
     }elsif( 5 == $entry ){
-        buildAll();
+        omniServer();
     }elsif( 6 == $entry ){
-        genOmniScript();
+        buildAll();
     }elsif( 7 == $entry ){
-        doUbuntuAptGets();
+        genOmniScript();
     }elsif( 8 == $entry ){
-        omniClean();
+        doUbuntuAptGets();
     }elsif( 9 == $entry ){
-        omniServer(1);
+        omniClean();
     }elsif( 10 == $entry ){
+        omniServer(1);
+    }elsif( 11 == $entry ){
         omniServer(0);
     }
 }
