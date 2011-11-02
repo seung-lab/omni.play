@@ -16,6 +16,7 @@
 #include "pipeline/getTileData.hpp"
 #include "pipeline/jpeg.h"
 #include "pipeline/encode.hpp"
+#include "pipeline/utility.hpp"
 
 //#include "network/writeTile.hpp"
 //#include "network/jpeg.h"
@@ -58,7 +59,7 @@ public:
         Vector3i dims = chan_->CoordinateSystem().GetDataDimensions();
         int depth = (int)point.z % dims.z;
         pipeline::getTileData<uint8_t> getter(chan_, coord, common::XY_VIEW, depth);
-        pipeline::jpeg8bit jpegger(&getter, dims.x, dims.y);
+        pipeline::jpeg8bit jpegger(&getter, 128, 128);
         pipeline::encode encoder(&jpegger);
         _return.data = std::string(encoder());
     }

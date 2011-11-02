@@ -33,6 +33,7 @@ public:
 
     T* operator()()
     {
+        std::cout << "Getting Tile Data." << std::endl;
         tile_.reset(new tiles::tile(vol_, coord_, view_, depth_));
         tile_->loadData();
         Vector3i dims = vol_->CoordinateSystem().GetChunkDimensions();
@@ -45,7 +46,7 @@ public:
         return tile_->data<T>();
     }
 
-    inline int out_size() {
+    inline int out_size() const {
         return outSize_;
     }
 

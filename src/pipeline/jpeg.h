@@ -38,7 +38,7 @@ public:
         compressed_.reset();
     }
 
-    inline int out_size() {
+    inline int out_size() const {
         return outSize_;
     }
 };
@@ -46,7 +46,7 @@ public:
 class jpeg8bit : public jpeg<uint8_t>
 {
 public:
-    jpeg8bit(pred_t* pred, uint32_t width, uint32_t height)
+    jpeg8bit(out_stage<uint8_t>* pred, uint32_t width, uint32_t height)
         : jpeg<uint8_t>(pred, width, height)
     { }
 
@@ -56,7 +56,7 @@ public:
 class jpeg32bit : public jpeg<uint32_t>
 {
 public:
-    jpeg32bit(pred_t* pred, uint32_t width, uint32_t height)
+    jpeg32bit(out_stage<uint32_t>* pred, uint32_t width, uint32_t height)
         : jpeg<uint32_t>(pred, width, height)
     { }
 

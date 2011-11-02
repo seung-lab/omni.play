@@ -10,21 +10,19 @@ class out_stage
 {
 public:
     virtual Tout* operator()() = 0;
-    virtual int out_size() = 0;
+    virtual int out_size() const = 0;
     virtual void cleanup() = 0;
 };
 
 template <typename Tin, typename Tout>
 class stage : public out_stage<Tout>
 {
-public:
-    typedef out_stage<Tin> pred_t;
-
 protected:
-    pred_t* predecessor_;
+    out_stage<Tin>* predecessor_;
+    int here_;
 
 public:
-    stage(pred_t* predecessor)
+    stage(out_stage<Tin>* predecessor)
         : predecessor_(predecessor)
     {}
 
@@ -33,7 +31,7 @@ public:
     }
 
     virtual Tout* operator()(Tin*) = 0;
-    virtual void cleanup() {};
+    virtual void cleanup() const {};
 
     Tout* operator()() {
         Tin* data = (*predecessor_)();
