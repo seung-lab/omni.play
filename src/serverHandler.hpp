@@ -18,6 +18,7 @@
 #include "pipeline/encode.hpp"
 #include "pipeline/utility.hpp"
 #include "pipeline/filter.hpp"
+#include "pipeline/png.hpp"
 
 //#include "network/writeTile.hpp"
 //#include "network/jpeg.h"
@@ -70,7 +71,7 @@ public:
     {
         coords::chunkCoord coord(mipLevel, point.x, point.y, point.z);
         Vector3i dims = chan_->CoordinateSystem().GetDataDimensions();
-        int depth = (int)point.z % dims.z;
+        int depth = (int)point.z % 128;
         pipeline::getTileData<uint32_t> getter(chan_, coord, common::XY_VIEW, depth);
         pipeline::seg_filter segFilter(&getter, segId);
     }
