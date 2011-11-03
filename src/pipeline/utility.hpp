@@ -57,6 +57,27 @@ protected:
     }
 };
 
+template<typename Tin, typename Tout>
+class recast : public stage<Tin, Tout>
+{
+public:
+    recast(out_stage<Tin> pred)
+        : stage<Tin, Tout> (pred)
+    {}
+
+    void cleanup() {
+        this->predecessor_->cleanup();
+    }
+
+    int out_size() const {
+        return this->predecessor_->out_size();
+    }
+
+    Tout* operator()(Tin* data) {
+        return reinterpret_cast<Tout*>(data);
+    }
+};
+
 
 } // namespace pipeline
 } // namespace om

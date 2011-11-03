@@ -9,7 +9,7 @@ namespace om {
 namespace pipeline {
 
 template<typename T>
-class png : stage<T, char>
+class png : public stage<T, char>
 {
 protected:
     std::vector<char> compressed_;
@@ -206,16 +206,16 @@ public:
     }
 };
 
-class pngMask : public png<uint8_t>
+class pngMask : public png<bool>
 {
 public:
-    pngMask(out_stage<uint8_t>* pred, uint32_t width, uint32_t height)
-        : png<uint8_t>(pred, width, height)
+    pngMask(out_stage<bool>* pred, uint32_t width, uint32_t height)
+        : png<bool>(pred, width, height)
     {}
 
-    char* operator()(uint8_t* data)
+    char* operator()(bool* data)
     {
-        compress(1, PNG_COLOR_TYPE_GRAY, data);
+        compress(1, PNG_COLOR_TYPE_GRAY, reinterpret_cast<uint8_t*>(data));
         return &(*compressed_.begin());
     }
 };

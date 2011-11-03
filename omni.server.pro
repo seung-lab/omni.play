@@ -287,7 +287,7 @@ exists(external/libs/Boost) {
 #BOOST_DISABLE_ASSERTS
 
 }else {
-    error(please run 'bootstrap.pl 1' to install Boost)
+    error(please run 'bootstrap.pl 2' to install Boost)
 }
 
 #### thrift
@@ -296,7 +296,7 @@ exists(external/libs/thrift) {
 
     LIBS += external/libs/thrift/lib/libthrift.a
 } else {
-    error(please run 'bootstrap.pl 2' to install thrift)
+    error(please run 'bootstrap.pl 3' to install thrift)
 }
 
 #### libjpeg
@@ -305,7 +305,7 @@ exists(external/libs/libjpeg) {
 
     LIBS += external/libs/libjpeg/lib/libturbojpeg.a
 } else {
-    error(please run 'bootstrap.pl 3' to install libjpeg)
+    error(please run 'bootstrap.pl 4' to install libjpeg)
 }
 
 #### libpng
@@ -314,5 +314,14 @@ exists(external/libs/libpng) {
 
     LIBS += external/libs/libpng/lib/libpng.a
 } else {
-    error(please run 'bootstrap.pl 4' to install libpng)
+    error(please run 'bootstrap.pl 5' to install libpng)
+}
+
+#### zlib
+exists(external/libs/zlib) {
+    INCLUDEPATH += external/libs/zlib/include
+
+    LIBS += external/libs/zlib/lib/libz.a
+} else {
+    error(please run 'bootstrap.pl 6' to install zlib)
 }

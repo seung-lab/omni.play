@@ -354,6 +354,12 @@ sub libpng
     prepareAndBuild( $PNG_VER, "libpng" );
 }
 
+sub zlib
+{
+    prepare( $ZLIB_VER, "zlib" );
+    buildInSourceFolder( $ZLIB_VER, "zlib" );
+}
+
 sub boost
 {
 #./bjam --show-libraries
@@ -429,18 +435,19 @@ sub menu
 {
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
-    print "1 -- Build boost\n";
-    print "2 -- Build thrift\n";
-    print "3 -- Build libjpeg\n";
-    print "4 -- Build libpng\n";
-    print "5 -- Build omni.server\n";
-    print "6 -- [Do 1 through 5]\n";
-    print "7 -- Generate scripts\n";
-    print "8 -- Ubuntu library apt-gets...\n";
-    print "9 -- build omni.server (make clean first)...\n";
-    print "10 -- build omni.server in debug mode...\n";
-    print "11 -- build omni.server in release mode...\n\n";
-    my $max_answer = 11;
+    print "1 -- Build All\n";
+    print "2 -- Build boost\n";
+    print "3 -- Build thrift\n";
+    print "4 -- Build libjpeg\n";
+    print "5 -- Build libpng\n";
+    print "6 -- Build zlib\n";
+    print "7 -- Build omni.server\n";
+    print "8 -- Generate scripts\n";
+    print "9 -- Ubuntu library apt-gets...\n";
+    print "10 -- build omni.server (make clean first)...\n";
+    print "11 -- build omni.server in debug mode...\n";
+    print "12 -- build omni.server in release mode...\n\n";
+    my $max_answer = 12;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -461,6 +468,7 @@ sub buildAll
     thrift();
     libjpeg();
     libpng();
+    zlib();
     omniServer();
 }
 
@@ -471,26 +479,28 @@ sub runMenuEntry
     if( 0 == $entry ){
 	return();
     }elsif( 1 == $entry ){
-        boost();
-    }elsif( 2 == $entry ){
-        thrift();
-    }elsif( 3 == $entry ){
-        libjpeg();
-    }elsif( 4 == $entry ){
-        libpng();
-    }elsif( 5 == $entry ){
-        omniServer();
-    }elsif( 6 == $entry ){
         buildAll();
+    }elsif( 2 == $entry ){
+        boost();
+    }elsif( 3 == $entry ){
+        thrift();
+    }elsif( 4 == $entry ){
+        libjpeg();
+    }elsif( 5 == $entry ){
+        libpng();
+    }elsif( 6 == $entry ){
+        zlib();
     }elsif( 7 == $entry ){
-        genOmniScript();
+        omniServer();
     }elsif( 8 == $entry ){
-        doUbuntuAptGets();
+        genOmniScript();
     }elsif( 9 == $entry ){
-        omniClean();
+        doUbuntuAptGets();
     }elsif( 10 == $entry ){
-        omniServer(1);
+        omniClean();
     }elsif( 11 == $entry ){
+        omniServer(1);
+    }elsif( 12 == $entry ){
         omniServer(0);
     }
 }
