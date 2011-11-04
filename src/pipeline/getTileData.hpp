@@ -33,9 +33,10 @@ public:
 
     T* operator()()
     {
-        std::cout << "Getting Tile Data." << std::endl;
+//        std::cout << "Getting Tile Data." << std::endl;
         tile_.reset(new tiles::tile(vol_, coord_, view_, depth_));
         tile_->loadData();
+//        outSize_ = 128 * 128;
         Vector3i dims = vol_->CoordinateSystem().GetChunkDimensions();
         switch(view_)
         {

@@ -24,7 +24,7 @@ public:
 
     inline char* operator()(char* input)
     {
-        std::cout << "Encoding" << std::endl;
+//        std::cout << "Encoding" << std::endl;
         outSize_ = 2 * predecessor_->out_size();
         data_.reset(new char[outSize_]);
         e.encode(input, predecessor_->out_size(), data_.get());

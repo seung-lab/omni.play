@@ -70,16 +70,14 @@ public:
     void get_seg_tile(tile& _return, const vector3d& point,
                       const int32_t mipLevel, const int32_t segId)
     {
-        unsigned int id = segId;
-
         coords::chunkCoord coord(mipLevel, point.x, point.y, point.z);
         Vector3i dims = chan_->CoordinateSystem().GetDataDimensions();
         int depth = (int)point.z % 128;
-        pipeline::getTileData<uint32_t> getter(chan_, coord, common::XY_VIEW, depth);
-        pipeline::bitmask<uint32_t> masked(&getter, 0);
+        pipeline::getTileData<uint32_t> getter(seg_, coord, common::XY_VIEW, depth);
+        pipeline::bitmask<uint32_t> masked(&getter, segId);
         pipeline::pngMask png(&masked, 128, 128);
-        pipeline::write_out<char> writer(&png, "/Users/balkamm/test.png");
-        pipeline::encode encoder(&writer);
+        //pipeline::write_out<char> writer(&png, "/Users/balkamm/test.png");
+        pipeline::encode encoder(&png);
         _return.data = std::string(encoder());
     }
 
