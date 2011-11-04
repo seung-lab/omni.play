@@ -31,6 +31,7 @@ public:
     // TODO: Error handling
     void compress(const int bit_depth, const int color_type, const uint8_t* data)
     {
+        std::cout << "Pnging" << std::endl;
         png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
                                                       NULL,
                                                       NULL, // user error functions

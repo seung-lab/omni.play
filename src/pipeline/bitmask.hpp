@@ -31,6 +31,7 @@ public:
 
     bool* operator()(T* data)
     {
+        std::cout << "Bitmasking" << std::endl;
         outSize_ = this->predecessor_->out_size();
         data_.reset(new bool[outSize_]);
         for(int i = 0; i < outSize_; i++) {

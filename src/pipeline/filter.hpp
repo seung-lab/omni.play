@@ -23,6 +23,7 @@ public:
 
     T* operator()(T* input)
     {
+        std::cout << "Filtering" << std::endl;
         size_ = this->predecessor_->out_size();
         data_.reset(new T[size_]);
         for(int i = 0; i < size_; i++) {

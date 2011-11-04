@@ -14,6 +14,7 @@ namespace pipeline {
 template <typename T>
 void jpeg<T>::compress(int pixelsize, int jpegsubsamp, uint8_t* data)
 {
+    std::cout << "Jpegging" << std::endl;
     unsigned long buffSize = TJBUFSIZE(width_, height_);
     compressed_.reset(new char[buffSize]);
 

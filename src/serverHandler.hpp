@@ -58,10 +58,16 @@ public:
 
     void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel)
     {
-        coords::chunkCoord coord(mipLevel, point.x, point.y, point.z);
+        coords::globalCoord coord = point;
+        coords::chunkCoord cc = coord.toChunkCoord(*chan_, mipLevel);
+
+        if(!chan_->CoordinateSystem().ContainsMipChunkCoord(cc)) {
+            throw common::argException("Requested data outside of volume.");
+        }
+
         Vector3i dims = chan_->CoordinateSystem().GetDataDimensions();
         int depth = (int)point.z % dims.z;
-        pipeline::getTileData<uint8_t> getter(chan_, coord, common::XY_VIEW, depth);
+        pipeline::getTileData<uint8_t> getter(chan_, cc, common::XY_VIEW, depth);
         pipeline::jpeg8bit jpegger(&getter, 128, 128);
         pipeline::encode encoder(&jpegger);
         _return.data = std::string(encoder());
@@ -70,10 +76,16 @@ public:
     void get_seg_tile(tile& _return, const vector3d& point,
                       const int32_t mipLevel, const int32_t segId)
     {
-        coords::chunkCoord coord(mipLevel, point.x, point.y, point.z);
+        coords::globalCoord coord = point;
+        coords::chunkCoord cc = coord.toChunkCoord(*seg_, mipLevel);
+
+        if(!seg_->CoordinateSystem().ContainsMipChunkCoord(cc)) {
+            throw common::argException("Requested data outside of volume.");
+        }
+
         Vector3i dims = chan_->CoordinateSystem().GetDataDimensions();
         int depth = (int)point.z % 128;
-        pipeline::getTileData<uint32_t> getter(seg_, coord, common::XY_VIEW, depth);
+        pipeline::getTileData<uint32_t> getter(seg_, cc, common::XY_VIEW, depth);
         pipeline::bitmask<uint32_t> masked(&getter, segId);
         pipeline::pngMask png(&masked, 128, 128);
         //pipeline::write_out<char> writer(&png, "/Users/balkamm/test.png");
