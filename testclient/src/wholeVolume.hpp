@@ -4,6 +4,11 @@
 #include <cstdlib>
 #include <time.h>
 
+std::ostream& operator<< (std::ostream& stream, const vector3d& p) {
+    return stream << p.x << ", " << p.y << ", " << p.z;
+}
+
+
 class testClient {
 public:
     static void getChanTiles(serverClient client, bbox bounds, int mipLevel, int skip)
@@ -41,6 +46,11 @@ public:
             p.z = rand() % zsize + bounds.min.z;
 
             uint32_t id = client.get_seg_id(p);
+            if(id == 0) {
+                std::cout << "Found Segment Id 0 at " << p << std::endl;
+                continue;
+            }
+
             bbox segBbox;
             client.get_seg_bbox(segBbox, id);
 
@@ -51,14 +61,10 @@ public:
                 vector3d max = segBbox.max;
                 client.get_seg_tile(tile, segBbox.max, mipLevel, id);
             } catch(...) {
-                std::cout << "Failed Getting Segment tile on :\n"
+                std::cout << "Failed Getting Segment tile on :" << std::endl
                           << "\tSegID: " << id << std::endl
-                          << "\tbbox min: " << segBbox.min.x << ", "
-                                            << segBbox.min.y << ", "
-                                            << segBbox.min.z << "\n"
-                          << "\tbbox max: " << segBbox.max.x << ", "
-                                            << segBbox.max.y << ", "
-                                            << segBbox.max.z << "\n\n";
+                          << "\tbbox min: " << segBbox.min << std::endl
+                          << "\tbbox max: " << segBbox.max << std::endl << std::endl;
 
             }
         }
@@ -66,9 +72,11 @@ public:
 
     static void wholeVolume(serverClient client)
     {
-        std::cout << "Getting Bounds" << std::endl;
+        std::cout << "Getting Bounds:" << std::endl;
         bbox bounds;
         client.get_volume_bounds(bounds);
+        std::cout << "\tbbox min: " << bounds.min << std::endl
+                  << "\tbbox max: " << bounds.max << std::endl;
 
         std::cout << "Getting Channel Tiles, Mip(0)" << std::endl;
         getChanTiles(client, bounds, 0, 2);
