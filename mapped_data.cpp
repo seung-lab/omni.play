@@ -40,51 +40,44 @@ class storage_server
 private:
     
     
-  typedef std::pair<K, storage_type<V> > ValueType;
+  typedef std::pair<K, storage_type<V> > value_type;
   
   //Alias an STL compatible allocator of for the map.
   //This allocator will allow to place containers
   //in managed shared memory segments
-  typedef allocator<ValueType, managed_mapped_file::segment_manager> 
-  MFileAllocator;
+  typedef allocator<value_type, managed_mapped_file::segment_manager> 
+  m_file_allocator;
 
   //Alias a map of ints that uses the previous STL-like allocator.
   //Note that the third parameter argument is the ordering function
   //of the map, just like with std::map, used to compare the keys.
-  typedef map<K, storage_type<V>, std::less<K>, MFileAllocator> FileMap;
-  typedef typename FileMap::iterator       data_iterator;
-  typedef typename FileMap::const_iterator data_const_iterator;
+  typedef map<K, storage_type<V>, std::less<K>, m_file_allocator> file_map;
+  typedef typename file_map::iterator       data_iterator;
+  typedef typename file_map::const_iterator data_const_iterator;
 
-  FileMap *mymap;
-  managed_mapped_file *mfile;
-  MFileAllocator *alloc_inst;
+  file_map *mymap;
+  managed_mapped_file mfile;
+  m_file_allocator alloc_inst;
   
 public:
-  storage_server(){
+  storage_server()
+    :mfile(open_or_create ,"MappedFile",4194304), alloc_inst(mfile.get_segment_manager())
+  {
     std::cout << "starting server...\n";
-    //Shared memory front-end that is able to construct objects
-    //associated with a c-string. Erase previous shared memory with the name
-    //to be used and create the memory segment at the specified address and initialize resources
-    mfile = new managed_mapped_file(open_or_create ,"MappedFile",4194304);
-
-    //Initialize the shared memory STL-compatible allocator
-    alloc_inst = new MFileAllocator(mfile->get_segment_manager());
-
+    
     //Construct a shared memory map.
     //Note that the first parameter is the comparison function,
     //and the second one the allocator.
     //This the same signature as std::map's constructor taking an allocator
     mymap = 
-      mfile->find_or_construct<FileMap>("FileMap")      //object name
+      mfile.find_or_construct<file_map>("FileMap")      //object name
       (std::less<int>() //first  ctor parameter
-       ,*alloc_inst);     //second ctor parameter
+       ,alloc_inst);     //second ctor parameter
     std::cout << "server constructed\n";
   }
 
   ~storage_server(){
-    delete mfile;
-    delete alloc_inst;
-  }
+   }
 
   // returns the data if its mapped, empty data otherwise
   storage_type<V> get( const K& key ) const
@@ -106,7 +99,7 @@ public:
     bool had_it = mymap->find(key) != mymap->end();
     //*mymap[key] = store;
     std::cout << "inserting key-value pair\n";
-    mymap->insert(ValueType(key,store));
+    mymap->insert(value_type(key,store));
     std::cout << "inserted.\n";
     return had_it;
   }
