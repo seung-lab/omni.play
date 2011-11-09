@@ -84,9 +84,9 @@ private:
   }
 
 public:
-  storage_server(std::string id, std::size_t size)
+  storage_server(std::string  id, std::size_t size)
     :name(id), mapping_size(size), 
-     mfile(bint::open_or_create ,"MappedFile",mapping_size), 
+     mfile(bint::open_or_create ,name.c_str(),mapping_size), 
      alloc_inst(mfile.get_segment_manager())
   {
     init();
@@ -219,134 +219,137 @@ public:
 };
 
 
-template< typename K, typename V >
-class storage_client
-{
-private:
-  typedef storage_client<K,V > this_type;
+// template< typename K, typename V >
+// class storage_client
+// {
+// private:
+//   typedef storage_client<K,V > this_type;
 
-  storage_manager<K,V> manager_;
-  zi::task_manager::deque tm_;
+//   storage_manager<K,V> manager_;
+//   zi::task_manager::deque tm_;
 
-  void get_in_parallel( K key, storage_type<V>* dest,
-			std::size_t* num_left
-			, zi::mutex* m
-			, zi::condition_variable* cv )
-  {
-    *dest = get(key);
-    {
-      zi::mutex::guard g(*m);
-      --(*num_left);
-      if ( *num_left == 0 )
-	{
-	  cv->notify_one();
-	}
-      std::cout << "LEFT: " << *num_left << "\n";
-    }
-  }
+//   void get_in_parallel( K key, storage_type<V>* dest,
+// 			std::size_t* num_left
+// 			, zi::mutex* m
+// 			, zi::condition_variable* cv )
+//   {
+//     *dest = get(key);
+//     {
+//       zi::mutex::guard g(*m);
+//       --(*num_left);
+//       if ( *num_left == 0 )
+// 	{
+// 	  cv->notify_one();
+// 	}
+//       std::cout << "LEFT: " << *num_left << "\n";
+//     }
+//   }
 
-public:
+// public:
 
-  storage_client()
-    : tm_(10),manager_()
-  {
-    std::cout << "starting client\n";
-    tm_.start();
-    std::cout << "client started\n";
-  }
+//   storage_client()
+//     : tm_(10),manager_()
+//   {
+//     std::cout << "starting client\n";
+//     tm_.start();
+//     std::cout << "client started\n";
+//   }
 
-  ~storage_client()
-  {
-    tm_.join();
-  }
+//   ~storage_client()
+//   {
+//     tm_.join();
+//   }
 
-  storage_type<V> get( const K& key ) //const
-  {
-    storage_server<K,V>* server = manager_.get_server(key);
-    std::cout << "Stored in: " << server->get_id() << std::endl;
-    return server->get(key);
-    //return storage_type<V>();
-  }
+//   storage_type<V> get( const K& key ) //const
+//   {
+//     storage_server<K,V>* server = manager_.get_server(key);
+//     std::cout << "Stored in: " << server->get_id() << std::endl;
+//     return server->get(key);
+//     //return storage_type<V>();
+//   }
 
-  std::vector< std::pair<K,storage_type<V> > >
-  multi_get( const std::vector<K>& keys )
-  {
-    // this can also be done in parallel
+//   std::vector< std::pair<K,storage_type<V> > >
+//   multi_get( const std::vector<K>& keys )
+//   {
+//     // this can also be done in parallel
 
-    std::vector< std::pair<K,storage_type<V> > > ret(keys.size());
+//     std::vector< std::pair<K,storage_type<V> > > ret(keys.size());
 
-    std::size_t total_left = keys.size();
-    zi::mutex m;
-    zi::condition_variable cv;
+//     std::size_t total_left = keys.size();
+//     zi::mutex m;
+//     zi::condition_variable cv;
 
-    std::size_t i = 0;
-    FOR_EACH( it, keys )
-      {
-	ret[i].first = *it;
-	tm_.push_back( zi::bind( &this_type::get_in_parallel, this, *it, &ret[i++].second,
-				 &total_left, &m, &cv ) );
-      }
+//     std::size_t i = 0;
+//     FOR_EACH( it, keys )
+//       {
+// 	ret[i].first = *it;
+// 	tm_.push_back( zi::bind( &this_type::get_in_parallel, this, *it, &ret[i++].second,
+// 				 &total_left, &m, &cv ) );
+//       }
 
-    {
-      zi::mutex::guard g(m);
-      while ( total_left > 0 )
-	{
-	  cv.wait(m);
-	}
-    }
+//     {
+//       zi::mutex::guard g(m);
+//       while ( total_left > 0 )
+// 	{
+// 	  cv.wait(m);
+// 	}
+//     }
 
-    return ret;
-  }
+//     return ret;
+//   }
 
-  // return whether it got replaced
-  bool set( const K& key, const storage_type<V>& store )
-  {
-    storage_server<K,V>* server = manager_.get_server(key);
-    return server->set(key,store);
-  }
+//   // return whether it got replaced
+//   bool set( const K& key, const storage_type<V>& store )
+//   {
+//     storage_server<K,V>* server = manager_.get_server(key);
+//     return server->set(key,store);
+//   }
 
-  bool set( const K& key, V* store, std::size_t size )
-  {
-    return set(key, storage_type<V>(size,store));
-  }
+//   bool set( const K& key, V* store, std::size_t size )
+//   {
+//     return set(key, storage_type<V>(size,store));
+//   }
 
-};
+// };
 
 
 
 int main()
-{
-  storage_client<int,int> s;
+ {
+   storage_manager<int,int> mgr;
+   storage_server<int,int>* ptr = mgr.get_server(5);
+   std::cout << ptr->get_id() << std::endl;
+//   storage_client<int,int> s;
 
-  int x[1];
-  int y[1];
+//   int x[1];
+//   int y[1];
 
-  x[0] = 1;
-  y[0] = 2;
+//   x[0] = 1;
+//   y[0] = 2;
 
-  std::cout << s.set(1,x,1) << "\n";
-  std::cout << s.set(1,x,1) << "\n";
+//   std::cout << s.set(1,x,1) << "\n";
+//   std::cout << s.set(1,x,1) << "\n";
 
-  std::cout << s.set(2,y,1) << "\n";
-  std::cout << s.set(2,y,1) << "\n";
+//   std::cout << s.set(2,y,1) << "\n";
+//   std::cout << s.set(2,y,1) << "\n";
 
-  std::cout << (s.get(2).data)[0] << "\n";
-  std::cout << (s.get(1).data)[0] << "\n";
+//   std::cout << (s.get(2).data)[0] << "\n";
+//   std::cout << (s.get(1).data)[0] << "\n";
 
-  std::vector<int> keys;
-  keys.push_back(1);
-  keys.push_back(2);
-  keys.push_back(1);
-  keys.push_back(2);
-  keys.push_back(1);
-  keys.push_back(2);
+//   std::vector<int> keys;
+//   keys.push_back(1);
+//   keys.push_back(2);
+//   keys.push_back(1);
+//   keys.push_back(2);
+//   keys.push_back(1);
+//   keys.push_back(2);
 
-  std::vector<std::pair<int,storage_type<int> > > r = s.multi_get(keys);
+//   std::vector<std::pair<int,storage_type<int> > > r = s.multi_get(keys);
 
-  FOR_EACH( it, r )
-    {
-      std::cout << "Key: " << it->first << " Val: " << it->second.data[0] << "\n";
-    }
-  //remove mapped file
-  //bint::file_mapping::remove("MappedFile");
-}
+//   FOR_EACH( it, r )
+//     {
+//       std::cout << "Key: " << it->first << " Val: " << it->second.data[0] << "\n";
+//     }
+//   //remove mapped file
+//   //bint::file_mapping::remove("MappedFile");
+ }
