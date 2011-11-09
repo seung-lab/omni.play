@@ -3,17 +3,17 @@
  *
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  */
-#ifndef server_H
-#define server_H
+#ifndef old_server_H
+#define old_server_H
 
 #include <TProcessor.h>
 #include "server_types.h"
 
 namespace om { namespace server {
 
-class serverIf {
+class old_serverIf {
  public:
-  virtual ~serverIf() {}
+  virtual ~old_serverIf() {}
   virtual void get_volume_bounds(bbox& _return) = 0;
   virtual void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel) = 0;
   virtual void get_seg_tile(tile& _return, const vector3d& point, const int32_t mipLevel, const int32_t segId) = 0;
@@ -23,9 +23,9 @@ class serverIf {
   virtual double compare_results(const std::vector<result> & old_results, const result& new_result) = 0;
 };
 
-class serverNull : virtual public serverIf {
+class old_serverNull : virtual public old_serverIf {
  public:
-  virtual ~serverNull() {}
+  virtual ~old_serverNull() {}
   void get_volume_bounds(bbox& /* _return */) {
     return;
   }
@@ -52,24 +52,24 @@ class serverNull : virtual public serverIf {
 };
 
 
-class server_get_volume_bounds_args {
+class old_server_get_volume_bounds_args {
  public:
 
-  server_get_volume_bounds_args() {
+  old_server_get_volume_bounds_args() {
   }
 
-  virtual ~server_get_volume_bounds_args() throw() {}
+  virtual ~old_server_get_volume_bounds_args() throw() {}
 
 
-  bool operator == (const server_get_volume_bounds_args & /* rhs */) const
+  bool operator == (const old_server_get_volume_bounds_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const server_get_volume_bounds_args &rhs) const {
+  bool operator != (const old_server_get_volume_bounds_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_volume_bounds_args & ) const;
+  bool operator < (const old_server_get_volume_bounds_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -77,92 +77,92 @@ class server_get_volume_bounds_args {
 };
 
 
-class server_get_volume_bounds_pargs {
+class old_server_get_volume_bounds_pargs {
  public:
 
 
-  virtual ~server_get_volume_bounds_pargs() throw() {}
+  virtual ~old_server_get_volume_bounds_pargs() throw() {}
 
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_volume_bounds_result__isset {
-  _server_get_volume_bounds_result__isset() : success(false) {}
+typedef struct _old_server_get_volume_bounds_result__isset {
+  _old_server_get_volume_bounds_result__isset() : success(false) {}
   bool success;
-} _server_get_volume_bounds_result__isset;
+} _old_server_get_volume_bounds_result__isset;
 
-class server_get_volume_bounds_result {
+class old_server_get_volume_bounds_result {
  public:
 
-  server_get_volume_bounds_result() {
+  old_server_get_volume_bounds_result() {
   }
 
-  virtual ~server_get_volume_bounds_result() throw() {}
+  virtual ~old_server_get_volume_bounds_result() throw() {}
 
   bbox success;
 
-  _server_get_volume_bounds_result__isset __isset;
+  _old_server_get_volume_bounds_result__isset __isset;
 
   void __set_success(const bbox& val) {
     success = val;
   }
 
-  bool operator == (const server_get_volume_bounds_result & rhs) const
+  bool operator == (const old_server_get_volume_bounds_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_get_volume_bounds_result &rhs) const {
+  bool operator != (const old_server_get_volume_bounds_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_volume_bounds_result & ) const;
+  bool operator < (const old_server_get_volume_bounds_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_volume_bounds_presult__isset {
-  _server_get_volume_bounds_presult__isset() : success(false) {}
+typedef struct _old_server_get_volume_bounds_presult__isset {
+  _old_server_get_volume_bounds_presult__isset() : success(false) {}
   bool success;
-} _server_get_volume_bounds_presult__isset;
+} _old_server_get_volume_bounds_presult__isset;
 
-class server_get_volume_bounds_presult {
+class old_server_get_volume_bounds_presult {
  public:
 
 
-  virtual ~server_get_volume_bounds_presult() throw() {}
+  virtual ~old_server_get_volume_bounds_presult() throw() {}
 
   bbox* success;
 
-  _server_get_volume_bounds_presult__isset __isset;
+  _old_server_get_volume_bounds_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _server_get_chan_tile_args__isset {
-  _server_get_chan_tile_args__isset() : point(false), mipLevel(false) {}
+typedef struct _old_server_get_chan_tile_args__isset {
+  _old_server_get_chan_tile_args__isset() : point(false), mipLevel(false) {}
   bool point;
   bool mipLevel;
-} _server_get_chan_tile_args__isset;
+} _old_server_get_chan_tile_args__isset;
 
-class server_get_chan_tile_args {
+class old_server_get_chan_tile_args {
  public:
 
-  server_get_chan_tile_args() : mipLevel(0) {
+  old_server_get_chan_tile_args() : mipLevel(0) {
   }
 
-  virtual ~server_get_chan_tile_args() throw() {}
+  virtual ~old_server_get_chan_tile_args() throw() {}
 
   vector3d point;
   int32_t mipLevel;
 
-  _server_get_chan_tile_args__isset __isset;
+  _old_server_get_chan_tile_args__isset __isset;
 
   void __set_point(const vector3d& val) {
     point = val;
@@ -172,7 +172,7 @@ class server_get_chan_tile_args {
     mipLevel = val;
   }
 
-  bool operator == (const server_get_chan_tile_args & rhs) const
+  bool operator == (const old_server_get_chan_tile_args & rhs) const
   {
     if (!(point == rhs.point))
       return false;
@@ -180,11 +180,11 @@ class server_get_chan_tile_args {
       return false;
     return true;
   }
-  bool operator != (const server_get_chan_tile_args &rhs) const {
+  bool operator != (const old_server_get_chan_tile_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_chan_tile_args & ) const;
+  bool operator < (const old_server_get_chan_tile_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -192,11 +192,11 @@ class server_get_chan_tile_args {
 };
 
 
-class server_get_chan_tile_pargs {
+class old_server_get_chan_tile_pargs {
  public:
 
 
-  virtual ~server_get_chan_tile_pargs() throw() {}
+  virtual ~old_server_get_chan_tile_pargs() throw() {}
 
   const vector3d* point;
   const int32_t* mipLevel;
@@ -205,83 +205,83 @@ class server_get_chan_tile_pargs {
 
 };
 
-typedef struct _server_get_chan_tile_result__isset {
-  _server_get_chan_tile_result__isset() : success(false) {}
+typedef struct _old_server_get_chan_tile_result__isset {
+  _old_server_get_chan_tile_result__isset() : success(false) {}
   bool success;
-} _server_get_chan_tile_result__isset;
+} _old_server_get_chan_tile_result__isset;
 
-class server_get_chan_tile_result {
+class old_server_get_chan_tile_result {
  public:
 
-  server_get_chan_tile_result() {
+  old_server_get_chan_tile_result() {
   }
 
-  virtual ~server_get_chan_tile_result() throw() {}
+  virtual ~old_server_get_chan_tile_result() throw() {}
 
   tile success;
 
-  _server_get_chan_tile_result__isset __isset;
+  _old_server_get_chan_tile_result__isset __isset;
 
   void __set_success(const tile& val) {
     success = val;
   }
 
-  bool operator == (const server_get_chan_tile_result & rhs) const
+  bool operator == (const old_server_get_chan_tile_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_get_chan_tile_result &rhs) const {
+  bool operator != (const old_server_get_chan_tile_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_chan_tile_result & ) const;
+  bool operator < (const old_server_get_chan_tile_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_chan_tile_presult__isset {
-  _server_get_chan_tile_presult__isset() : success(false) {}
+typedef struct _old_server_get_chan_tile_presult__isset {
+  _old_server_get_chan_tile_presult__isset() : success(false) {}
   bool success;
-} _server_get_chan_tile_presult__isset;
+} _old_server_get_chan_tile_presult__isset;
 
-class server_get_chan_tile_presult {
+class old_server_get_chan_tile_presult {
  public:
 
 
-  virtual ~server_get_chan_tile_presult() throw() {}
+  virtual ~old_server_get_chan_tile_presult() throw() {}
 
   tile* success;
 
-  _server_get_chan_tile_presult__isset __isset;
+  _old_server_get_chan_tile_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _server_get_seg_tile_args__isset {
-  _server_get_seg_tile_args__isset() : point(false), mipLevel(false), segId(false) {}
+typedef struct _old_server_get_seg_tile_args__isset {
+  _old_server_get_seg_tile_args__isset() : point(false), mipLevel(false), segId(false) {}
   bool point;
   bool mipLevel;
   bool segId;
-} _server_get_seg_tile_args__isset;
+} _old_server_get_seg_tile_args__isset;
 
-class server_get_seg_tile_args {
+class old_server_get_seg_tile_args {
  public:
 
-  server_get_seg_tile_args() : mipLevel(0), segId(0) {
+  old_server_get_seg_tile_args() : mipLevel(0), segId(0) {
   }
 
-  virtual ~server_get_seg_tile_args() throw() {}
+  virtual ~old_server_get_seg_tile_args() throw() {}
 
   vector3d point;
   int32_t mipLevel;
   int32_t segId;
 
-  _server_get_seg_tile_args__isset __isset;
+  _old_server_get_seg_tile_args__isset __isset;
 
   void __set_point(const vector3d& val) {
     point = val;
@@ -295,7 +295,7 @@ class server_get_seg_tile_args {
     segId = val;
   }
 
-  bool operator == (const server_get_seg_tile_args & rhs) const
+  bool operator == (const old_server_get_seg_tile_args & rhs) const
   {
     if (!(point == rhs.point))
       return false;
@@ -305,11 +305,11 @@ class server_get_seg_tile_args {
       return false;
     return true;
   }
-  bool operator != (const server_get_seg_tile_args &rhs) const {
+  bool operator != (const old_server_get_seg_tile_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_seg_tile_args & ) const;
+  bool operator < (const old_server_get_seg_tile_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -317,11 +317,11 @@ class server_get_seg_tile_args {
 };
 
 
-class server_get_seg_tile_pargs {
+class old_server_get_seg_tile_pargs {
  public:
 
 
-  virtual ~server_get_seg_tile_pargs() throw() {}
+  virtual ~old_server_get_seg_tile_pargs() throw() {}
 
   const vector3d* point;
   const int32_t* mipLevel;
@@ -331,95 +331,95 @@ class server_get_seg_tile_pargs {
 
 };
 
-typedef struct _server_get_seg_tile_result__isset {
-  _server_get_seg_tile_result__isset() : success(false) {}
+typedef struct _old_server_get_seg_tile_result__isset {
+  _old_server_get_seg_tile_result__isset() : success(false) {}
   bool success;
-} _server_get_seg_tile_result__isset;
+} _old_server_get_seg_tile_result__isset;
 
-class server_get_seg_tile_result {
+class old_server_get_seg_tile_result {
  public:
 
-  server_get_seg_tile_result() {
+  old_server_get_seg_tile_result() {
   }
 
-  virtual ~server_get_seg_tile_result() throw() {}
+  virtual ~old_server_get_seg_tile_result() throw() {}
 
   tile success;
 
-  _server_get_seg_tile_result__isset __isset;
+  _old_server_get_seg_tile_result__isset __isset;
 
   void __set_success(const tile& val) {
     success = val;
   }
 
-  bool operator == (const server_get_seg_tile_result & rhs) const
+  bool operator == (const old_server_get_seg_tile_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_get_seg_tile_result &rhs) const {
+  bool operator != (const old_server_get_seg_tile_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_seg_tile_result & ) const;
+  bool operator < (const old_server_get_seg_tile_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_seg_tile_presult__isset {
-  _server_get_seg_tile_presult__isset() : success(false) {}
+typedef struct _old_server_get_seg_tile_presult__isset {
+  _old_server_get_seg_tile_presult__isset() : success(false) {}
   bool success;
-} _server_get_seg_tile_presult__isset;
+} _old_server_get_seg_tile_presult__isset;
 
-class server_get_seg_tile_presult {
+class old_server_get_seg_tile_presult {
  public:
 
 
-  virtual ~server_get_seg_tile_presult() throw() {}
+  virtual ~old_server_get_seg_tile_presult() throw() {}
 
   tile* success;
 
-  _server_get_seg_tile_presult__isset __isset;
+  _old_server_get_seg_tile_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _server_get_seg_id_args__isset {
-  _server_get_seg_id_args__isset() : point(false) {}
+typedef struct _old_server_get_seg_id_args__isset {
+  _old_server_get_seg_id_args__isset() : point(false) {}
   bool point;
-} _server_get_seg_id_args__isset;
+} _old_server_get_seg_id_args__isset;
 
-class server_get_seg_id_args {
+class old_server_get_seg_id_args {
  public:
 
-  server_get_seg_id_args() {
+  old_server_get_seg_id_args() {
   }
 
-  virtual ~server_get_seg_id_args() throw() {}
+  virtual ~old_server_get_seg_id_args() throw() {}
 
   vector3d point;
 
-  _server_get_seg_id_args__isset __isset;
+  _old_server_get_seg_id_args__isset __isset;
 
   void __set_point(const vector3d& val) {
     point = val;
   }
 
-  bool operator == (const server_get_seg_id_args & rhs) const
+  bool operator == (const old_server_get_seg_id_args & rhs) const
   {
     if (!(point == rhs.point))
       return false;
     return true;
   }
-  bool operator != (const server_get_seg_id_args &rhs) const {
+  bool operator != (const old_server_get_seg_id_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_seg_id_args & ) const;
+  bool operator < (const old_server_get_seg_id_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -427,11 +427,11 @@ class server_get_seg_id_args {
 };
 
 
-class server_get_seg_id_pargs {
+class old_server_get_seg_id_pargs {
  public:
 
 
-  virtual ~server_get_seg_id_pargs() throw() {}
+  virtual ~old_server_get_seg_id_pargs() throw() {}
 
   const vector3d* point;
 
@@ -439,95 +439,95 @@ class server_get_seg_id_pargs {
 
 };
 
-typedef struct _server_get_seg_id_result__isset {
-  _server_get_seg_id_result__isset() : success(false) {}
+typedef struct _old_server_get_seg_id_result__isset {
+  _old_server_get_seg_id_result__isset() : success(false) {}
   bool success;
-} _server_get_seg_id_result__isset;
+} _old_server_get_seg_id_result__isset;
 
-class server_get_seg_id_result {
+class old_server_get_seg_id_result {
  public:
 
-  server_get_seg_id_result() : success(0) {
+  old_server_get_seg_id_result() : success(0) {
   }
 
-  virtual ~server_get_seg_id_result() throw() {}
+  virtual ~old_server_get_seg_id_result() throw() {}
 
   int32_t success;
 
-  _server_get_seg_id_result__isset __isset;
+  _old_server_get_seg_id_result__isset __isset;
 
   void __set_success(const int32_t val) {
     success = val;
   }
 
-  bool operator == (const server_get_seg_id_result & rhs) const
+  bool operator == (const old_server_get_seg_id_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_get_seg_id_result &rhs) const {
+  bool operator != (const old_server_get_seg_id_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_seg_id_result & ) const;
+  bool operator < (const old_server_get_seg_id_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_seg_id_presult__isset {
-  _server_get_seg_id_presult__isset() : success(false) {}
+typedef struct _old_server_get_seg_id_presult__isset {
+  _old_server_get_seg_id_presult__isset() : success(false) {}
   bool success;
-} _server_get_seg_id_presult__isset;
+} _old_server_get_seg_id_presult__isset;
 
-class server_get_seg_id_presult {
+class old_server_get_seg_id_presult {
  public:
 
 
-  virtual ~server_get_seg_id_presult() throw() {}
+  virtual ~old_server_get_seg_id_presult() throw() {}
 
   int32_t* success;
 
-  _server_get_seg_id_presult__isset __isset;
+  _old_server_get_seg_id_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _server_get_seg_bbox_args__isset {
-  _server_get_seg_bbox_args__isset() : segId(false) {}
+typedef struct _old_server_get_seg_bbox_args__isset {
+  _old_server_get_seg_bbox_args__isset() : segId(false) {}
   bool segId;
-} _server_get_seg_bbox_args__isset;
+} _old_server_get_seg_bbox_args__isset;
 
-class server_get_seg_bbox_args {
+class old_server_get_seg_bbox_args {
  public:
 
-  server_get_seg_bbox_args() : segId(0) {
+  old_server_get_seg_bbox_args() : segId(0) {
   }
 
-  virtual ~server_get_seg_bbox_args() throw() {}
+  virtual ~old_server_get_seg_bbox_args() throw() {}
 
   int32_t segId;
 
-  _server_get_seg_bbox_args__isset __isset;
+  _old_server_get_seg_bbox_args__isset __isset;
 
   void __set_segId(const int32_t val) {
     segId = val;
   }
 
-  bool operator == (const server_get_seg_bbox_args & rhs) const
+  bool operator == (const old_server_get_seg_bbox_args & rhs) const
   {
     if (!(segId == rhs.segId))
       return false;
     return true;
   }
-  bool operator != (const server_get_seg_bbox_args &rhs) const {
+  bool operator != (const old_server_get_seg_bbox_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_seg_bbox_args & ) const;
+  bool operator < (const old_server_get_seg_bbox_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -535,11 +535,11 @@ class server_get_seg_bbox_args {
 };
 
 
-class server_get_seg_bbox_pargs {
+class old_server_get_seg_bbox_pargs {
  public:
 
 
-  virtual ~server_get_seg_bbox_pargs() throw() {}
+  virtual ~old_server_get_seg_bbox_pargs() throw() {}
 
   const int32_t* segId;
 
@@ -547,81 +547,81 @@ class server_get_seg_bbox_pargs {
 
 };
 
-typedef struct _server_get_seg_bbox_result__isset {
-  _server_get_seg_bbox_result__isset() : success(false) {}
+typedef struct _old_server_get_seg_bbox_result__isset {
+  _old_server_get_seg_bbox_result__isset() : success(false) {}
   bool success;
-} _server_get_seg_bbox_result__isset;
+} _old_server_get_seg_bbox_result__isset;
 
-class server_get_seg_bbox_result {
+class old_server_get_seg_bbox_result {
  public:
 
-  server_get_seg_bbox_result() {
+  old_server_get_seg_bbox_result() {
   }
 
-  virtual ~server_get_seg_bbox_result() throw() {}
+  virtual ~old_server_get_seg_bbox_result() throw() {}
 
   bbox success;
 
-  _server_get_seg_bbox_result__isset __isset;
+  _old_server_get_seg_bbox_result__isset __isset;
 
   void __set_success(const bbox& val) {
     success = val;
   }
 
-  bool operator == (const server_get_seg_bbox_result & rhs) const
+  bool operator == (const old_server_get_seg_bbox_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_get_seg_bbox_result &rhs) const {
+  bool operator != (const old_server_get_seg_bbox_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_seg_bbox_result & ) const;
+  bool operator < (const old_server_get_seg_bbox_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_seg_bbox_presult__isset {
-  _server_get_seg_bbox_presult__isset() : success(false) {}
+typedef struct _old_server_get_seg_bbox_presult__isset {
+  _old_server_get_seg_bbox_presult__isset() : success(false) {}
   bool success;
-} _server_get_seg_bbox_presult__isset;
+} _old_server_get_seg_bbox_presult__isset;
 
-class server_get_seg_bbox_presult {
+class old_server_get_seg_bbox_presult {
  public:
 
 
-  virtual ~server_get_seg_bbox_presult() throw() {}
+  virtual ~old_server_get_seg_bbox_presult() throw() {}
 
   bbox* success;
 
-  _server_get_seg_bbox_presult__isset __isset;
+  _old_server_get_seg_bbox_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _server_get_seg_ids_args__isset {
-  _server_get_seg_ids_args__isset() : point(false), radius(false) {}
+typedef struct _old_server_get_seg_ids_args__isset {
+  _old_server_get_seg_ids_args__isset() : point(false), radius(false) {}
   bool point;
   bool radius;
-} _server_get_seg_ids_args__isset;
+} _old_server_get_seg_ids_args__isset;
 
-class server_get_seg_ids_args {
+class old_server_get_seg_ids_args {
  public:
 
-  server_get_seg_ids_args() : radius(0) {
+  old_server_get_seg_ids_args() : radius(0) {
   }
 
-  virtual ~server_get_seg_ids_args() throw() {}
+  virtual ~old_server_get_seg_ids_args() throw() {}
 
   vector3d point;
   double radius;
 
-  _server_get_seg_ids_args__isset __isset;
+  _old_server_get_seg_ids_args__isset __isset;
 
   void __set_point(const vector3d& val) {
     point = val;
@@ -631,7 +631,7 @@ class server_get_seg_ids_args {
     radius = val;
   }
 
-  bool operator == (const server_get_seg_ids_args & rhs) const
+  bool operator == (const old_server_get_seg_ids_args & rhs) const
   {
     if (!(point == rhs.point))
       return false;
@@ -639,11 +639,11 @@ class server_get_seg_ids_args {
       return false;
     return true;
   }
-  bool operator != (const server_get_seg_ids_args &rhs) const {
+  bool operator != (const old_server_get_seg_ids_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_seg_ids_args & ) const;
+  bool operator < (const old_server_get_seg_ids_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -651,11 +651,11 @@ class server_get_seg_ids_args {
 };
 
 
-class server_get_seg_ids_pargs {
+class old_server_get_seg_ids_pargs {
  public:
 
 
-  virtual ~server_get_seg_ids_pargs() throw() {}
+  virtual ~old_server_get_seg_ids_pargs() throw() {}
 
   const vector3d* point;
   const double* radius;
@@ -664,81 +664,81 @@ class server_get_seg_ids_pargs {
 
 };
 
-typedef struct _server_get_seg_ids_result__isset {
-  _server_get_seg_ids_result__isset() : success(false) {}
+typedef struct _old_server_get_seg_ids_result__isset {
+  _old_server_get_seg_ids_result__isset() : success(false) {}
   bool success;
-} _server_get_seg_ids_result__isset;
+} _old_server_get_seg_ids_result__isset;
 
-class server_get_seg_ids_result {
+class old_server_get_seg_ids_result {
  public:
 
-  server_get_seg_ids_result() {
+  old_server_get_seg_ids_result() {
   }
 
-  virtual ~server_get_seg_ids_result() throw() {}
+  virtual ~old_server_get_seg_ids_result() throw() {}
 
   std::vector<int32_t>  success;
 
-  _server_get_seg_ids_result__isset __isset;
+  _old_server_get_seg_ids_result__isset __isset;
 
   void __set_success(const std::vector<int32_t> & val) {
     success = val;
   }
 
-  bool operator == (const server_get_seg_ids_result & rhs) const
+  bool operator == (const old_server_get_seg_ids_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_get_seg_ids_result &rhs) const {
+  bool operator != (const old_server_get_seg_ids_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_seg_ids_result & ) const;
+  bool operator < (const old_server_get_seg_ids_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_seg_ids_presult__isset {
-  _server_get_seg_ids_presult__isset() : success(false) {}
+typedef struct _old_server_get_seg_ids_presult__isset {
+  _old_server_get_seg_ids_presult__isset() : success(false) {}
   bool success;
-} _server_get_seg_ids_presult__isset;
+} _old_server_get_seg_ids_presult__isset;
 
-class server_get_seg_ids_presult {
+class old_server_get_seg_ids_presult {
  public:
 
 
-  virtual ~server_get_seg_ids_presult() throw() {}
+  virtual ~old_server_get_seg_ids_presult() throw() {}
 
   std::vector<int32_t> * success;
 
-  _server_get_seg_ids_presult__isset __isset;
+  _old_server_get_seg_ids_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _server_compare_results_args__isset {
-  _server_compare_results_args__isset() : old_results(false), new_result(false) {}
+typedef struct _old_server_compare_results_args__isset {
+  _old_server_compare_results_args__isset() : old_results(false), new_result(false) {}
   bool old_results;
   bool new_result;
-} _server_compare_results_args__isset;
+} _old_server_compare_results_args__isset;
 
-class server_compare_results_args {
+class old_server_compare_results_args {
  public:
 
-  server_compare_results_args() {
+  old_server_compare_results_args() {
   }
 
-  virtual ~server_compare_results_args() throw() {}
+  virtual ~old_server_compare_results_args() throw() {}
 
   std::vector<result>  old_results;
   result new_result;
 
-  _server_compare_results_args__isset __isset;
+  _old_server_compare_results_args__isset __isset;
 
   void __set_old_results(const std::vector<result> & val) {
     old_results = val;
@@ -748,7 +748,7 @@ class server_compare_results_args {
     new_result = val;
   }
 
-  bool operator == (const server_compare_results_args & rhs) const
+  bool operator == (const old_server_compare_results_args & rhs) const
   {
     if (!(old_results == rhs.old_results))
       return false;
@@ -756,11 +756,11 @@ class server_compare_results_args {
       return false;
     return true;
   }
-  bool operator != (const server_compare_results_args &rhs) const {
+  bool operator != (const old_server_compare_results_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_compare_results_args & ) const;
+  bool operator < (const old_server_compare_results_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -768,11 +768,11 @@ class server_compare_results_args {
 };
 
 
-class server_compare_results_pargs {
+class old_server_compare_results_pargs {
  public:
 
 
-  virtual ~server_compare_results_pargs() throw() {}
+  virtual ~old_server_compare_results_pargs() throw() {}
 
   const std::vector<result> * old_results;
   const result* new_result;
@@ -781,72 +781,72 @@ class server_compare_results_pargs {
 
 };
 
-typedef struct _server_compare_results_result__isset {
-  _server_compare_results_result__isset() : success(false) {}
+typedef struct _old_server_compare_results_result__isset {
+  _old_server_compare_results_result__isset() : success(false) {}
   bool success;
-} _server_compare_results_result__isset;
+} _old_server_compare_results_result__isset;
 
-class server_compare_results_result {
+class old_server_compare_results_result {
  public:
 
-  server_compare_results_result() : success(0) {
+  old_server_compare_results_result() : success(0) {
   }
 
-  virtual ~server_compare_results_result() throw() {}
+  virtual ~old_server_compare_results_result() throw() {}
 
   double success;
 
-  _server_compare_results_result__isset __isset;
+  _old_server_compare_results_result__isset __isset;
 
   void __set_success(const double val) {
     success = val;
   }
 
-  bool operator == (const server_compare_results_result & rhs) const
+  bool operator == (const old_server_compare_results_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_compare_results_result &rhs) const {
+  bool operator != (const old_server_compare_results_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_compare_results_result & ) const;
+  bool operator < (const old_server_compare_results_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_compare_results_presult__isset {
-  _server_compare_results_presult__isset() : success(false) {}
+typedef struct _old_server_compare_results_presult__isset {
+  _old_server_compare_results_presult__isset() : success(false) {}
   bool success;
-} _server_compare_results_presult__isset;
+} _old_server_compare_results_presult__isset;
 
-class server_compare_results_presult {
+class old_server_compare_results_presult {
  public:
 
 
-  virtual ~server_compare_results_presult() throw() {}
+  virtual ~old_server_compare_results_presult() throw() {}
 
   double* success;
 
-  _server_compare_results_presult__isset __isset;
+  _old_server_compare_results_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-class serverClient : virtual public serverIf {
+class old_serverClient : virtual public old_serverIf {
  public:
-  serverClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
+  old_serverClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
     piprot_(prot),
     poprot_(prot) {
     iprot_ = prot.get();
     oprot_ = prot.get();
   }
-  serverClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) :
+  old_serverClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) :
     piprot_(iprot),
     poprot_(oprot) {
     iprot_ = iprot.get();
@@ -886,12 +886,12 @@ class serverClient : virtual public serverIf {
   ::apache::thrift::protocol::TProtocol* oprot_;
 };
 
-class serverProcessor : virtual public ::apache::thrift::TProcessor {
+class old_serverProcessor : virtual public ::apache::thrift::TProcessor {
  protected:
-  boost::shared_ptr<serverIf> iface_;
+  boost::shared_ptr<old_serverIf> iface_;
   virtual bool process_fn(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, std::string& fname, int32_t seqid, void* callContext);
  private:
-  std::map<std::string, void (serverProcessor::*)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*)> processMap_;
+  std::map<std::string, void (old_serverProcessor::*)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*)> processMap_;
   void process_get_volume_bounds(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_chan_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -900,30 +900,30 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
   void process_get_seg_ids(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_compare_results(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
-  serverProcessor(boost::shared_ptr<serverIf> iface) :
+  old_serverProcessor(boost::shared_ptr<old_serverIf> iface) :
     iface_(iface) {
-    processMap_["get_volume_bounds"] = &serverProcessor::process_get_volume_bounds;
-    processMap_["get_chan_tile"] = &serverProcessor::process_get_chan_tile;
-    processMap_["get_seg_tile"] = &serverProcessor::process_get_seg_tile;
-    processMap_["get_seg_id"] = &serverProcessor::process_get_seg_id;
-    processMap_["get_seg_bbox"] = &serverProcessor::process_get_seg_bbox;
-    processMap_["get_seg_ids"] = &serverProcessor::process_get_seg_ids;
-    processMap_["compare_results"] = &serverProcessor::process_compare_results;
+    processMap_["get_volume_bounds"] = &old_serverProcessor::process_get_volume_bounds;
+    processMap_["get_chan_tile"] = &old_serverProcessor::process_get_chan_tile;
+    processMap_["get_seg_tile"] = &old_serverProcessor::process_get_seg_tile;
+    processMap_["get_seg_id"] = &old_serverProcessor::process_get_seg_id;
+    processMap_["get_seg_bbox"] = &old_serverProcessor::process_get_seg_bbox;
+    processMap_["get_seg_ids"] = &old_serverProcessor::process_get_seg_ids;
+    processMap_["compare_results"] = &old_serverProcessor::process_compare_results;
   }
 
   virtual bool process(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot, void* callContext);
-  virtual ~serverProcessor() {}
+  virtual ~old_serverProcessor() {}
 };
 
-class serverMultiface : virtual public serverIf {
+class old_serverMultiface : virtual public old_serverIf {
  public:
-  serverMultiface(std::vector<boost::shared_ptr<serverIf> >& ifaces) : ifaces_(ifaces) {
+  old_serverMultiface(std::vector<boost::shared_ptr<old_serverIf> >& ifaces) : ifaces_(ifaces) {
   }
-  virtual ~serverMultiface() {}
+  virtual ~old_serverMultiface() {}
  protected:
-  std::vector<boost::shared_ptr<serverIf> > ifaces_;
-  serverMultiface() {}
-  void add(boost::shared_ptr<serverIf> iface) {
+  std::vector<boost::shared_ptr<old_serverIf> > ifaces_;
+  old_serverMultiface() {}
+  void add(boost::shared_ptr<old_serverIf> iface) {
     ifaces_.push_back(iface);
   }
  public:

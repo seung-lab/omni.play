@@ -3,155 +3,11 @@
  *
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  */
-#include "server.h"
+#include "new_server.h"
 
 namespace om { namespace server {
 
-uint32_t server_get_volume_bounds_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t server_get_volume_bounds_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_volume_bounds_args");
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t server_get_volume_bounds_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_volume_bounds_pargs");
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t server_get_volume_bounds_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->success.read(iprot);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t server_get_volume_bounds_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("server_get_volume_bounds_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
-    xfer += this->success.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t server_get_volume_bounds_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += (*(this->success)).read(iprot);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t server_get_chan_tile_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_get_chan_tile_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -173,193 +29,215 @@ uint32_t server_get_chan_tile_args::read(::apache::thrift::protocol::TProtocol* 
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->point.read(iprot);
-          this->__isset.point = true;
+          xfer += this->vol.read(iprot);
+          this->__isset.vol = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 2:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->mipLevel);
-          this->__isset.mipLevel = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t server_get_chan_tile_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_chan_tile_args");
-  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 1);
-  xfer += this->point.write(oprot);
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 2);
-  xfer += oprot->writeI32(this->mipLevel);
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t server_get_chan_tile_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_chan_tile_pargs");
-  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 1);
-  xfer += (*(this->point)).write(oprot);
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 2);
-  xfer += oprot->writeI32((*(this->mipLevel)));
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t server_get_chan_tile_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->success.read(iprot);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t server_get_chan_tile_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("server_get_chan_tile_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
-    xfer += this->success.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t server_get_chan_tile_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += (*(this->success)).read(iprot);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t server_get_seg_tile_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->point.read(iprot);
           this->__isset.point = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->mipLevel);
-          this->__isset.mipLevel = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->mipLevel);
+          this->__isset.mipLevel = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast8;
+          xfer += iprot->readI32(ecast8);
+          this->view = (viewType::type)ecast8;
+          this->__isset.view = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t new_server_get_chan_tile_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("new_server_get_chan_tile_args");
+  xfer += oprot->writeFieldBegin("vol", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->vol.write(oprot);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += this->point.write(oprot);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32(this->mipLevel);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)this->view);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t new_server_get_chan_tile_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("new_server_get_chan_tile_pargs");
+  xfer += oprot->writeFieldBegin("vol", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->vol)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += (*(this->point)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((*(this->mipLevel)));
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)(*(this->view)));
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t new_server_get_chan_tile_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->success.read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t new_server_get_chan_tile_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("new_server_get_chan_tile_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
+    xfer += this->success.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t new_server_get_chan_tile_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += (*(this->success)).read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t new_server_get_seg_tiles_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->vol.read(iprot);
+          this->__isset.vol = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->segId);
           this->__isset.segId = true;
@@ -367,6 +245,24 @@ uint32_t server_get_seg_tile_args::read(::apache::thrift::protocol::TProtocol* i
           xfer += iprot->skip(ftype);
         }
         break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->mipLevel);
+          this->__isset.mipLevel = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast9;
+          xfer += iprot->readI32(ecast9);
+          this->view = (viewType::type)ecast9;
+          this->__isset.view = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -379,41 +275,47 @@ uint32_t server_get_seg_tile_args::read(::apache::thrift::protocol::TProtocol* i
   return xfer;
 }
 
-uint32_t server_get_seg_tile_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_get_seg_tiles_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_seg_tile_args");
-  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 1);
-  xfer += this->point.write(oprot);
+  xfer += oprot->writeStructBegin("new_server_get_seg_tiles_args");
+  xfer += oprot->writeFieldBegin("vol", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->vol.write(oprot);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 2);
-  xfer += oprot->writeI32(this->mipLevel);
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("segId", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("segId", ::apache::thrift::protocol::T_I32, 2);
   xfer += oprot->writeI32(this->segId);
   xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32(this->mipLevel);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)this->view);
+  xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t server_get_seg_tile_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_get_seg_tiles_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_seg_tile_pargs");
-  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 1);
-  xfer += (*(this->point)).write(oprot);
+  xfer += oprot->writeStructBegin("new_server_get_seg_tiles_pargs");
+  xfer += oprot->writeFieldBegin("vol", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->vol)).write(oprot);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 2);
-  xfer += oprot->writeI32((*(this->mipLevel)));
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("segId", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("segId", ::apache::thrift::protocol::T_I32, 2);
   xfer += oprot->writeI32((*(this->segId)));
   xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((*(this->mipLevel)));
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)(*(this->view)));
+  xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t server_get_seg_tile_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_get_seg_tiles_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -434,8 +336,20 @@ uint32_t server_get_seg_tile_result::read(::apache::thrift::protocol::TProtocol*
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->success.read(iprot);
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->success.clear();
+            uint32_t _size10;
+            ::apache::thrift::protocol::TType _etype13;
+            iprot->readListBegin(_etype13, _size10);
+            this->success.resize(_size10);
+            uint32_t _i14;
+            for (_i14 = 0; _i14 < _size10; ++_i14)
+            {
+              xfer += this->success[_i14].read(iprot);
+            }
+            iprot->readListEnd();
+          }
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -453,15 +367,23 @@ uint32_t server_get_seg_tile_result::read(::apache::thrift::protocol::TProtocol*
   return xfer;
 }
 
-uint32_t server_get_seg_tile_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_get_seg_tiles_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("server_get_seg_tile_result");
+  xfer += oprot->writeStructBegin("new_server_get_seg_tiles_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
-    xfer += this->success.write(oprot);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
+      std::vector<tile> ::const_iterator _iter15;
+      for (_iter15 = this->success.begin(); _iter15 != this->success.end(); ++_iter15)
+      {
+        xfer += (*_iter15).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -469,7 +391,7 @@ uint32_t server_get_seg_tile_result::write(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t server_get_seg_tile_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_get_seg_tiles_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -490,8 +412,20 @@ uint32_t server_get_seg_tile_presult::read(::apache::thrift::protocol::TProtocol
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += (*(this->success)).read(iprot);
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            (*(this->success)).clear();
+            uint32_t _size16;
+            ::apache::thrift::protocol::TType _etype19;
+            iprot->readListBegin(_etype19, _size16);
+            (*(this->success)).resize(_size16);
+            uint32_t _i20;
+            for (_i20 = 0; _i20 < _size16; ++_i20)
+            {
+              xfer += (*(this->success))[_i20].read(iprot);
+            }
+            iprot->readListEnd();
+          }
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -509,7 +443,7 @@ uint32_t server_get_seg_tile_presult::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t server_get_seg_id_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_get_seg_id_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -531,6 +465,14 @@ uint32_t server_get_seg_id_args::read(::apache::thrift::protocol::TProtocol* ipr
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->vol.read(iprot);
+          this->__isset.vol = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->point.read(iprot);
           this->__isset.point = true;
         } else {
@@ -549,10 +491,13 @@ uint32_t server_get_seg_id_args::read(::apache::thrift::protocol::TProtocol* ipr
   return xfer;
 }
 
-uint32_t server_get_seg_id_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_get_seg_id_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_seg_id_args");
-  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeStructBegin("new_server_get_seg_id_args");
+  xfer += oprot->writeFieldBegin("vol", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->vol.write(oprot);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += this->point.write(oprot);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -560,10 +505,13 @@ uint32_t server_get_seg_id_args::write(::apache::thrift::protocol::TProtocol* op
   return xfer;
 }
 
-uint32_t server_get_seg_id_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_get_seg_id_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_seg_id_pargs");
-  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeStructBegin("new_server_get_seg_id_pargs");
+  xfer += oprot->writeFieldBegin("vol", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->vol)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += (*(this->point)).write(oprot);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -571,7 +519,7 @@ uint32_t server_get_seg_id_pargs::write(::apache::thrift::protocol::TProtocol* o
   return xfer;
 }
 
-uint32_t server_get_seg_id_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_get_seg_id_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -611,11 +559,11 @@ uint32_t server_get_seg_id_result::read(::apache::thrift::protocol::TProtocol* i
   return xfer;
 }
 
-uint32_t server_get_seg_id_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_get_seg_id_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("server_get_seg_id_result");
+  xfer += oprot->writeStructBegin("new_server_get_seg_id_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
@@ -627,7 +575,7 @@ uint32_t server_get_seg_id_result::write(::apache::thrift::protocol::TProtocol* 
   return xfer;
 }
 
-uint32_t server_get_seg_id_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_get_seg_id_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -667,7 +615,7 @@ uint32_t server_get_seg_id_presult::read(::apache::thrift::protocol::TProtocol* 
   return xfer;
 }
 
-uint32_t server_get_seg_bbox_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_get_seg_ids_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -688,164 +636,14 @@ uint32_t server_get_seg_bbox_args::read(::apache::thrift::protocol::TProtocol* i
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->segId);
-          this->__isset.segId = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t server_get_seg_bbox_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_seg_bbox_args");
-  xfer += oprot->writeFieldBegin("segId", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->segId);
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t server_get_seg_bbox_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_seg_bbox_pargs");
-  xfer += oprot->writeFieldBegin("segId", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((*(this->segId)));
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t server_get_seg_bbox_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->success.read(iprot);
-          this->__isset.success = true;
+          xfer += this->vol.read(iprot);
+          this->__isset.vol = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t server_get_seg_bbox_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("server_get_seg_bbox_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
-    xfer += this->success.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t server_get_seg_bbox_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += (*(this->success)).read(iprot);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t server_get_seg_ids_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->point.read(iprot);
           this->__isset.point = true;
@@ -853,10 +651,20 @@ uint32_t server_get_seg_ids_args::read(::apache::thrift::protocol::TProtocol* ip
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_DOUBLE) {
           xfer += iprot->readDouble(this->radius);
           this->__isset.radius = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast21;
+          xfer += iprot->readI32(ecast21);
+          this->view = (viewType::type)ecast21;
+          this->__isset.view = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -873,35 +681,47 @@ uint32_t server_get_seg_ids_args::read(::apache::thrift::protocol::TProtocol* ip
   return xfer;
 }
 
-uint32_t server_get_seg_ids_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_get_seg_ids_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_seg_ids_args");
-  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeStructBegin("new_server_get_seg_ids_args");
+  xfer += oprot->writeFieldBegin("vol", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->vol.write(oprot);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += this->point.write(oprot);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("radius", ::apache::thrift::protocol::T_DOUBLE, 2);
+  xfer += oprot->writeFieldBegin("radius", ::apache::thrift::protocol::T_DOUBLE, 3);
   xfer += oprot->writeDouble(this->radius);
   xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)this->view);
+  xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t server_get_seg_ids_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_get_seg_ids_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_get_seg_ids_pargs");
-  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeStructBegin("new_server_get_seg_ids_pargs");
+  xfer += oprot->writeFieldBegin("vol", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->vol)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += (*(this->point)).write(oprot);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("radius", ::apache::thrift::protocol::T_DOUBLE, 2);
+  xfer += oprot->writeFieldBegin("radius", ::apache::thrift::protocol::T_DOUBLE, 3);
   xfer += oprot->writeDouble((*(this->radius)));
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)(*(this->view)));
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t server_get_seg_ids_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_get_seg_ids_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -925,14 +745,14 @@ uint32_t server_get_seg_ids_result::read(::apache::thrift::protocol::TProtocol* 
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size40;
-            ::apache::thrift::protocol::TType _etype43;
-            iprot->readListBegin(_etype43, _size40);
-            this->success.resize(_size40);
-            uint32_t _i44;
-            for (_i44 = 0; _i44 < _size40; ++_i44)
+            uint32_t _size22;
+            ::apache::thrift::protocol::TType _etype25;
+            iprot->readListBegin(_etype25, _size22);
+            this->success.resize(_size22);
+            uint32_t _i26;
+            for (_i26 = 0; _i26 < _size22; ++_i26)
             {
-              xfer += iprot->readI32(this->success[_i44]);
+              xfer += iprot->readI32(this->success[_i26]);
             }
             iprot->readListEnd();
           }
@@ -953,20 +773,20 @@ uint32_t server_get_seg_ids_result::read(::apache::thrift::protocol::TProtocol* 
   return xfer;
 }
 
-uint32_t server_get_seg_ids_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_get_seg_ids_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("server_get_seg_ids_result");
+  xfer += oprot->writeStructBegin("new_server_get_seg_ids_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->success.size()));
-      std::vector<int32_t> ::const_iterator _iter45;
-      for (_iter45 = this->success.begin(); _iter45 != this->success.end(); ++_iter45)
+      std::vector<int32_t> ::const_iterator _iter27;
+      for (_iter27 = this->success.begin(); _iter27 != this->success.end(); ++_iter27)
       {
-        xfer += oprot->writeI32((*_iter45));
+        xfer += oprot->writeI32((*_iter27));
       }
       xfer += oprot->writeListEnd();
     }
@@ -977,7 +797,7 @@ uint32_t server_get_seg_ids_result::write(::apache::thrift::protocol::TProtocol*
   return xfer;
 }
 
-uint32_t server_get_seg_ids_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_get_seg_ids_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1001,14 +821,14 @@ uint32_t server_get_seg_ids_presult::read(::apache::thrift::protocol::TProtocol*
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size46;
-            ::apache::thrift::protocol::TType _etype49;
-            iprot->readListBegin(_etype49, _size46);
-            (*(this->success)).resize(_size46);
-            uint32_t _i50;
-            for (_i50 = 0; _i50 < _size46; ++_i50)
+            uint32_t _size28;
+            ::apache::thrift::protocol::TType _etype31;
+            iprot->readListBegin(_etype31, _size28);
+            (*(this->success)).resize(_size28);
+            uint32_t _i32;
+            for (_i32 = 0; _i32 < _size28; ++_i32)
             {
-              xfer += iprot->readI32((*(this->success))[_i50]);
+              xfer += iprot->readI32((*(this->success))[_i32]);
             }
             iprot->readListEnd();
           }
@@ -1029,7 +849,7 @@ uint32_t server_get_seg_ids_presult::read(::apache::thrift::protocol::TProtocol*
   return xfer;
 }
 
-uint32_t server_compare_results_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_compare_results_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1053,14 +873,14 @@ uint32_t server_compare_results_args::read(::apache::thrift::protocol::TProtocol
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->old_results.clear();
-            uint32_t _size51;
-            ::apache::thrift::protocol::TType _etype54;
-            iprot->readListBegin(_etype54, _size51);
-            this->old_results.resize(_size51);
-            uint32_t _i55;
-            for (_i55 = 0; _i55 < _size51; ++_i55)
+            uint32_t _size33;
+            ::apache::thrift::protocol::TType _etype36;
+            iprot->readListBegin(_etype36, _size33);
+            this->old_results.resize(_size33);
+            uint32_t _i37;
+            for (_i37 = 0; _i37 < _size33; ++_i37)
             {
-              xfer += this->old_results[_i55].read(iprot);
+              xfer += this->old_results[_i37].read(iprot);
             }
             iprot->readListEnd();
           }
@@ -1089,16 +909,16 @@ uint32_t server_compare_results_args::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t server_compare_results_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_compare_results_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_compare_results_args");
+  xfer += oprot->writeStructBegin("new_server_compare_results_args");
   xfer += oprot->writeFieldBegin("old_results", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->old_results.size()));
-    std::vector<result> ::const_iterator _iter56;
-    for (_iter56 = this->old_results.begin(); _iter56 != this->old_results.end(); ++_iter56)
+    std::vector<result> ::const_iterator _iter38;
+    for (_iter38 = this->old_results.begin(); _iter38 != this->old_results.end(); ++_iter38)
     {
-      xfer += (*_iter56).write(oprot);
+      xfer += (*_iter38).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -1111,16 +931,16 @@ uint32_t server_compare_results_args::write(::apache::thrift::protocol::TProtoco
   return xfer;
 }
 
-uint32_t server_compare_results_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_compare_results_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("server_compare_results_pargs");
+  xfer += oprot->writeStructBegin("new_server_compare_results_pargs");
   xfer += oprot->writeFieldBegin("old_results", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->old_results)).size()));
-    std::vector<result> ::const_iterator _iter57;
-    for (_iter57 = (*(this->old_results)).begin(); _iter57 != (*(this->old_results)).end(); ++_iter57)
+    std::vector<result> ::const_iterator _iter39;
+    for (_iter39 = (*(this->old_results)).begin(); _iter39 != (*(this->old_results)).end(); ++_iter39)
     {
-      xfer += (*_iter57).write(oprot);
+      xfer += (*_iter39).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -1133,7 +953,7 @@ uint32_t server_compare_results_pargs::write(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t server_compare_results_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_compare_results_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1173,11 +993,11 @@ uint32_t server_compare_results_result::read(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t server_compare_results_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t new_server_compare_results_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("server_compare_results_result");
+  xfer += oprot->writeStructBegin("new_server_compare_results_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_DOUBLE, 0);
@@ -1189,7 +1009,7 @@ uint32_t server_compare_results_result::write(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-uint32_t server_compare_results_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t new_server_compare_results_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1229,77 +1049,22 @@ uint32_t server_compare_results_presult::read(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-void serverClient::get_volume_bounds(bbox& _return)
+void new_serverClient::get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const int32_t mipLevel, const viewType::type view)
 {
-  send_get_volume_bounds();
-  recv_get_volume_bounds(_return);
-}
-
-void serverClient::send_get_volume_bounds()
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get_volume_bounds", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  server_get_volume_bounds_pargs args;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void serverClient::recv_get_volume_bounds(bbox& _return)
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("get_volume_bounds") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  server_get_volume_bounds_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_volume_bounds failed: unknown result");
-}
-
-void serverClient::get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel)
-{
-  send_get_chan_tile(point, mipLevel);
+  send_get_chan_tile(vol, point, mipLevel, view);
   recv_get_chan_tile(_return);
 }
 
-void serverClient::send_get_chan_tile(const vector3d& point, const int32_t mipLevel)
+void new_serverClient::send_get_chan_tile(const metadata& vol, const vector3d& point, const int32_t mipLevel, const viewType::type view)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("get_chan_tile", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  server_get_chan_tile_pargs args;
+  new_server_get_chan_tile_pargs args;
+  args.vol = &vol;
   args.point = &point;
   args.mipLevel = &mipLevel;
+  args.view = &view;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -1307,7 +1072,7 @@ void serverClient::send_get_chan_tile(const vector3d& point, const int32_t mipLe
   oprot_->getTransport()->flush();
 }
 
-void serverClient::recv_get_chan_tile(tile& _return)
+void new_serverClient::recv_get_chan_tile(tile& _return)
 {
 
   int32_t rseqid = 0;
@@ -1332,7 +1097,7 @@ void serverClient::recv_get_chan_tile(tile& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  server_get_chan_tile_presult result;
+  new_server_get_chan_tile_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -1345,21 +1110,22 @@ void serverClient::recv_get_chan_tile(tile& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_chan_tile failed: unknown result");
 }
 
-void serverClient::get_seg_tile(tile& _return, const vector3d& point, const int32_t mipLevel, const int32_t segId)
+void new_serverClient::get_seg_tiles(std::vector<tile> & _return, const metadata& vol, const int32_t segId, const int32_t mipLevel, const viewType::type view)
 {
-  send_get_seg_tile(point, mipLevel, segId);
-  recv_get_seg_tile(_return);
+  send_get_seg_tiles(vol, segId, mipLevel, view);
+  recv_get_seg_tiles(_return);
 }
 
-void serverClient::send_get_seg_tile(const vector3d& point, const int32_t mipLevel, const int32_t segId)
+void new_serverClient::send_get_seg_tiles(const metadata& vol, const int32_t segId, const int32_t mipLevel, const viewType::type view)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get_seg_tile", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("get_seg_tiles", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  server_get_seg_tile_pargs args;
-  args.point = &point;
-  args.mipLevel = &mipLevel;
+  new_server_get_seg_tiles_pargs args;
+  args.vol = &vol;
   args.segId = &segId;
+  args.mipLevel = &mipLevel;
+  args.view = &view;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -1367,7 +1133,7 @@ void serverClient::send_get_seg_tile(const vector3d& point, const int32_t mipLev
   oprot_->getTransport()->flush();
 }
 
-void serverClient::recv_get_seg_tile(tile& _return)
+void new_serverClient::recv_get_seg_tiles(std::vector<tile> & _return)
 {
 
   int32_t rseqid = 0;
@@ -1387,12 +1153,12 @@ void serverClient::recv_get_seg_tile(tile& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("get_seg_tile") != 0) {
+  if (fname.compare("get_seg_tiles") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  server_get_seg_tile_presult result;
+  new_server_get_seg_tiles_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -1402,21 +1168,22 @@ void serverClient::recv_get_seg_tile(tile& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_seg_tile failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_seg_tiles failed: unknown result");
 }
 
-int32_t serverClient::get_seg_id(const vector3d& point)
+int32_t new_serverClient::get_seg_id(const metadata& vol, const vector3d& point)
 {
-  send_get_seg_id(point);
+  send_get_seg_id(vol, point);
   return recv_get_seg_id();
 }
 
-void serverClient::send_get_seg_id(const vector3d& point)
+void new_serverClient::send_get_seg_id(const metadata& vol, const vector3d& point)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("get_seg_id", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  server_get_seg_id_pargs args;
+  new_server_get_seg_id_pargs args;
+  args.vol = &vol;
   args.point = &point;
   args.write(oprot_);
 
@@ -1425,7 +1192,7 @@ void serverClient::send_get_seg_id(const vector3d& point)
   oprot_->getTransport()->flush();
 }
 
-int32_t serverClient::recv_get_seg_id()
+int32_t new_serverClient::recv_get_seg_id()
 {
 
   int32_t rseqid = 0;
@@ -1451,7 +1218,7 @@ int32_t serverClient::recv_get_seg_id()
     iprot_->getTransport()->readEnd();
   }
   int32_t _return;
-  server_get_seg_id_presult result;
+  new_server_get_seg_id_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -1463,78 +1230,22 @@ int32_t serverClient::recv_get_seg_id()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_seg_id failed: unknown result");
 }
 
-void serverClient::get_seg_bbox(bbox& _return, const int32_t segId)
+void new_serverClient::get_seg_ids(std::vector<int32_t> & _return, const metadata& vol, const vector3d& point, const double radius, const viewType::type view)
 {
-  send_get_seg_bbox(segId);
-  recv_get_seg_bbox(_return);
-}
-
-void serverClient::send_get_seg_bbox(const int32_t segId)
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get_seg_bbox", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  server_get_seg_bbox_pargs args;
-  args.segId = &segId;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void serverClient::recv_get_seg_bbox(bbox& _return)
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("get_seg_bbox") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  server_get_seg_bbox_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_seg_bbox failed: unknown result");
-}
-
-void serverClient::get_seg_ids(std::vector<int32_t> & _return, const vector3d& point, const double radius)
-{
-  send_get_seg_ids(point, radius);
+  send_get_seg_ids(vol, point, radius, view);
   recv_get_seg_ids(_return);
 }
 
-void serverClient::send_get_seg_ids(const vector3d& point, const double radius)
+void new_serverClient::send_get_seg_ids(const metadata& vol, const vector3d& point, const double radius, const viewType::type view)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("get_seg_ids", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  server_get_seg_ids_pargs args;
+  new_server_get_seg_ids_pargs args;
+  args.vol = &vol;
   args.point = &point;
   args.radius = &radius;
+  args.view = &view;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -1542,7 +1253,7 @@ void serverClient::send_get_seg_ids(const vector3d& point, const double radius)
   oprot_->getTransport()->flush();
 }
 
-void serverClient::recv_get_seg_ids(std::vector<int32_t> & _return)
+void new_serverClient::recv_get_seg_ids(std::vector<int32_t> & _return)
 {
 
   int32_t rseqid = 0;
@@ -1567,7 +1278,7 @@ void serverClient::recv_get_seg_ids(std::vector<int32_t> & _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  server_get_seg_ids_presult result;
+  new_server_get_seg_ids_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -1580,18 +1291,18 @@ void serverClient::recv_get_seg_ids(std::vector<int32_t> & _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_seg_ids failed: unknown result");
 }
 
-double serverClient::compare_results(const std::vector<result> & old_results, const result& new_result)
+double new_serverClient::compare_results(const std::vector<result> & old_results, const result& new_result)
 {
   send_compare_results(old_results, new_result);
   return recv_compare_results();
 }
 
-void serverClient::send_compare_results(const std::vector<result> & old_results, const result& new_result)
+void new_serverClient::send_compare_results(const std::vector<result> & old_results, const result& new_result)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("compare_results", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  server_compare_results_pargs args;
+  new_server_compare_results_pargs args;
   args.old_results = &old_results;
   args.new_result = &new_result;
   args.write(oprot_);
@@ -1601,7 +1312,7 @@ void serverClient::send_compare_results(const std::vector<result> & old_results,
   oprot_->getTransport()->flush();
 }
 
-double serverClient::recv_compare_results()
+double new_serverClient::recv_compare_results()
 {
 
   int32_t rseqid = 0;
@@ -1627,7 +1338,7 @@ double serverClient::recv_compare_results()
     iprot_->getTransport()->readEnd();
   }
   double _return;
-  server_compare_results_presult result;
+  new_server_compare_results_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -1639,7 +1350,7 @@ double serverClient::recv_compare_results()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "compare_results failed: unknown result");
 }
 
-bool serverProcessor::process(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot, void* callContext) {
+bool new_serverProcessor::process(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot, void* callContext) {
 
   ::apache::thrift::protocol::TProtocol* iprot = piprot.get();
   ::apache::thrift::protocol::TProtocol* oprot = poprot.get();
@@ -1665,8 +1376,8 @@ bool serverProcessor::process(boost::shared_ptr< ::apache::thrift::protocol::TPr
   return process_fn(iprot, oprot, fname, seqid, callContext);
 }
 
-bool serverProcessor::process_fn(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, std::string& fname, int32_t seqid, void* callContext) {
-  std::map<std::string, void (serverProcessor::*)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*)>::iterator pfn;
+bool new_serverProcessor::process_fn(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, std::string& fname, int32_t seqid, void* callContext) {
+  std::map<std::string, void (new_serverProcessor::*)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*)>::iterator pfn;
   pfn = processMap_.find(fname);
   if (pfn == processMap_.end()) {
     iprot->skip(::apache::thrift::protocol::T_STRUCT);
@@ -1684,88 +1395,34 @@ bool serverProcessor::process_fn(::apache::thrift::protocol::TProtocol* iprot, :
   return true;
 }
 
-void serverProcessor::process_get_volume_bounds(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void new_serverProcessor::process_get_chan_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (eventHandler_.get() != NULL) {
-    ctx = eventHandler_->getContext("server.get_volume_bounds", callContext);
+    ctx = eventHandler_->getContext("new_server.get_chan_tile", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "server.get_volume_bounds");
+  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "new_server.get_chan_tile");
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->preRead(ctx, "server.get_volume_bounds");
+    eventHandler_->preRead(ctx, "new_server.get_chan_tile");
   }
 
-  server_get_volume_bounds_args args;
+  new_server_get_chan_tile_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->postRead(ctx, "server.get_volume_bounds", bytes);
+    eventHandler_->postRead(ctx, "new_server.get_chan_tile", bytes);
   }
 
-  server_get_volume_bounds_result result;
+  new_server_get_chan_tile_result result;
   try {
-    iface_->get_volume_bounds(result.success);
+    iface_->get_chan_tile(result.success, args.vol, args.point, args.mipLevel, args.view);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (eventHandler_.get() != NULL) {
-      eventHandler_->handlerError(ctx, "server.get_volume_bounds");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get_volume_bounds", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (eventHandler_.get() != NULL) {
-    eventHandler_->preWrite(ctx, "server.get_volume_bounds");
-  }
-
-  oprot->writeMessageBegin("get_volume_bounds", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (eventHandler_.get() != NULL) {
-    eventHandler_->postWrite(ctx, "server.get_volume_bounds", bytes);
-  }
-}
-
-void serverProcessor::process_get_chan_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (eventHandler_.get() != NULL) {
-    ctx = eventHandler_->getContext("server.get_chan_tile", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "server.get_chan_tile");
-
-  if (eventHandler_.get() != NULL) {
-    eventHandler_->preRead(ctx, "server.get_chan_tile");
-  }
-
-  server_get_chan_tile_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (eventHandler_.get() != NULL) {
-    eventHandler_->postRead(ctx, "server.get_chan_tile", bytes);
-  }
-
-  server_get_chan_tile_result result;
-  try {
-    iface_->get_chan_tile(result.success, args.point, args.mipLevel);
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (eventHandler_.get() != NULL) {
-      eventHandler_->handlerError(ctx, "server.get_chan_tile");
+      eventHandler_->handlerError(ctx, "new_server.get_chan_tile");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
@@ -1778,7 +1435,7 @@ void serverProcessor::process_get_chan_tile(int32_t seqid, ::apache::thrift::pro
   }
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->preWrite(ctx, "server.get_chan_tile");
+    eventHandler_->preWrite(ctx, "new_server.get_chan_tile");
   }
 
   oprot->writeMessageBegin("get_chan_tile", ::apache::thrift::protocol::T_REPLY, seqid);
@@ -1788,42 +1445,42 @@ void serverProcessor::process_get_chan_tile(int32_t seqid, ::apache::thrift::pro
   oprot->getTransport()->flush();
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->postWrite(ctx, "server.get_chan_tile", bytes);
+    eventHandler_->postWrite(ctx, "new_server.get_chan_tile", bytes);
   }
 }
 
-void serverProcessor::process_get_seg_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void new_serverProcessor::process_get_seg_tiles(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (eventHandler_.get() != NULL) {
-    ctx = eventHandler_->getContext("server.get_seg_tile", callContext);
+    ctx = eventHandler_->getContext("new_server.get_seg_tiles", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "server.get_seg_tile");
+  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "new_server.get_seg_tiles");
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->preRead(ctx, "server.get_seg_tile");
+    eventHandler_->preRead(ctx, "new_server.get_seg_tiles");
   }
 
-  server_get_seg_tile_args args;
+  new_server_get_seg_tiles_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->postRead(ctx, "server.get_seg_tile", bytes);
+    eventHandler_->postRead(ctx, "new_server.get_seg_tiles", bytes);
   }
 
-  server_get_seg_tile_result result;
+  new_server_get_seg_tiles_result result;
   try {
-    iface_->get_seg_tile(result.success, args.point, args.mipLevel, args.segId);
+    iface_->get_seg_tiles(result.success, args.vol, args.segId, args.mipLevel, args.view);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (eventHandler_.get() != NULL) {
-      eventHandler_->handlerError(ctx, "server.get_seg_tile");
+      eventHandler_->handlerError(ctx, "new_server.get_seg_tiles");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get_seg_tile", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("get_seg_tiles", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -1832,48 +1489,48 @@ void serverProcessor::process_get_seg_tile(int32_t seqid, ::apache::thrift::prot
   }
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->preWrite(ctx, "server.get_seg_tile");
+    eventHandler_->preWrite(ctx, "new_server.get_seg_tiles");
   }
 
-  oprot->writeMessageBegin("get_seg_tile", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("get_seg_tiles", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->postWrite(ctx, "server.get_seg_tile", bytes);
+    eventHandler_->postWrite(ctx, "new_server.get_seg_tiles", bytes);
   }
 }
 
-void serverProcessor::process_get_seg_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void new_serverProcessor::process_get_seg_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (eventHandler_.get() != NULL) {
-    ctx = eventHandler_->getContext("server.get_seg_id", callContext);
+    ctx = eventHandler_->getContext("new_server.get_seg_id", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "server.get_seg_id");
+  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "new_server.get_seg_id");
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->preRead(ctx, "server.get_seg_id");
+    eventHandler_->preRead(ctx, "new_server.get_seg_id");
   }
 
-  server_get_seg_id_args args;
+  new_server_get_seg_id_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->postRead(ctx, "server.get_seg_id", bytes);
+    eventHandler_->postRead(ctx, "new_server.get_seg_id", bytes);
   }
 
-  server_get_seg_id_result result;
+  new_server_get_seg_id_result result;
   try {
-    result.success = iface_->get_seg_id(args.point);
+    result.success = iface_->get_seg_id(args.vol, args.point);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (eventHandler_.get() != NULL) {
-      eventHandler_->handlerError(ctx, "server.get_seg_id");
+      eventHandler_->handlerError(ctx, "new_server.get_seg_id");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
@@ -1886,7 +1543,7 @@ void serverProcessor::process_get_seg_id(int32_t seqid, ::apache::thrift::protoc
   }
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->preWrite(ctx, "server.get_seg_id");
+    eventHandler_->preWrite(ctx, "new_server.get_seg_id");
   }
 
   oprot->writeMessageBegin("get_seg_id", ::apache::thrift::protocol::T_REPLY, seqid);
@@ -1896,92 +1553,38 @@ void serverProcessor::process_get_seg_id(int32_t seqid, ::apache::thrift::protoc
   oprot->getTransport()->flush();
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->postWrite(ctx, "server.get_seg_id", bytes);
+    eventHandler_->postWrite(ctx, "new_server.get_seg_id", bytes);
   }
 }
 
-void serverProcessor::process_get_seg_bbox(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void new_serverProcessor::process_get_seg_ids(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (eventHandler_.get() != NULL) {
-    ctx = eventHandler_->getContext("server.get_seg_bbox", callContext);
+    ctx = eventHandler_->getContext("new_server.get_seg_ids", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "server.get_seg_bbox");
+  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "new_server.get_seg_ids");
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->preRead(ctx, "server.get_seg_bbox");
+    eventHandler_->preRead(ctx, "new_server.get_seg_ids");
   }
 
-  server_get_seg_bbox_args args;
+  new_server_get_seg_ids_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->postRead(ctx, "server.get_seg_bbox", bytes);
+    eventHandler_->postRead(ctx, "new_server.get_seg_ids", bytes);
   }
 
-  server_get_seg_bbox_result result;
+  new_server_get_seg_ids_result result;
   try {
-    iface_->get_seg_bbox(result.success, args.segId);
+    iface_->get_seg_ids(result.success, args.vol, args.point, args.radius, args.view);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (eventHandler_.get() != NULL) {
-      eventHandler_->handlerError(ctx, "server.get_seg_bbox");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get_seg_bbox", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (eventHandler_.get() != NULL) {
-    eventHandler_->preWrite(ctx, "server.get_seg_bbox");
-  }
-
-  oprot->writeMessageBegin("get_seg_bbox", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (eventHandler_.get() != NULL) {
-    eventHandler_->postWrite(ctx, "server.get_seg_bbox", bytes);
-  }
-}
-
-void serverProcessor::process_get_seg_ids(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (eventHandler_.get() != NULL) {
-    ctx = eventHandler_->getContext("server.get_seg_ids", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "server.get_seg_ids");
-
-  if (eventHandler_.get() != NULL) {
-    eventHandler_->preRead(ctx, "server.get_seg_ids");
-  }
-
-  server_get_seg_ids_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (eventHandler_.get() != NULL) {
-    eventHandler_->postRead(ctx, "server.get_seg_ids", bytes);
-  }
-
-  server_get_seg_ids_result result;
-  try {
-    iface_->get_seg_ids(result.success, args.point, args.radius);
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (eventHandler_.get() != NULL) {
-      eventHandler_->handlerError(ctx, "server.get_seg_ids");
+      eventHandler_->handlerError(ctx, "new_server.get_seg_ids");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
@@ -1994,7 +1597,7 @@ void serverProcessor::process_get_seg_ids(int32_t seqid, ::apache::thrift::proto
   }
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->preWrite(ctx, "server.get_seg_ids");
+    eventHandler_->preWrite(ctx, "new_server.get_seg_ids");
   }
 
   oprot->writeMessageBegin("get_seg_ids", ::apache::thrift::protocol::T_REPLY, seqid);
@@ -2004,38 +1607,38 @@ void serverProcessor::process_get_seg_ids(int32_t seqid, ::apache::thrift::proto
   oprot->getTransport()->flush();
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->postWrite(ctx, "server.get_seg_ids", bytes);
+    eventHandler_->postWrite(ctx, "new_server.get_seg_ids", bytes);
   }
 }
 
-void serverProcessor::process_compare_results(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void new_serverProcessor::process_compare_results(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (eventHandler_.get() != NULL) {
-    ctx = eventHandler_->getContext("server.compare_results", callContext);
+    ctx = eventHandler_->getContext("new_server.compare_results", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "server.compare_results");
+  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "new_server.compare_results");
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->preRead(ctx, "server.compare_results");
+    eventHandler_->preRead(ctx, "new_server.compare_results");
   }
 
-  server_compare_results_args args;
+  new_server_compare_results_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->postRead(ctx, "server.compare_results", bytes);
+    eventHandler_->postRead(ctx, "new_server.compare_results", bytes);
   }
 
-  server_compare_results_result result;
+  new_server_compare_results_result result;
   try {
     result.success = iface_->compare_results(args.old_results, args.new_result);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (eventHandler_.get() != NULL) {
-      eventHandler_->handlerError(ctx, "server.compare_results");
+      eventHandler_->handlerError(ctx, "new_server.compare_results");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
@@ -2048,7 +1651,7 @@ void serverProcessor::process_compare_results(int32_t seqid, ::apache::thrift::p
   }
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->preWrite(ctx, "server.compare_results");
+    eventHandler_->preWrite(ctx, "new_server.compare_results");
   }
 
   oprot->writeMessageBegin("compare_results", ::apache::thrift::protocol::T_REPLY, seqid);
@@ -2058,7 +1661,7 @@ void serverProcessor::process_compare_results(int32_t seqid, ::apache::thrift::p
   oprot->getTransport()->flush();
 
   if (eventHandler_.get() != NULL) {
-    eventHandler_->postWrite(ctx, "server.compare_results", bytes);
+    eventHandler_->postWrite(ctx, "new_server.compare_results", bytes);
   }
 }
 

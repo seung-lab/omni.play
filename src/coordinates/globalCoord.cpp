@@ -4,7 +4,7 @@
 namespace om {
 namespace coords {
 
-globalCoord::globalCoord(common::vector3d v) {
+globalCoord::globalCoord(server::vector3d v) {
     x = v.x;
     y = v.y;
     z = v.z;
@@ -47,15 +47,15 @@ Vector3i globalCoord::withAbsOffset(const volumeSystem * vol) const
     return *this + vol->GetAbsOffset();
 }
 
-globalCoord::operator common::vector3d () const {
-    common::vector3d out;
+globalCoord::operator server::vector3d () const {
+    server::vector3d out;
     out.x = x;
     out.y = y;
     out.z = z;
     return out;
 }
 
-globalBbox::globalBbox(common::bbox b) {
+globalBbox::globalBbox(server::bbox b) {
     _min = globalCoord(b.min);
     _max = globalCoord(b.max);
 }
@@ -76,8 +76,8 @@ dataBbox globalBbox::toDataBbox(const volumeSystem *vol, int mipLevel) const
     return dataBbox(min.toDataCoord(vol, mipLevel), max.toDataCoord(vol, mipLevel));
 }
 
-globalBbox::operator common::bbox() const{
-    common::bbox out;
+globalBbox::operator server::bbox() const{
+    server::bbox out;
 
     out.min = globalCoord(_min);
     out.max = globalCoord(_max);

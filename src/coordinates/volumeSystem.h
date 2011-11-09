@@ -3,6 +3,8 @@
 #include "common/common.h"
 #include "zi/concurrency.hpp"
 
+#include "thrift/server_types.h"
+
 namespace om {
 namespace coords {
 
@@ -26,6 +28,28 @@ public:
     static const int DefaultChunkDim = 128;
 
     volumeSystem();
+
+    volumeSystem(const server::metadata& meta)
+        : dataToGlobal_(Matrix4f::IDENTITY)
+        , globalToData_(Matrix4f::IDENTITY)
+        , normToGlobal_(Matrix4f::IDENTITY)
+        , globalToNorm_(Matrix4f::IDENTITY)
+        , chunkDim_(DefaultChunkDim)
+        , mMipRootLevel(0)
+    {
+        Vector3i dims;
+        dims.x = meta.bounds.max.x - meta.bounds.min.x;
+        dims.y = meta.bounds.max.y - meta.bounds.min.y;
+        dims.z = meta.bounds.max.z - meta.bounds.min.z;
+        SetDataDimensions(dims);
+
+        Vector3i abs(meta.bounds.min.x, meta.bounds.min.y, meta.bounds.min.z);
+        SetAbsOffset(abs);
+
+        Vector3i res(meta.resolution.x, meta.resolution.y, meta.resolution.z);
+        SetResolution(res);
+        UpdateRootLevel();
+    }
 
     void UpdateRootLevel();
 

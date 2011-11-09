@@ -13,7 +13,29 @@
 
 
 
-namespace om { namespace common {
+namespace om { namespace server {
+
+struct viewType {
+  enum type {
+    XY_VIEW = 1,
+    XZ_VIEW = 2,
+    ZY_VIEW = 3
+  };
+};
+
+extern const std::map<int, const char*> _viewType_VALUES_TO_NAMES;
+
+struct dataType {
+  enum type {
+    INT8 = 1,
+    UINT8 = 2,
+    INT32 = 3,
+    UINT32 = 4,
+    FLOAT = 5
+  };
+};
+
+extern const std::map<int, const char*> _dataType_VALUES_TO_NAMES;
 
 typedef struct _vector3d__isset {
   _vector3d__isset() : x(false), y(false), z(false) {}
@@ -72,6 +94,63 @@ class vector3d {
 
 };
 
+typedef struct _vector3i__isset {
+  _vector3i__isset() : x(false), y(false), z(false) {}
+  bool x;
+  bool y;
+  bool z;
+} _vector3i__isset;
+
+class vector3i {
+ public:
+
+  static const char* ascii_fingerprint; // = "6435B39C87AB0E30F30BEDEFD7328C0D";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x35,0xB3,0x9C,0x87,0xAB,0x0E,0x30,0xF3,0x0B,0xED,0xEF,0xD7,0x32,0x8C,0x0D};
+
+  vector3i() : x(0), y(0), z(0) {
+  }
+
+  virtual ~vector3i() throw() {}
+
+  int32_t x;
+  int32_t y;
+  int32_t z;
+
+  _vector3i__isset __isset;
+
+  void __set_x(const int32_t val) {
+    x = val;
+  }
+
+  void __set_y(const int32_t val) {
+    y = val;
+  }
+
+  void __set_z(const int32_t val) {
+    z = val;
+  }
+
+  bool operator == (const vector3i & rhs) const
+  {
+    if (!(x == rhs.x))
+      return false;
+    if (!(y == rhs.y))
+      return false;
+    if (!(z == rhs.z))
+      return false;
+    return true;
+  }
+  bool operator != (const vector3i &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const vector3i & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
 typedef struct _bbox__isset {
   _bbox__isset() : min(false), max(false) {}
   bool min;
@@ -122,24 +201,36 @@ class bbox {
 };
 
 typedef struct _tile__isset {
-  _tile__isset() : data(false) {}
+  _tile__isset() : view(false), bounds(false), data(false) {}
+  bool view;
+  bool bounds;
   bool data;
 } _tile__isset;
 
 class tile {
  public:
 
-  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
-  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
+  static const char* ascii_fingerprint; // = "89F61E823E1BFA34748CDA01327FE40C";
+  static const uint8_t binary_fingerprint[16]; // = {0x89,0xF6,0x1E,0x82,0x3E,0x1B,0xFA,0x34,0x74,0x8C,0xDA,0x01,0x32,0x7F,0xE4,0x0C};
 
   tile() : data("") {
   }
 
   virtual ~tile() throw() {}
 
+  viewType::type view;
+  bbox bounds;
   std::string data;
 
   _tile__isset __isset;
+
+  void __set_view(const viewType::type val) {
+    view = val;
+  }
+
+  void __set_bounds(const bbox& val) {
+    bounds = val;
+  }
 
   void __set_data(const std::string& val) {
     data = val;
@@ -147,6 +238,10 @@ class tile {
 
   bool operator == (const tile & rhs) const
   {
+    if (!(view == rhs.view))
+      return false;
+    if (!(bounds == rhs.bounds))
+      return false;
     if (!(data == rhs.data))
       return false;
     return true;
@@ -197,6 +292,79 @@ class result {
   }
 
   bool operator < (const result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _metadata__isset {
+  _metadata__isset() : uri(false), bounds(false), resolution(false), type(false), chunkDims(false) {}
+  bool uri;
+  bool bounds;
+  bool resolution;
+  bool type;
+  bool chunkDims;
+} _metadata__isset;
+
+class metadata {
+ public:
+
+  static const char* ascii_fingerprint; // = "B059B8F2B2B39EEEF216E28DA66A0C64";
+  static const uint8_t binary_fingerprint[16]; // = {0xB0,0x59,0xB8,0xF2,0xB2,0xB3,0x9E,0xEE,0xF2,0x16,0xE2,0x8D,0xA6,0x6A,0x0C,0x64};
+
+  metadata() : uri("") {
+  }
+
+  virtual ~metadata() throw() {}
+
+  std::string uri;
+  bbox bounds;
+  vector3i resolution;
+  dataType::type type;
+  vector3i chunkDims;
+
+  _metadata__isset __isset;
+
+  void __set_uri(const std::string& val) {
+    uri = val;
+  }
+
+  void __set_bounds(const bbox& val) {
+    bounds = val;
+  }
+
+  void __set_resolution(const vector3i& val) {
+    resolution = val;
+  }
+
+  void __set_type(const dataType::type val) {
+    type = val;
+  }
+
+  void __set_chunkDims(const vector3i& val) {
+    chunkDims = val;
+  }
+
+  bool operator == (const metadata & rhs) const
+  {
+    if (!(uri == rhs.uri))
+      return false;
+    if (!(bounds == rhs.bounds))
+      return false;
+    if (!(resolution == rhs.resolution))
+      return false;
+    if (!(type == rhs.type))
+      return false;
+    if (!(chunkDims == rhs.chunkDims))
+      return false;
+    return true;
+  }
+  bool operator != (const metadata &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const metadata & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
