@@ -10,7 +10,9 @@
 #include <zi/utility/for_each.hpp>
 
 // get/set stuff
+namespace bint{
 using namespace boost::interprocess;
+}
 
 template< typename T >
 struct storage_type
@@ -39,29 +41,29 @@ class storage_server
   
 private:
     
-    
-  typedef std::pair<K, storage_type<V> > value_type;
+  typedef bint::managed_mapped_file::handle_t handle_t;
+  typedef std::pair<K,  handle_t> value_type;
   
   //Alias an STL compatible allocator of for the map.
   //This allocator will allow to place containers
   //in managed shared memory segments
-  typedef allocator<value_type, managed_mapped_file::segment_manager> 
+  typedef bint::allocator<value_type, bint::managed_mapped_file::segment_manager> 
   m_file_allocator;
 
   //Alias a map of ints that uses the previous STL-like allocator.
   //Note that the third parameter argument is the ordering function
   //of the map, just like with std::map, used to compare the keys.
-  typedef map<K, storage_type<V>, std::less<K>, m_file_allocator> file_map;
+  typedef bint::map<K, handle_t, std::less<K>, m_file_allocator> file_map;
   typedef typename file_map::iterator       data_iterator;
   typedef typename file_map::const_iterator data_const_iterator;
 
   file_map *mymap;
-  managed_mapped_file mfile;
+  bint::managed_mapped_file mfile;
   m_file_allocator alloc_inst;
   
 public:
   storage_server()
-    :mfile(open_or_create ,"MappedFile",4194304), alloc_inst(mfile.get_segment_manager())
+    :mfile(bint::open_or_create ,"MappedFile",4194304), alloc_inst(mfile.get_segment_manager())
   {
     std::cout << "starting server...\n";
     
@@ -74,6 +76,20 @@ public:
       (std::less<int>() //first  ctor parameter
        ,alloc_inst);     //second ctor parameter
     std::cout << "server constructed\n";
+  
+    std::cout << "map size "<< mymap->size() << "\n";
+    std::cout << "mapped memory "<< (mfile.get_size() - mfile.get_free_memory())
+	      << std::endl;
+    if(mymap->size()>0)
+      {
+	data_iterator it;
+	for ( it=mymap->begin() ; it != mymap->end(); it++ )
+	  {
+	    std::cout << (*it).first  << std::endl;
+	    //storage_type<V> data = (*it).second;
+	    //std::cout << *(data.data) << std::endl;
+	  }
+      }
   }
 
   ~storage_server(){
@@ -83,10 +99,14 @@ public:
   storage_type<V> get( const K& key ) const
   {
     data_const_iterator it = mymap->find(key);
+    
     if ( it != mymap->end() )
       {
-	storage_type<V> x = it->second;
-	return it->second;
+	//get handle and convert it back into storage_type
+	handle_t handle = it->second;
+	storage_type<V>* store = static_cast<storage_type<V>* >
+	  (mfile.get_address_from_handle(handle));
+	return *store;
       }
     //return empty data on failure
     return storage_type<V>();
@@ -95,11 +115,47 @@ public:
   // return whether it got replaced
   bool set( const K& key, const storage_type<V>& store )
   {
+    //construct value_type in memory-mapped region
+    void* new_data = mfile.allocate(sizeof(V)*store.size);
+    std::memcpy(new_data,store.data,sizeof(V)*store.size);
+    
+    storage_type<V>* new_store = mfile.construct<storage_type<V> >
+      (bint::anonymous_instance)(
+    				 store.size
+				 ,static_cast<V*>(new_data));
+        
+    //get handle for allocated storage_type
+    handle_t* handle = mfile.construct<handle_t>
+      (bint::anonymous_instance)(
+				 mfile.get_handle_from_address(new_store));
+
+    value_type* insertion = mfile.construct<value_type>
+      (bint::anonymous_instance)(key,*handle);
+    
+
     data_const_iterator it = mymap->find(key);
     bool had_it = mymap->find(key) != mymap->end();
-    //*mymap[key] = store;
+    //if had_it, we have to erase the old value to replace
+    if(had_it)
+      {
+	data_const_iterator it_delete = mymap->find(key);
+    
+	
+	//get handle and convert it back into storage_type
+	handle_t handle_delete = it_delete->second;
+	storage_type<V>* store_delete = static_cast<storage_type<V>* >
+	  (mfile.get_address_from_handle(handle_delete));
+	//TODO deallocate memory
+	//void* data_delete = store_delete->data;
+	//destroy object
+	mfile.destroy_ptr(store_delete);	
+	//erase from map
+	mymap->erase(key);
+	
+      }
+
     std::cout << "inserting key-value pair\n";
-    mymap->insert(value_type(key,store));
+    mymap->insert(*insertion);
     std::cout << "inserted.\n";
     return had_it;
   }
@@ -147,9 +203,9 @@ public:
   storage_client()
     : server_(), hasher_(), tm_(10)
   {
-    std::cout << "starting client";
+    std::cout << "starting client\n";
     tm_.start();
-    std::cout << "client started";
+    std::cout << "client started\n";
   }
 
   ~storage_client()
@@ -242,5 +298,5 @@ int main()
       std::cout << "Key: " << it->first << " Val: " << it->second.data[0] << "\n";
     }
   //remove mapped file
-  file_mapping::remove("MappedFile");
+  //bint::file_mapping::remove("MappedFile");
 }
