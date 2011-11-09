@@ -3,6 +3,7 @@
 #include <boost/interprocess/containers/map.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
 #include <iostream>
+#include <sstream>
 #include <cstddef>
 #include <vector>
 #include <zi/hash.hpp>
@@ -60,11 +61,10 @@ private:
   file_map *mymap;
   bint::managed_mapped_file mfile;
   m_file_allocator alloc_inst;
-  
-public:
-  storage_server()
-    :mfile(bint::open_or_create ,"MappedFile",4194304), alloc_inst(mfile.get_segment_manager())
-  {
+  std::string name;
+  std::size_t mapping_size;
+
+  void init(){
     std::cout << "starting server...\n";
     
     //Construct a shared memory map.
@@ -76,22 +76,23 @@ public:
       (std::less<int>() //first  ctor parameter
        ,alloc_inst);     //second ctor parameter
     std::cout << "server constructed\n";
-  
+    
     std::cout << "map size "<< mymap->size() << "\n";
     std::cout << "mapped memory "<< (mfile.get_size() - mfile.get_free_memory())
 	      << std::endl;
-    if(mymap->size()>0)
-      {
-	data_iterator it;
-	for ( it=mymap->begin() ; it != mymap->end(); it++ )
-	  {
-	    std::cout << (*it).first  << std::endl;
-	    //storage_type<V> data = (*it).second;
-	    //std::cout << *(data.data) << std::endl;
-	  }
-      }
+
   }
 
+public:
+  storage_server(std::string id, std::size_t size)
+    :name(id), mapping_size(size), 
+     mfile(bint::open_or_create ,"MappedFile",mapping_size), 
+     alloc_inst(mfile.get_segment_manager())
+  {
+    init();
+  }
+
+    
   ~storage_server(){
    }
 
@@ -164,27 +165,73 @@ public:
   {
     return set(key, storage_type<V>(size,store));
   }
+
+  std::string get_id(){ return name;}
+  std::size_t get_mapping_size(){ return mapping_size;}
 };
 
 
 template< typename K, typename V, typename H = zi::hash<K> >
+class storage_manager
+{
+private:
+  static const std::size_t num_servers = 1;
+  static const std::size_t file_mapping_size = 16*1024*1024; //in megabytes
+  // thrift connections, or just a list of computers... or whatever
+  // we (you) decide to have
+  //std::vector<storage_server<K,V>* > server_;
+  storage_server<K,V>* server_;
+  H hasher_;
+
+public:
+  storage_manager()
+    :hasher_()//,server_(num_servers)
+  {
+    //construct servers
+    unsigned int i;
+    for(i=0;i<num_servers;i++)
+      {
+	std::stringstream ss;
+	ss << i << "-filemap";
+	server_ = new storage_server<K,V>(ss.str(),file_mapping_size);
+	//server_.push_back(new storage_server<K,V>(ss.str(),file_mapping_size));
+      }
+
+  }
+  ~storage_manager()
+  {
+    //deallocate servers
+    unsigned int i;
+    for(i=0;i<num_servers;i++)
+      {
+	//delete server_[i];
+      }
+    
+  }
+  
+  storage_server<K,V>* get_server(const K& key){
+    //for now just do the hash based on the fixed number of servers
+    //later do better load-balancing
+    return server_;
+  }
+
+
+};
+
+
+template< typename K, typename V >
 class storage_client
 {
 private:
-  typedef storage_client<K,V,H> this_type;
+  typedef storage_client<K,V > this_type;
 
-  static const std::size_t num_servers = 1;
-
-  // thrift connections, or just a list of computers... or whatever
-  // we (you) decide to have
-  storage_server<K,V> server_[num_servers];
-
-  H hasher_;
-
+  storage_manager<K,V> manager_;
   zi::task_manager::deque tm_;
 
   void get_in_parallel( K key, storage_type<V>* dest,
-			std::size_t* num_left, zi::mutex* m, zi::condition_variable* cv )
+			std::size_t* num_left
+			, zi::mutex* m
+			, zi::condition_variable* cv )
   {
     *dest = get(key);
     {
@@ -201,7 +248,7 @@ private:
 public:
 
   storage_client()
-    : server_(), hasher_(), tm_(10)
+    : tm_(10),manager_()
   {
     std::cout << "starting client\n";
     tm_.start();
@@ -213,10 +260,12 @@ public:
     tm_.join();
   }
 
-  storage_type<V> get( const K& key ) const
+  storage_type<V> get( const K& key ) //const
   {
-    std::cout << "Hashed to: " << (hasher_(key)%num_servers) << std::endl;
-    return server_[hasher_(key)%num_servers].get(key);
+    storage_server<K,V>* server = manager_.get_server(key);
+    std::cout << "Stored in: " << server->get_id() << std::endl;
+    return server->get(key);
+    //return storage_type<V>();
   }
 
   std::vector< std::pair<K,storage_type<V> > >
@@ -252,7 +301,8 @@ public:
   // return whether it got replaced
   bool set( const K& key, const storage_type<V>& store )
   {
-    return server_[hasher_(key)%num_servers].set(key,store);
+    storage_server<K,V>* server = manager_.get_server(key);
+    return server->set(key,store);
   }
 
   bool set( const K& key, V* store, std::size_t size )
