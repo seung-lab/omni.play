@@ -20,6 +20,7 @@ struct storage_type
 {
   std::size_t size;
   T*          data;
+  bint::managed_mapped_file::handle_t handle;
 
   storage_type( std::size_t s, T* d )
     : size(s), data(d)
@@ -58,11 +59,11 @@ private:
   typedef typename file_map::iterator       data_iterator;
   typedef typename file_map::const_iterator data_const_iterator;
 
-  file_map *mymap;
-  bint::managed_mapped_file mfile;
-  m_file_allocator alloc_inst;
   std::string name;
   std::size_t mapping_size;
+  bint::managed_mapped_file mfile;
+  m_file_allocator alloc_inst;
+  file_map *mymap;
 
   void init(){
     std::cout << "starting server...\n";
@@ -107,6 +108,7 @@ public:
 	handle_t handle = it->second;
 	storage_type<V>* store = static_cast<storage_type<V>* >
 	  (mfile.get_address_from_handle(handle));
+	store->data = reinterpret_cast<V*>(mfile.get_address_from_handle(store->handle));
 	return *store;
       }
     //return empty data on failure
@@ -124,7 +126,9 @@ public:
       (bint::anonymous_instance)(
     				 store.size
 				 ,static_cast<V*>(new_data));
-        
+    //store handle for data ptr
+    new_store->handle = mfile.get_handle_from_address(new_data);
+
     //get handle for allocated storage_type
     handle_t* handle = mfile.construct<handle_t>
       (bint::anonymous_instance)(
@@ -146,8 +150,10 @@ public:
 	handle_t handle_delete = it_delete->second;
 	storage_type<V>* store_delete = static_cast<storage_type<V>* >
 	  (mfile.get_address_from_handle(handle_delete));
+
+	store_delete->data = reinterpret_cast<V*>(mfile.get_address_from_handle(store_delete->handle));
 	//TODO deallocate memory
-	//void* data_delete = store_delete->data;
+	mfile.deallocate(store_delete->data);
 	//destroy object
 	mfile.destroy_ptr(store_delete);	
 	//erase from map
@@ -179,13 +185,13 @@ private:
   static const std::size_t file_mapping_size = 16*1024*1024; //in megabytes
   // thrift connections, or just a list of computers... or whatever
   // we (you) decide to have
-  //std::vector<storage_server<K,V>* > server_;
-  storage_server<K,V>* server_;
+  std::vector<boost::shared_ptr<storage_server<K,V> > > server_;
+  
   H hasher_;
 
 public:
   storage_manager()
-    :hasher_()//,server_(num_servers)
+    :server_(num_servers),hasher_()//,server_(num_servers)
   {
     //construct servers
     unsigned int i;
@@ -193,8 +199,9 @@ public:
       {
 	std::stringstream ss;
 	ss << i << "-filemap";
-	server_ = new storage_server<K,V>(ss.str(),file_mapping_size);
-	//server_.push_back(new storage_server<K,V>(ss.str(),file_mapping_size));
+	boost::shared_ptr<storage_server<K,V> > p
+	  (new storage_server<K,V>(ss.str(),file_mapping_size)); 
+	server_.push_back(p);
       }
 
   }
@@ -209,147 +216,159 @@ public:
     
   }
   
-  storage_server<K,V>* get_server(const K& key){
+  boost::shared_ptr<storage_server<K,V> > get_server(const K& key){
     //for now just do the hash based on the fixed number of servers
     //later do better load-balancing
-    return server_;
+    return server_[hasher_(key) % num_servers];
   }
 
 
 };
 
 
-// template< typename K, typename V >
-// class storage_client
-// {
-// private:
-//   typedef storage_client<K,V > this_type;
+template< typename K, typename V >
+class storage_client
+{
+private:
+  typedef storage_client<K,V > this_type;
+  
+  zi::task_manager::deque tm_;
+  storage_manager<K,V> manager_;
 
-//   storage_manager<K,V> manager_;
-//   zi::task_manager::deque tm_;
 
-//   void get_in_parallel( K key, storage_type<V>* dest,
-// 			std::size_t* num_left
-// 			, zi::mutex* m
-// 			, zi::condition_variable* cv )
-//   {
-//     *dest = get(key);
-//     {
-//       zi::mutex::guard g(*m);
-//       --(*num_left);
-//       if ( *num_left == 0 )
-// 	{
-// 	  cv->notify_one();
-// 	}
-//       std::cout << "LEFT: " << *num_left << "\n";
-//     }
-//   }
+  void get_in_parallel( K key, storage_type<V>* dest,
+			std::size_t* num_left
+			, zi::mutex* m
+			, zi::condition_variable* cv )
+  {
+    *dest = get(key);
+    {
+      zi::mutex::guard g(*m);
+      --(*num_left);
+      if ( *num_left == 0 )
+	{
+	  cv->notify_one();
+	}
+      std::cout << "LEFT: " << *num_left << "\n";
+    }
+  }
 
-// public:
+public:
 
-//   storage_client()
-//     : tm_(10),manager_()
-//   {
-//     std::cout << "starting client\n";
-//     tm_.start();
-//     std::cout << "client started\n";
-//   }
+  storage_client()
+    : tm_(10),manager_()
+  {
+    std::cout << "starting client\n";
+    tm_.start();
+    std::cout << "client started\n";
+  }
 
-//   ~storage_client()
-//   {
-//     tm_.join();
-//   }
+  ~storage_client()
+  {
+    tm_.join();
+  }
 
-//   storage_type<V> get( const K& key ) //const
-//   {
-//     storage_server<K,V>* server = manager_.get_server(key);
-//     std::cout << "Stored in: " << server->get_id() << std::endl;
-//     return server->get(key);
-//     //return storage_type<V>();
-//   }
+  storage_type<V> get( const K& key ) //const
+  {
+    boost::shared_ptr<storage_server<K,V> > server = manager_.get_server(key);
+    std::cout << "Stored in: " << server->get_id() << std::endl;
+    return server->get(key);
+  }
 
-//   std::vector< std::pair<K,storage_type<V> > >
-//   multi_get( const std::vector<K>& keys )
-//   {
-//     // this can also be done in parallel
+  std::vector< std::pair<K,storage_type<V> > >
+  multi_get( const std::vector<K>& keys )
+  {
+    // this can also be done in parallel
 
-//     std::vector< std::pair<K,storage_type<V> > > ret(keys.size());
+    std::vector< std::pair<K,storage_type<V> > > ret(keys.size());
 
-//     std::size_t total_left = keys.size();
-//     zi::mutex m;
-//     zi::condition_variable cv;
+    std::size_t total_left = keys.size();
+    zi::mutex m;
+    zi::condition_variable cv;
 
-//     std::size_t i = 0;
-//     FOR_EACH( it, keys )
-//       {
-// 	ret[i].first = *it;
-// 	tm_.push_back( zi::bind( &this_type::get_in_parallel, this, *it, &ret[i++].second,
-// 				 &total_left, &m, &cv ) );
-//       }
+    std::size_t i = 0;
+    FOR_EACH( it, keys )
+      {
+	ret[i].first = *it;
+	tm_.push_back( zi::bind( &this_type::get_in_parallel, this, *it, &ret[i++].second,
+				 &total_left, &m, &cv ) );
+      }
 
-//     {
-//       zi::mutex::guard g(m);
-//       while ( total_left > 0 )
-// 	{
-// 	  cv.wait(m);
-// 	}
-//     }
+    {
+      zi::mutex::guard g(m);
+      while ( total_left > 0 )
+	{
+	  cv.wait(m);
+	}
+    }
 
-//     return ret;
-//   }
+    return ret;
+  }
 
-//   // return whether it got replaced
-//   bool set( const K& key, const storage_type<V>& store )
-//   {
-//     storage_server<K,V>* server = manager_.get_server(key);
-//     return server->set(key,store);
-//   }
+  // return whether it got replaced
+  bool set( const K& key, const storage_type<V>& store )
+  {
+    boost::shared_ptr<storage_server<K,V> > server = manager_.get_server(key);
+    return server->set(key,store);
+  }
 
-//   bool set( const K& key, V* store, std::size_t size )
-//   {
-//     return set(key, storage_type<V>(size,store));
-//   }
+  bool set( const K& key, V* store, std::size_t size )
+  {
+    return set(key, storage_type<V>(size,store));
+  }
 
-// };
+};
 
 
 
 int main()
- {
-   storage_manager<int,int> mgr;
-   storage_server<int,int>* ptr = mgr.get_server(5);
-   std::cout << ptr->get_id() << std::endl;
-//   storage_client<int,int> s;
+{
+  storage_client<int,int> s;
 
-//   int x[1];
-//   int y[1];
+  // int x[1];
+  // int y[1];
 
-//   x[0] = 1;
-//   y[0] = 2;
+  // x[0] = 1;
+  // y[0] = 2;
 
-//   std::cout << s.set(1,x,1) << "\n";
-//   std::cout << s.set(1,x,1) << "\n";
+  // std::cout << s.set(1,x,1) << "\n";
+  // std::cout << s.set(1,x,1) << "\n";
 
-//   std::cout << s.set(2,y,1) << "\n";
-//   std::cout << s.set(2,y,1) << "\n";
+  // std::cout << s.set(2,y,1) << "\n";
+  // std::cout << s.set(2,y,1) << "\n";
 
-//   std::cout << (s.get(2).data)[0] << "\n";
-//   std::cout << (s.get(1).data)[0] << "\n";
+  // std::cout << (s.get(2).data)[0] << "\n";
+  // std::cout << (s.get(1).data)[0] << "\n";
 
-//   std::vector<int> keys;
-//   keys.push_back(1);
-//   keys.push_back(2);
-//   keys.push_back(1);
-//   keys.push_back(2);
-//   keys.push_back(1);
-//   keys.push_back(2);
+  // std::vector<int> keys;
+  // keys.push_back(1);
+  // keys.push_back(2);
+  // keys.push_back(1);
+  // keys.push_back(2);
+  // keys.push_back(1);
+  // keys.push_back(2);
+  
+  int size = 100;
+  int i;
+  std::vector<int> keys;
+  for(i = 0;i<size;i++)
+    {
+      int x[2] =  {2,1};
+      s.set(i,x,2);
+      keys.push_back(i);
+      std::cout << "here\n";
+    }
+  
 
-//   std::vector<std::pair<int,storage_type<int> > > r = s.multi_get(keys);
+  
 
-//   FOR_EACH( it, r )
-//     {
-//       std::cout << "Key: " << it->first << " Val: " << it->second.data[0] << "\n";
-//     }
-//   //remove mapped file
-//   //bint::file_mapping::remove("MappedFile");
- }
+
+  std::vector<std::pair<int,storage_type<int> > > r = s.multi_get(keys);
+
+  FOR_EACH( it, r )
+    {
+      std::cout << "Key: " << it->first << " Val: " << it->second.data[0] << "\n";
+    }
+  //remove mapped file
+  //bint::file_mapping::remove("MappedFile");
+}
