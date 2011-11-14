@@ -161,9 +161,9 @@ public:
 	
       }
 
-    std::cout << "inserting key-value pair\n";
+    
     mymap->insert(*insertion);
-    std::cout << "inserted.\n";
+    
     return had_it;
   }
 
@@ -182,7 +182,7 @@ class storage_manager
 {
 private:
   static const std::size_t num_servers = 5;
-  static const std::size_t file_mapping_size = 20*1024*1024; //in megabytes
+  static const std::size_t file_mapping_size = 50*1024; //in megabytes
   // thrift connections, or just a list of computers... or whatever
   // we (you) decide to have
   std::vector< storage_server<K,V>*  > server_;
@@ -271,7 +271,7 @@ public:
   storage_type<V> get( const K& key ) //const
   {
     storage_server<K,V>* server = manager_.get_server(key);
-    std::cout << "Stored in: " << server->get_id() << std::endl;
+    
     return server->get(key);
   }
 
@@ -325,38 +325,16 @@ int main()
 {
   storage_client<int,int> s;
 
-  // int x[1];
-  // int y[1];
-
-  // x[0] = 1;
-  // y[0] = 2;
-
-  // std::cout << s.set(1,x,1) << "\n";
-  // std::cout << s.set(1,x,1) << "\n";
-
-  // std::cout << s.set(2,y,1) << "\n";
-  // std::cout << s.set(2,y,1) << "\n";
-
-  // std::cout << (s.get(2).data)[0] << "\n";
-  // std::cout << (s.get(1).data)[0] << "\n";
-
-  // std::vector<int> keys;
-  // keys.push_back(1);
-  // keys.push_back(2);
-  // keys.push_back(1);
-  // keys.push_back(2);
-  // keys.push_back(1);
-  // keys.push_back(2);
-  
-  int size = 100;
+    
+  int size = 10;
   int i;
   std::vector<int> keys;
   for(i = 0;i<size;i++)
     {
-      int x[2] =  {2,1};
-      s.set(i,x,2);
+      int x[2000] =  {2,1};
+      s.set(i,x,2000);
       keys.push_back(i);
-      std::cout << "here\n";
+      
     }
   
 
