@@ -181,17 +181,17 @@ template< typename K, typename V, typename H = zi::hash<K> >
 class storage_manager
 {
 private:
-  static const std::size_t num_servers = 1;
-  static const std::size_t file_mapping_size = 16*1024*1024; //in megabytes
+  static const std::size_t num_servers = 5;
+  static const std::size_t file_mapping_size = 20*1024*1024; //in megabytes
   // thrift connections, or just a list of computers... or whatever
   // we (you) decide to have
-  std::vector<boost::shared_ptr<storage_server<K,V> > > server_;
+  std::vector< storage_server<K,V>*  > server_;
   
   H hasher_;
 
 public:
   storage_manager()
-    :server_(num_servers),hasher_()//,server_(num_servers)
+    :server_(),hasher_()
   {
     //construct servers
     unsigned int i;
@@ -199,8 +199,8 @@ public:
       {
 	std::stringstream ss;
 	ss << i << "-filemap";
-	boost::shared_ptr<storage_server<K,V> > p
-	  (new storage_server<K,V>(ss.str(),file_mapping_size)); 
+	storage_server<K,V>* p = new storage_server<K,V>
+	  (ss.str(),file_mapping_size ); 
 	server_.push_back(p);
       }
 
@@ -211,12 +211,12 @@ public:
     unsigned int i;
     for(i=0;i<num_servers;i++)
       {
-	//delete server_[i];
+	delete server_[i];
       }
     
   }
   
-  boost::shared_ptr<storage_server<K,V> > get_server(const K& key){
+  storage_server<K,V>* get_server(const K& key){
     //for now just do the hash based on the fixed number of servers
     //later do better load-balancing
     return server_[hasher_(key) % num_servers];
@@ -270,7 +270,7 @@ public:
 
   storage_type<V> get( const K& key ) //const
   {
-    boost::shared_ptr<storage_server<K,V> > server = manager_.get_server(key);
+    storage_server<K,V>* server = manager_.get_server(key);
     std::cout << "Stored in: " << server->get_id() << std::endl;
     return server->get(key);
   }
@@ -308,7 +308,7 @@ public:
   // return whether it got replaced
   bool set( const K& key, const storage_type<V>& store )
   {
-    boost::shared_ptr<storage_server<K,V> > server = manager_.get_server(key);
+    storage_server<K,V>* server = manager_.get_server(key);
     return server->set(key,store);
   }
 
