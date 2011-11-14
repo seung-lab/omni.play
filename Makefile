@@ -10,7 +10,7 @@ clean:
 	rm -rf *.o
 
 %.o:%.cpp
-	g++ -lrt -Wall -ggdb -I /usr/local/boost_1_47_0 -I../zi_lib -I../zi_lib/external/include $< -o $@ 
+	g++ -lrt -Wall -ggdb -I../zi_lib -I../zi_lib/external/include $< -o $@ 
 
 #Uncomment to debug Makefile
 #OLD_SHELL := $(SHELL)
