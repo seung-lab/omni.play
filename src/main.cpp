@@ -1,4 +1,5 @@
-#include "serverHandler.hpp"
+//#include "serverHandler.hpp"
+#include "serverHandlerNew.hpp"
 #include <protocol/TBinaryProtocol.h>
 #include <server/TSimpleServer.h>
 #include <transport/TServerSocket.h>

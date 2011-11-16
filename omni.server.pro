@@ -178,9 +178,6 @@ SOURCES +=  \
         src/segment/lowLevel/pagingPtrStore.cpp \
         src/chunks/chunk.cpp \
         src/chunks/segChunk.cpp \
-#        src/tiles/tile.cpp \
-#        src/jpeg/jpeg.cpp \
-#        src/network/jpeg.cpp \
         src/pipeline/jpeg.cpp \
         src/main.cpp
 

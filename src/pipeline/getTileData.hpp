@@ -3,12 +3,13 @@
 #include "common/common.h"
 #include "pipeline/stage.hpp"
 #include "boost/scoped_ptr.hpp"
+#include "datalayer/fs/memMappedFile.hpp"
 
 namespace om {
 namespace volume { class volume; }
 namespace tiles { class tile; }
 namespace pipeline {
-
+/*
 template<typename T>
 class getTileData : public out_stage<T>
 {
@@ -55,6 +56,60 @@ public:
         tile_.reset();
     }
 };
+*/
+
+class mapData : public out_stage
+{
+private:
+    dataSrcs file_;
+
+public:
+    mapData(std::string fnp, server::dataType::type type)
+    {
+        switch(type)
+        {
+        case server::dataType::INT8: init<int8_t>(fnp); break;
+        case server::dataType::UINT8: init<uint8_t>(fnp); break;
+        case server::dataType::INT32: init<int32_t>(fnp); break;
+        case server::dataType::UINT32: init<uint32_t>(fnp); break;
+        case server::dataType::FLOAT: init<float>(fnp); break;
+        }
+    }
+
+    template<typename T>
+    void init(std::string fnp)
+    {
+        file_ = datalayer::memMappedFile<T>(fnp);;
+    }
+
+    operator data_var() {
+        return data<char>();
+    }
+};
+
+class getChunk : public stage
+{
+private:
+    coords::dataCoord dc_;
+
+public:
+    getChunk(coords::dataCoord dc)
+        : dc_(dc)
+    {}
+
+    template<typename T>
+    data_var operator()(const data<T>& in) const
+    {
+        data<T> out;
+        out.data.reset(&in.data[dc_.toChunkOffset()]);
+        out.size = dc_.volume()->GetChunkDimensions().dot(Vector3i::ONE);
+        return out;
+    }
+};
+
+data_var operator>>(const data_var& d, const getChunk& v) {
+    return boost::apply_visitor(v, d);
+}
 
 }
 }

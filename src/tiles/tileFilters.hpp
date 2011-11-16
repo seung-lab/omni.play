@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utility/smartPtr.hpp"
+#include "zi/utility.h"
 
 namespace om {
 namespace tiles {

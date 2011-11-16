@@ -21,6 +21,10 @@
 #include "pipeline/bitmask.hpp"
 #include "pipeline/png.hpp"
 
+#include "datalayer/fs/file.h"
+
+#include <sstream>
+
 //#include "network/writeTile.hpp"
 //#include "network/jpeg.h"
 
@@ -46,6 +50,10 @@ private:
 public:
     serverHandler()
     {
+        if(!file::exists("project.omni")) {
+            std::cout << "Please run in a directory with an omni project called project.omni.";
+            return;
+        }
         project::Load("project.omni");
         chan_ = &project::Volumes().Channels().GetChannel(1);
         seg_ = &project::Volumes().Segmentations().GetSegmentation(1);
@@ -59,38 +67,49 @@ public:
     void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel)
     {
         coords::globalCoord coord = point;
-        coords::chunkCoord cc = coord.toChunkCoord(*chan_, mipLevel);
+        coords::dataCoord dataCoord = coord.toDataCoord(*chan_, mipLevel);
+        coords::chunkCoord cc = dataCoord.toChunkCoord();
+        int depth = dataCoord.toTileDepth(common::XY_VIEW);
 
         if(!chan_->CoordinateSystem().ContainsMipChunkCoord(cc)) {
             throw common::argException("Requested data outside of volume.");
         }
 
-        Vector3i dims = chan_->CoordinateSystem().GetDataDimensions();
-        int depth = (int)point.z % dims.z;
         pipeline::getTileData<uint8_t> getter(chan_, cc, common::XY_VIEW, depth);
         pipeline::jpeg8bit jpegger(&getter, 128, 128);
+        std::stringstream ss;
+        ss << "/var/omni/"
+           << cc.Coordinate.x << "."
+           << cc.Coordinate.y << "."
+           << cc.Coordinate.z << ".jpg";
+//        pipeline::write_out<char> writer(&jpegger, ss.str());
+//        pipeline::checkJpeg checker(&jpegger);
         pipeline::encode encoder(&jpegger);
         _return.data = std::string(encoder());
+//        std::cout << _return.data << std::endl;
     }
 
     void get_seg_tile(tile& _return, const vector3d& point,
                       const int32_t mipLevel, const int32_t segId)
     {
         coords::globalCoord coord = point;
-        coords::chunkCoord cc = coord.toChunkCoord(*seg_, mipLevel);
+        coords::dataCoord dataCoord = coord.toDataCoord(*chan_, mipLevel);
+        coords::chunkCoord cc = dataCoord.toChunkCoord();
+        int depth = dataCoord.toTileDepth(common::XY_VIEW);
 
         if(!seg_->CoordinateSystem().ContainsMipChunkCoord(cc)) {
             throw common::argException("Requested data outside of volume.");
         }
 
-        Vector3i dims = chan_->CoordinateSystem().GetDataDimensions();
-        int depth = (int)point.z % 128;
         pipeline::getTileData<uint32_t> getter(seg_, cc, common::XY_VIEW, depth);
+//        pipeline::write_out<uint32_t> rawWrite(&getter, "/var/omni/raw.bin");
         pipeline::bitmask<uint32_t> masked(&getter, segId);
+//        pipeline::write_out<bool> binWrite(&masked, "/var/omni/test.bin");
         pipeline::pngMask png(&masked, 128, 128);
-        //pipeline::write_out<char> writer(&png, "/Users/balkamm/test.png");
+//        pipeline::write_out<char> pngWrite(&png, "/var/omni/test.png");
         pipeline::encode encoder(&png);
         _return.data = std::string(encoder());
+//        std::cout << _return.data;
     }
 
     void get_seg_bbox(bbox& _return, const int32_t segId)

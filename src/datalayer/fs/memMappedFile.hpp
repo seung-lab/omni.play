@@ -6,6 +6,7 @@
 #include "boost/iostreams/device/mapped_file.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/format.hpp"
+#include "boost/make_shared.hpp"
 
 typedef boost::iostreams::mapped_file mapped_file;
 
@@ -42,13 +43,18 @@ public:
     }
 
 private:
-    const std::string fnp_;
+    std::string fnp_;
 
-    boost::scoped_ptr<mapped_file> file_;
+    boost::shared_ptr<mapped_file> file_;
 
     int64_t numBytes_;
 
 public:
+    // for boost::variant
+    memMappedFile()
+        : fnp_(std::string(""))
+    {}
+
     memMappedFile(const std::string& fnp)
         : fnp_(fnp)
         , numBytes_(boost::filesystem::file_size(fnp_))

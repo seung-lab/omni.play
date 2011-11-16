@@ -8,41 +8,42 @@
 namespace om {
 namespace pipeline {
 
-class encode : public stage<char, char>
+class encode : public stage
 {
-private:
-    boost::scoped_ptr<char> data_;
-    int outSize_;
-    base64::encoder e;
-
 public:
-    encode(out_stage<char>* pred)
-        : stage<char, char>(pred)
-    { }
+    template<typename T>
+    data_var operator()(const data<T>& in) const {
+        return doEncode(reinterpret_cast<const char*>(in.data.get()), in.size);
+    }
 
-    ~encode() {}
+    data_var operator()(const data<char>& in) const {
+        return doEncode(in.data.get(), in.size);
+    }
 
-    inline char* operator()(char* input)
+private:
+    data_var doEncode(const char* in, int64_t size) const
     {
+        base64::encoder e;
+
         std::cout << "Encoding" << std::endl;
-        outSize_ = 2 * predecessor_->out_size();
-        data_.reset(new char[outSize_]);
-        e.encode(input, predecessor_->out_size(), data_.get());
-        return data_.get();
-    }
 
-    inline char* operator()(){
-        return stage<char, char>::operator()();
-    }
+        data<char> out;
+        out.size = 2 * size;
+        out.data.reset(new char[out.size]);
 
-    inline void cleanup() {
-//        data_.reset();
-    }
+        int written = e.encode(in, size, out.data.get());
+        written += e.encode_end(&out.data[written]);
 
-    inline int out_size() const {
-        return outSize_;
+        out.data[written] = '\0';
+        out.size = written + 1;
+
+        return out;
     }
 };
+
+data_var operator>>(const data_var& d, const encode& v) {
+    return boost::apply_visitor(v, d);
+}
 
 }
 }

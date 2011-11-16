@@ -1,10 +1,42 @@
 #pragma once
 
-#include "boost/scoped_ptr.hpp"
+#include "boost/shared_array.hpp"
+#include "boost/variant.hpp"
+#include "volume/volumeTypes.h"
+#include "datalayer/fs/memMappedFile.hpp"
 
 namespace om {
 namespace pipeline {
 
+template<typename T>
+struct data
+{
+    boost::shared_array<T> data;
+    uint64_t size;
+};
+
+typedef boost::variant<datalayer::memMappedFile<int8_t>,
+                       datalayer::memMappedFile<uint8_t>,
+                       datalayer::memMappedFile<int32_t>,
+                       datalayer::memMappedFile<uint32_t>,
+                       datalayer::memMappedFile<float> > dataSrcs;
+
+typedef boost::variant<data<char>,
+                       data<int8_t>,
+                       data<uint8_t>,
+                       data<int32_t>,
+                       data<uint32_t>,
+                       data<float> > data_var;
+
+class out_stage
+{
+public:
+    virtual operator data_var() = 0;
+};
+
+typedef boost::static_visitor<data_var> stage;
+
+/*
 template <typename Tout>
 class out_stage
 {
@@ -40,6 +72,6 @@ public:
         return ret;
     }
 };
-
+*/
 }
 }

@@ -23,6 +23,11 @@ public:
                 for(; point.z < bounds.max.z; point.z += step)
                 {
                     client.get_chan_tile(tile, point, mipLevel);
+                    if(tile.data.empty())
+                    {
+                        std::cout << "NULL output: " << point << std::endl;
+                        return;
+                    }
                 }
                 point.z = bounds.min.z;
             }
@@ -58,8 +63,20 @@ public:
             {
                 tile tile;
                 client.get_seg_tile(tile, segBbox.min, mipLevel, id);
+                if(tile.data.empty())
+                {
+                    std::cout << "NULL output: " << segBbox.min << std::endl;
+                    return;
+                }
+
                 vector3d max = segBbox.max;
                 client.get_seg_tile(tile, segBbox.max, mipLevel, id);
+                if(tile.data.empty())
+                {
+                    std::cout << "NULL output: " << segBbox.max << std::endl;
+                    return;
+                }
+
             } catch(...) {
                 std::cout << "Failed Getting Segment tile on :" << std::endl
                           << "\tSegID: " << id << std::endl

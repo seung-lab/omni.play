@@ -1,30 +1,22 @@
-#include "common/common.h"
-
 #include "pipeline/jpeg.h"
-
-extern "C"
-{
-#include <jpeglib.h>
-#include <jerror.h>
-}
 
 namespace om {
 namespace pipeline {
 
-template <typename T>
-void jpeg<T>::compress(int pixelsize, int jpegsubsamp, uint8_t* data)
+data_var jpeg::compress(int pixelsize, int jpegsubsamp, uint8_t* in) const
 {
-    std::cout << "Jpegging" << std::endl;
+    data<char> out;
+    std::cout << "Executing jpeg stage." << std::endl;
     unsigned long buffSize = TJBUFSIZE(width_, height_);
-    compressed_.reset(new char[buffSize]);
+    out.data.reset(new char[buffSize]);
 
     if(tjCompress(handle_,
-                  reinterpret_cast<unsigned char*>(data),
+                  reinterpret_cast<unsigned char*>(in),
                   width_,
                   0,
                   height_,
                   pixelsize,
-                  reinterpret_cast<unsigned char*>(compressed_.get()),
+                  reinterpret_cast<unsigned char*>(out.data.get()),
                   &buffSize,
                   jpegsubsamp,
                   90, // quality
@@ -33,19 +25,12 @@ void jpeg<T>::compress(int pixelsize, int jpegsubsamp, uint8_t* data)
         throw common::ioException(tjGetErrorStr());
     }
 
-    outSize_ = buffSize;
+    out.size = buffSize;
+    return out;
 }
 
-char* jpeg8bit::operator()(uint8_t* data)
-{
-    compress(1, TJ_GRAYSCALE, data);
-    return compressed_.get();
-}
-
-char* jpeg32bit::operator()(uint32_t* data)
-{
-    compress(4, TJ_444, reinterpret_cast<uint8_t*>(data));
-    return compressed_.get();
+data_var operator>>(const data_var& d, const jpeg& v) {
+    return boost::apply_visitor(v, d);
 }
 
 }
