@@ -133,6 +133,24 @@ dataBbox chunkCoord::chunkBoundingBox(const volumeSystem *vol) const
     return dataBbox(min, max);
 }
 
+uint64_t chunkCoord::chunkPtrOffset(const volumeSystem* vol, int64_t bytesPerVoxel) const
+{
+    const Vector3<int64_t> volDims = vol->getDimsRoundedToNearestChunk(Level);
+    const Vector3<int64_t> chunkDims = vol->GetChunkDimensions();
+
+    const int64_t slabSize  = volDims.x   * volDims.y   * chunkDims.z * bytesPerVoxel;
+    const int64_t rowSize   = volDims.x   * chunkDims.y * chunkDims.z * bytesPerVoxel;
+    const int64_t chunkSize = chunkDims.x * chunkDims.y * chunkDims.z * bytesPerVoxel;
+
+    const Vector3<int64_t> chunkPos = Coordinate; // bottom left corner
+    const int64_t offset = slabSize*chunkPos.z + rowSize*chunkPos.y + chunkSize*chunkPos.x;
+
+    ZiLOG(DEBUG, io) << "offset is: " << offset
+                     << " (" << volDims << ") for "
+                     << Coordinate << "\n";
+    return offset;
+}
+
 int chunkCoord::sliceDepth(const volumeSystem* vol, globalCoord c, common::viewType view) const
 {
     const dataCoord d = c.toDataCoord(vol, Level);

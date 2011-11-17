@@ -58,6 +58,7 @@ public:
 
     dataCoord toDataCoord(const volumeSystem*) const;
     dataBbox chunkBoundingBox(const volumeSystem*) const;
+    uint64_t chunkPtrOffset(const volumeSystem*, int64_t) const;
     int sliceDepth(const volumeSystem*, globalCoord, common::viewType) const;
 
     //operators
