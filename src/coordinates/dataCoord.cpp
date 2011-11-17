@@ -5,12 +5,12 @@ using namespace om::common;
 
 namespace om {
 namespace coords {
-    
+
 dataCoord::dataCoord(dataCoord::base_t v, const volumeSystem* vol, int mipLevel)
     : base_t(v)
     , vol_(vol)
     , mipLevel_(mipLevel)
-{ 
+{
     if (mipLevel > vol_->GetRootMipLevel()) {
         throw argException("Invalid Mip level.");
     }
@@ -61,7 +61,7 @@ int dataCoord::toTileOffset (viewType viewType) const
 {
     const Vector3i dims = vol_->GetChunkDimensions();
     const Vector3i chunkVec = toChunkVec();
-    
+
     switch(viewType)
     {
     case XY_VIEW:
@@ -71,7 +71,22 @@ int dataCoord::toTileOffset (viewType viewType) const
     case ZY_VIEW:
         return dims.z * chunkVec.y + chunkVec.z;
     }
-    
+
+    return -1;
+}
+
+int dataCoord::toTileDepth (viewType viewType) const
+{
+    const Vector3i dims = vol_->GetChunkDimensions();
+    const Vector3i chunkVec = toChunkVec();
+
+    switch(viewType)
+    {
+    case XY_VIEW: return chunkVec.z;
+    case XZ_VIEW: return chunkVec.y;
+    case ZY_VIEW: return chunkVec.x;
+    }
+
     return -1;
 }
 
@@ -80,11 +95,11 @@ dataCoord dataCoord::atDifferentLevel(int newLevel) const
     if (newLevel > vol_->GetRootMipLevel()) {
         throw argException("Invalid Mip level.");
     }
-    
+
     if(newLevel == mipLevel_) {
         return *this;
     }
-    
+
     Vector3f result = *this * om::math::pow2int(mipLevel_) / om::math::pow2int(newLevel);
     return dataCoord(result, vol_, newLevel);
 }
@@ -93,11 +108,11 @@ dataBbox::dataBbox(dataCoord min, dataCoord max)
     : base_t(min, max)
     , vol_(min.volume())
     , mipLevel_(min.level())
-{ 
+{
     if(min.volume() != max.volume()) {
         throw argException("min and max coords come from different volumes");
     }
-    
+
     if(min.level() != max.level()) {
         throw argException("min and max coords come from different mip levels");
     }
@@ -131,6 +146,6 @@ dataBbox dataBbox::atDifferentLevel(int newLevel) const
     return dataBbox(getMin().atDifferentLevel(newLevel),
                     getMax().atDifferentLevel(newLevel));
 }
-    
+
 } // namespace coords
 } // namespace om

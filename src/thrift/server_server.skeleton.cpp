@@ -22,32 +22,22 @@ class serverHandler : virtual public serverIf {
     // Your initialization goes here
   }
 
-  void get_volume_bounds(bbox& _return) {
-    // Your implementation goes here
-    printf("get_volume_bounds\n");
-  }
-
-  void get_chan_tile(tile& _return, const vector3d& point, const int32_t mipLevel) {
+  void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const int32_t mipLevel, const viewType::type view) {
     // Your implementation goes here
     printf("get_chan_tile\n");
   }
 
-  void get_seg_tile(tile& _return, const vector3d& point, const int32_t mipLevel, const int32_t segId) {
+  void get_seg_tiles(std::vector<tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view) {
     // Your implementation goes here
-    printf("get_seg_tile\n");
+    printf("get_seg_tiles\n");
   }
 
-  int32_t get_seg_id(const vector3d& point) {
+  int32_t get_seg_id(const metadata& vol, const vector3d& point) {
     // Your implementation goes here
     printf("get_seg_id\n");
   }
 
-  void get_seg_bbox(bbox& _return, const int32_t segId) {
-    // Your implementation goes here
-    printf("get_seg_bbox\n");
-  }
-
-  void get_seg_ids(std::vector<int32_t> & _return, const vector3d& point, const double radius) {
+  void get_seg_ids(std::vector<int32_t> & _return, const metadata& vol, const vector3d& point, const double radius, const viewType::type view) {
     // Your implementation goes here
     printf("get_seg_ids\n");
   }

@@ -4,7 +4,7 @@
 #include <sstream>
 
 namespace om {
-namespace coords { 
+namespace coords {
 
 //const chunkCoord chunkCoord::NULL_COORD(-1, -1, -1, -1);
 
@@ -131,6 +131,24 @@ dataBbox chunkCoord::chunkBoundingBox(const volumeSystem *vol) const
     const dataCoord min = toDataCoord(vol);
     const dataCoord max = min + vol->GetChunkDimensions();
     return dataBbox(min, max);
+}
+
+int chunkCoord::sliceDepth(const volumeSystem* vol, globalCoord c, common::viewType view) const
+{
+    const dataCoord d = c.toDataCoord(vol, Level);
+    const dataBbox bounds = chunkBoundingBox(vol);
+    if(!bounds.contains(d)) {
+        throw common::argException("Coordinate outside of chunk.");
+    }
+
+    switch(view)
+    {
+    case common::XY_VIEW: return d.z - bounds.getMin().z;
+    case common::XZ_VIEW: return d.y - bounds.getMin().y;
+    case common::ZY_VIEW: return d.x - bounds.getMin().x;
+    }
+
+    throw common::argException("Bad viewType");
 }
 
 /////////////////////////////////

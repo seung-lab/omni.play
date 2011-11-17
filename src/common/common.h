@@ -7,12 +7,15 @@
 #include <cassert>
 
 #include "math.hpp"
+#include "thrift/server_types.h"
 
 // needed for coordinates
 namespace om { namespace common {
     enum viewType { XY_VIEW, XZ_VIEW, ZY_VIEW };
     std::ostream& operator<<(std::ostream &out, const viewType& vt);
 }}
+
+
 
 #include "coordinates/coordinates.h"
 #include <zi/for_each.hpp>
@@ -79,6 +82,7 @@ enum cacheGroup {
 };
 
 std::ostream& operator<<(std::ostream &out, const cacheGroup& c);
+viewType Convert(server::viewType::type type);
 
 } // common
 } // om

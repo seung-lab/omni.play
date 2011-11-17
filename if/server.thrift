@@ -56,7 +56,7 @@ struct metadata
     5: vector3i chunkDims
 }
 
-service new_server
+service server
 {
     tile get_chan_tile( 1: metadata vol,
                         2: vector3d point,
@@ -65,8 +65,9 @@ service new_server
 
     list<tile> get_seg_tiles( 1: metadata vol,
                               2: i32 segId,
-                              3: i32 mipLevel,
-                              4: viewType view ),
+                              3: bbox segBbox,
+                              4: i32 mipLevel,
+                              5: viewType view ),
 
     i32 get_seg_id( 1: metadata vol, 2: vector3d point),
 
@@ -78,17 +79,5 @@ service new_server
                            4: viewType view),
 
     # do we need the metadata for the comparison procedure?
-    double compare_results( 1: list<result> old_results, 2: result new_result)
-}
-
-#deprecated
-service server
-{
-    bbox get_volume_bounds(),
-    tile get_chan_tile( 1: vector3d point, 2: i32 mipLevel ),
-    tile get_seg_tile( 1: vector3d point, 2: i32 mipLevel, 3: i32 segId ),
-    i32 get_seg_id( 1: vector3d point ),
-    bbox get_seg_bbox( 1: i32 segId ),
-    list<i32> get_seg_ids(1: vector3d point, 2: double radius ),
     double compare_results( 1: list<result> old_results, 2: result new_result)
 }

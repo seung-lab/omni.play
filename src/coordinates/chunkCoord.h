@@ -55,9 +55,10 @@ public:
     inline int Z() const {
         return Coordinate.z;
     }
-    
+
     dataCoord toDataCoord(const volumeSystem*) const;
     dataBbox chunkBoundingBox(const volumeSystem*) const;
+    int sliceDepth(const volumeSystem*, globalCoord, common::viewType) const;
 
     //operators
     void operator=(const chunkCoord& rhs);
