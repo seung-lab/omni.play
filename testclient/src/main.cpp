@@ -4,6 +4,8 @@
 #include <transport/TBufferTransports.h>
 #include <protocol/TBinaryProtocol.h>
 
+#include <vector>
+
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
@@ -25,7 +27,7 @@ int main(int argc, char **argv) {
     serverClient client(protocol);
     transport->open();
 
-    tile tile;
+    std::vector<tile> tiles;
 
     metadata metadata;
     metadata.uri = std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/channels/channel1/0/volume.float.raw");
@@ -48,8 +50,10 @@ int main(int argc, char **argv) {
     point.y = 0;
     point.z = 0;
 
-    client.get_chan_tile(tile, metadata, point, 0, viewType::XY_VIEW);
-    std::cout << tile.data << std::endl;
+    int32_t segId = client.get_seg_id(metadata, metadata.bounds.min);
+    bbox segBbox = metadata.bounds;
+
+    client.get_seg_tiles(tiles, metadata, 10, segBbox, 0, viewType::XY_VIEW);
 
 //    testClient::wholeVolume(client);
     transport->close();

@@ -20,7 +20,8 @@
 #include "pipeline/utility.hpp"
 //#include "pipeline/filter.hpp"
 #include "pipeline/bitmask.hpp"
-//#include "pipeline/png.hpp"
+#include "pipeline/png.hpp"
+#include "pipeline/getSegIds.hpp"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -146,8 +147,8 @@ private:
         t.bounds.min = bounds.getMin().toGlobalCoord();
         t.bounds.max = bounds.getMax().toGlobalCoord();
 
-        data_var encoded = src >> sliceTile(viewType, dc) >> bitmask(segId);
-            //>> png(128,128) >> encode();
+        data_var encoded = src >> sliceTile(viewType, dc) >> bitmask(segId)
+                               >> png(128,128) >> encode();
 
         data<char> out = boost::get<data<char> >(encoded);
         t.data = std::string(out.data.get(), out.size);
@@ -156,10 +157,20 @@ private:
     }
 
 public:
-    int32_t get_seg_id(const metadata& vol, const vector3d& point) {
-        // Your implementation goes here
-        printf("get_seg_id\n");
-        return 0;
+    int32_t get_seg_id(const metadata& vol, const vector3d& point)
+    {
+        coords::volumeSystem coordSystem(vol);
+
+        coords::globalCoord coord = point;
+        coords::dataCoord dc = coord.toDataCoord(&coordSystem, 0);
+
+        using namespace pipeline;
+
+        mapData dataSrc(vol.uri, vol.type);
+
+        data_var id = dataSrc >> getSegIds(dc, 0);
+
+        return boost::get<data<uint32_t> >(id).data.get()[0];
     }
 
     void get_seg_ids(std::vector<int32_t> & _return,

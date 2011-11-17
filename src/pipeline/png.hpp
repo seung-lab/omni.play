@@ -21,28 +21,40 @@ public:
     { }
 
     template<typename T>
-    data_var operator()(const data<T>& in) const
-    {
+    data_var operator()(const data<T>& in) const {
+        throw common::argException("Unsupported Data Type.");
     }
 
     data_var operator()(const data<uint8_t>& in) const {
-        return compress(8, PNG_COLOR_TYPE_GRAY, data);
+        return doPng(8, PNG_COLOR_TYPE_GRAY, in.data.get());
     }
 
     data_var operator()(const data<uint32_t>& in) const {
-        return compress(8, PNG_COLOR_TYPE_RGB_ALPHA, reinterpret_cast<uint8_t*>(data));
+        return doPng(8, PNG_COLOR_TYPE_RGB_ALPHA, reinterpret_cast<uint8_t*>(in.data.get()));
     }
 
     data_var operator()(const data<bool>& in) const {
-        return compress(1, PNG_COLOR_TYPE_GRAY, reinterpret_cast<uint8_t*>(data));
+        return doPng(1, PNG_COLOR_TYPE_GRAY, reinterpret_cast<uint8_t*>(in.data.get()));
+    }
+
+    data_var doPng(const int bit_depth, const int color_type, const uint8_t* in) const
+    {
+        std::vector<char> outData;
+        compress(bit_depth, color_type, in, outData);
+        data<char> out;
+        out.size = outData.size();
+        out.data.reset(new char[out.size]);
+        std::copy(outData.begin(), outData.end(), out.data.get());
+        return out;
     }
 
     // heavily based on libpng manual http://www.libpng.org/pub/png/libpng-1.4.0-manual.pdf
     // TODO: Error handling
-    data_var compress(const int bit_depth, const int color_type, const uint8_t* data)
+    void compress(const int bit_depth,
+                  const int color_type,
+                  const uint8_t* data,
+                  std::vector<char>& out) const
     {
-        data<char> out;
-
         std::cout << "Pnging" << std::endl;
         png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
                                                       NULL,
@@ -65,9 +77,9 @@ public:
             return;
         }
 
-        png_set_write_fn(png_ptr, &compressed_,
-                         &om::pipeline::png<T>::write_data,
-                         &om::pipeline::png<T>::flush_data);
+        png_set_write_fn(png_ptr, &out,
+                         &om::pipeline::png::write_data,
+                         &om::pipeline::png::flush_data);
 
 /*
   width - holds the width of the image in pixels (up to 2ˆ31).
