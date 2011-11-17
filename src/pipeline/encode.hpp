@@ -31,19 +31,17 @@ private:
         out.size = 2 * size;
         out.data.reset(new char[out.size]);
 
-        int written = e.encode(in, size, out.data.get());
-        written += e.encode_end(&out.data[written]);
+        char* dest = out.data.get();
 
-        out.data[written] = '\0';
+        int written = e.encode(in, size, dest);
+        written += e.encode_end(&dest[written]);
+
+        dest[written] = '\0';
         out.size = written + 1;
 
         return out;
     }
 };
-
-data_var operator>>(const data_var& d, const encode& v) {
-    return boost::apply_visitor(v, d);
-}
 
 }
 }

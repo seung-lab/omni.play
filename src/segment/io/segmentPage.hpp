@@ -28,7 +28,7 @@ public:
 
     data* Create()
     {
-        data_ = datalayer::memMappedFile<data>::CreateNumElements(fnp_, pageSize_);
+        //data_ = datalayer::memMappedFile<data>::CreateNumElements(fnp_, pageSize_);
         return data_->GetPtr();
     }
 
@@ -40,7 +40,7 @@ public:
 
     data* Import(boost::shared_ptr<data> d)
     {
-        data_ = datalayer::memMappedFile<data>::CreateFromData(fnp_, d, pageSize_);
+        //data_ = datalayer::memMappedFile<data>::CreateFromData(fnp_, d, pageSize_);
         return data_->GetPtr();
     }
 

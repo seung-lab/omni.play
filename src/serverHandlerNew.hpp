@@ -17,7 +17,7 @@
 #include "pipeline/sliceTile.hpp"
 #include "pipeline/jpeg.h"
 #include "pipeline/encode.hpp"
-//#include "pipeline/utility.hpp"
+#include "pipeline/utility.hpp"
 //#include "pipeline/filter.hpp"
 //#include "pipeline/bitmask.hpp"
 //#include "pipeline/png.hpp"
@@ -64,21 +64,47 @@ public:
 
         using namespace pipeline;
 
-        data_var result = mapData(vol.uri, vol.type) >> getChunk(dc)
-          >> sliceTile(viewType, depth, 128) >> jpeg(128,128) >> encode();
+        data_var encoded = mapData(vol.uri, vol.type) >> sliceTile(viewType, dc)
+                                                      >> jpeg(128,128)
+                                                      >> encode();
 
-        data<char> out = boost::get<data<char> >(result);
+        data<char> out = boost::get<data<char> >(encoded);
         _return.data = std::string(out.data.get(), out.size);
     }
 
     void get_seg_tiles(std::vector<tile> & _return,
                        const metadata& vol,
                        const int32_t segId,
+                       const bbox& segBbox,
                        const int32_t mipLevel,
                        const viewType::type view)
     {
-        // Your implementation goes here
-        printf("get_seg_tiles\n");
+/*        coords::volumeSystem coordSystem(vol);
+
+        coords::globalCoord coord = point;
+        coords::dataCoord dc = coord.toDataCoord(&coordSystem, mipLevel);
+        coords::chunkCoord cc = dc.toChunkCoord();
+        common::viewType viewType = common::Convert(view);
+        int depth = dc.toTileDepth(viewType);
+
+        if(!coordSystem.ContainsMipChunkCoord(cc)) {
+            throw common::argException("Requested data outside of volume.");
+        }
+
+        _return.view = view;
+
+        coords::dataBbox bounds = cc.chunkBoundingBox(&coordSystem);
+        _return.bounds.min = bounds.getMin().toGlobalCoord();
+        _return.bounds.max = bounds.getMax().toGlobalCoord();
+
+        using namespace pipeline;
+
+        data_var encoded = mapData(vol.uri, vol.type) >> sliceTile(viewType, dc)
+                                                      >> jpeg(128,128)
+                                                      >> encode();
+
+        data<char> out = boost::get<data<char> >(encoded);
+        _return.data = std::string(out.data.get(), out.size);*/
     }
 
     int32_t get_seg_id(const metadata& vol, const vector3d& point) {

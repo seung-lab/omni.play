@@ -72,8 +72,7 @@ public:
                       << "," << dims.z
                       << ")\n";
 
-            maps_[level] = datalayer::memMappedFile<T>::CreateNumBytes(getFileName(level),
-                                                                       size);
+            //maps_[level] = datalayer::memMappedFile<T>::CreateNumBytes(getFileName(level),size);
         }
 
         printf("OmMemMappedVolume: done allocating data\n");

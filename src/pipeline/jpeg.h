@@ -32,39 +32,43 @@ public:
 
     data_var operator()(const data<char>& in) const
     {
+        std::cout << "Greyscalin' it!" << std::endl;
         return compress(1, TJ_GRAYSCALE, reinterpret_cast<uint8_t*>(in.data.get()));
     }
 
     data_var operator()(const data<int8_t>& in) const
     {
+        std::cout << "Cast Greyscalin' it!" << std::endl;
         boost::scoped_ptr<uint8_t> casted(new uint8_t[in.size]);
-        std::copy(in.data.get(), &in.data[in.size], casted.get());
+        std::copy(in.data.get(), &in.data.get()[in.size], casted.get());
         return compress(1, TJ_GRAYSCALE, casted.get());
     }
 
     data_var operator()(const data<uint8_t>& in) const
     {
+        std::cout << "Greyscalin' it!" << std::endl;
         return compress(1, TJ_GRAYSCALE, in.data.get());
     }
 
     data_var operator()(const data<int32_t>& in) const
     {
+        std::cout << "Cast Colorin' it!" << std::endl;
         boost::scoped_ptr<uint32_t> casted(new uint32_t[in.size]);
-        std::copy(in.data.get(), &in.data[in.size], casted.get());
+        std::copy(in.data.get(), &in.data.get()[in.size], casted.get());
         return compress(4, TJ_444, reinterpret_cast<uint8_t*>(casted.get()));
     }
 
     data_var operator()(const data<uint32_t>& in) const
     {
-        return compress(4, TJ_444,
-                        reinterpret_cast<uint8_t*>(in.data.get()));
+        std::cout << "Colorin' it!" << std::endl;
+        return compress(4, TJ_444, reinterpret_cast<uint8_t*>(in.data.get()));
     }
 
     data_var operator()(const data<float>& in) const
     {
+        std::cout << "Rescale Greyscalin' it!" << std::endl;
         tiles::filters<float> filter(128);
-        boost::shared_ptr<uint8_t> rescaled = filter.rescaleAndCast<uint8_t>(
-            boost::shared_ptr<float>(in.data.get()), 0.0f, 1.0f, 255);
+        boost::shared_ptr<uint8_t> rescaled = filter.rescaleAndCast<uint8_t>(in.data, 0.0f, 1.0f, 255);
         return compress(1, TJ_GRAYSCALE, rescaled.get());
     }
 
@@ -74,8 +78,6 @@ public:
         return outSize_;
     }
 };
-
-data_var operator>>(const data_var& d, const jpeg& v);
 
 }
 }

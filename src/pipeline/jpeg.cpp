@@ -29,9 +29,5 @@ data_var jpeg::compress(int pixelsize, int jpegsubsamp, uint8_t* in) const
     return out;
 }
 
-data_var operator>>(const data_var& d, const jpeg& v) {
-    return boost::apply_visitor(v, d);
-}
-
 }
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "boost/shared_array.hpp"
+#include "boost/shared_ptr.hpp"
 #include "boost/variant.hpp"
 #include "volume/volumeTypes.h"
 #include "datalayer/fs/memMappedFile.hpp"
@@ -11,7 +11,7 @@ namespace pipeline {
 template<typename T>
 struct data
 {
-    boost::shared_array<T> data;
+    boost::shared_ptr<T> data;
     uint64_t size;
 };
 
@@ -28,13 +28,12 @@ typedef boost::variant<data<char>,
                        data<uint32_t>,
                        data<float> > data_var;
 
-class out_stage
-{
-public:
-    virtual operator data_var() = 0;
-};
-
 typedef boost::static_visitor<data_var> stage;
+
+template<typename T>
+data_var operator>>(const data_var& d, const T& v) {
+    return boost::apply_visitor(v, d);
+}
 
 /*
 template <typename Tout>

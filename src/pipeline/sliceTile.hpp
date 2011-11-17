@@ -2,6 +2,7 @@
 
 #include "pipeline/stage.hpp"
 #include "chunks/rawChunkSlicer.hpp"
+#include "datalayer/fs/memMappedFile.hpp"
 
 namespace om {
 namespace pipeline {
@@ -10,29 +11,29 @@ class sliceTile : public stage
 {
 private:
     common::viewType view_;
-    int depth_;
+    coords::dataCoord dc_;
     int chunkSize_;
 
 public:
-    sliceTile(common::viewType view, int depth, int chunkSize)
+    sliceTile(common::viewType view, coords::dataCoord dc)
         : view_(view)
-        , depth_(depth)
-        , chunkSize_(chunkSize)
+        , dc_(dc)
+        , chunkSize_(dc.volume()->GetChunkDimension())
     { }
 
     template <typename T>
-    data_var operator()(const data<T>& in) const
+    data_var operator()(const datalayer::memMappedFile<T>& in) const
     {
         data<T> out;
         std::cout << "Executing sliceTile stage." << std::endl;
-        chunks::rawChunkSlicer<T> slicer(chunkSize_, in.data.get());
-        out.data.reset(slicer.GetCopyOfTile(view_, depth_).get());
+        chunks::rawChunkSlicer<T> slicer(chunkSize_, in.GetPtr() + dc_.toChunkOffset());
+        out.data = slicer.GetCopyOfTile(view_, dc_.toTileDepth(view_));
         out.size = chunkSize_ * chunkSize_;
         return out;
     }
 };
 
-data_var operator>>(const data_var& d, const sliceTile& v) {
+data_var operator>>(const dataSrcs& d, const sliceTile& v) {
     return boost::apply_visitor(v, d);
 }
 

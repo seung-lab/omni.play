@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     tile tile;
 
     metadata metadata;
-    metadata.uri = std::string("project.omni.files/channels/channel1/0/volume.uint8_t.raw");
+    metadata.uri = std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/channels/channel1/0/volume.float.raw");
     metadata.bounds.min.x = 0;
     metadata.bounds.min.y = 0;
     metadata.bounds.min.z = 0;
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     metadata.resolution.x = 1;
     metadata.resolution.y = 1;
     metadata.resolution.z = 1;
-    metadata.type = dataType::UINT8;
+    metadata.type = dataType::FLOAT;
     metadata.chunkDims.x = 128;
     metadata.chunkDims.y = 128;
     metadata.chunkDims.z = 128;
@@ -49,6 +49,7 @@ int main(int argc, char **argv) {
     point.z = 0;
 
     client.get_chan_tile(tile, metadata, point, 0, viewType::XY_VIEW);
+    std::cout << tile.data << std::endl;
 
 //    testClient::wholeVolume(client);
     transport->close();

@@ -58,7 +58,7 @@ public:
 };
 */
 
-class mapData : public out_stage
+class mapData
 {
 private:
     dataSrcs file_;
@@ -77,39 +77,14 @@ public:
     }
 
     template<typename T>
-    void init(std::string fnp)
-    {
+    void init(std::string fnp) {
         file_ = datalayer::memMappedFile<T>(fnp);;
     }
 
-    operator data_var() {
-        return data<char>();
+    operator dataSrcs() {
+        return file_;
     }
 };
-
-class getChunk : public stage
-{
-private:
-    coords::dataCoord dc_;
-
-public:
-    getChunk(coords::dataCoord dc)
-        : dc_(dc)
-    {}
-
-    template<typename T>
-    data_var operator()(const data<T>& in) const
-    {
-        data<T> out;
-        out.data.reset(&in.data[dc_.toChunkOffset()]);
-        out.size = dc_.volume()->GetChunkDimensions().dot(Vector3i::ONE);
-        return out;
-    }
-};
-
-data_var operator>>(const data_var& d, const getChunk& v) {
-    return boost::apply_visitor(v, d);
-}
 
 }
 }

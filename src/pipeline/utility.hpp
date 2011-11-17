@@ -6,78 +6,29 @@
 namespace om {
 namespace pipeline {
 
-template<typename T>
-class passthrough : public stage<T, T>
-{
-protected:
-    virtual void inspect(const T* data) {};
-
-public:
-    passthrough(out_stage<T>* pred)
-        : stage<T, T>(pred)
-    {}
-
-    T* operator()(T* data)
-    {
-        inspect(data);
-        return data;
-    }
-
-    void cleanup() {
-        this->predecessor_->cleanup();
-    }
-
-    int out_size() const {
-        return this->predecessor_->out_size();
-    }
-};
-
-template<typename T>
-class write_out : public passthrough<T>
+class write_out : public stage
 {
 private:
     std::string fnp_;
 
 public:
-    write_out(out_stage<T>* pred, std::string fnp)
-        : passthrough<T>(pred)
-        , fnp_(fnp)
+    write_out(std::string fnp)
+        : fnp_(fnp)
     { }
 
-protected:
-    void inspect(const T* data)
+    template<typename T>
+    data_var operator()(const data<T>& d) const
     {
         std::cout << "Writing" << std::endl;
         std::ofstream fout(fnp_.c_str());
 
-        for(int i = 0; i < this->out_size(); i++) {
-            fout << data[i];
+        for(int i = 0; i < d.size; i++) {
+            fout << d.data.get()[i];
         }
         std::cout << "Done Writing" << std::endl;
+        return d;
     }
 };
-
-template<typename Tin, typename Tout>
-class recast : public stage<Tin, Tout>
-{
-public:
-    recast(out_stage<Tin> pred)
-        : stage<Tin, Tout> (pred)
-    {}
-
-    void cleanup() {
-        this->predecessor_->cleanup();
-    }
-
-    int out_size() const {
-        return this->predecessor_->out_size();
-    }
-
-    Tout* operator()(Tin* data) {
-        return reinterpret_cast<Tout*>(data);
-    }
-};
-
 
 } // namespace pipeline
 } // namespace om
