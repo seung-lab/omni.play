@@ -7,37 +7,27 @@
 namespace om {
 namespace pipeline {
 
-template<typename T>
-class bitmask : public stage<T, bool>
+class bitmask : public stage
 {
 private:
-    T mask_;
-    boost::scoped_array<bool> data_;
-    int outSize_;
+    uint32_t mask_;
 
 public:
-    bitmask(out_stage<T>* pred, T mask)
-        : stage<T, bool>(pred)
-        , mask_(mask)
+    bitmask(uint32_t mask)
+        : mask_(mask)
     {}
 
-    int out_size() const {
-        return outSize_;
-    }
-
-    void cleanup() {
-        this->predecessor_->cleanup();
-    }
-
-    bool* operator()(T* data)
+    template<typename T>
+    data_var operator()(const data<T>& in) const
     {
         std::cout << "Bitmasking" << std::endl;
-        outSize_ = this->predecessor_->out_size();
-        data_.reset(new bool[outSize_]);
-        for(int i = 0; i < outSize_; i++) {
-            data_[i] = data[i] == mask_;
+        data<bool> out;
+        out.size = in.size;
+        out.data.reset(new bool[out.size]);
+        for(int i = 0; i < out.size; i++) {
+            out.data.get()[i] = in.data.get()[i] == mask_;
         }
-        return data_.get();
+        return out;
     }
 };
 

@@ -21,7 +21,8 @@ typedef boost::variant<datalayer::memMappedFile<int8_t>,
                        datalayer::memMappedFile<uint32_t>,
                        datalayer::memMappedFile<float> > dataSrcs;
 
-typedef boost::variant<data<char>,
+typedef boost::variant<data<bool>,
+                       data<char>,
                        data<int8_t>,
                        data<uint8_t>,
                        data<int32_t>,

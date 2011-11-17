@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     metadata.chunkDims.z = 128;
 
     vector3d point;
-    point.x = 0;
+    point.x = 20;
     point.y = 0;
     point.z = 0;
 

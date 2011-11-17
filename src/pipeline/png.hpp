@@ -8,29 +8,41 @@
 namespace om {
 namespace pipeline {
 
-template<typename T>
-class png : public stage<T, char>
+class png : public stage
 {
 protected:
-    std::vector<char> compressed_;
-    int outSize_;
     uint32_t width_;
     uint32_t height_;
 
 public:
-    png(out_stage<T>* pred, uint32_t width, uint32_t height)
-        : stage<T, char>(pred)
-        , width_(width)
+    png(uint32_t width, uint32_t height)
+        : width_(width)
         , height_(height)
     { }
 
-    ~png()
-    { }
+    template<typename T>
+    data_var operator()(const data<T>& in) const
+    {
+    }
+
+    data_var operator()(const data<uint8_t>& in) const {
+        return compress(8, PNG_COLOR_TYPE_GRAY, data);
+    }
+
+    data_var operator()(const data<uint32_t>& in) const {
+        return compress(8, PNG_COLOR_TYPE_RGB_ALPHA, reinterpret_cast<uint8_t*>(data));
+    }
+
+    data_var operator()(const data<bool>& in) const {
+        return compress(1, PNG_COLOR_TYPE_GRAY, reinterpret_cast<uint8_t*>(data));
+    }
 
     // heavily based on libpng manual http://www.libpng.org/pub/png/libpng-1.4.0-manual.pdf
     // TODO: Error handling
-    void compress(const int bit_depth, const int color_type, const uint8_t* data)
+    data_var compress(const int bit_depth, const int color_type, const uint8_t* data)
     {
+        data<char> out;
+
         std::cout << "Pnging" << std::endl;
         png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
                                                       NULL,
@@ -169,59 +181,7 @@ public:
     }
 
     static void flush_data(png_structp png_ptr) {}
-
-    inline void cleanup() {
-        compressed_.clear();
-    }
-
-    inline int out_size() const {
-        return compressed_.size();
-    }
 };
-
-class png8bit : public png<uint8_t>
-{
-public:
-    png8bit(out_stage<uint8_t>* pred, uint32_t width, uint32_t height)
-        : png<uint8_t>(pred, width, height)
-    {}
-
-    char* operator()(uint8_t* data)
-    {
-        compress(8, PNG_COLOR_TYPE_GRAY, data);
-        return &(*compressed_.begin());
-    }
-};
-
-class png32bit : public png<uint32_t>
-{
-public:
-    png32bit(out_stage<uint32_t>* pred, uint32_t width, uint32_t height)
-        : png<uint32_t>(pred, width, height)
-    {}
-
-    char* operator()(uint32_t* data)
-    {
-        compress(8, PNG_COLOR_TYPE_RGB_ALPHA, reinterpret_cast<uint8_t*>(data));
-        return &(*compressed_.begin());
-    }
-};
-
-class pngMask : public png<bool>
-{
-public:
-    pngMask(out_stage<bool>* pred, uint32_t width, uint32_t height)
-        : png<bool>(pred, width, height)
-    {}
-
-    char* operator()(bool* data)
-    {
-        compress(1, PNG_COLOR_TYPE_GRAY, reinterpret_cast<uint8_t*>(data));
-        return &(*compressed_.begin());
-    }
-};
-
-
 
 }
 }

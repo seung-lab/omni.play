@@ -19,7 +19,7 @@
 #include "pipeline/encode.hpp"
 #include "pipeline/utility.hpp"
 //#include "pipeline/filter.hpp"
-//#include "pipeline/bitmask.hpp"
+#include "pipeline/bitmask.hpp"
 //#include "pipeline/png.hpp"
 
 using namespace ::apache::thrift;
@@ -79,34 +79,83 @@ public:
                        const int32_t mipLevel,
                        const viewType::type view)
     {
-/*        coords::volumeSystem coordSystem(vol);
+        coords::volumeSystem coordSystem(vol);
 
-        coords::globalCoord coord = point;
-        coords::dataCoord dc = coord.toDataCoord(&coordSystem, mipLevel);
+        pipeline::mapData dataSrc(vol.uri, vol.type);
+
+        vector3d min = twist(segBbox.min, view);
+        vector3d max = twist(segBbox.max, view);
+        vector3i dims = twist(vol.chunkDims, view);
+        vector3i res = twist(vol.resolution, view);
+
+        for(int x = min.x; x <= max.x; x += dims.x * res.x) {
+            for(int y = min.y; y <= max.y; y += dims.y * res.y) {
+                for(int z = min.z; z <= max.z; z += res.z) // always depth when twisted
+                {
+                    coords::globalCoord coord = twist(coords::globalCoord(x,y,z), view);
+                    coords::dataCoord dc = coord.toDataCoord(&coordSystem, mipLevel);
+                    tile t = makeSegTile(dataSrc, dc, view, segId);
+                    _return.push_back(t);
+                }
+            }
+        }
+    }
+
+private:
+    template<typename T>
+    T twist(T vec, viewType::type view)
+    {
+        T out;
+        switch(view)
+        {
+        case viewType::XY_VIEW:
+            out.x = vec.x;
+            out.y = vec.y;
+            out.z = vec.z;
+            break;
+        case viewType::XZ_VIEW:
+            out.x = vec.x;
+            out.z = vec.z;
+            out.y = vec.y;
+            break;
+        case viewType::ZY_VIEW:
+            out.z = vec.z;
+            out.y = vec.y;
+            out.x = vec.x;
+            break;
+        }
+
+        return out;
+    }
+
+    tile makeSegTile(const pipeline::dataSrcs& src,
+                     const coords::dataCoord& dc,
+                     const viewType::type& view,
+                     uint32_t segId) const
+    {
+        using namespace pipeline;
+
         coords::chunkCoord cc = dc.toChunkCoord();
         common::viewType viewType = common::Convert(view);
         int depth = dc.toTileDepth(viewType);
 
-        if(!coordSystem.ContainsMipChunkCoord(cc)) {
-            throw common::argException("Requested data outside of volume.");
-        }
+        tile t;
+        t.view = view;
 
-        _return.view = view;
+        coords::dataBbox bounds = cc.chunkBoundingBox(dc.volume());
+        t.bounds.min = bounds.getMin().toGlobalCoord();
+        t.bounds.max = bounds.getMax().toGlobalCoord();
 
-        coords::dataBbox bounds = cc.chunkBoundingBox(&coordSystem);
-        _return.bounds.min = bounds.getMin().toGlobalCoord();
-        _return.bounds.max = bounds.getMax().toGlobalCoord();
-
-        using namespace pipeline;
-
-        data_var encoded = mapData(vol.uri, vol.type) >> sliceTile(viewType, dc)
-                                                      >> jpeg(128,128)
-                                                      >> encode();
+        data_var encoded = src >> sliceTile(viewType, dc) >> bitmask(segId);
+            //>> png(128,128) >> encode();
 
         data<char> out = boost::get<data<char> >(encoded);
-        _return.data = std::string(out.data.get(), out.size);*/
+        t.data = std::string(out.data.get(), out.size);
+
+        return t;
     }
 
+public:
     int32_t get_seg_id(const metadata& vol, const vector3d& point) {
         // Your implementation goes here
         printf("get_seg_id\n");

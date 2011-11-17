@@ -26,7 +26,8 @@ public:
     {
         data<T> out;
         std::cout << "Executing sliceTile stage." << std::endl;
-        chunks::rawChunkSlicer<T> slicer(chunkSize_, in.GetPtr() + dc_.toChunkOffset());
+        T* ptr = in.GetPtr() + dc_.toChunkCoord().chunkPtrOffset(dc_.volume(), sizeof(T));
+        chunks::rawChunkSlicer<T> slicer(chunkSize_, ptr);
         out.data = slicer.GetCopyOfTile(view_, dc_.toTileDepth(view_));
         out.size = chunkSize_ * chunkSize_;
         return out;
