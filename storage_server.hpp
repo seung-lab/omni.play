@@ -15,16 +15,16 @@
 template< typename K, typename V >
 class storage_server
 {
-  
+
 private:
-    
+
   typedef bint::managed_mapped_file::handle_t handle_t;
   typedef std::pair<K,  handle_t> value_type;
-  
+
   //Alias an STL compatible allocator of for the map.
   //This allocator will allow to place containers
   //in managed shared memory segments
-  typedef bint::allocator<value_type, bint::managed_mapped_file::segment_manager> 
+  typedef bint::allocator<value_type, bint::managed_mapped_file::segment_manager>
   m_file_allocator;
 
   //Alias a map of ints that uses the previous STL-like allocator.
@@ -42,17 +42,17 @@ private:
 
   void init(){
     std::cout << "starting server...\n";
-    
+
     //Construct a shared memory map.
     //Note that the first parameter is the comparison function,
     //and the second one the allocator.
     //This the same signature as std::map's constructor taking an allocator
-    mymap = 
+    mymap =
       mfile.find_or_construct<file_map>("FileMap")      //object name
-      (std::less<int>() //first  ctor parameter
+      (std::less<K>() //first  ctor parameter
        ,alloc_inst);     //second ctor parameter
     std::cout << "server constructed\n";
-    
+
     std::cout << "map size "<< mymap->size() << "\n";
     std::cout << "mapped memory "<< (mfile.get_size() - mfile.get_free_memory())
 	      << std::endl;
@@ -61,14 +61,14 @@ private:
 
 public:
   storage_server(std::string  id, std::size_t size)
-    :name(id), mapping_size(size), 
-     mfile(bint::open_or_create ,name.c_str(),mapping_size), 
+    :name(id), mapping_size(size),
+     mfile(bint::open_or_create ,name.c_str(),mapping_size),
      alloc_inst(mfile.get_segment_manager())
   {
     init();
   }
 
-    
+
   ~storage_server(){
    }
 
@@ -76,7 +76,7 @@ public:
   storage_type<V> get( const K& key ) const
   {
     data_const_iterator it = mymap->find(key);
-    
+
     if ( it != mymap->end() )
       {
 	//get handle and convert it back into storage_type
@@ -96,7 +96,7 @@ public:
     //construct value_type in memory-mapped region
     void* new_data = mfile.allocate(sizeof(V)*store.size);
     std::memcpy(new_data,store.data,sizeof(V)*store.size);
-    
+
     storage_type<V>* new_store = mfile.construct<storage_type<V> >
       (bint::anonymous_instance)(
     				 store.size
@@ -111,7 +111,7 @@ public:
 
     value_type* insertion = mfile.construct<value_type>
       (bint::anonymous_instance)(key,*handle);
-    
+
 
     data_const_iterator it = mymap->find(key);
     bool had_it = mymap->find(key) != mymap->end();
@@ -119,8 +119,8 @@ public:
     if(had_it)
       {
 	data_const_iterator it_delete = mymap->find(key);
-    
-	
+
+
 	//get handle and convert it back into storage_type
 	handle_t handle_delete = it_delete->second;
 	storage_type<V>* store_delete = static_cast<storage_type<V>* >
@@ -130,15 +130,15 @@ public:
 	//TODO deallocate memory
 	mfile.deallocate(store_delete->data);
 	//destroy object
-	mfile.destroy_ptr(store_delete);	
+	mfile.destroy_ptr(store_delete);
 	//erase from map
 	mymap->erase(key);
-	
+
       }
 
-    
+
     mymap->insert(*insertion);
-    
+
     return had_it;
   }
 

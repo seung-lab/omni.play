@@ -1,14 +1,14 @@
 namespace cpp bint
 
-struct server_id {
+struct server_id
+{
     1: string   address,
-    2: i32      port       
-
+    2: i32      port
 }
 
 
-service storage_manager {
-    
+service storage_manager
+{
     server_id get_server(
       1: string key
     ),
@@ -16,12 +16,10 @@ service storage_manager {
     bool register_server(
       1: server_id id
     ),
-
 }
 
-
-service storage_server {
-
+service storage_server
+{
     binary get (
       1: string key,
     ),

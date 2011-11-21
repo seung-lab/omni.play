@@ -6,8 +6,10 @@
 
 
 
-namespace bint{
+namespace bint {
+
 using namespace boost::interprocess;
+
 }
 
 template< typename T >
