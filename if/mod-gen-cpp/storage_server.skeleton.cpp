@@ -6,6 +6,9 @@
 #include <server/TSimpleServer.h>
 #include <transport/TServerSocket.h>
 #include <transport/TBufferTransports.h>
+#include <boost/program_options.hpp>
+#include <iostream>
+#include "../../storage_server.hpp"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -13,13 +16,25 @@ using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
 using boost::shared_ptr;
-
+namespace po = boost::program_options;
 using namespace bint;
 
 class storage_serverHandler : virtual public storage_serverIf {
- public:
-  storage_serverHandler() {
+
+private:
+  storage_server<std::string,std::string> server_;
+
+
+public:
+  storage_serverHandler(std::string id, size_t size, std::string manager, std::string port)
+    :server_(id,size) //initialize storage_server
+
+  {
     // Your initialization goes here
+    
+    
+    //register with storage manager service
+    
   }
 
   void get(std::string& _return, const std::string& key) {
@@ -30,11 +45,64 @@ class storage_serverHandler : virtual public storage_serverIf {
   bool put(const std::string& key, const std::string& value) {
     // Your implementation goes here
     printf("put\n");
+    //TODO need to include size
   }
 
 };
 
 int main(int argc, char **argv) {
+
+  //take care of program options
+  po::variables_map vm;        
+  int manager_port;
+  std::size_t size;
+  std::string id;
+  std::string manager_addr;
+  
+  try {
+    
+    po::options_description desc("Allowed options");
+    desc.add_options()
+      ("help", "produce help message")
+      ("id", po::value<std::string>(), "set the server id (ideally a unique number)")
+      ("size", po::value<std::size_t>(&size), "set the file mapping size")
+      ("manager_addr", po::value<std::string>(), "the address of the storage_manager")
+      ("manager_port", po::value<int>(&manager_port)->default_value(9090), "the port of the address manager")
+      ;
+    
+    
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);    
+    
+    if (vm.count("help")) {
+      std::cout << desc << "\n";
+      return 1;
+    }
+
+    if (vm.count("id") == 0){
+      std::cout << "must include id\n";
+      return 1;
+    }if (vm.count("size") == 0){
+      std::cout << "must include size\n";
+      return 1;
+    }if (vm.count("manager_addr") == 0){
+      std::cout << "must include manager address\n";
+      return 1;
+    }
+
+
+  }
+  catch(std::exception& e) {
+    std::cerr << "error: " << e.what() << "\n";
+    return 1;
+  }
+  catch(...) {
+    std::cerr << "Exception of unknown type!\n";
+  }
+
+  id = vm["id"].as<std::string>();
+  manager_addr = vm["manager_addr"].as<std::string>();
+
   int port = 9090;
   shared_ptr<storage_serverHandler> handler(new storage_serverHandler());
   shared_ptr<TProcessor> processor(new storage_serverProcessor(handler));
