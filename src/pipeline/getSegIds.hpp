@@ -27,8 +27,8 @@ public:
             segs.data.reset(new uint32_t[1]);
             segs.size = 1;
 
-            T* chunkPtr = in.GetPtr() +
-                coord_.toChunkCoord().chunkPtrOffset(coord_.volume(), sizeof(T));
+            uint64_t offset = coord_.toChunkCoord().chunkPtrOffset(coord_.volume(), sizeof(T));
+            T* chunkPtr = in.GetPtrWithOffset(offset);
 
             segs.data.get()[0] = chunkPtr[coord_.toChunkOffset()];
         } else { // brush select

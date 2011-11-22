@@ -25,8 +25,6 @@ private:
     {
         base64::encoder e;
 
-        std::cout << "Encoding" << std::endl;
-
         data<char> out;
         out.size = 2 * size;
         out.data.reset(new char[out.size]);

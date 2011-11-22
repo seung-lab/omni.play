@@ -50,6 +50,8 @@ public:
         coords::globalCoord coord = point;
         coords::dataCoord dc = coord.toDataCoord(&coordSystem, mipLevel);
         coords::chunkCoord cc = dc.toChunkCoord();
+//        std::cout << coord << " - " << dc << " - " << cc << " - "
+//                  << cc.chunkPtrOffset(&coordSystem, 4) << std::endl;
         common::viewType viewType = common::Convert(view);
         int depth = dc.toTileDepth(viewType);
 
@@ -104,7 +106,7 @@ public:
 
 private:
     template<typename T>
-    T twist(T vec, viewType::type view)
+    T twist(T vec, viewType::type view) const
     {
         T out;
         switch(view)
@@ -144,8 +146,14 @@ private:
         t.view = view;
 
         coords::dataBbox bounds = cc.chunkBoundingBox(dc.volume());
-        t.bounds.min = bounds.getMin().toGlobalCoord();
-        t.bounds.max = bounds.getMax().toGlobalCoord();
+        vector3d min = twist(bounds.getMin().toGlobalCoord(), view);
+        vector3d max = twist(bounds.getMax().toGlobalCoord(), view);
+
+        min.z = depth;
+        max.z = depth;
+
+        t.bounds.min = twist(min, view);
+        t.bounds.max = twist(max, view);
 
         data_var encoded = src >> sliceTile(viewType, dc) >> bitmask(segId)
                                >> png(128,128) >> encode();

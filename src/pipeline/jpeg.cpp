@@ -6,7 +6,6 @@ namespace pipeline {
 data_var jpeg::compress(int pixelsize, int jpegsubsamp, uint8_t* in) const
 {
     data<char> out;
-    std::cout << "Executing jpeg stage." << std::endl;
     unsigned long buffSize = TJBUFSIZE(width_, height_);
     out.data.reset(new char[buffSize]);
 

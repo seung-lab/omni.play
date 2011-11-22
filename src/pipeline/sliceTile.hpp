@@ -25,8 +25,9 @@ public:
     data_var operator()(const datalayer::memMappedFile<T>& in) const
     {
         data<T> out;
-        std::cout << "Executing sliceTile stage." << std::endl;
-        T* chunkPtr = in.GetPtr() + dc_.toChunkCoord().chunkPtrOffset(dc_.volume(), sizeof(T));
+        coords::chunkCoord cc = dc_.toChunkCoord();
+        uint64_t offset = cc.chunkPtrOffset(dc_.volume(), sizeof(T));
+        T* chunkPtr = in.GetPtrWithOffset(offset);
         chunks::rawChunkSlicer<T> slicer(chunkSize_, chunkPtr);
         out.data = slicer.GetCopyOfTile(view_, dc_.toTileDepth(view_));
         out.size = chunkSize_ * chunkSize_;
