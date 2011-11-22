@@ -689,9 +689,14 @@ class server_get_seg_tiles_result {
       self::$_TSPEC = array(
         0 => array(
           'var' => 'success',
-          'type' => TType::LST,
-          'etype' => TType::STRUCT,
-          'elem' => array(
+          'type' => TType::MAP,
+          'ktype' => TType::STRUCT,
+          'vtype' => TType::STRUCT,
+          'key' => array(
+            'type' => TType::STRUCT,
+            'class' => 'vector3d',
+          ),
+          'val' => array(
             'type' => TType::STRUCT,
             'class' => 'tile',
             ),
@@ -725,19 +730,23 @@ class server_get_seg_tiles_result {
       switch ($fid)
       {
         case 0:
-          if ($ftype == TType::LST) {
+          if ($ftype == TType::MAP) {
             $this->success = array();
             $_size7 = 0;
-            $_etype10 = 0;
-            $xfer += $input->readListBegin($_etype10, $_size7);
+            $_ktype8 = 0;
+            $_vtype9 = 0;
+            $xfer += $input->readMapBegin($_ktype8, $_vtype9, $_size7);
             for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
             {
-              $elem12 = null;
-              $elem12 = new tile();
-              $xfer += $elem12->read($input);
-              $this->success []= $elem12;
+              $key12 = new vector3d();
+              $val13 = new tile();
+              $key12 = new vector3d();
+              $xfer += $key12->read($input);
+              $val13 = new tile();
+              $xfer += $val13->read($input);
+              $this->success[$key12] = $val13;
             }
-            $xfer += $input->readListEnd();
+            $xfer += $input->readMapEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -759,16 +768,17 @@ class server_get_seg_tiles_result {
       if (!is_array($this->success)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      $xfer += $output->writeFieldBegin('success', TType::MAP, 0);
       {
-        $output->writeListBegin(TType::STRUCT, count($this->success));
+        $output->writeMapBegin(TType::STRUCT, TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter13)
+          foreach ($this->success as $kiter14 => $viter15)
           {
-            $xfer += $iter13->write($output);
+            $xfer += $kiter14->write($output);
+            $xfer += $viter15->write($output);
           }
         }
-        $output->writeListEnd();
+        $output->writeMapEnd();
       }
       $xfer += $output->writeFieldEnd();
     }
@@ -1142,14 +1152,14 @@ class server_get_seg_ids_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size14 = 0;
-            $_etype17 = 0;
-            $xfer += $input->readListBegin($_etype17, $_size14);
-            for ($_i18 = 0; $_i18 < $_size14; ++$_i18)
+            $_size16 = 0;
+            $_etype19 = 0;
+            $xfer += $input->readListBegin($_etype19, $_size16);
+            for ($_i20 = 0; $_i20 < $_size16; ++$_i20)
             {
-              $elem19 = null;
-              $xfer += $input->readI32($elem19);
-              $this->success []= $elem19;
+              $elem21 = null;
+              $xfer += $input->readI32($elem21);
+              $this->success []= $elem21;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1177,9 +1187,9 @@ class server_get_seg_ids_result {
       {
         $output->writeListBegin(TType::I32, count($this->success));
         {
-          foreach ($this->success as $iter20)
+          foreach ($this->success as $iter22)
           {
-            $xfer += $output->writeI32($iter20);
+            $xfer += $output->writeI32($iter22);
           }
         }
         $output->writeListEnd();
@@ -1250,15 +1260,15 @@ class server_compare_results_args {
         case 1:
           if ($ftype == TType::LST) {
             $this->old_results = array();
-            $_size21 = 0;
-            $_etype24 = 0;
-            $xfer += $input->readListBegin($_etype24, $_size21);
-            for ($_i25 = 0; $_i25 < $_size21; ++$_i25)
+            $_size23 = 0;
+            $_etype26 = 0;
+            $xfer += $input->readListBegin($_etype26, $_size23);
+            for ($_i27 = 0; $_i27 < $_size23; ++$_i27)
             {
-              $elem26 = null;
-              $elem26 = new result();
-              $xfer += $elem26->read($input);
-              $this->old_results []= $elem26;
+              $elem28 = null;
+              $elem28 = new result();
+              $xfer += $elem28->read($input);
+              $this->old_results []= $elem28;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1294,9 +1304,9 @@ class server_compare_results_args {
       {
         $output->writeListBegin(TType::STRUCT, count($this->old_results));
         {
-          foreach ($this->old_results as $iter27)
+          foreach ($this->old_results as $iter29)
           {
-            $xfer += $iter27->write($output);
+            $xfer += $iter29->write($output);
           }
         }
         $output->writeListEnd();

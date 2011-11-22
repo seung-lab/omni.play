@@ -63,11 +63,11 @@ service server
                         3: i32 mipLevel,
                         4: viewType view ),
 
-    list<tile> get_seg_tiles( 1: metadata vol,
-                              2: i32 segId,
-                              3: bbox segBbox,
-                              4: i32 mipLevel,
-                              5: viewType view ),
+    map<vector3d, tile> get_seg_tiles( 1: metadata vol,
+                                       2: i32 segId,
+                                       3: bbox segBbox,
+                                       4: i32 mipLevel,
+                                       5: viewType view ),
 
     i32 get_seg_id( 1: metadata vol, 2: vector3d point),
 

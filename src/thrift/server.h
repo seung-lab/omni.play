@@ -15,7 +15,7 @@ class serverIf {
  public:
   virtual ~serverIf() {}
   virtual void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const int32_t mipLevel, const viewType::type view) = 0;
-  virtual void get_seg_tiles(std::vector<tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view) = 0;
+  virtual void get_seg_tiles(std::map<vector3d, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view) = 0;
   virtual int32_t get_seg_id(const metadata& vol, const vector3d& point) = 0;
   virtual void get_seg_ids(std::vector<int32_t> & _return, const metadata& vol, const vector3d& point, const double radius, const viewType::type view) = 0;
   virtual double compare_results(const std::vector<result> & old_results, const result& new_result) = 0;
@@ -27,7 +27,7 @@ class serverNull : virtual public serverIf {
   void get_chan_tile(tile& /* _return */, const metadata& /* vol */, const vector3d& /* point */, const int32_t /* mipLevel */, const viewType::type /* view */) {
     return;
   }
-  void get_seg_tiles(std::vector<tile> & /* _return */, const metadata& /* vol */, const int32_t /* segId */, const bbox& /* segBbox */, const int32_t /* mipLevel */, const viewType::type /* view */) {
+  void get_seg_tiles(std::map<vector3d, tile> & /* _return */, const metadata& /* vol */, const int32_t /* segId */, const bbox& /* segBbox */, const int32_t /* mipLevel */, const viewType::type /* view */) {
     return;
   }
   int32_t get_seg_id(const metadata& /* vol */, const vector3d& /* point */) {
@@ -278,11 +278,11 @@ class server_get_seg_tiles_result {
 
   virtual ~server_get_seg_tiles_result() throw() {}
 
-  std::vector<tile>  success;
+  std::map<vector3d, tile>  success;
 
   _server_get_seg_tiles_result__isset __isset;
 
-  void __set_success(const std::vector<tile> & val) {
+  void __set_success(const std::map<vector3d, tile> & val) {
     success = val;
   }
 
@@ -314,7 +314,7 @@ class server_get_seg_tiles_presult {
 
   virtual ~server_get_seg_tiles_presult() throw() {}
 
-  std::vector<tile> * success;
+  std::map<vector3d, tile> * success;
 
   _server_get_seg_tiles_presult__isset __isset;
 
@@ -714,9 +714,9 @@ class serverClient : virtual public serverIf {
   void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const int32_t mipLevel, const viewType::type view);
   void send_get_chan_tile(const metadata& vol, const vector3d& point, const int32_t mipLevel, const viewType::type view);
   void recv_get_chan_tile(tile& _return);
-  void get_seg_tiles(std::vector<tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view);
+  void get_seg_tiles(std::map<vector3d, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view);
   void send_get_seg_tiles(const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view);
-  void recv_get_seg_tiles(std::vector<tile> & _return);
+  void recv_get_seg_tiles(std::map<vector3d, tile> & _return);
   int32_t get_seg_id(const metadata& vol, const vector3d& point);
   void send_get_seg_id(const metadata& vol, const vector3d& point);
   int32_t recv_get_seg_id();
@@ -782,7 +782,7 @@ class serverMultiface : virtual public serverIf {
     }
   }
 
-  void get_seg_tiles(std::vector<tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view) {
+  void get_seg_tiles(std::map<vector3d, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {

@@ -350,19 +350,22 @@ uint32_t server_get_seg_tiles_result::read(::apache::thrift::protocol::TProtocol
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->success.clear();
             uint32_t _size10;
-            ::apache::thrift::protocol::TType _etype13;
-            iprot->readListBegin(_etype13, _size10);
-            this->success.resize(_size10);
+            ::apache::thrift::protocol::TType _ktype11;
+            ::apache::thrift::protocol::TType _vtype12;
+            iprot->readMapBegin(_ktype11, _vtype12, _size10);
             uint32_t _i14;
             for (_i14 = 0; _i14 < _size10; ++_i14)
             {
-              xfer += this->success[_i14].read(iprot);
+              vector3d _key15;
+              xfer += _key15.read(iprot);
+              tile& _val16 = this->success[_key15];
+              xfer += _val16.read(iprot);
             }
-            iprot->readListEnd();
+            iprot->readMapEnd();
           }
           this->__isset.success = true;
         } else {
@@ -388,15 +391,16 @@ uint32_t server_get_seg_tiles_result::write(::apache::thrift::protocol::TProtoco
   xfer += oprot->writeStructBegin("server_get_seg_tiles_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
     {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector<tile> ::const_iterator _iter15;
-      for (_iter15 = this->success.begin(); _iter15 != this->success.end(); ++_iter15)
+      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRUCT, ::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
+      std::map<vector3d, tile> ::const_iterator _iter17;
+      for (_iter17 = this->success.begin(); _iter17 != this->success.end(); ++_iter17)
       {
-        xfer += (*_iter15).write(oprot);
+        xfer += _iter17->first.write(oprot);
+        xfer += _iter17->second.write(oprot);
       }
-      xfer += oprot->writeListEnd();
+      xfer += oprot->writeMapEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
@@ -426,19 +430,22 @@ uint32_t server_get_seg_tiles_presult::read(::apache::thrift::protocol::TProtoco
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             (*(this->success)).clear();
-            uint32_t _size16;
-            ::apache::thrift::protocol::TType _etype19;
-            iprot->readListBegin(_etype19, _size16);
-            (*(this->success)).resize(_size16);
-            uint32_t _i20;
-            for (_i20 = 0; _i20 < _size16; ++_i20)
+            uint32_t _size18;
+            ::apache::thrift::protocol::TType _ktype19;
+            ::apache::thrift::protocol::TType _vtype20;
+            iprot->readMapBegin(_ktype19, _vtype20, _size18);
+            uint32_t _i22;
+            for (_i22 = 0; _i22 < _size18; ++_i22)
             {
-              xfer += (*(this->success))[_i20].read(iprot);
+              vector3d _key23;
+              xfer += _key23.read(iprot);
+              tile& _val24 = (*(this->success))[_key23];
+              xfer += _val24.read(iprot);
             }
-            iprot->readListEnd();
+            iprot->readMapEnd();
           }
           this->__isset.success = true;
         } else {
@@ -675,9 +682,9 @@ uint32_t server_get_seg_ids_args::read(::apache::thrift::protocol::TProtocol* ip
         break;
       case 4:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast21;
-          xfer += iprot->readI32(ecast21);
-          this->view = (viewType::type)ecast21;
+          int32_t ecast25;
+          xfer += iprot->readI32(ecast25);
+          this->view = (viewType::type)ecast25;
           this->__isset.view = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -759,14 +766,14 @@ uint32_t server_get_seg_ids_result::read(::apache::thrift::protocol::TProtocol* 
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size22;
-            ::apache::thrift::protocol::TType _etype25;
-            iprot->readListBegin(_etype25, _size22);
-            this->success.resize(_size22);
-            uint32_t _i26;
-            for (_i26 = 0; _i26 < _size22; ++_i26)
+            uint32_t _size26;
+            ::apache::thrift::protocol::TType _etype29;
+            iprot->readListBegin(_etype29, _size26);
+            this->success.resize(_size26);
+            uint32_t _i30;
+            for (_i30 = 0; _i30 < _size26; ++_i30)
             {
-              xfer += iprot->readI32(this->success[_i26]);
+              xfer += iprot->readI32(this->success[_i30]);
             }
             iprot->readListEnd();
           }
@@ -797,10 +804,10 @@ uint32_t server_get_seg_ids_result::write(::apache::thrift::protocol::TProtocol*
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->success.size()));
-      std::vector<int32_t> ::const_iterator _iter27;
-      for (_iter27 = this->success.begin(); _iter27 != this->success.end(); ++_iter27)
+      std::vector<int32_t> ::const_iterator _iter31;
+      for (_iter31 = this->success.begin(); _iter31 != this->success.end(); ++_iter31)
       {
-        xfer += oprot->writeI32((*_iter27));
+        xfer += oprot->writeI32((*_iter31));
       }
       xfer += oprot->writeListEnd();
     }
@@ -835,14 +842,14 @@ uint32_t server_get_seg_ids_presult::read(::apache::thrift::protocol::TProtocol*
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size28;
-            ::apache::thrift::protocol::TType _etype31;
-            iprot->readListBegin(_etype31, _size28);
-            (*(this->success)).resize(_size28);
-            uint32_t _i32;
-            for (_i32 = 0; _i32 < _size28; ++_i32)
+            uint32_t _size32;
+            ::apache::thrift::protocol::TType _etype35;
+            iprot->readListBegin(_etype35, _size32);
+            (*(this->success)).resize(_size32);
+            uint32_t _i36;
+            for (_i36 = 0; _i36 < _size32; ++_i36)
             {
-              xfer += iprot->readI32((*(this->success))[_i32]);
+              xfer += iprot->readI32((*(this->success))[_i36]);
             }
             iprot->readListEnd();
           }
@@ -887,14 +894,14 @@ uint32_t server_compare_results_args::read(::apache::thrift::protocol::TProtocol
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->old_results.clear();
-            uint32_t _size33;
-            ::apache::thrift::protocol::TType _etype36;
-            iprot->readListBegin(_etype36, _size33);
-            this->old_results.resize(_size33);
-            uint32_t _i37;
-            for (_i37 = 0; _i37 < _size33; ++_i37)
+            uint32_t _size37;
+            ::apache::thrift::protocol::TType _etype40;
+            iprot->readListBegin(_etype40, _size37);
+            this->old_results.resize(_size37);
+            uint32_t _i41;
+            for (_i41 = 0; _i41 < _size37; ++_i41)
             {
-              xfer += this->old_results[_i37].read(iprot);
+              xfer += this->old_results[_i41].read(iprot);
             }
             iprot->readListEnd();
           }
@@ -929,10 +936,10 @@ uint32_t server_compare_results_args::write(::apache::thrift::protocol::TProtoco
   xfer += oprot->writeFieldBegin("old_results", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->old_results.size()));
-    std::vector<result> ::const_iterator _iter38;
-    for (_iter38 = this->old_results.begin(); _iter38 != this->old_results.end(); ++_iter38)
+    std::vector<result> ::const_iterator _iter42;
+    for (_iter42 = this->old_results.begin(); _iter42 != this->old_results.end(); ++_iter42)
     {
-      xfer += (*_iter38).write(oprot);
+      xfer += (*_iter42).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -951,10 +958,10 @@ uint32_t server_compare_results_pargs::write(::apache::thrift::protocol::TProtoc
   xfer += oprot->writeFieldBegin("old_results", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->old_results)).size()));
-    std::vector<result> ::const_iterator _iter39;
-    for (_iter39 = (*(this->old_results)).begin(); _iter39 != (*(this->old_results)).end(); ++_iter39)
+    std::vector<result> ::const_iterator _iter43;
+    for (_iter43 = (*(this->old_results)).begin(); _iter43 != (*(this->old_results)).end(); ++_iter43)
     {
-      xfer += (*_iter39).write(oprot);
+      xfer += (*_iter43).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -1124,7 +1131,7 @@ void serverClient::recv_get_chan_tile(tile& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_chan_tile failed: unknown result");
 }
 
-void serverClient::get_seg_tiles(std::vector<tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view)
+void serverClient::get_seg_tiles(std::map<vector3d, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view)
 {
   send_get_seg_tiles(vol, segId, segBbox, mipLevel, view);
   recv_get_seg_tiles(_return);
@@ -1148,7 +1155,7 @@ void serverClient::send_get_seg_tiles(const metadata& vol, const int32_t segId, 
   oprot_->getTransport()->flush();
 }
 
-void serverClient::recv_get_seg_tiles(std::vector<tile> & _return)
+void serverClient::recv_get_seg_tiles(std::map<vector3d, tile> & _return)
 {
 
   int32_t rseqid = 0;

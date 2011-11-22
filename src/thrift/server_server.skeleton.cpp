@@ -27,7 +27,7 @@ class serverHandler : virtual public serverIf {
     printf("get_chan_tile\n");
   }
 
-  void get_seg_tiles(std::vector<tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view) {
+  void get_seg_tiles(std::map<vector3d, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view) {
     // Your implementation goes here
     printf("get_seg_tiles\n");
   }
