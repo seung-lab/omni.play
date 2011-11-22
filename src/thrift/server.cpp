@@ -45,14 +45,6 @@ uint32_t server_get_chan_tile_args::read(::apache::thrift::protocol::TProtocol* 
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->mipLevel);
-          this->__isset.mipLevel = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 4:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast8;
           xfer += iprot->readI32(ecast8);
           this->view = (viewType::type)ecast8;
@@ -82,10 +74,7 @@ uint32_t server_get_chan_tile_args::write(::apache::thrift::protocol::TProtocol*
   xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += this->point.write(oprot);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 3);
-  xfer += oprot->writeI32(this->mipLevel);
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((int32_t)this->view);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -102,10 +91,7 @@ uint32_t server_get_chan_tile_pargs::write(::apache::thrift::protocol::TProtocol
   xfer += oprot->writeFieldBegin("point", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += (*(this->point)).write(oprot);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 3);
-  xfer += oprot->writeI32((*(this->mipLevel)));
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((int32_t)(*(this->view)));
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -255,14 +241,6 @@ uint32_t server_get_seg_tiles_args::read(::apache::thrift::protocol::TProtocol* 
         break;
       case 4:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->mipLevel);
-          this->__isset.mipLevel = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 5:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast9;
           xfer += iprot->readI32(ecast9);
           this->view = (viewType::type)ecast9;
@@ -295,10 +273,7 @@ uint32_t server_get_seg_tiles_args::write(::apache::thrift::protocol::TProtocol*
   xfer += oprot->writeFieldBegin("segBbox", ::apache::thrift::protocol::T_STRUCT, 3);
   xfer += this->segBbox.write(oprot);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 4);
-  xfer += oprot->writeI32(this->mipLevel);
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 5);
+  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32((int32_t)this->view);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -318,10 +293,7 @@ uint32_t server_get_seg_tiles_pargs::write(::apache::thrift::protocol::TProtocol
   xfer += oprot->writeFieldBegin("segBbox", ::apache::thrift::protocol::T_STRUCT, 3);
   xfer += (*(this->segBbox)).write(oprot);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 4);
-  xfer += oprot->writeI32((*(this->mipLevel)));
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 5);
+  xfer += oprot->writeFieldBegin("view", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32((int32_t)(*(this->view)));
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -360,8 +332,8 @@ uint32_t server_get_seg_tiles_result::read(::apache::thrift::protocol::TProtocol
             uint32_t _i14;
             for (_i14 = 0; _i14 < _size10; ++_i14)
             {
-              vector3d _key15;
-              xfer += _key15.read(iprot);
+              std::string _key15;
+              xfer += iprot->readString(_key15);
               tile& _val16 = this->success[_key15];
               xfer += _val16.read(iprot);
             }
@@ -393,11 +365,11 @@ uint32_t server_get_seg_tiles_result::write(::apache::thrift::protocol::TProtoco
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
     {
-      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRUCT, ::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::map<vector3d, tile> ::const_iterator _iter17;
+      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
+      std::map<std::string, tile> ::const_iterator _iter17;
       for (_iter17 = this->success.begin(); _iter17 != this->success.end(); ++_iter17)
       {
-        xfer += _iter17->first.write(oprot);
+        xfer += oprot->writeString(_iter17->first);
         xfer += _iter17->second.write(oprot);
       }
       xfer += oprot->writeMapEnd();
@@ -440,8 +412,8 @@ uint32_t server_get_seg_tiles_presult::read(::apache::thrift::protocol::TProtoco
             uint32_t _i22;
             for (_i22 = 0; _i22 < _size18; ++_i22)
             {
-              vector3d _key23;
-              xfer += _key23.read(iprot);
+              std::string _key23;
+              xfer += iprot->readString(_key23);
               tile& _val24 = (*(this->success))[_key23];
               xfer += _val24.read(iprot);
             }
@@ -1070,13 +1042,13 @@ uint32_t server_compare_results_presult::read(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-void serverClient::get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const int32_t mipLevel, const viewType::type view)
+void serverClient::get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view)
 {
-  send_get_chan_tile(vol, point, mipLevel, view);
+  send_get_chan_tile(vol, point, view);
   recv_get_chan_tile(_return);
 }
 
-void serverClient::send_get_chan_tile(const metadata& vol, const vector3d& point, const int32_t mipLevel, const viewType::type view)
+void serverClient::send_get_chan_tile(const metadata& vol, const vector3d& point, const viewType::type view)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("get_chan_tile", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -1084,7 +1056,6 @@ void serverClient::send_get_chan_tile(const metadata& vol, const vector3d& point
   server_get_chan_tile_pargs args;
   args.vol = &vol;
   args.point = &point;
-  args.mipLevel = &mipLevel;
   args.view = &view;
   args.write(oprot_);
 
@@ -1131,13 +1102,13 @@ void serverClient::recv_get_chan_tile(tile& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_chan_tile failed: unknown result");
 }
 
-void serverClient::get_seg_tiles(std::map<vector3d, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view)
+void serverClient::get_seg_tiles(std::map<std::string, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view)
 {
-  send_get_seg_tiles(vol, segId, segBbox, mipLevel, view);
+  send_get_seg_tiles(vol, segId, segBbox, view);
   recv_get_seg_tiles(_return);
 }
 
-void serverClient::send_get_seg_tiles(const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view)
+void serverClient::send_get_seg_tiles(const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("get_seg_tiles", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -1146,7 +1117,6 @@ void serverClient::send_get_seg_tiles(const metadata& vol, const int32_t segId, 
   args.vol = &vol;
   args.segId = &segId;
   args.segBbox = &segBbox;
-  args.mipLevel = &mipLevel;
   args.view = &view;
   args.write(oprot_);
 
@@ -1155,7 +1125,7 @@ void serverClient::send_get_seg_tiles(const metadata& vol, const int32_t segId, 
   oprot_->getTransport()->flush();
 }
 
-void serverClient::recv_get_seg_tiles(std::map<vector3d, tile> & _return)
+void serverClient::recv_get_seg_tiles(std::map<std::string, tile> & _return)
 {
 
   int32_t rseqid = 0;
@@ -1440,7 +1410,7 @@ void serverProcessor::process_get_chan_tile(int32_t seqid, ::apache::thrift::pro
 
   server_get_chan_tile_result result;
   try {
-    iface_->get_chan_tile(result.success, args.vol, args.point, args.mipLevel, args.view);
+    iface_->get_chan_tile(result.success, args.vol, args.point, args.view);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (eventHandler_.get() != NULL) {
@@ -1494,7 +1464,7 @@ void serverProcessor::process_get_seg_tiles(int32_t seqid, ::apache::thrift::pro
 
   server_get_seg_tiles_result result;
   try {
-    iface_->get_seg_tiles(result.success, args.vol, args.segId, args.segBbox, args.mipLevel, args.view);
+    iface_->get_seg_tiles(result.success, args.vol, args.segId, args.segBbox, args.view);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (eventHandler_.get() != NULL) {

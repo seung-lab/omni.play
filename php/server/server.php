@@ -9,8 +9,8 @@ include_once $GLOBALS['THRIFT_ROOT'].'/Thrift.php';
 include_once $GLOBALS['THRIFT_ROOT'].'/packages/server/server_types.php';
 
 interface serverIf {
-  public function get_chan_tile($vol, $point, $mipLevel, $view);
-  public function get_seg_tiles($vol, $segId, $segBbox, $mipLevel, $view);
+  public function get_chan_tile($vol, $point, $view);
+  public function get_seg_tiles($vol, $segId, $segBbox, $view);
   public function get_seg_id($vol, $point);
   public function get_seg_ids($vol, $point, $radius, $view);
   public function compare_results($old_results, $new_result);
@@ -27,18 +27,17 @@ class serverClient implements serverIf {
     $this->output_ = $output ? $output : $input;
   }
 
-  public function get_chan_tile($vol, $point, $mipLevel, $view)
+  public function get_chan_tile($vol, $point, $view)
   {
-    $this->send_get_chan_tile($vol, $point, $mipLevel, $view);
+    $this->send_get_chan_tile($vol, $point, $view);
     return $this->recv_get_chan_tile();
   }
 
-  public function send_get_chan_tile($vol, $point, $mipLevel, $view)
+  public function send_get_chan_tile($vol, $point, $view)
   {
     $args = new server_get_chan_tile_args();
     $args->vol = $vol;
     $args->point = $point;
-    $args->mipLevel = $mipLevel;
     $args->view = $view;
     $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -81,19 +80,18 @@ class serverClient implements serverIf {
     throw new Exception("get_chan_tile failed: unknown result");
   }
 
-  public function get_seg_tiles($vol, $segId, $segBbox, $mipLevel, $view)
+  public function get_seg_tiles($vol, $segId, $segBbox, $view)
   {
-    $this->send_get_seg_tiles($vol, $segId, $segBbox, $mipLevel, $view);
+    $this->send_get_seg_tiles($vol, $segId, $segBbox, $view);
     return $this->recv_get_seg_tiles();
   }
 
-  public function send_get_seg_tiles($vol, $segId, $segBbox, $mipLevel, $view)
+  public function send_get_seg_tiles($vol, $segId, $segBbox, $view)
   {
     $args = new server_get_seg_tiles_args();
     $args->vol = $vol;
     $args->segId = $segId;
     $args->segBbox = $segBbox;
-    $args->mipLevel = $mipLevel;
     $args->view = $view;
     $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -303,7 +301,6 @@ class server_get_chan_tile_args {
 
   public $vol = null;
   public $point = null;
-  public $mipLevel = null;
   public $view = null;
 
   public function __construct($vals=null) {
@@ -320,10 +317,6 @@ class server_get_chan_tile_args {
           'class' => 'vector3d',
           ),
         3 => array(
-          'var' => 'mipLevel',
-          'type' => TType::I32,
-          ),
-        4 => array(
           'var' => 'view',
           'type' => TType::I32,
           ),
@@ -335,9 +328,6 @@ class server_get_chan_tile_args {
       }
       if (isset($vals['point'])) {
         $this->point = $vals['point'];
-      }
-      if (isset($vals['mipLevel'])) {
-        $this->mipLevel = $vals['mipLevel'];
       }
       if (isset($vals['view'])) {
         $this->view = $vals['view'];
@@ -382,13 +372,6 @@ class server_get_chan_tile_args {
           break;
         case 3:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->mipLevel);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
-          if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->view);
           } else {
             $xfer += $input->skip($ftype);
@@ -423,13 +406,8 @@ class server_get_chan_tile_args {
       $xfer += $this->point->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->mipLevel !== null) {
-      $xfer += $output->writeFieldBegin('mipLevel', TType::I32, 3);
-      $xfer += $output->writeI32($this->mipLevel);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->view !== null) {
-      $xfer += $output->writeFieldBegin('view', TType::I32, 4);
+      $xfer += $output->writeFieldBegin('view', TType::I32, 3);
       $xfer += $output->writeI32($this->view);
       $xfer += $output->writeFieldEnd();
     }
@@ -523,7 +501,6 @@ class server_get_seg_tiles_args {
   public $vol = null;
   public $segId = null;
   public $segBbox = null;
-  public $mipLevel = null;
   public $view = null;
 
   public function __construct($vals=null) {
@@ -544,10 +521,6 @@ class server_get_seg_tiles_args {
           'class' => 'bbox',
           ),
         4 => array(
-          'var' => 'mipLevel',
-          'type' => TType::I32,
-          ),
-        5 => array(
           'var' => 'view',
           'type' => TType::I32,
           ),
@@ -562,9 +535,6 @@ class server_get_seg_tiles_args {
       }
       if (isset($vals['segBbox'])) {
         $this->segBbox = $vals['segBbox'];
-      }
-      if (isset($vals['mipLevel'])) {
-        $this->mipLevel = $vals['mipLevel'];
       }
       if (isset($vals['view'])) {
         $this->view = $vals['view'];
@@ -616,13 +586,6 @@ class server_get_seg_tiles_args {
           break;
         case 4:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->mipLevel);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 5:
-          if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->view);
           } else {
             $xfer += $input->skip($ftype);
@@ -662,13 +625,8 @@ class server_get_seg_tiles_args {
       $xfer += $this->segBbox->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->mipLevel !== null) {
-      $xfer += $output->writeFieldBegin('mipLevel', TType::I32, 4);
-      $xfer += $output->writeI32($this->mipLevel);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->view !== null) {
-      $xfer += $output->writeFieldBegin('view', TType::I32, 5);
+      $xfer += $output->writeFieldBegin('view', TType::I32, 4);
       $xfer += $output->writeI32($this->view);
       $xfer += $output->writeFieldEnd();
     }

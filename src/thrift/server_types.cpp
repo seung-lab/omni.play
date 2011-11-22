@@ -404,8 +404,8 @@ uint32_t result::write(::apache::thrift::protocol::TProtocol* oprot) const {
   return xfer;
 }
 
-const char* metadata::ascii_fingerprint = "B059B8F2B2B39EEEF216E28DA66A0C64";
-const uint8_t metadata::binary_fingerprint[16] = {0xB0,0x59,0xB8,0xF2,0xB2,0xB3,0x9E,0xEE,0xF2,0x16,0xE2,0x8D,0xA6,0x6A,0x0C,0x64};
+const char* metadata::ascii_fingerprint = "F0FECCD4BD8758BFDF81BE5022C7A120";
+const uint8_t metadata::binary_fingerprint[16] = {0xF0,0xFE,0xCC,0xD4,0xBD,0x87,0x58,0xBF,0xDF,0x81,0xBE,0x50,0x22,0xC7,0xA1,0x20};
 
 uint32_t metadata::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -469,6 +469,14 @@ uint32_t metadata::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->mipLevel);
+          this->__isset.mipLevel = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -498,6 +506,9 @@ uint32_t metadata::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldBegin("chunkDims", ::apache::thrift::protocol::T_STRUCT, 5);
   xfer += this->chunkDims.write(oprot);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 6);
+  xfer += oprot->writeI32(this->mipLevel);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();

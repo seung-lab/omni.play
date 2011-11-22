@@ -53,21 +53,18 @@ struct metadata
     2: bbox bounds,
     3: vector3i resolution,
     4: dataType type,
-    5: vector3i chunkDims
+    5: vector3i chunkDims,
+    6: i32 mipLevel
 }
 
 service server
 {
-    tile get_chan_tile( 1: metadata vol,
-                        2: vector3d point,
-                        3: i32 mipLevel,
-                        4: viewType view ),
+    tile get_chan_tile( 1: metadata vol, 2: vector3d point, 3: viewType view ),
 
-    map<vector3d, tile> get_seg_tiles( 1: metadata vol,
-                                       2: i32 segId,
-                                       3: bbox segBbox,
-                                       4: i32 mipLevel,
-                                       5: viewType view ),
+    map<string, tile> get_seg_tiles( 1: metadata vol,
+                                     2: i32 segId,
+                                     3: bbox segBbox,
+                                     4: viewType view ),
 
     i32 get_seg_id( 1: metadata vol, 2: vector3d point),
 

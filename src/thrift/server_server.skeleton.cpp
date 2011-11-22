@@ -22,12 +22,12 @@ class serverHandler : virtual public serverIf {
     // Your initialization goes here
   }
 
-  void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const int32_t mipLevel, const viewType::type view) {
+  void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) {
     // Your implementation goes here
     printf("get_chan_tile\n");
   }
 
-  void get_seg_tiles(std::map<vector3d, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const int32_t mipLevel, const viewType::type view) {
+  void get_seg_tiles(std::map<std::string, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view) {
     // Your implementation goes here
     printf("get_seg_tiles\n");
   }

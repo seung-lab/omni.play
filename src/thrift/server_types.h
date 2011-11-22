@@ -299,21 +299,22 @@ class result {
 };
 
 typedef struct _metadata__isset {
-  _metadata__isset() : uri(false), bounds(false), resolution(false), type(false), chunkDims(false) {}
+  _metadata__isset() : uri(false), bounds(false), resolution(false), type(false), chunkDims(false), mipLevel(false) {}
   bool uri;
   bool bounds;
   bool resolution;
   bool type;
   bool chunkDims;
+  bool mipLevel;
 } _metadata__isset;
 
 class metadata {
  public:
 
-  static const char* ascii_fingerprint; // = "B059B8F2B2B39EEEF216E28DA66A0C64";
-  static const uint8_t binary_fingerprint[16]; // = {0xB0,0x59,0xB8,0xF2,0xB2,0xB3,0x9E,0xEE,0xF2,0x16,0xE2,0x8D,0xA6,0x6A,0x0C,0x64};
+  static const char* ascii_fingerprint; // = "F0FECCD4BD8758BFDF81BE5022C7A120";
+  static const uint8_t binary_fingerprint[16]; // = {0xF0,0xFE,0xCC,0xD4,0xBD,0x87,0x58,0xBF,0xDF,0x81,0xBE,0x50,0x22,0xC7,0xA1,0x20};
 
-  metadata() : uri("") {
+  metadata() : uri(""), mipLevel(0) {
   }
 
   virtual ~metadata() throw() {}
@@ -323,6 +324,7 @@ class metadata {
   vector3i resolution;
   dataType::type type;
   vector3i chunkDims;
+  int32_t mipLevel;
 
   _metadata__isset __isset;
 
@@ -346,6 +348,10 @@ class metadata {
     chunkDims = val;
   }
 
+  void __set_mipLevel(const int32_t val) {
+    mipLevel = val;
+  }
+
   bool operator == (const metadata & rhs) const
   {
     if (!(uri == rhs.uri))
@@ -357,6 +363,8 @@ class metadata {
     if (!(type == rhs.type))
       return false;
     if (!(chunkDims == rhs.chunkDims))
+      return false;
+    if (!(mipLevel == rhs.mipLevel))
       return false;
     return true;
   }

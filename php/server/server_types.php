@@ -596,6 +596,7 @@ class metadata {
   public $resolution = null;
   public $type = null;
   public $chunkDims = null;
+  public $mipLevel = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -623,6 +624,10 @@ class metadata {
           'type' => TType::STRUCT,
           'class' => 'vector3i',
           ),
+        6 => array(
+          'var' => 'mipLevel',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -640,6 +645,9 @@ class metadata {
       }
       if (isset($vals['chunkDims'])) {
         $this->chunkDims = $vals['chunkDims'];
+      }
+      if (isset($vals['mipLevel'])) {
+        $this->mipLevel = $vals['mipLevel'];
       }
     }
   }
@@ -701,6 +709,13 @@ class metadata {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 6:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->mipLevel);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -746,6 +761,11 @@ class metadata {
       }
       $xfer += $output->writeFieldBegin('chunkDims', TType::STRUCT, 5);
       $xfer += $this->chunkDims->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->mipLevel !== null) {
+      $xfer += $output->writeFieldBegin('mipLevel', TType::I32, 6);
+      $xfer += $output->writeI32($this->mipLevel);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
