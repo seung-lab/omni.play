@@ -1,4 +1,5 @@
-INCFLAGS	=	-I/usr/include/thrift -I/Users/zlateski/zi_libx/external/include -I/Users/zlateski/zi_libx
+#INCFLAGS	=	-I/usr/include/thrift -I/Users/zlateski/zi_libx/external/include -I/Users/zlateski/zi_libx
+INCFLAGS	=	-I/usr/local/include/thrift -I/usr/local/zi_lib/external/include -I/usr/local/zi_lib
 LINKFLAGS	=	-lpthread -lthrift
 
 all:

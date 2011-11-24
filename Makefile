@@ -3,7 +3,7 @@
 
 .PHONY:
 all:
-	g++ -lrt -Wall -ggdb -I/Users/zlateski/zi_libx -I/Users/zlateski/zi_libx/external/include main.cpp -o main
+	g++ -lrt -Wall -ggdb -I../zi_lib -I../zi_lib/external/include main.cpp -o main
 .PHONY:
 clean:
 	echo "Cleaning..."
