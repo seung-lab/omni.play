@@ -4,4 +4,4 @@ Refactoring:
 - Rename so that types don't share names with namespaces
 - Add segments functionality back in
 - refactor coords::dataCoord into coord::data etc.
-refactor out serverHandlerNew.hpp into a bunch of different files
+- refactor out serverHandlerNew.hpp into a bunch of different files

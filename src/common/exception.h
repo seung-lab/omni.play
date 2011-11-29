@@ -64,7 +64,7 @@ public:
         : exception("ioException", msg)
     {}
     ioException(const char* msg, const std::string& fnp)
-        : exception("ioException", str(boost::format("%1%: %2%") % fnp))
+        : exception("ioException", str(boost::format("%1%: %2%") % fnp % msg))
     {}
 };
 
