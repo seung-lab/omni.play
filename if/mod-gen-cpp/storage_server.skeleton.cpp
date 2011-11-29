@@ -7,8 +7,8 @@
 #include <server/TSimpleServer.h>
 #include <transport/TServerSocket.h>
 #include <transport/TBufferTransports.h>
-//nclude <boost/program_options.hpp>
-
+#include "storage_manager.h"
+#include "simple_client.hpp"
 #include <zi/system.hpp>
 #include <zi/arguments.hpp>
 #include <iostream>
@@ -18,7 +18,8 @@
 ZiARG_string(id, "", "Server's ID");
 ZiARG_uint64(size, 1000, "Size");
 ZiARG_string(manager, "localhost", "Manager's IP");
-ZiARG_int32(port, 9090, "Manager's port");
+ZiARG_int32(port, 9090, "Server's port");
+ZiARG_int32(m_port, 9090, "Manager's port");
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -27,35 +28,49 @@ using namespace ::apache::thrift::server;
 
 using boost::shared_ptr;
 
-//using namespace bint;
 
 class storage_serverHandler : virtual public bint::storage_serverIf {
 
 private:
     storage_server<std::string,char> server_;
-
+    bint::server_id id_;
 
 public:
-    storage_serverHandler(std::string id, size_t size, std::string manager, int port)
-        : server_(id,size) //initialize storage_server
-
+    storage_serverHandler(std::string id, size_t size, std::string manager, int port, int m_port)
+        : server_(id,size), //initialize storage_server
+	  id_()
     {
-        // Your initialization goes here
-
-
-        //register with storage manager service
-
+	// Your initialization goes here
+	id_.address = zi::system::get_hostname();
+	id_.port = port;
+	
+	//register with storage manager service
+	boost::shared_ptr<bint::storage_managerClient> client = 
+	    ThriftFactory<bint::storage_managerClient>::getClient(manager, m_port);
+	
+	client->register_server(id_);
     }
 
     void get(std::string& _return, const std::string& key) {
         // Your implementation goes here
         printf("get\n");
+	storage_type<char> val = server_.get(key);
+	_return.assign(val.data,val.size);
     }
 
     bool put(const std::string& key, const std::string& value) {
         // Your implementation goes here
         printf("put\n");
-        //TODO need to include size
+        //construct storage_type
+	storage_type<char> val;
+	//TODO is array being allocated correctly?
+	std::strcpy(val.data,value.c_str());
+	//val.data = value.c_str();
+	//TODO check that this works right, might be +1
+	val.size = value.size();
+	
+	return server_.set(key,val);
+	
     }
 
 };
@@ -64,62 +79,12 @@ int main(int argc, char **argv) {
 
     zi::parse_arguments(argc, argv, true);
 
-//     //take care of program options
-//     // po::variables_map vm;
-//     // int manager_port;
-//     // std::size_t size;
-//     // std::string id;
-//     // std::string manager_addr;
-
-//     // try {
-
-//     //     po::options_description desc("Allowed options");
-//     //     desc.add_options()
-//     //         ("help", "produce help message")
-//     //         ("id", po::value<std::string>(), "set the server id (ideally a unique number)")
-//     //         ("size", po::value<std::size_t>(&size), "set the file mapping size")
-//     //         ("manager_addr", po::value<std::string>(), "the address of the storage_manager")
-//     //         ("manager_port", po::value<int>(&manager_port)->default_value(9090), "the port of the address manager")
-//     //         ;
-
-
-//     //     po::store(po::parse_command_line(argc, argv, desc), vm);
-//     //     po::notify(vm);
-
-//     //     if (vm.count("help")) {
-//     //         std::cout << desc << "\n";
-//     //         return 1;
-//     //     }
-
-//     //     if (vm.count("id") == 0){
-//     //         std::cout << "must include id\n";
-//     //         return 1;
-//     //     }if (vm.count("size") == 0){
-//     //         std::cout << "must include size\n";
-//     //         return 1;
-//     //     }if (vm.count("manager_addr") == 0){
-//     //         std::cout << "must include manager address\n";
-//     //         return 1;
-//     //     }
-
-
-//     // }
-//     // catch(std::exception& e) {
-//     //     std::cerr << "error: " << e.what() << "\n";
-//     //     return 1;
-//     // }
-//     // catch(...) {
-//     //     std::cerr << "Exception of unknown type!\n";
-//     // }
-
-//     // id = vm["id"].as<std::string>();
-//     // manager_addr = vm["manager_addr"].as<std::string>();
 
     std::cout << zi::system::get_hostname() << ".local \n";
 
-    int port = 9090;
+    int port = ZiARG_port;
     ::boost::shared_ptr<storage_serverHandler> handler
-          (new storage_serverHandler(ZiARG_id, ZiARG_size, ZiARG_manager, ZiARG_port));
+          (new storage_serverHandler(ZiARG_id, ZiARG_size, ZiARG_manager, ZiARG_port, ZiARG_m_port));
     ::boost::shared_ptr<TProcessor> processor(new bint::storage_serverProcessor(handler));
     ::boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
     ::boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
@@ -131,4 +96,4 @@ int main(int argc, char **argv) {
 }
 
 
-//int main() {}
+
