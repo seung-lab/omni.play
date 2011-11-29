@@ -20,8 +20,8 @@ private:
 
   typedef bint::managed_mapped_file::handle_t handle_t;
   typedef std::pair<K,  handle_t> value_type;
-
-  //Alias an STL compatible allocator of for the map.
+    
+    //Alias an STL compatible allocator of for the map.
   //This allocator will allow to place containers
   //in managed shared memory segments
   typedef bint::allocator<value_type, bint::managed_mapped_file::segment_manager>
@@ -48,7 +48,7 @@ private:
     //and the second one the allocator.
     //This the same signature as std::map's constructor taking an allocator
     mymap =
-      mfile.find_or_construct<file_map>("FileMap")      //object name
+	mfile.find_or_construct<file_map>(name.c_str())      //object name
       (std::less<K>() //first  ctor parameter
        ,alloc_inst);     //second ctor parameter
     std::cout << "server constructed\n";
@@ -61,8 +61,8 @@ private:
 
 public:
   storage_server(std::string  id, std::size_t size)
-    :name(id), mapping_size(size),
-     mfile(bint::open_or_create ,name.c_str(),mapping_size),
+      :name(id), mapping_size(size),
+       mfile(bint::open_or_create ,name.append(".filemap").c_str(),mapping_size),
      alloc_inst(mfile.get_segment_manager())
   {
     init();

@@ -29,7 +29,7 @@ public:
     for(i=0;i<num_servers;i++)
       {
 	std::stringstream ss;
-	ss << i << "-filemap";
+	ss << i;
 	storage_server<K,V>* p = new storage_server<K,V>
 	  (ss.str(),file_mapping_size ); 
 	server_.push_back(p);
