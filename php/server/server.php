@@ -13,6 +13,7 @@ interface serverIf {
   public function get_seg_tiles($vol, $segId, $segBbox, $view);
   public function get_seg_id($vol, $point);
   public function get_seg_ids($vol, $point, $radius, $view);
+  public function get_mesh($uri, $chunk, $segId);
   public function compare_results($old_results, $new_result);
 }
 
@@ -238,6 +239,59 @@ class serverClient implements serverIf {
       return $result->success;
     }
     throw new Exception("get_seg_ids failed: unknown result");
+  }
+
+  public function get_mesh($uri, $chunk, $segId)
+  {
+    $this->send_get_mesh($uri, $chunk, $segId);
+    return $this->recv_get_mesh();
+  }
+
+  public function send_get_mesh($uri, $chunk, $segId)
+  {
+    $args = new server_get_mesh_args();
+    $args->uri = $uri;
+    $args->chunk = $chunk;
+    $args->segId = $segId;
+    $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'get_mesh', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('get_mesh', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_get_mesh()
+  {
+    $bin_accel = ($this->input_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'server_get_mesh_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new server_get_mesh_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    throw new Exception("get_mesh failed: unknown result");
   }
 
   public function compare_results($old_results, $new_result)
@@ -648,11 +702,10 @@ class server_get_seg_tiles_result {
         0 => array(
           'var' => 'success',
           'type' => TType::MAP,
-          'ktype' => TType::STRUCT,
+          'ktype' => TType::STRING,
           'vtype' => TType::STRUCT,
           'key' => array(
-            'type' => TType::STRUCT,
-            'class' => 'vector3d',
+            'type' => TType::STRING,
           ),
           'val' => array(
             'type' => TType::STRUCT,
@@ -696,10 +749,9 @@ class server_get_seg_tiles_result {
             $xfer += $input->readMapBegin($_ktype8, $_vtype9, $_size7);
             for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
             {
-              $key12 = new vector3d();
+              $key12 = '';
               $val13 = new tile();
-              $key12 = new vector3d();
-              $xfer += $key12->read($input);
+              $xfer += $input->readString($key12);
               $val13 = new tile();
               $xfer += $val13->read($input);
               $this->success[$key12] = $val13;
@@ -728,11 +780,11 @@ class server_get_seg_tiles_result {
       }
       $xfer += $output->writeFieldBegin('success', TType::MAP, 0);
       {
-        $output->writeMapBegin(TType::STRUCT, TType::STRUCT, count($this->success));
+        $output->writeMapBegin(TType::STRING, TType::STRUCT, count($this->success));
         {
           foreach ($this->success as $kiter14 => $viter15)
           {
-            $xfer += $kiter14->write($output);
+            $xfer += $output->writeString($kiter14);
             $xfer += $viter15->write($output);
           }
         }
@@ -1152,6 +1204,195 @@ class server_get_seg_ids_result {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_get_mesh_args {
+  static $_TSPEC;
+
+  public $uri = null;
+  public $chunk = null;
+  public $segId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'uri',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'chunk',
+          'type' => TType::STRUCT,
+          'class' => 'vector3i',
+          ),
+        3 => array(
+          'var' => 'segId',
+          'type' => TType::I32,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['uri'])) {
+        $this->uri = $vals['uri'];
+      }
+      if (isset($vals['chunk'])) {
+        $this->chunk = $vals['chunk'];
+      }
+      if (isset($vals['segId'])) {
+        $this->segId = $vals['segId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_mesh_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->uri);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->chunk = new vector3i();
+            $xfer += $this->chunk->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->segId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_mesh_args');
+    if ($this->uri !== null) {
+      $xfer += $output->writeFieldBegin('uri', TType::STRING, 1);
+      $xfer += $output->writeString($this->uri);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->chunk !== null) {
+      if (!is_object($this->chunk)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('chunk', TType::STRUCT, 2);
+      $xfer += $this->chunk->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->segId !== null) {
+      $xfer += $output->writeFieldBegin('segId', TType::I32, 3);
+      $xfer += $output->writeI32($this->segId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_get_mesh_result {
+  static $_TSPEC;
+
+  public $success = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_mesh_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_mesh_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

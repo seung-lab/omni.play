@@ -75,6 +75,10 @@ service server
                            3: double radius,
                            4: viewType view),
 
+    string get_mesh( 1: string uri,
+                     2: vector3i chunk,
+                     3: i32 segId)
+
     # do we need the metadata for the comparison procedure?
     double compare_results( 1: list<result> old_results, 2: result new_result)
 }

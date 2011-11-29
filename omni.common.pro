@@ -192,8 +192,16 @@ server_types_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --
 server_types_h.depends = if/server.thrift
 QMAKE_EXTRA_TARGETS += server_types_h
 
-
 ## end of section to be rewritten using Perl
+
+php_server.target = php/server/TServer.php
+php_server.commands = mkdir php; external/libs/thrift/bin/thrift -r --out php --gen php if/server.thrift
+php_server.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += php_server
+
+php.target = php
+php.depends = php/server/TServer.php
+QMAKE_EXTRA_TARGETS += php
 
 INCLUDEPATH = src include lib
 INCLUDEPATH += external/zi_lib

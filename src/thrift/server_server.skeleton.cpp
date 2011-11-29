@@ -42,6 +42,11 @@ class serverHandler : virtual public serverIf {
     printf("get_seg_ids\n");
   }
 
+  void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) {
+    // Your implementation goes here
+    printf("get_mesh\n");
+  }
+
   double compare_results(const std::vector<result> & old_results, const result& new_result) {
     // Your implementation goes here
     printf("compare_results\n");
