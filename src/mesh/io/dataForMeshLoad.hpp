@@ -2,9 +2,12 @@
 
 #include "common/common.h"
 
-class dataForMeshLoad{
+namespace om {
+namespace mesh {
+
+class data{
 public:
-    dataForMeshLoad()
+    data()
         : hasData_(false)
         , vertexIndexCount_(0)
         , vertexIndexNumBytes_(0)
@@ -156,3 +159,5 @@ private:
     uint64_t trianDataNumBytes_;
 };
 
+} // namespace mesh
+} // namespace om

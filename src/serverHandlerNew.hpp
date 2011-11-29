@@ -12,6 +12,8 @@
 #include "volume/channel.h"
 #include "segment/segment.h"
 #include "segment/segments.h"
+#include "mesh/io/meshReader.hpp"
+#include "utility/UUID.hpp"
 
 #include "pipeline/getTileData.hpp"
 #include "pipeline/sliceTile.hpp"
@@ -23,15 +25,20 @@
 #include "pipeline/png.hpp"
 #include "pipeline/getSegIds.hpp"
 
+#include "boost/format.hpp"
+
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
-
 using boost::shared_ptr;
 namespace om {
 namespace server {
+
+std::ostream& operator<<(std::ostream& o, const vector3d& v) {
+    return o << v.x << ", " << v.y << ", " << v.z;
+}
 
 class serverHandler : virtual public serverIf {
 public:
@@ -133,15 +140,50 @@ public:
         return 0;
     }
 
+    void get_mesh(std::string& _return,
+                  const std::string& uri,
+                  const vector3i& chunk,
+                  int32_t segId)
+    {
+        mesh::reader reader(uri);
+
+        boost::shared_ptr<mesh::data> data =
+            reader.Read(segId, coords::chunkCoord(0, chunk.x, chunk.y, chunk.z));
+
+        if(data->TrianDataCount()){
+            throw common::ioException("old meshes not supported");
+        }
+
+        if(!data->HasData()){
+            throw common::ioException("no data");
+        }
+
+        const utility::UUID uuid;
+
+        std::string formatStr = "/var/www/temp_omni_imgs/segmentation-1-meshes/%1%.%2%";
+
+        std::stringstream ss;
+        std::string fnp;
+
+        writeFile(str(boost::format(formatStr) % uuid.Str() % "vertexIndexData"),
+                  data->VertexIndex(), data->VertexIndexNumBytes());
+        writeFile(str(boost::format(formatStr) % uuid.Str() % "vertexData"),
+                  data->VertexData(), data->VertexDataNumBytes());
+        writeFile(str(boost::format(formatStr) % uuid.Str() % "stripData"),
+                  data->StripData(), data->StripDataNumBytes());
+
+        _return = uuid.Str();
+    }
+
 private:
     void validateMetadata(const metadata& meta)
     {
         if(!file::exists(meta.uri)) {
             throw common::argException("Cannot find requested volume.");
         }
-
-        int factor = math::pow2int(meta.mipLevel);
 /*
+        int factor = math::pow2int(meta.mipLevel);
+
         std::size_t size = (meta.bounds.max.x - meta.bounds.min.x) *
             (meta.bounds.max.y - meta.bounds.min.y) *
             (meta.bounds.max.z - meta.bounds.min.z) /
@@ -227,12 +269,26 @@ private:
         vector3d min = twist(bounds.getMin().toGlobalCoord(), view);
         vector3d max = twist(bounds.getMax().toGlobalCoord(), view);
 
-        min.z = depth;
-        max.z = depth;
+        min.z += depth;
+        max.z = min.z;
 
         t.bounds.min = twist(min, view);
         t.bounds.max = twist(max, view);
     }
+
+    template <typename T>
+    void writeFile(const std::string& fnp, T const*const data, const uint64_t numBytes)
+    {
+        using namespace std;
+        std::ofstream file(fnp.c_str(), std::ios::out | std::ios::binary);
+
+        file.write(reinterpret_cast<const char*>(data), numBytes);
+
+        if(file.fail()){
+            throw common::ioException("could not write file", fnp);
+        }
+    }
+
 };
 
 }

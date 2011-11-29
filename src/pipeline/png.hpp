@@ -3,6 +3,8 @@
 #include "pipeline/stage.hpp"
 #include "png.h"
 
+#include "utility/smartPtr.hpp"
+
 #include <vector>
 
 namespace om {
@@ -43,7 +45,7 @@ public:
         compress(bit_depth, color_type, in, outData);
         data<char> out;
         out.size = outData.size();
-        out.data.reset(new char[out.size]);
+        out.data = utility::smartPtr<char>::MallocNumElements(out.size);
         std::copy(outData.begin(), outData.end(), out.data.get());
         return out;
     }

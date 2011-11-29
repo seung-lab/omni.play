@@ -3,7 +3,7 @@
 #include "pipeline/stage.hpp"
 #include "b64/encode.h"
 
-#include "boost/scoped_ptr.hpp"
+#include "utility/smartPtr.hpp"
 
 namespace om {
 namespace pipeline {
@@ -27,7 +27,7 @@ private:
 
         data<char> out;
         out.size = 2 * size;
-        out.data.reset(new char[out.size]);
+        out.data = utility::smartPtr<char>::MallocNumElements(out.size);
 
         char* dest = out.data.get();
 

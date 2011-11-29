@@ -1,7 +1,7 @@
 #pragma once
 
 #include "datalayer/fs/fileNames.hpp"
-#include "mesh/iochunk/memMappedAllocFile.hpp"
+#include "mesh/io/chunk/memMappedAllocFile.hpp"
 #include "utility/omLockedObjects.h"
 
 class meshFilePtrCache;

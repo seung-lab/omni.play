@@ -1,30 +1,30 @@
 #pragma once
 
-struct meshFilePart{
+namespace om {
+namespace mesh {
+
+struct filePart{
     uint64_t offsetIntoFile;
     uint64_t numElements;
     uint64_t totalBytes;
     uint64_t count;
 };
 
-struct meshDataEntry {
+struct dataEntry {
     common::segId segID;
     bool wasMeshed;
     bool hasMeshData;
-    meshFilePart vertexIndex;
-    meshFilePart vertexData;
-    meshFilePart stripData;
-    meshFilePart trianData;
+    filePart vertexIndex;
+    filePart vertexData;
+    filePart stripData;
+    filePart trianData;
 };
 
-namespace om {
-namespace meshio_ {
-
-static meshDataEntry MakeEmptyEntry(const common::segId segID)
+static dataEntry MakeEmptyEntry(const common::segId segID)
 {
-    static const meshFilePart empty = {0, 0, 0, 0};
+    static const filePart empty = {0, 0, 0, 0};
 
-    meshDataEntry entry;
+    dataEntry entry;
     entry.segID = segID;
     entry.wasMeshed = false;
     entry.hasMeshData = false;
@@ -36,6 +36,6 @@ static meshDataEntry MakeEmptyEntry(const common::segId segID)
     return entry;
 }
 
-} // namespace meshio_
+} // namespace mesh
 } // namespace om
 

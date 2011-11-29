@@ -2,80 +2,86 @@
 
 #include "common/common.h"
 #include "mesh/io/dataForMeshLoad.hpp"
-#include "mesh/iochunk/meshChunkDataReader.hpp"
-#include "mesh/iomeshFilePtrCache.hpp"
-#include "mesh/mesh::manager.h"
+#include "mesh/io/chunk/meshChunkDataReader.hpp"
+#include "mesh/io/dataForMeshLoad.hpp"
+#include "mesh/io/chunk/memMappedAllocFile.hpp"
 
-class meshReader{
+namespace om {
+namespace mesh {
+
+class reader{
 private:
-    segmentation *const segmentation_;
-    const double threshold_;
-    meshFilePtrCache *const filePtrCache_;
+    std::string fnp_;
 
 public:
-    meshReader(mesh::manager* mesh::manager)
-        : segmentation_(mesh::manager->GetSegmentation())
-        , threshold_(mesh::manager->Threshold())
-        , filePtrCache_(mesh::manager->FilePtrCache())
+    reader(std::string fnp)
+        : fnp_(fnp)
     {}
 
-    ~meshReader()
+    ~reader()
     {}
 
-    inline boost::shared_ptr<dataForMeshLoad>
-    Read(const meshCoord& meshCoord){
-        return Read(meshCoord.SegID(), meshCoord.Coord());
-    }
-
-    boost::shared_ptr<dataForMeshLoad>
+    boost::shared_ptr<data>
     Read(const common::segId segID, const coords::chunkCoord& coord)
     {
-        meshChunkAllocTableV2* chunk_table =
-            filePtrCache_->GetAllocTable(coord);
-
-        meshChunkDataReader chunk_data(segmentation_, coord, threshold_);
-
-        boost::shared_ptr<dataForMeshLoad> ret =
-            boost::make_shared<dataForMeshLoad>();
-
-        if(!chunk_table->Contains(segID)){
-            return ret;
+        std::stringstream ss;
+        ss << fnp_ << "meshAllocTable.ver2";
+        std::string allocTablePath;
+        ss >> allocTablePath;
+        if(!file::exists(allocTablePath)) {
+            throw common::argException("Alloc table file not found.");
         }
 
-        const meshDataEntry entry = chunk_table->Find(segID);
+        std::stringstream ss2;
+        ss2 << fnp_ << "meshData.ver2";
+        std::string dataPath;
+        ss2 >> dataPath;
+        if(!file::exists(dataPath)) {
+            throw common::argException("Mesh data file not found.");
+        }
 
-        if(!entry.wasMeshed)
+        memMappedAllocFile chunk_table(allocTablePath);
+        chunkDataReader chunk_data(dataPath);
+
+        boost::shared_ptr<data> ret =
+            boost::make_shared<data>();
+
+        const dataEntry* entry = chunk_table.Find(MakeEmptyEntry(segID));
+
+        if(!entry || !entry->wasMeshed)
         {
             std::cout << "did not yet mesh " << segID
                       << " in coord " << coord << "\n" << std::flush;
             throw common::ioException("mesh data not found");
         }
 
-        ret->HasData(entry.hasMeshData);
+        ret->HasData(entry->hasMeshData);
 
-        if(!entry.hasMeshData){
+        if(!entry->hasMeshData){
             return ret;
         }
 
-        ret->SetVertexIndex(chunk_data.Read<uint32_t>(entry.vertexIndex),
-                            entry.vertexIndex.count,
-                            entry.vertexIndex.totalBytes);
+        ret->SetVertexIndex(chunk_data.Read<uint32_t>(entry->vertexIndex),
+                            entry->vertexIndex.count,
+                            entry->vertexIndex.totalBytes);
 
-        ret->SetStripData(chunk_data.Read<uint32_t>(entry.stripData),
-                          entry.stripData.count,
-                          entry.stripData.totalBytes);
+        ret->SetStripData(chunk_data.Read<uint32_t>(entry->stripData),
+                          entry->stripData.count,
+                          entry->stripData.totalBytes);
 
-        ret->SetVertexData(chunk_data.Read<float>(entry.vertexData),
-                           entry.vertexData.count,
-                           entry.vertexData.totalBytes);
+        ret->SetVertexData(chunk_data.Read<float>(entry->vertexData),
+                           entry->vertexData.count,
+                           entry->vertexData.totalBytes);
 
-        if(entry.trianData.totalBytes){
-            ret->SetTrianData(chunk_data.Read<uint32_t>(entry.trianData),
-                              entry.trianData.count,
-                              entry.trianData.totalBytes);
+        if(entry->trianData.totalBytes){
+            ret->SetTrianData(chunk_data.Read<uint32_t>(entry->trianData),
+                              entry->trianData.count,
+                              entry->trianData.totalBytes);
         }
 
         return ret;
     }
 };
 
+} // namespace mesh
+} // namespace om

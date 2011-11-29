@@ -1,10 +1,10 @@
 #pragma once
 
 #include "common/common.h"
-#include "mesh/iochunk/meshChunkAllocTable.hpp"
-#include "mesh/iochunk/meshChunkDataReader.hpp"
-#include "mesh/iochunk/meshChunkDataWriter.hpp"
-#include "mesh/ioomRingBuffer.hpp"
+#include "mesh/io/chunk/meshChunkAllocTable.hpp"
+#include "mesh/io/chunk/meshChunkDataReader.hpp"
+#include "mesh/io/chunk/meshChunkDataWriter.hpp"
+#include "mesh/io/omRingBuffer.hpp"
 #include "mesh/meshCoord.h"
 #include "threads/omTaskManager.hpp"
 #include "zi/mutex.h"

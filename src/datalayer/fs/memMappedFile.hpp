@@ -5,7 +5,7 @@
 
 #include "boost/iostreams/device/mapped_file.hpp"
 #include "boost/filesystem.hpp"
-#include "boost/format.hpp"
+//#include "boost/format.hpp"
 #include "boost/make_shared.hpp"
 
 typedef boost::iostreams::mapped_file mapped_file;
@@ -17,7 +17,7 @@ namespace datalayer {
 template <typename T>
 class memMappedFile : public IOnDiskFile<T> {
 public:
-/*    static boost::shared_ptr<memMappedFile<T> >
+    static boost::shared_ptr<memMappedFile<T> >
     CreateNumElements(const std::string& fnp, const int64_t numElements)
     {
         om::file::createFileNumElements<T>(fnp, numElements);
@@ -41,7 +41,7 @@ public:
 
         return boost::make_shared<memMappedFile<T> >(fnp);
     }
-*/
+
 private:
     std::string fnp_;
 

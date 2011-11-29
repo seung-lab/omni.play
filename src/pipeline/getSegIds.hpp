@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pipeline/stage.hpp"
+#include "utility/smartPtr.hpp"
 
 namespace om {
 namespace pipeline {
@@ -24,7 +25,7 @@ public:
 
         if(radius_ == 0) // single seg
         {
-            segs.data.reset(new uint32_t[1]);
+            segs.data = utility::smartPtr<uint32_t>::MallocNumElements(1);
             segs.size = 1;
 
             uint64_t offset = coord_.toChunkCoord().chunkPtrOffset(coord_.volume(), sizeof(T));
