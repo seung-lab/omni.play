@@ -10,8 +10,7 @@
 #include "project/details/segmentationManager.h"
 #include "tiles/tile.h"
 #include "volume/channel.h"
-#include "segment/segment.h"
-#include "segment/segments.h"
+#include "segment/segmentTypes.h"
 #include "mesh/io/meshReader.hpp"
 #include "utility/UUID.hpp"
 
@@ -133,6 +132,30 @@ public:
         printf("get_seg_ids\n");
     }
 
+    void get_seg_bbox(bbox& _return, const std::string&path, const int32_t segId)
+    {
+        if (!file::exists(path)) {
+            throw common::argException("Cannot find path");
+        }
+
+        const uint32_t pageSize = 100000;
+        const uint32_t pageNum = segId / pageSize;
+        const uint32_t idx = segId % pageSize;
+        const std::string fname = str( boost::format("%1%/segment_page%2%.data.ver4")
+                                       % path % pageNum);
+
+        datalayer::memMappedFile<segment::data> page(fname);
+
+        const segment::data& d = page.GetPtr()[idx];
+
+        _return.min.x = d.bounds.getMin().x;
+        _return.min.y = d.bounds.getMin().y;
+        _return.min.z = d.bounds.getMin().z;
+        _return.max.x = d.bounds.getMax().x;
+        _return.max.y = d.bounds.getMax().y;
+        _return.max.z = d.bounds.getMax().z;
+    }
+
     double compare_results(const std::vector<result> & old_results, const result& new_result)
     {
         // Your implementation goes here
@@ -145,7 +168,7 @@ public:
                   const vector3i& chunk,
                   int32_t segId)
     {
-        mesh::reader reader(uri);
+        mesh::reader reader(str(boost::format("%1%/0/%2%/") % uri));
 
         boost::shared_ptr<mesh::data> data =
             reader.Read(segId, coords::chunkCoord(0, chunk.x, chunk.y, chunk.z));
@@ -179,7 +202,7 @@ private:
     void validateMetadata(const metadata& meta)
     {
         if(!file::exists(meta.uri)) {
-            throw common::argException("Cannot find requested volume.");
+            throw common::argException("Cannot find requested volu2me.");
         }
 /*
         int factor = math::pow2int(meta.mipLevel);

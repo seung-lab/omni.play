@@ -38,42 +38,50 @@ int main(int argc, char **argv) {
 
     std::map<std::string, tile> tiles;
 
-    metadata metadata;
-    metadata.uri = std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/0/volume.uint32_t.raw");
-    metadata.bounds.min.x = 0;
-    metadata.bounds.min.y = 0;
-    metadata.bounds.min.z = 0;
-    metadata.bounds.max.x = 1151;
-    metadata.bounds.max.y = 2047;
-    metadata.bounds.max.z = 2047;
-    metadata.resolution.x = 1;
-    metadata.resolution.y = 1;
-    metadata.resolution.z = 1;
-    metadata.type = dataType::UINT32;
-    metadata.chunkDims.x = 128;
-    metadata.chunkDims.y = 128;
-    metadata.chunkDims.z = 128;
-    metadata.mipLevel = 0;
+    metadata meta;
+    meta.uri = std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/0/volume.uint32_t.raw");
+    meta.bounds.min.x = 0;
+    meta.bounds.min.y = 0;
+    meta.bounds.min.z = 0;
+    meta.bounds.max.x = 1151;
+    meta.bounds.max.y = 2047;
+    meta.bounds.max.z = 2047;
+    meta.resolution.x = 1;
+    meta.resolution.y = 1;
+    meta.resolution.z = 1;
+    meta.type = dataType::UINT32;
+    meta.chunkDims.x = 128;
+    meta.chunkDims.y = 128;
+    meta.chunkDims.z = 128;
+    meta.mipLevel = 0;
 
     vector3d point;
     point.x = 100;
     point.y = 100;
     point.z = 100;
 
-    int32_t segId = client.get_seg_id(metadata, point);
+    int32_t segId = client.get_seg_id(meta, point);
 
-    std::cout << "SegID: " << segId << std::endl;
+    metadata segs;
+    segs.uri = std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/segments/");
+
+    bbox bounds;
+    client.get_seg_bbox(bounds, segs, segId);
+
+    std::cout << bounds;
+
+//    std::cout << "SegID: " << segId << std::endl;
 /*    bbox segBbox;
-    segBbox.min = metadata.bounds.min;
+    segBbox.min = meta.bounds.min;
     segBbox.max.x = segBbox.max.y = segBbox.max.z = 20;
 
-    client.get_seg_tiles(tiles, metadata, segId, segBbox, viewType::XY_VIEW);
+    client.get_seg_tiles(tiles, meta, segId, segBbox, viewType::XY_VIEW);
 
     for(std::map<std::string, tile>::iterator it = tiles.begin(); it != tiles.end(); it++)
     {
         std::cout << it->first << " = " << it->second.bounds << std::endl;
     }
-*/
+
     vector3i chunk;
     chunk.x = chunk.y = chunk.z = 0;
 
@@ -82,7 +90,7 @@ int main(int argc, char **argv) {
                     std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/meshes/1.0000/0/0/0/0/"),
                     chunk,
                     segId);
-
+*/
 //    testClient::wholeVolume(client);
     transport->close();
 

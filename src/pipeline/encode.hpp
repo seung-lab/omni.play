@@ -34,8 +34,7 @@ private:
         int written = e.encode(in, size, dest);
         written += e.encode_end(&dest[written]);
 
-        dest[written] = '\0';
-        out.size = written + 1;
+        out.size = written;
 
         return out;
     }
