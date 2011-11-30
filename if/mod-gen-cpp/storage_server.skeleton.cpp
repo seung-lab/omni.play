@@ -78,11 +78,11 @@ public:
 int main(int argc, char **argv) {
 
     zi::parse_arguments(argc, argv, true);
-
-
-    std::cout << zi::system::get_hostname() << ".local \n";
-
     int port = ZiARG_port;
+
+
+    std::cout << zi::system::get_hostname() << ".local:"<<port <<" \n";
+
     ::boost::shared_ptr<storage_serverHandler> handler
           (new storage_serverHandler(ZiARG_id, ZiARG_size, ZiARG_manager, ZiARG_port, ZiARG_m_port));
     ::boost::shared_ptr<TProcessor> processor(new bint::storage_serverProcessor(handler));
