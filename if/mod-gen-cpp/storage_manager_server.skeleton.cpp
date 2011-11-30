@@ -8,51 +8,68 @@
 #include <transport/TBufferTransports.h>
 #include <zi/hash.hpp>
 #include <zi/system.hpp>
+#include <vector>
+#include <boost/shared_ptr.hpp>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
-using boost::shared_ptr;
 
 using namespace bint;
 
 class storage_managerHandler : virtual public storage_managerIf {
 private:
-    static size_t map_size = 10*1024*1024;
+    static const size_t map_size = 10*1024*1024;
 
-    storage_server<std::string,server_id> servers_;
-    H hasher_;
-
+    storage_server<std::string,server_id > servers_;
+    zi::hash<std::string> hasher_;
+    std::vector<boost::shared_ptr<server_id> > registered_;
 
 public:
     storage_managerHandler()
 	:servers_("manager_map",map_size),
-	 hasher_()
+	 hasher_(),
+	 registered_()
     {
 	// Your initialization goes here
     }
 
     void get_server(server_id& _return, const std::string& key) {
 	// Your implementation goes here
-	printf("get_server\n");
+	//first try our filemap in the server
+	storage_type<server_id> ret = servers_.get(key);
+	if(ret.size>0){
+	    _return = *ret.data;
+	    return;
+	}
+	//if not there, decide on a server for this key
+	server_id serv = *registered_[hasher_(key) % registered_.size()].get();
+	//TODO store it in the filemap
+	//servers_.set(key,serv);
+	//return its server_id
+	_return = serv;
+
     }
 
     bool register_server(const server_id& id) {
 	// Your implementation goes here
-	printf("register_server\n");
+	boost::shared_ptr<server_id> p (new server_id(id));
+	registered_.push_back(p);
+
+	return 1;
     }
 
 };
 
 int main(int argc, char **argv) {
     int port = 9090;
-    shared_ptr<storage_managerHandler> handler(new storage_managerHandler());
-    shared_ptr<TProcessor> processor(new storage_managerProcessor(handler));
-    shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
-    shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
-    shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+    boost::shared_ptr<storage_managerHandler> handler(new storage_managerHandler());
+    boost::shared_ptr<TProcessor> processor(new storage_managerProcessor(handler));
+    boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
+    boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
+    boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
     TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
 
