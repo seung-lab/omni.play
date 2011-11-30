@@ -17,6 +17,7 @@ class serverIf {
   virtual void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) = 0;
   virtual void get_seg_tiles(std::map<std::string, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view) = 0;
   virtual int32_t get_seg_id(const metadata& vol, const vector3d& point) = 0;
+  virtual void get_seg_bbox(bbox& _return, const std::string& path, const int32_t segId) = 0;
   virtual void get_seg_ids(std::vector<int32_t> & _return, const metadata& vol, const vector3d& point, const double radius, const viewType::type view) = 0;
   virtual void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) = 0;
   virtual double compare_results(const std::vector<result> & old_results, const result& new_result) = 0;
@@ -34,6 +35,9 @@ class serverNull : virtual public serverIf {
   int32_t get_seg_id(const metadata& /* vol */, const vector3d& /* point */) {
     int32_t _return = 0;
     return _return;
+  }
+  void get_seg_bbox(bbox& /* _return */, const std::string& /* path */, const int32_t /* segId */) {
+    return;
   }
   void get_seg_ids(std::vector<int32_t> & /* _return */, const metadata& /* vol */, const vector3d& /* point */, const double /* radius */, const viewType::type /* view */) {
     return;
@@ -420,6 +424,123 @@ class server_get_seg_id_presult {
   int32_t* success;
 
   _server_get_seg_id_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _server_get_seg_bbox_args__isset {
+  _server_get_seg_bbox_args__isset() : path(false), segId(false) {}
+  bool path;
+  bool segId;
+} _server_get_seg_bbox_args__isset;
+
+class server_get_seg_bbox_args {
+ public:
+
+  server_get_seg_bbox_args() : path(""), segId(0) {
+  }
+
+  virtual ~server_get_seg_bbox_args() throw() {}
+
+  std::string path;
+  int32_t segId;
+
+  _server_get_seg_bbox_args__isset __isset;
+
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_segId(const int32_t val) {
+    segId = val;
+  }
+
+  bool operator == (const server_get_seg_bbox_args & rhs) const
+  {
+    if (!(path == rhs.path))
+      return false;
+    if (!(segId == rhs.segId))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seg_bbox_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seg_bbox_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_seg_bbox_pargs {
+ public:
+
+
+  virtual ~server_get_seg_bbox_pargs() throw() {}
+
+  const std::string* path;
+  const int32_t* segId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seg_bbox_result__isset {
+  _server_get_seg_bbox_result__isset() : success(false) {}
+  bool success;
+} _server_get_seg_bbox_result__isset;
+
+class server_get_seg_bbox_result {
+ public:
+
+  server_get_seg_bbox_result() {
+  }
+
+  virtual ~server_get_seg_bbox_result() throw() {}
+
+  bbox success;
+
+  _server_get_seg_bbox_result__isset __isset;
+
+  void __set_success(const bbox& val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_seg_bbox_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seg_bbox_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seg_bbox_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seg_bbox_presult__isset {
+  _server_get_seg_bbox_presult__isset() : success(false) {}
+  bool success;
+} _server_get_seg_bbox_presult__isset;
+
+class server_get_seg_bbox_presult {
+ public:
+
+
+  virtual ~server_get_seg_bbox_presult() throw() {}
+
+  bbox* success;
+
+  _server_get_seg_bbox_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -832,6 +953,9 @@ class serverClient : virtual public serverIf {
   int32_t get_seg_id(const metadata& vol, const vector3d& point);
   void send_get_seg_id(const metadata& vol, const vector3d& point);
   int32_t recv_get_seg_id();
+  void get_seg_bbox(bbox& _return, const std::string& path, const int32_t segId);
+  void send_get_seg_bbox(const std::string& path, const int32_t segId);
+  void recv_get_seg_bbox(bbox& _return);
   void get_seg_ids(std::vector<int32_t> & _return, const metadata& vol, const vector3d& point, const double radius, const viewType::type view);
   void send_get_seg_ids(const metadata& vol, const vector3d& point, const double radius, const viewType::type view);
   void recv_get_seg_ids(std::vector<int32_t> & _return);
@@ -857,6 +981,7 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
   void process_get_chan_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_tiles(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_seg_bbox(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_ids(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_mesh(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_compare_results(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -866,6 +991,7 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
     processMap_["get_chan_tile"] = &serverProcessor::process_get_chan_tile;
     processMap_["get_seg_tiles"] = &serverProcessor::process_get_seg_tiles;
     processMap_["get_seg_id"] = &serverProcessor::process_get_seg_id;
+    processMap_["get_seg_bbox"] = &serverProcessor::process_get_seg_bbox;
     processMap_["get_seg_ids"] = &serverProcessor::process_get_seg_ids;
     processMap_["get_mesh"] = &serverProcessor::process_get_mesh;
     processMap_["compare_results"] = &serverProcessor::process_compare_results;
@@ -918,6 +1044,18 @@ class serverMultiface : virtual public serverIf {
         return ifaces_[i]->get_seg_id(vol, point);
       } else {
         ifaces_[i]->get_seg_id(vol, point);
+      }
+    }
+  }
+
+  void get_seg_bbox(bbox& _return, const std::string& path, const int32_t segId) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_seg_bbox(_return, path, segId);
+        return;
+      } else {
+        ifaces_[i]->get_seg_bbox(_return, path, segId);
       }
     }
   }

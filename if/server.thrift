@@ -68,7 +68,8 @@ service server
 
     i32 get_seg_id( 1: metadata vol, 2: vector3d point),
 
-#    bbox get_seg_bbox( 1: i32 segId ), #Just a lookup... store in the DB?
+    bbox get_seg_bbox( 1: string path,
+                       2: i32 segId ),
 
     list<i32> get_seg_ids( 1: metadata vol,
                            2: vector3d point,

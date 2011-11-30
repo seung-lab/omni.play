@@ -37,6 +37,11 @@ class serverHandler : virtual public serverIf {
     printf("get_seg_id\n");
   }
 
+  void get_seg_bbox(bbox& _return, const std::string& path, const int32_t segId) {
+    // Your implementation goes here
+    printf("get_seg_bbox\n");
+  }
+
   void get_seg_ids(std::vector<int32_t> & _return, const metadata& vol, const vector3d& point, const double radius, const viewType::type view) {
     // Your implementation goes here
     printf("get_seg_ids\n");
