@@ -9,7 +9,7 @@ namespace om {
 namespace coords {
 
 class globalBbox;
-class chunkCoord;
+class chunk;
 
 class volumeSystem {
 protected:
@@ -171,10 +171,10 @@ public:
     }
 
     //mip chunk methods
-    chunkCoord RootMipChunkCoordinate() const;
+    chunk RootMipChunkinate() const;
 
     // Returns true if given MipCoordinate is a valid coordinate within the MipVolume.
-    bool ContainsMipChunkCoord(const chunkCoord & rMipCoord) const;
+    bool ContainsMipChunk(const chunk & rMipCoord) const;
 };
 
 } // namespace coords

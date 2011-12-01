@@ -6,7 +6,7 @@ using namespace vmml;
 namespace om {
 namespace coords {
 
-class globalCoord;
+class global;
 
 class screenSystem
 {
@@ -18,7 +18,7 @@ private:
     Matrix4f globalToScreenMat_;
 
     double zoomScale_;
-    globalCoord location_;
+    global location_;
 
     template <typename T>
     inline Vector3<T> makeViewTypeVector3(const T& x, const T& y, const T& z) const
@@ -87,7 +87,7 @@ public:
         zoomScale_ = scale;
     }
 
-    inline void setLocation(const globalCoord location) {
+    inline void setLocation(const global location) {
         location_ = location;
     }
 };

@@ -40,7 +40,7 @@ globalBbox volumeSystem::GetDataExtent() const
     return globalBbox(abs, abs - Vector3f::ONE + dataDimensions_);
 }
 
-bool volumeSystem::ContainsMipChunkCoord(const chunkCoord & rMipCoord) const
+bool volumeSystem::ContainsMipChunk(const chunk & rMipCoord) const
 {
     //if level is greater than root level
     if(rMipCoord.Level < 0 ||
@@ -60,8 +60,8 @@ bool volumeSystem::ContainsMipChunkCoord(const chunkCoord & rMipCoord) const
     return true;
 }
 
-chunkCoord volumeSystem::RootMipChunkCoordinate() const {
-    return chunkCoord(mMipRootLevel, Vector3i::ZERO);
+chunk volumeSystem::RootMipChunkinate() const {
+    return chunk(mMipRootLevel, Vector3i::ZERO);
 }
 
 } // namespace coords

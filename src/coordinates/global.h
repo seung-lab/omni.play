@@ -10,34 +10,34 @@ class bbox;
 }
 namespace coords {
 
-class chunkCoord;
-class dataCoord;
-class screenCoord;
-class normCoord;
+class chunk;
+class data;
+class screen;
+class norm;
 class normBbox;
 class dataBbox;
 class volumeSystem;
 class screenSystem;
 
-class globalCoord : public Vector3f
+class global : public Vector3f
 {
 private:
     typedef Vector3f base_t;
 
 public:
-    globalCoord() : base_t() {}
-    globalCoord(base_t v) : base_t(v) {}
-    globalCoord(const float a) : base_t(a) {}
-    globalCoord(const float i, const float j, const float k)
+    global() : base_t() {}
+    global(base_t v) : base_t(v) {}
+    global(const float a) : base_t(a) {}
+    global(const float i, const float j, const float k)
         : base_t(i, j, k) {}
-    globalCoord(server::vector3d v);
+    global(server::vector3d v);
 
-    normCoord toNormCoord(const volumeSystem*) const;
-    dataCoord toDataCoord(const volumeSystem*, const int) const;
-    chunkCoord toChunkCoord(const volumeSystem*, const int) const;
-    screenCoord toScreenCoord(screenSystem*) const;
+    norm toNorm(const volumeSystem*) const;
+    data toData(const volumeSystem*, const int) const;
+    chunk toChunk(const volumeSystem*, const int) const;
+    screen toScreen(screenSystem*) const;
     Vector3i withAbsOffset(const volumeSystem*) const;
-    static globalCoord fromOffsetCoords(Vector3i, const volumeSystem*);
+    static global fromOffsetCoords(Vector3i, const volumeSystem*);
     operator server::vector3d () const;
 };
 
@@ -48,7 +48,7 @@ private:
 
 public:
     globalBbox() : base_t() {}
-    globalBbox(globalCoord min, globalCoord max) : base_t(min, max) {}
+    globalBbox(global min, global max) : base_t(min, max) {}
     globalBbox(server::bbox b);
 
     normBbox toNormBbox(const volumeSystem*) const;

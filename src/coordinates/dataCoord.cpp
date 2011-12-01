@@ -6,7 +6,7 @@ using namespace om::common;
 namespace om {
 namespace coords {
 
-dataCoord::dataCoord(dataCoord::base_t v, const volumeSystem* vol, int mipLevel)
+data::data(data::base_t v, const volumeSystem* vol, int mipLevel)
     : base_t(v)
     , vol_(vol)
     , mipLevel_(mipLevel)
@@ -16,7 +16,7 @@ dataCoord::dataCoord(dataCoord::base_t v, const volumeSystem* vol, int mipLevel)
     }
 }
 
-dataCoord::dataCoord(int x, int y, int z, const volumeSystem* vol, int mipLevel)
+data::data(int x, int y, int z, const volumeSystem* vol, int mipLevel)
     : base_t(x, y, z)
     , vol_(vol)
     , mipLevel_(mipLevel)
@@ -27,37 +27,37 @@ dataCoord::dataCoord(int x, int y, int z, const volumeSystem* vol, int mipLevel)
 }
 
 
-globalCoord dataCoord::toGlobalCoord() const
+global data::toGlobal() const
 {
     const vmml::Vector4f data(x, y, z, 1);
     vmml::Vector3f global = vol_->DataToGlobalMat(mipLevel_) * data;
     return global;
 }
 
-normCoord dataCoord::toNormCoord() const
+norm data::toNorm() const
 {
-    return toGlobalCoord().toNormCoord(vol_);
+    return toGlobal().toNorm(vol_);
 }
 
-chunkCoord dataCoord::toChunkCoord() const
+chunk data::toChunk() const
 {
-    return chunkCoord(mipLevel_, *this / vol_->GetChunkDimensions());
+    return chunk(mipLevel_, *this / vol_->GetChunkDimensions());
 }
 
-Vector3i dataCoord::toChunkVec() const
+Vector3i data::toChunkVec() const
 {
     Vector3i dims = vol_->GetChunkDimensions();
     return Vector3i(x % dims.x, y % dims.y, z % dims.z);
 }
 
-int dataCoord::toChunkOffset() const
+int data::toChunkOffset() const
 {
     const Vector3i dims = vol_->GetChunkDimensions();
     const Vector3i chunkVec = toChunkVec();
     return dims.x * dims.y * chunkVec.z + dims.x * chunkVec.y + chunkVec.x;
 }
 
-int dataCoord::toTileOffset (viewType viewType) const
+int data::toTileOffset (viewType viewType) const
 {
     const Vector3i dims = vol_->GetChunkDimensions();
     const Vector3i chunkVec = toChunkVec();
@@ -75,7 +75,7 @@ int dataCoord::toTileOffset (viewType viewType) const
     return -1;
 }
 
-int dataCoord::toTileDepth (viewType viewType) const
+int data::toTileDepth (viewType viewType) const
 {
     const Vector3i dims = vol_->GetChunkDimensions();
     const Vector3i chunkVec = toChunkVec();
@@ -90,7 +90,7 @@ int dataCoord::toTileDepth (viewType viewType) const
     return -1;
 }
 
-dataCoord dataCoord::atDifferentLevel(int newLevel) const
+data data::atDifferentLevel(int newLevel) const
 {
     if (newLevel > vol_->GetRootMipLevel()) {
         throw argException("Invalid Mip level.");
@@ -101,10 +101,10 @@ dataCoord dataCoord::atDifferentLevel(int newLevel) const
     }
 
     Vector3f result = *this * om::math::pow2int(mipLevel_) / om::math::pow2int(newLevel);
-    return dataCoord(result, vol_, newLevel);
+    return data(result, vol_, newLevel);
 }
 
-dataBbox::dataBbox(dataCoord min, dataCoord max)
+dataBbox::dataBbox(data min, data max)
     : base_t(min, max)
     , vol_(min.volume())
     , mipLevel_(min.level())
@@ -132,12 +132,12 @@ dataBbox::dataBbox(dataBbox::base_t bbox, const volumeSystem* vol, int level)
 
 
 globalBbox dataBbox::toGlobalBbox() const {
-    return globalBbox(getMin().toGlobalCoord(), getMax().toGlobalCoord());
+    return globalBbox(getMin().toGlobal(), getMax().toGlobal());
 }
 
 normBbox dataBbox::toNormBbox() const
 {
-    return normBbox(getMin().toNormCoord(), getMax().toNormCoord());
+    return normBbox(getMin().toNorm(), getMax().toNorm());
 }
 
 

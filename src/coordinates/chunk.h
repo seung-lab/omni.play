@@ -1,7 +1,7 @@
 #pragma once
 
 /*
- * chunkCoord represents a location in Mip Space given by a level (or mip resolution),
+ * chunk represents a location in Mip Space given by a level (or mip resolution),
  *  and an x,y,z coordinate.  This is stored in a four element tuple as [level, (x,y,z)].
  *
  * Brett Warne - bwarne@mit.edu - 2/24/09
@@ -16,17 +16,17 @@ namespace om {
 namespace coords {
 
 class dataBbox;
-class dataCoord;
+class data;
 class volumeSystem;
 
-class chunkCoord {
+class chunk {
 
 public:
-    chunkCoord();
-    chunkCoord(int, const Vector3i &);
-    chunkCoord(int level, int, int, int);
+    chunk();
+    chunk(int, const Vector3i &);
+    chunk(int level, int, int, int);
 
-    //static const chunkCoord NULL_COORD;
+    //static const chunk NULL_COORD;
 
     std::string getCoordsAsString() const;
 
@@ -36,11 +36,11 @@ public:
     }
 
     //family coordinate methods
-    chunkCoord ParentCoord() const;
-    chunkCoord PrimarySiblingCoord() const;
-    void SiblingCoords(chunkCoord *pSiblings) const;
-    chunkCoord PrimaryChildCoord() const;
-    void ChildrenCoords(chunkCoord *pChildren) const;
+    chunk ParentCoord() const;
+    chunk PrimarySiblingCoord() const;
+    void SiblingCoords(chunk *pSiblings) const;
+    chunk PrimaryChildCoord() const;
+    void ChildrenCoords(chunk *pChildren) const;
 
     //access
     inline int getLevel() const {
@@ -56,21 +56,21 @@ public:
         return Coordinate.z;
     }
 
-    dataCoord toDataCoord(const volumeSystem*) const;
+    data toData(const volumeSystem*) const;
     dataBbox chunkBoundingBox(const volumeSystem*) const;
     uint64_t chunkPtrOffset(const volumeSystem*, int64_t) const;
-    int sliceDepth(const volumeSystem*, globalCoord, common::viewType) const;
+    int sliceDepth(const volumeSystem*, global, common::viewType) const;
 
     //operators
-    void operator=(const chunkCoord& rhs);
-    bool operator==(const chunkCoord& rhs) const;
-    bool operator!=(const chunkCoord& rhs) const;
-    bool operator<(const chunkCoord& rhs) const;
+    void operator=(const chunk& rhs);
+    bool operator==(const chunk& rhs) const;
+    bool operator!=(const chunk& rhs) const;
+    bool operator<(const chunk& rhs) const;
 
     int Level;
     Vector3i Coordinate;
 
-    friend std::ostream& operator<<(std::ostream &out, const chunkCoord &in);
+    friend std::ostream& operator<<(std::ostream &out, const chunk &in);
 };
 
 } // namespace coords

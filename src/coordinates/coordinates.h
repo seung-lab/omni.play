@@ -3,11 +3,11 @@
 #include <vmmlib/vmmlib.h>
 using namespace vmml;
 
-#include "coordinates/dataCoord.h"
-#include "coordinates/globalCoord.h"
-#include "coordinates/screenCoord.h"
-#include "coordinates/normCoord.h"
-#include "coordinates/chunkCoord.h"
+#include "coordinates/data.h"
+#include "coordinates/global.h"
+#include "coordinates/screen.h"
+#include "coordinates/norm.h"
+#include "coordinates/chunk.h"
 #include "coordinates/screenSystem.h"
 #include "coordinates/volumeSystem.h"
 #include "coordinates/yaml.h"

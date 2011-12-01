@@ -34,6 +34,8 @@ HEADERS +=  \
 	lib/include/threads/threadPoolBatched.hpp \
 	lib/include/threads/threadPoolByMipLevel.hpp \
 	lib/include/threads/threadPoolManager.h \
+	lib/include/thrift/new_server.h \
+	lib/include/thrift/old_server.h \
 	lib/include/thrift/server.h \
 	lib/include/thrift/server_constants.h \
 	lib/include/thrift/server_types.h \
@@ -61,6 +63,7 @@ HEADERS +=  \
 	lib/include/zi/trees/lib/DynaTree.hpp \
 	lib/include/zi/trees/lib/DynamicTree.hpp \
 	lib/include/zi/trees/lib/FHeap.hpp \
+	lib/include/zi/tri_strip_to_obj.hpp \
 	lib/include/zi/utility.h \
 	lib/include/zi/watershed/MemMap.hpp \
 	lib/include/zi/watershed/RawQuickieWS.h \
@@ -79,12 +82,12 @@ HEADERS +=  \
 	src/common/std.h \
 	src/common/stoppable.h \
 	src/common/string.hpp \
-	src/coordinates/chunkCoord.h \
+	src/coordinates/chunk.h \
 	src/coordinates/coordinates.h \
-	src/coordinates/dataCoord.h \
-	src/coordinates/globalCoord.h \
-	src/coordinates/normCoord.h \
-	src/coordinates/screenCoord.h \
+	src/coordinates/data.h \
+	src/coordinates/global.h \
+	src/coordinates/norm.h \
+	src/coordinates/screen.h \
 	src/coordinates/screenSystem.h \
 	src/coordinates/volumeSystem.h \
 	src/coordinates/yaml.h \
@@ -122,6 +125,7 @@ HEADERS +=  \
 	src/zi/trees/lib/DynaTree.hpp \
 	src/zi/trees/lib/DynamicTree.hpp \
 	src/zi/trees/lib/FHeap.hpp \
+	src/zi/tri_strip_to_obj.hpp \
 	src/zi/utility.h \
 	src/zi/watershed/MemMap.hpp \
 	src/zi/watershed/RawQuickieWS.h
@@ -130,11 +134,11 @@ SOURCES +=  \
 	src/common/colors.cpp \
 	src/common/common.cpp \
 	src/common/gl.cpp \
-	src/coordinates/chunkCoord.cpp \
+	src/coordinates/chunk.cpp \
 	src/coordinates/dataCoord.cpp \
-	src/coordinates/globalCoord.cpp \
-	src/coordinates/normCoord.cpp \
-	src/coordinates/screenCoord.cpp \
+	src/coordinates/global.cpp \
+	src/coordinates/norm.cpp \
+	src/coordinates/screen.cpp \
 	src/coordinates/screenSystem.cpp \
 	src/coordinates/volumeSystem.cpp \
 	src/coordinates/yaml.cpp \
@@ -146,6 +150,16 @@ SOURCES +=  \
 	src/utility/primeNumbers.cpp \
 	src/utility/systemInformation.cpp \
 	src/zi/watershed/RawQuickieWS.cpp
+
+new_server_h.target = lib/include/thrift/new_server.h
+new_server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/new.thrift
+new_server_h.depends = if/new.thrift
+QMAKE_EXTRA_TARGETS += new_server_h
+
+old_server_h.target = lib/include/thrift/old_server.h
+old_server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/old.thrift
+old_server_h.depends = if/old.thrift
+QMAKE_EXTRA_TARGETS += old_server_h
 
 server_h.target = lib/include/thrift/server.h
 server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
@@ -191,6 +205,7 @@ server_types_h.target = src/thrift/server_types.h
 server_types_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
 server_types_h.depends = if/server.thrift
 QMAKE_EXTRA_TARGETS += server_types_h
+
 
 ## end of section to be rewritten using Perl
 

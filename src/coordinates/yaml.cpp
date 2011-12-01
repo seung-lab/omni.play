@@ -6,13 +6,13 @@ using namespace om::coords;
 namespace YAML
 {
 
-Emitter& operator<<(Emitter& e, const globalCoord& c)
+Emitter& operator<<(Emitter& e, const global& c)
 {
     e << (Vector3f)c;
     return e;
 }
 
-void operator>>(const Node& n, globalCoord& c)
+void operator>>(const Node& n, global& c)
 {
     Vector3f &vec = c;
     n >> vec;
