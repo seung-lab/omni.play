@@ -57,7 +57,6 @@ public:
                   const uint8_t* data,
                   std::vector<char>& out) const
     {
-        std::cout << "Pnging" << std::endl;
         png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
                                                       NULL,
                                                       NULL, // user error functions

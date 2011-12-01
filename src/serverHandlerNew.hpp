@@ -13,6 +13,7 @@
 #include "segment/segmentTypes.h"
 #include "mesh/io/meshReader.hpp"
 #include "utility/UUID.hpp"
+#include "utility/timer.hpp"
 
 #include "pipeline/getTileData.hpp"
 #include "pipeline/sliceTile.hpp"
@@ -41,15 +42,12 @@ std::ostream& operator<<(std::ostream& o, const vector3d& v) {
 
 class serverHandler : virtual public serverIf {
 public:
-    serverHandler() {
-        // Your initialization goes here
-    }
-
     void get_chan_tile(server::tile& _return,
                        const server::metadata& vol,
                        const server::vector3d& point,
                        const server::viewType::type view)
     {
+        utility::timer t;
         validateMetadata(vol);
 
         coords::volumeSystem coordSystem(vol);
@@ -66,6 +64,8 @@ public:
 
         data<char> out = boost::get<data<char> >(encoded);
         _return.data = std::string(out.data.get(), out.size);
+
+        std::cout << "get_chan_tile done: " << t.s_elapsed() << " seconds" << std::endl;
     }
 
     void get_seg_tiles(std::map<std::string, tile> & _return,
@@ -74,36 +74,44 @@ public:
                        const bbox& segBbox,
                        const viewType::type view)
     {
+        utility::timer t;
+
         validateMetadata(vol);
 
         coords::volumeSystem coordSystem(vol);
 
         pipeline::mapData dataSrc(vol.uri, vol.type);
 
-        vector3d min = twist(segBbox.min, view);
-        vector3d max = twist(segBbox.max, view);
-        vector3i dims = twist(vol.chunkDims, view);
-        vector3i res = twist(vol.resolution, view);
+        vector3d min = common::twist(segBbox.min, view);
+        vector3d max = common::twist(segBbox.max, view);
+        vector3i dims = common::twist(vol.chunkDims, view);
+        vector3i res = common::twist(vol.resolution, view);
 
         for(int x = min.x; x <= max.x; x += dims.x * res.x) {
             for(int y = min.y; y <= max.y; y += dims.y * res.y) {
                 for(int z = min.z; z <= max.z; z += res.z) // always depth when twisted
                 {
-                    coords::globalCoord coord = twist(coords::globalCoord(x,y,z), view);
+                    coords::globalCoord coord = common::twist(coords::globalCoord(x,y,z), view);
                     coords::dataCoord dc = coord.toDataCoord(&coordSystem, vol.mipLevel);
 
                     tile t;
                     makeSegTile(t, dataSrc, dc, view, segId);
                     std::stringstream ss;
-                    ss << t.bounds.min.x << "-" << t.bounds.min.y << "-" << t.bounds.min.z;
+                    ss << t.bounds.min.x << "-"
+                       << t.bounds.min.y << "-"
+                       << t.bounds.min.z << "-"
+                       << segId;
                     _return[ss.str()] = t;
                 }
             }
         }
+
+        std::cout << "get_seg_tiles done: " << t.s_elapsed() << " seconds" << std::endl;
     }
 
     int32_t get_seg_id(const metadata& vol, const vector3d& point)
     {
+        utility::timer t;
         validateMetadata(vol);
 
         coords::volumeSystem coordSystem(vol);
@@ -115,7 +123,9 @@ public:
 
         mapData dataSrc(vol.uri, vol.type);
 
-        data_var id = dataSrc >> getSegIds(dc, 0);
+        data_var id = dataSrc >> getSegIds(dc);
+
+        std::cout << "get_seg_id done: " << t.s_elapsed() << " seconds" << std::endl;
 
         return boost::get<data<uint32_t> >(id).data.get()[0];
     }
@@ -126,14 +136,31 @@ public:
                      const double radius,
                      const viewType::type view)
     {
+        utility::timer t;
         validateMetadata(vol);
 
-        // Your implementation goes here
-        printf("get_seg_ids\n");
+        coords::volumeSystem coordSystem(vol);
+
+        coords::globalCoord coord = point;
+        coords::dataCoord dc = coord.toDataCoord(&coordSystem, vol.mipLevel);
+
+        using namespace pipeline;
+
+        mapData dataSrc(vol.uri, vol.type);
+
+        data_var ids = dataSrc >> getSegIds(dc, radius, view);
+
+        data<uint32_t> out = boost::get<data<uint32_t> >(ids);
+
+        _return.resize(out.size);
+        uint32_t* outData = out.data.get();
+        std::copy(outData, &outData[out.size], _return.begin());
+        std::cout << "get_seg_id done: " << t.s_elapsed() << " seconds" << std::endl;
     }
 
     void get_seg_bbox(bbox& _return, const std::string&path, const int32_t segId)
     {
+        utility::timer t;
         if (!file::exists(path)) {
             throw common::argException("Cannot find path");
         }
@@ -154,6 +181,8 @@ public:
         _return.max.x = d.bounds.getMax().x;
         _return.max.y = d.bounds.getMax().y;
         _return.max.z = d.bounds.getMax().z;
+
+        std::cout << "get_seg_bbox done: " << t.s_elapsed() << " seconds" << std::endl;
     }
 
     double compare_results(const std::vector<result> & old_results, const result& new_result)
@@ -168,7 +197,11 @@ public:
                   const vector3i& chunk,
                   int32_t segId)
     {
-        mesh::reader reader(str(boost::format("%1%/0/%2%/") % uri));
+        utility::timer t;
+        std::string path = str(boost::format("%1%/1.0000/0/%2%/%3%/%4%/")
+                                % uri % chunk.x % chunk.y % chunk.z);
+        std::cout << path << std::endl;
+        mesh::reader reader(path);
 
         boost::shared_ptr<mesh::data> data =
             reader.Read(segId, coords::chunkCoord(0, chunk.x, chunk.y, chunk.z));
@@ -196,6 +229,8 @@ public:
                   data->StripData(), data->StripDataNumBytes());
 
         _return = uuid.Str();
+
+        std::cout << "get_mesh done: " << t.s_elapsed() << " seconds" << std::endl;
     }
 
 private:
@@ -235,32 +270,6 @@ private:
         }
     }
 
-    template<typename T>
-    T twist(T vec, viewType::type view) const
-    {
-        T out;
-        switch(view)
-        {
-        case viewType::XY_VIEW:
-            out.x = vec.x;
-            out.y = vec.y;
-            out.z = vec.z;
-            break;
-        case viewType::XZ_VIEW:
-            out.x = vec.x;
-            out.z = vec.z;
-            out.y = vec.y;
-            break;
-        case viewType::ZY_VIEW:
-            out.z = vec.z;
-            out.y = vec.y;
-            out.x = vec.x;
-            break;
-        }
-
-        return out;
-    }
-
     void makeSegTile(tile& t,
                      const pipeline::dataSrcs& src,
                      const coords::dataCoord& dc,
@@ -289,14 +298,14 @@ private:
         int depth = dc.toTileDepth(common::Convert(view));
         coords::dataBbox bounds = cc.chunkBoundingBox(dc.volume());
 
-        vector3d min = twist(bounds.getMin().toGlobalCoord(), view);
-        vector3d max = twist(bounds.getMax().toGlobalCoord(), view);
+        vector3d min = common::twist(bounds.getMin().toGlobalCoord(), view);
+        vector3d max = common::twist(bounds.getMax().toGlobalCoord(), view);
 
         min.z += depth;
         max.z = min.z;
 
-        t.bounds.min = twist(min, view);
-        t.bounds.max = twist(max, view);
+        t.bounds.min = common::twist(min, view);
+        t.bounds.max = common::twist(max, view);
     }
 
     template <typename T>

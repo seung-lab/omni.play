@@ -1,7 +1,11 @@
 #pragma once
 
+#include "common/common.h"
 #include "pipeline/stage.hpp"
 #include "utility/smartPtr.hpp"
+#include "pointsInCircle.hpp"
+
+#include <set>
 
 namespace om {
 namespace pipeline {
@@ -10,33 +14,82 @@ class getSegIds : public stage
 {
 private:
     coords::dataCoord coord_;
-    double radius_;
+    int radius_;
+    server::viewType::type view_;
+    static const utility::pointsInCircle pts;
 
 public:
-    getSegIds(coords::dataCoord coord, double radius)
+    getSegIds(coords::dataCoord coord)
+        : coord_(coord)
+        , radius_(0)
+    {}
+
+    getSegIds(coords::dataCoord coord, int radius, server::viewType::type view)
         : coord_(coord)
         , radius_(radius)
+        , view_(view)
     {}
 
     template<typename T>
     data_var operator()(const datalayer::memMappedFile<T>& in) const
     {
-        data<uint32_t> segs;
-
-        if(radius_ == 0) // single seg
-        {
-            segs.data = utility::smartPtr<uint32_t>::MallocNumElements(1);
-            segs.size = 1;
-
-            uint64_t offset = coord_.toChunkCoord().chunkPtrOffset(coord_.volume(), sizeof(T));
-            T* chunkPtr = in.GetPtrWithOffset(offset);
-
-            segs.data.get()[0] = chunkPtr[coord_.toChunkOffset()];
+        if(radius_ == 0) {
+            return getSingleSeg(in);
         } else { // brush select
-
+            return getCircle(in);
         }
 
+        return data<uint32_t>();
+    }
+
+private:
+    template<typename T>
+    inline data_var getSingleSeg(const datalayer::memMappedFile<T>& in) const
+    {
+        data<uint32_t> segs;
+        segs.data = utility::smartPtr<uint32_t>::MallocNumElements(1);
+        segs.size = 1;
+
+        segs.data.get()[0] = getSegId(in, coord_);
+
         return segs;
+    }
+
+    template<typename T>
+    inline data_var getCircle(const datalayer::memMappedFile<T>& in) const
+    {
+        const std::vector<Vector2i>& points = pts.GetPtsInCircle(radius_);
+
+        std::set<uint32_t> segments;
+
+        const coords::dataCoord twisted = common::twist(coord_, view_);
+        FOR_EACH(it, points)
+        {
+            coords::dataCoord offseted = twisted;
+            offseted.x += it->x;
+            offseted.y += it->y;
+            coords::dataCoord untwisted = common::twist(offseted, view_);
+            int32_t segId = getSegId(in, untwisted);
+            segments.insert(segId);
+        }
+
+        data<uint32_t> segs;
+        segs.data = utility::smartPtr<uint32_t>::MallocNumElements(segments.size());
+        segs.size = segments.size();
+
+        std::copy(segments.begin(), segments.end(), segs.data.get());
+
+        return segs;
+    }
+
+    template<typename T>
+    inline uint32_t getSegId(const datalayer::memMappedFile<T>& in,
+                             const coords::dataCoord& c) const
+    {
+        uint64_t offset = c.toChunkCoord().chunkPtrOffset(c.volume(), sizeof(T));
+        T* chunkPtr = in.GetPtrWithOffset(offset);
+
+        return chunkPtr[c.toChunkOffset()];
     }
 };
 
@@ -44,6 +97,7 @@ data_var operator>>(const dataSrcs& d, const getSegIds& v) {
     return boost::apply_visitor(v, d);
 }
 
+const utility::pointsInCircle getSegIds::pts;
 
 }
 }

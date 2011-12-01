@@ -19,7 +19,6 @@ public:
     template<typename T>
     data_var operator()(const data<T>& in) const
     {
-        std::cout << "Bitmasking" << std::endl;
         data<bool> out;
         out.size = in.size;
         out.data = utility::smartPtr<bool>::MallocNumElements(out.size);

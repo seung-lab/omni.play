@@ -60,34 +60,35 @@ int main(int argc, char **argv) {
     point.y = 100;
     point.z = 100;
 
-    int32_t segId = client.get_seg_id(meta, point);
+    std::vector<int32_t> ids;
 
-    metadata segs;
-    segs.uri = std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/segments/");
+    client.get_seg_ids(ids, meta, point, 10, viewType::XY_VIEW);
 
+    for(std::vector<int32_t>::iterator it = ids.begin(); it != ids.end(); it++)
+    {
+        std::cout << *it << ", ";
+    }
+/*
     bbox bounds;
-    client.get_seg_bbox(bounds, segs, segId);
+    client.get_seg_bbox(bounds, std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/segments/"), segId);
 
     std::cout << bounds;
 
 //    std::cout << "SegID: " << segId << std::endl;
-/*    bbox segBbox;
+    bbox segBbox;
     segBbox.min = meta.bounds.min;
     segBbox.max.x = segBbox.max.y = segBbox.max.z = 20;
 
     client.get_seg_tiles(tiles, meta, segId, segBbox, viewType::XY_VIEW);
 
-    for(std::map<std::string, tile>::iterator it = tiles.begin(); it != tiles.end(); it++)
-    {
-        std::cout << it->first << " = " << it->second.bounds << std::endl;
-    }
-
     vector3i chunk;
     chunk.x = chunk.y = chunk.z = 0;
 
+    std::cout << "Getting Mesh" << std::endl;
+
     std::string uuid;
     client.get_mesh(uuid,
-                    std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/meshes/1.0000/0/0/0/0/"),
+                    std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/meshes/"),
                     chunk,
                     segId);
 */
