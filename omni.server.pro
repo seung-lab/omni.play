@@ -31,7 +31,6 @@ HEADERS +=  \
 	src/pointsInCircle.hpp \
 	src/segment/segmentTypes.h \
 	src/serverHandler.hpp \
-	src/serverHandlerNew.hpp \
 	src/tiles/tileFilters.hpp
 
 SOURCES +=  \
