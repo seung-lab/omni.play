@@ -39,6 +39,16 @@ public:
         return true;
     }
 
+    bool try_acquire_read( client_type clt, lock_type lid )
+    {
+        return pools_[hasher_(lid) % num_buckets].try_acquire_read( clt, lid );
+    }
+
+    bool try_acquire_write( client_type clt, lock_type lid )
+    {
+        return pools_[hasher_(lid) % num_buckets].try_acquire_write( clt, lid );
+    }
+
     bool acquire_write( client_type clt, lock_type lid )
     {
         pools_[hasher_(lid) % num_buckets].acquire_write( clt, lid );

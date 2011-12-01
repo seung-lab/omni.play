@@ -15,6 +15,30 @@ void do_some_acquiering(std::string client)
         std::cout << "Client " << client << " got 2 read locks for ID " << (i%10) << std::endl;
         usleep(50000);
 
+        bool b = server.try_acquire_read(client, i%10);
+        if ( b )
+        {
+            server.release_read(client, i%10);
+        }
+        else
+        {
+            std::cout << "ERROR\n";
+            return;
+        }
+
+
+        b = server.try_acquire_write(client, i%10);
+        if ( b )
+        {
+            std::cout << "ERROR\n";
+            return;
+        }
+        else
+        {
+            server.release_read(client, i%10);
+        }
+
+
         server.release_read(client, i%10);
         server.release_read(client, i%10);
 
@@ -24,6 +48,28 @@ void do_some_acquiering(std::string client)
 
         std::cout << "Client " << client << " got a write lock for ID " << (i%10) << std::endl;
         usleep(50000);
+
+        b = server.try_acquire_write(client, i%10);
+        if ( b )
+        {
+            std::cout << "ERROR\n";
+            return;
+        }
+        else
+        {
+            server.release_read(client, i%10);
+        }
+
+        b = server.try_acquire_read(client, i%10);
+        if ( b )
+        {
+            std::cout << "ERROR\n";
+            return;
+        }
+        else
+        {
+            server.release_read(client, i%10);
+        }
 
 
         server.release_write(client, i%10);
