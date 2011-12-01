@@ -1,4 +1,4 @@
-#include "datalayer/fs/file.h"
+#include "datalayer/file.h"
 
 #include <boost/filesystem.hpp>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/exception.h"
-#include "datalayer/fs/file.h"
+#include "datalayer/file.h"
 
 namespace om {
 namespace handler {

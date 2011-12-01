@@ -1,7 +1,7 @@
 #pragma once
 
-#include "mesh/io/chunk/meshChunkTypes.h"
-#include "datalayer/fs/memMappedFile.hpp"
+#include "mesh/meshChunkTypes.hpp"
+#include "datalayer/memMappedFile.hpp"
 
 namespace om {
 namespace mesh {

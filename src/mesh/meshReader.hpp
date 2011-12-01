@@ -1,10 +1,10 @@
 #pragma once
 
 #include "common/common.h"
-#include "mesh/io/dataForMeshLoad.hpp"
-#include "mesh/io/chunk/meshChunkDataReader.hpp"
-#include "mesh/io/dataForMeshLoad.hpp"
-#include "mesh/io/chunk/memMappedAllocFile.hpp"
+#include "mesh/dataForMeshLoad.hpp"
+#include "mesh/meshChunkDataReader.hpp"
+#include "mesh/dataForMeshLoad.hpp"
+#include "mesh/memMappedAllocFile.hpp"
 
 namespace om {
 namespace mesh {

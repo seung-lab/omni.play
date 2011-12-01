@@ -3,7 +3,7 @@
 #include "common/common.h"
 #include "pipeline/stage.hpp"
 #include "boost/scoped_ptr.hpp"
-#include "datalayer/fs/memMappedFile.hpp"
+#include "datalayer/memMappedFile.hpp"
 
 namespace om {
 namespace volume { class volume; }

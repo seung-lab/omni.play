@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "mesh/io/chunk/meshChunkTypes.h"
+#include "mesh/meshChunkTypes.hpp"
 #include "utility/smartPtr.hpp"
 
 #include <fstream>

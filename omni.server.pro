@@ -9,17 +9,17 @@ CONFIG = console
 HEADERS +=  \
 	src/chunks/rawChunkSlicer.hpp \
 	src/datalayer/IDataVolume.hpp \
+	src/datalayer/IOnDiskFile.h \
 	src/datalayer/dataWrapper.h \
-	src/datalayer/fs/IOnDiskFile.h \
-	src/datalayer/fs/file.h \
-	src/datalayer/fs/memMappedFile.hpp \
+	src/datalayer/file.h \
+	src/datalayer/memMappedFile.hpp \
 	src/handler/handler.h \
 	src/handler/validate.hpp \
-	src/mesh/io/chunk/memMappedAllocFile.hpp \
-	src/mesh/io/chunk/meshChunkDataReader.hpp \
-	src/mesh/io/chunk/meshChunkTypes.h \
-	src/mesh/io/dataForMeshLoad.hpp \
-	src/mesh/io/meshReader.hpp \
+	src/mesh/dataForMeshLoad.hpp \
+	src/mesh/memMappedAllocFile.hpp \
+	src/mesh/meshChunkDataReader.hpp \
+	src/mesh/meshChunkTypes.hpp \
+	src/mesh/meshReader.hpp \
 	src/pipeline/bitmask.hpp \
 	src/pipeline/encode.hpp \
 	src/pipeline/filter.hpp \
@@ -31,12 +31,12 @@ HEADERS +=  \
 	src/pipeline/stage.hpp \
 	src/pipeline/utility.hpp \
 	src/pointsInCircle.hpp \
-	src/segment/segmentTypes.h \
+	src/segment/segmentTypes.hpp \
 	src/serverHandler.hpp \
 	src/tiles/tileFilters.hpp
 
 SOURCES +=  \
-	src/datalayer/fs/file.cpp \
+	src/datalayer/file.cpp \
 	src/handler/compareResults.cpp \
 	src/handler/getMesh.cpp \
 	src/handler/getSegBbox.cpp \

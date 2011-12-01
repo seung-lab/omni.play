@@ -3,7 +3,7 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/variant.hpp"
 //#include "volume/volumeTypes.h"
-#include "datalayer/fs/memMappedFile.hpp"
+#include "datalayer/memMappedFile.hpp"
 
 namespace om {
 namespace pipeline {

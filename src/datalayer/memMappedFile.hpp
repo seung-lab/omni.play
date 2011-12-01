@@ -5,8 +5,8 @@
 //#include "boost/format.hpp"
 #include "boost/make_shared.hpp"
 
-#include "datalayer/fs/IOnDiskFile.h"
-#include "datalayer/fs/file.h"
+#include "datalayer/IOnDiskFile.h"
+#include "datalayer/file.h"
 
 
 typedef boost::iostreams::mapped_file mapped_file;

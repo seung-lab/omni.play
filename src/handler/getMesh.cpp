@@ -1,5 +1,5 @@
 
-#include "datalayer/fs/memMappedFile.hpp"
+#include "datalayer/memMappedFile.hpp"
 #include "boost/format.hpp"
 
 #include "handler/handler.h"
@@ -9,7 +9,7 @@
 #include "utility/timer.hpp"
 #include "utility/UUID.hpp"
 
-#include "mesh/io/meshReader.hpp"
+#include "mesh/meshReader.hpp"
 
 using namespace std;
 using namespace boost;

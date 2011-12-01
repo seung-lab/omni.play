@@ -2,9 +2,9 @@
 #include "handler/validate.hpp"
 
 #include "common/common.h"
-#include "datalayer/fs/memMappedFile.hpp"
+#include "datalayer/memMappedFile.hpp"
 #include "utility/timer.hpp"
-#include "segment/segmentTypes.h"
+#include "segment/segmentTypes.hpp"
 
 #include "boost/format.hpp"
 

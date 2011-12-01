@@ -2,7 +2,7 @@
 
 #include "pipeline/stage.hpp"
 #include "chunks/rawChunkSlicer.hpp"
-#include "datalayer/fs/memMappedFile.hpp"
+#include "datalayer/memMappedFile.hpp"
 
 namespace om {
 namespace pipeline {
