@@ -13,7 +13,7 @@ public:
     virtual void Load() = 0;
     virtual void Create(const std::map<int, Vector3i> &) = 0;
     virtual T* GetPtr(const int level) const = 0;
-    //virtual T* GetChunkPtr(const coords::chunkCoord & coord) const = 0;
+    //virtual T* GetChunkPtr(const coords::chunk & coord) const = 0;
     virtual int GetBytesPerVoxel() const = 0;
 };
 

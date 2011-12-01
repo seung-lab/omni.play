@@ -17,6 +17,8 @@ using namespace std;
 //#include "wholeVolume.hpp"
 #include "throws.hpp"
 
+#include "boost/format.hpp"
+
 #include <cstdlib>
 #include <time.h>
 
@@ -36,10 +38,13 @@ int main(int argc, char **argv) {
     serverClient client(protocol);
     transport->open();
 
+    std::string root = std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/");
+
     std::map<std::string, tile> tiles;
 
     metadata meta;
-    meta.uri = std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/0/volume.uint32_t.raw");
+    meta.uri = str(boost::format("%1%%2%") % root
+                   % "segmentations/segmentation1/0/volume.uint32_t.raw");
     meta.bounds.min.x = 0;
     meta.bounds.min.y = 0;
     meta.bounds.min.z = 0;
@@ -64,11 +69,8 @@ int main(int argc, char **argv) {
 
     client.get_seg_ids(ids, meta, point, 10, viewType::XY_VIEW);
 
-    for(std::vector<int32_t>::iterator it = ids.begin(); it != ids.end(); it++)
-    {
-        std::cout << *it << ", ";
-    }
-/*
+    int32_t segId = ids[0];
+
     bbox bounds;
     client.get_seg_bbox(bounds, std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/segments/"), segId);
 
@@ -91,7 +93,7 @@ int main(int argc, char **argv) {
                     std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/meshes/"),
                     chunk,
                     segId);
-*/
+
 //    testClient::wholeVolume(client);
     transport->close();
 

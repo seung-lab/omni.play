@@ -22,7 +22,7 @@ public:
     {}
 
     boost::shared_ptr<data>
-    Read(const common::segId segID, const coords::chunkCoord& coord)
+    Read(const common::segId segID, const coords::chunk& coord)
     {
         std::stringstream ss;
         ss << fnp_ << "meshAllocTable.ver2";

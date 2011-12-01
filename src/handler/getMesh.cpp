@@ -38,11 +38,10 @@ void get_mesh(std::string& _return,
     utility::timer t;
     std::string path = str(boost::format("%1%/1.0000/0/%2%/%3%/%4%/")
                            % uri % chunk.x % chunk.y % chunk.z);
-    std::cout << path << std::endl;
     mesh::reader reader(path);
 
     boost::shared_ptr<mesh::data> data =
-        reader.Read(segId, coords::chunkCoord(0, chunk.x, chunk.y, chunk.z));
+        reader.Read(segId, coords::chunk(0, chunk.x, chunk.y, chunk.z));
 
     if(data->TrianDataCount()){
         throw common::ioException("old meshes not supported");

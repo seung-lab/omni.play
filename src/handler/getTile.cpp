@@ -19,15 +19,15 @@ namespace handler {
 using namespace pipeline;
 
 void setTileBounds(server::tile& t,
-                   const coords::dataCoord dc,
+                   const coords::data dc,
                    const server::viewType::type& view)
 {
-    coords::chunkCoord cc = dc.toChunkCoord();
+    coords::chunk cc = dc.toChunk();
     int depth = dc.toTileDepth(common::Convert(view));
     coords::dataBbox bounds = cc.chunkBoundingBox(dc.volume());
 
-    server::vector3d min = common::twist(bounds.getMin().toGlobalCoord(), view);
-    server::vector3d max = common::twist(bounds.getMax().toGlobalCoord(), view);
+    server::vector3d min = common::twist(bounds.getMin().toGlobal(), view);
+    server::vector3d max = common::twist(bounds.getMax().toGlobal(), view);
 
     min.z += depth;
     max.z = min.z;
@@ -47,8 +47,8 @@ void get_chan_tile(server::tile& _return,
     validateMetadata(vol);
 
     coords::volumeSystem coordSystem(vol);
-    coords::globalCoord coord = point;
-    coords::dataCoord dc = coord.toDataCoord(&coordSystem, vol.mipLevel);
+    coords::global coord = point;
+    coords::data dc = coord.toData(&coordSystem, vol.mipLevel);
 
     setTileBounds(_return, dc, view);
 
@@ -64,7 +64,7 @@ void get_chan_tile(server::tile& _return,
 
 void makeSegTile(server::tile& t,
                  const dataSrcs& src,
-                 const coords::dataCoord& dc,
+                 const coords::data& dc,
                  const server::viewType::type& view,
                  uint32_t segId)
 {
@@ -104,8 +104,8 @@ void get_seg_tiles(std::map<std::string, server::tile> & _return,
         for(int y = min.y; y <= max.y; y += dims.y * res.y) {
             for(int z = min.z; z <= max.z; z += res.z) // always depth when twisted
             {
-                coords::globalCoord coord = common::twist(coords::globalCoord(x,y,z), view);
-                coords::dataCoord dc = coord.toDataCoord(&coordSystem, vol.mipLevel);
+                coords::global coord = common::twist(coords::global(x,y,z), view);
+                coords::data dc = coord.toData(&coordSystem, vol.mipLevel);
 
                 server::tile t;
                 makeSegTile(t, dataSrc, dc, view, segId);

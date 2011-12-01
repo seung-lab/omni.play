@@ -13,18 +13,18 @@ namespace pipeline {
 class getSegIds : public stage
 {
 private:
-    coords::dataCoord coord_;
+    coords::data coord_;
     int radius_;
     server::viewType::type view_;
     static const utility::pointsInCircle pts;
 
 public:
-    getSegIds(coords::dataCoord coord)
+    getSegIds(coords::data coord)
         : coord_(coord)
         , radius_(0)
     {}
 
-    getSegIds(coords::dataCoord coord, int radius, server::viewType::type view)
+    getSegIds(coords::data coord, int radius, server::viewType::type view)
         : coord_(coord)
         , radius_(radius)
         , view_(view)
@@ -62,13 +62,13 @@ private:
 
         std::set<uint32_t> segments;
 
-        const coords::dataCoord twisted = common::twist(coord_, view_);
+        const coords::data twisted = common::twist(coord_, view_);
         FOR_EACH(it, points)
         {
-            coords::dataCoord offseted = twisted;
+            coords::data offseted = twisted;
             offseted.x += it->x;
             offseted.y += it->y;
-            coords::dataCoord untwisted = common::twist(offseted, view_);
+            coords::data untwisted = common::twist(offseted, view_);
             int32_t segId = getSegId(in, untwisted);
             segments.insert(segId);
         }
@@ -84,9 +84,9 @@ private:
 
     template<typename T>
     inline uint32_t getSegId(const datalayer::memMappedFile<T>& in,
-                             const coords::dataCoord& c) const
+                             const coords::data& c) const
     {
-        uint64_t offset = c.toChunkCoord().chunkPtrOffset(c.volume(), sizeof(T));
+        uint64_t offset = c.toChunk().chunkPtrOffset(c.volume(), sizeof(T));
         T* chunkPtr = in.GetPtrWithOffset(offset);
 
         return chunkPtr[c.toChunkOffset()];

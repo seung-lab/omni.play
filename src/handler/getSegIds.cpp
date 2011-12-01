@@ -21,8 +21,8 @@ int32_t get_seg_id(const server::metadata& vol, const server::vector3d& point)
 
     coords::volumeSystem coordSystem(vol);
 
-    coords::globalCoord coord = point;
-    coords::dataCoord dc = coord.toDataCoord(&coordSystem, vol.mipLevel);
+    coords::global coord = point;
+    coords::data dc = coord.toData(&coordSystem, vol.mipLevel);
 
     mapData dataSrc(vol.uri, vol.type);
 
@@ -44,8 +44,8 @@ void get_seg_ids(vector<int32_t> & _return,
 
     coords::volumeSystem coordSystem(vol);
 
-    coords::globalCoord coord = point;
-    coords::dataCoord dc = coord.toDataCoord(&coordSystem, vol.mipLevel);
+    coords::global coord = point;
+    coords::data dc = coord.toData(&coordSystem, vol.mipLevel);
 
     mapData dataSrc(vol.uri, vol.type);
 
