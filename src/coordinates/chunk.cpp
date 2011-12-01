@@ -6,36 +6,36 @@
 namespace om {
 namespace coords {
 
-//const chunkCoord chunkCoord::NULL_COORD(-1, -1, -1, -1);
+//const chunk chunk::NULL_COORD(-1, -1, -1, -1);
 
 /////////////////////////////////
-///////          chunkCoord
+///////          chunk
 
-chunkCoord::chunkCoord()
+chunk::chunk()
     : Level(-1)
     , Coordinate(Vector3i(-1, -1, -1))
 {
 }
 
-chunkCoord::chunkCoord(int Level, const Vector3i & coord)
+chunk::chunk(int Level, const Vector3i & coord)
     : Level(Level)
     , Coordinate(coord)
 {
     if (coord.x < 0 || coord.y < 0 || coord.z < 0) {
-        throw common::argException("Bad Chunk Coord");
+        throw argException("Bad Chunk Coord");
     }
 }
 
-chunkCoord::chunkCoord(int level, int x, int y, int z)
+chunk::chunk(int level, int x, int y, int z)
     : Level(level)
     , Coordinate(Vector3i(x, y, z))
 {
     if (x < 0 || y < 0 || z < 0) {
-        throw common::argException("Bad Chunk Coord");
+        throw argException("Bad Chunk Coord");
     }
 }
 
-std::string chunkCoord::getCoordsAsString() const
+std::string chunk::getCoordsAsString() const
 {
     std::stringstream ss;
     ss << Level <<":"
@@ -49,43 +49,43 @@ std::string chunkCoord::getCoordsAsString() const
 ///////          Family Coordinates
 
 // Parent coordiante containing this coordinate as a child
-chunkCoord chunkCoord::ParentCoord() const
+chunk chunk::ParentCoord() const
 {
     //get primary coordinate of octal containing given coordinate
-    chunkCoord primary_coord = PrimarySiblingCoord();
+    chunk primary_coord = PrimarySiblingCoord();
 
     int x = primary_coord.Coordinate.x;
     int y = primary_coord.Coordinate.y;
     int z = primary_coord.Coordinate.z;
 
     //return parent (next level, half coordinates)
-    return chunkCoord(Level + 1, x / 2, y / 2, z / 2);
+    return chunk(Level + 1, x / 2, y / 2, z / 2);
 }
 
 // Primary coordinate in the sibling octal
-chunkCoord chunkCoord::PrimarySiblingCoord() const
+chunk chunk::PrimarySiblingCoord() const
 {
     int prim_x = om::math::roundDown(Coordinate.x, 2);
     int prim_y = om::math::roundDown(Coordinate.y, 2);
     int prim_z = om::math::roundDown(Coordinate.z, 2);
 
-    return chunkCoord(Level, prim_x, prim_y, prim_z);
+    return chunk(Level, prim_x, prim_y, prim_z);
 }
 
 // Array of sibling coordinates in octal
-void chunkCoord::SiblingCoords(chunkCoord * pSiblings) const
+void chunk::SiblingCoords(chunk * pSiblings) const
 {
     //return null coordinates if coord is null
     if (Level < 0) {
         //set each child to null
         for (int i = 0; i < 8; i++) {
-            //pSiblings[i] = chunkCoord::NULL_COORD; // TODO: Fix for mesher
+            //pSiblings[i] = chunk::NULL_COORD; // TODO: Fix for mesher
         }
         return;
     }
 
     //primary child is in first position
-    chunkCoord primary_coord = PrimarySiblingCoord();
+    chunk primary_coord = PrimarySiblingCoord();
 
     int x = primary_coord.Coordinate.x;
     int y = primary_coord.Coordinate.y;
@@ -98,42 +98,42 @@ void chunkCoord::SiblingCoords(chunkCoord * pSiblings) const
     assert(Coordinate.z == primary_coord.Coordinate.z);
 
     pSiblings[0] = primary_coord;
-    pSiblings[1] = chunkCoord(Level, x + 1, y, z);
-    pSiblings[2] = chunkCoord(Level, x + 1, y + 1, z);
-    pSiblings[3] = chunkCoord(Level, x, y + 1, z);
-    pSiblings[4] = chunkCoord(Level, x, y, z + 1);
-    pSiblings[5] = chunkCoord(Level, x + 1, y, z + 1);
-    pSiblings[6] = chunkCoord(Level, x + 1, y + 1, z + 1);
-    pSiblings[7] = chunkCoord(Level, x, y + 1, z + 1);
+    pSiblings[1] = chunk(Level, x + 1, y, z);
+    pSiblings[2] = chunk(Level, x + 1, y + 1, z);
+    pSiblings[3] = chunk(Level, x, y + 1, z);
+    pSiblings[4] = chunk(Level, x, y, z + 1);
+    pSiblings[5] = chunk(Level, x + 1, y, z + 1);
+    pSiblings[6] = chunk(Level, x + 1, y + 1, z + 1);
+    pSiblings[7] = chunk(Level, x, y + 1, z + 1);
 }
 
 // Primary child coordinate of octal children
-chunkCoord chunkCoord::PrimaryChildCoord() const
+chunk chunk::PrimaryChildCoord() const
 {
     //return primary child (prev level, double coordinates)
-    return chunkCoord(Level - 1, Coordinate.x * 2, Coordinate.y * 2, Coordinate.z * 2);
+    return chunk(Level - 1, Coordinate.x * 2, Coordinate.y * 2, Coordinate.z * 2);
 }
 
-void chunkCoord::ChildrenCoords(chunkCoord * pChildren) const
+void chunk::ChildrenCoords(chunk * pChildren) const
 {
     //get primary child
-    chunkCoord primary_child = PrimaryChildCoord();
+    chunk primary_child = PrimaryChildCoord();
     primary_child.SiblingCoords(pChildren);
 
 }
 
-dataCoord chunkCoord::toDataCoord(const volumeSystem *vol) const {
-    return dataCoord(Coordinate * vol->GetChunkDimensions(), vol, Level);
+data chunk::toData(const volumeSystem *vol) const {
+    return data(Coordinate * vol->GetChunkDimensions(), vol, Level);
 }
 
-dataBbox chunkCoord::chunkBoundingBox(const volumeSystem *vol) const
+dataBbox chunk::chunkBoundingBox(const volumeSystem *vol) const
 {
-    const dataCoord min = toDataCoord(vol);
-    const dataCoord max = min + vol->GetChunkDimensions();
+    const data min = toData(vol);
+    const data max = min + vol->GetChunkDimensions();
     return dataBbox(min, max);
 }
 
-uint64_t chunkCoord::chunkPtrOffset(const volumeSystem* vol, int64_t bytesPerVoxel) const
+uint64_t chunk::chunkPtrOffset(const volumeSystem* vol, int64_t bytesPerVoxel) const
 {
     const Vector3<int64_t> volDims = vol->getDimsRoundedToNearestChunk(Level);
     const Vector3<int64_t> chunkDims = vol->GetChunkDimensions();
@@ -151,12 +151,12 @@ uint64_t chunkCoord::chunkPtrOffset(const volumeSystem* vol, int64_t bytesPerVox
     return offset;
 }
 
-int chunkCoord::sliceDepth(const volumeSystem* vol, globalCoord c, common::viewType view) const
+int chunk::sliceDepth(const volumeSystem* vol, global c, common::viewType view) const
 {
-    const dataCoord d = c.toDataCoord(vol, Level);
+    const data d = c.toData(vol, Level);
     const dataBbox bounds = chunkBoundingBox(vol);
     if(!bounds.contains(d)) {
-        throw common::argException("Coordinate outside of chunk.");
+        throw argException("Coordinate outside of chunk.");
     }
 
     switch(view)
@@ -166,24 +166,24 @@ int chunkCoord::sliceDepth(const volumeSystem* vol, globalCoord c, common::viewT
     case common::ZY_VIEW: return d.x - bounds.getMin().x;
     }
 
-    throw common::argException("Bad viewType");
+    throw argException("Bad viewType");
 }
 
 /////////////////////////////////
 ///////          Operators
 
-void chunkCoord::operator=(const chunkCoord & rhs)
+void chunk::operator=(const chunk & rhs)
 {
     Level = rhs.Level;
     Coordinate = rhs.Coordinate;
 }
 
-bool chunkCoord::operator==(const chunkCoord & rhs) const
+bool chunk::operator==(const chunk & rhs) const
 {
     return (Level == rhs.Level && Coordinate == rhs.Coordinate);
 }
 
-bool chunkCoord::operator!=(const chunkCoord & rhs) const
+bool chunk::operator!=(const chunk & rhs) const
 {
     if( Level != rhs.Level ){
         return true;
@@ -197,7 +197,7 @@ bool chunkCoord::operator!=(const chunkCoord & rhs) const
 }
 
 // comparitor for stl key usage
-bool chunkCoord::operator<(const chunkCoord & rhs) const
+bool chunk::operator<(const chunk & rhs) const
 {
     if (Level != rhs.Level) {
         return (Level < rhs.Level);
@@ -206,7 +206,7 @@ bool chunkCoord::operator<(const chunkCoord & rhs) const
     return (Coordinate < rhs.Coordinate);
 }
 
-std::ostream& operator<<(std::ostream &out, const chunkCoord &c) {
+std::ostream& operator<<(std::ostream &out, const chunk &c) {
     out << "[" << c.Level;
     out << " (" << c.Coordinate.x << ", " << c.Coordinate.y << ", " << c.Coordinate.z << ")]";
     return out;

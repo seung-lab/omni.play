@@ -8,14 +8,14 @@ class OmMipVolume;
 namespace om {
 namespace coords {
 
-class globalCoord;
-class normCoord;
-class chunkCoord;
+class global;
+class norm;
+class chunk;
 class globalBbox;
 class normBbox;
 class volumeSystem;
 
-class dataCoord : public vmml::Vector3i
+class data : public vmml::Vector3i
 {
 private:
     typedef Vector3i base_t;
@@ -23,12 +23,12 @@ private:
     int mipLevel_;
 
 public:
-    dataCoord(base_t v, const volumeSystem * vol, int mipLevel);
-    dataCoord(int x, int y, int z, const volumeSystem * vol, int mipLevel);
+    data(base_t v, const volumeSystem * vol, int mipLevel);
+    data(int x, int y, int z, const volumeSystem * vol, int mipLevel);
 
-    globalCoord toGlobalCoord() const;
-    normCoord toNormCoord() const;
-    chunkCoord toChunkCoord() const;
+    global toGlobal() const;
+    norm toNorm() const;
+    chunk toChunk() const;
     Vector3i toChunkVec() const;
     int toChunkOffset() const;
     int toTileOffset(om::common::viewType) const;
@@ -38,26 +38,26 @@ public:
         return mipLevel_;
     }
 
-    dataCoord atDifferentLevel(int) const;
+    data atDifferentLevel(int) const;
 
     inline volumeSystem const * volume() const {
         return vol_;
     }
 
-    dataCoord operator+(const Vector3i b) const {
-        return dataCoord(base_t::operator+(b), vol_, mipLevel_);
+    data operator+(const Vector3i b) const {
+        return data(base_t::operator+(b), vol_, mipLevel_);
     }
 
-    dataCoord operator*(const int scalar) const {
-        return dataCoord(base_t::operator*(scalar), vol_, mipLevel_);
+    data operator*(const int scalar) const {
+        return data(base_t::operator*(scalar), vol_, mipLevel_);
     }
 
-    dataCoord operator/(const int scalar) const {
-        return dataCoord(base_t::operator/(scalar), vol_, mipLevel_);
+    data operator/(const int scalar) const {
+        return data(base_t::operator/(scalar), vol_, mipLevel_);
     }
 
-    dataCoord operator/(const Vector3i b) const {
-        return dataCoord(base_t::operator/(b), vol_, mipLevel_);
+    data operator/(const Vector3i b) const {
+        return data(base_t::operator/(b), vol_, mipLevel_);
     }
 };
 
@@ -69,28 +69,28 @@ private:
     const int mipLevel_;
 
 public:
-    dataBbox(dataCoord min, dataCoord max);
+    dataBbox(data min, data max);
     dataBbox(const volumeSystem * vol, int level);
     dataBbox(base_t bbox, const volumeSystem * vol, int level);
 
-    inline dataCoord getMin() const {
-        return dataCoord(base_t::getMin(), vol_, mipLevel_);
+    inline data getMin() const {
+        return data(base_t::getMin(), vol_, mipLevel_);
     }
 
-    inline dataCoord getMax() const {
-        return dataCoord(base_t::getMax(), vol_, mipLevel_);
+    inline data getMax() const {
+        return data(base_t::getMax(), vol_, mipLevel_);
     }
 
-    inline dataCoord getDimensions() const {
-        return dataCoord(base_t::getDimensions(), vol_, mipLevel_);
+    inline data getDimensions() const {
+        return data(base_t::getDimensions(), vol_, mipLevel_);
     }
 
-    inline dataCoord getUnitDimensions() const {
-        return dataCoord(base_t::getUnitDimensions(), vol_, mipLevel_);
+    inline data getUnitDimensions() const {
+        return data(base_t::getUnitDimensions(), vol_, mipLevel_);
     }
 
-    inline dataCoord getCenter() const {
-        return dataCoord(base_t::getCenter(), vol_, mipLevel_);
+    inline data getCenter() const {
+        return data(base_t::getCenter(), vol_, mipLevel_);
     }
 
     inline void intersect(const dataBbox& other) {
