@@ -28,7 +28,7 @@ void fileHelpers::RemoveDir(const std::string &folder)
         if(remove_all(folder)){
             std::cout << "done!\n";
         } else {
-            throw common::ioException("could not remove folder " + folder);
+            throw ioException("could not remove folder " + folder);
         }
     }
 }
@@ -36,13 +36,13 @@ void fileHelpers::RemoveDir(const std::string &folder)
 void fileHelpers::MoveFile(const std::string& from_fnp, const std::string& to_fnp)
 {
     if(!exists(from_fnp)){
-        throw common::ioException("could not find file " + from_fnp);
+        throw ioException("could not find file " + from_fnp);
     }
 
     if(exists(to_fnp))
     {
         if(!remove_all(to_fnp)){
-            throw common::ioException("could not remove previous file " + to_fnp);
+            throw ioException("could not remove previous file " + to_fnp);
         }
     }
     
@@ -72,13 +72,13 @@ void fileHelpers::MoveAllFiles(const std::string& fromDir, const std::string& to
     path from(fromDir);
 
     if(!exists(from) || !is_directory(from)){
-        throw common::ioException("invalid folder name " + fromDir);
+        throw ioException("invalid folder name " + fromDir);
     }
 
     path to(toDir);
 
     if(!exists(to) || !is_directory(to)){
-        throw common::ioException("invalid folder name " + toDir);
+        throw ioException("invalid folder name " + toDir);
     }
 
     directory_iterator iter(from);
@@ -101,7 +101,7 @@ bool fileHelpers::MkDir(const std::string& dirName)
         return create_directories(path);
 
     } catch(...){
-        throw common::ioException("could not create directory " + dirName);
+        throw ioException("could not create directory " + dirName);
     }
 }
 

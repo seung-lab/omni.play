@@ -89,7 +89,7 @@ public:
     void start(const uint32_t numWorkerThreads)
     {
         if(!numWorkerThreads){
-            throw common::ioException("please specify more than 0 threads");
+            throw ioException("please specify more than 0 threads");
         }
 
         const uint32_t max_size = std::numeric_limits<uint32_t>::max();

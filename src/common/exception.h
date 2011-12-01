@@ -17,7 +17,6 @@
 #include <exception>
 
 namespace om {
-namespace common {
 
 class exception : public std::exception {
 public:
@@ -80,5 +79,4 @@ public:
         : exception("verifyException", msg) { }
 };
 
-} // namespace common
 } // namespace om

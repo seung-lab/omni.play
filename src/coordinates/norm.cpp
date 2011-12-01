@@ -20,7 +20,7 @@ normBbox::normBbox(norm min, norm max)
     , vol_(min.volume())
 { 
     if(min.volume() != max.volume()) {
-        throw common::argException("min and max coords come from different volumes");
+        throw argException("min and max coords come from different volumes");
     }
 }
 

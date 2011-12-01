@@ -22,7 +22,7 @@ chunk::chunk(int Level, const Vector3i & coord)
     , Coordinate(coord)
 {
     if (coord.x < 0 || coord.y < 0 || coord.z < 0) {
-        throw common::argException("Bad Chunk Coord");
+        throw argException("Bad Chunk Coord");
     }
 }
 
@@ -31,7 +31,7 @@ chunk::chunk(int level, int x, int y, int z)
     , Coordinate(Vector3i(x, y, z))
 {
     if (x < 0 || y < 0 || z < 0) {
-        throw common::argException("Bad Chunk Coord");
+        throw argException("Bad Chunk Coord");
     }
 }
 
@@ -156,7 +156,7 @@ int chunk::sliceDepth(const volumeSystem* vol, global c, common::viewType view) 
     const data d = c.toData(vol, Level);
     const dataBbox bounds = chunkBoundingBox(vol);
     if(!bounds.contains(d)) {
-        throw common::argException("Coordinate outside of chunk.");
+        throw argException("Coordinate outside of chunk.");
     }
 
     switch(view)
@@ -166,7 +166,7 @@ int chunk::sliceDepth(const volumeSystem* vol, global c, common::viewType view) 
     case common::ZY_VIEW: return d.x - bounds.getMin().x;
     }
 
-    throw common::argException("Bad viewType");
+    throw argException("Bad viewType");
 }
 
 /////////////////////////////////
