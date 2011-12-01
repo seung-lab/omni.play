@@ -4,12 +4,6 @@
 #include <transport/TServerSocket.h>
 #include <transport/TBufferTransports.h>
 
-#include "project/project.h"
-#include "project/details/projectVolumes.h"
-#include "project/details/channelManager.h"
-#include "project/details/segmentationManager.h"
-#include "tiles/tile.h"
-#include "volume/channel.h"
 #include "segment/segmentTypes.h"
 #include "mesh/io/meshReader.hpp"
 #include "utility/UUID.hpp"
@@ -20,7 +14,6 @@
 #include "pipeline/jpeg.h"
 #include "pipeline/encode.hpp"
 #include "pipeline/utility.hpp"
-//#include "pipeline/filter.hpp"
 #include "pipeline/bitmask.hpp"
 #include "pipeline/png.hpp"
 #include "pipeline/getSegIds.hpp"

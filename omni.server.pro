@@ -7,182 +7,42 @@ CONFIG = console
 
 ## start of section to be rewritten using Perl
 HEADERS +=  \
-	src/chunks/chunk.h \
-	src/chunks/chunkData.hpp \
-	src/chunks/chunkDataImpl.hpp \
-	src/chunks/chunkDataInterface.hpp \
-	src/chunks/chunkItemContainer.hpp \
-	src/chunks/chunkItemContainerMatrix.hpp \
-	src/chunks/chunkMipping.hpp \
-	src/chunks/chunkUtils.hpp \
-	src/chunks/details/ptrToChunkDataBase.hpp \
-	src/chunks/details/ptrToChunkDataMemMapVol.h \
-	src/chunks/extractChanTile.hpp \
-	src/chunks/extractSegTile.hpp \
-	src/chunks/rawChunk.hpp \
-	src/chunks/rawChunkMemMapped.hpp \
 	src/chunks/rawChunkSlicer.hpp \
-	src/chunks/segChunk.h \
-	src/chunks/segChunkData.hpp \
-	src/chunks/segChunkDataImpl.hpp \
-	src/chunks/segChunkDataInterface.hpp \
-	src/chunks/uniqueValues/chunkUniqueValuesManager.hpp \
-	src/chunks/uniqueValues/chunkUniqueValuesPerThreshold.hpp \
-	src/chunks/uniqueValues/chunkUniqueValuesTypes.h \
-	src/chunks/uniqueValues/thresholdsInChunk.hpp \
 	src/datalayer/IDataVolume.hpp \
-	src/datalayer/archive/baseTypes.hpp \
-	src/datalayer/archive/channel.h \
-	src/datalayer/archive/filter.h \
-	src/datalayer/archive/genericManager.hpp \
-	src/datalayer/archive/mipVolume.hpp \
-	src/datalayer/archive/project.h \
-	src/datalayer/archive/segmentation.h \
-	src/datalayer/dataPath.h \
-	src/datalayer/dataPaths.h \
 	src/datalayer/dataWrapper.h \
 	src/datalayer/fs/IOnDiskFile.h \
-	src/datalayer/fs/compressedFile.h \
 	src/datalayer/fs/file.h \
-	src/datalayer/fs/fileNames.hpp \
-	src/datalayer/fs/fileQT.hpp \
-	src/datalayer/fs/memMapCompressedFile.hpp \
-	src/datalayer/fs/memMappedFileQT.hpp \
-	src/datalayer/fs/memMappedFileQTNew.hpp \
+	src/datalayer/fs/memMappedFile.hpp \
 	src/mesh/io/chunk/memMappedAllocFile.hpp \
-	src/mesh/io/chunk/meshChunkAllocTable.h \
 	src/mesh/io/chunk/meshChunkDataReader.hpp \
-	src/mesh/io/chunk/meshChunkDataWriter.hpp \
-	src/mesh/io/chunk/meshChunkDataWriterTask.hpp \
 	src/mesh/io/chunk/meshChunkTypes.h \
 	src/mesh/io/dataForMeshLoad.hpp \
-	src/mesh/io/meshFilePtrCache.hpp \
-	src/mesh/io/meshMetadata.hpp \
 	src/mesh/io/meshReader.hpp \
-	src/mesh/io/meshWriter.hpp \
-	src/mesh/io/ringBuffer.hpp \
-	src/mesh/io/threads/meshWriterTask.hpp \
-	src/mesh/mesh.h \
-	src/mesh/meshCoord.h \
-	src/mesh/meshManager.h \
-	src/mesh/meshManagers.hpp \
-	src/mesh/meshParams.hpp \
-	src/mesh/meshTypes.h \
-	src/mesh/mesher/MeshCollector.hpp \
-	src/mesh/mesher/TriStripCollector.hpp \
-	src/mesh/mesher/mesherSetup.hpp \
-	src/mesh/mesher/ziMesher.hpp \
-	src/project/details/affinityGraphManager.h \
-	src/project/details/channelManager.h \
-	src/project/details/projectVolumes.h \
-	src/project/details/segmentationManager.h \
-	src/project/project.h \
-	src/project/projectGlobals.h \
-	src/project/projectImpl.hpp \
-	src/segment/io/segmentListTypePage.hpp \
-	src/segment/io/segmentPage.hpp \
-	src/segment/io/segmentPageObjects.hpp \
-	src/segment/io/segmentPageV4.hpp \
-	src/segment/io/validGroupNum.hpp \
-	src/segment/lists/segmentList.h \
-	src/segment/lists/segmentListByMRU.h \
-	src/segment/lists/segmentListGlobal.hpp \
-	src/segment/lists/segmentListLowLevel.hpp \
-	src/segment/lists/segmentListsTypes.h \
-	src/segment/lowLevel/dynamicForestCache.hpp \
-	src/segment/lowLevel/dynamicForestPool.hpp \
-	src/segment/lowLevel/enabledSegments.hpp \
-	src/segment/lowLevel/pagingPtrStore.h \
-	src/segment/lowLevel/segmentChildren.hpp \
-	src/segment/lowLevel/segmentGraph.h \
-	src/segment/lowLevel/segmentGraphInitialLoad.hpp \
-	src/segment/lowLevel/segmentLowLevelTypes.h \
-	src/segment/lowLevel/segmentsImplLowLevel.h \
-	src/segment/lowLevel/store/segmentStore.h \
-	src/segment/segment.h \
-	src/segment/segmentChildrenTypes.h \
-	src/segment/segmentIterator.h \
-	src/segment/segmentPointers.h \
+	src/pipeline/bitmask.hpp \
+	src/pipeline/encode.hpp \
+	src/pipeline/filter.hpp \
+	src/pipeline/getSegIds.hpp \
+	src/pipeline/getTileData.hpp \
+	src/pipeline/jpeg.h \
+	src/pipeline/png.hpp \
+	src/pipeline/sliceTile.hpp \
+	src/pipeline/stage.hpp \
+	src/pipeline/utility.hpp \
+	src/pointsInCircle.hpp \
 	src/segment/segmentTypes.h \
-	src/segment/segments.h \
-	src/segment/segmentsImpl.h \
 	src/serverHandler.hpp \
-	src/tiles/tile.h \
-	src/tiles/tileCoord.h \
-	src/volume/affinityChannel.h \
-	src/volume/affinityGraph.h \
-	src/volume/channel.h \
-	src/volume/channelFolder.h \
-	src/volume/channelImpl.h \
-	src/volume/io/memMappedVolume.h \
-	src/volume/io/memMappedVolume.hpp \
-	src/volume/io/volumeData.h \
-	src/volume/mipVolume.h \
-	src/volume/segmentation.h \
-	src/volume/segmentationFolder.h \
-	src/volume/segmentationLoader.h \
-	src/volume/simpleRawVol.hpp \
-	src/volume/volumeTypes.h
+	src/serverHandlerNew.hpp \
+	src/tiles/tileFilters.hpp
 
 SOURCES +=  \
-	include/yaml-cpp/src/aliasmanager.cpp \
-	include/yaml-cpp/src/contrib/graphbuilder.cpp \
-	include/yaml-cpp/src/contrib/graphbuilderadapter.cpp \
-	include/yaml-cpp/src/conversion.cpp \
-	include/yaml-cpp/src/directives.cpp \
-	include/yaml-cpp/src/emitfromevents.cpp \
-	include/yaml-cpp/src/emitter.cpp \
-	include/yaml-cpp/src/emitterstate.cpp \
-	include/yaml-cpp/src/emitterutils.cpp \
-	include/yaml-cpp/src/exp.cpp \
-	include/yaml-cpp/src/iterator.cpp \
-	include/yaml-cpp/src/node.cpp \
-	include/yaml-cpp/src/nodebuilder.cpp \
-	include/yaml-cpp/src/nodeownership.cpp \
-	include/yaml-cpp/src/null.cpp \
-	include/yaml-cpp/src/ostream.cpp \
-	include/yaml-cpp/src/parser.cpp \
-	include/yaml-cpp/src/regex.cpp \
-	include/yaml-cpp/src/scanner.cpp \
-	include/yaml-cpp/src/scanscalar.cpp \
-	include/yaml-cpp/src/scantag.cpp \
-	include/yaml-cpp/src/scantoken.cpp \
-	include/yaml-cpp/src/simplekey.cpp \
-	include/yaml-cpp/src/singledocparser.cpp \
-	include/yaml-cpp/src/stream.cpp \
-	include/yaml-cpp/src/tag.cpp \
-        include/libb64/src/cdecode.c \
-        include/libb64/src/cencode.c \
-	src/volume/volume.cpp \
-	src/volume/volumeTypes.cpp \
-	src/volume/channel.cpp \
-	src/volume/channelImpl.cpp \
-	src/volume/io/volumeData.cpp \
-        src/volume/io/memMappedVolume.cpp\
-        src/volume/channelFolder.cpp \
-        src/volume/segmentation.cpp \
-        src/volume/segmentationFolder.cpp \
-        src/project/project.cpp \
-        src/project/details/projectVolumes.cpp \
-        src/project/details/segmentationManager.cpp \
-        src/project/details/channelManager.cpp \
-        src/datalayer/fs/file.cpp \
-        src/datalayer/archive/projectYaml.cpp \
-        src/datalayer/archive/channelYaml.cpp \
-        src/datalayer/archive/segmentationYaml.cpp \
-        src/segment/segments.cpp \
-        src/segment/segmentsImpl.cpp \
-        src/segment/segment.cpp \
-        src/segment/lowLevel/segmentsImplLowLevel.cpp \
-        src/segment/lowLevel/store/segmentStore.cpp \
-        src/segment/lowLevel/pagingPtrStore.cpp \
-        src/chunks/chunk.cpp \
-        src/chunks/segChunk.cpp \
-        src/pipeline/jpeg.cpp \
-        src/main.cpp
+	src/datalayer/fs/file.cpp \
+	src/main.cpp \
+	src/pipeline/jpeg.cpp
 
 
 ## end of section to be rewritten using Perl
+
+SOURCES += include/libb64/src/cencode.c
 
 INCLUDEPATH = src include lib
 INCLUDEPATH += external/zi_lib

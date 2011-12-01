@@ -1,4 +1,4 @@
-#include "datalayer/fs/omCompressedFile.h"
+#include "datalayer/fs/compressedFile.h"
 
 #include <fstream>
 #include <iostream>

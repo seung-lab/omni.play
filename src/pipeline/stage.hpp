@@ -2,7 +2,7 @@
 
 #include "boost/shared_ptr.hpp"
 #include "boost/variant.hpp"
-#include "volume/volumeTypes.h"
+//#include "volume/volumeTypes.h"
 #include "datalayer/fs/memMappedFile.hpp"
 
 namespace om {
