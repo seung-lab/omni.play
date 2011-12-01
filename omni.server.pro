@@ -13,6 +13,8 @@ HEADERS +=  \
 	src/datalayer/fs/IOnDiskFile.h \
 	src/datalayer/fs/file.h \
 	src/datalayer/fs/memMappedFile.hpp \
+	src/handler/handler.h \
+	src/handler/validate.hpp \
 	src/mesh/io/chunk/memMappedAllocFile.hpp \
 	src/mesh/io/chunk/meshChunkDataReader.hpp \
 	src/mesh/io/chunk/meshChunkTypes.h \
@@ -22,8 +24,8 @@ HEADERS +=  \
 	src/pipeline/encode.hpp \
 	src/pipeline/filter.hpp \
 	src/pipeline/getSegIds.hpp \
-	src/pipeline/getTileData.hpp \
 	src/pipeline/jpeg.h \
+	src/pipeline/mapData.hpp \
 	src/pipeline/png.hpp \
 	src/pipeline/sliceTile.hpp \
 	src/pipeline/stage.hpp \
@@ -35,6 +37,11 @@ HEADERS +=  \
 
 SOURCES +=  \
 	src/datalayer/fs/file.cpp \
+	src/handler/compareResults.cpp \
+	src/handler/getMesh.cpp \
+	src/handler/getSegBbox.cpp \
+	src/handler/getSegIds.cpp \
+	src/handler/getTile.cpp \
 	src/main.cpp \
 	src/pipeline/jpeg.cpp
 
