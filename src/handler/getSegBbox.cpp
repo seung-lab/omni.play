@@ -18,7 +18,7 @@ void get_seg_bbox(server::bbox& _return, const std::string&path, const int32_t s
 {
     utility::timer t;
     if (!file::exists(path)) {
-        throw common::argException("Cannot find path");
+        throw argException("Cannot find path");
     }
 
     const uint32_t pageSize = 100000;

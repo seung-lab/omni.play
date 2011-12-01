@@ -44,7 +44,7 @@ boost::shared_ptr<T> readAll(std::string* fnp)
     const int64_t bytes = numBytes(*fnp);
 
     if(0 != bytes % sizeof(T)){
-        throw common::ioException("file size not even multiple of sizeof(type)");
+        throw ioException("file size not even multiple of sizeof(type)");
     }
 
     boost::shared_ptr<T> ret =
@@ -56,7 +56,7 @@ boost::shared_ptr<T> readAll(std::string* fnp)
     const int64_t bytesRead = file.read(dataChar, bytes);
 
     if(bytesRead != bytes){
-        throw common::ioException("could not read entire file");
+        throw ioException("could not read entire file");
     }
 
     return ret;
@@ -80,7 +80,7 @@ void writeVec(std::string& fnp, const std::vector<T>& vec)
     std::fstream file(fnp, std::fstream::out | std::fstream::binary);
 
     if(!file.good()){
-        throw common::ioException("could not fully write file", fnp);
+        throw ioException("could not fully write file", fnp);
     }
 }
 
@@ -105,7 +105,7 @@ void writeNumElements(const std::string& fnp, const boost::shared_ptr<T> ptr,
     std::fstream file(fnp.c_str(), std::fstream::out | std::fstream::binary);
 
     if(!file.good()){
-        throw common::ioException("could not fully write file", fnp);
+        throw ioException("could not fully write file", fnp);
     }
 }
 

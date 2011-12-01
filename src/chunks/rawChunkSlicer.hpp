@@ -74,7 +74,7 @@ private:
         break;
 
         default:
-            throw common::argException("unknown plane");
+            throw argException("unknown plane");
         }
     }
 };

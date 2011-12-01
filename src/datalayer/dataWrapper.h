@@ -165,7 +165,7 @@ private:
             return utility::smartPtr<T>::WrapNoFree(rawPtr);
         case INVALID:
         default:
-            throw common::argException("can't wrap invalid ptr");
+            throw argException("can't wrap invalid ptr");
         };
     }
 
@@ -177,7 +177,7 @@ private:
 
     void checkIfValid(){
         if(!ptr_){
-            throw common::ioException("dataWrapper: ptr not valid");
+            throw ioException("dataWrapper: ptr not valid");
         }
     }
 };

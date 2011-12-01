@@ -29,7 +29,7 @@ public:
         std::string allocTablePath;
         ss >> allocTablePath;
         if(!file::exists(allocTablePath)) {
-            throw common::argException("Alloc table file not found.");
+            throw argException("Alloc table file not found.");
         }
 
         std::stringstream ss2;
@@ -37,7 +37,7 @@ public:
         std::string dataPath;
         ss2 >> dataPath;
         if(!file::exists(dataPath)) {
-            throw common::argException("Mesh data file not found.");
+            throw argException("Mesh data file not found.");
         }
 
         memMappedAllocFile chunk_table(allocTablePath);
@@ -52,7 +52,7 @@ public:
         {
             std::cout << "did not yet mesh " << segID
                       << " in coord " << coord << "\n" << std::flush;
-            throw common::ioException("mesh data not found");
+            throw ioException("mesh data not found");
         }
 
         ret->HasData(entry->hasMeshData);

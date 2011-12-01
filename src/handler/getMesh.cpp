@@ -26,7 +26,7 @@ void writeFile(const std::string& fnp, T const*const data, const uint64_t numByt
     file.write(reinterpret_cast<const char*>(data), numBytes);
 
     if(file.fail()){
-        throw common::ioException("could not write file", fnp);
+        throw ioException("could not write file", fnp);
     }
 }
 
@@ -44,11 +44,11 @@ void get_mesh(std::string& _return,
         reader.Read(segId, coords::chunk(0, chunk.x, chunk.y, chunk.z));
 
     if(data->TrianDataCount()){
-        throw common::ioException("old meshes not supported");
+        throw ioException("old meshes not supported");
     }
 
     if(!data->HasData()){
-        throw common::ioException("no data");
+        throw ioException("no data");
     }
 
     const utility::UUID uuid;

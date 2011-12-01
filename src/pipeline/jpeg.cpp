@@ -23,7 +23,7 @@ data_var jpeg::compress(int pixelsize, int jpegsubsamp, uint8_t* in) const
                   90, // quality
                   0) != 0) // flags
     {
-        throw common::ioException(tjGetErrorStr());
+        throw ioException(tjGetErrorStr());
     }
 
     out.size = buffSize;
