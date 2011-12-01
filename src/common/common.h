@@ -84,5 +84,26 @@ enum cacheGroup {
 std::ostream& operator<<(std::ostream &out, const cacheGroup& c);
 viewType Convert(server::viewType::type type);
 
+template<typename T>
+T twist(T vec, server::viewType::type view)
+{
+    T out(vec);
+    switch(view)
+    {
+    case server::viewType::XZ_VIEW:
+        out.x = vec.x;
+        out.z = vec.z;
+        out.y = vec.y;
+        break;
+    case server::viewType::ZY_VIEW:
+        out.z = vec.z;
+        out.y = vec.y;
+        out.x = vec.x;
+        break;
+    }
+
+    return out;
+}
+
 } // common
 } // om
