@@ -15,10 +15,10 @@
 #include <cstddef>
 
 
-ZiARG_string(id, "", "Server's ID");
+ZiARG_string(id, "server1", "Server's ID");
 ZiARG_uint64(size, 1000, "Size");
 ZiARG_string(manager, "localhost", "Manager's IP");
-ZiARG_int32(port, 9090, "Server's port");
+ZiARG_int32(port, 9091, "Server's port");
 ZiARG_int32(m_port, 9090, "Manager's port");
 
 using namespace ::apache::thrift;
@@ -53,19 +53,18 @@ public:
 
     void get(std::string& _return, const std::string& key) {
         // Your implementation goes here
-        printf("get\n");
+        //printf("get\n");
 	storage_type<char> val = server_.get(key);
 	_return.assign(val.data,val.size);
     }
 
     bool put(const std::string& key, const std::string& value) {
         // Your implementation goes here
-        printf("put\n");
+        //printf("put\n");
         //construct storage_type
 	storage_type<char> val;
-	//TODO is array being allocated correctly?
-	std::strcpy(val.data,value.c_str());
-	//val.data = value.c_str();
+	//this is ok since the server stores a copy of val
+	val.data = const_cast<char*>(value.c_str());
 	//TODO check that this works right, might be +1
 	val.size = value.size();
 	
