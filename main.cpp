@@ -8,7 +8,7 @@ int main()
 {
   storage_client<int,int> s;
 
-    
+
   int size = 10;
   int i;
   std::vector<int> keys;
@@ -17,15 +17,17 @@ int main()
       int x[2000] =  {2,1};
       s.set(i,x,2000);
       keys.push_back(i);
-      
+
     }
-  
+
   std::vector<std::pair<int,storage_type<int> > > r = s.multi_get(keys);
 
   FOR_EACH( it, r )
     {
       std::cout << "Key: " << it->first << " Val: " << it->second.data[0] << "\n";
     }
+
+  for (;;) ;
   //remove mapped file
   //bint::file_mapping::remove("MappedFile");
 }

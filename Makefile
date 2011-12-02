@@ -1,9 +1,9 @@
-#all:
+ #all:
 #	g++ data.cpp  -I./zi_lib -I./zi_lib/external/include -lpthread -lrt
 
 .PHONY:
 all:
-	g++ -lrt -Wall -ggdb -I/usr/local/zi_lib -I/usr/local/zi_lib/external/include main.cpp -o main
+	g++ -lrt -Wall -ggdb -I/home/zlateski/code/zi_lib -I/home/zlateski/code/zi_lib/external/include main.cpp -o main -lpthread -lrt
 .PHONY:
 clean:
 	echo "Cleaning..."

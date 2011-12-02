@@ -28,4 +28,7 @@ service storage_server
       1: string key,
       2: binary value,
     ),
+
+    map<string,i64> get_stats(
+    ),
 }
