@@ -278,7 +278,7 @@ public:
         zi::mutex::guard g( mutex_ );
         rwlock_impl< ClientType >* lock = find_or_insert_lock_nl( lid );
 
-        return lock->try_acquire_read( client, mutex_ );
+        return lock->try_acquire_read( client );
     }
 
     void release_read( const ClientType& client, const LockType& lid ) const
@@ -307,7 +307,7 @@ public:
         rwlock_impl< ClientType >* lock = find_or_insert_lock_nl( lid );
 
         // ZI_ASSERT_0( lock->is_writer( client ) );
-        return lock->try_acquire_write( client, mutex_ );
+        return lock->try_acquire_write( client );
     }
 
     void release_write( const ClientType& client, const LockType& lid ) const

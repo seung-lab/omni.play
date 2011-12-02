@@ -33,47 +33,47 @@ public:
     ~rwlock_server()
     { }
 
-    bool acquire_read( client_type clt, lock_type lid )
+    bool acquire_read( const client_type& clt, const lock_type& lid )
     {
         pools_[hasher_(lid) % num_buckets].acquire_read( clt, lid );
         return true;
     }
 
-    bool try_acquire_read( client_type clt, lock_type lid )
+    bool try_acquire_read( const client_type& clt, const lock_type& lid )
     {
         return pools_[hasher_(lid) % num_buckets].try_acquire_read( clt, lid );
     }
 
-    bool try_acquire_write( client_type clt, lock_type lid )
+    bool try_acquire_write( const client_type& clt, const lock_type& lid )
     {
         return pools_[hasher_(lid) % num_buckets].try_acquire_write( clt, lid );
     }
 
-    bool acquire_write( client_type clt, lock_type lid )
+    bool acquire_write( const client_type& clt, const lock_type& lid )
     {
         pools_[hasher_(lid) % num_buckets].acquire_write( clt, lid );
         return true;
     }
 
-    bool release_read( client_type clt, lock_type lid )
+    bool release_read( const client_type& clt, const lock_type& lid )
     {
         pools_[hasher_(lid) % num_buckets].release_read( clt, lid );
         return true;;
     }
 
-    bool release_write( client_type clt, lock_type lid )
+    bool release_write( const client_type& clt, const lock_type& lid )
     {
         pools_[hasher_(lid) % num_buckets].release_write( clt, lid );
         return true;;
     }
 
-    bool acquire( client_type clt, lock_type lid )
+    bool acquire( const client_type& clt, const lock_type& lid )
     {
         pools_[hasher_(lid) % num_buckets].acquire_write( clt, lid );
         return true;;
     }
 
-    bool release( client_type clt, lock_type lid )
+    bool release( const client_type& clt, const lock_type& lid )
     {
         pools_[hasher_(lid) % num_buckets].release_write( clt, lid );
         return true;;
