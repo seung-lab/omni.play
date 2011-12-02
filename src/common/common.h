@@ -90,6 +90,8 @@ T twist(T vec, server::viewType::type view)
     T out(vec);
     switch(view)
     {
+    case server::viewType::XY_VIEW:
+        break;
     case server::viewType::XZ_VIEW:
         out.x = vec.x;
         out.z = vec.z;

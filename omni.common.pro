@@ -18,12 +18,12 @@ HEADERS +=  \
 	lib/include/common/std.h \
 	lib/include/common/stoppable.h \
 	lib/include/common/string.hpp \
-	lib/include/coordinates/chunkCoord.h \
+	lib/include/coordinates/chunk.h \
 	lib/include/coordinates/coordinates.h \
-	lib/include/coordinates/dataCoord.h \
-	lib/include/coordinates/globalCoord.h \
-	lib/include/coordinates/normCoord.h \
-	lib/include/coordinates/screenCoord.h \
+	lib/include/coordinates/data.h \
+	lib/include/coordinates/global.h \
+	lib/include/coordinates/norm.h \
+	lib/include/coordinates/screen.h \
 	lib/include/coordinates/screenSystem.h \
 	lib/include/coordinates/volumeSystem.h \
 	lib/include/coordinates/yaml.h \
@@ -34,8 +34,6 @@ HEADERS +=  \
 	lib/include/threads/threadPoolBatched.hpp \
 	lib/include/threads/threadPoolByMipLevel.hpp \
 	lib/include/threads/threadPoolManager.h \
-	lib/include/thrift/new_server.h \
-	lib/include/thrift/old_server.h \
 	lib/include/thrift/server.h \
 	lib/include/thrift/server_constants.h \
 	lib/include/thrift/server_types.h \
@@ -75,7 +73,6 @@ HEADERS +=  \
 	src/common/enums.hpp \
 	src/common/exception.h \
 	src/common/genericManager.hpp \
-	src/common/gl.h \
 	src/common/manageableObject.hpp \
 	src/common/math.hpp \
 	src/common/set.hpp \
@@ -133,7 +130,6 @@ HEADERS +=  \
 SOURCES +=  \
 	src/common/colors.cpp \
 	src/common/common.cpp \
-	src/common/gl.cpp \
 	src/coordinates/chunk.cpp \
 	src/coordinates/dataCoord.cpp \
 	src/coordinates/global.cpp \
@@ -150,16 +146,6 @@ SOURCES +=  \
 	src/utility/primeNumbers.cpp \
 	src/utility/systemInformation.cpp \
 	src/zi/watershed/RawQuickieWS.cpp
-
-new_server_h.target = lib/include/thrift/new_server.h
-new_server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/new.thrift
-new_server_h.depends = if/new.thrift
-QMAKE_EXTRA_TARGETS += new_server_h
-
-old_server_h.target = lib/include/thrift/old_server.h
-old_server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/old.thrift
-old_server_h.depends = if/old.thrift
-QMAKE_EXTRA_TARGETS += old_server_h
 
 server_h.target = lib/include/thrift/server.h
 server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
