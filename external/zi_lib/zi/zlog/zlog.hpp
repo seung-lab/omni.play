@@ -34,7 +34,7 @@ struct ZiLOGGING_call
 {
     ZiLOGGING_call()
     {
-        //std::ios_base::sync_with_stdio( true );
+        std::ios_base::sync_with_stdio( false );
     }
 };
 

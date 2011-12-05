@@ -8,6 +8,8 @@
 #include <concurrency/PosixThreadFactory.h>
 #include <boost/shared_ptr.hpp>
 
+#include "zi/system/daemon.hpp"
+
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
@@ -18,6 +20,11 @@ using namespace ::om::server;
 
 int main(int argc, char *argv[])
 {
+    if(!zi::system::daemonize()) {
+        std::cerr << "Unable to daemonize.";
+        return -1;
+    }
+
     int port = 9090;
     boost::shared_ptr<serverHandler> handler(new serverHandler());
     boost::shared_ptr<TProcessor> processor(new serverProcessor(handler));

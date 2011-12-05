@@ -23,7 +23,6 @@
 #include <zi/time/now.hpp>
 #include <zi/time/time_units.hpp>
 #include <zi/utility/enable_if.hpp>
-#include <zi/utility/non_copyable.hpp>
 #include <zi/bits/cstdint.hpp>
 #include <zi/bits/type_traits.hpp>
 #include <zi/bits/function.hpp>
