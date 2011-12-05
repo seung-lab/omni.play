@@ -1,6 +1,11 @@
 TEMPLATE = app
 CONFIG = console
 
+system( g++ --version | grep -e "4.6" ) {
+    QMAKE_GXX = g++-4.5
+}
+
+
 !exists($$[COMMON_PATH]/omni.common.pro) {
    error(unable to find omni.common.  Please set the path using: qmake -set COMMON_PATH [path to omni.common])
 }

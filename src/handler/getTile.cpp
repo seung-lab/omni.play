@@ -51,6 +51,7 @@ void get_chan_tile(server::tile& _return,
     coords::data dc = coord.toData(&coordSystem, vol.mipLevel);
 
     setTileBounds(_return, dc, view);
+    _return.view = view;
 
     data_var encoded = mapData(vol.uri, vol.type) >> sliceTile(common::Convert(view), dc)
                                                   >> jpeg(128,128)

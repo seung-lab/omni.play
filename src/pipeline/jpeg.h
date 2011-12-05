@@ -20,9 +20,9 @@ protected:
 
 public:
     jpeg(uint32_t width, uint32_t height)
-        : handle_(tjInitCompress())
-        , width_(width)
+        : width_(width)
         , height_(height)
+        , handle_(tjInitCompress())
     { }
 
     ~jpeg()
