@@ -1,4 +1,5 @@
 #include <zi/rwlock_server.hpp>
+#include <zi/system/daemon.hpp>
 
 #include "gen-cpp/lockServer.h"
 #include <protocol/TBinaryProtocol.h>
@@ -10,6 +11,8 @@
 #include "FacebookBase.h"
 
 #include <boost/shared_ptr.hpp>
+
+#include <iostream>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -91,6 +94,11 @@ public:
 
 int main()
 {
+    if(!::zi::system::daemonize()) {
+        std::cerr << "Error trying to daemonize." << std::endl;
+        return -1;
+    }
+
     int port = 9090;
     boost::shared_ptr<TProtocolFactory>   protocolFactory(new TBinaryProtocolFactory());
     boost::shared_ptr<lockServerHandler>  handler(new lockServerHandler());
