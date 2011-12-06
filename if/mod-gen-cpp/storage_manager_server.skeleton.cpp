@@ -47,7 +47,10 @@ public:
 	//if not there, decide on a server for this key
 	server_id serv = *registered_[hasher_(key) % registered_.size()].get();
 	//TODO store it in the filemap
-	servers_.set(key,serv);
+	//servers_.set(key,serv);
+
+	//servers_.set(key,storage_type<server_id>(serv));
+
 	//return its server_id
 	_return = serv;
 

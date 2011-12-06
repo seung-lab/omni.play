@@ -11,12 +11,14 @@
 #include "simple_client.hpp"
 #include <zi/system.hpp>
 #include <zi/arguments.hpp>
+#include <zi/system/daemon.hpp>
 #include <iostream>
 #include <cstddef>
+#include <map>
 
-
+ZiARG_bool(daemonize, true, "Run as daemon");
 ZiARG_string(id, "server1", "Server's ID");
-ZiARG_uint64(size, 1000, "Size");
+ZiARG_uint64(size, 1024*1024*1024, "Size");
 ZiARG_string(manager, "localhost", "Manager's IP");
 ZiARG_int32(port, 9091, "Server's port");
 ZiARG_int32(m_port, 9090, "Manager's port");
@@ -43,12 +45,20 @@ public:
 	// Your initialization goes here
 	id_.address = zi::system::get_hostname();
 	id_.port = port;
-	
+
 	//register with storage manager service
-	boost::shared_ptr<bint::storage_managerClient> client = 
+	boost::shared_ptr<bint::storage_managerClient> client =
 	    ThriftFactory<bint::storage_managerClient>::getClient(manager, m_port);
-	
+
 	client->register_server(id_);
+    }
+
+    void get_stats(std::map<std::string,int64_t>& _return)
+    {
+        _return.clear();
+        _return["FileSize"] = server_.get_size();
+        _return["FreeMemory"] = server_.get_free_memory();
+        _return["UsedMemory"] = server_.get_size() - server_.get_free_memory();
     }
 
     void get(std::string& _return, const std::string& key) {
@@ -67,9 +77,9 @@ public:
 	val.data = const_cast<char*>(value.c_str());
 	//TODO check that this works right, might be +1
 	val.size = value.size();
-	
+
 	return server_.set(key,val);
-	
+
     }
 
 };
@@ -90,6 +100,12 @@ int main(int argc, char **argv) {
     ::boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
     TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
+
+    if ( ZiARG_daemonize )
+    {
+        zi::system::daemonize(true,true);
+    }
+
     server.serve();
     return 0;
 }

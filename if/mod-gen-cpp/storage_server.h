@@ -16,6 +16,7 @@ class storage_serverIf {
   virtual ~storage_serverIf() {}
   virtual void get(std::string& _return, const std::string& key) = 0;
   virtual bool put(const std::string& key, const std::string& value) = 0;
+  virtual void get_stats(std::map<std::string, int64_t> & _return) = 0;
 };
 
 class storage_serverNull : virtual public storage_serverIf {
@@ -27,6 +28,9 @@ class storage_serverNull : virtual public storage_serverIf {
   bool put(const std::string& /* key */, const std::string& /* value */) {
     bool _return = false;
     return _return;
+  }
+  void get_stats(std::map<std::string, int64_t> & /* _return */) {
+    return;
   }
 };
 
@@ -255,6 +259,100 @@ class storage_server_put_presult {
 
 };
 
+
+class storage_server_get_stats_args {
+ public:
+
+  storage_server_get_stats_args() {
+  }
+
+  virtual ~storage_server_get_stats_args() throw() {}
+
+
+  bool operator == (const storage_server_get_stats_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const storage_server_get_stats_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const storage_server_get_stats_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class storage_server_get_stats_pargs {
+ public:
+
+
+  virtual ~storage_server_get_stats_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _storage_server_get_stats_result__isset {
+  _storage_server_get_stats_result__isset() : success(false) {}
+  bool success;
+} _storage_server_get_stats_result__isset;
+
+class storage_server_get_stats_result {
+ public:
+
+  storage_server_get_stats_result() {
+  }
+
+  virtual ~storage_server_get_stats_result() throw() {}
+
+  std::map<std::string, int64_t>  success;
+
+  _storage_server_get_stats_result__isset __isset;
+
+  void __set_success(const std::map<std::string, int64_t> & val) {
+    success = val;
+  }
+
+  bool operator == (const storage_server_get_stats_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const storage_server_get_stats_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const storage_server_get_stats_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _storage_server_get_stats_presult__isset {
+  _storage_server_get_stats_presult__isset() : success(false) {}
+  bool success;
+} _storage_server_get_stats_presult__isset;
+
+class storage_server_get_stats_presult {
+ public:
+
+
+  virtual ~storage_server_get_stats_presult() throw() {}
+
+  std::map<std::string, int64_t> * success;
+
+  _storage_server_get_stats_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class storage_serverClient : virtual public storage_serverIf {
  public:
   storage_serverClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -281,6 +379,9 @@ class storage_serverClient : virtual public storage_serverIf {
   bool put(const std::string& key, const std::string& value);
   void send_put(const std::string& key, const std::string& value);
   bool recv_put();
+  void get_stats(std::map<std::string, int64_t> & _return);
+  void send_get_stats();
+  void recv_get_stats(std::map<std::string, int64_t> & _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -296,11 +397,13 @@ class storage_serverProcessor : virtual public ::apache::thrift::TProcessor {
   std::map<std::string, void (storage_serverProcessor::*)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*)> processMap_;
   void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_put(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_stats(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   storage_serverProcessor(boost::shared_ptr<storage_serverIf> iface) :
     iface_(iface) {
     processMap_["get"] = &storage_serverProcessor::process_get;
     processMap_["put"] = &storage_serverProcessor::process_put;
+    processMap_["get_stats"] = &storage_serverProcessor::process_get_stats;
   }
 
   virtual bool process(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot, void* callContext);
@@ -338,6 +441,18 @@ class storage_serverMultiface : virtual public storage_serverIf {
         return ifaces_[i]->put(key, value);
       } else {
         ifaces_[i]->put(key, value);
+      }
+    }
+  }
+
+  void get_stats(std::map<std::string, int64_t> & _return) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_stats(_return);
+        return;
+      } else {
+        ifaces_[i]->get_stats(_return);
       }
     }
   }
