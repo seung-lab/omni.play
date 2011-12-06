@@ -27,7 +27,7 @@ int main()
       std::cout << "Key: " << it->first << " Val: " << it->second.data[0] << "\n";
     }
 
-  for (;;) ;
+
   //remove mapped file
   //bint::file_mapping::remove("MappedFile");
 }
