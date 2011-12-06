@@ -3,71 +3,38 @@
 usage()
 {
 cat << EOF
-usage: $0 -s [ip address] options
+usage: $0 head_node_hostname
 
-Deploys Omni on a given machine. Must include one of the deployment options.
-
-OPTIONS:
-   -h      Show this message
-   -q      Deploy MySQL
-   -l      Deploy Locking Server
-   -o      Deploy Omni.server
 EOF
 }
 
-SERVER=
-MYSQL=
-LOCKING=
-OMNI=
-while getopts “hs:qlo” OPTION
-do
-     case $OPTION in
-         h)
-             usage
-             exit 1
-             ;;
-         s)
-             SERVER=$OPTARG
-             ;;
-         q)
-             MYSQL=1
-             ;;
-         l)
-             LOCKING=1
-             ;;
-         o)
-             OMNI=1
-             ;;
-         ?)
-             usage
-             exit
-             ;;
-     esac
-done
-
-if [[ -z $MYSQL ]] && [[ -z $LOCKING ]] && [[ -z $OMNI ]]
-then
-     usage
-     exit 1
-fi
-
-if [[ -z $SERVER ]]
+if [[ $# -ne 1 ]]
 then
     usage
-    exit 1
+    exit(-1)
 fi
 
-if [[ $MYSQL ]]
+HEAD=$1
+OMNI=/usr/local/omni
+
+#add NFS mount as necessary
+if [[ -z $(grep "$HEAD:$OMNI") ]]
 then
-
+    mkdir /usr/local/omni
+    echo "$HEAD:$OMNI $OMNI nfs rw,hard,intr,auto" >> /etc/fstab
+    mount -a
 fi
 
-if [[ $LOCKING ]]
-then
+# disable the node
+rm -f /etc/apache2/sites-enabled/
 
-fi
+# update web content
+rsync $OMNI/omni-web /var/www/omni-web
+cp -f $OMNI/omni-web/omniweb /etc/apache2/sites-available/
 
-if [[ $OMNI ]]
-then
-    scp
-fi
+# stop and restart the server to run latest version
+killall omni.server
+$OMNI/omni.server/bin/omni.server
+
+#reenable the site
+ln -s /etc/apache2/sites-available/omniweb /etc/apache2/sites-enabled/

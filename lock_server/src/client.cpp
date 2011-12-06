@@ -3,6 +3,10 @@
 #include <transport/TSocket.h>
 #include <transport/TTransportUtils.h>
 #include <boost/shared_ptr.hpp>
+#include <iostream>
+#include <map>
+#include <string>
+#include <zi/utility/for_each.hpp>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -14,7 +18,7 @@ int main()
 {
 
     shared_ptr<TTransport> socket(new TSocket("localhost", 9090));
-    shared_ptr<TTransport> transport(new TFramedTransport(socket));
+    shared_ptr<TTransport> transport(new TBufferedTransport(socket));
     shared_ptr<TProtocol>  protocol(new TBinaryProtocol(transport));
     omni::server::lockServerClient client(protocol);
 
@@ -24,30 +28,40 @@ int main()
     //std::cout << client.tryAcquireWrite("a","b") << std::endl;
     //std::cout << client.tryAcquireRead("a","b") << std::endl;
 
-    sleep(1);
+    //sleep(1);
 
     client.releaseWrite("a", "b");
 
     //if ( client.tryAcquireWrite("a","b") )
-    {
-        client.acquireWrite("a", "b");
-        std::cout << "Got Write" << std::endl;
-        client.releaseWrite("a", "b");
-    }
-    //else
-    {
-        //std::cout << "Didnt Get Write" << std::endl;
-    }
+    // {
+    //     client.acquireWrite("a", "b");
+    //     std::cout << "Got Write" << std::endl;
+    //     client.releaseWrite("a", "b");
+    // }
+    // //else
+    // {
+    //     //std::cout << "Didnt Get Write" << std::endl;
+    // }
 
     client.acquireRead("a", "b");
-    //std::cout << client.tryAcquireRead("a","b") << std::endl;
-    //client.releaseRead("a", "b");
+    client.acquireRead("a", "b");
+    // //std::cout << client.tryAcquireRead("a","b") << std::endl;
+    // //client.releaseRead("a", "b");
+    client.releaseRead("a", "b");
     client.releaseRead("a", "b");
 
     client.acquireRead("a", "b");
-    //std::cout << client.tryAcquireRead("a","b") << std::endl;
-    //client.releaseRead("a", "b");
+    // //std::cout << client.tryAcquireRead("a","b") << std::endl;
+    // //client.releaseRead("a", "b");
     client.releaseRead("a", "b");
+
+    std::map<std::string, int64_t> r;
+    client.getCounters(r);
+
+    FOR_EACH(it, r)
+    {
+        std::cout << it->first << ": " << it->second << std::endl;
+    }
 
 
 }
