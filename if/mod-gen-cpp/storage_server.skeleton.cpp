@@ -34,7 +34,7 @@ using boost::shared_ptr;
 class storage_serverHandler : virtual public bint::storage_serverIf {
 
 private:
-    storage_server<std::string,char> server_;
+    storage_server<char> server_;
     bint::server_id id_;
 
 public:

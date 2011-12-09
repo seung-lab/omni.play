@@ -3,15 +3,15 @@ INCFLAGS	=	-I/usr/local/include/thrift -I/usr/local/zi_lib/external/include -I/u
 LINKFLAGS	=	-lpthread -lthrift -ggdb -lrt #-Wextra
 .PHONY:
 all:
-	g++-4.5 storage_manager_server.skeleton.cpp storage_manager.cpp filesystem_constants.cpp filesystem_types.cpp $(INCFLAGS) $(LINKFLAGS) -o manager
-	g++-4.5 storage_server.skeleton.cpp storage_server.cpp filesystem_constants.cpp filesystem_types.cpp storage_manager.cpp $(INCFLAGS) $(LINKFLAGS) -o server
-	g++-4.5 test_client.cpp storage_manager.cpp filesystem_constants.cpp filesystem_types.cpp storage_server.cpp $(INCFLAGS) $(LINKFLAGS) -o test_client
-
+	g++ storage_manager_server.skeleton.cpp storage_manager.cpp filesystem_constants.cpp filesystem_types.cpp $(INCFLAGS) $(LINKFLAGS) -o manager
+	g++ storage_server.skeleton.cpp storage_server.cpp filesystem_constants.cpp filesystem_types.cpp storage_manager.cpp $(INCFLAGS) $(LINKFLAGS) -o server
+	g++ test_client.cpp storage_manager.cpp filesystem_constants.cpp filesystem_types.cpp storage_server.cpp $(INCFLAGS) $(LINKFLAGS) -o test_client
+	g++ load_test.cpp storage_manager.cpp storage_server.cpp filesystem_constants.cpp filesystem_types.cpp $(INCFLAGS) $(LINKFLAGS) -o load_test
 
 
 .PHONY:
 clean:
-	rm -rf server manager test_client test *.filemap
+	rm -rf server manager test_client load_test *.filemap
 
 .PHONY:
 remake:	clean all

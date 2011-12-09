@@ -6,6 +6,7 @@
 #include <boost/interprocess/managed_mapped_file.hpp>
 #include <boost/interprocess/containers/map.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
+#include <boost/functional/hash.hpp>
 #include <iostream>
 #include "storage_type.hpp"
 

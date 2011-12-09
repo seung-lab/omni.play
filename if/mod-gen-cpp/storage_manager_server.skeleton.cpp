@@ -23,7 +23,7 @@ class storage_managerHandler : virtual public storage_managerIf {
 private:
     static const size_t map_size = 10*1024*1024;
 
-    storage_server<std::string,server_id > servers_;
+    storage_server<server_id > servers_;
     zi::hash<std::string> hasher_;
     std::vector<boost::shared_ptr<server_id> > registered_;
 
