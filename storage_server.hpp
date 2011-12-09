@@ -12,11 +12,21 @@
 
 
 
-template< typename K, typename V >
+template< typename V >
 class storage_server
 {
 
 private:
+
+    struct list_node
+    {
+	bint::managed_mapped_file::handle_t key_handle      ;
+        std::size_t                   size            ;
+	bint::managed_mapped_file::handle_t value_handle    ;
+	bint::managed_mapped_file::handle_t next_node_handle;
+    };
+
+
 
     typedef bint::managed_mapped_file::handle_t handle_t;
     typedef std::pair<const std::size_t, handle_t> pair_type;
@@ -38,7 +48,7 @@ private:
     std::size_t mapping_size;
     bint::managed_mapped_file mfile;
     m_file_allocator alloc_inst;
-    boost::hash<K> hasher_;
+    boost::hash<std::string> hasher_;
     file_map *mymap;
 
 
@@ -60,6 +70,71 @@ private:
                   << std::endl;
 
     }
+
+
+    storage_type<V> find_in_node_list( const std::string& key,
+                                                             handle_t node ) const
+    {
+        while ( node )
+        {
+
+            list_node* n = reinterpret_cast<list_node*>(mfile.get_address_from_handle(node));
+            char*      k = reinterpret_cast<char*>(mfile.get_address_from_handle(n->key_handle));
+            if ( std::strcmp( key.c_str(), k ) == 0 )
+            {
+		storage_type<V> ret;
+		ret.size = n->size;
+		ret.data = reinterpret_cast<V*> (mfile.get_address_from_handle(n->value_handle));
+                return ret;
+            }
+
+            node = n->next_node_handle;
+        }
+
+        return storage_type<V> ();
+    }
+
+    bool
+    find_and_replace_node_list( const std::string& key,
+                                bint::managed_mapped_file::handle_t node,
+                                std::size_t size,
+                                bint::managed_mapped_file::handle_t handle )
+    {
+        //managed_mapped_file::handle_t prev = node;
+        list_node* prev = 0;
+
+        while ( node )
+        {
+            list_node* n = reinterpret_cast<list_node*>(mfile.get_address_from_handle(node));
+            char*      k = reinterpret_cast<char*>(mfile.get_address_from_handle(n->key_handle));
+            if ( std::strcmp( key.c_str(), k ) == 0 )
+            {
+                mfile.deallocate( mfile.get_address_from_handle(n->value_handle) );
+                n->size = size;
+                n->value_handle = handle;
+                return true;
+            }
+
+            prev = n;
+            node = n->next_node_handle;
+        }
+
+        list_node* n = reinterpret_cast<list_node*>(mfile.allocate(sizeof(list_node)));
+        char*      k = reinterpret_cast<char*>(mfile.allocate(key.size()+1));
+
+        std::memcpy( k, key.c_str(), key.size()+1 );
+
+        n->key_handle        = mfile.get_handle_from_address(k);
+        n->size              = size;
+        n->value_handle      = handle;
+        n->next_node_handle  = 0;
+
+        prev->next_node_handle = mfile.get_handle_from_address(n);
+
+        return false;
+    }
+
+
 
 public:
     storage_server(std::string  id, std::size_t size)
@@ -86,80 +161,59 @@ public:
     }
 
     // returns the data if its mapped, empty data otherwise
-    storage_type<V> get( const K& key ) const
+    storage_type<V> get( const std::string& key ) const
     {
-        std::cout << "MIGHT DIE" << std::endl << std::flush;
-
-        data_const_iterator it = mymap->find(hasher_(key));
-
-        std::cout << "DIDNT DIE" << std::endl << std::flush;
-
+	std::size_t h = hasher_(key);
+        data_iterator it = mymap->find(h);
+	
         if ( it != mymap->end() )
         {
-            //get handle and convert it back into storage_type
-            handle_t handle = it->second;
-            storage_type<V>* store = static_cast<storage_type<V>* >
-                (mfile.get_address_from_handle(handle));
-            store->data = reinterpret_cast<V*>(mfile.get_address_from_handle(store->handle));
-            return *store;
+            return find_in_node_list( key, it->second );
         }
-        //return empty data on failure
+
         return storage_type<V>();
     }
 
-    // return whether it got replaced
-    bool set( const K& key, const storage_type<V>& store )
+    // return whether it replaced a value
+    bool set( const std::string& key, const storage_type<V>& store )
     {
-        //construct pair_type in memory-mapped region
-        void* new_data = mfile.allocate(sizeof(V)*store.size);
-        std::memcpy(new_data,store.data,sizeof(V)*store.size);
 
-        storage_type<V>* new_store = mfile.construct<storage_type<V> >
-            (bint::anonymous_instance)(
-                store.size
-                ,static_cast<V*>(new_data));
-        //store handle for data ptr
-        new_store->handle = mfile.get_handle_from_address(new_data);
+	std::size_t h = hasher_(key);
 
-        //get handle for allocated storage_type
-        handle_t* handle = mfile.construct<handle_t>
-            (bint::anonymous_instance)(
-                mfile.get_handle_from_address(new_store));
+        data_iterator it = mymap->find(h);
 
-        pair_type* insertion = mfile.construct<pair_type>
-            (bint::anonymous_instance)(hasher_(key),*handle);
+        void* d = mfile.allocate( store.size );
+        handle_t handle = mfile.get_handle_from_address(d);
 
+        std::memcpy(d, store.data, store.size);
 
-        data_const_iterator it = mymap->find(hasher_(key));
-        bool had_it = mymap->find(hasher_(key)) != mymap->end();
-        //if had_it, we have to erase the old value to replace
-        if(had_it)
+        if ( it != mymap->end() )
         {
-            data_const_iterator it_delete = mymap->find(hasher_(key));
-
-
-            //get handle and convert it back into storage_type
-            handle_t handle_delete = it_delete->second;
-            storage_type<V>* store_delete = static_cast<storage_type<V>* >
-                (mfile.get_address_from_handle(handle_delete));
-
-            store_delete->data = reinterpret_cast<V*>(mfile.get_address_from_handle(store_delete->handle));
-            //TODO deallocate memory
-            mfile.deallocate(store_delete->data);
-            //destroy object
-            mfile.destroy_ptr(store_delete);
-            //erase from map
-            mymap->erase(hasher_(key));
-
+            return find_and_replace_node_list( key, it->second, store.size, handle);
         }
 
+        list_node* n = reinterpret_cast<list_node*>(mfile.allocate(sizeof(list_node)));
+        char*      k = reinterpret_cast<char*>(mfile.allocate(key.size()+1));
 
-        mymap->insert(*insertion);
+        std::memcpy( k, key.c_str(), key.size()+1 );
 
-        return had_it;
+        n->key_handle        = mfile.get_handle_from_address(k);
+        n->size              = store.size;
+        n->value_handle      = handle;
+        n->next_node_handle  = 0;
+
+        mymap->insert(std::pair<const std::size_t, handle_t>
+                       (h, mfile.get_handle_from_address(n)));
+
+        return false;
+
+
+
+
+
     }
 
-    bool set( const K& key, V* store, std::size_t size )
+    bool set( const std::string& key, V* store, std::size_t size )
     {
         return set(key, storage_type<V>(size,store));
     }

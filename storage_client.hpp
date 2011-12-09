@@ -52,7 +52,7 @@ public:
 
   storage_type<V> get( const K& key ) //const
   {
-    storage_server<K,V>* server = manager_.get_server(key);
+    storage_server<V>* server = manager_.get_server(key);
     
     return server->get(key);
   }
@@ -90,7 +90,7 @@ public:
   // return whether it got replaced
   bool set( const K& key, const storage_type<V>& store )
   {
-    storage_server<K,V>* server = manager_.get_server(key);
+    storage_server<V>* server = manager_.get_server(key);
     return server->set(key,store);
   }
 

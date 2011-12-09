@@ -16,7 +16,7 @@ private:
   static const std::size_t file_mapping_size = 50*1024; //in megabytes
   // thrift connections, or just a list of computers... or whatever
   // we (you) decide to have
-  std::vector< storage_server<K,V>*  > server_;
+  std::vector< storage_server<V>*  > server_;
   
   H hasher_;
 
@@ -30,7 +30,7 @@ public:
       {
 	std::stringstream ss;
 	ss << i;
-	storage_server<K,V>* p = new storage_server<K,V>
+	storage_server<V>* p = new storage_server<V>
 	  (ss.str(),file_mapping_size ); 
 	server_.push_back(p);
       }
@@ -47,7 +47,7 @@ public:
     
   }
   
-  storage_server<K,V>* get_server(const K& key){
+  storage_server<V>* get_server(const K& key){
     //for now just do the hash based on the fixed number of servers
     //later do better load-balancing
     return server_[hasher_(key) % num_servers];
