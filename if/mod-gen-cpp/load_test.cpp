@@ -22,6 +22,7 @@ void generate_random(char* out, int size){
     int i;
     for(i=0;i<size;i++){
 	out[i] = rand() % 256;
+	
     }
 
 }
@@ -44,11 +45,13 @@ int main(int argc, char **argv){
 
     //generate & store data
     std::vector< pair_type > list;
-	
+
+    std::cout << "generating and storing data" << std::endl;
+
     int i;
     for(i=0;i<ZiARG_num;i++){
 	
-	char data[ZiARG_size]; 
+	char* data = new char[ZiARG_size]; 
 	generate_random(data,ZiARG_size);
 	
 	std::size_t hash = hasher_(std::string(data,ZiARG_size));
@@ -71,7 +74,42 @@ int main(int argc, char **argv){
 
     }
 
+    std::cout << "retrieving and verifying data" << std::endl;
 
+    std::vector< pair_type >::iterator it;
+    for(it=list.begin();it!=list.end();it++){
+	std::size_t hash = it->first;
+	char* data = it->second;
+
+	std::stringstream key;
+	key << hash;
+
+	//get data from storage server
+	bint::server_id serv_id;
+	manager->get_server(serv_id,key.str());	
+
+	//use the server ID gotten from the manager to open a server client
+	boost::shared_ptr<bint::storage_serverClient> s_client =
+	    ThriftFactory<bint::storage_serverClient>::getClient(serv_id.address, serv_id.port);
+
+	
+	std::string ret;
+	s_client->get(ret,key.str());
+
+	//check that the returned value is the same
+	std::string val(data,ZiARG_size);
+	if(std::strcmp(val.c_str(),ret.c_str()) != 0){
+	    std::cout << "failed to get right data" << std::endl;
+	    std::cout << val.size() << " <-size-> " << ret.size() << std::endl;
+	    std::cout << "should have been: "<< val << std::endl;
+	    std::cout << "got: " << ret << std::endl;
+	    exit(1);
+
+	}
+
+	delete data;
+
+    }
     
 	
     
