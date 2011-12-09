@@ -68,13 +68,13 @@ service server
 
     i32 get_seg_id( 1: metadata vol, 2: vector3d point),
 
-    bbox get_seg_bbox( 1: string path,
+    bbox get_seg_bbox( 1: metadata vol,
                        2: i32 segId ),
 
-    list<i32> get_seg_ids( 1: metadata vol,
-                           2: vector3d point,
-                           3: double radius,
-                           4: viewType view),
+    set<i32> get_seg_ids( 1: metadata vol,
+                          2: vector3d point,
+                          3: i32 radius,
+                          4: viewType view),
 
     string get_mesh( 1: string uri,
                      2: vector3i chunk,
@@ -82,4 +82,8 @@ service server
 
     # do we need the metadata for the comparison procedure?
     double compare_results( 1: list<result> old_results, 2: result new_result)
+
+    list<set<i32>> get_seeds( 1: metadata taskVolume,
+                              2: set<i32> selected,
+                              3: metadata adjacentVolume)
 }

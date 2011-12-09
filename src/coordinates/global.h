@@ -50,6 +50,11 @@ public:
     globalBbox() : base_t() {}
     globalBbox(global min, global max) : base_t(min, max) {}
     globalBbox(server::bbox b);
+    template<typename T>
+    globalBbox(AxisAlignedBoundingBox<T> b)
+        : base_t(global(b.getMin().x,b.getMin().y,b.getMin().z),
+                 global(b.getMax().x,b.getMax().y,b.getMax().z))
+    {}
 
     normBbox toNormBbox(const volumeSystem*) const;
     dataBbox toDataBbox(const volumeSystem*, int) const;

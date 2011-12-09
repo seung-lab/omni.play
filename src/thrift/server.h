@@ -17,10 +17,11 @@ class serverIf {
   virtual void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) = 0;
   virtual void get_seg_tiles(std::map<std::string, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view) = 0;
   virtual int32_t get_seg_id(const metadata& vol, const vector3d& point) = 0;
-  virtual void get_seg_bbox(bbox& _return, const std::string& path, const int32_t segId) = 0;
-  virtual void get_seg_ids(std::vector<int32_t> & _return, const metadata& vol, const vector3d& point, const double radius, const viewType::type view) = 0;
+  virtual void get_seg_bbox(bbox& _return, const metadata& vol, const int32_t segId) = 0;
+  virtual void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) = 0;
   virtual void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) = 0;
   virtual double compare_results(const std::vector<result> & old_results, const result& new_result) = 0;
+  virtual void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume) = 0;
 };
 
 class serverNull : virtual public serverIf {
@@ -36,10 +37,10 @@ class serverNull : virtual public serverIf {
     int32_t _return = 0;
     return _return;
   }
-  void get_seg_bbox(bbox& /* _return */, const std::string& /* path */, const int32_t /* segId */) {
+  void get_seg_bbox(bbox& /* _return */, const metadata& /* vol */, const int32_t /* segId */) {
     return;
   }
-  void get_seg_ids(std::vector<int32_t> & /* _return */, const metadata& /* vol */, const vector3d& /* point */, const double /* radius */, const viewType::type /* view */) {
+  void get_seg_ids(std::set<int32_t> & /* _return */, const metadata& /* vol */, const vector3d& /* point */, const int32_t /* radius */, const viewType::type /* view */) {
     return;
   }
   void get_mesh(std::string& /* _return */, const std::string& /* uri */, const vector3i& /* chunk */, const int32_t /* segId */) {
@@ -48,6 +49,9 @@ class serverNull : virtual public serverIf {
   double compare_results(const std::vector<result> & /* old_results */, const result& /* new_result */) {
     double _return = (double)0;
     return _return;
+  }
+  void get_seeds(std::vector<std::set<int32_t> > & /* _return */, const metadata& /* taskVolume */, const std::set<int32_t> & /* selected */, const metadata& /* adjacentVolume */) {
+    return;
   }
 };
 
@@ -430,26 +434,26 @@ class server_get_seg_id_presult {
 };
 
 typedef struct _server_get_seg_bbox_args__isset {
-  _server_get_seg_bbox_args__isset() : path(false), segId(false) {}
-  bool path;
+  _server_get_seg_bbox_args__isset() : vol(false), segId(false) {}
+  bool vol;
   bool segId;
 } _server_get_seg_bbox_args__isset;
 
 class server_get_seg_bbox_args {
  public:
 
-  server_get_seg_bbox_args() : path(""), segId(0) {
+  server_get_seg_bbox_args() : segId(0) {
   }
 
   virtual ~server_get_seg_bbox_args() throw() {}
 
-  std::string path;
+  metadata vol;
   int32_t segId;
 
   _server_get_seg_bbox_args__isset __isset;
 
-  void __set_path(const std::string& val) {
-    path = val;
+  void __set_vol(const metadata& val) {
+    vol = val;
   }
 
   void __set_segId(const int32_t val) {
@@ -458,7 +462,7 @@ class server_get_seg_bbox_args {
 
   bool operator == (const server_get_seg_bbox_args & rhs) const
   {
-    if (!(path == rhs.path))
+    if (!(vol == rhs.vol))
       return false;
     if (!(segId == rhs.segId))
       return false;
@@ -482,7 +486,7 @@ class server_get_seg_bbox_pargs {
 
   virtual ~server_get_seg_bbox_pargs() throw() {}
 
-  const std::string* path;
+  const metadata* vol;
   const int32_t* segId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -564,7 +568,7 @@ class server_get_seg_ids_args {
 
   metadata vol;
   vector3d point;
-  double radius;
+  int32_t radius;
   viewType::type view;
 
   _server_get_seg_ids_args__isset __isset;
@@ -577,7 +581,7 @@ class server_get_seg_ids_args {
     point = val;
   }
 
-  void __set_radius(const double val) {
+  void __set_radius(const int32_t val) {
     radius = val;
   }
 
@@ -617,7 +621,7 @@ class server_get_seg_ids_pargs {
 
   const metadata* vol;
   const vector3d* point;
-  const double* radius;
+  const int32_t* radius;
   const viewType::type* view;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -637,11 +641,11 @@ class server_get_seg_ids_result {
 
   virtual ~server_get_seg_ids_result() throw() {}
 
-  std::vector<int32_t>  success;
+  std::set<int32_t>  success;
 
   _server_get_seg_ids_result__isset __isset;
 
-  void __set_success(const std::vector<int32_t> & val) {
+  void __set_success(const std::set<int32_t> & val) {
     success = val;
   }
 
@@ -673,7 +677,7 @@ class server_get_seg_ids_presult {
 
   virtual ~server_get_seg_ids_presult() throw() {}
 
-  std::vector<int32_t> * success;
+  std::set<int32_t> * success;
 
   _server_get_seg_ids_presult__isset __isset;
 
@@ -924,6 +928,132 @@ class server_compare_results_presult {
 
 };
 
+typedef struct _server_get_seeds_args__isset {
+  _server_get_seeds_args__isset() : taskVolume(false), selected(false), adjacentVolume(false) {}
+  bool taskVolume;
+  bool selected;
+  bool adjacentVolume;
+} _server_get_seeds_args__isset;
+
+class server_get_seeds_args {
+ public:
+
+  server_get_seeds_args() {
+  }
+
+  virtual ~server_get_seeds_args() throw() {}
+
+  metadata taskVolume;
+  std::set<int32_t>  selected;
+  metadata adjacentVolume;
+
+  _server_get_seeds_args__isset __isset;
+
+  void __set_taskVolume(const metadata& val) {
+    taskVolume = val;
+  }
+
+  void __set_selected(const std::set<int32_t> & val) {
+    selected = val;
+  }
+
+  void __set_adjacentVolume(const metadata& val) {
+    adjacentVolume = val;
+  }
+
+  bool operator == (const server_get_seeds_args & rhs) const
+  {
+    if (!(taskVolume == rhs.taskVolume))
+      return false;
+    if (!(selected == rhs.selected))
+      return false;
+    if (!(adjacentVolume == rhs.adjacentVolume))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seeds_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seeds_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_seeds_pargs {
+ public:
+
+
+  virtual ~server_get_seeds_pargs() throw() {}
+
+  const metadata* taskVolume;
+  const std::set<int32_t> * selected;
+  const metadata* adjacentVolume;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seeds_result__isset {
+  _server_get_seeds_result__isset() : success(false) {}
+  bool success;
+} _server_get_seeds_result__isset;
+
+class server_get_seeds_result {
+ public:
+
+  server_get_seeds_result() {
+  }
+
+  virtual ~server_get_seeds_result() throw() {}
+
+  std::vector<std::set<int32_t> >  success;
+
+  _server_get_seeds_result__isset __isset;
+
+  void __set_success(const std::vector<std::set<int32_t> > & val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_seeds_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seeds_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seeds_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seeds_presult__isset {
+  _server_get_seeds_presult__isset() : success(false) {}
+  bool success;
+} _server_get_seeds_presult__isset;
+
+class server_get_seeds_presult {
+ public:
+
+
+  virtual ~server_get_seeds_presult() throw() {}
+
+  std::vector<std::set<int32_t> > * success;
+
+  _server_get_seeds_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class serverClient : virtual public serverIf {
  public:
   serverClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -953,18 +1083,21 @@ class serverClient : virtual public serverIf {
   int32_t get_seg_id(const metadata& vol, const vector3d& point);
   void send_get_seg_id(const metadata& vol, const vector3d& point);
   int32_t recv_get_seg_id();
-  void get_seg_bbox(bbox& _return, const std::string& path, const int32_t segId);
-  void send_get_seg_bbox(const std::string& path, const int32_t segId);
+  void get_seg_bbox(bbox& _return, const metadata& vol, const int32_t segId);
+  void send_get_seg_bbox(const metadata& vol, const int32_t segId);
   void recv_get_seg_bbox(bbox& _return);
-  void get_seg_ids(std::vector<int32_t> & _return, const metadata& vol, const vector3d& point, const double radius, const viewType::type view);
-  void send_get_seg_ids(const metadata& vol, const vector3d& point, const double radius, const viewType::type view);
-  void recv_get_seg_ids(std::vector<int32_t> & _return);
+  void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view);
+  void send_get_seg_ids(const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view);
+  void recv_get_seg_ids(std::set<int32_t> & _return);
   void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId);
   void send_get_mesh(const std::string& uri, const vector3i& chunk, const int32_t segId);
   void recv_get_mesh(std::string& _return);
   double compare_results(const std::vector<result> & old_results, const result& new_result);
   void send_compare_results(const std::vector<result> & old_results, const result& new_result);
   double recv_compare_results();
+  void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume);
+  void send_get_seeds(const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume);
+  void recv_get_seeds(std::vector<std::set<int32_t> > & _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -985,6 +1118,7 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
   void process_get_seg_ids(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_mesh(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_compare_results(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_seeds(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   serverProcessor(boost::shared_ptr<serverIf> iface) :
     iface_(iface) {
@@ -995,6 +1129,7 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
     processMap_["get_seg_ids"] = &serverProcessor::process_get_seg_ids;
     processMap_["get_mesh"] = &serverProcessor::process_get_mesh;
     processMap_["compare_results"] = &serverProcessor::process_compare_results;
+    processMap_["get_seeds"] = &serverProcessor::process_get_seeds;
   }
 
   virtual bool process(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot, void* callContext);
@@ -1048,19 +1183,19 @@ class serverMultiface : virtual public serverIf {
     }
   }
 
-  void get_seg_bbox(bbox& _return, const std::string& path, const int32_t segId) {
+  void get_seg_bbox(bbox& _return, const metadata& vol, const int32_t segId) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
-        ifaces_[i]->get_seg_bbox(_return, path, segId);
+        ifaces_[i]->get_seg_bbox(_return, vol, segId);
         return;
       } else {
-        ifaces_[i]->get_seg_bbox(_return, path, segId);
+        ifaces_[i]->get_seg_bbox(_return, vol, segId);
       }
     }
   }
 
-  void get_seg_ids(std::vector<int32_t> & _return, const metadata& vol, const vector3d& point, const double radius, const viewType::type view) {
+  void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
@@ -1091,6 +1226,18 @@ class serverMultiface : virtual public serverIf {
         return ifaces_[i]->compare_results(old_results, new_result);
       } else {
         ifaces_[i]->compare_results(old_results, new_result);
+      }
+    }
+  }
+
+  void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_seeds(_return, taskVolume, selected, adjacentVolume);
+        return;
+      } else {
+        ifaces_[i]->get_seeds(_return, taskVolume, selected, adjacentVolume);
       }
     }
   }

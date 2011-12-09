@@ -37,12 +37,12 @@ class serverHandler : virtual public serverIf {
     printf("get_seg_id\n");
   }
 
-  void get_seg_bbox(bbox& _return, const std::string& path, const int32_t segId) {
+  void get_seg_bbox(bbox& _return, const metadata& vol, const int32_t segId) {
     // Your implementation goes here
     printf("get_seg_bbox\n");
   }
 
-  void get_seg_ids(std::vector<int32_t> & _return, const metadata& vol, const vector3d& point, const double radius, const viewType::type view) {
+  void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) {
     // Your implementation goes here
     printf("get_seg_ids\n");
   }
@@ -55,6 +55,11 @@ class serverHandler : virtual public serverIf {
   double compare_results(const std::vector<result> & old_results, const result& new_result) {
     // Your implementation goes here
     printf("compare_results\n");
+  }
+
+  void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume) {
+    // Your implementation goes here
+    printf("get_seeds\n");
   }
 
 };
