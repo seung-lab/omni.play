@@ -17,7 +17,6 @@ struct storage_type
 {
   std::size_t size;
   T*          data;
-  bint::managed_mapped_file::handle_t handle;
 
   storage_type( std::size_t s, T* d )
       : size(s), data(d)

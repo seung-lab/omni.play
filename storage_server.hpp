@@ -8,6 +8,7 @@
 #include <boost/interprocess/allocators/allocator.hpp>
 #include <boost/functional/hash.hpp>
 #include <iostream>
+#include <zi/concurrency.hpp>
 #include "storage_type.hpp"
 
 
@@ -21,13 +22,11 @@ private:
 
     struct list_node
     {
-	bint::managed_mapped_file::handle_t key_handle      ;
-        std::size_t                   size            ;
-	bint::managed_mapped_file::handle_t value_handle    ;
-	bint::managed_mapped_file::handle_t next_node_handle;
+        bint::managed_mapped_file::handle_t key_handle      ;
+        std::size_t                         size            ;
+        bint::managed_mapped_file::handle_t value_handle    ;
+        bint::managed_mapped_file::handle_t next_node_handle;
     };
-
-
 
     typedef bint::managed_mapped_file::handle_t handle_t;
     typedef std::pair<const std::size_t, handle_t> pair_type;
@@ -52,6 +51,7 @@ private:
     boost::hash<std::string> hasher_;
     file_map *mymap;
 
+    zi::rwmutex mutex_;
 
     void init(){
         std::cout << "starting server...\n";
@@ -74,7 +74,7 @@ private:
 
 
     storage_type<V> find_in_node_list( const std::string& key,
-                                                             handle_t node ) const
+                                       handle_t node ) const
     {
         while ( node )
         {
@@ -83,9 +83,9 @@ private:
             char*      k = reinterpret_cast<char*>(mfile.get_address_from_handle(n->key_handle));
             if ( std::strcmp( key.c_str(), k ) == 0 )
             {
-		storage_type<V> ret;
-		ret.size = n->size;
-		ret.data = reinterpret_cast<V*> (mfile.get_address_from_handle(n->value_handle));
+                storage_type<V> ret;
+                ret.size = n->size;
+                ret.data = reinterpret_cast<V*> (mfile.get_address_from_handle(n->value_handle));
                 return ret;
             }
 
@@ -139,10 +139,10 @@ private:
 
 public:
     storage_server(std::string  id, std::size_t size)
-        :name(id), mapping_size(size),
-         mfile(bint::open_or_create ,name.append(".filemap").c_str(),mapping_size),
-         alloc_inst(mfile.get_segment_manager()),
-	 hasher_()
+        : name(id), mapping_size(size),
+          mfile(bint::open_or_create ,name.append(".filemap").c_str(),mapping_size),
+          alloc_inst(mfile.get_segment_manager()),
+          hasher_()
     {
         init();
     }
@@ -153,20 +153,23 @@ public:
 
     std::size_t get_size() const
     {
+        zi::rwmutex::read_guard g(mutex_);
         return static_cast<std::size_t>(mfile.get_size());
     }
 
     std::size_t get_free_memory() const
     {
+        zi::rwmutex::read_guard g(mutex_);
         return static_cast<std::size_t>(mfile.get_free_memory());
     }
 
     // returns the data if its mapped, empty data otherwise
     storage_type<V> get( const std::string& key ) const
     {
-	std::size_t h = hasher_(key);
+        zi::rwmutex::read_guard g(mutex_);
+        std::size_t h = hasher_(key);
         data_iterator it = mymap->find(h);
-	
+
         if ( it != mymap->end() )
         {
             return find_in_node_list( key, it->second );
@@ -178,8 +181,8 @@ public:
     // return whether it replaced a value
     bool set( const std::string& key, const storage_type<V>& store )
     {
-
-	std::size_t h = hasher_(key);
+        zi::rwmutex::write_guard g(mutex_);
+        std::size_t h = hasher_(key);
 
         data_iterator it = mymap->find(h);
 
@@ -204,14 +207,9 @@ public:
         n->next_node_handle  = 0;
 
         mymap->insert(std::pair<const std::size_t, handle_t>
-                       (h, mfile.get_handle_from_address(n)));
+                      (h, mfile.get_handle_from_address(n)));
 
         return false;
-
-
-
-
-
     }
 
     bool set( const std::string& key, V* store, std::size_t size )
@@ -219,8 +217,15 @@ public:
         return set(key, storage_type<V>(size,store));
     }
 
-    std::string get_id(){ return name;}
-    std::size_t get_mapping_size(){ return mapping_size;}
+    std::string get_id()
+    {
+        return name;
+    }
+
+    std::size_t get_mapping_size()
+    {
+        return mapping_size;
+    }
 };
 
 #endif /* STORAGE_SERVER_H */
