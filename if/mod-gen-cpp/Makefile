@@ -1,5 +1,5 @@
-#INCFLAGS	=	-I/usr/include/thrift -I/home/zlateski/code/zi_lib/external/include -I/home/zlateski/code/zi_lib
-INCFLAGS	=	-I/usr/local/include/thrift -I/usr/local/zi_lib/external/include -I/usr/local/zi_lib
+INCFLAGS	=	-I/usr/include/thrift -I/home/zlateski/code/zi_lib/external/include -I/home/zlateski/code/zi_lib
+#INCFLAGS	=	-I/usr/local/include/thrift -I/usr/local/zi_lib/external/include -I/usr/local/zi_lib
 LINKFLAGS	=	-lpthread -lthrift -ggdb -lrt -Wextra
 .PHONY:
 all:
