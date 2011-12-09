@@ -1,8 +1,7 @@
 #include "handler/handler.h"
 #include "handler/validate.hpp"
 
-#include "pipeline/mapData.hpp"
-#include "pipeline/getSegIds.hpp"
+#include "volume/volume.h"
 
 #include "utility/timer.hpp"
 
@@ -14,49 +13,23 @@ namespace handler {
 
 using namespace pipeline;
 
-int32_t get_seg_id(const server::metadata& vol, const server::vector3d& point)
+int32_t get_seg_id(const volume::volume& vol, coords::global point)
 {
     utility::timer t;
-    validateMetadata(vol);
-
-    coords::volumeSystem coordSystem(vol);
-
-    coords::global coord = point;
-    coords::data dc = coord.toData(&coordSystem, vol.mipLevel);
-
-    mapData dataSrc(vol.uri, vol.type);
-
-    data_var id = dataSrc >> getSegIds(dc);
-
+    int32_t segId = vol.GetSegId(point);
     cout << "get_seg_id done: " << t.s_elapsed() << " seconds" << endl;
-
-    return get<data<uint32_t> >(id).data.get()[0];
+    return segId;
 }
 
-void get_seg_ids(vector<int32_t> & _return,
-                 const server::metadata& vol,
-                 const server::vector3d& point,
-                 const double radius,
+void get_seg_ids(std::set<int32_t>& _return,
+                 const volume::volume& vol,
+                 coords::global point,
+                 const int radius,
                  const server::viewType::type view)
 {
     utility::timer t;
-    validateMetadata(vol);
-
-    coords::volumeSystem coordSystem(vol);
-
-    coords::global coord = point;
-    coords::data dc = coord.toData(&coordSystem, vol.mipLevel);
-
-    mapData dataSrc(vol.uri, vol.type);
-
-    data_var ids = dataSrc >> getSegIds(dc, radius, view);
-
-    data<uint32_t> out = get<data<uint32_t> >(ids);
-
-    _return.resize(out.size);
-    uint32_t* outData = out.data.get();
-    copy(outData, &outData[out.size], _return.begin());
-    cout << "get_seg_id done: " << t.s_elapsed() << " seconds" << endl;
+    vol.GetSegIds(point, radius, view, _return);
+    cout << "get_seg_ids done: " << t.s_elapsed() << " seconds" << endl;
 }
 
 }

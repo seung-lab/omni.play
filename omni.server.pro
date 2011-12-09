@@ -38,7 +38,8 @@ HEADERS +=  \
 	src/pointsInCircle.hpp \
 	src/segment/segmentTypes.hpp \
 	src/serverHandler.hpp \
-	src/tiles/tileFilters.hpp
+	src/tiles/tileFilters.hpp \
+	src/volume/volume.h
 
 SOURCES +=  \
 	src/datalayer/file.cpp \
@@ -47,8 +48,10 @@ SOURCES +=  \
 	src/handler/getSegBbox.cpp \
 	src/handler/getSegIds.cpp \
 	src/handler/getTile.cpp \
+	src/handler/makeTask.cpp \
 	src/main.cpp \
-	src/pipeline/jpeg.cpp
+	src/pipeline/jpeg.cpp \
+	src/volume/volume.cpp
 
 
 ## end of section to be rewritten using Perl

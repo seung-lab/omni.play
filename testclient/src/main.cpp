@@ -43,8 +43,7 @@ int main(int argc, char **argv) {
     std::map<std::string, tile> tiles;
 
     metadata meta;
-    meta.uri = str(boost::format("%1%%2%") % root
-                   % "segmentations/segmentation1/0/volume.uint32_t.raw");
+    meta.uri = root;
     meta.bounds.min.x = 0;
     meta.bounds.min.y = 0;
     meta.bounds.min.z = 0;
@@ -65,22 +64,24 @@ int main(int argc, char **argv) {
     point.y = 100;
     point.z = 100;
 
-    std::vector<int32_t> ids;
-
+    std::set<int32_t> ids;
+    std::cout << "Getting Seg ids." << std::endl;
     client.get_seg_ids(ids, meta, point, 10, viewType::XY_VIEW);
 
-    int32_t segId = ids[0];
+    int32_t segId = *ids.begin();
 
     bbox bounds;
-    client.get_seg_bbox(bounds, std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/segments/"), segId);
+    std::cout << "Getting Seg bbox." << std::endl;
+    client.get_seg_bbox(bounds, meta, segId);
 
-    std::cout << bounds;
+    std::cout << bounds << std::endl;
 
 //    std::cout << "SegID: " << segId << std::endl;
     bbox segBbox;
     segBbox.min = meta.bounds.min;
     segBbox.max.x = segBbox.max.y = segBbox.max.z = 20;
 
+    std::cout << "Getting Seg tiles." << std::endl;
     client.get_seg_tiles(tiles, meta, segId, segBbox, viewType::XY_VIEW);
 
     vector3i chunk;

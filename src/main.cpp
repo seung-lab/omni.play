@@ -20,7 +20,7 @@ using namespace ::om::server;
 
 int main(int argc, char *argv[])
 {
-    if(!zi::system::daemonize()) {
+    if(!zi::system::daemonize(false, false)) {
         std::cerr << "Unable to daemonize.";
         return -1;
     }

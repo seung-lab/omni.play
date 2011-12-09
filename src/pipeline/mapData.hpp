@@ -33,6 +33,10 @@ public:
         file_ = datalayer::memMappedFile<T>(fnp);;
     }
 
+    dataSrcs file() const {
+        return file_;
+    }
+
     operator dataSrcs() {
         return file_;
     }

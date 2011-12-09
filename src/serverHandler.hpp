@@ -1,4 +1,6 @@
 #include "handler/handler.h"
+#include "common/common.h"
+#include "volume/volume.h"
 
 namespace om {
 namespace server {
@@ -29,17 +31,17 @@ public:
         return handler::get_seg_id(vol, point);
     }
 
-    void get_seg_ids(std::vector<int32_t> & _return,
+    void get_seg_ids(std::set<int32_t> & _return,
                      const metadata& vol,
                      const vector3d& point,
-                     const double radius,
+                     const int32_t radius,
                      const viewType::type view) {
         handler::get_seg_ids(_return, vol, point, radius, view);
     }
 
-    void get_seg_bbox(bbox& _return, const std::string&path, const int32_t segId)
+    void get_seg_bbox(bbox& _return, const metadata& meta, const int32_t segId)
     {
-        handler::get_seg_bbox(_return, path, segId);
+        handler::get_seg_bbox(_return, meta, segId);
     }
 
     double compare_results(const std::vector<result> & old_results, const result& new_result)
@@ -52,6 +54,13 @@ public:
                   const vector3i& chunk,
                   int32_t segId) {
         handler::get_mesh(_return, uri, chunk, segId);
+    }
+
+    void get_seeds(std::vector<std::set<int32_t> >& _return,
+                   const metadata& taskVolume,
+                   const std::set<int32_t>& selected,
+                   const metadata& adjacentVolume)
+    {
     }
 };
 

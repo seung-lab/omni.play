@@ -3,28 +3,30 @@
 #include "thrift/server.h"
 
 namespace om {
+namespace volume { class volume; }
+namespace coords { class global; }
 namespace handler {
 
 void get_chan_tile(server::tile& _return,
-                   const server::metadata& vol,
-                   const server::vector3d& point,
+                   const volume::volume& vol,
+                   const coords::global& point,
                    const server::viewType::type view);
 
 void get_seg_tiles(std::map<std::string, server::tile> & _return,
-                   const server::metadata& vol,
+                   const volume::volume& vol,
                    const int32_t segId,
                    const server::bbox& segBbox,
                    const server::viewType::type view);
 
-int32_t get_seg_id(const server::metadata& vol, const server::vector3d& point);
+int32_t get_seg_id(const volume::volume& vol, coords::global point);
 
-void get_seg_ids(std::vector<int32_t> & _return,
-                 const server::metadata& vol,
-                 const server::vector3d& point,
-                 const double radius,
+void get_seg_ids(std::set<int32_t> & _return,
+                 const volume::volume& vol,
+                 coords::global point,
+                 const int32_t radius,
                  const server::viewType::type view);
 
-void get_seg_bbox(server::bbox& _return, const std::string&path, const int32_t segId);
+void get_seg_bbox(server::bbox& _return, const volume::volume& vol, const int32_t segId);
 
 double compare_results(const std::vector<server::result> & old_results,
                        const server::result& new_result);
@@ -33,5 +35,11 @@ void get_mesh(std::string& _return,
               const std::string& uri,
               const server::vector3i& chunk,
               int32_t segId);
+
+void get_seeds(const server::metadata& taskVolume,
+               const std::set<int32_t>& selected,
+               const server::metadata& adjacentVolume,
+               std::set<int32_t>& seedIds);
+
 }
 }

@@ -9,6 +9,7 @@
 #include "pipeline/encode.hpp"
 #include "pipeline/bitmask.hpp"
 #include "pipeline/png.hpp"
+#include "volume/volume.h"
 
 using namespace std;
 using namespace boost;
@@ -39,23 +40,20 @@ void setTileBounds(server::tile& t,
 
 
 void get_chan_tile(server::tile& _return,
-                   const server::metadata& vol,
-                   const server::vector3d& point,
+                   const volume::volume& vol,
+                   const coords::global& point,
                    const server::viewType::type view)
 {
     utility::timer t;
-    validateMetadata(vol);
 
-    coords::volumeSystem coordSystem(vol);
-    coords::global coord = point;
-    coords::data dc = coord.toData(&coordSystem, vol.mipLevel);
+    coords::data dc = point.toData(&vol.CoordSystem(), vol.MipLevel());
 
     setTileBounds(_return, dc, view);
     _return.view = view;
 
-    data_var encoded = mapData(vol.uri, vol.type) >> sliceTile(common::Convert(view), dc)
-                                                  >> jpeg(128,128)
-                                                  >> encode();
+    data_var encoded = vol.ChannelData() >> sliceTile(common::Convert(view), dc)
+                                         >> jpeg(128,128)
+                                         >> encode();
 
     data<char> out = get<data<char> >(encoded);
     _return.data = std::string(out.data.get(), out.size);
@@ -83,33 +81,27 @@ void makeSegTile(server::tile& t,
 
 
 void get_seg_tiles(std::map<std::string, server::tile> & _return,
-                   const server::metadata& vol,
+                   const volume::volume& vol,
                    const int32_t segId,
                    const server::bbox& segBbox,
                    const server::viewType::type view)
 {
     utility::timer t;
 
-    validateMetadata(vol);
-
-    coords::volumeSystem coordSystem(vol);
-
-    mapData dataSrc(vol.uri, vol.type);
-
     server::vector3d min = common::twist(segBbox.min, view);
     server::vector3d max = common::twist(segBbox.max, view);
-    server::vector3i dims = common::twist(vol.chunkDims, view);
-    server::vector3i res = common::twist(vol.resolution, view);
+    Vector3i dims = common::twist(vol.ChunkDims(), view);
+    Vector3i res = common::twist(vol.Resolution(), view);
 
     for(int x = min.x; x <= max.x; x += dims.x * res.x) {
         for(int y = min.y; y <= max.y; y += dims.y * res.y) {
             for(int z = min.z; z <= max.z; z += res.z) // always depth when twisted
             {
                 coords::global coord = common::twist(coords::global(x,y,z), view);
-                coords::data dc = coord.toData(&coordSystem, vol.mipLevel);
+                coords::data dc = coord.toData(&vol.CoordSystem(), vol.MipLevel());
 
                 server::tile t;
-                makeSegTile(t, dataSrc, dc, view, segId);
+                makeSegTile(t, vol.SegmentationData(), dc, view, segId);
                 std::stringstream ss;
                 ss << t.bounds.min.x << "-"
                    << t.bounds.min.y << "-"

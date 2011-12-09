@@ -10,51 +10,54 @@
 namespace om {
 namespace pipeline {
 
+class getSegId : public boost::static_visitor<uint32_t>
+{
+private:
+    coords::data coord_;
+
+public:
+    getSegId(coords::data coord)
+        : coord_(coord)
+    {}
+
+    template<typename T>
+    uint32_t operator()(const datalayer::memMappedFile<T>& in) const
+    {
+        uint64_t offset = coord_.toChunk().chunkPtrOffset(coord_.volume(), sizeof(T));
+        T* chunkPtr = in.GetPtrWithOffset(offset);
+
+        return chunkPtr[coord_.toChunkOffset()];
+    }
+};
+
+uint32_t operator>>(const dataSrcs& d, const getSegId& v) {
+    return boost::apply_visitor(v, d);
+}
+
 class getSegIds : public stage
 {
 private:
     coords::data coord_;
     int radius_;
     server::viewType::type view_;
+    coords::dataBbox bounds_;
     static const utility::pointsInCircle pts;
 
 public:
-    getSegIds(coords::data coord)
-        : coord_(coord)
-        , radius_(0)
-    {}
-
-    getSegIds(coords::data coord, int radius, server::viewType::type view)
+    getSegIds(coords::data coord, int radius,
+              server::viewType::type view, coords::dataBbox bounds)
         : coord_(coord)
         , radius_(radius)
         , view_(view)
+        , bounds_(bounds)
     {}
 
     template<typename T>
-    data_var operator()(const datalayer::memMappedFile<T>& in) const
-    {
-        if(radius_ == 0) {
-            return getSingleSeg(in);
-        } else { // brush select
-            return getCircle(in);
-        }
-
-        return data<uint32_t>();
+    data_var operator()(const datalayer::memMappedFile<T>& in) const {
+        return getCircle(in);
     }
 
 private:
-    template<typename T>
-    inline data_var getSingleSeg(const datalayer::memMappedFile<T>& in) const
-    {
-        data<uint32_t> segs;
-        segs.data = utility::smartPtr<uint32_t>::MallocNumElements(1);
-        segs.size = 1;
-
-        segs.data.get()[0] = getSegId(in, coord_);
-
-        return segs;
-    }
-
     template<typename T>
     inline data_var getCircle(const datalayer::memMappedFile<T>& in) const
     {
@@ -69,6 +72,10 @@ private:
             offseted.x += it->x;
             offseted.y += it->y;
             coords::data untwisted = common::twist(offseted, view_);
+            if(!bounds_.contains(untwisted)) {
+                continue;
+            }
+
             int32_t segId = getSegId(in, untwisted);
             segments.insert(segId);
         }
