@@ -38,62 +38,32 @@ int main(int argc, char **argv) {
     serverClient client(protocol);
     transport->open();
 
-    std::string root = std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/");
-
-    std::map<std::string, tile> tiles;
-
     metadata meta;
-    meta.uri = root;
-    meta.bounds.min.x = 0;
-    meta.bounds.min.y = 0;
-    meta.bounds.min.z = 0;
-    meta.bounds.max.x = 1151;
-    meta.bounds.max.y = 2047;
-    meta.bounds.max.z = 2047;
-    meta.resolution.x = 1;
-    meta.resolution.y = 1;
-    meta.resolution.z = 1;
+    meta.uri = std::string("/omniData/omniWebTest.copy/111_s915_14867_6163_e1170_15122_6418.omni.files");
+    meta.bounds.min.x = meta.bounds.min.y = meta.bounds.min.z = 0;
+    meta.bounds.max.x = meta.bounds.max.y = meta.bounds.max.z = 255;
+    meta.resolution.x = meta.resolution.y = meta.resolution.z = 1;
     meta.type = dataType::UINT32;
-    meta.chunkDims.x = 128;
-    meta.chunkDims.y = 128;
-    meta.chunkDims.z = 128;
+    meta.chunkDims.x = meta.chunkDims.y = meta.chunkDims.z = 128;
     meta.mipLevel = 0;
 
-    vector3d point;
-    point.x = 100;
-    point.y = 100;
-    point.z = 100;
+	metadata meta2 = meta;
+	meta.uri = std::string("/omniData/omniWebTest.copy/211_s1107_14867_6163_e1362_15122_6418.omni.files");
+    
+	std::set<int32_t> selected;
 
-    std::set<int32_t> ids;
-    std::cout << "Getting Seg ids." << std::endl;
-    client.get_seg_ids(ids, meta, point, 10, viewType::XY_VIEW);
+	std::vector<std::set<int32_t> > result;
 
-    int32_t segId = *ids.begin();
+    client.get_seeds(result, meta, selected, meta2);
 
-    bbox bounds;
-    std::cout << "Getting Seg bbox." << std::endl;
-    client.get_seg_bbox(bounds, meta, segId);
-
-    std::cout << bounds << std::endl;
-
-//    std::cout << "SegID: " << segId << std::endl;
-    bbox segBbox;
-    segBbox.min = meta.bounds.min;
-    segBbox.max.x = segBbox.max.y = segBbox.max.z = 20;
-
-    std::cout << "Getting Seg tiles." << std::endl;
-    client.get_seg_tiles(tiles, meta, segId, segBbox, viewType::XY_VIEW);
-
-    vector3i chunk;
-    chunk.x = chunk.y = chunk.z = 0;
-
-    std::cout << "Getting Mesh" << std::endl;
-
-    std::string uuid;
-    client.get_mesh(uuid,
-                    std::string("/omniData/e2198/e2198_a_s8_101_46_e16_116_61.omni.files/segmentations/segmentation1/meshes/"),
-                    chunk,
-                    segId);
+	FOR_EACH(seed, result)
+	{
+		std::cout << "Seed: " << std::endl;
+		FOR_EACH(seg, *seed) {
+			std::cout << *seg << ", ";
+		}
+		std::cout << std::endl;
+	}
 
 //    testClient::wholeVolume(client);
     transport->close();
