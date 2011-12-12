@@ -49,7 +49,11 @@ private:
 public:
     globalBbox() : base_t() {}
     globalBbox(global min, global max) : base_t(min, max) {}
-    globalBbox(server::bbox b);
+
+    globalBbox(server::bbox b)
+        : base_t(global(b.min), global(b.max)) {
+    }
+
     template<typename T>
     globalBbox(AxisAlignedBoundingBox<T> b)
         : base_t(global(b.getMin().x,b.getMin().y,b.getMin().z),

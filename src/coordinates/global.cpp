@@ -54,11 +54,6 @@ global::operator server::vector3d () const {
     return out;
 }
 
-globalBbox::globalBbox(server::bbox b) {
-    _min = global(b.min);
-    _max = global(b.max);
-}
-
 normBbox globalBbox::toNormBbox(const volumeSystem *vol) const
 {
     global min = _min;
