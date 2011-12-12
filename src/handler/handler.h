@@ -36,10 +36,10 @@ void get_mesh(std::string& _return,
               const server::vector3i& chunk,
               int32_t segId);
 
-void get_seeds(const server::metadata& taskVolume,
+void get_seeds(std::vector<std::set<int32_t> >& seedIds,
+               const volume::volume& taskVolume,
                const std::set<int32_t>& selected,
-               const server::metadata& adjacentVolume,
-               std::set<int32_t>& seedIds);
+               const volume::volume& adjacentVolume);
 
 }
 }

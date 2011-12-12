@@ -5,7 +5,8 @@ SOURCES += src/main.cpp
 
 INCLUDEPATH = src ../src
 
-INCLUDEPATH += ../../omni.common/lib/include
+INCLUDEPATH += ../../omni.common/lib/include \
+               ../external/zi_lib
 LIBS += ../../omni.common/lib/bin/libomni.common.a
 
 OBJECTS_DIR = build

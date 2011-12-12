@@ -1,3 +1,5 @@
+#include <zi/arguments.hpp>
+
 #include "serverHandler.hpp"
 #include <protocol/TBinaryProtocol.h>
 #include <server/TSimpleServer.h>
@@ -10,6 +12,9 @@
 
 #include "zi/system/daemon.hpp"
 
+ZiARG_int32(port, 9090, "Server's port");
+ZiARG_bool(daemonize, true, "Run as daemon");
+
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
@@ -20,12 +25,16 @@ using namespace ::om::server;
 
 int main(int argc, char *argv[])
 {
-    if(!zi::system::daemonize(false, false)) {
-        std::cerr << "Unable to daemonize.";
-        return -1;
+    zi::parse_arguments(argc, argv, true);
+    if ( ZiARG_daemonize )
+    {
+        if(!::zi::system::daemonize(true, true)) {
+            std::cerr << "Error trying to daemonize." << std::endl;
+            return -1;
+        }
     }
 
-    int port = 9090;
+    int port = ZiARG_port;
     boost::shared_ptr<serverHandler> handler(new serverHandler());
     boost::shared_ptr<TProcessor> processor(new serverProcessor(handler));
     boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));

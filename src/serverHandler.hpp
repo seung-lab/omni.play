@@ -61,6 +61,7 @@ public:
                    const std::set<int32_t>& selected,
                    const metadata& adjacentVolume)
     {
+        handler::get_seeds(_return, taskVolume, selected, adjacentVolume);
     }
 };
 

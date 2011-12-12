@@ -13,28 +13,6 @@
 namespace om {
 namespace handler {
 
-enum Dim {
-    X_DIM,
-    Y_DIM,
-    Z_DIM
-};
-
-Dim findOverlapDim(const volume::volume& task, const volume::volume& adj)
-{
-    coords::global taskMin = task.Bounds().getMin();
-    coords::global adjacentMin = adj.Bounds().getMin();
-
-    if (taskMin.x == adjacentMin.x) {
-        if (taskMin.y == adjacentMin.y) {
-            return Z_DIM;
-        } else {
-            return Y_DIM;
-        }
-    }
-
-    return X_DIM;
-}
-
 void conditionalJoin(zi::disjoint_sets<uint32_t>& sets, uint32_t id1, uint32_t id2)
 {
     uint32_t id1_rep = sets.find_set(id1);
@@ -70,11 +48,11 @@ void connectedSets(const coords::globalBbox& bounds,
                     }
                     uint32_t seg_id2 = vol.GetSegId( coords::global(i,j-1,k) );
                     if ( allowed.count(seg_id2) ) {
-                        conditionalJoin(sets, seg_id, seg_id1);
+                        conditionalJoin(sets, seg_id, seg_id2);
                     }
                     uint32_t seg_id3 = vol.GetSegId( coords::global(i,j,k-1) );
                     if ( allowed.count(seg_id3) ) {
-                        conditionalJoin(sets, seg_id, seg_id1);
+                        conditionalJoin(sets, seg_id, seg_id3);
                     }
                 }
             }
@@ -92,19 +70,20 @@ void connectedSets(const coords::globalBbox& bounds,
     }
 }
 
-void get_seeds(const volume::volume& taskVolume,
+void get_seeds(std::vector<std::set<int32_t> >& seeds,
+               const volume::volume& taskVolume,
                const std::set<int32_t>& selected,
-               const volume::volume& adjacentVolume,
-               std::vector<std::set<int32_t> >& seeds)
+               const volume::volume& adjacentVolume)
 {
+    std::cout << "Getting Seeds" << std::endl;
+
     const int DUST_SIZE_THR_2D=25;
     const int FALSE_OBJ_SIZE_THR=125;
 
     coords::globalBbox overlap = taskVolume.Bounds();
     overlap.intersect(adjacentVolume.Bounds());
 
-    // Figure out which dimension the overlap is in.
-    Dim overlapDim = findOverlapDim(taskVolume, adjacentVolume);
+    std::cout << "\tOverlap:\t\t" << overlap << std::endl;
 
     boost::unordered_set<uint32_t> intersectingSegIds;
     // Find intersecting segIds
@@ -119,6 +98,7 @@ void get_seeds(const volume::volume& taskVolume,
         }
 
         coords::globalBbox segOverlap = segData.bounds;
+        segOverlap.offset(taskVolume.Bounds().getMin());
         segOverlap.intersect(overlap);
 
         // Does not overlap with boundary region
@@ -127,11 +107,15 @@ void get_seeds(const volume::volume& taskVolume,
         }
     }
 
+    std::cout << "Found " << intersectingSegIds.size()
+              << " segments in the overlapping region." << std::endl;
+
     std::vector<std::set<int32_t> > groupedSegIds;
     // group all the segments based on adjacency
     connectedSets(overlap, taskVolume, intersectingSegIds, groupedSegIds);
 
-    int groupNum = 0;
+    std::cout << "Separated them out into " << groupedSegIds.size()
+              << " groups of segment ids." << std::endl;
 
     // OPTIMIZATION: remove this loop for efficiency
     FOR_EACH( group, groupedSegIds )
@@ -160,13 +144,14 @@ void get_seeds(const volume::volume& taskVolume,
             }
         }
 
-        std::set<int32_t>& correspondingIds = seeds[groupNum++];
+        std::set<int32_t> correspondingIds;
         // Find all the segIds in the adjacent volume with enough overlap
         FOR_EACH(seg, mappingCounts) {
             if (seg->second >= FALSE_OBJ_SIZE_THR) {
                 correspondingIds.insert(seg->first);
             }
         }
+        seeds.push_back(correspondingIds);
     }
 }
 
