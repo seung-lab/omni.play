@@ -10,6 +10,7 @@
 #include <zi/system.hpp>
 #include <vector>
 #include <boost/shared_ptr.hpp>
+#include <zi/concurrency.hpp>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -23,9 +24,15 @@ class storage_managerHandler : virtual public storage_managerIf {
 private:
     static const size_t map_size = 10*1024*1024;
 
-    storage_server<server_id > servers_;
+    typedef std::pair<std::string,int> serv_pair;
+
+    
+    storage_server<serv_pair > servers_;
     zi::hash<std::string> hasher_;
     std::vector<boost::shared_ptr<server_id> > registered_;
+
+    zi::rwmutex s_mutex_;
+    zi::rwmutex l_mutex_;
 
 public:
     storage_managerHandler()
@@ -38,26 +45,34 @@ public:
 
     void get_server(server_id& _return, const std::string& key) {
 	// Your implementation goes here
+	zi::rwmutex::write_guard g(s_mutex_);
 	//first try our filemap in the server
-	storage_type<server_id> ret = servers_.get(key);
+	
+	storage_type<serv_pair> ret = servers_.get(key);
+
 	if(ret.size>0){
-	    _return = *ret.data;
+	    //_return = *ret.data;
+	    _return.address = ret.data->first;
+	    _return.port = ret.data->second;
 	    return;
 	}
 	//if not there, decide on a server for this key
-	server_id serv = *registered_[hasher_(key) % registered_.size()].get();
-	//TODO store it in the filemap
-	//servers_.set(key,serv);
-
-	//servers_.set(key,storage_type<server_id>(serv));
+	server_id* serv = registered_[hasher_(key) % registered_.size()].get();
+	//store it in the filemap
+	
+	serv_pair pair(serv->address,serv->port);
+	servers_.set(key,&pair,sizeof(pair));
+	
 
 	//return its server_id
-	_return = serv;
+	_return = *serv;
 
     }
 
     bool register_server(const server_id& id) {
 	// Your implementation goes here
+	zi::rwmutex::write_guard g(l_mutex_);
+
 	boost::shared_ptr<server_id> p (new server_id(id));
 	registered_.push_back(p);
 
