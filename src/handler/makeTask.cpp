@@ -76,6 +76,11 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
                const volume::volume& adjacentVolume)
 {
     std::cout << "Getting Seeds" << std::endl;
+    FOR_EACH(it, selected) {
+        std::cout << *it << ", ";
+    }
+
+    std::cout << std::endl;
 
     const int DUST_SIZE_THR_2D=25;
     const int FALSE_OBJ_SIZE_THR=125;
@@ -109,6 +114,11 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
 
     std::cout << "Found " << intersectingSegIds.size()
               << " segments in the overlapping region." << std::endl;
+    FOR_EACH(it, intersectingSegIds) {
+        std::cout << *it << ", ";
+    }
+
+    std::cout << std::endl;
 
     std::vector<std::set<int32_t> > groupedSegIds;
     // group all the segments based on adjacency
@@ -117,42 +127,43 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     std::cout << "Separated them out into " << groupedSegIds.size()
               << " groups of segment ids." << std::endl;
 
-    // OPTIMIZATION: remove this loop for efficiency
-    FOR_EACH( group, groupedSegIds )
+    std::vector<boost::unordered_map<uint32_t, int> > mappingCounts(groupedSegIds.size());
+
+    // Find corresponding Segments in adjacent volume
+    for(int x = overlap.getMin().x; x < overlap.getMax().x; x++)
     {
-        boost::unordered_map<uint32_t, int> mappingCounts;
-
-        // Find corresponding Segments in adjacent volume
-        for(int i = overlap.getMin().x; i < overlap.getMax().x; i++)
+        for(int y = overlap.getMin().y; y < overlap.getMax().y; y++)
         {
-            for(int j = overlap.getMin().y; j < overlap.getMax().y; j++)
+            for(int z = overlap.getMin().z; z < overlap.getMax().z; z++)
             {
-                for(int k = overlap.getMin().z; k < overlap.getMax().z; k++)
+                const coords::global point(x, y, z);
+
+                uint32_t taskSegId = taskVolume.GetSegId(point);
+
+                for(int i = 0; i < mappingCounts.size(); i++)
                 {
-                    const coords::global point(i, j, k);
-
-                    uint32_t taskSegId = taskVolume.GetSegId(point);
-
-                    // Not interested in this segment.
-                    if ( !group->count(taskSegId) ) {
-                        continue;
+                    if ( groupedSegIds[i].count(taskSegId) ) {
+                        uint32_t adjacentSegId = adjacentVolume.GetSegId(point);
+                        ++mappingCounts[i][adjacentSegId];
+                        break;
                     }
-
-                    uint32_t adjacentSegId = adjacentVolume.GetSegId(point);
-                    ++mappingCounts[adjacentSegId];
                 }
             }
         }
+    }
 
+    // Find all the segIds in the adjacent volume with enough overlap
+    for(int i = 0; i < mappingCounts.size(); i++)
+    {
         std::set<int32_t> correspondingIds;
-        // Find all the segIds in the adjacent volume with enough overlap
-        FOR_EACH(seg, mappingCounts) {
+        FOR_EACH(seg, mappingCounts[i]) {
             if (seg->second >= FALSE_OBJ_SIZE_THR) {
                 correspondingIds.insert(seg->first);
             }
         }
         seeds.push_back(correspondingIds);
     }
+
 }
 
 }} // namespace om::handler
