@@ -92,10 +92,12 @@ void get_seg_tiles(std::map<std::string, server::tile> & _return,
 {
     utility::timer t;
 
-    segBbox.intersect(vol.Bounds());
+    coords::globalBbox bounds = segBbox;
 
-    coords::global min = common::twist(segBbox.getMin(), view);
-    coords::global max = common::twist(segBbox.getMax(), view);
+    bounds.intersect(vol.Bounds());
+
+    coords::global min = common::twist(bounds.getMin(), view);
+    coords::global max = common::twist(bounds.getMax(), view);
     Vector3i dims = common::twist(vol.ChunkDims(), view);
     Vector3i res = common::twist(vol.Resolution(), view);
 

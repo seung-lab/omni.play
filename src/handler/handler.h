@@ -4,7 +4,7 @@
 
 namespace om {
 namespace volume { class volume; }
-namespace coords { class global; }
+namespace coords { class global; class globalBbox; }
 namespace handler {
 
 void get_chan_tile(server::tile& _return,
@@ -15,7 +15,7 @@ void get_chan_tile(server::tile& _return,
 void get_seg_tiles(std::map<std::string, server::tile> & _return,
                    const volume::volume& vol,
                    const int32_t segId,
-                   const server::bbox& segBbox,
+                   const coords::globalBbox& segBbox,
                    const server::viewType::type view);
 
 int32_t get_seg_id(const volume::volume& vol, coords::global point);
