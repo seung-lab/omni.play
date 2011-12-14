@@ -46,6 +46,10 @@ void get_chan_tile(server::tile& _return,
 {
     utility::timer t;
 
+    if(!vol.Bounds().contains(point)) {
+        throw argException("Requested Channel Tile outside bounds of volume.");
+    }
+
     coords::data dc = point.toData(&vol.CoordSystem(), vol.MipLevel());
 
     setTileBounds(_return, dc, view);
@@ -83,13 +87,15 @@ void makeSegTile(server::tile& t,
 void get_seg_tiles(std::map<std::string, server::tile> & _return,
                    const volume::volume& vol,
                    const int32_t segId,
-                   const server::bbox& segBbox,
+                   const coords::globalBbox& segBbox,
                    const server::viewType::type view)
 {
     utility::timer t;
 
-    server::vector3d min = common::twist(segBbox.min, view);
-    server::vector3d max = common::twist(segBbox.max, view);
+    segBbox.intersect(vol.Bounds());
+
+    coords::global min = common::twist(segBbox.getMin(), view);
+    coords::global max = common::twist(segBbox.getMax(), view);
     Vector3i dims = common::twist(vol.ChunkDims(), view);
     Vector3i res = common::twist(vol.Resolution(), view);
 
