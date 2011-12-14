@@ -13,5 +13,4 @@ struct data {
     AxisAlignedBoundingBox<int> bounds;
 };
 
-}
-}
+}}
