@@ -61,6 +61,10 @@ void volume::GetSegIds(coords::global point, int radius,
 
 segment::data volume::GetSegmentData(int32_t segId) const
 {
+    if (segId < 0) {
+        throw argException("Not allowed segment Ids less than 0");
+    }
+
     const uint32_t pageSize = 100000;
     const uint32_t pageNum = segId / pageSize;
     const uint32_t idx = segId % pageSize;
