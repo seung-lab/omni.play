@@ -12,12 +12,16 @@ system( g++ --version | grep -e "4.6" ) {
 
 ## start of section to be rewritten using Perl
 HEADERS +=  \
+	src/chunks/chunk.h \
+	src/chunks/chunkCache.h \
 	src/chunks/rawChunkSlicer.hpp \
 	src/datalayer/IDataVolume.hpp \
 	src/datalayer/IOnDiskFile.h \
+	src/datalayer/cache.h \
 	src/datalayer/dataWrapper.h \
 	src/datalayer/file.h \
 	src/datalayer/memMappedFile.hpp \
+	src/datalayer/types.hpp \
 	src/handler/handler.h \
 	src/handler/validate.hpp \
 	src/mesh/dataForMeshLoad.hpp \
@@ -42,6 +46,8 @@ HEADERS +=  \
 	src/volume/volume.h
 
 SOURCES +=  \
+	src/chunks/chunk.cpp \
+	src/datalayer/cache.cpp \
 	src/datalayer/file.cpp \
 	src/handler/compareResults.cpp \
 	src/handler/getMesh.cpp \
