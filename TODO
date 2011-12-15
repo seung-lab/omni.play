@@ -1,6 +1,6 @@
-- test: store turn off (crash) and get the data back later
+- test: store turn off (crash) and get the data back later (done)
 - manager expose stats
-- locking (sort of done in the storage), to be done in the manager
+- locking (sort of done in the storage), to be done in the manager (done)
 - erasing
 
 - more stats for the storage server:
