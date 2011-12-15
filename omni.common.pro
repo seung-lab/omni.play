@@ -11,7 +11,6 @@ HEADERS +=  \
 	lib/include/common/enums.hpp \
 	lib/include/common/exception.h \
 	lib/include/common/genericManager.hpp \
-	lib/include/common/gl.h \
 	lib/include/common/manageableObject.hpp \
 	lib/include/common/math.hpp \
 	lib/include/common/set.hpp \
@@ -56,6 +55,8 @@ HEADERS +=  \
 	lib/include/utility/yaml/genericManager.hpp \
 	lib/include/utility/yaml/yaml.hpp \
 	lib/include/zi/mutex.h \
+	lib/include/zi/rwlock_pool.hpp \
+	lib/include/zi/rwlock_server.hpp \
 	lib/include/zi/threads.h \
 	lib/include/zi/trees/DisjointSets.hpp \
 	lib/include/zi/trees/lib/DynaTree.hpp \
@@ -95,9 +96,13 @@ HEADERS +=  \
 	src/threads/threadPoolBatched.hpp \
 	src/threads/threadPoolByMipLevel.hpp \
 	src/threads/threadPoolManager.h \
+	src/thrift/filesystem_constants.h \
+	src/thrift/filesystem_types.h \
 	src/thrift/server.h \
 	src/thrift/server_constants.h \
 	src/thrift/server_types.h \
+	src/thrift/storage_manager.h \
+	src/thrift/storage_server.h \
 	src/utility/UUID.hpp \
 	src/utility/chunkVoxelWalker.hpp \
 	src/utility/copyFirstN.hpp \
@@ -117,6 +122,8 @@ HEADERS +=  \
 	src/utility/yaml/genericManager.hpp \
 	src/utility/yaml/yaml.hpp \
 	src/zi/mutex.h \
+	src/zi/rwlock_pool.hpp \
+	src/zi/rwlock_server.hpp \
 	src/zi/threads.h \
 	src/zi/trees/DisjointSets.hpp \
 	src/zi/trees/lib/DynaTree.hpp \
@@ -139,61 +146,51 @@ SOURCES +=  \
 	src/coordinates/volumeSystem.cpp \
 	src/coordinates/yaml.cpp \
 	src/threads/threadPoolManager.cpp \
+	src/thrift/filesystem_constants.cpp \
+	src/thrift/filesystem_types.cpp \
 	src/thrift/server.cpp \
 	src/thrift/server_constants.cpp \
 	src/thrift/server_types.cpp \
+	src/thrift/storage_manager.cpp \
+	src/thrift/storage_server.cpp \
 	src/utility/fileHelpers.cpp \
 	src/utility/primeNumbers.cpp \
 	src/utility/systemInformation.cpp \
+	src/zi/rwlock_example.cpp \
 	src/zi/watershed/RawQuickieWS.cpp
+
+## end of section to be rewritten using Perl
 
 server_h.target = lib/include/thrift/server.h
 server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
 server_h.depends = if/server.thrift
 QMAKE_EXTRA_TARGETS += server_h
 
-server_constants_h.target = lib/include/thrift/server_constants.h
-server_constants_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_constants_h.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_constants_h
-
-server_types_h.target = lib/include/thrift/server_types.h
-server_types_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_types_h.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_types_h
-
 server_cpp.target = src/thrift/server.cpp
 server_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
 server_cpp.depends = if/server.thrift
 QMAKE_EXTRA_TARGETS += server_cpp
 
-server_h.target = src/thrift/server.h
-server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_h.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_h
+storage_server_h.target = lib/include/thrift/storage_server.h
+storage_server_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/filesystem.thrift
+storage_server_h.depends = if/server.thrift
+QMAKE_EXTRA_TARGETS += storage_server_h
 
-server_constants_cpp.target = src/thrift/server_constants.cpp
-server_constants_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_constants_cpp.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_constants_cpp
+storage_server_cpp.target = src/thrift/storage_server.cpp
+storage_server_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/filesystem.thrift
+storage_server_cpp.depends = if/filesystem.thrift
+QMAKE_EXTRA_TARGETS += storage_server_cpp
 
-server_constants_h.target = src/thrift/server_constants.h
-server_constants_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_constants_h.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_constants_h
+storage_manager_h.target = lib/include/thrift/storage_manager.h
+storage_manager_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/filesystem.thrift
+storage_manager_h.depends = if/manager.thrift
+QMAKE_EXTRA_TARGETS += storage_manager_h
 
-server_types_cpp.target = src/thrift/server_types.cpp
-server_types_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_types_cpp.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_types_cpp
+storage_manager_cpp.target = src/thrift/storage_manager.cpp
+storage_manager_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/filesystem.thrift
+storage_manager_cpp.depends = if/filesystem.thrift
+QMAKE_EXTRA_TARGETS += storage_manager_cpp
 
-server_types_h.target = src/thrift/server_types.h
-server_types_h.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/server.thrift
-server_types_h.depends = if/server.thrift
-QMAKE_EXTRA_TARGETS += server_types_h
-
-
-## end of section to be rewritten using Perl
 
 php_server.target = php/server/TServer.php
 php_server.commands = mkdir php; external/libs/thrift/bin/thrift -r --out php --gen php if/server.thrift

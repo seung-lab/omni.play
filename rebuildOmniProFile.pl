@@ -32,7 +32,7 @@ sub processFile{
 	return;
     }
 
-    if($file =~ m/.*thrift.*\.[hHcC](pp)?$/){
+    if($file =~ m/.*thrift.*\.[hH](pp)?$/){
     processGen($file);
     }
 
@@ -90,25 +90,25 @@ sub outputGenTargets {
     @files = sort(@files);
     my @ret;
     foreach(@files){
-    my $file = $_;
-    
-    if($file =~ m/\.skeleton\.cpp/) {
-        next;
-    }
+        my $file = $_;
 
-    # escape special chars using \Q and \E
-    $file =~ s/\Q$basePath\E\///g;
-    my $target = $file;
-    $target =~ s/^.*\///g;
-    $target =~ s/\./_/g;
-    my $ifFile = $file;
-    $ifFile =~ s/^.*\///g;
-    $ifFile =~ s/[_|\.].*/\.thrift/;
+        if($file =~ m/\.skeleton\.cpp/) {
+            next;
+        }
 
-    push(@ret, "$target.target = $file\n");
-    push(@ret, "$target.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/$ifFile\n");
-    push(@ret, "$target.depends = if/$ifFile\n");
-    push(@ret, "QMAKE_EXTRA_TARGETS += $target\n\n");
+        # escape special chars using \Q and \E
+        $file =~ s/\Q$basePath\E\///g;
+        my $target = $file;
+        $target =~ s/^.*\///g;
+        $target =~ s/\./_/g;
+        my $ifFile = $file;
+        $ifFile =~ s/^.*\///g;
+        $ifFile =~ s/[_|\.].*/\.thrift/;
+
+        push(@ret, "$target.target = $file\n");
+        push(@ret, "$target.commands = external/libs/thrift/bin/thrift -r --out src/thrift --gen cpp if/$ifFile\n");
+        push(@ret, "$target.depends = if/$ifFile\n");
+        push(@ret, "QMAKE_EXTRA_TARGETS += $target\n\n");
     }
 
     return join("", @ret);
@@ -151,8 +151,8 @@ sub makeReplacementStr {
     $str .= "SOURCES += $delim";
     $str .= outputFileName(@cppFiles);
     $str .= "\n\n";
-    $str .= outputGenTargets(@genFiles);
-    $str .= "\n";
+#    $str .= outputGenTargets(@genFiles);
+#    $str .= "\n";
     $str .= "## end ".$strToPartiallyMatch."\n";
     return $str;
 }
