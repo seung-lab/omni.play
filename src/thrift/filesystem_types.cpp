@@ -5,7 +5,7 @@
  */
 #include "filesystem_types.h"
 
-namespace bint {
+namespace om { namespace server {
 
 const char* server_id::ascii_fingerprint = "EEBC915CE44901401D881E6091423036";
 const uint8_t server_id::binary_fingerprint[16] = {0xEE,0xBC,0x91,0x5C,0xE4,0x49,0x01,0x40,0x1D,0x88,0x1E,0x60,0x91,0x42,0x30,0x36};
@@ -72,4 +72,4 @@ uint32_t server_id::write(::apache::thrift::protocol::TProtocol* oprot) const {
   return xfer;
 }
 
-} // namespace
+}} // namespace

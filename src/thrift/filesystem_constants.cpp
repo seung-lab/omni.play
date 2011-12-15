@@ -5,12 +5,12 @@
  */
 #include "filesystem_constants.h"
 
-namespace bint {
+namespace om { namespace server {
 
 const filesystemConstants g_filesystem_constants;
 
 filesystemConstants::filesystemConstants() {
 }
 
-} // namespace
+}} // namespace
 

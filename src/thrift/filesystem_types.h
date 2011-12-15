@@ -13,7 +13,7 @@
 
 
 
-namespace bint {
+namespace om { namespace server {
 
 typedef struct _server_id__isset {
   _server_id__isset() : address(false), port(false) {}
@@ -64,6 +64,6 @@ class server_id {
 
 };
 
-} // namespace
+}} // namespace
 
 #endif

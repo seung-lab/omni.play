@@ -1,4 +1,4 @@
-namespace cpp bint
+namespace cpp om.server
 
 struct server_id
 {

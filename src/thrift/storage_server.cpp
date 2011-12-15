@@ -5,7 +5,7 @@
  */
 #include "storage_server.h"
 
-namespace bint {
+namespace om { namespace server {
 
 uint32_t storage_server_get_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -901,5 +901,5 @@ void storage_serverProcessor::process_get_stats(int32_t seqid, ::apache::thrift:
   }
 }
 
-} // namespace
+}} // namespace
 

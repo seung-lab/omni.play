@@ -8,7 +8,7 @@
 
 #include "filesystem_types.h"
 
-namespace bint {
+namespace om { namespace server {
 
 class filesystemConstants {
  public:
@@ -18,6 +18,6 @@ class filesystemConstants {
 
 extern const filesystemConstants g_filesystem_constants;
 
-} // namespace
+}} // namespace
 
 #endif

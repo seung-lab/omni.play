@@ -14,7 +14,7 @@ using namespace ::apache::thrift::server;
 
 using boost::shared_ptr;
 
-using namespace bint;
+using namespace om::server;
 
 class storage_serverHandler : virtual public storage_serverIf {
  public:

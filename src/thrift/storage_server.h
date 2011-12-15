@@ -9,7 +9,7 @@
 #include <TProcessor.h>
 #include "filesystem_types.h"
 
-namespace bint {
+namespace om { namespace server {
 
 class storage_serverIf {
  public:
@@ -459,6 +459,6 @@ class storage_serverMultiface : virtual public storage_serverIf {
 
 };
 
-} // namespace
+}} // namespace
 
 #endif
