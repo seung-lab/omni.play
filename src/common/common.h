@@ -83,12 +83,13 @@ enum cacheGroup {
 
 std::ostream& operator<<(std::ostream &out, const cacheGroup& c);
 viewType Convert(server::viewType::type type);
+server::viewType::type Convert(viewType type);
 inline Vector3i Convert(server::vector3i v) {
     return Vector3i(v.x, v.y, v.z);
 }
 
 template<typename T>
-T twist(T vec, server::viewType::type view)
+T twist(T vec, viewType view)
 {
     T out(vec);
     switch(view)

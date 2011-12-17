@@ -404,8 +404,8 @@ uint32_t result::write(::apache::thrift::protocol::TProtocol* oprot) const {
   return xfer;
 }
 
-const char* metadata::ascii_fingerprint = "F0FECCD4BD8758BFDF81BE5022C7A120";
-const uint8_t metadata::binary_fingerprint[16] = {0xF0,0xFE,0xCC,0xD4,0xBD,0x87,0x58,0xBF,0xDF,0x81,0xBE,0x50,0x22,0xC7,0xA1,0x20};
+const char* metadata::ascii_fingerprint = "673B7869C1AD476E2D865D1202A99091";
+const uint8_t metadata::binary_fingerprint[16] = {0x67,0x3B,0x78,0x69,0xC1,0xAD,0x47,0x6E,0x2D,0x86,0x5D,0x12,0x02,0xA9,0x90,0x91};
 
 uint32_t metadata::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -428,9 +428,9 @@ uint32_t metadata::read(::apache::thrift::protocol::TProtocol* iprot) {
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->uri);
-          this->__isset.uri = true;
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->volId);
+          this->__isset.volId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -455,24 +455,26 @@ uint32_t metadata::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast7;
           xfer += iprot->readI32(ecast7);
-          this->type = (dataType::type)ecast7;
-          this->__isset.type = true;
+          this->channelType = (dataType::type)ecast7;
+          this->__isset.channelType = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 5:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->chunkDims.read(iprot);
-          this->__isset.chunkDims = true;
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast8;
+          xfer += iprot->readI32(ecast8);
+          this->segmentationType = (dataType::type)ecast8;
+          this->__isset.segmentationType = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 6:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->mipLevel);
-          this->__isset.mipLevel = true;
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->chunkDims.read(iprot);
+          this->__isset.chunkDims = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -492,8 +494,8 @@ uint32_t metadata::read(::apache::thrift::protocol::TProtocol* iprot) {
 uint32_t metadata::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("metadata");
-  xfer += oprot->writeFieldBegin("uri", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->uri);
+  xfer += oprot->writeFieldBegin("volId", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->volId);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldBegin("bounds", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += this->bounds.write(oprot);
@@ -501,14 +503,14 @@ uint32_t metadata::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeFieldBegin("resolution", ::apache::thrift::protocol::T_STRUCT, 3);
   xfer += this->resolution.write(oprot);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("type", ::apache::thrift::protocol::T_I32, 4);
-  xfer += oprot->writeI32((int32_t)this->type);
+  xfer += oprot->writeFieldBegin("channelType", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)this->channelType);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("chunkDims", ::apache::thrift::protocol::T_STRUCT, 5);
+  xfer += oprot->writeFieldBegin("segmentationType", ::apache::thrift::protocol::T_I32, 5);
+  xfer += oprot->writeI32((int32_t)this->segmentationType);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("chunkDims", ::apache::thrift::protocol::T_STRUCT, 6);
   xfer += this->chunkDims.write(oprot);
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 6);
-  xfer += oprot->writeI32(this->mipLevel);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();

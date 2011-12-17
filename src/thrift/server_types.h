@@ -299,37 +299,37 @@ class result {
 };
 
 typedef struct _metadata__isset {
-  _metadata__isset() : uri(false), bounds(false), resolution(false), type(false), chunkDims(false), mipLevel(false) {}
-  bool uri;
+  _metadata__isset() : volId(false), bounds(false), resolution(false), channelType(false), segmentationType(false), chunkDims(false) {}
+  bool volId;
   bool bounds;
   bool resolution;
-  bool type;
+  bool channelType;
+  bool segmentationType;
   bool chunkDims;
-  bool mipLevel;
 } _metadata__isset;
 
 class metadata {
  public:
 
-  static const char* ascii_fingerprint; // = "F0FECCD4BD8758BFDF81BE5022C7A120";
-  static const uint8_t binary_fingerprint[16]; // = {0xF0,0xFE,0xCC,0xD4,0xBD,0x87,0x58,0xBF,0xDF,0x81,0xBE,0x50,0x22,0xC7,0xA1,0x20};
+  static const char* ascii_fingerprint; // = "673B7869C1AD476E2D865D1202A99091";
+  static const uint8_t binary_fingerprint[16]; // = {0x67,0x3B,0x78,0x69,0xC1,0xAD,0x47,0x6E,0x2D,0x86,0x5D,0x12,0x02,0xA9,0x90,0x91};
 
-  metadata() : uri(""), mipLevel(0) {
+  metadata() : volId(0) {
   }
 
   virtual ~metadata() throw() {}
 
-  std::string uri;
+  int32_t volId;
   bbox bounds;
   vector3i resolution;
-  dataType::type type;
+  dataType::type channelType;
+  dataType::type segmentationType;
   vector3i chunkDims;
-  int32_t mipLevel;
 
   _metadata__isset __isset;
 
-  void __set_uri(const std::string& val) {
-    uri = val;
+  void __set_volId(const int32_t val) {
+    volId = val;
   }
 
   void __set_bounds(const bbox& val) {
@@ -340,31 +340,31 @@ class metadata {
     resolution = val;
   }
 
-  void __set_type(const dataType::type val) {
-    type = val;
+  void __set_channelType(const dataType::type val) {
+    channelType = val;
+  }
+
+  void __set_segmentationType(const dataType::type val) {
+    segmentationType = val;
   }
 
   void __set_chunkDims(const vector3i& val) {
     chunkDims = val;
   }
 
-  void __set_mipLevel(const int32_t val) {
-    mipLevel = val;
-  }
-
   bool operator == (const metadata & rhs) const
   {
-    if (!(uri == rhs.uri))
+    if (!(volId == rhs.volId))
       return false;
     if (!(bounds == rhs.bounds))
       return false;
     if (!(resolution == rhs.resolution))
       return false;
-    if (!(type == rhs.type))
+    if (!(channelType == rhs.channelType))
+      return false;
+    if (!(segmentationType == rhs.segmentationType))
       return false;
     if (!(chunkDims == rhs.chunkDims))
-      return false;
-    if (!(mipLevel == rhs.mipLevel))
       return false;
     return true;
   }

@@ -14,6 +14,15 @@ viewType Convert(server::viewType::type type) {
     throw argException("Bad viewType.");
 }
 
+server::viewType::type Convert(viewType type) {
+    switch(type) {
+    case XY_VIEW: return server::viewType::XY_VIEW;
+    case XZ_VIEW: return server::viewType::XZ_VIEW;
+    case ZY_VIEW: return server::viewType::ZY_VIEW;
+    }
+    throw argException("Bad viewType.");
+}
+
 std::ostream& operator<<(std::ostream &out, const segIdSet& in)
 {
     const std::string joined = om::string::join(in);
