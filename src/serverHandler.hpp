@@ -15,7 +15,8 @@ public:
                        const server::metadata& vol,
                        const server::vector3d& point,
                        const server::viewType::type view) {
-        handler::get_chan_tile(_return, vol, point, view);
+        volume::volume v = vol;
+        handler::get_chan_tile(_return, v, point, common::Convert(view));
     }
 
     void get_seg_tiles(std::map<std::string, tile> & _return,
@@ -23,12 +24,14 @@ public:
                        const int32_t segId,
                        const bbox& segBbox,
                        const viewType::type view) {
-        handler::get_seg_tiles(_return, vol, segId, segBbox, view);
+        volume::volume v = vol;
+        handler::get_seg_tiles(_return, v, segId, segBbox, common::Convert(view));
     }
 
 
     int32_t get_seg_id(const metadata& vol, const vector3d& point) {
-        return handler::get_seg_id(vol, point);
+        volume::volume v = vol;
+        return handler::get_seg_id(v, point);
     }
 
     void get_seg_ids(std::set<int32_t> & _return,
@@ -36,12 +39,14 @@ public:
                      const vector3d& point,
                      const int32_t radius,
                      const viewType::type view) {
-        handler::get_seg_ids(_return, vol, point, radius, view);
+        volume::volume v = vol;
+        handler::get_seg_ids(_return, v, point, radius, common::Convert(view));
     }
 
-    void get_seg_bbox(bbox& _return, const metadata& meta, const int32_t segId)
+    void get_seg_bbox(bbox& _return, const metadata& vol, const int32_t segId)
     {
-        handler::get_seg_bbox(_return, meta, segId);
+        volume::volume v = vol;
+        handler::get_seg_bbox(_return, v, segId);
     }
 
     double compare_results(const std::vector<result> & old_results, const result& new_result)
@@ -61,7 +66,9 @@ public:
                    const std::set<int32_t>& selected,
                    const metadata& adjacentVolume)
     {
-        handler::get_seeds(_return, taskVolume, selected, adjacentVolume);
+        volume::volume t = taskVolume;
+        volume::volume a = adjacentVolume;
+        handler::get_seeds(_return, t, selected, a);
     }
 };
 

@@ -1,6 +1,9 @@
 #include "datalayer/cache.h"
 #include <boost/make_shared.hpp>
 
+#include "chunks/chunk.hpp"
+#include "segment/page.h"
+
 namespace om {
 namespace datalayer {
 
@@ -18,8 +21,12 @@ cache::~cache() {
     managerTransport_->close();
 }
 
-void cache::loadData(const std::string& key)
+bool cache::loadData(const std::string& key)
 {
+    if(data_.count(key)) {
+        return false;
+    }
+
     server::server_id id;
     manager_->get_server(id, key);
 
@@ -31,6 +38,8 @@ void cache::loadData(const std::string& key)
     transport->open();
     s.get(data_[key], key);
     transport->close();
+
+    return !data_[key].empty();
 }
 
 }} // namespace om::datalayer::

@@ -7,7 +7,7 @@
 
 namespace om {
 namespace volume { class volume; }
-namespace tiles { class tile; }
+namespace tiles { class Tile; }
 namespace pipeline {
 
 class mapData

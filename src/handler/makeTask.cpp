@@ -22,7 +22,7 @@ void conditionalJoin(zi::disjoint_sets<uint32_t>& sets, uint32_t id1, uint32_t i
 
 template<typename T>
 void connectedSets(const coords::globalBbox& bounds,
-                   const volume::volume& vol,
+                   volume::volume& vol,
                    const T& allowed,
                    std::vector<std::set<int32_t> >& results)
 {
@@ -71,9 +71,9 @@ void connectedSets(const coords::globalBbox& bounds,
 }
 
 void get_seeds(std::vector<std::set<int32_t> >& seeds,
-               const volume::volume& taskVolume,
+               volume::volume& taskVolume,
                const std::set<int32_t>& selected,
-               const volume::volume& adjacentVolume)
+               volume::volume& adjacentVolume)
 {
     std::cout << "Getting Seeds" << std::endl;
     FOR_EACH(it, selected) {
@@ -85,8 +85,8 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     const int DUST_SIZE_THR_2D=25;
     const int FALSE_OBJ_SIZE_THR=125;
 
-    coords::globalBbox overlap = taskVolume.Bounds();
-    overlap.intersect(adjacentVolume.Bounds());
+    coords::globalBbox overlap = taskVolume.CoordSystem().GetDataExtent();
+    overlap.intersect(adjacentVolume.CoordSystem().GetDataExtent());
 
     std::cout << "\tOverlap:\t\t" << overlap << std::endl;
 
@@ -103,7 +103,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
         }
 
         coords::globalBbox segOverlap = segData.bounds;
-        segOverlap.offset(taskVolume.Bounds().getMin());
+        segOverlap.offset(taskVolume.CoordSystem().GetDataExtent().getMin());
         segOverlap.intersect(overlap);
 
         // Does not overlap with boundary region

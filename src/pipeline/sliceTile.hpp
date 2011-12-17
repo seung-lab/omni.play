@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pipeline/stage.hpp"
+#include "chunks/chunk.hpp"
 #include "chunks/rawChunkSlicer.hpp"
 #include "datalayer/memMappedFile.hpp"
 
@@ -22,20 +23,17 @@ public:
     { }
 
     template <typename T>
-    data_var operator()(const datalayer::memMappedFile<T>& in) const
+    data_var operator()(const chunks::Chunk<T>& chunk) const
     {
         data<T> out;
-        coords::chunk cc = dc_.toChunk();
-        uint64_t offset = cc.chunkPtrOffset(dc_.volume(), sizeof(T));
-        T* chunkPtr = in.GetPtrWithOffset(offset);
-        chunks::rawChunkSlicer<T> slicer(chunkSize_, chunkPtr);
+        chunks::rawChunkSlicer<T> slicer(chunkSize_, chunk.ptr());
         out.data = slicer.GetCopyOfTile(view_, dc_.toTileDepth(view_));
         out.size = chunkSize_ * chunkSize_;
         return out;
     }
 };
 
-data_var operator>>(const dataSrcs& d, const sliceTile& v) {
+inline data_var operator>>(const chunks::ChunkVar& d, const sliceTile& v) {
     return boost::apply_visitor(v, d);
 }
 

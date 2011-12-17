@@ -1,5 +1,4 @@
 #include "handler/handler.h"
-#include "handler/validate.hpp"
 
 #include "common/common.h"
 #include "datalayer/memMappedFile.hpp"
@@ -15,7 +14,7 @@ using namespace boost;
 namespace om {
 namespace handler {
 
-void get_seg_bbox(server::bbox& _return, const volume::volume& vol, const int32_t segId)
+void get_seg_bbox(server::bbox& _return, volume::volume& vol, const int32_t segId)
 {
     utility::timer t;
     const segment::data& d = vol.GetSegmentData(segId);

@@ -3,7 +3,6 @@
 #include "boost/format.hpp"
 
 #include "handler/handler.h"
-#include "handler/validate.hpp"
 
 #include "common/common.h"
 #include "utility/timer.hpp"
