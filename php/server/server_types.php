@@ -588,22 +588,193 @@ class result {
 
 }
 
-class metadata {
+class value {
   static $_TSPEC;
 
-  public $uri = null;
-  public $bounds = null;
-  public $resolution = null;
   public $type = null;
-  public $chunkDims = null;
-  public $mipLevel = null;
+  public $int8 = null;
+  public $int16 = null;
+  public $int32 = null;
+  public $int64 = null;
+  public $double_float = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'uri',
-          'type' => TType::STRING,
+          'var' => 'type',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'int8',
+          'type' => TType::BYTE,
+          ),
+        3 => array(
+          'var' => 'int16',
+          'type' => TType::I16,
+          ),
+        4 => array(
+          'var' => 'int32',
+          'type' => TType::I32,
+          ),
+        5 => array(
+          'var' => 'int64',
+          'type' => TType::I64,
+          ),
+        6 => array(
+          'var' => 'double_float',
+          'type' => TType::DOUBLE,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['type'])) {
+        $this->type = $vals['type'];
+      }
+      if (isset($vals['int8'])) {
+        $this->int8 = $vals['int8'];
+      }
+      if (isset($vals['int16'])) {
+        $this->int16 = $vals['int16'];
+      }
+      if (isset($vals['int32'])) {
+        $this->int32 = $vals['int32'];
+      }
+      if (isset($vals['int64'])) {
+        $this->int64 = $vals['int64'];
+      }
+      if (isset($vals['double_float'])) {
+        $this->double_float = $vals['double_float'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'value';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->type);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::BYTE) {
+            $xfer += $input->readByte($this->int8);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::I16) {
+            $xfer += $input->readI16($this->int16);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->int32);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->int64);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::DOUBLE) {
+            $xfer += $input->readDouble($this->double_float);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('value');
+    if ($this->type !== null) {
+      $xfer += $output->writeFieldBegin('type', TType::I32, 1);
+      $xfer += $output->writeI32($this->type);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->int8 !== null) {
+      $xfer += $output->writeFieldBegin('int8', TType::BYTE, 2);
+      $xfer += $output->writeByte($this->int8);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->int16 !== null) {
+      $xfer += $output->writeFieldBegin('int16', TType::I16, 3);
+      $xfer += $output->writeI16($this->int16);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->int32 !== null) {
+      $xfer += $output->writeFieldBegin('int32', TType::I32, 4);
+      $xfer += $output->writeI32($this->int32);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->int64 !== null) {
+      $xfer += $output->writeFieldBegin('int64', TType::I64, 5);
+      $xfer += $output->writeI64($this->int64);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->double_float !== null) {
+      $xfer += $output->writeFieldBegin('double_float', TType::DOUBLE, 6);
+      $xfer += $output->writeDouble($this->double_float);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class metadata {
+  static $_TSPEC;
+
+  public $volId = null;
+  public $bounds = null;
+  public $resolution = null;
+  public $type = null;
+  public $chunkDims = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'volId',
+          'type' => TType::I32,
           ),
         2 => array(
           'var' => 'bounds',
@@ -619,20 +790,16 @@ class metadata {
           'var' => 'type',
           'type' => TType::I32,
           ),
-        5 => array(
+        6 => array(
           'var' => 'chunkDims',
           'type' => TType::STRUCT,
           'class' => 'vector3i',
           ),
-        6 => array(
-          'var' => 'mipLevel',
-          'type' => TType::I32,
-          ),
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['uri'])) {
-        $this->uri = $vals['uri'];
+      if (isset($vals['volId'])) {
+        $this->volId = $vals['volId'];
       }
       if (isset($vals['bounds'])) {
         $this->bounds = $vals['bounds'];
@@ -645,9 +812,6 @@ class metadata {
       }
       if (isset($vals['chunkDims'])) {
         $this->chunkDims = $vals['chunkDims'];
-      }
-      if (isset($vals['mipLevel'])) {
-        $this->mipLevel = $vals['mipLevel'];
       }
     }
   }
@@ -672,8 +836,8 @@ class metadata {
       switch ($fid)
       {
         case 1:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->uri);
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->volId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -701,17 +865,10 @@ class metadata {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 6:
           if ($ftype == TType::STRUCT) {
             $this->chunkDims = new vector3i();
             $xfer += $this->chunkDims->read($input);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 6:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->mipLevel);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -729,9 +886,9 @@ class metadata {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('metadata');
-    if ($this->uri !== null) {
-      $xfer += $output->writeFieldBegin('uri', TType::STRING, 1);
-      $xfer += $output->writeString($this->uri);
+    if ($this->volId !== null) {
+      $xfer += $output->writeFieldBegin('volId', TType::I32, 1);
+      $xfer += $output->writeI32($this->volId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->bounds !== null) {
@@ -759,13 +916,8 @@ class metadata {
       if (!is_object($this->chunkDims)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('chunkDims', TType::STRUCT, 5);
+      $xfer += $output->writeFieldBegin('chunkDims', TType::STRUCT, 6);
       $xfer += $this->chunkDims->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->mipLevel !== null) {
-      $xfer += $output->writeFieldBegin('mipLevel', TType::I32, 6);
-      $xfer += $output->writeI32($this->mipLevel);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

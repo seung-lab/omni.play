@@ -22,19 +22,24 @@ class serverHandler : virtual public serverIf {
     // Your initialization goes here
   }
 
-  void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) {
+  void get_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) {
     // Your implementation goes here
-    printf("get_chan_tile\n");
+    printf("get_tile\n");
   }
 
-  void get_seg_tiles(std::map<std::string, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view) {
+  void get_tiles(std::map<std::string, tile> & _return, const metadata& vol, const bbox& bounds, const viewType::type view, const value& filter) {
     // Your implementation goes here
-    printf("get_seg_tiles\n");
+    printf("get_tiles\n");
   }
 
-  int32_t get_seg_id(const metadata& vol, const vector3d& point) {
+  void get_value(value& _return, const metadata& vol, const vector3d& point) {
     // Your implementation goes here
-    printf("get_seg_id\n");
+    printf("get_value\n");
+  }
+
+  void get_values(std::set<value> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) {
+    // Your implementation goes here
+    printf("get_values\n");
   }
 
   void get_seg_bbox(bbox& _return, const metadata& vol, const int32_t segId) {
@@ -42,12 +47,7 @@ class serverHandler : virtual public serverIf {
     printf("get_seg_bbox\n");
   }
 
-  void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) {
-    // Your implementation goes here
-    printf("get_seg_ids\n");
-  }
-
-  void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) {
+  void get_mesh(std::string& _return, const metadata& vol, const vector3i& chunk, const int32_t segId) {
     // Your implementation goes here
     printf("get_mesh\n");
   }
@@ -57,9 +57,14 @@ class serverHandler : virtual public serverIf {
     printf("compare_results\n");
   }
 
-  void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume) {
+  void get_seeds(std::vector<std::set<value> > & _return, const metadata& taskVolume, const std::set<value> & selected, const metadata& adjacentVolume) {
     // Your implementation goes here
     printf("get_seeds\n");
+  }
+
+  void make_volume(const metadata& vol, const std::string& uri) {
+    // Your implementation goes here
+    printf("make_volume\n");
   }
 
 };

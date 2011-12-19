@@ -298,21 +298,115 @@ class result {
 
 };
 
+typedef struct _value__isset {
+  _value__isset() : int8(false), int16(false), int32(false), int64(false), double_float(false) {}
+  bool int8;
+  bool int16;
+  bool int32;
+  bool int64;
+  bool double_float;
+} _value__isset;
+
+class value {
+ public:
+
+  static const char* ascii_fingerprint; // = "1A5F7E9D274F7B4947E93F6F966E68DC";
+  static const uint8_t binary_fingerprint[16]; // = {0x1A,0x5F,0x7E,0x9D,0x27,0x4F,0x7B,0x49,0x47,0xE9,0x3F,0x6F,0x96,0x6E,0x68,0xDC};
+
+  value() : int8(0), int16(0), int32(0), int64(0), double_float(0) {
+  }
+
+  virtual ~value() throw() {}
+
+  dataType::type type;
+  int8_t int8;
+  int16_t int16;
+  int32_t int32;
+  int64_t int64;
+  double double_float;
+
+  _value__isset __isset;
+
+  void __set_type(const dataType::type val) {
+    type = val;
+  }
+
+  void __set_int8(const int8_t val) {
+    int8 = val;
+    __isset.int8 = true;
+  }
+
+  void __set_int16(const int16_t val) {
+    int16 = val;
+    __isset.int16 = true;
+  }
+
+  void __set_int32(const int32_t val) {
+    int32 = val;
+    __isset.int32 = true;
+  }
+
+  void __set_int64(const int64_t val) {
+    int64 = val;
+    __isset.int64 = true;
+  }
+
+  void __set_double_float(const double val) {
+    double_float = val;
+    __isset.double_float = true;
+  }
+
+  bool operator == (const value & rhs) const
+  {
+    if (!(type == rhs.type))
+      return false;
+    if (__isset.int8 != rhs.__isset.int8)
+      return false;
+    else if (__isset.int8 && !(int8 == rhs.int8))
+      return false;
+    if (__isset.int16 != rhs.__isset.int16)
+      return false;
+    else if (__isset.int16 && !(int16 == rhs.int16))
+      return false;
+    if (__isset.int32 != rhs.__isset.int32)
+      return false;
+    else if (__isset.int32 && !(int32 == rhs.int32))
+      return false;
+    if (__isset.int64 != rhs.__isset.int64)
+      return false;
+    else if (__isset.int64 && !(int64 == rhs.int64))
+      return false;
+    if (__isset.double_float != rhs.__isset.double_float)
+      return false;
+    else if (__isset.double_float && !(double_float == rhs.double_float))
+      return false;
+    return true;
+  }
+  bool operator != (const value &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const value & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
 typedef struct _metadata__isset {
-  _metadata__isset() : volId(false), bounds(false), resolution(false), channelType(false), segmentationType(false), chunkDims(false) {}
+  _metadata__isset() : volId(false), bounds(false), resolution(false), type(false), chunkDims(false) {}
   bool volId;
   bool bounds;
   bool resolution;
-  bool channelType;
-  bool segmentationType;
+  bool type;
   bool chunkDims;
 } _metadata__isset;
 
 class metadata {
  public:
 
-  static const char* ascii_fingerprint; // = "673B7869C1AD476E2D865D1202A99091";
-  static const uint8_t binary_fingerprint[16]; // = {0x67,0x3B,0x78,0x69,0xC1,0xAD,0x47,0x6E,0x2D,0x86,0x5D,0x12,0x02,0xA9,0x90,0x91};
+  static const char* ascii_fingerprint; // = "66D3FD5740968CE2ACC5A5F0EE9F325F";
+  static const uint8_t binary_fingerprint[16]; // = {0x66,0xD3,0xFD,0x57,0x40,0x96,0x8C,0xE2,0xAC,0xC5,0xA5,0xF0,0xEE,0x9F,0x32,0x5F};
 
   metadata() : volId(0) {
   }
@@ -322,8 +416,7 @@ class metadata {
   int32_t volId;
   bbox bounds;
   vector3i resolution;
-  dataType::type channelType;
-  dataType::type segmentationType;
+  dataType::type type;
   vector3i chunkDims;
 
   _metadata__isset __isset;
@@ -340,12 +433,8 @@ class metadata {
     resolution = val;
   }
 
-  void __set_channelType(const dataType::type val) {
-    channelType = val;
-  }
-
-  void __set_segmentationType(const dataType::type val) {
-    segmentationType = val;
+  void __set_type(const dataType::type val) {
+    type = val;
   }
 
   void __set_chunkDims(const vector3i& val) {
@@ -360,9 +449,7 @@ class metadata {
       return false;
     if (!(resolution == rhs.resolution))
       return false;
-    if (!(channelType == rhs.channelType))
-      return false;
-    if (!(segmentationType == rhs.segmentationType))
+    if (!(type == rhs.type))
       return false;
     if (!(chunkDims == rhs.chunkDims))
       return false;
