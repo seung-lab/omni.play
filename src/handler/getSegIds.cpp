@@ -1,4 +1,5 @@
 #include "handler/handler.h"
+#include "handler/validate.hpp"
 
 #include "volume/volume.h"
 
@@ -12,7 +13,7 @@ namespace handler {
 
 using namespace pipeline;
 
-int32_t get_seg_id(volume::volume& vol, coords::global point)
+int32_t get_seg_id(const volume::volume& vol, coords::global point)
 {
     utility::timer t;
     int32_t segId = vol.GetSegId(point);
@@ -21,10 +22,10 @@ int32_t get_seg_id(volume::volume& vol, coords::global point)
 }
 
 void get_seg_ids(std::set<int32_t>& _return,
-                 volume::volume& vol,
+                 const volume::volume& vol,
                  coords::global point,
                  const int radius,
-                 const common::viewType view)
+                 const server::viewType::type view)
 {
     utility::timer t;
     vol.GetSegIds(point, radius, view, _return);

@@ -21,12 +21,16 @@ public:
     {}
 
     template<typename T>
-    uint32_t operator()(const chunks::Chunk<T> c) const {
-        return c[coord_.toChunkOffset()];
+    uint32_t operator()(const datalayer::memMappedFile<T>& in) const
+    {
+        uint64_t offset = coord_.toChunk().chunkPtrOffset(coord_.volume(), sizeof(T));
+        T* chunkPtr = in.GetPtrWithOffset(offset);
+
+        return chunkPtr[coord_.toChunkOffset()];
     }
 };
 
-uint32_t operator>>(const chunks::ChunkVar& d, const getSegId& v) {
+uint32_t operator>>(const dataSrcs& d, const getSegId& v) {
     return boost::apply_visitor(v, d);
 }
 
@@ -35,25 +39,27 @@ class getSegIds : public stage
 private:
     coords::data coord_;
     int radius_;
-    common::viewType view_;
+    server::viewType::type view_;
+    coords::dataBbox bounds_;
     static const utility::pointsInCircle pts;
 
 public:
     getSegIds(coords::data coord, int radius,
-              common::viewType view)
+              server::viewType::type view, coords::dataBbox bounds)
         : coord_(coord)
         , radius_(radius)
         , view_(view)
+        , bounds_(bounds)
     {}
 
     template<typename T>
-    data_var operator()(const chunks::Chunk<T>& chunk) const {
-        return getCircle(chunk);
+    data_var operator()(const datalayer::memMappedFile<T>& in) const {
+        return getCircle(in);
     }
 
 private:
     template<typename T>
-    inline data_var getCircle(const chunks::Chunk<T> chunk) const
+    inline data_var getCircle(const datalayer::memMappedFile<T>& in) const
     {
         const std::vector<Vector2i>& points = pts.GetPtsInCircle(radius_);
 
@@ -66,13 +72,12 @@ private:
             offseted.x += it->x;
             offseted.y += it->y;
             coords::data untwisted = common::twist(offseted, view_);
-
-            coords::chunk cc = untwisted.toChunk();
-            if(cc != chunk.Coord()) {
+            if(!bounds_.contains(untwisted)) {
                 continue;
             }
 
-            segments.insert(chunk[untwisted.toChunkOffset()]);
+            int32_t segId = getSegId(in, untwisted);
+            segments.insert(segId);
         }
 
         data<uint32_t> segs;
@@ -95,7 +100,7 @@ private:
     }
 };
 
-data_var operator>>(const chunks::ChunkVar& d, const getSegIds& v) {
+data_var operator>>(const dataSrcs& d, const getSegIds& v) {
     return boost::apply_visitor(v, d);
 }
 
