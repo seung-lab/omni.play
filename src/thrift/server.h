@@ -14,70 +14,67 @@ namespace om { namespace server {
 class serverIf {
  public:
   virtual ~serverIf() {}
-  virtual void get_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) = 0;
-  virtual void get_tiles(std::map<std::string, tile> & _return, const metadata& vol, const bbox& bounds, const viewType::type view, const value& filter) = 0;
-  virtual void get_value(value& _return, const metadata& vol, const vector3d& point) = 0;
-  virtual void get_values(std::set<value> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) = 0;
+  virtual void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) = 0;
+  virtual void get_seg_tiles(std::map<std::string, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view) = 0;
+  virtual int32_t get_seg_id(const metadata& vol, const vector3d& point) = 0;
   virtual void get_seg_bbox(bbox& _return, const metadata& vol, const int32_t segId) = 0;
-  virtual void get_mesh(std::string& _return, const metadata& vol, const vector3i& chunk, const int32_t segId) = 0;
+  virtual void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) = 0;
+  virtual void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) = 0;
   virtual double compare_results(const std::vector<result> & old_results, const result& new_result) = 0;
-  virtual void get_seeds(std::vector<std::set<value> > & _return, const metadata& taskVolume, const std::set<value> & selected, const metadata& adjacentVolume) = 0;
-  virtual void make_volume(const metadata& vol, const std::string& uri) = 0;
+  virtual void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume) = 0;
 };
 
 class serverNull : virtual public serverIf {
  public:
   virtual ~serverNull() {}
-  void get_tile(tile& /* _return */, const metadata& /* vol */, const vector3d& /* point */, const viewType::type /* view */) {
+  void get_chan_tile(tile& /* _return */, const metadata& /* vol */, const vector3d& /* point */, const viewType::type /* view */) {
     return;
   }
-  void get_tiles(std::map<std::string, tile> & /* _return */, const metadata& /* vol */, const bbox& /* bounds */, const viewType::type /* view */, const value& /* filter */) {
+  void get_seg_tiles(std::map<std::string, tile> & /* _return */, const metadata& /* vol */, const int32_t /* segId */, const bbox& /* segBbox */, const viewType::type /* view */) {
     return;
   }
-  void get_value(value& /* _return */, const metadata& /* vol */, const vector3d& /* point */) {
-    return;
-  }
-  void get_values(std::set<value> & /* _return */, const metadata& /* vol */, const vector3d& /* point */, const int32_t /* radius */, const viewType::type /* view */) {
-    return;
+  int32_t get_seg_id(const metadata& /* vol */, const vector3d& /* point */) {
+    int32_t _return = 0;
+    return _return;
   }
   void get_seg_bbox(bbox& /* _return */, const metadata& /* vol */, const int32_t /* segId */) {
     return;
   }
-  void get_mesh(std::string& /* _return */, const metadata& /* vol */, const vector3i& /* chunk */, const int32_t /* segId */) {
+  void get_seg_ids(std::set<int32_t> & /* _return */, const metadata& /* vol */, const vector3d& /* point */, const int32_t /* radius */, const viewType::type /* view */) {
+    return;
+  }
+  void get_mesh(std::string& /* _return */, const std::string& /* uri */, const vector3i& /* chunk */, const int32_t /* segId */) {
     return;
   }
   double compare_results(const std::vector<result> & /* old_results */, const result& /* new_result */) {
     double _return = (double)0;
     return _return;
   }
-  void get_seeds(std::vector<std::set<value> > & /* _return */, const metadata& /* taskVolume */, const std::set<value> & /* selected */, const metadata& /* adjacentVolume */) {
-    return;
-  }
-  void make_volume(const metadata& /* vol */, const std::string& /* uri */) {
+  void get_seeds(std::vector<std::set<int32_t> > & /* _return */, const metadata& /* taskVolume */, const std::set<int32_t> & /* selected */, const metadata& /* adjacentVolume */) {
     return;
   }
 };
 
-typedef struct _server_get_tile_args__isset {
-  _server_get_tile_args__isset() : vol(false), point(false), view(false) {}
+typedef struct _server_get_chan_tile_args__isset {
+  _server_get_chan_tile_args__isset() : vol(false), point(false), view(false) {}
   bool vol;
   bool point;
   bool view;
-} _server_get_tile_args__isset;
+} _server_get_chan_tile_args__isset;
 
-class server_get_tile_args {
+class server_get_chan_tile_args {
  public:
 
-  server_get_tile_args() {
+  server_get_chan_tile_args() {
   }
 
-  virtual ~server_get_tile_args() throw() {}
+  virtual ~server_get_chan_tile_args() throw() {}
 
   metadata vol;
   vector3d point;
   viewType::type view;
 
-  _server_get_tile_args__isset __isset;
+  _server_get_chan_tile_args__isset __isset;
 
   void __set_vol(const metadata& val) {
     vol = val;
@@ -91,7 +88,7 @@ class server_get_tile_args {
     view = val;
   }
 
-  bool operator == (const server_get_tile_args & rhs) const
+  bool operator == (const server_get_chan_tile_args & rhs) const
   {
     if (!(vol == rhs.vol))
       return false;
@@ -101,11 +98,11 @@ class server_get_tile_args {
       return false;
     return true;
   }
-  bool operator != (const server_get_tile_args &rhs) const {
+  bool operator != (const server_get_chan_tile_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_tile_args & ) const;
+  bool operator < (const server_get_chan_tile_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -113,11 +110,11 @@ class server_get_tile_args {
 };
 
 
-class server_get_tile_pargs {
+class server_get_chan_tile_pargs {
  public:
 
 
-  virtual ~server_get_tile_pargs() throw() {}
+  virtual ~server_get_chan_tile_pargs() throw() {}
 
   const metadata* vol;
   const vector3d* point;
@@ -127,119 +124,119 @@ class server_get_tile_pargs {
 
 };
 
-typedef struct _server_get_tile_result__isset {
-  _server_get_tile_result__isset() : success(false) {}
+typedef struct _server_get_chan_tile_result__isset {
+  _server_get_chan_tile_result__isset() : success(false) {}
   bool success;
-} _server_get_tile_result__isset;
+} _server_get_chan_tile_result__isset;
 
-class server_get_tile_result {
+class server_get_chan_tile_result {
  public:
 
-  server_get_tile_result() {
+  server_get_chan_tile_result() {
   }
 
-  virtual ~server_get_tile_result() throw() {}
+  virtual ~server_get_chan_tile_result() throw() {}
 
   tile success;
 
-  _server_get_tile_result__isset __isset;
+  _server_get_chan_tile_result__isset __isset;
 
   void __set_success(const tile& val) {
     success = val;
   }
 
-  bool operator == (const server_get_tile_result & rhs) const
+  bool operator == (const server_get_chan_tile_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_get_tile_result &rhs) const {
+  bool operator != (const server_get_chan_tile_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_tile_result & ) const;
+  bool operator < (const server_get_chan_tile_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_tile_presult__isset {
-  _server_get_tile_presult__isset() : success(false) {}
+typedef struct _server_get_chan_tile_presult__isset {
+  _server_get_chan_tile_presult__isset() : success(false) {}
   bool success;
-} _server_get_tile_presult__isset;
+} _server_get_chan_tile_presult__isset;
 
-class server_get_tile_presult {
+class server_get_chan_tile_presult {
  public:
 
 
-  virtual ~server_get_tile_presult() throw() {}
+  virtual ~server_get_chan_tile_presult() throw() {}
 
   tile* success;
 
-  _server_get_tile_presult__isset __isset;
+  _server_get_chan_tile_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _server_get_tiles_args__isset {
-  _server_get_tiles_args__isset() : vol(false), bounds(false), view(false), filter(false) {}
+typedef struct _server_get_seg_tiles_args__isset {
+  _server_get_seg_tiles_args__isset() : vol(false), segId(false), segBbox(false), view(false) {}
   bool vol;
-  bool bounds;
+  bool segId;
+  bool segBbox;
   bool view;
-  bool filter;
-} _server_get_tiles_args__isset;
+} _server_get_seg_tiles_args__isset;
 
-class server_get_tiles_args {
+class server_get_seg_tiles_args {
  public:
 
-  server_get_tiles_args() {
+  server_get_seg_tiles_args() : segId(0) {
   }
 
-  virtual ~server_get_tiles_args() throw() {}
+  virtual ~server_get_seg_tiles_args() throw() {}
 
   metadata vol;
-  bbox bounds;
+  int32_t segId;
+  bbox segBbox;
   viewType::type view;
-  value filter;
 
-  _server_get_tiles_args__isset __isset;
+  _server_get_seg_tiles_args__isset __isset;
 
   void __set_vol(const metadata& val) {
     vol = val;
   }
 
-  void __set_bounds(const bbox& val) {
-    bounds = val;
+  void __set_segId(const int32_t val) {
+    segId = val;
+  }
+
+  void __set_segBbox(const bbox& val) {
+    segBbox = val;
   }
 
   void __set_view(const viewType::type val) {
     view = val;
   }
 
-  void __set_filter(const value& val) {
-    filter = val;
-  }
-
-  bool operator == (const server_get_tiles_args & rhs) const
+  bool operator == (const server_get_seg_tiles_args & rhs) const
   {
     if (!(vol == rhs.vol))
       return false;
-    if (!(bounds == rhs.bounds))
+    if (!(segId == rhs.segId))
+      return false;
+    if (!(segBbox == rhs.segBbox))
       return false;
     if (!(view == rhs.view))
       return false;
-    if (!(filter == rhs.filter))
-      return false;
     return true;
   }
-  bool operator != (const server_get_tiles_args &rhs) const {
+  bool operator != (const server_get_seg_tiles_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_tiles_args & ) const;
+  bool operator < (const server_get_seg_tiles_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -247,96 +244,96 @@ class server_get_tiles_args {
 };
 
 
-class server_get_tiles_pargs {
+class server_get_seg_tiles_pargs {
  public:
 
 
-  virtual ~server_get_tiles_pargs() throw() {}
+  virtual ~server_get_seg_tiles_pargs() throw() {}
 
   const metadata* vol;
-  const bbox* bounds;
+  const int32_t* segId;
+  const bbox* segBbox;
   const viewType::type* view;
-  const value* filter;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_tiles_result__isset {
-  _server_get_tiles_result__isset() : success(false) {}
+typedef struct _server_get_seg_tiles_result__isset {
+  _server_get_seg_tiles_result__isset() : success(false) {}
   bool success;
-} _server_get_tiles_result__isset;
+} _server_get_seg_tiles_result__isset;
 
-class server_get_tiles_result {
+class server_get_seg_tiles_result {
  public:
 
-  server_get_tiles_result() {
+  server_get_seg_tiles_result() {
   }
 
-  virtual ~server_get_tiles_result() throw() {}
+  virtual ~server_get_seg_tiles_result() throw() {}
 
   std::map<std::string, tile>  success;
 
-  _server_get_tiles_result__isset __isset;
+  _server_get_seg_tiles_result__isset __isset;
 
   void __set_success(const std::map<std::string, tile> & val) {
     success = val;
   }
 
-  bool operator == (const server_get_tiles_result & rhs) const
+  bool operator == (const server_get_seg_tiles_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_get_tiles_result &rhs) const {
+  bool operator != (const server_get_seg_tiles_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_tiles_result & ) const;
+  bool operator < (const server_get_seg_tiles_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_tiles_presult__isset {
-  _server_get_tiles_presult__isset() : success(false) {}
+typedef struct _server_get_seg_tiles_presult__isset {
+  _server_get_seg_tiles_presult__isset() : success(false) {}
   bool success;
-} _server_get_tiles_presult__isset;
+} _server_get_seg_tiles_presult__isset;
 
-class server_get_tiles_presult {
+class server_get_seg_tiles_presult {
  public:
 
 
-  virtual ~server_get_tiles_presult() throw() {}
+  virtual ~server_get_seg_tiles_presult() throw() {}
 
   std::map<std::string, tile> * success;
 
-  _server_get_tiles_presult__isset __isset;
+  _server_get_seg_tiles_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _server_get_value_args__isset {
-  _server_get_value_args__isset() : vol(false), point(false) {}
+typedef struct _server_get_seg_id_args__isset {
+  _server_get_seg_id_args__isset() : vol(false), point(false) {}
   bool vol;
   bool point;
-} _server_get_value_args__isset;
+} _server_get_seg_id_args__isset;
 
-class server_get_value_args {
+class server_get_seg_id_args {
  public:
 
-  server_get_value_args() {
+  server_get_seg_id_args() {
   }
 
-  virtual ~server_get_value_args() throw() {}
+  virtual ~server_get_seg_id_args() throw() {}
 
   metadata vol;
   vector3d point;
 
-  _server_get_value_args__isset __isset;
+  _server_get_seg_id_args__isset __isset;
 
   void __set_vol(const metadata& val) {
     vol = val;
@@ -346,7 +343,7 @@ class server_get_value_args {
     point = val;
   }
 
-  bool operator == (const server_get_value_args & rhs) const
+  bool operator == (const server_get_seg_id_args & rhs) const
   {
     if (!(vol == rhs.vol))
       return false;
@@ -354,11 +351,11 @@ class server_get_value_args {
       return false;
     return true;
   }
-  bool operator != (const server_get_value_args &rhs) const {
+  bool operator != (const server_get_seg_id_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_value_args & ) const;
+  bool operator < (const server_get_seg_id_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -366,11 +363,11 @@ class server_get_value_args {
 };
 
 
-class server_get_value_pargs {
+class server_get_seg_id_pargs {
  public:
 
 
-  virtual ~server_get_value_pargs() throw() {}
+  virtual ~server_get_seg_id_pargs() throw() {}
 
   const metadata* vol;
   const vector3d* point;
@@ -379,193 +376,58 @@ class server_get_value_pargs {
 
 };
 
-typedef struct _server_get_value_result__isset {
-  _server_get_value_result__isset() : success(false) {}
+typedef struct _server_get_seg_id_result__isset {
+  _server_get_seg_id_result__isset() : success(false) {}
   bool success;
-} _server_get_value_result__isset;
+} _server_get_seg_id_result__isset;
 
-class server_get_value_result {
+class server_get_seg_id_result {
  public:
 
-  server_get_value_result() {
+  server_get_seg_id_result() : success(0) {
   }
 
-  virtual ~server_get_value_result() throw() {}
+  virtual ~server_get_seg_id_result() throw() {}
 
-  value success;
+  int32_t success;
 
-  _server_get_value_result__isset __isset;
+  _server_get_seg_id_result__isset __isset;
 
-  void __set_success(const value& val) {
+  void __set_success(const int32_t val) {
     success = val;
   }
 
-  bool operator == (const server_get_value_result & rhs) const
+  bool operator == (const server_get_seg_id_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_get_value_result &rhs) const {
+  bool operator != (const server_get_seg_id_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_value_result & ) const;
+  bool operator < (const server_get_seg_id_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_value_presult__isset {
-  _server_get_value_presult__isset() : success(false) {}
+typedef struct _server_get_seg_id_presult__isset {
+  _server_get_seg_id_presult__isset() : success(false) {}
   bool success;
-} _server_get_value_presult__isset;
+} _server_get_seg_id_presult__isset;
 
-class server_get_value_presult {
+class server_get_seg_id_presult {
  public:
 
 
-  virtual ~server_get_value_presult() throw() {}
+  virtual ~server_get_seg_id_presult() throw() {}
 
-  value* success;
+  int32_t* success;
 
-  _server_get_value_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-typedef struct _server_get_values_args__isset {
-  _server_get_values_args__isset() : vol(false), point(false), radius(false), view(false) {}
-  bool vol;
-  bool point;
-  bool radius;
-  bool view;
-} _server_get_values_args__isset;
-
-class server_get_values_args {
- public:
-
-  server_get_values_args() : radius(0) {
-  }
-
-  virtual ~server_get_values_args() throw() {}
-
-  metadata vol;
-  vector3d point;
-  int32_t radius;
-  viewType::type view;
-
-  _server_get_values_args__isset __isset;
-
-  void __set_vol(const metadata& val) {
-    vol = val;
-  }
-
-  void __set_point(const vector3d& val) {
-    point = val;
-  }
-
-  void __set_radius(const int32_t val) {
-    radius = val;
-  }
-
-  void __set_view(const viewType::type val) {
-    view = val;
-  }
-
-  bool operator == (const server_get_values_args & rhs) const
-  {
-    if (!(vol == rhs.vol))
-      return false;
-    if (!(point == rhs.point))
-      return false;
-    if (!(radius == rhs.radius))
-      return false;
-    if (!(view == rhs.view))
-      return false;
-    return true;
-  }
-  bool operator != (const server_get_values_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const server_get_values_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class server_get_values_pargs {
- public:
-
-
-  virtual ~server_get_values_pargs() throw() {}
-
-  const metadata* vol;
-  const vector3d* point;
-  const int32_t* radius;
-  const viewType::type* view;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _server_get_values_result__isset {
-  _server_get_values_result__isset() : success(false) {}
-  bool success;
-} _server_get_values_result__isset;
-
-class server_get_values_result {
- public:
-
-  server_get_values_result() {
-  }
-
-  virtual ~server_get_values_result() throw() {}
-
-  std::set<value>  success;
-
-  _server_get_values_result__isset __isset;
-
-  void __set_success(const std::set<value> & val) {
-    success = val;
-  }
-
-  bool operator == (const server_get_values_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const server_get_values_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const server_get_values_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _server_get_values_presult__isset {
-  _server_get_values_presult__isset() : success(false) {}
-  bool success;
-} _server_get_values_presult__isset;
-
-class server_get_values_presult {
- public:
-
-
-  virtual ~server_get_values_presult() throw() {}
-
-  std::set<value> * success;
-
-  _server_get_values_presult__isset __isset;
+  _server_get_seg_id_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -688,9 +550,144 @@ class server_get_seg_bbox_presult {
 
 };
 
-typedef struct _server_get_mesh_args__isset {
-  _server_get_mesh_args__isset() : vol(false), chunk(false), segId(false) {}
+typedef struct _server_get_seg_ids_args__isset {
+  _server_get_seg_ids_args__isset() : vol(false), point(false), radius(false), view(false) {}
   bool vol;
+  bool point;
+  bool radius;
+  bool view;
+} _server_get_seg_ids_args__isset;
+
+class server_get_seg_ids_args {
+ public:
+
+  server_get_seg_ids_args() : radius(0) {
+  }
+
+  virtual ~server_get_seg_ids_args() throw() {}
+
+  metadata vol;
+  vector3d point;
+  int32_t radius;
+  viewType::type view;
+
+  _server_get_seg_ids_args__isset __isset;
+
+  void __set_vol(const metadata& val) {
+    vol = val;
+  }
+
+  void __set_point(const vector3d& val) {
+    point = val;
+  }
+
+  void __set_radius(const int32_t val) {
+    radius = val;
+  }
+
+  void __set_view(const viewType::type val) {
+    view = val;
+  }
+
+  bool operator == (const server_get_seg_ids_args & rhs) const
+  {
+    if (!(vol == rhs.vol))
+      return false;
+    if (!(point == rhs.point))
+      return false;
+    if (!(radius == rhs.radius))
+      return false;
+    if (!(view == rhs.view))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seg_ids_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seg_ids_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_seg_ids_pargs {
+ public:
+
+
+  virtual ~server_get_seg_ids_pargs() throw() {}
+
+  const metadata* vol;
+  const vector3d* point;
+  const int32_t* radius;
+  const viewType::type* view;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seg_ids_result__isset {
+  _server_get_seg_ids_result__isset() : success(false) {}
+  bool success;
+} _server_get_seg_ids_result__isset;
+
+class server_get_seg_ids_result {
+ public:
+
+  server_get_seg_ids_result() {
+  }
+
+  virtual ~server_get_seg_ids_result() throw() {}
+
+  std::set<int32_t>  success;
+
+  _server_get_seg_ids_result__isset __isset;
+
+  void __set_success(const std::set<int32_t> & val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_seg_ids_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seg_ids_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seg_ids_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seg_ids_presult__isset {
+  _server_get_seg_ids_presult__isset() : success(false) {}
+  bool success;
+} _server_get_seg_ids_presult__isset;
+
+class server_get_seg_ids_presult {
+ public:
+
+
+  virtual ~server_get_seg_ids_presult() throw() {}
+
+  std::set<int32_t> * success;
+
+  _server_get_seg_ids_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _server_get_mesh_args__isset {
+  _server_get_mesh_args__isset() : uri(false), chunk(false), segId(false) {}
+  bool uri;
   bool chunk;
   bool segId;
 } _server_get_mesh_args__isset;
@@ -698,19 +695,19 @@ typedef struct _server_get_mesh_args__isset {
 class server_get_mesh_args {
  public:
 
-  server_get_mesh_args() : segId(0) {
+  server_get_mesh_args() : uri(""), segId(0) {
   }
 
   virtual ~server_get_mesh_args() throw() {}
 
-  metadata vol;
+  std::string uri;
   vector3i chunk;
   int32_t segId;
 
   _server_get_mesh_args__isset __isset;
 
-  void __set_vol(const metadata& val) {
-    vol = val;
+  void __set_uri(const std::string& val) {
+    uri = val;
   }
 
   void __set_chunk(const vector3i& val) {
@@ -723,7 +720,7 @@ class server_get_mesh_args {
 
   bool operator == (const server_get_mesh_args & rhs) const
   {
-    if (!(vol == rhs.vol))
+    if (!(uri == rhs.uri))
       return false;
     if (!(chunk == rhs.chunk))
       return false;
@@ -749,7 +746,7 @@ class server_get_mesh_pargs {
 
   virtual ~server_get_mesh_pargs() throw() {}
 
-  const metadata* vol;
+  const std::string* uri;
   const vector3i* chunk;
   const int32_t* segId;
 
@@ -947,7 +944,7 @@ class server_get_seeds_args {
   virtual ~server_get_seeds_args() throw() {}
 
   metadata taskVolume;
-  std::set<value>  selected;
+  std::set<int32_t>  selected;
   metadata adjacentVolume;
 
   _server_get_seeds_args__isset __isset;
@@ -956,7 +953,7 @@ class server_get_seeds_args {
     taskVolume = val;
   }
 
-  void __set_selected(const std::set<value> & val) {
+  void __set_selected(const std::set<int32_t> & val) {
     selected = val;
   }
 
@@ -993,7 +990,7 @@ class server_get_seeds_pargs {
   virtual ~server_get_seeds_pargs() throw() {}
 
   const metadata* taskVolume;
-  const std::set<value> * selected;
+  const std::set<int32_t> * selected;
   const metadata* adjacentVolume;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1013,11 +1010,11 @@ class server_get_seeds_result {
 
   virtual ~server_get_seeds_result() throw() {}
 
-  std::vector<std::set<value> >  success;
+  std::vector<std::set<int32_t> >  success;
 
   _server_get_seeds_result__isset __isset;
 
-  void __set_success(const std::vector<std::set<value> > & val) {
+  void __set_success(const std::vector<std::set<int32_t> > & val) {
     success = val;
   }
 
@@ -1049,71 +1046,11 @@ class server_get_seeds_presult {
 
   virtual ~server_get_seeds_presult() throw() {}
 
-  std::vector<std::set<value> > * success;
+  std::vector<std::set<int32_t> > * success;
 
   _server_get_seeds_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-typedef struct _server_make_volume_args__isset {
-  _server_make_volume_args__isset() : vol(false), uri(false) {}
-  bool vol;
-  bool uri;
-} _server_make_volume_args__isset;
-
-class server_make_volume_args {
- public:
-
-  server_make_volume_args() : uri("") {
-  }
-
-  virtual ~server_make_volume_args() throw() {}
-
-  metadata vol;
-  std::string uri;
-
-  _server_make_volume_args__isset __isset;
-
-  void __set_vol(const metadata& val) {
-    vol = val;
-  }
-
-  void __set_uri(const std::string& val) {
-    uri = val;
-  }
-
-  bool operator == (const server_make_volume_args & rhs) const
-  {
-    if (!(vol == rhs.vol))
-      return false;
-    if (!(uri == rhs.uri))
-      return false;
-    return true;
-  }
-  bool operator != (const server_make_volume_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const server_make_volume_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class server_make_volume_pargs {
- public:
-
-
-  virtual ~server_make_volume_pargs() throw() {}
-
-  const metadata* vol;
-  const std::string* uri;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -1137,32 +1074,30 @@ class serverClient : virtual public serverIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void get_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view);
-  void send_get_tile(const metadata& vol, const vector3d& point, const viewType::type view);
-  void recv_get_tile(tile& _return);
-  void get_tiles(std::map<std::string, tile> & _return, const metadata& vol, const bbox& bounds, const viewType::type view, const value& filter);
-  void send_get_tiles(const metadata& vol, const bbox& bounds, const viewType::type view, const value& filter);
-  void recv_get_tiles(std::map<std::string, tile> & _return);
-  void get_value(value& _return, const metadata& vol, const vector3d& point);
-  void send_get_value(const metadata& vol, const vector3d& point);
-  void recv_get_value(value& _return);
-  void get_values(std::set<value> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view);
-  void send_get_values(const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view);
-  void recv_get_values(std::set<value> & _return);
+  void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view);
+  void send_get_chan_tile(const metadata& vol, const vector3d& point, const viewType::type view);
+  void recv_get_chan_tile(tile& _return);
+  void get_seg_tiles(std::map<std::string, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view);
+  void send_get_seg_tiles(const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view);
+  void recv_get_seg_tiles(std::map<std::string, tile> & _return);
+  int32_t get_seg_id(const metadata& vol, const vector3d& point);
+  void send_get_seg_id(const metadata& vol, const vector3d& point);
+  int32_t recv_get_seg_id();
   void get_seg_bbox(bbox& _return, const metadata& vol, const int32_t segId);
   void send_get_seg_bbox(const metadata& vol, const int32_t segId);
   void recv_get_seg_bbox(bbox& _return);
-  void get_mesh(std::string& _return, const metadata& vol, const vector3i& chunk, const int32_t segId);
-  void send_get_mesh(const metadata& vol, const vector3i& chunk, const int32_t segId);
+  void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view);
+  void send_get_seg_ids(const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view);
+  void recv_get_seg_ids(std::set<int32_t> & _return);
+  void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId);
+  void send_get_mesh(const std::string& uri, const vector3i& chunk, const int32_t segId);
   void recv_get_mesh(std::string& _return);
   double compare_results(const std::vector<result> & old_results, const result& new_result);
   void send_compare_results(const std::vector<result> & old_results, const result& new_result);
   double recv_compare_results();
-  void get_seeds(std::vector<std::set<value> > & _return, const metadata& taskVolume, const std::set<value> & selected, const metadata& adjacentVolume);
-  void send_get_seeds(const metadata& taskVolume, const std::set<value> & selected, const metadata& adjacentVolume);
-  void recv_get_seeds(std::vector<std::set<value> > & _return);
-  void make_volume(const metadata& vol, const std::string& uri);
-  void send_make_volume(const metadata& vol, const std::string& uri);
+  void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume);
+  void send_get_seeds(const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume);
+  void recv_get_seeds(std::vector<std::set<int32_t> > & _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -1176,27 +1111,25 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
   virtual bool process_fn(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, std::string& fname, int32_t seqid, void* callContext);
  private:
   std::map<std::string, void (serverProcessor::*)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*)> processMap_;
-  void process_get_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_get_tiles(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_get_value(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_get_values(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_chan_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_seg_tiles(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_seg_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_bbox(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_seg_ids(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_mesh(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_compare_results(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seeds(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_make_volume(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   serverProcessor(boost::shared_ptr<serverIf> iface) :
     iface_(iface) {
-    processMap_["get_tile"] = &serverProcessor::process_get_tile;
-    processMap_["get_tiles"] = &serverProcessor::process_get_tiles;
-    processMap_["get_value"] = &serverProcessor::process_get_value;
-    processMap_["get_values"] = &serverProcessor::process_get_values;
+    processMap_["get_chan_tile"] = &serverProcessor::process_get_chan_tile;
+    processMap_["get_seg_tiles"] = &serverProcessor::process_get_seg_tiles;
+    processMap_["get_seg_id"] = &serverProcessor::process_get_seg_id;
     processMap_["get_seg_bbox"] = &serverProcessor::process_get_seg_bbox;
+    processMap_["get_seg_ids"] = &serverProcessor::process_get_seg_ids;
     processMap_["get_mesh"] = &serverProcessor::process_get_mesh;
     processMap_["compare_results"] = &serverProcessor::process_compare_results;
     processMap_["get_seeds"] = &serverProcessor::process_get_seeds;
-    processMap_["make_volume"] = &serverProcessor::process_make_volume;
   }
 
   virtual bool process(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot, void* callContext);
@@ -1215,50 +1148,37 @@ class serverMultiface : virtual public serverIf {
     ifaces_.push_back(iface);
   }
  public:
-  void get_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) {
+  void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
-        ifaces_[i]->get_tile(_return, vol, point, view);
+        ifaces_[i]->get_chan_tile(_return, vol, point, view);
         return;
       } else {
-        ifaces_[i]->get_tile(_return, vol, point, view);
+        ifaces_[i]->get_chan_tile(_return, vol, point, view);
       }
     }
   }
 
-  void get_tiles(std::map<std::string, tile> & _return, const metadata& vol, const bbox& bounds, const viewType::type view, const value& filter) {
+  void get_seg_tiles(std::map<std::string, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
-        ifaces_[i]->get_tiles(_return, vol, bounds, view, filter);
+        ifaces_[i]->get_seg_tiles(_return, vol, segId, segBbox, view);
         return;
       } else {
-        ifaces_[i]->get_tiles(_return, vol, bounds, view, filter);
+        ifaces_[i]->get_seg_tiles(_return, vol, segId, segBbox, view);
       }
     }
   }
 
-  void get_value(value& _return, const metadata& vol, const vector3d& point) {
+  int32_t get_seg_id(const metadata& vol, const vector3d& point) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
-        ifaces_[i]->get_value(_return, vol, point);
-        return;
+        return ifaces_[i]->get_seg_id(vol, point);
       } else {
-        ifaces_[i]->get_value(_return, vol, point);
-      }
-    }
-  }
-
-  void get_values(std::set<value> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) {
-    size_t sz = ifaces_.size();
-    for (size_t i = 0; i < sz; ++i) {
-      if (i == sz - 1) {
-        ifaces_[i]->get_values(_return, vol, point, radius, view);
-        return;
-      } else {
-        ifaces_[i]->get_values(_return, vol, point, radius, view);
+        ifaces_[i]->get_seg_id(vol, point);
       }
     }
   }
@@ -1275,14 +1195,26 @@ class serverMultiface : virtual public serverIf {
     }
   }
 
-  void get_mesh(std::string& _return, const metadata& vol, const vector3i& chunk, const int32_t segId) {
+  void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
-        ifaces_[i]->get_mesh(_return, vol, chunk, segId);
+        ifaces_[i]->get_seg_ids(_return, vol, point, radius, view);
         return;
       } else {
-        ifaces_[i]->get_mesh(_return, vol, chunk, segId);
+        ifaces_[i]->get_seg_ids(_return, vol, point, radius, view);
+      }
+    }
+  }
+
+  void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_mesh(_return, uri, chunk, segId);
+        return;
+      } else {
+        ifaces_[i]->get_mesh(_return, uri, chunk, segId);
       }
     }
   }
@@ -1298,7 +1230,7 @@ class serverMultiface : virtual public serverIf {
     }
   }
 
-  void get_seeds(std::vector<std::set<value> > & _return, const metadata& taskVolume, const std::set<value> & selected, const metadata& adjacentVolume) {
+  void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
@@ -1307,13 +1239,6 @@ class serverMultiface : virtual public serverIf {
       } else {
         ifaces_[i]->get_seeds(_return, taskVolume, selected, adjacentVolume);
       }
-    }
-  }
-
-  void make_volume(const metadata& vol, const std::string& uri) {
-    size_t sz = ifaces_.size();
-    for (size_t i = 0; i < sz; ++i) {
-      ifaces_[i]->make_volume(vol, uri);
     }
   }
 
