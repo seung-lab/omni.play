@@ -49,12 +49,12 @@ enum dataType {
 
 struct metadata
 {
-    1: i32 volId,
+    1: string uri,
     2: bbox bounds,
     3: vector3i resolution,
-    4: dataType channelType,
-    5: dataType segmentationType,
-    6: vector3i chunkDims
+    4: dataType type,
+    5: vector3i chunkDims,
+    6: i32 mipLevel
 }
 
 service server
