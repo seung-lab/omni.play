@@ -44,7 +44,7 @@ int32_t volume::GetSegId(coords::global point) const
 }
 
 void volume::GetSegIds(coords::global point, int radius,
-                       server::viewType::type view,
+                       common::viewType view,
                        std::set<int32_t>& ids) const
 {
     coords::global coord = point;

@@ -25,7 +25,7 @@ void get_seg_ids(std::set<int32_t>& _return,
                  const volume::volume& vol,
                  coords::global point,
                  const int radius,
-                 const server::viewType::type view)
+                 const common::viewType view)
 {
     utility::timer t;
     vol.GetSegIds(point, radius, view, _return);

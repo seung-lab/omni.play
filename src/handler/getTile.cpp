@@ -21,10 +21,10 @@ using namespace pipeline;
 
 void setTileBounds(server::tile& t,
                    const coords::data dc,
-                   const server::viewType::type& view)
+                   const common::viewType& view)
 {
     coords::chunk cc = dc.toChunk();
-    int depth = dc.toTileDepth(common::Convert(view));
+    int depth = dc.toTileDepth(view);
     coords::dataBbox bounds = cc.chunkBoundingBox(dc.volume());
 
     server::vector3d min = common::twist(bounds.getMin().toGlobal(), view);
@@ -42,7 +42,7 @@ void setTileBounds(server::tile& t,
 void get_chan_tile(server::tile& _return,
                    const volume::volume& vol,
                    const coords::global& point,
-                   const server::viewType::type view)
+                   const common::viewType view)
 {
     utility::timer t;
 
@@ -53,9 +53,9 @@ void get_chan_tile(server::tile& _return,
     coords::data dc = point.toData(&vol.CoordSystem(), vol.MipLevel());
 
     setTileBounds(_return, dc, view);
-    _return.view = view;
+    _return.view = common::Convert(view);
 
-    data_var encoded = vol.ChannelData() >> sliceTile(common::Convert(view), dc)
+    data_var encoded = vol.ChannelData() >> sliceTile(view, dc)
                                          >> jpeg(128,128)
                                          >> encode();
 
@@ -68,13 +68,13 @@ void get_chan_tile(server::tile& _return,
 void makeSegTile(server::tile& t,
                  const dataSrcs& src,
                  const coords::data& dc,
-                 const server::viewType::type& view,
+                 const common::viewType& view,
                  uint32_t segId)
 {
-    t.view = view;
+    t.view = common::Convert(view);
     setTileBounds(t, dc, view);
 
-    data_var encoded = src >> sliceTile(common::Convert(view), dc)
+    data_var encoded = src >> sliceTile(view, dc)
                            >> bitmask(segId)
                            >> png(128,128)
                            >> encode();
@@ -88,7 +88,7 @@ void get_seg_tiles(std::map<std::string, server::tile> & _return,
                    const volume::volume& vol,
                    const int32_t segId,
                    const coords::globalBbox& segBbox,
-                   const server::viewType::type view)
+                   const common::viewType view)
 {
     utility::timer t;
 

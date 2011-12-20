@@ -15,7 +15,7 @@ public:
                        const server::metadata& vol,
                        const server::vector3d& point,
                        const server::viewType::type view) {
-        handler::get_chan_tile(_return, vol, point, view);
+        handler::get_chan_tile(_return, vol, point, common::Convert(view));
     }
 
     void get_seg_tiles(std::map<std::string, tile> & _return,
@@ -23,7 +23,7 @@ public:
                        const int32_t segId,
                        const bbox& segBbox,
                        const viewType::type view) {
-        handler::get_seg_tiles(_return, vol, segId, segBbox, view);
+        handler::get_seg_tiles(_return, vol, segId, segBbox, common::Convert(view));
     }
 
 
@@ -36,7 +36,7 @@ public:
                      const vector3d& point,
                      const int32_t radius,
                      const viewType::type view) {
-        handler::get_seg_ids(_return, vol, point, radius, view);
+        handler::get_seg_ids(_return, vol, point, radius, common::Convert(view));
     }
 
     void get_seg_bbox(bbox& _return, const metadata& meta, const int32_t segId)

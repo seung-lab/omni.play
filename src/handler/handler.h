@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/common.h"
 #include "thrift/server.h"
 
 namespace om {
@@ -10,13 +11,13 @@ namespace handler {
 void get_chan_tile(server::tile& _return,
                    const volume::volume& vol,
                    const coords::global& point,
-                   const server::viewType::type view);
+                   const common::viewType view);
 
 void get_seg_tiles(std::map<std::string, server::tile> & _return,
                    const volume::volume& vol,
                    const int32_t segId,
                    const coords::globalBbox& segBbox,
-                   const server::viewType::type view);
+                   const common::viewType view);
 
 int32_t get_seg_id(const volume::volume& vol, coords::global point);
 
@@ -24,7 +25,7 @@ void get_seg_ids(std::set<int32_t> & _return,
                  const volume::volume& vol,
                  coords::global point,
                  const int32_t radius,
-                 const server::viewType::type view);
+                 const common::viewType view);
 
 void get_seg_bbox(server::bbox& _return, const volume::volume& vol, const int32_t segId);
 
