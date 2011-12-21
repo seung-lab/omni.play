@@ -75,7 +75,7 @@ void makeSegTile(server::tile& t,
     setTileBounds(t, dc, view);
 
     data_var encoded = src >> sliceTile(view, dc)
-                           >> bitmask(segId)
+                        // >> bitmask(segId)
                            >> png(128,128)
                            >> encode();
 
