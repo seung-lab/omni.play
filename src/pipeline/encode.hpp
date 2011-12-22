@@ -13,7 +13,7 @@ class encode : public stage
 public:
     template<typename T>
     data_var operator()(const data<T>& in) const {
-        return doEncode(reinterpret_cast<const char*>(in.data.get()), in.size);
+        return doEncode(reinterpret_cast<const char*>(in.data.get()), in.size * sizeof(T));
     }
 
     data_var operator()(const data<char>& in) const {

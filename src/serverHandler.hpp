@@ -22,7 +22,7 @@ public:
                        const metadata& vol,
                        const int32_t segId,
                        const bbox& segBbox,
-                       const viewType::type view) {
+                       const server::viewType::type view) {
         handler::get_seg_tiles(_return, vol, segId, segBbox, common::Convert(view));
     }
 

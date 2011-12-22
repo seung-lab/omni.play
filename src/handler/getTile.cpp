@@ -74,10 +74,7 @@ void makeSegTile(server::tile& t,
     t.view = common::Convert(view);
     setTileBounds(t, dc, view);
 
-    data_var encoded = src >> sliceTile(view, dc)
-                        // >> bitmask(segId)
-                           >> png(128,128)
-                           >> encode();
+    data_var encoded = src >> sliceTile(view, dc) >> encode();
 
     data<char> out = get<data<char> >(encoded);
     t.data = std::string(out.data.get(), out.size);
