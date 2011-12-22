@@ -120,14 +120,8 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
 
     std::cout << std::endl;
 
-    std::vector<std::set<int32_t> > groupedSegIds;
-    // group all the segments based on adjacency
-    connectedSets(overlap, taskVolume, intersectingSegIds, groupedSegIds);
+    boost::unordered_map<uint32_t, int> mappingCounts;
 
-    std::cout << "Separated them out into " << groupedSegIds.size()
-              << " groups of segment ids." << std::endl;
-
-    std::vector<boost::unordered_map<uint32_t, int> > mappingCounts(groupedSegIds.size());
 
     // Find corresponding Segments in adjacent volume
     for(int x = overlap.getMin().x; x < overlap.getMax().x; x++)
@@ -140,12 +134,10 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
 
                 uint32_t taskSegId = taskVolume.GetSegId(point);
 
-                for(int i = 0; i < mappingCounts.size(); i++)
-                {
-                    if ( groupedSegIds[i].count(taskSegId) ) {
-                        uint32_t adjacentSegId = adjacentVolume.GetSegId(point);
-                        ++mappingCounts[i][adjacentSegId];
-                        break;
+                if ( intersectingSegIds.count(taskSegId) ) {
+                    uint32_t adjacentSegId = adjacentVolume.GetSegId(point);
+                    if(adjacentSegId > 0) {
+                        ++mappingCounts[adjacentSegId];
                     }
                 }
             }
@@ -153,17 +145,28 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     }
 
     // Find all the segIds in the adjacent volume with enough overlap
-    for(int i = 0; i < mappingCounts.size(); i++)
-    {
-        std::set<int32_t> correspondingIds;
-        FOR_EACH(seg, mappingCounts[i]) {
-            if (seg->second >= FALSE_OBJ_SIZE_THR) {
-                correspondingIds.insert(seg->first);
-            }
+    std::set<uint32_t> correspondingIds;
+    FOR_EACH(seg, mappingCounts) {
+        if (seg->second >= FALSE_OBJ_SIZE_THR) {
+            correspondingIds.insert(seg->first);
+        } else {
+            std::cout << "Segment too small: " << seg->first
+                      << " - " << seg->second << std::endl;
         }
-        seeds.push_back(correspondingIds);
     }
 
+    std::cout << "Found " << correspondingIds.size()
+              << " segments in the adjacent volume." << std::endl;
+    FOR_EACH(it, correspondingIds) {
+        std::cout << *it << ", ";
+    }
+    std::cout << std::endl;
+
+    // group all the segments based on adjacency
+    connectedSets(overlap, adjacentVolume, correspondingIds, seeds);
+
+    std::cout << "Separated them out into " << seeds.size()
+              << " groups of segment ids." << std::endl;
 }
 
 }} // namespace om::handler
