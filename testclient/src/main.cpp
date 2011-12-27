@@ -45,13 +45,13 @@ metadata makeMetadata(int x, int y, int z)
     meta.bounds.min.x = x_min + x * offset;
     meta.bounds.min.y = y_min + y * offset;
     meta.bounds.min.z = z_min + z * offset;
-    meta.bounds.max.x = meta.bounds.min.x + num_chunks * chunk_size;
-    meta.bounds.max.y = meta.bounds.min.y + num_chunks * chunk_size;
-    meta.bounds.max.z = meta.bounds.min.z + num_chunks * chunk_size;
+    meta.bounds.max.x = meta.bounds.min.x + num_chunks * chunk_size - 1;
+    meta.bounds.max.y = meta.bounds.min.y + num_chunks * chunk_size - 1;
+    meta.bounds.max.z = meta.bounds.min.z + num_chunks * chunk_size - 1;
     stringstream ss;
     ss << "/home/balkamm/omniData/" << x << y << z << "_s"
        << meta.bounds.min.x + 1 << "_" << meta.bounds.min.y + 1 << "_" << meta.bounds.min.z + 1 << "_e"
-       << meta.bounds.max.x << "_" << meta.bounds.max.y << "_" << meta.bounds.max.z << ".omni.files";
+       << meta.bounds.max.x + 1 << "_" << meta.bounds.max.y + 1 << "_" << meta.bounds.max.z + 1 << ".omni.files";
     meta.uri = ss.str();
     meta.resolution.x = meta.resolution.y = meta.resolution.z = 1;
     meta.type = dataType::UINT32;

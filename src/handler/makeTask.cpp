@@ -13,6 +13,24 @@
 namespace om {
 namespace handler {
 
+bool inAdjacentVolume(uint32_t segId,
+                      const coords::globalBbox& seg,
+                      const coords::globalBbox& ovr,
+                      const coords::globalBbox& adj)
+{
+    std::cout << "Checking " << segId << ":\n\t" << seg << "\n+\t" << ovr << "\n=\t" << adj << std::endl;
+
+    // If the segment is touching a boundary && that boundary is inside the adj Volume.
+    // Need to adjust segment mins by 1 because segments don't go all the way to the
+    // edges of the volume.
+    return (seg.getMin().x - 1 == ovr.getMin().x && ovr.getMin().x > adj.getMin().x) ||
+           (seg.getMin().y - 1 == ovr.getMin().y && ovr.getMin().y > adj.getMin().y) ||
+           (seg.getMin().z - 1 == ovr.getMin().z && ovr.getMin().z > adj.getMin().z) ||
+           (seg.getMax().x + 1 == ovr.getMax().x && ovr.getMax().x < adj.getMax().x) ||
+           (seg.getMax().y + 1 == ovr.getMax().y && ovr.getMax().y < adj.getMax().y) ||
+           (seg.getMax().z + 1 == ovr.getMax().z && ovr.getMax().z < adj.getMax().z);
+}
+
 void conditionalJoin(zi::disjoint_sets<uint32_t>& sets, uint32_t id1, uint32_t id2)
 {
     uint32_t id1_rep = sets.find_set(id1);
@@ -90,6 +108,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
 
     std::cout << "\tOverlap:\t\t" << overlap << std::endl;
 
+    bool leavesVolume = false;
     boost::unordered_set<uint32_t> intersectingSegIds;
     // Find intersecting segIds
     FOR_EACH(it, selected)
@@ -102,14 +121,21 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
             continue;
         }
 
-        coords::globalBbox segOverlap = segData.bounds;
-        segOverlap.offset(taskVolume.Bounds().getMin());
-        segOverlap.intersect(overlap);
+        coords::dataBbox segOverlap(segData.bounds, &taskVolume.CoordSystem(), 0);
+        coords::globalBbox segOver = segOverlap.toGlobalBbox();
+        segOver.intersect(overlap);
 
         // Does not overlap with boundary region
-        if (!segOverlap.isEmpty()) {
+        if (!segOver.isEmpty()) {
             intersectingSegIds.insert(segId);
+            if(inAdjacentVolume(segId, segOverlap.toGlobalBbox(), overlap, adjacentVolume.Bounds())) {
+                leavesVolume = true;
+            }
         }
+    }
+
+    if(!leavesVolume) {
+        return;
     }
 
     std::cout << "Found " << intersectingSegIds.size()
