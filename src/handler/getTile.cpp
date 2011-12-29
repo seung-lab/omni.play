@@ -44,8 +44,6 @@ void get_chan_tile(server::tile& _return,
                    const coords::global& point,
                    const common::viewType view)
 {
-    utility::timer t;
-
     if(!vol.Bounds().contains(point)) {
         throw argException("Requested Channel Tile outside bounds of volume.");
     }
@@ -61,8 +59,6 @@ void get_chan_tile(server::tile& _return,
 
     data<char> out = get<data<char> >(encoded);
     _return.data = std::string(out.data.get(), out.size);
-
-    cout << "get_chan_tile done: " << t.s_elapsed() << " seconds" << endl;
 }
 
 void makeSegTile(server::tile& t,
@@ -87,8 +83,6 @@ void get_seg_tiles(std::map<std::string, server::tile> & _return,
                    const coords::globalBbox& segBbox,
                    const common::viewType view)
 {
-    utility::timer t;
-
     coords::globalBbox bounds = segBbox;
 
     bounds.intersect(vol.Bounds());
@@ -116,8 +110,6 @@ void get_seg_tiles(std::map<std::string, server::tile> & _return,
             }
         }
     }
-
-    std::cout << "get_seg_tiles done: " << t.s_elapsed() << " seconds" << std::endl;
 }
 
 } // namespace handler

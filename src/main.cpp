@@ -4,6 +4,7 @@
 #include <protocol/TBinaryProtocol.h>
 #include <server/TSimpleServer.h>
 #include <server/TThreadPoolServer.h>
+#include <server/TNonblockingServer.h>
 #include <transport/TServerSocket.h>
 #include <transport/TBufferTransports.h>
 #include <concurrency/ThreadManager.h>
@@ -47,8 +48,11 @@ int main(int argc, char *argv[])
     threadManager->threadFactory(threadFactory);
     threadManager->start();
 
-    TThreadPoolServer server(processor, serverTransport, transportFactory,
-                             protocolFactory, threadManager);
+//    TThreadPoolServer server(processor, serverTransport, transportFactory,
+//                             protocolFactory, threadManager);
+
+    TNonblockingServer server(processor, transportFactory, transportFactory,
+                              protocolFactory, protocolFactory, port, threadManager);
     server.serve();
     return 0;
 }

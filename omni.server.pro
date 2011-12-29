@@ -69,7 +69,7 @@ INCLUDEPATH += external/zi_lib
 INCLUDEPATH += include/yaml-cpp/include
 INCLUDEPATH += include/libb64/include
 INCLUDEPATH += $$[COMMON_PATH]/lib/include
-LIBS += $$[COMMON_PATH]/lib/bin/libomni.common.a
+LIBS += $$[COMMON_PATH]/lib/bin/libomni.common.a -levent
 
 OBJECTS_DIR = build
 MOC_DIR = build
@@ -171,7 +171,8 @@ exists(external/libs/Boost) {
 exists(external/libs/thrift) {
     INCLUDEPATH += external/libs/thrift/include/thrift/
 
-    LIBS += external/libs/thrift/lib/libthrift.a
+    LIBS += external/libs/thrift/lib/libthrift.a \
+            external/libs/thrift/lib/libthriftnb.a
 } else {
     error(please run 'bootstrap.pl 3' to install thrift)
 }
