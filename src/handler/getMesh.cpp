@@ -1,3 +1,4 @@
+#include <limits>
 
 #include "datalayer/memMappedFile.hpp"
 #include "boost/format.hpp"
@@ -25,23 +26,26 @@ void writeFile(const std::string& fnp, T const*const data, const uint64_t numByt
 
     file.write(reinterpret_cast<const char*>(data), numBytes);
 
-    if(file.fail()){
-        throw ioException("could not write file", fnp);
-    }
+//    Appears to be failing even though the file gets written...
+//    if(file.fail()){
+//        throw ioException("could not write file", fnp);
+//    }
 }
 
-void get_mesh(std::string& _return,
-              const std::string& uri,
-              const server::vector3i& chunk,
-              int32_t segId)
+boost::shared_ptr<mesh::data> get_mesh_data(std::string uri,
+                                            coords::chunk chunk,
+                                            int32_t segId)
 {
-    utility::timer t;
-    std::string path = str(boost::format("%1%/1.0000/0/%2%/%3%/%4%/")
-                           % uri % chunk.x % chunk.y % chunk.z);
+    std::string path = str(boost::format("%1%/1.0000/%2%/%3%/%4%/%5%/")
+                           % uri % chunk.getLevel() % chunk.X() % chunk.Y() % chunk.Z());
     mesh::reader reader(path);
 
-    boost::shared_ptr<mesh::data> data =
-        reader.Read(segId, coords::chunk(0, chunk.x, chunk.y, chunk.z));
+    boost::shared_ptr<mesh::data> data;
+    try {
+        data = reader.Read(segId, chunk);
+    } catch (ioException e) {
+        return boost::shared_ptr<mesh::data>();
+    }
 
     if(data->TrianDataCount()){
         throw ioException("old meshes not supported");
@@ -51,6 +55,30 @@ void get_mesh(std::string& _return,
         throw ioException("no data");
     }
 
+    return data;
+}
+
+void get_mesh(std::string& _return,
+              const std::string& uri,
+              const server::vector3i& chunk,
+              int32_t segId)
+{
+    boost::shared_ptr<mesh::data> data;
+    for(int mip = 0;; mip++)
+    {
+        coords::chunk chunkCoord(mip, chunk.x, chunk.y, chunk.z);
+        data = get_mesh_data(uri, chunkCoord, segId);
+
+        if(!data) {
+            _return = "";
+            return;
+        }
+
+        if(data->VertexDataCount() < numeric_limits<uint16_t>::max()) {
+            break;
+        }
+    }
+
     const utility::UUID uuid;
 
     std::string formatStr = "/var/www/temp_omni_imgs/segmentation-1-meshes/%1%.%2%";
@@ -58,16 +86,24 @@ void get_mesh(std::string& _return,
     std::stringstream ss;
     std::string fnp;
 
+    // Move the vertex data to a uint16 array for the sake of webgl.
+    boost::shared_ptr<uint16_t> vertexIndexData =
+        utility::smartPtr<uint16_t>::MallocNumElements(data->VertexIndexCount());
+
+    std::copy(data->VertexIndex(),
+              &data->VertexIndex()[data->VertexIndexCount()],
+              vertexIndexData.get());
+
+    // Remove trailing 0s from Strip data.
+
     writeFile(str(boost::format(formatStr) % uuid.Str() % "vertexIndexData"),
-              data->VertexIndex(), data->VertexIndexNumBytes());
+              vertexIndexData.get(), data->VertexIndexNumBytes());
     writeFile(str(boost::format(formatStr) % uuid.Str() % "vertexData"),
               data->VertexData(), data->VertexDataNumBytes());
     writeFile(str(boost::format(formatStr) % uuid.Str() % "stripData"),
               data->StripData(), data->StripDataNumBytes());
 
     _return = uuid.Str();
-
-    std::cout << "get_mesh done: " << t.s_elapsed() << " seconds" << std::endl;
 }
 
 }

@@ -5,6 +5,7 @@
 #include "segment/segmentTypes.hpp"
 #include "pipeline/mapData.hpp"
 #include "pipeline/getSegIds.hpp"
+#include <zi/zlog/zlog.hpp>
 
 namespace om {
 namespace volume {
@@ -20,6 +21,10 @@ volume::volume(const server::metadata& meta)
     , mipLevel_(meta.mipLevel)
     , coordSystem_(meta)
 {
+    if(!file::exists(uri_)) {
+        throw argException("Invalid metadata: uri not found.");
+    }
+
     const std::string chanName = str(
         boost::format("%1%/channels/channel1/%2%/volume.float.raw")
         % uri_ % mipLevel_);

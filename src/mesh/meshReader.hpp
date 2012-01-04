@@ -43,8 +43,7 @@ public:
         memMappedAllocFile chunk_table(allocTablePath);
         chunkDataReader chunk_data(dataPath);
 
-        boost::shared_ptr<data> ret =
-            boost::make_shared<data>();
+        boost::shared_ptr<data> ret = boost::make_shared<data>();
 
         const dataEntry* entry = chunk_table.Find(MakeEmptyEntry(segID));
 

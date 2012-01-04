@@ -26,8 +26,6 @@ void get_seg_bbox(server::bbox& _return, const volume::volume& vol, const int32_
     _return.max.x = d.bounds.getMax().x;
     _return.max.y = d.bounds.getMax().y;
     _return.max.z = d.bounds.getMax().z;
-
-    std::cout << "get_seg_bbox done: " << t.s_elapsed() << " seconds" << std::endl;
 }
 
 }
