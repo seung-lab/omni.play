@@ -94,6 +94,14 @@ void get_mesh(std::string& _return,
               &data->VertexIndex()[data->VertexIndexCount()],
               vertexIndexData.get());
 
+    // Find last real item in stripData.
+    int lastStrip = 0;
+    for(int i = 0; i < data->StripDataCount(); i++) {
+        if(data->StripData()[i] > 0) {
+            lastStrip = i;
+        }
+    }
+
     // Remove trailing 0s from Strip data.
 
     writeFile(str(boost::format(formatStr) % uuid.Str() % "vertexIndexData"),
@@ -101,7 +109,7 @@ void get_mesh(std::string& _return,
     writeFile(str(boost::format(formatStr) % uuid.Str() % "vertexData"),
               data->VertexData(), data->VertexDataNumBytes());
     writeFile(str(boost::format(formatStr) % uuid.Str() % "stripData"),
-              data->StripData(), data->StripDataNumBytes());
+              data->StripData(), lastStrip * sizeof(uint32_t));
 
     _return = uuid.Str();
 }
