@@ -8,7 +8,7 @@ all:
 .PHONY:
 clean:
 	echo "Cleaning..."
-	rm -rf main
+	rm -rf main *filemap
 
 #%.o:%.cpp
 #	g++ -lrt -Wall -ggdb -I../zi_lib -I../zi_lib/external/include $< -o $@
