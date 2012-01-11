@@ -1,6 +1,6 @@
-INCFLAGS	=	-I/usr/include/thrift -I/home/zlateski/code/zi_lib/external/include -I/home/zlateski/code/zi_lib
-#INCFLAGS	=	-I/usr/local/include/thrift -I/usr/local/zi_lib/external/include -I/usr/local/zi_lib
-LINKFLAGS	=	-lpthread -lthrift -ggdb -lrt -Wextra
+#INCFLAGS	=	-I/usr/include/thrift -I/home/zlateski/code/zi_lib/external/include -I/home/zlateski/code/zi_lib
+INCFLAGS	=	-I/usr/local/include/thrift -I/usr/local/zi_lib/external/include -I/usr/local/zi_lib
+LINKFLAGS	=	-lpthread -lthrift -ggdb -lrt
 .PHONY:
 all:
 	g++ storage_manager_server.skeleton.cpp storage_manager.cpp filesystem_constants.cpp filesystem_types.cpp $(INCFLAGS) $(LINKFLAGS) -o manager
