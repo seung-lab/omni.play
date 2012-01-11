@@ -57,7 +57,11 @@ class server_id {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_id & ) const;
+  bool operator < (const server_id &other ) const {
+      if (address == other.address )
+          return port < other.port;
+      return address < other.address;
+  }
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;

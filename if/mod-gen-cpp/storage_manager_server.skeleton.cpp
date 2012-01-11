@@ -79,6 +79,29 @@ public:
 	return 1;
     }
 
+
+    void free_key(const server_id& id, const std::string& key) {
+        // Your implementation goes here
+        printf("free_key\n");
+    }
+
+    void get_stats(std::map<std::string, std::string> & _return) {
+        // Your implementation goes here
+        printf("get_stats\n");
+    }
+
+    void server_full(const server_id& id) {
+        // Your implementation goes here
+        printf("server_full\n");
+    }
+
+    void multi_get(std::map<server_id, std::vector<std::string> > & _return, 
+                   const std::vector<std::string> & keys) {
+        // Your implementation goes here
+        printf("multi_get\n");
+    }
+
+
 };
 
 int main(int argc, char **argv) {

@@ -25,7 +25,7 @@ int main(int argc, char **argv){
     boost::shared_ptr<bint::storage_serverClient> s_client =
 	ThriftFactory<bint::storage_serverClient>::getClient(serv_id.address, serv_id.port);
 
-    std::map<std::string,int64_t> r;
+    std::map<std::string,std::string> r;
     s_client->get_stats(r);
 
     FOR_EACH( it, r )

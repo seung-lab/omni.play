@@ -82,6 +82,23 @@ public:
 
     }
 
+    void get_stats(std::map<std::string, std::string> & _return) {
+        // Your implementation goes here
+        printf("get_stats\n");
+    }
+
+    bool remove(const std::string& key) {
+        // Your implementation goes here
+        printf("remove\n");
+    }
+
+    void multi_get(std::map<std::string, std::string> & _return, 
+                   const std::vector<std::string> & keys) {
+        // Your implementation goes here
+        printf("multi_get\n");
+    }
+
+
 };
 
 int main(int argc, char **argv) {
