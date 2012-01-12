@@ -1,7 +1,6 @@
 #include <limits>
 
 #include "datalayer/memMappedFile.hpp"
-#include "boost/format.hpp"
 
 #include "handler/handler.h"
 #include "handler/validate.hpp"
@@ -32,51 +31,41 @@ void writeFile(const std::string& fnp, T const*const data, const uint64_t numByt
 //    }
 }
 
-boost::shared_ptr<mesh::data> get_mesh_data(std::string uri,
-                                            coords::chunk chunk,
-                                            int32_t segId)
-{
-    std::string path = str(boost::format("%1%/1.0000/%2%/%3%/%4%/%5%/")
-                           % uri % chunk.getLevel() % chunk.X() % chunk.Y() % chunk.Z());
-    mesh::reader reader(path);
-
-    boost::shared_ptr<mesh::data> data;
-    try {
-        data = reader.Read(segId, chunk);
-    } catch (ioException e) {
-        return boost::shared_ptr<mesh::data>();
-    }
-
-    if(data->TrianDataCount()){
-        throw ioException("old meshes not supported");
-    }
-
-    if(!data->HasData()){
-        throw ioException("no data");
-    }
-
-    return data;
-}
-
 void get_mesh(std::string& _return,
               const std::string& uri,
               const server::vector3i& chunk,
               int32_t segId)
 {
     boost::shared_ptr<mesh::data> data;
+    // Refactor uri into volume so that we know how many mip levels there are
     for(int mip = 0;; mip++)
     {
         coords::chunk chunkCoord(mip, chunk.x, chunk.y, chunk.z);
-        data = get_mesh_data(uri, chunkCoord, segId);
 
-        if(!data) {
+        mesh::reader reader(uri, chunkCoord);
+        mesh::dataEntry* de = reader.GetDataEntry(segId);
+        if(!de || !de->wasMeshed)
+        {
             _return = "";
             return;
         }
 
-        if(data->VertexDataCount() < numeric_limits<uint16_t>::max()) {
+        int numVertices = de->vertexData.numElements;
+        if (numVertices < numeric_limits<uint16_t>::max())
+        {
+            data = reader.Read(segId);
             break;
         }
+    }
+
+    if(data->TrianDataCount()){
+        _return = "";
+        return;
+    }
+
+    if(!data->HasData()){
+        _return = "";
+        return;
     }
 
     const utility::UUID uuid;
@@ -94,14 +83,6 @@ void get_mesh(std::string& _return,
               &data->VertexIndex()[data->VertexIndexCount()],
               vertexIndexData.get());
 
-    // Find last real item in stripData.
-    int lastStrip = 0;
-    for(int i = 0; i < data->StripDataCount(); i++) {
-        if(data->StripData()[i] > 0) {
-            lastStrip = i;
-        }
-    }
-
     // Remove trailing 0s from Strip data.
 
     writeFile(str(boost::format(formatStr) % uuid.Str() % "vertexIndexData"),
@@ -109,7 +90,7 @@ void get_mesh(std::string& _return,
     writeFile(str(boost::format(formatStr) % uuid.Str() % "vertexData"),
               data->VertexData(), data->VertexDataNumBytes());
     writeFile(str(boost::format(formatStr) % uuid.Str() % "stripData"),
-              data->StripData(), lastStrip * sizeof(uint32_t));
+              data->StripData(), data->StripDataNumBytes());
 
     _return = uuid.Str();
 }

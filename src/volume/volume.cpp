@@ -78,7 +78,7 @@ segment::data volume::GetSegmentData(int32_t segId) const
         % uri_ % pageNum);
 
     if(!file::exists(fname)) {
-        throw argException(str(boost::format("Invalid Seg Id %") % segId));
+        throw argException(str(boost::format("Invalid Seg Id %1%") % segId));
     }
 
     datalayer::memMappedFile<segment::data> page(fname);
@@ -86,7 +86,7 @@ segment::data volume::GetSegmentData(int32_t segId) const
     segment::data d = page.GetPtr()[idx];
 
     if(d.value <= 0) {
-        throw argException(str(boost::format("Invalid Seg Id %") % segId));
+        throw argException(str(boost::format("Invalid Seg Id %1%") % segId));
     }
 
     return d;
