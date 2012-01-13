@@ -151,6 +151,63 @@ class vector3i {
 
 };
 
+typedef struct _edge__isset {
+  _edge__isset() : a(false), b(false), value(false) {}
+  bool a;
+  bool b;
+  bool value;
+} _edge__isset;
+
+class edge {
+ public:
+
+  static const char* ascii_fingerprint; // = "AA65D1E80A832794F68DFF3C92410597";
+  static const uint8_t binary_fingerprint[16]; // = {0xAA,0x65,0xD1,0xE8,0x0A,0x83,0x27,0x94,0xF6,0x8D,0xFF,0x3C,0x92,0x41,0x05,0x97};
+
+  edge() : a(0), b(0), value(0) {
+  }
+
+  virtual ~edge() throw() {}
+
+  int32_t a;
+  int32_t b;
+  double value;
+
+  _edge__isset __isset;
+
+  void __set_a(const int32_t val) {
+    a = val;
+  }
+
+  void __set_b(const int32_t val) {
+    b = val;
+  }
+
+  void __set_value(const double val) {
+    value = val;
+  }
+
+  bool operator == (const edge & rhs) const
+  {
+    if (!(a == rhs.a))
+      return false;
+    if (!(b == rhs.b))
+      return false;
+    if (!(value == rhs.value))
+      return false;
+    return true;
+  }
+  bool operator != (const edge &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const edge & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
 typedef struct _bbox__isset {
   _bbox__isset() : min(false), max(false) {}
   bool min;

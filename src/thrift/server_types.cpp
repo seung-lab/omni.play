@@ -187,6 +187,82 @@ uint32_t vector3i::write(::apache::thrift::protocol::TProtocol* oprot) const {
   return xfer;
 }
 
+const char* edge::ascii_fingerprint = "AA65D1E80A832794F68DFF3C92410597";
+const uint8_t edge::binary_fingerprint[16] = {0xAA,0x65,0xD1,0xE8,0x0A,0x83,0x27,0x94,0xF6,0x8D,0xFF,0x3C,0x92,0x41,0x05,0x97};
+
+uint32_t edge::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->a);
+          this->__isset.a = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->b);
+          this->__isset.b = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_DOUBLE) {
+          xfer += iprot->readDouble(this->value);
+          this->__isset.value = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t edge::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("edge");
+  xfer += oprot->writeFieldBegin("a", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->a);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("b", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32(this->b);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_DOUBLE, 3);
+  xfer += oprot->writeDouble(this->value);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
 const char* bbox::ascii_fingerprint = "EFD57E86E580906F433F480C60E1C408";
 const uint8_t bbox::binary_fingerprint[16] = {0xEF,0xD5,0x7E,0x86,0xE5,0x80,0x90,0x6F,0x43,0x3F,0x48,0x0C,0x60,0xE1,0xC4,0x08};
 

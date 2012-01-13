@@ -14,6 +14,13 @@ struct vector3i
     3: i32 z
 }
 
+struct edge
+{
+    1: i32 a,
+    2: i32 b,
+    3: double value
+}
+
 struct bbox
 {
     1: vector3d min,
@@ -40,11 +47,11 @@ struct result
 }
 
 enum dataType {
-  INT8 = 1,
-  UINT8 = 2,
-  INT32 = 3,
-  UINT32 = 4,
-  FLOAT = 5
+    INT8 = 1,
+    UINT8 = 2,
+    INT32 = 3,
+    UINT32 = 4,
+    FLOAT = 5
 }
 
 struct metadata
@@ -59,6 +66,15 @@ struct metadata
 
 service server
 {
+    void add_chunk( 1: metadata vol, 2: vector3i chunk, 3: binary data ),
+    void delete_chunk( 1: metadata vol, 2: vector3i chunk ),
+    binary get_chunk( 1: metadata vol, 2: vector3i chunk ),
+    list<edge> get_MST( 1: metadata vol ),
+    
+    metadata create_segmentation( 1: metadata chan,
+                                  2: i32 newVolId,
+                                  3: list<string> features ),
+    
     tile get_chan_tile( 1: metadata vol, 2: vector3d point, 3: viewType view ),
 
     map<string, tile> get_seg_tiles( 1: metadata vol,

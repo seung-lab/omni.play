@@ -22,6 +22,31 @@ class serverHandler : virtual public serverIf {
     // Your initialization goes here
   }
 
+  void add_chunk(const metadata& vol, const vector3i& chunk, const std::string& data) {
+    // Your implementation goes here
+    printf("add_chunk\n");
+  }
+
+  void delete_chunk(const metadata& vol, const vector3i& chunk) {
+    // Your implementation goes here
+    printf("delete_chunk\n");
+  }
+
+  void get_chunk(std::string& _return, const metadata& vol, const vector3i& chunk) {
+    // Your implementation goes here
+    printf("get_chunk\n");
+  }
+
+  void get_MST(std::vector<edge> & _return, const metadata& vol) {
+    // Your implementation goes here
+    printf("get_MST\n");
+  }
+
+  void create_segmentation(metadata& _return, const metadata& chan, const int32_t newVolId, const std::vector<std::string> & features) {
+    // Your implementation goes here
+    printf("create_segmentation\n");
+  }
+
   void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) {
     // Your implementation goes here
     printf("get_chan_tile\n");

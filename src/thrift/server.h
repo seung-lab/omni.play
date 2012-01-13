@@ -14,6 +14,11 @@ namespace om { namespace server {
 class serverIf {
  public:
   virtual ~serverIf() {}
+  virtual void add_chunk(const metadata& vol, const vector3i& chunk, const std::string& data) = 0;
+  virtual void delete_chunk(const metadata& vol, const vector3i& chunk) = 0;
+  virtual void get_chunk(std::string& _return, const metadata& vol, const vector3i& chunk) = 0;
+  virtual void get_MST(std::vector<edge> & _return, const metadata& vol) = 0;
+  virtual void create_segmentation(metadata& _return, const metadata& chan, const int32_t newVolId, const std::vector<std::string> & features) = 0;
   virtual void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) = 0;
   virtual void get_seg_tiles(std::map<std::string, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view) = 0;
   virtual int32_t get_seg_id(const metadata& vol, const vector3d& point) = 0;
@@ -27,6 +32,21 @@ class serverIf {
 class serverNull : virtual public serverIf {
  public:
   virtual ~serverNull() {}
+  void add_chunk(const metadata& /* vol */, const vector3i& /* chunk */, const std::string& /* data */) {
+    return;
+  }
+  void delete_chunk(const metadata& /* vol */, const vector3i& /* chunk */) {
+    return;
+  }
+  void get_chunk(std::string& /* _return */, const metadata& /* vol */, const vector3i& /* chunk */) {
+    return;
+  }
+  void get_MST(std::vector<edge> & /* _return */, const metadata& /* vol */) {
+    return;
+  }
+  void create_segmentation(metadata& /* _return */, const metadata& /* chan */, const int32_t /* newVolId */, const std::vector<std::string> & /* features */) {
+    return;
+  }
   void get_chan_tile(tile& /* _return */, const metadata& /* vol */, const vector3d& /* point */, const viewType::type /* view */) {
     return;
   }
@@ -53,6 +73,560 @@ class serverNull : virtual public serverIf {
   void get_seeds(std::vector<std::set<int32_t> > & /* _return */, const metadata& /* taskVolume */, const std::set<int32_t> & /* selected */, const metadata& /* adjacentVolume */) {
     return;
   }
+};
+
+typedef struct _server_add_chunk_args__isset {
+  _server_add_chunk_args__isset() : vol(false), chunk(false), data(false) {}
+  bool vol;
+  bool chunk;
+  bool data;
+} _server_add_chunk_args__isset;
+
+class server_add_chunk_args {
+ public:
+
+  server_add_chunk_args() : data("") {
+  }
+
+  virtual ~server_add_chunk_args() throw() {}
+
+  metadata vol;
+  vector3i chunk;
+  std::string data;
+
+  _server_add_chunk_args__isset __isset;
+
+  void __set_vol(const metadata& val) {
+    vol = val;
+  }
+
+  void __set_chunk(const vector3i& val) {
+    chunk = val;
+  }
+
+  void __set_data(const std::string& val) {
+    data = val;
+  }
+
+  bool operator == (const server_add_chunk_args & rhs) const
+  {
+    if (!(vol == rhs.vol))
+      return false;
+    if (!(chunk == rhs.chunk))
+      return false;
+    if (!(data == rhs.data))
+      return false;
+    return true;
+  }
+  bool operator != (const server_add_chunk_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_add_chunk_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_add_chunk_pargs {
+ public:
+
+
+  virtual ~server_add_chunk_pargs() throw() {}
+
+  const metadata* vol;
+  const vector3i* chunk;
+  const std::string* data;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_add_chunk_result {
+ public:
+
+  server_add_chunk_result() {
+  }
+
+  virtual ~server_add_chunk_result() throw() {}
+
+
+  bool operator == (const server_add_chunk_result & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const server_add_chunk_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_add_chunk_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_add_chunk_presult {
+ public:
+
+
+  virtual ~server_add_chunk_presult() throw() {}
+
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _server_delete_chunk_args__isset {
+  _server_delete_chunk_args__isset() : vol(false), chunk(false) {}
+  bool vol;
+  bool chunk;
+} _server_delete_chunk_args__isset;
+
+class server_delete_chunk_args {
+ public:
+
+  server_delete_chunk_args() {
+  }
+
+  virtual ~server_delete_chunk_args() throw() {}
+
+  metadata vol;
+  vector3i chunk;
+
+  _server_delete_chunk_args__isset __isset;
+
+  void __set_vol(const metadata& val) {
+    vol = val;
+  }
+
+  void __set_chunk(const vector3i& val) {
+    chunk = val;
+  }
+
+  bool operator == (const server_delete_chunk_args & rhs) const
+  {
+    if (!(vol == rhs.vol))
+      return false;
+    if (!(chunk == rhs.chunk))
+      return false;
+    return true;
+  }
+  bool operator != (const server_delete_chunk_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_delete_chunk_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_delete_chunk_pargs {
+ public:
+
+
+  virtual ~server_delete_chunk_pargs() throw() {}
+
+  const metadata* vol;
+  const vector3i* chunk;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_delete_chunk_result {
+ public:
+
+  server_delete_chunk_result() {
+  }
+
+  virtual ~server_delete_chunk_result() throw() {}
+
+
+  bool operator == (const server_delete_chunk_result & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const server_delete_chunk_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_delete_chunk_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_delete_chunk_presult {
+ public:
+
+
+  virtual ~server_delete_chunk_presult() throw() {}
+
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _server_get_chunk_args__isset {
+  _server_get_chunk_args__isset() : vol(false), chunk(false) {}
+  bool vol;
+  bool chunk;
+} _server_get_chunk_args__isset;
+
+class server_get_chunk_args {
+ public:
+
+  server_get_chunk_args() {
+  }
+
+  virtual ~server_get_chunk_args() throw() {}
+
+  metadata vol;
+  vector3i chunk;
+
+  _server_get_chunk_args__isset __isset;
+
+  void __set_vol(const metadata& val) {
+    vol = val;
+  }
+
+  void __set_chunk(const vector3i& val) {
+    chunk = val;
+  }
+
+  bool operator == (const server_get_chunk_args & rhs) const
+  {
+    if (!(vol == rhs.vol))
+      return false;
+    if (!(chunk == rhs.chunk))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_chunk_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_chunk_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_chunk_pargs {
+ public:
+
+
+  virtual ~server_get_chunk_pargs() throw() {}
+
+  const metadata* vol;
+  const vector3i* chunk;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_chunk_result__isset {
+  _server_get_chunk_result__isset() : success(false) {}
+  bool success;
+} _server_get_chunk_result__isset;
+
+class server_get_chunk_result {
+ public:
+
+  server_get_chunk_result() : success("") {
+  }
+
+  virtual ~server_get_chunk_result() throw() {}
+
+  std::string success;
+
+  _server_get_chunk_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_chunk_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_chunk_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_chunk_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_chunk_presult__isset {
+  _server_get_chunk_presult__isset() : success(false) {}
+  bool success;
+} _server_get_chunk_presult__isset;
+
+class server_get_chunk_presult {
+ public:
+
+
+  virtual ~server_get_chunk_presult() throw() {}
+
+  std::string* success;
+
+  _server_get_chunk_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _server_get_MST_args__isset {
+  _server_get_MST_args__isset() : vol(false) {}
+  bool vol;
+} _server_get_MST_args__isset;
+
+class server_get_MST_args {
+ public:
+
+  server_get_MST_args() {
+  }
+
+  virtual ~server_get_MST_args() throw() {}
+
+  metadata vol;
+
+  _server_get_MST_args__isset __isset;
+
+  void __set_vol(const metadata& val) {
+    vol = val;
+  }
+
+  bool operator == (const server_get_MST_args & rhs) const
+  {
+    if (!(vol == rhs.vol))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_MST_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_MST_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_MST_pargs {
+ public:
+
+
+  virtual ~server_get_MST_pargs() throw() {}
+
+  const metadata* vol;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_MST_result__isset {
+  _server_get_MST_result__isset() : success(false) {}
+  bool success;
+} _server_get_MST_result__isset;
+
+class server_get_MST_result {
+ public:
+
+  server_get_MST_result() {
+  }
+
+  virtual ~server_get_MST_result() throw() {}
+
+  std::vector<edge>  success;
+
+  _server_get_MST_result__isset __isset;
+
+  void __set_success(const std::vector<edge> & val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_MST_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_MST_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_MST_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_MST_presult__isset {
+  _server_get_MST_presult__isset() : success(false) {}
+  bool success;
+} _server_get_MST_presult__isset;
+
+class server_get_MST_presult {
+ public:
+
+
+  virtual ~server_get_MST_presult() throw() {}
+
+  std::vector<edge> * success;
+
+  _server_get_MST_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _server_create_segmentation_args__isset {
+  _server_create_segmentation_args__isset() : chan(false), newVolId(false), features(false) {}
+  bool chan;
+  bool newVolId;
+  bool features;
+} _server_create_segmentation_args__isset;
+
+class server_create_segmentation_args {
+ public:
+
+  server_create_segmentation_args() : newVolId(0) {
+  }
+
+  virtual ~server_create_segmentation_args() throw() {}
+
+  metadata chan;
+  int32_t newVolId;
+  std::vector<std::string>  features;
+
+  _server_create_segmentation_args__isset __isset;
+
+  void __set_chan(const metadata& val) {
+    chan = val;
+  }
+
+  void __set_newVolId(const int32_t val) {
+    newVolId = val;
+  }
+
+  void __set_features(const std::vector<std::string> & val) {
+    features = val;
+  }
+
+  bool operator == (const server_create_segmentation_args & rhs) const
+  {
+    if (!(chan == rhs.chan))
+      return false;
+    if (!(newVolId == rhs.newVolId))
+      return false;
+    if (!(features == rhs.features))
+      return false;
+    return true;
+  }
+  bool operator != (const server_create_segmentation_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_create_segmentation_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_create_segmentation_pargs {
+ public:
+
+
+  virtual ~server_create_segmentation_pargs() throw() {}
+
+  const metadata* chan;
+  const int32_t* newVolId;
+  const std::vector<std::string> * features;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_create_segmentation_result__isset {
+  _server_create_segmentation_result__isset() : success(false) {}
+  bool success;
+} _server_create_segmentation_result__isset;
+
+class server_create_segmentation_result {
+ public:
+
+  server_create_segmentation_result() {
+  }
+
+  virtual ~server_create_segmentation_result() throw() {}
+
+  metadata success;
+
+  _server_create_segmentation_result__isset __isset;
+
+  void __set_success(const metadata& val) {
+    success = val;
+  }
+
+  bool operator == (const server_create_segmentation_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_create_segmentation_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_create_segmentation_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_create_segmentation_presult__isset {
+  _server_create_segmentation_presult__isset() : success(false) {}
+  bool success;
+} _server_create_segmentation_presult__isset;
+
+class server_create_segmentation_presult {
+ public:
+
+
+  virtual ~server_create_segmentation_presult() throw() {}
+
+  metadata* success;
+
+  _server_create_segmentation_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
 };
 
 typedef struct _server_get_chan_tile_args__isset {
@@ -1074,6 +1648,21 @@ class serverClient : virtual public serverIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
+  void add_chunk(const metadata& vol, const vector3i& chunk, const std::string& data);
+  void send_add_chunk(const metadata& vol, const vector3i& chunk, const std::string& data);
+  void recv_add_chunk();
+  void delete_chunk(const metadata& vol, const vector3i& chunk);
+  void send_delete_chunk(const metadata& vol, const vector3i& chunk);
+  void recv_delete_chunk();
+  void get_chunk(std::string& _return, const metadata& vol, const vector3i& chunk);
+  void send_get_chunk(const metadata& vol, const vector3i& chunk);
+  void recv_get_chunk(std::string& _return);
+  void get_MST(std::vector<edge> & _return, const metadata& vol);
+  void send_get_MST(const metadata& vol);
+  void recv_get_MST(std::vector<edge> & _return);
+  void create_segmentation(metadata& _return, const metadata& chan, const int32_t newVolId, const std::vector<std::string> & features);
+  void send_create_segmentation(const metadata& chan, const int32_t newVolId, const std::vector<std::string> & features);
+  void recv_create_segmentation(metadata& _return);
   void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view);
   void send_get_chan_tile(const metadata& vol, const vector3d& point, const viewType::type view);
   void recv_get_chan_tile(tile& _return);
@@ -1111,6 +1700,11 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
   virtual bool process_fn(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, std::string& fname, int32_t seqid, void* callContext);
  private:
   std::map<std::string, void (serverProcessor::*)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*)> processMap_;
+  void process_add_chunk(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_delete_chunk(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_chunk(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_MST(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_create_segmentation(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_chan_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_tiles(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1122,6 +1716,11 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
  public:
   serverProcessor(boost::shared_ptr<serverIf> iface) :
     iface_(iface) {
+    processMap_["add_chunk"] = &serverProcessor::process_add_chunk;
+    processMap_["delete_chunk"] = &serverProcessor::process_delete_chunk;
+    processMap_["get_chunk"] = &serverProcessor::process_get_chunk;
+    processMap_["get_MST"] = &serverProcessor::process_get_MST;
+    processMap_["create_segmentation"] = &serverProcessor::process_create_segmentation;
     processMap_["get_chan_tile"] = &serverProcessor::process_get_chan_tile;
     processMap_["get_seg_tiles"] = &serverProcessor::process_get_seg_tiles;
     processMap_["get_seg_id"] = &serverProcessor::process_get_seg_id;
@@ -1148,6 +1747,56 @@ class serverMultiface : virtual public serverIf {
     ifaces_.push_back(iface);
   }
  public:
+  void add_chunk(const metadata& vol, const vector3i& chunk, const std::string& data) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      ifaces_[i]->add_chunk(vol, chunk, data);
+    }
+  }
+
+  void delete_chunk(const metadata& vol, const vector3i& chunk) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      ifaces_[i]->delete_chunk(vol, chunk);
+    }
+  }
+
+  void get_chunk(std::string& _return, const metadata& vol, const vector3i& chunk) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_chunk(_return, vol, chunk);
+        return;
+      } else {
+        ifaces_[i]->get_chunk(_return, vol, chunk);
+      }
+    }
+  }
+
+  void get_MST(std::vector<edge> & _return, const metadata& vol) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_MST(_return, vol);
+        return;
+      } else {
+        ifaces_[i]->get_MST(_return, vol);
+      }
+    }
+  }
+
+  void create_segmentation(metadata& _return, const metadata& chan, const int32_t newVolId, const std::vector<std::string> & features) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->create_segmentation(_return, chan, newVolId, features);
+        return;
+      } else {
+        ifaces_[i]->create_segmentation(_return, chan, newVolId, features);
+      }
+    }
+  }
+
   void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
