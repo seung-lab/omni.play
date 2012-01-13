@@ -69,7 +69,8 @@ service server
     void add_chunk( 1: metadata vol, 2: vector3i chunk, 3: binary data ),
     void delete_chunk( 1: metadata vol, 2: vector3i chunk ),
     binary get_chunk( 1: metadata vol, 2: vector3i chunk ),
-    list<edge> get_MST( 1: metadata vol ),
+    list<edge> get_graph( 1: metadata vol ),
+    list<edge> get_mst( 1: metadata vol ),
     
     metadata create_segmentation( 1: metadata chan,
                                   2: i32 newVolId,
@@ -95,6 +96,10 @@ service server
     string get_mesh( 1: string uri,
                      2: vector3i chunk,
                      3: i32 segId)
+
+    string get_obj( 1: string uri,
+                    2: vector3i chunk,
+                    3: i32 segId)                     
 
     # do we need the metadata for the comparison procedure?
     double compare_results( 1: list<result> old_results, 2: result new_result)

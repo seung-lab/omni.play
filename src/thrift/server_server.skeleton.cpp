@@ -37,9 +37,14 @@ class serverHandler : virtual public serverIf {
     printf("get_chunk\n");
   }
 
-  void get_MST(std::vector<edge> & _return, const metadata& vol) {
+  void get_graph(std::vector<edge> & _return, const metadata& vol) {
     // Your implementation goes here
-    printf("get_MST\n");
+    printf("get_graph\n");
+  }
+
+  void get_mst(std::vector<edge> & _return, const metadata& vol) {
+    // Your implementation goes here
+    printf("get_mst\n");
   }
 
   void create_segmentation(metadata& _return, const metadata& chan, const int32_t newVolId, const std::vector<std::string> & features) {
@@ -75,6 +80,11 @@ class serverHandler : virtual public serverIf {
   void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) {
     // Your implementation goes here
     printf("get_mesh\n");
+  }
+
+  void get_obj(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) {
+    // Your implementation goes here
+    printf("get_obj\n");
   }
 
   double compare_results(const std::vector<result> & old_results, const result& new_result) {

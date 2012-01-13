@@ -17,7 +17,8 @@ class serverIf {
   virtual void add_chunk(const metadata& vol, const vector3i& chunk, const std::string& data) = 0;
   virtual void delete_chunk(const metadata& vol, const vector3i& chunk) = 0;
   virtual void get_chunk(std::string& _return, const metadata& vol, const vector3i& chunk) = 0;
-  virtual void get_MST(std::vector<edge> & _return, const metadata& vol) = 0;
+  virtual void get_graph(std::vector<edge> & _return, const metadata& vol) = 0;
+  virtual void get_mst(std::vector<edge> & _return, const metadata& vol) = 0;
   virtual void create_segmentation(metadata& _return, const metadata& chan, const int32_t newVolId, const std::vector<std::string> & features) = 0;
   virtual void get_chan_tile(tile& _return, const metadata& vol, const vector3d& point, const viewType::type view) = 0;
   virtual void get_seg_tiles(std::map<std::string, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view) = 0;
@@ -25,6 +26,7 @@ class serverIf {
   virtual void get_seg_bbox(bbox& _return, const metadata& vol, const int32_t segId) = 0;
   virtual void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) = 0;
   virtual void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) = 0;
+  virtual void get_obj(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) = 0;
   virtual double compare_results(const std::vector<result> & old_results, const result& new_result) = 0;
   virtual void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume) = 0;
 };
@@ -41,7 +43,10 @@ class serverNull : virtual public serverIf {
   void get_chunk(std::string& /* _return */, const metadata& /* vol */, const vector3i& /* chunk */) {
     return;
   }
-  void get_MST(std::vector<edge> & /* _return */, const metadata& /* vol */) {
+  void get_graph(std::vector<edge> & /* _return */, const metadata& /* vol */) {
+    return;
+  }
+  void get_mst(std::vector<edge> & /* _return */, const metadata& /* vol */) {
     return;
   }
   void create_segmentation(metadata& /* _return */, const metadata& /* chan */, const int32_t /* newVolId */, const std::vector<std::string> & /* features */) {
@@ -64,6 +69,9 @@ class serverNull : virtual public serverIf {
     return;
   }
   void get_mesh(std::string& /* _return */, const std::string& /* uri */, const vector3i& /* chunk */, const int32_t /* segId */) {
+    return;
+  }
+  void get_obj(std::string& /* _return */, const std::string& /* uri */, const vector3i& /* chunk */, const int32_t /* segId */) {
     return;
   }
   double compare_results(const std::vector<result> & /* old_results */, const result& /* new_result */) {
@@ -395,38 +403,38 @@ class server_get_chunk_presult {
 
 };
 
-typedef struct _server_get_MST_args__isset {
-  _server_get_MST_args__isset() : vol(false) {}
+typedef struct _server_get_graph_args__isset {
+  _server_get_graph_args__isset() : vol(false) {}
   bool vol;
-} _server_get_MST_args__isset;
+} _server_get_graph_args__isset;
 
-class server_get_MST_args {
+class server_get_graph_args {
  public:
 
-  server_get_MST_args() {
+  server_get_graph_args() {
   }
 
-  virtual ~server_get_MST_args() throw() {}
+  virtual ~server_get_graph_args() throw() {}
 
   metadata vol;
 
-  _server_get_MST_args__isset __isset;
+  _server_get_graph_args__isset __isset;
 
   void __set_vol(const metadata& val) {
     vol = val;
   }
 
-  bool operator == (const server_get_MST_args & rhs) const
+  bool operator == (const server_get_graph_args & rhs) const
   {
     if (!(vol == rhs.vol))
       return false;
     return true;
   }
-  bool operator != (const server_get_MST_args &rhs) const {
+  bool operator != (const server_get_graph_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_MST_args & ) const;
+  bool operator < (const server_get_graph_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -434,11 +442,11 @@ class server_get_MST_args {
 };
 
 
-class server_get_MST_pargs {
+class server_get_graph_pargs {
  public:
 
 
-  virtual ~server_get_MST_pargs() throw() {}
+  virtual ~server_get_graph_pargs() throw() {}
 
   const metadata* vol;
 
@@ -446,58 +454,166 @@ class server_get_MST_pargs {
 
 };
 
-typedef struct _server_get_MST_result__isset {
-  _server_get_MST_result__isset() : success(false) {}
+typedef struct _server_get_graph_result__isset {
+  _server_get_graph_result__isset() : success(false) {}
   bool success;
-} _server_get_MST_result__isset;
+} _server_get_graph_result__isset;
 
-class server_get_MST_result {
+class server_get_graph_result {
  public:
 
-  server_get_MST_result() {
+  server_get_graph_result() {
   }
 
-  virtual ~server_get_MST_result() throw() {}
+  virtual ~server_get_graph_result() throw() {}
 
   std::vector<edge>  success;
 
-  _server_get_MST_result__isset __isset;
+  _server_get_graph_result__isset __isset;
 
   void __set_success(const std::vector<edge> & val) {
     success = val;
   }
 
-  bool operator == (const server_get_MST_result & rhs) const
+  bool operator == (const server_get_graph_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const server_get_MST_result &rhs) const {
+  bool operator != (const server_get_graph_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const server_get_MST_result & ) const;
+  bool operator < (const server_get_graph_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _server_get_MST_presult__isset {
-  _server_get_MST_presult__isset() : success(false) {}
+typedef struct _server_get_graph_presult__isset {
+  _server_get_graph_presult__isset() : success(false) {}
   bool success;
-} _server_get_MST_presult__isset;
+} _server_get_graph_presult__isset;
 
-class server_get_MST_presult {
+class server_get_graph_presult {
  public:
 
 
-  virtual ~server_get_MST_presult() throw() {}
+  virtual ~server_get_graph_presult() throw() {}
 
   std::vector<edge> * success;
 
-  _server_get_MST_presult__isset __isset;
+  _server_get_graph_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _server_get_mst_args__isset {
+  _server_get_mst_args__isset() : vol(false) {}
+  bool vol;
+} _server_get_mst_args__isset;
+
+class server_get_mst_args {
+ public:
+
+  server_get_mst_args() {
+  }
+
+  virtual ~server_get_mst_args() throw() {}
+
+  metadata vol;
+
+  _server_get_mst_args__isset __isset;
+
+  void __set_vol(const metadata& val) {
+    vol = val;
+  }
+
+  bool operator == (const server_get_mst_args & rhs) const
+  {
+    if (!(vol == rhs.vol))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_mst_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_mst_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_mst_pargs {
+ public:
+
+
+  virtual ~server_get_mst_pargs() throw() {}
+
+  const metadata* vol;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_mst_result__isset {
+  _server_get_mst_result__isset() : success(false) {}
+  bool success;
+} _server_get_mst_result__isset;
+
+class server_get_mst_result {
+ public:
+
+  server_get_mst_result() {
+  }
+
+  virtual ~server_get_mst_result() throw() {}
+
+  std::vector<edge>  success;
+
+  _server_get_mst_result__isset __isset;
+
+  void __set_success(const std::vector<edge> & val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_mst_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_mst_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_mst_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_mst_presult__isset {
+  _server_get_mst_presult__isset() : success(false) {}
+  bool success;
+} _server_get_mst_presult__isset;
+
+class server_get_mst_presult {
+ public:
+
+
+  virtual ~server_get_mst_presult() throw() {}
+
+  std::vector<edge> * success;
+
+  _server_get_mst_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -1385,6 +1501,132 @@ class server_get_mesh_presult {
 
 };
 
+typedef struct _server_get_obj_args__isset {
+  _server_get_obj_args__isset() : uri(false), chunk(false), segId(false) {}
+  bool uri;
+  bool chunk;
+  bool segId;
+} _server_get_obj_args__isset;
+
+class server_get_obj_args {
+ public:
+
+  server_get_obj_args() : uri(""), segId(0) {
+  }
+
+  virtual ~server_get_obj_args() throw() {}
+
+  std::string uri;
+  vector3i chunk;
+  int32_t segId;
+
+  _server_get_obj_args__isset __isset;
+
+  void __set_uri(const std::string& val) {
+    uri = val;
+  }
+
+  void __set_chunk(const vector3i& val) {
+    chunk = val;
+  }
+
+  void __set_segId(const int32_t val) {
+    segId = val;
+  }
+
+  bool operator == (const server_get_obj_args & rhs) const
+  {
+    if (!(uri == rhs.uri))
+      return false;
+    if (!(chunk == rhs.chunk))
+      return false;
+    if (!(segId == rhs.segId))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_obj_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_obj_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_obj_pargs {
+ public:
+
+
+  virtual ~server_get_obj_pargs() throw() {}
+
+  const std::string* uri;
+  const vector3i* chunk;
+  const int32_t* segId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_obj_result__isset {
+  _server_get_obj_result__isset() : success(false) {}
+  bool success;
+} _server_get_obj_result__isset;
+
+class server_get_obj_result {
+ public:
+
+  server_get_obj_result() : success("") {
+  }
+
+  virtual ~server_get_obj_result() throw() {}
+
+  std::string success;
+
+  _server_get_obj_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_obj_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_obj_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_obj_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_obj_presult__isset {
+  _server_get_obj_presult__isset() : success(false) {}
+  bool success;
+} _server_get_obj_presult__isset;
+
+class server_get_obj_presult {
+ public:
+
+
+  virtual ~server_get_obj_presult() throw() {}
+
+  std::string* success;
+
+  _server_get_obj_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 typedef struct _server_compare_results_args__isset {
   _server_compare_results_args__isset() : old_results(false), new_result(false) {}
   bool old_results;
@@ -1657,9 +1899,12 @@ class serverClient : virtual public serverIf {
   void get_chunk(std::string& _return, const metadata& vol, const vector3i& chunk);
   void send_get_chunk(const metadata& vol, const vector3i& chunk);
   void recv_get_chunk(std::string& _return);
-  void get_MST(std::vector<edge> & _return, const metadata& vol);
-  void send_get_MST(const metadata& vol);
-  void recv_get_MST(std::vector<edge> & _return);
+  void get_graph(std::vector<edge> & _return, const metadata& vol);
+  void send_get_graph(const metadata& vol);
+  void recv_get_graph(std::vector<edge> & _return);
+  void get_mst(std::vector<edge> & _return, const metadata& vol);
+  void send_get_mst(const metadata& vol);
+  void recv_get_mst(std::vector<edge> & _return);
   void create_segmentation(metadata& _return, const metadata& chan, const int32_t newVolId, const std::vector<std::string> & features);
   void send_create_segmentation(const metadata& chan, const int32_t newVolId, const std::vector<std::string> & features);
   void recv_create_segmentation(metadata& _return);
@@ -1681,6 +1926,9 @@ class serverClient : virtual public serverIf {
   void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId);
   void send_get_mesh(const std::string& uri, const vector3i& chunk, const int32_t segId);
   void recv_get_mesh(std::string& _return);
+  void get_obj(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId);
+  void send_get_obj(const std::string& uri, const vector3i& chunk, const int32_t segId);
+  void recv_get_obj(std::string& _return);
   double compare_results(const std::vector<result> & old_results, const result& new_result);
   void send_compare_results(const std::vector<result> & old_results, const result& new_result);
   double recv_compare_results();
@@ -1703,7 +1951,8 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
   void process_add_chunk(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_delete_chunk(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_chunk(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_get_MST(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_graph(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_mst(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_create_segmentation(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_chan_tile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_tiles(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1711,6 +1960,7 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
   void process_get_seg_bbox(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_ids(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_mesh(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_obj(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_compare_results(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seeds(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
@@ -1719,7 +1969,8 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
     processMap_["add_chunk"] = &serverProcessor::process_add_chunk;
     processMap_["delete_chunk"] = &serverProcessor::process_delete_chunk;
     processMap_["get_chunk"] = &serverProcessor::process_get_chunk;
-    processMap_["get_MST"] = &serverProcessor::process_get_MST;
+    processMap_["get_graph"] = &serverProcessor::process_get_graph;
+    processMap_["get_mst"] = &serverProcessor::process_get_mst;
     processMap_["create_segmentation"] = &serverProcessor::process_create_segmentation;
     processMap_["get_chan_tile"] = &serverProcessor::process_get_chan_tile;
     processMap_["get_seg_tiles"] = &serverProcessor::process_get_seg_tiles;
@@ -1727,6 +1978,7 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
     processMap_["get_seg_bbox"] = &serverProcessor::process_get_seg_bbox;
     processMap_["get_seg_ids"] = &serverProcessor::process_get_seg_ids;
     processMap_["get_mesh"] = &serverProcessor::process_get_mesh;
+    processMap_["get_obj"] = &serverProcessor::process_get_obj;
     processMap_["compare_results"] = &serverProcessor::process_compare_results;
     processMap_["get_seeds"] = &serverProcessor::process_get_seeds;
   }
@@ -1773,14 +2025,26 @@ class serverMultiface : virtual public serverIf {
     }
   }
 
-  void get_MST(std::vector<edge> & _return, const metadata& vol) {
+  void get_graph(std::vector<edge> & _return, const metadata& vol) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
-        ifaces_[i]->get_MST(_return, vol);
+        ifaces_[i]->get_graph(_return, vol);
         return;
       } else {
-        ifaces_[i]->get_MST(_return, vol);
+        ifaces_[i]->get_graph(_return, vol);
+      }
+    }
+  }
+
+  void get_mst(std::vector<edge> & _return, const metadata& vol) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_mst(_return, vol);
+        return;
+      } else {
+        ifaces_[i]->get_mst(_return, vol);
       }
     }
   }
@@ -1864,6 +2128,18 @@ class serverMultiface : virtual public serverIf {
         return;
       } else {
         ifaces_[i]->get_mesh(_return, uri, chunk, segId);
+      }
+    }
+  }
+
+  void get_obj(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_obj(_return, uri, chunk, segId);
+        return;
+      } else {
+        ifaces_[i]->get_obj(_return, uri, chunk, segId);
       }
     }
   }
