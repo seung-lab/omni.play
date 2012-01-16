@@ -27,6 +27,12 @@ struct bbox
     2: vector3d max
 }
 
+struct segData
+{
+    1: bbox bounds,
+    2: i32 size
+}
+
 enum viewType
 {
     XY_VIEW = 1,
@@ -54,6 +60,11 @@ enum dataType {
     FLOAT = 5
 }
 
+enum volType {
+    CHANNEL = 1,
+    SEGMENTATION = 2
+}
+
 struct metadata
 {
     1: string uri,
@@ -61,7 +72,8 @@ struct metadata
     3: vector3i resolution,
     4: dataType type,
     5: vector3i chunkDims,
-    6: i32 mipLevel
+    6: i32 mipLevel,
+    7: volType vol_type
 }
 
 service server
@@ -85,8 +97,8 @@ service server
 
     i32 get_seg_id( 1: metadata vol, 2: vector3d point),
 
-    bbox get_seg_bbox( 1: metadata vol,
-                       2: i32 segId ),
+    segData get_seg_data( 1: metadata vol,
+                          2: i32 segId ),
 
     set<i32> get_seg_ids( 1: metadata vol,
                           2: vector3d point,

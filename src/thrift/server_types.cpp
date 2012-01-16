@@ -35,6 +35,16 @@ const char* _kdataTypeNames[] = {
 };
 const std::map<int, const char*> _dataType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kdataTypeValues, _kdataTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
+int _kvolTypeValues[] = {
+  volType::CHANNEL,
+  volType::SEGMENTATION
+};
+const char* _kvolTypeNames[] = {
+  "CHANNEL",
+  "SEGMENTATION"
+};
+const std::map<int, const char*> _volType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kvolTypeValues, _kvolTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 const char* vector3d::ascii_fingerprint = "EFFAD640FBA2CA56C50155B2A4545897";
 const uint8_t vector3d::binary_fingerprint[16] = {0xEF,0xFA,0xD6,0x40,0xFB,0xA2,0xCA,0x56,0xC5,0x01,0x55,0xB2,0xA4,0x54,0x58,0x97};
 
@@ -328,6 +338,71 @@ uint32_t bbox::write(::apache::thrift::protocol::TProtocol* oprot) const {
   return xfer;
 }
 
+const char* segData::ascii_fingerprint = "B3DA054E3D0E1F6B4B2B99C776187A63";
+const uint8_t segData::binary_fingerprint[16] = {0xB3,0xDA,0x05,0x4E,0x3D,0x0E,0x1F,0x6B,0x4B,0x2B,0x99,0xC7,0x76,0x18,0x7A,0x63};
+
+uint32_t segData::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->bounds.read(iprot);
+          this->__isset.bounds = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->size);
+          this->__isset.size = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t segData::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("segData");
+  xfer += oprot->writeFieldBegin("bounds", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->bounds.write(oprot);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("size", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32(this->size);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
 const char* tile::ascii_fingerprint = "89F61E823E1BFA34748CDA01327FE40C";
 const uint8_t tile::binary_fingerprint[16] = {0x89,0xF6,0x1E,0x82,0x3E,0x1B,0xFA,0x34,0x74,0x8C,0xDA,0x01,0x32,0x7F,0xE4,0x0C};
 
@@ -480,8 +555,8 @@ uint32_t result::write(::apache::thrift::protocol::TProtocol* oprot) const {
   return xfer;
 }
 
-const char* metadata::ascii_fingerprint = "F0FECCD4BD8758BFDF81BE5022C7A120";
-const uint8_t metadata::binary_fingerprint[16] = {0xF0,0xFE,0xCC,0xD4,0xBD,0x87,0x58,0xBF,0xDF,0x81,0xBE,0x50,0x22,0xC7,0xA1,0x20};
+const char* metadata::ascii_fingerprint = "B9F2183D0FD0EF0DCA59C160A61E9191";
+const uint8_t metadata::binary_fingerprint[16] = {0xB9,0xF2,0x18,0x3D,0x0F,0xD0,0xEF,0x0D,0xCA,0x59,0xC1,0x60,0xA6,0x1E,0x91,0x91};
 
 uint32_t metadata::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -553,6 +628,16 @@ uint32_t metadata::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast8;
+          xfer += iprot->readI32(ecast8);
+          this->vol_type = (volType::type)ecast8;
+          this->__isset.vol_type = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -585,6 +670,9 @@ uint32_t metadata::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldBegin("mipLevel", ::apache::thrift::protocol::T_I32, 6);
   xfer += oprot->writeI32(this->mipLevel);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldBegin("vol_type", ::apache::thrift::protocol::T_I32, 7);
+  xfer += oprot->writeI32((int32_t)this->vol_type);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();

@@ -37,6 +37,15 @@ struct dataType {
 
 extern const std::map<int, const char*> _dataType_VALUES_TO_NAMES;
 
+struct volType {
+  enum type {
+    CHANNEL = 1,
+    SEGMENTATION = 2
+  };
+};
+
+extern const std::map<int, const char*> _volType_VALUES_TO_NAMES;
+
 typedef struct _vector3d__isset {
   _vector3d__isset() : x(false), y(false), z(false) {}
   bool x;
@@ -257,6 +266,55 @@ class bbox {
 
 };
 
+typedef struct _segData__isset {
+  _segData__isset() : bounds(false), size(false) {}
+  bool bounds;
+  bool size;
+} _segData__isset;
+
+class segData {
+ public:
+
+  static const char* ascii_fingerprint; // = "B3DA054E3D0E1F6B4B2B99C776187A63";
+  static const uint8_t binary_fingerprint[16]; // = {0xB3,0xDA,0x05,0x4E,0x3D,0x0E,0x1F,0x6B,0x4B,0x2B,0x99,0xC7,0x76,0x18,0x7A,0x63};
+
+  segData() : size(0) {
+  }
+
+  virtual ~segData() throw() {}
+
+  bbox bounds;
+  int32_t size;
+
+  _segData__isset __isset;
+
+  void __set_bounds(const bbox& val) {
+    bounds = val;
+  }
+
+  void __set_size(const int32_t val) {
+    size = val;
+  }
+
+  bool operator == (const segData & rhs) const
+  {
+    if (!(bounds == rhs.bounds))
+      return false;
+    if (!(size == rhs.size))
+      return false;
+    return true;
+  }
+  bool operator != (const segData &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const segData & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
 typedef struct _tile__isset {
   _tile__isset() : view(false), bounds(false), data(false) {}
   bool view;
@@ -356,20 +414,21 @@ class result {
 };
 
 typedef struct _metadata__isset {
-  _metadata__isset() : uri(false), bounds(false), resolution(false), type(false), chunkDims(false), mipLevel(false) {}
+  _metadata__isset() : uri(false), bounds(false), resolution(false), type(false), chunkDims(false), mipLevel(false), vol_type(false) {}
   bool uri;
   bool bounds;
   bool resolution;
   bool type;
   bool chunkDims;
   bool mipLevel;
+  bool vol_type;
 } _metadata__isset;
 
 class metadata {
  public:
 
-  static const char* ascii_fingerprint; // = "F0FECCD4BD8758BFDF81BE5022C7A120";
-  static const uint8_t binary_fingerprint[16]; // = {0xF0,0xFE,0xCC,0xD4,0xBD,0x87,0x58,0xBF,0xDF,0x81,0xBE,0x50,0x22,0xC7,0xA1,0x20};
+  static const char* ascii_fingerprint; // = "B9F2183D0FD0EF0DCA59C160A61E9191";
+  static const uint8_t binary_fingerprint[16]; // = {0xB9,0xF2,0x18,0x3D,0x0F,0xD0,0xEF,0x0D,0xCA,0x59,0xC1,0x60,0xA6,0x1E,0x91,0x91};
 
   metadata() : uri(""), mipLevel(0) {
   }
@@ -382,6 +441,7 @@ class metadata {
   dataType::type type;
   vector3i chunkDims;
   int32_t mipLevel;
+  volType::type vol_type;
 
   _metadata__isset __isset;
 
@@ -409,6 +469,10 @@ class metadata {
     mipLevel = val;
   }
 
+  void __set_vol_type(const volType::type val) {
+    vol_type = val;
+  }
+
   bool operator == (const metadata & rhs) const
   {
     if (!(uri == rhs.uri))
@@ -422,6 +486,8 @@ class metadata {
     if (!(chunkDims == rhs.chunkDims))
       return false;
     if (!(mipLevel == rhs.mipLevel))
+      return false;
+    if (!(vol_type == rhs.vol_type))
       return false;
     return true;
   }
