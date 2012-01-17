@@ -1,7 +1,8 @@
 #pragma once
 
+#include <string>
 #include "pipeline/stage.hpp"
-#include <fstream>
+
 
 namespace om {
 namespace pipeline {
@@ -9,21 +10,20 @@ namespace pipeline {
 class write_out : public stage
 {
 private:
-    std::string fnp_;
+    std::string& dest_;
 
 public:
-    write_out(std::string fnp)
-        : fnp_(fnp)
+    write_out(std::string& dest)
+        : dest_(dest)
     { }
 
     template<typename T>
     data_var operator()(const data<T>& d) const
     {
-        std::ofstream fout(fnp_.c_str());
-
-        for(int i = 0; i < d.size; i++) {
-            fout << d.data.get()[i];
-        }
+        int size = d.size * sizeof(T);
+        dest_.resize(size);
+        char* data = reinterpret_cast<char*>(d.data.get());
+        dest_.assign(data, size);
         return d;
     }
 };

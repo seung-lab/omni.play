@@ -4,6 +4,7 @@ builds
 lib
 libs
 omni.server.kdev4
+*.sublime-workspace
 src/thrift
 external/srcs
 *~

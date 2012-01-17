@@ -14,11 +14,11 @@ private:
     std::string uri_;
     coords::globalBbox bounds_;
     Vector3i resolution_;
-    server::dataType::type type_; // Replace with omni type?
+    server::dataType::type dataType_; // Replace with omni type?
+    server::volType::type volType_;
     Vector3i chunkDims_;
     int32_t mipLevel_;
-    pipeline::dataSrcs chanData_;
-    pipeline::dataSrcs segmentationData_;
+    pipeline::dataSrcs data_;
 //    segment::dataManager segData_;
     coords::volumeSystem coordSystem_;
 
@@ -37,8 +37,12 @@ public:
         return resolution_;
     }
 
-    inline server::dataType::type Type() const {
-        return type_;
+    inline server::dataType::type DataType() const {
+        return dataType_;
+    }
+
+    inline server::volType::type VolumeType() const {
+        return volType_;
     }
 
     inline const Vector3i& ChunkDims() const {
@@ -49,12 +53,8 @@ public:
         return mipLevel_;
     }
 
-    inline const pipeline::dataSrcs& ChannelData() const {
-        return chanData_;
-    }
-
-    inline const pipeline::dataSrcs& SegmentationData() const {
-        return segmentationData_;
+    inline const pipeline::dataSrcs& Data() const {
+        return data_;
     }
 
     inline const coords::volumeSystem& CoordSystem() const {

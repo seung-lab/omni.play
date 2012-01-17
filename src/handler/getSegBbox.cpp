@@ -15,17 +15,18 @@ using namespace boost;
 namespace om {
 namespace handler {
 
-void get_seg_bbox(server::bbox& _return, const volume::volume& vol, const int32_t segId)
+void get_seg_data(server::segData& _return, const volume::volume& vol, const int32_t segId)
 {
     utility::timer t;
     const segment::data& d = vol.GetSegmentData(segId);
 
-    _return.min.x = d.bounds.getMin().x;
-    _return.min.y = d.bounds.getMin().y;
-    _return.min.z = d.bounds.getMin().z;
-    _return.max.x = d.bounds.getMax().x;
-    _return.max.y = d.bounds.getMax().y;
-    _return.max.z = d.bounds.getMax().z;
+    _return.bounds.min.x = d.bounds.getMin().x;
+    _return.bounds.min.y = d.bounds.getMin().y;
+    _return.bounds.min.z = d.bounds.getMin().z;
+    _return.bounds.max.x = d.bounds.getMax().x;
+    _return.bounds.max.y = d.bounds.getMax().y;
+    _return.bounds.max.z = d.bounds.getMax().z;
+    _return.size = d.size;
 }
 
 }

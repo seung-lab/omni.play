@@ -8,6 +8,10 @@ namespace volume { class volume; }
 namespace coords { class global; class globalBbox; }
 namespace handler {
 
+void get_chunk(std::string& _return,
+               const volume::volume& vol,
+               const server::vector3i& chunk);
+
 void get_chan_tile(server::tile& _return,
                    const volume::volume& vol,
                    const coords::global& point,
@@ -27,7 +31,7 @@ void get_seg_ids(std::set<int32_t> & _return,
                  const int32_t radius,
                  const common::viewType view);
 
-void get_seg_bbox(server::bbox& _return, const volume::volume& vol, const int32_t segId);
+void get_seg_data(server::segData& _return, const volume::volume& vol, const int32_t segId);
 
 double compare_results(const std::vector<server::result> & old_results,
                        const server::result& new_result);

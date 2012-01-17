@@ -30,6 +30,7 @@ HEADERS +=  \
 	src/mesh/meshChunkTypes.hpp \
 	src/mesh/meshReader.hpp \
 	src/pipeline/bitmask.hpp \
+	src/pipeline/chunk.hpp \
 	src/pipeline/encode.hpp \
 	src/pipeline/filter.hpp \
 	src/pipeline/getSegIds.hpp \
@@ -49,6 +50,7 @@ SOURCES +=  \
 	src/chunks/chunk.cpp \
 	src/datalayer/cache.cpp \
 	src/datalayer/file.cpp \
+	src/handler/chunker.cpp \
 	src/handler/compareResults.cpp \
 	src/handler/getMesh.cpp \
 	src/handler/getSegBbox.cpp \

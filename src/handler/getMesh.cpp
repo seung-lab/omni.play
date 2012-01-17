@@ -42,19 +42,27 @@ void get_mesh(std::string& _return,
     {
         coords::chunk chunkCoord(mip, chunk.x, chunk.y, chunk.z);
 
-        mesh::reader reader(uri, chunkCoord);
-        mesh::dataEntry* de = reader.GetDataEntry(segId);
-        if(!de || !de->wasMeshed)
+        try
+        {
+            mesh::reader reader(uri, chunkCoord);
+            mesh::dataEntry* de = reader.GetDataEntry(segId);
+            if(!de || !de->wasMeshed)
+            {
+                _return = "";
+                return;
+            }
+
+            int numVertices = de->vertexData.numElements;
+            if (numVertices < numeric_limits<uint16_t>::max())
+            {
+                data = reader.Read(segId);
+                break;
+            }
+        }
+        catch (exception e)
         {
             _return = "";
             return;
-        }
-
-        int numVertices = de->vertexData.numElements;
-        if (numVertices < numeric_limits<uint16_t>::max())
-        {
-            data = reader.Read(segId);
-            break;
         }
     }
 

@@ -16,7 +16,8 @@ volume::volume(const server::metadata& meta)
     : uri_(meta.uri)
     , bounds_(meta.bounds)
     , resolution_(common::Convert(meta.resolution))
-    , type_(meta.type)
+    , dataType_(meta.type)
+    , volType_(meta.vol_type)
     , chunkDims_(common::Convert(meta.chunkDims))
     , mipLevel_(meta.mipLevel)
     , coordSystem_(meta)
@@ -25,19 +26,30 @@ volume::volume(const server::metadata& meta)
         throw argException("Invalid metadata: uri not found.");
     }
 
-    const std::string chanName = str(
-        boost::format("%1%/channels/channel1/%2%/volume.float.raw")
-        % uri_ % mipLevel_);
+    switch(volType_)
+    {
+        case server::volType::CHANNEL:
+        {
+            const std::string chanName = str(
+                boost::format("%1%/channels/channel1/%2%/volume.float.raw")
+                % uri_ % mipLevel_);
 
-    mapData mapped(chanName, server::dataType::FLOAT); // Ignore dataType for now.
-    chanData_ = mapped.file();
+            mapData mapped(chanName, server::dataType::FLOAT); // Ignore dataType for now.
+            data_ = mapped.file();
+            break;
+        }
+        case server::volType::SEGMENTATION:
+        {
+            
+            const std::string segName = str(
+                boost::format("%1%/segmentations/segmentation1/%2%/volume.uint32_t.raw")
+                % uri_ % mipLevel_);
 
-    const std::string segName = str(
-        boost::format("%1%/segmentations/segmentation1/%2%/volume.uint32_t.raw")
-        % uri_ % mipLevel_);
-
-    mapData mappedSeg(segName, server::dataType::UINT32); // Ignore dataType for now.
-    segmentationData_ = mappedSeg.file();
+            mapData mappedSeg(segName, server::dataType::UINT32); // Ignore dataType for now.
+            data_ = mappedSeg.file();
+            break;
+        }
+    }
 }
 
 int32_t volume::GetSegId(coords::global point) const
@@ -45,7 +57,7 @@ int32_t volume::GetSegId(coords::global point) const
     coords::global coord = point;
     coords::data dc = coord.toData(&coordSystem_, mipLevel_);
 
-    return segmentationData_ >> getSegId(dc);
+    return data_ >> getSegId(dc);
 }
 
 void volume::GetSegIds(coords::global point, int radius,
@@ -55,7 +67,7 @@ void volume::GetSegIds(coords::global point, int radius,
     coords::global coord = point;
     coords::data dc = coord.toData(&coordSystem_, mipLevel_);
 
-    data_var id = segmentationData_ >> getSegIds(dc, radius, view,
+    data_var id = data_ >> getSegIds(dc, radius, view,
                                                  bounds_.toDataBbox(&coordSystem_, mipLevel_));
 
     data<uint32_t> found = boost::get<data<uint32_t> >(id);

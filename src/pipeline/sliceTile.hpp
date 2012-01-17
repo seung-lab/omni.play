@@ -39,5 +39,4 @@ data_var operator>>(const dataSrcs& d, const sliceTile& v) {
     return boost::apply_visitor(v, d);
 }
 
-}
-}
+}}
