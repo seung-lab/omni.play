@@ -83,11 +83,11 @@ service server
     binary get_chunk( 1: metadata vol, 2: vector3i chunk ),
     list<edge> get_graph( 1: metadata vol ),
     list<edge> get_mst( 1: metadata vol ),
-    
+
     metadata create_segmentation( 1: metadata chan,
                                   2: i32 newVolId,
                                   3: list<string> features ),
-    
+
     tile get_chan_tile( 1: metadata vol, 2: vector3d point, 3: viewType view ),
 
     map<string, tile> get_seg_tiles( 1: metadata vol,
@@ -106,12 +106,11 @@ service server
                           4: viewType view),
 
     string get_mesh( 1: string uri,
-                     2: vector3i chunk,
-                     3: i32 segId)
+                     2: i32 segId)
 
     string get_obj( 1: string uri,
                     2: vector3i chunk,
-                    3: i32 segId)                     
+                    3: i32 segId)
 
     # do we need the metadata for the comparison procedure?
     double compare_results( 1: list<result> old_results, 2: result new_result)

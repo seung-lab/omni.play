@@ -77,7 +77,7 @@ class serverHandler : virtual public serverIf {
     printf("get_seg_ids\n");
   }
 
-  void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId) {
+  void get_mesh(std::string& _return, const std::string& uri, const int32_t segId) {
     // Your implementation goes here
     printf("get_mesh\n");
   }

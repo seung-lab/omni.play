@@ -2127,14 +2127,6 @@ uint32_t server_get_mesh_args::read(::apache::thrift::protocol::TProtocol* iprot
         }
         break;
       case 2:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->chunk.read(iprot);
-          this->__isset.chunk = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 3:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->segId);
           this->__isset.segId = true;
@@ -2160,10 +2152,7 @@ uint32_t server_get_mesh_args::write(::apache::thrift::protocol::TProtocol* opro
   xfer += oprot->writeFieldBegin("uri", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->uri);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("chunk", ::apache::thrift::protocol::T_STRUCT, 2);
-  xfer += this->chunk.write(oprot);
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("segId", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("segId", ::apache::thrift::protocol::T_I32, 2);
   xfer += oprot->writeI32(this->segId);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -2177,10 +2166,7 @@ uint32_t server_get_mesh_pargs::write(::apache::thrift::protocol::TProtocol* opr
   xfer += oprot->writeFieldBegin("uri", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->uri)));
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("chunk", ::apache::thrift::protocol::T_STRUCT, 2);
-  xfer += (*(this->chunk)).write(oprot);
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("segId", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("segId", ::apache::thrift::protocol::T_I32, 2);
   xfer += oprot->writeI32((*(this->segId)));
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -3595,20 +3581,19 @@ void serverClient::recv_get_seg_ids(std::set<int32_t> & _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_seg_ids failed: unknown result");
 }
 
-void serverClient::get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t segId)
+void serverClient::get_mesh(std::string& _return, const std::string& uri, const int32_t segId)
 {
-  send_get_mesh(uri, chunk, segId);
+  send_get_mesh(uri, segId);
   recv_get_mesh(_return);
 }
 
-void serverClient::send_get_mesh(const std::string& uri, const vector3i& chunk, const int32_t segId)
+void serverClient::send_get_mesh(const std::string& uri, const int32_t segId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("get_mesh", ::apache::thrift::protocol::T_CALL, cseqid);
 
   server_get_mesh_pargs args;
   args.uri = &uri;
-  args.chunk = &chunk;
   args.segId = &segId;
   args.write(oprot_);
 
@@ -4494,7 +4479,7 @@ void serverProcessor::process_get_mesh(int32_t seqid, ::apache::thrift::protocol
 
   server_get_mesh_result result;
   try {
-    iface_->get_mesh(result.success, args.uri, args.chunk, args.segId);
+    iface_->get_mesh(result.success, args.uri, args.segId);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (eventHandler_.get() != NULL) {

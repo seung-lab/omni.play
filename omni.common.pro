@@ -191,7 +191,6 @@ storage_manager_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thri
 storage_manager_cpp.depends = if/filesystem.thrift
 QMAKE_EXTRA_TARGETS += storage_manager_cpp
 
-
 php_server.target = php/server/TServer.php
 php_server.commands = mkdir php; external/libs/thrift/bin/thrift -r --out php --gen php if/server.thrift
 php_server.depends = if/server.thrift
@@ -238,7 +237,7 @@ linux-g++ {
     }
 }
 # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43943
-g++4new: QMAKE_CXXFLAGS += -Werror=return-type
+# g++4new: QMAKE_CXXFLAGS += -Werror=return-type
 
 ####
 # debug/release

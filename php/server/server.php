@@ -9,12 +9,19 @@ include_once $GLOBALS['THRIFT_ROOT'].'/Thrift.php';
 include_once $GLOBALS['THRIFT_ROOT'].'/packages/server/server_types.php';
 
 interface serverIf {
+  public function add_chunk($vol, $chunk, $data);
+  public function delete_chunk($vol, $chunk);
+  public function get_chunk($vol, $chunk);
+  public function get_graph($vol);
+  public function get_mst($vol);
+  public function create_segmentation($chan, $newVolId, $features);
   public function get_chan_tile($vol, $point, $view);
   public function get_seg_tiles($vol, $segId, $segBbox, $view);
   public function get_seg_id($vol, $point);
-  public function get_seg_bbox($vol, $segId);
+  public function get_seg_data($vol, $segId);
   public function get_seg_ids($vol, $point, $radius, $view);
   public function get_mesh($uri, $chunk, $segId);
+  public function get_obj($uri, $chunk, $segId);
   public function compare_results($old_results, $new_result);
   public function get_seeds($taskVolume, $selected, $adjacentVolume);
 }
@@ -28,6 +35,312 @@ class serverClient implements serverIf {
   public function __construct($input, $output=null) {
     $this->input_ = $input;
     $this->output_ = $output ? $output : $input;
+  }
+
+  public function add_chunk($vol, $chunk, $data)
+  {
+    $this->send_add_chunk($vol, $chunk, $data);
+    $this->recv_add_chunk();
+  }
+
+  public function send_add_chunk($vol, $chunk, $data)
+  {
+    $args = new server_add_chunk_args();
+    $args->vol = $vol;
+    $args->chunk = $chunk;
+    $args->data = $data;
+    $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'add_chunk', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('add_chunk', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_add_chunk()
+  {
+    $bin_accel = ($this->input_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'server_add_chunk_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new server_add_chunk_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    return;
+  }
+
+  public function delete_chunk($vol, $chunk)
+  {
+    $this->send_delete_chunk($vol, $chunk);
+    $this->recv_delete_chunk();
+  }
+
+  public function send_delete_chunk($vol, $chunk)
+  {
+    $args = new server_delete_chunk_args();
+    $args->vol = $vol;
+    $args->chunk = $chunk;
+    $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'delete_chunk', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('delete_chunk', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_delete_chunk()
+  {
+    $bin_accel = ($this->input_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'server_delete_chunk_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new server_delete_chunk_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    return;
+  }
+
+  public function get_chunk($vol, $chunk)
+  {
+    $this->send_get_chunk($vol, $chunk);
+    return $this->recv_get_chunk();
+  }
+
+  public function send_get_chunk($vol, $chunk)
+  {
+    $args = new server_get_chunk_args();
+    $args->vol = $vol;
+    $args->chunk = $chunk;
+    $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'get_chunk', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('get_chunk', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_get_chunk()
+  {
+    $bin_accel = ($this->input_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'server_get_chunk_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new server_get_chunk_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    throw new Exception("get_chunk failed: unknown result");
+  }
+
+  public function get_graph($vol)
+  {
+    $this->send_get_graph($vol);
+    return $this->recv_get_graph();
+  }
+
+  public function send_get_graph($vol)
+  {
+    $args = new server_get_graph_args();
+    $args->vol = $vol;
+    $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'get_graph', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('get_graph', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_get_graph()
+  {
+    $bin_accel = ($this->input_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'server_get_graph_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new server_get_graph_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    throw new Exception("get_graph failed: unknown result");
+  }
+
+  public function get_mst($vol)
+  {
+    $this->send_get_mst($vol);
+    return $this->recv_get_mst();
+  }
+
+  public function send_get_mst($vol)
+  {
+    $args = new server_get_mst_args();
+    $args->vol = $vol;
+    $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'get_mst', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('get_mst', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_get_mst()
+  {
+    $bin_accel = ($this->input_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'server_get_mst_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new server_get_mst_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    throw new Exception("get_mst failed: unknown result");
+  }
+
+  public function create_segmentation($chan, $newVolId, $features)
+  {
+    $this->send_create_segmentation($chan, $newVolId, $features);
+    return $this->recv_create_segmentation();
+  }
+
+  public function send_create_segmentation($chan, $newVolId, $features)
+  {
+    $args = new server_create_segmentation_args();
+    $args->chan = $chan;
+    $args->newVolId = $newVolId;
+    $args->features = $features;
+    $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'create_segmentation', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('create_segmentation', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_create_segmentation()
+  {
+    $bin_accel = ($this->input_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'server_create_segmentation_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new server_create_segmentation_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    throw new Exception("create_segmentation failed: unknown result");
   }
 
   public function get_chan_tile($vol, $point, $view)
@@ -189,35 +502,35 @@ class serverClient implements serverIf {
     throw new Exception("get_seg_id failed: unknown result");
   }
 
-  public function get_seg_bbox($vol, $segId)
+  public function get_seg_data($vol, $segId)
   {
-    $this->send_get_seg_bbox($vol, $segId);
-    return $this->recv_get_seg_bbox();
+    $this->send_get_seg_data($vol, $segId);
+    return $this->recv_get_seg_data();
   }
 
-  public function send_get_seg_bbox($vol, $segId)
+  public function send_get_seg_data($vol, $segId)
   {
-    $args = new server_get_seg_bbox_args();
+    $args = new server_get_seg_data_args();
     $args->vol = $vol;
     $args->segId = $segId;
     $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
-      thrift_protocol_write_binary($this->output_, 'get_seg_bbox', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+      thrift_protocol_write_binary($this->output_, 'get_seg_data', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
     }
     else
     {
-      $this->output_->writeMessageBegin('get_seg_bbox', TMessageType::CALL, $this->seqid_);
+      $this->output_->writeMessageBegin('get_seg_data', TMessageType::CALL, $this->seqid_);
       $args->write($this->output_);
       $this->output_->writeMessageEnd();
       $this->output_->getTransport()->flush();
     }
   }
 
-  public function recv_get_seg_bbox()
+  public function recv_get_seg_data()
   {
     $bin_accel = ($this->input_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_read_binary');
-    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'server_get_seg_bbox_result', $this->input_->isStrictRead());
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'server_get_seg_data_result', $this->input_->isStrictRead());
     else
     {
       $rseqid = 0;
@@ -231,14 +544,14 @@ class serverClient implements serverIf {
         $this->input_->readMessageEnd();
         throw $x;
       }
-      $result = new server_get_seg_bbox_result();
+      $result = new server_get_seg_data_result();
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
     if ($result->success !== null) {
       return $result->success;
     }
-    throw new Exception("get_seg_bbox failed: unknown result");
+    throw new Exception("get_seg_data failed: unknown result");
   }
 
   public function get_seg_ids($vol, $point, $radius, $view)
@@ -346,6 +659,59 @@ class serverClient implements serverIf {
       return $result->success;
     }
     throw new Exception("get_mesh failed: unknown result");
+  }
+
+  public function get_obj($uri, $chunk, $segId)
+  {
+    $this->send_get_obj($uri, $chunk, $segId);
+    return $this->recv_get_obj();
+  }
+
+  public function send_get_obj($uri, $chunk, $segId)
+  {
+    $args = new server_get_obj_args();
+    $args->uri = $uri;
+    $args->chunk = $chunk;
+    $args->segId = $segId;
+    $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'get_obj', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('get_obj', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_get_obj()
+  {
+    $bin_accel = ($this->input_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'server_get_obj_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new server_get_obj_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    throw new Exception("get_obj failed: unknown result");
   }
 
   public function compare_results($old_results, $new_result)
@@ -456,6 +822,1078 @@ class serverClient implements serverIf {
 }
 
 // HELPER FUNCTIONS AND STRUCTURES
+
+class server_add_chunk_args {
+  static $_TSPEC;
+
+  public $vol = null;
+  public $chunk = null;
+  public $data = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'vol',
+          'type' => TType::STRUCT,
+          'class' => 'metadata',
+          ),
+        2 => array(
+          'var' => 'chunk',
+          'type' => TType::STRUCT,
+          'class' => 'vector3i',
+          ),
+        3 => array(
+          'var' => 'data',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['vol'])) {
+        $this->vol = $vals['vol'];
+      }
+      if (isset($vals['chunk'])) {
+        $this->chunk = $vals['chunk'];
+      }
+      if (isset($vals['data'])) {
+        $this->data = $vals['data'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_add_chunk_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->vol = new metadata();
+            $xfer += $this->vol->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->chunk = new vector3i();
+            $xfer += $this->chunk->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->data);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_add_chunk_args');
+    if ($this->vol !== null) {
+      if (!is_object($this->vol)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('vol', TType::STRUCT, 1);
+      $xfer += $this->vol->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->chunk !== null) {
+      if (!is_object($this->chunk)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('chunk', TType::STRUCT, 2);
+      $xfer += $this->chunk->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->data !== null) {
+      $xfer += $output->writeFieldBegin('data', TType::STRING, 3);
+      $xfer += $output->writeString($this->data);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_add_chunk_result {
+  static $_TSPEC;
+
+
+  public function __construct() {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        );
+    }
+  }
+
+  public function getName() {
+    return 'server_add_chunk_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_add_chunk_result');
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_delete_chunk_args {
+  static $_TSPEC;
+
+  public $vol = null;
+  public $chunk = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'vol',
+          'type' => TType::STRUCT,
+          'class' => 'metadata',
+          ),
+        2 => array(
+          'var' => 'chunk',
+          'type' => TType::STRUCT,
+          'class' => 'vector3i',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['vol'])) {
+        $this->vol = $vals['vol'];
+      }
+      if (isset($vals['chunk'])) {
+        $this->chunk = $vals['chunk'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_delete_chunk_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->vol = new metadata();
+            $xfer += $this->vol->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->chunk = new vector3i();
+            $xfer += $this->chunk->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_delete_chunk_args');
+    if ($this->vol !== null) {
+      if (!is_object($this->vol)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('vol', TType::STRUCT, 1);
+      $xfer += $this->vol->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->chunk !== null) {
+      if (!is_object($this->chunk)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('chunk', TType::STRUCT, 2);
+      $xfer += $this->chunk->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_delete_chunk_result {
+  static $_TSPEC;
+
+
+  public function __construct() {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        );
+    }
+  }
+
+  public function getName() {
+    return 'server_delete_chunk_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_delete_chunk_result');
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_get_chunk_args {
+  static $_TSPEC;
+
+  public $vol = null;
+  public $chunk = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'vol',
+          'type' => TType::STRUCT,
+          'class' => 'metadata',
+          ),
+        2 => array(
+          'var' => 'chunk',
+          'type' => TType::STRUCT,
+          'class' => 'vector3i',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['vol'])) {
+        $this->vol = $vals['vol'];
+      }
+      if (isset($vals['chunk'])) {
+        $this->chunk = $vals['chunk'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_chunk_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->vol = new metadata();
+            $xfer += $this->vol->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->chunk = new vector3i();
+            $xfer += $this->chunk->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_chunk_args');
+    if ($this->vol !== null) {
+      if (!is_object($this->vol)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('vol', TType::STRUCT, 1);
+      $xfer += $this->vol->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->chunk !== null) {
+      if (!is_object($this->chunk)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('chunk', TType::STRUCT, 2);
+      $xfer += $this->chunk->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_get_chunk_result {
+  static $_TSPEC;
+
+  public $success = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_chunk_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_chunk_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_get_graph_args {
+  static $_TSPEC;
+
+  public $vol = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'vol',
+          'type' => TType::STRUCT,
+          'class' => 'metadata',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['vol'])) {
+        $this->vol = $vals['vol'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_graph_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->vol = new metadata();
+            $xfer += $this->vol->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_graph_args');
+    if ($this->vol !== null) {
+      if (!is_object($this->vol)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('vol', TType::STRUCT, 1);
+      $xfer += $this->vol->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_get_graph_result {
+  static $_TSPEC;
+
+  public $success = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => 'edge',
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_graph_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::LST) {
+            $this->success = array();
+            $_size7 = 0;
+            $_etype10 = 0;
+            $xfer += $input->readListBegin($_etype10, $_size7);
+            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
+            {
+              $elem12 = null;
+              $elem12 = new edge();
+              $xfer += $elem12->read($input);
+              $this->success []= $elem12;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_graph_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $iter13)
+          {
+            $xfer += $iter13->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_get_mst_args {
+  static $_TSPEC;
+
+  public $vol = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'vol',
+          'type' => TType::STRUCT,
+          'class' => 'metadata',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['vol'])) {
+        $this->vol = $vals['vol'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_mst_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->vol = new metadata();
+            $xfer += $this->vol->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_mst_args');
+    if ($this->vol !== null) {
+      if (!is_object($this->vol)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('vol', TType::STRUCT, 1);
+      $xfer += $this->vol->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_get_mst_result {
+  static $_TSPEC;
+
+  public $success = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => 'edge',
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_mst_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::LST) {
+            $this->success = array();
+            $_size14 = 0;
+            $_etype17 = 0;
+            $xfer += $input->readListBegin($_etype17, $_size14);
+            for ($_i18 = 0; $_i18 < $_size14; ++$_i18)
+            {
+              $elem19 = null;
+              $elem19 = new edge();
+              $xfer += $elem19->read($input);
+              $this->success []= $elem19;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_mst_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $iter20)
+          {
+            $xfer += $iter20->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_create_segmentation_args {
+  static $_TSPEC;
+
+  public $chan = null;
+  public $newVolId = null;
+  public $features = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'chan',
+          'type' => TType::STRUCT,
+          'class' => 'metadata',
+          ),
+        2 => array(
+          'var' => 'newVolId',
+          'type' => TType::I32,
+          ),
+        3 => array(
+          'var' => 'features',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['chan'])) {
+        $this->chan = $vals['chan'];
+      }
+      if (isset($vals['newVolId'])) {
+        $this->newVolId = $vals['newVolId'];
+      }
+      if (isset($vals['features'])) {
+        $this->features = $vals['features'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_create_segmentation_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->chan = new metadata();
+            $xfer += $this->chan->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->newVolId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::LST) {
+            $this->features = array();
+            $_size21 = 0;
+            $_etype24 = 0;
+            $xfer += $input->readListBegin($_etype24, $_size21);
+            for ($_i25 = 0; $_i25 < $_size21; ++$_i25)
+            {
+              $elem26 = null;
+              $xfer += $input->readString($elem26);
+              $this->features []= $elem26;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_create_segmentation_args');
+    if ($this->chan !== null) {
+      if (!is_object($this->chan)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('chan', TType::STRUCT, 1);
+      $xfer += $this->chan->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->newVolId !== null) {
+      $xfer += $output->writeFieldBegin('newVolId', TType::I32, 2);
+      $xfer += $output->writeI32($this->newVolId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->features !== null) {
+      if (!is_array($this->features)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('features', TType::LST, 3);
+      {
+        $output->writeListBegin(TType::STRING, count($this->features));
+        {
+          foreach ($this->features as $iter27)
+          {
+            $xfer += $output->writeString($iter27);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_create_segmentation_result {
+  static $_TSPEC;
+
+  public $success = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRUCT,
+          'class' => 'metadata',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_create_segmentation_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRUCT) {
+            $this->success = new metadata();
+            $xfer += $this->success->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_create_segmentation_result');
+    if ($this->success !== null) {
+      if (!is_object($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::STRUCT, 0);
+      $xfer += $this->success->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
 
 class server_get_chan_tile_args {
   static $_TSPEC;
@@ -850,18 +2288,18 @@ class server_get_seg_tiles_result {
         case 0:
           if ($ftype == TType::MAP) {
             $this->success = array();
-            $_size7 = 0;
-            $_ktype8 = 0;
-            $_vtype9 = 0;
-            $xfer += $input->readMapBegin($_ktype8, $_vtype9, $_size7);
-            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
+            $_size28 = 0;
+            $_ktype29 = 0;
+            $_vtype30 = 0;
+            $xfer += $input->readMapBegin($_ktype29, $_vtype30, $_size28);
+            for ($_i32 = 0; $_i32 < $_size28; ++$_i32)
             {
-              $key12 = '';
-              $val13 = new tile();
-              $xfer += $input->readString($key12);
-              $val13 = new tile();
-              $xfer += $val13->read($input);
-              $this->success[$key12] = $val13;
+              $key33 = '';
+              $val34 = new tile();
+              $xfer += $input->readString($key33);
+              $val34 = new tile();
+              $xfer += $val34->read($input);
+              $this->success[$key33] = $val34;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -889,10 +2327,10 @@ class server_get_seg_tiles_result {
       {
         $output->writeMapBegin(TType::STRING, TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $kiter14 => $viter15)
+          foreach ($this->success as $kiter35 => $viter36)
           {
-            $xfer += $output->writeString($kiter14);
-            $xfer += $viter15->write($output);
+            $xfer += $output->writeString($kiter35);
+            $xfer += $viter36->write($output);
           }
         }
         $output->writeMapEnd();
@@ -1080,7 +2518,7 @@ class server_get_seg_id_result {
 
 }
 
-class server_get_seg_bbox_args {
+class server_get_seg_data_args {
   static $_TSPEC;
 
   public $vol = null;
@@ -1111,7 +2549,7 @@ class server_get_seg_bbox_args {
   }
 
   public function getName() {
-    return 'server_get_seg_bbox_args';
+    return 'server_get_seg_data_args';
   }
 
   public function read($input)
@@ -1156,7 +2594,7 @@ class server_get_seg_bbox_args {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('server_get_seg_bbox_args');
+    $xfer += $output->writeStructBegin('server_get_seg_data_args');
     if ($this->vol !== null) {
       if (!is_object($this->vol)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
@@ -1177,7 +2615,7 @@ class server_get_seg_bbox_args {
 
 }
 
-class server_get_seg_bbox_result {
+class server_get_seg_data_result {
   static $_TSPEC;
 
   public $success = null;
@@ -1188,7 +2626,7 @@ class server_get_seg_bbox_result {
         0 => array(
           'var' => 'success',
           'type' => TType::STRUCT,
-          'class' => 'bbox',
+          'class' => 'segData',
           ),
         );
     }
@@ -1200,7 +2638,7 @@ class server_get_seg_bbox_result {
   }
 
   public function getName() {
-    return 'server_get_seg_bbox_result';
+    return 'server_get_seg_data_result';
   }
 
   public function read($input)
@@ -1220,7 +2658,7 @@ class server_get_seg_bbox_result {
       {
         case 0:
           if ($ftype == TType::STRUCT) {
-            $this->success = new bbox();
+            $this->success = new segData();
             $xfer += $this->success->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -1238,7 +2676,7 @@ class server_get_seg_bbox_result {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('server_get_seg_bbox_result');
+    $xfer += $output->writeStructBegin('server_get_seg_data_result');
     if ($this->success !== null) {
       if (!is_object($this->success)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
@@ -1443,17 +2881,17 @@ class server_get_seg_ids_result {
         case 0:
           if ($ftype == TType::SET) {
             $this->success = array();
-            $_size16 = 0;
-            $_etype19 = 0;
-            $xfer += $input->readSetBegin($_etype19, $_size16);
-            for ($_i20 = 0; $_i20 < $_size16; ++$_i20)
+            $_size37 = 0;
+            $_etype40 = 0;
+            $xfer += $input->readSetBegin($_etype40, $_size37);
+            for ($_i41 = 0; $_i41 < $_size37; ++$_i41)
             {
-              $elem21 = null;
-              $xfer += $input->readI32($elem21);
-              if (is_scalar($elem21)) {
-                $this->success[$elem21] = true;
+              $elem42 = null;
+              $xfer += $input->readI32($elem42);
+              if (is_scalar($elem42)) {
+                $this->success[$elem42] = true;
               } else {
-                $this->success []= $elem21;
+                $this->success []= $elem42;
               }
             }
             $xfer += $input->readSetEnd();
@@ -1482,12 +2920,12 @@ class server_get_seg_ids_result {
       {
         $output->writeSetBegin(TType::I32, count($this->success));
         {
-          foreach ($this->success as $iter22)
+          foreach ($this->success as $iter43)
           {
-            if (is_scalar($iter22)) {
-              $this->success[$iter22] = true;
+            if (is_scalar($iter43)) {
+              $this->success[$iter43] = true;
             }
-            $xfer += $output->writeI32($iter22);
+            $xfer += $output->writeI32($iter43);
           }
         }
         $output->writeSetEnd();
@@ -1690,6 +3128,195 @@ class server_get_mesh_result {
 
 }
 
+class server_get_obj_args {
+  static $_TSPEC;
+
+  public $uri = null;
+  public $chunk = null;
+  public $segId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'uri',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'chunk',
+          'type' => TType::STRUCT,
+          'class' => 'vector3i',
+          ),
+        3 => array(
+          'var' => 'segId',
+          'type' => TType::I32,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['uri'])) {
+        $this->uri = $vals['uri'];
+      }
+      if (isset($vals['chunk'])) {
+        $this->chunk = $vals['chunk'];
+      }
+      if (isset($vals['segId'])) {
+        $this->segId = $vals['segId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_obj_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->uri);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->chunk = new vector3i();
+            $xfer += $this->chunk->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->segId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_obj_args');
+    if ($this->uri !== null) {
+      $xfer += $output->writeFieldBegin('uri', TType::STRING, 1);
+      $xfer += $output->writeString($this->uri);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->chunk !== null) {
+      if (!is_object($this->chunk)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('chunk', TType::STRUCT, 2);
+      $xfer += $this->chunk->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->segId !== null) {
+      $xfer += $output->writeFieldBegin('segId', TType::I32, 3);
+      $xfer += $output->writeI32($this->segId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_get_obj_result {
+  static $_TSPEC;
+
+  public $success = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_obj_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_obj_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class server_compare_results_args {
   static $_TSPEC;
 
@@ -1747,15 +3374,15 @@ class server_compare_results_args {
         case 1:
           if ($ftype == TType::LST) {
             $this->old_results = array();
-            $_size23 = 0;
-            $_etype26 = 0;
-            $xfer += $input->readListBegin($_etype26, $_size23);
-            for ($_i27 = 0; $_i27 < $_size23; ++$_i27)
+            $_size44 = 0;
+            $_etype47 = 0;
+            $xfer += $input->readListBegin($_etype47, $_size44);
+            for ($_i48 = 0; $_i48 < $_size44; ++$_i48)
             {
-              $elem28 = null;
-              $elem28 = new result();
-              $xfer += $elem28->read($input);
-              $this->old_results []= $elem28;
+              $elem49 = null;
+              $elem49 = new result();
+              $xfer += $elem49->read($input);
+              $this->old_results []= $elem49;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1791,9 +3418,9 @@ class server_compare_results_args {
       {
         $output->writeListBegin(TType::STRUCT, count($this->old_results));
         {
-          foreach ($this->old_results as $iter29)
+          foreach ($this->old_results as $iter50)
           {
-            $xfer += $iter29->write($output);
+            $xfer += $iter50->write($output);
           }
         }
         $output->writeListEnd();
@@ -1960,17 +3587,17 @@ class server_get_seeds_args {
         case 2:
           if ($ftype == TType::SET) {
             $this->selected = array();
-            $_size30 = 0;
-            $_etype33 = 0;
-            $xfer += $input->readSetBegin($_etype33, $_size30);
-            for ($_i34 = 0; $_i34 < $_size30; ++$_i34)
+            $_size51 = 0;
+            $_etype54 = 0;
+            $xfer += $input->readSetBegin($_etype54, $_size51);
+            for ($_i55 = 0; $_i55 < $_size51; ++$_i55)
             {
-              $elem35 = null;
-              $xfer += $input->readI32($elem35);
-              if (is_scalar($elem35)) {
-                $this->selected[$elem35] = true;
+              $elem56 = null;
+              $xfer += $input->readI32($elem56);
+              if (is_scalar($elem56)) {
+                $this->selected[$elem56] = true;
               } else {
-                $this->selected []= $elem35;
+                $this->selected []= $elem56;
               }
             }
             $xfer += $input->readSetEnd();
@@ -2015,12 +3642,12 @@ class server_get_seeds_args {
       {
         $output->writeSetBegin(TType::I32, count($this->selected));
         {
-          foreach ($this->selected as $iter36)
+          foreach ($this->selected as $iter57)
           {
-            if (is_scalar($iter36)) {
-              $this->selected[$iter36] = true;
+            if (is_scalar($iter57)) {
+              $this->selected[$iter57] = true;
             }
-            $xfer += $output->writeI32($iter36);
+            $xfer += $output->writeI32($iter57);
           }
         }
         $output->writeSetEnd();
@@ -2093,28 +3720,28 @@ class server_get_seeds_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size37 = 0;
-            $_etype40 = 0;
-            $xfer += $input->readListBegin($_etype40, $_size37);
-            for ($_i41 = 0; $_i41 < $_size37; ++$_i41)
+            $_size58 = 0;
+            $_etype61 = 0;
+            $xfer += $input->readListBegin($_etype61, $_size58);
+            for ($_i62 = 0; $_i62 < $_size58; ++$_i62)
             {
-              $elem42 = null;
-              $elem42 = array();
-              $_size43 = 0;
-              $_etype46 = 0;
-              $xfer += $input->readSetBegin($_etype46, $_size43);
-              for ($_i47 = 0; $_i47 < $_size43; ++$_i47)
+              $elem63 = null;
+              $elem63 = array();
+              $_size64 = 0;
+              $_etype67 = 0;
+              $xfer += $input->readSetBegin($_etype67, $_size64);
+              for ($_i68 = 0; $_i68 < $_size64; ++$_i68)
               {
-                $elem48 = null;
-                $xfer += $input->readI32($elem48);
-                if (is_scalar($elem48)) {
-                  $elem42[$elem48] = true;
+                $elem69 = null;
+                $xfer += $input->readI32($elem69);
+                if (is_scalar($elem69)) {
+                  $elem63[$elem69] = true;
                 } else {
-                  $elem42 []= $elem48;
+                  $elem63 []= $elem69;
                 }
               }
               $xfer += $input->readSetEnd();
-              $this->success []= $elem42;
+              $this->success []= $elem63;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -2142,17 +3769,17 @@ class server_get_seeds_result {
       {
         $output->writeListBegin(TType::SET, count($this->success));
         {
-          foreach ($this->success as $iter49)
+          foreach ($this->success as $iter70)
           {
             {
-              $output->writeSetBegin(TType::I32, count($iter49));
+              $output->writeSetBegin(TType::I32, count($iter70));
               {
-                foreach ($iter49 as $iter50)
+                foreach ($iter70 as $iter71)
                 {
-                  if (is_scalar($iter50)) {
-                    $iter49[$iter50] = true;
+                  if (is_scalar($iter71)) {
+                    $iter70[$iter71] = true;
                   }
-                  $xfer += $output->writeI32($iter50);
+                  $xfer += $output->writeI32($iter71);
                 }
               }
               $output->writeSetEnd();

@@ -47,6 +47,20 @@ final class dataType {
   );
 }
 
+$GLOBALS['E_volType'] = array(
+  'CHANNEL' => 1,
+  'SEGMENTATION' => 2,
+);
+
+final class volType {
+  const CHANNEL = 1;
+  const SEGMENTATION = 2;
+  static public $__names = array(
+    1 => 'CHANNEL',
+    2 => 'SEGMENTATION',
+  );
+}
+
 class vector3d {
   static $_TSPEC;
 
@@ -271,6 +285,118 @@ class vector3i {
 
 }
 
+class edge {
+  static $_TSPEC;
+
+  public $a = null;
+  public $b = null;
+  public $value = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'a',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'b',
+          'type' => TType::I32,
+          ),
+        3 => array(
+          'var' => 'value',
+          'type' => TType::DOUBLE,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['a'])) {
+        $this->a = $vals['a'];
+      }
+      if (isset($vals['b'])) {
+        $this->b = $vals['b'];
+      }
+      if (isset($vals['value'])) {
+        $this->value = $vals['value'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'edge';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->a);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->b);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::DOUBLE) {
+            $xfer += $input->readDouble($this->value);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('edge');
+    if ($this->a !== null) {
+      $xfer += $output->writeFieldBegin('a', TType::I32, 1);
+      $xfer += $output->writeI32($this->a);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->b !== null) {
+      $xfer += $output->writeFieldBegin('b', TType::I32, 2);
+      $xfer += $output->writeI32($this->b);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->value !== null) {
+      $xfer += $output->writeFieldBegin('value', TType::DOUBLE, 3);
+      $xfer += $output->writeDouble($this->value);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class bbox {
   static $_TSPEC;
 
@@ -364,6 +490,103 @@ class bbox {
       }
       $xfer += $output->writeFieldBegin('max', TType::STRUCT, 2);
       $xfer += $this->max->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class segData {
+  static $_TSPEC;
+
+  public $bounds = null;
+  public $size = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'bounds',
+          'type' => TType::STRUCT,
+          'class' => 'bbox',
+          ),
+        2 => array(
+          'var' => 'size',
+          'type' => TType::I32,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['bounds'])) {
+        $this->bounds = $vals['bounds'];
+      }
+      if (isset($vals['size'])) {
+        $this->size = $vals['size'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'segData';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->bounds = new bbox();
+            $xfer += $this->bounds->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->size);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('segData');
+    if ($this->bounds !== null) {
+      if (!is_object($this->bounds)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('bounds', TType::STRUCT, 1);
+      $xfer += $this->bounds->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->size !== null) {
+      $xfer += $output->writeFieldBegin('size', TType::I32, 2);
+      $xfer += $output->writeI32($this->size);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -597,6 +820,7 @@ class metadata {
   public $type = null;
   public $chunkDims = null;
   public $mipLevel = null;
+  public $vol_type = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -628,6 +852,10 @@ class metadata {
           'var' => 'mipLevel',
           'type' => TType::I32,
           ),
+        7 => array(
+          'var' => 'vol_type',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -648,6 +876,9 @@ class metadata {
       }
       if (isset($vals['mipLevel'])) {
         $this->mipLevel = $vals['mipLevel'];
+      }
+      if (isset($vals['vol_type'])) {
+        $this->vol_type = $vals['vol_type'];
       }
     }
   }
@@ -716,6 +947,13 @@ class metadata {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 7:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->vol_type);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -766,6 +1004,11 @@ class metadata {
     if ($this->mipLevel !== null) {
       $xfer += $output->writeFieldBegin('mipLevel', TType::I32, 6);
       $xfer += $output->writeI32($this->mipLevel);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->vol_type !== null) {
+      $xfer += $output->writeFieldBegin('vol_type', TType::I32, 7);
+      $xfer += $output->writeI32($this->vol_type);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
