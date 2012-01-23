@@ -52,6 +52,7 @@ SOURCES +=  \
 	src/datalayer/file.cpp \
 	src/handler/chunker.cpp \
 	src/handler/compareResults.cpp \
+	src/handler/getGraph.cpp \
 	src/handler/getMesh.cpp \
 	src/handler/getSegBbox.cpp \
 	src/handler/getSegIds.cpp \

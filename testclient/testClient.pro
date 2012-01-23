@@ -29,7 +29,7 @@ linux-g++ {
     }
 }
 # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43943
-g++4new: QMAKE_CXXFLAGS += -Werror=return-type
+# g++4new: QMAKE_CXXFLAGS += -Werror=return-type
 
 ####
 # debug/release

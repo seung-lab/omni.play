@@ -1,3 +1,4 @@
+
 #include "handler/handler.h"
 #include "common/common.h"
 #include "volume/volume.h"
@@ -24,11 +25,11 @@ public:
     }
 
     void get_mst(std::vector<edge>& _return, const metadata& vol){
-    
+        handler::get_mst(_return, vol);
     }
 
     void get_graph(std::vector<edge>& _return, const metadata& vol){
-    
+        handler::get_graph(_return, vol);
     }
 
     void create_segmentation(metadata& _return,
@@ -37,7 +38,7 @@ public:
                              const std::vector<std::string> & features) {
         
     }
-    
+
     void get_chan_tile(server::tile& _return,
                        const server::metadata& vol,
                        const server::vector3d& point,
@@ -87,7 +88,7 @@ public:
                   const std::string& uri,
                   const vector3i& chunk,
                   int32_t segId) {
-        // handler::get_obj(_return, uri, chunk, segId);
+        handler::get_obj(_return, uri, chunk, segId);
     }
 
     void get_seeds(std::vector<std::set<int32_t> >& _return,

@@ -1,22 +1,5 @@
 #pragma once
 
-#include "chunks/omChunkUtils.hpp"
-#include "chunks/omSegChunk.h"
-#include "common/omCommon.h"
-#include "mesh/mesher/MeshCollector.hpp"
-#include "mesh/mesher/TriStripCollector.hpp"
-#include "mesh/io/omMeshMetadata.hpp"
-#include "mesh/omMeshParams.hpp"
-#include "utility/omLockedPODs.hpp"
-#include "volume/io/omVolumeData.h"
-#include "volume/omSegmentation.h"
-#include "mesh/mesher/omMesherProgress.hpp"
-#include "mesh/mesher/if/gen-cpp/mesher_types.h"
-#include "mesh/mesher/if/gen-cpp/mesher_constants.h"
-#include "mesh/mesher/if/gen-cpp/mesher.h"
-#include "mesh/mesher/if/gen-cpp/meshing_scheduler.h"
-#include "utility/omRand.hpp"
-
 #include <zi/vl/vec.hpp>
 #include <zi/system.hpp>
 #include <zi/bits/cstdint.hpp>
@@ -27,23 +10,40 @@
 #include <zi/mesh/marching_cubes.hpp>
 #include <zi/shared_ptr.hpp>
 #include <zi/utility/container_utilities.hpp>
-
-#include "zi/omThreads.h"
+#include <zi/concurrency.hpp>
 
 #include <protocol/TBinaryProtocol.h>
 #include <transport/TSocket.h>
 #include <transport/TTransportUtils.h>
 
+#include "common/common.h"
+#include "datalayer/memMappedFile.hpp"
+
+
+namespace om {
+namespace mesh {
 
 class ziMesher {
+private:
+    datalayer::memMappedFile<uint32_t> data_file_    ;
+    coords::volumeSystem               volume_system_;
+
+    std::map<coords::chunk, std::vector<MeshCollector*> >  occurances_;
+    std::map<coords::chunk, MeshCollector*>                chunkCollectors_;
+    zi::task_manager::simple                               manager_;
+
+    const int    numParallelChunks_ ;
+    const int    numThreadsPerChunk_;
+    const double downScallingFactor_;
+
 public:
-    ziMesher(OmSegmentation* segmentation, const double threshold)
-        : segmentation_(segmentation)
-        , rootMipLevel_(segmentation->Coords().GetRootMipLevel())
-        , threshold_(threshold)
+    ziMesher(const datalayer::memMappedFile<uint32_t>& data_file,
+             const coords::volumeSystem& volume_system )
+        : data_file_(data_file)
+        , volume_system_(volume_system)
+        , occurances_()
         , chunkCollectors_()
-        , meshManager_(segmentation->MeshManager(threshold))
-        , meshWriter_(new OmMeshWriterV2(meshManager_))
+        , manager_( numParallelChunks() )
         , numParallelChunks_(numberParallelChunks())
         , numThreadsPerChunk_(zi::system::cpu_count / 2)
         , downScallingFactor_(OmMeshParams::GetDownScallingFactor())
@@ -54,10 +54,32 @@ public:
 
     ~ziMesher()
     {
-        FOR_EACH(iter, chunkCollectors_){
+        FOR_EACH(iter, chunkCollectors_)
+        {
             delete iter->second;
         }
     }
+
+    // add a chunk to the queue to be meshed
+    // has to be called for all the chunks in the volume
+    void enqueueChunk( coords::chunk coord, int max_mip_level )
+    {
+        // get the data to find unique values!
+        std::set<uint32_t> unique_values;
+
+        uint32_t* data = data_file_.GetPtrWithOffset(
+            coord.chunkPtrOffset( &volume_system_, sizeof(uint32_t)) );
+
+        for ( std::size_t i = 0; i < 128*128*128; ++i )
+        {
+            unique_values.insert(data[i]);
+        }
+
+        // for each mip level, register all IDs with the
+
+
+    }
+
 
     void MeshFullVolume()
     {
@@ -86,23 +108,6 @@ public:
     }
 
 private:
-
-    OmSegmentation *const segmentation_;
-    const int rootMipLevel_;
-    const double threshold_;
-
-    std::map<OmChunkCoord, std::vector<MeshCollector*> > occurances_;
-    std::map<OmChunkCoord, MeshCollector*> chunkCollectors_;
-
-    OmMeshManager *const meshManager_;
-    boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
-
-    const int numParallelChunks_;
-    const int numThreadsPerChunk_;
-    const double downScallingFactor_;
-
-    om::mesher::progress progress_;
-
     void init()
     {
         om::shared_ptr<std::deque<OmChunkCoord> > levelZeroChunks =
@@ -660,3 +665,7 @@ public:
         return numChunks;
     }
 };
+
+
+} // namespace mesh
+} // namespace om

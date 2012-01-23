@@ -8,6 +8,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
@@ -32,7 +33,7 @@ ostream& operator<<(ostream& s, bbox b) {
     return s << "{ min = " << b.min << "; max = " << b.max << " }";
 }
 
-metadata makeMetadata(int x, int y, int z)
+metadata makeMetadata(int x, int y, int z, volType::type type)
 {
     const int x_min = 914;
     const int y_min = 15506;
@@ -57,27 +58,29 @@ metadata makeMetadata(int x, int y, int z)
     meta.type = dataType::UINT32;
     meta.chunkDims.x = meta.chunkDims.y = meta.chunkDims.z = chunk_size;
     meta.mipLevel = 0;
+    meta.vol_type = type;
 
     return meta;
 }
 
 int main(int argc, char **argv) {
-    boost::shared_ptr<TSocket> socket(new TSocket("localhost", 9090));
+    boost::shared_ptr<TSocket> socket(new TSocket("brainiac.mit.edu", 9090));
     boost::shared_ptr<TTransport> transport(new TFramedTransport(socket));
     boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
 
     serverClient client(protocol);
     transport->open();
 
-    std::string uri = "/home/balkamm/omniData/001_s915_15507_7155_e1170_15762_7410.omni.files/segmentations/segmentation1/meshes/";
-    std::string result;
-
     vector3i chunk;
     chunk.x = chunk.y = chunk.z = 0;
 
-    client.get_mesh(result, uri, chunk, 12);
+    std::string path = "/usr/local/omni/data/omelette2/x07/y50/x07y50z02_s1811_11475_659_e2066_11730_914.omni.files/segmentations/segmentation1/meshes/";
 
-    std::cout << result;
+    std::string obj;
+
+    client.get_obj(obj, path, chunk, 428);
+    std::cout << obj;
+
     transport->close();
 
     return 0;

@@ -17,6 +17,7 @@ private:
 public:
     getChunk(volume::volume vol, coords::chunk cc)
         : vol_(vol)
+        , cc_(cc)
     { }
 
     template <typename T>

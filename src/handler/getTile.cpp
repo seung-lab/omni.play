@@ -53,9 +53,9 @@ void get_chan_tile(server::tile& _return,
     setTileBounds(_return, dc, view);
     _return.view = common::Convert(view);
 
-    data_var encoded = vol.ChannelData() >> sliceTile(view, dc)
-                                         >> jpeg(128,128)
-                                         >> encode();
+    data_var encoded = vol.Data() >> sliceTile(view, dc)
+                                  >> jpeg(128,128)
+                                  >> encode();
 
     data<char> out = get<data<char> >(encoded);
     _return.data = std::string(out.data.get(), out.size);
@@ -100,7 +100,7 @@ void get_seg_tiles(std::map<std::string, server::tile> & _return,
                 coords::data dc = coord.toData(&vol.CoordSystem(), vol.MipLevel());
 
                 server::tile t;
-                makeSegTile(t, vol.SegmentationData(), dc, view, segId);
+                makeSegTile(t, vol.Data(), dc, view, segId);
                 std::stringstream ss;
                 ss << t.bounds.min.x << "-"
                    << t.bounds.min.y << "-"
