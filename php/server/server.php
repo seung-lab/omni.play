@@ -20,8 +20,8 @@ interface serverIf {
   public function get_seg_id($vol, $point);
   public function get_seg_data($vol, $segId);
   public function get_seg_ids($vol, $point, $radius, $view);
-  public function get_mesh($uri, $segId);
-  public function get_obj($uri, $chunk, $segId);
+  public function get_mesh($uri, $chunk, $mipLevel, $segId);
+  public function get_obj($uri, $chunk, $mipLevel, $segId);
   public function compare_results($old_results, $new_result);
   public function get_seeds($taskVolume, $selected, $adjacentVolume);
 }
@@ -608,16 +608,18 @@ class serverClient implements serverIf {
     throw new Exception("get_seg_ids failed: unknown result");
   }
 
-  public function get_mesh($uri, $segId)
+  public function get_mesh($uri, $chunk, $mipLevel, $segId)
   {
-    $this->send_get_mesh($uri, $segId);
+    $this->send_get_mesh($uri, $chunk, $mipLevel, $segId);
     return $this->recv_get_mesh();
   }
 
-  public function send_get_mesh($uri, $segId)
+  public function send_get_mesh($uri, $chunk, $mipLevel, $segId)
   {
     $args = new server_get_mesh_args();
     $args->uri = $uri;
+    $args->chunk = $chunk;
+    $args->mipLevel = $mipLevel;
     $args->segId = $segId;
     $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -660,17 +662,18 @@ class serverClient implements serverIf {
     throw new Exception("get_mesh failed: unknown result");
   }
 
-  public function get_obj($uri, $chunk, $segId)
+  public function get_obj($uri, $chunk, $mipLevel, $segId)
   {
-    $this->send_get_obj($uri, $chunk, $segId);
+    $this->send_get_obj($uri, $chunk, $mipLevel, $segId);
     return $this->recv_get_obj();
   }
 
-  public function send_get_obj($uri, $chunk, $segId)
+  public function send_get_obj($uri, $chunk, $mipLevel, $segId)
   {
     $args = new server_get_obj_args();
     $args->uri = $uri;
     $args->chunk = $chunk;
+    $args->mipLevel = $mipLevel;
     $args->segId = $segId;
     $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -2942,6 +2945,8 @@ class server_get_mesh_args {
   static $_TSPEC;
 
   public $uri = null;
+  public $chunk = null;
+  public $mipLevel = null;
   public $segId = null;
 
   public function __construct($vals=null) {
@@ -2952,6 +2957,15 @@ class server_get_mesh_args {
           'type' => TType::STRING,
           ),
         2 => array(
+          'var' => 'chunk',
+          'type' => TType::STRUCT,
+          'class' => 'vector3i',
+          ),
+        3 => array(
+          'var' => 'mipLevel',
+          'type' => TType::I32,
+          ),
+        4 => array(
           'var' => 'segId',
           'type' => TType::I32,
           ),
@@ -2960,6 +2974,12 @@ class server_get_mesh_args {
     if (is_array($vals)) {
       if (isset($vals['uri'])) {
         $this->uri = $vals['uri'];
+      }
+      if (isset($vals['chunk'])) {
+        $this->chunk = $vals['chunk'];
+      }
+      if (isset($vals['mipLevel'])) {
+        $this->mipLevel = $vals['mipLevel'];
       }
       if (isset($vals['segId'])) {
         $this->segId = $vals['segId'];
@@ -2994,6 +3014,21 @@ class server_get_mesh_args {
           }
           break;
         case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->chunk = new vector3i();
+            $xfer += $this->chunk->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->mipLevel);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->segId);
           } else {
@@ -3018,8 +3053,21 @@ class server_get_mesh_args {
       $xfer += $output->writeString($this->uri);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->chunk !== null) {
+      if (!is_object($this->chunk)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('chunk', TType::STRUCT, 2);
+      $xfer += $this->chunk->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->mipLevel !== null) {
+      $xfer += $output->writeFieldBegin('mipLevel', TType::I32, 3);
+      $xfer += $output->writeI32($this->mipLevel);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->segId !== null) {
-      $xfer += $output->writeFieldBegin('segId', TType::I32, 2);
+      $xfer += $output->writeFieldBegin('segId', TType::I32, 4);
       $xfer += $output->writeI32($this->segId);
       $xfer += $output->writeFieldEnd();
     }
@@ -3107,6 +3155,7 @@ class server_get_obj_args {
 
   public $uri = null;
   public $chunk = null;
+  public $mipLevel = null;
   public $segId = null;
 
   public function __construct($vals=null) {
@@ -3122,6 +3171,10 @@ class server_get_obj_args {
           'class' => 'vector3i',
           ),
         3 => array(
+          'var' => 'mipLevel',
+          'type' => TType::I32,
+          ),
+        4 => array(
           'var' => 'segId',
           'type' => TType::I32,
           ),
@@ -3133,6 +3186,9 @@ class server_get_obj_args {
       }
       if (isset($vals['chunk'])) {
         $this->chunk = $vals['chunk'];
+      }
+      if (isset($vals['mipLevel'])) {
+        $this->mipLevel = $vals['mipLevel'];
       }
       if (isset($vals['segId'])) {
         $this->segId = $vals['segId'];
@@ -3176,6 +3232,13 @@ class server_get_obj_args {
           break;
         case 3:
           if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->mipLevel);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->segId);
           } else {
             $xfer += $input->skip($ftype);
@@ -3207,8 +3270,13 @@ class server_get_obj_args {
       $xfer += $this->chunk->write($output);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->mipLevel !== null) {
+      $xfer += $output->writeFieldBegin('mipLevel', TType::I32, 3);
+      $xfer += $output->writeI32($this->mipLevel);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->segId !== null) {
-      $xfer += $output->writeFieldBegin('segId', TType::I32, 3);
+      $xfer += $output->writeFieldBegin('segId', TType::I32, 4);
       $xfer += $output->writeI32($this->segId);
       $xfer += $output->writeFieldEnd();
     }
