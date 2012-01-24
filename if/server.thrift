@@ -106,11 +106,14 @@ service server
                           4: viewType view),
 
     string get_mesh( 1: string uri,
-                     2: i32 segId)
+                     2: vector3i chunk,
+                     3: i32 mipLevel,
+                     4: i32 segId)
 
     string get_obj( 1: string uri,
                     2: vector3i chunk,
-                    3: i32 segId)
+                    3: i32 mipLevel,
+                    4: i32 segId)
 
     # do we need the metadata for the comparison procedure?
     double compare_results( 1: list<result> old_results, 2: result new_result)
