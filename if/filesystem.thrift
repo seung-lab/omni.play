@@ -9,13 +9,30 @@ struct server_id
 
 service storage_manager
 {
-    server_id get_server(
+    server_id get_server (
       1: string key
     ),
 
-    bool register_server(
+    bool register_server (
       1: server_id id
     ),
+
+    void free_key (
+      1: server_id id,
+      2: string key
+    ),
+
+    map<string,string> get_stats (
+    ),
+
+    void server_full (
+      1: server_id id
+    ),
+
+    map<server_id, list<string> > multi_get (
+      1: list<string> keys
+    ),
+
 }
 
 service storage_server
@@ -29,6 +46,14 @@ service storage_server
       2: binary value,
     ),
 
-    map<string,i64> get_stats(
+    map<string,string> get_stats(
+    ),
+
+    bool remove (
+      1: string key
+    ),
+
+    map<string,binary> multi_get (
+      1: list<string> keys
     ),
 }

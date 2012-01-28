@@ -16,7 +16,9 @@ class storage_serverIf {
   virtual ~storage_serverIf() {}
   virtual void get(std::string& _return, const std::string& key) = 0;
   virtual bool put(const std::string& key, const std::string& value) = 0;
-  virtual void get_stats(std::map<std::string, int64_t> & _return) = 0;
+  virtual void get_stats(std::map<std::string, std::string> & _return) = 0;
+  virtual bool remove(const std::string& key) = 0;
+  virtual void multi_get(std::map<std::string, std::string> & _return, const std::vector<std::string> & keys) = 0;
 };
 
 class storage_serverNull : virtual public storage_serverIf {
@@ -29,7 +31,14 @@ class storage_serverNull : virtual public storage_serverIf {
     bool _return = false;
     return _return;
   }
-  void get_stats(std::map<std::string, int64_t> & /* _return */) {
+  void get_stats(std::map<std::string, std::string> & /* _return */) {
+    return;
+  }
+  bool remove(const std::string& /* key */) {
+    bool _return = false;
+    return _return;
+  }
+  void multi_get(std::map<std::string, std::string> & /* _return */, const std::vector<std::string> & /* keys */) {
     return;
   }
 };
@@ -309,11 +318,11 @@ class storage_server_get_stats_result {
 
   virtual ~storage_server_get_stats_result() throw() {}
 
-  std::map<std::string, int64_t>  success;
+  std::map<std::string, std::string>  success;
 
   _storage_server_get_stats_result__isset __isset;
 
-  void __set_success(const std::map<std::string, int64_t> & val) {
+  void __set_success(const std::map<std::string, std::string> & val) {
     success = val;
   }
 
@@ -345,9 +354,225 @@ class storage_server_get_stats_presult {
 
   virtual ~storage_server_get_stats_presult() throw() {}
 
-  std::map<std::string, int64_t> * success;
+  std::map<std::string, std::string> * success;
 
   _storage_server_get_stats_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _storage_server_remove_args__isset {
+  _storage_server_remove_args__isset() : key(false) {}
+  bool key;
+} _storage_server_remove_args__isset;
+
+class storage_server_remove_args {
+ public:
+
+  storage_server_remove_args() : key("") {
+  }
+
+  virtual ~storage_server_remove_args() throw() {}
+
+  std::string key;
+
+  _storage_server_remove_args__isset __isset;
+
+  void __set_key(const std::string& val) {
+    key = val;
+  }
+
+  bool operator == (const storage_server_remove_args & rhs) const
+  {
+    if (!(key == rhs.key))
+      return false;
+    return true;
+  }
+  bool operator != (const storage_server_remove_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const storage_server_remove_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class storage_server_remove_pargs {
+ public:
+
+
+  virtual ~storage_server_remove_pargs() throw() {}
+
+  const std::string* key;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _storage_server_remove_result__isset {
+  _storage_server_remove_result__isset() : success(false) {}
+  bool success;
+} _storage_server_remove_result__isset;
+
+class storage_server_remove_result {
+ public:
+
+  storage_server_remove_result() : success(0) {
+  }
+
+  virtual ~storage_server_remove_result() throw() {}
+
+  bool success;
+
+  _storage_server_remove_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  bool operator == (const storage_server_remove_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const storage_server_remove_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const storage_server_remove_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _storage_server_remove_presult__isset {
+  _storage_server_remove_presult__isset() : success(false) {}
+  bool success;
+} _storage_server_remove_presult__isset;
+
+class storage_server_remove_presult {
+ public:
+
+
+  virtual ~storage_server_remove_presult() throw() {}
+
+  bool* success;
+
+  _storage_server_remove_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _storage_server_multi_get_args__isset {
+  _storage_server_multi_get_args__isset() : keys(false) {}
+  bool keys;
+} _storage_server_multi_get_args__isset;
+
+class storage_server_multi_get_args {
+ public:
+
+  storage_server_multi_get_args() {
+  }
+
+  virtual ~storage_server_multi_get_args() throw() {}
+
+  std::vector<std::string>  keys;
+
+  _storage_server_multi_get_args__isset __isset;
+
+  void __set_keys(const std::vector<std::string> & val) {
+    keys = val;
+  }
+
+  bool operator == (const storage_server_multi_get_args & rhs) const
+  {
+    if (!(keys == rhs.keys))
+      return false;
+    return true;
+  }
+  bool operator != (const storage_server_multi_get_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const storage_server_multi_get_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class storage_server_multi_get_pargs {
+ public:
+
+
+  virtual ~storage_server_multi_get_pargs() throw() {}
+
+  const std::vector<std::string> * keys;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _storage_server_multi_get_result__isset {
+  _storage_server_multi_get_result__isset() : success(false) {}
+  bool success;
+} _storage_server_multi_get_result__isset;
+
+class storage_server_multi_get_result {
+ public:
+
+  storage_server_multi_get_result() {
+  }
+
+  virtual ~storage_server_multi_get_result() throw() {}
+
+  std::map<std::string, std::string>  success;
+
+  _storage_server_multi_get_result__isset __isset;
+
+  void __set_success(const std::map<std::string, std::string> & val) {
+    success = val;
+  }
+
+  bool operator == (const storage_server_multi_get_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const storage_server_multi_get_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const storage_server_multi_get_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _storage_server_multi_get_presult__isset {
+  _storage_server_multi_get_presult__isset() : success(false) {}
+  bool success;
+} _storage_server_multi_get_presult__isset;
+
+class storage_server_multi_get_presult {
+ public:
+
+
+  virtual ~storage_server_multi_get_presult() throw() {}
+
+  std::map<std::string, std::string> * success;
+
+  _storage_server_multi_get_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -379,9 +604,15 @@ class storage_serverClient : virtual public storage_serverIf {
   bool put(const std::string& key, const std::string& value);
   void send_put(const std::string& key, const std::string& value);
   bool recv_put();
-  void get_stats(std::map<std::string, int64_t> & _return);
+  void get_stats(std::map<std::string, std::string> & _return);
   void send_get_stats();
-  void recv_get_stats(std::map<std::string, int64_t> & _return);
+  void recv_get_stats(std::map<std::string, std::string> & _return);
+  bool remove(const std::string& key);
+  void send_remove(const std::string& key);
+  bool recv_remove();
+  void multi_get(std::map<std::string, std::string> & _return, const std::vector<std::string> & keys);
+  void send_multi_get(const std::vector<std::string> & keys);
+  void recv_multi_get(std::map<std::string, std::string> & _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -398,12 +629,16 @@ class storage_serverProcessor : virtual public ::apache::thrift::TProcessor {
   void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_put(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_stats(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_remove(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_multi_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   storage_serverProcessor(boost::shared_ptr<storage_serverIf> iface) :
     iface_(iface) {
     processMap_["get"] = &storage_serverProcessor::process_get;
     processMap_["put"] = &storage_serverProcessor::process_put;
     processMap_["get_stats"] = &storage_serverProcessor::process_get_stats;
+    processMap_["remove"] = &storage_serverProcessor::process_remove;
+    processMap_["multi_get"] = &storage_serverProcessor::process_multi_get;
   }
 
   virtual bool process(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot, void* callContext);
@@ -445,7 +680,7 @@ class storage_serverMultiface : virtual public storage_serverIf {
     }
   }
 
-  void get_stats(std::map<std::string, int64_t> & _return) {
+  void get_stats(std::map<std::string, std::string> & _return) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
@@ -453,6 +688,29 @@ class storage_serverMultiface : virtual public storage_serverIf {
         return;
       } else {
         ifaces_[i]->get_stats(_return);
+      }
+    }
+  }
+
+  bool remove(const std::string& key) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        return ifaces_[i]->remove(key);
+      } else {
+        ifaces_[i]->remove(key);
+      }
+    }
+  }
+
+  void multi_get(std::map<std::string, std::string> & _return, const std::vector<std::string> & keys) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->multi_get(_return, keys);
+        return;
+      } else {
+        ifaces_[i]->multi_get(_return, keys);
       }
     }
   }

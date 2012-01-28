@@ -409,17 +409,17 @@ uint32_t storage_server_get_stats_result::read(::apache::thrift::protocol::TProt
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->success.clear();
-            uint32_t _size0;
-            ::apache::thrift::protocol::TType _ktype1;
-            ::apache::thrift::protocol::TType _vtype2;
-            iprot->readMapBegin(_ktype1, _vtype2, _size0);
-            uint32_t _i4;
-            for (_i4 = 0; _i4 < _size0; ++_i4)
+            uint32_t _size48;
+            ::apache::thrift::protocol::TType _ktype49;
+            ::apache::thrift::protocol::TType _vtype50;
+            iprot->readMapBegin(_ktype49, _vtype50, _size48);
+            uint32_t _i52;
+            for (_i52 = 0; _i52 < _size48; ++_i52)
             {
-              std::string _key5;
-              xfer += iprot->readString(_key5);
-              int64_t& _val6 = this->success[_key5];
-              xfer += iprot->readI64(_val6);
+              std::string _key53;
+              xfer += iprot->readString(_key53);
+              std::string& _val54 = this->success[_key53];
+              xfer += iprot->readString(_val54);
             }
             iprot->readMapEnd();
           }
@@ -449,12 +449,12 @@ uint32_t storage_server_get_stats_result::write(::apache::thrift::protocol::TPro
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
     {
-      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
-      std::map<std::string, int64_t> ::const_iterator _iter7;
-      for (_iter7 = this->success.begin(); _iter7 != this->success.end(); ++_iter7)
+      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
+      std::map<std::string, std::string> ::const_iterator _iter55;
+      for (_iter55 = this->success.begin(); _iter55 != this->success.end(); ++_iter55)
       {
-        xfer += oprot->writeString(_iter7->first);
-        xfer += oprot->writeI64(_iter7->second);
+        xfer += oprot->writeString(_iter55->first);
+        xfer += oprot->writeString(_iter55->second);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -489,17 +489,400 @@ uint32_t storage_server_get_stats_presult::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             (*(this->success)).clear();
-            uint32_t _size8;
-            ::apache::thrift::protocol::TType _ktype9;
-            ::apache::thrift::protocol::TType _vtype10;
-            iprot->readMapBegin(_ktype9, _vtype10, _size8);
-            uint32_t _i12;
-            for (_i12 = 0; _i12 < _size8; ++_i12)
+            uint32_t _size56;
+            ::apache::thrift::protocol::TType _ktype57;
+            ::apache::thrift::protocol::TType _vtype58;
+            iprot->readMapBegin(_ktype57, _vtype58, _size56);
+            uint32_t _i60;
+            for (_i60 = 0; _i60 < _size56; ++_i60)
             {
-              std::string _key13;
-              xfer += iprot->readString(_key13);
-              int64_t& _val14 = (*(this->success))[_key13];
-              xfer += iprot->readI64(_val14);
+              std::string _key61;
+              xfer += iprot->readString(_key61);
+              std::string& _val62 = (*(this->success))[_key61];
+              xfer += iprot->readString(_val62);
+            }
+            iprot->readMapEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t storage_server_remove_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->key);
+          this->__isset.key = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t storage_server_remove_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("storage_server_remove_args");
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->key);
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t storage_server_remove_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("storage_server_remove_pargs");
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->key)));
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t storage_server_remove_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t storage_server_remove_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("storage_server_remove_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t storage_server_remove_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t storage_server_multi_get_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->keys.clear();
+            uint32_t _size63;
+            ::apache::thrift::protocol::TType _etype66;
+            iprot->readListBegin(_etype66, _size63);
+            this->keys.resize(_size63);
+            uint32_t _i67;
+            for (_i67 = 0; _i67 < _size63; ++_i67)
+            {
+              xfer += iprot->readString(this->keys[_i67]);
+            }
+            iprot->readListEnd();
+          }
+          this->__isset.keys = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t storage_server_multi_get_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("storage_server_multi_get_args");
+  xfer += oprot->writeFieldBegin("keys", ::apache::thrift::protocol::T_LIST, 1);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->keys.size()));
+    std::vector<std::string> ::const_iterator _iter68;
+    for (_iter68 = this->keys.begin(); _iter68 != this->keys.end(); ++_iter68)
+    {
+      xfer += oprot->writeString((*_iter68));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t storage_server_multi_get_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("storage_server_multi_get_pargs");
+  xfer += oprot->writeFieldBegin("keys", ::apache::thrift::protocol::T_LIST, 1);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*(this->keys)).size()));
+    std::vector<std::string> ::const_iterator _iter69;
+    for (_iter69 = (*(this->keys)).begin(); _iter69 != (*(this->keys)).end(); ++_iter69)
+    {
+      xfer += oprot->writeString((*_iter69));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t storage_server_multi_get_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
+          {
+            this->success.clear();
+            uint32_t _size70;
+            ::apache::thrift::protocol::TType _ktype71;
+            ::apache::thrift::protocol::TType _vtype72;
+            iprot->readMapBegin(_ktype71, _vtype72, _size70);
+            uint32_t _i74;
+            for (_i74 = 0; _i74 < _size70; ++_i74)
+            {
+              std::string _key75;
+              xfer += iprot->readString(_key75);
+              std::string& _val76 = this->success[_key75];
+              xfer += iprot->readBinary(_val76);
+            }
+            iprot->readMapEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t storage_server_multi_get_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("storage_server_multi_get_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
+    {
+      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
+      std::map<std::string, std::string> ::const_iterator _iter77;
+      for (_iter77 = this->success.begin(); _iter77 != this->success.end(); ++_iter77)
+      {
+        xfer += oprot->writeString(_iter77->first);
+        xfer += oprot->writeBinary(_iter77->second);
+      }
+      xfer += oprot->writeMapEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t storage_server_multi_get_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
+          {
+            (*(this->success)).clear();
+            uint32_t _size78;
+            ::apache::thrift::protocol::TType _ktype79;
+            ::apache::thrift::protocol::TType _vtype80;
+            iprot->readMapBegin(_ktype79, _vtype80, _size78);
+            uint32_t _i82;
+            for (_i82 = 0; _i82 < _size78; ++_i82)
+            {
+              std::string _key83;
+              xfer += iprot->readString(_key83);
+              std::string& _val84 = (*(this->success))[_key83];
+              xfer += iprot->readBinary(_val84);
             }
             iprot->readMapEnd();
           }
@@ -637,7 +1020,7 @@ bool storage_serverClient::recv_put()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "put failed: unknown result");
 }
 
-void storage_serverClient::get_stats(std::map<std::string, int64_t> & _return)
+void storage_serverClient::get_stats(std::map<std::string, std::string> & _return)
 {
   send_get_stats();
   recv_get_stats(_return);
@@ -656,7 +1039,7 @@ void storage_serverClient::send_get_stats()
   oprot_->getTransport()->flush();
 }
 
-void storage_serverClient::recv_get_stats(std::map<std::string, int64_t> & _return)
+void storage_serverClient::recv_get_stats(std::map<std::string, std::string> & _return)
 {
 
   int32_t rseqid = 0;
@@ -692,6 +1075,122 @@ void storage_serverClient::recv_get_stats(std::map<std::string, int64_t> & _retu
     return;
   }
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_stats failed: unknown result");
+}
+
+bool storage_serverClient::remove(const std::string& key)
+{
+  send_remove(key);
+  return recv_remove();
+}
+
+void storage_serverClient::send_remove(const std::string& key)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("remove", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  storage_server_remove_pargs args;
+  args.key = &key;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+bool storage_serverClient::recv_remove()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("remove") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  bool _return;
+  storage_server_remove_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "remove failed: unknown result");
+}
+
+void storage_serverClient::multi_get(std::map<std::string, std::string> & _return, const std::vector<std::string> & keys)
+{
+  send_multi_get(keys);
+  recv_multi_get(_return);
+}
+
+void storage_serverClient::send_multi_get(const std::vector<std::string> & keys)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("multi_get", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  storage_server_multi_get_pargs args;
+  args.keys = &keys;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void storage_serverClient::recv_multi_get(std::map<std::string, std::string> & _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("multi_get") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  storage_server_multi_get_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "multi_get failed: unknown result");
 }
 
 bool storage_serverProcessor::process(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot, void* callContext) {
@@ -898,6 +1397,114 @@ void storage_serverProcessor::process_get_stats(int32_t seqid, ::apache::thrift:
 
   if (eventHandler_.get() != NULL) {
     eventHandler_->postWrite(ctx, "storage_server.get_stats", bytes);
+  }
+}
+
+void storage_serverProcessor::process_remove(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (eventHandler_.get() != NULL) {
+    ctx = eventHandler_->getContext("storage_server.remove", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "storage_server.remove");
+
+  if (eventHandler_.get() != NULL) {
+    eventHandler_->preRead(ctx, "storage_server.remove");
+  }
+
+  storage_server_remove_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (eventHandler_.get() != NULL) {
+    eventHandler_->postRead(ctx, "storage_server.remove", bytes);
+  }
+
+  storage_server_remove_result result;
+  try {
+    result.success = iface_->remove(args.key);
+    result.__isset.success = true;
+  } catch (const std::exception& e) {
+    if (eventHandler_.get() != NULL) {
+      eventHandler_->handlerError(ctx, "storage_server.remove");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("remove", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (eventHandler_.get() != NULL) {
+    eventHandler_->preWrite(ctx, "storage_server.remove");
+  }
+
+  oprot->writeMessageBegin("remove", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (eventHandler_.get() != NULL) {
+    eventHandler_->postWrite(ctx, "storage_server.remove", bytes);
+  }
+}
+
+void storage_serverProcessor::process_multi_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (eventHandler_.get() != NULL) {
+    ctx = eventHandler_->getContext("storage_server.multi_get", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(eventHandler_.get(), ctx, "storage_server.multi_get");
+
+  if (eventHandler_.get() != NULL) {
+    eventHandler_->preRead(ctx, "storage_server.multi_get");
+  }
+
+  storage_server_multi_get_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (eventHandler_.get() != NULL) {
+    eventHandler_->postRead(ctx, "storage_server.multi_get", bytes);
+  }
+
+  storage_server_multi_get_result result;
+  try {
+    iface_->multi_get(result.success, args.keys);
+    result.__isset.success = true;
+  } catch (const std::exception& e) {
+    if (eventHandler_.get() != NULL) {
+      eventHandler_->handlerError(ctx, "storage_server.multi_get");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("multi_get", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (eventHandler_.get() != NULL) {
+    eventHandler_->preWrite(ctx, "storage_server.multi_get");
+  }
+
+  oprot->writeMessageBegin("multi_get", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (eventHandler_.get() != NULL) {
+    eventHandler_->postWrite(ctx, "storage_server.multi_get", bytes);
   }
 }
 
