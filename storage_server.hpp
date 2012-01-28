@@ -135,6 +135,62 @@ private:
         return false;
     }
 
+    //returns the front of the new node_list or 0 (if gone)
+
+    handle_t
+    find_and_remove_node_list( const std::string& key,
+			       bint::managed_mapped_file::handle_t node)
+    {
+        
+        handle_t prev = 0;
+	handle_t current = node;
+	list_node* n;
+	char* k;
+	//find relevant node
+        while ( current )
+        {
+            n = reinterpret_cast<list_node*>(mfile.get_address_from_handle(current));
+            k = reinterpret_cast<char*>(mfile.get_address_from_handle(n->key_handle));
+            if ( std::strcmp( key.c_str(), k ) == 0 )
+            {
+                break;
+            }
+
+            prev = current;
+            current = n->next_node_handle;
+        }
+
+	//if we didnt find it, then return node
+	if (!current)
+	    return node;
+
+	//grab next node
+	handle_t next = n->next_node_handle;
+
+	//deallocate value
+	mfile.deallocate( mfile.get_address_from_handle(n->value_handle) );
+	//deallocate key
+	mfile.deallocate( mfile.get_address_from_handle(n->key_handle) );
+	//deallocate node
+	mfile.deallocate(n);
+
+        if (prev){
+	    //set next handle
+	    list_node* p = reinterpret_cast<list_node*>(mfile.get_address_from_handle(current));
+
+	    p->next_node_handle = next;
+	    return prev;
+	}
+
+	
+	//see if next exists
+	if(next)
+	    return next;
+	//else return 0
+	return 0;
+        
+    }
+
 
 
 public:
@@ -215,6 +271,32 @@ public:
     bool set( const std::string& key, V* store, std::size_t size )
     {
         return set(key, storage_type<V>(size,store));
+    }
+
+    //returns whether or not it was removed
+    bool remove (const std::string& key)
+    {
+	zi::rwmutex::write_guard g(mutex_);
+        std::size_t h = hasher_(key);
+        data_iterator it = mymap->find(h);
+
+	handle_t node_h;
+
+	//if doesnt exist, then return false
+        if ( it == mymap->end() )
+        {
+	    return false;
+	}
+	// remove it from the nodelist
+	node_h = it->second;
+	handle_t new_node = find_and_remove_node_list( key , node_h);
+	//remove it from the map
+        mymap->erase(it);
+	//insert new head
+	mymap->insert(std::pair<const std::size_t, handle_t>
+                      (h, new_node));
+
+        return true;
     }
 
     std::string get_id()
