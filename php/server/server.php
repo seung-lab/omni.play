@@ -19,6 +19,7 @@ interface serverIf {
   public function get_seg_tiles($vol, $segId, $segBbox, $view);
   public function get_seg_id($vol, $point);
   public function get_seg_data($vol, $segId);
+  public function get_seg_list_data($vol, $segIds);
   public function get_seg_ids($vol, $point, $radius, $view);
   public function get_mesh($uri, $chunk, $mipLevel, $segId);
   public function get_obj($uri, $chunk, $mipLevel, $segId);
@@ -552,6 +553,58 @@ class serverClient implements serverIf {
       return $result->success;
     }
     throw new Exception("get_seg_data failed: unknown result");
+  }
+
+  public function get_seg_list_data($vol, $segIds)
+  {
+    $this->send_get_seg_list_data($vol, $segIds);
+    return $this->recv_get_seg_list_data();
+  }
+
+  public function send_get_seg_list_data($vol, $segIds)
+  {
+    $args = new server_get_seg_list_data_args();
+    $args->vol = $vol;
+    $args->segIds = $segIds;
+    $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'get_seg_list_data', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('get_seg_list_data', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_get_seg_list_data()
+  {
+    $bin_accel = ($this->input_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'server_get_seg_list_data_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new server_get_seg_list_data_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    throw new Exception("get_seg_list_data failed: unknown result");
   }
 
   public function get_seg_ids($vol, $point, $radius, $view)
@@ -2694,6 +2747,244 @@ class server_get_seg_data_result {
 
 }
 
+class server_get_seg_list_data_args {
+  static $_TSPEC;
+
+  public $vol = null;
+  public $segIds = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'vol',
+          'type' => TType::STRUCT,
+          'class' => 'metadata',
+          ),
+        2 => array(
+          'var' => 'segIds',
+          'type' => TType::SET,
+          'etype' => TType::I32,
+          'elem' => array(
+            'type' => TType::I32,
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['vol'])) {
+        $this->vol = $vals['vol'];
+      }
+      if (isset($vals['segIds'])) {
+        $this->segIds = $vals['segIds'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_seg_list_data_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->vol = new metadata();
+            $xfer += $this->vol->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::SET) {
+            $this->segIds = array();
+            $_size37 = 0;
+            $_etype40 = 0;
+            $xfer += $input->readSetBegin($_etype40, $_size37);
+            for ($_i41 = 0; $_i41 < $_size37; ++$_i41)
+            {
+              $elem42 = null;
+              $xfer += $input->readI32($elem42);
+              if (is_scalar($elem42)) {
+                $this->segIds[$elem42] = true;
+              } else {
+                $this->segIds []= $elem42;
+              }
+            }
+            $xfer += $input->readSetEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_seg_list_data_args');
+    if ($this->vol !== null) {
+      if (!is_object($this->vol)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('vol', TType::STRUCT, 1);
+      $xfer += $this->vol->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->segIds !== null) {
+      if (!is_array($this->segIds)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('segIds', TType::SET, 2);
+      {
+        $output->writeSetBegin(TType::I32, count($this->segIds));
+        {
+          foreach ($this->segIds as $iter43)
+          {
+            if (is_scalar($iter43)) {
+              $this->segIds[$iter43] = true;
+            }
+            $xfer += $output->writeI32($iter43);
+          }
+        }
+        $output->writeSetEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class server_get_seg_list_data_result {
+  static $_TSPEC;
+
+  public $success = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::MAP,
+          'ktype' => TType::I32,
+          'vtype' => TType::STRUCT,
+          'key' => array(
+            'type' => TType::I32,
+          ),
+          'val' => array(
+            'type' => TType::STRUCT,
+            'class' => 'segData',
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'server_get_seg_list_data_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::MAP) {
+            $this->success = array();
+            $_size44 = 0;
+            $_ktype45 = 0;
+            $_vtype46 = 0;
+            $xfer += $input->readMapBegin($_ktype45, $_vtype46, $_size44);
+            for ($_i48 = 0; $_i48 < $_size44; ++$_i48)
+            {
+              $key49 = 0;
+              $val50 = new segData();
+              $xfer += $input->readI32($key49);
+              $val50 = new segData();
+              $xfer += $val50->read($input);
+              $this->success[$key49] = $val50;
+            }
+            $xfer += $input->readMapEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('server_get_seg_list_data_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::MAP, 0);
+      {
+        $output->writeMapBegin(TType::I32, TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $kiter51 => $viter52)
+          {
+            $xfer += $output->writeI32($kiter51);
+            $xfer += $viter52->write($output);
+          }
+        }
+        $output->writeMapEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class server_get_seg_ids_args {
   static $_TSPEC;
 
@@ -2883,17 +3174,17 @@ class server_get_seg_ids_result {
         case 0:
           if ($ftype == TType::SET) {
             $this->success = array();
-            $_size37 = 0;
-            $_etype40 = 0;
-            $xfer += $input->readSetBegin($_etype40, $_size37);
-            for ($_i41 = 0; $_i41 < $_size37; ++$_i41)
+            $_size53 = 0;
+            $_etype56 = 0;
+            $xfer += $input->readSetBegin($_etype56, $_size53);
+            for ($_i57 = 0; $_i57 < $_size53; ++$_i57)
             {
-              $elem42 = null;
-              $xfer += $input->readI32($elem42);
-              if (is_scalar($elem42)) {
-                $this->success[$elem42] = true;
+              $elem58 = null;
+              $xfer += $input->readI32($elem58);
+              if (is_scalar($elem58)) {
+                $this->success[$elem58] = true;
               } else {
-                $this->success []= $elem42;
+                $this->success []= $elem58;
               }
             }
             $xfer += $input->readSetEnd();
@@ -2922,12 +3213,12 @@ class server_get_seg_ids_result {
       {
         $output->writeSetBegin(TType::I32, count($this->success));
         {
-          foreach ($this->success as $iter43)
+          foreach ($this->success as $iter59)
           {
-            if (is_scalar($iter43)) {
-              $this->success[$iter43] = true;
+            if (is_scalar($iter59)) {
+              $this->success[$iter59] = true;
             }
-            $xfer += $output->writeI32($iter43);
+            $xfer += $output->writeI32($iter59);
           }
         }
         $output->writeSetEnd();
@@ -3416,15 +3707,15 @@ class server_compare_results_args {
         case 1:
           if ($ftype == TType::LST) {
             $this->old_results = array();
-            $_size44 = 0;
-            $_etype47 = 0;
-            $xfer += $input->readListBegin($_etype47, $_size44);
-            for ($_i48 = 0; $_i48 < $_size44; ++$_i48)
+            $_size60 = 0;
+            $_etype63 = 0;
+            $xfer += $input->readListBegin($_etype63, $_size60);
+            for ($_i64 = 0; $_i64 < $_size60; ++$_i64)
             {
-              $elem49 = null;
-              $elem49 = new result();
-              $xfer += $elem49->read($input);
-              $this->old_results []= $elem49;
+              $elem65 = null;
+              $elem65 = new result();
+              $xfer += $elem65->read($input);
+              $this->old_results []= $elem65;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3460,9 +3751,9 @@ class server_compare_results_args {
       {
         $output->writeListBegin(TType::STRUCT, count($this->old_results));
         {
-          foreach ($this->old_results as $iter50)
+          foreach ($this->old_results as $iter66)
           {
-            $xfer += $iter50->write($output);
+            $xfer += $iter66->write($output);
           }
         }
         $output->writeListEnd();
@@ -3629,17 +3920,17 @@ class server_get_seeds_args {
         case 2:
           if ($ftype == TType::SET) {
             $this->selected = array();
-            $_size51 = 0;
-            $_etype54 = 0;
-            $xfer += $input->readSetBegin($_etype54, $_size51);
-            for ($_i55 = 0; $_i55 < $_size51; ++$_i55)
+            $_size67 = 0;
+            $_etype70 = 0;
+            $xfer += $input->readSetBegin($_etype70, $_size67);
+            for ($_i71 = 0; $_i71 < $_size67; ++$_i71)
             {
-              $elem56 = null;
-              $xfer += $input->readI32($elem56);
-              if (is_scalar($elem56)) {
-                $this->selected[$elem56] = true;
+              $elem72 = null;
+              $xfer += $input->readI32($elem72);
+              if (is_scalar($elem72)) {
+                $this->selected[$elem72] = true;
               } else {
-                $this->selected []= $elem56;
+                $this->selected []= $elem72;
               }
             }
             $xfer += $input->readSetEnd();
@@ -3684,12 +3975,12 @@ class server_get_seeds_args {
       {
         $output->writeSetBegin(TType::I32, count($this->selected));
         {
-          foreach ($this->selected as $iter57)
+          foreach ($this->selected as $iter73)
           {
-            if (is_scalar($iter57)) {
-              $this->selected[$iter57] = true;
+            if (is_scalar($iter73)) {
+              $this->selected[$iter73] = true;
             }
-            $xfer += $output->writeI32($iter57);
+            $xfer += $output->writeI32($iter73);
           }
         }
         $output->writeSetEnd();
@@ -3762,28 +4053,28 @@ class server_get_seeds_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size58 = 0;
-            $_etype61 = 0;
-            $xfer += $input->readListBegin($_etype61, $_size58);
-            for ($_i62 = 0; $_i62 < $_size58; ++$_i62)
+            $_size74 = 0;
+            $_etype77 = 0;
+            $xfer += $input->readListBegin($_etype77, $_size74);
+            for ($_i78 = 0; $_i78 < $_size74; ++$_i78)
             {
-              $elem63 = null;
-              $elem63 = array();
-              $_size64 = 0;
-              $_etype67 = 0;
-              $xfer += $input->readSetBegin($_etype67, $_size64);
-              for ($_i68 = 0; $_i68 < $_size64; ++$_i68)
+              $elem79 = null;
+              $elem79 = array();
+              $_size80 = 0;
+              $_etype83 = 0;
+              $xfer += $input->readSetBegin($_etype83, $_size80);
+              for ($_i84 = 0; $_i84 < $_size80; ++$_i84)
               {
-                $elem69 = null;
-                $xfer += $input->readI32($elem69);
-                if (is_scalar($elem69)) {
-                  $elem63[$elem69] = true;
+                $elem85 = null;
+                $xfer += $input->readI32($elem85);
+                if (is_scalar($elem85)) {
+                  $elem79[$elem85] = true;
                 } else {
-                  $elem63 []= $elem69;
+                  $elem79 []= $elem85;
                 }
               }
               $xfer += $input->readSetEnd();
-              $this->success []= $elem63;
+              $this->success []= $elem79;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3811,17 +4102,17 @@ class server_get_seeds_result {
       {
         $output->writeListBegin(TType::SET, count($this->success));
         {
-          foreach ($this->success as $iter70)
+          foreach ($this->success as $iter86)
           {
             {
-              $output->writeSetBegin(TType::I32, count($iter70));
+              $output->writeSetBegin(TType::I32, count($iter86));
               {
-                foreach ($iter70 as $iter71)
+                foreach ($iter86 as $iter87)
                 {
-                  if (is_scalar($iter71)) {
-                    $iter70[$iter71] = true;
+                  if (is_scalar($iter87)) {
+                    $iter86[$iter87] = true;
                   }
-                  $xfer += $output->writeI32($iter71);
+                  $xfer += $output->writeI32($iter87);
                 }
               }
               $output->writeSetEnd();

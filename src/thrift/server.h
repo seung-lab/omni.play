@@ -24,6 +24,7 @@ class serverIf {
   virtual void get_seg_tiles(std::map<std::string, tile> & _return, const metadata& vol, const int32_t segId, const bbox& segBbox, const viewType::type view) = 0;
   virtual int32_t get_seg_id(const metadata& vol, const vector3d& point) = 0;
   virtual void get_seg_data(segData& _return, const metadata& vol, const int32_t segId) = 0;
+  virtual void get_seg_list_data(std::map<int32_t, segData> & _return, const metadata& vol, const std::set<int32_t> & segIds) = 0;
   virtual void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) = 0;
   virtual void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const int32_t segId) = 0;
   virtual void get_obj(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const int32_t segId) = 0;
@@ -63,6 +64,9 @@ class serverNull : virtual public serverIf {
     return _return;
   }
   void get_seg_data(segData& /* _return */, const metadata& /* vol */, const int32_t /* segId */) {
+    return;
+  }
+  void get_seg_list_data(std::map<int32_t, segData> & /* _return */, const metadata& /* vol */, const std::set<int32_t> & /* segIds */) {
     return;
   }
   void get_seg_ids(std::set<int32_t> & /* _return */, const metadata& /* vol */, const vector3d& /* point */, const int32_t /* radius */, const viewType::type /* view */) {
@@ -1240,6 +1244,123 @@ class server_get_seg_data_presult {
 
 };
 
+typedef struct _server_get_seg_list_data_args__isset {
+  _server_get_seg_list_data_args__isset() : vol(false), segIds(false) {}
+  bool vol;
+  bool segIds;
+} _server_get_seg_list_data_args__isset;
+
+class server_get_seg_list_data_args {
+ public:
+
+  server_get_seg_list_data_args() {
+  }
+
+  virtual ~server_get_seg_list_data_args() throw() {}
+
+  metadata vol;
+  std::set<int32_t>  segIds;
+
+  _server_get_seg_list_data_args__isset __isset;
+
+  void __set_vol(const metadata& val) {
+    vol = val;
+  }
+
+  void __set_segIds(const std::set<int32_t> & val) {
+    segIds = val;
+  }
+
+  bool operator == (const server_get_seg_list_data_args & rhs) const
+  {
+    if (!(vol == rhs.vol))
+      return false;
+    if (!(segIds == rhs.segIds))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seg_list_data_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seg_list_data_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_seg_list_data_pargs {
+ public:
+
+
+  virtual ~server_get_seg_list_data_pargs() throw() {}
+
+  const metadata* vol;
+  const std::set<int32_t> * segIds;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seg_list_data_result__isset {
+  _server_get_seg_list_data_result__isset() : success(false) {}
+  bool success;
+} _server_get_seg_list_data_result__isset;
+
+class server_get_seg_list_data_result {
+ public:
+
+  server_get_seg_list_data_result() {
+  }
+
+  virtual ~server_get_seg_list_data_result() throw() {}
+
+  std::map<int32_t, segData>  success;
+
+  _server_get_seg_list_data_result__isset __isset;
+
+  void __set_success(const std::map<int32_t, segData> & val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_seg_list_data_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_seg_list_data_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_seg_list_data_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_seg_list_data_presult__isset {
+  _server_get_seg_list_data_presult__isset() : success(false) {}
+  bool success;
+} _server_get_seg_list_data_presult__isset;
+
+class server_get_seg_list_data_presult {
+ public:
+
+
+  virtual ~server_get_seg_list_data_presult() throw() {}
+
+  std::map<int32_t, segData> * success;
+
+  _server_get_seg_list_data_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 typedef struct _server_get_seg_ids_args__isset {
   _server_get_seg_ids_args__isset() : vol(false), point(false), radius(false), view(false) {}
   bool vol;
@@ -1938,6 +2059,9 @@ class serverClient : virtual public serverIf {
   void get_seg_data(segData& _return, const metadata& vol, const int32_t segId);
   void send_get_seg_data(const metadata& vol, const int32_t segId);
   void recv_get_seg_data(segData& _return);
+  void get_seg_list_data(std::map<int32_t, segData> & _return, const metadata& vol, const std::set<int32_t> & segIds);
+  void send_get_seg_list_data(const metadata& vol, const std::set<int32_t> & segIds);
+  void recv_get_seg_list_data(std::map<int32_t, segData> & _return);
   void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view);
   void send_get_seg_ids(const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view);
   void recv_get_seg_ids(std::set<int32_t> & _return);
@@ -1976,6 +2100,7 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
   void process_get_seg_tiles(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_data(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_seg_list_data(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_ids(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_mesh(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_obj(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1994,6 +2119,7 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
     processMap_["get_seg_tiles"] = &serverProcessor::process_get_seg_tiles;
     processMap_["get_seg_id"] = &serverProcessor::process_get_seg_id;
     processMap_["get_seg_data"] = &serverProcessor::process_get_seg_data;
+    processMap_["get_seg_list_data"] = &serverProcessor::process_get_seg_list_data;
     processMap_["get_seg_ids"] = &serverProcessor::process_get_seg_ids;
     processMap_["get_mesh"] = &serverProcessor::process_get_mesh;
     processMap_["get_obj"] = &serverProcessor::process_get_obj;
@@ -2122,6 +2248,18 @@ class serverMultiface : virtual public serverIf {
         return;
       } else {
         ifaces_[i]->get_seg_data(_return, vol, segId);
+      }
+    }
+  }
+
+  void get_seg_list_data(std::map<int32_t, segData> & _return, const metadata& vol, const std::set<int32_t> & segIds) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_seg_list_data(_return, vol, segIds);
+        return;
+      } else {
+        ifaces_[i]->get_seg_list_data(_return, vol, segIds);
       }
     }
   }

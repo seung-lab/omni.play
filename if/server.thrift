@@ -100,6 +100,9 @@ service server
     segData get_seg_data( 1: metadata vol,
                           2: i32 segId ),
 
+    map<i32, segData> get_seg_list_data( 1: metadata vol,
+                                         2: set<i32> segIds ),
+
     set<i32> get_seg_ids( 1: metadata vol,
                           2: vector3d point,
                           3: i32 radius,
