@@ -28,6 +28,16 @@ void get_seg_data(server::segData& _return, const volume::volume& vol, const int
     _return.bounds.max.z = d.bounds.getMax().z;
     _return.size = d.size;
 }
+void get_seg_list_data(std::map<int32_t, server::segData>& _return,
+                       const volume::volume& vol,
+                       const std::set<int32_t>& segIds)
+{
+	FOR_EACH(id, segIds)
+	{
+		get_seg_data(_return[*id], vol, *id);
+	}
+}
+
 
 }
 }

@@ -4,6 +4,7 @@
 #include <transport/TSocket.h>
 #include <transport/TBufferTransports.h>
 #include <protocol/TBinaryProtocol.h>
+#include <boost/lexical_cast.hpp>
 
 #include <vector>
 #include <iostream>
@@ -64,24 +65,111 @@ metadata makeMetadata(int x, int y, int z, volType::type type)
 }
 
 int main(int argc, char **argv) {
-    boost::shared_ptr<TSocket> socket(new TSocket("brainiac.mit.edu", 9090));
+    boost::shared_ptr<TSocket> socket(new TSocket("localhost", 9090));
     boost::shared_ptr<TTransport> transport(new TFramedTransport(socket));
     boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
 
     serverClient client(protocol);
     transport->open();
 
-    vector3i chunk;
-    chunk.x = chunk.y = chunk.z = 0;
+    std::set<int32_t> ids;
 
-    std::string path = "/usr/local/omni/data/omelette2/x07/y50/x07y50z02_s1811_11475_659_e2066_11730_914.omni.files/segmentations/segmentation1/meshes/";
+    for (int i = 1; i < 100; ++i)
+    {
+        ids.insert(i);
+    }
 
-    std::string obj;
+    metadata meta = makeMetadata(0,0,0, volType::SEGMENTATION);
 
-    client.get_obj(obj, path, chunk, 428);
-    std::cout << obj;
+    std::map<int, segData> data;
+    client.get_seg_list_data(data, meta, ids);
+
+    for (int i = 0; i < 100; ++i)
+    {
+        std::cout << i << ": " << data[i].size << std::endl;
+    }
 
     transport->close();
 
     return 0;
 }
+
+/*  Dump obj to disk
+int main(int argc, char **argv) {
+    boost::shared_ptr<TSocket> socket(new TSocket("localhost", 9090));
+    boost::shared_ptr<TTransport> transport(new TFramedTransport(socket));
+    boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+
+    serverClient client(protocol);
+    transport->open();
+
+    std::vector<uint32_t> all_ids;
+    //all_ids.push_back(10005);
+    //all_ids.push_back(10018);
+    //all_ids.push_back(40001);
+    //all_ids.push_back(40005);
+    //all_ids.push_back(60002);
+    //all_ids.push_back(80001);
+    //all_ids.push_back(90001);
+    //all_ids.push_back(91001);
+    //all_ids.push_back(91002);
+    //all_ids.push_back(91003);
+    all_ids.push_back(91004);
+    //all_ids.push_back(91005);
+
+    std::string path = "/omelette/2/omniData/e2198_all/cells.omni.files/segmentations/segmentation1/meshes/";
+
+    vector3i chunk;
+
+//    FOR_EACH( it, all_ids )
+    {
+        for ( int i = 0; i <= 18; ++i )
+        {
+            for ( int j = 0; j <= 81; ++j )
+            {
+                for ( int k = 0; k <= 50; ++k )
+		FOR_EACH (it, all_ids)
+                {
+                    chunk.x = i;
+                    chunk.y = j;
+                    chunk.z = k;
+                    std::string r;                    
+                    try {
+                        client.get_obj(r, path, chunk, 0, *it); // 0 IS THE MIP LEVEL
+                    }
+                    catch ( std::exception e )
+                    {
+                        std::cout << "NO MESH (Exception) for ID: " << *it
+                            << " chunk: " << chunk.x << ' ' << chunk.y << ' ' << chunk.z << std::endl;
+                        continue;
+                    }
+                    if ( r != "" )
+                    {
+                        std::string filename = boost::lexical_cast<std::string>(*it) + "."
+                            + boost::lexical_cast<std::string>(i) + "."
+                            + boost::lexical_cast<std::string>(j) + "."
+                            + boost::lexical_cast<std::string>(k) + ".obj";
+                        std::cout << "Got mesh for ID: " << *it
+                            << " chunk: " << chunk.x << ' ' << chunk.y << ' ' << chunk.z << std::endl;
+                        std::ofstream fout(filename.c_str());
+                        fout << r;
+                    }
+                    else
+                    {
+                        std::cout << "NO MESH for ID: " << *it
+                            << " chunk: " << chunk.x << ' ' << chunk.y << ' ' << chunk.z << std::endl;
+                        
+                    }
+                }
+            }
+        }        
+    }
+          
+
+    //std::cout << uuid;
+
+    transport->close();
+
+    return 0;
+}
+*/

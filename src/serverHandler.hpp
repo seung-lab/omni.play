@@ -13,11 +13,11 @@ std::ostream& operator<<(std::ostream& o, const vector3d& v) {
 class serverHandler : virtual public serverIf {
 public:
     void add_chunk(const metadata& vol, const vector3i& chunk, const std::string& data) {
-        
+
     }
 
     void delete_chunk(const metadata& vol, const vector3i& chunk){
-        
+
     }
 
     void get_chunk(std::string& _return, const metadata& vol, const vector3i& chunk){
@@ -36,7 +36,7 @@ public:
                              const metadata& chan,
                              const int32_t newVolId,
                              const std::vector<std::string> & features) {
-        
+
     }
 
     void get_chan_tile(server::tile& _return,
@@ -72,6 +72,13 @@ public:
         handler::get_seg_data(_return, meta, segId);
     }
 
+    void get_seg_list_data(std::map<int, segData>& _return,
+                           const metadata& meta,
+                           const std::set<int32_t>& segIds)
+    {
+        handler::get_seg_list_data(_return, meta, segIds);
+    }
+
     double compare_results(const std::vector<result> & old_results, const result& new_result)
     {
         return handler::compare_results(old_results, new_result);
@@ -80,15 +87,17 @@ public:
     void get_mesh(std::string& _return,
                   const std::string& uri,
                   const vector3i& chunk,
+                  int32_t mipLevel,
                   int32_t segId) {
-        handler::get_mesh(_return, uri, chunk, segId);
+        handler::get_mesh(_return, uri, chunk, mipLevel, segId);
     }
 
     void get_obj(std::string& _return,
                   const std::string& uri,
                   const vector3i& chunk,
+                  int32_t mipLevel,
                   int32_t segId) {
-        handler::get_obj(_return, uri, chunk, segId);
+        handler::get_obj(_return, uri, chunk, mipLevel, segId);
     }
 
     void get_seeds(std::vector<std::set<int32_t> >& _return,

@@ -29,6 +29,9 @@ HEADERS +=  \
 	src/mesh/meshChunkDataReader.hpp \
 	src/mesh/meshChunkTypes.hpp \
 	src/mesh/meshReader.hpp \
+	src/mesh/mesher/meshCollector.hpp \
+	src/mesh/mesher/triStripCollector.hpp \
+	src/mesh/mesher/ziMesher.hpp \
 	src/pipeline/bitmask.hpp \
 	src/pipeline/chunk.hpp \
 	src/pipeline/encode.hpp \
@@ -41,6 +44,7 @@ HEADERS +=  \
 	src/pipeline/stage.hpp \
 	src/pipeline/utility.hpp \
 	src/pointsInCircle.hpp \
+	src/segment/segmentGraph.h \
 	src/segment/segmentTypes.hpp \
 	src/serverHandler.hpp \
 	src/tiles/tileFilters.hpp \
@@ -60,6 +64,7 @@ SOURCES +=  \
 	src/handler/makeTask.cpp \
 	src/main.cpp \
 	src/pipeline/jpeg.cpp \
+	src/segment/segmentGraph.cpp \
 	src/volume/volume.cpp
 
 
