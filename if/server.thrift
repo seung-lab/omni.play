@@ -1,3 +1,5 @@
+include "../external/srcs/thrift-0.7.0/contrib/fb303/if/fb303.thrift"
+
 namespace cpp om.server
 
 struct vector3d
@@ -76,7 +78,7 @@ struct metadata
     7: volType vol_type
 }
 
-service server
+service server extends fb303.FacebookService
 {
     void add_chunk( 1: metadata vol, 2: vector3i chunk, 3: binary data ),
     void delete_chunk( 1: metadata vol, 2: vector3i chunk ),

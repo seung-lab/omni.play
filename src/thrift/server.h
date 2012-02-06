@@ -8,10 +8,11 @@
 
 #include <TProcessor.h>
 #include "server_types.h"
+#include "FacebookService.h"
 
 namespace om { namespace server {
 
-class serverIf {
+class serverIf : virtual public facebook::fb303::FacebookServiceIf {
  public:
   virtual ~serverIf() {}
   virtual void add_chunk(const metadata& vol, const vector3i& chunk, const std::string& data) = 0;
@@ -32,7 +33,7 @@ class serverIf {
   virtual void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume) = 0;
 };
 
-class serverNull : virtual public serverIf {
+class serverNull : virtual public serverIf , virtual public facebook::fb303::FacebookServiceNull {
  public:
   virtual ~serverNull() {}
   void add_chunk(const metadata& /* vol */, const vector3i& /* chunk */, const std::string& /* data */) {
@@ -2009,20 +2010,12 @@ class server_get_seeds_presult {
 
 };
 
-class serverClient : virtual public serverIf {
+class serverClient : virtual public serverIf, public facebook::fb303::FacebookServiceClient {
  public:
   serverClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
-    piprot_(prot),
-    poprot_(prot) {
-    iprot_ = prot.get();
-    oprot_ = prot.get();
-  }
+    facebook::fb303::FacebookServiceClient(prot, prot) {}
   serverClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) :
-    piprot_(iprot),
-    poprot_(oprot) {
-    iprot_ = iprot.get();
-    oprot_ = oprot.get();
-  }
+    facebook::fb303::FacebookServiceClient(iprot, oprot) {}
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getInputProtocol() {
     return piprot_;
   }
@@ -2077,14 +2070,9 @@ class serverClient : virtual public serverIf {
   void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume);
   void send_get_seeds(const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume);
   void recv_get_seeds(std::vector<std::set<int32_t> > & _return);
- protected:
-  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
-  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
-  ::apache::thrift::protocol::TProtocol* iprot_;
-  ::apache::thrift::protocol::TProtocol* oprot_;
 };
 
-class serverProcessor : virtual public ::apache::thrift::TProcessor {
+class serverProcessor : virtual public ::apache::thrift::TProcessor, public facebook::fb303::FacebookServiceProcessor {
  protected:
   boost::shared_ptr<serverIf> iface_;
   virtual bool process_fn(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, std::string& fname, int32_t seqid, void* callContext);
@@ -2108,6 +2096,7 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
   void process_get_seeds(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   serverProcessor(boost::shared_ptr<serverIf> iface) :
+    facebook::fb303::FacebookServiceProcessor(iface),
     iface_(iface) {
     processMap_["add_chunk"] = &serverProcessor::process_add_chunk;
     processMap_["delete_chunk"] = &serverProcessor::process_delete_chunk;
@@ -2131,15 +2120,20 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor {
   virtual ~serverProcessor() {}
 };
 
-class serverMultiface : virtual public serverIf {
+class serverMultiface : virtual public serverIf, public facebook::fb303::FacebookServiceMultiface {
  public:
   serverMultiface(std::vector<boost::shared_ptr<serverIf> >& ifaces) : ifaces_(ifaces) {
+    std::vector<boost::shared_ptr<serverIf> >::iterator iter;
+    for (iter = ifaces.begin(); iter != ifaces.end(); ++iter) {
+      facebook::fb303::FacebookServiceMultiface::add(*iter);
+    }
   }
   virtual ~serverMultiface() {}
  protected:
   std::vector<boost::shared_ptr<serverIf> > ifaces_;
   serverMultiface() {}
   void add(boost::shared_ptr<serverIf> iface) {
+    facebook::fb303::FacebookServiceMultiface::add(iface);
     ifaces_.push_back(iface);
   }
  public:

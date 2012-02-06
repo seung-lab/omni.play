@@ -11,6 +11,7 @@
 #include <protocol/TProtocol.h>
 #include <transport/TTransport.h>
 
+#include "fb303_types.h"
 
 
 namespace om { namespace server {
