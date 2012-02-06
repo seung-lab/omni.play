@@ -7,8 +7,9 @@
 include_once $GLOBALS['THRIFT_ROOT'].'/Thrift.php';
 
 include_once $GLOBALS['THRIFT_ROOT'].'/packages/server/server_types.php';
+include_once $GLOBALS['THRIFT_ROOT'].'/packages/fb303/FacebookService.php';
 
-interface serverIf {
+interface serverIf extends FacebookServiceIf {
   public function add_chunk($vol, $chunk, $data);
   public function delete_chunk($vol, $chunk);
   public function get_chunk($vol, $chunk);
@@ -27,15 +28,9 @@ interface serverIf {
   public function get_seeds($taskVolume, $selected, $adjacentVolume);
 }
 
-class serverClient implements serverIf {
-  protected $input_ = null;
-  protected $output_ = null;
-
-  protected $seqid_ = 0;
-
+class serverClient extends FacebookServiceClient implements serverIf {
   public function __construct($input, $output=null) {
-    $this->input_ = $input;
-    $this->output_ = $output ? $output : $input;
+    parent::__construct($input, $output);
   }
 
   public function add_chunk($vol, $chunk, $data)

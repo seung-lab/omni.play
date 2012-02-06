@@ -6,6 +6,7 @@
  */
 include_once $GLOBALS['THRIFT_ROOT'].'/Thrift.php';
 
+include_once $GLOBALS['THRIFT_ROOT'].'/packages/fb303/fb303_types.php';
 
 $GLOBALS['E_viewType'] = array(
   'XY_VIEW' => 1,
