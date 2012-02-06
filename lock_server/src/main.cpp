@@ -16,7 +16,7 @@
 
 #include <iostream>
 
-ZiARG_int32(port, 9090, "Server's port");
+ZiARG_int32(port, 9091, "Server's port");
 ZiARG_bool(daemonize, true, "Run as daemon");
 
 using namespace ::apache::thrift;

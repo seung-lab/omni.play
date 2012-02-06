@@ -13,13 +13,10 @@
 namespace om {
 namespace handler {
 
-bool inAdjacentVolume(uint32_t segId,
-                      const coords::globalBbox& seg,
+bool inAdjacentVolume(const coords::globalBbox& seg,
                       const coords::globalBbox& ovr,
                       const coords::globalBbox& adj)
 {
-    std::cout << "Checking " << segId << ":\n\t" << seg << "\n+\t" << ovr << "\n=\t" << adj << std::endl;
-
     // If the segment is touching a boundary && that boundary is inside the adj Volume.
     // Need to adjust segment mins by 1 because segments don't go all the way to the
     // edges of the volume.
@@ -130,7 +127,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
         // Does not overlap with boundary region
         if (!segOver.isEmpty()) {
             intersectingSegIds.insert(segId);
-            if(inAdjacentVolume(segId, segOverlap.toGlobalBbox(), overlap, adjacentVolume.Bounds())) {
+            if(inAdjacentVolume(segOverlap.toGlobalBbox(), overlap, adjacentVolume.Bounds())) {
                 leavesVolume = true;
             }
         }
@@ -177,24 +174,32 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     FOR_EACH(seg, mappingCounts) {
         if (seg->second >= FALSE_OBJ_SIZE_THR) {
             correspondingIds.insert(seg->first);
-        } else {
-            // std::cout << "Segment too small: " << seg->first
-            //           << " - " << seg->second << std::endl;
         }
     }
 
-    // std::cout << "Found " << correspondingIds.size()
-    //           << " segments in the adjacent volume." << std::endl;
-    // FOR_EACH(it, correspondingIds) {
-    //     std::cout << *it << ", ";
-    // }
-    // std::cout << std::endl;
+    std::vector<std::set<int32_t> > adjacentSeeds;
 
     // group all the segments based on adjacency
-    connectedSets(overlap, adjacentVolume, correspondingIds, seeds);
+    connectedSets(overlap, adjacentVolume, correspondingIds, adjacentSeeds);
 
-    // std::cout << "Separated them out into " << seeds.size()
-    //           << " groups of segment ids." << std::endl;
+    FOR_EACH(seed, adjacentSeeds)
+    {
+        FOR_EACH(seg, *seed)
+        {
+            const uint32_t& segId = *seg;
+            segment::data segData = adjacentVolume.GetSegmentData(segId);
+            
+            coords::dataBbox segOverlap(segData.bounds, &adjacentVolume.CoordSystem(), 0);
+            coords::globalBbox segOver = segOverlap.toGlobalBbox();
+            segOver.intersect(overlap);
+        
+            if(inAdjacentVolume(segOverlap.toGlobalBbox(), overlap, adjacentVolume.Bounds())) {
+                seeds.push_back(*seed);
+                continue;
+            }
+        }
+    }
+    
 }
 
 }} // namespace om::handler
