@@ -33,9 +33,16 @@ HEADERS +=  \
 	lib/include/threads/threadPoolBatched.hpp \
 	lib/include/threads/threadPoolByMipLevel.hpp \
 	lib/include/threads/threadPoolManager.h \
+	lib/include/thrift/FacebookService.h \
+	lib/include/thrift/fb303_constants.h \
+	lib/include/thrift/fb303_types.h \
+	lib/include/thrift/filesystem_constants.h \
+	lib/include/thrift/filesystem_types.h \
 	lib/include/thrift/server.h \
 	lib/include/thrift/server_constants.h \
 	lib/include/thrift/server_types.h \
+	lib/include/thrift/storage_manager.h \
+	lib/include/thrift/storage_server.h \
 	lib/include/utility/UUID.hpp \
 	lib/include/utility/chunkVoxelWalker.hpp \
 	lib/include/utility/copyFirstN.hpp \
@@ -96,6 +103,9 @@ HEADERS +=  \
 	src/threads/threadPoolBatched.hpp \
 	src/threads/threadPoolByMipLevel.hpp \
 	src/threads/threadPoolManager.h \
+	src/thrift/FacebookService.h \
+	src/thrift/fb303_constants.h \
+	src/thrift/fb303_types.h \
 	src/thrift/filesystem_constants.h \
 	src/thrift/filesystem_types.h \
 	src/thrift/server.h \
@@ -146,6 +156,9 @@ SOURCES +=  \
 	src/coordinates/volumeSystem.cpp \
 	src/coordinates/yaml.cpp \
 	src/threads/threadPoolManager.cpp \
+	src/thrift/FacebookService.cpp \
+	src/thrift/fb303_constants.cpp \
+	src/thrift/fb303_types.cpp \
 	src/thrift/filesystem_constants.cpp \
 	src/thrift/filesystem_types.cpp \
 	src/thrift/server.cpp \
@@ -191,13 +204,13 @@ storage_manager_cpp.commands = external/libs/thrift/bin/thrift -r --out src/thri
 storage_manager_cpp.depends = if/filesystem.thrift
 QMAKE_EXTRA_TARGETS += storage_manager_cpp
 
-php_server.target = php/server/TServer.php
-php_server.commands = mkdir php; external/libs/thrift/bin/thrift -r --out php --gen php if/server.thrift
+php_server.target = php/packages/server/TServer.php
+php_server.commands = mkdir -p php/packages; external/libs/thrift/bin/thrift -r --out php/packages --gen php if/server.thrift
 php_server.depends = if/server.thrift
 QMAKE_EXTRA_TARGETS += php_server
 
 php.target = php
-php.depends = php/server/TServer.php
+php.depends = php/packages/server/TServer.php
 QMAKE_EXTRA_TARGETS += php
 
 INCLUDEPATH = src include lib
