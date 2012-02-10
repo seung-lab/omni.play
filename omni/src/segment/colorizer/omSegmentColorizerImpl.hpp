@@ -94,13 +94,20 @@ private:
         OmColor color;
     };
 
+    inline OmSegment* getSegment(const OmSegID segID)
+    {
+        // return segments_->GetSegmentUnsafe(segID);
+        return segments_->GetSegment(segID);
+    }
+
     OmColor getVoxelColorForView2d(const OmSegID segID)
     {
-        OmSegment* seg = segments_->GetSegmentUnsafe(segID);
+        //OmSegment* seg = getSegment(segID);
+        OmSegment* seg = getSegment(segID);
 
         OmSegment* segRoot = seg;
         if(segRoot->getParent()){
-            segRoot = segments_->GetSegmentUnsafe(segments_->findRootID(segID));
+            segRoot = getSegment(segments_->findRootID(segID));
         }
 
         const OmColor segRootColor = segRoot->GetColorInt();

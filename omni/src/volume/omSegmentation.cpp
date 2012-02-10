@@ -198,7 +198,7 @@ void OmSegmentation::SetVoxelValue(const DataCoord& vox, const uint32_t val)
 {
     if (!ContainsVoxel(vox))
         return;
-    
+
     for(int level = 0; level <= coords_.GetRootMipLevel(); level++)
     {
         int factor = om::math::pow2int(level);
@@ -216,12 +216,12 @@ bool OmSegmentation::SetVoxelValueIfSelected(const DataCoord& vox, const uint32_
         OmChunkCoord leaf_mip_coord = coords_.DataToMipCoord(vox, 0);
         OmSegChunk* chunk = GetChunk(leaf_mip_coord);
         OmSegID target = Segments()->findRootID(chunk->GetVoxelValue(vox));
-        
+
         if(selection.count(target) == 0) {
-            return false;  
+            return false;
         }
     }
-    
+
     SetVoxelValue(vox, val);
     return true;
 }
