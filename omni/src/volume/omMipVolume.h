@@ -20,6 +20,8 @@ class OmVolumeData;
 
 namespace YAML { template <class T> class mipVolume; }
 
+namespace om { namespace rebuilder { class segmentation; } }
+
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
                            MIPVOL_BUILT,
                            MIPVOL_BUILDING };
@@ -89,5 +91,6 @@ private:
     friend class OmMemMappedVolume;
     friend class OmUpgradeTo14;
     friend class OmWatershedImporter;
+    friend class om::rebuilder::segmentation;
 };
 

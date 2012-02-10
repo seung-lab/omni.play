@@ -36,6 +36,26 @@ public:
         return volFiles;
     }
 
+    static void ReAllocateDownsampledVolumes(OmMipVolume* vol)
+    {
+        const int maxLevel = vol->Coords().GetRootMipLevel();
+
+        std::vector<om::shared_ptr<QFile> > volFiles(maxLevel + 1);
+
+        for(int level = 1; level <= maxLevel; ++level)
+        {
+            const Vector3<uint64_t> dims =
+                vol->Coords().getDimsRoundedToNearestChunk(level);
+
+            volFiles[level] = createFile(vol, level, dims);
+        }
+
+        printf("\tdone reallocating volume for all mip levels\n");
+
+        vol->VolData()->load(vol);
+        std::cout << "volumes memory mapped\n";
+    }
+
 private:
 
     static om::shared_ptr<QFile>

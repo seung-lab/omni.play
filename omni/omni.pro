@@ -739,6 +739,7 @@ HEADERS +=  \
 	src/volume/build/omMSTImportHdf5.hpp \
 	src/volume/build/omMSTImportWatershed.hpp \
 	src/volume/build/omProcessSegmentationChunk.hpp \
+	src/volume/build/omSegmentationRebuilder.hpp \
 	src/volume/build/omVolumeAllocater.hpp \
 	src/volume/build/omVolumeBuilder.hpp \
 	src/volume/build/omVolumeBuilderBase.hpp \
@@ -1149,5 +1150,5 @@ exists(../external/libs/Boost) {
 #BOOST_DISABLE_ASSERTS
 
 }else {
-    error(please run 'bootstrap.pl  2' to install Boost)
+    error(please run 'bootstrap.pl 2' to install Boost)
 }

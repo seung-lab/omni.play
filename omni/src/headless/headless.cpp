@@ -1,4 +1,3 @@
-#include "network/omExtractMesh.h"
 #include "actions/omActions.h"
 #include "chunks/omChunk.h"
 #include "common/omDebug.h"
@@ -8,6 +7,7 @@
 #include "headless/headless.h"
 #include "headless/headlessImpl.hpp"
 #include "mesh/omMesh.h"
+#include "network/omExtractMesh.h"
 #include "segment/omSegments.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
@@ -18,6 +18,7 @@
 #include "volume/build/omBuildAffinityChannel.hpp"
 #include "volume/build/omBuildChannel.hpp"
 #include "volume/build/omBuildSegmentation.hpp"
+#include "volume/build/omSegmentationRebuilder.hpp"
 #include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omAffinityGraph.h"
 #include "volume/omCompareVolumes.hpp"
@@ -839,6 +840,28 @@ void Headless::processLine(const QString& line, const QString&)
         }
 
         HeadlessImpl::ExportSegmentationRaw(sdw, args[2]);
+
+    } else if(line.startsWith("rebuildSegmentation:")){
+        QStringList args = line.split(':',QString::SkipEmptyParts);
+
+        if (args.size() < 2)
+        {
+            printf("Please enter a segmentation id.\n");
+            return;
+        }
+
+        const OmID segID = OmStringHelpers::getUInt(args[1]);
+
+        SegmentationDataWrapper sdw(segID);
+
+        if (!sdw.IsValidWrapper())
+        {
+            printf("segmentation id %i is not a valid segmentation.\n", segID);
+            return;
+        }
+
+        om::rebuilder::segmentation rebuilder(sdw);
+        rebuilder.Rebuild();
 
     } else if(line.startsWith("exportSegReroot:")){
         QStringList args = line.split(':',QString::SkipEmptyParts);
