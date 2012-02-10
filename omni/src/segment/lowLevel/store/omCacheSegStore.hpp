@@ -55,13 +55,13 @@ private:
 
     inline OmSegment* doGetSegment(const std::vector<OmSegmentPage*>& pages,
                                    const uint32_t pageNum, const OmSegID segID,
-                                   const om::Safe isSafe)
+                                   const om::Safe /* isSafe */)
     {
-        if(om::NOT_SAFE == isSafe)
-        {
-            OmSegmentPage& page = *pages[pageNum];
-            return &(page[segID % pageSize_]);
-        }
+        // if(om::NOT_SAFE == isSafe)
+        // {
+        //     OmSegmentPage& page = *pages[pageNum];
+        //     return &(page[segID % pageSize_]);
+        // }
 
         if(pageNum >= pages.size()){
             return NULL;
