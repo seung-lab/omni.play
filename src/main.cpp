@@ -51,8 +51,12 @@ int main(int argc, char *argv[])
 //    TThreadPoolServer server(processor, serverTransport, transportFactory,
 //                             protocolFactory, threadManager);
 
-    TNonblockingServer server(processor, transportFactory, transportFactory,
-                              protocolFactory, protocolFactory, port, threadManager);
-    server.serve();
+    boost::shared_ptr<TNonblockingServer> server(
+        new TNonblockingServer(processor, transportFactory, transportFactory,
+                               protocolFactory, protocolFactory, port, threadManager));
+
+    handler->setServer(server); // For Service Shutdown
+    handler->setThreadManager(threadManager); // For thread busyness checking
+    server->serve();
     return 0;
 }

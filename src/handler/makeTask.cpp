@@ -17,6 +17,7 @@ bool inAdjacentVolume(const coords::globalBbox& seg,
                       const coords::globalBbox& ovr,
                       const coords::globalBbox& adj)
 {
+    
     // If the segment is touching a boundary && that boundary is inside the adj Volume.
     // Need to adjust segment mins by 1 because segments don't go all the way to the
     // edges of the volume.

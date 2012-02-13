@@ -91,9 +91,9 @@ ServiceTracker::startService(const ServiceMethod &serviceMethod)
     // service method's point of view, a status of STOPPING is a green
     // light.
     facebook::fb303::fb_status status = handler_->getStatus();
-    if (status != facebook::fb303::ALIVE
-        && status != facebook::fb303::STOPPING) {
-      if (status == facebook::fb303::STARTING) {
+    if (status != facebook::fb303::fb_status::ALIVE
+        && status != facebook::fb303::fb_status::STOPPING) {
+      if (status == facebook::fb303::fb_status::STARTING) {
         throw ServiceException("Server starting up; please try again later");
       } else {
         throw ServiceException("Server not alive; please try again later");

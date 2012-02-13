@@ -79,6 +79,11 @@ INCLUDEPATH += include/libb64/include
 INCLUDEPATH += $$[COMMON_PATH]/lib/include
 LIBS += $$[COMMON_PATH]/lib/bin/libomni.common.a -levent
 
+INCLUDEPATH += external/srcs/thrift-0.7.0/contrib/fb303/cpp/
+INCLUDEPATH += $$[COMMON_PATH]/lib/include/thrift
+SOURCES += external/srcs/thrift-0.7.0/contrib/fb303/cpp/ServiceTracker.cpp
+SOURCES += external/srcs/thrift-0.7.0/contrib/fb303/cpp/FacebookBase.cpp
+
 OBJECTS_DIR = build
 MOC_DIR = build
 RCC_DIR = build
