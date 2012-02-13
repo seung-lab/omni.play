@@ -28,6 +28,7 @@ class serverIf : virtual public facebook::fb303::FacebookServiceIf {
   virtual void get_seg_list_data(std::map<int32_t, segData> & _return, const metadata& vol, const std::set<int32_t> & segIds) = 0;
   virtual void get_seg_ids(std::set<int32_t> & _return, const metadata& vol, const vector3d& point, const int32_t radius, const viewType::type view) = 0;
   virtual void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const int32_t segId) = 0;
+  virtual void get_remesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const std::set<int32_t> & segIds) = 0;
   virtual void get_obj(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const int32_t segId) = 0;
   virtual double compare_results(const std::vector<result> & old_results, const result& new_result) = 0;
   virtual void get_seeds(std::vector<std::set<int32_t> > & _return, const metadata& taskVolume, const std::set<int32_t> & selected, const metadata& adjacentVolume) = 0;
@@ -74,6 +75,9 @@ class serverNull : virtual public serverIf , virtual public facebook::fb303::Fac
     return;
   }
   void get_mesh(std::string& /* _return */, const std::string& /* uri */, const vector3i& /* chunk */, const int32_t /* mipLevel */, const int32_t /* segId */) {
+    return;
+  }
+  void get_remesh(std::string& /* _return */, const std::string& /* uri */, const vector3i& /* chunk */, const int32_t /* mipLevel */, const std::set<int32_t> & /* segIds */) {
     return;
   }
   void get_obj(std::string& /* _return */, const std::string& /* uri */, const vector3i& /* chunk */, const int32_t /* mipLevel */, const int32_t /* segId */) {
@@ -1632,6 +1636,141 @@ class server_get_mesh_presult {
 
 };
 
+typedef struct _server_get_remesh_args__isset {
+  _server_get_remesh_args__isset() : uri(false), chunk(false), mipLevel(false), segIds(false) {}
+  bool uri;
+  bool chunk;
+  bool mipLevel;
+  bool segIds;
+} _server_get_remesh_args__isset;
+
+class server_get_remesh_args {
+ public:
+
+  server_get_remesh_args() : uri(""), mipLevel(0) {
+  }
+
+  virtual ~server_get_remesh_args() throw() {}
+
+  std::string uri;
+  vector3i chunk;
+  int32_t mipLevel;
+  std::set<int32_t>  segIds;
+
+  _server_get_remesh_args__isset __isset;
+
+  void __set_uri(const std::string& val) {
+    uri = val;
+  }
+
+  void __set_chunk(const vector3i& val) {
+    chunk = val;
+  }
+
+  void __set_mipLevel(const int32_t val) {
+    mipLevel = val;
+  }
+
+  void __set_segIds(const std::set<int32_t> & val) {
+    segIds = val;
+  }
+
+  bool operator == (const server_get_remesh_args & rhs) const
+  {
+    if (!(uri == rhs.uri))
+      return false;
+    if (!(chunk == rhs.chunk))
+      return false;
+    if (!(mipLevel == rhs.mipLevel))
+      return false;
+    if (!(segIds == rhs.segIds))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_remesh_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_remesh_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class server_get_remesh_pargs {
+ public:
+
+
+  virtual ~server_get_remesh_pargs() throw() {}
+
+  const std::string* uri;
+  const vector3i* chunk;
+  const int32_t* mipLevel;
+  const std::set<int32_t> * segIds;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_remesh_result__isset {
+  _server_get_remesh_result__isset() : success(false) {}
+  bool success;
+} _server_get_remesh_result__isset;
+
+class server_get_remesh_result {
+ public:
+
+  server_get_remesh_result() : success("") {
+  }
+
+  virtual ~server_get_remesh_result() throw() {}
+
+  std::string success;
+
+  _server_get_remesh_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const server_get_remesh_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const server_get_remesh_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const server_get_remesh_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _server_get_remesh_presult__isset {
+  _server_get_remesh_presult__isset() : success(false) {}
+  bool success;
+} _server_get_remesh_presult__isset;
+
+class server_get_remesh_presult {
+ public:
+
+
+  virtual ~server_get_remesh_presult() throw() {}
+
+  std::string* success;
+
+  _server_get_remesh_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 typedef struct _server_get_obj_args__isset {
   _server_get_obj_args__isset() : uri(false), chunk(false), mipLevel(false), segId(false) {}
   bool uri;
@@ -2061,6 +2200,9 @@ class serverClient : virtual public serverIf, public facebook::fb303::FacebookSe
   void get_mesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const int32_t segId);
   void send_get_mesh(const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const int32_t segId);
   void recv_get_mesh(std::string& _return);
+  void get_remesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const std::set<int32_t> & segIds);
+  void send_get_remesh(const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const std::set<int32_t> & segIds);
+  void recv_get_remesh(std::string& _return);
   void get_obj(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const int32_t segId);
   void send_get_obj(const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const int32_t segId);
   void recv_get_obj(std::string& _return);
@@ -2091,6 +2233,7 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor, public face
   void process_get_seg_list_data(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seg_ids(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_mesh(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_remesh(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_obj(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_compare_results(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_seeds(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -2111,6 +2254,7 @@ class serverProcessor : virtual public ::apache::thrift::TProcessor, public face
     processMap_["get_seg_list_data"] = &serverProcessor::process_get_seg_list_data;
     processMap_["get_seg_ids"] = &serverProcessor::process_get_seg_ids;
     processMap_["get_mesh"] = &serverProcessor::process_get_mesh;
+    processMap_["get_remesh"] = &serverProcessor::process_get_remesh;
     processMap_["get_obj"] = &serverProcessor::process_get_obj;
     processMap_["compare_results"] = &serverProcessor::process_compare_results;
     processMap_["get_seeds"] = &serverProcessor::process_get_seeds;
@@ -2278,6 +2422,18 @@ class serverMultiface : virtual public serverIf, public facebook::fb303::Faceboo
         return;
       } else {
         ifaces_[i]->get_mesh(_return, uri, chunk, mipLevel, segId);
+      }
+    }
+  }
+
+  void get_remesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const std::set<int32_t> & segIds) {
+    size_t sz = ifaces_.size();
+    for (size_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->get_remesh(_return, uri, chunk, mipLevel, segIds);
+        return;
+      } else {
+        ifaces_[i]->get_remesh(_return, uri, chunk, mipLevel, segIds);
       }
     }
   }

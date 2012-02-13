@@ -87,6 +87,11 @@ class serverHandler : virtual public serverIf {
     printf("get_mesh\n");
   }
 
+  void get_remesh(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const std::set<int32_t> & segIds) {
+    // Your implementation goes here
+    printf("get_remesh\n");
+  }
+
   void get_obj(std::string& _return, const std::string& uri, const vector3i& chunk, const int32_t mipLevel, const int32_t segId) {
     // Your implementation goes here
     printf("get_obj\n");

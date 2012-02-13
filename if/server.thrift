@@ -115,6 +115,11 @@ service server extends fb303.FacebookService
                      3: i32 mipLevel,
                      4: i32 segId)
 
+    string get_remesh( 1: string uri,
+                       2: vector3i chunk,
+                       3: i32 mipLevel,
+                       4: set<i32> segIds)
+
     string get_obj( 1: string uri,
                     2: vector3i chunk,
                     3: i32 mipLevel,
