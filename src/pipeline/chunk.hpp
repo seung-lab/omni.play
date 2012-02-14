@@ -1,7 +1,6 @@
 #include "common/common.h"
 #include "pipeline/stage.hpp"
 #include "datalayer/memMappedFile.hpp"
-#include "volume/volume.h"
 #include "utility/smartPtr.hpp"
 
 namespace om {
@@ -11,12 +10,12 @@ namespace pipeline {
 class getChunk : public stage
 {
 private:
-    volume::volume vol_;
+    coords::volumeSystem vs_;
     coords::chunk cc_;
 
 public:
-    getChunk(volume::volume vol, coords::chunk cc)
-        : vol_(vol)
+    getChunk(coords::volumeSystem vs, coords::chunk cc)
+        : vs_(vs)
         , cc_(cc)
     { }
 
@@ -24,7 +23,7 @@ public:
     data_var operator()(const datalayer::memMappedFile<T>& in) const
     {
         data<T> out;
-        uint64_t offset = cc_.chunkPtrOffset(&vol_.CoordSystem(), sizeof(T));
+        uint64_t offset = cc_.chunkPtrOffset(&vs_, sizeof(T));
         T* chunkPtr = in.GetPtrWithOffset(offset);
         
         out.size = 128 * 128 * 128;

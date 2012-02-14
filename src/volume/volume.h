@@ -3,6 +3,7 @@
 #include "thrift/server_types.h"
 #include "common/common.h"
 #include "pipeline/mapData.hpp"
+#include "pipeline/chunk.hpp"
 #include "segment/segmentTypes.hpp"
 
 namespace om {
@@ -55,6 +56,13 @@ public:
 
     inline const pipeline::dataSrcs& Data() const {
         return data_;
+    }
+
+    template<typename T>
+    inline const boost::shared_ptr<T> GetChunk(coords::chunk chunk) const {
+        using namespace pipeline;
+        data_var data = data_ >> getChunk(coordSystem_, chunk);
+        return boost::get<T>(data).data;
     }
 
     inline const coords::volumeSystem& CoordSystem() const {

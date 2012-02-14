@@ -1,16 +1,12 @@
 #pragma once
 
 #include "chunks/chunkUtils.hpp"
-#include "chunks/segChunk.h"
 #include "common/common.h"
-#include "mesh/mesher/MeshCollector.hpp"
-#include "mesh/mesher/TriStripCollector.hpp"
-#include "mesh/io/meshMetadata.hpp"
+#include "mesh/mesher/meshCollector.hpp"
+#include "mesh/mesher/triStripCollector.hpp"
+
 #include "mesh/meshParams.hpp"
-#include "utility/omLockedPODs.hpp"
-#include "volume/io/volumeData.h"
-#include "volume/segmentation.h"
-#include "mesh/mesher/mesherProgress.hpp"
+#include "utility/lockedPODs.hpp"
 
 #include <zi/vl/vec.hpp>
 #include <zi/system.hpp>
@@ -23,14 +19,28 @@
 
 #include "zi/threads.h"
 
+namespace om {
+namespace mesh {
+
 class ziMesher {
+private:
+    const volume::volume& vol_;
+    const int rootMipLevel_;
+
+    std::map<coords::chunk, std::vector<MeshCollector*> > occurances_;
+    std::map<coords::chunk, MeshCollector*> chunkCollectors_;
+
+    const int numParallelChunks_;
+    const int numThreadsPerChunk_;
+    const double downScallingFactor_;
+
 public:
-    ziMesher(segmentation* segmentation, const double threshold)
-        : segmentation_(segmentation)
-        , rootMipLevel_(segmentation->CoordinateSystem()().GetRootMipLevel())
+    ziMesher(const volume::volume& vol, const double threshold)
+        : vol_(vol)
+        , rootMipLevel_(vol.CoordinateSystem()().GetRootMipLevel())
         , threshold_(threshold)
         , chunkCollectors_()
-        , mesh::manager_(segmentation->MeshManager(threshold))
+        , mesh::manager_(vol.MeshManager(threshold))
         , meshWriter_(new meshWriter(mesh::manager_))
         , numParallelChunks_(numberParallelChunks())
         , numThreadsPerChunk_(zi::system::cpu_count / 2)
@@ -60,41 +70,16 @@ public:
     // void RemeshFullVolume()
     // {
     // if(redownsample){
-    //     segmentation_->VolData()->downsample(segmentation_);
+    //     vol_.VolData()->downsample(vol_);
     // }
-    //     chunkUtils::RefindUniqueChunkValues(segmentation_->GetID());
+    //     chunkUtils::RefindUniqueChunkValues(vol_.GetID());
     // }
-
-    boost::shared_ptr<om::gui::progress> Progress(){
-        return progress_.Progress();
-    }
-
-    void Progress(boost::shared_ptr<om::gui::progress> p){
-        progress_.Progress(p);
-    }
-
 private:
-
-    segmentation *const segmentation_;
-    const int rootMipLevel_;
-    const double threshold_;
-
-    std::map<coords::chunkCoord, std::vector<MeshCollector*> > occurances_;
-    std::map<coords::chunkCoord, MeshCollector*> chunkCollectors_;
-
-    mesh::manager *const mesh::manager_;
-    boost::scoped_ptr<meshWriter> meshWriter_;
-
-    const int numParallelChunks_;
-    const int numThreadsPerChunk_;
-    const double downScallingFactor_;
-
-    om::mesher::progress progress_;
 
     void init()
     {
-        boost::shared_ptr<std::deque<coords::chunkCoord> > levelZeroChunks =
-            segmentation_->GetMipChunkCoordinateSystem()(0);
+        boost::shared_ptr<std::deque<coords::chunk> > levelZeroChunks =
+            vol_.GetMipChunkinateSystem()(0);
 
         progress_.SetTotalNumChunks(levelZeroChunks->size());
 
@@ -119,10 +104,10 @@ private:
         std::cout << "\ndone meshing...\n";
     }
 
-    void addValuesFrchunkAndDownsampledChunks(const coords::chunkCoord& mip0coord)
+    void addValuesFrchunkAndDownsampledChunks(const coords::chunk& mip0coord)
     {
         const ChunkUniqueValues segIDs =
-            segmentation_->ChunkUniqueValues()->Values(mip0coord, threshold_);
+            vol_.ChunkUniqueValues()->Values(mip0coord, threshold_);
 
         chunkCollectors_.insert(
             std::make_pair( mip0coord, new MeshCollector( mip0coord,
@@ -139,10 +124,10 @@ private:
         //downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
     }
 
-    void downsampleSegThroughAllMipLevels(const coords::chunkCoord& mip0coord,
+    void downsampleSegThroughAllMipLevels(const coords::chunk& mip0coord,
                                           const ChunkUniqueValues& segIDsMip0)
     {
-        coords::chunkCoord c = mip0coord.ParentCoord();
+        coords::chunk c = mip0coord.ParentCoord();
 
         // corner case: no MIP levels >0
         while (c.getLevel() <= rootMipLevel_)
@@ -153,10 +138,10 @@ private:
         }
     }
 
-    void downsampleSegThroughViewableMipLevels(const coords::chunkCoord& mip0coord,
+    void downsampleSegThroughViewableMipLevels(const coords::chunk& mip0coord,
                                                const ChunkUniqueValues& segIDsMip0)
     {
-        coords::chunkCoord c = mip0coord.ParentCoord();
+        coords::chunk c = mip0coord.ParentCoord();
 
         // corner case: no MIP levels >0
         while (c.getLevel() <= rootMipLevel_)
@@ -164,7 +149,7 @@ private:
             std::deque<common::segId> commonIDs;
 
             const ChunkUniqueValues segIDs =
-                segmentation_->ChunkUniqueValues()->Values(c, threshold_);
+                vol_.ChunkUniqueValues()->Values(c, threshold_);
 
             FOR_EACH( cid, segIDsMip0 )
             {
@@ -184,7 +169,7 @@ private:
     }
 
     template <typename C>
-    void registerSegIDs(const coords::chunkCoord& mip0coord, const coords::chunkCoord& c,
+    void registerSegIDs(const coords::chunk& mip0coord, const coords::chunk& c,
                         const C& segIDs)
     {
         if ( chunkCollectors_.count( c ) == 0 )
@@ -241,20 +226,20 @@ private:
                            segChunk* chunk)
     {
         OmImage< uint32_t, 3 > chunkData =
-            chunkUtils::GetMeshOmImageData(segmentation_, chunk);
+            chunkUtils::GetMeshOmImageData(vol_, chunk);
 
-        chunkUtils::RewriteChunkAtThreshold(segmentation_, chunkData, threshold_);
+        chunkUtils::RewriteChunkAtThreshold(vol_, chunkData, threshold_);
 
         const common::segId* chunkDataRaw = static_cast< const common::segId* >( chunkData.getScalarPtr() );
 
         cube_marcher.marche( reinterpret_cast< const int* >(chunkDataRaw), 129, 129, 129 );
     }
 
-    void processChunk( coords::chunkCoord coord )
+    void processChunk( coords::chunk coord )
     {
-        static const int chunkDim = segmentation_->CoordinateSystem()().GetChunkDimension();
+        static const int chunkDim = vol_.CoordinateSystem()().GetChunkDimension();
 
-        segChunk* chunk = segmentation_->GetChunk(coord);
+        segChunk* chunk = vol_.GetChunk(coord);
 
         const coords::normBbox& dstBbox = chunk->Mipping().GetNormExtent();
 
@@ -273,7 +258,7 @@ private:
         scale *= 0.5;
 
         const ChunkUniqueValues segIDs =
-            segmentation_->ChunkUniqueValues()->Values(coord, threshold_);
+            vol_.ChunkUniqueValues()->Values(coord, threshold_);
 
         zi::mesh::marching_cubes< int > cube_marcher;
         setupMarchingCube(cube_marcher, chunk);
@@ -331,3 +316,5 @@ private:
         return numChunks;
     }
 };
+
+}} // namespace om::mesh

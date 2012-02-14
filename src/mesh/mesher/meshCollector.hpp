@@ -1,9 +1,6 @@
 #pragma once
 
-#include "TriStripCollector.hpp"
-#include "mesh/io/v2/omMeshWriterV2.hpp"
-#include "mesh/omMesh.h"
-#include "mesh/omMeshCoord.h"
+#include "mesh/mesher/triStripCollector.hpp"
 
 #include <zi/bits/cstdint.hpp>
 #include <zi/bits/unordered_map.hpp>
@@ -13,24 +10,26 @@
 
 #include <vector>
 
+namespace om {
+namespace mesh {
+
 class MeshCollector
 {
 private:
-    const OmChunkCoord coord_ ;
-    OmMeshWriterV2 *const meshIO_;
+    const coords::chunk coord_ ;
+    //OmMeshWriterV2 *const meshIO_;
 
     zi::spinlock lock_;
 
-    typedef zi::unordered_map< OmSegID, TriStripCollector* > map_t;
+    typedef zi::unordered_map< common::segId, TriStripCollector* > map_t;
     map_t meshes_;
 
 public:
-    MeshCollector( const OmChunkCoord& coord,
-                   OmMeshWriterV2* meshIO )
-        : coord_( coord ),
-          meshIO_( meshIO ),
-          lock_(),
-          meshes_()
+    MeshCollector( const coords::chunk& coord)//, OmMeshWriterV2* meshIO )
+        : coord_( coord )
+        //, meshIO_( meshIO )
+        , lock_()
+        , meshes_()
     {}
 
     ~MeshCollector()
@@ -41,7 +40,7 @@ public:
         }
     }
 
-    void registerMeshPart( const OmSegID segID )
+    void registerMeshPart( const common::segId segID )
     {
         TriStripCollector* tsc = NULL;
 
@@ -60,7 +59,7 @@ public:
         tsc->registerPart();
     }
 
-    TriStripCollector* getMesh( const OmSegID segID )
+    TriStripCollector* getMesh( const common::segId segID )
     {
         zi::guard g( lock_ );
 
@@ -72,7 +71,7 @@ public:
         return meshes_[ segID ];
     }
 
-    void save( const OmSegID segID )
+    void save( const common::segId segID )
     {
         TriStripCollector* mesh = getMesh( segID );
 
@@ -83,7 +82,9 @@ public:
             return;
         }
 
-        meshIO_->Save(segID, coord_, mesh,
-                      om::BUFFER_WRITES, om::OVERWRITE);
+        //meshIO_->Save(segID, coord_, mesh,
+         //             om::BUFFER_WRITES, om::OVERWRITE);
     }
 };
+
+}} // namespace om::mesh
