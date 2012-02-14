@@ -119,6 +119,16 @@ public:
         handler::get_mesh(_return, uri, chunk, mipLevel, segId);
     }
 
+    void get_remesh(std::string& _return,
+                    const std::string& uri,
+                    const vector3i& chunk,
+                    int32_t mipLevel,
+                    int32_t segId)
+    {
+        ServiceMethod serviceMethod(&serviceTracker_, "get_remesh", "get_remesh");
+        handler::get_remesh(_return, uri, chunk, mipLevel, segId);
+    }
+
     void get_obj(std::string& _return,
                  const std::string& uri,
                  const vector3i& chunk,

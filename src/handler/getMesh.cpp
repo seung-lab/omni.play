@@ -11,6 +11,7 @@
 #include "utility/UUID.hpp"
 
 #include "mesh/meshReader.hpp"
+#include "mesh/mesher/ziMesher.hpp"
 
 using namespace std;
 using namespace boost;
@@ -157,6 +158,15 @@ void get_mesh(std::string& _return,
               data->StripData(), data->StripDataNumBytes());
 
     _return = uuid.Str();
+}
+
+void get_remesh(std::string& _return,
+                const std::string& uri,
+                const server::vector3i& chunk,
+                int32_t mipLevel,
+                int32_t segId)
+{
+
 }
 
 void get_obj(std::string& _return,
