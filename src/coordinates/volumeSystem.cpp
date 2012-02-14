@@ -60,8 +60,30 @@ bool volumeSystem::ContainsMipChunk(const chunk & rMipCoord) const
     return true;
 }
 
-chunk volumeSystem::RootMipChunkinate() const {
+chunk volumeSystem::RootMipChunkCoordinate() const {
     return chunk(mMipRootLevel, Vector3i::ZERO);
+}
+
+boost::shared_ptr<std::deque<coords::chunk> >
+volumeSystem::GetMipChunkCoords() const
+{
+    std::deque<coords::chunk>* coords = new std::deque<coords::chunk>();
+
+    for(int level = 0; level <= mMipRootLevel; ++level) {
+        addChunkCoordsForLevel(level, coords);
+    }
+
+    return boost::shared_ptr<std::deque<coords::chunk> >(coords);
+}
+
+boost::shared_ptr<std::deque<coords::chunk> >
+volumeSystem::GetMipChunkCoords(const int mipLevel) const
+{
+    std::deque<coords::chunk>* coords = new std::deque<coords::chunk>();
+
+    addChunkCoordsForLevel(mipLevel, coords);
+
+    return boost::shared_ptr<std::deque<coords::chunk> >(coords);
 }
 
 } // namespace coords

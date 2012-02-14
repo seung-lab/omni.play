@@ -78,6 +78,13 @@ public:
                         ceil(mip_level_dims.z));
     }
 
+    inline Vector3i MipLevelDimensionsInMipChunks(int level) const
+    {
+        const Vector3f data_dims = MipLevelDataDimensions(level);
+        return Vector3i (ceil(data_dims.x / GetChunkDimension()),
+                         ceil(data_dims.y / GetChunkDimension()),
+                         ceil(data_dims.z / GetChunkDimension()));
+    }
 
     //data properties
     globalBbox GetDataExtent() const;
@@ -171,10 +178,28 @@ public:
     }
 
     //mip chunk methods
-    chunk RootMipChunkinate() const;
+    chunk RootMipChunkCoordinate() const;
+
+    boost::shared_ptr<std::deque<coords::chunk> > GetMipChunkCoords() const;
+    boost::shared_ptr<std::deque<coords::chunk> > GetMipChunkCoords(const int mipLevel) const;
 
     // Returns true if given MipCoordinate is a valid coordinate within the MipVolume.
     bool ContainsMipChunk(const chunk & rMipCoord) const;
+private:
+    void addChunkCoordsForLevel(const int mipLevel,
+                            std::deque<coords::chunk>* coords) const
+    {
+        const Vector3i dims = MipLevelDimensionsInMipChunks(mipLevel);
+
+        for (int z = 0; z < dims.z; ++z){
+            for (int y = 0; y < dims.y; ++y){
+                for (int x = 0; x < dims.x; ++x){
+                    coords->push_back(coords::chunk(mipLevel, x, y, z));
+                }
+            }
+        }
+    }
+
 };
 
 } // namespace coords

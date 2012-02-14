@@ -3,7 +3,8 @@ build
 builds
 lib
 libs
-omni.server.kdev4
+*.sublime-workspace
+*.sublime-project
 external/srcs
 *~
 GPATH
