@@ -1,6 +1,0 @@
-04/26/11
-
-- automatically get mesh data to 3D in webGL
-- create MySQL server to start handling users
-- better architecture around selecting segments
-- join and split
