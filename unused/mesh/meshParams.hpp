@@ -13,7 +13,7 @@ public:
 
 private:
     meshParams()
-        : factor_(2.5)
+    : factor_(2.5)
     {}
 
     double factor_;

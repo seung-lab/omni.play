@@ -79,12 +79,12 @@ private:
     void init()
     {
         boost::shared_ptr<std::deque<coords::chunk> > levelZeroChunks =
-            vol_.GetMipChunkinateSystem()(0);
+            vol_.CoordSystem().GetMipChunkCoords(0);
 
         progress_.SetTotalNumChunks(levelZeroChunks->size());
 
         FOR_EACH( it, *levelZeroChunks ){
-            addValuesFrchunkAndDownsampledChunks(*it);
+            addValuesFromChunkAndDownsampledChunks(*it);
         }
 
         std::cout << "\nstarting meshing...\n";
@@ -104,7 +104,7 @@ private:
         std::cout << "\ndone meshing...\n";
     }
 
-    void addValuesFrchunkAndDownsampledChunks(const coords::chunk& mip0coord)
+    void addValuesFromChunkAndDownsampledChunks(const coords::chunk& mip0coord)
     {
         const ChunkUniqueValues segIDs =
             vol_.ChunkUniqueValues()->Values(mip0coord, threshold_);
@@ -143,7 +143,7 @@ private:
     {
         coords::chunk c = mip0coord.ParentCoord();
 
-        // corner case: no MIP levels >0
+        corner case: no MIP levels >0
         while (c.getLevel() <= rootMipLevel_)
         {
             std::deque<common::segId> commonIDs;
