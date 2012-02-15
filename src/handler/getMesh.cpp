@@ -11,7 +11,7 @@
 #include "utility/UUID.hpp"
 
 #include "mesh/meshReader.hpp"
-#include "mesh/mesher/ziMesher.hpp"
+//#include "mesh/mesher/ziMesher.hpp"
 
 using namespace std;
 using namespace boost;
@@ -164,7 +164,7 @@ void get_remesh(std::string& _return,
                 const std::string& uri,
                 const server::vector3i& chunk,
                 int32_t mipLevel,
-                int32_t segId)
+                const std::set<int32_t>& segId)
 {
 
 }

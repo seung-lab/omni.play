@@ -1,5 +1,5 @@
 #include "handler/handler.h"
-#include "pipeline/chunk.hpp"
+#include "pipeline/chunk.h"
 #include "pipeline/utility.hpp"
 #include "volume/volume.h"
 #include <sstream>
@@ -13,7 +13,7 @@ void get_chunk(std::string& _return,
 			   const server::vector3i& chunk)
 {
 	coords::chunk chunkCoord(0, chunk.x, chunk.y, chunk.z);
-	vol.Data() >> getChunk(vol, chunkCoord) >> write_out(_return);
+	vol.Data() >> getChunk(vol.CoordSystem(), chunkCoord) >> write_out(_return);
 }
 
 }}

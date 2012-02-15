@@ -123,10 +123,10 @@ public:
                     const std::string& uri,
                     const vector3i& chunk,
                     int32_t mipLevel,
-                    int32_t segId)
+                    const std::set<int32_t>& segIds)
     {
         ServiceMethod serviceMethod(&serviceTracker_, "get_remesh", "get_remesh");
-        handler::get_remesh(_return, uri, chunk, mipLevel, segId);
+        handler::get_remesh(_return, uri, chunk, mipLevel, segIds);
     }
 
     void get_obj(std::string& _return,

@@ -34,9 +34,7 @@ public:
     }
 };
 
-data_var operator>>(const dataSrcs& d, const getChunk& v) {
-    return boost::apply_visitor(v, d);
-}
+data_var operator>>(const dataSrcs& d, const getChunk& v);
 
 class writeChunk : boost::static_visitor<>
 {

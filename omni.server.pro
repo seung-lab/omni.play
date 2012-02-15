@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG = console
 
 system( g++ --version | grep -e "4.6" ) {
-    QMAKE_GXX = g++-4.5
+    QMAKE_LFLAGS = -static-libstdc++ -static-libgcc
 }
 
 
@@ -14,6 +14,7 @@ system( g++ --version | grep -e "4.6" ) {
 HEADERS +=  \
 	src/chunks/chunk.h \
 	src/chunks/chunkCache.h \
+	src/chunks/chunkUtils.hpp \
 	src/chunks/rawChunkSlicer.hpp \
 	src/datalayer/IDataVolume.hpp \
 	src/datalayer/IOnDiskFile.h \
@@ -28,12 +29,13 @@ HEADERS +=  \
 	src/mesh/memMappedAllocFile.hpp \
 	src/mesh/meshChunkDataReader.hpp \
 	src/mesh/meshChunkTypes.hpp \
+	src/mesh/meshParams.hpp \
 	src/mesh/meshReader.hpp \
 	src/mesh/mesher/meshCollector.hpp \
 	src/mesh/mesher/triStripCollector.hpp \
 	src/mesh/mesher/ziMesher.hpp \
 	src/pipeline/bitmask.hpp \
-	src/pipeline/chunk.hpp \
+	src/pipeline/chunk.h \
 	src/pipeline/encode.hpp \
 	src/pipeline/filter.hpp \
 	src/pipeline/getSegIds.hpp \
@@ -51,7 +53,6 @@ HEADERS +=  \
 	src/volume/volume.h
 
 SOURCES +=  \
-	src/chunks/chunk.cpp \
 	src/datalayer/cache.cpp \
 	src/datalayer/file.cpp \
 	src/handler/chunker.cpp \
@@ -64,6 +65,7 @@ SOURCES +=  \
 	src/handler/makeTask.cpp \
 	src/main.cpp \
 	src/pipeline/jpeg.cpp \
+	src/pipeline/pipechunk.cpp \
 	src/segment/segmentGraph.cpp \
 	src/volume/volume.cpp
 
@@ -77,7 +79,7 @@ INCLUDEPATH += external/zi_lib
 INCLUDEPATH += include/yaml-cpp/include
 INCLUDEPATH += include/libb64/include
 INCLUDEPATH += $$[COMMON_PATH]/lib/include
-LIBS += $$[COMMON_PATH]/lib/bin/libomni.common.a -levent
+LIBS += $$[COMMON_PATH]/lib/bin/libomni.common.a
 
 INCLUDEPATH += external/srcs/thrift-0.7.0/contrib/fb303/cpp/
 INCLUDEPATH += $$[COMMON_PATH]/lib/include/thrift
@@ -216,3 +218,5 @@ exists(external/libs/zlib) {
 } else {
     error(please run 'bootstrap.pl 6' to install zlib)
 }
+
+LIBS += -levent -lpthread -levent -lrt

@@ -53,7 +53,7 @@ void get_remesh(std::string& _return,
                 const std::string& uri,
                 const server::vector3i& chunk,
                 int32_t mipLevel,
-                int32_t segId);
+                const std::set<int32_t>& segId);
 
 void get_obj(std::string& _return,
              const std::string& uri,
