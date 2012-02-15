@@ -1,1 +1,0 @@
-gcc hdf5_merge.c -g -I ../../external/libs/HDF5/include/ -L ../../external/libs/HDF5/lib -lhdf5 -lm -lrt -lpthread -lz -o hdf5_merge
