@@ -1,5 +1,9 @@
-builds
-srcs
-tarballs
-zi_lib
-libs
+external/builds
+external/srcs
+external/tarballs
+external/zi_lib
+external/libs
+omni/Makefile
+omni/bin
+omni/build
+scripts/buildomni.sh
