@@ -181,25 +181,25 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     std::vector<std::set<int32_t> > adjacentSeeds;
 
     // group all the segments based on adjacency
-    connectedSets(overlap, adjacentVolume, correspondingIds, adjacentSeeds);
+    connectedSets(overlap, adjacentVolume, correspondingIds, seeds);
 
-    FOR_EACH(seed, adjacentSeeds)
-    {
-        FOR_EACH(seg, *seed)
-        {
-            const uint32_t& segId = *seg;
-            segment::data segData = adjacentVolume.GetSegmentData(segId);
+    // FOR_EACH(seed, adjacentSeeds)
+    // {
+    //     FOR_EACH(seg, *seed)
+    //     {
+    //         const uint32_t& segId = *seg;
+    //         segment::data segData = adjacentVolume.GetSegmentData(segId);
             
-            coords::dataBbox segOverlap(segData.bounds, &adjacentVolume.CoordSystem(), 0);
-            coords::globalBbox segOver = segOverlap.toGlobalBbox();
-            segOver.intersect(overlap);
+    //         coords::dataBbox segOverlap(segData.bounds, &adjacentVolume.CoordSystem(), 0);
+    //         coords::globalBbox segOver = segOverlap.toGlobalBbox();
+    //         segOver.intersect(overlap);
         
-            if(inAdjacentVolume(segOverlap.toGlobalBbox(), overlap, adjacentVolume.Bounds())) {
-                seeds.push_back(*seed);
-                continue;
-            }
-        }
-    }
+    //         if(inAdjacentVolume(segOverlap.toGlobalBbox(), overlap, adjacentVolume.Bounds())) {
+    //             seeds.push_back(*seed);
+    //             continue;
+    //         }
+    //     }
+    // }
     
 }
 
