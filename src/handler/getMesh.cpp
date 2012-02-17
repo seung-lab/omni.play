@@ -33,48 +33,6 @@ void writeFile(const std::string& fnp, T const*const data, const uint64_t numByt
 //    }
 }
 
-boost::shared_ptr<mesh::data> get_data(const std::string& uri, 
-                                       coords::chunk chunkCoord, 
-                                       int32_t segId)
-{
-    boost::shared_ptr<mesh::data> data;
-
-    try
-    {
-        mesh::reader reader(uri, chunkCoord);
-        mesh::dataEntry* de = reader.GetDataEntry(segId);
-        if(!de || !de->wasMeshed) {
-            return boost::shared_ptr<mesh::data>();
-        }
-
-        int numVertices = de->vertexData.numElements;
-        if (numVertices < numeric_limits<uint16_t>::max())
-        {
-            data = reader.Read(segId);
-        } else {
-            std::cout << "Mesh had " << numVertices << " Vertices." << std::endl;
-        }
-    }
-    catch (exception e)
-    {
-        return boost::shared_ptr<mesh::data>();
-    }
-
-    if(!data.get()) {
-        return boost::shared_ptr<mesh::data>();
-    }
-
-    if(data->TrianDataCount()){
-        return boost::shared_ptr<mesh::data>();
-    }
-
-    if(!data->HasData()){
-        return boost::shared_ptr<mesh::data>();
-    }
-
-    return data;
-}
-
 std::string tri_strip_to_obj( const float* points,
                               const std::size_t points_length,
                               const uint32_t* indices,
@@ -128,11 +86,44 @@ void get_mesh(std::string& _return,
               int32_t mipLevel,
               int32_t segId)
 {
-    boost::shared_ptr<mesh::data> data = 
-        get_data(uri, coords::chunk(mipLevel, chunk.x, chunk.y, chunk.z), segId);
+    boost::shared_ptr<mesh::data> data;
+
+    try
+    {
+        mesh::reader reader(uri, coords::chunk(mipLevel, chunk.x, chunk.y, chunk.z));
+        mesh::dataEntry* de = reader.GetDataEntry(segId);
+        if(!de || !de->wasMeshed) {
+            _return = "not found";
+            return;
+        }
+
+        int numVertices = de->vertexData.numElements;
+        if (numVertices < numeric_limits<uint16_t>::max())
+        {
+            data = reader.Read(segId);
+        } else {
+            _return = "mesh too big";
+            return;
+        }
+    }
+    catch (exception e)
+    {
+        _return = "not found";
+        return;
+    }
 
     if(!data.get()) {
-        _return = "";
+        _return = "not found";
+        return;
+    }
+
+    if(data->TrianDataCount()){
+        _return = "not found";
+        return;
+    }
+
+    if(!data->HasData()){
+        _return = "not found";
         return;
     }
 
