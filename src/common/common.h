@@ -98,13 +98,13 @@ T twist(T vec, viewType view)
         break;
     case server::viewType::XZ_VIEW:
         out.x = vec.x;
-        out.z = vec.z;
-        out.y = vec.y;
+        out.y = vec.z;
+        out.z = vec.y;
         break;
     case server::viewType::ZY_VIEW:
-        out.z = vec.z;
+        out.x = vec.z;
         out.y = vec.y;
-        out.x = vec.x;
+        out.z = vec.x;
         break;
     }
 
