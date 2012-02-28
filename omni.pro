@@ -1035,8 +1035,8 @@ SOURCES +=  \
 RESOURCES += src/gui/resources.qrc
 
 INCLUDEPATH = src include lib tests
-INCLUDEPATH += ../external/zi_lib
-INCLUDEPATH += ../external/libs/libjpeg/include
+INCLUDEPATH += external/zi_lib
+INCLUDEPATH += external/libs/libjpeg/include
 INCLUDEPATH +=  include/json_spirit_v4.03/json_spirit
 INCLUDEPATH +=  include/yaml-cpp/include
 
@@ -1047,18 +1047,20 @@ win32 {
    LIBS += -lgdi32
 } else {
 #### Linux or MacOS
-   INCLUDEPATH +=  ../external/libs/HDF5/include
-   LIBS += ../external/libs/HDF5/lib/libhdf5.a
-   LIBS += ../external/libs/libjpeg/lib/libjpeg.a
+   INCLUDEPATH +=  external/libs/HDF5/include
+   LIBS += external/libs/HDF5/lib/libhdf5.a
+   LIBS += external/libs/libjpeg/lib/libjpeg.a
    LIBS += -lz
 }
+
+LIBS += -lGLU
 
 OBJECTS_DIR = build
 MOC_DIR = build
 RCC_DIR = build
 DESTDIR = bin
 
-QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN/../external/libs/Qt/libs\''
+QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN/external/libs/Qt/libs\''
 
 #### for static build
 #CONFIG += qt warn_on static
@@ -1128,27 +1130,32 @@ CONFIG += no_keywords
   QMAKE_CXXFLAGS += -fno-omit-frame-pointer
 }
 
-!exists(../external/libs/libjpeg/lib/libjpeg.a){
+!exists(external/libs/libjpeg/lib/libjpeg.a){
     error(please run 'bootstrap.pl 4' to install libjpeg)
 }
 
 #### Boost
-exists(../external/libs/Boost) {
-     INCLUDEPATH += ../external/libs/Boost/include
+exists(external/libs/Boost) {
+	INCLUDEPATH += external/libs/Boost/include
 
-     LIBS += ../external/libs/Boost/lib/libboost_filesystem.a
-     LIBS += ../external/libs/Boost/lib/libboost_iostreams.a
-     LIBS += ../external/libs/Boost/lib/libboost_system.a
-     LIBS += ../external/libs/Boost/lib/libboost_thread.a
+	LIBS += external/libs/Boost/lib/libboost_filesystem.a
+	LIBS += external/libs/Boost/lib/libboost_iostreams.a
+	LIBS += external/libs/Boost/lib/libboost_system.a
+	LIBS += external/libs/Boost/lib/libboost_thread.a
 
-     QMAKE_CXXFLAGS += -DBOOST_MULTI_INDEX_DISABLE_SERIALIZATION
-     QMAKE_CXXFLAGS += -DBOOST_SPIRIT_THREADSAFE
-     QMAKE_CXXFLAGS += -DBOOST_SYSTEM_NO_DEPRECATED
-     QMAKE_CXXFLAGS += -DBOOST_FILESYSTEM_VERSION=3
-     QMAKE_CXXFLAGS += -DBOOST_FILESYSTEM_NO_DEPRECATED
+	QMAKE_CXXFLAGS += -DBOOST_MULTI_INDEX_DISABLE_SERIALIZATION
+	QMAKE_CXXFLAGS += -DBOOST_SPIRIT_THREADSAFE
+	QMAKE_CXXFLAGS += -DBOOST_SYSTEM_NO_DEPRECATED
+	QMAKE_CXXFLAGS += -DBOOST_FILESYSTEM_VERSION=3
+	QMAKE_CXXFLAGS += -DBOOST_FILESYSTEM_NO_DEPRECATED
+
+	# https://bugreports.qt-project.org//browse/QTBUG-22829
+	QMAKE_MOC = $$QMAKE_MOC -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED 
 
 #BOOST_DISABLE_ASSERTS
 
 }else {
     error(please run 'bootstrap.pl 2' to install Boost)
 }
+
+QMAKE_CXXFLAGS += -Wno-unused-variable -Wno-unused-but-set-variable

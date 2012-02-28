@@ -18,8 +18,8 @@ my $srcPath     = $basePath.'/external/srcs';
 my $libPath     = $basePath.'/external/libs';
 my $tarballPath = $basePath.'/external/tarballs';
 my $scriptPath  = $basePath.'/scripts';
-my $omniPath    = $basePath.'/omni';
-my $omniExecPathMac  = $basePath.'/omni/bin/omni.app/Contents/MacOS/omni';
+my $omniPath    = $basePath;
+my $omniExecPathMac  = $basePath.'/bin/omni.app/Contents/MacOS/omni';
 
 my $omniScriptFile = $scriptPath.'/buildomni.sh';
 my $omniScriptOptions = "";
@@ -34,10 +34,14 @@ my $NumCores;
 ##
 # source tar-ball versions
 ##
-my $BOOST_VER = "boost_1_46_1";
-my $QT_VER = "qt-everywhere-opensource-src-4.7.3";
-my $HDF5_VER = "hdf5-1.8.6";
-my $ZLIB_VER = "zlib-1.2.5";
+my $BOOST_VER = "boost_1_49_0";
+my $BOOST_URI = "http://sourceforge.net/projects/boost/files/boost/1.49.0/boost_1_49_0.tar.gz/download";
+my $QT_VER = "qt-everywhere-opensource-src-4.8.0";
+my $QT_URI = "http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.8.0.tar.gz";
+my $HDF5_VER = "hdf5-1.8.8";
+my $HDF5_URI = "http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.8.tar.gz";
+my $ZLIB_VER = "zlib-1.2.6";
+my $ZLIB_URI = "http://zlib.net/zlib-1.2.6.tar.gz";
 my $INTEL_TBB_VER = "tbb30_20110315oss";
 my $THRIFT_VER = "thrift-0.6.1";
 my $RE2C = "re2c-0.13.5";
@@ -47,7 +51,8 @@ my $LIBEDIT_VER = "libedit-20110709-3.0";
 #if(isMac()){
 #    $JPEG_VER = "jpeg-8c";
 #}
-my $JPEG_VER = "jpeg-8c";
+my $JPEG_VER = "libjpeg-turbo-1.2.0";
+my $JPEG_URI = "http://sourceforge.net/projects/libjpeg-turbo/files/latest/download";
 
 # from http://stackoverflow.com/questions/334686/how-can-i-detect-the-operating-system-in-perl
 sub isMac {
@@ -129,7 +134,7 @@ sub makeDirPaths
 sub genOmniScript
 {
     my $script = "";
-    $script .= "cd $basePath/omni;";
+    $script .= "cd $basePath;";
 
     if(@_ == 1) {
 	my $debugMode = $_[0];
@@ -144,7 +149,7 @@ sub genOmniScript
 	print "building omni with current make options\n";
     }
 
-    $script .= "../external/libs/Qt/bin/qmake omni.pro;";
+    $script .= "external/libs/Qt/bin/qmake omni.pro;";
 
     if(@_ == 1) {
 	print "will make clean\n";
@@ -216,14 +221,32 @@ sub untar
     print "done\n";
 }
 
+sub wget
+{
+	my $uri = $_[0];
+	my $baseFileName = $_[1];
+
+	if (-e $tarballPath."/".$baseFileName.".tar.gz") {
+		print "==> skipping wget\n";
+		return;
+	}
+
+    print "==> wgetting to external/tarballs/...";
+    `mkdir -p $tarballPath`;
+    `wget $uri -O $tarballPath/$baseFileName.tar.gz`;
+    print "done\n";
+}
+
 sub prepare
 {
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
+	my $uri           = $_[2];
 
     printTitle(        $baseFileName );
     nukeBuildFolder(   $baseFileName );
-    nukeLibraryFolder( $libFolderName );
+    nukeLibraryFolder( $libFolderName);
+    wget(              $uri, $baseFileName);
     untar(             $baseFileName );
     setupBuildFolder(  $baseFileName );
 }
@@ -232,11 +255,13 @@ sub prepareNukeSrcsFolder
 {
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
+    my $uri           = $_[2];
 
     printTitle(        $baseFileName );
     nukeSrcsFolder(    $baseFileName );
     nukeBuildFolder(   $baseFileName );
-    nukeLibraryFolder( $libFolderName );
+    nukeLibraryFolder( $libFolderName);
+    wget(              $uri, $baseFileName);
     untar(             $baseFileName );
     setupBuildFolder(  $baseFileName );
 }
@@ -312,13 +337,15 @@ sub prepareAndBuild
 {
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
-
+    
     my $buildOptions = "";
     if( scalar(@_) > 2 ) {
 	$buildOptions = $_[2];
     }
 
-    prepare( $baseFileName, $libFolderName );
+	my $uri = $_[3];
+
+    prepare( $baseFileName, $libFolderName, $uri );
     build(   $baseFileName, $libFolderName, $buildOptions );
 }
 
@@ -354,7 +381,7 @@ sub thrift
 
 sub libjpeg
 {
-    prepareAndBuild( $JPEG_VER, "libjpeg" );
+    prepareAndBuild( $JPEG_VER, "libjpeg", "", $JPEG_URI);
 }
 
 sub libedit
@@ -376,7 +403,7 @@ sub hdf5
 	$args .= " --with-pthread=/usr/lib ";
     }
 
-    prepareAndBuild( $HDF5_VER, "HDF5", $args );
+    prepareAndBuild( $HDF5_VER, "HDF5", $args, $HDF5_URI );
 }
 
 sub boost
@@ -403,8 +430,10 @@ sub boost
 
     my $baseFileName = $BOOST_VER;
     my $libFolderName = "Boost";
-    prepareNukeSrcsFolder( $baseFileName, $libFolderName );
+    my $uri = $BOOST_URI;
+    prepareNukeSrcsFolder( $baseFileName, $libFolderName, $uri);
 
+    wget($ZLIB_URI, $ZLIB_VER);
     untar($ZLIB_VER);
 
     my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName ";
@@ -437,7 +466,7 @@ sub qt
  -no-fast -make libs -make tools
  -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit
  -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend
- -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng
+ -no-svg -qt-zlib -qt-libtiff -qt-libpng -no-libmng
  -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-freetype
  -no-multimedia -no-javascript-jit -no-script -no-scripttools
 );
@@ -450,7 +479,9 @@ sub qt
 	$args .= " -optimized-qmake ";
     }
 
-    prepareAndBuild( $baseFileName, "Qt", $args );
+    my $uri = $QT_URI;
+
+    prepareAndBuild( $baseFileName, "Qt", $args, $uri );
 }
 
 sub omni

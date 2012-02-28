@@ -3,7 +3,7 @@ external/srcs
 external/tarballs
 external/zi_lib
 external/libs
-omni/Makefile
-omni/bin
-omni/build
+Makefile
+bin
+build
 scripts/buildomni.sh

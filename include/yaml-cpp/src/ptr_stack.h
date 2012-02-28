@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include <cstddef>
 #include "yaml-cpp/noncopyable.h"
 #include <memory>
 #include <vector>
