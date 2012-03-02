@@ -70,6 +70,10 @@ public:
         return numBytes_;
     }
 
+    virtual size_t Length() const {
+    	return numBytes_ / sizeof(T);
+    }
+
     virtual void Flush()
     {}
 
