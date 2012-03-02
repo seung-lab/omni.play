@@ -11,6 +11,11 @@ struct mstEdge {
     uint8_t userJoin;
     uint8_t userSplit;
     uint8_t wasJoined; // transient state
+
+    bool operator<(mstEdge const & rhs) const
+    {
+        return threshold < rhs.threshold;
+    }
 };
 
 }}
