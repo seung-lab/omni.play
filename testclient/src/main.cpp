@@ -65,28 +65,21 @@ metadata makeMetadata(int x, int y, int z, volType::type type)
 }
 
 int main(int argc, char **argv) {
-    boost::shared_ptr<TSocket> socket(new TSocket("localhost", 9090));
+    boost::shared_ptr<TSocket> socket(new TSocket("hebb", 9090));
     boost::shared_ptr<TTransport> transport(new TFramedTransport(socket));
     boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
 
     serverClient client(protocol);
     transport->open();
 
-    std::set<int32_t> ids;
-
-    for (int i = 1; i < 100; ++i)
-    {
-        ids.insert(i);
-    }
-
     metadata meta = makeMetadata(0,0,0, volType::SEGMENTATION);
 
-    std::map<int, segData> data;
-    client.get_seg_list_data(data, meta, ids);
+    std::vector<edge> mst;
+    client.get_mst(mst, meta);
 
-    for (int i = 0; i < 100; ++i)
+    FOR_EACH(e, mst)
     {
-        std::cout << i << ": " << data[i].size << std::endl;
+    	std::cout << e->a << " - " << e->b << ": " << e->value << std::endl;
     }
 
     transport->close();

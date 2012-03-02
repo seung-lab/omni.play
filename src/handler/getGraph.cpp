@@ -1,14 +1,14 @@
 #include "handler/handler.h"
 #include "pipeline/utility.hpp"
 #include "volume/volume.h"
-#include "segments/mstTypes.hpp"
+#include "segment/mstTypes.hpp"
 
 namespace om {
 namespace handler{
 
 void get_mst(std::vector<server::edge>& _return, const volume::volume& vol)
 {
-	std::string uri = vol.Uri() + "segmentations/segmentation1/segments/mst.data";
+	std::string fname = vol.Uri() + "/segmentations/segmentation1/segments/mst.data";
 
 	datalayer::memMappedFile<segments::mstEdge> mstData(fname);
 
