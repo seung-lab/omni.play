@@ -19,13 +19,9 @@ void get_seg_data(server::segData& _return, const volume::volume& vol, const int
 {
     utility::timer t;
     const segment::data& d = vol.GetSegmentData(segId);
+    coords::dataBbox dc(d.bounds, &vol.CoordSystem(), 0);
 
-    _return.bounds.min.x = d.bounds.getMin().x;
-    _return.bounds.min.y = d.bounds.getMin().y;
-    _return.bounds.min.z = d.bounds.getMin().z;
-    _return.bounds.max.x = d.bounds.getMax().x;
-    _return.bounds.max.y = d.bounds.getMax().y;
-    _return.bounds.max.z = d.bounds.getMax().z;
+    _return.bounds = dc.toGlobalBbox();
     _return.size = d.size;
 }
 void get_seg_list_data(std::map<int32_t, server::segData>& _return,
