@@ -1,0 +1,9 @@
+external/builds
+external/srcs
+external/tarballs
+external/zi_lib
+external/libs
+Makefile
+bin
+build
+scripts/buildomni.sh

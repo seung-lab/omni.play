@@ -1,0 +1,32 @@
+#pragma once
+
+#include "chunks/omChunkCoord.h"
+#include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
+#include "volume/omVolumeTypes.hpp"
+
+class OmSegChunk;
+class OmSegments;
+class OmSegmentation;
+
+namespace om {
+namespace segchunk {
+
+class dataInterface {
+public:
+    virtual void ProcessChunk(const bool, OmSegments* segments) = 0;
+
+    virtual void RefreshBoundingData(OmSegments* segments) = 0;
+
+    virtual PooledTile32Ptr ExtractDataSlice32bit(const ViewType, const int) = 0;
+    virtual om::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32() = 0;
+
+    virtual void RewriteChunk(const boost::unordered_map<uint32_t, uint32_t>&) = 0;
+
+    virtual uint32_t SetVoxelValue(const DataCoord& voxel, const uint32_t val) = 0;
+    virtual uint32_t GetVoxelValue(const DataCoord& voxel) = 0;
+};
+
+} // namespace segchunk
+} // namespace om
+
+

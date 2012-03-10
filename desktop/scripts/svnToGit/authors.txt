@@ -1,0 +1,10 @@
+purcaro = Michael Purcaro <purcaro@gmail.com>
+balkamm = Matthew Balkam <balkamm+mit@gmail.com>
+zlateski = Aleksandar Zlateski <zlateski@mit.edu>
+mwimer = Matthew Wimer <subsilico@yahoo.com>
+bwarne = Brett Warne <brett.warne@gmail.com>
+didier = Clay Didier <csdidier@gmail.com>
+tanzx = Tan Zong Xuan <tzxrules@gmail.com>
+davidjia = David W Jia <david.w.jia@gmail.com>
+kannanuv = Kannan U V <kannanuv@cshl.edu>
+sturaga = Srinivas Turaga <sturaga@mit.edu>

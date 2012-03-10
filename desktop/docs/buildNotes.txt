@@ -1,0 +1,32 @@
+on ubuntu, omni needs:
+
+apt-get install libxrender-dev 
+apt-get install libxext-dev
+apt-get install freeglut3-dev
+apt-get install freetype
+apt-get install g++
+apt-get install freetype
+apt-get install libfreetype6-dev
+apt-get install libxml2
+apt-get install libxml2-dev
+apt-get install cmake
+apt-get install mesa-common-dev
+apt-get install emacs
+apt-get install libxt-dev
+
+on Ubuntu 9.10 AMD64bit (on Intel Xeon 64 bit processor)
+needed the above but not freetype, nor the xml stuff
+
+also:
+
+apt-get install libgl1-mesa-dev
+apt-get install libglu1-mesa-dev
+
+also added
+
+apt-get install libgl1-mesa-dri-dbg	
+apt-get install libgl1-mesa-glx-dbg	
+
+to get debugging symbols
+
+

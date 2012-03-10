@@ -1,0 +1,10 @@
+nvidia driver installation blew away mesa-common-dev's
+/usr/include/GL/glext.h.
+
+The easiest way to fix is:
+Force the mesa-common-dev package back onto the machine overwriting nvidia's
+brain damaged one. (I know this works on ubuntu.)
+
+so we need someone w/ sudo to
+
+apt-get install --reinstall mesa-common-dev
