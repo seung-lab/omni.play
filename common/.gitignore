@@ -1,0 +1,15 @@
+bin
+build
+builds
+lib
+libs
+*.sublime-workspace
+*.sublime-project
+external/srcs
+*~
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+TAGS
+Makefile
