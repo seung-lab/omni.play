@@ -1,0 +1,6 @@
+*.T
+*.d
+*.o
+build/*
+bin/*
+src/thrift/*

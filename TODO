@@ -1,0 +1,24 @@
+Refactoring:
+- Consolidate all "files" Functionality
+- add using namespace om::common to common/common.h to clean up exceptions
+- Rename so that types don't share names with namespaces
+
+Filesystem:
+- test: store turn off (crash) and get the data back later (done)
+- manager expose stats
+- locking (sort of done in the storage), to be done in the manager (done)
+- erasing
+
+- more stats for the storage server:
+  - num of bytes read/written
+  - average time per request (read/write)
+  - etc...
+
+Next step:
+- revovery procedure (manager asking the storage servers for the keys)
+- manager should use regular memory
+- stress test
+- multi_get
+
+TODO (for aleks)
+- Makefile

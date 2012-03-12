@@ -1,1 +1,0 @@
-cd /Users/balkamm/omni.server/omni.server;qmake omni.server.pro;make  -j2 
