@@ -1,0 +1,3 @@
+[submodule "zi_lib"]
+	path = zi_lib
+	url = git@github.com:seung-lab/zi_lib.git
