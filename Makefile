@@ -33,6 +33,7 @@ INCLUDES	=	-I$(HERE) \
 				-I$(HERE)/common/src \
 				-I$(HERE)/common/include \
 				-I$(HERE)/common/include/yaml-cpp/include \
+				-I$(HERE)/common/include/libb64/include \
 				-I$(HERE)/server/src \
 				-I$(HERE)/filesystem/src \
 				-I$(HERE)/desktop/src \
@@ -40,17 +41,16 @@ INCLUDES	=	-I$(HERE) \
 				-I/usr/include/thrift
 
 
-LIBS = ../omni.common/lib/bin/libomni.common.a \
-	   external/libs/Boost/lib/libboost_filesystem.a \
-	   external/libs/Boost/lib/libboost_iostreams.a \
-	   external/libs/Boost/lib/libboost_system.a \
-	   external/libs/Boost/lib/libboost_thread.a \
-	   external/libs/Boost/lib/libboost_regex.a \
-	   external/libs/thrift/lib/libthrift.a \
-	   external/libs/thrift/lib/libthriftnb.a \
-	   external/libs/libjpeg/lib/libturbojpeg.a \
-	   external/libs/libpng/lib/libpng.a \
-	   external/libs/zlib/lib/libz.a \
+LIBS = -lboost_filesystem \
+	   -lboost_iostreams \
+	   -lboost_system \
+	   -lboost_thread \
+	   -lboost_regex \
+	   -lthrift \
+	   -lthriftnb \
+	   -lturbojpeg \
+	   -lpng \
+	   -lz \
 	   -levent -lpthread -levent -lrt 
 
 CXX_INCLUDES	=	$(INCLUDES)
@@ -64,8 +64,10 @@ COMMON_CFLAGS		=	-g -std=gnu99 -D_GNU_SOURCE=1 \
 				-D_REENTRANT $(CPP_INLINE_DEPFLAGS) \
 				$(INCLUDES) $(FPIC) $(CWARN)
 
+THRIFT_CXXFLAGS	   = 	-DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H
+
 COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) $(CXX_INCLUDES) \
-						   $(FPIC) $(CXXWARN)
+						   $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS)
 
 DBG_CFLAGS         =	$(COMMON_CFLAGS) -DDEBUG_MODE=1
 DBG_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DDEBUG_MODE=1
@@ -135,6 +137,7 @@ common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
 	$(MKDIR) -p $(dir $@)
 	$(TOUCH) $@.tmp
 	$(THRIFT) -r --out common/src/thrift --gen cpp $<
+	$(RM) common/src/thrift/*.skeleton.cpp
 	$(MV) $@.tmp $@
 
 .PHONY: all
@@ -161,7 +164,7 @@ SERVERSOURCES = $(subst server/src,build,$(shell find server/src -iname "*.cpp")
 DESKTOPSOURCES = $(shell find desktop/src -iname "*.cpp")
 FILESYSTEMSOURCES = $(shell find filesystem/src -iname "*.cpp")
 
-YAMLSOURCES = $(shell find include/yaml-cpp/src -iname "*.cpp" )
+YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
 
 SERVER_SRCS = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES)
 SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
