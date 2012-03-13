@@ -165,8 +165,9 @@ DESKTOPSOURCES = $(shell find desktop/src -iname "*.cpp")
 FILESYSTEMSOURCES = $(shell find filesystem/src -iname "*.cpp")
 
 YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
+LIB64SOURCES = common/include/libb64/src/cencode.o
 
-SERVER_SRCS = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES)
+SERVER_SRCS = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
 SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
 
 $(BINDIR)/omni.server: common/src/thrift/server.thrift.mkcpp $(SERVER_DEPS)
