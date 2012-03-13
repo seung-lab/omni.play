@@ -2,7 +2,6 @@
 
 HERE    	=       .
 BINDIR		=	./bin
-GENDIR	=	./build
 
 AT		=   @
 DOLLAR  = 	$$
@@ -24,34 +23,37 @@ PERL    =	$(AT)perl
 AR      =	$(AT)ar
 ARFLAGS =	rcs
 
-CC      =	$(AT)gcc
-CXX     =	$(AT)g++
-THRIFT  =	$(AT)thrift
+CC   =	$(AT)gcc
+CXX  =	$(AT)g++
 FPIC =	-fPIC
 
 INCLUDES	=	-I$(HERE) \
 				-I$(HERE)/src \
-				-I$(HERE)/src/common \
-				-I$(HERE)/src/server \
-				-I$(HERE)/src/filesystem \
-				-I$(HERE)/src/desktop \
-				-I$(HERE)/src/thrift \
+				-I$(HERE)/external/include \
 				-I$(HERE)/include \
-				-I$(HERE)/zi_lib \
+				-Iexternal/zi_lib \
 				-Iinclude/yaml-cpp/include \
 				-Iinclude/libb64/include \
-				-I/usr/include/thrift
+				-I../omni.common/lib/include \
+				-Iexternal/srcs/thrift-0.7.0/contrib/fb303/cpp \
+				-I../omni.common/lib/include/thrift \
+				-Iexternal/libs/Boost/include \
+				-Iexternal/libs/thrift/include/thrift \
+				-Iexternal/libs/libjpeg/include \
+				-Iexternal/libs/libpng/include \
+				-Iexternal/libs/zlib/include
 
-LIBS = -lboost_filesystem \
-	   -lboost_iostreams \
-	   -lboost_system \
-	   -lboost_thread \
-	   -lboost_regex \
-	   -lthrift \
-	   -lthriftnb \
-	   -lturbojpeg \
-	   -lpng \
-	   -lz \
+LIBS = ../omni.common/lib/bin/libomni.common.a \
+	   external/libs/Boost/lib/libboost_filesystem.a \
+	   external/libs/Boost/lib/libboost_iostreams.a \
+	   external/libs/Boost/lib/libboost_system.a \
+	   external/libs/Boost/lib/libboost_thread.a \
+	   external/libs/Boost/lib/libboost_regex.a \
+	   external/libs/thrift/lib/libthrift.a \
+	   external/libs/thrift/lib/libthriftnb.a \
+	   external/libs/libjpeg/lib/libturbojpeg.a \
+	   external/libs/libpng/lib/libpng.a \
+	   external/libs/zlib/lib/libz.a \
 	   -levent -lpthread -levent -lrt 
 
 CXX_INCLUDES	=	$(INCLUDES)
@@ -66,7 +68,7 @@ COMMON_CFLAGS		=	-g -std=gnu99 -D_GNU_SOURCE=1 \
 				$(INCLUDES) $(FPIC) $(CWARN)
 
 COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) $(CXX_INCLUDES) \
-						   $(FPIC) $(CXXWARN)
+						   $(FPIC) $(CXXWARN) -std=c++0x
 
 DBG_CFLAGS         =	$(COMMON_CFLAGS) -DDEBUG_MODE=1
 DBG_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DDEBUG_MODE=1
@@ -94,34 +96,44 @@ else
 endif
 
 # dependency files for c++
-$(GENDIR)/%.d: src/%.cpp
+$(BINDIR)/%.d: src/%.cpp
 	$(MKDIR) -p $(dir $@)
 	$(CXX) $(CPP_DEPFLAGS) -MF $@ $<
 
 # c++
-$(GENDIR)/%.o: src/%.cpp
+$(BINDIR)/%.o: src/%.cpp
 	$(ECHO) "[CXX] compiling $<"
 	$(MKDIR) -p $(dir $@)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
 
 # c
-$(GENDIR)/%.o: src/%.c
+$(BINDIR)/%.o: src/%.c
 	$(ECHO) "[CC] compiling $<"
 	$(MKDIR) -p $(dir $@)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-# Thrift
-.PHONY: thrift
-thrift: if/server.thrift if/filesystem.thrift
-	$(ECHO) "[Thrift] Generating..."
-	$(MKDIR) -p src/thrift
-	$(THRIFT) -r --out src/thrift --gen cpp if/server.thrift
-	$(THRIFT) -r --out src/thrift --gen cpp if/filesystem.thrift
-	$(RM) src/thrift/*.skeleton.cpp
+# dependency files for c++
+%.d: %.cpp
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CPP_DEPFLAGS) -MF $@ $<
+
+# c++
+%.o: %.cpp
+	$(ECHO) "[CXX] compiling $<"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
+
+# c
+%.o: %.c
+	$(ECHO) "[CC] compiling $<"
+	$(MKDIR) -p $(dir $@)
+	$(CC) -c $(CFLAGS) -o $@ $<
+
 
 .PHONY: all
-all: $(BINDIR)/omni.server
+all:
 
 .PHONY: tidy
 tidy:
@@ -139,26 +151,21 @@ clean:
 .PHONY: remake
 remake: clean all
 
-COMMONSOURCES  = $(shell find src/common | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.o/g' | sed 's/src\//\.\/build\//g' )
-SERVERSOURCES  = $(shell find src/server | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.o/g' | sed 's/src\//\.\/build\//g' )
-FSSOURCES      = $(shell find src/filesystem | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.o/g' | sed 's/src\//\.\/build\//g' )
-DESKTOPSOURCES = $(shell find src/desktop | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.o/g' | sed 's/src\//\.\/build\//g' )
-THRIFTSOURCES  = $(shell find src/thrift | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.o/g' | sed 's/src\//\.\/build\//g' )
-
+SOURCES = $(shell find src | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.o/g' | sed 's/src\//\.\/bin\//g' )
 YAMLSOURCES = $(shell find include/yaml-cpp/src | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.o/g' )
 MISCSOURCES = include/libb64/src/cencode.o \
 			  external/srcs/thrift-0.7.0/contrib/fb303/cpp/FacebookBase.o \
 			  external/srcs/thrift-0.7.0/contrib/fb303/cpp/ServiceTracker.o
 
-SERVER = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(MISCSOURCES) $(THRIFTSOURCES)
+ALLSOURCES = $(SOURCES) $(YAMLSOURCES) $(MISCSOURCES)
 
-$(BINDIR)/omni.server: thrift $(SERVER)
+$(BINDIR)/omni.server: $(ALLSOURCES)
 	$(ECHO) "[CXX] linking bin/omni.server"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -o $(BINDIR)/omni.server $(SERVER) $(LIBS)
+	$(CXX) $(CXXFLAGS) -o $(BINDIR)/omni.server $(ALLSOURCES) $(LIBS)
 
 all: $(BINDIR)/omni.server
 
-ALLDEPS = $(shell find src | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.d/g' | sed 's/src\//\.\/build\//g' )
+ALLDEPS = $(shell find src | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.d/g' | sed 's/src\//\.\/bin\//g' )
 
 -include $(ALLDEPS)
