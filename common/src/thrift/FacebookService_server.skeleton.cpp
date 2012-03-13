@@ -14,7 +14,7 @@ using namespace ::apache::thrift::server;
 
 using boost::shared_ptr;
 
-using namespace facebook::fb303;
+using namespace  ::facebook::fb303;
 
 class FacebookServiceHandler : virtual public FacebookServiceIf {
  public:

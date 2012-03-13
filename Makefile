@@ -2,6 +2,7 @@
 
 HERE    	=       .
 BINDIR		=	./bin
+BUILDDIR	=	build
 
 AT		=   @
 DOLLAR  = 	$$
@@ -23,25 +24,21 @@ PERL    =	$(AT)perl
 AR      =	$(AT)ar
 ARFLAGS =	rcs
 
-CC   =	$(AT)gcc
-CXX  =	$(AT)g++
-FPIC =	-fPIC
+CC     =	$(AT)gcc
+CXX    =	$(AT)g++
+THRIFT = 	$(AT)thrift
+FPIC   =	-fPIC
 
 INCLUDES	=	-I$(HERE) \
-				-I$(HERE)/src \
-				-I$(HERE)/external/include \
-				-I$(HERE)/include \
-				-Iexternal/zi_lib \
-				-Iinclude/yaml-cpp/include \
-				-Iinclude/libb64/include \
-				-I../omni.common/lib/include \
-				-Iexternal/srcs/thrift-0.7.0/contrib/fb303/cpp \
-				-I../omni.common/lib/include/thrift \
-				-Iexternal/libs/Boost/include \
-				-Iexternal/libs/thrift/include/thrift \
-				-Iexternal/libs/libjpeg/include \
-				-Iexternal/libs/libpng/include \
-				-Iexternal/libs/zlib/include
+				-I$(HERE)/common/src \
+				-I$(HERE)/common/include \
+				-I$(HERE)/common/include/yaml-cpp/include \
+				-I$(HERE)/server/src \
+				-I$(HERE)/filesystem/src \
+				-I$(HERE)/desktop/src \
+				-I$(HERE)/zi_lib \
+				-I/usr/include/thrift
+
 
 LIBS = ../omni.common/lib/bin/libomni.common.a \
 	   external/libs/Boost/lib/libboost_filesystem.a \
@@ -68,7 +65,7 @@ COMMON_CFLAGS		=	-g -std=gnu99 -D_GNU_SOURCE=1 \
 				$(INCLUDES) $(FPIC) $(CWARN)
 
 COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) $(CXX_INCLUDES) \
-						   $(FPIC) $(CXXWARN) -std=c++0x
+						   $(FPIC) $(CXXWARN)
 
 DBG_CFLAGS         =	$(COMMON_CFLAGS) -DDEBUG_MODE=1
 DBG_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DDEBUG_MODE=1
@@ -95,20 +92,22 @@ else
   LDFLAGS	=	$(DBG_LDFLAGS) $(EXTRA_LDFLAGS)
 endif
 
+VPATH = common/src:server/src:filesystem/src:desktop/src
+
 # dependency files for c++
-$(BINDIR)/%.d: src/%.cpp
+build/%.d: %.cpp
 	$(MKDIR) -p $(dir $@)
 	$(CXX) $(CPP_DEPFLAGS) -MF $@ $<
 
 # c++
-$(BINDIR)/%.o: src/%.cpp
+build/%.o: %.cpp
 	$(ECHO) "[CXX] compiling $<"
 	$(MKDIR) -p $(dir $@)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
 
 # c
-$(BINDIR)/%.o: src/%.c
+build/%.o: %.c
 	$(ECHO) "[CC] compiling $<"
 	$(MKDIR) -p $(dir $@)
 	$(CC) -c $(CFLAGS) -o $@ $<
@@ -131,9 +130,15 @@ $(BINDIR)/%.o: src/%.c
 	$(MKDIR) -p $(dir $@)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
+common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
+	$(ECHO) "[Thrift ] Generating $@"
+	$(MKDIR) -p $(dir $@)
+	$(TOUCH) $@.tmp
+	$(THRIFT) -r --out common/src/thrift --gen cpp $<
+	$(MV) $@.tmp $@
 
 .PHONY: all
-all:
+all: $(BINDIR)/omni.server
 
 .PHONY: tidy
 tidy:
@@ -151,21 +156,21 @@ clean:
 .PHONY: remake
 remake: clean all
 
-SOURCES = $(shell find src | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.o/g' | sed 's/src\//\.\/bin\//g' )
-YAMLSOURCES = $(shell find include/yaml-cpp/src | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.o/g' )
-MISCSOURCES = include/libb64/src/cencode.o \
-			  external/srcs/thrift-0.7.0/contrib/fb303/cpp/FacebookBase.o \
-			  external/srcs/thrift-0.7.0/contrib/fb303/cpp/ServiceTracker.o
+COMMONSOURCES = $(subst common/src,build,$(shell find common/src -iname "*.cpp"))
+SERVERSOURCES = $(subst server/src,build,$(shell find server/src -iname "*.cpp"))
+DESKTOPSOURCES = $(shell find desktop/src -iname "*.cpp")
+FILESYSTEMSOURCES = $(shell find filesystem/src -iname "*.cpp")
 
-ALLSOURCES = $(SOURCES) $(YAMLSOURCES) $(MISCSOURCES)
+YAMLSOURCES = $(shell find include/yaml-cpp/src -iname "*.cpp" )
 
-$(BINDIR)/omni.server: $(ALLSOURCES)
+SERVER_SRCS = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES)
+SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
+
+$(BINDIR)/omni.server: common/src/thrift/server.thrift.mkcpp $(SERVER_DEPS)
 	$(ECHO) "[CXX] linking bin/omni.server"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -o $(BINDIR)/omni.server $(ALLSOURCES) $(LIBS)
+	$(CXX) $(CXXFLAGS) -o $(BINDIR)/omni.server $(SERVER_DEPS) $(LIBS)
 
-all: $(BINDIR)/omni.server
-
-ALLDEPS = $(shell find src | grep -Z --color=never ".cpp$$" | sed 's/\.cpp/\.d/g' | sed 's/src\//\.\/bin\//g' )
+ALLDEPS = $(shell find build -iname "*.d")
 
 -include $(ALLDEPS)

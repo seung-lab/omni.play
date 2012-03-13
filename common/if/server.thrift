@@ -1,4 +1,4 @@
-include "../external/srcs/thrift-0.7.0/contrib/fb303/if/fb303.thrift"
+include "fb303.thrift"
 
 namespace cpp om.server
 
