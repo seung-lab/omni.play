@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chunks/omChunkCoord.h"
+#include "common/omCommon.h"
 #include "chunks/omSegChunk.h"
 #include "chunks/omSegChunkDataInterface.hpp"
 #include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
@@ -14,7 +14,7 @@
 class OmChunkUniqueValuesPerThreshold {
 private:
     OmSegmentation *const segmentation_;
-    const OmChunkCoord coord_;
+    const om::chunkCoord coord_;
     const double threshold_;
     const QString fnp_;
 
@@ -25,7 +25,7 @@ private:
 
 public:
     OmChunkUniqueValuesPerThreshold(OmSegmentation* segmentation,
-                                    const OmChunkCoord& coord,
+                                    const om::chunkCoord& coord,
                                     const double threshold)
         : segmentation_(segmentation)
         , coord_(coord)

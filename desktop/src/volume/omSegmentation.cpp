@@ -138,7 +138,7 @@ int OmSegmentation::GetBytesPerVoxel() const {
 }
 
 int OmSegmentation::GetBytesPerSlice() const {
-    return GetBytesPerVoxel()*128*128;
+    return GetBytesPerVoxel()*coords_.GetChunkDimension()*coords_.GetChunkDimension();
 }
 
 void OmSegmentation::SetVolDataType(const OmVolDataType type)
@@ -179,54 +179,54 @@ OmMeshManager* OmSegmentation::MeshManager(const double threshold){
     return meshManagers_->GetManager(threshold);
 }
 
-quint32 OmSegmentation::GetVoxelValue(const DataCoord & vox)
+quint32 OmSegmentation::GetVoxelValue(const om::globalCoord & vox)
 {
     if(!ContainsVoxel(vox)){
         return 0;
     }
 
     //find mip_coord and offset
-    const OmChunkCoord mip0coord = coords_.DataToMipCoord(vox, 0);
+    const om::chunkCoord mip0coord = vox.toChunkCoord(this, 0);
 
     OmSegChunk* chunk = GetChunk(mip0coord);
 
     //get voxel data
-    return chunk->GetVoxelValue(vox);
+    return chunk->GetVoxelValue(vox.toDataCoord(this, 0));
 }
 
-void OmSegmentation::SetVoxelValue(const DataCoord& vox, const uint32_t val)
+void OmSegmentation::SetVoxelValue(const om::globalCoord& vox, const uint32_t val)
 {
     if (!ContainsVoxel(vox))
         return;
-
+    
     for(int level = 0; level <= coords_.GetRootMipLevel(); level++)
     {
-        int factor = om::math::pow2int(level);
-        OmChunkCoord leaf_mip_coord = coords_.DataToMipCoord(vox, level);
+        om::chunkCoord leaf_mip_coord = vox.toChunkCoord(this, level);
         OmSegChunk* chunk = GetChunk(leaf_mip_coord);
-        chunk->SetVoxelValue(vox / factor, val);
+        chunk->SetVoxelValue(vox.toDataCoord(this, level), val);
     }
 }
 
-bool OmSegmentation::SetVoxelValueIfSelected(const DataCoord& vox, const uint32_t val)
+bool OmSegmentation::SetVoxelValueIfSelected(const om::globalCoord& vox, const uint32_t val)
 {
     const OmSegIDsSet selection = Segments()->GetSelectedSegmentIDs();
     if(selection.size() > 0)
     {
-        OmChunkCoord leaf_mip_coord = coords_.DataToMipCoord(vox, 0);
+        om::chunkCoord leaf_mip_coord = vox.toChunkCoord(this, 0);
         OmSegChunk* chunk = GetChunk(leaf_mip_coord);
-        OmSegID target = Segments()->findRootID(chunk->GetVoxelValue(vox));
-
+        OmSegID target = Segments()->findRootID(
+            chunk->GetVoxelValue(vox.toDataCoord(this, 0)));
+        
         if(selection.count(target) == 0) {
-            return false;
+            return false;  
         }
     }
-
+    
     SetVoxelValue(vox, val);
     return true;
 }
 
-OmSegChunk* OmSegmentation::GetChunk(const OmChunkCoord& coord){
+OmSegChunk* OmSegmentation::GetChunk(const om::chunkCoord& coord){
     return chunkCache_->GetChunk(coord);
 }
 

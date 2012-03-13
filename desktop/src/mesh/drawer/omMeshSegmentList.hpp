@@ -1,6 +1,5 @@
 #pragma once
 
-#include "chunks/omChunkCoord.h"
 #include "chunks/omSegChunk.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
@@ -83,7 +82,7 @@ private:
 
     OmMeshSegListKey makeKey(OmSegChunk* chunk, OmSegment* rootSeg)
     {
-        const OmChunkCoord& c = chunk->GetCoordinate();
+        const om::chunkCoord& c = chunk->GetCoordinate();
         return OmMeshSegListKey(rootSeg->GetSegmentationID(),
                                 rootSeg->value(),
                                 c.Level,

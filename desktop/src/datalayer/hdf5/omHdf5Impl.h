@@ -34,10 +34,10 @@ class OmHdf5Impl
 					  const OmDataWrapperPtr data);
 
 	OmDataWrapperPtr readChunk(const OmDataPath& path,
-							   const DataBbox& dataExtent,
+							   const om::dataBbox& dataExtent,
 							   const om::AffinityGraph aff);
 	void writeChunk(const OmDataPath& path,
-					DataBbox dataExtent,
+					om::dataBbox dataExtent,
 					OmDataWrapperPtr data);
 	Vector3i getDatasetDims(const OmDataPath& path );
 	OmDataWrapperPtr GetChunkDataType(const OmDataPath& path);

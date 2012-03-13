@@ -21,7 +21,7 @@ private:
     bool rightMouseButton_;
     om::tool::mode tool_;
     QMouseEvent* event_;
-    DataCoord dataClickPoint_;
+    om::globalCoord dataClickPoint_;
 
     friend class OmMouseEventState;
 
@@ -99,7 +99,8 @@ private:
         rightMouseButton_ = event->buttons() & Qt::RightButton;
 
         tool_ = OmStateManager::GetToolMode();
-        dataClickPoint_ = state_->ComputeMouseClickPointDataCoord(event);
+        om::screenCoord clicked(Vector2i(event->x(), event->y()), state_);
+        dataClickPoint_ = clicked.toGlobalCoord();
     }
 
     inline void selectSegments()
@@ -132,7 +133,7 @@ private:
     }
 
     inline void mousePan(){
-        state_->DoMousePan(Vector2i(event_->x(), event_->y()));
+        state_->DoMousePan(om::screenCoord(event_->x(), event_->y(), state_));
     }
 };
 

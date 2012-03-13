@@ -5,7 +5,7 @@
 
 OmTileCoord::OmTileCoord()
     : OmTileCoordKey(-1,
-                     DataCoord(),
+                     om::globalCoord(),
                      NULL,
                      0,
                      NULL,
@@ -13,7 +13,7 @@ OmTileCoord::OmTileCoord()
                      SCC_NUMBER_OF_ENUMS)
 {}
 
-OmTileCoord::OmTileCoord(const int level, const DataCoord& dataCoord,
+OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
                          OmMipVolume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
                          const ObjectType objType)
@@ -26,7 +26,7 @@ OmTileCoord::OmTileCoord(const int level, const DataCoord& dataCoord,
                      vgs->determineColorizationType(objType))
 {}
 
-OmTileCoord::OmTileCoord(const int level, const DataCoord& dataCoord,
+OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
                          OmMipVolume* vol, const uint32_t freshness,
                          OmViewGroupState* vgs, const ViewType vt,
                          const OmSegmentColorCacheType segColorType)
@@ -47,7 +47,7 @@ std::ostream& operator<<(std::ostream &out, const OmTileCoord &c)
 {
     out << "["
         << c.getLevel() << ", "
-        << c.getDataCoord() << ", "
+        << c.getCoord() << ", "
         << c.getVolume()->GetName() << ", "
         << c.getFreshness() << ", "
         << c.getViewType() << ", "

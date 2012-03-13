@@ -6,20 +6,18 @@ class OmChunksAndPts {
 private:
     OmSegmentation *const vol_;
     const ViewType viewType_;
-    const int chunkDim_;
 
-    std::map<OmChunkCoord, std::set<Vector3i> > ptsInChunks_;
+    std::map<om::chunkCoord, std::set<om::dataCoord> > ptsInChunks_;
 
 public:
     OmChunksAndPts(OmSegmentation* vol, const ViewType viewType)
         : vol_(vol)
         , viewType_(viewType)
-        , chunkDim_(vol->Coords().GetChunkDimension())
     {}
 
     void AddAllPtsThatIntersectVol(om::pt3d_list_t* pts)
     {
-        const DataBbox& segDataExtent = vol_->Coords().GetDataExtent();
+        const om::globalBbox& segDataExtent = vol_->Coords().GetDataExtent();
 
         FOR_EACH(iter, *pts)
         {
@@ -27,23 +25,10 @@ public:
                 continue;
             }
 
-            AddPtAbsVoxelLoc(*iter);
+            om::dataCoord coord = iter->toDataCoord(vol_, 0);
+
+            ptsInChunks_[coord.toChunkCoord()].insert(coord);
         }
-    }
-
-    inline void AddPtAbsVoxelLoc(const Vector3i& vec)
-    {
-        const OmChunkCoord chunkCoord(0,
-                                      vec.x / chunkDim_,
-                                      vec.y / chunkDim_,
-                                      vec.z / chunkDim_);
-
-        const Vector3i chunkPos(vec.x % chunkDim_,
-                                vec.y % chunkDim_,
-                                vec.z % chunkDim_);
-
-
-        ptsInChunks_[chunkCoord].insert(chunkPos);
     }
 
     om::shared_ptr<boost::unordered_set<OmSegID> >
@@ -56,19 +41,16 @@ public:
 
         FOR_EACH(iter, ptsInChunks_)
         {
-            const OmChunkCoord& coord = iter->first;
-
+            const om::chunkCoord& coord = iter->first;
+            
             PooledTile32Ptr slicePtr = sliceCache.GetSlice(coord, depth);
             uint32_t const*const sliceData = slicePtr->GetData();
 
-            const std::set<Vector3i>& pts = iter->second;
+            const std::set<om::dataCoord>& pts = iter->second;
 
             FOR_EACH(vec, pts)
             {
-                const Vector2i loc =
-                    OmView2dConverters::Get2PtsInPlane(*vec, viewType_);
-
-                const OmSegID segID = sliceData[chunkDim_ * loc.y + loc.x];
+                const OmSegID segID = sliceData[vec->toTileOffset(viewType_)];
 
                 if(segID){
                     ret->insert(segID);

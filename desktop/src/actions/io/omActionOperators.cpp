@@ -130,7 +130,7 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentSplitActionImpl& a)
         OmSegID deadSeg;
         in >> deadSeg;
 
-        DataCoord dc;
+        Vector3i dc;
         in >> dc;
         in >> dc;
     }

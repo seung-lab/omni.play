@@ -32,8 +32,8 @@ public:
     void allocateChunkedDataset(const Vector3i&,
                                 const Vector3i&,
                                 const OmVolDataType);
-    OmDataWrapperPtr readChunk(const DataBbox&, const om::AffinityGraph aff);
-    void writeChunk(const DataBbox&, OmDataWrapperPtr);
+    OmDataWrapperPtr readChunk(const om::dataBbox&, const om::AffinityGraph aff);
+    void writeChunk(const om::dataBbox&, OmDataWrapperPtr);
     OmDataWrapperPtr GetChunkDataType();
 
 private:

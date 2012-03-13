@@ -20,7 +20,7 @@ public:
     {}
 
     void Add(boost::optional<SegmentDataWrapper> sdwIn,
-             const DataCoord& dataClickPoint)
+             const om::globalCoord& dataClickPoint)
     {
         if(!sdwIn){
             return;

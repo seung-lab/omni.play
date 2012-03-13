@@ -14,7 +14,7 @@ private:
     DATA *const rawData_;
 
 public:
-    ptrToChunkDataMemMapVol(OmMipVolume* vol, const OmChunkCoord& coord)
+    ptrToChunkDataMemMapVol(OmMipVolume* vol, const om::chunkCoord& coord)
         : rawData_(boost::get<DATA*>(vol->VolData()->getChunkPtrRaw(coord)))
     {}
 

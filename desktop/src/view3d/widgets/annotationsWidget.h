@@ -8,7 +8,7 @@
 struct annotation
 {
     QString text;
-    DataCoord point;
+    om::globalCoord point;
     OmColor color;
 };
 

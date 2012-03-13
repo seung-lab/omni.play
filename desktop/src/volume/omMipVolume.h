@@ -7,7 +7,6 @@
  */
 
 #include "common/omCommon.h"
-#include "chunks/omChunkCoord.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolCoordsMipped.hpp"
@@ -20,7 +19,7 @@ class OmVolumeData;
 
 namespace YAML { template <class T> class mipVolume; }
 
-namespace om { namespace rebuilder { class segmentation; } }
+namespace om{ namespace rebuilder { class segmentation; } }
 
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
                            MIPVOL_BUILT,
@@ -42,11 +41,11 @@ public:
         return MIPVOL_BUILT == mBuildState;
     }
 
-    om::shared_ptr<std::deque<OmChunkCoord> > GetMipChunkCoords() const;
-    om::shared_ptr<std::deque<OmChunkCoord> > GetMipChunkCoords(const int mipLevel) const;
+    om::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords() const;
+    om::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords(const int mipLevel) const;
 
     //mip data accessors
-    bool ContainsVoxel(const DataCoord &vox);
+    bool ContainsVoxel(const om::globalCoord &vox);
 
     OmVolDataType getVolDataType(){
         return mVolDataType;
@@ -70,13 +69,18 @@ public:
     }
 
 protected:
-    OmMipVolCoords coords_;
+    //OmMipVolCoords coords_;
     OmVolDataType mVolDataType;
+
+    OmMipVolCoords coords_;
 
     int mBuildState;
     void SetBuildState(const MipVolumeBuildState s){
         mBuildState = s;
     }
+
+    void addChunkCoordsForLevel(const int mipLevel,
+                                std::deque<om::chunkCoord>* coords) const;
 
 private:
     template <class T> friend class OmVolumeBuilderBase;

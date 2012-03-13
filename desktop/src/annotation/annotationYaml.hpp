@@ -8,7 +8,8 @@ namespace YAML {
     
 void operator>> (const Node& node, om::annotation::data& data)
 {
-    node["coord"] >> data.coord;
+    //TODO: Update coordinate loading and saving
+    //node["coord"] >> data.coord;
     node["comment"] >> data.comment;
     if(data.comment == "~")
         data.comment = "";

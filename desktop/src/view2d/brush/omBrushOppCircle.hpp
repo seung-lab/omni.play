@@ -21,7 +21,7 @@ public:
     {}
 
     om::shared_ptr<om::pt3d_list_t>
-    GetPts(const DataCoord& xyzCoord)
+    GetPts(const om::globalCoord& xyzCoord)
     {
         om::shared_ptr<om::pt3d_list_t> ret =
             om::make_shared<om::pt3d_list_t>();

@@ -28,12 +28,12 @@ public:
     {
         printf("copying mesh data...\n");
 
-        om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             segmentation_->GetMipChunkCoords();
 
         FOR_EACH(iter, *coordsPtr)
         {
-            const OmChunkCoord& coord = *iter;
+            const om::chunkCoord& coord = *iter;
 
             if(!processChunk(coord)){
                 return;
@@ -48,7 +48,7 @@ public:
     }
 
 private:
-    bool processChunk(const OmChunkCoord& coord)
+    bool processChunk(const om::chunkCoord& coord)
     {
         const ChunkUniqueValues segIDs =
             segmentation_->ChunkUniqueValues()->Values(coord, 1);

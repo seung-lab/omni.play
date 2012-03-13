@@ -40,11 +40,11 @@ public:
         : OmEventListener(OmViewEvent::CLASS)
     {};
 
-    virtual void ViewBoxChangeEvent() = 0;
-    virtual void ViewCenterChangeEvent() = 0;
-    virtual void ViewPosChangeEvent() = 0;
-    virtual void ViewRedrawEvent() = 0;
-    virtual void ViewBlockingRedrawEvent() = 0;
-    virtual void AbsOffsetChangeEvent() = 0;
+    virtual void ViewBoxChangeEvent() {}
+    virtual void ViewCenterChangeEvent() {}
+    virtual void ViewPosChangeEvent() {}
+    virtual void ViewRedrawEvent() {}
+    virtual void ViewBlockingRedrawEvent() {}
+    virtual void AbsOffsetChangeEvent() {}
 };
 

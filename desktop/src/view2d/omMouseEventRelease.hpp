@@ -9,7 +9,7 @@ private:
     OmView2d *const v2d_;
     OmView2dState *const state_;
 
-    DataCoord dataClickPoint_;
+    om::globalCoord dataClickPoint_;
 
 public:
     OmMouseEventRelease(OmView2d* v2d, OmView2dState* state)
@@ -39,7 +39,8 @@ public:
 
 private:
     void setState(QMouseEvent* event){
-        dataClickPoint_ = state_->ComputeMouseClickPointDataCoord(event);
+        om::screenCoord clicked(Vector2i(event->x(), event->y()),state_);
+        dataClickPoint_ = clicked.toGlobalCoord();
     }
 };
 

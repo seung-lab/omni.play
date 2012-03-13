@@ -16,7 +16,7 @@ namespace annotation {
 
 struct data {
     OmID id;
-    DataCoord coord;
+    globalCoord coord;
     std::string comment;
     OmColor color;
     
@@ -35,7 +35,7 @@ public:
         : vol_(vol)
     {}
 
-    void Add(DataCoord coord, const std::string& comment, const OmColor& color)
+    void Add(globalCoord coord, const std::string& comment, const OmColor& color)
     {
         data& d = base_t::Add();
 

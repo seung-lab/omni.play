@@ -1,9 +1,9 @@
 #pragma once
 
+#include "common/omCommon.h"
 #include "chunks/omSegChunkDataInterface.hpp"
 #include "chunks/omSegChunkDataImpl.hpp"
 
-class OmChunkCoord;
 class OmSegChunk;
 class OmSegmentation;
 
@@ -13,7 +13,7 @@ namespace segchunk {
 class dataFactory {
 public:
     static dataInterface* Produce(OmSegmentation* vol, OmSegChunk* chunk,
-                                  const OmChunkCoord& coord)
+                                  const om::chunkCoord& coord)
     {
         switch(vol->getVolDataType().index()){
         case OmVolDataType::INT8:

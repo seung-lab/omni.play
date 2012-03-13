@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/omCommon.h"
 #include "common/omContainer.hpp"
 #include "src/chunks/omChunkItemContainerMatrix.hpp"
 #include "zi/omMutex.h"
@@ -54,7 +55,7 @@ public:
         setup();
     }
 
-    T* Get(const OmChunkCoord& coord)
+    T* Get(const om::chunkCoord& coord)
     {
         zi::guard g(lock_);
 

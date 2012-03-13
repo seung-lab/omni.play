@@ -8,10 +8,15 @@
 #include "tiles/cache/omTileCache.h"
 #include "utility/segmentationDataWrapper.hpp"
 #include "view2d/omView2dConverters.hpp"
-#include "view2d/omView2dVolLocation.hpp"
 #include "viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
+#include "events/details/omViewEvent.h"
 #include "volume/omMipVolume.h"
+#include "view2d/view2dCoords.hpp"
+
+#include "vmmlib/vmmlib.h"
+using namespace vmml;
 
 #include <QSize>
 #include <QMouseEvent>
@@ -25,7 +30,7 @@ class OmBrushSize;
  *
  */
 
-class OmView2dState{
+class OmView2dState {
 private:
     OmMipVolume* vol_;
     const ObjectType objType_;
@@ -35,23 +40,22 @@ private:
     const ViewType viewType_;
     const std::string name_;
     
-    Vector4i totalViewport_; //lower left x, lower left y, width, height
     bool scribbling_;
     Vector2i mousePoint_;
     bool isLevelLocked_;
     
-    boost::optional<Vector2f> mousePanStartingPt_;
+    boost::optional<om::screenCoord> mousePanStartingPt_;
     
     // (x,y) coordinates only (no depth); needed for Bresenham
-    DataCoord lastDataPoint_;
-    
-    om::shared_ptr<OmView2dVolLocation> location_;
+    om::globalCoord lastDataPoint_;
     
     OmBrushSize *const brushSize_;
     
     bool overrideToolModeForPan_;
     
     OmSegID segIDforPainting_;
+    
+    om::view2dCoords coords_;
     
 public:
     OmView2dState(OmMipVolume* vol,
@@ -68,147 +72,59 @@ public:
         , scribbling_(false)
         , mousePoint_(0,0)
         , isLevelLocked_(false)
-        , lastDataPoint_(0,0)
-        , location_(om::make_shared<OmView2dVolLocation>(vol, vgs, viewType))
+        , lastDataPoint_(0,0,0)
         , brushSize_(OmStateManager::BrushSize())
         , overrideToolModeForPan_(false)
         , segIDforPainting_(0)
+        , coords_(vgs, viewType)
     {
-        setTotalViewport(size);
+        coords_.setTotalViewport(size);
         zoomLevel_->Update(getMaxMipLevel());
+        
+        coords_.UpdateTransformationMatrices();
     }
-
-    // coord convertors
-
-private:
-    inline Vector2f screenToPanShift(const Vector2f screenshift) const
-    {
-        const Vector2f stretch= vol_->Coords().GetStretchValues(viewType_);
-        const float zoomScale = getZoomScale();
-
-        return Vector2f(screenshift.x/zoomScale/stretch.x,
-                        screenshift.y/zoomScale/stretch.y);
+    
+    inline om::view2dCoords& Coords() {
+        return coords_;
     }
-
-public:
-    inline DataCoord ScreenToDataCoord(const ScreenCoord& screenc) const
-    {
-        const Vector2f panDistance = ComputePanDistance();
-        const float factor = om::math::pow2int(getMipLevel());
-
-        const Vector2f unscaleNorm =
-            (screenToPanShift(screenc) - panDistance) * factor;
-
-        const Vector3f dataScale = vol_->Coords().GetDataDimensions();
-
-        const NormCoord normc = scaleViewType(unscaleNorm, dataScale);
-        Vector3i result = vol_->Coords().NormToDataCoord(normc);
-
-        const int depth = location_->DataDepth();
-
-        setViewTypeDepth(result, depth);
-
-//         std::cout << "ScreenToDataCoord: screenc: " << screenc
-//                   << "\n\tpanDistance: " << panDistance
-//                   << "\n\t factor: " << factor
-//                   << "\n\t screenToPanShift(screenc): " << screenToPanShift(screenc)
-//                   << "\n\t unscaleNorm: " << unscaleNorm
-//                   << "\n\t dataScale: " << dataScale
-//                   << "\n\t normc: " << normc
-//                   << "\n\t result: " << result
-//                   << "\n\t depth: " << depth
-//                   << "\n";
-
-        return result;
+    
+    inline const om::view2dCoords& Coords() const {
+        return coords_;
     }
-
-    inline ScreenCoord DataToScreenCoord(const DataCoord& inc) const
-    {
-        const NormCoord normCoord = vol_->Coords().DataToNormCoord(inc);
-        const Vector3f scale = vol_->Coords().GetDataDimensions();
-        const Vector3f datac = normCoord * scale;
-
-        const Vector2f panDistance = ComputePanDistance();
-        const Vector2f stretch = vol_->Coords().GetStretchValues(viewType_);
-        const float factor = om::math::pow2int(getMipLevel());
-        const float zoomScale = getZoomScale();
-
-        switch(viewType_){
-        case XY_VIEW:
-            return ScreenCoord((int)((float)(datac.x/factor+panDistance.x)*zoomScale*stretch.x),
-                               (int)((float)(datac.y/factor+panDistance.y)*zoomScale*stretch.y));
-        case XZ_VIEW:
-            return ScreenCoord((int)((float)(datac.x/factor+panDistance.x)*zoomScale*stretch.x),
-                               (int)((float)(datac.z/factor+panDistance.y)*zoomScale*stretch.y));
-        case ZY_VIEW:
-            return ScreenCoord((int)((float)(datac.z/factor+panDistance.x)*zoomScale*stretch.x),
-                               (int)((float)(datac.y/factor+panDistance.y)*zoomScale*stretch.y));
-        };
-
-        throw OmArgException("invalid viewType");
-    }
-
+    
     void Shift(const om::Direction dir)
     {
-        Vector3f curLocation = location_->DataLocation();
         const float numberOfSlicestoAdvance = 2 * om::math::pow2int(getMipLevel());
-        OmView2dConverters::ShiftPanDirection(curLocation, numberOfSlicestoAdvance, dir, viewType_);
-        location_->SetDataLocation(curLocation);
+        om::globalCoord loc = Location();
+        OmView2dConverters::ShiftPanDirection(loc, numberOfSlicestoAdvance, dir, viewType_);
+        setLocation(loc);
         OmEvents::Redraw2d();
+        coords_.UpdateTransformationMatrices();
     }
 
     inline Vector2f ComputePanDistance() const
     {
-        const Vector2f stretch = vol_->Coords().GetStretchValues(viewType_);
-        const float factor = om::math::pow2int(getMipLevel());
-
-        const Vector3f curLocation = location_->DataLocation();
-
-        const float zoomScale = getZoomScale();
-        const float panx = (totalViewport_.width/2.0) / (zoomScale * stretch.x);
-        const float pany = (totalViewport_.height/2.0) / (zoomScale * stretch.y);
-
-        Vector2f oldPts = OmView2dConverters::Get2PtsInPlane(curLocation, viewType_);
-        oldPts /= factor;
-
-        const Vector2f ret = Vector2f(panx, pany) - oldPts;
-        // std::cout << "pan: " << ret << "\n";
-        // std::cout << "stretch: " << stretch << "\n";
-        return ret;
+        Vector3f pan = coords_.GlobalToScreenMat().getTranslation();
+        return OmView2dConverters::Get2PtsInPlane(pan, viewType_);
     }
-
+    
     inline void SetViewSliceOnPan()
     {
-        const Vector2f translateVector = ComputePanDistance();
-
-        const float pl = om::math::pow2int(getMipLevel());
-        const float zoomFactor = getZoomScale();
-
-        const DataCoord minDCoord(totalViewport_.lowerLeftX - translateVector.x * pl,
-                                  totalViewport_.lowerLeftY - translateVector.y * pl,
-                                  0);
-
-        const DataCoord maxDCoord(totalViewport_.width / zoomFactor * pl - translateVector.x * pl,
-                                  totalViewport_.height / zoomFactor * pl - translateVector.y * pl,
-                                  0);
-
-        location_->SetDataMinAndMax(minDCoord, maxDCoord);
-
+        const Vector4i& viewport = coords_.getTotalViewport();
+        om::globalCoord min = om::screenCoord(0, 0, this).toGlobalCoord();
+        om::globalCoord max = om::screenCoord(viewport.width, 
+                                              viewport.height, 
+                                              this).toGlobalCoord();
+                                              
+        vgs_->View2dState()->SetViewSliceMax(viewType_, get2ptsInPlane(max));
+        vgs_->View2dState()->SetViewSliceMin(viewType_, get2ptsInPlane(min));
+        
         OmEvents::Redraw3d();
     }
 
     inline void ChangeViewCenter()
     {
-        const Vector3f depth = location_->ScaledLocation();
-
-        const ScreenCoord crossCoord = DataToScreenCoord(depth);
-
-        const ScreenCoord centerCoord(totalViewport_.width/2,
-                                      totalViewport_.height/2);
-
-        const Vector2f currentPan = ComputePanDistance();
-        const Vector2f newPan =  currentPan + screenToPanShift(centerCoord - crossCoord);
-
+        coords_.UpdateTransformationMatrices();
         SetViewSliceOnPan();
     }
 
@@ -228,13 +144,16 @@ public:
 
     void ResetWindowState()
     {
-        static const NormCoord midPoint(0.5, 0.5, 0.5);
-        const DataCoord depth = vol_->Coords().NormToDataCoord(midPoint);
-
-        location_->SetDataLocation(depth);
+        static const om::normCoord midPoint(0.5, 0.5, 0.5, vol_);
+        
+        std::cout << vol_->Coords().GetDataDimensions() << std::endl;
+        
+        setLocation(midPoint.toGlobalCoord());
 
         zoomLevel_->Reset(getMaxMipLevel());
 
+        coords_.UpdateTransformationMatrices();
+        
         OmTileCache::ClearAll();
         OmEvents::Redraw2d();
     }
@@ -242,41 +161,35 @@ public:
     inline void MoveUpStackCloserToViewer()
     {
         const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel());
-        const int depth = location_->DataDepth();
-        location_->SetDataDepth(depth + numberOfSlicestoAdvance);
+        const int depth = Depth();
+        vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth + numberOfSlicestoAdvance);
+        
+        coords_.UpdateTransformationMatrices();
     }
 
     inline void MoveDownStackFartherFromViewer()
     {
         const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel());
-        const int depth = location_->DataDepth();
-        location_->SetDataDepth(depth - numberOfSlicestoAdvance);
+        const int depth = Depth();
+        vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth - numberOfSlicestoAdvance);
+        
+        coords_.UpdateTransformationMatrices();
     }
 
     // mouse movement
-    inline void DoMousePan(const Vector2i& cursorLocation)
+    inline void DoMousePan(const om::screenCoord& cursorLocation)
     {
         if(!mousePanStartingPt_){
             return;
         }
-	const DataCoord difference = ScreenToDataCoord(*mousePanStartingPt_) - ScreenToDataCoord(cursorLocation);
+        const om::globalCoord difference = mousePanStartingPt_->toGlobalCoord() - cursorLocation.toGlobalCoord();
 
-        const DataCoord oldLocation = location_->DataLocation();
-        const DataCoord newLocation = oldLocation + difference;
-
-        location_->SetDataLocation(newLocation);
+        setLocation(Location() + difference);
 
         OmEvents::ViewCenterChanged();
 
-//         std::cout << "cursorLocation: " << cursorLocation
-//                   << "\n\t mousePanStartingPt_: " << *mousePanStartingPt_
-//                   << "\n\t difference: " << difference
-//                   << "\n\t oldLocation: " << oldLocation
-//                   << "\n\t newLocation: " << newLocation
-//                   << "\n";
-
-        if(oldLocation != newLocation){
-            mousePanStartingPt_ = cursorLocation;
+        if(difference != Vector3f::ZERO){
+            mousePanStartingPt_.reset(cursorLocation);
         }
     }
 
@@ -288,17 +201,6 @@ public:
     // viewtype
     inline ViewType getViewType() const {
         return viewType_;
-    }
-
-    // viewport
-    inline const Vector4i& getTotalViewport() const {
-        return totalViewport_;
-    }
-    void setTotalViewport(const QSize& size){
-        totalViewport_ = Vector4i(0, 0, size.width(), size.height());
-    }
-    void setTotalViewport(const int width, const int height){
-        totalViewport_ = Vector4i(0, 0, width, height);
     }
 
     // volume
@@ -344,14 +246,27 @@ public:
                                           const T& z) const {
         return OmView2dConverters::MakeViewTypeVector3(x,y,z,viewType_);
     }
+    
+    template <typename T>
+    inline Vector2<T> get2ptsInPlane(const Vector3<T>& vec) {
+        return OmView2dConverters::Get2PtsInPlane<T>(vec, viewType_);
+    }
 
     template <typename T>
     inline T getViewTypeDepth(const Vector3<T>& vec) const {
         return OmView2dConverters::GetViewTypeDepth(vec, viewType_);
     }
 
+    inline float getViewTypeDepth(const om::globalCoord& vec) const {
+        return OmView2dConverters::GetViewTypeDepth(vec, viewType_);
+    }
+
     template <typename T>
     inline void setViewTypeDepth(Vector3<T>& vec, const T& val) const {
+        OmView2dConverters::SetViewTypeDepth(vec, val, viewType_);
+    }
+    
+    inline void setViewTypeDepth(om::globalCoord& vec, const float val) const {
         OmView2dConverters::SetViewTypeDepth(vec, val, viewType_);
     }
 
@@ -367,18 +282,6 @@ public:
                                     const Vector3<T>& scale) const
     {
         return OmView2dConverters::ScaleViewType(vec, scale, viewType_);
-    }
-
-    // for tile coord creation
-    DataCoord computeTileDataCoord(const DataCoord& dataCoord) const
-    {
-        const DataBbox box = vol_->Coords().DataToDataBBox(dataCoord, 0);
-        const int depth = getViewTypeDepth(dataCoord);
-
-        Vector3i bcoord = box.getMin();
-        setViewTypeDepth(bcoord, depth);
-
-        return bcoord;
     }
 
     // brush size
@@ -405,20 +308,15 @@ public:
         isLevelLocked_ = !isLevelLocked_;
     }
 
-    void SetMousePanStartingPt(const Vector2f& vec){
+    void SetMousePanStartingPt(const om::screenCoord& vec){
         mousePanStartingPt_ = vec;
     }
 
-    // mouse click coord
-    inline DataCoord ComputeMouseClickPointDataCoord(QMouseEvent* event) const {
-        return ScreenToDataCoord(Vector2f(event->x(), event->y()));
-    }
-
     // last data point--coupled w/ click point?
-    inline const DataCoord& GetLastDataPoint() const {
+    inline const om::globalCoord& GetLastDataPoint() const {
         return lastDataPoint_;
     }
-    void SetLastDataPoint(const DataCoord& coord){
+    void SetLastDataPoint(const om::globalCoord& coord){
         lastDataPoint_ = coord;
     }
 
@@ -427,12 +325,10 @@ public:
         return objType_;
     }
 
-    // TODO: get from viewgroup state (purcaro)
     inline OmID GetSegmentationID() const {
         return vgs_->Segmentation().GetID();
     }
 
-    // TODO: get from viewgroup state (purcaro)
     inline SegmentationDataWrapper GetSDW() const {
         return vgs_->Segmentation();
     }
@@ -441,8 +337,18 @@ public:
         return zoomLevel_;
     }
 
-    inline OmView2dVolLocation* Location(){
-        return location_.get();
+    inline om::globalCoord Location(){
+        return vgs_->View2dState()->GetScaledSliceDepth();
+    }
+    
+    inline void setLocation(om::globalCoord loc) 
+    {
+        vgs_->View2dState()->SetScaledSliceDepth(loc);
+        coords_.UpdateTransformationMatrices();
+    }
+    
+    inline float Depth() {
+        return vgs_->View2dState()->GetScaledSliceDepth(viewType_);
     }
 
     inline bool OverrideToolModeForPan(){

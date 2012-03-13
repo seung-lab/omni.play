@@ -64,14 +64,14 @@ private:
         const uint32_t numChunks = vol.Coords().ComputeTotalNumChunks();
         uint32_t counter = 0;
 
-        for(int level = 0; level <= vol.Coords().GetRootMipLevel(); ++level) {
-
+        for(int level = 0; level <= vol.Coords().GetRootMipLevel(); ++level) 
+        {
             if(!OmHdf5ChunkUtils::VolumeExistsInHDF5(&vol, level)){
                 printf("no HDF5 volume data found for mip %d\n", level);
                 continue;
             }
 
-            om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+            om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
                 vol.GetMipChunkCoords(level);
 
             FOR_EACH(iter, *coordsPtr)
@@ -86,7 +86,7 @@ private:
     }
 
     template <typename T>
-    void copyChunk(T& vol, const OmChunkCoord& coord)
+    void copyChunk(T& vol, const om::chunkCoord& coord)
     {
         OmChunk* chunk = vol.GetChunk(coord);
 

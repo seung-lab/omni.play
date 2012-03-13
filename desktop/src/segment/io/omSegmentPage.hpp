@@ -80,7 +80,7 @@ public:
             objectPool_[i].segments_ = segments_;
             objectPool_[i].data_ = &segmentsData_[i];
             objectPool_[i].listType_ = &listTypePage_[i];
-            objectPool_[i].data_->bounds = DataBbox();
+            objectPool_[i].data_->bounds = om::dataBbox(segmentation_, 0);
         }
     }
 

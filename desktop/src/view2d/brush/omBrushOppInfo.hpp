@@ -8,18 +8,13 @@
 
 class OmBrushOppInfoFactory {
 private:
-    static int getDepth(const DataCoord& coord, const ViewType viewType){
-        return OmView2dConverters::GetViewTypeDepth(coord, viewType);
+    static int getDepth(const om::dataCoord& coord, const ViewType viewType){
+        return OmView2dConverters::GetViewTypeDepth(coord.toChunkVec(), viewType);
     }
 
 public:
-    /**
-     *
-     * DataCoord is just used to determine slice depth
-     *
-     **/
     static om::shared_ptr<OmBrushOppInfo>
-    MakeOppInfo(OmView2dState* state, const DataCoord& coord,
+    MakeOppInfo(OmView2dState* state, const om::globalCoord& coord,
                 const om::AddOrSubtract addOrSubract)
     {
         SegmentationDataWrapper sdw(state->GetSegmentationID());
@@ -27,19 +22,16 @@ public:
 
         const ViewType viewType = state->getViewType();
         const int brushSize = state->getBrushSize()->Diameter();
-        const int depth = getDepth(coord, viewType);
+        const int depth = getDepth(coord.toDataCoord(segmentation, 0), viewType);
 
         const std::vector<om::point2di>& ptsInCircle =
             state->getBrushSize()->GetPtsInCircle();
-
-        const int chunkDim = segmentation->Coords().GetChunkDimension();
 
         return om::make_shared<OmBrushOppInfo>(segmentation,
                                                viewType,
                                                brushSize,
                                                depth,
                                                ptsInCircle,
-                                               chunkDim,
                                                addOrSubract);
     }
 };

@@ -18,30 +18,18 @@ private:
     OmMipVolume *const vol_;
     const ViewType viewType_;
     OmViewGroupState *const vgs_;
-    const float tileLength_;
-    const float zoomFactor_;
-    const float mipLevel_;
-    const Vector2f stretch_;
-    const Vector4i totalViewport_; //lower left x, lower left y, width, height
-    const Vector2f translateVector_;
+
+    int mipLevel_;
+    OmTileCoordsAndLocationsPtr tileCoordsAndLocations_;
 
     int dataDepth_;
     uint64_t freshness_;
 
-    int xMipChunk_;
-    int yMipChunk_;
-
-    OmTileCoordsAndLocationsPtr tileCoordsAndLocations_;
-
     void doComputeCoordsAndLocations(const int depthOffset);
-    void setDepths();
-    DataCoord toDataCoord(const int);
-    GLfloatBox computeVertices(const float, const float);
-    void computeTile(const float x, const float y, const int);
-    void makeTileCoordFromFilter(OmFilter2d* filter, const DataCoord & dataCoord,
-                                 const float x, const float y);
-    OmTileCoord makeTileCoord(const DataCoord& coord, OmMipVolume * vol,
-                              int freshness);
+    GLfloatBox computeVertices(const om::chunkCoord& coord, const OmMipVolume* vol);
+    void computeTile(const om::chunkCoord&, const int);
+    void makeTileCoordFromFilter(OmFilter2d*, const om::chunkCoord &, const int);
+    OmTileCoord makeTileCoord(const om::chunkCoord&, const int, OmMipVolume*, int);
 
     friend std::ostream& operator<<(std::ostream &out, const OmOnScreenTileCoords& c);
 };

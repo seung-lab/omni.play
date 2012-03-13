@@ -26,7 +26,7 @@ private:
 private Q_SLOTS:
     void apply()
     {
-        const Vector3f dims(absOffsetX_->text().toInt(),
+        const Vector3i dims(absOffsetX_->text().toInt(),
                             absOffsetY_->text().toInt(),
                             absOffsetZ_->text().toInt());
 

@@ -3,13 +3,11 @@
 
 QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c)
 {
-    out << c.normToDataMat_;
-    out << c.normToDataInvMat_;
-    out << c.dataExtent_;
-    out << c.dataResolution_;
+    //out << c.normToDataMat_;
+    //out << c.normToDataInvMat_;
+    out << c.dataDimensions_;
+    //out << c.dataResolution_;
     out << c.chunkDim_;
-    out << c.unitString_;
-    out << c.dataStretchValues_;
 
     out << c.mMipLeafDim;
     out << c.mMipRootLevel;
@@ -19,13 +17,18 @@ QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c)
 
 QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c)
 {
-    in >> c.normToDataMat_;
-    in >> c.normToDataInvMat_;
-    in >> c.dataExtent_;
-    in >> c.dataResolution_;
+    Matrix4f dummyMat;
+    in >> dummyMat; // normToDataMat_
+    in >> dummyMat; // normToDataInvMat_
+    Vector3i dims;
+    in >> dims;
+    c.SetDataDimensions(dims);
+    Vector3i resolution;
+    in >> resolution;
+    c.SetResolution(resolution);
     in >> c.chunkDim_;
-    in >> c.unitString_;
-    in >> c.dataStretchValues_;
+    QString dummy;
+    in >> dummy; //c.dataStretchValues_
 
     in >> c.mMipLeafDim;
     in >> c.mMipRootLevel;

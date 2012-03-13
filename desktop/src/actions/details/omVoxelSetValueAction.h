@@ -11,11 +11,11 @@ public:
     {}
 
     OmVoxelSetValueAction(const OmID segmentationId,
-                          const DataCoord& rVoxel,
+                          const om::globalCoord& rVoxel,
                           const OmSegID value);
 
     OmVoxelSetValueAction(const OmID segmentationId,
-                          const std::set<DataCoord>&rVoxels,
+                          const std::set<om::globalCoord>&rVoxels,
                           const OmSegID value);
 
 private:

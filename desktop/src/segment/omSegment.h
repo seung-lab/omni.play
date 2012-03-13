@@ -106,19 +106,15 @@ public:
         threshold_ = thres;
     }
 
-    inline const DataBbox BoundingBox() const
-    {
-        zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
-        return data_->bounds;
-    }
+    const om::dataBbox BoundingBox() const;
 
     inline void ClearBoundingBox()
     {
         zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
-        data_->bounds = DataBbox();
+        data_->bounds.set(Vector3i::ZERO, Vector3i::ZERO);
     }
 
-    inline void AddToBoundingBox(const DataBbox& box)
+    inline void AddToBoundingBox(const om::dataBbox& box)
     {
         zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
         data_->bounds.merge(box);

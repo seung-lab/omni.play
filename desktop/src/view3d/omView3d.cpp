@@ -300,7 +300,7 @@ void OmView3d::View3dRecenter()
     {
         mCamera.SetDistance(*distance);
 
-        const DataCoord coord = vgs_->View2dState()->GetScaledSliceDepth();
+        const om::globalCoord coord = vgs_->View2dState()->GetScaledSliceDepth();
         mCamera.SetFocus(coord);
     }
 
@@ -495,10 +495,11 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
     //draw focus axis
     mCamera.DrawFocusAxis();
 
+    const OmSegmentation * seg = vgs_->Segmentation().GetSegmentationPtr();
     //setup culler to current projection-modelview matrix
     OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
-                          mCamera.GetPosition(),
-                          mCamera.GetFocus());
+                          om::normCoord(mCamera.GetPosition(), seg),
+                          om::normCoord(mCamera.GetFocus(), seg));
 
     meshesFound_ = false;
 
@@ -518,8 +519,8 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
         }
 
         om::shared_ptr<OmVolumeCuller> newCuller =
-            culler.GetTransformedCuller(vol->Coords().GetNormToDataMatrix(),
-                                        vol->Coords().GetNormToDataInvMatrix());
+            culler.GetTransformedCuller(vol->Coords().NormToGlobalMat(),
+                                        vol->Coords().GlobalToNormMat());
 
         OmMeshDrawer* meshDrawer = vol->MeshDrawer();
 

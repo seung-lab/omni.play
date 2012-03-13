@@ -10,7 +10,7 @@ std::string OmExtractMesh::WriteOutMesh(const OmID segmentationID, const OmSegID
         return "invalid segmentation";
     }
 
-    const OmChunkCoord coord(mipLevel, x, y, z);
+    const om::chunkCoord coord(mipLevel, x, y, z);
     OmSegmentation& vol = sdw.GetSegmentation();
 
     if(!vol.Coords().ContainsMipChunkCoord(coord)){

@@ -124,12 +124,23 @@ private:
         return false;
     }
 
-    int runTests()
+    bool runTests()
     {
-        Tests().Run();
-        return 0;
-    }
+        QCoreApplication* app = new QCoreApplication(argc_, argv_);
+        
+        registerTypes();
+        
+//         OmThreadPool pool;
+//         pool.start(1);
+//         pool.push_back(zi::run_fn(zi::bind(&Omni::RunAppThread, this)));
 
+        Tests t;
+        
+        QMetaObject::invokeMethod(&t, "RunTests", Qt::QueuedConnection);
+        
+        return app->exec();
+    }
+    
     void registerTypes()
     {
         qRegisterMetaType<om::tool::mode>("om::tool::mode");

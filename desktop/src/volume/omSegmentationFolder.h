@@ -1,8 +1,8 @@
 #pragma once
 
-class OmChunkCoord;
 class OmSegmentation;
 
+#include "common/omCommon.h"
 #include <QString>
 
 namespace om {
@@ -24,10 +24,10 @@ public:
     QString RelativeVolPath();
 
     QString GetMeshChunkFolderPath(const double threshold,
-                                   const OmChunkCoord& coord);
+                                   const om::chunkCoord& coord);
 
     QString MakeMeshChunkFolderPath(const double threshold,
-                                    const OmChunkCoord& coord);
+                                    const om::chunkCoord& coord);
     QString GetMeshFolderPath();
     QString MakeMeshFolderPath();
     QString GetMeshThresholdFolderPath(const double threshold);
@@ -35,8 +35,8 @@ public:
     QString MeshMetadataFileOld();
     QString MeshMetadataFilePerThreshold(const double threshold);
     QString GetChunksFolder();
-    QString GetChunkFolderPath(const OmChunkCoord& coord);
-    QString MakeChunkFolderPath(const OmChunkCoord& coord);
+    QString GetChunkFolderPath(const om::chunkCoord& coord);
+    QString MakeChunkFolderPath(const om::chunkCoord& coord);
 
     QString AnnotationFile();
     QString LongRangeConnectionFile();
@@ -44,5 +44,5 @@ public:
     void MakeUserSegmentsFolder();
 };
 
-} // namespace volume
+} // namespace segmentation
 } // namespace om

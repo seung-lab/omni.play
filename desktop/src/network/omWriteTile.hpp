@@ -29,14 +29,14 @@ public:
         , sdw_(1)
     {}
 
-    std::string MakeTileFileChannel(const DataCoord& dataCoord)
+    std::string MakeTileFileChannel(const om::globalCoord& coord)
     {
         const OmUUID uuid;
 
         {
             OmTimer timer;
 
-            makeImgFile(dataCoord, uuid, cdw_);
+            makeImgFile(coord, uuid, cdw_);
 
             timer.Print("\tdone making channel tile");
         }
@@ -44,14 +44,14 @@ public:
         return uuid.Str();
     }
 
-    std::string MakeTileFileSegmentation(const DataCoord& dataCoord)
+    std::string MakeTileFileSegmentation(const om::globalCoord& coord)
     {
         const OmUUID uuid;
 
         {
             OmTimer timer;
 
-            makeImgFile(dataCoord, uuid, sdw_);
+            makeImgFile(coord, uuid, sdw_);
 
             timer.Print("\tdone making segmentation tile");
         }
@@ -80,22 +80,22 @@ private:
         return OmCacheManager::GetFreshness();
     }
 
-    void makeImgFile(const DataCoord& dataCoord, const OmUUID& uuid,
+    void makeImgFile(const om::globalCoord& coord, const OmUUID& uuid,
                      const ChannelDataWrapper& wrapper)
     {
         if(wrapper.IsValidWrapper()){
-            makeImgFileValid<OmChannel, uint8_t>(dataCoord, uuid,
+            makeImgFileValid<OmChannel, uint8_t>(coord, uuid,
                                                  wrapper.GetChannelPtr());
         } else {
             makeBlankImage("channel-1", uuid);
         }
     }
 
-    void makeImgFile(const DataCoord& dataCoord, const OmUUID& uuid,
+    void makeImgFile(const om::globalCoord& coord, const OmUUID& uuid,
                      const SegmentationDataWrapper& wrapper)
     {
         if(wrapper.IsValidWrapper()){
-            makeImgFileValid<OmSegmentation, OmColorARGB>(dataCoord, uuid,
+            makeImgFileValid<OmSegmentation, OmColorARGB>(coord, uuid,
                                                           wrapper.GetSegmentationPtr());
         } else {
             makeBlankImage("segmentation-1", uuid);
@@ -115,9 +115,9 @@ private:
     }
 
     template <typename T, typename U>
-    void makeImgFileValid(const DataCoord& dataCoord, const OmUUID& uuid, T* vol)
+    void makeImgFileValid(const om::globalCoord& coord, const OmUUID& uuid, T* vol)
     {
-        OmTilePtr tilePtr = getTile(vol, dataCoord);
+        OmTilePtr tilePtr = getTile(vol, coord);
         const OmTextureID& texture = tilePtr->GetTexture();
         U const*const tileData = reinterpret_cast<U const*const>(texture.GetTileData());
 
@@ -136,10 +136,10 @@ private:
     }
 
     template <typename T>
-    OmTilePtr getTile(T* vol, const DataCoord& dataCoord)
+    OmTilePtr getTile(T* vol, const om::globalCoord& coord)
     {
         const OmTileCoord tileCoord(0,
-                                    dataCoord,
+                                    coord,
                                     vol,
                                     freshness(vol),
                                     &vgs_,

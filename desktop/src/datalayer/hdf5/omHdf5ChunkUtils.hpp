@@ -1,7 +1,6 @@
 #pragma once
 
 #include "chunks/omChunk.h"
-#include "chunks/omChunkCoord.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"

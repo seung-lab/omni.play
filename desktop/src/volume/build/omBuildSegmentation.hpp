@@ -9,6 +9,7 @@
 #include "threads/omTaskManager.hpp"
 #include "utility/dataWrappers.h"
 #include "volume/build/omBuildVolumes.hpp"
+#include "volume/build/omSegmentationRebuilder.hpp"
 #include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
@@ -50,6 +51,10 @@ public:
 
     void BuildImage(){
         do_build_seg_image();
+    }
+
+    void ReBuildImage(){
+        do_rebuild_seg_image();
     }
 
     void BuildMesh(){
@@ -109,6 +114,22 @@ private:
         stopTimingAndSave(type, build_timer);
 
         printf("Segmentation image COMPLETELY done\n");
+        printf("************************\n");
+    }
+
+    void do_rebuild_seg_image()
+    {
+        const QString type = "rebuild segmentation data";
+
+        OmTimer build_timer;
+        startTiming(type, build_timer);
+
+        om::rebuilder::segmentation rebuilder(&seg_);
+        rebuilder.Rebuild();
+
+        stopTimingAndSave(type, build_timer);
+
+        printf("Segmentation rebuild COMPLETELY done\n");
         printf("************************\n");
     }
 

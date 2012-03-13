@@ -5,7 +5,6 @@
 #include "utility/omStringHelpers.h"
 #include "datalayer/omDataWrapper.h"
 #include "chunks/omChunk.h"
-#include "chunks/omChunkCoord.h"
 #include "volume/omMipVolume.h"
 #include "utility/omTimer.hpp"
 #include "threads/omTaskManager.hpp"
@@ -38,7 +37,7 @@ private:
     const uint32_t numTilesToWrite_;
     zi::semaphore limit_;
 
-    std::map<OmChunkCoord, uint64_t> chunkOffsets_;
+    std::map<om::chunkCoord, uint64_t> chunkOffsets_;
 
     bool shouldPreallocate_;
 
@@ -122,7 +121,7 @@ private:
         doProcessSlice(img, sliceNum);
     }
 
-    uint64_t getChunkOffset(const OmChunkCoord& coord)
+    uint64_t getChunkOffset(const om::chunkCoord& coord)
     {
         if(chunkOffsets_.count(coord)){
             return chunkOffsets_[coord];
@@ -161,8 +160,8 @@ private:
         {
             for(int x = 0; x < mip0dims_.x; ++x)
             {
-                const OmChunkCoord coord = OmChunkCoord(0, x, y, z);
-                const DataBbox chunk_bbox = vol_->Coords().MipCoordToDataBbox(coord, 0);
+                const om::chunkCoord coord = om::chunkCoord(0, x, y, z);
+                const om::dataBbox chunk_bbox = coord.chunkBoundingBox(vol_);
 
                 const int startX = chunk_bbox.getMin().x;
                 const int startY = chunk_bbox.getMin().y;
@@ -185,7 +184,7 @@ private:
         }
     }
 
-    void tileWriterTask(om::shared_ptr<T> tile, const OmChunkCoord coord, const int sliceNum)
+    void tileWriterTask(om::shared_ptr<T> tile, const om::chunkCoord coord, const int sliceNum)
     {
         const uint64_t chunkOffset = getChunkOffset(coord);
 

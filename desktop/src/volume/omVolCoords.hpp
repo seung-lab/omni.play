@@ -9,80 +9,42 @@
 
 #include "common/omCommon.h"
 #include "events/omEvents.h"
+#include "zi/concurrency.hpp"
 
 class OmVolCoords {
-protected:
-    //transforms from normailzed unit cube external spatial coverage
-    Matrix4f spaceToUserMat_;
-    Matrix4f spaceToUserInvMat_;
-
-    Matrix4f normToDataMat_;
-    Matrix4f normToDataInvMat_;
+protected:    
+    Matrix4f dataToGlobal_;
+    Matrix4f globalToData_;
+    Matrix4f normToGlobal_;
+    Matrix4f globalToNorm_;
+    
+    //data properties
+    Vector3i dataDimensions_;
+    
+    int chunkDim_;
+    
+public:
 
     //data properties
-    DataBbox dataExtent_;
-    Vector3f dataResolution_;  //units per voxel
-    Vector3f dataStretchValues_;
-
-    int chunkDim_;
-    QString unitString_;
-
-    Vector3i absOffset_;
-
-public:
-//transform methods
-    inline Vector3f GetScale() const
+    inline om::globalBbox GetDataExtent() const 
     {
-        return Vector3f(normToDataMat_.m00,
-                        normToDataMat_.m11,
-                        normToDataMat_.m22);
-    }
-
-    inline Vector3f GetUserScale() const
-    {
-        return Vector3f(spaceToUserMat_.m00,
-                        spaceToUserMat_.m11,
-                        spaceToUserMat_.m22);
-    }
-
-//data properties
-    inline const DataBbox& GetDataExtent() const {
-        return dataExtent_;
+        Vector3f abs = GetAbsOffset();
+        return om::globalBbox(abs, abs - Vector3f::ONE + dataDimensions_);
     }
 
     inline Vector3i GetDataDimensions() const {
-        return dataExtent_.getUnitDimensions();
+        return dataDimensions_;
     }
 
-    void SetDataDimensions(const Vector3i& dim)
+    void SetDataDimensions(const Vector3f& dim)
     {
-        dataExtent_ = DataBbox(Vector3i::ZERO,
-                               dim - Vector3i::ONE);
-        update();
-    }
-
-    inline const Vector3f& GetDataResolution() const {
-        return dataResolution_;
-    }
-
-    void SetDataResolution(const Vector3f& res)
-    {
-        dataResolution_ = res;
-        update();
-    }
-
-    inline Vector2f GetStretchValues(const ViewType plane) const
-    {
-        switch(plane){
-        case XY_VIEW:
-            return Vector2f(dataStretchValues_.x, dataStretchValues_.y);
-        case ZY_VIEW:
-            return Vector2f(dataStretchValues_.z, dataStretchValues_.y);
-        case XZ_VIEW:
-            return Vector2f(dataStretchValues_.x, dataStretchValues_.z);
-        }
-
-        throw OmArgException("invalid type");
+        dataDimensions_ = dim;
+                               
+        Vector3i dims = GetDataDimensions();
+        normToGlobal_.m00 = dims.x;
+        normToGlobal_.m11 = dims.y;
+        normToGlobal_.m22 = dims.z;
+        normToGlobal_.getInverse(globalToNorm_);
     }
 
 // chunk dims
@@ -94,159 +56,63 @@ public:
         chunkDim_ = dim;
     }
 
-// units
-    const QString& GetUnit() const {
-        return unitString_;
-    }
-
-    void SetUnit(const QString& unit) {
-        unitString_ = unit;
-    }
-
 // coordinate frame methods
 
-    /**
-     * Converts DataCoord to NormCoord based on source extent of data volume.
-     *  NormCoords are used for relative location information and not absolute data access.
-     *  centered : causes normalized coordinates to represent center of rectangular pixel.
-     */
-    inline NormCoord DataToNormCoord(const DataCoord& data,
-                                     const bool centered = true) const
-    {
-        const Vector3f scale = dataExtent_.getUnitDimensions();
-        const Vector3f offset = centered ?
-            Vector3f(0.5f, 0.5f, 0.5f) :
-            Vector3f::ZERO;
-        return NormCoord((offset + data) / scale);
+    inline Matrix4f DataToGlobalMat() const {
+        return dataToGlobal_;
     }
-
-    /**
-     * Returns rectangular pixel that contains given normalized coordinate.
-     */
-    inline DataCoord NormToDataCoord(const NormCoord& norm) const
-    {
-        const Vector3f scale = dataExtent_.getUnitDimensions();
-        return DataCoord(om::math::symmetricalRound(norm.x * scale.x),
-                         om::math::symmetricalRound(norm.y * scale.y),
-                         om::math::symmetricalRound(norm.z * scale.z));
+    
+    inline Matrix4f GlobalToDataMat() const {
+        return globalToData_;
     }
-
-    /**
-     * Returns normalized bbox that encloses rectangular pixels in given data bbox.
-     */
-    inline NormBbox DataToNormBbox(const DataBbox& dataBbox) const
-    {
-        return NormBbox(DataToNormCoord(dataBbox.getMin(), false),
-                        DataToNormCoord(dataBbox.getMax() + Vector3i::ONE, false));
+    
+    inline const Matrix4f& NormToGlobalMat() const {
+        return normToGlobal_;
     }
-
-    /**
-     * Returns data bbox contained by given normalized bounding box.
-     */
-    inline DataBbox NormToDataBbox(const NormBbox& normBbox) const
-    {
-        const Vector3f normalized_pixel_dim =
-            Vector3f::ONE / dataExtent_.getUnitDimensions();
-
-        const NormCoord extent_min = normBbox.getMin() + normalized_pixel_dim * 0.5f;
-        const NormCoord extent_max = normBbox.getMax() - normalized_pixel_dim * 0.5f;
-
-        return DataBbox(NormToDataCoord(extent_min),
-                        NormToDataCoord(extent_max));
+    
+    inline const Matrix4f& GlobalToNormMat() const {
+        return globalToNorm_;
     }
-
-    inline const Matrix4f & GetNormToDataMatrix() const {
-        return normToDataMat_;
-    }
-
-    inline const Matrix4f & GetNormToDataInvMatrix() const {
-        return normToDataInvMat_;
-    }
-
-// absolute offset
+    
     inline Vector3i GetAbsOffset() const {
-        return absOffset_;
+        return dataToGlobal_.getTranslation();
     }
-
-    void SetAbsOffset(const Vector3i& absOffset){
-        absOffset_ = absOffset;
-        OmEvents::AbsOffsetChanged();
+    
+    inline void SetAbsOffset(Vector3i absOffset) {
+        dataToGlobal_.setTranslation(absOffset);
+        dataToGlobal_.getInverse(globalToData_);
+        normToGlobal_.setTranslation(absOffset);
+        normToGlobal_.getInverse(globalToNorm_);
+    }
+    
+    inline Vector3i GetResolution() const {
+        return Vector3i(dataToGlobal_.m00, dataToGlobal_.m11, dataToGlobal_.m22);
+    }
+    
+    inline void SetResolution(Vector3i resolution) {
+        dataToGlobal_.m00 = resolution.x;
+        dataToGlobal_.m11 = resolution.y;
+        dataToGlobal_.m22 = resolution.z;
+        
+        dataToGlobal_.getInverse(globalToData_);
     }
 
 protected:
     static const int DefaultChunkDim = 128;
 
     OmVolCoords()
-        : spaceToUserMat_(Matrix4f::IDENTITY)
-        , spaceToUserInvMat_(Matrix4f::IDENTITY)
-        , normToDataMat_(Matrix4f::IDENTITY)
-        , normToDataInvMat_(Matrix4f::IDENTITY)
-        , dataResolution_(Vector3f::ONE)
+        : dataToGlobal_(Matrix4f::IDENTITY)
+        , globalToData_(Matrix4f::IDENTITY)
+        , normToGlobal_(Matrix4f::IDENTITY)
+        , globalToNorm_(Matrix4f::IDENTITY)
         , chunkDim_(DefaultChunkDim)
-        , unitString_("")
-        , absOffset_(0,0,0)
     {
         SetDataDimensions(Vector3i(DefaultChunkDim,
                                    DefaultChunkDim,
                                    DefaultChunkDim));
-        setUserScale(Vector3i(1, 1, 1));
     }
 
     virtual ~OmVolCoords()
     {}
-
-private:
-    bool update()
-    {
-        //update scale
-        const Vector3i data_dims = dataExtent_.getUnitDimensions();
-        setStretchValues();
-        return setScale(dataResolution_ * data_dims);
-    }
-
-    bool setUserScale(const Vector3f& scale)
-    {
-        //set scale
-        spaceToUserMat_.m[0][0] = scale.x;
-        spaceToUserMat_.m[1][1] = scale.y;
-        spaceToUserMat_.m[2][2] = scale.z;
-
-        update();
-
-        //set inverse and return if invertable
-        return spaceToUserMat_.getInverse(spaceToUserInvMat_);
-    }
-
-    void setStretchValues()
-    {
-        const Vector3f res = dataResolution_;
-
-        if( (res.x<=res.y) && (res.x<=res.z)){
-            dataStretchValues_.x = 1.0;
-            dataStretchValues_.y = res.y/res.x;
-            dataStretchValues_.z = res.z/res.x;
-        } else {
-            if (res.y<=res.z){
-                dataStretchValues_.x = res.x/res.y;
-                dataStretchValues_.y = 1.0;
-                dataStretchValues_.z = res.z/res.y;
-            } else {
-                dataStretchValues_.x = res.x/res.z;
-                dataStretchValues_.y = res.y/res.z;
-                dataStretchValues_.z = 1.0;
-            }
-        }
-    }
-
-    bool setScale(const Vector3f& scale)
-    {
-        //set scale
-        normToDataMat_.m[0][0] = scale.x;
-        normToDataMat_.m[1][1] = scale.y;
-        normToDataMat_.m[2][2] = scale.z;
-
-        //set inverse and return if invertable
-        return normToDataMat_.getInverse(normToDataInvMat_);
-    }
 };
 

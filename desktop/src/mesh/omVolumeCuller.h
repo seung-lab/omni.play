@@ -14,11 +14,11 @@
 class OmVolumeCuller {
 public:
     OmVolumeCuller(const Matrix4f& projmodelview,
-                   const NormCoord& pos,
-                   const NormCoord& focus);
+                   const om::normCoord& pos,
+                   const om::normCoord& focus);
 
-    Visibility TestChunk(const NormBbox&);
-    const NormCoord& GetPosition() const;
+    Visibility TestChunk(const om::normBbox&);
+    const om::normCoord& GetPosition() const;
 
     om::shared_ptr<OmVolumeCuller>
     GetTransformedCuller(const Matrix4f&, const Matrix4f&);
@@ -31,8 +31,8 @@ public:
 
 private:
     const Matrix4f mProjModelView;
-    const NormCoord mPosition;
-    const NormCoord mFocus;
+    const om::normCoord mPosition;
+    const om::normCoord mFocus;
 
     FrustumCullerf mFrustumCuller;
 };

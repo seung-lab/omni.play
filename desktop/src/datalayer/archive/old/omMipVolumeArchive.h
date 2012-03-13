@@ -83,7 +83,9 @@ private:
 
         assert(1 == version);
 
-        in >> vol_.Coords().absOffset_;
+        Vector3i offset;
+        in >> offset;
+        vol_.Coords().SetAbsOffset(offset);
 
         if(!in.atEnd()){
             throw OmIoException("corrupt file?", filePath);
@@ -105,7 +107,7 @@ private:
         const int version = 1;
         out << version;
 
-        out << vol_.Coords().absOffset_;
+        out << vol_.Coords().GetAbsOffset();
     }
 };
 

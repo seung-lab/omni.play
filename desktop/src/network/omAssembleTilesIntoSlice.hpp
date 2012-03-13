@@ -111,7 +111,7 @@ private:
         int x;
         int y;
         int sliceNum;
-        DataCoord dataCoord;
+        om::globalCoord coord;
         U* data;
         int width;
         zi::semaphore* semaphore;
@@ -120,7 +120,7 @@ private:
     template <typename T, typename U>
     void getAndCopyTile(om::shared_ptr<CopyTileTask<T,U> > params)
     {
-        OmTilePtr tile = getTile(params->vol, params->dataCoord);
+        OmTilePtr tile = getTile(params->vol, params->coord);
         const OmTextureID& texture = tile->GetTexture();
         U* tileData = reinterpret_cast<U*>(texture.GetTileData());
 
@@ -193,7 +193,7 @@ private:
             {
                 ++tileCounter;
 
-                const DataCoord dataCoord(x, y, sliceNum);
+                const om::globalCoord coord(x, y, sliceNum);
 
                 om::shared_ptr<CopyTileTask<T,U> > task =
                     om::make_shared<CopyTileTask<T,U> >();
@@ -202,7 +202,7 @@ private:
                 task->x = x;
                 task->y = y;
                 task->sliceNum = sliceNum;
-                task->dataCoord = dataCoord;
+                task->coord = coord;
                 task->data = data;
                 task->width = width;
                 task->semaphore = &semaphore;
@@ -220,7 +220,7 @@ private:
 
         processImage(vol, slice);
 
-        const Vector3i actualDataSize = vol->Coords().GetDataExtent().getMax();
+        const om::globalCoord actualDataSize = vol->Coords().GetDataExtent().getMax();
         const QImage cropped = slice.copy(0, 0, actualDataSize.x, actualDataSize.y);
 
         const QImage scaled = cropped.scaled(512, 512, Qt::KeepAspectRatio);
@@ -240,10 +240,10 @@ private:
     }
 
     template <typename T>
-    OmTilePtr getTile(T* vol, const DataCoord& dataCoord)
+    OmTilePtr getTile(T* vol, const om::globalCoord& coord)
     {
         const OmTileCoord tileCoord(0,
-                                    dataCoord,
+                                    coord,
                                     vol,
                                     freshness(vol),
                                     &vgs_,

@@ -15,6 +15,7 @@
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
+#include "view2d/omView2dState.hpp"
 
 OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     : OmManageableObject()
@@ -98,10 +99,9 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
         }
 
         return SCC_SEGMENTATION;
-
-    default:
-        throw OmArgException("unknown objType");
     }
+
+    throw OmArgException("unknown objType");
 }
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm)

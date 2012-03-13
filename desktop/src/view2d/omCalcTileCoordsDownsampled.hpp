@@ -56,12 +56,12 @@ public:
                  const OmTileCoordAndVertices& tcv, std::deque<OmTileAndVertices>& tilesToDraw)
     {
         const int initialMipLevel = tcv.tileCoord.getLevel();
-        const DataCoord& initialDataCoord = tcv.tileCoord.getDataCoord();
+        const om::globalCoord& initialCoord = tcv.tileCoord.getCoord();
         const GLfloatBox& vertices = tcv.vertices;
 
         OmTileAndVertices tv = {downsampledTile,
                                 vertices,
-                                getTextureVertices(initialDataCoord, initialMipLevel,
+                                getTextureVertices(initialCoord, initialMipLevel,
                                                    mipLevel)
         };
 
@@ -71,7 +71,7 @@ public:
     OmTileCoord makeNewTileCoord(const OmTileCoord& initialTileCoord, const int mipLevel)
     {
         return OmTileCoord(mipLevel,
-                           makeNewDataCoord(initialTileCoord.getDataCoord(), mipLevel),
+                           makeNewCoord(initialTileCoord.getCoord(), mipLevel),
                            initialTileCoord.getVolume(),
                            initialTileCoord.getFreshness(),
                            initialTileCoord.getViewGroupState(),
@@ -79,21 +79,21 @@ public:
                            initialTileCoord.getSegmentColorCacheType());
     }
 
-    DataCoord makeNewDataCoord(const DataCoord& oldDataCoord, const int mipLevel)
+    om::globalCoord makeNewCoord(const om::globalCoord& oldCoord, const int mipLevel)
     {
-        const int newTileSize = 128 * om::math::pow2int(mipLevel);
+        const int newTileSize = 128 * om::math::pow2int(mipLevel); // TODO: Don't hardcode 128
 
-        const Vector2i ptsInPlane = OmView2dConverters::Get2PtsInPlane(oldDataCoord, viewType_);
+        const Vector2i ptsInPlane = OmView2dConverters::Get2PtsInPlane(oldCoord, viewType_);
 
-        const int depth = OmView2dConverters::GetViewTypeDepth(oldDataCoord, viewType_);
+        const float depth = OmView2dConverters::GetViewTypeDepth(oldCoord, viewType_);
 
-        return OmView2dConverters::MakeViewTypeVector3(om::math::roundDown(ptsInPlane.x, newTileSize),
-                                                       om::math::roundDown(ptsInPlane.y, newTileSize),
+        return OmView2dConverters::MakeViewTypeVector3((float)om::math::roundDown(ptsInPlane.x, newTileSize),
+                                                       (float)om::math::roundDown(ptsInPlane.y, newTileSize),
                                                        depth,
                                                        viewType_);
     }
 
-    TextureVectices getTextureVertices(const DataCoord& oldDC, const int initialMipLevel,
+    TextureVectices getTextureVertices(const om::globalCoord& oldDC, const int initialMipLevel,
                                        const int curMipLevel)
     {
         const Vector2i initialPtsInPlane = OmView2dConverters::Get2PtsInPlane(oldDC, viewType_);

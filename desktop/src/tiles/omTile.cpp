@@ -66,15 +66,15 @@ void OmTile::load32bitSegmentationTile()
     texture_.reset(new OmTextureID(tileLength_, colorMappedData));
 }
 
-OmChunkCoord OmTile::tileToMipCoord(){
-    return getVol()->Coords().DataToMipCoord(key_.getDataCoord(), key_.getLevel());
+om::chunkCoord OmTile::tileToMipCoord(){
+    return key_.getCoord().toDataCoord(key_.getVolume(), key_.getLevel()).toChunkCoord();
 }
 
 int OmTile::getDepth()
 {
     const uint32_t factor = om::math::pow2int(key_.getLevel());
 
-    return OmView2dConverters::GetViewTypeDepth(key_.getDataCoord(),
+    return OmView2dConverters::GetViewTypeDepth(key_.getCoord(),
                                                 key_.getViewType()) / factor;
 }
 

@@ -42,7 +42,7 @@ int OmMemMappedVolume::GetBytesPerVoxel() const {
 
 class GetChunkPtrVisitor : public boost::static_visitor<OmRawDataPtrs>{
 public:
-    GetChunkPtrVisitor(const OmChunkCoord& coord)
+    GetChunkPtrVisitor(const om::chunkCoord& coord)
         : coord(coord) {}
 
     template <typename T>
@@ -50,9 +50,9 @@ public:
         return d.GetChunkPtr(coord);
     }
 private:
-    const OmChunkCoord coord;
+    const om::chunkCoord coord;
 };
-OmRawDataPtrs OmMemMappedVolume::getChunkPtrRaw(const OmChunkCoord& coord){
+OmRawDataPtrs OmMemMappedVolume::getChunkPtrRaw(const om::chunkCoord& coord){
     return boost::apply_visitor(GetChunkPtrVisitor(coord), volData_);
 }
 

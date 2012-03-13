@@ -6,7 +6,6 @@
 class OmAffinityChannel;
 class OmChannelImpl;
 class OmDataPath;
-class OmChunkCoord;
 class OmMeshCoord;
 class OmMeshManager;
 class OmSegmentation;

@@ -9,7 +9,6 @@
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
 #include "volume/omChannelImpl.h"
-#include "chunks/omChunkCoord.h"
 #include "volume/omSegmentation.h"
 
 OmDataPath OmDataPaths::getDefaultDatasetName(){

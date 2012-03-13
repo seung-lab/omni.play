@@ -12,20 +12,6 @@
 #include "utility/omSharedPtr.hpp"
 #include <zi/for_each.hpp>
 
-/**
- * vmml-related
- */
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
-
-//coordinate frames
-typedef vmml::Vector3<int> DataCoord;
-typedef vmml::Vector3<float> NormCoord;
-typedef vmml::Vector2<int> ScreenCoord;
-
-typedef vmml::AxisAlignedBoundingBox<int> DataBbox;
-typedef vmml::AxisAlignedBoundingBox<float> NormBbox;
-typedef vmml::AxisAlignedBoundingBox<float> SpaceBbox;
 
 
 /**
@@ -43,8 +29,10 @@ enum ViewType { XY_VIEW, XZ_VIEW, ZY_VIEW };
 std::ostream& operator<<(std::ostream &out, const ViewType& vt);
 
 //objects
-enum ObjectType { CHANNEL, SEGMENTATION, AFFINITY };
+enum ObjectType { CHANNEL, SEGMENTATION };
 
+// Must be here so that ViewType is already defined.
+#include "coordinates/coordinates.h"
 
 /**
  * "segment" types

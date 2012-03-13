@@ -1,6 +1,5 @@
 #pragma once
 
-#include "chunks/omChunkCoord.h"
 #include "common/omDebug.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/fs/omMemMappedFileQT.hpp"
@@ -86,7 +85,7 @@ public:
         return maps_[level]->GetPtr();
     }
 
-    T* GetChunkPtr(const OmChunkCoord& coord) const
+    T* GetChunkPtr(const om::chunkCoord& coord) const
     {
         const int level = coord.Level;
         const uint64_t offset =

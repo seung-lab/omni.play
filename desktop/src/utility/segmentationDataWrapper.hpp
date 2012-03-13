@@ -160,8 +160,8 @@ public:
         return GetSegmentation().ValidGroupNum();
     }
 
-    inline const Vector3f& GetDataResolution() const {
-        return GetSegmentation().Coords().GetDataResolution();
+    inline const Vector3f GetDataResolution() const {
+        return GetSegmentation().Coords().GetResolution();
     }
 
     inline const OmSegIDsSet GetSelectedSegmentIDs() const {

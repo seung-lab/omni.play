@@ -29,11 +29,11 @@ std::string OmServiceObjects::SelectSegment(const OmID segmentationID, const int
     SegmentationDataWrapper sdw(segmentationID);
     OmSegmentation& vol = sdw.GetSegmentation();
 
-    const AxisAlignedBoundingBox<int> volExtent = vol.Coords().GetDataExtent();
+    const om::globalBbox volExtent = vol.Coords().GetDataExtent();
 
-    const DataCoord coord(x * volExtent.getMax().x / w,
-                          y * volExtent.getMax().y / h,
-                          sliceNum);
+    const om::globalCoord coord(x * volExtent.getMax().x / w,
+                                y * volExtent.getMax().y / h,
+                                sliceNum);
 
     std::cout << "coord: " << coord << "\n";
 
@@ -117,14 +117,14 @@ std::string OmServiceObjects::GetSegmentationDim()
 std::string OmServiceObjects::MakeTileFileChannel(const int sliceNum,
                                                   const int tileX, const int tileY)
 {
-    const DataCoord dataCoord(tileX * 128, tileY * 128, sliceNum);
-    return tileWriter_->MakeTileFileChannel(dataCoord);
+    const om::globalCoord coord(tileX * 128, tileY * 128, sliceNum);
+    return tileWriter_->MakeTileFileChannel(coord);
 }
 
 std::string OmServiceObjects::MakeTileFileSegmentation(const int sliceNum,
                                                        const int tileX, const int tileY)
 {
-    const DataCoord dataCoord(tileX * 128, tileY * 128, sliceNum);
-    return tileWriter_->MakeTileFileSegmentation(dataCoord);
+    const om::globalCoord coord(tileX * 128, tileY * 128, sliceNum);
+    return tileWriter_->MakeTileFileSegmentation(coord);
 }
 

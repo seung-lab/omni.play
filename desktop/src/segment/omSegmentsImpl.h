@@ -3,7 +3,6 @@
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
 #include "datalayer/archive/segmentation.h"
 
-class OmChunkCoord;
 class OmSegmentEdge;
 class OmUserEdges;
 class OmSegmentChildren;

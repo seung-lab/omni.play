@@ -8,7 +8,6 @@
  *  Michael Purcaro - purcaro@gmail.com - 1/29/11
  */
 
-#include "chunks/omChunkCoord.h"
 #include "chunks/omChunkMipping.hpp"
 #include "volume/omVolumeTypes.hpp"
 
@@ -19,24 +18,26 @@ namespace om { namespace chunk { class dataInterface; } }
 
 class OmChunk {
 public:
-    OmChunk(OmChannel* vol, const OmChunkCoord& coord);
-    OmChunk(OmChannelImpl* vol, const OmChunkCoord& coord);
-    OmChunk(OmSegmentation* vol, const OmChunkCoord& coord);
+    OmChunk(OmChannel* vol, const om::chunkCoord& coord);
+    OmChunk(OmChannelImpl* vol, const om::chunkCoord& coord);
+    OmChunk(OmSegmentation* vol, const om::chunkCoord& coord);
 
     virtual ~OmChunk();
 
-    bool ContainsVoxel(const DataCoord& vox) const {
-        return mipping_.GetExtent().contains(vox);
+    bool ContainsVoxel(const om::dataCoord& vox) const {
+        return vox.volume() == vol_ &&  
+               vox.level() == GetLevel() &&
+               mipping_.GetExtent().contains(vox);
     }
 
 public:
-    const OmChunkCoord& GetCoordinate() const {
+    const om::chunkCoord& GetCoordinate() const {
         return coord_;
     }
     int GetLevel() const {
         return coord_.Level;
     }
-    const Vector3i GetDimensions() const {
+    const om::dataCoord GetDimensions() const {
         return mipping_.GetExtent().getUnitDimensions();
     }
 
@@ -49,8 +50,9 @@ public:
     }
 
 protected:
-    const OmChunkCoord coord_;
+    const om::chunkCoord coord_;
     const boost::scoped_ptr<om::chunk::dataInterface> chunkData_;
+    const OmMipVolume * const vol_;
 
     OmChunkMipping mipping_;
 };

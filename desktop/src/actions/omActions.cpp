@@ -49,7 +49,7 @@ void OmActions::ChangeSizethreshold(const SegmentationDataWrapper sdw,
 
 //painting-related
 void OmActions::SetVoxel(const OmID segmentationID,
-                         const DataCoord& voxel,
+                         const om::globalCoord& voxel,
                          const OmSegID segmentID)
 {
     pool().push_back(
@@ -59,7 +59,7 @@ void OmActions::SetVoxel(const OmID segmentationID,
 }
 
 void OmActions::SetVoxels(const OmID segmentationID,
-                          const std::set<DataCoord>& voxels,
+                          const std::set<om::globalCoord>& voxels,
                           const OmSegID segmentID)
 {
     pool().push_back(

@@ -6,7 +6,6 @@
 
 #include <zi/mutex.hpp>
 
-class OmChunkCoord;
 class OmSegment;
 class OmSegmentChildren;
 class OmSegmentation;
@@ -85,6 +84,10 @@ public:
 
     uint64_t MSTfreshness() const;
 
+    inline const OmSegmentation * getSegmentation() const {
+        return segmentation_;
+    }
+    
 private:
     zi::mutex mutex_;
 

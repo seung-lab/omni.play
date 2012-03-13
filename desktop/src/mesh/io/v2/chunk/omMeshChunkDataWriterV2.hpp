@@ -5,7 +5,6 @@
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterTaskV2.hpp"
 #include "utility/omLockedPODs.hpp"
 #include "chunks/omChunk.h"
-#include "chunks/omChunkCoord.h"
 #include "zi/omMutex.h"
 
 class OmMeshChunkDataWriterV2{
@@ -15,7 +14,7 @@ private:
 
 private:
     OmSegmentation *const vol_;
-    const OmChunkCoord& coord_;
+    const om::chunkCoord& coord_;
     const double threshold_;
     const QString fnp_;
 
@@ -24,7 +23,7 @@ private:
     zi::rwmutex lock_;
 
 public:
-    OmMeshChunkDataWriterV2(OmSegmentation* seg, const OmChunkCoord& coord,
+    OmMeshChunkDataWriterV2(OmSegmentation* seg, const om::chunkCoord& coord,
                             const double threshold)
         : vol_(seg)
         , coord_(coord)

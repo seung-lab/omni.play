@@ -65,7 +65,7 @@ public:
 
         //transform to normal frame
         glPushMatrix();
-        glMultMatrixf(segmentation_->Coords().GetNormToDataMatrix().ml);
+        glMultMatrixf(segmentation_->Coords().NormToGlobalMat().ml);
 
         //draw volume axis
         if(checkDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
@@ -135,7 +135,7 @@ private:
         }
     }
 
-    void drawSegment(OmSegment* seg, const OmChunkCoord& coord)
+    void drawSegment(OmSegment* seg, const om::chunkCoord& coord)
     {
         OmMeshPtr mesh;
         segmentation_->MeshManagers()->GetMesh(mesh, coord, seg->value(), 1);
@@ -176,7 +176,7 @@ private:
         //disable lighting for lines
         glDisable(GL_LIGHTING);
 
-        const NormBbox& clippedNormExtent = chunk->Mipping().GetClippedNormExtent();
+        const om::normBbox& clippedNormExtent = chunk->Mipping().GetClippedNormExtent();
 
         //translate and scale to chunk norm extent
         const Vector3f translate = clippedNormExtent.getMin();

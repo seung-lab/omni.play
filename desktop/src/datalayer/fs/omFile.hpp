@@ -80,7 +80,7 @@ template <typename T>
 T* mapFile(QFile* file)
 {
     uchar* map = file->map(0, file->size());
-
+    
     if(!map){
         throw OmIoException("could not map file", file->fileName());
     }

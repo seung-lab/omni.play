@@ -4,18 +4,17 @@
 #include "common/omCommon.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "chunks/omChunk.h"
-#include "chunks/omChunkCoord.h"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
 
 class OmMeshChunkDataReaderV2{
 private:
     OmSegmentation *const vol_;
-    const OmChunkCoord& coord_;
+    const om::chunkCoord& coord_;
     const double threshold_;
     const QString fnp_;
 
 public:
-    OmMeshChunkDataReaderV2(OmSegmentation* seg, const OmChunkCoord& coord,
+    OmMeshChunkDataReaderV2(OmSegmentation* seg, const om::chunkCoord& coord,
                             const double threshold)
         : vol_(seg)
         , coord_(coord)

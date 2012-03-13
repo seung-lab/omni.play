@@ -7,7 +7,6 @@ std::ostream& operator<<(std::ostream &out, const OmBrushOppInfo& i)
         << "brushDia: " << i.brushDia << ", "
         << "depth: " << i.depth << ", "
         << "ptsInCircle: " << i.ptsInCircle.size() << ", "
-        << "chunkDim: " << i.chunkDim << ", "
         << "AddOrSubtract: " << i.addOrSubract;
 
     return out;

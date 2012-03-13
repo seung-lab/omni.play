@@ -17,8 +17,6 @@
 #include <sstream>
 
 
-Q_DECLARE_METATYPE(DataCoord);
-
 namespace om {
 namespace sidebars {
     

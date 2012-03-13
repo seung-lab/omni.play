@@ -27,7 +27,7 @@ private:
     bool rightMouseButton_;
     om::tool::mode tool_;
     QMouseEvent* event_;
-    DataCoord dataClickPoint_;
+    om::globalCoord dataClickPoint_;
 
     friend class OmMouseEventState;
 
@@ -41,7 +41,7 @@ public:
     {
         setState(event);
 
-        state_->SetMousePanStartingPt(Vector2f(event->x(), event->y()));
+        state_->SetMousePanStartingPt(om::screenCoord(event->x(), event->y(), state_));
 
         if(leftMouseButton_)
         {
@@ -84,7 +84,8 @@ private:
         rightMouseButton_ = event->buttons() & Qt::RightButton;
 
         tool_ = OmStateManager::GetToolMode();
-        dataClickPoint_ = state_->ComputeMouseClickPointDataCoord(event);
+        om::screenCoord clicked(event->x(), event->y(), state_);
+        dataClickPoint_ = clicked.toGlobalCoord();
     }
 
     void doFindAndSplitSegment()
@@ -120,9 +121,9 @@ private:
 
     void setDepth()
     {
-        const ScreenCoord screenc = ScreenCoord(event_->x(), event_->y());
-        const DataCoord newDepth = state_->ScreenToDataCoord(screenc);
-        state_->Location()->SetDataLocation(newDepth);
+        const om::screenCoord screenc = om::screenCoord(event_->x(), event_->y(), state_);
+        const om::globalCoord newloc = screenc.toGlobalCoord();
+        state_->setLocation(newloc);
 
         OmEvents::ViewCenterChanged();
     }

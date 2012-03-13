@@ -98,7 +98,7 @@ private:
 
     void drawBoundingBox(QPainter& painter)
     {
-        const Vector4i& vp = state_->getTotalViewport();
+        const Vector4i& vp = state_->Coords().getTotalViewport();
         painter.drawRect(vp.lowerLeftX,
                          vp.lowerLeftY,
                          vp.width - 1,
@@ -135,7 +135,7 @@ private:
         int yTop = 45;
 
         const int xoffset = 10;
-        const int yTopOfText = state_->getTotalViewport().height - yTop;
+        const int yTopOfText = state_->Coords().getTotalViewport().height - yTop;
 
         OmDisplayInfo di(painter, pen, yTopOfText, xoffset);
 
@@ -154,16 +154,15 @@ private:
 
     QString depthString()
     {
-        const int dataDepth = state_->Location()->DataDepth();
+        const int globalDepth = state_->Depth();
 
-        const int scaledDepth = state_->Location()->ScaledDepth();
-
-        // TODO: remove: hack for abs coords
-        const Vector3i absOffsetVec = state_->getVol()->Coords().GetAbsOffset();
-        const int absOffset = OmView2dConverters::GetViewTypeDepth(absOffsetVec, state_->getViewType());
-
-        QString depthStr = QString::number(scaledDepth + absOffset) + " Slice Depth";
-        if(scaledDepth != dataDepth){
+        const om::dataCoord data = state_->Location().
+            toDataCoord(state_->getVol(), state_->getMipLevel());
+            
+        const int dataDepth = state_->getViewTypeDepth(data);
+        
+        QString depthStr = QString::number(globalDepth) + " Slice Depth";
+        if(globalDepth != dataDepth){
             depthStr += " (" + QString::number(dataDepth) + " data)";
         }
 
@@ -187,7 +186,7 @@ private:
 
     void drawCursors(QPainter& painter)
     {
-        const Vector4i& vp = state_->getTotalViewport();
+        const Vector4i& vp = state_->Coords().getTotalViewport();
         const int fullHeight = vp.height;
         const int halfHeight = fullHeight/2;
         const int fullWidth = vp.width;
@@ -269,7 +268,7 @@ private:
                 if(!closeInDepth(a.coord))
                     continue;
                 
-                ScreenCoord loc = state_->DataToScreenCoord(a.coord);
+                om::screenCoord loc = a.coord.toScreenCoord(state_);
                 
                 QPen pen;
                 pen.setColor(QColor::fromRgb(a.color.red, a.color.green, a.color.blue));
@@ -283,10 +282,10 @@ private:
     
     static const int DEPTH_CUTOFF = 20;
     
-    bool closeInDepth(DataCoord point)
+    bool closeInDepth(om::globalCoord point)
     {
         int depth = state_->getViewTypeDepth(point);
-        int plane = state_->Location()->DataDepth();
+        int plane = state_->Depth();
         
         return abs(depth - plane) < DEPTH_CUTOFF;
     }
