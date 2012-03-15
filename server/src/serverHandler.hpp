@@ -3,8 +3,8 @@
 #include "handler/handler.h"
 #include "common/common.h"
 #include "volume/volume.h"
-#include "ServiceTracker.h"
-#include "FacebookBase.h"
+#include "utility/ServiceTracker.h"
+#include "utility/FacebookBase.h"
 
 using namespace facebook::fb303;
 
