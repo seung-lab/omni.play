@@ -52,8 +52,8 @@ LIBS = $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/Boost/lib/libboost_regex.a \
 	   $(EXTERNAL)/thrift/lib/libthrift.a \
 	   $(EXTERNAL)/thrift/lib/libthriftnb.a \
-	   $(EXTERNAL)/libjpeg/libturbojpeg.a \
-	   $(EXTERNAL)/libpng/libpng.a \
+	   $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
+	   $(EXTERNAL)/libpng/lib/libpng.a \
 	   -levent -lpthread -levent -lrt 
 
 CXX_INCLUDES	=	$(INCLUDES)
