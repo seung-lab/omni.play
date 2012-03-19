@@ -1,6 +1,7 @@
 # -*- Makefile -*-
 
 HERE    	=       .
+EXTERNAL	=	$(HERE)/external/libs
 BINDIR		=	./bin
 BUILDDIR	=	build
 
@@ -26,7 +27,7 @@ ARFLAGS =	rcs
 
 CC     =	$(AT)gcc
 CXX    =	$(AT)g++
-THRIFT = 	$(AT)thrift
+THRIFT = 	$(AT)$(EXTERNAL)/thrift/bin/thrift
 FPIC   =	-fPIC
 
 INCLUDES	=	-I$(HERE) \
@@ -38,19 +39,21 @@ INCLUDES	=	-I$(HERE) \
 				-I$(HERE)/filesystem/src \
 				-I$(HERE)/desktop/src \
 				-I$(HERE)/zi_lib \
-				-I/usr/include/thrift
+				-I$(EXTERNAL)/thrift/include/thrift \
+				-I$(EXTERNAL)/Boost/include \
+				-I$(EXTERNAL)/libjpeg/include \
+				-I$(EXTERNAL)/libpng/include \
 
 
-LIBS = -lboost_filesystem \
-	   -lboost_iostreams \
-	   -lboost_system \
-	   -lboost_thread \
-	   -lboost_regex \
-	   -lthrift \
-	   -lthriftnb \
-	   -lturbojpeg \
-	   -lpng \
-	   -lz \
+LIBS = $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
+	   $(EXTERNAL)/Boost/lib/libboost_iostreams.a \
+	   $(EXTERNAL)/Boost/lib/libboost_system.a \
+	   $(EXTERNAL)/Boost/lib/libboost_thread.a \
+	   $(EXTERNAL)/Boost/lib/libboost_regex.a \
+	   $(EXTERNAL)/thrift/lib/libthrift.a \
+	   $(EXTERNAL)/thrift/lib/libthriftnb.a \
+	   $(EXTERNAL)/libjpeg/libturbojpeg.a \
+	   $(EXTERNAL)/libpng/libpng.a \
 	   -levent -lpthread -levent -lrt 
 
 CXX_INCLUDES	=	$(INCLUDES)
@@ -64,7 +67,7 @@ COMMON_CFLAGS		=	-g -std=gnu99 -D_GNU_SOURCE=1 \
 				-D_REENTRANT $(CPP_INLINE_DEPFLAGS) \
 				$(INCLUDES) $(FPIC) $(CWARN)
 
-THRIFT_CXXFLAGS	   = 	-DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H
+THRIFT_CXXFLAGS	   = 	-DHAVE_CONFIG_H
 
 COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) $(CXX_INCLUDES) \
 						   $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS)
