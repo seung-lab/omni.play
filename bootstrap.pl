@@ -369,6 +369,8 @@ sub thrift
     $args .= " --with-boost=$libPath/Boost";
 
     prepareAndBuild( $THRIFT_VER, "thrift", $THRIFT_URI, $args);
+    chdir($basePath."/external");
+    print `patch -p0 < patches/thrift.patch`;
 }
 
 sub libjpeg
