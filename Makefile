@@ -176,7 +176,7 @@ SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
 $(BINDIR)/omni.server: common/src/thrift/server.thrift.mkcpp $(SERVER_DEPS)
 	$(ECHO) "[CXX] linking bin/omni.server"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -o $(BINDIR)/omni.server $(SERVER_DEPS) $(LIBS)
+	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o $(BINDIR)/omni.server $(SERVER_DEPS) $(LIBS)
 
 ALLDEPS = $(shell find build -iname "*.d")
 

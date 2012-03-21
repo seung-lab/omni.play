@@ -17,7 +17,6 @@ bool inAdjacentVolume(const coords::globalBbox& seg,
                       const coords::globalBbox& ovr,
                       const coords::globalBbox& adj)
 {
-    
     // If the segment is touching a boundary && that boundary is inside the adj Volume.
     // Need to adjust segment mins by 1 because segments don't go all the way to the
     // edges of the volume.
@@ -27,6 +26,14 @@ bool inAdjacentVolume(const coords::globalBbox& seg,
            (seg.getMax().x + 1 == ovr.getMax().x && ovr.getMax().x < adj.getMax().x) ||
            (seg.getMax().y + 1 == ovr.getMax().y && ovr.getMax().y < adj.getMax().y) ||
            (seg.getMax().z + 1 == ovr.getMax().z && ovr.getMax().z < adj.getMax().z);
+}
+
+bool exceedsOverlap(const coords::globalBbox& seg,
+                    const coords::globalBbox& ovr)
+{
+    
+    return seg.getMin().x < ovr.getMin().x || seg.getMin().y < ovr.getMin().y || seg.getMin().z < ovr.getMin().z ||
+           seg.getMax().x > ovr.getMax().x || seg.getMax().y > ovr.getMax().y || seg.getMax().z > ovr.getMax().z;
 }
 
 void conditionalJoin(zi::disjoint_sets<uint32_t>& sets, uint32_t id1, uint32_t id2)
@@ -128,7 +135,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
         // Does not overlap with boundary region
         if (!segOver.isEmpty()) {
             intersectingSegIds.insert(segId);
-            if(inAdjacentVolume(segOverlap.toGlobalBbox(), overlap, adjacentVolume.Bounds())) {
+            if(inAdjacentVolume(segOver, overlap, adjacentVolume.Bounds())) {
                 leavesVolume = true;
             }
         }
@@ -138,16 +145,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
         return;
     }
 
-    // std::cout << "Found " << intersectingSegIds.size()
-              // << " segments in the overlapping region." << std::endl;
-    FOR_EACH(it, intersectingSegIds) {
-        std::cout << *it << ", ";
-    }
-
-    std::cout << std::endl;
-
     boost::unordered_map<uint32_t, int> mappingCounts;
-
 
     // Find corresponding Segments in adjacent volume
     for(int x = overlap.getMin().x; x < overlap.getMax().x; x++)
@@ -181,25 +179,27 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     std::vector<std::set<int32_t> > adjacentSeeds;
 
     // group all the segments based on adjacency
-    connectedSets(overlap, adjacentVolume, correspondingIds, seeds);
+    connectedSets(overlap, adjacentVolume, correspondingIds, adjacentSeeds);
 
-    // FOR_EACH(seed, adjacentSeeds)
-    // {
-    //     FOR_EACH(seg, *seed)
-    //     {
-    //         const uint32_t& segId = *seg;
-    //         segment::data segData = adjacentVolume.GetSegmentData(segId);
+ 	// std::cout << "Ovr Bounds: " << overlap << std::endl;
+
+    FOR_EACH(seed, adjacentSeeds)
+    {
+        FOR_EACH(seg, *seed)
+        {
+            const uint32_t& segId = *seg;
+            segment::data segData = adjacentVolume.GetSegmentData(segId);
             
-    //         coords::dataBbox segOverlap(segData.bounds, &adjacentVolume.CoordSystem(), 0);
-    //         coords::globalBbox segOver = segOverlap.toGlobalBbox();
-    //         segOver.intersect(overlap);
-        
-    //         if(inAdjacentVolume(segOverlap.toGlobalBbox(), overlap, adjacentVolume.Bounds())) {
-    //             seeds.push_back(*seed);
-    //             continue;
-    //         }
-    //     }
-    // }
+            coords::dataBbox segBounds(segData.bounds, &adjacentVolume.CoordSystem(), 0);
+        	
+        	// std::cout << "            " << segBounds.toGlobalBbox() << std::endl;
+
+            if(exceedsOverlap(segBounds.toGlobalBbox(), overlap)) {
+                seeds.push_back(*seed);
+                break;
+            }
+        }
+    }
     
 }
 
