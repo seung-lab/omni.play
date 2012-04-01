@@ -1,22 +1,6 @@
 #!/usr/bin/python
 
-basePath = `pwd`
-chomp basePath
-buildPath   = basePath.'/external/builds'
-srcPath     = basePath.'/external/srcs'
-libPath     = basePath.'/external/libs'
-tarballPath = basePath.'/external/tarballs'
-scriptPath  = basePath.'/scripts'
-omniPath    = basePath
-omniExecPathMac  = basePath.'/bin/omni.server.app/Contents/MacOS/omni.server'
-
-omniScriptFile = scriptPath.'/buildomni.sh'
-omniScriptOptions = ""
-
-globalMakeOptions = ""
-
-hostname = `hostname`
-profileOn = ""
+import os
 
 NumCores
 
@@ -35,8 +19,11 @@ PNG_VER = "libpng-1.5.9"
 PNG_URI = "http://prdownloads.sourceforge.net/libpng/libpng-1.5.9.tar.gz?download"
 
 
+def makeBuilder():
+    cwd = os.getcwd()
+    b = builder(cwd
 
-def thrift:
+def thrift():
 #    prepareAndBuild( RE2C, "re2c")
 
     @argsList = qw( CXXFLAGS='-g -O2' CFLAGS='-g -O2'
@@ -53,20 +40,20 @@ def thrift:
     print `patch -p0 < patches/thrift.patch`
 
 
-def libjpeg:
+def libjpeg():
     prepareAndBuild( JPEG_VER, "libjpeg", JPEG_URI)
 
 
-def libpng:
+def libpng():
     prepareAndBuild( PNG_VER, "libpng", PNG_URI )
 
 
-def zlib:
+def zlib():
     prepare( ZLIB_VER, "zlib" )
     buildInSourceFolder( ZLIB_VER, "zlib", ZLIB_URI )
 
 
-def boost:
+def boost():
 #./bjam --show-libraries
     #The following libraries require building:
     #- date_time
@@ -112,7 +99,7 @@ def boost:
     print "done\n"
 
 
-def omniServer:
+def omniServer():
     printTitle("omni.server")
     genOmniScript(@_)
 
@@ -126,17 +113,17 @@ def omniServer:
     print "done\n"
 
 
-def printTitle:
+def printTitle():
     title = _[0]
     printLine()
     print title.":\n"
 
 
-def printLine:
+def printLine():
     print "\n**********************************************\n"
 
 
-def menu:
+def menu():
     print "bootstrap.pl menu:\n"
     print "0 -- exit\n"
     print "1 -- Build All\n"
@@ -159,14 +146,14 @@ def menu:
     
 
 
-def buildAll:
+def buildAll():
     boost()
     thrift()
     libjpeg()
     libpng()
 
 
-def runMenuEntry:
+def runMenuEntry():
     entry = _[0]
 
     if( 0 == entry ){
@@ -186,7 +173,7 @@ def runMenuEntry:
     
 
 
-def numberOfCores:
+def numberOfCores():
     NumCores = 2
     if (-e "/proc/cpuinfo"):
 	NumCores =`cat /proc/cpuinfo  | grep processor | wc -l`
@@ -206,7 +193,7 @@ def numberOfCores:
     return NumCores
 
 
-def setupParallelBuildOption:
+def setupParallelBuildOption():
     NumCores = numberOfCores()
     if( scalar(@_) > 0 ):
 	NumCores = _[0]
@@ -222,7 +209,7 @@ def setupParallelBuildOption:
     print "number of parallel builds (override with \"-j n\" switch to bootstrap.pl): NumCores\n"
 
 
-def checkCmdLineArgs:
+def checkCmdLineArgs():
     if ( 1 == @ARGV ):
 	setupParallelBuildOption()
 	runMenuEntry( ARGV[0] )
@@ -235,7 +222,7 @@ def checkCmdLineArgs:
     
 
 
-def doUbuntuAptGets:
+def doUbuntuAptGets():
     @packages = qw( libxrender-dev libxext-dev freeglut3-dev g++
 	libfreetype6-dev libxml2 libxml2-dev mesa-common-dev
 	libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
@@ -247,7 +234,7 @@ def doUbuntuAptGets:
     print "Done with the Ubuntu apt-gets! \n\n"
 
 
-def concatStrList:
+def concatStrList():
     (@array) = @_
     args = ""
     foreach (@array){
@@ -256,7 +243,7 @@ def concatStrList:
     return args
 
 
-def omniClean:
+def omniClean():
     `(cd omniPath make clean)`
     omniServer()
 

@@ -3,14 +3,10 @@ import os
 import shutil
 import urllib
 
-# http://stackoverflow.com/questions/273192/python-best-way-to-create-directory-if-it-doesnt-exist-for-file-write
 def ensure_dir(f):
-    d = os.path.dirname(f)
-    if not f.endswith("/"):
-        d = os.path.dirname(f+"/")
-    if not os.path.exists(d):
+    if not dir_exists(f):
         try:
-            os.makedirs(d)
+            os.makedirs(f)
         except:
             print "could not make folder " + f
             raise
