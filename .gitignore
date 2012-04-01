@@ -3,5 +3,5 @@ bin/*
 *.d
 *.T
 *.o
-
+*~
 external
