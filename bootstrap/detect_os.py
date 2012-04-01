@@ -27,16 +27,16 @@ def getMacOSXversionNum():
     output = proc.communicate()[0]
     match = re.search(r".*System Version: Mac OS X 10\.(\d)\..*", output)
     if match:
-        return match.group(1)
+        return int( match.group(1) )
     else:
         print "could not find version number"
         sys.exit()
 
 def isMacLeopard():
-    return isMac() and ('5' == getMacOSXversionNum())
+    return isMac() and 5 == getMacOSXversionNum()
 
 def isMacSnowLeopard():
-    return isMac() and ('6' == getMacOSXversionNum())
+    return isMac() and 6 == getMacOSXversionNum()
 
 def checkForMac():
     if isMac():

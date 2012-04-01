@@ -1,12 +1,14 @@
 import fileutils
+from string import Template
 
 class Builder:
 
-    def __init__(cwd, baseFileName, libFolderName, uri):
+    def __init__(cwd, baseFileName, libFolderName, uri, buildOptions = ""):
         self.basePath    = cwd
         self.baseFileName = baseFileName
         self.libFolderName = libFolderName
         self.uri = uri
+        self.buildOptions = buildOptions
 
         self.buildPath   = self.basePath + '/external/builds'
         self.srcPath     = self.basePath + '/external/srcs'
@@ -15,9 +17,15 @@ class Builder:
         self.scriptPath  = self.basePath + '/scripts'
         self.omniPath    = self.basePath
 
-        self.buildOptions = ""
-
         self.globalMakeOptions = ""
+
+        makeDirPaths()
+
+    def globalMakeOptions(opts):
+        self.globalMakeOptions = opts
+
+    def numCores(num):
+        self.numCores = num
 
     def src_fp():
         self.srcPath + "/" + self.baseFileName
@@ -32,17 +40,17 @@ class Builder:
         fileutils.ensure_dir(self.buildPath)
         fileutils.ensure_dir(self.srcPath)
 
-    def setupBuildFolder(baseFileName):
+    def setupBuildFolder():
         print "==> creating new build folder..."
         filesutils.ensure_dir(build_fp)
         print "done\n"
 
-    def nukeSrcsFolder(baseFileName):
+    def nukeSrcsFolder():
         print "==> removing old srcs folder..."
         fileutils.rm_f(src_fp)
         print "done\n"
 
-    def nukeBuildFolder(baseFileName):
+    def nukeBuildFolder():
         print "==> removing old build folder..."
         fileutils.rm_f(build_fp)
         print "done\n"
@@ -77,30 +85,30 @@ class Builder:
         self.tarballPath + "/" + self.baseFileName + ".tar.gz"
     
     def prepare():
-        printTitle
-        nukeBuildFolder
-        nukeLibraryFolder
-        wget
-        untar
-        setupBuildFolder
+        printTitle()
+        nukeBuildFolder()
+        nukeLibraryFolder()
+        wget()
+        untar()
+        setupBuildFolder()
 
     def prepareNukeSrcsFolder():
-        printTitle
-        nukeSrcsFolder
-        nukeBuildFolder
-        nukeLibraryFolder
-        wget
-        untar
-        setupBuildFolder
+        printTitle()
+        nukeSrcsFolder()
+        nukeBuildFolder()
+        nukeLibraryFolder()
+        wget()
+        untar()
+        setupBuildFolder()
     
     def build():
-        chdir_src
+        chdir_src()
         
-        configure
-        make
-        makeInstall
+        configure()
+        make()
+        makeInstall()
         
-        chdir_home
+        chdir_home()
     
     def chdir_src():
         os.chdir(self.srcPath + "/" + self.baseFileName)
@@ -109,13 +117,13 @@ class Builder:
         os.chdir(self.basePath)
 
     def buildInSourceFolder():
-        chdir_src
+        chdir_src()
         
-        configure
-        make
-        makeInstall
+        configure()
+        make()
+        makeInstall()
         
-        chdir_home
+        chdir_home()
 
     def configure():
         cmd = "chmod +x {c}; ".format(c = configure)
@@ -148,9 +156,9 @@ class Builder:
         print "done with make install\n"
 
     def prepareAndBuild:
-        prepare
-        build
+        prepare()
+        build()
 
     def prepareNukeSrcsAndBuild():
-        prepareNukeSrcsFolder
-        build
+        prepareNukeSrcsFolder()
+        build()
