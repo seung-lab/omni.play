@@ -1,324 +1,73 @@
 #!/usr/bin/python
 
-import os
+basePath = `pwd`
+chomp basePath
+buildPath   = basePath.'/external/builds'
+srcPath     = basePath.'/external/srcs'
+libPath     = basePath.'/external/libs'
+tarballPath = basePath.'/external/tarballs'
+scriptPath  = basePath.'/scripts'
+omniPath    = basePath
+omniExecPathMac  = basePath.'/bin/omni.server.app/Contents/MacOS/omni.server'
 
-basePath = `pwd`;
-chomp basePath;
-buildPath   = basePath.'/external/builds';
-srcPath     = basePath.'/external/srcs';
-libPath     = basePath.'/external/libs';
-tarballPath = basePath.'/external/tarballs';
-scriptPath  = basePath.'/scripts';
-omniPath    = basePath;
-omniExecPathMac  = basePath.'/bin/omni.server.app/Contents/MacOS/omni.server';
+omniScriptFile = scriptPath.'/buildomni.sh'
+omniScriptOptions = ""
 
-omniScriptFile = scriptPath.'/buildomni.sh';
-omniScriptOptions = "";
+globalMakeOptions = ""
 
-globalMakeOptions = "";
+hostname = `hostname`
+profileOn = ""
 
-hostname = `hostname`;
-profileOn = "";
-
-NumCores;
+NumCores
 
 ##
 # source tar-ball versions
 ##
-BOOST_VER = "boost_1_49_0";
-BOOST_URI = "http://sourceforge.net/projects/boost/files/boost/1.49.0/boost_1_49_0.tar.gz/download";
-ZLIB_VER = "zlib-1.2.6";
-ZLIB_URI = "http://zlib.net/zlib-1.2.6.tar.gz";
-THRIFT_VER = "thrift-0.8.0";
-THRIFT_URI = "http://www.eng.lsu.edu/mirrors/apache/thrift/0.8.0/thrift-0.8.0.tar.gz";
-JPEG_VER = "libjpeg-turbo-1.2.0";
-JPEG_URI = "http://sourceforge.net/projects/libjpeg-turbo/files/latest/download";
-PNG_VER = "libpng-1.5.9";
-PNG_URI = "http://prdownloads.sourceforge.net/libpng/libpng-1.5.9.tar.gz?download";
-
-# from http://stackoverflow.com/questions/334686/how-can-i-detect-the-operating-system-in-perl
-
-def makeDirPaths
-
-    if( !-e buildPath && !-l buildPath)
-	mkpath(buildPath) or die "could not create buildPath";
-        
-
-    if( !-e srcPath && !-l srcPath)
-	mkpath(srcPath) or die "could not create srcPath";
-        
-    
-
-def genOmniScript
-
-    script = "";
-    script .= "cd basePath/omni.server;";
-
-    if(@_ == 1) 
-	debugMode = _[0];
-	if(debugMode)
-	    print "building omni.server in debug mode\n";
-	    script .= "rm -f release;";
-             else 
-	    print "building omni.server in release mode\n";
-	    script .= "touch release;";
-            
-         else 
-	print "building omni.server with current make options\n";
-        
-
-    script .= "qmake omni.server.pro;";
-
-    if(@_ == 1) 
-	print "will make clean\n";
-	script .= "make clean;";
-        
-
-    script .= "make globalMakeOptions";
-
-    #     if(isMac()) 
-    #         nigOutPath = "basePath/omni/bin/omni.app/Contents/Resources/";
-    # 	script .= "; cp -r ../external/QT_VER/src/gui/mac/qt_menu.nib nigOutPath\n";
-    #     
-
-    open (SCRIPT, ">", omniScriptFile) or die !;
-    print SCRIPT script;
-    close SCRIPT;
-    `chmod +x omniScriptFile`;
-    
-
-def setupBuildFolder
-
-    baseFileName = _[0];
-
-    print "==> creating new build folder...";
-    `mkdir buildPath/baseFileName` if (!-e "buildPath/baseFileName" );
-    print "done\n";
-    
-
-def nukeSrcsFolder
-
-    baseFileName = _[0];
-
-    print "==> removing old srcs folder...";
-    `rm -rf srcPath/baseFileName`;
-    print "done\n";
-    
-
-def nukeBuildFolder
-
-    baseFileName = _[0];
-
-    print "==> removing old build folder...";
-    `rm -rf buildPath/baseFileName`;
-    print "done\n";
-    
-
-def nukeLibraryFolder
-
-    libFolderName = _[0];
-
-    print "==> removing old library folder...";
-    `rm -rf libPath/libFolderName`;
-    print "done\n";
-    
-
-def untar
-
-    baseFileName = _[0];
-
-    if (-e "srcPath/baseFileName" )
-	print "==> skipping untar\n";
-	return;
-        
-
-    tarOptions = " -C srcPath/ ";
-
-    print "==> untarring to external/srcs/...";
-    `tar -zxf tarballPath/baseFileName.tar.gz tarOptions`;
-    print "done\n";
-    
-
-def wget
-
-    uri = _[0];
-    baseFileName = _[1];
-
-    if (-e tarballPath."/".baseFileName.".tar.gz") 
-        print "==> skipping wget\n";
-        return;
-	
-
-    print "==> wgetting to external/tarballs/...";
-    `mkdir -p tarballPath`;
-    `wget --no-verbose uri -O tarballPath/baseFileName.tar.gz`;
-    print "done\n";
-    
-
-def prepare
-
-    baseFileName  = _[0];
-    libFolderName = _[1];
-    uri           = _[2];
-
-    printTitle(        baseFileName );
-    nukeBuildFolder(   baseFileName );
-    nukeLibraryFolder( libFolderName );
-    wget(              uri, baseFileName);
-    untar(             baseFileName );
-    setupBuildFolder(  baseFileName );
-    
-
-def prepareNukeSrcsFolder
-
-    baseFileName  = _[0];
-    libFolderName = _[1];
-    uri           = _[2];
-
-    printTitle(        baseFileName );
-    nukeSrcsFolder(    baseFileName );
-    nukeBuildFolder(   baseFileName );
-    nukeLibraryFolder( libFolderName );
-    wget(              uri, baseFileName);
-    untar(             baseFileName );
-    setupBuildFolder(  baseFileName );
-    
-
-def build
-
-    baseFileName  = _[0];
-    libFolderName = _[1];
-    buildOptions  = _[2];
-
-    chdir( "buildPath/baseFileName" );
-
-    configure(   baseFileName, libFolderName, buildOptions );
-    make();
-    makeInstall();
-
-    chdir( basePath );
-    
-
-def buildInSourceFolder
-
-    baseFileName  = _[0];
-    libFolderName = _[1];
-    buildOptions  = _[2];
-
-    chdir( "srcPath/baseFileName" );
-
-    configure(   baseFileName, libFolderName, buildOptions );
-    make();
-    makeInstall();
-
-    chdir( basePath );
-    
-
-def configure
-
-    baseFileName  = _[0];
-    libFolderName = _[1];
-    buildOptions  = _[2];
-
-    cmd = "chmod +x srcPath/baseFileName/configure;srcPath/baseFileName/configure --prefix=libPath/libFolderName buildOptions;";
-    if( "Qt" eq libFolderName )
-	cmd = 'echo "yes" | '.cmd;
-        
-    print "==> running configure...";
-    print "(cmd)\n";
-    # TODO: check return values; die if something went wrong...
-    print `(cmd)`;
-    print "done with configure\n\n";
-    
-
-def make
-
-    cmd = "make globalMakeOptions";
-    print "==> running make...";
-    print "(cmd)\n";
-    # TODO: check return values; die if something went wrong...
-    print `(cmd)`;
-    print "done with make\n\n";
-    
-
-def makeInstall
-
-    cmd = "make install";
-    print "==> running make install...";
-    print "(cmd)\n";
-    # TODO: check return values; die if something went wrong...
-    print `(cmd)`;
-    print "done with make install\n";
-    
-
-def prepareAndBuild
-
-    baseFileName  = _[0];
-    libFolderName = _[1];
-    uri = _[2];
-
-    buildOptions = "";
-    if( scalar(@_) > 2 ) 
-	buildOptions = _[3];
-        
-
-    prepare( baseFileName, libFolderName, uri );
-    build(   baseFileName, libFolderName, buildOptions );
-    
-
-def prepareNukeSrcsAndBuild
-
-    baseFileName  = _[0];
-    libFolderName = _[1];
-
-    buildOptions = "";
-    if( scalar(@_) > 2 ) 
-	buildOptions = _[2];
-        
-
-    uri = _[3];
-
-    prepareNukeSrcsFolder( baseFileName, libFolderName, uri );
-    build(   baseFileName, libFolderName, buildOptions );
-    
-
-def thrift
-
-    #    prepareAndBuild( RE2C, "re2c");
+BOOST_VER = "boost_1_49_0"
+BOOST_URI = "http://sourceforge.net/projects/boost/files/boost/1.49.0/boost_1_49_0.tar.gz/download"
+ZLIB_VER = "zlib-1.2.6"
+ZLIB_URI = "http://zlib.net/zlib-1.2.6.tar.gz"
+THRIFT_VER = "thrift-0.8.0"
+THRIFT_URI = "http://www.eng.lsu.edu/mirrors/apache/thrift/0.8.0/thrift-0.8.0.tar.gz"
+JPEG_VER = "libjpeg-turbo-1.2.0"
+JPEG_URI = "http://sourceforge.net/projects/libjpeg-turbo/files/latest/download"
+PNG_VER = "libpng-1.5.9"
+PNG_URI = "http://prdownloads.sourceforge.net/libpng/libpng-1.5.9.tar.gz?download"
+
+
+
+def thrift:
+#    prepareAndBuild( RE2C, "re2c")
 
     @argsList = qw( CXXFLAGS='-g -O2' CFLAGS='-g -O2'
-                    --without-ruby
-                    --without-erlang
-                    --enable-gen-cpp
-                    );
+--without-ruby
+--without-erlang
+--enable-gen-cpp
+)
 
-     args = concatStrList(@argsList);
-     args .= " --with-boost=libPath/Boost";
+    args = concatStrList(@argsList)
+    args .= " --with-boost=libPath/Boost"
 
-     prepareAndBuild( THRIFT_VER, "thrift", THRIFT_URI, args);
-     chdir(basePath."/external");
-     print `patch -p0 < patches/thrift.patch`;
-     
+    prepareAndBuild( THRIFT_VER, "thrift", THRIFT_URI, args)
+    chdir(basePath."/external")
+    print `patch -p0 < patches/thrift.patch`
 
-def libjpeg
 
-    prepareAndBuild( JPEG_VER, "libjpeg", JPEG_URI);
-    
+def libjpeg:
+    prepareAndBuild( JPEG_VER, "libjpeg", JPEG_URI)
 
-def libpng
 
-    prepareAndBuild( PNG_VER, "libpng", PNG_URI );
-    
+def libpng:
+    prepareAndBuild( PNG_VER, "libpng", PNG_URI )
 
-def zlib
 
-    prepare( ZLIB_VER, "zlib" );
-    buildInSourceFolder( ZLIB_VER, "zlib", ZLIB_URI );
-    
+def zlib:
+    prepare( ZLIB_VER, "zlib" )
+    buildInSourceFolder( ZLIB_VER, "zlib", ZLIB_URI )
 
-def boost
 
-    #./bjam --show-libraries
+def boost:
+#./bjam --show-libraries
     #The following libraries require building:
     #- date_time
     #- filesystem
@@ -338,192 +87,181 @@ def boost
     #- thread
     #- wave
 
-    baseFileName = BOOST_VER;
-    libFolderName = "Boost";
-    prepareNukeSrcsFolder( baseFileName, libFolderName, BOOST_URI);
+    baseFileName = BOOST_VER
+    libFolderName = "Boost"
+    prepareNukeSrcsFolder( baseFileName, libFolderName, BOOST_URI)
 
-    wget(ZLIB_URI, ZLIB_VER);
-    untar(ZLIB_VER);
+	wget(ZLIB_URI, ZLIB_VER)
+    untar(ZLIB_VER)
 
-    cmd = "cd srcPath/baseFileName; ./bootstrap.sh --prefix=libPath/libFolderName ";
-    cmd .= " --with-libraries=filesystem,thread,system,iostreams,regex";
+    cmd = "cd srcPath/baseFileName ./bootstrap.sh --prefix=libPath/libFolderName "
+    cmd .= " --with-libraries=filesystem,thread,system,iostreams,regex"
 
-    print "configuring (cmd)\n";
+    print "configuring (cmd)\n"
 
-    `(cmd)`;
-    print "done\n";
+    `(cmd)`
+    print "done\n"
 
-    bjamFlags = "-jNumCores";
-    bjamFlags .= " -sNO_BZIP2=1 -sZLIB_SOURCE=srcPath/ZLIB_VER";
-    bjamFlags .= " variant=release link=static threading=multi runtime-link=static";
-    # bjamFlags .= " toolset=gcc cxxflags=-std=gnu++0x";
-    cmd = "cd srcPath/baseFileName; ./bjam bjamFlags install";
-    print "building and installing (cmd)\n";
-    `(cmd)`;
-    print "done\n";
+    bjamFlags = "-jNumCores"
+    bjamFlags .= " -sNO_BZIP2=1 -sZLIB_SOURCE=srcPath/ZLIB_VER"
+    bjamFlags .= " variant=release link=static threading=multi runtime-link=static"
+    # bjamFlags .= " toolset=gcc cxxflags=-std=gnu++0x"
+    cmd = "cd srcPath/baseFileName ./bjam bjamFlags install"
+    print "building and installing (cmd)\n"
+    `(cmd)`
+    print "done\n"
+
+
+def omniServer:
+    printTitle("omni.server")
+    genOmniScript(@_)
+
+    if(isMac()){
+	unlink(omniExecPathMac)
     
 
-def omniServer
+    cmd = "sh omniScriptFile"
+    print "running: (cmd)\n"
+    print `cmd`
+    print "done\n"
 
-    printTitle("omni.server");
-    genOmniScript(@_);
 
-    if(isMac())
-	unlink(omniExecPathMac);
-        
+def printTitle:
+    title = _[0]
+    printLine()
+    print title.":\n"
 
-    cmd = "sh omniScriptFile";
-    print "running: (cmd)\n";
-    print `cmd`;
-    print "done\n";
+
+def printLine:
+    print "\n**********************************************\n"
+
+
+def menu:
+    print "bootstrap.pl menu:\n"
+    print "0 -- exit\n"
+    print "1 -- Build All\n"
+    print "2 -- Build boost\n"
+    print "3 -- Build thrift\n"
+    print "4 -- Build libjpeg\n"
+    print "5 -- Build libpng\n"
+    max_answer = 12
+
+    while( 1 ){
+	print "Please make selection: "
+	answer = <STDIN>
+
+	if( answer && answer =~ /^\d+/ ):
+	    if( (answer > -1) and (answer < (1+max_answer))){
+		runMenuEntry( answer )
+		exit()
+	    
+	
     
 
-def printTitle
 
-    title = _[0];
-    printLine();
-    print title.":\n";
+def buildAll:
+    boost()
+    thrift()
+    libjpeg()
+    libpng()
+
+
+def runMenuEntry:
+    entry = _[0]
+
+    if( 0 == entry ){
+	return()
+    elsif( 1 == entry ){
+        buildAll()
+    elsif( 2 == entry ){
+        boost()
+    elsif( 3 == entry ){
+        thrift()
+    elsif( 4 == entry ){
+        libjpeg()
+    elsif( 5 == entry ){
+        libpng()
+    elsif( 6 == entry ){
+        zlib()
     
 
-def printLine 
-    print "\n**********************************************\n";
+
+def numberOfCores:
+    NumCores = 2
+    if (-e "/proc/cpuinfo"):
+	NumCores =`cat /proc/cpuinfo  | grep processor | wc -l`
     
 
-def menu
-
-    print "bootstrap.pl menu:\n";
-    print "0 -- exit\n";
-    print "1 -- Build All\n";
-    print "2 -- Build boost\n";
-    print "3 -- Build thrift\n";
-    print "4 -- Build libjpeg\n";
-    print "5 -- Build libpng\n";
-    max_answer = 12;
-
-    while( 1 )
-	print "Please make selection: ";
-	answer = <STDIN>;
-
-	if( answer && answer =~ /^\d+/ ) 
-	    if( (answer > -1) and (answer < (1+max_answer)))
-		runMenuEntry( answer );
-		exit();
-                
-            
-        
+    if( isMac() ){
+	numCoreStr = `/usr/sbin/system_profiler SPHardwareDataType | grep 'Total Number Of Cores'`
+	if (numCoreStr =~ m/.*:.*([\d*])/):
+	    NumCores = 1
+	
     
 
-def buildAll
-
-    boost();
-    thrift();
-    libjpeg();
-    libpng();
+    if( NumCores < 2 ){
+	NumCores = 2
     
 
-def runMenuEntry
+    return NumCores
 
-    entry = _[0];
 
-    if( 0 == entry )
-	return();
-        elsif( 1 == entry )
-        buildAll();
-        elsif( 2 == entry )
-        boost();
-        elsif( 3 == entry )
-        thrift();
-        elsif( 4 == entry )
-        libjpeg();
-        elsif( 5 == entry )
-        libpng();
-        elsif( 6 == entry )
-        zlib();
-        
+def setupParallelBuildOption:
+    NumCores = numberOfCores()
+    if( scalar(@_) > 0 ):
+	NumCores = _[0]
+    
+    if (onCluster()):
+        NumCores = 60
     
 
-def numberOfCores
+    chomp(NumCores)
 
-    NumCores = 2;
-    if (-e "/proc/cpuinfo") 
-	NumCores =`cat /proc/cpuinfo  | grep processor | wc -l`;
-        
+    globalMakeOptions .=  " -jNumCores "
 
-    if( isMac() )
-	numCoreStr = `/usr/sbin/system_profiler SPHardwareDataType | grep 'Total Number Of Cores'`;
-	if (numCoreStr =~ m/.*:.*([\d*])/) 
-	    NumCores = 1;
-            
-        
+    print "number of parallel builds (override with \"-j n\" switch to bootstrap.pl): NumCores\n"
 
-    if( NumCores < 2 )
-	NumCores = 2;
-        
 
-    return NumCores;
+def checkCmdLineArgs:
+    if ( 1 == @ARGV ):
+	setupParallelBuildOption()
+	runMenuEntry( ARGV[0] )
+     elsif (2 == @ARGV ):
+	setupParallelBuildOption( ARGV[1] )
+	menu()
+     else:
+	setupParallelBuildOption()
+	menu()
     
 
-def setupParallelBuildOption
 
-    NumCores = numberOfCores();
-    if( scalar(@_) > 0 ) 
-	NumCores = _[0];
-        
-    if (onCluster()) 
-        NumCores = 60;
-        
-
-    chomp(NumCores);
-
-    globalMakeOptions .=  " -jNumCores ";
-
-    print "number of parallel builds (override with \"-j n\" switch to bootstrap.pl): NumCores\n";
-    
-
-def checkCmdLineArgs
-
-    if ( 1 == @ARGV ) 
-	setupParallelBuildOption();
-	runMenuEntry( ARGV[0] );
-         elsif (2 == @ARGV ) 
-	setupParallelBuildOption( ARGV[1] );
-	menu();
-         else 
-	setupParallelBuildOption();
-	menu();
-        
-    
-
-def doUbuntuAptGets
-
+def doUbuntuAptGets:
     @packages = qw( libxrender-dev libxext-dev freeglut3-dev g++
-                    libfreetype6-dev libxml2 libxml2-dev mesa-common-dev
-                    libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
-                    libgl1-mesa-glx-dbg libncurses5-dev);
+	libfreetype6-dev libxml2 libxml2-dev mesa-common-dev
+	libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
+	libgl1-mesa-glx-dbg libncurses5-dev)
 
-     args = concatStrList(@packages);
+    args = concatStrList(@packages)
 
-     print `sudo apt-get -y install args`;
-     print "Done with the Ubuntu apt-gets! \n\n";
-     
+    print `sudo apt-get -y install args`
+    print "Done with the Ubuntu apt-gets! \n\n"
 
-def concatStrList
 
-    (@array) = @_;
-    args = "";
-    foreach (@array)
-	args .= " _";
-        
-    return args;
+def concatStrList:
+    (@array) = @_
+    args = ""
+    foreach (@array){
+	args .= " _"
     
+    return args
 
-def omniClean
 
-    `(cd omniPath; make clean)`;
-    omniServer();
-    
+def omniClean:
+    `(cd omniPath make clean)`
+    omniServer()
 
-checkForMac();
-dealWithCluster();
-makeDirPaths();
-checkCmdLineArgs();
+
+checkForMac()
+dealWithCluster()
+makeDirPaths()
+checkCmdLineArgs()
