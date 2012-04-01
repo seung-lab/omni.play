@@ -1,6 +1,8 @@
 from string import Template
 import os
 
+from builder import Builder
+
 numCores = 2
 
 ##
@@ -20,7 +22,7 @@ PNG_URI = "http://prdownloads.sourceforge.net/libpng/libpng-1.5.9.tar.gz?downloa
 
 def makeBuilder(baseFileName, libFolderName, uri):
     cwd = os.getcwd()
-    b = builder(cwd, baseFileName, libFolderName, uri)
+    b = Builder(cwd, baseFileName, libFolderName, uri)
     b.numCores = 2
     return b
 
@@ -42,16 +44,16 @@ def thrift():
 
 def libjpeg():
     b = makeBuilder( JPEG_VER, "libjpeg", JPEG_URI )
-    b.prepareAndBuild
+    b.prepareAndBuild()
     
 def libpng():
     b = makeBuilder( PNG_VER, "libpng", PNG_URI )
-    b.prepareAndBuild
+    b.prepareAndBuild()
 
 def zlib():
     b = makeBuilder( ZLIB_VER, "zlib", ZLIB_URI )
-    b.prepare
-    b.buildInSourceFolder
+    b.prepare()
+    b.buildInSourceFolder()
 
 def boost():
 #./bjam --show-libraries
@@ -75,11 +77,11 @@ def boost():
     #- wave
 
     b = makeBuilder( BOOST_VER, "Boost", BOOST_URI )
-    b.prepareNukeSrcsFolder
+    b.prepareNukeSrcsFolder()
     
     bz = makeBuilder( ZLIB_VER, "zlib", ZLIB_URI )
-    bz.wget
-    bz.untar
+    bz.wget()
+    bz.untar()
 """
     cmd = "cd srcPath/baseFileName ./bootstrap.sh --prefix=libPath/libFolderName "
     cmd += " --with-libraries=filesystem,thread,system,iostreams,regex"

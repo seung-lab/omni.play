@@ -6,23 +6,32 @@ import urllib
 def ensure_dir(f):
     if not dir_exists(f):
         try:
+            print "making folder: ", f
             os.makedirs(f)
         except:
             print "could not make folder " + f
             raise
 
 def dir_exists(f):
-    d = os.path.dirname(f)
-    if not f.endswith("/"):
-        d = os.path.dirname(f+"/")
-    return os.path.exists(d)
+    try:
+        d = os.path.dirname(f)
+        if not f.endswith("/"):
+            d = os.path.dirname(f+"/")
+        print "checking folder exists: ", d
+        return os.path.exists(d)
+    except:
+        print "error checking existence of " + f
+        raise
 
 # note: racey, since file could disappear after call...
 def file_exists(fnp):
-    os.path.isfile(fnp)
+    print "checking file exists: ", fnp
+    return os.path.isfile(fnp)
 
 def rm_f(f):
-    shutil.rmtree(f)
+    if dir_exists(f):
+        print "deleting folder: ", f
+        shutil.rmtree(f)
 
 def gunzip(fnp, fp):
     tar = tarfile.open(fnp)

@@ -5,6 +5,7 @@ import fileutils
 import detect_os 
 
 def numberOfCores(override):
+    numCores = 2
 
     if None == override:     
         if detect_os.isLinux():
@@ -12,14 +13,8 @@ def numberOfCores(override):
 
         elif detect_os.isMac():
             numCores = numCoresMac()
-
-        else:
-            numCores = 2
     else:
         numCores = override
-
-    if numCores < 2:
-	numCores = 2
     
     return numCores
 
