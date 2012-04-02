@@ -1,49 +1,51 @@
 from string import Template
-from library import Library
+from library import LibraryMetadata
 import os
 
 from builder import Builder
 
 class runner:
-    ##
-    # source tar-ball versions
-    ##
-
     def __init__(self, numCores):
         self.numCores = numCores
 
-    def makeBuilder(self, lib, buildOptions = ""):
+    def makeBuilder(self, lib):
         cwd = os.getcwd()
-        b = Builder(cwd, lib, buildOptions)
+        b = Builder(cwd, lib)
         b.numCores = self.numCores
         return b
 
     def thrift(self):
+        b = self.makeBuilder(LibraryMetadata.thrift())
+
         args = " ".join([ "CXXFLAGS='-g -O2'",
                           "CFLAGS='-g -O2'",
                           "--without-ruby",
                           "--without-erlang",
                           "--enable-gen-cpp",
-                          "--with-boost={libPath}/Boost".format(libPath=self.libPath)
+                          "--with-boost={libPath}/Boost".format(libPath=b.lib_fp())
                           ])
 
-        b = self.makeBuilder(THRIFT_VER, "thrift", THRIFT_URI, args)
-        b.prepareAndBuild
+        b.build_options(args)
+        b.prepareAndBuild()
 
-        #    chdir(basePath."/external")
-        #    # TODO: doesn't this path need to be done before building? (purcaro)
-        #    print `patch -p0 < patches/thrift.patch`
+        ext_fp = b.ext_fp
+        patch_fnp = os.path.join(ext_fp, "patches/thrift.patch")
+
+        cmd = "/usr/bin/patch -d {ext_fp} -p0 -i {fnp}".format(ext_fp=ext_fp,
+                                                               fnp=patch_fnp)
+        print "patching using cmd: ", cmd
+        os.system(cmd)
 
     def libjpeg(self):
-        b = self.makeBuilder(Library.jpeg())
+        b = self.makeBuilder(LibraryMetadata.jpeg())
         b.prepareAndBuild()
 
     def libpng(self):
-        b = self.makeBuilder(Library.png())
+        b = self.makeBuilder(LibraryMetadata.png())
         b.prepareAndBuild()
 
     def zlib(self):
-        b = self.makeBuilder(Library.zlib())
+        b = self.makeBuilder(LibraryMetadata.zlib())
         b.prepare()
         b.buildInSourceFolder()
 
@@ -68,10 +70,10 @@ class runner:
         #- thread
         #- wave
 
-        b = self.makeBuilder(Library.boost())
+        b = self.makeBuilder(LibraryMetadata.boost())
         b.prepareNukeSrcsFolder()
 
-        bz = self.makeBuilder(Library.zlib())
+        bz = self.makeBuilder(LibraryMetadata.zlib())
         bz.wget()
         bz.untar()
     """
@@ -100,7 +102,6 @@ class runner:
 
         if(isMac()){
             unlink(omniExecPathMac)
-
 
         cmd = "sh omniScriptFile"
         print "running: (cmd)\n"

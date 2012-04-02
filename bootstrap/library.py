@@ -5,7 +5,7 @@ struct to hold info needed to build library
 import yaml
 import sys
 
-class Library:
+class LibraryMetadata:
     def __init__(self, key):
         f = open("bootstrap/metadata.yaml", 'r')
         libs = yaml.load(f)
@@ -21,20 +21,20 @@ class Library:
 
     @staticmethod
     def boost():
-        return Library("boost")
+        return LibraryMetadata("boost")
 
     @staticmethod
     def zlib():
-        return Library("zlib")
+        return LibraryMetadata("zlib")
 
     @staticmethod
     def thrift():
-        return Library("thrift")
+        return LibraryMetadata("thrift")
 
     @staticmethod
     def jpeg():
-        return Library("libjpeg")
+        return LibraryMetadata("jpeg")
 
     @staticmethod
     def png():
-        return Library("libpng")
+        return LibraryMetadata("png")

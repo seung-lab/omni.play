@@ -4,13 +4,14 @@ from string import Template
 
 class Builder:
 
-    def __init__(self, cwd, lib, buildOptions):
+    def __init__(self, cwd, lib):
         self.basePath    = cwd
         self.baseFileName = lib.baseFileName
         self.libFolderName = lib.libFolderName
         self.uri = lib.uri
-        self.buildOptions = buildOptions
+        self.buildOptions = ""
 
+        self.ext_fp      = self.basePath + '/external'
         self.buildPath   = self.basePath + '/external/builds'
         self.srcPath     = self.basePath + '/external/srcs'
         self.libPath     = self.basePath + '/external/libs'
@@ -21,6 +22,9 @@ class Builder:
         self.globalMakeOptions = ""
 
         self.makeDirPaths
+
+    def build_options(self, buildOptions):
+        self.buildOptions = buildOptions
 
     def numCores(self, num):
         self.numCores = num
