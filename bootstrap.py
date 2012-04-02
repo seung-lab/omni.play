@@ -22,10 +22,13 @@ class bootstrap:
                                         val = val)
             
         while True:
-            s = raw_input( "Please make selection: " )
             answer = None
             try:
+                s = raw_input( "Please make selection: " )
                 answer = int( s )
+            except KeyboardInterrupt, SystemExit:
+                print ""
+                sys.exit(0)
             except:
                 print "could not parse \"" + s + "\""
                 pass

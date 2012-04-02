@@ -2,8 +2,14 @@
 struct to hold info needed to build library
 """
 
-import yaml
 import sys
+
+try:
+    import yaml
+except:
+    print "PyYaml required, but could not be loaded; please install?"
+    print "\tapt-get install python-yaml"
+    sys.exit(1)
 
 class LibraryMetadata:
     def __init__(self, key):
