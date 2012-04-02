@@ -4,11 +4,11 @@ from string import Template
 
 class Builder:
 
-    def __init__(self, cwd, baseFileName, libFolderName, uri, buildOptions = ""):
+    def __init__(self, cwd, lib, buildOptions):
         self.basePath    = cwd
-        self.baseFileName = baseFileName
-        self.libFolderName = libFolderName
-        self.uri = uri
+        self.baseFileName = lib.baseFileName
+        self.libFolderName = lib.libFolderName
+        self.uri = lib.uri
         self.buildOptions = buildOptions
 
         self.buildPath   = self.basePath + '/external/builds'

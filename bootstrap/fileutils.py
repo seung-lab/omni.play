@@ -17,16 +17,19 @@ def dir_exists(f):
         d = os.path.dirname(f)
         if not f.endswith("/"):
             d = os.path.dirname(f+"/")
-        print "checking folder exists: ", d
-        return os.path.exists(d)
+
+        e = os.path.exists(d)
+        print "checking folder exists: {d}...{e}".format( d=d, e=e)
+        return e
     except:
         print "error checking existence of " + f
         raise
 
-# note: racey, since file could disappear after call...
+# note: racey, since file could (dis)appear after call...
 def file_exists(fnp):
-    print "checking file exists: ", fnp
-    return os.path.isfile(fnp)
+    e = os.path.isfile(fnp)
+    print "checking file exists: {fnp}...{e}".format(fnp=fnp, e=e)
+    return e
 
 def rm_f(f):
     if dir_exists(f):

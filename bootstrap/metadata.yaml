@@ -1,0 +1,20 @@
+boost:
+ lib_folder: Boost
+ ver: boost_1_49_0
+ uri: http://sourceforge.net/projects/boost/files/boost/1.49.0/boost_1_49_0.tar.gz/download
+zlib:
+ lib_folder: zlib
+ ver: zlib-1.2.6
+ uri: http://zlib.net/zlib-1.2.6.tar.gz
+thrift:
+ lib_folder: thrift
+ ver: thrift-0.8.0
+ uri: http://www.eng.lsu.edu/mirrors/apache/thrift/0.8.0/thrift-0.8.0.tar.gz
+jpeg:
+ lib_folder: libjpeg
+ ver: libjpeg-turbo-1.2.0
+ uri: http://sourceforge.net/projects/libjpeg-turbo/files/latest/download
+png:
+ lib_folder: libpng
+ ver: libpng-1.5.9
+ uri: http://prdownloads.sourceforge.net/libpng/libpng-1.5.9.tar.gz?download
