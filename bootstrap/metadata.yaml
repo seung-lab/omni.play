@@ -18,3 +18,7 @@ png:
  lib_folder: libpng
  ver: libpng-1.5.9
  uri: http://prdownloads.sourceforge.net/libpng/libpng-1.5.9.tar.gz?download
+event:
+ lib_folder: libevent
+ ver: libevent-2.0.18-stable
+ uri: https://github.com/downloads/libevent/libevent/libevent-2.0.18-stable.tar.gz

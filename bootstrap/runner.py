@@ -44,6 +44,10 @@ class runner:
         b = self.makeBuilder(LibraryMetadata.png())
         b.prepareAndBuild()
 
+    def libevent(self):
+        b = self.makeBuilder(LibraryMetadata.event())
+        b.prepareAndBuild()
+
     def zlib(self):
         b = self.makeBuilder(LibraryMetadata.zlib())
         b.prepare()

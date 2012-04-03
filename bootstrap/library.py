@@ -44,3 +44,7 @@ class LibraryMetadata:
     @staticmethod
     def png():
         return LibraryMetadata("png")
+
+    @staticmethod
+    def event():
+        return LibraryMetadata("event")
