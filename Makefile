@@ -4,6 +4,7 @@ HERE    	=       .
 EXTERNAL	=	$(HERE)/external/libs
 BINDIR		=	./bin
 BUILDDIR	=	build
+GENDIR		=	common/src/thrift
 
 AT		=   @
 DOLLAR  = 	$$
@@ -54,8 +55,7 @@ LIBS = $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/thrift/lib/libthriftnb.a \
 	   $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
 	   $(EXTERNAL)/libpng/lib/libpng.a \
-	   $(EXTERNAL)/libevent/lib/libevent.a \
-	   -lpthread -lrt 
+	   -levent -lpthread -lrt -lz
 
 CXX_INCLUDES	=	$(INCLUDES)
 
@@ -98,46 +98,54 @@ else
   LDFLAGS	=	$(DBG_LDFLAGS) $(EXTRA_LDFLAGS)
 endif
 
-VPATH = common/src:server/src:filesystem/src:desktop/src
-
-# dependency files for c++
-build/%.d: %.cpp
-	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CPP_DEPFLAGS) -MF $@ $<
-
-# c++
-build/%.o: %.cpp
+define build_cpp
 	$(ECHO) "[CXX] compiling $<"
 	$(MKDIR) -p $(dir $@)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
+endef
 
-# c
-build/%.o: %.c
+define build_c
 	$(ECHO) "[CC] compiling $<"
 	$(MKDIR) -p $(dir $@)
 	$(CC) -c $(CFLAGS) -o $@ $<
+endef
 
-# dependency files for c++
+define make_d
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CPP_DEPFLAGS) -MF $@ $<
+endef
+
+
+build/common/%.d: common/src/%.cpp
+	$(make_d)
+build/common/%.o: common/src/%.cpp
+	$(build_cpp)
+
+build/server/%.d: server/src/%.cpp
+	$(make_d)
+build/server/%.o: server/src/%.cpp
+	$(build_cpp)
+
+build/desktop/%.d: desktop/src/%.cpp
+	$(make_d)
+build/desktop/%.o: desktop/src/%.cpp
+	$(build_cpp)
+
+build/filesystem/%.d: filesystem/src/%.cpp
+	$(make_d)
+build/filesystem/%.o: filesystem/src/%.cpp
+	$(build_cpp)
+
 %.d: %.cpp
-	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CPP_DEPFLAGS) -MF $@ $<
-
-# c++
+	$(make_d)
 %.o: %.cpp
-	$(ECHO) "[CXX] compiling $<"
-	$(MKDIR) -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
-	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
-
-# c
+	$(build_cpp)
 %.o: %.c
-	$(ECHO) "[CC] compiling $<"
-	$(MKDIR) -p $(dir $@)
-	$(CC) -c $(CFLAGS) -o $@ $<
+	$(build_c)
 
 common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
-	$(ECHO) "[Thrift ] Generating $@"
+	$(ECHO) "[Thrift] Generating $@"
 	$(MKDIR) -p $(dir $@)
 	$(TOUCH) $@.tmp
 	$(THRIFT) -r --out common/src/thrift --gen cpp $<
@@ -145,7 +153,9 @@ common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
 	$(MV) $@.tmp $@
 
 .PHONY: all
-all: $(BINDIR)/omni.server
+all: $(BINDIR)/omni.server \
+	 $(BINDIR)/omni.dds_manager \
+	 $(BINDIR)/omni.dds_server
 
 .PHONY: tidy
 tidy:
@@ -158,26 +168,60 @@ tidy:
 .PHONY: clean
 clean:
 	$(ECHO) Cleaning...
-	$(RM) -rf $(BINDIR) $(GENDIR)
+	$(RM) -rf $(BINDIR) $(GENDIR) $(BUILDDIR)
 
 .PHONY: remake
 remake: clean all
 
-COMMONSOURCES = $(subst common/src,build,$(shell find common/src -iname "*.cpp"))
-SERVERSOURCES = $(subst server/src,build,$(shell find server/src -iname "*.cpp"))
-DESKTOPSOURCES = $(shell find desktop/src -iname "*.cpp")
-FILESYSTEMSOURCES = $(shell find filesystem/src -iname "*.cpp")
+COMMONSOURCES     = $(subst common/src,build/common, 				\
+					  $(shell find common/src -iname "*.cpp"))
+
+SERVERSOURCES     = $(subst server/src,build/server, 				\
+                      $(shell find server/src -iname "*.cpp"))
+
+DESKTOPSOURCES    = $(subst desktop/src,build/desktop, 				\
+                      $(shell find desktop/src -iname "*.cpp"))
 
 YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
 LIB64SOURCES = common/include/libb64/src/cencode.o
 
 SERVER_SRCS = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
-SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
+SERVER_DEPS := common/src/thrift/server.thrift.mkcpp \
+			   common/src/thrift/filesystem.thrift.mkcpp\
+			   $(SERVER_SRCS:.cpp=.o)
+			   
 
-$(BINDIR)/omni.server: common/src/thrift/server.thrift.mkcpp $(SERVER_DEPS)
-	$(ECHO) "[CXX] linking bin/omni.server"
+DDS_MAN_SRCS = $(COMMONSOURCES) $(YAMLSOURCES) build/filesystem/dds_manager.cpp
+DDS_MAN_DEPS := common/src/thrift/server.thrift.mkcpp \
+				common/src/thrift/filesystem.thrift.mkcpp \
+				$(DDS_MAN_SRCS:.cpp=.o)
+				
+
+DDS_SRV_SRCS = $(COMMONSOURCES) $(YAMLSOURCES) build/filesystem/dds_server.cpp
+DDS_SRV_DEPS := common/src/thrift/server.thrift.mkcpp \
+				common/src/thrift/filesystem.thrift.mkcpp \
+				$(DDS_SRV_SRCS:.cpp=.o)
+				
+OMNI_SRCS = $(DESKTOPSOURCES)
+OMNI_DEPS := $(OMNI_SRCS:.cpp=.o)
+
+define link
+	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o $(BINDIR)/omni.server $(SERVER_DEPS) $(LIBS)
+	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
+endef
+
+$(BINDIR)/omni.server: $(SERVER_DEPS)
+	$(link)
+
+$(BINDIR)/omni.dds_manager: $(DDS_MAN_DEPS)
+	$(link)
+
+$(BINDIR)/omni.dds_server: $(DDS_SRV_DEPS)
+	$(link)
+
+$(BINDIR)/omni: $(OMNI_DEPS)
+	$(link)
 
 ALLDEPS = $(shell find build -iname "*.d")
 

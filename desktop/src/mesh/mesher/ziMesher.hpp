@@ -275,42 +275,47 @@ private:
         const ChunkUniqueValues segIDs =
             segmentation_->ChunkUniqueValues()->Values(coord, threshold_);
 
-        zi::mesh::marching_cubes< int > cube_marcher;
-        setupMarchingCube(cube_marcher, chunk);
+       	if (segIDs.size() > 0)
+       	{
+	        zi::mesh::marching_cubes< int > cube_marcher;
+	        setupMarchingCube(cube_marcher, chunk);
 
-        zi::task_manager::simple manager( numThreadsPerChunk_ );
-        manager.start();
+	        zi::task_manager::simple manager( numThreadsPerChunk_ );
+	        manager.start();
 
-        FOR_EACH( it, cube_marcher.meshes() )
-        {
-            const OmSegID segID = it->first;
+	        FOR_EACH( it, cube_marcher.meshes() )
+	        {
+	            const OmSegID segID = it->first;
 
-            if(segIDs.contains(segID))
-            {
-                zi::shared_ptr< zi::mesh::simplifier< double > >
-                    spfy( new zi::mesh::simplifier< double >( 0 ) );
+	            if(segIDs.contains(segID))
+	            {
+	                zi::shared_ptr< zi::mesh::simplifier< double > >
+	                    spfy( new zi::mesh::simplifier< double >( 0 ) );
 
-                cube_marcher.fill_simplifier< double >( *spfy, segID,
-                                                        0, 0, 0,
-                                                        scale.at( 2 ),
-                                                        scale.at( 1 ),
-                                                        scale.at( 0 ) );
+	                cube_marcher.fill_simplifier< double >( *spfy, segID,
+	                                                        0, 0, 0,
+	                                                        scale.at( 2 ),
+	                                                        scale.at( 1 ),
+	                                                        scale.at( 0 ) );
 
-                manager.push_back(
-                    zi::run_fn(
-                        zi::bind( &ziMesher::processSingleSegment, this,
-                                  segID,
-                                  maxScale,
-                                  translate,
-                                  spfy,
-                                  &occurances_[ coord ]
-                            )));
-            }
+	                manager.push_back(
+	                    zi::run_fn(
+	                        zi::bind( &ziMesher::processSingleSegment, this,
+	                                  segID,
+	                                  maxScale,
+	                                  translate,
+	                                  spfy,
+	                                  &occurances_[ coord ]
+	                            )));
+	            }
+	        }
+
+	        cube_marcher.clear();
+
+	        manager.join();
+	    } else {
+            std::cout << "\rSkipping Chunk " << coord << " b/c there's nothing in there";
         }
-
-        cube_marcher.clear();
-
-        manager.join();
 
         progress_.ChunkCompleted(coord);
     }
