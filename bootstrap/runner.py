@@ -53,6 +53,12 @@ class runner:
         b.prepare()
         b.buildInSourceFolder()
 
+    def submodule(self):
+    	print ("Initializing Submodules.")
+    	os.system("git submodule init")
+    	print ("Downloading Submodules.")
+    	os.system("git submodule update")
+
     def boost(self):
     #./bjam --show-libraries
         #The following libraries require building:

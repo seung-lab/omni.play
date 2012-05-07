@@ -46,6 +46,7 @@ class bootstrap:
                     "Build libpng",
                     "Build zlib",
                     "Build libevent",
+                    "Init Submodules",
                     "Install Ubuntu dev packages"]
 
         self.show_menu(options)
@@ -70,6 +71,8 @@ class bootstrap:
             elif 7 == entry:
             	r.libevent()
             elif 8 == entry:
+            	r.submodule()
+            elif 9 == entry:
                 self.doUbuntuAptGets()
             else:
                 print "unknown option: ", entry
@@ -83,6 +86,7 @@ class bootstrap:
 
     def buildAll(self):
         r = runner(numCores)
+        r.submodule()
         r.boost()
         r.thrift()
         r.libjpeg()
@@ -109,7 +113,7 @@ class bootstrap:
         args = 'libxrender-dev libxext-dev freeglut3-dev g++ \
 libfreetype6-dev libxml2 libxml2-dev mesa-common-dev \
 libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg \
-libgl1-mesa-glx-dbg libncurses5-dev yaml-python'
+libgl1-mesa-glx-dbg libncurses5-dev yaml-python nasm'
         
         cmd = "sudo apt-get -y install " + args
         print "about to run: " + cmd
