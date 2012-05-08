@@ -86,7 +86,7 @@ class bootstrap:
 
     def buildAll(self):
         r = runner(self.numCores)
-        doUbuntuAptGets()
+        self.doUbuntuAptGets()
         r.submodule()
         r.boost()
         r.thrift()
