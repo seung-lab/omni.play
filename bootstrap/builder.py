@@ -38,6 +38,9 @@ class Builder:
     def lib_fp(self):
         return os.path.join(self.libPath, self.libFolderName)
 
+    def libs_fp(self):
+        return self.libPath
+
     def build_fp(self):
         return os.path.join(self.buildPath, self.baseFileName)
 

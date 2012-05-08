@@ -37,6 +37,7 @@ def rm_f(f):
         shutil.rmtree(f)
 
 def gunzip(fnp, fp):
+    print "unzipping: ", fnp
     tar = tarfile.open(fnp)
     tar.extractall(fp)
     tar.close()
