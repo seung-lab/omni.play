@@ -22,7 +22,7 @@ class runner:
                           "--without-ruby",
                           "--without-erlang",
                           "--enable-gen-cpp",
-                          "--with-boost={libPath}/Boost".format(libPath=b.lib_fp())
+                          "--with-boost={libs}/Boost".format(libs=b.libs_fp())
                           ])
 
         b.build_options(args)
@@ -86,24 +86,26 @@ class runner:
         bz = self.makeBuilder(LibraryMetadata.zlib())
         bz.wget()
         bz.untar()
-    """
-        cmd = "cd srcPath/baseFileName ./bootstrap.sh --prefix=libPath/libFolderName "
+
+        b.chdir_src()
+        cmd = "./bootstrap.sh --prefix=" + b.lib_fp()
         cmd += " --with-libraries=filesystem,thread,system,iostreams,regex"
 
-        print "configuring (cmd)\n"
+        print "configuring (" + cmd + ")\n"
 
-        `(cmd)`
+        os.system(cmd)
         print "done\n"
 
-        bjamFlags = "-jNumCores"
+        bjamFlags = "-j{num}".format(num=self.numCores)
         bjamFlags += " -sNO_BZIP2=1 -sZLIB_SOURCE=srcPath/ZLIB_VER"
         bjamFlags += " variant=release link=static threading=multi runtime-link=static"
         # bjamFlags += " toolset=gcc cxxflags=-std=gnu++0x"
-        cmd = "cd srcPath/baseFileName ./bjam bjamFlags install"
+        cmd = "./bjam " + bjamFlags + " install"
         print "building and installing (cmd)\n"
-        `(cmd)`
+        os.system(cmd)
+        b.chdir_home()
         print "done\n"
-    """
+
 
     def omniServer(self):
         printTitle("omni.server")

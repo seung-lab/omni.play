@@ -5,7 +5,7 @@ boost:
 zlib:
  lib_folder: zlib
  ver: zlib-1.2.6
- uri: http://zlib.net/zlib-1.2.6.tar.gz
+ uri: http://sourceforge.net/projects/libpng/files/zlib/1.2.6/zlib-1.2.6.tar.gz/download
 thrift:
  lib_folder: thrift
  ver: thrift-0.8.0
