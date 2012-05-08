@@ -85,7 +85,7 @@ class bootstrap:
             traceback.print_exc()
 
     def buildAll(self):
-        r = runner(numCores)
+        r = runner(self.numCores)
         doUbuntuAptGets()
         r.submodule()
         r.boost()
