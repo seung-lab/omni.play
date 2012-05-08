@@ -57,7 +57,7 @@ class bootstrap:
             if 0 == entry:
                 sys.exit(0)
             elif 1 == entry:
-                r.buildAll()
+                self.buildAll()
             elif 2 == entry:
                 r.boost()
             elif 3 == entry:
@@ -86,6 +86,7 @@ class bootstrap:
 
     def buildAll(self):
         r = runner(numCores)
+        doUbuntuAptGets()
         r.submodule()
         r.boost()
         r.thrift()
