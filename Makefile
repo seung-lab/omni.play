@@ -153,9 +153,7 @@ common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
 	$(MV) $@.tmp $@
 
 .PHONY: all
-all: $(BINDIR)/omni.server \
-	 $(BINDIR)/omni.dds_manager \
-	 $(BINDIR)/omni.dds_server
+all: $(BINDIR)/omni.server 
 
 .PHONY: tidy
 tidy:
@@ -190,17 +188,6 @@ SERVER_DEPS := common/src/thrift/server.thrift.mkcpp \
 			   common/src/thrift/filesystem.thrift.mkcpp\
 			   $(SERVER_SRCS:.cpp=.o)
 			   
-
-DDS_MAN_SRCS = $(COMMONSOURCES) $(YAMLSOURCES) build/filesystem/dds_manager.cpp
-DDS_MAN_DEPS := common/src/thrift/server.thrift.mkcpp \
-				common/src/thrift/filesystem.thrift.mkcpp \
-				$(DDS_MAN_SRCS:.cpp=.o)
-				
-
-DDS_SRV_SRCS = $(COMMONSOURCES) $(YAMLSOURCES) build/filesystem/dds_server.cpp
-DDS_SRV_DEPS := common/src/thrift/server.thrift.mkcpp \
-				common/src/thrift/filesystem.thrift.mkcpp \
-				$(DDS_SRV_SRCS:.cpp=.o)
 				
 OMNI_SRCS = $(DESKTOPSOURCES)
 OMNI_DEPS := $(OMNI_SRCS:.cpp=.o)
@@ -212,12 +199,6 @@ define link
 endef
 
 $(BINDIR)/omni.server: $(SERVER_DEPS)
-	$(link)
-
-$(BINDIR)/omni.dds_manager: $(DDS_MAN_DEPS)
-	$(link)
-
-$(BINDIR)/omni.dds_server: $(DDS_SRV_DEPS)
 	$(link)
 
 $(BINDIR)/omni: $(OMNI_DEPS)
