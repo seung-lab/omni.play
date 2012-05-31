@@ -46,6 +46,7 @@ class bootstrap:
                     "Build libpng",
                     "Build zlib",
                     "Build libevent",
+                    "Build qt",
                     "Init Submodules",
                     "Install Ubuntu dev packages"]
 
@@ -71,8 +72,10 @@ class bootstrap:
             elif 7 == entry:
             	r.libevent()
             elif 8 == entry:
-            	r.submodule()
+            	r.qt()
             elif 9 == entry:
+            	r.submodule()
+            elif 10 == entry:
                 self.doUbuntuAptGets()
             else:
                 print "unknown option: ", entry
@@ -93,6 +96,7 @@ class bootstrap:
         r.libjpeg()
         r.libpng()
         r.libevent()
+        r.qt()
     
     def parallelCompilation(self, cmd_procs):
         self.numCores = sysutils.numberOfCores(cmd_procs)

@@ -22,3 +22,7 @@ event:
  lib_folder: libevent
  ver: libevent-2.0.18-stable
  uri: https://github.com/downloads/libevent/libevent/libevent-2.0.18-stable.tar.gz
+qt:
+ lib_folder: qt
+ ver: qt-everywhere-opensource-src-4.8.2
+ uri: http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.2.tar.gz

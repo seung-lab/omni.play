@@ -116,15 +116,17 @@ define make_d
 	$(CXX) $(CPP_DEPFLAGS) -MF $@ $<
 endef
 
+THRIFT_DEPS = common/src/thrift/server.thrift.mkcpp \
+			  common/src/thrift/filesystem.thrift.mkcpp
 
-build/common/%.d: common/src/%.cpp
+build/common/%.d: common/src/%.cpp $(THRIFT_DEPS)
 	$(make_d)
-build/common/%.o: common/src/%.cpp
+build/common/%.o: common/src/%.cpp $(THRIFT_DEPS)
 	$(build_cpp)
 
-build/server/%.d: server/src/%.cpp
+build/server/%.d: server/src/%.cpp $(THRIFT_DEPS)
 	$(make_d)
-build/server/%.o: server/src/%.cpp
+build/server/%.o: server/src/%.cpp $(THRIFT_DEPS)
 	$(build_cpp)
 
 build/desktop/%.d: desktop/src/%.cpp
@@ -150,6 +152,7 @@ common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
 	$(TOUCH) $@.tmp
 	$(THRIFT) -r --out common/src/thrift --gen cpp $<
 	$(RM) common/src/thrift/*.skeleton.cpp
+
 	$(MV) $@.tmp $@
 
 .PHONY: all
@@ -184,9 +187,7 @@ YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
 LIB64SOURCES = common/include/libb64/src/cencode.o
 
 SERVER_SRCS = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
-SERVER_DEPS := common/src/thrift/server.thrift.mkcpp \
-			   common/src/thrift/filesystem.thrift.mkcpp\
-			   $(SERVER_SRCS:.cpp=.o)
+SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
 			   
 				
 OMNI_SRCS = $(DESKTOPSOURCES)
@@ -198,7 +199,7 @@ define link
 	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
 endef
 
-$(BINDIR)/omni.server: $(SERVER_DEPS)
+$(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
 	$(link)
 
 $(BINDIR)/omni: $(OMNI_DEPS)

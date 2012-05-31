@@ -106,6 +106,10 @@ class runner:
         b.chdir_home()
         print "done\n"
 
+    def qt(self):
+    	b = self.makeBuilder(LibraryMetadata.qt())
+    	b.build_options = "-static -fast -no-qt3support"
+        b.prepareAndBuild()
 
     def omniServer(self):
         printTitle("omni.server")

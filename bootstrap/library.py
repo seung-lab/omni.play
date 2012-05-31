@@ -48,3 +48,7 @@ class LibraryMetadata:
     @staticmethod
     def event():
         return LibraryMetadata("event")
+
+    @staticmethod
+    def qt():
+        return LibraryMetadata("qt")
