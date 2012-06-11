@@ -52,3 +52,7 @@ class LibraryMetadata:
     @staticmethod
     def qt():
         return LibraryMetadata("qt")
+
+    @staticmethod
+    def hdf5():
+        return LibraryMetadata("hdf5")

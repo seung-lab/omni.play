@@ -54,10 +54,10 @@ class runner:
         b.buildInSourceFolder()
 
     def submodule(self):
-    	print ("Initializing Submodules.")
-    	os.system("git submodule init")
-    	print ("Downloading Submodules.")
-    	os.system("git submodule update")
+        print ("Initializing Submodules.")
+        os.system("git submodule init")
+        print ("Downloading Submodules.")
+        os.system("git submodule update")
 
     def boost(self):
     #./bjam --show-libraries
@@ -107,8 +107,13 @@ class runner:
         print "done\n"
 
     def qt(self):
-    	b = self.makeBuilder(LibraryMetadata.qt())
-    	b.build_options = "-static -fast -no-qt3support"
+        b = self.makeBuilder(LibraryMetadata.qt())
+        b.build_options = "-static -fast -no-qt3support"
+        b.prepareAndBuild()
+
+    def hdf5(self):
+        b = self.makeBuilder(LibraryMetadata.hdf5())
+        b.build_options = "--enable-threadsafe"
         b.prepareAndBuild()
 
     def omniServer(self):

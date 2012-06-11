@@ -26,3 +26,7 @@ qt:
  lib_folder: qt
  ver: qt-everywhere-opensource-src-4.8.2
  uri: http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.2.tar.gz
+hdf5:
+ lib_folder: hdf5
+ ver: hdf5-1.8.10-snap3
+ uri: ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf5/snapshots/v18/hdf5-1.8.10-snap3.tar.gz

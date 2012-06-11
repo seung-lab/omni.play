@@ -38,13 +38,30 @@ INCLUDES	=	-I$(HERE) \
 				-I$(HERE)/common/include/libb64/include \
 				-I$(HERE)/server/src \
 				-I$(HERE)/filesystem/src \
-				-I$(HERE)/desktop/src \
 				-I$(HERE)/zi_lib \
 				-I$(EXTERNAL)/thrift/include/thrift \
 				-I$(EXTERNAL)/Boost/include \
 				-I$(EXTERNAL)/libjpeg/include \
 				-I$(EXTERNAL)/libpng/include \
 
+DESKTOPINCLUDES = -I$(HERE)/desktop/src \
+				  -I$(HERE)/desktop/include \
+				  -I$(HERE)/desktop/lib \
+				  -I$(HERE)/desktop/include/json_spirit_v4.03/json_spirit \
+				  -I$(HERE)/desktop \
+				  -I$(HERE)/desktop/tests \
+				  -I$(HERE)/common/include \
+				  -I$(HERE)/common/include/yaml-cpp/include \
+				  -I$(HERE)/zi_lib \
+				  -I$(EXTERNAL)/libjpeg/include \
+				  -I$(EXTERNAL)/Boost/include \
+				  -I$(EXTERNAL)/qt/include/Qt \
+				  -I$(EXTERNAL)/qt/include/QtCore \
+				  -I$(EXTERNAL)/qt/include/QtOpenGL \
+				  -I$(EXTERNAL)/qt/include/QtGui \
+				  -I$(EXTERNAL)/qt/include/QtNetwork \
+				  -I$(EXTERNAL)/qt/include \
+				  -I$(EXTERNAL)/hdf5/include
 
 LIBS = $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/Boost/lib/libboost_iostreams.a \
@@ -57,20 +74,37 @@ LIBS = $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/libpng/lib/libpng.a \
 	   -levent -lpthread -lrt -lz
 
+DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
+			  $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
+	          $(EXTERNAL)/Boost/lib/libboost_iostreams.a \
+	          $(EXTERNAL)/Boost/lib/libboost_system.a \
+	          $(EXTERNAL)/Boost/lib/libboost_thread.a \
+	          $(EXTERNAL)/Boost/lib/libboost_regex.a \
+	          $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
+	          $(EXTERNAL)/libpng/lib/libpng.a \
+			  $(EXTERNAL)/hdf5/lib/libhdf5.a \
+              -lQtGui \
+              -lQtNetwork \
+              -lQtCore \
+              -lQtOpenGL \
+              -lGLU \
+              -lGL \
+	   		  -levent -lpthread -lrt -lz
+
 CXX_INCLUDES	=	$(INCLUDES)
 
 CWARN		=	-Wall -Wno-sign-compare -Wno-unused-variable -Wno-return-type
 CXXWARN		=	$(CWARN) -Wno-deprecated -Woverloaded-virtual
 
-CPP_DEPFLAGS		=	-MM -MG -MP $(CXX_INCLUDES) -MT "$(@:.d=.o)"
+CPP_DEPFLAGS		=	-MM -MG -MP -MT "$(@:.d=.o)"
 CPP_INLINE_DEPFLAGS	=	-MMD -MP -MT "$(@)" -MF $(@:.o=.T)
 COMMON_CFLAGS		=	-g -std=gnu99 -D_GNU_SOURCE=1 \
 				-D_REENTRANT $(CPP_INLINE_DEPFLAGS) \
-				$(INCLUDES) $(FPIC) $(CWARN)
+				$(FPIC) $(CWARN)
 
 THRIFT_CXXFLAGS	   = 	-DHAVE_CONFIG_H
 
-COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) $(CXX_INCLUDES) \
+COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) \
 						   $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS)
 
 DBG_CFLAGS         =	$(COMMON_CFLAGS) -DDEBUG_MODE=1
@@ -101,19 +135,19 @@ endif
 define build_cpp
 	$(ECHO) "[CXX] compiling $<"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
+	$(CXX) -c $(CXXFLAGS) $(INCLUDES) -o $@ $<
 	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
 endef
 
 define build_c
 	$(ECHO) "[CC] compiling $<"
 	$(MKDIR) -p $(dir $@)
-	$(CC) -c $(CFLAGS) -o $@ $<
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o $@ $<
 endef
 
 define make_d
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CPP_DEPFLAGS) -MF $@ $<
+	$(CXX) $(CPP_DEPFLAGS) $(INCLUDES) -MF $@ $<
 endef
 
 THRIFT_DEPS = common/src/thrift/server.thrift.mkcpp \
@@ -130,9 +164,13 @@ build/server/%.o: server/src/%.cpp $(THRIFT_DEPS)
 	$(build_cpp)
 
 build/desktop/%.d: desktop/src/%.cpp
-	$(make_d)
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CPP_DEPFLAGS) $(DESKTOPINCLUDES) -MF $@ $<
 build/desktop/%.o: desktop/src/%.cpp
-	$(build_cpp)
+	$(ECHO) "[CXX] compiling $<"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) -Wno-unused-but-set-variable -o $@ $<
+	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
 
 build/filesystem/%.d: filesystem/src/%.cpp
 	$(make_d)
@@ -203,7 +241,9 @@ $(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
 	$(link)
 
 $(BINDIR)/omni: $(OMNI_DEPS)
-	$(link)
+	$(ECHO) "[CXX] linking $@"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
 
 ALLDEPS = $(shell find build -iname "*.d")
 

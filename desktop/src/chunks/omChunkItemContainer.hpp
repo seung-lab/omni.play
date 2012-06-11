@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/omContainer.hpp"
-#include "src/chunks/omChunkItemContainerMatrix.hpp"
+#include "chunks/omChunkItemContainerMatrix.hpp"
 #include "zi/omMutex.h"
 
 template <typename VOL, typename T>

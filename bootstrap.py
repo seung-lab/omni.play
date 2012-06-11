@@ -15,7 +15,7 @@ class bootstrap:
     def show_menu(self, options):
         max_answer = len(options) - 1
 
-        print "bootstrap.pl menu:"
+        print "bootstrap.py menu:"
         
         for idx, val in enumerate(options):
             print "{i} -- {val}".format(i = idx,
@@ -47,6 +47,7 @@ class bootstrap:
                     "Build zlib",
                     "Build libevent",
                     "Build qt",
+                    "Build hdf5",
                     "Init Submodules",
                     "Install Ubuntu dev packages"]
 
@@ -74,8 +75,10 @@ class bootstrap:
             elif 8 == entry:
             	r.qt()
             elif 9 == entry:
-            	r.submodule()
+            	r.hdf5()
             elif 10 == entry:
+            	r.submodule()
+            elif 11 == entry:
                 self.doUbuntuAptGets()
             else:
                 print "unknown option: ", entry
@@ -97,6 +100,7 @@ class bootstrap:
         r.libpng()
         r.libevent()
         r.qt()
+        r.hdf5()
     
     def parallelCompilation(self, cmd_procs):
         self.numCores = sysutils.numberOfCores(cmd_procs)
