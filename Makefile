@@ -29,6 +29,8 @@ ARFLAGS =	rcs
 CC     =	$(AT)gcc
 CXX    =	$(AT)g++
 THRIFT = 	$(AT)$(EXTERNAL)/thrift/bin/thrift
+MOC	   =    $(AT)$(EXTERNAL)/qt/bin/moc
+RCC	   =    $(AT)$(EXTERNAL)/qt/bin/rcc
 FPIC   =	-fPIC
 
 INCLUDES	=	-I$(HERE) \
@@ -49,7 +51,6 @@ DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop/lib \
 				  -I$(HERE)/desktop/include/json_spirit_v4.03/json_spirit \
 				  -I$(HERE)/desktop \
-				  -I$(HERE)/desktop/tests \
 				  -I$(HERE)/common/include \
 				  -I$(HERE)/common/include/yaml-cpp/include \
 				  -I$(HERE)/zi_lib \
@@ -122,6 +123,8 @@ COMM_FLEX_FLAGS    =    -d
 OPT_FLEXFLAGS      =    $(COMM_FLEX_FLAGS)
 DBG_FLEXFLAGS      =    $(COMM_FLEX_FLAGS) -t
 
+DEFINES       = -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED
+
 ifneq ($(strip $(OPT)),)
   CFLAGS	=	$(OPT_CFLAGS) $(EXTRA_CFLAGS)
   CXXFLAGS	=	$(OPT_CXXFLAGS) $(EXTRA_CXXFLAGS)
@@ -183,6 +186,18 @@ build/filesystem/%.o: filesystem/src/%.cpp
 	$(build_cpp)
 %.o: %.c
 	$(build_c)
+%.moc.cpp: %.hpp
+	$(ECHO) "[MOC] Generating $<"
+	$(MKDIR) -p $(dir $@)
+	$(MOC) $(DEFINES) $(DESKTOPINCLUDES) -o $@ $<
+%.moc.cpp: %.h
+	$(ECHO) "[MOC] Generating $<"
+	$(MKDIR) -p $(dir $@)
+	$(MOC) $(DEFINES) $(DESKTOPINCLUDES) -o $@ $<
+%.rcc.cpp: %.qrc
+	$(ECHO) "[RCC] Generating $@"
+	$(MKDIR) -p $(dir $@)
+	$(RCC) -name $(basename $(notdir $<)) $< -o $@
 
 common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
 	$(ECHO) "[Thrift] Generating $@"
@@ -221,7 +236,11 @@ SERVERSOURCES     = $(subst server/src,build/server, 				\
 DESKTOPSOURCES    = $(subst desktop/src,build/desktop, 				\
                       $(shell find desktop/src -iname "*.cpp"))
 
+DESKTOPHEADERS    = $(subst desktop/src,build/desktop, 				\
+                      $(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':'))
+
 YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
+JSONSOURCES = $(shell find desktop/include/json_spirit_v4.03/json_spirit -iname "*.cpp" )
 LIB64SOURCES = common/include/libb64/src/cencode.o
 
 SERVER_SRCS = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
@@ -229,7 +248,10 @@ SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
 			   
 				
 OMNI_SRCS = $(DESKTOPSOURCES)
-OMNI_DEPS := $(OMNI_SRCS:.cpp=.o)
+MOC_SRCS = $(DESKTOPHEADERS:.hpp=.moc.cpp)
+MOC_SRCS2 = $(MOC_SRCS:.h=.moc.cpp)
+
+OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o) $(YAMLSOURCES:.cpp=.o) $(JSONSOURCES:.cpp=.o)
 
 define link
 	$(ECHO) "[CXX] linking $@"
@@ -240,7 +262,7 @@ endef
 $(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
 	$(link)
 
-$(BINDIR)/omni: $(OMNI_DEPS)
+$(BINDIR)/omni: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/resources.rcc.o
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)

@@ -1,10 +1,7 @@
 #include <zi/zargs/zargs.hpp>
 ZiARG_bool(headless, false, "run Omni without GUI");
-ZiARG_bool(tests, false, "run tests");
-ZiARG_bool(segments, false, "run segments tests");
 ZiARG_string(cmdfile, "", "run automated script file");
 ZiARG_int64(psn, 0, "mac OSX proces ID");
-ZiARG_bool(perf, false, "enable performance tests");
 ZiARG_bool(noTilePrefetch, false, "disable tile prefetcher");
 ZiARG_string(importHDF5seg, "", "create new Omni project file from data");
 ZiARG_bool(noView3dThrottle, false, "disable View3d throttling");
@@ -33,8 +30,6 @@ DEFINE_ZiLOG(segmentSelector, false);
 #include "network/server/omServer.h"
 #include "system/omQTApp.hpp"
 #include "system/omStateManager.h"
-#include "tests/tests.hpp"
-
 #include <QApplication>
 #include <QFileInfo>
 
@@ -62,10 +57,6 @@ public:
 
         if(ZiARG_importHDF5seg.size() > 0){
             return importHDF5seg();
-        }
-
-        if(ZiARG_tests){
-            return runTests();
         }
 
         if(ZiARG_server){
@@ -122,12 +113,6 @@ private:
         }
 
         return false;
-    }
-
-    int runTests()
-    {
-        Tests().Run();
-        return 0;
     }
 
     void registerTypes()

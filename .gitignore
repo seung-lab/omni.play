@@ -8,3 +8,4 @@ bin/*
 external
 common/src/thrift
 *.filemap
+*.rcc.cpp
