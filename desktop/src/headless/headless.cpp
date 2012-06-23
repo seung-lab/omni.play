@@ -7,7 +7,6 @@
 #include "headless/headless.h"
 #include "headless/headlessImpl.hpp"
 #include "mesh/omMesh.h"
-#include "network/omExtractMesh.h"
 #include "segment/omSegments.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
@@ -890,24 +889,6 @@ void Headless::processLine(const QString& line, const QString&)
 
         OmBuildChannel bc(&chann);
         bc.BuildEmptyChannel();
-
-    } else if(line.startsWith("dumpMesh:")){
-        QStringList args = line.split(':',QString::SkipEmptyParts);
-        if (args.size() < 2) {
-            printf("specify which segment to export.");
-            return;
-        }
-
-        OmExtractMesh meshExtractor;
-
-        const OmID segmentationID = 1;
-        const OmSegID segID = OmStringHelpers::getUInt(args[1]);
-        const uint32_t mipLevel = 2;
-        const uint32_t x = 0;
-        const uint32_t y = 0;
-        const uint32_t z = 0;
-
-        meshExtractor.WriteOutMesh(segmentationID, segID, mipLevel, x, y, z);
 
     } else {
         printf("Could not parse \"%s\".\n", qPrintable(line));
