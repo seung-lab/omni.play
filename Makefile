@@ -209,7 +209,7 @@ common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
 	$(MV) $@.tmp $@
 
 .PHONY: all
-all: $(BINDIR)/omni.server 
+all: $(BINDIR)/omni.server
 
 .PHONY: tidy
 tidy:
@@ -245,8 +245,7 @@ LIB64SOURCES = common/include/libb64/src/cencode.o
 
 SERVER_SRCS = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
 SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
-			   
-				
+
 OMNI_SRCS = $(DESKTOPSOURCES)
 MOC_SRCS = $(DESKTOPHEADERS:.hpp=.moc.cpp)
 MOC_SRCS2 = $(MOC_SRCS:.h=.moc.cpp)
