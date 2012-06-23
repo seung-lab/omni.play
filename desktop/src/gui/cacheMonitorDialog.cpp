@@ -36,7 +36,7 @@ void CacheMonitorDialog::Refresh()
     }
 }
 
-void CacheMonitorDialog::done()
+void CacheMonitorDialog::done(int)
 {
     mDying = true;
     mTimer->stop();

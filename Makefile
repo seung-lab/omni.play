@@ -49,7 +49,6 @@ INCLUDES	=	-I$(HERE) \
 DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop/include \
 				  -I$(HERE)/desktop/lib \
-				  -I$(HERE)/desktop/include/json_spirit_v4.03/json_spirit \
 				  -I$(HERE)/desktop \
 				  -I$(HERE)/common/include \
 				  -I$(HERE)/common/include/yaml-cpp/include \
@@ -123,7 +122,10 @@ COMM_FLEX_FLAGS    =    -d
 OPT_FLEXFLAGS      =    $(COMM_FLEX_FLAGS)
 DBG_FLEXFLAGS      =    $(COMM_FLEX_FLAGS) -t
 
-DEFINES       = -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED
+DEFINES = -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_MULTI_INDEX_DISABLE_SERIALIZATION
+
+EXTRA_CXXFLAGS = -DZI_USE_OPENMP -fopenmp
+EXTRA_LDFLAGS  = -DZI_USE_OPENMP -fopenmp
 
 ifneq ($(strip $(OPT)),)
   CFLAGS	=	$(OPT_CFLAGS) $(EXTRA_CFLAGS)
@@ -172,7 +174,7 @@ build/desktop/%.d: desktop/src/%.cpp
 build/desktop/%.o: desktop/src/%.cpp
 	$(ECHO) "[CXX] compiling $<"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) -Wno-unused-but-set-variable -o $@ $<
+	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) $(DEFINES) -Wno-unused-but-set-variable -o $@ $<
 	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
 
 build/filesystem/%.d: filesystem/src/%.cpp
@@ -240,7 +242,6 @@ DESKTOPHEADERS    = $(subst desktop/src,build/desktop, 				\
                       $(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':'))
 
 YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
-JSONSOURCES = $(shell find desktop/include/json_spirit_v4.03/json_spirit -iname "*.cpp" )
 LIB64SOURCES = common/include/libb64/src/cencode.o
 
 SERVER_SRCS = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
@@ -250,7 +251,7 @@ OMNI_SRCS = $(DESKTOPSOURCES)
 MOC_SRCS = $(DESKTOPHEADERS:.hpp=.moc.cpp)
 MOC_SRCS2 = $(MOC_SRCS:.h=.moc.cpp)
 
-OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o) $(YAMLSOURCES:.cpp=.o) $(JSONSOURCES:.cpp=.o)
+OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o) $(YAMLSOURCES:.cpp=.o)
 
 define link
 	$(ECHO) "[CXX] linking $@"
