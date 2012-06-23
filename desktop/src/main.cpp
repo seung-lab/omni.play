@@ -1,18 +1,10 @@
 #include <zi/zargs/zargs.hpp>
 ZiARG_bool(headless, false, "run Omni without GUI");
-ZiARG_bool(tests, false, "run tests");
-ZiARG_bool(segments, false, "run segments tests");
 ZiARG_string(cmdfile, "", "run automated script file");
 ZiARG_int64(psn, 0, "mac OSX proces ID");
-ZiARG_bool(perf, false, "enable performance tests");
 ZiARG_bool(noTilePrefetch, false, "disable tile prefetcher");
 ZiARG_string(importHDF5seg, "", "create new Omni project file from data");
 ZiARG_bool(noView3dThrottle, false, "disable View3d throttling");
-
-// network args
-ZiARG_bool(client, false, "run Omni in client mode");
-ZiARG_string(clientCMD, "", "command for client to ask server");
-ZiARG_bool(server, false, "run Omni in server mode");
 
 #include <zi/logging.hpp>
 USE_ZiLOGGING(STDOUT);
@@ -29,12 +21,8 @@ DEFINE_ZiLOG(segmentSelector, false);
 #include "gui/mainWindow/mainWindow.h"
 #include "headless/headless.h"
 #include "headless/headlessImpl.hpp"
-#include "network/client/omClient.hpp"
-#include "network/server/omServer.h"
 #include "system/omQTApp.hpp"
 #include "system/omStateManager.h"
-#include "tests/tests.hpp"
-
 #include <QApplication>
 #include <QFileInfo>
 
@@ -54,22 +42,10 @@ public:
     {
         checkRemainingArgs();
 
-        if(ZiARG_client){
-            return runClient();
-        }
-
         fileToOpen_ = getFileToOpen();
 
         if(ZiARG_importHDF5seg.size() > 0){
             return importHDF5seg();
-        }
-
-        if(ZiARG_tests){
-            return runTests();
-        }
-
-        if(ZiARG_server){
-            return runServer();
         }
 
         if(shouldRunHeadless()){
@@ -80,28 +56,6 @@ public:
     }
 
 private:
-    bool runServer()
-    {
-        QCoreApplication* app = new QCoreApplication(argc_, argv_);
-        registerTypes();
-
-        if(fileToOpen_ != ""){
-            HeadlessImpl::OpenProject(fileToOpen_);
-        }
-
-        OmServer server;
-        server.Start();
-
-        return app->exec();
-    }
-
-    bool runClient()
-    {
-        OmClient client;
-        client.Send(ZiARG_clientCMD);
-        return 0;
-    }
-
     bool shouldRunHeadless()
     {
 // from QT docs
@@ -124,23 +78,6 @@ private:
         return false;
     }
 
-    bool runTests()
-    {
-        QCoreApplication* app = new QCoreApplication(argc_, argv_);
-        
-        registerTypes();
-        
-//         OmThreadPool pool;
-//         pool.start(1);
-//         pool.push_back(zi::run_fn(zi::bind(&Omni::RunAppThread, this)));
-
-        Tests t;
-        
-        QMetaObject::invokeMethod(&t, "RunTests", Qt::QueuedConnection);
-        
-        return app->exec();
-    }
-    
     void registerTypes()
     {
         qRegisterMetaType<om::tool::mode>("om::tool::mode");

@@ -99,9 +99,10 @@ private:
 
         if(fileDidNotExist){
             file.resize(defaultFileSizeMB * om::math::bytesPerMB);
+            curEndOfFile_ = 0;
+        } else {
+            curEndOfFile_ = file.size();
         }
-
-        curEndOfFile_ = file.size();
     }
 
     void expandFileIfNeeded(OmMeshFilePart& entry, const int64_t numBytes)

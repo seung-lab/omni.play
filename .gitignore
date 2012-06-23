@@ -3,5 +3,9 @@ bin/*
 *.d
 *.T
 *.o
-
+*~
+*.pyc
 external
+common/src/thrift
+*.filemap
+*.rcc.cpp

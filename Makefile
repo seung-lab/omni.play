@@ -4,6 +4,7 @@ HERE    	=       .
 EXTERNAL	=	$(HERE)/external/libs
 BINDIR		=	./bin
 BUILDDIR	=	build
+GENDIR		=	common/src/thrift
 
 AT		=   @
 DOLLAR  = 	$$
@@ -28,6 +29,8 @@ ARFLAGS =	rcs
 CC     =	$(AT)gcc
 CXX    =	$(AT)g++
 THRIFT = 	$(AT)$(EXTERNAL)/thrift/bin/thrift
+MOC	   =    $(AT)$(EXTERNAL)/qt/bin/moc
+RCC	   =    $(AT)$(EXTERNAL)/qt/bin/rcc
 FPIC   =	-fPIC
 
 INCLUDES	=	-I$(HERE) \
@@ -37,13 +40,28 @@ INCLUDES	=	-I$(HERE) \
 				-I$(HERE)/common/include/libb64/include \
 				-I$(HERE)/server/src \
 				-I$(HERE)/filesystem/src \
-				-I$(HERE)/desktop/src \
 				-I$(HERE)/zi_lib \
 				-I$(EXTERNAL)/thrift/include/thrift \
 				-I$(EXTERNAL)/Boost/include \
 				-I$(EXTERNAL)/libjpeg/include \
 				-I$(EXTERNAL)/libpng/include \
 
+DESKTOPINCLUDES = -I$(HERE)/desktop/src \
+				  -I$(HERE)/desktop/include \
+				  -I$(HERE)/desktop/lib \
+				  -I$(HERE)/desktop \
+				  -I$(HERE)/common/include \
+				  -I$(HERE)/common/include/yaml-cpp/include \
+				  -I$(HERE)/zi_lib \
+				  -I$(EXTERNAL)/libjpeg/include \
+				  -I$(EXTERNAL)/Boost/include \
+				  -I$(EXTERNAL)/qt/include/Qt \
+				  -I$(EXTERNAL)/qt/include/QtCore \
+				  -I$(EXTERNAL)/qt/include/QtOpenGL \
+				  -I$(EXTERNAL)/qt/include/QtGui \
+				  -I$(EXTERNAL)/qt/include/QtNetwork \
+				  -I$(EXTERNAL)/qt/include \
+				  -I$(EXTERNAL)/hdf5/include
 
 LIBS = $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/Boost/lib/libboost_iostreams.a \
@@ -54,38 +72,62 @@ LIBS = $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/thrift/lib/libthriftnb.a \
 	   $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
 	   $(EXTERNAL)/libpng/lib/libpng.a \
-	   -levent -lpthread -levent -lrt 
+	   -levent -lpthread -lrt -lz
+
+DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
+			  $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
+	          $(EXTERNAL)/Boost/lib/libboost_iostreams.a \
+	          $(EXTERNAL)/Boost/lib/libboost_system.a \
+	          $(EXTERNAL)/Boost/lib/libboost_thread.a \
+	          $(EXTERNAL)/Boost/lib/libboost_regex.a \
+	          $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
+	          $(EXTERNAL)/libpng/lib/libpng.a \
+			  $(EXTERNAL)/hdf5/lib/libhdf5.a \
+              -lQtGui \
+              -lQtNetwork \
+              -lQtCore \
+              -lQtOpenGL \
+              -lGLU \
+              -lGL \
+	   		  -levent -lpthread -lrt -lz
 
 CXX_INCLUDES	=	$(INCLUDES)
 
 CWARN		=	-Wall -Wno-sign-compare -Wno-unused-variable -Wno-return-type
 CXXWARN		=	$(CWARN) -Wno-deprecated -Woverloaded-virtual
 
-CPP_DEPFLAGS		=	-MM -MG -MP $(CXX_INCLUDES) -MT "$(@:.d=.o)"
+CPP_DEPFLAGS		=	-MM -MG -MP -MT "$(@:.d=.o)"
 CPP_INLINE_DEPFLAGS	=	-MMD -MP -MT "$(@)" -MF $(@:.o=.T)
 COMMON_CFLAGS		=	-g -std=gnu99 -D_GNU_SOURCE=1 \
 				-D_REENTRANT $(CPP_INLINE_DEPFLAGS) \
-				$(INCLUDES) $(FPIC) $(CWARN)
+				$(FPIC) $(CWARN)
 
 THRIFT_CXXFLAGS	   = 	-DHAVE_CONFIG_H
 
-COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) $(CXX_INCLUDES) \
+COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) \
 						   $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS)
 
 DBG_CFLAGS         =	$(COMMON_CFLAGS) -DDEBUG_MODE=1
-DBG_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DDEBUG_MODE=1
+DBG_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -gstabs+
 OPTIMIZATION_FLAGS =	-O3
 OPT_CFLAGS         =	$(COMMON_CFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
 OPT_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
 COMMON_LDFLAGS     =	-g $(FPIC) -Wl,--eh-frame-hdr -lm
-DBG_LDFLAGS        =	$(COMMON_LDFLAGS)
+DBG_LDFLAGS        =	$(COMMON_LDFLAGS) -gstabs+
 OPT_LDFLAGS        =	$(COMMON_LDFLAGS) -O3 -fno-omit-frame-pointer
 
 COMM_FLEX_FLAGS    =    -d
 OPT_FLEXFLAGS      =    $(COMM_FLEX_FLAGS)
 DBG_FLEXFLAGS      =    $(COMM_FLEX_FLAGS) -t
+
+DEFINES = -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED \
+-DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_MULTI_INDEX_DISABLE_SERIALIZATION \
+-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3 -DBOOST_SYSTEM_NO_DEPRECATED
+
+EXTRA_CXXFLAGS = -DZI_USE_OPENMP -fopenmp
+EXTRA_LDFLAGS  = -DZI_USE_OPENMP -fopenmp
 
 ifneq ($(strip $(OPT)),)
   CFLAGS	=	$(OPT_CFLAGS) $(EXTRA_CFLAGS)
@@ -97,50 +139,77 @@ else
   LDFLAGS	=	$(DBG_LDFLAGS) $(EXTRA_LDFLAGS)
 endif
 
-VPATH = common/src:server/src:filesystem/src:desktop/src
-
-# dependency files for c++
-build/%.d: %.cpp
-	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CPP_DEPFLAGS) -MF $@ $<
-
-# c++
-build/%.o: %.cpp
+define build_cpp
 	$(ECHO) "[CXX] compiling $<"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
+	$(CXX) -c $(CXXFLAGS) $(INCLUDES) -o $@ $<
 	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
+endef
 
-# c
-build/%.o: %.c
+define build_c
 	$(ECHO) "[CC] compiling $<"
 	$(MKDIR) -p $(dir $@)
-	$(CC) -c $(CFLAGS) -o $@ $<
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o $@ $<
+endef
 
-# dependency files for c++
+define make_d
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CPP_DEPFLAGS) $(INCLUDES) -MF $@ $<
+endef
+
+THRIFT_DEPS = common/src/thrift/server.thrift.mkcpp \
+			  common/src/thrift/filesystem.thrift.mkcpp
+
+build/common/%.d: common/src/%.cpp $(THRIFT_DEPS)
+	$(make_d)
+build/common/%.o: common/src/%.cpp $(THRIFT_DEPS)
+	$(build_cpp)
+
+build/server/%.d: server/src/%.cpp $(THRIFT_DEPS)
+	$(make_d)
+build/server/%.o: server/src/%.cpp $(THRIFT_DEPS)
+	$(build_cpp)
+
+build/desktop/%.d: desktop/src/%.cpp
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CPP_DEPFLAGS) $(DESKTOPINCLUDES) -MF $@ $<
+build/desktop/%.o: desktop/src/%.cpp
+	$(ECHO) "[CXX] compiling $<"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) $(DEFINES) -Wno-unused-but-set-variable -o $@ $<
+	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
+
+build/filesystem/%.d: filesystem/src/%.cpp
+	$(make_d)
+build/filesystem/%.o: filesystem/src/%.cpp
+	$(build_cpp)
+
 %.d: %.cpp
-	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CPP_DEPFLAGS) -MF $@ $<
-
-# c++
+	$(make_d)
 %.o: %.cpp
-	$(ECHO) "[CXX] compiling $<"
-	$(MKDIR) -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
-	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
-
-# c
+	$(build_cpp)
 %.o: %.c
-	$(ECHO) "[CC] compiling $<"
+	$(build_c)
+%.moc.cpp: %.hpp
+	$(ECHO) "[MOC] Generating $<"
 	$(MKDIR) -p $(dir $@)
-	$(CC) -c $(CFLAGS) -o $@ $<
+	$(MOC) $(DEFINES) $(DESKTOPINCLUDES) -o $@ $<
+%.moc.cpp: %.h
+	$(ECHO) "[MOC] Generating $<"
+	$(MKDIR) -p $(dir $@)
+	$(MOC) $(DEFINES) $(DESKTOPINCLUDES) -o $@ $<
+%.rcc.cpp: %.qrc
+	$(ECHO) "[RCC] Generating $@"
+	$(MKDIR) -p $(dir $@)
+	$(RCC) -name $(basename $(notdir $<)) $< -o $@
 
 common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
-	$(ECHO) "[Thrift ] Generating $@"
+	$(ECHO) "[Thrift] Generating $@"
 	$(MKDIR) -p $(dir $@)
 	$(TOUCH) $@.tmp
 	$(THRIFT) -r --out common/src/thrift --gen cpp $<
 	$(RM) common/src/thrift/*.skeleton.cpp
+
 	$(MV) $@.tmp $@
 
 .PHONY: all
@@ -157,15 +226,22 @@ tidy:
 .PHONY: clean
 clean:
 	$(ECHO) Cleaning...
-	$(RM) -rf $(BINDIR) $(GENDIR)
+	$(RM) -rf $(BINDIR) $(GENDIR) $(BUILDDIR)
 
 .PHONY: remake
 remake: clean all
 
-COMMONSOURCES = $(subst common/src,build,$(shell find common/src -iname "*.cpp"))
-SERVERSOURCES = $(subst server/src,build,$(shell find server/src -iname "*.cpp"))
-DESKTOPSOURCES = $(shell find desktop/src -iname "*.cpp")
-FILESYSTEMSOURCES = $(shell find filesystem/src -iname "*.cpp")
+COMMONSOURCES     = $(subst common/src,build/common, 				\
+					  $(shell find common/src -iname "*.cpp"))
+
+SERVERSOURCES     = $(subst server/src,build/server, 				\
+                      $(shell find server/src -iname "*.cpp"))
+
+DESKTOPSOURCES    = $(subst desktop/src,build/desktop, 				\
+                      $(shell find desktop/src -iname "*.cpp"))
+
+DESKTOPHEADERS    = $(subst desktop/src,build/desktop, 				\
+                      $(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':'))
 
 YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
 LIB64SOURCES = common/include/libb64/src/cencode.o
@@ -173,10 +249,25 @@ LIB64SOURCES = common/include/libb64/src/cencode.o
 SERVER_SRCS = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
 SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
 
-$(BINDIR)/omni.server: common/src/thrift/server.thrift.mkcpp $(SERVER_DEPS)
-	$(ECHO) "[CXX] linking bin/omni.server"
+OMNI_SRCS = $(DESKTOPSOURCES)
+MOC_SRCS = $(DESKTOPHEADERS:.hpp=.moc.cpp)
+MOC_SRCS2 = $(MOC_SRCS:.h=.moc.cpp)
+
+OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o) $(YAMLSOURCES:.cpp=.o)
+
+define link
+	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o $(BINDIR)/omni.server $(SERVER_DEPS) $(LIBS)
+	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
+endef
+
+$(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
+	$(link)
+
+$(BINDIR)/omni: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/resources.rcc.o
+	$(ECHO) "[CXX] linking $@"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
 
 ALLDEPS = $(shell find build -iname "*.d")
 

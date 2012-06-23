@@ -16,7 +16,7 @@ class CacheMonitorDialog : public QDialog
 
 private Q_SLOTS:
     void Refresh();
-    void done();
+    void done(int);
 
 private:
     QVBoxLayout* layout;
