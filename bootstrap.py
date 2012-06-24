@@ -94,12 +94,12 @@ class bootstrap:
         r = runner(self.numCores)
         self.doUbuntuAptGets()
         r.submodule()
-        r.thrift()
         r.libjpeg()
         r.libpng()
         r.libevent()
         r.hdf5()
         r.boost()
+        r.thrift()
         r.qt()
 
     def parallelCompilation(self, cmd_procs):
