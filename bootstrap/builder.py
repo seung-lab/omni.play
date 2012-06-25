@@ -1,15 +1,18 @@
 import os
+import sys
+
 import fileutils
 from string import Template
 
-class Builder:
+class Builder(object):
 
     def __init__(self, cwd, lib):
         self.basePath    = cwd
         self.baseFileName = lib.baseFileName
         self.libFolderName = lib.libFolderName
         self.uri = lib.uri
-        self.buildOptions = ""
+        self.build_options = ""
+        self.num_cores = 1
 
         self.ext_fp      = self.basePath + '/external'
         self.buildPath   = self.basePath + '/external/builds'
@@ -23,14 +26,24 @@ class Builder:
 
         self.makeDirPaths
 
-    def build_options(self, buildOptions):
-        self.buildOptions = buildOptions
+    def get_num_cores(self):
+        return self._num_cores
 
-    def numCores(self, num):
-        self.numCores = num
+    def set_num_cores(self, num):
+        self._num_cores = num
         
         # TODO: make globalMakeOtions a hash of options...
         self.globalMakeOptions = " -j{num} ".format( num = num )
+
+    num_cores = property(get_num_cores, set_num_cores)
+
+    def get_build_options(self):
+        return self._build_options
+
+    def set_build_options(self, opts):
+        self._build_options = " ".join(opts.strip().split("\n"))
+
+    build_options = property(get_build_options, set_build_options)
 
     def src_fp(self):
         return os.path.join(self.srcPath, self.baseFileName)
@@ -49,45 +62,49 @@ class Builder:
         fileutils.ensure_dir(self.srcPath)
 
     def setupBuildFolder(self):
-        print "==> creating new build folder..."
+        print "==> creating new build folder...",
         fileutils.ensure_dir(self.build_fp())
-        print "done\n"
+        print "done"
 
     def nukeSrcsFolder(self):
-        print "==> removing old srcs folder..."
+        print "==> removing old srcs folder...",
         fileutils.rm_f(self.src_fp())
-        print "done\n"
+        print "done"
 
     def nukeBuildFolder(self):
-        print "==> removing old build folder..."
+        print "==> removing old build folder...",
         fileutils.rm_f(self.build_fp())
-        print "done\n"
+        print "done"
 
     def nukeLibraryFolder(self):
-        print "==> removing old library folder..."
+        print "==> removing old library folder...",
         fileutils.rm_f(self.lib_fp())
-        print "done\n"
+        print "done"
 
     def untar(self):
         if fileutils.dir_exists(self.src_fp()):
-            print "==> skipping untar\n"
+            print "==> skipping untar"
             return
         
-        print "==> untarring to external/srcs/..."
+        print "==> untarring to external/srcs/...",
         fileutils.gunzip(self.tarball_fnp(), self.srcPath)
-        print "done\n"
+        print "done"
 
     def wget(self):
         fnp = self.tarball_fnp()
         
         if fileutils.file_exists(fnp):
-            print "==> skipping wget\n"
-            return
+            if fileutils.check_expected_wget_file_size(self.uri, fnp):
+                print "==> skipping wget"
+                return
         
-        print "==> wgetting to external/tarballs/..."
+        size = fileutils.uri_size_bytes(self.uri)
+        hrsize = fileutils.file_size_human_readable(size)
+        print "==> wgetting {0} to external/tarballs/...".format(hrsize),
+        sys.stdout.flush()
         fileutils.ensure_dir(self.tarballPath)
         fileutils.wget(self.uri, fnp)
-        print "done\n"
+        print "done"
 
     def tarball_fnp(self):
         return os.path.join(self.tarballPath, self.baseFileName + ".tar.gz")
@@ -139,17 +156,19 @@ class Builder:
     def configure(self):
         configure = os.path.join(self.srcPath, self.baseFileName, "configure")
         cmd = "chmod +x {c}; ".format(c = configure)
+
+        if "qt" == self.libFolderName:
+            cmd += 'echo "yes" | '
+
         cmd += "{c} --prefix={p} {bopts}".format(c = configure,
                                                  p = self.lib_fp(),
-                                                 bopts = self.buildOptions)
-        if "Qt" == self.libFolderName:
-            cmd = 'echo "yes" | '.cmd
-            
+                                                 bopts = self.build_options)
+
         print "==> running configure..."
-        print cmd
+        print "cmd:", cmd
         # TODO: check return values die if something went wrong...
         print os.system(cmd)
-        print "done with configure\n\n"
+        print "done with configure"
 
     def make(self):
         cmd = "make {gmo}".format(gmo = self.globalMakeOptions)
@@ -157,7 +176,7 @@ class Builder:
         print cmd
         # TODO: check return values die if something went wrong...
         print os.system(cmd)
-        print "done with make\n\n"
+        print "done with make"
 
     def makeInstall(self):
         cmd = "make install"
@@ -165,7 +184,7 @@ class Builder:
         print cmd
         # TODO: check return values die if something went wrong...
         print os.system(cmd)
-        print "done with make install\n"
+        print "done with make install"
 
     def prepareAndBuild(self):
         self.prepare()
