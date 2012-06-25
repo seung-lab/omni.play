@@ -122,7 +122,7 @@ class bootstrap:
         args = 'libxrender-dev libxext-dev freeglut3-dev g++ \
 libfreetype6-dev libxml2 libxml2-dev mesa-common-dev \
 libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg \
-libgl1-mesa-glx-dbg libncurses5-dev nasm libevent-dev'
+libgl1-mesa-glx-dbg libncurses5-dev nasm libevent-dev libssl-dev'
 
         cmd = "sudo apt-get -y install " + args
         print "about to run: " + cmd

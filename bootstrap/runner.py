@@ -1,3 +1,4 @@
+import fileutils
 from string import Template
 from library import LibraryMetadata
 import os
@@ -53,6 +54,10 @@ CFLAGS='-g -O2'
         b.buildInSourceFolder()
 
     def submodule(self):
+        path = os.path.join(os.getcwd(), "zi_lib")
+        if os.path.exists(path):
+            print "\nsubmodules already exists; skipping"
+
         print ("Initializing Submodules.")
         os.system("git submodule init")
         print ("Downloading Submodules.")

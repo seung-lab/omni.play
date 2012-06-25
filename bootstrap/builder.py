@@ -1,4 +1,6 @@
 import os
+import sys
+
 import fileutils
 from string import Template
 
@@ -92,10 +94,12 @@ class Builder(object):
         fnp = self.tarball_fnp()
         
         if fileutils.file_exists(fnp):
-            print "==> skipping wget"
-            return
+            if fileutils.check_expected_wget_file_size(self.uri, fnp):
+                print "==> skipping wget"
+                return
         
         print "==> wgetting to external/tarballs/...",
+        sys.stdout.flush()
         fileutils.ensure_dir(self.tarballPath)
         fileutils.wget(self.uri, fnp)
         print "done"
