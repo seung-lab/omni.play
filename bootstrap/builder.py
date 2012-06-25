@@ -98,7 +98,9 @@ class Builder(object):
                 print "==> skipping wget"
                 return
         
-        print "==> wgetting to external/tarballs/...",
+        size = fileutils.uri_size_bytes(self.uri)
+        hrsize = fileutils.file_size_human_readable(size)
+        print "==> wgetting {0} to external/tarballs/...".format(hrsize),
         sys.stdout.flush()
         fileutils.ensure_dir(self.tarballPath)
         fileutils.wget(self.uri, fnp)

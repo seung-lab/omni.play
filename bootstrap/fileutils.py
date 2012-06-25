@@ -55,7 +55,12 @@ def check_expected_wget_file_size(uri, fnp):
     if not os.path.exists(fnp):
         return False
 
-    return os.path.getsize(fnp) == uri_size_bytes(uri)
+    fs = os.path.getsize(fnp)
+    web = int(uri_size_bytes(uri))
+    same_size = fs == web
+    if not same_size:
+        print "size mismatch({0} {1})".format(fs, web)
+    return same_size
 
 def query_yes_no(question, default="yes"):
     """
@@ -91,3 +96,11 @@ def query_yes_no(question, default="yes"):
         else:
             sys.stdout.write("Please respond with 'yes' or 'no' "\
                              "(or 'y' or 'n').\n")
+
+def file_size_human_readable(num):
+    # stackoverflow.com/questions/1094841/reusable-library-to-get-human-readable-version-of-file-size
+    for x in ['bytes','KB','MB','GB']:
+        if num < 1024.0:
+            return "%3.1f%s" % (num, x)
+        num /= 1024.0
+    return "%3.1f%s" % (num, 'TB')

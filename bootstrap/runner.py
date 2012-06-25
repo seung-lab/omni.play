@@ -27,6 +27,14 @@ CFLAGS='-g -O2'
 --with-boost={libs}/Boost""".format(libs=b.libs_fp())
 
         b.prepareAndBuild()
+        self.__patch_thrift(b)
+        
+    def __patch_thrift(self, b):
+        for f in ["thrift/include/thrift/protocol/TBinaryProtocol.h",
+                  "thrift/include/thrift/protocol/TDenseProtocol.h"]:
+            fnp = os.path.join(b.libPath, f)
+            if not os.path.exists(fnp):
+                raise Exception("can't patch " + fnp)
 
         ext_fp = b.ext_fp
         patch_fnp = os.path.join(ext_fp, "patches/thrift.patch")
