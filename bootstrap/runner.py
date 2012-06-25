@@ -5,27 +5,26 @@ import os
 from builder import Builder
 
 class runner:
-    def __init__(self, numCores):
-        self.numCores = numCores
+    def __init__(self, num_cores):
+        self.num_cores = num_cores
 
     def makeBuilder(self, lib):
         cwd = os.getcwd()
         b = Builder(cwd, lib)
-        b.numCores = self.numCores
+        b.num_cores = self.num_cores
         return b
 
     def thrift(self):
         b = self.makeBuilder(LibraryMetadata.thrift())
 
-        args = " ".join([ "CXXFLAGS='-g -O2'",
-                          "CFLAGS='-g -O2'",
-                          "--without-ruby",
-                          "--without-erlang",
-                          "--enable-gen-cpp",
-                          "--with-boost={libs}/Boost".format(libs=b.libs_fp())
-                          ])
+        b.build_options = """
+CXXFLAGS='-g -O2'
+CFLAGS='-g -O2'
+--without-ruby
+--without-erlang
+--enable-gen-cpp
+--with-boost={libs}/Boost""".format(libs=b.libs_fp())
 
-        b.build_options(args)
         b.prepareAndBuild()
 
         ext_fp = b.ext_fp
@@ -96,7 +95,7 @@ class runner:
         os.system(cmd)
         print "done\n"
 
-        bjamFlags = "-j{num}".format(num=self.numCores)
+        bjamFlags = "-j{num}".format(num=self.num_cores)
         bjamFlags += " -sNO_BZIP2=1 -sZLIB_SOURCE=srcPath/ZLIB_VER"
         bjamFlags += " variant=release link=static threading=multi runtime-link=static"
         # bjamFlags += " toolset=gcc cxxflags=-std=gnu++0x"
@@ -108,7 +107,15 @@ class runner:
 
     def qt(self):
         b = self.makeBuilder(LibraryMetadata.qt())
-        b.build_options = "-static -fast -no-qt3support"
+        b.build_options = """ -release -opensource -no-glib -v
+ -no-exceptions
+ -no-fast -make libs -make tools
+ -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit
+ -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend
+ -no-svg -qt-zlib -qt-libtiff -qt-libpng -no-libmng
+ -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-freetype
+ -no-multimedia -no-javascript-jit -no-script -no-scripttools"""
+        
         b.prepareAndBuild()
 
     def hdf5(self):
