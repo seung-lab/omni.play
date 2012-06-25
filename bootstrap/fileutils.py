@@ -49,14 +49,14 @@ def wget(uri, fnp):
 def uri_size_bytes(uri):
     # stackoverflow.com/questions/5909/get-size-of-a-file-before-downloading-in-python
     site = urllib.urlopen(uri)
-    return site.info().getheaders("Content-Length")[0]
+    return int(site.info().getheaders("Content-Length")[0])
     
 def check_expected_wget_file_size(uri, fnp):
     if not os.path.exists(fnp):
         return False
 
     fs = os.path.getsize(fnp)
-    web = int(uri_size_bytes(uri))
+    web = uri_size_bytes(uri)
     same_size = fs == web
     if not same_size:
         print "size mismatch({0} {1})".format(fs, web)
