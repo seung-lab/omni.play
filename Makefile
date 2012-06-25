@@ -258,7 +258,7 @@ OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o) $(YAMLSOURCES:.cpp=.o)
 define link
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
+	$(CXX) $(CXXFLAGS)  -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
 endef
 
 $(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
@@ -267,7 +267,7 @@ $(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
 $(BINDIR)/omni: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/resources.rcc.o
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
+	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
 
 ALLDEPS = $(shell find build -iname "*.d")
 
