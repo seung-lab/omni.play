@@ -52,8 +52,9 @@ boost::shared_ptr<T> readAll(std::string* fnp)
 
     char* dataChar = reinterpret_cast<char*>(ret.get());
 
-    std::fstream file(*fnp, std::fstream::in | std::fstream::binary);
-    const int64_t bytesRead = file.read(dataChar, bytes);
+    std::fstream file(fnp->c_str(), std::fstream::in | std::fstream::binary);
+    file.read(dataChar, bytes);
+    const int64_t bytesRead = file.gcount();
 
     if(bytesRead != bytes){
         throw ioException("could not read entire file");
@@ -77,7 +78,7 @@ void writeVec(std::string& fnp, const std::vector<T>& vec)
 
     const int64_t bytes = vec.size() * sizeof(T);
 
-    std::fstream file(fnp, std::fstream::out | std::fstream::binary);
+    std::fstream file(fnp.c_str(), std::fstream::out | std::fstream::binary);
 
     if(!file.good()){
         throw ioException("could not fully write file", fnp);
@@ -112,7 +113,7 @@ void writeNumElements(const std::string& fnp, const boost::shared_ptr<T> ptr,
 template <typename T>
 void writeStrings(std::string& file, const T& strings)
 {
-    std::fstream out(file, std::fstream::out);
+    std::fstream out(file.c_str(), std::fstream::out);
 
     FOR_EACH(iter, strings)
     {
@@ -125,7 +126,7 @@ void writeStrings(std::string& file, const T& strings, PROGRESS* progress)
 {
     progress->SetTotal(strings.size());
 
-    std::fstream out(&file);
+    std::fstream out(file.c_str());
 
     FOR_EACH(iter, strings)
     {
