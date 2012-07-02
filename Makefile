@@ -213,7 +213,7 @@ common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
 	$(MV) $@.tmp $@
 
 .PHONY: all
-all: $(BINDIR)/server $(BINDIR)/desktop
+all: $(BINDIR)/omni.server $(BINDIR)/omni.desktop
 
 .PHONY: tidy
 tidy:
@@ -261,10 +261,10 @@ define link
 	$(CXX) $(CXXFLAGS)  -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
 endef
 
-$(BINDIR)/server: $(SERVER_DEPS) $(THRIFT_DEPS)
+$(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
 	$(link)
 
-$(BINDIR)/desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/resources.rcc.o
+$(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/resources.rcc.o
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
