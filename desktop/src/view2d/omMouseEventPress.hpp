@@ -169,6 +169,9 @@ private:
         case om::tool::ANNOTATE:
             addAnnotation();
             break;
+        case om::tool::KALINA:
+        	kalina();
+        	break;
         default:
             return;
         }
@@ -180,10 +183,7 @@ private:
 
     void selectSegments()
     {
-        om::AddOrSubtract addOrSubtractSegments = om::ADD;
-        if(altKey_){
-            addOrSubtractSegments = om::SUBTRACT;
-        }
+        om::AddOrSubtract addOrSubtractSegments = altKey_ ? om::ADD : om::SUBTRACT;
 
         OmBrushSelect::SelectByClick(state_, dataClickPoint_, addOrSubtractSegments);
     }
@@ -343,6 +343,26 @@ private:
         OmViewGroupState *vgs = state_->getViewGroupState();
         
         manager.Add(dataClickPoint_, vgs->getAnnotationString(), vgs->getAnnotationColor());
+    }
+
+    void kalina()
+    {
+    	boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+    	if(!sdw){
+            return;
+        }
+        SegmentDataWrapper& seg = *sdw;
+    	if(!seg.IsSegmentValid()) {
+    		return;
+        }
+        
+		SegmentationDataWrapper segmentation = seg.MakeSegmentationDataWrapper();
+        
+        if(shiftKey_) {
+        	// Do something different
+        } else {
+        	// Do the same.
+        }
     }
 }; 
 

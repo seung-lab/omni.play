@@ -8,32 +8,6 @@
 class OmCutSegmentRunner {
 public:
 
-	// TODO: nuke this old method of cutting once new system is tested (purcaro)
-	//
-    // static void CutSegmentFromParent(const SegmentDataWrapper& sdw)
-    // {
-    //     OmSegment* seg = sdw.GetSegment();
-
-    //     if(!seg->getParent())
-    //     {
-    //         OmEvents::NonFatalEvent("segment is root--not yet spltitable");
-    //         return;
-    //     }
-
-    //     boost::optional<std::string> notSplittable = sdw.Segments()->IsSegmentSplittable(seg);
-
-    //     if(notSplittable)
-    //     {
-    //         const QString err = QString::fromStdString(*notSplittable);
-    //         OmEvents::NonFatalEvent(err);
-    //         return;
-    //     }
-
-    //     const OmSegmentEdge edge = om::segmentEdge::MakeEdge(seg);
-
-    //     (new OmSegmentSplitAction(sdw.MakeSegmentationDataWrapper(), edge))->Run();
-    // }
-
      static void CutSegmentFromParent(const SegmentDataWrapper& sdw)
      {
          OmSegment* seg = sdw.GetSegment();
