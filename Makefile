@@ -82,7 +82,7 @@ DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
 	          $(EXTERNAL)/Boost/lib/libboost_regex.a \
 	          $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
 	          $(EXTERNAL)/libpng/lib/libpng.a \
-			  $(EXTERNAL)/hdf5/lib/libhdf5.a \
+			  -lhdf5 \
               -lQtGui \
               -lQtNetwork \
               -lQtCore \
@@ -259,7 +259,7 @@ OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o) $(YAMLSOURCES:.cpp=.o)
 define link
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS)  -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
+	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
 endef
 
 $(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
@@ -268,7 +268,7 @@ $(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
 $(BINDIR)/omni: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/resources.rcc.o
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
+	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
 
 ALLDEPS = $(shell find build -iname "*.d")
 

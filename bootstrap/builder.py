@@ -94,9 +94,9 @@ class Builder(object):
         fnp = self.tarball_fnp()
         
         if fileutils.file_exists(fnp):
-            if fileutils.check_expected_wget_file_size(self.uri, fnp):
-                print "==> skipping wget"
-                return
+            #if fileutils.check_expected_wget_file_size(self.uri, fnp):
+            print "==> skipping wget"
+            return
         
         size = fileutils.uri_size_bytes(self.uri)
         hrsize = fileutils.file_size_human_readable(size)
