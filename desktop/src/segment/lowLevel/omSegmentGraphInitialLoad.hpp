@@ -8,6 +8,9 @@
 #include "segment/lowLevel/omSegmentChildren.hpp"
 #include "threads/omThreadPoolBatched.hpp"
 #include "utility/omTimer.hpp"
+#include "segment/io/omMSTtypes.h"
+
+using namespace std;
 
 class OmSegmentGraphInitialLoad {
 private:
@@ -16,6 +19,7 @@ private:
     OmSegmentListLowLevel *const segmentListsLL_;
     OmSegmentsStore *const segmentPages_;
     OmSegmentChildren *const children_;
+    map < OmSegID,vector<OmMSTEdge*> > *AdjacencyList_;
 
     OmThreadPool pool_;
 
@@ -36,12 +40,14 @@ public:
                               OmValidGroupNum* validGroupNum,
                               OmSegmentListLowLevel* segmentListLL,
                               OmSegmentsStore* segmentPages,
-                              OmSegmentChildren* children)
+                              OmSegmentChildren* children,
+                              map < OmSegID,vector<OmMSTEdge*> > *AdjacencyList)
         : forest_(forest)
         , validGroupNum_(validGroupNum)
         , segmentListsLL_(segmentListLL)
         , segmentPages_(segmentPages)
         , children_(children)
+        , AdjacencyList_(AdjacencyList)
     {
         joinTaskPool_.Start(&OmSegmentGraphInitialLoad::initialJoinInternalTask,
                             this,
@@ -88,6 +94,9 @@ public:
         joinTaskPool_.JoinPool();
 
         forest_->SetBatch(false);
+
+        for ( uint32_t i = 0; i < mst->NumEdges(); i++ )
+            (*AdjacencyList_)[ edges[i].node1ID ].push_back(&edges[i]);
 
         timer.PrintDone();
     }

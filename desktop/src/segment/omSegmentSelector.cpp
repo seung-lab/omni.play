@@ -116,6 +116,10 @@ void OmSegmentSelector::augmentSelectedSet_toggle(const OmSegID segIDunknownLeve
     augmentSelectedSet( segID, !isSelected );
 }
 
+bool OmSegmentSelector::IsSegmentSelected(const OmSegID segID)
+{
+    return segments_->IsSegmentSelected( segID );
+}
 
 bool OmSegmentSelector::sendEvent()
 {

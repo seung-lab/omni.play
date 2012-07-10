@@ -1,8 +1,14 @@
 #include "segment/lowLevel/omSegmentGraphInitialLoad.hpp"
 #include "segment/lowLevel/omSegmentsImplLowLevel.h"
 #include "segment/lowLevel/omSegmentGraph.h"
+#include "segment/lowLevel/omSegmentSelection.hpp"
 #include "utility/omStringHelpers.h"
 #include "volume/omSegmentation.h"
+#include "segment/omSegmentSelector.h"
+#include <queue>
+#include <stack>
+
+#define OMSEGMENTGRAPH_NEWLEVEL -1
 
 OmSegmentGraph::OmSegmentGraph()
     : segmentation_(NULL)
@@ -63,7 +69,8 @@ void OmSegmentGraph::SetGlobalThreshold(OmMST* mst)
                                      validGroupNum_,
                                      segmentListsLL_,
                                      segmentPages_,
-                                     children_.get());
+                                     children_.get(), 
+                                     GetAdjacencyList());
 
     loader.SetGlobalThreshold(mst);
 }
@@ -205,6 +212,108 @@ void OmSegmentGraph::UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* chil
         computeSegmentSizeWithChildren(child);
 
     segmentListsLL_->UpdateSizeListsFromSplit(root, child, childInfo);
+}
+
+void OmSegmentGraph::AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
+{
+    OmMSTEdge *currEdge;
+
+    double threshold = mst->UserThreshold();
+    map < OmSegID,vector<OmMSTEdge*> > *AdjacencyList = GetAdjacencyList();
+
+    boost::unordered_set<OmSegID> *setToAdd;
+    setToAdd = new boost::unordered_set<OmSegID>;
+
+    for ( int i = 0; i < (*AdjacencyList)[SegmentID].size() ; i++)
+    {
+        currEdge = (*AdjacencyList)[SegmentID][i];
+
+        if ( (*currEdge).threshold < threshold ) continue;
+        
+        if ( sel->IsSegmentSelected ( (*currEdge).node2ID) ) continue; //How do I ckeck that?
+
+        setToAdd->insert ( (*currEdge).node2ID );
+    }
+
+    sel->InsertSegments (setToAdd);
+    sel->sendEvent();
+}
+
+queue <OmSegID> q;
+
+void OmSegmentGraph::AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
+{
+    OmMSTEdge *currEdge;
+    OmSegID currSegment;
+    double threshold = mst->UserThreshold();
+    map < OmSegID,vector<OmMSTEdge*> > *AdjacencyList = GetAdjacencyList();
+
+    q.push( SegmentID );
+
+    boost::unordered_set<OmSegID> *setToAdd;
+    setToAdd = new boost::unordered_set<OmSegID>;
+
+    while (!q.empty())
+    {
+        currSegment = q.front();
+        q.pop();
+        if ( currSegment == OMSEGMENTGRAPH_NEWLEVEL )
+        {
+            if ( q.empty() ) break;
+            q.push(OMSEGMENTGRAPH_NEWLEVEL);
+
+            sel->InsertSegments (setToAdd);
+            setToAdd->clear();
+
+            continue;
+        }
+
+        for ( int i = 0; i < (*AdjacencyList)[currSegment].size(); i++)
+        {
+            currEdge = (*AdjacencyList)[currSegment][i];
+
+            if ( (*currEdge).threshold < threshold ) continue;
+            if ( sel->IsSegmentSelected( (*currEdge).node2ID ) ) continue;
+
+            q.push( (*currEdge).node2ID );
+            setToAdd->insert ( (*currEdge).node2ID );
+        }
+    }
+}
+
+stack <OmSegID> stackDFS;
+
+void OmSegmentGraph::AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
+{
+    boost::unordered_set<OmSegID> *setToAdd;
+    setToAdd = new boost::unordered_set<OmSegID>;
+
+    OmMSTEdge *currEdge;
+    OmSegID currSegment;
+    double threshold = mst->UserThreshold();
+    map < OmSegID,vector<OmMSTEdge*> > *AdjacencyList = GetAdjacencyList();
+
+    stackDFS.push(SegmentID);
+
+    while (!stackDFS.empty())
+    {
+        currSegment = stackDFS.top();
+        stackDFS.pop();
+
+        for ( int i = 0; i < (*AdjacencyList)[currSegment].size(); i++ )
+        {
+            currEdge = (*AdjacencyList)[currSegment][i];
+
+            if ( (*currEdge).threshold < threshold ) continue;
+            if ( sel->IsSegmentSelected( (*currEdge).node2ID ) ) continue;
+
+            stackDFS.push( (*currEdge).node2ID );
+
+            setToAdd->insert ( (*currEdge).node2ID );
+            sel->InsertSegments (setToAdd);
+            setToAdd->clear();
+        }
+    }
 }
 
 SizeAndNumPieces

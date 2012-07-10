@@ -23,6 +23,7 @@ public:
     void augmentSelectedSet_toggle(const OmSegID segID);
 
     bool sendEvent();
+    bool IsSegmentSelected(const OmSegID segID);
     void selectNoSegments();
 
     void ShouldScroll(const bool shouldScroll);

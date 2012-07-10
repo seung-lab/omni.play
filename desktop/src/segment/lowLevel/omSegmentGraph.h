@@ -4,7 +4,11 @@
 #include "segment/lowLevel/omDynamicForestCache.hpp"
 #include "segment/lowLevel/omSegmentLowLevelTypes.h"
 #include "threads/omTaskManagerTypes.h"
+#include "segment/io/omMSTtypes.h"
 
+using namespace std;
+
+class OmSegmentSelector;
 class OmMST;
 class OmSegmentsStore;
 class OmSegment;
@@ -12,6 +16,7 @@ class OmSegmentsImplLowLevel;
 class OmSegmentChildren;
 class OmSegmentListLowLevel;
 class OmSegmentation;
+class OmSegmentSelection;
 class OmValidGroupNum;
 
 class OmSegmentGraph {
@@ -42,6 +47,10 @@ public:
     void SetGlobalThreshold(OmMST* mst);
     void ResetGlobalThreshold(OmMST* mst);
 
+    void AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
+    void AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
+    void AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
+
     void UpdateSizeListsFromJoin(OmSegment* root, OmSegment* child);
     void UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* child);
 
@@ -49,11 +58,17 @@ public:
         return children_.get();
     }
 
+    inline map < OmSegID,vector<OmMSTEdge*> >* GetAdjacencyList()
+    {
+        return &AdjacencyList;
+    }
+
 private:
     OmSegmentation* segmentation_;
     OmValidGroupNum* validGroupNum_;
     OmSegmentsImplLowLevel* mCache;
     OmSegmentsStore* segmentPages_;
+    map < OmSegID,vector<OmMSTEdge*> > AdjacencyList;
 
     boost::scoped_ptr<OmDynamicForestCache> forest_;
     boost::scoped_ptr<OmSegmentChildren> children_;
