@@ -83,7 +83,8 @@ enum mode { SELECT,
             SPLIT,
             CUT,
             LANDMARK,
-            ANNOTATE
+            ANNOTATE,
+            KALINA
 };
 
 } //namespace tool

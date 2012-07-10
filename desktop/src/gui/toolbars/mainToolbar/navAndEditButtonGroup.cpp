@@ -48,6 +48,10 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
                                     "Annotate", om::tool::ANNOTATE,
                                    ":/toolbars/mainToolbar/icons/kcmfontinst.png"));
 
+    addNavButton(new ToolButton(parent, "Kalina",
+                                "Do Crazy Stuff", om::tool::KALINA,
+                                ":/toolbars/mainToolbar/icons/1308021634_keditbookmarks.png"));
+
     om::connect( this, SIGNAL(buttonClicked(int)),
                  this, SLOT(buttonWasClicked(int)));
 
