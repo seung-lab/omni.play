@@ -12,6 +12,7 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include <annotation/annotation.h>
+#include "segment/omSegments.h"
 
 class OmMouseEventPress{
 private:
@@ -183,7 +184,7 @@ private:
 
     void selectSegments()
     {
-        om::AddOrSubtract addOrSubtractSegments = altKey_ ? om::ADD : om::SUBTRACT;
+        om::AddOrSubtract addOrSubtractSegments = altKey_ ? om::SUBTRACT : om::ADD;
 
         OmBrushSelect::SelectByClick(state_, dataClickPoint_, addOrSubtractSegments);
     }
@@ -358,10 +359,17 @@ private:
         
 		SegmentationDataWrapper segmentation = seg.MakeSegmentationDataWrapper();
         
+        OmMST *MST = segmentation.MST();
+
+        OmSegments *Segments = segmentation.Segments();
+
+        OmSegmentSelector sel(segmentation, this, "view2dEvent" );
+
         if(shiftKey_) {
-        	// Do something different
+                
+        	   Segments->AddSegments_BreadthFirstSearch(MST,&sel,seg);
         } else {
-        	// Do the same.
+        	Segments->AddSegments_BFS_DynamicThreshold(MST,&sel,seg);
         }
     }
 }; 

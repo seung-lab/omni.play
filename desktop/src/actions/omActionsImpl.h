@@ -33,6 +33,9 @@ public:
     void ChangeSizethreshold(const SegmentationDataWrapper sdw,
                              const double threshold);
 
+    void ChangeASthreshold(const SegmentationDataWrapper sdw,
+                            const double threshold);
+
 // painting-related
     void SetVoxel(const OmID segmentationId,
                   const DataCoord rVoxel,

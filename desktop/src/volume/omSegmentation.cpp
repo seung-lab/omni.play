@@ -103,6 +103,10 @@ void OmSegmentation::SetSizeThreshold(const double t){
     mst_->SetUserSizeThreshold(t);
 }
 
+void OmSegmentation::SetASThreshold(const double t){
+    mst_->SetUserASThreshold(t);
+}
+
 void OmSegmentation::CloseDownThreads() {
     meshManagers_->CloseDownThreads();
 }
@@ -125,6 +129,10 @@ double OmSegmentation::GetDendThreshold() {
 
 double OmSegmentation::GetSizeThreshold() {
     return mst_->UserSizeThreshold();
+}
+
+double OmSegmentation::GetASThreshold() {
+    return mst_->UserASThreshold();
 }
 
 void OmSegmentation::UpdateVoxelBoundingData()

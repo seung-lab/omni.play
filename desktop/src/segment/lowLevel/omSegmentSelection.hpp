@@ -13,6 +13,7 @@ private:
     OmSegmentsImplLowLevel *const cache_;
 
     OmSegIDsSet selected_;
+    // Selection tree
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
     friend void YAML::operator>>(const YAML::Node&, OmSegmentsImpl&);

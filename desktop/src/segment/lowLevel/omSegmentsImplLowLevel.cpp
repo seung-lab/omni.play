@@ -64,4 +64,4 @@ void OmSegmentsImplLowLevel::growGraphIfNeeded(OmSegment* newSeg){
 
 SegmentationDataWrapper OmSegmentsImplLowLevel::GetSDW() const {
     return segmentation_->GetSDW();
-}
+}    

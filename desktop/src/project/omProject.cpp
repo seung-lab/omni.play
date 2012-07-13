@@ -32,8 +32,9 @@ void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent)
     try{
         instance().impl_->Load(fileNameAndPath, guiParent);
 
-    } catch(...)
+    } catch(OmException e)
     {
+        std::cout << e.what() << std::endl;
         instance().impl_.reset();
         throw;
     }

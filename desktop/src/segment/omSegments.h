@@ -6,13 +6,15 @@
 
 #include <zi/mutex.hpp>
 
+class OmMST;
 class OmChunkCoord;
 class OmSegment;
 class OmSegmentChildren;
 class OmSegmentation;
 class OmSegmentsImpl;
 class OmSegmentsStore;
-class OmSegmentDataWrapper;
+class SegmentDataWrapper;
+class OmSegmentSelector;
 
 class OmSegments {
 public:
@@ -76,6 +78,10 @@ public:
     // Your method
     // void GrowSelection(OmSegmentDataWrapper& sdw);
     // void ShrinkSelection(OmSegmentDataWrapper& sdw);
+    void AddNeighboursToSelection(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
+    void AddSegments_BreadthFirstSearch(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
+    void AddSegments_DepthFirstSearch(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
+    void AddSegments_BFS_DynamicThreshold(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
 
 	std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
 	bool JoinEdges(const std::vector<OmSegmentEdge>& edges);

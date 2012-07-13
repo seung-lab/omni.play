@@ -9,6 +9,7 @@
 #include "threads/omThreadPoolBatched.hpp"
 #include "utility/omTimer.hpp"
 #include "segment/io/omMSTtypes.h"
+#include <boost/unordered_map.hpp>
 
 using namespace std;
 
@@ -19,8 +20,8 @@ private:
     OmSegmentListLowLevel *const segmentListsLL_;
     OmSegmentsStore *const segmentPages_;
     OmSegmentChildren *const children_;
-    map < OmSegID,vector<OmMSTEdge*> > *AdjacencyList_;
-
+    OmSegmentGraph::AdjacencyMap *const AdjacencyList_;
+    
     OmThreadPool pool_;
 
     struct TaskArgs {
@@ -34,14 +35,14 @@ private:
     OmThreadPoolBatched<TaskArgs,
                         OmSegmentGraphInitialLoad,
                         IndivArgPolicy> joinTaskPool_;
-
+    
 public:
     OmSegmentGraphInitialLoad(OmDynamicForestCache* forest,
                               OmValidGroupNum* validGroupNum,
                               OmSegmentListLowLevel* segmentListLL,
                               OmSegmentsStore* segmentPages,
                               OmSegmentChildren* children,
-                              map < OmSegID,vector<OmMSTEdge*> > *AdjacencyList)
+                              OmSegmentGraph::AdjacencyMap *AdjacencyList)
         : forest_(forest)
         , validGroupNum_(validGroupNum)
         , segmentListsLL_(segmentListLL)
@@ -67,7 +68,14 @@ public:
         const double stopThreshold = mst->UserThreshold();
         OmMSTEdge* edges = mst->Edges();
 
-        for(uint32_t i = 0; i < mst->NumEdges(); ++i) {
+        for(uint32_t i = 0; i < mst->NumEdges(); ++i) 
+        {
+            (*AdjacencyList_)[edges[i].node1ID].push_back(&edges[i]);
+            (*AdjacencyList_)[edges[i].node2ID].push_back(&edges[i]);
+
+            //AllSegIDs.insert(edges[i].node1ID);
+            //AllSegIDs.insert(edges[i].node2ID); 
+
             if( 1 == edges[i].userSplit ){
                 continue;
             }
@@ -91,12 +99,15 @@ public:
             }
         }
 
+        std::vector<SegInfo> ::iterator it;
+        std::vector <SegInfo>* listOfSegments = (*segmentListsLL_).GetList();
+
+        for ( it = listOfSegments->begin(); it != listOfSegments->end(); it++ )
+            sort( (*AdjacencyList_)[ (*it).segID ].begin(), (*AdjacencyList_)[ (*it).segID ].end());
+
         joinTaskPool_.JoinPool();
 
         forest_->SetBatch(false);
-
-        for ( uint32_t i = 0; i < mst->NumEdges(); i++ )
-            (*AdjacencyList_)[ edges[i].node1ID ].push_back(&edges[i]);
 
         timer.PrintDone();
     }

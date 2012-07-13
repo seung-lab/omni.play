@@ -50,6 +50,7 @@ public:
     void AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
     void AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
     void AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
+    void AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
 
     void UpdateSizeListsFromJoin(OmSegment* root, OmSegment* child);
     void UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* child);
@@ -58,17 +59,14 @@ public:
         return children_.get();
     }
 
-    inline map < OmSegID,vector<OmMSTEdge*> >* GetAdjacencyList()
-    {
-        return &AdjacencyList;
-    }
+    typedef boost::unordered_map < OmSegID, std::vector <OmMSTEdge*> > AdjacencyMap;
 
 private:
     OmSegmentation* segmentation_;
     OmValidGroupNum* validGroupNum_;
     OmSegmentsImplLowLevel* mCache;
     OmSegmentsStore* segmentPages_;
-    map < OmSegID,vector<OmMSTEdge*> > AdjacencyList;
+    AdjacencyMap adjacencyList_;
 
     boost::scoped_ptr<OmDynamicForestCache> forest_;
     boost::scoped_ptr<OmSegmentChildren> children_;

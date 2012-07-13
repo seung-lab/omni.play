@@ -46,6 +46,7 @@ public:
 
     static OmProjectGlobals& Globals();
 
+//    OmProject::Globals().Users().UserSettings()
 private:
     OmProject();
     ~OmProject();

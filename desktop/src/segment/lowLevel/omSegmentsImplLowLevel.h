@@ -109,6 +109,26 @@ public:
 
     // Your method here
 
+    inline void AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
+    {
+        segmentGraph_.AddNeighboursToSelection(mst,sel,SegmentID);
+    }
+
+    inline void AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
+    {
+        segmentGraph_.AddSegments_BreadthFirstSearch(mst,sel,SegmentID);
+    }
+
+    inline void AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
+    {
+        segmentGraph_.AddSegments_DepthFirstSearch(mst,sel,SegmentID);
+    }
+
+    inline void AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
+    {
+        segmentGraph_.AddSegments_BFS_DynamicThreshold(mst,sel,SegmentID);
+    }
+
 protected:
     OmSegmentation *const segmentation_;
     OmSegmentsStore *const store_;

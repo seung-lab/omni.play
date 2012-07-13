@@ -22,6 +22,7 @@ private:
     bool recreateGUIlists_;
 
 public:
+
     OmSegmentListLowLevel(OmSegmentLists* segmentLists)
         : segmentLists_(segmentLists)
         , cache_(NULL)
@@ -30,6 +31,11 @@ public:
 
     ~OmSegmentListLowLevel(){
         threadPool_.join();
+    }
+
+    std::vector <SegInfo>* GetList()
+    {
+        return &list_;
     }
     
     void Init(OmSegmentsImplLowLevel* cache, const size_t size)

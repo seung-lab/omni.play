@@ -1,5 +1,4 @@
 #include "datalayer/omDataPath.h"
-#include "datalayer/omDataPath.h"
 #include "segment/lowLevel/omEnabledSegments.hpp"
 #include "segment/lowLevel/omSegmentSelection.hpp"
 #include "segment/lowLevel/store/omSegmentStore.hpp"
@@ -315,6 +314,26 @@ bool OmSegments::JoinEdges(const std::vector<OmSegmentEdge>& edges)
 {
     zi::guard g(mutex_);
     return impl_->JoinEdges(edges);
+}
+
+void OmSegments::AddNeighboursToSelection(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)
+{
+    impl_->AddNeighboursToSelection(MST,sel,sdw.GetSegmentID());
+}
+
+void OmSegments::AddSegments_BreadthFirstSearch(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)
+{
+    impl_->AddSegments_BreadthFirstSearch(MST,sel,sdw.GetSegmentID());
+}
+
+void OmSegments::AddSegments_DepthFirstSearch(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)
+{
+    impl_->AddSegments_DepthFirstSearch(MST,sel,sdw.GetSegmentID());
+}
+
+void OmSegments::AddSegments_BFS_DynamicThreshold(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)
+{
+    impl_->AddSegments_BFS_DynamicThreshold(MST,sel,sdw.GetSegmentID());
 }
 
 // void OmSegments::GrowSelection(OmSegmentDataWraper& sdw) {

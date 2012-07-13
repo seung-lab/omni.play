@@ -47,6 +47,15 @@ void OmActions::ChangeSizethreshold(const SegmentationDataWrapper sdw,
                      sdw, threshold)));
 }
 
+void OmActions::ChangeASthreshold(const SegmentationDataWrapper sdw,
+                                   const double threshold)
+{
+    pool().push_back(
+        zi::run_fn(
+            zi::bind(&OmActionsImpl::ChangeASthreshold, impl(),
+                     sdw, threshold)));
+}
+
 //painting-related
 void OmActions::SetVoxel(const OmID segmentationID,
                          const DataCoord& voxel,
