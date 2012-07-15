@@ -90,17 +90,18 @@ class Builder(object):
         fileutils.gunzip(self.tarball_fnp(), self.srcPath)
         print "done"
 
+    # TODO: rename to "download", since we don't use wget
     def wget(self):
         fnp = self.tarball_fnp()
 
         if fileutils.file_exists(fnp):
             if fileutils.check_expected_wget_file_size(self.uri, fnp):
-                print "==> skipping wget"
+                print "==> skipping download"
                 return
 
         size = fileutils.uri_size_bytes(self.uri)
         hrsize = fileutils.file_size_human_readable(size)
-        print "==> wgetting {0} to external/tarballs/...".format(hrsize),
+        print "==> downloading {0} to external/tarballs/...".format(hrsize),
         sys.stdout.flush()
         fileutils.ensure_dir(self.tarballPath)
         fileutils.wget(self.uri, fnp)
