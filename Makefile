@@ -82,7 +82,7 @@ DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
 	          $(EXTERNAL)/Boost/lib/libboost_regex.a \
 	          $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
 	          $(EXTERNAL)/libpng/lib/libpng.a \
-			  -lhdf5 \
+                  $(EXTERNAL)/hdf5/lib/libhdf5.a \
               -lQtGui \
               -lQtNetwork \
               -lQtCore \
