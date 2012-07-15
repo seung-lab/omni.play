@@ -48,9 +48,27 @@ def wget(uri, fnp):
 
 def uri_size_bytes(uri):
     # stackoverflow.com/questions/5909/get-size-of-a-file-before-downloading-in-python
+    if uri.startswith("ftp"):
+        return uri_size_bytes_ftp(uri)
+    return uri_size_bytes_http(uri)
+
+def uri_size_bytes_ftp(uri):
+    # http://stackoverflow.com/questions/3231910/python-ftplib-cant-get-size-of-file-before-download
+    raise Exception("http uri preferred")
+    ftp.sendcmd("TYPE i")    # Switch to Binary mode
+    return ftp.size(uri)   # Get size of file
+
+def uri_size_bytes_http(uri):
     site = urllib.urlopen(uri)
-    return int(site.info().getheaders("Content-Length")[0])
-    
+    try:
+        headers = site.info().getheaders("Content-Length")
+        if not headers:
+            raise Exception("no headers for " + uri)
+        return int(headers[0])
+    except:
+        print headers
+        raise
+
 def check_expected_wget_file_size(uri, fnp):
     if not os.path.exists(fnp):
         return False

@@ -31,7 +31,7 @@ class Builder(object):
 
     def set_num_cores(self, num):
         self._num_cores = num
-        
+
         # TODO: make globalMakeOtions a hash of options...
         self.globalMakeOptions = " -j{num} ".format( num = num )
 
@@ -85,19 +85,19 @@ class Builder(object):
         if fileutils.dir_exists(self.src_fp()):
             print "==> skipping untar"
             return
-        
+
         print "==> untarring to external/srcs/...",
         fileutils.gunzip(self.tarball_fnp(), self.srcPath)
         print "done"
 
     def wget(self):
         fnp = self.tarball_fnp()
-        
+
         if fileutils.file_exists(fnp):
-            #if fileutils.check_expected_wget_file_size(self.uri, fnp):
-            print "==> skipping wget"
-            return
-        
+            if fileutils.check_expected_wget_file_size(self.uri, fnp):
+                print "==> skipping wget"
+                return
+
         size = fileutils.uri_size_bytes(self.uri)
         hrsize = fileutils.file_size_human_readable(size)
         print "==> wgetting {0} to external/tarballs/...".format(hrsize),
@@ -108,7 +108,7 @@ class Builder(object):
 
     def tarball_fnp(self):
         return os.path.join(self.tarballPath, self.baseFileName + ".tar.gz")
-    
+
     def prepare(self):
         self.printTitle(self.baseFileName)
         self.nukeBuildFolder()
@@ -125,25 +125,25 @@ class Builder(object):
         self.wget()
         self.untar()
         self.setupBuildFolder()
-    
+
     def build(self):
         self.chdir_build()
-        
+
         self.configure()
         self.make()
         self.makeInstall()
-        
+
         self.chdir_home()
 
     def buildInSourceFolder(self):
         self.chdir_src()
-        
+
         self.configure()
         self.make()
         self.makeInstall()
-        
+
         self.chdir_home()
-    
+
     def chdir_src(self):
         os.chdir(os.path.join(self.srcPath, self.baseFileName))
 

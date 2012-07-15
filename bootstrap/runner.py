@@ -28,7 +28,7 @@ CFLAGS='-g -O2'
 
         b.prepareAndBuild()
         self.__patch_thrift(b)
-        
+
     def __patch_thrift(self, b):
         for f in ["thrift/include/thrift/protocol/TBinaryProtocol.h",
                   "thrift/include/thrift/protocol/TDenseProtocol.h"]:
@@ -128,12 +128,12 @@ CFLAGS='-g -O2'
  -no-svg -qt-zlib -qt-libtiff -qt-libpng -no-libmng
  -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-freetype
  -no-multimedia -no-javascript-jit -no-script -no-scripttools"""
-        
+
         b.prepareAndBuild()
 
     def hdf5(self):
         b = self.makeBuilder(LibraryMetadata.hdf5())
-        b.build_options = "--enable-threadsafe"
+        b.build_options = "--enable-threadsafe --with-pthread=/usr/lib"
         b.prepareAndBuild()
 
     def omniServer(self):
