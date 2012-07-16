@@ -101,16 +101,10 @@ void OmDataArchiveProject::upgrade()
 
 void OmDataArchiveProject::ArchiveWrite(const QString& fnp, OmProjectImpl* project)
 {
-    const QString fnpOld = fnp + ".old";
-
-    try {
-        OmFileHelpers::CopyFile(fnp, fnpOld);
-    } catch(...)
-    {}
-
     QFile file(fnp);
-
-    om::file::openFileWO(file);
+    if(!file.open(QIODevice::WriteOnly)){
+        throw OmIoException("could not open", fnp);
+    }
 
     QDataStream out(&file);
     out.setByteOrder(QDataStream::LittleEndian);
