@@ -163,3 +163,7 @@ void OmFileHelpers::RmFile(const QString& fileNameQT)
 
     boost::filesystem::remove(path);
 }
+
+bool OmFileHelpers::DoesFileExist(const QString& fnp){
+    return QFileInfo(fnp).exists();
+}
