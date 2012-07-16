@@ -1,17 +1,22 @@
 #pragma once
 
 #include "common/omCommon.h"
+#include "segment/io/omMSTtypes.h"
 
 class OmSegmentation;
 class OmSegments;
 class OmSelectSegmentsParams;
 class SegmentationDataWrapper;
+class OmSegmentGraph;
 
 class OmSegmentSelector {
 public:
     OmSegmentSelector(const SegmentationDataWrapper& sdw,
                       void* sender,
                       const std::string& cmt);
+
+    void setOrderOfAdditionToZero(OmSegID segID);
+    void setOrderOfAdditionToNextNumber(OmSegID segID);
 
     void selectJustThisSegment(const OmSegID segID, const bool isSelected);
     void augmentSelectedSet(const OmSegID segID, const bool isSelected);
@@ -33,6 +38,7 @@ public:
     void AddOrSubtract(const om::AddOrSubtract addSegments);
 
 private:
+    uint32_t numberOfAddedSegment;
     OmSegments* segments_;
     om::shared_ptr<OmSelectSegmentsParams> params_;
 

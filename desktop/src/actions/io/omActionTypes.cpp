@@ -12,10 +12,10 @@ om::actions_::typeMap_t om::actions_::registerActionTypes()
     ret["OmSegmentGroupAction"] = OmSegmentGroupAction;
     ret["OmSegmentUncertainAction"] = OmSegmentUncertainAction;
     ret["OmVolxelSetvalueAction"] = OmVolxelSetvalueAction;
-    ret["OmSegmentationThresholdChangeAction"] =
-        OmSegmentationThresholdChangeAction;
+    ret["OmSegmentationThresholdChangeAction"] = OmSegmentationThresholdChangeAction;
     ret["OmProjectCloseAction"] = OmProjectCloseAction;
     ret["OmProjectSaveAction"] = OmProjectSaveAction;
+    ret["OmAutomaticSpreadingThresholdChangeAction"] = OmAutomaticSpreadingThresholdChangeAction;
 
     return ret;
 }

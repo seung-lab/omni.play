@@ -89,6 +89,11 @@ public:
         return maxValue_.get();
     }
 
+    inline OmSegmentGraph* GetGraph()
+    {
+        return &segmentGraph_;
+    }
+
     inline uint64_t MSTfreshness() const {
         return segmentGraph_.MSTfreshness();
     }
@@ -127,6 +132,11 @@ public:
     inline void AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
     {
         segmentGraph_.AddSegments_BFS_DynamicThreshold(mst,sel,SegmentID);
+    }
+
+    inline void Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
+    {
+        segmentGraph_.Trim(mst,sel,SegmentID);
     }
 
 protected:

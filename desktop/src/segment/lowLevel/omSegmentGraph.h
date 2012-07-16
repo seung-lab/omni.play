@@ -6,7 +6,7 @@
 #include "threads/omTaskManagerTypes.h"
 #include "segment/io/omMSTtypes.h"
 
-using namespace std;
+//using namespace std;
 
 class OmSegmentSelector;
 class OmMST;
@@ -51,6 +51,7 @@ public:
     void AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
     void AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
     void AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
+    void Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
 
     void UpdateSizeListsFromJoin(OmSegment* root, OmSegment* child);
     void UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* child);
@@ -60,6 +61,11 @@ public:
     }
 
     typedef boost::unordered_map < OmSegID, std::vector <OmMSTEdge*> > AdjacencyMap;
+
+    inline AdjacencyMap* GetAdjacencyList()
+    {
+        return &adjacencyList_;
+    }
 
 private:
     OmSegmentation* segmentation_;

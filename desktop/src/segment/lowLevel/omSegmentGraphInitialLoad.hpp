@@ -11,7 +11,7 @@
 #include "segment/io/omMSTtypes.h"
 #include <boost/unordered_map.hpp>
 
-using namespace std;
+//using namespace std;
 
 class OmSegmentGraphInitialLoad {
 private:
@@ -21,7 +21,7 @@ private:
     OmSegmentsStore *const segmentPages_;
     OmSegmentChildren *const children_;
     OmSegmentGraph::AdjacencyMap *const AdjacencyList_;
-    
+
     OmThreadPool pool_;
 
     struct TaskArgs {
@@ -72,6 +72,8 @@ public:
         {
             (*AdjacencyList_)[edges[i].node1ID].push_back(&edges[i]);
             (*AdjacencyList_)[edges[i].node2ID].push_back(&edges[i]);
+
+            edges[i].orderOfAddition = 0;
 
             //AllSegIDs.insert(edges[i].node1ID);
             //AllSegIDs.insert(edges[i].node2ID); 

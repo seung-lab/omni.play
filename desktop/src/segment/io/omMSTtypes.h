@@ -3,6 +3,7 @@
 #include "common/omStd.h"
 
 struct OmMSTEdge {
+    uint32_t orderOfAddition;
     uint32_t number;
     uint32_t node1ID;
     uint32_t node2ID;

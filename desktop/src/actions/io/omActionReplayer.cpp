@@ -62,6 +62,9 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
                                       QDataStream& in)
 {
     switch(om::actions_::actionStrToType_.at(actionName)){
+    case om::actions_::OmAutomaticSpreadingThresholdChangeAction:
+        doReplayFile<OmAutomaticSpreadingThresholdChangeAction, OmAutomaticSpreadingThresholdChangeActionImpl>(in);
+        break;
     case om::actions_::OmSegmentValidateAction:
         doReplayFile<OmSegmentValidateAction, OmSegmentValidateActionImpl>(in);
         break;

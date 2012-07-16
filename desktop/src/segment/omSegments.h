@@ -15,9 +15,16 @@ class OmSegmentsImpl;
 class OmSegmentsStore;
 class SegmentDataWrapper;
 class OmSegmentSelector;
+class OmSegmentImpl;
 
 class OmSegments {
 public:
+
+    inline OmSegmentsImpl* GetImpl()
+    {
+        return impl_.get();
+    }
+
     OmSegments(OmSegmentation* segmentation);
     ~OmSegments();
 
@@ -82,6 +89,7 @@ public:
     void AddSegments_BreadthFirstSearch(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
     void AddSegments_DepthFirstSearch(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
     void AddSegments_BFS_DynamicThreshold(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
+    void Trim(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
 
 	std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
 	bool JoinEdges(const std::vector<OmSegmentEdge>& edges);

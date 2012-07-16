@@ -5,8 +5,6 @@
 #include "utility/omStringHelpers.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentSelector.h"
-#include <queue>
-#include <stack>
 
 #define OMSEGMENTGRAPH_NEWLEVEL -1
 
@@ -251,7 +249,7 @@ void OmSegmentGraph::AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel
 
 void OmSegmentGraph::AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
 {
-    queue <OmSegID> q;
+    std::queue <OmSegID> q;
     OmMSTEdge *currEdge;
     OmSegID currSegment, nextSegment;
     double threshold = mst->UserASThreshold();
@@ -272,7 +270,7 @@ void OmSegmentGraph::AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelecto
 
         q.pop();
 
-        for ( int i = 0; i < adjacencyList_[currSegment].size(); i++)
+        for ( int i = 0; i < adjacencyList_[currSegment].size(); i++ )
         {
             currEdge = adjacencyList_[currSegment][i];
 
@@ -292,9 +290,53 @@ void OmSegmentGraph::AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelecto
     sel->sendEvent();
 }
 
+void OmSegmentGraph::Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
+{
+    uint32_t mini = -1;
+    for ( int i = 0; i < adjacencyList_[SegmentID].size(); i++ )
+        if ( adjacencyList_[SegmentID][i]->orderOfAddition &&
+            ( mini == -1 || adjacencyList_[SegmentID][i]->orderOfAddition < mini ) )
+            mini = adjacencyList_[SegmentID][i]->orderOfAddition;
+
+    std::queue <OmSegID> q;
+    OmMSTEdge *currEdge;
+    OmSegID currSegment, nextSegment;
+    
+    q.push( SegmentID );
+
+    boost::unordered_set<OmSegID> setToRemove;
+
+    while (!q.empty())
+    {
+        currSegment = q.front();
+
+        std::cout << "Currently trimming segment " << currSegment << std::endl;
+
+        q.pop();
+
+        for ( int i = 0; i < adjacencyList_[currSegment].size(); i++ )
+        {
+            currEdge = adjacencyList_[currSegment][i];
+
+            if ( (*currEdge).orderOfAddition <= mini ) continue;
+
+            if ( currSegment == (*currEdge).node2ID ) nextSegment = (*currEdge).node1ID;
+            else nextSegment = (*currEdge).node2ID;
+
+            if ( ! sel->IsSegmentSelected( nextSegment ) ) continue;
+            if ( setToRemove.find( nextSegment ) != setToRemove.end() ) continue;
+
+            q.push( nextSegment );
+            setToRemove.insert ( nextSegment );
+        }
+    }
+    sel->RemoveSegments (&setToRemove);
+    sel->sendEvent();
+}
+
 void OmSegmentGraph::AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
 {
-    queue <OmSegID> q;
+    std::queue <OmSegID> q;
     OmMSTEdge *currEdge;
     OmSegID currSegment, nextSegment;
     double threshold = mst->UserASThreshold(),difference,top;
@@ -323,7 +365,7 @@ void OmSegmentGraph::AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelec
         for ( int i = 0; i < sizeList; i++)
         {
 
-            if ( (*adjacencyList_[currSegment][0]).threshold - (*adjacencyList_[currSegment][i]).threshold > 0.03 ) break;
+            if ( (*adjacencyList_[currSegment][0]).threshold - (*adjacencyList_[currSegment][i]).threshold > 0.05 ) break;
 
             currEdge = adjacencyList_[currSegment][i];
 
@@ -367,7 +409,9 @@ void OmSegmentGraph::SelectOnlyTheseSegments(OmMST* mst, OmSegmentSelector* sel,
 
 void OmSegmentGraph::AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
 {
-    stack <OmSegID> stackDFS;
+    OmSegID *stackDFS;
+    stackDFS[0] = 1;
+
     boost::unordered_set<OmSegID> setToAdd;
     setToAdd.insert ( SegmentID );
 
@@ -375,12 +419,12 @@ void OmSegmentGraph::AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector*
     OmSegID currSegment, nextSegment;
     double threshold = mst->UserASThreshold();
 
-    stackDFS.push(SegmentID);
+    stackDFS[1] = SegmentID;
 
-    while (!stackDFS.empty())
+    while (stackDFS[0])
     {
-        currSegment = stackDFS.top();
-        stackDFS.pop();
+        currSegment = stackDFS[ stackDFS[0] ];
+        stackDFS[0]--;
 
         for ( int i = 0; i < adjacencyList_[currSegment].size(); i++ )
         {
@@ -394,7 +438,8 @@ void OmSegmentGraph::AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector*
             if ( sel->IsSegmentSelected( nextSegment ) ) continue;
             if ( setToAdd.find( nextSegment ) != setToAdd.end() ) continue;
 
-            stackDFS.push( nextSegment );
+            stackDFS[0]++;
+            stackDFS[ stackDFS[0] ] = nextSegment;
 
             setToAdd.insert ( nextSegment );
         }

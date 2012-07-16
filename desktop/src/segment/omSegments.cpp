@@ -336,6 +336,11 @@ void OmSegments::AddSegments_BFS_DynamicThreshold(OmMST* MST, OmSegmentSelector*
     impl_->AddSegments_BFS_DynamicThreshold(MST,sel,sdw.GetSegmentID());
 }
 
+void OmSegments::Trim(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)
+{
+    impl_->Trim(MST,sel,sdw.GetSegmentID());
+}
+
 // void OmSegments::GrowSelection(OmSegmentDataWraper& sdw) {
 // 	impl_->GrowSelection(sdw);
 // }
