@@ -366,10 +366,9 @@ private:
         OmSegmentSelector sel(segmentation, this, "view2dEvent" );
 
         if(shiftKey_) {
-                if (controlKey_) Segments->AddSegments_BreadthFirstSearch(MST,&sel,seg);
-                else Segments->Trim(MST,&sel,seg);
+                Segments->AddSegments_BreadthFirstSearch(MST,&sel,seg);
         } else {
-        	Segments->AddSegments_BFS_DynamicThreshold(MST,&sel,seg);
+        	Segments->Trim(MST,&sel,seg);//Segments->AddSegments_BFS_DynamicThreshold(MST,&sel,seg);
         }
     }
 }; 

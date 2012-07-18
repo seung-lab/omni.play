@@ -68,7 +68,8 @@ void OmSegmentGraph::SetGlobalThreshold(OmMST* mst)
                                      segmentListsLL_,
                                      segmentPages_,
                                      children_.get(), 
-                                     &adjacencyList_);
+                                     &adjacencyList_,
+                                     &orderOfAdding);
 
     loader.SetGlobalThreshold(mst);
 }
@@ -292,15 +293,33 @@ void OmSegmentGraph::AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelecto
 
 void OmSegmentGraph::Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
 {
-    uint32_t mini = -1;
-    for ( int i = 0; i < adjacencyList_[SegmentID].size(); i++ )
-        if ( adjacencyList_[SegmentID][i]->orderOfAddition &&
-            ( mini == -1 || adjacencyList_[SegmentID][i]->orderOfAddition < mini ) )
-            mini = adjacencyList_[SegmentID][i]->orderOfAddition;
 
-    std::queue <OmSegID> q;
+    //std::cout << "Trimming from segment " << SegmentID << std::endl;
+
     OmMSTEdge *currEdge;
     OmSegID currSegment, nextSegment;
+
+    uint32_t mini = -1;
+
+    if ( !orderOfAdding[SegmentID] )
+    {
+        for ( int i = 0; i < adjacencyList_[SegmentID].size(); i++ )
+        {
+            currEdge = adjacencyList_[SegmentID][i];
+
+           if ( SegmentID == (*currEdge).node2ID ) nextSegment = (*currEdge).node1ID;
+                else nextSegment = (*currEdge).node2ID;
+
+            if ( orderOfAdding[nextSegment] &&
+                ( mini == -1 || orderOfAdding[nextSegment] < mini ) )
+                mini = orderOfAdding[nextSegment];
+        }
+    }
+    else mini = orderOfAdding[SegmentID];
+
+ //   std::cout << "---- " << mini << std::endl;
+
+    std::queue <OmSegID> q;
     
     q.push( SegmentID );
 
@@ -310,7 +329,7 @@ void OmSegmentGraph::Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
     {
         currSegment = q.front();
 
-        std::cout << "Currently trimming segment " << currSegment << std::endl;
+      //  std::cout << "Currently trimming segment " << currSegment << std::endl;
 
         q.pop();
 
@@ -318,19 +337,26 @@ void OmSegmentGraph::Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
         {
             currEdge = adjacencyList_[currSegment][i];
 
-            if ( (*currEdge).orderOfAddition <= mini ) continue;
-
             if ( currSegment == (*currEdge).node2ID ) nextSegment = (*currEdge).node1ID;
             else nextSegment = (*currEdge).node2ID;
+
+          //  std::cout << i << " Segment " << nextSegment << ' ' << orderOfAdding[nextSegment] << std::endl;
+            if ( orderOfAdding[nextSegment] <= mini ) continue;
+          //  std::cout << i << std::endl;
 
             if ( ! sel->IsSegmentSelected( nextSegment ) ) continue;
             if ( setToRemove.find( nextSegment ) != setToRemove.end() ) continue;
 
             q.push( nextSegment );
+
+           // std::cout << "Adding to the set\n";
             setToRemove.insert ( nextSegment );
         }
+       // std::cout << " blaaaaa\n";
     }
-    sel->RemoveSegments (&setToRemove);
+
+//    std::cout << "The set has " << setToRemove.size() << " elements\n";
+    sel->RemoveTheseSegments (&setToRemove);
     sel->sendEvent();
 }
 
@@ -396,14 +422,14 @@ void OmSegmentGraph::AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelec
 void OmSegmentGraph::RemoveSegments(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
 {
     boost::unordered_set<OmSegID> *setToRemove = BreadthFirstSearch(mst,sel,SegmentID);
-    sel->RemoveSegments (setToRemove);
+    sel->RemoveTheseSegments (setToRemove);
     sel->sendEvent();
 }
 
 void OmSegmentGraph::SelectOnlyTheseSegments(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
 {
     boost::unordered_set<OmSegID> *setToLeave = BreadthFirstSearch(mst,sel,SegmentID);
-    sel->RemoveSegments (setToLeave);
+    sel->RemoveTheseSegments (setToLeave);
     sel->sendEvent();   
 }*/
 

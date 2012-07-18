@@ -23,6 +23,7 @@ public:
 
     void InsertSegments(const boost::unordered_set<OmSegID>* segIDs);
     void RemoveSegments(const boost::unordered_set<OmSegID>* segIDs);
+    void RemoveTheseSegments(const boost::unordered_set<OmSegID>* segIDs);
 
     void selectJustThisSegment_toggle(const OmSegID segID);
     void augmentSelectedSet_toggle(const OmSegID segID);
@@ -38,7 +39,6 @@ public:
     void AddOrSubtract(const om::AddOrSubtract addSegments);
 
 private:
-    uint32_t numberOfAddedSegment;
     OmSegments* segments_;
     om::shared_ptr<OmSelectSegmentsParams> params_;
 

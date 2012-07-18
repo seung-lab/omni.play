@@ -11,6 +11,8 @@
 #include "segment/io/omMSTtypes.h"
 #include <boost/unordered_map.hpp>
 
+uint32_t numberOfAddedSegment;
+
 //using namespace std;
 
 class OmSegmentGraphInitialLoad {
@@ -21,6 +23,7 @@ private:
     OmSegmentsStore *const segmentPages_;
     OmSegmentChildren *const children_;
     OmSegmentGraph::AdjacencyMap *const AdjacencyList_;
+    boost::unordered_map <OmSegID,uint32_t> *const orderOfAdding_;
 
     OmThreadPool pool_;
 
@@ -42,13 +45,15 @@ public:
                               OmSegmentListLowLevel* segmentListLL,
                               OmSegmentsStore* segmentPages,
                               OmSegmentChildren* children,
-                              OmSegmentGraph::AdjacencyMap *AdjacencyList)
+                              OmSegmentGraph::AdjacencyMap *AdjacencyList,
+                              boost::unordered_map <OmSegID,uint32_t> *orderOfAdding)
         : forest_(forest)
         , validGroupNum_(validGroupNum)
         , segmentListsLL_(segmentListLL)
         , segmentPages_(segmentPages)
         , children_(children)
         , AdjacencyList_(AdjacencyList)
+        , orderOfAdding_(orderOfAdding)
     {
         joinTaskPool_.Start(&OmSegmentGraphInitialLoad::initialJoinInternalTask,
                             this,
@@ -57,6 +62,8 @@ public:
 
     void SetGlobalThreshold(OmMST* mst)
     {
+        numberOfAddedSegment = 0;
+
         std::cout << "\t" << om::string::humanizeNum(mst->NumEdges())
                   << " edges..." << std::flush;
 
@@ -72,8 +79,6 @@ public:
         {
             (*AdjacencyList_)[edges[i].node1ID].push_back(&edges[i]);
             (*AdjacencyList_)[edges[i].node2ID].push_back(&edges[i]);
-
-            edges[i].orderOfAddition = 0;
 
             //AllSegIDs.insert(edges[i].node1ID);
             //AllSegIDs.insert(edges[i].node2ID); 
@@ -105,7 +110,10 @@ public:
         std::vector <SegInfo>* listOfSegments = (*segmentListsLL_).GetList();
 
         for ( it = listOfSegments->begin(); it != listOfSegments->end(); it++ )
+        {
+            (*orderOfAdding_)[ (*it).segID ] = 0;
             sort( (*AdjacencyList_)[ (*it).segID ].begin(), (*AdjacencyList_)[ (*it).segID ].end());
+        }
 
         joinTaskPool_.JoinPool();
 

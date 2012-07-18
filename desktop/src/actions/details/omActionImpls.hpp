@@ -65,12 +65,7 @@ public:
                                         const double threshold)
     {
 
-        std::cout << "Crash\n";
-
         impl_ = om::make_shared<OmAutomaticSpreadingThresholdChangeActionImpl>(sdw, threshold);
-
-
-        std::cout << "Not crash\n";
 
         SetUndoable(true);
     }

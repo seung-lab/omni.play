@@ -67,12 +67,18 @@ public:
         return &adjacencyList_;
     }
 
+    inline boost::unordered_map <OmSegID,uint32_t>* GetOrderOfAdding()
+    {
+        return &orderOfAdding;
+    }
+
 private:
     OmSegmentation* segmentation_;
     OmValidGroupNum* validGroupNum_;
     OmSegmentsImplLowLevel* mCache;
     OmSegmentsStore* segmentPages_;
     AdjacencyMap adjacencyList_;
+    boost::unordered_map <OmSegID,uint32_t> orderOfAdding;
 
     boost::scoped_ptr<OmDynamicForestCache> forest_;
     boost::scoped_ptr<OmSegmentChildren> children_;

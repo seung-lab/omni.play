@@ -11,9 +11,11 @@
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegmentsImpl.h"
 
+extern uint32_t numberOfAddedSegment;
+
 OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
                                      void* sender,
-                                     const std::string& cmt )
+                                     const std::string& cmt)
     : segments_(sdw.Segments())
     , params_(om::make_shared<OmSelectSegmentsParams>())
 {
@@ -34,10 +36,9 @@ void OmSegmentSelector::setOrderOfAdditionToZero(OmSegID segID)
 {
     OmSegmentsImpl *impl_ = (*segments_).GetImpl();
     OmSegmentGraph *segmentGraph_ = (*impl_).GetGraph();
-    boost::unordered_map < OmSegID, std::vector <OmMSTEdge*> > *adjacencyList_ = (*segmentGraph_).GetAdjacencyList();
+    boost::unordered_map <OmSegID,uint32_t> *orderOfAdding_ = (*segmentGraph_).GetOrderOfAdding();
 
-    for ( uint32_t i=0; i<(*adjacencyList_)[segID].size(); i++ )
-        (* (*adjacencyList_)[segID][i] ).orderOfAddition = 0;
+    (*orderOfAdding_)[segID] = 0;
 }
 
 void OmSegmentSelector::setOrderOfAdditionToNextNumber(OmSegID segID)
@@ -45,19 +46,14 @@ void OmSegmentSelector::setOrderOfAdditionToNextNumber(OmSegID segID)
     OmSegID otherSeg;
     OmSegmentsImpl *impl_ = (*segments_).GetImpl();
     OmSegmentGraph *segmentGraph_ = (*impl_).GetGraph();
-    boost::unordered_map < OmSegID, std::vector <OmMSTEdge*> > *adjacencyList_ = (*segmentGraph_).GetAdjacencyList();
+    boost::unordered_map <OmSegID,uint32_t> *orderOfAdding_ = (*segmentGraph_).GetOrderOfAdding();
 
-    for ( uint32_t i=0; i<(*adjacencyList_)[segID].size(); i++ )
-    {
-        if ( (* (*adjacencyList_)[segID][i] ).orderOfAddition ) continue;
+    if ( (*orderOfAdding_)[segID] ) return;
+    numberOfAddedSegment++;
 
-        otherSeg = (* (*adjacencyList_)[segID][i] ).node1ID;
-        if ( otherSeg == segID ) otherSeg = (* (*adjacencyList_)[segID][i] ).node2ID;
-        if ( !IsSegmentSelected(otherSeg) ) continue;
-        
-        numberOfAddedSegment++;
-        (* (*adjacencyList_)[segID][i] ).orderOfAddition = numberOfAddedSegment;
-    }
+   // Centralize numberOfAddedSegment !!!
+
+    (*orderOfAdding_)[segID] = numberOfAddedSegment;
 }
 
 void OmSegmentSelector::selectNoSegments()
@@ -68,7 +64,6 @@ void OmSegmentSelector::selectNoSegments()
     }
 
     params_->newSelectedIDs.clear();
-    numberOfAddedSegment = 0;
 }
 
 void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel,
@@ -113,6 +108,10 @@ void OmSegmentSelector::InsertSegments(const boost::unordered_set<OmSegID>* segI
 
 void OmSegmentSelector::RemoveSegments(const boost::unordered_set<OmSegID>* segIDs)
 {
+    FOR_EACH(iter, params_->newSelectedIDs)
+    {
+        setOrderOfAdditionToZero(*iter);
+    }
     params_->newSelectedIDs.clear();
 
     uint32_t segID;
@@ -120,6 +119,17 @@ void OmSegmentSelector::RemoveSegments(const boost::unordered_set<OmSegID>* segI
         segID = segments_->findRootID(*iter);
         params_->newSelectedIDs.insert(segID);
         setOrderOfAdditionToNextNumber(segID);
+    }
+}
+
+void OmSegmentSelector::RemoveTheseSegments(const boost::unordered_set<OmSegID>* segIDs)
+{
+    uint32_t segID;
+    FOR_EACH(iter, *segIDs)
+    {
+        segID = segments_->findRootID(*iter);
+        params_->newSelectedIDs.erase(segID);
+        setOrderOfAdditionToZero(segID);
     }
 }
 
