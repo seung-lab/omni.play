@@ -1,10 +1,11 @@
 import subprocess
 import re
+import sys
 
 class cmd:
     @staticmethod
-    def regex_cmd_int(cmd, regex):
-        match = cmd.regex_cmd_search(cmd, regex)
+    def regex_cmd_int(c, regex):
+        match = cmd.regex_cmd_search(c, regex)
         if match:
             return int( match.group(1) )
         else:
@@ -15,7 +16,12 @@ class cmd:
         proc = subprocess.Popen(cmd, shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
-        output = proc.communicate()[0]
+        output, stderr = proc.communicate()
+        output = output.strip()
+        if stderr:
+            print "regex: error:", stderr
+            print "\tregex was:", cmd, regex
+            sys.exit(1)
         return re.search(regex, output)
 
     @staticmethod
@@ -23,5 +29,9 @@ class cmd:
         proc = subprocess.Popen(cmd, shell=True,
                                 stdin=subprocess.PIPE, 
                                 stdout=subprocess.PIPE)
-        output = proc.communicate()[0]
+        output, stderr = proc.communicate()
+        if stderr:
+            print "regex: error:", stderr
+            print "\tregex was:", cmd, regex
+            sys.exit(1)
         return len(re.findall(regex, output))

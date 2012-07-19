@@ -1,9 +1,10 @@
 import fileutils
-from string import Template
-from library import LibraryMetadata
 import os
 
+from string import Template
+from library import LibraryMetadata
 from builder import Builder
+from sysutils import sysutils
 
 class runner:
     def __init__(self, num_cores):
@@ -46,6 +47,11 @@ CFLAGS='-g -O2'
 
     def libjpeg(self):
         b = self.makeBuilder(LibraryMetadata.jpeg())
+
+        if sysutils.isMac():
+            print "libjpeg not building on mac"
+            return
+
         b.prepareAndBuild()
 
     def libpng(self):
