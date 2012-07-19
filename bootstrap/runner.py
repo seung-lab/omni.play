@@ -136,8 +136,14 @@ CFLAGS='-g -O2'
         b.build_options = "--enable-threadsafe --with-pthread=/usr/lib"
         b.prepareAndBuild()
 
-    def omniServer(self):
-        printTitle("omni.server")
+    def omni(self):
+        self.printTitle("omni")
+        pwd = os.path.dirname(__file__)
+        parent = os.path.abspath(os.path.join(pwd, '..'))
+        os.chdir(parent)
+        cmd = "make -j{0}".format(self.num_cores)
+        os.system(cmd)
+
     """
         genOmniScript(@_)
 

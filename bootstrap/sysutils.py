@@ -8,7 +8,7 @@ class sysutils:
     def numberOfCores(override):
         numCores = 2
 
-        if None == override:     
+        if None == override:
             if detect_os.isLinux():
                 numCores = sys_linux.numCoresLinux()
 
