@@ -268,7 +268,7 @@ $(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
 $(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/resources.rcc.o
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
+	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN../external/libs/qt/lib' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
 
 ALLDEPS = $(shell find build -iname "*.d")
 
