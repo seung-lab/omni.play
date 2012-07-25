@@ -321,6 +321,11 @@ void OmSegments::AddNeighboursToSelection(OmMST* MST, OmSegmentSelector* sel, Se
     impl_->AddNeighboursToSelection(MST,sel,sdw.GetSegmentID());
 }
 
+void OmSegments::Grow_LocalSizeThreshold(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)
+{
+    impl_->Grow_LocalSizeThreshold(MST,sel,sdw.GetSegmentID());
+}
+
 void OmSegments::AddSegments_BreadthFirstSearch(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)
 {
     impl_->AddSegments_BreadthFirstSearch(MST,sel,sdw.GetSegmentID());

@@ -124,6 +124,11 @@ public:
         segmentGraph_.AddSegments_BreadthFirstSearch(mst,sel,SegmentID);
     }
 
+    inline void Grow_LocalSizeThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
+    {
+        segmentGraph_.Grow_LocalSizeThreshold(mst,sel,SegmentID);
+    }
+
     inline void AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
     {
         segmentGraph_.AddSegments_DepthFirstSearch(mst,sel,SegmentID);

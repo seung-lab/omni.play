@@ -334,6 +334,7 @@ void OmSegmentsImpl::refreshTree()
         segmentGraph_.Initialize(segmentation_, this);
 
         setGlobalThreshold(mst);
+        //resetSizeThreshold(mst);
 
         userEdges_ = segmentation_->MSTUserEdges();
         FOR_EACH(iter, userEdges_->Edges()){
@@ -342,6 +343,7 @@ void OmSegmentsImpl::refreshTree()
 
     } else {
         resetGlobalThreshold(mst);
+        resetSizeThreshold(mst);
     }
 
     RefreshGUIlists();
@@ -357,6 +359,12 @@ void OmSegmentsImpl::setGlobalThreshold(OmMST* mst)
 
     segmentGraph_.SetGlobalThreshold(mst);
     SegmentSelection().Clear();
+}
+
+void OmSegmentsImpl::resetSizeThreshold(OmMST *mst)
+{
+    segmentGraph_.ResetSizeThreshold(mst);
+    rerootSegmentLists();
 }
 
 void OmSegmentsImpl::resetGlobalThreshold(OmMST* mst)

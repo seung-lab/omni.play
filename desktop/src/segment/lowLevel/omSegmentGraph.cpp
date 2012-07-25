@@ -6,8 +6,6 @@
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentSelector.h"
 
-#define OMSEGMENTGRAPH_NEWLEVEL -1
-
 OmSegmentGraph::OmSegmentGraph()
     : segmentation_(NULL)
     , mCache(NULL)
@@ -37,7 +35,7 @@ void OmSegmentGraph::Initialize(OmSegmentation* segmentation,
     mCache = cache;
     segmentPages_ = cache->SegmentStore();
 
-    // maxValue is a valid segment id, so array needs to be 1 bigger
+    // maxValue is a valid segOmSegmentGraphInitialLoadment id, so array needs to be 1 bigger
     const uint32_t size = 1 + mCache->getMaxValue();
 
     forest_.reset(new OmDynamicForestCache(size));
@@ -69,13 +67,33 @@ void OmSegmentGraph::SetGlobalThreshold(OmMST* mst)
                                      segmentPages_,
                                      children_.get(), 
                                      &adjacencyList_,
-                                     &orderOfAdding);
+                                     &orderOfAdding,
+                                     &distribution_,
+                                     &accessToSegments_);
 
     loader.SetGlobalThreshold(mst);
 }
 
+void OmSegmentGraph::ResetSizeThreshold(OmMST* mst)
+{
+    std::cout << "Got here\n";
+
+    int direction = mst->UserSizeThresholdDirection();
+    
+    if ( !direction ) return;
+
+    std::cout << "The direction is " << direction << std::endl;
+
+
+    if ( direction == 1 ) ResetSizeThresholdUp(mst);
+    else { std::cout<<"-----------\n"; ResetSizeThresholdDown(mst); std::cout<<"T-------------\n";} 
+
+    std::cout << "Got here\n";
+}
+
 void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
 {
+
     std::cout << "\t" << om::string::humanizeNum(mst->NumEdges())
               << " edges..." << std::flush;
 
@@ -88,6 +106,7 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
     OmMSTEdge* edges = mst->Edges();
 
     for(uint32_t i = 0; i < mst->NumEdges(); ++i) {
+
         if( 1 == edges[i].userSplit ){
             continue;
         }
@@ -116,6 +135,103 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
             }
         }
     }
+
+    forest_->SetBatch(false);
+
+    timer.PrintDone();
+}
+
+void OmSegmentGraph::ResetSizeThresholdUp(OmMST* mst) // Joining the edges that can be joined
+{
+
+    OmTimer timer;
+
+    forest_->SetBatch(true);
+    forest_->ClearCache();
+
+    const double sizeThreshold = mst->UserSizeThreshold();
+    const double stopThreshold = mst->UserThreshold();
+    OmMSTEdge* edges = mst->Edges();
+    
+    for(uint32_t i = 0; i < mst->NumEdges(); i++)
+    {
+        if ( edges[i].threshold < stopThreshold ) break;
+
+        if( 1 == edges[i].userSplit )
+        {
+            continue;
+        }
+
+        if ( sizeCheck(edges[i].node1ID,edges[i].node2ID,sizeThreshold) )
+        { // join
+            if( 1 == edges[i].wasJoined )
+            {
+                continue;
+            }
+            if( joinInternal(edges[i].node2ID,
+                             edges[i].node1ID,
+                             edges[i].threshold, i) )
+            {
+                edges[i].wasJoined = 1;
+            }
+            else
+            {
+                edges[i].userSplit = 1;
+            }
+        }
+    }
+
+    forest_->SetBatch(false);
+
+    timer.PrintDone();
+}
+
+void OmSegmentGraph::ResetSizeThresholdDown(OmMST* mst) // Splitting the edges that should be split
+{
+
+    std:: cout << "Here we die\n";
+    OmTimer timer;
+
+    forest_->SetBatch(true);
+    forest_->ClearCache();
+
+    const double sizeThreshold = mst->UserSizeThreshold();
+    OmMSTEdge* edges = mst->Edges();
+
+    std::cout << "Not crashed yet\n";
+    
+    for(int32_t i = static_cast<int32_t>(mst->NumEdges())-1; i >= 0; --i)
+    {
+        //std::cout << i << '\n' << std::flush;
+
+        if( 1 == edges[i].userSplit )
+        {
+            continue;
+        }
+
+        //std:: cout << i << " Not crashed yet 1\n";
+        if ( !sizeCheck(edges[i].node1ID,edges[i].node2ID,sizeThreshold) )
+        { 
+            //std:: cout << i << " Not crashed yet 2\n";
+
+            // split
+            if( 0 == edges[i].wasJoined )
+            {
+                continue;
+            }
+            if( splitChildFromParentInternal(edges[i].node1ID))
+            {
+                edges[i].wasJoined = 0;
+            }
+            else
+            {
+                edges[i].userJoin = 1;
+            }
+        }
+       //std:: cout << i << " Not crashed yet 3\n";
+    }
+
+    //std:: cout << "Not crashed yet !!!\n";
 
     forest_->SetBatch(false);
 
@@ -212,6 +328,71 @@ void OmSegmentGraph::UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* chil
 
     segmentListsLL_->UpdateSizeListsFromSplit(root, child, childInfo);
 }
+
+ double OmSegmentGraph::SizeOfBFSGrowth(OmMST* mst, OmSegID SegmentID, double threshold)
+ {
+     double totalSize = 0;
+
+     std::queue <OmSegID> q;
+     OmMSTEdge *currEdge;
+     OmSegID currSegment, nextSegment;
+    
+     q.push( SegmentID );
+     totalSize += segmentListsLL_->GetSizeWithChildren(Root( SegmentID )); // PROBABLY SHOULD BE JUST THE CURRENT SEGMENT WITHOUT THE CHILDREN
+
+     boost::unordered_map <OmSegID,bool> used;
+     used[ SegmentID ] = 1; //setToAdd.insert ( SegmentID );
+
+     while (!q.empty())
+     {
+
+         currSegment = q.front();
+
+         q.pop();
+
+         for ( int i = 0; i < adjacencyList_[currSegment].size(); i++ )
+         {
+             currEdge = adjacencyList_[currSegment][i];
+
+             if ( (*currEdge).threshold < threshold ) continue;
+
+             if ( currSegment == (*currEdge).node2ID ) nextSegment = (*currEdge).node1ID;
+             else nextSegment = (*currEdge).node2ID;
+
+             if ( used[ nextSegment ] ) continue; //if ( setToAdd.find( nextSegment ) != setToAdd.end() ) continue;
+
+             q.push( nextSegment );
+             used[ nextSegment ] = 1; //setToAdd.insert ( nextSegment );
+             totalSize += segmentListsLL_->GetSizeWithChildren(Root( nextSegment)); // PROBABLY SHOULD BE JUST THE CURRENT SEGMENT WITHOUT THE CHILDREN
+         }
+     }
+
+     return totalSize;
+ }
+
+ void OmSegmentGraph::Grow_LocalSizeThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
+ {
+     double totalSize,sizeThreshold = mst->UserSizeThreshold();
+
+     //std::cout << "The size of the current segment is " << segmentListsLL_->GetSizeWithChildren(Root(SegmentID)) << std::endl;
+
+     double l=0.6,r=1,mid;
+     while ( (r-l) > 0.0001 )
+     {
+         mid = ( ( l + r )/2 );
+         totalSize = SizeOfBFSGrowth (mst,SegmentID,mid);
+
+         //std::cout.precision(4);
+         //std::cout << std::fixed << l << ' ' << std::fixed << r << " The total size is " << totalSize << std::endl;
+         
+         if ( totalSize > sizeThreshold ) l = mid;
+         else r = mid;
+     }
+
+     mst->SetUserASThreshold(r);
+
+     AddSegments_BreadthFirstSearch(mst,sel,SegmentID);
+ }
 
 void OmSegmentGraph::AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
 {
@@ -352,7 +533,6 @@ void OmSegmentGraph::Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
            // std::cout << "Adding to the set\n";
             setToRemove.insert ( nextSegment );
         }
-       // std::cout << " blaaaaa\n";
     }
 
 //    std::cout << "The set has " << setToRemove.size() << " elements\n";
@@ -412,30 +592,9 @@ void OmSegmentGraph::AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelec
     sel->sendEvent();
 }
 
-/*void OmSegmentGraph::AddSegments(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
-{
-    boost::unordered_set<OmSegID> *setToAdd = BreadthFirstSearch(mst,sel,SegmentID);
-    sel->InsertSegments (setToAdd);
-    sel->sendEvent();
-}
-
-void OmSegmentGraph::RemoveSegments(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
-{
-    boost::unordered_set<OmSegID> *setToRemove = BreadthFirstSearch(mst,sel,SegmentID);
-    sel->RemoveTheseSegments (setToRemove);
-    sel->sendEvent();
-}
-
-void OmSegmentGraph::SelectOnlyTheseSegments(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
-{
-    boost::unordered_set<OmSegID> *setToLeave = BreadthFirstSearch(mst,sel,SegmentID);
-    sel->RemoveTheseSegments (setToLeave);
-    sel->sendEvent();   
-}*/
-
 void OmSegmentGraph::AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
 {
-    OmSegID *stackDFS;
+    std::vector<OmSegID> stackDFS(1000); // = new OmSegID[1000];
     stackDFS[0] = 1;
 
     boost::unordered_set<OmSegID> setToAdd;

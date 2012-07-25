@@ -114,6 +114,8 @@ public:
         base_t::operator=(other);
         return *this;
     }
+
+    friend class OmSegmentGraphInitialLoad;
 };
 
 } // namespace coords

@@ -26,6 +26,8 @@ private:
     bool shiftKey_;
     bool leftMouseButton_;
     bool rightMouseButton_;
+    bool gButton_;
+    bool tButton_;
     om::tool::mode tool_;
     QMouseEvent* event_;
     DataCoord dataClickPoint_;
@@ -365,10 +367,14 @@ private:
 
         OmSegmentSelector sel(segmentation, this, "view2dEvent" );
 
-        if(shiftKey_) {
-                Segments->AddSegments_BreadthFirstSearch(MST,&sel,seg);
-        } else {
-        	Segments->Trim(MST,&sel,seg);//Segments->AddSegments_BFS_DynamicThreshold(MST,&sel,seg);
+        if ( shiftKey_ )
+        {
+            if ( altKey_ ) Segments->Trim(MST,&sel,seg);
+            else Segments->Grow_LocalSizeThreshold(MST,&sel,seg);
+        }
+        else
+        {
+            Segments->AddSegments_BreadthFirstSearch(MST,&sel,seg);
         }
     }
 }; 

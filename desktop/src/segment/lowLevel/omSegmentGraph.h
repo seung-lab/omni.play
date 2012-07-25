@@ -6,6 +6,10 @@
 #include "threads/omTaskManagerTypes.h"
 #include "segment/io/omMSTtypes.h"
 
+// #define OMSEGMENTGRAPH_NEWLEVEL -1
+// #define STEP 100
+// #define MAX_NOS 10
+
 //using namespace std;
 
 class OmSegmentSelector;
@@ -19,7 +23,15 @@ class OmSegmentation;
 class OmSegmentSelection;
 class OmValidGroupNum;
 
+
 class OmSegmentGraph {
+public:
+    static const int omsegmentgraph_newlevel = -1 ;
+    static const int step                    = 100;
+    static const int max_nos                 = 10 ;
+
+    typedef std::vector<OmSegment*> some_type[max_nos][max_nos*2+2][max_nos];
+
 public:
     OmSegmentGraph();
     ~OmSegmentGraph();
@@ -46,7 +58,12 @@ public:
 
     void SetGlobalThreshold(OmMST* mst);
     void ResetGlobalThreshold(OmMST* mst);
+    void ResetSizeThreshold(OmMST* mst);
+    void ResetSizeThresholdUp(OmMST* mst);
+    void ResetSizeThresholdDown(OmMST* mst);
 
+    double SizeOfBFSGrowth(OmMST* mst, OmSegID SegmentID, double globalThreshold);
+    void Grow_LocalSizeThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
     void AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
     void AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
     void AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
@@ -72,6 +89,13 @@ public:
         return &orderOfAdding;
     }
 
+    bool joinInternal(const OmSegID parentID,
+                      const OmSegID childUnknownDepthID,
+                      const double threshold,
+                      const int edgeNumber);
+
+    bool splitChildFromParentInternal(const OmSegID childID);
+
 private:
     OmSegmentation* segmentation_;
     OmValidGroupNum* validGroupNum_;
@@ -79,17 +103,11 @@ private:
     OmSegmentsStore* segmentPages_;
     AdjacencyMap adjacencyList_;
     boost::unordered_map <OmSegID,uint32_t> orderOfAdding;
-
+    some_type distribution_;
+    boost::unordered_map <OmSegID,OmSegment*> accessToSegments_;
     boost::scoped_ptr<OmDynamicForestCache> forest_;
     boost::scoped_ptr<OmSegmentChildren> children_;
     OmSegmentListLowLevel* segmentListsLL_;
-
-    bool joinInternal(const OmSegID parentID,
-                      const OmSegID childUnknownDepthID,
-                      const double threshold,
-                      const int edgeNumber);
-
-    bool splitChildFromParentInternal(const OmSegID childID);
 
     SizeAndNumPieces computeSegmentSizeWithChildren(OmSegment* seg);
     std::vector<OmSegment*> segsTempVec_;

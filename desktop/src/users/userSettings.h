@@ -17,7 +17,8 @@ private:
     double threshold_;
     double sizeThreshold_;
     double automaticSpreadingThreshold_;
-    
+    int sizeThreshold_direction_;
+
 public:
     userSettings(std::string filename)
         : filename_(filename)
@@ -27,6 +28,7 @@ public:
         , threshold_(defaultThreshold_)
         , sizeThreshold_(defaultSizeThreshold_)
         , automaticSpreadingThreshold_(defaultASThreshold_)
+        , sizeThreshold_direction_(0)
     {
         std::cout << "New User Settings\n";
     }
@@ -50,8 +52,17 @@ public:
     inline float getSizeThreshold() {
         return sizeThreshold_;
     }
+
+    inline int getSizeDirection() {
+        return sizeThreshold_direction_;
+    }
     
     inline void setSizeThreshold(float val) {
+        if ( !sizeThreshold_ ) sizeThreshold_direction_ = -1;
+        else if ( !val ) sizeThreshold_direction_ = 0;
+        else if ( sizeThreshold_ < val ) sizeThreshold_direction_ = 1;
+        else if ( sizeThreshold_ > val ) sizeThreshold_direction_ = -1;
+        else sizeThreshold_direction_ = 0;
         sizeThreshold_ = val;
     }
     

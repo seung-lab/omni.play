@@ -58,6 +58,10 @@ public:
         return OmProject::Globals().Users().UserSettings().getASThreshold();
     }
 
+    inline int UserSizeThresholdDirection() const {
+        return OmProject::Globals().Users().UserSettings().getSizeDirection();
+    }
+
     void SetUserThreshold(const double t);
     void SetUserSizeThreshold(const double t);
     void SetUserASThreshold(const double t);

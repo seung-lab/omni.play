@@ -152,6 +152,11 @@ public:
         return segments_;
     }
 
+    inline OmSegmentDataV4* GetData()
+    {
+        return data_;
+    }
+
 private:
     OmSegmentDataV4* data_;
     uint8_t* listType_;

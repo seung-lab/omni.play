@@ -48,6 +48,7 @@ private:
     void rerootSegmentLists();
     void setGlobalThreshold(OmMST* mst);
     void resetGlobalThreshold(OmMST* mst);
+    void resetSizeThreshold(OmMST* mst);
 
     friend class OmSegmentColorizer;
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmSegmentsImpl&);

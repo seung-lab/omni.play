@@ -70,7 +70,8 @@ public:
     int Level;
     Vector3i Coordinate;
 
-    friend std::ostream& operator<<(std::ostream &out, const chunk &in);
+    friend std::ostream& operator<<(std::ostream &out, const chunk &in);\
+    friend class OmSegmentGraphInitialLoad;
 };
 
 } // namespace coords

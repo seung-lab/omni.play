@@ -11,12 +11,21 @@
 #include "segment/io/omMSTtypes.h"
 #include <boost/unordered_map.hpp>
 
+//#include "../../../../common/src/coordinates/chunk.h"
+//#include "../../../../common/src/coordinates/data.h"
+
 uint32_t numberOfAddedSegment;
 
 //using namespace std;
 
+class chunk;
+class data;
+
 class OmSegmentGraphInitialLoad {
 private:
+    static const int step                    = 100;
+    static const int max_nos                 = 10 ;
+
     OmDynamicForestCache *const forest_;
     OmValidGroupNum *const validGroupNum_;
     OmSegmentListLowLevel *const segmentListsLL_;
@@ -24,6 +33,8 @@ private:
     OmSegmentChildren *const children_;
     OmSegmentGraph::AdjacencyMap *const AdjacencyList_;
     boost::unordered_map <OmSegID,uint32_t> *const orderOfAdding_;
+    OmSegmentGraph::some_type* distribution_;
+    boost::unordered_map <OmSegID,OmSegment*> *const accessToSegments_;
 
     OmThreadPool pool_;
 
@@ -46,7 +57,9 @@ public:
                               OmSegmentsStore* segmentPages,
                               OmSegmentChildren* children,
                               OmSegmentGraph::AdjacencyMap *AdjacencyList,
-                              boost::unordered_map <OmSegID,uint32_t> *orderOfAdding)
+                              boost::unordered_map <OmSegID,uint32_t> *orderOfAdding,
+                              OmSegmentGraph::some_type* distribution,
+                              boost::unordered_map <OmSegID,OmSegment*> *accessToSegments)
         : forest_(forest)
         , validGroupNum_(validGroupNum)
         , segmentListsLL_(segmentListLL)
@@ -54,10 +67,88 @@ public:
         , children_(children)
         , AdjacencyList_(AdjacencyList)
         , orderOfAdding_(orderOfAdding)
+        , distribution_(distribution)
+        , accessToSegments_(accessToSegments)
     {
+
         joinTaskPool_.Start(&OmSegmentGraphInitialLoad::initialJoinInternalTask,
                             this,
                             1);
+    }
+
+    struct point
+    {
+        int x,y,z;
+    };
+
+    inline int abss(int a)
+    {
+        if ( a < 0 ) return -a;
+        return a;
+    }
+
+    void DistributeSegmentsInBatches(OmMST *mst)
+    {
+        OmMSTEdge* edges = mst->Edges();
+
+        OmSegment *segment,*segment1,*segment2;
+        OmSegID segID;
+
+        point center_,batch_,center_1,center_2,batch_1,batch_2;
+        int i,j;
+        for ( i=0; i<segmentListsLL_->GetList()->size(); i++ )
+        {
+            segment = (* segmentListsLL_->GetList() )[i].seg;
+            if ( segment == NULL ) continue;
+
+            segID = segment->GetData()->value;
+            (*accessToSegments_)[segID] = segment;
+
+            center_.x = segment->GetData()->bounds.getCenter().x; // Extracting the center of the current segment
+            center_.y = segment->GetData()->bounds.getCenter().y;
+            center_.z = segment->GetData()->bounds.getCenter().z;
+
+            batch_.x = center_.x/step + (center_.x%step)?1:0; // Determine which batch the current segment belongs to
+            batch_.y = center_.y/step + (center_.y%step)?1:0;
+            batch_.z = center_.z/step + (center_.z%step)?1:0;
+            (*distribution_)[ batch_.x ][ batch_.y ][ batch_.z ].push_back(segment);
+        }
+
+        /*for ( it.x = step; it.x <= volumeSize; it.x += step ) ----- Traversing the distribution array
+            for ( it.y = step; it.y <= volumeSize; it.y += step )
+                for ( it.z = step; it.z <= volumeSize; it.z += step )
+                {
+
+                }*/
+
+
+        /*for ( i = 0; i < mst->NumEdges(); ++i ) ------ Check if edges are only between neighbouring batches - yep for now
+        {
+            segment1 = (*accessToSegments_)[ edges[i].node1ID ];
+            segment2 = (*accessToSegments_)[ edges[i].node2ID ];
+            
+            center_1.x = segment1->GetData()->bounds.getCenter().x;
+            center_1.y = segment1->GetData()->bounds.getCenter().y;
+            center_1.z = segment1->GetData()->bounds.getCenter().z;
+
+            batch_1.x = center_1.x/STEP + (center_1.x%STEP)?1:0;
+            batch_1.y = center_1.y/STEP + (center_1.y%STEP)?1:0;
+            batch_1.z = center_1.z/STEP + (center_1.z%STEP)?1:0;
+            
+            center_2.x = segment2->GetData()->bounds.getCenter().x;
+            center_2.y = segment2->GetData()->bounds.getCenter().y;
+            center_2.z = segment2->GetData()->bounds.getCenter().z;
+
+            batch_2.x = center_2.x/STEP + (center_2.x%STEP)?1:0;
+            batch_2.y = center_2.y/STEP + (center_2.y%STEP)?1:0;
+            batch_2.z = center_2.z/STEP + (center_2.z%STEP)?1:0;
+
+            if ( abss( batch_1.x - batch_2.x ) + abss( batch_1.y - batch_2.y ) + abss( batch_1.z - batch_2.z ) > 1 )
+            {
+                std::cout << batch_1.x << ' ' << batch_1.y << ' ' << batch_1.z << std::endl;
+                std::cout << batch_2.x << ' ' << batch_2.y << ' ' << batch_2.z << std::endl << std::endl;
+            }
+        }*/
     }
 
     void SetGlobalThreshold(OmMST* mst)
@@ -120,6 +211,8 @@ public:
         forest_->SetBatch(false);
 
         timer.PrintDone();
+        
+        DistributeSegmentsInBatches(mst);
     }
 
 private:
@@ -170,6 +263,7 @@ private:
 
     void initialJoinInternalTask(const TaskArgs& t)
     {
+
         OmSegment* childRoot = segmentPages_->GetSegmentUnsafe(t.childRootID);
         OmSegment* parent = segmentPages_->GetSegmentUnsafe(t.parentID);
 

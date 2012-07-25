@@ -13,7 +13,8 @@ om::segLists::getPage(const std::vector<SegInfo> list,
     }
 
     if(startIndex > list.size()){
-        assert(0 && "illegal page request");
+        //std::cout << "The start index is " << startIndex << '\n' << "The size of the list is " << list.size() << '\n';
+        assert(startIndex && "illegal page request");
     }
 
     ret->pageNum = startIndex / numToGet;
