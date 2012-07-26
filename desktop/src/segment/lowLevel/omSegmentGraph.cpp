@@ -103,6 +103,8 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
     forest_->ClearCache();
 
     const double stopThreshold = mst->UserThreshold();
+    const double sizeThreshold = mst->UserSizeThreshold();
+
     OmMSTEdge* edges = mst->Edges();
 
     for(uint32_t i = 0; i < mst->NumEdges(); ++i) {
@@ -114,9 +116,13 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
         if(edges[i].threshold >= stopThreshold ||
             1 == edges[i].userJoin )
         { // join
+
             if( 1 == edges[i].wasJoined ){
                 continue;
             }
+
+            if ( !sizeCheck(edges[i].node1ID,edges[i].node2ID,sizeThreshold) ) continue;
+
             if( joinInternal(edges[i].node2ID,
                              edges[i].node1ID,
                              edges[i].threshold, i) ){
@@ -161,13 +167,16 @@ void OmSegmentGraph::ResetSizeThresholdUp(OmMST* mst) // Joining the edges that 
         {
             continue;
         }
+        if( 1 == edges[i].wasJoined )
+        {
+           continue;
+        }
 
         if ( sizeCheck(edges[i].node1ID,edges[i].node2ID,sizeThreshold) )
         { // join
-            if( 1 == edges[i].wasJoined )
-            {
-                continue;
-            }
+
+            std::cout << segmentListsLL_->GetSizeWithChildren(Root( edges[i].node1ID )) + segmentListsLL_->GetSizeWithChildren(Root( edges[i].node2ID )) << std::endl;
+
             if( joinInternal(edges[i].node2ID,
                              edges[i].node1ID,
                              edges[i].threshold, i) )
@@ -188,8 +197,6 @@ void OmSegmentGraph::ResetSizeThresholdUp(OmMST* mst) // Joining the edges that 
 
 void OmSegmentGraph::ResetSizeThresholdDown(OmMST* mst) // Splitting the edges that should be split
 {
-
-    std:: cout << "Here we die\n";
     OmTimer timer;
 
     forest_->SetBatch(true);
@@ -197,28 +204,23 @@ void OmSegmentGraph::ResetSizeThresholdDown(OmMST* mst) // Splitting the edges t
 
     const double sizeThreshold = mst->UserSizeThreshold();
     OmMSTEdge* edges = mst->Edges();
-
-    std::cout << "Not crashed yet\n";
     
     for(int32_t i = static_cast<int32_t>(mst->NumEdges())-1; i >= 0; --i)
     {
-        //std::cout << i << '\n' << std::flush;
 
         if( 1 == edges[i].userSplit )
         {
             continue;
         }
 
-        //std:: cout << i << " Not crashed yet 1\n";
-        if ( !sizeCheck(edges[i].node1ID,edges[i].node2ID,sizeThreshold) )
-        { 
-            //std:: cout << i << " Not crashed yet 2\n";
+        if( 0 == edges[i].wasJoined )
+        {
+            continue;
+        }
 
+        if ( segmentListsLL_->GetSizeWithChildren(Root( edges[i].node1ID )) > sizeThreshold )
+        { 
             // split
-            if( 0 == edges[i].wasJoined )
-            {
-                continue;
-            }
             if( splitChildFromParentInternal(edges[i].node1ID))
             {
                 edges[i].wasJoined = 0;
@@ -228,10 +230,7 @@ void OmSegmentGraph::ResetSizeThresholdDown(OmMST* mst) // Splitting the edges t
                 edges[i].userJoin = 1;
             }
         }
-       //std:: cout << i << " Not crashed yet 3\n";
     }
-
-    //std:: cout << "Not crashed yet !!!\n";
 
     forest_->SetBatch(false);
 
@@ -341,7 +340,7 @@ void OmSegmentGraph::UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* chil
      totalSize += segmentListsLL_->GetSizeWithChildren(Root( SegmentID )); // PROBABLY SHOULD BE JUST THE CURRENT SEGMENT WITHOUT THE CHILDREN
 
      boost::unordered_map <OmSegID,bool> used;
-     used[ SegmentID ] = 1; //setToAdd.insert ( SegmentID );
+     used[ SegmentID ] = 1;
 
      while (!q.empty())
      {
@@ -359,10 +358,10 @@ void OmSegmentGraph::UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* chil
              if ( currSegment == (*currEdge).node2ID ) nextSegment = (*currEdge).node1ID;
              else nextSegment = (*currEdge).node2ID;
 
-             if ( used[ nextSegment ] ) continue; //if ( setToAdd.find( nextSegment ) != setToAdd.end() ) continue;
+             if ( used[ nextSegment ] ) continue;
 
              q.push( nextSegment );
-             used[ nextSegment ] = 1; //setToAdd.insert ( nextSegment );
+             used[ nextSegment ] = 1;
              totalSize += segmentListsLL_->GetSizeWithChildren(Root( nextSegment)); // PROBABLY SHOULD BE JUST THE CURRENT SEGMENT WITHOUT THE CHILDREN
          }
      }
@@ -374,17 +373,12 @@ void OmSegmentGraph::UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* chil
  {
      double totalSize,sizeThreshold = mst->UserSizeThreshold();
 
-     //std::cout << "The size of the current segment is " << segmentListsLL_->GetSizeWithChildren(Root(SegmentID)) << std::endl;
-
      double l=0.6,r=1,mid;
      while ( (r-l) > 0.0001 )
      {
          mid = ( ( l + r )/2 );
          totalSize = SizeOfBFSGrowth (mst,SegmentID,mid);
 
-         //std::cout.precision(4);
-         //std::cout << std::fixed << l << ' ' << std::fixed << r << " The total size is " << totalSize << std::endl;
-         
          if ( totalSize > sizeThreshold ) l = mid;
          else r = mid;
      }
@@ -393,44 +387,6 @@ void OmSegmentGraph::UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* chil
 
      AddSegments_BreadthFirstSearch(mst,sel,SegmentID);
  }
-
-void OmSegmentGraph::AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
-{
-    OmSegID nextSegment;
-
-    OmMSTEdge *currEdge;
-
-    double threshold = mst->UserASThreshold();
-
-    std::vector<OmSegID> vecToAdd;
-    boost::unordered_set<OmSegID> setToAdd;
-    setToAdd.insert ( SegmentID );
-    vecToAdd.push_back (SegmentID);
-
-    //std::cout << "Adding Neighbors to ____: " << SegmentID << " with " << adjacencyList_[SegmentID].size() << " neighbours" << endl;
-
-    for ( int i = 0; i < adjacencyList_[SegmentID].size() ; i++)
-    {
-        currEdge = adjacencyList_[SegmentID][i];
-
-        if ( (*currEdge).threshold < threshold ) continue;
-
-        if ( SegmentID == (*currEdge).node2ID ) nextSegment = (*currEdge).node1ID;
-        else nextSegment = (*currEdge).node2ID;
-        
-        if ( sel->IsSegmentSelected ( nextSegment ) ) continue;
-        if ( setToAdd.find( nextSegment ) != setToAdd.end() ) continue;
-
-        //std::cout << "Adding " << (*currEdge).node2ID << endl;
-
-        setToAdd.insert ( nextSegment );
-        vecToAdd.push_back ( nextSegment );
-    }
-
-    sel->InsertSegmentsOrdered (&vecToAdd);
-    sel->sendEvent();
-}
-
 
 void OmSegmentGraph::AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
 {
@@ -480,9 +436,6 @@ void OmSegmentGraph::AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelecto
 
 void OmSegmentGraph::Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
 {
-
-    //std::cout << "Trimming from segment " << SegmentID << std::endl;
-
     OmMSTEdge *currEdge;
     OmSegID currSegment, nextSegment;
 
@@ -504,8 +457,6 @@ void OmSegmentGraph::Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
     }
     else mini = orderOfAdding[SegmentID];
 
- // std::cout << "---- " << mini << std::endl;
-
     std::queue <OmSegID> q;
     
     q.push( SegmentID );
@@ -525,21 +476,17 @@ void OmSegmentGraph::Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
             if ( currSegment == (*currEdge).node2ID ) nextSegment = (*currEdge).node1ID;
             else nextSegment = (*currEdge).node2ID;
 
-          //  std::cout << i << " Segment " << nextSegment << ' ' << orderOfAdding[nextSegment] << std::endl;
             if ( orderOfAdding[nextSegment] <= mini ) continue;
-          //  std::cout << i << std::endl;
 
             if ( ! sel->IsSegmentSelected( nextSegment ) ) continue;
             if ( setToRemove.find( nextSegment ) != setToRemove.end() ) continue;
 
             q.push( nextSegment );
 
-           // std::cout << "Adding to the set\n";
             setToRemove.insert ( nextSegment );
         }
     }
 
-//    std::cout << "The set has " << setToRemove.size() << " elements\n";
     sel->RemoveTheseSegments (&setToRemove);
     sel->sendEvent();
 }
@@ -572,7 +519,6 @@ void OmSegmentGraph::AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelec
         sizeList = adjacencyList_[currSegment].size();
         difference = (*adjacencyList_[currSegment][0]).threshold - (*adjacencyList_[currSegment][ sizeList - 1 ]).threshold;
         if ( sizeList == 1 ) top = 0;
-        //top = difference / double(sizeList-1);
 
         for ( int i = 0; i < sizeList; i++)
         {
@@ -581,8 +527,6 @@ void OmSegmentGraph::AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelec
 
             currEdge = adjacencyList_[currSegment][i];
 
-            //if ( (*currEdge).threshold < threshold ) continue;
-            
             if ( currSegment == (*currEdge).node2ID ) nextSegment = (*currEdge).node1ID;
             else nextSegment = (*currEdge).node2ID;
 
@@ -595,51 +539,6 @@ void OmSegmentGraph::AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelec
             vecToAdd.push_back (nextSegment);
         }
     }
-    sel->InsertSegmentsOrdered (&vecToAdd);
-    sel->sendEvent();
-}
-
-void OmSegmentGraph::AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
-{
-    std::vector<OmSegID> stackDFS(1000); // = new OmSegID[1000];
-    stackDFS[0] = 1;
-
-    std::vector <OmSegID> vecToAdd;
-    boost::unordered_set<OmSegID> setToAdd;
-    setToAdd.insert ( SegmentID );
-    vecToAdd.push_back ( SegmentID );
-
-    OmMSTEdge *currEdge;
-    OmSegID currSegment, nextSegment;
-    double threshold = mst->UserASThreshold();
-
-    stackDFS[1] = SegmentID;
-
-    while (stackDFS[0])
-    {
-        currSegment = stackDFS[ stackDFS[0] ];
-        stackDFS[0]--;
-
-        for ( int i = 0; i < adjacencyList_[currSegment].size(); i++ )
-        {
-            currEdge = adjacencyList_[currSegment][i];
-
-            if ( (*currEdge).threshold < threshold ) continue;
-
-            if ( currSegment == (*currEdge).node2ID ) nextSegment = (*currEdge).node1ID;
-            else nextSegment = (*currEdge).node2ID;
-
-            if ( sel->IsSegmentSelected( nextSegment ) ) continue;
-            if ( setToAdd.find( nextSegment ) != setToAdd.end() ) continue;
-
-            stackDFS[0]++;
-            stackDFS[ stackDFS[0] ] = nextSegment;
-
-            setToAdd.insert ( nextSegment );
-            vecToAdd.push_back ( nextSegment );
-        }
-    }
-
     sel->InsertSegmentsOrdered (&vecToAdd);
     sel->sendEvent();
 }

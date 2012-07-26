@@ -86,9 +86,7 @@ public:
     // void GrowSelection(OmSegmentDataWrapper& sdw);
     // void ShrinkSelection(OmSegmentDataWrapper& sdw);
     void Grow_LocalSizeThreshold(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
-    void AddNeighboursToSelection(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
     void AddSegments_BreadthFirstSearch(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
-    void AddSegments_DepthFirstSearch(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
     void AddSegments_BFS_DynamicThreshold(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
     void Trim(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw);
 

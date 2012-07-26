@@ -114,11 +114,6 @@ public:
 
     // Your method here
 
-    inline void AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
-    {
-        segmentGraph_.AddNeighboursToSelection(mst,sel,SegmentID);
-    }
-
     inline void AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
     {
         segmentGraph_.AddSegments_BreadthFirstSearch(mst,sel,SegmentID);
@@ -127,11 +122,6 @@ public:
     inline void Grow_LocalSizeThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
     {
         segmentGraph_.Grow_LocalSizeThreshold(mst,sel,SegmentID);
-    }
-
-    inline void AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
-    {
-        segmentGraph_.AddSegments_DepthFirstSearch(mst,sel,SegmentID);
     }
 
     inline void AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)

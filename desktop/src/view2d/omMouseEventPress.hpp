@@ -132,11 +132,13 @@ private:
 
     void mouseLeftButton()
     {
-        if(controlKey_)
+        if ( controlKey_ && !shiftKey_ && !altKey_ )
         {
             state_->OverrideToolModeForPan(true);
             return;
         }
+
+        //printf ("Control key is %d Alt key is %d Shift key is %d\n",controlKey_,altKey_,shiftKey_);
         
         switch(tool_){
         case om::tool::SELECT:
@@ -369,12 +371,13 @@ private:
 
         if ( shiftKey_ )
         {
-            if ( altKey_ ) Segments->Trim(MST,&sel,seg);
+            if ( controlKey_ ) Segments->Trim(MST,&sel,seg);
             else Segments->Grow_LocalSizeThreshold(MST,&sel,seg);
         }
         else
         {
-            Segments->AddSegments_BreadthFirstSearch(MST,&sel,seg);
+            if ( controlKey_ && altKey_ ) Segments->AddSegments_BFS_DynamicThreshold(MST,&sel,seg);
+            else Segments->AddSegments_BreadthFirstSearch(MST,&sel,seg);
         }
     }
 }; 

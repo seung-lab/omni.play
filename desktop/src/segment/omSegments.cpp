@@ -316,11 +316,6 @@ bool OmSegments::JoinEdges(const std::vector<OmSegmentEdge>& edges)
     return impl_->JoinEdges(edges);
 }
 
-void OmSegments::AddNeighboursToSelection(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)
-{
-    impl_->AddNeighboursToSelection(MST,sel,sdw.GetSegmentID());
-}
-
 void OmSegments::Grow_LocalSizeThreshold(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)
 {
     impl_->Grow_LocalSizeThreshold(MST,sel,sdw.GetSegmentID());
@@ -329,11 +324,6 @@ void OmSegments::Grow_LocalSizeThreshold(OmMST* MST, OmSegmentSelector* sel, Seg
 void OmSegments::AddSegments_BreadthFirstSearch(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)
 {
     impl_->AddSegments_BreadthFirstSearch(MST,sel,sdw.GetSegmentID());
-}
-
-void OmSegments::AddSegments_DepthFirstSearch(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)
-{
-    impl_->AddSegments_DepthFirstSearch(MST,sel,sdw.GetSegmentID());
 }
 
 void OmSegments::AddSegments_BFS_DynamicThreshold(OmMST* MST, OmSegmentSelector* sel, SegmentDataWrapper& sdw)

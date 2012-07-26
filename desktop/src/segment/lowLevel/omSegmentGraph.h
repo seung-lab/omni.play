@@ -64,9 +64,7 @@ public:
 
     double SizeOfBFSGrowth(OmMST* mst, OmSegID SegmentID, double globalThreshold);
     void Grow_LocalSizeThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
-    void AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
     void AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
-    void AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
     void AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
     void Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID);
 
