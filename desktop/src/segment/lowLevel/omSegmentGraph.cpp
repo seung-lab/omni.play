@@ -402,8 +402,10 @@ void OmSegmentGraph::AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel
 
     double threshold = mst->UserASThreshold();
 
+    std::vector<OmSegID> vecToAdd;
     boost::unordered_set<OmSegID> setToAdd;
     setToAdd.insert ( SegmentID );
+    vecToAdd.push_back (SegmentID);
 
     //std::cout << "Adding Neighbors to ____: " << SegmentID << " with " << adjacencyList_[SegmentID].size() << " neighbours" << endl;
 
@@ -422,9 +424,10 @@ void OmSegmentGraph::AddNeighboursToSelection(OmMST* mst, OmSegmentSelector* sel
         //std::cout << "Adding " << (*currEdge).node2ID << endl;
 
         setToAdd.insert ( nextSegment );
+        vecToAdd.push_back ( nextSegment );
     }
 
-    sel->InsertSegments (&setToAdd);
+    sel->InsertSegmentsOrdered (&vecToAdd);
     sel->sendEvent();
 }
 
@@ -438,8 +441,10 @@ void OmSegmentGraph::AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelecto
     
     q.push( SegmentID );
 
+    std::vector<OmSegID> vecToAdd;
     boost::unordered_set<OmSegID> setToAdd;
     setToAdd.insert ( SegmentID );
+    vecToAdd.push_back(SegmentID);
 
     int br=0;
     while (!q.empty())
@@ -466,9 +471,10 @@ void OmSegmentGraph::AddSegments_BreadthFirstSearch(OmMST* mst, OmSegmentSelecto
 
             q.push( nextSegment );
             setToAdd.insert ( nextSegment );
+            vecToAdd.push_back ( nextSegment );
         }
     }
-    sel->InsertSegments (&setToAdd);
+    sel->InsertSegmentsOrdered (&vecToAdd);
     sel->sendEvent();
 }
 
@@ -498,7 +504,7 @@ void OmSegmentGraph::Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
     }
     else mini = orderOfAdding[SegmentID];
 
- //   std::cout << "---- " << mini << std::endl;
+ // std::cout << "---- " << mini << std::endl;
 
     std::queue <OmSegID> q;
     
@@ -509,8 +515,6 @@ void OmSegmentGraph::Trim(OmMST* mst, OmSegmentSelector* sel, OmSegID SegmentID)
     while (!q.empty())
     {
         currSegment = q.front();
-
-      //  std::cout << "Currently trimming segment " << currSegment << std::endl;
 
         q.pop();
 
@@ -549,8 +553,10 @@ void OmSegmentGraph::AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelec
     
     q.push( SegmentID );
 
+    std::vector<OmSegID> vecToAdd;
     boost::unordered_set<OmSegID> setToAdd;
     setToAdd.insert ( SegmentID );
+    vecToAdd.push_back (SegmentID);
 
     int br=0,sizeList;
     while (!q.empty())
@@ -586,9 +592,10 @@ void OmSegmentGraph::AddSegments_BFS_DynamicThreshold(OmMST* mst, OmSegmentSelec
 
             q.push( nextSegment );
             setToAdd.insert ( nextSegment );
+            vecToAdd.push_back (nextSegment);
         }
     }
-    sel->InsertSegments (&setToAdd);
+    sel->InsertSegmentsOrdered (&vecToAdd);
     sel->sendEvent();
 }
 
@@ -597,8 +604,10 @@ void OmSegmentGraph::AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector*
     std::vector<OmSegID> stackDFS(1000); // = new OmSegID[1000];
     stackDFS[0] = 1;
 
+    std::vector <OmSegID> vecToAdd;
     boost::unordered_set<OmSegID> setToAdd;
     setToAdd.insert ( SegmentID );
+    vecToAdd.push_back ( SegmentID );
 
     OmMSTEdge *currEdge;
     OmSegID currSegment, nextSegment;
@@ -627,10 +636,11 @@ void OmSegmentGraph::AddSegments_DepthFirstSearch(OmMST* mst, OmSegmentSelector*
             stackDFS[ stackDFS[0] ] = nextSegment;
 
             setToAdd.insert ( nextSegment );
+            vecToAdd.push_back ( nextSegment );
         }
     }
 
-    sel->InsertSegments (&setToAdd);
+    sel->InsertSegmentsOrdered (&vecToAdd);
     sel->sendEvent();
 }
 

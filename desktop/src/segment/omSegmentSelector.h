@@ -22,6 +22,7 @@ public:
     void augmentSelectedSet(const OmSegID segID, const bool isSelected);
 
     void InsertSegments(const boost::unordered_set<OmSegID>* segIDs);
+    void InsertSegmentsOrdered(const std::vector<OmSegID>* segIDs);
     void RemoveSegments(const boost::unordered_set<OmSegID>* segIDs);
     void RemoveTheseSegments(const boost::unordered_set<OmSegID>* segIDs);
 

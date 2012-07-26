@@ -54,6 +54,8 @@ void OmSegmentSelector::setOrderOfAdditionToNextNumber(OmSegID segID)
    // Centralize numberOfAddedSegment !!!
 
     (*orderOfAdding_)[segID] = numberOfAddedSegment;
+
+    std::cout << "We've added " << numberOfAddedSegment << std::endl;
 }
 
 void OmSegmentSelector::selectNoSegments()
@@ -97,6 +99,16 @@ void OmSegmentSelector::setSelectedSegment(const OmSegID segID)
 }
 
 void OmSegmentSelector::InsertSegments(const boost::unordered_set<OmSegID>* segIDs)
+{
+    uint32_t segID;
+    FOR_EACH(iter, *segIDs){
+        segID = segments_->findRootID(*iter);
+        params_->newSelectedIDs.insert( segID );
+        setOrderOfAdditionToNextNumber( segID );
+    }
+}
+
+void OmSegmentSelector::InsertSegmentsOrdered(const std::vector<OmSegID>* segIDs)
 {
     uint32_t segID;
     FOR_EACH(iter, *segIDs){
