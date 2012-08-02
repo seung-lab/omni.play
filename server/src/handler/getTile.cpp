@@ -2,6 +2,7 @@
 #include "handler/validate.hpp"
 
 #include "common/common.h"
+#include "volume/volume.h"
 #include "utility/timer.hpp"
 #include "pipeline/mapData.hpp"
 #include "pipeline/sliceTile.hpp"
@@ -9,7 +10,7 @@
 #include "pipeline/encode.hpp"
 #include "pipeline/bitmask.hpp"
 #include "pipeline/png.hpp"
-#include "volume/volume.h"
+#include "pipeline/mask.hpp"
 
 using namespace std;
 using namespace boost;
@@ -70,7 +71,10 @@ void makeSegTile(server::tile& t,
     t.view = common::Convert(view);
     setTileBounds(t, dc, view);
 
-    data_var encoded = src >> sliceTile(view, dc) >> encode();
+    data_var encoded = src >> sliceTile(view, dc)
+    					   >> mask(0xFF000000)
+    					   >> png(128,128)
+    					   >> encode();
 
     data<char> out = get<data<char> >(encoded);
     t.data = std::string(out.data.get(), out.size);
