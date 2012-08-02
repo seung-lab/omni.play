@@ -119,7 +119,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     FOR_EACH(it, selected)
     {
         const uint32_t& segId = *it;
-        segment::data segData = taskVolume.GetSegmentData(segId);
+        segments::data segData = taskVolume.GetSegmentData(segId);
 
         // object too small
         if (segData.size < DUST_SIZE_THR_2D) {
@@ -185,7 +185,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
         FOR_EACH(seg, *seed)
         {
             const uint32_t& segId = *seg;
-            segment::data segData = adjacentVolume.GetSegmentData(segId);
+            segments::data segData = adjacentVolume.GetSegmentData(segId);
             
             coords::dataBbox segBounds(segData.bounds, &adjacentVolume.CoordSystem(), 0);
         	

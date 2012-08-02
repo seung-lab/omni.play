@@ -4,7 +4,7 @@
 #include "common/colors.h"
 
 namespace om {
-namespace segment {
+namespace segments {
 
 struct data
 {
