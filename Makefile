@@ -42,7 +42,7 @@ INCLUDES	=	-I$(HERE) \
 				-I$(HERE)/filesystem/src \
 				-I$(HERE)/zi_lib \
 				-I$(EXTERNAL)/thrift/include/thrift \
-				-I$(EXTERNAL)/Boost/include \
+				-I$(EXTERNAL)/boost/include \
 				-I$(EXTERNAL)/libjpeg/include \
 				-I$(EXTERNAL)/libpng/include \
 
@@ -54,7 +54,7 @@ DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(HERE)/common/include/yaml-cpp/include \
 				  -I$(HERE)/zi_lib \
 				  -I$(EXTERNAL)/libjpeg/include \
-				  -I$(EXTERNAL)/Boost/include \
+				  -I$(EXTERNAL)/boost/include \
 				  -I$(EXTERNAL)/qt/include/Qt \
 				  -I$(EXTERNAL)/qt/include/QtCore \
 				  -I$(EXTERNAL)/qt/include/QtOpenGL \
@@ -63,11 +63,11 @@ DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(EXTERNAL)/qt/include \
 				  -I$(EXTERNAL)/hdf5/include
 
-LIBS = $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
-	   $(EXTERNAL)/Boost/lib/libboost_iostreams.a \
-	   $(EXTERNAL)/Boost/lib/libboost_system.a \
-	   $(EXTERNAL)/Boost/lib/libboost_thread.a \
-	   $(EXTERNAL)/Boost/lib/libboost_regex.a \
+LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
+	   $(EXTERNAL)/boost/lib/libboost_iostreams.a \
+	   $(EXTERNAL)/boost/lib/libboost_system.a \
+	   $(EXTERNAL)/boost/lib/libboost_thread.a \
+	   $(EXTERNAL)/boost/lib/libboost_regex.a \
 	   $(EXTERNAL)/thrift/lib/libthrift.a \
 	   $(EXTERNAL)/thrift/lib/libthriftnb.a \
 	   $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
@@ -75,14 +75,14 @@ LIBS = $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
 	   -levent -lpthread -lrt -lz
 
 DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
-			  $(EXTERNAL)/Boost/lib/libboost_filesystem.a \
-	          $(EXTERNAL)/Boost/lib/libboost_iostreams.a \
-	          $(EXTERNAL)/Boost/lib/libboost_system.a \
-	          $(EXTERNAL)/Boost/lib/libboost_thread.a \
-	          $(EXTERNAL)/Boost/lib/libboost_regex.a \
+			  $(EXTERNAL)/boost/lib/libboost_filesystem.a \
+	          $(EXTERNAL)/boost/lib/libboost_iostreams.a \
+	          $(EXTERNAL)/boost/lib/libboost_system.a \
+	          $(EXTERNAL)/boost/lib/libboost_thread.a \
+	          $(EXTERNAL)/boost/lib/libboost_regex.a \
 	          $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
 	          $(EXTERNAL)/libpng/lib/libpng.a \
-			  -lhdf5 \
+                  $(EXTERNAL)/hdf5/lib/libhdf5.a \
               -lQtGui \
               -lQtNetwork \
               -lQtCore \
@@ -268,7 +268,7 @@ $(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
 $(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/resources.rcc.o
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
+	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN../external/libs/qt/lib' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
 
 ALLDEPS = $(shell find build -iname "*.d")
 

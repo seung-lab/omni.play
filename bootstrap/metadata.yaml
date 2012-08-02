@@ -1,7 +1,7 @@
 boost:
- lib_folder: Boost
- ver: boost_1_49_0
- uri: http://sourceforge.net/projects/boost/files/boost/1.49.0/boost_1_49_0.tar.gz/download
+ lib_folder: boost
+ ver: boost_1_50_0
+ uri: http://downloads.sourceforge.net/project/boost/boost/1.50.0/boost_1_50_0.tar.gz
 zlib:
  lib_folder: zlib
  ver: zlib-1.2.6
@@ -12,8 +12,8 @@ thrift:
  uri: http://www.eng.lsu.edu/mirrors/apache/thrift/0.8.0/thrift-0.8.0.tar.gz
 jpeg:
  lib_folder: libjpeg
- ver: libjpeg-turbo-1.2.0
- uri: http://sourceforge.net/projects/libjpeg-turbo/files/latest/download
+ ver: libjpeg-turbo-1.2.1
+ uri: http://iweb.dl.sourceforge.net/project/libjpeg-turbo/1.2.1/libjpeg-turbo-1.2.1.tar.gz
 png:
  lib_folder: libpng
  ver: libpng-1.5.9
@@ -28,5 +28,5 @@ qt:
  uri: http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.2.tar.gz
 hdf5:
  lib_folder: hdf5
- ver: hdf5-1.8.10-snap3
- uri: ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf5/snapshots/v18/hdf5-1.8.10-snap3.tar.gz
+ ver: hdf5-1.8.6
+ uri: http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.6/src/hdf5-1.8.6.tar

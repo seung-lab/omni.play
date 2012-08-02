@@ -19,11 +19,11 @@ inline YAML::Emitter &operator<<(YAML::Emitter& out, const QString& s) {
 inline void operator>>(const YAML::Node& in, QString& s) {
     std::string str;
     in >> str;
-    
+
     if(str == "~") // NULL Value from YAML
         str = "";
-    
-    s = QString::fromStdString(str);   
+
+    s = QString::fromStdString(str);
 }
 
 template<class T>
@@ -38,7 +38,7 @@ template<class T>
 void operator>>(const YAML::Node& in, Vector3<T>& p)
 {
     in[0] >> p.x;
-    in[1] >> p.y; 
+    in[1] >> p.y;
     in[2] >> p.z;
 }
 
@@ -140,14 +140,14 @@ YAML::Emitter &operator<<(YAML::Emitter& out, const QHash<Key, T>& p)
         out << YAML::Value << it.value();
     }
     out << YAML::EndMap;
-    
+
     return out;
 }
 
 template<class Key, class T>
 void operator>>(const YAML::Node& in, QHash<Key, T>& p)
 {
-    FOR_EACH(it, in) 
+    FOR_EACH(it, in)
     {
         Key key;
         T value;

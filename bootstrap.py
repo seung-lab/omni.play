@@ -49,7 +49,8 @@ class bootstrap:
                     "Build qt",
                     "Build hdf5",
                     "Init Submodules",
-                    "Install Ubuntu dev packages"]
+                    "Install Ubuntu dev packages",
+                    "Build Omni"]
 
         self.show_menu(options)
 
@@ -80,6 +81,8 @@ class bootstrap:
             	r.submodule()
             elif 11 == entry:
                 self.doUbuntuAptGets()
+            elif 12 == entry:
+                r.omni()
             else:
                 print "unknown option: ", entry
                 sys.exit(1)
@@ -92,8 +95,8 @@ class bootstrap:
 
     def buildAll(self):
         r = runner(self.numCores)
-        self.doUbuntuAptGets()
-        r.submodule()
+        #self.doUbuntuAptGets()
+        #r.submodule()
         r.libjpeg()
         r.libpng()
         r.libevent()
@@ -101,6 +104,7 @@ class bootstrap:
         r.boost()
         r.thrift()
         r.qt()
+        r.omni()
 
     def parallelCompilation(self, cmd_procs):
         self.numCores = sysutils.numberOfCores(cmd_procs)

@@ -1,9 +1,10 @@
 import fileutils
-from string import Template
-from library import LibraryMetadata
 import os
 
+from string import Template
+from library import LibraryMetadata
 from builder import Builder
+from sysutils import sysutils
 
 class runner:
     def __init__(self, num_cores):
@@ -28,7 +29,7 @@ CFLAGS='-g -O2'
 
         b.prepareAndBuild()
         self.__patch_thrift(b)
-        
+
     def __patch_thrift(self, b):
         for f in ["thrift/include/thrift/protocol/TBinaryProtocol.h",
                   "thrift/include/thrift/protocol/TDenseProtocol.h"]:
@@ -46,6 +47,11 @@ CFLAGS='-g -O2'
 
     def libjpeg(self):
         b = self.makeBuilder(LibraryMetadata.jpeg())
+
+        if sysutils.isMac():
+            print "libjpeg not building on mac"
+            return
+
         b.prepareAndBuild()
 
     def libpng(self):
@@ -128,16 +134,22 @@ CFLAGS='-g -O2'
  -no-svg -qt-zlib -qt-libtiff -qt-libpng -no-libmng
  -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-freetype
  -no-multimedia -no-javascript-jit -no-script -no-scripttools"""
-        
+
         b.prepareAndBuild()
 
     def hdf5(self):
         b = self.makeBuilder(LibraryMetadata.hdf5())
-        b.build_options = "--enable-threadsafe"
+        b.build_options = "--enable-threadsafe --with-pthread=/usr/lib"
         b.prepareAndBuild()
 
-    def omniServer(self):
-        printTitle("omni.server")
+    def omni(self):
+        self.printTitle("omni")
+        pwd = os.path.dirname(__file__)
+        parent = os.path.abspath(os.path.join(pwd, '..'))
+        os.chdir(parent)
+        cmd = "make -j{0}".format(self.num_cores)
+        os.system(cmd)
+
     """
         genOmniScript(@_)
 

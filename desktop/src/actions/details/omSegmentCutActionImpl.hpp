@@ -11,7 +11,7 @@
 class OmSegmentCutActionImpl {
 private:
     SegmentDataWrapper sdw_;
-	QVector<OmSegmentEdge> edges_;
+    QVector<OmSegmentEdge> edges_;
     QString desc; //TODO: rename to desc_
 
 public:
@@ -19,28 +19,28 @@ public:
     {}
 
     OmSegmentCutActionImpl(const SegmentDataWrapper& sdw)
-		: sdw_(sdw)
+        : sdw_(sdw)
         , desc("Cutting: ")
     {}
 
     void Execute()
     {
-		if(!sdw_.IsValidWrapper())
-		{
-			desc += " failed: invalid segment";
-			return;
-		}
+        if(!sdw_.IsValidWrapper())
+        {
+            desc += " failed: invalid segment";
+            return;
+        }
 
-		OmSegment* seg = sdw_.GetSegment();
+        OmSegment* seg = sdw_.GetSegment();
 
-		std::vector<OmSegmentEdge> edges =
-			sdw_.Segments()->CutSegment(seg);
+        std::vector<OmSegmentEdge> edges =
+            sdw_.Segments()->CutSegment(seg);
 
-		edges_ = QVector<OmSegmentEdge>::fromStdVector(edges);
+        edges_ = QVector<OmSegmentEdge>::fromStdVector(edges);
 
         desc = QString("Cut seg %1; %2 edges")
             .arg(seg->value())
-			.arg(edges.size());
+            .arg(edges.size());
 
         std::cout << desc.toStdString() << "\n";
 
@@ -55,26 +55,26 @@ public:
 
     void Undo()
     {
-		if(!sdw_.IsValidWrapper())
-		{
-			desc += " undo failed: invalid segment";
-			return;
-		}
+        if(!sdw_.IsValidWrapper())
+        {
+            desc += " undo failed: invalid segment";
+            return;
+        }
 
-		OmSegment* seg = sdw_.GetSegment();
+        OmSegment* seg = sdw_.GetSegment();
 
-		std::vector<OmSegmentEdge> edges = edges_.toStdVector();
+        std::vector<OmSegmentEdge> edges = edges_.toStdVector();
 
-		const bool ret = sdw_.Segments()->JoinEdges(edges);
+        const bool ret = sdw_.Segments()->JoinEdges(edges);
 
         desc = QString("Uncut seg %1")
             .arg(seg->value());
 
         if(!ret)
-		{
+        {
             OmEvents::NonFatalEvent("Could not fully undo cut");
-			desc += " with errors";
-		}
+            desc += " with errors";
+        }
 
         OmEvents::SegmentModified();
 
