@@ -29,7 +29,7 @@ enum ViewType { XY_VIEW, XZ_VIEW, ZY_VIEW };
 std::ostream& operator<<(std::ostream &out, const ViewType& vt);
 
 //objects
-enum ObjectType { CHANNEL, SEGMENTATION };
+enum ObjectType { CHANNEL, SEGMENTATION, AFFINITY };
 
 // Must be here so that ViewType is already defined.
 #include "coordinates/coordinates.h"
