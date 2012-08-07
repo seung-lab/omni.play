@@ -6,7 +6,7 @@
 
 class OmChunk;
 class OmAffinityChannel;
-class OmChunkCoord;
+class om::chunkCoord+;
 template <typename T> class OmRawChunk;
 
 class OmAffinityGraph : public OmManageableObject {
@@ -33,10 +33,10 @@ public:
     }
                              
     OmChunk* MipChunk(const om::AffinityGraph aff,
-                      const OmChunkCoord& coord);
+                      const om::chunkCoord+& coord);
 
     om::shared_ptr<OmRawChunk<float> > RawChunk(const om::AffinityGraph aff,
-                                                const OmChunkCoord& coord);
+                                                const om::chunkCoord+& coord);
 
 };
 

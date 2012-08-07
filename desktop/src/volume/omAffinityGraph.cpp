@@ -47,7 +47,7 @@ OmAffinityChannel* OmAffinityGraph::GetChannel(const om::AffinityGraph aff) cons
 // use to just read data
 om::shared_ptr<OmRawChunk<float> >
 OmAffinityGraph::RawChunk(const om::AffinityGraph aff,
-                          const OmChunkCoord& coord)
+                          const om::chunkCoord& coord)
 {
     OmAffinityChannel* affChan = channels_[aff].get();
 
@@ -55,7 +55,7 @@ OmAffinityGraph::RawChunk(const om::AffinityGraph aff,
 }
 
 OmChunk* OmAffinityGraph::MipChunk(const om::AffinityGraph aff,
-                                     const OmChunkCoord& coord)
+                                     const om::chunkCoord& coord)
 {
     OmAffinityChannel* affChan = channels_[aff].get();
 

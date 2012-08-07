@@ -1,6 +1,5 @@
 #include "volume/build/omVolumeProcessor.h"
 #include "threads/omTaskManager.hpp"
-#include "chunks/omChunkCoord.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omAffinityChannel.h"
@@ -10,12 +9,12 @@
 
 class OmSegmentationChunkBuildTask : public zi::runnable {
 private:
-    const OmChunkCoord coord_;
+    const om::chunkCoord coord_;
     OmSegmentation *const vol_;
     OmSegments *const segments_;
 
 public:
-    OmSegmentationChunkBuildTask(const OmChunkCoord& coord,
+    OmSegmentationChunkBuildTask(const om::chunkCoord& coord,
                                  OmSegments* segments,
                                  OmSegmentation* vol)
         : coord_(coord)
@@ -50,12 +49,12 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol)
     OmThreadPool threadPool;
     threadPool.start();
 
-    om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         vol->GetMipChunkCoords();
 
     FOR_EACH(iter, *coordsPtr)
     {
-        const OmChunkCoord& coord = *iter;
+        const om::chunkCoord& coord = *iter;
 
         om::shared_ptr<OmSegmentationChunkBuildTask> task =
             om::make_shared<OmSegmentationChunkBuildTask>(coord,

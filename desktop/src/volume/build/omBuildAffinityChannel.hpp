@@ -42,7 +42,7 @@ public:
 		OmTimer build_timer;
 		startTiming(type, build_timer);
 
-		OmVolumeBuilder<OmChannel> builder(affChan_->Channel(),
+		OmVolumeBuilder<OmChannel> builder(affChan_,
 										   mFileNamesAndPaths,
 										   affChan_->GetDefaultHDF5DatasetName());
 		builder.Build(aff_);
