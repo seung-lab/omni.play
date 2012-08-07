@@ -49,7 +49,7 @@ public:
     inline double UserThreshold() const {
         return OmProject::Globals().Users().UserSettings().getThreshold();
     }
-    
+
     inline double UserSizeThreshold() const {
         return OmProject::Globals().Users().UserSettings().getSizeThreshold();
     }

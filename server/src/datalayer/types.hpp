@@ -23,7 +23,7 @@ struct Chunk
 struct SegmentationData
 {
     uint8_t PageNum;
-    segment::data Data[100000];
+    segments::data Data[100000];
 };
 
 enum MeshDataType { MESH_ALLOC_TABLE = 1, MESH_DATA = 2 }

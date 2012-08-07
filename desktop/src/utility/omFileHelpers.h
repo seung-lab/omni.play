@@ -4,6 +4,8 @@
 
 class OmFileHelpers{
 public:
+    static bool DoesFileExist(const QString& fnp);
+
     static bool IsFileReadOnly(const std::string& fileNameAndPath);
     static void RemoveDir(const QString &dirName); // rm -rf
     static bool IsFolderEmpty(const QString& dirName);

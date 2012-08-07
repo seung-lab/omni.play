@@ -145,21 +145,27 @@ public:
             green, and blue channels, whichever are appropriate for the given color type
             (png_color_16)
 */
+
+        int channels = 1;
         png_color_8 sig_bit;
         if(color_type == PNG_COLOR_TYPE_GRAY) {
             sig_bit.gray = bit_depth;
+            channels = 1;
         } else if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
             sig_bit.gray = bit_depth;
             sig_bit.alpha = bit_depth;
+            channels = 2;
         } else if (color_type == PNG_COLOR_TYPE_RGB) {
             sig_bit.red = bit_depth;
             sig_bit.green = bit_depth;
             sig_bit.blue = bit_depth;
+            channels = 3;
         } else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA) {
             sig_bit.red = bit_depth;
             sig_bit.green = bit_depth;
             sig_bit.blue = bit_depth;
             sig_bit.alpha = bit_depth;
+            channels = 4;
         }
 
         png_set_sBIT(png_ptr, info_ptr, &sig_bit);
@@ -170,7 +176,7 @@ public:
         for(int i = 0; i < height_; i++) {
             row_pointers[i] =
                 const_cast<png_byte*>(
-                    reinterpret_cast<const png_byte*>(&data[i * width_ * pixelBytes]));
+                    reinterpret_cast<const png_byte*>(&data[i * width_ * pixelBytes * channels]));
         }
 
         png_set_rows(png_ptr, info_ptr, row_pointers);

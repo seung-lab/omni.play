@@ -9,3 +9,5 @@ external
 common/src/thrift
 *.filemap
 *.rcc.cpp
+*.moc.cpp
+desktop/TAGS

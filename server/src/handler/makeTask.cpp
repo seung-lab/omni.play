@@ -98,14 +98,14 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
                const std::set<int32_t>& selected,
                const volume::volume& adjacentVolume)
 {
-    // std::cout << "Getting Seeds" << std::endl
-    //           << taskVolume.Uri() << std::endl
-    //           << adjacentVolume.Uri() << std::endl;
-    // FOR_EACH(it, selected) {
-    //     std::cout << *it << ", ";
-    // }
+    std::cout << "Getting Seeds" << std::endl
+              << taskVolume.Uri() << std::endl
+              << adjacentVolume.Uri() << std::endl;
+    FOR_EACH(it, selected) {
+        std::cout << *it << ", ";
+    }
 
-    // std::cout << std::endl;
+    std::cout << std::endl;
 
     const int DUST_SIZE_THR_2D=25;
     const int FALSE_OBJ_SIZE_THR=125;
@@ -113,15 +113,13 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     coords::globalBbox overlap = taskVolume.Bounds();
     overlap.intersect(adjacentVolume.Bounds());
 
-    // std::cout << "\tOverlap:\t\t" << overlap << std::endl;
-
     bool leavesVolume = false;
     boost::unordered_set<uint32_t> intersectingSegIds;
     // Find intersecting segIds
     FOR_EACH(it, selected)
     {
         const uint32_t& segId = *it;
-        segment::data segData = taskVolume.GetSegmentData(segId);
+        segments::data segData = taskVolume.GetSegmentData(segId);
 
         // object too small
         if (segData.size < DUST_SIZE_THR_2D) {
@@ -142,6 +140,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     }
 
     if(!leavesVolume) {
+    	std::cout << "Does not leave Volume." << std::endl;
         return;
     }
 
@@ -181,18 +180,16 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     // group all the segments based on adjacency
     connectedSets(overlap, adjacentVolume, correspondingIds, adjacentSeeds);
 
- 	// std::cout << "Ovr Bounds: " << overlap << std::endl;
-
     FOR_EACH(seed, adjacentSeeds)
     {
         FOR_EACH(seg, *seed)
         {
             const uint32_t& segId = *seg;
-            segment::data segData = adjacentVolume.GetSegmentData(segId);
+            segments::data segData = adjacentVolume.GetSegmentData(segId);
             
             coords::dataBbox segBounds(segData.bounds, &adjacentVolume.CoordSystem(), 0);
         	
-        	// std::cout << "            " << segBounds.toGlobalBbox() << std::endl;
+        	std::cout << "            " << segBounds.toGlobalBbox() << std::endl;
 
             if(exceedsOverlap(segBounds.toGlobalBbox(), overlap)) {
                 seeds.push_back(*seed);

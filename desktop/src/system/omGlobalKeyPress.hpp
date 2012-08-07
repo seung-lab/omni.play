@@ -28,6 +28,8 @@ private:
     boost::scoped_ptr<QShortcut> v_;
     boost::scoped_ptr<QShortcut> k_;
     boost::scoped_ptr<QShortcut> l_;
+    boost::scoped_ptr<QShortcut> slash_;
+
 
     void setShortcut(boost::scoped_ptr<QShortcut>& shortcut,
                      const QKeySequence key,
@@ -82,6 +84,10 @@ private Q_SLOTS:
         setTool(om::tool::LANDMARK);
     }
 
+    void keySlash(){
+    	setTool(om::tool::KALINA);
+    }
+
     void keyR(){
         OmSegmentSelected::RandomizeColor();
     }
@@ -127,6 +133,7 @@ public:
         setShortcut(v_,       QKeySequence(Qt::Key_V),       SLOT(keyV()));
         setShortcut(k_,       QKeySequence(Qt::Key_K),       SLOT(keyK()));
         setShortcut(l_,       QKeySequence(Qt::Key_L),       SLOT(keyL()));
+        setShortcut(slash_,   QKeySequence(Qt::Key_Slash),   SLOT(keySlash()));
     }
 };
 

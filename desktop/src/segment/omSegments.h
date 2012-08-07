@@ -11,6 +11,7 @@ class OmSegmentChildren;
 class OmSegmentation;
 class OmSegmentsImpl;
 class OmSegmentsStore;
+class OmSegmentDataWrapper;
 
 class OmSegments {
 public:
@@ -70,6 +71,10 @@ public:
     OmSegmentEdge SplitEdge(const OmSegmentEdge& e);
     OmSegIDsSet JoinTheseSegments(const OmSegIDsSet& segmentList);
     OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
+
+    // Your method
+    // void GrowSelection(OmSegmentDataWrapper& sdw);
+    // void ShrinkSelection(OmSegmentDataWrapper& sdw);
 
 	std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
 	bool JoinEdges(const std::vector<OmSegmentEdge>& edges);

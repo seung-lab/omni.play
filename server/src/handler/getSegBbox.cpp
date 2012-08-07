@@ -18,7 +18,7 @@ namespace handler {
 void get_seg_data(server::segData& _return, const volume::volume& vol, const int32_t segId)
 {
     utility::timer t;
-    const segment::data& d = vol.GetSegmentData(segId);
+    const segments::data& d = vol.GetSegmentData(segId);
     coords::dataBbox dc(d.bounds, &vol.CoordSystem(), 0);
 
     _return.bounds = dc.toGlobalBbox();

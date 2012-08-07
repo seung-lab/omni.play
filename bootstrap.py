@@ -49,7 +49,8 @@ class bootstrap:
                     "Build qt",
                     "Build hdf5",
                     "Init Submodules",
-                    "Install Ubuntu dev packages"]
+                    "Install Ubuntu dev packages",
+                    "Build Omni"]
 
         self.show_menu(options)
 
@@ -80,6 +81,8 @@ class bootstrap:
             	r.submodule()
             elif 11 == entry:
                 self.doUbuntuAptGets()
+            elif 12 == entry:
+                r.omni()
             else:
                 print "unknown option: ", entry
                 sys.exit(1)
@@ -92,15 +95,16 @@ class bootstrap:
 
     def buildAll(self):
         r = runner(self.numCores)
-        self.doUbuntuAptGets()
-        r.submodule()
-        r.thrift()
+        #self.doUbuntuAptGets()
+        #r.submodule()
         r.libjpeg()
         r.libpng()
         r.libevent()
         r.hdf5()
         r.boost()
+        r.thrift()
         r.qt()
+        r.omni()
 
     def parallelCompilation(self, cmd_procs):
         self.numCores = sysutils.numberOfCores(cmd_procs)
@@ -122,7 +126,7 @@ class bootstrap:
         args = 'libxrender-dev libxext-dev freeglut3-dev g++ \
 libfreetype6-dev libxml2 libxml2-dev mesa-common-dev \
 libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg \
-libgl1-mesa-glx-dbg libncurses5-dev nasm libevent-dev'
+libgl1-mesa-glx-dbg libncurses5-dev nasm libevent-dev libssl-dev'
 
         cmd = "sudo apt-get -y install " + args
         print "about to run: " + cmd

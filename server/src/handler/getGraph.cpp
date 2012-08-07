@@ -8,7 +8,7 @@ namespace handler{
 
 void get_mst(std::vector<server::edge>& _return, const volume::volume& vol)
 {
-	std::string fname = vol.Uri() + "/segmentations/segmentation1/segments/mst.data";
+	std::string fname = vol.Uri() + "/users/_default/segmentations/segmentation1/segments/mst.data";
 
 	datalayer::memMappedFile<segments::mstEdge> mstData(fname);
 
@@ -27,4 +27,4 @@ void get_graph(std::vector<server::edge>& _return, const volume::volume& vol)
 	get_mst(_return, vol);
 }
 
-}}		
+}} // namespace om::handler::

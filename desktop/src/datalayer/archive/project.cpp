@@ -21,30 +21,30 @@
 namespace om {
 namespace data {
 namespace archive {
-    
+
 void project::Read(const QString& fnp, OmProjectImpl* project) {
     using namespace YAML;
-    
+
     std::ifstream fin(fnp.toStdString().c_str());
-    
+
     try
     {
         Parser parser(fin);
-        
+
         Node doc;
         parser.GetNextDocument(doc);
-        
+
         int ver;
         doc["version"] >> ver;
         OmProject::setFileVersion(ver);
-        
+
         parser.GetNextDocument(doc);
         doc >> (*project);
     }
     catch(Exception e)
     {
         std::stringstream ss;
-        ss << e.msg << "\n"; 
+        ss << e.msg << "\n";
         ss << fnp.toStdString();
         ss << " line: " << e.mark.line;
         ss << " col: " << e.mark.column;
@@ -56,32 +56,34 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
 
 void project::Write(const QString& fnp, OmProjectImpl* project) {
     using namespace YAML;
-    
+
     Emitter emitter;
-    
+
     emitter << BeginDoc << BeginMap;
     emitter << Key << "version" << Value << Latest_Project_Version;
     emitter << EndMap << EndDoc;
-    
+
     emitter << BeginDoc;
     emitter << *project;
     emitter << EndDoc;
-    
+
     const QString fnpOld = fnp + ".old";
-    
+
     try {
-        OmFileHelpers::MoveFile(fnp, fnpOld);
+        if(OmFileHelpers::DoesFileExist(fnp)){
+            OmFileHelpers::MoveFile(fnp, fnpOld);
+        }
     } catch(...)
     {}
-    
+
     QFile file(fnp);
-    
+
     om::file::openFileWO(file);
-    
+
     QTextStream out(&file);
-    
+
     OmProject::setFileVersion(Latest_Project_Version);
-    
+
     out << emitter.c_str();
 }
 
@@ -90,11 +92,11 @@ void project::postLoad()
     FOR_EACH(iter, ChannelDataWrapper::ValidIDs())
     {
         const ChannelDataWrapper cdw(*iter);
-        
+
         if(cdw.IsBuilt())
         {
             std::vector<OmFilter2d*> filters = cdw.GetFilters();
-            
+
             FOR_EACH(fiter, filters)
             {
                 OmFilter2d* filter = *fiter;
@@ -102,7 +104,7 @@ void project::postLoad()
             }
         }
     }
-    
+
     FOR_EACH(iter, SegmentationDataWrapper::ValidIDs())
     {
         const SegmentationDataWrapper sdw(*iter);
@@ -117,7 +119,7 @@ void project::postLoad()
 } // namespace om
 
 namespace YAML {
-    
+
 Emitter &operator<<(Emitter& out, const OmProjectImpl& p)
 {
     out << BeginMap;
