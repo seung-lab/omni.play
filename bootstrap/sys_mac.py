@@ -55,7 +55,7 @@ class sys_mac:
     @staticmethod
     def numCoresMac():
         m = cmd.regex_cmd_int("/usr/sbin/system_profiler SPHardwareDataType  | grep 'Cores'",
-                              ".*Total Number of Cores.*(\d).*")
+                              ".*Cores.*(\d).*")
         if None == m:
             print "could not find num cores"
             sys.exit()
