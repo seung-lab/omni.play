@@ -31,7 +31,6 @@ bool inAdjacentVolume(const coords::globalBbox& seg,
 bool exceedsOverlap(const coords::globalBbox& seg,
                     const coords::globalBbox& ovr)
 {
-    
     return seg.getMin().x < ovr.getMin().x || seg.getMin().y < ovr.getMin().y || seg.getMin().z < ovr.getMin().z ||
            seg.getMax().x > ovr.getMax().x || seg.getMax().y > ovr.getMax().y || seg.getMax().z > ovr.getMax().z;
 }

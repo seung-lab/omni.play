@@ -28,7 +28,7 @@ void OmAffinityGraph::ImportSingleChannel(const QString& hdf5fnp,
                                           const om::AffinityGraph aff)
 {
     std::cout << "Building affinity channel: " << aff << std::endl;
-    
+
     channels_[aff] =
         om::make_shared<OmAffinityChannel>(aff);
 
