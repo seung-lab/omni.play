@@ -1,0 +1,250 @@
+# -*- Makefile -*-
+
+HERE    	=       .
+EXTERNAL	=	$(HERE)/external/libs
+BINDIR		=	./bin
+BUILDDIR	=	build
+GENDIR		=	common/src/thrift
+
+AT		= @
+DOLLAR  = 	$$
+
+CD      =	$(AT)cd
+CP      =	$(AT)cp
+ECHO    =	$(AT)echo
+CAT     =	$(AT)cat
+IF      =	$(AT)if
+LN      =	$(AT)ln
+MKDIR   =	$(AT)mkdir
+MV      =	$(AT)mv
+SED     =	$(AT)sed
+RM      =	$(AT)rm
+TOUCH   =	$(AT)touch
+CHMOD   =	$(AT)chmod
+DATE    =   $(AT)date
+PERL    =	$(AT)perl
+TAR     =	$(AT)tar
+ARFLAGS =	rcs
+INT     =   $(AT)install_name_tool
+
+CC     =	$(AT)gcc
+CXX    =	$(AT)g++
+THRIFT = 	$(AT)$(EXTERNAL)/thrift/bin/thrift
+MOC	   =    $(AT)$(EXTERNAL)/qt/bin/moc
+RCC	   =    $(AT)$(EXTERNAL)/qt/bin/rcc
+FPIC   =	-fPIC
+
+DESKTOPINCLUDES = -I$(HERE)/desktop/src \
+				  -I$(HERE)/desktop/include \
+				  -I$(HERE)/desktop/lib \
+				  -I$(HERE)/desktop \
+				  -I$(HERE)/common/include \
+				  -I$(HERE)/common/include/yaml-cpp/include \
+				  -I$(HERE)/zi_lib \
+				  -I$(EXTERNAL)/libjpeg/include \
+				  -I$(EXTERNAL)/boost/include \
+				  -I$(EXTERNAL)/qt/lib/Qt.framework/Headers \
+				  -I$(EXTERNAL)/qt/lib/QtCore.framework/Headers \
+				  -I$(EXTERNAL)/qt/lib/QtOpenGL.framework/Headers \
+				  -I$(EXTERNAL)/qt/lib/QtGui.framework/Headers \
+				  -I$(EXTERNAL)/qt/lib/QtNetwork.framework/Headers \
+				  -F$(EXTERNAL)/qt/lib \
+				  -I$(EXTERNAL)/hdf5/include
+
+DESKTOPLIBS = 	  $(EXTERNAL)/boost/lib/libboost_filesystem.a \
+	              $(EXTERNAL)/boost/lib/libboost_iostreams.a \
+	              $(EXTERNAL)/boost/lib/libboost_system.a \
+	              $(EXTERNAL)/boost/lib/libboost_thread.a \
+	              $(EXTERNAL)/boost/lib/libboost_regex.a \
+	              $(EXTERNAL)/libpng/lib/libpng.a \
+                  $(EXTERNAL)/hdf5/lib/libhdf5.a \
+				  -F$(EXTERNAL)/qt/lib \
+				  -framework QtCore \
+				  -framework QtOpenGL \
+				  -framework QtGui \
+				  -framework QtNetwork \
+				  -framework OpenGL \
+				  -framework GLUT \
+	   		      -lpthread -lz
+
+CXX_INCLUDES	=	$(INCLUDES)
+
+CWARN		=	-Wall -Wno-sign-compare -Wno-unused-variable -Wno-return-type
+CXXWARN		=	$(CWARN) -Wno-deprecated -Woverloaded-virtual
+
+CPP_DEPFLAGS		=	-MM -MG -MP -MT "$(@:.d=.o)"
+CPP_INLINE_DEPFLAGS	=	-MMD -MP -MT "$(@)" -MF $(@:.o=.T)
+COMMON_CFLAGS		=	-g -std=gnu99 -D_GNU_SOURCE=1 \
+				-D_REENTRANT $(CPP_INLINE_DEPFLAGS) \
+				$(FPIC) $(CWARN)
+
+THRIFT_CXXFLAGS	   = 	-DHAVE_CONFIG_H
+
+COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) \
+						   $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS)
+
+DBG_CFLAGS         =	$(COMMON_CFLAGS) -DDEBUG_MODE=1
+DBG_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -gstabs+
+OPTIMIZATION_FLAGS =	-O3
+OPT_CFLAGS         =	$(COMMON_CFLAGS) -DNDEBUG \
+						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
+OPT_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DNDEBUG \
+						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
+COMMON_LDFLAGS     =	-g $(FPIC) -Wl,--eh-frame-hdr -lm
+DBG_LDFLAGS        =	$(COMMON_LDFLAGS) -gstabs+
+OPT_LDFLAGS        =	$(COMMON_LDFLAGS) -O3 -fno-omit-frame-pointer
+
+COMM_FLEX_FLAGS    =    -d
+OPT_FLEXFLAGS      =    $(COMM_FLEX_FLAGS)
+DBG_FLEXFLAGS      =    $(COMM_FLEX_FLAGS) -t
+
+DEFINES = -DQT_NO_DEBUG -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED \
+-DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_MULTI_INDEX_DISABLE_SERIALIZATION \
+-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3 -DBOOST_SYSTEM_NO_DEPRECATED
+
+CFLAGS		=	$(OPT_CFLAGS) $(EXTRA_CFLAGS)
+CXXFLAGS	=	$(OPT_CXXFLAGS) $(EXTRA_CXXFLAGS)
+LDFLAGS		=	$(OPT_LDFLAGS) $(EXTRA_LDFLAGS)
+
+define build_cpp
+	$(ECHO) "[CXX] compiling $<"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) -c $(CXXFLAGS) $(INCLUDES) -o $@ $<
+	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
+endef
+
+define build_c
+	$(ECHO) "[CC] compiling $<"
+	$(MKDIR) -p $(dir $@)
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o $@ $<
+endef
+
+define make_d
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CPP_DEPFLAGS) $(INCLUDES) -MF $@ $<
+endef
+
+THRIFT_DEPS = common/src/thrift/server.thrift.mkcpp \
+			  common/src/thrift/filesystem.thrift.mkcpp
+
+build/desktop/%.d: desktop/src/%.cpp
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CPP_DEPFLAGS) $(DESKTOPINCLUDES) -MF $@ $<
+build/desktop/%.o: desktop/src/%.cpp
+	$(ECHO) "[CXX] compiling $<"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) $(DEFINES) -o $@ $<
+	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
+
+%.d: %.cpp
+	$(make_d)
+%.o: %.cpp
+	$(build_cpp)
+%.o: %.c
+	$(build_c)
+%.moc.cpp: %.hpp
+	$(ECHO) "[MOC] Generating $<"
+	$(MKDIR) -p $(dir $@)
+	$(MOC) $(DEFINES) $(DESKTOPINCLUDES) -o $@ $<
+%.moc.cpp: %.h
+	$(ECHO) "[MOC] Generating $<"
+	$(MKDIR) -p $(dir $@)
+	$(MOC) $(DEFINES) $(DESKTOPINCLUDES) -o $@ $<
+%.rcc.cpp: %.qrc
+	$(ECHO) "[RCC] Generating $<"
+	$(MKDIR) -p $(dir $@)
+	$(RCC) -name $(basename $(notdir $<)) $< -o $@
+
+.PHONY: all
+all: app
+
+.PHONY: tidy
+tidy:
+	$(ECHO) Tidy...
+	$(AT)touch .tmp.tmp~
+	$(AT)touch ./tmp.tmp#
+	$(AT)find . | grep "~$$" | xargs rm -rf
+	$(AT)find . | grep "#"   | xargs rm -rf
+
+.PHONY: clean
+clean:
+	$(ECHO) Cleaning...
+	$(RM) -rf $(BINDIR) $(GENDIR) $(BUILDDIR)
+
+.PHONY: remake
+remake: clean all
+
+DESKTOPSOURCES    = $(subst desktop/src,build/desktop, 				\
+                      $(shell find desktop/src -iname "*.cpp"))
+
+DESKTOPHEADERS    = $(subst desktop/src,build/desktop, 				\
+                      $(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':'))
+
+YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
+
+OMNI_SRCS = $(DESKTOPSOURCES)
+MOC_SRCS = $(DESKTOPHEADERS:.hpp=.moc.cpp)
+MOC_SRCS2 = $(MOC_SRCS:.h=.moc.cpp)
+
+OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o) $(YAMLSOURCES:.cpp=.o)
+
+define link
+	$(ECHO) "[CXX] linking $@"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
+endef
+
+$(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/resources.rcc.o
+	$(ECHO) "[CXX] linking $@"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
+
+APPDIR = $(BINDIR)/omni.desktop.app
+APPBINDIR = $(APPDIR)/Contents/MacOS
+APPFRAMEDIR = $(APPDIR)/Contents/Frameworks
+APPRESCDIR = $(APPDIR)/Contents/Resources
+
+QtMenuNib = external/srcs/qt-everywhere-opensource-src-4.8.2/src/gui/mac/qt_menu.nib
+
+QtCore = $(abspath $(EXTERNAL)/qt/lib/QtCore.framework/Versions/4/QtCore)
+QtGui = $(abspath $(EXTERNAL)/qt/lib/QtGui.framework/Versions/4/QtGui)
+QtNetwork = $(abspath $(EXTERNAL)/qt/lib/QtNetwork.framework/Versions/4/QtNetwork)
+QtOpenGL = $(abspath $(EXTERNAL)/qt/lib/QtOpenGL.framework/Versions/4/QtOpenGL)
+
+.PHONY: app
+app: $(BINDIR)/omni.desktop
+	$(ECHO) "Assembling App..."
+	$(MKDIR) -p $(APPBINDIR)
+	$(MKDIR) -p $(APPFRAMEDIR)
+	$(MKDIR) -p $(APPRESCDIR)
+
+	$(CP) $(BINDIR)/omni.desktop $(APPBINDIR)
+
+	$(CP) $(QtCore) $(APPFRAMEDIR)
+	$(CP) $(QtGui) $(APPFRAMEDIR)
+	$(CP) $(QtNetwork) $(APPFRAMEDIR)
+	$(CP) $(QtOpenGL) $(APPFRAMEDIR)
+
+	$(CP) -R $(QtMenuNib) $(APPRESCDIR)
+
+	$(INT) -id @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtCore
+	$(INT) -id @executable_path/../Frameworks/QtGui $(APPFRAMEDIR)/QtGui
+	$(INT) -id @executable_path/../Frameworks/QtNetwork $(APPFRAMEDIR)/QtNetwork
+	$(INT) -id @executable_path/../Frameworks/QtOpenGL $(APPFRAMEDIR)/QtOpenGL
+
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtGui
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtNetwork
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtOpenGL
+	$(INT) -change $(QtGui) @executable_path/../Frameworks/QtGui $(APPFRAMEDIR)/QtOpenGL
+
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtGui) @executable_path/../Frameworks/QtGui $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtNetwork) @executable_path/../Frameworks/QtNetwork $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtOpenGL) @executable_path/../Frameworks/QtOpenGL $(APPBINDIR)/omni.desktop
+
+	$(TAR) -zcvf $(BINDIR)/omni.tar.gz -C $(BINDIR) omni.desktop.app
+
+
+ALLDEPS = $(shell find build -iname "*.d")
+
+-include $(ALLDEPS)
