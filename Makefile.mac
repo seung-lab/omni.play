@@ -23,8 +23,9 @@ TOUCH   =	$(AT)touch
 CHMOD   =	$(AT)chmod
 DATE    =   $(AT)date
 PERL    =	$(AT)perl
-AR      =	$(AT)ar
+TAR     =	$(AT)tar
 ARFLAGS =	rcs
+INT     =   $(AT)install_name_tool
 
 CC     =	$(AT)gcc
 CXX    =	$(AT)g++
@@ -97,19 +98,13 @@ COMM_FLEX_FLAGS    =    -d
 OPT_FLEXFLAGS      =    $(COMM_FLEX_FLAGS)
 DBG_FLEXFLAGS      =    $(COMM_FLEX_FLAGS) -t
 
-DEFINES = -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED \
+DEFINES = -DQT_NO_DEBUG -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED \
 -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_MULTI_INDEX_DISABLE_SERIALIZATION \
 -DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3 -DBOOST_SYSTEM_NO_DEPRECATED
 
-ifneq ($(strip $(OPT)),)
-  CFLAGS	=	$(OPT_CFLAGS) $(EXTRA_CFLAGS)
-  CXXFLAGS	=	$(OPT_CXXFLAGS) $(EXTRA_CXXFLAGS)
-  LDFLAGS	=	$(OPT_LDFLAGS) $(EXTRA_LDFLAGS)
-else
-  CFLAGS	=	$(DBG_CFLAGS) $(EXTRA_CFLAGS)
-  CXXFLAGS	=	$(DBG_CXXFLAGS) $(EXTRA_CXXFLAGS)
-  LDFLAGS	=	$(DBG_LDFLAGS) $(EXTRA_LDFLAGS)
-endif
+CFLAGS		=	$(OPT_CFLAGS) $(EXTRA_CFLAGS)
+CXXFLAGS	=	$(OPT_CXXFLAGS) $(EXTRA_CXXFLAGS)
+LDFLAGS		=	$(OPT_LDFLAGS) $(EXTRA_LDFLAGS)
 
 define build_cpp
 	$(ECHO) "[CXX] compiling $<"
@@ -156,12 +151,12 @@ build/desktop/%.o: desktop/src/%.cpp
 	$(MKDIR) -p $(dir $@)
 	$(MOC) $(DEFINES) $(DESKTOPINCLUDES) -o $@ $<
 %.rcc.cpp: %.qrc
-	$(ECHO) "[RCC] Generating $@"
+	$(ECHO) "[RCC] Generating $<"
 	$(MKDIR) -p $(dir $@)
 	$(RCC) -name $(basename $(notdir $<)) $< -o $@
 
 .PHONY: all
-all: $(BINDIR)/omni.server $(BINDIR)/omni.desktop
+all: app
 
 .PHONY: tidy
 tidy:
@@ -203,6 +198,52 @@ $(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/r
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
+
+APPDIR = $(BINDIR)/omni.desktop.app
+APPBINDIR = $(APPDIR)/Contents/MacOS
+APPFRAMEDIR = $(APPDIR)/Contents/Frameworks
+APPRESCDIR = $(APPDIR)/Contents/Resources
+
+QtMenuNib = external/srcs/qt-everywhere-opensource-src-4.8.2/src/gui/mac/qt_menu.nib
+
+QtCore = $(abspath $(EXTERNAL)/qt/lib/QtCore.framework/Versions/4/QtCore)
+QtGui = $(abspath $(EXTERNAL)/qt/lib/QtGui.framework/Versions/4/QtGui)
+QtNetwork = $(abspath $(EXTERNAL)/qt/lib/QtNetwork.framework/Versions/4/QtNetwork)
+QtOpenGL = $(abspath $(EXTERNAL)/qt/lib/QtOpenGL.framework/Versions/4/QtOpenGL)
+
+.PHONY: app
+app: $(BINDIR)/omni.desktop
+	$(ECHO) "Assembling App..."
+	$(MKDIR) -p $(APPBINDIR)
+	$(MKDIR) -p $(APPFRAMEDIR)
+	$(MKDIR) -p $(APPRESCDIR)
+
+	$(CP) $(BINDIR)/omni.desktop $(APPBINDIR)
+
+	$(CP) $(QtCore) $(APPFRAMEDIR)
+	$(CP) $(QtGui) $(APPFRAMEDIR)
+	$(CP) $(QtNetwork) $(APPFRAMEDIR)
+	$(CP) $(QtOpenGL) $(APPFRAMEDIR)
+
+	$(CP) -R $(QtMenuNib) $(APPRESCDIR)
+
+	$(INT) -id @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtCore
+	$(INT) -id @executable_path/../Frameworks/QtGui $(APPFRAMEDIR)/QtGui
+	$(INT) -id @executable_path/../Frameworks/QtNetwork $(APPFRAMEDIR)/QtNetwork
+	$(INT) -id @executable_path/../Frameworks/QtOpenGL $(APPFRAMEDIR)/QtOpenGL
+
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtGui
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtNetwork
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtOpenGL
+	$(INT) -change $(QtGui) @executable_path/../Frameworks/QtGui $(APPFRAMEDIR)/QtOpenGL
+
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtGui) @executable_path/../Frameworks/QtGui $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtNetwork) @executable_path/../Frameworks/QtNetwork $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtOpenGL) @executable_path/../Frameworks/QtOpenGL $(APPBINDIR)/omni.desktop
+
+	$(TAR) -zcvf $(BINDIR)/omni.tar.gz -C $(BINDIR) omni.desktop.app
+
 
 ALLDEPS = $(shell find build -iname "*.d")
 
