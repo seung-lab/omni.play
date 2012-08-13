@@ -1,7 +1,7 @@
 #ifndef EMITTERSTATE_H_62B23520_7C8E_11DE_8A39_0800200C9A66
 #define EMITTERSTATE_H_62B23520_7C8E_11DE_8A39_0800200C9A66
 
-#if !defined(__GNUC__) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || (__GNUC__ >= 4) // GCC supports "pragma once" correctly since 3.4
+#if defined(_MSC_VER) || (defined(__GNUC__) && (__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || (__GNUC__ >= 4)) // GCC supports "pragma once" correctly since 3.4
 #pragma once
 #endif
 
@@ -145,6 +145,11 @@ namespace YAML
 		
 		bool SetMapKeyFormat(EMITTER_MANIP value, FMT_SCOPE scope);
 		EMITTER_MANIP GetMapKeyFormat() const { return m_mapKeyFmt.get(); }
+        
+        bool SetFloatPrecision(int value, FMT_SCOPE scope);
+        unsigned GetFloatPrecision() const { return m_floatPrecision.get(); }
+        bool SetDoublePrecision(int value, FMT_SCOPE scope);
+        unsigned GetDoublePrecision() const { return m_doublePrecision.get(); }
 		
 	private:
 		template <typename T>
@@ -169,6 +174,8 @@ namespace YAML
 		Setting<EMITTER_MANIP> m_seqFmt;
 		Setting<EMITTER_MANIP> m_mapFmt;
 		Setting<EMITTER_MANIP> m_mapKeyFmt;
+        Setting<int> m_floatPrecision;
+        Setting<int> m_doublePrecision;
 		
 		SettingChanges m_modifiedSettings;
 		SettingChanges m_globalModifiedSettings;
