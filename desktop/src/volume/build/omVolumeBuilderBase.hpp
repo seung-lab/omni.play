@@ -11,6 +11,7 @@
 #include "volume/build/omVolumeProcessor.h"
 #include "volume/io/omVolumeData.h"
 #include "volume/omMipVolume.h"
+#include "utility/dataWrappers.h"
 
 #include <QFileInfo>
 
@@ -63,18 +64,18 @@ private:
 
         vol_->LoadVolData();
     }
-    
+
     void build(OmAffinityChannel*)
     {
         // TODO: Check this process for completeness
         setVolAsBuilding();
-        
+
         checkChunkDims();
         updateMipProperties();
         importSourceData();
-        
+
         setVolAsBuilt();
-        
+
         downsample();
     }
 

@@ -21,7 +21,7 @@ class QDataStream;
 
 class OmMST {
 private:
-    static const double defaultThreshold_ = 0.999;
+    static constexpr double defaultThreshold_ = 0.999;
 
 public:
     OmMST(OmSegmentation* segmentation);

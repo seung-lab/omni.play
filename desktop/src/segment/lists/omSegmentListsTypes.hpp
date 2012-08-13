@@ -10,7 +10,7 @@ struct SegInfo
     OmSegment* seg;
     OmSegID segID;
     int64_t sizeIncludingChildren;
-    int32_t numChildren;
+    int64_t numChildren;
 };
 
 struct GUIPageOfSegments

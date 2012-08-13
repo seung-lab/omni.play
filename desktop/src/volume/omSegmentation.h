@@ -72,7 +72,7 @@ public:
 
     void SetDendThreshold( double t );
     double GetDendThreshold();
-    
+
     void SetSizeThreshold( double t );
     double GetSizeThreshold();
 
