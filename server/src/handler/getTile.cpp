@@ -73,7 +73,7 @@ void makeSegTile(server::tile& t,
 
     data_var encoded = src >> sliceTile(view, dc)
     					   >> mask(0xFF000000)
-    					   >> png(128,128)
+    					   >> png(128, 128, true)
     					   >> encode();
 
     data<char> out = get<data<char> >(encoded);
