@@ -61,7 +61,10 @@ public:
     }
     
     static OmColor QColorToOmColor(const QColor color){
-        OmColor c = { color.red(), color.green(), color.blue() };
+        OmColor c = {
+        	static_cast<uint8_t>(color.red()),
+        	static_cast<uint8_t>(color.green()),
+        	static_cast<uint8_t>(color.blue()) };
         return c;
     }
     

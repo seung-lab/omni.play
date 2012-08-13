@@ -181,9 +181,11 @@ public:
         //                     std::min(128, color.green()),
         //                     std::min(128, color.blue()) };
 
-        const OmColor c = { color.red(),
-                            color.green(),
-                            color.blue() };
+        const OmColor c = {
+        	static_cast<uint8_t>(color.red()),
+            static_cast<uint8_t>(color.green()),
+            static_cast<uint8_t>(color.blue())
+        };
 
         sdw.SetColor(c);
 

@@ -91,7 +91,11 @@ private:
                     const int v = avg2 - avg*avg;
 
                     if(v >= min_variance){
-                        const OmColor color = {r, g, b};
+                        const OmColor color = {
+                        	static_cast<uint8_t>(r),
+                        	static_cast<uint8_t>(g),
+                        	static_cast<uint8_t>(b)
+                        };
                         colorTable.push_back(color);
                     }
                 }

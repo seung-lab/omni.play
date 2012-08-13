@@ -27,7 +27,7 @@ AR      =	$(AT)ar
 ARFLAGS =	rcs
 
 CC     =	$(AT)gcc
-CXX    =	$(AT)g++
+CXX    =	$(AT)clang++
 THRIFT = 	$(AT)$(EXTERNAL)/thrift/bin/thrift
 MOC	   =    $(AT)$(EXTERNAL)/qt/bin/moc
 RCC	   =    $(AT)$(EXTERNAL)/qt/bin/rcc
@@ -93,7 +93,7 @@ DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
 
 CXX_INCLUDES	=	$(INCLUDES)
 
-CWARN		=	-Wall -Wno-sign-compare -Wno-unused-variable -Wno-return-type
+CWARN		=	-Wall -Wno-sign-compare -Wno-unused-variable -Wno-return-type -Wno-mismatched-tags
 CXXWARN		=	$(CWARN) -Wno-deprecated -Woverloaded-virtual
 
 CPP_DEPFLAGS		=	-MM -MG -MP -MT "$(@:.d=.o)"
@@ -105,7 +105,7 @@ COMMON_CFLAGS		=	-g -std=gnu99 -D_GNU_SOURCE=1 \
 THRIFT_CXXFLAGS	   = 	-DHAVE_CONFIG_H
 
 COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) \
-						   $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS)
+						   $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS) -std=c++0x
 
 DBG_CFLAGS         =	$(COMMON_CFLAGS) -DDEBUG_MODE=1
 DBG_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -gstabs+
@@ -127,8 +127,8 @@ DEFINES = -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CO
 -DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3 -DBOOST_SYSTEM_NO_DEPRECATED
 
 # Get rid of these if building with clang.
-EXTRA_CXXFLAGS = -DZI_USE_OPENMP -fopenmp
-EXTRA_LDFLAGS  = -DZI_USE_OPENMP -fopenmp
+# EXTRA_CXXFLAGS = -DZI_USE_OPENMP -fopenmp
+# EXTRA_LDFLAGS  = -DZI_USE_OPENMP -fopenmp
 
 ifneq ($(strip $(OPT)),)
   CFLAGS	=	$(OPT_CFLAGS) $(EXTRA_CFLAGS)

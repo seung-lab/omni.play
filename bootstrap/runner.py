@@ -117,7 +117,7 @@ CFLAGS='-g -O2'
         bjamFlags = "-j{num}".format(num=self.num_cores)
         bjamFlags += " -sNO_BZIP2=1 -sZLIB_SOURCE=srcPath/ZLIB_VER"
         bjamFlags += " variant=release link=static threading=multi runtime-link=static"
-        # bjamFlags += " toolset=gcc cxxflags=-std=gnu++0x"
+        bjamFlags += " toolset=gcc cxxflags=-std=gnu++0x"
         cmd = "./bjam " + bjamFlags + " install"
         print "building and installing (cmd)\n"
         os.system(cmd)

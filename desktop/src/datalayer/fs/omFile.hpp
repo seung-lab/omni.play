@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <QFile>
+#include <QTextStream>
 
 namespace om {
 namespace file {
