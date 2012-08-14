@@ -95,17 +95,23 @@ private:
     static void loadOldOmVolume(QDataStream& in, OmMipVolCoords& v)
     {
         Matrix4f dummyMat;
-        in >> dummyMat; // normToDataMat_
+        in >> dummyMat; // normToDataMat_s
         in >> dummyMat; // normToDataInvMat_
         AxisAlignedBoundingBox<int> extent;
         in >> extent;
         v.SetDataDimensions(extent.getDimensions());
-        Vector3i resolution;
+        Vector3f resolution;
         in >> resolution;
         v.SetResolution(resolution);
         in >> v.chunkDim_;
         QString dummy;
-        in >> dummy; //c.dataStretchValues_
+        in >> dummy; //c.unitString_
+        Vector3f dummyVec;
+		in >> dummyVec; //c.dataStretchValues_
+
+		int dummyInt;
+		in >> dummyInt; //c.mMipLeafDim
+		in >> dummyInt; //c.mMipRootLevel
     }
 };
 

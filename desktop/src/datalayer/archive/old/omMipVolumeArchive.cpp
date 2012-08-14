@@ -20,18 +20,21 @@ QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c)
     Matrix4f dummyMat;
     in >> dummyMat; // normToDataMat_
     in >> dummyMat; // normToDataInvMat_
-    Vector3i dims;
-    in >> dims;
-    c.SetDataDimensions(dims);
-    Vector3i resolution;
+    AxisAlignedBoundingBox<int> extent;
+    in >> extent;
+    c.SetDataDimensions(extent.getDimensions());
+    Vector3f resolution;
     in >> resolution;
     c.SetResolution(resolution);
     in >> c.chunkDim_;
-    QString dummy;
-    in >> dummy; //c.dataStretchValues_
+    QString dummyQString;
+    in >> dummyQString; //c.unitString_
+    Vector3f dummyVec;
+	in >> dummyVec; //c.dataStretchValues_
 
-    in >> c.mMipLeafDim;
-    in >> c.mMipRootLevel;
+	int dummyInt;
+	in >> dummyInt; //c.mMipLeafDim
+    in >> dummyInt; //c.mMipRootLevel
 
     return in;
 }

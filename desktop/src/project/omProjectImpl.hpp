@@ -120,7 +120,7 @@ public:
         }
 
         om::data::archive::project::Write(projectMetadataFile_, this);
-        
+
         globals_->Users().UserSettings().Save();
 
         printf("omni project saved!\n");
@@ -185,13 +185,13 @@ private:
         omniFile_ = fnp;
         filesFolder_ = fnp + ".files";
 
-        
+
         oldHDF5projectFile_ = OmFileNames::OldHDF5projectFileName();
         projectMetadataFile_ = OmFileNames::ProjectMetadataFile();
-        
+
         if(!QFileInfo(omniFile_).size())
             oldHDF5projectFile_ = "";
-        else 
+        else
             migrateFromHdf5();
 
         setupGlobals();
@@ -210,14 +210,14 @@ private:
         OmTileCache::Reset();
         OmActionLogger::Reset();
 
-        
+
         if (om::file::exists(projectMetadataFile_.toStdString()))
             om::data::archive::project::Read(projectMetadataFile_, this);
         else
             OmDataArchiveProject::ArchiveRead(OmFileNames::ProjectMetadataFileOld(), this);
-        
+
         globals_->Users().UserSettings().Load();
-        
+
         OmActionReplayer::Replay();
     }
 
