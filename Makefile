@@ -27,7 +27,7 @@ AR      =	$(AT)ar
 ARFLAGS =	rcs
 
 CC     =	$(AT)gcc
-CXX    =	$(AT)clang++
+CXX    =	$(AT)g++
 THRIFT = 	$(AT)$(EXTERNAL)/thrift/bin/thrift
 MOC	   =    $(AT)$(EXTERNAL)/qt/bin/moc
 RCC	   =    $(AT)$(EXTERNAL)/qt/bin/rcc
@@ -108,7 +108,7 @@ COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) \
 						   $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS)
 
 DBG_CFLAGS         =	$(COMMON_CFLAGS) -DDEBUG_MODE=1
-DBG_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -gstabs+
+DBG_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -gstabs
 OPTIMIZATION_FLAGS =	-O3
 OPT_CFLAGS         =	$(COMMON_CFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer

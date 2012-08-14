@@ -7,60 +7,72 @@
 namespace om {
 namespace pipeline {
 
-template <typename T>
-class filter : public stage<T, T>
+template<typename T>
+class set_filter : public stage
 {
 protected:
-    boost::scoped_array<T> data_;
-    int size_;
-
-    virtual bool predicate(const T&) = 0;
+    const std::set<T>& vals_;
+    const T outputAs_;
 
 public:
-    filter(out_stage<T>* predecessor)
-        : stage<T, T>(predecessor)
-    { }
+	set_filter(const std::set<T>& vals, T outputAs = 0)
+		: vals_(vals)
+		, outputAs_(outputAs)
+	{}
 
-    T* operator()(T* input)
+    data_var operator()(const data<T>& in)
     {
-        std::cout << "Filtering" << std::endl;
-        size_ = this->predecessor_->out_size();
-        data_.reset(new T[size_]);
-        for(int i = 0; i < size_; i++) {
-            if(predicate(input[i])) {
+        data<T> out;
+        out.size = in.size;
+        out.data = utility::smartPtr<T>::MallocNumElements(out.size);
+
+        for(int i = 0; i < in.size; i++)
+        {
+            if(segIds_.find(inupt[i]) != segIds_.end())
+            {
+            	if(outputAs_) {
+            		data_[i] = outputAs_;
+            	} else {
+                	data_[i] = input[i];
+            	}
+            } else {
+                data_[i] = 0;
+            }
+        }
+        return out;
+    }
+
+    data_var operator()(const datalayer::memMappedFile<T>& in) const
+    {
+        data<T> out;
+        out.size = in.size;
+        out.data = utility::smartPtr<T>::MallocNumElements(out.size);
+
+        for(int i = 0; i < in.size; i++)
+        {
+            if(segIds_.find(inupt[i]) != segIds_.end()) {
                 data_[i] = input[i];
             } else {
                 data_[i] = 0;
             }
         }
-        return data_.get();
+        return out;
     }
 
-    int out_size() const {
-        return size_;
+    template <typename S>
+    data_var operator()(const data<S> in) {
+    	throw argException("Attempting to filter the wrong type of data.");
     }
 
-    void cleanup() {
-        data_.reset();
-    }
-};
-
-class seg_filter : public filter<uint32_t>
-{
-private:
-    uint32_t segId_;
-
-public:
-    seg_filter(out_stage<uint32_t>* predecessor, uint32_t segId)
-        : filter<uint32_t>(predecessor)
-        , segId_(segId)
-    {}
-
-protected:
-    bool predicate(const uint32_t& id) {
-        return id == segId_;
+    template <typename S>
+    data_var operator()(const datalayer::memMappedFile<S>& in) {
+    	throw argException("Attempting to filter the wrong type of data.");
     }
 };
 
-} // namespace pipeline
-} // namespace om
+template<typename T>
+data_var operator>>(const dataSrcs& d, const set_filter<T>& v) {
+    return boost::apply_visitor(v, d);
+}
+
+}} // namespace om::pipeline::

@@ -119,6 +119,15 @@ public:
         handler::get_mesh(_return, uri, chunk, mipLevel, segId);
     }
 
+	void update_global_mesh(const metadata& vol,
+	                        const std::set<int32_t>& segIds,
+                            int32_t segId)
+    {
+        ServiceMethod serviceMethod(&serviceTracker_, "update_global_mesh", "update_global_mesh");
+        handler::update_global_mesh(vol, segIds, segId);
+    }
+
+
     void get_remesh(std::string& _return,
                     const std::string& uri,
                     const vector3i& chunk,

@@ -25,11 +25,11 @@ public:
         data<T> out;
         uint64_t offset = cc_.chunkPtrOffset(&vs_, sizeof(T));
         T* chunkPtr = in.GetPtrWithOffset(offset);
-        
+
         out.size = 128 * 128 * 128;
         out.data = utility::smartPtr<T>::MallocNumElements(out.size);
         std::copy(chunkPtr, &chunkPtr[out.size], out.data.get());
-        
+
         return out;
     }
 };
