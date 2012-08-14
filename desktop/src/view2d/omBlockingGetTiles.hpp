@@ -20,7 +20,7 @@ public:
     {
         zi::for_each(tileCoordsAndLocations->begin(),
                      tileCoordsAndLocations->end(),
-                     std::bind(&OmBlockingGetTiles::getTile, this, _1));
+                     zi::bind(&OmBlockingGetTiles::getTile, this, _1));
     }
 
 private:

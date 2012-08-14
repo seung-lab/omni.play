@@ -25,6 +25,8 @@ public:
         : vol_(vol)
     {}
 
+    virtual ~OmVolumeBuilderBase() {}
+
     void Build(){
         build(vol_);
     }
@@ -129,7 +131,7 @@ private:
         printf("************************\n");
 
         OmActions::ChangeMSTthreshold(vol->GetSDW(),
-                                      vol->MST()->DefaultThreshold());
+                                      OmMST::DefaultThreshold);
         OmEvents::SegmentModified();
     }
 

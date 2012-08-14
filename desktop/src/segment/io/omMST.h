@@ -20,18 +20,13 @@ class QDataStream;
 
 
 class OmMST {
-private:
-    static constexpr double defaultThreshold_ = 0.999;
-
 public:
     OmMST(OmSegmentation* segmentation);
 
     ~OmMST()
     {}
 
-    static double DefaultThreshold(){
-        return defaultThreshold_;
-    }
+    static double DefaultThreshold;
 
     void Read();
     void Flush();
