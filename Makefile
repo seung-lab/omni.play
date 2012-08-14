@@ -27,7 +27,7 @@ AR      =	$(AT)ar
 ARFLAGS =	rcs
 
 CC     =	$(AT)gcc
-CXX    =	$(AT)clang++
+CXX    =	$(AT)g++
 THRIFT = 	$(AT)$(EXTERNAL)/thrift/bin/thrift
 MOC	   =    $(AT)$(EXTERNAL)/qt/bin/moc
 RCC	   =    $(AT)$(EXTERNAL)/qt/bin/rcc
@@ -93,7 +93,7 @@ DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
 
 CXX_INCLUDES	=	$(INCLUDES)
 
-CWARN		=	-Wall -Wno-sign-compare -Wno-unused-variable -Wno-return-type -Wno-mismatched-tags
+CWARN		=	-Wall -Wno-sign-compare -Wno-unused-variable -Wno-return-type
 CXXWARN		=	$(CWARN) -Wno-deprecated -Woverloaded-virtual
 
 CPP_DEPFLAGS		=	-MM -MG -MP -MT "$(@:.d=.o)"
