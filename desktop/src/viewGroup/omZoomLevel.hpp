@@ -42,7 +42,7 @@ public:
     int GetMipLevel() const {
         return mipLevel_;
     }
-    
+
     void MouseWheelZoom(const int numSteps, const bool isLevelLocked)
     {
         if (numSteps >= 0){
@@ -80,10 +80,10 @@ private:
 
         setMipLevel();
     }
-    
+
     void setMipLevel()
     {
-        mipLevel_ = log2(8.0 / zoomFactor_);
+        mipLevel_ = log2(3 / zoomFactor_);
         if(mipLevel_ < 0) {
             mipLevel_ = 0;
         } else if(mipLevel_ > maxMipLevel_) {

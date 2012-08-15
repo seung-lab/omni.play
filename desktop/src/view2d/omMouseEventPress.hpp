@@ -135,7 +135,7 @@ private:
             state_->OverrideToolModeForPan(true);
             return;
         }
-        
+
         switch(tool_){
         case om::tool::SELECT:
             state_->setScribbling(true);
@@ -337,12 +337,12 @@ private:
                    func +
                    " by right-clicking and selecting \n\"Set As Segment Palette Color\"");
     }
-    
+
     void addAnnotation()
     {
         om::annotation::manager& manager = *state_->GetSDW().GetSegmentationPtr()->Annotations();
         OmViewGroupState *vgs = state_->getViewGroupState();
-        
+
         manager.Add(dataClickPoint_, vgs->getAnnotationString(), vgs->getAnnotationColor());
     }
 
@@ -356,14 +356,14 @@ private:
     	if(!seg.IsSegmentValid()) {
     		return;
         }
-        
+
 		SegmentationDataWrapper segmentation = seg.MakeSegmentationDataWrapper();
-        
+
         if(shiftKey_) {
         	// Do something different
         } else {
         	// Do the same.
         }
     }
-}; 
+};
 

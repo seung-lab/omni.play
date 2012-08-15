@@ -52,39 +52,39 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
     return ret;
 }
 
-int numChunks(om::chunkCoord min, om::chunkCoord max) 
+int numChunks(om::chunkCoord min, om::chunkCoord max)
 {
     return (max.Coordinate.x - min.Coordinate.x + 1) *
            (max.Coordinate.y - min.Coordinate.y + 1) *
            (max.Coordinate.z - min.Coordinate.z + 1);
 }
-    
+
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 {
     // Make sure that the upper left and bottom right don't exceed the volume
     om::globalBbox bounds = vol_->Coords().GetDataExtent();
-    
+
     if (dataDepth_ < state_->getViewTypeDepth(bounds.getMin()) ||
         dataDepth_ > state_->getViewTypeDepth(bounds.getMax()))
     {
         return;
     }
-    
+
     Vector4i viewport = state_->Coords().getTotalViewport();
     om::globalCoord min = om::screenCoord(0, 0, state_).toGlobalCoord();
     om::globalCoord max = om::screenCoord(viewport.width, viewport.height, state_).toGlobalCoord();
-    
+
     if(!bounds.contains(min)) {
         min = bounds.getMin();
     }
-    
+
     if(!bounds.contains(max)) {
         max = bounds.getMax();
     }
-    
+
     om::chunkCoord minChunk = min.toChunkCoord(vol_, mipLevel_);
     om::chunkCoord maxChunk = max.toChunkCoord(vol_, mipLevel_);
-    
+
     // iterate over all chunks on the screen
     for (int x = minChunk.Coordinate.x; x <= maxChunk.Coordinate.x; x++)
     {
@@ -97,7 +97,7 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
             }
         }
     }
-    
+
 }
 
 void OmOnScreenTileCoords::computeTile(const om::chunkCoord& chunkCoord,
@@ -176,13 +176,13 @@ GLfloatBox OmOnScreenTileCoords::computeVertices(const om::chunkCoord& coord, co
     om::dataBbox bounds = coord.chunkBoundingBox(vol);
     om::screenCoord min = bounds.getMin().toGlobalCoord().toScreenCoord(state_);
     om::screenCoord max = bounds.getMax().toGlobalCoord().toScreenCoord(state_);
-    
+
     GLfloatBox glBox;
     glBox.lowerLeft.y  = min.y;
     glBox.upperRight.y = max.y;
     glBox.lowerLeft.x  = min.x;
     glBox.upperRight.x = max.x;
-        
+
 
     glBox.lowerRight.x = glBox.upperRight.x;
     glBox.lowerRight.y = glBox.lowerLeft.y;

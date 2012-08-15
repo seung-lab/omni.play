@@ -36,27 +36,27 @@ private:
     const ObjectType objType_;
     OmViewGroupState *const vgs_;
     OmZoomLevel *const zoomLevel_;
-    
+
     const ViewType viewType_;
     const std::string name_;
-    
+
     bool scribbling_;
     Vector2i mousePoint_;
     bool isLevelLocked_;
-    
+
     boost::optional<om::screenCoord> mousePanStartingPt_;
-    
+
     // (x,y) coordinates only (no depth); needed for Bresenham
     om::globalCoord lastDataPoint_;
-    
+
     OmBrushSize *const brushSize_;
-    
+
     bool overrideToolModeForPan_;
-    
+
     OmSegID segIDforPainting_;
-    
+
     om::view2dCoords coords_;
-    
+
 public:
     OmView2dState(OmMipVolume* vol,
                   OmViewGroupState* vgs,
@@ -80,18 +80,18 @@ public:
     {
         coords_.setTotalViewport(size);
         zoomLevel_->Update(getMaxMipLevel());
-        
+
         coords_.UpdateTransformationMatrices();
     }
-    
+
     inline om::view2dCoords& Coords() {
         return coords_;
     }
-    
+
     inline const om::view2dCoords& Coords() const {
         return coords_;
     }
-    
+
     void Shift(const om::Direction dir)
     {
         const float numberOfSlicestoAdvance = 2 * om::math::pow2int(getMipLevel());
@@ -107,18 +107,18 @@ public:
         Vector3f pan = coords_.GlobalToScreenMat().getTranslation();
         return OmView2dConverters::Get2PtsInPlane(pan, viewType_);
     }
-    
+
     inline void SetViewSliceOnPan()
     {
         const Vector4i& viewport = coords_.getTotalViewport();
         om::globalCoord min = om::screenCoord(0, 0, this).toGlobalCoord();
-        om::globalCoord max = om::screenCoord(viewport.width, 
-                                              viewport.height, 
+        om::globalCoord max = om::screenCoord(viewport.width,
+                                              viewport.height,
                                               this).toGlobalCoord();
-                                              
+
         vgs_->View2dState()->SetViewSliceMax(viewType_, get2ptsInPlane(max));
         vgs_->View2dState()->SetViewSliceMin(viewType_, get2ptsInPlane(min));
-        
+
         OmEvents::Redraw3d();
     }
 
@@ -145,15 +145,15 @@ public:
     void ResetWindowState()
     {
         static const om::normCoord midPoint(0.5, 0.5, 0.5, vol_);
-        
+
         std::cout << vol_->Coords().GetDataDimensions() << std::endl;
-        
+
         setLocation(midPoint.toGlobalCoord());
 
         zoomLevel_->Reset(getMaxMipLevel());
 
         coords_.UpdateTransformationMatrices();
-        
+
         OmTileCache::ClearAll();
         OmEvents::Redraw2d();
     }
@@ -163,7 +163,7 @@ public:
         const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel());
         const int depth = Depth();
         vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth + numberOfSlicestoAdvance);
-        
+
         coords_.UpdateTransformationMatrices();
     }
 
@@ -172,7 +172,7 @@ public:
         const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel());
         const int depth = Depth();
         vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth - numberOfSlicestoAdvance);
-        
+
         coords_.UpdateTransformationMatrices();
     }
 
@@ -246,7 +246,7 @@ public:
                                           const T& z) const {
         return OmView2dConverters::MakeViewTypeVector3(x,y,z,viewType_);
     }
-    
+
     template <typename T>
     inline Vector2<T> get2ptsInPlane(const Vector3<T>& vec) {
         return OmView2dConverters::Get2PtsInPlane<T>(vec, viewType_);
@@ -265,7 +265,7 @@ public:
     inline void setViewTypeDepth(Vector3<T>& vec, const T& val) const {
         OmView2dConverters::SetViewTypeDepth(vec, val, viewType_);
     }
-    
+
     inline void setViewTypeDepth(om::globalCoord& vec, const float val) const {
         OmView2dConverters::SetViewTypeDepth(vec, val, viewType_);
     }
@@ -340,13 +340,13 @@ public:
     inline om::globalCoord Location(){
         return vgs_->View2dState()->GetScaledSliceDepth();
     }
-    
-    inline void setLocation(om::globalCoord loc) 
+
+    inline void setLocation(om::globalCoord loc)
     {
         vgs_->View2dState()->SetScaledSliceDepth(loc);
         coords_.UpdateTransformationMatrices();
     }
-    
+
     inline float Depth() {
         return vgs_->View2dState()->GetScaledSliceDepth(viewType_);
     }

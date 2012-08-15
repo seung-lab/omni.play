@@ -11,7 +11,7 @@ private:
 
     //inferred from leaf dim and source data extent
     int mMipRootLevel;
-    
+
     const OmMipVolume * const vol_;
 
     template <class T> friend class OmMipVolumeArchive;
@@ -23,7 +23,7 @@ private:
     friend void YAML::operator>>(const YAML::Node& in, OmMipVolCoords& c);
     friend QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c);
     friend QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c);
-    
+
 
 public:
     OmMipVolCoords(const OmMipVolume * const vol)
@@ -178,7 +178,7 @@ public:
         ret.m33 = 1.0f / factor;
         return ret;
     }
-    
+
     inline Matrix4f GlobalToDataMat(int mipLevel) const {
         Matrix4f ret = globalToData_;
         int factor = om::math::pow2int(mipLevel);

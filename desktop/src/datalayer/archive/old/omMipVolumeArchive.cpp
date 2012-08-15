@@ -32,9 +32,8 @@ QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c)
     Vector3f dummyVec;
 	in >> dummyVec; //c.dataStretchValues_
 
-	int dummyInt;
-	in >> dummyInt; //c.mMipLeafDim
-    in >> dummyInt; //c.mMipRootLevel
+	in >> c.mMipLeafDim;
+    in >> c.mMipRootLevel;
 
     return in;
 }
