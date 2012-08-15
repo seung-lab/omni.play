@@ -35,9 +35,10 @@ public:
 
         om::connect(this, SIGNAL(signalAddView2Dchannel(ChannelDataWrapper, ViewType)),
                     this, SLOT(addView2Dchannel(ChannelDataWrapper, ViewType)));
-
+#ifndef ZI_OS_MACOS
         om::connect(this, SIGNAL(signalAddView2Dsegmentation(SegmentationDataWrapper, ViewType)),
                     this, SLOT(addView2Dsegmentation(SegmentationDataWrapper, ViewType)));
+#endif
     }
 
     ~viewGroupImpl()
