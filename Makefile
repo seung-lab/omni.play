@@ -228,6 +228,7 @@ tidy:
 clean:
 	$(ECHO) Cleaning...
 	$(RM) -rf $(BINDIR) $(GENDIR) $(BUILDDIR)
+	$(RM) common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
 
 .PHONY: remake
 remake: clean all
