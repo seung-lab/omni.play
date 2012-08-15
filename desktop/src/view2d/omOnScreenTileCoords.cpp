@@ -64,26 +64,20 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
     // Make sure that the upper left and bottom right don't exceed the volume
     om::globalBbox bounds = vol_->Coords().GetDataExtent();
 
-    if (dataDepth_ < state_->getViewTypeDepth(bounds.getMin()) ||
-        dataDepth_ > state_->getViewTypeDepth(bounds.getMax()))
-    {
-        return;
-    }
-
     Vector4i viewport = state_->Coords().getTotalViewport();
     om::globalCoord min = om::screenCoord(0, 0, state_).toGlobalCoord();
     om::globalCoord max = om::screenCoord(viewport.width, viewport.height, state_).toGlobalCoord();
 
-    if(!bounds.contains(min)) {
-        min = bounds.getMin();
+    om::globalBbox viewBounds(min, max);
+
+    viewBounds.intersect(bounds);
+
+    if (viewBounds.isEmpty()) {
+    	return;
     }
 
-    if(!bounds.contains(max)) {
-        max = bounds.getMax();
-    }
-
-    om::chunkCoord minChunk = min.toChunkCoord(vol_, mipLevel_);
-    om::chunkCoord maxChunk = max.toChunkCoord(vol_, mipLevel_);
+    om::chunkCoord minChunk = om::globalCoord(viewBounds.getMin()).toChunkCoord(vol_, mipLevel_);
+    om::chunkCoord maxChunk = om::globalCoord(viewBounds.getMax()).toChunkCoord(vol_, mipLevel_);
 
     // iterate over all chunks on the screen
     for (int x = minChunk.Coordinate.x; x <= maxChunk.Coordinate.x; x++)
@@ -126,6 +120,8 @@ void OmOnScreenTileCoords::computeTile(const om::chunkCoord& chunkCoord,
     OmTileCoordAndVertices pair = {makeTileCoord(chunkCoord, depthOffset, vol_, freshness_),
                                    computeVertices(chunkCoord, vol_) };
 
+
+	std::cout << chunkCoord << ":" << depthOffset << " - " << pair.tileCoord << std::endl;
     tileCoordsAndLocations_->push_back(pair);
 }
 

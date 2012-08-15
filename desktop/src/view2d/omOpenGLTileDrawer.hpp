@@ -46,7 +46,7 @@ private:
                   const TextureVectices& textureVectices)
     {
         OmTextureID& texture = tile->GetTexture();
-        
+
         if(texture.NeedToBuildTexture()){
             doBindTileDataToGLid(texture);
 
@@ -57,7 +57,7 @@ private:
 
         glBindTexture(GL_TEXTURE_2D, texture.GetTextureID());
 
-//         std::cout << "drawing: " << tile->GetTileCoord() << " - " 
+//         std::cout << "drawing: " << tile->GetTileCoord() << " - "
 //                   << vertices.lowerLeft << " to " << vertices.upperRight
 //                   << "\n";
 
