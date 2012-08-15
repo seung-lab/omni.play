@@ -151,10 +151,10 @@ private:
         }
 
         SegmentationLine segInfo = { args[0],
-                                     OmStringHelpers::getUInt(args[1]),
-                                     OmStringHelpers::getUInt(args[2]),
-                                     OmStringHelpers::getUInt(args[3]),
-                                     OmStringHelpers::getUInt(args[4]) };
+                                     OmStringHelpers::getInt(args[1]),
+                                     OmStringHelpers::getInt(args[2]),
+                                     OmStringHelpers::getInt(args[3]),
+                                     OmStringHelpers::getInt(args[4]) };
 
         segmentationFiles_[segmentationCounter_++] = segInfo;
     }
@@ -172,8 +172,8 @@ private:
         }
 
         DendLine dendInfo = { args[0],
-                              OmStringHelpers::getUInt(args[1]),
-                              OmStringHelpers::getUInt(args[2]) };
+                              OmStringHelpers::getInt(args[1]),
+                              OmStringHelpers::getInt(args[2]) };
 
         dendLine_ = dendInfo;
 

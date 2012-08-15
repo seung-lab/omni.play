@@ -127,7 +127,7 @@ private:
 
     inline void addSegment(OmSegment* seg)
     {
-        uint64_t size = seg->size();
+        int64_t size = seg->size();
         if(!size){
             size = 1; // for newly-added segment
         }

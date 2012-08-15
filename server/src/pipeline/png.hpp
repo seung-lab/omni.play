@@ -15,11 +15,13 @@ class png : public stage
 protected:
     uint32_t width_;
     uint32_t height_;
+    bool exact_;
 
 public:
-    png(uint32_t width, uint32_t height)
+    png(uint32_t width, uint32_t height, bool exact)
         : width_(width)
         , height_(height)
+        , exact_(exact)
     { }
 
     template<typename T>
@@ -138,7 +140,9 @@ public:
                 PNG_sRGB_INTENT_PERCEPTUAL,
                 PNG_sRGB_INTENT_ABSOLUTE, or
                 PNG_sRGB_INTENT_RELATIVE.*/
-        png_set_sRGB_gAMA_and_cHRM(png_ptr, info_ptr, PNG_sRGB_INTENT_RELATIVE);
+        if(!exact_) {
+        	png_set_sRGB_gAMA_and_cHRM(png_ptr, info_ptr, PNG_sRGB_INTENT_ABSOLUTE);
+        }
 
 /*
   sig_bit - the number of significant bits for (PNG_INFO_sBIT) each of the gray, red,
@@ -168,7 +172,9 @@ public:
             channels = 4;
         }
 
-        png_set_sBIT(png_ptr, info_ptr, &sig_bit);
+        if(!exact_) {
+        	png_set_sBIT(png_ptr, info_ptr, &sig_bit);
+        }
 
         int pixelBytes = (bit_depth + 7) / 8; // all bit depths are at least 1 byte large
 

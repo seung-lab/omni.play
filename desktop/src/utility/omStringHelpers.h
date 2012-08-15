@@ -22,6 +22,16 @@ public:
         throw OmIoException("could not parse to uint32_t", arg);
     }
 
+    static int32_t getInt(const QString& arg)
+    {
+        bool ok;
+        uint32_t ret = arg.toInt(&ok, 10);
+        if(ok){
+            return ret;
+        }
+        throw OmIoException("could not parse to int32_t", arg);
+    }
+
     static bool getBool(const QString& arg)
     {
         if("true" == arg){

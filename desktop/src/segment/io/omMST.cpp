@@ -10,6 +10,8 @@
 #include "utility/omStringHelpers.h"
 #include "volume/omSegmentationFolder.h"
 
+double OmMST::DefaultThreshold = 0.999;
+
 OmMST::OmMST(OmSegmentation* segmentation)
     : vol_(segmentation)
     , numEdges_(0)

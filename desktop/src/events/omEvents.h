@@ -30,7 +30,7 @@ public:
     static void RefreshMSTthreshold();
 
     static void NonFatalEvent(const QString err);
-    
+
     static void AnnotationEvent();
 };
 

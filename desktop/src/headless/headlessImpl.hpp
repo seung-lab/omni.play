@@ -206,9 +206,9 @@ private:
 
         static const int min_variance = 120;
 
-        for(int r = 0; r < 128; ++r){
-            for(int g = 0; g < 128; ++g){
-                for(int b = 0; b < 128; ++b){
+        for(uint8_t r = 0; r < 128; ++r){
+            for(uint8_t g = 0; g < 128; ++g){
+                for(uint8_t b = 0; b < 128; ++b){
                     const int avg  = ( r + g + b ) / 3;
                     const int avg2 = ( r*r + g*g + b*b ) / 3;
                     const int v = avg2 - avg*avg;

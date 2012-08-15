@@ -11,6 +11,7 @@
 #include "volume/build/omVolumeProcessor.h"
 #include "volume/io/omVolumeData.h"
 #include "volume/omMipVolume.h"
+#include "utility/dataWrappers.h"
 
 #include <QFileInfo>
 
@@ -23,6 +24,8 @@ public:
     OmVolumeBuilderBase(VOL* vol)
         : vol_(vol)
     {}
+
+    virtual ~OmVolumeBuilderBase() {}
 
     void Build(){
         build(vol_);
@@ -63,18 +66,18 @@ private:
 
         vol_->LoadVolData();
     }
-    
+
     void build(OmAffinityChannel*)
     {
         // TODO: Check this process for completeness
         setVolAsBuilding();
-        
+
         checkChunkDims();
         updateMipProperties();
         importSourceData();
-        
+
         setVolAsBuilt();
-        
+
         downsample();
     }
 
@@ -128,7 +131,7 @@ private:
         printf("************************\n");
 
         OmActions::ChangeMSTthreshold(vol->GetSDW(),
-                                      vol->MST()->DefaultThreshold());
+                                      OmMST::DefaultThreshold);
         OmEvents::SegmentModified();
     }
 
