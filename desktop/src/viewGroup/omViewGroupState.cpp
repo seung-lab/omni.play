@@ -16,6 +16,8 @@
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
 
+#include <QGLWidget>
+
 OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     : OmManageableObject()
     , viewGroup_(new ViewGroup(mainWindow, this))
@@ -26,6 +28,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     , landmarks_(new OmLandmarks(mainWindow))
     , cdw_(new ChannelDataWrapper(1))
     , sdw_(new SegmentationDataWrapper(1))
+    , context3d_(new QGLWidget())
     , toolBarManager_(NULL)
     , brightenSelected_(true)
     , annotationVisible_(true)

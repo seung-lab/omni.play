@@ -32,6 +32,8 @@ private:
     boost::scoped_ptr<ChannelDataWrapper> cdw_;
     boost::scoped_ptr<SegmentationDataWrapper> sdw_;
 
+    boost::scoped_ptr<QGLWidget> context3d_;
+
     float mBreakThreshold;
     uint64_t mDustThreshold;
 
@@ -48,9 +50,6 @@ private:
     OmColor annotationColor_;
     std::string annotationString_;
     bool annotationVisible_;
-
-    //3d stuff
-    QGLWidget* context3d_;
 
 public:
     OmViewGroupState(MainWindow* mw);
@@ -150,12 +149,8 @@ public:
         annotationVisible_ = visible;
     }
 
-    inline void set3dContext(QGLWidget* widget) {
-    	context3d_ = widget;
-    }
-
     inline QGLWidget* get3dContext() {
-    	return context3d_;
+    	return context3d_.get();
     }
 };
 

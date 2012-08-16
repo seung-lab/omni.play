@@ -59,7 +59,7 @@ private:
 
         } else {
             // if contexts are different, the text is for the WRONG OpenGL context
-            assert(context_ == texture.Context());
+            //assert(context_ == texture.Context());
         }
 
         glBindTexture(GL_TEXTURE_2D, texture.GetTextureID());
