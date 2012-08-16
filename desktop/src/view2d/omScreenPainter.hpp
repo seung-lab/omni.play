@@ -62,7 +62,7 @@ public:
         if(Om2dPreferences::ShowCrosshairs()){
             drawCursors(painter);
         }
-        
+
         if(state_->getViewGroupState()->getAnnotationVisible()) {
             drawAnnotations(painter);
         }
@@ -246,48 +246,48 @@ private:
 
         painter.drawImage(point, star);
     }
-    
+
     static const float ZOOM_CUTOFF = 2.0f;
-    
+
     void drawAnnotations(QPainter& painter)
     {
         float zs = state_->getZoomScale();
         if(zs < ZOOM_CUTOFF) {
             return;
         }
-        
+
         FOR_EACH(i, SegmentationDataWrapper::ValidIDs())
         {
             SegmentationDataWrapper sdw(*i);
-            
+
             om::annotation::manager &annotations = *sdw.GetSegmentation().Annotations();
-            
+
             FOR_EACH(it, annotations.GetValidIds())
             {
                 om::annotation::data& a = annotations.Get(*it);
-                
+
                 if(!closeInDepth(a.coord))
                     continue;
-                
+
                 ScreenCoord loc = state_->DataToScreenCoord(a.coord);
-                
+
                 QPen pen;
                 pen.setColor(QColor::fromRgb(a.color.red, a.color.green, a.color.blue));
                 painter.setPen(pen);
-                
+
                 OmDisplayInfo di(painter, pen, loc.y, loc.x);
                 di.paint(QString::fromStdString(a.comment));
             }
         }
     }
-    
+
     static const int DEPTH_CUTOFF = 20;
-    
+
     bool closeInDepth(DataCoord point)
     {
         int depth = state_->getViewTypeDepth(point);
         int plane = state_->Location()->DataDepth();
-        
+
         return abs(depth - plane) < DEPTH_CUTOFF;
     }
 };

@@ -225,7 +225,10 @@ public:
             delete getDockWidget(makeObjectName(vgw));
         }
 
-        vgw.widget = new OmView3d(mainWindow_, vgs_);
+        OmView3d* view = new OmView3d(mainWindow_, vgs_);
+        vgs_->	set3dContext(view);
+
+        vgw.widget = view;
 
         return vgw;
     }

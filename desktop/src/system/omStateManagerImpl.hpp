@@ -22,8 +22,6 @@ public:
         , toolModePrev_(om::tool::PAN)
     {}
 
-    ~OmStateManagerImpl();
-
     OmBrushSize* BrushSize() {
         return &brushSize_;
     }

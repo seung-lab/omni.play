@@ -10,14 +10,17 @@
 OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
                            OmViewGroupState * vgs, const ViewType viewType,
                            const std::string& name)
-    : QGLWidget(parent)
+    : QWidget(parent)
     , blockingRedraw_(false)
     , viewType_(viewType)
     , name_(name)
     , state_(new OmView2dState(vol, vgs, viewType, size(), name))
     , tileDrawer_(new OmTileDrawer(state_.get(), viewType))
     , screenPainter_(new OmScreenPainter(this, state_.get()))
-{}
+{
+	state_->setTotalViewport(size());
+	resetPbuffer(size());
+}
 
 OmView2dCore::~OmView2dCore()
 {}
@@ -81,26 +84,15 @@ void OmView2dCore::dockVisibilityChanged(const bool visible){
     OmTileCache::WidgetVisibilityChanged(tileDrawer_.get(), visible);
 }
 
-void OmView2dCore::initializeGL(){
-    state_->setTotalViewport(size());
-}
-
-void OmView2dCore::resizeGL(int width, int height)
+void OmView2dCore::paintEvent (QPaintEvent* event)
 {
-    OmEvents::ViewCenterChanged();
+	buffer_->makeCurrent();
+	paintGL();
+	buffer_->doneCurrent();
+	QImage view = buffer_->toImage();
 
-    state_->setTotalViewport(width, height);
-    state_->SetViewSliceOnPan();
-}
-
-void OmView2dCore::paintGL()
-{
-    setupMainGLpaintOp();
-    {
-        tileDrawer_->FullRedraw2d(blockingRedraw_);
-        blockingRedraw_ = false;
-    }
-    teardownMainGLpaintOp();
+	QPainter painter(this);
+    painter.drawImage(QPoint(0, 0), view);
 
     screenPainter_->PaintExtras();
 
@@ -118,4 +110,40 @@ void OmView2dCore::paintGL()
     if(!IsDrawComplete()){
         OmEvents::Redraw2d();
     }
+}
+
+void OmView2dCore::resizeEvent (QResizeEvent* event)
+{
+	resizeGL(event->size().width(), event->size().height());
+}
+
+void OmView2dCore::resetPbuffer(const QSize& size)
+{
+    buffer_.reset(new QGLPixelBuffer(size,
+		QGLFormat::defaultFormat(),
+        state_->getViewGroupState()->get3dContext()));
+}
+
+void OmView2dCore::initializeGL(){
+    state_->setTotalViewport(size());
+}
+
+void OmView2dCore::resizeGL(int width, int height)
+{
+    OmEvents::ViewCenterChanged();
+
+    resetPbuffer(QSize(width, height));
+
+    state_->setTotalViewport(width, height);
+    state_->SetViewSliceOnPan();
+}
+
+void OmView2dCore::paintGL()
+{
+    setupMainGLpaintOp();
+    {
+        tileDrawer_->FullRedraw2d(blockingRedraw_);
+        blockingRedraw_ = false;
+    }
+    teardownMainGLpaintOp();
 }

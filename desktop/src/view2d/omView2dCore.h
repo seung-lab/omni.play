@@ -3,7 +3,8 @@
 #include "common/omCommon.h"
 #include "view2d/omOnScreenTileCoords.h"
 
-#include <QGLWidget>
+#include <QWidget>
+#include <QGLPixelBuffer>
 #include <QtGui>
 
 class OmFilter2d;
@@ -14,7 +15,7 @@ class OmTileDrawer;
 class OmView2dState;
 class OmViewGroupState;
 
-class OmView2dCore : public QGLWidget {
+class OmView2dCore : public QWidget {
 Q_OBJECT
 
 public:
@@ -39,10 +40,16 @@ protected:
         return state_.get();
     }
 
+    // QT QWidget overrides
+	void paintEvent (QPaintEvent* event);
+	void resizeEvent (QResizeEvent* event);
+
     // QT QGLWidget overrides
     void initializeGL();
     void resizeGL(int width, int height);
     virtual void paintGL();
+
+	void resetPbuffer(const QSize& size);
 
     bool blockingRedraw_;
 
@@ -53,6 +60,8 @@ private:
     boost::scoped_ptr<OmView2dState> state_;
     boost::scoped_ptr<OmTileDrawer> tileDrawer_;
     boost::scoped_ptr<OmScreenPainter> screenPainter_;
+
+    boost::scoped_ptr<QGLPixelBuffer> buffer_;
 
     void setupMainGLpaintOp();
     void teardownMainGLpaintOp();

@@ -3,6 +3,7 @@
 #include "system/omManageableObject.h"
 #include <common/omColors.h>
 
+class QGLWidget;
 class ChannelDataWrapper;
 class InspectorProperties;
 class MainWindow;
@@ -47,6 +48,9 @@ private:
     OmColor annotationColor_;
     std::string annotationString_;
     bool annotationVisible_;
+
+    //3d stuff
+    QGLWidget* context3d_;
 
 public:
     OmViewGroupState(MainWindow* mw);
@@ -137,13 +141,21 @@ public:
     inline void setAnnotationString(const std::string &string) {
         annotationString_ = string;
     }
-    
+
     inline bool getAnnotationVisible() {
         return annotationVisible_;
     }
-    
+
     inline void setAnnotationVisible(bool visible) {
         annotationVisible_ = visible;
+    }
+
+    inline void set3dContext(QGLWidget* widget) {
+    	context3d_ = widget;
+    }
+
+    inline QGLWidget* get3dContext() {
+    	return context3d_;
     }
 };
 
