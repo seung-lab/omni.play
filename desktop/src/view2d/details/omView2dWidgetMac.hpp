@@ -26,7 +26,7 @@ public:
 	inline void resizeEvent (QResizeEvent* event)
 	{
     	Resize(event->size().width(), event->size().height());
-    	resetPbuffer(QSize(width, height));
+    	resetPbuffer(event->size());
     }
 
     inline virtual void paintEvent (QPaintEvent* event)
