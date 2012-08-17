@@ -3,6 +3,7 @@
 #include "system/omManageableObject.h"
 #include <common/omColors.h>
 
+class QGLWidget;
 class ChannelDataWrapper;
 class InspectorProperties;
 class MainWindow;
@@ -30,6 +31,10 @@ private:
 
     boost::scoped_ptr<ChannelDataWrapper> cdw_;
     boost::scoped_ptr<SegmentationDataWrapper> sdw_;
+
+#ifdef ZI_OS_MACOS
+    boost::scoped_ptr<QGLWidget> context3d_;
+#endif
 
     float mBreakThreshold;
     uint64_t mDustThreshold;
@@ -137,13 +142,19 @@ public:
     inline void setAnnotationString(const std::string &string) {
         annotationString_ = string;
     }
-    
+
     inline bool getAnnotationVisible() {
         return annotationVisible_;
     }
-    
+
     inline void setAnnotationVisible(bool visible) {
         annotationVisible_ = visible;
     }
+
+#ifdef ZI_OS_MACOS
+    inline QGLWidget* get3dContext() {
+    	return context3d_.get();
+    }
+#endif
 };
 

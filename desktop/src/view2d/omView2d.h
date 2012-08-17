@@ -53,8 +53,9 @@ protected:
     void enterEvent(QEvent*);
 
     QSize sizeHint () const;
-
+#ifndef ZI_OS_MACOS
     virtual void paintGL();
+#endif
 
 private:
     OmView2dState *const state_;

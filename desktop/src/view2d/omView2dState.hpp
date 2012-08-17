@@ -31,28 +31,28 @@ private:
     const ObjectType objType_;
     OmViewGroupState *const vgs_;
     OmZoomLevel *const zoomLevel_;
-    
+
     const ViewType viewType_;
     const std::string name_;
-    
+
     Vector4i totalViewport_; //lower left x, lower left y, width, height
     bool scribbling_;
     Vector2i mousePoint_;
     bool isLevelLocked_;
-    
+
     boost::optional<Vector2f> mousePanStartingPt_;
-    
+
     // (x,y) coordinates only (no depth); needed for Bresenham
     DataCoord lastDataPoint_;
-    
+
     om::shared_ptr<OmView2dVolLocation> location_;
-    
+
     OmBrushSize *const brushSize_;
-    
+
     bool overrideToolModeForPan_;
-    
+
     OmSegID segIDforPainting_;
-    
+
 public:
     OmView2dState(OmMipVolume* vol,
                   OmViewGroupState* vgs,
