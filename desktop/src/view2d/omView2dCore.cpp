@@ -10,7 +10,11 @@
 OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
                            OmViewGroupState * vgs, const ViewType viewType,
                            const std::string& name)
+#ifdef ZI_OS_MACOS
     : QWidget(parent)
+#else
+    : QGLWidget(parent)
+#endif
     , blockingRedraw_(false)
     , viewType_(viewType)
     , name_(name)
@@ -18,8 +22,10 @@ OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
     , tileDrawer_(new OmTileDrawer(state_.get(), viewType))
     , screenPainter_(new OmScreenPainter(this, state_.get()))
 {
+#ifdef ZI_OS_MACOS
 	state_->setTotalViewport(size());
 	resetPbuffer(size());
+#endif
 }
 
 OmView2dCore::~OmView2dCore()
@@ -84,17 +90,65 @@ void OmView2dCore::dockVisibilityChanged(const bool visible){
     OmTileCache::WidgetVisibilityChanged(tileDrawer_.get(), visible);
 }
 
+#ifdef ZI_OS_MACOS
 void OmView2dCore::paintEvent (QPaintEvent* event)
 {
 	buffer_->makeCurrent();
-	paintGL();
+	doPaintGL();
 	buffer_->doneCurrent();
 	QImage view = buffer_->toImage();
 
 	QPainter painter(this);
     painter.drawImage(QPoint(0, 0), view);
 
-    screenPainter_->PaintExtras();
+    doPaintOther();
+}
+
+void OmView2dCore::resizeEvent (QResizeEvent* event)
+{
+	resizeGL(event->size().width(), event->size().height());
+    resetPbuffer(QSize(width, height));
+}
+
+void OmView2dCore::resetPbuffer(const QSize& size)
+{
+    buffer_.reset(new QGLPixelBuffer(size,
+		QGLFormat::defaultFormat(),
+        state_->getViewGroupState()->get3dContext()));
+}
+
+#else
+
+void OmView2dCore::initializeGL(){
+    state_->setTotalViewport(size());
+}
+
+void OmView2dCore::resizeGL(int width, int height)
+{
+	doResize(width, height);
+}
+
+void OmView2dCore::paintGL()
+{
+	doPaintGL();
+	doPaintOther();
+}
+
+#endif
+
+void OmView2dCore::doPaintGL()
+{
+    setupMainGLpaintOp();
+    {
+        tileDrawer_->FullRedraw2d(blockingRedraw_);
+        blockingRedraw_ = false;
+    }
+    teardownMainGLpaintOp();
+}
+
+void OmView2dCore::doPaintOther()
+{
+	screenPainter_->PaintExtras();
 
     if(!IsDrawComplete() || state_->getScribbling()){
         OmTileCache::SetDrawerActive(tileDrawer_.get());
@@ -112,38 +166,10 @@ void OmView2dCore::paintEvent (QPaintEvent* event)
     }
 }
 
-void OmView2dCore::resizeEvent (QResizeEvent* event)
-{
-	resizeGL(event->size().width(), event->size().height());
-}
-
-void OmView2dCore::resetPbuffer(const QSize& size)
-{
-    buffer_.reset(new QGLPixelBuffer(size,
-		QGLFormat::defaultFormat(),
-        state_->getViewGroupState()->get3dContext()));
-}
-
-void OmView2dCore::initializeGL(){
-    state_->setTotalViewport(size());
-}
-
-void OmView2dCore::resizeGL(int width, int height)
+void OmView2dCore::doResize(int width, int height)
 {
     OmEvents::ViewCenterChanged();
 
-    resetPbuffer(QSize(width, height));
-
     state_->setTotalViewport(width, height);
     state_->SetViewSliceOnPan();
-}
-
-void OmView2dCore::paintGL()
-{
-    setupMainGLpaintOp();
-    {
-        tileDrawer_->FullRedraw2d(blockingRedraw_);
-        blockingRedraw_ = false;
-    }
-    teardownMainGLpaintOp();
 }

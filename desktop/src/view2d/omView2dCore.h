@@ -15,7 +15,12 @@ class OmTileDrawer;
 class OmView2dState;
 class OmViewGroupState;
 
+#ifdef ZI_OS_MACOS
 class OmView2dCore : public QWidget {
+#else
+class OmView2dCore : public QGLWidget {
+#endif
+
 Q_OBJECT
 
 public:
@@ -40,16 +45,21 @@ protected:
         return state_.get();
     }
 
+#ifdef ZI_OS_MACOS
     // QT QWidget overrides
 	void paintEvent (QPaintEvent* event);
 	void resizeEvent (QResizeEvent* event);
-
+	void resetPbuffer(const QSize& size);
+#else
     // QT QGLWidget overrides
     void initializeGL();
     void resizeGL(int width, int height);
     virtual void paintGL();
+#endif
 
-	void resetPbuffer(const QSize& size);
+    void doPaintGL();
+    void doPaintOther();
+    void doResize(int width, int height);
 
     bool blockingRedraw_;
 
@@ -61,7 +71,9 @@ private:
     boost::scoped_ptr<OmTileDrawer> tileDrawer_;
     boost::scoped_ptr<OmScreenPainter> screenPainter_;
 
+#ifdef ZI_OS_MACOS
     boost::scoped_ptr<QGLPixelBuffer> buffer_;
+#endif
 
     void setupMainGLpaintOp();
     void teardownMainGLpaintOp();

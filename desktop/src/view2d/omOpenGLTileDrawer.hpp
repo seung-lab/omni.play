@@ -59,7 +59,9 @@ private:
 
         } else {
             // if contexts are different, the text is for the WRONG OpenGL context
-            //assert(context_ == texture.Context());
+#ifndef ZI_OS_MACOS
+            assert(context_ == texture.Context());
+#endif
         }
 
         glBindTexture(GL_TEXTURE_2D, texture.GetTextureID());

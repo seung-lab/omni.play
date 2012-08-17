@@ -16,7 +16,9 @@
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
 
+#ifdef ZI_OS_MACOS
 #include <QGLWidget>
+#endif
 
 OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     : OmManageableObject()
@@ -28,7 +30,9 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     , landmarks_(new OmLandmarks(mainWindow))
     , cdw_(new ChannelDataWrapper(1))
     , sdw_(new SegmentationDataWrapper(1))
+#ifdef ZI_OS_MACOS
     , context3d_(new QGLWidget())
+#endif
     , toolBarManager_(NULL)
     , brightenSelected_(true)
     , annotationVisible_(true)

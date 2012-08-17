@@ -157,52 +157,52 @@ private:
     getTileCoordsAndLocationsForCurrentScene(OmMipVolume* vol)
     {
 //         OmTileCoordsAndLocationsPtr ret = om::make_shared<OmTileCoordsAndLocations>();
-//         
+//
 //         int mipLevel = state_->getMipLevel();
 //         int chunkWidth = vol->Coords().GetChunkDimension();
-//         
+//
 //         int freshness = 0;
 //         if(SEGMENTATION == vol->getVolumeType()){
 //             freshness = OmCacheManager::GetFreshness();
 //         }
-//         
+//
 //         Vector4i viewport = state_->getTotalViewport();
-//         
+//
 //         FOR_EACH(chunk, *vol->GetMipChunkCoords(mipLevel))
 //         {
 //             ScreenCoord screenCoordll = state_->DataToScreenCoord(chunk->Coordinate);
 //             ScreenCoord screenCoordur = state_->DataToScreenCoord(chunk->Coordinate + DataCoord(chunkWidth, chunkWidth, chunkWidth));
-//             
+//
 //             GLfloatBox glBox;
 //             glBox.lowerLeft.x  = screenCoordll.x;
 //             glBox.lowerLeft.y  = screenCoordll.y;
 //             glBox.upperRight.x = screenCoordur.x;
 //             glBox.upperRight.y = screenCoordur.y;
-//             
+//
 //             glBox.lowerRight.x = glBox.upperRight.x;
 //             glBox.lowerRight.y = glBox.lowerLeft.y;
 //             glBox.upperLeft.x  = glBox.lowerLeft.x;
 //             glBox.upperLeft.y  = glBox.upperRight.y;
-//             
-//             if(contains(viewport, glBox)) 
+//
+//             if(contains(viewport, glBox))
 //             {
-//                 OmTileCoord tile(mipLevel, 
-//                                  chunk->Coordinate, 
-//                                  vol, 
-//                                  freshness, 
-//                                  state_->getViewGroupState(), 
-//                                  viewType_, 
+//                 OmTileCoord tile(mipLevel,
+//                                  chunk->Coordinate,
+//                                  vol,
+//                                  freshness,
+//                                  state_->getViewGroupState(),
+//                                  viewType_,
 //                                  state_->getObjectType());
-//                                  
-//                 OmTileCoordAndVertices pair = { tile, glBox };  
-//                 
+//
+//                 OmTileCoordAndVertices pair = { tile, glBox };
+//
 //                 ret->push_back(pair);
 //             }
 //         }
-//         
-//         
+//
+//
 //         return ret;
-        
+
         OmMipVolume* curVol = state_->getVol();
         state_->setVol(vol);
 
@@ -213,19 +213,19 @@ private:
 
         return ret;
     }
-    
+
     bool contains(Vector4i viewport, GLfloatBox glBox) {
         return contains(viewport, glBox.lowerLeft) ||
                contains(viewport, glBox.lowerRight) ||
                contains(viewport, glBox.upperLeft) ||
                contains(viewport, glBox.upperRight);
     }
-    
+
     bool contains(Vector4i viewport, GLfloatPair glPair) {
         return viewport.x <= glPair.x && glPair.x <= viewport.width &&
         viewport.y <= glPair.y && glPair.y <= viewport.height;
     }
-    
+
     void drawChannelAndFilters(OmMipVolume* vol)
     {
         const bool haveAlphaGoToBlack = Om2dPreferences::HaveAlphaGoToBlack();

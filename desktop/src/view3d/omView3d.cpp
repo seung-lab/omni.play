@@ -43,8 +43,12 @@ enum widgets {
  *  Constructs View3d widget that shares with the primary widget.
  */
 OmView3d::OmView3d(QWidget* parent, OmViewGroupState* vgs)
+#ifdef ZI_OS_MACOS
     : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent, vgs->get3dContext())
-    , mView3dUi(this, vgs)
+#else
+    : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent)
+#endif
+	, mView3dUi(this, vgs)
     , vgs_(vgs)
     , meshesFound_(false)
     , segmentations_(SegmentationDataWrapper::GetPtrVec())
