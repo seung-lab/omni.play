@@ -10,23 +10,14 @@
 OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
                            OmViewGroupState * vgs, const ViewType viewType,
                            const std::string& name)
-#ifdef ZI_OS_MACOS
-    : QWidget(parent)
-#else
-    : QGLWidget(parent)
-#endif
+    : OmView2dWidgetBase(parent, vgs)
     , blockingRedraw_(false)
     , viewType_(viewType)
     , name_(name)
     , state_(new OmView2dState(vol, vgs, viewType, size(), name))
     , tileDrawer_(new OmTileDrawer(state_.get(), viewType))
     , screenPainter_(new OmScreenPainter(this, state_.get()))
-{
-#ifdef ZI_OS_MACOS
-	state_->setTotalViewport(size());
-	resetPbuffer(size());
-#endif
-}
+{ }
 
 OmView2dCore::~OmView2dCore()
 {}
@@ -90,53 +81,12 @@ void OmView2dCore::dockVisibilityChanged(const bool visible){
     OmTileCache::WidgetVisibilityChanged(tileDrawer_.get(), visible);
 }
 
-#ifdef ZI_OS_MACOS
-void OmView2dCore::paintEvent (QPaintEvent* event)
+void OmView2dCore::Initialize()
 {
-	buffer_->makeCurrent();
-	doPaintGL();
-	buffer_->doneCurrent();
-	QImage view = buffer_->toImage();
-
-	QPainter painter(this);
-    painter.drawImage(QPoint(0, 0), view);
-
-    doPaintOther();
+	state_->setTotalViewport(size());
 }
 
-void OmView2dCore::resizeEvent (QResizeEvent* event)
-{
-	resizeGL(event->size().width(), event->size().height());
-    resetPbuffer(QSize(width, height));
-}
-
-void OmView2dCore::resetPbuffer(const QSize& size)
-{
-    buffer_.reset(new QGLPixelBuffer(size,
-		QGLFormat::defaultFormat(),
-        state_->getViewGroupState()->get3dContext()));
-}
-
-#else
-
-void OmView2dCore::initializeGL(){
-    state_->setTotalViewport(size());
-}
-
-void OmView2dCore::resizeGL(int width, int height)
-{
-	doResize(width, height);
-}
-
-void OmView2dCore::paintGL()
-{
-	doPaintGL();
-	doPaintOther();
-}
-
-#endif
-
-void OmView2dCore::doPaintGL()
+void OmView2dCore::Paint3D()
 {
     setupMainGLpaintOp();
     {
@@ -146,7 +96,7 @@ void OmView2dCore::doPaintGL()
     teardownMainGLpaintOp();
 }
 
-void OmView2dCore::doPaintOther()
+void OmView2dCore::PaintOther()
 {
 	screenPainter_->PaintExtras();
 
@@ -166,7 +116,7 @@ void OmView2dCore::doPaintOther()
     }
 }
 
-void OmView2dCore::doResize(int width, int height)
+void OmView2dCore::Resize(int width, int height)
 {
     OmEvents::ViewCenterChanged();
 

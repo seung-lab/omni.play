@@ -1,12 +1,49 @@
 #pragma once
 
-class OmView2dWidgetBase : public QWidget {
-public:
+class OmView2dWidgetBase : public QWidget
+{
+protected:
     virtual void Initialize() = 0;
-    virtual void Paint() = 0;
-    virtual void Resize() = 0;
+    virtual void Paint3D() = 0;
+    virtual void PaintOther() = 0;
+    virtual void Resize(int width, int height) = 0;
+
+public:
+	OmView2dWidgetBase(QWidget* parent, OmViewGroupState* vgs)
+		: QWidget(parent)
+		, vgs_(vgs)
+	{
+		Initialize();
+		resetPbuffer(size());
+	}
+
+	inline void resetPbuffer(const QSize& size, const OmView2dState* state) {
+		buffer_.reset(new QGLPixelBuffer(size,
+			QGLFormat::defaultFormat(),
+        	vgs_->get3dContext()));
+	}
+
+	inline void resizeEvent (QResizeEvent* event)
+	{
+    	Resize(event->size().width(), event->size().height());
+    	resetPbuffer(QSize(width, height));
+    }
+
+    inline virtual void paintEvent (QPaintEvent* event)
+    {
+    	buffer_->makeCurrent();
+		Paint3D();
+		buffer_->doneCurrent();
+		QImage view = buffer_->toImage();
+
+		QPainter painter(this);
+	    painter.drawImage(QPoint(0, 0), view);
+
+	    PaintOther();
+    }
 
 private:
-
+	boost::scoped_ptr<QGLPixelBuffer> buffer_;
+	OmViewGroupState* vgs_;
 
 };
