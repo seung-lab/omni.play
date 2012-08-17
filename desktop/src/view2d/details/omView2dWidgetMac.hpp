@@ -17,7 +17,7 @@ public:
 		resetPbuffer(size());
 	}
 
-	inline void resetPbuffer(const QSize& size, const OmView2dState* state) {
+	inline void resetPbuffer(const QSize& size) {
 		buffer_.reset(new QGLPixelBuffer(size,
 			QGLFormat::defaultFormat(),
         	vgs_->get3dContext()));
