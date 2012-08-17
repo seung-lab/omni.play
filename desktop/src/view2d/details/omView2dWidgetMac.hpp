@@ -1,9 +1,11 @@
 #pragma once
 
+#include "viewGroup/omViewGroupState.h"
+
 class OmView2dWidgetBase : public QWidget
 {
 protected:
-    virtual void Initialize() = 0;
+    virtual void Initialize() {}
     virtual void Paint3D() = 0;
     virtual void PaintOther() = 0;
     virtual void Resize(int width, int height) = 0;
