@@ -2,6 +2,7 @@
 #include "tiles/omTileCoord.h"
 #include "volume/omMipVolume.h"
 #include "viewGroup/omViewGroupState.h"
+#include "view2d/omView2dConverters.hpp"
 
 OmTileCoord::OmTileCoord()
     : OmTileCoordKey(om::chunkCoord(),
@@ -36,6 +37,20 @@ OmTileCoord::OmTileCoord(const om::chunkCoord& cc, ViewType view, uint8_t depth,
                      vgs,
                      vgs->determineColorizationType(objType))
 {}
+
+OmTileCoord OmTileCoord::Downsample() const
+{
+	int newDepth = (getDepth() +
+		(OmView2dConverters::GetViewTypeDepth(getCoord().Coordinate, getViewType()) % 2) * 128) / 2;
+	return OmTileCoord(getCoord().ParentCoord(),
+	                   getViewType(),
+	                   newDepth,
+	                   getVolume(),
+	                   getFreshness(),
+	                   getViewGroupState(),
+	                   getSegmentColorCacheType());
+}
+
 
 std::ostream& operator<<(std::ostream &out, const OmTileCoord &c)
 {

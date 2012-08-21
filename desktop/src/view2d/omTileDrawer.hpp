@@ -22,7 +22,7 @@ public:
         , tileCount_(0)
         , tileCountIncomplete_(0)
         , openglTileDrawer_(new OmOpenGLTileDrawer())
-        // , tileCalcDownsampled_(new OmCalcTileCoordsDownsampled(viewType))
+        , tileCalcDownsampled_(new OmCalcTileCoordsDownsampled(viewType))
         , blockingGetTiles_(new OmBlockingGetTiles(tilesToDraw_))
     {
         OmTileCache::RegisterDrawer(this);
@@ -76,7 +76,7 @@ private:
     int tileCount_;
     int tileCountIncomplete_;
     boost::scoped_ptr<OmOpenGLTileDrawer> openglTileDrawer_;
-    // boost::scoped_ptr<OmCalcTileCoordsDownsampled> tileCalcDownsampled_;
+    boost::scoped_ptr<OmCalcTileCoordsDownsampled> tileCalcDownsampled_;
     boost::scoped_ptr<OmBlockingGetTiles> blockingGetTiles_;
 
     std::deque<OmTileAndVertices> tilesToDraw_;
@@ -158,7 +158,7 @@ private:
             } else
             {
                 ++tileCountIncomplete_;
-                // tileCalcDownsampled_->TryDownsample(*tileCL, tilesToDraw_);
+                tileCalcDownsampled_->TryDownsample(*tileCL, tilesToDraw_);
             }
         }
     }
@@ -171,7 +171,7 @@ private:
     OmTileCoordsAndLocationsPtr
     getTileCoordsAndLocationsForCurrentScene(OmMipVolume* vol)
     {
-        OmMipVolume* curVol = state_->getVol();
+        OmMipVolume* curVol = state_->getVol();  // TODO: Codesmell
         state_->setVol(vol);
 
         OmOnScreenTileCoords stc(state_);

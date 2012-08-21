@@ -45,6 +45,8 @@ public:
         return this->get<6>();
     }
 
+    OmTileCoord Downsample() const;
+
     friend std::ostream& operator<<(std::ostream &, const OmTileCoord &);
 };
 

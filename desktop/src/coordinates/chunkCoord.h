@@ -36,9 +36,9 @@ public:
     //family coordinate methods
     chunkCoord ParentCoord() const;
     chunkCoord PrimarySiblingCoord() const;
-    void SiblingCoords(chunkCoord *pSiblings) const;
+    void SiblingCoords(chunkCoord *pSiblings) const; // TODO: C array? Really???
     chunkCoord PrimaryChildCoord() const;
-    void ChildrenCoords(chunkCoord *pChildren) const;
+    void ChildrenCoords(chunkCoord *pChildren) const;// TODO: C array? Really???
 
     //access
     inline int getLevel() const {
