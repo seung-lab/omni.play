@@ -137,11 +137,11 @@ public:
     inline void setAnnotationString(const std::string &string) {
         annotationString_ = string;
     }
-    
+
     inline bool getAnnotationVisible() {
         return annotationVisible_;
     }
-    
+
     inline void setAnnotationVisible(bool visible) {
         annotationVisible_ = visible;
     }

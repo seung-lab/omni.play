@@ -19,14 +19,14 @@ class globalCoord : public Vector3f
 {
 private:
     typedef Vector3f base_t;
-    
+
 public:
     globalCoord() : base_t() {}
     globalCoord(base_t v) : base_t(v) {}
     globalCoord(const float a) : base_t(a) {}
-    globalCoord(const float i, const float j, const float k) 
+    globalCoord(const float i, const float j, const float k)
         : base_t(i, j, k) {}
-    
+
     normCoord toNormCoord(const OmMipVolume*) const;
     dataCoord toDataCoord(const OmMipVolume*, int) const;
     chunkCoord toChunkCoord(const OmMipVolume*, int) const;
@@ -39,11 +39,11 @@ class globalBbox : public AxisAlignedBoundingBox<float>
 {
 private:
     typedef AxisAlignedBoundingBox<float> base_t;
-    
+
 public:
     globalBbox() : base_t() {}
     globalBbox(globalCoord min, globalCoord max) : base_t(min, max) {}
-    
+
     normBbox toNormBbox(const OmMipVolume*) const;
     dataBbox toDataBbox(const OmMipVolume*, int) const;
 };

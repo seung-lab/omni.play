@@ -161,7 +161,7 @@ public:
     inline void MoveUpStackCloserToViewer()
     {
         const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel());
-        const int depth = Depth();
+        const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
         vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth + numberOfSlicestoAdvance);
 
         coords_.UpdateTransformationMatrices();
@@ -170,7 +170,7 @@ public:
     inline void MoveDownStackFartherFromViewer()
     {
         const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel());
-        const int depth = Depth();
+        const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
         vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth - numberOfSlicestoAdvance);
 
         coords_.UpdateTransformationMatrices();
@@ -345,10 +345,6 @@ public:
     {
         vgs_->View2dState()->SetScaledSliceDepth(loc);
         coords_.UpdateTransformationMatrices();
-    }
-
-    inline float Depth() {
-        return vgs_->View2dState()->GetScaledSliceDepth(viewType_);
     }
 
     inline bool OverrideToolModeForPan(){

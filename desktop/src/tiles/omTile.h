@@ -43,7 +43,6 @@ private:
 
     om::chunkCoord tileToMipCoord();
     int getDepth();
-    int getChunkSliceNum();
     void setVertices(const int x, const int y, const float zoomFactor);
 
     inline OmMipVolume* getVol() const {

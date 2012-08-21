@@ -4,7 +4,7 @@
 
 namespace om {
 
-screenCoord globalCoord::toScreenCoord(OmView2dState *state) const 
+screenCoord globalCoord::toScreenCoord(OmView2dState *state) const
 {
     const vmml::Vector4f global(x, y, z, 1);
     vmml::Vector3f screen = state->Coords().GlobalToScreenMat() * global;
@@ -22,7 +22,6 @@ chunkCoord globalCoord::toChunkCoord(const OmMipVolume *vol, int mipLevel) const
 {
     return toDataCoord(vol, mipLevel).toChunkCoord();
 }
-
 
 normCoord globalCoord::toNormCoord(const OmMipVolume *vol) const
 {
@@ -46,7 +45,7 @@ normBbox globalBbox::toNormBbox(const OmMipVolume *vol) const
 {
     globalCoord min = _min;
     globalCoord max = _max;
-    
+
     return normBbox(min.toNormCoord(vol), max.toNormCoord(vol));
 }
 
@@ -54,9 +53,9 @@ dataBbox globalBbox::toDataBbox(const OmMipVolume *vol, int mipLevel) const
 {
     globalCoord min = _min;
     globalCoord max = _max;
-    
+
     return dataBbox(min.toDataCoord(vol, mipLevel), max.toDataCoord(vol, mipLevel));
 }
 
-    
+
 } // namespace om

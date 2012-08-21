@@ -22,8 +22,8 @@ private:
     int mipLevel_;
     OmTileCoordsAndLocationsPtr tileCoordsAndLocations_;
 
-    int dataDepth_;
     uint64_t freshness_;
+    int dataDepth_;
 
     void doComputeCoordsAndLocations(const int depthOffset);
     GLfloatBox computeVertices(const om::chunkCoord& coord, const OmMipVolume* vol);

@@ -4,53 +4,47 @@
 #include "viewGroup/omViewGroupState.h"
 
 OmTileCoord::OmTileCoord()
-    : OmTileCoordKey(-1,
-                     om::globalCoord(),
-                     NULL,
-                     0,
-                     NULL,
+    : OmTileCoordKey(om::chunkCoord(),
                      XY_VIEW,
+                     -1,
+                     NULL,
+                     -1,
+                     NULL,
                      SCC_NUMBER_OF_ENUMS)
 {}
 
-OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
-                         OmMipVolume* vol, const uint32_t freshness,
-                         OmViewGroupState* vgs, const ViewType vt,
-                         const ObjectType objType)
-    : OmTileCoordKey(level,
-                     dataCoord,
+OmTileCoord::OmTileCoord(const om::chunkCoord& cc, ViewType view, uint8_t depth,
+                         OmMipVolume* vol, uint32_t freshness,
+                         OmViewGroupState* vgs, OmSegmentColorCacheType segColorType)
+    : OmTileCoordKey(cc,
+                     view,
+                     depth,
                      vol,
                      freshness,
                      vgs,
-                     vt,
-                     vgs->determineColorizationType(objType))
-{}
-
-OmTileCoord::OmTileCoord(const int level, const om::globalCoord& dataCoord,
-                         OmMipVolume* vol, const uint32_t freshness,
-                         OmViewGroupState* vgs, const ViewType vt,
-                         const OmSegmentColorCacheType segColorType)
-    : OmTileCoordKey(level,
-                     dataCoord,
-                     vol,
-                     freshness,
-                     vgs,
-                     vt,
                      segColorType)
 {}
 
-ObjectType OmTileCoord::getVolType() const {
-    return getVolume()->getVolumeType();
-}
+OmTileCoord::OmTileCoord(const om::chunkCoord& cc, ViewType view, uint8_t depth,
+                         OmMipVolume* vol, uint32_t freshness,
+                         OmViewGroupState* vgs, ObjectType objType)
+    : OmTileCoordKey(cc,
+                     view,
+                     depth,
+                     vol,
+                     freshness,
+                     vgs,
+                     vgs->determineColorizationType(objType))
+{}
 
 std::ostream& operator<<(std::ostream &out, const OmTileCoord &c)
 {
     out << "["
-        << c.getLevel() << ", "
         << c.getCoord() << ", "
+        << c.getViewType() << ", "
+        << c.getDepth() << ", "
         << c.getVolume()->GetName() << ", "
         << c.getFreshness() << ", "
-        << c.getViewType() << ", "
         << c.getSegmentColorCacheType()
         << "]";
 

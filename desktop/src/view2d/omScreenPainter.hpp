@@ -62,7 +62,7 @@ public:
         if(Om2dPreferences::ShowCrosshairs()){
             drawCursors(painter);
         }
-        
+
         if(state_->getViewGroupState()->getAnnotationVisible()) {
             drawAnnotations(painter);
         }
@@ -154,17 +154,12 @@ private:
 
     QString depthString()
     {
-        const int globalDepth = state_->Depth();
-
         const om::dataCoord data = state_->Location().
             toDataCoord(state_->getVol(), state_->getMipLevel());
-            
+
         const int dataDepth = state_->getViewTypeDepth(data);
-        
-        QString depthStr = QString::number(globalDepth) + " Slice Depth";
-        if(globalDepth != dataDepth){
-            depthStr += " (" + QString::number(dataDepth) + " data)";
-        }
+
+        QString depthStr = QString::number(dataDepth);
 
         return depthStr;
     }
@@ -245,48 +240,48 @@ private:
 
         painter.drawImage(point, star);
     }
-    
+
     static const float ZOOM_CUTOFF = 2.0f;
-    
+
     void drawAnnotations(QPainter& painter)
     {
         float zs = state_->getZoomScale();
         if(zs < ZOOM_CUTOFF) {
             return;
         }
-        
+
         FOR_EACH(i, SegmentationDataWrapper::ValidIDs())
         {
             SegmentationDataWrapper sdw(*i);
-            
+
             om::annotation::manager &annotations = *sdw.GetSegmentation().Annotations();
-            
+
             FOR_EACH(it, annotations.GetValidIds())
             {
                 om::annotation::data& a = annotations.Get(*it);
-                
+
                 if(!closeInDepth(a.coord))
                     continue;
-                
+
                 om::screenCoord loc = a.coord.toScreenCoord(state_);
-                
+
                 QPen pen;
                 pen.setColor(QColor::fromRgb(a.color.red, a.color.green, a.color.blue));
                 painter.setPen(pen);
-                
+
                 OmDisplayInfo di(painter, pen, loc.y, loc.x);
                 di.paint(QString::fromStdString(a.comment));
             }
         }
     }
-    
+
     static const int DEPTH_CUTOFF = 20;
-    
+
     bool closeInDepth(om::globalCoord point)
     {
         int depth = state_->getViewTypeDepth(point);
-        int plane = state_->Depth();
-        
+        int plane = state_->getViewTypeDepth(state_->Location());
+
         return abs(depth - plane) < DEPTH_CUTOFF;
     }
 };

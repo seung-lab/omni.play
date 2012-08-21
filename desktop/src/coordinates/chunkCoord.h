@@ -53,7 +53,7 @@ public:
     inline int Z() const {
         return Coordinate.z;
     }
-    
+
     dataCoord toDataCoord(const OmMipVolume*) const;
     dataBbox chunkBoundingBox(const OmMipVolume*) const;
 
