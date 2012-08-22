@@ -81,11 +81,11 @@ void OmView2dCore::dockVisibilityChanged(const bool visible){
     OmTileCache::WidgetVisibilityChanged(tileDrawer_.get(), visible);
 }
 
-void OmView2dCore::initializeGL(){
+void OmView2dCore::Initialize(){
     state_->Coords().setTotalViewport(size());
 }
 
-void OmView2dCore::resizeGL(int width, int height)
+void OmView2dCore::Resize(int width, int height)
 {
     OmEvents::ViewCenterChanged();
 
@@ -121,12 +121,4 @@ void OmView2dCore::PaintOther()
     if(!IsDrawComplete()){
         OmEvents::Redraw2d();
     }
-}
-
-void OmView2dCore::Resize(int width, int height)
-{
-    OmEvents::ViewCenterChanged();
-
-    state_->setTotalViewport(width, height);
-    state_->SetViewSliceOnPan();
 }
