@@ -32,6 +32,7 @@ public:
     {
         mipLevel_ = defaultMipLevel;
         zoomFactor_ = 1;
+        setMipLevel();
         valid = true;
     }
 
