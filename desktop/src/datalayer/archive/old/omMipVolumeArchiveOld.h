@@ -107,11 +107,7 @@ private:
         QString dummy;
         in >> dummy; //c.unitString_
         Vector3f dummyVec;
-		in >> dummyVec; //c.dataStretchValues_
-
-		int dummyInt;
-		in >> dummyInt; //c.mMipLeafDim
-		in >> dummyInt; //c.mMipRootLevel
+	in >> dummyVec; //c.dataStretchValues_
     }
 };
 
