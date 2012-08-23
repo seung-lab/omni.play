@@ -57,6 +57,7 @@ private:
     void centerAxisOfRotation(QMouseEvent* event);
     OmSegmentPickPoint pickVoxelMouseCrosshair(QMouseEvent* event);
     bool cutSegment(QMouseEvent* event);
+    bool annotate(QMouseEvent* event);
     void resetWindow();
 
     void deselectSegment(const SegmentDataWrapper& sdw);

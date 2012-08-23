@@ -17,6 +17,7 @@
 #include "view3d/omView3dUi.h"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
+#include "annotation/annotation.h"
 
 OmView3dUi::OmView3dUi(OmView3d* view3d, OmViewGroupState* vgs)
     : view3d_(view3d)
@@ -98,6 +99,20 @@ bool OmView3dUi::cutSegment(QMouseEvent* event)
     return true;
 }
 
+bool OmView3dUi::annotate(QMouseEvent* event)
+{
+	const OmSegmentPickPoint pickPoint = pickVoxelMouseCrosshair(event);
+
+	if(!pickPoint.sdw.IsSegmentValid()) {
+	    return false;
+	}
+
+    om::annotation::manager* manager = pickPoint.sdw.GetSegmentation().Annotations();
+
+    manager->Add(pickPoint.coord, vgs_->getAnnotationString(), vgs_->getAnnotationColor());
+    return true;
+}
+
 /////////////////////////////////
 ///////          Navigation Mode Methods
 
@@ -145,6 +160,13 @@ void OmView3dUi::navigationModeMousePressed(QMouseEvent* event)
         if(om::tool::CUT == OmStateManager::GetToolMode())
         {
             if(cutSegment(event)){
+                return;
+            }
+        }
+
+		if(om::tool::ANNOTATE == OmStateManager::GetToolMode())
+        {
+            if(annotate(event)){
                 return;
             }
         }

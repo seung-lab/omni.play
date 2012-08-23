@@ -12,21 +12,21 @@
 #include "zi/concurrency.hpp"
 
 class OmVolCoords {
-protected:    
+protected:
     Matrix4f dataToGlobal_;
     Matrix4f globalToData_;
     Matrix4f normToGlobal_;
     Matrix4f globalToNorm_;
-    
+
     //data properties
     Vector3i dataDimensions_;
-    
+
     int chunkDim_;
-    
+
 public:
 
     //data properties
-    inline om::globalBbox GetDataExtent() const 
+    inline om::globalBbox GetDataExtent() const
     {
         Vector3f abs = GetAbsOffset();
         return om::globalBbox(abs, abs - Vector3f::ONE + dataDimensions_);
@@ -39,7 +39,7 @@ public:
     void SetDataDimensions(const Vector3f& dim)
     {
         dataDimensions_ = dim;
-                               
+
         Vector3i dims = GetDataDimensions();
         normToGlobal_.m00 = dims.x;
         normToGlobal_.m11 = dims.y;
@@ -61,39 +61,39 @@ public:
     inline Matrix4f DataToGlobalMat() const {
         return dataToGlobal_;
     }
-    
+
     inline Matrix4f GlobalToDataMat() const {
         return globalToData_;
     }
-    
+
     inline const Matrix4f& NormToGlobalMat() const {
         return normToGlobal_;
     }
-    
+
     inline const Matrix4f& GlobalToNormMat() const {
         return globalToNorm_;
     }
-    
+
     inline Vector3i GetAbsOffset() const {
         return dataToGlobal_.getTranslation();
     }
-    
+
     inline void SetAbsOffset(Vector3i absOffset) {
         dataToGlobal_.setTranslation(absOffset);
         dataToGlobal_.getInverse(globalToData_);
         normToGlobal_.setTranslation(absOffset);
         normToGlobal_.getInverse(globalToNorm_);
     }
-    
+
     inline Vector3i GetResolution() const {
         return Vector3i(dataToGlobal_.m00, dataToGlobal_.m11, dataToGlobal_.m22);
     }
-    
+
     inline void SetResolution(Vector3i resolution) {
         dataToGlobal_.m00 = resolution.x;
         dataToGlobal_.m11 = resolution.y;
         dataToGlobal_.m22 = resolution.z;
-        
+
         dataToGlobal_.getInverse(globalToData_);
     }
 

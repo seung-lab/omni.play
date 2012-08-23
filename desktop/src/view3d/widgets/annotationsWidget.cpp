@@ -24,41 +24,39 @@ void AnnotationsWidget::Draw()
     if(!vgs_->getAnnotationVisible()) {
         return;
     }
-    
+
     Vector3f camPos = View3dPtr()->GetCamera().GetPosition();
-    
+
     glPushAttrib(GL_ALL_ATTRIB_BITS);
-    
+
     GLUquadricObj* quad = gluNewQuadric();
-    
+
     FOR_EACH(i, SegmentationDataWrapper::ValidIDs())
     {
         SegmentationDataWrapper sdw(*i);
-    
+
         om::annotation::manager &annotations = *sdw.GetSegmentation().Annotations();
-        
+
         FOR_EACH(it, annotations.GetValidIds())
         {
             om::annotation::data& a = annotations.Get(*it);
-            if(camPos.distance(a.coord) >= DIST_CUTOFF) {
-                continue;
-            }
-            
+            float dist = camPos.distance(a.coord);
+
             glPushMatrix();
             glEnable(GL_LIGHTING | GL_DEPTH_TEST);
             glColor3ub(a.color.red, a.color.green, a.color.blue);
             glTranslatef(a.coord.x, a.coord.y, a.coord.z);
-            gluSphere(quad, .2f, 26, 13);
-            
+            gluSphere(quad, .03f * dist, 26, 13);
+
             glDisable(GL_LIGHTING | GL_DEPTH_TEST);
             glColor4fv(TEXT_COLOR);
             View3dPtr()->renderText(.4, -.2, 0, QString::fromStdString(a.comment), font_);
             glPopMatrix();
         }
-    
+
     }
-    
+
     gluDeleteQuadric(quad);
-    
+
     glPopAttrib();
 }

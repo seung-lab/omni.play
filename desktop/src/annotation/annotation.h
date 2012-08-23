@@ -19,9 +19,9 @@ struct data {
     globalCoord coord;
     std::string comment;
     OmColor color;
-    
+
     data(OmID id) : id(id) {}
-    
+
     inline OmID GetID() { return id; }
 };
 
@@ -29,7 +29,7 @@ class manager : public OmGenericManager<data> {
 private:
     OmSegmentation *const vol_;
     typedef OmGenericManager<data> base_t;
-    
+
 public:
     manager(OmSegmentation* vol)
         : vol_(vol)
@@ -46,10 +46,10 @@ public:
         OmEvents::Redraw2d();
         OmEvents::Redraw3d();
     }
-    
+
     void Load();
     void Save() const;
-    
+
 
 protected:
     std::string getFileName() { return filePathV1(); }

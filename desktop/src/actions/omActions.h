@@ -33,10 +33,10 @@ public:
 // MST-related
     static void ChangeMSTthreshold(const SegmentationDataWrapper sdw,
                                    const double threshold);
-    
+
     static void ChangeSizethreshold(const SegmentationDataWrapper sdw,
                                     const double threshold);
-                                                                  
+
 // painting-related
     static void SetVoxel(const OmID segmentationId,
                          const om::globalCoord& rVoxel,

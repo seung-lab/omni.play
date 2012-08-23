@@ -43,14 +43,14 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
     addModifyButton(new ToolButton(parent, "Cut",
                                    "Cut", om::tool::CUT,
                                    ":/toolbars/mainToolbar/icons/1308183310_Scissors.png"));
-    
+
     addModifyButton(new ToolButton(parent, "Annotate",
                                     "Annotate", om::tool::ANNOTATE,
                                    ":/toolbars/mainToolbar/icons/kcmfontinst.png"));
 
-    addNavButton(new ToolButton(parent, "Kalina",
-                                "Do Crazy Stuff", om::tool::KALINA,
-                                ":/toolbars/mainToolbar/icons/1308021634_keditbookmarks.png"));
+    // addNavButton(new ToolButton(parent, "Kalina",
+    //                             "Do Crazy Stuff", om::tool::KALINA,
+    //                             ":/toolbars/mainToolbar/icons/1308021634_keditbookmarks.png"));
 
     om::connect( this, SIGNAL(buttonClicked(int)),
                  this, SLOT(buttonWasClicked(int)));

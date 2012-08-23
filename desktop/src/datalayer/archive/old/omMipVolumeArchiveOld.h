@@ -107,7 +107,7 @@ private:
         QString dummy;
         in >> dummy; //c.unitString_
         Vector3f dummyVec;
-	in >> dummyVec; //c.dataStretchValues_
+		in >> dummyVec; //c.dataStretchValues_
     }
 };
 
