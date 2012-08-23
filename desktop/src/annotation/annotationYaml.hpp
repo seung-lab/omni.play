@@ -5,11 +5,10 @@
 #include "utility/yaml/baseTypes.hpp"
 
 namespace YAML {
-    
+
 void operator>> (const Node& node, om::annotation::data& data)
 {
-    //TODO: Update coordinate loading and saving
-    //node["coord"] >> data.coord;
+    node["coord"] >> data.coord;
     node["comment"] >> data.comment;
     if(data.comment == "~")
         data.comment = "";

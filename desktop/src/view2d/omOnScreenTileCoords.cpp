@@ -40,7 +40,7 @@ OmTileCoordsAndLocationsPtr
 OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 {
     if(vol_->IsBuilt()){
-        doComputeCoordsAndLocations(depthOffset);
+		doComputeCoordsAndLocations(depthOffset);
     }
 
     OmTileCoordsAndLocationsPtr ret = tileCoordsAndLocations_;
@@ -57,9 +57,17 @@ int numChunks(om::chunkCoord min, om::chunkCoord max)
 
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 {
-    // Make sure that the upper left and bottom right don't exceed the volume
     om::globalBbox bounds = vol_->Coords().GetDataExtent();
 
+	// Make sure that we aren't trying to fetch outside of the bounds of the data.
+	om::globalCoord loc = state_->Location();
+	int targetDepth = state_->getViewTypeDepth(loc) + depthOffset;
+	if (targetDepth < state_->getViewTypeDepth(bounds.getMin()) ||
+	    targetDepth > state_->getViewTypeDepth(bounds.getMax())) {
+		return;
+	}
+
+    // Make sure that the upper left and bottom right don't exceed the volume
     Vector4i viewport = state_->Coords().getTotalViewport();
     om::globalCoord min = om::screenCoord(viewport.lowerLeftX, viewport.lowerLeftY, state_).toGlobalCoord();
     om::globalCoord max = om::screenCoord(viewport.width, viewport.height, state_).toGlobalCoord();
