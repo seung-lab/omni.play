@@ -241,15 +241,8 @@ private:
         painter.drawImage(point, star);
     }
 
-    static const float ZOOM_CUTOFF = 2.0f;
-
     void drawAnnotations(QPainter& painter)
     {
-        float zs = state_->getZoomScale();
-        if(zs < ZOOM_CUTOFF) {
-            return;
-        }
-
         FOR_EACH(i, SegmentationDataWrapper::ValidIDs())
         {
             SegmentationDataWrapper sdw(*i);
