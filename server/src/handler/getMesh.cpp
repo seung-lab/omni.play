@@ -80,6 +80,53 @@ std::string tri_strip_to_obj( const float* points,
     return ss.str();
 }
 
+void tri_strip_to_degenerate( boost::shared_ptr<uint16_t>& newpoints,
+                              std::size_t& newpoints_length,
+                              const float* points,
+                              const std::size_t points_length,
+                              const uint32_t* indices,
+                              const std::size_t indices_length,
+                              const uint32_t* strips,
+                              const std::size_t strips_length )
+{
+    ZI_ASSERT( points_length % 6 == 0 );
+
+    newpoints_length = (indices_length + 2 * (strips_length - 1)) * 6;
+
+    newpoints = utility::smartPtr<float>::MallocNumElements(newpoints_length);
+
+    uint32_t l = 0;
+    for ( std::size_t i = 0; i < strips_length; i += 2 )
+    {
+        if ( i > 0 )
+        {
+            for ( uint32_t k = 0; k < 6; ++k )
+            {
+                newpoints[l*6 + k] = points[strips[i]*6 + k];
+            }
+            ++l;
+        }
+
+        for ( uint32_t j = strips[i]; j < strips[i] + strips[i+1]; ++j )
+        {
+            for ( uint32_t k = 0; k < 6; ++k )
+            {
+                newpoints[l*6 + k] = points[j*6 + k];
+            }
+            ++l;
+        }
+
+        if ( i < (strips_length - 2) )
+        {
+            for ( uint32_t k = 0; k < 6; ++k )
+            {
+                newpoints[l*6 + k] = points[(strips[i] + strips[i+1] - 1)*6 + k];
+            }
+            ++l;
+        }
+    }
+}
+
 void get_mesh(std::string& _return,
               const std::string& uri,
               const server::vector3i& chunk,
@@ -97,14 +144,7 @@ void get_mesh(std::string& _return,
             return;
         }
 
-        int numVertices = de->vertexData.numElements;
-        if (numVertices < numeric_limits<uint16_t>::max())
-        {
-            data = reader.Read(segId);
-        } else {
-            _return = "mesh too big";
-            return;
-        }
+        data = reader.Read(segId);
     }
     catch (exception e)
     {
@@ -133,20 +173,21 @@ void get_mesh(std::string& _return,
 
     std::string fnp;
 
-    // Move the vertex data to a uint16 array for the sake of webgl.
-    boost::shared_ptr<uint16_t> vertexIndexData =
-        utility::smartPtr<uint16_t>::MallocNumElements(data->VertexIndexCount());
+    boost::shared_ptr<float> newVertexData;
+    uint32_t newVertexCount;
 
-    std::copy(data->VertexIndex(),
-              &data->VertexIndex()[data->VertexIndexCount()],
-              vertexIndexData.get());
+    tri_strip_to_obj(&newVertexData,
+                     &newVertexCount,
+                     data->VertexData(),
+                     data->VertexDataCount()*6,
+                     data->VertexIndex(),
+                     data->VertexIndexCount(),
+                     data->StripData(),
+                     data->StripDataCount()*2);
 
-    writeFile(str(boost::format(formatStr) % uuid.Str() % "vertexIndexData"),
-              vertexIndexData.get(), data->VertexIndexNumBytes());
+
     writeFile(str(boost::format(formatStr) % uuid.Str() % "vertexData"),
-              data->VertexData(), data->VertexDataNumBytes());
-    writeFile(str(boost::format(formatStr) % uuid.Str() % "stripData"),
-              data->StripData(), data->StripDataNumBytes());
+              newVertexData.get(), newVertexCount * 6 * sizeof(float));
 
     _return = uuid.Str();
 }
