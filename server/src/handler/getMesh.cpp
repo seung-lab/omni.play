@@ -90,29 +90,22 @@ void tri_strip_to_degenerate( std::vector<float>& newpoints,
 {
     ZI_ASSERT( points_length % 6 == 0 );
 
-    size_t newpoints_length = (indices_length + 2 * (strips_length - 1)) * 6;
-
-    newpoints.resize(newpoints_length);
-
-    uint32_t l = 0;
     for ( std::size_t i = 0; i < strips_length; i += 2 )
     {
         if ( i > 0 )
         {
             for ( uint32_t k = 0; k < 6; ++k )
             {
-                newpoints[l*6 + k] = points[indices[strips[i]]*6 + k];
+                newpoints.push_back( points[indices[strips[i]]*6 + k] );
             }
-            ++l;
         }
 
         for ( uint32_t j = strips[i]; j < strips[i] + strips[i+1]; ++j )
         {
             for ( uint32_t k = 0; k < 6; ++k )
             {
-                newpoints[l*6 + k] = points[indices[j]*6 + k];
+                newpoints.push_back( points[indices[j]*6 + k] );
             }
-            ++l;
         }
 
         if (i+2 < strips_length && strips[i+2] == strips[i+3] && strips[i+3] == 0)
@@ -124,9 +117,8 @@ void tri_strip_to_degenerate( std::vector<float>& newpoints,
         {
             for ( uint32_t k = 0; k < 6; ++k )
             {
-                newpoints[l*6 + k] = points[indices[strips[i] + strips[i+1] - 1]*6 + k];
+                newpoints.push_back( points[indices[strips[i] + strips[i+1] - 1]*6 + k] );
             }
-            ++l;
         }
     }
 }
