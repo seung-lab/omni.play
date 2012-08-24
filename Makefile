@@ -24,6 +24,7 @@ CHMOD   =	$(AT)chmod
 DATE    =   $(AT)date
 PERL    =	$(AT)perl
 AR      =	$(AT)ar
+TAR     =	$(AT)tar
 ARFLAGS =	rcs
 
 CC     =	$(AT)gcc
@@ -214,7 +215,7 @@ common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
 	$(MV) $@.tmp $@
 
 .PHONY: all
-all: $(BINDIR)/omni.server $(BINDIR)/omni.desktop
+all: $(BINDIR)/omni.server $(BINDIR)/omni.desktop $(BINDIR)/omni.tar.gz
 
 .PHONY: tidy
 tidy:
@@ -270,6 +271,9 @@ $(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/r
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
+
+$(BINDIR)/omni.tar.gz: $(BINDIR)/omni.desktop
+	$(TAR) -zcvf $@ -C $(BINDIR) omni.desktop
 
 ALLDEPS = $(shell find build -iname "*.d")
 
