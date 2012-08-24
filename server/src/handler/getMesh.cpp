@@ -80,7 +80,7 @@ std::string tri_strip_to_obj( const float* points,
     return ss.str();
 }
 
-void tri_strip_to_degenerate( boost::shared_ptr<uint16_t>& newpoints,
+void tri_strip_to_degenerate( boost::shared_ptr<float>& newpoints,
                               std::size_t& newpoints_length,
                               const float* points,
                               const std::size_t points_length,
