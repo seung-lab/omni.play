@@ -80,8 +80,7 @@ std::string tri_strip_to_obj( const float* points,
     return ss.str();
 }
 
-void tri_strip_to_degenerate( boost::shared_ptr<float>& newpoints,
-                              std::size_t& newpoints_length,
+void tri_strip_to_degenerate( std::vector<float>& newpoints,
                               const float* points,
                               const std::size_t points_length,
                               const uint32_t* indices,
@@ -91,9 +90,9 @@ void tri_strip_to_degenerate( boost::shared_ptr<float>& newpoints,
 {
     ZI_ASSERT( points_length % 6 == 0 );
 
-    newpoints_length = (indices_length + 2 * (strips_length - 1)) * 6;
+    size_t newpoints_length = (indices_length + 2 * (strips_length - 1)) * 6;
 
-    newpoints = utility::smartPtr<float>::MallocNumElements(newpoints_length);
+    newpoints.resize(newpoints_length);
 
     uint32_t l = 0;
     for ( std::size_t i = 0; i < strips_length; i += 2 )
@@ -127,69 +126,66 @@ void tri_strip_to_degenerate( boost::shared_ptr<float>& newpoints,
     }
 }
 
-void get_mesh(std::string& _return,
-              const std::string& uri,
-              const server::vector3i& chunk,
-              int32_t mipLevel,
-              int32_t segId)
+boost::shared_ptr<mesh::data> loadData(coords::chunk cc, const std::string& uri, uint32_t segId)
 {
-    boost::shared_ptr<mesh::data> data;
+	boost::shared_ptr<mesh::data> data;
 
     try
     {
-        mesh::reader reader(uri, coords::chunk(mipLevel, chunk.x, chunk.y, chunk.z));
+        mesh::reader reader(uri, cc);
         mesh::dataEntry* de = reader.GetDataEntry(segId);
         if(!de || !de->wasMeshed) {
-            _return = "not found";
-            return;
+            return boost::shared_ptr<mesh::data>();
         }
 
         data = reader.Read(segId);
     }
     catch (exception e)
     {
-        _return = "not found";
-        return;
+        return boost::shared_ptr<mesh::data>();
     }
 
     if(!data.get()) {
-        _return = "not found";
-        return;
+        return boost::shared_ptr<mesh::data>();
     }
 
     if(data->TrianDataCount()){
-        _return = "not found";
-        return;
+        return boost::shared_ptr<mesh::data>();
     }
 
     if(!data->HasData()){
-        _return = "not found";
-        return;
+        return boost::shared_ptr<mesh::data>();
     }
 
+    return data;
+}
+
+void get_mesh(std::string& _return,
+              const std::string& uri,
+              const server::vector3i& chunk,
+              int32_t mipLevel,
+              int32_t segId)
+{
     const utility::UUID uuid;
 
-    std::string formatStr = "/var/www/temp_omni_imgs/segmentation-1-meshes/%1%.%2%";
+	coords::chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
+	boost::shared_ptr<mesh::data> data = loadData(cc, uri, segId);
 
-    std::string fnp;
+	if(!data.get()) {
+		return;
+	}
 
-    boost::shared_ptr<float> newVertexData;
-    uint32_t newVertexCount;
-
-    tri_strip_to_obj(&newVertexData,
-                     &newVertexCount,
-                     data->VertexData(),
-                     data->VertexDataCount()*6,
-                     data->VertexIndex(),
-                     data->VertexIndexCount(),
-                     data->StripData(),
-                     data->StripDataCount()*2);
+    std::vector<float> newVertexData;
+	tri_strip_to_degenerate(newVertexData,
+                            data->VertexData(),
+                            data->VertexDataCount()*6,
+                            data->VertexIndex(),
+                            data->VertexIndexCount(),
+                            data->StripData(),
+                            data->StripDataCount()*2);
 
 
-    writeFile(str(boost::format(formatStr) % uuid.Str() % "vertexData"),
-              newVertexData.get(), newVertexCount * 6 * sizeof(float));
-
-    _return = uuid.Str();
+    _return = std::string((char*)&newVertexData.front(), newVertexData.size() * sizeof(float));
 }
 
 void get_remesh(std::string& _return,
@@ -207,23 +203,12 @@ void get_obj(std::string& _return,
              int32_t mipLevel,
              int32_t segId)
 {
-    _return.clear();
-    std::cout << "Getting some Obj!!!" << std::endl;
-    mesh::reader reader(uri, coords::chunk(mipLevel, chunk.x, chunk.y, chunk.z));
-    mesh::dataEntry* de = reader.GetDataEntry(segId);
-    if(!de || !de->wasMeshed) {
-        return;
-    }
+    coords::chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
+	boost::shared_ptr<mesh::data> data = loadData(cc, uri, segId);
 
-    boost::shared_ptr<mesh::data> data = reader.Read(segId);
-
-    if(data->TrianDataCount()){
-        return;
-    }
-
-    if(!data->HasData()){
-        return;
-    }
+	if(!data.get()) {
+		return;
+	}
 
     _return = tri_strip_to_obj(data->VertexData(),
                                data->VertexDataCount()*6,
@@ -233,5 +218,4 @@ void get_obj(std::string& _return,
                                data->StripDataCount()*2);
 }
 
-}
-}
+}} // namespace om::handler::
