@@ -111,6 +111,7 @@ void SegmentListBase::setupPageButtons()
     endButton->setFixedSize(x, y);
 
     searchEdit = new QLineEdit();
+    searchEdit->setMaxLength(searchEdit->maxLength() * 10);
 
     om::connect(searchEdit, SIGNAL(returnPressed()),
             this, SLOT(searchChanged()));
