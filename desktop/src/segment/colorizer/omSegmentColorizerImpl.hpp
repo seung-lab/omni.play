@@ -105,6 +105,10 @@ private:
         //OmSegment* seg = getSegment(segID);
         OmSegment* seg = getSegment(segID);
 
+        if(!seg) {
+        	return blackColor;
+        }
+
         OmSegment* segRoot = seg;
         if(segRoot->getParent()){
             segRoot = getSegment(segments_->findRootID(segID));

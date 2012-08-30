@@ -37,17 +37,25 @@ public:
 
     inline void Get(const uint32_t val, uint64_t& freshness, OmColor& color)
     {
-        spinlock_guard_t g(val);
-        freshness = cache_[val].freshness;
-        color = cache_[val].color;
+    	if(val > Size()) {
+    		color.red = 0;
+    		color.green = 0;
+    		color.blue = 0;
+    	} else {
+			spinlock_guard_t g(val);
+	        freshness = cache_[val].freshness;
+	        color = cache_[val].color;
+    	}
     }
 
     inline void Set(const uint32_t val, const uint64_t freshness,
                     const OmColor& color)
     {
-        spinlock_guard_t g(val);
-        cache_[val].freshness = freshness;
-        cache_[val].color = color;
+    	if(val < size_.get()) {
+	        spinlock_guard_t g(val);
+	        cache_[val].freshness = freshness;
+	        cache_[val].color = color;
+    	}
     }
 };
 
