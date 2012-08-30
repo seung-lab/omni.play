@@ -24,7 +24,7 @@ public:
         state_->setScribbling(false);
         state_->SetLastDataPoint(dataClickPoint_);
 
-        switch (OmStateManager::GetToolMode()) 
+        switch (OmStateManager::GetToolMode())
         {
         case om::tool::PAINT:
         case om::tool::ERASE:

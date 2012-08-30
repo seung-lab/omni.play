@@ -25,7 +25,6 @@ private:
     boost::scoped_ptr<QShortcut> n_;
     boost::scoped_ptr<QShortcut> period_;
     boost::scoped_ptr<QShortcut> r_;
-    boost::scoped_ptr<QShortcut> v_;
     boost::scoped_ptr<QShortcut> k_;
     boost::scoped_ptr<QShortcut> l_;
     boost::scoped_ptr<QShortcut> slash_;
@@ -52,10 +51,6 @@ private:
     }
 
 private Q_SLOTS:
-    void keyV(){
-        setTool(om::tool::CROSSHAIR);
-    }
-
     void keyB(){
         setTool(om::tool::PAN);
     }
@@ -130,7 +125,6 @@ public:
         setShortcut(n_,       QKeySequence(Qt::Key_N),       SLOT(keyN()));
         setShortcut(period_,  QKeySequence(Qt::Key_Period),  SLOT(keyPeriod()));
         setShortcut(r_,       QKeySequence(Qt::Key_R),       SLOT(keyR()));
-        setShortcut(v_,       QKeySequence(Qt::Key_V),       SLOT(keyV()));
         setShortcut(k_,       QKeySequence(Qt::Key_K),       SLOT(keyK()));
         setShortcut(l_,       QKeySequence(Qt::Key_L),       SLOT(keyL()));
         setShortcut(slash_,   QKeySequence(Qt::Key_Slash),   SLOT(keySlash()));

@@ -63,8 +63,6 @@ namespace tool {
 
 enum mode { SELECT,
             PAN,
-            CROSSHAIR,
-            ZOOM,
             PAINT,
             ERASE,
             FILL,

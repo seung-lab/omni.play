@@ -8,14 +8,6 @@
 NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
     : QButtonGroup(parent)
 {
-    addNavButton(new ToolButton(parent, "Crosshair",
-                                "Recenter Dispaly", om::tool::CROSSHAIR,
-                                ":/toolbars/mainToolbar/icons/1277962376_target.png"));
-
-    // addNavButton(new ToolButton(parent, "Zoom",
-    //                             "Zoom", om::tool::ZOOM,
-    //                             ":/toolbars/mainToolbar/icons/1278008421_search.png"));
-
     addNavButton(new ToolButton(parent, "Pan",
                                 "Move Image", om::tool::PAN,
                                 ":/toolbars/mainToolbar/icons/1277962397_cursor_hand.png"));

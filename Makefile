@@ -215,7 +215,7 @@ common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
 	$(MV) $@.tmp $@
 
 .PHONY: all
-all: $(BINDIR)/omni.server $(BINDIR)/omni.desktop $(BINDIR)/omni.tar.gz
+all: $(BINDIR)/omni.server $(BINDIR)/omni.desktop
 
 .PHONY: tidy
 tidy:

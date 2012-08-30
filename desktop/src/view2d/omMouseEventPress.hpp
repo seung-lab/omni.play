@@ -25,6 +25,7 @@ private:
     bool shiftKey_;
     bool leftMouseButton_;
     bool rightMouseButton_;
+    bool middleMouseButton_;
     om::tool::mode tool_;
     QMouseEvent* event_;
     om::globalCoord dataClickPoint_;
@@ -68,6 +69,8 @@ public:
             } else {
                 mouseShowSegmentContextMenu();
             }
+        } else if(middleMouseButton_) {
+        	state_->OverrideToolModeForPan(true);
         }
     }
 
@@ -82,6 +85,7 @@ private:
 
         leftMouseButton_ = event->buttons() & Qt::LeftButton;
         rightMouseButton_ = event->buttons() & Qt::RightButton;
+        middleMouseButton_ = event->buttons() & Qt::MiddleButton;
 
         tool_ = OmStateManager::GetToolMode();
         om::screenCoord clicked(event->x(), event->y(), state_);
@@ -142,13 +146,6 @@ private:
             selectSegments();
             break;
         case om::tool::PAN:
-            return;
-        case om::tool::CROSSHAIR:
-            mouseSetCrosshair();
-            return;
-        case om::tool::ZOOM:
-            v2d_->Zoom()->MouseLeftButtonClick(event_);
-            OmEvents::Redraw3d();
             return;
         case om::tool::PAINT:
             state_->setScribbling(true);

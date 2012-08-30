@@ -19,12 +19,6 @@ std::ostream& operator<<(std::ostream &out, const om::tool::mode& tool)
     case om::tool::PAN:
         out << "PAN";
         break;
-    case om::tool::CROSSHAIR:
-        out << "CROSSHAIR";
-        break;
-    case om::tool::ZOOM:
-        out << "ZOOM";
-        break;
     case om::tool::PAINT:
         out << "PAINT";
         break;

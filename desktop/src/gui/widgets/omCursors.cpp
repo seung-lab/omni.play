@@ -12,8 +12,6 @@ QCursor OmCursors::figureOutCursor()
     case om::tool::SELECT:
         return Qt::BlankCursor;
     case om::tool::PAN:
-    case om::tool::CROSSHAIR:
-    case om::tool::ZOOM:
     default:
         return Qt::ArrowCursor;
     }
