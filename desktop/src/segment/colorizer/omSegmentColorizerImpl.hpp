@@ -48,6 +48,7 @@ public:
     void ColorTile(uint32_t const*const d, OmColorARGB* colorMappedData)
     {
         PrevSegAndColor prev = { 0, blackColor };
+        uint32_t maxSize = colorCache_.Size();
 
         for(uint32_t i = 0; i < params_.numElements; ++i )
         {
@@ -59,7 +60,7 @@ public:
                 colorMappedData[i].green = prev.color.green;
                 colorMappedData[i].blue  = prev.color.blue;
 
-            } else if( 0 == d[i] )
+            } else if( 0 == d[i] || d[i] > maxSize)
             { // black
                 colorMappedData[i].red   = 0;
                 colorMappedData[i].green = 0;
