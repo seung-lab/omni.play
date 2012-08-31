@@ -40,7 +40,10 @@ public:
             om::make_shared<boost::unordered_set<OmSegID> >();
 
         FOR_EACH(pt, pts_) {
-            ret->insert(sliceCache.GetVoxelValue(*pt));
+        	OmSegID id = sliceCache.GetVoxelValue(*pt);
+            if(id) {
+            	ret->insert(id);
+            }
         }
 
         return ret;
