@@ -14,7 +14,7 @@ public:
 
         chunksAndPts.AddAllPtsThatIntersectVol(pts);
 
-        return chunksAndPts.GetSegIDs(info->depth);
+        return chunksAndPts.GetSegIDs();
     }
 
     void static SendEvent(OmBrushOppInfo* info, boost::unordered_set<OmSegID>* segIDs)

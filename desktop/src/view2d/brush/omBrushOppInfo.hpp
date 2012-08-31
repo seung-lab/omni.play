@@ -7,11 +7,6 @@
 #include "view2d/omView2dManager.hpp"
 
 class OmBrushOppInfoFactory {
-private:
-    static int getDepth(const om::dataCoord& coord, const ViewType viewType){
-        return OmView2dConverters::GetViewTypeDepth(coord.toChunkVec(), viewType);
-    }
-
 public:
     static om::shared_ptr<OmBrushOppInfo>
     MakeOppInfo(OmView2dState* state, const om::globalCoord& coord,
@@ -22,7 +17,7 @@ public:
 
         const ViewType viewType = state->getViewType();
         const int brushSize = state->getBrushSize()->Diameter();
-        const int depth = getDepth(coord.toDataCoord(segmentation, 0), viewType);
+        const int depth = state->getViewTypeDepth(coord);
 
         const std::vector<om::point2di>& ptsInCircle =
             state->getBrushSize()->GetPtsInCircle();
