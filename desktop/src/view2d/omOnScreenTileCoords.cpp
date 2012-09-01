@@ -20,8 +20,7 @@ OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state)
         freshness_ = OmCacheManager::GetFreshness();
     }
 
-    const Vector3i chunkVec = state_->Location().toDataCoord(vol_, mipLevel_).toChunkVec();
-    dataDepth_ = state_->getViewTypeDepth(chunkVec);
+    dataDepth_ = state_->Location().toDataCoord(vol_, mipLevel_).toTileDepth(viewType_);
 }
 
 std::ostream& operator<<(std::ostream &out, const OmOnScreenTileCoords& c)

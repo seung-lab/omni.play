@@ -32,6 +32,7 @@ public:
     Vector3i toChunkVec() const;
     int toChunkOffset() const;
     int toTileOffset(ViewType) const;
+    int toTileDepth(ViewType) const;
 
     inline int level() const {
         return mipLevel_;

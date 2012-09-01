@@ -37,15 +37,15 @@ public:
         , chunkDim_(vol->Coords().GetChunkDimension())
     {}
 
-    OmSegID GetVoxelValue(const om::chunkCoord& chunkCoord, const Vector3i& chunkPos)
+    OmSegID GetVoxelValue(const om::dataCoord& coord)
     {
-        const int depthInChunk = chunkPos.z;
-
-        PooledTile32Ptr slicePtr = GetSlice(chunkCoord, depthInChunk);
+        const int depthInChunk = coord.toTileDepth(viewType_);
+        
+        PooledTile32Ptr slicePtr = GetSlice(coord.toChunkCoord(), depthInChunk);
 
         uint32_t const*const sliceData = slicePtr->GetData();
 
-        const uint32_t offset = chunkDim_*chunkPos.y + chunkPos.x;
+        const uint32_t offset = coord.toTileOffset(viewType_);
 
         return sliceData[offset];
     }

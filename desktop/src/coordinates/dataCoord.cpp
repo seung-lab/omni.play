@@ -1,6 +1,7 @@
 #include "common/omCommon.h"
 #include "volume/omMipVolume.h"
 #include "common/omException.h"
+#include "view2d/omView2dConverters.hpp"
 
 namespace om {
 
@@ -71,6 +72,11 @@ int dataCoord::toTileOffset (ViewType viewType) const
     }
 
     return -1;
+}
+
+int dataCoord::toTileDepth (ViewType viewType) const
+{
+    return OmView2dConverters::GetViewTypeDepth(toChunkVec(), viewType);
 }
 
 dataCoord dataCoord::atDifferentLevel(int newLevel) const
