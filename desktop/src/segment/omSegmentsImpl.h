@@ -27,14 +27,15 @@ public:
     OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
     boost::optional<std::string> IsEdgeSplittable(const OmSegmentEdge& e);
     boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
-	boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
+    boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
 
     void refreshTree();
 
     bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
 
-	std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
-	bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
+    std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
+    bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
+    std::vector<OmSegmentEdge> Shatter(OmSegment* seg);
 
 private:
     OmUserEdges* userEdges_;
