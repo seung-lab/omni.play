@@ -317,10 +317,8 @@ bool OmSegments::JoinEdges(const std::vector<OmSegmentEdge>& edges)
     return impl_->JoinEdges(edges);
 }
 
-// void OmSegments::GrowSelection(OmSegmentDataWraper& sdw) {
-// 	impl_->GrowSelection(sdw);
-// }
-
-// void OmSegments::ShrinkSelection(OmSegmentDataWraper& sdw) {
-// 	impl_->ShrinkSelection(sdw);
-// }
+std::vector<OmSegmentEdge> OmSegments::Shatter(OmSegment* seg)
+{
+   zi::guard g(mutex_);
+   return impl_->Shatter(seg);
+}
