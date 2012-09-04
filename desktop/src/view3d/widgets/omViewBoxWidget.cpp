@@ -109,7 +109,7 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
                                 const Vector2f& max,
                                 const float depth)
 {
-    Vector3i v0, v1, v2, v3;
+	Vector3i v0, v1, v2, v3;
 
     switch (plane) {
     case XY_VIEW:
@@ -130,10 +130,10 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 
     case ZY_VIEW:
         glColor3fv(OMGL_RED);
-        v0 = Vector3i(depth, min.x, min.y);
-        v1 = Vector3i(depth, max.x, min.y);
-        v2 = Vector3i(depth, max.x, max.y);
-        v3 = Vector3i(depth, min.x, max.y);
+        v0 = Vector3i(depth, min.y, min.x);
+        v1 = Vector3i(depth, max.y, min.x);
+        v2 = Vector3i(depth, max.y, max.x);
+        v3 = Vector3i(depth, min.y, max.x);
         break;
     }
 

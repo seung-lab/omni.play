@@ -82,7 +82,7 @@ void OmView2dCore::dockVisibilityChanged(const bool visible){
 }
 
 void OmView2dCore::Initialize(){
-    state_->Coords().setTotalViewport(size());
+	state_->Coords().setTotalViewport(size());
 }
 
 void OmView2dCore::Resize(int width, int height)
