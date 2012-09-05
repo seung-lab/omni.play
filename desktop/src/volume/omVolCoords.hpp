@@ -63,7 +63,6 @@ public:
     }
 
     inline const Matrix4f& NormToGlobalMat() const {
-    	std::cout << normToGlobal_ << std::endl;
         return normToGlobal_;
     }
 

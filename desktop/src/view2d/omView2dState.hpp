@@ -149,7 +149,6 @@ public:
         std::cout << vol_->Coords().GetDataDimensions() << std::endl;
 
         om::globalCoord loc = midPoint.toGlobalCoord();
-        std::cout << "Center: " << loc << std::endl;
         setLocation(loc);
 
         zoomLevel_->Reset(getMaxMipLevel());
