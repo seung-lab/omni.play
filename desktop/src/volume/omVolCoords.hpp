@@ -20,6 +20,7 @@ protected:
 
     //data properties
     Vector3i dataDimensions_;
+    Vector3i resolution_;
 
     int chunkDim_;
 
@@ -39,12 +40,7 @@ public:
     void SetDataDimensions(const Vector3f& dim)
     {
         dataDimensions_ = dim;
-
-        Vector3i dims = GetDataDimensions();
-        normToGlobal_.m00 = dims.x;
-        normToGlobal_.m11 = dims.y;
-        normToGlobal_.m22 = dims.z;
-        normToGlobal_.getInverse(globalToNorm_);
+        updateNormMat();
     }
 
 // chunk dims
@@ -67,6 +63,7 @@ public:
     }
 
     inline const Matrix4f& NormToGlobalMat() const {
+    	std::cout << normToGlobal_ << std::endl;
         return normToGlobal_;
     }
 
@@ -90,11 +87,14 @@ public:
     }
 
     inline void SetResolution(Vector3i resolution) {
+    	resolution_ = resolution;
+
         dataToGlobal_.m00 = resolution.x;
         dataToGlobal_.m11 = resolution.y;
         dataToGlobal_.m22 = resolution.z;
 
         dataToGlobal_.getInverse(globalToData_);
+        updateNormMat();
     }
 
 protected:
@@ -114,5 +114,13 @@ protected:
 
     virtual ~OmVolCoords()
     {}
+
+    void updateNormMat()
+    {
+        normToGlobal_.m00 = dataDimensions_.x * resolution_.x;
+        normToGlobal_.m11 = dataDimensions_.y * resolution_.y;
+        normToGlobal_.m22 = dataDimensions_.z * resolution_.z;
+        normToGlobal_.getInverse(globalToNorm_);
+    }
 };
 
