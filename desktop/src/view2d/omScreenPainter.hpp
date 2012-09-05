@@ -154,12 +154,14 @@ private:
 
     QString depthString()
     {
-        const om::dataCoord data = state_->Location().
+    	const om::globalCoord global = state_->Location();
+        const om::dataCoord data = global.
             toDataCoord(state_->getVol(), state_->getMipLevel());
 
+		const int globalDepth = state_->getViewTypeDepth(global);
         const int dataDepth = state_->getViewTypeDepth(data);
 
-        QString depthStr = QString::number(dataDepth);
+        QString depthStr = QString::number(globalDepth) + " - " + QString::number(dataDepth);
 
         return depthStr;
     }

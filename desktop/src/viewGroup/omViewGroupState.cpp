@@ -106,6 +106,8 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
         }
 
         return SCC_SEGMENTATION;
+    default:
+    	break;
     }
 
     throw OmArgException("unknown objType");

@@ -7,7 +7,7 @@
 #include "utility/yaml/genericManager.hpp"
 
 namespace YAML {
-    
+
 Emitter &operator<<(Emitter& out, const OmChannelManager& cm)
 {
     out << BeginMap;
@@ -26,7 +26,7 @@ Emitter& operator<<(Emitter& out, const OmChannel& chan)
     out << BeginMap;
     mipVolume<const OmChannel> volArchive(chan);
     volArchive.Store(out);
-    
+
     out << Key << "Filters" << Value << chan.filterManager_;
     out << EndMap;
     return out;
@@ -36,7 +36,7 @@ void operator>>(const Node& in, OmChannel& chan)
 {
     mipVolume<OmChannel> volArchive(chan);
     volArchive.Load(in);
-    
+
     in["Filters"] >> chan.filterManager_;
     chan.LoadVolDataIfFoldersExist();
 }
@@ -65,11 +65,11 @@ void operator>>(const Node& in, OmMipVolCoords& c)
         in["dataDimensions"] >> dims;
         c.SetDataDimensions(dims);
     }
-    
+
     Vector3i resolution;
     in["dataResolution"] >> resolution;
     c.SetResolution(resolution);
-    
+
     in["chunkDim"] >> c.chunkDim_;
     in["mMipLeafDim"] >> c.mMipLeafDim;
     in["mMipRootLevel"] >> c.mMipRootLevel;
