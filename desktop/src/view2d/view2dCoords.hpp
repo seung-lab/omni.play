@@ -111,12 +111,12 @@ public:
                 break;
         }
 
-        if(screenToGlobalMat_.m03 != screenToGlobalMat_.m03) // is NAN
-        {
-            std::cout << screenToGlobalMat_ << std::endl
-            << location << std::endl
-            << pan << std::endl;
-        }
+        // if(screenToGlobalMat_.m03 != screenToGlobalMat_.m03) // is NAN
+        // {
+        //     std::cout << screenToGlobalMat_ << std::endl
+        //     << location << std::endl
+        //     << pan << std::endl;
+        // }
     }
 
     inline const Matrix4f& ScreenToGlobalMat() const {

@@ -63,6 +63,8 @@ private:
 
         vg2ds()->SetScaledSliceDepth(viewType(), depth);
         OmEvents::Redraw2d();
+        OmEvents::ViewCenterChanged();
+        OmEvents::View3dRecenter();
     }
 
     void update()
