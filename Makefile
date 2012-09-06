@@ -234,6 +234,11 @@ clean:
 .PHONY: remake
 remake: clean all
 
+.PHONY: lint
+lint:
+	find desktop/src -iname "*.[hc]*" | grep -v "moc.cpp" | grep -v "rcc.cpp" | xargs \
+		external/scripts/cpplint.py --filter=-legal/copyright
+
 COMMONSOURCES     = $(subst common/src,build/common, 				\
 					  $(shell find common/src -iname "*.cpp"))
 
