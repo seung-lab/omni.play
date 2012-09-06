@@ -11,6 +11,7 @@
 class OmSegmentShatterActionImpl {
 private:
     SegmentDataWrapper sdw_;
+    std::vector<OmSegmentEdge> removed_;
     QString desc;
 
 public:
@@ -24,7 +25,7 @@ public:
 
     void Execute()
     {
-    	sdw_.GetSegmentation().Segments()->Shatter(sdw_.GetSegment());
+    	removed_ = sdw_.GetSegmentation().Segments()->Shatter(sdw_.GetSegment());
 
         desc = QString("Shatter seg %1").arg(sdw_.GetSegmentID());
         notify();
@@ -32,9 +33,18 @@ public:
 
     void Undo()
     {
+    	FOR_EACH(e, removed_)
+    	{
+    		std::pair<bool, OmSegmentEdge> edge = sdw_.GetSegmentation().Segments()->JoinEdge(*e);
 
+    		if(!edge.first)
+    		{
+    		    std::cout << "edge could not be rejoined...\n";
+    		    return;
+    		}
+		}
 
-        desc = QString("Undo shatter currently not supported").arg(sdw_.GetSegmentID());
+        desc = QString("Unshattered %1").arg(sdw_.GetSegmentID());
 		notify();
     }
 
