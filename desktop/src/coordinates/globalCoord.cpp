@@ -4,18 +4,22 @@
 
 namespace om {
 
+int round(float f) {
+	return std::floor(f + 0.5f);
+}
+
 screenCoord globalCoord::toScreenCoord(OmView2dState *state) const
 {
     const vmml::Vector4f global(x, y, z, 1);
     vmml::Vector3f screen = state->Coords().GlobalToScreenMat() * global;
-    return screenCoord(vmml::Vector2i(screen.x, screen.y), state);
+    return screenCoord(round(screen.x), round(screen.y), state);
 }
 
 dataCoord globalCoord::toDataCoord(const OmMipVolume *vol, int mipLevel) const
 {
     const vmml::Vector4f global(x, y, z, 1);
     vmml::Vector3f data = vol->Coords().GlobalToDataMat(mipLevel) * global;
-    return dataCoord(data, vol, mipLevel);
+    return dataCoord(round(data.x), round(data.y), round(data.z), vol, mipLevel);
 }
 
 chunkCoord globalCoord::toChunkCoord(const OmMipVolume *vol, int mipLevel) const
