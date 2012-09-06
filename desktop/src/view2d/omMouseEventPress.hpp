@@ -53,6 +53,13 @@ public:
                 return;
             }
 
+            if(om::tool::SHATTER == tool_)
+            {
+                doFindAndShatterSegment();
+                v2d_->Redraw();
+                return;
+            }
+
             const bool doCrosshair = controlKey_ && om::tool::PAN == tool_;
 
             if(doCrosshair){
@@ -103,6 +110,19 @@ private:
         OmSplitSegmentRunner::FindAndSplitSegments(*sdw,
                                                 state_->getViewGroupState(),
                                                 dataClickPoint_);
+    }
+
+    void doFindAndShatterSegment()
+    {
+        boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+
+        if(!sdw) {
+            return;
+        }
+
+        OmActions::ShatterSegment(sdw->GetSegment());
+        state_->getViewGroupState()->GetToolBarManager()->SetShatteringOff();
+        OmStateManager::SetOldToolModeAndSendEvent();
     }
 
     void doFindAndCutSegment()

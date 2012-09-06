@@ -130,6 +130,14 @@ void OmActions::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2)
                      seg1, seg2)));
 }
 
+void OmActions::ShatterSegment(OmSegment* seg)
+{
+    pool().push_back(
+        zi::run_fn(
+            zi::bind(&OmActionsImpl::ShatterSegment, impl(),
+                     seg)));
+}
+
 void OmActions::CutSegment(const SegmentDataWrapper& sdw)
 {
     pool().push_back(

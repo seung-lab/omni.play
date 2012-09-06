@@ -31,6 +31,9 @@ std::ostream& operator<<(std::ostream &out, const om::tool::mode& tool)
     case om::tool::SPLIT:
         out << "SPLIT";
         break;
+    case om::tool::SHATTER:
+        out << "SHATTER";
+        break;
     case om::tool::CUT:
         out << "CUT";
         break;

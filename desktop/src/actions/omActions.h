@@ -64,6 +64,7 @@ public:
                              const OmSegIDsSet& ids);
 
     static void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
+    static void ShatterSegment(OmSegment* seg);
 
     static void CutSegment(const SegmentDataWrapper& sdw);
 

@@ -70,7 +70,8 @@ enum mode { SELECT,
             CUT,
             LANDMARK,
             ANNOTATE,
-            KALINA
+            KALINA,
+            SHATTER
 };
 
 } //namespace tool

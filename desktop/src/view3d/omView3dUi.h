@@ -43,6 +43,7 @@ private:
     void navigationModeMouseWheel(QWheelEvent* event);
 
     void splitModeMouseReleased(QMouseEvent* event);
+    void shatterModeMouseReleased(QMouseEvent* event);
 
     void cameraMovementMouseStart(QMouseEvent* event);
     void cameraMovementMouseEnd(QMouseEvent* event);

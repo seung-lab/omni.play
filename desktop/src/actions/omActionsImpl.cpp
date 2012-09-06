@@ -1,5 +1,6 @@
 #include "actions/details/omActionImpls.hpp"
 #include "actions/details/omSegmentSplitAction.h"
+#include "actions/details/omSegmentShatterAction.h"
 #include "actions/details/omSegmentUncertainAction.h"
 #include "actions/details/omSegmentValidateAction.h"
 #include "actions/details/omVoxelSetValueAction.h"
@@ -184,6 +185,13 @@ void OmActionsImpl::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2)
     }
 
     (new OmSegmentSplitAction(sdw, edge))->Run();
+}
+
+void OmActionsImpl::ShatterSegment(OmSegment* seg)
+{
+    SegmentDataWrapper sdw(seg);
+
+    (new OmSegmentShatterAction(sdw))->Run();
 }
 
 void OmActionsImpl::CutSegment(const SegmentDataWrapper sdw)

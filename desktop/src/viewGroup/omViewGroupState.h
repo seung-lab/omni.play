@@ -86,6 +86,7 @@ public:
     }
 
     void SetToolBarManager(ToolBarManager* tbm);
+    ToolBarManager* GetToolBarManager();
 
     inline bool GetShatterMode() const {
         return mShatter;

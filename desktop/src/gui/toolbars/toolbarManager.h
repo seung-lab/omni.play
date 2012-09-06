@@ -22,6 +22,7 @@ public:
     void UpdateGuiFromProjectClose();
 
     void SetSplittingOff();
+    void SetShatteringOff();
 
     void SetTool(const om::tool::mode tool);
 

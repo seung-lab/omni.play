@@ -79,9 +79,9 @@ private Q_SLOTS:
         setTool(om::tool::LANDMARK);
     }
 
-    void keySlash(){
-    	setTool(om::tool::KALINA);
-    }
+    // void keySlash(){
+    // 	setTool(om::tool::KALINA);
+    // }
 
     void keyR(){
         OmSegmentSelected::RandomizeColor();
@@ -127,7 +127,7 @@ public:
         setShortcut(r_,       QKeySequence(Qt::Key_R),       SLOT(keyR()));
         setShortcut(k_,       QKeySequence(Qt::Key_K),       SLOT(keyK()));
         setShortcut(l_,       QKeySequence(Qt::Key_L),       SLOT(keyL()));
-        setShortcut(slash_,   QKeySequence(Qt::Key_Slash),   SLOT(keySlash()));
+        // setShortcut(slash_,   QKeySequence(Qt::Key_Slash),   SLOT(keySlash()));
     }
 };
 

@@ -1,8 +1,9 @@
 #include "common/omDebug.h"
 #include "gui/sidebars/right/graphTools/shatterButton.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
-#include "system/cache/omCacheManager.h"
+#include "system/omStateManager.h"
 #include "system/omConnect.hpp"
+#include "events/omEvents.h"
 #include "viewGroup/omViewGroupState.h"
 
 ShatterButton::ShatterButton(GraphTools* d)
@@ -17,10 +18,12 @@ ShatterButton::ShatterButton(GraphTools* d)
 
 void ShatterButton::enterOrExitShatterMode(const bool inShatterMode)
 {
-    // if(inShatterMode){
-    //     mParent->GetViewGroupState()->Shatterting()->EnterShatterMode();
+	if(inShatterMode) {
+		OmStateManager::SetToolModeAndSendEvent(om::tool::SHATTER);
+	} else {
+		OmStateManager::SetOldToolModeAndSendEvent();
+	}
 
-    // } else {
-    //     mParent->GetViewGroupState()->Shatterting()->ExitShatterMode();
-    // }
+    OmEvents::Redraw3d();
+    OmEvents::Redraw2d();
 }

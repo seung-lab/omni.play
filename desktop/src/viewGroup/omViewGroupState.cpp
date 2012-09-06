@@ -119,6 +119,10 @@ void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm)
     splitting_->SetToolBarManager(tbm);
 }
 
+ToolBarManager* OmViewGroupState::GetToolBarManager() {
+    return toolBarManager_;
+}
+
 void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)
 {
     mShowValid = mode;

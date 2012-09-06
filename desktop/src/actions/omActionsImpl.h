@@ -29,7 +29,7 @@ public:
 // MST-related
     void ChangeMSTthreshold(const SegmentationDataWrapper sdw,
                             const double threshold);
-                            
+
     void ChangeSizethreshold(const SegmentationDataWrapper sdw,
                              const double threshold);
 
@@ -60,6 +60,8 @@ public:
                          const OmSegIDsSet ids);
 
     void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
+    void ShatterSegment(OmSegment* seg);
+
     void CutSegment(const SegmentDataWrapper sdw);
 
     void SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params);

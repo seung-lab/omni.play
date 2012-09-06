@@ -20,6 +20,7 @@ public:
     void updateGui();
 
     void SetSplittingOff();
+    void SetShatteringOff();
 
     SegmentationDataWrapper GetSDW();
 

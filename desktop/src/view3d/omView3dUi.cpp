@@ -85,6 +85,22 @@ void OmView3dUi::splitModeMouseReleased(QMouseEvent* event)
     OmSplitSegmentRunner::FindAndSplitSegments(pickPoint.sdw, vgs_, pickPoint.coord);
 }
 
+void OmView3dUi::shatterModeMouseReleased(QMouseEvent* event)
+{
+    const OmSegmentPickPoint pickPoint = pickVoxelMouseCrosshair(event);
+
+    view3d_->updateGL();
+
+    if(!pickPoint.sdw.IsSegmentValid()) {
+        return;
+    }
+
+    OmActions::ShatterSegment(pickPoint.sdw.GetSegment());
+    vgs_->GetToolBarManager()->SetShatteringOff();
+    OmStateManager::SetOldToolModeAndSendEvent();
+}
+
+
 bool OmView3dUi::cutSegment(QMouseEvent* event)
 {
     const SegmentDataWrapper sdw = pickSegmentMouse(event, false);
@@ -154,6 +170,12 @@ void OmView3dUi::navigationModeMousePressed(QMouseEvent* event)
         if(om::tool::SPLIT == OmStateManager::GetToolMode())
         {
             splitModeMouseReleased(event);
+            return;
+        }
+
+        if(om::tool::SHATTER == OmStateManager::GetToolMode())
+        {
+            shatterModeMouseReleased(event);
             return;
         }
 
