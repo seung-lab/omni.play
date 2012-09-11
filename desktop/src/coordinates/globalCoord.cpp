@@ -5,7 +5,7 @@
 namespace om {
 
 int round(float f) {
-	return std::floor(f + 0.5f);
+	return std::floor(f + 0.001f); // Fix small rounding errors.
 }
 
 screenCoord globalCoord::toScreenCoord(OmView2dState *state) const
