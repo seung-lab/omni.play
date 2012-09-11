@@ -57,7 +57,7 @@ std::ostream& operator<<(std::ostream &out, const OmTileCoord &c)
     out << "["
         << c.getCoord() << ", "
         << c.getViewType() << ", "
-        << c.getDepth() << ", "
+        << int(c.getDepth()) << ", "
         << c.getVolume()->GetName() << ", "
         << c.getFreshness() << ", "
         << c.getSegmentColorCacheType()

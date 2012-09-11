@@ -19,13 +19,11 @@ OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state)
     if(SEGMENTATION == vol_->getVolumeType()){
         freshness_ = OmCacheManager::GetFreshness();
     }
-
-    dataDepth_ = state_->Location().toDataCoord(vol_, mipLevel_).toTileDepth(viewType_);
 }
 
 std::ostream& operator<<(std::ostream &out, const OmOnScreenTileCoords& c)
 {
-    out << c.mipLevel_ << " - " << c.dataDepth_ << "\n";
+    out << c.mipLevel_ << std::endl;
     return out;
 }
 
@@ -44,6 +42,10 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 
     OmTileCoordsAndLocationsPtr ret = tileCoordsAndLocations_;
     tileCoordsAndLocations_ = om::make_shared<OmTileCoordsAndLocations>();
+    FOR_EACH(tcl, *ret) {
+    	std::cout << tcl->tileCoord << " ";
+    }
+    std::cout << std::endl;
     return ret;
 }
 
@@ -57,12 +59,15 @@ int numChunks(om::chunkCoord min, om::chunkCoord max)
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 {
     om::globalBbox bounds = vol_->Coords().GetExtent();
+    om::dataBbox dataBounds = bounds.toDataBbox(vol_, 0);
 
-	// Make sure that we aren't trying to fetch outside of the bounds of the data.
-	om::globalCoord loc = state_->Location();
-	int targetDepth = state_->getViewTypeDepth(loc) + depthOffset;
-	if (targetDepth < state_->getViewTypeDepth(bounds.getMin()) ||
-	    targetDepth > state_->getViewTypeDepth(bounds.getMax())) {
+    int dataDepth = state_->getViewTypeDepth(state_->Location().toDataCoord(vol_, 0));
+
+    // Make sure that we aren't trying to fetch outside of the bounds of the data.
+	int targetDepth = dataDepth + depthOffset;
+	std::cout << targetDepth << " - ";
+	if (targetDepth < state_->getViewTypeDepth(dataBounds.getMin()) ||
+	    targetDepth > state_->getViewTypeDepth(dataBounds.getMax())) {
 		return;
 	}
 
@@ -157,9 +162,13 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::chunkCoord& coord,
                                                 OmMipVolume* vol,
                                                 int freshness)
 {
+	om::dataCoord loc = state_->Location().toDataCoord(vol, 0);
+	int targetDepth = state_->getViewTypeDepth(loc) + depthOffset;
+	state_->setViewTypeDepth(loc, targetDepth);
+
     return OmTileCoord(coord,
                        state_->getViewType(),
-                       dataDepth_ + depthOffset,
+                       loc.toTileDepth(viewType_),
                        vol,
                        freshness,
                        vgs_,
