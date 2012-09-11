@@ -56,7 +56,7 @@ int numChunks(om::chunkCoord min, om::chunkCoord max)
 
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 {
-    om::globalBbox bounds = vol_->Coords().GetDataExtent();
+    om::globalBbox bounds = vol_->Coords().GetExtent();
 
 	// Make sure that we aren't trying to fetch outside of the bounds of the data.
 	om::globalCoord loc = state_->Location();
@@ -100,10 +100,8 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 void OmOnScreenTileCoords::computeTile(const om::chunkCoord& chunkCoord,
                                        const int depthOffset)
 {
-    if(!vol_->Coords().ContainsMipChunkCoord(chunkCoord))
-    {
-        std::cout << chunkCoord << std::endl;
-        throw OmArgException("Bad Chunk Coord created.");
+    if(!vol_->Coords().ContainsMipChunkCoord(chunkCoord)) {
+        return; // Rounding errors can cause bad chunk coords to slip through.
     }
 
     if(depthOffset) // i.e. if we are pre-fetching

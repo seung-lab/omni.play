@@ -59,9 +59,9 @@ private:
     {
         zoomFactor_ /= std::pow(1.125, -numSteps); // numSteps is negative!
 
-        if( zoomFactor_ < 0.1 ){  // mipLevel == 0
-            zoomFactor_ = 0.1;
-        }
+        // if( zoomFactor_ < 0.1 ){  // mipLevel == 0
+        //     zoomFactor_ = 0.1;
+        // }
 
         if(isLevelLocked){
             return;

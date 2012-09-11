@@ -8,14 +8,14 @@ OmMipVolume::OmMipVolume()
 {}
 
 bool OmMipVolume::ContainsVoxel(const om::globalCoord & vox){
-    return coords_.GetDataExtent().contains(vox);
+    return coords_.GetExtent().contains(vox);
 }
 
 void OmMipVolume::addChunkCoordsForLevel(const int mipLevel,
                                          std::deque<om::chunkCoord>* coords) const
 {
     const Vector3i dims = coords_.MipLevelDataDimensions(mipLevel);
-    
+
     for (int z = 0; z < dims.z; ++z){
         for (int y = 0; y < dims.y; ++y){
             for (int x = 0; x < dims.x; ++x){

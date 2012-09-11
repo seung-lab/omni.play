@@ -41,7 +41,7 @@ public:
     void UpdateRootLevel()
     {
         //determine max level
-        Vector3i source_dims = GetDataExtent().getUnitDimensions();
+        Vector3i source_dims = GetExtent().getUnitDimensions();
         int max_source_dim = source_dims.getMaxComponent();
         int mipchunk_dim = GetChunkDimension();
 
@@ -66,7 +66,7 @@ public:
     inline Vector3i MipLevelDataDimensions(const int level) const
     {
         //get dimensions
-        om::globalBbox source_extent = GetDataExtent();
+        om::globalBbox source_extent = GetExtent();
         Vector3f source_dims = source_extent.getUnitDimensions();
 
         //dims in fraction of pixels
@@ -111,7 +111,7 @@ public:
         //convert to data box in leaf (MIP 0)
         om::globalBbox bbox = rMipCoord.chunkBoundingBox(vol_).toGlobalBbox();
 
-        bbox.intersect(GetDataExtent());
+        bbox.intersect(GetExtent());
         if(bbox.isEmpty()){
             return false;
         }

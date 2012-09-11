@@ -20,7 +20,7 @@ public:
         , newSegID_(sdw.getID())
         , viewType_(viewType)
         , vol_(sdw.GetSegmentation())
-        , segDataExtent_(vol_.Coords().GetDataExtent())
+        , segDataExtent_(vol_.Coords().GetExtent())
         , segments_(vol_.Segments())
     {}
 
