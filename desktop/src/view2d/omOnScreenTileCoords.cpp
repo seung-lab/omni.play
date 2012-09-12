@@ -42,10 +42,7 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 
     OmTileCoordsAndLocationsPtr ret = tileCoordsAndLocations_;
     tileCoordsAndLocations_ = om::make_shared<OmTileCoordsAndLocations>();
-    FOR_EACH(tcl, *ret) {
-    	std::cout << tcl->tileCoord << " ";
-    }
-    std::cout << std::endl;
+
     return ret;
 }
 
@@ -65,7 +62,7 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 
     // Make sure that we aren't trying to fetch outside of the bounds of the data.
 	int targetDepth = dataDepth + depthOffset;
-	std::cout << targetDepth << " - ";
+
 	if (targetDepth < state_->getViewTypeDepth(dataBounds.getMin()) ||
 	    targetDepth > state_->getViewTypeDepth(dataBounds.getMax())) {
 		return;
