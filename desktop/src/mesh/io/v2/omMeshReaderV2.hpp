@@ -46,9 +46,9 @@ public:
 
         if(!entry.wasMeshed)
         {
-            std::cout << "did not yet mesh " << segID
+            std::cout << "Warning: did not yet mesh " << segID
                       << " in coord " << coord << "\n" << std::flush;
-            throw OmIoException("mesh data not found");
+            return ret;
         }
 
         ret->HasData(entry.hasMeshData);

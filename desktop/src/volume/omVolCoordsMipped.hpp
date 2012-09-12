@@ -63,18 +63,8 @@ public:
 
     // Calculate the data dimensions needed to contain the volume at a given compression level.
     // TODO: should this be factored out?
-    inline Vector3i MipLevelDataDimensions(const int level) const
-    {
-        //get dimensions
-        om::globalBbox source_extent = GetExtent();
-        Vector3f source_dims = source_extent.getUnitDimensions();
-
-        //dims in fraction of pixels
-        Vector3f mip_level_dims = source_dims / om::math::pow2int(level);
-
-        return Vector3i(ceil(mip_level_dims.x),
-                        ceil(mip_level_dims.y),
-                        ceil(mip_level_dims.z));
+    inline Vector3i MipLevelDataDimensions(const int level) const {
+        return GetExtent().toDataBbox(vol_, level).getMax();
     }
 
     // Calculate the MipChunkCoord dims required to contain all the chunks of a given level.

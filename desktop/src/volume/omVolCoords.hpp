@@ -31,7 +31,7 @@ public:
     {
         Vector3f abs = GetAbsOffset();
         Vector3i res = GetResolution();
-        return om::globalBbox(abs * res, (abs - Vector3f::ONE + dataDimensions_)*res );
+        return om::globalBbox(abs, abs - Vector3f::ONE + dataDimensions_*res );
     }
 
     inline Vector3i GetDataDimensions() const {

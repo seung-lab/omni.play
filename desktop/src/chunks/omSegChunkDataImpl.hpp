@@ -94,10 +94,10 @@ public:
         DATA* data = dataWrapper.Data();
 
         const int offset = voxel.toChunkOffset();
-        
+
         const uint32_t oldVal = data[offset];
         data[offset] = val;
-        
+
         return oldVal;
     }
 
