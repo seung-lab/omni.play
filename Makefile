@@ -2,8 +2,8 @@
 
 HERE    	=       .
 EXTERNAL	=	$(HERE)/external/libs
-BINDIR		=	./bin
-BUILDDIR	=	build
+# BINDIR		=	./bin
+# BUILDDIR	=	build
 GENDIR		=	common/src/thrift
 
 AT		=   @
@@ -135,10 +135,14 @@ ifneq ($(strip $(OPT)),)
   CFLAGS	=	$(OPT_CFLAGS) $(EXTRA_CFLAGS)
   CXXFLAGS	=	$(OPT_CXXFLAGS) $(EXTRA_CXXFLAGS)
   LDFLAGS	=	$(OPT_LDFLAGS) $(EXTRA_LDFLAGS)
+  BUILDDIR	=	./build/release
+  BINDIR	=	./bin/release
 else
   CFLAGS	=	$(DBG_CFLAGS) $(EXTRA_CFLAGS)
   CXXFLAGS	=	$(DBG_CXXFLAGS) $(EXTRA_CXXFLAGS)
   LDFLAGS	=	$(DBG_LDFLAGS) $(EXTRA_LDFLAGS)
+  BUILDDIR	=	./build/debug
+  BINDIR	=	./bin/debug
 endif
 
 define build_cpp
@@ -162,28 +166,28 @@ endef
 THRIFT_DEPS = common/src/thrift/server.thrift.mkcpp \
 			  common/src/thrift/filesystem.thrift.mkcpp
 
-build/common/%.d: common/src/%.cpp $(THRIFT_DEPS)
+$(BUILDDIR)/common/%.d: common/src/%.cpp $(THRIFT_DEPS)
 	$(make_d)
-build/common/%.o: common/src/%.cpp $(THRIFT_DEPS)
+$(BUILDDIR)/common/%.o: common/src/%.cpp $(THRIFT_DEPS)
 	$(build_cpp)
 
-build/server/%.d: server/src/%.cpp $(THRIFT_DEPS)
+$(BUILDDIR)/server/%.d: server/src/%.cpp $(THRIFT_DEPS)
 	$(make_d)
-build/server/%.o: server/src/%.cpp $(THRIFT_DEPS)
+$(BUILDDIR)/server/%.o: server/src/%.cpp $(THRIFT_DEPS)
 	$(build_cpp)
 
-build/desktop/%.d: desktop/src/%.cpp
+$(BUILDDIR)/desktop/%.d: desktop/src/%.cpp
 	$(MKDIR) -p $(dir $@)
 	$(CXX) $(CPP_DEPFLAGS) $(DESKTOPINCLUDES) -MF $@ $<
-build/desktop/%.o: desktop/src/%.cpp
+$(BUILDDIR)/desktop/%.o: desktop/src/%.cpp
 	$(ECHO) "[CXX] compiling $<"
 	$(MKDIR) -p $(dir $@)
 	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) $(DEFINES) -Wno-unused-but-set-variable -o $@ $<
 	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
 
-build/filesystem/%.d: filesystem/src/%.cpp
+$(BUILDDIR)/filesystem/%.d: filesystem/src/%.cpp
 	$(make_d)
-build/filesystem/%.o: filesystem/src/%.cpp
+$(BUILDDIR)/filesystem/%.o: filesystem/src/%.cpp
 	$(build_cpp)
 
 %.d: %.cpp
@@ -239,16 +243,16 @@ lint:
 	find desktop/src -iname "*.[hc]*" | grep -v "moc.cpp" | grep -v "rcc.cpp" | xargs \
 		external/scripts/cpplint.py --filter=-legal/copyright
 
-COMMONSOURCES     = $(subst common/src,build/common, 				\
+COMMONSOURCES     = $(subst common/src,$(BUILDDIR)/common, 				\
 					  $(shell find common/src -iname "*.cpp"))
 
-SERVERSOURCES     = $(subst server/src,build/server, 				\
+SERVERSOURCES     = $(subst server/src,$(BUILDDIR)/server, 				\
                       $(shell find server/src -iname "*.cpp"))
 
-DESKTOPSOURCES    = $(subst desktop/src,build/desktop, 				\
+DESKTOPSOURCES    = $(subst desktop/src,$(BUILDDIR)/desktop, 				\
                       $(shell find desktop/src -iname "*.cpp"))
 
-DESKTOPHEADERS    = $(subst desktop/src,build/desktop, 				\
+DESKTOPHEADERS    = $(subst desktop/src,$(BUILDDIR)/desktop, 				\
                       $(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':'))
 
 YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
@@ -272,7 +276,7 @@ endef
 $(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
 	$(link)
 
-$(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/resources.rcc.o
+$(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o $(BUILDDIR)/desktop/gui/resources.rcc.o
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
@@ -280,6 +284,6 @@ $(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o build/desktop/gui/r
 $(BINDIR)/omni.tar.gz: $(BINDIR)/omni.desktop
 	$(TAR) -zcvf $@ -C $(BINDIR) omni.desktop
 
-ALLDEPS = $(shell find build -iname "*.d")
+ALLDEPS = $(shell find $(BUILDDIR) -iname "*.d")
 
 -include $(ALLDEPS)
