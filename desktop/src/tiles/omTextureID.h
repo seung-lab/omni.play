@@ -48,10 +48,8 @@ public:
 
     uchar* GetTileDataUChar() const;
 
-    bool NeedToBuildTexture() const
-    {
-        return (flag_ == OMTILE_NEEDTEXTUREBUILT ||
-                flag_ == OMTILE_NEEDCOLORMAP);
+    bool NeedToBuildTexture() const {
+        return (flag_ != OMTILE_GOOD);
     }
 
     QImage::Format GetQTimageFormat() const
