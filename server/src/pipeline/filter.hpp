@@ -20,53 +20,53 @@ public:
 		, outputAs_(outputAs)
 	{}
 
-    data_var operator()(const data<T>& in)
+    data_var operator()(const data<T>& in) const
     {
         data<T> out;
         out.size = in.size;
         out.data = utility::smartPtr<T>::MallocNumElements(out.size);
 
-        for(int i = 0; i < in.size; i++)
-        {
-            if(segIds_.find(inupt[i]) != segIds_.end())
-            {
-            	if(outputAs_) {
-            		data_[i] = outputAs_;
-            	} else {
-                	data_[i] = input[i];
-            	}
-            } else {
-                data_[i] = 0;
-            }
-        }
+        doFilter(in.data.get(), out.data.get(), out.size);
         return out;
     }
 
     data_var operator()(const datalayer::memMappedFile<T>& in) const
     {
         data<T> out;
-        out.size = in.size;
+        out.size = in.Size();
         out.data = utility::smartPtr<T>::MallocNumElements(out.size);
 
-        for(int i = 0; i < in.size; i++)
-        {
-            if(segIds_.find(inupt[i]) != segIds_.end()) {
-                data_[i] = input[i];
-            } else {
-                data_[i] = 0;
-            }
-        }
+        doFilter(in.GetPtr(), out.data.get(), out.size);
         return out;
     }
 
+
     template <typename S>
-    data_var operator()(const data<S> in) {
+    data_var operator()(const data<S> in) const {
     	throw argException("Attempting to filter the wrong type of data.");
     }
 
     template <typename S>
-    data_var operator()(const datalayer::memMappedFile<S>& in) {
+    data_var operator()(const datalayer::memMappedFile<S>& in) const {
     	throw argException("Attempting to filter the wrong type of data.");
+    }
+
+private:
+    void doFilter(const T* inData, T* outData, size_t size) const
+    {
+    	for(int i = 0; i < size; i++)
+        {
+            if(vals_.find(inData[i]) != vals_.end())
+            {
+            	if(outputAs_) {
+            		outData[i] = outputAs_;
+            	} else {
+                	outData[i] = inData[i];
+            	}
+            } else {
+                outData[i] = 0;
+            }
+        }
     }
 };
 

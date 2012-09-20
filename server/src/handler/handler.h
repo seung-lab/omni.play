@@ -56,8 +56,8 @@ void get_remesh(std::string& _return,
                 const std::set<int32_t>& segId);
 
 void update_global_mesh(const volume::volume& vol,
-	                    const std::set<int32_t>& segIds,
-                        int32_t segId);
+	                    const std::set<uint32_t>& segIds,
+                        uint32_t segId);
 
 void get_obj(std::string& _return,
              const std::string& uri,

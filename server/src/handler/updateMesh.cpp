@@ -6,19 +6,19 @@
 namespace om {
 namespace handler {
 
-void update_global_mesh(const volume::volume vol,
-	                    const std::set<int32_t>& segIds,
-                        int32_t segId)
+void update_global_mesh(const volume::volume& vol,
+	                    const std::set<uint32_t>& segIds,
+                        uint32_t segId)
 {
 	using namespace pipeline;
 
-	if (!vol.VolumeType() == volType::SEGMENTATION) {
+	if (!vol.VolumeType() == server::volType::SEGMENTATION) {
 		throw argException("Can only update global mesh from segmentation");
 	}
 
 	data_var filtered = vol.Data() >> set_filter<uint32_t>(segIds, segId);
 
-	data<uint32_t> out = boost::get<data<uint32_t> >(encoded);
+	data<uint32_t> out = boost::get<data<uint32_t> >(filtered);
 
 	// Integrate with realtime mesher.
 }

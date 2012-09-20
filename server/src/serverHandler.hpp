@@ -124,7 +124,11 @@ public:
                             int32_t segId)
     {
         ServiceMethod serviceMethod(&serviceTracker_, "update_global_mesh", "update_global_mesh");
-        handler::update_global_mesh(vol, segIds, segId);
+        std::set<uint32_t> ids;
+        FOR_EACH(id, segIds) {
+        	ids.insert(*id);
+        }
+        handler::update_global_mesh(vol, ids, segId);
     }
 
 
