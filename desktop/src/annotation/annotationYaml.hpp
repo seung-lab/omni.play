@@ -5,7 +5,7 @@
 #include "utility/yaml/baseTypes.hpp"
 
 namespace YAML {
-    
+
 void operator>> (const Node& node, om::annotation::data& data)
 {
     node["coord"] >> data.coord;

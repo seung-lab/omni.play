@@ -137,9 +137,7 @@ void OmMesh::makeDisplayList(QGLContext const* context)
     if(data_->StripDataCount())
     {
         uint32_t* stripOffsetSizeData = data_->StripData();
-
-        for (uint32_t idx = 0; idx < data_->StripDataCount(); ++idx)
-        {
+        for (uint32_t idx = 0; idx < data_->StripDataCount(); ++idx) {
             glDrawElements(GL_TRIANGLE_STRIP, //triangle strip
                            stripOffsetSizeData[2 * idx + 1], //elements in strip
                            GL_UNSIGNED_INT, //type

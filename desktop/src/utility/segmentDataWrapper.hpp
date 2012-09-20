@@ -198,7 +198,7 @@ public:
         return segmentID_;
     }
 
-    inline OmSegID GetVoxelValue(const DataCoord& dataClickPoint) const {
+    inline OmSegID GetVoxelValue(const om::globalCoord& dataClickPoint) const {
         return GetSegmentation().GetVoxelValue(dataClickPoint);
     }
 

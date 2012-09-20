@@ -12,41 +12,19 @@ OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state)
     , vol_(state->getVol())
     , viewType_(state->getViewType())
     , vgs_(state->getViewGroupState())
-    , tileLength_(vol_->Coords().GetChunkDimension())
-    , zoomFactor_(state->getZoomScale())
     , mipLevel_(state->getMipLevel())
-    , stretch_(vol_->Coords().GetStretchValues(state->getViewType()))
-    , totalViewport_(state->getTotalViewport())
-    , translateVector_(state->ComputePanDistance())
     , tileCoordsAndLocations_(om::make_shared<OmTileCoordsAndLocations>())
 {
     freshness_ = 0;
     if(SEGMENTATION == vol_->getVolumeType()){
         freshness_ = OmCacheManager::GetFreshness();
     }
-
-    setDepths();
 }
 
 std::ostream& operator<<(std::ostream &out, const OmOnScreenTileCoords& c)
 {
-    out << c.state_ << "\n\t";
-    out << c.vol_ << "\n\t";
-    out << c.viewType_ << "\n\t";
-    out << c.vgs_ << "\n\t";
-    out << c.tileLength_ << "\n\t";
-    out << c.zoomFactor_ << "\n\t";
-    out << c.mipLevel_ << "\n\t";
-    out << c.stretch_ << "\n\t";
-    out << c.totalViewport_ << "\n\t";
-    out << c.translateVector_ << "\n\t";
-    out << c.tileCoordsAndLocations_ << "\n\t";
-    out << c.dataDepth_ << "\n";
+    out << c.mipLevel_ << std::endl;
     return out;
-}
-
-void OmOnScreenTileCoords::setDepths(){
-    dataDepth_ = state_->Location()->DataDepth();
 }
 
 OmTileCoordsAndLocationsPtr
@@ -59,63 +37,73 @@ OmTileCoordsAndLocationsPtr
 OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 {
     if(vol_->IsBuilt()){
-        doComputeCoordsAndLocations(depthOffset);
+		doComputeCoordsAndLocations(depthOffset);
     }
 
     OmTileCoordsAndLocationsPtr ret = tileCoordsAndLocations_;
     tileCoordsAndLocations_ = om::make_shared<OmTileCoordsAndLocations>();
+
     return ret;
+}
+
+int numChunks(om::chunkCoord min, om::chunkCoord max)
+{
+    return (max.Coordinate.x - min.Coordinate.x + 1) *
+           (max.Coordinate.y - min.Coordinate.y + 1) *
+           (max.Coordinate.z - min.Coordinate.z + 1);
 }
 
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 {
-    const int levelFactor = om::math::pow2int(mipLevel_);
-    const int dataDim = tileLength_ * levelFactor;
-    float xval;
-    float yval;
+    om::globalBbox bounds = vol_->Coords().GetExtent();
+    om::dataBbox dataBounds = bounds.toDataBbox(vol_, mipLevel_);
 
-    if(translateVector_.y < 0) {
-        yMipChunk_ = ((abs((int)translateVector_.y) /dataDim)) * dataDim * levelFactor;
-        yval = (-1 * (abs((int)translateVector_.y) % dataDim));
-    } else {
-        yMipChunk_ = 0;
-        yval = translateVector_.y;
+    int dataDepth = state_->getViewTypeDepth(state_->Location().toDataCoord(vol_, mipLevel_));
+
+    // Make sure that we aren't trying to fetch outside of the bounds of the data.
+	int targetDepth = dataDepth + depthOffset;
+
+	if (targetDepth < state_->getViewTypeDepth(dataBounds.getMin()) ||
+	    targetDepth > state_->getViewTypeDepth(dataBounds.getMax())) {
+		return;
+	}
+
+    // Make sure that the upper left and bottom right don't exceed the volume
+    Vector4i viewport = state_->Coords().getTotalViewport();
+    om::globalCoord min = om::screenCoord(viewport.lowerLeftX, viewport.lowerLeftY, state_).toGlobalCoord();
+    om::globalCoord max = om::screenCoord(viewport.width, viewport.height, state_).toGlobalCoord();
+
+    om::globalBbox viewBounds(min, max);
+
+    viewBounds.intersect(bounds);
+
+    if (viewBounds.isEmpty()) {
+    	return;
     }
 
-    // if(!depthOffset)
-    // {
-    //     std::cout << "initial: yMipChunk_: " << yMipChunk_ << "; yval: " << yval << "\n";
-    // }
+    om::chunkCoord minChunk = om::globalCoord(viewBounds.getMin()).toChunkCoord(vol_, mipLevel_);
+    om::chunkCoord maxChunk = om::globalCoord(viewBounds.getMax()).toChunkCoord(vol_, mipLevel_);
 
-    const float maxY = totalViewport_.height/zoomFactor_/stretch_.y;
-    for(float y = yval; y < maxY; y += tileLength_, yMipChunk_ += dataDim){
-
-        if (translateVector_.x < 0) {
-            xMipChunk_ = ((abs((int)translateVector_.x) / dataDim)) * dataDim * levelFactor;
-            xval = (-1 * (abs((int)translateVector_.x) % dataDim));
-        } else {
-            xMipChunk_ = 0;
-            xval = translateVector_.x;
-        }
-
-        const float maxX = totalViewport_.width/zoomFactor_/stretch_.x;
-        for(float x = xval; x < maxX; x += tileLength_, xMipChunk_ += dataDim){
-
-            computeTile(x, y, depthOffset);
+    // iterate over all chunks on the screen
+    for (int x = minChunk.Coordinate.x; x <= maxChunk.Coordinate.x; x++)
+    {
+        for (int y = minChunk.Coordinate.y; y <= maxChunk.Coordinate.y; y++)
+        {
+            for (int z = minChunk.Coordinate.z; z <= maxChunk.Coordinate.z; z++)
+            {
+                om::chunkCoord coord(mipLevel_, x, y, z);
+                computeTile(coord, depthOffset);
+            }
         }
     }
+
 }
 
-void OmOnScreenTileCoords::computeTile(const float x, const float y,
+void OmOnScreenTileCoords::computeTile(const om::chunkCoord& chunkCoord,
                                        const int depthOffset)
 {
-    const DataCoord dataCoord = toDataCoord(depthOffset);
-
-    const OmChunkCoord chunkCoord =
-        vol_->Coords().DataToMipCoord(dataCoord, mipLevel_);
-
-    if(!vol_->Coords().ContainsMipChunkCoord(chunkCoord)){
-        return;
+    if(!vol_->Coords().ContainsMipChunkCoord(chunkCoord)) {
+        return; // Rounding errors can cause bad chunk coords to slip through.
     }
 
     if(depthOffset) // i.e. if we are pre-fetching
@@ -127,30 +115,22 @@ void OmOnScreenTileCoords::computeTile(const float x, const float y,
             const std::vector<OmFilter2d*> filters = chan->GetFilters();
 
             FOR_EACH(iter, filters){
-                makeTileCoordFromFilter(*iter, dataCoord, x, y);
+                makeTileCoordFromFilter(*iter, chunkCoord, depthOffset);
             }
         }
     }
 
-    OmTileCoordAndVertices pair = {makeTileCoord(dataCoord, vol_, freshness_),
-                                   computeVertices(x, y) };
+    OmTileCoordAndVertices pair = {makeTileCoord(chunkCoord, depthOffset, vol_, freshness_),
+                                   computeVertices(chunkCoord, vol_) };
 
-    // if(!depthOffset)
-    // {
-    //     std::cout << "dataCoord is: " << dataCoord
-    //               << "; valid mip chunk coord is: "
-    //               << chunkCoord
-    //               << "\n";
-    //     std::cout << "(x,y)=" << x << ", " << y << "\n";
-    //     std::cout << "vertices: " << pair.vertices << "\n";
-    // }
 
+	// std::cout << chunkCoord << ":" << depthOffset << " - " << pair.tileCoord << std::endl;
     tileCoordsAndLocations_->push_back(pair);
 }
 
 void OmOnScreenTileCoords::makeTileCoordFromFilter(OmFilter2d* filter,
-                                                   const DataCoord & dataCoord,
-                                                   const float x, const float y)
+                                                   const om::chunkCoord & chunkCoord,
+                                                   const int depthOffset)
 {
     const om::FilterType filterType = filter->FilterType();
 
@@ -168,52 +148,42 @@ void OmOnScreenTileCoords::makeTileCoordFromFilter(OmFilter2d* filter,
         freshness = OmCacheManager::GetFreshness();
     }
 
-    OmTileCoordAndVertices pair = { makeTileCoord(dataCoord, vol, freshness),
-                                    computeVertices(x, y) };
+    OmTileCoordAndVertices pair = { makeTileCoord(chunkCoord, depthOffset, vol, freshness),
+                                    computeVertices(chunkCoord, vol) };
 
     tileCoordsAndLocations_->push_back(pair);
 }
 
-DataCoord OmOnScreenTileCoords::toDataCoord(const int depthOffset)
-{
-    // const Vector2f res = OmView2dConverters::Get2PtsInPlane(vol_->Coords().GetDataResolution(),
-    //                                                         viewType_);
-
-    return state_->makeViewTypeVector3<int>(xMipChunk_,
-                                            yMipChunk_,
-                                            dataDepth_ + depthOffset);
-}
-
-OmTileCoord OmOnScreenTileCoords::makeTileCoord(const DataCoord& coord,
+OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::chunkCoord& coord,
+                                                const int depthOffset,
                                                 OmMipVolume* vol,
                                                 int freshness)
 {
-    return OmTileCoord(mipLevel_,
-                       coord,
+	om::dataCoord loc = state_->Location().toDataCoord(vol, mipLevel_);
+	int targetDepth = state_->getViewTypeDepth(loc) + depthOffset;
+	state_->setViewTypeDepth(loc, targetDepth);
+
+    return OmTileCoord(coord,
+                       state_->getViewType(),
+                       loc.toTileDepth(viewType_),
                        vol,
                        freshness,
                        vgs_,
-                       viewType_,
                        state_->getObjectType());
 }
 
-GLfloatBox OmOnScreenTileCoords::computeVertices(const float xRaw,
-                                                 const float yRaw)
+GLfloatBox OmOnScreenTileCoords::computeVertices(const om::chunkCoord& coord, const OmMipVolume* vol)
 {
-    const float x = xRaw * stretch_.x;
-    const float y = yRaw * stretch_.y;
-
-    const GLfloat minX = x * zoomFactor_;
-    const GLfloat minY = y * zoomFactor_;
-    const GLfloat maxX = (x + tileLength_*stretch_.x) * zoomFactor_;
-    const GLfloat maxY = (y + tileLength_ *stretch_.y) * zoomFactor_;
+    om::dataBbox bounds = coord.chunkBoundingBox(vol);
+    om::screenCoord min = bounds.getMin().toGlobalCoord().toScreenCoord(state_);
+    om::screenCoord max = bounds.getMax().toGlobalCoord().toScreenCoord(state_);
 
     GLfloatBox glBox;
-    glBox.lowerLeft.y  = minY;
-    glBox.upperRight.y = maxY;
-    glBox.lowerLeft.x  = minX;
-    glBox.upperRight.x = maxX;
-        
+    glBox.lowerLeft.y  = min.y;
+    glBox.upperRight.y = max.y;
+    glBox.lowerLeft.x  = min.x;
+    glBox.upperRight.x = max.x;
+
 
     glBox.lowerRight.x = glBox.upperRight.x;
     glBox.lowerRight.y = glBox.lowerLeft.y;

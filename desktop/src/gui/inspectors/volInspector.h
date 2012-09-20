@@ -23,11 +23,11 @@ private:
 private Q_SLOTS:
     void apply()
     {
-        const Vector3f dims(resX_->text().toFloat(),
+        const Vector3i dims(resX_->text().toFloat(),
                             resY_->text().toFloat(),
                             resZ_->text().toFloat());
 
-        vol_.Coords().SetDataResolution(dims);
+        vol_.Coords().SetResolution(dims);
     }
 
 public:
@@ -63,7 +63,7 @@ public:
         labelVolume->setText("Z Resolution:");
         grid_->addWidget(labelVolume, 3, 0);
 
-        const Vector3f resf = vol_.Coords().GetDataResolution();
+        const Vector3i resf = vol_.Coords().GetResolution();
 
         resX_ = new QLineEdit(this);
         resX_->setText(QString::number(resf.x));

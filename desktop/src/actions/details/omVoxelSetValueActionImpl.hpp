@@ -13,7 +13,7 @@ private:
     OmID mSegmentationId;
 
     //map of voxels to old values
-    std::map<DataCoord, OmSegID> mOldVoxelValues;
+    std::map<om::globalCoord, OmSegID> mOldVoxelValues;
 
     //new value of voxels
     OmSegID mNewValue;
@@ -23,7 +23,7 @@ public:
     {}
 
     OmVoxelSetValueActionImpl(const OmID segmentationId,
-                              const DataCoord& rVoxel,
+                              const om::globalCoord& rVoxel,
                               const OmSegID value)
     {
         //store segmentation id
@@ -37,7 +37,7 @@ public:
     }
 
     OmVoxelSetValueActionImpl(const OmID segmentationId,
-                              const std::set<DataCoord>& rVoxels,
+                              const std::set<om::globalCoord>& rVoxels,
                               const OmSegID value)
     {
         //store segmentation id
@@ -59,7 +59,7 @@ public:
         OmSegmentation & r_segmentation = OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
 
         //modified voxels
-        std::set<DataCoord> edited_voxels;
+        std::set<om::globalCoord> edited_voxels;
 
         FOR_EACH(itr, mOldVoxelValues)
         {
@@ -84,7 +84,7 @@ public:
         OmSegmentation & r_segmentation = OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
 
         //modified voxels
-        std::set<DataCoord> edited_voxels;
+        std::set<om::globalCoord> edited_voxels;
 
         FOR_EACH(itr, mOldVoxelValues){
             //set voxel to prev value

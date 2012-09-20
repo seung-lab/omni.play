@@ -5,7 +5,7 @@
 
 class OmAffinityGraph;
 
-class OmAffinityChannel : public OmChannelImpl {
+class OmAffinityChannel : public OmChannel {
 private:
     const om::AffinityGraph affinity_;
 
@@ -13,7 +13,7 @@ private:
 
 public:
     OmAffinityChannel(const om::AffinityGraph aff)
-        : OmChannelImpl()
+        : OmChannel()
         , affinity_(aff)
     {
         if (!(aff == om::X_AFFINITY ||
@@ -25,7 +25,7 @@ public:
     }
 
     OmAffinityChannel(OmID id, const om::AffinityGraph aff)
-        : OmChannelImpl(id)
+        : OmChannel(id)
         , affinity_(aff)
     {}
 

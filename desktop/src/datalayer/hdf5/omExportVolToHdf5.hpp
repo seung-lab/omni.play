@@ -1,6 +1,5 @@
 #pragma once
 
-#include "chunks/omChunkCoord.h"
 #include "chunks/omChunkDataImpl.hpp"
 #include "chunks/omSegChunk.h"
 #include "chunks/omSegChunkDataInterface.hpp"
@@ -61,15 +60,14 @@ private:
             hdfExport->open();
         }
 
-        om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol->GetMipChunkCoords(0);
 
         FOR_EACH(iter, *coordsPtr){
-            const OmChunkCoord& coord = *iter;
-
+            const om::chunkCoord& coord = *iter;
+            
             OmDataWrapperPtr data = exportChunk(vol, coord, rerootSegments);
-            const DataBbox chunk_data_bbox =
-                vol->Coords().MipCoordToDataBbox(coord, 0);
+            om::dataBbox chunk_data_bbox = coord.chunkBoundingBox(vol);
 
             hdfExport->writeChunk(OmDataPaths::getDefaultDatasetName(),
                                   chunk_data_bbox,
@@ -81,7 +79,7 @@ private:
         printf("\nexport done!\n");
     }
 
-    OmDataWrapperPtr exportChunk(OmChannel* vol, const OmChunkCoord& coord,
+    OmDataWrapperPtr exportChunk(OmChannel* vol, const om::chunkCoord& coord,
                                  const bool)
     {
         OmChunk* chunk = vol->GetChunk(coord);
@@ -89,7 +87,7 @@ private:
     }
 
     OmDataWrapperPtr exportChunk(OmSegmentation* vol,
-                                 const OmChunkCoord& coord,
+                                 const om::chunkCoord& coord,
                                  const bool rerootSegments)
     {
         std::cout << "\r\texporting " << coord << std::flush;

@@ -11,3 +11,4 @@ common/src/thrift
 *.rcc.cpp
 *.moc.cpp
 desktop/TAGS
+desktop/src/TAGS

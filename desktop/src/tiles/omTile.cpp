@@ -31,10 +31,6 @@ void OmTile::LoadData()
     }
 }
 
-int OmTile::getChunkSliceNum(){
-    return getDepth() % (getVol()->Coords().GetChunkDimension());
-}
-
 void OmTile::load8bitChannelTile()
 {
     OmChannel* chan = reinterpret_cast<OmChannel*>(getVol());
@@ -42,7 +38,7 @@ void OmTile::load8bitChannelTile()
 
     OmPooledTile<uint8_t>* tileData =
         chunk->Data()->ExtractDataSlice8bit(key_.getViewType(),
-                                            getChunkSliceNum());
+                                            getDepth());
 
     OmChannelTileFilter::Filter(tileData);
 
@@ -56,7 +52,7 @@ void OmTile::load32bitSegmentationTile()
 
     PooledTile32Ptr imageData =
         chunk->SegData()->ExtractDataSlice32bit(key_.getViewType(),
-                                                getChunkSliceNum());
+                                                getDepth());
 
     OmPooledTile<OmColorARGB>* colorMappedData =
         key_.getViewGroupState()->ColorTile(imageData->GetData(),
@@ -66,16 +62,13 @@ void OmTile::load32bitSegmentationTile()
     texture_.reset(new OmTextureID(tileLength_, colorMappedData));
 }
 
-OmChunkCoord OmTile::tileToMipCoord(){
-    return getVol()->Coords().DataToMipCoord(key_.getDataCoord(), key_.getLevel());
+om::chunkCoord OmTile::tileToMipCoord(){
+    return key_.getCoord();
 }
 
 int OmTile::getDepth()
 {
-    const uint32_t factor = om::math::pow2int(key_.getLevel());
-
-    return OmView2dConverters::GetViewTypeDepth(key_.getDataCoord(),
-                                                key_.getViewType()) / factor;
+    return key_.getDepth();
 }
 
 ObjectType OmTile::getVolType() const {

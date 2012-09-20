@@ -27,7 +27,7 @@ public:
 
     int GetBytesPerVoxel() const;
     OmRawDataPtrs GetVolPtr(const int level);
-    OmRawDataPtrs getChunkPtrRaw(const OmChunkCoord& coord);
+    OmRawDataPtrs getChunkPtrRaw(const om::chunkCoord& coord);
 
     void downsample(OmMipVolume* vol);
 

@@ -16,12 +16,12 @@ namespace annotation {
 
 struct data {
     OmID id;
-    DataCoord coord;
+    globalCoord coord;
     std::string comment;
     OmColor color;
-    
+
     data(OmID id) : id(id) {}
-    
+
     inline OmID GetID() { return id; }
 };
 
@@ -29,13 +29,13 @@ class manager : public OmGenericManager<data> {
 private:
     OmSegmentation *const vol_;
     typedef OmGenericManager<data> base_t;
-    
+
 public:
     manager(OmSegmentation* vol)
         : vol_(vol)
     {}
 
-    void Add(DataCoord coord, const std::string& comment, const OmColor& color)
+    void Add(globalCoord coord, const std::string& comment, const OmColor& color)
     {
         data& d = base_t::Add();
 
@@ -46,10 +46,10 @@ public:
         OmEvents::Redraw2d();
         OmEvents::Redraw3d();
     }
-    
+
     void Load();
     void Save() const;
-    
+
 
 protected:
     std::string getFileName() { return filePathV1(); }

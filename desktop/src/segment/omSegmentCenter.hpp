@@ -9,10 +9,10 @@
 class OmSegmentCenter {
 private:
 
-    boost::optional<DataBbox>
+    boost::optional<om::dataBbox>
     static computeSelectedSegmentBoundingBox(const SegmentationDataWrapper& sdw)
     {
-        DataBbox box;
+        om::dataBbox box(sdw.GetSegmentationPtr(), 0);
 
         OmSegmentIterator iter(sdw.Segments());
         iter.iterOverSelectedIDs();
@@ -22,7 +22,7 @@ private:
         OmSegment* seg = iter.getNextSegment();
         for(int i = 0; i < max && NULL != seg; ++i)
         {
-            const DataBbox segBox = seg->BoundingBox();
+            const om::dataBbox segBox = seg->BoundingBox();
             if(segBox.isEmpty()){
                 continue;
             }
@@ -33,40 +33,40 @@ private:
         }
 
         if(box.isEmpty()){
-            return boost::optional<DataBbox>();
+            return boost::optional<om::dataBbox>();
         }
 
-        return boost::optional<DataBbox>(box);
+        return boost::optional<om::dataBbox>(box);
     }
 
-    boost::optional<DataCoord>
+    boost::optional<om::dataCoord>
     static findCenterOfSelectedSegments(const SegmentationDataWrapper& sdw)
     {
-        boost::optional<DataBbox> box = computeSelectedSegmentBoundingBox(sdw);
+        boost::optional<om::dataBbox> box = computeSelectedSegmentBoundingBox(sdw);
 
         if(!box){
-            return boost::optional<DataCoord>();
+            return boost::optional<om::dataCoord>();
         }
 
-        const DataCoord ret = (box->getMin() + box->getMax()) / 2;
-        return boost::optional<DataCoord>(ret);
+        const om::dataCoord ret = (box->getMin() + box->getMax()) / 2;
+        return boost::optional<om::dataCoord>(ret);
     }
 
-    boost::optional<DataCoord>
+    boost::optional<om::dataCoord>
     static findCenterOfSelectedSegments(const SegmentDataWrapper& sdw)
     {
         if(!sdw.IsSegmentValid()){
-            return boost::optional<DataCoord>();
+            return boost::optional<om::dataCoord>();
         }
 
         OmSegment* seg = sdw.GetSegment();
-        const DataBbox& box = seg->BoundingBox();
+        const om::dataBbox& box = seg->BoundingBox();
         if(box.isEmpty()){
-            return boost::optional<DataCoord>();
+            return boost::optional<om::dataCoord>();
         }
 
-        const DataCoord ret = (box.getMin() + box.getMax()) / 2;
-        return boost::optional<DataCoord>(ret);
+        const om::dataCoord ret = (box.getMin() + box.getMax()) / 2;
+        return boost::optional<om::dataCoord>(ret);
     }
 
 public:
@@ -74,21 +74,14 @@ public:
     {
         const SegmentationDataWrapper sdw = vgs->Segmentation();
 
-        const boost::optional<DataCoord> voxelDC
+        const boost::optional<om::dataCoord> voxelDC
             = findCenterOfSelectedSegments(sdw);
 
         if(!voxelDC){
             return;
         }
 
-        // printf("v: %i %i %i\n", voxelDC->x, voxelDC->y, voxelDC->z);
-
-        OmSegmentation& segmentation = sdw.GetSegmentation();
-        const Vector3f& res = segmentation.Coords().GetDataResolution();
-
-        const Vector3f newLoc = *voxelDC * res;
-
-        vgs->View2dState()->SetScaledSliceDepth(newLoc);
+        vgs->View2dState()->SetScaledSliceDepth(voxelDC->toGlobalCoord());
 
         OmEvents::ViewCenterChanged();
         OmEvents::View3dRecenter();
@@ -96,30 +89,27 @@ public:
 
     static boost::optional<float> ComputeCameraDistanceForSelectedSegments()
     {
-       	DataBbox box;
-        Vector3f res;
+        om::globalBbox box;
 
         FOR_EACH(iter, SegmentationDataWrapper::ValidIDs())
         {
             SegmentationDataWrapper sdw(*iter);
 
-            const boost::optional<DataBbox> b =
+            const boost::optional<om::dataBbox> b =
                 computeSelectedSegmentBoundingBox(sdw);
 
             if(b){
-                box.merge(*b);
+                box.merge(b->toGlobalBbox());
             }
-
-            res = sdw.GetDataResolution();
         }
 
         if(box.isEmpty()){
             return boost::optional<float>();
         }
-
-        const float x = (box.getMax().x - box.getMin().x) * res.x;
-        const float y = (box.getMax().y - box.getMin().y) * res.y;
-        const float z = (box.getMax().z - box.getMin().z) * res.z;
+        
+        const float x = box.getMax().x - box.getMin().x;
+        const float y = box.getMax().y - box.getMin().y;
+        const float z = box.getMax().z - box.getMin().z;
 
         return boost::optional<float>(sqrt(x*x + y*y + z*z));
     }

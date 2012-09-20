@@ -11,7 +11,7 @@ struct OmSegmentDataV2 {
     OmColor color;
     bool immutable;
     uint64_t size;
-    DataBbox bounds;
+    AxisAlignedBoundingBox<int> bounds;
 };
 
 struct OmSegmentDataV3 {
@@ -19,13 +19,13 @@ struct OmSegmentDataV3 {
     OmColor color;
     om::SegListType listType;
     uint64_t size;
-    DataBbox bounds;
+    AxisAlignedBoundingBox<int> bounds;
 };
 
 struct OmSegmentDataV4 {
     OmSegID value;
     OmColor color;
     uint64_t size;
-    DataBbox bounds;
+    AxisAlignedBoundingBox<int> bounds;
 };
 

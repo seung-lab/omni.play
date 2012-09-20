@@ -62,7 +62,7 @@ public:
         if(Om2dPreferences::ShowCrosshairs()){
             drawCursors(painter);
         }
-        
+
         if(state_->getViewGroupState()->getAnnotationVisible()) {
             drawAnnotations(painter);
         }
@@ -98,7 +98,7 @@ private:
 
     void drawBoundingBox(QPainter& painter)
     {
-        const Vector4i& vp = state_->getTotalViewport();
+        const Vector4i& vp = state_->Coords().getTotalViewport();
         painter.drawRect(vp.lowerLeftX,
                          vp.lowerLeftY,
                          vp.width - 1,
@@ -135,7 +135,7 @@ private:
         int yTop = 45;
 
         const int xoffset = 10;
-        const int yTopOfText = state_->getTotalViewport().height - yTop;
+        const int yTopOfText = state_->Coords().getTotalViewport().height - yTop;
 
         OmDisplayInfo di(painter, pen, yTopOfText, xoffset);
 
@@ -154,18 +154,14 @@ private:
 
     QString depthString()
     {
-        const int dataDepth = state_->Location()->DataDepth();
+    	const om::globalCoord global = state_->Location();
+        const om::dataCoord data = global.
+            toDataCoord(state_->getVol(), state_->getMipLevel());
 
-        const int scaledDepth = state_->Location()->ScaledDepth();
+		const int globalDepth = state_->getViewTypeDepth(global);
+        const int dataDepth = state_->getViewTypeDepth(data);
 
-        // TODO: remove: hack for abs coords
-        const Vector3i absOffsetVec = state_->getVol()->Coords().GetAbsOffset();
-        const int absOffset = OmView2dConverters::GetViewTypeDepth(absOffsetVec, state_->getViewType());
-
-        QString depthStr = QString::number(scaledDepth + absOffset) + " Slice Depth";
-        if(scaledDepth != dataDepth){
-            depthStr += " (" + QString::number(dataDepth) + " data)";
-        }
+        QString depthStr = QString::number(globalDepth) + " - " + QString::number(dataDepth);
 
         return depthStr;
     }
@@ -187,7 +183,7 @@ private:
 
     void drawCursors(QPainter& painter)
     {
-        const Vector4i& vp = state_->getTotalViewport();
+        const Vector4i& vp = state_->Coords().getTotalViewport();
         const int fullHeight = vp.height;
         const int halfHeight = fullHeight/2;
         const int fullWidth = vp.width;
@@ -246,48 +242,41 @@ private:
 
         painter.drawImage(point, star);
     }
-    
-    static const float ZOOM_CUTOFF = 2.0f;
-    
+
     void drawAnnotations(QPainter& painter)
     {
-        float zs = state_->getZoomScale();
-        if(zs < ZOOM_CUTOFF) {
-            return;
-        }
-        
         FOR_EACH(i, SegmentationDataWrapper::ValidIDs())
         {
             SegmentationDataWrapper sdw(*i);
-            
+
             om::annotation::manager &annotations = *sdw.GetSegmentation().Annotations();
-            
+
             FOR_EACH(it, annotations.GetValidIds())
             {
                 om::annotation::data& a = annotations.Get(*it);
-                
+
                 if(!closeInDepth(a.coord))
                     continue;
-                
-                ScreenCoord loc = state_->DataToScreenCoord(a.coord);
-                
+
+                om::screenCoord loc = a.coord.toScreenCoord(state_);
+
                 QPen pen;
                 pen.setColor(QColor::fromRgb(a.color.red, a.color.green, a.color.blue));
                 painter.setPen(pen);
-                
+
                 OmDisplayInfo di(painter, pen, loc.y, loc.x);
                 di.paint(QString::fromStdString(a.comment));
             }
         }
     }
-    
+
     static const int DEPTH_CUTOFF = 20;
-    
-    bool closeInDepth(DataCoord point)
+
+    bool closeInDepth(om::globalCoord point)
     {
         int depth = state_->getViewTypeDepth(point);
-        int plane = state_->Location()->DataDepth();
-        
+        int plane = state_->getViewTypeDepth(state_->Location());
+
         return abs(depth - plane) < DEPTH_CUTOFF;
     }
 };

@@ -8,10 +8,10 @@
 #include "events/details/omUserInterfaceEvent.h"
 #include "events/details/omView3dEvent.h"
 #include "events/details/omViewEvent.h"
+#include "events/details/annotationEvent.h"
 #include "events/omEvents.h"
 
 #define POST OmEventManager::PostEvent
-#include "events/details/annotationEvent.h"
 
 void OmEvents::ToolChange(){
     POST(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));

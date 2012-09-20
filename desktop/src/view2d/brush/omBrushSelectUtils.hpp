@@ -10,14 +10,11 @@ public:
     static FindSegIDsFromPoints(OmBrushOppInfo* info,
                                 om::pt3d_list_t* pts)
     {
-
-        const int depthInChunk = info->depth % info->chunkDim;
-
         OmChunksAndPts chunksAndPts(info->segmentation, info->viewType);
 
         chunksAndPts.AddAllPtsThatIntersectVol(pts);
 
-        return chunksAndPts.GetSegIDs(depthInChunk);
+        return chunksAndPts.GetSegIDs();
     }
 
     void static SendEvent(OmBrushOppInfo* info, boost::unordered_set<OmSegID>* segIDs)

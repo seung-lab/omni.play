@@ -43,7 +43,7 @@ public:
 
         if(insertSinceDidNotHaveKey(key))
         {
-            threadPool_.insert(key.getLevel(),
+            threadPool_.insert(key.getCoord().getLevel(),
                                zi::run_fn(
                                    zi::bind(ptrMemFunc, klassInstance, key)));
         }

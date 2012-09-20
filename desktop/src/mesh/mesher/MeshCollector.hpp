@@ -16,7 +16,7 @@
 class MeshCollector
 {
 private:
-    const OmChunkCoord coord_ ;
+    const om::chunkCoord coord_ ;
     OmMeshWriterV2 *const meshIO_;
 
     zi::spinlock lock_;
@@ -25,7 +25,7 @@ private:
     map_t meshes_;
 
 public:
-    MeshCollector( const OmChunkCoord& coord,
+    MeshCollector( const om::chunkCoord& coord,
                            OmMeshWriterV2* meshIO )
         : coord_( coord ),
           meshIO_( meshIO ),

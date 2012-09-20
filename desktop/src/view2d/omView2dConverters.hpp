@@ -181,17 +181,17 @@ public:
         }
     }
 
-    template <typename T>
-    inline static Vector3<T> IncVectorWith2Pts(const Vector3<T>& vec, const T x, const T y,
+    template <typename T, typename ColT>
+    inline static ColT IncVectorWith2Pts(const ColT& vec, const T x, const T y,
                                                const ViewType viewType)
     {
         switch(viewType){
         case XY_VIEW:
-            return Vector3<T>(vec.x + x, vec.y + y, vec.z);
+            return ColT(vec.x + x, vec.y + y, vec.z);
         case XZ_VIEW:
-            return Vector3<T>(vec.x + x, vec.y, vec.z + y);
+            return ColT(vec.x + x, vec.y, vec.z + y);
         case ZY_VIEW:
-            return Vector3<T>(vec.x, vec.y + y, vec.z + x);
+            return ColT(vec.x, vec.y + y, vec.z + x);
         default:
             throw OmArgException("invalid viewType");
         }

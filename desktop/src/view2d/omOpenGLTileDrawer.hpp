@@ -9,6 +9,7 @@
 #include "zi/omUtility.h"
 
 #include <QGLContext>
+#include <tiles/omTileImplTypes.hpp>
 
 class OmOpenGLTileDrawer {
 private:
@@ -28,43 +29,39 @@ public:
     bool DrawTiles(std::deque<OmTileAndVertices>& tilesToDraw)
     {
         context_ = QGLContext::currentContext();
-        // elapsed_.restart();
-        // int counter = 0;
 
         FOR_EACH(iter, tilesToDraw)
         {
-            // if(elapsed_.ms_elapsed() > allowedDrawTimeMS_)
-            // {
-            //     std::cout << "tile draw took too long...\n";
-            //     return false;
-            // }
-
-            drawTile(iter->tile->GetTexture(),
+            drawTile(iter->tile,
                      iter->vertices,
                      iter->textureVectices);
-
-            // ++counter;
         }
 
         return true;
     }
 
 private:
-    void drawTile(OmTextureID& texture,
+    void drawTile(const OmTilePtr tile,
                   const GLfloatBox& vertices,
                   const TextureVectices& textureVectices)
     {
+        OmTextureID& texture = tile->GetTexture();
+
         if(texture.NeedToBuildTexture()){
             doBindTileDataToGLid(texture);
 
         } else {
             // if contexts are different, the text is for the WRONG OpenGL context
+#ifndef ZI_OS_MACOS
             assert(context_ == texture.Context());
+#endif
         }
 
         glBindTexture(GL_TEXTURE_2D, texture.GetTextureID());
 
-        // std::cout << "drawing: " << tv.tile->GetTileCoord() << "\n";
+//         std::cout << "drawing: " << tile->GetTileCoord() << " - "
+//                   << vertices.lowerLeft << " to " << vertices.upperRight
+//                   << "\n";
 
         glBegin(GL_QUADS);
 
@@ -72,37 +69,37 @@ private:
                      textureVectices.lowerRight.y);  /* lower left corner */
         glVertex2f(vertices.lowerLeft.x,
                    vertices.lowerLeft.y);
-        // std::cout << "\ttex: " << textureVectices.upperLeft.x
-        //           << ", " << textureVectices.lowerRight.y << "\n";
-        // std::cout << "\tvertex: " << vertices.lowerLeft.x
-        //           << ", " << vertices.lowerLeft.y << "\n";
+//         std::cout << "\ttex: " << textureVectices.upperLeft.x
+//                   << ", " << textureVectices.lowerRight.y << "\n";
+//         std::cout << "\tvertex: " << vertices.lowerLeft.x
+//                   << ", " << vertices.lowerLeft.y << "\n";
 
         glTexCoord2f(textureVectices.lowerRight.x,
                      textureVectices.lowerRight.y);  /* lower right corner */
         glVertex2f(vertices.lowerRight.x,
                    vertices.lowerRight.y);
-        // std::cout << "\ttex: " << textureVectices.lowerRight.x
-        //           << ", " << textureVectices.lowerRight.y << "\n";
-        // std::cout << "\tvertex: " << vertices.lowerRight.x
-        //           << ", " << vertices.lowerRight.y << "\n";
+//         std::cout << "\ttex: " << textureVectices.lowerRight.x
+//                   << ", " << textureVectices.lowerRight.y << "\n";
+//         std::cout << "\tvertex: " << vertices.lowerRight.x
+//                   << ", " << vertices.lowerRight.y << "\n";
 
         glTexCoord2f(textureVectices.lowerRight.x,
                      textureVectices.upperLeft.y);  /* upper right corner */
         glVertex2f(vertices.upperRight.x,
                    vertices.upperRight.y);
-        // std::cout << "\ttex: " << textureVectices.lowerRight.x
-        //           << ", " << textureVectices.upperLeft.y << "\n";
-        // std::cout << "\tvertex: " << vertices.upperRight.x
-        //           << ", " << vertices.upperRight.y << "\n";
+//         std::cout << "\ttex: " << textureVectices.lowerRight.x
+//                   << ", " << textureVectices.upperLeft.y << "\n";
+//         std::cout << "\tvertex: " << vertices.upperRight.x
+//                   << ", " << vertices.upperRight.y << "\n";
 
         glTexCoord2f(textureVectices.upperLeft.x,
                      textureVectices.upperLeft.y);  /* upper left corner */
         glVertex2f(vertices.upperLeft.x,
                    vertices.upperLeft.y);
-        // std::cout << "\ttex: " << textureVectices.upperLeft.x
-        //           << ", " << textureVectices.upperLeft.y << "\n";
-        // std::cout << "\tvertex: " << vertices.upperLeft.x
-        //           << ", " << vertices.upperLeft.y << "\n";
+//         std::cout << "\ttex: " << textureVectices.upperLeft.x
+//                   << ", " << textureVectices.upperLeft.y << "\n";
+//         std::cout << "\tvertex: " << vertices.upperLeft.x
+//                   << ", " << vertices.upperLeft.y << "\n";
 
         glEnd();
     }

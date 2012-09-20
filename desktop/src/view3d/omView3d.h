@@ -76,7 +76,7 @@ protected:
     //voxel selection
     void FocusSelectVoxel(QKeyEvent *event);
     void MouseSelectVoxel(QMouseEvent *event, bool drag);
-    void SelectVoxel(DataCoord &voxel, bool append);
+    void SelectVoxel(om::globalCoord &voxel, bool append);
 
     //gl actions
     SegmentDataWrapper PickPoint(const Vector2i& point2di);

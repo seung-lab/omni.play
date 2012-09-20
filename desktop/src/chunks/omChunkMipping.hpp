@@ -5,76 +5,43 @@
 class OmChunkMipping {
 private:
     //octree properties
-    DataBbox dataExtent_;
-    NormBbox normExtent_; // extent of chunk in norm space
-    NormBbox clippedNormExtent_; // extent of contained data in norm space
-    OmChunkCoord coord_;
-    OmChunkCoord parentCoord_;
-    std::set<OmChunkCoord> childrenCoordinates_;
+    om::dataBbox dataExtent_;
+    om::normBbox normExtent_; // extent of chunk in norm space
+    om::normBbox clippedNormExtent_; // extent of contained data in norm space
+    om::chunkCoord coord_;
+    std::set<om::chunkCoord> childrenCoordinates_;
 
     uint32_t numVoxels_;
     uint32_t numBytes_;
 
 public:
-    OmChunkMipping()
-    {}
-
-    virtual ~OmChunkMipping()
-    {}
-
-    template <typename T>
-    void Init(T* vol, const OmChunkCoord& coord)
+    OmChunkMipping(OmMipVolume* vol, const om::chunkCoord& coord)
+        : dataExtent_(coord.chunkBoundingBox(vol))
+        , normExtent_(dataExtent_.toNormBbox())
+        , clippedNormExtent_(dataExtent_.toNormBbox())
+        , coord_(coord)
+        , numVoxels_(vol->Coords().GetNumberOfVoxelsPerChunk())
+        , numBytes_(numVoxels_ * vol->GetBytesPerVoxel())
     {
-        //set coordinate
-        coord_ = coord;
-
-        //set parent, if any
-        if (coord.Level == vol->Coords().GetRootMipLevel()) {
-            parentCoord_ = OmChunkCoord::NULL_COORD;
-        } else {
-            parentCoord_ = coord.ParentCoord();
-        }
-
         //set children
         vol->Coords().ValidMipChunkCoordChildren(coord, childrenCoordinates_);
 
-        //get extent from coord
-        dataExtent_ = vol->Coords().MipCoordToDataBbox(coord, coord.Level);
-
-        //set norm extent
-        normExtent_ = vol->Coords().MipCoordToNormBbox(coord);
-
-        //set clipped norm extent
-        clippedNormExtent_ = vol->Coords().MipCoordToNormBbox(coord);
         clippedNormExtent_.intersect(AxisAlignedBoundingBox<float>::UNITBOX);
-
-        numVoxels_ = vol->Coords().GetNumberOfVoxelsPerChunk();
-        numBytes_ = numVoxels_ * vol->GetBytesPerVoxel();
     }
 
-    inline const DataBbox& GetExtent() const {
+    inline const om::dataBbox& GetExtent() const {
         return dataExtent_;
     }
 
-    inline const NormBbox& GetNormExtent() const {
+    inline const om::normBbox& GetNormExtent() const {
         return normExtent_;
     }
 
-    inline const NormBbox& GetClippedNormExtent() const {
+    inline const om::normBbox& GetClippedNormExtent() const {
         return clippedNormExtent_;
     }
 
-    inline bool IsRoot() const
-    {
-        //if parent is null
-        return OmChunkCoord::NULL_COORD == parentCoord_;
-    }
-
-    inline const OmChunkCoord& GetParentCoordinate() const {
-        return parentCoord_;
-    }
-
-    inline const std::set<OmChunkCoord>& GetChildrenCoordinates() const {
+    inline const std::set<om::chunkCoord>& GetChildrenCoordinates() const {
         return childrenCoordinates_;
     }
 

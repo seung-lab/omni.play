@@ -20,94 +20,41 @@ public:
     {
         OmMipVolume* vol = tcv.tileCoord.getVolume();
         const int rootMipLevel = vol->Coords().GetRootMipLevel();
-        const int initialMipLevel = tcv.tileCoord.getLevel();
+        OmTileCoord tileCoord = tcv.tileCoord;
 
-        if(initialMipLevel == rootMipLevel){
-            return;
-        }
-
-        const OmTileCoord& initialTileCoord = tcv.tileCoord;
-
-        for(int mipLevel = initialMipLevel + 1; mipLevel <= rootMipLevel; ++mipLevel)
+        while(tileCoord.getCoord().getLevel() < rootMipLevel)
         {
-            const OmTileCoord downsampledTileCoord = makeNewTileCoord(initialTileCoord, mipLevel);
+            tileCoord = tileCoord.Downsample();
 
             OmTilePtr downsampledTile;
-            OmTileCache::GetDontQueue(downsampledTile, downsampledTileCoord);
+            OmTileCache::GetDontQueue(downsampledTile, tileCoord);
 
             if(downsampledTile)
             {
-                addTile(downsampledTile, mipLevel, tcv, tilesToDraw);
+                OmTileAndVertices tv = {
+                	downsampledTile,
+                    tcv.vertices,
+                    getTextureVertices(tcv.tileCoord.getCoord(),
+                    				   tileCoord.getCoord().getLevel())
+                };
+
+                tilesToDraw.push_back(tv);
                 return;
             }
         }
 
-        // just queue up downsampled tile
-        int mipLevel = initialMipLevel + 1;
-
-        OmTileCache::QueueUp(makeNewTileCoord(initialTileCoord, mipLevel));
-
-        if(rootMipLevel != mipLevel){
-            OmTileCache::QueueUp(makeNewTileCoord(initialTileCoord, rootMipLevel));
-        }
+        OmTileCache::QueueUp(tileCoord);
     }
 
-    void addTile(OmTilePtr& downsampledTile, const int mipLevel,
-                 const OmTileCoordAndVertices& tcv, std::deque<OmTileAndVertices>& tilesToDraw)
+    TextureVectices getTextureVertices(const om::chunkCoord& old, const int curMipLevel)
     {
-        const int initialMipLevel = tcv.tileCoord.getLevel();
-        const DataCoord& initialDataCoord = tcv.tileCoord.getDataCoord();
-        const GLfloatBox& vertices = tcv.vertices;
+    	Vector2i chunkCoordsInPlane = OmView2dConverters::Get2PtsInPlane(old.Coordinate, viewType_);
+    	int mipDiff = om::math::pow2int(curMipLevel - old.getLevel());
+    	float inc = 1.0f / mipDiff;
+    	Vector2f textureRet(chunkCoordsInPlane.x % mipDiff * inc,
+    	                    chunkCoordsInPlane.y % mipDiff * inc);
 
-        OmTileAndVertices tv = {downsampledTile,
-                                vertices,
-                                getTextureVertices(initialDataCoord, initialMipLevel,
-                                                   mipLevel)
-        };
-
-        tilesToDraw.push_back(tv);
-    }
-
-    OmTileCoord makeNewTileCoord(const OmTileCoord& initialTileCoord, const int mipLevel)
-    {
-        return OmTileCoord(mipLevel,
-                           makeNewDataCoord(initialTileCoord.getDataCoord(), mipLevel),
-                           initialTileCoord.getVolume(),
-                           initialTileCoord.getFreshness(),
-                           initialTileCoord.getViewGroupState(),
-                           initialTileCoord.getViewType(),
-                           initialTileCoord.getSegmentColorCacheType());
-    }
-
-    DataCoord makeNewDataCoord(const DataCoord& oldDataCoord, const int mipLevel)
-    {
-        const int newTileSize = 128 * om::math::pow2int(mipLevel);
-
-        const Vector2i ptsInPlane = OmView2dConverters::Get2PtsInPlane(oldDataCoord, viewType_);
-
-        const int depth = OmView2dConverters::GetViewTypeDepth(oldDataCoord, viewType_);
-
-        return OmView2dConverters::MakeViewTypeVector3(om::math::roundDown(ptsInPlane.x, newTileSize),
-                                                       om::math::roundDown(ptsInPlane.y, newTileSize),
-                                                       depth,
-                                                       viewType_);
-    }
-
-    TextureVectices getTextureVertices(const DataCoord& oldDC, const int initialMipLevel,
-                                       const int curMipLevel)
-    {
-        const Vector2i initialPtsInPlane = OmView2dConverters::Get2PtsInPlane(oldDC, viewType_);
-        const int initialTileSize = 128 * om::math::pow2int(initialMipLevel);
-        const int finalTileSize = 128 * om::math::pow2int(curMipLevel);
-
-        const Vector2f pts(initialPtsInPlane.x % finalTileSize,
-                           initialPtsInPlane.y % finalTileSize);
-
-        const Vector2f textureRet = pts / static_cast<float>(finalTileSize);
-
-        const float inc = static_cast<float>(initialTileSize) / static_cast<float>(finalTileSize);
-
-        TextureVectices ret;
+		TextureVectices ret;
 
         ret.upperLeft.x = textureRet.x;
         ret.upperLeft.y = textureRet.y + inc;

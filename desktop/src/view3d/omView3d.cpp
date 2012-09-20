@@ -43,8 +43,12 @@ enum widgets {
  *  Constructs View3d widget that shares with the primary widget.
  */
 OmView3d::OmView3d(QWidget* parent, OmViewGroupState* vgs)
+#ifdef ZI_OS_MACOS
+    : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent, vgs->get3dContext())
+#else
     : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent)
-    , mView3dUi(this, vgs)
+#endif
+	, mView3dUi(this, vgs)
     , vgs_(vgs)
     , meshesFound_(false)
     , segmentations_(SegmentationDataWrapper::GetPtrVec())
@@ -299,9 +303,8 @@ void OmView3d::View3dRecenter()
     if(distance)
     {
         mCamera.SetDistance(*distance);
-
-        const DataCoord coord = vgs_->View2dState()->GetScaledSliceDepth();
-        mCamera.SetFocus(coord);
+	    const om::globalCoord coord = vgs_->View2dState()->GetScaledSliceDepth();
+	    mCamera.SetFocus(coord);
     }
 
     updateGL();
@@ -495,10 +498,11 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
     //draw focus axis
     mCamera.DrawFocusAxis();
 
+    const OmSegmentation * seg = vgs_->Segmentation().GetSegmentationPtr();
     //setup culler to current projection-modelview matrix
     OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
-                          mCamera.GetPosition(),
-                          mCamera.GetFocus());
+                          om::normCoord(mCamera.GetPosition(), seg),
+                          om::normCoord(mCamera.GetFocus(), seg));
 
     meshesFound_ = false;
 
@@ -518,8 +522,8 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
         }
 
         om::shared_ptr<OmVolumeCuller> newCuller =
-            culler.GetTransformedCuller(vol->Coords().GetNormToDataMatrix(),
-                                        vol->Coords().GetNormToDataInvMatrix());
+            culler.GetTransformedCuller(vol->Coords().NormToGlobalMat(),
+                                        vol->Coords().GlobalToNormMat());
 
         OmMeshDrawer* meshDrawer = vol->MeshDrawer();
 

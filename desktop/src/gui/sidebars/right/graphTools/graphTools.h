@@ -9,6 +9,7 @@ class SizeThresholdSpinBox;
 class OmViewGroupState;
 class SegmentationDataWrapper;
 class SplitButton;
+class ShatterButton;
 
 namespace om { namespace sidebars { class rightImpl; } }
 
@@ -18,6 +19,7 @@ public:
     GraphTools(om::sidebars::rightImpl*, OmViewGroupState* vgs);
 
     void SetSplittingOff();
+    void SetShatteringOff();
 
     OmViewGroupState* GetViewGroupState() const {
         return vgs_;
@@ -35,15 +37,18 @@ public:
 
 private Q_SLOTS:
     void setSplittingOff();
+    void setShatteringOff();
 
 Q_SIGNALS:
     void signalSplittingOff();
+    void signalShatteringOff();
 
 private:
     om::sidebars::rightImpl *const mParent;
     OmViewGroupState *const vgs_;
 
     SplitButton* splitButton;
+    ShatterButton* shatterButton;
 
     MSTThresholdSpinBox* threshold_;
     SizeThresholdSpinBox* sizeThreshold_;

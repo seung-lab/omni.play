@@ -63,17 +63,17 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel,
                             const int x, const int y, const int z,
                             const ViewType viewType)
 {
-
-    const DataCoord data_coord = DataCoord(x, y, z);
-
+    const om::globalCoord coord = om::globalCoord(x, y, z);
+    const om::chunkCoord chunk = coord.toChunkCoord(vol_, mipLevel);
+    const om::dataCoord data = coord.toDataCoord(vol_, mipLevel);
     const int freshness = 0;
 
-    const OmTileCoord tileCoord(mipLevel,
-                                data_coord,
+    const OmTileCoord tileCoord(chunk,
+                                viewType,
+                                data.toTileOffset(viewType),
                                 vol_,
                                 freshness,
                                 vgs_,
-                                viewType,
                                 SEGMENTATION);
 
     OmTilePtr tile;

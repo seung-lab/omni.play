@@ -7,7 +7,7 @@
 #include "utility/yaml/genericManager.hpp"
 
 namespace YAML {
-    
+
 Emitter &operator<<(Emitter& out, const OmChannelManager& cm)
 {
     out << BeginMap;
@@ -26,7 +26,7 @@ Emitter& operator<<(Emitter& out, const OmChannel& chan)
     out << BeginMap;
     mipVolume<const OmChannel> volArchive(chan);
     volArchive.Store(out);
-    
+
     out << Key << "Filters" << Value << chan.filterManager_;
     out << EndMap;
     return out;
@@ -36,7 +36,7 @@ void operator>>(const Node& in, OmChannel& chan)
 {
     mipVolume<OmChannel> volArchive(chan);
     volArchive.Load(in);
-    
+
     in["Filters"] >> chan.filterManager_;
     chan.LoadVolDataIfFoldersExist();
 }
@@ -44,32 +44,38 @@ void operator>>(const Node& in, OmChannel& chan)
 Emitter& operator<<(Emitter& out, const OmMipVolCoords& c)
 {
     out << BeginMap;
-    out << Key << "normToDataMat" << Value << c.normToDataMat_;
-    out << Key << "normToDataInvMat" << Value << c.normToDataInvMat_;
-    out << Key << "dataExtent" << Value << c.dataExtent_;
-    out << Key << "dataResolution" << Value << c.dataResolution_;
+    out << Key << "dataDimensions" << Value << c.GetDataDimensions();
+    out << Key << "dataResolution" << Value << c.GetResolution();
     out << Key << "chunkDim" << Value << c.chunkDim_;
-    out << Key << "unitString" << Value << c.unitString_;
-    out << Key << "dataStretchValues" << Value << c.dataStretchValues_;
     out << Key << "mMipLeafDim" << Value << c.mMipLeafDim;
     out << Key << "mMipRootLevel" << Value << c.mMipRootLevel;
-    out << Key << "absOffset" << Value << c.absOffset_;
+    out << Key << "absOffset" << Value << c.GetAbsOffset();
     out << EndMap;
     return out;
 }
 
 void operator>>(const Node& in, OmMipVolCoords& c)
 {
-    in["normToDataMat"] >> c.normToDataMat_;
-    in["normToDataInvMat"] >> c.normToDataInvMat_;
-    in["dataExtent"] >> c.dataExtent_;
-    in["dataResolution"] >> c.dataResolution_;
+    boost::optional<om::globalBbox> extent;
+    om::yaml::yamlUtil::OptionalRead(in, "dataExtent", extent); // backwards compatibility
+    if(extent) {
+        c.SetDataDimensions(extent.get().getDimensions());
+    } else {
+        Vector3i dims;
+        in["dataDimensions"] >> dims;
+        c.SetDataDimensions(dims);
+    }
+
+    Vector3i resolution;
+    in["dataResolution"] >> resolution;
+    c.SetResolution(resolution);
+
     in["chunkDim"] >> c.chunkDim_;
-    in["unitString"] >> c.unitString_;
-    in["dataStretchValues"] >> c.dataStretchValues_;
     in["mMipLeafDim"] >> c.mMipLeafDim;
     in["mMipRootLevel"] >> c.mMipRootLevel;
-    om::yaml::yamlUtil::OptionalRead(in, "absOffset", c.absOffset_, Vector3i::ZERO);
+    Vector3i offset;
+    om::yaml::yamlUtil::OptionalRead(in, "absOffset", offset, Vector3i::ZERO);
+    c.SetAbsOffset(offset);
 }
 
 } // namespace YAML

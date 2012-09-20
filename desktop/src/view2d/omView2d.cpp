@@ -95,6 +95,7 @@ void OmView2d::enterEvent(QEvent*)
     // steal focus when mouse hovers over widget
 }
 
+#ifndef ZI_OS_MACOS
 void OmView2d::paintGL()
 {
     if(keyEvents_->IsBlockingKeyDown()){
@@ -102,3 +103,4 @@ void OmView2d::paintGL()
     }
     OmView2dCore::paintGL();
 }
+#endif

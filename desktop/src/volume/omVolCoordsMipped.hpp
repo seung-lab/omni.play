@@ -3,12 +3,16 @@
 #include "volume/omVolCoords.hpp"
 #include "datalayer/archive/channel.h"
 
+class OmMipVolume;
+
 class OmMipVolCoords : public OmVolCoords {
 private:
     int mMipLeafDim; //must be even
 
     //inferred from leaf dim and source data extent
     int mMipRootLevel;
+
+    const OmMipVolume * const vol_;
 
     template <class T> friend class OmMipVolumeArchive;
 
@@ -19,12 +23,13 @@ private:
     friend void YAML::operator>>(const YAML::Node& in, OmMipVolCoords& c);
     friend QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c);
     friend QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c);
-    
+
 
 public:
-    OmMipVolCoords()
+    OmMipVolCoords(const OmMipVolume * const vol)
         : mMipLeafDim(0)
         , mMipRootLevel(0)
+        , vol_(vol)
     {}
 
     virtual ~OmMipVolCoords()
@@ -32,20 +37,18 @@ public:
 
 //mip level method
 
-    /**
-     *  Calculate MipRootLevel using GetChunkDimension().
-     */
+    // Calculate MipRootLevel using GetChunkDimension().
     void UpdateRootLevel()
     {
         //determine max level
-        Vector3i source_dims = GetDataExtent().getUnitDimensions();
+        Vector3i source_dims = GetExtent().getUnitDimensions();
         int max_source_dim = source_dims.getMaxComponent();
         int mipchunk_dim = GetChunkDimension();
 
         if (max_source_dim <= mipchunk_dim) {
             mMipRootLevel = 0;
         } else {
-            mMipRootLevel = ceil(log((float) (max_source_dim) / GetChunkDimension()) / log((float)2));
+            mMipRootLevel = ceil(log((float) (max_source_dim) / mipchunk_dim) / log(2.0f));
         }
     }
 
@@ -53,26 +56,18 @@ public:
         return mMipRootLevel;
     }
 
-    /**
-     *  Calculate the data dimensions needed to contain the volume at a given compression level.
-     */
-    inline Vector3i MipLevelDataDimensions(const int level) const
+    inline Vector3i MipedDataDimensions(const int level) const
     {
-        //get dimensions
-        DataBbox source_extent = GetDataExtent();
-        Vector3f source_dims = source_extent.getUnitDimensions();
-
-        //dims in fraction of pixels
-        Vector3f mip_level_dims = source_dims / om::math::pow2int(level);
-
-        return Vector3i(ceil(mip_level_dims.x),
-                        ceil(mip_level_dims.y),
-                        ceil(mip_level_dims.z));
+        return GetDataDimensions() / om::math::pow2int(level);
     }
 
-    /**
-     *  Calculate the MipChunkCoord dims required to contain all the chunks of a given level.
-     */
+    // Calculate the data dimensions needed to contain the volume at a given compression level.
+    // TODO: should this be factored out?
+    inline Vector3i MipLevelDataDimensions(const int level) const {
+        return GetExtent().toDataBbox(vol_, level).getMax();
+    }
+
+    // Calculate the MipChunkCoord dims required to contain all the chunks of a given level.
     // TODO: this appear to NOT do the right thing for level=0 (purcaro)
     inline Vector3i MipLevelDimensionsInMipChunks(int level) const
     {
@@ -89,82 +84,13 @@ public:
                         GetChunkDimension());
     }
 
-    /*
-     *  Returns MipChunkCoord containing given data coordinate for given MipLevel
-     */
-    inline OmChunkCoord DataToMipCoord(const DataCoord& dataCoord,
-                                       const int level) const
-    {
-        return DataToMipCoord(dataCoord, level, GetChunkDimensions());
-    }
-
-    inline static OmChunkCoord DataToMipCoord(const DataCoord& dataCoord,
-                                              const int level,
-                                              const Vector3i& chunkDimensions)
-    {
-        if( dataCoord.x < 0 ||
-            dataCoord.y < 0 ||
-            dataCoord.z < 0 )
-        {
-            return OmChunkCoord::NULL_COORD;
-        }
-
-        const int factor = om::math::pow2int(level);
-        return OmChunkCoord(level,
-                            dataCoord.x / factor / chunkDimensions.x,
-                            dataCoord.y / factor / chunkDimensions.y,
-                            dataCoord.z / factor / chunkDimensions.z);
-    }
-
-    inline OmChunkCoord NormToMipCoord(const NormCoord &normCoord,
-                                       const int level) const
-    {
-        return DataToMipCoord(NormToDataCoord(normCoord), level);
-    }
-
-    /**
-     *  Returns the extent of the data in specified level covered by the given MipCoordinate.
-     */
-    inline DataBbox MipCoordToDataBbox(const OmChunkCoord & rMipCoord,
-                                       const int newLevel) const
-    {
-
-        int old_level_factor = om::math::pow2int(rMipCoord.Level);
-        int new_level_factor = om::math::pow2int(newLevel);
-
-        //convert to leaf level dimensions
-        int leaf_dim = GetChunkDimension() * old_level_factor;
-        Vector3i leaf_dims = GetChunkDimensions() * old_level_factor;
-
-        //min of extent in leaf data coordinates
-        DataCoord leaf_min_coord = rMipCoord.Coordinate * leaf_dim;
-
-        //convert to new level
-        DataCoord new_extent_min_coord = leaf_min_coord / new_level_factor;
-
-        Vector3i new_dims = leaf_dims / new_level_factor;
-
-        //return
-        return DataBbox(new_extent_min_coord, new_dims.x, new_dims.y, new_dims.z);
-    }
-
-    inline NormBbox MipCoordToNormBbox(const OmChunkCoord & rMipCoord) const {
-        return DataToNormBbox(MipCoordToDataBbox(rMipCoord, 0));
-    }
-
-    inline DataBbox DataToDataBBox(const DataCoord &vox, const int level) const {
-        return MipCoordToDataBbox(DataToMipCoord(vox, level), level);
-    }
-
     //mip chunk methods
-    inline OmChunkCoord RootMipChunkCoordinate() const {
-        return OmChunkCoord(mMipRootLevel, 0, 0, 0);
+    inline om::chunkCoord RootMipChunkCoordinate() const {
+        return om::chunkCoord(mMipRootLevel, Vector3i::ZERO);
     }
 
-    /*
-     *  Returns true if given MipCoordinate is a valid coordinate within the MipVolume.
-     */
-    inline bool ContainsMipChunkCoord(const OmChunkCoord & rMipCoord) const
+    // Returns true if given MipCoordinate is a valid coordinate within the MipVolume.
+    inline bool ContainsMipChunkCoord(const om::chunkCoord & rMipCoord) const
     {
         //if level is greater than root level
         if(rMipCoord.Level < 0 ||
@@ -173,9 +99,9 @@ public:
         }
 
         //convert to data box in leaf (MIP 0)
-        DataBbox bbox = MipCoordToDataBbox(rMipCoord, 0);
+        om::globalBbox bbox = rMipCoord.chunkBoundingBox(vol_).toGlobalBbox();
 
-        bbox.intersect(GetDataExtent());
+        bbox.intersect(GetExtent());
         if(bbox.isEmpty()){
             return false;
         }
@@ -184,17 +110,15 @@ public:
         return true;
     }
 
-    /**
-     *  Finds set of children coordinates that are valid for this MipVolume.
-     */
-    inline void ValidMipChunkCoordChildren(const OmChunkCoord & rMipCoord,
-                                           std::set<OmChunkCoord>& children) const
+    // Finds set of children coordinates that are valid for this MipVolume.
+    inline void ValidMipChunkCoordChildren(const om::chunkCoord & rMipCoord,
+                                           std::set<om::chunkCoord>& children) const
     {
         //clear set
         children.clear();
 
         //get all possible children
-        OmChunkCoord possible_children[8];
+        om::chunkCoord possible_children[8];
         rMipCoord.ChildrenCoords(possible_children);
 
         //for all possible children
@@ -237,18 +161,19 @@ public:
         return dims.x * dims.y * dims.z;
     }
 
-    void addChunkCoordsForLevel(const int mipLevel,
-                                std::deque<OmChunkCoord>* coords) const
-    {
-        const Vector3i dims = MipLevelDimensionsInMipChunks(mipLevel);
+    inline Matrix4f DataToGlobalMat(int mipLevel) const {
+        Matrix4f ret = dataToGlobal_;
+        int factor = om::math::pow2int(mipLevel);
+        ret.scaleTranslation(1.0f / factor);
+        ret.m33 = 1.0f / factor;
+        return ret;
+    }
 
-        for (int z = 0; z < dims.z; ++z){
-            for (int y = 0; y < dims.y; ++y){
-                for (int x = 0; x < dims.x; ++x){
-                    coords->push_back(OmChunkCoord(mipLevel, x, y, z));
-                }
-            }
-        }
+    inline Matrix4f GlobalToDataMat(int mipLevel) const {
+        Matrix4f ret = globalToData_;
+        int factor = om::math::pow2int(mipLevel);
+        ret.m33 = factor;
+        return ret;
     }
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chunks/omChunkCoord.h"
+#include "common/omCommon.h"
 #include "gui/widgets/progress.hpp"
 
 namespace om {
@@ -31,7 +31,7 @@ public:
         return progress_->GetTotal();
     }
 
-    void ChunkCompleted(const OmChunkCoord& coord)
+    void ChunkCompleted(const om::chunkCoord& coord)
     {
         progress_->SetDone(1);
 

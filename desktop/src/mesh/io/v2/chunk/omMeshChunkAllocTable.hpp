@@ -17,7 +17,7 @@ private:
 public:
     OmMeshChunkAllocTableV2(OmMeshFilePtrCache* filePtrCache,
                             OmSegmentation* seg,
-                            const OmChunkCoord& coord,
+                            const om::chunkCoord& coord,
                             const double threshold)
         : filePtrCache_(filePtrCache)
         , file_(new OmMemMappedAllocFile(seg, coord, threshold))

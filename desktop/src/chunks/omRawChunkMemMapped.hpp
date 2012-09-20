@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chunks/omChunkCoord.h"
+#include "common/omCommon.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omMipVolume.h"
@@ -11,7 +11,7 @@ template <typename T>
 class OmRawChunkMemMapped {
 private:
     OmMipVolume *const vol_;
-    const OmChunkCoord coord_;
+    const om::chunkCoord coord_;
     const uint64_t chunkOffset_;
     const QString fnp_;
     const uint64_t numBytes_;
@@ -20,7 +20,7 @@ private:
     T* dataRaw_;
 
 public:
-    OmRawChunkMemMapped(OmMipVolume* vol, const OmChunkCoord& coord)
+    OmRawChunkMemMapped(OmMipVolume* vol, const om::chunkCoord& coord)
         : vol_(vol)
         , coord_(coord)
         , chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))

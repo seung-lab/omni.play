@@ -22,7 +22,7 @@ public:
         dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
         dock->setWidget(impl_);
         dock->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
-        
+
         impl_->setParent(dock);
 
         mainWindow->addDockWidget(Qt::RightDockWidgetArea, dock);
@@ -30,6 +30,10 @@ public:
 
     void SetSplittingOff(){
         impl_->SetSplittingOff();
+    }
+
+    void SetShatteringOff(){
+        impl_->SetShatteringOff();
     }
 };
 

@@ -73,11 +73,13 @@ public:
     }
     
     template <typename T>
-    static void OptionalRead(const YAML::Node& n, const std::string& name, T &data)
+    static void OptionalRead(const YAML::Node& n, const std::string& name, boost::optional<T> &data)
     {
         if(n.FindValue(name)) {
-            n[name] >> data;  
-        } 
+            T read;
+            n[name] >> read;
+            data = read;
+        }
     }
 };
 

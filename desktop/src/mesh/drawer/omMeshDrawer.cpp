@@ -25,6 +25,11 @@ OmMeshDrawer::Draw(OmViewGroupState* vgs,
     om::shared_ptr<OmMeshPlan> sortedSegments =
         cache_->GetSegmentsToDraw(vgs, culler, drawOptions);
 
+    // FOR_EACH(iter, *sortedSegments) {
+    // 	std::cout << iter->first->value() << ":" << iter->second << " ";
+    // }
+    // std::cout << std::endl;
+
     updateNumPrevRedraws(culler);
 
     OmMeshDrawerImpl drawer(segmentation_, vgs, drawOptions,

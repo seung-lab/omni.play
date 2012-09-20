@@ -17,6 +17,7 @@
 #include "view3d/omView3dUi.h"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
+#include "annotation/annotation.h"
 
 OmView3dUi::OmView3dUi(OmView3d* view3d, OmViewGroupState* vgs)
     : view3d_(view3d)
@@ -84,6 +85,22 @@ void OmView3dUi::splitModeMouseReleased(QMouseEvent* event)
     OmSplitSegmentRunner::FindAndSplitSegments(pickPoint.sdw, vgs_, pickPoint.coord);
 }
 
+void OmView3dUi::shatterModeMouseReleased(QMouseEvent* event)
+{
+    const OmSegmentPickPoint pickPoint = pickVoxelMouseCrosshair(event);
+
+    view3d_->updateGL();
+
+    if(!pickPoint.sdw.IsSegmentValid()) {
+        return;
+    }
+
+    OmActions::ShatterSegment(pickPoint.sdw.GetSegment());
+    vgs_->GetToolBarManager()->SetShatteringOff();
+    OmStateManager::SetOldToolModeAndSendEvent();
+}
+
+
 bool OmView3dUi::cutSegment(QMouseEvent* event)
 {
     const SegmentDataWrapper sdw = pickSegmentMouse(event, false);
@@ -95,6 +112,20 @@ bool OmView3dUi::cutSegment(QMouseEvent* event)
     }
 
     OmActions::CutSegment(sdw);
+    return true;
+}
+
+bool OmView3dUi::annotate(QMouseEvent* event)
+{
+	const OmSegmentPickPoint pickPoint = pickVoxelMouseCrosshair(event);
+
+	if(!pickPoint.sdw.IsSegmentValid()) {
+	    return false;
+	}
+
+    om::annotation::manager* manager = pickPoint.sdw.GetSegmentation().Annotations();
+
+    manager->Add(pickPoint.coord, vgs_->getAnnotationString(), vgs_->getAnnotationColor());
     return true;
 }
 
@@ -142,9 +173,22 @@ void OmView3dUi::navigationModeMousePressed(QMouseEvent* event)
             return;
         }
 
+        if(om::tool::SHATTER == OmStateManager::GetToolMode())
+        {
+            shatterModeMouseReleased(event);
+            return;
+        }
+
         if(om::tool::CUT == OmStateManager::GetToolMode())
         {
             if(cutSegment(event)){
+                return;
+            }
+        }
+
+		if(om::tool::ANNOTATE == OmStateManager::GetToolMode())
+        {
+            if(annotate(event)){
                 return;
             }
         }

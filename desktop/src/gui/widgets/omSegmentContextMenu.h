@@ -16,7 +16,7 @@ Q_OBJECT
 
 public:
     void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs);
-    void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs, const DataCoord coord);
+    void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs, const om::globalCoord coord);
     void Refresh(const OmSegmentPickPoint& pickPoint, OmViewGroupState* vgs);
 
 protected:
@@ -50,7 +50,7 @@ private Q_SLOTS:
 
 private:
     SegmentDataWrapper sdw_;
-    DataCoord coord_;
+    om::globalCoord coord_;
     OmViewGroupState* vgs_;
 
     bool isValid() const;

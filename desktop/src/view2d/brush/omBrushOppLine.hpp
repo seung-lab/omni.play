@@ -25,7 +25,7 @@ public:
     {}
 
     om::shared_ptr<om::pt3d_list_t>
-    GetPts(const DataCoord& first, const DataCoord& second)
+    GetPts(const om::globalCoord& first, const om::globalCoord& second)
     {
         const Vector2i pt0 = OmView2dConverters::Get2PtsInPlane(first, info_->viewType);
         const Vector2i pt1 = OmView2dConverters::Get2PtsInPlane(second, info_->viewType);
@@ -52,8 +52,8 @@ private:
 
         for(int i = 0; i < numPts; ++i)
         {
-            const Vector3i xyzCoord =
-                OmView2dConverters::MakeViewTypeVector3<int>(ptsInLineRadius1x_[i],
+            const om::globalCoord xyzCoord =
+                OmView2dConverters::MakeViewTypeVector3<float>(ptsInLineRadius1x_[i],
                                                              ptsInLineRadius1y_[i],
                                                              depth_, viewType_);
             OmBrushOppUtils::GetPts(info, pts, xyzCoord, viewType_);

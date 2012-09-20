@@ -13,7 +13,7 @@ public:
     static void ErasePts(OmBrushOppInfo* info, om::pt3d_list_t* pts,
                          const OmSegID segIDtoErase)
     {
-        const DataBbox& segDataExtent = info->segmentation->Coords().GetDataExtent();
+        const om::globalBbox& segDataExtent = info->segmentation->Coords().GetDataExtent();
 
         std::set<Vector3i> voxelCoords;
 
@@ -32,7 +32,7 @@ public:
                                 info->viewType);
 
         virtual om::shared_ptr<boost::unordered_set<OmSegID> > segIDsAndPts =
-            sliceCache.GetSegIDs(chunksAndPts, info->depth % info->chunkDim);
+            sliceCache.GetSegIDs(chunksAndPts, info->depth);
 
 
         FOR_EACH(iter, *pts)
@@ -52,22 +52,21 @@ public:
                              voxelCoords,
                              segIDtoErase);
 
-        removeModifiedTiles(info, voxelCoords);
+        removeModifiedTiles();
 
         OmEvents::Redraw2d();
     }
 
 private:
-    static void removeModifiedTiles(OmBrushOppInfo*,
-                                    const std::set<DataCoord>&)
+    static void removeModifiedTiles()
     {
         // const int chunkDim = info->chunkDim;
 
-        // std::map<OmChunkCoord, std::set<Vector3i> > ptsInChunks;
+        // std::map<om::chunkCoord, std::set<Vector3i> > ptsInChunks;
 
         // FOR_EACH(iter, voxelCoords)
         // {
-        //     const OmChunkCoord chunkCoord(0,
+        //     const om::chunkCoord chunkCoord(0,
         //                                   iter->x / chunkDim,
         //                                   iter->y / chunkDim,
         //                                   iter->z / chunkDim);

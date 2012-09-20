@@ -15,6 +15,11 @@
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
+#include "view2d/omView2dState.hpp"
+
+#ifdef ZI_OS_MACOS
+#include <QGLWidget>
+#endif
 
 OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     : OmManageableObject()
@@ -26,6 +31,9 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     , landmarks_(new OmLandmarks(mainWindow))
     , cdw_(new ChannelDataWrapper(1))
     , sdw_(new SegmentationDataWrapper(1))
+#ifdef ZI_OS_MACOS
+    , context3d_(new QGLWidget())
+#endif
     , toolBarManager_(NULL)
     , brightenSelected_(true)
     , annotationVisible_(true)
@@ -98,16 +106,21 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
         }
 
         return SCC_SEGMENTATION;
-
     default:
-        throw OmArgException("unknown objType");
+    	break;
     }
+
+    throw OmArgException("unknown objType");
 }
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm)
 {
     toolBarManager_ = tbm;
     splitting_->SetToolBarManager(tbm);
+}
+
+ToolBarManager* OmViewGroupState::GetToolBarManager() {
+    return toolBarManager_;
 }
 
 void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)

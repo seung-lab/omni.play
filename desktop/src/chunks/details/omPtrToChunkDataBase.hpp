@@ -5,6 +5,7 @@
 namespace om {
 namespace chunk {
 
+// TODO: Get rid of this!
 class ptrToChunkDataBase {
 public:
     virtual void Release()

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "chunks/omChunkCoord.h"
 #include "chunks/omSegChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "utility/image/omImage.hpp"
@@ -49,12 +48,12 @@ public:
                     const int lenX = x ? 1 : 128;
 
                     //form mip coord
-                    const OmChunkCoord& currentCoord = chunk->GetCoordinate();
+                    const om::chunkCoord& currentCoord = chunk->GetCoordinate();
 
-                    const OmChunkCoord mip_coord(currentCoord.getLevel(),
-                                                 currentCoord.getCoordinateX() + x,
-                                                 currentCoord.getCoordinateY() + y,
-                                                 currentCoord.getCoordinateZ() + z);
+                    const om::chunkCoord mip_coord(currentCoord.getLevel(),
+                                                   currentCoord.X() + x,
+                                                   currentCoord.Y() + y,
+                                                   currentCoord.Z() + z);
 
                     //skip invalid mip coord
                     if(vol->Coords().ContainsMipChunkCoord(mip_coord))
@@ -84,7 +83,7 @@ public:
         SegmentationDataWrapper sdw(segmentationID_);
         OmSegmentation& vol = sdw.GetSegmentation();
 
-        om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol.GetMipChunkCoords();
 
         const uint32_t numChunks = coordsPtr->size();
@@ -93,7 +92,7 @@ public:
 
         FOR_EACH(iter, *coordsPtr)
         {
-            const OmChunkCoord& coord = *iter;
+            const om::chunkCoord& coord = *iter;
 
             ++counter;
             printf("\rfinding values in chunk %d of %d...", counter, numChunks);

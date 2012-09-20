@@ -33,17 +33,17 @@ public:
 // MST-related
     static void ChangeMSTthreshold(const SegmentationDataWrapper sdw,
                                    const double threshold);
-    
+
     static void ChangeSizethreshold(const SegmentationDataWrapper sdw,
                                     const double threshold);
-                                                                  
+
 // painting-related
     static void SetVoxel(const OmID segmentationId,
-                         const DataCoord& rVoxel,
+                         const om::globalCoord& rVoxel,
                          const OmSegID value);
 
     static void SetVoxels(const OmID segmentationId,
-                          const std::set<DataCoord>& rVoxels,
+                          const std::set<om::globalCoord>& rVoxels,
                           const OmSegID value);
 
 // segment-related
@@ -64,6 +64,7 @@ public:
                              const OmSegIDsSet& ids);
 
     static void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
+    static void ShatterSegment(OmSegment* seg);
 
     static void CutSegment(const SegmentDataWrapper& sdw);
 

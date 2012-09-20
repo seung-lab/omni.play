@@ -33,30 +33,40 @@ public:
     void SegmentSelectedEvent(OmSegmentEvent*)
     {}
 
-    void ViewBoxChangeEvent(){
+    void ViewBoxChangeEvent()
+    {
+        state_->Coords().UpdateTransformationMatrices();
         v2d_->Redraw();
     }
 
-    void ViewPosChangeEvent(){
+    void ViewPosChangeEvent()
+    {
+        state_->Coords().UpdateTransformationMatrices();
         v2d_->Redraw();
     }
 
     void ViewCenterChangeEvent()
     {
+        state_->Coords().UpdateTransformationMatrices();
         state_->ChangeViewCenter();
         v2d_->Redraw();
         OmEvents::Redraw3d();
     }
 
-    void ViewRedrawEvent(){
+    void ViewRedrawEvent()
+    {
+        state_->Coords().UpdateTransformationMatrices();
         v2d_->Redraw();
     }
 
-    void ViewBlockingRedrawEvent(){
+    void ViewBlockingRedrawEvent()
+    {
+        state_->Coords().UpdateTransformationMatrices();
         v2d_->RedrawBlocking();
     }
 
-    void ToolModeChangeEvent(){
+    void ToolModeChangeEvent()
+    {
         OmCursors::setToolCursor(v2d_);
     }
     

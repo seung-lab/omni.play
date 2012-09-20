@@ -23,7 +23,7 @@ public:
 
     void Execute()
     {
-        OmSegments* segments = params_->sdw.Segments();
+    	OmSegments* segments = params_->sdw.Segments();
 
         if(params_->augmentListOnly)
 		{

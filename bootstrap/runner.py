@@ -25,7 +25,7 @@ CFLAGS='-g -O2'
 --without-ruby
 --without-erlang
 --enable-gen-cpp
---with-boost={libs}/Boost""".format(libs=b.libs_fp())
+--with-boost={libs}/boost""".format(libs=b.libs_fp())
 
         b.prepareAndBuild()
         self.__patch_thrift(b)

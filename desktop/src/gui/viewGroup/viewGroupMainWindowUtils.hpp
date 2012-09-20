@@ -42,7 +42,7 @@ public:
 
         } else if(utils_->doesDockWidgetExist(AFFINITY, viewType)){
             dockToSplit = utils_->getDockWidget(AFFINITY, viewType);
-            
+
         } else {
             throw OmArgException("don't know where to put dock");
         }

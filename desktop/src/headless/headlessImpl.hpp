@@ -145,16 +145,16 @@ public:
 
     template <typename T>
     static void ChangeVolResolution(T& vol,
-                                    const float xRes,
-                                    const float yRes,
-                                    const float zRes)
+                                    const int xRes,
+                                    const int yRes,
+                                    const int zRes)
     {
-        const Vector3f dims(xRes, yRes, zRes);
+        const Vector3i dims(xRes, yRes, zRes);
 
-        vol.Coords().SetDataResolution(dims);
+        vol.Coords().SetResolution(dims);
 
         std::cout << "\tvolume data resolution set to "
-                  << vol.Coords().GetDataResolution()
+                  << vol.Coords().GetResolution()
                   << "\n";
     }
 
@@ -273,9 +273,9 @@ public:
 
         double timeSecs = 0;
 
-        om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol.GetMipChunkCoords();
-        std::deque<OmChunkCoord>& coords = *coordsPtr;
+        std::deque<om::chunkCoord>& coords = *coordsPtr;
         const uint32_t numChunks = coords.size();
 
         if(randomize){
