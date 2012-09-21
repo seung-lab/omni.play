@@ -1,13 +1,13 @@
 namespace cpp zi.mesh
 
-struct vector3i
+struct Vector3i
 {
     1: i32 x,
     2: i32 y,
     3: i32 z
 }
 
-struct vector4i
+struct Vector4i
 {
     1: i32 x,
     2: i32 y,
@@ -15,7 +15,7 @@ struct vector4i
     4: i32 a
 }
 
-struct meshCoordinate
+struct MeshCoordinate
 {
     1: i32 x,
     2: i32 y,
@@ -24,42 +24,42 @@ struct meshCoordinate
     5: i32 segID
 }
 
-struct meshData
+struct MeshData
 {
     1: binary data
 }
 
-struct meshDataResult
+struct MeshDataResult
 {
     1: i32 code,
-    2: meshData
+    2: MeshData mesh
 }
 
 service RealTimeMesher
 {
     bool queueUpdateChunk(
       1: string uri,
-      2: vector3i chunk,
+      2: Vector3i chunk,
       3: binary data,
       ),
 
     bool updateChunk(
       1: string uri,
-      2: vector3i chunk,
+      2: Vector3i chunk,
       4: binary data,
       ),
 
     bool queueUpdate(
       1: string uri,
-      2: vector3i location,
-      3: vector3i size,
+      2: Vector3i location,
+      3: Vector3i size,
       4: binary data,
       ),
 
     bool update(
       1: string uri,
-      2: vector3i location,
-      3: vector3i size,
+      2: Vector3i location,
+      3: Vector3i size,
       4: binary data,
       ),
 
@@ -67,36 +67,36 @@ service RealTimeMesher
         1: bool sync
     ),
 
-    meshDataResult getMesh(
+    MeshDataResult getMesh(
       1: string uri,
-      2: meshCoordinate coordinate
+      2: MeshCoordinate coordinate
     ),
 
-    list<meshDataResult> getMeshes(
+    list<MeshDataResult> getMeshes(
       1: string uri,
-      2: list<meshCoordinate> coordinates
+      2: list<MeshCoordinate> coordinates
     ),
 
-    meshDataResult getMeshIfNewer(
+    MeshDataResult getMeshIfNewer(
       1: string uri,
-      2: meshCoordinate coordinate,
+      2: MeshCoordinate coordinate,
       3: i64 version
     ),
 
-    list<meshDataResult> getMeshesIfNewer(
+    list<MeshDataResult> getMeshesIfNewer(
       1: string uri,
-      2: list<meshCoordinate> coordinates
+      2: list<MeshCoordinate> coordinates
       3: list<i64> versions
     ),
 
     i64 getMeshVersion(
       1: string uri,
-      2: meshCoordinate coordinate
+      2: MeshCoordinate coordinate
     ),
 
     list<i64> getMeshVersions(
       1: string uri,
-      2: list<meshCoordinate> coordinates
+      2: list<MeshCoordinate> coordinates
     ),
 
 }
