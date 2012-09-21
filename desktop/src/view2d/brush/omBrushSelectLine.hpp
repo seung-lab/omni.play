@@ -17,7 +17,7 @@ public:
     virtual ~OmBrushSelectLine()
     {}
 
-    void SelectLine(const DataCoord& first, const DataCoord& second)
+    void SelectLine(const om::globalCoord& first, const om::globalCoord& second)
     {
         OmBrushOppLine lineOpp(info_);
 

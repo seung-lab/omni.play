@@ -107,6 +107,8 @@ public:
         return store_;
     }
 
+    // Your method here
+
 protected:
     OmSegmentation *const segmentation_;
     OmSegmentsStore *const store_;

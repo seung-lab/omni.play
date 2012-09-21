@@ -1,32 +1,41 @@
-from string import Template
-from library import LibraryMetadata
+import fileutils
 import os
 
+from string import Template
+from library import LibraryMetadata
 from builder import Builder
+from sysutils import sysutils
 
 class runner:
-    def __init__(self, numCores):
-        self.numCores = numCores
+    def __init__(self, num_cores):
+        self.num_cores = num_cores
 
     def makeBuilder(self, lib):
         cwd = os.getcwd()
         b = Builder(cwd, lib)
-        b.numCores = self.numCores
+        b.num_cores = self.num_cores
         return b
 
     def thrift(self):
         b = self.makeBuilder(LibraryMetadata.thrift())
 
-        args = " ".join([ "CXXFLAGS='-g -O2'",
-                          "CFLAGS='-g -O2'",
-                          "--without-ruby",
-                          "--without-erlang",
-                          "--enable-gen-cpp",
-                          "--with-boost={libs}/Boost".format(libs=b.libs_fp())
-                          ])
+        b.build_options = """
+CXXFLAGS='-g -O2'
+CFLAGS='-g -O2'
+--without-ruby
+--without-erlang
+--enable-gen-cpp
+--with-boost={libs}/boost""".format(libs=b.libs_fp())
 
-        b.build_options(args)
         b.prepareAndBuild()
+        self.__patch_thrift(b)
+
+    def __patch_thrift(self, b):
+        for f in ["thrift/include/thrift/protocol/TBinaryProtocol.h",
+                  "thrift/include/thrift/protocol/TDenseProtocol.h"]:
+            fnp = os.path.join(b.libPath, f)
+            if not os.path.exists(fnp):
+                raise Exception("can't patch " + fnp)
 
         ext_fp = b.ext_fp
         patch_fnp = os.path.join(ext_fp, "patches/thrift.patch")
@@ -38,6 +47,11 @@ class runner:
 
     def libjpeg(self):
         b = self.makeBuilder(LibraryMetadata.jpeg())
+
+        if sysutils.isMac():
+            print "libjpeg not building on mac"
+            return
+
         b.prepareAndBuild()
 
     def libpng(self):
@@ -54,6 +68,10 @@ class runner:
         b.buildInSourceFolder()
 
     def submodule(self):
+        path = os.path.join(os.getcwd(), "zi_lib")
+        if os.path.exists(path):
+            print "\nsubmodules already exists; skipping"
+
         print ("Initializing Submodules.")
         os.system("git submodule init")
         print ("Downloading Submodules.")
@@ -96,7 +114,7 @@ class runner:
         os.system(cmd)
         print "done\n"
 
-        bjamFlags = "-j{num}".format(num=self.numCores)
+        bjamFlags = "-j{num}".format(num=self.num_cores)
         bjamFlags += " -sNO_BZIP2=1 -sZLIB_SOURCE=srcPath/ZLIB_VER"
         bjamFlags += " variant=release link=static threading=multi runtime-link=static"
         # bjamFlags += " toolset=gcc cxxflags=-std=gnu++0x"
@@ -108,16 +126,30 @@ class runner:
 
     def qt(self):
         b = self.makeBuilder(LibraryMetadata.qt())
-        b.build_options = "-static -fast -no-qt3support"
+        b.build_options = """ -release -opensource -no-glib -v
+ -no-exceptions
+ -no-fast -make libs -make tools
+ -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit
+ -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend
+ -no-svg -qt-zlib -qt-libtiff -qt-libpng -no-libmng
+ -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-freetype
+ -no-multimedia -no-javascript-jit -no-script -no-scripttools"""
+
         b.prepareAndBuild()
 
     def hdf5(self):
         b = self.makeBuilder(LibraryMetadata.hdf5())
-        b.build_options = "--enable-threadsafe"
+        b.build_options = "--enable-threadsafe --with-pthread=/usr/lib"
         b.prepareAndBuild()
 
-    def omniServer(self):
-        printTitle("omni.server")
+    def omni(self):
+        self.printTitle("omni")
+        pwd = os.path.dirname(__file__)
+        parent = os.path.abspath(os.path.join(pwd, '..'))
+        os.chdir(parent)
+        cmd = "make -j{0}".format(self.num_cores)
+        os.system(cmd)
+
     """
         genOmniScript(@_)
 

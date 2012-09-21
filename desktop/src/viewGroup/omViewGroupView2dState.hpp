@@ -13,8 +13,8 @@ private:
     struct ViewPlanInfo
     {
         float depth;
-        om::point2df min;
-        om::point2df max;
+        Vector2f min;
+        Vector2f max;
     };
 
     ViewPlanInfo xy_;
@@ -70,10 +70,10 @@ public:
         return wasInitialized_;
     }
 
-    inline Vector3f GetScaledSliceDepth() const
+    inline om::globalCoord GetScaledSliceDepth() const
     {
         zi::guard g(lock_);
-        return Vector3f(yz_.depth, xz_.depth, xy_.depth);
+        return om::globalCoord(yz_.depth, xz_.depth, xy_.depth);
     }
 
     inline float GetScaledSliceDepth(const ViewType plane) const
@@ -82,7 +82,7 @@ public:
         return getPlane(plane).depth;
     }
 
-    inline void SetScaledSliceDepth(const Vector3f& depths)
+    inline void SetScaledSliceDepth(const om::globalCoord& depths)
     {
         {
             zi::guard g(lock_);
@@ -102,19 +102,16 @@ public:
         OmEvents::ViewBoxChanged();
     }
 
-// minimum coordiante of view slice
-    inline void SetViewSliceMin(const ViewType plane, const float x, const float y)
+    // minimum coordiante of view slice
+    inline void SetViewSliceMin(const ViewType plane, const Vector2f vec)
     {
-        const om::point2df pts = { x, y };
-        {
-            zi::guard g(lock_);
-            getPlane(plane).min = pts;
-        }
+        zi::guard g(lock_);
+        getPlane(plane).min = vec;
     }
 
     inline Vector2f GetViewSliceMin(ViewType plane) const
     {
-        const om::point2df& pts = getPlane(plane).min;
+        const Vector2f& pts = getPlane(plane).min;
         {
             zi::guard g(lock_);
             return Vector2f(pts.x, pts.y);
@@ -122,18 +119,15 @@ public:
     }
 
 // maximum coordiante of view slice
-    inline void SetViewSliceMax(const ViewType plane, const float x, const float y)
+    inline void SetViewSliceMax(const ViewType plane, const Vector2f vec)
     {
-        const om::point2df pts = { x, y };
-        {
-            zi::guard g(lock_);
-            getPlane(plane).max = pts;
-        }
+        zi::guard g(lock_);
+        getPlane(plane).max = vec;
     }
 
     inline Vector2f GetViewSliceMax(const ViewType plane) const
     {
-        const om::point2df& pts = getPlane(plane).max;
+        const Vector2f& pts = getPlane(plane).max;
         {
             zi::guard g(lock_);
             return Vector2f(pts.x, pts.y);

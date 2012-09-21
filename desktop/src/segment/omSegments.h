@@ -6,12 +6,12 @@
 
 #include <zi/mutex.hpp>
 
-class OmChunkCoord;
 class OmSegment;
 class OmSegmentChildren;
 class OmSegmentation;
 class OmSegmentsImpl;
 class OmSegmentsStore;
+class OmSegmentDataWrapper;
 
 class OmSegments {
 public:
@@ -59,7 +59,7 @@ public:
 
     boost::optional<std::string> IsEdgeSplittable(const OmSegmentEdge& e);
     boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
-	boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
+    boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
 
     OmSegment* findRoot(OmSegment* segment);
     OmSegment* findRoot(const OmSegID segID);
@@ -72,8 +72,9 @@ public:
     OmSegIDsSet JoinTheseSegments(const OmSegIDsSet& segmentList);
     OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
 
-	std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
-	bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
+    std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
+    bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
+    std::vector<OmSegmentEdge> Shatter(OmSegment* seg);
 
     uint32_t getPageSize();
 
@@ -84,6 +85,10 @@ public:
     bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
 
     uint64_t MSTfreshness() const;
+
+    inline const OmSegmentation * getSegmentation() const {
+        return segmentation_;
+    }
 
 private:
     zi::mutex mutex_;

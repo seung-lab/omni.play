@@ -37,7 +37,7 @@ public:
 
     inline void Get(const uint32_t val, uint64_t& freshness, OmColor& color)
     {
-        spinlock_guard_t g(val);
+		spinlock_guard_t g(val);
         freshness = cache_[val].freshness;
         color = cache_[val].color;
     }

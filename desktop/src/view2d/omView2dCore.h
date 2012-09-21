@@ -3,7 +3,8 @@
 #include "common/omCommon.h"
 #include "view2d/omOnScreenTileCoords.h"
 
-#include <QGLWidget>
+#include <QWidget>
+#include <QGLPixelBuffer>
 #include <QtGui>
 
 class OmFilter2d;
@@ -14,7 +15,13 @@ class OmTileDrawer;
 class OmView2dState;
 class OmViewGroupState;
 
-class OmView2dCore : public QGLWidget {
+#ifdef ZI_OS_MACOS
+#include "view2d/details/omView2dWidgetMac.hpp"
+#else
+#include "view2d/details/omView2dWidgetLinux.hpp"
+#endif
+
+class OmView2dCore : public OmView2dWidgetBase {
 Q_OBJECT
 
 public:
@@ -39,10 +46,10 @@ protected:
         return state_.get();
     }
 
-    // QT QGLWidget overrides
-    void initializeGL();
-    void resizeGL(int width, int height);
-    virtual void paintGL();
+    void Initialize();
+    void Paint3D();
+    void PaintOther();
+    void Resize(int width, int height);
 
     bool blockingRedraw_;
 
@@ -53,6 +60,7 @@ private:
     boost::scoped_ptr<OmView2dState> state_;
     boost::scoped_ptr<OmTileDrawer> tileDrawer_;
     boost::scoped_ptr<OmScreenPainter> screenPainter_;
+
 
     void setupMainGLpaintOp();
     void teardownMainGLpaintOp();

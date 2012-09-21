@@ -19,7 +19,7 @@ private:
     Vector3i chunkDims_;
     int32_t mipLevel_;
     pipeline::dataSrcs data_;
-//    segment::dataManager segData_;
+//    segments::dataManager segData_;
     coords::volumeSystem coordSystem_;
 
 public:
@@ -70,7 +70,7 @@ public:
                    common::viewType view,
                    std::set<int32_t>& ret) const;
 
-    segment::data GetSegmentData(int32_t segId) const;
+    segments::data GetSegmentData(int32_t segId) const;
 };
 
 }} // namespace om::volume::

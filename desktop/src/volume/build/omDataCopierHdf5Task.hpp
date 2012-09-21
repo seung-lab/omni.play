@@ -25,7 +25,7 @@ private:
     const Vector3i volSize_;
     OmHdf5 *const hdf5reader_;
     const QString mip0fnp_;
-    const OmChunkCoord coord_;
+    const om::chunkCoord coord_;
 
     OmSimpleProgress* prog_;
 
@@ -39,7 +39,7 @@ public:
                          const Vector3i volSize,
                          OmHdf5 *const hdf5reader,
                          const QString mip0fnp,
-                         const OmChunkCoord& coord,
+                         const om::chunkCoord& coord,
                          OmSimpleProgress* prog)
         : vol_(vol)
         , path_(path)
@@ -77,8 +77,8 @@ public:
 private:
     template <typename T>
     OmDataWrapperPtr doResizePartialChunk(OmDataWrapperPtr data,
-                                          const DataBbox& chunkExtent,
-                                          const DataBbox& dataExtent)
+                                          const om::dataBbox& chunkExtent,
+                                          const om::dataBbox& dataExtent)
     {
         resizedChunk_ = true;
 
@@ -100,8 +100,8 @@ private:
     }
 
     OmDataWrapperPtr resizePartialChunk(OmDataWrapperPtr data,
-                                        const DataBbox& chunkExtent,
-                                        const DataBbox& dataExtent)
+                                        const om::dataBbox& chunkExtent,
+                                        const om::dataBbox& dataExtent)
     {
         switch(data->getVolDataType().index()){
         case OmVolDataType::INT8:
@@ -139,10 +139,10 @@ private:
     OmDataWrapperPtr getChunkData()
     {
         // get chunk data bbox
-        const DataBbox& chunkExtent = chunk_->Mipping().GetExtent();
+        const om::dataBbox& chunkExtent = chunk_->Mipping().GetExtent();
 
-        const DataBbox volExtent(Vector3i::ZERO,
-                                 volSize_.x, volSize_.y, volSize_.z);
+        const om::dataBbox volExtent(om::dataCoord(Vector3i::ZERO, vol_, chunk_->GetLevel()),
+                                     om::dataCoord(volSize_, vol_, chunk_->GetLevel()));
 
         //if data extent contains given extent, read full chunk
         if (volExtent.contains(chunkExtent)) {
@@ -151,7 +151,7 @@ private:
 
         // else, read what we can, and resize
 
-        DataBbox intersect_extent = chunkExtent;
+        om::dataBbox intersect_extent = chunkExtent;
         intersect_extent.intersect(volExtent);
 
         if(intersect_extent.isEmpty()) {

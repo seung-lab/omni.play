@@ -145,16 +145,16 @@ public:
 
     template <typename T>
     static void ChangeVolResolution(T& vol,
-                                    const float xRes,
-                                    const float yRes,
-                                    const float zRes)
+                                    const int xRes,
+                                    const int yRes,
+                                    const int zRes)
     {
-        const Vector3f dims(xRes, yRes, zRes);
+        const Vector3i dims(xRes, yRes, zRes);
 
-        vol.Coords().SetDataResolution(dims);
+        vol.Coords().SetResolution(dims);
 
         std::cout << "\tvolume data resolution set to "
-                  << vol.Coords().GetDataResolution()
+                  << vol.Coords().GetResolution()
                   << "\n";
     }
 
@@ -206,9 +206,9 @@ private:
 
         static const int min_variance = 120;
 
-        for(int r = 0; r < 128; ++r){
-            for(int g = 0; g < 128; ++g){
-                for(int b = 0; b < 128; ++b){
+        for(uint8_t r = 0; r < 128; ++r){
+            for(uint8_t g = 0; g < 128; ++g){
+                for(uint8_t b = 0; b < 128; ++b){
                     const int avg  = ( r + g + b ) / 3;
                     const int avg2 = ( r*r + g*g + b*b ) / 3;
                     const int v = avg2 - avg*avg;
@@ -273,9 +273,9 @@ public:
 
         double timeSecs = 0;
 
-        om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol.GetMipChunkCoords();
-        std::deque<OmChunkCoord>& coords = *coordsPtr;
+        std::deque<om::chunkCoord>& coords = *coordsPtr;
         const uint32_t numChunks = coords.size();
 
         if(randomize){

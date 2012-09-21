@@ -29,7 +29,7 @@ void OmUserInterfaceEvent::Dispatch(OmEventListener* pListener)
     case OmUserInterfaceEvent::UPDATE_SEGMENT_PROP_WIDGET:
         p_cast_listener->UpdateSegmentPropWidgetEvent(this);
         return;
-
+        
     default:
         throw OmArgException("unknown event type");
     }

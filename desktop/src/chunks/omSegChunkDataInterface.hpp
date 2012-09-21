@@ -1,6 +1,5 @@
 #pragma once
 
-#include "chunks/omChunkCoord.h"
 #include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
 #include "volume/omVolumeTypes.hpp"
 
@@ -22,8 +21,8 @@ public:
 
     virtual void RewriteChunk(const boost::unordered_map<uint32_t, uint32_t>&) = 0;
 
-    virtual uint32_t SetVoxelValue(const DataCoord& voxel, const uint32_t val) = 0;
-    virtual uint32_t GetVoxelValue(const DataCoord& voxel) = 0;
+    virtual uint32_t SetVoxelValue(const om::dataCoord& voxel, const uint32_t val) = 0;
+    virtual uint32_t GetVoxelValue(const om::dataCoord& voxel) = 0;
 };
 
 } // namespace segchunk

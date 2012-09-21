@@ -7,7 +7,7 @@ class OmSegmentation;
 
 namespace om {
 typedef std::deque<point2di> pt2d_list_t;
-typedef std::deque<Vector3i> pt3d_list_t;
+typedef std::deque<om::globalCoord> pt3d_list_t;
 }; //namespace om
 
 struct OmBrushOppInfo
@@ -17,7 +17,6 @@ struct OmBrushOppInfo
     const int brushDia;
     const int depth;
     const std::vector<om::point2di>& ptsInCircle;
-    const int chunkDim;
     const om::AddOrSubtract addOrSubract;
 
     OmBrushOppInfo(OmSegmentation* segmentation,
@@ -25,14 +24,12 @@ struct OmBrushOppInfo
                    const int brushDia,
                    const int depth,
                    const std::vector<om::point2di>& ptsInCircle,
-                   const int chunkDim,
                    om::AddOrSubtract addOrSubract)
         : segmentation(segmentation)
         , viewType(viewType)
         , brushDia(brushDia)
         , depth(depth)
         , ptsInCircle(ptsInCircle)
-        , chunkDim(chunkDim)
         , addOrSubract(addOrSubract)
     {}
 

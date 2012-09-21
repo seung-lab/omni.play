@@ -10,7 +10,7 @@ use POSIX;
 my $omniDir = $scriptPath;
 $omniDir =~ s/\/scripts\///;
 
-my $omniExec = $omniDir . "/omni/bin/omni ";
+my $omniExec = $omniDir . "/../bin/omni.desktop ";
 my $scriptFolder = $omniDir . "/scripts/BuildScripts";
 my $headlessCmd = "run --headless --cmdfile=".$scriptFolder;
 

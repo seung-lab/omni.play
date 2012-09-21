@@ -9,18 +9,18 @@ from bootstrap.sysutils import sysutils
 from bootstrap.runner import runner
 from bootstrap.detect_os import detect_os
 from bootstrap.sys_mac import sys_mac
-    
+
 class bootstrap:
 
     def show_menu(self, options):
         max_answer = len(options) - 1
 
         print "bootstrap.py menu:"
-        
+
         for idx, val in enumerate(options):
             print "{i} -- {val}".format(i = idx,
                                         val = val)
-            
+
         while True:
             answer = None
             try:
@@ -36,7 +36,7 @@ class bootstrap:
             if answer >= 0 and answer <= max_answer:
                 self.runMenuEntry( answer )
                 sys.exit(0)
-    
+
     def menu(self):
         options = [ "exit",
                     "Build All",
@@ -49,10 +49,11 @@ class bootstrap:
                     "Build qt",
                     "Build hdf5",
                     "Init Submodules",
-                    "Install Ubuntu dev packages"]
+                    "Install Ubuntu dev packages",
+                    "Build Omni"]
 
         self.show_menu(options)
-           
+
     def runMenuEntry(self, entry):
         r = runner(self.numCores)
         try:
@@ -80,6 +81,8 @@ class bootstrap:
             	r.submodule()
             elif 11 == entry:
                 self.doUbuntuAptGets()
+            elif 12 == entry:
+                r.omni()
             else:
                 print "unknown option: ", entry
                 sys.exit(1)
@@ -92,43 +95,44 @@ class bootstrap:
 
     def buildAll(self):
         r = runner(self.numCores)
-        self.doUbuntuAptGets()
-        r.submodule()
-        r.boost()
-        r.thrift()
+        #self.doUbuntuAptGets()
+        #r.submodule()
         r.libjpeg()
         r.libpng()
         r.libevent()
-        r.qt()
         r.hdf5()
-    
+        r.boost()
+        r.thrift()
+        r.qt()
+        r.omni()
+
     def parallelCompilation(self, cmd_procs):
         self.numCores = sysutils.numberOfCores(cmd_procs)
         print "number of parallel builds (override with \"-j n\" switch to bootstrap.pl): ", self.numCores
-                
+
     def checkCmdLineArgs(self):
         parser = OptionParser()
         parser.add_option("-j", dest="cmd_procs", type="int", help="override num parallel builds")
         (options, args) = parser.parse_args()
-        
+
         self.parallelCompilation(options.cmd_procs)
-        
+
         if len(args) == 0:
             self.menu()
         else:
             self.runMenuEntry( int(args[0]) )
-            
+
     def doUbuntuAptGets(self):
         args = 'libxrender-dev libxext-dev freeglut3-dev g++ \
 libfreetype6-dev libxml2 libxml2-dev mesa-common-dev \
 libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg \
-libgl1-mesa-glx-dbg libncurses5-dev nasm'
-        
+libgl1-mesa-glx-dbg libncurses5-dev nasm libevent-dev libssl-dev'
+
         cmd = "sudo apt-get -y install " + args
         print "about to run: " + cmd
         print os.system(cmd)
         print "Done with the Ubuntu apt-gets! \n\n"
-        
+
     def omniClean(self):
         print "fix me"
         #os.system("cd " + omniPath make clean)`

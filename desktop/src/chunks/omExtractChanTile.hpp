@@ -10,12 +10,12 @@ namespace chunk {
 class extractChanTile{
 private:
     OmMipVolume *const vol_;
-    const OmChunkCoord coord_;
+    const om::chunkCoord coord_;
     const ViewType plane_;
     const int depth_;
 
 public:
-    extractChanTile(OmMipVolume* vol, const OmChunkCoord& coord, const ViewType plane, int depth)
+    extractChanTile(OmMipVolume* vol, const om::chunkCoord& coord, const ViewType plane, int depth)
         : vol_(vol)
         , coord_(coord)
         , plane_(plane)

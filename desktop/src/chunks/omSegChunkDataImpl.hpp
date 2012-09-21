@@ -22,7 +22,7 @@ class dataImpl : public dataInterface {
 private:
     OmSegmentation *const vol_;
     OmSegChunk *const chunk_;
-    const OmChunkCoord coord_;
+    const om::chunkCoord coord_;
 
     ptrToChunkDataBase *const ptrToChunkData_;
 
@@ -30,7 +30,7 @@ private:
     const int elementsPerSlice_;
 
 public:
-    dataImpl(OmSegmentation* vol, OmSegChunk* chunk, const OmChunkCoord& coord)
+    dataImpl(OmSegmentation* vol, OmSegChunk* chunk, const om::chunkCoord& coord)
         : vol_(vol)
         , chunk_(chunk)
         , coord_(coord)
@@ -88,26 +88,25 @@ public:
         }
     }
 
-    uint32_t SetVoxelValue(const DataCoord& voxel, const uint32_t val)
+    uint32_t SetVoxelValue(const om::dataCoord& voxel, const uint32_t val)
     {
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();
 
-        const int offset = voxel.z * elementsPerSlice_ + voxel.y * elementsPerRow_ + voxel.x;
+        const int offset = voxel.toChunkOffset();
 
         const uint32_t oldVal = data[offset];
         data[offset] = val;
+
         return oldVal;
     }
 
-    uint32_t GetVoxelValue(const DataCoord& voxel)
+    uint32_t GetVoxelValue(const om::dataCoord& voxel)
     {
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();
 
-        const int offset = voxel.z * elementsPerSlice_ + voxel.y * elementsPerRow_ + voxel.x;
-
-        return data[offset];
+        return data[voxel.toChunkOffset()];
     }
 
     void RewriteChunk(const boost::unordered_map<uint32_t, uint32_t>& vals)

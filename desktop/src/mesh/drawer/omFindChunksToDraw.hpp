@@ -33,7 +33,7 @@ private:
      *  the visibility of a MipChunk.  If visible, the MipChunk is either
      *  drawn or the recursive draw process is called on its children.
      */
-    void determineChunksToDraw(const OmChunkCoord& chunkCoord,
+    void determineChunksToDraw(const om::chunkCoord& chunkCoord,
                                bool testVis)
     {
         OmSegChunk* chunk = segmentation_->GetChunk(chunkCoord);
@@ -76,11 +76,11 @@ private:
             return true;
         }
 
-        const NormBbox& normExtent = chunk->Mipping().GetNormExtent();
-        const NormBbox& clippedNormExtent = chunk->Mipping().GetClippedNormExtent();
+        const om::normBbox& normExtent = chunk->Mipping().GetNormExtent();
+        const om::normBbox& clippedNormExtent = chunk->Mipping().GetClippedNormExtent();
 
-        const NormCoord camera = culler_->GetPosition();
-        const NormCoord center = clippedNormExtent.getCenter();
+        const om::normCoord camera = culler_->GetPosition();
+        const om::normCoord center = clippedNormExtent.getCenter();
 
         const float camera_to_center = center.distance(camera);
         const float distance =

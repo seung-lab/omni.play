@@ -38,10 +38,8 @@ MeshPreviewerImpl::MeshPreviewerImpl(QWidget* parent,
 
 void MeshPreviewerImpl::mesh()
 {
-    OmSegmentation& segmentation = sdw_.GetSegmentation();
-    const DataCoord center =
-        segmentation.Coords().NormToDataCoord(NormCoord(0.5, 0.5, 0.5));
-    const OmChunkCoord coord = segmentation.Coords().DataToMipCoord(center, 0);
+//     OmSegmentation& segmentation = sdw_.GetSegmentation();
+//     const om::dataCoord coord = om::normCoord(0.5, 0.5, 0.5).toDataCoord();
 
 /*
     segmentation.MeshManagers()->MeshChunk(coord);

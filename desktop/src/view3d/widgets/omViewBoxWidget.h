@@ -15,30 +15,30 @@ public:
 private:
     OmViewGroupState* vgs_;
 
-    void drawRectangle(const DataCoord& v0,
-                       const DataCoord& v1,
-                       const DataCoord& v2,
-                       const DataCoord& v3);
+    void drawRectangle(const Vector3i& v0,
+                       const Vector3i& v1,
+                       const Vector3i& v2,
+                       const Vector3i& v3);
 
     void draw2dBox(const ViewType plane,
                    const Vector2f& min,
                    const Vector2f& max,
                    const float depth);
 
-    void drawLines(DataCoord depth);
+    void drawLines(Vector3i depth);
 
-    void drawChannelData(ViewType plane,
-                         std::vector<OmTilePtr>);
-
-    bool getTextureMax(Vector3f coord,
-                       ViewType plane,
-                       Vector2f& dataMax,
-                       Vector2f& spaceMax );
-
-    bool getTextureMin(Vector3f coord,
-                       ViewType plane,
-                       Vector2f & dataMin,
-                       Vector2f & spaceMin);
+//     void drawChannelData(ViewType plane,
+//                          std::vector<OmTilePtr>);
+// 
+//     bool getTextureMax(Vector3f coord,
+//                        ViewType plane,
+//                        Vector2f& dataMax,
+//                        Vector2f& spaceMax );
+// 
+//     bool getTextureMin(Vector3f coord,
+//                        ViewType plane,
+//                        Vector2f & dataMin,
+//                        Vector2f & spaceMin);
 
     void draw2dBoxWrapper(OmViewGroupView2dState* view2dState,
                           const ViewType viewType);

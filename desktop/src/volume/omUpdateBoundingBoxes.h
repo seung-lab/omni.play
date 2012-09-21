@@ -1,8 +1,9 @@
 #pragma once
 
+#include "common/omCommon.h"
+
 class OmSegmentation;
 class OmSegments;
-class OmChunkCoord;
 
 class OmUpdateBoundingBoxes {
 private:
@@ -14,6 +15,6 @@ public:
     void Update();
 
 private:
-    void doUpdate(const OmChunkCoord& coord);
+    void doUpdate(const om::chunkCoord& coord);
 };
 

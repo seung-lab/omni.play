@@ -7,6 +7,7 @@
 #include "segment/omSegments.h"
 #include "segment/omSegmentsImpl.h"
 #include "volume/omSegmentation.h"
+#include "utility/dataWrappers.h"
 
 OmSegments::OmSegments(OmSegmentation* segmentation)
     : segmentation_(segmentation)
@@ -314,4 +315,10 @@ bool OmSegments::JoinEdges(const std::vector<OmSegmentEdge>& edges)
 {
     zi::guard g(mutex_);
     return impl_->JoinEdges(edges);
+}
+
+std::vector<OmSegmentEdge> OmSegments::Shatter(OmSegment* seg)
+{
+   zi::guard g(mutex_);
+   return impl_->Shatter(seg);
 }

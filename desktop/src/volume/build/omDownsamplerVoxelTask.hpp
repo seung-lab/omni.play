@@ -2,6 +2,7 @@
 
 #include "chunks/omRawChunk.hpp"
 #include "volume/io/omMemMappedVolumeImpl.hpp"
+#include "volume/build/omDownsamplerTypes.hpp"
 
 template <typename T>
 class DownsampleVoxelTask : public zi::runnable {
@@ -9,7 +10,7 @@ private:
     OmMipVolume *const vol_;
     const std::vector<MipLevelInfo>& mips_;
     const MippingInfo& mippingInfo_;
-    const OmChunkCoord coord_;
+    const om::chunkCoord coord_;
     const Vector3i srcChunkStartPos_;
 
     OmMemMappedVolumeImpl<T> *const files_;
@@ -19,21 +20,21 @@ public:
     DownsampleVoxelTask(OmMipVolume* vol,
                         const std::vector<MipLevelInfo>& mips,
                         const MippingInfo& mippingInfo,
-                        const OmChunkCoord& coord,
+                        const om::chunkCoord& coord,
                         OmMemMappedVolumeImpl<T>* files)
         : vol_(vol)
         , mips_(mips)
         , mippingInfo_(mippingInfo)
         , coord_(coord)
-        , srcChunkStartPos_(vol_->Coords().MipCoordToDataBbox(coord_, 0).getMin())
+        , srcChunkStartPos_(coord_.chunkBoundingBox(vol_).getMin())
         , files_(files)
     {
         rawChunks_.resize(mippingInfo.maxMipLevel + 1);
 
         for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i)
         {
-            const DataCoord dstCoord = coord_.Coordinate / mips_[i].factor;
-            const OmChunkCoord coord(i, dstCoord);
+            const Vector3i dstCoord = coord_.Coordinate / mips_[i].factor;
+            const om::chunkCoord coord(i, dstCoord);
 
             rawChunks_[i] = files_->GetChunkPtr(coord);
         }
@@ -67,7 +68,7 @@ public:
                 offsetVec.x);
     }
 
-    inline void pushVoxelIntoMips(const DataCoord& srcCoord, const T srcVoxel)
+    inline void pushVoxelIntoMips(const Vector3i& srcCoord, const T srcVoxel)
     {
         for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i)
         {
@@ -77,8 +78,8 @@ public:
                 return;
             }
 
-            const DataCoord dstLocation = srcCoord / mips_[i].factor;
-            const DataCoord dstCoord(dstLocation.x  % 128,
+            const Vector3i dstLocation = srcCoord / mips_[i].factor;
+            const Vector3i dstCoord(dstLocation.x  % 128,
                                      dstLocation.y  % 128,
                                      dstLocation.z  % 128);
             const uint64_t offset = computeVoxelOffsetIntoChunk(dstCoord);

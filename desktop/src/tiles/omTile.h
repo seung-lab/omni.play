@@ -7,7 +7,6 @@
  */
 
 #include "common/omStd.h"
-#include "chunks/omChunkCoord.h"
 #include "tiles/omTileCoord.h"
 
 class OmTextureID;
@@ -35,16 +34,15 @@ private:
     OmCacheBase *const cache_;
     const OmTileCoord key_;
     const int tileLength_;
-    const OmChunkCoord mipChunkCoord_;
+    const om::chunkCoord mipChunkCoord_;
 
     boost::scoped_ptr<OmTextureID> texture_;
 
     void load8bitChannelTile();
     void load32bitSegmentationTile();
 
-    OmChunkCoord tileToMipCoord();
+    om::chunkCoord tileToMipCoord();
     int getDepth();
-    int getChunkSliceNum();
     void setVertices(const int x, const int y, const float zoomFactor);
 
     inline OmMipVolume* getVol() const {

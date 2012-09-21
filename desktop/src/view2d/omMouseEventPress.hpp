@@ -25,9 +25,10 @@ private:
     bool shiftKey_;
     bool leftMouseButton_;
     bool rightMouseButton_;
+    bool middleMouseButton_;
     om::tool::mode tool_;
     QMouseEvent* event_;
-    DataCoord dataClickPoint_;
+    om::globalCoord dataClickPoint_;
 
     friend class OmMouseEventState;
 
@@ -41,13 +42,20 @@ public:
     {
         setState(event);
 
-        state_->SetMousePanStartingPt(Vector2f(event->x(), event->y()));
+        state_->SetMousePanStartingPt(om::screenCoord(event->x(), event->y(), state_));
 
         if(leftMouseButton_)
         {
             if(om::tool::SPLIT == tool_)
             {
                 doFindAndSplitSegment();
+                v2d_->Redraw();
+                return;
+            }
+
+            if(om::tool::SHATTER == tool_)
+            {
+                doFindAndShatterSegment();
                 v2d_->Redraw();
                 return;
             }
@@ -68,6 +76,8 @@ public:
             } else {
                 mouseShowSegmentContextMenu();
             }
+        } else if(middleMouseButton_) {
+        	state_->OverrideToolModeForPan(true);
         }
     }
 
@@ -82,9 +92,11 @@ private:
 
         leftMouseButton_ = event->buttons() & Qt::LeftButton;
         rightMouseButton_ = event->buttons() & Qt::RightButton;
+        middleMouseButton_ = event->buttons() & Qt::MiddleButton;
 
         tool_ = OmStateManager::GetToolMode();
-        dataClickPoint_ = state_->ComputeMouseClickPointDataCoord(event);
+        om::screenCoord clicked(event->x(), event->y(), state_);
+        dataClickPoint_ = clicked.toGlobalCoord();
     }
 
     void doFindAndSplitSegment()
@@ -98,6 +110,19 @@ private:
         OmSplitSegmentRunner::FindAndSplitSegments(*sdw,
                                                 state_->getViewGroupState(),
                                                 dataClickPoint_);
+    }
+
+    void doFindAndShatterSegment()
+    {
+        boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+
+        if(!sdw) {
+            return;
+        }
+
+        OmActions::ShatterSegment(sdw->GetSegment());
+        state_->getViewGroupState()->GetToolBarManager()->SetShatteringOff();
+        OmStateManager::SetOldToolModeAndSendEvent();
     }
 
     void doFindAndCutSegment()
@@ -120,9 +145,9 @@ private:
 
     void setDepth()
     {
-        const ScreenCoord screenc = ScreenCoord(event_->x(), event_->y());
-        const DataCoord newDepth = state_->ScreenToDataCoord(screenc);
-        state_->Location()->SetDataLocation(newDepth);
+        const om::screenCoord screenc = om::screenCoord(event_->x(), event_->y(), state_);
+        const om::globalCoord newloc = screenc.toGlobalCoord();
+        state_->setLocation(newloc);
 
         OmEvents::ViewCenterChanged();
     }
@@ -134,20 +159,13 @@ private:
             state_->OverrideToolModeForPan(true);
             return;
         }
-        
+
         switch(tool_){
         case om::tool::SELECT:
             state_->setScribbling(true);
             selectSegments();
             break;
         case om::tool::PAN:
-            return;
-        case om::tool::CROSSHAIR:
-            mouseSetCrosshair();
-            return;
-        case om::tool::ZOOM:
-            v2d_->Zoom()->MouseLeftButtonClick(event_);
-            OmEvents::Redraw3d();
             return;
         case om::tool::PAINT:
             state_->setScribbling(true);
@@ -169,6 +187,9 @@ private:
         case om::tool::ANNOTATE:
             addAnnotation();
             break;
+        case om::tool::KALINA:
+        	kalina();
+        	break;
         default:
             return;
         }
@@ -180,10 +201,7 @@ private:
 
     void selectSegments()
     {
-        om::AddOrSubtract addOrSubtractSegments = om::ADD;
-        if(altKey_){
-            addOrSubtractSegments = om::SUBTRACT;
-        }
+        om::AddOrSubtract addOrSubtractSegments = altKey_ ? om::SUBTRACT : om::ADD;
 
         OmBrushSelect::SelectByClick(state_, dataClickPoint_, addOrSubtractSegments);
     }
@@ -336,13 +354,33 @@ private:
                    func +
                    " by right-clicking and selecting \n\"Set As Segment Palette Color\"");
     }
-    
+
     void addAnnotation()
     {
         om::annotation::manager& manager = *state_->GetSDW().GetSegmentationPtr()->Annotations();
         OmViewGroupState *vgs = state_->getViewGroupState();
-        
+
         manager.Add(dataClickPoint_, vgs->getAnnotationString(), vgs->getAnnotationColor());
     }
-}; 
+
+    void kalina()
+    {
+    	boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+    	if(!sdw){
+            return;
+        }
+        SegmentDataWrapper& seg = *sdw;
+    	if(!seg.IsSegmentValid()) {
+    		return;
+        }
+
+		SegmentationDataWrapper segmentation = seg.MakeSegmentationDataWrapper();
+
+        if(shiftKey_) {
+        	// Do something different
+        } else {
+        	// Do the same.
+        }
+    }
+};
 

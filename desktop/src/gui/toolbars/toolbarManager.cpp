@@ -48,6 +48,10 @@ void ToolBarManager::SetSplittingOff(){
     rightSideBar_->SetSplittingOff();
 }
 
+void ToolBarManager::SetShatteringOff(){
+    rightSideBar_->SetShatteringOff();
+}
+
 void ToolBarManager::SetTool(const om::tool::mode tool){
     mainToolBar_->SetTool(tool);
 }

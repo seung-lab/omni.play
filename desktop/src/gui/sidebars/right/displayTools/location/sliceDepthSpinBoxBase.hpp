@@ -36,7 +36,6 @@ private:
 
     virtual ViewType viewType() const = 0;
 
-    // TODO: remove: hack for abs coords
     OmMipVolume* getVol()
     {
         {
@@ -56,31 +55,16 @@ private:
         return NULL;
     }
 
-    // TODO: remove: hack for abs coords
-    int getOffset()
-    {
-        OmMipVolume* vol = getVol();
-
-        if(vol)
-        {
-            const Vector3i absOffset = vol->Coords().GetAbsOffset();
-            return OmView2dConverters::GetViewTypeDepth(absOffset, viewType());
-        }
-
-        return 0;
-    }
-
     void actUponSpinboxChange(const int depth)
     {
         if(NULL == vg2ds()){
             return;
         }
 
-        // TODO: refactor abs coords into viewgroupstate (i.e. remove hack)
-        const int offset = getOffset();
-
-        vg2ds()->SetScaledSliceDepth(viewType(), depth - offset);
+        vg2ds()->SetScaledSliceDepth(viewType(), depth);
         OmEvents::Redraw2d();
+        OmEvents::ViewCenterChanged();
+        OmEvents::View3dRecenter();
     }
 
     void update()
@@ -89,10 +73,7 @@ private:
 
         const int depth = vg2ds()->GetScaledSliceDepth(viewType());
 
-        // TODO: remove: hack for abs coords
-        const int offset = getOffset();
-
-        setValue(depth + offset);
+        setValue(depth);
 
         blockSignals(false);
     }

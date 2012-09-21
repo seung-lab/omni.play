@@ -1,7 +1,6 @@
 #pragma once
 
 #include "segment/omSegment.h"
-#include "chunks/omChunkCoord.h"
 
 struct LargestSegmentFirst {
     bool operator() (const OmSegment* a, const OmSegment* b) const {
@@ -10,7 +9,7 @@ struct LargestSegmentFirst {
 };
 
 typedef std::multimap<OmSegment*,
-                      OmChunkCoord,
+                      om::chunkCoord,
                       LargestSegmentFirst> OmMeshPlanStruct;
 
 class OmMeshPlan : public OmMeshPlanStruct {
@@ -22,7 +21,7 @@ public:
         : voxelCount_(0)
     {}
 
-    void Add(OmSegment* seg, const OmChunkCoord& coord)
+    void Add(OmSegment* seg, const om::chunkCoord& coord)
     {
         insert(std::make_pair(seg, coord));
         voxelCount_ += seg->size();

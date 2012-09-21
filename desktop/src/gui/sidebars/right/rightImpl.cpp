@@ -43,3 +43,7 @@ void om::sidebars::rightImpl::updateGui(){
 void om::sidebars::rightImpl::SetSplittingOff(){
     graphTools_->SetSplittingOff();
 }
+
+void om::sidebars::rightImpl::SetShatteringOff(){
+    graphTools_->SetShatteringOff();
+}

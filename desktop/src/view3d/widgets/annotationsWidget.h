@@ -8,16 +8,16 @@
 struct annotation
 {
     QString text;
-    DataCoord point;
+    om::globalCoord point;
     OmColor color;
 };
 
 class AnnotationsWidget : public OmView3dWidget {
-    
+
     public:
         AnnotationsWidget(OmView3d *view3d, OmViewGroupState *vgs);
         virtual void Draw();
-        
+
     private:
         QFont font_;
         static const float DIST_CUTOFF = 100.0f;

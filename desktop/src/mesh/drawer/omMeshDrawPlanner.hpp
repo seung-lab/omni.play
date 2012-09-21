@@ -119,7 +119,7 @@ private:
         }
     }
 
-    void addSegmentsToDraw(const OmChunkCoord& chunkCoord,
+    void addSegmentsToDraw(const om::chunkCoord& chunkCoord,
                            const OmSegPtrList& segmentsToDraw)
     {
         FOR_EACH(iter, segmentsToDraw){

@@ -49,7 +49,7 @@ void OmActions::ChangeSizethreshold(const SegmentationDataWrapper sdw,
 
 //painting-related
 void OmActions::SetVoxel(const OmID segmentationID,
-                         const DataCoord& voxel,
+                         const om::globalCoord& voxel,
                          const OmSegID segmentID)
 {
     pool().push_back(
@@ -59,7 +59,7 @@ void OmActions::SetVoxel(const OmID segmentationID,
 }
 
 void OmActions::SetVoxels(const OmID segmentationID,
-                          const std::set<DataCoord>& voxels,
+                          const std::set<om::globalCoord>& voxels,
                           const OmSegID segmentID)
 {
     pool().push_back(
@@ -128,6 +128,14 @@ void OmActions::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2)
         zi::run_fn(
             zi::bind(&OmActionsImpl::FindAndSplitSegments, impl(),
                      seg1, seg2)));
+}
+
+void OmActions::ShatterSegment(OmSegment* seg)
+{
+    pool().push_back(
+        zi::run_fn(
+            zi::bind(&OmActionsImpl::ShatterSegment, impl(),
+                     seg)));
 }
 
 void OmActions::CutSegment(const SegmentDataWrapper& sdw)

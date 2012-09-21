@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chunks/omChunkCoord.h"
+#include "common/omCommon.h"
 #include "chunks/omSegChunk.h"
 #include "chunks/omSegChunkDataInterface.hpp"
 #include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
@@ -14,7 +14,7 @@
 class OmChunkUniqueValuesPerThreshold {
 private:
     OmSegmentation *const segmentation_;
-    const OmChunkCoord coord_;
+    const om::chunkCoord coord_;
     const double threshold_;
     const QString fnp_;
 
@@ -25,7 +25,7 @@ private:
 
 public:
     OmChunkUniqueValuesPerThreshold(OmSegmentation* segmentation,
-                                    const OmChunkCoord& coord,
+                                    const om::chunkCoord& coord,
                                     const double threshold)
         : segmentation_(segmentation)
         , coord_(coord)
@@ -81,40 +81,40 @@ private:
     {
         OmSegChunk* chunk = segmentation_->GetChunk(coord_);
 
-        om::shared_ptr<uint32_t> rawDataPtr =
-            chunk->SegData()->GetCopyOfChunkDataAsUint32();
+	    om::shared_ptr<uint32_t> rawDataPtr =
+	        chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
-        uint32_t const*const rawData = rawDataPtr.get();
+	    uint32_t const*const rawData = rawDataPtr.get();
 
-        boost::unordered_set<uint32_t> segIDs;
+	    boost::unordered_set<uint32_t> segIDs;
 
-        if(!qFuzzyCompare(1, threshold_))
-        {
-            OmSegments* segments = segmentation_->Segments();
-            segmentation_->SetDendThreshold(threshold_);
+	    if(!qFuzzyCompare(1, threshold_))
+	    {
+	        OmSegments* segments = segmentation_->Segments();
+	        segmentation_->SetDendThreshold(threshold_);
 
-            for(size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
-                if( 0 != rawData[i]) {
-                    segIDs.insert(segments->findRootID(rawData[i]));
-                }
-            }
-        } else {
-            for(size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
-                if( 0 != rawData[i]) {
-                    segIDs.insert(rawData[i]);
-                }
-            }
-        }
+	        for(size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
+	            if( 0 != rawData[i]) {
+	                segIDs.insert(segments->findRootID(rawData[i]));
+	            }
+	        }
+	    } else {
+	        for(size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
+	            if( 0 != rawData[i]) {
+	                segIDs.insert(rawData[i]);
+	            }
+	        }
+	    }
 
-        values_ = OmSmartPtr<uint32_t>::MallocNumElements(segIDs.size(),
-                                                          om::DONT_ZERO_FILL);
+	    values_ = OmSmartPtr<uint32_t>::MallocNumElements(segIDs.size(),
+	                                                      om::DONT_ZERO_FILL);
 
-        std::copy(segIDs.begin(), segIDs.end(), values_.get());
-        zi::sort(values_.get(), values_.get() + segIDs.size());
+	    std::copy(segIDs.begin(), segIDs.end(), values_.get());
+	    zi::sort(values_.get(), values_.get() + segIDs.size());
 
-        numElements_ = segIDs.size();
+	    numElements_ = segIDs.size();
 
-        store();
+	    store();
     }
 
     void store()

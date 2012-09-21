@@ -2,7 +2,7 @@
 #include "volume/omSegmentation.h"
 #include "chunks/omSegChunkData.hpp"
 
-OmSegChunk::OmSegChunk(OmSegmentation* vol, const OmChunkCoord& coord)
+OmSegChunk::OmSegChunk(OmSegmentation* vol, const om::chunkCoord& coord)
     : OmChunk(vol, coord)
     , vol_(vol)
     , segChunkData_(om::segchunk::dataFactory::Produce(vol, this, coord))
@@ -11,13 +11,12 @@ OmSegChunk::OmSegChunk(OmSegmentation* vol, const OmChunkCoord& coord)
 OmSegChunk::~OmSegChunk()
 {}
 
-void OmSegChunk::SetVoxelValue(const DataCoord& globalCoord,
+void OmSegChunk::SetVoxelValue(const om::dataCoord& coord,
                                const uint32_t val)
 {
-    assert(ContainsVoxel(globalCoord));
+    assert(ContainsVoxel(coord));
 
-    const DataCoord voxel = globalCoord - mipping_.GetExtent().getMin();
-    const uint32_t oldVal = segChunkData_->SetVoxelValue(voxel, val);
+    const uint32_t oldVal = segChunkData_->SetVoxelValue(coord, val);
 
     {
         zi::guard g(modifiedSegIDsLock_);
@@ -26,11 +25,9 @@ void OmSegChunk::SetVoxelValue(const DataCoord& globalCoord,
     }
 }
 
-uint32_t OmSegChunk::GetVoxelValue(const DataCoord& globalCoord)
+uint32_t OmSegChunk::GetVoxelValue(const om::dataCoord& coord)
 {
-    assert(ContainsVoxel(globalCoord));
+    assert(ContainsVoxel(coord));
 
-    const DataCoord voxel = globalCoord - mipping_.GetExtent().getMin();
-
-    return segChunkData_->GetVoxelValue(voxel);
+    return segChunkData_->GetVoxelValue(coord);
 }

@@ -28,7 +28,7 @@ public:
         return memMapped_.GetVolPtr(level);
     }
 
-    OmRawDataPtrs getChunkPtrRaw(const OmChunkCoord& coord){
+    OmRawDataPtrs getChunkPtrRaw(const om::chunkCoord& coord){
         return memMapped_.getChunkPtrRaw(coord);
     }
 

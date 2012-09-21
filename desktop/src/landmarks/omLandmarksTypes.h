@@ -8,7 +8,7 @@ namespace landmarks {
 
 struct sdwAndPt{
     SegmentDataWrapper sdw;
-    DataCoord coord;
+    om::globalCoord coord;
 };
 
 std::string outputPt(const sdwAndPt& d);

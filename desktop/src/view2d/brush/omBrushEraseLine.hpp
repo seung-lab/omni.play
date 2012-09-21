@@ -18,7 +18,7 @@ public:
     virtual ~OmBrushEraseLine()
     {}
 
-    void EraseLine(const DataCoord& first, const DataCoord& second)
+    void EraseLine(const om::globalCoord& first, const om::globalCoord& second)
     {
         OmBrushOppLine lineOpp(info_);
 

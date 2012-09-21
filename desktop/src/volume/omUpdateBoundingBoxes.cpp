@@ -1,4 +1,3 @@
-#include "chunks/omChunkCoord.h"
 #include "chunks/omSegChunk.h"
 #include "chunks/omSegChunkDataInterface.hpp"
 #include "segment/omSegments.h"
@@ -11,7 +10,7 @@ OmUpdateBoundingBoxes::OmUpdateBoundingBoxes(OmSegmentation* vol)
     , segments_(vol->Segments())
 {}
 
-void OmUpdateBoundingBoxes::doUpdate(const OmChunkCoord& coord)
+void OmUpdateBoundingBoxes::doUpdate(const om::chunkCoord& coord)
 {
     OmSegChunk* chunk = vol_->GetChunk(coord);
 
@@ -23,7 +22,7 @@ void OmUpdateBoundingBoxes::Update()
     OmThreadPool pool;
     pool.start();
 
-    om::shared_ptr<std::deque<OmChunkCoord> > coordsPtr =
+    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         vol_->GetMipChunkCoords(0);
 
     FOR_EACH(iter, *coordsPtr)

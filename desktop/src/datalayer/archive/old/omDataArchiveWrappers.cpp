@@ -29,7 +29,7 @@ QDataStream& operator>>(QDataStream& in, SegmentDataWrapper& sdw)
     uint32_t segmentID;
 
     in >> segmentationID;
-	in >> segmentID;
+       in >> segmentID;
 
     sdw = SegmentDataWrapper(segmentationID, segmentID);
 

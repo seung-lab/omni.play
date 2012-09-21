@@ -45,7 +45,7 @@ public:
     }
   }
 
-  template <int I, int X> friend class MakeBoostRange;
+  template <int I, int X> friend struct MakeBoostRange;
 
   static OmDimension ONE;
   static OmDimension ZERO;

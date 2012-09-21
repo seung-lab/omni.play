@@ -5,23 +5,22 @@
  *	Brett Warne - bwarne@mit.edu - 2/24/09
  */
 
-#include "common/omStd.h"
-#include "chunks/omChunkCoord.h"
+#include "common/omCommon.h"
 
 class OmMeshCoord {
  public:
 	OmMeshCoord();
-	OmMeshCoord( const OmChunkCoord&, OmSegID );
+    OmMeshCoord( const om::chunkCoord&, OmSegID );
 
 	void operator=( const OmMeshCoord& rhs );
 	bool operator==( const OmMeshCoord& rhs ) const;
 	bool operator!=( const OmMeshCoord& rhs ) const;
 	bool operator<( const OmMeshCoord& rhs ) const;
 
-	OmChunkCoord MipChunkCoord;
+    om::chunkCoord MipChunkCoord;
 	OmSegID DataValue;
 
-	const OmChunkCoord& Coord() const {
+    const om::chunkCoord& Coord() const {
 		return MipChunkCoord;
 	}
 

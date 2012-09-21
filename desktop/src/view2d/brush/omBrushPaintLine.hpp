@@ -18,7 +18,7 @@ public:
     virtual ~OmBrushPaintLine()
     {}
 
-    void PaintLine(const DataCoord& first, const DataCoord& second)
+    void PaintLine(const om::globalCoord& first, const om::globalCoord& second)
     {
         OmBrushOppLine lineOpp(info_);
 

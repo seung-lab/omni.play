@@ -72,7 +72,7 @@ public:
 
     void SetDendThreshold( double t );
     double GetDendThreshold();
-    
+
     void SetSizeThreshold( double t );
     double GetSizeThreshold();
 
@@ -84,11 +84,11 @@ public:
 
     void BuildBlankVolume(const Vector3i & dims);
 
-    OmSegChunk* GetChunk(const OmChunkCoord& coord);
+    OmSegChunk* GetChunk(const om::chunkCoord& coord);
 
-    uint32_t GetVoxelValue(const DataCoord &vox);
-    void SetVoxelValue(const DataCoord &vox, const uint32_t value);
-    bool SetVoxelValueIfSelected(const DataCoord &vox, const uint32_t value);
+    uint32_t GetVoxelValue(const om::globalCoord &vox);
+    void SetVoxelValue(const om::globalCoord &vox, const uint32_t value);
+    bool SetVoxelValueIfSelected(const om::globalCoord &vox, const uint32_t value);
 
     void RebuildSegments();
 

@@ -3,31 +3,48 @@
 
 OmMipVolume::OmMipVolume()
     : mVolDataType(OmVolDataType::UNKNOWN)
+    , coords_(this)
     , mBuildState(MIPVOL_UNBUILT)
 {}
 
-bool OmMipVolume::ContainsVoxel(const DataCoord & vox){
-    return coords_.GetDataExtent().contains(vox);
+bool OmMipVolume::ContainsVoxel(const om::globalCoord & vox){
+    return coords_.GetExtent().contains(vox);
 }
 
-om::shared_ptr<std::deque<OmChunkCoord> >
+void OmMipVolume::addChunkCoordsForLevel(const int mipLevel,
+                                         std::deque<om::chunkCoord>* coords) const
+{
+    const Vector3i dims = coords_.MipLevelDataDimensions(mipLevel);
+
+    for (int z = 0; z < dims.z; ++z){
+        for (int y = 0; y < dims.y; ++y){
+            for (int x = 0; x < dims.x; ++x){
+                coords->push_back(om::chunkCoord(0, Vector3i(x, y, z)));
+            }
+        }
+    }
+}
+
+om::shared_ptr<std::deque<om::chunkCoord> >
 OmMipVolume::GetMipChunkCoords() const
 {
-    std::deque<OmChunkCoord>* coords = new std::deque<OmChunkCoord>();
+    std::deque<om::chunkCoord>* coords = new std::deque<om::chunkCoord>();
 
     for(int level = 0; level <= coords_.GetRootMipLevel(); ++level) {
-        coords_.addChunkCoordsForLevel(level, coords);
+        addChunkCoordsForLevel(level, coords);
     }
 
-    return om::shared_ptr<std::deque<OmChunkCoord> >(coords);
+    return om::shared_ptr<std::deque<om::chunkCoord> >(coords);
 }
 
-om::shared_ptr<std::deque<OmChunkCoord> >
+om::shared_ptr<std::deque<om::chunkCoord> >
 OmMipVolume::GetMipChunkCoords(const int mipLevel) const
 {
-    std::deque<OmChunkCoord>* coords = new std::deque<OmChunkCoord>();
+    std::deque<om::chunkCoord>* coords = new std::deque<om::chunkCoord>();
 
-    coords_.addChunkCoordsForLevel(mipLevel, coords);
+    addChunkCoordsForLevel(mipLevel, coords);
 
-    return om::shared_ptr<std::deque<OmChunkCoord> >(coords);
+    return om::shared_ptr<std::deque<om::chunkCoord> >(coords);
 }
+
+

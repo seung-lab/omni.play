@@ -76,7 +76,7 @@ void volume::GetSegIds(coords::global point, int radius,
     }
 }
 
-segment::data volume::GetSegmentData(int32_t segId) const
+segments::data volume::GetSegmentData(int32_t segId) const
 {
     if (segId <= 0) {
         throw argException("Not allowed segment Ids less than or equal to 0");
@@ -93,9 +93,9 @@ segment::data volume::GetSegmentData(int32_t segId) const
         throw argException(str(boost::format("Invalid Seg Id %1%") % segId));
     }
 
-    datalayer::memMappedFile<segment::data> page(fname);
+    datalayer::memMappedFile<segments::data> page(fname);
 
-    segment::data d = page.GetPtr()[idx];
+    segments::data d = page.GetPtr()[idx];
 
     if(d.value <= 0) {
         throw argException(str(boost::format("Invalid Seg Id %1%") % segId));

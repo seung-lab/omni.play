@@ -19,9 +19,10 @@ private:
     bool shiftKey_;
     bool leftMouseButton_;
     bool rightMouseButton_;
+    bool middleMouseButton_;
     om::tool::mode tool_;
     QMouseEvent* event_;
-    DataCoord dataClickPoint_;
+    om::globalCoord dataClickPoint_;
 
     friend class OmMouseEventState;
 
@@ -36,7 +37,7 @@ public:
         setState(event);
 
         state_->SetMousePoint(event);
-        
+
         if(leftMouseButton_)
         {
             if(shouldPan()){
@@ -44,7 +45,7 @@ public:
                 v2d_->Redraw();
                 return;
             }
-            
+
             switch(tool_)
             {
             case om::tool::SELECT:
@@ -70,6 +71,12 @@ public:
                 break;
             default:
                 break;
+            }
+        } else if (middleMouseButton_){
+			if(shouldPan()){
+                doPan();
+                v2d_->Redraw();
+                return;
             }
         }
 
@@ -97,9 +104,11 @@ private:
 
         leftMouseButton_ = event->buttons() & Qt::LeftButton;
         rightMouseButton_ = event->buttons() & Qt::RightButton;
+        middleMouseButton_ = event->buttons() & Qt::MiddleButton;
 
         tool_ = OmStateManager::GetToolMode();
-        dataClickPoint_ = state_->ComputeMouseClickPointDataCoord(event);
+        om::screenCoord clicked(Vector2i(event->x(), event->y()), state_);
+        dataClickPoint_ = clicked.toGlobalCoord();
     }
 
     inline void selectSegments()
@@ -132,7 +141,7 @@ private:
     }
 
     inline void mousePan(){
-        state_->DoMousePan(Vector2i(event_->x(), event_->y()));
+        state_->DoMousePan(om::screenCoord(event_->x(), event_->y(), state_));
     }
 };
 

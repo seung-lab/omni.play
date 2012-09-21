@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/omCommon.h"
 #include <boost/multi_array.hpp>
 
 template <typename VOL, typename T>
@@ -34,7 +35,7 @@ public:
         }
     }
 
-    T* Get(const OmChunkCoord& coord)
+    T* Get(const om::chunkCoord& coord)
     {
         const int x = coord.Coordinate.x;
         const int y = coord.Coordinate.y;

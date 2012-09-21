@@ -1,6 +1,5 @@
 #pragma once
 
-#include "chunks/omChunkCoord.h"
 #include "chunks/omChunkItemContainer.hpp"
 
 /**
@@ -24,7 +23,7 @@ public:
         : chunks_(new OmChunkItemContainer<VOL, CHUNK>(vol))
     {}
 
-    CHUNK* GetChunk(const OmChunkCoord& coord){
+    CHUNK* GetChunk(const om::chunkCoord& coord){
         return chunks_->Get(coord);
     }
 };

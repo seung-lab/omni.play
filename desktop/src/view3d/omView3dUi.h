@@ -43,6 +43,7 @@ private:
     void navigationModeMouseWheel(QWheelEvent* event);
 
     void splitModeMouseReleased(QMouseEvent* event);
+    void shatterModeMouseReleased(QMouseEvent* event);
 
     void cameraMovementMouseStart(QMouseEvent* event);
     void cameraMovementMouseEnd(QMouseEvent* event);
@@ -57,6 +58,7 @@ private:
     void centerAxisOfRotation(QMouseEvent* event);
     OmSegmentPickPoint pickVoxelMouseCrosshair(QMouseEvent* event);
     bool cutSegment(QMouseEvent* event);
+    bool annotate(QMouseEvent* event);
     void resetWindow();
 
     void deselectSegment(const SegmentDataWrapper& sdw);

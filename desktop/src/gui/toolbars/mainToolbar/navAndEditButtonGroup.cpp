@@ -8,14 +8,6 @@
 NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
     : QButtonGroup(parent)
 {
-    addNavButton(new ToolButton(parent, "Crosshair",
-                                "Recenter Dispaly", om::tool::CROSSHAIR,
-                                ":/toolbars/mainToolbar/icons/1277962376_target.png"));
-
-    // addNavButton(new ToolButton(parent, "Zoom",
-    //                             "Zoom", om::tool::ZOOM,
-    //                             ":/toolbars/mainToolbar/icons/1278008421_search.png"));
-
     addNavButton(new ToolButton(parent, "Pan",
                                 "Move Image", om::tool::PAN,
                                 ":/toolbars/mainToolbar/icons/1277962397_cursor_hand.png"));
@@ -43,10 +35,14 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
     addModifyButton(new ToolButton(parent, "Cut",
                                    "Cut", om::tool::CUT,
                                    ":/toolbars/mainToolbar/icons/1308183310_Scissors.png"));
-    
+
     addModifyButton(new ToolButton(parent, "Annotate",
                                     "Annotate", om::tool::ANNOTATE,
                                    ":/toolbars/mainToolbar/icons/kcmfontinst.png"));
+
+    // addNavButton(new ToolButton(parent, "Kalina",
+    //                             "Do Crazy Stuff", om::tool::KALINA,
+    //                             ":/toolbars/mainToolbar/icons/1308021634_keditbookmarks.png"));
 
     om::connect( this, SIGNAL(buttonClicked(int)),
                  this, SLOT(buttonWasClicked(int)));

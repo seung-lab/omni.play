@@ -351,7 +351,7 @@ void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
     }
 }
 
-void OmHdf5LowLevel::writeChunk(const DataBbox& extent, OmDataWrapperPtr data)
+void OmHdf5LowLevel::writeChunk(const om::dataBbox& extent, OmDataWrapperPtr data)
 {
     debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -449,7 +449,7 @@ OmDataWrapperPtr OmHdf5LowLevel::GetChunkDataType()
     return data;
 }
 
-OmDataWrapperPtr OmHdf5LowLevel::readChunk(const DataBbox& extent,
+OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
                                            const om::AffinityGraph aff)
 {
     debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);

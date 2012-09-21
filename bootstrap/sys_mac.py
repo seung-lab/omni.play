@@ -1,7 +1,10 @@
 import platform
 import subprocess
 import re
+import sys
+
 from detect_os import detect_os
+from cmd import cmd
 
 class sys_mac:
     def isMac(self):
@@ -20,28 +23,39 @@ class sys_mac:
             sys.exit()
 
     def isMacLeopard(self):
-        return isMac() and 5 == getMacOSXversionNum()
+        return self.isMac() and 5 == self.getMacOSXversionNum()
 
     def isMacSnowLeopard(self):
-        return isMac() and 6 == getMacOSXversionNum()
+        return self.isMac() and 6 == self.getMacOSXversionNum()
+
+    def isMacLion(self):
+        return self.isMac() and 7 == self.getMacOSXversionNum()
+
+    def isMacMountainLion(self):
+        return self.isMac() and 8 == self.getMacOSXversionNum()
 
     @staticmethod
     def checkForMac():
         sm = sys_mac()
         if sm.isMac():
-            a = "Mac OS X version is: " + getMacOSXversionNum()
+            a = "Mac OS X version is: {0}".format(sm.getMacOSXversionNum())
 
             if sm.isMacLeopard():
                 a += " (Leopard)"
             elif sm.isMacSnowLeopard():
                 a += " (Snow Leopard)"
+            elif sm.isMacLion():
+                a += " (Lion)"
+            elif sm.isMacMountainLion():
+                a += " (Mountain Lion)"
             else:
                 a += " (unknown)"
             print a
 
-    def numCoresMac(self):
-        m = regex_cmd_int("/usr/sbin/system_profiler SPHardwareDataType",
-                          ".*Total Number Of Cores: (\d).*")
+    @staticmethod
+    def numCoresMac():
+        m = cmd.regex_cmd_int("/usr/sbin/system_profiler SPHardwareDataType  | grep 'Cores'",
+                              ".*Cores.*(\d).*")
         if None == m:
             print "could not find num cores"
             sys.exit()

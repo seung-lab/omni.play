@@ -20,7 +20,7 @@ public:
     userSettings(std::string filename)
         : filename_(filename)
         , defaultThreshold_(0.999)
-        , defaultSizeThreshold_(0)
+        , defaultSizeThreshold_(250)
         , threshold_(defaultThreshold_)
         , sizeThreshold_(defaultSizeThreshold_)
     {

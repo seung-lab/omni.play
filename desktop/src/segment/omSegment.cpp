@@ -108,3 +108,9 @@ OmSegID OmSegment::RootID(){
 const segChildCont_t& OmSegment::GetChildren(){
     return segments_->Children()->GetChildren(this);
 }
+
+const om::dataBbox OmSegment::BoundingBox() const
+{
+    zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
+    return om::dataBbox(data_->bounds, segments_->getSegmentation(), 0);
+}

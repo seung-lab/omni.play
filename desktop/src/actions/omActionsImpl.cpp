@@ -1,5 +1,6 @@
 #include "actions/details/omActionImpls.hpp"
 #include "actions/details/omSegmentSplitAction.h"
+#include "actions/details/omSegmentShatterAction.h"
 #include "actions/details/omSegmentUncertainAction.h"
 #include "actions/details/omSegmentValidateAction.h"
 #include "actions/details/omVoxelSetValueAction.h"
@@ -52,7 +53,7 @@ void OmActionsImpl::ChangeSizethreshold(const SegmentationDataWrapper sdw,
 
 //painting-related
 void OmActionsImpl::SetVoxel(const OmID segmentationID,
-                             const DataCoord voxel,
+                             const om::globalCoord voxel,
                              const OmSegID segmentID)
 {
     (new OmVoxelSetValueAction(segmentationID,
@@ -61,7 +62,7 @@ void OmActionsImpl::SetVoxel(const OmID segmentationID,
 }
 
 void OmActionsImpl::SetVoxels(const OmID segmentationID,
-                              const std::set<DataCoord> voxels,
+                              const std::set<om::globalCoord> voxels,
                               const OmSegID segmentID)
 {
     (new OmVoxelSetValueAction(segmentationID,
@@ -184,6 +185,13 @@ void OmActionsImpl::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2)
     }
 
     (new OmSegmentSplitAction(sdw, edge))->Run();
+}
+
+void OmActionsImpl::ShatterSegment(OmSegment* seg)
+{
+    SegmentDataWrapper sdw(seg);
+
+    (new OmSegmentShatterAction(sdw))->Run();
 }
 
 void OmActionsImpl::CutSegment(const SegmentDataWrapper sdw)

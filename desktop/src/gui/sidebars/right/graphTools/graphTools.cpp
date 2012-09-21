@@ -7,6 +7,7 @@
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/sidebars/right/graphTools/joinButton.h"
 #include "gui/sidebars/right/graphTools/splitButton.h"
+#include "gui/sidebars/right/graphTools/shatterButton.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
 
@@ -15,6 +16,7 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState* vgs)
     , mParent(d)
     , vgs_(vgs)
     , splitButton(new SplitButton(this))
+    , shatterButton(new ShatterButton(this))
 {
     QVBoxLayout* box = new QVBoxLayout(this);
     box->addWidget(thresholdBox());
@@ -26,6 +28,7 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState* vgs)
 
     box2->addWidget(new JoinButton(this), 0, 0, 1, 1);
     box2->addWidget(splitButton, 0, 1, 1, 1);
+    box2->addWidget(shatterButton, 1, 0, 1, 1);
     box2->addWidget(new BreakButton(this), 1, 1, 1, 1);
 
     breakThresholdBox_ = makeBreakThresholdBox();
@@ -34,6 +37,8 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState* vgs)
 
     om::connect(this, SIGNAL(signalSplittingOff()),
                 this, SLOT(setSplittingOff()));
+    om::connect(this, SIGNAL(signalShatteringOff()),
+                this, SLOT(setShatteringOff()));
 }
 
 QWidget* GraphTools::makeBreakThresholdBox()
@@ -55,7 +60,7 @@ QWidget* GraphTools::thresholdBox()
 
     QVBoxLayout* layout = new QVBoxLayout(widget);
     layout->addWidget(threshold_);
-    layout->addWidget(sizeThreshold_);    
+    layout->addWidget(sizeThreshold_);
 
     return widget;
 }
@@ -75,6 +80,15 @@ void GraphTools::SetSplittingOff(){
 void GraphTools::setSplittingOff(){
     splitButton->setChecked(false);
 }
+
+void GraphTools::SetShatteringOff(){
+    signalShatteringOff();
+}
+
+void GraphTools::setShatteringOff(){
+    shatterButton->setChecked(false);
+}
+
 
 void GraphTools::HideBreakThreasholdBox(){
     breakThresholdBox_->hide();

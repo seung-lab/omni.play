@@ -1,7 +1,6 @@
 #pragma once
 
 #include "chunks/omChunk.h"
-#include "chunks/omChunkCoord.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
 #include "utility/omStringHelpers.h"
@@ -10,7 +9,7 @@
 class OmMemMappedAllocFile {
 private:
     OmSegmentation *const segmentation_;
-    const OmChunkCoord coord_;
+    const om::chunkCoord coord_;
     const double threshold_;
     const QString fnp_;
 
@@ -20,7 +19,7 @@ private:
 
 public:
     OmMemMappedAllocFile(OmSegmentation* segmentation,
-                         const OmChunkCoord& coord,
+                         const om::chunkCoord& coord,
                          const double threshold)
         : segmentation_(segmentation)
         , coord_(coord)

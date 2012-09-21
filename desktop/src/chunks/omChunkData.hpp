@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chunks/omChunkCoord.h"
+#include "common/omCommon.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
 #include "chunks/omChunkDataInterface.hpp"
@@ -12,7 +12,7 @@ namespace chunk {
 class dataFactory {
 public:
     template <typename VOL>
-    static dataInterface* Produce(VOL* vol, const OmChunkCoord& coord)
+    static dataInterface* Produce(VOL* vol, const om::chunkCoord& coord)
     {
         switch(vol->getVolDataType().index()){
         case OmVolDataType::INT8:

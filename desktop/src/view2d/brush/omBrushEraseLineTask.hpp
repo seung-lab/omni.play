@@ -6,14 +6,14 @@
 class OmBrushEraseLineTask : public zi::runnable {
 private:
     const om::shared_ptr<OmBrushOppInfo> info_;
-    const DataCoord first_;
-    const DataCoord second_;
+    const om::globalCoord first_;
+    const om::globalCoord second_;
     const OmSegID segIDtoErase_;
 
 public:
     OmBrushEraseLineTask(om::shared_ptr<OmBrushOppInfo> info,
-                         const DataCoord& first,
-                         const DataCoord& second,
+                         const om::globalCoord& first,
+                         const om::globalCoord& second,
                          const OmSegID segIDtoErase)
         : info_(info)
         , first_(first)

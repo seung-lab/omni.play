@@ -49,6 +49,8 @@ public:
         return children_.get();
     }
 
+    //Do stuff
+
 private:
     OmSegmentation* segmentation_;
     OmValidGroupNum* validGroupNum_;

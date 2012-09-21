@@ -38,16 +38,16 @@ public:
 						  const Vector3i&,
 						  const Vector3i&,
 						  const OmVolDataType type);
-	void dataset_image_write_trim( const OmDataPath &, const DataBbox&,
+	void dataset_image_write_trim( const OmDataPath &, const om::dataBbox&,
 				       OmDataWrapperPtr data);
 
 	//data set raw
 	OmDataWrapperPtr readDataset( const OmDataPath & path, int* size = NULL);
 	void writeDataset( const OmDataPath & path, int size, const OmDataWrapperPtr data);
 	OmDataWrapperPtr readChunk( const OmDataPath & path,
-								const DataBbox& dataExtent,
+								const om::dataBbox& dataExtent,
 								const om::AffinityGraph aff);
-	void writeChunk(const OmDataPath& path, DataBbox dataExtent, OmDataWrapperPtr data);
+	void writeChunk(const OmDataPath& path, om::dataBbox dataExtent, OmDataWrapperPtr data);
 	Vector3i getDatasetDims( const OmDataPath & path );
 	OmDataWrapperPtr GetChunkDataType(const OmDataPath& path);
 
