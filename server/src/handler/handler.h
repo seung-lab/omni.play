@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "thrift/server.h"
+#include "server.h"
 
 namespace om {
 namespace volume { class volume; }

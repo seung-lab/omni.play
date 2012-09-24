@@ -7,7 +7,7 @@
 #include <cassert>
 
 #include "math.hpp"
-#include "thrift/server_types.h"
+#include "server_types.h"
 
 // needed for coordinates
 namespace om { namespace common {

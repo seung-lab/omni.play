@@ -6,8 +6,8 @@
 #include <transport/TBufferTransports.h>
 #include <protocol/TBinaryProtocol.h>
 
-#include "thrift/storage_manager.h"
-#include "thrift/storage_server.h"
+#include "storage_manager.h"
+#include "storage_server.h"
 
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;

@@ -29,9 +29,16 @@ struct MeshData
     1: binary data
 }
 
+enum MeshResultCode
+{
+	MISSING = 0,
+	FOUND = 1,
+	NOT_UPDATED = 2
+}
+
 struct MeshDataResult
 {
-    1: i32 code,
+    1: MeshResultCode code,
     2: MeshData mesh
 }
 

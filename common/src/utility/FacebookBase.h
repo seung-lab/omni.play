@@ -20,7 +20,7 @@
 #ifndef _FACEBOOK_TB303_FACEBOOKBASE_H_
 #define _FACEBOOK_TB303_FACEBOOKBASE_H_ 1
 
-#include "thrift/FacebookService.h"
+#include "FacebookService.h"
 
 #include "server/TServer.h"
 #include "concurrency/Mutex.h"
