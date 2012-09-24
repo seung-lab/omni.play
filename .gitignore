@@ -6,7 +6,7 @@ bin/*
 *~
 *.pyc
 external
-common/src/thrift
+thrift/src
 *.filemap
 *.rcc.cpp
 *.moc.cpp

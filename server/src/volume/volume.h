@@ -1,6 +1,6 @@
 #pragma once
 
-#include "thrift/server_types.h"
+#include "server_types.h"
 #include "common/common.h"
 #include "pipeline/mapData.hpp"
 #include "segment/segmentTypes.hpp"

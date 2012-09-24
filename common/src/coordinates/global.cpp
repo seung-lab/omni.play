@@ -1,5 +1,5 @@
 #include "common/common.h"
-#include "thrift/server_types.h"
+#include "server_types.h"
 
 namespace om {
 namespace coords {

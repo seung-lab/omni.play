@@ -4,7 +4,7 @@ HERE    	=       .
 EXTERNAL	=	$(HERE)/external/libs
 # BINDIR		=	./bin
 # BUILDDIR	=	build
-GENDIR		=	common/src/thrift
+GENDIR		=	thrift/src
 
 AT		=   @
 DOLLAR  = 	$$
@@ -39,6 +39,7 @@ INCLUDES	=	-I$(HERE) \
 				-I$(HERE)/common/include \
 				-I$(HERE)/common/include/yaml-cpp/include \
 				-I$(HERE)/common/include/libb64/include \
+				-I$(HERE)/thrift/src \
 				-I$(HERE)/server/src \
 				-I$(HERE)/filesystem/src \
 				-I$(HERE)/zi_lib \
@@ -53,6 +54,7 @@ DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop \
 				  -I$(HERE)/common/include \
 				  -I$(HERE)/common/include/yaml-cpp/include \
+				  -I$(HERE)/thrift/src \
 				  -I$(HERE)/zi_lib \
 				  -I$(EXTERNAL)/libjpeg/include \
 				  -I$(EXTERNAL)/boost/include \
@@ -95,7 +97,7 @@ DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
 CXX_INCLUDES	=	$(INCLUDES)
 
 CWARN		=	-Wall -Wno-sign-compare -Wno-unused-variable -Wno-return-type
-CXXWARN		=	$(CWARN) -Wno-deprecated -Woverloaded-virtual
+CXXWARN		=	$(CWARN) -Wno-deprecated -Woverloaded-virtual -Wno-unused-but-set-variable -Wno-switch
 
 CPP_DEPFLAGS		=	-MM -MG -MP -MT "$(@:.d=.o)"
 CPP_INLINE_DEPFLAGS	=	-MMD -MP -MT "$(@)" -MF $(@:.o=.T)
@@ -163,12 +165,18 @@ define make_d
 	$(CXX) $(CPP_DEPFLAGS) $(INCLUDES) -MF $@ $<
 endef
 
-THRIFT_DEPS = common/src/thrift/server.thrift.mkcpp \
-			  common/src/thrift/filesystem.thrift.mkcpp
+THRIFT_DEPS = $(GENDIR)/server.thrift.mkcpp \
+			  $(GENDIR)/filesystem.thrift.mkcpp \
+			  $(GENDIR)/rtm.thrift.mkcpp
 
 $(BUILDDIR)/common/%.d: common/src/%.cpp $(THRIFT_DEPS)
 	$(make_d)
 $(BUILDDIR)/common/%.o: common/src/%.cpp $(THRIFT_DEPS)
+	$(build_cpp)
+
+$(BUILDDIR)/thrift/%.d: thrift/src/%.cpp $(THRIFT_DEPS)
+	$(make_d)
+$(BUILDDIR)/thrift/%.o: thrift/src/%.cpp $(THRIFT_DEPS)
 	$(build_cpp)
 
 $(BUILDDIR)/server/%.d: server/src/%.cpp $(THRIFT_DEPS)
@@ -182,7 +190,7 @@ $(BUILDDIR)/desktop/%.d: desktop/src/%.cpp
 $(BUILDDIR)/desktop/%.o: desktop/src/%.cpp
 	$(ECHO) "[CXX] compiling $<"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) $(DEFINES) -Wno-unused-but-set-variable -o $@ $<
+	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) $(DEFINES) -o $@ $<
 	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
 
 $(BUILDDIR)/filesystem/%.d: filesystem/src/%.cpp
@@ -209,12 +217,12 @@ $(BUILDDIR)/filesystem/%.o: filesystem/src/%.cpp
 	$(MKDIR) -p $(dir $@)
 	$(RCC) -name $(basename $(notdir $<)) $< -o $@
 
-common/src/thrift/%.thrift.mkcpp: common/if/%.thrift
+$(GENDIR)/%.thrift.mkcpp: thrift/if/%.thrift
 	$(ECHO) "[Thrift] Generating $@"
 	$(MKDIR) -p $(dir $@)
 	$(TOUCH) $@.tmp
-	$(THRIFT) -r --out common/src/thrift --gen cpp $<
-	$(RM) common/src/thrift/*.skeleton.cpp
+	$(THRIFT) -r --out $(GENDIR) --gen cpp $<
+	$(RM) $(GENDIR)/*.skeleton.cpp
 
 	$(MV) $@.tmp $@
 
@@ -246,6 +254,9 @@ lint:
 COMMONSOURCES     = $(subst common/src,$(BUILDDIR)/common, 				\
 					  $(shell find common/src -iname "*.cpp"))
 
+THRIFTSOURCES     = $(subst thrift/src,$(BUILDDIR)/thrift, 				\
+					  $(shell find thrift/src -iname "*.cpp"))
+
 SERVERSOURCES     = $(subst server/src,$(BUILDDIR)/server, 				\
                       $(shell find server/src -iname "*.cpp"))
 
@@ -258,7 +269,7 @@ DESKTOPHEADERS    = $(subst desktop/src,$(BUILDDIR)/desktop, 				\
 YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
 LIB64SOURCES = common/include/libb64/src/cencode.o
 
-SERVER_SRCS = $(COMMONSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
+SERVER_SRCS = $(COMMONSOURCES) $(THRIFTSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
 SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
 
 OMNI_SRCS = $(DESKTOPSOURCES)
