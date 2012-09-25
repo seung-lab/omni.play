@@ -142,6 +142,11 @@ CFLAGS='-g -O2'
         b.build_options = "--enable-threadsafe --with-pthread=/usr/lib"
         b.prepareAndBuild()
 
+    def breakpad(self):
+    	b = self.makeBuilder(LibraryMetadata.breakpad())
+        b.prepareSvn()
+        b.build()
+
     def omni(self):
         self.printTitle("omni")
         pwd = os.path.dirname(__file__)

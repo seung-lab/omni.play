@@ -48,6 +48,7 @@ class bootstrap:
                     "Build libevent",
                     "Build qt",
                     "Build hdf5",
+                    "Build breakpad",
                     "Init Submodules",
                     "Install Ubuntu dev packages",
                     "Build Omni"]
@@ -78,10 +79,12 @@ class bootstrap:
             elif 9 == entry:
             	r.hdf5()
             elif 10 == entry:
-            	r.submodule()
+            	r.breakpad()
             elif 11 == entry:
-                self.doUbuntuAptGets()
+            	r.submodule()
             elif 12 == entry:
+                self.doUbuntuAptGets()
+            elif 13 == entry:
                 r.omni()
             else:
                 print "unknown option: ", entry
@@ -101,6 +104,7 @@ class bootstrap:
         r.libpng()
         r.libevent()
         r.hdf5()
+        r.breakpad()
         r.boost()
         r.thrift()
         r.qt()

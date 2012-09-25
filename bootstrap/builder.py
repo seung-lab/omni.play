@@ -107,6 +107,13 @@ class Builder(object):
         fileutils.wget(self.uri, fnp)
         print "done"
 
+    def svn(self):
+        fileutils.ensure_dir(self.src_fp())
+        print "==> checking out from svn to {0}".format(self.src_fp()),
+        sys.stdout.flush()
+        fileutils.svn_co(self.uri, self.src_fp())
+        print "done"
+
     def tarball_fnp(self):
         return os.path.join(self.tarballPath, self.baseFileName + ".tar.gz")
 
@@ -116,6 +123,13 @@ class Builder(object):
         self.nukeLibraryFolder()
         self.wget()
         self.untar()
+        self.setupBuildFolder()
+
+    def prepareSvn(self):
+        self.printTitle(self.baseFileName)
+        self.nukeBuildFolder()
+        self.nukeLibraryFolder()
+        self.svn()
         self.setupBuildFolder()
 
     def prepareNukeSrcsFolder(self):

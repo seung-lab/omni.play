@@ -30,3 +30,7 @@ hdf5:
  lib_folder: hdf5
  ver: hdf5-1.8.6
  uri: http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.6/src/hdf5-1.8.6.tar
+breakpad:
+ lib_folder: breakpad
+ ver: google-breakpad
+ uri: http://google-breakpad.googlecode.com/svn/trunk/

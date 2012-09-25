@@ -56,3 +56,7 @@ class LibraryMetadata:
     @staticmethod
     def hdf5():
         return LibraryMetadata("hdf5")
+
+    @staticmethod
+    def breakpad():
+        return LibraryMetadata("breakpad")
