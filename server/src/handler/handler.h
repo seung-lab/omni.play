@@ -6,6 +6,7 @@
 namespace om {
 namespace volume { class volume; }
 namespace coords { class global; class globalBbox; }
+namespace server { class serverHandler; }
 namespace handler {
 
 void get_chunk(std::string& _return,
@@ -55,7 +56,8 @@ void get_remesh(std::string& _return,
                 int32_t mipLevel,
                 const std::set<int32_t>& segId);
 
-void update_global_mesh(const volume::volume& vol,
+void update_global_mesh(const server::serverHandler* const handler,
+                        const volume::volume& vol,
 	                    const std::set<uint32_t>& segIds,
                         uint32_t segId);
 

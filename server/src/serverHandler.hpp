@@ -1,19 +1,20 @@
-#pragma once
+ #pragma once
 
 #include "handler/handler.h"
 #include "common/common.h"
 #include "volume/volume.h"
 #include "utility/ServiceTracker.h"
 #include "utility/FacebookBase.h"
+#include "RealTimeMesher.h"
+
+#include <protocol/TBinaryProtocol.h>
+#include <transport/TSocket.h>
+#include <transport/TTransportUtils.h>
 
 using namespace facebook::fb303;
 
 namespace om {
 namespace server {
-
-std::ostream& operator<<(std::ostream& o, const vector3d& v) {
-    return o << v.x << ", " << v.y << ", " << v.z;
-}
 
 class serverHandler : virtual public serverIf,
                       public facebook::fb303::FacebookBase
@@ -21,6 +22,8 @@ class serverHandler : virtual public serverIf,
 private:
     fb_status::type status_;
     ServiceTracker serviceTracker_;
+
+    boost::shared_ptr<zi::mesh::RealTimeMesherClient> mesher_;
 
 public:
     serverHandler()
@@ -30,6 +33,31 @@ public:
     {
         status_ = fb_status::ALIVE;
     }
+
+    void connect_mesher(std::string host, int port)
+	{
+		using namespace apache::thrift;
+		using namespace apache::thrift::transport;
+		using namespace apache::thrift::protocol;
+
+		boost::shared_ptr<TSocket> socket =
+			boost::shared_ptr<TSocket>(new TSocket(host, port));
+
+		boost::shared_ptr<TTransport> transport =
+		    boost::shared_ptr<TTransport>(new TBufferedTransport(socket));
+
+		boost::shared_ptr<TProtocol> protocol =
+		    boost::shared_ptr<TProtocol>(new TBinaryProtocol(transport));
+
+		mesher_ = boost::shared_ptr<zi::mesh::RealTimeMesherClient>
+			(new zi::mesh::RealTimeMesherClient(protocol));
+
+		try {
+		    transport->open();
+		} catch (apache::thrift::TException &tx) {
+		    throw(tx);
+		}
+	}
 
     void add_chunk(const metadata& vol, const vector3i& chunk, const std::string& data) {
     }
@@ -128,7 +156,7 @@ public:
         FOR_EACH(id, segIds) {
         	ids.insert(*id);
         }
-        handler::update_global_mesh(vol, ids, segId);
+        handler::update_global_mesh(this, vol, ids, segId);
     }
 
 
@@ -169,6 +197,10 @@ public:
 
     void setThreadManager(boost::shared_ptr<apache::thrift::concurrency::ThreadManager> threadManager) {
         serviceTracker_.setThreadManager(threadManager);
+    }
+
+    boost::shared_ptr<zi::mesh::RealTimeMesherClient> mesher() const {
+    	return mesher_;
     }
 };
 

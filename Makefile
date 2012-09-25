@@ -85,7 +85,9 @@ DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
 	          $(EXTERNAL)/boost/lib/libboost_regex.a \
 	          $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
 	          $(EXTERNAL)/libpng/lib/libpng.a \
-                  $(EXTERNAL)/hdf5/lib/libhdf5.a \
+              $(EXTERNAL)/hdf5/lib/libhdf5.a \
+              $(EXTERNAL)/thrift/lib/libthrift.a \
+	   		  $(EXTERNAL)/thrift/lib/libthriftnb.a \
               -lQtGui \
               -lQtNetwork \
               -lQtCore \
@@ -240,7 +242,7 @@ tidy:
 .PHONY: clean
 clean:
 	$(ECHO) Cleaning...
-	$(RM) -rf $(BINDIR) $(GENDIR) $(BUILDDIR)
+	$(RM) -rf bin $(GENDIR) build
 	$(RM) common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
 
 .PHONY: remake
@@ -272,11 +274,11 @@ LIB64SOURCES = common/include/libb64/src/cencode.o
 SERVER_SRCS = $(COMMONSOURCES) $(THRIFTSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
 SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
 
-OMNI_SRCS = $(DESKTOPSOURCES)
+OMNI_SRCS = $(DESKTOPSOURCES) $(THRIFTSOURCES) $(YAMLSOURCES)
 MOC_SRCS = $(DESKTOPHEADERS:.hpp=.moc.cpp)
 MOC_SRCS2 = $(MOC_SRCS:.h=.moc.cpp)
 
-OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o) $(YAMLSOURCES:.cpp=.o)
+OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o)
 
 define link
 	$(ECHO) "[CXX] linking $@"
