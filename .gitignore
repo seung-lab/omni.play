@@ -12,3 +12,4 @@ thrift/src
 *.moc.cpp
 desktop/TAGS
 desktop/src/TAGS
+symbols

@@ -23,19 +23,50 @@ DEFINE_ZiLOG(segmentSelector, false);
 #include "headless/headlessImpl.hpp"
 #include "system/omQTApp.hpp"
 #include "system/omStateManager.h"
-#include <QApplication>
+#ifndef ZI_OS_MACOS
+#  include "client/linux/handler/exception_handler.h"
+#  include "common/linux/google_crashdump_uploader.h"
+using namespace google_breakpad;
+#endif
 #include <QFileInfo>
+#include <QApplication>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QUrl>
+#include <boost/filesystem.hpp>
+
+class Omni;
+
+class MyApplication : public QApplication
+{
+private:
+	Omni* o_;
+public:
+	MyApplication(int argc, char **argv, Omni* o)
+		: QApplication(argc, argv)
+		, o_(o)
+	{}
+
+	bool notify ( QObject * receiver, QEvent * e );
+};
 
 class Omni{
 private:
     int argc_;
     char **argv_;
     QString fileToOpen_;
+#ifndef ZI_OS_MACOS
+    ExceptionHandler eh_;
+#endif
 
 public:
     Omni(int argc, char **argv)
         : argc_(argc)
         , argv_(argv)
+#ifndef ZI_OS_MACOS
+        , eh_(MinidumpDescriptor("/tmp"), NULL, dumpCallback, NULL, true, -1)
+#endif
     {}
 
     int Run()
@@ -53,6 +84,10 @@ public:
         }
 
         return runGUI();
+    }
+
+    ExceptionHandler& eh() {
+    	return eh_;
     }
 
 private:
@@ -86,6 +121,7 @@ private:
         qRegisterMetaType<uint32_t>("uint32_t");
         qRegisterMetaType<ChannelDataWrapper>("ChannelDataWrapper");
         qRegisterMetaType<SegmentationDataWrapper>("SegmentationDataWrapper");
+        qRegisterMetaType<std::string>("std::string");
     }
 
     int runHeadless()
@@ -100,7 +136,7 @@ private:
     int runGUI()
     {
         // leak QApplication to avoid "~QX11PixmapData(): QPixmap objects" error
-        QApplication* app = new QApplication(argc_, argv_);
+        MyApplication* app = new MyApplication(argc_, argv_, this);
         Q_INIT_RESOURCE(resources);
         registerTypes();
 
@@ -143,7 +179,42 @@ private:
         OmProject::Close();
         return 0;
     }
+
+#ifndef ZI_OS_MACOS
+	static bool dumpCallback(const MinidumpDescriptor& descriptor,
+                             void* context,
+                             bool succeeded)
+	{
+		std::cout << "Omni has crashed.  Uploading error report " << descriptor.path() << "..." << std::endl;
+
+		QNetworkAccessManager nam;
+		QFile report(descriptor.path());
+		QNetworkRequest request(QUrl("http://seungweb.mit.edu/omni/crashes/"));
+		QNetworkReply* reply = nam.post(request, &report);
+
+		while(reply->isRunning()) {
+			sleep(1);
+		}
+
+		if(reply->error() == QNetworkReply::NoError) {
+			std::cout << std::endl << "Error report uploaded sucessfully!  This bug will be fixed!  Eventually....." << std::endl;
+		} else {
+			std::cout << std::endl << "Error report not uploaded!  Bug Matt...." << std::endl;
+		}
+		return succeeded;
+	}
+#endif
 };
+
+bool MyApplication::notify ( QObject * receiver, QEvent * e )
+{
+	try {
+		QApplication::notify(receiver, e);
+	} catch (OmException e) {
+		o_->eh().WriteMinidump();
+		throw;
+	}
+}
 
 int main(int argc, char *argv[])
 {
