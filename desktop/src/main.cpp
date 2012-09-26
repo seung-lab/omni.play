@@ -86,10 +86,6 @@ public:
         return runGUI();
     }
 
-    ExceptionHandler& eh() {
-    	return eh_;
-    }
-
 private:
     bool shouldRunHeadless()
     {
