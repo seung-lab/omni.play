@@ -38,18 +38,18 @@ using namespace google_breakpad;
 
 class Omni;
 
-class MyApplication : public QApplication
-{
-private:
-	Omni* o_;
-public:
-	MyApplication(int argc, char **argv, Omni* o)
-		: QApplication(argc, argv)
-		, o_(o)
-	{}
+// class MyApplication : public QApplication
+// {
+// private:
+// 	Omni* o_;
+// public:
+// 	MyApplication(int argc, char **argv, Omni* o)
+// 		: QApplication(argc, argv)
+// 		, o_(o)
+// 	{}
 
-	bool notify ( QObject * receiver, QEvent * e );
-};
+// 	bool notify ( QObject * receiver, QEvent * e );
+// };
 
 class Omni{
 private:
@@ -136,7 +136,7 @@ private:
     int runGUI()
     {
         // leak QApplication to avoid "~QX11PixmapData(): QPixmap objects" error
-        MyApplication* app = new MyApplication(argc_, argv_, this);
+        QApplication* app = new QApplication(argc_, argv_, this);
         Q_INIT_RESOURCE(resources);
         registerTypes();
 
@@ -185,18 +185,13 @@ private:
                              void* context,
                              bool succeeded)
 	{
-		std::cout << "Omni has crashed.  Uploading error report " << descriptor.path() << "..." << std::endl;
+		std::cout << "Omni has crashed.  Uploading error report " << descriptor.path() << std::endl;
 
-		QNetworkAccessManager nam;
-		QFile report(descriptor.path());
-		QNetworkRequest request(QUrl("http://seungweb.mit.edu/omni/crashes/"));
-		QNetworkReply* reply = nam.post(request, &report);
+		std::string cmd = std::string("curl -sF \"file=@") +
+			descriptor.path() +
+			"\" http://seungweb.mit.edu/omni/crashes/upload.php";
 
-		while(reply->isRunning()) {
-			sleep(1);
-		}
-
-		if(reply->error() == QNetworkReply::NoError) {
+		if(!system(cmd.c_str())) {
 			std::cout << std::endl << "Error report uploaded sucessfully!  This bug will be fixed!  Eventually....." << std::endl;
 		} else {
 			std::cout << std::endl << "Error report not uploaded!  Bug Matt...." << std::endl;
@@ -206,15 +201,15 @@ private:
 #endif
 };
 
-bool MyApplication::notify ( QObject * receiver, QEvent * e )
-{
-	try {
-		QApplication::notify(receiver, e);
-	} catch (OmException e) {
-		o_->eh().WriteMinidump();
-		throw;
-	}
-}
+// bool MyApplication::notify ( QObject * receiver, QEvent * e )
+// {
+// 	try {
+// 		QApplication::notify(receiver, e);
+// 	} catch (OmException e) {
+// 		o_->eh().WriteMinidump();
+// 		throw;
+// 	}
+// }
 
 int main(int argc, char *argv[])
 {
