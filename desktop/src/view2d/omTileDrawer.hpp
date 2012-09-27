@@ -47,6 +47,9 @@ public:
         } else {
 
             OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(vol);
+            if(!seg) {
+            	throw new OmFormatException("Bad Cast to OmSegmentation.");
+            }
             draw(seg);
         }
     }
@@ -199,6 +202,9 @@ private:
         const bool haveAlphaGoToBlack = Om2dPreferences::HaveAlphaGoToBlack();
 
         OmChannel* chan = reinterpret_cast<OmChannel*>(vol);
+		if(!chan) {
+        	throw new OmFormatException("Bad Cast to OmChannel.");
+        }
 
         bool drawChannel = false;
 
