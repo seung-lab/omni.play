@@ -78,6 +78,10 @@ public:
         , segIDforPainting_(0)
         , coords_(vgs, viewType)
     {
+    	if(!vol) {
+    		throw OmArgException("vol cannot be null!");
+    	}
+
         coords_.setTotalViewport(size);
         zoomLevel_->Update(getMaxMipLevel());
 
