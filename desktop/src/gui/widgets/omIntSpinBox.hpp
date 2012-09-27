@@ -29,12 +29,12 @@ private Q_SLOTS:
 
     void spinboxChanged()
     {
-        actUponSpinboxChange(value());
+        actUponValueChange(value());
         OmEvents::Redraw2d();
     }
 
 protected:
     virtual void setInitialGUIThresholdValue(){}
-    virtual void actUponSpinboxChange(const int value) = 0;
+    virtual void actUponValueChange(const int value) = 0;
 };
 

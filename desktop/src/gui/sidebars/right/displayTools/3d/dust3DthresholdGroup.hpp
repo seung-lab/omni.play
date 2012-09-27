@@ -22,7 +22,7 @@ public:
 private:
     OmViewGroupState *const vgs_;
 
-    void actUponSpinboxChange(const int threshold)
+    void actUponValueChange(const int threshold)
     {
         vgs_->setDustThreshold(threshold);
         OmEvents::Redraw3d();

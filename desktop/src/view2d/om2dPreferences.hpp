@@ -9,6 +9,7 @@ private:
     bool haveAlphaGoToBlack_;
     bool showView2dCrosshairs_;
     int crosshairHoleSize_;
+    double mipRate_;
 
 public:
 // have alpha fade to black
@@ -41,12 +42,24 @@ public:
         LocalPrefFiles::writeSettingNumber<int32_t>("View2dCrosshairHoleSize", val);
     }
 
+// cross hair opening size
+    static double MipRate(){
+        return instance().mipRate_;
+    }
+    static void MipRate(const double val)
+    {
+        instance().mipRate_ = val;
+        LocalPrefFiles::writeSettingNumber<double>("MipRate", val);
+    }
+
+
 private:
     Om2dPreferences()
     {
         setDefaultHaveAlphaGoToBlack();
         setDefaultShowCrosshairs();
         setDefaultCrosshairHoleSize();
+        setDefaultMipRate();
     }
     ~Om2dPreferences(){}
 
@@ -69,6 +82,14 @@ private:
         const int defaultVal = 20;
         crosshairHoleSize_ =
             LocalPrefFiles::readSettingNumber<int32_t>("View2dCrosshairHoleSize",
+                                                       defaultVal);
+    }
+
+    void setDefaultMipRate()
+    {
+        const int defaultVal = 3;
+        mipRate_ =
+            LocalPrefFiles::readSettingNumber<double>("MipRate",
                                                        defaultVal);
     }
 

@@ -16,7 +16,7 @@ public:
 	}
 
 private:
-	void actUponSpinboxChange(const int val)
+	void actUponValueChange(const int val)
 	{
 		Om2dPreferences::CrosshairHoleSize(val);
 		OmEvents::Redraw2d();
