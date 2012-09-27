@@ -12,10 +12,11 @@
 #include "utility/dataWrappers.h"
 #include "system/omConnect.hpp"
 #include "events/details/omViewEvent.h"
+#include "gui/widgets/locationEditDialog.hpp"
 
 #include <QtGui>
+#include <QDialog>
 #include <sstream>
-
 
 namespace om {
 namespace sidebars {
@@ -36,8 +37,8 @@ public:
         QStringList headers;
         headers << tr("Enable") << tr("Color") << tr("Comment") << tr("Position");
         setColumnCount(headers.size());
-        setColumnWidth(ENABLE_COL, 60);
-        setColumnWidth(COLOR_COL, 60);
+        setColumnWidth(ENABLE_COL, 50);
+        setColumnWidth(COLOR_COL, 50);
         setHeaderLabels(headers);
 
         setFocusPolicy(Qt::StrongFocus);
@@ -47,6 +48,8 @@ public:
                     this, SLOT(highlightSelected()));
         om::connect(this, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
                     this, SLOT(highlightClicked(QTreeWidgetItem *, int)));
+        om::connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
+                    this, SLOT(doEdit(QTreeWidgetItem *, int)));
         om::connect(this, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
                     this, SLOT(itemEdited(QTreeWidgetItem *, int)));
     }
@@ -74,11 +77,7 @@ public:
                 row->setCheckState(ENABLE_COL, enabled);
                 row->setIcon(COLOR_COL, om::utils::color::OmColorAsQPixmap(a.color));
                 row->setText(TEXT_COL, QString::fromStdString(a.comment));
-                std::stringstream ss;
-                ss << a.coord.x << ", "
-                   << a.coord.y << ", "
-                   << a.coord.z;
-                row->setText(POSITION_COL, QString::fromStdString(ss.str()));
+                setLocationText(row, a);
                 row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue<void *>(&a));
                 row->setData(TEXT_COL, Qt::UserRole, QVariant::fromValue<void *>(&annotations));
             }
@@ -112,6 +111,31 @@ private Q_SLOTS:
 
     void highlightClicked(QTreeWidgetItem* item, int) {
         highlight(item);
+    }
+
+    void doEdit(QTreeWidgetItem* item, int column)
+    {
+    	using namespace om::utils;
+
+		om::annotation::data& annotation = getAnnotation(item);
+        if (column == COLOR_COL)
+        {
+        	QColor color = color::OmColorToQColor(annotation.color);
+        	color = QColorDialog::getColor(color, this);
+
+            if (!color.isValid()) {
+                return;
+            }
+
+            annotation.color = color::QColorToOmColor(color);
+            item->setIcon(COLOR_COL, color::OmColorAsQPixmap(annotation.color));
+        }
+
+        if (column == POSITION_COL)
+        {
+        	LocationEditDialog::EditLocation(annotation.coord, this);
+			setLocationText(item, annotation);
+        }
     }
 
     void itemEdited(QTreeWidgetItem* item, int column)
@@ -199,6 +223,15 @@ private:
         }
 
         return NULL;
+    }
+
+    void setLocationText(QTreeWidgetItem* row, const om::annotation::data& a)
+    {
+    	std::stringstream ss;
+    	ss << a.coord.x << ", "
+    	   << a.coord.y << ", "
+    	   << a.coord.z;
+    	row->setText(POSITION_COL, QString::fromStdString(ss.str()));
     }
 
     OmViewGroupState *vgs_;
