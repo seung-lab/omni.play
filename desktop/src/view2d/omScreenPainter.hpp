@@ -253,6 +253,10 @@ private:
 
             FOR_EACH(it, annotations.GetValidIds())
             {
+            	if (!annotations.IsEnabled(*it)) {
+            		continue;
+            	}
+
                 om::annotation::data& a = annotations.Get(*it);
 
                 if(!closeInDepth(a.coord))

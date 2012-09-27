@@ -34,8 +34,9 @@ public:
         setAlternatingRowColors(true);
 
         QStringList headers;
-        headers << tr("Color") << tr("Comment") << tr("Position");
+        headers << tr("Enable") << tr("Color") << tr("Comment") << tr("Position");
         setColumnCount(headers.size());
+        setColumnWidth(ENABLE_COL, 60);
         setColumnWidth(COLOR_COL, 60);
         setHeaderLabels(headers);
 
@@ -69,6 +70,8 @@ public:
                               Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 
 
+                Qt::CheckState enabled = annotations.IsEnabled(a.GetID()) ? Qt::Checked : Qt::Unchecked;
+                row->setCheckState(ENABLE_COL, enabled);
                 row->setIcon(COLOR_COL, om::utils::color::OmColorAsQPixmap(a.color));
                 row->setText(TEXT_COL, QString::fromStdString(a.comment));
                 std::stringstream ss;
@@ -113,13 +116,21 @@ private Q_SLOTS:
 
     void itemEdited(QTreeWidgetItem* item, int column)
     {
-        if(column == TEXT_COL)
-        {
-            om::annotation::data& annotation = getAnnotation(item);
+        om::annotation::data& annotation = getAnnotation(item);
+        om::annotation::manager& manager = getManager(item);
+
+    	if(column == ENABLE_COL)
+		{
+			manager.SetEnabled(annotation.GetID(),
+				item->checkState(ENABLE_COL) == Qt::Checked);
+		}
+
+        if(column == TEXT_COL) {
             annotation.comment = item->text(TEXT_COL).toStdString();
-            OmEvents::Redraw2d();
-            OmEvents::Redraw3d();
         }
+
+        OmEvents::Redraw2d();
+        OmEvents::Redraw3d();
     }
 protected:
     void keyReleaseEvent(QKeyEvent * event)
@@ -192,9 +203,11 @@ private:
 
     OmViewGroupState *vgs_;
 
-    static const int COLOR_COL = 0;
-    static const int TEXT_COL = 1;
-    static const int POSITION_COL = 2;
+    static const int ENABLE_COL = 0;
+    static const int COLOR_COL = 1;
+    static const int TEXT_COL = 2;
+    static const int POSITION_COL = 3;
+    static const int SIZE_COL = 4;
 };
 
 } // namespace sidebars

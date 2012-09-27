@@ -17,21 +17,21 @@ inline Emitter &operator<<(Emitter& out, const QString& s) {
 inline void operator>>(const Node& in, QString& s) {
     std::string str;
     in >> str;
-    
+
     if(str == "~") // NULL Value from YAML
         str = "";
-    
-    s = QString::fromStdString(str);   
+
+    s = QString::fromStdString(str);
 }
 
 inline Emitter& operator<<(Emitter& out, const OmColor& c)
 {
     out << Flow << BeginSeq;
-    out << c.red;
-    out << c.green;
-    out << c.blue;
+    out << (uint32_t)c.red;
+    out << (uint32_t)c.green;
+    out << (uint32_t)c.blue;
     out << EndSeq;
-    
+
     return out;
 }
 
@@ -59,7 +59,7 @@ template<class T>
 void operator>>(const Node& in, Vector3<T>& p)
 {
     in[0] >> p.x;
-    in[1] >> p.y; 
+    in[1] >> p.y;
     in[2] >> p.z;
 }
 
@@ -161,14 +161,14 @@ Emitter &operator<<(Emitter& out, const QHash<K, V>& p)
         out << Value << it.value();
     }
     out << EndMap;
-    
+
     return out;
 }
 
 template<class K, class V>
 void operator>>(const Node& in, QHash<K, V>& p)
 {
-    FOR_EACH(it, in) 
+    FOR_EACH(it, in)
     {
         K key;
         V value;

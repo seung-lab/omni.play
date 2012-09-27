@@ -39,6 +39,10 @@ void AnnotationsWidget::Draw()
 
         FOR_EACH(it, annotations.GetValidIds())
         {
+        	if (!annotations.IsEnabled(*it)) {
+        		continue;
+        	}
+
             om::annotation::data& a = annotations.Get(*it);
             float dist = camPos.distance(a.coord);
 
