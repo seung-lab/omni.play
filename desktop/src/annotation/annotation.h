@@ -19,6 +19,7 @@ struct data {
     globalCoord coord;
     std::string comment;
     OmColor color;
+    double size;
 
     data(OmID id) : id(id) {}
 
@@ -35,13 +36,14 @@ public:
         : vol_(vol)
     {}
 
-    void Add(globalCoord coord, const std::string& comment, const OmColor& color)
+    void Add(globalCoord coord, const std::string& comment, const OmColor& color, double size)
     {
         data& d = base_t::Add();
 
         d.coord = coord;
         d.comment = comment;
         d.color = color;
+        d.size = size;
         OmEvents::AnnotationEvent();
         OmEvents::Redraw2d();
         OmEvents::Redraw3d();

@@ -6,6 +6,7 @@
 #include "utility/color.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "system/omConnect.hpp"
+#include "gui/widgets/omDoubleSpinBox.hpp"
 
 namespace om {
 namespace gui {
@@ -51,24 +52,45 @@ class ColorButton : public OmButton<QWidget>
 
 class AnnotationLineEdit : public QLineEdit
 {
-    Q_OBJECT
+Q_OBJECT
 
-    private:
-        OmViewGroupState* vgs_;
+private:
+    OmViewGroupState* vgs_;
 
-    private Q_SLOTS:
-        void update(const QString &text) {
-            vgs_->setAnnotationString(text.toStdString());
-        }
+private Q_SLOTS:
+    void update(const QString &text) {
+        vgs_->setAnnotationString(text.toStdString());
+    }
 
-    public:
-        AnnotationLineEdit(QWidget* d, OmViewGroupState* vgs)
-        : QLineEdit(d)
-        , vgs_(vgs)
-        {
-            om::connect(this, SIGNAL(textChanged(const QString&)),
-                        this, SLOT(update(const QString&)));
-        }
+public:
+    AnnotationLineEdit(QWidget* d, OmViewGroupState* vgs)
+    : QLineEdit(d)
+    , vgs_(vgs)
+    {
+        om::connect(this, SIGNAL(textChanged(const QString&)),
+                    this, SLOT(update(const QString&)));
+    }
+};
+
+class AnnotationSizeSpinBox : public OmDoubleSpinBox
+{
+private:
+    OmViewGroupState* vgs_;
+
+    void actUponValueChange(const double value) {
+        vgs_->setAnnotationSize(value);
+    }
+
+public:
+    AnnotationSizeSpinBox(QWidget* d, OmViewGroupState* vgs)
+    : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE)
+    , vgs_(vgs)
+    {
+    	setSingleStep(0.1);
+		setMinimum(0);
+		setMaximum(10);
+		setValue(vgs_->getAnnotationSize());
+    }
 };
 
 class AnnotationToolbox : public QDialog {

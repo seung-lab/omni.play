@@ -16,14 +16,14 @@ std::string om::annotation::manager::filePathV1() const {
 
 void om::annotation::manager::Save() const {
     std::string fnp = filePathV1();
-    
+
     YAML::Emitter e;
-    
+
     e << YAML::BeginDoc << YAML::BeginMap;
     YAML::genericManager::Save(e, *this);
     e << YAML::EndMap << YAML::EndDoc;
-    
-    om::yaml::yamlUtil::Write(fnp, e);
+
+    om::yaml::util::Write(fnp, e);
 }
 
 void om::annotation::manager::Load() {
@@ -32,11 +32,11 @@ void om::annotation::manager::Load() {
         std::cout << "Unable to find Annotations file.  Creating new one." << std::endl;
         return;
     }
-    
+
     YAML::Node n;
     try
     {
-        om::yaml::yamlUtil::Read(fnp, n);
+        om::yaml::util::Read(fnp, n);
         YAML::genericManager::Load(n, *this);
     }
     catch(YAML::Exception e)
@@ -45,6 +45,6 @@ void om::annotation::manager::Load() {
         ss << "Error Loading Annotations: " << e.what() << ".\n";
         throw OmIoException(ss.str());
     }
-    
+
     return;
 }

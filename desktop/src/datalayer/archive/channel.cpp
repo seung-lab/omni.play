@@ -57,7 +57,7 @@ Emitter& operator<<(Emitter& out, const OmMipVolCoords& c)
 void operator>>(const Node& in, OmMipVolCoords& c)
 {
     boost::optional<om::globalBbox> extent;
-    om::yaml::yamlUtil::OptionalRead(in, "dataExtent", extent); // backwards compatibility
+    om::yaml::util::OptionalRead(in, "dataExtent", extent); // backwards compatibility
     if(extent) {
         c.SetDataDimensions(extent.get().getDimensions());
     } else {
@@ -74,7 +74,7 @@ void operator>>(const Node& in, OmMipVolCoords& c)
     in["mMipLeafDim"] >> c.mMipLeafDim;
     in["mMipRootLevel"] >> c.mMipRootLevel;
     Vector3i offset;
-    om::yaml::yamlUtil::OptionalRead(in, "absOffset", offset, Vector3i::ZERO);
+    om::yaml::util::OptionalRead(in, "absOffset", offset, Vector3i::ZERO);
     c.SetAbsOffset(offset);
 }
 

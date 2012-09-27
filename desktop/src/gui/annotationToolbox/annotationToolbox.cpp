@@ -12,6 +12,7 @@ AnnotationToolbox::AnnotationToolbox(QWidget* parent, OmViewGroupState* vgs)
     QVBoxLayout* layout = new QVBoxLayout;
     layout->addWidget(new ColorButton(this, vgs));
     layout->addWidget(new AnnotationLineEdit(this, vgs));
+    layout->addWidget(new AnnotationSizeSpinBox(this, vgs));
 
     setLayout(layout);
 }

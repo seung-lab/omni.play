@@ -46,7 +46,7 @@ void AnnotationsWidget::Draw()
             glEnable(GL_LIGHTING | GL_DEPTH_TEST);
             glColor3ub(a.color.red, a.color.green, a.color.blue);
             glTranslatef(a.coord.x, a.coord.y, a.coord.z);
-            gluSphere(quad, .03f * dist, 26, 13);
+            gluSphere(quad, a.size * .005 * dist, 26, 13);
 
             glDisable(GL_LIGHTING | GL_DEPTH_TEST);
             glColor4fv(TEXT_COLOR);

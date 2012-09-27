@@ -51,6 +51,7 @@ private:
     //annotation stuff
     OmColor annotationColor_;
     std::string annotationString_;
+    double annotationSize_;
     bool annotationVisible_;
 
 public:
@@ -142,6 +143,14 @@ public:
 
     inline void setAnnotationString(const std::string &string) {
         annotationString_ = string;
+    }
+
+    inline const double & getAnnotationSize() {
+        return annotationSize_;
+    }
+
+    inline void setAnnotationSize(const double &size) {
+        annotationSize_ = size;
     }
 
     inline bool getAnnotationVisible() {
