@@ -1,24 +1,26 @@
 #pragma once
 
 #include "common/omCommon.h"
-#include "gui/widgets/omDoubleSpinBox.hpp"
+#include "gui/widgets/omIntSpinBox.hpp"
 #include "system/omConnect.hpp"
 
 #include <QDialog>
 #include <QLabel>
+#include <limits>
 
-class DimSpinBox : public OmDoubleSpinBox
+class DimSpinBox : public OmIntSpinBox
 {
 	float& val_;
 public:
 	DimSpinBox(float& val, QWidget* parent)
-		: OmDoubleSpinBox(parent, om::DONT_UPDATE_AS_TYPE)
+		: OmIntSpinBox(parent, om::DONT_UPDATE_AS_TYPE)
 		, val_(val)
 	{
+		setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 		setValue(val_);
 	}
 
-	void actUponValueChange(const double val) {
+	void actUponValueChange(const int val) {
 		val_ = val;
 	}
 };
