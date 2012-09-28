@@ -297,15 +297,16 @@ void OmView3d::View3dRedrawEventFromCache()
 
 void OmView3d::View3dRecenter()
 {
-    const boost::optional<float> distance =
+    boost::optional<float> distance =
         OmSegmentCenter::ComputeCameraDistanceForSelectedSegments();
 
-    if(distance)
-    {
-        mCamera.SetDistance(*distance);
-	    const om::globalCoord coord = vgs_->View2dState()->GetScaledSliceDepth();
-	    mCamera.SetFocus(coord);
+    if(!distance) {
+    	distance = 100.0f;
     }
+
+    mCamera.SetDistance(*distance);
+    const om::globalCoord coord = vgs_->View2dState()->GetScaledSliceDepth();
+    mCamera.SetFocus(coord);
 
     updateGL();
 }
