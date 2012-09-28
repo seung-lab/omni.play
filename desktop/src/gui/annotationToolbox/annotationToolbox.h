@@ -21,7 +21,7 @@ class ColorButton : public OmButton<QWidget>
         ColorButton(QWidget* d, OmViewGroupState *vgs)
         : OmButton<QWidget>(d, "", "Choose a Color", false)
         , vgs_(vgs)
-        , cur_(QColor(255,255,255))
+        , cur_(QColor(255,0,0))
         {
             updateColor();
         }
@@ -67,6 +67,7 @@ public:
     : QLineEdit(d)
     , vgs_(vgs)
     {
+    	setText("Annotation");
         om::connect(this, SIGNAL(textChanged(const QString&)),
                     this, SLOT(update(const QString&)));
     }

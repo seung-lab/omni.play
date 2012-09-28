@@ -37,6 +37,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     , toolBarManager_(NULL)
     , brightenSelected_(true)
     , annotationVisible_(true)
+    , annotationSize_(3)
 {
     mBreakThreshold = 0;
     mDustThreshold = 90;
