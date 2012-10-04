@@ -17,6 +17,7 @@ struct ManagedObject
 {
 	OmID ID;
 	bool Enabled;
+	zi::spinlock Lock;
 	T* Object;
 };
 
@@ -83,6 +84,7 @@ public:
 		if(!disposed_.get())
 		{
 			FOR_EACH(iter, objs_) {
+				zi::guard g2(iter->second.Lock);
 				delete iter->second.Object;
 			}
 			disposed_.set(true);
@@ -122,6 +124,7 @@ public:
 		zi::guard g(lock_);
 		if(isValid(id))
 		{
+			zi::guard g2(objs_[id].Lock);
 			delete objs_[id].Object;
 			objs_.erase(id);
 			if(id < next_) {
