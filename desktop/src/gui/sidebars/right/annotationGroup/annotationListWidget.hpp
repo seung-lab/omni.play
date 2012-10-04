@@ -36,10 +36,11 @@ public:
         setAlternatingRowColors(true);
 
         QStringList headers;
-        headers << tr("Enable") << tr("Color") << tr("Comment") << tr("Position");
+        headers << tr("") << tr("") << tr("Comment") << tr("Position") << tr("Size");
         setColumnCount(headers.size());
-        setColumnWidth(ENABLE_COL, 50);
-        setColumnWidth(COLOR_COL, 50);
+        setColumnWidth(ENABLE_COL, 30);
+        setColumnWidth(COLOR_COL, 30);
+        setColumnWidth(SIZE_COL, 30);
         setHeaderLabels(headers);
 
         setFocusPolicy(Qt::StrongFocus);
@@ -81,9 +82,11 @@ public:
 
                 Qt::CheckState enabled = iter->second.Enabled ? Qt::Checked : Qt::Unchecked;
                 row->setCheckState(ENABLE_COL, enabled);
+                row->setTextAlignment(ENABLE_COL, Qt::AlignCenter);
                 row->setIcon(COLOR_COL, om::utils::color::OmColorAsQPixmap(a.color));
                 row->setText(TEXT_COL, QString::fromStdString(a.comment));
                 setLocationText(row, a);
+                row->setText(SIZE_COL, QString::number(a.size));
                 row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue<void *>(&iter->second));
                 row->setData(TEXT_COL, Qt::UserRole, QVariant::fromValue<void *>(&annotations));
             }
@@ -163,6 +166,16 @@ private Q_SLOTS:
 
         if(column == TEXT_COL) {
             ann->Object->comment = item->text(TEXT_COL).toStdString();
+        }
+
+        if(column == SIZE_COL) {
+        	bool success;
+            double size = item->text(SIZE_COL).toDouble(&success);
+            if(success) {
+            	ann->Object->size = size;
+            } else {
+            	item->setText(SIZE_COL, QString::number(ann->Object->size));
+            }
         }
 
         OmEvents::Redraw2d();
