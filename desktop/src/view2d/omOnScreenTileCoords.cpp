@@ -7,9 +7,9 @@
 #include "volume/omFilter2d.h"
 #include "volume/omMipVolume.h"
 
-OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state)
+OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state, OmMipVolume* vol)
     : state_(state)
-    , vol_(state->getVol())
+    , vol_(vol)
     , viewType_(state->getViewType())
     , vgs_(state->getViewGroupState())
     , mipLevel_(state->getMipLevel())

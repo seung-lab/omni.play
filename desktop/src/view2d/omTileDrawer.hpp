@@ -174,15 +174,8 @@ private:
     OmTileCoordsAndLocationsPtr
     getTileCoordsAndLocationsForCurrentScene(OmMipVolume* vol)
     {
-        OmMipVolume* curVol = state_->getVol();  // TODO: Codesmell
-        state_->setVol(vol);
-
-        OmOnScreenTileCoords stc(state_);
-        OmTileCoordsAndLocationsPtr ret = stc.ComputeCoordsAndLocations();
-
-        state_->setVol(curVol);
-
-        return ret;
+        OmOnScreenTileCoords stc(state_, vol);
+        return stc.ComputeCoordsAndLocations();
     }
 
     bool contains(Vector4i viewport, GLfloatBox glBox) {

@@ -210,9 +210,6 @@ public:
     inline OmMipVolume* getVol() const {
         return vol_;
     }
-    void setVol(OmMipVolume* vol){
-        vol_ = vol;
-    }
 
     // view group state
     inline OmViewGroupState* getViewGroupState() const {
