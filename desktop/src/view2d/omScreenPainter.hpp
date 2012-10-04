@@ -251,12 +251,9 @@ private:
 
             om::annotation::manager &annotations = *sdw.GetSegmentation().Annotations();
 
-            FOR_EACH(it, annotations)
+            FOR_EACH(it, annotations.Enabled())
             {
-            	if(!it->second.Enabled) {
-            		continue;
-            	}
-            	om::annotation::data& a = *it->second.Object;
+            	om::annotation::data& a = *it->Object;
 
                 if(!closeInDepth(a.coord.toGlobalCoord()))
                     continue;

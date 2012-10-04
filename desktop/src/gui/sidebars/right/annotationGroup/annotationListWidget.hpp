@@ -73,21 +73,22 @@ public:
 
             FOR_EACH(iter, annotations)
             {
-            	om::annotation::data& a = *iter->second.Object;
+            	om::annotation::data& a = *iter->Object;
+            	managedAnnotation& ma = *iter;
 
                 QTreeWidgetItem *row = new QTreeWidgetItem(this);
                 row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable |
                               Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 
 
-                Qt::CheckState enabled = iter->second.Enabled ? Qt::Checked : Qt::Unchecked;
+                Qt::CheckState enabled = iter->Enabled ? Qt::Checked : Qt::Unchecked;
                 row->setCheckState(ENABLE_COL, enabled);
                 row->setTextAlignment(ENABLE_COL, Qt::AlignCenter);
                 row->setIcon(COLOR_COL, om::utils::color::OmColorAsQPixmap(a.color));
                 row->setText(TEXT_COL, QString::fromStdString(a.comment));
                 setLocationText(row, a);
                 row->setText(SIZE_COL, QString::number(a.size));
-                row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue<void *>(&iter->second));
+                row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue<void *>(&ma));
                 row->setData(TEXT_COL, Qt::UserRole, QVariant::fromValue<void *>(&annotations));
             }
         }

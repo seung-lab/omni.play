@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/iterator/transform_iterator.hpp>
 #include <boost/iterator/filter_iterator.hpp>
 #include <boost/unordered_map.hpp>
 #include <zi/mutex.hpp>
@@ -16,7 +17,6 @@ struct ManagedObject
 {
 	OmID ID;
 	bool Enabled;
-	zi::spinlock Lock;
 	T* Object;
 };
 
@@ -47,8 +47,21 @@ class Manager
 public:
 	typedef ManagedObject<T> obj;
 	typedef boost::unordered_map<OmID, obj> coll;
-	typedef typename coll::iterator iterator;
-	typedef typename coll::const_iterator const_iterator;
+
+private:
+	struct get_value : std::unary_function<typename coll::value_type, obj&> {
+		obj& operator()(typename coll::value_type& pair) const { return pair.second; }
+	};
+
+	struct get_enabled {
+		bool operator()(obj& o) const { return o.Enabled; }
+	};
+
+public:
+	typedef boost::transform_iterator<get_value, typename coll::iterator> iterator;
+	typedef boost::transform_iterator<get_value, typename coll::const_iterator> const_iterator;
+	typedef boost::filter_iterator<get_enabled, iterator> enabled_iterator;
+	typedef boost::filter_iterator<get_enabled, iterator> const_enabled_iterator;
 
 private:
 	coll objs_;
@@ -107,8 +120,8 @@ public:
 	void Remove(OmID id)
 	{
 		zi::guard g(lock_);
-		if(isValid(id)) {
-			zi::guard g2(objs_[id].Lock);
+		if(isValid(id))
+		{
 			delete objs_[id].Object;
 			objs_.erase(id);
 			if(id < next_) {
@@ -155,19 +168,49 @@ public:
     }
 
 	inline iterator begin() {
-		return objs_.begin();
+		return iterator(objs_.begin());
 	}
 
 	inline iterator end() {
-		return objs_.end();
+		return iterator(objs_.end());
 	}
 
 	inline const_iterator begin() const {
-		return objs_.begin();
+		return const_iterator(objs_.begin());
 	}
 
 	inline const_iterator end() const {
-		return objs_.end();
+		return const_iterator(objs_.end());
+	}
+
+	struct enabled
+	{
+	private:
+		Manager<T>* man_;
+	public:
+		enabled(Manager<T>* man)
+			: man_(man)
+		{}
+
+		inline enabled_iterator begin() {
+			return enabled_iterator(man_->begin(), man_->end());
+		}
+
+		inline enabled_iterator end() {
+			return enabled_iterator(man_->end(), man_->end());
+		}
+
+		inline const_enabled_iterator begin() const {
+			return const_enabled_iterator(man_->begin(), man_->end());
+		}
+
+		inline const_enabled_iterator end() const {
+			return const_enabled_iterator(man_->end(), man_->end());
+		}
+	};
+
+	inline enabled Enabled() {
+		return enabled(this);
 	}
 
 protected:
