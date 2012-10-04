@@ -49,11 +49,9 @@ public:
 
     void MeshFullVolume()
     {
-        init();
-
+    	init();
         meshWriter_->Join();
-        meshWriter_->CheckEverythingWasMeshed();
-
+		meshWriter_->CheckEverythingWasMeshed();
         meshManager_->Metadata()->SetMeshedAndStorageAsChunkFiles();
     }
 
@@ -314,7 +312,7 @@ private:
 
 	        manager.join();
 	    } else {
-            std::cout << "\rSkipping Chunk " << coord << " b/c there's nothing in there";
+            std::cout << "Skipping Chunk " << coord << " b/c there's nothing in there" << std::endl;
         }
 
         progress_.ChunkCompleted(coord);

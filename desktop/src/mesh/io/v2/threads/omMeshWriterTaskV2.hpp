@@ -67,6 +67,10 @@ public:
         const OmMeshDataEntry entry =
             writeOutData(chunk_data, mesh_, OmMeshCoord(coord_, segID_));
 
+        if(!entry.wasMeshed) {
+        	std::cout << "Wrote unmeshed Entry..." << std::endl;
+        }
+
         chunk_table->Set(entry);
 
         chunk_table->SegmentMeshSaveDone(segID_);
