@@ -5,6 +5,7 @@
 #include <zi/mutex.hpp>
 
 #include "common/omException.h"
+#include "utility/omLockedPODs.hpp"
 #include "utility/yaml/manager.hpp"
 
 namespace om {
@@ -53,23 +54,25 @@ private:
 	coll objs_;
 	size_t next_;
 	zi::spinlock lock_;
+	LockedBool disposed_;
 
 public:
 	Manager()
 		: objs_()
 		, next_(1)
-	{}
+	{
+		disposed_.set(false);
+	}
 
 	~Manager()
 	{
-		static bool disposed = false;
 		zi::guard g(lock_);
-		if(!disposed)
+		if(!disposed_.get())
 		{
 			FOR_EACH(iter, objs_) {
 				delete iter->second.Object;
 			}
-			disposed = true;
+			disposed_.set(true);
 		}
 	}
 
