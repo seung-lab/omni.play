@@ -89,7 +89,7 @@ private:
     void ViewCenterChangeEvent(){
         update();
     }
-    void AbsOffsetChangeEvent() {
+    void CoordSystemChangeEvent() {
         update();
     }
     void ViewPosChangeEvent(){}

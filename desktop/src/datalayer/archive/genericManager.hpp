@@ -26,7 +26,7 @@ public:
     }
 
     template <class T>
-    static void Load(const YAML::Node& in, OmGenericManager<T>& gm)
+    static void Load(const YAML::Node& in, OmGenericManager<T>& gm, void(*parse)(const YAML::Node&, T*) = NULL)
     {
         in["size"] >> gm.size_;
         in["valid set"] >> gm.validSet_;
@@ -38,7 +38,12 @@ public:
         for(uint32_t i = 0; i < gm.validSet_.size(); ++i)
         {
             T* t = new T();
-            in["values"][i] >> *t;
+            if (!parse) {
+            	in["values"][i] >> *t;
+            } else {
+            	parse(in["values"][i], t);
+            }
+
             gm.vec_[ t->GetID() ] = t;
 
             gm.vecValidPtrs_.push_back(t);

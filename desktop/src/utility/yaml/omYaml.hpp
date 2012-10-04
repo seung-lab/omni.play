@@ -37,31 +37,31 @@ public:
 
         return ret;
     }
-    
+
     // based on http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
     static void Read(const std::string& fnp, YAML::Node& node)
     {
         if(!om::file::exists(fnp)){
             throw OmIoException("could not find file", fnp);
         }
-        
+
         std::ifstream fin(fnp.c_str());
-        
+
         YAML::Parser parser(fin);
-        
+
         parser.GetNextDocument(node);
     }
-    
+
     // based on http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
     static void Write(const std::string& fnp, YAML::Emitter& emitter)
     {
         std::ofstream fout(fnp.c_str());
-        
+
         fout << emitter.c_str();
-        
+
         fout.close();
     }
-    
+
     template <typename T>
     static void OptionalRead(const YAML::Node& n, const std::string& name, T &data, const T &defaultValue)
     {
@@ -71,7 +71,7 @@ public:
             data = defaultValue;
         }
     }
-    
+
     template <typename T>
     static void OptionalRead(const YAML::Node& n, const std::string& name, boost::optional<T> &data)
     {

@@ -4,29 +4,55 @@
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationFolder.h"
 #include "utility/yaml/omYaml.hpp"
-#include "utility/yaml/genericManager.hpp"
+#include "utility/yaml/manager.hpp"
 
 #include <fstream>
 #include <sstream>
 
+namespace om {
+namespace annotation {
 
-std::string om::annotation::manager::filePathV1() const {
+std::string manager::filePathV1() const {
     return vol_->Folder()->AnnotationFile().toStdString();
 }
 
-void om::annotation::manager::Save() const {
+void manager::Add(globalCoord coord, const std::string& comment, const OmColor& color, double size)
+{
+    base_t::Add(new data(coord.toDataCoord(vol_, 0), comment, color, size));
+    OmEvents::AnnotationEvent();
+    OmEvents::Redraw2d();
+    OmEvents::Redraw3d();
+}
+
+void manager::Save() const {
     std::string fnp = filePathV1();
 
     YAML::Emitter e;
 
-    e << YAML::BeginDoc << YAML::BeginMap;
-    YAML::genericManager::Save(e, *this);
-    e << YAML::EndMap << YAML::EndDoc;
+    e << YAML::BeginDoc;
+    base_t::Save(e);
+    e << YAML::EndDoc;
 
     om::yaml::util::Write(fnp, e);
 }
 
-void om::annotation::manager::Load() {
+data* manager::parse(const YAML::Node& n)
+{
+	globalCoord c;
+	n["coord"] >> c;
+	std::string comment;
+	n["comment"] >> comment;
+	OmColor color;
+	n["color"] >> color;
+	double size;
+	yaml::util::OptionalRead(n, "size", size, 3.0);
+	return new data(c.toDataCoord(vol_, 0),
+					comment,
+					color,
+					size);
+}
+
+void manager::Load() {
     std::string fnp = filePathV1();
     if(!om::file::exists(fnp)) {
         std::cout << "Unable to find Annotations file.  Creating new one." << std::endl;
@@ -37,7 +63,7 @@ void om::annotation::manager::Load() {
     try
     {
         om::yaml::util::Read(fnp, n);
-        YAML::genericManager::Load(n, *this);
+        base_t::Load(n);
     }
     catch(YAML::Exception e)
     {
@@ -48,3 +74,5 @@ void om::annotation::manager::Load() {
 
     return;
 }
+
+}} // namespace om::annotation::

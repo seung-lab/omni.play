@@ -51,8 +51,8 @@ private:
     //annotation stuff
     OmColor annotationColor_;
     std::string annotationString_;
-    double annotationSize_;
     bool annotationVisible_;
+    double annotationSize_;
 
 public:
     OmViewGroupState(MainWindow* mw);

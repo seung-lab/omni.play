@@ -21,7 +21,7 @@ public:
     static void View3dRecenter();
     static void ViewBoxChanged();
     static void ViewPosChanged();
-    static void AbsOffsetChanged();
+    static void CoordSystemChanged();
     static void PreferenceChange(const int key);
 
     static void UpdateSegmentPropBox(QWidget* widget, const QString& title);

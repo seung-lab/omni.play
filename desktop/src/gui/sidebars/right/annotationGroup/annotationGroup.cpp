@@ -8,7 +8,7 @@
 
 namespace om {
 namespace sidebars {
-    
+
 class ToggleAnnotationButton : public OmButton<QWidget>
 {
 public:
@@ -19,10 +19,10 @@ public:
                           true)
     , vgs_(vgs)
     { }
-    
+
 private:
     OmViewGroupState *vgs_;
-    
+
     void doAction() {
         vgs_->setAnnotationVisible(!this->isChecked());
         OmEvents::Redraw2d();
@@ -36,10 +36,10 @@ AnnotationGroup::AnnotationGroup(om::sidebars::rightImpl* parent, OmViewGroupSta
     , vgs_(vgs)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
-    
-    ToggleAnnotationButton *toggleAnnotationsButton = 
+
+    ToggleAnnotationButton *toggleAnnotationsButton =
         new ToggleAnnotationButton(this, vgs_);
-                                   
+
     toggleAnnotationsButton->setChecked(vgs_->getAnnotationVisible());
     layout->addWidget(toggleAnnotationsButton);
     layout->addWidget(new AnnotationListWidget(this, vgs_));

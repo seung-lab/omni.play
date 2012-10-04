@@ -2,7 +2,7 @@
 
 #include "common/omCommon.h"
 #include "datalayer/fs/omFile.hpp"
-#include "system/omGenericManager.hpp"
+#include "system/manager.hpp"
 #include "events/omEvents.h"
 
 #include <QDataStream>
@@ -15,45 +15,44 @@ namespace om {
 namespace annotation {
 
 struct data {
-    OmID id;
-    globalCoord coord;
+    dataCoord coord;
     std::string comment;
     OmColor color;
     double size;
 
-    data(OmID id) : id(id) {}
+    data(dataCoord coord, std::string comment, OmColor color, double size)
+    	: coord(coord)
+    	, comment(comment)
+    	, color(color)
+    	, size(size)
+    {}
 
-    inline OmID GetID() { return id; }
+    inline void setCoord(const om::globalCoord& c) {
+    	coord = c.toDataCoord(coord.volume(), 0);
+    }
+    inline om::globalCoord getCoord() {
+    	return coord.toGlobalCoord();
+    }
 };
 
-class manager : public OmGenericManager<data> {
+class manager : public system::Manager<data> {
 private:
-    OmSegmentation *const vol_;
-    typedef OmGenericManager<data> base_t;
+    const OmSegmentation * vol_;
+    typedef system::Manager<data> base_t;
 
 public:
     manager(OmSegmentation* vol)
         : vol_(vol)
     {}
 
-    void Add(globalCoord coord, const std::string& comment, const OmColor& color, double size)
-    {
-        data& d = base_t::Add();
-
-        d.coord = coord;
-        d.comment = comment;
-        d.color = color;
-        d.size = size;
-        OmEvents::AnnotationEvent();
-        OmEvents::Redraw2d();
-        OmEvents::Redraw3d();
-    }
+    void Add(globalCoord coord, const std::string& comment, const OmColor& color, double size);
 
     void Load();
     void Save() const;
 
 
 protected:
+    data* parse(const YAML::Node& n);
     std::string getFileName() { return filePathV1(); }
 
 private:

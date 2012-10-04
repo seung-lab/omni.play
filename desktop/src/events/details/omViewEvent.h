@@ -27,7 +27,7 @@ public:
     static const QEvent::Type REDRAW = (QEvent::Type) (CLASS + 3);
     static const QEvent::Type REDRAW_BLOCKING = (QEvent::Type) (CLASS + 4);
 
-    static const QEvent::Type ABS_OFFSET_CHANGE = (QEvent::Type) (CLASS + 5);
+    static const QEvent::Type COORD_SYSTEM_CHANGE = (QEvent::Type) (CLASS + 5);
 };
 
 /*
@@ -45,6 +45,6 @@ public:
     virtual void ViewPosChangeEvent() {}
     virtual void ViewRedrawEvent() {}
     virtual void ViewBlockingRedrawEvent() {}
-    virtual void AbsOffsetChangeEvent() {}
+    virtual void CoordSystemChangeEvent() {}
 };
 

@@ -23,7 +23,8 @@ namespace sidebars {
 
 class AnnotationListWidget : public QTreeWidget,
                              public om::events::annotationEventListener,
-                             public OmViewEventListener {
+                             public OmViewEventListener
+{
 Q_OBJECT
 
 public:
@@ -54,6 +55,11 @@ public:
                     this, SLOT(itemEdited(QTreeWidgetItem *, int)));
     }
 
+private:
+	typedef om::system::ManagedObject<om::annotation::data> managedAnnotation;
+
+public:
+
     void populate()
     {
         clear();
@@ -64,21 +70,21 @@ public:
 
             om::annotation::manager &annotations = *sdw.GetSegmentation().Annotations();
 
-            FOR_EACH(i, annotations.GetValidIds())
+            FOR_EACH(iter, annotations)
             {
-                om::annotation::data& a = annotations.Get(*i);
+            	om::annotation::data& a = *iter->second.Object;
 
                 QTreeWidgetItem *row = new QTreeWidgetItem(this);
                 row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable |
                               Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 
 
-                Qt::CheckState enabled = annotations.IsEnabled(a.GetID()) ? Qt::Checked : Qt::Unchecked;
+                Qt::CheckState enabled = iter->second.Enabled ? Qt::Checked : Qt::Unchecked;
                 row->setCheckState(ENABLE_COL, enabled);
                 row->setIcon(COLOR_COL, om::utils::color::OmColorAsQPixmap(a.color));
                 row->setText(TEXT_COL, QString::fromStdString(a.comment));
                 setLocationText(row, a);
-                row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue<void *>(&a));
+                row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue<void *>(&iter->second));
                 row->setData(TEXT_COL, Qt::UserRole, QVariant::fromValue<void *>(&annotations));
             }
         }
@@ -96,8 +102,9 @@ public:
     void ViewPosChangeEvent() {}
     void ViewRedrawEvent() {}
     void ViewBlockingRedrawEvent() {}
-    void AbsOffsetChangeEvent()
-    { populate(); }
+    void CoordSystemChangeEvent() {
+       	populate();
+    }
 
 private Q_SLOTS:
 
@@ -117,40 +124,45 @@ private Q_SLOTS:
     {
     	using namespace om::utils;
 
-		om::annotation::data& annotation = getAnnotation(item);
+		managedAnnotation* ann = getAnnotation(item);
+		if(!ann) {
+			return;
+		}
         if (column == COLOR_COL)
         {
-        	QColor color = color::OmColorToQColor(annotation.color);
+        	QColor color = color::OmColorToQColor(ann->Object->color);
         	color = QColorDialog::getColor(color, this);
 
             if (!color.isValid()) {
                 return;
             }
 
-            annotation.color = color::QColorToOmColor(color);
-            item->setIcon(COLOR_COL, color::OmColorAsQPixmap(annotation.color));
+            ann->Object->color = color::QColorToOmColor(color);
+            item->setIcon(COLOR_COL, color::OmColorAsQPixmap(ann->Object->color));
         }
 
         if (column == POSITION_COL)
         {
-        	LocationEditDialog::EditLocation(annotation.coord, this);
-			setLocationText(item, annotation);
+        	om::globalCoord c = ann->Object->coord.toGlobalCoord();
+        	LocationEditDialog::EditLocation(c, this);
+        	ann->Object->coord = c.toDataCoord(ann->Object->coord.volume(), 0);
+			setLocationText(item, *ann->Object);
         }
     }
 
     void itemEdited(QTreeWidgetItem* item, int column)
     {
-        om::annotation::data& annotation = getAnnotation(item);
-        om::annotation::manager& manager = getManager(item);
+        managedAnnotation* ann = getAnnotation(item);
+        if(!ann) {
+        	return;
+        }
 
-    	if(column == ENABLE_COL)
-		{
-			manager.SetEnabled(annotation.GetID(),
-				item->checkState(ENABLE_COL) == Qt::Checked);
+    	if(column == ENABLE_COL) {
+			ann->Enabled = item->checkState(ENABLE_COL) == Qt::Checked;
 		}
 
         if(column == TEXT_COL) {
-            annotation.comment = item->text(TEXT_COL).toStdString();
+            ann->Object->comment = item->text(TEXT_COL).toStdString();
         }
 
         OmEvents::Redraw2d();
@@ -165,9 +177,15 @@ protected:
             QTreeWidgetItem* selectedItem = getSelected();
             if(selectedItem)
             {
-                om::annotation::data& selected = getAnnotation(selectedItem);
-                om::annotation::manager& manager = getManager(selectedItem);
-                manager.Remove(selected.id);
+                managedAnnotation* selected = getAnnotation(selectedItem);
+                if(!selected) {
+                	return;
+                }
+                om::annotation::manager* manager = getManager(selectedItem);
+                if(!manager) {
+                	return;
+                }
+                manager->Remove(selected->ID);
                 delete selectedItem;
                 OmEvents::Redraw2d();
                 OmEvents::Redraw3d();
@@ -178,22 +196,26 @@ protected:
 private:
     void highlight(QTreeWidgetItem* item)
     {
-        om::annotation::data& annotation = getAnnotation(item);
+        managedAnnotation* annotation = getAnnotation(item);
+        if(!annotation) {
+        	return;
+        }
 
-        vgs_->View2dState()->SetScaledSliceDepth(annotation.coord);
+        vgs_->View2dState()->SetScaledSliceDepth(annotation->Object->coord.toGlobalCoord());
         OmEvents::ViewCenterChanged();
         OmEvents::View3dRecenter();
     }
 
-    om::annotation::data& getAnnotation(QTreeWidgetItem* item)
+    static managedAnnotation* getAnnotation(QTreeWidgetItem* item)
     {
-        return *static_cast<om::annotation::data*>(
-            item->data(POSITION_COL, Qt::UserRole).value<void *>());
+    	QVariant data = item->data(POSITION_COL, Qt::UserRole);
+		void* ptr = data.value<void *>();
+    	return (managedAnnotation*)ptr;
     }
 
-    om::annotation::manager& getManager(QTreeWidgetItem* item)
+    static om::annotation::manager* getManager(QTreeWidgetItem* item)
     {
-        return *static_cast<om::annotation::manager*>(
+        return static_cast<om::annotation::manager*>(
         item->data(TEXT_COL, Qt::UserRole).value<void *>());
     }
 
@@ -227,10 +249,11 @@ private:
 
     void setLocationText(QTreeWidgetItem* row, const om::annotation::data& a)
     {
+    	globalCoord c = a.coord.toGlobalCoord();
     	std::stringstream ss;
-    	ss << a.coord.x << ", "
-    	   << a.coord.y << ", "
-    	   << a.coord.z;
+    	ss << c.x << ", "
+    	   << c.y << ", "
+    	   << c.z;
     	row->setText(POSITION_COL, QString::fromStdString(ss.str()));
     }
 

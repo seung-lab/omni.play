@@ -68,7 +68,7 @@ protected:
     void ViewPosChangeEvent() {}
     void ViewRedrawEvent() {}
     void ViewBlockingRedrawEvent() {}
-    void AbsOffsetChangeEvent() {}
+    void CoordSystemChangeEvent() {}
 
     //edit actions
     void SelectSegment(QMouseEvent *event);

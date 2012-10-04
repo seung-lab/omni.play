@@ -37,19 +37,19 @@ void AnnotationsWidget::Draw()
 
         om::annotation::manager &annotations = *sdw.GetSegmentation().Annotations();
 
-        FOR_EACH(it, annotations.GetValidIds())
+        FOR_EACH(it, annotations)
         {
-        	if (!annotations.IsEnabled(*it)) {
+        	if(!it->second.Enabled) {
         		continue;
         	}
-
-            om::annotation::data& a = annotations.Get(*it);
-            float dist = camPos.distance(a.coord);
+        	om::annotation::data& a = *it->second.Object;
+        	om::globalCoord coord = a.coord.toGlobalCoord();
+            float dist = camPos.distance(coord);
 
             glPushMatrix();
             glEnable(GL_LIGHTING | GL_DEPTH_TEST);
             glColor3ub(a.color.red, a.color.green, a.color.blue);
-            glTranslatef(a.coord.x, a.coord.y, a.coord.z);
+            glTranslatef(coord.x, coord.y, coord.z);
             gluSphere(quad, a.size * .005 * dist, 26, 13);
 
             glDisable(GL_LIGHTING | GL_DEPTH_TEST);
