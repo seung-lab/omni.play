@@ -1,0 +1,1 @@
+g++ src/real_time_meshes.cpp -o bin/real_time_meshes -O2 -DNDEBUG -lpthread -lz -lrt -lGLU -lglut -I.
