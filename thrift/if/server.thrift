@@ -120,9 +120,9 @@ service server extends fb303.FacebookService
                        3: i32 mipLevel,
                        4: set<i32> segIds)
 
-    void update_global_mesh( 1: metadata vol,
-    					     2: set<i32> segIds,
-    					     3: i32 segId)
+    oneway void update_global_mesh( 1: metadata vol,
+    					            2: set<i32> segIds,
+    					            3: i32 segId)
 
     string get_obj( 1: string uri,
                     2: vector3i chunk,

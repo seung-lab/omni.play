@@ -32,7 +32,7 @@ void update_global_mesh(const server::serverHandler* const handler,
 	size.z = vol.Bounds().getMax().z - vol.Bounds().getMin().z;
 	std::string data(reinterpret_cast<char*>(out.data.get()), out.size);
 	// Integrate with realtime mesher.
-	handler->mesher()->queueUpdate(vol.Uri(), loc, size, data);
+	handler->mesher()->update(vol.Uri(), loc, size, data);
 
 	handler->mesher()->remesh(false);
 }

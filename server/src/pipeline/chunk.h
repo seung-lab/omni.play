@@ -1,3 +1,5 @@
+#pragma once
+
 #include "common/common.h"
 #include "pipeline/stage.hpp"
 #include "datalayer/memMappedFile.hpp"
