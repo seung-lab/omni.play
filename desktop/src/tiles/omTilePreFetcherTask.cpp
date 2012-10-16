@@ -12,7 +12,7 @@ OmTilePreFetcherTask::OmTilePreFetcherTask(OmView2dState* state)
 
 void OmTilePreFetcherTask::run()
 {
-    onScreenTileCoords_.reset(new OmOnScreenTileCoords(state_.get()));
+    onScreenTileCoords_.reset(new OmOnScreenTileCoords(state_.get(), state_->getVol()));
 
     const int maxPrefetchDepth = 32;
 

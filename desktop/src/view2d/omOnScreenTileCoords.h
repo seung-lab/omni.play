@@ -8,7 +8,7 @@ class OmFilter2d;
 
 class OmOnScreenTileCoords {
 public:
-    OmOnScreenTileCoords(OmView2dState*);
+    OmOnScreenTileCoords(OmView2dState*, OmMipVolume*);
 
     OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations();
     OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations(const int);

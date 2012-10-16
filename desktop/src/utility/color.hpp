@@ -55,11 +55,11 @@ public:
 
         return ret;
     }
-    
+
     static QColor OmColorToQColor(const OmColor color){
         return qRgb(color.red, color.green, color.blue);
     }
-    
+
     static OmColor QColorToOmColor(const QColor color){
         OmColor c = {
         	static_cast<uint8_t>(color.red()),
@@ -67,12 +67,12 @@ public:
         	static_cast<uint8_t>(color.blue()) };
         return c;
     }
-    
+
     static QPixmap OmColorAsQPixmap(const OmColor& color)
     {
         return MakeQPixmap(OmColorToQColor(color));
     }
-    
+
     static QPixmap MakeQPixmap(const QColor& color)
     {
         QPixmap pixm(40, 30);

@@ -29,17 +29,6 @@ public:
         , numEntries_(0)
     {}
 
-    bool CreateIfNeeded()
-    {
-        QFile file(fnp_);
-        if(file.exists()){
-            return false;
-        }
-
-        setupFile();
-        return true;
-    }
-
     bool CheckEverythingWasMeshed()
     {
         bool allGood = true;

@@ -12,17 +12,19 @@
 #include "utility/dataWrappers.h"
 #include "system/omConnect.hpp"
 #include "events/details/omViewEvent.h"
+#include "gui/widgets/locationEditDialog.hpp"
 
 #include <QtGui>
+#include <QDialog>
 #include <sstream>
-
 
 namespace om {
 namespace sidebars {
 
 class AnnotationListWidget : public QTreeWidget,
                              public om::events::annotationEventListener,
-                             public OmViewEventListener {
+                             public OmViewEventListener
+{
 Q_OBJECT
 
 public:
@@ -34,9 +36,11 @@ public:
         setAlternatingRowColors(true);
 
         QStringList headers;
-        headers << tr("Color") << tr("Comment") << tr("Position");
+        headers << tr("") << tr("") << tr("Comment") << tr("Position") << tr("Size");
         setColumnCount(headers.size());
-        setColumnWidth(COLOR_COL, 60);
+        setColumnWidth(ENABLE_COL, 30);
+        setColumnWidth(COLOR_COL, 30);
+        setColumnWidth(SIZE_COL, 30);
         setHeaderLabels(headers);
 
         setFocusPolicy(Qt::StrongFocus);
@@ -46,9 +50,16 @@ public:
                     this, SLOT(highlightSelected()));
         om::connect(this, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
                     this, SLOT(highlightClicked(QTreeWidgetItem *, int)));
+        om::connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
+                    this, SLOT(doEdit(QTreeWidgetItem *, int)));
         om::connect(this, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
                     this, SLOT(itemEdited(QTreeWidgetItem *, int)));
     }
+
+private:
+	typedef om::system::ManagedObject<om::annotation::data> managedAnnotation;
+
+public:
 
     void populate()
     {
@@ -60,23 +71,24 @@ public:
 
             om::annotation::manager &annotations = *sdw.GetSegmentation().Annotations();
 
-            FOR_EACH(i, annotations.GetValidIds())
+            FOR_EACH(iter, annotations)
             {
-                om::annotation::data& a = annotations.Get(*i);
+            	om::annotation::data& a = *iter->Object;
+            	managedAnnotation& ma = *iter;
 
                 QTreeWidgetItem *row = new QTreeWidgetItem(this);
                 row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable |
                               Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 
 
+                Qt::CheckState enabled = iter->Enabled ? Qt::Checked : Qt::Unchecked;
+                row->setCheckState(ENABLE_COL, enabled);
+                row->setTextAlignment(ENABLE_COL, Qt::AlignCenter);
                 row->setIcon(COLOR_COL, om::utils::color::OmColorAsQPixmap(a.color));
                 row->setText(TEXT_COL, QString::fromStdString(a.comment));
-                std::stringstream ss;
-                ss << a.coord.x << ", "
-                   << a.coord.y << ", "
-                   << a.coord.z;
-                row->setText(POSITION_COL, QString::fromStdString(ss.str()));
-                row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue<void *>(&a));
+                setLocationText(row, a);
+                row->setText(SIZE_COL, QString::number(a.size));
+                row->setData(POSITION_COL, Qt::UserRole, QVariant::fromValue<void *>(&ma));
                 row->setData(TEXT_COL, Qt::UserRole, QVariant::fromValue<void *>(&annotations));
             }
         }
@@ -94,8 +106,9 @@ public:
     void ViewPosChangeEvent() {}
     void ViewRedrawEvent() {}
     void ViewBlockingRedrawEvent() {}
-    void AbsOffsetChangeEvent()
-    { populate(); }
+    void CoordSystemChangeEvent() {
+       	populate();
+    }
 
 private Q_SLOTS:
 
@@ -111,15 +124,63 @@ private Q_SLOTS:
         highlight(item);
     }
 
+    void doEdit(QTreeWidgetItem* item, int column)
+    {
+    	using namespace om::utils;
+
+		managedAnnotation* ann = getAnnotation(item);
+		if(!ann) {
+			return;
+		}
+        if (column == COLOR_COL)
+        {
+        	QColor color = color::OmColorToQColor(ann->Object->color);
+        	color = QColorDialog::getColor(color, this);
+
+            if (!color.isValid()) {
+                return;
+            }
+
+            ann->Object->color = color::QColorToOmColor(color);
+            item->setIcon(COLOR_COL, color::OmColorAsQPixmap(ann->Object->color));
+        }
+
+        if (column == POSITION_COL)
+        {
+        	om::globalCoord c = ann->Object->coord.toGlobalCoord();
+        	LocationEditDialog::EditLocation(c, this);
+        	ann->Object->coord = c.toDataCoord(ann->Object->coord.volume(), 0);
+			setLocationText(item, *ann->Object);
+        }
+    }
+
     void itemEdited(QTreeWidgetItem* item, int column)
     {
-        if(column == TEXT_COL)
-        {
-            om::annotation::data& annotation = getAnnotation(item);
-            annotation.comment = item->text(TEXT_COL).toStdString();
-            OmEvents::Redraw2d();
-            OmEvents::Redraw3d();
+        managedAnnotation* ann = getAnnotation(item);
+        if(!ann) {
+        	return;
         }
+
+    	if(column == ENABLE_COL) {
+			ann->Enabled = item->checkState(ENABLE_COL) == Qt::Checked;
+		}
+
+        if(column == TEXT_COL) {
+            ann->Object->comment = item->text(TEXT_COL).toStdString();
+        }
+
+        if(column == SIZE_COL) {
+        	bool success;
+            double size = item->text(SIZE_COL).toDouble(&success);
+            if(success) {
+            	ann->Object->size = size;
+            } else {
+            	item->setText(SIZE_COL, QString::number(ann->Object->size));
+            }
+        }
+
+        OmEvents::Redraw2d();
+        OmEvents::Redraw3d();
     }
 protected:
     void keyReleaseEvent(QKeyEvent * event)
@@ -130,9 +191,15 @@ protected:
             QTreeWidgetItem* selectedItem = getSelected();
             if(selectedItem)
             {
-                om::annotation::data& selected = getAnnotation(selectedItem);
-                om::annotation::manager& manager = getManager(selectedItem);
-                manager.Remove(selected.id);
+                managedAnnotation* selected = getAnnotation(selectedItem);
+                if(!selected) {
+                	return;
+                }
+                om::annotation::manager* manager = getManager(selectedItem);
+                if(!manager) {
+                	return;
+                }
+                manager->Remove(selected->ID);
                 delete selectedItem;
                 OmEvents::Redraw2d();
                 OmEvents::Redraw3d();
@@ -143,22 +210,26 @@ protected:
 private:
     void highlight(QTreeWidgetItem* item)
     {
-        om::annotation::data& annotation = getAnnotation(item);
+        managedAnnotation* annotation = getAnnotation(item);
+        if(!annotation) {
+        	return;
+        }
 
-        vgs_->View2dState()->SetScaledSliceDepth(annotation.coord);
+        vgs_->View2dState()->SetScaledSliceDepth(annotation->Object->coord.toGlobalCoord());
         OmEvents::ViewCenterChanged();
         OmEvents::View3dRecenter();
     }
 
-    om::annotation::data& getAnnotation(QTreeWidgetItem* item)
+    static managedAnnotation* getAnnotation(QTreeWidgetItem* item)
     {
-        return *static_cast<om::annotation::data*>(
-            item->data(POSITION_COL, Qt::UserRole).value<void *>());
+    	QVariant data = item->data(POSITION_COL, Qt::UserRole);
+		void* ptr = data.value<void *>();
+    	return (managedAnnotation*)ptr;
     }
 
-    om::annotation::manager& getManager(QTreeWidgetItem* item)
+    static om::annotation::manager* getManager(QTreeWidgetItem* item)
     {
-        return *static_cast<om::annotation::manager*>(
+        return static_cast<om::annotation::manager*>(
         item->data(TEXT_COL, Qt::UserRole).value<void *>());
     }
 
@@ -190,11 +261,23 @@ private:
         return NULL;
     }
 
+    void setLocationText(QTreeWidgetItem* row, const om::annotation::data& a)
+    {
+    	globalCoord c = a.coord.toGlobalCoord();
+    	std::stringstream ss;
+    	ss << c.x << ", "
+    	   << c.y << ", "
+    	   << c.z;
+    	row->setText(POSITION_COL, QString::fromStdString(ss.str()));
+    }
+
     OmViewGroupState *vgs_;
 
-    static const int COLOR_COL = 0;
-    static const int TEXT_COL = 1;
-    static const int POSITION_COL = 2;
+    static const int ENABLE_COL = 0;
+    static const int COLOR_COL = 1;
+    static const int TEXT_COL = 2;
+    static const int POSITION_COL = 3;
+    static const int SIZE_COL = 4;
 };
 
 } // namespace sidebars

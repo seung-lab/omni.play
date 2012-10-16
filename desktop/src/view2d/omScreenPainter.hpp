@@ -251,14 +251,14 @@ private:
 
             om::annotation::manager &annotations = *sdw.GetSegmentation().Annotations();
 
-            FOR_EACH(it, annotations.GetValidIds())
+            FOR_EACH(it, annotations.Enabled())
             {
-                om::annotation::data& a = annotations.Get(*it);
+            	om::annotation::data& a = *it->Object;
 
-                if(!closeInDepth(a.coord))
+                if(!closeInDepth(a.coord.toGlobalCoord()))
                     continue;
 
-                om::screenCoord loc = a.coord.toScreenCoord(state_);
+                om::screenCoord loc = a.coord.toGlobalCoord().toScreenCoord(state_);
 
                 QPen pen;
                 pen.setColor(QColor::fromRgb(a.color.red, a.color.green, a.color.blue));

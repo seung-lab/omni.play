@@ -2,6 +2,7 @@
 
 HERE    	=       .
 EXTERNAL	=	$(HERE)/external/libs
+BREAKPAD    =   $(HERE)/external/srcs/google-breakpad/src
 # BINDIR		=	./bin
 # BUILDDIR	=	build
 GENDIR		=	thrift/src
@@ -27,12 +28,13 @@ AR      =	$(AT)ar
 TAR     =	$(AT)tar
 ARFLAGS =	rcs
 
-CC     =	$(AT)gcc
-CXX    =	$(AT)g++
-THRIFT = 	$(AT)$(EXTERNAL)/thrift/bin/thrift
-MOC	   =    $(AT)$(EXTERNAL)/qt/bin/moc
-RCC	   =    $(AT)$(EXTERNAL)/qt/bin/rcc
-FPIC   =	-fPIC
+CC       =	$(AT)gcc
+CXX      =	$(AT)g++
+THRIFT   = 	$(AT)$(EXTERNAL)/thrift/bin/thrift
+MOC	     =	$(AT)$(EXTERNAL)/qt/bin/moc
+RCC	     =	$(AT)$(EXTERNAL)/qt/bin/rcc
+DUMPSYMS =  $(AT)$(EXTERNAL)/breakpad/bin/dump_syms
+FPIC     =	-fPIC
 
 INCLUDES	=	-I$(HERE) \
 				-I$(HERE)/common/src \
@@ -47,6 +49,7 @@ INCLUDES	=	-I$(HERE) \
 				-I$(EXTERNAL)/boost/include \
 				-I$(EXTERNAL)/libjpeg/include \
 				-I$(EXTERNAL)/libpng/include \
+				-I$(BREAKPAD)
 
 DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop/include \
@@ -64,7 +67,8 @@ DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(EXTERNAL)/qt/include/QtGui \
 				  -I$(EXTERNAL)/qt/include/QtNetwork \
 				  -I$(EXTERNAL)/qt/include \
-				  -I$(EXTERNAL)/hdf5/include
+				  -I$(EXTERNAL)/hdf5/include \
+				  -I$(BREAKPAD)
 
 LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/boost/lib/libboost_iostreams.a \
@@ -88,6 +92,8 @@ DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
               $(EXTERNAL)/hdf5/lib/libhdf5.a \
               $(EXTERNAL)/thrift/lib/libthrift.a \
 	   		  $(EXTERNAL)/thrift/lib/libthriftnb.a \
+			  $(EXTERNAL)/breakpad/lib/libbreakpad.a \
+			  $(EXTERNAL)/breakpad/lib/libbreakpad_client.a \
               -lQtGui \
               -lQtNetwork \
               -lQtCore \
@@ -120,7 +126,7 @@ OPT_CFLAGS         =	$(COMMON_CFLAGS) -DNDEBUG \
 OPT_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
 COMMON_LDFLAGS     =	-g $(FPIC) -Wl,--eh-frame-hdr -lm
-DBG_LDFLAGS        =	$(COMMON_LDFLAGS) -gstabs+
+DBG_LDFLAGS        =	$(COMMON_LDFLAGS) -gstabs
 OPT_LDFLAGS        =	$(COMMON_LDFLAGS) -O3 -fno-omit-frame-pointer
 
 COMM_FLEX_FLAGS    =    -d
@@ -204,6 +210,8 @@ $(BUILDDIR)/filesystem/%.o: filesystem/src/%.cpp
 	$(make_d)
 %.o: %.cpp
 	$(build_cpp)
+%.o: %.cc
+	$(build_cpp)
 %.o: %.c
 	$(build_c)
 %.moc.cpp: %.hpp
@@ -252,6 +260,15 @@ remake: clean all
 lint:
 	find desktop/src -iname "*.[hc]*" | grep -v "moc.cpp" | grep -v "rcc.cpp" | xargs \
 		external/scripts/cpplint.py --filter=-legal/copyright
+
+omni.desktop.sym: $(BINDIR)/omni.desktop
+	$(ECHO) [Breakpad] Generating Symbols...
+	$(DUMPSYMS) $< > $@
+
+.PHONY: symbols
+symbols: omni.desktop.sym
+	$(MKDIR) -p symbols/omni.desktop/$(shell head -n1 $< | cut -d' ' -f4)
+	$(MV) $< symbols/omni.desktop/$(shell head -n1 $< | cut -d' ' -f4)
 
 COMMONSOURCES     = $(subst common/src,$(BUILDDIR)/common, 				\
 					  $(shell find common/src -iname "*.cpp"))

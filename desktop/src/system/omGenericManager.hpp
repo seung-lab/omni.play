@@ -1,14 +1,5 @@
 #pragma once
 
-/*
- * Templated generic manager for a objects that have an
- *   (OmID id) constructor.
- *
- *  NOT thread-safe
- *
- * Brett Warne - bwarne@mit.edu - 2/20/09
- */
-
 #include "common/omCommon.h"
 #include "common/omException.h"
 #include "common/omContainer.hpp"
@@ -23,7 +14,7 @@ namespace YAML { class genericManager; }
 
 template <typename T, typename Lock = zi::spinlock>
 class OmGenericManager {
-private:
+protected:
     static const uint32_t DEFAULT_MAP_SIZE = 10;
 
     OmID nextId_;

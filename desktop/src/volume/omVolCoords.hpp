@@ -42,6 +42,7 @@ public:
     {
         dataDimensions_ = dim;
         updateNormMat();
+        OmEvents::CoordSystemChanged();
     }
 
 // chunk dims
@@ -80,6 +81,7 @@ public:
         dataToGlobal_.getInverse(globalToData_);
         normToGlobal_.setTranslation(absOffset);
         normToGlobal_.getInverse(globalToNorm_);
+        OmEvents::CoordSystemChanged();
     }
 
     inline Vector3i GetResolution() const {
@@ -95,6 +97,7 @@ public:
 
         dataToGlobal_.getInverse(globalToData_);
         updateNormMat();
+        OmEvents::CoordSystemChanged();
     }
 
 protected:

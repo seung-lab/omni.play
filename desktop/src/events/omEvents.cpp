@@ -63,8 +63,8 @@ void OmEvents::ViewPosChanged(){
     POST(new OmViewEvent(OmViewEvent::VIEW_POS_CHANGE));
 }
 
-void OmEvents::AbsOffsetChanged(){
-    POST(new OmViewEvent(OmViewEvent::ABS_OFFSET_CHANGE));
+void OmEvents::CoordSystemChanged(){
+    POST(new OmViewEvent(OmViewEvent::COORD_SYSTEM_CHANGE));
 }
 
 void OmEvents::PreferenceChange(const int key){

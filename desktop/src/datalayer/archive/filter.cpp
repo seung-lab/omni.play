@@ -29,7 +29,7 @@ Emitter &operator<<(Emitter& out, const OmFilter2d& f)
     out << Key << "chan id" << Value << f.chanID_;
     out << Key << "seg id" << Value << f.segID_;
     out << EndMap;
-    
+
     return out;
 }
 

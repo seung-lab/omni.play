@@ -25,6 +25,8 @@
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
 
+#include <QCoreApplication>
+
 MainWindow::MainWindow()
     : inspector_(NULL)
     , undoView_(NULL)
@@ -254,6 +256,7 @@ void MainWindow::openProject(QString fileNameAndPath)
 {
     try {
         OmProject::Load(fileNameAndPath, this);
+        QCoreApplication::processEvents();
         updateGuiFromProjectCreateOrOpen(fileNameAndPath);
 
     } catch(OmException& e) {

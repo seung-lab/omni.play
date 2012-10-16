@@ -23,7 +23,7 @@ public:
 
 private:
 
-    void actUponSpinboxChange(const int val)
+    void actUponValueChange(const int val)
     {
         OmChannelTileFilter::SetBrightnessShift(val);
         OmTileCache::ClearChannel();

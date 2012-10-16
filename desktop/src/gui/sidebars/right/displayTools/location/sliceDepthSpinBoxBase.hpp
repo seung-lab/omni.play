@@ -55,7 +55,7 @@ private:
         return NULL;
     }
 
-    void actUponSpinboxChange(const int depth)
+    void actUponValueChange(const int depth)
     {
         if(NULL == vg2ds()){
             return;
@@ -89,7 +89,7 @@ private:
     void ViewCenterChangeEvent(){
         update();
     }
-    void AbsOffsetChangeEvent() {
+    void CoordSystemChangeEvent() {
         update();
     }
     void ViewPosChangeEvent(){}

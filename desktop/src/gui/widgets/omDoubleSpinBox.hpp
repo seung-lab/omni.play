@@ -43,7 +43,7 @@ protected:
         setValue(newThreshold);
     }
 
-    virtual void setInitialGUIThresholdValue() = 0;
+    virtual void setInitialGUIThresholdValue() {};
     virtual void actUponValueChange(const double threshold) = 0;
 };
 

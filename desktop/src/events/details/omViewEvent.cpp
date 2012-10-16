@@ -42,8 +42,8 @@ void OmViewEvent::Dispatch(OmEventListener * pListener)
         p_cast_listener->ViewBlockingRedrawEvent();
         return;
 
-    case OmViewEvent::ABS_OFFSET_CHANGE:
-        p_cast_listener->AbsOffsetChangeEvent();
+    case OmViewEvent::COORD_SYSTEM_CHANGE:
+        p_cast_listener->CoordSystemChangeEvent();
         return;
 
     default:

@@ -1,6 +1,7 @@
 #pragma once
 #include <events/omEvents.h>
 #include <cmath>
+#include "view2d/om2dPreferences.hpp"
 
 class OmZoomLevel {
 private:
@@ -84,7 +85,7 @@ private:
 
     void setMipLevel()
     {
-        mipLevel_ = log2(3 / zoomFactor_);
+        mipLevel_ = log2(Om2dPreferences::MipRate() / zoomFactor_);
         if(mipLevel_ < 0) {
             mipLevel_ = 0;
         } else if(mipLevel_ > maxMipLevel_) {

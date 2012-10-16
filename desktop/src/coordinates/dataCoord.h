@@ -20,7 +20,7 @@ class dataCoord : public vmml::Vector3i
 private:
     typedef Vector3i base_t;
     const OmMipVolume *vol_;
-    const int mipLevel_;
+    int mipLevel_;
 
 public:
     dataCoord(base_t v, const OmMipVolume * vol, int mipLevel);

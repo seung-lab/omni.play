@@ -125,7 +125,7 @@ bool OmView3dUi::annotate(QMouseEvent* event)
 
     om::annotation::manager* manager = pickPoint.sdw.GetSegmentation().Annotations();
 
-    manager->Add(pickPoint.coord, vgs_->getAnnotationString(), vgs_->getAnnotationColor());
+    manager->Add(pickPoint.coord, vgs_->getAnnotationString(), vgs_->getAnnotationColor(), vgs_->getAnnotationSize());
     return true;
 }
 

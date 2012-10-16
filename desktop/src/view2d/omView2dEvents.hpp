@@ -70,5 +70,5 @@ public:
         OmCursors::setToolCursor(v2d_);
     }
     
-    void AbsOffsetChangeEvent() {}
+    void CoordSystemChangeEvent() {}
 };

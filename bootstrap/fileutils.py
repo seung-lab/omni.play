@@ -32,6 +32,10 @@ def file_exists(fnp):
     #print "checking file exists: {fnp}...{e}".format(fnp=fnp, e=e)
     return e
 
+def folder_exists(fnp):
+    e = os.path.isdir(fnp)
+    return e
+
 def rm_f(f):
     if dir_exists(f):
         print "deleting folder: ", f,
@@ -45,6 +49,14 @@ def gunzip(fnp, fp):
 
 def wget(uri, fnp):
     urllib.urlretrieve(uri, fnp)
+
+def svn_co(uri, fnp):
+    cmd = "svn co {remote} {local}".format(remote = uri, local = fnp)
+    os.system(cmd)
+
+def svn_up(fnp):
+    cmd = "svn up {local}".format(local = fnp)
+    os.system(cmd)
 
 def uri_size_bytes(uri):
     # stackoverflow.com/questions/5909/get-size-of-a-file-before-downloading-in-python

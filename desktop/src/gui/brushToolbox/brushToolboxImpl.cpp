@@ -89,7 +89,7 @@ private:
         setValue(OmStateManager::BrushSize()->Diameter());
     }
 
-    virtual void actUponSpinboxChange(const int value)
+    virtual void actUponValueChange(const int value)
     {
         OmStateManager::BrushSize()->SetDiameter(value);
         OmEvents::Redraw2d();
