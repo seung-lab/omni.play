@@ -44,7 +44,7 @@ public:
 			boost::shared_ptr<TSocket>(new TSocket(host, port));
 
 		boost::shared_ptr<TTransport> transport =
-		    boost::shared_ptr<TTransport>(new TBufferedTransport(socket));
+		    boost::shared_ptr<TTransport>(new TFramedTransport(socket));
 
 		boost::shared_ptr<TProtocol> protocol =
 		    boost::shared_ptr<TProtocol>(new TBinaryProtocol(transport));

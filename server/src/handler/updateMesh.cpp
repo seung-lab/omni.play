@@ -1,5 +1,6 @@
 #include "handler/handler.h"
 
+#include "pipeline/unchunk.hpp"
 #include "pipeline/filter.hpp"
 #include "volume/volume.h"
 #include "RealTimeMesher.h"
@@ -19,7 +20,7 @@ void update_global_mesh(const server::serverHandler* const handler,
 		throw argException("Can only update global mesh from segmentation");
 	}
 
-	data_var filtered = vol.Data() >> set_filter<uint32_t>(segIds, segId);
+	data_var filtered = vol.Data() >> unchunk(vol.CoordSystem()) >> set_filter<uint32_t>(segIds, segId);
 
 	data<uint32_t> out = boost::get<data<uint32_t> >(filtered);
 
