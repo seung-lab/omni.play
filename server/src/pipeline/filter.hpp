@@ -8,7 +8,7 @@ namespace om {
 namespace pipeline {
 
 template<typename T>
-class set_filter : public stage
+class set_filter //: public stage
 {
 protected:
     const std::set<T>& vals_;
@@ -20,36 +20,38 @@ public:
 		, outputAs_(outputAs)
 	{}
 
-    data_var operator()(const data<T>& in) const
+    data<T> operator()(const data<T>& in) const
     {
-        data<T> out;
+    	std::cout << "Filtering." << std::endl;
+    	data<T> out;
         out.size = in.size;
         out.data = utility::smartPtr<T>::MallocNumElements(out.size);
 
         doFilter(in.data.get(), out.data.get(), out.size);
+        std::cout << "Finished Filtering." << std::endl;
         return out;
     }
 
-    data_var operator()(const datalayer::memMappedFile<T>& in) const
-    {
-        data<T> out;
-        out.size = in.Size();
-        out.data = utility::smartPtr<T>::MallocNumElements(out.size);
+    // data_var operator()(const datalayer::memMappedFile<T>& in) const
+    // {
+    //     data<T> out;
+    //     out.size = in.Size();
+    //     out.data = utility::smartPtr<T>::MallocNumElements(out.size);
 
-        doFilter(in.GetPtr(), out.data.get(), out.size);
-        return out;
-    }
+    //     doFilter(in.GetPtr(), out.data.get(), out.size);
+    //     return out;
+    // }
 
 
-    template <typename S>
-    data_var operator()(const data<S> in) const {
-    	throw argException("Attempting to filter the wrong type of data.");
-    }
+    // template <typename S>
+    // data_var operator()(const data<S> in) const {
+    // 	throw argException("Attempting to filter the wrong type of data.");
+    // }
 
-    template <typename S>
-    data_var operator()(const datalayer::memMappedFile<S>& in) const {
-    	throw argException("Attempting to filter the wrong type of data.");
-    }
+    // template <typename S>
+    // data_var operator()(const datalayer::memMappedFile<S>& in) const {
+    // 	throw argException("Attempting to filter the wrong type of data.");
+    // }
 
 private:
     void doFilter(const T* inData, T* outData, size_t size) const
@@ -70,9 +72,9 @@ private:
     }
 };
 
-template<typename T>
-data_var operator>>(const dataSrcs& d, const set_filter<T>& v) {
-    return boost::apply_visitor(v, d);
-}
+// template<typename T>
+// data_var operator>>(const dataSrcs& d, const set_filter<T>& v) {
+//     return boost::apply_visitor(v, d);
+// }
 
 }} // namespace om::pipeline::

@@ -56,7 +56,7 @@ void get_remesh(std::string& _return,
                 int32_t mipLevel,
                 const std::set<int32_t>& segId);
 
-void update_global_mesh(const server::serverHandler* const handler,
+void update_global_mesh(server::serverHandler* const handler,
                         const volume::volume& vol,
 	                    const std::set<uint32_t>& segIds,
                         uint32_t segId);

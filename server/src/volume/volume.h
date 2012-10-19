@@ -22,6 +22,8 @@ private:
 //    segments::dataManager segData_;
     coords::volumeSystem coordSystem_;
 
+    friend std::ostream& operator<<(std::ostream& out, const volume& vol);
+
 public:
     volume(const server::metadata& metadata);
 
@@ -72,5 +74,19 @@ public:
 
     segments::data GetSegmentData(int32_t segId) const;
 };
+
+inline std::ostream& operator<<(std::ostream& out, const volume& vol)
+{
+	out << "{" << std::endl
+		<< "\turi:\t" << vol.uri_ << std::endl
+    	<< "\tbounds:\t" << vol.bounds_ << std::endl
+    	<< "\tresolution:\t" << vol.resolution_ << std::endl
+    	<< "\tdataType:\t" << vol.dataType_ << std::endl
+    	<< "\tvolType:\t" << vol.volType_ << std::endl
+    	<< "\tchunkDims:\t" << vol.chunkDims_ << std::endl
+    	<< "\tmipLevel:\t" << vol.mipLevel_ << std::endl
+    	<< "}";
+	return out;
+}
 
 }} // namespace om::volume::
