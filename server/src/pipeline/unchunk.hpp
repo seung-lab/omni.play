@@ -20,7 +20,7 @@ public:
     size_t target_offset(coords::data d) const
     {
     	const Vector3i dims = vs_.GetChunkDimensions();
-    	return d.x * dims.y * dims.z + d.y * dims.z + d.z;
+    	return d.x + d.y * dims.x + d.z * dims.x * dims.y;
     }
 
     template <typename T>

@@ -1,3 +1,5 @@
+
+#include "common/string.hpp"
 #include "handler/handler.h"
 
 #include "pipeline/unchunk.hpp"
@@ -33,7 +35,7 @@ void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
 	size.z = vol.Bounds().getMax().z - vol.Bounds().getMin().z;
 	std::string data(reinterpret_cast<char*>(filtered.data.get()), filtered.size);
 	// Integrate with realtime mesher.
-	rtm->update(vol.Uri(), loc, size, data);
+	rtm->update(string::num(segId), loc, size, data);
 
 	rtm->remesh(false);
 }
