@@ -40,12 +40,7 @@
 
 #include <zlib.h>
 
-#include "real_time_meshes.hpp"
-
-#include "detail/volume.hpp"
-#include "detail/rwlock_pool.hpp"
-#include "detail/cache.hpp"
-#include "mesh_cache.hpp"
+#include "rtm.hpp"
 
 
 //zi::mesh::simplifier<double> s;
@@ -61,6 +56,7 @@ inline std::string file_get_contents(const std::string& f)
     buffer << t.rdbuf();
     return buffer.str();
 }
+
 bool is_wire = false;
 bool is_zoom = false;
 zi::gl::camera camera;
@@ -349,46 +345,10 @@ void motion_func( int x, int y )
 }
 
 
-zi::mesh::cache<zi::mesh::int_mesh_cache>  imc(500000000);
-zi::mesh::cache<zi::mesh::face_mesh_cache> fmc(500000000);
-
-inline boost::shared_ptr<zi::mesh::face_mesh<double> >
-load_face_mesh_from_lower_mips( zi::vl::vec<uint32_t, 5> c, const zi::vl::vec3d& off )
-{
-    if ( c[0] == 0 )
-    {
-        return fmc.get( c ).get();
-    }
-
-    //std::cout << "Load face mesh from lower: " << c << "\n";
-
-    boost::shared_ptr<zi::mesh::face_mesh<double> > m(new zi::mesh::face_mesh<double> );
-
-    for ( uint32_t dx = 0; dx < 2; ++dx )
-    {
-        for ( uint32_t dy = 0; dy < 2; ++dy )
-        {
-            for ( uint32_t dz = 0; dz < 2; ++dz )
-            {
-                boost::shared_ptr<zi::mesh::face_mesh<double> > x = fmc.get
-                    ( zi::vl::vec<uint32_t, 5>(c[0]-1,c[1]*2+dx,c[2]*2+dy,c[3]*2+dz,c[4]) ).get();
-                m->add(x, off[0]*dx, off[1]*dy, off[2]*dz);
-            }
-        }
-    }
-
-    if ( m->size() == 0 )
-    {
-        m.reset();
-    }
-
-    return m;
-}
-
 
 int main( int argc, char* argv[] ) {
 
-    zi::mesh::real_time_meshes rtm;
+    zi::mesh::rtm rtm;
 
     //return 0;
 
@@ -397,18 +357,62 @@ int main( int argc, char* argv[] ) {
         for ( uint32_t j = 0; j < 10; ++j )
             for ( uint32_t k = 0; k < 10; ++k )
             {
-                boost::shared_ptr<boost::multi_array<uint32_t,3> > v
-                    = zi::mesh::vol::from_file<uint32_t,128>
+                std::string s = file_get_contents
                     ( boost::str( boost::format( "./zt/raw_%04d_%04d_%04d.raw")
-                                  % i % j % k), false);
-                //zi::mesh::vol::save_volume<int,128>(v, zi::mesh::vol::chunk_coord(k,j,i));
-                if ( v ) {
-                    rtm.update_chunk(i,j,k,v);
+                                  % i % j % k) );
+                if ( s.size() ) {
+                    rtm.chunk_update(i,j,k,s.data());
                 }
             }
     //  }
 
-    rtm.remesh(false);
+    uint32_t* d = new uint32_t[128*128*128];
+
+    for ( uint32_t i = 0, idx = 0; i < 128; ++i )
+        for ( uint32_t j = 0; j < 128; ++j )
+            for ( uint32_t k = 0; k < 128; ++k )
+            {
+                if ( i > 2 && i < 120 && k > 2 && k < 120 )
+                {
+                    d[idx] = ( j > 50 ) ? 61 : 0;
+                }
+                d[idx] = 61;
+                idx++;
+            }
+
+    // rtm.volume_update( 50, 50, 50, 128, 128, 128,
+    //                    reinterpret_cast<char*>(d));
+
+    // rtm.volume_update( 51, 51, 51, 128, 128, 128,
+    //                    reinterpret_cast<char*>(d));
+
+    rtm.chunk_update(1,1,1,reinterpret_cast<char*>(d));
+    rtm.chunk_update(1,2,1,reinterpret_cast<char*>(d));
+    rtm.chunk_update(2,1,1,reinterpret_cast<char*>(d));
+//    rtm.chunk_update(1,2,1,reinterpret_cast<char*>(d));
+//    rtm.chunk_update(1,1,1,reinterpret_cast<char*>(d));
+    // rtm.chunk_update(1,1,2,reinterpret_cast<char*>(d));
+    // rtm.chunk_update(2,1,2,reinterpret_cast<char*>(d));
+    // rtm.chunk_update(2,1,1,reinterpret_cast<char*>(d));
+
+    // for ( uint32_t i = 0, idx = 0; i < 128; ++i )
+    //     for ( uint32_t j = 0; j < 128; ++j )
+    //         for ( uint32_t k = 0; k < 128; ++k )
+    //         {
+    //             if ( i > 2 && i < 120 && k > 2 && k < 120 )
+    //             {
+    //                 d[idx] = ( j < 50 ) ? 61 : 0;
+    //             }
+    //             idx++;
+    //         }
+
+    // // rtm.volume_update( 0, 100, 0, 100, 50, 100,
+    // //                    reinterpret_cast<char*>(d));
+
+    // rtm.chunk_update(1,2,1,reinterpret_cast<char*>(d));
+    // rtm.chunk_update(1,2,2,reinterpret_cast<char*>(d));
+    // rtm.chunk_update(2,2,1,reinterpret_cast<char*>(d));
+    // rtm.chunk_update(2,2,2,reinterpret_cast<char*>(d));
 
     std::cout << "HEEEEEEEEEERE!\n" << std::endl;
 
@@ -416,17 +420,16 @@ int main( int argc, char* argv[] ) {
         for ( uint32_t j = 0; j < 3; ++j )
             for ( uint32_t k = 0; k < 3; ++k )
             {
-                zi::mesh::face_mesh_ptr xp = zi::mesh::vol::load_face_mesh<double>(zi::mesh::vec5u(3,i,j,k,101));
+                zi::mesh::face_mesh_ptr xp = zi::mesh::mesh_io.read(zi::mesh::vec5u(i,j,k,1,61));
+                fm.add(xp,(256<<1)*k,(256<<1)*j,(256<<1)*i);
+    //             xp = zi::mesh::vol::load_face_mesh<double>(zi::mesh::vec5u(3,i,j,k,81));
 
-                fm.add(xp,(256<<3)*k,(256<<3)*j,(256<<3)*i);
-                xp = zi::mesh::vol::load_face_mesh<double>(zi::mesh::vec5u(3,i,j,k,81));
+    //             fm1.add(xp,(256<<3)*k,(256<<3)*j,(256<<3)*i);
+    //             xp = zi::mesh::vol::load_face_mesh<double>(zi::mesh::vec5u(3,i,j,k,71));
 
-                fm1.add(xp,(256<<3)*k,(256<<3)*j,(256<<3)*i);
-                xp = zi::mesh::vol::load_face_mesh<double>(zi::mesh::vec5u(3,i,j,k,71));
-
-                fm2.add(xp,(256<<3)*k,(256<<3)*j,(256<<3)*i);
+    //             fm2.add(xp,(256<<3)*k,(256<<3)*j,(256<<3)*i);
+    //         }
             }
-
 
     zi::gl::glutInit( &argc, argv );
     zi::gl::glutInitDisplayMode( zi::glut::t_double |

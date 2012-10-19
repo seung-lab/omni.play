@@ -42,6 +42,8 @@ public:
             boost::format("./data/raw/%d/%d/%d/chunk.raw")
             % c[0] % c[1] % c[2] );
 
+        //std::cout << "Reading Chunk: " << fname << "\n";
+
         gzFile fin;
 
         if ( (fin = gzopen(fname.c_str(), "r")) )
@@ -52,8 +54,8 @@ public:
                                     sizeof(uint32_t)*128*128*128);
             gzclose(fin);
 
-            std::cout << "GZREAD: " << r  << " / "
-                      << (sizeof(uint32_t)*128*128*128) << "\n";
+            //std::cout << "GZREAD: " << r  << " / "
+            //          << (sizeof(uint32_t)*128*128*128) << "\n";
 
             if ( r == sizeof(uint32_t)*128*128*128 )
             {
@@ -88,8 +90,8 @@ public:
             std::size_t r = gzwrite(out, reinterpret_cast<const void*>(v->data()),
                                     sizeof(uint32_t)*128*128*128);
 
-            std::cout << "GZWRITE: " << r  << " / "
-                      << (sizeof(uint32_t)*128*128*128) << "\n";
+            //std::cout << "GZWRITE: " << r  << " / "
+            //          << (sizeof(uint32_t)*128*128*128) << "\n";
             gzclose(out);
             return true;
         }
@@ -115,6 +117,8 @@ private:
     void merge(chunk_type& v, const chunk_type& x, side_to_attach s) const
     {
         static const std::size_t N = 128;
+
+        //std::cout << "Overlap: " << (int)(s) << "\n";
 
         switch (s)
         {

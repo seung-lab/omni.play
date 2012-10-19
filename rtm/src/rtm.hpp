@@ -70,6 +70,26 @@ private:
         to_remesh_next_[c].insert(i);
     }
 
+    void schedule_remesh_around( const vec3u& c, uint32_t i )
+    {
+        uint32_t fx = ( c[0] > 0 ) ? c[0] - 1 : c[0];
+        uint32_t fy = ( c[1] > 0 ) ? c[1] - 1 : c[1];
+        uint32_t fz = ( c[2] > 0 ) ? c[2] - 1 : c[2];
+
+        zi::mutex::guard g(to_remesh_next_mutex_);
+
+        for ( uint32_t x = fx; x <= c[0] + 1; ++x )
+        {
+            for ( uint32_t y = fy; y <= c[1] + 1; ++y )
+            {
+                for ( uint32_t z = fz; z <= c[2] + 1; ++z )
+                {
+                    to_remesh_next_[vec3u(x,y,z)].insert(i);
+                }
+            }
+        }
+    }
+
     void get_scheduled( const vec3u&c, std::set<uint32_t>& s )
     {
         zi::mutex::guard g(to_remesh_mutex_);
@@ -155,6 +175,13 @@ private:
         chunk->operator[](indices[range(fz%128,tz%128)][range(fy%128,ty%128)][range(fx%128,tx%128)])
             = d->operator[](indices[range(fz-z0,tz-z0)][range(fy-y0,ty-y0)][range(fx-x0,tx-x0)]);
 
+
+        std::cout << "Filling Chunk: " << chunk_coord << " range: "
+                  << "[ " << (fx%128) << "-" << (tx%128) << " "
+                  << ", " << (fy%128) << "-" << (ty%128) << " "
+                  << ", " << (fz%128) << "-" << (tz%128) << " ]" << std::endl;
+
+
         // get new hashes
         hashes(new_hashes, chunk->data(), chunk->num_elements());
 
@@ -168,13 +195,13 @@ private:
 
                 if ( old_hashes.count( it->first ) == 0 )
                 {
-                    schedule_remesh(chunk_coord, it->first);
+                    schedule_remesh_around(chunk_coord, it->first);
                 }
                 else
                 {
                     if ( old_hashes[it->first] != it->second )
                     {
-                        schedule_remesh(chunk_coord, it->first);
+                        schedule_remesh_around(chunk_coord, it->first);
                     }
                 }
             }
@@ -185,7 +212,57 @@ private:
 
                 if ( new_hashes.count( it->first ) == 0 )
                 {
-                    schedule_remesh(chunk_coord, it->first);
+                    schedule_remesh_around(chunk_coord, it->first);
+                }
+            }
+        }
+    }
+
+    void chunk_update_internal( vec3u chunk_coord, chunk_ref_ptr d )
+    {
+        std::map<uint32_t,std::size_t> old_hashes, new_hashes;
+        chunk_type_ptr chunk;
+
+        // get old chunk and old hashes!
+        chunk = chunk_io.read(chunk_coord, true);
+        hashes(old_hashes, chunk->data(), chunk->num_elements());
+
+        // update the chunk
+        chunk->operator[](indices[range(0,128)][range(0,128)][range(0,128)])
+            = d->operator[](indices[range(0,128)][range(0,128)][range(0,128)]);
+
+
+        // get new hashes
+        hashes(new_hashes, chunk->data(), chunk->num_elements());
+
+        // save the new chunk
+        chunk_io.write(chunk, chunk_coord);
+
+        {
+            FOR_EACH( it, new_hashes )
+            {
+                if ( it->first == 0 ) continue;
+
+                if ( old_hashes.count( it->first ) == 0 )
+                {
+                    schedule_remesh_around(chunk_coord, it->first);
+                }
+                else
+                {
+                    if ( old_hashes[it->first] != it->second )
+                    {
+                        schedule_remesh_around(chunk_coord, it->first);
+                    }
+                }
+            }
+
+            FOR_EACH( it, old_hashes )
+            {
+                if ( it->first == 0 ) continue;
+
+                if ( new_hashes.count( it->first ) == 0 )
+                {
+                    schedule_remesh_around(chunk_coord, it->first);
                 }
             }
         }
@@ -235,11 +312,11 @@ private:
                     //                   vec3u(tox, toy, toz), c );
 
 
-                    std::cout << "Update MIP0; " << i << ' ' << j << ' ' << k
-                              << "\n"
-                              << "    [" << fromx << ' ' << tox << "]\n"
-                              << "    [" << fromy << ' ' << toy << "]\n"
-                              << "    [" << fromz << ' ' << toz << "]\n";
+                    // std::cout << "Update MIP0; " << i << ' ' << j << ' ' << k
+                    //           << "\n"
+                    //           << "    [" << fromx << ' ' << tox << "]\n"
+                    //           << "    [" << fromy << ' ' << toy << "]\n"
+                    //           << "    [" << fromz << ' ' << toz << "]\n";
                 }
             }
         }
@@ -258,13 +335,13 @@ private:
         zi::mesh::marching_cubes<int32_t> mc;
         mc.marche(reinterpret_cast<int32_t*>(chunk->data()), 129, 129, 129);
 
-        std::cout << "Processing Chunk: " << c << "\n";
+        //std::cout << "Processing Chunk: " << c << "\n";
 
         FOR_EACH( it, ids )
         {
             vec5u mcoord( c[0], c[1], c[2], 0, *it);
 
-            std::cout << "Processing Chunk Coord: " << mcoord << "\n";
+            //std::cout << "Processing Chunk Coord: " << mcoord << "\n";
 
             if ( mc.count(*it) )
             {
@@ -275,7 +352,7 @@ private:
                 im.fill_simplifier<double>(s);
 
                 s.prepare();
-                s.optimize(s.face_count()/100, 1e-8 );
+                s.optimize(s.face_count()/10, 1e-12 );
 
                 std::vector< zi::vl::vec3d > points ;
                 std::vector< zi::vl::vec3d > normals;
@@ -323,7 +400,7 @@ private:
                 fmd->fill_simplifier<double>(s);
 
                 s.prepare();
-                s.optimize(s.face_count()/8, 0.5*(1<<(mip-1)));
+                s.optimize(s.face_count()/8, (1<<(mip-1)));
 
                 std::vector< zi::vl::vec3d > points ;
                 std::vector< zi::vl::vec3d > normals;
@@ -385,6 +462,40 @@ public:
                 remesh_tm_.insert( zi::run_fn( zi::bind( &rtm::process_chunk_mipn,
                                                          this, it->first, mip )));
                 //process_chunk_mipn( it->first, mip );
+            }
+
+            remesh_tm_.join();
+        }
+    }
+
+    void chunk_update( uint32_t x, uint32_t y, uint32_t z,
+                       const char* data)
+    {
+        chunk_ref_ptr c( new chunk_type_ref(reinterpret_cast<const uint32_t*>(data),
+                                            extents[128][128][128]) );
+
+        to_remesh_.clear();
+        chunk_update_internal( vec3u(x,y,z), c );
+
+        swap_to_remesh();
+        remesh_tm_.start();
+
+        FOR_EACH( it, to_remesh_ )
+        {
+            remesh_tm_.insert( zi::run_fn( zi::bind( &rtm::process_chunk, this, it->first ) ) );
+        }
+
+        remesh_tm_.join();
+
+        for ( uint32_t mip = 1; mip < 9; ++mip )
+        {
+            swap_to_remesh();
+            remesh_tm_.start();
+
+            FOR_EACH( it, to_remesh_ )
+            {
+                remesh_tm_.insert( zi::run_fn( zi::bind( &rtm::process_chunk_mipn,
+                                                         this, it->first, mip )));
             }
 
             remesh_tm_.join();

@@ -48,7 +48,7 @@ private:
         std::string s = boost::str( boost::format("./data/fmesh/%d/%d/%d/%d/%d.fmesh")
                                     % c[3] % c[0] % c[1] % c[2] % c[4] );
 
-        std::cout << "Trying to open: " << c << " :: " << s << "\n";
+        //std::cout << "Trying to open: " << c << " :: " << s << "\n";
         std::ifstream in(s.c_str(), std::ios::in | std::ios::binary);
         if (in)
         {
@@ -81,7 +81,7 @@ private:
 
             delete [] buff;
 
-            std::cout << "READ: " << tot << "\n";
+            //std::cout << "READ: " << tot << "\n";
 
             return tot;
         }
@@ -180,7 +180,7 @@ public:
                     mesh_type_ptr x = read(vec5u(c[0]*2+dx,c[1]*2+dy,c[2]*2+dz,c[3]-1,c[4]));
                     if ( x )
                     {
-                        m->add(x, off[0]*dx, off[1]*dy, off[2]*dz);
+                        m->add(x, off[0]*dz, off[1]*dy, off[2]*dx);
                     }
                 }
             }
@@ -212,45 +212,45 @@ public:
                 // add the last point
                 {
                     std::size_t idx = indices[starts[i-1] + lengths[i-1] - 1];
-                    newpoints.push_back(static_cast<float>(points[idx].at(0)));
-                    newpoints.push_back(static_cast<float>(points[idx].at(1)));
                     newpoints.push_back(static_cast<float>(points[idx].at(2)));
-                    newpoints.push_back(static_cast<float>(normals[idx].at(0)));
-                    newpoints.push_back(static_cast<float>(normals[idx].at(1)));
+                    newpoints.push_back(static_cast<float>(points[idx].at(1)));
+                    newpoints.push_back(static_cast<float>(points[idx].at(0)));
                     newpoints.push_back(static_cast<float>(normals[idx].at(2)));
+                    newpoints.push_back(static_cast<float>(normals[idx].at(1)));
+                    newpoints.push_back(static_cast<float>(normals[idx].at(0)));
                 }
 
                 if ( (newpoints.size()/6) % 2 == 0 )
                 {
                     std::size_t idx = indices[starts[i]];
-                    newpoints.push_back(static_cast<float>(points[idx].at(0)));
-                    newpoints.push_back(static_cast<float>(points[idx].at(1)));
                     newpoints.push_back(static_cast<float>(points[idx].at(2)));
-                    newpoints.push_back(static_cast<float>(normals[idx].at(0)));
-                    newpoints.push_back(static_cast<float>(normals[idx].at(1)));
+                    newpoints.push_back(static_cast<float>(points[idx].at(1)));
+                    newpoints.push_back(static_cast<float>(points[idx].at(0)));
                     newpoints.push_back(static_cast<float>(normals[idx].at(2)));
+                    newpoints.push_back(static_cast<float>(normals[idx].at(1)));
+                    newpoints.push_back(static_cast<float>(normals[idx].at(0)));
                 }
 
                 {
                     std::size_t idx = indices[starts[i]];
-                    newpoints.push_back(static_cast<float>(points[idx].at(0)));
-                    newpoints.push_back(static_cast<float>(points[idx].at(1)));
                     newpoints.push_back(static_cast<float>(points[idx].at(2)));
-                    newpoints.push_back(static_cast<float>(normals[idx].at(0)));
-                    newpoints.push_back(static_cast<float>(normals[idx].at(1)));
+                    newpoints.push_back(static_cast<float>(points[idx].at(1)));
+                    newpoints.push_back(static_cast<float>(points[idx].at(0)));
                     newpoints.push_back(static_cast<float>(normals[idx].at(2)));
+                    newpoints.push_back(static_cast<float>(normals[idx].at(1)));
+                    newpoints.push_back(static_cast<float>(normals[idx].at(0)));
                 }
             }
 
             for ( uint32_t j = starts[i]; j < starts[i] + lengths[i]; ++j )
             {
                 std::size_t idx = indices[j];
-                newpoints.push_back(static_cast<float>(points[idx].at(0)));
-                newpoints.push_back(static_cast<float>(points[idx].at(1)));
                 newpoints.push_back(static_cast<float>(points[idx].at(2)));
-                newpoints.push_back(static_cast<float>(normals[idx].at(0)));
-                newpoints.push_back(static_cast<float>(normals[idx].at(1)));
+                newpoints.push_back(static_cast<float>(points[idx].at(1)));
+                newpoints.push_back(static_cast<float>(points[idx].at(0)));
                 newpoints.push_back(static_cast<float>(normals[idx].at(2)));
+                newpoints.push_back(static_cast<float>(normals[idx].at(1)));
+                newpoints.push_back(static_cast<float>(normals[idx].at(0)));
             }
 
         }
@@ -270,7 +270,7 @@ public:
 
         tri_strip_to_degenerate( degen, points, normals, indices, strip_begins, strip_lengths );
 
-        std::cout << "DEGEN SIZE: " << degen.size() << "\n";
+        //std::cout << "DEGEN SIZE: " << degen.size() << "\n";
 
         vec4u cp(c[3], c[0], c[1], c[2]);
         if ( !file_io.create_path<4>("./data/fmesh", cp) )
@@ -307,7 +307,7 @@ public:
         std::string s = boost::str( boost::format("./data/fmesh/%d/%d/%d/%d/%d.smesh")
                                     % c[3] % c[0] % c[1] % c[2] % c[4] );
 
-        std::cout << "Trying to open: " << c << " :: " << s << "\n";
+        //std::cout << "Trying to open: " << c << " :: " << s << "\n";
         std::ifstream in(s.c_str(), std::ios::in | std::ios::binary);
         if (in)
         {
@@ -315,7 +315,7 @@ public:
             ret.assign( (std::istreambuf_iterator<char>(in) ),
                         (std::istreambuf_iterator<char>()) );
 
-            std::cout << "READ: " << ret.size() << "\n";
+            //std::cout << "READ: " << ret.size() << "\n";
 
             return true;
         }
