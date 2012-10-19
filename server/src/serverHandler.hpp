@@ -23,41 +23,19 @@ private:
     fb_status::type status_;
     ServiceTracker serviceTracker_;
 
-    boost::shared_ptr<zi::mesh::RealTimeMesherClient> mesher_;
+    std::string mesherHost_;
+    int32_t mesherPort_;
 
 public:
-    serverHandler()
+    serverHandler(std::string mesherHost, int32_t mesherPort)
         : FacebookBase("omni.server")
         , status_(fb_status::STARTING)
         , serviceTracker_(this)
+        , mesherHost_(mesherHost)
+        , mesherPort_(mesherPort)
     {
         status_ = fb_status::ALIVE;
     }
-
-    void connect_mesher(std::string host, int port)
-	{
-		using namespace apache::thrift;
-		using namespace apache::thrift::transport;
-		using namespace apache::thrift::protocol;
-
-		boost::shared_ptr<TSocket> socket =
-			boost::shared_ptr<TSocket>(new TSocket(host, port));
-
-		boost::shared_ptr<TTransport> transport =
-		    boost::shared_ptr<TTransport>(new TFramedTransport(socket));
-
-		boost::shared_ptr<TProtocol> protocol =
-		    boost::shared_ptr<TProtocol>(new TBinaryProtocol(transport));
-
-		mesher_ = boost::shared_ptr<zi::mesh::RealTimeMesherClient>
-			(new zi::mesh::RealTimeMesherClient(protocol));
-
-		try {
-		    transport->open();
-		} catch (apache::thrift::TException &tx) {
-		    throw(tx);
-		}
-	}
 
     void add_chunk(const metadata& vol, const vector3i& chunk, const std::string& data) {
     }
@@ -152,11 +130,14 @@ public:
                             int32_t segId)
     {
         ServiceMethod serviceMethod(&serviceTracker_, "update_global_mesh", "update_global_mesh");
+
+        MesherPtr mesher = makeMesher();
+
         std::set<uint32_t> ids;
         FOR_EACH(id, segIds) {
         	ids.insert(*id);
         }
-        handler::update_global_mesh(this, vol, ids, segId);
+        handler::update_global_mesh(mesher.get(), vol, ids, segId);
     }
 
 
@@ -198,10 +179,33 @@ public:
     void setThreadManager(boost::shared_ptr<apache::thrift::concurrency::ThreadManager> threadManager) {
         serviceTracker_.setThreadManager(threadManager);
     }
+private:
+	typedef boost::shared_ptr<zi::mesh::RealTimeMesherClient> MesherPtr;
+	MesherPtr makeMesher()
+	{
+		using namespace apache::thrift;
+		using namespace apache::thrift::transport;
+		using namespace apache::thrift::protocol;
 
-    boost::shared_ptr<zi::mesh::RealTimeMesherClient> mesher() const {
-    	return mesher_;
-    }
+		boost::shared_ptr<TSocket> socket =
+			boost::shared_ptr<TSocket>(new TSocket(mesherHost_, mesherPort_));
+
+		boost::shared_ptr<TTransport> transport =
+		    boost::shared_ptr<TTransport>(new TFramedTransport(socket));
+
+		boost::shared_ptr<TProtocol> protocol =
+		    boost::shared_ptr<TProtocol>(new TBinaryProtocol(transport));
+
+		MesherPtr mesher = MesherPtr(new zi::mesh::RealTimeMesherClient(protocol));
+
+		try {
+		    transport->open();
+		} catch (apache::thrift::TException &tx) {
+		    throw(tx);
+		}
+
+		return mesher;
+	}
 };
 
 }

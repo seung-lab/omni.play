@@ -12,17 +12,9 @@ namespace volume {
 
 using namespace pipeline;
 
-volume::volume(const server::metadata& meta)
-    : uri_(meta.uri)
-    , bounds_(meta.bounds)
-    , resolution_(common::Convert(meta.resolution))
-    , dataType_(meta.type)
-    , volType_(meta.vol_type)
-    , chunkDims_(common::Convert(meta.chunkDims))
-    , mipLevel_(meta.mipLevel)
-    , coordSystem_(meta)
+void volume::loadVolume()
 {
-    if(!file::exists(uri_)) {
+	if(!file::exists(uri_)) {
         throw argException("Invalid metadata: uri not found.");
     }
 
@@ -40,7 +32,6 @@ volume::volume(const server::metadata& meta)
         }
         case server::volType::SEGMENTATION:
         {
-            
             const std::string segName = str(
                 boost::format("%1%/segmentations/segmentation1/%2%/volume.uint32_t.raw")
                 % uri_ % mipLevel_);
@@ -50,6 +41,43 @@ volume::volume(const server::metadata& meta)
             break;
         }
     }
+}
+
+volume::volume(const server::metadata& meta)
+    : uri_(meta.uri)
+    , bounds_(meta.bounds)
+    , resolution_(common::Convert(meta.resolution))
+    , dataType_(meta.type)
+    , volType_(meta.vol_type)
+    , chunkDims_(common::Convert(meta.chunkDims))
+    , mipLevel_(meta.mipLevel)
+    , coordSystem_(meta)
+{
+    loadVolume();
+}
+
+volume::volume(std::string uri,
+    	   	   coords::globalBbox bounds,
+    	   	   Vector3i resolution,
+    	   	   server::dataType::type dataType,
+    	   	   server::volType::type volType,
+    	   	   Vector3i chunkDims,
+    	   	   int32_t mipLevel)
+    	: uri_(uri)
+    	, bounds_(bounds)
+    	, resolution_(resolution)
+    	, dataType_(dataType)
+    	, volType_(volType)
+    	, chunkDims_(chunkDims)
+    	, mipLevel_(mipLevel)
+    	, coordSystem_()
+{
+	Vector3i dims = bounds.getMax() - bounds.getMin();
+	coordSystem_.SetDataDimensions(dims);
+    coordSystem_.SetAbsOffset(bounds.getMin());
+    coordSystem_.SetResolution(resolution);
+    coordSystem_.UpdateRootLevel();
+	loadVolume();
 }
 
 int32_t volume::GetSegId(coords::global point) const

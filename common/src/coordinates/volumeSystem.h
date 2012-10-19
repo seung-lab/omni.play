@@ -190,7 +190,6 @@ private:
                             std::deque<coords::chunk>* coords) const
     {
         const Vector3i dims = MipLevelDimensionsInMipChunks(mipLevel);
-
         for (int z = 0; z < dims.z; ++z){
             for (int y = 0; y < dims.y; ++y){
                 for (int x = 0; x < dims.x; ++x){

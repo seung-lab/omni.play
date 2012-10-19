@@ -35,12 +35,11 @@ public:
 
         // iterate over all chunks in order
         // TODO: boost multi_array
-	    FOR_EACH(iter, *vs_.GetMipChunkCoords(0))
+        boost::shared_ptr<std::deque<coords::chunk> > chunks = vs_.GetMipChunkCoords(0);
+	    FOR_EACH(iter, *chunks)
 	    {
             coords::chunk coord = *iter;
-            std::cout << coord << " ";
-			coords::data base = coord.toData(&vs_);
-			std::cout << base << " | ";
+            coords::data base = coord.toData(&vs_);
 
             uint64_t offset = coord.chunkPtrOffset(&vs_, sizeof(T));
 	        T* chunkPtr = in.GetPtrWithOffset(offset);

@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     int port = ZiARG_port;
     std::string mesher = ZiARG_mesher;
     int mesher_port = ZiARG_mport;
-    boost::shared_ptr<serverHandler> handler(new serverHandler());
+    boost::shared_ptr<serverHandler> handler(new serverHandler(mesher, port));
     boost::shared_ptr<TProcessor> processor(new serverProcessor(handler));
     boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
     boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
@@ -61,7 +61,6 @@ int main(int argc, char *argv[])
 
     handler->setServer(server); // For Service Shutdown
     handler->setThreadManager(threadManager); // For thread busyness checking
-    handler->connect_mesher(mesher, mesher_port);
     server->serve();
     return 0;
 }

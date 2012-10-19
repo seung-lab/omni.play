@@ -26,6 +26,13 @@ private:
 
 public:
     volume(const server::metadata& metadata);
+    volume(std::string uri,
+    	   coords::globalBbox bounds,
+    	   Vector3i resolution,
+    	   server::dataType::type dataType,
+    	   server::volType::type volType,
+    	   Vector3i chunkDims,
+    	   int32_t mipLevel_);
 
     inline const std::string& Uri() const {
         return uri_;
@@ -73,6 +80,9 @@ public:
                    std::set<int32_t>& ret) const;
 
     segments::data GetSegmentData(int32_t segId) const;
+
+private:
+	void loadVolume();
 };
 
 inline std::ostream& operator<<(std::ostream& out, const volume& vol)

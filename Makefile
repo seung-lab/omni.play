@@ -3,6 +3,7 @@
 HERE    	=       .
 EXTERNAL	=	$(HERE)/external/libs
 BREAKPAD    =   $(HERE)/external/srcs/google-breakpad/src
+GMOCK    	=   $(HERE)/common/include/gmock-1.6.0
 # BINDIR		=	./bin
 # BUILDDIR	=	build
 GENDIR		=	thrift/src
@@ -69,6 +70,11 @@ DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(EXTERNAL)/qt/include \
 				  -I$(EXTERNAL)/hdf5/include \
 				  -I$(BREAKPAD)
+
+TESTINCLUDES = -I$(GMOCK)/include \
+ 			   -I$(GMOCK)/gtest/include \
+ 			   -I$(GMOCK) \
+ 			   -I$(GMOCK)/gtest \
 
 LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/boost/lib/libboost_iostreams.a \
@@ -158,19 +164,19 @@ endif
 define build_cpp
 	$(ECHO) "[CXX] compiling $<"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) $(INCLUDES) -o $@ $<
+	$(CXX) -c $(CXXFLAGS) $(INCLUDES) $(TESTINCLUDES) -o $@ $<
 	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
 endef
 
 define build_c
 	$(ECHO) "[CC] compiling $<"
 	$(MKDIR) -p $(dir $@)
-	$(CC) -c $(CFLAGS) $(INCLUDES) -o $@ $<
+	$(CC) -c $(CFLAGS) $(INCLUDES) $(TESTINCLUDES) -o $@ $<
 endef
 
 define make_d
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CPP_DEPFLAGS) $(INCLUDES) -MF $@ $<
+	$(CXX) $(CPP_DEPFLAGS) $(INCLUDES) $(TESTINCLUDES) -MF $@ $<
 endef
 
 THRIFT_DEPS = $(GENDIR)/server.thrift.mkcpp \
@@ -190,6 +196,11 @@ $(BUILDDIR)/thrift/%.o: thrift/src/%.cpp $(THRIFT_DEPS)
 $(BUILDDIR)/server/%.d: server/src/%.cpp $(THRIFT_DEPS)
 	$(make_d)
 $(BUILDDIR)/server/%.o: server/src/%.cpp $(THRIFT_DEPS)
+	$(build_cpp)
+
+$(BUILDDIR)/server/test/%.d: server/test/src/%.cpp $(THRIFT_DEPS)
+	$(make_d)
+$(BUILDDIR)/server/test/%.o: server/test/src/%.cpp $(THRIFT_DEPS)
 	$(build_cpp)
 
 $(BUILDDIR)/desktop/%.d: desktop/src/%.cpp
@@ -236,8 +247,63 @@ $(GENDIR)/%.thrift.mkcpp: thrift/if/%.thrift
 
 	$(MV) $@.tmp $@
 
+COMMONSOURCES     = $(subst common/src,$(BUILDDIR)/common, 				\
+					  $(shell find common/src -iname "*.cpp"))
+
+THRIFTSOURCES     = $(subst thrift/src,$(BUILDDIR)/thrift, 				\
+					  $(shell find thrift/src -iname "*.cpp"))
+
+SERVERSOURCES     = $(subst server/src,$(BUILDDIR)/server, 				\
+                      $(shell find server/src -iname "*.cpp" | grep -v "main.cpp"))
+
+SERVER_TEST_SOURCES = $(subst server/test/src,$(BUILDDIR)/server/test,	\
+                      $(shell find server/test/src -iname "*.cpp"))
+
+DESKTOPSOURCES    = $(subst desktop/src,$(BUILDDIR)/desktop, 			\
+                      $(shell find desktop/src -iname "*.cpp"))
+
+DESKTOPHEADERS    = $(subst desktop/src,$(BUILDDIR)/desktop, 			\
+                      $(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':'))
+
+YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
+LIB64SOURCES = common/include/libb64/src/cencode.o
+
+TEST_DEPS = $(GMOCK)/src/gmock-all.o $(GMOCK)/gtest/src/gtest-all.o
+
+SERVER_SRCS = $(COMMONSOURCES) $(THRIFTSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
+SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
+
+SERVER_TEST_DEPS := $(SERVER_TEST_SOURCES:.cpp=.o)
+
+OMNI_SRCS = $(DESKTOPSOURCES) $(THRIFTSOURCES) $(YAMLSOURCES)
+MOC_SRCS = $(DESKTOPHEADERS:.hpp=.moc.cpp)
+MOC_SRCS2 = $(MOC_SRCS:.h=.moc.cpp)
+
+OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o)
+
+define link
+	$(ECHO) "[CXX] linking $@"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
+endef
+
 .PHONY: all
-all: $(BINDIR)/omni.server $(BINDIR)/omni.desktop
+all: server $(BINDIR)/omni.desktop
+
+$(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS) $(BUILDDIR)/server/main.o
+	$(link)
+
+$(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o $(BUILDDIR)/desktop/gui/resources.rcc.o
+	$(ECHO) "[CXX] linking $@"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
+
+$(BINDIR)/omni.server.test:$(SERVER_DEPS) $(SERVER_TEST_DEPS) $(THRIFT_DEPS) $(TEST_DEPS)
+	$(link)
+
+$(BINDIR)/omni.tar.gz: $(BINDIR)/omni.desktop
+	$(TAR) -zcvf $@ -C $(BINDIR) omni.desktop
+
 
 .PHONY: tidy
 tidy:
@@ -270,50 +336,8 @@ symbols: omni.desktop.sym
 	$(MKDIR) -p symbols/omni.desktop/$(shell head -n1 $< | cut -d' ' -f4)
 	$(MV) $< symbols/omni.desktop/$(shell head -n1 $< | cut -d' ' -f4)
 
-COMMONSOURCES     = $(subst common/src,$(BUILDDIR)/common, 				\
-					  $(shell find common/src -iname "*.cpp"))
-
-THRIFTSOURCES     = $(subst thrift/src,$(BUILDDIR)/thrift, 				\
-					  $(shell find thrift/src -iname "*.cpp"))
-
-SERVERSOURCES     = $(subst server/src,$(BUILDDIR)/server, 				\
-                      $(shell find server/src -iname "*.cpp"))
-
-DESKTOPSOURCES    = $(subst desktop/src,$(BUILDDIR)/desktop, 				\
-                      $(shell find desktop/src -iname "*.cpp"))
-
-DESKTOPHEADERS    = $(subst desktop/src,$(BUILDDIR)/desktop, 				\
-                      $(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':'))
-
-YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
-LIB64SOURCES = common/include/libb64/src/cencode.o
-
-SERVER_SRCS = $(COMMONSOURCES) $(THRIFTSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
-SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
-
-OMNI_SRCS = $(DESKTOPSOURCES) $(THRIFTSOURCES) $(YAMLSOURCES)
-MOC_SRCS = $(DESKTOPHEADERS:.hpp=.moc.cpp)
-MOC_SRCS2 = $(MOC_SRCS:.h=.moc.cpp)
-
-OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o)
-
-define link
-	$(ECHO) "[CXX] linking $@"
-	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
-endef
-
-$(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS)
-	$(link)
-
-$(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o $(BUILDDIR)/desktop/gui/resources.rcc.o
-	$(ECHO) "[CXX] linking $@"
-	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
-
-$(BINDIR)/omni.tar.gz: $(BINDIR)/omni.desktop
-	$(TAR) -zcvf $@ -C $(BINDIR) omni.desktop
+.PHONY: server
+server: $(BINDIR)/omni.server $(BINDIR)/omni.server.test
 
 ALLDEPS = $(shell find $(BUILDDIR) -iname "*.d")
-
 -include $(ALLDEPS)

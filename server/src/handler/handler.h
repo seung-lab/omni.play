@@ -2,6 +2,7 @@
 
 #include "common/common.h"
 #include "server.h"
+#include "RealTimeMesher.h"
 
 namespace om {
 namespace volume { class volume; }
@@ -56,7 +57,7 @@ void get_remesh(std::string& _return,
                 int32_t mipLevel,
                 const std::set<int32_t>& segId);
 
-void update_global_mesh(server::serverHandler* const handler,
+void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
                         const volume::volume& vol,
 	                    const std::set<uint32_t>& segIds,
                         uint32_t segId);

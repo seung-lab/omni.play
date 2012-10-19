@@ -4,12 +4,11 @@
 #include "pipeline/filter.hpp"
 #include "volume/volume.h"
 #include "RealTimeMesher.h"
-#include "serverHandler.hpp"
 
 namespace om {
 namespace handler {
 
-void update_global_mesh(const server::serverHandler* const handler,
+void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
                         const volume::volume& vol,
 	                    const std::set<uint32_t>& segIds,
                         uint32_t segId)
@@ -20,9 +19,10 @@ void update_global_mesh(const server::serverHandler* const handler,
 		throw argException("Can only update global mesh from segmentation");
 	}
 
-	data_var filtered = vol.Data() >> unchunk(vol.CoordSystem()) >> set_filter<uint32_t>(segIds, segId);
-
-	data<uint32_t> out = boost::get<data<uint32_t> >(filtered);
+	datalayer::memMappedFile<uint32_t> dataFile =
+		boost::get<datalayer::memMappedFile<uint32_t> >(vol.Data());
+	data<uint32_t> unchunked = unchunk(vol.CoordSystem())(dataFile);
+	data<uint32_t> filtered = set_filter<uint32_t>(segIds, segId)(unchunked);
 
 	zi::mesh::Vector3i loc,size;
 	loc.x = vol.Bounds().getMin().x;
@@ -31,11 +31,11 @@ void update_global_mesh(const server::serverHandler* const handler,
 	size.x = vol.Bounds().getMax().x - vol.Bounds().getMin().x;
 	size.y = vol.Bounds().getMax().y - vol.Bounds().getMin().y;
 	size.z = vol.Bounds().getMax().z - vol.Bounds().getMin().z;
-	std::string data(reinterpret_cast<char*>(out.data.get()), out.size);
+	std::string data(reinterpret_cast<char*>(filtered.data.get()), filtered.size);
 	// Integrate with realtime mesher.
-	handler->mesher()->update(vol.Uri(), loc, size, data);
+	rtm->update(vol.Uri(), loc, size, data);
 
-	handler->mesher()->remesh(false);
+	rtm->remesh(false);
 }
 
 }} // namespace om::handler::
