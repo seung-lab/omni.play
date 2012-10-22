@@ -16,7 +16,7 @@ void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
                         uint32_t segId)
 {
 	using namespace pipeline;
-
+	std::cout << "Updating Mesh." << std::endl;
 	if (!vol.VolumeType() == server::volType::SEGMENTATION) {
 		throw argException("Can only update global mesh from segmentation");
 	}
@@ -33,11 +33,12 @@ void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
 	size.x = vol.Bounds().getMax().x - vol.Bounds().getMin().x;
 	size.y = vol.Bounds().getMax().y - vol.Bounds().getMin().y;
 	size.z = vol.Bounds().getMax().z - vol.Bounds().getMin().z;
-	std::string data(reinterpret_cast<char*>(filtered.data.get()), filtered.size);
+	std::string data(reinterpret_cast<char*>(filtered.data.get()), filtered.size * sizeof(uint32_t));
 	// Integrate with realtime mesher.
 	rtm->update(string::num(segId), loc, size, data);
 
 	rtm->remesh(false);
+	std::cout << "Done Meshing." << std::endl;
 }
 
 }} // namespace om::handler::

@@ -11,28 +11,29 @@ class unchunk //: public stage
 {
 private:
     const coords::volumeSystem& vs_;
+	const Vector3i dims_;
 
 public:
     unchunk(const coords::volumeSystem& vs)
         : vs_(vs)
+        , dims_(vs_.GetDataDimensions())
     { }
 
-    size_t target_offset(coords::data d) const
+    inline size_t target_offset(coords::data d) const
     {
-    	const Vector3i dims = vs_.GetChunkDimensions();
-    	return d.x + d.y * dims.x + d.z * dims.x * dims.y;
+    	return d.x + d.y * dims_.x + d.z * dims_.x * dims_.y;
     }
 
     template <typename T>
     data<T> operator()(const datalayer::memMappedFile<T>& in) const
     {
+    	std::cout << "Unchunking." << std::endl;
     	data<T> out;
-        Vector3i d = vs_.GetDataDimensions();
-        out.size = d.x * d.y * d.z;
+        out.size = dims_.x * dims_.y * dims_.z;
 		out.data = utility::smartPtr<T>::MallocNumElements(out.size);
+		T* outPtr = out.data.get();
 
 		const Vector3i dims = vs_.GetChunkDimensions();
-
         // iterate over all chunks in order
         // TODO: boost multi_array
         boost::shared_ptr<std::deque<coords::chunk> > chunks = vs_.GetMipChunkCoords(0);
@@ -40,19 +41,18 @@ public:
 	    {
             coords::chunk coord = *iter;
             coords::data base = coord.toData(&vs_);
-
             uint64_t offset = coord.chunkPtrOffset(&vs_, sizeof(T));
 	        T* chunkPtr = in.GetPtrWithOffset(offset);
-	        T* outPtr = out.data.get();
-            for (int x = 0; x < dims.x; ++x) {
+
+            for (int z = 0; z < dims.z; ++z) {
             	for (int y = 0; y < dims.y; ++y) {
-            		for (int z = 0; z < dims.z; ++z) {
-            			coords::data d(base.x + x, base.y + y, base.z + z, &vs_, 0);
-            			outPtr[target_offset(d)] = chunkPtr[d.toChunkOffset()];
-            		}
+        			coords::data d(base.x, base.y + y, base.z + z, &vs_, 0);
+        			size_t off = d.toChunkOffset();
+        			std::copy(&chunkPtr[off], &chunkPtr[off + dims.x], &outPtr[target_offset(d)]);
             	}
             }
 	    }
+		std::cout << "Done Unchunking." << std::endl;
 	    return out;
     }
 };

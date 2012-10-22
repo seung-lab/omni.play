@@ -22,11 +22,13 @@ public:
 
     data<T> operator()(const data<T>& in) const
     {
+    	std::cout << "Filtering." << std::endl;
     	data<T> out;
         out.size = in.size;
         out.data = utility::smartPtr<T>::MallocNumElements(out.size);
 
         doFilter(in.data.get(), out.data.get(), out.size);
+        std::cout << "Done Filtering." << std::endl;
         return out;
     }
 

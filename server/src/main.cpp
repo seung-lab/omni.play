@@ -28,19 +28,19 @@ using namespace ::om::server;
 
 int main(int argc, char *argv[])
 {
-    zi::parse_arguments(argc, argv, true);
-    if ( ZiARG_daemonize )
-    {
-        if(!::zi::system::daemonize(true, true)) {
-            std::cerr << "Error trying to daemonize." << std::endl;
-            return -1;
-        }
-    }
+    // zi::parse_arguments(argc, argv, true);
+    // if ( ZiARG_daemonize )
+    // {
+    //     if(!::zi::system::daemonize(true, true)) {
+    //         std::cerr << "Error trying to daemonize." << std::endl;
+    //         return -1;
+    //     }
+    // }
 
     int port = ZiARG_port;
     std::string mesher = ZiARG_mesher;
     int mesher_port = ZiARG_mport;
-    boost::shared_ptr<serverHandler> handler(new serverHandler(mesher, port));
+    boost::shared_ptr<serverHandler> handler(new serverHandler(mesher, mesher_port));
     boost::shared_ptr<TProcessor> processor(new serverProcessor(handler));
     boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
     boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
