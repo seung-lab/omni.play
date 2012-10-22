@@ -179,7 +179,7 @@ public:
     void setThreadManager(boost::shared_ptr<apache::thrift::concurrency::ThreadManager> threadManager) {
         serviceTracker_.setThreadManager(threadManager);
     }
-private:
+//private:
 	typedef boost::shared_ptr<zi::mesh::RealTimeMesherClient> MesherPtr;
 	MesherPtr makeMesher()
 	{

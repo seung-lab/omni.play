@@ -4,6 +4,7 @@
 #include "RealTimeMesher.h"
 
 #include "volume/volume.h"
+#include "serverHandler.hpp"
 
 using ::testing::_;
 using namespace ::zi::mesh;
@@ -71,6 +72,16 @@ TEST(UpdateMeshTest, Test1)
 	uint32_t segId = 1;
 
 	handler::update_global_mesh(&mesher, vol, segIds, segId);
+}
+
+TEST(ThriftTest, UpdateTest)
+{
+	server::serverHandler handler("template", 9099);
+	boost::shared_ptr<zi::mesh::RealTimeMesherClient> client = handler.makeMesher();
+	zi::mesh::Vector3i loc,size;
+	size.x = size.y = size.z = 1;
+	loc.x = loc.y = loc.z = 1;
+	client->update("61", loc, size, "1atartfrtfrftrtt");
 }
 
 }} // namespace om::test::
