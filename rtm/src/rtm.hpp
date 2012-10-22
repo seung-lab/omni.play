@@ -172,8 +172,8 @@ private:
         hashes(old_hashes, chunk->data(), chunk->num_elements());
 
         // update the chunk
-        chunk->operator[](indices[range(fz%128,tz%128)][range(fy%128,ty%128)][range(fx%128,tx%128)])
-            = d->operator[](indices[range(fz-z0,tz-z0)][range(fy-y0,ty-y0)][range(fx-x0,tx-x0)]);
+        chunk->operator[](indices[range(fz%128,tz%128+1)][range(fy%128,ty%128+1)][range(fx%128,tx%128+1)])
+            = d->operator[](indices[range(fz-z0,tz-z0+1)][range(fy-y0,ty-y0+1)][range(fx-x0,tx-x0+1)]);
 
 
         std::cout << "Filling Chunk: " << chunk_coord << " range: "
@@ -288,6 +288,8 @@ private:
 
         remesh_tm_.start();
 
+        uint32_t total_volume = 0;
+
         for ( uint32_t i = mx0; i <= mx1; ++i )
         {
             for ( uint32_t j = my0; j <= my1; ++j )
@@ -308,6 +310,7 @@ private:
                                                      vec3u(x,y,z), vec3u(fromx, fromy, fromz),
                                                      vec3u(tox, toy, toz), c ) ) );
 
+                    total_volume += (tox-fromx+1)*(toz-fromz+1)*(toy-fromy+1);
                     // subvolume_update( vec3u(x,y,z), vec3u(fromx, fromy, fromz),
                     //                   vec3u(tox, toy, toz), c );
 
@@ -322,6 +325,8 @@ private:
         }
 
         remesh_tm_.join();
+        std::cout << "Total remeshed volume: " << total_volume
+                  << " and should be " << (w*h*d) << std::endl;
     }
 
 private:
@@ -400,7 +405,7 @@ private:
                 fmd->fill_simplifier<double>(s);
 
                 s.prepare();
-                s.optimize(s.face_count()/8, (1<<(mip-1)));
+                s.optimize(s.face_count()/2, (1<<(mip-1)));
 
                 std::vector< zi::vl::vec3d > points ;
                 std::vector< zi::vl::vec3d > normals;
