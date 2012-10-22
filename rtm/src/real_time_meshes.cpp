@@ -380,15 +380,14 @@ int main( int argc, char* argv[] ) {
                 idx++;
             }
 
-    // rtm.volume_update( 50, 50, 50, 128, 128, 128,
-    //                    reinterpret_cast<char*>(d));
-
+     rtm.volume_update( 20, 70, 120, 128, 128, 128,
+                        reinterpret_cast<char*>(d));
     // rtm.volume_update( 51, 51, 51, 128, 128, 128,
     //                    reinterpret_cast<char*>(d));
 
-    rtm.chunk_update(1,1,1,reinterpret_cast<char*>(d));
-    rtm.chunk_update(1,2,1,reinterpret_cast<char*>(d));
-    rtm.chunk_update(2,1,1,reinterpret_cast<char*>(d));
+    // rtm.chunk_update(1,1,1,reinterpret_cast<char*>(d));
+    // rtm.chunk_update(1,2,1,reinterpret_cast<char*>(d));
+    // rtm.chunk_update(2,1,1,reinterpret_cast<char*>(d));
 //    rtm.chunk_update(1,2,1,reinterpret_cast<char*>(d));
 //    rtm.chunk_update(1,1,1,reinterpret_cast<char*>(d));
     // rtm.chunk_update(1,1,2,reinterpret_cast<char*>(d));

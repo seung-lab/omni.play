@@ -21,6 +21,7 @@
 
 #include "types.hpp"
 #include "files.hpp"
+#include "detail/rwlock_pool.hpp"
 
 #include <zi/utility/singleton.hpp>
 
@@ -41,6 +42,11 @@ namespace mesh {
 
 class mesh_io_impl
 {
+private:
+    struct mesh_io_impl_lock_pool_tag {};
+    typedef static_lock_pool_read_guard<rwlock_single_pool<vec5u>,mesh_io_impl_lock_pool_tag> read_guard_t;
+    typedef static_lock_pool_write_guard<rwlock_single_pool<vec5u>,mesh_io_impl_lock_pool_tag> write_guard_t;
+
 private:
     bool add_to_mesh( mesh_type_ptr m, const vec5u& c,
                       double x = 0, double y = 0, double z = 0 ) const
@@ -281,6 +287,8 @@ public:
         std::string s = boost::str( boost::format("./data/fmesh/%d/%d/%d/%d/%d.smesh")
                                     % c[3] % c[0] % c[1] % c[2] % c[4] );
 
+        write_guard_t g(c);
+
         std::ofstream out(s.c_str(), std::ios::out | std::ios::binary | std::ios::trunc );
         if (out)
         {
@@ -304,6 +312,8 @@ public:
 
     bool read_degenerate( const vec5u& c, std::string& ret ) const
     {
+        read_guard_t g(c);
+
         std::string s = boost::str( boost::format("./data/fmesh/%d/%d/%d/%d/%d.smesh")
                                     % c[3] % c[0] % c[1] % c[2] % c[4] );
 

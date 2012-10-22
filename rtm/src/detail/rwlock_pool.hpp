@@ -36,6 +36,9 @@ struct lock_data
 template< class T >
 class rwlock_single_pool
 {
+public:
+    typedef T                       key_type;
+
 private:
     mutable std::map<T, lock_data*> locks_;
     mutex                           mutex_;
@@ -220,21 +223,18 @@ private:
     typedef typename LockPool::key_type const & key_type;
 
 private:
-    static LockPool pool;
-
-private:
     key_type key_;
 
 public:
     static_lock_pool_read_guard(typename LockPool::key_type const & key)
         : key_(key)
     {
-        pool.acquire_read(key);
+        zi::singleton<LockPool>::template instance<Tag>().acquire_read(key);
     }
 
     ~static_lock_pool_read_guard()
     {
-        pool.release_read(key_);
+        zi::singleton<LockPool>::template instance<Tag>().release_read(key_);
     }
 };
 
@@ -245,21 +245,18 @@ private:
     typedef typename LockPool::key_type const & key_type;
 
 private:
-    static LockPool pool;
-
-private:
     key_type key_;
 
 public:
     static_lock_pool_write_guard(typename LockPool::key_type const & key)
         : key_(key)
     {
-        pool.acquire_write(key);
+        zi::singleton<LockPool>::template instance<Tag>().acquire_write(key);
     }
 
     ~static_lock_pool_write_guard()
     {
-        pool.release_write(key_);
+        zi::singleton<LockPool>::template instance<Tag>().release_write(key_);
     }
 };
 
