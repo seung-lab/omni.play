@@ -16,6 +16,7 @@ void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
                         uint32_t segId)
 {
 	using namespace pipeline;
+	using namespace apache::thrift;
 	std::cout << "Updating Mesh." << std::endl;
 	if (!vol.VolumeType() == server::volType::SEGMENTATION) {
 		throw argException("Can only update global mesh from segmentation");
@@ -35,9 +36,14 @@ void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
 	size.z = vol.Bounds().getMax().z - vol.Bounds().getMin().z;
 	std::string data(reinterpret_cast<char*>(filtered.data.get()), filtered.size * sizeof(uint32_t));
 	// Integrate with realtime mesher.
-	rtm->update(string::num(segId), loc, size, data);
+	try {
+		rtm->update(string::num(segId), loc, size, data);
+		rtm->remesh(false);
+	} catch (apache::thrift::TException &tx) {
+		std::cout << "Something's Wrong: " << tx.what() << std::endl;
+	    throw(tx);
+	}
 
-	rtm->remesh(false);
 	std::cout << "Done Meshing." << std::endl;
 }
 
