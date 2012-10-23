@@ -200,6 +200,9 @@ public:
 
 		try {
 		    transport->open();
+		    if(!transport->isOpen()) {
+		    	std::cout << "WTF!!!!" << std::endl;
+		    }
 		} catch (apache::thrift::TException &tx) {
 		    throw(tx);
 		}

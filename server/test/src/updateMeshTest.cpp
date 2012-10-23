@@ -76,12 +76,13 @@ TEST(UpdateMeshTest, Test1)
 
 TEST(ThriftTest, UpdateTest)
 {
-	server::serverHandler handler("template", 9099);
+	server::serverHandler handler("18.4.45.150", 9099);
 	boost::shared_ptr<zi::mesh::RealTimeMesherClient> client = handler.makeMesher();
+	zi::mesh::RealTimeMesherIf* mesher = client.get();
 	zi::mesh::Vector3i loc,size;
 	size.x = size.y = size.z = 1;
 	loc.x = loc.y = loc.z = 1;
-	client->update("61", loc, size, "1atartfrtfrftrtt");
+	mesher->update("61", loc, size, "1atartfrtfrftrtt");
 }
 
 }} // namespace om::test::

@@ -28,14 +28,14 @@ using namespace ::om::server;
 
 int main(int argc, char *argv[])
 {
-    // zi::parse_arguments(argc, argv, true);
-    // if ( ZiARG_daemonize )
-    // {
-    //     if(!::zi::system::daemonize(true, true)) {
-    //         std::cerr << "Error trying to daemonize." << std::endl;
-    //         return -1;
-    //     }
-    // }
+    zi::parse_arguments(argc, argv, true);
+    if ( ZiARG_daemonize )
+    {
+        if(!::zi::system::daemonize(true, true)) {
+            std::cerr << "Error trying to daemonize." << std::endl;
+            return -1;
+        }
+    }
 
     int port = ZiARG_port;
     std::string mesher = ZiARG_mesher;
