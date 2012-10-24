@@ -27,12 +27,12 @@ void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
 	data<uint32_t> filtered = set_filter<uint32_t>(segIds, segId)(unchunked);
 
 	zi::mesh::Vector3i loc,size;
-	loc.x = vol.Bounds().getMin().x;
-	loc.y = vol.Bounds().getMin().y;
-	loc.z = vol.Bounds().getMin().z;
-	size.x = vol.Bounds().getMax().x - vol.Bounds().getMin().x;
-	size.y = vol.Bounds().getMax().y - vol.Bounds().getMin().y;
-	size.z = vol.Bounds().getMax().z - vol.Bounds().getMin().z;
+	loc.x = vol.Bounds().getMin().x + 1;
+	loc.y = vol.Bounds().getMin().y + 1;
+	loc.z = vol.Bounds().getMin().z + 1;
+	size.x = vol.Bounds().getMax().x - vol.Bounds().getMin().x - 1;
+	size.y = vol.Bounds().getMax().y - vol.Bounds().getMin().y - 1;
+	size.z = vol.Bounds().getMax().z - vol.Bounds().getMin().z - 1;
 	std::string data(reinterpret_cast<char*>(filtered.data.get()), filtered.size * sizeof(uint32_t));
 	// Integrate with realtime mesher.
 	try {
