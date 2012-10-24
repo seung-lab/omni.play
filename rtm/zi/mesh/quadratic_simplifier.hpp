@@ -31,7 +31,7 @@
 #include <zi/mesh/detail/quadratic.hpp>
 #include <zi/mesh/detail/qmetric.hpp>
 
-#include <boost/heap/fibonacci_heap.hpp>
+#include <boost/heap/binomial_heap.hpp>
 
 #include <zi/vl/vec.hpp>
 #include <zi/vl/quat.hpp>
@@ -62,7 +62,7 @@ private:
 
     struct heap_entry
     {
-        typedef typename boost::heap::fibonacci_heap<heap_entry>::handle_type handle_t;
+        typedef typename boost::heap::binomial_heap<heap_entry>::handle_type handle_t;
 
 
         uint64_t                  edge_   ;
@@ -112,7 +112,7 @@ private:
     };
 
     unordered_map<uint64_t, typename heap_entry::handle_t>          edge_handles_;
-    boost::heap::fibonacci_heap<heap_entry>                         heap_        ;
+    boost::heap::binomial_heap<heap_entry>                         heap_        ;
 
     typedef typename unordered_map<uint64_t, typename heap_entry::handle_t>::iterator edge_handles_iterator;
 
@@ -429,7 +429,7 @@ public:
         //double no_faces = static_cast< double >( mesh_.face_count() );
 
         std::size_t bad = 0;
-        while ( heap_.size() )
+        while ( heap_.size() > 4 ) // don't ask - don't tell!
         {
             if ( ( ( mesh_.face_count() <= target_faces ) &&
                    ( heap_.top().value_ >= min_error ) ) ||
