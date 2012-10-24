@@ -212,6 +212,15 @@ $(BUILDDIR)/desktop/%.o: desktop/src/%.cpp
 	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) $(DEFINES) -o $@ $<
 	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
 
+$(BUILDDIR)/desktop/test/%.d: desktop/test/src/%.cpp
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CPP_DEPFLAGS) $(DESKTOPINCLUDES) $(TESTINCLUDES) -MF $@ $<
+$(BUILDDIR)/desktop/test/%.o: desktop/test/src/%.cpp
+	$(ECHO) "[CXX] compiling $<"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) $(TESTINCLUDES) $(DEFINES) -o $@ $<
+	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
+
 $(BUILDDIR)/filesystem/%.d: filesystem/src/%.cpp
 	$(make_d)
 $(BUILDDIR)/filesystem/%.o: filesystem/src/%.cpp
@@ -260,7 +269,10 @@ SERVER_TEST_SOURCES = $(subst server/test/src,$(BUILDDIR)/server/test,	\
                       $(shell find server/test/src -iname "*.cpp"))
 
 DESKTOPSOURCES    = $(subst desktop/src,$(BUILDDIR)/desktop, 			\
-                      $(shell find desktop/src -iname "*.cpp"))
+                      $(shell find desktop/src -iname "*.cpp" | grep -v "main.cpp"))
+
+DESKTOP_TEST_SOURCES = $(subst desktop/test/src,$(BUILDDIR)/desktop/test,	\
+                      $(shell find desktop/test/src -iname "*.cpp"))
 
 DESKTOPHEADERS    = $(subst desktop/src,$(BUILDDIR)/desktop, 			\
                       $(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':'))
@@ -280,6 +292,7 @@ MOC_SRCS = $(DESKTOPHEADERS:.hpp=.moc.cpp)
 MOC_SRCS2 = $(MOC_SRCS:.h=.moc.cpp)
 
 OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o)
+DESKTOP_TEST_DEPS := $(DESKTOP_TEST_SOURCES:.cpp=.o)
 
 define link
 	$(ECHO) "[CXX] linking $@"
@@ -288,15 +301,20 @@ define link
 endef
 
 .PHONY: all
-all: server $(BINDIR)/omni.desktop
+all: server desktop
 
-$(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS) $(BUILDDIR)/server/main.o
-	$(link)
-
-$(BINDIR)/omni.desktop: $(OMNI_DEPS) desktop/lib/strnatcmp.o $(BUILDDIR)/desktop/gui/resources.rcc.o
+$(BINDIR)/omni.desktop: $(OMNI_DEPS) $(BUILDDIR)/desktop/main.o desktop/lib/strnatcmp.o $(BUILDDIR)/desktop/gui/resources.rcc.o
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
+
+$(BINDIR)/omni.desktop.test:$(OMNI_DEPS) $(DESKTOP_TEST_DEPS) desktop/lib/strnatcmp.o $(THRIFT_DEPS) $(TEST_DEPS)
+	$(ECHO) "[CXX] linking $@"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
+
+$(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS) $(BUILDDIR)/server/main.o
+	$(link)
 
 $(BINDIR)/omni.server.test:$(SERVER_DEPS) $(SERVER_TEST_DEPS) $(THRIFT_DEPS) $(TEST_DEPS)
 	$(link)
@@ -335,6 +353,9 @@ omni.desktop.sym: $(BINDIR)/omni.desktop
 symbols: omni.desktop.sym
 	$(MKDIR) -p symbols/omni.desktop/$(shell head -n1 $< | cut -d' ' -f4)
 	$(MV) $< symbols/omni.desktop/$(shell head -n1 $< | cut -d' ' -f4)
+
+.PHONY: desktop
+desktop: $(BINDIR)/omni.desktop $(BINDIR)/omni.desktop.test
 
 .PHONY: server
 server: $(BINDIR)/omni.server $(BINDIR)/omni.server.test

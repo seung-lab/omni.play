@@ -12,44 +12,19 @@ class unchunk //: public stage
 {
 private:
     const coords::volumeSystem& vs_;
-	Vector3i dims_;
+	coords::dataBbox dataBounds_;
 	const Vector3i chunkDims_;
-	const Vector3i mipDims_;
+	Vector3i dims_;
 
 public:
     unchunk(const coords::volumeSystem& vs)
         : vs_(vs)
-        , dims_(vs_.GetDataDimensions())
+        , dataBounds_(vs_.GetDataExtent().toDataBbox(&vs_, 0))
         , chunkDims_(vs_.GetChunkDimensions())
-        , mipDims_(vs_.MipLevelDimensionsInMipChunks(0))
     {
-    	dims_.x -= 2;
-    	dims_.y -= 2;
-    	dims_.z -= 2;
-    }
-
-    inline size_t target_offset(coords::data d) const
-    {
-    	return d.x + d.y * dims_.x + d.z * dims_.x * dims_.y;
-    }
-
-    size_t getFrom(int chunkIdx, int dim) const
-    {
-    	if (chunkIdx == 0) {
-    		return 1;
-    	} else {
-    		return chunkIdx * chunkDims_[dim];
-    	}
-    }
-
-    size_t getTo(int chunkIdx, int dim) const
-    {
-    	size_t to = chunkIdx * chunkDims_[dim];
-    	if (chunkIdx == mipDims_[dim] - 1) {
-    		return to - 1;
-    	} else {
-    		return to;
-    	}
+    	dataBounds_.setMin(dataBounds_.getMin() + Vector3i::ONE);
+    	dataBounds_.setMax(dataBounds_.getMax() - Vector3i::ONE);
+    	dims_ = dataBounds_.getDimensions();
     }
 
     template <typename T>
@@ -68,30 +43,30 @@ public:
         out.size = dims_.x * dims_.y * dims_.z;
 		out.data = utility::smartPtr<T>::MallocNumElements(out.size);
 		array_type volData(out.data.get(), volExent, fortran_storage_order());
-		T* outPtr = out.data.get();
 
         shared_ptr<std::deque<coords::chunk> > chunks = vs_.GetMipChunkCoords(0);
 	    FOR_EACH(iter, *chunks)
 	    {
 	    	const coords::chunk& coord = *iter;
-	    	coords::data base = coord.toData(&vs_);
+    		coords::dataBbox chunkBounds = coord.chunkBoundingBox(&vs_);
+    		chunkBounds.intersect(dataBounds_); // crop to volume.
+
+    		// Shift min and max to chunk space.
+    		Vector3i min = chunkBounds.getMin() % chunkDims_;
+    		Vector3i max = (chunkBounds.getMax() - Vector3i::ONE )% chunkDims_ + Vector3i::ONE; // bounds are exclusive
+    		const size_t width = max.x - min.x - 1;
 
             uint64_t offset = coord.chunkPtrOffset(&vs_, sizeof(T));
             array_type chunkData(in.GetPtrWithOffset(offset), chunkExent, fortran_storage_order());
-            const_view_type view = chunkData[ indices[range(getFrom(coord.X(), 0),getTo(coord.X(), 0))]
-                               				  		 [range(getFrom(coord.Y(), 1),getTo(coord.Y(), 1))]
-                               				  		 [range(getFrom(coord.Z(), 2),getTo(coord.Z(), 2))]];
+            const_view_type view = chunkData[ indices[range(min.x, max.x)][range(min.y, max.y)][range(min.z, max.z)]];
 
+            Vector3i base = chunkBounds.getMin() - Vector3i::ONE; // offset the output 1 for the boundry 0s
 
-            for (int z = 0; z < view.shape()[2] && z < dims_.z; ++z) {
+            for (int x = 0; x < view.shape()[0] && x < dims_.x; ++x) {
             	for (int y = 0; y < view.shape()[1] && y < dims_.y; ++y) {
-            		coords::data d(base.x, base.y + y, base.z + z, &vs_, 0);
-
-            		size_t width = view.shape()[0];
-            		if (dims_.x % chunkDims_.x < width) {
-            			width = dims_.x % chunkDims_.x;
+            		for (int z = 0; z < view.shape()[2] && z < dims_.z; ++z) {
+            			volData[base.x + x][base.y + y][base.z + z] = view[x][y][z];
             		}
-            		std::copy(&view[d.x][d.y][d.z], &view[d.x + width][d.y][d.z], &volData[d.x][d.y][d.z]);
             	}
             }
 	    }

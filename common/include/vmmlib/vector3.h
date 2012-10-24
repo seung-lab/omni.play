@@ -110,12 +110,14 @@ public:
     Vector3 operator-( const Vector3& rhs ) const;
     Vector3 operator*( const Vector3& rhs ) const;
     Vector3 operator/( const Vector3& rhs ) const;
+    Vector3 operator%( const Vector3& rhs ) const;
     Vector3 operator-() const;
 
     const Vector3& operator+=( const Vector3& rhs );
     const Vector3& operator-=( const Vector3& rhs );
     const Vector3& operator*=( const Vector3& rhs );
     const Vector3& operator/=( const Vector3& rhs );
+    const Vector3& operator%=( const Vector3& rhs );
 
     /*bwarne*/
     bool operator<( const Vector3& rhs ) const;
@@ -707,6 +709,13 @@ Vector3< T > Vector3< T >::operator/( const Vector3 &rhs ) const
 }
 
 
+template < typename T >
+Vector3< T > Vector3< T >::operator%( const Vector3 &rhs ) const
+{
+    return Vector3( x % rhs.x, y % rhs.y, z % rhs.z );
+}
+
+
 
 template < typename T >
 Vector3< T > Vector3< T >::operator-() const
@@ -755,6 +764,17 @@ const Vector3< T >& Vector3< T >::operator/=( const Vector3& rhs )
     x /= rhs.x;
     y /= rhs.y;
     z /= rhs.z;
+    return *this;
+}
+
+
+
+template < typename T >
+const Vector3< T >& Vector3< T >::operator%=( const Vector3& rhs )
+{
+    x %= rhs.x;
+    y %= rhs.y;
+    z %= rhs.z;
     return *this;
 }
 

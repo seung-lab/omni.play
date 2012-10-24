@@ -90,6 +90,10 @@ int data::toTileDepth (viewType viewType) const
     return -1;
 }
 
+bool data::isInVolume() const {
+	return vol_->GetDataExtent().contains(toGlobal());
+}
+
 data data::atDifferentLevel(int newLevel) const
 {
     if (newLevel > vol_->GetRootMipLevel()) {
@@ -139,7 +143,6 @@ normBbox dataBbox::toNormBbox() const
 {
     return normBbox(getMin().toNorm(), getMax().toNorm());
 }
-
 
 dataBbox dataBbox::atDifferentLevel(int newLevel) const
 {

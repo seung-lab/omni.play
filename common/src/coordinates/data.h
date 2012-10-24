@@ -33,6 +33,7 @@ public:
     int toChunkOffset() const;
     int toTileOffset(om::common::viewType) const;
     int toTileDepth(om::common::viewType) const;
+    bool isInVolume() const;
 
     inline int level() const {
         return mipLevel_;
