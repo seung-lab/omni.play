@@ -479,7 +479,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
     Vector3<hsize_t> stride = Vector3i::ONE;
     Vector3<hsize_t> count = Vector3i::ONE;
 
-    Vector3<hsize_t> block = extent.getUnitDimensions();
+    Vector3<hsize_t> block = extent.getDimensions();
     Vector3<hsize_t> block_flipped(block.z, block.y, block.x);
     debug(hdf5image, "start:%i,%i,%i\n", DEBUGV3(start));
     debug(hdf5image, "block:%i,%i,%i\n", DEBUGV3(block));
@@ -508,9 +508,9 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
             throw OmIoException("Could not select HDF5 hyperslab.");
         }
 
-        const Vector4<hsize_t> block4(extent.getUnitDimensions().x,
-                                      extent.getUnitDimensions().y,
-                                      extent.getUnitDimensions().z,
+        const Vector4<hsize_t> block4(extent.getDimensions().x,
+                                      extent.getDimensions().y,
+                                      extent.getDimensions().z,
                                       3);
 
         //Creates a new simple dataspace and opens it for access.
@@ -520,7 +520,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
         }
 
         //setup image data
-        const Vector3i extent_dims = extent.getUnitDimensions();
+        const Vector3i extent_dims = extent.getDimensions();
         const int64_t size = extent_dims.x*
             extent_dims.y*
             extent_dims.z*
@@ -568,12 +568,13 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
             throw OmIoException("Could not select HDF5 hyperslab.");
 
         //Creates a new simple dataspace and opens it for access.
+        std::cout << "\tBlock: " << block << std::endl;
         mem_dataspace_id = H5Screate_simple(3, block.array, NULL);
         if (mem_dataspace_id < 0){
             throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
         }
 
-        const Vector3i extent_dims = extent.getUnitDimensions();
+        const Vector3i extent_dims = extent.getDimensions();
         const int64_t size = extent_dims.x*
             extent_dims.y*
             extent_dims.z*

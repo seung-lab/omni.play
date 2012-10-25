@@ -23,14 +23,14 @@ public:
 
     void Build()
     {
-        OmBuildChannel* bc = new OmBuildChannel(cdw_.GetChannelPtr());
+        OmBuildChannel* bc = new OmBuildChannel(cdw_);
         bc->setFileNamesAndPaths(fileNamesAndPaths_);
         bc->BuildNonBlocking();
     }
 
     void Build(om::shared_ptr<om::gui::progress>)
     {
-        OmBuildChannel* bc = new OmBuildChannel(cdw_.GetChannelPtr());
+        OmBuildChannel* bc = new OmBuildChannel(cdw_);
         bc->setFileNamesAndPaths(fileNamesAndPaths_);
         bc->BuildNonBlocking();
     }

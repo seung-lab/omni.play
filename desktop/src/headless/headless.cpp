@@ -380,11 +380,9 @@ void Headless::processLine(const QString& line, const QString&)
             return;
         }
 
-        ChannelDataWrapper cdw;
-        OmChannel& chann = cdw.Create();
         QString hdf5fnp = args[1];
 
-        OmBuildChannel bc(&chann);
+        OmBuildChannel bc;
         bc.addFileNameAndPath(hdf5fnp);
         bc.Build();
 
@@ -410,9 +408,7 @@ void Headless::processLine(const QString& line, const QString&)
             return;
         }
 
-        ChannelDataWrapper cdw;
-        OmChannel& chann = cdw.Create();
-        OmBuildChannel bc(&chann);
+        OmBuildChannel bc;
 
         QDir dir(args[1]);
         Q_FOREACH(QFileInfo f, dir.entryInfoList())
@@ -884,10 +880,7 @@ void Headless::processLine(const QString& line, const QString&)
         HeadlessImpl::ExportAndRerootSegments(sdw, args[2]);
 
     } else if(line.startsWith("buildEmptyChannel")){
-        ChannelDataWrapper cdw;
-        OmChannel& chann = cdw.Create();
-
-        OmBuildChannel bc(&chann);
+        OmBuildChannel bc;
         bc.BuildEmptyChannel();
 
     } else {

@@ -82,17 +82,16 @@ private:
     {
         resizedChunk_ = true;
 
-        const Vector3i dataSize = dataExtent.getUnitDimensions();
+        const Vector3i dataSize = dataExtent.getDimensions();
 
         //weirdness w/ hdf5 and/or boost::multi_arry requires flipping x/z
         //TODO: figure out!
-        OmImage<T, 3> partialChunk(OmExtents
-                                   [dataSize.z]
-                                   [dataSize.y]
-                                   [dataSize.x],
+        OmImage<T, 3> partialChunk(OmExtents[dataSize.z]
+		                                    [dataSize.y]
+		                                    [dataSize.x],
                                    data->getPtr<T>());
 
-        const Vector3i chunkSize = chunkExtent.getUnitDimensions();
+        const Vector3i chunkSize = chunkExtent.getDimensions();
 
         partialChunk.resize(chunkSize);
 

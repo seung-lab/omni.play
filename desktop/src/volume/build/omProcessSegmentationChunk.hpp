@@ -22,7 +22,7 @@ public:
             const OmSegID val = iter->first;
             OmSegment* seg = iter->second;
             seg->addToSize(sizes_[val]);
-            seg->AddToBoundingBox(getBbox(val).get());
+            seg->AddToBoundingBox(om::dataBbox(bounds_[val], minVertexOfChunk_.volume(), 0));
         }
     }
 
@@ -34,8 +34,8 @@ public:
 
         getOrAddSegment(val);
         sizes_[val] = 1 + sizes_[val];
-        getBbox(val).get().merge(om::dataBbox(minVertexOfChunk_ + voxelPos,
-                                              minVertexOfChunk_ + voxelPos));
+        bounds_[val].merge(om::dataBbox(minVertexOfChunk_ + voxelPos,
+                                        minVertexOfChunk_ + voxelPos));
     }
 
 private:
@@ -46,7 +46,7 @@ private:
 
     boost::unordered_map<OmSegID, OmSegment*> cacheSegments_;
     boost::unordered_map<OmSegID, uint64_t> sizes_;
-    typedef boost::unordered_map<OmSegID, om::dataBbox> bbox_map;
+    typedef boost::unordered_map<OmSegID, AxisAlignedBoundingBox<int> > bbox_map;
     bbox_map bounds_;
 
     OmSegment* getOrAddSegment(const OmSegID val)
@@ -55,16 +55,6 @@ private:
             return cacheSegments_[val] = segments_->GetOrAddSegment(val);
         }
         return cacheSegments_[val];
-    }
-    
-    boost::optional<om::dataBbox&> getBbox(OmSegID id) 
-    {
-        bbox_map::iterator bbox = bounds_.find(id);
-        if(bbox != bounds_.end()) {
-            return bbox->second;
-        } else {
-            return false;
-        }
     }
 };
 
