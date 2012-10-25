@@ -12,7 +12,6 @@ thrift/src
 *.moc.cpp
 desktop/TAGS
 desktop/src/TAGS
-desktop/test
 symbols
 crashes
 /test
