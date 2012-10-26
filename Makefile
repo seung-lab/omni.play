@@ -190,6 +190,11 @@ $(BUILDDIR)/common/%.d: common/src/%.cpp $(THRIFT_DEPS)
 $(BUILDDIR)/common/%.o: common/src/%.cpp $(THRIFT_DEPS)
 	$(build_cpp)
 
+$(BUILDDIR)/common/test/%.d: common/test/src/%.cpp $(THRIFT_DEPS)
+	$(make_d)
+$(BUILDDIR)/common/test/%.o: common/test/src/%.cpp $(THRIFT_DEPS)
+	$(build_cpp)
+
 $(BUILDDIR)/thrift/%.d: thrift/src/%.cpp $(THRIFT_DEPS)
 	$(make_d)
 $(BUILDDIR)/thrift/%.o: thrift/src/%.cpp $(THRIFT_DEPS)
@@ -261,6 +266,9 @@ $(GENDIR)/%.thrift.mkcpp: thrift/if/%.thrift
 COMMONSOURCES     = $(subst common/src,$(BUILDDIR)/common, 				\
 					  $(shell find common/src -iname "*.cpp"))
 
+COMMON_TEST_SOURCES = $(subst common/test/src,$(BUILDDIR)/common/test,	\
+                      $(shell find common/test/src -iname "*.cpp"))
+
 THRIFTSOURCES     = $(subst thrift/src,$(BUILDDIR)/thrift, 				\
 					  $(shell find thrift/src -iname "*.cpp"))
 
@@ -303,7 +311,10 @@ define link
 endef
 
 .PHONY: all
-all: server desktop
+all: server desktop common
+
+$(BINDIR)/omni.common.test: $(COMMONSOURCES:.cpp=.o) $(COMMON_TEST_SOURCES:.cpp=.o)
+	$(link)
 
 $(BINDIR)/omni.desktop: $(OMNI_DEPS) $(BUILDDIR)/desktop/main.o desktop/lib/strnatcmp.o $(BUILDDIR)/desktop/gui/resources.rcc.o
 	$(ECHO) "[CXX] linking $@"
@@ -355,6 +366,9 @@ omni.desktop.sym: $(BINDIR)/omni.desktop
 symbols: omni.desktop.sym
 	$(MKDIR) -p symbols/omni.desktop/$(shell head -n1 $< | cut -d' ' -f4)
 	$(MV) $< symbols/omni.desktop/$(shell head -n1 $< | cut -d' ' -f4)
+
+.PHONY: common
+common: $(BINDIR)/omni.common.test
 
 .PHONY: desktop
 desktop: $(BINDIR)/omni.desktop $(BINDIR)/omni.desktop.test

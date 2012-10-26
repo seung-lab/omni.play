@@ -51,6 +51,15 @@ public:
         UpdateRootLevel();
     }
 
+    volumeSystem(Vector3i dims, Vector3i abs = Vector3i::ZERO, Vector3i res = Vector3i::ONE, uint dim = DefaultChunkDim)
+    {
+    	SetDataDimensions(dims);
+        SetAbsOffset(abs);
+        SetResolution(res);
+        SetChunkDimension(chunk)
+        UpdateRootLevel();
+    }
+
     void UpdateRootLevel();
 
     inline int GetRootMipLevel() const {
