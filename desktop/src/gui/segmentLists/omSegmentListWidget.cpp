@@ -1,4 +1,4 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/guiUtils.hpp"
 #include "gui/inspectors/segmentInspector.h"
 #include "gui/segmentLists/details/segmentListBase.h"

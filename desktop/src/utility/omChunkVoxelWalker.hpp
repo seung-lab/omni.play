@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omException.h"
 
 #include <boost/iterator/iterator_facade.hpp>

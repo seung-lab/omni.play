@@ -8,7 +8,7 @@
 #include "events/details/omViewEvent.h"
 #include "events/details/omSegmentEvent.h"
 #include "events/details/omPreferenceEvent.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 #include <QGLWidget>
 #include <QTimer>

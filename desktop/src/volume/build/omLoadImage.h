@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omDebug.h"
 #include "utility/omStringHelpers.h"
 #include "datalayer/omDataWrapper.h"

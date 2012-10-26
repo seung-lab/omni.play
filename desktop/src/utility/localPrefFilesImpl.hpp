@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/omString.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "zi/omUtility.h"
 
 #include <QDir>

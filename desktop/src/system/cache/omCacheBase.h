@@ -5,7 +5,7 @@
  * Brett Warne - bwarne@mit.edu - 7/15/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmCacheBase {
 protected:

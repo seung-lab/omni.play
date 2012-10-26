@@ -1,5 +1,5 @@
 #include "system/omConnect.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/groupsTable/dropdownMenuButton.hpp"
 #include "gui/groupsTable/groupsTable.h"
 #include "segment/omSegments.h"

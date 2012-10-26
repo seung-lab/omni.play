@@ -1,4 +1,4 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omDebug.h"
 #include "common/omGl.h"
 #include "omViewBoxWidget.h"

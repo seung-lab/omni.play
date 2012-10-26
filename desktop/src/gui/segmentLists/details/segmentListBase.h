@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/dataWrappers.h"
 
 #include <QtGui>

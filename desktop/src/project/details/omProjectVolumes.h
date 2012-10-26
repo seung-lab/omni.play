@@ -8,7 +8,7 @@
  *  Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/archive/project.h"
 
 class OmAffinityGraphManager;

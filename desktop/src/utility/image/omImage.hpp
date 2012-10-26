@@ -1,7 +1,7 @@
 #pragma once
 
 #include "bits/omImage_traits.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/omSmartPtr.hpp"
 #include "zi/omUtility.h"
 

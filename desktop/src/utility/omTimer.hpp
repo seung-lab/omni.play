@@ -5,7 +5,7 @@
  *    performance testing by wrapping OS-specific timer functions.
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 #include <zi/time/time.hpp>
 

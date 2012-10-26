@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omDebug.h"
 #include "common/omGl.h"
 #include "mesh/drawer/omMeshPlan.h"

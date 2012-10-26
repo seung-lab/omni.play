@@ -1,5 +1,5 @@
 #include "actions/omSelectSegmentParams.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omDebug.h"
 #include "events/details/omSegmentEvent.h"
 #include "gui/segmentLists/details/segmentListBase.h"

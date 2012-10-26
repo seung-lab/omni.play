@@ -6,7 +6,7 @@
  *  Brett Warne - bwarne@mit.edu - 7/19/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolCoordsMipped.hpp"

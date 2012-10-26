@@ -2,7 +2,7 @@
 
 #include "common/om.hpp"
 #include "common/omString.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 template <typename T>
 class OmSmartPtr {

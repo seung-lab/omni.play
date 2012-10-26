@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/lowLevel/store/omSegmentStore.hpp"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"

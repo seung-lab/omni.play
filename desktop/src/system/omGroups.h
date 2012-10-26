@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "system/omGenericManager.hpp"
 #include "datalayer/archive/segmentation.h"
 #include <QVector>

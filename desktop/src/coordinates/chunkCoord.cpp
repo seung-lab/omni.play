@@ -1,4 +1,4 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omDebug.h"
 #include "volume/omMipVolume.h"
 

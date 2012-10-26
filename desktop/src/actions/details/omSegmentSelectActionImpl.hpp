@@ -1,7 +1,7 @@
 #pragma once
 
 #include "actions/omSelectSegmentParams.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omString.hpp"
 #include "project/omProject.h"
 #include "project/omProject.h"

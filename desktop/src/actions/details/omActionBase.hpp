@@ -2,7 +2,7 @@
 
 #include "actions/details/omUndoCommand.hpp"
 #include "actions/io/omActionLogger.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 template <typename IMPL>
 class OmActionBase : public OmUndoCommand {

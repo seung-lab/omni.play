@@ -1,7 +1,7 @@
 #pragma once
 
 #include "actions/details/omUndoCommand.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmSegment;
 class SegmentDataWrapper;

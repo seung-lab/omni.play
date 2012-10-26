@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omString.hpp"
 #include "system/omGroups.h"
 #include "utility/omCopyFirstN.hpp"

@@ -7,7 +7,7 @@
  *  Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "events/omEvents.h"
 #include "zi/concurrency.hpp"
 

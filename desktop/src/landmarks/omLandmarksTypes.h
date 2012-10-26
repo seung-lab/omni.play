@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utility/segmentDataWrapper.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 namespace om {
 namespace landmarks {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QtGui>
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omSegmentation.h"
 
 class GroupsTable;

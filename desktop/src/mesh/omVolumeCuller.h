@@ -8,7 +8,7 @@
  * The culler also keeps track of it's position of the camera and camera's focus.
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "omDrawOptions.h"
 
 class OmVolumeCuller {

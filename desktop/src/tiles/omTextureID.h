@@ -13,7 +13,7 @@
  */
 
 #include "common/omGl.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 #include <QImage>
 

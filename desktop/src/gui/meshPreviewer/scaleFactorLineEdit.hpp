@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/widgets/omLineEdit.hpp"
 #include "mesh/omMeshParams.hpp"
 

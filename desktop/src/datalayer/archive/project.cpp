@@ -1,7 +1,7 @@
 #include "datalayer/archive/project.h"
 #include "datalayer/archive/channel.h"
 #include "datalayer/archive/segmentation.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/omFileHelpers.h"
 #include "datalayer/fs/omFile.hpp"
 #include "project/omProject.h"

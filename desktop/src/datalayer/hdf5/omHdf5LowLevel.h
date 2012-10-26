@@ -6,7 +6,7 @@
 typedef LONG_PTR ssize_t;
 #endif
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omDataPath.h"
 

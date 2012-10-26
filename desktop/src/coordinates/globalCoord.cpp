@@ -1,4 +1,4 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "view2d/omView2dState.hpp"
 #include "volume/omMipVolume.h"
 

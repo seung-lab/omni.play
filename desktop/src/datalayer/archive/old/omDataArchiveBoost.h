@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 QDataStream &operator<<(QDataStream & out, const OmIDsSet & set );
 QDataStream &operator>>(QDataStream & in, OmIDsSet & set );

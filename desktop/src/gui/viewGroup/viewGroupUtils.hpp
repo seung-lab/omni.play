@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/viewGroup/viewGroupWidgetInfo.h"
 #include "gui/widgets/omTellInfo.hpp"

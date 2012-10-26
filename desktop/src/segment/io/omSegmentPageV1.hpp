@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/archive/old/omDataArchiveSegment.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/omDataPath.h"

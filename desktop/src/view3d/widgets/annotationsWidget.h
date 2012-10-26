@@ -1,7 +1,7 @@
 #pragma once
 
 #include "view3d/omView3dWidget.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omSegmentation.h"
 #include <QFont>
 

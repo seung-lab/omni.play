@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "view2d/omOnScreenTileCoords.h"
 
 #include <QWidget>

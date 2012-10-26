@@ -2,7 +2,7 @@
 
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmSegmentPageVersion {
 private:

@@ -2,7 +2,7 @@
 
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/segmentLists/elementListBox.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/dataWrappers.h"
 #include "segment/lists/omSegmentLists.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmSegmentation;
 

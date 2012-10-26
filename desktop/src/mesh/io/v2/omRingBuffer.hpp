@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "zi/omUtility.h"
 #include "zi/omMutex.h"
 

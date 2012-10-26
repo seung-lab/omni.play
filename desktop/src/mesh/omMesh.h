@@ -7,7 +7,7 @@
  *  Brett Warne - bwarne@mit.edu - 3/7/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omGl.h"
 #include "mesh/omMeshTypes.h"
 #include "mesh/omMeshCoord.h"

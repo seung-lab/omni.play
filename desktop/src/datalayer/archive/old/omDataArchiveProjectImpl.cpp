@@ -1,4 +1,4 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/archive/old/omDataArchiveBoost.h"
 #include "datalayer/archive/old/omDataArchiveProjectImpl.h"
 #include "datalayer/archive/old/omGenericManagerArchive.hpp"

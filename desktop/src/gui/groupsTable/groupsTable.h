@@ -5,7 +5,7 @@
 * Author(s): Matt Wimer
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "project/omProject.h"
 #include "system/omGroups.h"
 #include "gui/widgets/omGroupListWidget.h"

@@ -15,7 +15,7 @@
  * Matt Wimer mwimer@mit.edu 10/21/09
  **/
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omContainer.hpp"
 #include "common/omGl.h"
 #include "utility/omTimer.hpp"

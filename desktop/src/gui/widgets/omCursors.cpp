@@ -1,5 +1,5 @@
 #include "gui/widgets/omCursors.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "system/omStateManager.h"
 
 void OmCursors::setToolCursor(QWidget* w){

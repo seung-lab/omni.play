@@ -1,7 +1,7 @@
 #pragma once
 
 #include "volume/omSegmentationFolder.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "chunks/omChunk.h"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"

@@ -1,5 +1,5 @@
 #include "common/omString.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"

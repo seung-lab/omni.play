@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omCommon.h"
+#include "common/common.h"
+#include "common/common.h"
 #include "omVoxelSetValueAction.h"
 #include "segment/omSegmentSelected.hpp"
 #include "system/omStateManager.h"

@@ -2,7 +2,7 @@
 #include "chunks/omChunkCache.hpp"
 #include "chunks/omSegChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPaths.h"
 #include "mesh/drawer/omMeshDrawer.h"

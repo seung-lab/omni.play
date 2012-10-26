@@ -2,7 +2,7 @@
 
 #include "tiles/cache/omTileCacheThreadPool.hpp"
 #include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "system/omStateManager.h"
 #include "tiles/cache/omTileCacheChannel.hpp"
 #include "tiles/cache/omTileCacheEventListener.hpp"

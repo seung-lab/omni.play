@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "actions/io/omActionTypes.h"
 
 #include <QFileInfo>

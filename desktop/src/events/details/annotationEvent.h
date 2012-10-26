@@ -6,7 +6,7 @@
  */
 
 #include "events/details/omEvent.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 namespace om {
 namespace events {

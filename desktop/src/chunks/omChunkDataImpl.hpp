@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "chunks/details/omPtrToChunkDataMemMapVol.h"
 #include "chunks/omChunkDataInterface.hpp"
 #include "chunks/omExtractChanTile.hpp"

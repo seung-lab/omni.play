@@ -11,7 +11,7 @@
 #include "actions/io/omActionReplayer.hpp"
 #include "actions/omActions.h"
 #include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/archive/old/omDataArchiveProject.h"
 #include "datalayer/archive/project.h"
 #include "datalayer/fs/omFileNames.hpp"

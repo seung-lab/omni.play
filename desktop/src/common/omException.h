@@ -9,7 +9,7 @@
  * Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 #include <boost/lexical_cast.hpp>
 #include <cstdarg>
