@@ -56,10 +56,12 @@ DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop/include \
 				  -I$(HERE)/desktop/lib \
 				  -I$(HERE)/desktop \
+				  -I$(HERE)/common/src \
 				  -I$(HERE)/common/include \
 				  -I$(HERE)/common/include/yaml-cpp/include \
 				  -I$(HERE)/thrift/src \
 				  -I$(HERE)/zi_lib \
+				  -I$(EXTERNAL)/thrift/include/thrift \
 				  -I$(EXTERNAL)/libjpeg/include \
 				  -I$(EXTERNAL)/boost/include \
 				  -I$(EXTERNAL)/qt/include/Qt \
