@@ -10,7 +10,7 @@ class bbox;
 }
 namespace coords {
 
-class chunk;
+class Chunk;
 class data;
 class screen;
 class norm;
@@ -34,7 +34,7 @@ public:
 
     norm toNorm(const volumeSystem*) const;
     data toData(const volumeSystem*, const int) const;
-    chunk toChunk(const volumeSystem*, const int) const;
+    Chunk toChunk(const volumeSystem*, const int) const;
     screen toScreen(screenSystem*) const;
     Vector3i withAbsOffset(const volumeSystem*) const;
     static global fromOffsetCoords(Vector3i, const volumeSystem*);

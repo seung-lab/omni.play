@@ -10,7 +10,7 @@ namespace coords {
 
 class global;
 class norm;
-class chunk;
+class Chunk;
 class globalBbox;
 class normBbox;
 class volumeSystem;
@@ -28,7 +28,7 @@ public:
 
     global toGlobal() const;
     norm toNorm() const;
-    chunk toChunk() const;
+    Chunk toChunk() const;
     Vector3i toChunkVec() const;
     int toChunkOffset() const;
     int toTileOffset(om::common::viewType) const;
@@ -45,20 +45,24 @@ public:
         return vol_;
     }
 
-    data operator+(const Vector3i b) const {
+    inline data operator+(const Vector3i b) const {
         return data(base_t::operator+(b), vol_, mipLevel_);
     }
 
-    data operator*(const int scalar) const {
+    inline data operator*(const int scalar) const {
         return data(base_t::operator*(scalar), vol_, mipLevel_);
     }
 
-    data operator/(const int scalar) const {
+    inline data operator/(const int scalar) const {
         return data(base_t::operator/(scalar), vol_, mipLevel_);
     }
 
-    data operator/(const Vector3i b) const {
+    inline data operator/(const Vector3i b) const {
         return data(base_t::operator/(b), vol_, mipLevel_);
+    }
+
+    inline bool operator==(const data& other) const {
+    	return base_t::operator==(other) && vol_ == other.vol_ && mipLevel_ == other.mipLevel_;
     }
 };
 
@@ -114,6 +118,10 @@ public:
     inline dataBbox& operator=(const dataBbox& other) {
         base_t::operator=(other);
         return *this;
+    }
+
+    inline bool operator==(const dataBbox& other) const {
+    	return base_t::operator==(other) && vol_ == other.vol_ && mipLevel_ == other.mipLevel_;
     }
 };
 

@@ -24,7 +24,7 @@ data global::toData(const volumeSystem *vol, const int mipLevel) const
     return data(dataC, vol, mipLevel);
 }
 
-chunk global::toChunk(const volumeSystem *vol, const int mipLevel) const
+Chunk global::toChunk(const volumeSystem *vol, const int mipLevel) const
 {
     return toData(vol, mipLevel).toChunk();
 }

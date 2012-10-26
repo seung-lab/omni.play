@@ -131,7 +131,7 @@ int Chunk::SliceDepth(const volumeSystem* vol, global c, common::viewType view) 
     const data d = c.toData(vol, mipLevel_);
     const dataBbox bounds = BoundingBox(vol);
     if(!bounds.contains(d)) {
-        throw argException("coord_ outside of chunk.");
+        throw argException("Coord outside of chunk.");
     }
 
     switch(view)

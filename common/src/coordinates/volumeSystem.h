@@ -9,7 +9,7 @@ namespace om {
 namespace coords {
 
 class globalBbox;
-class chunk;
+class Chunk;
 
 class volumeSystem {
 protected:
@@ -52,6 +52,12 @@ public:
     }
 
     volumeSystem(Vector3i dims, Vector3i abs = Vector3i::ZERO, Vector3i res = Vector3i::ONE, uint chunkDim = DefaultChunkDim)
+    	: dataToGlobal_(Matrix4f::IDENTITY)
+        , globalToData_(Matrix4f::IDENTITY)
+        , normToGlobal_(Matrix4f::IDENTITY)
+        , globalToNorm_(Matrix4f::IDENTITY)
+        , chunkDim_(DefaultChunkDim)
+        , mMipRootLevel(0)
     {
     	SetDataDimensions(dims);
         SetAbsOffset(abs);
@@ -113,7 +119,7 @@ public:
         normToGlobal_.getInverse(globalToNorm_);
     }
 
-// chunk dims
+// Chunk dims
     inline int GetChunkDimension() const {
         return chunkDim_;
     }
@@ -186,16 +192,16 @@ public:
                         math::roundUp(data_dims.z, GetChunkDimension()));
     }
 
-    //mip chunk methods
-    chunk RootMipChunkCoordinate() const;
+    //mip Chunk methods
+    Chunk RootMipChunkCoordinate() const;
 
-    boost::shared_ptr<std::deque<coords::chunk> > GetMipChunkCoords() const;
-    boost::shared_ptr<std::deque<coords::chunk> > GetMipChunkCoords(const int mipLevel) const;
+    boost::shared_ptr<std::deque<coords::Chunk> > GetMipChunkCoords() const;
+    boost::shared_ptr<std::deque<coords::Chunk> > GetMipChunkCoords(const int mipLevel) const;
 
     // Returns true if given MipCoordinate is a valid coordinate within the MipVolume.
-    bool ContainsMipChunk(const chunk & rMipCoord) const;
+    bool ContainsMipChunk(const Chunk & rMipCoord) const;
 private:
-    void addChunkCoordsForLevel(const int mipLevel, std::deque<coords::chunk>* coords) const;
+    void addChunkCoordsForLevel(const int mipLevel, std::deque<coords::Chunk>* coords) const;
 
 };
 

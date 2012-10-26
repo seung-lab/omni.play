@@ -292,9 +292,12 @@ LIB64SOURCES = common/include/libb64/src/cencode.o
 
 TEST_DEPS = $(GMOCK)/src/gmock-all.o $(GMOCK)/gtest/src/gtest-all.o
 
+COMMON_SRCS = $(COMMONSOURCES) $(THRIFTSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
+COMMON_DEPS := $(COMMON_SRCS:.cpp=.o)
+COMMON_TEST_DEPS := $(COMMON_TEST_SOURCES:.cpp=.o)
+
 SERVER_SRCS = $(COMMONSOURCES) $(THRIFTSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
 SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
-
 SERVER_TEST_DEPS := $(SERVER_TEST_SOURCES:.cpp=.o)
 
 OMNI_SRCS = $(DESKTOPSOURCES) $(THRIFTSOURCES) $(YAMLSOURCES)
@@ -313,8 +316,9 @@ endef
 .PHONY: all
 all: common server desktop
 
-$(BINDIR)/omni.common.test: $(COMMONSOURCES:.cpp=.o) $(COMMON_TEST_SOURCES:.cpp=.o)
+$(BINDIR)/omni.common.test: $(COMMON_DEPS) $(COMMON_TEST_DEPS) $(THRIFT_DEPS) $(TEST_DEPS)
 	$(link)
+	$(BINDIR)/omni.common.test
 
 $(BINDIR)/omni.desktop: $(OMNI_DEPS) $(BUILDDIR)/desktop/main.o desktop/lib/strnatcmp.o $(BUILDDIR)/desktop/gui/resources.rcc.o
 	$(ECHO) "[CXX] linking $@"

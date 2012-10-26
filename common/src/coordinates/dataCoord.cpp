@@ -39,9 +39,9 @@ norm data::toNorm() const
     return toGlobal().toNorm(vol_);
 }
 
-chunk data::toChunk() const
+Chunk data::toChunk() const
 {
-    return chunk(mipLevel_, *this / vol_->GetChunkDimensions());
+    return Chunk(mipLevel_, *this / vol_->GetChunkDimensions());
 }
 
 Vector3i data::toChunkVec() const
