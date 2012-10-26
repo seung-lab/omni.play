@@ -311,7 +311,7 @@ define link
 endef
 
 .PHONY: all
-all: server desktop common
+all: common server desktop
 
 $(BINDIR)/omni.common.test: $(COMMONSOURCES:.cpp=.o) $(COMMON_TEST_SOURCES:.cpp=.o)
 	$(link)

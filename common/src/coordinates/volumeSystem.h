@@ -51,12 +51,12 @@ public:
         UpdateRootLevel();
     }
 
-    volumeSystem(Vector3i dims, Vector3i abs = Vector3i::ZERO, Vector3i res = Vector3i::ONE, uint dim = DefaultChunkDim)
+    volumeSystem(Vector3i dims, Vector3i abs = Vector3i::ZERO, Vector3i res = Vector3i::ONE, uint chunkDim = DefaultChunkDim)
     {
     	SetDataDimensions(dims);
         SetAbsOffset(abs);
         SetResolution(res);
-        SetChunkDimension(chunk)
+        SetChunkDimension(chunkDim);
         UpdateRootLevel();
     }
 
@@ -195,18 +195,7 @@ public:
     // Returns true if given MipCoordinate is a valid coordinate within the MipVolume.
     bool ContainsMipChunk(const chunk & rMipCoord) const;
 private:
-    void addChunkCoordsForLevel(const int mipLevel,
-                            std::deque<coords::chunk>* coords) const
-    {
-        const Vector3i dims = MipLevelDimensionsInMipChunks(mipLevel);
-        for (int z = 0; z < dims.z; ++z){
-            for (int y = 0; y < dims.y; ++y){
-                for (int x = 0; x < dims.x; ++x){
-                    coords->push_back(coords::chunk(mipLevel, x, y, z));
-                }
-            }
-        }
-    }
+    void addChunkCoordsForLevel(const int mipLevel, std::deque<coords::chunk>* coords) const;
 
 };
 

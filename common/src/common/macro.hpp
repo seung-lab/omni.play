@@ -27,7 +27,7 @@ public:                                \
 
 #define PROP_CONST_REF(type, name)     \
 private:                               \
-	const type name##_;                \
+	type name##_;                      \
 public:                                \
 	inline const type & name() const { \
 		return name##_;                \

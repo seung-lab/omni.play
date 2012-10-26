@@ -23,7 +23,7 @@ public:
     std::string GetCoordsAsString() const;
 
     inline bool IsLeaf() const {
-        return 0 == Level;
+        return 0 == mipLevel_;
     }
 
     //family coordinate methods
@@ -44,7 +44,7 @@ public:
     bool operator<(const Chunk& rhs) const;
 
 private:
-    PROP_CONST_REF(uint, mipLevel);
+    PROP_CONST_REF(int, mipLevel);
     PROP_CONST_REF(Vector3i, coord);
 
     friend std::ostream& operator<<(std::ostream &out, const Chunk &in);

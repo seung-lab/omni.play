@@ -12,8 +12,8 @@ Chunk::Chunk()
 {
 }
 
-Chunk::Chunk(int mipLevel, const Vector3i & coord)
-    : mipLevel_(mipLevel)
+Chunk::Chunk(int level, const Vector3i & coord)
+    : mipLevel_(level)
     , coord_(coord)
 {
     if (coord.x < 0 || coord.y < 0 || coord.z < 0) {
@@ -22,7 +22,7 @@ Chunk::Chunk(int mipLevel, const Vector3i & coord)
 }
 
 Chunk::Chunk(int level, int x, int y, int z)
-    : mipLevel_(mipLevel)
+    : mipLevel_(level)
     , coord_(Vector3i(x, y, z))
 {
     if (x < 0 || y < 0 || z < 0) {
@@ -30,7 +30,7 @@ Chunk::Chunk(int level, int x, int y, int z)
     }
 }
 
-std::string Chunk::getCoordsAsString() const
+std::string Chunk::GetCoordsAsString() const
 {
     std::stringstream ss;
     ss << mipLevel_ <<":"
@@ -103,7 +103,7 @@ data Chunk::ToData(const volumeSystem *vol) const {
 
 dataBbox Chunk::BoundingBox(const volumeSystem *vol) const
 {
-    const data min = toData(vol);
+    const data min = ToData(vol);
     const data max = min + vol->GetChunkDimensions();
     return dataBbox(min, max);
 }
@@ -129,7 +129,7 @@ uint64_t Chunk::PtrOffset(const volumeSystem* vol, int64_t bytesPerVoxel) const
 int Chunk::SliceDepth(const volumeSystem* vol, global c, common::viewType view) const
 {
     const data d = c.toData(vol, mipLevel_);
-    const dataBbox bounds = chunkBoundingBox(vol);
+    const dataBbox bounds = BoundingBox(vol);
     if(!bounds.contains(d)) {
         throw argException("coord_ outside of chunk.");
     }

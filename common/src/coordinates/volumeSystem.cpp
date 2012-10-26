@@ -86,5 +86,17 @@ volumeSystem::GetMipChunkCoords(const int mipLevel) const
     return boost::shared_ptr<std::deque<coords::chunk> >(coords);
 }
 
+void volumeSystem::addChunkCoordsForLevel(const int mipLevel, std::deque<coords::chunk>* coords) const
+{
+    const Vector3i dims = MipLevelDimensionsInMipChunks(mipLevel);
+    for (int z = 0; z < dims.z; ++z){
+        for (int y = 0; y < dims.y; ++y){
+            for (int x = 0; x < dims.x; ++x){
+                coords->push_back(coords::chunk(mipLevel, x, y, z));
+            }
+        }
+    }
+}
+
 } // namespace coords
 } // namespace om
