@@ -356,9 +356,11 @@ symbols: omni.desktop.sym
 
 .PHONY: desktop
 desktop: $(BINDIR)/omni.desktop $(BINDIR)/omni.desktop.test
+	$(BINDIR)/omni.desktop.test
 
 .PHONY: server
 server: $(BINDIR)/omni.server $(BINDIR)/omni.server.test
+	$(BINDIR)/omni.server.test
 
 ALLDEPS = $(shell find $(BUILDDIR) -iname "*.d")
 -include $(ALLDEPS)
