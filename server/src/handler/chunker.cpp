@@ -12,7 +12,7 @@ void get_chunk(std::string& _return,
 			   const volume::volume& vol, 
 			   const server::vector3i& chunk)
 {
-	coords::chunk chunkCoord(0, chunk.x, chunk.y, chunk.z);
+	coords::Chunk chunkCoord(0, chunk.x, chunk.y, chunk.z);
 	vol.Data() >> getChunk(vol.CoordSystem(), chunkCoord) >> write_out(_return);
 }
 

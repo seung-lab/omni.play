@@ -24,7 +24,7 @@ void setTileBounds(server::tile& t,
                    const coords::data dc,
                    const common::viewType& view)
 {
-    coords::chunk cc = dc.toChunk();
+    coords::Chunk cc = dc.toChunk();
     int depth = dc.toTileDepth(view);
     coords::dataBbox bounds = cc.chunkBoundingBox(dc.volume());
 

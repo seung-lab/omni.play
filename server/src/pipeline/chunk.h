@@ -13,10 +13,10 @@ class getChunk : public stage
 {
 private:
     coords::volumeSystem vs_;
-    coords::chunk cc_;
+    coords::Chunk cc_;
 
 public:
-    getChunk(coords::volumeSystem vs, coords::chunk cc)
+    getChunk(coords::volumeSystem vs, coords::Chunk cc)
         : vs_(vs)
         , cc_(cc)
     { }
@@ -62,7 +62,7 @@ public:
 			throw argException("Chunk Data is the wrong size.");
 		}
 
-		coords::chunk cc = dc_.toChunk();
+		coords::Chunk cc = dc_.toChunk();
         uint64_t offset = cc.chunkPtrOffset(dc_.volume(), sizeof(T));
         T* chunkPtr = file->GetPtrWithOffset(offset);
 

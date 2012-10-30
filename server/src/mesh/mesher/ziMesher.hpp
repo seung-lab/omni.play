@@ -27,8 +27,8 @@ private:
     const volume::volume& vol_;
     const int rootMipLevel_;
 
-    std::map<coords::chunk, std::vector<MeshCollector*> > occurances_;
-    std::map<coords::chunk, MeshCollector*> chunkCollectors_;
+    std::map<coords::Chunk, std::vector<MeshCollector*> > occurances_;
+    std::map<coords::Chunk, MeshCollector*> chunkCollectors_;
 
     const int numParallelChunks_;
     const int numThreadsPerChunk_;
@@ -78,7 +78,7 @@ private:
 
     void init()
     {
-        boost::shared_ptr<std::deque<coords::chunk> > levelZeroChunks =
+        boost::shared_ptr<std::deque<coords::Chunk> > levelZeroChunks =
             vol_.CoordSystem().GetMipChunkCoords(0);
 
         progress_.SetTotalNumChunks(levelZeroChunks->size());
@@ -104,7 +104,7 @@ private:
         std::cout << "\ndone meshing...\n";
     }
 
-    void addValuesFromChunkAndDownsampledChunks(const coords::chunk& mip0coord)
+    void addValuesFromChunkAndDownsampledChunks(const coords::Chunk& mip0coord)
     {
         const ChunkUniqueValues segIDs =
             vol_.ChunkUniqueValues()->Values(mip0coord, threshold_);
@@ -124,10 +124,10 @@ private:
         //downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
     }
 
-    void downsampleSegThroughAllMipLevels(const coords::chunk& mip0coord,
+    void downsampleSegThroughAllMipLevels(const coords::Chunk& mip0coord,
                                           const ChunkUniqueValues& segIDsMip0)
     {
-        coords::chunk c = mip0coord.ParentCoord();
+        coords::Chunk c = mip0coord.ParentCoord();
 
         // corner case: no MIP levels >0
         while (c.getLevel() <= rootMipLevel_)
@@ -138,10 +138,10 @@ private:
         }
     }
 
-    void downsampleSegThroughViewableMipLevels(const coords::chunk& mip0coord,
+    void downsampleSegThroughViewableMipLevels(const coords::Chunk& mip0coord,
                                                const ChunkUniqueValues& segIDsMip0)
     {
-        coords::chunk c = mip0coord.ParentCoord();
+        coords::Chunk c = mip0coord.ParentCoord();
 
         corner case: no MIP levels >0
         while (c.getLevel() <= rootMipLevel_)
@@ -169,7 +169,7 @@ private:
     }
 
     template <typename C>
-    void registerSegIDs(const coords::chunk& mip0coord, const coords::chunk& c,
+    void registerSegIDs(const coords::Chunk& mip0coord, const coords::Chunk& c,
                         const C& segIDs)
     {
         if ( chunkCollectors_.count( c ) == 0 )
@@ -235,7 +235,7 @@ private:
         cube_marcher.marche( reinterpret_cast< const int* >(chunkDataRaw), 129, 129, 129 );
     }
 
-    void processChunk( coords::chunk coord )
+    void processChunk( coords::Chunk coord )
     {
         static const int chunkDim = vol_.CoordinateSystem()().GetChunkDimension();
 

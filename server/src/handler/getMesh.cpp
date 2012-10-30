@@ -127,7 +127,7 @@ void tri_strip_to_degenerate( std::vector<float>& newpoints,
     }
 }
 
-boost::shared_ptr<mesh::data> loadData(coords::chunk cc, const std::string& uri, uint32_t segId)
+boost::shared_ptr<mesh::data> loadData(coords::Chunk cc, const std::string& uri, uint32_t segId)
 {
 	boost::shared_ptr<mesh::data> data;
 
@@ -169,7 +169,7 @@ void get_mesh(std::string& _return,
 {
     const utility::UUID uuid;
 
-	coords::chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
+	coords::Chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
 	boost::shared_ptr<mesh::data> data = loadData(cc, uri, segId);
 
 	if(!data.get()) {
@@ -204,7 +204,7 @@ void get_obj(std::string& _return,
              int32_t mipLevel,
              int32_t segId)
 {
-    coords::chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
+    coords::Chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
 	boost::shared_ptr<mesh::data> data = loadData(cc, uri, segId);
 
 	if(!data.get()) {

@@ -16,7 +16,7 @@ namespace mesh {
 class MeshCollector
 {
 private:
-    const coords::chunk coord_ ;
+    const coords::Chunk coord_ ;
     //OmMeshWriterV2 *const meshIO_;
 
     zi::spinlock lock_;
@@ -25,7 +25,7 @@ private:
     map_t meshes_;
 
 public:
-    MeshCollector( const coords::chunk& coord)//, OmMeshWriterV2* meshIO )
+    MeshCollector( const coords::Chunk& coord)//, OmMeshWriterV2* meshIO )
         : coord_( coord )
         //, meshIO_( meshIO )
         , lock_()

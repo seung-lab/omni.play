@@ -25,7 +25,7 @@ public:
     data_var operator()(const datalayer::memMappedFile<T>& in) const
     {
         data<T> out;
-        coords::chunk cc = dc_.toChunk();
+        coords::Chunk cc = dc_.toChunk();
         uint64_t offset = cc.chunkPtrOffset(dc_.volume(), sizeof(T));
         T* chunkPtr = in.GetPtrWithOffset(offset);
         chunks::rawChunkSlicer<T> slicer(chunkSize_, chunkPtr);

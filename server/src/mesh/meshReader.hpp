@@ -16,7 +16,7 @@ private:
     boost::scoped_ptr<chunkDataReader> chunkData_;
 
 public:
-    reader(std::string fnp, const coords::chunk& coord)
+    reader(std::string fnp, const coords::Chunk& coord)
     {
         std::string path = str(boost::format("%1%/1.0000/%2%/%3%/%4%/%5%/")
                                % fnp % coord.getLevel() % coord.X() % coord.Y() % coord.Z());

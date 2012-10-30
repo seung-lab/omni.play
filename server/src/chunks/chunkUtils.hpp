@@ -14,7 +14,7 @@ public:
      *      voxel of data is included on each dimensions.
      */
     static utility::image<uint32_t, 3> GetMeshImageData(const volume::volume& vol,
-                                                        const coords::chunk& chunk)
+                                                        const coords::Chunk& chunk)
     {
         utility::image<uint32_t, 3> retImage(utility::extents[129][129][129]);
 
@@ -29,7 +29,7 @@ public:
                     const int lenX = x ? 1 : 128;
 
                     //form mip coord
-                    const coords::chunk mip_coord(chunk.getLevel(),
+                    const coords::Chunk mip_coord(chunk.getLevel(),
                                                   chunk.X() + x,
                                                   chunk.Y() + y,
                                                   chunk.Z() + z);

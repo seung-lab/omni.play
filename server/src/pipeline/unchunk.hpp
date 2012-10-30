@@ -35,10 +35,10 @@ public:
 		const Vector3i dims = vs_.GetChunkDimensions();
         // iterate over all chunks in order
         // TODO: boost multi_array
-        boost::shared_ptr<std::deque<coords::chunk> > chunks = vs_.GetMipChunkCoords(0);
+        boost::shared_ptr<std::deque<coords::Chunk> > chunks = vs_.GetMipChunkCoords(0);
 	    FOR_EACH(iter, *chunks)
 	    {
-            coords::chunk coord = *iter;
+            coords::Chunk coord = *iter;
             coords::data base = coord.toData(&vs_);
             uint64_t offset = coord.chunkPtrOffset(&vs_, sizeof(T));
 	        T* chunkPtr = in.GetPtrWithOffset(offset);
