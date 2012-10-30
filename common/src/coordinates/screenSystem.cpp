@@ -11,6 +11,15 @@ screenSystem::screenSystem(common::viewType viewType)
     : viewType_(viewType)
 { }
 
+screenSystem::screenSystem(common::viewType viewType, int width, int height, double scale, Global location)
+    : viewType_(viewType)
+{
+	setTotalViewport(width, height);
+	setZoomScale(scale);
+	setLocation(location);
+	UpdateTransformationMatrices();
+}
+
 void screenSystem::UpdateTransformationMatrices()
 {
     // init

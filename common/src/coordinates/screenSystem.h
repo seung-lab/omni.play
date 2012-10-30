@@ -42,6 +42,7 @@ private:
 
 public:
     screenSystem(common::viewType viewType);
+    screenSystem(common::viewType viewType, int width, int height, double scale = 1.0, Global location = Global(0));
 
     // Update the Transformation Matricies based on changes to scale, location or viewport
     //
