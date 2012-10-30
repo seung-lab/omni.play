@@ -84,7 +84,7 @@ public:
 
     void BuildBlankVolume(const Vector3i & dims);
 
-    OmSegChunk* GetChunk(const om::chunkCoord& coord);
+    OmSegChunk* GetChunk(const om::coords::Chunk& coord);
 
     uint32_t GetVoxelValue(const om::globalCoord &vox);
     void SetVoxelValue(const om::globalCoord &vox, const uint32_t value);

@@ -44,11 +44,11 @@ private:
         for (int level = 0; level <= vol1->Coords().GetRootMipLevel(); ++level) {
             printf("Comparing mip level %i\n",level);
 
-            om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+            om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
                 vol1->GetMipChunkCoords(level);
 
             FOR_EACH(iter, *coordsPtr){
-                const om::chunkCoord& coord = *iter;
+                const om::coords::Chunk& coord = *iter;
 
                 if(CompareChunks(coord, vol1, vol2)){
                     continue;
@@ -67,7 +67,7 @@ private:
      * Returns true if two given chunks contain the exact same image data
      */
     template <typename VOL>
-    static bool CompareChunks(const om::chunkCoord& coord,
+    static bool CompareChunks(const om::coords::Chunk& coord,
                               VOL* vol1, VOL* vol2)
     {
         OmChunk* chunk1= vol1->GetChunk(coord);

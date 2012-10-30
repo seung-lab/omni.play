@@ -24,7 +24,7 @@ public:
 
     bool IsAnyMeshDataPresent()
     {
-        const om::chunkCoord coord(0, 0, 0, 0);
+        const om::coords::Chunk coord(0, 0, 0, 0);
 
         const ChunkUniqueValues segIDs =
             segmentation_->ChunkUniqueValues()->Values(coord, 1);
@@ -44,7 +44,7 @@ public:
     }
 
     inline om::shared_ptr<OmDataForMeshLoad>
-    Read(const OmSegID segID, const om::chunkCoord& coord)
+    Read(const OmSegID segID, const om::coords::Chunk& coord)
     {
         try{
             return doRead(segID, coord);
@@ -55,7 +55,7 @@ public:
 
 private:
 
-    bool isMeshDataPresent(const OmSegID segID, const om::chunkCoord& coord)
+    bool isMeshDataPresent(const OmSegID segID, const om::coords::Chunk& coord)
     {
         try{
             return doIsMeshDataPresent(segID, coord);
@@ -64,7 +64,7 @@ private:
         }
     }
 
-    bool doIsMeshDataPresent(const OmSegID segID, const om::chunkCoord& coord)
+    bool doIsMeshDataPresent(const OmSegID segID, const om::coords::Chunk& coord)
     {
         const OmMeshCoord meshCoord(coord, segID);
 
@@ -85,7 +85,7 @@ private:
     }
 
     om::shared_ptr<OmDataForMeshLoad>
-    doRead(const OmSegID segID, const om::chunkCoord& coord)
+    doRead(const OmSegID segID, const om::coords::Chunk& coord)
     {
         om::shared_ptr<OmDataForMeshLoad> ret =
             om::make_shared<OmDataForMeshLoad>();

@@ -17,7 +17,7 @@ private:
     OmSegmentation *const seg_;
     OmMeshFilePtrCache *const  filePtrCache_;
     const OmSegID segID_;
-    const om::chunkCoord coord_;
+    const om::coords::Chunk coord_;
     const U mesh_;
     const om::AllowOverwrite allowOverwrite_;
 
@@ -25,7 +25,7 @@ public:
     OmMeshWriterTaskV2(OmSegmentation* seg,
                        OmMeshFilePtrCache* filePtrCache,
                        const OmSegID segID,
-                       const om::chunkCoord& coord,
+                       const om::coords::Chunk& coord,
                        const U mesh,
                        const om::AllowOverwrite allowOverwrite)
         : seg_(seg)

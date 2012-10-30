@@ -41,8 +41,8 @@ public:
         return MIPVOL_BUILT == mBuildState;
     }
 
-    om::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords() const;
-    om::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords(const int mipLevel) const;
+    om::shared_ptr<std::deque<om::coords::Chunk> > GetMipChunkCoords() const;
+    om::shared_ptr<std::deque<om::coords::Chunk> > GetMipChunkCoords(const int mipLevel) const;
 
     //mip data accessors
     bool ContainsVoxel(const om::globalCoord &vox);
@@ -80,7 +80,7 @@ protected:
     }
 
     void addChunkCoordsForLevel(const int mipLevel,
-                                std::deque<om::chunkCoord>* coords) const;
+                                std::deque<om::coords::Chunk>* coords) const;
 
 private:
     template <class T> friend class OmVolumeBuilderBase;

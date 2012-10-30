@@ -22,7 +22,7 @@ private:
     zi::spinlock modifiedSegIDsLock_;
 
 public:
-    OmSegChunk(OmSegmentation* vol, const om::chunkCoord& coord);
+    OmSegChunk(OmSegmentation* vol, const om::coords::Chunk& coord);
     virtual ~OmSegChunk();
 
     uint32_t GetVoxelValue(const om::dataCoord& vox);

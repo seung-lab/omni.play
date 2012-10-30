@@ -9,7 +9,7 @@ struct LargestSegmentFirst {
 };
 
 typedef std::multimap<OmSegment*,
-                      om::chunkCoord,
+                      om::coords::Chunk,
                       LargestSegmentFirst> OmMeshPlanStruct;
 
 class OmMeshPlan : public OmMeshPlanStruct {
@@ -21,7 +21,7 @@ public:
         : voxelCount_(0)
     {}
 
-    void Add(OmSegment* seg, const om::chunkCoord& coord)
+    void Add(OmSegment* seg, const om::coords::Chunk& coord)
     {
         insert(std::make_pair(seg, coord));
         voxelCount_ += seg->size();

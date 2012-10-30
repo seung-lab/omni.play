@@ -71,7 +71,7 @@ private:
                 continue;
             }
 
-            om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+            om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
                 vol.GetMipChunkCoords(level);
 
             FOR_EACH(iter, *coordsPtr)
@@ -86,7 +86,7 @@ private:
     }
 
     template <typename T>
-    void copyChunk(T& vol, const om::chunkCoord& coord)
+    void copyChunk(T& vol, const om::coords::Chunk& coord)
     {
         OmChunk* chunk = vol.GetChunk(coord);
 

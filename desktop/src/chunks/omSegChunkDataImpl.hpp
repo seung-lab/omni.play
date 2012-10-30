@@ -22,7 +22,7 @@ class dataImpl : public dataInterface {
 private:
     OmSegmentation *const vol_;
     OmSegChunk *const chunk_;
-    const om::chunkCoord coord_;
+    const om::coords::Chunk coord_;
 
     ptrToChunkDataBase *const ptrToChunkData_;
 
@@ -30,7 +30,7 @@ private:
     const int elementsPerSlice_;
 
 public:
-    dataImpl(OmSegmentation* vol, OmSegChunk* chunk, const om::chunkCoord& coord)
+    dataImpl(OmSegmentation* vol, OmSegChunk* chunk, const om::coords::Chunk& coord)
         : vol_(vol)
         , chunk_(chunk)
         , coord_(coord)

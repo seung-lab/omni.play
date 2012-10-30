@@ -60,11 +60,11 @@ private:
             hdfExport->open();
         }
 
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
             vol->GetMipChunkCoords(0);
 
         FOR_EACH(iter, *coordsPtr){
-            const om::chunkCoord& coord = *iter;
+            const om::coords::Chunk& coord = *iter;
             
             OmDataWrapperPtr data = exportChunk(vol, coord, rerootSegments);
             om::dataBbox chunk_data_bbox = coord.BoundingBox(vol);
@@ -79,7 +79,7 @@ private:
         printf("\nexport done!\n");
     }
 
-    OmDataWrapperPtr exportChunk(OmChannel* vol, const om::chunkCoord& coord,
+    OmDataWrapperPtr exportChunk(OmChannel* vol, const om::coords::Chunk& coord,
                                  const bool)
     {
         OmChunk* chunk = vol->GetChunk(coord);
@@ -87,7 +87,7 @@ private:
     }
 
     OmDataWrapperPtr exportChunk(OmSegmentation* vol,
-                                 const om::chunkCoord& coord,
+                                 const om::coords::Chunk& coord,
                                  const bool rerootSegments)
     {
         std::cout << "\r\texporting " << coord << std::flush;

@@ -34,14 +34,14 @@ private:
     OmCacheBase *const cache_;
     const OmTileCoord key_;
     const int tileLength_;
-    const om::chunkCoord mipChunkCoord_;
+    const om::coords::Chunk mipChunkCoord_;
 
     boost::scoped_ptr<OmTextureID> texture_;
 
     void load8bitChannelTile();
     void load32bitSegmentationTile();
 
-    om::chunkCoord tileToMipCoord();
+    om::coords::Chunk tileToMipCoord();
     int getDepth();
     void setVertices(const int x, const int y, const float zoomFactor);
 

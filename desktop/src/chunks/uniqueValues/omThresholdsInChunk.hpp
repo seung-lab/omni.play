@@ -6,7 +6,7 @@
 class OmThresholdsInChunk {
 private:
     OmSegmentation *const segmentation_;
-    const om::chunkCoord coord_;
+    const om::coords::Chunk coord_;
 
     typedef DoubleFuzzyStdMap<OmChunkUniqueValuesPerThreshold*> map_t;
     typedef map_t::iterator iterator;
@@ -17,7 +17,7 @@ private:
 
 public:
     OmThresholdsInChunk(OmSegmentation* segmentation,
-                        const om::chunkCoord& coord)
+                        const om::coords::Chunk& coord)
         : segmentation_(segmentation)
         , coord_(coord)
     {}

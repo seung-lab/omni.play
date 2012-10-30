@@ -46,7 +46,7 @@ public:
         OmTileCache::QueueUp(tileCoord);
     }
 
-    TextureVectices getTextureVertices(const om::chunkCoord& old, const int curMipLevel)
+    TextureVectices getTextureVertices(const om::coords::Chunk& old, const int curMipLevel)
     {
     	Vector2i chunkCoordsInPlane = OmView2dConverters::Get2PtsInPlane(old.Coordinate, viewType_);
     	int mipDiff = om::math::pow2int(curMipLevel - old.getLevel());

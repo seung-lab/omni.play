@@ -25,7 +25,7 @@ private:
     const Vector3i volSize_;
     OmHdf5 *const hdf5reader_;
     const QString mip0fnp_;
-    const om::chunkCoord coord_;
+    const om::coords::Chunk coord_;
 
     OmSimpleProgress* prog_;
 
@@ -39,7 +39,7 @@ public:
                          const Vector3i volSize,
                          OmHdf5 *const hdf5reader,
                          const QString mip0fnp,
-                         const om::chunkCoord& coord,
+                         const om::coords::Chunk& coord,
                          OmSimpleProgress* prog)
         : vol_(vol)
         , path_(path)

@@ -46,7 +46,7 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
     return ret;
 }
 
-int numChunks(om::chunkCoord min, om::chunkCoord max)
+int numChunks(om::coords::Chunk min, om::coords::Chunk max)
 {
     return (max.Coordinate.x - min.Coordinate.x + 1) *
            (max.Coordinate.y - min.Coordinate.y + 1) *
@@ -81,8 +81,8 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
     	return;
     }
 
-    om::chunkCoord minChunk = om::globalCoord(viewBounds.getMin()).toChunkCoord(vol_, mipLevel_);
-    om::chunkCoord maxChunk = om::globalCoord(viewBounds.getMax()).toChunkCoord(vol_, mipLevel_);
+    om::coords::Chunk minChunk = om::globalCoord(viewBounds.getMin()).toChunkCoord(vol_, mipLevel_);
+    om::coords::Chunk maxChunk = om::globalCoord(viewBounds.getMax()).toChunkCoord(vol_, mipLevel_);
 
     // iterate over all chunks on the screen
     for (int x = minChunk.Coordinate.x; x <= maxChunk.Coordinate.x; x++)
@@ -91,7 +91,7 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
         {
             for (int z = minChunk.Coordinate.z; z <= maxChunk.Coordinate.z; z++)
             {
-                om::chunkCoord coord(mipLevel_, x, y, z);
+                om::coords::Chunk coord(mipLevel_, x, y, z);
                 computeTile(coord, depthOffset);
             }
         }
@@ -99,7 +99,7 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 
 }
 
-void OmOnScreenTileCoords::computeTile(const om::chunkCoord& chunkCoord,
+void OmOnScreenTileCoords::computeTile(const om::coords::Chunk& chunkCoord,
                                        const int depthOffset)
 {
     if(!vol_->Coords().ContainsMipChunkCoord(chunkCoord)) {
@@ -129,7 +129,7 @@ void OmOnScreenTileCoords::computeTile(const om::chunkCoord& chunkCoord,
 }
 
 void OmOnScreenTileCoords::makeTileCoordFromFilter(OmFilter2d* filter,
-                                                   const om::chunkCoord & chunkCoord,
+                                                   const om::coords::Chunk & chunkCoord,
                                                    const int depthOffset)
 {
     const om::FilterType filterType = filter->FilterType();
@@ -154,7 +154,7 @@ void OmOnScreenTileCoords::makeTileCoordFromFilter(OmFilter2d* filter,
     tileCoordsAndLocations_->push_back(pair);
 }
 
-OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::chunkCoord& coord,
+OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::coords::Chunk& coord,
                                                 const int depthOffset,
                                                 OmMipVolume* vol,
                                                 int freshness)
@@ -172,7 +172,7 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::chunkCoord& coord,
                        state_->getObjectType());
 }
 
-GLfloatBox OmOnScreenTileCoords::computeVertices(const om::chunkCoord& coord, const OmMipVolume* vol)
+GLfloatBox OmOnScreenTileCoords::computeVertices(const om::coords::Chunk& coord, const OmMipVolume* vol)
 {
     om::dataBbox bounds = coord.BoundingBox(vol);
     om::screenCoord min = bounds.getMin().toGlobalCoord().toScreenCoord(state_);

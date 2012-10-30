@@ -23,7 +23,7 @@ public:
         : chunks_(new OmChunkItemContainer<VOL, CHUNK>(vol))
     {}
 
-    CHUNK* GetChunk(const om::chunkCoord& coord){
+    CHUNK* GetChunk(const om::coords::Chunk& coord){
         return chunks_->Get(coord);
     }
 };

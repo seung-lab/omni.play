@@ -48,9 +48,9 @@ public:
                     const int lenX = x ? 1 : 128;
 
                     //form mip coord
-                    const om::chunkCoord& currentCoord = chunk->GetCoordinate();
+                    const om::coords::Chunk& currentCoord = chunk->GetCoordinate();
 
-                    const om::chunkCoord mip_coord(currentCoord.getLevel(),
+                    const om::coords::Chunk mip_coord(currentCoord.getLevel(),
                                                    currentCoord.x + x,
                                                    currentCoord.y + y,
                                                    currentCoord.z + z);
@@ -83,7 +83,7 @@ public:
         SegmentationDataWrapper sdw(segmentationID_);
         OmSegmentation& vol = sdw.GetSegmentation();
 
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
             vol.GetMipChunkCoords();
 
         const uint32_t numChunks = coordsPtr->size();
@@ -92,7 +92,7 @@ public:
 
         FOR_EACH(iter, *coordsPtr)
         {
-            const om::chunkCoord& coord = *iter;
+            const om::coords::Chunk& coord = *iter;
 
             ++counter;
             printf("\rfinding values in chunk %d of %d...", counter, numChunks);

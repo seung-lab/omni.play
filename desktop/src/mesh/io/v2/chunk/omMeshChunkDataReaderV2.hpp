@@ -9,12 +9,12 @@
 class OmMeshChunkDataReaderV2{
 private:
     OmSegmentation *const vol_;
-    const om::chunkCoord& coord_;
+    const om::coords::Chunk& coord_;
     const double threshold_;
     const QString fnp_;
 
 public:
-    OmMeshChunkDataReaderV2(OmSegmentation* seg, const om::chunkCoord& coord,
+    OmMeshChunkDataReaderV2(OmSegmentation* seg, const om::coords::Chunk& coord,
                             const double threshold)
         : vol_(seg)
         , coord_(coord)

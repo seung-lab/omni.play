@@ -32,10 +32,10 @@ public:
     }
 
     OmChunk* MipChunk(const om::AffinityGraph aff,
-                      const om::chunkCoord& coord);
+                      const om::coords::Chunk& coord);
 
     om::shared_ptr<OmRawChunk<float> > RawChunk(const om::AffinityGraph aff,
-                                                const om::chunkCoord& coord);
+                                                const om::coords::Chunk& coord);
 
 };
 

@@ -35,7 +35,7 @@ public:
         }
     }
 
-    T* Get(const om::chunkCoord& coord)
+    T* Get(const om::coords::Chunk& coord)
     {
         const int x = coord.Coordinate.x;
         const int y = coord.Coordinate.y;

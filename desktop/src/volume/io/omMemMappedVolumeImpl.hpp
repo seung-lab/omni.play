@@ -85,7 +85,7 @@ public:
         return maps_[level]->GetPtr();
     }
 
-    T* GetChunkPtr(const om::chunkCoord& coord) const
+    T* GetChunkPtr(const om::coords::Chunk& coord) const
     {
         const int level = coord.Level;
         const uint64_t offset =

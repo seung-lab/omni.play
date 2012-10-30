@@ -62,7 +62,7 @@ void OmTile::load32bitSegmentationTile()
     texture_.reset(new OmTextureID(tileLength_, colorMappedData));
 }
 
-om::chunkCoord OmTile::tileToMipCoord(){
+om::coords::Chunk OmTile::tileToMipCoord(){
     return key_.getCoord();
 }
 

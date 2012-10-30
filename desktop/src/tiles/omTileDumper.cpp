@@ -64,7 +64,7 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel,
                             const ViewType viewType)
 {
     const om::globalCoord coord = om::globalCoord(x, y, z);
-    const om::chunkCoord chunk = coord.toChunkCoord(vol_, mipLevel);
+    const om::coords::Chunk chunk = coord.toChunkCoord(vol_, mipLevel);
     const om::dataCoord data = coord.toDataCoord(vol_, mipLevel);
     const int freshness = 0;
 

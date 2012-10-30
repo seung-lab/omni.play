@@ -77,8 +77,8 @@ private:
     const int rootMipLevel_;
     const double threshold_;
 
-    std::map<om::chunkCoord, std::vector<MeshCollector*> > occurances_;
-    std::map<om::chunkCoord, MeshCollector*> chunkCollectors_;
+    std::map<om::coords::Chunk, std::vector<MeshCollector*> > occurances_;
+    std::map<om::coords::Chunk, MeshCollector*> chunkCollectors_;
 
     OmMeshManager *const meshManager_;
     boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
@@ -91,7 +91,7 @@ private:
 
     void init()
     {
-        om::shared_ptr<std::deque<om::chunkCoord> > levelZeroChunks =
+        om::shared_ptr<std::deque<om::coords::Chunk> > levelZeroChunks =
             segmentation_->GetMipChunkCoords(0);
 
         progress_.SetTotalNumChunks(levelZeroChunks->size());
@@ -117,7 +117,7 @@ private:
         std::cout << "\ndone meshing...\n";
     }
 
-    void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord)
+    void addValuesFromChunkAndDownsampledChunks(const om::coords::Chunk& mip0coord)
     {
         const ChunkUniqueValues segIDs =
             segmentation_->ChunkUniqueValues()->Values(mip0coord, threshold_);
@@ -137,10 +137,10 @@ private:
         //downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
     }
 
-    void downsampleSegThroughAllMipLevels(const om::chunkCoord& mip0coord,
+    void downsampleSegThroughAllMipLevels(const om::coords::Chunk& mip0coord,
                                           const ChunkUniqueValues& segIDsMip0)
     {
-        om::chunkCoord c = mip0coord.ParentCoord();
+        om::coords::Chunk c = mip0coord.ParentCoord();
 
         // corner case: no MIP levels >0
         while (c.getLevel() <= rootMipLevel_)
@@ -151,10 +151,10 @@ private:
         }
     }
 
-    void downsampleSegThroughViewableMipLevels(const om::chunkCoord& mip0coord,
+    void downsampleSegThroughViewableMipLevels(const om::coords::Chunk& mip0coord,
                                                const ChunkUniqueValues& segIDsMip0)
     {
-        om::chunkCoord c = mip0coord.ParentCoord();
+        om::coords::Chunk c = mip0coord.ParentCoord();
 
         // corner case: no MIP levels >0
         while (c.getLevel() <= rootMipLevel_)
@@ -182,7 +182,7 @@ private:
     }
 
     template <typename C>
-    void registerSegIDs(const om::chunkCoord& mip0coord, const om::chunkCoord& c,
+    void registerSegIDs(const om::coords::Chunk& mip0coord, const om::coords::Chunk& c,
                         const C& segIDs)
     {
         if ( chunkCollectors_.count( c ) == 0 )
@@ -248,7 +248,7 @@ private:
         cube_marcher.marche( reinterpret_cast< const int* >(chunkDataRaw), 129, 129, 129 );
     }
 
-    void processChunk( om::chunkCoord coord )
+    void processChunk( om::coords::Chunk coord )
     {
         static const int chunkDim = segmentation_->Coords().GetChunkDimension();
 

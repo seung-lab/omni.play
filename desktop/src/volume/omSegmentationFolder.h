@@ -24,10 +24,10 @@ public:
     QString RelativeVolPath();
 
     QString GetMeshChunkFolderPath(const double threshold,
-                                   const om::chunkCoord& coord);
+                                   const om::coords::Chunk& coord);
 
     QString MakeMeshChunkFolderPath(const double threshold,
-                                    const om::chunkCoord& coord);
+                                    const om::coords::Chunk& coord);
     QString GetMeshFolderPath();
     QString MakeMeshFolderPath();
     QString GetMeshThresholdFolderPath(const double threshold);
@@ -35,8 +35,8 @@ public:
     QString MeshMetadataFileOld();
     QString MeshMetadataFilePerThreshold(const double threshold);
     QString GetChunksFolder();
-    QString GetChunkFolderPath(const om::chunkCoord& coord);
-    QString MakeChunkFolderPath(const om::chunkCoord& coord);
+    QString GetChunkFolderPath(const om::coords::Chunk& coord);
+    QString MakeChunkFolderPath(const om::coords::Chunk& coord);
 
     QString AnnotationFile();
     QString LongRangeConnectionFile();

@@ -5,17 +5,17 @@
 class OmMeshCoord {
  public:
 	OmMeshCoord();
-    OmMeshCoord( const om::chunkCoord&, OmSegID );
+    OmMeshCoord( const om::coords::Chunk&, OmSegID );
 
 	void operator=( const OmMeshCoord& rhs );
 	bool operator==( const OmMeshCoord& rhs ) const;
 	bool operator!=( const OmMeshCoord& rhs ) const;
 	bool operator<( const OmMeshCoord& rhs ) const;
 
-    om::chunkCoord MipChunkCoord;
+    om::coords::Chunk MipChunkCoord;
 	OmSegID DataValue;
 
-    const om::chunkCoord& Coord() const {
+    const om::coords::Chunk& Coord() const {
 		return MipChunkCoord;
 	}
 

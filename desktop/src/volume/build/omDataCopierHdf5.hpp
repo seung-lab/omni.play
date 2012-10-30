@@ -59,13 +59,13 @@ private:
         OmThreadPool threadPool;
         threadPool.start(3);
 
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
             vol_->GetMipChunkCoords(0);
 
         OmSimpleProgress prog(coordsPtr->size(), "HDF5 chunk copy");
 
         FOR_EACH(iter, *coordsPtr){
-            const om::chunkCoord& coord = *iter;
+            const om::coords::Chunk& coord = *iter;
 
             om::shared_ptr<OmDataCopierHdf5Task<VOL> > task =
                 om::make_shared<OmDataCopierHdf5Task<VOL> >(vol_,

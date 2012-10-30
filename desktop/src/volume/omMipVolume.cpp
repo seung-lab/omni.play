@@ -12,39 +12,39 @@ bool OmMipVolume::ContainsVoxel(const om::globalCoord & vox){
 }
 
 void OmMipVolume::addChunkCoordsForLevel(const int mipLevel,
-                                         std::deque<om::chunkCoord>* coords) const
+                                         std::deque<om::coords::Chunk>* coords) const
 {
     const Vector3i dims = coords_.MipLevelDimensionsInMipChunks(mipLevel);
 
     for (int z = 0; z < dims.z; ++z){
         for (int y = 0; y < dims.y; ++y){
             for (int x = 0; x < dims.x; ++x){
-                coords->push_back(om::chunkCoord(mipLevel, Vector3i(x, y, z)));
+                coords->push_back(om::coords::Chunk(mipLevel, Vector3i(x, y, z)));
             }
         }
     }
 }
 
-om::shared_ptr<std::deque<om::chunkCoord> >
+om::shared_ptr<std::deque<om::coords::Chunk> >
 OmMipVolume::GetMipChunkCoords() const
 {
-    std::deque<om::chunkCoord>* coords = new std::deque<om::chunkCoord>();
+    std::deque<om::coords::Chunk>* coords = new std::deque<om::coords::Chunk>();
 
     for(int level = 0; level <= coords_.GetRootMipLevel(); ++level) {
         addChunkCoordsForLevel(level, coords);
     }
 
-    return om::shared_ptr<std::deque<om::chunkCoord> >(coords);
+    return om::shared_ptr<std::deque<om::coords::Chunk> >(coords);
 }
 
-om::shared_ptr<std::deque<om::chunkCoord> >
+om::shared_ptr<std::deque<om::coords::Chunk> >
 OmMipVolume::GetMipChunkCoords(const int mipLevel) const
 {
-    std::deque<om::chunkCoord>* coords = new std::deque<om::chunkCoord>();
+    std::deque<om::coords::Chunk>* coords = new std::deque<om::coords::Chunk>();
 
     addChunkCoordsForLevel(mipLevel, coords);
 
-    return om::shared_ptr<std::deque<om::chunkCoord> >(coords);
+    return om::shared_ptr<std::deque<om::coords::Chunk> >(coords);
 }
 
 

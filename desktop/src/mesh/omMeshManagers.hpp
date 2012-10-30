@@ -100,14 +100,14 @@ public:
     }
 
 /*
-    void MeshChunk(const om::chunkCoord& coord)
+    void MeshChunk(const om::coords::Chunk& coord)
     {
         ziMesher mesher(segmentation_, 1);
         mesher.addChunkCoord(coord);
         mesher.mesh();
     }
 
-    void RebuildChunk(const om::chunkCoord&,
+    void RebuildChunk(const om::coords::Chunk&,
                       const OmSegIDsSet& )
     {
         assert(0);
@@ -129,7 +129,7 @@ OmEvents::Redraw3d();
     }
 */
 
-    void GetMesh(OmMeshPtr& ptr, const om::chunkCoord& coord,
+    void GetMesh(OmMeshPtr& ptr, const om::coords::Chunk& coord,
                  const OmSegID segID, const double threshold,
                  const om::Blocking blocking = om::NON_BLOCKING)
     {

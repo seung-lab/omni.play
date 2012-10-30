@@ -37,7 +37,7 @@ private:
     const uint32_t numTilesToWrite_;
     zi::semaphore limit_;
 
-    std::map<om::chunkCoord, uint64_t> chunkOffsets_;
+    std::map<om::coords::Chunk, uint64_t> chunkOffsets_;
 
     bool shouldPreallocate_;
 
@@ -121,7 +121,7 @@ private:
         doProcessSlice(img, sliceNum);
     }
 
-    uint64_t getChunkOffset(const om::chunkCoord& coord)
+    uint64_t getChunkOffset(const om::coords::Chunk& coord)
     {
         if(chunkOffsets_.count(coord)){
             return chunkOffsets_[coord];
@@ -160,7 +160,7 @@ private:
         {
             for(int x = 0; x < mip0dims_.x; ++x)
             {
-                const om::chunkCoord coord = om::chunkCoord(0, x, y, z);
+                const om::coords::Chunk coord = om::coords::Chunk(0, x, y, z);
                 const om::dataBbox chunk_bbox = coord.BoundingBox(vol_);
 
                 const int startX = chunk_bbox.getMin().x;
@@ -184,7 +184,7 @@ private:
         }
     }
 
-    void tileWriterTask(om::shared_ptr<T> tile, const om::chunkCoord coord, const int sliceNum)
+    void tileWriterTask(om::shared_ptr<T> tile, const om::coords::Chunk coord, const int sliceNum)
     {
         const uint64_t chunkOffset = getChunkOffset(coord);
 

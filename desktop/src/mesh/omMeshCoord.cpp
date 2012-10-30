@@ -3,11 +3,11 @@
 
 OmMeshCoord::OmMeshCoord()
 {
-    MipChunkCoord = om::chunkCoord();
+    MipChunkCoord = om::coords::Chunk();
     DataValue = -1;
 }
 
-OmMeshCoord::OmMeshCoord(const om::chunkCoord & rMipChunkCoord, OmSegID dataValue)
+OmMeshCoord::OmMeshCoord(const om::coords::Chunk & rMipChunkCoord, OmSegID dataValue)
     : MipChunkCoord(rMipChunkCoord)
     , DataValue(dataValue)
 {

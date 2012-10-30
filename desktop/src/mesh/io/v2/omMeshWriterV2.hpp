@@ -35,7 +35,7 @@ public:
 
     bool CheckEverythingWasMeshed()
     {
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
             segmentation_->GetMipChunkCoords();
 
         bool allGood = true;
@@ -63,14 +63,14 @@ public:
         return allGood;
     }
 
-    bool Contains(const OmSegID segID, const om::chunkCoord& coord)
+    bool Contains(const OmSegID segID, const om::coords::Chunk& coord)
     {
         OmMeshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);
         return chunk_table->Contains(segID);
     }
 
-    bool WasMeshed(const OmSegID segID, const om::chunkCoord& coord)
+    bool WasMeshed(const OmSegID segID, const om::coords::Chunk& coord)
     {
         OmMeshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);
@@ -84,7 +84,7 @@ public:
         return entry.wasMeshed;
     }
 
-    bool HasData(const OmSegID segID, const om::chunkCoord& coord)
+    bool HasData(const OmSegID segID, const om::coords::Chunk& coord)
     {
         OmMeshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);
@@ -104,7 +104,7 @@ public:
 
     // Save will take ownership of mesh data
     template <typename U>
-    void Save(const OmSegID segID, const om::chunkCoord& coord,
+    void Save(const OmSegID segID, const om::coords::Chunk& coord,
               const U data, const om::ShouldBufferWrites buffferWrites,
               const om::AllowOverwrite allowOverwrite)
     {

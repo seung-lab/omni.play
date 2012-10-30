@@ -97,7 +97,7 @@ void OmChannelImpl::SetVolDataType(const OmVolDataType type)
     volData_->SetDataType(this);
 }
 
-OmChunk* OmChannelImpl::GetChunk(const om::chunkCoord& coord){
+OmChunk* OmChannelImpl::GetChunk(const om::coords::Chunk& coord){
     return chunkCache_->GetChunk(coord);
 }
 

@@ -18,9 +18,9 @@ namespace om { namespace chunk { class dataInterface; } }
 
 class OmChunk {
 public:
-    OmChunk(OmChannel* vol, const om::chunkCoord& coord);
-    OmChunk(OmChannelImpl* vol, const om::chunkCoord& coord);
-    OmChunk(OmSegmentation* vol, const om::chunkCoord& coord);
+    OmChunk(OmChannel* vol, const om::coords::Chunk& coord);
+    OmChunk(OmChannelImpl* vol, const om::coords::Chunk& coord);
+    OmChunk(OmSegmentation* vol, const om::coords::Chunk& coord);
 
     virtual ~OmChunk();
 
@@ -31,7 +31,7 @@ public:
     }
 
 public:
-    const om::chunkCoord& GetCoordinate() const {
+    const om::coords::Chunk& GetCoordinate() const {
         return coord_;
     }
     int GetLevel() const {
@@ -50,7 +50,7 @@ public:
     }
 
 protected:
-    const om::chunkCoord coord_;
+    const om::coords::Chunk coord_;
     const boost::scoped_ptr<om::chunk::dataInterface> chunkData_;
     const OmMipVolume * const vol_;
 

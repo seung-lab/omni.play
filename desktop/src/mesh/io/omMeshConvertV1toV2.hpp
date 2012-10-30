@@ -45,7 +45,7 @@ public:
     ReadAndConvert(const OmMeshCoord& meshCoord)
     {
         const OmSegID segID = meshCoord.SegID();
-        const om::chunkCoord& coord = meshCoord.Coord();
+        const om::coords::Chunk& coord = meshCoord.Coord();
 
         if(!meshWriter_->Contains(segID, coord))
         {

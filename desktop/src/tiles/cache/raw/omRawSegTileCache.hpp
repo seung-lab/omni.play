@@ -16,7 +16,7 @@ struct OmVolSliceKey : public OmVolSliceKey_t {
         : OmVolSliceKey_t(-1, -1, -1, -1, -1, XY_VIEW)
     {}
 
-    OmVolSliceKey(const om::chunkCoord& chunkCoord,
+    OmVolSliceKey(const om::coords::Chunk& chunkCoord,
                   const int sliceDepth,
                   const ViewType viewType)
         : OmVolSliceKey_t(chunkCoord.Level,
@@ -49,14 +49,14 @@ public:
         cache_->Clear();
     }
 
-    PooledTile32Ptr Get(const om::chunkCoord& chunkCoord, const int sliceDepth,
+    PooledTile32Ptr Get(const om::coords::Chunk& chunkCoord, const int sliceDepth,
                         const ViewType viewType)
     {
         const OmVolSliceKey key(chunkCoord, sliceDepth, viewType);
         return cache_->Get(key);
     }
 
-    void Set(const om::chunkCoord& chunkCoord, const int sliceDepth,
+    void Set(const om::coords::Chunk& chunkCoord, const int sliceDepth,
              const ViewType viewType, PooledTile32Ptr tile)
     {
         const OmVolSliceKey key(chunkCoord, sliceDepth, viewType);

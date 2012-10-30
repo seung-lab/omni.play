@@ -135,7 +135,7 @@ private:
         }
     }
 
-    void drawSegment(OmSegment* seg, const om::chunkCoord& coord)
+    void drawSegment(OmSegment* seg, const om::coords::Chunk& coord)
     {
         OmMeshPtr mesh;
         segmentation_->MeshManagers()->GetMesh(mesh, coord, seg->value(), 1);

@@ -50,7 +50,7 @@ public:
         return sliceData[offset];
     }
 
-    PooledTile32Ptr GetSlice(const om::chunkCoord& chunkCoord, const int depthInChunk)
+    PooledTile32Ptr GetSlice(const om::coords::Chunk& chunkCoord, const int depthInChunk)
     {
         const OmSliceKey key(chunkCoord.Coordinate.x,
                              chunkCoord.Coordinate.y,

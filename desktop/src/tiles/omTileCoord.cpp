@@ -5,7 +5,7 @@
 #include "view2d/omView2dConverters.hpp"
 
 OmTileCoord::OmTileCoord()
-    : OmTileCoordKey(om::chunkCoord(),
+    : OmTileCoordKey(om::coords::Chunk(),
                      XY_VIEW,
                      -1,
                      NULL,
@@ -14,7 +14,7 @@ OmTileCoord::OmTileCoord()
                      SCC_NUMBER_OF_ENUMS)
 {}
 
-OmTileCoord::OmTileCoord(const om::chunkCoord& cc, ViewType view, uint8_t depth,
+OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, ViewType view, uint8_t depth,
                          OmMipVolume* vol, uint32_t freshness,
                          OmViewGroupState* vgs, OmSegmentColorCacheType segColorType)
     : OmTileCoordKey(cc,
@@ -26,7 +26,7 @@ OmTileCoord::OmTileCoord(const om::chunkCoord& cc, ViewType view, uint8_t depth,
                      segColorType)
 {}
 
-OmTileCoord::OmTileCoord(const om::chunkCoord& cc, ViewType view, uint8_t depth,
+OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, ViewType view, uint8_t depth,
                          OmMipVolume* vol, uint32_t freshness,
                          OmViewGroupState* vgs, ObjectType objType)
     : OmTileCoordKey(cc,

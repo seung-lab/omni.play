@@ -6,7 +6,7 @@ class OmChunkOffset {
 public:
 
     static uint64_t ComputeChunkPtrOffsetBytes(OmMipVolume* vol,
-                                               const om::chunkCoord& coord)
+                                               const om::coords::Chunk& coord)
     {
         const int level = coord.Level;
         const Vector3<int64_t> volDims =

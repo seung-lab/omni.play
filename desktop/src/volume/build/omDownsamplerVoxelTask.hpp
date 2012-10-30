@@ -10,7 +10,7 @@ private:
     OmMipVolume *const vol_;
     const std::vector<MipLevelInfo>& mips_;
     const MippingInfo& mippingInfo_;
-    const om::chunkCoord coord_;
+    const om::coords::Chunk coord_;
     const Vector3i srcChunkStartPos_;
 
     OmMemMappedVolumeImpl<T> *const files_;
@@ -20,7 +20,7 @@ public:
     DownsampleVoxelTask(OmMipVolume* vol,
                         const std::vector<MipLevelInfo>& mips,
                         const MippingInfo& mippingInfo,
-                        const om::chunkCoord& coord,
+                        const om::coords::Chunk& coord,
                         OmMemMappedVolumeImpl<T>* files)
         : vol_(vol)
         , mips_(mips)
@@ -34,7 +34,7 @@ public:
         for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i)
         {
             const Vector3i dstCoord = coord_.Coordinate / mips_[i].factor;
-            const om::chunkCoord coord(i, dstCoord);
+            const om::coords::Chunk coord(i, dstCoord);
 
             rawChunks_[i] = files_->GetChunkPtr(coord);
         }

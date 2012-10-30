@@ -33,7 +33,7 @@ private:
      *  the visibility of a MipChunk.  If visible, the MipChunk is either
      *  drawn or the recursive draw process is called on its children.
      */
-    void determineChunksToDraw(const om::chunkCoord& chunkCoord,
+    void determineChunksToDraw(const om::coords::Chunk& chunkCoord,
                                bool testVis)
     {
         OmSegChunk* chunk = segmentation_->GetChunk(chunkCoord);

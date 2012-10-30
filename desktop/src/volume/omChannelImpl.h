@@ -58,7 +58,7 @@ public:
 
     void SetVolDataType(const OmVolDataType);
 
-    OmChunk* GetChunk(const om::chunkCoord& coord);
+    OmChunk* GetChunk(const om::coords::Chunk& coord);
 
     inline std::vector<OmFilter2d*> GetFilters() const {
         return filterManager_.GetFilters();

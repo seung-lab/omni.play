@@ -85,12 +85,12 @@ public:
     }
 
     //mip chunk methods
-    inline om::chunkCoord RootMipChunkCoordinate() const {
-        return om::chunkCoord(mMipRootLevel, Vector3i::ZERO);
+    inline om::coords::Chunk RootMipChunkCoordinate() const {
+        return om::coords::Chunk(mMipRootLevel, Vector3i::ZERO);
     }
 
     // Returns true if given MipCoordinate is a valid coordinate within the MipVolume.
-    inline bool ContainsMipChunkCoord(const om::chunkCoord & rMipCoord) const
+    inline bool ContainsMipChunkCoord(const om::coords::Chunk & rMipCoord) const
     {
         //if level is greater than root level
         if(rMipCoord.Level < 0 ||
@@ -111,14 +111,14 @@ public:
     }
 
     // Finds set of children coordinates that are valid for this MipVolume.
-    inline void ValidMipChunkCoordChildren(const om::chunkCoord & rMipCoord,
-                                           std::set<om::chunkCoord>& children) const
+    inline void ValidMipChunkCoordChildren(const om::coords::Chunk & rMipCoord,
+                                           std::set<om::coords::Chunk>& children) const
     {
         //clear set
         children.clear();
 
         //get all possible children
-        om::chunkCoord possible_children[8];
+        om::coords::Chunk possible_children[8];
         rMipCoord.ChildrenCoords(possible_children);
 
         //for all possible children
