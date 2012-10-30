@@ -19,49 +19,49 @@ class dataBbox;
 class volumeSystem;
 class screenSystem;
 
-class global : public Vector3f
+class Global : public Vector3f
 {
 private:
     typedef Vector3f base_t;
 
 public:
-    global() : base_t() {}
-    global(base_t v) : base_t(v) {}
-    global(const float a) : base_t(a) {}
-    global(const float i, const float j, const float k)
+    Global() : base_t() {}
+    Global(base_t v) : base_t(v) {}
+    Global(const float a) : base_t(a) {}
+    Global(const float i, const float j, const float k)
         : base_t(i, j, k) {}
-    global(server::vector3d v);
+    Global(server::vector3d v);
 
-    norm toNorm(const volumeSystem*) const;
-    data toData(const volumeSystem*, const int) const;
-    Chunk toChunk(const volumeSystem*, const int) const;
-    screen toScreen(screenSystem*) const;
-    Vector3i withAbsOffset(const volumeSystem*) const;
-    static global fromOffsetCoords(Vector3i, const volumeSystem*);
+    norm ToNorm(const volumeSystem*) const;
+    data ToData(const volumeSystem*, const int) const;
+    Chunk ToChunk(const volumeSystem*, const int) const;
+    screen ToScreen(screenSystem*) const;
+    Vector3i WithAbsOffset(const volumeSystem*) const;
+    static Global FromOffsetCoords(Vector3i, const volumeSystem*);
     operator server::vector3d () const;
 };
 
-class globalBbox : public AxisAlignedBoundingBox<float>
+class GlobalBbox : public AxisAlignedBoundingBox<float>
 {
 private:
     typedef AxisAlignedBoundingBox<float> base_t;
 
 public:
-    globalBbox() : base_t() {}
-    globalBbox(global min, global max) : base_t(min, max) {}
+    GlobalBbox() : base_t() {}
+    GlobalBbox(Global min, Global max) : base_t(min, max) {}
 
-    globalBbox(server::bbox b)
-        : base_t(global(b.min), global(b.max)) {
+    GlobalBbox(server::bbox b)
+        : base_t(Global(b.min), Global(b.max)) {
     }
 
     template<typename T>
-    globalBbox(AxisAlignedBoundingBox<T> b)
-        : base_t(global(b.getMin().x,b.getMin().y,b.getMin().z),
-                 global(b.getMax().x,b.getMax().y,b.getMax().z))
+    GlobalBbox(AxisAlignedBoundingBox<T> b)
+        : base_t(Global(b.getMin().x,b.getMin().y,b.getMin().z),
+                 Global(b.getMax().x,b.getMax().y,b.getMax().z))
     {}
 
-    normBbox toNormBbox(const volumeSystem*) const;
-    dataBbox toDataBbox(const volumeSystem*, int) const;
+    normBbox ToNormBbox(const volumeSystem*) const;
+    dataBbox ToDataBbox(const volumeSystem*, int) const;
     operator server::bbox () const;
 };
 

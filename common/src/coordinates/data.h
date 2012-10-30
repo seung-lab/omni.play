@@ -8,10 +8,10 @@ class OmMipVolume;
 namespace om {
 namespace coords {
 
-class global;
+class Global;
 class norm;
 class Chunk;
-class globalBbox;
+class GlobalBbox;
 class normBbox;
 class volumeSystem;
 
@@ -26,7 +26,7 @@ public:
     data(base_t v, const volumeSystem * vol, int mipLevel);
     data(int x, int y, int z, const volumeSystem * vol, int mipLevel);
 
-    global toGlobal() const;
+    Global toGlobal() const;
     norm toNorm() const;
     Chunk toChunk() const;
     Vector3i toChunkVec() const;
@@ -102,7 +102,7 @@ public:
         base_t::intersect(other);
     }
 
-    globalBbox toGlobalBbox() const;
+    GlobalBbox toGlobalBbox() const;
     normBbox toNormBbox() const;
 
     inline int level() {

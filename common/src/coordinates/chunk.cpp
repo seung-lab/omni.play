@@ -123,9 +123,9 @@ uint64_t Chunk::PtrOffset(const volumeSystem* vol, int64_t bytesPerVoxel) const
     return offset;
 }
 
-int Chunk::SliceDepth(const volumeSystem* vol, global c, common::viewType view) const
+int Chunk::SliceDepth(const volumeSystem* vol, Global c, common::viewType view) const
 {
-    const data d = c.toData(vol, mipLevel_);
+    const data d = c.ToData(vol, mipLevel_);
     const dataBbox bounds = BoundingBox(vol);
     if(!bounds.contains(d)) {
         throw argException("Coord outside of chunk.");

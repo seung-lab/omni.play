@@ -87,9 +87,9 @@ TEST(Coords_Chunk, SliceDepth)
 {
 	Chunk cc(1,1,1,1);
 	volumeSystem vs(Vector3i(1024,1024,1024));
-	ASSERT_EQ(15, cc.SliceDepth(&vs, global(266, 276, 286), common::XY_VIEW));
-	ASSERT_EQ(10, cc.SliceDepth(&vs, global(266, 276, 286), common::XZ_VIEW));
-	ASSERT_EQ(5, cc.SliceDepth(&vs, global(266, 276, 286), common::ZY_VIEW));
+	ASSERT_EQ(15, cc.SliceDepth(&vs, Global(266, 276, 286), common::XY_VIEW));
+	ASSERT_EQ(10, cc.SliceDepth(&vs, Global(266, 276, 286), common::XZ_VIEW));
+	ASSERT_EQ(5, cc.SliceDepth(&vs, Global(266, 276, 286), common::ZY_VIEW));
 }
 
 

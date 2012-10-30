@@ -6,25 +6,25 @@ using namespace om::coords;
 namespace YAML
 {
 
-Emitter& operator<<(Emitter& e, const global& c)
+Emitter& operator<<(Emitter& e, const Global& c)
 {
     e << (Vector3f)c;
     return e;
 }
 
-void operator>>(const Node& n, global& c)
+void operator>>(const Node& n, Global& c)
 {
     Vector3f &vec = c;
     n >> vec;
 }
 
-Emitter& operator<<(Emitter& e, const globalBbox& box)
+Emitter& operator<<(Emitter& e, const GlobalBbox& box)
 {
     e << (AxisAlignedBoundingBox<float>)box;
     return e;
 }
 
-void operator>>(const Node& n, globalBbox& box)
+void operator>>(const Node& n, GlobalBbox& box)
 {
     AxisAlignedBoundingBox<float>& bbox = box;
     n >> bbox;
@@ -44,7 +44,7 @@ Emitter& operator<<(Emitter& out, const volumeSystem& c)
 
 void operator>>(const Node& in, volumeSystem& c)
 {
-    globalBbox extent;
+    GlobalBbox extent;
     in["dataExtent"] >> extent;
     c.SetDataDimensions(extent.getDimensions());
 

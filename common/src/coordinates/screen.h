@@ -5,7 +5,7 @@
 namespace om {
 namespace coords {
 
-class global;
+class Global;
 class screenSystem;
 
 class screen : public vmml::Vector2i
@@ -30,7 +30,7 @@ public:
         , system_(coord.system_)
     { }
 
-    global toGlobal() const ;
+    Global toGlobal() const ;
 };
 
 } // namespace coords

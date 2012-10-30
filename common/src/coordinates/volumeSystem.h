@@ -8,7 +8,7 @@
 namespace om {
 namespace coords {
 
-class globalBbox;
+class GlobalBbox;
 class Chunk;
 
 class volumeSystem {
@@ -82,7 +82,7 @@ public:
     inline Vector3i MipLevelDataDimensions(const int level) const
     {
         //get dimensions
-        globalBbox source_extent = GetDataExtent();
+        GlobalBbox source_extent = GetDataExtent();
         Vector3f source_dims = source_extent.getUnitDimensions();
 
         //dims in fraction of pixels
@@ -102,7 +102,7 @@ public:
     }
 
     //data properties
-    globalBbox GetDataExtent() const;
+    GlobalBbox GetDataExtent() const;
 
     inline Vector3i GetDataDimensions() const {
         return dataDimensions_;

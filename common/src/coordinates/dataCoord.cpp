@@ -27,7 +27,7 @@ data::data(int x, int y, int z, const volumeSystem* vol, int mipLevel)
 }
 
 
-global data::toGlobal() const
+Global data::toGlobal() const
 {
     const vmml::Vector4f data(x, y, z, 1);
     vmml::Vector3f global = vol_->DataToGlobalMat(mipLevel_) * data;
@@ -36,7 +36,7 @@ global data::toGlobal() const
 
 norm data::toNorm() const
 {
-    return toGlobal().toNorm(vol_);
+    return toGlobal().ToNorm(vol_);
 }
 
 Chunk data::toChunk() const
@@ -135,8 +135,8 @@ dataBbox::dataBbox(dataBbox::base_t bbox, const volumeSystem* vol, int level)
 { }
 
 
-globalBbox dataBbox::toGlobalBbox() const {
-    return globalBbox(getMin().toGlobal(), getMax().toGlobal());
+GlobalBbox dataBbox::toGlobalBbox() const {
+    return GlobalBbox(getMin().toGlobal(), getMax().toGlobal());
 }
 
 normBbox dataBbox::toNormBbox() const

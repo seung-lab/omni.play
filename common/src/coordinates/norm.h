@@ -6,7 +6,7 @@ namespace om {
 namespace coords {
 
 class data;
-class global;
+class Global;
 class volumeSystem;
 
 class norm : public vmml::Vector3f
@@ -26,7 +26,7 @@ public:
         , vol_(vol)
     { }
 
-    global toGlobal() const;
+    Global toGlobal() const;
     data toData(int) const;
 
     inline const volumeSystem* volume() const {
