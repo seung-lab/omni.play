@@ -174,7 +174,7 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::chunkCoord& coord,
 
 GLfloatBox OmOnScreenTileCoords::computeVertices(const om::chunkCoord& coord, const OmMipVolume* vol)
 {
-    om::dataBbox bounds = coord.chunkBoundingBox(vol);
+    om::dataBbox bounds = coord.BoundingBox(vol);
     om::screenCoord min = bounds.getMin().toGlobalCoord().toScreenCoord(state_);
     om::screenCoord max = bounds.getMax().toGlobalCoord().toScreenCoord(state_);
 

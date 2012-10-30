@@ -26,7 +26,7 @@ void setTileBounds(server::tile& t,
 {
     coords::Chunk cc = dc.toChunk();
     int depth = dc.toTileDepth(view);
-    coords::dataBbox bounds = cc.chunkBoundingBox(dc.volume());
+    coords::dataBbox bounds = cc.BoundingBox(dc.volume());
 
     server::vector3d min = common::twist(bounds.getMin().toGlobal(), view);
     server::vector3d max = common::twist(bounds.getMax().toGlobal(), view);

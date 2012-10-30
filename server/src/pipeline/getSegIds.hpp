@@ -23,7 +23,7 @@ public:
     template<typename T>
     uint32_t operator()(const datalayer::memMappedFile<T>& in) const
     {
-        uint64_t offset = coord_.toChunk().chunkPtrOffset(coord_.volume(), sizeof(T));
+        uint64_t offset = coord_.toChunk().PtrOffset(coord_.volume(), sizeof(T));
         T* chunkPtr = in.GetPtrWithOffset(offset);
 
         return chunkPtr[coord_.toChunkOffset()];
@@ -93,7 +93,7 @@ private:
     inline uint32_t getSegId(const datalayer::memMappedFile<T>& in,
                              const coords::data& c) const
     {
-        uint64_t offset = c.toChunk().chunkPtrOffset(c.volume(), sizeof(T));
+        uint64_t offset = c.toChunk().PtrOffset(c.volume(), sizeof(T));
         T* chunkPtr = in.GetPtrWithOffset(offset);
 
         return chunkPtr[c.toChunkOffset()];

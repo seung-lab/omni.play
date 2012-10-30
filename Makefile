@@ -335,6 +335,7 @@ $(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS) $(BUILDDIR)/server/main.o
 
 $(BINDIR)/omni.server.test:$(SERVER_DEPS) $(SERVER_TEST_DEPS) $(THRIFT_DEPS) $(TEST_DEPS)
 	$(link)
+	$(BINDIR)/omni.server.test
 
 $(BINDIR)/omni.tar.gz: $(BINDIR)/omni.desktop
 	$(TAR) -zcvf $@ -C $(BINDIR) omni.desktop

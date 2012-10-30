@@ -39,8 +39,8 @@ public:
 	    FOR_EACH(iter, *chunks)
 	    {
             coords::Chunk coord = *iter;
-            coords::data base = coord.toData(&vs_);
-            uint64_t offset = coord.chunkPtrOffset(&vs_, sizeof(T));
+            coords::data base = coord.ToData(&vs_);
+            uint64_t offset = coord.PtrOffset(&vs_, sizeof(T));
 	        T* chunkPtr = in.GetPtrWithOffset(offset);
 
             for (int z = 0; z < dims.z; ++z) {

@@ -25,7 +25,7 @@ public:
     data_var operator()(const datalayer::memMappedFile<T>& in) const
     {
         data<T> out;
-        uint64_t offset = cc_.chunkPtrOffset(&vs_, sizeof(T));
+        uint64_t offset = cc_.PtrOffset(&vs_, sizeof(T));
         T* chunkPtr = in.GetPtrWithOffset(offset);
 
         out.size = 128 * 128 * 128;
@@ -63,7 +63,7 @@ public:
 		}
 
 		coords::Chunk cc = dc_.toChunk();
-        uint64_t offset = cc.chunkPtrOffset(dc_.volume(), sizeof(T));
+        uint64_t offset = cc.PtrOffset(dc_.volume(), sizeof(T));
         T* chunkPtr = file->GetPtrWithOffset(offset);
 
 		std::copy(toWrite->data.get(), &toWrite->data.get()[toWrite->size], chunkPtr);

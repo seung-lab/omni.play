@@ -67,7 +67,7 @@ private:
             const om::chunkCoord& coord = *iter;
             
             OmDataWrapperPtr data = exportChunk(vol, coord, rerootSegments);
-            om::dataBbox chunk_data_bbox = coord.chunkBoundingBox(vol);
+            om::dataBbox chunk_data_bbox = coord.BoundingBox(vol);
 
             hdfExport->writeChunk(OmDataPaths::getDefaultDatasetName(),
                                   chunk_data_bbox,

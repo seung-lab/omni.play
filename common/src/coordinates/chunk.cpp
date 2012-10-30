@@ -7,14 +7,14 @@ namespace om {
 namespace coords {
 
 Chunk::Chunk()
-    : mipLevel_(-1)
-    , coord_(Vector3i(-1, -1, -1))
+    : base_t(-1,-1,-1)
+    , mipLevel_(-1)
 {
 }
 
 Chunk::Chunk(int level, const Vector3i & coord)
-    : mipLevel_(level)
-    , coord_(coord)
+    : base_t(coord)
+    , mipLevel_(level)
 {
     if (coord.x < 0 || coord.y < 0 || coord.z < 0) {
         throw argException("Bad Chunk Coord");
@@ -22,8 +22,8 @@ Chunk::Chunk(int level, const Vector3i & coord)
 }
 
 Chunk::Chunk(int level, int x, int y, int z)
-    : mipLevel_(level)
-    , coord_(Vector3i(x, y, z))
+    : base_t(Vector3i(x, y, z))
+    , mipLevel_(level)
 {
     if (x < 0 || y < 0 || z < 0) {
         throw argException("Bad Chunk Coord");
@@ -33,10 +33,7 @@ Chunk::Chunk(int level, int x, int y, int z)
 std::string Chunk::GetCoordsAsString() const
 {
     std::stringstream ss;
-    ss << mipLevel_ <<":"
-       << coord_.x <<","
-       << coord_.y <<","
-       << coord_.z;
+    ss << mipLevel_ << ":" << x << "," << y << "," << z;
    return ss.str();
 }
 
@@ -45,15 +42,15 @@ Chunk Chunk::ParentCoord() const
 {
     Chunk primary_coord = PrimarySiblingCoord();
 
-    return Chunk(mipLevel_ + 1, primary_coord.coord_ / 2);
+    return Chunk(mipLevel_ + 1, primary_coord / 2);
 }
 
 // Primary coordinate in the sibling octal
 Chunk Chunk::PrimarySiblingCoord() const
 {
-    int prim_x = om::math::roundDown(coord_.x, 2);
-    int prim_y = om::math::roundDown(coord_.y, 2);
-    int prim_z = om::math::roundDown(coord_.z, 2);
+    int prim_x = om::math::roundDown(x, 2);
+    int prim_y = om::math::roundDown(y, 2);
+    int prim_z = om::math::roundDown(z, 2);
 
     return Chunk(mipLevel_, prim_x, prim_y, prim_z);
 }
@@ -68,9 +65,9 @@ std::vector<Chunk> Chunk::SiblingCoords() const
 
     Chunk primary_coord = PrimarySiblingCoord();
 
-    int x = primary_coord.coord_.x;
-    int y = primary_coord.coord_.y;
-    int z = primary_coord.coord_.z;
+    int x = primary_coord.x;
+    int y = primary_coord.y;
+    int z = primary_coord.z;
 
     sibs.push_back(primary_coord);
     sibs.push_back(Chunk(mipLevel_, x + 1, y, z));
@@ -88,7 +85,7 @@ std::vector<Chunk> Chunk::SiblingCoords() const
 Chunk Chunk::PrimaryChildCoord() const
 {
     //return primary child (prev level, double coordinates)
-    return Chunk(mipLevel_ - 1, coord_.x * 2, coord_.y * 2, coord_.z * 2);
+    return Chunk(mipLevel_ - 1, x * 2, y * 2, z * 2);
 }
 
 std::vector<Chunk> Chunk::ChildrenCoords() const
@@ -98,7 +95,7 @@ std::vector<Chunk> Chunk::ChildrenCoords() const
 }
 
 data Chunk::ToData(const volumeSystem *vol) const {
-    return data(coord_ * vol->GetChunkDimensions(), vol, mipLevel_);
+    return data(*this * vol->GetChunkDimensions(), vol, mipLevel_);
 }
 
 dataBbox Chunk::BoundingBox(const volumeSystem *vol) const
@@ -117,12 +114,12 @@ uint64_t Chunk::PtrOffset(const volumeSystem* vol, int64_t bytesPerVoxel) const
     const int64_t rowSize   = volDims.x   * chunkDims.y * chunkDims.z * bytesPerVoxel;
     const int64_t chunkSize = chunkDims.x * chunkDims.y * chunkDims.z * bytesPerVoxel;
 
-    const Vector3<int64_t> chunkPos = coord_; // bottom left corner
+    const Vector3<int64_t> chunkPos = *this; // bottom left corner
     const int64_t offset = slabSize*chunkPos.z + rowSize*chunkPos.y + chunkSize*chunkPos.x;
 
     ZiLOG(DEBUG, io) << "offset is: " << offset
                      << " (" << volDims << ") for "
-                     << coord_ << "\n";
+                     << *this << "\n";
     return offset;
 }
 
@@ -147,25 +144,17 @@ int Chunk::SliceDepth(const volumeSystem* vol, global c, common::viewType view) 
 void Chunk::operator=(const Chunk & rhs)
 {
     mipLevel_ = rhs.mipLevel_;
-    coord_ = rhs.coord_;
+    x = rhs.x; y = rhs.y; z = rhs.z;
 }
 
 bool Chunk::operator==(const Chunk & rhs) const
 {
-    return (mipLevel_ == rhs.mipLevel_ && coord_ == rhs.coord_);
+    return (mipLevel_ == rhs.mipLevel_ && base_t::operator==(rhs));
 }
 
 bool Chunk::operator!=(const Chunk & rhs) const
 {
-    if( mipLevel_ != rhs.mipLevel_ ){
-        return true;
-    }
-
-    if(coord_ != rhs.coord_) {
-        return true;
-    }
-
-    return false;
+    return !(*this == rhs);
 }
 
 // comparitor for stl key usage
@@ -175,12 +164,12 @@ bool Chunk::operator<(const Chunk & rhs) const
         return (mipLevel_ < rhs.mipLevel_);
     }
 
-    return (coord_ < rhs.coord_);
+    return base_t::operator<(rhs);
 }
 
 std::ostream& operator<<(std::ostream &out, const Chunk &c) {
     out << "[" << c.mipLevel_;
-    out << " (" << c.coord_.x << ", " << c.coord_.y << ", " << c.coord_.z << ")]";
+    out << " (" << c.x << ", " << c.y << ", " << c.z << ")]";
     return out;
 }
 

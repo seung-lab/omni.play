@@ -51,9 +51,9 @@ public:
                     const om::chunkCoord& currentCoord = chunk->GetCoordinate();
 
                     const om::chunkCoord mip_coord(currentCoord.getLevel(),
-                                                   currentCoord.X() + x,
-                                                   currentCoord.Y() + y,
-                                                   currentCoord.Z() + z);
+                                                   currentCoord.x + x,
+                                                   currentCoord.y + y,
+                                                   currentCoord.z + z);
 
                     //skip invalid mip coord
                     if(vol->Coords().ContainsMipChunkCoord(mip_coord))

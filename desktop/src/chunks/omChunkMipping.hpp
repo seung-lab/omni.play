@@ -16,7 +16,7 @@ private:
 
 public:
     OmChunkMipping(OmMipVolume* vol, const om::chunkCoord& coord)
-        : dataExtent_(coord.chunkBoundingBox(vol))
+        : dataExtent_(coord.BoundingBox(vol))
         , normExtent_(dataExtent_.toNormBbox())
         , clippedNormExtent_(dataExtent_.toNormBbox())
         , coord_(coord)

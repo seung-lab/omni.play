@@ -30,9 +30,9 @@ public:
 
                     //form mip coord
                     const coords::Chunk mip_coord(chunk.getLevel(),
-                                                  chunk.X() + x,
-                                                  chunk.Y() + y,
-                                                  chunk.Z() + z);
+                                                  chunk.x + x,
+                                                  chunk.y + y,
+                                                  chunk.z + z);
 
                     //skip invalid mip coord
                     if(vol.CoordSystem().ContainsMipChunk(mip_coord))

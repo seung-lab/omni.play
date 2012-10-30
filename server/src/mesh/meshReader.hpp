@@ -19,7 +19,7 @@ public:
     reader(std::string fnp, const coords::Chunk& coord)
     {
         std::string path = str(boost::format("%1%/1.0000/%2%/%3%/%4%/%5%/")
-                               % fnp % coord.getLevel() % coord.X() % coord.Y() % coord.Z());
+                               % fnp % coord.mipLevel() % coord.x % coord.y % coord.z);
 
         std::stringstream ss;
         ss << path << "meshAllocTable.ver2";

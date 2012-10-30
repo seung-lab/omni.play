@@ -26,7 +26,7 @@ public:
         , mips_(mips)
         , mippingInfo_(mippingInfo)
         , coord_(coord)
-        , srcChunkStartPos_(coord_.chunkBoundingBox(vol_).getMin())
+        , srcChunkStartPos_(coord_.BoundingBox(vol_).getMin())
         , files_(files)
     {
         rawChunks_.resize(mippingInfo.maxMipLevel + 1);

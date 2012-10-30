@@ -13,7 +13,7 @@ class dataBbox;
 class data;
 class volumeSystem;
 
-class Chunk {
+class Chunk : public vmml::Vector3i {
 
 public:
     Chunk();
@@ -44,8 +44,8 @@ public:
     bool operator<(const Chunk& rhs) const;
 
 private:
+	typedef Vector3i base_t;
     PROP_CONST_REF(int, mipLevel);
-    PROP_CONST_REF(Vector3i, coord);
 
     friend std::ostream& operator<<(std::ostream &out, const Chunk &in);
 };

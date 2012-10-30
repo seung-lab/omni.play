@@ -99,7 +99,7 @@ public:
         }
 
         //convert to data box in leaf (MIP 0)
-        om::globalBbox bbox = rMipCoord.chunkBoundingBox(vol_).toGlobalBbox();
+        om::globalBbox bbox = rMipCoord.BoundingBox(vol_).toGlobalBbox();
 
         bbox.intersect(GetExtent());
         if(bbox.isEmpty()){

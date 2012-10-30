@@ -26,7 +26,7 @@ public:
     {
         data<T> out;
         coords::Chunk cc = dc_.toChunk();
-        uint64_t offset = cc.chunkPtrOffset(dc_.volume(), sizeof(T));
+        uint64_t offset = cc.PtrOffset(dc_.volume(), sizeof(T));
         T* chunkPtr = in.GetPtrWithOffset(offset);
         chunks::rawChunkSlicer<T> slicer(chunkSize_, chunkPtr);
         out.data = slicer.GetCopyOfTile(view_, dc_.toTileDepth(view_));

@@ -161,7 +161,7 @@ private:
             for(int x = 0; x < mip0dims_.x; ++x)
             {
                 const om::chunkCoord coord = om::chunkCoord(0, x, y, z);
-                const om::dataBbox chunk_bbox = coord.chunkBoundingBox(vol_);
+                const om::dataBbox chunk_bbox = coord.BoundingBox(vol_);
 
                 const int startX = chunk_bbox.getMin().x;
                 const int startY = chunk_bbox.getMin().y;
