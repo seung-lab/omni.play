@@ -7,20 +7,33 @@
 namespace om {
 namespace test {
 
-TEST(ImportTest, ImportChan)
+class ImportTest : public ::testing::Test
 {
-	OmBuildChannel bc;
+protected:
+	ImportTest()
+		: bc(ChannelDataWrapper(1))
+		, bs(SegmentationDataWrapper(1))
+	{}
 
-    bc.addFileNameAndPath("test/data/test_chan.h5");
+	OmBuildChannel bc;
+	OmBuildSegmentation bs;
+};
+
+TEST_F(ImportTest, ImportChan)
+{
+	bc.addFileNameAndPath("test/data/test_chan.h5");
 	bc.Build();
 }
 
-TEST(ImportTest, ImportSeg)
+TEST_F(ImportTest, ImportSeg)
 {
-	OmBuildSegmentation bs;
-
     bs.addFileNameAndPath("test/data/test_seg.h5");
 	bs.BuildImage();
+}
+
+TEST_F(ImportTest, Mesh)
+{
+   bs.BuildMesh();
 }
 
 }} // namespace om::test::
