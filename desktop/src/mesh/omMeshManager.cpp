@@ -28,6 +28,8 @@ void OmMeshManager::Create()
     OmFileHelpers::RemoveDir(path);
 
     segmentation_->Folder()->MakeMeshThresholdFolderPath(threshold_);
+
+    reader_.reset(new OmMeshReaderV2(this));
 }
 
 void OmMeshManager::Load()
