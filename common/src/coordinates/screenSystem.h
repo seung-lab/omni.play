@@ -40,8 +40,8 @@ public:
     // Update the Transformation Matricies based on changes to scale, location or viewport
     //
     // transformation from global to screen should be equivalent to these linear equations:
-    // xs = (xg + w/2 - lx) * scale
-    // ys = (yg + h/2 - ly) * scale
+    // xs = (xg - lx) * scale + w/2
+    // ys = (yg - ly) * scale + h/2
     //
     // In the case of the different views, different values will be chosen as X and Y.
     // Here are the selection matrices:
@@ -52,8 +52,8 @@ public:
     // [0 0 0] [0 0 0] [0 0 0]
     //
     // transformation from screen to global should be equivalent to these linear equations:
-    // xg = xs / scale - (w/2 - lx)
-    // yg = ys / scale - (h/2 - ly)
+    // xg = (xs - w/2) / scale + lx
+    // yg = (ys - h/2) / scale + ly
     // zg = lz
     //
     // the selection matrices should be transposes of the earlier ones and the transforms need
