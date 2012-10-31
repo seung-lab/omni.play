@@ -41,8 +41,10 @@ public:
         OmMeshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord_);
 
+        chunk_table->CreateIfNeeded();
+
         if(!chunk_table->Contains(segID_)){
-            //printInfoAboutSkippedSegment(mesh_);
+            // printInfoAboutSkippedSegment(mesh_);
             return;
         }
 
@@ -171,7 +173,7 @@ private:
                   << "\n";
     }
 
-    void printInfoAboutSkippedSegment(zi::shared_ptr<TriStripCollector> triStrips)
+    void printInfoAboutSkippedSegment(TriStripCollector* triStrips)
     {
         printf(".");
 

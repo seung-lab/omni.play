@@ -29,6 +29,17 @@ public:
         , numEntries_(0)
     {}
 
+	bool CreateIfNeeded()
+    {
+        QFile file(fnp_);
+        if(file.exists()){
+            return false;
+        }
+
+        setupFile();
+        return true;
+    }
+
     bool CheckEverythingWasMeshed()
     {
         bool allGood = true;
@@ -119,6 +130,7 @@ private:
             segmentation_->ChunkUniqueValues()->Values(coord_, threshold_);
 
         if(!segIDs.size()){
+        	std::cout << "No unique values in " << coord_ << std::endl;
             return;
         }
 

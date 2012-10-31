@@ -21,7 +21,17 @@ public:
                             const double threshold)
         : filePtrCache_(filePtrCache)
         , file_(new OmMemMappedAllocFile(seg, coord, threshold))
-    {}
+    { }
+
+    bool CreateIfNeeded()
+    {
+    	zi::rwmutex::write_guard g(lock_);
+    	if(file_->CreateIfNeeded()){
+            registerMappedFile();
+            return true;
+        }
+        return false;
+    }
 
     // avoid over-lapping writes for meshes with same segment ID
     bool CanContinueMeshSave(const OmSegID segID)

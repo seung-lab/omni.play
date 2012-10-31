@@ -156,3 +156,21 @@ private:
     uint64_t trianDataNumBytes_;
 };
 
+inline std::ostream& operator<<(std::ostream& out, const OmDataForMeshLoad& dfml)
+{
+	out << "HasData: " << dfml.HasData() << std::endl;
+	out << "VertexIndex: " << dfml.VertexIndex() << std::endl;
+	out << "VertexIndexCount: " << dfml.VertexIndexCount() << std::endl;
+	out << "VertexIndexNumBytes: " << dfml.VertexIndexNumBytes() << std::endl;
+	out << "StripData: " << dfml.StripData() << std::endl;
+	out << "StripDataCount: " << dfml.StripDataCount() << std::endl;
+	out << "StripDataNumBytes: " << dfml.StripDataNumBytes() << std::endl;
+	out << "VertexData: " << dfml.VertexData() << std::endl;
+	out << "VertexDataCount: " << dfml.VertexDataCount() << std::endl;
+	out << "VertexDataNumBytes: " << dfml.VertexDataNumBytes() << std::endl;
+	out << "TrianData: " << dfml.TrianData() << std::endl;
+	out << "TrianDataCount: " << dfml.TrianDataCount() << std::endl;
+	out << "TrianDataNumBytes: " << dfml.TrianDataNumBytes() << std::endl;
+    return out;
+}
+
