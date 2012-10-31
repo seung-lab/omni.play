@@ -32,3 +32,11 @@ public:                                \
 	inline const type & name() const { \
 		return name##_;                \
 	}
+
+#define PROP_CONST_PTR(type, name)     \
+private:                               \
+	const type * name##_;              \
+public:                                \
+	inline const type * name() const { \
+		return name##_;                \
+	}

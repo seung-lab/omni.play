@@ -6,13 +6,13 @@ namespace coords {
 Global Norm::ToGlobal() const
 {
     const vmml::Vector4f Norm(x, y, z, 1);
-    vmml::Vector3f global = vol_->NormToGlobalMat() * Norm;
+    vmml::Vector3f global = volume_->NormToGlobalMat() * Norm;
     return global;
 }
 
 data Norm::ToData(int mipLevel) const
 {
-    return ToGlobal().ToData(vol_, mipLevel);
+    return ToGlobal().ToData(volume_, mipLevel);
 }
 
 NormBbox::NormBbox(Norm min, Norm max)

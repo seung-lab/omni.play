@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vmmlib/vmmlib.h"
+#include "common/macro.hpp"
 
 namespace om {
 namespace coords {
@@ -13,25 +14,23 @@ class Norm : public vmml::Vector3f
 {
 private:
     typedef vmml::Vector3f base_t;
-    const volumeSystem * vol_;
 
 public:
-    Norm(base_t v, const volumeSystem *vol)
+    Norm(base_t v, const volumeSystem *volume)
         : base_t(v)
-        , vol_(vol)
+        , volume_(volume)
     { }
 
-    Norm(float x, float y, float z, const volumeSystem *vol)
+    Norm(float x, float y, float z, const volumeSystem *volume)
         : base_t(x, y, z)
-        , vol_(vol)
+        , volume_(volume)
     { }
 
     Global ToGlobal() const;
     data ToData(int) const;
 
-    inline const volumeSystem* volume() const {
-        return vol_;
-    }
+private:
+	PROP_CONST_PTR(volumeSystem, volume);
 };
 
 class NormBbox : public vmml::AxisAlignedBoundingBox<float>
