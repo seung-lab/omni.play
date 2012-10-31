@@ -154,7 +154,7 @@ private:
 
     QString depthString()
     {
-    	const om::globalCoord global = state_->Location();
+    	const om::coords::Global global = state_->Location();
         const om::dataCoord data = global.
             toDataCoord(state_->getVol(), state_->getMipLevel());
 
@@ -272,7 +272,7 @@ private:
 
     static const int DEPTH_CUTOFF = 20;
 
-    bool closeInDepth(om::globalCoord point)
+    bool closeInDepth(om::coords::Global point)
     {
         int depth = state_->getViewTypeDepth(point);
         int plane = state_->getViewTypeDepth(state_->Location());

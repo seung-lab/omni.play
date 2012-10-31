@@ -7,7 +7,7 @@ OmMipVolume::OmMipVolume()
     , mBuildState(MIPVOL_UNBUILT)
 {}
 
-bool OmMipVolume::ContainsVoxel(const om::globalCoord & vox){
+bool OmMipVolume::ContainsVoxel(const om::coords::Global & vox){
     return coords_.GetExtent().contains(vox);
 }
 

@@ -15,7 +15,7 @@ public:
     virtual ~OmBrushSelectCircle()
     {}
 
-    void SelectCircle(const om::globalCoord& coord)
+    void SelectCircle(const om::coords::Global& coord)
     {
         OmBrushOppCircle circleOpp(info_);
 

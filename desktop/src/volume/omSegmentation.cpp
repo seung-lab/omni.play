@@ -179,7 +179,7 @@ OmMeshManager* OmSegmentation::MeshManager(const double threshold){
     return meshManagers_->GetManager(threshold);
 }
 
-quint32 OmSegmentation::GetVoxelValue(const om::globalCoord & vox)
+quint32 OmSegmentation::GetVoxelValue(const om::coords::Global & vox)
 {
     if(!ContainsVoxel(vox)){
         return 0;
@@ -194,7 +194,7 @@ quint32 OmSegmentation::GetVoxelValue(const om::globalCoord & vox)
     return chunk->GetVoxelValue(vox.toDataCoord(this, 0));
 }
 
-void OmSegmentation::SetVoxelValue(const om::globalCoord& vox, const uint32_t val)
+void OmSegmentation::SetVoxelValue(const om::coords::Global& vox, const uint32_t val)
 {
     if (!ContainsVoxel(vox))
         return;
@@ -207,7 +207,7 @@ void OmSegmentation::SetVoxelValue(const om::globalCoord& vox, const uint32_t va
     }
 }
 
-bool OmSegmentation::SetVoxelValueIfSelected(const om::globalCoord& vox, const uint32_t val)
+bool OmSegmentation::SetVoxelValueIfSelected(const om::coords::Global& vox, const uint32_t val)
 {
     const OmSegIDsSet selection = Segments()->GetSelectedSegmentIDs();
     if(selection.size() > 0)

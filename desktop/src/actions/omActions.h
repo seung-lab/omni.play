@@ -39,11 +39,11 @@ public:
 
 // painting-related
     static void SetVoxel(const OmID segmentationId,
-                         const om::globalCoord& rVoxel,
+                         const om::coords::Global& rVoxel,
                          const OmSegID value);
 
     static void SetVoxels(const OmID segmentationId,
-                          const std::set<om::globalCoord>& rVoxels,
+                          const std::set<om::coords::Global>& rVoxels,
                           const OmSegID value);
 
 // segment-related

@@ -305,7 +305,7 @@ void OmView3d::View3dRecenter()
     }
 
     mCamera.SetDistance(*distance);
-    const om::globalCoord coord = vgs_->View2dState()->GetScaledSliceDepth();
+    const om::coords::Global coord = vgs_->View2dState()->GetScaledSliceDepth();
     mCamera.SetFocus(coord);
 
     updateGL();

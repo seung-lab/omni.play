@@ -45,7 +45,7 @@ public:
     om::shared_ptr<std::deque<om::coords::Chunk> > GetMipChunkCoords(const int mipLevel) const;
 
     //mip data accessors
-    bool ContainsVoxel(const om::globalCoord &vox);
+    bool ContainsVoxel(const om::coords::Global &vox);
 
     OmVolDataType getVolDataType(){
         return mVolDataType;

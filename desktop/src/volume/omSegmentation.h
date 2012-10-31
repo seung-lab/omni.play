@@ -86,9 +86,9 @@ public:
 
     OmSegChunk* GetChunk(const om::coords::Chunk& coord);
 
-    uint32_t GetVoxelValue(const om::globalCoord &vox);
-    void SetVoxelValue(const om::globalCoord &vox, const uint32_t value);
-    bool SetVoxelValueIfSelected(const om::globalCoord &vox, const uint32_t value);
+    uint32_t GetVoxelValue(const om::coords::Global &vox);
+    void SetVoxelValue(const om::coords::Global &vox, const uint32_t value);
+    bool SetVoxelValueIfSelected(const om::coords::Global &vox, const uint32_t value);
 
     void RebuildSegments();
 

@@ -70,10 +70,10 @@ public:
         return wasInitialized_;
     }
 
-    inline om::globalCoord GetScaledSliceDepth() const
+    inline om::coords::Global GetScaledSliceDepth() const
     {
         zi::guard g(lock_);
-        return om::globalCoord(yz_.depth, xz_.depth, xy_.depth);
+        return om::coords::Global(yz_.depth, xz_.depth, xy_.depth);
     }
 
     inline float GetScaledSliceDepth(const ViewType plane) const
@@ -82,7 +82,7 @@ public:
         return getPlane(plane).depth;
     }
 
-    inline void SetScaledSliceDepth(const om::globalCoord& depths)
+    inline void SetScaledSliceDepth(const om::coords::Global& depths)
     {
         {
             zi::guard g(lock_);

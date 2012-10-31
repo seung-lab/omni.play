@@ -15,7 +15,7 @@ public:
     {
         const om::globalBbox& segDataExtent = info->segmentation->Coords().GetExtent();
 
-        std::set<om::globalCoord> voxelCoords;
+        std::set<om::coords::Global> voxelCoords;
 
         FOR_EACH(iter, *pts)
         {

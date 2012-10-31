@@ -9,7 +9,7 @@ private:
     OmView2d *const v2d_;
     OmView2dState *const state_;
 
-    om::globalCoord dataClickPoint_;
+    om::coords::Global dataClickPoint_;
 
 public:
     OmMouseEventRelease(OmView2d* v2d, OmView2dState* state)

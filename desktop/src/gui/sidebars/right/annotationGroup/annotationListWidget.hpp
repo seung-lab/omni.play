@@ -147,7 +147,7 @@ private Q_SLOTS:
 
         if (column == POSITION_COL)
         {
-        	om::globalCoord c = ann->Object->coord.toGlobalCoord();
+        	om::coords::Global c = ann->Object->coord.toGlobalCoord();
         	LocationEditDialog::EditLocation(c, this);
         	ann->Object->coord = c.toDataCoord(ann->Object->coord.volume(), 0);
 			setLocationText(item, *ann->Object);

@@ -47,7 +47,7 @@ private:
     boost::optional<om::screenCoord> mousePanStartingPt_;
 
     // (x,y) coordinates only (no depth); needed for Bresenham
-    om::globalCoord lastDataPoint_;
+    om::coords::Global lastDataPoint_;
 
     OmBrushSize *const brushSize_;
 
@@ -95,7 +95,7 @@ public:
     void Shift(const om::Direction dir)
     {
         const float numberOfSlicestoAdvance = 2 * om::math::pow2int(getMipLevel());
-        om::globalCoord loc = Location();
+        om::coords::Global loc = Location();
         OmView2dConverters::ShiftPanDirection(loc, numberOfSlicestoAdvance, dir, viewType_);
         setLocation(loc);
         OmEvents::Redraw2d();
@@ -111,8 +111,8 @@ public:
     inline void SetViewSliceOnPan()
     {
         const Vector4i& viewport = coords_.getTotalViewport();
-        om::globalCoord min = om::screenCoord(0, 0, this).toGlobalCoord();
-        om::globalCoord max = om::screenCoord(viewport.width,
+        om::coords::Global min = om::screenCoord(0, 0, this).toGlobalCoord();
+        om::coords::Global max = om::screenCoord(viewport.width,
                                               viewport.height,
                                               this).toGlobalCoord();
 
@@ -148,7 +148,7 @@ public:
 
         std::cout << vol_->Coords().GetDataDimensions() << std::endl;
 
-        om::globalCoord loc = midPoint.toGlobalCoord();
+        om::coords::Global loc = midPoint.toGlobalCoord();
         setLocation(loc);
 
         zoomLevel_->Reset(getMaxMipLevel());
@@ -185,7 +185,7 @@ public:
         if(!mousePanStartingPt_){
             return;
         }
-        const om::globalCoord difference = mousePanStartingPt_->toGlobalCoord() - cursorLocation.toGlobalCoord();
+        const om::coords::Global difference = mousePanStartingPt_->toGlobalCoord() - cursorLocation.toGlobalCoord();
 
         setLocation(Location() + difference);
 
@@ -257,7 +257,7 @@ public:
         return OmView2dConverters::GetViewTypeDepth(vec, viewType_);
     }
 
-    inline float getViewTypeDepth(const om::globalCoord& vec) const {
+    inline float getViewTypeDepth(const om::coords::Global& vec) const {
         return OmView2dConverters::GetViewTypeDepth(vec, viewType_);
     }
 
@@ -266,7 +266,7 @@ public:
         OmView2dConverters::SetViewTypeDepth(vec, val, viewType_);
     }
 
-    inline void setViewTypeDepth(om::globalCoord& vec, const float val) const {
+    inline void setViewTypeDepth(om::coords::Global& vec, const float val) const {
         OmView2dConverters::SetViewTypeDepth(vec, val, viewType_);
     }
 
@@ -313,10 +313,10 @@ public:
     }
 
     // last data point--coupled w/ click point?
-    inline const om::globalCoord& GetLastDataPoint() const {
+    inline const om::coords::Global& GetLastDataPoint() const {
         return lastDataPoint_;
     }
-    void SetLastDataPoint(const om::globalCoord& coord){
+    void SetLastDataPoint(const om::coords::Global& coord){
         lastDataPoint_ = coord;
     }
 
@@ -337,11 +337,11 @@ public:
         return zoomLevel_;
     }
 
-    inline om::globalCoord Location(){
+    inline om::coords::Global Location(){
         return vgs_->View2dState()->GetScaledSliceDepth();
     }
 
-    inline void setLocation(om::globalCoord loc)
+    inline void setLocation(om::coords::Global loc)
     {
         vgs_->View2dState()->SetScaledSliceDepth(loc);
         coords_.UpdateTransformationMatrices();

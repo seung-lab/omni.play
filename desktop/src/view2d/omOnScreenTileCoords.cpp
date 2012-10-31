@@ -70,8 +70,8 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 
     // Make sure that the upper left and bottom right don't exceed the volume
     Vector4i viewport = state_->Coords().getTotalViewport();
-    om::globalCoord min = om::screenCoord(viewport.lowerLeftX, viewport.lowerLeftY, state_).toGlobalCoord();
-    om::globalCoord max = om::screenCoord(viewport.width, viewport.height, state_).toGlobalCoord();
+    om::coords::Global min = om::screenCoord(viewport.lowerLeftX, viewport.lowerLeftY, state_).toGlobalCoord();
+    om::coords::Global max = om::screenCoord(viewport.width, viewport.height, state_).toGlobalCoord();
 
     om::globalBbox viewBounds(min, max);
 
@@ -81,8 +81,8 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
     	return;
     }
 
-    om::coords::Chunk minChunk = om::globalCoord(viewBounds.getMin()).toChunkCoord(vol_, mipLevel_);
-    om::coords::Chunk maxChunk = om::globalCoord(viewBounds.getMax()).toChunkCoord(vol_, mipLevel_);
+    om::coords::Chunk minChunk = om::coords::Global(viewBounds.getMin()).toChunkCoord(vol_, mipLevel_);
+    om::coords::Chunk maxChunk = om::coords::Global(viewBounds.getMax()).toChunkCoord(vol_, mipLevel_);
 
     // iterate over all chunks on the screen
     for (int x = minChunk.Coordinate.x; x <= maxChunk.Coordinate.x; x++)

@@ -18,7 +18,7 @@ public:
     virtual ~OmBrushEraseCircle()
     {}
 
-    void EraseCircle(const om::globalCoord& coord)
+    void EraseCircle(const om::coords::Global& coord)
     {
         OmBrushOppCircle circleOpp(info_);
 

@@ -27,10 +27,10 @@ struct data {
     	, size(size)
     {}
 
-    inline void setCoord(const om::globalCoord& c) {
+    inline void setCoord(const om::coords::Global& c) {
     	coord = c.toDataCoord(coord.volume(), 0);
     }
-    inline om::globalCoord getCoord() {
+    inline om::coords::Global getCoord() {
     	return coord.toGlobalCoord();
     }
 };

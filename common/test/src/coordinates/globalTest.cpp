@@ -56,5 +56,4 @@ TEST(Coords_Global, FromOffsetCoords)
 	ASSERT_EQ(Global(0), Global::FromOffsetCoords(Vector3i(128), &vs));
 }
 
-
 }} // namespace om::test::

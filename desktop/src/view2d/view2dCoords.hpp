@@ -75,7 +75,7 @@ public:
                                                  totalViewport_.height/2.0f,
                                                  0.0f);
 
-        om::globalCoord location = vgs_->View2dState()->GetScaledSliceDepth();
+        om::coords::Global location = vgs_->View2dState()->GetScaledSliceDepth();
 
         // g to s scaling and translation
         globalToScreenMat_.setTranslation(makeViewTypeVector3(pan / scale - location));

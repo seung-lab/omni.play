@@ -18,7 +18,7 @@ public:
     virtual ~OmBrushPaintCircle()
     {}
 
-    void PaintCircle(const om::globalCoord& coord)
+    void PaintCircle(const om::coords::Global& coord)
     {
         OmBrushOppCircle circleOpp(info_);
 

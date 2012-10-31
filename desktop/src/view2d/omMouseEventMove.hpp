@@ -22,7 +22,7 @@ private:
     bool middleMouseButton_;
     om::tool::mode tool_;
     QMouseEvent* event_;
-    om::globalCoord dataClickPoint_;
+    om::coords::Global dataClickPoint_;
 
     friend class OmMouseEventState;
 

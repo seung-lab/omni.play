@@ -28,7 +28,7 @@ private:
     bool middleMouseButton_;
     om::tool::mode tool_;
     QMouseEvent* event_;
-    om::globalCoord dataClickPoint_;
+    om::coords::Global dataClickPoint_;
 
     friend class OmMouseEventState;
 
@@ -146,7 +146,7 @@ private:
     void setDepth()
     {
         const om::screenCoord screenc = om::screenCoord(event_->x(), event_->y(), state_);
-        const om::globalCoord newloc = screenc.toGlobalCoord();
+        const om::coords::Global newloc = screenc.toGlobalCoord();
         state_->setLocation(newloc);
 
         OmEvents::ViewCenterChanged();

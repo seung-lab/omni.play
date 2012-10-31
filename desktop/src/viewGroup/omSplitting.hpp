@@ -11,7 +11,7 @@ private:
     bool showSplit_;
     ToolBarManager* toolBarManager_;
 
-    boost::optional<om::globalCoord> coordBeingSplit_;
+    boost::optional<om::coords::Global> coordBeingSplit_;
     SegmentDataWrapper segmentBeingSplit_;
 
 public:
@@ -28,7 +28,7 @@ public:
         return segmentBeingSplit_;
     }
 
-    const boost::optional<om::globalCoord>& Coord() const {
+    const boost::optional<om::coords::Global>& Coord() const {
         return coordBeingSplit_;
     }
 
@@ -61,10 +61,10 @@ public:
         ExitSplitMode();
     }
 
-    void SetFirstSplitPoint(const SegmentDataWrapper& sdw, const om::globalCoord& coord)
+    void SetFirstSplitPoint(const SegmentDataWrapper& sdw, const om::coords::Global& coord)
     {
         segmentBeingSplit_ = sdw;
-        coordBeingSplit_ = boost::optional<om::globalCoord>(coord);
+        coordBeingSplit_ = boost::optional<om::coords::Global>(coord);
     }
 };
 

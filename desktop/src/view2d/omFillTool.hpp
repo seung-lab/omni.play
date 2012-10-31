@@ -27,7 +27,7 @@ public:
     ~OmFillTool()
     {}
 
-    void Fill(const om::globalCoord& v)
+    void Fill(const om::coords::Global& v)
     {
         if(!segDataExtent_.contains(v)){
             return;
@@ -38,12 +38,12 @@ public:
 
         vol_.SetVoxelValue(v, newSegID_);
 
-        std::deque<om::globalCoord> voxels;
+        std::deque<om::coords::Global> voxels;
 
-        voxels.push_back(om::globalCoord(v.x - 1, v.y,     v.z));
-        voxels.push_back(om::globalCoord(v.x + 1, v.y,     v.z));
-        voxels.push_back(om::globalCoord(v.x,     v.y - 1, v.z));
-        voxels.push_back(om::globalCoord(v.x,     v.y + 1, v.z));
+        voxels.push_back(om::coords::Global(v.x - 1, v.y,     v.z));
+        voxels.push_back(om::coords::Global(v.x + 1, v.y,     v.z));
+        voxels.push_back(om::coords::Global(v.x,     v.y - 1, v.z));
+        voxels.push_back(om::coords::Global(v.x,     v.y + 1, v.z));
 
         semaphore_.set(0);
 
@@ -64,12 +64,12 @@ public:
 
 private:
 
-    void doFill(const om::globalCoord voxelLocStart, const OmSegID segIDtoReplace)
+    void doFill(const om::coords::Global voxelLocStart, const OmSegID segIDtoReplace)
     {
-        std::deque<om::globalCoord> voxels;
+        std::deque<om::coords::Global> voxels;
         voxels.push_back(voxelLocStart);
 
-        om::globalCoord v;
+        om::coords::Global v;
 
         while(!voxels.empty())
         {
@@ -95,10 +95,10 @@ private:
             vol_.SetVoxelValue(v, newSegID_);
 
             // TODO: assumes XY_VIEW for now
-            voxels.push_back(om::globalCoord(v.x - 1, v.y,     v.z));
-            voxels.push_back(om::globalCoord(v.x + 1, v.y,     v.z));
-            voxels.push_back(om::globalCoord(v.x,     v.y - 1, v.z));
-            voxels.push_back(om::globalCoord(v.x,     v.y + 1, v.z));
+            voxels.push_back(om::coords::Global(v.x - 1, v.y,     v.z));
+            voxels.push_back(om::coords::Global(v.x + 1, v.y,     v.z));
+            voxels.push_back(om::coords::Global(v.x,     v.y - 1, v.z));
+            voxels.push_back(om::coords::Global(v.x,     v.y + 1, v.z));
         }
 
         semaphore_.release(1);

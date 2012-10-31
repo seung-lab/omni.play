@@ -6,7 +6,7 @@
 
 class OmBrushErase {
 public:
-    static void EraseByClick(OmView2dState* state, const om::globalCoord& coord,
+    static void EraseByClick(OmView2dState* state, const om::coords::Global& coord,
                              const OmSegID segIDtoErase)
     {
         om::shared_ptr<OmBrushOppInfo> info =
@@ -17,10 +17,10 @@ public:
         circle.EraseCircle(coord);
     }
 
-    static void EraseByLine(OmView2dState* state, const om::globalCoord& second,
+    static void EraseByLine(OmView2dState* state, const om::coords::Global& second,
                             const OmSegID segIDtoErase)
     {
-        const om::globalCoord& first = state->GetLastDataPoint();
+        const om::coords::Global& first = state->GetLastDataPoint();
 
         om::shared_ptr<OmBrushOppInfo> info =
             OmBrushOppInfoFactory::MakeOppInfo(state, first, om::ADD);

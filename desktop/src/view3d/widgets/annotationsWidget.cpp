@@ -40,7 +40,7 @@ void AnnotationsWidget::Draw()
         FOR_EACH(it, annotations.Enabled())
         {
         	om::annotation::data& a = *it->Object;
-        	om::globalCoord coord = a.coord.toGlobalCoord();
+        	om::coords::Global coord = a.coord.toGlobalCoord();
             float dist = camPos.distance(coord);
 
             glPushMatrix();

@@ -9,7 +9,7 @@
 class OmBrushOppInfoFactory {
 public:
     static om::shared_ptr<OmBrushOppInfo>
-    MakeOppInfo(OmView2dState* state, const om::globalCoord& coord,
+    MakeOppInfo(OmView2dState* state, const om::coords::Global& coord,
                 const om::AddOrSubtract addOrSubract)
     {
         SegmentationDataWrapper sdw(state->GetSegmentationID());
