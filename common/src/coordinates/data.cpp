@@ -6,7 +6,7 @@ using namespace om::common;
 namespace om {
 namespace coords {
 
-data::data(data::base_t v, const volumeSystem* vol, int mipLevel)
+Data::Data(Data::base_t v, const volumeSystem* vol, int mipLevel)
     : base_t(v)
     , vol_(vol)
     , mipLevel_(mipLevel)
@@ -16,7 +16,7 @@ data::data(data::base_t v, const volumeSystem* vol, int mipLevel)
     }
 }
 
-data::data(int x, int y, int z, const volumeSystem* vol, int mipLevel)
+Data::Data(int x, int y, int z, const volumeSystem* vol, int mipLevel)
     : base_t(x, y, z)
     , vol_(vol)
     , mipLevel_(mipLevel)
@@ -27,40 +27,40 @@ data::data(int x, int y, int z, const volumeSystem* vol, int mipLevel)
 }
 
 
-Global data::toGlobal() const
+Global Data::ToGlobal() const
 {
     const vmml::Vector4f data(x, y, z, 1);
     vmml::Vector3f global = vol_->DataToGlobalMat(mipLevel_) * data;
     return global;
 }
 
-Norm data::toNorm() const
+Norm Data::ToNorm() const
 {
-    return toGlobal().ToNorm(vol_);
+    return ToGlobal().ToNorm(vol_);
 }
 
-Chunk data::toChunk() const
+Chunk Data::ToChunk() const
 {
     return Chunk(mipLevel_, *this / vol_->GetChunkDimensions());
 }
 
-Vector3i data::toChunkVec() const
+Vector3i Data::ToChunkVec() const
 {
-    Vector3i dims = vol_->GetChunkDimensions();
+    VecTor3i dims = vol_->GetChunkDimensions();
     return Vector3i(x % dims.x, y % dims.y, z % dims.z);
 }
 
-int data::toChunkOffset() const
+int Data::ToChunkOffset() const
 {
     const Vector3i dims = vol_->GetChunkDimensions();
     const Vector3i chunkVec = toChunkVec();
     return dims.x * dims.y * chunkVec.z + dims.x * chunkVec.y + chunkVec.x;
 }
 
-int data::toTileOffset (viewType viewType) const
+int Data::ToTileOffset (viewType viewType) const
 {
     const Vector3i dims = vol_->GetChunkDimensions();
-    const Vector3i chunkVec = toChunkVec();
+    const Vector3i chunkVec = ToChunkVec();
 
     switch(viewType)
     {
@@ -75,10 +75,10 @@ int data::toTileOffset (viewType viewType) const
     return -1;
 }
 
-int data::toTileDepth (viewType viewType) const
+int Data::ToTileDepth (viewType viewType) const
 {
     const Vector3i dims = vol_->GetChunkDimensions();
-    const Vector3i chunkVec = toChunkVec();
+    const Vector3i chunkVec = ToChunkVec();
 
     switch(viewType)
     {
@@ -90,11 +90,11 @@ int data::toTileDepth (viewType viewType) const
     return -1;
 }
 
-bool data::isInVolume() const {
-	return vol_->GetDataExtent().contains(toGlobal());
+bool Data::IsInVolume() const {
+	return vol_->GetDataExtent().contains(ToGlobal());
 }
 
-data data::atDifferentLevel(int newLevel) const
+Data Data::AtDifferentLevel(int newLevel) const
 {
     if (newLevel > vol_->GetRootMipLevel()) {
         throw argException("Invalid Mip level.");
@@ -105,10 +105,10 @@ data data::atDifferentLevel(int newLevel) const
     }
 
     Vector3f result = *this * om::math::pow2int(mipLevel_) / om::math::pow2int(newLevel);
-    return data(result, vol_, newLevel);
+    return Data(result, vol_, newLevel);
 }
 
-dataBbox::dataBbox(data min, data max)
+DataBbox::DataBbox(Data min, Data max)
     : base_t(min, max)
     , vol_(min.volume())
     , mipLevel_(min.level())
@@ -122,31 +122,31 @@ dataBbox::dataBbox(data min, data max)
     }
 }
 
-dataBbox::dataBbox(const volumeSystem* vol, int level)
+DataBbox::DataBbox(const volumeSystem* vol, int level)
     : base_t()
     , vol_(vol)
     , mipLevel_(level)
 { }
 
-dataBbox::dataBbox(dataBbox::base_t bbox, const volumeSystem* vol, int level)
+DataBbox::DataBbox(DataBbox::base_t bbox, const volumeSystem* vol, int level)
     : base_t(bbox)
     , vol_(vol)
     , mipLevel_(level)
 { }
 
 
-GlobalBbox dataBbox::toGlobalBbox() const {
-    return GlobalBbox(getMin().toGlobal(), getMax().toGlobal());
+GlobalBbox DataBbox::ToGlobalBbox() const {
+    return GlobalBbox(getMin().ToGlobal(), getMax().ToGlobal());
 }
 
-NormBbox dataBbox::toNormBbox() const
+NormBbox DataBbox::ToNormBbox() const
 {
-    return NormBbox(getMin().toNorm(), getMax().toNorm());
+    return NormBbox(getMin().ToNorm(), getMax().toNorm());
 }
 
-dataBbox dataBbox::atDifferentLevel(int newLevel) const
+DataBbox DataBbox::AtDifferentLevel(int newLevel) const
 {
-    return dataBbox(getMin().atDifferentLevel(newLevel),
+    return DataBbox(getMin().atDifferentLevel(newLevel),
                     getMax().atDifferentLevel(newLevel));
 }
 

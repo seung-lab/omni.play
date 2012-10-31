@@ -3,6 +3,8 @@
 #include "vmmlib/vmmlib.h"
 using namespace vmml;
 
+#include "common/macro.hpp"
+
 class OmMipVolume;
 
 namespace om {
@@ -15,114 +17,98 @@ class GlobalBbox;
 class NormBbox;
 class volumeSystem;
 
-class data : public vmml::Vector3i
+class Data : public vmml::Vector3i
 {
 private:
     typedef Vector3i base_t;
-    const volumeSystem *vol_;
-    int mipLevel_;
 
 public:
-    data(base_t v, const volumeSystem * vol, int mipLevel);
-    data(int x, int y, int z, const volumeSystem * vol, int mipLevel);
+    Data(base_t v, const volumeSystem * vol, int mipLevel);
+    Data(int x, int y, int z, const volumeSystem * vol, int mipLevel);
 
-    Global toGlobal() const;
-    Norm toNorm() const;
-    Chunk toChunk() const;
-    Vector3i toChunkVec() const;
-    int toChunkOffset() const;
-    int toTileOffset(om::common::viewType) const;
-    int toTileDepth(om::common::viewType) const;
-    bool isInVolume() const;
+    Global ToGlobal() const;
+    Norm ToNorm() const;
+    Chunk ToChunk() const;
+    Vector3i ToChunkVec() const;
+    int ToChunkOffset() const;
+    int ToTileOffset(common::viewType) const;
+    int ToTileDepth(common::viewType) const;
+    bool IsInVolume() const;
+    Data AtDifferentLevel(int) const;
 
-    inline int level() const {
-        return mipLevel_;
+    inline Data operator+(const Vector3i b) const {
+        return Data(base_t::operator+(b), volume_, mipLevel_);
     }
 
-    data atDifferentLevel(int) const;
-
-    inline volumeSystem const * volume() const {
-        return vol_;
+    inline Data operator*(const int scalar) const {
+        return Data(base_t::operator*(scalar), volume_, mipLevel_);
     }
 
-    inline data operator+(const Vector3i b) const {
-        return data(base_t::operator+(b), vol_, mipLevel_);
+    inline Data operator/(const int scalar) const {
+        return Data(base_t::operator/(scalar), volume_, mipLevel_);
     }
 
-    inline data operator*(const int scalar) const {
-        return data(base_t::operator*(scalar), vol_, mipLevel_);
+    inline Data operator/(const Vector3i b) const {
+        return Data(base_t::operator/(b), volume_, mipLevel_);
     }
 
-    inline data operator/(const int scalar) const {
-        return data(base_t::operator/(scalar), vol_, mipLevel_);
+    inline bool operator==(const Data& other) const {
+    	return base_t::operator==(other) && volume_ == other.volume_ && mipLevel_ == other.mipLevel_;
     }
-
-    inline data operator/(const Vector3i b) const {
-        return data(base_t::operator/(b), vol_, mipLevel_);
-    }
-
-    inline bool operator==(const data& other) const {
-    	return base_t::operator==(other) && vol_ == other.vol_ && mipLevel_ == other.mipLevel_;
-    }
+private:
+	PROP_CONST_PTR(volumeSystem, volume);
+	PROP_CONST_REF(int, mipLevel);
 };
 
-class dataBbox : public vmml::AxisAlignedBoundingBox<int>
+class DataBbox : public vmml::AxisAlignedBoundingBox<int>
 {
 private:
     typedef AxisAlignedBoundingBox<int> base_t;
-    const volumeSystem * vol_;
-    const int mipLevel_;
 
 public:
-    dataBbox(data min, data max);
-    dataBbox(const volumeSystem * vol, int level);
-    dataBbox(base_t bbox, const volumeSystem * vol, int level);
+    DataBbox(Data min, Data max);
+    DataBbox(const volumeSystem * vol, int level);
+    DataBbox(base_t bbox, const volumeSystem * vol, int level);
 
-    inline data getMin() const {
-        return data(base_t::getMin(), vol_, mipLevel_);
+    inline Data getMin() const {
+        return Data(base_t::getMin(), volume_, mipLevel_);
     }
 
-    inline data getMax() const {
-        return data(base_t::getMax(), vol_, mipLevel_);
+    inline Data getMax() const {
+        return Data(base_t::getMax(), volume_, mipLevel_);
     }
 
-    inline data getDimensions() const {
-        return data(base_t::getDimensions(), vol_, mipLevel_);
+    inline Data getDimensions() const {
+        return Data(base_t::getDimensions(), volume_, mipLevel_);
     }
 
-    inline data getUnitDimensions() const {
-        return data(base_t::getUnitDimensions(), vol_, mipLevel_);
+    inline Data getUnitDimensions() const {
+        return Data(base_t::getUnitDimensions(), volume_, mipLevel_);
     }
 
-    inline data getCenter() const {
-        return data(base_t::getCenter(), vol_, mipLevel_);
+    inline Data getCenter() const {
+        return Data(base_t::getCenter(), volume_, mipLevel_);
     }
 
-    inline void intersect(const dataBbox& other) {
+    inline void intersect(const DataBbox& other) {
         base_t::intersect(other);
     }
 
-    GlobalBbox toGlobalBbox() const;
-    NormBbox toNormBbox() const;
+    GlobalBbox ToGlobalBbox() const;
+    NormBbox ToNormBbox() const;
+    DataBbox AtDifferentLevel(int) const;
 
-    inline int level() {
-        return mipLevel_;
-    }
-
-    dataBbox atDifferentLevel(int) const;
-
-    inline volumeSystem const * volume() const {
-        return vol_;
-    }
-
-    inline dataBbox& operator=(const dataBbox& other) {
+    inline DataBbox& operator=(const DataBbox& other) {
         base_t::operator=(other);
         return *this;
     }
 
-    inline bool operator==(const dataBbox& other) const {
-    	return base_t::operator==(other) && vol_ == other.vol_ && mipLevel_ == other.mipLevel_;
+    inline bool operator==(const DataBbox& other) const {
+    	return base_t::operator==(other) && volume_ == other.volume_ && mipLevel_ == other.mipLevel_;
     }
+private:
+	PROP_CONST_PTR(volumeSystem, volume);
+	PROP_CONST_REF(int, mipLevel);
 };
 
 } // namespace coords
