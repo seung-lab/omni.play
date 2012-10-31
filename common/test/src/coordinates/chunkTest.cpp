@@ -60,15 +60,15 @@ TEST(Coords_Chunk, ToData)
 {
 	Chunk cc(1,1,1,1);
 	volumeSystem vs(Vector3i(1024));
-	ASSERT_EQ(data(128, 128, 128, &vs, 1), cc.ToData(&vs));
+	ASSERT_EQ(Data(128, 128, 128, &vs, 1), cc.ToData(&vs));
 }
 
 TEST(Coords_Chunk, BoundingBox)
 {
 	Chunk cc(1,1,1,1);
 	volumeSystem vs(Vector3i(1024));
-	ASSERT_EQ(dataBbox(data(128, 128, 128, &vs, 1),
-	          		   data(256, 256, 256, &vs, 1)),
+	ASSERT_EQ(DataBbox(Data(128, 128, 128, &vs, 1),
+	          		   Data(256, 256, 256, &vs, 1)),
 			  cc.BoundingBox(&vs));
 
 }

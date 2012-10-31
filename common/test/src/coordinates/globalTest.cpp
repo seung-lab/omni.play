@@ -21,8 +21,8 @@ TEST(Coords_Global, ToData)
 {
 	volumeSystem vs(Vector3i(1024));
 	Global g(128);
-	ASSERT_EQ(data(128, 128, 128, &vs, 0), g.ToData(&vs, 0));
-	ASSERT_EQ(data(64, 64, 64, &vs, 1), g.ToData(&vs, 1));
+	ASSERT_EQ(Data(128, 128, 128, &vs, 0), g.ToData(&vs, 0));
+	ASSERT_EQ(Data(64, 64, 64, &vs, 1), g.ToData(&vs, 1));
 }
 
 TEST(Coords_Global, ToChunk)

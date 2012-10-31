@@ -10,7 +10,7 @@ Global Norm::ToGlobal() const
     return global;
 }
 
-data Norm::ToData(int mipLevel) const
+Data Norm::ToData(int mipLevel) const
 {
     return ToGlobal().ToData(volume_, mipLevel);
 }

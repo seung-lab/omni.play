@@ -6,7 +6,7 @@
 namespace om {
 namespace coords {
 
-class data;
+class Data;
 class Global;
 class volumeSystem;
 
@@ -27,7 +27,7 @@ public:
     { }
 
     Global ToGlobal() const;
-    data ToData(int) const;
+    Data ToData(int) const;
 
 private:
 	PROP_CONST_PTR(volumeSystem, volume);

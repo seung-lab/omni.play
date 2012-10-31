@@ -49,7 +49,7 @@ bool volumeSystem::ContainsMipChunk(const Chunk & rMipCoord) const
     }
 
     //convert to data box in leaf (MIP 0)
-    GlobalBbox bbox = rMipCoord.BoundingBox(this).toGlobalBbox();
+    GlobalBbox bbox = rMipCoord.BoundingBox(this).ToGlobalBbox();
 
     bbox.intersect(GetDataExtent());
     if(bbox.isEmpty()){

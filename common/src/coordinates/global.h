@@ -11,11 +11,11 @@ class bbox;
 namespace coords {
 
 class Chunk;
-class data;
+class Data;
+class DataBbox;
 class screen;
 class Norm;
 class NormBbox;
-class dataBbox;
 class volumeSystem;
 class screenSystem;
 
@@ -33,7 +33,7 @@ public:
     Global(server::vector3d v);
 
     Norm ToNorm(const volumeSystem*) const;
-    data ToData(const volumeSystem*, const int) const;
+    Data ToData(const volumeSystem*, const int) const;
     Chunk ToChunk(const volumeSystem*, const int) const;
     screen ToScreen(screenSystem*) const;
     Vector3i WithAbsOffset(const volumeSystem*) const;
@@ -61,7 +61,7 @@ public:
     {}
 
     NormBbox ToNormBbox(const volumeSystem*) const;
-    dataBbox ToDataBbox(const volumeSystem*, int) const;
+    DataBbox ToDataBbox(const volumeSystem*, int) const;
     operator server::bbox () const;
 };
 

@@ -21,8 +21,8 @@ TEST(Coords_Norm, ToData)
 {
 	volumeSystem vs(Vector3i(1024));
 	Norm n(.125, .25, .5, &vs);
-	ASSERT_EQ(data(128, 256, 512, &vs, 0), n.ToData(0));
-	ASSERT_EQ(data(64, 128, 256, &vs, 1), n.ToData(1));
+	ASSERT_EQ(Data(128, 256, 512, &vs, 0), n.ToData(0));
+	ASSERT_EQ(Data(64, 128, 256, &vs, 1), n.ToData(1));
 }
 
 

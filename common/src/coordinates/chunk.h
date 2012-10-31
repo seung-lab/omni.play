@@ -9,8 +9,8 @@ using namespace vmml;
 namespace om {
 namespace coords {
 
-class dataBbox;
-class data;
+class DataBbox;
+class Data;
 class volumeSystem;
 
 class Chunk : public vmml::Vector3i {
@@ -33,8 +33,8 @@ public:
     Chunk PrimaryChildCoord() const;
     std::vector<Chunk> ChildrenCoords() const;
 
-    data ToData(const volumeSystem*) const;
-    dataBbox BoundingBox(const volumeSystem*) const;
+    Data ToData(const volumeSystem*) const;
+    DataBbox BoundingBox(const volumeSystem*) const;
     uint64_t PtrOffset(const volumeSystem*, int64_t) const;
     int SliceDepth(const volumeSystem*, Global, common::viewType) const;
 

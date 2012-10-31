@@ -17,16 +17,16 @@ screen Global::ToScreen(screenSystem *state) const
     return screen(vmml::Vector2i(screenC.x, screenC.y), state);
 }
 
-data Global::ToData(const volumeSystem *vol, const int mipLevel) const
+Data Global::ToData(const volumeSystem *vol, const int mipLevel) const
 {
     const vmml::Vector4f Global(x, y, z, 1);
     vmml::Vector3f dataC = vol->GlobalToDataMat(mipLevel) * Global;
-    return data(dataC, vol, mipLevel);
+    return Data(dataC, vol, mipLevel);
 }
 
 Chunk Global::ToChunk(const volumeSystem *vol, const int mipLevel) const
 {
-    return ToData(vol, mipLevel).toChunk();
+    return ToData(vol, mipLevel).ToChunk();
 }
 
 Norm Global::ToNorm(const volumeSystem *vol) const
@@ -62,12 +62,12 @@ NormBbox GlobalBbox::ToNormBbox(const volumeSystem *vol) const
     return NormBbox(min.ToNorm(vol), max.ToNorm(vol));
 }
 
-dataBbox GlobalBbox::ToDataBbox(const volumeSystem *vol, int mipLevel) const
+DataBbox GlobalBbox::ToDataBbox(const volumeSystem *vol, int mipLevel) const
 {
     Global min = _min;
     Global max = _max;
 
-    return dataBbox(min.ToData(vol, mipLevel), max.ToData(vol, mipLevel));
+    return DataBbox(min.ToData(vol, mipLevel), max.ToData(vol, mipLevel));
 }
 
 GlobalBbox::operator server::bbox() const{

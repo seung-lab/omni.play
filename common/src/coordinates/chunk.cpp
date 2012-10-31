@@ -94,15 +94,15 @@ std::vector<Chunk> Chunk::ChildrenCoords() const
     return primary_child.SiblingCoords();
 }
 
-data Chunk::ToData(const volumeSystem *vol) const {
-    return data(*this * vol->GetChunkDimensions(), vol, mipLevel_);
+Data Chunk::ToData(const volumeSystem *vol) const {
+    return Data(*this * vol->GetChunkDimensions(), vol, mipLevel_);
 }
 
-dataBbox Chunk::BoundingBox(const volumeSystem *vol) const
+DataBbox Chunk::BoundingBox(const volumeSystem *vol) const
 {
-    const data min = ToData(vol);
-    const data max = min + vol->GetChunkDimensions();
-    return dataBbox(min, max);
+    const Data min = ToData(vol);
+    const Data max = min + vol->GetChunkDimensions();
+    return DataBbox(min, max);
 }
 
 uint64_t Chunk::PtrOffset(const volumeSystem* vol, int64_t bytesPerVoxel) const
@@ -125,8 +125,8 @@ uint64_t Chunk::PtrOffset(const volumeSystem* vol, int64_t bytesPerVoxel) const
 
 int Chunk::SliceDepth(const volumeSystem* vol, Global c, common::viewType view) const
 {
-    const data d = c.ToData(vol, mipLevel_);
-    const dataBbox bounds = BoundingBox(vol);
+    const Data d = c.ToData(vol, mipLevel_);
+    const DataBbox bounds = BoundingBox(vol);
     if(!bounds.contains(d)) {
         throw argException("Coord outside of chunk.");
     }
