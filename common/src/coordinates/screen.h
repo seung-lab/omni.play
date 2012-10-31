@@ -8,29 +8,30 @@ namespace coords {
 class Global;
 class screenSystem;
 
-class screen : public vmml::Vector2i
+class Screen : public vmml::Vector2i
 {
 private:
     typedef vmml::Vector2i base_t;
-    const screenSystem * system_;
 
 public:
-    screen(base_t v, const screenSystem * system)
+    Screen(base_t v, const screenSystem * system)
         : base_t(v)
         , system_(system)
     { }
 
-    screen(int x, int y, const screenSystem * system)
+    Screen(int x, int y, const screenSystem * system)
         : base_t(x, y)
         , system_(system)
     { }
 
-    screen(const screen& coord)
+    Screen(const Screen& coord)
         : base_t(coord)
         , system_(coord.system_)
     { }
 
-    Global toGlobal() const ;
+    Global ToGlobal() const;
+private:
+	PROP_CONST_PTR(screenSystem, system);
 };
 
 } // namespace coords

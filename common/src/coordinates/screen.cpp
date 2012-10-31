@@ -3,7 +3,7 @@
 namespace om {
 namespace coords {
 
-Global screen::toGlobal() const
+Global Screen::ToGlobal() const
 {
     const vmml::Vector4f screen(x,y,0,1);
     vmml::Vector3f global = system_->ScreenToGlobalMat() * screen;
