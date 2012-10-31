@@ -29,11 +29,11 @@ Chunk Global::ToChunk(const volumeSystem *vol, const int mipLevel) const
     return ToData(vol, mipLevel).toChunk();
 }
 
-norm Global::ToNorm(const volumeSystem *vol) const
+Norm Global::ToNorm(const volumeSystem *vol) const
 {
     const vmml::Vector4f Global(x, y, z, 1);
     vmml::Vector3f normC = vol->GlobalToNormMat() * Global;
-    return norm(normC, vol);
+    return Norm(normC, vol);
 }
 
 Global Global::FromOffsetCoords(Vector3i vec, const volumeSystem * vol)
@@ -54,12 +54,12 @@ Global::operator server::vector3d () const {
     return out;
 }
 
-normBbox GlobalBbox::ToNormBbox(const volumeSystem *vol) const
+NormBbox GlobalBbox::ToNormBbox(const volumeSystem *vol) const
 {
     Global min = _min;
     Global max = _max;
 
-    return normBbox(min.ToNorm(vol), max.ToNorm(vol));
+    return NormBbox(min.ToNorm(vol), max.ToNorm(vol));
 }
 
 dataBbox GlobalBbox::ToDataBbox(const volumeSystem *vol, int mipLevel) const

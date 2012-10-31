@@ -3,19 +3,19 @@
 namespace om {
 namespace coords {
 
-Global norm::toGlobal() const
+Global Norm::ToGlobal() const
 {
-    const vmml::Vector4f norm(x, y, z, 1);
-    vmml::Vector3f global = vol_->NormToGlobalMat() * norm;
+    const vmml::Vector4f Norm(x, y, z, 1);
+    vmml::Vector3f global = vol_->NormToGlobalMat() * Norm;
     return global;
 }
 
-data norm::toData(int mipLevel) const
+data Norm::ToData(int mipLevel) const
 {
-    return toGlobal().ToData(vol_, mipLevel);
+    return ToGlobal().ToData(vol_, mipLevel);
 }
 
-normBbox::normBbox(norm min, norm max)
+NormBbox::NormBbox(Norm min, Norm max)
     : base_t(min, max)
     , vol_(min.volume())
 {

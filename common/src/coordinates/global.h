@@ -13,8 +13,8 @@ namespace coords {
 class Chunk;
 class data;
 class screen;
-class norm;
-class normBbox;
+class Norm;
+class NormBbox;
 class dataBbox;
 class volumeSystem;
 class screenSystem;
@@ -32,7 +32,7 @@ public:
         : base_t(i, j, k) {}
     Global(server::vector3d v);
 
-    norm ToNorm(const volumeSystem*) const;
+    Norm ToNorm(const volumeSystem*) const;
     data ToData(const volumeSystem*, const int) const;
     Chunk ToChunk(const volumeSystem*, const int) const;
     screen ToScreen(screenSystem*) const;
@@ -60,7 +60,7 @@ public:
                  Global(b.getMax().x,b.getMax().y,b.getMax().z))
     {}
 
-    normBbox ToNormBbox(const volumeSystem*) const;
+    NormBbox ToNormBbox(const volumeSystem*) const;
     dataBbox ToDataBbox(const volumeSystem*, int) const;
     operator server::bbox () const;
 };

@@ -9,10 +9,10 @@ namespace om {
 namespace coords {
 
 class Global;
-class norm;
+class Norm;
 class Chunk;
 class GlobalBbox;
-class normBbox;
+class NormBbox;
 class volumeSystem;
 
 class data : public vmml::Vector3i
@@ -27,7 +27,7 @@ public:
     data(int x, int y, int z, const volumeSystem * vol, int mipLevel);
 
     Global toGlobal() const;
-    norm toNorm() const;
+    Norm toNorm() const;
     Chunk toChunk() const;
     Vector3i toChunkVec() const;
     int toChunkOffset() const;
@@ -103,7 +103,7 @@ public:
     }
 
     GlobalBbox toGlobalBbox() const;
-    normBbox toNormBbox() const;
+    NormBbox toNormBbox() const;
 
     inline int level() {
         return mipLevel_;

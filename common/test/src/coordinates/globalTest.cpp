@@ -14,7 +14,7 @@ TEST(Coords_Global, ToNorm)
 {
 	volumeSystem vs(Vector3i(1024));
 	Global g(128, 256, 512);
-	ASSERT_EQ(norm(.125, .25, .5, &vs), g.ToNorm(&vs));
+	ASSERT_EQ(Norm(.125, .25, .5, &vs), g.ToNorm(&vs));
 }
 
 TEST(Coords_Global, ToData)

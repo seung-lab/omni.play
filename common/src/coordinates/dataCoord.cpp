@@ -34,7 +34,7 @@ Global data::toGlobal() const
     return global;
 }
 
-norm data::toNorm() const
+Norm data::toNorm() const
 {
     return toGlobal().ToNorm(vol_);
 }
@@ -139,9 +139,9 @@ GlobalBbox dataBbox::toGlobalBbox() const {
     return GlobalBbox(getMin().toGlobal(), getMax().toGlobal());
 }
 
-normBbox dataBbox::toNormBbox() const
+NormBbox dataBbox::toNormBbox() const
 {
-    return normBbox(getMin().toNorm(), getMax().toNorm());
+    return NormBbox(getMin().toNorm(), getMax().toNorm());
 }
 
 dataBbox dataBbox::atDifferentLevel(int newLevel) const
