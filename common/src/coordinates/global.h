@@ -17,7 +17,7 @@ class Screen;
 class Norm;
 class NormBbox;
 class volumeSystem;
-class screenSystem;
+class ScreenSystem;
 
 class Global : public Vector3f
 {
@@ -35,7 +35,7 @@ public:
     Norm ToNorm(const volumeSystem*) const;
     Data ToData(const volumeSystem*, const int) const;
     Chunk ToChunk(const volumeSystem*, const int) const;
-    Screen ToScreen(screenSystem*) const;
+    Screen ToScreen(ScreenSystem*) const;
     Vector3i WithAbsOffset(const volumeSystem*) const;
     static Global FromOffsetCoords(Vector3i, const volumeSystem*);
     operator server::vector3d () const;

@@ -3,6 +3,8 @@
 #include "vmmlib/vmmlib.h"
 using namespace vmml;
 
+#include "common/macro.hpp"
+
 namespace om {
 namespace coords {
 
@@ -11,15 +13,6 @@ class Global;
 class ScreenSystem
 {
 private:
-    common::viewType viewType_;
-    Vector4i totalViewport_; //lower left x, lower left y, width, height
-
-    Matrix4f screenToGlobalMat_;
-    Matrix4f globalToScreenMat_;
-
-    double zoomScale_;
-    Global location_;
-
     template <typename T>
     inline Vector3<T> makeViewTypeVector3(const T& x, const T& y, const T& z) const
     {
@@ -39,6 +32,10 @@ private:
     {
         return makeViewTypeVector3(vec.x, vec.y, vec.z);
     }
+
+public:
+    ScreenSystem(common::viewType viewType);
+    ScreenSystem(common::viewType viewType, int width, int height, double scale = 1.0, Global location = Global(0));
 
     // Update the Transformation Matricies based on changes to scale, location or viewport
     //
@@ -61,47 +58,17 @@ private:
     //
     // the selection matrices should be transposes of the earlier ones and the transforms need
     // to be shuffled around too.
-    void update();
+    void UpdateTransformationMatrices();
 
-public:
-    ScreenSystem(common::viewType viewType);
-    ScreenSystem(common::viewType viewType, int width, int height, double scale = 1.0, Global location = Global(0));
+private:
+	PROP_CONST_REF(common::viewType, viewType);
 
-    inline const Matrix4f& screenToGlobalMat() const {
-        return screenToGlobalMat_;
-    }
+	PROP_CONST_REF(Matrix4f, screenToGlobalMat);
+    PROP_CONST_REF(Matrix4f, globalToScreenMat);
 
-    inline const Matrix4f& globalToScreenMat() const {
-        return globalToScreenMat_;
-    }
-
-    // viewport
-    inline const Vector4i& totalViewport() const {
-        return totalViewport_;
-    }
-
-    inline void set_totalViewport(const int width, const int height) {
-        totalViewport_ = Vector4i(0, 0, width, height);
-		update();
-    }
-
-    inline double zoomScale() const {
-    	return zoomScale_;
-    }
-
-    inline void set_zoomScale(const double scale) {
-        zoomScale_ = scale;
-        update();
-    }
-
-    inline Global location() const {
-    	return location_;
-    }
-
-    inline void set_location(const Global location) {
-        location_ = location;
-        update();
-    }
+    PROP_REF(Vector4i, totalViewport);
+    PROP_REF(double, zoomScale);
+    PROP_REF(Global, location);
 };
 
 } // namespace coords

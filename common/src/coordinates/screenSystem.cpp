@@ -7,19 +7,20 @@ using namespace om::common;
 namespace om {
 namespace coords {
 
-screenSystem::screenSystem(common::viewType viewType)
+ScreenSystem::ScreenSystem(common::viewType viewType)
     : viewType_(viewType)
 { }
 
-screenSystem::screenSystem(common::viewType viewType, int width, int height, double scale, Global location)
+ScreenSystem::ScreenSystem(common::viewType viewType, int width, int height, double scale, Global location)
     : viewType_(viewType)
 {
-	setTotalViewport(width, height);
-	setZoomScale(scale);
-	setLocation(location);
+	totalViewport_ = Vector4i(0, 0, width, height);
+	zoomScale_ = scale;
+	location_ = location;
+	UpdateTransformationMatrices();
 }
 
-void screenSystem::update()
+void ScreenSystem::UpdateTransformationMatrices()
 {
     // init
     screenToGlobalMat_ = Matrix4f::ZERO;

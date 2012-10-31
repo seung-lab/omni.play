@@ -10,10 +10,10 @@ Global::Global(server::vector3d v) {
     z = v.z;
 }
 
-Screen Global::ToScreen(screenSystem *state) const
+Screen Global::ToScreen(ScreenSystem *state) const
 {
     const vmml::Vector4f Global(x, y, z, 1);
-    vmml::Vector3f screenC = state->GlobalToScreenMat() * Global;
+    vmml::Vector3f screenC = state->globalToScreenMat() * Global;
     return Screen(vmml::Vector2i(screenC.x, screenC.y), state);
 }
 
