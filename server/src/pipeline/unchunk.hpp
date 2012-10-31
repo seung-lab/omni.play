@@ -19,7 +19,7 @@ public:
         , dims_(vs_.GetDataDimensions())
     { }
 
-    inline size_t target_offset(coords::data d) const
+    inline size_t target_offset(coords::Data d) const
     {
     	return d.x + d.y * dims_.x + d.z * dims_.x * dims_.y;
     }
@@ -39,14 +39,14 @@ public:
 	    FOR_EACH(iter, *chunks)
 	    {
             coords::Chunk coord = *iter;
-            coords::data base = coord.ToData(&vs_);
+            coords::Data base = coord.ToData(&vs_);
             uint64_t offset = coord.PtrOffset(&vs_, sizeof(T));
 	        T* chunkPtr = in.GetPtrWithOffset(offset);
 
             for (int z = 0; z < dims.z; ++z) {
             	for (int y = 0; y < dims.y; ++y) {
-        			coords::data d(base.x, base.y + y, base.z + z, &vs_, 0);
-        			size_t off = d.toChunkOffset();
+        			coords::Data d(base.x, base.y + y, base.z + z, &vs_, 0);
+        			size_t off = d.ToChunkOffset();
         			std::copy(&chunkPtr[off], &chunkPtr[off + dims.x], &outPtr[target_offset(d)]);
             	}
             }

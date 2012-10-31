@@ -88,7 +88,7 @@ public:
         }
     }
 
-    uint32_t SetVoxelValue(const om::dataCoord& voxel, const uint32_t val)
+    uint32_t SetVoxelValue(const om::coords::Data& voxel, const uint32_t val)
     {
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();
@@ -101,7 +101,7 @@ public:
         return oldVal;
     }
 
-    uint32_t GetVoxelValue(const om::dataCoord& voxel)
+    uint32_t GetVoxelValue(const om::coords::Data& voxel)
     {
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();

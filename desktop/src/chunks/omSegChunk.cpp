@@ -11,7 +11,7 @@ OmSegChunk::OmSegChunk(OmSegmentation* vol, const om::coords::Chunk& coord)
 OmSegChunk::~OmSegChunk()
 {}
 
-void OmSegChunk::SetVoxelValue(const om::dataCoord& coord,
+void OmSegChunk::SetVoxelValue(const om::coords::Data& coord,
                                const uint32_t val)
 {
     assert(ContainsVoxel(coord));
@@ -25,7 +25,7 @@ void OmSegChunk::SetVoxelValue(const om::dataCoord& coord,
     }
 }
 
-uint32_t OmSegChunk::GetVoxelValue(const om::dataCoord& coord)
+uint32_t OmSegChunk::GetVoxelValue(const om::coords::Data& coord)
 {
     assert(ContainsVoxel(coord));
 

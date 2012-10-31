@@ -25,8 +25,8 @@ public:
     OmSegChunk(OmSegmentation* vol, const om::coords::Chunk& coord);
     virtual ~OmSegChunk();
 
-    uint32_t GetVoxelValue(const om::dataCoord& vox);
-    void SetVoxelValue(const om::dataCoord& vox, const uint32_t value);
+    uint32_t GetVoxelValue(const om::coords::Data& vox);
+    void SetVoxelValue(const om::coords::Data& vox, const uint32_t value);
 
     om::segchunk::dataInterface* SegData(){
         return segChunkData_.get();

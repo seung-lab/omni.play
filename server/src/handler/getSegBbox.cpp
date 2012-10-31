@@ -19,9 +19,9 @@ void get_seg_data(server::segData& _return, const volume::volume& vol, const int
 {
     utility::timer t;
     const segments::data& d = vol.GetSegmentData(segId);
-    coords::dataBbox dc(d.bounds, &vol.CoordSystem(), 0);
+    coords::DataBbox dc(d.bounds, &vol.CoordSystem(), 0);
 
-    _return.bounds = dc.toGlobalBbox();
+    _return.bounds = dc.ToGlobalBbox();
     _return.size = d.size;
 }
 void get_seg_list_data(std::map<int32_t, server::segData>& _return,

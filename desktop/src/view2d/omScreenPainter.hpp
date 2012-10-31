@@ -155,7 +155,7 @@ private:
     QString depthString()
     {
     	const om::coords::Global global = state_->Location();
-        const om::dataCoord data = global.
+        const om::coords::Data data = global.
             toDataCoord(state_->getVol(), state_->getMipLevel());
 
 		const int globalDepth = state_->getViewTypeDepth(global);

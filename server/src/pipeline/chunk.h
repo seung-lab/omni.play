@@ -42,10 +42,10 @@ class writeChunk : boost::static_visitor<>
 {
 private:
 	dataSrcs file_;
-	coords::data dc_;
+	coords::Data dc_;
 
 public:
-	writeChunk(dataSrcs file, coords::data dc)
+	writeChunk(dataSrcs file, coords::Data dc)
 		: file_(file)
 		, dc_(dc)
 	{}
@@ -62,7 +62,7 @@ public:
 			throw argException("Chunk Data is the wrong size.");
 		}
 
-		coords::Chunk cc = dc_.toChunk();
+		coords::Chunk cc = dc_.ToChunk();
         uint64_t offset = cc.PtrOffset(dc_.volume(), sizeof(T));
         T* chunkPtr = file->GetPtrWithOffset(offset);
 

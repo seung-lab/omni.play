@@ -24,7 +24,7 @@ public:
 
     virtual ~OmChunk();
 
-    bool ContainsVoxel(const om::dataCoord& vox) const {
+    bool ContainsVoxel(const om::coords::Data& vox) const {
         return vox.volume() == vol_ &&  
                vox.level() == GetLevel() &&
                mipping_.GetExtent().contains(vox);
@@ -37,7 +37,7 @@ public:
     int GetLevel() const {
         return coord_.Level;
     }
-    const om::dataCoord GetDimensions() const {
+    const om::coords::Data GetDimensions() const {
         return mipping_.GetExtent().getUnitDimensions();
     }
 

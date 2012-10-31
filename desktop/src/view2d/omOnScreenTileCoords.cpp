@@ -159,7 +159,7 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::coords::Chunk& coord,
                                                 OmMipVolume* vol,
                                                 int freshness)
 {
-	om::dataCoord loc = state_->Location().toDataCoord(vol, mipLevel_);
+	om::coords::Data loc = state_->Location().toDataCoord(vol, mipLevel_);
 	int targetDepth = state_->getViewTypeDepth(loc) + depthOffset;
 	state_->setViewTypeDepth(loc, targetDepth);
 

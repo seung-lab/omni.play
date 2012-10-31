@@ -13,20 +13,20 @@ namespace pipeline {
 class getSegId : public boost::static_visitor<uint32_t>
 {
 private:
-    coords::data coord_;
+    coords::Data coord_;
 
 public:
-    getSegId(coords::data coord)
+    getSegId(coords::Data coord)
         : coord_(coord)
     {}
 
     template<typename T>
     uint32_t operator()(const datalayer::memMappedFile<T>& in) const
     {
-        uint64_t offset = coord_.toChunk().PtrOffset(coord_.volume(), sizeof(T));
+        uint64_t offset = coord_.ToChunk().PtrOffset(coord_.volume(), sizeof(T));
         T* chunkPtr = in.GetPtrWithOffset(offset);
 
-        return chunkPtr[coord_.toChunkOffset()];
+        return chunkPtr[coord_.ToChunkOffset()];
     }
 };
 
@@ -37,15 +37,15 @@ uint32_t operator>>(const dataSrcs& d, const getSegId& v) {
 class getSegIds : public stage
 {
 private:
-    coords::data coord_;
+    coords::Data coord_;
     int radius_;
     common::viewType view_;
-    coords::dataBbox bounds_;
+    coords::DataBbox bounds_;
     static const utility::pointsInCircle pts;
 
 public:
-    getSegIds(coords::data coord, int radius,
-              common::viewType view, coords::dataBbox bounds)
+    getSegIds(coords::Data coord, int radius,
+              common::viewType view, coords::DataBbox bounds)
         : coord_(coord)
         , radius_(radius)
         , view_(view)
@@ -65,13 +65,13 @@ private:
 
         std::set<uint32_t> segments;
 
-        const coords::data twisted = common::twist(coord_, view_);
+        const coords::Data twisted = common::twist(coord_, view_);
         FOR_EACH(it, points)
         {
-            coords::data offseted = twisted;
+            coords::Data offseted = twisted;
             offseted.x += it->x;
             offseted.y += it->y;
-            coords::data untwisted = common::twist(offseted, view_);
+            coords::Data untwisted = common::twist(offseted, view_);
             if(!bounds_.contains(untwisted)) {
                 continue;
             }
@@ -91,12 +91,12 @@ private:
 
     template<typename T>
     inline uint32_t getSegId(const datalayer::memMappedFile<T>& in,
-                             const coords::data& c) const
+                             const coords::Data& c) const
     {
-        uint64_t offset = c.toChunk().PtrOffset(c.volume(), sizeof(T));
+        uint64_t offset = c.ToChunk().PtrOffset(c.volume(), sizeof(T));
         T* chunkPtr = in.GetPtrWithOffset(offset);
 
-        return chunkPtr[c.toChunkOffset()];
+        return chunkPtr[c.ToChunkOffset()];
     }
 };
 

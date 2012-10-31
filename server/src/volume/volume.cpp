@@ -83,7 +83,7 @@ volume::volume(std::string uri,
 int32_t volume::GetSegId(coords::Global point) const
 {
     coords::Global coord = point;
-    coords::data dc = coord.ToData(&coordSystem_, mipLevel_);
+    coords::Data dc = coord.ToData(&coordSystem_, mipLevel_);
 
     return data_ >> getSegId(dc);
 }
@@ -93,7 +93,7 @@ void volume::GetSegIds(coords::Global point, int radius,
                        std::set<int32_t>& ids) const
 {
     coords::Global coord = point;
-    coords::data dc = coord.ToData(&coordSystem_, mipLevel_);
+    coords::Data dc = coord.ToData(&coordSystem_, mipLevel_);
 
     data_var id = data_ >> getSegIds(dc, radius, view,
                                                  bounds_.ToDataBbox(&coordSystem_, mipLevel_));

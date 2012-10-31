@@ -39,34 +39,34 @@ private:
         return boost::optional<om::dataBbox>(box);
     }
 
-    boost::optional<om::dataCoord>
+    boost::optional<om::coords::Data>
     static findCenterOfSelectedSegments(const SegmentationDataWrapper& sdw)
     {
         boost::optional<om::dataBbox> box = computeSelectedSegmentBoundingBox(sdw);
 
         if(!box){
-            return boost::optional<om::dataCoord>();
+            return boost::optional<om::coords::Data>();
         }
 
-        const om::dataCoord ret = (box->getMin() + box->getMax()) / 2;
-        return boost::optional<om::dataCoord>(ret);
+        const om::coords::Data ret = (box->getMin() + box->getMax()) / 2;
+        return boost::optional<om::coords::Data>(ret);
     }
 
-    boost::optional<om::dataCoord>
+    boost::optional<om::coords::Data>
     static findCenterOfSelectedSegments(const SegmentDataWrapper& sdw)
     {
         if(!sdw.IsSegmentValid()){
-            return boost::optional<om::dataCoord>();
+            return boost::optional<om::coords::Data>();
         }
 
         OmSegment* seg = sdw.GetSegment();
         const om::dataBbox& box = seg->BoundingBox();
         if(box.isEmpty()){
-            return boost::optional<om::dataCoord>();
+            return boost::optional<om::coords::Data>();
         }
 
-        const om::dataCoord ret = (box.getMin() + box.getMax()) / 2;
-        return boost::optional<om::dataCoord>(ret);
+        const om::coords::Data ret = (box.getMin() + box.getMax()) / 2;
+        return boost::optional<om::coords::Data>(ret);
     }
 
 public:
@@ -74,7 +74,7 @@ public:
     {
         const SegmentationDataWrapper sdw = vgs->Segmentation();
 
-        const boost::optional<om::dataCoord> voxelDC
+        const boost::optional<om::coords::Data> voxelDC
             = findCenterOfSelectedSegments(sdw);
 
         if(!voxelDC){

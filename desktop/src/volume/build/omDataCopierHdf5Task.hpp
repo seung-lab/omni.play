@@ -140,8 +140,8 @@ private:
         // get chunk data bbox
         const om::dataBbox& chunkExtent = chunk_->Mipping().GetExtent();
 
-        const om::dataBbox volExtent(om::dataCoord(Vector3i::ZERO, vol_, chunk_->GetLevel()),
-                                     om::dataCoord(volSize_, vol_, chunk_->GetLevel()));
+        const om::dataBbox volExtent(om::coords::Data(Vector3i::ZERO, vol_, chunk_->GetLevel()),
+                                     om::coords::Data(volSize_, vol_, chunk_->GetLevel()));
 
         //if data extent contains given extent, read full chunk
         if (volExtent.contains(chunkExtent)) {

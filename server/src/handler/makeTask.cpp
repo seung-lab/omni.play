@@ -125,8 +125,8 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
             continue;
         }
 
-        coords::dataBbox segOverlap(segData.bounds, &taskVolume.CoordSystem(), 0);
-        coords::GlobalBbox segOver = segOverlap.toGlobalBbox();
+        coords::DataBbox segOverlap(segData.bounds, &taskVolume.CoordSystem(), 0);
+        coords::GlobalBbox segOver = segOverlap.ToGlobalBbox();
         segOver.intersect(overlap);
 
         // Does not overlap with boundary region
@@ -185,18 +185,18 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
         {
             const uint32_t& segId = *seg;
             segments::data segData = adjacentVolume.GetSegmentData(segId);
-            
-            coords::dataBbox segBounds(segData.bounds, &adjacentVolume.CoordSystem(), 0);
-        	
-        	std::cout << "            " << segBounds.toGlobalBbox() << std::endl;
 
-            if(exceedsOverlap(segBounds.toGlobalBbox(), overlap)) {
+            coords::DataBbox segBounds(segData.bounds, &adjacentVolume.CoordSystem(), 0);
+
+        	std::cout << "            " << segBounds.ToGlobalBbox() << std::endl;
+
+            if(exceedsOverlap(segBounds.ToGlobalBbox(), overlap)) {
                 seeds.push_back(*seed);
                 break;
             }
         }
     }
-    
+
 }
 
 }} // namespace om::handler

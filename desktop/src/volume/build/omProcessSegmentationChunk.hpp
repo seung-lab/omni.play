@@ -41,7 +41,7 @@ public:
 private:
     OmChunk *const chunk_;
     const bool computeSizes_;
-    const om::dataCoord minVertexOfChunk_;
+    const om::coords::Data minVertexOfChunk_;
     OmSegments *const segments_;
 
     boost::unordered_map<OmSegID, OmSegment*> cacheSegments_;

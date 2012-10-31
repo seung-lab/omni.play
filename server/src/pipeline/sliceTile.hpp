@@ -11,11 +11,11 @@ class sliceTile : public stage
 {
 private:
     common::viewType view_;
-    coords::data dc_;
+    coords::Data dc_;
     int chunkSize_;
 
 public:
-    sliceTile(common::viewType view, coords::data dc)
+    sliceTile(common::viewType view, coords::Data dc)
         : view_(view)
         , dc_(dc)
         , chunkSize_(dc.volume()->GetChunkDimension())
@@ -25,11 +25,11 @@ public:
     data_var operator()(const datalayer::memMappedFile<T>& in) const
     {
         data<T> out;
-        coords::Chunk cc = dc_.toChunk();
+        coords::Chunk cc = dc_.ToChunk();
         uint64_t offset = cc.PtrOffset(dc_.volume(), sizeof(T));
         T* chunkPtr = in.GetPtrWithOffset(offset);
         chunks::rawChunkSlicer<T> slicer(chunkSize_, chunkPtr);
-        out.data = slicer.GetCopyOfTile(view_, dc_.toTileDepth(view_));
+        out.data = slicer.GetCopyOfTile(view_, dc_.ToTileDepth(view_));
         out.size = chunkSize_ * chunkSize_;
         return out;
     }

@@ -21,15 +21,15 @@ namespace handler {
 using namespace pipeline;
 
 void setTileBounds(server::tile& t,
-                   const coords::data dc,
+                   const coords::Data dc,
                    const common::viewType& view)
 {
-    coords::Chunk cc = dc.toChunk();
-    int depth = dc.toTileDepth(view);
-    coords::dataBbox bounds = cc.BoundingBox(dc.volume());
+    coords::Chunk cc = dc.ToChunk();
+    int depth = dc.ToTileDepth(view);
+    coords::DataBbox bounds = cc.BoundingBox(dc.volume());
 
-    server::vector3d min = common::twist(bounds.getMin().toGlobal(), view);
-    server::vector3d max = common::twist(bounds.getMax().toGlobal(), view);
+    server::vector3d min = common::twist(bounds.getMin().ToGlobal(), view);
+    server::vector3d max = common::twist(bounds.getMax().ToGlobal(), view);
 
     min.z += depth;
     max.z = min.z;
@@ -49,7 +49,7 @@ void get_chan_tile(server::tile& _return,
         throw argException("Requested Channel Tile outside bounds of volume.");
     }
 
-    coords::data dc = point.ToData(&vol.CoordSystem(), vol.MipLevel());
+    coords::Data dc = point.ToData(&vol.CoordSystem(), vol.MipLevel());
 
     setTileBounds(_return, dc, view);
     _return.view = common::Convert(view);
@@ -64,7 +64,7 @@ void get_chan_tile(server::tile& _return,
 
 void makeSegTile(server::tile& t,
                  const dataSrcs& src,
-                 const coords::data& dc,
+                 const coords::Data& dc,
                  const common::viewType& view,
                  uint32_t segId)
 {
@@ -101,7 +101,7 @@ void get_seg_tiles(std::map<std::string, server::tile> & _return,
             for(int z = min.z; z <= max.z; z += res.z) // always depth when twisted
             {
                 coords::Global coord = common::twist(coords::Global(x,y,z), view);
-                coords::data dc = coord.ToData(&vol.CoordSystem(), vol.MipLevel());
+                coords::Data dc = coord.ToData(&vol.CoordSystem(), vol.MipLevel());
 
                 server::tile t;
                 makeSegTile(t, vol.Data(), dc, view, segId);

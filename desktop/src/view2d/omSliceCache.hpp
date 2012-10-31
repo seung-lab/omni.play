@@ -37,7 +37,7 @@ public:
         , chunkDim_(vol->Coords().GetChunkDimension())
     {}
 
-    OmSegID GetVoxelValue(const om::dataCoord& coord)
+    OmSegID GetVoxelValue(const om::coords::Data& coord)
     {
         const int depthInChunk = coord.toTileDepth(viewType_);
         

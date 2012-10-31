@@ -7,7 +7,7 @@ private:
     OmSegmentation *const vol_;
     const ViewType viewType_;
 
-    std::set<om::dataCoord> pts_;
+    std::set<om::coords::Data> pts_;
 
 public:
     OmChunksAndPts(OmSegmentation* vol, const ViewType viewType)
@@ -25,7 +25,7 @@ public:
                 continue;
             }
 
-            om::dataCoord coord = iter->toDataCoord(vol_, 0);
+            om::coords::Data coord = iter->toDataCoord(vol_, 0);
 
             pts_.insert(coord);
         }
