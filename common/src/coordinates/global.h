@@ -13,7 +13,7 @@ namespace coords {
 class Chunk;
 class Data;
 class DataBbox;
-class screen;
+class Screen;
 class Norm;
 class NormBbox;
 class volumeSystem;
@@ -35,7 +35,7 @@ public:
     Norm ToNorm(const volumeSystem*) const;
     Data ToData(const volumeSystem*, const int) const;
     Chunk ToChunk(const volumeSystem*, const int) const;
-    screen ToScreen(screenSystem*) const;
+    Screen ToScreen(screenSystem*) const;
     Vector3i WithAbsOffset(const volumeSystem*) const;
     static Global FromOffsetCoords(Vector3i, const volumeSystem*);
     operator server::vector3d () const;

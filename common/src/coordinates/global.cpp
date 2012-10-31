@@ -10,11 +10,11 @@ Global::Global(server::vector3d v) {
     z = v.z;
 }
 
-screen Global::ToScreen(screenSystem *state) const
+Screen Global::ToScreen(screenSystem *state) const
 {
     const vmml::Vector4f Global(x, y, z, 1);
     vmml::Vector3f screenC = state->GlobalToScreenMat() * Global;
-    return screen(vmml::Vector2i(screenC.x, screenC.y), state);
+    return Screen(vmml::Vector2i(screenC.x, screenC.y), state);
 }
 
 Data Global::ToData(const volumeSystem *vol, const int mipLevel) const

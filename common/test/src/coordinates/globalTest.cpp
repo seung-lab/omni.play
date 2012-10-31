@@ -38,9 +38,9 @@ TEST(Coords_Global, ToScreen)
 {
 	screenSystem ss(common::XY_VIEW, 128, 128, 1.0, Global(64));
 	Global g(128);
-	ASSERT_EQ(screen(128, 128, &ss), g.ToScreen(&ss));
+	ASSERT_EQ(Screen(128, 128, &ss), g.ToScreen(&ss));
 	screenSystem ss2(common::XY_VIEW, 128, 128, .5, Global(64));
-	ASSERT_EQ(screen(96, 96, &ss2), g.ToScreen(&ss2));
+	ASSERT_EQ(Screen(96, 96, &ss2), g.ToScreen(&ss2));
 }
 
 TEST(Coords_Global, WithAbsOffset)
