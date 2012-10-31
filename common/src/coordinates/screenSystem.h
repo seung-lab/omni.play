@@ -8,7 +8,7 @@ namespace coords {
 
 class Global;
 
-class screenSystem
+class ScreenSystem
 {
 private:
     common::viewType viewType_;
@@ -40,10 +40,6 @@ private:
         return makeViewTypeVector3(vec.x, vec.y, vec.z);
     }
 
-public:
-    screenSystem(common::viewType viewType);
-    screenSystem(common::viewType viewType, int width, int height, double scale = 1.0, Global location = Global(0));
-
     // Update the Transformation Matricies based on changes to scale, location or viewport
     //
     // transformation from global to screen should be equivalent to these linear equations:
@@ -65,31 +61,46 @@ public:
     //
     // the selection matrices should be transposes of the earlier ones and the transforms need
     // to be shuffled around too.
-    void UpdateTransformationMatrices();
+    void update();
 
-    inline const Matrix4f& ScreenToGlobalMat() const {
+public:
+    ScreenSystem(common::viewType viewType);
+    ScreenSystem(common::viewType viewType, int width, int height, double scale = 1.0, Global location = Global(0));
+
+    inline const Matrix4f& screenToGlobalMat() const {
         return screenToGlobalMat_;
     }
 
-    inline const Matrix4f& GlobalToScreenMat() const {
+    inline const Matrix4f& globalToScreenMat() const {
         return globalToScreenMat_;
     }
 
     // viewport
-    inline const Vector4i& getTotalViewport() const {
+    inline const Vector4i& totalViewport() const {
         return totalViewport_;
     }
 
-    inline void setTotalViewport(const int width, const int height) {
+    inline void set_totalViewport(const int width, const int height) {
         totalViewport_ = Vector4i(0, 0, width, height);
+		update();
     }
 
-    inline void setZoomScale(const double scale) {
+    inline double zoomScale() const {
+    	return zoomScale_;
+    }
+
+    inline void set_zoomScale(const double scale) {
         zoomScale_ = scale;
+        update();
     }
 
-    inline void setLocation(const Global location) {
+    inline Global location() const {
+    	return location_;
+    }
+
+    inline void set_location(const Global location) {
         location_ = location;
+        update();
     }
 };
 

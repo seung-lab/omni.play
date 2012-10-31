@@ -17,10 +17,9 @@ screenSystem::screenSystem(common::viewType viewType, int width, int height, dou
 	setTotalViewport(width, height);
 	setZoomScale(scale);
 	setLocation(location);
-	UpdateTransformationMatrices();
 }
 
-void screenSystem::UpdateTransformationMatrices()
+void screenSystem::update()
 {
     // init
     screenToGlobalMat_ = Matrix4f::ZERO;
