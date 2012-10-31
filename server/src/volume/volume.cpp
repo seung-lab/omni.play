@@ -57,7 +57,7 @@ volume::volume(const server::metadata& meta)
 }
 
 volume::volume(std::string uri,
-    	   	   coords::globalBbox bounds,
+    	   	   coords::GlobalBbox bounds,
     	   	   Vector3i resolution,
     	   	   server::dataType::type dataType,
     	   	   server::volType::type volType,
@@ -80,23 +80,23 @@ volume::volume(std::string uri,
 	loadVolume();
 }
 
-int32_t volume::GetSegId(coords::global point) const
+int32_t volume::GetSegId(coords::Global point) const
 {
-    coords::global coord = point;
-    coords::data dc = coord.toData(&coordSystem_, mipLevel_);
+    coords::Global coord = point;
+    coords::data dc = coord.ToData(&coordSystem_, mipLevel_);
 
     return data_ >> getSegId(dc);
 }
 
-void volume::GetSegIds(coords::global point, int radius,
+void volume::GetSegIds(coords::Global point, int radius,
                        common::viewType view,
                        std::set<int32_t>& ids) const
 {
-    coords::global coord = point;
-    coords::data dc = coord.toData(&coordSystem_, mipLevel_);
+    coords::Global coord = point;
+    coords::data dc = coord.ToData(&coordSystem_, mipLevel_);
 
     data_var id = data_ >> getSegIds(dc, radius, view,
-                                                 bounds_.toDataBbox(&coordSystem_, mipLevel_));
+                                                 bounds_.ToDataBbox(&coordSystem_, mipLevel_));
 
     data<uint32_t> found = boost::get<data<uint32_t> >(id);
     for(int i = 0; i < found.size; i++) {

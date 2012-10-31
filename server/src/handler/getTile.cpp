@@ -42,14 +42,14 @@ void setTileBounds(server::tile& t,
 
 void get_chan_tile(server::tile& _return,
                    const volume::volume& vol,
-                   const coords::global& point,
+                   const coords::Global& point,
                    const common::viewType view)
 {
     if(!vol.Bounds().contains(point)) {
         throw argException("Requested Channel Tile outside bounds of volume.");
     }
 
-    coords::data dc = point.toData(&vol.CoordSystem(), vol.MipLevel());
+    coords::data dc = point.ToData(&vol.CoordSystem(), vol.MipLevel());
 
     setTileBounds(_return, dc, view);
     _return.view = common::Convert(view);
@@ -84,15 +84,15 @@ void makeSegTile(server::tile& t,
 void get_seg_tiles(std::map<std::string, server::tile> & _return,
                    const volume::volume& vol,
                    const int32_t segId,
-                   const coords::globalBbox& segBbox,
+                   const coords::GlobalBbox& segBbox,
                    const common::viewType view)
 {
-    coords::globalBbox bounds = segBbox;
+    coords::GlobalBbox bounds = segBbox;
 
     bounds.intersect(vol.Bounds());
 
-    coords::global min = common::twist(bounds.getMin(), view);
-    coords::global max = common::twist(bounds.getMax(), view);
+    coords::Global min = common::twist(bounds.getMin(), view);
+    coords::Global max = common::twist(bounds.getMax(), view);
     Vector3i dims = common::twist(vol.ChunkDims(), view);
     Vector3i res = common::twist(vol.Resolution(), view);
 
@@ -100,8 +100,8 @@ void get_seg_tiles(std::map<std::string, server::tile> & _return,
         for(int y = min.y; y <= max.y; y += dims.y * res.y) {
             for(int z = min.z; z <= max.z; z += res.z) // always depth when twisted
             {
-                coords::global coord = common::twist(coords::global(x,y,z), view);
-                coords::data dc = coord.toData(&vol.CoordSystem(), vol.MipLevel());
+                coords::Global coord = common::twist(coords::Global(x,y,z), view);
+                coords::data dc = coord.ToData(&vol.CoordSystem(), vol.MipLevel());
 
                 server::tile t;
                 makeSegTile(t, vol.Data(), dc, view, segId);

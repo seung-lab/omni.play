@@ -6,7 +6,7 @@
 
 namespace om {
 namespace volume { class volume; }
-namespace coords { class global; class globalBbox; }
+namespace coords { class Global; class GlobalBbox; }
 namespace server { class serverHandler; }
 namespace handler {
 
@@ -19,20 +19,20 @@ void get_graph(std::vector<server::edge>& _return, const volume::volume& vol);
 
 void get_chan_tile(server::tile& _return,
                    const volume::volume& vol,
-                   const coords::global& point,
+                   const coords::Global& point,
                    const common::viewType view);
 
 void get_seg_tiles(std::map<std::string, server::tile> & _return,
                    const volume::volume& vol,
                    const int32_t segId,
-                   const coords::globalBbox& segBbox,
+                   const coords::GlobalBbox& segBbox,
                    const common::viewType view);
 
-int32_t get_seg_id(const volume::volume& vol, coords::global point);
+int32_t get_seg_id(const volume::volume& vol, coords::Global point);
 
 void get_seg_ids(std::set<int32_t> & _return,
                  const volume::volume& vol,
-                 coords::global point,
+                 coords::Global point,
                  const int32_t radius,
                  const common::viewType view);
 

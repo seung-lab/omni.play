@@ -13,9 +13,9 @@
 namespace om {
 namespace handler {
 
-bool inAdjacentVolume(const coords::globalBbox& seg,
-                      const coords::globalBbox& ovr,
-                      const coords::globalBbox& adj)
+bool inAdjacentVolume(const coords::GlobalBbox& seg,
+                      const coords::GlobalBbox& ovr,
+                      const coords::GlobalBbox& adj)
 {
     // If the segment is touching a boundary && that boundary is inside the adj Volume.
     // Need to adjust segment mins by 1 because segments don't go all the way to the
@@ -28,8 +28,8 @@ bool inAdjacentVolume(const coords::globalBbox& seg,
            (seg.getMax().z + 1 == ovr.getMax().z && ovr.getMax().z < adj.getMax().z);
 }
 
-bool exceedsOverlap(const coords::globalBbox& seg,
-                    const coords::globalBbox& ovr)
+bool exceedsOverlap(const coords::GlobalBbox& seg,
+                    const coords::GlobalBbox& ovr)
 {
     return seg.getMin().x < ovr.getMin().x || seg.getMin().y < ovr.getMin().y || seg.getMin().z < ovr.getMin().z ||
            seg.getMax().x > ovr.getMax().x || seg.getMax().y > ovr.getMax().y || seg.getMax().z > ovr.getMax().z;
@@ -43,7 +43,7 @@ void conditionalJoin(zi::disjoint_sets<uint32_t>& sets, uint32_t id1, uint32_t i
 }
 
 template<typename T>
-void connectedSets(const coords::globalBbox& bounds,
+void connectedSets(const coords::GlobalBbox& bounds,
                    const volume::volume& vol,
                    const T& allowed,
                    std::vector<std::set<int32_t> >& results)
@@ -61,18 +61,18 @@ void connectedSets(const coords::globalBbox& bounds,
         {
             for(int k = bounds.getMin().z + 1; k < bounds.getMax().z; k++)
             {
-                uint32_t seg_id  = vol.GetSegId( coords::global(i,j,k) );
+                uint32_t seg_id  = vol.GetSegId( coords::Global(i,j,k) );
                 if (allowed.count(seg_id))
                 {
-                    uint32_t seg_id1 = vol.GetSegId( coords::global(i-1,j,k) );
+                    uint32_t seg_id1 = vol.GetSegId( coords::Global(i-1,j,k) );
                     if ( allowed.count(seg_id1) ) {
                         conditionalJoin(sets, seg_id, seg_id1);
                     }
-                    uint32_t seg_id2 = vol.GetSegId( coords::global(i,j-1,k) );
+                    uint32_t seg_id2 = vol.GetSegId( coords::Global(i,j-1,k) );
                     if ( allowed.count(seg_id2) ) {
                         conditionalJoin(sets, seg_id, seg_id2);
                     }
-                    uint32_t seg_id3 = vol.GetSegId( coords::global(i,j,k-1) );
+                    uint32_t seg_id3 = vol.GetSegId( coords::Global(i,j,k-1) );
                     if ( allowed.count(seg_id3) ) {
                         conditionalJoin(sets, seg_id, seg_id3);
                     }
@@ -109,7 +109,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     const int DUST_SIZE_THR_2D=25;
     const int FALSE_OBJ_SIZE_THR=125;
 
-    coords::globalBbox overlap = taskVolume.Bounds();
+    coords::GlobalBbox overlap = taskVolume.Bounds();
     overlap.intersect(adjacentVolume.Bounds());
 
     bool leavesVolume = false;
@@ -126,7 +126,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
         }
 
         coords::dataBbox segOverlap(segData.bounds, &taskVolume.CoordSystem(), 0);
-        coords::globalBbox segOver = segOverlap.toGlobalBbox();
+        coords::GlobalBbox segOver = segOverlap.toGlobalBbox();
         segOver.intersect(overlap);
 
         // Does not overlap with boundary region
@@ -152,7 +152,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
         {
             for(int z = overlap.getMin().z; z < overlap.getMax().z; z++)
             {
-                const coords::global point(x, y, z);
+                const coords::Global point(x, y, z);
 
                 uint32_t taskSegId = taskVolume.GetSegId(point);
 

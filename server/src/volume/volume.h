@@ -12,7 +12,7 @@ class volume
 {
 private:
     std::string uri_;
-    coords::globalBbox bounds_;
+    coords::GlobalBbox bounds_;
     Vector3i resolution_;
     server::dataType::type dataType_; // Replace with omni type?
     server::volType::type volType_;
@@ -27,7 +27,7 @@ private:
 public:
     volume(const server::metadata& metadata);
     volume(std::string uri,
-    	   coords::globalBbox bounds,
+    	   coords::GlobalBbox bounds,
     	   Vector3i resolution,
     	   server::dataType::type dataType,
     	   server::volType::type volType,
@@ -38,7 +38,7 @@ public:
         return uri_;
     }
 
-    inline const coords::globalBbox& Bounds() const {
+    inline const coords::GlobalBbox& Bounds() const {
         return bounds_;
     }
 
@@ -70,11 +70,11 @@ public:
         return coordSystem_;
     }
 
-//    tile::tile GetChanTile(coords::global point, server::viewType::type view);
-//    tile::tile GetSegTile(coords::global point, server::viewType::type view);
-    int32_t GetSegId(coords::global point) const;
+//    tile::tile GetChanTile(coords::Global point, server::viewType::type view);
+//    tile::tile GetSegTile(coords::Global point, server::viewType::type view);
+    int32_t GetSegId(coords::Global point) const;
 
-    void GetSegIds(coords::global point,
+    void GetSegIds(coords::Global point,
                    int radius,
                    common::viewType view,
                    std::set<int32_t>& ret) const;

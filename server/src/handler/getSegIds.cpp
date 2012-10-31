@@ -13,7 +13,7 @@ namespace handler {
 
 using namespace pipeline;
 
-int32_t get_seg_id(const volume::volume& vol, coords::global point)
+int32_t get_seg_id(const volume::volume& vol, coords::Global point)
 {
     utility::timer t;
     int32_t segId = vol.GetSegId(point);
@@ -23,7 +23,7 @@ int32_t get_seg_id(const volume::volume& vol, coords::global point)
 
 void get_seg_ids(std::set<int32_t>& _return,
                  const volume::volume& vol,
-                 coords::global point,
+                 coords::Global point,
                  const int radius,
                  const common::viewType view)
 {

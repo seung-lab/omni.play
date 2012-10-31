@@ -59,7 +59,7 @@ TEST(UpdateMeshTest, Test1)
 	EXPECT_CALL(mesher, remesh(_));
 
 	om::volume::volume vol("test/data/test.omni.files/",
-		coords::globalBbox(coords::global(0, 0, 0), coords::global(255, 255, 159)),
+		coords::GlobalBbox(coords::Global(0), coords::Global(255, 255, 159)),
 		vmml::Vector3i::ONE, server::dataType::UINT32,
 		server::volType::SEGMENTATION, vmml::Vector3i(128),0);
 
