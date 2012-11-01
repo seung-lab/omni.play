@@ -17,7 +17,7 @@ private:
 
     void setup()
     {
-        const int rootMipLevel = vol_->Coords().GetRootMipLevel();
+        const int rootMipLevel = vol_->Coords().RootMipLevel();
 
         std::vector<matrix_t*> newMips;
         newMips.resize(rootMipLevel + 1);

@@ -14,7 +14,7 @@
 OmTile::OmTile(OmCacheBase* cache, const OmTileCoord& key)
     : cache_(cache)
     , key_(key)
-    , tileLength_(key.getVolume()->Coords().GetChunkDimension())
+    , tileLength_(key.getVolume()->Coords().ChunkDimension())
     , mipChunkCoord_(tileToMipCoord())
 {}
 

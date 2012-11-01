@@ -18,7 +18,7 @@ public:
     sliceTile(common::viewType view, coords::Data dc)
         : view_(view)
         , dc_(dc)
-        , chunkSize_(dc.volume()->GetChunkDimension())
+        , chunkSize_(dc.volume()->ChunkDimension())
     { }
 
     template <typename T>

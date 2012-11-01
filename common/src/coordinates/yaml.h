@@ -5,7 +5,7 @@
 namespace om { namespace coords {
 class Global;
 class GlobalBbox;
-class volumeSystem;
+class VolumeSystem;
 } }
 
 
@@ -16,7 +16,7 @@ Emitter& operator<<(Emitter&, const om::coords::Global&);
 void operator>>(const Node&, om::coords::Global&);
 Emitter& operator<<(Emitter&, const om::coords::GlobalBbox&);
 void operator>>(const Node&, om::coords::GlobalBbox&);
-Emitter& operator<<(Emitter&, const om::coords::volumeSystem&);
-void operator>>(const Node&, om::coords::volumeSystem&);
+Emitter& operator<<(Emitter&, const om::coords::VolumeSystem&);
+void operator>>(const Node&, om::coords::VolumeSystem&);
 
 } // namespace YAML

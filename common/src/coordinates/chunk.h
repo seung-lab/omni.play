@@ -11,7 +11,7 @@ namespace coords {
 
 class DataBbox;
 class Data;
-class volumeSystem;
+class VolumeSystem;
 
 class Chunk : public vmml::Vector3i {
 
@@ -33,10 +33,10 @@ public:
     Chunk PrimaryChildCoord() const;
     std::vector<Chunk> ChildrenCoords() const;
 
-    Data ToData(const volumeSystem*) const;
-    DataBbox BoundingBox(const volumeSystem*) const;
-    uint64_t PtrOffset(const volumeSystem*, int64_t) const;
-    int SliceDepth(const volumeSystem*, Global, common::viewType) const;
+    Data ToData(const VolumeSystem*) const;
+    DataBbox BoundingBox(const VolumeSystem*) const;
+    uint64_t PtrOffset(const VolumeSystem*, int64_t) const;
+    int SliceDepth(const VolumeSystem*, Global, common::viewType) const;
 
     void operator=(const Chunk& rhs);
     bool operator==(const Chunk& rhs) const;

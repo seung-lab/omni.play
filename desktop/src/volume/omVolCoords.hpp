@@ -29,12 +29,12 @@ public:
     //data properties
     inline om::globalBbox GetExtent() const
     {
-        Vector3f abs = GetAbsOffset();
+        Vector3f abs = AbsOffset();
         Vector3i res = GetResolution();
         return om::globalBbox(abs, abs - Vector3f::ONE + dataDimensions_*res );
     }
 
-    inline Vector3i GetDataDimensions() const {
+    inline Vector3i DataDimensions() const {
         return dataDimensions_;
     }
 
@@ -46,7 +46,7 @@ public:
     }
 
 // chunk dims
-    inline int GetChunkDimension() const {
+    inline int ChunkDimension() const {
         return chunkDim_;
     }
 
@@ -72,7 +72,7 @@ public:
         return globalToNorm_;
     }
 
-    inline Vector3i GetAbsOffset() const {
+    inline Vector3i AbsOffset() const {
         return dataToGlobal_.getTranslation();
     }
 

@@ -36,7 +36,7 @@ public:
     bool CheckEverythingWasMeshed()
     {
         om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-            segmentation_->GetMipChunkCoords();
+            segmentation_->MipChunkCoords();
 
         bool allGood = true;
 

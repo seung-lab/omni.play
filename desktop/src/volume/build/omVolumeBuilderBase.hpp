@@ -145,7 +145,7 @@ private:
 
     void checkChunkDims()
     {
-        if(vol_->Coords().GetChunkDimension() % 2){
+        if(vol_->Coords().ChunkDimension() % 2){
             throw OmFormatException("chunk dimensions must be even");
         }
     }
@@ -154,7 +154,7 @@ private:
     {
         const Vector3i source_dims = getMip0Dims();
 
-        if(vol_->Coords().GetDataDimensions() != source_dims){
+        if(vol_->Coords().DataDimensions() != source_dims){
             vol_->Coords().SetDataDimensions(source_dims);
         }
 

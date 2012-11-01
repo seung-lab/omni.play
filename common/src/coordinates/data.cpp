@@ -6,22 +6,22 @@ using namespace om::common;
 namespace om {
 namespace coords {
 
-Data::Data(Data::base_t v, const volumeSystem* volume, int mipLevel)
+Data::Data(Data::base_t v, const VolumeSystem* volume, int mipLevel)
     : base_t(v)
     , volume_(volume)
     , mipLevel_(mipLevel)
 {
-    if (mipLevel > volume_->GetRootMipLevel()) {
+    if (mipLevel > volume_->RootMipLevel()) {
         throw argException("Invalid Mip level.");
     }
 }
 
-Data::Data(int x, int y, int z, const volumeSystem* volume, int mipLevel)
+Data::Data(int x, int y, int z, const VolumeSystem* volume, int mipLevel)
     : base_t(x, y, z)
     , volume_(volume)
     , mipLevel_(mipLevel)
 {
-    if (mipLevel > volume_->GetRootMipLevel()) {
+    if (mipLevel > volume_->RootMipLevel()) {
         throw argException("Invalid Mip level.");
     }
 }
@@ -41,25 +41,25 @@ Norm Data::ToNorm() const
 
 Chunk Data::ToChunk() const
 {
-    return Chunk(mipLevel_, *this / volume_->GetChunkDimensions());
+    return Chunk(mipLevel_, *this / volume_->ChunkDimensions());
 }
 
 Vector3i Data::ToChunkVec() const
 {
-    Vector3i dims = volume_->GetChunkDimensions();
+    Vector3i dims = volume_->ChunkDimensions();
     return Vector3i(x % dims.x, y % dims.y, z % dims.z);
 }
 
 int Data::ToChunkOffset() const
 {
-    const Vector3i dims = volume_->GetChunkDimensions();
+    const Vector3i dims = volume_->ChunkDimensions();
     const Vector3i chunkVec = ToChunkVec();
     return dims.x * dims.y * chunkVec.z + dims.x * chunkVec.y + chunkVec.x;
 }
 
 int Data::ToTileOffset (viewType viewType) const
 {
-    const Vector3i dims = volume_->GetChunkDimensions();
+    const Vector3i dims = volume_->ChunkDimensions();
     const Vector3i chunkVec = ToChunkVec();
 
     switch(viewType)
@@ -77,7 +77,7 @@ int Data::ToTileOffset (viewType viewType) const
 
 int Data::ToTileDepth (viewType viewType) const
 {
-    const Vector3i dims = volume_->GetChunkDimensions();
+    const Vector3i dims = volume_->ChunkDimensions();
     const Vector3i chunkVec = ToChunkVec();
 
     switch(viewType)
@@ -91,12 +91,12 @@ int Data::ToTileDepth (viewType viewType) const
 }
 
 bool Data::IsInVolume() const {
-	return volume_->GetDataExtent().contains(ToGlobal());
+	return volume_->DataExtent().contains(ToGlobal());
 }
 
 Data Data::AtDifferentLevel(int newLevel) const
 {
-    if (newLevel > volume_->GetRootMipLevel()) {
+    if (newLevel > volume_->RootMipLevel()) {
         throw argException("Invalid Mip level.");
     }
 
@@ -122,13 +122,13 @@ DataBbox::DataBbox(Data min, Data max)
     }
 }
 
-DataBbox::DataBbox(const volumeSystem* volume, int level)
+DataBbox::DataBbox(const VolumeSystem* volume, int level)
     : base_t()
     , volume_(volume)
     , mipLevel_(level)
 { }
 
-DataBbox::DataBbox(DataBbox::base_t bbox, const volumeSystem* volume, int level)
+DataBbox::DataBbox(DataBbox::base_t bbox, const VolumeSystem* volume, int level)
     : base_t(bbox)
     , volume_(volume)
     , mipLevel_(level)

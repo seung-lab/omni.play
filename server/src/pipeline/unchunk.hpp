@@ -10,13 +10,13 @@ namespace pipeline {
 class unchunk //: public stage
 {
 private:
-    const coords::volumeSystem& vs_;
+    const coords::VolumeSystem& vs_;
 	const Vector3i dims_;
 
 public:
-    unchunk(const coords::volumeSystem& vs)
+    unchunk(const coords::VolumeSystem& vs)
         : vs_(vs)
-        , dims_(vs_.GetDataDimensions())
+        , dims_(vs_.DataDimensions())
     { }
 
     inline size_t target_offset(coords::Data d) const
@@ -32,10 +32,10 @@ public:
 		out.data = utility::smartPtr<T>::MallocNumElements(out.size);
 		T* outPtr = out.data.get();
 
-		const Vector3i dims = vs_.GetChunkDimensions();
+		const Vector3i dims = vs_.ChunkDimensions();
         // iterate over all chunks in order
         // TODO: boost multi_array
-        boost::shared_ptr<std::deque<coords::Chunk> > chunks = vs_.GetMipChunkCoords(0);
+        boost::shared_ptr<std::deque<coords::Chunk> > chunks = vs_.MipChunkCoords(0);
 	    FOR_EACH(iter, *chunks)
 	    {
             coords::Chunk coord = *iter;

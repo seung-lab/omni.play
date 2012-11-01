@@ -29,7 +29,7 @@ public:
         printf("copying mesh data...\n");
 
         om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-            segmentation_->GetMipChunkCoords();
+            segmentation_->MipChunkCoords();
 
         FOR_EACH(iter, *coordsPtr)
         {

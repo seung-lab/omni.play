@@ -151,7 +151,7 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 // 
 //     OmChannel& channel = cdw.GetChannel();
 //     Vector3f resolution = channel.Coords().GetResolution();
-//     Vector3i extents = channel.Coords().GetDataDimensions();
+//     Vector3i extents = channel.Coords().DataDimensions();
 // 
 //     glColor3fv(OMGL_WHITE);
 //     glEnable(GL_TEXTURE_2D);
@@ -272,7 +272,7 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //     Vector3f resolution = channel.Coords().GetDataResolution();
 //     Vector3f tileLength = resolution*128.0;
 //     Vector2f maxScreen = vgs_->View2dState()->GetViewSliceMax(plane);
-//     DataCoord maxDataExt = channel.Coords().GetDataExtent().getMax();
+//     DataCoord maxDataExt = channel.Coords().DataExtent().getMax();
 //     NormCoord maxNorm = channel.Coords().DataToNormCoord(maxDataExt);
 //     DataCoord maxData= channel.Coords().NormToDataCoord(maxNorm);
 //     DataCoord maxLimit = maxData.compareMinimum(coord+tileLength);
@@ -318,7 +318,7 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //     Vector3f resolution = channel.Coords().GetDataResolution();
 //     Vector3f tileLength = resolution*128.0;
 //     Vector2f minScreen = vgs_->View2dState()->GetViewSliceMin(plane);
-//     DataCoord minDataExt = channel.Coords().GetDataExtent().getMin();
+//     DataCoord minDataExt = channel.Coords().DataExtent().getMin();
 //     NormCoord minNorm = channel.Coords().DataToNormCoord(minDataExt);
 //     DataCoord minData= channel.Coords().NormToDataCoord(minNorm);
 //     DataCoord minLimit = minData.compareMaximum(coord);

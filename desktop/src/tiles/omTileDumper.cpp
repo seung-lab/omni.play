@@ -24,10 +24,10 @@ void OmTileDumper::DumpTiles()
     file.open(QIODevice::WriteOnly);
     QDataStream out(&file);
 
-    for(int mipLevel = 0; mipLevel <= vol_->Coords().GetRootMipLevel(); ++mipLevel){
+    for(int mipLevel = 0; mipLevel <= vol_->Coords().RootMipLevel(); ++mipLevel){
 
         //dim of miplevel in mipchunks
-        const int chunkDim = vol_->Coords().GetChunkDimension();
+        const int chunkDim = vol_->Coords().ChunkDimension();
         const Vector3i mip_coord_dims =
             vol_->Coords().MipLevelDimensionsInMipChunks(mipLevel) * chunkDim;
 

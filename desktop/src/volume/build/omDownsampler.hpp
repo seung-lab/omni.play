@@ -21,9 +21,9 @@ public:
         : vol_(vol)
         , files_(files)
     {
-        mippingInfo_.maxMipLevel = vol_->Coords().GetRootMipLevel();
+        mippingInfo_.maxMipLevel = vol_->Coords().RootMipLevel();
 
-        const Vector3<uint64_t> chunkDims = vol_->Coords().GetChunkDimensions();
+        const Vector3<uint64_t> chunkDims = vol_->Coords().ChunkDimensions();
 
         mippingInfo_.chunkDims = chunkDims;
         mippingInfo_.chunkSize = chunkDims.x * chunkDims.y * chunkDims.z;
@@ -53,7 +53,7 @@ public:
         threadPool.start(3);
 
         om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-            vol_->GetMipChunkCoords(0);
+            vol_->MipChunkCoords(0);
 
         FOR_EACH(iter, *coordsPtr)
         {

@@ -36,16 +36,16 @@ private:
         }
 
         //root mip level should be the same if data dimensions are the same
-        if( vol1->Coords().GetRootMipLevel() != vol2->Coords().GetRootMipLevel() ){
+        if( vol1->Coords().RootMipLevel() != vol2->Coords().RootMipLevel() ){
             printf("Volumes differ: Different number of MIP levels.\n");
             return false;
         }
 
-        for (int level = 0; level <= vol1->Coords().GetRootMipLevel(); ++level) {
+        for (int level = 0; level <= vol1->Coords().RootMipLevel(); ++level) {
             printf("Comparing mip level %i\n",level);
 
             om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-                vol1->GetMipChunkCoords(level);
+                vol1->MipChunkCoords(level);
 
             FOR_EACH(iter, *coordsPtr){
                 const om::coords::Chunk& coord = *iter;

@@ -17,33 +17,33 @@ Screen Global::ToScreen(ScreenSystem *state) const
     return Screen(vmml::Vector2i(screenC.x, screenC.y), state);
 }
 
-Data Global::ToData(const volumeSystem *vol, const int mipLevel) const
+Data Global::ToData(const VolumeSystem *vol, const int mipLevel) const
 {
     const vmml::Vector4f Global(x, y, z, 1);
     vmml::Vector3f dataC = vol->GlobalToDataMat(mipLevel) * Global;
     return Data(dataC, vol, mipLevel);
 }
 
-Chunk Global::ToChunk(const volumeSystem *vol, const int mipLevel) const
+Chunk Global::ToChunk(const VolumeSystem *vol, const int mipLevel) const
 {
     return ToData(vol, mipLevel).ToChunk();
 }
 
-Norm Global::ToNorm(const volumeSystem *vol) const
+Norm Global::ToNorm(const VolumeSystem *vol) const
 {
     const vmml::Vector4f Global(x, y, z, 1);
     vmml::Vector3f normC = vol->GlobalToNormMat() * Global;
     return Norm(normC, vol);
 }
 
-Global Global::FromOffsetCoords(Vector3i vec, const volumeSystem * vol)
+Global Global::FromOffsetCoords(Vector3i vec, const VolumeSystem * vol)
 {
-    return Global(vec - vol->GetAbsOffset());
+    return Global(vec - vol->AbsOffset());
 }
 
-Vector3i Global::WithAbsOffset(const volumeSystem * vol) const
+Vector3i Global::WithAbsOffset(const VolumeSystem * vol) const
 {
-    return *this + vol->GetAbsOffset();
+    return *this + vol->AbsOffset();
 }
 
 Global::operator server::vector3d () const {
@@ -54,7 +54,7 @@ Global::operator server::vector3d () const {
     return out;
 }
 
-NormBbox GlobalBbox::ToNormBbox(const volumeSystem *vol) const
+NormBbox GlobalBbox::ToNormBbox(const VolumeSystem *vol) const
 {
     Global min = _min;
     Global max = _max;
@@ -62,7 +62,7 @@ NormBbox GlobalBbox::ToNormBbox(const volumeSystem *vol) const
     return NormBbox(min.ToNorm(vol), max.ToNorm(vol));
 }
 
-DataBbox GlobalBbox::ToDataBbox(const volumeSystem *vol, int mipLevel) const
+DataBbox GlobalBbox::ToDataBbox(const VolumeSystem *vol, int mipLevel) const
 {
     Global min = _min;
     Global max = _max;

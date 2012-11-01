@@ -34,7 +34,7 @@ public:
     OmSliceCache(OmSegmentation* vol, const ViewType viewType)
         : vol_(vol)
         , viewType_(viewType)
-        , chunkDim_(vol->Coords().GetChunkDimension())
+        , chunkDim_(vol->Coords().ChunkDimension())
     {}
 
     OmSegID GetVoxelValue(const om::coords::Data& coord)

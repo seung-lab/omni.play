@@ -102,7 +102,7 @@ public:
 private:
 
     void resizeMapsVector(){
-        maps_.resize(vol_->Coords().GetRootMipLevel() + 1);
+        maps_.resize(vol_->Coords().RootMipLevel() + 1);
     }
 
     std::string getFileName(const int level) const {

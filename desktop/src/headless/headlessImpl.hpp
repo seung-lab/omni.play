@@ -169,7 +169,7 @@ public:
         vol.Coords().SetAbsOffset(dims);
 
         std::cout << "\tvolume data abs offset set to "
-                  << vol.Coords().GetAbsOffset()
+                  << vol.Coords().AbsOffset()
                   << "\n";
     }
 
@@ -274,7 +274,7 @@ public:
         double timeSecs = 0;
 
         om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-            vol.GetMipChunkCoords();
+            vol.MipChunkCoords();
         std::deque<om::coords::Chunk>& coords = *coordsPtr;
         const uint32_t numChunks = coords.size();
 
@@ -295,7 +295,7 @@ public:
             timeSecs += timer.s_elapsed();
         }
 
-        const Vector3i chunkDims = vol.Coords().GetChunkDimensions();
+        const Vector3i chunkDims = vol.Coords().ChunkDimensions();
         const double totalMegs =
             static_cast<double>(chunkDims.x) *
             static_cast<double>(chunkDims.y) *

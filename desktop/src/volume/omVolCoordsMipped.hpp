@@ -37,13 +37,13 @@ public:
 
 //mip level method
 
-    // Calculate MipRootLevel using GetChunkDimension().
+    // Calculate MipRootLevel using ChunkDimension().
     void UpdateRootLevel()
     {
         //determine max level
         Vector3i source_dims = GetExtent().getUnitDimensions();
         int max_source_dim = source_dims.getMaxComponent();
-        int mipchunk_dim = GetChunkDimension();
+        int mipchunk_dim = ChunkDimension();
 
         if (max_source_dim <= mipchunk_dim) {
             mMipRootLevel = 0;
@@ -52,13 +52,13 @@ public:
         }
     }
 
-    inline int GetRootMipLevel() const {
+    inline int RootMipLevel() const {
         return mMipRootLevel;
     }
 
     inline Vector3i MipedDataDimensions(const int level) const
     {
-        return GetDataDimensions() / om::math::pow2int(level);
+        return DataDimensions() / om::math::pow2int(level);
     }
 
     // Calculate the data dimensions needed to contain the volume at a given compression level.
@@ -72,16 +72,16 @@ public:
     inline Vector3i MipLevelDimensionsInMipChunks(int level) const
     {
         const Vector3f data_dims = MipLevelDataDimensions(level);
-        return Vector3i (ceil(data_dims.x / GetChunkDimension()),
-                         ceil(data_dims.y / GetChunkDimension()),
-                         ceil(data_dims.z / GetChunkDimension()));
+        return Vector3i (ceil(data_dims.x / ChunkDimension()),
+                         ceil(data_dims.y / ChunkDimension()),
+                         ceil(data_dims.z / ChunkDimension()));
     }
 
-    inline Vector3i GetChunkDimensions() const
+    inline Vector3i ChunkDimensions() const
     {
-        return Vector3i(GetChunkDimension(),
-                        GetChunkDimension(),
-                        GetChunkDimension());
+        return Vector3i(ChunkDimension(),
+                        ChunkDimension(),
+                        ChunkDimension());
     }
 
     //mip chunk methods
@@ -94,7 +94,7 @@ public:
     {
         //if level is greater than root level
         if(rMipCoord.Level < 0 ||
-           rMipCoord.Level > GetRootMipLevel()){
+           rMipCoord.Level > RootMipLevel()){
             return false;
         }
 
@@ -133,16 +133,16 @@ public:
     {
         const Vector3i data_dims = MipLevelDataDimensions(level);
 
-        return Vector3i(om::math::roundUp(data_dims.x, GetChunkDimension()),
-                        om::math::roundUp(data_dims.y, GetChunkDimension()),
-                        om::math::roundUp(data_dims.z, GetChunkDimension()));
+        return Vector3i(om::math::roundUp(data_dims.x, ChunkDimension()),
+                        om::math::roundUp(data_dims.y, ChunkDimension()),
+                        om::math::roundUp(data_dims.z, ChunkDimension()));
     }
 
     inline uint32_t ComputeTotalNumChunks() const
     {
         uint32_t numChunks = 0;
 
-        for (int level = 0; level <= GetRootMipLevel(); ++level) {
+        for (int level = 0; level <= RootMipLevel(); ++level) {
             numChunks += ComputeTotalNumChunks(level);
         }
 
@@ -157,7 +157,7 @@ public:
 
     inline uint32_t GetNumberOfVoxelsPerChunk() const
     {
-        const Vector3i dims = GetChunkDimensions();
+        const Vector3i dims = ChunkDimensions();
         return dims.x * dims.y * dims.z;
     }
 

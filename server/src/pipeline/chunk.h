@@ -12,11 +12,11 @@ namespace pipeline {
 class getChunk : public stage
 {
 private:
-    coords::volumeSystem vs_;
+    coords::VolumeSystem vs_;
     coords::Chunk cc_;
 
 public:
-    getChunk(coords::volumeSystem vs, coords::Chunk cc)
+    getChunk(coords::VolumeSystem vs, coords::Chunk cc)
         : vs_(vs)
         , cc_(cc)
     { }

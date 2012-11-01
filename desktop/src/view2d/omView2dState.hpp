@@ -146,7 +146,7 @@ public:
     {
         static const om::normCoord midPoint(0.5, 0.5, 0.5, vol_);
 
-        std::cout << vol_->Coords().GetDataDimensions() << std::endl;
+        std::cout << vol_->Coords().DataDimensions() << std::endl;
 
         om::coords::Global loc = midPoint.toGlobalCoord();
         setLocation(loc);
@@ -232,7 +232,7 @@ public:
         return zoomLevel_->GetMipLevel();
     }
     inline int getMaxMipLevel() const {
-        return vol_->Coords().GetRootMipLevel();
+        return vol_->Coords().RootMipLevel();
     }
 
     // depth-related computation helpers

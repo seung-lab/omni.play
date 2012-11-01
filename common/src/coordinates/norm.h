@@ -8,7 +8,7 @@ namespace coords {
 
 class Data;
 class Global;
-class volumeSystem;
+class VolumeSystem;
 
 class Norm : public vmml::Vector3f
 {
@@ -16,12 +16,12 @@ private:
     typedef vmml::Vector3f base_t;
 
 public:
-    Norm(base_t v, const volumeSystem *volume)
+    Norm(base_t v, const VolumeSystem *volume)
         : base_t(v)
         , volume_(volume)
     { }
 
-    Norm(float x, float y, float z, const volumeSystem *volume)
+    Norm(float x, float y, float z, const VolumeSystem *volume)
         : base_t(x, y, z)
         , volume_(volume)
     { }
@@ -30,14 +30,14 @@ public:
     Data ToData(int) const;
 
 private:
-	PROP_CONST_PTR(volumeSystem, volume);
+	PROP_CONST_PTR(VolumeSystem, volume);
 };
 
 class NormBbox : public vmml::AxisAlignedBoundingBox<float>
 {
 private:
     typedef AxisAlignedBoundingBox<float> base_t;
-    volumeSystem const * const vol_;
+    VolumeSystem const * const vol_;
 
 public:
     NormBbox(Norm min, Norm max);

@@ -49,7 +49,7 @@ private:
         {
             hdfExport->create();
             hdfExport->open();
-            const Vector3i chunkSize = vol->Coords().GetChunkDimensions();
+            const Vector3i chunkSize = vol->Coords().ChunkDimensions();
             const Vector3i rounded_data_dims =
                 vol->Coords().getDimsRoundedToNearestChunk(0);
             hdfExport->allocateChunkedDataset(fpath,
@@ -61,7 +61,7 @@ private:
         }
 
         om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-            vol->GetMipChunkCoords(0);
+            vol->MipChunkCoords(0);
 
         FOR_EACH(iter, *coordsPtr){
             const om::coords::Chunk& coord = *iter;

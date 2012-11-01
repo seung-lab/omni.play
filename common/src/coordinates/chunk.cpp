@@ -94,21 +94,21 @@ std::vector<Chunk> Chunk::ChildrenCoords() const
     return primary_child.SiblingCoords();
 }
 
-Data Chunk::ToData(const volumeSystem *vol) const {
-    return Data(*this * vol->GetChunkDimensions(), vol, mipLevel_);
+Data Chunk::ToData(const VolumeSystem *vol) const {
+    return Data(*this * vol->ChunkDimensions(), vol, mipLevel_);
 }
 
-DataBbox Chunk::BoundingBox(const volumeSystem *vol) const
+DataBbox Chunk::BoundingBox(const VolumeSystem *vol) const
 {
     const Data min = ToData(vol);
-    const Data max = min + vol->GetChunkDimensions();
+    const Data max = min + vol->ChunkDimensions();
     return DataBbox(min, max);
 }
 
-uint64_t Chunk::PtrOffset(const volumeSystem* vol, int64_t bytesPerVoxel) const
+uint64_t Chunk::PtrOffset(const VolumeSystem* vol, int64_t bytesPerVoxel) const
 {
-    const Vector3<int64_t> volDims = vol->getDimsRoundedToNearestChunk(mipLevel_);
-    const Vector3<int64_t> chunkDims = vol->GetChunkDimensions();
+    const Vector3<int64_t> volDims = vol->DimsRoundedToNearestChunk(mipLevel_);
+    const Vector3<int64_t> chunkDims = vol->ChunkDimensions();
 
     const int64_t slabSize  = volDims.x   * volDims.y   * chunkDims.z * bytesPerVoxel;
     const int64_t rowSize   = volDims.x   * chunkDims.y * chunkDims.z * bytesPerVoxel;
@@ -123,7 +123,7 @@ uint64_t Chunk::PtrOffset(const volumeSystem* vol, int64_t bytesPerVoxel) const
     return offset;
 }
 
-int Chunk::SliceDepth(const volumeSystem* vol, Global c, common::viewType view) const
+int Chunk::SliceDepth(const VolumeSystem* vol, Global c, common::viewType view) const
 {
     const Data d = c.ToData(vol, mipLevel_);
     const DataBbox bounds = BoundingBox(vol);

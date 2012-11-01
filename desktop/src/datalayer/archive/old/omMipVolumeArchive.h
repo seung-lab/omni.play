@@ -107,7 +107,7 @@ private:
         const int version = 1;
         out << version;
 
-        out << vol_.Coords().GetAbsOffset();
+        out << vol_.Coords().AbsOffset();
     }
 };
 

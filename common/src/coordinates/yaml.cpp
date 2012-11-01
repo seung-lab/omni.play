@@ -29,20 +29,20 @@ void operator>>(const Node& n, GlobalBbox& box)
     AxisAlignedBoundingBox<float>& bbox = box;
     n >> bbox;
 }
-Emitter& operator<<(Emitter& out, const volumeSystem& c)
+Emitter& operator<<(Emitter& out, const VolumeSystem& c)
 {
     out << BeginMap;
-    // out << Key << "dataDimensions" << Value << c.GetDataDimensions();
+    // out << Key << "dataDimensions" << Value << c.DataDimensions();
     // out << Key << "dataResolution" << Value << c.GetResolution();
     // out << Key << "chunkDim" << Value << c.chunkDim_;
     // out << Key << "mMipLeafDim" << Value << c.mMipLeafDim;
     // out << Key << "mMipRootLevel" << Value << c.mMipRootLevel;
-    // out << Key << "absOffset" << Value << c.GetAbsOffset();
+    // out << Key << "absOffset" << Value << c.AbsOffset();
     out << EndMap;
     return out;
 }
 
-void operator>>(const Node& in, volumeSystem& c)
+void operator>>(const Node& in, VolumeSystem& c)
 {
     GlobalBbox extent;
     in["dataExtent"] >> extent;

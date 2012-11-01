@@ -37,7 +37,7 @@ public:
     {
         setTitle("Volume Resolution");
 
-        const Vector3i dims = vol_.Coords().GetDataDimensions();
+        const Vector3i dims = vol_.Coords().DataDimensions();
 
         const QString extStr = QString("%1 x %2 x %3").arg(dims.x).arg(dims.y).arg(dims.z);
         grid_ = new QGridLayout(this);

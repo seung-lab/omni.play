@@ -59,14 +59,14 @@ TEST(Coords_Chunk, ChildrenCoords)
 TEST(Coords_Chunk, ToData)
 {
 	Chunk cc(1,1,1,1);
-	volumeSystem vs(Vector3i(1024));
+	VolumeSystem vs(Vector3i(1024));
 	ASSERT_EQ(Data(128, 128, 128, &vs, 1), cc.ToData(&vs));
 }
 
 TEST(Coords_Chunk, BoundingBox)
 {
 	Chunk cc(1,1,1,1);
-	volumeSystem vs(Vector3i(1024));
+	VolumeSystem vs(Vector3i(1024));
 	ASSERT_EQ(DataBbox(Data(128, 128, 128, &vs, 1),
 	          		   Data(256, 256, 256, &vs, 1)),
 			  cc.BoundingBox(&vs));
@@ -76,7 +76,7 @@ TEST(Coords_Chunk, BoundingBox)
 TEST(Coords_Chunk, PtrOffset)
 {
 	Chunk cc(1,1,1,1);
-	volumeSystem vs(Vector3i(1024));
+	VolumeSystem vs(Vector3i(1024));
 	size_t chunkSize = 128*128*128;
 	size_t chunks = 1024/128/2;
 	ASSERT_EQ(chunkSize*(chunks * chunks + chunks + 1), cc.PtrOffset(&vs, 1));
@@ -86,7 +86,7 @@ TEST(Coords_Chunk, PtrOffset)
 TEST(Coords_Chunk, SliceDepth)
 {
 	Chunk cc(1,1,1,1);
-	volumeSystem vs(Vector3i(1024));
+	VolumeSystem vs(Vector3i(1024));
 	ASSERT_EQ(15, cc.SliceDepth(&vs, Global(266, 276, 286), common::XY_VIEW));
 	ASSERT_EQ(10, cc.SliceDepth(&vs, Global(266, 276, 286), common::XZ_VIEW));
 	ASSERT_EQ(5, cc.SliceDepth(&vs, Global(266, 276, 286), common::ZY_VIEW));

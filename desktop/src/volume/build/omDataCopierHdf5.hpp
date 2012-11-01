@@ -60,7 +60,7 @@ private:
         threadPool.start(3);
 
         om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-            vol_->GetMipChunkCoords(0);
+            vol_->MipChunkCoords(0);
 
         OmSimpleProgress prog(coordsPtr->size(), "HDF5 chunk copy");
 

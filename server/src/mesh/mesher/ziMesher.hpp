@@ -37,7 +37,7 @@ private:
 public:
     ziMesher(const volume::volume& vol, const double threshold)
         : vol_(vol)
-        , rootMipLevel_(vol.CoordinateSystem()().GetRootMipLevel())
+        , rootMipLevel_(vol.CoordinateSystem()().RootMipLevel())
         , threshold_(threshold)
         , chunkCollectors_()
         , mesh::manager_(vol.MeshManager(threshold))
@@ -79,7 +79,7 @@ private:
     void init()
     {
         boost::shared_ptr<std::deque<coords::Chunk> > levelZeroChunks =
-            vol_.CoordSystem().GetMipChunkCoords(0);
+            vol_.CoordSystem().MipChunkCoords(0);
 
         progress_.SetTotalNumChunks(levelZeroChunks->size());
 
@@ -237,7 +237,7 @@ private:
 
     void processChunk( coords::Chunk coord )
     {
-        static const int chunkDim = vol_.CoordinateSystem()().GetChunkDimension();
+        static const int chunkDim = vol_.CoordinateSystem()().ChunkDimension();
 
         segChunk* chunk = vol_.GetChunk(coord);
 

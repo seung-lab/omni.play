@@ -10,7 +10,7 @@ VolumeSystem::VolumeSystem()
     , globalToData_(Matrix4f::IDENTITY)
     , normToGlobal_(Matrix4f::IDENTITY)
     , globalToNorm_(Matrix4f::IDENTITY)
-    , chunkDim_(DefaultChunkDim)
+    , chunkDimension_(DefaultChunkDim)
     , mMipRootLevel(0)
 {
     SetDataDimensions(Vector3i(DefaultChunkDim,
@@ -44,7 +44,7 @@ bool VolumeSystem::ContainsMipChunk(const Chunk & rMipCoord) const
 {
     //if level is greater than root level
     if(rMipCoord.mipLevel() < 0 ||
-        rMipCoord.mipLevel() > GetRootMipLevel()){
+        rMipCoord.mipLevel() > RootMipLevel()){
         return false;
     }
 

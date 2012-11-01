@@ -50,7 +50,7 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol)
     threadPool.start();
 
     om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-        vol->GetMipChunkCoords();
+        vol->MipChunkCoords();
 
     FOR_EACH(iter, *coordsPtr)
     {

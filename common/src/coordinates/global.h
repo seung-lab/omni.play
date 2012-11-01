@@ -16,7 +16,7 @@ class DataBbox;
 class Screen;
 class Norm;
 class NormBbox;
-class volumeSystem;
+class VolumeSystem;
 class ScreenSystem;
 
 class Global : public Vector3f
@@ -32,12 +32,12 @@ public:
         : base_t(i, j, k) {}
     Global(server::vector3d v);
 
-    Norm ToNorm(const volumeSystem*) const;
-    Data ToData(const volumeSystem*, const int) const;
-    Chunk ToChunk(const volumeSystem*, const int) const;
+    Norm ToNorm(const VolumeSystem*) const;
+    Data ToData(const VolumeSystem*, const int) const;
+    Chunk ToChunk(const VolumeSystem*, const int) const;
     Screen ToScreen(ScreenSystem*) const;
-    Vector3i WithAbsOffset(const volumeSystem*) const;
-    static Global FromOffsetCoords(Vector3i, const volumeSystem*);
+    Vector3i WithAbsOffset(const VolumeSystem*) const;
+    static Global FromOffsetCoords(Vector3i, const VolumeSystem*);
     operator server::vector3d () const;
 };
 
@@ -60,8 +60,8 @@ public:
                  Global(b.getMax().x,b.getMax().y,b.getMax().z))
     {}
 
-    NormBbox ToNormBbox(const volumeSystem*) const;
-    DataBbox ToDataBbox(const volumeSystem*, int) const;
+    NormBbox ToNormBbox(const VolumeSystem*) const;
+    DataBbox ToDataBbox(const VolumeSystem*, int) const;
     operator server::bbox () const;
 };
 

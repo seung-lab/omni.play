@@ -20,7 +20,7 @@ private:
     int32_t mipLevel_;
     pipeline::dataSrcs data_;
 //    segments::dataManager segData_;
-    coords::volumeSystem coordSystem_;
+    coords::VolumeSystem coordSystem_;
 
     friend std::ostream& operator<<(std::ostream& out, const volume& vol);
 
@@ -66,7 +66,7 @@ public:
         return data_;
     }
 
-    inline const coords::volumeSystem& CoordSystem() const {
+    inline const coords::VolumeSystem& CoordSystem() const {
         return coordSystem_;
     }
 

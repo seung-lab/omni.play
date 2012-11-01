@@ -48,7 +48,7 @@ private:
     {
         std::map<int, Vector3i> levelsAndDims;
 
-        for (int level = 0; level <= vol.Coords().GetRootMipLevel(); level++) {
+        for (int level = 0; level <= vol.Coords().RootMipLevel(); level++) {
             levelsAndDims[level] = vol.Coords().getDimsRoundedToNearestChunk(level);
         }
 
@@ -64,7 +64,7 @@ private:
         const uint32_t numChunks = vol.Coords().ComputeTotalNumChunks();
         uint32_t counter = 0;
 
-        for(int level = 0; level <= vol.Coords().GetRootMipLevel(); ++level) 
+        for(int level = 0; level <= vol.Coords().RootMipLevel(); ++level) 
         {
             if(!OmHdf5ChunkUtils::VolumeExistsInHDF5(&vol, level)){
                 printf("no HDF5 volume data found for mip %d\n", level);
@@ -72,7 +72,7 @@ private:
             }
 
             om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-                vol.GetMipChunkCoords(level);
+                vol.MipChunkCoords(level);
 
             FOR_EACH(iter, *coordsPtr)
             {

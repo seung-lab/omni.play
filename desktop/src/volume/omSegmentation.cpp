@@ -138,7 +138,7 @@ int OmSegmentation::GetBytesPerVoxel() const {
 }
 
 int OmSegmentation::GetBytesPerSlice() const {
-    return GetBytesPerVoxel()*coords_.GetChunkDimension()*coords_.GetChunkDimension();
+    return GetBytesPerVoxel()*coords_.ChunkDimension()*coords_.ChunkDimension();
 }
 
 void OmSegmentation::SetVolDataType(const OmVolDataType type)
@@ -199,7 +199,7 @@ void OmSegmentation::SetVoxelValue(const om::coords::Global& vox, const uint32_t
     if (!ContainsVoxel(vox))
         return;
     
-    for(int level = 0; level <= coords_.GetRootMipLevel(); level++)
+    for(int level = 0; level <= coords_.RootMipLevel(); level++)
     {
         om::coords::Chunk leaf_mip_coord = vox.toChunkCoord(this, level);
         OmSegChunk* chunk = GetChunk(leaf_mip_coord);

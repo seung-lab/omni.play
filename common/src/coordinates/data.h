@@ -15,7 +15,7 @@ class Norm;
 class Chunk;
 class GlobalBbox;
 class NormBbox;
-class volumeSystem;
+class VolumeSystem;
 
 class Data : public vmml::Vector3i
 {
@@ -23,8 +23,8 @@ private:
     typedef Vector3i base_t;
 
 public:
-    Data(base_t v, const volumeSystem * vol, int mipLevel);
-    Data(int x, int y, int z, const volumeSystem * vol, int mipLevel);
+    Data(base_t v, const VolumeSystem * vol, int mipLevel);
+    Data(int x, int y, int z, const VolumeSystem * vol, int mipLevel);
 
     Global ToGlobal() const;
     Norm ToNorm() const;
@@ -56,7 +56,7 @@ public:
     	return base_t::operator==(other) && volume_ == other.volume_ && mipLevel_ == other.mipLevel_;
     }
 private:
-	PROP_CONST_PTR(volumeSystem, volume);
+	PROP_CONST_PTR(VolumeSystem, volume);
 	PROP_CONST_REF(int, mipLevel);
 };
 
@@ -67,8 +67,8 @@ private:
 
 public:
     DataBbox(Data min, Data max);
-    DataBbox(const volumeSystem * vol, int level);
-    DataBbox(base_t bbox, const volumeSystem * vol, int level);
+    DataBbox(const VolumeSystem * vol, int level);
+    DataBbox(base_t bbox, const VolumeSystem * vol, int level);
 
     inline Data getMin() const {
         return Data(base_t::getMin(), volume_, mipLevel_);
@@ -107,7 +107,7 @@ public:
     	return base_t::operator==(other) && volume_ == other.volume_ && mipLevel_ == other.mipLevel_;
     }
 private:
-	PROP_CONST_PTR(volumeSystem, volume);
+	PROP_CONST_PTR(VolumeSystem, volume);
 	PROP_CONST_REF(int, mipLevel);
 };
 

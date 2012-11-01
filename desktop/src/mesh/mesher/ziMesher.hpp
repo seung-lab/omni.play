@@ -27,7 +27,7 @@ class ziMesher {
 public:
     ziMesher(OmSegmentation* segmentation, const double threshold)
         : segmentation_(segmentation)
-        , rootMipLevel_(segmentation->Coords().GetRootMipLevel())
+        , rootMipLevel_(segmentation->Coords().RootMipLevel())
         , threshold_(threshold)
         , chunkCollectors_()
         , meshManager_(segmentation->MeshManager(threshold))
@@ -92,7 +92,7 @@ private:
     void init()
     {
         om::shared_ptr<std::deque<om::coords::Chunk> > levelZeroChunks =
-            segmentation_->GetMipChunkCoords(0);
+            segmentation_->MipChunkCoords(0);
 
         progress_.SetTotalNumChunks(levelZeroChunks->size());
 
@@ -250,7 +250,7 @@ private:
 
     void processChunk( om::coords::Chunk coord )
     {
-        static const int chunkDim = segmentation_->Coords().GetChunkDimension();
+        static const int chunkDim = segmentation_->Coords().ChunkDimension();
 
         OmSegChunk* chunk = segmentation_->GetChunk(coord);
 

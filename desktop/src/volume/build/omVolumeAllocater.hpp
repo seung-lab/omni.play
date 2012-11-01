@@ -15,7 +15,7 @@ public:
         assert(OmVolDataType::UNKNOWN != type.index());
         vol->SetVolDataType(type);
 
-        const int maxLevel = vol->Coords().GetRootMipLevel();
+        const int maxLevel = vol->Coords().RootMipLevel();
 
         std::vector<om::shared_ptr<QFile> > volFiles(maxLevel + 1);
 
@@ -38,7 +38,7 @@ public:
 
     static void ReAllocateDownsampledVolumes(OmMipVolume* vol)
     {
-        const int maxLevel = vol->Coords().GetRootMipLevel();
+        const int maxLevel = vol->Coords().RootMipLevel();
 
         std::vector<om::shared_ptr<QFile> > volFiles(maxLevel + 1);
 
