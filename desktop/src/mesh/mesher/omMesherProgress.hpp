@@ -40,7 +40,7 @@ public:
 
         std::cout << "finished chunk: " << coord << "; "
                   << chunksLeft << " chunks left "
-                  << "(" << total << " total)\n";
+                  << "(" << total << " total)" << std::endl;
 
     }
 };

@@ -100,7 +100,7 @@ private:
             addValuesFromChunkAndDownsampledChunks(*it);
         }
 
-        std::cout << "\nstarting meshing...\n";
+        std::cout << "\nstarting meshing..." << std::endl;
 
         zi::task_manager::simple manager( numParallelChunks_ );
         manager.start();
@@ -114,7 +114,7 @@ private:
 
         manager.join();
 
-        std::cout << "\ndone meshing...\n";
+        std::cout << "\ndone meshing..." << std::endl;
     }
 
     void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord)
