@@ -64,29 +64,29 @@ Chunk VolumeSystem::RootMipChunkCoordinate() const {
     return Chunk(mMipRootLevel, Vector3i::ZERO);
 }
 
-boost::shared_ptr<std::deque<coords::Chunk> >
+boost::shared_ptr<std::vector<coords::Chunk> >
 VolumeSystem::MipChunkCoords() const
 {
-    std::deque<coords::Chunk>* coords = new std::deque<coords::Chunk>();
+    std::vector<coords::Chunk>* coords = new std::vector<coords::Chunk>();
 
     for(int level = 0; level <= mMipRootLevel; ++level) {
         addChunkCoordsForLevel(level, coords);
     }
 
-    return boost::shared_ptr<std::deque<coords::Chunk> >(coords);
+    return boost::shared_ptr<std::vector<coords::Chunk> >(coords);
 }
 
-boost::shared_ptr<std::deque<coords::Chunk> >
+boost::shared_ptr<std::vector<coords::Chunk> >
 VolumeSystem::MipChunkCoords(const int mipLevel) const
 {
-    std::deque<coords::Chunk>* coords = new std::deque<coords::Chunk>();
+    std::vector<coords::Chunk>* coords = new std::vector<coords::Chunk>();
 
     addChunkCoordsForLevel(mipLevel, coords);
 
-    return boost::shared_ptr<std::deque<coords::Chunk> >(coords);
+    return boost::shared_ptr<std::vector<coords::Chunk> >(coords);
 }
 
-void VolumeSystem::addChunkCoordsForLevel(const int mipLevel, std::deque<coords::Chunk>* coords) const
+void VolumeSystem::addChunkCoordsForLevel(const int mipLevel, std::vector<coords::Chunk>* coords) const
 {
     const Vector3i dims = MipLevelDimensionsInMipChunks(mipLevel);
     for (int z = 0; z < dims.z; ++z){

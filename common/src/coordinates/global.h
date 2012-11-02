@@ -63,6 +63,11 @@ public:
     NormBbox ToNormBbox(const VolumeSystem*) const;
     DataBbox ToDataBbox(const VolumeSystem*, int) const;
     operator server::bbox () const;
+
+    friend std::ostream& operator << (std::ostream& os, const GlobalBbox& bbox ) {
+        os << "min:" << bbox._min << " max:" << bbox._max;
+        return os;
+    };
 };
 
 } // namespace coords

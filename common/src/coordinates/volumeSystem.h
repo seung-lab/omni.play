@@ -195,13 +195,13 @@ public:
     //mip Chunk methods
     Chunk RootMipChunkCoordinate() const;
 
-    boost::shared_ptr<std::deque<coords::Chunk> > MipChunkCoords() const;
-    boost::shared_ptr<std::deque<coords::Chunk> > MipChunkCoords(const int mipLevel) const;
+    boost::shared_ptr<std::vector<coords::Chunk> > MipChunkCoords() const;
+    boost::shared_ptr<std::vector<coords::Chunk> > MipChunkCoords(const int mipLevel) const;
 
     // Returns true if given MipCoordinate is a valid coordinate within the MipVolume.
     bool ContainsMipChunk(const Chunk & rMipCoord) const;
 private:
-    void addChunkCoordsForLevel(const int mipLevel, std::deque<coords::Chunk>* coords) const;
+    void addChunkCoordsForLevel(const int mipLevel, std::vector<coords::Chunk>* coords) const;
 
 };
 
