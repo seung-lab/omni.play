@@ -8,7 +8,7 @@
 
 struct OmSegmentDataV2 {
     OmSegID value;
-    OmColor color;
+    om::common::Color color;
     bool immutable;
     uint64_t size;
     AxisAlignedBoundingBox<int> bounds;
@@ -16,7 +16,7 @@ struct OmSegmentDataV2 {
 
 struct OmSegmentDataV3 {
     OmSegID value;
-    OmColor color;
+    om::common::Color color;
     om::SegListType listType;
     uint64_t size;
     AxisAlignedBoundingBox<int> bounds;
@@ -24,7 +24,7 @@ struct OmSegmentDataV3 {
 
 struct OmSegmentDataV4 {
     OmSegID value;
-    OmColor color;
+    om::common::Color color;
     uint64_t size;
     AxisAlignedBoundingBox<int> bounds;
 };

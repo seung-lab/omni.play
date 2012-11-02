@@ -99,7 +99,7 @@ void GroupsTable::populateGroupTable(OmGroupID id)
         ++count;
 
         OmSegment* segment = cache->GetSegment(id);
-        const OmColor color = segment->GetColorInt();
+        const om::common::Color color = segment->GetColorInt();
 
         GroupsTableDropDownMenuButton* segmentButton =
             new GroupsTableDropDownMenuButton(this, id);

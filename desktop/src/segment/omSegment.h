@@ -36,7 +36,7 @@ public:
 
     void reRandomizeColor();
 
-    inline OmColor GetColorInt() const {
+    inline om::common::Color GetColorInt() const {
         return data_->color;
     }
 
@@ -47,7 +47,7 @@ public:
                          data_->color.blue  / 255. );
     }
 
-    void SetColor(const OmColor&);
+    void SetColor(const om::common::Color&);
     void SetColor(const Vector3i&);
     void SetColor(const Vector3f&);
 

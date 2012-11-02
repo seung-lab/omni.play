@@ -16,7 +16,7 @@ std::string manager::filePathV1() const {
     return vol_->Folder()->AnnotationFile().toStdString();
 }
 
-void manager::Add(globalCoord coord, const std::string& comment, const OmColor& color, double size)
+void manager::Add(globalCoord coord, const std::string& comment, const om::common::Color& color, double size)
 {
     base_t::Add(new data(coord.toDataCoord(vol_, 0), comment, color, size));
     OmEvents::AnnotationEvent();

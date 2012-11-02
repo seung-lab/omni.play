@@ -213,7 +213,7 @@ private:
                     const int avg2 = ( r*r + g*g + b*b ) / 3;
                     const int v = avg2 - avg*avg;
                     if(v >= min_variance){
-                        const OmColor color = {r, g, b};
+                        const om::common::Color color = {r, g, b};
                         segColorHist[color] = 0;
                     }
                 }
@@ -233,7 +233,7 @@ private:
             if(findRoot){
                 seg = segments->findRoot(seg);
             }
-            const OmColor color = seg->GetColorInt();
+            const om::common::Color color = seg->GetColorInt();
 
             ++(segColorHist[color]);
         }

@@ -177,11 +177,11 @@ public:
     static QColor SetSegColor(const SegmentDataWrapper& sdw, const QColor& color)
     {
         // max allowed color val is 128 to allow color to be highlighted
-        // const OmColor c = { std::min(128, color.red()),
+        // const om::common::Color c = { std::min(128, color.red()),
         //                     std::min(128, color.green()),
         //                     std::min(128, color.blue()) };
 
-        const OmColor c = {
+        const om::common::Color c = {
         	static_cast<uint8_t>(color.red()),
             static_cast<uint8_t>(color.green()),
             static_cast<uint8_t>(color.blue())

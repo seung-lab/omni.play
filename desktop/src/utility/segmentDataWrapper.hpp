@@ -148,7 +148,7 @@ public:
         return QString("%1").arg(getID());
     }
 
-    inline OmColor GetColorInt() const {
+    inline om::common::Color GetColorInt() const {
         return GetSegment()->GetColorInt();
     }
 
@@ -156,7 +156,7 @@ public:
         return GetSegment()->GetColorFloat();
     }
 
-    inline void SetColor(const OmColor& color) const {
+    inline void SetColor(const om::common::Color& color) const {
         GetSegment()->SetColor(color);
     }
 

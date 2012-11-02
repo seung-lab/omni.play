@@ -3,7 +3,7 @@
 #include <QColor>
 #include <QTextStream>
 
-QTextStream &operator<<(QTextStream& out, const OmColor& c)
+QTextStream &operator<<(QTextStream& out, const om::common::Color& c)
 {
     out << c.red << "\t";
     out << c.green << "\t";

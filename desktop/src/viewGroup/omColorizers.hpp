@@ -6,7 +6,7 @@
 
 class OmViewGroupState;
 
-class OmColorizers {
+class om::common::Colorizers {
 private:
     OmViewGroupState *const vgs_;
 
@@ -14,7 +14,7 @@ private:
     boost::array<OmSegmentColorizer*, SCC_NUMBER_OF_ENUMS> colorizers_;
 
 public:
-    OmColorizers(OmViewGroupState* vgs)
+    om::common::Colorizers(OmViewGroupState* vgs)
         : vgs_(vgs)
     {
         std::fill(colorizers_.begin(), colorizers_.end(),

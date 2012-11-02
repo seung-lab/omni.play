@@ -47,7 +47,7 @@ private:
             pixmap = om::utils::color::OmColorAsQPixmap(sdw.GetColorInt());
 
         } else {
-            OmColor black = { 0, 0, 0 };
+            om::common::Color black = { 0, 0, 0 };
             pixmap = om::utils::color::OmColorAsQPixmap(black);
         }
 

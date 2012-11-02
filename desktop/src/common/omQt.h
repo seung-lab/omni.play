@@ -7,7 +7,7 @@
 #include "common/omColors.h"
 
 class QTextStream;
-QTextStream &operator<<(QTextStream& out, const OmColor& c);
+QTextStream &operator<<(QTextStream& out, const om::common::Color& c);
 
 class QColor;
 std::ostream& operator<<(std::ostream &out, const QColor& c);

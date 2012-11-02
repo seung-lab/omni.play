@@ -49,7 +49,7 @@ private:
     bool brightenSelected_;
 
     //annotation stuff
-    OmColor annotationColor_;
+    om::common::Color annotationColor_;
     std::string annotationString_;
     bool annotationVisible_;
     double annotationSize_;
@@ -129,11 +129,11 @@ public:
         return *landmarks_;
     }
 
-    inline const OmColor & getAnnotationColor() {
+    inline const om::common::Color & getAnnotationColor() {
         return annotationColor_;
     }
 
-    inline void setAnnotationColor(const OmColor &color) {
+    inline void setAnnotationColor(const om::common::Color &color) {
         annotationColor_ = color;
     }
 

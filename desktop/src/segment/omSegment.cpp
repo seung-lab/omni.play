@@ -32,7 +32,7 @@ void OmSegment::reRandomizeColor()
     RandomizeColor();
 }
 
-void OmSegment::SetColor(const OmColor& color){
+void OmSegment::SetColor(const om::common::Color& color){
     data_->color = color;
 }
 

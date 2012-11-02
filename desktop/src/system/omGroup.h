@@ -48,7 +48,7 @@ public:
 
 private:
     OmSegIDsSet mIDs;
-    OmColor mColor;
+    om::common::Color mColor;
 
     OmGroupName mName;
     friend class OmGroups;

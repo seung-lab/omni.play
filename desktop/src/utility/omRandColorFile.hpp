@@ -13,7 +13,7 @@ private:
     const std::string fnp_;
 
     om::shared_ptr<QFile> file_;
-    OmColor* values_;
+    om::common::Color* values_;
     int64_t numEntries_;
 
     friend class OmProjectGlobals;
@@ -28,14 +28,14 @@ public:
     ~OmRandColorFile()
     {}
 
-    OmColor GetRandomColor()
+    om::common::Color GetRandomColor()
     {
         assert(values_);
         const int index = OmRand::GetRandomInt(0, numEntries_-1);
         return values_[index];
     }
 
-    OmColor GetRandomColor(const uint32_t segID)
+    om::common::Color GetRandomColor(const uint32_t segID)
     {
         assert(values_);
         const int index = segID % numEntries_;
@@ -91,7 +91,7 @@ private:
                     const int v = avg2 - avg*avg;
 
                     if(v >= min_variance){
-                        const OmColor color = {
+                        const om::common::Color color = {
                         	static_cast<uint8_t>(r),
                         	static_cast<uint8_t>(g),
                         	static_cast<uint8_t>(b)

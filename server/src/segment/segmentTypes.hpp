@@ -9,7 +9,7 @@ namespace segments {
 struct data
 {
     common::segId value;
-    common::color color;
+    common::Color color;
     uint64_t size;
     AxisAlignedBoundingBox<int> bounds;
 };

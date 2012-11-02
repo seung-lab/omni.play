@@ -15,15 +15,15 @@ private:
 
 public:
 
-    static inline OmColor GetRandomColor(){
+    static inline om::common::Color GetRandomColor(){
 		return OmProject::Globals().RandColorFile().GetRandomColor();
 	}
 
-    static inline OmColor GetRandomColor(const OmColor old)
+    static inline om::common::Color GetRandomColor(const om::common::Color old)
     {
         ColorIndexInternal olc;
         ColorIndexInternal nsc;
-        OmColor ret = GetRandomColor();
+        om::common::Color ret = GetRandomColor();
 
         if(old.red > old.blue && old.red > old.green) {
 			olc = RED;
@@ -56,19 +56,19 @@ public:
         return ret;
     }
 
-    static QColor OmColorToQColor(const OmColor color){
+    static QColor om::common::ColorToQColor(const om::common::Color color){
         return qRgb(color.red, color.green, color.blue);
     }
 
-    static OmColor QColorToOmColor(const QColor color){
-        OmColor c = {
+    static om::common::Color QColorToOmColor(const QColor color){
+        om::common::Color c = {
         	static_cast<uint8_t>(color.red()),
         	static_cast<uint8_t>(color.green()),
         	static_cast<uint8_t>(color.blue()) };
         return c;
     }
 
-    static QPixmap OmColorAsQPixmap(const OmColor& color)
+    static QPixmap om::common::ColorAsQPixmap(const om::common::Color& color)
     {
         return MakeQPixmap(OmColorToQColor(color));
     }

@@ -6,7 +6,7 @@
 
 namespace YAML {
 
-inline Emitter& operator<<(Emitter& out, const om::common::color& c)
+inline Emitter& operator<<(Emitter& out, const om::common::Color& c)
 {
     out << Flow << BeginSeq;
     out << c.red;
@@ -17,7 +17,7 @@ inline Emitter& operator<<(Emitter& out, const om::common::color& c)
     return out;
 }
 
-inline void operator>>(const Node& node, om::common::color& c)
+inline void operator>>(const Node& node, om::common::Color& c)
 {
     // workaround: Reading into uint8_ts appears to be bugged out.
     int temp;

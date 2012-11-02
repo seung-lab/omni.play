@@ -24,7 +24,7 @@ inline void operator>>(const Node& in, QString& s) {
     s = QString::fromStdString(str);
 }
 
-inline Emitter& operator<<(Emitter& out, const OmColor& c)
+inline Emitter& operator<<(Emitter& out, const om::common::Color& c)
 {
     out << Flow << BeginSeq;
     out << (uint32_t)c.red;
@@ -35,7 +35,7 @@ inline Emitter& operator<<(Emitter& out, const OmColor& c)
     return out;
 }
 
-inline void operator>>(const Node& node, OmColor& c)
+inline void operator>>(const Node& node, om::common::Color& c)
 {
     // workaround: Reading into uint8_ts appears to be bugged out.
     int temp;

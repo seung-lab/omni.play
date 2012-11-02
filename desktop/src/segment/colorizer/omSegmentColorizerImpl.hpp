@@ -8,7 +8,7 @@
 #include "utility/omLockedObjects.h"
 #include "viewGroup/omViewGroupState.h"
 
-static const OmColor blackColor = {0, 0, 0};
+static const om::common::Color blackColor = {0, 0, 0};
 
 class OmSegmentColorizerImpl {
 private:
@@ -45,7 +45,7 @@ public:
         anySegmentsSelected_ = !selectedSegIDs_.empty() || !enabledSegIDs_.empty();
     }
 
-    void ColorTile(uint32_t const*const d, OmColorARGB* colorMappedData)
+    void ColorTile(uint32_t const*const d, om::common::ColorARGB* colorMappedData)
     {
         PrevSegAndColor prev = { 0, blackColor };
         uint32_t maxSize = colorCache_.Size();
@@ -92,7 +92,7 @@ public:
 private:
     struct PrevSegAndColor {
         OmSegID segID;
-        OmColor color;
+        om::common::Color color;
     };
 
     inline OmSegment* getSegment(const OmSegID segID)
@@ -101,7 +101,7 @@ private:
         return segments_->GetSegment(segID);
     }
 
-    OmColor getVoxelColorForView2d(const OmSegID segID)
+    om::common::Color getVoxelColorForView2d(const OmSegID segID)
     {
         //OmSegment* seg = getSegment(segID);
         OmSegment* seg = getSegment(segID);
@@ -115,7 +115,7 @@ private:
             segRoot = getSegment(segments_->findRootID(segID));
         }
 
-        const OmColor segRootColor = segRoot->GetColorInt();
+        const om::common::Color segRootColor = segRoot->GetColorInt();
 
         const bool isSelected =
             selectedSegIDs_.count(segRoot->value()) ||
@@ -193,9 +193,9 @@ private:
     }
 
     // TODO: might be faster to compute: lookup could affect cache lines
-    static inline OmColor makeMutedColor(const OmColor& color)
+    static inline om::common::Color makeMutedColor(const om::common::Color& color)
     {
-        const OmColor ret =
+        const om::common::Color ret =
             {OmSegmentColors::MakeMutedColor(color.red),
              OmSegmentColors::MakeMutedColor(color.green),
              OmSegmentColors::MakeMutedColor(color.blue)
@@ -204,9 +204,9 @@ private:
     }
 
     // TODO: might be faster to compute: lookup could affect cache lines
-    static inline OmColor makeSelectedColor(const OmColor& color)
+    static inline om::common::Color makeSelectedColor(const om::common::Color& color)
     {
-        const OmColor ret =
+        const om::common::Color ret =
             {OmSegmentColorizer::SelectedColorLookupTable[color.red],
              OmSegmentColorizer::SelectedColorLookupTable[color.green],
              OmSegmentColorizer::SelectedColorLookupTable[color.blue]

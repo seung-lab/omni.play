@@ -9,7 +9,7 @@ struct annotation
 {
     QString text;
     om::coords::Global point;
-    OmColor color;
+    om::common::Color color;
 };
 
 class AnnotationsWidget : public OmView3dWidget {
