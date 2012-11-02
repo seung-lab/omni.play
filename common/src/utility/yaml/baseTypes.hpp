@@ -13,7 +13,7 @@ inline Emitter& operator<<(Emitter& out, const om::common::color& c)
     out << c.green;
     out << c.blue;
     out << EndSeq;
-    
+
     return out;
 }
 
@@ -41,7 +41,7 @@ template<class T>
 void operator>>(const Node& in, Vector3<T>& p)
 {
     in[0] >> p.x;
-    in[1] >> p.y; 
+    in[1] >> p.y;
     in[2] >> p.z;
 }
 

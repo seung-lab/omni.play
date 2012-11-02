@@ -4,26 +4,26 @@
 
 namespace om {
 namespace common {
-    
+
 /**
- * color structs
+ * Color structs
  **/
-struct color {
+struct Color {
     uint8_t red;
     uint8_t green;
     uint8_t blue;
 };
-std::ostream& operator<<(std::ostream &out, const color& c);
-bool operator<(const color& a, const color& b);
-bool operator==(const color& a, const color& b);
+std::ostream& operator<<(std::ostream &out, const Color& c);
+bool operator<(const Color& a, const Color& b);
+bool operator==(const Color& a, const Color& b);
 
-struct colorARGB {
+struct ColorARGB {
     uint8_t alpha;
     uint8_t red;
     uint8_t green;
     uint8_t blue;
 };
-std::ostream& operator<<(std::ostream &out, const colorARGB& c);
+std::ostream& operator<<(std::ostream &out, const ColorARGB& c);
 
 } // namespace common
 } // namespace om
