@@ -1,6 +1,5 @@
 #pragma once
 
-#include "server_types.h"
 #include "common/common.h"
 #include "pipeline/mapData.hpp"
 #include "segment/segmentTypes.hpp"
@@ -14,8 +13,8 @@ private:
     std::string uri_;
     coords::GlobalBbox bounds_;
     Vector3i resolution_;
-    server::dataType::type dataType_; // Replace with omni type?
-    server::volType::type volType_;
+    common::type dataType_; // Replace with omni type?
+    common::objectType volType_;
     Vector3i chunkDims_;
     int32_t mipLevel_;
     pipeline::dataSrcs data_;

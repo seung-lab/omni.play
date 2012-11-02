@@ -4,10 +4,6 @@
 using namespace vmml;
 
 namespace om {
-namespace server {
-class vector3d;
-class bbox;
-}
 namespace coords {
 
 class Chunk;
@@ -30,7 +26,6 @@ public:
     Global(const float a) : base_t(a) {}
     Global(const float i, const float j, const float k)
         : base_t(i, j, k) {}
-    Global(server::vector3d v);
 
     Norm ToNorm(const VolumeSystem*) const;
     Data ToData(const VolumeSystem*, const int) const;
@@ -38,7 +33,6 @@ public:
     Screen ToScreen(ScreenSystem*) const;
     Vector3i WithAbsOffset(const VolumeSystem*) const;
     static Global FromOffsetCoords(Vector3i, const VolumeSystem*);
-    operator server::vector3d () const;
 };
 
 class GlobalBbox : public AxisAlignedBoundingBox<float>
@@ -50,10 +44,6 @@ public:
     GlobalBbox() : base_t() {}
     GlobalBbox(Global min, Global max) : base_t(min, max) {}
 
-    GlobalBbox(server::bbox b)
-        : base_t(Global(b.min), Global(b.max)) {
-    }
-
     template<typename T>
     GlobalBbox(AxisAlignedBoundingBox<T> b)
         : base_t(Global(b.getMin().x,b.getMin().y,b.getMin().z),
@@ -62,7 +52,6 @@ public:
 
     NormBbox ToNormBbox(const VolumeSystem*) const;
     DataBbox ToDataBbox(const VolumeSystem*, int) const;
-    operator server::bbox () const;
 
     friend std::ostream& operator << (std::ostream& os, const GlobalBbox& bbox ) {
         os << "min:" << bbox._min << " max:" << bbox._max;

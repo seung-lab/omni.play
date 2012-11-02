@@ -37,33 +37,30 @@ RCC	     =	$(AT)$(EXTERNAL)/qt/bin/rcc
 DUMPSYMS =  $(AT)$(EXTERNAL)/breakpad/bin/dump_syms
 FPIC     =	-fPIC
 
+# Includes  #################################################
 INCLUDES	=	-I$(HERE) \
 				-I$(HERE)/common/src \
 				-I$(HERE)/common/include \
 				-I$(HERE)/common/include/yaml-cpp/include \
-				-I$(HERE)/common/include/libb64/include \
-				-I$(HERE)/thrift/src \
-				-I$(HERE)/server/src \
-				-I$(HERE)/filesystem/src \
 				-I$(HERE)/zi_lib \
-				-I$(EXTERNAL)/thrift/include/thrift \
-				-I$(EXTERNAL)/boost/include \
-				-I$(EXTERNAL)/libjpeg/include \
-				-I$(EXTERNAL)/libpng/include \
-				-I$(BREAKPAD)
+				-I$(EXTERNAL)/boost/include
 
-DESKTOPINCLUDES = -I$(HERE)/desktop/src \
+THRIFTINCLUDES = $(INCLUDES) \
+				 -I$(HERE)/thrift/src \
+				 -I$(EXTERNAL)/thrift/include/thrift \
+
+SERVERINCLUDES = $(THRIFTINCLUDES) \
+				 -I$(HERE)/server/src \
+				 -I$(HERE)/filesystem/src \
+				 -I$(EXTERNAL)/libjpeg/include \
+				 -I$(EXTERNAL)/libpng/include \
+				 -I$(HERE)/common/include/libb64/include \
+
+DESKTOPINCLUDES = $(INCLUDES) \
+				  -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop/include \
 				  -I$(HERE)/desktop/lib \
 				  -I$(HERE)/desktop \
-				  -I$(HERE)/common/src \
-				  -I$(HERE)/common/include \
-				  -I$(HERE)/common/include/yaml-cpp/include \
-				  -I$(HERE)/thrift/src \
-				  -I$(HERE)/zi_lib \
-				  -I$(EXTERNAL)/thrift/include/thrift \
-				  -I$(EXTERNAL)/libjpeg/include \
-				  -I$(EXTERNAL)/boost/include \
 				  -I$(EXTERNAL)/qt/include/Qt \
 				  -I$(EXTERNAL)/qt/include/QtCore \
 				  -I$(EXTERNAL)/qt/include/QtOpenGL \
@@ -78,40 +75,35 @@ TESTINCLUDES = -I$(GMOCK)/include \
  			   -I$(GMOCK) \
  			   -I$(GMOCK)/gtest \
 
+# Libs ##############################################
 LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/boost/lib/libboost_iostreams.a \
 	   $(EXTERNAL)/boost/lib/libboost_system.a \
 	   $(EXTERNAL)/boost/lib/libboost_thread.a \
 	   $(EXTERNAL)/boost/lib/libboost_regex.a \
-	   $(EXTERNAL)/thrift/lib/libthrift.a \
-	   $(EXTERNAL)/thrift/lib/libthriftnb.a \
-	   $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
-	   $(EXTERNAL)/libpng/lib/libpng.a \
-	   -levent -lpthread -lrt -lz
+	   -lpthread -lrt -lz
 
-DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
-			  $(EXTERNAL)/boost/lib/libboost_filesystem.a \
-	          $(EXTERNAL)/boost/lib/libboost_iostreams.a \
-	          $(EXTERNAL)/boost/lib/libboost_system.a \
-	          $(EXTERNAL)/boost/lib/libboost_thread.a \
-	          $(EXTERNAL)/boost/lib/libboost_regex.a \
-	          $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
-	          $(EXTERNAL)/libpng/lib/libpng.a \
-              $(EXTERNAL)/hdf5/lib/libhdf5.a \
-              $(EXTERNAL)/thrift/lib/libthrift.a \
-	   		  $(EXTERNAL)/thrift/lib/libthriftnb.a \
-			  $(EXTERNAL)/breakpad/lib/libbreakpad.a \
+SERVERLIBS = $(LIBS) \
+			 $(EXTERNAL)/thrift/lib/libthrift.a \
+	   		 $(EXTERNAL)/thrift/lib/libthriftnb.a \
+	   		 $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
+	   		 $(EXTERNAL)/libpng/lib/libpng.a \
+	   		 -levent
+
+
+DESKTOPLIBS = $(LIBS) \
+			  $(EXTERNAL)/hdf5/lib/libhdf5.a \
+              $(EXTERNAL)/breakpad/lib/libbreakpad.a \
 			  $(EXTERNAL)/breakpad/lib/libbreakpad_client.a \
+			  -L$(EXTERNAL)/qt/lib \
               -lQtGui \
               -lQtNetwork \
               -lQtCore \
               -lQtOpenGL \
               -lGLU \
-              -lGL \
-	   		  -levent -lpthread -lrt -lz
+              -lGL
 
-CXX_INCLUDES	=	$(INCLUDES)
-
+# Compile Flags ############################
 CWARN		=	-Wall -Wno-sign-compare -Wno-unused-variable -Wno-return-type
 CXXWARN		=	$(CWARN) -Wno-deprecated -Woverloaded-virtual -Wno-unused-but-set-variable -Wno-switch
 
@@ -163,84 +155,73 @@ else
   BINDIR	=	./bin/debug
 endif
 
+# Build functions #####################################
 define build_cpp
 	$(ECHO) "[CXX] compiling $<"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) $(INCLUDES) $(TESTINCLUDES) -o $@ $<
+	$(CXX) -c $(CXXFLAGS) $1 -o $@ $<
 	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
 endef
 
 define build_c
 	$(ECHO) "[CC] compiling $<"
 	$(MKDIR) -p $(dir $@)
-	$(CC) -c $(CFLAGS) $(INCLUDES) $(TESTINCLUDES) -o $@ $<
+	$(CC) -c $(CFLAGS) $1 -o $@ $<
 endef
 
 define make_d
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CPP_DEPFLAGS) $(INCLUDES) $(TESTINCLUDES) -MF $@ $<
+	$(CXX) $(CPP_DEPFLAGS) $1 -MF $@ $<
 endef
 
 THRIFT_DEPS = $(GENDIR)/server.thrift.mkcpp \
-			  $(GENDIR)/filesystem.thrift.mkcpp \
 			  $(GENDIR)/rtm.thrift.mkcpp
 
-$(BUILDDIR)/common/%.d: common/src/%.cpp $(THRIFT_DEPS)
-	$(make_d)
-$(BUILDDIR)/common/%.o: common/src/%.cpp $(THRIFT_DEPS)
-	$(build_cpp)
+# Build Directives ###################################
+$(BUILDDIR)/common/%.d: common/src/%.cpp
+	$(call make_d, $(INCLUDES))
+$(BUILDDIR)/common/%.o: common/src/%.cpp
+	$(call build_cpp, $(INCLUDES))
 
-$(BUILDDIR)/common/test/%.d: common/test/src/%.cpp $(THRIFT_DEPS)
-	$(make_d)
-$(BUILDDIR)/common/test/%.o: common/test/src/%.cpp $(THRIFT_DEPS)
-	$(build_cpp)
+$(BUILDDIR)/common/test/%.d: common/test/src/%.cpp
+	$(call make_d, $(INCLUDES) $(TESTINCLUDES))
+$(BUILDDIR)/common/test/%.o: common/test/src/%.cpp
+	$(call build_cpp, $(INCLUDES) $(TESTINCLUDES))
 
 $(BUILDDIR)/thrift/%.d: thrift/src/%.cpp $(THRIFT_DEPS)
-	$(make_d)
+	$(call make_d, $(THRIFTINCLUDES))
 $(BUILDDIR)/thrift/%.o: thrift/src/%.cpp $(THRIFT_DEPS)
-	$(build_cpp)
+	$(call build_cpp, $(THRIFTINCLUDES))
 
 $(BUILDDIR)/server/%.d: server/src/%.cpp $(THRIFT_DEPS)
-	$(make_d)
+	$(call make_d, $(SERVERINCLUDES))
 $(BUILDDIR)/server/%.o: server/src/%.cpp $(THRIFT_DEPS)
-	$(build_cpp)
+	$(call build_cpp, $(SERVERINCLUDES))
 
 $(BUILDDIR)/server/test/%.d: server/test/src/%.cpp $(THRIFT_DEPS)
-	$(make_d)
+	$(call make_d, $(SERVERINCLUDES) $(TESTINCLUDES))
 $(BUILDDIR)/server/test/%.o: server/test/src/%.cpp $(THRIFT_DEPS)
-	$(build_cpp)
+	$(call build_cpp, $(SERVERINCLUDES) $(TESTINCLUDES))
 
-$(BUILDDIR)/desktop/%.d: desktop/src/%.cpp
-	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CPP_DEPFLAGS) $(DESKTOPINCLUDES) -MF $@ $<
-$(BUILDDIR)/desktop/%.o: desktop/src/%.cpp
-	$(ECHO) "[CXX] compiling $<"
-	$(MKDIR) -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) $(DEFINES) -o $@ $<
-	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
+$(BUILDDIR)/desktop/%.d: desktop/src/%.cpp $(THRIFT_DEPS)
+	$(call make_d, $(DESKTOPINCLUDES))
+$(BUILDDIR)/desktop/%.o: desktop/src/%.cpp $(THRIFT_DEPS)
+	$(call build_cpp, $(DESKTOPINCLUDES))
 
-$(BUILDDIR)/desktop/test/%.d: desktop/test/src/%.cpp
-	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CPP_DEPFLAGS) $(DESKTOPINCLUDES) $(TESTINCLUDES) -MF $@ $<
-$(BUILDDIR)/desktop/test/%.o: desktop/test/src/%.cpp
-	$(ECHO) "[CXX] compiling $<"
-	$(MKDIR) -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) $(DESKTOPINCLUDES) $(TESTINCLUDES) $(DEFINES) -o $@ $<
-	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
-
-$(BUILDDIR)/filesystem/%.d: filesystem/src/%.cpp
-	$(make_d)
-$(BUILDDIR)/filesystem/%.o: filesystem/src/%.cpp
-	$(build_cpp)
+$(BUILDDIR)/desktop/test/%.d: desktop/test/src/%.cpp $(THRIFT_DEPS)
+	$(call make_d, $(DESKTOPINCLUDES) $(TESTINCLUDES))
+$(BUILDDIR)/desktop/test/%.o: desktop/test/src/%.cpp $(THRIFT_DEPS)
+	$(call build_cpp, $(DESKTOPINCLUDES) $(TESTINCLUDES))
 
 %.d: %.cpp
-	$(make_d)
+	$(call make_d, $(INCLUDES))
 %.o: %.cpp
-	$(build_cpp)
+	$(call build_cpp, $(INCLUDES))
 %.o: %.cc
-	$(build_cpp)
+	$(call build_cpp, $(INCLUDES))
 %.o: %.c
-	$(build_c)
+	$(call build_c, $(INCLUDES))
+
 %.moc.cpp: %.hpp
 	$(ECHO) "[MOC] Generating $<"
 	$(MKDIR) -p $(dir $@)
@@ -260,86 +241,84 @@ $(GENDIR)/%.thrift.mkcpp: thrift/if/%.thrift
 	$(TOUCH) $@.tmp
 	$(THRIFT) -r --out $(GENDIR) --gen cpp $<
 	$(RM) $(GENDIR)/*.skeleton.cpp
-
 	$(MV) $@.tmp $@
 
-COMMONSOURCES     = $(subst common/src,$(BUILDDIR)/common, 				\
-					  $(shell find common/src -iname "*.cpp"))
+# Dependencies #################################
+define deps
+	$(eval $1_SOURCES = $(shell find $2/src -iname "*.cpp"  | grep -v "main.cpp"))
+	$(eval $1_MAIN = $(BUILDDIR)/$2/main.o)
+	$(eval $1_DEPS = $(subst $2/src,$(BUILDDIR)/$2,$($1_SOURCES:.cpp=.o)))
+endef
 
-COMMON_TEST_SOURCES = $(subst common/test/src,$(BUILDDIR)/common/test,	\
-                      $(shell find common/test/src -iname "*.cpp"))
+$(eval $(call deps,COMMON,common))
+$(eval $(call deps,COMMON_TEST,common/test))
+$(eval $(call deps,SERVER,server))
+$(eval $(call deps,SERVER_TEST,server/test))
+$(eval $(call deps,DESKTOP,desktop))
+$(eval $(call deps,DESKTOP_TEST,desktop/test))
 
-THRIFTSOURCES     = $(subst thrift/src,$(BUILDDIR)/thrift, 				\
-					  $(shell find thrift/src -iname "*.cpp"))
+YAML_SOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
+YAML_DEPS = $(YAML_SOURCES:.cpp=.o)
 
-SERVERSOURCES     = $(subst server/src,$(BUILDDIR)/server, 				\
-                      $(shell find server/src -iname "*.cpp" | grep -v "main.cpp"))
-
-SERVER_TEST_SOURCES = $(subst server/test/src,$(BUILDDIR)/server/test,	\
-                      $(shell find server/test/src -iname "*.cpp"))
-
-DESKTOPSOURCES    = $(subst desktop/src,$(BUILDDIR)/desktop, 			\
-                      $(shell find desktop/src -iname "*.cpp" | grep -v "main.cpp"))
-
-DESKTOP_TEST_SOURCES = $(subst desktop/test/src,$(BUILDDIR)/desktop/test,	\
-                      $(shell find desktop/test/src -iname "*.cpp"))
-
-DESKTOPHEADERS    = $(subst desktop/src,$(BUILDDIR)/desktop, 			\
-                      $(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':'))
-
-YAMLSOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
-LIB64SOURCES = common/include/libb64/src/cencode.o
+LIB64_DEPS = common/include/libb64/src/cencode.o
 
 TEST_DEPS = $(GMOCK)/src/gmock-all.o $(GMOCK)/gtest/src/gtest-all.o
 
-COMMON_SRCS = $(COMMONSOURCES) $(THRIFTSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
-COMMON_DEPS := $(COMMON_SRCS:.cpp=.o)
-COMMON_TEST_DEPS := $(COMMON_TEST_SOURCES:.cpp=.o)
-
-SERVER_SRCS = $(COMMONSOURCES) $(THRIFTSOURCES) $(SERVERSOURCES) $(YAMLSOURCES) $(LIB64SOURCES)
-SERVER_DEPS := $(SERVER_SRCS:.cpp=.o)
-SERVER_TEST_DEPS := $(SERVER_TEST_SOURCES:.cpp=.o)
-
-OMNI_SRCS = $(DESKTOPSOURCES) $(THRIFTSOURCES) $(YAMLSOURCES)
-MOC_SRCS = $(DESKTOPHEADERS:.hpp=.moc.cpp)
-MOC_SRCS2 = $(MOC_SRCS:.h=.moc.cpp)
-
-OMNI_DEPS := $(OMNI_SRCS:.cpp=.o) $(MOC_SRCS2:.cpp=.o)
-DESKTOP_TEST_DEPS := $(DESKTOP_TEST_SOURCES:.cpp=.o)
+DESKTOPHEADERS = $(subst desktop/src,$(BUILDDIR)/desktop, \
+               	 	$(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':'))
+MOC_SRCS := $($(DESKTOPHEADERS:.hpp=.moc.cpp):.h=.moc.cpp)
+MOC_DEPS := $(MOC_SRCS:.cpp=.o)
 
 define link
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $(LIBS)
+	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $1
 endef
 
+# Targets ####################################
 .PHONY: all
 all: common server desktop
 
-$(BINDIR)/omni.common.test: $(COMMON_DEPS) $(COMMON_TEST_DEPS) $(THRIFT_DEPS) $(TEST_DEPS)
+$(BINDIR)/omni.common.test: $(COMMON_DEPS) \
+							$(COMMON_TEST_DEPS) \
+							$(YAML_DEPS) \
+							$(TEST_DEPS) \
+							$(COMMON_TEST_MAIN)
+	$(call link,$(LIBS))
+	$@
+
+$(BINDIR)/omni.desktop: $(COMMON_DEPS)\
+					    $(DESKTOP_DEPS)\
+					    $(DESKTOP_MAIN)\
+					    desktop/lib/strnatcmp.o\
+					    $(BUILDDIR)/desktop/gui/resources.rcc.o
+	$(call link,$(DESKTOPLIBS))
+
+$(BINDIR)/omni.desktop.test: $(COMMON_DEPS)\
+							 $(DESKTOP_DEPS)\
+							 $(DESKTOP_TEST_DEPS)\
+							 $(DESKTOP_TEST_MAIN)\
+							 desktop/lib/strnatcmp.o\
+							 $(BUILDDIR)/desktop/gui/resources.rcc.o
+	$(call link,$(DESKTOPLIBS))
+	$@
+
+$(BINDIR)/omni.server: $(COMMON_DEPS)\
+					   $(SERVER_DEPS)\
+					   $(THRIFT_DEPS)\
+					   $(SERVER_MAIN)
 	$(link)
-	$(BINDIR)/omni.common.test
 
-$(BINDIR)/omni.desktop: $(OMNI_DEPS) $(BUILDDIR)/desktop/main.o desktop/lib/strnatcmp.o $(BUILDDIR)/desktop/gui/resources.rcc.o
-	$(ECHO) "[CXX] linking $@"
-	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
-
-$(BINDIR)/omni.desktop.test:$(OMNI_DEPS) $(DESKTOP_TEST_DEPS) desktop/lib/strnatcmp.o $(THRIFT_DEPS) $(TEST_DEPS)
-	$(ECHO) "[CXX] linking $@"
-	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -Wl,-rpath='$$ORIGIN' -o $@ $(filter-out %.mkcpp,$^) $(DESKTOPLIBS)
-
-$(BINDIR)/omni.server: $(SERVER_DEPS) $(THRIFT_DEPS) $(BUILDDIR)/server/main.o
+$(BINDIR)/omni.server.test:$(COMMON_DEPS)\
+					   	   $(SERVER_DEPS)\
+					   	   $(SERVER_TEST_DEPS)\
+					   	   $(THRIFT_DEPS)\
+					   	   $(SERVER_TEST_MAIN)
 	$(link)
+	$@
 
-$(BINDIR)/omni.server.test:$(SERVER_DEPS) $(SERVER_TEST_DEPS) $(THRIFT_DEPS) $(TEST_DEPS)
-	$(link)
-	$(BINDIR)/omni.server.test
-
-$(BINDIR)/omni.tar.gz: $(BINDIR)/omni.desktop
+$(BINDIR)/omni.tar.gz: desktop
 	$(TAR) -zcvf $@ -C $(BINDIR) omni.desktop
-
 
 .PHONY: tidy
 tidy:
@@ -369,18 +348,19 @@ omni.desktop.sym: $(BINDIR)/omni.desktop
 
 .PHONY: symbols
 symbols: omni.desktop.sym
-	$(MKDIR) -p symbols/omni.desktop/$(shell head -n1 $< | cut -d' ' -f4)
-	$(MV) $< symbols/omni.desktop/$(shell head -n1 $< | cut -d' ' -f4)
+	$(eval SYMS_HASH = $(shell head -n1 $< | cut -d' ' -f4))
+	$(MKDIR) -p symbols/omni.desktop/$(SYMS_HASH)
+	$(MV) $< symbols/omni.desktop/$(SYMS_HASH)
 
 .PHONY: common
 common: $(BINDIR)/omni.common.test
 
 .PHONY: desktop
-desktop: $(BINDIR)/omni.desktop $(BINDIR)/omni.desktop.test
+desktop: common $(BINDIR)/omni.desktop $(BINDIR)/omni.desktop.test
 	$(BINDIR)/omni.desktop.test
 
 .PHONY: server
-server: $(BINDIR)/omni.server $(BINDIR)/omni.server.test
+server: common $(BINDIR)/omni.server $(BINDIR)/omni.server.test
 #	$(BINDIR)/omni.server.test
 
 ALLDEPS = $(shell find $(BUILDDIR) -iname "*.d")
