@@ -35,7 +35,7 @@ public:
 		const Vector3i dims = vs_.ChunkDimensions();
         // iterate over all chunks in order
         // TODO: boost multi_array
-        boost::shared_ptr<std::deque<coords::Chunk> > chunks = vs_.MipChunkCoords(0);
+        boost::shared_ptr<std::vector<coords::Chunk> > chunks = vs_.MipChunkCoords(0);
 	    FOR_EACH(iter, *chunks)
 	    {
             coords::Chunk coord = *iter;
