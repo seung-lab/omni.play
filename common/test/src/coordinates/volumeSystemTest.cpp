@@ -37,10 +37,10 @@ TEST(Coords_VolumeSystem, MipLevelDimensionsInMipChunks)
 	ASSERT_EQ(Vector3i(1), vs.MipLevelDimensionsInMipChunks(3));
 }
 
-TEST(Coords_VolumeSystem, DataExtent)
+TEST(Coords_VolumeSystem, Extent)
 {
 	VolumeSystem vs(Vector3i(1024));
-	ASSERT_EQ(GlobalBbox(Global::ZERO, Global(1023)), vs.DataExtent());
+	ASSERT_EQ(GlobalBbox(Global::ZERO, Global(1023)), vs.Extent());
 }
 
 TEST(Coords_VolumeSystem, DimsRoundedToNearestChunk)

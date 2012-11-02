@@ -91,7 +91,7 @@ int Data::ToTileDepth (viewType viewType) const
 }
 
 bool Data::IsInVolume() const {
-	return volume_->DataExtent().contains(ToGlobal());
+	return volume_->Extent().contains(ToGlobal());
 }
 
 Data Data::AtDifferentLevel(int newLevel) const

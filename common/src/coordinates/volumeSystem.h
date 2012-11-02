@@ -77,21 +77,9 @@ public:
         return DataDimensions() / math::pow2int(level);
     }
 
-    // Calculate the data dimensions needed to contain the volume at a given compression level.
-    // TODO: should this be factored out?
-    inline Vector3i MipLevelDataDimensions(const int level) const
-    {
-        //get dimensions
-        GlobalBbox source_extent = DataExtent();
-        Vector3f source_dims = source_extent.getUnitDimensions();
-
-        //dims in fraction of pixels
-        Vector3f mip_level_dims = source_dims / math::pow2int(level);
-
-        return Vector3i(ceil(mip_level_dims.x),
-                        ceil(mip_level_dims.y),
-                        ceil(mip_level_dims.z));
-    }
+    inline Vector3i MipLevelDataDimensions(const int level) const {
+        return Extent().ToDataBbox(this, level).getMax();
+     }
 
     inline Vector3i MipLevelDimensionsInMipChunks(int level) const
     {
@@ -102,7 +90,7 @@ public:
     }
 
     //data properties
-    GlobalBbox DataExtent() const;
+    GlobalBbox Extent() const;
 
     inline Vector3i DataDimensions() const {
         return dataDimensions_;

@@ -34,10 +34,10 @@ void VolumeSystem::UpdateRootLevel()
     }
 }
 
-GlobalBbox VolumeSystem::DataExtent() const
+GlobalBbox VolumeSystem::Extent() const
 {
     Vector3f abs = AbsOffset();
-    return GlobalBbox(abs, abs - Vector3f::ONE + dataDimensions_);
+    return GlobalBbox(abs, abs - Vector3f::ONE + DataDimensions() * Resolution() );
 }
 
 bool VolumeSystem::ContainsMipChunk(const Chunk & rMipCoord) const
@@ -51,7 +51,7 @@ bool VolumeSystem::ContainsMipChunk(const Chunk & rMipCoord) const
     //convert to data box in leaf (MIP 0)
     GlobalBbox bbox = rMipCoord.BoundingBox(this).ToGlobalBbox();
 
-    bbox.intersect(DataExtent());
+    bbox.intersect(Extent());
     if(bbox.isEmpty()){
         return false;
     }
