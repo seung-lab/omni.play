@@ -21,7 +21,7 @@ void volume::loadVolume()
 
     switch(volType_)
     {
-        case server::volType::CHANNEL:
+        case common::CHANNEL:
         {
             const std::string chanName = str(
                 boost::format("%1%/channels/channel1/%2%/volume.float.raw")
@@ -31,7 +31,7 @@ void volume::loadVolume()
             data_ = mapped.file();
             break;
         }
-        case server::volType::SEGMENTATION:
+        case common::SEGMENTATION:
         {
             const std::string segName = str(
                 boost::format("%1%/segmentations/segmentation1/%2%/volume.uint32_t.raw")
