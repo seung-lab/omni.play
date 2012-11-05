@@ -64,7 +64,7 @@ public:
         case ZY_VIEW:
             return "ZY";
         default:
-            throw OmArgException("unknown viewtype");
+            throw ArgException("unknown viewtype");
         }
     }
 
@@ -122,7 +122,7 @@ public:
         if( widgets.isEmpty() ){
             return NULL;
         } else if( widgets.size() > 1 ){
-            throw OmArgException("too many widgets");
+            throw ArgException("too many widgets");
         }
 
         return widgets[0];

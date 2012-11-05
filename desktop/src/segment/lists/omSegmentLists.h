@@ -34,7 +34,7 @@ private:
         case om::common::UNCERTAIN:
             return uncertain_.get();
         default:
-            throw OmArgException("unknown type");
+            throw ArgException("unknown type");
         }
     }
 

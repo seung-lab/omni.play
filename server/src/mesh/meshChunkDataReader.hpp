@@ -39,7 +39,7 @@ public:
         {
             std::stringstream ss;
             ss << "could not seek to " << entry.offsetIntoFile;
-            throw ioException(ss.str());
+            throw IoException(ss.str());
         }
 
         reader.read(dataCharPtr, numBytes);
@@ -48,7 +48,7 @@ public:
         {
             std::cout << "could not read data; numBytes is " << numBytes << "\n"
                       << std::flush;
-            throw ioException("could not read fully file", fnp_);
+            throw IoException("could not read fully file", fnp_);
         }
 
         return ret;

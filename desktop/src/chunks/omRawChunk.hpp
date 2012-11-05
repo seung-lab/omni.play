@@ -91,7 +91,7 @@ private:
 
         QFile file(memMapFileName_);
         if(!file.open(QIODevice::ReadOnly)){
-            throw OmIoException("could not open", memMapFileName_);
+            throw IoException("could not open", memMapFileName_);
         }
 
         file.seek(chunkOffset_);
@@ -101,7 +101,7 @@ private:
         const uint64_t readSize = file.read(dataAsCharPtr, numBytes_);
 
         if( readSize != numBytes_) {
-            throw OmIoException("read failed");
+            throw IoException("read failed");
         }
 
         dataRaw_ = data_.get();
@@ -113,7 +113,7 @@ private:
 
         QFile file(memMapFileName_);
         if(!file.open(QIODevice::ReadWrite)){
-            throw OmIoException("could not open", memMapFileName_);
+            throw IoException("could not open", memMapFileName_);
         }
 
         file.seek(chunkOffset_);
@@ -121,7 +121,7 @@ private:
             file.write(reinterpret_cast<const char*>(dataRaw_), numBytes_);
 
         if( writeSize != numBytes_) {
-            throw OmIoException("write failed");
+            throw IoException("write failed");
         }
     }
 };

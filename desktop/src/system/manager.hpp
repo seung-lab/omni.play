@@ -5,7 +5,7 @@
 #include <boost/unordered_map.hpp>
 #include <zi/mutex.hpp>
 
-#include "common/omException.h"
+#include "common/exception.h"
 #include "utility/omLockedPODs.hpp"
 #include "utility/yaml/manager.hpp"
 
@@ -114,7 +114,7 @@ public:
 		zi::guard g(lock_);
 		iterator iter = objs_.find(id);
 		if (iter != end()) {
-			throw OmArgException("Bad id");
+			throw ArgException("Bad id");
 		}
 		return iter->second;
 	}

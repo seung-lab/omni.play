@@ -29,7 +29,7 @@ void writeFile(const std::string& fnp, T const*const data, const uint64_t numByt
 
 //    Appears to be failing even though the file gets written...
 //    if(file.fail()){
-//        throw ioException("could not write file", fnp);
+//        throw IoException("could not write file", fnp);
 //    }
 }
 
@@ -141,7 +141,7 @@ boost::shared_ptr<mesh::data> loadData(coords::Chunk cc, const std::string& uri,
 
         data = reader.Read(segId);
     }
-    catch (exception e)
+    catch (Exception e)
     {
         return boost::shared_ptr<mesh::data>();
     }

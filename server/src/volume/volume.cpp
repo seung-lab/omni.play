@@ -16,7 +16,7 @@ using namespace pipeline;
 void volume::loadVolume()
 {
 	if(!file::exists(uri_)) {
-        throw argException("Invalid metadata: uri not found.");
+        throw ArgException("Invalid metadata: uri not found.");
     }
 
     switch(volType_)
@@ -109,7 +109,7 @@ void volume::GetSegIds(coords::Global point, int radius,
 segments::data volume::GetSegmentData(int32_t segId) const
 {
     if (segId <= 0) {
-        throw argException("Not allowed segment Ids less than or equal to 0");
+        throw ArgException("Not allowed segment Ids less than or equal to 0");
     }
 
     const uint32_t pageSize = 100000;
@@ -120,7 +120,7 @@ segments::data volume::GetSegmentData(int32_t segId) const
         % uri_ % pageNum);
 
     if(!file::exists(fname)) {
-        throw argException(str(boost::format("Invalid Seg Id %1%") % segId));
+        throw ArgException(str(boost::format("Invalid Seg Id %1%") % segId));
     }
 
     datalayer::memMappedFile<segments::data> page(fname);
@@ -128,7 +128,7 @@ segments::data volume::GetSegmentData(int32_t segId) const
     segments::data d = page.GetPtr()[idx];
 
     if(d.value <= 0) {
-        throw argException(str(boost::format("Invalid Seg Id %1%") % segId));
+        throw ArgException(str(boost::format("Invalid Seg Id %1%") % segId));
     }
 
     return d;

@@ -34,7 +34,7 @@ protected:
     bool checkSettings()
     {
         if( !are_file_names_valid()){
-            throw OmArgException("Error: file list contains invalid files");
+            throw ArgException("Error: file list contains invalid files");
         }
 
         return true;

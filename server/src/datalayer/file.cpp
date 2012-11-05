@@ -8,7 +8,7 @@ namespace file {
 int64_t numBytes(const std::string& fnp)
 {
     if(!exists(fnp)){
-        throw ioException("file not found", fnp);
+        throw IoException("file not found", fnp);
     }
     return boost::filesystem::file_size(fnp);
 }
@@ -19,7 +19,7 @@ void resizeFileNumBytes(const std::string* file, const int64_t numBytes)
     boost::filesystem::resize_file(*file, numBytes, ec);
     if(ec)
     {
-        throw ioException(str(boost::format("could not resize file to %1% bytes")
+        throw IoException(str(boost::format("could not resize file to %1% bytes")
                                       % numBytes));
     }
 }
@@ -30,7 +30,7 @@ void rmFile(const std::string& fnp)
         boost::system::error_code ec;
         boost::filesystem::remove(fnp, ec);
         if (ec){
-            throw ioException("could not remove previous file", fnp);
+            throw IoException("could not remove previous file", fnp);
         }
     }
 }
@@ -53,7 +53,7 @@ void mvFile(const std::string& old_fnp, const std::string& new_fnp)
         boost::filesystem::rename(old_fnp, new_fnp);
 
     } catch(...){
-        throw ioException("could not mv file", old_fnp);
+        throw IoException("could not mv file", old_fnp);
     }
 }
 
@@ -64,7 +64,7 @@ void cpFile(const std::string& from_fnp, const std::string& to_fnp)
         boost::filesystem::copy_file(from_fnp, to_fnp);
 
     } catch(...){
-        throw ioException("could not mv file", from_fnp);
+        throw IoException("could not mv file", from_fnp);
     }
 }
 

@@ -38,7 +38,7 @@ public:
             imageLoader.ReplaceSlice(sliceNum);
 
         } else {
-            throw OmIoException("don't know how to import image with bpp of", depth);
+            throw IoException("don't know how to import image with bpp of", depth);
         }
     }
 
@@ -63,7 +63,7 @@ protected:
             imageLoader.Process();
 
         } else {
-            throw OmIoException("don't know how to import image with bpp of", depth);
+            throw IoException("don't know how to import image with bpp of", depth);
         }
     }
 
@@ -75,7 +75,7 @@ protected:
         case 32:
             return OmVolDataType::UINT32;
         default:
-            throw OmIoException("don't know how to import image with bpp of", depth);
+            throw IoException("don't know how to import image with bpp of", depth);
         }
     }
 

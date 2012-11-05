@@ -44,7 +44,7 @@ public:
                 vol->mVolDataType = OmHdf5ChunkUtils::DetermineOldVolType(vol);
 
             } else {
-                throw OmIoException("can not resolve volume type");
+                throw IoException("can not resolve volume type");
             }
         }
 
@@ -72,10 +72,10 @@ private:
         case OmVolDataType::FLOAT:
             return OmMemMappedVolumeImpl<float>(vol);
         case OmVolDataType::UNKNOWN:
-            throw OmIoException("unknown data type--probably old file?");
+            throw IoException("unknown data type--probably old file?");
         }
 
-        throw OmArgException("type not know");
+        throw ArgException("type not know");
     }
 };
 

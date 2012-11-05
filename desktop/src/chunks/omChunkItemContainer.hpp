@@ -62,7 +62,7 @@ public:
         const std::size_t mipLevel = coord.Level;
 
         if(mipLevel >= mips_.size()){
-            throw OmArgException("invalid mip level");
+            throw ArgException("invalid mip level");
         }
 
         return mips_[mipLevel]->Get(coord);

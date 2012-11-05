@@ -39,7 +39,7 @@ public:
     GLuint GetTextureID() const
     {
         if(!textureID_){
-            throw OmIoException("texture not yet built");
+            throw IoException("texture not yet built");
         }
         return *textureID_;
     }
@@ -60,7 +60,7 @@ public:
         case OMTILE_NEEDTEXTUREBUILT:
             return QImage::Format_Indexed8;
         default:
-            throw OmArgException("unknown flag");
+            throw ArgException("unknown flag");
         }
     }
 
@@ -72,7 +72,7 @@ public:
         case OMTILE_NEEDTEXTUREBUILT:
             return GL_LUMINANCE;
         default:
-            throw OmArgException("unknown flag");
+            throw ArgException("unknown flag");
         }
     }
 
@@ -84,7 +84,7 @@ public:
         case OMTILE_NEEDTEXTUREBUILT:
             return GL_LUMINANCE;
         default:
-            throw OmArgException("unknown flag");
+            throw ArgException("unknown flag");
         }
     }
 
@@ -96,7 +96,7 @@ public:
         case OMTILE_NEEDTEXTUREBUILT:
             return GL_UNSIGNED_BYTE;
         default:
-            throw OmArgException("unknown flag");
+            throw ArgException("unknown flag");
         }
     }
 

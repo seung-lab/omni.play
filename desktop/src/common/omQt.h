@@ -4,7 +4,7 @@
 #define QT_USE_FAST_OPERATOR_PLUS
 #include <QString>
 
-#include "common/omColors.h"
+#include "common/colors.h"
 
 class QTextStream;
 QTextStream &operator<<(QTextStream& out, const om::common::Color& c);

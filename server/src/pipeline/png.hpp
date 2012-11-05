@@ -26,7 +26,7 @@ public:
 
     template<typename T>
     data_var operator()(const data<T>& in) const {
-        throw argException("Unsupported Data Type.");
+        throw ArgException("Unsupported Data Type.");
     }
 
     data_var operator()(const data<uint8_t>& in) const {

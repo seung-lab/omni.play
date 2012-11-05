@@ -43,12 +43,12 @@ public:
 
     // template <typename S>
     // data_var operator()(const data<S> in) const {
-    // 	throw argException("Attempting to filter the wrong type of data.");
+    // 	throw ArgException("Attempting to filter the wrong type of data.");
     // }
 
     // template <typename S>
     // data_var operator()(const datalayer::memMappedFile<S>& in) const {
-    // 	throw argException("Attempting to filter the wrong type of data.");
+    // 	throw ArgException("Attempting to filter the wrong type of data.");
     // }
 
 private:

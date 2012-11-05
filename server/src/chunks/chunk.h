@@ -19,7 +19,7 @@ public:
     Chunk(char* data, size_t size)
     {
         if(size != sizeof(Chunk<T>)) {
-            throw argException("Chunk Data is the wrong size");
+            throw ArgException("Chunk Data is the wrong size");
             data_ = reinterpret_cast<Chunk<T> >(data);
         }
     }
@@ -27,7 +27,7 @@ public:
     const T& operator[](uint i) const
     {
         if(i >= 128*128*128) {
-            throw argException("chunk index out of bounds.");
+            throw ArgException("chunk index out of bounds.");
         }
 
         return data_->data[i];
@@ -35,7 +35,7 @@ public:
 
     T& operator[](uint i) {
         if(i >= 128*128*128) {
-            throw argException("chunk index out of bounds.");
+            throw ArgException("chunk index out of bounds.");
         }
 
         return data_->data[i];

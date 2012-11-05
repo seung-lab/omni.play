@@ -44,7 +44,7 @@ public:
             dockToSplit = utils_->getDockWidget(AFFINITY, viewType);
 
         } else {
-            throw OmArgException("don't know where to put dock");
+            throw ArgException("don't know where to put dock");
         }
 
         InsertBySplitting(vgw, dockToSplit);

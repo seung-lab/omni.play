@@ -1,7 +1,7 @@
 #pragma once
 
 #include "system/omManageableObject.h"
-#include <common/omColors.h>
+#include "common/colors.h"
 
 class QGLWidget;
 class ChannelDataWrapper;

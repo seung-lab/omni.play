@@ -49,7 +49,7 @@ void get_chan_tile(server::tile& _return,
                    const ViewType view)
 {
     if(!vol.Bounds().contains(point)) {
-        throw argException("Requested Channel Tile outside bounds of volume.");
+        throw ArgException("Requested Channel Tile outside bounds of volume.");
     }
 
     coords::Data dc = point.ToData(&vol.CoordSystem(), vol.MipLevel());

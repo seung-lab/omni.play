@@ -12,7 +12,7 @@ Data::Data(Data::base_t v, const VolumeSystem* volume, int mipLevel)
     , mipLevel_(mipLevel)
 {
     if (mipLevel > volume_->RootMipLevel()) {
-        throw argException("Invalid Mip level.");
+        throw ArgException("Invalid Mip level.");
     }
 }
 
@@ -22,7 +22,7 @@ Data::Data(int x, int y, int z, const VolumeSystem* volume, int mipLevel)
     , mipLevel_(mipLevel)
 {
     if (mipLevel > volume_->RootMipLevel()) {
-        throw argException("Invalid Mip level.");
+        throw ArgException("Invalid Mip level.");
     }
 }
 
@@ -97,7 +97,7 @@ bool Data::IsInVolume() const {
 Data Data::AtDifferentLevel(int newLevel) const
 {
     if (newLevel > volume_->RootMipLevel()) {
-        throw argException("Invalid Mip level.");
+        throw ArgException("Invalid Mip level.");
     }
 
     if(newLevel == mipLevel_) {
@@ -114,11 +114,11 @@ DataBbox::DataBbox(Data min, Data max)
     , mipLevel_(min.mipLevel())
 {
     if(min.volume() != max.volume()) {
-        throw argException("min and max coords come from different volumes");
+        throw ArgException("min and max coords come from different volumes");
     }
 
     if(min.mipLevel() != max.mipLevel()) {
-        throw argException("min and max coords come from different mip levels");
+        throw ArgException("min and max coords come from different mip levels");
     }
 }
 

@@ -45,7 +45,7 @@ public:
         {
             std::ostringstream stm;
             stm << "invald coordinate: " << coord;
-            throw OmArgException(stm.str());
+            throw ArgException(stm.str());
         }
 
         if(!array_[x][y][z]){

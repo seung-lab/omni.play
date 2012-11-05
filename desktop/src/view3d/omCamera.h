@@ -13,7 +13,7 @@
 #include "omCameraMovement.h"
 
 #include "common/omStd.h"
-#include "common/omException.h"
+#include "common/exception.h"
 
 
 

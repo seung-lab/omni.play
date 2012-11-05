@@ -118,7 +118,7 @@ private:
                   << "..." << std::flush;
 
         if(!bi::managed_mapped_file::grow(fnp_.c_str(), newSize)){
-            throw OmIoException("could not resize file");
+            throw IoException("could not resize file");
         }
 
         std::cout << "done\n";

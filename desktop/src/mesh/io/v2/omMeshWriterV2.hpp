@@ -57,7 +57,7 @@ public:
 
         } else {
             std::cout << "\nERROR: some segments not meshed!\n";
-            throw OmIoException("some segments not meshed");
+            throw IoException("some segments not meshed");
         }
 
         return allGood;
@@ -76,7 +76,7 @@ public:
             filePtrCache_->GetAllocTable(coord);
 
         if(!chunk_table->Contains(segID)){
-            throw OmIoException("segID not present");
+            throw IoException("segID not present");
         }
 
         const OmMeshDataEntry entry = chunk_table->Find(segID);
@@ -90,13 +90,13 @@ public:
             filePtrCache_->GetAllocTable(coord);
 
         if(!chunk_table->Contains(segID)){
-            throw OmIoException("segID not present");
+            throw IoException("segID not present");
         }
 
         const OmMeshDataEntry entry = chunk_table->Find(segID);
 
         if(!entry.wasMeshed){
-            throw OmIoException("was not yet meshed");
+            throw IoException("was not yet meshed");
         }
 
         return entry.hasMeshData;

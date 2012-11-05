@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omException.h"
+#include "common/exception.h"
 #include "utility/omSmartPtr.hpp"
 
 #include <vector>
@@ -45,7 +45,7 @@ void openFileRO(PTR& file, const std::string& fnp)
 {
     file.reset(new QFile(QString::fromStdString(fnp)));
     if(!file->open(QIODevice::ReadOnly)){
-        throw OmIoException("could not open file read only", fnp);
+        throw IoException("could not open file read only", fnp);
     }
 }
 
@@ -54,7 +54,7 @@ void openFileAppend(PTR& file, const std::string& fnp)
 {
     file.reset(new QFile(QString::fromStdString(fnp)));
     if(!file->open(QIODevice::Append)){
-        throw OmIoException("could not open file read/write append", fnp);
+        throw IoException("could not open file read/write append", fnp);
     }
 }
 
@@ -63,7 +63,7 @@ void openFileRW(PTR& file, const std::string& fnp)
 {
     file.reset(new QFile(QString::fromStdString(fnp)));
     if(!file->open(QIODevice::ReadWrite)){
-        throw OmIoException("could not open file read/write", fnp);
+        throw IoException("could not open file read/write", fnp);
     }
 }
 
@@ -73,7 +73,7 @@ void openFileWO(PTR& file, const std::string& fnp)
     file.reset(new QFile(QString::fromStdString(fnp)));
 
     if(!file->open(QIODevice::WriteOnly)){
-        throw OmIoException("could not open file for writing", fnp);
+        throw IoException("could not open file for writing", fnp);
     }
 }
 
@@ -83,7 +83,7 @@ T* mapFile(QFile* file)
     uchar* map = file->map(0, file->size());
     
     if(!map){
-        throw OmIoException("could not map file", file->fileName());
+        throw IoException("could not map file", file->fileName());
     }
 
     file->close();
@@ -97,7 +97,7 @@ T* mapFile(PTR& file)
     uchar* map = file->map(0, file->size());
 
     if(!map){
-        throw OmIoException("could not map file", file->fileName());
+        throw IoException("could not map file", file->fileName());
     }
 
     file->close();
@@ -111,7 +111,7 @@ om::shared_ptr<T> readAll(QFile* file)
     const int64_t numBytes = file->size();
 
     if(0 != numBytes % sizeof(T)){
-        throw OmIoException("file size not even multiple of sizeof(type)");
+        throw IoException("file size not even multiple of sizeof(type)");
     }
 
     om::shared_ptr<T> ret =
@@ -122,7 +122,7 @@ om::shared_ptr<T> readAll(QFile* file)
     const int64_t numBytesRead = file->read(dataChar, numBytes);
 
     if(numBytesRead != numBytes){
-        throw OmIoException("could not read entire file");
+        throw IoException("could not read entire file");
     }
 
     return ret;
@@ -146,7 +146,7 @@ void writeVec(QFile& file, const std::vector<T>& vec)
     const int numBytesWritten = file.write(data, numBytes);
 
     if(numBytesWritten != numBytes){
-        throw OmIoException("could not fully write file", file.fileName());
+        throw IoException("could not fully write file", file.fileName());
     }
 }
 
@@ -163,7 +163,7 @@ void writeNumElements(QFile& file, const om::shared_ptr<T> ptr,
     const int numBytesWritten = file.write(data, numBytes);
 
     if(numBytesWritten != numBytes){
-        throw OmIoException("could not fully write file", file.fileName());
+        throw IoException("could not fully write file", file.fileName());
     }
 }
 

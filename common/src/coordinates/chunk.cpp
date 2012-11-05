@@ -17,7 +17,7 @@ Chunk::Chunk(int level, const Vector3i & coord)
     , mipLevel_(level)
 {
     if (coord.x < 0 || coord.y < 0 || coord.z < 0) {
-        throw argException("Bad Chunk Coord");
+        throw ArgException("Bad Chunk Coord");
     }
 }
 
@@ -26,7 +26,7 @@ Chunk::Chunk(int level, int x, int y, int z)
     , mipLevel_(level)
 {
     if (x < 0 || y < 0 || z < 0) {
-        throw argException("Bad Chunk Coord");
+        throw ArgException("Bad Chunk Coord");
     }
 }
 
@@ -128,7 +128,7 @@ int Chunk::SliceDepth(const VolumeSystem* vol, Global c, om::common::ViewType vi
     const Data d = c.ToData(vol, mipLevel_);
     const DataBbox bounds = BoundingBox(vol);
     if(!bounds.contains(d)) {
-        throw argException("Coord outside of chunk.");
+        throw ArgException("Coord outside of chunk.");
     }
 
     switch(view)
@@ -138,7 +138,7 @@ int Chunk::SliceDepth(const VolumeSystem* vol, Global c, om::common::ViewType vi
     case common::ZY_VIEW: return d.x - bounds.getMin().x;
     }
 
-    throw argException("Bad viewType");
+    throw ArgException("Bad viewType");
 }
 
 void Chunk::operator=(const Chunk & rhs)

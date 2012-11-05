@@ -31,7 +31,7 @@ private:
         case ZY_VIEW:
             return yz_;
         default:
-            throw OmArgException("unknown plane");
+            throw ArgException("unknown plane");
         }
     }
 
@@ -45,7 +45,7 @@ private:
         case ZY_VIEW:
             return yz_;
         default:
-            throw OmArgException("unknown plane");
+            throw ArgException("unknown plane");
         }
     }
 

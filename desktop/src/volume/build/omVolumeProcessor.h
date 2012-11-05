@@ -20,7 +20,7 @@ public:
             doBuildThreadedVolume(vol);
 
         } catch(...){
-            throw OmIoException("volume build failed");
+            throw IoException("volume build failed");
         }
 
         printf("OmVolumeBuilder: BuildThreadedVolume() done : %.6f secs\n",

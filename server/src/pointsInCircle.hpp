@@ -26,7 +26,7 @@ public:
     {
         if(brushDia <= 0 || brushDia > maxBrushSize)
         {
-            throw argException(
+            throw ArgException(
                 str(boost::format("brush size must be between 1 and %") % maxBrushSize));
         }
 

@@ -6,7 +6,7 @@
  */
 
 #include "common/omStd.h"
-#include "common/omException.h"
+#include "common/exception.h"
 #include "datalayer/archive/segmentation.h"
 #include "datalayer/archive/filter.h"
 

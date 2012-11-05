@@ -21,6 +21,6 @@ void OmRefreshMSTthresholdEvent::Dispatch(OmEventListener* listenerBase)
         return;
 
     default:
-        throw OmArgException("unknown event type");
+        throw ArgException("unknown event type");
     }
 }

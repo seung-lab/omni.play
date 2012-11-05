@@ -25,7 +25,7 @@ public:
     }
 
     PooledTile32Ptr Extract(float*) const {
-        throw OmIoException("segmentation data shouldn't be float");
+        throw IoException("segmentation data shouldn't be float");
     }
 
 private:

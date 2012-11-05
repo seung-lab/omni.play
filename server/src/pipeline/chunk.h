@@ -55,11 +55,11 @@ public:
 	{
 		datalayer::memMappedFile<T>* file = boost::get<datalayer::memMappedFile<T> >(file_);
 		if(!file) {
-			throw argException("Trying to write the wrong type of data.");
+			throw ArgException("Trying to write the wrong type of data.");
 		}
 
 		if(toWrite.size != 128 * 128 * 128) {
-			throw argException("Chunk Data is the wrong size.");
+			throw ArgException("Chunk Data is the wrong size.");
 		}
 
 		coords::Chunk cc = dc_.ToChunk();

@@ -123,7 +123,7 @@ private:
     {
        switch(versionInfo_->Get()){
         case 0:
-            throw OmArgException("bad segment page version number");
+            throw ArgException("bad segment page version number");
         case 1:
             convertFromHDF5();
             break;
@@ -137,7 +137,7 @@ private:
             loadV4();
             break;
         default:
-            throw OmArgException("unknown segment page version number: " +
+            throw ArgException("unknown segment page version number: " +
                                  om::string::num(versionInfo_->Get()));
         }
     }

@@ -52,12 +52,12 @@ private:
         file_.reset(new QFile(fnp_));
 
         if(!file_->open(QIODevice::ReadOnly)){
-            throw OmIoException("could not open", fnp_);
+            throw IoException("could not open", fnp_);
         }
 
         uchar* map = file_->map(chunkOffset_, numBytes_);
         if(!map){
-            throw OmIoException("could not map", fnp_);
+            throw IoException("could not map", fnp_);
         }
 
         dataRaw_ = reinterpret_cast<T*>(map);

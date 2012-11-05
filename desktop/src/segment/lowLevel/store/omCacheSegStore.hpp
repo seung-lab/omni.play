@@ -81,7 +81,7 @@ private:
         }
 
         if(loadedID != segID){
-            throw OmIoException("corruption detected in segment page");
+            throw IoException("corruption detected in segment page");
         }
 
         return ret;

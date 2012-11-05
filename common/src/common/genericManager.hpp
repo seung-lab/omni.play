@@ -155,7 +155,7 @@ private:
     {
         if(isIDinvalid(id)){
             assert(0 && "invalid ID");
-            throw common::accessException("Cannot get object with id: " + id);
+            throw common::AccessException("Cannot get object with id: " + id);
         }
     }
 

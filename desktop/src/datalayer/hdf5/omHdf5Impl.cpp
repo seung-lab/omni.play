@@ -1,5 +1,5 @@
 #include "common/omDebug.h"
-#include "common/omException.h"
+#include "common/exception.h"
 #include "datalayer/hdf5/omHdf5Impl.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/hdf5/omHdf5FileUtils.hpp"

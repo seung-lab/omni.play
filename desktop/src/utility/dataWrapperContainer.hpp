@@ -28,7 +28,7 @@ public:
             adw_ = boost::optional<AffinityGraphDataWrapper>(obj_id);
             break;
         default:
-            throw OmArgException("unknown type");
+            throw ArgException("unknown type");
         }
     }
 
@@ -66,7 +66,7 @@ public:
         if(adw_){
             return AFFINITY;
         }
-        throw OmArgException("uninitialized");
+        throw ArgException("uninitialized");
     }
 
     SegmentationDataWrapper GetSDW() const {

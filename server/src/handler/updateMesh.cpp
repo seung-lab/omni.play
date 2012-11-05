@@ -18,7 +18,7 @@ void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
 	using namespace pipeline;
 	using namespace apache::thrift;
 	if (!vol.VolumeType() == server::volType::SEGMENTATION) {
-		throw argException("Can only update global mesh from segmentation");
+		throw ArgException("Can only update global mesh from segmentation");
 	}
 
 	datalayer::memMappedFile<uint32_t> dataFile =

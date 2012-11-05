@@ -162,7 +162,7 @@ private:
             return OmSmartPtr<T>::WrapNoFree(rawPtr);
         case om::INVALID:
         default:
-            throw OmArgException("can't wrap invalid ptr");
+            throw ArgException("can't wrap invalid ptr");
         };
     }
 
@@ -174,7 +174,7 @@ private:
 
     void checkIfValid(){
         if(!ptr_){
-            throw OmIoException("OmDataWrapper: ptr not valid");
+            throw IoException("OmDataWrapper: ptr not valid");
         }
     }
 };

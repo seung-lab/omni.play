@@ -1,4 +1,4 @@
-#include "common/omException.h"
+#include "common/exception.h"
 #include "datalayer/archive/old/omDataArchiveSegment.h"
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
@@ -56,7 +56,7 @@ void OmDataArchiveSegment::attemptOldSegmentRead()
         printf("intial segment load failed; rereading\n");
         const bool dataReadCorrectOverride = readSegmentsOld(true);
         if(!dataReadCorrectOverride){
-            throw OmIoException("corrupt segment list detected");
+            throw IoException("corrupt segment list detected");
         }
     }
 }
@@ -129,6 +129,6 @@ void OmDataArchiveSegment::readSegmentsNew()
     QString omniPostfix;
     in >> omniPostfix;
     if(Omni_Postfix != omniPostfix || !in.atEnd()){
-        throw OmIoException("corrupt segment list detected");
+        throw IoException("corrupt segment list detected");
     }
 }

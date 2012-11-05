@@ -54,7 +54,7 @@ private:
     void mapReadOnly()
     {
         if(!om::file::exists(fnp_)){
-            throw OmIoException("file doesn't exist", fnp_);
+            throw IoException("file doesn't exist", fnp_);
         }
 
         om::file::openFileRO(file_, fnp_);

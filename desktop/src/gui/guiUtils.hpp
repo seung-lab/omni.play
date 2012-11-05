@@ -26,7 +26,7 @@ public:
 			return true;
 			break;
 		default:
-			throw OmArgException("unknown state?");
+			throw ArgException("unknown state?");
 		}
 	}
 

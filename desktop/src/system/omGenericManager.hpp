@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "common/omException.h"
+#include "common/exception.h"
 #include "common/omContainer.hpp"
 #include "zi/mutex.hpp"
 
@@ -148,7 +148,7 @@ private:
     {
         if(isIDinvalid(id)){
             assert(0 && "invalid ID");
-            throw OmAccessException("Cannot get object with id: " + id);
+            throw AccessException("Cannot get object with id: " + id);
         }
     }
 

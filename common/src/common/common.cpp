@@ -26,7 +26,7 @@ std::ostream& operator<<(std::ostream &out, const ViewType& vt)
         out << "ZY_VIEW";
         break;
     default:
-        throw argException("unknown viewtype");
+        throw ArgException("unknown viewtype");
     }
 
     return out;

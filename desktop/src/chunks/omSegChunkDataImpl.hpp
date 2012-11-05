@@ -158,7 +158,7 @@ private:
     }
 
     om::shared_ptr<uint32_t> getChunkAs32bit(float*) const {
-        throw OmIoException("can't deal with float data!");
+        throw IoException("can't deal with float data!");
     }
 };
 

@@ -115,7 +115,7 @@ private:
             return doResizePartialChunk<float>(data, chunkExtent, dataExtent);
         case OmVolDataType::UNKNOWN:
         default:
-            throw OmIoException("unknown data type");
+            throw IoException("unknown data type");
         }
     }
 
@@ -128,7 +128,7 @@ private:
 
         QFile file(mip0fnp_);
         if(!file.open(QIODevice::ReadWrite)){
-            throw OmIoException("could not open file", mip0fnp_);
+            throw IoException("could not open file", mip0fnp_);
         }
 
         file.seek(chunkOffset);
@@ -154,7 +154,7 @@ private:
         intersect_extent.intersect(volExtent);
 
         if(intersect_extent.isEmpty()) {
-            throw OmIoException("should not have happened");
+            throw IoException("should not have happened");
         }
 
         OmDataWrapperPtr partialChunk =

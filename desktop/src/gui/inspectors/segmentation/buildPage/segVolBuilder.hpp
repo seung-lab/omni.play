@@ -42,7 +42,7 @@ public:
             bs.BuildBlankVolume();
 
         } else {
-            throw OmArgException("unknown option", whatOrHowToBuild_);
+            throw ArgException("unknown option", whatOrHowToBuild_);
         }
     }
 
@@ -68,7 +68,7 @@ public:
             bs.BuildBlankVolume();
 
         } else {
-            throw OmArgException("unknown option", whatOrHowToBuild_);
+            throw ArgException("unknown option", whatOrHowToBuild_);
         }
     }
 };

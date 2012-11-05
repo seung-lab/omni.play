@@ -33,7 +33,7 @@ protected:
         file_ = om::make_shared<QFile>(QString::fromStdString(fnp_));
 
         if( !file_->open(QIODevice::ReadWrite)) {
-            throw OmIoException("could not open", fnp_);
+            throw IoException("could not open", fnp_);
         }
     }
 
@@ -46,7 +46,7 @@ protected:
         file_->seek(0);
         const uint64_t readBytes = file_->read(dataCharPtr, numBytes);
         if(readBytes != numBytes){
-            throw OmIoException("could not read in fully file ", fnp_);
+            throw IoException("could not read in fully file ", fnp_);
         }
 
         return readBytes;
@@ -63,7 +63,7 @@ public:
         file_->seek(0);
         const uint64_t writeBytes = file_->write(dataCharPtr, numBytes);
         if(writeBytes != numBytes){
-            throw OmIoException("could not write fully file", fnp_);
+            throw IoException("could not write fully file", fnp_);
         }
         printf("flushed %s\n", fnp_.c_str());
     }
@@ -124,7 +124,7 @@ private:
                 QString("error: input file size of %1 bytes doesn't match expected size %d")
                 .arg(this->file_->size())
                 .arg(numBytes);
-            throw OmIoException(err.toStdString());
+            throw IoException(err.toStdString());
         }
     }
 };
@@ -163,7 +163,7 @@ private:
         const int64_t bytesRead = this->readIn();
 
         if(bytesRead != numBytes){
-            throw OmIoException("did't read right amount of data");
+            throw IoException("did't read right amount of data");
         }
 
         if(om::common::ZERO_FILL == shouldZeroFill){
@@ -176,7 +176,7 @@ private:
     void checkFileSize(const int64_t numBytes)
     {
         if(!numBytes){
-            throw OmIoException("size was 0");
+            throw IoException("size was 0");
         }
     }
 };

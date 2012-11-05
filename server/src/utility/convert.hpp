@@ -56,7 +56,7 @@ inline server::volType::type Convert(common::ObjectType type)
     case common::CHANNEL: return server::volType::CHANNEL;
     case common::SEGMENTATION: return server::volType::SEGMENTATION;
     }
-    throw argException("Bad volume type.");
+    throw ArgException("Bad volume type.");
 }
 
 inline common::ObjectType Convert(server::volType::type type)
@@ -65,7 +65,7 @@ inline common::ObjectType Convert(server::volType::type type)
     case server::volType::CHANNEL: return common::CHANNEL;
     case server::volType::SEGMENTATION: return common::SEGMENTATION;
     }
-    throw argException("Bad volume type.");
+    throw ArgException("Bad volume type.");
 }
 
 inline server::viewType::type Convert(om::common::ViewType type)
@@ -75,7 +75,7 @@ inline server::viewType::type Convert(om::common::ViewType type)
     case common::XZ_VIEW: return server::viewType::XZ_VIEW;
     case common::ZY_VIEW: return server::viewType::ZY_VIEW;
     }
-    throw argException("Bad view type.");
+    throw ArgException("Bad view type.");
 }
 
 inline om::common::ViewType Convert(server::viewType::type type)
@@ -85,7 +85,7 @@ inline om::common::ViewType Convert(server::viewType::type type)
     case server::viewType::XZ_VIEW: return common::XZ_VIEW;
     case server::viewType::ZY_VIEW: return common::ZY_VIEW;
     }
-    throw argException("Bad view type.");
+    throw ArgException("Bad view type.");
 }
 
 inline common::DataType Convert(server::dataType::type type)
@@ -97,7 +97,7 @@ inline common::DataType Convert(server::dataType::type type)
     case server::dataType::UINT32: return common::DataType::UINT32;
     case server::dataType::FLOAT: return common::DataType::FLOAT;
 	}
-	throw argException("Bad data type.");
+	throw ArgException("Bad data type.");
 }
 
 inline server::dataType::type Convert(common::DataType type)
@@ -109,7 +109,7 @@ inline server::dataType::type Convert(common::DataType type)
     case common::DataType::UINT32: return server::dataType::UINT32;
     case common::DataType::FLOAT: return server::dataType::FLOAT;
 	}
-	throw argException("Bad data type.");
+	throw ArgException("Bad data type.");
 }
 
 

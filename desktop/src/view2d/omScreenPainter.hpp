@@ -126,7 +126,7 @@ private:
         case ZY_VIEW:
             return QColor(Qt::white);
         default:
-            throw OmArgException("invalid view type");
+            throw ArgException("invalid view type");
         }
     }
 
@@ -217,7 +217,7 @@ private:
         case ZY_VIEW:
             return std::make_pair(Qt::green, Qt::blue);
         default:
-            throw OmArgException("invalid viewtype");
+            throw ArgException("invalid viewtype");
         }
     }
 

@@ -26,7 +26,7 @@ public:
         std::string allocTablePath;
         ss >> allocTablePath;
         if(!file::exists(allocTablePath)) {
-            throw argException("Alloc table file not found.");
+            throw ArgException("Alloc table file not found.");
         }
 
         chunkTable_.reset(new memMappedAllocFile(allocTablePath));
@@ -36,7 +36,7 @@ public:
         std::string dataPath;
         ss2 >> dataPath;
         if(!file::exists(dataPath)) {
-            throw argException("Mesh data file not found.");
+            throw ArgException("Mesh data file not found.");
         }
         chunkData_.reset(new chunkDataReader(dataPath));
     }

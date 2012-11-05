@@ -82,7 +82,7 @@ private:
         break;
 
         default:
-            throw OmArgException("unknown plane");
+            throw ArgException("unknown plane");
         };
     }
 };

@@ -9,7 +9,7 @@ namespace handler {
 inline void validateMetadata(const server::metadata& meta)
 {
     if(!file::exists(meta.uri)) {
-        throw argException("Cannot find requested volu2me.");
+        throw ArgException("Cannot find requested volu2me.");
     }
 /*
     int factor = math::pow2int(meta.mipLevel);
@@ -29,16 +29,16 @@ inline void validateMetadata(const server::metadata& meta)
     }
 
     if(file::numBytes(meta.uri) != size) {
-        throw argException("Incorrect file size given bounds, mip level and data type.");
+        throw ArgException("Incorrect file size given bounds, mip level and data type.");
     }
 */
 
     if(meta.resolution.x <= 0 || meta.resolution.y <= 0 || meta.resolution.z <= 0) {
-        throw argException("Resolution must be greater than 0.");
+        throw ArgException("Resolution must be greater than 0.");
     }
 
     if(meta.chunkDims.x <= 0 || meta.chunkDims.y <= 0 || meta.chunkDims.z <= 0) {
-        throw argException("Chunk Dims must be greater than 0.");
+        throw ArgException("Chunk Dims must be greater than 0.");
     }
 }
 

@@ -56,7 +56,7 @@ bool OmMesh::createVbo()
     }
 
     if(isVbo()){
-        throw OmIoException("should not already be vbo");
+        throw IoException("should not already be vbo");
     }
 
     //create the VBO for the vertex data
@@ -85,7 +85,7 @@ bool OmMesh::createVbo()
 void OmMesh::deleteVbo()
 {
     if(!isVbo()){
-        throw OmIoException("not a vbo");
+        throw IoException("not a vbo");
     }
 
     glDeleteBuffersARB(1, &vertexDataVboId_);

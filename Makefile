@@ -301,7 +301,7 @@ $(BINDIR)/omni.server: $(SERVER_DEPS) $(SERVER_MAIN)
 
 $(BINDIR)/omni.server.test: $(SERVER_TEST_DEPS) $(SERVER_TEST_MAIN)
 	$(call link,$(SERVERLIBS))
-	$@
+#	$@
 
 $(BINDIR)/omni.tar.gz: desktop
 	$(TAR) -zcvf $@ -C $(BINDIR) omni.desktop

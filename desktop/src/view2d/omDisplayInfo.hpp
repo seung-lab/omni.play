@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omException.h"
+#include "common/exception.h"
 
 #include <QPainter>
 

@@ -72,7 +72,7 @@ public:
             .arg(level);
 
         if(subPath.startsWith("/")){
-            throw OmIoException("not a relative path: " + subPath.toStdString());
+            throw IoException("not a relative path: " + subPath.toStdString());
         }
 
         return FilesFolder() + QLatin1String("/") + subPath;
@@ -88,7 +88,7 @@ public:
 
         if(!QDir(fullPath).exists()){
             if(!QDir().mkpath(fullPath)){
-                throw OmIoException("could not create folder", fullPath);
+                throw IoException("could not create folder", fullPath);
             }
         }
 

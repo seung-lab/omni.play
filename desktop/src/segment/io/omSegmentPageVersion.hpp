@@ -75,7 +75,7 @@ private:
         in >> version_;
 
         if(!in.atEnd()){
-            throw OmIoException("corrupt file?", versionFilePath());
+            throw IoException("corrupt file?", versionFilePath());
         }
     }
 

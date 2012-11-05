@@ -73,7 +73,7 @@ private:
         }
 
         if(!hdf5->dataset_exists(datasetName_)){
-            throw OmIoException("could not find dataset");
+            throw IoException("could not find dataset");
         }
 
         hdf5->close();

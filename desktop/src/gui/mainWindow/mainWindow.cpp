@@ -1,6 +1,6 @@
 #include "actions/io/omActionDumper.h"
 #include "actions/omActions.h"
-#include "common/omException.h"
+#include "common/exception.h"
 #include "gui/cacheMonitorDialog.h"
 #include "gui/groupsTable/groupsTable.h"
 #include "gui/mainWindow/centralWidget.hpp"

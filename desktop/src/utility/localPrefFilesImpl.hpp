@@ -38,7 +38,7 @@ public:
     {
         QStringList lines = readFile(setting);
         if(0 == lines.size()){
-            throw OmIoException("invalid preference found", setting);
+            throw IoException("invalid preference found", setting);
         }
 
         return om::string::toNum<T>(lines[0].toStdString());
@@ -51,7 +51,7 @@ public:
 
         QFile file(fnp);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            throw OmIoException("could not write file", fnp);
+            throw IoException("could not write file", fnp);
         }
 
         QTextStream out(&file);
@@ -63,7 +63,7 @@ public:
     {
         const QStringList lines = readFile(setting);
         if(1 != lines.size()){
-            throw OmIoException("no preference found", setting);
+            throw IoException("no preference found", setting);
         }
 
         return lines[0];
@@ -76,7 +76,7 @@ public:
 
         QFile file(fnp);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            throw OmIoException("could not write file", fnp);
+            throw IoException("could not write file", fnp);
         }
 
         QTextStream out(&file);
@@ -95,7 +95,7 @@ public:
 
         QFile file(fnp);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            throw OmIoException("could not write file", fnp);
+            throw IoException("could not write file", fnp);
         }
 
         QTextStream out(&file);
@@ -128,7 +128,7 @@ private:
             printf("made folder %s\n", qPrintable(omniFolderPath));
             prefFolder_ = dir;
         } else {
-            throw OmIoException("could not create folder", omniFolderPath);
+            throw IoException("could not create folder", omniFolderPath);
         }
     }
 
@@ -142,7 +142,7 @@ private:
 
         QFile file(fnp);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            throw OmIoException("could not read file", fnp);
+            throw IoException("could not read file", fnp);
         }
 
         QStringList lines;

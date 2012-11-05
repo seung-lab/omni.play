@@ -44,7 +44,7 @@ void OmMST::Read()
 
         const QString is32bit("; is Omni running on a 32-bit OS?");
 
-        throw OmIoException(err + is32bit);
+        throw IoException(err + is32bit);
     }
 
     for(uint32_t i = 0; i < numEdges_; ++i){

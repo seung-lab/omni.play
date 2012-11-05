@@ -78,7 +78,7 @@ private:
         om::shared_ptr<QFile> file(om::make_shared<QFile>(fnp));
         file->resize(size);
         if(!file->open(QIODevice::ReadWrite)){
-            throw OmIoException("could not open file "+fnpStr);
+            throw IoException("could not open file "+fnpStr);
         }
         file->seek(size-1);
         file->putChar(0);

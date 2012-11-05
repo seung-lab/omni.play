@@ -33,7 +33,7 @@ public:
             std::cout << "writing log file " << outFile_ << std::endl;
 
         } else{
-            throw ioException("could not open file", outFile_);
+            throw IoException("could not open file", outFile_);
         }
     }
 
