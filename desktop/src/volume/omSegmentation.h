@@ -5,7 +5,6 @@
  * Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
-#include "common/om.hpp"
 #include "datalayer/omDataWrapper.h"
 #include "mesh/omMeshTypes.h"
 #include "system/omManageableObject.h"

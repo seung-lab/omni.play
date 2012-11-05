@@ -4,7 +4,6 @@
 #include "chunks/omSegChunk.h"
 #include "chunks/omSegChunkDataInterface.hpp"
 #include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
-#include "common/om.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/image/omImage.hpp"
 #include "utility/segmentationDataWrapper.hpp"

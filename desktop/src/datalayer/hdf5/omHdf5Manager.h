@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common/common.h"
-#include "common/om.hpp"
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
 #include "datalayer/hdf5/omHdf5.h"

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "mesh/omMeshTypes.h"
 
 #include <boost/scoped_ptr.hpp>

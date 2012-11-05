@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "common/omDebug.h"
 #include "events/omEvents.h"
 #include "system/omConnect.hpp"

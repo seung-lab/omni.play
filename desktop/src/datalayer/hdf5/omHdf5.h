@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common/common.h"
-#include "common/om.hpp"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
 #include "zi/omMutex.h"

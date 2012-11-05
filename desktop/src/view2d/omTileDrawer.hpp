@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "tiles/omTileTypes.hpp"
 #include "view2d/om2dPreferences.hpp"
 #include "view2d/omBlockingGetTiles.hpp"

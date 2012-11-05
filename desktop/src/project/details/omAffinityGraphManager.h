@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common/common.h"
-#include "common/om.hpp"
 #include "system/omGenericManager.hpp"
 #include "volume/omAffinityGraph.h"
 

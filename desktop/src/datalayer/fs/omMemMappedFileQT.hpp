@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "common/common.h"
 #include "common/omDebug.h"
 #include "common/omString.hpp"

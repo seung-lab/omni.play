@@ -18,7 +18,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "common/om.hpp"
 #include "threads/omTaskManagerImpl.hpp"
 #include "threads/omTaskManagerTypes.h"
 #include "utility/omSystemInformation.h"
