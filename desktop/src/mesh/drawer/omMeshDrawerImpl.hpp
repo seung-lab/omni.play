@@ -176,7 +176,7 @@ private:
         //disable lighting for lines
         glDisable(GL_LIGHTING);
 
-        const om::normBbox& clippedNormExtent = chunk->Mipping().GetClippedNormExtent();
+        const om::coords::NormBbox& clippedNormExtent = chunk->Mipping().GetClippedNormExtent();
 
         //translate and scale to chunk norm extent
         const Vector3f translate = clippedNormExtent.getMin();

@@ -254,7 +254,7 @@ private:
 
         OmSegChunk* chunk = segmentation_->GetChunk(coord);
 
-        const om::normBbox& dstBbox = chunk->Mipping().GetNormExtent();
+        const om::coords::NormBbox& dstBbox = chunk->Mipping().GetNormExtent();
 
         Vector3f dstDim = dstBbox.getDimensions();
 

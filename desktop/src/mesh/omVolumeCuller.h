@@ -17,7 +17,7 @@ public:
                    const om::normCoord& pos,
                    const om::normCoord& focus);
 
-    Visibility TestChunk(const om::normBbox&);
+    Visibility TestChunk(const om::coords::NormBbox&);
     const om::normCoord& GetPosition() const;
 
     boost::shared_ptr<OmVolumeCuller>

@@ -6,8 +6,8 @@ class OmChunkMipping {
 private:
     //octree properties
     om::coords::DataBbox dataExtent_;
-    om::normBbox normExtent_; // extent of chunk in norm space
-    om::normBbox clippedNormExtent_; // extent of contained data in norm space
+    om::coords::NormBbox normExtent_; // extent of chunk in norm space
+    om::coords::NormBbox clippedNormExtent_; // extent of contained data in norm space
     om::coords::Chunk coord_;
     std::set<om::coords::Chunk> childrenCoordinates_;
 
@@ -16,9 +16,9 @@ private:
 
 public:
     OmChunkMipping(OmMipVolume* vol, const om::coords::Chunk& coord)
-        : dataExtent_(coord.BoundingBox(vol))
-        , normExtent_(dataExtent_.toNormBbox())
-        , clippedNormExtent_(dataExtent_.toNormBbox())
+        : dataExtent_(coord.BoundingBox(&vol->Coords()))
+        , normExtent_(dataExtent_.ToNormBbox())
+        , clippedNormExtent_(dataExtent_.ToNormBbox())
         , coord_(coord)
         , numVoxels_(vol->Coords().GetNumberOfVoxelsPerChunk())
         , numBytes_(numVoxels_ * vol->GetBytesPerVoxel())
@@ -33,11 +33,11 @@ public:
         return dataExtent_;
     }
 
-    inline const om::normBbox& GetNormExtent() const {
+    inline const om::coords::NormBbox& GetNormExtent() const {
         return normExtent_;
     }
 
-    inline const om::normBbox& GetClippedNormExtent() const {
+    inline const om::coords::NormBbox& GetClippedNormExtent() const {
         return clippedNormExtent_;
     }
 

@@ -68,6 +68,10 @@ public:
         return coords_;
     }
 
+    inline operator om::coords::VolumeSystem&() {
+    	return coords_;
+    }
+
 protected:
     om::common::DataType mVolDataType;
 

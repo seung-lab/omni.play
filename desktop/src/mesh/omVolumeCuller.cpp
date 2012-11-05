@@ -26,7 +26,7 @@ OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat,
                                            om::normCoord(matInv * mFocus, vol));
 }
 
-Visibility OmVolumeCuller::TestChunk(const om::normBbox& normBox){
+Visibility OmVolumeCuller::TestChunk(const om::coords::NormBbox& normBox){
     return mFrustumCuller.testAabb(normBox);
 }
 

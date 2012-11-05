@@ -2,6 +2,7 @@
 
 #include "common/common.h"
 #include "zi/concurrency.hpp"
+#include "zi/for_each.hpp"
 
 namespace om {
 namespace coords {
@@ -151,14 +152,33 @@ public:
                         math::roundUp(data_dims.z, chunkDimensions_.z));
     }
 
-    //mip Chunk methods
+    inline void ValidMipChunkCoordChildren(const Chunk & coord,
+                                           std::set<Chunk>& children) const
+    {
+        //clear set
+        children.clear();
+
+        //get all possible children
+        std::vector<Chunk> possible_children = coord.ChildrenCoords();
+
+        //for all possible children
+        FOR_EACH(c, possible_children) {
+            if (ContainsMipChunk(*c)) {
+                children.insert(*c);
+            }
+        }
+    }
+
     Chunk RootMipChunkCoordinate() const;
 
     boost::shared_ptr<std::vector<coords::Chunk> > MipChunkCoords() const;
     boost::shared_ptr<std::vector<coords::Chunk> > MipChunkCoords(const int mipLevel) const;
 
-    // Returns true if given MipCoordinate is a valid coordinate within the MipVolume.
     bool ContainsMipChunk(const Chunk & rMipCoord) const;
+
+    inline uint32_t GetNumberOfVoxelsPerChunk() const {
+	    return chunkDimensions_.x * chunkDimensions_.y * chunkDimensions_.z;
+    }
 private:
     void addChunkCoordsForLevel(const int mipLevel, std::vector<coords::Chunk>* coords) const;
 
