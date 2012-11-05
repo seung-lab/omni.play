@@ -38,7 +38,7 @@ private:
     }
 
 public:
-    OmThreadedMeshCache(const om::CacheGroup group,
+    OmThreadedMeshCache(const om::common::CacheGroup group,
                         const std::string& name)
         : OmCacheBase(name, group)
     {

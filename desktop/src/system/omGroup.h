@@ -9,13 +9,13 @@ class OmGroup : public OmManageableObject {
 public:
     OmGroup(){}
 
-    OmGroup(OmID id)
+    OmGroup(om::common::ID id)
         : OmManageableObject(id)
     {
         mColor =  om::utils::color::GetRandomColor();
     }
 
-    OmGroup(const OmSegIDsSet& ids)
+    OmGroup(const om::common::SegIDSet& ids)
     {
         mColor =  om::utils::color::GetRandomColor();
         AddIds(ids);
@@ -24,33 +24,33 @@ public:
     virtual ~OmGroup()
     {}
 
-    void AddIds(const OmSegIDsSet& ids)
+    void AddIds(const om::common::SegIDSet& ids)
     {
         FOR_EACH(iter, ids) {
             mIDs.insert(*iter);
         }
     }
 
-    void RemoveIds(const OmSegIDsSet& ids)
+    void RemoveIds(const om::common::SegIDSet& ids)
     {
         FOR_EACH(iter, ids) {
             mIDs.erase(*iter);
         }
     }
 
-    OmGroupName GetName() const {
+    om::common::GroupName GetName() const {
         return mName;
     }
 
-    const OmSegIDsSet& GetIDs() const {
+    const om::common::SegIDSet& GetIDs() const {
         return mIDs;
     }
 
 private:
-    OmSegIDsSet mIDs;
+    om::common::SegIDSet mIDs;
     om::common::Color mColor;
 
-    OmGroupName mName;
+    om::common::GroupName mName;
     friend class OmGroups;
 
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter & out, const OmGroup & g );

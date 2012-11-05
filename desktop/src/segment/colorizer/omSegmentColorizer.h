@@ -12,7 +12,7 @@ template <class> class OmPooledTile;
 class OmSegmentColorizer {
 public:
     OmSegmentColorizer(OmSegments*,
-                       const OmSegmentColorCacheType,
+                       const om::common::SegmentColorCacheType,
                        const int tileDim,
                        OmViewGroupState* vgs);
 

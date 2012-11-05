@@ -14,27 +14,27 @@ public:
     OmGroups(OmSegmentation * seg);
     ~OmGroups();
 
-    OmGroup & AddGroup(OmGroupName);
-    OmGroup & GetGroup(OmGroupID);
-    OmGroup & GetGroup(OmGroupName);
+    OmGroup & AddGroup(om::common::GroupName);
+    OmGroup & GetGroup(om::common::GroupID);
+    OmGroup & GetGroup(om::common::GroupName);
 
-    OmGroupID GetIDFromName(OmGroupName);
-    void SetGroup(const OmSegIDsSet & set, OmGroupName name);
-    void UnsetGroup(const OmSegIDsSet & set, OmGroupName name);
+    om::common::GroupID GetIDFromName(om::common::GroupName);
+    void SetGroup(const om::common::SegIDSet & set, om::common::GroupName name);
+    void UnsetGroup(const om::common::SegIDSet & set, om::common::GroupName name);
 
-    OmGroupIDsSet GetGroups();
-    OmGroupIDsSet GetGroups(OmSegID);
+    om::common::GroupIDSet GetGroups();
+    om::common::GroupIDSet GetGroups(om::common::SegID);
 
-    OmID GetSegmentationID();
+    om::common::ID GetSegmentationID();
     void populateGroupsList();
 
 
 private:
-    void setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool doSet);
+    void setGroupIDs(const om::common::SegIDSet & set, OmGroup * group, bool doSet);
 
     OmSegmentation * mSegmentation;
     OmGenericManager<OmGroup> mGroupManager;
-    QHash<OmGroupName, OmGroupID> mGroupsByName;
+    QHash<om::common::GroupName, om::common::GroupID> mGroupsByName;
 
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter & out, const OmGroups &);
     friend void YAML::operator>>(const YAML::Node & in, OmGroups &);

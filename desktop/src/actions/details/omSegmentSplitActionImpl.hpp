@@ -11,7 +11,7 @@
 class OmSegmentSplitActionImpl {
 private:
     OmSegmentEdge mEdge;
-    OmID mSegmentationID;
+    om::common::ID mSegmentationID;
     QString desc;
 
 public:

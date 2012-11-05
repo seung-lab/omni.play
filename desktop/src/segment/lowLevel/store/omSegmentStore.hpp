@@ -34,16 +34,16 @@ public:
     void Flush();
 
 // segments
-    OmSegment* AddSegment(const OmSegID value);
-    bool IsSegmentValid(const OmSegID value);
+    OmSegment* AddSegment(const om::common::SegID value);
+    bool IsSegmentValid(const om::common::SegID value);
 
 // caching
     void StartCaches();
-    OmSegment* GetSegment(const OmSegID value);
-    OmSegment* GetSegmentUnsafe(const OmSegID value);
+    OmSegment* GetSegment(const om::common::SegID value);
+    OmSegment* GetSegmentUnsafe(const om::common::SegID value);
 
     // WARNING: do not call from inside OmSegmentsImpl or OmSegmentsImplLowLevel
-    OmSegID Root(const OmSegID segID);
+    om::common::SegID Root(const om::common::SegID segID);
 
 private:
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const OmSegmentsImpl&);

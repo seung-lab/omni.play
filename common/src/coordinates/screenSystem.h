@@ -34,8 +34,8 @@ private:
     }
 
 public:
-    ScreenSystem(common::viewType viewType);
-    ScreenSystem(common::viewType viewType, int width, int height, double scale = 1.0, Global location = Global(0));
+    ScreenSystem(om::common::ViewType viewType);
+    ScreenSystem(om::common::ViewType viewType, int width, int height, double scale = 1.0, Global location = Global(0));
 
     // Update the Transformation Matricies based on changes to scale, location or viewport
     //
@@ -61,7 +61,7 @@ public:
     void UpdateTransformationMatrices();
 
 private:
-	PROP_CONST_REF(common::viewType, viewType);
+	PROP_CONST_REF(om::common::ViewType, viewType);
 
 	PROP_CONST_REF(Matrix4f, screenToGlobalMat);
     PROP_CONST_REF(Matrix4f, globalToScreenMat);

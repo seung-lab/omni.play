@@ -7,7 +7,7 @@
 #include <boost/tuple/tuple_comparison.hpp>
 
 // segmentation ID, segment ID, mip level, x, y, z
-typedef boost::tuple<OmID,OmSegID,int,int,int,int> OmMeshSegListKey;
+typedef boost::tuple<om::common::ID,om::common::SegID,int,int,int,int> OmMeshSegListKey;
 
 class OmSegPtrListValid {
 public:

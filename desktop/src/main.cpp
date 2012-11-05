@@ -112,7 +112,7 @@ private:
     void registerTypes()
     {
         qRegisterMetaType<om::tool::mode>("om::tool::mode");
-        qRegisterMetaType<OmID>("OmID");
+        qRegisterMetaType<om::common::ID>("om::common::ID");
         qRegisterMetaType<ViewType>("ViewType");
         qRegisterMetaType<uint32_t>("uint32_t");
         qRegisterMetaType<ChannelDataWrapper>("ChannelDataWrapper");

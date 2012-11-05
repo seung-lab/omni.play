@@ -5,7 +5,7 @@
 #include "volume/omChannelFolder.h"
 #include "volume/omFilter2d.h"
 
-OmChannel& OmChannelManager::GetChannel(const OmID id)
+OmChannel& OmChannelManager::GetChannel(const om::common::ID id)
 {
     return manager_.Get(id);
 }
@@ -18,7 +18,7 @@ OmChannel& OmChannelManager::AddChannel()
     return vol;
 }
 
-void OmChannelManager::RemoveChannel(const OmID id)
+void OmChannelManager::RemoveChannel(const om::common::ID id)
 {
     GetChannel(id).CloseDownThreads();
 
@@ -31,19 +31,19 @@ void OmChannelManager::RemoveChannel(const OmID id)
     OmActions::Save();
 }
 
-bool OmChannelManager::IsChannelValid(const OmID id){
+bool OmChannelManager::IsChannelValid(const om::common::ID id){
     return manager_.IsValid(id);
 }
 
-const OmIDsSet& OmChannelManager::GetValidChannelIds(){
+const om::common::IDSet& OmChannelManager::GetValidChannelIds(){
     return manager_.GetValidIds();
 }
 
-bool OmChannelManager::IsChannelEnabled(const OmID id){
+bool OmChannelManager::IsChannelEnabled(const om::common::ID id){
     return manager_.IsEnabled(id);
 }
 
-void OmChannelManager::SetChannelEnabled(const OmID id, bool enable){
+void OmChannelManager::SetChannelEnabled(const om::common::ID id, bool enable){
     manager_.SetEnabled(id, enable);
 }
 

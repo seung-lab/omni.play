@@ -73,7 +73,7 @@ public:
         OmProject::Save();
     }
 
-    static void loadHDF5seg(const QString file, OmID& segmentationID_)
+    static void loadHDF5seg(const QString file, om::common::ID& segmentationID_)
     {
         OmBuildSegmentation bs;
         bs.addFileNameAndPath(file);
@@ -82,7 +82,7 @@ public:
         segmentationID_ = bs.GetDataWrapper().GetID();
     }
 
-    static void ClearMST(const OmID segmentationID)
+    static void ClearMST(const om::common::ID segmentationID)
     {
         SegmentationDataWrapper sdw(segmentationID);
 
@@ -103,7 +103,7 @@ public:
 
         OmSegments* segments = sdw.Segments();
 
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
+        for(om::common::SegID i = 1; i <= segments->getMaxValue(); ++i)
         {
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){
@@ -118,13 +118,13 @@ public:
         OmActions::Save();
     }
 
-    static void RecolorAllSegments(const OmID segmentationID)
+    static void RecolorAllSegments(const om::common::ID segmentationID)
     {
         SegmentationDataWrapper sdw(segmentationID);
 
         OmSegments* segments = sdw.Segments();
 
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
+        for(om::common::SegID i = 1; i <= segments->getMaxValue(); ++i)
         {
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){
@@ -136,7 +136,7 @@ public:
         OmActions::Save();
     }
 
-    static void RebuildCenterOfSegmentData(const OmID segmentationID)
+    static void RebuildCenterOfSegmentData(const om::common::ID segmentationID)
     {
         SegmentationDataWrapper sdw(segmentationID);
         OmSegmentCenter::RebuildCenterOfSegmentData(sdw);
@@ -181,23 +181,23 @@ public:
                   << "\n";
     }
 
-    static void ReValidateEveryObject(const OmID segmentationID)
+    static void ReValidateEveryObject(const om::common::ID segmentationID)
     {
         SegmentationDataWrapper sdw(segmentationID);
         OmSegmentUtils::ReValidateEveryObject(sdw);
         OmActions::Save();
     }
 
-    static void DumpSegmentColorHistograms(const OmID segmentationID){
+    static void DumpSegmentColorHistograms(const om::common::ID segmentationID){
         dumpRootSegmentColorHistograms(segmentationID, false);
     }
 
-    static void DumpRootSegmentColorHistograms(const OmID segmentationID){
+    static void DumpRootSegmentColorHistograms(const om::common::ID segmentationID){
         dumpRootSegmentColorHistograms(segmentationID, true);
     }
 
 private:
-    static void dumpRootSegmentColorHistograms(const OmID segmentationID,
+    static void dumpRootSegmentColorHistograms(const om::common::ID segmentationID,
                                                const bool findRoot)
     {
         SegmentationDataWrapper sdw(segmentationID);
@@ -225,7 +225,7 @@ private:
                   << " colors\n";
 
         OmSegments* segments = sdw.Segments();
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i){
+        for(om::common::SegID i = 1; i <= segments->getMaxValue(); ++i){
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){
                 continue;
@@ -262,7 +262,7 @@ private:
 
 public:
 
-    static void TimeSegChunkReads(const OmID segmentationID,
+    static void TimeSegChunkReads(const om::common::ID segmentationID,
                                   const bool randomize,
                                   const bool useMeshChunk)
     {
@@ -315,7 +315,7 @@ public:
         std::cout << megsPerSec << " MB/sec\n";
     }
 
-    static void Mesh(const OmID segmentationID)
+    static void Mesh(const om::common::ID segmentationID)
     {
         const SegmentationDataWrapper sdw(segmentationID);
         OmBuildSegmentation bs(sdw);

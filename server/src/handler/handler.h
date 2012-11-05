@@ -20,13 +20,13 @@ void get_graph(std::vector<server::edge>& _return, const volume::volume& vol);
 void get_chan_tile(server::tile& _return,
                    const volume::volume& vol,
                    const coords::Global& point,
-                   const common::viewType view);
+                   const om::common::ViewType view);
 
 void get_seg_tiles(std::map<std::string, server::tile> & _return,
                    const volume::volume& vol,
                    const int32_t segId,
                    const coords::GlobalBbox& segBbox,
-                   const common::viewType view);
+                   const om::common::ViewType view);
 
 int32_t get_seg_id(const volume::volume& vol, coords::Global point);
 
@@ -34,7 +34,7 @@ void get_seg_ids(std::set<int32_t> & _return,
                  const volume::volume& vol,
                  coords::Global point,
                  const int32_t radius,
-                 const common::viewType view);
+                 const om::common::ViewType view);
 
 void get_seg_data(server::segData& _return, const volume::volume& vol, const int32_t segId);
 

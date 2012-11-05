@@ -40,7 +40,7 @@ namespace om { namespace annotation { class manager; } }
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
 public:
     OmSegmentation();
-    OmSegmentation(OmID id);
+    OmSegmentation(om::common::ID id);
     virtual ~OmSegmentation();
 
     std::string GetName();
@@ -57,7 +57,7 @@ public:
         return SEGMENTATION;
     }
 
-    inline OmID getID() const {
+    inline om::common::ID getID() const {
         return GetID();
     }
 

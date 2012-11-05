@@ -4,7 +4,7 @@
 #include <zi/system.hpp>
 
 OmMeshCache::OmMeshCache(OmMeshManager* parent)
-    : OmThreadedMeshCache(om::MESH_CACHE, "Meshes")
+    : OmThreadedMeshCache(om::common::MESH_CACHE, "Meshes")
     , meshMan_(parent)
 {}
 

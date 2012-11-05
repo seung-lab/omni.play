@@ -34,13 +34,13 @@ public:
                              const double threshold);
 
 // painting-related
-    void SetVoxel(const OmID segmentationId,
+    void SetVoxel(const om::common::ID segmentationId,
                   const om::coords::Global rVoxel,
-                  const OmSegID value);
+                  const om::common::SegID value);
 
-    void SetVoxels(const OmID segmentationId,
+    void SetVoxels(const om::common::ID segmentationId,
                    const std::set<om::coords::Global> rVoxels,
-                   const OmSegID value);
+                   const om::common::SegID value);
 
 // segment-related
     void ValidateSegment(const SegmentDataWrapper sdw,
@@ -57,7 +57,7 @@ public:
 
     void JoinSegmentsWrapper(const SegmentationDataWrapper sdw);
     void JoinSegmentsSet(const SegmentationDataWrapper sdw,
-                         const OmSegIDsSet ids);
+                         const om::common::SegIDSet ids);
 
     void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
     void ShatterSegment(OmSegment* seg);
@@ -67,9 +67,9 @@ public:
     void SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params);
 
 // group-related
-    void CreateOrDeleteSegmentGroup(const OmID segmentationID,
-                                    const OmSegIDsSet selectedSegmentIDs,
-                                    const OmGroupName name,
+    void CreateOrDeleteSegmentGroup(const om::common::ID segmentationID,
+                                    const om::common::SegIDSet selectedSegmentIDs,
+                                    const om::common::GroupName name,
                                     const bool create);
 
 private:

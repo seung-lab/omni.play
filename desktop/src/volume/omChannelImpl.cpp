@@ -24,7 +24,7 @@ OmChannelImpl::OmChannelImpl()
     , tileCache_(new OmTileCacheChannel())
 {}
 
-OmChannelImpl::OmChannelImpl(OmID id)
+OmChannelImpl::OmChannelImpl(om::common::ID id)
     : OmManageableObject(id)
     , chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this))
     , volData_(new OmVolumeData())

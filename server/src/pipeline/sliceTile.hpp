@@ -10,12 +10,12 @@ namespace pipeline {
 class sliceTile : public stage
 {
 private:
-    common::viewType view_;
+    om::common::ViewType view_;
     coords::Data dc_;
     int chunkSize_; // TODO: rewrite for arbitrary chunks
 
 public:
-    sliceTile(common::viewType view, coords::Data dc)
+    sliceTile(om::common::ViewType view, coords::Data dc)
         : view_(view)
         , dc_(dc)
         , chunkSize_(dc.volume()->ChunkDimensions().x)

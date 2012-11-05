@@ -45,7 +45,7 @@ private:
         out << "segID, 1 == working, 2 == valid, 3 == uncertain, isGlia\n";
         out << "example: 100,2,0\n";
 
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
+        for(om::common::SegID i = 1; i <= segments->getMaxValue(); ++i)
         {
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){
@@ -77,7 +77,7 @@ private:
 
     int isGlia(OmSegment* seg)
     {
-        const OmGroupIDsSet set = groups_->GetGroups(seg->RootID());
+        const om::common::GroupIDSet set = groups_->GetGroups(seg->RootID());
 
         if(set.empty()){
             return 0;

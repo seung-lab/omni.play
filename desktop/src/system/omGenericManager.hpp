@@ -17,14 +17,14 @@ class OmGenericManager {
 protected:
     static const uint32_t DEFAULT_MAP_SIZE = 10;
 
-    OmID nextId_;
+    om::common::ID nextId_;
     uint32_t size_;
 
     std::vector<T*> vec_;
     std::vector<T*> vecValidPtrs_;
 
-    OmIDsSet validSet_;  // keys in map (fast iteration)
-    OmIDsSet enabledSet_; // enabled keys in map
+    om::common::IDSet validSet_;  // keys in map (fast iteration)
+    om::common::IDSet enabledSet_; // enabled keys in map
 
     Lock lock_;
 
@@ -48,7 +48,7 @@ public:
     {
         zi::guard g(lock_);
 
-        const OmID id = nextId_;
+        const om::common::ID id = nextId_;
 
         T* t = new T(id);
         vec_[id] = t;
@@ -62,7 +62,7 @@ public:
         return *vec_[id];
     }
 
-    inline T& Get(const OmID id) const
+    inline T& Get(const om::common::ID id) const
     {
         zi::guard g(lock_);
 
@@ -70,7 +70,7 @@ public:
         return *vec_[id];
     }
 
-    void Remove(const OmID id)
+    void Remove(const om::common::ID id)
     {
         zi::guard g(lock_);
 
@@ -90,28 +90,28 @@ public:
     }
 
     //valid
-    inline bool IsValid(const OmID id) const
+    inline bool IsValid(const om::common::ID id) const
     {
         zi::guard g(lock_);
         return !isIDinvalid(id);
     }
 
     // TODO: Remove return of ref to ensure locking of vector is not circumvented
-    inline const OmIDsSet& GetValidIds() const
+    inline const om::common::IDSet& GetValidIds() const
     {
         zi::guard g(lock_);
         return validSet_;
     }
 
     //enabled
-    inline bool IsEnabled(const OmID id) const
+    inline bool IsEnabled(const om::common::ID id) const
     {
         zi::guard g(lock_);
         throwIfInvalidID(id);
         return enabledSet_.count(id);
     }
 
-    inline void SetEnabled(const OmID id, const bool enable)
+    inline void SetEnabled(const om::common::ID id, const bool enable)
     {
         zi::guard g(lock_);
         throwIfInvalidID(id);
@@ -124,7 +124,7 @@ public:
     }
 
     // TODO: Remove return of ref to ensure locking of vector is not circumvented
-    inline const OmIDsSet& GetEnabledIds() const
+    inline const om::common::IDSet& GetEnabledIds() const
     {
         zi::guard g(lock_);
         return enabledSet_;
@@ -140,11 +140,11 @@ public:
     }
 
 private:
-    inline bool isIDinvalid(const OmID id) const {
+    inline bool isIDinvalid(const om::common::ID id) const {
         return id < 1 || id >= size_ || NULL == vec_[id];
     }
 
-    inline void throwIfInvalidID(const OmID id) const
+    inline void throwIfInvalidID(const om::common::ID id) const
     {
         if(isIDinvalid(id)){
             assert(0 && "invalid ID");

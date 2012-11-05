@@ -9,7 +9,7 @@
 
 class SegmentationDataWrapper {
 public:
-    static const OmIDsSet& ValidIDs(){
+    static const om::common::IDSet& ValidIDs(){
         return OmProject::Volumes().Segmentations().GetValidSegmentationIds();
     }
 
@@ -17,12 +17,12 @@ public:
         return OmProject::Volumes().Segmentations().GetPtrVec();
     }
 
-    static void Remove(const OmID id){
+    static void Remove(const om::common::ID id){
         OmProject::Volumes().Segmentations().RemoveSegmentation(id);
     }
 
 private:
-    OmID id_;
+    om::common::ID id_;
     mutable boost::optional<OmSegmentation&> segmentation_;
 
 public:
@@ -30,7 +30,7 @@ public:
         : id_(0)
     {}
 
-    explicit SegmentationDataWrapper(const OmID ID)
+    explicit SegmentationDataWrapper(const om::common::ID ID)
         : id_(ID)
     {}
 
@@ -63,11 +63,11 @@ public:
         return !(*this == sdw);
     }
 
-    inline OmID GetSegmentationID() const {
+    inline om::common::ID GetSegmentationID() const {
         return id_;
     }
 
-    inline OmID GetID() const {
+    inline om::common::ID GetID() const {
         return id_;
     }
 
@@ -164,7 +164,7 @@ public:
         return GetSegmentation().Coords().GetResolution();
     }
 
-    inline const OmSegIDsSet GetSelectedSegmentIDs() const {
+    inline const om::common::SegIDSet GetSelectedSegmentIDs() const {
         return Segments()->GetSelectedSegmentIDs();
     }
 

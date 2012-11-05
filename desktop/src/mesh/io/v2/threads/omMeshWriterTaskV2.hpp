@@ -16,7 +16,7 @@ class OmMeshWriterTaskV2 : public zi::runnable{
 private:
     OmSegmentation *const seg_;
     OmMeshFilePtrCache *const  filePtrCache_;
-    const OmSegID segID_;
+    const om::common::SegID segID_;
     const om::coords::Chunk coord_;
     const U mesh_;
     const om::common::AllowOverwrite allowOverwrite_;
@@ -24,7 +24,7 @@ private:
 public:
     OmMeshWriterTaskV2(OmSegmentation* seg,
                        OmMeshFilePtrCache* filePtrCache,
-                       const OmSegID segID,
+                       const om::common::SegID segID,
                        const om::coords::Chunk& coord,
                        const U mesh,
                        const om::common::AllowOverwrite allowOverwrite)

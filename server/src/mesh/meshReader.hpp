@@ -44,13 +44,13 @@ public:
     ~reader()
     {}
 
-    dataEntry* GetDataEntry(const common::segId segId)
+    dataEntry* GetDataEntry(const common::SegID segId)
     {
         return chunkTable_->Find(MakeEmptyEntry(segId));
     }
 
     boost::shared_ptr<data>
-    Read(const common::segId segId)
+    Read(const common::SegID segId)
     {
         boost::shared_ptr<data> ret = boost::make_shared<data>();
 

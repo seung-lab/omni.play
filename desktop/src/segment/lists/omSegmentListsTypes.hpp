@@ -8,7 +8,7 @@ class OmSegment;
 struct SegInfo
 {
     OmSegment* seg;
-    OmSegID segID;
+    om::common::SegID segID;
     int64_t sizeIncludingChildren;
     int64_t numChildren;
 };
@@ -23,7 +23,7 @@ struct GUIPageRequest
 {
     uint32_t offset;
     int numToGet;
-    OmSegID startSeg;
+    om::common::SegID startSeg;
 };
 
 namespace om {

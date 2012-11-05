@@ -162,7 +162,7 @@ private:
     }
 
     struct ResetEntry {
-        OmMeshDataEntry operator()(const OmSegID segID) const {
+        OmMeshDataEntry operator()(const om::common::SegID segID) const {
             return om::meshio_::MakeEmptyEntry(segID);
         }
     };

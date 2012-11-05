@@ -19,15 +19,15 @@ void OmCacheManager::UpdateCacheSizeFromLocalPrefs(){
     impl()->UpdateCacheSizeFromLocalPrefs();
 }
 
-void OmCacheManager::AddCache(const om::CacheGroup group, OmCacheBase* base){
+void OmCacheManager::AddCache(const om::common::CacheGroup group, OmCacheBase* base){
     impl()->AddCache(group, base);
 }
 
-void OmCacheManager::RemoveCache(const om::CacheGroup group, OmCacheBase* base){
+void OmCacheManager::RemoveCache(const om::common::CacheGroup group, OmCacheBase* base){
     impl()->RemoveCache(group, base);
 }
 
-QList<OmCacheInfo> OmCacheManager::GetCacheInfo(const om::CacheGroup group){
+QList<OmCacheInfo> OmCacheManager::GetCacheInfo(const om::common::CacheGroup group){
     return impl()->GetCacheInfo(group);
 }
 

@@ -18,9 +18,9 @@ private:
     }
 
 public:
-    static QList<OmCacheInfo> GetCacheInfo(const om::CacheGroup group);
-    static void AddCache(const om::CacheGroup group, OmCacheBase* base);
-    static void RemoveCache(const om::CacheGroup group, OmCacheBase* base);
+    static QList<OmCacheInfo> GetCacheInfo(const om::common::CacheGroup group);
+    static void AddCache(const om::common::CacheGroup group, OmCacheBase* base);
+    static void RemoveCache(const om::common::CacheGroup group, OmCacheBase* base);
 
     static void SignalCachesToCloseDown();
     static void UpdateCacheSizeFromLocalPrefs();

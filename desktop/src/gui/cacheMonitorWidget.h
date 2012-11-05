@@ -13,6 +13,6 @@ Q_SIGNALS:
     void triggerCacheView();
 
 private:
-    QGroupBox* showDisplay(const QString&, const om::CacheGroup);
+    QGroupBox* showDisplay(const QString&, const om::common::CacheGroup);
 };
 

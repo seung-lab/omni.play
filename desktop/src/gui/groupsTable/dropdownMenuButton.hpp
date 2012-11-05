@@ -5,7 +5,7 @@
 
 class GroupsTableDropDownMenuButton : public OmButton<GroupsTable> {
 public:
-	GroupsTableDropDownMenuButton(GroupsTable * parent, OmSegID seg)
+	GroupsTableDropDownMenuButton(GroupsTable * parent, om::common::SegID seg)
 		: OmButton<GroupsTable>(parent, QString("%1").arg(seg), "", false)
 		, seg_(seg)
 	{}
@@ -18,7 +18,7 @@ protected:
 	}
 
 private:
-	OmSegID seg_;
+	om::common::SegID seg_;
 
 	void doAction()
 	{}

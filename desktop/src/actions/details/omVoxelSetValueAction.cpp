@@ -2,9 +2,9 @@
 #include "actions/details/omVoxelSetValueAction.h"
 #include "actions/details/omVoxelSetValueActionImpl.hpp"
 
-OmVoxelSetValueAction::OmVoxelSetValueAction(const OmID segmentationId,
+OmVoxelSetValueAction::OmVoxelSetValueAction(const om::common::ID segmentationId,
                                              const om::coords::Global& rVoxel,
-                                             const OmSegID value)
+                                             const om::common::SegID value)
     : impl_(om::make_shared<OmVoxelSetValueActionImpl>(segmentationId,
                                                           rVoxel,
                                                           value))
@@ -12,9 +12,9 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(const OmID segmentationId,
     mUndoable = false;
 }
 
-OmVoxelSetValueAction::OmVoxelSetValueAction(const OmID segmentationId,
+OmVoxelSetValueAction::OmVoxelSetValueAction(const om::common::ID segmentationId,
                                              const std::set<om::coords::Global>& rVoxels,
-                                             const OmSegID value)
+                                             const om::common::SegID value)
     : impl_(om::make_shared<OmVoxelSetValueActionImpl>(segmentationId,
                                                           rVoxels,
                                                           value))

@@ -14,19 +14,19 @@ class OmFilter2dManager {
 public:
     OmFilter2dManager();
 
-    inline OmFilter2d& GetFilter(OmID id){
+    inline OmFilter2d& GetFilter(om::common::ID id){
         return filters_.Get(id);
     }
 
-    inline const OmIDsSet& GetValidFilterIds() const {
+    inline const om::common::IDSet& GetValidFilterIds() const {
         return filters_.GetValidIds();
     }
 
-    inline bool IsFilterEnabled(OmID id) const {
+    inline bool IsFilterEnabled(om::common::ID id) const {
         return filters_.IsEnabled(id);
     }
 
-    inline bool IsFilterValid(OmID id) const {
+    inline bool IsFilterValid(om::common::ID id) const {
         return filters_.IsValid(id);
     }
 

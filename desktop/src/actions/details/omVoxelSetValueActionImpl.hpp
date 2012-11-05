@@ -10,21 +10,21 @@
 class OmVoxelSetValueActionImpl {
 private:
     //segmentation of voxels
-    OmID mSegmentationId;
+    om::common::ID mSegmentationId;
 
     //map of voxels to old values
-    std::map<om::coords::Global, OmSegID> mOldVoxelValues;
+    std::map<om::coords::Global, om::common::SegID> mOldVoxelValues;
 
     //new value of voxels
-    OmSegID mNewValue;
+    om::common::SegID mNewValue;
 
 public:
     OmVoxelSetValueActionImpl()
     {}
 
-    OmVoxelSetValueActionImpl(const OmID segmentationId,
+    OmVoxelSetValueActionImpl(const om::common::ID segmentationId,
                               const om::coords::Global& rVoxel,
-                              const OmSegID value)
+                              const om::common::SegID value)
     {
         //store segmentation id
         mSegmentationId = segmentationId;
@@ -36,9 +36,9 @@ public:
         mOldVoxelValues[rVoxel] = mNewValue;
     }
 
-    OmVoxelSetValueActionImpl(const OmID segmentationId,
+    OmVoxelSetValueActionImpl(const om::common::ID segmentationId,
                               const std::set<om::coords::Global>& rVoxels,
-                              const OmSegID value)
+                              const om::common::SegID value)
     {
         //store segmentation id
         mSegmentationId = segmentationId;

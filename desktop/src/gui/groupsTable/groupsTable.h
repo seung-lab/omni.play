@@ -24,11 +24,11 @@ Q_OBJECT
 public:
     GroupsTable(OmViewGroupState* vgs);
 
-    static void Repopulate(OmSegID id = 0);
+    static void Repopulate(om::common::SegID id = 0);
 
-    void populateGroupTable(OmGroupID id);
+    void populateGroupTable(om::common::GroupID id);
 
-    void SetSegmentID(const OmSegID seg){
+    void SetSegmentID(const om::common::SegID seg){
         seg_ = seg;
     }
 
@@ -39,8 +39,8 @@ private:
     OmViewGroupState *const vgs_;
     const SegmentationDataWrapper sdw_;
 
-    OmSegID seg_;
-    OmGroupID groupid_;
+    om::common::SegID seg_;
+    om::common::GroupID groupid_;
 
     void populateGroupsList();
 

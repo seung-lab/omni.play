@@ -30,7 +30,7 @@ public:
     void openProject( QString fileNameAndPath );
     void openProject( QString fileName, QString pathName );
 
-    void cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId);
+    void cleanViewsOnVolumeChange(ObjectType objectType, om::common::ID objectId);
     void updateStatusBar( QString msg );
 
     inline OmViewGroupState* GetViewGroupState(){

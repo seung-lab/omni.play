@@ -11,7 +11,7 @@ private:
     OmViewGroupState *const vgs_;
 
     zi::spinlock lock_;
-    boost::array<OmSegmentColorizer*, SCC_NUMBER_OF_ENUMS> colorizers_;
+    boost::array<OmSegmentColorizer*, om::common::SCC_NUMBER_OF_ENUMS> colorizers_;
 
 public:
     om::common::Colorizers(OmViewGroupState* vgs)
@@ -32,7 +32,7 @@ public:
                                                 const int tileDim,
                                                 const OmTileCoord& key)
     {
-        const OmSegmentColorCacheType sccType =
+        const om::common::SegmentColorCacheType sccType =
             key.getSegmentColorCacheType();
 
         {
@@ -48,7 +48,7 @@ public:
 private:
     void setupColorizer(const int tileDim,
                         const OmTileCoord& key,
-                        const OmSegmentColorCacheType sccType)
+                        const om::common::SegmentColorCacheType sccType)
     {
         if(SEGMENTATION != key.getVolume()->getVolumeType()){
             throw OmIoException("can only color segmentations");

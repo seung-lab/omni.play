@@ -217,7 +217,7 @@ void OmSegmentContextMenu::setNotValid()
 
 void OmSegmentContextMenu::showProperties()
 {
-    const OmSegID rootSegID = sdw_.FindRootID();
+    const om::common::SegID rootSegID = sdw_.FindRootID();
     SegmentDataWrapper sdw(sdw_.GetSegmentationID(), rootSegID);
 
     const QString title = QString("Segmentation %1: Segment %2")
@@ -280,11 +280,11 @@ void OmSegmentContextMenu::writeChildrenFile(const QString fnp, om::gui::progres
 void OmSegmentContextMenu::addGroups()
 {
     OmGroups* groups = sdw_.GetSegmentation().Groups();
-    OmGroupIDsSet set = groups->GetGroups(sdw_.FindRootID());
-    OmGroupID firstID = 0;
+    om::common::GroupIDSet set = groups->GetGroups(sdw_.FindRootID());
+    om::common::GroupID firstID = 0;
     QString groupsStr = "Groups: ";
 
-    Q_FOREACH(OmGroupID id, set)
+    Q_FOREACH(om::common::GroupID id, set)
     {
         if(!firstID) {
             firstID = id;
@@ -299,7 +299,7 @@ void OmSegmentContextMenu::addGroups()
 
 void OmSegmentContextMenu::addDisableAction()
 {
-    const OmSegID segid = sdw_.FindRootID();
+    const om::common::SegID segid = sdw_.FindRootID();
     OmSegments* segments = sdw_.Segments();
 
     if(segments->isSegmentEnabled(segid)) {
@@ -309,7 +309,7 @@ void OmSegmentContextMenu::addDisableAction()
 
 void OmSegmentContextMenu::disableSegment()
 {
-    const OmSegID segid = sdw_.FindRootID();
+    const om::common::SegID segid = sdw_.FindRootID();
     OmSegments* segments = sdw_.Segments();
 
     segments->setSegmentEnabled(segid, false);

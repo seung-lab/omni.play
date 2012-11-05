@@ -373,9 +373,9 @@ SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2di)
         return SegmentDataWrapper();
     }
 
-    //ensure valid OmIDsSet
-    const OmID segmentationID = result[0];
-    const OmSegID segmentID = result[1];
+    //ensure valid om::common::IDSet
+    const om::common::ID segmentationID = result[0];
+    const om::common::SegID segmentID = result[1];
     SegmentDataWrapper sdw(segmentationID, segmentID);
 
     if(!sdw.IsSegmentValid()){
@@ -434,7 +434,7 @@ void OmView3d::UpdateEnabledWidgets()
  *  Root of drawing tree.
  *  Called from myUpdate() and picking calls.
  */
-void OmView3d::Draw(OmBitfield cullerOptions)
+void OmView3d::Draw(om::common::Bitfield cullerOptions)
 {
     mElapsed->restart();
     // clear buffer
@@ -494,7 +494,7 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 /*
  *  Draw VolumeManager to using this View3d's camera.
  */
-void OmView3d::DrawVolumes(OmBitfield cullerOptions)
+void OmView3d::DrawVolumes(om::common::Bitfield cullerOptions)
 {
     //draw focus axis
     mCamera.DrawFocusAxis();

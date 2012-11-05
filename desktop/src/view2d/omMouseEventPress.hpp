@@ -247,7 +247,7 @@ private:
             return;
         }
 
-        const OmID segmentID = sdw.getID();
+        const om::common::ID segmentID = sdw.getID();
 
         OmSegmentSelected::Set(sdw);
 
@@ -308,7 +308,7 @@ private:
     boost::optional<SegmentDataWrapper>
     getSelectedSegmentSegmentation(OmSegmentation* segmentation)
     {
-        const OmSegID segmentID = segmentation->GetVoxelValue(dataClickPoint_);
+        const om::common::SegID segmentID = segmentation->GetVoxelValue(dataClickPoint_);
 
         if(!segmentID){
             return boost::optional<SegmentDataWrapper>();

@@ -23,7 +23,7 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentValidateActionImpl& a)
     int version = 1;
     out << version;
 
-    OmSegIDsSet ids;
+    om::common::SegIDSet ids;
     std::set<OmSegment*>* segs = a.selectedSegments_.get();
     FOR_EACH(iter, *segs){
         OmSegment* seg = *iter;
@@ -41,7 +41,7 @@ QDataStream& operator>>(QDataStream& in, OmSegmentValidateActionImpl& a)
     int version;
     in >> version;
 
-    OmSegIDsSet ids;
+    om::common::SegIDSet ids;
     in >> ids;
     in >> a.valid_;
 
@@ -67,7 +67,7 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentUncertainActionImpl& a)
     int version = 1;
     out << version;
 
-    OmSegIDsSet ids;
+    om::common::SegIDSet ids;
     std::set<OmSegment*>* segs = a.selectedSegments_.get();
     FOR_EACH(iter, *segs){
         OmSegment* seg = *iter;
@@ -85,7 +85,7 @@ QDataStream& operator>>(QDataStream& in, OmSegmentUncertainActionImpl& a)
     int version;
     in >> version;
 
-    OmSegIDsSet ids;
+    om::common::SegIDSet ids;
     in >> ids;
     in >> a.uncertain_;
 
@@ -128,7 +128,7 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentSplitActionImpl& a)
 
     if(2 == version)
     {
-        OmSegID deadSeg;
+        om::common::SegID deadSeg;
         in >> deadSeg;
 
         Vector3i dc;
@@ -226,13 +226,13 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentSelectActionImpl& a)
     om::shared_ptr<OmSelectSegmentsParams> params =
         om::make_shared<OmSelectSegmentsParams>();
 
-    OmID segmentationID;
+    om::common::ID segmentationID;
     in >> segmentationID;
 
     in >> params->newSelectedIDs;
     in >> params->oldSelectedIDs;
 
-    OmSegID segmentID;
+    om::common::SegID segmentID;
     in >> segmentID;
 
     params->sdw = SegmentDataWrapper(segmentationID, segmentID);
@@ -297,7 +297,7 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentationThresholdChangeActionImp
     in >> a.threshold_;
     in >> a.oldThreshold_;
 
-    OmID id = 1;
+    om::common::ID id = 1;
 
     if(version > 1){
         in >> id;
@@ -328,7 +328,7 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentationSizeThresholdChangeActio
     in >> a.threshold_;
     in >> a.oldThreshold_;
 
-    OmID id = 1;
+    om::common::ID id = 1;
 
     if(version > 1){
         in >> id;

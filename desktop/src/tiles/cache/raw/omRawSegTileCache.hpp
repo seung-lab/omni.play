@@ -41,7 +41,7 @@ public:
     {}
 
     void Load(){
-        cache_.reset(new cache_t(om::TILE_CACHE, "slice cache",
+        cache_.reset(new cache_t(om::common::TILE_CACHE, "slice cache",
                                  vol_->GetBytesPerSlice()));
     }
 

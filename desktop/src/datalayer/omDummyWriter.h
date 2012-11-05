@@ -3,7 +3,7 @@
 #include "common/common.h"
 #include "datalayer/omIDataWriter.h"
 
-class OmDummyWriter : public OmIDataWriter {
+class OmDummyWriter : public om::common::IDataWriter {
 public:
 	OmDummyWriter(const std::string&){}
 

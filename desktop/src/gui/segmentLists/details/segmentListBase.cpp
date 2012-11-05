@@ -232,7 +232,7 @@ void SegmentListBase::searchChanged()
 
 void SegmentListBase::searchOne(const QString& text)
 {
-    const OmSegID segID = text.toInt();
+    const om::common::SegID segID = text.toInt();
     SegmentDataWrapper sdw(sdw_, segID);
 
     if(!sdw.IsSegmentValid()){
@@ -257,7 +257,7 @@ void SegmentListBase::searchMany(const QStringList& args)
 
     FOR_EACH(iter, args)
     {
-        const OmSegID segID = iter->toInt();
+        const om::common::SegID segID = iter->toInt();
         SegmentDataWrapper sdw(sdw_, segID);
 
         if(!sdw.IsSegmentValid()){

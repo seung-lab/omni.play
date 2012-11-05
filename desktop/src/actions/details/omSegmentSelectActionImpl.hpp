@@ -68,7 +68,7 @@ public:
         static const int max = 5;
 
         const std::string nums =
-            om::utils::MakeShortStrList<OmSegIDsSet, OmSegID>(params_->newSelectedIDs, max);
+            om::utils::MakeShortStrList<om::common::SegIDSet, om::common::SegID>(params_->newSelectedIDs, max);
 
         std::string prefix("Selected segments: ");
 

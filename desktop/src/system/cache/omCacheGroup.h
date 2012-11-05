@@ -10,7 +10,7 @@ class OmCacheInfo;
 
 class OmCacheGroup {
 public:
-    OmCacheGroup(const om::CacheGroup cacheGroup);
+    OmCacheGroup(const om::common::CacheGroup cacheGroup);
 
     void AddCache(OmCacheBase* cache);
     void RemoveCache(OmCacheBase* cache);
@@ -25,7 +25,7 @@ public:
     QList<OmCacheInfo> GetCacheInfo();
 
 private:
-    const om::CacheGroup cacheGroup_;
+    const om::common::CacheGroup cacheGroup_;
     int64_t maxAllowedSize_;
 
     zi::rwmutex lock_;

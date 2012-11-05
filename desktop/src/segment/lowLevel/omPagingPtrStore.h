@@ -21,7 +21,7 @@ public:
         return pageSize_;
     }
 
-    OmSegment* AddSegment(const OmSegID value);
+    OmSegment* AddSegment(const om::common::SegID value);
 
     std::vector<OmSegmentPage*> Pages(){
         return pages_;

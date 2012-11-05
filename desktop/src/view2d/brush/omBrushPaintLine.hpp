@@ -6,11 +6,11 @@
 class OmBrushPaintLine {
 private:
     const om::shared_ptr<OmBrushOppInfo> info_;
-    const OmSegID segIDtoPaint_;
+    const om::common::SegID segIDtoPaint_;
 
 public:
     OmBrushPaintLine(om::shared_ptr<OmBrushOppInfo> info,
-                     const OmSegID segIDtoPaint)
+                     const om::common::SegID segIDtoPaint)
         : info_(info)
         , segIDtoPaint_(segIDtoPaint)
     {}

@@ -6,14 +6,14 @@
 
 class OmCompareVolumes {
 public:
-    static bool CompareChannels(const OmID id1, const OmID id2)
+    static bool CompareChannels(const om::common::ID id1, const om::common::ID id2)
     {
         OmChannel& chan1 = ChannelDataWrapper(id1).GetChannel();
         OmChannel& chan2 = ChannelDataWrapper(id2).GetChannel();
         return compareVolumes(&chan1, &chan2);
     }
 
-    static bool CompareSegmentations(const OmID id1, const OmID id2)
+    static bool CompareSegmentations(const om::common::ID id1, const om::common::ID id2)
     {
         OmSegmentation* seg1 = SegmentationDataWrapper(id1).GetSegmentationPtr();
         OmSegmentation* seg2 = SegmentationDataWrapper(id2).GetSegmentationPtr();

@@ -11,7 +11,7 @@ public:
                                        const om::coords::Global& dataClickPoint,
                                        OmView2d* v2d)
     {
-        const OmSegID segID = sdw.GetVoxelValue(dataClickPoint);
+        const om::common::SegID segID = sdw.GetVoxelValue(dataClickPoint);
         if (segID) {
             OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(),
                                   v2d,

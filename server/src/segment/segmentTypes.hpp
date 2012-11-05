@@ -8,7 +8,7 @@ namespace segments {
 
 struct data
 {
-    common::segId value;
+    common::SegID value;
     common::Color color;
     uint64_t size;
     AxisAlignedBoundingBox<int> bounds;
@@ -16,8 +16,8 @@ struct data
 
 struct edge
 {
-	common::segId seg1;
-	common::segId seg2;
+	common::SegID seg1;
+	common::SegID seg2;
 	double threshold;
 };
 

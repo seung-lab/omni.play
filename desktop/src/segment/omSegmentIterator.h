@@ -14,8 +14,8 @@ public:
     explicit OmSegmentIterator(const SegmentationDataWrapper& sdw);
     explicit OmSegmentIterator(const SegmentDataWrapper& sdw);
 
-    void iterOverSegmentID(const OmSegID segID);
-    void iterOverSegmentIDs(const OmSegIDsSet& set);
+    void iterOverSegmentID(const om::common::SegID segID);
+    void iterOverSegmentIDs(const om::common::SegIDSet& set);
     void iterOverSelectedIDs();
     void iterOverEnabledIDs();
 

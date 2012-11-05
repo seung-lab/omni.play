@@ -21,8 +21,8 @@ private:
     const float breakThreshold_;
 
     bool anySegmentsSelected_;
-    boost::unordered_set<OmSegID> selectedSegIDs_;
-    boost::unordered_set<OmSegID> enabledSegIDs_;
+    boost::unordered_set<om::common::SegID> selectedSegIDs_;
+    boost::unordered_set<om::common::SegID> enabledSegIDs_;
 
 public:
     OmSegmentColorizerImpl(SegmentColorParams& params,
@@ -34,12 +34,12 @@ public:
         , freshness_(freshness)
         , breakThreshold_(params_.vgs->getBreakThreshold())
     {
-        const OmSegIDsSet selected = params.segments->GetSelectedSegmentIDs();
-        selectedSegIDs_ = boost::unordered_set<OmSegID>(selected.begin(),
+        const om::common::SegIDSet selected = params.segments->GetSelectedSegmentIDs();
+        selectedSegIDs_ = boost::unordered_set<om::common::SegID>(selected.begin(),
                                                         selected.end());
 
-        const OmSegIDsSet enabled = params.segments->GetEnabledSegmentIDs();
-        enabledSegIDs_ = boost::unordered_set<OmSegID>(enabled.begin(),
+        const om::common::SegIDSet enabled = params.segments->GetEnabledSegmentIDs();
+        enabledSegIDs_ = boost::unordered_set<om::common::SegID>(enabled.begin(),
                                                        enabled.end());
 
         anySegmentsSelected_ = !selectedSegIDs_.empty() || !enabledSegIDs_.empty();
@@ -91,17 +91,17 @@ public:
 
 private:
     struct PrevSegAndColor {
-        OmSegID segID;
+        om::common::SegID segID;
         om::common::Color color;
     };
 
-    inline OmSegment* getSegment(const OmSegID segID)
+    inline OmSegment* getSegment(const om::common::SegID segID)
     {
         // return segments_->GetSegmentUnsafe(segID);
         return segments_->GetSegment(segID);
     }
 
-    om::common::Color getVoxelColorForView2d(const OmSegID segID)
+    om::common::Color getVoxelColorForView2d(const om::common::SegID segID)
     {
         //OmSegment* seg = getSegment(segID);
         OmSegment* seg = getSegment(segID);
@@ -123,23 +123,23 @@ private:
 
         switch(params_.sccType)
         {
-        case SCC_SEGMENTATION_VALID:
-        case SCC_FILTER_VALID:
+        case om::common::om::common::SCC_SEGMENTATION_VALID:
+        case om::common::SCC_FILTER_VALID:
             if(seg->IsValidListType()) {
                 return segRootColor;
             }
             return blackColor;
 
-        case SCC_SEGMENTATION_VALID_BLACK:
-        case SCC_FILTER_VALID_BLACK:
+        case om::common::om::common::om::common::SCC_SEGMENTATION_VALID_BLACK:
+        case om::common::om::common::SCC_FILTER_VALID_BLACK:
             if(seg->IsValidListType()) {
                 return blackColor;
             }
             return segRootColor;
 
-        case SCC_FILTER_BREAK:
-        case SCC_SEGMENTATION_BREAK_BLACK:
-        case SCC_SEGMENTATION_BREAK_COLOR:
+        case om::common::SCC_FILTER_BREAK:
+        case om::common::om::common::SCC_SEGMENTATION_BREAK_BLACK:
+        case om::common::om::common::SCC_SEGMENTATION_BREAK_COLOR:
             if(isSelected || !anySegmentsSelected_)
             {
                 OmSegment* segToShow = seg;
@@ -150,7 +150,7 @@ private:
                     segToShow = OmSegmentUtils::GetSegmentBasedOnThreshold(seg, breakThreshold_);
                 }
 
-                if(SCC_SEGMENTATION_BREAK_COLOR == params_.sccType){
+                if(om::common::om::common::SCC_SEGMENTATION_BREAK_COLOR == params_.sccType){
                     return makeSelectedColor(segToShow->GetColorInt());
                 }
 
@@ -159,7 +159,7 @@ private:
 
             if(!isSelected && anySegmentsSelected_)
             {
-                if(SCC_SEGMENTATION_BREAK_COLOR != params_.sccType){
+                if(om::common::om::common::SCC_SEGMENTATION_BREAK_COLOR != params_.sccType){
                     return blackColor;
                 }
 
@@ -171,8 +171,8 @@ private:
         default:
             if(isSelected)
             {
-                if(SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT == params_.sccType ||
-                   SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT == params_.sccType)
+                if(om::common::SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT == params_.sccType ||
+                   om::common::SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT == params_.sccType)
                 {
                     return segRootColor;
                 }
@@ -180,8 +180,8 @@ private:
                 return makeSelectedColor(segRootColor);
             }
 
-            if(SCC_FILTER_BLACK_BRIGHTEN_SELECT == params_.sccType ||
-               SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT == params_.sccType)
+            if(om::common::SCC_FILTER_BLACK_BRIGHTEN_SELECT == params_.sccType ||
+               om::common::SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT == params_.sccType)
             {
                 if(anySegmentsSelected_){
                     return blackColor;

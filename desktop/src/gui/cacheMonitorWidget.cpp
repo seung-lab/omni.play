@@ -7,13 +7,13 @@ CacheMonitorWidget::CacheMonitorWidget(QWidget* parent)
     : QWidget(parent)
 {
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
-    mainLayout->addWidget(showDisplay("MESH", om::MESH_CACHE));
-    mainLayout->addWidget(showDisplay("TILE", om::TILE_CACHE));
+    mainLayout->addWidget(showDisplay("MESH", om::common::MESH_CACHE));
+    mainLayout->addWidget(showDisplay("TILE", om::common::TILE_CACHE));
     setLayout(mainLayout);
 }
 
 QGroupBox* CacheMonitorWidget::showDisplay(const QString& cacheType,
-                                           const om::CacheGroup cacheGroup)
+                                           const om::common::CacheGroup cacheGroup)
 {
     QGroupBox* groupBox = new QGroupBox(cacheType);
     QGridLayout* gridLayout = new QGridLayout(groupBox);

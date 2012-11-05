@@ -101,7 +101,7 @@ private Q_SLOTS:
 
     void keyJ()
     {
-        const OmIDsSet& segset = SegmentationDataWrapper::ValidIDs();
+        const om::common::IDSet& segset = SegmentationDataWrapper::ValidIDs();
 
         FOR_EACH(iter, segset){
             OmActions::JoinSegments(SegmentationDataWrapper(*iter));

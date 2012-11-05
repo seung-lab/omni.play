@@ -50,7 +50,7 @@ inline coords::GlobalBbox Convert(server::bbox bbox)
 	return ret;
 }
 
-inline server::volType::type Convert(common::objectType type)
+inline server::volType::type Convert(common::ObjectType type)
 {
     switch(type) {
     case common::CHANNEL: return server::volType::CHANNEL;
@@ -59,7 +59,7 @@ inline server::volType::type Convert(common::objectType type)
     throw argException("Bad volume type.");
 }
 
-inline common::objectType Convert(server::volType::type type)
+inline common::ObjectType Convert(server::volType::type type)
 {
     switch(type) {
     case server::volType::CHANNEL: return common::CHANNEL;
@@ -68,7 +68,7 @@ inline common::objectType Convert(server::volType::type type)
     throw argException("Bad volume type.");
 }
 
-inline server::viewType::type Convert(common::viewType type)
+inline server::viewType::type Convert(om::common::ViewType type)
 {
     switch(type) {
     case common::XY_VIEW: return server::viewType::XY_VIEW;
@@ -78,7 +78,7 @@ inline server::viewType::type Convert(common::viewType type)
     throw argException("Bad view type.");
 }
 
-inline common::viewType Convert(server::viewType::type type)
+inline om::common::ViewType Convert(server::viewType::type type)
 {
     switch(type) {
     case server::viewType::XY_VIEW: return common::XY_VIEW;

@@ -18,11 +18,11 @@ public:
         : id_( 1 )
     {}
 
-    explicit OmManageableObject(const OmID id)
+    explicit OmManageableObject(const om::common::ID id)
         : id_( id )
     {}
 
-    inline OmID GetID() const {
+    inline om::common::ID GetID() const {
         return id_;
     }
 
@@ -43,7 +43,7 @@ public:
     }
 
 protected:
-    OmID id_;
+    om::common::ID id_;
     QString note_;
     QString customName_;
 

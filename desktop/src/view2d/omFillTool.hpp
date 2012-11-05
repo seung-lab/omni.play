@@ -33,7 +33,7 @@ public:
             return;
         }
 
-        const OmSegID segIDtoReplace =
+        const om::common::SegID segIDtoReplace =
             segments_->findRootID(vol_.GetVoxelValue(v));
 
         vol_.SetVoxelValue(v, newSegID_);
@@ -64,7 +64,7 @@ public:
 
 private:
 
-    void doFill(const om::coords::Global voxelLocStart, const OmSegID segIDtoReplace)
+    void doFill(const om::coords::Global voxelLocStart, const om::common::SegID segIDtoReplace)
     {
         std::deque<om::coords::Global> voxels;
         voxels.push_back(voxelLocStart);
@@ -80,7 +80,7 @@ private:
                 continue;
             }
 
-            const OmSegID curSegID = vol_.GetVoxelValue(v);
+            const om::common::SegID curSegID = vol_.GetVoxelValue(v);
 
             if(newSegID_ == curSegID){
                 continue;

@@ -4,7 +4,7 @@ OmChannel::OmChannel()
 	: OmChannelImpl()
 {}
 
-OmChannel::OmChannel(OmID id)
+OmChannel::OmChannel(om::common::ID id)
 	: OmChannelImpl(id)
 {}
 

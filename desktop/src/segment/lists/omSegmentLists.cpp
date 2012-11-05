@@ -99,7 +99,7 @@ OmSegmentLists::GetSegmentGUIPage(const om::common::SegListType type,
     return get(type)->GetSegmentGUIPage(request);
 }
 
-int64_t OmSegmentLists::GetSizeWithChildren(const OmSegID segID)
+int64_t OmSegmentLists::GetSizeWithChildren(const om::common::SegID segID)
 {
     zi::rwmutex::read_guard g(lock_);
     return globalList_->GetSizeWithChildren(segID);
@@ -111,7 +111,7 @@ int64_t OmSegmentLists::GetSizeWithChildren(OmSegment* seg)
     return globalList_->GetSizeWithChildren(seg);
 }
 
-OmSegID OmSegmentLists::GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw)
+om::common::SegID OmSegmentLists::GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw)
 {
     zi::rwmutex::read_guard g(lock_);
 
@@ -127,7 +127,7 @@ OmSegID OmSegmentLists::GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw)
 }
 
 // choose largest segment
-OmSegID OmSegmentLists::GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw)
+om::common::SegID OmSegmentLists::GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw)
 {
     zi::rwmutex::read_guard g(lock_);
 
@@ -135,7 +135,7 @@ OmSegID OmSegmentLists::GetNextSegIDinWorkingList(const SegmentationDataWrapper&
         return 0;
     }
 
-    const OmSegIDsSet selectedIDs = sdw.GetSelectedSegmentIDs();
+    const om::common::SegIDSet selectedIDs = sdw.GetSelectedSegmentIDs();
     std::vector<SegInfo> infos;
     infos.reserve(selectedIDs.size());
 
@@ -163,7 +163,7 @@ void OmSegmentLists::RefreshGUIlists(){
     segmentListsLL_->ForceRefreshGUIlists();
 }
 
-int64_t OmSegmentLists::GetNumChildren(const OmSegID segID)
+int64_t OmSegmentLists::GetNumChildren(const om::common::SegID segID)
 {
     zi::rwmutex::read_guard g(lock_);
     return globalList_->GetNumChildren(segID);

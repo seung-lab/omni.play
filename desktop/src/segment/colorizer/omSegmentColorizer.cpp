@@ -10,7 +10,7 @@ const std::vector<uint8_t> OmSegmentColorizer::SelectedColorLookupTable =
     OmSegmentColors::makeLookupTable();
 
 OmSegmentColorizer::OmSegmentColorizer(OmSegments* segments,
-                                       const OmSegmentColorCacheType sccType,
+                                       const om::common::SegmentColorCacheType sccType,
                                        const int tileDim,
                                        OmViewGroupState* vgs)
 {
@@ -31,7 +31,7 @@ void OmSegmentColorizer::setup()
     freshness_.set(OmCacheManager::GetFreshness());
 
     // resize cache, if needed
-    const OmSegID curSize = params_.segments->getMaxValue() + 1;
+    const om::common::SegID curSize = params_.segments->getMaxValue() + 1;
 
     if(curSize != colorCache_.Size()){
         colorCache_.Resize(curSize);

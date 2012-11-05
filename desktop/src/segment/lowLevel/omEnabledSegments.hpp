@@ -10,7 +10,7 @@ class OmEnabledSegments {
 private:
     OmSegmentsImplLowLevel *const cache_;
 
-    OmSegIDsSet enabled_;
+    om::common::SegIDSet enabled_;
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
     friend void YAML::operator>>(const YAML::Node&, OmSegmentsImpl&);
@@ -24,7 +24,7 @@ public:
 
     inline void Reroot()
     {
-        OmSegIDsSet old = enabled_;
+        om::common::SegIDSet old = enabled_;
         enabled_.clear();
 
         FOR_EACH(iter, old){
@@ -32,7 +32,7 @@ public:
         }
     }
 
-    inline OmSegIDsSet GetEnabledSegmentIDs(){
+    inline om::common::SegIDSet GetEnabledSegmentIDs(){
         return enabled_;
     }
 
@@ -40,7 +40,7 @@ public:
         return enabled_.size();
     }
 
-    inline bool IsEnabled(const OmSegID segID) const
+    inline bool IsEnabled(const om::common::SegID segID) const
     {
         if(enabled_.empty()){
             return false;
@@ -52,9 +52,9 @@ public:
         return enabled_.size();
     }
 
-    inline void SetEnabled(const OmSegID segID, const bool isEnabled)
+    inline void SetEnabled(const om::common::SegID segID, const bool isEnabled)
     {
-        const OmSegID rootID = cache_->FindRootID(segID);
+        const om::common::SegID rootID = cache_->FindRootID(segID);
 
         cache_->touchFreshness();
 

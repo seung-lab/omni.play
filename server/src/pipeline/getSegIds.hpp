@@ -39,13 +39,13 @@ class getSegIds : public stage
 private:
     coords::Data coord_;
     int radius_;
-    common::viewType view_;
+    om::common::ViewType view_;
     coords::DataBbox bounds_;
     static const utility::pointsInCircle pts;
 
 public:
     getSegIds(coords::Data coord, int radius,
-              common::viewType view, coords::DataBbox bounds)
+              om::common::ViewType view, coords::DataBbox bounds)
         : coord_(coord)
         , radius_(radius)
         , view_(view)

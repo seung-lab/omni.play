@@ -11,7 +11,7 @@ struct filePart{
 };
 
 struct dataEntry {
-    common::segId segID;
+    common::SegID segID;
     bool wasMeshed;
     bool hasMeshData;
     filePart vertexIndex;
@@ -20,7 +20,7 @@ struct dataEntry {
     filePart trianData;
 };
 
-static dataEntry MakeEmptyEntry(const common::segId segID)
+static dataEntry MakeEmptyEntry(const common::SegID segID)
 {
     static const filePart empty = {0, 0, 0, 0};
 

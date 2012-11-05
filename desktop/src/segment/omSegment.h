@@ -27,7 +27,7 @@ public:
         , freshnessForMeshes_(0)
     {}
 
-    inline OmSegID value() const {
+    inline om::common::SegID value() const {
         return data_->value;
     }
 
@@ -94,9 +94,9 @@ public:
 
     const segChildCont_t& GetChildren();
 
-    OmSegID RootID();
+    om::common::SegID RootID();
 
-    OmID GetSegmentationID();
+    om::common::ID GetSegmentationID();
 
     inline double getThreshold() const {
         return threshold_;

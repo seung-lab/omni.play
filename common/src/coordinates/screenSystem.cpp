@@ -7,11 +7,11 @@ using namespace om::common;
 namespace om {
 namespace coords {
 
-ScreenSystem::ScreenSystem(common::viewType viewType)
+ScreenSystem::ScreenSystem(om::common::ViewType viewType)
     : viewType_(viewType)
 { }
 
-ScreenSystem::ScreenSystem(common::viewType viewType, int width, int height, double scale, Global location)
+ScreenSystem::ScreenSystem(om::common::ViewType viewType, int width, int height, double scale, Global location)
     : viewType_(viewType)
 {
 	totalViewport_ = Vector4i(0, 0, width, height);

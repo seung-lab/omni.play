@@ -123,7 +123,7 @@ uint64_t Chunk::PtrOffset(const VolumeSystem* vol, int64_t bytesPerVoxel) const
     return offset;
 }
 
-int Chunk::SliceDepth(const VolumeSystem* vol, Global c, common::viewType view) const
+int Chunk::SliceDepth(const VolumeSystem* vol, Global c, om::common::ViewType view) const
 {
     const Data d = c.ToData(vol, mipLevel_);
     const DataBbox bounds = BoundingBox(vol);

@@ -25,7 +25,7 @@ using namespace utility;
 
 void setTileBounds(server::tile& t,
                    const coords::Data dc,
-                   const viewType& view)
+                   const ViewType& view)
 {
     coords::Chunk cc = dc.ToChunk();
     int depth = dc.ToTileDepth(view);
@@ -46,7 +46,7 @@ void setTileBounds(server::tile& t,
 void get_chan_tile(server::tile& _return,
                    const volume::volume& vol,
                    const coords::Global& point,
-                   const viewType view)
+                   const ViewType view)
 {
     if(!vol.Bounds().contains(point)) {
         throw argException("Requested Channel Tile outside bounds of volume.");
@@ -68,7 +68,7 @@ void get_chan_tile(server::tile& _return,
 void makeSegTile(server::tile& t,
                  const dataSrcs& src,
                  const coords::Data& dc,
-                 const viewType& view,
+                 const ViewType& view,
                  uint32_t segId)
 {
     t.view = Convert(view);
@@ -88,7 +88,7 @@ void get_seg_tiles(std::map<std::string, server::tile> & _return,
                    const volume::volume& vol,
                    const int32_t segId,
                    const coords::GlobalBbox& segBbox,
-                   const viewType view)
+                   const ViewType view)
 {
     coords::GlobalBbox bounds = segBbox;
 

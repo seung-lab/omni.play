@@ -17,7 +17,7 @@ private:
     static const int CLEANER_THREAD_LOOP_TIME_SECS = 30;
 
 public:
-    QList<OmCacheInfo> GetCacheInfo(const om::CacheGroup group){
+    QList<OmCacheInfo> GetCacheInfo(const om::common::CacheGroup group){
         return getCache(group)->GetCacheInfo();
     }
 
@@ -27,11 +27,11 @@ public:
         tileCaches_->ClearCacheContents();
     }
 
-    void AddCache(const om::CacheGroup group, OmCacheBase* base){
+    void AddCache(const om::common::CacheGroup group, OmCacheBase* base){
         getCache(group)->AddCache(base);
     }
 
-    void RemoveCache(const om::CacheGroup group, OmCacheBase* base){
+    void RemoveCache(const om::common::CacheGroup group, OmCacheBase* base){
         getCache(group)->RemoveCache(base);
     }
 
@@ -73,8 +73,8 @@ private:
     LockedUint64 freshness_;
 
     OmCacheManagerImpl()
-        : meshCaches_(new OmCacheGroup(om::MESH_CACHE))
-        , tileCaches_(new OmCacheGroup(om::TILE_CACHE))
+        : meshCaches_(new OmCacheGroup(om::common::MESH_CACHE))
+        , tileCaches_(new OmCacheGroup(om::common::TILE_CACHE))
     {
         freshness_.set(1); // non-segmentation tiles have freshness of 0
 
@@ -119,9 +119,9 @@ private:
         cleanerThread_->start();
     }
 
-    inline OmCacheGroup* getCache(const om::CacheGroup group)
+    inline OmCacheGroup* getCache(const om::common::CacheGroup group)
     {
-        if(om::MESH_CACHE == group){
+        if(om::common::MESH_CACHE == group){
             return meshCaches_.get();
         }
         return tileCaches_.get();

@@ -19,14 +19,14 @@ public:
     {
         FOR_EACH(iter, cacheSegments_)
         {
-            const OmSegID val = iter->first;
+            const om::common::SegID val = iter->first;
             OmSegment* seg = iter->second;
             seg->addToSize(sizes_[val]);
             seg->AddToBoundingBox(om::dataBbox(bounds_[val], minVertexOfChunk_.volume(), 0));
         }
     }
 
-    inline void processVoxel(const OmSegID val, const Vector3i& voxelPos)
+    inline void processVoxel(const om::common::SegID val, const Vector3i& voxelPos)
     {
         if(!computeSizes_){
             return;
@@ -44,12 +44,12 @@ private:
     const om::coords::Data minVertexOfChunk_;
     OmSegments *const segments_;
 
-    boost::unordered_map<OmSegID, OmSegment*> cacheSegments_;
-    boost::unordered_map<OmSegID, uint64_t> sizes_;
-    typedef boost::unordered_map<OmSegID, AxisAlignedBoundingBox<int> > bbox_map;
+    boost::unordered_map<om::common::SegID, OmSegment*> cacheSegments_;
+    boost::unordered_map<om::common::SegID, uint64_t> sizes_;
+    typedef boost::unordered_map<om::common::SegID, AxisAlignedBoundingBox<int> > bbox_map;
     bbox_map bounds_;
 
-    OmSegment* getOrAddSegment(const OmSegID val)
+    OmSegment* getOrAddSegment(const om::common::SegID val)
     {
         if(!cacheSegments_.count(val)){
             return cacheSegments_[val] = segments_->GetOrAddSegment(val);

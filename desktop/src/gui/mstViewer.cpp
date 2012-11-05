@@ -27,8 +27,8 @@ void MstViewerImpl::populate()
 	setRowCount(numEdges);
 
 	for( int i = 0; i < numEdges; ++i){
-		const OmSegID node1ID  = edges[i].node1ID;
-		const OmSegID node2ID  = edges[i].node2ID;
+		const om::common::SegID node1ID  = edges[i].node1ID;
+		const om::common::SegID node2ID  = edges[i].node2ID;
 		const float threshold  = edges[i].threshold;
 
 		OmSegment* node1 = segmentation.Segments()->GetSegment(node1ID);

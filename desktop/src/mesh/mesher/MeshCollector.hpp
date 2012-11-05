@@ -21,7 +21,7 @@ private:
 
     zi::spinlock lock_;
 
-    typedef zi::unordered_map< OmSegID, TriStripCollector* > map_t;
+    typedef zi::unordered_map< om::common::SegID, TriStripCollector* > map_t;
     map_t meshes_;
 
 public:
@@ -40,7 +40,7 @@ public:
         }
     }
 
-    void registerMeshPart( const OmSegID segID )
+    void registerMeshPart( const om::common::SegID segID )
     {
         TriStripCollector* tsc = NULL;
 
@@ -59,7 +59,7 @@ public:
         tsc->registerPart();
     }
 
-    TriStripCollector* getMesh( const OmSegID segID )
+    TriStripCollector* getMesh( const om::common::SegID segID )
     {
         zi::guard g( lock_ );
 
@@ -71,7 +71,7 @@ public:
         return meshes_[ segID ];
     }
 
-    void save( const OmSegID segID )
+    void save( const om::common::SegID segID )
     {
         TriStripCollector* mesh = getMesh( segID );
 

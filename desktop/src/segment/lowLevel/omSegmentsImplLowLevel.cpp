@@ -20,7 +20,7 @@ OmSegmentsImplLowLevel::OmSegmentsImplLowLevel(OmSegmentation* segmentation,
 OmSegmentsImplLowLevel::~OmSegmentsImplLowLevel()
 {}
 
-QString OmSegmentsImplLowLevel::getSegmentName(OmSegID segID)
+QString OmSegmentsImplLowLevel::getSegmentName(om::common::SegID segID)
 {
     if(segmentCustomNames.empty()){
         return "";
@@ -33,11 +33,11 @@ QString OmSegmentsImplLowLevel::getSegmentName(OmSegID segID)
     return ""; //QString("segment%1").arg(segID);
 }
 
-void OmSegmentsImplLowLevel::setSegmentName(OmSegID segID, QString name){
+void OmSegmentsImplLowLevel::setSegmentName(om::common::SegID segID, QString name){
     segmentCustomNames[ segID ] = name;
 }
 
-QString OmSegmentsImplLowLevel::getSegmentNote(OmSegID segID)
+QString OmSegmentsImplLowLevel::getSegmentNote(om::common::SegID segID)
 {
     if(segmentNotes.empty()){
         return "";
@@ -50,7 +50,7 @@ QString OmSegmentsImplLowLevel::getSegmentNote(OmSegID segID)
     return "";
 }
 
-void OmSegmentsImplLowLevel::setSegmentNote(OmSegID segID, QString note){
+void OmSegmentsImplLowLevel::setSegmentNote(om::common::SegID segID, QString note){
     segmentNotes[ segID ] = note;
 }
 

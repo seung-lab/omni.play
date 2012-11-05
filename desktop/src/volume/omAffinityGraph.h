@@ -17,7 +17,7 @@ private:
 
 public:
     OmAffinityGraph();
-    OmAffinityGraph(const OmID id);
+    OmAffinityGraph(const om::common::ID id);
     virtual ~OmAffinityGraph();
 
     void ImportAllChannels(const QString& hdf5fnp);

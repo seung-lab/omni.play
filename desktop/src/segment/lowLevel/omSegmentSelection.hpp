@@ -12,14 +12,14 @@ class OmSegmentSelection {
 private:
     OmSegmentsImplLowLevel *const cache_;
 
-    OmSegIDsSet selected_;
+    om::common::SegIDSet selected_;
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
     friend void YAML::operator>>(const YAML::Node&, OmSegmentsImpl&);
     friend QDataStream& operator<<(QDataStream&, const OmSegmentsImpl&);
     friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);
     
-    inline void addToRecentMap(const OmSegID segID)
+    inline void addToRecentMap(const om::common::SegID segID)
     {
         OmSegment* seg = cache_->SegmentStore()->GetSegment(segID);
         cache_->segmentation_->SegmentLists()->TouchRecent(seg);
@@ -30,7 +30,7 @@ public:
         : cache_(cache)
     {}
 
-    inline const OmSegIDsSet GetSelectedSegmentIDs() const {
+    inline const om::common::SegIDSet GetSelectedSegmentIDs() const {
         return selected_;
     }
 
@@ -44,7 +44,7 @@ public:
 
     void rerootSegmentList()
     {
-        OmSegIDsSet old = selected_;
+        om::common::SegIDSet old = selected_;
         selected_.clear();
 
         FOR_EACH(iter, old){
@@ -56,7 +56,7 @@ public:
         return !selected_.empty();
     }
 
-    inline bool isSegmentSelected(const OmSegID segID) const
+    inline bool isSegmentSelected(const om::common::SegID segID) const
     {
         if(selected_.empty()){
             return false;
@@ -64,7 +64,7 @@ public:
         return selected_.count(cache_->FindRootID(segID));
     }
 
-    inline void setSegmentSelected(OmSegID segID,
+    inline void setSegmentSelected(om::common::SegID segID,
                                    const bool isSelected,
                                    const bool addToRecentList)
     {
@@ -72,7 +72,7 @@ public:
         cache_->touchFreshness();
     }
 
-    void UpdateSegmentSelection(const OmSegIDsSet & ids,
+    void UpdateSegmentSelection(const om::common::SegIDSet & ids,
                                 const bool addToRecentList)
     {
         selected_.clear();
@@ -84,7 +84,7 @@ public:
         cache_->touchFreshness();
     }
 
-    void AddToSegmentSelection(const OmSegIDsSet& ids)
+    void AddToSegmentSelection(const om::common::SegIDSet& ids)
     {
         FOR_EACH(iter, ids){
             setSegmentSelectedBatch(*iter, true, true);
@@ -93,7 +93,7 @@ public:
         cache_->touchFreshness();
     }
 
-    void RemoveFromSegmentSelection(const OmSegIDsSet& ids)
+    void RemoveFromSegmentSelection(const om::common::SegIDSet& ids)
     {
         FOR_EACH(iter, ids){
             setSegmentSelectedBatch(*iter, false, false);
@@ -102,11 +102,11 @@ public:
         cache_->touchFreshness();
     }
 
-    inline void setSegmentSelectedBatch(const OmSegID segID,
+    inline void setSegmentSelectedBatch(const om::common::SegID segID,
                                         const bool isSelected,
                                         const bool addToRecentList)
     {
-        const OmSegID rootID = cache_->FindRootID(segID);
+        const om::common::SegID rootID = cache_->FindRootID(segID);
 
         if (isSelected) {
             doSelectedSetInsert(rootID, addToRecentList);
@@ -115,7 +115,7 @@ public:
         }
     }
 
-    inline void doSelectedSetInsert(const OmSegID segID,
+    inline void doSelectedSetInsert(const om::common::SegID segID,
                                     const bool addToRecentList)
     {
         selected_.insert(segID);
@@ -124,7 +124,7 @@ public:
         }
     }
 
-    inline void doSelectedSetRemove(const OmSegID segID)
+    inline void doSelectedSetRemove(const om::common::SegID segID)
     {
         selected_.erase(segID);
         addToRecentMap(segID);

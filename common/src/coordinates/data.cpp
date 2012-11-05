@@ -57,7 +57,7 @@ int Data::ToChunkOffset() const
     return dims.x * dims.y * chunkVec.z + dims.x * chunkVec.y + chunkVec.x;
 }
 
-int Data::ToTileOffset (viewType viewType) const
+int Data::ToTileOffset (ViewType viewType) const
 {
     const Vector3i dims = volume_->ChunkDimensions();
     const Vector3i chunkVec = ToChunkVec();
@@ -75,7 +75,7 @@ int Data::ToTileOffset (viewType viewType) const
     return -1;
 }
 
-int Data::ToTileDepth (viewType viewType) const
+int Data::ToTileDepth (ViewType viewType) const
 {
     const Vector3i dims = volume_->ChunkDimensions();
     const Vector3i chunkVec = ToChunkVec();

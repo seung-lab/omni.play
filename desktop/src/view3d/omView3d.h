@@ -83,8 +83,8 @@ protected:
     bool UnprojectPoint(Vector2i point2di, Vector3f &point3d);
 
     //draw methods
-    void Draw(OmBitfield option);
-    void DrawVolumes(OmBitfield option);
+    void Draw(om::common::Bitfield option);
+    void DrawVolumes(om::common::Bitfield option);
     void DrawWidgets();
     void doTimedDraw();
     void myUpdate();

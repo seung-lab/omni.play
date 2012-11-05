@@ -25,7 +25,7 @@ private:
     OmSegmentation *const segmentation_;
     OmViewGroupState *const vgs_;
     OmSegments *const segments_;
-    const OmBitfield drawOptions_;
+    const om::common::Bitfield drawOptions_;
     OmMeshPlan *const sortedSegments_;
     const float breakThreshold_;
 
@@ -39,7 +39,7 @@ private:
 
 public:
     OmMeshDrawerImpl(OmSegmentation* seg, OmViewGroupState* vgs,
-                     const OmBitfield drawOptions,
+                     const om::common::Bitfield drawOptions,
                      OmMeshPlan* sortedSegments)
         : segmentation_(seg)
         , vgs_(vgs)
@@ -118,7 +118,7 @@ public:
 
 private:
 
-    inline bool checkDrawOption(const OmBitfield option){
+    inline bool checkDrawOption(const om::common::Bitfield option){
         return drawOptions_ & option;
     }
 
@@ -201,26 +201,26 @@ private:
 
     inline void colorMesh(OmSegment* segment)
     {
-        OmSegmentColorCacheType sccType;
+        om::common::SegmentColorCacheType sccType;
 
         if( vgs_->shouldVolumeBeShownBroken() ) {
-            sccType = SCC_SEGMENTATION_BREAK_BLACK;
+            sccType = om::common::om::common::SCC_SEGMENTATION_BREAK_BLACK;
         } else {
-            sccType = SCC_SEGMENTATION;
+            sccType = om::common::SCC_SEGMENTATION;
         }
 
         applyColor( segment, sccType);
     }
 
-    void applyColor(OmSegment* seg, const OmSegmentColorCacheType sccType)
+    void applyColor(OmSegment* seg, const om::common::SegmentColorCacheType sccType)
     {
-        if(seg->getParent() && sccType != SCC_SEGMENTATION_BREAK_BLACK){
+        if(seg->getParent() && sccType != om::common::om::common::SCC_SEGMENTATION_BREAK_BLACK){
             applyColor(segments_->findRoot(seg), sccType);
             return;
         }
 
         Vector3f hyperColor;
-        if(SCC_SEGMENTATION_BREAK_BLACK != sccType) {
+        if(om::common::om::common::SCC_SEGMENTATION_BREAK_BLACK != sccType) {
             hyperColor = seg->GetColorFloat() * 2.;
         } else {
 

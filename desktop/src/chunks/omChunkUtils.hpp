@@ -78,7 +78,7 @@ public:
         return retImage;
     }
 
-    static void RefindUniqueChunkValues(const OmID segmentationID_)
+    static void RefindUniqueChunkValues(const om::common::ID segmentationID_)
     {
         SegmentationDataWrapper sdw(segmentationID_);
         OmSegmentation& vol = sdw.GetSegmentation();

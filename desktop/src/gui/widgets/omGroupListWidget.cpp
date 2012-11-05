@@ -66,11 +66,11 @@ void OmGroupListWidget::populate(OmSegmentation& seg)
 
     clear();
 
-    OmGroupIDsSet set = groups->GetGroups();
+    om::common::GroupIDSet set = groups->GetGroups();
 
-    OmGroupID firstID = 0;
+    om::common::GroupID firstID = 0;
 
-    Q_FOREACH(OmGroupID id, set) {
+    Q_FOREACH(om::common::GroupID id, set) {
         if(!firstID) {
             firstID = id;
         }

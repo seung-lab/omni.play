@@ -25,7 +25,7 @@ public:
 
     boost::optional<std::pair<float,float> >
     Draw(OmViewGroupState*, om::shared_ptr<OmVolumeCuller>,
-         const OmBitfield drawOptions);
+         const om::common::Bitfield drawOptions);
 
 private:
     void printDrawInfo(const OmMeshDrawerImpl& drawer);

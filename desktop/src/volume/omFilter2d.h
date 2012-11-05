@@ -30,7 +30,7 @@ enum FilterType {
 class OmFilter2d : public OmManageableObject {
 public:
     OmFilter2d();
-    OmFilter2d(const OmID);
+    OmFilter2d(const om::common::ID);
 
     void Load();
 
@@ -46,8 +46,8 @@ public:
         return alpha_;
     }
 
-    void SetSegmentation(const OmID id);
-    void SetChannel(const OmID id);
+    void SetSegmentation(const om::common::ID id);
+    void SetChannel(const om::common::ID id);
 
     inline bool HasValidVol() const {
         return om::OVERLAY_NONE != filterType_;
@@ -65,11 +65,11 @@ public:
         return *segVolPtr_;
     }
 
-    inline OmID GetChannelID() const{
+    inline om::common::ID GetChannelID() const{
         return chanID_;
     }
 
-    inline OmID GetSegmentationID() const{
+    inline om::common::ID GetSegmentationID() const{
         return segID_;
     }
 
@@ -80,8 +80,8 @@ private:
     boost::optional<OmChannel*> channVolPtr_;
     boost::optional<OmSegmentation*> segVolPtr_;
 
-    OmID chanID_;
-    OmID segID_;
+    om::common::ID chanID_;
+    om::common::ID segID_;
 
     void reset();
 

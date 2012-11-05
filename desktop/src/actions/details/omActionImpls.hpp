@@ -75,7 +75,7 @@ public:
     }
 
     OmSegmentJoinAction(const SegmentationDataWrapper& sdw,
-                        const OmSegIDsSet& ids)
+                        const om::common::SegIDSet& ids)
     {
         impl_ = om::make_shared<OmSegmentJoinActionImpl>(sdw, ids);
         SetUndoable(true);
@@ -103,9 +103,9 @@ public:
         impl_ = impl;
     }
 
-    OmSegmentGroupAction(const OmID segmentationId,
-                         const OmSegIDsSet& selectedSegmentIds,
-                         const OmGroupName name,
+    OmSegmentGroupAction(const om::common::ID segmentationId,
+                         const om::common::SegIDSet& selectedSegmentIds,
+                         const om::common::GroupName name,
                          const bool create)
     {
         impl_ = om::make_shared<OmSegmentGroupActionImpl>(segmentationId,

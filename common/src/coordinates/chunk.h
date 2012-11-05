@@ -36,7 +36,7 @@ public:
     Data ToData(const VolumeSystem*) const;
     DataBbox BoundingBox(const VolumeSystem*) const;
     uint64_t PtrOffset(const VolumeSystem*, int64_t) const;
-    int SliceDepth(const VolumeSystem*, Global, common::viewType) const;
+    int SliceDepth(const VolumeSystem*, Global, om::common::ViewType) const;
 
     void operator=(const Chunk& rhs);
     bool operator==(const Chunk& rhs) const;

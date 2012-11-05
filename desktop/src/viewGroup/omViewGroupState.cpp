@@ -57,7 +57,7 @@ OmPooledTile<OmColorARGB>* OmViewGroupState::ColorTile(uint32_t const*const imag
     return colorizers_->ColorTile(imageData, tileDim, key);
 }
 
-OmSegmentColorCacheType
+om::common::SegmentColorCacheType
 OmViewGroupState::determineColorizationType(const ObjectType objType)
 {
     switch(objType){
@@ -65,48 +65,48 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
         if(mShowValid)
         {
             if(mShowValidInColor){
-                return SCC_FILTER_VALID;
+                return om::common::SCC_FILTER_VALID;
             }
-            return SCC_FILTER_VALID_BLACK;
+            return om::common::om::common::SCC_FILTER_VALID_BLACK;
         }
 
         if(shouldVolumeBeShownBroken()){
-            return SCC_FILTER_BREAK;
+            return om::common::SCC_FILTER_BREAK;
         }
 
         if(brightenSelected_)
         {
             if(mShowFilterInColor){
-                return SCC_FILTER_COLOR_BRIGHTEN_SELECT;
+                return om::common::SCC_FILTER_COLOR_BRIGHTEN_SELECT;
             }
 
-            return SCC_FILTER_BLACK_BRIGHTEN_SELECT;
+            return om::common::SCC_FILTER_BLACK_BRIGHTEN_SELECT;
         }
 
         if(mShowFilterInColor){
-            return SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT;
+            return om::common::SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT;
         }
 
-        return SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT;
+        return om::common::SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT;
 
     case SEGMENTATION:
         if(mShowValid)
         {
             if(mShowValidInColor){
-                return SCC_SEGMENTATION_VALID;
+                return om::common::om::common::SCC_SEGMENTATION_VALID;
             }
-            return SCC_SEGMENTATION_VALID_BLACK;
+            return om::common::om::common::om::common::SCC_SEGMENTATION_VALID_BLACK;
         }
 
         if(shouldVolumeBeShownBroken())
         {
             if(mShowFilterInColor){
-                return SCC_SEGMENTATION_BREAK_COLOR;
+                return om::common::om::common::SCC_SEGMENTATION_BREAK_COLOR;
             }
-            return SCC_SEGMENTATION_BREAK_BLACK;
+            return om::common::om::common::SCC_SEGMENTATION_BREAK_BLACK;
         }
 
-        return SCC_SEGMENTATION;
+        return om::common::SCC_SEGMENTATION;
     default:
     	break;
     }

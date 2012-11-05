@@ -479,7 +479,7 @@ void MainWindow::openCacheMonitor()
     mMenuBar->GetOpenCacheMonitorAct()->setChecked(true);
 }
 
-void MainWindow::cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId)
+void MainWindow::cleanViewsOnVolumeChange(ObjectType objectType, om::common::ID objectId)
 {
     QString unwantedView3DTitle = "3D";
 

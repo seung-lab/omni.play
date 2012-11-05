@@ -7,7 +7,7 @@
 // see http://gcc.gnu.org/onlinedocs/gcc/Structure_002dPacking-Pragmas.html
 
 struct OmSegmentDataV2 {
-    OmSegID value;
+    om::common::SegID value;
     om::common::Color color;
     bool immutable;
     uint64_t size;
@@ -15,7 +15,7 @@ struct OmSegmentDataV2 {
 };
 
 struct OmSegmentDataV3 {
-    OmSegID value;
+    om::common::SegID value;
     om::common::Color color;
     om::common::SegListType listType;
     uint64_t size;
@@ -23,7 +23,7 @@ struct OmSegmentDataV3 {
 };
 
 struct OmSegmentDataV4 {
-    OmSegID value;
+    om::common::SegID value;
     om::common::Color color;
     uint64_t size;
     AxisAlignedBoundingBox<int> bounds;

@@ -42,13 +42,13 @@ private:
 
 public:
     OmThreadedTileCache(const std::string& name, const int bytesPerTile)
-        : OmCacheBase(name, om::TILE_CACHE)
+        : OmCacheBase(name, om::common::TILE_CACHE)
         , bytesPerTile_(bytesPerTile)
         , threadPool_(OmTileCache::ThreadPool())
     {
         freshness_.set(0);
 
-        OmCacheManager::AddCache(om::TILE_CACHE, this);
+        OmCacheManager::AddCache(om::common::TILE_CACHE, this);
     }
 
     virtual ~OmThreadedTileCache()

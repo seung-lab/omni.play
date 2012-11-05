@@ -16,7 +16,7 @@
 class OmSegmentUtils {
 public:
     om::shared_ptr<std::set<OmSegment*> >
-    static GetAllChildrenSegments(OmSegments* segments, const OmSegIDsSet& set)
+    static GetAllChildrenSegments(OmSegments* segments, const om::common::SegIDSet& set)
     {
         OmSegmentIterator iter(segments);
         iter.iterOverSegmentIDs(set);
@@ -50,7 +50,7 @@ public:
     }
 
     template <class B>
-    static void GetAllChildrenSegments(OmSegments* segments, const OmSegID segID, B& ret)
+    static void GetAllChildrenSegments(OmSegments* segments, const om::common::SegID segID, B& ret)
     {
         OmSegmentIterator iter(segments);
         iter.iterOverSegmentID(segID);
@@ -113,7 +113,7 @@ public:
         {
             OmSegment* parent = seg->getParent();
 
-            const OmSegID parentID = parent ? parent->value() : 0;
+            const om::common::SegID parentID = parent ? parent->value() : 0;
 
             const QString str = QString("%1 : %2, %3, %4")
                 .arg(seg->value())
@@ -152,11 +152,11 @@ public:
         }
     }
 
-    static OmSegID GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw){
+    static om::common::SegID GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw){
         return sdw.GetSegmentation().SegmentLists()->GetNextSegIDinWorkingList(sdw);
     }
 
-    static OmSegID GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw){
+    static om::common::SegID GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw){
         return sdw.SegmentLists()->GetNextSegIDinWorkingList(sdw);
     }
 

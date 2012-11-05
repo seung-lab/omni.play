@@ -11,7 +11,7 @@ OmGroups::OmGroups(OmSegmentation * seg)
 OmGroups::~OmGroups()
 {}
 
-OmGroup & OmGroups::AddGroup(OmGroupName name)
+OmGroup & OmGroups::AddGroup(om::common::GroupName name)
 {
     //debug(groups, "adding group for seg\n");
     OmGroup & group = mGroupManager.Add();
@@ -24,7 +24,7 @@ OmGroup & OmGroups::AddGroup(OmGroupName name)
     return group;
 }
 
-void OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool add)
+void OmGroups::setGroupIDs(const om::common::SegIDSet & set, OmGroup * group, bool add)
 {
     printf("adding ids\n");
     if(add) {
@@ -35,7 +35,7 @@ void OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool add)
     GroupsTable::Repopulate(group->GetID());
 }
 
-void OmGroups::SetGroup(const OmSegIDsSet & set, OmGroupName name)
+void OmGroups::SetGroup(const om::common::SegIDSet & set, om::common::GroupName name)
 {
     if(!mGroupsByName[name]) {
         setGroupIDs(set, &AddGroup(name), true);
@@ -45,7 +45,7 @@ void OmGroups::SetGroup(const OmSegIDsSet & set, OmGroupName name)
     GroupsTable::Repopulate();
 }
 
-void OmGroups::UnsetGroup(const OmSegIDsSet & set, OmGroupName name)
+void OmGroups::UnsetGroup(const om::common::SegIDSet & set, om::common::GroupName name)
 {
     if(!mGroupsByName[name]) {
         return;
@@ -56,19 +56,19 @@ void OmGroups::UnsetGroup(const OmSegIDsSet & set, OmGroupName name)
     GroupsTable::Repopulate();
 }
 
-OmGroup & OmGroups::GetGroup(OmGroupName name)
+OmGroup & OmGroups::GetGroup(om::common::GroupName name)
 {
     return mGroupManager.Get(mGroupsByName[name]);
 }
 
-OmGroup & OmGroups::GetGroup(OmGroupID id)
+OmGroup & OmGroups::GetGroup(om::common::GroupID id)
 {
     return mGroupManager.Get(id);
 }
 
-OmGroupIDsSet OmGroups::GetGroups()
+om::common::GroupIDSet OmGroups::GetGroups()
 {
-    OmGroupIDsSet set;
+    om::common::GroupIDSet set;
     FOR_EACH(iter, mGroupsByName)
     {
         set.insert(*iter);
@@ -77,14 +77,14 @@ OmGroupIDsSet OmGroups::GetGroups()
     return set;
 }
 
-OmGroupIDsSet OmGroups::GetGroups(OmSegID seg)
+om::common::GroupIDSet OmGroups::GetGroups(om::common::SegID seg)
 {
-    OmGroupIDsSet set;
+    om::common::GroupIDSet set;
 
     FOR_EACH(iter, mGroupsByName)
     {
         OmGroup& group = GetGroup(*iter);
-        OmSegIDsSet ids = group.GetIDs();
+        om::common::SegIDSet ids = group.GetIDs();
         if(ids.count(seg) > 0) {
             set.insert(*iter);
         }

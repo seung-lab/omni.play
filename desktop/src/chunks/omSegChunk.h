@@ -18,7 +18,7 @@ private:
     OmSegmentation *const vol_;
     const boost::scoped_ptr<om::segchunk::dataInterface> segChunkData_;
 
-    std::set<OmSegID> modifiedSegIDs_;
+    std::set<om::common::SegID> modifiedSegIDs_;
     zi::spinlock modifiedSegIDsLock_;
 
 public:

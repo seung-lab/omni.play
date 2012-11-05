@@ -31,16 +31,16 @@ public:
         }
     }
 
-	om::shared_ptr<boost::unordered_set<OmSegID> >
+	om::shared_ptr<boost::unordered_set<om::common::SegID> >
     GetSegIDs()
     {
         OmSliceCache sliceCache(vol_, viewType_);
 
-        om::shared_ptr<boost::unordered_set<OmSegID> > ret =
-            om::make_shared<boost::unordered_set<OmSegID> >();
+        om::shared_ptr<boost::unordered_set<om::common::SegID> > ret =
+            om::make_shared<boost::unordered_set<om::common::SegID> >();
 
         FOR_EACH(pt, pts_) {
-        	OmSegID id = sliceCache.GetVoxelValue(*pt);
+        	om::common::SegID id = sliceCache.GetVoxelValue(*pt);
             if(id) {
             	ret->insert(id);
             }

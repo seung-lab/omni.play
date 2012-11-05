@@ -216,7 +216,7 @@ void OmView3dUi::deselectSegment(const SegmentDataWrapper& sdw)
         return;
     }
 
-    const OmID segmentID = sdw.getID();
+    const om::common::ID segmentID = sdw.getID();
 
     OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), this, "view3d");
     sel.augmentSelectedSet(segmentID, false);
@@ -230,7 +230,7 @@ void OmView3dUi::doSelectSegment(const SegmentDataWrapper& sdw, const bool augme
         return;
     }
 
-    const OmID segmentID = sdw.getID();
+    const om::common::ID segmentID = sdw.getID();
 
     OmSegmentSelected::Set(sdw);
 

@@ -63,7 +63,7 @@ public:
 
         for(iter.begin(); iter < iter.end(); ++iter)
         {
-            const OmSegID val = static_cast<OmSegID>(*data++);
+            const om::common::SegID val = static_cast<om::common::SegID>(*data++);
 
             if(val){
                 p.processVoxel(val, *iter);
@@ -81,7 +81,7 @@ public:
         OmChunkVoxelWalker iter(128);
         for(iter.begin(); iter < iter.end(); ++iter)
         {
-            const OmSegID val = static_cast<OmSegID>(*data++);
+            const om::common::SegID val = static_cast<om::common::SegID>(*data++);
             if(val){
                 p.processVoxel(val, *iter);
             }

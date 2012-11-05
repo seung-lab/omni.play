@@ -159,7 +159,7 @@ private:
         // corner case: no MIP levels >0
         while (c.getLevel() <= rootMipLevel_)
         {
-            std::deque<OmSegID> commonIDs;
+            std::deque<om::common::SegID> commonIDs;
 
             const ChunkUniqueValues segIDs =
                 segmentation_->ChunkUniqueValues()->Values(c, threshold_);
@@ -243,7 +243,7 @@ private:
 
         OmChunkUtils::RewriteChunkAtThreshold(segmentation_, chunkData, threshold_);
 
-        const OmSegID* chunkDataRaw = static_cast< const OmSegID* >( chunkData.getScalarPtr() );
+        const om::common::SegID* chunkDataRaw = static_cast< const om::common::SegID* >( chunkData.getScalarPtr() );
 
         cube_marcher.marche( reinterpret_cast< const int* >(chunkDataRaw), 129, 129, 129 );
     }
@@ -283,7 +283,7 @@ private:
 
 	        FOR_EACH( it, cube_marcher.meshes() )
 	        {
-	            const OmSegID segID = it->first;
+	            const om::common::SegID segID = it->first;
 
 	            if(segIDs.contains(segID))
 	            {

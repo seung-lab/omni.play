@@ -37,7 +37,7 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
                                    om::shared_ptr<GUIPageOfSegments> segIDs )
 {
     bool makeTabActive = false;
-    const OmSegID segIDjustSelected = segmentJustSelected.GetSegmentID();
+    const om::common::SegID segIDjustSelected = segmentJustSelected.GetSegmentID();
 
     setUpdatesEnabled( false );
     clear();

@@ -137,12 +137,12 @@ private Q_SLOTS:
     }
 
 private:
-    OmID getChannelID()
+    om::common::ID getChannelID()
     {
         return 1;
     }
 
-    OmID getFilterID()
+    om::common::ID getFilterID()
     {
         return 1;
     }

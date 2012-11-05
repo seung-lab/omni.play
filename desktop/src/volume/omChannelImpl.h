@@ -21,7 +21,7 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
 public:
     OmChannelImpl();
-    OmChannelImpl(OmID id);
+    OmChannelImpl(om::common::ID id);
     virtual ~OmChannelImpl();
 
     virtual QString GetDefaultHDF5DatasetName() = 0;
@@ -43,7 +43,7 @@ public:
         return CHANNEL;
     }
 
-    OmID getID() const {
+    om::common::ID getID() const {
         return GetID();
     }
 

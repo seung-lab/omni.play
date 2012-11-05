@@ -20,7 +20,7 @@ private:
     {
         om::shared_ptr<OmVolumeCuller> culler;
         om::shared_ptr<std::deque<OmSegChunk*> > chunks;
-        std::map<OmBitfield, CachedDataEnry> dataByBitfield;
+        std::map<om::common::Bitfield, CachedDataEnry> dataByBitfield;
     };
 
     CachedData cachedData_;
@@ -35,7 +35,7 @@ public:
     om::shared_ptr<OmMeshPlan>
     GetSegmentsToDraw(OmViewGroupState* vgs,
                       om::shared_ptr<OmVolumeCuller> culler,
-                      const OmBitfield drawOptions)
+                      const om::common::Bitfield drawOptions)
     {
         om::shared_ptr<OmMeshPlan> sortedSegments =
             getCachedSegments(vgs, culler, drawOptions);
@@ -59,7 +59,7 @@ private:
     om::shared_ptr<OmMeshPlan>
     getCachedSegments(OmViewGroupState* vgs,
                       om::shared_ptr<OmVolumeCuller> culler,
-                      const OmBitfield drawOptions)
+                      const om::common::Bitfield drawOptions)
     {
         if(!cachedData_.culler){
             return om::shared_ptr<OmMeshPlan>();
@@ -90,7 +90,7 @@ private:
     om::shared_ptr<OmMeshPlan>
     buildPlan(OmViewGroupState* vgs,
               om::shared_ptr<OmVolumeCuller> culler,
-              const OmBitfield drawOptions)
+              const om::common::Bitfield drawOptions)
     {
         OmMeshDrawPlanner planner(segmentation_, vgs, culler, drawOptions,
                                   rootSegLists_);

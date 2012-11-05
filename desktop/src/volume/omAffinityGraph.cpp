@@ -9,7 +9,7 @@ OmAffinityGraph::OmAffinityGraph()
 {}
 
 // used by OmGenericManager
-OmAffinityGraph::OmAffinityGraph(const OmID id)
+OmAffinityGraph::OmAffinityGraph(const om::common::ID id)
     : OmManageableObject(id)
 {}
 

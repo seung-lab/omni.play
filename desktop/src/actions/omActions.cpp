@@ -48,9 +48,9 @@ void OmActions::ChangeSizethreshold(const SegmentationDataWrapper sdw,
 }
 
 //painting-related
-void OmActions::SetVoxel(const OmID segmentationID,
+void OmActions::SetVoxel(const om::common::ID segmentationID,
                          const om::coords::Global& voxel,
-                         const OmSegID segmentID)
+                         const om::common::SegID segmentID)
 {
     pool().push_back(
         zi::run_fn(
@@ -58,9 +58,9 @@ void OmActions::SetVoxel(const OmID segmentationID,
                      segmentationID, voxel, segmentID)));
 }
 
-void OmActions::SetVoxels(const OmID segmentationID,
+void OmActions::SetVoxels(const om::common::ID segmentationID,
                           const std::set<om::coords::Global>& voxels,
-                          const OmSegID segmentID)
+                          const om::common::SegID segmentID)
 {
     pool().push_back(
         zi::run_fn(
@@ -114,7 +114,7 @@ void OmActions::JoinSegments(const SegmentationDataWrapper& sdw)
 }
 
 void OmActions::JoinSegments(const SegmentationDataWrapper& sdw,
-                             const OmSegIDsSet& ids)
+                             const om::common::SegIDSet& ids)
 {
     pool().push_back(
         zi::run_fn(
@@ -155,9 +155,9 @@ void OmActions::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params)
 }
 
 // group-related
-void OmActions::CreateOrDeleteSegmentGroup(const OmID segmentationID,
-                                           const OmSegIDsSet& selectedSegmentIDs,
-                                           const OmGroupName name,
+void OmActions::CreateOrDeleteSegmentGroup(const om::common::ID segmentationID,
+                                           const om::common::SegIDSet& selectedSegmentIDs,
+                                           const om::common::GroupName name,
                                            const bool create)
 {
     pool().push_back(

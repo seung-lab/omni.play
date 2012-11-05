@@ -41,11 +41,11 @@ InspectorWidget::InspectorWidget(QWidget* parent, MainWindow* mainWindow, OmView
 
     QMetaObject::connectSlotsByName(this);
 
-    om::connect(this, SIGNAL(triggerChannelView(OmID, ViewType)),
-                this, SLOT(openChannelView(OmID, ViewType)));
+    om::connect(this, SIGNAL(triggerChannelView(om::common::ID, ViewType)),
+                this, SLOT(openChannelView(om::common::ID, ViewType)));
 
-    om::connect(this, SIGNAL(triggerSegmentationView(OmID, ViewType)),
-                this, SLOT(openSegmentationView(OmID, ViewType)));
+    om::connect(this, SIGNAL(triggerSegmentationView(om::common::ID, ViewType)),
+                this, SLOT(openSegmentationView(om::common::ID, ViewType)));
 
     OmAppState::SetInspector(this);
 }
@@ -56,13 +56,13 @@ InspectorWidget::~InspectorWidget()
     OmAppState::SetInspector(NULL);
 }
 
-void InspectorWidget::openChannelView(OmID chanID, ViewType vtype)
+void InspectorWidget::openChannelView(om::common::ID chanID, ViewType vtype)
 {
     const ChannelDataWrapper cdw(chanID);
     vgs_->GetViewGroup()->AddView2Dchannel(cdw, vtype);
 }
 
-void InspectorWidget::openSegmentationView(OmID segmentationID, ViewType vtype)
+void InspectorWidget::openSegmentationView(om::common::ID segmentationID, ViewType vtype)
 {
     const SegmentationDataWrapper sdw(segmentationID);
     vgs_->GetViewGroup()->AddView2Dsegmentation(sdw, vtype);
@@ -91,10 +91,10 @@ void InspectorWidget::populateDataSrcListWidget()
 {
     dataSrcListWidget_->clear();
 
-    const OmIDsSet& validChanIDs = ChannelDataWrapper::ValidIDs();
+    const om::common::IDSet& validChanIDs = ChannelDataWrapper::ValidIDs();
     FOR_EACH(iter, validChanIDs)
     {
-        const OmID channID = *iter;
+        const om::common::ID channID = *iter;
         DataWrapperContainer dwc = DataWrapperContainer(CHANNEL, channID);
         ChannelDataWrapper cdw = dwc.getChannelDataWrapper();
         QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget_);
@@ -105,10 +105,10 @@ void InspectorWidget::populateDataSrcListWidget()
         setRowFlagsAndCheckState(row, GuiUtils::getCheckState(cdw.isEnabled()));
     }
 
-    const OmIDsSet& validSegIDs = SegmentationDataWrapper::ValidIDs();
+    const om::common::IDSet& validSegIDs = SegmentationDataWrapper::ValidIDs();
     FOR_EACH(iter, validSegIDs)
     {
-        const OmID segmenID = *iter;
+        const om::common::ID segmenID = *iter;
         DataWrapperContainer dwc = DataWrapperContainer(SEGMENTATION, segmenID);
         SegmentationDataWrapper sdw = dwc.GetSDW();
         QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget_);
@@ -119,10 +119,10 @@ void InspectorWidget::populateDataSrcListWidget()
         setRowFlagsAndCheckState(row, GuiUtils::getCheckState(sdw.isEnabled()));
     }
     
-    const OmIDsSet& validAffIDs = AffinityGraphDataWrapper::ValidIDs();
+    const om::common::IDSet& validAffIDs = AffinityGraphDataWrapper::ValidIDs();
     FOR_EACH(iter, validAffIDs)
     {
-        const OmID affID = *iter;
+        const om::common::ID affID = *iter;
         DataWrapperContainer dwc = DataWrapperContainer(AFFINITY, affID);
         AffinityGraphDataWrapper adw = dwc.GetADW();
         QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget_);
@@ -291,7 +291,7 @@ void InspectorWidget::refreshWidgetData()
     ElementListBox::PopulateLists();
 }
 
-void InspectorWidget::rebuildSegmentLists(const OmID segmentationID, const OmSegID segID)
+void InspectorWidget::rebuildSegmentLists(const om::common::ID segmentationID, const om::common::SegID segID)
 {
     ElementListBox::RebuildLists(SegmentDataWrapper(segmentationID, segID));
 }
@@ -521,7 +521,7 @@ void InspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
 
     ElementListBox::Reset();
 
-    const OmID segmentationID = sdw.GetID();
+    const om::common::ID segmentationID = sdw.GetID();
 
     mainWindow_->cleanViewsOnVolumeChange(CHANNEL, segmentationID);
 

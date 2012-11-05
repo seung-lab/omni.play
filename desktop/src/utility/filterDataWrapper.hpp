@@ -5,23 +5,23 @@
 
 class FilterDataWrapper {
 private:
-    OmID mID;
-    OmID mChannelID;
+    om::common::ID mID;
+    om::common::ID mChannelID;
 
 public:
     FilterDataWrapper()
     {}
 
-    FilterDataWrapper(const OmID channelID, const OmID id)
+    FilterDataWrapper(const om::common::ID channelID, const om::common::ID id)
         : mID(id)
         , mChannelID(channelID)
     {}
 
-    OmID getChannelID() const {
+    om::common::ID getChannelID() const {
         return mChannelID;
     }
 
-    OmID GetID() const {
+    om::common::ID GetID() const {
         return mID;
     }
 

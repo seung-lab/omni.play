@@ -28,7 +28,7 @@ public:
     }
 
     om::shared_ptr<OmDataForMeshLoad>
-    Read(const OmSegID segID, const om::coords::Chunk& coord)
+    Read(const om::common::SegID segID, const om::coords::Chunk& coord)
     {
         OmMeshChunkAllocTableV2* chunk_table =
             filePtrCache_->GetAllocTable(coord);

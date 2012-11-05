@@ -5,7 +5,7 @@
 #include "utility/omStringHelpers.h"
 #include "zi/omMutex.h"
 
-OmCacheGroup::OmCacheGroup(const om::CacheGroup cacheGroup)
+OmCacheGroup::OmCacheGroup(const om::common::CacheGroup cacheGroup)
     : cacheGroup_(cacheGroup)
     , maxAllowedSize_(0)
 {}

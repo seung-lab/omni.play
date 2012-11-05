@@ -11,12 +11,12 @@ OmTileCoord::OmTileCoord()
                      NULL,
                      -1,
                      NULL,
-                     SCC_NUMBER_OF_ENUMS)
+                     om::common::SCC_NUMBER_OF_ENUMS)
 {}
 
 OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, ViewType view, uint8_t depth,
                          OmMipVolume* vol, uint32_t freshness,
-                         OmViewGroupState* vgs, OmSegmentColorCacheType segColorType)
+                         OmViewGroupState* vgs, om::common::SegmentColorCacheType segColorType)
     : OmTileCoordKey(cc,
                      view,
                      depth,

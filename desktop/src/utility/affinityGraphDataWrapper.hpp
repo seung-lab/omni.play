@@ -6,12 +6,12 @@
 
 class AffinityGraphDataWrapper {
 public:
-    static const OmIDsSet& ValidIDs(){
+    static const om::common::IDSet& ValidIDs(){
         return OmProject::Volumes().AffinityGraphs().GetValidIds();
     }
 
 private:
-    OmID id_;
+    om::common::ID id_;
     mutable boost::optional<OmAffinityGraph&> affGraph_;
 
 public:
@@ -19,11 +19,11 @@ public:
         : id_(0)
     {}
 
-    explicit AffinityGraphDataWrapper(const OmID ID)
+    explicit AffinityGraphDataWrapper(const om::common::ID ID)
         : id_(ID)
     {}
 
-    inline OmID GetID() const {
+    inline om::common::ID GetID() const {
         return id_;
     }
     

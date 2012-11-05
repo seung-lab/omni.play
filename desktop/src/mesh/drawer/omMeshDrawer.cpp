@@ -15,7 +15,7 @@ OmMeshDrawer::OmMeshDrawer(OmSegmentation* segmentation)
 boost::optional<std::pair<float,float> >
 OmMeshDrawer::Draw(OmViewGroupState* vgs,
                    om::shared_ptr<OmVolumeCuller> culler,
-                   const OmBitfield drawOptions)
+                   const om::common::Bitfield drawOptions)
 {
     if(!segmentation_->MeshManager(1)->Metadata()->IsBuilt()){
         // printf("no meshes found\n");

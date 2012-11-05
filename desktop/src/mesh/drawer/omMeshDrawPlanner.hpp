@@ -13,7 +13,7 @@ private:
     OmSegments *const segments_;
     OmViewGroupState *const vgs_;
     const om::shared_ptr<OmVolumeCuller> culler_;
-    const OmBitfield drawOptions_;
+    const om::common::Bitfield drawOptions_;
     OmMeshSegmentList *const rootSegList_;
 
     OmSegPtrList rootSegs_;
@@ -26,7 +26,7 @@ public:
     OmMeshDrawPlanner(OmSegmentation* segmentation,
                       OmViewGroupState* vgs,
                       om::shared_ptr<OmVolumeCuller> culler,
-                      const OmBitfield drawOptions,
+                      const om::common::Bitfield drawOptions,
                       OmMeshSegmentList* rootSegList)
         : segmentation_(segmentation)
         , segments_(segmentation_->Segments())
@@ -56,7 +56,7 @@ public:
 
 private:
 
-    inline bool checkDrawOption(const OmBitfield option){
+    inline bool checkDrawOption(const om::common::Bitfield option){
         return drawOptions_ & option;
     }
 
@@ -83,14 +83,14 @@ private:
         //check to filter for relevant data values
         if(checkDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED))
         {
-            const OmSegIDsSet ids = segments_->GetSelectedSegmentIDs();
+            const om::common::SegIDSet ids = segments_->GetSelectedSegmentIDs();
             FOR_EACH(iter, ids){
                 rootSegs_.push_back(segments_->GetSegment(*iter));
             }
 
         } else if (checkDrawOption(DRAWOP_SEGMENT_FILTER_UNSELECTED))
         {
-            const OmSegIDsSet ids = segments_->GetEnabledSegmentIDs();
+            const om::common::SegIDSet ids = segments_->GetEnabledSegmentIDs();
             FOR_EACH(iter, ids){
                 rootSegs_.push_back(segments_->GetSegment(*iter));
             }

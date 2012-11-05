@@ -66,13 +66,13 @@ public:
     om::shared_ptr<GUIPageOfSegments>
     GetSegmentGUIPage(const om::common::SegListType type, const GUIPageRequest& request);
 
-    OmSegID GetNextSegIDinWorkingList(const SegmentDataWrapper&);
-    OmSegID GetNextSegIDinWorkingList(const SegmentationDataWrapper&);
+    om::common::SegID GetNextSegIDinWorkingList(const SegmentDataWrapper&);
+    om::common::SegID GetNextSegIDinWorkingList(const SegmentationDataWrapper&);
 
-    int64_t GetSizeWithChildren(const OmSegID segID);
+    int64_t GetSizeWithChildren(const om::common::SegID segID);
     int64_t GetSizeWithChildren(OmSegment* seg);
 
-    int64_t GetNumChildren(const OmSegID segID);
+    int64_t GetNumChildren(const om::common::SegID segID);
     int64_t GetNumChildren(OmSegment* seg);
 };
 

@@ -5,7 +5,7 @@
 namespace om {
 namespace common {
 
-std::ostream& operator<<(std::ostream &out, const segIdSet& in)
+std::ostream& operator<<(std::ostream &out, const SegIDSet& in)
 {
     const std::string joined = om::string::join(in);
 
@@ -13,17 +13,7 @@ std::ostream& operator<<(std::ostream &out, const segIdSet& in)
     return out;
 }
 
-std::ostream& operator<<(std::ostream &out, const cacheGroup& c)
-{
-    if(MESH_CACHE == c){
-        out << "MESH_CACHE";
-    } else {
-        out <<"TILE_CACHE";
-    }
-    return out;
-}
-
-std::ostream& operator<<(std::ostream &out, const viewType& vt)
+std::ostream& operator<<(std::ostream &out, const ViewType& vt)
 {
     switch(vt){
     case XY_VIEW:

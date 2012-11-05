@@ -53,7 +53,7 @@ private:
 
     bool overrideToolModeForPan_;
 
-    OmSegID segIDforPainting_;
+    om::common::SegID segIDforPainting_;
 
     om::view2dCoords coords_;
 
@@ -325,7 +325,7 @@ public:
         return objType_;
     }
 
-    inline OmID GetSegmentationID() const {
+    inline om::common::ID GetSegmentationID() const {
         return vgs_->Segmentation().GetID();
     }
 
@@ -355,11 +355,11 @@ public:
         overrideToolModeForPan_ = b;
     }
 
-    inline OmSegID GetSegIDForPainting(){
+    inline om::common::SegID GetSegIDForPainting(){
         return segIDforPainting_;
     }
 
-    inline void SetSegIDForPainting(const OmSegID segID){
+    inline void SetSegIDForPainting(const om::common::SegID segID){
         segIDforPainting_ = segID;
     }
 };

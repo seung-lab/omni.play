@@ -31,8 +31,8 @@ public:
     Chunk ToChunk() const;
     Vector3i ToChunkVec() const;
     int ToChunkOffset() const;
-    int ToTileOffset(common::viewType) const;
-    int ToTileDepth(common::viewType) const;
+    int ToTileOffset(om::common::ViewType) const;
+    int ToTileDepth(om::common::ViewType) const;
     bool IsInVolume() const;
     Data AtDifferentLevel(int) const;
 

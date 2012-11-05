@@ -10,13 +10,13 @@ public:
         : impl_(impl)
     {}
 
-    OmVoxelSetValueAction(const OmID segmentationId,
+    OmVoxelSetValueAction(const om::common::ID segmentationId,
                           const om::coords::Global& rVoxel,
-                          const OmSegID value);
+                          const om::common::SegID value);
 
-    OmVoxelSetValueAction(const OmID segmentationId,
+    OmVoxelSetValueAction(const om::common::ID segmentationId,
                           const std::set<om::coords::Global>&rVoxels,
-                          const OmSegID value);
+                          const om::common::SegID value);
 
 private:
     void Action();

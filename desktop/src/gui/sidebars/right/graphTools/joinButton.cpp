@@ -22,7 +22,7 @@ void JoinButton::doAction()
     }
 
     OmSegmentation& seg = sdw.GetSegmentation();
-    const OmSegIDsSet ids = seg.Segments()->GetSelectedSegmentIDs();
+    const om::common::SegIDSet ids = seg.Segments()->GetSelectedSegmentIDs();
     OmActions::JoinSegments(sdw, ids);
 
     mParent->updateGui();

@@ -131,7 +131,7 @@ private:
 
     void paint()
     {
-        const OmSegID segmentValueToPaint = state_->GetSegIDForPainting();
+        const om::common::SegID segmentValueToPaint = state_->GetSegIDForPainting();
 
         assert(segmentValueToPaint);
 

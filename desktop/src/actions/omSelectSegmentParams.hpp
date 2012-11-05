@@ -7,8 +7,8 @@
 struct OmSelectSegmentsParams
 {
     SegmentDataWrapper sdw;
-    OmSegIDsSet newSelectedIDs;
-    OmSegIDsSet oldSelectedIDs;
+    om::common::SegIDSet newSelectedIDs;
+    om::common::SegIDSet oldSelectedIDs;
     void* sender;
     std::string comment;
     bool shouldScroll;

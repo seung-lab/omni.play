@@ -6,11 +6,11 @@
 class OmBrushEraseLine {
 private:
     const om::shared_ptr<OmBrushOppInfo> info_;
-    const OmSegID segIDtoErase_;
+    const om::common::SegID segIDtoErase_;
 
 public:
     OmBrushEraseLine(om::shared_ptr<OmBrushOppInfo> info,
-                     const OmSegID segIDtoErase)
+                     const om::common::SegID segIDtoErase)
         : info_(info)
         , segIDtoErase_(segIDtoErase)
     {}

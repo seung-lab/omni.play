@@ -7,7 +7,7 @@ class OmSegments;
 
 class SegmentColorParams {
 public:
-    OmSegmentColorCacheType sccType;
+    om::common::SegmentColorCacheType sccType;
     uint32_t numElements;
     OmViewGroupState* vgs;
     OmSegments* segments;

@@ -10,8 +10,8 @@
 
 // needed for coordinates
 namespace om { namespace common {
-    enum viewType { XY_VIEW, XZ_VIEW, ZY_VIEW };
-    std::ostream& operator<<(std::ostream &out, const viewType& vt);
+    enum ViewType { XY_VIEW, XZ_VIEW, ZY_VIEW };
+    std::ostream& operator<<(std::ostream &out, const ViewType& vt);
 }}
 
 #include "coordinates/coordinates.h"
@@ -24,64 +24,34 @@ namespace common {
  * "system" types
  */
 //id typedefs
-typedef uint32_t id;
-typedef boost::unordered_set< id > idSet;
+typedef uint32_t ID;
+typedef boost::unordered_set< ID > IDSet;
 
 //bit field
-typedef unsigned int bitfield;
+typedef unsigned int Bitfield;
 
 //objects
 //slices
-enum objectType { CHANNEL, SEGMENTATION };
+enum ObjectType { CHANNEL, SEGMENTATION };
 
 /**
  * "segment" types
  */
-typedef uint32_t segId;
-typedef std::deque<segId> segIdList;
-typedef uint32_t pageNum;
+typedef uint32_t SegID;
+typedef std::deque<SegID> SegIDList;
+typedef std::set<SegID> SegIDSet;
+std::ostream& operator<<(std::ostream& out, const SegIDSet& in);
 
-class segment;
-typedef std::set<segment*> segPtrSet;
-typedef std::set<segId> segIdSet;
-std::ostream& operator<<(std::ostream& out, const segIdSet& in);
-
+typedef uint32_t PageNum;
 /**
  * "group" types
  */
-typedef uint32_t groupId;
-typedef std::string groupName;
-typedef boost::unordered_set<groupId> groupIdSet;
-
-/**
- * color cache enum
- */
-enum segmentColorCacheType { SCC_FILTER_BLACK_BRIGHTEN_SELECT = 0,
-                             SCC_FILTER_COLOR_BRIGHTEN_SELECT,
-                             SCC_FILTER_BREAK,
-                             SCC_FILTER_VALID,
-                             SCC_FILTER_VALID_BLACK,
-                             SCC_SEGMENTATION,
-                             SCC_SEGMENTATION_BREAK_BLACK,
-                             SCC_SEGMENTATION_BREAK_COLOR,
-                             SCC_SEGMENTATION_VALID,
-                             SCC_SEGMENTATION_VALID_BLACK,
-                             SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT,
-                             SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT,
-                             SCC_NUMBER_OF_ENUMS };
-
-/**
- * cache-type enum
- */
-enum cacheGroup {
-    MESH_CACHE = 1,
-    TILE_CACHE
-};
-
-std::ostream& operator<<(std::ostream &out, const cacheGroup& c);
+typedef uint32_t GroupID;
+typedef std::string GroupIDoupName;
+typedef boost::unordered_set<GroupID> GroupIDSet;
 
 template<typename T>
-T twist(T vec, viewType view)
+T twist(T vec, ViewType view)
 {
     T out(vec);
     switch(view)

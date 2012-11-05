@@ -8,7 +8,7 @@ private:
     const SegmentDataWrapper sdw_;
     const om::common::SetValid validEnum_;
 
-    OmSegID nextSegmentIDtoJumpTo_;
+    om::common::SegID nextSegmentIDtoJumpTo_;
 
 public:
     OmSetSegmentValidRunner(const SegmentDataWrapper& sdw,
@@ -26,7 +26,7 @@ public:
             valid = true;
         }
 
-        OmSegIDsSet set;
+        om::common::SegIDSet set;
         set.insert(sdw_.FindRootID());
 
         om::shared_ptr<std::set<OmSegment*> > children =
@@ -67,7 +67,7 @@ private:
     const SegmentationDataWrapper sdw_;
     const om::common::SetValid validEnum_;
 
-    OmSegID nextSegmentIDtoJumpTo_;
+    om::common::SegID nextSegmentIDtoJumpTo_;
 
 public:
     OmSetSegmentsValidRunner(const SegmentationDataWrapper& sdw,

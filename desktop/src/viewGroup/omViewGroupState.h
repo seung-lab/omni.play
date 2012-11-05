@@ -112,7 +112,7 @@ public:
         return mShowFilterInColor;
     }
 
-    OmSegmentColorCacheType determineColorizationType(const ObjectType);
+    om::common::SegmentColorCacheType determineColorizationType(const ObjectType);
 
     OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*const,
                                          const int tileDim,

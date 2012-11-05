@@ -15,7 +15,7 @@ private:
     coords::GlobalBbox bounds_;
     Vector3i resolution_;
     common::DataType dataType_;
-    common::objectType volType_;
+    common::ObjectType volType_;
     Vector3i chunkDims_;
     int32_t mipLevel_;
     pipeline::dataSrcs data_;
@@ -30,7 +30,7 @@ public:
     	   coords::GlobalBbox bounds,
     	   Vector3i resolution,
     	   common::DataType dataType,
-    	   common::objectType volType,
+    	   common::ObjectType volType,
     	   Vector3i chunkDims,
     	   int32_t mipLevel_);
 
@@ -50,7 +50,7 @@ public:
         return dataType_;
     }
 
-    inline common::objectType VolumeType() const {
+    inline common::ObjectType VolumeType() const {
         return volType_;
     }
 
@@ -76,7 +76,7 @@ public:
 
     void GetSegIds(coords::Global point,
                    int radius,
-                   common::viewType view,
+                   om::common::ViewType view,
                    std::set<int32_t>& ret) const;
 
     segments::data GetSegmentData(int32_t segId) const;

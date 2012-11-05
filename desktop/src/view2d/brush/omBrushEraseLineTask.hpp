@@ -8,13 +8,13 @@ private:
     const om::shared_ptr<OmBrushOppInfo> info_;
     const om::coords::Global first_;
     const om::coords::Global second_;
-    const OmSegID segIDtoErase_;
+    const om::common::SegID segIDtoErase_;
 
 public:
     OmBrushEraseLineTask(om::shared_ptr<OmBrushOppInfo> info,
                          const om::coords::Global& first,
                          const om::coords::Global& second,
-                         const OmSegID segIDtoErase)
+                         const om::common::SegID segIDtoErase)
         : info_(info)
         , first_(first)
         , second_(second)

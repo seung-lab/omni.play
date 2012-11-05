@@ -8,13 +8,13 @@ private:
     const om::shared_ptr<OmBrushOppInfo> info_;
     const om::coords::Global first_;
     const om::coords::Global second_;
-    const OmSegID segIDtoPaint_;
+    const om::common::SegID segIDtoPaint_;
 
 public:
     OmBrushPaintLineTask(om::shared_ptr<OmBrushOppInfo> info,
                          const om::coords::Global& first,
                          const om::coords::Global& second,
-                         const OmSegID segIDtoPaint)
+                         const om::common::SegID segIDtoPaint)
         : info_(info)
         , first_(first)
         , second_(second)

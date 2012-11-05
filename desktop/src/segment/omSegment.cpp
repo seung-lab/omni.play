@@ -97,11 +97,11 @@ void OmSegment::SetEnabled( const bool isEnabled){
     segments_->setSegmentEnabled( data_->value, isEnabled );
 }
 
-OmID OmSegment::GetSegmentationID(){
+om::common::ID OmSegment::GetSegmentationID(){
     return segments_->GetSegmentationID();
 }
 
-OmSegID OmSegment::RootID(){
+om::common::SegID OmSegment::RootID(){
     return segments_->findRootID(data_->value);
 }
 

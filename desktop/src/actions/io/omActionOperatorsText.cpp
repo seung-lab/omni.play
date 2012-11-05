@@ -18,7 +18,7 @@ QTextStream& operator<<(QTextStream& out, const SegmentationDataWrapper& sdw)
     return out;
 }
 
-QTextStream& operator<<(QTextStream& out, const OmSegIDsSet& set)
+QTextStream& operator<<(QTextStream& out, const om::common::SegIDSet& set)
 {
     const std::string nums = om::string::join(set);
     out << QString::fromStdString(nums);

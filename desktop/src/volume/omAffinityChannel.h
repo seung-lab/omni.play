@@ -24,7 +24,7 @@ public:
         }
     }
 
-    OmAffinityChannel(OmID id, const om::common::AffinityGraph aff)
+    OmAffinityChannel(om::common::ID id, const om::common::AffinityGraph aff)
         : OmChannel(id)
         , affinity_(aff)
     {}

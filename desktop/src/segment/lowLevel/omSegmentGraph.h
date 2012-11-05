@@ -29,13 +29,13 @@ public:
     inline uint64_t MSTfreshness() const {
         return forest_->Freshness();
     }
-    inline OmSegID Root(const OmSegID segID){
+    inline om::common::SegID Root(const om::common::SegID segID){
         return forest_->Root(segID);
     }
-    inline void Cut(const OmSegID segID){
+    inline void Cut(const om::common::SegID segID){
         forest_->Cut(segID);
     }
-    inline void Join(const OmSegID childRootID, const OmSegID parentRootID){
+    inline void Join(const om::common::SegID childRootID, const om::common::SegID parentRootID){
         forest_->Join(childRootID, parentRootID);
     }
 
@@ -61,16 +61,16 @@ private:
     boost::scoped_ptr<OmSegmentChildren> children_;
     OmSegmentListLowLevel* segmentListsLL_;
 
-    bool joinInternal(const OmSegID parentID,
-                      const OmSegID childUnknownDepthID,
+    bool joinInternal(const om::common::SegID parentID,
+                      const om::common::SegID childUnknownDepthID,
                       const double threshold,
                       const int edgeNumber);
 
-    bool splitChildFromParentInternal(const OmSegID childID);
+    bool splitChildFromParentInternal(const om::common::SegID childID);
 
     SizeAndNumPieces computeSegmentSizeWithChildren(OmSegment* seg);
     std::vector<OmSegment*> segsTempVec_;
     
-    bool sizeCheck(const OmSegID a, const OmSegID b, const double threshold);
+    bool sizeCheck(const om::common::SegID a, const om::common::SegID b, const double threshold);
 };
 

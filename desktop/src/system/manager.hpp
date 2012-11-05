@@ -15,7 +15,7 @@ namespace system {
 template <typename T>
 struct ManagedObject
 {
-	OmID ID;
+	om::common::ID ID;
 	bool Enabled;
 	zi::spinlock Lock;
 	T* Object;
@@ -47,7 +47,7 @@ class Manager
 {
 public:
 	typedef ManagedObject<T> obj;
-	typedef boost::unordered_map<OmID, obj> coll;
+	typedef boost::unordered_map<om::common::ID, obj> coll;
 
 private:
 	struct get_value : std::unary_function<typename coll::value_type, obj&> {
@@ -103,13 +103,13 @@ public:
 		findNext();
 	}
 
-	bool IsValid(OmID id)
+	bool IsValid(om::common::ID id)
 	{
 		zi::guard g(lock_);
 		return isValid(id);
 	}
 
-	obj& Get(OmID id)
+	obj& Get(om::common::ID id)
 	{
 		zi::guard g(lock_);
 		iterator iter = objs_.find(id);
@@ -119,7 +119,7 @@ public:
 		return iter->second;
 	}
 
-	void Remove(OmID id)
+	void Remove(om::common::ID id)
 	{
 		zi::guard g(lock_);
 		if(isValid(id))
@@ -146,7 +146,7 @@ public:
     {
     	if(in.FindValue("size")) // Old Manager Format
     	{
-    		OmIDsSet valid, enabled;
+    		om::common::IDSet valid, enabled;
 	        in["valid set"] >> valid;
 	        in["enabled set"] >> enabled;
 
@@ -219,7 +219,7 @@ public:
 protected:
 	virtual T* parse(const YAML::Node& in) = 0;
 
-	inline bool isValid(OmID id) {
+	inline bool isValid(om::common::ID id) {
 		return objs_.count(id) > 0;
 	}
 

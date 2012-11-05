@@ -50,7 +50,7 @@ void GroupsTable::doDeleteAction()
 
     OmGroup& group = sdw_.Groups()->GetGroup(groupid_);
 
-    OmSegIDsSet set;
+    om::common::SegIDSet set;
     set.insert(seg_);
     sdw_.Groups()->UnsetGroup(set, group.GetName());
 }
@@ -65,7 +65,7 @@ void GroupsTable::populateGroupsList()
     mGroupsList->populate(sdw_.GetSegmentation());
 }
 
-void GroupsTable::Repopulate(OmSegID id)
+void GroupsTable::Repopulate(om::common::SegID id)
 {
     if(!gTable) {
         return;
@@ -78,7 +78,7 @@ void GroupsTable::Repopulate(OmSegID id)
     }
 }
 
-void GroupsTable::populateGroupTable(OmGroupID id)
+void GroupsTable::populateGroupTable(om::common::GroupID id)
 {
     groupid_ = id;
 
@@ -89,13 +89,13 @@ void GroupsTable::populateGroupTable(OmGroupID id)
     OmGroup& group = sdw_.Groups()->GetGroup(id);
     OmSegments* cache = sdw_.Segments();
 
-    const OmSegIDsSet& set = group.GetIDs();
+    const om::common::SegIDSet& set = group.GetIDs();
     mGroupsTable->setRowCount(set.size());
     int count = 0;
 
     FOR_EACH(iter, set)
     {
-        const OmSegID id = *iter;
+        const om::common::SegID id = *iter;
         ++count;
 
         OmSegment* segment = cache->GetSegment(id);

@@ -60,6 +60,34 @@ enum SegListType {
     VALID = 1,
     UNCERTAIN = 2
 };
+enum SegmentColorCacheType { SCC_FILTER_BLACK_BRIGHTEN_SELECT = 0,
+                             SCC_FILTER_COLOR_BRIGHTEN_SELECT,
+                             SCC_FILTER_BREAK,
+                             SCC_FILTER_VALID,
+                             SCC_FILTER_VALID_BLACK,
+                             SCC_SEGMENTATION,
+                             SCC_SEGMENTATION_BREAK_BLACK,
+                             SCC_SEGMENTATION_BREAK_COLOR,
+                             SCC_SEGMENTATION_VALID,
+                             SCC_SEGMENTATION_VALID_BLACK,
+                             SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT,
+                             SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT,
+                             SCC_NUMBER_OF_ENUMS };
+
+enum CacheGroup {
+    MESH_CACHE = 1,
+    TILE_CACHE
+};
+
+inline std::ostream& operator<<(std::ostream &out, const CacheGroup& c)
+{
+    if(MESH_CACHE == c){
+        out << "MESH_CACHE";
+    } else {
+        out << "TILE_CACHE";
+    }
+    return out;
+}
 
 BOOST_ENUM_VALUES(DataType, std::string,
                   (UNKNOWN)("unknown")

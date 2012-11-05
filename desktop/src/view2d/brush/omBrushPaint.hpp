@@ -7,7 +7,7 @@
 class OmBrushPaint {
 public:
     static void PaintByClick(OmView2dState* state, const om::coords::Global& coord,
-                             const OmSegID segIDtoPaint)
+                             const om::common::SegID segIDtoPaint)
     {
         om::shared_ptr<OmBrushOppInfo> info =
             OmBrushOppInfoFactory::MakeOppInfo(state, coord, om::common::ADD);
@@ -18,7 +18,7 @@ public:
     }
 
     static void PaintByLine(OmView2dState* state, const om::coords::Global& second,
-                            const OmSegID segIDtoPaint)
+                            const om::common::SegID segIDtoPaint)
     {
         const om::coords::Global& first = state->GetLastDataPoint();
 

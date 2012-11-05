@@ -11,7 +11,7 @@
 class OmBrushEraseUtils {
 public:
     static void ErasePts(OmBrushOppInfo* info, om::pt3d_list_t* pts,
-                         const OmSegID segIDtoErase)
+                         const om::common::SegID segIDtoErase)
     {
         const om::globalBbox& segDataExtent = info->segmentation->Coords().DataExtent();
 
@@ -31,7 +31,7 @@ public:
         OmSliceCache sliceCache(info->segmentation,
                                 info->viewType);
 
-        virtual om::shared_ptr<boost::unordered_set<OmSegID> > segIDsAndPts =
+        virtual om::shared_ptr<boost::unordered_set<om::common::SegID> > segIDsAndPts =
             sliceCache.GetSegIDs(chunksAndPts, info->depth);
 
 
@@ -83,7 +83,7 @@ private:
         //     ptsInChunks[chunkCoord].insert(chunkPos);
         // }
 
-        const OmIDsSet& segset = SegmentationDataWrapper::ValidIDs();
+        const om::common::IDSet& segset = SegmentationDataWrapper::ValidIDs();
 
         FOR_EACH(iter, segset)
         {

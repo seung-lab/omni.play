@@ -63,7 +63,7 @@ volume::volume(std::string uri,
     	   	   coords::GlobalBbox bounds,
     	   	   Vector3i resolution,
     	   	   common::DataType dataType,
-    	   	   common::objectType volType,
+    	   	   common::ObjectType volType,
     	   	   Vector3i chunkDims,
     	   	   int32_t mipLevel)
     	: uri_(uri)
@@ -91,7 +91,7 @@ int32_t volume::GetSegId(coords::Global point) const
 }
 
 void volume::GetSegIds(coords::Global point, int radius,
-                       common::viewType view,
+                       om::common::ViewType view,
                        std::set<int32_t>& ids) const
 {
     coords::Global coord = point;
