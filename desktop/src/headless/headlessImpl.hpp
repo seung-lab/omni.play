@@ -247,7 +247,7 @@ private:
         if(data.open(QFile::WriteOnly | QFile::Truncate)) {
             printf("writing segment file %s\n", qPrintable(outFile));
         } else{
-            throw om::IoException("could not open file", outFile);
+            throw om::IoException("could not open file", outFile.toStdString());
         }
 
         QTextStream out(&data);

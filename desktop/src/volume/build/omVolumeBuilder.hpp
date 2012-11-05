@@ -147,7 +147,7 @@ private:
 
         FOR_EACH(iter, files_){
             if(!iter->exists()){
-                throw om::IoException("source file not found", iter->fileName());
+                throw om::IoException("source file not found", iter->fileName().toStdString());
             }
         }
     }

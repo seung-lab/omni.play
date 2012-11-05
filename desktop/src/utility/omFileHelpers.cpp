@@ -30,7 +30,7 @@ void OmFileHelpers::RemoveDir(const QString &folder)
         if(removeDir(folder)){
             printf("done!\n");
         } else {
-            throw om::IoException("could not remove folder", folder);
+            throw om::IoException("could not remove folder", folder.toStdString());
         }
     }
 }
@@ -46,18 +46,18 @@ void OmFileHelpers::MoveFile(const QString& from_fnp, const QString& to_fnp)
 {
     QFile file(from_fnp);
     if(!file.exists()){
-        throw om::IoException("could not find file", from_fnp);
+        throw om::IoException("could not find file", from_fnp.toStdString());
     }
 
     if(QFile::exists(to_fnp))
     {
         if(!QFile::remove(to_fnp)){
-            throw om::IoException("could not remove previous file", to_fnp);
+            throw om::IoException("could not remove previous file", to_fnp.toStdString());
         }
     }
 
     if(!file.rename(to_fnp)){
-        throw om::IoException("could not rename file to", to_fnp);
+        throw om::IoException("could not rename file to", to_fnp.toStdString());
 
     } else {
         std::cout << "moved file from " << from_fnp.toStdString()
@@ -69,18 +69,18 @@ void OmFileHelpers::CopyFile(const QString& from_fnp, const QString& to_fnp)
 {
     QFile file(from_fnp);
     if(!file.exists()){
-        throw om::IoException("could not find file", from_fnp);
+        throw om::IoException("could not find file", from_fnp.toStdString());
     }
 
     if(QFile::exists(to_fnp))
     {
         if(!QFile::remove(to_fnp)){
-            throw om::IoException("could not remove previous file", to_fnp);
+            throw om::IoException("could not remove previous file", to_fnp.toStdString());
         }
     }
 
     if(!QFile::copy(from_fnp, to_fnp)){
-        throw om::IoException("could not copy to file", to_fnp);
+        throw om::IoException("could not copy to file", to_fnp.toStdString());
     }
 }
 
@@ -101,13 +101,13 @@ void OmFileHelpers::MoveAllFiles(const QString& fromDirQT, const QString& toDirQ
     boost::filesystem::path fromDir(fromDirQT.toStdString());
 
     if(!boost::filesystem::exists(fromDir) || !boost::filesystem::is_directory(fromDir)){
-        throw om::IoException("invalid folder name", fromDirQT);
+        throw om::IoException("invalid folder name", fromDirQT.toStdString());
     }
 
     boost::filesystem::path toDir(toDirQT.toStdString());
 
     if(!boost::filesystem::exists(toDir) || !boost::filesystem::is_directory(toDir)){
-        throw om::IoException("invalid folder name", toDirQT);
+        throw om::IoException("invalid folder name", toDirQT.toStdString());
     }
 
     boost::filesystem::directory_iterator iter(fromDir);

@@ -43,7 +43,7 @@ protected:
         //std::cout << "file size is " << file_->size() << "\n";
         map_ = file_->map(0, file_->size());
         if(!map_){
-            throw om::IoException("could not map file", file_->fileName());
+            throw om::IoException("could not map file", file_->fileName().toStdString());
         }
         file_->close();
     }

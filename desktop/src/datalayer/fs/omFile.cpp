@@ -14,28 +14,28 @@ int64_t om::file::numBytes(const std::string& fnp)
 void om::file::openFileRO(QFile& file)
 {
     if(!file.open(QIODevice::ReadOnly)){
-        throw om::IoException("could not open file read only", file.fileName());
+        throw om::IoException("could not open file read only", file.fileName().toStdString());
     }
 }
 
 void om::file::openFileRW(QFile& file)
 {
     if(!file.open(QIODevice::ReadWrite)){
-        throw om::IoException("could not open file read/write", file.fileName());
+        throw om::IoException("could not open file read/write", file.fileName().toStdString());
     }
 }
 
 void om::file::openFileWO(QFile& file)
 {
     if(!file.open(QIODevice::WriteOnly | QFile::Truncate)){
-        throw om::IoException("could not open file for write", file.fileName());
+        throw om::IoException("could not open file for write", file.fileName().toStdString());
     }
 }
 
 void om::file::openFileAppend(QFile& file)
 {
     if(!file.open(QIODevice::Append)){
-        throw om::IoException("could not open file for write", file.fileName());
+        throw om::IoException("could not open file for write", file.fileName().toStdString());
     }
 }
 
@@ -55,7 +55,7 @@ void om::file::rmFile(const std::string& fnp)
 
     if(QFile::exists(f)){
         if(!QFile::remove(f)){
-            throw om::IoException("could not remove previous file", f);
+            throw om::IoException("could not remove previous file", f.toStdString());
         }
     }
 }

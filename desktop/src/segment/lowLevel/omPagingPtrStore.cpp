@@ -101,7 +101,7 @@ void OmPagingPtrStore::loadMetadata()
     QFile file(metadataPathQStr());
 
     if(!file.open(QIODevice::ReadOnly)){
-        throw om::IoException("error reading file", metadataPathQStr());
+        throw om::IoException("error reading file", metadataPathQStr().toStdString());
     }
 
     QDataStream in(&file);
@@ -120,7 +120,7 @@ void OmPagingPtrStore::loadMetadata()
     }
 
     if(!in.atEnd()){
-        throw om::IoException("corrupt file?", metadataPathQStr());
+        throw om::IoException("corrupt file?", metadataPathQStr().toStdString());
     }
 }
 

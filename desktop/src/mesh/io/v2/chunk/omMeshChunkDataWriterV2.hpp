@@ -94,7 +94,7 @@ private:
         const bool fileDidNotExist = !file.exists();
 
         if(!file.open(QIODevice::ReadWrite)){
-            throw om::IoException("could not open", fnp_);
+            throw om::IoException("could not open", fnp_.toStdString());
         }
 
         if(fileDidNotExist){

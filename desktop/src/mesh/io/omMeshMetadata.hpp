@@ -81,7 +81,7 @@ private:
         }
 
         if(!file.open(QIODevice::ReadOnly)){
-            throw om::IoException("error reading file", fnp_);
+            throw om::IoException("error reading file", fnp_.toStdString());
         }
 
         QDataStream in(&file);
@@ -93,7 +93,7 @@ private:
         in >> meshVersion_;
 
         if(!in.atEnd()){
-            throw om::IoException("corrupt file?", fnp_);
+            throw om::IoException("corrupt file?", fnp_.toStdString());
         }
 
         return true;
@@ -104,7 +104,7 @@ private:
         QFile file(fnp_);
 
         if (!file.open(QIODevice::WriteOnly)) {
-            throw om::IoException("could not write file", fnp_);
+            throw om::IoException("could not write file", fnp_.toStdString());
         }
 
         QDataStream out(&file);

@@ -33,7 +33,7 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp, OmProjectImpl* projec
             QString("can not open file: file version is (%1), but Omni expecting (%2)")
             .arg(fileVersion_)
             .arg(Latest_Project_Version);
-        throw om::IoException(err);
+        throw om::IoException(err.toStdString());
     }
 
     in >> (*project);
@@ -103,7 +103,7 @@ void OmDataArchiveProject::ArchiveWrite(const QString& fnp, OmProjectImpl* proje
 {
     QFile file(fnp);
     if(!file.open(QIODevice::WriteOnly)){
-        throw om::IoException("could not open", fnp);
+        throw om::IoException("could not open", fnp.toStdString());
     }
 
     QDataStream out(&file);

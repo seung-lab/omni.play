@@ -32,7 +32,7 @@ protected:
         file_ = om::make_shared<QFile>(QString::fromStdString(fnp_));
 
         if( !file_->open(QIODevice::ReadWrite)) {
-            throw om::IoException("could not open", fnp_);
+            throw om::IoException("could not open", fnp_.toStdString());
         }
     }
 

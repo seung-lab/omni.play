@@ -29,7 +29,7 @@ public:
         QFile file(path);
 
         if(!file.open(QIODevice::ReadOnly)){
-            throw om::IoException("error reading file", path);
+            throw om::IoException("error reading file", path.toStdString());
         }
 
         QDataStream in(&file);
@@ -54,7 +54,7 @@ public:
         printf("loaded %d user edges\n", edges_.size());
 
         if(!in.atEnd()){
-            throw om::IoException("corrupt file?", path);
+            throw om::IoException("corrupt file?", path.toStdString());
         }
     }
 
@@ -65,7 +65,7 @@ public:
         QFile file(path);
 
         if (!file.open(QIODevice::WriteOnly)) {
-            throw om::IoException("could not write file", path);
+            throw om::IoException("could not write file", path.toStdString());
         }
 
         QDataStream out(&file);

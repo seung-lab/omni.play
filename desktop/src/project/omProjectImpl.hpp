@@ -178,7 +178,7 @@ private:
     void doLoad(const QString& fnp, QWidget* guiParent)
     {
         if(!QFile::exists(fnp)){
-            throw om::IoException("Project file not found at", fnp);
+            throw om::IoException("Project file not found at", fnp.toStdString());
         }
 
         omniFile_ = fnp;
@@ -247,7 +247,7 @@ private:
     {
         QFile file(omniFile_);
         if(!file.open(QIODevice::WriteOnly)) {
-            throw om::IoException("could not open", omniFile_);
+            throw om::IoException("could not open", omniFile_.toStdString());
         }
     }
 

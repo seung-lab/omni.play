@@ -58,6 +58,6 @@ om::common::DataType OmVolumeTypeHelpers::GetTypeFromString(const QString & type
         return *ret;
     }
 
-    throw om::IoException("invalid type", type);
+    throw om::IoException("invalid type", type.toStdString());
 }
 

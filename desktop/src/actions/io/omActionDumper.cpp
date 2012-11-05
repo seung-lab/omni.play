@@ -39,7 +39,7 @@ void OmActionDumper::readAndDumpFile(const QFileInfo& fileInfo)
 {
     QFile file(fileInfo.absoluteFilePath());
     if(!file.open(QIODevice::ReadOnly)){
-        throw om::IoException("could not open", file.fileName());
+        throw om::IoException("could not open", file.fileName().toStdString());
     }
 
     QDataStream in(&file);
@@ -62,11 +62,11 @@ void OmActionDumper::readAndDumpFile(const QFileInfo& fileInfo)
     QString postfix;
     in >> postfix;
     if("OMNI_LOG" != postfix){
-        throw om::IoException("bad postfix", file.fileName());
+        throw om::IoException("bad postfix", file.fileName().toStdString());
     }
 
     if(!in.atEnd()){
-        throw om::IoException("corrupt log file dectected", file.fileName());
+        throw om::IoException("corrupt log file dectected", file.fileName().toStdString());
     }
 }
 

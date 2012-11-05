@@ -128,7 +128,7 @@ private:
 
         QFile file(mip0fnp_);
         if(!file.open(QIODevice::ReadWrite)){
-            throw om::IoException("could not open file", mip0fnp_);
+            throw om::IoException("could not open file", mip0fnp_.toStdString());
         }
 
         file.seek(chunkOffset);

@@ -71,7 +71,7 @@ private:
         }
 
         if(!file.open(QIODevice::ReadOnly)){
-            throw om::IoException("error reading file", filePath);
+            throw om::IoException("error reading file", filePath.toStdString());
         }
 
         QDataStream in(&file);
@@ -88,7 +88,7 @@ private:
         vol_.Coords().SetAbsOffset(offset);
 
         if(!in.atEnd()){
-            throw om::IoException("corrupt file?", filePath);
+            throw om::IoException("corrupt file?", filePath.toStdString());
         }
     }
 

@@ -83,7 +83,7 @@ T* mapFile(QFile* file)
     uchar* map = file->map(0, file->size());
     
     if(!map){
-        throw om::IoException("could not map file", file->fileName());
+        throw om::IoException("could not map file", file->fileName().toStdString());
     }
 
     file->close();
@@ -97,7 +97,7 @@ T* mapFile(PTR& file)
     uchar* map = file->map(0, file->size());
 
     if(!map){
-        throw om::IoException("could not map file", file->fileName());
+        throw om::IoException("could not map file", file->fileName().toStdString());
     }
 
     file->close();
@@ -146,7 +146,7 @@ void writeVec(QFile& file, const std::vector<T>& vec)
     const int numBytesWritten = file.write(data, numBytes);
 
     if(numBytesWritten != numBytes){
-        throw om::IoException("could not fully write file", file.fileName());
+        throw om::IoException("could not fully write file", file.fileName().toStdString());
     }
 }
 
@@ -163,7 +163,7 @@ void writeNumElements(QFile& file, const boost::shared_ptr<T> ptr,
     const int numBytesWritten = file.write(data, numBytes);
 
     if(numBytesWritten != numBytes){
-        throw om::IoException("could not fully write file", file.fileName());
+        throw om::IoException("could not fully write file", file.fileName().toStdString());
     }
 }
 

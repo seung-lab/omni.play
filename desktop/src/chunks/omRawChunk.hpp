@@ -91,7 +91,7 @@ private:
 
         QFile file(memMapFileName_);
         if(!file.open(QIODevice::ReadOnly)){
-            throw om::IoException("could not open", memMapFileName_);
+            throw om::IoException("could not open", memMapFileName_.toStdString());
         }
 
         file.seek(chunkOffset_);
@@ -113,7 +113,7 @@ private:
 
         QFile file(memMapFileName_);
         if(!file.open(QIODevice::ReadWrite)){
-            throw om::IoException("could not open", memMapFileName_);
+            throw om::IoException("could not open", memMapFileName_.toStdString());
         }
 
         file.seek(chunkOffset_);

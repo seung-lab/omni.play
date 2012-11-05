@@ -55,7 +55,7 @@ public:
             std::cout << "could not read data; numBytes is " << numBytes
                       << ", but only read " << bytesRead << "\n"
                       << std::flush;
-            throw om::IoException("could not read fully file", fnp_);
+            throw om::IoException("could not read fully file", fnp_.toStdString());
         }
 
         return ret;

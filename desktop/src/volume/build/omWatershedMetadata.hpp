@@ -138,7 +138,7 @@ private:
             parseLineDend(tokens[1]);
 
         } else {
-            throw om::IoException("invalid line", line);
+            throw om::IoException("invalid line", line.toStdString());
         }
     }
 
@@ -147,7 +147,7 @@ private:
     {
         const QStringList args = tokens.split(' ', QString::SkipEmptyParts);
         if(5 != args.size()){
-            throw om::IoException("invalid line args", tokens);
+            throw om::IoException("invalid line args", tokens.toStdString());
         }
 
         SegmentationLine segInfo = { args[0],
@@ -164,7 +164,7 @@ private:
     {
         const QStringList args = tokens.split(' ', QString::SkipEmptyParts);
         if(3 != args.size()){
-            throw om::IoException("invalid line args", tokens);
+            throw om::IoException("invalid line args", tokens.toStdString());
         }
 
         if(dendCounter_){
@@ -184,7 +184,7 @@ private:
     {
         QFile file(fnp_);
         if(!file.open(QIODevice::ReadOnly)){
-            throw om::IoException("could not open", fnp_);
+            throw om::IoException("could not open", fnp_.toStdString());
         }
 
         QTextStream in(&file);

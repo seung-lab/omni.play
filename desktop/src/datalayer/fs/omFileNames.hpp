@@ -88,7 +88,7 @@ public:
 
         if(!QDir(fullPath).exists()){
             if(!QDir().mkpath(fullPath)){
-                throw om::IoException("could not create folder", fullPath);
+                throw om::IoException("could not create folder", fullPath.toStdString());
             }
         }
 
