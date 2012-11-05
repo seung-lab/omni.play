@@ -88,7 +88,7 @@ public:
     }
 
     inline om::common::ObjectType getType() const {
-        return SEGMENTATION;
+        return om::common::SEGMENTATION;
     }
 
     inline bool IsValidWrapper() const {

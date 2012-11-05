@@ -196,7 +196,7 @@ public:
 
 private:
     bool isChannel(const OmTileCoord& key){
-        return CHANNEL == key.getVolume()->getVolumeType();
+        return om::common::CHANNEL == key.getVolume()->getVolumeType();
     }
 
     void runIdleThreadTask()

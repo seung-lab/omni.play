@@ -23,7 +23,7 @@ OmTile::~OmTile()
 
 void OmTile::LoadData()
 {
-    if(getVolType() == CHANNEL) {
+    if(getVolType() == om::common::CHANNEL) {
         load8bitChannelTile();
 
     } else {
@@ -77,7 +77,7 @@ ObjectType OmTile::getVolType() const {
 
 uint32_t OmTile::NumBytes() const
 {
-    if(getVolType() == CHANNEL) {
+    if(getVolType() == om::common::CHANNEL) {
         return 128*128;
     }
 

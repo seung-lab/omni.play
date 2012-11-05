@@ -492,10 +492,10 @@ void MainWindow::cleanViewsOnVolumeChange(ObjectType objectType, om::common::ID 
 
     QString unwantedView2DTitle;
     switch (objectType){
-    case CHANNEL:
+    case om::common::CHANNEL:
         unwantedView2DTitle = "channel" + QString::number(objectId);
         break;
-    case SEGMENTATION:
+    case om::common::SEGMENTATION:
         unwantedView2DTitle = "segmentation" + QString::number(objectId);
         break;
     default:

@@ -61,7 +61,7 @@ om::common::SegmentColorCacheType
 OmViewGroupState::determineColorizationType(const om::common::ObjectType objType)
 {
     switch(objType){
-    case CHANNEL:
+    case om::common::CHANNEL:
         if(mShowValid)
         {
             if(mShowValidInColor){
@@ -89,7 +89,7 @@ OmViewGroupState::determineColorizationType(const om::common::ObjectType objType
 
         return om::common::SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT;
 
-    case SEGMENTATION:
+    case om::common::SEGMENTATION:
         if(mShowValid)
         {
             if(mShowValidInColor){

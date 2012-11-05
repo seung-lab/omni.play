@@ -40,7 +40,7 @@ public:
     void UpdateFromVolResize();
 
     om::common::ObjectType getVolumeType() const {
-        return CHANNEL;
+        return om::common::CHANNEL;
     }
 
     om::common::ID getID() const {

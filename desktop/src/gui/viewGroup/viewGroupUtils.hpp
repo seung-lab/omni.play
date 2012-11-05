@@ -72,9 +72,9 @@ public:
     {
         QString name;
 
-        if( CHANNEL == voltype ){
+        if( om::common::CHANNEL == voltype ){
             name = "channel_";
-        } else if ( SEGMENTATION == voltype ) {
+        } else if ( om::common::SEGMENTATION == voltype ) {
             name = "segmentation_";
         } else if ( AFFINITY == voltype ) {
             name = "affinity_";
@@ -88,11 +88,11 @@ public:
     QString makeObjectName(ViewGroupWidgetInfo& vgw)
     {
         if( VIEW2D_CHAN == vgw.widgetType ) {
-            return makeObjectName( CHANNEL, vgw.viewType );
+            return makeObjectName( om::common::CHANNEL, vgw.viewType );
         }
 
         if (VIEW2D_SEG  == vgw.widgetType ){
-            return makeObjectName( SEGMENTATION, vgw.viewType );
+            return makeObjectName( om::common::SEGMENTATION, vgw.viewType );
         }
 
         return makeObjectName();
@@ -101,11 +101,11 @@ public:
     QString makeComplimentaryObjectName(ViewGroupWidgetInfo& vgw)
     {
         if( VIEW2D_CHAN == vgw.widgetType ){
-            return makeObjectName( SEGMENTATION, vgw.viewType );
+            return makeObjectName( om::common::SEGMENTATION, vgw.viewType );
         }
 
         if( VIEW2D_SEG == vgw.widgetType ){
-            return makeObjectName( CHANNEL, vgw.viewType );
+            return makeObjectName( om::common::CHANNEL, vgw.viewType );
         }
 
         return "";

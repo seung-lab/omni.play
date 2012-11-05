@@ -18,10 +18,10 @@ public:
     DataWrapperContainer(const om::common::ObjectType obj_type, const om::common::ID obj_id)
     {
         switch (obj_type){
-        case CHANNEL:
+        case om::common::CHANNEL:
             cdw_ = boost::optional<ChannelDataWrapper>(obj_id);
             break;
-        case SEGMENTATION:
+        case om::common::SEGMENTATION:
             sdw_ = boost::optional<SegmentationDataWrapper>(obj_id);
             break;
         case AFFINITY:
@@ -56,11 +56,11 @@ public:
     om::common::ObjectType getType() const
     {
         if(cdw_){
-            return CHANNEL;
+            return om::common::CHANNEL;
         }
         
         if(sdw_){
-            return SEGMENTATION;
+            return om::common::SEGMENTATION;
         }
         
         if(adw_){

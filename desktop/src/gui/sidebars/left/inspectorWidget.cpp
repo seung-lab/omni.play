@@ -274,9 +274,9 @@ void InspectorWidget::nameEditChanged()
       QVariant result = proxyModel->data(view->currentIndex(), Qt::UserRole);
       int item_type = result.value<int>();
 
-      if(item_type == CHANNEL)
+      if(item_type == om::common::CHANNEL)
       proxyModel->setData(view->currentIndex(), QVariant(channelInspectorWidget_->nameEdit->text()), Qt::EditRole);
-      else if(item_type == SEGMENTATION)
+      else if(item_type == om::common::SEGMENTATION)
       proxyModel->setData(view->currentIndex(), QVariant(segmentationInspectorWidget->nameEdit->text()), Qt::EditRole);
       else if(item_type == SEGMENT)
       proxyModel->setData(view->currentIndex(), QVariant(segmentInspectorWidget->nameEdit->text()), Qt::EditRole);
@@ -360,11 +360,11 @@ void InspectorWidget::doShowDataSrcContextMenu(QTreeWidgetItem *dataSrcItem)
     DataWrapperContainer dwc = result.value<DataWrapperContainer>();
 
     switch (dwc.getType()) {
-    case CHANNEL:
+    case om::common::CHANNEL:
         showChannelContextMenu();
         break;
 
-    case SEGMENTATION:
+    case om::common::SEGMENTATION:
         showSegmentationContextMenu();
         break;
         
@@ -452,11 +452,11 @@ void InspectorWidget::addToSplitterDataSource(QTreeWidgetItem* current)
     DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
 
     switch (dwc.getType()) {
-    case CHANNEL:
+    case om::common::CHANNEL:
         populateFilterListWidget(dwc.getChannelDataWrapper());
         break;
 
-    case SEGMENTATION:
+    case om::common::SEGMENTATION:
         updateSegmentListBox(dwc.GetSDW());
         break;
         
