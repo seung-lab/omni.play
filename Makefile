@@ -4,6 +4,7 @@ HERE    	=       .
 EXTERNAL	=	$(HERE)/external/libs
 BREAKPAD    =   $(HERE)/external/srcs/google-breakpad/src
 GMOCK    	=   $(HERE)/common/include/gmock-1.6.0
+BASE64    	=   $(HERE)/common/include/libb64
 # BINDIR		=	./bin
 # BUILDDIR	=	build
 GENDIR		=	thrift/src
@@ -54,7 +55,7 @@ SERVERINCLUDES = $(THRIFTINCLUDES) \
 				 -I$(HERE)/filesystem/src \
 				 -I$(EXTERNAL)/libjpeg/include \
 				 -I$(EXTERNAL)/libpng/include \
-				 -I$(HERE)/common/include/libb64/include \
+				 -I$(BASE64)/include \
 
 DESKTOPINCLUDES = $(INCLUDES) \
 				  -I$(HERE)/desktop/src \
@@ -81,14 +82,14 @@ LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/boost/lib/libboost_system.a \
 	   $(EXTERNAL)/boost/lib/libboost_thread.a \
 	   $(EXTERNAL)/boost/lib/libboost_regex.a \
-	   -lpthread -lrt -lz
+	   -lpthread -lrt
 
 SERVERLIBS = $(LIBS) \
 			 $(EXTERNAL)/thrift/lib/libthrift.a \
 	   		 $(EXTERNAL)/thrift/lib/libthriftnb.a \
 	   		 $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
 	   		 $(EXTERNAL)/libpng/lib/libpng.a \
-	   		 -levent
+	   		 -levent -lz
 
 
 DESKTOPLIBS = $(LIBS) \
@@ -244,23 +245,11 @@ $(GENDIR)/%.thrift.mkcpp: thrift/if/%.thrift
 	$(MV) $@.tmp $@
 
 # Dependencies #################################
-define deps
-	$(eval $1_SOURCES = $(shell find $2/src -iname "*.cpp"  | grep -v "main.cpp"))
-	$(eval $1_MAIN = $(BUILDDIR)/$2/main.o)
-	$(eval $1_DEPS = $(subst $2/src,$(BUILDDIR)/$2,$($1_SOURCES:.cpp=.o)))
-endef
-
-$(eval $(call deps,COMMON,common))
-$(eval $(call deps,COMMON_TEST,common/test))
-$(eval $(call deps,SERVER,server))
-$(eval $(call deps,SERVER_TEST,server/test))
-$(eval $(call deps,DESKTOP,desktop))
-$(eval $(call deps,DESKTOP_TEST,desktop/test))
 
 YAML_SOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
 YAML_DEPS = $(YAML_SOURCES:.cpp=.o)
 
-LIB64_DEPS = common/include/libb64/src/cencode.o
+LIB64_DEPS = $(BASE64)/src/cencode.o
 
 TEST_DEPS = $(GMOCK)/src/gmock-all.o $(GMOCK)/gtest/src/gtest-all.o
 
@@ -269,52 +258,49 @@ DESKTOPHEADERS = $(subst desktop/src,$(BUILDDIR)/desktop, \
 MOC_SRCS := $($(DESKTOPHEADERS:.hpp=.moc.cpp):.h=.moc.cpp)
 MOC_DEPS := $(MOC_SRCS:.cpp=.o)
 
+define deps
+	$(eval $1_SOURCES = $(shell find $2/src -iname "*.cpp"  | grep -v "main.cpp"))
+	$(eval $1_MAIN = $(BUILDDIR)/$2/main.o)
+	$(eval $1_DEPS = $(subst $2/src,$(BUILDDIR)/$2,$($1_SOURCES:.cpp=.o)) $3)
+endef
+
+$(eval $(call deps,COMMON,common,$(YAML_DEPS)))
+$(eval $(call deps,COMMON_TEST,common/test,$(COMMON_DEPS) $(TEST_DEPS)))
+
+$(eval $(call deps,THRIFT,thrift))
+
+$(eval $(call deps,SERVER,server,$(COMMON_DEPS) $(THRIFT_DEPS) $(LIB64_DEPS)))
+$(eval $(call deps,SERVER_TEST,server/test,$(SERVER_DEPS) $(TEST_DEPS)))
+
+$(eval $(call deps,DESKTOP,desktop,$(COMMON_DEPS) desktop/lib/strnatcmp.o $(BUILDDIR)/desktop/gui/resources.rcc.o))
+$(eval $(call deps,DESKTOP_TEST,desktop/test,$(DESKTOP_DEPS) $(TEST_DEPS)))
+
+# Targets ####################################
+.PHONY: all
+all: common server desktop
+
 define link
 	$(ECHO) "[CXX] linking $@"
 	$(MKDIR) -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.mkcpp,$^) $1
 endef
 
-# Targets ####################################
-.PHONY: all
-all: common server desktop
-
-$(BINDIR)/omni.common.test: $(COMMON_DEPS) \
-							$(COMMON_TEST_DEPS) \
-							$(YAML_DEPS) \
-							$(TEST_DEPS) \
-							$(COMMON_TEST_MAIN)
+$(BINDIR)/omni.common.test: $(COMMON_TEST_DEPS) $(COMMON_TEST_MAIN)
 	$(call link,$(LIBS))
 	$@
 
-$(BINDIR)/omni.desktop: $(COMMON_DEPS)\
-					    $(DESKTOP_DEPS)\
-					    $(DESKTOP_MAIN)\
-					    desktop/lib/strnatcmp.o\
-					    $(BUILDDIR)/desktop/gui/resources.rcc.o
+$(BINDIR)/omni.desktop: $(DESKTOP_DEPS) $(DESKTOP_MAIN)
 	$(call link,$(DESKTOPLIBS))
 
-$(BINDIR)/omni.desktop.test: $(COMMON_DEPS)\
-							 $(DESKTOP_DEPS)\
-							 $(DESKTOP_TEST_DEPS)\
-							 $(DESKTOP_TEST_MAIN)\
-							 desktop/lib/strnatcmp.o\
-							 $(BUILDDIR)/desktop/gui/resources.rcc.o
+$(BINDIR)/omni.desktop.test: $(DESKTOP_TEST_DEPS) $(DESKTOP_TEST_MAIN)
 	$(call link,$(DESKTOPLIBS))
 	$@
 
-$(BINDIR)/omni.server: $(COMMON_DEPS)\
-					   $(SERVER_DEPS)\
-					   $(THRIFT_DEPS)\
-					   $(SERVER_MAIN)
-	$(link)
+$(BINDIR)/omni.server: $(SERVER_DEPS) $(SERVER_MAIN)
+	$(call link,$(SERVERLIBS))
 
-$(BINDIR)/omni.server.test:$(COMMON_DEPS)\
-					   	   $(SERVER_DEPS)\
-					   	   $(SERVER_TEST_DEPS)\
-					   	   $(THRIFT_DEPS)\
-					   	   $(SERVER_TEST_MAIN)
-	$(link)
+$(BINDIR)/omni.server.test: $(SERVER_TEST_DEPS) $(SERVER_TEST_MAIN)
+	$(call link,$(SERVERLIBS))
 	$@
 
 $(BINDIR)/omni.tar.gz: desktop

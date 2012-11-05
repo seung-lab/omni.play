@@ -1,5 +1,7 @@
 #pragma once
 
+#include "enum/enum.hpp"
+
 namespace om {
 namespace common {
 
@@ -70,6 +72,14 @@ enum SegListType {
     VALID = 1,
     UNCERTAIN = 2
 };
+
+BOOST_ENUM_VALUES(DataType, std::string,
+                  (UNKNOWN)("unknown")
+                  (INT8)("int8_t")
+                  (UINT8)("uint8_t")
+                  (INT32)("int32_t")
+                  (UINT32)("uint32_t")
+                  (FLOAT)("float"))
 
 } // common
 } // om

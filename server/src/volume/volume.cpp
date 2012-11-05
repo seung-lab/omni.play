@@ -2,6 +2,7 @@
 #include "volume/volume.h"
 #include "datalayer/memMappedFile.hpp"
 #include "utility/timer.hpp"
+#include "utility/convert.hpp"
 #include "segment/segmentTypes.hpp"
 #include "pipeline/mapData.hpp"
 #include "pipeline/getSegIds.hpp"
@@ -26,7 +27,7 @@ void volume::loadVolume()
                 boost::format("%1%/channels/channel1/%2%/volume.float.raw")
                 % uri_ % mipLevel_);
 
-            mapData mapped(chanName, server::dataType::FLOAT); // Ignore dataType for now.
+            mapData mapped(chanName, common::DataType::FLOAT); // Ignore dataType for now.
             data_ = mapped.file();
             break;
         }
@@ -36,7 +37,7 @@ void volume::loadVolume()
                 boost::format("%1%/segmentations/segmentation1/%2%/volume.uint32_t.raw")
                 % uri_ % mipLevel_);
 
-            mapData mappedSeg(segName, server::dataType::UINT32); // Ignore dataType for now.
+            mapData mappedSeg(segName, common::DataType::UINT32); // Ignore dataType for now.
             data_ = mappedSeg.file();
             break;
         }
@@ -45,22 +46,24 @@ void volume::loadVolume()
 
 volume::volume(const server::metadata& meta)
     : uri_(meta.uri)
-    , bounds_(meta.bounds)
-    , resolution_(common::Convert(meta.resolution))
-    , dataType_(meta.type)
-    , volType_(meta.vol_type)
-    , chunkDims_(common::Convert(meta.chunkDims))
+    , bounds_(utility::Convert(meta.bounds))
+    , resolution_(utility::Convert(meta.resolution))
+    , dataType_(utility::Convert(meta.type))
+    , volType_(utility::Convert(meta.vol_type))
+    , chunkDims_(utility::Convert(meta.chunkDims))
     , mipLevel_(meta.mipLevel)
-    , coordSystem_(meta)
 {
+	coordSystem_.SetBounds(utility::Convert(meta.bounds));
+    coordSystem_.SetResolution(utility::Convert(meta.resolution));
+    coordSystem_.SetChunkDimensions(utility::Convert(meta.chunkDims));
     loadVolume();
 }
 
 volume::volume(std::string uri,
     	   	   coords::GlobalBbox bounds,
     	   	   Vector3i resolution,
-    	   	   server::dataType::type dataType,
-    	   	   server::volType::type volType,
+    	   	   common::DataType dataType,
+    	   	   common::objectType volType,
     	   	   Vector3i chunkDims,
     	   	   int32_t mipLevel)
     	: uri_(uri)
@@ -72,10 +75,9 @@ volume::volume(std::string uri,
     	, mipLevel_(mipLevel)
     	, coordSystem_()
 {
-	Vector3i dims = bounds.getMax() - bounds.getMin();
-	coordSystem_.SetDataDimensions(dims);
-    coordSystem_.SetAbsOffset(bounds.getMin());
+	coordSystem_.SetBounds(bounds);
     coordSystem_.SetResolution(resolution);
+    coordSystem_.SetChunkDimensions(chunkDims);
     coordSystem_.UpdateRootLevel();
 	loadVolume();
 }

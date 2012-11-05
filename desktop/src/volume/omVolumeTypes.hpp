@@ -19,16 +19,6 @@ OmVolDataSrcs;
 typedef boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*>
 OmRawDataPtrs;
 
-// char* used for serialization (don't change!)
-BOOST_ENUM_VALUES(OmVolDataType, std::string,
-                  (UNKNOWN)("unknown")
-                  (INT8)("int8_t")
-                  (UINT8)("uint8_t")
-                  (INT32)("int32_t")
-                  (UINT32)("uint32_t")
-                  (FLOAT)("float")
-    )
-
 class OmVolumeTypeHelpers {
 public:
     static std::string GetTypeAsString(const OmVolDataType type);

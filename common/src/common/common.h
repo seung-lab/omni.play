@@ -14,8 +14,6 @@ namespace om { namespace common {
     std::ostream& operator<<(std::ostream &out, const viewType& vt);
 }}
 
-
-
 #include "coordinates/coordinates.h"
 #include <zi/for_each.hpp>
 

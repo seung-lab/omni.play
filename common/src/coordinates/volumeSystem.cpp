@@ -10,27 +10,21 @@ VolumeSystem::VolumeSystem()
     , globalToData_(Matrix4f::IDENTITY)
     , normToGlobal_(Matrix4f::IDENTITY)
     , globalToNorm_(Matrix4f::IDENTITY)
-    , chunkDimension_(DefaultChunkDim)
-    , mMipRootLevel(0)
+    , chunkDimensions_(Vector3i(DefaultChunkDim))
+    , rootMipLevel_(0)
 {
-    SetDataDimensions(Vector3i(DefaultChunkDim,
-                                DefaultChunkDim,
-                                DefaultChunkDim));
+    SetDataDimensions(Vector3i(DefaultChunkDim));
 
     UpdateRootLevel();
 }
 
 void VolumeSystem::UpdateRootLevel()
 {
-    //determine max level
-    Vector3i source_dims = DataDimensions();
-    int max_source_dim = source_dims.getMaxComponent();
-    int mipchunk_dim = ChunkDimension();
-
-    if (max_source_dim <= mipchunk_dim) {
-        mMipRootLevel = 0;
+    float ratio = (Vector3f(DataDimensions()) / chunkDimensions_).getMaxComponent();
+    if (ratio <= 1) {
+        rootMipLevel_ = 0;
     } else {
-        mMipRootLevel = ceil(log((float) (max_source_dim) / mipchunk_dim) / log(2.0f));
+        rootMipLevel_ = ceil(log(ratio) / log(2.0f));
     }
 }
 
@@ -61,7 +55,7 @@ bool VolumeSystem::ContainsMipChunk(const Chunk & rMipCoord) const
 }
 
 Chunk VolumeSystem::RootMipChunkCoordinate() const {
-    return Chunk(mMipRootLevel, Vector3i::ZERO);
+    return Chunk(rootMipLevel_, Vector3i::ZERO);
 }
 
 boost::shared_ptr<std::vector<coords::Chunk> >
@@ -69,7 +63,7 @@ VolumeSystem::MipChunkCoords() const
 {
     std::vector<coords::Chunk>* coords = new std::vector<coords::Chunk>();
 
-    for(int level = 0; level <= mMipRootLevel; ++level) {
+    for(int level = 0; level <= rootMipLevel_; ++level) {
         addChunkCoordsForLevel(level, coords);
     }
 

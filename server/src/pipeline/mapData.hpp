@@ -16,15 +16,15 @@ private:
     dataSrcs file_;
 
 public:
-    mapData(std::string fnp, server::dataType::type type)
+    mapData(std::string fnp, common::DataType type)
     {
-        switch(type)
+        switch(type.index())
         {
-        case server::dataType::INT8: init<int8_t>(fnp); break;
-        case server::dataType::UINT8: init<uint8_t>(fnp); break;
-        case server::dataType::INT32: init<int32_t>(fnp); break;
-        case server::dataType::UINT32: init<uint32_t>(fnp); break;
-        case server::dataType::FLOAT: init<float>(fnp); break;
+        case common::DataType::INT8: init<int8_t>(fnp); break;
+        case common::DataType::UINT8: init<uint8_t>(fnp); break;
+        case common::DataType::INT32: init<int32_t>(fnp); break;
+        case common::DataType::UINT32: init<uint32_t>(fnp); break;
+        case common::DataType::FLOAT: init<float>(fnp); break;
         }
     }
 

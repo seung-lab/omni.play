@@ -4,6 +4,7 @@
 #include "common/common.h"
 #include "datalayer/memMappedFile.hpp"
 #include "utility/timer.hpp"
+#include "utility/convert.hpp"
 #include "segment/segmentTypes.hpp"
 #include "volume/volume.h"
 
@@ -21,7 +22,7 @@ void get_seg_data(server::segData& _return, const volume::volume& vol, const int
     const segments::data& d = vol.GetSegmentData(segId);
     coords::DataBbox dc(d.bounds, &vol.CoordSystem(), 0);
 
-    _return.bounds = dc.ToGlobalBbox();
+    _return.bounds = utility::Convert(dc.ToGlobalBbox());
     _return.size = d.size;
 }
 void get_seg_list_data(std::map<int32_t, server::segData>& _return,

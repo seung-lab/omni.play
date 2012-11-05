@@ -52,6 +52,12 @@ public:
 
     NormBbox ToNormBbox(const VolumeSystem*) const;
     DataBbox ToDataBbox(const VolumeSystem*, int) const;
+    inline Global getMin() const {
+    	return base_t::getMin();
+    }
+    inline Global getMax() const {
+    	return base_t::getMax();
+    }
 
     friend std::ostream& operator << (std::ostream& os, const GlobalBbox& bbox ) {
         os << "min:" << bbox._min << " max:" << bbox._max;

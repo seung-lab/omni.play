@@ -12,13 +12,13 @@ class sliceTile : public stage
 private:
     common::viewType view_;
     coords::Data dc_;
-    int chunkSize_;
+    int chunkSize_; // TODO: rewrite for arbitrary chunks
 
 public:
     sliceTile(common::viewType view, coords::Data dc)
         : view_(view)
         , dc_(dc)
-        , chunkSize_(dc.volume()->ChunkDimension())
+        , chunkSize_(dc.volume()->ChunkDimensions().x)
     { }
 
     template <typename T>

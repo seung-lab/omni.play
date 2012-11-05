@@ -5,6 +5,7 @@
 #include "volume/volume.h"
 #include "utility/ServiceTracker.h"
 #include "utility/FacebookBase.h"
+#include "utility/convert.hpp"
 #include "RealTimeMesher.h"
 
 #include <protocol/TBinaryProtocol.h>
@@ -68,7 +69,7 @@ public:
                        const server::viewType::type view)
     {
         ServiceMethod serviceMethod(&serviceTracker_, "get_chan_tile", "get_chan_tile");
-        handler::get_chan_tile(_return, vol, point, common::Convert(view));
+        handler::get_chan_tile(_return, vol, utility::Convert(point), utility::Convert(view));
     }
 
     void get_seg_tiles(std::map<std::string, tile> & _return,
@@ -78,12 +79,12 @@ public:
                        const server::viewType::type view)
     {
         ServiceMethod serviceMethod(&serviceTracker_, "get_seg_tiles", "get_seg_tiles");
-        handler::get_seg_tiles(_return, vol, segId, segBbox, common::Convert(view));
+        handler::get_seg_tiles(_return, vol, segId, utility::Convert(segBbox), utility::Convert(view));
     }
 
     int32_t get_seg_id(const metadata& vol, const vector3d& point) {
         ServiceMethod serviceMethod(&serviceTracker_, "get_seg_id", "get_seg_id");
-        return handler::get_seg_id(vol, point);
+        return handler::get_seg_id(vol, utility::Convert(point));
     }
 
     void get_seg_ids(std::set<int32_t> & _return,
@@ -93,7 +94,7 @@ public:
                      const viewType::type view)
     {
         ServiceMethod serviceMethod(&serviceTracker_, "get_seg_ids", "get_seg_ids");
-        handler::get_seg_ids(_return, vol, point, radius, common::Convert(view));
+        handler::get_seg_ids(_return, vol, utility::Convert(point), radius, utility::Convert(view));
     }
 
     void get_seg_data(segData& _return, const metadata& meta, const int32_t segId)

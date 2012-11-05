@@ -58,10 +58,10 @@ TEST(UpdateMeshTest, Test1)
 	EXPECT_CALL(mesher, update(_,_,_,_));
 	EXPECT_CALL(mesher, remesh(_));
 
-	om::volume::volume vol("test/data/test.omni.files/",
+	volume::volume vol("test/data/test.omni.files/",
 		coords::GlobalBbox(coords::Global(0), coords::Global(255, 255, 159)),
-		vmml::Vector3i::ONE, server::dataType::UINT32,
-		server::volType::SEGMENTATION, vmml::Vector3i(128),0);
+		vmml::Vector3i::ONE, common::DataType::UINT32,
+		common::SEGMENTATION, vmml::Vector3i(128),0);
 
 	std::set<uint32_t> segIds;
 	segIds.insert(342);

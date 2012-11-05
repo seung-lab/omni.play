@@ -4,6 +4,7 @@
 #include "common/common.h"
 #include "volume/volume.h"
 #include "utility/timer.hpp"
+#include "utility/convert.hpp"
 #include "pipeline/mapData.hpp"
 #include "pipeline/sliceTile.hpp"
 #include "pipeline/jpeg.h"
@@ -19,23 +20,25 @@ namespace om {
 namespace handler {
 
 using namespace pipeline;
+using namespace common;
+using namespace utility;
 
 void setTileBounds(server::tile& t,
                    const coords::Data dc,
-                   const common::viewType& view)
+                   const viewType& view)
 {
     coords::Chunk cc = dc.ToChunk();
     int depth = dc.ToTileDepth(view);
     coords::DataBbox bounds = cc.BoundingBox(dc.volume());
 
-    server::vector3d min = common::twist(bounds.getMin().ToGlobal(), view);
-    server::vector3d max = common::twist(bounds.getMax().ToGlobal(), view);
+    server::vector3d min = Convert(twist(bounds.getMin().ToGlobal(), view));
+    server::vector3d max = Convert(twist(bounds.getMax().ToGlobal(), view));
 
     min.z += depth;
     max.z = min.z;
 
-    t.bounds.min = common::twist(min, view);
-    t.bounds.max = common::twist(max, view);
+    t.bounds.min = twist(min, view);
+    t.bounds.max = twist(max, view);
 }
 
 
@@ -43,7 +46,7 @@ void setTileBounds(server::tile& t,
 void get_chan_tile(server::tile& _return,
                    const volume::volume& vol,
                    const coords::Global& point,
-                   const common::viewType view)
+                   const viewType view)
 {
     if(!vol.Bounds().contains(point)) {
         throw argException("Requested Channel Tile outside bounds of volume.");
@@ -52,7 +55,7 @@ void get_chan_tile(server::tile& _return,
     coords::Data dc = point.ToData(&vol.CoordSystem(), vol.MipLevel());
 
     setTileBounds(_return, dc, view);
-    _return.view = common::Convert(view);
+    _return.view = Convert(view);
 
     data_var encoded = vol.Data() >> sliceTile(view, dc)
                                   >> jpeg(128,128)
@@ -65,10 +68,10 @@ void get_chan_tile(server::tile& _return,
 void makeSegTile(server::tile& t,
                  const dataSrcs& src,
                  const coords::Data& dc,
-                 const common::viewType& view,
+                 const viewType& view,
                  uint32_t segId)
 {
-    t.view = common::Convert(view);
+    t.view = Convert(view);
     setTileBounds(t, dc, view);
 
     data_var encoded = src >> sliceTile(view, dc)
@@ -85,22 +88,22 @@ void get_seg_tiles(std::map<std::string, server::tile> & _return,
                    const volume::volume& vol,
                    const int32_t segId,
                    const coords::GlobalBbox& segBbox,
-                   const common::viewType view)
+                   const viewType view)
 {
     coords::GlobalBbox bounds = segBbox;
 
     bounds.intersect(vol.Bounds());
 
-    coords::Global min = common::twist(bounds.getMin(), view);
-    coords::Global max = common::twist(bounds.getMax(), view);
-    Vector3i dims = common::twist(vol.ChunkDims(), view);
-    Vector3i res = common::twist(vol.Resolution(), view);
+    coords::Global min = twist(bounds.getMin(), view);
+    coords::Global max = twist(bounds.getMax(), view);
+    Vector3i dims = twist(vol.ChunkDims(), view);
+    Vector3i res = twist(vol.Resolution(), view);
 
     for(int x = min.x; x <= max.x; x += dims.x * res.x) {
         for(int y = min.y; y <= max.y; y += dims.y * res.y) {
             for(int z = min.z; z <= max.z; z += res.z) // always depth when twisted
             {
-                coords::Global coord = common::twist(coords::Global(x,y,z), view);
+                coords::Global coord = twist(coords::Global(x,y,z), view);
                 coords::Data dc = coord.ToData(&vol.CoordSystem(), vol.MipLevel());
 
                 server::tile t;

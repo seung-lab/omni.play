@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/common.h"
+#include "server_types.h"
 #include "pipeline/mapData.hpp"
 #include "segment/segmentTypes.hpp"
 
@@ -13,7 +14,7 @@ private:
     std::string uri_;
     coords::GlobalBbox bounds_;
     Vector3i resolution_;
-    common::type dataType_; // Replace with omni type?
+    common::DataType dataType_;
     common::objectType volType_;
     Vector3i chunkDims_;
     int32_t mipLevel_;
@@ -28,8 +29,8 @@ public:
     volume(std::string uri,
     	   coords::GlobalBbox bounds,
     	   Vector3i resolution,
-    	   server::dataType::type dataType,
-    	   server::volType::type volType,
+    	   common::DataType dataType,
+    	   common::objectType volType,
     	   Vector3i chunkDims,
     	   int32_t mipLevel_);
 
@@ -45,11 +46,11 @@ public:
         return resolution_;
     }
 
-    inline server::dataType::type DataType() const {
+    inline common::DataType DataType() const {
         return dataType_;
     }
 
-    inline server::volType::type VolumeType() const {
+    inline common::objectType VolumeType() const {
         return volType_;
     }
 

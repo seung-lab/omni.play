@@ -45,6 +45,14 @@ TEST(Coords_VolumeSystem, Extent)
 	ASSERT_EQ(GlobalBbox(Global(0,512,768), Global(1023, 1535, 1535)), vs2.Extent());
 }
 
+TEST(Coords_VolumeSystem, SetBounds)
+{
+	VolumeSystem vs;
+	GlobalBbox bounds(Global(256), Global(1024));
+	vs.SetBounds(bounds);
+	ASSERT_EQ(GlobalBbox(bounds.getMin(), bounds.getMax() - Global::ONE), vs.Extent());
+}
+
 TEST(Coords_VolumeSystem, DimsRoundedToNearestChunk)
 {
 	VolumeSystem vs(Vector3i(1000));

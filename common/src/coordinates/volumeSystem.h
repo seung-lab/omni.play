@@ -16,11 +16,10 @@ protected:
     Matrix4f normToGlobal_;
     Matrix4f globalToNorm_;
 
-    //data properties
     Vector3i dataDimensions_;
+    Vector3i chunkDimensions_;
 
-    int chunkDimension_;
-    int mMipRootLevel;
+    int rootMipLevel_;
 
 public:
     static const int DefaultChunkDim = 128;
@@ -31,20 +30,19 @@ public:
         , globalToData_(Matrix4f::IDENTITY)
         , normToGlobal_(Matrix4f::IDENTITY)
         , globalToNorm_(Matrix4f::IDENTITY)
-        , chunkDimension_(DefaultChunkDim)
-        , mMipRootLevel(0)
+        , chunkDimensions_(Vector3i(chunkDim))
+        , rootMipLevel_(0)
     {
     	SetDataDimensions(dims);
         SetAbsOffset(abs);
         SetResolution(res);
-        SetChunkDimension(chunkDim);
         UpdateRootLevel();
     }
 
     void UpdateRootLevel();
 
     inline int RootMipLevel() const {
-        return mMipRootLevel;
+        return rootMipLevel_;
     }
 
     inline Vector3i MipedDataDimensions(const int level) const
@@ -59,9 +57,9 @@ public:
     inline Vector3i MipLevelDimensionsInMipChunks(int level) const
     {
         const Vector3f data_dims = MipLevelDataDimensions(level);
-        return Vector3i (ceil(data_dims.x / ChunkDimension()),
-                         ceil(data_dims.y / ChunkDimension()),
-                         ceil(data_dims.z / ChunkDimension()));
+        return Vector3i (ceil(data_dims.x / chunkDimensions_.x),
+                         ceil(data_dims.y / chunkDimensions_.y),
+                         ceil(data_dims.z / chunkDimensions_.z));
     }
 
     //data properties
@@ -82,20 +80,18 @@ public:
         normToGlobal_.getInverse(globalToNorm_);
     }
 
-// Chunk dims
-    inline int ChunkDimension() const {
-        return chunkDimension_;
-    }
-
-    inline void SetChunkDimension(const int dim) {
-        chunkDimension_ = dim;
-    }
-
-    inline Vector3i ChunkDimensions() const
+    inline void SetBounds(const GlobalBbox& bounds)
     {
-        return Vector3i(ChunkDimension(),
-                        ChunkDimension(),
-                        ChunkDimension());
+    	SetDataDimensions(bounds.getDimensions());
+    	SetAbsOffset(bounds.getMin());
+    }
+
+    inline void SetChunkDimensions(const Vector3i& dims) {
+        chunkDimensions_ = dims;
+    }
+
+    inline Vector3i ChunkDimensions() const {
+        return chunkDimensions_;
     }
 
 // coordinate frame methods
@@ -150,9 +146,9 @@ public:
     {
         const Vector3i data_dims = MipLevelDataDimensions(level);
 
-        return Vector3i(math::roundUp(data_dims.x, ChunkDimension()),
-                        math::roundUp(data_dims.y, ChunkDimension()),
-                        math::roundUp(data_dims.z, ChunkDimension()));
+        return Vector3i(math::roundUp(data_dims.x, chunkDimensions_.x),
+                        math::roundUp(data_dims.y, chunkDimensions_.y),
+                        math::roundUp(data_dims.z, chunkDimensions_.z));
     }
 
     //mip Chunk methods

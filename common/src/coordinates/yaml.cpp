@@ -54,7 +54,7 @@ void operator>>(const Node& in, VolumeSystem& c)
 
     int chunkDim;
     in["chunkDim"] >> chunkDim;
-    c.SetChunkDimension(chunkDim);
+    c.SetChunkDimensions(Vector3i(chunkDim));
 
     c.UpdateRootLevel();
     Vector3i offset;
