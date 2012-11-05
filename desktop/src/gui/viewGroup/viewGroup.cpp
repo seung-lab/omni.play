@@ -17,11 +17,11 @@ void ViewGroup::AddView3D4View(){
     impl_->AddView3D4View();
 }
 
-void ViewGroup::AddView2Dchannel(const ChannelDataWrapper& chanID, const ViewType viewType){
+void ViewGroup::AddView2Dchannel(const ChannelDataWrapper& chanID, const om::common::ViewType viewType){
     impl_->AddView2Dchannel(chanID, viewType);
 }
 
-void ViewGroup::AddView2Dsegmentation(const SegmentationDataWrapper& sdw, const ViewType viewType){
+void ViewGroup::AddView2Dsegmentation(const SegmentationDataWrapper& sdw, const om::common::ViewType viewType){
     impl_->AddView2Dsegmentation(sdw, viewType);
 }
 

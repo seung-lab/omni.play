@@ -46,7 +46,7 @@ public:
         return "3d_" + viewGroupName();
     }
 
-    QString getViewName(const std::string& volName, const ViewType viewType)
+    QString getViewName(const std::string& volName, const om::common::ViewType viewType)
     {
         return QString::fromStdString(volName)
             + " -- "
@@ -54,7 +54,7 @@ public:
             + " View";
     }
 
-    QString getViewTypeAsStr(const ViewType viewType)
+    QString getViewTypeAsStr(const om::common::ViewType viewType)
     {
         switch(viewType){
         case XY_VIEW:
@@ -68,7 +68,7 @@ public:
         }
     }
 
-    QString makeObjectName(const om::common::ObjectType voltype, const ViewType viewType)
+    QString makeObjectName(const om::common::ObjectType voltype, const om::common::ViewType viewType)
     {
         QString name;
 
@@ -111,7 +111,7 @@ public:
         return "";
     }
 
-    QDockWidget* getDockWidget(const om::common::ObjectType voltype, const ViewType viewType){
+    QDockWidget* getDockWidget(const om::common::ObjectType voltype, const om::common::ViewType viewType){
         return getDockWidget(makeObjectName(voltype, viewType));
     }
 
@@ -128,7 +128,7 @@ public:
         return widgets[0];
     }
 
-    bool doesDockWidgetExist(const om::common::ObjectType voltype, const ViewType viewType){
+    bool doesDockWidgetExist(const om::common::ObjectType voltype, const om::common::ViewType viewType){
         return doesDockWidgetExist(makeObjectName(voltype, viewType));
     }
 
@@ -230,7 +230,7 @@ public:
         return vgw;
     }
 
-    ViewGroupWidgetInfo CreateView2dChannel(const ChannelDataWrapper& cdw, const ViewType viewType)
+    ViewGroupWidgetInfo CreateView2dChannel(const ChannelDataWrapper& cdw, const om::common::ViewType viewType)
     {
         OmChannel& chan = cdw.GetChannel();
 
@@ -248,7 +248,7 @@ public:
         return vgw;
     }
 
-    ViewGroupWidgetInfo CreateView2dSegmentation(const SegmentationDataWrapper& sdw, const ViewType viewType)
+    ViewGroupWidgetInfo CreateView2dSegmentation(const SegmentationDataWrapper& sdw, const om::common::ViewType viewType)
     {
         const QString name = getViewName(sdw.GetName().toStdString(), viewType);
 

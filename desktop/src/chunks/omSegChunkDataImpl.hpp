@@ -43,7 +43,7 @@ public:
         delete ptrToChunkData_;
     }
 
-    PooledTile32Ptr ExtractDataSlice32bit(const ViewType plane, const int depth)
+    PooledTile32Ptr ExtractDataSlice32bit(const om::common::ViewType plane, const int depth)
     {
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();

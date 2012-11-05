@@ -7,7 +7,7 @@ class OmFillTool {
 private:
     const SegmentDataWrapper sdw_;
     const uint32_t newSegID_;
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
     OmSegmentation& vol_;
     const om::coords::GlobalBbox segDataExtent_;
     OmSegments *const segments_;
@@ -15,7 +15,7 @@ private:
     zi::semaphore semaphore_;
 
 public:
-    OmFillTool(const SegmentDataWrapper& sdw, const ViewType viewType)
+    OmFillTool(const SegmentDataWrapper& sdw, const om::common::ViewType viewType)
         : sdw_(sdw)
         , newSegID_(sdw.getID())
         , viewType_(viewType)

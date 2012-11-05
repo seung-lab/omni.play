@@ -7,7 +7,7 @@ private:
     const boost::shared_ptr<OmBrushOppInfo> info_;
     const int brushDia_;
     const int depth_;
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
 
 public:
     OmBrushOppCircle(boost::shared_ptr<OmBrushOppInfo> info)

@@ -21,7 +21,7 @@
 class OmSliceCache {
 private:
     OmSegmentation *const vol_;
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
     const int chunkDim_;
 
     // ignore mip level--always 0
@@ -31,7 +31,7 @@ private:
     std::map<OmSliceKey, PooledTile32Ptr> cache_;
 
 public:
-    OmSliceCache(OmSegmentation* vol, const ViewType viewType)
+    OmSliceCache(OmSegmentation* vol, const om::common::ViewType viewType)
         : vol_(vol)
         , viewType_(viewType)
         , chunkDim_(vol->Coords().ChunkDimension())

@@ -7,7 +7,7 @@ public:
     template <typename T>
     inline static Vector3<T> MakeViewTypeVector3(const T& x, const T& y,
                                                  const T& z,
-                                                 const ViewType viewType)
+                                                 const om::common::ViewType viewType)
     {
         switch(viewType){
         case XY_VIEW:
@@ -23,7 +23,7 @@ public:
 
     template <typename T>
     inline static Vector3<T> MakeViewTypeVector3(const Vector3<T>& vec,
-                                                 const ViewType viewType)
+                                                 const om::common::ViewType viewType)
     {
         switch(viewType){
         case XY_VIEW:
@@ -39,7 +39,7 @@ public:
 
     template <typename T>
     inline static T GetViewTypeDepth(const Vector3<T>& vec,
-                                     const ViewType viewType)
+                                     const om::common::ViewType viewType)
     {
         switch(viewType){
         case XY_VIEW:
@@ -55,7 +55,7 @@ public:
 
     template <typename T>
     inline static void SetViewTypeDepth(Vector3<T>& vec, const T& val,
-                                        const ViewType viewType)
+                                        const om::common::ViewType viewType)
     {
         switch(viewType){
         case XY_VIEW:
@@ -75,7 +75,7 @@ public:
     template <typename T>
     inline static Vector3<T> ScaleViewType(const Vector2<T>& vec,
                                            const Vector3<T>& scale,
-                                           const ViewType viewType)
+                                           const om::common::ViewType viewType)
     {
         return ScaleViewType(vec.x, vec.y, scale, viewType);
     }
@@ -83,7 +83,7 @@ public:
     template <typename T>
     inline static Vector3<T> ScaleViewType(const T& x, const T& y,
                                            const Vector3<T>& scale,
-                                           const ViewType viewType)
+                                           const om::common::ViewType viewType)
     {
         switch(viewType){
         case XY_VIEW:
@@ -105,7 +105,7 @@ public:
 
     template <typename T>
     inline static Vector2<T> Get2PtsInPlane(const Vector3<T>& vec,
-                                            const ViewType viewType)
+                                            const om::common::ViewType viewType)
     {
         switch(viewType) {
         case XY_VIEW:
@@ -122,7 +122,7 @@ public:
 private:
     template <typename T>
     inline static void incLeftRightPanDirection(Vector3<T>& vec, const T val,
-                                                const ViewType viewType)
+                                                const om::common::ViewType viewType)
     {
         switch(viewType) {
         case XY_VIEW:
@@ -141,7 +141,7 @@ private:
 
     template <typename T>
     inline static void incUpDownPanDirection(Vector3<T>& vec, const T val,
-                                             const ViewType viewType)
+                                             const om::common::ViewType viewType)
     {
         switch(viewType) {
         case XY_VIEW:
@@ -161,7 +161,7 @@ private:
 public:
     template <typename T>
     inline static void ShiftPanDirection(Vector3<T>& vec, const T val,
-                                         const om::common::Direction dir, const ViewType viewType)
+                                         const om::common::Direction dir, const om::common::ViewType viewType)
     {
         switch(dir){
         case om::common::LEFT:
@@ -183,7 +183,7 @@ public:
 
     template <typename T, typename ColT>
     inline static ColT IncVectorWith2Pts(const ColT& vec, const T x, const T y,
-                                               const ViewType viewType)
+                                               const om::common::ViewType viewType)
     {
         switch(viewType){
         case XY_VIEW:

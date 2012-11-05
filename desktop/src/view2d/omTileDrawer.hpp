@@ -14,7 +14,7 @@
 
 class OmTileDrawer{
 public:
-    OmTileDrawer(OmView2dState* state, const ViewType viewType)
+    OmTileDrawer(OmView2dState* state, const om::common::ViewType viewType)
         : state_(state)
         , viewType_(viewType)
         , blockingRedraw_(false)
@@ -71,7 +71,7 @@ public:
 
 private:
     OmView2dState* state_;
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
 
     bool blockingRedraw_;
 

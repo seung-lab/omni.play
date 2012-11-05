@@ -14,7 +14,7 @@ OmTileCoord::OmTileCoord()
                      om::common::SCC_NUMBER_OF_ENUMS)
 {}
 
-OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, ViewType view, uint8_t depth,
+OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, om::common::ViewType view, uint8_t depth,
                          OmMipVolume* vol, uint32_t freshness,
                          OmViewGroupState* vgs, om::common::SegmentColorCacheType segColorType)
     : OmTileCoordKey(cc,
@@ -26,7 +26,7 @@ OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, ViewType view, uint8_t dep
                      segColorType)
 {}
 
-OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, ViewType view, uint8_t depth,
+OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, om::common::ViewType view, uint8_t depth,
                          OmMipVolume* vol, uint32_t freshness,
                          OmViewGroupState* vgs, om::common::ObjectType objType)
     : OmTileCoordKey(cc,

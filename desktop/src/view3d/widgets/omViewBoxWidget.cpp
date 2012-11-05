@@ -46,7 +46,7 @@ void OmViewBoxWidget::Draw()
 }
 
 void OmViewBoxWidget::draw2dBoxWrapper(OmViewGroupView2dState* view2dState,
-                                       const ViewType viewType)
+                                       const om::common::ViewType viewType)
 {
 //    drawChannelData(viewType, OmStateManager::GetViewDrawable(viewType));
     draw2dBox(viewType,
@@ -104,7 +104,7 @@ void OmViewBoxWidget::drawLines(Vector3i depth)
 /**
  *  Draw a given orthogonal slice of a bbox given the plane and offset of plane
  */
-void OmViewBoxWidget::draw2dBox(const ViewType plane,
+void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
                                 const Vector2f& min,
                                 const Vector2f& max,
                                 const float depth)
@@ -264,7 +264,7 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 // }
 
 // bool OmViewBoxWidget::getTextureMax(Vector3f coord,
-//                                     ViewType plane,
+//                                     om::common::ViewType plane,
 //                                     Vector2f & dataMax,
 //                                     Vector2f & spaceMax)
 // {

@@ -9,7 +9,7 @@
 #include <boost/tuple/tuple_comparison.hpp>
 
 // mip, x, y, z, depth, plane
-typedef boost::tuple<int, int, int, int, int, ViewType> OmVolSliceKey_t;
+typedef boost::tuple<int, int, int, int, int, om::common::ViewType> OmVolSliceKey_t;
 
 struct OmVolSliceKey : public OmVolSliceKey_t {
     OmVolSliceKey()
@@ -18,7 +18,7 @@ struct OmVolSliceKey : public OmVolSliceKey_t {
 
     OmVolSliceKey(const om::coords::Chunk& chunkCoord,
                   const int sliceDepth,
-                  const ViewType viewType)
+                  const om::common::ViewType viewType)
         : OmVolSliceKey_t(chunkCoord.Level,
                           chunkCoord.Coordinate.x,
                           chunkCoord.Coordinate.y,
@@ -50,14 +50,14 @@ public:
     }
 
     PooledTile32Ptr Get(const om::coords::Chunk& chunkCoord, const int sliceDepth,
-                        const ViewType viewType)
+                        const om::common::ViewType viewType)
     {
         const OmVolSliceKey key(chunkCoord, sliceDepth, viewType);
         return cache_->Get(key);
     }
 
     void Set(const om::coords::Chunk& chunkCoord, const int sliceDepth,
-             const ViewType viewType, PooledTile32Ptr tile)
+             const om::common::ViewType viewType, PooledTile32Ptr tile)
     {
         const OmVolSliceKey key(chunkCoord, sliceDepth, viewType);
         cache_->Set(key, tile);

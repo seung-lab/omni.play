@@ -15,7 +15,7 @@ public:
         SegmentationDataWrapper sdw(state->GetSegmentationID());
         OmSegmentation* segmentation = sdw.GetSegmentationPtr();
 
-        const ViewType viewType = state->getViewType();
+        const om::common::ViewType viewType = state->getViewType();
         const int brushSize = state->getBrushSize()->Diameter();
         const int depth = state->getViewTypeDepth(coord);
 

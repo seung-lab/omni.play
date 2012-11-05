@@ -12,14 +12,14 @@ typedef std::deque<om::coords::Global> pt3d_list_t;
 struct OmBrushOppInfo
 {
     OmSegmentation *const segmentation;
-    const ViewType viewType;
+    const om::common::ViewType viewType;
     const int brushDia;
     const int depth;
     const std::vector<om::point2di>& ptsInCircle;
     const om::common::AddOrSubtract addOrSubract;
 
     OmBrushOppInfo(OmSegmentation* segmentation,
-                   const ViewType viewType,
+                   const om::common::ViewType viewType,
                    const int brushDia,
                    const int depth,
                    const std::vector<om::point2di>& ptsInCircle,

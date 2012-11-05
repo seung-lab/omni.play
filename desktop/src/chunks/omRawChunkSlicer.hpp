@@ -21,7 +21,7 @@ public:
         , chunkPtr_(chunkPtr)
     {}
 
-    OmPooledTile<T>* GetCopyAsPooledTile(const ViewType viewType, const int offsetNumTiles)
+    OmPooledTile<T>* GetCopyAsPooledTile(const om::common::ViewType viewType, const int offsetNumTiles)
     {
         OmPooledTile<T>* pooledTile = new OmPooledTile<T>();
 
@@ -30,7 +30,7 @@ public:
         return pooledTile;
     }
 
-    boost::shared_ptr<T> GetCopyOfTile(const ViewType viewType, const int offsetNumTiles)
+    boost::shared_ptr<T> GetCopyOfTile(const om::common::ViewType viewType, const int offsetNumTiles)
     {
         boost::shared_ptr<T> tilePtr = OmSmartPtr<T>::MallocNumElements(elementsPerTile_,
                                                                      om::common::DONT_ZERO_FILL);
@@ -40,7 +40,7 @@ public:
     }
 
 private:
-    void sliceTile(const ViewType viewType, const int offsetNumTiles, T* tile)
+    void sliceTile(const om::common::ViewType viewType, const int offsetNumTiles, T* tile)
     {
         switch(viewType){
 

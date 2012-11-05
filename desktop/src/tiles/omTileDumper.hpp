@@ -19,6 +19,6 @@ private:
 
     void saveTile(QDataStream&, const int,
                   const int, const int, const int,
-                  const ViewType);
+                  const om::common::ViewType);
 };
 

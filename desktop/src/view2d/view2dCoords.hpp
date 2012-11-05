@@ -16,7 +16,7 @@ class view2dCoords
 private:
     OmViewGroupState * vgs_;
     OmZoomLevel * zoomLevel_;
-    ViewType viewType_;
+    om::common::ViewType viewType_;
     Vector4i totalViewport_; //lower left x, lower left y, width, height
 
     Matrix4f screenToGlobalMat_;
@@ -36,7 +36,7 @@ private:
 
 public:
     view2dCoords(OmViewGroupState* vgs,
-                 ViewType viewType)
+                 om::common::ViewType viewType)
         : vgs_(vgs)
         , zoomLevel_(vgs->ZoomLevel())
         , viewType_(viewType)

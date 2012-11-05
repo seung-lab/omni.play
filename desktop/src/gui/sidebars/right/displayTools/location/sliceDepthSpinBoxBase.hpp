@@ -34,7 +34,7 @@ public:
 private:
     OmViewGroupState *const vgs_;
 
-    virtual ViewType viewType() const = 0;
+    virtual om::common::ViewType viewType() const = 0;
 
     OmMipVolume* getVol()
     {

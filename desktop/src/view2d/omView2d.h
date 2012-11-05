@@ -16,7 +16,7 @@ class OmView2d : public OmView2dCore {
     Q_OBJECT
 
 public:
-    OmView2d(const ViewType, QWidget*, OmViewGroupState*, OmMipVolume*,
+    OmView2d(const om::common::ViewType, QWidget*, OmViewGroupState*, OmMipVolume*,
              const std::string& name);
     ~OmView2d();
 

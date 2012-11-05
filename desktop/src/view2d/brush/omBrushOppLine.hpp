@@ -8,7 +8,7 @@ private:
     const boost::shared_ptr<OmBrushOppInfo> info_;
     const int brushDia_;
     const int depth_;
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
 
     std::vector<int> ptsInLineRadius1x_;
     std::vector<int> ptsInLineRadius1y_;

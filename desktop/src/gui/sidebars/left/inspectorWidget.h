@@ -35,8 +35,8 @@ public:
     void rebuildSegmentLists(const om::common::ID segmentationID, const om::common::SegID segID);
 
 Q_SIGNALS:
-    void triggerChannelView(om::common::ID chan_id, ViewType vtype);
-    void triggerSegmentationView(om::common::ID primary_id, ViewType vtype);
+    void triggerChannelView(om::common::ID chan_id, om::common::ViewType vtype);
+    void triggerSegmentationView(om::common::ID primary_id, om::common::ViewType vtype);
 
 protected:
     static const int ENABLED_COL = 0;
@@ -59,8 +59,8 @@ private Q_SLOTS:
 
     void doDataSrcContextMenuVolAdd(QAction* act);
 
-    void openChannelView(om::common::ID chan_id, ViewType vtype);
-    void openSegmentationView(om::common::ID primary_id, ViewType vtype);
+    void openChannelView(om::common::ID chan_id, om::common::ViewType vtype);
+    void openSegmentationView(om::common::ID primary_id, om::common::ViewType vtype);
 
 private:
     MainWindow* const mainWindow_;
@@ -115,7 +115,7 @@ private:
 
     InspectorProperties* inspectorProperties_;
 
-    ViewType getViewType(QAction* act);
+    om::common::ViewType getViewType(QAction* act);
 
     void updateSegmentListBox( SegmentationDataWrapper sdw );
 

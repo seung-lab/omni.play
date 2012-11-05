@@ -41,11 +41,11 @@ InspectorWidget::InspectorWidget(QWidget* parent, MainWindow* mainWindow, OmView
 
     QMetaObject::connectSlotsByName(this);
 
-    om::connect(this, SIGNAL(triggerChannelView(om::common::ID, ViewType)),
-                this, SLOT(openChannelView(om::common::ID, ViewType)));
+    om::connect(this, SIGNAL(triggerChannelView(om::common::ID, om::common::ViewType)),
+                this, SLOT(openChannelView(om::common::ID, om::common::ViewType)));
 
-    om::connect(this, SIGNAL(triggerSegmentationView(om::common::ID, ViewType)),
-                this, SLOT(openSegmentationView(om::common::ID, ViewType)));
+    om::connect(this, SIGNAL(triggerSegmentationView(om::common::ID, om::common::ViewType)),
+                this, SLOT(openSegmentationView(om::common::ID, om::common::ViewType)));
 
     OmAppState::SetInspector(this);
 }
@@ -56,13 +56,13 @@ InspectorWidget::~InspectorWidget()
     OmAppState::SetInspector(NULL);
 }
 
-void InspectorWidget::openChannelView(om::common::ID chanID, ViewType vtype)
+void InspectorWidget::openChannelView(om::common::ID chanID, om::common::ViewType vtype)
 {
     const ChannelDataWrapper cdw(chanID);
     vgs_->GetViewGroup()->AddView2Dchannel(cdw, vtype);
 }
 
-void InspectorWidget::openSegmentationView(om::common::ID segmentationID, ViewType vtype)
+void InspectorWidget::openSegmentationView(om::common::ID segmentationID, om::common::ViewType vtype)
 {
     const SegmentationDataWrapper sdw(segmentationID);
     vgs_->GetViewGroup()->AddView2Dsegmentation(sdw, vtype);

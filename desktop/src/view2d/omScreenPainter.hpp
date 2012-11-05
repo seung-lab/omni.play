@@ -72,7 +72,7 @@ private:
     OmView2dCore *const v2d_;
     OmView2dState *const state_;
 
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
     const bool shouldDisplayInfo_;
 
     // current state

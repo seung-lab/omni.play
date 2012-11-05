@@ -15,8 +15,8 @@ public:
     ViewGroup(MainWindow*, OmViewGroupState*);
     ~ViewGroup();
 
-    void AddView2Dchannel(const ChannelDataWrapper& cdw, const ViewType vtype);
-    void AddView2Dsegmentation(const SegmentationDataWrapper& sdw, const ViewType vtype);
+    void AddView2Dchannel(const ChannelDataWrapper& cdw, const om::common::ViewType vtype);
+    void AddView2Dsegmentation(const SegmentationDataWrapper& sdw, const om::common::ViewType vtype);
 
     void AddView3D();
     void AddView3D4View();

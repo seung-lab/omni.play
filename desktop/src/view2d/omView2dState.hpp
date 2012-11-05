@@ -37,7 +37,7 @@ private:
     OmViewGroupState *const vgs_;
     OmZoomLevel *const zoomLevel_;
 
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
     const std::string name_;
 
     bool scribbling_;
@@ -60,7 +60,7 @@ private:
 public:
     OmView2dState(OmMipVolume* vol,
                   OmViewGroupState* vgs,
-                  const ViewType viewType,
+                  const om::common::ViewType viewType,
                   const QSize& size,
                   const std::string name)
         : vol_(vol)
@@ -202,7 +202,7 @@ public:
     }
 
     // viewtype
-    inline ViewType getViewType() const {
+    inline om::common::ViewType getViewType() const {
         return viewType_;
     }
 

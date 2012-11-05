@@ -5,12 +5,12 @@
 class OmChunksAndPts {
 private:
     OmSegmentation *const vol_;
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
 
     std::set<om::coords::Data> pts_;
 
 public:
-    OmChunksAndPts(OmSegmentation* vol, const ViewType viewType)
+    OmChunksAndPts(OmSegmentation* vol, const om::common::ViewType viewType)
         : vol_(vol)
         , viewType_(viewType)
     {}

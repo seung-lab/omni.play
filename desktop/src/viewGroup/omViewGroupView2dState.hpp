@@ -20,7 +20,7 @@ private:
     ViewPlanInfo xz_;
     ViewPlanInfo yz_;
 
-    inline ViewPlanInfo& getPlane(const ViewType plane)
+    inline ViewPlanInfo& getPlane(const om::common::ViewType plane)
     {
         switch (plane) {
         case XY_VIEW:
@@ -34,7 +34,7 @@ private:
         }
     }
 
-    inline const ViewPlanInfo& getPlane(const ViewType plane) const
+    inline const ViewPlanInfo& getPlane(const om::common::ViewType plane) const
     {
         switch (plane) {
         case XY_VIEW:
@@ -75,7 +75,7 @@ public:
         return om::coords::Global(yz_.depth, xz_.depth, xy_.depth);
     }
 
-    inline float GetScaledSliceDepth(const ViewType plane) const
+    inline float GetScaledSliceDepth(const om::common::ViewType plane) const
     {
         zi::guard g(lock_);
         return getPlane(plane).depth;
@@ -92,7 +92,7 @@ public:
         OmEvents::ViewBoxChanged();
     }
 
-    inline void SetScaledSliceDepth(const ViewType plane, const float depth)
+    inline void SetScaledSliceDepth(const om::common::ViewType plane, const float depth)
     {
         {
             zi::guard g(lock_);
@@ -102,7 +102,7 @@ public:
     }
 
     // minimum coordiante of view slice
-    inline void SetViewSliceMin(const ViewType plane, const Vector2f vec)
+    inline void SetViewSliceMin(const om::common::ViewType plane, const Vector2f vec)
     {
         zi::guard g(lock_);
         getPlane(plane).min = vec;
@@ -118,13 +118,13 @@ public:
     }
 
 // maximum coordiante of view slice
-    inline void SetViewSliceMax(const ViewType plane, const Vector2f vec)
+    inline void SetViewSliceMax(const om::common::ViewType plane, const Vector2f vec)
     {
         zi::guard g(lock_);
         getPlane(plane).max = vec;
     }
 
-    inline Vector2f GetViewSliceMax(const ViewType plane) const
+    inline Vector2f GetViewSliceMax(const om::common::ViewType plane) const
     {
         const Vector2f& pts = getPlane(plane).max;
         {

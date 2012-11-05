@@ -12,9 +12,9 @@ private:
     OmViewGroupState *const vgs_;
     ViewGroupUtils *const utils_;
 
-    static const ViewType upperLeft_ = XY_VIEW;
-    static const ViewType upperRight_ = ZY_VIEW;
-    static const ViewType lowerLeft_ = XZ_VIEW;
+    static const om::common::ViewType upperLeft_ = XY_VIEW;
+    static const om::common::ViewType upperRight_ = ZY_VIEW;
+    static const om::common::ViewType lowerLeft_ = XZ_VIEW;
 
 public:
     ViewGroupMainWindowUtils(MainWindow* mainWindow, OmViewGroupState* vgs, ViewGroupUtils* utils)
@@ -23,7 +23,7 @@ public:
         , utils_(utils)
     {}
 
-    void InsertDockIntoGroup2View(ViewGroupWidgetInfo& vgw, const ViewType viewType)
+    void InsertDockIntoGroup2View(ViewGroupWidgetInfo& vgw, const om::common::ViewType viewType)
     {
         if(0 == getNumDockWidgets())
         {
@@ -205,15 +205,15 @@ private:
     }
 
 public:
-    ViewType UpperLeft() const {
+    om::common::ViewType UpperLeft() const {
         return upperLeft_;
     }
 
-    ViewType UpperRight() const {
+    om::common::ViewType UpperRight() const {
         return upperRight_;
     }
 
-    ViewType LowerLeft() const {
+    om::common::ViewType LowerLeft() const {
         return lowerLeft_;
     }
 };

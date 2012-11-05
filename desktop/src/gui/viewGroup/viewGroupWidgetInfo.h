@@ -18,7 +18,7 @@ public:
 
     ViewGroupWidgetInfo(const QString& in_name,
                         const WIDGET_TYPE in_widgetType,
-                        const ViewType in_viewType)
+                        const om::common::ViewType in_viewType)
         : name(in_name)
         , widgetType(in_widgetType)
         , viewType(in_viewType)
@@ -29,7 +29,7 @@ public:
     const QString name;
     const WIDGET_TYPE widgetType;
 
-    ViewType viewType;
+    om::common::ViewType viewType;
 
     Qt::Orientation Dir() const {
         return dir_;

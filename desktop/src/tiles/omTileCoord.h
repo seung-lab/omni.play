@@ -7,7 +7,7 @@
 class OmMipVolume;
 class OmViewGroupState;
 
-typedef boost::tuple<om::coords::Chunk, ViewType, uint8_t,
+typedef boost::tuple<om::coords::Chunk, om::common::ViewType, uint8_t,
                      OmMipVolume*, uint32_t, OmViewGroupState*,
                      om::common::SegmentColorCacheType> OmTileCoordKey;
 
@@ -15,18 +15,18 @@ class OmTileCoord : public OmTileCoordKey {
 public:
     OmTileCoord();
 
-    OmTileCoord(const om::coords::Chunk&, ViewType, uint8_t,
+    OmTileCoord(const om::coords::Chunk&, om::common::ViewType, uint8_t,
                 OmMipVolume*, uint32_t,
                 OmViewGroupState*, om::common::SegmentColorCacheType);
 
-    OmTileCoord(const om::coords::Chunk&, ViewType, uint8_t,
+    OmTileCoord(const om::coords::Chunk&, om::common::ViewType, uint8_t,
                 OmMipVolume*, uint32_t,
                 OmViewGroupState*, om::common::ObjectType);
 
     inline const om::coords::Chunk& getCoord() const {
         return this->get<0>();
     }
-    inline ViewType getViewType() const {
+    inline om::common::ViewType getViewType() const {
         return this->get<1>();
     }
     inline uint8_t getDepth() const {
