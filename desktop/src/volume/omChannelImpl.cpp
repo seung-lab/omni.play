@@ -91,7 +91,7 @@ int OmChannelImpl::GetBytesPerSlice() const {
     return GetBytesPerVoxel()*128*128;
 }
 
-void OmChannelImpl::SetVolDataType(const OmVolDataType type)
+void OmChannelImpl::SetVolDataType(const om::common::DataType type)
 {
     mVolDataType = type;
     volData_->SetDataType(this);

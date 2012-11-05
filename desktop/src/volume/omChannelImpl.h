@@ -56,7 +56,7 @@ public:
         return filterManager_;
     }
 
-    void SetVolDataType(const OmVolDataType);
+    void SetVolDataType(const om::common::DataType);
 
     OmChunk* GetChunk(const om::coords::Chunk& coord);
 

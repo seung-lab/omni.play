@@ -67,19 +67,19 @@ protected:
         }
     }
 
-    OmVolDataType determineDataType(const int depth)
+    om::common::DataType determineDataType(const int depth)
     {
         switch(depth){
         case 8:
-            return OmVolDataType::UINT8;
+            return om::common::DataType::UINT8;
         case 32:
-            return OmVolDataType::UINT32;
+            return om::common::DataType::UINT32;
         default:
             throw IoException("don't know how to import image with bpp of", depth);
         }
     }
 
-    void allocateData(const OmVolDataType type){
+    void allocateData(const om::common::DataType type){
         volFiles_ = OmVolumeAllocater::AllocateData(vol_, type);
     }
 };

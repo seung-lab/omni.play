@@ -40,7 +40,7 @@ bool OmHdf5Impl::dataset_exists(const OmDataPath& path)
 void OmHdf5Impl::allocateChunkedDataset(const OmDataPath& path,
 					const Vector3i& dataDims,
 					const Vector3i& chunkDims,
-					const OmVolDataType type)
+					const om::common::DataType type)
 {
 	hdf_->setPath(path);
 	hdf_->dataset_delete_create_tree();
@@ -75,7 +75,7 @@ Vector3i OmHdf5Impl::getChunkedDatasetDims(const OmDataPath& path,
 }
 
 OmDataWrapperPtr OmHdf5Impl::readChunk(const OmDataPath& path,
-									   const om::dataBbox& dataExtent,
+									   const om::coords::DataBbox& dataExtent,
 									   const om::common::AffinityGraph aff)
 {
 	hdf_->setPath(path);
@@ -83,7 +83,7 @@ OmDataWrapperPtr OmHdf5Impl::readChunk(const OmDataPath& path,
 }
 
 void OmHdf5Impl::writeChunk(const OmDataPath& path,
-							om::dataBbox dataExtent,
+							om::coords::DataBbox dataExtent,
 							OmDataWrapperPtr data)
 {
 	hdf_->setPath(path);

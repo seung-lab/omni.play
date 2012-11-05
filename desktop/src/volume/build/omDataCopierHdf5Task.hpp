@@ -77,8 +77,8 @@ public:
 private:
     template <typename T>
     OmDataWrapperPtr doResizePartialChunk(OmDataWrapperPtr data,
-                                          const om::dataBbox& chunkExtent,
-                                          const om::dataBbox& dataExtent)
+                                          const om::coords::DataBbox& chunkExtent,
+                                          const om::coords::DataBbox& dataExtent)
     {
         resizedChunk_ = true;
 
@@ -99,21 +99,21 @@ private:
     }
 
     OmDataWrapperPtr resizePartialChunk(OmDataWrapperPtr data,
-                                        const om::dataBbox& chunkExtent,
-                                        const om::dataBbox& dataExtent)
+                                        const om::coords::DataBbox& chunkExtent,
+                                        const om::coords::DataBbox& dataExtent)
     {
         switch(data->getVolDataType().index()){
-        case OmVolDataType::INT8:
+        case om::common::DataType::INT8:
             return doResizePartialChunk<int8_t>(data, chunkExtent, dataExtent);
-        case OmVolDataType::UINT8:
+        case om::common::DataType::UINT8:
             return doResizePartialChunk<uint8_t>(data, chunkExtent, dataExtent);
-        case OmVolDataType::INT32:
+        case om::common::DataType::INT32:
             return doResizePartialChunk<int32_t>(data, chunkExtent, dataExtent);
-        case OmVolDataType::UINT32:
+        case om::common::DataType::UINT32:
             return doResizePartialChunk<uint32_t>(data, chunkExtent, dataExtent);
-        case OmVolDataType::FLOAT:
+        case om::common::DataType::FLOAT:
             return doResizePartialChunk<float>(data, chunkExtent, dataExtent);
-        case OmVolDataType::UNKNOWN:
+        case om::common::DataType::UNKNOWN:
         default:
             throw IoException("unknown data type");
         }
@@ -138,9 +138,9 @@ private:
     OmDataWrapperPtr getChunkData()
     {
         // get chunk data bbox
-        const om::dataBbox& chunkExtent = chunk_->Mipping().GetExtent();
+        const om::coords::DataBbox& chunkExtent = chunk_->Mipping().GetExtent();
 
-        const om::dataBbox volExtent(om::coords::Data(Vector3i::ZERO, vol_, chunk_->GetLevel()),
+        const om::coords::DataBbox volExtent(om::coords::Data(Vector3i::ZERO, vol_, chunk_->GetLevel()),
                                      om::coords::Data(volSize_, vol_, chunk_->GetLevel()));
 
         //if data extent contains given extent, read full chunk
@@ -150,7 +150,7 @@ private:
 
         // else, read what we can, and resize
 
-        om::dataBbox intersect_extent = chunkExtent;
+        om::coords::DataBbox intersect_extent = chunkExtent;
         intersect_extent.intersect(volExtent);
 
         if(intersect_extent.isEmpty()) {

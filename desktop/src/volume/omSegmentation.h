@@ -79,7 +79,7 @@ public:
 
     void UpdateVoxelBoundingData();
 
-    void SetVolDataType(const OmVolDataType);
+    void SetVolDataType(const om::common::DataType);
 
     void BuildBlankVolume(const Vector3i & dims);
 

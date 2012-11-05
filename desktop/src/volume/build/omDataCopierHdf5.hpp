@@ -84,7 +84,7 @@ private:
         printf("\nHDF5 data copy done in %f secs\n", timer.s_elapsed());
     }
 
-    void allocateData(const OmVolDataType type)
+    void allocateData(const om::common::DataType type)
     {
         std::vector<boost::shared_ptr<QFile> > volFiles =
             OmVolumeAllocater::AllocateData(vol_, type);
@@ -92,7 +92,7 @@ private:
         mip0fnp_ = QFileInfo(*volFiles[0]).absoluteFilePath();
     }
 
-    OmVolDataType determineDataType()
+    om::common::DataType determineDataType()
     {
         OmDataWrapperPtr data =	hdf5reader_->GetChunkDataType(path_);
         return data->getVolDataType();

@@ -7,12 +7,12 @@
 #define OmDataWrapperRaw(c) (OmDataWrapper<int8_t>::produceNoFree(c))
 #define OmDataWrapperInvalid() (OmDataWrapper<int8_t>::produceNull())
 
-template <class T> struct OmVolDataTypeImpl;
-template <> struct OmVolDataTypeImpl<uint32_t>{ static OmVolDataType getType() { return OmVolDataType::UINT32;}};
-template <> struct OmVolDataTypeImpl<int32_t> { static OmVolDataType getType() { return OmVolDataType::INT32; }};
-template <> struct OmVolDataTypeImpl<float>   { static OmVolDataType getType() { return OmVolDataType::FLOAT; }};
-template <> struct OmVolDataTypeImpl<int8_t>  { static OmVolDataType getType() { return OmVolDataType::INT8;  }};
-template <> struct OmVolDataTypeImpl<uint8_t> { static OmVolDataType getType() { return OmVolDataType::UINT8; }};
+template <class T> struct DataTypeImpl;
+template <> struct DataTypeImpl<uint32_t>{ static om::common::DataType getType() { return om::common::DataType::UINT32;}};
+template <> struct DataTypeImpl<int32_t> { static om::common::DataType getType() { return om::common::DataType::INT32; }};
+template <> struct DataTypeImpl<float>   { static om::common::DataType getType() { return om::common::DataType::FLOAT; }};
+template <> struct DataTypeImpl<int8_t>  { static om::common::DataType getType() { return om::common::DataType::INT8;  }};
+template <> struct DataTypeImpl<uint8_t> { static om::common::DataType getType() { return om::common::DataType::UINT8; }};
 
 namespace om {
 enum OmDataAllocType {
@@ -56,7 +56,7 @@ public:
     virtual ptr_type newWrapper(void *, const om::OmDataAllocType) = 0;
 
     virtual std::string getTypeAsString() = 0;
-    virtual OmVolDataType getVolDataType() = 0;
+    virtual om::common::DataType getVolDataType() = 0;
     virtual int getHdf5FileType() = 0;
     virtual int getHdf5MemoryType() = 0;
 
@@ -137,8 +137,8 @@ public:
         return QString::fromStdString(getTypeAsString());
     }
 
-    OmVolDataType getVolDataType(){
-        return OmVolDataTypeImpl<T>::getType();
+    om::common::DataType getVolDataType(){
+        return om::common::DataTypeImpl<T>::getType();
     }
 
     int getHdf5FileType(){

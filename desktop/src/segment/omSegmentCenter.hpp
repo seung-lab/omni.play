@@ -9,10 +9,10 @@
 class OmSegmentCenter {
 private:
 
-    boost::optional<om::dataBbox>
+    boost::optional<om::coords::DataBbox>
     static computeSelectedSegmentBoundingBox(const SegmentationDataWrapper& sdw)
     {
-        om::dataBbox box(sdw.GetSegmentationPtr(), 0);
+        om::coords::DataBbox box(sdw.GetSegmentationPtr(), 0);
 
         OmSegmentIterator iter(sdw.Segments());
         iter.iterOverSelectedIDs();
@@ -22,7 +22,7 @@ private:
         OmSegment* seg = iter.getNextSegment();
         for(int i = 0; i < max && NULL != seg; ++i)
         {
-            const om::dataBbox segBox = seg->BoundingBox();
+            const om::coords::DataBbox segBox = seg->BoundingBox();
             if(segBox.isEmpty()){
                 continue;
             }
@@ -33,16 +33,16 @@ private:
         }
 
         if(box.isEmpty()){
-            return boost::optional<om::dataBbox>();
+            return boost::optional<om::coords::DataBbox>();
         }
 
-        return boost::optional<om::dataBbox>(box);
+        return boost::optional<om::coords::DataBbox>(box);
     }
 
     boost::optional<om::coords::Data>
     static findCenterOfSelectedSegments(const SegmentationDataWrapper& sdw)
     {
-        boost::optional<om::dataBbox> box = computeSelectedSegmentBoundingBox(sdw);
+        boost::optional<om::coords::DataBbox> box = computeSelectedSegmentBoundingBox(sdw);
 
         if(!box){
             return boost::optional<om::coords::Data>();
@@ -60,7 +60,7 @@ private:
         }
 
         OmSegment* seg = sdw.GetSegment();
-        const om::dataBbox& box = seg->BoundingBox();
+        const om::coords::DataBbox& box = seg->BoundingBox();
         if(box.isEmpty()){
             return boost::optional<om::coords::Data>();
         }
@@ -95,7 +95,7 @@ public:
         {
             SegmentationDataWrapper sdw(*iter);
 
-            const boost::optional<om::dataBbox> b =
+            const boost::optional<om::coords::DataBbox> b =
                 computeSelectedSegmentBoundingBox(sdw);
 
             if(b){

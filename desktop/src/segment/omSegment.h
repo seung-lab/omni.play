@@ -106,7 +106,7 @@ public:
         threshold_ = thres;
     }
 
-    const om::dataBbox BoundingBox() const;
+    const om::coords::DataBbox BoundingBox() const;
 
     inline void ClearBoundingBox()
     {
@@ -114,7 +114,7 @@ public:
         data_->bounds.set(Vector3i::ZERO, Vector3i::ZERO);
     }
 
-    inline void AddToBoundingBox(const om::dataBbox& box)
+    inline void AddToBoundingBox(const om::coords::DataBbox& box)
     {
         zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
         data_->bounds.merge(box);

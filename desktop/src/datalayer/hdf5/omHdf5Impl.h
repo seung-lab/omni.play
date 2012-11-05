@@ -23,7 +23,7 @@ class OmHdf5Impl
 	void allocateChunkedDataset(const OmDataPath&,
 				    const Vector3i& ,
 				    const Vector3i&,
-				    const OmVolDataType);
+				    const om::common::DataType);
 
 	OmDataWrapperPtr readDataset(const OmDataPath&, int* = NULL);
 	void allocateDataset(const OmDataPath&,
@@ -34,10 +34,10 @@ class OmHdf5Impl
 					  const OmDataWrapperPtr data);
 
 	OmDataWrapperPtr readChunk(const OmDataPath& path,
-							   const om::dataBbox& dataExtent,
+							   const om::coords::DataBbox& dataExtent,
 							   const om::common::AffinityGraph aff);
 	void writeChunk(const OmDataPath& path,
-					om::dataBbox dataExtent,
+					om::coords::DataBbox dataExtent,
 					OmDataWrapperPtr data);
 	Vector3i getDatasetDims(const OmDataPath& path );
 	OmDataWrapperPtr GetChunkDataType(const OmDataPath& path);

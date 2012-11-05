@@ -26,7 +26,7 @@ public:
     inline void processVoxel(const om::common::SegID val, const Vector3i& voxelPos)
     {
         getOrAddSegment(val);
-        getBbox(val).get().merge(om::dataBbox(minVertexOfChunk_ + voxelPos,
+        getBbox(val).get().merge(om::coords::DataBbox(minVertexOfChunk_ + voxelPos,
                                         minVertexOfChunk_ + voxelPos));
     }
 
@@ -36,7 +36,7 @@ private:
     OmSegments *const segments_;
 
     boost::unordered_map<om::common::SegID, OmSegment*> cacheSegments_;
-    typedef boost::unordered_map<om::common::SegID, om::dataBbox> bbox_map;
+    typedef boost::unordered_map<om::common::SegID, om::coords::DataBbox> bbox_map;
     bbox_map bounds_;
 
     OmSegment* getOrAddSegment(const om::common::SegID val)
@@ -47,7 +47,7 @@ private:
         return cacheSegments_[val];
     }
     
-    boost::optional<om::dataBbox&> getBbox(om::common::SegID id) 
+    boost::optional<om::coords::DataBbox&> getBbox(om::common::SegID id) 
     {
         bbox_map::iterator bbox = bounds_.find(id);
         if(bbox != bounds_.end()) {

@@ -22,7 +22,7 @@ public:
             const om::common::SegID val = iter->first;
             OmSegment* seg = iter->second;
             seg->addToSize(sizes_[val]);
-            seg->AddToBoundingBox(om::dataBbox(bounds_[val], minVertexOfChunk_.volume(), 0));
+            seg->AddToBoundingBox(om::coords::DataBbox(bounds_[val], minVertexOfChunk_.volume(), 0));
         }
     }
 
@@ -34,7 +34,7 @@ public:
 
         getOrAddSegment(val);
         sizes_[val] = 1 + sizes_[val];
-        bounds_[val].merge(om::dataBbox(minVertexOfChunk_ + voxelPos,
+        bounds_[val].merge(om::coords::DataBbox(minVertexOfChunk_ + voxelPos,
                                         minVertexOfChunk_ + voxelPos));
     }
 

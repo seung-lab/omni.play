@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common/common.h"
+#include <QtGlobal>
+#include <QDataStream>
 
 class OmSegmentEdge {
 public:

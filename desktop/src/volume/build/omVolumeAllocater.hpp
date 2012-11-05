@@ -10,9 +10,9 @@
 class OmVolumeAllocater {
 public:
     static std::vector<boost::shared_ptr<QFile> >
-    AllocateData(OmMipVolume* vol, const OmVolDataType type)
+    AllocateData(OmMipVolume* vol, const om::common::DataType type)
     {
-        assert(OmVolDataType::UNKNOWN != type.index());
+        assert(om::common::DataType::UNKNOWN != type.index());
         vol->SetVolDataType(type);
 
         const int maxLevel = vol->Coords().RootMipLevel();

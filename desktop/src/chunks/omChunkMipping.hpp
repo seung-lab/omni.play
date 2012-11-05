@@ -5,7 +5,7 @@
 class OmChunkMipping {
 private:
     //octree properties
-    om::dataBbox dataExtent_;
+    om::coords::DataBbox dataExtent_;
     om::normBbox normExtent_; // extent of chunk in norm space
     om::normBbox clippedNormExtent_; // extent of contained data in norm space
     om::coords::Chunk coord_;
@@ -29,7 +29,7 @@ public:
         clippedNormExtent_.intersect(AxisAlignedBoundingBox<float>::UNITBOX);
     }
 
-    inline const om::dataBbox& GetExtent() const {
+    inline const om::coords::DataBbox& GetExtent() const {
         return dataExtent_;
     }
 

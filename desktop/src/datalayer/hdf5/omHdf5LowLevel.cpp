@@ -288,7 +288,7 @@ Vector3i  OmHdf5LowLevel::getChunkedDatasetDims(const om::common::AffinityGraph 
 
 void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
                                             const Vector3i& chunkDims,
-                                            const OmVolDataType type)
+                                            const om::common::DataType type)
 {
     herr_t ret;
     const int rank = 3;
@@ -351,7 +351,7 @@ void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
     }
 }
 
-void OmHdf5LowLevel::writeChunk(const om::dataBbox& extent, OmDataWrapperPtr data)
+void OmHdf5LowLevel::writeChunk(const om::coords::DataBbox& extent, OmDataWrapperPtr data)
 {
     debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -449,7 +449,7 @@ OmDataWrapperPtr OmHdf5LowLevel::GetChunkDataType()
     return data;
 }
 
-OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
+OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::coords::DataBbox& extent,
                                            const om::common::AffinityGraph aff)
 {
     debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);

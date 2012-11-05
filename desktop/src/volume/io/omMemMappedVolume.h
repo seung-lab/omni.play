@@ -36,7 +36,7 @@ public:
     {
         printf("setting up volume data...\n");
 
-        if(OmVolDataType::UNKNOWN == vol->mVolDataType.index())
+        if(om::common::DataType::UNKNOWN == vol->mVolDataType.index())
         {
             printf("unknown data type--old file? attempting to infer type...\n");
 
@@ -61,17 +61,17 @@ private:
     OmVolDataSrcs makeVolData(OmMipVolume* vol)
     {
         switch(vol->mVolDataType.index()){
-        case OmVolDataType::INT8:
+        case om::common::DataType::INT8:
             return OmMemMappedVolumeImpl<int8_t>(vol);
-        case OmVolDataType::UINT8:
+        case om::common::DataType::UINT8:
             return OmMemMappedVolumeImpl<uint8_t>(vol);
-        case OmVolDataType::INT32:
+        case om::common::DataType::INT32:
             return OmMemMappedVolumeImpl<int32_t>(vol);
-        case OmVolDataType::UINT32:
+        case om::common::DataType::UINT32:
             return OmMemMappedVolumeImpl<uint32_t>(vol);
-        case OmVolDataType::FLOAT:
+        case om::common::DataType::FLOAT:
             return OmMemMappedVolumeImpl<float>(vol);
-        case OmVolDataType::UNKNOWN:
+        case om::common::DataType::UNKNOWN:
             throw IoException("unknown data type--probably old file?");
         }
 

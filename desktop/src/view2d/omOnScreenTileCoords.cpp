@@ -56,7 +56,7 @@ int numChunks(om::coords::Chunk min, om::coords::Chunk max)
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 {
     om::globalBbox bounds = vol_->Coords().GetExtent();
-    om::dataBbox dataBounds = bounds.toDataBbox(vol_, mipLevel_);
+    om::coords::DataBbox dataBounds = bounds.toDataBbox(vol_, mipLevel_);
 
     int dataDepth = state_->getViewTypeDepth(state_->Location().toDataCoord(vol_, mipLevel_));
 
@@ -174,7 +174,7 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::coords::Chunk& coord,
 
 GLfloatBox OmOnScreenTileCoords::computeVertices(const om::coords::Chunk& coord, const OmMipVolume* vol)
 {
-    om::dataBbox bounds = coord.BoundingBox(vol);
+    om::coords::DataBbox bounds = coord.BoundingBox(vol);
     om::screenCoord min = bounds.getMin().toGlobalCoord().toScreenCoord(state_);
     om::screenCoord max = bounds.getMax().toGlobalCoord().toScreenCoord(state_);
 

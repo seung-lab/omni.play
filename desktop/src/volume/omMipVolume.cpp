@@ -2,7 +2,7 @@
 #include "volume/io/omVolumeData.h"
 
 OmMipVolume::OmMipVolume()
-    : mVolDataType(OmVolDataType::UNKNOWN)
+    : mVolDataType(om::common::DataType::UNKNOWN)
     , coords_(this)
     , mBuildState(MIPVOL_UNBUILT)
 {}

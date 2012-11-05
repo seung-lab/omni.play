@@ -30,7 +30,7 @@ public:
 	void allocateChunkedDataset(const OmDataPath &,
 						 const Vector3i&,
 						 const Vector3i&,
-						 const OmVolDataType){
+						 const om::common::DataType){
 		printf("%s: write operation should not have happened...\n",
 		       __FUNCTION__);
 	}

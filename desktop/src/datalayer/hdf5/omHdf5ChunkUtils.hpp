@@ -9,7 +9,7 @@
 
 class OmHdf5ChunkUtils {
 public:
-    static OmVolDataType DetermineOldVolType(OmMipVolume* vol)
+    static om::common::DataType DetermineOldVolType(OmMipVolume* vol)
     {
         if(!OmProject::HasOldHDF5()){
             throw IoException("no hdf5 to read from!");

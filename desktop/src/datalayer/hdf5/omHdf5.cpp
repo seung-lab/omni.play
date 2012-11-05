@@ -52,7 +52,7 @@ bool OmHdf5::dataset_exists(const OmDataPath& path)
 void OmHdf5::allocateChunkedDataset(const OmDataPath& path,
                                     const Vector3i& dataDims,
                                     const Vector3i& chunkDims,
-                                    const OmVolDataType type)
+                                    const om::common::DataType type)
 {
     zi::rwmutex::write_guard g(fileLock);
     hdf5_->allocateChunkedDataset(path, dataDims, chunkDims, type);
@@ -65,7 +65,7 @@ OmDataWrapperPtr OmHdf5::readDataset(const OmDataPath& path, int* size)
 }
 
 OmDataWrapperPtr OmHdf5::readChunk(const OmDataPath& path,
-                                   const om::dataBbox& dataExtent,
+                                   const om::coords::DataBbox& dataExtent,
                                    const om::common::AffinityGraph aff)
 {
     zi::rwmutex::write_guard g(fileLock);
@@ -73,7 +73,7 @@ OmDataWrapperPtr OmHdf5::readChunk(const OmDataPath& path,
 }
 
 void OmHdf5::writeChunk(const OmDataPath& path,
-                        om::dataBbox dataExtent,
+                        om::coords::DataBbox dataExtent,
                         OmDataWrapperPtr data)
 {
     zi::rwmutex::write_guard g(fileLock);

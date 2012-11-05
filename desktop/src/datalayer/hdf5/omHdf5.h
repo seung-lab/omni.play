@@ -36,17 +36,17 @@ public:
 	void allocateChunkedDataset( const OmDataPath &,
 						  const Vector3i&,
 						  const Vector3i&,
-						  const OmVolDataType type);
-	void dataset_image_write_trim( const OmDataPath &, const om::dataBbox&,
+						  const om::common::DataType type);
+	void dataset_image_write_trim( const OmDataPath &, const om::coords::DataBbox&,
 				       OmDataWrapperPtr data);
 
 	//data set raw
 	OmDataWrapperPtr readDataset( const OmDataPath & path, int* size = NULL);
 	void writeDataset( const OmDataPath & path, int size, const OmDataWrapperPtr data);
 	OmDataWrapperPtr readChunk( const OmDataPath & path,
-								const om::dataBbox& dataExtent,
+								const om::coords::DataBbox& dataExtent,
 								const om::common::AffinityGraph aff);
-	void writeChunk(const OmDataPath& path, om::dataBbox dataExtent, OmDataWrapperPtr data);
+	void writeChunk(const OmDataPath& path, om::coords::DataBbox dataExtent, OmDataWrapperPtr data);
 	Vector3i getDatasetDims( const OmDataPath & path );
 	OmDataWrapperPtr GetChunkDataType(const OmDataPath& path);
 

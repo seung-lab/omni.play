@@ -21,12 +21,12 @@ OmRawDataPtrs;
 
 class OmVolumeTypeHelpers {
 public:
-    static std::string GetTypeAsString(const OmVolDataType type);
-    static QString GetTypeAsQString(const OmVolDataType type);
+    static std::string GetTypeAsString(const om::common::DataType type);
+    static QString GetTypeAsQString(const om::common::DataType type);
 
-    static OmVolDataType GetTypeFromString(const QString & type);
+    static om::common::DataType GetTypeFromString(const QString & type);
 
-    static int getHDF5FileType(const OmVolDataType type);
-    static int getHDF5MemoryType(const OmVolDataType type);
+    static int getHDF5FileType(const om::common::DataType type);
+    static int getHDF5MemoryType(const om::common::DataType type);
 };
 

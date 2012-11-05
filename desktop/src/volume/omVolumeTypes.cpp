@@ -2,57 +2,57 @@
 #include "hdf5.h"
 
 // hid_t is typedef'd to int in H5Ipublic.h
-int OmVolumeTypeHelpers::getHDF5FileType(const OmVolDataType type)
+int OmVolumeTypeHelpers::getHDF5FileType(const om::common::DataType type)
 {
     switch(type.index()){
-    case OmVolDataType::INT8:
+    case om::common::DataType::INT8:
         return H5T_STD_I8LE;
-    case OmVolDataType::UINT8:
+    case om::common::DataType::UINT8:
         return H5T_STD_U8LE;
-    case OmVolDataType::INT32:
+    case om::common::DataType::INT32:
         return H5T_STD_I32LE;
-    case OmVolDataType::UINT32:
+    case om::common::DataType::UINT32:
         return H5T_STD_U32LE;
-    case OmVolDataType::FLOAT:
+    case om::common::DataType::FLOAT:
         return H5T_IEEE_F32LE;
-    case OmVolDataType::UNKNOWN:
+    case om::common::DataType::UNKNOWN:
     default:
         throw IoException("unknown data type");
     }
 }
 
 // hid_t is typedef'd to int in H5Ipublic.h
-int OmVolumeTypeHelpers::getHDF5MemoryType(const OmVolDataType type)
+int OmVolumeTypeHelpers::getHDF5MemoryType(const om::common::DataType type)
 {
     switch(type.index()){
-    case OmVolDataType::INT8:
+    case om::common::DataType::INT8:
         return H5T_NATIVE_CHAR;
-    case OmVolDataType::UINT8:
+    case om::common::DataType::UINT8:
         return H5T_NATIVE_UCHAR;
-    case OmVolDataType::INT32:
+    case om::common::DataType::INT32:
         return H5T_NATIVE_INT;
-    case OmVolDataType::UINT32:
+    case om::common::DataType::UINT32:
         return H5T_NATIVE_UINT;
-    case OmVolDataType::FLOAT:
+    case om::common::DataType::FLOAT:
         return H5T_NATIVE_FLOAT;
-    case OmVolDataType::UNKNOWN:
+    case om::common::DataType::UNKNOWN:
     default:
         throw IoException("unknown data type");
     }
 }
 
-std::string OmVolumeTypeHelpers::GetTypeAsString(const OmVolDataType type){
+std::string OmVolumeTypeHelpers::GetTypeAsString(const om::common::DataType type){
     return type.value();
 }
 
-QString OmVolumeTypeHelpers::GetTypeAsQString(const OmVolDataType type){
+QString OmVolumeTypeHelpers::GetTypeAsQString(const om::common::DataType type){
     return QString::fromStdString(GetTypeAsString(type));
 }
 
-OmVolDataType OmVolumeTypeHelpers::GetTypeFromString(const QString & type)
+om::common::DataType OmVolumeTypeHelpers::GetTypeFromString(const QString & type)
 {
-    boost::optional<OmVolDataType> ret =
-        OmVolDataType::get_by_value(type.toStdString());
+    boost::optional<om::common::DataType> ret =
+        om::common::DataType::get_by_value(type.toStdString());
 
     if(ret){
         return *ret;

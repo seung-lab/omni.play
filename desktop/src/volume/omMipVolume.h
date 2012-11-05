@@ -47,7 +47,7 @@ public:
     //mip data accessors
     bool ContainsVoxel(const om::coords::Global &vox);
 
-    OmVolDataType getVolDataType(){
+    om::common::DataType getVolDataType(){
         return mVolDataType;
     }
 
@@ -55,7 +55,7 @@ public:
         return OmVolumeTypeHelpers::GetTypeAsString(mVolDataType);
     }
 
-    virtual void SetVolDataType(const OmVolDataType) = 0;
+    virtual void SetVolDataType(const om::common::DataType) = 0;
 
     virtual int GetBytesPerVoxel() const = 0;
     virtual int GetBytesPerSlice() const = 0;
@@ -70,7 +70,7 @@ public:
 
 protected:
     //OmMipVolCoords coords_;
-    OmVolDataType mVolDataType;
+    om::common::DataType mVolDataType;
 
     OmMipVolCoords coords_;
 

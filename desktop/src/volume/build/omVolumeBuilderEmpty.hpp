@@ -17,7 +17,7 @@ protected:
     virtual void importSourceData()
     {
         std::cout << "WARNING: assuming int8 typename\n";
-        OmVolumeAllocater::AllocateData(vol_, OmVolDataType::INT8);
+        OmVolumeAllocater::AllocateData(vol_, om::common::DataType::INT8);
     }
 
     virtual Vector3i getMip0Dims()
