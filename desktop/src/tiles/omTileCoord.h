@@ -21,7 +21,7 @@ public:
 
     OmTileCoord(const om::coords::Chunk&, ViewType, uint8_t,
                 OmMipVolume*, uint32_t,
-                OmViewGroupState*, ObjectType);
+                OmViewGroupState*, om::common::ObjectType);
 
     inline const om::coords::Chunk& getCoord() const {
         return this->get<0>();

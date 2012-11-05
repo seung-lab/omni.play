@@ -68,7 +68,7 @@ public:
         }
     }
 
-    QString makeObjectName(const ObjectType voltype, const ViewType viewType)
+    QString makeObjectName(const om::common::ObjectType voltype, const ViewType viewType)
     {
         QString name;
 
@@ -111,7 +111,7 @@ public:
         return "";
     }
 
-    QDockWidget* getDockWidget(const ObjectType voltype, const ViewType viewType){
+    QDockWidget* getDockWidget(const om::common::ObjectType voltype, const ViewType viewType){
         return getDockWidget(makeObjectName(voltype, viewType));
     }
 
@@ -128,7 +128,7 @@ public:
         return widgets[0];
     }
 
-    bool doesDockWidgetExist(const ObjectType voltype, const ViewType viewType){
+    bool doesDockWidgetExist(const om::common::ObjectType voltype, const ViewType viewType){
         return doesDockWidgetExist(makeObjectName(voltype, viewType));
     }
 

@@ -13,7 +13,7 @@ public:
     static void ErasePts(OmBrushOppInfo* info, om::pt3d_list_t* pts,
                          const om::common::SegID segIDtoErase)
     {
-        const om::globalBbox& segDataExtent = info->segmentation->Coords().DataExtent();
+        const om::coords::GlobalBbox& segDataExtent = info->segmentation->Coords().DataExtent();
 
         std::set<Vector3i> voxelCoords;
 

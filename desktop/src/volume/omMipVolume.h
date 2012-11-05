@@ -9,7 +9,7 @@
 #include "common/common.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataWrapper.h"
-#include "volume/omVolCoordsMipped.hpp"
+#include "coordinates/volumeSystem.h"
 
 class OmDataPath;
 class OmHdf5;
@@ -34,7 +34,7 @@ public:
     virtual std::string GetName() = 0;
     virtual bool LoadVolData() = 0;
     virtual OmVolumeData* VolData() = 0;
-    virtual ObjectType getVolumeType() const = 0;
+    virtual om::common::ObjectType getVolumeType() const = 0;
     virtual om::common::ID getID() const = 0;
 
     inline bool IsBuilt(){
@@ -60,19 +60,18 @@ public:
     virtual int GetBytesPerVoxel() const = 0;
     virtual int GetBytesPerSlice() const = 0;
 
-    inline OmMipVolCoords& Coords() {
+    inline om::coords::VolumeSystem& Coords() {
         return coords_;
     }
 
-    inline const OmMipVolCoords& Coords() const {
+    inline const om::coords::VolumeSystem& Coords() const {
         return coords_;
     }
 
 protected:
-    //OmMipVolCoords coords_;
     om::common::DataType mVolDataType;
 
-    OmMipVolCoords coords_;
+    om::coords::VolumeSystem coords_;
 
     int mBuildState;
     void SetBuildState(const MipVolumeBuildState s){

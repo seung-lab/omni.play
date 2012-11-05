@@ -56,7 +56,7 @@ Emitter& operator<<(Emitter& out, const OmMipVolCoords& c)
 
 void operator>>(const Node& in, OmMipVolCoords& c)
 {
-    boost::optional<om::globalBbox> extent;
+    boost::optional<om::coords::GlobalBbox> extent;
     om::yaml::util::OptionalRead(in, "dataExtent", extent); // backwards compatibility
     if(extent) {
         c.SetDataDimensions(extent.get().getDimensions());

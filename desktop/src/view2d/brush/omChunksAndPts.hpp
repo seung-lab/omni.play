@@ -17,7 +17,7 @@ public:
 
     void AddAllPtsThatIntersectVol(om::pt3d_list_t* pts)
     {
-        const om::globalBbox& segDataExtent = vol_->Coords().GetExtent();
+        const om::coords::GlobalBbox& segDataExtent = vol_->Coords().GetExtent();
 
         FOR_EACH(iter, *pts)
         {

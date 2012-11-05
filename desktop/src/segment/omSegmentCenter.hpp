@@ -89,7 +89,7 @@ public:
 
     static boost::optional<float> ComputeCameraDistanceForSelectedSegments()
     {
-        om::globalBbox box;
+        om::coords::GlobalBbox box;
 
         FOR_EACH(iter, SegmentationDataWrapper::ValidIDs())
         {

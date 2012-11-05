@@ -9,7 +9,7 @@ private:
     const uint32_t newSegID_;
     const ViewType viewType_;
     OmSegmentation& vol_;
-    const om::globalBbox segDataExtent_;
+    const om::coords::GlobalBbox segDataExtent_;
     OmSegments *const segments_;
 
     zi::semaphore semaphore_;

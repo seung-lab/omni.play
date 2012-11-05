@@ -87,7 +87,7 @@ public:
         segmentation_.reset();
     }
 
-    inline ObjectType getType() const {
+    inline om::common::ObjectType getType() const {
         return SEGMENTATION;
     }
 

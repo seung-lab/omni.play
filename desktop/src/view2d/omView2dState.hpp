@@ -33,7 +33,7 @@ class OmBrushSize;
 class OmView2dState {
 private:
     OmMipVolume* vol_;
-    const ObjectType objType_;
+    const om::common::ObjectType objType_;
     OmViewGroupState *const vgs_;
     OmZoomLevel *const zoomLevel_;
 
@@ -321,7 +321,7 @@ public:
     }
 
     // whether overall view2d widget is displaying a channel or a segmentation
-    inline ObjectType getObjectType() const {
+    inline om::common::ObjectType getObjectType() const {
         return objType_;
     }
 

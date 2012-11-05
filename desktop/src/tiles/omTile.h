@@ -49,6 +49,6 @@ private:
         return key_.getVolume();
     }
 
-    ObjectType getVolType() const;
+    om::common::ObjectType getVolType() const;
 };
 

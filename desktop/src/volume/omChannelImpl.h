@@ -39,7 +39,7 @@ public:
     bool LoadVolDataIfFoldersExist();
     void UpdateFromVolResize();
 
-    ObjectType getVolumeType() const {
+    om::common::ObjectType getVolumeType() const {
         return CHANNEL;
     }
 

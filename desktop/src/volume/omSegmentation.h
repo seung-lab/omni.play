@@ -52,8 +52,8 @@ public:
     bool LoadVolDataIfFoldersExist();
     void UpdateFromVolResize();
 
-    inline ObjectType getVolumeType() const {
-        return SEGMENTATION;
+    inline om::common::ObjectType getVolumeType() const {
+        return om::common::SEGMENTATION;
     }
 
     inline om::common::ID getID() const {

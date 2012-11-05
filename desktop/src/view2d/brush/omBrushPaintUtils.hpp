@@ -13,7 +13,7 @@ public:
     static void PaintPts(OmBrushOppInfo* info, om::pt3d_list_t* pts,
                          const om::common::SegID segIDtoPaint)
     {
-        const om::globalBbox& segDataExtent = info->segmentation->Coords().GetExtent();
+        const om::coords::GlobalBbox& segDataExtent = info->segmentation->Coords().GetExtent();
 
         std::set<om::coords::Global> voxelCoords;
 

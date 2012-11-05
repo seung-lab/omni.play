@@ -58,7 +58,7 @@ OmPooledTile<OmColorARGB>* OmViewGroupState::ColorTile(uint32_t const*const imag
 }
 
 om::common::SegmentColorCacheType
-OmViewGroupState::determineColorizationType(const ObjectType objType)
+OmViewGroupState::determineColorizationType(const om::common::ObjectType objType)
 {
     switch(objType){
     case CHANNEL:

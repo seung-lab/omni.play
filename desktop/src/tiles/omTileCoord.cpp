@@ -28,7 +28,7 @@ OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, ViewType view, uint8_t dep
 
 OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, ViewType view, uint8_t depth,
                          OmMipVolume* vol, uint32_t freshness,
-                         OmViewGroupState* vgs, ObjectType objType)
+                         OmViewGroupState* vgs, om::common::ObjectType objType)
     : OmTileCoordKey(cc,
                      view,
                      depth,

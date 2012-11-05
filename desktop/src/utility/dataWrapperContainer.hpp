@@ -15,7 +15,7 @@ private:
 public:
     DataWrapperContainer(){}
 
-    DataWrapperContainer(const ObjectType obj_type, const om::common::ID obj_id)
+    DataWrapperContainer(const om::common::ObjectType obj_type, const om::common::ID obj_id)
     {
         switch (obj_type){
         case CHANNEL:
@@ -53,7 +53,7 @@ public:
         return adw_;
     }
 
-    ObjectType getType() const
+    om::common::ObjectType getType() const
     {
         if(cdw_){
             return CHANNEL;
