@@ -19,10 +19,10 @@ struct OmVolSliceKey : public OmVolSliceKey_t {
     OmVolSliceKey(const om::coords::Chunk& chunkCoord,
                   const int sliceDepth,
                   const om::common::ViewType viewType)
-        : OmVolSliceKey_t(chunkCoord.Level,
-                          chunkCoord.Coordinate.x,
-                          chunkCoord.Coordinate.y,
-                          chunkCoord.Coordinate.z,
+        : OmVolSliceKey_t(chunkCoord.mipLevel(),
+                          chunkCoord.x,
+                          chunkCoord.y,
+                          chunkCoord.z,
                           sliceDepth,
                           viewType)
     {}

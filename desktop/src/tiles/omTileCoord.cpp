@@ -41,7 +41,7 @@ OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, om::common::ViewType view,
 OmTileCoord OmTileCoord::Downsample() const
 {
 	int newDepth = (getDepth() +
-		(OmView2dConverters::GetViewTypeDepth(getCoord().Coordinate, getViewType()) % 2) * 128) / 2;
+		(OmView2dConverters::GetViewTypeDepth(getCoord(), getViewType()) % 2) * 128) / 2;
 	return OmTileCoord(getCoord().ParentCoord(),
 	                   getViewType(),
 	                   newDepth,

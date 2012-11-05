@@ -33,7 +33,7 @@ public:
 
         for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i)
         {
-            const Vector3i dstCoord = coord_.Coordinate / mips_[i].factor;
+            const Vector3i dstCoord = coord_ / mips_[i].factor;
             const om::coords::Chunk coord(i, dstCoord);
 
             rawChunks_[i] = files_->GetChunkPtr(coord);

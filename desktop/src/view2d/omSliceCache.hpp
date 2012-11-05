@@ -52,9 +52,9 @@ public:
 
     PooledTile32Ptr GetSlice(const om::coords::Chunk& chunkCoord, const int depthInChunk)
     {
-        const OmSliceKey key(chunkCoord.Coordinate.x,
-                             chunkCoord.Coordinate.y,
-                             chunkCoord.Coordinate.z,
+        const OmSliceKey key(chunkCoord.x,
+                             chunkCoord.y,
+                             chunkCoord.z,
                              depthInChunk);
 
         if(cache_.count(key)){

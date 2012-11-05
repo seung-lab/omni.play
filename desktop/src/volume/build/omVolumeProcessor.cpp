@@ -26,7 +26,7 @@ public:
     {
         OmSegChunk* chunk = vol_->GetChunk(coord_);
 
-        const bool isMIPzero = (0 == coord_.Level);
+        const bool isMIPzero = (0 == coord_.mipLevel());
 
         chunk->SegData()->ProcessChunk(isMIPzero, segments_);
 

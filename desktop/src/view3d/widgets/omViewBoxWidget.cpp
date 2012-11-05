@@ -163,7 +163,7 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //     {
 //         OmTilePtr d = *it;
 // 
-//         const int level = d->GetTileCoord().getLevel();
+//         const int level = d->GetTileCoord().mipLevel();
 //         const Vector3f tileLength = resolution*128.0*om::math::pow2int(level);
 // 
 //         const DataCoord thisCoord = d->GetTileCoord().getDataCoord();

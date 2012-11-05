@@ -34,7 +34,7 @@ public:
         , coord_(coord)
         , chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))
         , memMapFileName_(OmFileNames::GetMemMapFileNameQT(vol,
-                                                           coord.Level))
+                                                           coord.mipLevel()))
         , numBytes_(128*128*128*vol_->GetBytesPerVoxel())
         , dataRaw_(NULL)
         , dirty_(false)

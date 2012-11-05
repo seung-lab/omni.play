@@ -37,9 +37,9 @@ public:
 
     T* Get(const om::coords::Chunk& coord)
     {
-        const int x = coord.Coordinate.x;
-        const int y = coord.Coordinate.y;
-        const int z = coord.Coordinate.z;
+        const int x = coord.x;
+        const int y = coord.y;
+        const int z = coord.z;
 
         if(x >= x_ || y >= y_ || z >= z_)
         {

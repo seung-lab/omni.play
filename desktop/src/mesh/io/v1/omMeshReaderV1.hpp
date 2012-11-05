@@ -145,10 +145,10 @@ private:
     std::string getDirectoryPath(const OmMeshCoord& meshCoord)
     {
         const std::string p = str( boost::format("%1%/%2%_%3%_%4%/mesh/%5%/")
-                                   % meshCoord.MipChunkCoord.Level
-                                   % meshCoord.MipChunkCoord.Coordinate.x
-                                   % meshCoord.MipChunkCoord.Coordinate.y
-                                   % meshCoord.MipChunkCoord.Coordinate.z
+                                   % meshCoord.MipChunkCoord.mipLevel()
+                                   % meshCoord.MipChunkCoord.x
+                                   % meshCoord.MipChunkCoord.y
+                                   % meshCoord.MipChunkCoord.z
                                    % meshCoord.DataValue);
 
         return segmentation_->Folder()->RelativeVolPath().toStdString() + p;

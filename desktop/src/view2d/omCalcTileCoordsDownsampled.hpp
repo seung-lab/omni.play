@@ -22,7 +22,7 @@ public:
         const int rootMipLevel = vol->Coords().RootMipLevel();
         OmTileCoord tileCoord = tcv.tileCoord;
 
-        while(tileCoord.getCoord().getLevel() < rootMipLevel)
+        while(tileCoord.getCoord().mipLevel() < rootMipLevel)
         {
             tileCoord = tileCoord.Downsample();
 
@@ -35,7 +35,7 @@ public:
                 	downsampledTile,
                     tcv.vertices,
                     getTextureVertices(tcv.tileCoord.getCoord(),
-                    				   tileCoord.getCoord().getLevel())
+                    				   tileCoord.getCoord().mipLevel())
                 };
 
                 tilesToDraw.push_back(tv);
@@ -48,8 +48,8 @@ public:
 
     TextureVectices getTextureVertices(const om::coords::Chunk& old, const int curMipLevel)
     {
-    	Vector2i chunkCoordsInPlane = OmView2dConverters::Get2PtsInPlane(old.Coordinate, viewType_);
-    	int mipDiff = om::math::pow2int(curMipLevel - old.getLevel());
+    	Vector2i chunkCoordsInPlane = OmView2dConverters::Get2PtsInPlane(old, viewType_);
+    	int mipDiff = om::math::pow2int(curMipLevel - old.mipLevel());
     	float inc = 1.0f / mipDiff;
     	Vector2f textureRet(chunkCoordsInPlane.x % mipDiff * inc,
     	                    chunkCoordsInPlane.y % mipDiff * inc);

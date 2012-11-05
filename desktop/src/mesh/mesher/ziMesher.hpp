@@ -143,7 +143,7 @@ private:
         om::coords::Chunk c = mip0coord.ParentCoord();
 
         // corner case: no MIP levels >0
-        while (c.getLevel() <= rootMipLevel_)
+        while (c.mipLevel() <= rootMipLevel_)
         {
             registerSegIDs(mip0coord, c, segIDsMip0);
 
@@ -157,7 +157,7 @@ private:
         om::coords::Chunk c = mip0coord.ParentCoord();
 
         // corner case: no MIP levels >0
-        while (c.getLevel() <= rootMipLevel_)
+        while (c.mipLevel() <= rootMipLevel_)
         {
             std::deque<om::common::SegID> commonIDs;
 

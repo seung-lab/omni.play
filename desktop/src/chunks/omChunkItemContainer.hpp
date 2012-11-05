@@ -59,7 +59,7 @@ public:
     {
         zi::guard g(lock_);
 
-        const std::size_t mipLevel = coord.Level;
+        const std::size_t mipLevel = coord.mipLevel();
 
         if(mipLevel >= mips_.size()){
             throw om::ArgException("invalid mip level");

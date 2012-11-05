@@ -41,7 +41,7 @@ QString om::segmentation::folder::GetMeshChunkFolderPath(const double threshold,
     const QString subPath =
         QString("/meshes/%1/%2/%3/%4/%5/")
         .arg(QString::number(threshold, 'f', 4))
-        .arg(coord.getLevel())
+        .arg(coord.mipLevel())
         .arg(coord.x)
         .arg(coord.y)
         .arg(coord.z);
@@ -116,7 +116,7 @@ QString om::segmentation::folder::GetChunkFolderPath(const om::coords::Chunk& co
 
     const QString subPath =
         QString("/chunks/%1/%2/%3/%4/")
-        .arg(coord.getLevel())
+        .arg(coord.mipLevel())
         .arg(coord.x)
         .arg(coord.y)
         .arg(coord.z);

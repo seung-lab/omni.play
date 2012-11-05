@@ -50,7 +50,7 @@ public:
                     //form mip coord
                     const om::coords::Chunk& currentCoord = chunk->GetCoordinate();
 
-                    const om::coords::Chunk mip_coord(currentCoord.getLevel(),
+                    const om::coords::Chunk mip_coord(currentCoord.mipLevel(),
                                                    currentCoord.x + x,
                                                    currentCoord.y + y,
                                                    currentCoord.z + z);

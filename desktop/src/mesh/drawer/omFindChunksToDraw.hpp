@@ -72,7 +72,7 @@ private:
     bool shouldChunkBeDrawn(OmSegChunk* chunk)
     {
         // draw if MIP 0
-        if(0 == chunk->GetCoordinate().Level){
+        if(0 == chunk->GetCoordinate().mipLevel()){
             return true;
         }
 

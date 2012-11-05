@@ -48,9 +48,9 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 
 int numChunks(om::coords::Chunk min, om::coords::Chunk max)
 {
-    return (max.Coordinate.x - min.Coordinate.x + 1) *
-           (max.Coordinate.y - min.Coordinate.y + 1) *
-           (max.Coordinate.z - min.Coordinate.z + 1);
+    return (max.x - min.x + 1) *
+           (max.y - min.y + 1) *
+           (max.z - min.z + 1);
 }
 
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
@@ -85,11 +85,11 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
     om::coords::Chunk maxChunk = om::coords::Global(viewBounds.getMax()).toChunkCoord(vol_, mipLevel_);
 
     // iterate over all chunks on the screen
-    for (int x = minChunk.Coordinate.x; x <= maxChunk.Coordinate.x; x++)
+    for (int x = minChunk.x; x <= maxChunk.x; x++)
     {
-        for (int y = minChunk.Coordinate.y; y <= maxChunk.Coordinate.y; y++)
+        for (int y = minChunk.y; y <= maxChunk.y; y++)
         {
-            for (int z = minChunk.Coordinate.z; z <= maxChunk.Coordinate.z; z++)
+            for (int z = minChunk.z; z <= maxChunk.z; z++)
             {
                 om::coords::Chunk coord(mipLevel_, x, y, z);
                 computeTile(coord, depthOffset);

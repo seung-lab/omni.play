@@ -87,7 +87,7 @@ public:
 
     T* GetChunkPtr(const om::coords::Chunk& coord) const
     {
-        const int level = coord.Level;
+        const int level = coord.mipLevel();
         const uint64_t offset =
             OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
         T* ret = maps_[level]->GetPtrWithOffset(offset);

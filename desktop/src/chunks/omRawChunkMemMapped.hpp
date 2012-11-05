@@ -24,7 +24,7 @@ public:
         : vol_(vol)
         , coord_(coord)
         , chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord))
-        , fnp_(OmFileNames::GetMemMapFileNameQT(vol, coord.Level))
+        , fnp_(OmFileNames::GetMemMapFileNameQT(vol, coord.mipLevel()))
         , numBytes_(128*128*128*vol_->GetBytesPerVoxel())
         , dataRaw_(NULL)
     {
