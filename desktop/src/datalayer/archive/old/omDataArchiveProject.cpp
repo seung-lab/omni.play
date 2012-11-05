@@ -33,7 +33,7 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp, OmProjectImpl* projec
             QString("can not open file: file version is (%1), but Omni expecting (%2)")
             .arg(fileVersion_)
             .arg(Latest_Project_Version);
-        throw IoException(err);
+        throw om::IoException(err);
     }
 
     in >> (*project);
@@ -42,7 +42,7 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp, OmProjectImpl* projec
     in >> omniPostfix;
 
     if(Omni_Postfix != omniPostfix || !in.atEnd()){
-        throw IoException("corruption detected in Omni file");
+        throw om::IoException("corruption detected in Omni file");
     }
 
     if(fileVersion_ < Latest_Project_Version)
@@ -103,7 +103,7 @@ void OmDataArchiveProject::ArchiveWrite(const QString& fnp, OmProjectImpl* proje
 {
     QFile file(fnp);
     if(!file.open(QIODevice::WriteOnly)){
-        throw IoException("could not open", fnp);
+        throw om::IoException("could not open", fnp);
     }
 
     QDataStream out(&file);

@@ -31,7 +31,7 @@ public:
             printf("writing log file %s\n", qPrintable(outFile_));
 
         } else{
-            throw IoException("could not open file", outFile_);
+            throw om::IoException("could not open file", outFile_);
         }
 
         out_.reset(new QTextStream(file_.get()));

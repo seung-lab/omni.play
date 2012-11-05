@@ -50,7 +50,7 @@ public:
         case 9000:
             return "OM_NON_FATAL_EVENT_CLASS";
         default:
-            throw ArgException("unknown event class");
+            throw om::ArgException("unknown event class");
         }
     }
 

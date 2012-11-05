@@ -148,7 +148,7 @@ private:
     {
         if(isIDinvalid(id)){
             assert(0 && "invalid ID");
-            throw AccessException("Cannot get object with id: " + id);
+            throw om::AccessException("Cannot get object with id: " + id);
         }
     }
 

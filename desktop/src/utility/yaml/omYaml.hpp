@@ -15,7 +15,7 @@ public:
     static std::vector<T> Parse(const std::string& fnp)
     {
         if(!om::file::exists(fnp)){
-            throw IoException("could not find file", fnp);
+            throw om::IoException("could not find file", fnp);
         }
 
         std::ifstream fin(fnp.c_str());
@@ -42,7 +42,7 @@ public:
     static void Read(const std::string& fnp, YAML::Node& node)
     {
         if(!om::file::exists(fnp)){
-            throw IoException("could not find file", fnp);
+            throw om::IoException("could not find file", fnp);
         }
 
         std::ifstream fin(fnp.c_str());

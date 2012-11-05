@@ -27,7 +27,7 @@ void OmActionReplayer::replayFile(const QFileInfo& fileInfo)
 {
     QFile file(fileInfo.absoluteFilePath());
     if(!file.open(QIODevice::ReadOnly)){
-        throw IoException("could not open", file.fileName());
+        throw om::IoException("could not open", file.fileName());
     }
 
     QDataStream in(&file);
@@ -50,11 +50,11 @@ void OmActionReplayer::replayFile(const QFileInfo& fileInfo)
     QString postfix;
     in >> postfix;
     if("OMNI_LOG" != postfix){
-        throw IoException("bad postfix", file.fileName());
+        throw om::IoException("bad postfix", file.fileName());
     }
 
     if(!in.atEnd()){
-        throw IoException("corrupt log file dectected", file.fileName());
+        throw om::IoException("corrupt log file dectected", file.fileName());
     }
 }
 
@@ -92,9 +92,9 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
         break;
     case om::actions_::OmProjectCloseAction:
     case om::actions_::OmProjectSaveAction:
-        throw ArgException("should not have received this action");
+        throw om::ArgException("should not have received this action");
     default:
-        throw ArgException("unknown action", actionName);
+        throw om::ArgException("unknown action", actionName);
     };
 }
 

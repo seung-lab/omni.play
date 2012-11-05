@@ -44,7 +44,7 @@ public:
 
         QFile file(fnp);
         if(!file.open(QIODevice::WriteOnly)){
-            throw IoException("could not write", fnp);
+            throw om::IoException("could not write", fnp);
         }
 
         QDataStream out(&file);

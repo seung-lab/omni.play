@@ -13,7 +13,7 @@ void OmHdf5FileUtils::file_create(const std::string & fpath)
         if (fileId < 0) {
             const std::string errMsg = "Could not create HDF5 file: " + fpath + "\n";
             fprintf(stderr, "%s", errMsg.c_str());
-            throw IoException(errMsg);
+            throw om::IoException(errMsg);
         }
 
         file_close(fileId);
@@ -38,7 +38,7 @@ hid_t OmHdf5FileUtils::file_open(std::string fpath, const bool readOnly  )
     hid_t fapl = H5Pcreate(H5P_FILE_ACCESS); // defaults
     herr_t err = H5Pset_cache( fapl, mdc_nelmts, rdcc_nelmts, rdcc_nbytes, rdcc_w0 );
     if(err < 0) {
-        throw IoException("Could not setup HDF5 file cache.");
+        throw om::IoException("Could not setup HDF5 file cache.");
     }
 
     hid_t fileId;
@@ -50,7 +50,7 @@ hid_t OmHdf5FileUtils::file_open(std::string fpath, const bool readOnly  )
 
     if (fileId < 0) {
         const std::string errMsg = "Could not open HDF5 file: " + fpath + "\n";
-        throw IoException(errMsg);
+        throw om::IoException(errMsg);
     }
 
     return fileId;
@@ -66,6 +66,6 @@ void OmHdf5FileUtils::file_close (hid_t fileId)
     flush( fileId );
     herr_t ret = H5Fclose(fileId);
     if (ret < 0) {
-        throw IoException("Could not close HDF5 file.");
+        throw om::IoException("Could not close HDF5 file.");
     }
 }

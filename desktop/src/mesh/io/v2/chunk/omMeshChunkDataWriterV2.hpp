@@ -67,7 +67,7 @@ public:
                 const int64_t numBytes)
     {
         if(0 != (numBytes % sizeof(T))){
-            throw IoException("numBytes is not a multiple of type size");
+            throw om::IoException("numBytes is not a multiple of type size");
         }
 
         const int64_t numElements = numBytes / sizeof(T);
@@ -94,7 +94,7 @@ private:
         const bool fileDidNotExist = !file.exists();
 
         if(!file.open(QIODevice::ReadWrite)){
-            throw IoException("could not open", fnp_);
+            throw om::IoException("could not open", fnp_);
         }
 
         if(fileDidNotExist){

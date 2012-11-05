@@ -138,7 +138,7 @@ public:
     }
 
     om::common::DataType getVolDataType(){
-        return om::common::DataTypeImpl<T>::getType();
+        return DataTypeImpl<T>::getType();
     }
 
     int getHdf5FileType(){
@@ -162,7 +162,7 @@ private:
             return OmSmartPtr<T>::WrapNoFree(rawPtr);
         case om::INVALID:
         default:
-            throw ArgException("can't wrap invalid ptr");
+            throw om::ArgException("can't wrap invalid ptr");
         };
     }
 
@@ -174,7 +174,7 @@ private:
 
     void checkIfValid(){
         if(!ptr_){
-            throw IoException("OmDataWrapper: ptr not valid");
+            throw om::IoException("OmDataWrapper: ptr not valid");
         }
     }
 };

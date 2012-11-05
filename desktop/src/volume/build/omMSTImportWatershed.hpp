@@ -17,7 +17,7 @@ public:
 				const uint32_t numEdges)
 	{
 		if(32 != bitsPerNode){
-			throw IoException("only know how to process 32-bit node values");
+			throw om::IoException("only know how to process 32-bit node values");
 		}
 
 		OmVectorInFile<OmMSTImportEdge> edges(fnp);
@@ -28,7 +28,7 @@ public:
 				QString("number of edges mismatch: have %1, but expected %2")
 				.arg(edges.Vector().size())
 				.arg(numEdges);
-			throw IoException(err);
+			throw om::IoException(err);
 		}
 
 		vol_->MST()->Import(edges.Vector());

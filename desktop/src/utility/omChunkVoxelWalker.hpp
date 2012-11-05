@@ -36,7 +36,7 @@ public:
 
 	bool operator <(const OmChunkVoxelWalker& rhs) const{
 		if(chunkDim_ != rhs.chunkDim_){
-			throw ArgException("different dimensions not allowed");
+			throw om::ArgException("different dimensions not allowed");
 		}
 		return (x < rhs.x &&
 			y < rhs.y &&
@@ -70,7 +70,7 @@ private:
 
 	bool equal(OmChunkVoxelWalker const& rhs) const {
 		if(chunkDim_ != rhs.chunkDim_){
-			throw ArgException("different dimensions not allowed");
+			throw om::ArgException("different dimensions not allowed");
 		}
 		return this->curPos_ == rhs.curPos_;
 	}
@@ -80,7 +80,7 @@ private:
 	}
 
 	bool operator !=(const OmChunkVoxelWalker&) const{
-		throw ArgException("not implemented");
+		throw om::ArgException("not implemented");
 	}
 
 	friend class boost::iterator_core_access;

@@ -65,7 +65,7 @@ public:
         printf("assuming channel 1\n");
         ChannelDataWrapper cdw(1);
         if(!cdw.IsValidWrapper()){
-            throw IoException("no channel 1");
+            throw om::IoException("no channel 1");
         }
 
         OmChannel& chann = cdw.GetChannel();
@@ -80,7 +80,7 @@ public:
     }
 
     void LoadDendrogram(){
-        throw IoException("not implemented");
+        throw om::IoException("not implemented");
     }
 
 private:

@@ -75,7 +75,7 @@ private:
         in >> version_;
 
         if(!in.atEnd()){
-            throw IoException("corrupt file?", versionFilePath());
+            throw om::IoException("corrupt file?", versionFilePath());
         }
     }
 

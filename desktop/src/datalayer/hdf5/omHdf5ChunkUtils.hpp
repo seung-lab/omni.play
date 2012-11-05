@@ -12,7 +12,7 @@ public:
     static om::common::DataType DetermineOldVolType(OmMipVolume* vol)
     {
         if(!OmProject::HasOldHDF5()){
-            throw IoException("no hdf5 to read from!");
+            throw om::IoException("no hdf5 to read from!");
         }
         OmHdf5* reader = OmProject::OldHDF5();
 
@@ -28,7 +28,7 @@ public:
                                           OmChunk* chunk)
     {
         if(!OmProject::HasOldHDF5()){
-            throw IoException("no hdf5 to read from!");
+            throw om::IoException("no hdf5 to read from!");
         }
         OmHdf5* reader = OmProject::OldHDF5();
 
@@ -46,7 +46,7 @@ public:
     static bool VolumeExistsInHDF5(VOL* vol, const int mipLevel)
     {
         if(!OmProject::HasOldHDF5()){
-            throw IoException("no hdf5 to read from!");
+            throw om::IoException("no hdf5 to read from!");
         }
         OmHdf5* reader = OmProject::OldHDF5();
 

@@ -34,7 +34,7 @@ protected:
         file_ = om::make_shared<QFile>(QString::fromStdString(fnp_));
 
         if(!file_->open(QIODevice::ReadWrite)) {
-            throw IoException("could not open", fnp_);
+            throw om::IoException("could not open", fnp_);
         }
     }
 
@@ -43,7 +43,7 @@ protected:
         //std::cout << "file size is " << file_->size() << "\n";
         map_ = file_->map(0, file_->size());
         if(!map_){
-            throw IoException("could not map file", file_->fileName());
+            throw om::IoException("could not map file", file_->fileName());
         }
         file_->close();
     }
@@ -100,7 +100,7 @@ private:
                 QString("error: input file size of %1 bytes doesn't match expected size %d")
                 .arg(this->file_->size())
                 .arg(numBytes);
-            throw IoException(err.toStdString());
+            throw om::IoException(err.toStdString());
         }
     }
 };
@@ -139,7 +139,7 @@ private:
         this->open();
 
         if(!this->file_->resize(numBytes)){
-            throw IoException("could not resize file to "
+            throw om::IoException("could not resize file to "
                                 + om::string::num(numBytes)
                                 + " bytes");
         }
@@ -157,7 +157,7 @@ private:
     void checkFileSize(const int64_t numBytes)
     {
         if(!numBytes){
-            throw IoException("size was 0");
+            throw om::IoException("size was 0");
         }
     }
 };

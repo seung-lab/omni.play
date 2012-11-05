@@ -64,7 +64,7 @@ private:
                 category = 3;
                 break;
             default:
-                throw ArgException("unknown type");
+                throw om::ArgException("unknown type");
             }
 
             const int glia = isGlia(seg);

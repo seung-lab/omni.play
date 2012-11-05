@@ -158,7 +158,7 @@ private:
     }
 
     boost::shared_ptr<uint32_t> getChunkAs32bit(float*) const {
-        throw IoException("can't deal with float data!");
+        throw om::IoException("can't deal with float data!");
     }
 };
 

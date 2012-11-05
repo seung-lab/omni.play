@@ -146,7 +146,7 @@ private:
     void checkChunkDims()
     {
         if(vol_->Coords().ChunkDimension() % 2){
-            throw FormatException("chunk dimensions must be even");
+            throw om::FormatException("chunk dimensions must be even");
         }
     }
 

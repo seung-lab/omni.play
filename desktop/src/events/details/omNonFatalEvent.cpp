@@ -22,6 +22,6 @@ void OmNonFatalEvent::Dispatch(OmEventListener* listenerBase)
         return;
 
     default:
-        throw ArgException("unknown event type");
+        throw om::ArgException("unknown event type");
     }
 }

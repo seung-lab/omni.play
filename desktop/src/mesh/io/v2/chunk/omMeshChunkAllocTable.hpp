@@ -81,7 +81,7 @@ public:
 
         OmMeshDataEntry* entry = file_->Find(newEntry);
         if(!entry){
-            throw IoException("unknown segment ID");
+            throw om::IoException("unknown segment ID");
         }
 
         assert(newEntry.segID == entry->segID);
@@ -100,7 +100,7 @@ public:
 
         OmMeshDataEntry* entry = file_->Find(e);
         if(!entry){
-            throw IoException("unknown segment ID");
+            throw om::IoException("unknown segment ID");
         }
 
         return *entry;

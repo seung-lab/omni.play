@@ -51,7 +51,7 @@ private:
                         const om::common::SegmentColorCacheType sccType)
     {
         if(SEGMENTATION != key.getVolume()->getVolumeType()){
-            throw IoException("can only color segmentations");
+            throw om::IoException("can only color segmentations");
         }
 
         SegmentationDataWrapper sdw(key.getVolume()->getID());

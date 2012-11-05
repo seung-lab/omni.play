@@ -92,7 +92,7 @@ public:
         , numBuckets_(computeNumBuckets())
     {
         if(0 != numBytesPerPage_ % numBytesPerTile_){
-            throw ArgException("invalid size");
+            throw om::ArgException("invalid size");
         }
 
         freeTileLists_.resize(numBuckets_);

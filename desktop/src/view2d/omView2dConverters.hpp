@@ -17,7 +17,7 @@ public:
         case ZY_VIEW:
             return Vector3<T>(z, y, x);
         default:
-            throw ArgException("invalid viewType");
+            throw om::ArgException("invalid viewType");
         }
     }
 
@@ -33,7 +33,7 @@ public:
         case ZY_VIEW:
             return Vector3<T>(vec.z, vec.y, vec.x);
         default:
-            throw ArgException("invalid viewType");
+            throw om::ArgException("invalid viewType");
         }
     }
 
@@ -49,7 +49,7 @@ public:
         case ZY_VIEW:
             return vec.x;
         default:
-            throw ArgException("invalid viewType");
+            throw om::ArgException("invalid viewType");
         }
     }
 
@@ -68,7 +68,7 @@ public:
             vec.x = val;
             break;
         default:
-            throw ArgException("invalid viewType");
+            throw om::ArgException("invalid viewType");
         }
     }
 
@@ -99,7 +99,7 @@ public:
                               y / scale.y,
                               x / scale.z);
         default:
-            throw ArgException("invalid viewType");
+            throw om::ArgException("invalid viewType");
         }
     }
 
@@ -115,7 +115,7 @@ public:
         case ZY_VIEW:
             return Vector2<T>(vec.z, vec.y);
         default:
-            throw ArgException("unknown viewType");
+            throw om::ArgException("unknown viewType");
         }
     }
 
@@ -135,7 +135,7 @@ private:
             vec.z += val;
             break;
         default:
-            throw ArgException("unknown viewType");
+            throw om::ArgException("unknown viewType");
         }
     }
 
@@ -154,7 +154,7 @@ private:
             vec.y += val;
             break;
         default:
-            throw ArgException("unknown viewType");
+            throw om::ArgException("unknown viewType");
         }
     }
 
@@ -177,7 +177,7 @@ public:
             incUpDownPanDirection(vec, -val, viewType);
             break;
         default:
-            throw ArgException("unknown direction");
+            throw om::ArgException("unknown direction");
         }
     }
 
@@ -193,7 +193,7 @@ public:
         case ZY_VIEW:
             return ColT(vec.x, vec.y + y, vec.z + x);
         default:
-            throw ArgException("invalid viewType");
+            throw om::ArgException("invalid viewType");
         }
     }
 };

@@ -41,7 +41,7 @@ public:
     void start(const uint32_t numWorkerThreads)
     {
         if(!numWorkerThreads){
-            throw IoException("please specify more than 0 threads");
+            throw om::IoException("please specify more than 0 threads");
         }
 
         pool_.reset(new task_man_t(numWorkerThreads));

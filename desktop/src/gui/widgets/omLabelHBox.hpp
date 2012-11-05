@@ -31,7 +31,7 @@ public:
             layout_->addWidget(label_);
             break;
         default:
-            throw ArgException("unknown side");
+            throw om::ArgException("unknown side");
         }
 
         setContentsMargins(0,0,0,0);

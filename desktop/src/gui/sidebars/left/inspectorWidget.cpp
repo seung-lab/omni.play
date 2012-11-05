@@ -234,7 +234,7 @@ void InspectorWidget::doDataSrcContextMenuVolAdd(QAction* act)
     } else if (act == addSegmentationAct_) {
         addSegmentationToVolume();
     } else {
-        throw FormatException("could not match QAction type...\n");
+        throw om::FormatException("could not match QAction type...\n");
     }
 }
 
@@ -263,7 +263,7 @@ ViewType InspectorWidget::getViewType(QAction* act)
     } else if (act == yzAct_) {
         return ZY_VIEW;
     } else {
-        throw FormatException("could not match QAction type...\n");
+        throw om::FormatException("could not match QAction type...\n");
     }
 }
 

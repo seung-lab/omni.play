@@ -111,7 +111,7 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
     	break;
     }
 
-    throw ArgException("unknown objType");
+    throw om::ArgException("unknown objType");
 }
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm)

@@ -44,7 +44,7 @@ public:
 
         if(!reader.seek(entry.offsetIntoFile))
         {
-            throw IoException("could not seek to " +
+            throw om::IoException("could not seek to " +
                                 om::string::num(entry.offsetIntoFile));
         }
 
@@ -55,7 +55,7 @@ public:
             std::cout << "could not read data; numBytes is " << numBytes
                       << ", but only read " << bytesRead << "\n"
                       << std::flush;
-            throw IoException("could not read fully file", fnp_);
+            throw om::IoException("could not read fully file", fnp_);
         }
 
         return ret;

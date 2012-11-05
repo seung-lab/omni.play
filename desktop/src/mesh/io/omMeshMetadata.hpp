@@ -46,7 +46,7 @@ public:
     {
         zi::guard g(lock_);
         if(!meshVersion_){
-            throw IoException("meshes not yet built");
+            throw om::IoException("meshes not yet built");
         }
         return 1 == meshVersion_;
     }
@@ -81,7 +81,7 @@ private:
         }
 
         if(!file.open(QIODevice::ReadOnly)){
-            throw IoException("error reading file", fnp_);
+            throw om::IoException("error reading file", fnp_);
         }
 
         QDataStream in(&file);
@@ -93,7 +93,7 @@ private:
         in >> meshVersion_;
 
         if(!in.atEnd()){
-            throw IoException("corrupt file?", fnp_);
+            throw om::IoException("corrupt file?", fnp_);
         }
 
         return true;
@@ -104,7 +104,7 @@ private:
         QFile file(fnp_);
 
         if (!file.open(QIODevice::WriteOnly)) {
-            throw IoException("could not write file", fnp_);
+            throw om::IoException("could not write file", fnp_);
         }
 
         QDataStream out(&file);

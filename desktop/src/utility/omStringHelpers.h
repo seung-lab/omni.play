@@ -19,7 +19,7 @@ public:
         if(ok){
             return ret;
         }
-        throw IoException("could not parse to uint32_t", arg);
+        throw om::IoException("could not parse to uint32_t", arg);
     }
 
     static int32_t getInt(const QString& arg)
@@ -29,7 +29,7 @@ public:
         if(ok){
             return ret;
         }
-        throw IoException("could not parse to int32_t", arg);
+        throw om::IoException("could not parse to int32_t", arg);
     }
 
     static bool getBool(const QString& arg)
@@ -51,7 +51,7 @@ public:
         if( ok ){
             return ret;
         }
-        throw IoException("could not parse to double", arg);
+        throw om::IoException("could not parse to double", arg);
     }
 
     static float getFloat(const QString& arg)
@@ -61,7 +61,7 @@ public:
         if( ok ){
             return ret;
         }
-        throw IoException("could not parse to float", arg);
+        throw om::IoException("could not parse to float", arg);
     }
 };
 

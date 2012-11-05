@@ -47,7 +47,7 @@ public:
 
             OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(vol);
             if(!seg) {
-            	throw new FormatException("Bad Cast to OmSegmentation.");
+            	throw new om::FormatException("Bad Cast to OmSegmentation.");
             }
             draw(seg);
         }
@@ -195,7 +195,7 @@ private:
 
         OmChannel* chan = reinterpret_cast<OmChannel*>(vol);
 		if(!chan) {
-        	throw new FormatException("Bad Cast to OmChannel.");
+        	throw new om::FormatException("Bad Cast to OmChannel.");
         }
 
         bool drawChannel = false;

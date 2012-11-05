@@ -49,7 +49,7 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
         ss << " line: " << e.mark.line;
         ss << " col: " << e.mark.column;
         ss << " pos: " << e.mark.pos;
-        throw IoException(ss.str());
+        throw om::IoException(ss.str());
     }
     postLoad();
 }

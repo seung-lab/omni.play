@@ -77,7 +77,7 @@ public:
     OmHdf5* OldHDF5()
     {
         if(!oldHDF5_){
-            throw IoException("no old hdf5 file present");
+            throw om::IoException("no old hdf5 file present");
         }
         return oldHDF5_;
     }
@@ -170,7 +170,7 @@ private:
         if(!dir.exists())
         {
             if(!dir.mkpath(dirStr)){
-                throw IoException("could not make path", dirStr);
+                throw om::IoException("could not make path", dirStr);
             }
         }
     }
@@ -178,7 +178,7 @@ private:
     void doLoad(const QString& fnp, QWidget* guiParent)
     {
         if(!QFile::exists(fnp)){
-            throw IoException("Project file not found at", fnp);
+            throw om::IoException("Project file not found at", fnp);
         }
 
         omniFile_ = fnp;
@@ -201,7 +201,7 @@ private:
             const int userWasSelected = chooser->exec();
 
             if(!userWasSelected){
-                throw IoException("user not choosen");
+                throw om::IoException("user not choosen");
             }
         }
 
@@ -247,7 +247,7 @@ private:
     {
         QFile file(omniFile_);
         if(!file.open(QIODevice::WriteOnly)) {
-            throw IoException("could not open", omniFile_);
+            throw om::IoException("could not open", omniFile_);
         }
     }
 
@@ -276,7 +276,7 @@ private:
         QFile newProjectMetadafile(OmFileNames::ProjectMetadataFileOld());
 
         if(!newProjectMetadafile.open(QIODevice::WriteOnly)) {
-            throw IoException("could not open", projectMetadataFile_);
+            throw om::IoException("could not open", projectMetadataFile_);
         }
 
         newProjectMetadafile.write(data, size);

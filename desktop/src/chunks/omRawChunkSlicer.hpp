@@ -82,7 +82,7 @@ private:
         break;
 
         default:
-            throw ArgException("unknown plane");
+            throw om::ArgException("unknown plane");
         };
     }
 };

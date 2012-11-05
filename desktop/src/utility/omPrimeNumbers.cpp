@@ -9,7 +9,7 @@ int om::constants::getNextBiggestPrime(const int num)
                          num);
 
     if(nextBiggestPrime == first1000Primes.end()){
-        throw IoException("couldn't find next biggest prime");
+        throw om::IoException("couldn't find next biggest prime");
     }
 
     return *nextBiggestPrime;

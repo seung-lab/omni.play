@@ -42,11 +42,11 @@ private:
     {
         QFile writer(fnp_);
         if( !writer.open(QIODevice::ReadWrite)) {
-            throw IoException("could not open", fnp_);
+            throw om::IoException("could not open", fnp_);
         }
 
         if(!writer.seek(offsetIntoFile_)){
-            throw IoException("could not seek to " +
+            throw om::IoException("could not seek to " +
                                 om::string::num(offsetIntoFile_));
         }
 
@@ -56,7 +56,7 @@ private:
             std::cout << "could not write data; numBytes is " << numBytes_
                       << ", but only wrote " << bytesWritten << "\n"
                       << std::flush;
-            throw IoException("could not write fully file", fnp_);
+            throw om::IoException("could not write fully file", fnp_);
         }
     }
 };

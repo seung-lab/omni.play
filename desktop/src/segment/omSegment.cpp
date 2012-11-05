@@ -8,7 +8,7 @@
 void OmSegment::setParent(OmSegment* parent, const double threshold)
 {
     if(parent_){
-        throw ArgException("parent already set");
+        throw om::ArgException("parent already set");
     }
 
     parent_ = parent;

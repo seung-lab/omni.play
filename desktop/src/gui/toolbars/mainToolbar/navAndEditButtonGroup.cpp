@@ -124,7 +124,7 @@ void NavAndEditButtonGroup::findAndSetTool(const om::tool::mode tool)
         id = modifyToolIDsByToolMode_.at(tool);
 
     } else {
-        throw ArgException("tool not found");
+        throw om::ArgException("tool not found");
     }
 
     ToolButton * button = allToolsByID_.at(id);

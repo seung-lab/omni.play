@@ -26,7 +26,7 @@ public:
 			return true;
 			break;
 		default:
-			throw ArgException("unknown state?");
+			throw om::ArgException("unknown state?");
 		}
 	}
 

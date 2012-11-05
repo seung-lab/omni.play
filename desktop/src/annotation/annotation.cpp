@@ -69,7 +69,7 @@ void manager::Load() {
     {
         std::stringstream ss;
         ss << "Error Loading Annotations: " << e.what() << ".\n";
-        throw IoException(ss.str());
+        throw om::IoException(ss.str());
     }
 
     return;

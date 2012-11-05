@@ -54,7 +54,7 @@ void OmSegmentLists::Swap(boost::shared_ptr<OmSegmentListForGUI>& list)
         uncertain_ = list;
         break;
     default:
-        throw ArgException("unknown type");
+        throw om::ArgException("unknown type");
     }
 }
 

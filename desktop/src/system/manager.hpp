@@ -114,7 +114,7 @@ public:
 		zi::guard g(lock_);
 		iterator iter = objs_.find(id);
 		if (iter != end()) {
-			throw ArgException("Bad id");
+			throw om::ArgException("Bad id");
 		}
 		return iter->second;
 	}

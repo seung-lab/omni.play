@@ -31,7 +31,7 @@ OmTextureID::~OmTextureID()
 void* OmTextureID::GetTileData() const
 {
     if(!pooledTile_){
-        throw IoException("no data");
+        throw om::IoException("no data");
     }
 
     return pooledTile_->GetDataVoid();

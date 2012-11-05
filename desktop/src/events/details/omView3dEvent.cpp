@@ -26,6 +26,6 @@ void OmView3dEvent::Dispatch(OmEventListener * pListener)
         return;
 
     default:
-        throw ArgException("unknown event type");
+        throw om::ArgException("unknown event type");
     }
 }

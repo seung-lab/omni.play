@@ -27,7 +27,7 @@ public:
             return new dataImpl<float>(vol, coord);
         case om::common::DataType::UNKNOWN:
         default:
-            throw IoException("data type not handled");
+            throw om::IoException("data type not handled");
         };
     }
 };

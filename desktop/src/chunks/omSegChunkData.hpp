@@ -33,7 +33,7 @@ public:
 
         case om::common::DataType::UNKNOWN:
         default:
-            throw IoException("data type not handled");
+            throw om::IoException("data type not handled");
         };
     }
 };

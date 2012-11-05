@@ -20,7 +20,7 @@ public:
               aff == om::common::Y_AFFINITY ||
               aff == om::common::Z_AFFINITY))
         {
-            throw ArgException("Bad Affinity Type.");
+            throw om::ArgException("Bad Affinity Type.");
         }
     }
 
@@ -51,7 +51,7 @@ public:
         case om::common::Z_AFFINITY:
             return str( boost::format("affinity/affinity%1%/Z") % GetID());
         default:
-            throw ArgException("unknown arg");
+            throw om::ArgException("unknown arg");
         }
     }
 };

@@ -10,13 +10,13 @@ void OmHdf5Utils::group_create(const int fileId,
     //Creates a new empty group and links it into the file.
     hid_t group_id = H5Gcreate2(fileId, path, 0, H5P_DEFAULT, H5P_DEFAULT);
     if (group_id < 0) {
-        throw IoException("Could not create HDF5 group \""
+        throw om::IoException("Could not create HDF5 group \""
                             + std::string(path) + "\"");
     }
 
     herr_t status = H5Gclose(group_id);
     if (status < 0) {
-        throw IoException("Could not close HDF5 group.");
+        throw om::IoException("Could not close HDF5 group.");
     }
 }
 
@@ -24,7 +24,7 @@ void OmHdf5Utils::group_delete(const int fileId, const char* path)
 {
     herr_t err = H5Gunlink(fileId, path);
     if (err < 0) {
-        throw IoException("Could not unlink HDF5 group " + std::string(path));
+        throw om::IoException("Could not unlink HDF5 group " + std::string(path));
     }
 }
 
@@ -57,7 +57,7 @@ bool OmHdf5Utils::dataset_exists(const int fileId, const char* path)
     //Closes the specified dataset.
     herr_t ret = H5Dclose(dataset_id);
     if (ret < 0) {
-        throw IoException("Could not close HDF5 dataset "
+        throw om::IoException("Could not close HDF5 dataset "
                             + std::string(path));
     }
 
@@ -69,7 +69,7 @@ void OmHdf5Utils::dataset_delete(const int fileId, const char* path)
     //Removes the link to an object from a group.
     herr_t err = H5Gunlink(fileId, path);
     if (err < 0) {
-        throw IoException("Could not unlink HDF5 dataset "
+        throw om::IoException("Could not unlink HDF5 dataset "
                             + std::string(path));
     }
 }
@@ -120,14 +120,14 @@ OmDataWrapperPtr OmHdf5Utils::getDataWrapper(void* dataset,
             return OmDataWrapper<int32_t>::produce(dataset, allocType);
 
         }else {
-            throw IoException("unknown hdf5 integer type");
+            throw om::IoException("unknown hdf5 integer type");
         }
 
     case H5T_FLOAT:
         return OmDataWrapper<float>::produce(dataset, allocType);
 
     default:
-        throw IoException("unknown hdf5 type");
+        throw om::IoException("unknown hdf5 type");
     }
 }
 

@@ -61,7 +61,7 @@ public:
     void Build(const om::common::AffinityGraph aff)
     {
         if(HDF5 != importType_){
-            throw ArgException("first file to import is not HDF5");
+            throw om::ArgException("first file to import is not HDF5");
         }
 
         OmVolumeBuilderHdf5<VOL> builder(vol_, files_[0], hdf5path_, aff);
@@ -71,7 +71,7 @@ public:
     void BuildWatershed()
     {
         if(WATERSHED != importType_){
-            throw ArgException("first file to import is not Watershed");
+            throw om::ArgException("first file to import is not Watershed");
         }
 
         OmVolumeBuilderWatershed<VOL> builder(vol_, files_[0]);
@@ -95,7 +95,7 @@ private:
         case WATERSHED:
             return new OmVolumeBuilderWatershed<VOL>(vol_, files_[0]);
         default:
-            throw ArgException("unknown type");
+            throw om::ArgException("unknown type");
         };
     }
 
@@ -113,7 +113,7 @@ private:
     void setImportType()
     {
         if(files_.empty()){
-            throw IoException("no source files");
+            throw om::IoException("no source files");
         }
 
         const QString fnp = files_[0].fileName();
@@ -136,18 +136,18 @@ private:
     void isSourceValid()
     {
         if(files_.empty()){
-            throw IoException("no source files");
+            throw om::IoException("no source files");
         }
 
         if(HDF5 == importType_ || WATERSHED == importType_){
             if(1 != files_.size()){
-                throw IoException("only import one hdf5/watershed file at a time");
+                throw om::IoException("only import one hdf5/watershed file at a time");
             }
         }
 
         FOR_EACH(iter, files_){
             if(!iter->exists()){
-                throw IoException("source file not found", iter->fileName());
+                throw om::IoException("source file not found", iter->fileName());
             }
         }
     }
