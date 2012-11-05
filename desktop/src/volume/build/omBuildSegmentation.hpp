@@ -18,7 +18,7 @@ private:
     SegmentationDataWrapper sdw_;
     OmSegmentation& seg_;
 
-    typedef om::shared_ptr<om::gui::progress> prog_t;
+    typedef boost::shared_ptr<om::gui::progress> prog_t;
 
 public:
     OmBuildSegmentation()

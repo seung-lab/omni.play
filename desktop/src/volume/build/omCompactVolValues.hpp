@@ -39,7 +39,7 @@ public:
 private:
     void findUniqueValues(boost::unordered_set<uint32_t>& values)
     {
-        om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
+        boost::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
             vol_->MipChunkCoords(0);
         const uint32_t numChunks = coordsPtr->size();
 
@@ -55,7 +55,7 @@ private:
 
             OmSegChunk* chunk = vol_->GetChunk(coord);
 
-            om::shared_ptr<uint32_t> dataPtr =
+            boost::shared_ptr<uint32_t> dataPtr =
                 chunk->SegData()->GetCopyOfChunkDataAsUint32();
             uint32_t const*const data = dataPtr.get();
 
@@ -67,7 +67,7 @@ private:
 
     void doRewriteVol(const boost::unordered_map<uint32_t, uint32_t>& compact)
     {
-        om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
+        boost::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
             vol_->MipChunkCoords(0);
         const uint32_t numChunks = coordsPtr->size();
 

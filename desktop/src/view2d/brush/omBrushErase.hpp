@@ -9,7 +9,7 @@ public:
     static void EraseByClick(OmView2dState* state, const om::coords::Global& coord,
                              const om::common::SegID segIDtoErase)
     {
-        om::shared_ptr<OmBrushOppInfo> info =
+        boost::shared_ptr<OmBrushOppInfo> info =
             OmBrushOppInfoFactory::MakeOppInfo(state, coord, om::common::ADD);
 
         OmBrushEraseCircle circle(info, segIDtoErase);
@@ -22,10 +22,10 @@ public:
     {
         const om::coords::Global& first = state->GetLastDataPoint();
 
-        om::shared_ptr<OmBrushOppInfo> info =
+        boost::shared_ptr<OmBrushOppInfo> info =
             OmBrushOppInfoFactory::MakeOppInfo(state, first, om::common::ADD);
 
-        om::shared_ptr<OmBrushEraseLineTask> task =
+        boost::shared_ptr<OmBrushEraseLineTask> task =
             om::make_shared<OmBrushEraseLineTask>(info, first, second, segIDtoErase);
 
         OmView2dManager::AddTaskBack(task);

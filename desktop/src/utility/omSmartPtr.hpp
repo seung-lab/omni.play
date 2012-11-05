@@ -7,7 +7,7 @@
 template <typename T>
 class OmSmartPtr {
 public:
-    static om::shared_ptr<T>
+    static boost::shared_ptr<T>
     inline MallocNumBytes(const uint64_t numBytes,
                           const om::common::ZeroMem shouldZeroMem)
     {
@@ -29,32 +29,32 @@ public:
         return WrapMalloc(rawPtr);
     }
 
-    static om::shared_ptr<T>
+    static boost::shared_ptr<T>
     inline MallocNumElements(const uint64_t numElements,
                              const om::common::ZeroMem shouldZeroMem)
     {
         return MallocNumBytes(numElements * sizeof(T), shouldZeroMem);
     }
 
-    static om::shared_ptr<T>
+    static boost::shared_ptr<T>
     inline NewNumElements(const uint64_t numElements)
     {
         return WrapNewArray(new T[numElements]);
     }
 
-    static om::shared_ptr<T>
+    static boost::shared_ptr<T>
     inline WrapNewArray(T* rawPtr){
-        return om::shared_ptr<T>(rawPtr, deallocatorNewArray());
+        return boost::shared_ptr<T>(rawPtr, deallocatorNewArray());
     }
 
-    static om::shared_ptr<T>
+    static boost::shared_ptr<T>
     inline WrapNoFree(T* rawPtr){
-        return om::shared_ptr<T>(rawPtr, deallocatorDoNothing());
+        return boost::shared_ptr<T>(rawPtr, deallocatorDoNothing());
     }
 
-    static om::shared_ptr<T>
+    static boost::shared_ptr<T>
     inline WrapMalloc(T* rawPtr){
-        return om::shared_ptr<T>(rawPtr, deallocatorMalloc());
+        return boost::shared_ptr<T>(rawPtr, deallocatorMalloc());
     }
 
 private:

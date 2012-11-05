@@ -22,12 +22,12 @@ public:
     ~OmMeshReaderV2()
     {}
 
-    inline om::shared_ptr<OmDataForMeshLoad>
+    inline boost::shared_ptr<OmDataForMeshLoad>
     Read(const OmMeshCoord& meshCoord){
         return Read(meshCoord.SegID(), meshCoord.Coord());
     }
 
-    om::shared_ptr<OmDataForMeshLoad>
+    boost::shared_ptr<OmDataForMeshLoad>
     Read(const om::common::SegID segID, const om::coords::Chunk& coord)
     {
         OmMeshChunkAllocTableV2* chunk_table =
@@ -35,7 +35,7 @@ public:
 
         OmMeshChunkDataReaderV2 chunk_data(segmentation_, coord, threshold_);
 
-        om::shared_ptr<OmDataForMeshLoad> ret =
+        boost::shared_ptr<OmDataForMeshLoad> ret =
             om::make_shared<OmDataForMeshLoad>();
 
         if(!chunk_table->Contains(segID)){

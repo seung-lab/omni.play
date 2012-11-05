@@ -45,7 +45,7 @@ private:
 
     QGLContext const* context_;
 
-    om::shared_ptr<OmDataForMeshLoad> data_;
+    boost::shared_ptr<OmDataForMeshLoad> data_;
 
     GLuint vertexDataVboId_;
     GLuint vertexIndexDataVboId_;

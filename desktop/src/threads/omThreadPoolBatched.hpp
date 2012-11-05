@@ -8,7 +8,7 @@ struct IndivArgPolicy {
     boost::function<void (T*, const ARG& arg)> func;
     T* classInstantiation;
 
-    void run(om::shared_ptr<std::vector<ARG> > argsPtr)
+    void run(boost::shared_ptr<std::vector<ARG> > argsPtr)
     {
         const std::vector<ARG>& args = *argsPtr;
 
@@ -27,7 +27,7 @@ struct VectorArgPolicy {
     boost::function<void (T*, const std::vector<ARG>& args)> func;
     T* classInstantiation;
 
-    void run(om::shared_ptr<std::vector<ARG> > argsPtr)
+    void run(boost::shared_ptr<std::vector<ARG> > argsPtr)
     {
         const std::vector<ARG>& args = *argsPtr;
 
@@ -46,7 +46,7 @@ private:
     OmThreadPool pool_;
 
     typedef std::vector<ARG> args_t;
-    om::shared_ptr<args_t> args_;
+    boost::shared_ptr<args_t> args_;
 
     void resetArgs()
     {
@@ -117,7 +117,7 @@ public:
 
 private:
 
-    void worker(om::shared_ptr<args_t> argsPtr){
+    void worker(boost::shared_ptr<args_t> argsPtr){
         runner_.run(argsPtr);
     }
 };

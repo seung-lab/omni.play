@@ -9,12 +9,12 @@ class OmSegmentUncertainActionImpl{
 private:
 	SegmentationDataWrapper sdw_;
 	bool uncertain_;
-	om::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+	boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
 
 public:
 	OmSegmentUncertainActionImpl() {}
 	OmSegmentUncertainActionImpl(const SegmentationDataWrapper& sdw,
-								 om::shared_ptr<std::set<OmSegment*> > selectedSegments,
+								 boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 								 const bool uncertain)
 		: sdw_(sdw)
 		, uncertain_(uncertain)

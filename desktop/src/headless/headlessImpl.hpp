@@ -273,7 +273,7 @@ public:
 
         double timeSecs = 0;
 
-        om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
+        boost::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
             vol.MipChunkCoords();
         std::deque<om::coords::Chunk>& coords = *coordsPtr;
         const uint32_t numChunks = coords.size();

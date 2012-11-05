@@ -14,7 +14,7 @@ class progressBarDialog : public QDialog {
 Q_OBJECT
 
 private:
-    om::shared_ptr<progress> progress_;
+    boost::shared_ptr<progress> progress_;
     progressBar<uint64_t>* progressBar_;
 
     OmThreadPool threadPool_;
@@ -47,7 +47,7 @@ public:
         init();
     }
 
-    progressBarDialog(QWidget* parent, om::shared_ptr<progress> progress)
+    progressBarDialog(QWidget* parent, boost::shared_ptr<progress> progress)
         : QDialog(parent)
         , progress_(progress)
     {
@@ -57,7 +57,7 @@ public:
     ~progressBarDialog()
     {}
 
-    om::shared_ptr<progress> Progress(){
+    boost::shared_ptr<progress> Progress(){
         return progress_;
     }
 

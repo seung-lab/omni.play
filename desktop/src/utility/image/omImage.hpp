@@ -23,7 +23,7 @@ public:
         : extent_(extent)
         , data_()
     {
-        data_ = om::shared_ptr<container_t>
+        data_ = boost::shared_ptr<container_t>
             (new container_t(extent.getBoostExtent()));
     }
 
@@ -31,12 +31,12 @@ public:
         : extent_(extent)
         , data_()
     {
-        data_ = om::shared_ptr<container_t>
+        data_ = boost::shared_ptr<container_t>
             (new container_t(extent.getBoostExtent()));
         data_->assign(data, data+data_->num_elements());
     }
 
-    OmImageCopiedData(om::shared_ptr<container_t> data, OmDimension<D> extent)
+    OmImageCopiedData(boost::shared_ptr<container_t> data, OmDimension<D> extent)
         : extent_(extent)
         , data_(data)
     {}
@@ -45,7 +45,7 @@ public:
     {}
 
     OmDimension<D>                 extent_;
-    om::shared_ptr<container_t> data_;
+    boost::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D>
@@ -66,11 +66,11 @@ public:
         : extent_(extent)
         , data_()
     {
-        data_ = om::shared_ptr<container_t>
+        data_ = boost::shared_ptr<container_t>
             (new container_t(data, extent.getBoostExtent()));
     }
 
-    OmImageRefData(om::shared_ptr<container_t> data, OmDimension<D> extent)
+    OmImageRefData(boost::shared_ptr<container_t> data, OmDimension<D> extent)
         : extent_(extent)
         , data_(data)
     {}
@@ -79,7 +79,7 @@ public:
     {}
 
     OmDimension<D>                 extent_;
-    om::shared_ptr<container_t> data_;
+    boost::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D>
@@ -100,11 +100,11 @@ public:
         : extent_(extent)
         , data_()
     {
-        data_ = om::shared_ptr<container_t>
+        data_ = boost::shared_ptr<container_t>
             (new container_t(data, extent.getBoostExtent()));
     }
 
-    OmImageConstRefData(om::shared_ptr<container_t> data, OmDimension<D> extent)
+    OmImageConstRefData(boost::shared_ptr<container_t> data, OmDimension<D> extent)
         : extent_(extent)
         , data_(data)
     {}
@@ -113,7 +113,7 @@ public:
     {}
 
     OmDimension<D>                 extent_;
-    om::shared_ptr<container_t> data_;
+    boost::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D,
@@ -133,7 +133,7 @@ public:
         : d_(container_t<T,D>(extent, data))
     {}
 
-    OmImage(om::shared_ptr<boost::multi_array<T,D> > data, OmDimension<D> extent)
+    OmImage(boost::shared_ptr<boost::multi_array<T,D> > data, OmDimension<D> extent)
         : d_(container_t<T,D>(data, extent))
     {}
 
@@ -183,14 +183,14 @@ public:
         }
     }
 
-    om::shared_ptr<T> getMallocCopyOfData() const
+    boost::shared_ptr<T> getMallocCopyOfData() const
     {
         if(!d_.data_){
-            return om::shared_ptr<T>();
+            return boost::shared_ptr<T>();
         }
 
         const int numBytes = d_.data_->num_elements()*sizeof(T);
-        om::shared_ptr<T> ret =
+        boost::shared_ptr<T> ret =
             OmSmartPtr<T>::MallocNumBytes(numBytes, om::common::DONT_ZERO_FILL);
         memcpy(ret.get(), d_.data_->data(), numBytes);
         return ret;

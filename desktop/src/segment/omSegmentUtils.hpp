@@ -15,7 +15,7 @@
 
 class OmSegmentUtils {
 public:
-    om::shared_ptr<std::set<OmSegment*> >
+    boost::shared_ptr<std::set<OmSegment*> >
     static GetAllChildrenSegments(OmSegments* segments, const om::common::SegIDSet& set)
     {
         OmSegmentIterator iter(segments);
@@ -31,7 +31,7 @@ public:
             seg = iter.getNextSegment();
         }
 
-        return om::shared_ptr<std::set<OmSegment*> >(children);
+        return boost::shared_ptr<std::set<OmSegment*> >(children);
     }
 
     template <class A, class B>
@@ -94,10 +94,10 @@ public:
         // 2 is the manual merge threshold
     }
 
-    om::shared_ptr<std::deque<std::string> >
+    boost::shared_ptr<std::deque<std::string> >
     static GetChildrenInfo(const SegmentDataWrapper& sdw)
     {
-        om::shared_ptr<std::deque<std::string> > ret =
+        boost::shared_ptr<std::deque<std::string> > ret =
             om::make_shared<std::deque<std::string> >();
 
         if(!sdw.IsSegmentValid()){

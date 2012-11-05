@@ -66,8 +66,8 @@ private:
     boost::scoped_ptr<OmCacheGroup> meshCaches_;
     boost::scoped_ptr<OmCacheGroup> tileCaches_;
 
-    om::shared_ptr<zi::periodic_function> cleaner_;
-    om::shared_ptr<zi::thread> cleanerThread_;
+    boost::shared_ptr<zi::periodic_function> cleaner_;
+    boost::shared_ptr<zi::thread> cleanerThread_;
 
     LockedBool amClosingDown;
     LockedUint64 freshness_;

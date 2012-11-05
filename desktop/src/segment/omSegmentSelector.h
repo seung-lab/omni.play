@@ -33,7 +33,7 @@ public:
 
 private:
     OmSegments* segments_;
-    om::shared_ptr<OmSelectSegmentsParams> params_;
+    boost::shared_ptr<OmSelectSegmentsParams> params_;
 
     void setSelectedSegment(const om::common::SegID segID);
 };

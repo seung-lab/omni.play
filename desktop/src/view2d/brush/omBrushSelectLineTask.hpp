@@ -5,12 +5,12 @@
 
 class OmBrushSelectLineTask : public zi::runnable {
 private:
-    const om::shared_ptr<OmBrushOppInfo> info_;
+    const boost::shared_ptr<OmBrushOppInfo> info_;
     const om::coords::Global first_;
     const om::coords::Global second_;
 
 public:
-    OmBrushSelectLineTask(om::shared_ptr<OmBrushOppInfo> info,
+    OmBrushSelectLineTask(boost::shared_ptr<OmBrushOppInfo> info,
                           const om::coords::Global& first,
                           const om::coords::Global& second)
         : info_(info)

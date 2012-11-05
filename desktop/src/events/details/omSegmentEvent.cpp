@@ -17,7 +17,7 @@ OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
 }
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
-                               om::shared_ptr<OmSelectSegmentsParams> params)
+                               boost::shared_ptr<OmSelectSegmentsParams> params)
     : OmEvent(type, CLASS)
     , params_(params)
 {}

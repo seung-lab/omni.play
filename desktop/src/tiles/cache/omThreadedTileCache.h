@@ -34,7 +34,7 @@ private:
         std::map<key_t,ptr_t> map;
         KeyMultiIndex<key_t> list;
     };
-    LockedList<om::shared_ptr<OldCache> > cachesToClean_;
+    LockedList<boost::shared_ptr<OldCache> > cachesToClean_;
 
     OmTilesToPrefetch tilesToPrefetch_;
 
@@ -136,7 +136,7 @@ public:
         }
 
         // avoid contention on cacheToClean by swapping in new, empty list
-        std::list<om::shared_ptr<OldCache> > oldCaches;
+        std::list<boost::shared_ptr<OldCache> > oldCaches;
         cachesToClean_.swap(oldCaches);
     }
 
@@ -155,7 +155,7 @@ public:
         ClearFetchQueue();
 
         // add current cache to list to be cleaned later by OmCacheMan thread
-        om::shared_ptr<OldCache> cache(new OldCache());
+        boost::shared_ptr<OldCache> cache(new OldCache());
 
         cache_.swap(cache->map, cache->list);
         cachesToClean_.push_back(cache);

@@ -28,7 +28,7 @@ public:
     {
         printf("copying mesh data...\n");
 
-        om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
+        boost::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
             segmentation_->MipChunkCoords();
 
         FOR_EACH(iter, *coordsPtr)
@@ -65,7 +65,7 @@ private:
                 continue;
             }
 
-            om::shared_ptr<OmDataForMeshLoad> mesh =
+            boost::shared_ptr<OmDataForMeshLoad> mesh =
                 hdf5Reader_->Read(*segID, coord);
 
             meshWriter_->Save(*segID, coord, mesh,

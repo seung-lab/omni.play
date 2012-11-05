@@ -15,7 +15,7 @@ public:
     static void SegmentGUIlist(const SegmentationDataWrapper& sdw,
                                const bool stayOnPage);
     static void SegmentModified();
-    static void SegmentModified(om::shared_ptr<OmSelectSegmentsParams> params);
+    static void SegmentModified(boost::shared_ptr<OmSelectSegmentsParams> params);
     static void SegmentSelected();
     static void ViewCenterChanged();
     static void View3dRecenter();

@@ -47,7 +47,7 @@ struct LargestSegInfoFirst : std::binary_function <SegInfo, SegInfo, bool>
 
 };
 
-om::shared_ptr<GUIPageOfSegments> getPage(const std::vector<SegInfo> list,
+boost::shared_ptr<GUIPageOfSegments> getPage(const std::vector<SegInfo> list,
                                              const uint32_t startIndex,
                                              const uint32_t numToGet);
 

@@ -68,7 +68,7 @@ public:
 
     static void CutSegment(const SegmentDataWrapper& sdw);
 
-    static void SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params);
+    static void SelectSegments(boost::shared_ptr<OmSelectSegmentsParams> params);
 
 // group-related
     static void CreateOrDeleteSegmentGroup(const om::common::ID segmentationID,

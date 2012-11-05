@@ -25,7 +25,7 @@ void OmMipVolume::addChunkCoordsForLevel(const int mipLevel,
     }
 }
 
-om::shared_ptr<std::deque<om::coords::Chunk> >
+boost::shared_ptr<std::deque<om::coords::Chunk> >
 OmMipVolume::MipChunkCoords() const
 {
     std::deque<om::coords::Chunk>* coords = new std::deque<om::coords::Chunk>();
@@ -34,17 +34,17 @@ OmMipVolume::MipChunkCoords() const
         addChunkCoordsForLevel(level, coords);
     }
 
-    return om::shared_ptr<std::deque<om::coords::Chunk> >(coords);
+    return boost::shared_ptr<std::deque<om::coords::Chunk> >(coords);
 }
 
-om::shared_ptr<std::deque<om::coords::Chunk> >
+boost::shared_ptr<std::deque<om::coords::Chunk> >
 OmMipVolume::MipChunkCoords(const int mipLevel) const
 {
     std::deque<om::coords::Chunk>* coords = new std::deque<om::coords::Chunk>();
 
     addChunkCoordsForLevel(mipLevel, coords);
 
-    return om::shared_ptr<std::deque<om::coords::Chunk> >(coords);
+    return boost::shared_ptr<std::deque<om::coords::Chunk> >(coords);
 }
 
 

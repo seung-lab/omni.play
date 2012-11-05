@@ -12,7 +12,7 @@ private:
     VOL *const vol_;
     const std::vector<QFileInfo>& files_;
 
-    std::vector<om::shared_ptr<QFile> > volFiles_;
+    std::vector<boost::shared_ptr<QFile> > volFiles_;
 
 public:
     OmDataCopierImages(VOL* vol, const std::vector<QFileInfo>& files)
@@ -23,7 +23,7 @@ public:
 
     void ReplaceSlice(const int sliceNum)
     {
-        om::shared_ptr<QFile> mip0volFile = OmSimpleRawVol::Open(vol_, 0);
+        boost::shared_ptr<QFile> mip0volFile = OmSimpleRawVol::Open(vol_, 0);
 
         const int depth = QImage(files_[0].absoluteFilePath()).depth();
 
@@ -50,7 +50,7 @@ protected:
 
         allocateData(determineDataType(depth));
 
-        om::shared_ptr<QFile> mip0volFile = volFiles_[0];
+        boost::shared_ptr<QFile> mip0volFile = volFiles_[0];
 
         if(8 == depth)
         {

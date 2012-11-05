@@ -38,7 +38,7 @@ class OmHdf5Manager : private om::singletonBase<OmHdf5Manager> {
 	~OmHdf5Manager(){}
 
 	zi::mutex mutex_;
-	std::map<std::string, om::shared_ptr<OmHdf5> > hdf5Files_;
+	std::map<std::string, boost::shared_ptr<OmHdf5> > hdf5Files_;
 
 	OmHdf5* doGetOmHdf5File(const std::string& fnp, const bool readOnly)
 	{
@@ -48,7 +48,7 @@ class OmHdf5Manager : private om::singletonBase<OmHdf5Manager> {
 			return hdf5Files_[fnp].get();
 		}
 
-		om::shared_ptr<OmHdf5> hdf5File(new OmHdf5(fnp, readOnly));
+		boost::shared_ptr<OmHdf5> hdf5File(new OmHdf5(fnp, readOnly));
 
 		hdf5Files_[fnp] = hdf5File;
 		return hdf5File.get();

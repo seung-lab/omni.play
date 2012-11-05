@@ -23,7 +23,7 @@ void compressToFileNumElements(T const*const data, const int64_t numElements,
 }
 
 template <class T>
-void compressToFileNumElements(const om::shared_ptr<T>& data,
+void compressToFileNumElements(const boost::shared_ptr<T>& data,
                                const int64_t numElements,
                                const std::string& out_fnp)
 {

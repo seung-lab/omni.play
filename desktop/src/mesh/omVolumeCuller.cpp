@@ -16,7 +16,7 @@ const om::normCoord& OmVolumeCuller::GetPosition() const {
     return mPosition;
 }
 
-om::shared_ptr<OmVolumeCuller>
+boost::shared_ptr<OmVolumeCuller>
 OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat,
                                     const Matrix4f & matInv)
 {

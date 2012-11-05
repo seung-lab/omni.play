@@ -235,7 +235,7 @@ void OmSegmentContextMenu::addPropertiesActions()
 
 void OmSegmentContextMenu::printChildren()
 {
-    om::shared_ptr<std::deque<std::string> > children = OmSegmentUtils::GetChildrenInfo(sdw_);
+    boost::shared_ptr<std::deque<std::string> > children = OmSegmentUtils::GetChildrenInfo(sdw_);
 
     OmAskYesNoQuestion fileExport("Export children list to file?");
 
@@ -262,7 +262,7 @@ void OmSegmentContextMenu::printChildren()
 }
 
 void OmSegmentContextMenu::writeChildrenFile(const QString fnp, om::gui::progressBarDialog* dialog,
-                                             om::shared_ptr<std::deque<std::string> > children)
+                                             boost::shared_ptr<std::deque<std::string> > children)
 {
     try
     {

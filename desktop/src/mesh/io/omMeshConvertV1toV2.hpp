@@ -34,14 +34,14 @@ public:
     {
         threadPool_.start(1);
 
-        om::shared_ptr<OmMeshConvertV1toV2Task> task =
+        boost::shared_ptr<OmMeshConvertV1toV2Task> task =
             om::make_shared<OmMeshConvertV1toV2Task>(meshManager_);
 
         threadPool_.push_back(task);
     }
 
     // migrate mesh
-    om::shared_ptr<OmDataForMeshLoad>
+    boost::shared_ptr<OmDataForMeshLoad>
     ReadAndConvert(const OmMeshCoord& meshCoord)
     {
         const om::common::SegID segID = meshCoord.SegID();
@@ -58,7 +58,7 @@ public:
             return meshReader_->Read(segID, coord);
         }
 
-        om::shared_ptr<OmDataForMeshLoad> mesh =
+        boost::shared_ptr<OmDataForMeshLoad> mesh =
             hdf5Reader_->Read(segID, coord);
 
         meshWriter_->Save(segID, coord, mesh,

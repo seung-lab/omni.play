@@ -20,7 +20,7 @@ private:
     const QString memMapFileName_;
     const uint64_t numBytes_;
 
-    om::shared_ptr<T> data_;
+    boost::shared_ptr<T> data_;
     T* dataRaw_;
 
     bool dirty_;
@@ -80,7 +80,7 @@ public:
         return dataRaw_;
     }
 
-    om::shared_ptr<T> SharedPtr(){
+    boost::shared_ptr<T> SharedPtr(){
         return data_;
     }
 

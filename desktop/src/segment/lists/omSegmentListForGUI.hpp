@@ -44,7 +44,7 @@ public:
         return totalNumVoxels_;
     }
 
-    om::shared_ptr<GUIPageOfSegments> GetSegmentGUIPage(const GUIPageRequest& request)
+    boost::shared_ptr<GUIPageOfSegments> GetSegmentGUIPage(const GUIPageRequest& request)
     {
         if(!request.startSeg) {
             return om::segLists::getPage(bySize_, request.offset, request.numToGet);
@@ -79,7 +79,7 @@ public:
     }
 
 private:
-    om::shared_ptr<GUIPageOfSegments>
+    boost::shared_ptr<GUIPageOfSegments>
     getPageContainingSegment(const om::common::SegID segID, const int numToGet)
     {
         if(!index_.count(segID)){

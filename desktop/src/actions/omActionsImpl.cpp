@@ -133,7 +133,7 @@ void OmActionsImpl::setUncertain(const SegmentDataWrapper& sdw,
     om::common::SegIDSet set;
     set.insert(sdw.FindRootID());
 
-    om::shared_ptr<std::set<OmSegment*> > children =
+    boost::shared_ptr<std::set<OmSegment*> > children =
         OmSegmentUtils::GetAllChildrenSegments(sdw.Segments(), set);
 
     (new OmSegmentUncertainAction(sdw.MakeSegmentationDataWrapper(),
@@ -145,7 +145,7 @@ void OmActionsImpl::setUncertain(const SegmentationDataWrapper& sdw,
 {
     OmSegments* segments = sdw.Segments();
 
-    om::shared_ptr<std::set<OmSegment*> > children =
+    boost::shared_ptr<std::set<OmSegment*> > children =
         OmSegmentUtils::GetAllChildrenSegments(segments,
                                                segments->GetSelectedSegmentIDs());
 
@@ -199,7 +199,7 @@ void OmActionsImpl::CutSegment(const SegmentDataWrapper sdw)
     OmCutSegmentRunner::CutSegmentFromParent(sdw);
 }
 
-void OmActionsImpl::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params){
+void OmActionsImpl::SelectSegments(boost::shared_ptr<OmSelectSegmentsParams> params){
     (new OmSegmentSelectAction(params))->Run();
 }
 

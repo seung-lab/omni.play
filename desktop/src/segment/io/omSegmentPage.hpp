@@ -16,15 +16,15 @@ private:
     PageNum pageNum_;
     uint32_t pageSize_;
 
-    om::shared_ptr<OmSegmentPageVersion> versionInfo_;
+    boost::shared_ptr<OmSegmentPageVersion> versionInfo_;
 
-    om::shared_ptr<OmSegmentPageObjects> objectPoolPtr_;
+    boost::shared_ptr<OmSegmentPageObjects> objectPoolPtr_;
     OmSegment* objectPool_;
 
-    om::shared_ptr<OmSegmentPageV4> segmentsDataPtr_;
+    boost::shared_ptr<OmSegmentPageV4> segmentsDataPtr_;
     OmSegmentDataV4* segmentsData_;
 
-    om::shared_ptr<OmSegmentListTypePage> listTypePagePtr_;
+    boost::shared_ptr<OmSegmentListTypePage> listTypePagePtr_;
     uint8_t* listTypePage_;
 
 public:
@@ -145,13 +145,13 @@ private:
     template <class C>
     void convert(C& page)
     {
-        om::shared_ptr<OmSegmentDataV3> dataV3 = page.Read();
+        boost::shared_ptr<OmSegmentDataV3> dataV3 = page.Read();
 
-        om::shared_ptr<OmSegmentDataV4> dataV4 =
+        boost::shared_ptr<OmSegmentDataV4> dataV4 =
             OmSegmentPageConverter::ConvertPageV3toV4(dataV3, pageSize_);
         segmentsData_ = segmentsDataPtr_->Import(dataV4);
 
-        om::shared_ptr<uint8_t> listType =
+        boost::shared_ptr<uint8_t> listType =
             OmSegmentPageConverter::ConvertPageV3toV4ListType(dataV3, pageSize_);
         listTypePage_ = listTypePagePtr_->Import(listType);
 

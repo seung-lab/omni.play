@@ -63,7 +63,7 @@ private:
 
     zi::rwmutex thresholdLock_;
 
-    om::shared_ptr<OmIOnDiskFile<OmMSTEdge> > edgesPtr_;
+    boost::shared_ptr<OmIOnDiskFile<OmMSTEdge> > edgesPtr_;
     OmMSTEdge* edges_;
 
     void create();

@@ -61,7 +61,7 @@ private:
 	const bool readOnly_;
 
 	zi::rwmutex fileLock;
-	om::shared_ptr<OmHdf5Impl> hdf5_;
+	boost::shared_ptr<OmHdf5Impl> hdf5_;
 
 	friend class OmHdf5Manager;
 };

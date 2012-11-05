@@ -46,7 +46,7 @@ public:
         }
     }
 
-    void Build(om::shared_ptr<om::gui::progress> p)
+    void Build(boost::shared_ptr<om::gui::progress> p)
     {
         OmBuildSegmentation bs(sdw_);
 

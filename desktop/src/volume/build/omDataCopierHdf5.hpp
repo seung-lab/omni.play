@@ -59,7 +59,7 @@ private:
         OmThreadPool threadPool;
         threadPool.start(3);
 
-        om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
+        boost::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
             vol_->MipChunkCoords(0);
 
         OmSimpleProgress prog(coordsPtr->size(), "HDF5 chunk copy");
@@ -67,7 +67,7 @@ private:
         FOR_EACH(iter, *coordsPtr){
             const om::coords::Chunk& coord = *iter;
 
-            om::shared_ptr<OmDataCopierHdf5Task<VOL> > task =
+            boost::shared_ptr<OmDataCopierHdf5Task<VOL> > task =
                 om::make_shared<OmDataCopierHdf5Task<VOL> >(vol_,
                                                                path_,
                                                                aff_,
@@ -86,7 +86,7 @@ private:
 
     void allocateData(const OmVolDataType type)
     {
-        std::vector<om::shared_ptr<QFile> > volFiles =
+        std::vector<boost::shared_ptr<QFile> > volFiles =
             OmVolumeAllocater::AllocateData(vol_, type);
 
         mip0fnp_ = QFileInfo(*volFiles[0]).absoluteFilePath();

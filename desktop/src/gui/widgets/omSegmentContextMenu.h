@@ -59,5 +59,5 @@ private:
     void doRefresh();
 
     static void writeChildrenFile(const QString fnp, om::gui::progressBarDialog* dialog,
-                                  om::shared_ptr<std::deque<std::string> > children);
+                                  boost::shared_ptr<std::deque<std::string> > children);
 };

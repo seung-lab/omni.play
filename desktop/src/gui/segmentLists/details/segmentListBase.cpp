@@ -52,7 +52,7 @@ void SegmentListBase::populateByPage(const int offset)
     request.numToGet = getNumSegmentsPerPage();
     request.startSeg = 0;
 
-    om::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
+    boost::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
 
     currentPageNum_ = segIDs->pageNum;
 
@@ -80,7 +80,7 @@ void SegmentListBase::populateBySegment(const bool doScrollToSelectedSegment,
     request.numToGet = getNumSegmentsPerPage();
     request.startSeg = segmentJustSelected.GetSegmentID();
 
-    om::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
+    boost::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
 
     currentPageNum_ = segIDs->pageNum;
 

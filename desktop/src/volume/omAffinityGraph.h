@@ -10,7 +10,7 @@ template <typename T> class OmRawChunk;
 
 class OmAffinityGraph : public OmManageableObject {
 private:
-    std::map<om::common::AffinityGraph, om::shared_ptr<OmAffinityChannel> > channels_;
+    std::map<om::common::AffinityGraph, boost::shared_ptr<OmAffinityChannel> > channels_;
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmAffinityGraph& chan);
     friend void YAML::operator>>(const YAML::Node& in, OmAffinityGraph& chan);
@@ -34,7 +34,7 @@ public:
     OmChunk* MipChunk(const om::common::AffinityGraph aff,
                       const om::coords::Chunk& coord);
 
-    om::shared_ptr<OmRawChunk<float> > RawChunk(const om::common::AffinityGraph aff,
+    boost::shared_ptr<OmRawChunk<float> > RawChunk(const om::common::AffinityGraph aff,
                                                 const om::coords::Chunk& coord);
 
 };

@@ -35,7 +35,7 @@ public:
 
     bool CheckEverythingWasMeshed()
     {
-        om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
+        boost::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
             segmentation_->MipChunkCoords();
 
         bool allGood = true;
@@ -108,7 +108,7 @@ public:
               const U data, const om::common::ShouldBufferWrites buffferWrites,
               const om::common::AllowOverwrite allowOverwrite)
     {
-        om::shared_ptr<OmMeshWriterTaskV2<U> > task =
+        boost::shared_ptr<OmMeshWriterTaskV2<U> > task =
             om::make_shared<OmMeshWriterTaskV2<U> >(segmentation_,
                                                        filePtrCache_,
                                                        segID,

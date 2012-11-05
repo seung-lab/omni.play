@@ -22,7 +22,7 @@ public:
 class OmSegmentationThresholdChangeAction
     : public OmActionBase<OmSegmentationThresholdChangeActionImpl>{
 public:
-    OmSegmentationThresholdChangeAction(om::shared_ptr<OmSegmentationThresholdChangeActionImpl> impl)
+    OmSegmentationThresholdChangeAction(boost::shared_ptr<OmSegmentationThresholdChangeActionImpl> impl)
     {
         impl_ = impl;
     }
@@ -39,7 +39,7 @@ public:
 class OmSegmentationSizeThresholdChangeAction
     : public OmActionBase<OmSegmentationSizeThresholdChangeActionImpl>{
 public:
-    OmSegmentationSizeThresholdChangeAction(om::shared_ptr<OmSegmentationSizeThresholdChangeActionImpl> impl)
+    OmSegmentationSizeThresholdChangeAction(boost::shared_ptr<OmSegmentationSizeThresholdChangeActionImpl> impl)
     {
         impl_ = impl;
     }
@@ -55,12 +55,12 @@ public:
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 class OmSegmentSelectAction : public OmActionBase<OmSegmentSelectActionImpl>{
 public:
-    OmSegmentSelectAction(om::shared_ptr<OmSegmentSelectActionImpl> impl)
+    OmSegmentSelectAction(boost::shared_ptr<OmSegmentSelectActionImpl> impl)
     {
         impl_ = impl;
     }
 
-    OmSegmentSelectAction(om::shared_ptr<OmSelectSegmentsParams> params)
+    OmSegmentSelectAction(boost::shared_ptr<OmSelectSegmentsParams> params)
     {
         impl_ = om::make_shared<OmSegmentSelectActionImpl>(params);
     }
@@ -69,7 +69,7 @@ public:
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 class OmSegmentJoinAction : public OmActionBase<OmSegmentJoinActionImpl>{
 public:
-    OmSegmentJoinAction(om::shared_ptr<OmSegmentJoinActionImpl> impl)
+    OmSegmentJoinAction(boost::shared_ptr<OmSegmentJoinActionImpl> impl)
     {
         impl_ = impl;
     }
@@ -98,7 +98,7 @@ public:
 #include "actions/details/omSegmentGroupActionImpl.hpp"
 class OmSegmentGroupAction : public OmActionBase<OmSegmentGroupActionImpl>{
 public:
-    OmSegmentGroupAction(om::shared_ptr<OmSegmentGroupActionImpl> impl)
+    OmSegmentGroupAction(boost::shared_ptr<OmSegmentGroupActionImpl> impl)
     {
         impl_ = impl;
     }

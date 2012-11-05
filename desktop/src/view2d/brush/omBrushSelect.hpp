@@ -11,7 +11,7 @@ public:
     {
         // std::cout << "mouse click data coord: " << coord << "\n";
 
-        om::shared_ptr<OmBrushOppInfo> info =
+        boost::shared_ptr<OmBrushOppInfo> info =
             OmBrushOppInfoFactory::MakeOppInfo(state, coord, addSegments);
 
         OmBrushSelectCircle circle(info);
@@ -24,12 +24,12 @@ public:
     {
         const om::coords::Global& first = state->GetLastDataPoint();
 
-        om::shared_ptr<OmBrushOppInfo> info =
+        boost::shared_ptr<OmBrushOppInfo> info =
             OmBrushOppInfoFactory::MakeOppInfo(state, first, addSegments);
 
         // std::cout << *info << ", " << first << ", " << second << "\n";
 
-        om::shared_ptr<OmBrushSelectLineTask> task =
+        boost::shared_ptr<OmBrushSelectLineTask> task =
             om::make_shared<OmBrushSelectLineTask>(info, first, second);
 
         OmView2dManager::AddTaskBack(task);

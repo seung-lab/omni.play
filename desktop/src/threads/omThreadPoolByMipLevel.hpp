@@ -78,7 +78,7 @@ public:
         pool_.reset();
     }
 
-    inline void insert(const int mipLevel, const om::shared_ptr<zi::runnable>& job)
+    inline void insert(const int mipLevel, const boost::shared_ptr<zi::runnable>& job)
     {
         assert(pool_ && "pool not started");
         pool_->insert(mipLevel, job);

@@ -522,7 +522,7 @@ void OmView3d::DrawVolumes(om::common::Bitfield cullerOptions)
             continue;
         }
 
-        om::shared_ptr<OmVolumeCuller> newCuller =
+        boost::shared_ptr<OmVolumeCuller> newCuller =
             culler.GetTransformedCuller(vol->Coords().NormToGlobalMat(),
                                         vol->Coords().GlobalToNormMat());
 

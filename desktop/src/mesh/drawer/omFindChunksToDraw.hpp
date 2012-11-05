@@ -8,7 +8,7 @@ private:
     OmSegmentation *const segmentation_;
     OmVolumeCuller *const culler_;
 
-    om::shared_ptr<std::deque<OmSegChunk*> > chunksToDraw_;
+    boost::shared_ptr<std::deque<OmSegChunk*> > chunksToDraw_;
 
 public:
     OmFindChunksToDraw(OmSegmentation* segmentation,
@@ -17,7 +17,7 @@ public:
         , culler_(culler)
     {}
 
-    om::shared_ptr<std::deque<OmSegChunk*> > FindChunksToDraw()
+    boost::shared_ptr<std::deque<OmSegChunk*> > FindChunksToDraw()
     {
         chunksToDraw_ =  om::make_shared<std::deque<OmSegChunk*> >();
         determineChunksToDraw(segmentation_->Coords().RootMipChunkCoordinate(),

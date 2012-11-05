@@ -12,20 +12,20 @@ private:
     OmSegmentation *const segmentation_;
     OmSegments *const segments_;
     OmViewGroupState *const vgs_;
-    const om::shared_ptr<OmVolumeCuller> culler_;
+    const boost::shared_ptr<OmVolumeCuller> culler_;
     const om::common::Bitfield drawOptions_;
     OmMeshSegmentList *const rootSegList_;
 
     OmSegPtrList rootSegs_;
-    om::shared_ptr<std::deque<OmSegChunk*> > chunks_;
-    om::shared_ptr<OmMeshPlan> sortedSegments_;
+    boost::shared_ptr<std::deque<OmSegChunk*> > chunks_;
+    boost::shared_ptr<OmMeshPlan> sortedSegments_;
 
     bool notAllSegmentsFound_;
 
 public:
     OmMeshDrawPlanner(OmSegmentation* segmentation,
                       OmViewGroupState* vgs,
-                      om::shared_ptr<OmVolumeCuller> culler,
+                      boost::shared_ptr<OmVolumeCuller> culler,
                       const om::common::Bitfield drawOptions,
                       OmMeshSegmentList* rootSegList)
         : segmentation_(segmentation)
@@ -37,8 +37,8 @@ public:
         , notAllSegmentsFound_(false)
     {}
 
-    om::shared_ptr<OmMeshPlan>
-    BuildPlan(om::shared_ptr<std::deque<OmSegChunk*> > chunks)
+    boost::shared_ptr<OmMeshPlan>
+    BuildPlan(boost::shared_ptr<std::deque<OmSegChunk*> > chunks)
     {
         chunks_ = chunks;
         sortedSegments_ = om::make_shared<OmMeshPlan>();
@@ -46,7 +46,7 @@ public:
         return sortedSegments_;
     }
 
-    om::shared_ptr<std::deque<OmSegChunk*> > GetChunkList(){
+    boost::shared_ptr<std::deque<OmSegChunk*> > GetChunkList(){
         return chunks_;
     }
 

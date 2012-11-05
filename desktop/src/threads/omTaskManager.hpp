@@ -29,13 +29,13 @@
 template <typename TaskContainer>
 class OmTaskManager {
 private:
-    typedef om::shared_ptr<zi::concurrency_::runnable> task_t;
+    typedef boost::shared_ptr<zi::concurrency_::runnable> task_t;
 
     TaskContainer tasks_;
 
     // shared_ptr to support enable_shared_from_this
     typedef OmTaskManagerImpl<TaskContainer> manager_t;
-    om::shared_ptr<manager_t> manager_;
+    boost::shared_ptr<manager_t> manager_;
 
 public:
     OmTaskManager()
@@ -161,7 +161,7 @@ public:
     }
 
     template <typename Runnable>
-    void push_front(om::shared_ptr<Runnable> task)
+    void push_front(boost::shared_ptr<Runnable> task)
     {
         tasks_.push_front(task);
         wake_manager();
@@ -182,7 +182,7 @@ public:
     }
 
     template <typename Runnable>
-    void push_back(om::shared_ptr<Runnable> task)
+    void push_back(boost::shared_ptr<Runnable> task)
     {
         tasks_.push_back(task);
         wake_manager();
@@ -203,7 +203,7 @@ public:
     }
 
     template <typename Runnable>
-    void insert(om::shared_ptr<Runnable> task)
+    void insert(boost::shared_ptr<Runnable> task)
     {
         tasks_.insert(task);
         wake_manager();
@@ -225,7 +225,7 @@ public:
     }
 
     template <typename ARG, class Runnable>
-    void insert(const ARG& arg, om::shared_ptr<Runnable> task)
+    void insert(const ARG& arg, boost::shared_ptr<Runnable> task)
     {
         tasks_.insert(arg, task);
         wake_manager();

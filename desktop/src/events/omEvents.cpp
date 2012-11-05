@@ -43,7 +43,7 @@ void OmEvents::SegmentModified(){
     POST(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
 }
 
-void OmEvents::SegmentModified(om::shared_ptr<OmSelectSegmentsParams> params){
+void OmEvents::SegmentModified(boost::shared_ptr<OmSelectSegmentsParams> params){
     POST(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION, params));
 }
 

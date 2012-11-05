@@ -8,13 +8,13 @@ class OmSegmentValidateActionImpl {
 private:
     SegmentationDataWrapper sdw_;
     bool valid_;
-    om::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+    boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
 
 public:
     OmSegmentValidateActionImpl() {}
 
     OmSegmentValidateActionImpl(const SegmentationDataWrapper& sdw,
-                                om::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                                boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
                                 const bool valid)
         : sdw_(sdw)
         , valid_(valid)

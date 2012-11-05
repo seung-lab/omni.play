@@ -8,7 +8,7 @@
 
 class OmBrushOppInfoFactory {
 public:
-    static om::shared_ptr<OmBrushOppInfo>
+    static boost::shared_ptr<OmBrushOppInfo>
     MakeOppInfo(OmView2dState* state, const om::coords::Global& coord,
                 const om::common::AddOrSubtract addOrSubract)
     {

@@ -146,7 +146,7 @@ void OmActions::CutSegment(const SegmentDataWrapper& sdw)
                      sdw)));
 }
 
-void OmActions::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params)
+void OmActions::SelectSegments(boost::shared_ptr<OmSelectSegmentsParams> params)
 {
     pool().push_back(
         zi::run_fn(

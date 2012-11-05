@@ -5,11 +5,11 @@
 
 class OmBrushPaintCircle  {
 private:
-    const om::shared_ptr<OmBrushOppInfo> info_;
+    const boost::shared_ptr<OmBrushOppInfo> info_;
     const om::common::SegID segIDtoPaint_;
 
 public:
-    OmBrushPaintCircle(om::shared_ptr<OmBrushOppInfo> info,
+    OmBrushPaintCircle(boost::shared_ptr<OmBrushOppInfo> info,
                        const om::common::SegID segIDtoPaint)
         : info_(info)
         , segIDtoPaint_(segIDtoPaint)
@@ -22,7 +22,7 @@ public:
     {
         OmBrushOppCircle circleOpp(info_);
 
-        om::shared_ptr<om::pt3d_list_t> pts = circleOpp.GetPts(coord);
+        boost::shared_ptr<om::pt3d_list_t> pts = circleOpp.GetPts(coord);
 
         OmBrushPaintUtils::PaintPts(info_.get(), pts.get(), segIDtoPaint_);
     }

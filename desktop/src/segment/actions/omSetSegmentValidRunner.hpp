@@ -29,7 +29,7 @@ public:
         om::common::SegIDSet set;
         set.insert(sdw_.FindRootID());
 
-        om::shared_ptr<std::set<OmSegment*> > children =
+        boost::shared_ptr<std::set<OmSegment*> > children =
             OmSegmentUtils::GetAllChildrenSegments(sdw_.Segments(), set);
 
         (new OmSegmentValidateAction(sdw_.MakeSegmentationDataWrapper(),
@@ -87,7 +87,7 @@ public:
 
         OmSegments* segments = sdw_.Segments();
 
-        om::shared_ptr<std::set<OmSegment*> > children =
+        boost::shared_ptr<std::set<OmSegment*> > children =
             OmSegmentUtils::GetAllChildrenSegments(segments,
                                                    segments->GetSelectedSegmentIDs());
 

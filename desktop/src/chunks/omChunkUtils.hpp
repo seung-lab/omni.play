@@ -60,7 +60,7 @@ public:
                     {
                         OmSegChunk* chunk = vol->GetChunk(mip_coord);
 
-                        om::shared_ptr<uint32_t> rawDataPtr =
+                        boost::shared_ptr<uint32_t> rawDataPtr =
                             chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
                         OmImage<uint32_t, 3> chunkImage(OmExtents[128][128][128],
@@ -83,7 +83,7 @@ public:
         SegmentationDataWrapper sdw(segmentationID_);
         OmSegmentation& vol = sdw.GetSegmentation();
 
-        om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
+        boost::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
             vol.MipChunkCoords();
 
         const uint32_t numChunks = coordsPtr->size();

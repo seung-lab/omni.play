@@ -19,7 +19,7 @@ public:
         , pageSize_(pageSize)
     {}
 
-    om::shared_ptr<OmSegmentDataV3> Read()
+    boost::shared_ptr<OmSegmentDataV3> Read()
     {
         printf("rewriting segment page %d from ver2 to ver3\n", pageNum_);
 
@@ -27,7 +27,7 @@ public:
         om::file::openFileRO(file);
         OmSegmentDataV2* oldData = om::file::mapFile<OmSegmentDataV2>(&file);
 
-        om::shared_ptr<OmSegmentDataV3> ret =
+        boost::shared_ptr<OmSegmentDataV3> ret =
             OmSmartPtr<OmSegmentDataV3>::MallocNumElements(pageSize_, om::common::ZERO_FILL);
         OmSegmentDataV3* newSegmentData = ret.get();
 

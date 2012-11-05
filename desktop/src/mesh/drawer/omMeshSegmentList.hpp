@@ -51,7 +51,7 @@ public:
         { // add coord to list to be fetched
             spList = OmSegPtrListValid(true);
 
-            om::shared_ptr<OmMeshSegmentListTask> task
+            boost::shared_ptr<OmMeshSegmentListTask> task
                 = om::make_shared<OmMeshSegmentListTask>(chunk,
                                                          rootSeg,
                                                          this,

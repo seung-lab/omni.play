@@ -80,7 +80,7 @@ public:
         mesher.MeshFullVolume();
     }
 
-    void FullMesh(const double threshold, om::shared_ptr<om::gui::progress> progress)
+    void FullMesh(const double threshold, boost::shared_ptr<om::gui::progress> progress)
     {
         CreateManager(threshold);
         ziMesher mesher(segmentation_, threshold);

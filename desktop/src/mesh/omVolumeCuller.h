@@ -20,12 +20,12 @@ public:
     Visibility TestChunk(const om::normBbox&);
     const om::normCoord& GetPosition() const;
 
-    om::shared_ptr<OmVolumeCuller>
+    boost::shared_ptr<OmVolumeCuller>
     GetTransformedCuller(const Matrix4f&, const Matrix4f&);
 
     bool operator ==(const OmVolumeCuller& c) const;
     bool operator !=(const OmVolumeCuller& c) const;
-    bool equals(const om::shared_ptr<OmVolumeCuller>& c){
+    bool equals(const boost::shared_ptr<OmVolumeCuller>& c){
         return *this == *c;
     }
 

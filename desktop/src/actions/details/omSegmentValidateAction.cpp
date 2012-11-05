@@ -4,7 +4,7 @@
 #include "segment/omSegmentUtils.hpp"
 
 OmSegmentValidateAction::OmSegmentValidateAction(const SegmentationDataWrapper& sdw,
-                                                 om::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                                                 boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
                                                  const bool valid)
     : impl_(om::make_shared<OmSegmentValidateActionImpl>(sdw,
                                                          selectedSegments,

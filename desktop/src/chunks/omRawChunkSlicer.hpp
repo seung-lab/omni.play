@@ -30,9 +30,9 @@ public:
         return pooledTile;
     }
 
-    om::shared_ptr<T> GetCopyOfTile(const ViewType viewType, const int offsetNumTiles)
+    boost::shared_ptr<T> GetCopyOfTile(const ViewType viewType, const int offsetNumTiles)
     {
-        om::shared_ptr<T> tilePtr = OmSmartPtr<T>::MallocNumElements(elementsPerTile_,
+        boost::shared_ptr<T> tilePtr = OmSmartPtr<T>::MallocNumElements(elementsPerTile_,
                                                                      om::common::DONT_ZERO_FILL);
         sliceTile(viewType, offsetNumTiles, tilePtr.get());
 

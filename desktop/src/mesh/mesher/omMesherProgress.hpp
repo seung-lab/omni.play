@@ -8,18 +8,18 @@ namespace mesher {
 
 class progress {
 private:
-    om::shared_ptr<om::gui::progress> progress_;
+    boost::shared_ptr<om::gui::progress> progress_;
 
 public:
     progress()
         : progress_(om::make_shared<om::gui::progress>())
     {}
 
-    om::shared_ptr<om::gui::progress> Progress(){
+    boost::shared_ptr<om::gui::progress> Progress(){
         return progress_;
     }
 
-    void Progress(om::shared_ptr<om::gui::progress> p){
+    void Progress(boost::shared_ptr<om::gui::progress> p){
         progress_ = p;
     }
 

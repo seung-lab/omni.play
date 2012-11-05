@@ -9,7 +9,7 @@
 
 class OmVolumeAllocater {
 public:
-    static std::vector<om::shared_ptr<QFile> >
+    static std::vector<boost::shared_ptr<QFile> >
     AllocateData(OmMipVolume* vol, const OmVolDataType type)
     {
         assert(OmVolDataType::UNKNOWN != type.index());
@@ -17,7 +17,7 @@ public:
 
         const int maxLevel = vol->Coords().RootMipLevel();
 
-        std::vector<om::shared_ptr<QFile> > volFiles(maxLevel + 1);
+        std::vector<boost::shared_ptr<QFile> > volFiles(maxLevel + 1);
 
         for (int level = 0; level <= maxLevel; ++level)
         {
@@ -40,7 +40,7 @@ public:
     {
         const int maxLevel = vol->Coords().RootMipLevel();
 
-        std::vector<om::shared_ptr<QFile> > volFiles(maxLevel + 1);
+        std::vector<boost::shared_ptr<QFile> > volFiles(maxLevel + 1);
 
         for(int level = 1; level <= maxLevel; ++level)
         {
@@ -58,7 +58,7 @@ public:
 
 private:
 
-    static om::shared_ptr<QFile>
+    static boost::shared_ptr<QFile>
     createFile(OmMipVolume* vol, const int level,
                const Vector3<uint64_t>& dims)
     {
@@ -75,7 +75,7 @@ private:
         const std::string fnpStr = OmFileNames::GetMemMapFileName(vol, level);
         const QString fnp = QString::fromStdString(fnpStr);
         QFile::remove(fnp);
-        om::shared_ptr<QFile> file(om::make_shared<QFile>(fnp));
+        boost::shared_ptr<QFile> file(om::make_shared<QFile>(fnp));
         file->resize(size);
         if(!file->open(QIODevice::ReadWrite)){
             throw IoException("could not open file "+fnpStr);

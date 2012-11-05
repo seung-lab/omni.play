@@ -44,7 +44,7 @@ private:
         for (int level = 0; level <= vol1->Coords().RootMipLevel(); ++level) {
             printf("Comparing mip level %i\n",level);
 
-            om::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
+            boost::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
                 vol1->MipChunkCoords(level);
 
             FOR_EACH(iter, *coordsPtr){

@@ -37,7 +37,7 @@ public:
         return vertexIndex_.get();
     }
 
-    inline om::shared_ptr<uint32_t> VertexIndexSharedPtr() const {
+    inline boost::shared_ptr<uint32_t> VertexIndexSharedPtr() const {
         return vertexIndex_;
     }
 
@@ -49,7 +49,7 @@ public:
         return vertexIndexNumBytes_;
     }
 
-    void SetVertexIndex(om::shared_ptr<uint32_t> vertexIndex,
+    void SetVertexIndex(boost::shared_ptr<uint32_t> vertexIndex,
                         const uint32_t vertexIndexCount,
                         const uint64_t numBytes)
     {
@@ -63,7 +63,7 @@ public:
         return stripData_.get();
     }
 
-    inline om::shared_ptr<uint32_t> StripDataSharedPtr() const {
+    inline boost::shared_ptr<uint32_t> StripDataSharedPtr() const {
         return stripData_;
     }
 
@@ -75,7 +75,7 @@ public:
         return stripDataNumBytes_;
     }
 
-    void SetStripData(om::shared_ptr<uint32_t> stripData,
+    void SetStripData(boost::shared_ptr<uint32_t> stripData,
                       const uint32_t stripDataCount,
                       const uint64_t numBytes)
     {
@@ -89,7 +89,7 @@ public:
         return vertexData_.get();
     }
 
-    inline om::shared_ptr<float> VertexDataSharedPtr() const {
+    inline boost::shared_ptr<float> VertexDataSharedPtr() const {
         return vertexData_;
     }
 
@@ -101,7 +101,7 @@ public:
         return vertexDataNumBytes_;
     }
 
-    void SetVertexData(om::shared_ptr<float> vertexData,
+    void SetVertexData(boost::shared_ptr<float> vertexData,
                        const uint32_t vertexDataCount,
                        const uint64_t numBytes)
     {
@@ -115,7 +115,7 @@ public:
         return trianData_.get();
     }
 
-    inline om::shared_ptr<uint32_t> TrianDataSharedPtr() const {
+    inline boost::shared_ptr<uint32_t> TrianDataSharedPtr() const {
         return trianData_;
     }
 
@@ -127,7 +127,7 @@ public:
         return trianDataNumBytes_;
     }
 
-    void SetTrianData(om::shared_ptr<uint32_t> trianData,
+    void SetTrianData(boost::shared_ptr<uint32_t> trianData,
                       const uint32_t trianDataCount,
                       const uint64_t numBytes)
     {
@@ -139,19 +139,19 @@ public:
 private:
     bool hasData_;
 
-    om::shared_ptr<uint32_t> vertexIndex_;
+    boost::shared_ptr<uint32_t> vertexIndex_;
     uint32_t vertexIndexCount_;
     uint64_t vertexIndexNumBytes_;
 
-    om::shared_ptr<uint32_t> stripData_;
+    boost::shared_ptr<uint32_t> stripData_;
     uint32_t stripDataCount_;
     uint64_t stripDataNumBytes_;
 
-    om::shared_ptr<float> vertexData_;
+    boost::shared_ptr<float> vertexData_;
     uint32_t vertexDataCount_;
     uint64_t vertexDataNumBytes_;
 
-    om::shared_ptr<uint32_t> trianData_;
+    boost::shared_ptr<uint32_t> trianData_;
     uint32_t trianDataCount_;
     uint64_t trianDataNumBytes_;
 };
