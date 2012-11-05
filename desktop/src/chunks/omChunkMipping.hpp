@@ -29,7 +29,7 @@ public:
         clippedNormExtent_.intersect(AxisAlignedBoundingBox<float>::UNITBOX);
     }
 
-    inline const om::coords::DataBbox& GetExtent() const {
+    inline const om::coords::DataBbox& Extent() const {
         return dataExtent_;
     }
 

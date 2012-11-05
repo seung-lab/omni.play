@@ -11,7 +11,7 @@ public:
                                OmSegments* segments)
         : chunk_(chunk)
         , computeSizes_(computeSizes)
-        , minVertexOfChunk_(chunk_->Mipping().GetExtent().getMin())
+        , minVertexOfChunk_(chunk_->Mipping().Extent().getMin())
         , segments_(segments)
     {}
 

@@ -36,7 +36,7 @@ public:
                                                          chunk->GetLevel());
 
         OmDataWrapperPtr data = reader->readChunk(path,
-                                                  chunk->Mipping().GetExtent(),
+                                                  chunk->Mipping().Extent(),
                                                   om::common::NO_AFFINITY);
 
         return data;

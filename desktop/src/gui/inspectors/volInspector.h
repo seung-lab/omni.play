@@ -63,7 +63,7 @@ public:
         labelVolume->setText("Z Resolution:");
         grid_->addWidget(labelVolume, 3, 0);
 
-        const Vector3i resf = vol_.Coords().GetResolution();
+        const Vector3i resf = vol_.Coords().Resolution();
 
         resX_ = new QLineEdit(this);
         resX_->setText(QString::number(resf.x));

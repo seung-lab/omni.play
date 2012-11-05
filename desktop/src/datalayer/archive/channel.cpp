@@ -45,7 +45,7 @@ Emitter& operator<<(Emitter& out, const OmMipVolCoords& c)
 {
     out << BeginMap;
     out << Key << "dataDimensions" << Value << c.DataDimensions();
-    out << Key << "dataResolution" << Value << c.GetResolution();
+    out << Key << "dataResolution" << Value << c.Resolution();
     out << Key << "chunkDim" << Value << c.chunkDim_;
     out << Key << "mMipLeafDim" << Value << c.mMipLeafDim;
     out << Key << "mMipRootLevel" << Value << c.mMipRootLevel;

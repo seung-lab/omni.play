@@ -154,7 +154,7 @@ public:
         vol.Coords().SetResolution(dims);
 
         std::cout << "\tvolume data resolution set to "
-                  << vol.Coords().GetResolution()
+                  << vol.Coords().Resolution()
                   << "\n";
     }
 

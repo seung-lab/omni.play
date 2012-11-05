@@ -161,7 +161,7 @@ public:
     }
 
     inline const Vector3f GetDataResolution() const {
-        return GetSegmentation().Coords().GetResolution();
+        return GetSegmentation().Coords().Resolution();
     }
 
     inline const om::common::SegIDSet GetSelectedSegmentIDs() const {

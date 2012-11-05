@@ -27,7 +27,7 @@ public:
     bool ContainsVoxel(const om::coords::Data& vox) const {
         return vox.volume() == &vol_->Coords() &&
                vox.mipLevel() == GetLevel() &&
-               mipping_.GetExtent().contains(vox);
+               mipping_.Extent().contains(vox);
     }
 
 public:
@@ -38,7 +38,7 @@ public:
         return coord_.mipLevel();
     }
     const om::coords::Data GetDimensions() const {
-        return mipping_.GetExtent().getUnitDimensions();
+        return mipping_.Extent().getUnitDimensions();
     }
 
     om::chunk::dataInterface* Data(){

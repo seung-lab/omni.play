@@ -138,7 +138,7 @@ private:
     OmDataWrapperPtr getChunkData()
     {
         // get chunk data bbox
-        const om::coords::DataBbox& chunkExtent = chunk_->Mipping().GetExtent();
+        const om::coords::DataBbox& chunkExtent = chunk_->Mipping().Extent();
 
         const om::coords::DataBbox volExtent(om::coords::Data(Vector3i::ZERO, vol_, chunk_->GetLevel()),
                                      om::coords::Data(volSize_, vol_, chunk_->GetLevel()));

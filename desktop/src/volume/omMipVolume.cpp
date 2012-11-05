@@ -8,7 +8,7 @@ OmMipVolume::OmMipVolume()
 {}
 
 bool OmMipVolume::ContainsVoxel(const om::coords::Global & vox){
-    return coords_.GetExtent().contains(vox);
+    return coords_.Extent().contains(vox);
 }
 
 void OmMipVolume::addChunkCoordsForLevel(const int mipLevel,

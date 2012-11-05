@@ -150,7 +150,7 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //     }
 // 
 //     OmChannel& channel = cdw.GetChannel();
-//     Vector3f resolution = channel.Coords().GetResolution();
+//     Vector3f resolution = channel.Coords().Resolution();
 //     Vector3i extents = channel.Coords().DataDimensions();
 // 
 //     glColor3fv(OMGL_WHITE);

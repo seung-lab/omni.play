@@ -29,8 +29,8 @@ private:
     static bool compareVolumes(VOL *vol1, VOL *vol2)
     {
         //check if dimensions are the same
-        if (vol1->Coords().GetExtent().getUnitDimensions() !=
-            vol2->Coords().GetExtent().getUnitDimensions()){
+        if (vol1->Coords().Extent().getUnitDimensions() !=
+            vol2->Coords().Extent().getUnitDimensions()){
             printf("Volumes differ: Different dimensions.\n");
             return false;
         }

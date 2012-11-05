@@ -162,7 +162,7 @@ public:
     inline void MoveUpStackCloserToViewer()
     {
         const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel()) *
-        	getViewTypeDepth(vol_->Coords().GetResolution());
+        	getViewTypeDepth(vol_->Coords().Resolution());
         const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
         vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth + numberOfSlicestoAdvance);
 
@@ -172,7 +172,7 @@ public:
     inline void MoveDownStackFartherFromViewer()
     {
         const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel()) *
-        	getViewTypeDepth(vol_->Coords().GetResolution());
+        	getViewTypeDepth(vol_->Coords().Resolution());
         const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
         vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth - numberOfSlicestoAdvance);
 

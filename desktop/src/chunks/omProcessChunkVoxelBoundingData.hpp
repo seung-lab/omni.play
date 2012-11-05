@@ -9,7 +9,7 @@ class ProcessChunkVoxelBoundingData {
 public:
     ProcessChunkVoxelBoundingData(OmSegChunk* chunk, OmSegments* segments)
         : chunk_(chunk)
-        , minVertexOfChunk_(chunk_->Mipping().GetExtent().getMin())
+        , minVertexOfChunk_(chunk_->Mipping().Extent().getMin())
         , segments_(segments)
     {}
 

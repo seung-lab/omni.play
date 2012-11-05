@@ -55,7 +55,7 @@ int numChunks(om::coords::Chunk min, om::coords::Chunk max)
 
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 {
-    om::coords::GlobalBbox bounds = vol_->Coords().GetExtent();
+    om::coords::GlobalBbox bounds = vol_->Coords().Extent();
     om::coords::DataBbox dataBounds = bounds.ToDataBbox(vol_, mipLevel_);
 
     int dataDepth = state_->getViewTypeDepth(state_->Location().toDataCoord(vol_, mipLevel_));
