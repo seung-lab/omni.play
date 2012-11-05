@@ -17,7 +17,7 @@ Q_OBJECT
 
 public:
     SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState* vgs)
-        : OmIntSpinBox(d, om::UPDATE_AS_TYPE)
+        : OmIntSpinBox(d, om::common::UPDATE_AS_TYPE)
         , vgs_(vgs)
     {
         setValue(0);

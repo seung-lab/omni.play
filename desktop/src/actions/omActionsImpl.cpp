@@ -72,7 +72,7 @@ void OmActionsImpl::SetVoxels(const OmID segmentationID,
 
 // segment-related
 void OmActionsImpl::ValidateSegment(const SegmentDataWrapper sdw,
-                                    const om::SetValid valid, const bool dontCenter)
+                                    const om::common::SetValid valid, const bool dontCenter)
 {
     OmSetSegmentValidRunner validator(sdw, valid);
     validator.Validate();
@@ -80,7 +80,7 @@ void OmActionsImpl::ValidateSegment(const SegmentDataWrapper sdw,
 }
 
 void OmActionsImpl::ValidateSelectedSegments(const SegmentationDataWrapper sdw,
-                                             const om::SetValid valid)
+                                             const om::common::SetValid valid)
 {
     OmSetSegmentsValidRunner validator(sdw, valid);
     validator.Validate();

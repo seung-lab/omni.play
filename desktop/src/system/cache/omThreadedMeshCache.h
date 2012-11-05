@@ -52,7 +52,7 @@ public:
         OmCacheManager::RemoveCache(cacheGroup_, this);
     }
 
-    virtual void Get(ptr_t& ptr, const key_t& key, const om::Blocking blocking)
+    virtual void Get(ptr_t& ptr, const key_t& key, const om::common::Blocking blocking)
     {
         if(cache_.assignIfHadKey(key, ptr)){
             return;

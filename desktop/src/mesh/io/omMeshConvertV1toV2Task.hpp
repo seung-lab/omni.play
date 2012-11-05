@@ -69,7 +69,7 @@ private:
                 hdf5Reader_->Read(*segID, coord);
 
             meshWriter_->Save(*segID, coord, mesh,
-                              om::DONT_BUFFER_WRITES, om::WRITE_ONCE);
+                              om::common::DONT_BUFFER_WRITES, om::common::WRITE_ONCE);
         }
 
         return true;

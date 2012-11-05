@@ -114,10 +114,10 @@ private:
     inline void selectSegments()
     {
         if(altKey_){
-            OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::SUBTRACT);
+            OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::common::SUBTRACT);
 
         } else {
-            OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::ADD);
+            OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::common::ADD);
         }
 
         state_->SetLastDataPoint(dataClickPoint_);

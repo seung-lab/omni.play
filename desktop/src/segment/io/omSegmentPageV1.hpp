@@ -29,7 +29,7 @@ public:
 
         om::shared_ptr<OmSegmentDataV2> oldSegmentDataPtr =
             OmSmartPtr<OmSegmentDataV2>::MallocNumElements(pageSize_,
-                                                           om::ZERO_FILL);
+                                                           om::common::ZERO_FILL);
 
         OmSegmentDataV2* oldSegmentData = oldSegmentDataPtr.get();
 
@@ -38,7 +38,7 @@ public:
                                           pageSize_);
 
         om::shared_ptr<OmSegmentDataV3> ret =
-            OmSmartPtr<OmSegmentDataV3>::MallocNumElements(pageSize_, om::ZERO_FILL);
+            OmSmartPtr<OmSegmentDataV3>::MallocNumElements(pageSize_, om::common::ZERO_FILL);
         OmSegmentDataV3* newSegmentData = ret.get();
 
         for(uint32_t i = 0; i < pageSize_; ++i)
@@ -49,9 +49,9 @@ public:
             newSegmentData[i].bounds = oldSegmentData[i].bounds;
 
             if(oldSegmentData[i].immutable){
-                newSegmentData[i].listType = om::VALID;
+                newSegmentData[i].listType = om::common::VALID;
             } else {
-                newSegmentData[i].listType = om::WORKING;
+                newSegmentData[i].listType = om::common::WORKING;
             }
         }
 

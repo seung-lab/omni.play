@@ -97,7 +97,7 @@ private:
 
 public:
     OmBrushSizeSpinBox(QWidget* parent)
-        : OmIntSpinBox(parent, om::UPDATE_AS_TYPE)
+        : OmIntSpinBox(parent, om::common::UPDATE_AS_TYPE)
     {
         setValue(OmStateManager::BrushSize()->Diameter());
         setSingleStep(1);

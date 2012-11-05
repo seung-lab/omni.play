@@ -12,7 +12,7 @@ public:
         OmSegmentDataV3* rawV3 = dataV3.get();
 
         om::shared_ptr<OmSegmentDataV4> ret =
-            OmSmartPtr<OmSegmentDataV4>::MallocNumElements(pageSize, om::ZERO_FILL);
+            OmSmartPtr<OmSegmentDataV4>::MallocNumElements(pageSize, om::common::ZERO_FILL);
         OmSegmentDataV4* rawV4 = ret.get();
 
         for(uint32_t i = 0; i < pageSize; ++i)
@@ -33,7 +33,7 @@ public:
         OmSegmentDataV3* rawV3 = dataV3.get();
 
         om::shared_ptr<uint8_t> ret =
-            OmSmartPtr<uint8_t>::MallocNumElements(pageSize, om::ZERO_FILL);
+            OmSmartPtr<uint8_t>::MallocNumElements(pageSize, om::common::ZERO_FILL);
         uint8_t* raw = ret.get();
 
         for(uint32_t i = 0; i < pageSize; ++i)

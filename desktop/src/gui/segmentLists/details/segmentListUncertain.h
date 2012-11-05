@@ -20,13 +20,13 @@ private:
     }
 
     uint64_t Size() {
-        return sdw_.SegmentLists()->Size(om::UNCERTAIN);
+        return sdw_.SegmentLists()->Size(om::common::UNCERTAIN);
     }
 
     om::shared_ptr<GUIPageOfSegments>
     getPageSegments(const GUIPageRequest& request)
     {
-        return sdw_.SegmentLists()->GetSegmentGUIPage(om::UNCERTAIN, request);
+        return sdw_.SegmentLists()->GetSegmentGUIPage(om::common::UNCERTAIN, request);
     }
 
     int getPreferredTabIndex(){

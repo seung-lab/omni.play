@@ -71,14 +71,14 @@ public:
     }
 
     inline bool IsValidListType() const {
-        return om::VALID == static_cast<om::SegListType>(*listType_);
+        return om::common::VALID == static_cast<om::common::SegListType>(*listType_);
     }
 
-    inline om::SegListType GetListType() const {
-        return static_cast<om::SegListType>(*listType_);
+    inline om::common::SegListType GetListType() const {
+        return static_cast<om::common::SegListType>(*listType_);
     }
 
-    inline void SetListType(const om::SegListType type){
+    inline void SetListType(const om::common::SegListType type){
         (*listType_) = static_cast<uint8_t>(type);
     }
 

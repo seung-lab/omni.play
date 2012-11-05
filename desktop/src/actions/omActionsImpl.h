@@ -44,10 +44,10 @@ public:
 
 // segment-related
     void ValidateSegment(const SegmentDataWrapper sdw,
-                         const om::SetValid valid, const bool dontCenter=false);
+                         const om::common::SetValid valid, const bool dontCenter=false);
 
     void ValidateSelectedSegments(const SegmentationDataWrapper sdw,
-                                  const om::SetValid valid);
+                                  const om::common::SetValid valid);
 
     void UncertainSegment(const SegmentDataWrapper sdw,
                           const bool uncertain);

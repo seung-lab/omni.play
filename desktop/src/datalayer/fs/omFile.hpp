@@ -115,7 +115,7 @@ om::shared_ptr<T> readAll(QFile* file)
     }
 
     om::shared_ptr<T> ret =
-        OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
+        OmSmartPtr<T>::MallocNumBytes(numBytes, om::common::DONT_ZERO_FILL);
 
     char* dataChar = reinterpret_cast<char*>(ret.get());
 
@@ -175,7 +175,7 @@ void createFileNumElements(const std::string& fnp, const int64_t numElements)
     openFileWO(file);
 
     om::shared_ptr<T> empty = OmSmartPtr<T>::MallocNumElements(numElements,
-                                                                  om::ZERO_FILL);
+                                                                  om::common::ZERO_FILL);
 
     writeNumElements(file, empty, numElements);
 }

@@ -27,7 +27,7 @@ public:
 
         if(params_->augmentListOnly)
 		{
-            if(om::ADD == params_->addOrSubtract){
+            if(om::common::ADD == params_->addOrSubtract){
                 segments->AddToSegmentSelection(params_->newSelectedIDs);
 
             } else {
@@ -48,7 +48,7 @@ public:
 
         if(params_->augmentListOnly)
 		{
-            if(om::ADD == params_->addOrSubtract){
+            if(om::common::ADD == params_->addOrSubtract){
                 segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
 
             } else {
@@ -73,7 +73,7 @@ public:
         std::string prefix("Selected segments: ");
 
         if(params_->augmentListOnly){
-            if(om::ADD == params_->addOrSubtract){
+            if(om::common::ADD == params_->addOrSubtract){
                 prefix = "Added segments: ";
             }else{
                 prefix = "Removed segments: ";

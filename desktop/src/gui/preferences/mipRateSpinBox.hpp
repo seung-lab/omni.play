@@ -7,7 +7,7 @@
 class MipRateSpinBox : public OmDoubleSpinBox {
 public:
 	MipRateSpinBox(QWidget* p)
-		: OmDoubleSpinBox(p, om::UPDATE_AS_TYPE)
+		: OmDoubleSpinBox(p, om::common::UPDATE_AS_TYPE)
 	{
 		setSingleStep(0.1);
 		setMinimum(0);

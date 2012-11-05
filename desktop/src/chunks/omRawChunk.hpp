@@ -96,7 +96,7 @@ private:
 
         file.seek(chunkOffset_);
 
-        data_ = OmSmartPtr<T>::MallocNumBytes(numBytes_, om::DONT_ZERO_FILL);
+        data_ = OmSmartPtr<T>::MallocNumBytes(numBytes_, om::common::DONT_ZERO_FILL);
         char* dataAsCharPtr = (char*)(data_.get());
         const uint64_t readSize = file.read(dataAsCharPtr, numBytes_);
 

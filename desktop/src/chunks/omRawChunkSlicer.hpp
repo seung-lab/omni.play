@@ -33,7 +33,7 @@ public:
     om::shared_ptr<T> GetCopyOfTile(const ViewType viewType, const int offsetNumTiles)
     {
         om::shared_ptr<T> tilePtr = OmSmartPtr<T>::MallocNumElements(elementsPerTile_,
-                                                                     om::DONT_ZERO_FILL);
+                                                                     om::common::DONT_ZERO_FILL);
         sliceTile(viewType, offsetNumTiles, tilePtr.get());
 
         return tilePtr;

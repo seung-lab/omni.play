@@ -53,9 +53,9 @@ private:
             OmSegment* seg = *iter;
 
             if(uncertain_){
-                seg->SetListType(om::UNCERTAIN);
+                seg->SetListType(om::common::UNCERTAIN);
             } else {
-                seg->SetListType(om::WORKING);
+                seg->SetListType(om::common::WORKING);
             }
         }
 

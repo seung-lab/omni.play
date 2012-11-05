@@ -11,10 +11,10 @@ class OmIntSpinBox : public QSpinBox {
 Q_OBJECT
 public:
     OmIntSpinBox(QWidget * d,
-                 const om::ShouldUpdateAsType updateAsType)
+                 const om::common::ShouldUpdateAsType updateAsType)
         : QSpinBox(d)
     {
-        if(om::UPDATE_AS_TYPE == updateAsType)
+        if(om::common::UPDATE_AS_TYPE == updateAsType)
         {
             om::connect(this, SIGNAL(valueChanged(int)),
                         this, SLOT(spinboxChanged()));

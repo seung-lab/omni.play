@@ -50,7 +50,7 @@ private:
     template <typename C>
     void doSet(const C& segs, const bool isValid)
     {
-        const om::SegListType listType = isValid ? om::VALID : om::WORKING;
+        const om::common::SegListType listType = isValid ? om::common::VALID : om::common::WORKING;
 
         FOR_EACH(iter, segs)
         {

@@ -9,7 +9,7 @@ private:
     // version 1: pages in hdf5
     // version 2: first move to mem-mapped pages
     // version 3: replace 'bool immutable' w/ 'enum OmSegListType'
-    // version 4: split om::SegListType off into seperate file
+    // version 4: split om::common::SegListType off into seperate file
     static const int CurrentFileVersion = 4;
 
     OmSegmentation *const vol_;

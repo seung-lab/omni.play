@@ -25,7 +25,7 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
     params_->addToRecentList = true;
 
     params_->augmentListOnly = false;
-    params_->addOrSubtract = om::ADD;
+    params_->addOrSubtract = om::common::ADD;
 }
 
 void OmSegmentSelector::selectNoSegments()
@@ -121,7 +121,7 @@ bool OmSegmentSelector::sendEvent()
 {
     if(params_->augmentListOnly)
     {
-        if(om::ADD == params_->addOrSubtract){
+        if(om::common::ADD == params_->addOrSubtract){
             if(om::set::SetAContainsB(params_->oldSelectedIDs,
                                       params_->newSelectedIDs))
             {
@@ -150,7 +150,7 @@ bool OmSegmentSelector::sendEvent()
         // disable undo option for now
         OmSegments* segments = params_->sdw.Segments();
 
-        if(om::ADD == params_->addOrSubtract){
+        if(om::common::ADD == params_->addOrSubtract){
             segments->AddToSegmentSelection(params_->newSelectedIDs);
         } else {
             segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
@@ -178,6 +178,6 @@ void OmSegmentSelector::AugmentListOnly(const bool augmentListOnly){
     params_->augmentListOnly = augmentListOnly;
 }
 
-void OmSegmentSelector::AddOrSubtract(const om::AddOrSubtract addOrSubtract){
+void OmSegmentSelector::AddOrSubtract(const om::common::AddOrSubtract addOrSubtract){
     params_->addOrSubtract = addOrSubtract;
 }

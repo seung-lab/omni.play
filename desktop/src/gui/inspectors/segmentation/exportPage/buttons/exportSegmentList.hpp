@@ -54,13 +54,13 @@ private:
 
             int category = 0;
             switch(seg->GetListType()){
-            case om::WORKING:
+            case om::common::WORKING:
                 category = 1;
                 break;
-            case om::VALID:
+            case om::common::VALID:
                 category = 2;
                 break;
-            case om::UNCERTAIN:
+            case om::common::UNCERTAIN:
                 category = 3;
                 break;
             default:

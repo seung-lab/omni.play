@@ -201,7 +201,7 @@ private:
 
     void selectSegments()
     {
-        om::AddOrSubtract addOrSubtractSegments = altKey_ ? om::SUBTRACT : om::ADD;
+        om::common::AddOrSubtract addOrSubtractSegments = altKey_ ? om::common::SUBTRACT : om::common::ADD;
 
         OmBrushSelect::SelectByClick(state_, dataClickPoint_, addOrSubtractSegments);
     }

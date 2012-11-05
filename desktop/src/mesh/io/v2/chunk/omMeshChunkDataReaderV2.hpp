@@ -34,7 +34,7 @@ public:
         assert(numBytes);
 
         om::shared_ptr<T> ret =
-            OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
+            OmSmartPtr<T>::MallocNumBytes(numBytes, om::common::DONT_ZERO_FILL);
 
         char* dataCharPtr = reinterpret_cast<char*>(ret.get());
 

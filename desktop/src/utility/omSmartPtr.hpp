@@ -9,7 +9,7 @@ class OmSmartPtr {
 public:
     static om::shared_ptr<T>
     inline MallocNumBytes(const uint64_t numBytes,
-                          const om::ZeroMem shouldZeroMem)
+                          const om::common::ZeroMem shouldZeroMem)
     {
         T* rawPtr = static_cast<T*>(malloc(numBytes));
 
@@ -22,7 +22,7 @@ public:
             throw std::bad_alloc();
         }
 
-        if(om::ZERO_FILL == shouldZeroMem){
+        if(om::common::ZERO_FILL == shouldZeroMem){
             memset(rawPtr, 0, numBytes);
         }
 
@@ -31,7 +31,7 @@ public:
 
     static om::shared_ptr<T>
     inline MallocNumElements(const uint64_t numElements,
-                             const om::ZeroMem shouldZeroMem)
+                             const om::common::ZeroMem shouldZeroMem)
     {
         return MallocNumBytes(numElements * sizeof(T), shouldZeroMem);
     }

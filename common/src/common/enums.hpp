@@ -21,14 +21,6 @@ enum SetValid{
     SET_VALID,
     SET_NOT_VALID
 };
-enum ShouldThrottle {
-    THROTTLE,
-    DONT_THROTTLE
-};
-enum ShouldFifo {
-    FIFO,
-    DONT_FIFO
-};
 enum AffinityGraph {
     NO_AFFINITY,
     X_AFFINITY,
@@ -60,10 +52,6 @@ enum Direction {
 enum Safe {
     SAFE,
     NOT_SAFE
-};
-enum ReadOrReread {
-    READ,
-    REREAD
 };
 // WARNING: used for serialization by OmSegmentPage,
 //  and values should fit inside uint8_t

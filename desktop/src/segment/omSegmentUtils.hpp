@@ -160,14 +160,14 @@ public:
         return sdw.SegmentLists()->GetNextSegIDinWorkingList(sdw);
     }
 
-    static std::string ListTypeAsStr(const om::SegListType type)
+    static std::string ListTypeAsStr(const om::common::SegListType type)
     {
         switch(type){
-        case om::WORKING:
+        case om::common::WORKING:
             return "working";
-        case om::VALID:
+        case om::common::VALID:
             return "valid";
-        case om::UNCERTAIN:
+        case om::common::UNCERTAIN:
             return "uncertain";
         default:
             return "unknown type";

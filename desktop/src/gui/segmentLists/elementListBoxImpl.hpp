@@ -120,7 +120,7 @@ private:
 
     void updateValidBar(const SegmentationDataWrapper& sdw)
     {
-        const uint64_t valid = sdw.SegmentLists()->NumVoxels(om::VALID);
+        const uint64_t valid = sdw.SegmentLists()->NumVoxels(om::common::VALID);
 
         percentValidated_->SetMaximum(sdw.SegmentLists()->TotalNumVoxels());
         percentValidated_->SetValue(valid);

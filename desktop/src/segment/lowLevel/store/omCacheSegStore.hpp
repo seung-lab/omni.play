@@ -23,15 +23,15 @@ public:
      * returns NULL if segment was never instantiated;
      **/
     OmSegment* GetSegment(const OmSegID segID){
-        return getSegment(segID, om::SAFE);
+        return getSegment(segID, om::common::SAFE);
     }
 
     OmSegment* GetSegmentUnsafe(const OmSegID segID){
-        return getSegment(segID, om::NOT_SAFE);
+        return getSegment(segID, om::common::NOT_SAFE);
     }
 
 private:
-    inline OmSegment* getSegment(const OmSegID segID, const om::Safe isSafe)
+    inline OmSegment* getSegment(const OmSegID segID, const om::common::Safe isSafe)
     {
         const uint32_t pageNum = segID / pageSize_;
 
@@ -55,9 +55,9 @@ private:
 
     inline OmSegment* doGetSegment(const std::vector<OmSegmentPage*>& pages,
                                    const uint32_t pageNum, const OmSegID segID,
-                                   const om::Safe /* isSafe */)
+                                   const om::common::Safe /* isSafe */)
     {
-        // if(om::NOT_SAFE == isSafe)
+        // if(om::common::NOT_SAFE == isSafe)
         // {
         //     OmSegmentPage& page = *pages[pageNum];
         //     return &(page[segID % pageSize_]);

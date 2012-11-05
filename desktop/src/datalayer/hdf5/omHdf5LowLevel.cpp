@@ -192,9 +192,9 @@ void OmHdf5LowLevel::dataset_delete_create_tree()
     OmHdf5Utils::dataset_delete_if_exists(fileId, getPath());
 }
 
-Vector3i  OmHdf5LowLevel::getChunkedDatasetDims(const om::AffinityGraph affin)
+Vector3i  OmHdf5LowLevel::getChunkedDatasetDims(const om::common::AffinityGraph affin)
 {
-    om::AffinityGraph aff = affin;
+    om::common::AffinityGraph aff = affin;
     debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
     herr_t status;
@@ -217,8 +217,8 @@ Vector3i  OmHdf5LowLevel::getChunkedDatasetDims(const om::AffinityGraph affin)
         throw OmIoException("Could not determine rank of HDF5 dataspace.");
     }
 
-    if (4 == rank && aff == om::NO_AFFINITY){
-        aff = om::X_AFFINITY;
+    if (4 == rank && aff == om::common::NO_AFFINITY){
+        aff = om::common::X_AFFINITY;
         //throw OmIoException("HDF5 dataspace rank 4 but doesn't have a set affinity.");
     }
 
@@ -450,7 +450,7 @@ OmDataWrapperPtr OmHdf5LowLevel::GetChunkDataType()
 }
 
 OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
-                                           const om::AffinityGraph aff)
+                                           const om::common::AffinityGraph aff)
 {
     debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -489,7 +489,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
 
     int rank = H5Sget_simple_extent_ndims(dataspace_id);
 
-    if(4 == rank && om::NO_AFFINITY != aff) {		// Load a side of the affinity graph.
+    if(4 == rank && om::common::NO_AFFINITY != aff) {		// Load a side of the affinity graph.
         //Selects a hyperslab region to add to the current selected region.
 
         const Vector4<hsize_t> start_flipped(0, start.z, start.y, start.x);

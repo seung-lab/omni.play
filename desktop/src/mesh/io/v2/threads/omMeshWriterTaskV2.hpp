@@ -19,7 +19,7 @@ private:
     const OmSegID segID_;
     const om::coords::Chunk coord_;
     const U mesh_;
-    const om::AllowOverwrite allowOverwrite_;
+    const om::common::AllowOverwrite allowOverwrite_;
 
 public:
     OmMeshWriterTaskV2(OmSegmentation* seg,
@@ -27,7 +27,7 @@ public:
                        const OmSegID segID,
                        const om::coords::Chunk& coord,
                        const U mesh,
-                       const om::AllowOverwrite allowOverwrite)
+                       const om::common::AllowOverwrite allowOverwrite)
         : seg_(seg)
         , filePtrCache_(filePtrCache)
         , segID_(segID)
@@ -54,7 +54,7 @@ public:
             return;
         }
 
-        if(om::WRITE_ONCE == allowOverwrite_)
+        if(om::common::WRITE_ONCE == allowOverwrite_)
         {
             const OmMeshDataEntry entry = chunk_table->Find(segID_);
             if(entry.wasMeshed){

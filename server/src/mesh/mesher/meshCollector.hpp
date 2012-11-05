@@ -83,7 +83,7 @@ public:
         }
 
         //meshIO_->Save(segID, coord_, mesh,
-         //             om::BUFFER_WRITES, om::OVERWRITE);
+         //             om::common::BUFFER_WRITES, om::common::OVERWRITE);
     }
 };
 

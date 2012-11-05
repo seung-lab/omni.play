@@ -13,7 +13,7 @@ Q_OBJECT
 
 public:
     ContrastSpinBox(QWidget* d)
-        : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE)
+        : OmDoubleSpinBox(d, om::common::UPDATE_AS_TYPE)
      {
         setSingleStep(0.05);
         setRange(-5, 5);

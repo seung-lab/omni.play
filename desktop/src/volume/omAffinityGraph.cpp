@@ -18,14 +18,14 @@ OmAffinityGraph::~OmAffinityGraph()
 
 void OmAffinityGraph::ImportAllChannels(const QString& hdf5fnp)
 {
-    ImportSingleChannel(hdf5fnp, om::X_AFFINITY);
-    ImportSingleChannel(hdf5fnp, om::Y_AFFINITY);
-    ImportSingleChannel(hdf5fnp, om::Z_AFFINITY);
+    ImportSingleChannel(hdf5fnp, om::common::X_AFFINITY);
+    ImportSingleChannel(hdf5fnp, om::common::Y_AFFINITY);
+    ImportSingleChannel(hdf5fnp, om::common::Z_AFFINITY);
     OmActions::Save();
 }
 
 void OmAffinityGraph::ImportSingleChannel(const QString& hdf5fnp,
-                                          const om::AffinityGraph aff)
+                                          const om::common::AffinityGraph aff)
 {
     std::cout << "Building affinity channel: " << aff << std::endl;
 
@@ -39,14 +39,14 @@ void OmAffinityGraph::ImportSingleChannel(const QString& hdf5fnp,
     bc.BuildBlocking();
 }
 
-OmAffinityChannel* OmAffinityGraph::GetChannel(const om::AffinityGraph aff) const
+OmAffinityChannel* OmAffinityGraph::GetChannel(const om::common::AffinityGraph aff) const
 {
     return channels_.find(aff)->second.get();
 }
 
 // use to just read data
 om::shared_ptr<OmRawChunk<float> >
-OmAffinityGraph::RawChunk(const om::AffinityGraph aff,
+OmAffinityGraph::RawChunk(const om::common::AffinityGraph aff,
                           const om::coords::Chunk& coord)
 {
     OmAffinityChannel* affChan = channels_[aff].get();
@@ -54,7 +54,7 @@ OmAffinityGraph::RawChunk(const om::AffinityGraph aff,
     return om::make_shared<OmRawChunk<float> >(affChan, coord);
 }
 
-OmChunk* OmAffinityGraph::MipChunk(const om::AffinityGraph aff,
+OmChunk* OmAffinityGraph::MipChunk(const om::common::AffinityGraph aff,
                                      const om::coords::Chunk& coord)
 {
     OmAffinityChannel* affChan = channels_[aff].get();

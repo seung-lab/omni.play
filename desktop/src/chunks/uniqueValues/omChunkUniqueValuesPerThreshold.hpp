@@ -68,7 +68,7 @@ private:
         }
 
         values_ = OmSmartPtr<uint32_t>::MallocNumBytes(file.size(),
-                                                       om::DONT_ZERO_FILL);
+                                                       om::common::DONT_ZERO_FILL);
         numElements_ = file.size() / sizeof(uint32_t);
 
         file.seek(0);
@@ -107,7 +107,7 @@ private:
 	    }
 
 	    values_ = OmSmartPtr<uint32_t>::MallocNumElements(segIDs.size(),
-	                                                      om::DONT_ZERO_FILL);
+	                                                      om::common::DONT_ZERO_FILL);
 
 	    std::copy(segIDs.begin(), segIDs.end(), values_.get());
 	    zi::sort(values_.get(), values_.get() + segIDs.size());

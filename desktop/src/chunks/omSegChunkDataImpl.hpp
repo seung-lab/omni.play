@@ -143,7 +143,7 @@ private:
         const int numVoxelsInChunk = chunk_->Mipping().NumVoxels();
 
         om::shared_ptr<uint32_t> ret = OmSmartPtr<uint32_t>::MallocNumElements(numVoxelsInChunk,
-                                                                               om::DONT_ZERO_FILL);
+                                                                               om::common::DONT_ZERO_FILL);
         std::copy(dataRaw,
                   dataRaw + numVoxelsInChunk,
                   ret.get());

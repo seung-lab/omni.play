@@ -13,7 +13,7 @@ class DimSpinBox : public OmIntSpinBox
 	float& val_;
 public:
 	DimSpinBox(float& val, QWidget* parent)
-		: OmIntSpinBox(parent, om::DONT_UPDATE_AS_TYPE)
+		: OmIntSpinBox(parent, om::common::DONT_UPDATE_AS_TYPE)
 		, val_(val)
 	{
 		setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());

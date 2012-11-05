@@ -25,12 +25,12 @@ QGroupBox* LocalPreferences2d::makeGeneralPropBox()
 
     layout->addWidget(new OmLabelHBox(widget,
                                     new CrosshairOpeningSizeSpinBox(widget),
-                                    om::LEFT_SIDE,
+                                    om::common::LEFT_SIDE,
                                     "Crosshair Opening Size"));
 
     layout->addWidget(new OmLabelHBox(widget,
                       				  new MipRateSpinBox(widget),
-                      				  om::LEFT_SIDE,
+                      				  om::common::LEFT_SIDE,
                       				  "Mip Rate"));
 
     return widget;

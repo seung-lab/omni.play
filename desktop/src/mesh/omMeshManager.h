@@ -37,7 +37,7 @@ public:
 
     OmMeshPtr Produce(const OmMeshCoord&);
 
-    void GetMesh(OmMeshPtr&, const OmMeshCoord&, const om::Blocking);
+    void GetMesh(OmMeshPtr&, const OmMeshCoord&, const om::common::Blocking);
 
     void UncacheMesh(const OmMeshCoord& coord);
 

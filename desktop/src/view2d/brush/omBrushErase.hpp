@@ -10,7 +10,7 @@ public:
                              const OmSegID segIDtoErase)
     {
         om::shared_ptr<OmBrushOppInfo> info =
-            OmBrushOppInfoFactory::MakeOppInfo(state, coord, om::ADD);
+            OmBrushOppInfoFactory::MakeOppInfo(state, coord, om::common::ADD);
 
         OmBrushEraseCircle circle(info, segIDtoErase);
 
@@ -23,7 +23,7 @@ public:
         const om::coords::Global& first = state->GetLastDataPoint();
 
         om::shared_ptr<OmBrushOppInfo> info =
-            OmBrushOppInfoFactory::MakeOppInfo(state, first, om::ADD);
+            OmBrushOppInfoFactory::MakeOppInfo(state, first, om::common::ADD);
 
         om::shared_ptr<OmBrushEraseLineTask> task =
             om::make_shared<OmBrushEraseLineTask>(info, first, second, segIDtoErase);

@@ -41,7 +41,7 @@ protected:
     {
         const uint64_t numBytes = file_->size();
 
-        data_ = OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
+        data_ = OmSmartPtr<T>::MallocNumBytes(numBytes, om::common::DONT_ZERO_FILL);
         char* dataCharPtr = reinterpret_cast<char*>(data_.get());
         file_->seek(0);
         const uint64_t readBytes = file_->read(dataCharPtr, numBytes);
@@ -134,7 +134,7 @@ class OmFileWriteQT : public OmFileQTbase<T> {
 public:
     static om::shared_ptr<OmFileWriteQT<T> >
     WriterNumBytes(const std::string& fnp, const int64_t numBytes,
-                   const om::ZeroMem shouldZeroFill)
+                   const om::common::ZeroMem shouldZeroFill)
     {
         OmFileWriteQT<T>* ret = new OmFileWriteQT(fnp, numBytes, shouldZeroFill);
         return om::shared_ptr<OmFileWriteQT<T> >(ret);
@@ -142,7 +142,7 @@ public:
 
     static om::shared_ptr<OmFileWriteQT<T> >
     WriterNumElements(const std::string& fnp, const int64_t numElements,
-                      const om::ZeroMem shouldZeroFill)
+                      const om::common::ZeroMem shouldZeroFill)
     {
         const uint64_t numBytes = numElements*sizeof(T);
         OmFileWriteQT<T>* ret = new OmFileWriteQT(fnp, numBytes, shouldZeroFill);
@@ -151,7 +151,7 @@ public:
 
 private:
     OmFileWriteQT(const std::string& fnp, const int64_t numBytes,
-                  const om::ZeroMem shouldZeroFill)
+                  const om::common::ZeroMem shouldZeroFill)
         : OmFileQTbase<T>(fnp)
     {
         checkFileSize(numBytes);
@@ -166,7 +166,7 @@ private:
             throw OmIoException("did't read right amount of data");
         }
 
-        if(om::ZERO_FILL == shouldZeroFill){
+        if(om::common::ZERO_FILL == shouldZeroFill){
             memset(this->data_.get(), 0, numBytes);
         }
 

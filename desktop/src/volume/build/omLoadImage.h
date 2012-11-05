@@ -170,7 +170,7 @@ private:
                 uint8_t const*const tileDataQT = tileQT.bits();
 
                 om::shared_ptr<T> tile = OmSmartPtr<T>::MallocNumBytes(tileSizeBytes_,
-                                                                       om::DONT_ZERO_FILL);
+                                                                       om::common::DONT_ZERO_FILL);
 
                 std::copy(tileDataQT, tileDataQT + tileSizeBytes_, tile.get());
 

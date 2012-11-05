@@ -16,7 +16,7 @@ struct OmSelectSegmentsParams
     bool autoCenter;
 
     bool augmentListOnly;
-    om::AddOrSubtract addOrSubtract;
+    om::common::AddOrSubtract addOrSubtract;
 };
 
 struct OmSegmentGUIparams

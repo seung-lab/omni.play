@@ -25,7 +25,7 @@ private:
             return;
         }
 
-        OmActions::ValidateSelectedSegments(sdw, om::SET_VALID);
+        OmActions::ValidateSelectedSegments(sdw, om::common::SET_VALID);
 
         OmEvents::SegmentModified();
     }

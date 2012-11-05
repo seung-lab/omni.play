@@ -85,7 +85,7 @@ bool OmSegmentContextMenu::isValid() const {
 }
 
 bool OmSegmentContextMenu::isUncertain() const {
-    return om::UNCERTAIN == sdw_.FindRoot()->GetListType();
+    return om::common::UNCERTAIN == sdw_.FindRoot()->GetListType();
 }
 
 void OmSegmentContextMenu::addSelectionNames()
@@ -202,7 +202,7 @@ void OmSegmentContextMenu::randomizeSegmentColor()
 void OmSegmentContextMenu::setValid()
 {
     if(sdw_.IsSegmentValid()){
-        OmActions::ValidateSegment(sdw_, om::SET_VALID);
+        OmActions::ValidateSegment(sdw_, om::common::SET_VALID);
         OmEvents::SegmentModified();
     }
 }
@@ -210,7 +210,7 @@ void OmSegmentContextMenu::setValid()
 void OmSegmentContextMenu::setNotValid()
 {
     if(sdw_.IsSegmentValid()){
-        OmActions::ValidateSegment(sdw_, om::SET_NOT_VALID);
+        OmActions::ValidateSegment(sdw_, om::common::SET_NOT_VALID);
         OmEvents::SegmentModified();
     }
 }

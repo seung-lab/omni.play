@@ -16,7 +16,7 @@ class MSTThresholdSpinBox
 Q_OBJECT
 public:
     MSTThresholdSpinBox(GraphTools* d)
-        : OmDoubleSpinBox(d, om::DONT_UPDATE_AS_TYPE)
+        : OmDoubleSpinBox(d, om::common::DONT_UPDATE_AS_TYPE)
         , mParent(d)
     {
         setSingleStep(0.002);

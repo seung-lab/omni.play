@@ -109,7 +109,7 @@ public:
             if(!seg){
                 continue;
             }
-            seg->SetListType(om::WORKING);
+            seg->SetListType(om::common::WORKING);
         }
 
         sdw.ValidGroupNum()->Clear();

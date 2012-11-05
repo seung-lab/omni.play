@@ -84,7 +84,7 @@ private:
 
 public:
     AnnotationSizeSpinBox(QWidget* d, OmViewGroupState* vgs)
-    : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE)
+    : OmDoubleSpinBox(d, om::common::UPDATE_AS_TYPE)
     , vgs_(vgs)
     {
     	setSingleStep(0.1);

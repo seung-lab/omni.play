@@ -24,14 +24,14 @@ private:
 
     boost::scoped_ptr<OmSegmentListByMRU> recent_;
 
-    inline OmSegmentListForGUI* get(const om::SegListType type)
+    inline OmSegmentListForGUI* get(const om::common::SegListType type)
     {
         switch(type){
-        case om::VALID:
+        case om::common::VALID:
             return valid_.get();
-        case om::WORKING:
+        case om::common::WORKING:
             return working_.get();
-        case om::UNCERTAIN:
+        case om::common::UNCERTAIN:
             return uncertain_.get();
         default:
             throw OmArgException("unknown type");
@@ -53,18 +53,18 @@ public:
     void Swap(om::shared_ptr<OmSegmentListForGUI>& list);
     void Swap(om::shared_ptr<OmSegmentListGlobal>& globalList);
 
-    size_t Size(const om::SegListType type);
+    size_t Size(const om::common::SegListType type);
     size_t SizeRecent();
 
     uint64_t GetNumTopLevelSegs();
     int64_t TotalNumVoxels();
-    int64_t NumVoxels(const om::SegListType type);
+    int64_t NumVoxels(const om::common::SegListType type);
 
     om::shared_ptr<GUIPageOfSegments>
     GetSegmentGUIPageRecent(const GUIPageRequest& request);
 
     om::shared_ptr<GUIPageOfSegments>
-    GetSegmentGUIPage(const om::SegListType type, const GUIPageRequest& request);
+    GetSegmentGUIPage(const om::common::SegListType type, const GUIPageRequest& request);
 
     OmSegID GetNextSegIDinWorkingList(const SegmentDataWrapper&);
     OmSegID GetNextSegIDinWorkingList(const SegmentationDataWrapper&);

@@ -10,7 +10,7 @@ Q_OBJECT
 
 public:
     BrightnessSpinBox(QWidget* d)
-        : OmIntSpinBox(d, om::UPDATE_AS_TYPE)
+        : OmIntSpinBox(d, om::common::UPDATE_AS_TYPE)
     {
         setSingleStep(1);
         setRange(-255, 255);

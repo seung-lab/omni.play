@@ -29,7 +29,7 @@ public:
     void AddToRecentList(const bool addToRecentList);
     void AutoCenter(const bool autoCenter);
     void AugmentListOnly(const bool augmentListOnly);
-    void AddOrSubtract(const om::AddOrSubtract addSegments);
+    void AddOrSubtract(const om::common::AddOrSubtract addSegments);
 
 private:
     OmSegments* segments_;

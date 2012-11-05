@@ -112,7 +112,7 @@ public:
 
     static om::shared_ptr<OmMemMappedFileWriteQT<T> >
     WriterNumBytes(const std::string& fnp, const int64_t numBytes,
-                   const om::ZeroMem shouldZeroFill)
+                   const om::common::ZeroMem shouldZeroFill)
     {
         OmMemMappedFileWriteQT* ret = new OmMemMappedFileWriteQT(fnp, numBytes,
                                                                  shouldZeroFill);
@@ -121,7 +121,7 @@ public:
 
     static om::shared_ptr<OmMemMappedFileWriteQT<T> >
     WriterNumElements(const std::string& fnp, const int64_t numElements,
-                      const om::ZeroMem shouldZeroFill)
+                      const om::common::ZeroMem shouldZeroFill)
     {
         const uint64_t numBytes = numElements * sizeof(T);
         OmMemMappedFileWriteQT* ret = new OmMemMappedFileWriteQT(fnp, numBytes,
@@ -131,7 +131,7 @@ public:
 
 private:
     OmMemMappedFileWriteQT(const std::string& fnp, const int64_t numBytes,
-                           const om::ZeroMem shouldZeroFill)
+                           const om::common::ZeroMem shouldZeroFill)
         : OmMemMappedFileQTbase<T>(fnp)
     {
         checkFileSize(numBytes);
@@ -148,7 +148,7 @@ private:
         //TODO: allocate space??
         this->map();
 
-        if(om::ZERO_FILL == shouldZeroFill){
+        if(om::common::ZERO_FILL == shouldZeroFill){
             memset(this->map_, 0, numBytes);
         }
 

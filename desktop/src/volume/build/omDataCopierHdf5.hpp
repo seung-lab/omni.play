@@ -19,7 +19,7 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL>{
 private:
     VOL *const vol_;
     const OmDataPath path_;
-    const om::AffinityGraph aff_;
+    const om::common::AffinityGraph aff_;
 
     Vector3i volSize_;
     OmHdf5* hdf5reader_;
@@ -29,7 +29,7 @@ public:
     OmDataCopierHdf5(VOL* vol,
                      const OmDataPath& path,
                      const std::string fnp,
-                     const om::AffinityGraph aff)
+                     const om::common::AffinityGraph aff)
         : OmDataCopierBase<VOL>(vol)
         , vol_(vol)
         , path_(path)

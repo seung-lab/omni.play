@@ -58,7 +58,7 @@ void OmMST::create()
 
     edgesPtr_ = writer_t::WriterNumElements(filePathActual(),
                                             numEdges_,
-                                            om::ZERO_FILL);
+                                            om::common::ZERO_FILL);
 
     edges_ = edgesPtr_->GetPtr();
 }

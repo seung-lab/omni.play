@@ -11,7 +11,7 @@ Q_OBJECT
 
 public:
     Dust3DThresholdGroup(QWidget* parent, OmViewGroupState* vgs)
-        : OmIntSpinBox(parent, om::UPDATE_AS_TYPE)
+        : OmIntSpinBox(parent, om::common::UPDATE_AS_TYPE)
         , vgs_(vgs)
     {
         setSingleStep(5);

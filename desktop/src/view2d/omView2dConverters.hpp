@@ -161,19 +161,19 @@ private:
 public:
     template <typename T>
     inline static void ShiftPanDirection(Vector3<T>& vec, const T val,
-                                         const om::Direction dir, const ViewType viewType)
+                                         const om::common::Direction dir, const ViewType viewType)
     {
         switch(dir){
-        case om::LEFT:
+        case om::common::LEFT:
             incLeftRightPanDirection(vec, val, viewType);
             break;
-        case om::RIGHT:
+        case om::common::RIGHT:
             incLeftRightPanDirection(vec, -val, viewType);
             break;
-        case om::UP:
+        case om::common::UP:
             incUpDownPanDirection(vec, val, viewType);
             break;
-        case om::DOWN:
+        case om::common::DOWN:
             incUpDownPanDirection(vec, -val, viewType);
             break;
         default:

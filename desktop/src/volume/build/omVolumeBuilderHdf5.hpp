@@ -13,7 +13,7 @@ template <typename VOL>
 class OmVolumeBuilderHdf5 : public OmVolumeBuilderBase<VOL> {
 private:
     VOL *const vol_;
-    const om::AffinityGraph aff_;
+    const om::common::AffinityGraph aff_;
 
     std::string fnp_;
     OmDataPath datasetName_;
@@ -22,7 +22,7 @@ public:
     OmVolumeBuilderHdf5(VOL* vol,
                         const QFileInfo& file,
                         const QString& hdf5path,
-                        const om::AffinityGraph aff = om::NO_AFFINITY)
+                        const om::common::AffinityGraph aff = om::common::NO_AFFINITY)
         : OmVolumeBuilderBase<VOL>(vol)
         , vol_(vol)
         , aff_(aff)

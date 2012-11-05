@@ -20,7 +20,7 @@ class OmDataCopierHdf5Task : public zi::runnable {
 private:
     VOL *const vol_;
     const OmDataPath path_;
-    const om::AffinityGraph aff_;
+    const om::common::AffinityGraph aff_;
 
     const Vector3i volSize_;
     OmHdf5 *const hdf5reader_;
@@ -35,7 +35,7 @@ private:
 public:
     OmDataCopierHdf5Task(VOL* vol,
                          const OmDataPath& path,
-                         const om::AffinityGraph aff,
+                         const om::common::AffinityGraph aff,
                          const Vector3i volSize,
                          OmHdf5 *const hdf5reader,
                          const QString mip0fnp,

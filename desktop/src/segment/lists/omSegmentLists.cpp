@@ -11,9 +11,9 @@
 OmSegmentLists::OmSegmentLists()
     : segmentListsLL_(new OmSegmentListLowLevel(this))
     , globalList_(new OmSegmentListGlobal())
-    , working_(new OmSegmentListForGUI(om::WORKING))
-    , uncertain_(new OmSegmentListForGUI(om::UNCERTAIN))
-    , valid_(new OmSegmentListForGUI(om::VALID))
+    , working_(new OmSegmentListForGUI(om::common::WORKING))
+    , uncertain_(new OmSegmentListForGUI(om::common::UNCERTAIN))
+    , valid_(new OmSegmentListForGUI(om::common::VALID))
     , recent_(new OmSegmentListByMRU(this))
 {}
 
@@ -44,13 +44,13 @@ void OmSegmentLists::Swap(om::shared_ptr<OmSegmentListForGUI>& list)
     zi::rwmutex::write_guard g(lock_);
 
     switch(list->Type()){
-    case om::VALID:
+    case om::common::VALID:
         valid_ = list;
         break;
-    case om::WORKING:
+    case om::common::WORKING:
         working_ = list;
         break;
-    case om::UNCERTAIN:
+    case om::common::UNCERTAIN:
         uncertain_ = list;
         break;
     default:
@@ -64,7 +64,7 @@ void OmSegmentLists::Swap(om::shared_ptr<OmSegmentListGlobal>& globalList)
     globalList_ = globalList;
 }
 
-size_t OmSegmentLists::Size(const om::SegListType type)
+size_t OmSegmentLists::Size(const om::common::SegListType type)
 {
     zi::rwmutex::read_guard g(lock_);
     return get(type)->Size();
@@ -85,14 +85,14 @@ int64_t OmSegmentLists::TotalNumVoxels()
         uncertain_->TotalNumVoxels();
 }
 
-int64_t OmSegmentLists::NumVoxels(const om::SegListType type)
+int64_t OmSegmentLists::NumVoxels(const om::common::SegListType type)
 {
     zi::rwmutex::read_guard g(lock_);
     return get(type)->TotalNumVoxels();
 }
 
 om::shared_ptr<GUIPageOfSegments>
-OmSegmentLists::GetSegmentGUIPage(const om::SegListType type,
+OmSegmentLists::GetSegmentGUIPage(const om::common::SegListType type,
                                   const GUIPageRequest& request)
 {
     zi::rwmutex::read_guard g(lock_);

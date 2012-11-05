@@ -12,10 +12,10 @@ class OmDoubleSpinBox : public QDoubleSpinBox {
 Q_OBJECT
 public:
     OmDoubleSpinBox(QWidget* d,
-                    const om::ShouldUpdateAsType updateAsType)
+                    const om::common::ShouldUpdateAsType updateAsType)
         : QDoubleSpinBox(d)
     {
-        if(om::UPDATE_AS_TYPE == updateAsType)
+        if(om::common::UPDATE_AS_TYPE == updateAsType)
         {
             om::connect(this, SIGNAL(valueChanged(double)),
                         this, SLOT(valueChanged()));

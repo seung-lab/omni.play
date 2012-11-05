@@ -105,8 +105,8 @@ public:
     // Save will take ownership of mesh data
     template <typename U>
     void Save(const OmSegID segID, const om::coords::Chunk& coord,
-              const U data, const om::ShouldBufferWrites buffferWrites,
-              const om::AllowOverwrite allowOverwrite)
+              const U data, const om::common::ShouldBufferWrites buffferWrites,
+              const om::common::AllowOverwrite allowOverwrite)
     {
         om::shared_ptr<OmMeshWriterTaskV2<U> > task =
             om::make_shared<OmMeshWriterTaskV2<U> >(segmentation_,
@@ -122,7 +122,7 @@ public:
             std::cout << "write back queue size " << curNumberTasks << "\n";
         }
 
-        if(om::BUFFER_WRITES == buffferWrites &&
+        if(om::common::BUFFER_WRITES == buffferWrites &&
            curNumberTasks < maxNumberTasks)
         {
             filePtrCache_->AddTaskBack(task);

@@ -28,7 +28,7 @@ public:
         selector.AugmentListOnly(true);
         selector.AddOrSubtract(info->addOrSubract);
 
-        if(om::ADD == info->addOrSubract){
+        if(om::common::ADD == info->addOrSubract){
             selector.InsertSegments(segIDs);
 
         } else {

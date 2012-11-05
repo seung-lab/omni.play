@@ -58,7 +58,7 @@ public:
         builder->Build();
     }
 
-    void Build(const om::AffinityGraph aff)
+    void Build(const om::common::AffinityGraph aff)
     {
         if(HDF5 != importType_){
             throw OmArgException("first file to import is not HDF5");

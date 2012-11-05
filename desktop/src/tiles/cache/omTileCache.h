@@ -30,7 +30,7 @@ public:
     static void WidgetVisibilityChanged(OmTileDrawer* drawer,
                                         const bool visible);
 
-    static void Get(OmTilePtr& tile, const OmTileCoord& key, const om::Blocking blocking);
+    static void Get(OmTilePtr& tile, const OmTileCoord& key, const om::common::Blocking blocking);
 
     static void QueueUp(const OmTileCoord& key);
 

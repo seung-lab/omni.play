@@ -6,13 +6,13 @@
 class OmSetSegmentValidRunner {
 private:
     const SegmentDataWrapper sdw_;
-    const om::SetValid validEnum_;
+    const om::common::SetValid validEnum_;
 
     OmSegID nextSegmentIDtoJumpTo_;
 
 public:
     OmSetSegmentValidRunner(const SegmentDataWrapper& sdw,
-                            const om::SetValid validEnum)
+                            const om::common::SetValid validEnum)
         : sdw_(sdw)
         , validEnum_(validEnum)
     {
@@ -22,7 +22,7 @@ public:
     void Validate()
     {
         bool valid = false;
-        if(om::SET_VALID == validEnum_){
+        if(om::common::SET_VALID == validEnum_){
             valid = true;
         }
 
@@ -40,7 +40,7 @@ public:
     {
         OmSegments* segments = sdw_.Segments();
 
-        const bool segmentGettingSetAsValid = om::SET_VALID == validEnum_;
+        const bool segmentGettingSetAsValid = om::common::SET_VALID == validEnum_;
         const bool shouldJump =
             OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
 
@@ -65,13 +65,13 @@ public:
 class OmSetSegmentsValidRunner {
 private:
     const SegmentationDataWrapper sdw_;
-    const om::SetValid validEnum_;
+    const om::common::SetValid validEnum_;
 
     OmSegID nextSegmentIDtoJumpTo_;
 
 public:
     OmSetSegmentsValidRunner(const SegmentationDataWrapper& sdw,
-                             const om::SetValid validEnum)
+                             const om::common::SetValid validEnum)
         : sdw_(sdw)
         , validEnum_(validEnum)
     {
@@ -81,7 +81,7 @@ public:
     void Validate()
     {
         bool valid = false;
-        if(om::SET_VALID == validEnum_){
+        if(om::common::SET_VALID == validEnum_){
             valid = true;
         }
 
@@ -96,7 +96,7 @@ public:
 
     void JumpToNextSegment()
     {
-        const bool segmentGettingSetAsValid = om::SET_VALID == validEnum_;
+        const bool segmentGettingSetAsValid = om::common::SET_VALID == validEnum_;
         const bool shouldJump =
             OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
 

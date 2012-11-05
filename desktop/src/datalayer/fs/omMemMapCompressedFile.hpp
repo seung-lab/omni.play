@@ -12,7 +12,7 @@ public:
     CreateNumElements(const std::string& fnp, const int64_t numElements)
     {
         om::shared_ptr<T> d = OmSmartPtr<T>::MallocNumElements(numElements,
-                                                                  om::ZERO_FILL);
+                                                                  om::common::ZERO_FILL);
         om::file::compressToFileNumElements(d, numElements, fnp);
 
         return om::make_shared<OmMemMapCompressedFile<T> >(fnp);

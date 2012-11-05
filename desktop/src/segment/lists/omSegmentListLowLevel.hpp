@@ -79,11 +79,11 @@ public:
     }
 
     inline void RefreshGUIlists(){
-        runRefreshGUIlists(om::DONT_FORCE);
+        runRefreshGUIlists(om::common::DONT_FORCE);
     }
 
     inline void ForceRefreshGUIlists(){
-        runRefreshGUIlists(om::FORCE);
+        runRefreshGUIlists(om::common::FORCE);
     }
     
     inline int64_t GetSizeWithChildren(const OmSegID segID) {
@@ -99,7 +99,7 @@ public:
     }
 
 private:
-    inline void runRefreshGUIlists(const om::ShouldForce force)
+    inline void runRefreshGUIlists(const om::common::ShouldForce force)
     {
         threadPool_.push_back(
             zi::run_fn(
@@ -221,9 +221,9 @@ private:
         recreateGUIlists_ = true;
     }
 
-    void doRecreateGUIlists(const om::ShouldForce force)
+    void doRecreateGUIlists(const om::common::ShouldForce force)
     {
-        if(om::DONT_FORCE == force && !recreateGUIlists_){
+        if(om::common::DONT_FORCE == force && !recreateGUIlists_){
             return;
         }
 
@@ -240,17 +240,17 @@ private:
         buildPool.push_back(
             zi::run_fn(
                 zi::bind(&OmSegmentListLowLevel::buildGUIlist,
-                         this, om::WORKING)));
+                         this, om::common::WORKING)));
 
         buildPool.push_back(
             zi::run_fn(
                 zi::bind(&OmSegmentListLowLevel::buildGUIlist,
-                         this, om::VALID)));
+                         this, om::common::VALID)));
 
         buildPool.push_back(
             zi::run_fn(
                 zi::bind(&OmSegmentListLowLevel::buildGUIlist,
-                         this, om::UNCERTAIN)));
+                         this, om::common::UNCERTAIN)));
 
         buildPool.join();
 
@@ -268,7 +268,7 @@ private:
         segmentLists_->Swap(globalList);
     }
 
-    void buildGUIlist(const om::SegListType listType)
+    void buildGUIlist(const om::common::SegListType listType)
     {
         om::shared_ptr<OmSegmentListForGUI> guiList =
             om::make_shared<OmSegmentListForGUI>(listType);

@@ -98,7 +98,7 @@ OmMeshPtr OmMeshManager::Produce(const OmMeshCoord& coord)
 }
 
 void OmMeshManager::GetMesh(OmMeshPtr& ptr, const OmMeshCoord& coord,
-                            const om::Blocking blocking)
+                            const om::common::Blocking blocking)
 {
     dataCache_->Get(ptr, coord, blocking);
 }

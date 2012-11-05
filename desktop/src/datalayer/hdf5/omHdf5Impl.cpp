@@ -68,7 +68,7 @@ void OmHdf5Impl::writeDataset(const OmDataPath& path,
 }
 
 Vector3i OmHdf5Impl::getChunkedDatasetDims(const OmDataPath& path,
-										   const om::AffinityGraph aff)
+										   const om::common::AffinityGraph aff)
 {
 	hdf_->setPath(path);
 	return hdf_->getChunkedDatasetDims(aff);
@@ -76,7 +76,7 @@ Vector3i OmHdf5Impl::getChunkedDatasetDims(const OmDataPath& path,
 
 OmDataWrapperPtr OmHdf5Impl::readChunk(const OmDataPath& path,
 									   const om::dataBbox& dataExtent,
-									   const om::AffinityGraph aff)
+									   const om::common::AffinityGraph aff)
 {
 	hdf_->setPath(path);
 	return hdf_->readChunk(dataExtent, aff);

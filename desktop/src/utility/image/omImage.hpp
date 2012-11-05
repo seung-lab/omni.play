@@ -191,7 +191,7 @@ public:
 
         const int numBytes = d_.data_->num_elements()*sizeof(T);
         om::shared_ptr<T> ret =
-            OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
+            OmSmartPtr<T>::MallocNumBytes(numBytes, om::common::DONT_ZERO_FILL);
         memcpy(ret.get(), d_.data_->data(), numBytes);
         return ret;
     }

@@ -14,7 +14,7 @@ class BreakThresholdGroup : public OmDoubleSpinBox {
 Q_OBJECT
 public:
     BreakThresholdGroup(GraphTools* d, OmViewGroupState* vgs)
-        : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE)
+        : OmDoubleSpinBox(d, om::common::UPDATE_AS_TYPE)
         , vgs_(vgs)
     {
         setSingleStep(0.002);

@@ -70,7 +70,7 @@ void OmActions::SetVoxels(const OmID segmentationID,
 
 // segment-related
 void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
-                                const om::SetValid valid, const bool dontCenter)
+                                const om::common::SetValid valid, const bool dontCenter)
 {
     pool().push_back(
         zi::run_fn(
@@ -79,7 +79,7 @@ void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
 }
 
 void OmActions::ValidateSelectedSegments(const SegmentationDataWrapper& sdw,
-                                         const om::SetValid valid)
+                                         const om::common::SetValid valid)
 {
     pool().push_back(
         zi::run_fn(

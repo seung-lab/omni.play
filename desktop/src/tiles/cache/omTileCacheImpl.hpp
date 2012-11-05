@@ -90,7 +90,7 @@ public:
         }
     }
 
-    void Get(OmTilePtr& tile, const OmTileCoord& key, const om::Blocking blocking)
+    void Get(OmTilePtr& tile, const OmTileCoord& key, const om::common::Blocking blocking)
     {
         if(isChannel(key)){
             getChanVol(key)->Get(tile, key, blocking);

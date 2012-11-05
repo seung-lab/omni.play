@@ -7,7 +7,7 @@
 class OmBrushSelect {
 public:
     static void SelectByClick(OmView2dState* state, const om::coords::Global& coord,
-                              const om::AddOrSubtract addSegments)
+                              const om::common::AddOrSubtract addSegments)
     {
         // std::cout << "mouse click data coord: " << coord << "\n";
 
@@ -20,7 +20,7 @@ public:
     }
 
     static void SelectByLine(OmView2dState* state, const om::coords::Global& second,
-                             const om::AddOrSubtract addSegments)
+                             const om::common::AddOrSubtract addSegments)
     {
         const om::coords::Global& first = state->GetLastDataPoint();
 

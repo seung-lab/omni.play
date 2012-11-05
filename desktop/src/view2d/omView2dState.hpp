@@ -92,7 +92,7 @@ public:
         return coords_;
     }
 
-    void Shift(const om::Direction dir)
+    void Shift(const om::common::Direction dir)
     {
         const float numberOfSlicestoAdvance = 2 * om::math::pow2int(getMipLevel());
         om::coords::Global loc = Location();

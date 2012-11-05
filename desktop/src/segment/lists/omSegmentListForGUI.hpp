@@ -6,7 +6,7 @@
 
 class OmSegmentListForGUI {
 private:
-    const om::SegListType listType_;
+    const om::common::SegListType listType_;
 
     std::vector<SegInfo> bySize_;
     boost::unordered_map<OmSegID, uint32_t> index_;
@@ -14,12 +14,12 @@ private:
     int64_t totalNumVoxels_;
 
 public:
-    OmSegmentListForGUI(const om::SegListType listType)
+    OmSegmentListForGUI(const om::common::SegListType listType)
         : listType_(listType)
         , totalNumVoxels_(0)
     {}
 
-    inline om::SegListType Type() const {
+    inline om::common::SegListType Type() const {
         return listType_;
     }
 
