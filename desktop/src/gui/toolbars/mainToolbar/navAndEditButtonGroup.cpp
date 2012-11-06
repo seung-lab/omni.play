@@ -4,6 +4,7 @@
 #include "gui/toolbars/mainToolbar/toolButton.h"
 #include "system/omConnect.hpp"
 #include "system/omStateManager.h"
+#include "gui/tools.hpp"
 
 NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
     : QButtonGroup(parent)

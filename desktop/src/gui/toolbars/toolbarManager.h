@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/common.h"
+#include "gui/tools.hpp"
 
 #include <QtGui>
 

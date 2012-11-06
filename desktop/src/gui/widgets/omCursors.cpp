@@ -1,6 +1,7 @@
 #include "gui/widgets/omCursors.h"
 #include "common/common.h"
 #include "system/omStateManager.h"
+#include "gui/tools.hpp"
 
 void OmCursors::setToolCursor(QWidget* w){
     w->setCursor(figureOutCursor());

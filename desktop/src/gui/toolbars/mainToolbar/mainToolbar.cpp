@@ -10,6 +10,7 @@
 #include "gui/toolbars/mainToolbar/saveButton.h"
 #include "gui/toolbars/mainToolbar/showPaintTools.hpp"
 #include "gui/toolbars/mainToolbar/showAnnotationsTools.hpp"
+#include "gui/tools.hpp"
 
 MainToolBar::MainToolBar(MainWindow* mainWindow)
     : QToolBar("Tools", mainWindow)

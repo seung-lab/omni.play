@@ -5,6 +5,7 @@
 #include "events/omEvents.h"
 #include "viewGroup/omBrushSize.hpp"
 #include "system/omUndoStack.hpp"
+#include "gui/tools.hpp"
 
 #include <QSize>
 

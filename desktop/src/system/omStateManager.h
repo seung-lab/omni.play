@@ -10,6 +10,7 @@
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "zi/omUtility.h"
+#include "gui/tools.hpp"
 
 #include <QSize>
 

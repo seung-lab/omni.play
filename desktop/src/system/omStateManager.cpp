@@ -1,5 +1,6 @@
 #include "system/omStateManager.h"
 #include "system/omStateManagerImpl.hpp"
+#include "gui/tools.hpp"
 
 OmStateManager::OmStateManager()
 {}

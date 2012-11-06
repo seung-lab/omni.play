@@ -1,6 +1,7 @@
 #include "gui/toolbars/mainToolbar/toolButton.h"
 #include "events/omEvents.h"
 #include "system/omStateManager.h"
+#include "gui/tools.hpp"
 
 ToolButton::ToolButton(QWidget* parent,
                        const QString& title,

@@ -4,6 +4,7 @@
 #include "events/details/omToolModeEvent.h"
 #include "gui/brushToolbox/brushToolboxImpl.h"
 #include "system/omStateManager.h"
+#include "gui/tools.hpp"
 
 class BrushToolbox : public OmToolModeEventListener,
                      public OmSegmentEventListener {

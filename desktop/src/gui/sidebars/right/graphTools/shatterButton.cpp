@@ -5,6 +5,7 @@
 #include "system/omConnect.hpp"
 #include "events/omEvents.h"
 #include "viewGroup/omViewGroupState.h"
+#include "gui/tools.hpp"
 
 ShatterButton::ShatterButton(GraphTools* d)
     : OmButton<GraphTools>( d,

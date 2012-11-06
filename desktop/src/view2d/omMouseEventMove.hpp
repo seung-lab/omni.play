@@ -8,6 +8,7 @@
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
+#include "gui/tools.hpp"
 
 class OmMouseEventMove{
 private:

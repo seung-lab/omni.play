@@ -16,6 +16,7 @@
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
 #include "view2d/omView2dState.hpp"
+#include "gui/tools.hpp"
 
 #ifdef ZI_OS_MACOS
 #include <QGLWidget>

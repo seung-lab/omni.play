@@ -5,6 +5,7 @@
 #include "gui/toolbars/toolbarManager.h"
 #include "system/cache/omCacheManager.h"
 #include "events/omEvents.h"
+#include "gui/tools.hpp"
 
 class OmSplitting {
 private:

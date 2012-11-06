@@ -12,6 +12,7 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include <annotation/annotation.h>
+#include "gui/tools.hpp"
 
 class OmMouseEventPress{
 private:

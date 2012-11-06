@@ -9,6 +9,7 @@
 #include "view2d/omView2dState.hpp"
 #include "viewGroup/omBrushSize.hpp"
 #include "annotation/annotation.h"
+#include "gui/tools.hpp"
 
 #include <QPainter>
 

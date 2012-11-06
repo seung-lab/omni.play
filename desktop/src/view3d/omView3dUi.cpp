@@ -18,6 +18,7 @@
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
 #include "annotation/annotation.h"
+#include "gui/tools.hpp"
 
 OmView3dUi::OmView3dUi(OmView3d* view3d, OmViewGroupState* vgs)
     : view3d_(view3d)

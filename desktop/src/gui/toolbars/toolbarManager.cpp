@@ -3,6 +3,7 @@
 #include "gui/toolbars/toolbarManager.h"
 #include "system/omAppState.hpp"
 #include "viewGroup/omViewGroupState.h"
+#include "gui/tools.hpp"
 
 ToolBarManager::ToolBarManager(MainWindow* mainWindow)
     : QWidget(mainWindow)
