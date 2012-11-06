@@ -22,7 +22,7 @@ public:
         for (int level = 0; level <= maxLevel; ++level)
         {
             const Vector3<uint64_t> dims =
-                vol->Coords().getDimsRoundedToNearestChunk(level);
+                vol->Coords().DimsRoundedToNearestChunk(level);
 
             volFiles[level] = createFile(vol, level, dims);
         }
@@ -45,7 +45,7 @@ public:
         for(int level = 1; level <= maxLevel; ++level)
         {
             const Vector3<uint64_t> dims =
-                vol->Coords().getDimsRoundedToNearestChunk(level);
+                vol->Coords().DimsRoundedToNearestChunk(level);
 
             volFiles[level] = createFile(vol, level, dims);
         }

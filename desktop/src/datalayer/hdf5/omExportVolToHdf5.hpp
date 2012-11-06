@@ -51,7 +51,7 @@ private:
             hdfExport->open();
             const Vector3i chunkSize = vol->Coords().ChunkDimensions();
             const Vector3i rounded_data_dims =
-                vol->Coords().getDimsRoundedToNearestChunk(0);
+                vol->Coords().DimsRoundedToNearestChunk(0);
             hdfExport->allocateChunkedDataset(fpath,
                                               rounded_data_dims,
                                               chunkSize,

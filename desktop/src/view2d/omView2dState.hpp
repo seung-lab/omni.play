@@ -144,7 +144,7 @@ public:
 
     void ResetWindowState()
     {
-        static const om::normCoord midPoint(0.5, 0.5, 0.5, vol_);
+        static const om::coords::Norm midPoint(0.5, 0.5, 0.5, vol_);
 
         std::cout << vol_->Coords().DataDimensions() << std::endl;
 

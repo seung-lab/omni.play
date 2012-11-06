@@ -2,6 +2,7 @@
 
 #include "system/omManageableObject.h"
 #include "common/colors.h"
+#include "gui/tools.hpp"
 
 class QGLWidget;
 class ChannelDataWrapper;
@@ -114,7 +115,7 @@ public:
 
     om::common::SegmentColorCacheType determineColorizationType(const om::common::ObjectType);
 
-    OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*const,
+    OmPooledTile<om::common::ColorARGB>* ColorTile(uint32_t const*const,
                                          const int tileDim,
                                          const OmTileCoord&);
 

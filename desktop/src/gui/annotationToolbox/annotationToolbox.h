@@ -29,7 +29,7 @@ class ColorButton : public OmButton<QWidget>
     private:
         void updateColor()
         {
-            vgs_->setAnnotationColor(om::utils::color::QColorToOmColor(cur_));
+            vgs_->setAnnotationColor(om::utils::color::QColorToColor(cur_));
 
             const QPixmap pixm =  om::utils::color::MakeQPixmap(cur_);
             setIcon(QIcon(pixm));

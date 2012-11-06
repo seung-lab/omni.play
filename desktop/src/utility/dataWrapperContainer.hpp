@@ -24,7 +24,7 @@ public:
         case om::common::SEGMENTATION:
             sdw_ = boost::optional<SegmentationDataWrapper>(obj_id);
             break;
-        case AFFINITY:
+        case om::common::AFFINITY:
             adw_ = boost::optional<AffinityGraphDataWrapper>(obj_id);
             break;
         default:
@@ -48,7 +48,7 @@ public:
     bool isChannel() const {
         return cdw_;
     }
-    
+
     bool isAffinityGraph() const {
         return adw_;
     }
@@ -58,13 +58,13 @@ public:
         if(cdw_){
             return om::common::CHANNEL;
         }
-        
+
         if(sdw_){
             return om::common::SEGMENTATION;
         }
-        
+
         if(adw_){
-            return AFFINITY;
+            return om::common::AFFINITY;
         }
         throw om::ArgException("uninitialized");
     }
@@ -76,9 +76,9 @@ public:
     ChannelDataWrapper getChannelDataWrapper() const {
         return *cdw_;
     }
-    
+
     AffinityGraphDataWrapper GetADW() const {
         return *adw_;
-    }   
+    }
 };
 

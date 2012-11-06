@@ -146,7 +146,7 @@ private:
         FOR_EACH(tileCL, *tileCoordsAndLocations)
         {
             OmTilePtr tile;
-            OmTileCache::Get(tile, tileCL->tileCoord, om::NON_BLOCKING);
+            OmTileCache::Get(tile, tileCL->tileCoord, om::common::NON_BLOCKING);
 
             if(tile)
             {

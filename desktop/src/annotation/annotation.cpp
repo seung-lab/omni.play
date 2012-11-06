@@ -42,7 +42,7 @@ data* manager::parse(const YAML::Node& n)
 	n["coord"] >> c;
 	std::string comment;
 	n["comment"] >> comment;
-	OmColor color;
+	om::common::Color color;
 	n["color"] >> color;
 	double size;
 	yaml::util::OptionalRead(n, "size", size, 3.0);

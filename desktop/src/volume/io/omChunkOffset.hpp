@@ -10,7 +10,7 @@ public:
     {
         const int level = coord.mipLevel();
         const Vector3<int64_t> volDims =
-            vol->Coords().getDimsRoundedToNearestChunk(level);
+            vol->Coords().DimsRoundedToNearestChunk(level);
         const Vector3<int64_t> chunkDims = vol->Coords().ChunkDimensions();
         const int64_t bps = vol->GetBytesPerVoxel();
 

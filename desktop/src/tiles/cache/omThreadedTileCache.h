@@ -67,7 +67,7 @@ public:
             return;
         }
 
-        if(om::BLOCKING == blocking)
+        if(om::common::BLOCKING == blocking)
         {
             ptr = loadItem(key);
             return;

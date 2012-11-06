@@ -11,7 +11,7 @@ OmTextureID::OmTextureID(const int tileDim, OmPooledTile<uint8_t>* data)
     , context_(NULL)
 {}
 
-OmTextureID::OmTextureID(const int tileDim, OmPooledTile<OmColorARGB>* data)
+OmTextureID::OmTextureID(const int tileDim, OmPooledTile<om::common::ColorARGB>* data)
     : tileDim_(tileDim)
     , pooledTile_(data)
     , flag_(OMTILE_NEEDCOLORMAP)

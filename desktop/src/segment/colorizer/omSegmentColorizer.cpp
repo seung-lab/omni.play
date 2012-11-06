@@ -38,12 +38,12 @@ void OmSegmentColorizer::setup()
     }
 }
 
-OmPooledTile<OmColorARGB>*
+OmPooledTile<om::common::ColorARGB>*
 OmSegmentColorizer::ColorTile(uint32_t const* imageData)
 {
     setup();
 
-    OmPooledTile<OmColorARGB>* colorMappedDataPtr = new OmPooledTile<OmColorARGB>();
+    OmPooledTile<om::common::ColorARGB>* colorMappedDataPtr = new OmPooledTile<om::common::ColorARGB>();
 
     // OmTimer timer;
 

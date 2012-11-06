@@ -59,9 +59,9 @@ private:
 
         om::file::openFileRO(file_, fnp_);
 
-        values_ = om::file::mapFile<OmColor>(file_.get());
+        values_ = om::file::mapFile<om::common::Color>(file_.get());
 
-        numEntries_ = file_->size() / sizeof(OmColor);
+        numEntries_ = file_->size() / sizeof(om::common::Color);
     }
 
     std::string fileName() const
@@ -73,7 +73,7 @@ private:
         return s.str();
     }
 
-    static void buildColorTable(std::vector<OmColor>& colorTable)
+    static void buildColorTable(std::vector<om::common::Color>& colorTable)
     {
         // make sure to change version_ if color table algorithm changes...
 
@@ -108,7 +108,7 @@ private:
 
     void setupFile()
     {
-        std::vector<OmColor> colorTable;
+        std::vector<om::common::Color> colorTable;
 
         buildColorTable(colorTable);
 

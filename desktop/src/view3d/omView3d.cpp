@@ -502,8 +502,8 @@ void OmView3d::DrawVolumes(om::common::Bitfield cullerOptions)
     const OmSegmentation * seg = vgs_->Segmentation().GetSegmentationPtr();
     //setup culler to current projection-modelview matrix
     OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
-                          om::normCoord(mCamera.GetPosition(), seg),
-                          om::normCoord(mCamera.GetFocus(), seg));
+                          om::coords::Norm(mCamera.GetPosition(), seg),
+                          om::coords::Norm(mCamera.GetFocus(), seg));
 
     meshesFound_ = false;
 

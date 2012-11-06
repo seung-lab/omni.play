@@ -50,7 +50,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
 OmViewGroupState::~OmViewGroupState()
 {}
 
-OmPooledTile<OmColorARGB>* OmViewGroupState::ColorTile(uint32_t const*const imageData,
+OmPooledTile<om::common::ColorARGB>* OmViewGroupState::ColorTile(uint32_t const*const imageData,
                                                        const int tileDim,
                                                        const OmTileCoord& key)
 {
@@ -103,7 +103,7 @@ OmViewGroupState::determineColorizationType(const om::common::ObjectType objType
             if(mShowFilterInColor){
                 return om::common::om::common::SCC_SEGMENTATION_BREAK_COLOR;
             }
-            return om::common::om::common::SCC_SEGMENTATION_BREAK_BLACK;
+            return om::common::SCC_SEGMENTATION_BREAK_BLACK;
         }
 
         return om::common::SCC_SEGMENTATION;

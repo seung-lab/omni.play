@@ -250,7 +250,7 @@ private:
 
     void processChunk( om::coords::Chunk coord )
     {
-        static const int chunkDim = segmentation_->Coords().ChunkDimension();
+        static const Vector3i chunkDims = segmentation_->Coords().ChunkDimensions();
 
         OmSegChunk* chunk = segmentation_->GetChunk(coord);
 
@@ -258,9 +258,9 @@ private:
 
         Vector3f dstDim = dstBbox.getDimensions();
 
-        zi::vl::vec3d scale( dstDim.x / chunkDim,
-                             dstDim.y / chunkDim,
-                             dstDim.z / chunkDim );
+        zi::vl::vec3d scale( dstDim.x / chunkDims.x,
+                             dstDim.y / chunkDims.y,
+                             dstDim.z / chunkDims.z );
 
         dstDim = dstBbox.getMin();
 

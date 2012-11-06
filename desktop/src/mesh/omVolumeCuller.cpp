@@ -3,8 +3,8 @@
 #include "common/omDebug.h"
 
 OmVolumeCuller::OmVolumeCuller(const Matrix4f & projmodelview,
-                            const om::normCoord & pos,
-                            const om::normCoord & focus)
+                            const om::coords::Norm & pos,
+                            const om::coords::Norm & focus)
     : mProjModelView(projmodelview)
     , mPosition(pos)
     , mFocus(focus)
@@ -12,7 +12,7 @@ OmVolumeCuller::OmVolumeCuller(const Matrix4f & projmodelview,
     mFrustumCuller.setup(mProjModelView);
 }
 
-const om::normCoord& OmVolumeCuller::GetPosition() const {
+const om::coords::Norm& OmVolumeCuller::GetPosition() const {
     return mPosition;
 }
 
@@ -22,8 +22,8 @@ OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat,
 {
     const OmMipVolume* vol = mPosition.volume();
     return om::make_shared<OmVolumeCuller>(mProjModelView * mat,
-                                           om::normCoord(matInv * mPosition, vol),
-                                           om::normCoord(matInv * mFocus, vol));
+                                           om::coords::Norm(matInv * mPosition, vol),
+                                           om::coords::Norm(matInv * mFocus, vol));
 }
 
 Visibility OmVolumeCuller::TestChunk(const om::coords::NormBbox& normBox){

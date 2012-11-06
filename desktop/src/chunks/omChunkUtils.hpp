@@ -56,7 +56,7 @@ public:
                                                    currentCoord.z + z);
 
                     //skip invalid mip coord
-                    if(vol->Coords().ContainsMipChunkCoord(mip_coord))
+                    if(vol->Coords().ContainsMipChunk(mip_coord))
                     {
                         OmSegChunk* chunk = vol->GetChunk(mip_coord);
 

@@ -28,7 +28,7 @@ public:
         }
     }
 
-    inline OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*const imageData,
+    inline OmPooledTile<om::common::ColorARGB>* ColorTile(uint32_t const*const imageData,
                                                 const int tileDim,
                                                 const OmTileCoord& key)
     {

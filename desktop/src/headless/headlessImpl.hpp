@@ -202,7 +202,7 @@ private:
     {
         SegmentationDataWrapper sdw(segmentationID);
 
-        std::map<OmColor, int> segColorHist;
+        std::map<om::common::Color, int> segColorHist;
 
         static const int min_variance = 120;
 

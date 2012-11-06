@@ -189,11 +189,11 @@ public:
 
         sdw.SetColor(c);
 
-        return om::utils::color::OmColorToQColor(c);
+        return om::utils::color::ColorToQColor(c);
     }
 
     static QColor SegColorAsQColor(const SegmentDataWrapper& sdw){
-        return om::utils::color::OmColorToQColor(sdw.GetColorInt());
+        return om::utils::color::ColorToQColor(sdw.GetColorInt());
     }
 
     template <class A, class B>

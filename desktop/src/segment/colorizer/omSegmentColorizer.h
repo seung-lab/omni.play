@@ -18,7 +18,7 @@ public:
 
     ~OmSegmentColorizer();
 
-    OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*const imageData);
+    OmPooledTile<om::common::ColorARGB>* ColorTile(uint32_t const*const imageData);
 
     static const std::vector<uint8_t> SelectedColorLookupTable;
 

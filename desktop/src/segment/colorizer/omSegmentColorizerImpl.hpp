@@ -138,7 +138,7 @@ private:
             return segRootColor;
 
         case om::common::SCC_FILTER_BREAK:
-        case om::common::om::common::SCC_SEGMENTATION_BREAK_BLACK:
+        case om::common::SCC_SEGMENTATION_BREAK_BLACK:
         case om::common::om::common::SCC_SEGMENTATION_BREAK_COLOR:
             if(isSelected || !anySegmentsSelected_)
             {

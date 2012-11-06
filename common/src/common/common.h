@@ -32,7 +32,7 @@ typedef unsigned int Bitfield;
 
 //objects
 //slices
-enum ObjectType { CHANNEL, SEGMENTATION };
+enum ObjectType { CHANNEL, SEGMENTATION, AFFINITY };
 
 /**
  * "segment" types
@@ -47,7 +47,7 @@ typedef uint32_t PageNum;
  * "group" types
  */
 typedef uint32_t GroupID;
-typedef std::string GroupIDoupName;
+typedef std::string GroupName;
 typedef boost::unordered_set<GroupID> GroupIDSet;
 
 template<typename T>

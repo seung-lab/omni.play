@@ -3,9 +3,9 @@
 #include "common/common.h"
 
 template <typename T>
-class om::common::IDataVolume {
+class IDataVolume {
 public:
-	virtual ~om::common::IDataVolume(){}
+	virtual ~IDataVolume(){}
 
 	virtual void Load() = 0;
 	virtual void Create(const std::map<int, Vector3i> &) = 0;

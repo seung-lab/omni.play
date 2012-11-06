@@ -102,7 +102,7 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 void OmOnScreenTileCoords::computeTile(const om::coords::Chunk& chunkCoord,
                                        const int depthOffset)
 {
-    if(!vol_->Coords().ContainsMipChunkCoord(chunkCoord)) {
+    if(!vol_->Coords().ContainsMipChunk(chunkCoord)) {
         return; // Rounding errors can cause bad chunk coords to slip through.
     }
 

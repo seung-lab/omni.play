@@ -204,7 +204,7 @@ private:
         om::common::SegmentColorCacheType sccType;
 
         if( vgs_->shouldVolumeBeShownBroken() ) {
-            sccType = om::common::om::common::SCC_SEGMENTATION_BREAK_BLACK;
+            sccType = om::common::SCC_SEGMENTATION_BREAK_BLACK;
         } else {
             sccType = om::common::SCC_SEGMENTATION;
         }
@@ -214,13 +214,13 @@ private:
 
     void applyColor(OmSegment* seg, const om::common::SegmentColorCacheType sccType)
     {
-        if(seg->getParent() && sccType != om::common::om::common::SCC_SEGMENTATION_BREAK_BLACK){
+        if(seg->getParent() && sccType != om::common::SCC_SEGMENTATION_BREAK_BLACK){
             applyColor(segments_->findRoot(seg), sccType);
             return;
         }
 
         Vector3f hyperColor;
-        if(om::common::om::common::SCC_SEGMENTATION_BREAK_BLACK != sccType) {
+        if(om::common::SCC_SEGMENTATION_BREAK_BLACK != sccType) {
             hyperColor = seg->GetColorFloat() * 2.;
         } else {
 

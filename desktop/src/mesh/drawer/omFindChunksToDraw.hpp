@@ -79,8 +79,8 @@ private:
         const om::coords::NormBbox& normExtent = chunk->Mipping().GetNormExtent();
         const om::coords::NormBbox& clippedNormExtent = chunk->Mipping().GetClippedNormExtent();
 
-        const om::normCoord camera = culler_->GetPosition();
-        const om::normCoord center = clippedNormExtent.getCenter();
+        const om::coords::Norm camera = culler_->GetPosition();
+        const om::coords::Norm center = clippedNormExtent.getCenter();
 
         const float camera_to_center = center.distance(camera);
         const float distance =

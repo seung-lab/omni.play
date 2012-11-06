@@ -18,7 +18,7 @@
 template <typename T> class OmIOnDiskFile;
 
 template <typename T>
-class OmMemMappedVolumeImpl : public om::common::IDataVolume<T> {
+class OmMemMappedVolumeImpl : public IDataVolume<T> {
 private:
     OmMipVolume* vol_;
     std::vector<boost::shared_ptr<OmIOnDiskFile<T> > > maps_;

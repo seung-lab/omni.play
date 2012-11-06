@@ -39,7 +39,7 @@ MeshPreviewerImpl::MeshPreviewerImpl(QWidget* parent,
 void MeshPreviewerImpl::mesh()
 {
 //     OmSegmentation& segmentation = sdw_.GetSegmentation();
-//     const om::coords::Data coord = om::normCoord(0.5, 0.5, 0.5).toDataCoord();
+//     const om::coords::Data coord = om::coords::Norm(0.5, 0.5, 0.5).toDataCoord();
 
 /*
     segmentation.MeshManagers()->MeshChunk(coord);

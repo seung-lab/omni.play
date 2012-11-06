@@ -54,7 +54,7 @@ void OmTile::load32bitSegmentationTile()
         chunk->SegData()->ExtractDataSlice32bit(key_.getViewType(),
                                                 getDepth());
 
-    OmPooledTile<OmColorARGB>* colorMappedData =
+    OmPooledTile<om::common::ColorARGB>* colorMappedData =
         key_.getViewGroupState()->ColorTile(imageData->GetData(),
                                             tileLength_,
                                             key_);

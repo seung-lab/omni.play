@@ -24,7 +24,7 @@ template <class> class OmPooledTile;
 class OmTextureID {
 public:
     OmTextureID(const int tileDim, OmPooledTile<uint8_t>*);
-    OmTextureID(const int tileDim, OmPooledTile<OmColorARGB>*);
+    OmTextureID(const int tileDim, OmPooledTile<om::common::ColorARGB>*);
 
     virtual ~OmTextureID();
 

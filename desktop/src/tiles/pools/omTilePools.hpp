@@ -10,7 +10,7 @@ private:
     boost::scoped_ptr<OmTilePool<int32_t> > tilePoolInt32_;
     boost::scoped_ptr<OmTilePool<uint32_t> > tilePoolUint32_;
     boost::scoped_ptr<OmTilePool<float> > tilePoolFloat_;
-    boost::scoped_ptr<OmTilePool<OmColorARGB> > tilePoolARGB_;
+    boost::scoped_ptr<OmTilePool<om::common::ColorARGB> > tilePoolARGB_;
 
 public:
     template <typename T>
@@ -43,7 +43,7 @@ private:
         return *tilePoolFloat_;
     }
 
-    inline OmTilePool<OmColorARGB>& getTilePool(OmColorARGB*){
+    inline OmTilePool<om::common::ColorARGB>& getTilePool(om::common::ColorARGB*){
         return *tilePoolARGB_;
     }
 
@@ -59,7 +59,7 @@ private:
         tilePoolInt32_.reset(new OmTilePool<int32_t>(20, 128*128));
         tilePoolUint32_.reset(new OmTilePool<uint32_t>(20, 128*128));
         tilePoolFloat_.reset(new OmTilePool<float>(20, 128*128));
-        tilePoolARGB_.reset(new OmTilePool<OmColorARGB>(20, 128*128));
+        tilePoolARGB_.reset(new OmTilePool<om::common::ColorARGB>(20, 128*128));
     }
 
     friend class zi::singleton<OmTilePools>;

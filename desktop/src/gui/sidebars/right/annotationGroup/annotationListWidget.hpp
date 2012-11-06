@@ -84,7 +84,7 @@ public:
                 Qt::CheckState enabled = iter->Enabled ? Qt::Checked : Qt::Unchecked;
                 row->setCheckState(ENABLE_COL, enabled);
                 row->setTextAlignment(ENABLE_COL, Qt::AlignCenter);
-                row->setIcon(COLOR_COL, om::utils::color::OmColorAsQPixmap(a.color));
+                row->setIcon(COLOR_COL, om::utils::color::ColorAsQPixmap(a.color));
                 row->setText(TEXT_COL, QString::fromStdString(a.comment));
                 setLocationText(row, a);
                 row->setText(SIZE_COL, QString::number(a.size));
@@ -134,15 +134,15 @@ private Q_SLOTS:
 		}
         if (column == COLOR_COL)
         {
-        	QColor color = color::OmColorToQColor(ann->Object->color);
+        	QColor color = color::ColorToQColor(ann->Object->color);
         	color = QColorDialog::getColor(color, this);
 
             if (!color.isValid()) {
                 return;
             }
 
-            ann->Object->color = color::QColorToOmColor(color);
-            item->setIcon(COLOR_COL, color::OmColorAsQPixmap(ann->Object->color));
+            ann->Object->color = color::QColorToColor(color);
+            item->setIcon(COLOR_COL, color::ColorAsQPixmap(ann->Object->color));
         }
 
         if (column == POSITION_COL)

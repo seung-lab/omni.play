@@ -35,7 +35,7 @@ public:
         {
             mips_[i].factor = om::math::pow2int(i);
 
-            const Vector3i dims = vol_->Coords().getDimsRoundedToNearestChunk(i);
+            const Vector3i dims = vol_->Coords().DimsRoundedToNearestChunk(i);
             mips_[i].volDims = dims;
             mips_[i].volSlabSize = dims.x * dims.y * chunkDims.z;
             mips_[i].volSliceSize = dims.x * dims.y;

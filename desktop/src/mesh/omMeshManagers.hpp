@@ -131,7 +131,7 @@ OmEvents::Redraw3d();
 
     void GetMesh(OmMeshPtr& ptr, const om::coords::Chunk& coord,
                  const om::common::SegID segID, const double threshold,
-                 const om::common::Blocking blocking = om::NON_BLOCKING)
+                 const om::common::Blocking blocking = om::common::NON_BLOCKING)
     {
         return GetManager(threshold)->GetMesh(ptr, OmMeshCoord(coord, segID), blocking);
     }

@@ -49,7 +49,7 @@ private:
         std::map<int, Vector3i> levelsAndDims;
 
         for (int level = 0; level <= vol.Coords().RootMipLevel(); level++) {
-            levelsAndDims[level] = vol.Coords().getDimsRoundedToNearestChunk(level);
+            levelsAndDims[level] = vol.Coords().DimsRoundedToNearestChunk(level);
         }
 
         // allocate mem-mapped files...
