@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/common.h"
+#include "common/colors.h"
 #include "common/omString.hpp"
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"

@@ -3,8 +3,8 @@
 #include "common/common.h"
 #include "system/omGenericManager.hpp"
 #include "datalayer/archive/segmentation.h"
+#include <boost/unordered_map.hpp>
 #include <QVector>
-#include <QHash>
 
 class OmSegmentation;
 class OmGroup;
@@ -34,7 +34,7 @@ private:
 
     OmSegmentation * mSegmentation;
     OmGenericManager<OmGroup> mGroupManager;
-    QHash<om::common::GroupName, om::common::GroupID> mGroupsByName;
+    boost::unordered_map<om::common::GroupName, om::common::GroupID> mGroupsByName;
 
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter & out, const OmGroups &);
     friend void YAML::operator>>(const YAML::Node & in, OmGroups &);

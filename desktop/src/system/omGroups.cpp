@@ -17,7 +17,7 @@ OmGroup & OmGroups::AddGroup(om::common::GroupName name)
     OmGroup & group = mGroupManager.Add();
     group.mName = name;
 
-    mGroupsByName.insert(name, group.GetID());
+    mGroupsByName[name] = group.GetID();
 
     GroupsTable::Repopulate();
 
@@ -71,7 +71,7 @@ om::common::GroupIDSet OmGroups::GetGroups()
     om::common::GroupIDSet set;
     FOR_EACH(iter, mGroupsByName)
     {
-        set.insert(*iter);
+        set.insert(iter->second);
         printf("got\n");
     }
     return set;
@@ -83,10 +83,10 @@ om::common::GroupIDSet OmGroups::GetGroups(om::common::SegID seg)
 
     FOR_EACH(iter, mGroupsByName)
     {
-        OmGroup& group = GetGroup(*iter);
+        OmGroup& group = GetGroup(iter->second);
         om::common::SegIDSet ids = group.GetIDs();
         if(ids.count(seg) > 0) {
-            set.insert(*iter);
+            set.insert(iter->second);
         }
     }
     return set;

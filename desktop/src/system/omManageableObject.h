@@ -5,6 +5,8 @@
 #include "datalayer/archive/segmentation.h"
 #include "datalayer/archive/filter.h"
 
+#include <QString>
+
 namespace YAML { template<class T> class mipVolume; }
 
 class OmManageableObject {
