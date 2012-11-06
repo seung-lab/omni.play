@@ -274,7 +274,7 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //     Vector2f maxScreen = vgs_->View2dState()->GetViewSliceMax(plane);
 //     DataCoord maxDataExt = channel.Coords().DataExtent().getMax();
 //     NormCoord maxNorm = channel.Coords().DataToNormCoord(maxDataExt);
-//     DataCoord maxData= channel.Coords().NormToDataCoord(maxNorm);
+//     DataCoord maxData= channel.Coords().NormToData(maxNorm);
 //     DataCoord maxLimit = maxData.compareMinimum(coord+tileLength);
 //     bool result;
 // 
@@ -320,7 +320,7 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //     Vector2f minScreen = vgs_->View2dState()->GetViewSliceMin(plane);
 //     DataCoord minDataExt = channel.Coords().DataExtent().getMin();
 //     NormCoord minNorm = channel.Coords().DataToNormCoord(minDataExt);
-//     DataCoord minData= channel.Coords().NormToDataCoord(minNorm);
+//     DataCoord minData= channel.Coords().NormToData(minNorm);
 //     DataCoord minLimit = minData.compareMaximum(coord);
 //     bool result;
 // 

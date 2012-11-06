@@ -27,29 +27,29 @@ void OmTileDumper::DumpTiles()
     for(int mipLevel = 0; mipLevel <= vol_->Coords().RootMipLevel(); ++mipLevel){
 
         //dim of miplevel in mipchunks
-        const int chunkDim = vol_->Coords().ChunkDimension();
+        const Vector3i chunkDims = vol_->Coords().ChunkDimensions();
         const Vector3i mip_coord_dims =
-            vol_->Coords().MipLevelDimensionsInMipChunks(mipLevel) * chunkDim;
+            vol_->Coords().MipLevelDimensionsInMipChunks(mipLevel) * chunkDims;
 
         //printf("dims: %i,%i,%i\n", mip_coord_dims.x, mip_coord_dims.y, mip_coord_dims.z);
 
         //for all coords
         for (int z = 0; z < mip_coord_dims.z; ++z){
-            for (int y = 0; y < mip_coord_dims.y; y+=chunkDim){
-                for (int x = 0; x < mip_coord_dims.x; x+=chunkDim){
+            for (int y = 0; y < mip_coord_dims.y; y+=chunkDims.y){
+                for (int x = 0; x < mip_coord_dims.x; x+=chunkDims.x){
                     saveTile(out, mipLevel, x, y, z, om::common::XY_VIEW);
                 }
             }
         }
-        for (int z = 0; z < mip_coord_dims.z; z+=chunkDim){
+        for (int z = 0; z < mip_coord_dims.z; z+=chunkDims.z){
             for (int y = 0; y < mip_coord_dims.y; ++y){
-                for (int x = 0; x < mip_coord_dims.x; x+=chunkDim){
+                for (int x = 0; x < mip_coord_dims.x; x+=chunkDims.x){
                     saveTile(out, mipLevel, x, y, z, om::common::XZ_VIEW);
                 }
             }
         }
-        for (int z = 0; z < mip_coord_dims.z; z+=chunkDim){
-            for (int y = 0; y < mip_coord_dims.y; y+=chunkDim){
+        for (int z = 0; z < mip_coord_dims.z; z+=chunkDims.z){
+            for (int y = 0; y < mip_coord_dims.y; y+=chunkDims.y){
                 for (int x = 0; x < mip_coord_dims.x; ++x){
                     saveTile(out, mipLevel, x, y, z, om::common::ZY_VIEW);
                 }
@@ -64,13 +64,13 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel,
                             const om::common::ViewType viewType)
 {
     const om::coords::Global coord = om::coords::Global(x, y, z);
-    const om::coords::Chunk chunk = coord.toChunkCoord(vol_, mipLevel);
-    const om::coords::Data data = coord.toDataCoord(vol_, mipLevel);
+    const om::coords::Chunk chunk = coord.ToChunk(*vol_, mipLevel);
+    const om::coords::Data data = coord.ToData(*vol_, mipLevel);
     const int freshness = 0;
 
     const OmTileCoord tileCoord(chunk,
                                 viewType,
-                                data.toTileOffset(viewType),
+                                data.ToTileOffset(viewType),
                                 vol_,
                                 freshness,
                                 vgs_,

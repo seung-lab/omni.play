@@ -40,7 +40,7 @@ public:
 
         OmMipVolume* vol = state_->getVol();
 
-        if(CHANNEL == vol->getVolumeType()){
+        if(om::common::CHANNEL == vol->getVolumeType()){
             drawChannelAndFilters(vol);
 
         } else {

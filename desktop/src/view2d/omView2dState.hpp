@@ -44,7 +44,7 @@ private:
     Vector2i mousePoint_;
     bool isLevelLocked_;
 
-    boost::optional<om::screenCoord> mousePanStartingPt_;
+    boost::optional<om::coords::Screen> mousePanStartingPt_;
 
     // (x,y) coordinates only (no depth); needed for Bresenham
     om::coords::Global lastDataPoint_;
@@ -55,7 +55,7 @@ private:
 
     om::common::SegID segIDforPainting_;
 
-    om::view2dCoords coords_;
+    om::coords::ScreenSystem coords_;
 
 public:
     OmView2dState(OmMipVolume* vol,
@@ -76,19 +76,19 @@ public:
         , brushSize_(OmStateManager::BrushSize())
         , overrideToolModeForPan_(false)
         , segIDforPainting_(0)
-        , coords_(vgs, viewType)
+        , coords_(viewType)
     {
-        coords_.setTotalViewport(size);
+        coords_.set_totalViewport(Vector4i(0,0,size.width(),size.height()));
         zoomLevel_->Update(getMaxMipLevel());
 
         coords_.UpdateTransformationMatrices();
     }
 
-    inline om::view2dCoords& Coords() {
+    inline om::coords::ScreenSystem& Coords() {
         return coords_;
     }
 
-    inline const om::view2dCoords& Coords() const {
+    inline const om::coords::ScreenSystem& Coords() const {
         return coords_;
     }
 
@@ -104,17 +104,17 @@ public:
 
     inline Vector2f ComputePanDistance() const
     {
-        Vector3f pan = coords_.GlobalToScreenMat().getTranslation();
+        Vector3f pan = coords_.globalToScreenMat().getTranslation();
         return OmView2dConverters::Get2PtsInPlane(pan, viewType_);
     }
 
     inline void SetViewSliceOnPan()
     {
-        const Vector4i& viewport = coords_.getTotalViewport();
-        om::coords::Global min = om::screenCoord(0, 0, this).ToGlobal();
-        om::coords::Global max = om::screenCoord(viewport.width,
+        const Vector4i& viewport = coords_.totalViewport();
+        om::coords::Global min = om::coords::Screen(0, 0, &coords_).ToGlobal();
+        om::coords::Global max = om::coords::Screen(viewport.width,
                                               viewport.height,
-                                              this).ToGlobal();
+                                              &coords_).ToGlobal();
 
         vgs_->View2dState()->SetViewSliceMax(viewType_, get2ptsInPlane(max));
         vgs_->View2dState()->SetViewSliceMin(viewType_, get2ptsInPlane(min));
@@ -144,7 +144,7 @@ public:
 
     void ResetWindowState()
     {
-        static const om::coords::Norm midPoint(0.5, 0.5, 0.5, vol_);
+        static const om::coords::Norm midPoint(0.5, 0.5, 0.5, *vol_);
 
         std::cout << vol_->Coords().DataDimensions() << std::endl;
 
@@ -180,7 +180,7 @@ public:
     }
 
     // mouse movement
-    inline void DoMousePan(const om::screenCoord& cursorLocation)
+    inline void DoMousePan(const om::coords::Screen& cursorLocation)
     {
         if(!mousePanStartingPt_){
             return;
@@ -308,7 +308,7 @@ public:
         isLevelLocked_ = !isLevelLocked_;
     }
 
-    void SetMousePanStartingPt(const om::screenCoord& vec){
+    void SetMousePanStartingPt(const om::coords::Screen& vec){
         mousePanStartingPt_ = vec;
     }
 

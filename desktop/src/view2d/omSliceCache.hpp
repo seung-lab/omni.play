@@ -41,11 +41,11 @@ public:
     {
         const int depthInChunk = coord.toTileDepth(viewType_);
         
-        PooledTile32Ptr slicePtr = GetSlice(coord.toChunkCoord(), depthInChunk);
+        PooledTile32Ptr slicePtr = GetSlice(coord.ToChunk(), depthInChunk);
 
         uint32_t const*const sliceData = slicePtr->GetData();
 
-        const uint32_t offset = coord.toTileOffset(viewType_);
+        const uint32_t offset = coord.ToTileOffset(viewType_);
 
         return sliceData[offset];
     }

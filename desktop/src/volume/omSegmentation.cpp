@@ -186,12 +186,12 @@ quint32 OmSegmentation::GetVoxelValue(const om::coords::Global & vox)
     }
 
     //find mip_coord and offset
-    const om::coords::Chunk mip0coord = vox.toChunkCoord(this, 0);
+    const om::coords::Chunk mip0coord = vox.ToChunk(this, 0);
 
     OmSegChunk* chunk = GetChunk(mip0coord);
 
     //get voxel data
-    return chunk->GetVoxelValue(vox.toDataCoord(this, 0));
+    return chunk->GetVoxelValue(vox.ToData(this, 0));
 }
 
 void OmSegmentation::SetVoxelValue(const om::coords::Global& vox, const uint32_t val)
@@ -201,9 +201,9 @@ void OmSegmentation::SetVoxelValue(const om::coords::Global& vox, const uint32_t
     
     for(int level = 0; level <= coords_.RootMipLevel(); level++)
     {
-        om::coords::Chunk leaf_mip_coord = vox.toChunkCoord(this, level);
+        om::coords::Chunk leaf_mip_coord = vox.ToChunk(this, level);
         OmSegChunk* chunk = GetChunk(leaf_mip_coord);
-        chunk->SetVoxelValue(vox.toDataCoord(this, level), val);
+        chunk->SetVoxelValue(vox.ToData(this, level), val);
     }
 }
 
@@ -212,10 +212,10 @@ bool OmSegmentation::SetVoxelValueIfSelected(const om::coords::Global& vox, cons
     const om::common::SegIDSet selection = Segments()->GetSelectedSegmentIDs();
     if(selection.size() > 0)
     {
-        om::coords::Chunk leaf_mip_coord = vox.toChunkCoord(this, 0);
+        om::coords::Chunk leaf_mip_coord = vox.ToChunk(this, 0);
         OmSegChunk* chunk = GetChunk(leaf_mip_coord);
         om::common::SegID target = Segments()->findRootID(
-            chunk->GetVoxelValue(vox.toDataCoord(this, 0)));
+            chunk->GetVoxelValue(vox.ToData(this, 0)));
         
         if(selection.count(target) == 0) {
             return false;  

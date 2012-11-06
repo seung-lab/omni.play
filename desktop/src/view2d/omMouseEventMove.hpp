@@ -108,7 +108,7 @@ private:
         middleMouseButton_ = event->buttons() & Qt::MiddleButton;
 
         tool_ = OmStateManager::GetToolMode();
-        om::screenCoord clicked(Vector2i(event->x(), event->y()), state_);
+        om::coords::Screen clicked(Vector2i(event->x(), event->y()), state_);
         dataClickPoint_ = clicked.ToGlobal();
     }
 
@@ -142,7 +142,7 @@ private:
     }
 
     inline void mousePan(){
-        state_->DoMousePan(om::screenCoord(event_->x(), event_->y(), state_));
+        state_->DoMousePan(om::coords::Screen(event_->x(), event_->y(), state_));
     }
 };
 

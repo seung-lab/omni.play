@@ -28,7 +28,7 @@ struct data {
     {}
 
     inline void setCoord(const om::coords::Global& c) {
-    	coord = c.toDataCoord(coord.volume(), 0);
+    	coord = c.ToData(coord.volume(), 0);
     }
     inline om::coords::Global getCoord() {
     	return coord.ToGlobal();

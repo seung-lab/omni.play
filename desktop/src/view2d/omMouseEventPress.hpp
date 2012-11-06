@@ -43,7 +43,7 @@ public:
     {
         setState(event);
 
-        state_->SetMousePanStartingPt(om::screenCoord(event->x(), event->y(), state_));
+        state_->SetMousePanStartingPt(om::coords::Screen(event->x(), event->y(), state_));
 
         if(leftMouseButton_)
         {
@@ -96,7 +96,7 @@ private:
         middleMouseButton_ = event->buttons() & Qt::MiddleButton;
 
         tool_ = OmStateManager::GetToolMode();
-        om::screenCoord clicked(event->x(), event->y(), state_);
+        om::coords::Screen clicked(event->x(), event->y(), state_);
         dataClickPoint_ = clicked.ToGlobal();
     }
 
@@ -146,7 +146,7 @@ private:
 
     void setDepth()
     {
-        const om::screenCoord screenc = om::screenCoord(event_->x(), event_->y(), state_);
+        const om::coords::Screen screenc = om::coords::Screen(event_->x(), event_->y(), state_);
         const om::coords::Global newloc = screenc.ToGlobal();
         state_->setLocation(newloc);
 

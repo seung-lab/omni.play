@@ -157,7 +157,7 @@ private:
     {
     	const om::coords::Global global = state_->Location();
         const om::coords::Data data = global.
-            toDataCoord(state_->getVol(), state_->getMipLevel());
+            ToData(state_->getVol(), state_->getMipLevel());
 
 		const int globalDepth = state_->getViewTypeDepth(global);
         const int dataDepth = state_->getViewTypeDepth(data);
@@ -259,7 +259,7 @@ private:
                 if(!closeInDepth(a.coord.ToGlobal()))
                     continue;
 
-                om::screenCoord loc = a.coord.ToGlobal().toScreenCoord(state_);
+                om::coords::Screen loc = a.coord.ToGlobal().toScreenCoord(state_);
 
                 QPen pen;
                 pen.setColor(QColor::fromRgb(a.color.red, a.color.green, a.color.blue));

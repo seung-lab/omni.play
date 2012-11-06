@@ -25,7 +25,7 @@ public:
                 continue;
             }
 
-            om::coords::Data coord = iter->toDataCoord(vol_, 0);
+            om::coords::Data coord = iter->ToData(vol_, 0);
 
             pts_.insert(coord);
         }

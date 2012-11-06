@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/common.h"
+#include "common/enums.hpp"
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 

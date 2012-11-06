@@ -1,11 +1,5 @@
 #pragma once
 
-/*
- *  OmTile allows access to 2D image data from the source volume.
- *
- *  Rachel Shearer - rshearer@mit.edu
- */
-
 #include "common/omStd.h"
 #include "tiles/omTileCoord.h"
 

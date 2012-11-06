@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/common.h"
+#include "common/enums.hpp"
 #include "tiles/omTileTypes.hpp"
 #include "zi/omUtility.h"
 

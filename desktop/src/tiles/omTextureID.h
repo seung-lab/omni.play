@@ -1,19 +1,8 @@
 #pragma once
 
-/*
- * OmTextureIDs are a wrapper for GLuint texture IDs.
- *
- * They associate a texture ID with the corresponding TileCoord,
- * and keep track of the size of the texture in memory.
- *
- * A TextureID is associated with a TextureIDCache that keeps track of how
- * much GL video memory is in use.
- *
- * Rachel Shearer - rshearer@mit.edu - 3/17/09
- */
-
 #include "common/omGl.h"
 #include "common/common.h"
+#include "common/colors.h"
 
 #include <QImage>
 

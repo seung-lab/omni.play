@@ -66,9 +66,9 @@ private:
 	PROP_CONST_REF(Matrix4f, screenToGlobalMat);
     PROP_CONST_REF(Matrix4f, globalToScreenMat);
 
-    PROP_REF(Vector4i, totalViewport);
-    PROP_REF(double, zoomScale);
-    PROP_REF(Global, location);
+    PROP_REF_SET(Vector4i, totalViewport);
+    PROP_REF_SET(double, zoomScale);
+    PROP_REF_SET(Global, location);
 };
 
 } // namespace coords

@@ -58,7 +58,7 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
     om::coords::GlobalBbox bounds = vol_->Coords().Extent();
     om::coords::DataBbox dataBounds = bounds.ToDataBbox(vol_, mipLevel_);
 
-    int dataDepth = state_->getViewTypeDepth(state_->Location().toDataCoord(vol_, mipLevel_));
+    int dataDepth = state_->getViewTypeDepth(state_->Location().ToData(vol_, mipLevel_));
 
     // Make sure that we aren't trying to fetch outside of the bounds of the data.
 	int targetDepth = dataDepth + depthOffset;
@@ -70,8 +70,8 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 
     // Make sure that the upper left and bottom right don't exceed the volume
     Vector4i viewport = state_->Coords().getTotalViewport();
-    om::coords::Global min = om::screenCoord(viewport.lowerLeftX, viewport.lowerLeftY, state_).ToGlobal();
-    om::coords::Global max = om::screenCoord(viewport.width, viewport.height, state_).ToGlobal();
+    om::coords::Global min = om::coords::Screen(viewport.lowerLeftX, viewport.lowerLeftY, state_).ToGlobal();
+    om::coords::Global max = om::coords::Screen(viewport.width, viewport.height, state_).ToGlobal();
 
     om::coords::GlobalBbox viewBounds(min, max);
 
@@ -81,8 +81,8 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
     	return;
     }
 
-    om::coords::Chunk minChunk = om::coords::Global(viewBounds.getMin()).toChunkCoord(vol_, mipLevel_);
-    om::coords::Chunk maxChunk = om::coords::Global(viewBounds.getMax()).toChunkCoord(vol_, mipLevel_);
+    om::coords::Chunk minChunk = om::coords::Global(viewBounds.getMin()).ToChunk(vol_, mipLevel_);
+    om::coords::Chunk maxChunk = om::coords::Global(viewBounds.getMax()).ToChunk(vol_, mipLevel_);
 
     // iterate over all chunks on the screen
     for (int x = minChunk.x; x <= maxChunk.x; x++)
@@ -159,7 +159,7 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::coords::Chunk& coord,
                                                 OmMipVolume* vol,
                                                 int freshness)
 {
-	om::coords::Data loc = state_->Location().toDataCoord(vol, mipLevel_);
+	om::coords::Data loc = state_->Location().ToData(vol, mipLevel_);
 	int targetDepth = state_->getViewTypeDepth(loc) + depthOffset;
 	state_->setViewTypeDepth(loc, targetDepth);
 
@@ -175,8 +175,8 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::coords::Chunk& coord,
 GLfloatBox OmOnScreenTileCoords::computeVertices(const om::coords::Chunk& coord, const OmMipVolume* vol)
 {
     om::coords::DataBbox bounds = coord.BoundingBox(vol);
-    om::screenCoord min = bounds.getMin().ToGlobal().toScreenCoord(state_);
-    om::screenCoord max = bounds.getMax().ToGlobal().toScreenCoord(state_);
+    om::coords::Screen min = bounds.getMin().ToGlobal().toScreenCoord(state_);
+    om::coords::Screen max = bounds.getMax().ToGlobal().toScreenCoord(state_);
 
     GLfloatBox glBox;
     glBox.lowerLeft.y  = min.y;

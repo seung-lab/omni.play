@@ -149,7 +149,7 @@ private Q_SLOTS:
         {
         	om::coords::Global c = ann->Object->coord.ToGlobal();
         	LocationEditDialog::EditLocation(c, this);
-        	ann->Object->coord = c.toDataCoord(ann->Object->coord.volume(), 0);
+        	ann->Object->coord = c.ToData(ann->Object->coord.volume(), 0);
 			setLocationText(item, *ann->Object);
         }
     }

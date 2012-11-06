@@ -1,5 +1,3 @@
-#pragma once
-
 #include "omGl.h"
 #include "omStd.h"
 #include "common/omDebug.h"
@@ -278,5 +276,3 @@ void glDrawPositiveAxis(int size)
     glPopAttrib();
     glPopMatrix();
 }
-
-#endif
