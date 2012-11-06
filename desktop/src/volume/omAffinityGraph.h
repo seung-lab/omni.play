@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/common.h"
+#include "common/enums.hpp"
 #include "system/omManageableObject.h"
 #include "datalayer/archive/affinity.h"
 #include "common/omString.hpp"

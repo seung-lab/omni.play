@@ -163,7 +163,7 @@ private:
         if(!dir.exists())
         {
             if(!dir.mkpath(dirStr)){
-                throw om::IoException("could not make path", dirStr);
+                throw om::IoException("could not make path", dirStr.toStdString());
             }
         }
     }
@@ -269,7 +269,7 @@ private:
         QFile newProjectMetadafile(OmFileNames::ProjectMetadataFileOld());
 
         if(!newProjectMetadafile.open(QIODevice::WriteOnly)) {
-            throw om::IoException("could not open", projectMetadataFile_);
+            throw om::IoException("could not open", projectMetadataFile_.toStdString());
         }
 
         newProjectMetadafile.write(data, size);

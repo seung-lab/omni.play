@@ -30,7 +30,7 @@ public:
         return pages_.size();
     }
 
-    const std::set<PageNum> ValidPageNums() const {
+    const std::set<om::common::PageNum> ValidPageNums() const {
         return validPageNums_;
     }
 
@@ -44,16 +44,16 @@ private:
     uint32_t pageSize_;
     std::vector<OmSegmentPage*> pages_;
 
-    std::set<PageNum> validPageNums_;
+    std::set<om::common::PageNum> validPageNums_;
 
     void loadAllSegmentPages();
-    void resizeVectorIfNeeded(const PageNum pageNum);
+    void resizeVectorIfNeeded(const om::common::PageNum pageNum);
 
     QString metadataPathQStr();
     void loadMetadata();
     void storeMetadata();
 
-    void loadPage(const PageNum page, OmSimpleProgress* prog);
+    void loadPage(const om::common::PageNum page, OmSimpleProgress* prog);
 
     friend class om::segmentation::loader;
 };

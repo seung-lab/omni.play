@@ -6,7 +6,7 @@
 
 class OmViewGroupState;
 
-class om::common::Colorizers {
+class OmColorizers {
 private:
     OmViewGroupState *const vgs_;
 
@@ -14,7 +14,7 @@ private:
     boost::array<OmSegmentColorizer*, om::common::SCC_NUMBER_OF_ENUMS> colorizers_;
 
 public:
-    om::common::Colorizers(OmViewGroupState* vgs)
+    OmColorizers(OmViewGroupState* vgs)
         : vgs_(vgs)
     {
         std::fill(colorizers_.begin(), colorizers_.end(),
@@ -50,7 +50,7 @@ private:
                         const OmTileCoord& key,
                         const om::common::SegmentColorCacheType sccType)
     {
-        if(SEGMENTATION != key.getVolume()->getVolumeType()){
+        if(om::common::SEGMENTATION != key.getVolume()->getVolumeType()){
             throw om::IoException("can only color segmentations");
         }
 

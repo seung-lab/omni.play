@@ -123,15 +123,15 @@ private:
 
         switch(params_.sccType)
         {
-        case om::common::om::common::SCC_SEGMENTATION_VALID:
+        case om::common::SCC_SEGMENTATION_VALID:
         case om::common::SCC_FILTER_VALID:
             if(seg->IsValidListType()) {
                 return segRootColor;
             }
             return blackColor;
 
-        case om::common::om::common::om::common::SCC_SEGMENTATION_VALID_BLACK:
-        case om::common::om::common::SCC_FILTER_VALID_BLACK:
+        case om::common::SCC_SEGMENTATION_VALID_BLACK:
+        case om::common::SCC_FILTER_VALID_BLACK:
             if(seg->IsValidListType()) {
                 return blackColor;
             }
@@ -139,7 +139,7 @@ private:
 
         case om::common::SCC_FILTER_BREAK:
         case om::common::SCC_SEGMENTATION_BREAK_BLACK:
-        case om::common::om::common::SCC_SEGMENTATION_BREAK_COLOR:
+        case om::common::SCC_SEGMENTATION_BREAK_COLOR:
             if(isSelected || !anySegmentsSelected_)
             {
                 OmSegment* segToShow = seg;
@@ -150,7 +150,7 @@ private:
                     segToShow = OmSegmentUtils::GetSegmentBasedOnThreshold(seg, breakThreshold_);
                 }
 
-                if(om::common::om::common::SCC_SEGMENTATION_BREAK_COLOR == params_.sccType){
+                if(om::common::SCC_SEGMENTATION_BREAK_COLOR == params_.sccType){
                     return makeSelectedColor(segToShow->GetColorInt());
                 }
 
@@ -159,7 +159,7 @@ private:
 
             if(!isSelected && anySegmentsSelected_)
             {
-                if(om::common::om::common::SCC_SEGMENTATION_BREAK_COLOR != params_.sccType){
+                if(om::common::SCC_SEGMENTATION_BREAK_COLOR != params_.sccType){
                     return blackColor;
                 }
 

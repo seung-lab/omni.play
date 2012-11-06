@@ -10,7 +10,7 @@
 #include "segment/io/omUserEdges.hpp"
 
 void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps,
-                                                QSet<PageNum>& validPageNumbers,
+                                                QSet<om::common::PageNum>& validPageNumbers,
                                                 uint32_t size)
 {
     if(OmProject::GetFileVersion() < 17)
@@ -44,10 +44,10 @@ void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps)
     if(vol_->IsBuilt())
     {
         const QString fullPath = QString::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
-        
+
         if(OmFileHelpers::IsFolderEmpty(fullPath)){
             rebuildSegments();
-            
+
         } else {
             ps.loadAllSegmentPages();
         }

@@ -26,7 +26,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     : OmManageableObject()
     , viewGroup_(new ViewGroup(mainWindow, this))
     , view2dState_(new OmViewGroupView2dState())
-    , colorizers_(new om::common::Colorizers(this))
+    , colorizers_(new OmColorizers(this))
     , zoomLevel_(new OmZoomLevel())
     , splitting_(new OmSplitting())
     , landmarks_(new OmLandmarks(mainWindow))
@@ -68,7 +68,7 @@ OmViewGroupState::determineColorizationType(const om::common::ObjectType objType
             if(mShowValidInColor){
                 return om::common::SCC_FILTER_VALID;
             }
-            return om::common::om::common::SCC_FILTER_VALID_BLACK;
+            return om::common::SCC_FILTER_VALID_BLACK;
         }
 
         if(shouldVolumeBeShownBroken()){
@@ -94,15 +94,15 @@ OmViewGroupState::determineColorizationType(const om::common::ObjectType objType
         if(mShowValid)
         {
             if(mShowValidInColor){
-                return om::common::om::common::SCC_SEGMENTATION_VALID;
+                return om::common::SCC_SEGMENTATION_VALID;
             }
-            return om::common::om::common::om::common::SCC_SEGMENTATION_VALID_BLACK;
+            return om::common::SCC_SEGMENTATION_VALID_BLACK;
         }
 
         if(shouldVolumeBeShownBroken())
         {
             if(mShowFilterInColor){
-                return om::common::om::common::SCC_SEGMENTATION_BREAK_COLOR;
+                return om::common::SCC_SEGMENTATION_BREAK_COLOR;
             }
             return om::common::SCC_SEGMENTATION_BREAK_BLACK;
         }

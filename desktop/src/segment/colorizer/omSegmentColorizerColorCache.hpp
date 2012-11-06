@@ -7,7 +7,7 @@ class OmSegmentColorizerColorCache : public zi::rwmutex {
 private:
     LockedUint32 size_;
 
-    struct om::common::ColorWithFreshness
+    struct OmColorWithFreshness
     {
         om::common::Color color;
         uint64_t freshness;

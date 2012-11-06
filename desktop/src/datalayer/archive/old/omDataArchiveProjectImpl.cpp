@@ -388,7 +388,7 @@ QDataStream &operator>>(QDataStream& in, OmSegmentsImpl& sc)
 
 QDataStream &operator<<(QDataStream& out, const OmPagingPtrStore&)
 {
-    QSet<PageNum> nums;
+    QSet<om::common::PageNum> nums;
     quint32 size = 0;
 
     out << nums;
@@ -398,7 +398,7 @@ QDataStream &operator<<(QDataStream& out, const OmPagingPtrStore&)
 
 QDataStream &operator>>(QDataStream& in, OmPagingPtrStore& ps)
 {
-    QSet<PageNum> validPageNumbers;
+    QSet<om::common::PageNum> validPageNumbers;
     quint32 size;
 
     in >> validPageNumbers;

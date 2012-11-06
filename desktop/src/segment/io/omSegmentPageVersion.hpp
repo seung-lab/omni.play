@@ -13,13 +13,13 @@ private:
     static const int CurrentFileVersion = 4;
 
     OmSegmentation *const vol_;
-    const PageNum pageNum_;
+    const om::common::PageNum pageNum_;
     const QString fnp_;
 
     int version_;
 
 public:
-    OmSegmentPageVersion(OmSegmentation* vol, const PageNum pageNum)
+    OmSegmentPageVersion(OmSegmentation* vol, const om::common::PageNum pageNum)
         : vol_(vol)
         , pageNum_(pageNum)
         , fnp_(versionFilePath())

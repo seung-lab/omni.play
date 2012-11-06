@@ -12,11 +12,11 @@
 class OmSegmentPageV1 {
 private:
     OmSegmentation *const segmentation_;
-    const PageNum pageNum_;
+    const om::common::PageNum pageNum_;
     const uint32_t pageSize_;
 
 public:
-    OmSegmentPageV1(OmSegmentation* segmentation, const PageNum pageNum,
+    OmSegmentPageV1(OmSegmentation* segmentation, const om::common::PageNum pageNum,
                     const uint32_t pageSize)
         : segmentation_(segmentation)
         , pageNum_(pageNum)
