@@ -97,7 +97,7 @@ private:
 
         tool_ = OmStateManager::GetToolMode();
         om::screenCoord clicked(event->x(), event->y(), state_);
-        dataClickPoint_ = clicked.toGlobalCoord();
+        dataClickPoint_ = clicked.ToGlobal();
     }
 
     void doFindAndSplitSegment()
@@ -147,7 +147,7 @@ private:
     void setDepth()
     {
         const om::screenCoord screenc = om::screenCoord(event_->x(), event_->y(), state_);
-        const om::coords::Global newloc = screenc.toGlobalCoord();
+        const om::coords::Global newloc = screenc.ToGlobal();
         state_->setLocation(newloc);
 
         OmEvents::ViewCenterChanged();

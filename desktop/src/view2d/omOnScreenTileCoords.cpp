@@ -70,8 +70,8 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
 
     // Make sure that the upper left and bottom right don't exceed the volume
     Vector4i viewport = state_->Coords().getTotalViewport();
-    om::coords::Global min = om::screenCoord(viewport.lowerLeftX, viewport.lowerLeftY, state_).toGlobalCoord();
-    om::coords::Global max = om::screenCoord(viewport.width, viewport.height, state_).toGlobalCoord();
+    om::coords::Global min = om::screenCoord(viewport.lowerLeftX, viewport.lowerLeftY, state_).ToGlobal();
+    om::coords::Global max = om::screenCoord(viewport.width, viewport.height, state_).ToGlobal();
 
     om::coords::GlobalBbox viewBounds(min, max);
 
@@ -175,8 +175,8 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::coords::Chunk& coord,
 GLfloatBox OmOnScreenTileCoords::computeVertices(const om::coords::Chunk& coord, const OmMipVolume* vol)
 {
     om::coords::DataBbox bounds = coord.BoundingBox(vol);
-    om::screenCoord min = bounds.getMin().toGlobalCoord().toScreenCoord(state_);
-    om::screenCoord max = bounds.getMax().toGlobalCoord().toScreenCoord(state_);
+    om::screenCoord min = bounds.getMin().ToGlobal().toScreenCoord(state_);
+    om::screenCoord max = bounds.getMax().ToGlobal().toScreenCoord(state_);
 
     GLfloatBox glBox;
     glBox.lowerLeft.y  = min.y;

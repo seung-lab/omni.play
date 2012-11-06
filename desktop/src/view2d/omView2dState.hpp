@@ -111,10 +111,10 @@ public:
     inline void SetViewSliceOnPan()
     {
         const Vector4i& viewport = coords_.getTotalViewport();
-        om::coords::Global min = om::screenCoord(0, 0, this).toGlobalCoord();
+        om::coords::Global min = om::screenCoord(0, 0, this).ToGlobal();
         om::coords::Global max = om::screenCoord(viewport.width,
                                               viewport.height,
-                                              this).toGlobalCoord();
+                                              this).ToGlobal();
 
         vgs_->View2dState()->SetViewSliceMax(viewType_, get2ptsInPlane(max));
         vgs_->View2dState()->SetViewSliceMin(viewType_, get2ptsInPlane(min));
@@ -148,7 +148,7 @@ public:
 
         std::cout << vol_->Coords().DataDimensions() << std::endl;
 
-        om::coords::Global loc = midPoint.toGlobalCoord();
+        om::coords::Global loc = midPoint.ToGlobal();
         setLocation(loc);
 
         zoomLevel_->Reset(getMaxMipLevel());
@@ -185,7 +185,7 @@ public:
         if(!mousePanStartingPt_){
             return;
         }
-        const om::coords::Global difference = mousePanStartingPt_->toGlobalCoord() - cursorLocation.toGlobalCoord();
+        const om::coords::Global difference = mousePanStartingPt_->ToGlobal() - cursorLocation.ToGlobal();
 
         setLocation(Location() + difference);
 

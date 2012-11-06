@@ -31,7 +31,7 @@ struct data {
     	coord = c.toDataCoord(coord.volume(), 0);
     }
     inline om::coords::Global getCoord() {
-    	return coord.toGlobalCoord();
+    	return coord.ToGlobal();
     }
 };
 

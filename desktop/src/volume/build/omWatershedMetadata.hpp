@@ -128,7 +128,7 @@ private:
         }
 
         if(2 != tokens.size()){
-            throw om::IoException("invalid line", line);
+            throw om::IoException("invalid line", line.toStdString());
         }
 
         if("segmentation" == tokens[0]){

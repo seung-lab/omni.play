@@ -12,7 +12,7 @@ private:
     boost::optional<om::coords::DataBbox>
     static computeSelectedSegmentBoundingBox(const SegmentationDataWrapper& sdw)
     {
-        om::coords::DataBbox box(sdw.GetSegmentationPtr(), 0);
+        om::coords::DataBbox box(sdw.GetSegmentation(), 0);
 
         OmSegmentIterator iter(sdw.Segments());
         iter.iterOverSelectedIDs();
@@ -81,7 +81,7 @@ public:
             return;
         }
 
-        vgs->View2dState()->SetScaledSliceDepth(voxelDC->toGlobalCoord());
+        vgs->View2dState()->SetScaledSliceDepth(voxelDC->ToGlobal());
 
         OmEvents::ViewCenterChanged();
         OmEvents::View3dRecenter();
@@ -99,7 +99,7 @@ public:
                 computeSelectedSegmentBoundingBox(sdw);
 
             if(b){
-                box.merge(b->toGlobalBbox());
+                box.merge(b->ToGlobalBbox());
             }
         }
 

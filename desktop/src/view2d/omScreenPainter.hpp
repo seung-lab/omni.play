@@ -256,10 +256,10 @@ private:
             {
             	om::annotation::data& a = *it->Object;
 
-                if(!closeInDepth(a.coord.toGlobalCoord()))
+                if(!closeInDepth(a.coord.ToGlobal()))
                     continue;
 
-                om::screenCoord loc = a.coord.toGlobalCoord().toScreenCoord(state_);
+                om::screenCoord loc = a.coord.ToGlobal().toScreenCoord(state_);
 
                 QPen pen;
                 pen.setColor(QColor::fromRgb(a.color.red, a.color.green, a.color.blue));

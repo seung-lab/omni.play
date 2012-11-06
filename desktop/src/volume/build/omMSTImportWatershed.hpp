@@ -28,7 +28,7 @@ public:
 				QString("number of edges mismatch: have %1, but expected %2")
 				.arg(edges.Vector().size())
 				.arg(numEdges);
-			throw om::IoException(err);
+			throw om::IoException(err.toStdString());
 		}
 
 		vol_->MST()->Import(edges.Vector());

@@ -108,7 +108,7 @@ public:
         getPlane(plane).min = vec;
     }
 
-    inline Vector2f GetViewSliceMin(ViewType plane) const
+    inline Vector2f GetViewSliceMin(om::common::ViewType plane) const
     {
         const Vector2f& pts = getPlane(plane).min;
         {

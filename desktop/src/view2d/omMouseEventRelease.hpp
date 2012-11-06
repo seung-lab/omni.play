@@ -41,7 +41,7 @@ public:
 private:
     void setState(QMouseEvent* event){
         om::screenCoord clicked(Vector2i(event->x(), event->y()),state_);
-        dataClickPoint_ = clicked.toGlobalCoord();
+        dataClickPoint_ = clicked.ToGlobal();
     }
 };
 

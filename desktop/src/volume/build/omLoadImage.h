@@ -50,9 +50,9 @@ public:
         , files_(files)
         , totalNumImages_(files.size())
         , totalTilesInSlice_(mip0dims_.x * mip0dims_.y)
-        , tileWidth_(vol_->Coords().ChunkDimension())
-        , tileHeight_(vol_->Coords().ChunkDimension())
-        , tilesPerChunk_(vol_->Coords().ChunkDimension())
+        , tileWidth_(vol_->Coords().ChunkDimensions().x) // TODO: Fix assumptions about cubic chunks
+        , tileHeight_(vol_->Coords().ChunkDimensions().x)
+        , tilesPerChunk_(vol_->Coords().ChunkDimensions().x)
         , tileSizeBytes_(tileWidth_*tileHeight_*sizeof(T))
         , chunkSizeBytes_(tileSizeBytes_*tilesPerChunk_)
         , numTilesToWrite_(10000)
@@ -161,7 +161,7 @@ private:
             for(int x = 0; x < mip0dims_.x; ++x)
             {
                 const om::coords::Chunk coord = om::coords::Chunk(0, x, y, z);
-                const om::coords::DataBbox chunk_bbox = coord.BoundingBox(vol_);
+                const om::coords::DataBbox chunk_bbox = coord.BoundingBox(*vol_);
 
                 const int startX = chunk_bbox.getMin().x;
                 const int startY = chunk_bbox.getMin().y;

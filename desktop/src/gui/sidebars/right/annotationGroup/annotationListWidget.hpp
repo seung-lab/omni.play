@@ -147,7 +147,7 @@ private Q_SLOTS:
 
         if (column == POSITION_COL)
         {
-        	om::coords::Global c = ann->Object->coord.toGlobalCoord();
+        	om::coords::Global c = ann->Object->coord.ToGlobal();
         	LocationEditDialog::EditLocation(c, this);
         	ann->Object->coord = c.toDataCoord(ann->Object->coord.volume(), 0);
 			setLocationText(item, *ann->Object);
@@ -215,7 +215,7 @@ private:
         	return;
         }
 
-        vgs_->View2dState()->SetScaledSliceDepth(annotation->Object->coord.toGlobalCoord());
+        vgs_->View2dState()->SetScaledSliceDepth(annotation->Object->coord.ToGlobal());
         OmEvents::ViewCenterChanged();
         OmEvents::View3dRecenter();
     }
@@ -263,7 +263,7 @@ private:
 
     void setLocationText(QTreeWidgetItem* row, const om::annotation::data& a)
     {
-    	globalCoord c = a.coord.toGlobalCoord();
+    	globalCoord c = a.coord.ToGlobal();
     	std::stringstream ss;
     	ss << c.x << ", "
     	   << c.y << ", "

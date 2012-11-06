@@ -109,7 +109,7 @@ private:
 
         tool_ = OmStateManager::GetToolMode();
         om::screenCoord clicked(Vector2i(event->x(), event->y()), state_);
-        dataClickPoint_ = clicked.toGlobalCoord();
+        dataClickPoint_ = clicked.ToGlobal();
     }
 
     inline void selectSegments()

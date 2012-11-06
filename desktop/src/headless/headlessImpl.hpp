@@ -20,6 +20,8 @@
 #include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omSegmentation.h"
 
+#include <iostream>
+
 class HeadlessImpl {
 public:
     static void OpenProject(const QString& fNameIn)
@@ -238,19 +240,17 @@ private:
             ++(segColorHist[color]);
         }
 
-        QString outFile("/tmp/segmentColors.txt");
+        std::string outFile("/tmp/segmentColors.txt");
         if(findRoot){
             outFile = "/tmp/segmentRootColors.txt";
         }
 
-        QFile data(outFile);
-        if(data.open(QFile::WriteOnly | QFile::Truncate)) {
-            printf("writing segment file %s\n", qPrintable(outFile));
+        std::ofstream out(outFile.c_str(), std::ios_base::out | std::ios_base::trunc);
+        if(out.good()) {
+            std::cout << "writing segment file " << outFile << std::endl;
         } else{
-            throw om::IoException("could not open file", outFile.toStdString());
+            throw om::IoException("could not open file", outFile);
         }
-
-        QTextStream out(&data);
 
         out << "red\tgreen\tblue\tnum\n";
 
