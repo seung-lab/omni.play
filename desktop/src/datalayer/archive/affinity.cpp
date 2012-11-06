@@ -36,15 +36,15 @@ namespace YAML {
     void operator>>(const Node& in, OmAffinityGraph& graph)
     {
         graph.channels_[om::common::X_AFFINITY] = 
-            om::make_shared<OmAffinityChannel>(graph.GetID(), om::common::X_AFFINITY);
+            boost::make_shared<OmAffinityChannel>(graph.GetID(), om::common::X_AFFINITY);
         in["X Affinity"] >> *graph.GetChannel(om::common::X_AFFINITY);
         
         graph.channels_[om::common::Y_AFFINITY] = 
-            om::make_shared<OmAffinityChannel>(graph.GetID(), om::common::Y_AFFINITY);
+            boost::make_shared<OmAffinityChannel>(graph.GetID(), om::common::Y_AFFINITY);
         in["Y Affinity"] >> *graph.GetChannel(om::common::Y_AFFINITY);
         
         graph.channels_[om::common::Z_AFFINITY] = 
-            om::make_shared<OmAffinityChannel>(graph.GetID(), om::common::Z_AFFINITY);
+            boost::make_shared<OmAffinityChannel>(graph.GetID(), om::common::Z_AFFINITY);
         in["Z Affinity"] >> *graph.GetChannel(om::common::Z_AFFINITY);
     }
     

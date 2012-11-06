@@ -32,7 +32,7 @@ public:
     uint8_t* Load()
     {
         data_ =
-            om::make_shared<OmMemMapCompressedFile<uint8_t> >(fnp_);
+            boost::make_shared<OmMemMapCompressedFile<uint8_t> >(fnp_);
         return data_->GetPtr();
     }
 

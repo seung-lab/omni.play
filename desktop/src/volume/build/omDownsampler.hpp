@@ -60,7 +60,7 @@ public:
             const om::coords::Chunk& coord = *iter;
 
             boost::shared_ptr<DownsampleVoxelTask<T> > task =
-                om::make_shared<DownsampleVoxelTask<T> >(vol_,
+                boost::make_shared<DownsampleVoxelTask<T> >(vol_,
                                                             mips_,
                                                             mippingInfo_,
                                                             coord,

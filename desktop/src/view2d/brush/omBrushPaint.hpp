@@ -26,7 +26,7 @@ public:
             OmBrushOppInfoFactory::MakeOppInfo(state, first, om::common::ADD);
 
         boost::shared_ptr<OmBrushPaintLineTask> task =
-            om::make_shared<OmBrushPaintLineTask>(info, first, second, segIDtoPaint);
+            boost::make_shared<OmBrushPaintLineTask>(info, first, second, segIDtoPaint);
 
         OmView2dManager::AddTaskBack(task);
     }

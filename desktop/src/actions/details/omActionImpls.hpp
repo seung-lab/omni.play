@@ -30,7 +30,7 @@ public:
     OmSegmentationThresholdChangeAction(const SegmentationDataWrapper sdw,
                                         const double threshold)
     {
-        impl_ = om::make_shared<OmSegmentationThresholdChangeActionImpl>(sdw, threshold);
+        impl_ = boost::make_shared<OmSegmentationThresholdChangeActionImpl>(sdw, threshold);
         SetUndoable(true);
     }
 };
@@ -47,7 +47,7 @@ public:
     OmSegmentationSizeThresholdChangeAction(const SegmentationDataWrapper sdw,
                                             const double threshold)
     {
-        impl_ = om::make_shared<OmSegmentationSizeThresholdChangeActionImpl>(sdw, threshold);
+        impl_ = boost::make_shared<OmSegmentationSizeThresholdChangeActionImpl>(sdw, threshold);
         SetUndoable(true);
     }
 };
@@ -62,7 +62,7 @@ public:
 
     OmSegmentSelectAction(boost::shared_ptr<OmSelectSegmentsParams> params)
     {
-        impl_ = om::make_shared<OmSegmentSelectActionImpl>(params);
+        impl_ = boost::make_shared<OmSegmentSelectActionImpl>(params);
     }
 };
 
@@ -77,7 +77,7 @@ public:
     OmSegmentJoinAction(const SegmentationDataWrapper& sdw,
                         const om::common::SegIDSet& ids)
     {
-        impl_ = om::make_shared<OmSegmentJoinActionImpl>(sdw, ids);
+        impl_ = boost::make_shared<OmSegmentJoinActionImpl>(sdw, ids);
         SetUndoable(true);
     }
 
@@ -108,7 +108,7 @@ public:
                          const om::common::GroupName name,
                          const bool create)
     {
-        impl_ = om::make_shared<OmSegmentGroupActionImpl>(segmentationId,
+        impl_ = boost::make_shared<OmSegmentGroupActionImpl>(segmentationId,
                                                              selectedSegmentIds,
                                                              name,
                                                              create);

@@ -30,7 +30,7 @@ public:
         // std::cout << *info << ", " << first << ", " << second << "\n";
 
         boost::shared_ptr<OmBrushSelectLineTask> task =
-            om::make_shared<OmBrushSelectLineTask>(info, first, second);
+            boost::make_shared<OmBrushSelectLineTask>(info, first, second);
 
         OmView2dManager::AddTaskBack(task);
     }

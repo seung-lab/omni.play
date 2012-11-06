@@ -21,7 +21,7 @@ OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat,
                                     const Matrix4f & matInv)
 {
     const OmMipVolume* vol = mPosition.volume();
-    return om::make_shared<OmVolumeCuller>(mProjModelView * mat,
+    return boost::make_shared<OmVolumeCuller>(mProjModelView * mat,
                                            om::coords::Norm(matInv * mPosition, vol),
                                            om::coords::Norm(matInv * mFocus, vol));
 }

@@ -35,7 +35,7 @@ public:
         threadPool_.start(1);
 
         boost::shared_ptr<OmMeshConvertV1toV2Task> task =
-            om::make_shared<OmMeshConvertV1toV2Task>(meshManager_);
+            boost::make_shared<OmMeshConvertV1toV2Task>(meshManager_);
 
         threadPool_.push_back(task);
     }
@@ -51,7 +51,7 @@ public:
         {
             std::cout << "did not find segID " << segID
                       << " in chunk " << coord << "\n";
-            return om::make_shared<OmDataForMeshLoad>();
+            return boost::make_shared<OmDataForMeshLoad>();
         }
 
         if(meshWriter_->WasMeshed(segID, coord)){

@@ -37,7 +37,7 @@ public:
         OmSliceCache sliceCache(vol_, viewType_);
 
         boost::shared_ptr<boost::unordered_set<om::common::SegID> > ret =
-            om::make_shared<boost::unordered_set<om::common::SegID> >();
+            boost::make_shared<boost::unordered_set<om::common::SegID> >();
 
         FOR_EACH(pt, pts_) {
         	om::common::SegID id = sliceCache.GetVoxelValue(*pt);

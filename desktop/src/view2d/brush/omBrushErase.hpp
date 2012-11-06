@@ -26,7 +26,7 @@ public:
             OmBrushOppInfoFactory::MakeOppInfo(state, first, om::common::ADD);
 
         boost::shared_ptr<OmBrushEraseLineTask> task =
-            om::make_shared<OmBrushEraseLineTask>(info, first, second, segIDtoErase);
+            boost::make_shared<OmBrushEraseLineTask>(info, first, second, segIDtoErase);
 
         OmView2dManager::AddTaskBack(task);
     }

@@ -5,7 +5,7 @@
 OmVoxelSetValueAction::OmVoxelSetValueAction(const om::common::ID segmentationId,
                                              const om::coords::Global& rVoxel,
                                              const om::common::SegID value)
-    : impl_(om::make_shared<OmVoxelSetValueActionImpl>(segmentationId,
+    : impl_(boost::make_shared<OmVoxelSetValueActionImpl>(segmentationId,
                                                           rVoxel,
                                                           value))
 {
@@ -15,7 +15,7 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(const om::common::ID segmentationId
 OmVoxelSetValueAction::OmVoxelSetValueAction(const om::common::ID segmentationId,
                                              const std::set<om::coords::Global>& rVoxels,
                                              const om::common::SegID value)
-    : impl_(om::make_shared<OmVoxelSetValueActionImpl>(segmentationId,
+    : impl_(boost::make_shared<OmVoxelSetValueActionImpl>(segmentationId,
                                                           rVoxels,
                                                           value))
 {

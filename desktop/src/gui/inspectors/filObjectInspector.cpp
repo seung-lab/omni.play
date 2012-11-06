@@ -8,7 +8,7 @@ FilObjectInspector::FilObjectInspector(QWidget * parent,
                                        const FilterDataWrapper & fdw )
     : QWidget(parent)
 {
-    fdw_ = om::make_shared<FilterDataWrapper>(fdw);
+    fdw_ = boost::make_shared<FilterDataWrapper>(fdw);
 
     QVBoxLayout* overallContainer = new QVBoxLayout( this );
 

@@ -225,7 +225,7 @@ public:
         zi::guard g(mutex_);
 
         boost::shared_ptr<valsCont> vals =
-            om::make_shared<valsCont>();
+            boost::make_shared<valsCont>();
 
         std::pair<KViterator, KViterator> found =
             mmap_.equal_range(key);

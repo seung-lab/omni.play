@@ -31,7 +31,7 @@ public:
     OmSegmentDataV3* Load()
     {
         segmentsDataPtr_ =
-            om::make_shared<OmMemMappedFileQTNew<OmSegmentDataV3> >(fnp_);
+            boost::make_shared<OmMemMappedFileQTNew<OmSegmentDataV3> >(fnp_);
         return segmentsDataPtr_->GetPtr();
     }
 

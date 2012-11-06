@@ -22,7 +22,7 @@ public:
         const std::vector<om::point2di>& ptsInCircle =
             state->getBrushSize()->GetPtsInCircle();
 
-        return om::make_shared<OmBrushOppInfo>(segmentation,
+        return boost::make_shared<OmBrushOppInfo>(segmentation,
                                                viewType,
                                                brushSize,
                                                depth,

@@ -6,7 +6,7 @@
 OmSegmentUncertainAction::OmSegmentUncertainAction(const SegmentationDataWrapper& sdw,
                                                    boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
                                                    const bool uncertain)
-    : impl_(om::make_shared<OmSegmentUncertainActionImpl>(sdw,
+    : impl_(boost::make_shared<OmSegmentUncertainActionImpl>(sdw,
                                                              selectedSegments,
                                                              uncertain))
 {

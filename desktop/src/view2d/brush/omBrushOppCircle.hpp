@@ -24,7 +24,7 @@ public:
     GetPts(const om::coords::Global& xyzCoord)
     {
         boost::shared_ptr<om::pt3d_list_t> ret =
-            om::make_shared<om::pt3d_list_t>();
+            boost::make_shared<om::pt3d_list_t>();
 
         OmBrushOppUtils::GetPts(info_.get(), ret.get(), xyzCoord, viewType_);
 

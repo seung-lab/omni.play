@@ -48,14 +48,14 @@ public:
         , segmentsData_(NULL)
         , listTypePage_(NULL)
     {
-        versionInfo_ = om::make_shared<OmSegmentPageVersion>(segmentation_,
+        versionInfo_ = boost::make_shared<OmSegmentPageVersion>(segmentation_,
                                                                 pageNum_);
 
-        segmentsDataPtr_ = om::make_shared<OmSegmentPageV4>(segmentation_,
+        segmentsDataPtr_ = boost::make_shared<OmSegmentPageV4>(segmentation_,
                                                                pageNum_,
                                                                pageSize_);
 
-        listTypePagePtr_ = om::make_shared<OmSegmentListTypePage>(segmentation_,
+        listTypePagePtr_ = boost::make_shared<OmSegmentListTypePage>(segmentation_,
                                                                      pageNum_,
                                                                      pageSize_);
 

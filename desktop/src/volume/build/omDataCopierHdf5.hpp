@@ -68,7 +68,7 @@ private:
             const om::coords::Chunk& coord = *iter;
 
             boost::shared_ptr<OmDataCopierHdf5Task<VOL> > task =
-                om::make_shared<OmDataCopierHdf5Task<VOL> >(vol_,
+                boost::make_shared<OmDataCopierHdf5Task<VOL> >(vol_,
                                                                path_,
                                                                aff_,
                                                                volSize_,

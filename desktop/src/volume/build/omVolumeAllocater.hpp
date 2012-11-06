@@ -75,7 +75,7 @@ private:
         const std::string fnpStr = OmFileNames::GetMemMapFileName(vol, level);
         const QString fnp = QString::fromStdString(fnpStr);
         QFile::remove(fnp);
-        boost::shared_ptr<QFile> file(om::make_shared<QFile>(fnp));
+        boost::shared_ptr<QFile> file(boost::make_shared<QFile>(fnp));
         file->resize(size);
         if(!file->open(QIODevice::ReadWrite)){
             throw om::IoException("could not open file ",fnpStr.toStdString());

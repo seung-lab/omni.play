@@ -42,7 +42,7 @@ private:
 public:
     progressBarDialog(QWidget* parent)
         : QDialog(parent)
-        , progress_(om::make_shared<progress>())
+        , progress_(boost::make_shared<progress>())
     {
         init();
     }

@@ -6,7 +6,7 @@ om::segLists::getPage(const std::vector<SegInfo> list,
                       const uint32_t numToGet)
 {
     boost::shared_ptr<GUIPageOfSegments> ret =
-        om::make_shared<GUIPageOfSegments>();
+        boost::make_shared<GUIPageOfSegments>();
 
     if(list.empty()){
         return ret;

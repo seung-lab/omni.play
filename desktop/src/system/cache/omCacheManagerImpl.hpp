@@ -111,11 +111,11 @@ private:
         const int64_t loopTimeSecs= CLEANER_THREAD_LOOP_TIME_SECS;
 
         cleaner_ =
-            om::make_shared<zi::periodic_function>(
+            boost::make_shared<zi::periodic_function>(
                 &OmCacheManagerImpl::cacheManagerCleaner, this,
                 zi::interval::secs(loopTimeSecs));
 
-        cleanerThread_ = om::make_shared<zi::thread>(*cleaner_);
+        cleanerThread_ = boost::make_shared<zi::thread>(*cleaner_);
         cleanerThread_->start();
     }
 

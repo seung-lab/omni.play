@@ -4,6 +4,9 @@
 #include "volume/omVolumeTypes.hpp"
 #include "utility/omSmartPtr.hpp"
 
+#include <boost/make_shared.hpp>
+#include <QString>
+
 #define OmDataWrapperRaw(c) (OmDataWrapper<int8_t>::produceNoFree(c))
 #define OmDataWrapperInvalid() (OmDataWrapper<int8_t>::produceNull())
 
@@ -184,7 +187,7 @@ namespace ptrs {
 
 template <typename T>
 static OmDataWrapperPtr Wrap(boost::shared_ptr<T> sptr){
-    return om::make_shared<OmDataWrapper<T> >(sptr);
+    return boost::make_shared<OmDataWrapper<T> >(sptr);
 }
 
 template <typename T>

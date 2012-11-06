@@ -109,7 +109,7 @@ public:
               const om::common::AllowOverwrite allowOverwrite)
     {
         boost::shared_ptr<OmMeshWriterTaskV2<U> > task =
-            om::make_shared<OmMeshWriterTaskV2<U> >(segmentation_,
+            boost::make_shared<OmMeshWriterTaskV2<U> >(segmentation_,
                                                        filePtrCache_,
                                                        segID,
                                                        coord,

@@ -12,7 +12,7 @@ private:
 
 public:
     progress()
-        : progress_(om::make_shared<om::gui::progress>())
+        : progress_(boost::make_shared<om::gui::progress>())
     {}
 
     boost::shared_ptr<om::gui::progress> Progress(){

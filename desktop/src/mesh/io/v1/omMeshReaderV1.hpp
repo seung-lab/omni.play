@@ -49,7 +49,7 @@ public:
         try{
             return doRead(segID, coord);
         } catch(...){
-            return om::make_shared<OmDataForMeshLoad>();
+            return boost::make_shared<OmDataForMeshLoad>();
         }
     }
 
@@ -88,7 +88,7 @@ private:
     doRead(const om::common::SegID segID, const om::coords::Chunk& coord)
     {
         boost::shared_ptr<OmDataForMeshLoad> ret =
-            om::make_shared<OmDataForMeshLoad>();
+            boost::make_shared<OmDataForMeshLoad>();
 
         const OmMeshCoord meshCoord(coord, segID);
 

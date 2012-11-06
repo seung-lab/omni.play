@@ -50,7 +50,7 @@ private:
 
     void resetArgs()
     {
-        args_ = om::make_shared<args_t>();
+        args_ = boost::make_shared<args_t>();
         args_->reserve(taskVecSize_);
     }
 

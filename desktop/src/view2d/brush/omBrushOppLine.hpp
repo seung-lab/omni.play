@@ -43,7 +43,7 @@ private:
     boost::shared_ptr<om::pt3d_list_t> getPtsInRadiusedLine()
     {
         boost::shared_ptr<om::pt3d_list_t> ret =
-            om::make_shared<om::pt3d_list_t>();
+            boost::make_shared<om::pt3d_list_t>();
 
         om::pt3d_list_t* pts = ret.get();
         OmBrushOppInfo* info = info_.get();

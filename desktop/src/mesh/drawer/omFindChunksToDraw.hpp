@@ -19,7 +19,7 @@ public:
 
     boost::shared_ptr<std::deque<OmSegChunk*> > FindChunksToDraw()
     {
-        chunksToDraw_ =  om::make_shared<std::deque<OmSegChunk*> >();
+        chunksToDraw_ =  boost::make_shared<std::deque<OmSegChunk*> >();
         determineChunksToDraw(segmentation_->Coords().RootMipChunkCoordinate(),
                               true);
         return chunksToDraw_;

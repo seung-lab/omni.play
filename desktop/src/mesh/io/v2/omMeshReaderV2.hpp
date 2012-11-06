@@ -36,7 +36,7 @@ public:
         OmMeshChunkDataReaderV2 chunk_data(segmentation_, coord, threshold_);
 
         boost::shared_ptr<OmDataForMeshLoad> ret =
-            om::make_shared<OmDataForMeshLoad>();
+            boost::make_shared<OmDataForMeshLoad>();
 
         if(!chunk_table->Contains(segID)){
             return ret;

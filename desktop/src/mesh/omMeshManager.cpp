@@ -91,7 +91,7 @@ void OmMeshManager::inferMeshMetadata()
 
 OmMeshPtr OmMeshManager::Produce(const OmMeshCoord& coord)
 {
-    return om::make_shared<OmMesh>(segmentation_,
+    return boost::make_shared<OmMesh>(segmentation_,
                                    coord,
                                    this,
                                    dataCache_.get());

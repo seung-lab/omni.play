@@ -57,7 +57,7 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol)
         const om::coords::Chunk& coord = *iter;
 
         boost::shared_ptr<OmSegmentationChunkBuildTask> task =
-            om::make_shared<OmSegmentationChunkBuildTask>(coord,
+            boost::make_shared<OmSegmentationChunkBuildTask>(coord,
                                                           vol->Segments(),
                                                           vol);
         threadPool.push_back(task);

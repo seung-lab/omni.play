@@ -41,7 +41,7 @@ public:
     BuildPlan(boost::shared_ptr<std::deque<OmSegChunk*> > chunks)
     {
         chunks_ = chunks;
-        sortedSegments_ = om::make_shared<OmMeshPlan>();
+        sortedSegments_ = boost::make_shared<OmMeshPlan>();
         doBuildPlan();
         return sortedSegments_;
     }

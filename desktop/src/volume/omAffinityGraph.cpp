@@ -30,7 +30,7 @@ void OmAffinityGraph::ImportSingleChannel(const QString& hdf5fnp,
     std::cout << "Building affinity channel: " << aff << std::endl;
 
     channels_[aff] =
-        om::make_shared<OmAffinityChannel>(aff);
+        boost::make_shared<OmAffinityChannel>(aff);
 
     OmAffinityChannel* affChan = channels_[aff].get();
 
@@ -51,7 +51,7 @@ OmAffinityGraph::RawChunk(const om::common::AffinityGraph aff,
 {
     OmAffinityChannel* affChan = channels_[aff].get();
 
-    return om::make_shared<OmRawChunk<float> >(affChan, coord);
+    return boost::make_shared<OmRawChunk<float> >(affChan, coord);
 }
 
 OmChunk* OmAffinityGraph::MipChunk(const om::common::AffinityGraph aff,

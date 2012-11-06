@@ -11,7 +11,7 @@ public:
     {
         om::file::createFileNumElements<T>(fnp, numElements);
 
-        return om::make_shared<OmMemMappedFileQTNew<T> >(fnp);
+        return boost::make_shared<OmMemMappedFileQTNew<T> >(fnp);
     }
 
     static boost::shared_ptr<OmMemMappedFileQTNew<T> >
@@ -20,7 +20,7 @@ public:
     {
         om::file::createFileFromData<T>(fnp, d, numElements);
 
-        return om::make_shared<OmMemMappedFileQTNew<T> >(fnp);
+        return boost::make_shared<OmMemMappedFileQTNew<T> >(fnp);
     }
 
 private:

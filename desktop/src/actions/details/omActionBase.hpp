@@ -11,7 +11,7 @@ protected:
 
 public:
     OmActionBase()
-        : impl_(om::make_shared<IMPL>())
+        : impl_(boost::make_shared<IMPL>())
     {}
 
     OmActionBase(boost::shared_ptr<IMPL> impl)

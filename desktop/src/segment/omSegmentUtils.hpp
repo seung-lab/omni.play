@@ -98,7 +98,7 @@ public:
     static GetChildrenInfo(const SegmentDataWrapper& sdw)
     {
         boost::shared_ptr<std::deque<std::string> > ret =
-            om::make_shared<std::deque<std::string> >();
+            boost::make_shared<std::deque<std::string> >();
 
         if(!sdw.IsSegmentValid()){
             return ret;

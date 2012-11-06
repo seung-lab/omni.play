@@ -52,7 +52,7 @@ public:
             spList = OmSegPtrListValid(true);
 
             boost::shared_ptr<OmMeshSegmentListTask> task
-                = om::make_shared<OmMeshSegmentListTask>(chunk,
+                = boost::make_shared<OmMeshSegmentListTask>(chunk,
                                                          rootSeg,
                                                          this,
                                                          segmentation_);

@@ -13,7 +13,7 @@ OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state, OmMipVolume* vo
     , viewType_(state->getViewType())
     , vgs_(state->getViewGroupState())
     , mipLevel_(state->getMipLevel())
-    , tileCoordsAndLocations_(om::make_shared<OmTileCoordsAndLocations>())
+    , tileCoordsAndLocations_(boost::make_shared<OmTileCoordsAndLocations>())
 {
     freshness_ = 0;
     if(SEGMENTATION == vol_->getVolumeType()){
@@ -41,7 +41,7 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
     }
 
     OmTileCoordsAndLocationsPtr ret = tileCoordsAndLocations_;
-    tileCoordsAndLocations_ = om::make_shared<OmTileCoordsAndLocations>();
+    tileCoordsAndLocations_ = boost::make_shared<OmTileCoordsAndLocations>();
 
     return ret;
 }

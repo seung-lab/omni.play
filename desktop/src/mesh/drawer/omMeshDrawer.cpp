@@ -6,8 +6,8 @@
 
 OmMeshDrawer::OmMeshDrawer(OmSegmentation* segmentation)
     : segmentation_(segmentation)
-    , rootSegLists_(om::make_shared<OmMeshSegmentList>(segmentation))
-    , cache_(om::make_shared<OmMeshPlanCache>(segmentation_,
+    , rootSegLists_(boost::make_shared<OmMeshSegmentList>(segmentation))
+    , cache_(boost::make_shared<OmMeshPlanCache>(segmentation_,
                                                  rootSegLists_.get()))
     , numPrevRedraws_(0)
 {}

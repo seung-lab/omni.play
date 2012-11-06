@@ -5,7 +5,7 @@
 #include "segment/omFindCommonEdge.hpp"
 
 OmSegmentShatterAction::OmSegmentShatterAction(const SegmentDataWrapper & sdw)
-    : impl_(om::make_shared<OmSegmentShatterActionImpl>(sdw))
+    : impl_(boost::make_shared<OmSegmentShatterActionImpl>(sdw))
 {
     SetUndoable(true);
 }

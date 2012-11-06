@@ -15,7 +15,7 @@ public:
                                                                   om::common::ZERO_FILL);
         om::file::compressToFileNumElements(d, numElements, fnp);
 
-        return om::make_shared<OmMemMapCompressedFile<T> >(fnp);
+        return boost::make_shared<OmMemMapCompressedFile<T> >(fnp);
     }
 
     static boost::shared_ptr<OmMemMapCompressedFile<T> >
@@ -24,7 +24,7 @@ public:
     {
         om::file::compressToFileNumElements(d, numElements, fnp);
 
-        return om::make_shared<OmMemMapCompressedFile<T> >(fnp);
+        return boost::make_shared<OmMemMapCompressedFile<T> >(fnp);
     }
 
 private:
