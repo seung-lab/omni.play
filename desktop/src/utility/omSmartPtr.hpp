@@ -2,6 +2,7 @@
 
 #include "common/omString.hpp"
 #include "common/common.h"
+#include "common/enums.hpp"
 
 template <typename T>
 class OmSmartPtr {

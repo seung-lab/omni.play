@@ -71,7 +71,7 @@ int OmTile::getDepth()
     return key_.getDepth();
 }
 
-ObjectType OmTile::getVolType() const {
+om::common::ObjectType OmTile::getVolType() const {
     return getVol()->getVolumeType();
 }
 
