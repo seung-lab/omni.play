@@ -1,6 +1,6 @@
 #pragma once
 
-#include "system/omGenericManager.hpp"
+#include "common/genericManager.hpp"
 #include "zi/omUtility.h"
 
 #include <QDataStream>
@@ -8,7 +8,7 @@
 class OmGenericManagerArchive {
 public:
     template <class T>
-    static void Save(QDataStream& out, const OmGenericManager<T>& gm)
+    static void Save(QDataStream& out, const om::common::GenericManager<T>& gm)
     {
         out << gm.nextId_;
         out << gm.size_;
@@ -21,7 +21,7 @@ public:
     }
 
     template <class T>
-    static void Load(QDataStream& in, OmGenericManager<T>& gm)
+    static void Load(QDataStream& in, om::common::GenericManager<T>& gm)
     {
         in >> gm.nextId_;
         in >> gm.size_;

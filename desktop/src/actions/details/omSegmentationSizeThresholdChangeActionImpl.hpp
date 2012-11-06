@@ -2,7 +2,7 @@
 
 #include "actions/io/omActionLogger.hpp"
 #include "common/common.h"
-#include "common/omString.hpp"
+#include "common/string.hpp"
 #include "events/details/omSegmentEvent.h"
 #include "events/omEvents.h"
 #include "gui/sidebars/right/rightImpl.h"

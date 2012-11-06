@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "system/omGenericManager.hpp"
+#include "common/genericManager.hpp"
 #include "datalayer/archive/filter.h"
 
 #include <QDataStream>
@@ -35,7 +35,7 @@ public:
     }
 
 private:
-    OmGenericManager<OmFilter2d> filters_;
+    om::common::GenericManager<OmFilter2d> filters_;
 
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter&, const OmFilter2dManager&);
     friend void YAML::operator>>(const YAML::Node&, OmFilter2dManager& );

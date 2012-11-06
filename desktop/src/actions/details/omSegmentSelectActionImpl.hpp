@@ -2,7 +2,7 @@
 
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/common.h"
-#include "common/omString.hpp"
+#include "common/string.hpp"
 #include "project/omProject.h"
 #include "project/omProject.h"
 #include "events/omEvents.h"

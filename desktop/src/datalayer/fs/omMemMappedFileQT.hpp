@@ -3,7 +3,7 @@
 #include "common/common.h"
 #include "common/enums.hpp"
 #include "common/omDebug.h"
-#include "common/omString.hpp"
+#include "common/string.hpp"
 #include "datalayer/fs/omIOnDiskFile.h"
 
 #include <QFile>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "system/omGenericManager.hpp"
+#include "common/genericManager.hpp"
 #include "datalayer/archive/segmentation.h"
 #include <boost/unordered_map.hpp>
 #include <QVector>
@@ -33,7 +33,7 @@ private:
     void setGroupIDs(const om::common::SegIDSet & set, OmGroup * group, bool doSet);
 
     OmSegmentation * mSegmentation;
-    OmGenericManager<OmGroup> mGroupManager;
+    om::common::GenericManager<OmGroup> mGroupManager;
     boost::unordered_map<om::common::GroupName, om::common::GroupID> mGroupsByName;
 
     friend YAML::Emitter &YAML::operator<<(YAML::Emitter & out, const OmGroups &);

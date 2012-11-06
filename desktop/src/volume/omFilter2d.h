@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omString.hpp"
+#include "common/string.hpp"
 #include "system/omManageableObject.h"
 #include "datalayer/archive/project.h"
 

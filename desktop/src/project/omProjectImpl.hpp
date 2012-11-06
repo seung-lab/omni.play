@@ -16,7 +16,7 @@
 #include "project/details/omSegmentationManager.h"
 #include "project/omProjectGlobals.h"
 #include "system/cache/omCacheManager.h"
-#include "system/omGenericManager.hpp"
+#include "common/genericManager.hpp"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
 #include "system/omUndoStack.hpp"

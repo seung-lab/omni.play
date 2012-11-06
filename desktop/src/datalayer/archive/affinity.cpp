@@ -13,14 +13,14 @@ namespace YAML {
     Emitter &operator<<(Emitter& out, const OmAffinityGraphManager& cm)
     {
         out << BeginMap;
-        genericManager::Save(out, cm.graphs_);
+        GenericManager::Save(out, cm.graphs_);
         out << EndMap;
         return out;
     }
     
     void operator>>(const Node& in, OmAffinityGraphManager& cm)
     {
-        genericManager::Load(in, cm.graphs_);
+        GenericManager::Load(in, cm.graphs_);
     }
     
     Emitter& operator<<(Emitter& out, const OmAffinityGraph& graph)

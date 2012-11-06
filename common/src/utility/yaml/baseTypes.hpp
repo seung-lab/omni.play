@@ -110,6 +110,33 @@ void operator>>(const Node& in, boost::unordered_set<T>& s)
     }
 }
 
+template<class K, class T>
+Emitter &operator<<(Emitter& out, const boost::unordered_map<K, T>& s)
+{
+    out << BeginMap;
+    FOR_EACH(it, s)
+    {
+        out << Key << it->first;
+        out << Value << it->second;
+    }
+    out << EndMap;
+
+    return out;
+}
+
+template<class K, class T>
+void operator>>(const Node& in, boost::unordered_map<K, T>& s)
+{
+    FOR_EACH(it, in)
+    {
+        K key;
+        T value;
+        it.first() >> key;
+        it.second() >> value;
+        s[key] = value;
+    }
+}
+
 // template<class T>
 // Emitter &operator<<(Emitter& out, const std::set<T>& s)
 // {

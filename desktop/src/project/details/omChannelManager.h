@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "system/omGenericManager.hpp"
+#include "common/genericManager.hpp"
 #include "volume/omChannel.h"
 #include "datalayer/archive/channel.h"
 
@@ -17,7 +17,7 @@ public:
     const std::vector<OmChannel*> GetPtrVec() const;
 
 private:
-    OmGenericManager<OmChannel> manager_;
+    om::common::GenericManager<OmChannel> manager_;
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmChannelManager&);
     friend void YAML::operator>>(const YAML::Node& in, OmChannelManager&);

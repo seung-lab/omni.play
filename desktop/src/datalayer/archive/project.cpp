@@ -1,6 +1,7 @@
 #include "datalayer/archive/project.h"
 #include "datalayer/archive/channel.h"
 #include "datalayer/archive/segmentation.h"
+#include "datalayer/archive/baseTypes.hpp"
 #include "common/common.h"
 #include "utility/omFileHelpers.h"
 #include "datalayer/fs/omFile.hpp"
@@ -41,7 +42,7 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
         parser.GetNextDocument(doc);
         doc >> (*project);
     }
-    catch(Exception e)
+    catch(YAML::Exception e)
     {
         std::stringstream ss;
         ss << e.msg << "\n";

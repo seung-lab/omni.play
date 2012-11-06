@@ -7,10 +7,10 @@
 
 namespace YAML{
 
-class genericManager {
+class GenericManager {
 public:
     template<typename T>
-    static void Save(Emitter& out, const om::common::genericManager<T>& gm)
+    static void Save(Emitter& out, const om::common::GenericManager<T>& gm)
     {
         out << Key << "size" << Value << gm.size_;
         out << Key << "valid set" << Value << gm.validSet_;
@@ -25,7 +25,7 @@ public:
     }
 
     template<typename T>
-    static void Load(const Node& in, om::common::genericManager<T>& gm)
+    static void Load(const Node& in, om::common::GenericManager<T>& gm)
     {
         in["size"] >> gm.size_;
         in["valid set"] >> gm.validSet_;

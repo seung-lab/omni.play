@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omString.hpp"
+#include "common/string.hpp"
 #include "common/common.h"
 #include "common/enums.hpp"
 

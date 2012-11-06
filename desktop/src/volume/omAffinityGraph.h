@@ -4,7 +4,7 @@
 #include "common/enums.hpp"
 #include "system/omManageableObject.h"
 #include "datalayer/archive/affinity.h"
-#include "common/omString.hpp"
+#include "common/string.hpp"
 
 class OmChunk;
 class OmAffinityChannel;

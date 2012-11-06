@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "system/omGenericManager.hpp"
+#include "common/genericManager.hpp"
 #include "volume/omSegmentation.h"
 #include "datalayer/archive/segmentation.h"
 
@@ -26,7 +26,7 @@ public:
     const std::vector<OmSegmentation*> GetPtrVec() const;
 
 private:
-    OmGenericManager<OmSegmentation> manager_;
+    om::common::GenericManager<OmSegmentation> manager_;
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmSegmentationManager&);
     friend void YAML::operator>>(const YAML::Node& in, OmSegmentationManager&);

@@ -21,3 +21,59 @@ inline QDataStream& operator>>(QDataStream& in, Vector3<T>& v)
     return in;
 }
 
+template<typename T>
+inline QDataStream& operator<<(QDataStream& out, const Matrix4<T>& m)
+{
+	for( int i = 0; i < 16; ++i){
+		out << m.array[i];
+	}
+	return out;
+}
+
+template<typename T>
+inline QDataStream& operator>>(QDataStream& in, Matrix4<T>& m)
+{
+	for( int i = 0; i < 16; ++i){
+		in >> m.array[i];
+	}
+	return in;
+}
+
+template<typename T>
+inline QDataStream& operator<<(QDataStream& out,
+                               const AxisAlignedBoundingBox<T>& d)
+{
+    vmml::Vector3<int> min = d.getMin();
+    vmml::Vector3<int> max = d.getMax();
+    bool dirty = d.isDirty();
+    bool empty = d.isEmpty();
+
+    out << min;
+    out << max;
+    out << dirty;
+    out << empty;
+
+    return out;
+}
+
+template<typename T>
+inline QDataStream& operator>>(QDataStream& in,
+                               AxisAlignedBoundingBox<T>& d)
+{
+    vmml::Vector3<int> min;
+    vmml::Vector3<int> max;
+    bool dirty;
+    bool empty;
+
+    in >> min;
+    in >> max;
+    in >> dirty;
+    in >> empty;
+
+    vmml::AxisAlignedBoundingBox<int> temp(min, max);
+    d.setDirty(dirty);
+    d.setEmpty(empty);
+    d = temp;
+
+    return in;
+}

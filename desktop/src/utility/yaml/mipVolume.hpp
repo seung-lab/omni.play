@@ -3,6 +3,7 @@
 #include "yaml-cpp/yaml.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/archive/baseTypes.hpp"
 #include "volume/omChannelFolder.h"
 #include "volume/omSegmentationFolder.h"
 
@@ -48,7 +49,7 @@ public:
 
         std::string volDataType;
         in["type"] >> volDataType;
-        vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(QString::fromStdString(volDataType));
+        vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
 
         vol_.LoadPath();
     }

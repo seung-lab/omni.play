@@ -4,6 +4,7 @@
 #include "volume/omChannelFolder.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
+#include "utility/serializers.hpp"
 
 #include <QDataStream>
 
@@ -27,10 +28,10 @@ public:
 
         out << vol_.mBuildState;
 
-        const QString type =
-            OmVolumeTypeHelpers::GetTypeAsQString(vol_.mVolDataType);
-        out << type;
-        std::cout << "saved type as " << type.toStdString() << "\n";
+        const std::string type =
+            OmVolumeTypeHelpers::GetTypeAsString(vol_.mVolDataType);
+        out << QString::fromStdString(type);
+        std::cout << "saved type as " << type << "\n";
 
         save();
     }
@@ -47,7 +48,7 @@ public:
 
         QString volDataType;
         in >> volDataType;
-        vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+        vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType.toStdString());
 
         vol_.LoadPath();
 
@@ -110,6 +111,5 @@ private:
     }
 };
 
-QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c);
-QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c);
+QDataStream& operator>>(QDataStream& in, om::coords::VolumeSystem& c);
 

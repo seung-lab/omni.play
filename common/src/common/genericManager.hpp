@@ -1,26 +1,18 @@
 #pragma once
 
-/*
- * Templated generic manager for a objects that have an
- *   (common::id id) constructor.
- *
- *  NOT thread-safe
- *
- * Brett Warne - bwarne@mit.edu - 2/20/09
- */
-
 #include "common/common.h"
+#include "common/string.hpp"
 #include "common/exception.h"
 #include "common/container.hpp"
 #include "zi/mutex.hpp"
 
-namespace YAML { class genericManager; }
+namespace YAML { class GenericManager; }
 
 namespace om {
 namespace common {
 
 template <typename T, typename Lock = zi::spinlock>
-class genericManager {
+class GenericManager {
 private:
     static const uint32_t DEFAULT_MAP_SIZE = 10;
 
@@ -36,14 +28,14 @@ private:
     Lock lock_;
 
 public:
-    genericManager()
+    GenericManager()
         : nextId_(1)
         , size_(DEFAULT_MAP_SIZE)
     {
         vec_.resize(DEFAULT_MAP_SIZE, NULL);
     }
 
-    ~genericManager()
+    ~GenericManager()
     {
         for(uint32_t i = 1; i < size_; ++i){
             delete vec_[i];
@@ -176,7 +168,7 @@ private:
         vec_.resize(size_, NULL);
     }
 
-    friend class YAML::genericManager;
+    friend class YAML::GenericManager;
 };
 
 } // namespace common

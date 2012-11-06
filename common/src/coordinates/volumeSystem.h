@@ -169,6 +169,23 @@ public:
         }
     }
 
+    inline uint32_t ComputeTotalNumChunks() const
+    {
+        uint32_t numChunks = 0;
+
+        for (int level = 0; level <= rootMipLevel_; ++level) {
+            numChunks += ComputeTotalNumChunks(level);
+        }
+
+        return numChunks;
+    }
+
+    inline uint32_t ComputeTotalNumChunks(const int mipLevel) const
+    {
+        const Vector3i dims = MipLevelDimensionsInMipChunks(mipLevel);
+        return dims.x * dims.y * dims.z;
+    }
+
     Chunk RootMipChunkCoordinate() const;
 
     boost::shared_ptr<std::vector<coords::Chunk> > MipChunkCoords() const;

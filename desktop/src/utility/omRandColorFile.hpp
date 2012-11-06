@@ -2,7 +2,7 @@
 
 #include "common/common.h"
 #include "common/colors.h"
-#include "common/omString.hpp"
+#include "common/string.hpp"
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/omRand.hpp"

@@ -9,14 +9,14 @@ namespace YAML {
 Emitter &operator<<(Emitter& out, const OmFilter2dManager& fm)
 {
     out << BeginMap;
-    genericManager::Save(out, fm.filters_);
+    GenericManager::Save(out, fm.filters_);
     out << EndMap;
     return out;
 }
 
 void operator>>(const Node& in, OmFilter2dManager& fm)
 {
-    genericManager::Load(in, fm.filters_);
+    GenericManager::Load(in, fm.filters_);
 }
 
 Emitter &operator<<(Emitter& out, const OmFilter2d& f)
@@ -36,8 +36,10 @@ Emitter &operator<<(Emitter& out, const OmFilter2d& f)
 void operator>>(const Node& in, OmFilter2d& f)
 {
     in["id"] >> f.id_;
-    in["note"] >> f.note_;
-    in["custom name"] >> f.customName_;
+    std::string note;
+    in["note"] >> note; f.note_ = QString::fromStdString(note);
+    std::string customName;
+    in["custom name"] >> customName; f.customName_ = QString::fromStdString(customName);
     in["alpha"] >> f.alpha_;
     in["chan id"] >> f.chanID_;
     in["seg id"] >> f.segID_;

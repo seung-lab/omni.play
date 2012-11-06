@@ -1,4 +1,4 @@
-#include "common/omString.hpp"
+#include "common/string.hpp"
 #include "common/common.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"

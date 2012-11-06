@@ -11,14 +11,14 @@ namespace YAML {
 Emitter &operator<<(Emitter& out, const OmChannelManager& cm)
 {
     out << BeginMap;
-    genericManager::Save(out, cm.manager_);
+    GenericManager::Save(out, cm.manager_);
     out << EndMap;
     return out;
 }
 
 void operator>>(const Node& in, OmChannelManager& cm)
 {
-    genericManager::Load(in, cm.manager_);
+    GenericManager::Load(in, cm.manager_);
 }
 
 Emitter& operator<<(Emitter& out, const OmChannel& chan)
@@ -41,7 +41,7 @@ void operator>>(const Node& in, OmChannel& chan)
     chan.LoadVolDataIfFoldersExist();
 }
 
-Emitter& operator<<(Emitter& out, const OmMipVolCoords& c)
+Emitter& operator<<(Emitter& out, const om::coords::VolumeSystem& c)
 {
     out << BeginMap;
     out << Key << "dataDimensions" << Value << c.DataDimensions();
@@ -54,7 +54,7 @@ Emitter& operator<<(Emitter& out, const OmMipVolCoords& c)
     return out;
 }
 
-void operator>>(const Node& in, OmMipVolCoords& c)
+void operator>>(const Node& in, om::coords::VolumeSystem& c)
 {
     boost::optional<om::coords::GlobalBbox> extent;
     om::yaml::util::OptionalRead(in, "dataExtent", extent); // backwards compatibility
