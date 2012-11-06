@@ -61,6 +61,25 @@ public:
         return *vec_[id];
     }
 
+    inline bool Insert(ID id, T* value)
+    {
+        zi::guard g(lock_);
+
+        if(IsValid(id)) {
+        	return false;
+        }
+
+        vec_[id] = value;
+        vecValidPtrs_.push_back(value);
+
+        findAndSetNextValidID();
+
+        validSet_.insert(id);
+        enabledSet_.insert(id);
+
+        return true;
+    }
+
     inline T& Get(const ID id) const
     {
         zi::guard g(lock_);

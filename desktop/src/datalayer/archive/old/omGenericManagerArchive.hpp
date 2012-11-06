@@ -7,36 +7,35 @@
 
 class OmGenericManagerArchive {
 public:
-    template <class T>
-    static void Save(QDataStream& out, const om::common::GenericManager<T>& gm)
-    {
-        out << gm.nextId_;
-        out << gm.size_;
-        out << gm.validSet_;
-        out << gm.enabledSet_;
+    // template <class T>
+    // static void Save(QDataStream& out, const om::common::GenericManager<T>& gm)
+    // {
+    //     out << gm.nextId_;
+    //     out << gm.size_;
+    //     out << gm.validSet_;
+    //     out << gm.enabledSet_;
 
-        FOR_EACH(iter, gm.validSet_){
-            out << *gm.vec_[*iter];
-        }
-    }
+    //     FOR_EACH(iter, gm.validSet_){
+    //         out << *gm.vec_[*iter];
+    //     }
+    // }
 
     template <class T>
     static void Load(QDataStream& in, om::common::GenericManager<T>& gm)
     {
-        in >> gm.nextId_;
-        in >> gm.size_;
-        in >> gm.validSet_;
-        in >> gm.enabledSet_;
+    	int dummyInt;
+        in >> dummyInt; //gm.nextId_;
+        in >> dummyInt; //gm.size_;
+        om::common::IDSet valid, enabled;
+        in >> valid;//gm.validSet_;
+        in >> enabled;//gm.enabledSet_;
 
-        gm.vec_.resize(gm.size_, NULL);
-
-        for(uint32_t i = 0; i < gm.validSet_.size(); ++i)
+        FOR_EACH(iter, valid)
         {
-            T* t = new T();
+            T* t = new T(*iter);
             in >> *t;
-            gm.vec_[ t->GetID() ] = t;
-
-            gm.vecValidPtrs_.push_back(t);
+            gm.Insert(*iter, t);
+            gm.SetEnabled(*iter, enabled.count(*iter));
         }
     }
 };

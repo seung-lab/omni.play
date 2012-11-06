@@ -18,23 +18,23 @@ public:
         : vol_(vol)
     {}
 
-    void Store(QDataStream& out) const
-    {
-        out << vol_.id_;
-        out << vol_.customName_;
-        out << vol_.note_;
+    // void Store(QDataStream& out) const
+    // {
+    //     out << vol_.id_;
+    //     out << vol_.customName_;
+    //     out << vol_.note_;
 
-        out << vol_.Coords();
+    //     out << vol_.Coords();
 
-        out << vol_.mBuildState;
+    //     out << vol_.mBuildState;
 
-        const std::string type =
-            OmVolumeTypeHelpers::GetTypeAsString(vol_.mVolDataType);
-        out << QString::fromStdString(type);
-        std::cout << "saved type as " << type << "\n";
+    //     const std::string type =
+    //         OmVolumeTypeHelpers::GetTypeAsString(vol_.mVolDataType);
+    //     out << QString::fromStdString(type);
+    //     std::cout << "saved type as " << type << "\n";
 
-        save();
-    }
+    //     save();
+    // }
 
     void Load(QDataStream& in)
     {

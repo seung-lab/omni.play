@@ -59,8 +59,9 @@ private:
             in >> dead;
         }
 
-        in >> vol.Coords().mMipLeafDim;
-        in >> vol.Coords().mMipRootLevel;
+        int dummyInt;
+        in >> dummyInt;
+        in >> dummyInt;
 
         if(fileVersion_ < 24)
         {
@@ -83,7 +84,7 @@ private:
         {
             QString volDataType;
             in >> volDataType;
-            vol.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+            vol.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType.toStdString());
 
         } else {
             vol.mVolDataType = om::common::DataType::UNKNOWN;
@@ -92,7 +93,7 @@ private:
         vol.LoadPath();
     }
 
-    static void loadOldOmVolume(QDataStream& in, OmMipVolCoords& v)
+    static void loadOldOmVolume(QDataStream& in, om::coords::VolumeSystem& v)
     {
         Matrix4f dummyMat;
         in >> dummyMat; // normToDataMat_s
@@ -103,7 +104,8 @@ private:
         Vector3f resolution;
         in >> resolution;
         v.SetResolution(resolution);
-        in >> v.chunkDim_;
+        int chunkDim;
+        in >> chunkDim; v.SetChunkDimensions(Vector3i(chunkDim));
         QString dummy;
         in >> dummy; //c.unitString_
         Vector3f dummyVec;
