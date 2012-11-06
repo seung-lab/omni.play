@@ -45,19 +45,15 @@ std::string OmVolumeTypeHelpers::GetTypeAsString(const om::common::DataType type
     return type.value();
 }
 
-QString OmVolumeTypeHelpers::GetTypeAsQString(const om::common::DataType type){
-    return QString::fromStdString(GetTypeAsString(type));
-}
-
-om::common::DataType OmVolumeTypeHelpers::GetTypeFromString(const QString & type)
+om::common::DataType OmVolumeTypeHelpers::GetTypeFromString(const std::string & type)
 {
     boost::optional<om::common::DataType> ret =
-        om::common::DataType::get_by_value(type.toStdString());
+        om::common::DataType::get_by_value(type);
 
     if(ret){
         return *ret;
     }
 
-    throw om::IoException("invalid type", type.toStdString());
+    throw om::IoException("invalid type", type);
 }
 
