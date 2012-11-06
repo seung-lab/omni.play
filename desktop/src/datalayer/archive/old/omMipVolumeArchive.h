@@ -3,7 +3,6 @@
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/omChannelFolder.h"
 #include "volume/omMipVolume.h"
-#include "volume/omVolCoordsMipped.hpp"
 #include "volume/omVolumeTypes.hpp"
 
 #include <QDataStream>

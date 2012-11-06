@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/common.h"
+#include "common/enums.hpp"
 #include "common/omDebug.h"
 #include "common/omString.hpp"
 #include "datalayer/fs/omIOnDiskFile.h"

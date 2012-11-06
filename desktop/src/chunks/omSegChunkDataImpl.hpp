@@ -93,7 +93,7 @@ public:
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();
 
-        const int offset = voxel.toChunkOffset();
+        const int offset = voxel.ToChunkOffset();
 
         const uint32_t oldVal = data[offset];
         data[offset] = val;
@@ -106,7 +106,7 @@ public:
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();
 
-        return data[voxel.toChunkOffset()];
+        return data[voxel.ToChunkOffset()];
     }
 
     void RewriteChunk(const boost::unordered_map<uint32_t, uint32_t>& vals)

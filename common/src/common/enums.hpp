@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring>
 #include "enum/enum.hpp"
 
 namespace om {

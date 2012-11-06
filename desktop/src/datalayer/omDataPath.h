@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/common.h"
+#include <QString>
 
 class OmDataPath {
 private:

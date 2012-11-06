@@ -15,12 +15,12 @@ namespace om {
 namespace annotation {
 
 struct data {
-    dataCoord coord;
+    coords::Data coord;
     std::string comment;
     om::common::Color color;
     double size;
 
-    data(dataCoord coord, std::string comment, om::common::Color color, double size)
+    data(coords::Data coord, std::string comment, om::common::Color color, double size)
     	: coord(coord)
     	, comment(comment)
     	, color(color)
@@ -45,7 +45,7 @@ public:
         : vol_(vol)
     {}
 
-    void Add(globalCoord coord, const std::string& comment, const om::common::Color& color, double size);
+    void Add(coords::Global coord, const std::string& comment, const om::common::Color& color, double size);
 
     void Load();
     void Save() const;

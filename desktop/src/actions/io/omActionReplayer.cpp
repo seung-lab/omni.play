@@ -94,7 +94,7 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
     case om::actions_::OmProjectSaveAction:
         throw om::ArgException("should not have received this action");
     default:
-        throw om::ArgException("unknown action", actionName);
+        throw om::ArgException("unknown action" + actionName.toStdString());
     };
 }
 

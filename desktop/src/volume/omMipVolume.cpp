@@ -3,7 +3,7 @@
 
 OmMipVolume::OmMipVolume()
     : mVolDataType(om::common::DataType::UNKNOWN)
-    , coords_(this)
+    , coords_()
     , mBuildState(MIPVOL_UNBUILT)
 {}
 

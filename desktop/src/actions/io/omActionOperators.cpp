@@ -4,6 +4,7 @@
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 #include "datalayer/archive/old/omDataArchiveWrappers.h"
+#include "utility/serializers.hpp"
 
 #include "actions/details/omSegmentGroupActionImpl.hpp"
 #include "actions/details/omSegmentJoinActionImpl.hpp"
@@ -166,7 +167,7 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentGroupActionImpl& a)
     int version = 1;
     out << version;
     out << a.mSegmentationId;
-    out << a.mName;
+    out << QString::fromStdString(a.mName);
     out << a.mCreate;
     out << a.mSelectedSegmentIds;
 
@@ -178,7 +179,8 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentGroupActionImpl& a)
     int version;
     in >> version;
     in >> a.mSegmentationId;
-    in >> a.mName;
+    QString name;
+    in >> name; a.mName = name.toStdString();
     in >> a.mCreate;
     in >> a.mSelectedSegmentIds;
 

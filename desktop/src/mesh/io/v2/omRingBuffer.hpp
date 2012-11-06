@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/common.h"
+#include "common/container.hpp"
 #include "zi/omUtility.h"
 #include "zi/omMutex.h"
 

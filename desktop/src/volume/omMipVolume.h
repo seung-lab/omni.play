@@ -66,6 +66,10 @@ public:
     	return &coords_;
     }
 
+    inline operator const om::coords::VolumeSystem*() const {
+    	return &coords_;
+    }
+
 protected:
     om::common::DataType mVolDataType;
 

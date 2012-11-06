@@ -24,14 +24,14 @@ class genericManager {
 private:
     static const uint32_t DEFAULT_MAP_SIZE = 10;
 
-    id nextId_;
+    ID nextId_;
     uint32_t size_;
 
     std::vector<T*> vec_;
     std::vector<T*> vecValidPtrs_;
 
-    idSet validSet_;  // keys in map (fast iteration)
-    idSet enabledSet_; // enabled keys in map
+    IDSet validSet_;  // keys in map (fast iteration)
+    IDSet enabledSet_; // enabled keys in map
 
     Lock lock_;
 
@@ -55,7 +55,7 @@ public:
     {
         zi::guard g(lock_);
 
-        const id id = nextId_;
+        const ID id = nextId_;
 
         T* t = new T(id);
         vec_[id] = t;
@@ -69,7 +69,7 @@ public:
         return *vec_[id];
     }
 
-    inline T& Get(const id id) const
+    inline T& Get(const ID id) const
     {
         zi::guard g(lock_);
 
@@ -77,7 +77,7 @@ public:
         return *vec_[id];
     }
 
-    void Remove(const id id)
+    void Remove(const ID id)
     {
         zi::guard g(lock_);
 
@@ -97,28 +97,28 @@ public:
     }
 
     //valid
-    inline bool IsValid(const id id) const
+    inline bool IsValid(const ID id) const
     {
         zi::guard g(lock_);
         return !isIDinvalid(id);
     }
 
     // TODO: Remove return of ref to ensure locking of vector is not circumvented
-    inline const idSet& GetValidIds() const
+    inline const IDSet& GetValidIds() const
     {
         zi::guard g(lock_);
         return validSet_;
     }
 
     //enabled
-    inline bool IsEnabled(const id id) const
+    inline bool IsEnabled(const ID id) const
     {
         zi::guard g(lock_);
         throwIfInvalidID(id);
         return enabledSet_.count(id);
     }
 
-    inline void SetEnabled(const id id, const bool enable)
+    inline void SetEnabled(const ID id, const bool enable)
     {
         zi::guard g(lock_);
         throwIfInvalidID(id);
@@ -131,7 +131,7 @@ public:
     }
 
     // TODO: Remove return of ref to ensure locking of vector is not circumvented
-    inline const idSet& GetEnabledIds() const
+    inline const IDSet& GetEnabledIds() const
     {
         zi::guard g(lock_);
         return enabledSet_;
@@ -147,15 +147,15 @@ public:
     }
 
 private:
-    inline bool isIDinvalid(const id id) const {
+    inline bool isIDinvalid(const ID id) const {
         return id < 1 || id >= size_ || NULL == vec_[id];
     }
 
-    inline void throwIfInvalidID(const id id) const
+    inline void throwIfInvalidID(const ID id) const
     {
         if(isIDinvalid(id)){
             assert(0 && "invalid ID");
-            throw common::AccessException("Cannot get object with id: " + id);
+            throw AccessException("Cannot get object with id: " + om::string::num(id));
         }
     }
 

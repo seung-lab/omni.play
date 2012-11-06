@@ -1,12 +1,10 @@
 #pragma once
 
-/*
- *  Matt Wimer mwimer@mit.edu Oct13, 2009
- */
-
 #include "common/common.h"
 #include "system/omGenericManager.hpp"
 #include "datalayer/archive/filter.h"
+
+#include <QDataStream>
 
 class OmFilter2d;
 

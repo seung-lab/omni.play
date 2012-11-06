@@ -1,17 +1,5 @@
 #pragma once
 
-/*
- * Filter Object
- *
- * A filter can overlay a channel OR a segmentation (purcaro)
- *
- * Filters need to be refactored out of OmChannel and into their own
- *  top-level class; they should also be able to support multiple volumes,
- *  different alpha-blending levels, etc. (purcaro)
- *
- * Matthew Wimer - mwimer@mit.edu - 11/13/09
- */
-
 #include "common/omString.hpp"
 #include "system/omManageableObject.h"
 #include "datalayer/archive/project.h"

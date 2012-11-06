@@ -19,7 +19,7 @@ void OmActionDumper::Dump(const QString& fnp)
 {
     QFile file(fnp);
     if(!file.open(QIODevice::WriteOnly)){
-        throw om::IoException("could not open", fnp);
+        throw om::IoException("could not open", fnp.toStdString());
     }
 
     out_.reset(new QTextStream(&file));
@@ -109,6 +109,6 @@ void OmActionDumper::dispatchAction(const QString& actionName, QDataStream& in,
          doDumpFile<OmProjectSaveAction, OmProjectSaveActionImpl>(in, fnp);
          break;
      default:
-         throw om::ArgException("unknown action", actionName);
+         throw om::ArgException("unknown action" + actionName.toStdString());
      };
 }
