@@ -1,10 +1,5 @@
 #pragma once
 
-/*
- *
- *     Brett Warne - bwarne@mit.edu - 3/14/09
- */
-
 #include "common/omStd.h"
 #include "events/details/omEvent.h"
 

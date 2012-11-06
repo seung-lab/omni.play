@@ -1,12 +1,5 @@
 #pragma once
 
-/**
- *  The mesh data associated with the region of a segment enclosed
- *   by a specific MipChunk.
- *
- *  Brett Warne - bwarne@mit.edu - 3/7/09
- */
-
 #include "common/common.h"
 #include "common/omGl.h"
 #include "mesh/omMeshTypes.h"

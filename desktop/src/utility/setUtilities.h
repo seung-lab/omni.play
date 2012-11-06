@@ -1,9 +1,4 @@
-/*
- * Brett Warne - bwarne@mit.edu - 2/6/09
- */
-
-#ifndef OM_UTILITY_H
-#define OM_UTILITY_H
+#pragma once
 
 #include "common/omStd.h"
 

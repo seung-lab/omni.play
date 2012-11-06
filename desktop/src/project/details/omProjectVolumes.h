@@ -1,13 +1,5 @@
 #pragma once
 
-/*
- *  Manages data structures that are shared between various parts of the system.  Making centralized
- *  changes in the StateManager will send events that cause the other interested systems to be
- *  notified and synchronized.
- *
- *  Brett Warne - bwarne@mit.edu - 3/14/09
- */
-
 #include "common/common.h"
 #include "datalayer/archive/project.h"
 
@@ -23,11 +15,11 @@ public:
     OmChannelManager& Channels() {
         return *channels_;
     }
-    
+
     const OmChannelManager& Channels() const {
         return *channels_;
     }
-    
+
     OmSegmentationManager& Segmentations() {
         return *segmentations_;
     }
@@ -39,7 +31,7 @@ public:
     OmAffinityGraphManager& AffinityGraphs(){
         return *affGraphs_;
     }
-    
+
     const OmAffinityGraphManager& AffinityGraphs() const {
         return *affGraphs_;
     }

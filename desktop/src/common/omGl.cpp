@@ -1,12 +1,4 @@
-
-/*
- * Omni Global Graphic Libraries Header File
- *
- * Brett Warne - bwarne@mit.edu - 4/4/09
- */
-
-#ifndef OM_GL_UTILITY_H
-#define OM_GL_UTILITY_H
+#pragma once
 
 #include "omGl.h"
 #include "omStd.h"

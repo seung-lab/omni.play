@@ -1,13 +1,5 @@
 #pragma once
 
-/*
- *  Manages data structures that are shared between various parts of the system.  Making centralized
- *  changes in the StateManager will send events that cause the other interested systems to be
- *  notified and synchronized.
- *
- *  Brett Warne - bwarne@mit.edu - 3/14/09
- */
-
 #include "common/common.h"
 #include "zi/omUtility.h"
 #include "datalayer/archive/project.h"
@@ -53,7 +45,7 @@ private:
     static void setFileVersion(const int fileVersion);
     friend class OmDataArchiveProject;
     friend class om::data::archive::project;
-    
+
     friend QDataStream &operator<<(QDataStream & out, const OmProject & p );
     friend QDataStream &operator>>(QDataStream & in, OmProject & p );
 

@@ -1,9 +1,5 @@
 #pragma once
 
-/*
- *
- *  Brett Warne - bwarne@mit.edu - 4/21/09
- */
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "utility/dataWrappers.h"
 #include "view3d/omSegmentPickPoint.h"

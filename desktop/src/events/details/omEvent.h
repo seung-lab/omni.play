@@ -1,10 +1,5 @@
 #pragma once
 
-/*
- *
- *  Brett Warne - bwarne@mit.edu - 4/6/09
- */
-
 #include "common/omStd.h"
 #include "common/exception.h"
 

@@ -1,13 +1,5 @@
 #pragma once
 
-/**
- *  OmChunk encapsulates a 3D-matrix of image data (typically 128^3) and
- *    its associated size/positioning metadata.
- *
- *  Brett Warne - bwarne@mit.edu - 2/24/09
- *  Michael Purcaro - purcaro@gmail.com - 1/29/11
- */
-
 #include "chunks/omChunkMipping.hpp"
 #include "volume/omVolumeTypes.hpp"
 

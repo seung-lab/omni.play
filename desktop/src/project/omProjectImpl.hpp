@@ -1,12 +1,5 @@
 #pragma once
 
-/*
- *  Manages data structures that are shared between various parts of the
- *    system.
- *
- *  Brett Warne - bwarne@mit.edu - 3/14/09
- */
-
 #include "actions/io/omActionLogger.hpp"
 #include "actions/io/omActionReplayer.hpp"
 #include "actions/omActions.h"

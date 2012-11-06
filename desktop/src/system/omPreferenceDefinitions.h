@@ -1,18 +1,5 @@
 #pragma once
 
-/**
- *Preference Naming Convetion:
- *
- *  Prefix each preference with om::PREF_
- *  Then append primary library using the preference. ex) VIEW3D_
- *  Then append name of preference. ex) BACKGROUND_COLOR_
- *  Postfix with type: STR, FLT, INT, BOOL, V3F
- *
- *  Keep sorted first by library, then alphabetically.
- *
- *  Brett Warne - bwarne@mit.edu - 4/8/09
- */
-
 namespace om {
 enum PrefEnum {
 

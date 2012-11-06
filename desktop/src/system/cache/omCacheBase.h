@@ -1,10 +1,5 @@
 #pragma once
 
-/**
- * Base class of all caches.
- * Brett Warne - bwarne@mit.edu - 7/15/09
- */
-
 #include "common/common.h"
 
 class OmCacheBase {

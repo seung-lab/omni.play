@@ -1,11 +1,5 @@
 #pragma once
 
-/*
- * OmChannel is the MIP data structure for a raw data volume
- *
- * Brett Warne - bwarne@mit.edu - 2/6/09
- */
-
 #include "volume/omChannelImpl.h"
 #include "datalayer/archive/channel.h"
 

@@ -1,10 +1,5 @@
 #pragma once
 
-/*
- *
- * Brett Warne - bwarne@mit.edu - 3/3/09
- */
-
 #include "common/omStd.h"
 #include "common/exception.h"
 #include "datalayer/archive/segmentation.h"

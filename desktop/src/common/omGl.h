@@ -1,12 +1,4 @@
-
-/*
- * Omni Global Graphic Libraries Header File
- *
- * Brett Warne - bwarne@mit.edu - 2/6/09
- */
-
-#ifndef OM_GL_H
-#define OM_GL_H
+#pragma once
 
 #include "common/omStd.h"
 
@@ -87,5 +79,3 @@ void glDrawPositiveAxis(int size = 3);
  */
 void omglWireCube(GLdouble size);
 void omglSolidCube(GLdouble size);
-
-#endif

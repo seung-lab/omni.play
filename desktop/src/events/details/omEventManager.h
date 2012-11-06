@@ -1,12 +1,5 @@
 #pragma once
 
-/*
- * OmEventManager is a hybrid event notification system using Qt's event system to
- *   dispatch events to sets of listeners that have registered with the manager.
- *
- * Brett Warne - bwarne@mit.edu - 2/11/09
- */
-
 #include "events/details/omEvent.h"
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"

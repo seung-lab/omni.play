@@ -1,14 +1,5 @@
 #pragma once
 
-/*
- * Segment Object
- *
- * Stored in object pool; values are initialized to 0, except for edgeNumber_
- *
- * Brett Warne - bwarne@mit.edu - 3/9/09
- * Michael Purcaro - purcaro@gmail.com
- */
-
 #include "segment/omSegmentTypes.h"
 #include "segment/omSegmentChildrenTypes.h"
 #include "segment/omSegmentEdge.h"

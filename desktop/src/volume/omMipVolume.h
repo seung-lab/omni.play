@@ -1,11 +1,5 @@
 #pragma once
 
-/*
- *  OmMipVolume is composed of sub-volumes cubes call OmChunks.
- *
- *  Brett Warne - bwarne@mit.edu - 7/19/09
- */
-
 #include "common/common.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataWrapper.h"

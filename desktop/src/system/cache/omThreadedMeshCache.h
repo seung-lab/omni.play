@@ -10,10 +10,6 @@
 
 #include <zi/system.hpp>
 
-/**
- *  Brett Warne - bwarne@mit.edu - 3/12/09
- */
-
 class OmThreadedMeshCache : public OmCacheBase {
 private:
     typedef OmMeshCoord key_t;

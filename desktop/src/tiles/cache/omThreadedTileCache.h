@@ -13,10 +13,6 @@
 
 #include <zi/system.hpp>
 
-/**
- *  Brett Warne - bwarne@mit.edu - 3/12/09
- */
-
 class OmThreadedTileCache : public OmCacheBase {
 private:
     typedef OmTileCoord key_t;

@@ -1,12 +1,5 @@
 #pragma once
 
-/*
- * Preferences model adopted from:
- * http://www.misfitcode.com/misfitmodel3d/
- *
- * Brett Warne - bwarne@mit.edu - 4/8/09
- */
-
 #include "common/common.h"
 #include "events/omEvents.h"
 #include "system/omPreferenceDefinitions.h"
