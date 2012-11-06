@@ -11,7 +11,7 @@ private:
     static const int defaultBrushDia = 8;
 
     OmPointsInCircle circlePts_;
-    std::vector<om::point2di> ptsInBrush_;
+    std::vector<Vector2i> ptsInBrush_;
 
 Q_SIGNALS:
     void SignalBrushSizeChange(int);
@@ -54,7 +54,7 @@ public:
         }
     }
 
-    const std::vector<om::point2di>& GetPtsInCircle() const {
+    const std::vector<Vector2i>& GetPtsInCircle() const {
         return ptsInBrush_;
     }
 

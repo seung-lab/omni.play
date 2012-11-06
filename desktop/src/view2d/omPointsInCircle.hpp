@@ -7,12 +7,12 @@
 
 class OmPointsInCircle {
 private:
-    std::map<int, std::vector<om::point2di> > ptsInCircle_;
+    std::map<int, std::vector<Vector2i> > ptsInCircle_;
 
     zi::mutex lock_;
 
 public:
-    const std::vector<om::point2di>& GetPtsInCircle(const int brushDia)
+    const std::vector<Vector2i>& GetPtsInCircle(const int brushDia)
     {
         zi::guard g(lock_);
 
@@ -23,12 +23,12 @@ public:
     }
 
 private:
-    static std::vector<om::point2di> makePtrListInCircle(const int brushDia)
+    static std::vector<Vector2i> makePtrListInCircle(const int brushDia)
     {
         const int radius   = brushDia / 2;
         const int sqRadius = radius * radius;
 
-        std::vector<om::point2di> pts;
+        std::vector<Vector2i> pts;
         pts.reserve(brushDia * brushDia);
 
         for(int i = 0; i < brushDia; ++i)
@@ -41,7 +41,7 @@ private:
 
                 if( x * x + y * y <= sqRadius )
                 {
-                    om::point2di p = {x,y};
+                    Vector2i p(x,y);
                     pts.push_back(p);
 
                     // std::cout << "adding pt: " << x << ", " << y << "\n";

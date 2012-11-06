@@ -19,7 +19,7 @@ public:
         const int brushSize = state->getBrushSize()->Diameter();
         const int depth = state->getViewTypeDepth(coord);
 
-        const std::vector<om::point2di>& ptsInCircle =
+        const std::vector<Vector2i>& ptsInCircle =
             state->getBrushSize()->GetPtsInCircle();
 
         return boost::make_shared<OmBrushOppInfo>(segmentation,

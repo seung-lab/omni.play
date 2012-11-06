@@ -15,14 +15,14 @@ struct OmBrushOppInfo
     const om::common::ViewType viewType;
     const int brushDia;
     const int depth;
-    const std::vector<om::point2di>& ptsInCircle;
+    const std::vector<Vector2i>& ptsInCircle;
     const om::common::AddOrSubtract addOrSubract;
 
     OmBrushOppInfo(OmSegmentation* segmentation,
                    const om::common::ViewType viewType,
                    const int brushDia,
                    const int depth,
-                   const std::vector<om::point2di>& ptsInCircle,
+                   const std::vector<Vector2i>& ptsInCircle,
                    om::common::AddOrSubtract addOrSubract)
         : segmentation(segmentation)
         , viewType(viewType)

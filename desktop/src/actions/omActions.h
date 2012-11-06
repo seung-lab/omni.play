@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/common.h"
+#include "common/enums.hpp"
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "zi/omUtility.h"
