@@ -32,9 +32,9 @@ private:
 
     void doAction()
     {
-        float x = vgs_->View2dState()->GetScaledSliceDepth(ZY_VIEW);
-        float y = vgs_->View2dState()->GetScaledSliceDepth(XZ_VIEW); 
-        float z = vgs_->View2dState()->GetScaledSliceDepth(XY_VIEW); 
+        float x = vgs_->View2dState()->GetScaledSliceDepth(om::common::ZY_VIEW);
+        float y = vgs_->View2dState()->GetScaledSliceDepth(om::common::XZ_VIEW); 
+        float z = vgs_->View2dState()->GetScaledSliceDepth(om::common::XY_VIEW); 
         (*stream_) << x << ", " << y << ", " << z << "\n";
         stream_->flush();
     }

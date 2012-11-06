@@ -134,7 +134,7 @@ public:
     {
         deleteWidgets();
 
-        static const om::common::ViewType viewType = XY_VIEW;
+        static const om::common::ViewType viewType = om::common::XY_VIEW;
 
         const ChannelDataWrapper cdw = vgs_->Channel();
         if(utils_->canShowChannel(cdw)){
@@ -181,7 +181,7 @@ public:
     {
         deleteWidgets();
 
-        static const om::common::ViewType viewType = XY_VIEW;
+        static const om::common::ViewType viewType = om::common::XY_VIEW;
 
         const ChannelDataWrapper cdw = vgs_->Channel();
         const bool showChannel = utils_->canShowChannel(cdw);

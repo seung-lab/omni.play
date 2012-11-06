@@ -12,9 +12,9 @@ private:
     OmViewGroupState *const vgs_;
     ViewGroupUtils *const utils_;
 
-    static const om::common::ViewType upperLeft_ = XY_VIEW;
-    static const om::common::ViewType upperRight_ = ZY_VIEW;
-    static const om::common::ViewType lowerLeft_ = XZ_VIEW;
+    static const om::common::ViewType upperLeft_ = om::common::XY_VIEW;
+    static const om::common::ViewType upperRight_ = om::common::ZY_VIEW;
+    static const om::common::ViewType lowerLeft_ = om::common::XZ_VIEW;
 
 public:
     ViewGroupMainWindowUtils(MainWindow* mainWindow, OmViewGroupState* vgs, ViewGroupUtils* utils)

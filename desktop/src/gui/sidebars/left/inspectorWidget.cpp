@@ -257,11 +257,11 @@ void InspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem* current)
 ViewType InspectorWidget::getViewType(QAction* act)
 {
     if (act == xyAct_) {
-        return XY_VIEW;
+        return om::common::XY_VIEW;
     } else if (act == xzAct_) {
-        return XZ_VIEW;
+        return om::common::XZ_VIEW;
     } else if (act == yzAct_) {
-        return ZY_VIEW;
+        return om::common::ZY_VIEW;
     } else {
         throw om::FormatException("could not match QAction type...\n");
     }

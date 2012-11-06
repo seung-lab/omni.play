@@ -6,7 +6,7 @@
 
 OmTileCoord::OmTileCoord()
     : OmTileCoordKey(om::coords::Chunk(),
-                     XY_VIEW,
+                     om::common::XY_VIEW,
                      -1,
                      NULL,
                      -1,

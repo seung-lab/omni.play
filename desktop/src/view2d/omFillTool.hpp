@@ -94,7 +94,7 @@ private:
 
             vol_.SetVoxelValue(v, newSegID_);
 
-            // TODO: assumes XY_VIEW for now
+            // TODO: assumes om::common::XY_VIEW for now
             voxels.push_back(om::coords::Global(v.x - 1, v.y,     v.z));
             voxels.push_back(om::coords::Global(v.x + 1, v.y,     v.z));
             voxels.push_back(om::coords::Global(v.x,     v.y - 1, v.z));

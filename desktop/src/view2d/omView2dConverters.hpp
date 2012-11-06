@@ -10,11 +10,11 @@ public:
                                                  const om::common::ViewType viewType)
     {
         switch(viewType){
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             return Vector3<T>(x, y, z);
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             return Vector3<T>(x, z, y);
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             return Vector3<T>(z, y, x);
         default:
             throw om::ArgException("invalid viewType");
@@ -26,11 +26,11 @@ public:
                                                  const om::common::ViewType viewType)
     {
         switch(viewType){
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             return vec;
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             return Vector3<T>(vec.x, vec.z, vec.y);
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             return Vector3<T>(vec.z, vec.y, vec.x);
         default:
             throw om::ArgException("invalid viewType");
@@ -42,11 +42,11 @@ public:
                                      const om::common::ViewType viewType)
     {
         switch(viewType){
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             return vec.z;
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             return vec.y;
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             return vec.x;
         default:
             throw om::ArgException("invalid viewType");
@@ -58,13 +58,13 @@ public:
                                         const om::common::ViewType viewType)
     {
         switch(viewType){
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             vec.z = val;
             break;
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             vec.y = val;
             break;
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             vec.x = val;
             break;
         default:
@@ -86,15 +86,15 @@ public:
                                            const om::common::ViewType viewType)
     {
         switch(viewType){
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             return Vector3<T>(x / scale.x,
                               y / scale.y,
                               0);
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             return Vector3<T>(x / scale.x,
                               0,
                               y / scale.z);
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             return Vector3<T>(0,
                               y / scale.y,
                               x / scale.z);
@@ -108,11 +108,11 @@ public:
                                             const om::common::ViewType viewType)
     {
         switch(viewType) {
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             return Vector2<T>(vec.x, vec.y);
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             return Vector2<T>(vec.x, vec.z);
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             return Vector2<T>(vec.z, vec.y);
         default:
             throw om::ArgException("unknown viewType");
@@ -125,13 +125,13 @@ private:
                                                 const om::common::ViewType viewType)
     {
         switch(viewType) {
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             vec.x += val;
             break;
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             vec.x += val;
             break;
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             vec.z += val;
             break;
         default:
@@ -144,13 +144,13 @@ private:
                                              const om::common::ViewType viewType)
     {
         switch(viewType) {
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             vec.y += val;
             break;
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             vec.z += val;
             break;
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             vec.y += val;
             break;
         default:
@@ -186,11 +186,11 @@ public:
                                                const om::common::ViewType viewType)
     {
         switch(viewType){
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             return ColT(vec.x + x, vec.y + y, vec.z);
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             return ColT(vec.x + x, vec.y, vec.z + y);
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             return ColT(vec.x, vec.y + y, vec.z + x);
         default:
             throw om::ArgException("invalid viewType");

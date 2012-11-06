@@ -44,7 +44,7 @@ private:
     {
         switch(viewType){
 
-        case XY_VIEW:
+        case om::common::XY_VIEW:
         {
             // skip to requested XY plane, then copy entire plane
             T const*const start = chunkPtr_ + offsetNumTiles*elementsPerTile_;
@@ -53,7 +53,7 @@ private:
         }
         break;
 
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
         {
             // skip to first scanline, then copy every scanline in XZ plane
             T const* start = chunkPtr_ + chunkDim_*offsetNumTiles;
@@ -65,7 +65,7 @@ private:
         }
         break;
 
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
         {
             // skip to first voxel in plane, then copy every voxel,
             //   advancing each time to the next scanline

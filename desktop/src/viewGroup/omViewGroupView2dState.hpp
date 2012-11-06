@@ -23,11 +23,11 @@ private:
     inline ViewPlanInfo& getPlane(const om::common::ViewType plane)
     {
         switch (plane) {
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             return xy_;
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             return xz_;
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             return yz_;
         default:
             throw om::ArgException("unknown plane");
@@ -37,11 +37,11 @@ private:
     inline const ViewPlanInfo& getPlane(const om::common::ViewType plane) const
     {
         switch (plane) {
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             return xy_;
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             return xz_;
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             return yz_;
         default:
             throw om::ArgException("unknown plane");

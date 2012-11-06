@@ -16,7 +16,7 @@ public:
 
 private:
     virtual om::common::ViewType viewType() const {
-        return ZY_VIEW;
+        return om::common::ZY_VIEW;
     }
 };
 

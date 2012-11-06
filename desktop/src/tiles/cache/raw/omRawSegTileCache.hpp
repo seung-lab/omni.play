@@ -13,7 +13,7 @@ typedef boost::tuple<int, int, int, int, int, om::common::ViewType> OmVolSliceKe
 
 struct OmVolSliceKey : public OmVolSliceKey_t {
     OmVolSliceKey()
-        : OmVolSliceKey_t(-1, -1, -1, -1, -1, XY_VIEW)
+        : OmVolSliceKey_t(-1, -1, -1, -1, -1, om::common::XY_VIEW)
     {}
 
     OmVolSliceKey(const om::coords::Chunk& chunkCoord,

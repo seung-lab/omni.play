@@ -2,6 +2,9 @@
 
 #include "common/common.h"
 
+#include <QWidget>
+#include <QString>
+
 class OmSelectSegmentsParams;
 class SegmentDataWrapper;
 class SegmentationDataWrapper;

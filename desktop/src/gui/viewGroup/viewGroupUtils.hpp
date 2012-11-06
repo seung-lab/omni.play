@@ -57,11 +57,11 @@ public:
     QString getViewTypeAsStr(const om::common::ViewType viewType)
     {
         switch(viewType){
-        case XY_VIEW:
+        case om::common::XY_VIEW:
             return "XY";
-        case XZ_VIEW:
+        case om::common::XZ_VIEW:
             return "XZ";
-        case ZY_VIEW:
+        case om::common::ZY_VIEW:
             return "ZY";
         default:
             throw om::ArgException("unknown viewtype");
