@@ -1,7 +1,9 @@
 #pragma once
 
 #include "common/common.h"
+#include "common/enums.hpp"
 #include "zi/omUtility.h"
+#include <QList>
 
 class OmCacheBase;
 class OmCacheGroup;

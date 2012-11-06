@@ -4,7 +4,6 @@
 #include "volume/omVolumeTypes.hpp"
 #include "utility/omSmartPtr.hpp"
 
-#include <boost/make_shared.hpp>
 #include <QString>
 
 #define OmDataWrapperRaw(c) (OmDataWrapper<int8_t>::produceNoFree(c))

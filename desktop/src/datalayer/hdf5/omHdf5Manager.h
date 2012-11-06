@@ -7,7 +7,6 @@
 
 #include <QHash>
 #include <QFileInfo>
-#include <boost/make_shared.hpp>
 
 class OmHdf5Manager : private om::singletonBase<OmHdf5Manager> {
 

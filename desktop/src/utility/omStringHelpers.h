@@ -4,6 +4,8 @@
 #include "common/omString.hpp"
 #include "zi/omUtility.h"
 
+#include <QString>
+
 class OmStringHelpers{
 public:
 

@@ -1,7 +1,6 @@
 #include "omVolumeCuller.h"
 #include "common/omGl.h"
 #include "common/omDebug.h"
-#include <boost/make_shared.hpp>
 #include <QtGlobal>
 
 OmVolumeCuller::OmVolumeCuller(const Matrix4f & projmodelview,

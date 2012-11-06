@@ -6,8 +6,6 @@
 #include "view2d/omMouseEventWheel.hpp"
 #include "view2d/omView2dZoom.hpp"
 
-#include <boost/make_shared.hpp>
-
 class OmMouseEvents{
 private:
     boost::scoped_ptr<OmMouseEventMove> move_;

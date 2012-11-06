@@ -10,8 +10,6 @@
 #include "volume/omSegmentation.h"
 #include "zi/omUtility.h"
 
-#include <boost/make_shared.hpp>
-
 MeshPreviewerImpl::MeshPreviewerImpl(QWidget* parent,
                                      const SegmentationDataWrapper& sdw,
                                      OmViewGroupState* vgs)

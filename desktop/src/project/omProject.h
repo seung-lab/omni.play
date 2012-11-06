@@ -4,6 +4,8 @@
 #include "zi/omUtility.h"
 #include "datalayer/archive/project.h"
 
+#include <QWidget>
+
 class OmChannel;
 class OmSegmentation;
 class OmHdf5;

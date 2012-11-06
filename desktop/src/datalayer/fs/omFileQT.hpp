@@ -6,7 +6,6 @@
 
 #include <QFile>
 #include <QFileInfo>
-#include <boost/make_shared.hpp>
 
 template <typename T>
 class OmFileQTbase : public OmIOnDiskFile<T> {
