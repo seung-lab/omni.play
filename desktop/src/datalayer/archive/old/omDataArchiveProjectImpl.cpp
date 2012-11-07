@@ -451,6 +451,30 @@ QDataStream &operator>>(QDataStream& in, boost::unordered_map<K,T>& g)
     return in;
 }
 
+template<typename T>
+QDataStream &operator<<(QDataStream& out, const boost::unordered_map<std::string,T>& g)
+{
+	QHash<QString,T> hash;
+    FOR_EACH(iter, g){
+    	hash.insert(QString::fromStdString(iter->first), iter->second);
+    }
+    out << hash;
+
+    return out;
+}
+
+template<typename T>
+QDataStream &operator>>(QDataStream& in, boost::unordered_map<std::string,T>& g)
+{
+	QHash<QString,T> hash;
+    in >> hash;
+	FOR_EACH(iter, hash) {
+		g[iter.key().toStdString()] = iter.value();
+	}
+
+    return in;
+}
+
 // QDataStream &operator<<(QDataStream& out, const OmGroups& g)
 // {
 //     OmGenericManagerArchive::Save(out, g.mGroupManager);

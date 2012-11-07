@@ -46,9 +46,9 @@ Emitter& operator<<(Emitter& out, const om::coords::VolumeSystem& c)
     out << BeginMap;
     out << Key << "dataDimensions" << Value << c.DataDimensions();
     out << Key << "dataResolution" << Value << c.Resolution();
-    out << Key << "chunkDim" << Value << c.chunkDim_;
-    out << Key << "mMipLeafDim" << Value << c.mMipLeafDim;
-    out << Key << "mMipRootLevel" << Value << c.mMipRootLevel;
+    out << Key << "chunkDim" << Value << c.ChunkDimensions().x;
+    // out << Key << "mMipLeafDim" << Value << c.mMipLeafDim;
+    // out << Key << "mMipRootLevel" << Value << c.mMipRootLevel;
     out << Key << "absOffset" << Value << c.AbsOffset();
     out << EndMap;
     return out;
@@ -70,9 +70,10 @@ void operator>>(const Node& in, om::coords::VolumeSystem& c)
     in["dataResolution"] >> resolution;
     c.SetResolution(resolution);
 
-    in["chunkDim"] >> c.chunkDim_;
-    in["mMipLeafDim"] >> c.mMipLeafDim;
-    in["mMipRootLevel"] >> c.mMipRootLevel;
+    int chunkDim;
+    in["chunkDim"] >> chunkDim; c.SetChunkDimensions(Vector3i(chunkDim));
+    // in["mMipLeafDim"] >> c.mMipLeafDim;
+    // in["mMipRootLevel"] >> c.mMipRootLevel;
     Vector3i offset;
     om::yaml::util::OptionalRead(in, "absOffset", offset, Vector3i::ZERO);
     c.SetAbsOffset(offset);

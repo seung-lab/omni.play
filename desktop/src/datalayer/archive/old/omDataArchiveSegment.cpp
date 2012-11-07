@@ -5,6 +5,7 @@
 #include "segment/io/omSegmentPage.hpp"
 #include "project/omProject.h"
 #include "datalayer/hdf5/omHdf5.h"
+#include "utility/serializers.hpp"
 
 #include <QDataStream>
 
