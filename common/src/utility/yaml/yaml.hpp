@@ -10,7 +10,7 @@
 namespace om {
 namespace yaml {
 
-class yamlUtil {
+class Util {
 public:
     // based on http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
     template <typename T>

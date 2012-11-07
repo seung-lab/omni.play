@@ -41,42 +41,4 @@ void operator>>(const Node& in, OmChannel& chan)
     chan.LoadVolDataIfFoldersExist();
 }
 
-Emitter& operator<<(Emitter& out, const om::coords::VolumeSystem& c)
-{
-    out << BeginMap;
-    out << Key << "dataDimensions" << Value << c.DataDimensions();
-    out << Key << "dataResolution" << Value << c.Resolution();
-    out << Key << "chunkDim" << Value << c.ChunkDimensions().x;
-    // out << Key << "mMipLeafDim" << Value << c.mMipLeafDim;
-    // out << Key << "mMipRootLevel" << Value << c.mMipRootLevel;
-    out << Key << "absOffset" << Value << c.AbsOffset();
-    out << EndMap;
-    return out;
-}
-
-void operator>>(const Node& in, om::coords::VolumeSystem& c)
-{
-    boost::optional<om::coords::GlobalBbox> extent;
-    om::yaml::util::OptionalRead(in, "dataExtent", extent); // backwards compatibility
-    if(extent) {
-        c.SetDataDimensions(extent.get().getDimensions());
-    } else {
-        Vector3i dims;
-        in["dataDimensions"] >> dims;
-        c.SetDataDimensions(dims);
-    }
-
-    Vector3i resolution;
-    in["dataResolution"] >> resolution;
-    c.SetResolution(resolution);
-
-    int chunkDim;
-    in["chunkDim"] >> chunkDim; c.SetChunkDimensions(Vector3i(chunkDim));
-    // in["mMipLeafDim"] >> c.mMipLeafDim;
-    // in["mMipRootLevel"] >> c.mMipRootLevel;
-    Vector3i offset;
-    om::yaml::util::OptionalRead(in, "absOffset", offset, Vector3i::ZERO);
-    c.SetAbsOffset(offset);
-}
-
 } // namespace YAML

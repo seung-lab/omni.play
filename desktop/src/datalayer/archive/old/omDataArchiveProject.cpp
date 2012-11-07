@@ -48,7 +48,7 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp, OmProjectImpl* projec
     if(fileVersion_ < Latest_Project_Version)
     {
         upgrade();
-        ArchiveWrite(fnp, project);
+        OmProject::Save();
     }
 
     postLoad();
@@ -99,20 +99,20 @@ void OmDataArchiveProject::upgrade()
     }
 }
 
-void OmDataArchiveProject::ArchiveWrite(const QString& fnp, OmProjectImpl* project)
-{
-    QFile file(fnp);
-    if(!file.open(QIODevice::WriteOnly)){
-        throw om::IoException("could not open", fnp.toStdString());
-    }
+// void OmDataArchiveProject::ArchiveWrite(const QString& fnp, OmProjectImpl* project)
+// {
+//     QFile file(fnp);
+//     if(!file.open(QIODevice::WriteOnly)){
+//         throw om::IoException("could not open", fnp.toStdString());
+//     }
 
-    QDataStream out(&file);
-    out.setByteOrder(QDataStream::LittleEndian);
-    out.setVersion(QDataStream::Qt_4_6);
+//     QDataStream out(&file);
+//     out.setByteOrder(QDataStream::LittleEndian);
+//     out.setVersion(QDataStream::Qt_4_6);
 
-    OmProject::setFileVersion(Latest_Project_Version);
+//     OmProject::setFileVersion(Latest_Project_Version);
 
-    out << Latest_Project_Version;
-    out << (*project);
-    out << Omni_Postfix;
-}
+//     out << Latest_Project_Version;
+//     out << (*project);
+//     out << Omni_Postfix;
+// }

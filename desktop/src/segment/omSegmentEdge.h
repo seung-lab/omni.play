@@ -37,7 +37,22 @@ public:
     double threshold;
     bool valid;
 
-    friend class QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & e );
-    friend class QDataStream &operator>>(QDataStream & in,  OmSegmentEdge & e );
+    friend QDataStream &operator<<(QDataStream& out, const OmSegmentEdge& se)
+	{
+	    out << se.parentID;
+	    out << se.childID;
+	    out << se.threshold;
+
+	    return out;
+	};
+
+	friend QDataStream &operator>>(QDataStream& in, OmSegmentEdge& se)
+	{
+	    in >> se.parentID;
+	    in >> se.childID;
+	    in >> se.threshold;
+
+	    return in;
+	};
 };
 
