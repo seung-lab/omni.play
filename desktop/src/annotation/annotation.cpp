@@ -16,9 +16,9 @@ std::string manager::filePathV1() const {
     return vol_->Folder()->AnnotationFile().toStdString();
 }
 
-void manager::Add(globalCoord coord, const std::string& comment, const om::common::Color& color, double size)
+void manager::Add(coords::Global coord, const std::string& comment, const om::common::Color& color, double size)
 {
-    base_t::Add(new data(coord.ToData(vol_, 0), comment, color, size));
+    base_t::Add(new data(coord.ToData(*vol_, 0), comment, color, size));
     OmEvents::AnnotationEvent();
     OmEvents::Redraw2d();
     OmEvents::Redraw3d();
@@ -38,7 +38,7 @@ void manager::Save() const {
 
 data* manager::parse(const YAML::Node& n)
 {
-	globalCoord c;
+	coords::Global c;
 	n["coord"] >> c;
 	std::string comment;
 	n["comment"] >> comment;
@@ -46,7 +46,7 @@ data* manager::parse(const YAML::Node& n)
 	n["color"] >> color;
 	double size;
 	yaml::util::OptionalRead(n, "size", size, 3.0);
-	return new data(c.ToData(vol_, 0),
+	return new data(c.ToData(*vol_, 0),
 					comment,
 					color,
 					size);

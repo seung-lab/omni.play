@@ -22,11 +22,11 @@ public:
         , label_(new QLabel(this))
     {
         switch(labelSide){
-        case om::common::LEFT_SIDE:
+        case om::LEFT_SIDE:
             layout_->addWidget(label_);
             layout_->addWidget(w);
             break;
-        case om::common::RIGHT_SIDE:
+        case om::RIGHT_SIDE:
             layout_->addWidget(w);
             layout_->addWidget(label_);
             break;

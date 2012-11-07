@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/enums.hpp"
 #include "common/omDebug.h"
 #include "events/omEvents.h"
 #include "gui/widgets/omCursors.h"

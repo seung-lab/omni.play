@@ -1,6 +1,8 @@
 #pragma once
 
+#include "common/enums.hpp"
 #include "common/omDebug.h"
+#include "common/omQt.h"
 #include "events/omEvents.h"
 #include "system/omConnect.hpp"
 

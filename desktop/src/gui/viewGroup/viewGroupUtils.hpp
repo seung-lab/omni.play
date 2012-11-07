@@ -76,7 +76,7 @@ public:
             name = "channel_";
         } else if ( om::common::SEGMENTATION == voltype ) {
             name = "segmentation_";
-        } else if ( AFFINITY == voltype ) {
+        } else if ( om::common::AFFINITY == voltype ) {
             name = "affinity_";
         }
 

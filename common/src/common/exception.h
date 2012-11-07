@@ -3,7 +3,7 @@
 /**
  * Exception handeling.
  *
- * OmException is the parent Exception class. Subclasses can be
+ * om::Exception is the parent Exception class. Subclasses can be
  * formed as described in the example code below.
  *
  * Brett Warne - bwarne@mit.edu - 2/6/09

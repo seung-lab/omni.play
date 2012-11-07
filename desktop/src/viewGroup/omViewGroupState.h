@@ -2,6 +2,7 @@
 
 #include "system/omManageableObject.h"
 #include "common/colors.h"
+#include "common/enums.hpp"
 #include "gui/tools.hpp"
 
 class QGLWidget;

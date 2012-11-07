@@ -27,7 +27,7 @@ void GroupButtonTag::doAction()
 
     OmActions::CreateOrDeleteSegmentGroup(seg.GetID(),
                                           seg.Segments()->GetSelectedSegmentIDs(),
-                                          mParent->getGroupNameFromGUI(),
+                                          mParent->getGroupNameFromGUI().toStdString(),
                                           true);
 
     OmEvents::SegmentModified();

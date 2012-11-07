@@ -1,3 +1,4 @@
+#include "common/enums.hpp"
 #include "common/omDebug.h"
 #include "gui/guiUtils.hpp"
 #include "gui/inspectors/channel/channelInspector.hpp"
@@ -95,7 +96,7 @@ void InspectorWidget::populateDataSrcListWidget()
     FOR_EACH(iter, validChanIDs)
     {
         const om::common::ID channID = *iter;
-        DataWrapperContainer dwc = DataWrapperContainer(CHANNEL, channID);
+        DataWrapperContainer dwc = DataWrapperContainer(om::common::CHANNEL, channID);
         ChannelDataWrapper cdw = dwc.getChannelDataWrapper();
         QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget_);
         row->setText(NAME_COL, cdw.GetName());
@@ -109,7 +110,7 @@ void InspectorWidget::populateDataSrcListWidget()
     FOR_EACH(iter, validSegIDs)
     {
         const om::common::ID segmenID = *iter;
-        DataWrapperContainer dwc = DataWrapperContainer(SEGMENTATION, segmenID);
+        DataWrapperContainer dwc = DataWrapperContainer(om::common::SEGMENTATION, segmenID);
         SegmentationDataWrapper sdw = dwc.GetSDW();
         QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget_);
         row->setText(NAME_COL, sdw.GetName());
@@ -118,12 +119,12 @@ void InspectorWidget::populateDataSrcListWidget()
         row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
         setRowFlagsAndCheckState(row, GuiUtils::getCheckState(sdw.isEnabled()));
     }
-    
+
     const om::common::IDSet& validAffIDs = AffinityGraphDataWrapper::ValidIDs();
     FOR_EACH(iter, validAffIDs)
     {
         const om::common::ID affID = *iter;
-        DataWrapperContainer dwc = DataWrapperContainer(AFFINITY, affID);
+        DataWrapperContainer dwc = DataWrapperContainer(om::common::AFFINITY, affID);
         AffinityGraphDataWrapper adw = dwc.GetADW();
         QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget_);
         row->setText(NAME_COL, adw.GetName());
@@ -223,7 +224,7 @@ void InspectorWidget::addAffinityToVolume()
 {
     AffinityGraphDataWrapper adw;
     adw.Create();
-    
+
     populateDataSrcListWidget();
 }
 
@@ -254,7 +255,7 @@ void InspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem* current)
     }
 }
 
-ViewType InspectorWidget::getViewType(QAction* act)
+om::common::ViewType InspectorWidget::getViewType(QAction* act)
 {
     if (act == xyAct_) {
         return om::common::XY_VIEW;
@@ -343,7 +344,7 @@ QMenu *InspectorWidget::makeDataSrcContextMenu(QTreeWidget* parent)
     addChannelAct_ = new QAction(tr("Add Channel"), parent);
 
     addSegmentationAct_ = new QAction(tr("Add Segmentation"), parent);
-    
+
     //addAffinityAct_ = new QAction(tr("Add Affinity"), parent);
 
     contextMenuDataSrc_ = new QMenu(parent);
@@ -367,8 +368,8 @@ void InspectorWidget::doShowDataSrcContextMenu(QTreeWidgetItem *dataSrcItem)
     case om::common::SEGMENTATION:
         showSegmentationContextMenu();
         break;
-        
-    case AFFINITY:
+
+    case om::common::AFFINITY:
         showAffinityContextMenu();
     }
 }
@@ -459,8 +460,8 @@ void InspectorWidget::addToSplitterDataSource(QTreeWidgetItem* current)
     case om::common::SEGMENTATION:
         updateSegmentListBox(dwc.GetSDW());
         break;
-        
-    case AFFINITY:
+
+    case om::common::AFFINITY:
         // TODO: something
         break;
     }
@@ -523,7 +524,7 @@ void InspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
 
     const om::common::ID segmentationID = sdw.GetID();
 
-    mainWindow_->cleanViewsOnVolumeChange(CHANNEL, segmentationID);
+    mainWindow_->cleanViewsOnVolumeChange(om::common::CHANNEL, segmentationID);
 
     FOR_EACH(channelID, ChannelDataWrapper::ValidIDs())
     {
@@ -539,13 +540,13 @@ void InspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
                 OmSegmentation* segmentation = filter->GetSegmentation();
 
                 if(segmentation->GetID() == segmentationID){
-                    mainWindow_->cleanViewsOnVolumeChange(CHANNEL, *channelID);
+                    mainWindow_->cleanViewsOnVolumeChange(om::common::CHANNEL, *channelID);
                 }
             }
         }
     }
 
-    mainWindow_->cleanViewsOnVolumeChange(SEGMENTATION, segmentationID);
+    mainWindow_->cleanViewsOnVolumeChange(om::common::SEGMENTATION, segmentationID);
 
     inspectorProperties_->CloseDialog();
 
@@ -563,7 +564,7 @@ void InspectorWidget::deleteChannel(ChannelDataWrapper cdw)
     {
         inspectorProperties_->CloseDialog();
         ElementListBox::Reset();
-        mainWindow_->cleanViewsOnVolumeChange(CHANNEL, cdw.GetID());
+        mainWindow_->cleanViewsOnVolumeChange(om::common::CHANNEL, cdw.GetID());
         cdw.Remove();
         populateDataSrcListWidget();
     }

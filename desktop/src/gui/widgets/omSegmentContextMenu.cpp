@@ -290,7 +290,7 @@ void OmSegmentContextMenu::addGroups()
             firstID = id;
         }
         OmGroup & group = groups->GetGroup(id);
-        groupsStr += group.GetName() + " + ";
+        groupsStr += QString::fromStdString(group.GetName()) + " + ";
 
         printf("here\n");
     }

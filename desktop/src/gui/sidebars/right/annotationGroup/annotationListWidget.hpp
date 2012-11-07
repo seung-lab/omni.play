@@ -263,7 +263,7 @@ private:
 
     void setLocationText(QTreeWidgetItem* row, const om::annotation::data& a)
     {
-    	globalCoord c = a.coord.ToGlobal();
+    	coords::Global c = a.coord.ToGlobal();
     	std::stringstream ss;
     	ss << c.x << ", "
     	   << c.y << ", "

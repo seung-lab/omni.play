@@ -1,3 +1,4 @@
+#include "common/omQt.h"
 #include "system/omConnect.hpp"
 #include "common/omDebug.h"
 #include "events/omEvents.h"

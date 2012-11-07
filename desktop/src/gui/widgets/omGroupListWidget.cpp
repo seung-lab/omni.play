@@ -76,7 +76,7 @@ void OmGroupListWidget::populate(OmSegmentation& seg)
         }
         QTreeWidgetItem *row = new QTreeWidgetItem(this);
         OmGroup& group = groups->GetGroup(id);
-        row->setText(0, group.GetName());
+        row->setText(0, QString::fromStdString(group.GetName()));
         row->setData(0, Qt::UserRole, qVariantFromValue(id));
         row->setFlags(Qt::ItemIsSelectable |
                       Qt::ItemIsEditable |
