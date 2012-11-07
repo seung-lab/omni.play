@@ -34,13 +34,13 @@ public:
     OmSliceCache(OmSegmentation* vol, const om::common::ViewType viewType)
         : vol_(vol)
         , viewType_(viewType)
-        , chunkDim_(vol->Coords().ChunkDimension())
+        , chunkDim_(vol->Coords().ChunkDimensions().x)
     {}
 
     om::common::SegID GetVoxelValue(const om::coords::Data& coord)
     {
-        const int depthInChunk = coord.toTileDepth(viewType_);
-        
+        const int depthInChunk = coord.ToTileDepth(viewType_);
+
         PooledTile32Ptr slicePtr = GetSlice(coord.ToChunk(), depthInChunk);
 
         uint32_t const*const sliceData = slicePtr->GetData();

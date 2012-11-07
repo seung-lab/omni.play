@@ -24,7 +24,7 @@ OmView2dCore::~OmView2dCore()
 
 void OmView2dCore::setupMainGLpaintOp()
 {
-    const Vector4i& vp = state_->Coords().getTotalViewport();
+    const Vector4i& vp = state_->Coords().totalViewport();
 
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -82,14 +82,14 @@ void OmView2dCore::dockVisibilityChanged(const bool visible){
 }
 
 void OmView2dCore::Initialize(){
-	state_->Coords().setTotalViewport(size());
+	state_->Coords().set_totalViewport(Vector4i(0,0,width(),height()));
 }
 
 void OmView2dCore::Resize(int width, int height)
 {
     OmEvents::ViewCenterChanged();
 
-    state_->Coords().setTotalViewport(width, height);
+    state_->Coords().set_totalViewport(Vector4i(0,0,width, height));
     state_->SetViewSliceOnPan();
 }
 

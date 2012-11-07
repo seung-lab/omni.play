@@ -92,6 +92,14 @@ public:
         return coords_;
     }
 
+    inline operator om::coords::ScreenSystem*() {
+    	return &coords_;
+    }
+
+    inline operator const om::coords::ScreenSystem*() const {
+    	return &coords_;
+    }
+
     void Shift(const om::common::Direction dir)
     {
         const float numberOfSlicestoAdvance = 2 * om::math::pow2int(getMipLevel());

@@ -99,7 +99,7 @@ private:
 
     void drawBoundingBox(QPainter& painter)
     {
-        const Vector4i& vp = state_->Coords().getTotalViewport();
+        const Vector4i& vp = state_->Coords().totalViewport();
         painter.drawRect(vp.lowerLeftX,
                          vp.lowerLeftY,
                          vp.width - 1,
@@ -136,7 +136,7 @@ private:
         int yTop = 45;
 
         const int xoffset = 10;
-        const int yTopOfText = state_->Coords().getTotalViewport().height - yTop;
+        const int yTopOfText = state_->Coords().totalViewport().height - yTop;
 
         OmDisplayInfo di(painter, pen, yTopOfText, xoffset);
 
@@ -157,7 +157,7 @@ private:
     {
     	const om::coords::Global global = state_->Location();
         const om::coords::Data data = global.
-            ToData(state_->getVol(), state_->getMipLevel());
+            ToData(*state_->getVol(), state_->getMipLevel());
 
 		const int globalDepth = state_->getViewTypeDepth(global);
         const int dataDepth = state_->getViewTypeDepth(data);
@@ -184,7 +184,7 @@ private:
 
     void drawCursors(QPainter& painter)
     {
-        const Vector4i& vp = state_->Coords().getTotalViewport();
+        const Vector4i& vp = state_->Coords().totalViewport();
         const int fullHeight = vp.height;
         const int halfHeight = fullHeight/2;
         const int fullWidth = vp.width;
@@ -259,7 +259,7 @@ private:
                 if(!closeInDepth(a.coord.ToGlobal()))
                     continue;
 
-                om::coords::Screen loc = a.coord.ToGlobal().toScreenCoord(state_);
+                om::coords::Screen loc = a.coord.ToGlobal().ToScreen(*state_);
 
                 QPen pen;
                 pen.setColor(QColor::fromRgb(a.color.red, a.color.green, a.color.blue));
