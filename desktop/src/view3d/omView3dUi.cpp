@@ -328,9 +328,9 @@ void OmView3dUi::cameraMovementMouseWheel(QWheelEvent* event)
 SegmentDataWrapper OmView3dUi::pickSegmentMouse(QMouseEvent* event, const bool drag)
 {
     //extract event properties
-    Vector2i point2di(event->x(), event->y());
+    Vector2i Vector2i(event->x(), event->y());
 
-    const SegmentDataWrapper sdw = view3d_->PickPoint(point2di);
+    const SegmentDataWrapper sdw = view3d_->PickPoint(Vector2i);
     if(!sdw.IsSegmentValid()){
         return SegmentDataWrapper();
     }
@@ -395,17 +395,17 @@ void OmView3dUi::crosshair(QMouseEvent* event)
 OmSegmentPickPoint OmView3dUi::pickVoxelMouseCrosshair(QMouseEvent* event)
 {
     //extract event properties
-    const Vector2i point2di(event->x(), event->y());
+    const Vector2i Vector2i(event->x(), event->y());
 
     view3d_->updateGL();
 
-    const SegmentDataWrapper sdw = view3d_->PickPoint(point2di);
+    const SegmentDataWrapper sdw = view3d_->PickPoint(Vector2i);
     if(!sdw.IsSegmentValid()){
         return OmSegmentPickPoint();
     }
 
     Vector3f point3d;
-    if(!view3d_->UnprojectPoint(point2di, point3d)){
+    if(!view3d_->UnprojectPoint(Vector2i, point3d)){
         return OmSegmentPickPoint();
     }
 

@@ -5,7 +5,7 @@
 class OmSegmentation;
 
 namespace om {
-typedef std::deque<point2di> pt2d_list_t;
+typedef std::deque<Vector2i> pt2d_list_t;
 typedef std::deque<om::coords::Global> pt3d_list_t;
 }; //namespace om
 

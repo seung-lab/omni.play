@@ -320,13 +320,13 @@ void OmView3d::View3dRecenter()
  * causes localized redraw (but all depth info stored in selection buffer)
  *
  */
-bool OmView3d::pickPoint(const Vector2i& point2di, std::vector<uint32_t>& rNamesVec)
+bool OmView3d::pickPoint(const Vector2i& Vector2i, std::vector<uint32_t>& rNamesVec)
 {
     //clear name vector
     rNamesVec.clear();
 
     //setup selection mode
-    startPicking(point2di.x, point2di.y, mCamera.GetPerspective().array);
+    startPicking(Vector2i.x, Vector2i.y, mCamera.GetPerspective().array);
 
     //render selectable points
     Draw(DRAWOP_LEVEL_ALL | DRAWOP_SEGMENT_FILTER_SELECTED | DRAWOP_RENDERMODE_SELECTION);
@@ -363,10 +363,10 @@ bool OmView3d::pickPoint(const Vector2i& point2di, std::vector<uint32_t>& rNames
     return true;
 }
 
-SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2di)
+SegmentDataWrapper OmView3d::PickPoint(const Vector2i& Vector2i)
 {
     std::vector<uint32_t> result;
-    const bool valid_pick = pickPoint(point2di, result);
+    const bool valid_pick = pickPoint(Vector2i, result);
 
     //if valid and return count
     if(!valid_pick || (result.size() != 3)){
@@ -390,14 +390,14 @@ SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2di)
  *  Returns if unproject is valid (not valid if no depth value at pixel).
  */
 
-bool OmView3d::UnprojectPoint(Vector2i point2di, Vector3f & point3d)
+bool OmView3d::UnprojectPoint(Vector2i Vector2i, Vector3f & point3d)
 {
     //apply camera modelview matrix
     mCamera.ApplyModelview();
 
-    //unproject point2di
+    //unproject Vector2i
     double point3dv[3];
-    if(unprojectPixel(point2di.x, point2di.y, point3dv) < 0)
+    if(unprojectPixel(Vector2i.x, Vector2i.y, point3dv) < 0)
         return false;
 
     //return point3d

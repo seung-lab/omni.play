@@ -79,8 +79,8 @@ protected:
     void SelectVoxel(om::coords::Global &voxel, bool append);
 
     //gl actions
-    SegmentDataWrapper PickPoint(const Vector2i& point2di);
-    bool UnprojectPoint(Vector2i point2di, Vector3f &point3d);
+    SegmentDataWrapper PickPoint(const Vector2i& Vector2i);
+    bool UnprojectPoint(Vector2i Vector2i, Vector3f &point3d);
 
     //draw methods
     void Draw(om::common::Bitfield option);
