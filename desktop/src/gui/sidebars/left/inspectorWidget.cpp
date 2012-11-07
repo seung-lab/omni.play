@@ -136,6 +136,8 @@ void InspectorWidget::populateDataSrcListWidget()
 
     dataSrcListWidget_->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
 
+    std::cout << "dataSrcListWidget_: " << dataSrcListWidget_ << "this: " << this << std::endl;
+
     om::connect(dataSrcListWidget_, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
                 this, SLOT(leftClickOnDataSourceItem(QTreeWidgetItem *)));
 

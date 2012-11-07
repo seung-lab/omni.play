@@ -8,14 +8,9 @@
 #include "utility/omChunkVoxelWalker.hpp"
 #include "volume/build/omProcessSegmentationChunk.hpp"
 #include "volume/omSegmentation.h"
-#include "chunks/details/omPtrToChunkDataMemMapVol.h"
 
 namespace om {
 namespace segchunk {
-
-using om::chunk::dataAccessor;
-using om::chunk::ptrToChunkDataBase;
-using om::chunk::ptrToChunkDataMemMapVol;
 
 template <typename DATA>
 class dataImpl : public dataInterface {
@@ -24,7 +19,7 @@ private:
     OmSegChunk *const chunk_;
     const om::coords::Chunk coord_;
 
-    ptrToChunkDataBase *const ptrToChunkData_;
+    DATA *const ptrToChunkData_;
 
     const int elementsPerRow_;
     const int elementsPerSlice_;
@@ -34,32 +29,23 @@ public:
         : vol_(vol)
         , chunk_(chunk)
         , coord_(coord)
-        , ptrToChunkData_(new ptrToChunkDataMemMapVol<DATA>(vol, coord))
+        , ptrToChunkData_(boost::get<DATA*>(vol->VolData()->getChunkPtrRaw(coord)))
         , elementsPerRow_(128)
         , elementsPerSlice_(128*128)
     {}
 
-    ~dataImpl(){
-        delete ptrToChunkData_;
-    }
-
     PooledTile32Ptr ExtractDataSlice32bit(const om::common::ViewType plane, const int depth)
     {
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA* data = dataWrapper.Data();
-
         OmExtractSegTile extractor(vol_, coord_, plane, depth);
-        return extractor.Extract(data);
+        return extractor.Extract(ptrToChunkData_);
     }
 
     void ProcessChunk(const bool computeSizes, OmSegments* segments)
     {
         OmProcessSegmentationChunk p(chunk_, computeSizes, segments);
-
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA* data = dataWrapper.Data();
-
         OmChunkVoxelWalker iter(128);
+
+        DATA* data = ptrToChunkData_;
 
         for(iter.begin(); iter < iter.end(); ++iter)
         {
@@ -74,11 +60,9 @@ public:
     void RefreshBoundingData(OmSegments* segments)
     {
         ProcessChunkVoxelBoundingData p(chunk_, segments);
-
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA* data = dataWrapper.Data();
-
         OmChunkVoxelWalker iter(128);
+
+        DATA* data = ptrToChunkData_;
         for(iter.begin(); iter < iter.end(); ++iter)
         {
             const om::common::SegID val = static_cast<om::common::SegID>(*data++);
@@ -90,23 +74,17 @@ public:
 
     uint32_t SetVoxelValue(const om::coords::Data& voxel, const uint32_t val)
     {
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA* data = dataWrapper.Data();
-
         const int offset = voxel.ToChunkOffset();
 
-        const uint32_t oldVal = data[offset];
-        data[offset] = val;
+        const uint32_t oldVal = ptrToChunkData_[offset];
+        ptrToChunkData_[offset] = val;
 
         return oldVal;
     }
 
     uint32_t GetVoxelValue(const om::coords::Data& voxel)
     {
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA* data = dataWrapper.Data();
-
-        return data[voxel.ToChunkOffset()];
+        return ptrToChunkData_[voxel.ToChunkOffset()];
     }
 
     void RewriteChunk(const boost::unordered_map<uint32_t, uint32_t>& vals)
@@ -125,10 +103,7 @@ public:
 
     boost::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32()
     {
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA* data = dataWrapper.Data();
-
-        return getChunkAs32bit(data);
+        return getChunkAs32bit(ptrToChunkData_);
     }
 
 private:

@@ -113,7 +113,7 @@ private:
     {
         qRegisterMetaType<om::tool::mode>("om::tool::mode");
         qRegisterMetaType<om::common::ID>("om::common::ID");
-        qRegisterMetaType<om::common::ViewType>("ViewType");
+        qRegisterMetaType<om::common::ViewType>("om::common::ViewType");
         qRegisterMetaType<uint32_t>("uint32_t");
         qRegisterMetaType<ChannelDataWrapper>("ChannelDataWrapper");
         qRegisterMetaType<SegmentationDataWrapper>("SegmentationDataWrapper");

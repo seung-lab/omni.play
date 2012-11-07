@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common/common.h"
-#include "chunks/details/omPtrToChunkDataMemMapVol.h"
 #include "chunks/omChunkDataInterface.hpp"
 #include "chunks/omExtractChanTile.hpp"
 #include "chunks/omRawChunk.hpp"
@@ -17,7 +16,7 @@ private:
     const om::coords::Chunk coord_;
     const int numElementsPerSlice_;
     const int numElementsPerChunk_;
-    ptrToChunkDataBase *const ptrToChunkData_;
+    DATA *const ptrToChunkData_;
 
 public:
     dataImpl(OmMipVolume* vol, const om::coords::Chunk& coord)
@@ -25,21 +24,14 @@ public:
         , coord_(coord)
         , numElementsPerSlice_(128*128)
         , numElementsPerChunk_(numElementsPerSlice_*128)
-        , ptrToChunkData_(new ptrToChunkDataMemMapVol<DATA>(vol, coord))
+        , ptrToChunkData_(boost::get<DATA*>(vol->VolData()->getChunkPtrRaw(coord)))
     {}
-
-    ~dataImpl(){
-        delete ptrToChunkData_;
-    }
 
     void CopyInTile(const int sliceOffset, uchar const*const bits)
     {
         const int advance = (numElementsPerSlice_ * (sliceOffset % 128)) * sizeof(DATA);
 
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA* data = dataWrapper.Data();
-
-        memcpy(data + advance,
+        memcpy(ptrToChunkData_ + advance,
                bits,
                numElementsPerSlice_ * sizeof(DATA));
     }
@@ -48,10 +40,7 @@ public:
     {
         DATA const*const dataHDF5 = hdf5->getPtr<DATA>();
 
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA* data = dataWrapper.Data();
-
-        memcpy(data,
+        memcpy(ptrToChunkData_,
                dataHDF5,
                numElementsPerChunk_ * sizeof(DATA));
     }
@@ -60,15 +49,9 @@ public:
     {
         dataImpl const*const other = reinterpret_cast<dataImpl const*const>(chunkInter);
 
-        dataAccessor<DATA> dataWrapperOther(other->ptrToChunkData_);
-        DATA const*const otherD = dataWrapperOther.Data();
-
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA const*const data = dataWrapper.Data();
-
         for(int i = 0; i < numElementsPerChunk_; ++i)
         {
-            if(otherD[i] != data[i]){
+            if(other->ptrToChunkData_[i] != ptrToChunkData_[i]){
                 return false;
             }
         }
@@ -76,20 +59,12 @@ public:
         return true;
     }
 
-    double GetMaxValue()
-    {
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA const*const data = dataWrapper.Data();
-
-        return *std::max_element(data, data + numElementsPerChunk_);
+    double GetMaxValue() {
+        return *std::max_element(ptrToChunkData_, ptrToChunkData_ + numElementsPerChunk_);
     }
 
-    double GetMinValue()
-    {
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA const*const data = dataWrapper.Data();
-
-        return *std::min_element(data, data + numElementsPerChunk_);
+    double GetMinValue() {
+        return *std::min_element(ptrToChunkData_, ptrToChunkData_ + numElementsPerChunk_);
     }
 
     OmDataWrapperPtr CopyOutChunkData()
@@ -100,11 +75,8 @@ public:
 
     OmPooledTile<uint8_t>* ExtractDataSlice8bit(const om::common::ViewType plane, const int depth)
     {
-        dataAccessor<DATA> dataWrapper(ptrToChunkData_);
-        DATA* data = dataWrapper.Data();
-
         extractChanTile extractor(vol_, coord_, plane, depth);
-        return extractor.Extract(data);
+        return extractor.Extract(ptrToChunkData_);
     }
 };
 
