@@ -28,9 +28,13 @@ public:
     inline VAL remove_oldest()
     {
         zi::guard g(lock_);
-        const KEY k = list_.remove_oldest();
+        boost::optional<KEY> k = list_.remove_oldest();
 
-        iterator iter = map_.find(k);
+        if(!k) {
+        	return VAL();
+        }
+
+        iterator iter = map_.find(k.get());
         if(iter == map_.end()){
             return VAL();
         }
@@ -196,7 +200,7 @@ public:
     virtual ~LockedKeyMultiIndex()
     {}
 
-    inline KEY remove_oldest()
+    inline boost::optional<KEY> remove_oldest()
     {
         zi::guard g(lock_);
         return list_.remove_oldest();

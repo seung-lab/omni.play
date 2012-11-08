@@ -4,16 +4,6 @@
 #include "viewGroup/omViewGroupState.h"
 #include "view2d/omView2dConverters.hpp"
 
-OmTileCoord::OmTileCoord()
-    : OmTileCoordKey(om::coords::Chunk(),
-                     om::common::XY_VIEW,
-                     -1,
-                     NULL,
-                     -1,
-                     NULL,
-                     om::common::SCC_NUMBER_OF_ENUMS)
-{}
-
 OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, om::common::ViewType view, uint8_t depth,
                          OmMipVolume* vol, uint32_t freshness,
                          OmViewGroupState* vgs, om::common::SegmentColorCacheType segColorType)

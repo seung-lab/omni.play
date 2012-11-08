@@ -1,18 +1,10 @@
 #include "omMeshCoord.h"
 #include "common/omDebug.h"
 
-OmMeshCoord::OmMeshCoord()
-{
-    MipChunkCoord = om::coords::Chunk();
-    DataValue = -1;
-}
-
 OmMeshCoord::OmMeshCoord(const om::coords::Chunk & rMipChunkCoord, om::common::SegID dataValue)
     : MipChunkCoord(rMipChunkCoord)
     , DataValue(dataValue)
-{
-
-}
+{}
 
 void OmMeshCoord::operator=(const OmMeshCoord & rhs)
 {

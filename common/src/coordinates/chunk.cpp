@@ -6,12 +6,6 @@
 namespace om {
 namespace coords {
 
-Chunk::Chunk()
-    : base_t(-1,-1,-1)
-    , mipLevel_(-1)
-{
-}
-
 Chunk::Chunk(int level, const Vector3i & coord)
     : base_t(coord)
     , mipLevel_(level)

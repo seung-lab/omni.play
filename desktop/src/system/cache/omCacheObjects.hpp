@@ -17,13 +17,13 @@ public:
         list_.swap(newList.list_);
     }
 
-    inline KEY remove_oldest()
+    inline boost::optional<KEY> remove_oldest()
     {
-        if(list_.empty()){
-            return KEY();
+    	boost::optional<KEY> ret;
+        if(!list_.empty()){
+	        ret = list_.front();
+	        list_.pop_front();
         }
-        const KEY ret = list_.front();
-        list_.pop_front();
         return ret;
     }
 

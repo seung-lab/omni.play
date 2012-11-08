@@ -14,8 +14,6 @@ typedef boost::tuple<om::coords::Chunk, om::common::ViewType, uint8_t,
 
 class OmTileCoord : public OmTileCoordKey {
 public:
-    OmTileCoord();
-
     OmTileCoord(const om::coords::Chunk&, om::common::ViewType, uint8_t,
                 OmMipVolume*, uint32_t,
                 OmViewGroupState*, om::common::SegmentColorCacheType);

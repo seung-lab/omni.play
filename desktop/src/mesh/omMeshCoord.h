@@ -4,7 +4,6 @@
 
 class OmMeshCoord {
  public:
-	OmMeshCoord();
     OmMeshCoord( const om::coords::Chunk&, om::common::SegID );
 
 	void operator=( const OmMeshCoord& rhs );

@@ -89,10 +89,11 @@ public:
             if(full_mru_.empty()){
                 return;
             }
-            const KEY key = full_mru_.remove_oldest();
+            boost::optional<KEY> key = full_mru_.remove_oldest();
+            if(key)
             {
                 zi::guard g(lock_);
-                cache_.erase(key);
+                cache_.erase(key.get());
             }
         }
     }

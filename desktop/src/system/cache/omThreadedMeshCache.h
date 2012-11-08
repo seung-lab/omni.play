@@ -94,10 +94,14 @@ public:
                 return;
             }
 
-            const ptr_t ptr = cache_.remove_oldest();
-
-            if(!ptr){
+            boost::optional<ptr_t> oldest = cache_.remove_oldest();
+            if(!oldest){
                 continue;
+            }
+
+            ptr_t ptr = oldest.get();
+            if(!ptr) {
+            	continue;
             }
 
             const int64_t removedBytes = ptr->NumBytes();

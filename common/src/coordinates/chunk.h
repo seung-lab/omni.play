@@ -16,7 +16,6 @@ class VolumeSystem;
 class Chunk : public vmml::Vector3i {
 
 public:
-    Chunk();
     Chunk(int, const Vector3i &);
     Chunk(int level, int, int, int);
 
