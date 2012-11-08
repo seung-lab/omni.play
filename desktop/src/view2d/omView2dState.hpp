@@ -95,6 +95,7 @@ public:
     inline void UpdateTransformationMatrices()
     {
     	coords_.set_zoomScale(zoomLevel_->GetZoomScale());
+    	coords_.set_location(Location());
     	coords_.UpdateTransformationMatrices();
     }
 

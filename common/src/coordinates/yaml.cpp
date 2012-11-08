@@ -67,6 +67,7 @@ void operator>>(const Node& in, VolumeSystem& c)
     Vector3i offset;
     om::yaml::Util::OptionalRead(in, "absOffset", offset, Vector3i::ZERO);
     c.SetAbsOffset(offset);
+    c.UpdateRootLevel();
 }
 
 } // namespace YAML
