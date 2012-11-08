@@ -81,7 +81,7 @@ public:
         coords_.set_totalViewport(Vector4i(0,0,size.width(),size.height()));
         zoomLevel_->Update(getMaxMipLevel());
 
-        coords_.UpdateTransformationMatrices();
+        UpdateTransformationMatrices();
     }
 
     inline om::coords::ScreenSystem& Coords() {
@@ -90,6 +90,12 @@ public:
 
     inline const om::coords::ScreenSystem& Coords() const {
         return coords_;
+    }
+
+    inline void UpdateTransformationMatrices()
+    {
+    	coords_.set_zoomScale(zoomLevel_->GetZoomScale());
+    	coords_.UpdateTransformationMatrices();
     }
 
     inline operator om::coords::ScreenSystem*() {
@@ -107,7 +113,7 @@ public:
         OmView2dConverters::ShiftPanDirection(loc, numberOfSlicestoAdvance, dir, viewType_);
         setLocation(loc);
         OmEvents::Redraw2d();
-        coords_.UpdateTransformationMatrices();
+        UpdateTransformationMatrices();
     }
 
     inline Vector2f ComputePanDistance() const
@@ -132,7 +138,7 @@ public:
 
     inline void ChangeViewCenter()
     {
-        coords_.UpdateTransformationMatrices();
+        UpdateTransformationMatrices();
         SetViewSliceOnPan();
     }
 
@@ -161,7 +167,7 @@ public:
 
         zoomLevel_->Reset(getMaxMipLevel());
 
-        coords_.UpdateTransformationMatrices();
+        UpdateTransformationMatrices();
 
         OmTileCache::ClearAll();
         OmEvents::Redraw2d();
@@ -174,7 +180,7 @@ public:
         const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
         vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth + numberOfSlicestoAdvance);
 
-        coords_.UpdateTransformationMatrices();
+        UpdateTransformationMatrices();
     }
 
     inline void MoveDownStackFartherFromViewer()
@@ -184,7 +190,7 @@ public:
         const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
         vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth - numberOfSlicestoAdvance);
 
-        coords_.UpdateTransformationMatrices();
+        UpdateTransformationMatrices();
     }
 
     // mouse movement
@@ -352,7 +358,7 @@ public:
     inline void setLocation(om::coords::Global loc)
     {
         vgs_->View2dState()->SetScaledSliceDepth(loc);
-        coords_.UpdateTransformationMatrices();
+        UpdateTransformationMatrices();
     }
 
     inline bool OverrideToolModeForPan(){

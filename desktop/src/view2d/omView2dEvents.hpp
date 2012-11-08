@@ -35,19 +35,19 @@ public:
 
     void ViewBoxChangeEvent()
     {
-        state_->Coords().UpdateTransformationMatrices();
+        state_->UpdateTransformationMatrices();
         v2d_->Redraw();
     }
 
     void ViewPosChangeEvent()
     {
-        state_->Coords().UpdateTransformationMatrices();
+        state_->UpdateTransformationMatrices();
         v2d_->Redraw();
     }
 
     void ViewCenterChangeEvent()
     {
-        state_->Coords().UpdateTransformationMatrices();
+        state_->UpdateTransformationMatrices();
         state_->ChangeViewCenter();
         v2d_->Redraw();
         OmEvents::Redraw3d();
@@ -55,13 +55,13 @@ public:
 
     void ViewRedrawEvent()
     {
-        state_->Coords().UpdateTransformationMatrices();
+        state_->UpdateTransformationMatrices();
         v2d_->Redraw();
     }
 
     void ViewBlockingRedrawEvent()
     {
-        state_->Coords().UpdateTransformationMatrices();
+        state_->UpdateTransformationMatrices();
         v2d_->RedrawBlocking();
     }
 
