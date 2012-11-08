@@ -204,14 +204,14 @@ $(BUILDDIR)/server/test/%.d: server/test/src/%.cpp $(THRIFT_DEPS)
 $(BUILDDIR)/server/test/%.o: server/test/src/%.cpp $(THRIFT_DEPS)
 	$(call build_cpp, $(SERVERINCLUDES) $(TESTINCLUDES))
 
-$(BUILDDIR)/desktop/%.d: desktop/src/%.cpp $(THRIFT_DEPS)
+$(BUILDDIR)/desktop/%.d: desktop/src/%.cpp
 	$(call make_d, $(DESKTOPINCLUDES))
-$(BUILDDIR)/desktop/%.o: desktop/src/%.cpp $(THRIFT_DEPS)
+$(BUILDDIR)/desktop/%.o: desktop/src/%.cpp
 	$(call build_cpp, $(DESKTOPINCLUDES))
 
-$(BUILDDIR)/desktop/test/%.d: desktop/test/src/%.cpp $(THRIFT_DEPS)
+$(BUILDDIR)/desktop/test/%.d: desktop/test/src/%.cpp
 	$(call make_d, $(DESKTOPINCLUDES) $(TESTINCLUDES))
-$(BUILDDIR)/desktop/test/%.o: desktop/test/src/%.cpp $(THRIFT_DEPS)
+$(BUILDDIR)/desktop/test/%.o: desktop/test/src/%.cpp
 	$(call build_cpp, $(DESKTOPINCLUDES) $(TESTINCLUDES))
 
 %.d: %.cpp
@@ -253,10 +253,10 @@ LIB64_DEPS = $(BASE64)/src/cencode.o
 
 TEST_DEPS = $(GMOCK)/src/gmock-all.o $(GMOCK)/gtest/src/gtest-all.o
 
-DESKTOPHEADERS = $(subst desktop/src,$(BUILDDIR)/desktop, \
-               	 	$(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':'))
-MOC_SRCS := $($(DESKTOPHEADERS:.hpp=.moc.cpp):.h=.moc.cpp)
-MOC_DEPS := $(MOC_SRCS:.cpp=.o)
+DESKTOPHEADERS = $(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':')
+MOC_SRC0 = $(DESKTOPHEADERS:.hpp=.moc.cpp)
+MOC_SRCS = $(MOC_SRC0:.h=.moc.cpp)
+MOC_DEPS = $(subst desktop/src,$(BUILDDIR)/desktop,$(MOC_SRCS:.cpp=.o))
 
 define deps
 	$(eval $1_SOURCES = $(shell find $2/src -iname "*.cpp"  | grep -v "main.cpp"))
@@ -272,7 +272,7 @@ $(eval $(call deps,THRIFT,thrift))
 $(eval $(call deps,SERVER,server,$(COMMON_DEPS) $(THRIFT_DEPS) $(LIB64_DEPS)))
 $(eval $(call deps,SERVER_TEST,server/test,$(SERVER_DEPS) $(TEST_DEPS)))
 
-$(eval $(call deps,DESKTOP,desktop,$(COMMON_DEPS) desktop/lib/strnatcmp.o $(BUILDDIR)/desktop/gui/resources.rcc.o))
+$(eval $(call deps,DESKTOP,desktop,$(COMMON_DEPS) $(MOC_DEPS) desktop/lib/strnatcmp.o $(BUILDDIR)/desktop/gui/resources.rcc.o))
 $(eval $(call deps,DESKTOP_TEST,desktop/test,$(DESKTOP_DEPS) $(TEST_DEPS)))
 
 # Targets ####################################
@@ -317,6 +317,7 @@ clean:
 	$(ECHO) Cleaning...
 	$(RM) -rf bin $(GENDIR) build
 	$(RM) common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
+	$(FIND) desktop/src -iname "*\.moc\.cpp" -delete
 
 .PHONY: remake
 remake: clean all
