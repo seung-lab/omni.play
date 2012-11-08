@@ -261,7 +261,7 @@ MOC_DEPS := $(MOC_SRCS:.cpp=.o)
 define deps
 	$(eval $1_SOURCES = $(shell find $2/src -iname "*.cpp"  | grep -v "main.cpp"))
 	$(eval $1_MAIN = $(BUILDDIR)/$2/main.o)
-	$(eval $1_DEPS = $(subst $2/src,$(BUILDDIR)/$2,$($1_SOURCES:.cpp=.o)) $3)
+	$(eval $1_DEPS = $(subst $2/src,$(BUILDDIR)/$2,$3 $($1_SOURCES:.cpp=.o)))
 endef
 
 $(eval $(call deps,COMMON,common,$(YAML_DEPS)))
@@ -287,14 +287,12 @@ endef
 
 $(BINDIR)/omni.common.test: $(COMMON_TEST_DEPS) $(COMMON_TEST_MAIN)
 	$(call link,$(LIBS))
-	$@
 
 $(BINDIR)/omni.desktop: $(DESKTOP_DEPS) $(DESKTOP_MAIN)
 	$(call link,$(DESKTOPLIBS))
 
 $(BINDIR)/omni.desktop.test: $(DESKTOP_TEST_DEPS) $(DESKTOP_TEST_MAIN)
 	$(call link,$(DESKTOPLIBS))
-	$@
 
 $(BINDIR)/omni.server: $(SERVER_DEPS) $(SERVER_MAIN)
 	$(call link,$(SERVERLIBS))
@@ -340,6 +338,7 @@ symbols: omni.desktop.sym
 
 .PHONY: common
 common: $(BINDIR)/omni.common.test
+	$(BINDIR)/omni.common.test
 
 .PHONY: desktop
 desktop: common $(BINDIR)/omni.desktop $(BINDIR)/omni.desktop.test
