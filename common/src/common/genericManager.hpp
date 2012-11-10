@@ -65,8 +65,8 @@ public:
     {
         zi::guard g(lock_);
 
-        if(IsValid(id)) {
-        	return false;
+        if(isIDvalid(id)) {
+	  return false;
         }
 
         vec_[id] = value;
@@ -111,7 +111,7 @@ public:
     inline bool IsValid(const ID id) const
     {
         zi::guard g(lock_);
-        return !isIDinvalid(id);
+        return isIDvalid(id);
     }
 
     // TODO: Remove return of ref to ensure locking of vector is not circumvented
@@ -158,13 +158,13 @@ public:
     }
 
 private:
-    inline bool isIDinvalid(const ID id) const {
-        return id < 1 || id >= size_ || NULL == vec_[id];
+    inline bool isIDvalid(const ID id) const {
+      return !(id < 1 || id >= size_ || NULL == vec_[id]);
     }
 
     inline void throwIfInvalidID(const ID id) const
     {
-        if(isIDinvalid(id)){
+        if(!isIDvalid(id)){
             assert(0 && "invalid ID");
             throw AccessException("Cannot get object with id: " + om::string::num(id));
         }
