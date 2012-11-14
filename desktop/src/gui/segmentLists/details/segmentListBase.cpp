@@ -42,13 +42,20 @@ quint32 SegmentListBase::getTotalNumberOfSegments()
     return Size();
 }
 
-// offset == number of segments in
-void SegmentListBase::populateByPage(const int offset)
+void SegmentListBase::populateByPage()
 {
     assert(haveValidSDW);
 
+    size_t totalPages = getTotalNumberOfSegments() / getNumSegmentsPerPage();
+
+	if(currentPageNum_ < 0){
+        currentPageNum_ = 0;
+    } else if(currentPageNum_ > totalPages) {
+    	currentPageNum_ = totalPages;
+    }
+
     GUIPageRequest request;
-    request.offset = offset;
+    request.offset = currentPageNum_* getNumSegmentsPerPage();
     request.numToGet = getNumSegmentsPerPage();
     request.startSeg = 0;
 
@@ -146,39 +153,25 @@ void SegmentListBase::setupPageButtons()
 void SegmentListBase::goToStartPage()
 {
     currentPageNum_ = 0;
-    int offset = currentPageNum_* getNumSegmentsPerPage();
-    populateByPage(offset);
+    populateByPage();
 }
 
 void SegmentListBase::goToNextPage()
 {
     ++currentPageNum_;
-    unsigned int offset = currentPageNum_* getNumSegmentsPerPage();
-    if(offset > getTotalNumberOfSegments()){
-        --currentPageNum_;
-        offset = currentPageNum_* getNumSegmentsPerPage();
-    }
-    populateByPage(offset);
+    populateByPage();
 }
 
 void SegmentListBase::goToPrevPage()
 {
     --currentPageNum_;
-    if(currentPageNum_ < 0){
-        currentPageNum_ = 0;
-    }
-    int offset = currentPageNum_* getNumSegmentsPerPage();
-    populateByPage(offset);
+    populateByPage();
 }
 
 void SegmentListBase::goToEndPage()
 {
     currentPageNum_ = (getTotalNumberOfSegments() / getNumSegmentsPerPage());
-    if(currentPageNum_ < 0) {
-        currentPageNum_ = 0;
-    }
-    int offset = currentPageNum_* getNumSegmentsPerPage();
-    populateByPage(offset);
+    populateByPage();
 }
 
 void SegmentListBase::makeSegmentationActive(const SegmentDataWrapper& sdw,
@@ -198,14 +191,14 @@ void SegmentListBase::MakeSegmentationActive(const SegmentationDataWrapper& sdw)
 {
     sdw_ = sdw;
     haveValidSDW = true;
-    populateByPage(0);
+    populateByPage();
 }
 
 void SegmentListBase::RefreshPage(const SegmentationDataWrapper& sdw)
 {
     sdw_ = sdw;
     haveValidSDW = true;
-    populateByPage(currentPageNum_ * getNumSegmentsPerPage());
+    populateByPage();
 }
 
 void SegmentListBase::searchChanged()

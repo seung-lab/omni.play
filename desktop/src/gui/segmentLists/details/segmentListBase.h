@@ -21,10 +21,10 @@ public:
     SegmentListBase(QWidget*, OmViewGroupState*);
 
     void populate(){
-        populateByPage(0);
+        populateByPage();
     }
 
-    void populateByPage(const int inOffset);
+    void populateByPage();
     void populateBySegment(const bool doScrollToSelectedSegment,
                            const SegmentDataWrapper segmentJustSelected);
 
