@@ -10,10 +10,10 @@ ZiARG_bool(noView3dThrottle, false, "disable View3d throttling");
 
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest(&argc, argv);
-	OmProject::New(QString::fromStdString(om::file::tempPath() + "/" + OmUUID().Str()));
-	ChannelDataWrapper(1).Create();
-	SegmentationDataWrapper(1).Create();
+	// OmProject::New(QString::fromStdString(om::file::tempPath() + "/" + OmUUID().Str()));
+	// ChannelDataWrapper(1).Create();
+	// SegmentationDataWrapper(1).Create();
 	int ret = RUN_ALL_TESTS();
-	OmProject::Close();
+	// OmProject::Close();
 	return ret;
 }
