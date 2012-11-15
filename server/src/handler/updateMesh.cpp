@@ -36,8 +36,8 @@ void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
 	std::string data(reinterpret_cast<char*>(filtered.data.get()), filtered.size * sizeof(uint32_t));
 	// Integrate with realtime mesher.
 	try {
-		rtm->remesh(false);
 		rtm->update(string::num(segId), loc, size, data);
+		rtm->remesh(false);
 	} catch (apache::thrift::TException &tx) {
 		std::cout << "Something's Wrong: " << tx.what() << std::endl;
 	    throw(tx);

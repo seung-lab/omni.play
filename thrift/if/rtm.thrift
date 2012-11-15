@@ -70,6 +70,22 @@ service RealTimeMesher
       4: binary data,
       ),
 
+    bool queueMaskedUpdate(
+      1: string uri,
+      2: Vector3i location,
+      3: Vector3i size,
+      4: binary data,
+      5: binary mask,
+      ),
+
+    bool maskedUpdate(
+      1: string uri,
+      2: Vector3i location,
+      3: Vector3i size,
+      4: binary data,
+      5: binary mask,
+      ),
+
     bool remesh(
         1: bool sync
     ),

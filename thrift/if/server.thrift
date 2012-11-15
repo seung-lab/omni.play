@@ -113,16 +113,18 @@ service server extends fb303.FacebookService
     binary get_mesh( 1: string uri,
                      2: vector3i chunk,
                      3: i32 mipLevel,
-                     4: i32 segId)
-
-    string get_remesh( 1: string uri,
-                       2: vector3i chunk,
-                       3: i32 mipLevel,
-                       4: set<i32> segIds)
+                     4: i32 segId),
 
     oneway void update_global_mesh( 1: metadata vol,
     					            2: set<i32> segIds,
-    					            3: i32 segId)
+    					            3: i32 segId),
+
+    void modify_global_mesh_data( 1: metadata vol,
+    					     	  2: set<i32> addedSegIds,
+    					     	  3: set<i32> deletedSegIds,
+    					     	  4: i32 segId),
+
+    void remesh_global_mesh(),
 
     string get_obj( 1: string uri,
                     2: vector3i chunk,
