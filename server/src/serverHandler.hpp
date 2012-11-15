@@ -3,6 +3,8 @@
 #include "handler/handler.h"
 #include "common/common.h"
 #include "volume/volume.h"
+#include "threads/taskManager.hpp"
+#include "threads/taskManagerTypes.h"
 #include "utility/ServiceTracker.h"
 #include "utility/FacebookBase.h"
 #include "RealTimeMesher.h"
@@ -25,6 +27,7 @@ private:
 
     std::string mesherHost_;
     int32_t mesherPort_;
+    threads::threadPool threadPool_;
 
 public:
     serverHandler(std::string mesherHost, int32_t mesherPort)
@@ -35,6 +38,11 @@ public:
         , mesherPort_(mesherPort)
     {
         status_ = fb_status::ALIVE;
+        threadPool_.start();
+    }
+
+    ~serverHandler(){
+    	threadPool_.stop();
     }
 
     void add_chunk(const metadata& vol, const vector3i& chunk, const std::string& data) {
@@ -160,7 +168,9 @@ public:
         	modifiedIDs.insert(*id);
         }
 
-        handler::modify_global_mesh_data(mesher.get(), vol, addedIDs, modifiedIDs, segId);
+        threadPool_.push_back(
+			zi::run_fn(
+            	zi::bind( &handler::modify_global_mesh_data, mesher.get(), vol, addedIDs, modifiedIDs, segId)));
     }
 
     void remesh_global_mesh() {
