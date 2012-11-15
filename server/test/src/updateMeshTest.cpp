@@ -30,6 +30,16 @@ public:
 				const zi::mesh::Vector3i& size,
 				const std::string& data));
 	MOCK_METHOD1(remesh, bool(const bool sync));
+	MOCK_METHOD5(queueMaskedUpdate, bool(const std::string& uri,
+				const zi::mesh::Vector3i& location,
+				const zi::mesh::Vector3i& size,
+				const std::string& data,
+				const std::string& mask));
+	MOCK_METHOD5(maskedUpdate, bool(const std::string& uri,
+				const zi::mesh::Vector3i& location,
+				const zi::mesh::Vector3i& size,
+				const std::string& data,
+				const std::string& mask));
 	MOCK_METHOD3(getMesh, void(MeshDataResult& _return,
 				const std::string& uri,
 				const MeshCoordinate& coordinate));
@@ -72,6 +82,33 @@ TEST(UpdateMeshTest, Test1)
 	uint32_t segId = 1;
 
 	handler::update_global_mesh(&mesher, vol, segIds, segId);
+}
+
+TEST(MaskedUpdateMeshTest, Test1)
+{
+	MockRealTimeMesher mesher;
+
+	EXPECT_CALL(mesher, queueMaskedUpdate(_,_,_,_,_));
+
+	om::volume::volume vol("test/data/test.omni.files/",
+		coords::globalBbox(coords::global(0, 0, 0), coords::global(255, 255, 159)),
+		vmml::Vector3i::ONE, server::dataType::UINT32,
+		server::volType::SEGMENTATION, vmml::Vector3i(128),0);
+
+	std::set<uint32_t> added;
+	added.insert(342);
+	added.insert(3463);
+	added.insert(4368);
+	added.insert(13);
+
+	std::set<uint32_t> modified;
+	modified.insert(added.begin(), added.end());
+	modified.insert(224);
+	modified.insert(1532);
+
+	uint32_t segId = 1;
+
+	handler::modify_global_mesh_data(&mesher, vol, added, modified, segId);
 }
 
 // TEST(ThriftTest, UpdateTest)

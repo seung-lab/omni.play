@@ -140,6 +140,33 @@ public:
         handler::update_global_mesh(mesher.get(), vol, ids, segId);
     }
 
+    void modify_global_mesh_data(const metadata& vol,
+    					     	 const std::set<int32_t>& addedSegIds,
+    					     	 const std::set<int32_t>& deletedSegIds,
+    					     	 int32_t segId)
+    {
+    	ServiceMethod serviceMethod(&serviceTracker_, "modify_global_mesh_data", "modify_global_mesh_data");
+
+    	MesherPtr mesher = makeMesher();
+
+        std::set<uint32_t> addedIDs;
+        std::set<uint32_t> modifiedIDs;
+        FOR_EACH(id, addedSegIds) {
+        	addedIDs.insert(*id);
+        	modifiedIDs.insert(*id);
+        }
+
+        FOR_EACH(id, deletedSegIds) {
+        	modifiedIDs.insert(*id);
+        }
+
+        handler::modify_global_mesh_data(mesher.get(), vol, addedIDs, modifiedIDs, segId);
+    }
+
+    void remesh_global_mesh() {
+    	ServiceMethod serviceMethod(&serviceTracker_, "remesh_global_mesh", "remesh_global_mesh");
+    	makeMesher()->remesh(false);
+    }
 
     void get_remesh(std::string& _return,
                     const std::string& uri,

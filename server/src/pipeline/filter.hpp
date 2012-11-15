@@ -7,24 +7,24 @@
 namespace om {
 namespace pipeline {
 
-template<typename T>
+template<typename TIn, typename TOut>
 class set_filter //: public stage
 {
 protected:
-    const std::set<T>& vals_;
-    const T outputAs_;
+    const std::set<TIn>& vals_;
+    const TOut outputAs_;
 
 public:
-	set_filter(const std::set<T>& vals, T outputAs = 0)
+	set_filter(const std::set<TIn>& vals, TOut outputAs = 0)
 		: vals_(vals)
 		, outputAs_(outputAs)
 	{}
 
-    data<T> operator()(const data<T>& in) const
+    data<TOut> operator()(const data<TIn>& in) const
     {
-    	data<T> out;
+    	data<TOut> out;
         out.size = in.size;
-        out.data = utility::smartPtr<T>::MallocNumElements(out.size);
+        out.data = utility::smartPtr<TOut>::MallocNumElements(out.size);
 
         doFilter(in.data.get(), out.data.get(), out.size);
         return out;
@@ -52,7 +52,7 @@ public:
     // }
 
 private:
-    void doFilter(const T* inData, T* outData, size_t size) const
+    void doFilter(const TIn* inData, TOut* outData, size_t size) const
     {
     	for(int i = 0; i < size; i++)
         {
