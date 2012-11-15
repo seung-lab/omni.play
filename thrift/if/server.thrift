@@ -124,8 +124,6 @@ service server extends fb303.FacebookService
     					     	  3: set<i32> deletedSegIds,
     					     	  4: i32 segId),
 
-    void remesh_global_mesh(),
-
     string get_obj( 1: string uri,
                     2: vector3i chunk,
                     3: i32 mipLevel,

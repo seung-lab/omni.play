@@ -173,21 +173,6 @@ public:
             	zi::bind( &handler::modify_global_mesh_data, mesher.get(), vol, addedIDs, modifiedIDs, segId)));
     }
 
-    void remesh_global_mesh() {
-    	ServiceMethod serviceMethod(&serviceTracker_, "remesh_global_mesh", "remesh_global_mesh");
-    	makeMesher()->remesh(false);
-    }
-
-    void get_remesh(std::string& _return,
-                    const std::string& uri,
-                    const vector3i& chunk,
-                    int32_t mipLevel,
-                    const std::set<int32_t>& segIds)
-    {
-        ServiceMethod serviceMethod(&serviceTracker_, "get_remesh", "get_remesh");
-        handler::get_remesh(_return, uri, chunk, mipLevel, segIds);
-    }
-
     void get_obj(std::string& _return,
                  const std::string& uri,
                  const vector3i& chunk,

@@ -42,7 +42,6 @@ void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
 
 	try {
 		rtm->update(string::num(segId), loc, size, data);
-		rtm->remesh(false);
 	} catch (apache::thrift::TException &tx) {
 		std::cout << "Something's Wrong: " << tx.what() << std::endl;
 	    throw(tx);
@@ -75,7 +74,7 @@ void modify_global_mesh_data(zi::mesh::RealTimeMesherIf* rtm,
 	make_loc_size(vol, loc, size);
 
 	try {
-		rtm->queueMaskedUpdate(string::num(segId), loc, size, data, mask);
+		rtm->maskedUpdate(string::num(segId), loc, size, data, mask);
 	} catch (apache::thrift::TException &tx) {
 		std::cout << "Something's Wrong: " << tx.what() << std::endl;
 	    throw(tx);

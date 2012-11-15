@@ -51,12 +51,6 @@ void get_mesh(std::string& _return,
               int32_t mipLevel,
               int32_t segId);
 
-void get_remesh(std::string& _return,
-                const std::string& uri,
-                const server::vector3i& chunk,
-                int32_t mipLevel,
-                const std::set<int32_t>& segId);
-
 void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
                         const volume::volume& vol,
 	                    const std::set<uint32_t>& segIds,

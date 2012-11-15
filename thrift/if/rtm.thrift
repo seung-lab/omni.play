@@ -44,22 +44,9 @@ struct MeshDataResult
 
 service RealTimeMesher
 {
-    bool queueUpdateChunk(
-      1: string uri,
-      2: Vector3i chunk,
-      3: binary data,
-      ),
-
     bool updateChunk(
       1: string uri,
       2: Vector3i chunk,
-      4: binary data,
-      ),
-
-    bool queueUpdate(
-      1: string uri,
-      2: Vector3i location,
-      3: Vector3i size,
       4: binary data,
       ),
 
@@ -70,14 +57,6 @@ service RealTimeMesher
       4: binary data,
       ),
 
-    bool queueMaskedUpdate(
-      1: string uri,
-      2: Vector3i location,
-      3: Vector3i size,
-      4: binary data,
-      5: binary mask,
-      ),
-
     bool maskedUpdate(
       1: string uri,
       2: Vector3i location,
@@ -85,10 +64,6 @@ service RealTimeMesher
       4: binary data,
       5: binary mask,
       ),
-
-    bool remesh(
-        1: bool sync
-    ),
 
     MeshDataResult getMesh(
       1: string uri,

@@ -15,26 +15,13 @@ namespace test {
 class MockRealTimeMesher : public RealTimeMesherIf
 {
 public:
-	MOCK_METHOD3(queueUpdateChunk, bool(const std::string& uri,
-				const zi::mesh::Vector3i& chunk,
-				const std::string& data));
 	MOCK_METHOD3(updateChunk, bool(const std::string& uri,
 				const zi::mesh::Vector3i& chunk,
-				const std::string& data));
-	MOCK_METHOD4(queueUpdate, bool(const std::string& uri,
-				const zi::mesh::Vector3i& location,
-				const zi::mesh::Vector3i& size,
 				const std::string& data));
 	MOCK_METHOD4(update, bool(const std::string& uri,
 				const zi::mesh::Vector3i& location,
 				const zi::mesh::Vector3i& size,
 				const std::string& data));
-	MOCK_METHOD1(remesh, bool(const bool sync));
-	MOCK_METHOD5(queueMaskedUpdate, bool(const std::string& uri,
-				const zi::mesh::Vector3i& location,
-				const zi::mesh::Vector3i& size,
-				const std::string& data,
-				const std::string& mask));
 	MOCK_METHOD5(maskedUpdate, bool(const std::string& uri,
 				const zi::mesh::Vector3i& location,
 				const zi::mesh::Vector3i& size,
@@ -61,12 +48,11 @@ public:
 				const std::vector<MeshCoordinate> & coordinates));
 };
 
-TEST(UpdateMeshTest, Test1)
+TEST(UpdateMeshTest, Update)
 {
 	MockRealTimeMesher mesher;
 
 	EXPECT_CALL(mesher, update(_,_,_,_));
-	EXPECT_CALL(mesher, remesh(_));
 
 	om::volume::volume vol("test/data/test.omni.files/",
 		coords::globalBbox(coords::global(0, 0, 0), coords::global(255, 255, 159)),
@@ -84,11 +70,11 @@ TEST(UpdateMeshTest, Test1)
 	handler::update_global_mesh(&mesher, vol, segIds, segId);
 }
 
-TEST(MaskedUpdateMeshTest, Test1)
+TEST(UpdateMeshTest, MaskedUpdate)
 {
 	MockRealTimeMesher mesher;
 
-	EXPECT_CALL(mesher, queueMaskedUpdate(_,_,_,_,_));
+	EXPECT_CALL(mesher, maskedUpdate(_,_,_,_,_));
 
 	om::volume::volume vol("test/data/test.omni.files/",
 		coords::globalBbox(coords::global(0, 0, 0), coords::global(255, 255, 159)),
