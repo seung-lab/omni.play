@@ -82,17 +82,12 @@ TEST(UpdateMeshTest, MaskedUpdate)
 		server::volType::SEGMENTATION, vmml::Vector3i(128),0);
 
 	std::set<uint32_t> added;
-	added.insert(342);
-	added.insert(3463);
-	added.insert(4368);
-	added.insert(13);
+	added.insert(238);
 
 	std::set<uint32_t> modified;
 	modified.insert(added.begin(), added.end());
-	modified.insert(224);
-	modified.insert(1532);
 
-	uint32_t segId = 1;
+	uint32_t segId = 37;
 
 	handler::modify_global_mesh_data(&mesher, vol, added, modified, segId);
 }

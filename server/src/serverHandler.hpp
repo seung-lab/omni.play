@@ -168,9 +168,7 @@ public:
         	modifiedIDs.insert(*id);
         }
 
-        threadPool_.push_back(
-			zi::run_fn(
-            	zi::bind( &handler::modify_global_mesh_data, mesher.get(), vol, addedIDs, modifiedIDs, segId)));
+        handler::modify_global_mesh_data(mesher.get(), vol, addedIDs, modifiedIDs, segId);
     }
 
     void get_obj(std::string& _return,
