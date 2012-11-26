@@ -62,7 +62,7 @@ void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
 	}
 }
 
-void modify_global_mesh_data(zi::mesh::RealTimeMesherIf* rtm,
+bool modify_global_mesh_data(zi::mesh::RealTimeMesherIf* rtm,
                              const volume::volume& vol,
     					     const std::set<uint32_t> addedSegIds,
     					     const std::set<uint32_t> modifiedSegIds,
@@ -74,8 +74,6 @@ void modify_global_mesh_data(zi::mesh::RealTimeMesherIf* rtm,
 	if (!vol.VolumeType() == server::volType::SEGMENTATION) {
 		throw argException("Can only update global mesh from segmentation");
 	}
-
-	std::cout << "SegID: " << segId << std::endl;
 
 	datalayer::memMappedFile<uint32_t> dataFile =
 		boost::get<datalayer::memMappedFile<uint32_t> >(vol.Data());
@@ -96,8 +94,9 @@ void modify_global_mesh_data(zi::mesh::RealTimeMesherIf* rtm,
 		rtm->maskedUpdate(string::num(segId), loc, size, data, mask);
 	} catch (apache::thrift::TException &tx) {
 		std::cout << "Something's Wrong: " << tx.what() << std::endl;
-	    throw(tx);
+	    return false;
 	}
+	return true;
 }
 
 }} // namespace om::handler::

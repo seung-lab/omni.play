@@ -119,7 +119,7 @@ service server extends fb303.FacebookService
     					            2: set<i32> segIds,
     					            3: i32 segId),
 
-    void modify_global_mesh_data( 1: metadata vol,
+    bool modify_global_mesh_data( 1: metadata vol,
     					     	  2: set<i32> addedSegIds,
     					     	  3: set<i32> deletedSegIds,
     					     	  4: i32 segId),

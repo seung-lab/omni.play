@@ -56,7 +56,7 @@ void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
 	                    const std::set<uint32_t>& segIds,
                         uint32_t segId);
 
-void modify_global_mesh_data(zi::mesh::RealTimeMesherIf* rtm,
+bool modify_global_mesh_data(zi::mesh::RealTimeMesherIf* rtm,
                              const volume::volume& vol,
     					     const std::set<uint32_t> addedSegIds,
     					     const std::set<uint32_t> modifiedSegIds,

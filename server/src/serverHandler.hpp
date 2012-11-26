@@ -148,7 +148,7 @@ public:
         handler::update_global_mesh(mesher.get(), vol, ids, segId);
     }
 
-    void modify_global_mesh_data(const metadata& vol,
+    bool modify_global_mesh_data(const metadata& vol,
     					     	 const std::set<int32_t>& addedSegIds,
     					     	 const std::set<int32_t>& deletedSegIds,
     					     	 int32_t segId)
@@ -156,6 +156,9 @@ public:
     	ServiceMethod serviceMethod(&serviceTracker_, "modify_global_mesh_data", "modify_global_mesh_data");
 
     	MesherPtr mesher = makeMesher();
+    	if(!mesher) {
+    		return false;
+    	}
 
         std::set<uint32_t> addedIDs;
         std::set<uint32_t> modifiedIDs;
@@ -168,7 +171,7 @@ public:
         	modifiedIDs.insert(*id);
         }
 
-        handler::modify_global_mesh_data(mesher.get(), vol, addedIDs, modifiedIDs, segId);
+        return handler::modify_global_mesh_data(mesher.get(), vol, addedIDs, modifiedIDs, segId);
     }
 
     void get_obj(std::string& _return,
