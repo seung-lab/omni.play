@@ -26,7 +26,8 @@ struct MeshCoordinate
 
 struct MeshData
 {
-    1: binary data
+    1: binary data,
+    2: i64    hash
 }
 
 enum MeshResultCode
@@ -39,7 +40,7 @@ enum MeshResultCode
 struct MeshDataResult
 {
     1: MeshResultCode code,
-    2: MeshData mesh
+    2: MeshData mesh,
 }
 
 service RealTimeMesher
@@ -96,5 +97,9 @@ service RealTimeMesher
       1: string uri,
       2: list<MeshCoordinate> coordinates
     ),
+
+    void clear(
+      1: string uri
+    )
 
 }

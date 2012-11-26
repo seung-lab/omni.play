@@ -28,6 +28,9 @@
 #include <boost/multi_array/types.hpp>
 #include <boost/shared_ptr.hpp>
 
+#define CHUNK_SIZE 128
+#define CHUNK_DATA_SIZE (CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE)
+
 namespace zi {
 namespace mesh {
 
@@ -35,13 +38,20 @@ typedef zi::vl::vec<uint32_t, 3> vec3u;
 typedef zi::vl::vec<uint32_t, 4> vec4u;
 typedef zi::vl::vec<uint32_t, 5> vec5u;
 
+using zi::vl::vec3d;
+using zi::vl::vec3f;
+
 typedef boost::shared_ptr<int_mesh>               int_mesh_ptr  ;
 typedef boost::multi_array<uint32_t,3>            chunk_type    ;
 typedef boost::const_multi_array_ref<uint32_t,3>  chunk_type_ref;
+typedef boost::multi_array<char,3>                mask_type     ;
+typedef boost::const_multi_array_ref<char,3>      mask_type_ref ;
 typedef chunk_type::index_range                   range         ;
 typedef boost::shared_ptr<chunk_type>             chunk_type_ptr;
+typedef boost::shared_ptr<mask_type>              mask_type_ptr ;
 typedef boost::shared_ptr<face_mesh<double> >     face_mesh_ptr ;
 typedef boost::shared_ptr<chunk_type_ref>         chunk_ref_ptr ;
+typedef boost::shared_ptr<mask_type_ref>          mask_ref_ptr  ;
 
 typedef face_mesh<double>                         mesh_type     ;
 typedef boost::shared_ptr<mesh_type>              mesh_type_ptr ;

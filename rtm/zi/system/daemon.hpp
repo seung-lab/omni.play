@@ -70,7 +70,9 @@ bool daemonize( bool no_chdir = false, bool no_close = false )
 
     if (!no_chdir)
     {
-        static_cast<void>(::chdir("/"));
+        if ( ::chdir("/") )
+        {
+        }
     }
 
     if ( !no_close && (fd = ::open("/dev/null", O_RDWR, 0)) != -1)

@@ -34,7 +34,7 @@ struct lock_data
 };
 
 template< class T >
-class rwlock_single_pool
+class rwlock_pool
 {
 public:
     typedef T                       key_type;
@@ -70,7 +70,7 @@ private:
     }
 
 public:
-    rwlock_single_pool()
+    rwlock_pool()
         : locks_()
         , mutex_()
     { }
@@ -162,22 +162,22 @@ public:
 };
 
 template< class T, std::size_t N, class Hash = zi::hash<T> >
-class rwlock_pool
+class rwlock_pool_n
 {
 public:
     typedef T                             key_type;
 
 private:
-    zi::array< rwlock_single_pool<T>, N > pool_;
-    Hash                                  hash_;
+    zi::array< rwlock_pool<T>, N > pool_;
+    Hash                           hash_;
 
 public:
-    explicit rwlock_pool()
+    explicit rwlock_pool_n()
         : pool_()
         , hash_()
     { }
 
-    explicit rwlock_pool(const Hash& h)
+    explicit rwlock_pool_n(const Hash& h)
         : pool_()
         , hash_(h)
     { }
@@ -210,6 +210,55 @@ public:
     void release_write(const T& k) const
     {
         pool_[hash_(k)%N].release_write(k);
+    }
+};
+
+
+template< class T >
+class lock_pool_read_guard
+{
+private:
+    typedef T                                       pool_type;
+    typedef typename pool_type::key_type            key_type ;
+
+    const pool_type& pool_;
+    const key_type&  key_ ;
+
+public:
+    lock_pool_read_guard(const pool_type& pool, const key_type& key)
+        : pool_(pool)
+        , key_(key)
+    {
+        pool.acquire_read(key);
+    }
+
+    ~lock_pool_read_guard()
+    {
+        pool_.release_read(key_);
+    }
+};
+
+template< class T >
+class lock_pool_write_guard
+{
+private:
+    typedef T                                       pool_type;
+    typedef typename pool_type::key_type            key_type ;
+
+    const pool_type& pool_;
+    const key_type&  key_ ;
+
+public:
+    lock_pool_write_guard(const pool_type& pool, const key_type& key)
+        : pool_(pool)
+        , key_(key)
+    {
+        pool.acquire_write(key);
+    }
+
+    ~lock_pool_write_guard()
+    {
+        pool_.release_write(key_);
     }
 };
 

@@ -1,1 +1,1 @@
-g++ src/real_time_meshes.cpp -o bin/real_time_meshes -O2 -DNDEBUG -lpthread -lz -lrt -lGLU -lglut -I.
+g++ -g src/im_server.cpp ../thrift/if/gen-cpp/*.cpp -DHAVE_CONFIG_H -I../external/libs/boost/include -I../thrift/if/gen-cpp -I. -I./src -I../external/libs/thrift/include/thrift -L../external/libs/thrift/lib -lrt -lpthread -lthrift -lz -lthriftnb -levent -DNDEBUG -O3  -o bin/rtmxz

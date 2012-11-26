@@ -156,7 +156,7 @@ public:
             faces_.push_back(face_t(f0,f1,f2));
         }
 
-        std::cout << "Matching overlap: " << matches << " out of " << p.size() << '\n';
+        //std::cout << "Matching overlap: " << matches << " out of " << p.size() << '\n';
 
     }
 
@@ -215,8 +215,9 @@ public:
     std::size_t mem_size() const
     {
         return points_.capacity() * sizeof(point_t)
+            + normals_.capacity() * sizeof(point_t)
             + faces_.capacity() * sizeof(face_t)
-            + map_.size() * sizeof( typename map_t::mapped_type );
+            + map_.size() * ( sizeof( typename map_t::value_type ) + 2 * sizeof(std::ptrdiff_t));
     }
 
     template< class W > std::size_t

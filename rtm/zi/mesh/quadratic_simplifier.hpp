@@ -31,8 +31,6 @@
 #include <zi/mesh/detail/quadratic.hpp>
 #include <zi/mesh/detail/qmetric.hpp>
 
-#include <boost/heap/binomial_heap.hpp>
-
 #include <zi/vl/vec.hpp>
 #include <zi/vl/quat.hpp>
 
@@ -62,22 +60,13 @@ private:
 
     struct heap_entry
     {
-        typedef typename boost::heap::binomial_heap<heap_entry>::handle_type handle_t;
-
-
         uint64_t                  edge_   ;
         Float                     value_  ;
         const vl::vec< Float, 3 > optimal_;
-        handle_t                  handle_ ;
 
         Float value() const
         {
             return value_;
-        }
-
-        bool operator<(heap_entry const & rhs ) const
-        {
-            return value_ > rhs.value_;
         }
 
         heap_entry()
@@ -111,10 +100,30 @@ private:
 
     };
 
-    unordered_map<uint64_t, typename heap_entry::handle_t>          edge_handles_;
-    boost::heap::binomial_heap<heap_entry>                         heap_        ;
+    friend struct heap_entry;
 
-    typedef typename unordered_map<uint64_t, typename heap_entry::handle_t>::iterator edge_handles_iterator;
+    typedef binary_heap<
+        heap_entry,
+        zi::heap::hashed_index<
+            zi::heap::member_variable<
+                heap_entry,
+                uint64_t,
+                &heap_entry::edge_
+            >
+        >,
+
+        zi::heap::value<
+            zi::heap::member_variable<
+                heap_entry,
+                Float,
+                &heap_entry::value_
+            >,
+            std::less< Float >
+        >
+    > heap_type;
+
+    heap_type heap_;
+
 
 
 private:
@@ -266,7 +275,6 @@ public:
           normals_(),
           quadratic_( 0 ),
           invalid_(),
-          edge_handles_(),
           heap_()
     {
     }
@@ -278,7 +286,6 @@ public:
           normals_( s ),
           quadratic_( s ),
           invalid_(),
-          edge_handles_(),
           heap_()
     {
     }
@@ -374,7 +381,6 @@ public:
     {
         size_ = s;
         heap_.clear();
-        edge_handles_.clear();
         invalid_.clear();
 
         mesh_.resize( s );
@@ -406,8 +412,8 @@ public:
             generate_normals();
         }
         init_heap();
-        std::cout << "HS: " << heap_size() << "\n";
-        std::cout << "FC: " << mesh_.face_count() << "\n";
+        //std::cout << "HS: " << heap_size() << "\n";
+        //std::cout << "FC: " << mesh_.face_count() << "\n";
     }
 
     std::size_t heap_size() const
@@ -429,7 +435,7 @@ public:
         //double no_faces = static_cast< double >( mesh_.face_count() );
 
         std::size_t bad = 0;
-        while ( heap_.size() > 4 ) // don't ask - don't tell!
+        while ( heap_.size() )
         {
             if ( ( ( mesh_.face_count() <= target_faces ) &&
                    ( heap_.top().value_ >= min_error ) ) ||
@@ -446,11 +452,11 @@ public:
         //generate_normals();
 
         invalid_.clear();
-        std::cout << "Face ratio: " << ( static_cast< double >( mesh_.face_count() ) / target_faces ) << "\n";
-        std::cout << "Next error: " << this->min_error() << "\n";
-        std::cout << "Total Face: " << mesh_.face_count() << "\n";
-        std::cout << "Heap Size : " << heap_.size() << "\n";
-        std::cout << "Bad  Size : " << bad << "\n";
+        // std::cout << "Face ratio: " << ( static_cast< double >( mesh_.face_count() ) / target_faces ) << "\n";
+        // std::cout << "Next error: " << this->min_error() << "\n";
+        // std::cout << "Total Face: " << mesh_.face_count() << "\n";
+        // std::cout << "Heap Size : " << heap_.size() << "\n";
+        // std::cout << "Bad  Size : " << bad << "\n";
         return mesh_.face_count();
     }
 
@@ -585,9 +591,6 @@ private:
         heap_entry e( heap_.top() );
         heap_.pop();
 
-        ZI_ASSERT(edge_handles_.count(e.edge_));
-        edge_handles_.erase(e.edge_);
-
         const uint32_t v0 = detail::edge_source( e.edge_ );
         const uint32_t v1 = detail::edge_sink  ( e.edge_ );
 
@@ -623,13 +626,7 @@ private:
             uint64_t eind = ( v0 < v ) ?
                 detail::make_edge( v0, v ) :
                 detail::make_edge( v, v0 );
-
-            edge_handles_iterator it = edge_handles_.find(eind);
-            if ( it != edge_handles_.end() )
-            {
-                heap_.erase(it->second);
-                edge_handles_.erase(it);
-            }
+            heap_.erase_key( eind );
         }
 
         for ( uint32_t v = mesh_.across_edge( v1, v0 );
@@ -639,13 +636,7 @@ private:
             uint64_t eind = ( v1 < v ) ?
                 detail::make_edge( v1, v ) :
                 detail::make_edge( v, v1 );
-
-            edge_handles_iterator it = edge_handles_.find(eind);
-            if ( it != edge_handles_.end() )
-            {
-                heap_.erase(it->second);
-                edge_handles_.erase(it);
-            }
+            heap_.erase_key( eind );
         }
 
         uint32_t v = mesh_.collapse_edge( v0, v1 );
@@ -806,7 +797,7 @@ private:
     {
         const uint64_t e = detail::make_edge( v0, v1 );
 
-        ZI_ASSERT_0(edge_handles_.count( e ));
+        ZI_ASSERT_0( heap_.key_count( e ) );
 
         if ( !check_valid_edge( e ) )
         {
@@ -866,7 +857,7 @@ private:
             val = static_cast< Float >( 0 );
         }
 
-        edge_handles_[e] = heap_.push( heap_entry( e, val, pos ) );
+        heap_.insert( heap_entry( e, val, pos ) );
     }
 
     void init_heap()
