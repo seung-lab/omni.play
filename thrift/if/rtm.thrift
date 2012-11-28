@@ -100,6 +100,10 @@ service RealTimeMesher
 
     void clear(
       1: string uri
+    ),
+
+    void remesh(
+      1: string uri
     )
 
 }

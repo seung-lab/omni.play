@@ -125,6 +125,18 @@ private:
 
                     std::fclose(fp);
                 }
+
+                if ( m.size() )
+                {
+                    std::size_t total = 0;
+                    {
+                        zi::mutex::guard g(m_);
+                        total = total_;
+                    }
+                    LOG(debug) << "Writeback (" << id_ << ") wrote: "
+                               << m.size() << " files, total: "
+                               << ( total_ / 1024 ) << " KB";
+                }
             }
         }
     }
@@ -217,6 +229,8 @@ private:
         {
             delete it->second;
         }
+
+        file_io.remove_dir(prefix_);
 
         map_.clear();
 
@@ -485,10 +499,17 @@ public:
 
     void erase_all()
     {
-        //file_io.remove_dir(prefix_);
         clear_all();
     }
 
+    void get_all( std::list<vec3u>& r )
+    {
+        zi::mutex::guard g(m_);
+        FOR_EACH( it, map_ )
+        {
+            r.push_back(it->first);
+        }
+    }
 
 }; // class chunk_io
 

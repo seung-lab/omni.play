@@ -258,6 +258,17 @@ public:
         LOG(request) << "clear(" << uri << ") [" << t.elapsed<double>() << "]";
     }
 
+    void remesh( const std::string& uri )
+    {
+        zi::wall_timer t;
+
+        zi::rwmutex::read_guard g(incall_);
+        get_mesher(uri)->remesh();
+
+        LOG(request) << "remesh(" << uri << ") [" << t.elapsed<double>() << "]";
+    }
+
+
     void die()
     {
         zi::rwmutex::write_guard g(incall_);
@@ -357,6 +368,8 @@ int main(int argc, char **argv)
     //                   std::string(st2,slen));
 
     // }
+
+    // handler->remesh("81");
 
     server->serve();
 

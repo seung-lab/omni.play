@@ -20,6 +20,7 @@
 #define ZI_MESHING_INTERACTIVE_MESH_HPP
 
 #include "detail/log.hpp"
+#include "detail/assert.hpp"
 #include "detail/scoped_task_manager.hpp"
 
 #include "types.hpp"
@@ -156,6 +157,11 @@ public:
         , stopping_stage_(0)
     {
         start_threads();
+
+        // If we decide to be OK with a few minutes of startup time
+        // we can remesh all the meshes on load!
+
+        // remesh();
     }
 
     ~interactive_mesh()
@@ -165,29 +171,9 @@ public:
 
         zi::rwmutex::write_guard wg(in_call_mutex_);
 
-        {
-            // Set the state to CLEARING and notify the first stage
-            zi::mutex::guard g(mutex_);
-            state_ = STOPPING;
-            update_chunks_cv_.notify_one();
-        }
+        stop_stages();
 
-        join_threads();
-
-        {
-            zi::mutex::guard g(mutex_);
-
-            // check whether everything is actually done!
-
-            for ( std::size_t i = 0; i < 10; ++i )
-            {
-                ZI_ASSERT(update_mip_level_[i].size()==0);
-            }
-
-            ZI_ASSERT(update_chunks_.size()==0);
-        }
-
-        LOG(out) << "   Interactive handler for cell " << id_ << " closed";
+        LOG(debug) << "   Interactive handler for cell " << id_ << " closed";
     }
 
 
@@ -212,6 +198,7 @@ private:
         }
     }
 
+
     // Wait for the stage threads to finish. This is used for either clearing
     // the data or on return.
 
@@ -221,6 +208,35 @@ private:
         for ( std::size_t i = 0; i < 9; ++i )
         {
             update_mip_level_stage_threads_[i].join();
+        }
+    }
+
+
+    // Used to stop the background threads, but first finish all the work
+    // that's scheduled to be done. Note there's no lock here, should be
+    // called under acquired write lock for in_call_mutex_
+
+    void stop_stages()
+    {
+        {
+            // Set the state to STOPPING and notify the first stage
+            zi::mutex::guard g(mutex_);
+            state_ = STOPPING;
+            update_chunks_cv_.notify_one();
+        }
+
+        join_threads();
+
+        {
+            zi::mutex::guard g(mutex_);
+
+            // check whether everything is actually done!
+            for ( std::size_t i = 0; i < 10; ++i )
+            {
+                ASSERT_ERROR(update_mip_level_[i].size()==0);
+            }
+
+            ASSERT_ERROR(update_chunks_.size()==0);
         }
     }
 
@@ -285,9 +301,9 @@ private:
             uint32_t ty = to[1];
             uint32_t tz = to[2];
 
-            ZI_ASSERT(fx/CHUNK_SIZE==tx/CHUNK_SIZE);
-            ZI_ASSERT(fy/CHUNK_SIZE==ty/CHUNK_SIZE);
-            ZI_ASSERT(fz/CHUNK_SIZE==tz/CHUNK_SIZE);
+            ASSERT_ERROR(fx/CHUNK_SIZE==tx/CHUNK_SIZE);
+            ASSERT_ERROR(fy/CHUNK_SIZE==ty/CHUNK_SIZE);
+            ASSERT_ERROR(fz/CHUNK_SIZE==tz/CHUNK_SIZE);
 
 
             //! Deprecated, to be removed. A case with no mask should be handled
@@ -412,18 +428,14 @@ private:
             //std::cout << "Saving Chunk Coord: " << mcoord << "\n";
 
             fmesh_io_.write(fmd, mcoord);
-            if ( smesh_io_.write(mcoord, s) )
-            {
-            }
+            smesh_io_.write(mcoord, s);
             schedule_remesh(next,1);
         }
         else
         {
             ///std::cout << "Erasing Chunk Coord: " << mcoord << "\n";
             fmesh_io_.remove(mcoord);
-            if ( smesh_io_.remove(mcoord) )
-            {
-            }
+            smesh_io_.remove(mcoord);
             schedule_remesh(next,1);
         }
     }
@@ -455,18 +467,14 @@ private:
             //std::cout << "Saving Chunk Coord: " << mcoord << "\n";
 
             fmesh_io_.write(nfmd, mcoord);
-            if ( smesh_io_.write(mcoord, s) )
-            {
-            }
+            smesh_io_.write(mcoord, s);
             schedule_remesh(next,mip+1);
         }
         else
         {
             //std::cout << "Erasing Chunk Coord: " << mcoord << "\n";
             fmesh_io_.remove(mcoord);
-            if ( smesh_io_.remove(mcoord) )
-            {
-            }
+            smesh_io_.remove(mcoord);
             schedule_remesh(next,mip+1);
         }
     }
@@ -508,14 +516,20 @@ private:
             if ( update_chunks.size() )
             {
                 zi::rwmutex::write_guard g(chunks_mutex_);
-                scoped_task_manager tm(16);
 
-                FOR_EACH( it, update_chunks )
+                LOG(debug) << "Handler for (" << id_ << ") will update_chunks: "
+                           << update_chunks.size();
+
                 {
-                    tm.push_back
-                        (zi::run_fn(zi::bind
-                                    (&interactive_mesh::chunk_update_task,
-                                     this, it->first, it->second )));
+                    scoped_task_manager tm(16);
+
+                    FOR_EACH( it, update_chunks )
+                    {
+                        tm.push_back
+                            (zi::run_fn(zi::bind
+                                        (&interactive_mesh::chunk_update_task,
+                                         this, it->first, it->second )));
+                    }
                 }
             }
 
@@ -532,7 +546,7 @@ private:
 
                 if ( done )
                 {
-                    ZI_ASSERT(stopping_stage_==0);
+                    ASSERT_ERROR(stopping_stage_==0);
                     stopping_stage_ = 1;
                 }
 
@@ -563,6 +577,15 @@ private:
 
                 t.reset();
 
+
+                // If we are in stopping phase we should just wait for the
+                // previous stage to be fully completed.
+                while ( stopping_stage_ != mip+1 && state_ != RUNNING )
+                {
+                    update_mip_level_cv_[mip].wait(mutex_);
+                }
+
+
                 // Again, get the list of queued updates unless we are in the
                 // clearing phase.
                 if ( state_ != CLEARING )
@@ -570,43 +593,53 @@ private:
                     to_remesh.swap(update_mip_level_[mip]);
                 }
 
-                // Determine whether we might be done. Note that this done
-                // variable is just a potential to be done, we need to sync the
-                // stopping state as well - make sure the previous stage threads
-                // are done as well.
+
+                // Determine whether we are done. If we are done then we should
+                // have waited for the right stage before continuing.
                 done = ( state_ == CLEARING || state_ == STOPPING );
 
+                if ( done )
+                {
+                    ASSERT_ERROR(stopping_stage_==mip+1);
+                }
             }
 
             // Do remeshing if needed
             if ( to_remesh.size() )
             {
-                scoped_task_manager tm(16);
-
                 // Get the appropriate locks to guard the data
-                zi::rwmutex::read_guard rg
+                zi::rwmutex& reading_mutex =
                     ((mip==0)?chunks_mutex_:mip_level_mutex_[mip-1]);
+
+                zi::rwmutex::read_guard  rg(reading_mutex);
                 zi::rwmutex::write_guard wg(mip_level_mutex_[mip]);
 
-                // the processing is different for the zero mip level
-                if ( mip == 0 )
+                LOG(debug) << "Handler for (" << id_ << ") will update_mip: "
+                           << mip << ", " << to_remesh.size();
+
                 {
-                    FOR_EACH( it, to_remesh )
+                    scoped_task_manager tm(16);
+
+                    // the processing is different for the zero mip level
+                    if ( mip == 0 )
                     {
-                        tm.insert(zi::run_fn
-                                  (zi::bind
-                                   (&interactive_mesh::update_mip0_task,
-                                    this, *it ) ) );
+                        FOR_EACH( it, to_remesh )
+                        {
+                            tm.insert(zi::run_fn
+                                      (zi::bind
+                                       (&interactive_mesh::update_mip0_task,
+                                        this, *it ) ) );
+                        }
                     }
-                }
-                else
-                {
-                    FOR_EACH( it, to_remesh )
+                    else
                     {
-                        tm.insert(zi::run_fn
+                        FOR_EACH( it, to_remesh )
+                        {
+                            tm.insert(zi::run_fn
                                   (zi::bind
                                    (&interactive_mesh::update_mipn_task,
                                     this, *it, mip ) ) );
+                        }
                     }
                 }
             }
@@ -619,12 +652,10 @@ private:
                 // Needs to decide whether we are actually done.
                 zi::mutex::guard g(mutex_);
 
-                done = done && stopping_stage_ == mip + 1;
-
                 if ( done )
                 {
-                    ZI_ASSERT(stopping_stage_ == mip+1);
-                    stopping_stage_ = mip + 2;
+                    ASSERT_ERROR(stopping_stage_==mip+1);
+                    stopping_stage_=mip+2;
                 }
 
                 if ( mip < 8 )
@@ -740,9 +771,11 @@ public:
     //                    uint32_t w, uint32_t h, uint32_t d,
     //                    const char* data)
     // {
-    //     zi::rwmutex::read_guard g(mutex_); // YES this is read guard (reading the dir structure)
+    //     zi::rwmutex::read_guard g(mutex_); // YES this is read guard
+    // (reading the dir structure)
 
-    //     chunk_ref_ptr c( new chunk_type_ref(reinterpret_cast<const uint32_t*>(data),
+    //     chunk_ref_ptr c( new chunk_type_ref(reinterpret_cast<const uint32_t*>
+    // (data),
     //                                         extents[d][h][w]) );
 
     //     {
@@ -758,8 +791,9 @@ public:
     {
         zi::rwmutex::read_guard g(in_call_mutex_);
 
-        chunk_ref_ptr c( new chunk_type_ref(reinterpret_cast<const uint32_t*>(data),
-                                            extents[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE]) );
+        chunk_ref_ptr c( new chunk_type_ref(
+                             reinterpret_cast<const uint32_t*>(data),
+                             extents[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE]) );
 
         {
             //zi::rwmutex::write_guard g1(chunk_updates_m_);
@@ -782,11 +816,13 @@ public:
 
         chunk_type_ptr c(new chunk_type(extents[d-dw][h-dw][w-dw]));
 
-        chunk_ref_ptr corig( new chunk_type_ref(reinterpret_cast<const uint32_t*>(data),
-                                                extents[d][h][w]) );
+        chunk_ref_ptr corig( new chunk_type_ref(
+                                 reinterpret_cast<const uint32_t*>(data),
+                                 extents[d][h][w]) );
 
         c->operator[](indices[range(0,d-dw)][range(0,h-dw)][range(0,w-dw)])
-            = corig->operator[](indices[range(ow,d-ow)][range(ow,h-ow)][range(ow,w-ow)]);
+            = corig->operator[](indices[range(ow,d-ow)]
+                                [range(ow,h-ow)][range(ow,w-ow)]);
 
         mask_type_ptr m;
 
@@ -796,7 +832,8 @@ public:
             mask_type_ref morig( mask, extents[d][h][w] );
 
             m->operator[](indices[range(0,d-dw)][range(0,h-dw)][range(0,w-dw)])
-                = morig[indices[range(ow,d-ow)][range(ow,h-ow)][range(ow,w-ow)]];
+                = morig[indices[range(ow,d-ow)][range(ow,h-ow)]
+                        [range(ow,w-ow)]];
         }
 
         {
@@ -837,7 +874,8 @@ public:
         }
     }
 
-    std::size_t get_mesh_if_different( const vec4u& c, std::string& ret, std::size_t h )
+    std::size_t get_mesh_if_different( const vec4u& c, std::string& ret,
+                                       std::size_t h )
     {
         zi::rwmutex::read_guard g(in_call_mutex_);
         return smesh_io_.read_if_different(c, ret, h);
@@ -884,17 +922,41 @@ public:
 
             update_chunks_.clear();
 
-            ZI_ASSERT(stopping_stage_==10);
+            ASSERT_ERROR(stopping_stage_==10);
             state_ = RUNNING;
         }
 
         start_threads();
     }
 
-private:
-    void stop()
+    void remesh()
     {
+        zi::rwmutex::write_guard wg(in_call_mutex_);
+        std::list<vec3u> to_update;
 
+        chunk_io_.get_all(to_update);
+
+        // For the case when we have problems with the file system it might be
+        // useful to have the erase_all calls made as well. In that case we
+        // might want to sync them with the other reads/writes.
+
+        // smesh_io_.erase_all();
+        // fmesh_io_.erase_all();
+
+        {
+            zi::mutex::guard g(mutex_);
+            FOR_EACH( it, to_update )
+            {
+                update_mip_level_[0].insert(*it);
+            }
+            if ( to_update.size() )
+            {
+                LOG(debug) << "Fully remeshing cell: " << id_
+                           << " total: " << to_update.size();
+
+                update_mip_level_cv_[0].notify_one();
+            }
+        }
     }
 
 

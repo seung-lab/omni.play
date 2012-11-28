@@ -23,6 +23,7 @@
 #include <zi/utility/singleton.hpp>
 #include <zi/utility/non_copyable.hpp>
 #include <zi/concurrency.hpp>
+#include <zi/time.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -119,7 +120,8 @@ public:
 }; // log_token
 
 
-#define LOG(what) (log_token()) << "LOG(" << #what << ") "
+#define LOG(what) (log_token()) << "LOG(" << #what << ") "      \
+    << "[" << zi::now::usecs() << "] "
 
 
 
