@@ -68,7 +68,7 @@ void get_obj(std::string& _return,
              int32_t mipLevel,
              int32_t segId);
 
-void get_seeds(std::vector<std::set<int32_t> >& seedIds,
+void get_seeds(std::vector<std::map<int32_t, int32_t> >& seedIds,
                const volume::volume& taskVolume,
                const std::set<int32_t>& selected,
                const volume::volume& adjacentVolume);

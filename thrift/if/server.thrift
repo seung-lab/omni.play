@@ -132,7 +132,7 @@ service server extends fb303.FacebookService
     # do we need the metadata for the comparison procedure?
     double compare_results( 1: list<result> old_results, 2: result new_result)
 
-    list<set<i32>> get_seeds( 1: metadata taskVolume,
-                              2: set<i32> selected,
-                              3: metadata adjacentVolume)
+    list<map<i32, i32>> get_seeds( 1: metadata taskVolume,
+		                           2: set<i32> selected,
+		                           3: metadata adjacentVolume)
 }

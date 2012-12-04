@@ -46,7 +46,7 @@ template<typename T>
 void connectedSets(const coords::globalBbox& bounds,
                    const volume::volume& vol,
                    const T& allowed,
-                   std::vector<std::set<int32_t> >& results)
+                   std::vector<std::set<uint32_t> >& results)
 {
     uint32_t max_seg_id = 0;
     FOR_EACH(it, allowed) {
@@ -81,7 +81,7 @@ void connectedSets(const coords::globalBbox& bounds,
         }
     }
 
-    boost::unordered_map<uint32_t, std::set<int32_t> > newSeedSets;
+    boost::unordered_map<uint32_t, std::set<uint32_t> > newSeedSets;
 
     FOR_EACH( it, allowed ) {
         newSeedSets[sets.find_set(*it)].insert(*it);
@@ -92,7 +92,7 @@ void connectedSets(const coords::globalBbox& bounds,
     }
 }
 
-void get_seeds(std::vector<std::set<int32_t> >& seeds,
+void get_seeds(std::vector<std::map<int32_t, int32_t> >& seeds,
                const volume::volume& taskVolume,
                const std::set<int32_t>& selected,
                const volume::volume& adjacentVolume)
@@ -144,6 +144,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     }
 
     boost::unordered_map<uint32_t, int> mappingCounts;
+    boost::unordered_map<uint32_t, int> sizes;
 
     // Find corresponding Segments in adjacent volume
     for(int x = overlap.getMin().x; x < overlap.getMax().x; x++)
@@ -155,10 +156,12 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
                 const coords::global point(x, y, z);
 
                 uint32_t taskSegId = taskVolume.GetSegId(point);
+            	uint32_t adjacentSegId = adjacentVolume.GetSegId(point);
 
-                if ( intersectingSegIds.count(taskSegId) ) {
-                    uint32_t adjacentSegId = adjacentVolume.GetSegId(point);
-                    if(adjacentSegId > 0) {
+                if(adjacentSegId > 0) {
+            		++sizes[adjacentSegId];
+
+                	if (intersectingSegIds.count(taskSegId)) {
                         ++mappingCounts[adjacentSegId];
                     }
                 }
@@ -174,7 +177,7 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
         }
     }
 
-    std::vector<std::set<int32_t> > adjacentSeeds;
+    std::vector<std::set<uint32_t> > adjacentSeeds;
 
     // group all the segments based on adjacency
     connectedSets(overlap, adjacentVolume, correspondingIds, adjacentSeeds);
@@ -185,18 +188,22 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
         {
             const uint32_t& segId = *seg;
             segments::data segData = adjacentVolume.GetSegmentData(segId);
-            
+
             coords::dataBbox segBounds(segData.bounds, &adjacentVolume.CoordSystem(), 0);
-        	
+
         	std::cout << "            " << segBounds.toGlobalBbox() << std::endl;
 
             if(exceedsOverlap(segBounds.toGlobalBbox(), overlap)) {
-                seeds.push_back(*seed);
+                std::map<int32_t, int32_t> seedMap;
+                FOR_EACH(seg, *seed) {
+					seedMap[*seg] = sizes[*seg];
+				}
+				seeds.push_back(seedMap);
                 break;
             }
         }
     }
-    
+
 }
 
 }} // namespace om::handler

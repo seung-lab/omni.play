@@ -46,6 +46,8 @@ public:
 	MOCK_METHOD3(getMeshVersions, void(std::vector<int64_t> & _return,
 				const std::string& uri,
 				const std::vector<MeshCoordinate> & coordinates));
+	MOCK_METHOD1(clear, void(const std::string&));
+	MOCK_METHOD1(remesh, void(const std::string&));
 };
 
 TEST(UpdateMeshTest, Update)

@@ -184,7 +184,7 @@ public:
         handler::get_obj(_return, uri, chunk, mipLevel, segId);
     }
 
-    void get_seeds(std::vector<std::set<int32_t> >& _return,
+    void get_seeds(std::vector<std::map<int32_t, int32_t> >& _return,
                    const metadata& taskVolume,
                    const std::set<int32_t>& selected,
                    const metadata& adjacentVolume)
