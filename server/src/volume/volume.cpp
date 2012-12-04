@@ -7,6 +7,9 @@
 #include "pipeline/getSegIds.hpp"
 #include <zi/zlog/zlog.hpp>
 
+#include "utility/yaml/baseTypes.hpp"
+#include "utility/yaml/yaml.hpp"
+
 namespace om {
 namespace volume {
 
@@ -79,6 +82,67 @@ volume::volume(std::string uri,
     coordSystem_.UpdateRootLevel();
 	loadVolume();
 }
+
+void volume::loadYaml(const YAML::Node& yamlVolume)
+{
+	const YAML::Node& coords = yamlVolume["coords"];
+
+	coords::global dims, absOffset;
+	coords["dataDimensions"] >> dims;
+	coords["absOffset"] >> absOffset;
+	coords["dataResolution"] >> resolution_;
+
+	bounds_ = coords::globalBbox(absOffset, absOffset + dims);
+
+	std::string type;
+	yamlVolume["type"] >> type;
+	if(type == "float") {
+		dataType_ = server::dataType::FLOAT;
+	} else if (type == "uint32_t") {
+		dataType_ = server::dataType::UINT32;
+	}
+
+	int chunkDim;
+	coords["chunkDim"] >> chunkDim;
+	chunkDims_ = Vector3i(chunkDim);
+}
+
+volume::volume(std::string uri, common::objectType type)
+    	: uri_(uri)
+{
+	YAML::Node n;
+	std::string fnp = uri + "/projectMetadata.yaml";
+	if(!boost::filesystem::exists(fnp)){
+        throw ioException("could not find file", fnp);
+    }
+
+    std::ifstream fin(fnp.c_str());
+
+    YAML::Parser parser(fin);
+
+    parser.GetNextDocument(n);
+    parser.GetNextDocument(n);
+
+	const YAML::Node& volumes = n["Volumes"];
+
+	if(type == common::CHANNEL) {
+		volType_ = server::volType::CHANNEL;
+		loadYaml(volumes["Channels"]["values"][0]);
+	} else {
+		volType_ = server::volType::SEGMENTATION;
+		loadYaml(volumes["Segmentations"]["values"][0]);
+	}
+
+	mipLevel_ = 0;
+
+	Vector3i dims = bounds_.getMax() - bounds_.getMin();
+	coordSystem_.SetDataDimensions(dims);
+    coordSystem_.SetAbsOffset(bounds_.getMin());
+    coordSystem_.SetResolution(resolution_);
+    coordSystem_.UpdateRootLevel();
+	loadVolume();
+}
+
 
 int32_t volume::GetSegId(coords::global point) const
 {

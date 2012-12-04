@@ -26,6 +26,7 @@ private:
 
 public:
     volume(const server::metadata& metadata);
+
     volume(std::string uri,
     	   coords::globalBbox bounds,
     	   Vector3i resolution,
@@ -33,6 +34,8 @@ public:
     	   server::volType::type volType,
     	   Vector3i chunkDims,
     	   int32_t mipLevel_);
+
+    volume(std::string uri, common::objectType type);
 
     inline const std::string& Uri() const {
         return uri_;
@@ -83,6 +86,7 @@ public:
 
 private:
 	void loadVolume();
+	void loadYaml(const YAML::Node&);
 };
 
 inline std::ostream& operator<<(std::ostream& out, const volume& vol)
