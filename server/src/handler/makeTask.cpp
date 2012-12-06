@@ -13,28 +13,6 @@
 namespace om {
 namespace handler {
 
-bool inAdjacentVolume(const coords::globalBbox& seg,
-                      const coords::globalBbox& ovr,
-                      const coords::globalBbox& adj)
-{
-    // If the segment is touching a boundary && that boundary is inside the adj Volume.
-    // Need to adjust segment mins by 1 because segments don't go all the way to the
-    // edges of the volume.
-    return (seg.getMin().x - 1 == ovr.getMin().x && ovr.getMin().x > adj.getMin().x) ||
-           (seg.getMin().y - 1 == ovr.getMin().y && ovr.getMin().y > adj.getMin().y) ||
-           (seg.getMin().z - 1 == ovr.getMin().z && ovr.getMin().z > adj.getMin().z) ||
-           (seg.getMax().x + 1 == ovr.getMax().x && ovr.getMax().x < adj.getMax().x) ||
-           (seg.getMax().y + 1 == ovr.getMax().y && ovr.getMax().y < adj.getMax().y) ||
-           (seg.getMax().z + 1 == ovr.getMax().z && ovr.getMax().z < adj.getMax().z);
-}
-
-bool exceedsOverlap(const coords::globalBbox& seg,
-                    const coords::globalBbox& ovr)
-{
-    return seg.getMin().x < ovr.getMin().x || seg.getMin().y < ovr.getMin().y || seg.getMin().z < ovr.getMin().z ||
-           seg.getMax().x > ovr.getMax().x || seg.getMax().y > ovr.getMax().y || seg.getMax().z > ovr.getMax().z;
-}
-
 void conditionalJoin(zi::disjoint_sets<uint32_t>& sets, uint32_t id1, uint32_t id2)
 {
     uint32_t id1_rep = sets.find_set(id1);
@@ -106,42 +84,10 @@ void get_seeds(std::vector<std::map<int32_t, int32_t> >& seeds,
 
     std::cout << std::endl;
 
-    const int DUST_SIZE_THR_2D=25;
     const int FALSE_OBJ_SIZE_THR=125;
 
     coords::globalBbox overlap = taskVolume.Bounds();
     overlap.intersect(adjacentVolume.Bounds());
-
-    bool leavesVolume = false;
-    boost::unordered_set<uint32_t> intersectingSegIds;
-    // Find intersecting segIds
-    FOR_EACH(it, selected)
-    {
-        const uint32_t& segId = *it;
-        segments::data segData = taskVolume.GetSegmentData(segId);
-
-        // object too small
-        if (segData.size < DUST_SIZE_THR_2D) {
-            continue;
-        }
-
-        coords::dataBbox segOverlap(segData.bounds, &taskVolume.CoordSystem(), 0);
-        coords::globalBbox segOver = segOverlap.toGlobalBbox();
-        segOver.intersect(overlap);
-
-        // Does not overlap with boundary region
-        if (!segOver.isEmpty()) {
-            intersectingSegIds.insert(segId);
-            if(inAdjacentVolume(segOver, overlap, adjacentVolume.Bounds())) {
-                leavesVolume = true;
-            }
-        }
-    }
-
-    if(!leavesVolume) {
-    	std::cout << "Does not leave Volume." << std::endl;
-        return;
-    }
 
     boost::unordered_map<uint32_t, int> mappingCounts;
     boost::unordered_map<uint32_t, int> sizes;
@@ -161,7 +107,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t> >& seeds,
                 if(adjacentSegId > 0) {
             		++sizes[adjacentSegId];
 
-                	if (intersectingSegIds.count(taskSegId)) {
+                	if (selected.count(taskSegId)) {
                         ++mappingCounts[adjacentSegId];
                     }
                 }
@@ -169,12 +115,9 @@ void get_seeds(std::vector<std::map<int32_t, int32_t> >& seeds,
         }
     }
 
-    // Find all the segIds in the adjacent volume with enough overlap
     std::set<uint32_t> correspondingIds;
     FOR_EACH(seg, mappingCounts) {
-        if (seg->second >= FALSE_OBJ_SIZE_THR) {
-            correspondingIds.insert(seg->first);
-        }
+        correspondingIds.insert(seg->first);
     }
 
     std::vector<std::set<uint32_t> > adjacentSeeds;
@@ -182,26 +125,35 @@ void get_seeds(std::vector<std::map<int32_t, int32_t> >& seeds,
     // group all the segments based on adjacency
     connectedSets(overlap, adjacentVolume, correspondingIds, adjacentSeeds);
 
+    // Prune small segments but don't totally destroy tasks
+    FOR_EACH(seed, adjacentSeeds)
+	{
+		std::vector<uint32_t> toRemove;
+    	FOR_EACH(seg, *seed)
+    	{
+		    if (mappingCounts[*seg] < FALSE_OBJ_SIZE_THR) {
+		    	toRemove.push_back(*seg);
+		    }
+    	}
+
+    	FOR_EACH(seg, toRemove)
+    	{
+    		if(seed->size() <= 1) {
+    			break;
+    		}
+
+			seed->erase(*seg);
+    	}
+    }
+
+
     FOR_EACH(seed, adjacentSeeds)
     {
-        FOR_EACH(seg, *seed)
-        {
-            const uint32_t& segId = *seg;
-            segments::data segData = adjacentVolume.GetSegmentData(segId);
-
-            coords::dataBbox segBounds(segData.bounds, &adjacentVolume.CoordSystem(), 0);
-
-        	std::cout << "            " << segBounds.toGlobalBbox() << std::endl;
-
-            if(exceedsOverlap(segBounds.toGlobalBbox(), overlap)) {
-                std::map<int32_t, int32_t> seedMap;
-                FOR_EACH(seg, *seed) {
-					seedMap[*seg] = sizes[*seg];
-				}
-				seeds.push_back(seedMap);
-                break;
-            }
+        std::map<int32_t, int32_t> seedMap;
+        FOR_EACH(seg, *seed) {
+			seedMap[*seg] = sizes[*seg];
         }
+		seeds.push_back(seedMap);
     }
 
 }
