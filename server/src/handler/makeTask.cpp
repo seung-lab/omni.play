@@ -208,12 +208,12 @@ struct Overlap
 
 	std::map<int32_t, int32_t> MakeSeed(const SegBundle& bundle)
 	{
-		const int FALSE_OBJ_SIZE_THR=125;
+		const double FALSE_OBJ_RATIO_THR=0.5;
 		std::map<int32_t, int32_t> ret;
 		uint32_t largest, largestSize;
 		FOR_EACH(seg, bundle.Segments())
     	{
-    		if (mappingCounts_[*seg] >= FALSE_OBJ_SIZE_THR) {
+    		if (((double)mappingCounts_[*seg]) / ((double)sizes_[*seg]) >= FALSE_OBJ_RATIO_THR) {
 		    	ret[*seg] = sizes_[*seg];
 		    }
 		    if(sizes_[*seg] > largestSize) {
