@@ -187,6 +187,10 @@ segments::data volume::GetSegmentData(int32_t segId) const
 
     datalayer::memMappedFile<segments::data> page(fname);
 
+    if(segId >= page.Length()) {
+    	throw argException(str(boost::format("Invalid Seg Id %1%") % segId));
+    }
+
     segments::data d = page.GetPtr()[idx];
 
     if(d.value <= 0) {
