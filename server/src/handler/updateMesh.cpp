@@ -34,34 +34,6 @@ void make_loc_size(const volume::volume& vol, zi::mesh::Vector3i& loc, zi::mesh:
 	size.z = vol.Bounds().getMax().z - vol.Bounds().getMin().z;
 }
 
-void update_global_mesh(zi::mesh::RealTimeMesherIf* rtm,
-                        const volume::volume& vol,
-	                    const std::set<uint32_t>& segIds,
-                        uint32_t segId)
-{
-	using namespace pipeline;
-	using namespace apache::thrift;
-	if (!vol.VolumeType() == server::volType::SEGMENTATION) {
-		throw argException("Can only update global mesh from segmentation");
-	}
-
-	datalayer::memMappedFile<uint32_t> dataFile =
-		boost::get<datalayer::memMappedFile<uint32_t> >(vol.Data());
-	data<uint32_t> unchunked = unchunk(vol.CoordSystem())(dataFile);
-	data<uint32_t> filtered = set_filter<uint32_t, uint32_t>(segIds, segId)(unchunked);
-	std::string data(reinterpret_cast<char*>(filtered.data.get()), filtered.size * sizeof(uint32_t));
-
-	zi::mesh::Vector3i loc, size;
-	make_loc_size(vol, loc, size);
-
-	try {
-		rtm->update(string::num(segId), loc, size, data);
-	} catch (apache::thrift::TException &tx) {
-		std::cout << "Something's Wrong: " << tx.what() << std::endl;
-	    throw(tx);
-	}
-}
-
 bool modify_global_mesh_data(zi::mesh::RealTimeMesherIf* rtm,
                              const volume::volume& vol,
     					     const std::set<uint32_t> addedSegIds,
@@ -76,7 +48,7 @@ bool modify_global_mesh_data(zi::mesh::RealTimeMesherIf* rtm,
 	}
 
 	datalayer::memMappedFile<uint32_t> dataFile =
-		boost::get<datalayer::memMappedFile<uint32_t> >(vol.Data());
+		boost::get<datalayer::memMappedFile<uint32_t> >(vol.Data(0));
 
 	data<uint32_t> unchunked = unchunk(vol.CoordSystem())(dataFile);
 

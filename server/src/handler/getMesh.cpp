@@ -7,6 +7,7 @@
 #include "handler/validate.hpp"
 
 #include "common/common.h"
+#include "volume/volume.h"
 #include "utility/timer.hpp"
 #include "utility/UUID.hpp"
 
@@ -161,8 +162,10 @@ boost::shared_ptr<mesh::data> loadData(coords::chunk cc, const std::string& uri,
     return data;
 }
 
+const char* MESH_RELATIVE_PATH = "segmentations/segmentation1/meshes/1.0000/";
+
 void get_mesh(std::string& _return,
-              const std::string& uri,
+              const volume::volume& vol,
               const server::vector3i& chunk,
               int32_t mipLevel,
               int32_t segId)
@@ -170,7 +173,8 @@ void get_mesh(std::string& _return,
     const utility::UUID uuid;
 
 	coords::chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
-	boost::shared_ptr<mesh::data> data = loadData(cc, uri, segId);
+	boost::shared_ptr<mesh::data> data =
+		loadData(cc, vol.Uri() + MESH_RELATIVE_PATH, segId);
 
 	if(!data.get()) {
 		return;
@@ -189,23 +193,15 @@ void get_mesh(std::string& _return,
     _return = std::string((char*)&newVertexData.front(), newVertexData.size() * sizeof(float));
 }
 
-void get_remesh(std::string& _return,
-                const std::string& uri,
-                const server::vector3i& chunk,
-                int32_t mipLevel,
-                const std::set<int32_t>& segId)
-{
-
-}
-
 void get_obj(std::string& _return,
-             const std::string& uri,
+             const volume::volume& vol,
              const server::vector3i& chunk,
              int32_t mipLevel,
              int32_t segId)
 {
     coords::chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
-	boost::shared_ptr<mesh::data> data = loadData(cc, uri, segId);
+	boost::shared_ptr<mesh::data> data =
+		loadData(cc, vol.Uri() + MESH_RELATIVE_PATH, segId);
 
 	if(!data.get()) {
 		return;

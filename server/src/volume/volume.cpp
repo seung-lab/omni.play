@@ -15,7 +15,7 @@ namespace volume {
 
 using namespace pipeline;
 
-void volume::loadVolume()
+bool volume::loadVolume(const int32_t mipLevel)
 {
 	if(!file::exists(uri_)) {
         throw argException("Invalid metadata: uri not found.");
@@ -27,23 +27,41 @@ void volume::loadVolume()
         {
             const std::string chanName = str(
                 boost::format("%1%/channels/channel1/%2%/volume.float.raw")
-                % uri_ % mipLevel_);
+                % uri_ % mipLevel);
+
+            if(!file::exists(chanName)){
+        		return false;
+        	}
 
             mapData mapped(chanName, server::dataType::FLOAT); // Ignore dataType for now.
-            data_ = mapped.file();
+            data_.push_back(mapped.file());
             break;
         }
         case server::volType::SEGMENTATION:
         {
             const std::string segName = str(
                 boost::format("%1%/segmentations/segmentation1/%2%/volume.uint32_t.raw")
-                % uri_ % mipLevel_);
+                % uri_ % mipLevel);
+
+			if(!file::exists(segName)){
+        		return false;
+        	}
 
             mapData mappedSeg(segName, server::dataType::UINT32); // Ignore dataType for now.
-            data_ = mappedSeg.file();
+            data_.push_back(mappedSeg.file());
             break;
         }
     }
+    return true;
+}
+
+void volume::loadVolume()
+{
+	for (int i = 0;; ++i)
+	{
+		if(!loadVolume(i))
+			break;
+	}
 }
 
 volume::volume(const server::metadata& meta)
@@ -53,7 +71,6 @@ volume::volume(const server::metadata& meta)
     , dataType_(meta.type)
     , volType_(meta.vol_type)
     , chunkDims_(common::Convert(meta.chunkDims))
-    , mipLevel_(meta.mipLevel)
     , coordSystem_(meta)
 {
     loadVolume();
@@ -64,15 +81,13 @@ volume::volume(std::string uri,
     	   	   Vector3i resolution,
     	   	   server::dataType::type dataType,
     	   	   server::volType::type volType,
-    	   	   Vector3i chunkDims,
-    	   	   int32_t mipLevel)
+    	   	   Vector3i chunkDims)
     	: uri_(uri)
     	, bounds_(bounds)
     	, resolution_(resolution)
     	, dataType_(dataType)
     	, volType_(volType)
     	, chunkDims_(chunkDims)
-    	, mipLevel_(mipLevel)
     	, coordSystem_()
 {
 	Vector3i dims = bounds.getMax() - bounds.getMin();
@@ -133,8 +148,6 @@ volume::volume(std::string uri, common::objectType type)
 		loadYaml(volumes["Segmentations"]["values"][0]);
 	}
 
-	mipLevel_ = 0;
-
 	Vector3i dims = bounds_.getMax() - bounds_.getMin();
 	coordSystem_.SetDataDimensions(dims);
     coordSystem_.SetAbsOffset(bounds_.getMin());
@@ -147,25 +160,9 @@ volume::volume(std::string uri, common::objectType type)
 int32_t volume::GetSegId(coords::global point) const
 {
     coords::global coord = point;
-    coords::data dc = coord.toData(&coordSystem_, mipLevel_);
+    coords::data dc = coord.toData(&coordSystem_, 0);
 
-    return data_ >> getSegId(dc);
-}
-
-void volume::GetSegIds(coords::global point, int radius,
-                       common::viewType view,
-                       std::set<int32_t>& ids) const
-{
-    coords::global coord = point;
-    coords::data dc = coord.toData(&coordSystem_, mipLevel_);
-
-    data_var id = data_ >> getSegIds(dc, radius, view,
-                                                 bounds_.toDataBbox(&coordSystem_, mipLevel_));
-
-    data<uint32_t> found = boost::get<data<uint32_t> >(id);
-    for(int i = 0; i < found.size; i++) {
-        ids.insert(found.data.get()[i]);
-    }
+    return data_[0] >> getSegId(dc);
 }
 
 segments::data volume::GetSegmentData(int32_t segId) const

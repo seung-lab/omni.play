@@ -16,13 +16,6 @@ struct vector3i
     3: i32 z
 }
 
-struct edge
-{
-    1: i32 a,
-    2: i32 b,
-    3: double value
-}
-
 struct bbox
 {
     1: vector3d min,
@@ -74,63 +67,29 @@ struct metadata
     3: vector3i resolution,
     4: dataType type,
     5: vector3i chunkDims,
-    6: i32 mipLevel,
-    7: volType vol_type
+    6: volType vol_type
 }
 
 service server extends fb303.FacebookService
 {
-    void add_chunk( 1: metadata vol, 2: vector3i chunk, 3: binary data ),
-    void delete_chunk( 1: metadata vol, 2: vector3i chunk ),
-    binary get_chunk( 1: metadata vol, 2: vector3i chunk ),
-    list<edge> get_graph( 1: metadata vol ),
-    list<edge> get_mst( 1: metadata vol ),
+    map<string, tile> get_tiles( 1: metadata vol, 2: bbox Bbox, 3: viewType view, 4: i32 mipLevel ),
 
-    metadata create_segmentation( 1: metadata chan,
-                                  2: i32 newVolId,
-                                  3: list<string> features ),
-
-    tile get_chan_tile( 1: metadata vol, 2: vector3d point, 3: viewType view ),
-
-    map<string, tile> get_seg_tiles( 1: metadata vol,
-                                     2: i32 segId,
-                                     3: bbox segBbox,
-                                     4: viewType view ),
-
-    i32 get_seg_id( 1: metadata vol, 2: vector3d point),
-
-    segData get_seg_data( 1: metadata vol,
-                          2: i32 segId ),
-
-    map<i32, segData> get_seg_list_data( 1: metadata vol,
-                                         2: set<i32> segIds ),
-
-    set<i32> get_seg_ids( 1: metadata vol,
-                          2: vector3d point,
-                          3: i32 radius,
-                          4: viewType view),
-
-    binary get_mesh( 1: string uri,
-                     2: vector3i chunk,
-                     3: i32 mipLevel,
-                     4: i32 segId),
-
-    oneway void update_global_mesh( 1: metadata vol,
-    					            2: set<i32> segIds,
-    					            3: i32 segId),
+    map<i32, segData> get_seg_list_data( 1: metadata vol, 2: set<i32> segIds ),
 
     bool modify_global_mesh_data( 1: metadata vol,
     					     	  2: set<i32> addedSegIds,
     					     	  3: set<i32> deletedSegIds,
     					     	  4: i32 segId),
 
-    string get_obj( 1: string uri,
+    binary get_mesh( 1: metadata vol,
+                     2: vector3i chunk,
+                     3: i32 mipLevel,
+                     4: i32 segId),
+
+    string get_obj( 1: metadata vol,
                     2: vector3i chunk,
                     3: i32 mipLevel,
                     4: i32 segId)
-
-    # do we need the metadata for the comparison procedure?
-    double compare_results( 1: list<result> old_results, 2: result new_result)
 
     list<map<i32, i32>> get_seeds( 1: metadata taskVolume,
 		                           2: set<i32> selected,

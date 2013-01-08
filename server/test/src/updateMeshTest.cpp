@@ -50,28 +50,6 @@ public:
 	MOCK_METHOD1(remesh, void(const std::string&));
 };
 
-TEST(UpdateMeshTest, Update)
-{
-	MockRealTimeMesher mesher;
-
-	EXPECT_CALL(mesher, update(_,_,_,_));
-
-	om::volume::volume vol("test/data/test.omni.files/",
-		coords::globalBbox(coords::global(0, 0, 0), coords::global(255, 255, 159)),
-		vmml::Vector3i::ONE, server::dataType::UINT32,
-		server::volType::SEGMENTATION, vmml::Vector3i(128),0);
-
-	std::set<uint32_t> segIds;
-	segIds.insert(342);
-	segIds.insert(3463);
-	segIds.insert(4368);
-	segIds.insert(13);
-
-	uint32_t segId = 1;
-
-	handler::update_global_mesh(&mesher, vol, segIds, segId);
-}
-
 TEST(UpdateMeshTest, MaskedUpdate)
 {
 	MockRealTimeMesher mesher;
@@ -81,7 +59,7 @@ TEST(UpdateMeshTest, MaskedUpdate)
 	om::volume::volume vol("test/data/test.omni.files/",
 		coords::globalBbox(coords::global(0, 0, 0), coords::global(255, 255, 159)),
 		vmml::Vector3i::ONE, server::dataType::UINT32,
-		server::volType::SEGMENTATION, vmml::Vector3i(128),0);
+		server::volType::SEGMENTATION, vmml::Vector3i(128));
 
 	std::set<uint32_t> added;
 	added.insert(238);
