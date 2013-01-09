@@ -72,9 +72,9 @@ DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(BREAKPAD)
 
 TESTINCLUDES = -I$(GMOCK)/include \
- 			   -I$(GMOCK)/gtest/include \
- 			   -I$(GMOCK) \
- 			   -I$(GMOCK)/gtest \
+			   -I$(GMOCK)/gtest/include \
+			   -I$(GMOCK) \
+			   -I$(GMOCK)/gtest \
 
 LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/boost/lib/libboost_iostreams.a \
@@ -260,7 +260,7 @@ COMMONSOURCES     = $(subst common/src,$(BUILDDIR)/common, 				\
 					  $(shell find common/src -iname "*.cpp"))
 
 THRIFTSOURCES     = $(subst thrift/src,$(BUILDDIR)/thrift, 				\
-					  $(shell find thrift/src -iname "*.cpp"))
+					  $(shell find thrift/src -iname "*.cpp" 2>/dev/null))
 
 SERVERSOURCES     = $(subst server/src,$(BUILDDIR)/server, 				\
                       $(shell find server/src -iname "*.cpp" | grep -v "main.cpp"))
@@ -335,7 +335,7 @@ tidy:
 clean:
 	$(ECHO) Cleaning...
 	$(RM) -rf bin $(GENDIR) build
-	$(RM) common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
+	$(RM) -f common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
 
 .PHONY: remake
 remake: clean all
@@ -362,5 +362,5 @@ desktop: $(BINDIR)/omni.desktop $(BINDIR)/omni.desktop.test
 server: $(BINDIR)/omni.server $(BINDIR)/omni.server.test
 #	$(BINDIR)/omni.server.test
 
-ALLDEPS = $(shell find $(BUILDDIR) -iname "*.d")
+ALLDEPS = $(shell find $(BUILDDIR) -iname "*.d" 2>/dev/null)
 -include $(ALLDEPS)
