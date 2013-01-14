@@ -44,7 +44,7 @@ public:
 	    FOR_EACH(iter, *chunks)
 	    {
 	    	const coords::chunk& cc = *iter;
-	    	uint64_t offset = cc.chunkPtrOffset(&vs_, sizeof(T));
+    	uint64_t offset = cc.chunkPtrOffset(&vs_, sizeof(T));
 	        T* chunkPtr = in.GetPtrWithOffset(offset);
 
 	        coords::dataBbox bounds = cc.chunkBoundingBox(&vs_);
@@ -59,19 +59,20 @@ public:
 	        max.y = std::min(max.y, volMax.y - TRIM) - min.y;
 	        max.z = std::min(max.z, volMax.z - TRIM) - min.z;
 
-	        min.x = min.x % 128;
-	        min.y = min.y % 128;
-	        min.z = min.z % 128;
+			Vector3i localMin;
+	        localMin.x = min.x % 128;
+	        localMin.y = min.y % 128;
+	        localMin.z = min.z % 128;
 
-	        if(max.x <= min.x || max.y <= min.y || max.z <= min.z) {
+	        if(max.x <= localMin.x || max.y <= localMin.y || max.z <= localMin.z) {
 	        	continue;
 	        }
 	        array chunkData(chunkPtr, extents[128][128][128]);
 
 	        typename array::index_gen indices;
-	        array_view regionOfInterest = chunkData[indices[range(min.x,max.x)]
-	                                                	   [range(min.y,max.y)]
-	                                                	   [range(min.z,max.z)]];
+	        array_view regionOfInterest = chunkData[indices[range(localMin.x,max.x)]
+	                                                	   [range(localMin.y,max.y)]
+	                                                	   [range(localMin.z,max.z)]];
 	        send<T>(regionOfInterest, min.toGlobal());
 	    }
 	}
