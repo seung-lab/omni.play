@@ -54,12 +54,13 @@ TEST(UpdateMeshTest, MaskedUpdate)
 {
 	MockRealTimeMesher mesher;
 
-	EXPECT_CALL(mesher, maskedUpdate(_,_,_,_,_));
-
 	om::volume::volume vol("test/data/test.omni.files/",
 		coords::globalBbox(coords::global(0, 0, 0), coords::global(255, 255, 159)),
 		vmml::Vector3i::ONE, server::dataType::UINT32,
 		server::volType::SEGMENTATION, vmml::Vector3i(128));
+
+	int times = vol.CoordSystem().GetMipChunkCoords(0)->size();
+	EXPECT_CALL(mesher, maskedUpdate(_,_,_,_,_)).Times(times);
 
 	std::set<uint32_t> added;
 	added.insert(238);

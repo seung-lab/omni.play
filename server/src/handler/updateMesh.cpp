@@ -44,49 +44,34 @@ public:
 	    FOR_EACH(iter, *chunks)
 	    {
 	    	const coords::chunk& cc = *iter;
-
 	    	uint64_t offset = cc.chunkPtrOffset(&vs_, sizeof(T));
 	        T* chunkPtr = in.GetPtrWithOffset(offset);
 
-	        array chunkData(chunkPtr, extents[128][128][128]);
-
 	        coords::dataBbox bounds = cc.chunkBoundingBox(&vs_);
 	        coords::data min = bounds.getMin();
-	        if (min.x == 0) {
-	        	min.x += TRIM;
-	        }
-
-	        if (min.y == 0) {
-	        	min.y += TRIM;
-	        }
-
-	        if (min.z == 0) {
-	        	min.z += TRIM;
-	        }
+	        min.x = std::max(min.x, TRIM);
+	        min.y = std::max(min.y, TRIM);
+	        min.z = std::max(min.z, TRIM);
 
 			coords::data max = bounds.getMax();
 			Vector3i volMax = vs_.GetDataDimensions();
-			if (max.x >= volMax.x) {
-	        	max.x = volMax.x - TRIM;
-	        }
+			max.x = std::min(max.x, volMax.x - TRIM) - min.x;
+	        max.y = std::min(max.y, volMax.y - TRIM) - min.y;
+	        max.z = std::min(max.z, volMax.z - TRIM) - min.z;
 
-	        if (max.y >= volMax.y) {
-	        	max.y = volMax.y - TRIM;
-	        }
-
-	        if (max.z >= volMax.z) {
-	        	max.z = volMax.z - TRIM;
-	        }
+	        min.x = min.x % 128;
+	        min.y = min.y % 128;
+	        min.z = min.z % 128;
 
 	        if(max.x <= min.x || max.y <= min.y || max.z <= min.z) {
 	        	continue;
 	        }
+	        array chunkData(chunkPtr, extents[128][128][128]);
 
 	        typename array::index_gen indices;
 	        array_view regionOfInterest = chunkData[indices[range(min.x,max.x)]
 	                                                	   [range(min.y,max.y)]
 	                                                	   [range(min.z,max.z)]];
-
 	        send<T>(regionOfInterest, min.toGlobal());
 	    }
 	}
@@ -97,7 +82,7 @@ private:
 	const std::set<uint32_t> addedSegIds_;
 	const std::set<uint32_t> modifiedSegIds_;
 	int32_t segId_;
-	static const int TRIM = 3;
+	static const int TRIM;
 
 	template <typename T, typename Arr>
 	void send(const Arr& data, coords::global location) const
@@ -108,10 +93,12 @@ private:
 		size_t length = shape[0] * shape[1] * shape[2];
 
 		std::string out(length * sizeof(T), 0);
-		multi_array_ref<T, 3> out_ref(reinterpret_cast<T*>(const_cast<char*>(out.data())), extents[shape[0]][shape[1]][shape[2]]);
+		multi_array_ref<T, 3> out_ref(reinterpret_cast<T*>(const_cast<char*>(out.data())),
+		                              extents[shape[0]][shape[1]][shape[2]]);
 
 		std::string mask(length, 0);
-		multi_array_ref<char, 3> mask_ref(const_cast<char*>(mask.data()), extents[shape[0]][shape[1]][shape[2]]);
+		multi_array_ref<char, 3> mask_ref(const_cast<char*>(mask.data()),
+		                                  extents[shape[0]][shape[1]][shape[2]]);
 
 		for (int x = 0; x < shape[0]; ++x) {
 			for (int y = 0; y < shape[1]; ++y) {
@@ -147,6 +134,8 @@ private:
 		} while(!succeded);
 	}
 };
+
+const int UpdateRTM::TRIM = 3;
 
 bool modify_global_mesh_data(zi::mesh::RealTimeMesherIf* rtm,
                              const volume::volume& vol,
