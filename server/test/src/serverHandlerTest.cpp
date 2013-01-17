@@ -16,15 +16,18 @@ TEST(ServerHandlerTest, get_tiles)
 	std::map<std::string, server::tile>  ret;
 	const volume::volume channel(URI, common::CHANNEL);
 	const volume::volume segmentation(URI, common::SEGMENTATION);
-	const coords::globalBbox Bbox(coords::global(1), coords::global(128));
+	const coords::chunk chunk(0, vmml::Vector3i(0));
+	const coords::chunk chunk2(1, vmml::Vector3i(0));
 
-	handler::get_tiles(ret, channel, Bbox, common::XY_VIEW, 0);
-	handler::get_tiles(ret, channel, Bbox, common::XZ_VIEW, 1);
-	handler::get_tiles(ret, channel, Bbox, common::ZY_VIEW, 2);
+	handler::get_tiles(ret, channel, chunk, common::XY_VIEW, 0, 3);
+	EXPECT_TRUE(ret.size() > 0);
+	handler::get_tiles(ret, channel, chunk2, common::XZ_VIEW, 0, 3);
+	EXPECT_TRUE(ret.size() > 0);
 
-	handler::get_tiles(ret, segmentation, Bbox, common::XY_VIEW, 0);
-	handler::get_tiles(ret, segmentation, Bbox, common::XZ_VIEW, 1);
-	handler::get_tiles(ret, segmentation, Bbox, common::ZY_VIEW, 2);
+	handler::get_tiles(ret, segmentation, chunk, common::XY_VIEW, 0, 3);
+	EXPECT_TRUE(ret.size() > 0);
+	handler::get_tiles(ret, segmentation, chunk2, common::XZ_VIEW, 0, 3);
+	EXPECT_TRUE(ret.size() > 0);
 }
 
 TEST(ServerHandlerTest, get_seg_list_data)

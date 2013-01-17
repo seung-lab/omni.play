@@ -57,11 +57,6 @@ public:
 
         const dataEntry* entry = GetDataEntry(segId);
 
-        std::cout << entry->segID << ", "
-                  << entry->wasMeshed << ", "
-                  << entry->hasMeshData;
-
-
         if(!entry || !entry->wasMeshed)
         {
             return ret;

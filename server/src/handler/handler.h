@@ -12,9 +12,10 @@ namespace handler {
 
 void get_tiles(std::map<std::string, server::tile> & _return,
                const volume::volume& vol,
-               const coords::globalBbox& segBbox,
+               const coords::chunk& chunk,
                const common::viewType view,
-               const int32_t mipLevel);
+               const int32_t from,
+               const int32_t to);
 
 void get_seg_list_data(std::map<int, server::segData>& _return,
                        const volume::volume& vol,

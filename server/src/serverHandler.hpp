@@ -46,13 +46,14 @@ public:
     }
 
     void get_tiles(std::map<std::string, tile> & _return,
-                   const metadata& vol,
-                   const bbox& Bbox,
-                   const server::viewType::type view,
-                   const int32_t mipLevel)
+    			   const metadata& vol,
+    			   const vector3i& chunk,
+    			   const viewType::type view,
+    			   const int32_t mipLevel,
+    			   const rangei& depths)
     {
         ServiceMethod serviceMethod(&serviceTracker_, "get_tiles", "get_tiles");
-        handler::get_tiles(_return, vol, Bbox, common::Convert(view), mipLevel);
+        handler::get_tiles(_return, vol, coords::chunk(mipLevel, chunk.x, chunk.y, chunk.z), common::Convert(view), depths.from, depths.to);
     }
 
     void get_seg_list_data(std::map<int, segData>& _return,

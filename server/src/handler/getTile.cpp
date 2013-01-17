@@ -71,46 +71,39 @@ void makeSegTile(server::tile& t,
     t.data = std::string(out.data.get(), out.size);
 }
 
-
 void get_tiles(std::map<std::string, server::tile> & _return,
                const volume::volume& vol,
-               const coords::globalBbox& segBbox,
+               const coords::chunk& chunk,
                const common::viewType view,
-               const int32_t mipLevel)
+               const int32_t from,
+               const int32_t to)
 {
-    coords::globalBbox bounds = segBbox;
+	for (int i = from; i < to; ++i)
+	{
+        coords::data dc = chunk.toData(&vol.CoordSystem());
+        coords::data twisted = twist(dc, view);
+        twisted.z += i;
+        dc = twist(twisted, view);
 
-    bounds.intersect(vol.Bounds());
-
-    coords::global min = common::twist(bounds.getMin(), view);
-    coords::global max = common::twist(bounds.getMax(), view);
-    Vector3i dims = common::twist(vol.ChunkDims(), view);
-    Vector3i res = common::twist(vol.Resolution(), view);
-
-    for(int x = min.x; x <= max.x; x += dims.x * res.x) {
-        for(int y = min.y; y <= max.y; y += dims.y * res.y) {
-            for(int z = min.z; z <= max.z; z += res.z) // always depth when twisted
-            {
-                coords::global coord = common::twist(coords::global(x,y,z), view);
-                coords::data dc = coord.toData(&vol.CoordSystem(), mipLevel);
-
-                server::tile t;
-                switch(vol.VolumeType())
-                {
-            	case server::volType::CHANNEL:
-            		makeChanTile(t, vol.Data(mipLevel), dc, view);
-            		break;
-            	case server::volType::SEGMENTATION:
-                	makeSegTile(t, vol.Data(mipLevel), dc, view);
-                	break;
-                }
-                std::stringstream ss;
-                ss << t.bounds.min.x << "-"
-                   << t.bounds.min.y << "-"
-                   << t.bounds.min.z;
-                _return[ss.str()] = t;
-            }
+        if(!dc.isInVolume()) {
+        	continue;
         }
+
+        server::tile t;
+        switch(vol.VolumeType())
+        {
+    	case server::volType::CHANNEL:
+    		makeChanTile(t, vol.Data(chunk.Level), dc, view);
+    		break;
+    	case server::volType::SEGMENTATION:
+        	makeSegTile(t, vol.Data(chunk.Level), dc, view);
+        	break;
+        }
+        std::stringstream ss;
+        ss << t.bounds.min.x << "-"
+           << t.bounds.min.y << "-"
+           << t.bounds.min.z;
+        _return[ss.str()] = t;
     }
 }
 
