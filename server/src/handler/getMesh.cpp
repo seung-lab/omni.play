@@ -162,7 +162,7 @@ boost::shared_ptr<mesh::data> loadData(coords::chunk cc, const std::string& uri,
     return data;
 }
 
-const char* MESH_RELATIVE_PATH = "segmentations/segmentation1/meshes/1.0000/";
+const char* MESH_RELATIVE_PATH = "segmentations/segmentation1/meshes/";
 
 void get_mesh(std::string& _return,
               const volume::volume& vol,
@@ -206,6 +206,7 @@ void get_obj(std::string& _return,
 	if(!data.get()) {
 		return;
 	}
+
 
     _return = tri_strip_to_obj(data->VertexData(),
                                data->VertexDataCount()*6,

@@ -40,15 +40,13 @@ public:
 
     dataEntry* Find(const dataEntry& entry)
     {
-        if(!table_){
+    	if(!table_){
             return NULL;
         }
-
         dataEntry* iter = std::lower_bound(table_,
                                            table_ + numEntries_,
                                            entry,
                                            compareBySegID);
-
         if(iter == table_ + numEntries_ ||
            iter->segID != entry.segID)
         {

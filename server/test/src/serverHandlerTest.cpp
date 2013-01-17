@@ -45,10 +45,12 @@ TEST(ServerHandlerTest, get_mesh)
 	std::string ret;
 	const volume::volume segmentation(URI, common::SEGMENTATION);
 	const server::vector3i chunk;
-	int32_t segId = 15;
+	int32_t segId = 122;
 
 	handler::get_mesh(ret, segmentation, chunk, 0, segId);
+	EXPECT_TRUE(ret.size() > 0);
 	handler::get_mesh(ret, segmentation, chunk, 1, segId);
+	EXPECT_TRUE(ret.size() > 0);
 }
 
 TEST(ServerHandlerTest, get_obj)
@@ -56,10 +58,12 @@ TEST(ServerHandlerTest, get_obj)
 	std::string ret;
 	const volume::volume segmentation(URI, common::SEGMENTATION);
 	const server::vector3i chunk;
-	int32_t segId = 15;
+	int32_t segId = 122;
 
 	handler::get_obj(ret, segmentation, chunk, 0, segId);
+	EXPECT_TRUE(ret.size() > 0);
 	handler::get_obj(ret, segmentation, chunk, 1, segId);
+	EXPECT_TRUE(ret.size() > 0);
 }
 
 }} // namespace om::test::
