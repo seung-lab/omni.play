@@ -71,7 +71,7 @@ void makeSegTile(server::tile& t,
     t.data = std::string(out.data.get(), out.size);
 }
 
-void get_tiles(std::map<std::string, server::tile> & _return,
+void get_tiles(std::vector<server::tile> & _return,
                const volume::volume& vol,
                const coords::chunk& chunk,
                const common::viewType view,
@@ -103,7 +103,7 @@ void get_tiles(std::map<std::string, server::tile> & _return,
         ss << t.bounds.min.x << "-"
            << t.bounds.min.y << "-"
            << t.bounds.min.z;
-        _return[ss.str()] = t;
+        _return.push_back(t);
     }
 }
 

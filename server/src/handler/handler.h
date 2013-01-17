@@ -10,7 +10,7 @@ namespace coords { class global; class globalBbox; }
 namespace server { class serverHandler; }
 namespace handler {
 
-void get_tiles(std::map<std::string, server::tile> & _return,
+void get_tiles(std::vector<server::tile> & _return,
                const volume::volume& vol,
                const coords::chunk& chunk,
                const common::viewType view,

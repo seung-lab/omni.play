@@ -78,7 +78,7 @@ struct metadata
 
 service server extends fb303.FacebookService
 {
-    map<string, tile> get_tiles( 1: metadata vol, 2: vector3i chunk, 3: viewType view, 4: i32 mipLevel, 5: rangei depths ),
+    list<tile> get_tiles( 1: metadata vol, 2: vector3i chunk, 3: viewType view, 4: i32 mipLevel, 5: rangei depths ),
 
     map<i32, segData> get_seg_list_data( 1: metadata vol, 2: set<i32> segIds ),
 

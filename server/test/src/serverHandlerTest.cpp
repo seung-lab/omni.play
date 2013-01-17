@@ -13,7 +13,7 @@ namespace test {
 const char* URI = "test/data/test.omni.files/";
 TEST(ServerHandlerTest, get_tiles)
 {
-	std::map<std::string, server::tile>  ret;
+	std::vector<server::tile>  ret;
 	const volume::volume channel(URI, common::CHANNEL);
 	const volume::volume segmentation(URI, common::SEGMENTATION);
 	const coords::chunk chunk(0, vmml::Vector3i(0));

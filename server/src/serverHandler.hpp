@@ -45,7 +45,7 @@ public:
     	threadPool_.stop();
     }
 
-    void get_tiles(std::map<std::string, tile> & _return,
+    void get_tiles(std::vector<tile> & _return,
     			   const metadata& vol,
     			   const vector3i& chunk,
     			   const viewType::type view,
