@@ -99,10 +99,6 @@ void get_tiles(std::vector<server::tile> & _return,
         	makeSegTile(t, vol.Data(chunk.Level), dc, view);
         	break;
         }
-        std::stringstream ss;
-        ss << t.bounds.min.x << "-"
-           << t.bounds.min.y << "-"
-           << t.bounds.min.z;
         _return.push_back(t);
     }
 }
