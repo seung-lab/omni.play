@@ -245,16 +245,41 @@ void get_seeds(std::vector<std::map<int32_t, int32_t> >& seeds,
 {
     std::cout << "Getting Seeds" << std::endl
               << taskVolume.Uri() << std::endl
-              << adjacentVolume.Uri() << std::endl << std::endl;
-
+              << adjacentVolume.Uri() << std::endl;
     Overlap overlap(taskVolume, selected, adjacentVolume);
 
     std::vector<Overlap::BundlePair> bundles = overlap.GetBundles();
 
-    FOR_EACH(bundle, bundles) {
-    	if(overlap.InPost(*bundle->first) && overlap.Exceeds(*bundle->second)) {
-	    	seeds.push_back(overlap.MakeSeed(*bundle->second));
-    	}
+    int i = 0;
+
+    FOR_EACH(bundle, bundles)
+    {
+        std::cout << "Bundle " << i++ << ":" << std::endl;
+
+        std::cout << "Pre Segments: ";
+        FOR_EACH(seg, bundle->first->Segments()) {
+            std::cout << *seg << ",";
+        }
+        std::cout << std::endl;
+
+        std::cout << "Post Segments: ";
+        FOR_EACH(seg, bundle->second->Segments()) {
+            std::cout << *seg << ",";
+        }
+        std::cout << std::endl;
+
+        if(!overlap.InPost(*bundle->first)) {
+            std::cout << "Pre-side Bundle does not enter the post volume." << std::endl << std::endl;
+            continue;
+        }
+
+        if(!overlap.Exceeds(*bundle->second)) {
+            std::cout << "Post-side Bundle does not exceed the overlap region." << std::endl << std::endl;
+            continue;
+        }
+
+        seeds.push_back(overlap.MakeSeed(*bundle->second));
+        std::cout << "Spawned!" << std::endl << std::endl;
     }
 }
 
