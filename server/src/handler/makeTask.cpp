@@ -180,13 +180,18 @@ struct Overlap
 	{
 		FOR_EACH(seg, bundle.Segments())
 		{
-			coords::globalBbox segBounds = bundle.Bounds(*seg);
+            // Seg bounds are inclusive on both ends.  Volume bounds are exclusive on the upper end.
+            // Segmentations have a 1 voxel border around the volume.
+            coords::globalBbox segBounds = bundle.Bounds(*seg);
+            std::cout << segBounds << std::endl;
+            std::cout << bounds_ << std::endl;
+            std::cout << post_.Bounds() << std::endl;
 			if ((segBounds.getMin().x - 1 == bounds_.getMin().x && bounds_.getMin().x > post_.Bounds().getMin().x) ||
-		       (segBounds.getMin().y - 1 == bounds_.getMin().y && bounds_.getMin().y > post_.Bounds().getMin().y) ||
-		       (segBounds.getMin().z - 1 == bounds_.getMin().z && bounds_.getMin().z > post_.Bounds().getMin().z) ||
-		       (segBounds.getMax().x + 1 == bounds_.getMax().x && bounds_.getMax().x < post_.Bounds().getMax().x) ||
-		       (segBounds.getMax().y + 1 == bounds_.getMax().y && bounds_.getMax().y < post_.Bounds().getMax().y) ||
-		       (segBounds.getMax().z + 1 == bounds_.getMax().z && bounds_.getMax().z < post_.Bounds().getMax().z))
+		        (segBounds.getMin().y - 1 == bounds_.getMin().y && bounds_.getMin().y > post_.Bounds().getMin().y) ||
+		        (segBounds.getMin().z - 1 == bounds_.getMin().z && bounds_.getMin().z > post_.Bounds().getMin().z) ||
+		        (segBounds.getMax().x + 1 == bounds_.getMax().x - 1 && bounds_.getMax().x < post_.Bounds().getMax().x) ||
+		        (segBounds.getMax().y + 1 == bounds_.getMax().y - 1 && bounds_.getMax().y < post_.Bounds().getMax().y) ||
+		        (segBounds.getMax().z + 1 == bounds_.getMax().z - 1 && bounds_.getMax().z < post_.Bounds().getMax().z))
 	        {
 	        	return true;
 	        }
