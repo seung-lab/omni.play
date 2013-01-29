@@ -51,7 +51,7 @@ void makeChanTile(server::tile& t,
                            >> encode();
 
     data<char> out = get<data<char> >(encoded);
-    t.data = std::string(out.data.get(), out.size);
+    t.data = "data:image/jpeg;base64," + std::string(out.data.get(), out.size);
 }
 
 void makeSegTile(server::tile& t,
@@ -68,7 +68,7 @@ void makeSegTile(server::tile& t,
     					   >> encode();
 
     data<char> out = get<data<char> >(encoded);
-    t.data = std::string(out.data.get(), out.size);
+    t.data = "data:image/png;base64," + std::string(out.data.get(), out.size);
 }
 
 void get_tiles(std::vector<server::tile> & _return,
