@@ -48,7 +48,7 @@ TEST(ServerHandlerTest, get_mesh)
 	std::string ret;
 	const volume::volume segmentation(URI, common::SEGMENTATION);
 	const server::vector3i chunk;
-	int32_t segId = 122;
+	int32_t segId = 100;
 
 	handler::get_mesh(ret, segmentation, chunk, 0, segId);
 	EXPECT_TRUE(ret.size() > 0);
@@ -61,7 +61,7 @@ TEST(ServerHandlerTest, get_obj)
 	std::string ret;
 	const volume::volume segmentation(URI, common::SEGMENTATION);
 	const server::vector3i chunk;
-	int32_t segId = 122;
+	int32_t segId = 100;
 
 	handler::get_obj(ret, segmentation, chunk, 0, segId);
 	EXPECT_TRUE(ret.size() > 0);

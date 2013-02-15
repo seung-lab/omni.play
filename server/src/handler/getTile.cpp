@@ -31,7 +31,7 @@ void setTileBounds(server::tile& t,
     server::vector3d min = common::twist(bounds.getMin().toGlobal(), view);
     server::vector3d max = common::twist(bounds.getMax().toGlobal(), view);
 
-    min.z += depth;
+    min.z += depth * pow(2,dc.level());
     max.z = min.z;
 
     t.bounds.min = common::twist(min, view);
