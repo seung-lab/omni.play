@@ -125,14 +125,14 @@ COMMON_CXXFLAGS    =	-g $(CPP_INLINE_DEPFLAGS) \
 						   $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS)
 
 DBG_CFLAGS         =	$(COMMON_CFLAGS) -DDEBUG_MODE=1
-DBG_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -gstabs
+DBG_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -gstabs+
 OPTIMIZATION_FLAGS =	-O3
 OPT_CFLAGS         =	$(COMMON_CFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
 OPT_CXXFLAGS       =	$(COMMON_CXXFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
 COMMON_LDFLAGS     =	-g $(FPIC) -Wl,--eh-frame-hdr -lm
-DBG_LDFLAGS        =	$(COMMON_LDFLAGS) -gstabs
+DBG_LDFLAGS        =	$(COMMON_LDFLAGS) -gstabs+
 OPT_LDFLAGS        =	$(COMMON_LDFLAGS) -O3 -fno-omit-frame-pointer
 
 COMM_FLEX_FLAGS    =    -d
