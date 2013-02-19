@@ -183,19 +183,24 @@ boost::optional<segments::data> volume::GetSegmentData(int32_t segId) const
         return false;
     }
 
-    datalayer::memMappedFile<segments::data> page(fname);
+    try {
+        datalayer::memMappedFile<segments::data> page(fname);
 
-    if(segId >= page.Length()) {
-    	return false;
+        if(segId >= page.Length()) {
+        	return false;
+        }
+
+        segments::data d = page.GetPtr()[idx];
+
+        if(d.value <= 0) {
+            return false;
+        }
+
+        return d;
+    } catch (std::exception e) {
+        std::cout << "Error reading segData: " << e.what() << std::endl;
+        throw;
     }
-
-    segments::data d = page.GetPtr()[idx];
-
-    if(d.value <= 0) {
-        return false;
-    }
-
-    return d;
 }
 
 }} // namespace om::volume::

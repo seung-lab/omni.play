@@ -46,8 +46,8 @@ std::ostream& operator<<(std::ostream& out, const server::vector3d& vec)
 
 std::ostream& operator<<(std::ostream& out, const server::bbox& bounds)
 {
-    out << "min - " << bounds.min;
-    return out << " max - " << bounds.max;
+    out << "min " << bounds.min;
+    return out << " max " << bounds.max;
 }
 
 std::ostream& operator<<(std::ostream& out, const server::segData& data)
@@ -61,8 +61,8 @@ void get_seg_list_data(std::map<int32_t, server::segData>& _return,
                        const std::set<int32_t>& segIds)
 {
     FOR_EACH(id, segIds)
-	{
-    	boost::optional<server::segData> d = get(vol, *id);
+    {
+        boost::optional<server::segData> d = get(vol, *id);
         if(d) {
             _return[*id] = *d;
         }
