@@ -69,7 +69,7 @@ public:
 
     int32_t GetSegId(coords::global point) const;
 
-    segments::data GetSegmentData(int32_t segId) const;
+    boost::optional<segments::data> GetSegmentData(int32_t segId) const;
 
 private:
 	bool loadVolume(const int32_t mipLevel);

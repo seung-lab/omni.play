@@ -6,6 +6,7 @@
 #include "pipeline/mapData.hpp"
 #include "pipeline/getSegIds.hpp"
 #include <zi/zlog/zlog.hpp>
+#include <boost/optional.hpp>
 
 #include "utility/yaml/baseTypes.hpp"
 #include "utility/yaml/yaml.hpp"
@@ -165,10 +166,10 @@ int32_t volume::GetSegId(coords::global point) const
     return data_[0] >> getSegId(dc);
 }
 
-segments::data volume::GetSegmentData(int32_t segId) const
+boost::optional<segments::data> volume::GetSegmentData(int32_t segId) const
 {
     if (segId <= 0) {
-        throw argException("Not allowed segment Ids less than or equal to 0");
+        return false;
     }
 
     const uint32_t pageSize = 100000;
@@ -179,19 +180,19 @@ segments::data volume::GetSegmentData(int32_t segId) const
         % uri_ % pageNum);
 
     if(!file::exists(fname)) {
-        throw argException(str(boost::format("Invalid Seg Id %1%") % segId));
+        return false;
     }
 
     datalayer::memMappedFile<segments::data> page(fname);
 
     if(segId >= page.Length()) {
-    	throw argException(str(boost::format("Invalid Seg Id %1%") % segId));
+    	return false;
     }
 
     segments::data d = page.GetPtr()[idx];
 
     if(d.value <= 0) {
-        throw argException(str(boost::format("Invalid Seg Id %1%") % segId));
+        return false;
     }
 
     return d;
