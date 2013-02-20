@@ -46,6 +46,7 @@ INCLUDES	=	-I$(HERE) \
 				-I$(HERE)/server/src \
 				-I$(HERE)/filesystem/src \
 				-I$(HERE)/zi_lib \
+				-I$(EXTERNAL)/thrift/include \
 				-I$(EXTERNAL)/thrift/include/thrift \
 				-I$(EXTERNAL)/boost/include \
 				-I$(EXTERNAL)/libjpeg/include \
