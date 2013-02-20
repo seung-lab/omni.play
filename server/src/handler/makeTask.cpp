@@ -24,7 +24,7 @@ template<typename T>
 void connectedSets(const coords::globalBbox& bounds,
                    const volume::volume& vol,
                    const T& allowed,
-                   std::vector<std::set<uint32_t> >& results)
+                   std::vector<boost::shared_ptr<std::set<uint32_t> > >& results)
 {
     uint32_t max_seg_id = 0;
     FOR_EACH(it, allowed) {
@@ -59,10 +59,14 @@ void connectedSets(const coords::globalBbox& bounds,
         }
     }
 
-    boost::unordered_map<uint32_t, std::set<uint32_t> > newSeedSets;
+    boost::unordered_map<uint32_t, boost::shared_ptr<std::set<uint32_t> > > newSeedSets;
 
     FOR_EACH( it, allowed ) {
-        newSeedSets[sets.find_set(*it)].insert(*it);
+        uint32_t set = sets.find_set(*it);
+        if(!newSeedSets[set]) {
+            newSeedSets[set] = boost::make_shared<std::set<uint32_t> >();
+        }
+        newSeedSets[sets.find_set(*it)]->insert(*it);
     }
 
     FOR_EACH( it, newSeedSets ) {
@@ -70,49 +74,13 @@ void connectedSets(const coords::globalBbox& bounds,
     }
 }
 
-struct SegBundle
-{
-	SegBundle(const volume::volume& volume)
-		: volume_(volume)
-	{}
-
-	SegBundle(const volume::volume& volume, const std::set<uint32_t> segments)
-		: volume_(volume)
-		, segments_(segments)
-	{}
-
-	inline void Insert(uint32_t segId) {
-		segments_.insert(segId);
-	}
-
-	inline void Insert(std::set<uint32_t> segIds) {
-		segments_.insert(segIds.begin(), segIds.end());
-	}
-
-	inline void Erase(uint32_t segId) {
-		segments_.erase(segId);
-	}
-
-	inline const std::set<uint32_t>& Segments() const {
-		return segments_;
-	}
-
-	inline const boost::optional<coords::globalBbox> Bounds(uint32_t segId) const
-	{
-		boost::optional<segments::data> data = volume_.GetSegmentData(segId);
-
-        if(!data) {
-            return false;
-        }
-
-        coords::dataBbox bounds(data->bounds, &volume_.CoordSystem(), 0);
-        return bounds.toGlobalBbox();
-	}
-
-private:
-	const volume::volume& volume_;
-	std::set<uint32_t> segments_;
+struct Plane {
+    size_t depth;
+    common::viewType view;
 };
+
+typedef std::set<uint32_t> SegBundle;
+typedef std::pair<boost::shared_ptr<SegBundle>, boost::shared_ptr<SegBundle> > BundlePair;
 
 struct Overlap
 {
@@ -122,6 +90,10 @@ struct Overlap
 	{
 	    bounds_ = pre_.Bounds();
 	    bounds_.intersect(post_.Bounds());
+        if(bounds_.isEmpty()) {
+            return;
+        }
+        Plane plane = GetExitPlane(post_.Bounds());
 
 	    // Find corresponding Segments in adjacent volume
 	    for(int x = bounds_.getMin().x; x < bounds_.getMax().x; x++)
@@ -143,12 +115,49 @@ struct Overlap
 	                        ++mappingCounts_[postSegId];
 	                    }
 	                }
+
+                    if(plane.view == common::XY_VIEW && z == plane.depth) {
+                        exitSegIds_.insert(preSegId);
+                    }
+                    if(plane.view == common::XZ_VIEW && y == plane.depth) {
+                        exitSegIds_.insert(preSegId);
+                    }
+                    if(plane.view == common::ZY_VIEW && x == plane.depth) {
+                        exitSegIds_.insert(preSegId);
+                    }
 	            }
 	        }
 	    }
 	}
 
-	typedef std::pair<boost::shared_ptr<SegBundle>, boost::shared_ptr<SegBundle> > BundlePair;
+    Plane GetExitPlane(const coords::globalBbox& post)
+    {
+        if(bounds_.getMin().x > post.getMin().x) {
+            Plane p = { bounds_.getMin().x, common::ZY_VIEW };
+            return p;
+        }
+        if(bounds_.getMax().x < post.getMax().x) {
+            Plane p = { bounds_.getMax().x, common::ZY_VIEW };
+            return p;
+        }
+        if(bounds_.getMin().y > post.getMin().y) {
+            Plane p = { bounds_.getMin().y, common::XZ_VIEW };
+            return p;
+        }
+        if(bounds_.getMax().y < post.getMax().y) {
+            Plane p = { bounds_.getMax().y, common::XZ_VIEW };
+            return p;
+        }
+        if(bounds_.getMin().z > post.getMin().z) {
+            Plane p = { bounds_.getMin().z, common::XY_VIEW };
+            return p;
+        }
+        if(bounds_.getMax().z < post.getMax().z) {
+            Plane p = { bounds_.getMax().z, common::XY_VIEW };
+            return p;
+        }
+    }
+
 	std::vector<BundlePair> GetBundles()
 	{
 		std::vector<BundlePair> ret;
@@ -158,73 +167,39 @@ struct Overlap
 	        postIds.insert(seg->first);
 	    }
 
-		std::vector<std::set<uint32_t> > postBundles;
+		std::vector<boost::shared_ptr<SegBundle> > postBundles;
 
 	    // group all the segments based on adjacency
 	    connectedSets(bounds_, post_, postIds, postBundles);
 
-	    FOR_EACH(bundle, postBundles)
+	    FOR_EACH(postBundle, postBundles)
 	    {
-			boost::shared_ptr<SegBundle> preBundle = boost::make_shared<SegBundle>(pre_);
-			FOR_EACH(seg, *bundle) {
-				preBundle->Insert(postPreCorrespondence_[*seg]);
+			boost::shared_ptr<SegBundle> preBundle = boost::make_shared<SegBundle>();
+			FOR_EACH(seg, **postBundle) {
+				preBundle->insert(postPreCorrespondence_[*seg].begin(), postPreCorrespondence_[*seg].end());
 			}
-			boost::shared_ptr<SegBundle> postBundle = boost::make_shared<SegBundle>(post_, *bundle);
-	    	ret.push_back(BundlePair(preBundle, postBundle));
+			ret.push_back(BundlePair(preBundle, *postBundle));
 	    }
 
 		return ret;
 	}
 
-	bool InPost(const SegBundle& bundle)
-	{
-		FOR_EACH(seg, bundle.Segments())
-		{
-            // Seg bounds are inclusive on both ends.  Volume bounds are exclusive on the upper end.
-            // Segmentations have a 1 voxel border around the volume.
-            boost::optional<coords::globalBbox> segBounds = bundle.Bounds(*seg);
-            if(!segBounds) {
-                continue;
+    bool Leaves(const SegBundle& bundle)
+    {
+        FOR_EACH(segId, bundle) {
+            if (exitSegIds_.count(*segId)) {
+                return true;
             }
-
-            std::cout << *segBounds << std::endl;
-            std::cout << bounds_ << std::endl;
-            std::cout << post_.Bounds() << std::endl;
-			if ((segBounds->getMin().x - 1 == bounds_.getMin().x && bounds_.getMin().x > post_.Bounds().getMin().x) ||
-		        (segBounds->getMin().y - 1 == bounds_.getMin().y && bounds_.getMin().y > post_.Bounds().getMin().y) ||
-		        (segBounds->getMin().z - 1 == bounds_.getMin().z && bounds_.getMin().z > post_.Bounds().getMin().z) ||
-		        (segBounds->getMax().x + 1 == bounds_.getMax().x - 1 && bounds_.getMax().x < post_.Bounds().getMax().x) ||
-		        (segBounds->getMax().y + 1 == bounds_.getMax().y - 1 && bounds_.getMax().y < post_.Bounds().getMax().y) ||
-		        (segBounds->getMax().z + 1 == bounds_.getMax().z - 1 && bounds_.getMax().z < post_.Bounds().getMax().z))
-	        {
-	        	return true;
-	        }
-		}
-		return false;
-	}
-
-	bool Exceeds(const SegBundle& bundle)
-	{
-		FOR_EACH(seg, bundle.Segments())
-		{
-			boost::optional<coords::globalBbox> segBounds = bundle.Bounds(*seg);
-			if(!segBounds) {
-                return false;
-            }
-
-            if(!bounds_.contains(*segBounds)) {
-				return true;
-			}
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 
 	std::map<int32_t, int32_t> MakeSeed(const SegBundle& bundle)
 	{
 		const double FALSE_OBJ_RATIO_THR=0.5;
 		std::map<int32_t, int32_t> ret;
 		uint32_t largest, largestSize;
-		FOR_EACH(seg, bundle.Segments())
+		FOR_EACH(seg, bundle)
     	{
     		if (((double)mappingCounts_[*seg]) / ((double)sizes_[*seg]) >= FALSE_OBJ_RATIO_THR) {
 		    	ret[*seg] = sizes_[*seg];
@@ -241,6 +216,10 @@ struct Overlap
     	return ret;
 	}
 
+    bool IsEmpty() const {
+        return bounds_.isEmpty();
+    }
+
 private:
 	const volume::volume& pre_;
 	const volume::volume& post_;
@@ -248,6 +227,7 @@ private:
 	boost::unordered_map<uint32_t, int> mappingCounts_;
     boost::unordered_map<uint32_t, int> sizes_;
     boost::unordered_map<uint32_t, std::set<uint32_t> > postPreCorrespondence_;
+    std::set<uint32_t> exitSegIds_;
 };
 
 
@@ -261,7 +241,12 @@ void get_seeds(std::vector<std::map<int32_t, int32_t> >& seeds,
               << adjacentVolume.Uri() << std::endl;
     Overlap overlap(taskVolume, selected, adjacentVolume);
 
-    std::vector<Overlap::BundlePair> bundles = overlap.GetBundles();
+    if(overlap.IsEmpty()) {
+        std::cout << "Regions do not overlap." << std::endl;
+        return;
+    }
+
+    std::vector<BundlePair> bundles = overlap.GetBundles();
 
     int i = 0;
 
@@ -270,24 +255,19 @@ void get_seeds(std::vector<std::map<int32_t, int32_t> >& seeds,
         std::cout << "Bundle " << i++ << ":" << std::endl;
 
         std::cout << "Pre Segments: ";
-        FOR_EACH(seg, bundle->first->Segments()) {
+        FOR_EACH(seg, *bundle->first) {
             std::cout << *seg << ",";
         }
         std::cout << std::endl;
 
         std::cout << "Post Segments: ";
-        FOR_EACH(seg, bundle->second->Segments()) {
+        FOR_EACH(seg, *bundle->second) {
             std::cout << *seg << ",";
         }
         std::cout << std::endl;
 
-        if(!overlap.InPost(*bundle->first)) {
+        if(!overlap.Leaves(*bundle->first)) {
             std::cout << "Pre-side Bundle does not enter the post volume." << std::endl << std::endl;
-            continue;
-        }
-
-        if(!overlap.Exceeds(*bundle->second)) {
-            std::cout << "Post-side Bundle does not exceed the overlap region." << std::endl << std::endl;
             continue;
         }
 
