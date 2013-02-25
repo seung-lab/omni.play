@@ -22,14 +22,27 @@
 #include "log.hpp"
 
 #include <zi/zpp/stringify.hpp>
+#include <csignal>
 
-#define ASSERT_ERROR(cond)                          \
-    if ( !(cond) )                                  \
-    {                                               \
-        LOG(error) << "File: " << __FILE__          \
-                   << ":" << __LINE__ << '('        \
-                   << ZiPP_STRINGIFY(cond) << ')';  \
-    }                                               \
-    else
+#define ASSERT_ERROR(cond)                                      \
+    if ( !(cond) )                                              \
+    {                                                           \
+        LOG(error) << "File: " << __FILE__                      \
+                   << ":" << __LINE__ << ' '                    \
+                   << "In: " << __PRETTY_FUNCTION__ << " ("     \
+                   << ZiPP_STRINGIFY(cond) << ')';              \
+    }                                                           \
+    (static_cast<void>(0))
+
+#define ASSERT_FATAL(cond)                                      \
+    if ( !(cond) )                                              \
+    {                                                           \
+        LOG(fatal) << "File: " << __FILE__                      \
+                   << ":" << __LINE__ << ' '                    \
+                   << "In: " << __PRETTY_FUNCTION__ << " ("     \
+                   << ZiPP_STRINGIFY(cond) << ')';              \
+        raise(9);                                               \
+    }                                                           \
+    (static_cast<void>(0))
 
 #endif // ZI_MESHING_DETAIL_ASSERT_HPP

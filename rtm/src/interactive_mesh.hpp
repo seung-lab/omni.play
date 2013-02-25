@@ -425,19 +425,16 @@ private:
             mesh_type_ptr fmd( new mesh_type );
             fmd->add(points, normals, faces);
 
-            //std::cout << "Saving Chunk Coord: " << mcoord << "\n";
-
             fmesh_io_.write(fmd, mcoord);
             smesh_io_.write(mcoord, s);
-            schedule_remesh(next,1);
         }
         else
         {
-            ///std::cout << "Erasing Chunk Coord: " << mcoord << "\n";
             fmesh_io_.remove(mcoord);
             smesh_io_.remove(mcoord);
-            schedule_remesh(next,1);
         }
+
+        schedule_remesh(next,1);
     }
 
     void update_mipn_task( const vec3u& c, uint32_t mip )
@@ -464,19 +461,16 @@ private:
             mesh_type_ptr nfmd( new mesh_type );
             nfmd->add(points, normals, faces);
 
-            //std::cout << "Saving Chunk Coord: " << mcoord << "\n";
-
             fmesh_io_.write(nfmd, mcoord);
             smesh_io_.write(mcoord, s);
-            schedule_remesh(next,mip+1);
         }
         else
         {
-            //std::cout << "Erasing Chunk Coord: " << mcoord << "\n";
             fmesh_io_.remove(mcoord);
             smesh_io_.remove(mcoord);
-            schedule_remesh(next,mip+1);
         }
+
+        schedule_remesh(next,mip+1);
     }
 
 
@@ -828,7 +822,7 @@ public:
 
         if ( mask )
         {
-            m = mask_type_ptr( new mask_type(extents[w-dw][h-dw][d-dw]) );
+            m = mask_type_ptr( new mask_type(extents[d-dw][h-dw][w-dw]) );
             mask_type_ref morig( mask, extents[d][h][w] );
 
             m->operator[](indices[range(0,d-dw)][range(0,h-dw)][range(0,w-dw)])
@@ -836,14 +830,7 @@ public:
                         [range(ow,w-ow)]];
         }
 
-        {
-            // zi::rwmutex::write_guard g(chunk_updates_m_);
-            // std::cout << "Chunk Data Update!" << std::endl;
-
-            volume_update_internal(x+ow, y+ow, z+ow, w-dw, h-dw, d-dw, c, m);
-        }
-
-        //process_up();
+        volume_update_internal(x+ow, y+ow, z+ow, w-dw, h-dw, d-dw, c, m);
     }
 
     std::size_t get_hash( const vec4u& c )
