@@ -2,9 +2,9 @@
 
 #include <boost/unordered_map.hpp>
 #include <string>
-#include <transport/TSocket.h>
-#include <transport/TBufferTransports.h>
-#include <protocol/TBinaryProtocol.h>
+#include <thrift/transport/TSocket.h>
+#include <thrift/transport/TBufferTransports.h>
+#include <thrift/protocol/TBinaryProtocol.h>
 
 #include "storage_manager.h"
 #include "storage_server.h"

@@ -46,40 +46,21 @@ public:
 	MOCK_METHOD3(getMeshVersions, void(std::vector<int64_t> & _return,
 				const std::string& uri,
 				const std::vector<MeshCoordinate> & coordinates));
+	MOCK_METHOD1(clear, void(const std::string&));
+	MOCK_METHOD1(remesh, void(const std::string&));
 };
-
-TEST(UpdateMeshTest, Update)
-{
-	MockRealTimeMesher mesher;
-
-	EXPECT_CALL(mesher, update(_,_,_,_));
-
-	om::volume::volume vol("test/data/test.omni.files/",
-		coords::globalBbox(coords::global(0, 0, 0), coords::global(255, 255, 159)),
-		vmml::Vector3i::ONE, server::dataType::UINT32,
-		server::volType::SEGMENTATION, vmml::Vector3i(128),0);
-
-	std::set<uint32_t> segIds;
-	segIds.insert(342);
-	segIds.insert(3463);
-	segIds.insert(4368);
-	segIds.insert(13);
-
-	uint32_t segId = 1;
-
-	handler::update_global_mesh(&mesher, vol, segIds, segId);
-}
 
 TEST(UpdateMeshTest, MaskedUpdate)
 {
 	MockRealTimeMesher mesher;
 
-	EXPECT_CALL(mesher, maskedUpdate(_,_,_,_,_));
-
 	om::volume::volume vol("test/data/test.omni.files/",
 		coords::globalBbox(coords::global(0, 0, 0), coords::global(255, 255, 159)),
 		vmml::Vector3i::ONE, server::dataType::UINT32,
-		server::volType::SEGMENTATION, vmml::Vector3i(128),0);
+		server::volType::SEGMENTATION, vmml::Vector3i(128));
+
+	int times = vol.CoordSystem().GetMipChunkCoords(0)->size();
+	EXPECT_CALL(mesher, maskedUpdate(_,_,_,_,_)).Times(times);
 
 	std::set<uint32_t> added;
 	added.insert(238);

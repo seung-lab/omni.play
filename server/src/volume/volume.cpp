@@ -6,13 +6,17 @@
 #include "pipeline/mapData.hpp"
 #include "pipeline/getSegIds.hpp"
 #include <zi/zlog/zlog.hpp>
+#include <boost/optional.hpp>
+
+#include "utility/yaml/baseTypes.hpp"
+#include "utility/yaml/yaml.hpp"
 
 namespace om {
 namespace volume {
 
 using namespace pipeline;
 
-void volume::loadVolume()
+bool volume::loadVolume(const int32_t mipLevel)
 {
 	if(!file::exists(uri_)) {
         throw argException("Invalid metadata: uri not found.");
@@ -24,23 +28,41 @@ void volume::loadVolume()
         {
             const std::string chanName = str(
                 boost::format("%1%/channels/channel1/%2%/volume.float.raw")
-                % uri_ % mipLevel_);
+                % uri_ % mipLevel);
+
+            if(!file::exists(chanName)){
+        		return false;
+        	}
 
             mapData mapped(chanName, server::dataType::FLOAT); // Ignore dataType for now.
-            data_ = mapped.file();
+            data_.push_back(mapped.file());
             break;
         }
         case server::volType::SEGMENTATION:
         {
             const std::string segName = str(
                 boost::format("%1%/segmentations/segmentation1/%2%/volume.uint32_t.raw")
-                % uri_ % mipLevel_);
+                % uri_ % mipLevel);
+
+			if(!file::exists(segName)){
+        		return false;
+        	}
 
             mapData mappedSeg(segName, server::dataType::UINT32); // Ignore dataType for now.
-            data_ = mappedSeg.file();
+            data_.push_back(mappedSeg.file());
             break;
         }
     }
+    return true;
+}
+
+void volume::loadVolume()
+{
+	for (int i = 0;; ++i)
+	{
+		if(!loadVolume(i))
+			break;
+	}
 }
 
 volume::volume(const server::metadata& meta)
@@ -50,7 +72,6 @@ volume::volume(const server::metadata& meta)
     , dataType_(meta.type)
     , volType_(meta.vol_type)
     , chunkDims_(common::Convert(meta.chunkDims))
-    , mipLevel_(meta.mipLevel)
     , coordSystem_(meta)
 {
     loadVolume();
@@ -61,15 +82,13 @@ volume::volume(std::string uri,
     	   	   Vector3i resolution,
     	   	   server::dataType::type dataType,
     	   	   server::volType::type volType,
-    	   	   Vector3i chunkDims,
-    	   	   int32_t mipLevel)
+    	   	   Vector3i chunkDims)
     	: uri_(uri)
     	, bounds_(bounds)
     	, resolution_(resolution)
     	, dataType_(dataType)
     	, volType_(volType)
     	, chunkDims_(chunkDims)
-    	, mipLevel_(mipLevel)
     	, coordSystem_()
 {
 	Vector3i dims = bounds.getMax() - bounds.getMin();
@@ -80,34 +99,77 @@ volume::volume(std::string uri,
 	loadVolume();
 }
 
+void volume::loadYaml(const YAML::Node& yamlVolume)
+{
+	const YAML::Node& coords = yamlVolume["coords"];
+
+	coords::global dims, absOffset;
+	coords["dataDimensions"] >> dims;
+	coords["absOffset"] >> absOffset;
+	coords["dataResolution"] >> resolution_;
+
+	bounds_ = coords::globalBbox(absOffset, absOffset + dims);
+
+	std::string type;
+	yamlVolume["type"] >> type;
+	if(type == "float") {
+		dataType_ = server::dataType::FLOAT;
+	} else if (type == "uint32_t") {
+		dataType_ = server::dataType::UINT32;
+	}
+
+	int chunkDim;
+	coords["chunkDim"] >> chunkDim;
+	chunkDims_ = Vector3i(chunkDim);
+}
+
+volume::volume(std::string uri, common::objectType type)
+    	: uri_(uri)
+{
+	YAML::Node n;
+	std::string fnp = uri + "/projectMetadata.yaml";
+	if(!boost::filesystem::exists(fnp)){
+        throw ioException("could not find file", fnp);
+    }
+
+    std::ifstream fin(fnp.c_str());
+
+    YAML::Parser parser(fin);
+
+    parser.GetNextDocument(n);
+    parser.GetNextDocument(n);
+
+	const YAML::Node& volumes = n["Volumes"];
+
+	if(type == common::CHANNEL) {
+		volType_ = server::volType::CHANNEL;
+		loadYaml(volumes["Channels"]["values"][0]);
+	} else {
+		volType_ = server::volType::SEGMENTATION;
+		loadYaml(volumes["Segmentations"]["values"][0]);
+	}
+
+	Vector3i dims = bounds_.getMax() - bounds_.getMin();
+	coordSystem_.SetDataDimensions(dims);
+    coordSystem_.SetAbsOffset(bounds_.getMin());
+    coordSystem_.SetResolution(resolution_);
+    coordSystem_.UpdateRootLevel();
+	loadVolume();
+}
+
+
 int32_t volume::GetSegId(coords::global point) const
 {
     coords::global coord = point;
-    coords::data dc = coord.toData(&coordSystem_, mipLevel_);
+    coords::data dc = coord.toData(&coordSystem_, 0);
 
-    return data_ >> getSegId(dc);
+    return data_[0] >> getSegId(dc);
 }
 
-void volume::GetSegIds(coords::global point, int radius,
-                       common::viewType view,
-                       std::set<int32_t>& ids) const
-{
-    coords::global coord = point;
-    coords::data dc = coord.toData(&coordSystem_, mipLevel_);
-
-    data_var id = data_ >> getSegIds(dc, radius, view,
-                                                 bounds_.toDataBbox(&coordSystem_, mipLevel_));
-
-    data<uint32_t> found = boost::get<data<uint32_t> >(id);
-    for(int i = 0; i < found.size; i++) {
-        ids.insert(found.data.get()[i]);
-    }
-}
-
-segments::data volume::GetSegmentData(int32_t segId) const
+boost::optional<segments::data> volume::GetSegmentData(int32_t segId) const
 {
     if (segId <= 0) {
-        throw argException("Not allowed segment Ids less than or equal to 0");
+        return false;
     }
 
     const uint32_t pageSize = 100000;
@@ -118,18 +180,27 @@ segments::data volume::GetSegmentData(int32_t segId) const
         % uri_ % pageNum);
 
     if(!file::exists(fname)) {
-        throw argException(str(boost::format("Invalid Seg Id %1%") % segId));
+        return false;
     }
 
-    datalayer::memMappedFile<segments::data> page(fname);
+    try {
+        datalayer::memMappedFile<segments::data> page(fname);
 
-    segments::data d = page.GetPtr()[idx];
+        if(segId >= page.Length()) {
+        	return false;
+        }
 
-    if(d.value <= 0) {
-        throw argException(str(boost::format("Invalid Seg Id %1%") % segId));
+        segments::data d = page.GetPtr()[idx];
+
+        if(d.value <= 0) {
+            return false;
+        }
+
+        return d;
+    } catch (std::exception e) {
+        std::cout << "Error reading segData: " << e.what() << std::endl;
+        throw;
     }
-
-    return d;
 }
 
 }} // namespace om::volume::

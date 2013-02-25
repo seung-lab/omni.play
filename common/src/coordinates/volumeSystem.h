@@ -95,7 +95,9 @@ public:
 
     inline void SetDataDimensions(const Vector3f& dim)
     {
-        dataDimensions_ = dim;
+        dataDimensions_.x = om::math::roundUp((int)dim.x, chunkDim_);
+        dataDimensions_.y = om::math::roundUp((int)dim.y, chunkDim_);
+        dataDimensions_.z = om::math::roundUp((int)dim.z, chunkDim_);
 
         Vector3i dims = GetDataDimensions();
         normToGlobal_.m00 = dims.x;

@@ -135,7 +135,7 @@ public:
         shared_ptr<interactive_mesh> m = get_mesher(id);
         m->volume_update_inner( location.x, location.y, location.z,
                                 size.x, size.y, size.z,
-                                2, data.data(), mask.data() );
+                                0, data.data(), mask.data() );
 
         LOG(request) << "maskedUpdate(" << uri << ", "
                      << location.x << ", " << location.y << ", " << location.z

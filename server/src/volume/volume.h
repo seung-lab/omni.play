@@ -17,8 +17,7 @@ private:
     server::dataType::type dataType_; // Replace with omni type?
     server::volType::type volType_;
     Vector3i chunkDims_;
-    int32_t mipLevel_;
-    pipeline::dataSrcs data_;
+    std::vector<pipeline::dataSrcs> data_;
 //    segments::dataManager segData_;
     coords::volumeSystem coordSystem_;
 
@@ -26,13 +25,15 @@ private:
 
 public:
     volume(const server::metadata& metadata);
+
     volume(std::string uri,
     	   coords::globalBbox bounds,
     	   Vector3i resolution,
     	   server::dataType::type dataType,
     	   server::volType::type volType,
-    	   Vector3i chunkDims,
-    	   int32_t mipLevel_);
+    	   Vector3i chunkDims);
+
+    volume(std::string uri, common::objectType type);
 
     inline const std::string& Uri() const {
         return uri_;
@@ -58,31 +59,22 @@ public:
         return chunkDims_;
     }
 
-    inline int32_t MipLevel() const {
-        return mipLevel_;
-    }
-
-    inline const pipeline::dataSrcs& Data() const {
-        return data_;
+    inline const pipeline::dataSrcs& Data(int32_t mipLevel) const {
+        return data_[mipLevel];
     }
 
     inline const coords::volumeSystem& CoordSystem() const {
         return coordSystem_;
     }
 
-//    tile::tile GetChanTile(coords::global point, server::viewType::type view);
-//    tile::tile GetSegTile(coords::global point, server::viewType::type view);
     int32_t GetSegId(coords::global point) const;
 
-    void GetSegIds(coords::global point,
-                   int radius,
-                   common::viewType view,
-                   std::set<int32_t>& ret) const;
-
-    segments::data GetSegmentData(int32_t segId) const;
+    boost::optional<segments::data> GetSegmentData(int32_t segId) const;
 
 private:
+	bool loadVolume(const int32_t mipLevel);
 	void loadVolume();
+	void loadYaml(const YAML::Node&);
 };
 
 inline std::ostream& operator<<(std::ostream& out, const volume& vol)
@@ -94,7 +86,6 @@ inline std::ostream& operator<<(std::ostream& out, const volume& vol)
     	<< "\tdataType:\t" << vol.dataType_ << std::endl
     	<< "\tvolType:\t" << vol.volType_ << std::endl
     	<< "\tchunkDims:\t" << vol.chunkDims_ << std::endl
-    	<< "\tmipLevel:\t" << vol.mipLevel_ << std::endl
     	<< "}";
 	return out;
 }

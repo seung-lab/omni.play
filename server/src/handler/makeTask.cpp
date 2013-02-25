@@ -13,28 +13,6 @@
 namespace om {
 namespace handler {
 
-bool inAdjacentVolume(const coords::globalBbox& seg,
-                      const coords::globalBbox& ovr,
-                      const coords::globalBbox& adj)
-{
-    // If the segment is touching a boundary && that boundary is inside the adj Volume.
-    // Need to adjust segment mins by 1 because segments don't go all the way to the
-    // edges of the volume.
-    return (seg.getMin().x - 1 == ovr.getMin().x && ovr.getMin().x > adj.getMin().x) ||
-           (seg.getMin().y - 1 == ovr.getMin().y && ovr.getMin().y > adj.getMin().y) ||
-           (seg.getMin().z - 1 == ovr.getMin().z && ovr.getMin().z > adj.getMin().z) ||
-           (seg.getMax().x + 1 == ovr.getMax().x && ovr.getMax().x < adj.getMax().x) ||
-           (seg.getMax().y + 1 == ovr.getMax().y && ovr.getMax().y < adj.getMax().y) ||
-           (seg.getMax().z + 1 == ovr.getMax().z && ovr.getMax().z < adj.getMax().z);
-}
-
-bool exceedsOverlap(const coords::globalBbox& seg,
-                    const coords::globalBbox& ovr)
-{
-    return seg.getMin().x < ovr.getMin().x || seg.getMin().y < ovr.getMin().y || seg.getMin().z < ovr.getMin().z ||
-           seg.getMax().x > ovr.getMax().x || seg.getMax().y > ovr.getMax().y || seg.getMax().z > ovr.getMax().z;
-}
-
 void conditionalJoin(zi::disjoint_sets<uint32_t>& sets, uint32_t id1, uint32_t id2)
 {
     uint32_t id1_rep = sets.find_set(id1);
@@ -46,7 +24,7 @@ template<typename T>
 void connectedSets(const coords::globalBbox& bounds,
                    const volume::volume& vol,
                    const T& allowed,
-                   std::vector<std::set<int32_t> >& results)
+                   std::vector<boost::shared_ptr<std::set<uint32_t> > >& results)
 {
     uint32_t max_seg_id = 0;
     FOR_EACH(it, allowed) {
@@ -81,10 +59,14 @@ void connectedSets(const coords::globalBbox& bounds,
         }
     }
 
-    boost::unordered_map<uint32_t, std::set<int32_t> > newSeedSets;
+    boost::unordered_map<uint32_t, boost::shared_ptr<std::set<uint32_t> > > newSeedSets;
 
     FOR_EACH( it, allowed ) {
-        newSeedSets[sets.find_set(*it)].insert(*it);
+        uint32_t set = sets.find_set(*it);
+        if(!newSeedSets[set]) {
+            newSeedSets[set] = boost::make_shared<std::set<uint32_t> >();
+        }
+        newSeedSets[sets.find_set(*it)]->insert(*it);
     }
 
     FOR_EACH( it, newSeedSets ) {
@@ -92,7 +74,164 @@ void connectedSets(const coords::globalBbox& bounds,
     }
 }
 
-void get_seeds(std::vector<std::set<int32_t> >& seeds,
+struct Plane {
+    size_t depth;
+    common::viewType view;
+};
+
+typedef std::set<uint32_t> SegBundle;
+typedef std::pair<boost::shared_ptr<SegBundle>, boost::shared_ptr<SegBundle> > BundlePair;
+
+struct Overlap
+{
+	Overlap(const volume::volume& pre, const std::set<int32_t>& preSegs, const volume::volume& post)
+		: pre_(pre)
+		, post_(post)
+	{
+	    bounds_ = pre_.Bounds();
+	    bounds_.intersect(post_.Bounds());
+        if(bounds_.isEmpty()) {
+            return;
+        }
+        Plane plane = GetExitPlane(post_.Bounds());
+
+	    // Find corresponding Segments in adjacent volume
+	    for(int x = bounds_.getMin().x; x < bounds_.getMax().x; x++)
+	    {
+	        for(int y = bounds_.getMin().y; y < bounds_.getMax().y; y++)
+	        {
+	            for(int z = bounds_.getMin().z; z < bounds_.getMax().z; z++)
+	            {
+	                const coords::global point(x, y, z);
+
+	                uint32_t preSegId = pre_.GetSegId(point);
+	            	uint32_t postSegId = post_.GetSegId(point);
+
+	                if(postSegId > 0) {
+	            		++sizes_[postSegId];
+
+	                	if (preSegs.count(preSegId)) {
+	                		postPreCorrespondence_[postSegId].insert(preSegId);
+	                        ++mappingCounts_[postSegId];
+	                    }
+	                }
+
+                    if(plane.view == common::XY_VIEW && z == plane.depth) {
+                        exitSegIds_.insert(preSegId);
+                    }
+                    if(plane.view == common::XZ_VIEW && y == plane.depth) {
+                        exitSegIds_.insert(preSegId);
+                    }
+                    if(plane.view == common::ZY_VIEW && x == plane.depth) {
+                        exitSegIds_.insert(preSegId);
+                    }
+	            }
+	        }
+	    }
+	}
+
+    Plane GetExitPlane(const coords::globalBbox& post)
+    {
+        if(bounds_.getMin().x > post.getMin().x) {
+            Plane p = { bounds_.getMin().x, common::ZY_VIEW };
+            return p;
+        }
+        if(bounds_.getMax().x < post.getMax().x) {
+            Plane p = { bounds_.getMax().x, common::ZY_VIEW };
+            return p;
+        }
+        if(bounds_.getMin().y > post.getMin().y) {
+            Plane p = { bounds_.getMin().y, common::XZ_VIEW };
+            return p;
+        }
+        if(bounds_.getMax().y < post.getMax().y) {
+            Plane p = { bounds_.getMax().y, common::XZ_VIEW };
+            return p;
+        }
+        if(bounds_.getMin().z > post.getMin().z) {
+            Plane p = { bounds_.getMin().z, common::XY_VIEW };
+            return p;
+        }
+        if(bounds_.getMax().z < post.getMax().z) {
+            Plane p = { bounds_.getMax().z, common::XY_VIEW };
+            return p;
+        }
+    }
+
+	std::vector<BundlePair> GetBundles()
+	{
+		std::vector<BundlePair> ret;
+
+	    std::set<uint32_t> postIds;
+	    FOR_EACH(seg, mappingCounts_) {
+	        postIds.insert(seg->first);
+	    }
+
+		std::vector<boost::shared_ptr<SegBundle> > postBundles;
+
+	    // group all the segments based on adjacency
+	    connectedSets(bounds_, post_, postIds, postBundles);
+
+	    FOR_EACH(postBundle, postBundles)
+	    {
+			boost::shared_ptr<SegBundle> preBundle = boost::make_shared<SegBundle>();
+			FOR_EACH(seg, **postBundle) {
+				preBundle->insert(postPreCorrespondence_[*seg].begin(), postPreCorrespondence_[*seg].end());
+			}
+			ret.push_back(BundlePair(preBundle, *postBundle));
+	    }
+
+		return ret;
+	}
+
+    bool Leaves(const SegBundle& bundle)
+    {
+        FOR_EACH(segId, bundle) {
+            if (exitSegIds_.count(*segId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+	std::map<int32_t, int32_t> MakeSeed(const SegBundle& bundle)
+	{
+		const double FALSE_OBJ_RATIO_THR=0.5;
+		std::map<int32_t, int32_t> ret;
+		uint32_t largest, largestSize;
+		FOR_EACH(seg, bundle)
+    	{
+    		if (((double)mappingCounts_[*seg]) / ((double)sizes_[*seg]) >= FALSE_OBJ_RATIO_THR) {
+		    	ret[*seg] = sizes_[*seg];
+		    }
+		    if(sizes_[*seg] > largestSize) {
+		    	largest = *seg; largestSize = sizes_[*seg];
+		    }
+    	}
+
+    	if(ret.size() == 0) {
+    		ret[largest] = largestSize;
+    	}
+
+    	return ret;
+	}
+
+    bool IsEmpty() const {
+        return bounds_.isEmpty();
+    }
+
+private:
+	const volume::volume& pre_;
+	const volume::volume& post_;
+	coords::globalBbox bounds_;
+	boost::unordered_map<uint32_t, int> mappingCounts_;
+    boost::unordered_map<uint32_t, int> sizes_;
+    boost::unordered_map<uint32_t, std::set<uint32_t> > postPreCorrespondence_;
+    std::set<uint32_t> exitSegIds_;
+};
+
+
+void get_seeds(std::vector<std::map<int32_t, int32_t> >& seeds,
                const volume::volume& taskVolume,
                const std::set<int32_t>& selected,
                const volume::volume& adjacentVolume)
@@ -100,103 +239,41 @@ void get_seeds(std::vector<std::set<int32_t> >& seeds,
     std::cout << "Getting Seeds" << std::endl
               << taskVolume.Uri() << std::endl
               << adjacentVolume.Uri() << std::endl;
-    FOR_EACH(it, selected) {
-        std::cout << *it << ", ";
-    }
+    Overlap overlap(taskVolume, selected, adjacentVolume);
 
-    std::cout << std::endl;
-
-    const int DUST_SIZE_THR_2D=25;
-    const int FALSE_OBJ_SIZE_THR=125;
-
-    coords::globalBbox overlap = taskVolume.Bounds();
-    overlap.intersect(adjacentVolume.Bounds());
-
-    bool leavesVolume = false;
-    boost::unordered_set<uint32_t> intersectingSegIds;
-    // Find intersecting segIds
-    FOR_EACH(it, selected)
-    {
-        const uint32_t& segId = *it;
-        segments::data segData = taskVolume.GetSegmentData(segId);
-
-        // object too small
-        if (segData.size < DUST_SIZE_THR_2D) {
-            continue;
-        }
-
-        coords::dataBbox segOverlap(segData.bounds, &taskVolume.CoordSystem(), 0);
-        coords::globalBbox segOver = segOverlap.toGlobalBbox();
-        segOver.intersect(overlap);
-
-        // Does not overlap with boundary region
-        if (!segOver.isEmpty()) {
-            intersectingSegIds.insert(segId);
-            if(inAdjacentVolume(segOver, overlap, adjacentVolume.Bounds())) {
-                leavesVolume = true;
-            }
-        }
-    }
-
-    if(!leavesVolume) {
-    	std::cout << "Does not leave Volume." << std::endl;
+    if(overlap.IsEmpty()) {
+        std::cout << "Regions do not overlap." << std::endl;
         return;
     }
 
-    boost::unordered_map<uint32_t, int> mappingCounts;
+    std::vector<BundlePair> bundles = overlap.GetBundles();
 
-    // Find corresponding Segments in adjacent volume
-    for(int x = overlap.getMin().x; x < overlap.getMax().x; x++)
+    int i = 0;
+
+    FOR_EACH(bundle, bundles)
     {
-        for(int y = overlap.getMin().y; y < overlap.getMax().y; y++)
-        {
-            for(int z = overlap.getMin().z; z < overlap.getMax().z; z++)
-            {
-                const coords::global point(x, y, z);
+        std::cout << "Bundle " << i++ << ":" << std::endl;
 
-                uint32_t taskSegId = taskVolume.GetSegId(point);
-
-                if ( intersectingSegIds.count(taskSegId) ) {
-                    uint32_t adjacentSegId = adjacentVolume.GetSegId(point);
-                    if(adjacentSegId > 0) {
-                        ++mappingCounts[adjacentSegId];
-                    }
-                }
-            }
+        std::cout << "Pre Segments: ";
+        FOR_EACH(seg, *bundle->first) {
+            std::cout << *seg << ",";
         }
-    }
+        std::cout << std::endl;
 
-    // Find all the segIds in the adjacent volume with enough overlap
-    std::set<uint32_t> correspondingIds;
-    FOR_EACH(seg, mappingCounts) {
-        if (seg->second >= FALSE_OBJ_SIZE_THR) {
-            correspondingIds.insert(seg->first);
+        std::cout << "Post Segments: ";
+        FOR_EACH(seg, *bundle->second) {
+            std::cout << *seg << ",";
         }
-    }
+        std::cout << std::endl;
 
-    std::vector<std::set<int32_t> > adjacentSeeds;
-
-    // group all the segments based on adjacency
-    connectedSets(overlap, adjacentVolume, correspondingIds, adjacentSeeds);
-
-    FOR_EACH(seed, adjacentSeeds)
-    {
-        FOR_EACH(seg, *seed)
-        {
-            const uint32_t& segId = *seg;
-            segments::data segData = adjacentVolume.GetSegmentData(segId);
-            
-            coords::dataBbox segBounds(segData.bounds, &adjacentVolume.CoordSystem(), 0);
-        	
-        	std::cout << "            " << segBounds.toGlobalBbox() << std::endl;
-
-            if(exceedsOverlap(segBounds.toGlobalBbox(), overlap)) {
-                seeds.push_back(*seed);
-                break;
-            }
+        if(!overlap.Leaves(*bundle->first)) {
+            std::cout << "Pre-side Bundle does not enter the post volume." << std::endl << std::endl;
+            continue;
         }
+
+        seeds.push_back(overlap.MakeSeed(*bundle->second));
+        std::cout << "Spawned!" << std::endl << std::endl;
     }
-    
 }
 
 }} // namespace om::handler

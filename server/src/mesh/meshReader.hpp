@@ -38,6 +38,7 @@ public:
         if(!file::exists(dataPath)) {
             throw argException("Mesh data file not found.");
         }
+
         chunkData_.reset(new chunkDataReader(dataPath));
     }
 
@@ -55,11 +56,6 @@ public:
         boost::shared_ptr<data> ret = boost::make_shared<data>();
 
         const dataEntry* entry = GetDataEntry(segId);
-
-        std::cout << entry->segID << ", "
-                  << entry->wasMeshed << ", "
-                  << entry->hasMeshData;
-
 
         if(!entry || !entry->wasMeshed)
         {
