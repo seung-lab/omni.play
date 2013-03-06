@@ -198,7 +198,8 @@ struct Overlap
 	{
 		const double FALSE_OBJ_RATIO_THR=0.5;
 		std::map<int32_t, int32_t> ret;
-		uint32_t largest, largestSize;
+		uint32_t largest = 0;
+        uint32_t largestSize = 0;
 		FOR_EACH(seg, bundle)
     	{
     		if (((double)mappingCounts_[*seg]) / ((double)sizes_[*seg]) >= FALSE_OBJ_RATIO_THR) {
