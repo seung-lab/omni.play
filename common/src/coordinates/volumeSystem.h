@@ -20,6 +20,7 @@ protected:
 
     //data properties
     Vector3i dataDimensions_;
+    Vector3i resolution_;
 
     int chunkDim_;
     int mMipRootLevel;
@@ -35,6 +36,7 @@ public:
         , normToGlobal_(Matrix4f::IDENTITY)
         , globalToNorm_(Matrix4f::IDENTITY)
         , chunkDim_(DefaultChunkDim)
+        , resolution_(Vector3i::ONE)
         , mMipRootLevel(0)
     {
         Vector3i dims;
@@ -99,11 +101,7 @@ public:
         dataDimensions_.y = om::math::roundUp((int)dim.y, chunkDim_);
         dataDimensions_.z = om::math::roundUp((int)dim.z, chunkDim_);
 
-        Vector3i dims = GetDataDimensions();
-        normToGlobal_.m00 = dims.x;
-        normToGlobal_.m11 = dims.y;
-        normToGlobal_.m22 = dims.z;
-        normToGlobal_.getInverse(globalToNorm_);
+        updateNormMat()
     }
 
 // chunk dims
@@ -162,11 +160,14 @@ public:
     }
 
     inline void SetResolution(Vector3i resolution) {
+        resolution_ = resolution;
+
         dataToGlobal_.m00 = resolution.x;
         dataToGlobal_.m11 = resolution.y;
         dataToGlobal_.m22 = resolution.z;
 
         dataToGlobal_.getInverse(globalToData_);
+        updateNormMat();
     }
 
 
@@ -201,6 +202,13 @@ private:
         }
     }
 
+    void updateNormMat()
+    {
+        normToGlobal_.m00 = dataDimensions_.x * resolution_.x;
+        normToGlobal_.m11 = dataDimensions_.y * resolution_.y;
+        normToGlobal_.m22 = dataDimensions_.z * resolution_.z;
+        normToGlobal_.getInverse(globalToNorm_);
+    }
 };
 
 } // namespace coords

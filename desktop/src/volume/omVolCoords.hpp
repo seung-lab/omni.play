@@ -43,7 +43,6 @@ public:
         dataDimensions_.x = om::math::roundUp((int)dim.x, chunkDim_);
         dataDimensions_.y = om::math::roundUp((int)dim.y, chunkDim_);
         dataDimensions_.z = om::math::roundUp((int)dim.z, chunkDim_);
-
         updateNormMat();
         OmEvents::CoordSystemChanged();
     }
@@ -111,6 +110,7 @@ protected:
         , globalToData_(Matrix4f::IDENTITY)
         , normToGlobal_(Matrix4f::IDENTITY)
         , globalToNorm_(Matrix4f::IDENTITY)
+        , resolution_(Vector3i::ONE)
         , chunkDim_(DefaultChunkDim)
     {
         SetDataDimensions(Vector3i(DefaultChunkDim,

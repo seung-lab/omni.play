@@ -11,6 +11,7 @@ volumeSystem::volumeSystem()
     , normToGlobal_(Matrix4f::IDENTITY)
     , globalToNorm_(Matrix4f::IDENTITY)
     , chunkDim_(DefaultChunkDim)
+    , resolution_(Vector3i::ONE)
     , mMipRootLevel(0)
 {
     SetDataDimensions(Vector3i(DefaultChunkDim,
