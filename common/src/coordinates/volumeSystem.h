@@ -35,8 +35,8 @@ public:
         , globalToData_(Matrix4f::IDENTITY)
         , normToGlobal_(Matrix4f::IDENTITY)
         , globalToNorm_(Matrix4f::IDENTITY)
-        , chunkDim_(DefaultChunkDim)
         , resolution_(Vector3i::ONE)
+        , chunkDim_(DefaultChunkDim)
         , mMipRootLevel(0)
     {
         Vector3i dims;
@@ -101,7 +101,7 @@ public:
         dataDimensions_.y = om::math::roundUp((int)dim.y, chunkDim_);
         dataDimensions_.z = om::math::roundUp((int)dim.z, chunkDim_);
 
-        updateNormMat()
+        updateNormMat();
     }
 
 // chunk dims
