@@ -10,8 +10,7 @@ thrift/src
 *.filemap
 *.rcc.cpp
 *.moc.cpp
-desktop/TAGS
-desktop/src/TAGS
 symbols
 crashes
 /test
+TAGS
