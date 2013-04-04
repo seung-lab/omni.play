@@ -35,10 +35,14 @@ static T toNum(const std::string& str){
 template <typename T>
 static std::string join(const T& in, const std::string sep = ", ")
 {
-    return boost::algorithm::join(
-        in  |
-        boost::adaptors::transformed(boost::lexical_cast<std::string,int>),
-        sep);
+    std::vector<std::string> tmp;
+    tmp.reserve(in.size());
+
+    FOR_EACH(s, in) {
+        tmp.push_back(boost::lexical_cast<std::string>(*s));
+    }
+
+    return boost::algorithm::join(tmp, sep);
 }
 
 template <typename T>
