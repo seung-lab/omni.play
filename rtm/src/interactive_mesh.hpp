@@ -38,6 +38,7 @@
 #include <map>
 #include <set>
 #include <list>
+#include <deque>
 
 namespace zi {
 namespace mesh {
@@ -255,9 +256,128 @@ public:
 
 private:
 
+    // Utility function for running DFS
+
+    void run_dfs( uint32_t x, uint32_t y, uint32_t z,
+                  uint32_t w, uint32_t h, uint32_t d,
+                  chunk_type& c )
+    {
+        static const uint32_t visited = (1<<31);
+
+        std::deque<vec3u> queue;
+        queue.push_back(vec3u(x,y,z));
+        c[z][y][z] |= visited;
+
+        while ( queue.size() )
+        {
+            vec3u& p = queue.front();
+
+            if ( p[0] > 0 )
+            {
+                if ( c[p[2]][p[1]][p[0]-1] == 0 )
+                {
+                    queue.push_back(vec3u(p[0]-1,p[1],p[2]));
+                    c[p[2]][p[1]][p[0]-1] = visited;
+                }
+            }
+            if ( p[0] < w-1 )
+            {
+                if ( c[p[2]][p[1]][p[0]+1] == 0 )
+                {
+                    queue.push_back(vec3u(p[0]+1,p[1],p[2]));
+                    c[p[2]][p[1]][p[0]+1] = visited;
+                }
+            }
+            if ( p[1] > 0 )
+            {
+                if ( c[p[2]][p[1]-1][p[0]] == 0 )
+                {
+                    queue.push_back(vec3u(p[0],p[1]-1,p[2]));
+                    c[p[2]][p[1]-1][p[0]] = visited;
+                }
+            }
+            if ( p[1] < h-1 )
+            {
+                if ( c[p[2]][p[1]+1][p[0]] == 0 )
+                {
+                    queue.push_back(vec3u(p[0],p[1]+1,p[2]));
+                    c[p[2]][p[1]+1][p[0]] = visited;
+                }
+            }
+            if ( p[2] > 0 )
+            {
+                if ( c[p[2]-1][p[1]][p[0]] == 0 )
+                {
+                    queue.push_back(vec3u(p[0],p[1],p[2]-1));
+                    c[p[2]-1][p[1]][p[0]] = visited;
+                }
+            }
+            if ( p[2] < h-1 )
+            {
+                if ( c[p[2]+1][p[1]][p[0]] == 0 )
+                {
+                    queue.push_back(vec3u(p[0],p[1],p[2]+1));
+                    c[p[2]+1][p[1]][p[0]] = visited;
+                }
+            }
+            queue.pop_front();
+        }
+    }
+
+    // Fills out the gaps fully enclosed inside another. We do this by
+    // visiting all the reachable nodes from the edges (DFS) and setting
+    // them to some temporary value. the non-visited nodes are enclosed
+    // with id_ voxels.
+
+    void fill_in_the_gaps( uint32_t w, uint32_t h, uint32_t d,
+                           chunk_type_ptr cp, mask_type_ptr mp )
+    {
+        chunk_type& c = *(cp.get());
+        mask_type&  m = *(mp.get());
+
+        static const uint32_t visited = (1<<31);
+
+        for ( uint32_t z = 0; z < d; ++z )
+        {
+            for ( uint32_t y = 0; y < h; ++y )
+            {
+                for ( uint32_t x = 0; x < w; ++x )
+                {
+                    if ( (z==0)||(z==d-1)||(y==0)||(y==h-1)||(x==0)||(x==w-1) )
+                    {
+                        if ( c[z][y][x] == 0 )
+                        {
+                            run_dfs(x,y,z,w,h,d,c);
+                        }
+                    }
+                }
+            }
+        }
+
+        for ( uint32_t z = 0; z < d; ++z )
+        {
+            for ( uint32_t y = 0; y < h; ++y )
+            {
+                for ( uint32_t x = 0; x < w; ++x )
+                {
+                    if ( c[z][y][x] == 0 )
+                    {
+                        c[z][y][x] = id_;
+                        m[z][y][x] = 1;
+                    }
+                    else if ( c[z][y][x] == visited )
+                    {
+                        c[z][y][x] = 0;
+                    }
+                }
+            }
+        }
+    }
+
+
     // Update chunk data with the given list of updates in the order of arrival.
     // If there is any change schedule remeshing the mip level 0 for the given
-    // chunk and the chinks that might be affected by the updates
+    // chunk and the chinks that might be affected by the updates.
 
     void
     chunk_update_task( vec3u chunk_coord, const std::list<store_task*>& tasks )
@@ -800,7 +920,7 @@ public:
     void volume_update_inner(uint32_t x, uint32_t y, uint32_t z,
                              uint32_t w, uint32_t h, uint32_t d,
                              uint32_t border_width, const char* data,
-                             const char* mask = 0)
+                             const char* mask = 0, bool fill_gaps = false )
     {
         zi::rwmutex::read_guard g(in_call_mutex_);
 
@@ -828,6 +948,12 @@ public:
             m->operator[](indices[range(0,d-dw)][range(0,h-dw)][range(0,w-dw)])
                 = morig[indices[range(ow,d-ow)][range(ow,h-ow)]
                         [range(ow,w-ow)]];
+        }
+
+        // check wether we have to fill-in the gaps.
+        if (fill_gaps)
+        {
+            fill_in_the_gaps(w-dw,h-dw,d-dw,c,m);
         }
 
         volume_update_internal(x+ow, y+ow, z+ow, w-dw, h-dw, d-dw, c, m);

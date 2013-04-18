@@ -43,6 +43,8 @@ struct MeshDataResult
     2: MeshData mesh,
 }
 
+const i64 FILL_GAPS = 1
+
 service RealTimeMesher
 {
     bool updateChunk(
@@ -64,6 +66,15 @@ service RealTimeMesher
       3: Vector3i size,
       4: binary data,
       5: binary mask,
+      ),
+
+    bool customMaskedUpdate(
+      1: string uri,
+      2: Vector3i location,
+      3: Vector3i size,
+      4: binary data,
+      5: binary mask,
+      6: i64 options,
       ),
 
     MeshDataResult getMesh(

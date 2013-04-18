@@ -144,6 +144,31 @@ public:
         return true;
     }
 
+    bool customMaskedUpdate( const std::string& uri,
+                             const Vector3i& location,
+                             const Vector3i& size,
+                             const std::string& data,
+                             const std::string& mask,
+                             const int64_t options )
+    {
+        zi::wall_timer t;
+
+        zi::rwmutex::read_guard g(incall_);
+        uint32_t id = boost::lexical_cast<uint32_t>(uri);
+
+        shared_ptr<interactive_mesh> m = get_mesher(id);
+        m->volume_update_inner( location.x, location.y, location.z,
+                                size.x, size.y, size.z,
+                                0, data.data(), mask.data(),
+                                options & 1);
+
+        LOG(request) << "maskedUpdate(" << uri << ", "
+                     << location.x << ", " << location.y << ", " << location.z
+                     << ") [" << t.elapsed<double>() << "]";
+
+        return true;
+    }
+
     void getMesh( MeshDataResult& _return,
                   const std::string& uri,
                   const MeshCoordinate& c)
