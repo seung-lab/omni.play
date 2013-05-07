@@ -238,11 +238,11 @@ $(BUILDDIR)/filesystem/%.o: filesystem/src/%.cpp
 %.moc.cpp: %.hpp
 	$(ECHO) "[MOC] Generating $<"
 	$(MKDIR) -p $(dir $@)
-	$(MOC) $(DEFINES) $(DESKTOPINCLUDES) -o $@ $<
+	$(MOC) $(DEFINES) -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION $(DESKTOPINCLUDES) -o $@ $<
 %.moc.cpp: %.h
 	$(ECHO) "[MOC] Generating $<"
 	$(MKDIR) -p $(dir $@)
-	$(MOC) $(DEFINES) $(DESKTOPINCLUDES) -o $@ $<
+	$(MOC) $(DEFINES) -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION $(DESKTOPINCLUDES) -o $@ $<
 %.rcc.cpp: %.qrc
 	$(ECHO) "[RCC] Generating $@"
 	$(MKDIR) -p $(dir $@)

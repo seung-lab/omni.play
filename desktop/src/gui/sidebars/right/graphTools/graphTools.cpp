@@ -18,7 +18,7 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState* vgs)
     , splitButton(new SplitButton(this))
     , shatterButton(new ShatterButton(this))
 {
-    QVBoxLayout* box = new QVBoxLayout(this);
+    QFormLayout* box = new QFormLayout(this);
     box->addWidget(thresholdBox());
 
     QWidget * wbox = new QWidget(this);

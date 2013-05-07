@@ -31,17 +31,6 @@ private:
     OmViewGroupState *const vgs_;
 
     GraphTools* graphTools_;
-
-    template <class T>
-    QWidget* wrapWithGroupBox(T* widget)
-    {
-        QGroupBox* gbox = new QGroupBox(widget->getName(), this);
-        QVBoxLayout* vbox = new QVBoxLayout(gbox);
-        vbox->addWidget(widget);
-        gbox->setContentsMargins(0,0,0,0);
-
-        return gbox;
-    }
 };
 
 } // namespace sidebars

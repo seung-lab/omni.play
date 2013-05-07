@@ -27,6 +27,12 @@ public:
 				const zi::mesh::Vector3i& size,
 				const std::string& data,
 				const std::string& mask));
+	MOCK_METHOD6(customMaskedUpdate, bool(const std::string& uri,
+				const zi::mesh::Vector3i& location,
+				const zi::mesh::Vector3i& size,
+				const std::string& data,
+				const std::string& mask,
+				const int64_t options));
 	MOCK_METHOD3(getMesh, void(MeshDataResult& _return,
 				const std::string& uri,
 				const MeshCoordinate& coordinate));

@@ -38,7 +38,11 @@ ValidationGroup::ValidationGroup(om::sidebars::rightImpl* d, OmViewGroupState* v
     mGroupName = new QLineEdit(this);
     mGroupName->setText("Glia");
 
-    QGridLayout * box = new QGridLayout(this);
+    QFormLayout * form = new QFormLayout(this);
+    QWidget * w = new QWidget(this);
+    form->addWidget(w);
+
+    QGridLayout * box = new QGridLayout(w);
     box->addWidget(addSelectedSegmentButtons(),0,0,2,2);
     box->addWidget(showValidatedButton,2,0,1,2);
     box->addWidget(showValid,3,0,1,1);
