@@ -3,6 +3,7 @@
 #include "gui/preferences/localPreferences2d.h"
 #include "gui/preferences/spinBoxCrosshairOpeningSize.hpp"
 #include "gui/preferences/mipRateSpinBox.hpp"
+#include "gui/preferences/scrollRateSpinBox.hpp"
 #include "gui/widgets/omLabelHBox.hpp"
 
 #include <QtGui>
@@ -32,6 +33,11 @@ QGroupBox* LocalPreferences2d::makeGeneralPropBox()
                       				  new MipRateSpinBox(widget),
                       				  om::LEFT_SIDE,
                       				  "Mip Rate"));
+
+    layout->addWidget(new OmLabelHBox(widget,
+                                      new ScrollRateSpinBox(widget),
+                                      om::LEFT_SIDE,
+                                      "Scroll Rate"));
 
     return widget;
 }

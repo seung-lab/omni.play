@@ -159,20 +159,22 @@ public:
         OmEvents::Redraw2d();
     }
 
-    inline void MoveUpStackCloserToViewer()
+    inline void MoveUpStackCloserToViewer(int steps = 1)
     {
         const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel()) *
-        	getViewTypeDepth(vol_->Coords().GetResolution());
+        	getViewTypeDepth(vol_->Coords().GetResolution()) *
+            steps;
         const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
         vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth + numberOfSlicestoAdvance);
 
         coords_.UpdateTransformationMatrices();
     }
 
-    inline void MoveDownStackFartherFromViewer()
+    inline void MoveDownStackFartherFromViewer(int steps = 1)
     {
         const int numberOfSlicestoAdvance = om::math::pow2int(getMipLevel()) *
-        	getViewTypeDepth(vol_->Coords().GetResolution());
+        	getViewTypeDepth(vol_->Coords().GetResolution()) *
+            steps;
         const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
         vgs_->View2dState()->SetScaledSliceDepth(viewType_, depth - numberOfSlicestoAdvance);
 

@@ -23,10 +23,12 @@ public:
         const int numDegrees = event->delta() / 8;
         const int numSteps = numDegrees / 15;
 
-        const bool controlKey = event->modifiers() & Qt::ControlModifier;;
+        const bool controlKey = event->modifiers() & Qt::ControlModifier;
         const bool shiftKey = event->modifiers() & Qt::ShiftModifier;
+        const bool altKey = event->modifiers() & Qt::AltModifier;
 
         const bool moveThroughStack = controlKey;
+        const bool moveThroughStackSlow = controlKey && altKey;
         const bool changeAlpha = shiftKey;
         const bool changeBrushSize = controlKey && shiftKey;
 
@@ -40,12 +42,18 @@ public:
                  OmStateManager::BrushSize()->DecreaseSize(BrushInc);
             }
 
-        } else if (moveThroughStack) {
-
+        } else if (moveThroughStackSlow) {
             if (numSteps >= 0) {
                 state_->MoveUpStackCloserToViewer();
             } else {
                 state_->MoveDownStackFartherFromViewer();
+            }
+
+        } else if (moveThroughStack) {
+            if (numSteps >= 0) {
+                state_->MoveUpStackCloserToViewer(Om2dPreferences::ScrollRate());
+            } else {
+                state_->MoveDownStackFartherFromViewer(Om2dPreferences::ScrollRate());
             }
 
         } else if(changeAlpha){
