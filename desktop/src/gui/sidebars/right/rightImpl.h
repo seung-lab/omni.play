@@ -27,6 +27,17 @@ public:
     static bool GetShowGroupsMode();
 
 private:
+    template <class T>
+    QWidget* wrapWithGroupBox(T* widget)
+    {
+        QGroupBox* gbox = new QGroupBox(widget->getName(), this);
+        QVBoxLayout* vbox = new QVBoxLayout(gbox);
+        vbox->addWidget(widget);
+        gbox->setContentsMargins(0,0,0,0);
+
+        return gbox;
+    }
+
     MainWindow *const mainWindow_;
     OmViewGroupState *const vgs_;
 

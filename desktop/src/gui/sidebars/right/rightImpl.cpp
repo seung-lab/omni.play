@@ -24,14 +24,11 @@ om::sidebars::rightImpl::rightImpl(MainWindow* mainWindow, OmViewGroupState* vgs
     DisplayTools* displayTools = new DisplayTools(this, vgs_);
     AnnotationGroup* annotationGroup = new AnnotationGroup(this, vgs_);
 
-    QToolBox* tbox = new QToolBox(this);
-    tbox->addItem(graphTools_, graphTools_->getName());
-    tbox->addItem(validationGroup, validationGroup->getName());
-    tbox->addItem(displayTools, displayTools->getName());
-    tbox->addItem(annotationGroup, annotationGroup->getName());
-
     QVBoxLayout* vbox = new QVBoxLayout(this);
-    vbox->addWidget(tbox);
+    vbox->addWidget(wrapWithGroupBox(graphTools_));
+    vbox->addWidget(wrapWithGroupBox(validationGroup));
+    vbox->addWidget(wrapWithGroupBox(displayTools));
+    vbox->addWidget(wrapWithGroupBox(annotationGroup), 1);
     setMaximumSize(250, 2000);
 }
 
