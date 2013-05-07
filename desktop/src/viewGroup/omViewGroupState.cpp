@@ -16,6 +16,7 @@
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
 #include "view2d/omView2dState.hpp"
+#include "users/omUsers.h"
 
 #ifdef ZI_OS_MACOS
 #include <QGLWidget>
@@ -36,7 +37,6 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
 #endif
     , toolBarManager_(NULL)
     , brightenSelected_(true)
-    , annotationVisible_(true)
     , annotationSize_(3)
 {
     mBreakThreshold = 0;
@@ -153,4 +153,12 @@ SegmentationDataWrapper OmViewGroupState::Segmentation() const {
 
 ChannelDataWrapper OmViewGroupState::Channel() const{
     return *cdw_;
+}
+
+bool OmViewGroupState::getAnnotationVisible() {
+    return OmProject::Globals().Users().UserSettings().getAnnotationVisible();
+}
+
+void OmViewGroupState::setAnnotationVisible(bool visible) {
+    OmProject::Globals().Users().UserSettings().setAnnotationVisible(visible);
 }

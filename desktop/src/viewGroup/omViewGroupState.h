@@ -51,7 +51,6 @@ private:
     //annotation stuff
     OmColor annotationColor_;
     std::string annotationString_;
-    bool annotationVisible_;
     double annotationSize_;
 
 public:
@@ -153,13 +152,8 @@ public:
         annotationSize_ = size;
     }
 
-    inline bool getAnnotationVisible() {
-        return annotationVisible_;
-    }
-
-    inline void setAnnotationVisible(bool visible) {
-        annotationVisible_ = visible;
-    }
+    bool getAnnotationVisible();
+    void setAnnotationVisible(bool visible);
 
 #ifdef ZI_OS_MACOS
     inline QGLWidget* get3dContext() {

@@ -13,16 +13,20 @@ private:
     const std::string filename_;
     const double defaultThreshold_;
     const double defaultSizeThreshold_;
+    const bool defaultShowAnnotations_;
     double threshold_;
     double sizeThreshold_;
+    bool showAnnotations_;
 
 public:
     userSettings(std::string filename)
         : filename_(filename)
         , defaultThreshold_(0.999)
         , defaultSizeThreshold_(250)
+        , defaultShowAnnotations_(false)
         , threshold_(defaultThreshold_)
         , sizeThreshold_(defaultSizeThreshold_)
+        , showAnnotations_(defaultShowAnnotations_)
     {
         std::cout << "New User Settings\n";
     }
@@ -49,6 +53,14 @@ public:
 
     inline void setSizeThreshold(float val) {
         sizeThreshold_ = val;
+    }
+
+    inline float getAnnotationVisible() {
+        return showAnnotations_;
+    }
+
+    inline void setAnnotationVisible(float val) {
+        showAnnotations_ = val;
     }
 
 };
