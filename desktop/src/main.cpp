@@ -23,11 +23,6 @@ DEFINE_ZiLOG(segmentSelector, false);
 #include "headless/headlessImpl.hpp"
 #include "system/omQTApp.hpp"
 #include "system/omStateManager.h"
-#ifndef ZI_OS_MACOS
-#  include "client/linux/handler/exception_handler.h"
-#  include "common/linux/google_crashdump_uploader.h"
-using namespace google_breakpad;
-#endif
 #include <QFileInfo>
 #include <QApplication>
 #include <QNetworkAccessManager>
@@ -56,17 +51,11 @@ private:
     int argc_;
     char **argv_;
     QString fileToOpen_;
-#ifndef ZI_OS_MACOS
-    ExceptionHandler eh_;
-#endif
 
 public:
     Omni(int argc, char **argv)
         : argc_(argc)
         , argv_(argv)
-#ifndef ZI_OS_MACOS
-        , eh_(MinidumpDescriptor("/tmp"), NULL, dumpCallback, NULL, true, -1)
-#endif
     {}
 
     int Run()
@@ -175,26 +164,6 @@ private:
         OmProject::Close();
         return 0;
     }
-
-#ifndef ZI_OS_MACOS
-	static bool dumpCallback(const MinidumpDescriptor& descriptor,
-                             void* context,
-                             bool succeeded)
-	{
-		std::cout << "Omni has crashed.  Uploading error report " << descriptor.path() << std::endl;
-
-		std::string cmd = std::string("curl -sF \"file=@") +
-			descriptor.path() +
-			"\" http://seungweb.mit.edu/omni/crashes/upload.php";
-
-		if(!system(cmd.c_str())) {
-			std::cout << std::endl << "Error report uploaded sucessfully!  This bug will be fixed!  Eventually....." << std::endl;
-		} else {
-			std::cout << std::endl << "Error report not uploaded!  Bug Matt...." << std::endl;
-		}
-		return succeeded;
-	}
-#endif
 };
 
 // bool MyApplication::notify ( QObject * receiver, QEvent * e )

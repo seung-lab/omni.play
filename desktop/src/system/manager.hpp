@@ -78,7 +78,7 @@ public:
 		disposed_.set(false);
 	}
 
-	~Manager()
+	virtual ~Manager()
 	{
 		zi::guard g(lock_);
 		if(!disposed_.get())
