@@ -55,6 +55,7 @@ public:
         zi::rwmutex::write_guard g( lock_ );
 
         ZI_ASSERT( missing_ > 0 );
+        ZI_ASSERT( scale > 0 );
 
         uint32_t ilen = indices_.size();
 
