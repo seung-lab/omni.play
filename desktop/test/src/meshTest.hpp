@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mesh/omMeshManagers.hpp"
 #include "chunks/omChunkUtils.hpp"
 #include "chunks/omSegChunk.h"
 #include "common/omCommon.h"
@@ -53,6 +54,7 @@ public:
         meshWriter_->Join();
         meshWriter_->CheckEverythingWasMeshed();
         meshManager_->Metadata()->SetMeshedAndStorageAsChunkFiles();
+        check();
     }
 
     om::shared_ptr<om::gui::progress> Progress(){
@@ -86,7 +88,10 @@ private:
         zi::task_manager::simple manager( numParallelChunks_ );
         manager.start();
 
-        FOR_EACH(cc, *segmentation_->GetMipChunkCoords()){
+        om::shared_ptr<std::deque<om::chunkCoord> > coords =
+            segmentation_->GetMipChunkCoords(0);
+
+        FOR_EACH(cc, *coords){
             manager.push_back(
                 zi::run_fn(
                     zi::bind( &MeshTest::processChunk, this, *cc ) ));
@@ -100,13 +105,13 @@ private:
     class MockTriStripCollector : public TriStripCollector {
     public:
         MockTriStripCollector(uint32_t id){
-            data_ = std::vector<float>(id, id);
-            indices_ = std::vector<uint32_t>(id, id + 0.1);
-            strips_ = std::vector<uint32_t>(id, id + 0.2);
+            data_ = std::vector<float>(id, id + 0.1);
+            indices_ = std::vector<uint32_t>(id, id + 1);
+            strips_ = std::vector<uint32_t>(id, id + 2);
         }
     };
 
-    std::vector<boost::shared_ptr<MockTriStripCollector> > tris_;
+    LockedVector<boost::shared_ptr<MockTriStripCollector> > tris_;
 
     void processChunk( om::chunkCoord coord )
     {
@@ -138,5 +143,45 @@ private:
         }
 
         return numChunks;
+    }
+
+    void check(){
+        printf("checking mesh data\n");
+
+        om::shared_ptr<std::deque<om::chunkCoord> > coords =
+            segmentation_->GetMipChunkCoords(0);
+
+        FOR_EACH(cc, *coords){
+            FOR_EACH(id,
+                     segmentation_->ChunkUniqueValues()->Values(*cc, 1))
+            {
+                OmMeshPtr mesh;
+                segmentation_->MeshManagers()->GetMesh(mesh, *cc, *id, 1,
+                                                       om::BLOCKING);
+                if(!mesh){
+                    throw OmIoException("no mesh found");
+                }
+
+                OmDataForMeshLoad* data = mesh->Data();
+                float* vd = data->VertexData();
+                uint32_t* vi = data->VertexIndex();
+                uint32_t* sd = data->StripData();
+
+                for(int i = 0; i < *id; ++i){
+                    float ff = *id + 0.1;
+                    if(!qFuzzyCompare(vd[i], ff)){
+                        throw OmIoException("bad vertex data");
+                    }
+                    if(vi[i] != (*id + 1)){
+                        throw OmIoException("bad vertex index data");
+                    }
+                    if(sd[i] != (*id + 2)){
+                        throw OmIoException("bad strip data");
+                    }
+                }
+            }
+        }
+
+        printf("data check ok!!\n");
     }
 };

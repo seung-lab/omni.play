@@ -81,40 +81,43 @@ private:
     {
         OmSegChunk* chunk = segmentation_->GetChunk(coord_);
 
-	    om::shared_ptr<uint32_t> rawDataPtr =
-	        chunk->SegData()->GetCopyOfChunkDataAsUint32();
+        om::shared_ptr<uint32_t> rawDataPtr =
+            chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
-	    uint32_t const*const rawData = rawDataPtr.get();
+        uint32_t const*const rawData = rawDataPtr.get();
 
-	    boost::unordered_set<uint32_t> segIDs;
+        boost::unordered_set<uint32_t> segIDs;
 
-	    if(!qFuzzyCompare(1, threshold_))
-	    {
-	        OmSegments* segments = segmentation_->Segments();
-	        segmentation_->SetDendThreshold(threshold_);
+        if(!qFuzzyCompare(1, threshold_))
+        {
+            OmSegments* segments = segmentation_->Segments();
+            segmentation_->SetDendThreshold(threshold_);
 
-	        for(size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
-	            if( 0 != rawData[i]) {
-	                segIDs.insert(segments->findRootID(rawData[i]));
-	            }
-	        }
-	    } else {
-	        for(size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
-	            if( 0 != rawData[i]) {
-	                segIDs.insert(rawData[i]);
-	            }
-	        }
-	    }
+            for(size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
+                if( 0 != rawData[i]) {
+                    segIDs.insert(segments->findRootID(rawData[i]));
+                }
+            }
+        } else {
+            for(size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
+                if( 0 != rawData[i]) {
+                    segIDs.insert(rawData[i]);
+                }
+            }
+        }
 
-	    values_ = OmSmartPtr<uint32_t>::MallocNumElements(segIDs.size(),
-	                                                      om::DONT_ZERO_FILL);
+        values_ = OmSmartPtr<uint32_t>::MallocNumElements(segIDs.size(),
+                                                          om::DONT_ZERO_FILL);
 
-	    std::copy(segIDs.begin(), segIDs.end(), values_.get());
-	    zi::sort(values_.get(), values_.get() + segIDs.size());
+        std::copy(segIDs.begin(), segIDs.end(), values_.get());
+        zi::sort(values_.get(), values_.get() + segIDs.size());
 
-	    numElements_ = segIDs.size();
+        numElements_ = segIDs.size();
 
-	    store();
+        std::cout << "ChunkUniqueValues: chunk " << coord_
+                  << " has " << numElements_ << " unique values\n";
+
+        store();
     }
 
     void store()

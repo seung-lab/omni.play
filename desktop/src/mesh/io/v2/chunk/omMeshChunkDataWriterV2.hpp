@@ -98,7 +98,9 @@ private:
         }
 
         if(fileDidNotExist){
-            file.resize(defaultFileSizeMB * om::math::bytesPerMB);
+            if(!file.resize(defaultFileSizeMB * om::math::bytesPerMB)){
+                throw OmIoException("could not resize larger", fnp_);
+            }
             curEndOfFile_ = 0;
         } else {
             curEndOfFile_ = file.size();
@@ -114,7 +116,9 @@ private:
 
         QFile file(fnp_);
         if(file.size() <= curEndOfFile_){
-            file.resize(curEndOfFile_ * defaultFileExpansionFactor);
+            if(!file.resize(curEndOfFile_ * defaultFileExpansionFactor)){
+                throw OmIoException("could not shrink", fnp_);
+            }
         }
     }
 
@@ -124,7 +128,9 @@ private:
 
         QFile file(fnp_);
         if(file.size() > curEndOfFile_ ){
-            file.resize(curEndOfFile_);
+            if(!file.resize(curEndOfFile_)){
+                throw OmIoException("could not resize larger", fnp_);
+            }
         }
     }
 
