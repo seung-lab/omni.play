@@ -44,6 +44,11 @@ public:
         zi::guard g(mutex_);
         vector_.swap(vec);
     }
+    void push_back(const VAL& val)
+    {
+        zi::guard g(mutex_);
+        vector_.push_back(val);
+    }
 private:
     std::vector<VAL> vector_;
     zi::spinlock mutex_;
