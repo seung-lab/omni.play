@@ -44,6 +44,7 @@ public:
     manager(OmSegmentation* vol)
         : vol_(vol)
     {}
+    virtual ~manager(){}
 
     void Add(globalCoord coord, const std::string& comment, const OmColor& color, double size);
 
