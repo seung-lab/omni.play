@@ -4,23 +4,12 @@
 #include "chunks/omChunkUtils.hpp"
 #include "chunks/omSegChunk.h"
 #include "common/omCommon.h"
-#include "mesh/mesher/MeshCollector.hpp"
 #include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/omMeshParams.hpp"
 #include "utility/omLockedPODs.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omSegmentation.h"
-#include "mesh/mesher/omMesherProgress.hpp"
-
-#include <zi/vl/vec.hpp>
-#include <zi/system.hpp>
-#include <zi/bits/cstdint.hpp>
-#include <zi/mesh/quadratic_simplifier.hpp>
-#include <zi/mesh/tri_mesh.hpp>
-#include <zi/mesh/tri_stripper.hpp>
-#include <zi/mesh/marching_cubes.hpp>
-#include <zi/shared_ptr.hpp>
 
 #include "zi/omThreads.h"
 
@@ -28,25 +17,15 @@ class MeshTest {
 public:
     MeshTest(OmSegmentation* segmentation, const double threshold)
         : segmentation_(segmentation)
-        , rootMipLevel_(segmentation->Coords().GetRootMipLevel())
         , threshold_(threshold)
-        , chunkCollectors_()
         , meshManager_(segmentation->MeshManager(threshold))
         , meshWriter_(new OmMeshWriterV2(meshManager_))
         , numParallelChunks_(numberParallelChunks())
         , numThreadsPerChunk_(zi::system::cpu_count / 2)
-        , downScallingFactor_(OmMeshParams::GetDownScallingFactor())
-    {
-        printf("ziMesher: will process %d chunks at a time\n", numParallelChunks_);
-        printf("ziMesher: will use %d threads per chunk\n", numThreadsPerChunk_);
-    }
+    {}
 
     ~MeshTest()
-    {
-        FOR_EACH(iter, chunkCollectors_){
-            delete iter->second;
-        }
-    }
+    {}
 
     void MeshFullVolume()
     {
@@ -57,31 +36,16 @@ public:
         check();
     }
 
-    om::shared_ptr<om::gui::progress> Progress(){
-        return progress_.Progress();
-    }
-
-    void Progress(om::shared_ptr<om::gui::progress> p){
-        progress_.Progress(p);
-    }
-
 private:
 
     OmSegmentation *const segmentation_;
-    const int rootMipLevel_;
     const double threshold_;
-
-    std::map<om::chunkCoord, std::vector<MeshCollector*> > occurances_;
-    std::map<om::chunkCoord, MeshCollector*> chunkCollectors_;
 
     OmMeshManager *const meshManager_;
     boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
 
     const int numParallelChunks_;
     const int numThreadsPerChunk_;
-    const double downScallingFactor_;
-
-    om::mesher::progress progress_;
 
     void init()
     {
