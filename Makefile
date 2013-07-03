@@ -53,6 +53,8 @@ INCLUDES	=	-I$(HERE) \
 				-I$(EXTERNAL)/libpng/include \
 				-I$(BREAKPAD)
 
+QT_LIBRARIES = QtGui QtNetwork QtCore QtOpenGL
+QT_FLAGS = $(shell pkg-config --cflags $(QT_LIBRARIES))
 DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop/include \
 				  -I$(HERE)/desktop/lib \
@@ -70,7 +72,8 @@ DESKTOPINCLUDES = -I$(HERE)/desktop/src \
 				  -I$(EXTERNAL)/qt/include/QtNetwork \
 				  -I$(EXTERNAL)/qt/include \
 				  -I$(EXTERNAL)/hdf5/include \
-				  -I$(BREAKPAD)
+				  -I$(BREAKPAD) \
+          $(QT_FLAGS)
 
 TESTINCLUDES = -I$(GMOCK)/include \
 			   -I$(GMOCK)/gtest/include \
@@ -78,18 +81,18 @@ TESTINCLUDES = -I$(GMOCK)/include \
 			   -I$(GMOCK)/gtest \
 
 LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
-	   $(EXTERNAL)/boost/lib/libboost_iostreams.a \
-	   $(EXTERNAL)/boost/lib/libboost_system.a \
-	   $(EXTERNAL)/boost/lib/libboost_thread.a \
-	   $(EXTERNAL)/boost/lib/libboost_regex.a \
-	   $(EXTERNAL)/thrift/lib/libthrift.a \
-	   $(EXTERNAL)/thrift/lib/libthriftnb.a \
-	   $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
-	   $(EXTERNAL)/libpng/lib/libpng.a \
-	   -levent -lpthread -lrt -lz
+     $(EXTERNAL)/boost/lib/libboost_iostreams.a \
+     $(EXTERNAL)/boost/lib/libboost_system.a \
+     $(EXTERNAL)/boost/lib/libboost_thread.a \
+     $(EXTERNAL)/boost/lib/libboost_regex.a \
+     $(EXTERNAL)/thrift/lib/libthrift.a \
+     $(EXTERNAL)/thrift/lib/libthriftnb.a \
+     $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
+     $(EXTERNAL)/libpng/lib/libpng.a \
+     -levent -lpthread -lrt -lz
 
-DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
-			  $(EXTERNAL)/boost/lib/libboost_filesystem.a \
+QT_LIBS = $(shell pkg-config --libs $(QT_LIBRARIES))
+DESKTOPLIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 	          $(EXTERNAL)/boost/lib/libboost_iostreams.a \
 	          $(EXTERNAL)/boost/lib/libboost_system.a \
 	          $(EXTERNAL)/boost/lib/libboost_thread.a \
@@ -101,13 +104,8 @@ DESKTOPLIBS = -L$(EXTERNAL)/qt/lib \
 	   		  $(EXTERNAL)/thrift/lib/libthriftnb.a \
 			  $(EXTERNAL)/breakpad/lib/libbreakpad.a \
 			  $(EXTERNAL)/breakpad/lib/libbreakpad_client.a \
-              -lQtGui \
-              -lQtNetwork \
-              -lQtCore \
-              -lQtOpenGL \
-              -lGLU \
-              -lGL \
-	   		  -levent -lpthread -lrt -lz
+        $(QT_LIBS) \
+	   		 -lGL -lGLU -levent -lpthread -lrt -lz
 
 CXX_INCLUDES	=	$(INCLUDES)
 
