@@ -58,13 +58,33 @@ public:
 
     inline Vector3i MipedDataDimensions(const int level) const
     {
-        return GetDataDimensions() / om::math::pow2int(level);
+        Vector3i dims = GetDataDimensions() / om::math::pow2int(level);
+        if(dims.x == 0) {
+            dims.x = 1;
+        }
+        if(dims.y == 0) {
+            dims.y = 1;
+        }
+        if(dims.z == 0) {
+            dims.z = 1;
+        }
+        return dims;
     }
 
     // Calculate the data dimensions needed to contain the volume at a given compression level.
     // TODO: should this be factored out?
     inline Vector3i MipLevelDataDimensions(const int level) const {
-        return GetExtent().toDataBbox(vol_, level).getMax();
+        Vector3i dims = GetExtent().toDataBbox(vol_, level).getMax();
+        if(dims.x == 0) {
+            dims.x = 1;
+        }
+        if(dims.y == 0) {
+            dims.y = 1;
+        }
+        if(dims.z == 0) {
+            dims.z = 1;
+        }
+        return dims;
     }
 
     // Calculate the MipChunkCoord dims required to contain all the chunks of a given level.
