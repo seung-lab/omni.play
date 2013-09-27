@@ -1,117 +1,80 @@
 #pragma once
 
-#include "boost.h"
+#include "core.hpp"
+#include "logging.h"
 
-#include "std.h"
 #include "common/exception.h"
 #include <cassert>
+#include <unordered_set>
+#include <deque>
+#include <set>
+#include <iostream>
 
 #include "math.hpp"
-#include "server_types.h"
 
 // needed for coordinates
-namespace om { namespace common {
-    enum viewType { XY_VIEW, XZ_VIEW, ZY_VIEW };
-    std::ostream& operator<<(std::ostream &out, const viewType& vt);
-}}
+#include <vmmlib/vmmlib.h>
+using namespace vmml;
 
-
-
-#include "coordinates/coordinates.h"
-#include <zi/for_each.hpp>
+// C++14 make_unique, ala http://stackoverflow.com/q/7038357
+namespace std {
+template <typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args) {
+  return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+};
 
 namespace om {
 namespace common {
 
+enum ViewType {
+  XY_VIEW,
+  XZ_VIEW,
+  ZY_VIEW
+};
+std::ostream& operator<<(std::ostream& out, const ViewType& vt);
+
 /**
  * "system" types
  */
-//id typedefs
-typedef uint32_t id;
-typedef boost::unordered_set< id > idSet;
-
-//bit field
-typedef unsigned int bitfield;
-
-//objects
-//slices
-enum objectType { CHANNEL, SEGMENTATION };
+// id typedefs
+typedef std::unordered_set<ID> IDSet;
 
 /**
  * "segment" types
  */
-typedef uint32_t segId;
-typedef std::deque<segId> segIdList;
-typedef uint32_t pageNum;
+typedef std::deque<SegID> SegIDList;
+typedef std::set<SegID> SegIDSet;
+std::ostream& operator<<(std::ostream& out, const SegIDSet& in);
 
-class segment;
-typedef std::set<segment*> segPtrSet;
-typedef std::set<segId> segIdSet;
-std::ostream& operator<<(std::ostream& out, const segIdSet& in);
-
+typedef uint32_t PageNum;
 /**
  * "group" types
  */
-typedef uint32_t groupId;
-typedef std::string groupName;
-typedef boost::unordered_set<groupId> groupIdSet;
+typedef uint32_t GroupID;
+typedef std::string GroupName;
+typedef std::unordered_set<GroupID> GroupIDSet;
 
-/**
- * color cache enum
- */
-enum segmentColorCacheType { SCC_FILTER_BLACK_BRIGHTEN_SELECT = 0,
-                             SCC_FILTER_COLOR_BRIGHTEN_SELECT,
-                             SCC_FILTER_BREAK,
-                             SCC_FILTER_VALID,
-                             SCC_FILTER_VALID_BLACK,
-                             SCC_SEGMENTATION,
-                             SCC_SEGMENTATION_BREAK_BLACK,
-                             SCC_SEGMENTATION_BREAK_COLOR,
-                             SCC_SEGMENTATION_VALID,
-                             SCC_SEGMENTATION_VALID_BLACK,
-                             SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT,
-                             SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT,
-                             SCC_NUMBER_OF_ENUMS };
-
-/**
- * cache-type enum
- */
-enum cacheGroup {
-    MESH_CACHE = 1,
-    TILE_CACHE
-};
-
-std::ostream& operator<<(std::ostream &out, const cacheGroup& c);
-viewType Convert(server::viewType::type type);
-server::viewType::type Convert(viewType type);
-inline Vector3i Convert(server::vector3i v) {
-    return Vector3i(v.x, v.y, v.z);
-}
-
-template<typename T>
-T twist(T vec, viewType view)
-{
-    T out(vec);
-    switch(view)
-    {
+template <typename T>
+T twist(T vec, ViewType view) {
+  T out(vec);
+  switch (view) {
     case XY_VIEW:
-        break;
+      break;
     case XZ_VIEW:
-        out.x = vec.x;
-        out.y = vec.z;
-        out.z = vec.y;
-        break;
+      out.x = vec.x;
+      out.y = vec.z;
+      out.z = vec.y;
+      break;
     case ZY_VIEW:
-        out.x = vec.z;
-        out.y = vec.y;
-        out.z = vec.x;
-        break;
-    }
+      out.x = vec.z;
+      out.y = vec.y;
+      out.z = vec.x;
+      break;
+  }
 
-    return out;
+  return out;
 }
 
-} // common
-} // om
-
-
+}  // common
+}  // om

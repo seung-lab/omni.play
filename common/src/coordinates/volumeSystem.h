@@ -1,215 +1,194 @@
 #pragma once
 
 #include "common/common.h"
-#include "zi/concurrency.hpp"
-
-#include "server_types.h"
+#include "coordinates/coordinates.h"
 
 namespace om {
 namespace coords {
 
-class globalBbox;
-class chunk;
+class GlobalBbox;
+class Chunk;
 
-class volumeSystem {
-protected:
-    Matrix4f dataToGlobal_;
-    Matrix4f globalToData_;
-    Matrix4f normToGlobal_;
-    Matrix4f globalToNorm_;
+class VolumeSystem {
+ protected:
+  Matrix4f dataToGlobal_;
+  Matrix4f globalToData_;
+  Matrix4f normToGlobal_;
+  Matrix4f globalToNorm_;
 
-    //data properties
-    Vector3i dataDimensions_;
-    Vector3i resolution_;
+  Vector3i dataDimensions_;
+  Vector3i chunkDimensions_;
+  Vector3i resolution_;
 
-    int chunkDim_;
-    int mMipRootLevel;
+  int rootMipLevel_;
 
-public:
-    static const int DefaultChunkDim = 128;
+ public:
+  static const int DefaultChunkDim = 128;
 
-    volumeSystem();
+  VolumeSystem();
 
-    volumeSystem(const server::metadata& meta)
-        : dataToGlobal_(Matrix4f::IDENTITY)
-        , globalToData_(Matrix4f::IDENTITY)
-        , normToGlobal_(Matrix4f::IDENTITY)
-        , globalToNorm_(Matrix4f::IDENTITY)
-        , resolution_(Vector3i::ONE)
-        , chunkDim_(DefaultChunkDim)
-        , mMipRootLevel(0)
-    {
-        Vector3i dims;
-        dims.x = meta.bounds.max.x - meta.bounds.min.x;
-        dims.y = meta.bounds.max.y - meta.bounds.min.y;
-        dims.z = meta.bounds.max.z - meta.bounds.min.z;
-        SetDataDimensions(dims);
+  VolumeSystem(Vector3i dims, Vector3i abs = Vector3i::ZERO,
+               Vector3i res = Vector3i::ONE, uint chunkDim = DefaultChunkDim)
+      : dataToGlobal_(Matrix4f::IDENTITY),
+        globalToData_(Matrix4f::IDENTITY),
+        normToGlobal_(Matrix4f::IDENTITY),
+        globalToNorm_(Matrix4f::IDENTITY),
+        chunkDimensions_(Vector3i(chunkDim)),
+        resolution_(Vector3i::ONE),
+        rootMipLevel_(0) {
+    SetDataDimensions(dims);
+    SetAbsOffset(abs);
+    SetResolution(res);
+    UpdateRootLevel();
+  }
 
-        Vector3i abs(meta.bounds.min.x, meta.bounds.min.y, meta.bounds.min.z);
-        SetAbsOffset(abs);
+  void UpdateRootLevel();
 
-        Vector3i res(meta.resolution.x, meta.resolution.y, meta.resolution.z);
-        SetResolution(res);
-        UpdateRootLevel();
+  inline int RootMipLevel() const { return rootMipLevel_; }
+
+  inline Vector3i MipedDataDimensions(const int level) const {
+    return DataDimensions() / math::pow2int(level);
+  }
+
+  Vector3i MipLevelDataDimensions(const int level) const;
+
+  inline Vector3i MipLevelDimensionsInMipChunks(int level) const {
+    const Vector3f data_dims = MipLevelDataDimensions(level);
+    return Vector3i(ceil(data_dims.x / chunkDimensions_.x),
+                    ceil(data_dims.y / chunkDimensions_.y),
+                    ceil(data_dims.z / chunkDimensions_.z));
+  }
+
+  // data properties
+  GlobalBbox Extent() const;
+
+  inline Vector3i DataDimensions() const { return dataDimensions_; }
+
+  inline void SetDataDimensions(const Vector3f& dim) {
+    dataDimensions_.x = om::math::roundUp((int)dim.x, chunkDimensions_.x);
+    dataDimensions_.y = om::math::roundUp((int)dim.y, chunkDimensions_.y);
+    dataDimensions_.z = om::math::roundUp((int)dim.z, chunkDimensions_.z);
+
+    updateNormMat();
+  }
+
+  inline void SetBounds(const GlobalBbox& bounds) {
+    SetDataDimensions(bounds.getDimensions());
+    SetAbsOffset(bounds.getMin());
+  }
+
+  inline void SetChunkDimensions(const Vector3i& dims) {
+    chunkDimensions_ = dims;
+  }
+
+  inline Vector3i ChunkDimensions() const { return chunkDimensions_; }
+
+  // coordinate frame methods
+  inline Matrix4f DataToGlobalMat(int mipLevel = 0) const {
+    Matrix4f ret = dataToGlobal_;
+    int factor = math::pow2int(mipLevel);
+    ret.scaleTranslation(1.0f / factor);
+    ret.m33 = 1.0f / factor;
+    return ret;
+  }
+
+  inline Matrix4f GlobalToDataMat(int mipLevel = 0) const {
+    Matrix4f ret = globalToData_;
+    int factor = math::pow2int(mipLevel);
+    ret.m33 = factor;
+    return ret;
+  }
+
+  inline const Matrix4f& NormToGlobalMat() const { return normToGlobal_; }
+
+  inline const Matrix4f& GlobalToNormMat() const { return globalToNorm_; }
+
+  inline Vector3i AbsOffset() const { return dataToGlobal_.getTranslation(); }
+
+  inline void SetAbsOffset(Vector3i absOffset) {
+    dataToGlobal_.setTranslation(absOffset);
+    dataToGlobal_.getInverse(globalToData_);
+    normToGlobal_.setTranslation(absOffset);
+    normToGlobal_.getInverse(globalToNorm_);
+  }
+
+  inline Vector3i Resolution() const {
+    return Vector3i(dataToGlobal_.m00, dataToGlobal_.m11, dataToGlobal_.m22);
+  }
+
+  inline void SetResolution(Vector3i resolution) {
+    resolution_ = resolution;
+
+    dataToGlobal_.m00 = resolution.x;
+    dataToGlobal_.m11 = resolution.y;
+    dataToGlobal_.m22 = resolution.z;
+
+    dataToGlobal_.getInverse(globalToData_);
+    updateNormMat();
+  }
+
+  inline Vector3i DimsRoundedToNearestChunk(const int level) const {
+    const Vector3i data_dims = MipLevelDataDimensions(level);
+
+    return Vector3i(math::roundUp(data_dims.x, chunkDimensions_.x),
+                    math::roundUp(data_dims.y, chunkDimensions_.y),
+                    math::roundUp(data_dims.z, chunkDimensions_.z));
+  }
+
+  inline void ValidMipChunkCoordChildren(const Chunk& coord,
+                                         std::set<Chunk>& children) const {
+    // clear set
+    children.clear();
+
+    // get all possible children
+    std::vector<Chunk> possible_children = coord.ChildrenCoords();
+
+    // for all possible children
+    for (auto& chunk : possible_children) {
+      if (ContainsMipChunk(chunk)) {
+        children.insert(chunk);
+      }
+    }
+  }
+
+  inline uint32_t ComputeTotalNumChunks() const {
+    uint32_t numChunks = 0;
+
+    for (auto level = 0; level <= rootMipLevel_; ++level) {
+      numChunks += ComputeTotalNumChunks(level);
     }
 
-    void UpdateRootLevel();
+    return numChunks;
+  }
 
-    inline int GetRootMipLevel() const {
-        return mMipRootLevel;
-    }
+  inline uint32_t ComputeTotalNumChunks(const int mipLevel) const {
+    const Vector3i dims = MipLevelDimensionsInMipChunks(mipLevel);
+    return dims.x * dims.y * dims.z;
+  }
 
-    inline Vector3i MipedDataDimensions(const int level) const
-    {
-        return GetDataDimensions() / math::pow2int(level);
-    }
+  Chunk RootMipChunkCoordinate() const;
 
-    // Calculate the data dimensions needed to contain the volume at a given compression level.
-    // TODO: should this be factored out?
-    inline Vector3i MipLevelDataDimensions(const int level) const
-    {
-        //get dimensions
-        globalBbox source_extent = GetDataExtent();
-        Vector3f source_dims = source_extent.getUnitDimensions();
+  std::shared_ptr<std::vector<coords::Chunk>> MipChunkCoords() const;
+  std::shared_ptr<std::vector<coords::Chunk>> MipChunkCoords(
+      const int mipLevel) const;
 
-        //dims in fraction of pixels
-        Vector3f mip_level_dims = source_dims / math::pow2int(level);
+  bool ContainsMipChunk(const Chunk& rMipCoord) const;
 
-        return Vector3i(ceil(mip_level_dims.x),
-                        ceil(mip_level_dims.y),
-                        ceil(mip_level_dims.z));
-    }
+  inline uint32_t GetNumberOfVoxelsPerChunk() const {
+    return chunkDimensions_.x * chunkDimensions_.y * chunkDimensions_.z;
+  }
 
-    inline Vector3i MipLevelDimensionsInMipChunks(int level) const
-    {
-        const Vector3f data_dims = MipLevelDataDimensions(level);
-        return Vector3i (ceil(data_dims.x / GetChunkDimension()),
-                         ceil(data_dims.y / GetChunkDimension()),
-                         ceil(data_dims.z / GetChunkDimension()));
-    }
+ private:
+  void addChunkCoordsForLevel(const int mipLevel,
+                              std::vector<coords::Chunk>* coords) const;
 
-    //data properties
-    globalBbox GetDataExtent() const;
-
-    inline Vector3i GetDataDimensions() const {
-        return dataDimensions_;
-    }
-
-    inline void SetDataDimensions(const Vector3f& dim)
-    {
-        dataDimensions_.x = om::math::roundUp((int)dim.x, chunkDim_);
-        dataDimensions_.y = om::math::roundUp((int)dim.y, chunkDim_);
-        dataDimensions_.z = om::math::roundUp((int)dim.z, chunkDim_);
-
-        updateNormMat();
-    }
-
-// chunk dims
-    inline int GetChunkDimension() const {
-        return chunkDim_;
-    }
-
-    inline void SetChunkDimension(const int dim) {
-        chunkDim_ = dim;
-    }
-
-    inline Vector3i GetChunkDimensions() const
-    {
-        return Vector3i(GetChunkDimension(),
-                        GetChunkDimension(),
-                        GetChunkDimension());
-    }
-
-// coordinate frame methods
-    inline Matrix4f DataToGlobalMat(int mipLevel = 0) const {
-        Matrix4f ret = dataToGlobal_;
-        int factor = math::pow2int(mipLevel);
-        ret.scaleTranslation(1.0f / factor);
-        ret.m33 = 1.0f / factor;
-        return ret;
-    }
-
-    inline Matrix4f GlobalToDataMat(int mipLevel = 0) const {
-        Matrix4f ret = globalToData_;
-        int factor = math::pow2int(mipLevel);
-        ret.m33 = factor;
-        return ret;
-    }
-
-    inline const Matrix4f& NormToGlobalMat() const {
-        return normToGlobal_;
-    }
-
-    inline const Matrix4f& GlobalToNormMat() const {
-        return globalToNorm_;
-    }
-
-    inline Vector3i GetAbsOffset() const {
-        return dataToGlobal_.getTranslation();
-    }
-
-    inline void SetAbsOffset(Vector3i absOffset) {
-        dataToGlobal_.setTranslation(absOffset);
-        dataToGlobal_.getInverse(globalToData_);
-        normToGlobal_.setTranslation(absOffset);
-        normToGlobal_.getInverse(globalToNorm_);
-    }
-
-    inline Vector3i GetResolution() const {
-        return Vector3i(dataToGlobal_.m00, dataToGlobal_.m11, dataToGlobal_.m22);
-    }
-
-    inline void SetResolution(Vector3i resolution) {
-        resolution_ = resolution;
-
-        dataToGlobal_.m00 = resolution.x;
-        dataToGlobal_.m11 = resolution.y;
-        dataToGlobal_.m22 = resolution.z;
-
-        dataToGlobal_.getInverse(globalToData_);
-        updateNormMat();
-    }
-
-
-    inline Vector3i getDimsRoundedToNearestChunk(const int level) const
-    {
-        const Vector3i data_dims = MipLevelDataDimensions(level);
-
-        return Vector3i(math::roundUp(data_dims.x, GetChunkDimension()),
-                        math::roundUp(data_dims.y, GetChunkDimension()),
-                        math::roundUp(data_dims.z, GetChunkDimension()));
-    }
-
-    //mip chunk methods
-    chunk RootMipChunkCoordinate() const;
-
-    boost::shared_ptr<std::deque<coords::chunk> > GetMipChunkCoords() const;
-    boost::shared_ptr<std::deque<coords::chunk> > GetMipChunkCoords(const int mipLevel) const;
-
-    // Returns true if given MipCoordinate is a valid coordinate within the MipVolume.
-    bool ContainsMipChunk(const chunk & rMipCoord) const;
-private:
-    void addChunkCoordsForLevel(const int mipLevel,
-                            std::deque<coords::chunk>* coords) const
-    {
-        const Vector3i dims = MipLevelDimensionsInMipChunks(mipLevel);
-        for (int z = 0; z < dims.z; ++z){
-            for (int y = 0; y < dims.y; ++y){
-                for (int x = 0; x < dims.x; ++x){
-                    coords->push_back(coords::chunk(mipLevel, x, y, z));
-                }
-            }
-        }
-    }
-
-    void updateNormMat()
-    {
-        normToGlobal_.m00 = dataDimensions_.x * resolution_.x;
-        normToGlobal_.m11 = dataDimensions_.y * resolution_.y;
-        normToGlobal_.m22 = dataDimensions_.z * resolution_.z;
-        normToGlobal_.getInverse(globalToNorm_);
-    }
+  void updateNormMat() {
+    normToGlobal_.m00 = dataDimensions_.x * resolution_.x;
+    normToGlobal_.m11 = dataDimensions_.y * resolution_.y;
+    normToGlobal_.m22 = dataDimensions_.z * resolution_.z;
+    normToGlobal_.getInverse(globalToNorm_);
+  }
 };
 
-} // namespace coords
+}  // namespace coords
 }

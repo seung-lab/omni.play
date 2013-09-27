@@ -11,21 +11,52 @@ from bootstrap.detect_os import detect_os
 from bootstrap.sys_mac import sys_mac
 
 class bootstrap:
+    def __init__(self):
+        (options, args) = self.__parseArgs()
+        self.numCores = self.__cores(options.cmd_procs)
+        self.r = runner(self.numCores)
+        self.options = self.__setupOptions()
 
-    def show_menu(self, options):
-        max_answer = len(options) - 1
+        if len(args) == 0:
+            self.__menu()
+        else:
+            self.__run_idx(int(args[0]))
 
+    def __setupOptions(self):
+        # --the ordering of the options matters:
+        #   We assume first 4 options (exit, all, init, and apt-get),
+        #   and the final "Build Omni" option, don't change.
+        # --This ordering let's us "Build All" easily since
+        #   1) we can skip the exit, init submodules, and apt-get steps
+        #   2) Build Omni is the last thing done
+        # --When adding a library, just add it between apt-get and Build Omni
+        #   (and resort these lines, if desired, to keep in alphabetical
+        #    order)
+        return [["exit", self.__exit],
+                ["Build All", self.__buildAll ],
+                ["Init Submodules", self.r.submodule ],
+                ["apt-get installs", self.__doUbuntuAptGets],
+                ["Build boost", self.r.boost ],
+                ["Build cpp_netlib", self.r.netlib ],
+                ["Build hdf5", self.r.hdf5 ],
+                ["Build libevent", self.r.libevent ],
+                ["Build libjpeg", self.r.libjpeg ],
+                ["Build libpng", self.r.libpng ],
+                ["Build qt", self.r.qt ],
+                ["Build thrift", self.r.thrift],
+                ["Build zlib", self.r.zlib ],
+                ["Build Omni", self.r.omni] ]
+
+    def __menu(self):
         print "bootstrap.py menu:"
-
-        for idx, val in enumerate(options):
-            print "{i} -- {val}".format(i = idx,
-                                        val = val)
-
+        for idx, val in enumerate(self.options):
+            print "{i} -- {v}".format(i = idx,
+                                      v = val[0])
         while True:
-            answer = None
+            idx = None
             try:
                 s = raw_input( "Please make selection: " )
-                answer = int( s )
+                idx = int( s )
             except KeyboardInterrupt, SystemExit:
                 print ""
                 sys.exit(0)
@@ -33,114 +64,54 @@ class bootstrap:
                 print "could not parse \"" + s + "\""
                 pass
 
-            if answer >= 0 and answer <= max_answer:
-                self.runMenuEntry( answer )
+            if self.__run_idx(idx):
                 sys.exit(0)
 
-    def menu(self):
-        options = [ "exit",
-                    "Build All",
-                    "Build boost",
-                    "Build thrift",
-                    "Build libjpeg",
-                    "Build libpng",
-                    "Build zlib",
-                    "Build libevent",
-                    "Build qt",
-                    "Build hdf5",
-                    "Build breakpad",
-                    "Init Submodules",
-                    "Install Ubuntu dev packages",
-                    "Build Omni"]
+    def __run_idx(self, idx):
+        max_idx = len(self.options) - 1
+        if idx >= 0 and idx <= max_idx:
+            try:
+                self.options[idx][1]()
+                return True
+            except SystemExit, e:
+                sys.exit(e)
+            except Exception, e:
+                print str(e)
+                print "*******************************"
+                traceback.print_exc()
+        return False
 
-        self.show_menu(options)
+    def __exit(self):
+        sys.exit(0)
 
-    def runMenuEntry(self, entry):
-        r = runner(self.numCores)
-        try:
-            if 0 == entry:
-                sys.exit(0)
-            elif 1 == entry:
-                self.buildAll()
-            elif 2 == entry:
-                r.boost()
-            elif 3 == entry:
-                r.thrift()
-            elif 4 == entry:
-                r.libjpeg()
-            elif 5 == entry:
-                r.libpng()
-            elif 6 == entry:
-                r.zlib()
-            elif 7 == entry:
-            	r.libevent()
-            elif 8 == entry:
-            	r.qt()
-            elif 9 == entry:
-            	r.hdf5()
-            elif 10 == entry:
-            	r.breakpad()
-            elif 11 == entry:
-            	r.submodule()
-            elif 12 == entry:
-                self.doUbuntuAptGets()
-            elif 13 == entry:
-                r.omni()
-            else:
-                print "unknown option: ", entry
-                sys.exit(1)
-        except SystemExit, e:
-            sys.exit(e)
-        except Exception, e:
-            print str(e)
-            print "*******************************"
-            traceback.print_exc()
+    def __buildAll(self):
+        #skip first 4 options
+        for idx, e in enumerate(self.options[4:]):
+            e[1]()
 
-    def buildAll(self):
-        r = runner(self.numCores)
-        #self.doUbuntuAptGets()
-        #r.submodule()
-        r.libjpeg()
-        r.libpng()
-        r.libevent()
-        r.hdf5()
-        r.breakpad()
-        r.boost()
-        r.thrift()
-        r.qt()
-        r.omni()
-
-    def parallelCompilation(self, cmd_procs):
-        self.numCores = sysutils.numberOfCores(cmd_procs)
-        print "number of parallel builds (override with \"-j n\" switch to bootstrap.pl): ", self.numCores
-
-    def checkCmdLineArgs(self):
+    def __parseArgs(self):
         parser = OptionParser()
-        parser.add_option("-j", dest="cmd_procs", type="int", help="override num parallel builds")
-        (options, args) = parser.parse_args()
+        parser.add_option("-j", dest="cmd_procs", type="int",
+                          help="override num parallel builds")
+        return parser.parse_args()
 
-        self.parallelCompilation(options.cmd_procs)
+    def __cores(self, cmd_procs):
+        numCores = sysutils.numberOfCores(cmd_procs)
+        print "number of parallel builds ",
+        print "(override with \"-j n\" switch to bootstrap.pl): ",
+        print numCores
+        return numCores
 
-        if len(args) == 0:
-            self.menu()
-        else:
-            self.runMenuEntry( int(args[0]) )
-
-    def doUbuntuAptGets(self):
+    def __doUbuntuAptGets(self):
         args = 'libxrender-dev libxext-dev freeglut3-dev g++ \
 libfreetype6-dev libxml2 libxml2-dev mesa-common-dev \
 libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg \
-libgl1-mesa-glx-dbg libncurses5-dev nasm libevent-dev libssl-dev'
+libgl1-mesa-glx-dbg libncurses5-dev nasm libevent-dev libssl-dev subversion'
 
         cmd = "sudo apt-get -y install " + args
         print "about to run: " + cmd
         print os.system(cmd)
         print "Done with the Ubuntu apt-gets! \n\n"
-
-    def omniClean(self):
-        print "fix me"
-        #os.system("cd " + omniPath make clean)`
-        #omniServer()
 
 def main(argv=None):
     if argv is None:
@@ -150,7 +121,6 @@ def main(argv=None):
     sys_mac.checkForMac()
 
     b = bootstrap()
-    b.checkCmdLineArgs()
 
 if __name__ == "__main__":
     main()

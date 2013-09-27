@@ -1,68 +1,54 @@
 #pragma once
 
 #include "vmmlib/vmmlib.h"
+#include "common/macro.hpp"
 
 namespace om {
 namespace coords {
 
-class data;
-class global;
-class volumeSystem;
+class Data;
+class Global;
+class VolumeSystem;
 
-class norm : public vmml::Vector3f
-{
-private:
-    typedef vmml::Vector3f base_t;
-    const volumeSystem * vol_;
+class Norm : public vmml::Vector3f {
+ private:
+  typedef vmml::Vector3f base_t;
 
-public:
-    norm(base_t v, const volumeSystem *vol)
-        : base_t(v)
-        , vol_(vol)
-    { }
+ public:
+  Norm(base_t v, const VolumeSystem &volume) : base_t(v), volume_(volume) {}
 
-    norm(float x, float y, float z, const volumeSystem *vol)
-        : base_t(x, y, z)
-        , vol_(vol)
-    { }
+  Norm(float x, float y, float z, const VolumeSystem &volume)
+      : base_t(x, y, z), volume_(volume) {}
 
-    global toGlobal() const;
-    data toData(int) const;
+  Global ToGlobal() const;
+  Data ToData(int) const;
 
-    inline const volumeSystem* volume() const {
-        return vol_;
-    }
+ private:
+  PROP_CONST(VolumeSystem &, volume);
 };
 
-class normBbox : public vmml::AxisAlignedBoundingBox<float>
-{
-private:
-    typedef AxisAlignedBoundingBox<float> base_t;
-    volumeSystem const * const vol_;
+class NormBbox : public vmml::AxisAlignedBoundingBox<float> {
+ private:
+  typedef AxisAlignedBoundingBox<float> base_t;
+  const VolumeSystem &vol_;
 
-public:
-    normBbox(norm min, norm max);
+ public:
+  NormBbox(Norm min, Norm max);
 
-    inline norm getMin() const {
-        return norm(base_t::getMin(), vol_);
-    }
+  inline Norm getMin() const { return Norm(base_t::getMin(), vol_); }
 
-    inline norm getMax() const {
-        return norm(base_t::getMax(), vol_);
-    }
+  inline Norm getMax() const { return Norm(base_t::getMax(), vol_); }
 
-    inline norm getDimensions() const {
-        return norm(base_t::getDimensions(), vol_);
-    }
+  inline Norm getDimensions() const {
+    return Norm(base_t::getDimensions(), vol_);
+  }
 
-    inline norm getUnitDimensions() const {
-        return norm(base_t::getUnitDimensions(), vol_);
-    }
+  inline Norm getUnitDimensions() const {
+    return Norm(base_t::getUnitDimensions(), vol_);
+  }
 
-    inline norm getCenter() const {
-        return norm(base_t::getCenter(), vol_);
-    }
+  inline Norm getCenter() const { return Norm(base_t::getCenter(), vol_); }
 };
 
-} // namespace coords
-} // namespace om
+}  // namespace coords
+}  // namespace om

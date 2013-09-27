@@ -5,87 +5,88 @@
 namespace om {
 namespace coords {
 
-volumeSystem::volumeSystem()
-    : dataToGlobal_(Matrix4f::IDENTITY)
-    , globalToData_(Matrix4f::IDENTITY)
-    , normToGlobal_(Matrix4f::IDENTITY)
-    , globalToNorm_(Matrix4f::IDENTITY)
-    , resolution_(Vector3i::ONE)
-    , chunkDim_(DefaultChunkDim)
-    , mMipRootLevel(0)
-{
-    SetDataDimensions(Vector3i(DefaultChunkDim,
-                                DefaultChunkDim,
-                                DefaultChunkDim));
+VolumeSystem::VolumeSystem()
+    : dataToGlobal_(Matrix4f::IDENTITY),
+      globalToData_(Matrix4f::IDENTITY),
+      normToGlobal_(Matrix4f::IDENTITY),
+      globalToNorm_(Matrix4f::IDENTITY),
+      chunkDimensions_(Vector3i(DefaultChunkDim)),
+      resolution_(Vector3i::ONE),
+      rootMipLevel_(0) {
+  SetDataDimensions(Vector3i(DefaultChunkDim));
 
-    UpdateRootLevel();
+  UpdateRootLevel();
 }
 
-void volumeSystem::UpdateRootLevel()
-{
-    //determine max level
-    Vector3i source_dims = GetDataDimensions();
-    int max_source_dim = source_dims.getMaxComponent();
-    int mipchunk_dim = GetChunkDimension();
+void VolumeSystem::UpdateRootLevel() {
+  float ratio =
+      (Vector3f(DataDimensions()) / chunkDimensions_).getMaxComponent();
+  if (ratio <= 1) {
+    rootMipLevel_ = 0;
+  } else {
+    rootMipLevel_ = ceil(log(ratio) / log(2.0f));
+  }
+}
 
-    if (max_source_dim <= mipchunk_dim) {
-        mMipRootLevel = 0;
-    } else {
-        mMipRootLevel = ceil(log((float) (max_source_dim) / mipchunk_dim) / log(2.0f));
+GlobalBbox VolumeSystem::Extent() const {
+  Vector3f abs = AbsOffset();
+  return GlobalBbox(abs, abs - Vector3f::ONE + DataDimensions() * Resolution());
+}
+
+bool VolumeSystem::ContainsMipChunk(const Chunk& rMipCoord) const {
+  // if level is greater than root level
+  if (rMipCoord.mipLevel() < 0 || rMipCoord.mipLevel() > RootMipLevel()) {
+    return false;
+  }
+
+  // convert to data box in leaf (MIP 0)
+  GlobalBbox bbox = rMipCoord.BoundingBox(*this).ToGlobalBbox();
+
+  bbox.intersect(Extent());
+  if (bbox.isEmpty()) {
+    return false;
+  }
+
+  // else valid mip coord
+  return true;
+}
+
+Chunk VolumeSystem::RootMipChunkCoordinate() const {
+  return Chunk(rootMipLevel_, Vector3i::ZERO);
+}
+
+std::shared_ptr<std::vector<coords::Chunk>> VolumeSystem::MipChunkCoords()
+    const {
+  auto ret = std::make_shared<std::vector<coords::Chunk>>();
+  for (auto level = 0; level <= rootMipLevel_; ++level) {
+    addChunkCoordsForLevel(level, ret.get());
+  }
+  return ret;
+}
+
+std::shared_ptr<std::vector<coords::Chunk>> VolumeSystem::MipChunkCoords(
+    const int mipLevel) const {
+  auto ret = std::make_shared<std::vector<coords::Chunk>>();
+  addChunkCoordsForLevel(mipLevel, ret.get());
+  return ret;
+}
+
+void VolumeSystem::addChunkCoordsForLevel(
+    const int mipLevel, std::vector<coords::Chunk>* coords) const {
+  const Vector3i dims = MipLevelDimensionsInMipChunks(mipLevel);
+  coords->reserve(coords->size() + dims.x * dims.y * dims.z);
+  for (auto z = 0; z < dims.z; ++z) {
+    for (auto y = 0; y < dims.y; ++y) {
+      for (auto x = 0; x < dims.x; ++x) {
+        coords->push_back(coords::Chunk(mipLevel, x, y, z));
+      }
     }
+  }
 }
 
-globalBbox volumeSystem::GetDataExtent() const
-{
-    Vector3f abs = GetAbsOffset();
-    return globalBbox(abs, abs - Vector3f::ONE + dataDimensions_);
+Vector3i VolumeSystem::MipLevelDataDimensions(const int level) const {
+  return Extent().ToDataBbox(*this, level).getMax();
 }
 
-bool volumeSystem::ContainsMipChunk(const chunk & rMipCoord) const
-{
-    //if level is greater than root level
-    if(rMipCoord.Level < 0 ||
-        rMipCoord.Level > GetRootMipLevel()){
-        return false;
-    }
-
-    //convert to data box in leaf (MIP 0)
-    globalBbox bbox = rMipCoord.chunkBoundingBox(this).toGlobalBbox();
-
-    bbox.intersect(GetDataExtent());
-    if(bbox.isEmpty()){
-        return false;
-    }
-
-    //else valid mip coord
-    return true;
-}
-
-chunk volumeSystem::RootMipChunkCoordinate() const {
-    return chunk(mMipRootLevel, Vector3i::ZERO);
-}
-
-boost::shared_ptr<std::deque<coords::chunk> >
-volumeSystem::GetMipChunkCoords() const
-{
-    std::deque<coords::chunk>* coords = new std::deque<coords::chunk>();
-
-    for(int level = 0; level <= mMipRootLevel; ++level) {
-        addChunkCoordsForLevel(level, coords);
-    }
-
-    return boost::shared_ptr<std::deque<coords::chunk> >(coords);
-}
-
-boost::shared_ptr<std::deque<coords::chunk> >
-volumeSystem::GetMipChunkCoords(const int mipLevel) const
-{
-    std::deque<coords::chunk>* coords = new std::deque<coords::chunk>();
-
-    addChunkCoordsForLevel(mipLevel, coords);
-
-    return boost::shared_ptr<std::deque<coords::chunk> >(coords);
-}
-
-} // namespace coords
-} // namespace om
+}  // namespace coords
+}  // namespace om

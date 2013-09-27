@@ -28,22 +28,6 @@ CFLAGS='-g -O2'
 --with-boost={libs}/boost""".format(libs=b.libs_fp())
 
         b.prepareAndBuild()
-        self.__patch_thrift(b)
-
-    def __patch_thrift(self, b):
-        for f in ["thrift/include/thrift/protocol/TBinaryProtocol.h",
-                  "thrift/include/thrift/protocol/TDenseProtocol.h"]:
-            fnp = os.path.join(b.libPath, f)
-            if not os.path.exists(fnp):
-                raise Exception("can't patch " + fnp)
-
-        ext_fp = b.ext_fp
-        patch_fnp = os.path.join(ext_fp, "patches/thrift.patch")
-
-        cmd = "/usr/bin/patch -d {ext_fp} -p0 -i {fnp}".format(ext_fp=ext_fp,
-                                                               fnp=patch_fnp)
-        print "patching using cmd: ", cmd
-        os.system(cmd)
 
     def libjpeg(self):
         b = self.makeBuilder(LibraryMetadata.jpeg())
@@ -78,26 +62,6 @@ CFLAGS='-g -O2'
         os.system("git submodule update")
 
     def boost(self):
-    #./bjam --show-libraries
-        #The following libraries require building:
-        #- date_time
-        #- filesystem
-        #- graph
-        #- graph_parallel
-        #- iostreams
-        #- math
-        #- mpi
-        #- program_options
-        #- python
-        #- random
-        #- regex
-        #- serialization
-        #- signals
-        #- system
-        #- test
-        #- thread
-        #- wave
-
         b = self.makeBuilder(LibraryMetadata.boost())
         b.prepareNukeSrcsFolder()
 
@@ -107,7 +71,7 @@ CFLAGS='-g -O2'
 
         b.chdir_src()
         cmd = "./bootstrap.sh --prefix=" + b.lib_fp()
-        cmd += " --with-libraries=filesystem,thread,system,iostreams,regex"
+        cmd += " --with-libraries=date_time,filesystem,iostreams,math,program_options,random,regex,serialization,signals,system,test,thread,log"
 
         print "configuring (" + cmd + ")\n"
 
@@ -117,7 +81,7 @@ CFLAGS='-g -O2'
         bjamFlags = "-j{num}".format(num=self.num_cores)
         bjamFlags += " -sNO_BZIP2=1 -sZLIB_SOURCE=srcPath/ZLIB_VER"
         bjamFlags += " variant=release link=static threading=multi runtime-link=static"
-        # bjamFlags += " toolset=gcc cxxflags=-std=gnu++0x"
+        bjamFlags += " toolset=gcc cxxflags=-std=c++11"
         cmd = "./bjam " + bjamFlags + " install"
         print "building and installing (cmd)\n"
         os.system(cmd)
@@ -134,7 +98,6 @@ CFLAGS='-g -O2'
  -no-svg -qt-zlib -qt-libtiff -qt-libpng -no-libmng
  -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-freetype
  -no-multimedia -no-javascript-jit -no-script -no-scripttools"""
-
         b.prepareAndBuild()
 
     def hdf5(self):
@@ -142,10 +105,29 @@ CFLAGS='-g -O2'
         b.build_options = "--enable-threadsafe --with-pthread=/usr/lib"
         b.prepareAndBuild()
 
-    def breakpad(self):
-    	b = self.makeBuilder(LibraryMetadata.breakpad())
-        b.prepareSvn()
-        b.build()
+    def netlib(self):
+        b = self.makeBuilder(LibraryMetadata.netlib())
+        b.prepareNukeSrcsFolder()
+        self.__patch_netlib(b);
+        boost = self.makeBuilder(LibraryMetadata.boost())
+        # see http://stackoverflow.com/a/17049807 for build_options
+        b.build_options = """
+-DBoost_NO_BOOST_CMAKE=TRUE
+-DBoost_NO_SYSTEM_PATHS=TRUE
+-DBOOST_ROOT:PATHNAME={boost}
+-DBoost_LIBRARY_DIRS:FILEPATH={boost}/lib
+""".format(boost=boost.lib_fp())
+        b.buildCmake()
+
+    def __patch_netlib(self, b):
+        ext_fp = b.ext_fp
+        srcPath = b.srcPath
+        patch_fnp = os.path.join(ext_fp, "patches/CMakeLists.txt.patch")
+
+        cmd = "/usr/bin/patch -d {srcPath} -p0 -i {fnp}".format(srcPath=srcPath,
+                                                               fnp=patch_fnp)
+        print "patching using cmd: ", cmd
+        os.system(cmd)
 
     def omni(self):
         self.printTitle("omni")

@@ -150,6 +150,15 @@ class Builder(object):
 
         self.chdir_home()
 
+    def buildCmake(self):
+        self.chdir_build()
+
+        self.cmake()
+        self.make()
+        self.makeInstall()
+
+        self.chdir_home()
+
     def buildInSourceFolder(self):
         self.chdir_src()
 
@@ -184,6 +193,17 @@ class Builder(object):
         # TODO: check return values die if something went wrong...
         print os.system(cmd)
         print "done with configure"
+
+    def cmake(self):
+        cmd = "cmake -DCMAKE_INSTALL_PREFIX:PATH={p} {src} {bopts}".format(p = self.lib_fp(),
+                                                                           src = self.src_fp(),
+                                                                           bopts = self.build_options)
+
+        print "==> running cmake..."
+        print "cmd:", cmd
+        # TODO: check return values die if something went wrong...
+        print os.system(cmd)
+        print "done with cmake"
 
     def make(self):
         cmd = "make {gmo}".format(gmo = self.globalMakeOptions)

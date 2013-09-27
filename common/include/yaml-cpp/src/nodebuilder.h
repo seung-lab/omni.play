@@ -1,26 +1,26 @@
-#ifndef NODEBUILDER_H_62B23520_7C8E_11DE_8A39_0800200C9A66
-#define NODEBUILDER_H_62B23520_7C8E_11DE_8A39_0800200C9A66
+#ifndef NODE_NODEBUILDER_H_62B23520_7C8E_11DE_8A39_0800200C9A66
+#define NODE_NODEBUILDER_H_62B23520_7C8E_11DE_8A39_0800200C9A66
 
 #if defined(_MSC_VER) || (defined(__GNUC__) && (__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || (__GNUC__ >= 4)) // GCC supports "pragma once" correctly since 3.4
 #pragma once
 #endif
 
 #include "yaml-cpp/eventhandler.h"
-#include <map>
-#include <memory>
-#include <stack>
+#include "yaml-cpp/node/ptr.h"
 #include <vector>
 
 namespace YAML
 {
 	class Node;
-	
+
 	class NodeBuilder: public EventHandler
 	{
 	public:
-		explicit NodeBuilder(Node& root);
+		NodeBuilder();
 		virtual ~NodeBuilder();
-
+		
+		Node Root();
+		
 		virtual void OnDocumentStart(const Mark& mark);
 		virtual void OnDocumentEnd();
 		
@@ -35,27 +35,24 @@ namespace YAML
 		virtual void OnMapEnd();
 		
 	private:
-		Node& Push(anchor_t anchor);
-		Node& Push();
-		Node& Top();
+		detail::node& Push(anchor_t anchor);
+		void Push(detail::node& node);
 		void Pop();
-
-		void Insert(Node& node);
-		void RegisterAnchor(anchor_t anchor, Node& node);
+		void RegisterAnchor(anchor_t anchor, detail::node& node);
 		
 	private:
-		Node& m_root;
-		bool m_initializedRoot;
-		bool m_finished;
+		detail::shared_memory_holder m_pMemory;
+		detail::node *m_pRoot;
 		
-		std::stack<Node *> m_stack;
-		std::stack<Node *> m_pendingKeys;
-		std::stack<bool> m_didPushKey;
+		typedef std::vector<detail::node *> Nodes;
+		Nodes m_stack;
+		Nodes m_anchors;
 
-		typedef std::vector<Node *> Anchors;
-		Anchors m_anchors;
+		typedef std::pair<detail::node *, bool> PushedKey;
+		std::vector<PushedKey> m_keys;
+		std::size_t m_mapDepth;
 	};
 }
 
-#endif // NODEBUILDER_H_62B23520_7C8E_11DE_8A39_0800200C9A66
+#endif // NODE_NODEBUILDER_H_62B23520_7C8E_11DE_8A39_0800200C9A66
 

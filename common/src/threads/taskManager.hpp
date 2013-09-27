@@ -26,227 +26,172 @@
 #include <zi/meta/enable_if.hpp>
 
 namespace om {
-namespace threads {
+namespace thread {
 
 template <typename TaskContainer>
-class taskManager {
-private:
-    typedef boost::shared_ptr<zi::concurrency_::runnable> task_t;
+class TaskManager {
+ private:
+  typedef std::shared_ptr<zi::concurrency_::runnable> task_t;
 
-    TaskContainer tasks_;
+  TaskContainer tasks_;
 
-    // shared_ptr to support enable_shared_from_this
-    typedef taskManagerImpl<TaskContainer> manager_t;
-    boost::shared_ptr<manager_t> manager_;
+  // shared_ptr to support enable_shared_from_this
+  typedef TaskManagerImpl<TaskContainer> manager_t;
+  std::shared_ptr<manager_t> manager_;
 
-public:
-    taskManager()
-    {}
+ public:
+  TaskManager() {}
 
-    ~taskManager(){
-        join();
+  ~TaskManager() { join(); }
+
+  std::size_t empty() { return tasks_.empty(); }
+
+  std::size_t idle() { return manager_->empty(); }
+
+  std::size_t size() { return tasks_.size(); }
+
+  std::size_t worker_count() { return manager_->worker_count(); }
+
+  std::size_t worker_limit() { return manager_->worker_limit(); }
+
+  std::size_t idle_workers() { return manager_->idle_workers(); }
+
+  void start() {
+    int numWokers = utility::systemInformation::get_num_cores();
+    if (numWokers < 2) {
+      numWokers = 2;
+    }
+    start(numWokers);
+  }
+
+  void start(const uint32_t numWorkerThreads) {
+    if (!numWorkerThreads) {
+      throw IoException("please specify more than 0 threads");
     }
 
-    std::size_t empty()
-    {
-        return tasks_.empty();
+    const uint32_t max_size = std::numeric_limits<uint32_t>::max();
+
+    manager_.reset(new manager_t(numWorkerThreads, max_size, tasks_));
+    manager_->start();
+  }
+
+  void stop() {
+    if (!manager_) {
+      return;
     }
+    clear();
+    manager_->stop();
+    manager_.reset();
+  }
 
-    std::size_t idle()
-    {
-        return manager_->empty();
+  void join() {
+    if (!manager_) {
+      return;
     }
+    manager_->join();
+    manager_.reset();
+  }
 
-    std::size_t size()
-    {
-        return tasks_.size();
-    }
+  void clear() { tasks_.clear(); }
 
-    std::size_t worker_count()
-    {
-        return manager_->worker_count();
-    }
+  void add_workers(std::size_t count) { manager_->add_workers(count); }
 
-    std::size_t worker_limit()
-    {
-        return manager_->worker_limit();
-    }
+  void remove_workers(std::size_t count) { manager_->remove_workers(count); }
 
-    std::size_t idle_workers()
-    {
-        return manager_->idle_workers();
-    }
+  // status
+  bool wasStarted() { return manager_; }
 
-    void start()
-    {
-        int numWokers = utility::systemInformation::get_num_cores();
-        if(numWokers <2){
-            numWokers = 2;
-        }
-        start(numWokers);
-    }
+  inline int getTaskCount() const { return tasks_.size(); }
 
-    void start(const uint32_t numWorkerThreads)
-    {
-        if(!numWorkerThreads){
-            throw ioException("please specify more than 0 threads");
-        }
+  inline int getNumWorkerThreads() const {
+    assert(manager_ && "pool not started");
+    return manager_->worker_count();
+  }
 
-        const uint32_t max_size = std::numeric_limits<uint32_t>::max();
+  inline int getMaxSimultaneousTaskCount() const {
+    assert(manager_ && "pool not started");
+    return getNumWorkerThreads();
+  }
 
-        manager_.reset(new manager_t(numWorkerThreads, max_size, tasks_));
-        manager_->start();
-    }
+  // push_front
+  void push_front(task_t task) {
+    tasks_.push_front(task);
+    wake_manager();
+  }
 
-    void stop()
-    {
-        if(!manager_){
-            return;
-        }
-        clear();
-        manager_->stop();
-        manager_.reset();
-    }
+  template <typename Runnable>
+  void push_front(std::shared_ptr<Runnable> task) {
+    tasks_.push_front(task);
+    wake_manager();
+  }
 
-    void join()
-    {
-        if(!manager_){
-            return;
-        }
-        manager_->join();
-        manager_.reset();
-    }
+  template <typename Function>
+  void push_front(const Function& task) {
+    tasks_.push_front(task);
+    wake_manager();
+  }
 
-    void clear()
-    {
-        tasks_.clear();
-    }
+  // push_back
+  void push_back(task_t task) {
+    tasks_.push_back(task);
+    wake_manager();
+  }
 
-    void add_workers(std::size_t count)
-    {
-        manager_->add_workers(count);
-    }
+  template <typename Runnable>
+  void push_back(std::shared_ptr<Runnable> task) {
+    tasks_.push_back(task);
+    wake_manager();
+  }
 
-    void remove_workers(std::size_t count)
-    {
-        manager_->remove_workers(count);
-    }
+  template <typename Function>
+  void push_back(const Function& task) {
+    tasks_.push_back(task);
+    wake_manager();
+  }
 
-//status
-    bool wasStarted()
-    {
-        return manager_;
-    }
+  // insert
+  void insert(task_t task) {
+    tasks_.insert(task);
+    wake_manager();
+  }
 
-    inline int getTaskCount() const
-    {
-        return tasks_.size();
-    }
+  template <typename Runnable>
+  void insert(std::shared_ptr<Runnable> task) {
+    tasks_.insert(task);
+    wake_manager();
+  }
 
-    inline int getNumWorkerThreads() const
-    {
-        assert(manager_ && "pool not started");
-        return manager_->worker_count();
-    }
+  template <typename Function>
+  void insert(const Function& task) {
+    tasks_.insert(task);
+    wake_manager();
+  }
 
-    inline int getMaxSimultaneousTaskCount() const
-    {
-        assert(manager_ && "pool not started");
-        return getNumWorkerThreads();
-    }
+  // insert w/ arg
+  template <typename ARG>
+  void insert(const ARG& arg, task_t task) {
+    tasks_.insert(arg, task);
+    wake_manager();
+  }
 
-//push_front
-    void push_front(task_t task)
-    {
-        tasks_.push_front(task);
-        wake_manager();
-    }
+  template <typename ARG, class Runnable>
+  void insert(const ARG& arg, std::shared_ptr<Runnable> task) {
+    tasks_.insert(arg, task);
+    wake_manager();
+  }
 
-    template <typename Runnable>
-    void push_front(boost::shared_ptr<Runnable> task)
-    {
-        tasks_.push_front(task);
-        wake_manager();
-    }
+  template <typename ARG, class Function>
+  void insert(const ARG& arg, const Function& task) {
+    tasks_.insert(arg, task);
+    wake_manager();
+  }
 
-    template <typename Function>
-    void push_front(const Function& task)
-    {
-        tasks_.push_front(task);
-        wake_manager();
-    }
-
-//push_back
-    void push_back(task_t task)
-    {
-        tasks_.push_back(task);
-        wake_manager();
-    }
-
-    template <typename Runnable>
-    void push_back(boost::shared_ptr<Runnable> task)
-    {
-        tasks_.push_back(task);
-        wake_manager();
-    }
-
-    template <typename Function>
-    void push_back(const Function& task)
-    {
-        tasks_.push_back(task);
-        wake_manager();
-    }
-
-//insert
-    void insert(task_t task)
-    {
-        tasks_.insert(task);
-        wake_manager();
-    }
-
-    template <typename Runnable>
-    void insert(boost::shared_ptr<Runnable> task)
-    {
-        tasks_.insert(task);
-        wake_manager();
-    }
-
-    template <typename Function>
-    void insert(const Function& task)
-    {
-        tasks_.insert(task);
-        wake_manager();
-    }
-
-//insert w/ arg
-    template <typename ARG>
-    void insert(const ARG& arg, task_t task)
-    {
-        tasks_.insert(arg, task);
-        wake_manager();
-    }
-
-    template <typename ARG, class Runnable>
-    void insert(const ARG& arg, boost::shared_ptr<Runnable> task)
-    {
-        tasks_.insert(arg, task);
-        wake_manager();
-    }
-
-    template <typename ARG, class Function>
-    void insert(const ARG& arg, const Function& task)
-    {
-        tasks_.insert(arg, task);
-        wake_manager();
-    }
-
-private:
-    void wake_manager()
-    {
-        assert(manager_ && "pool not started");
-        manager_->wake_all();
-    }
+ private:
+  void wake_manager() {
+    assert(manager_ && "pool not started");
+    manager_->wake_all();
+  }
 };
 
-} // namespace threads
-} // namespace om
+}  // namespace threads
+}  // namespace om

@@ -1,141 +1,134 @@
 #include "nodebuilder.h"
 #include "yaml-cpp/mark.h"
-#include "yaml-cpp/node.h"
+#include "yaml-cpp/node/node.h"
+#include "yaml-cpp/node/impl.h"
 #include <cassert>
 
 namespace YAML
 {
-	NodeBuilder::NodeBuilder(Node& root): m_root(root), m_initializedRoot(false), m_finished(false)
+	NodeBuilder::NodeBuilder(): m_pMemory(new detail::memory_holder), m_pRoot(0), m_mapDepth(0)
 	{
-		m_root.Clear();
 		m_anchors.push_back(0); // since the anchors start at 1
 	}
 	
 	NodeBuilder::~NodeBuilder()
 	{
 	}
+	
+	Node NodeBuilder::Root()
+	{
+		if(!m_pRoot)
+			return Node();
+		
+		return Node(*m_pRoot, m_pMemory);
+	}
 
 	void NodeBuilder::OnDocumentStart(const Mark&)
 	{
 	}
-
+	
 	void NodeBuilder::OnDocumentEnd()
 	{
-		assert(m_finished);
 	}
-
-	void NodeBuilder::OnNull(const Mark& mark, anchor_t anchor)
+	
+	void NodeBuilder::OnNull(const Mark& /* mark */, anchor_t anchor)
 	{
-		Node& node = Push(anchor);
-		node.Init(NodeType::Null, mark, "");
+		detail::node& node = Push(anchor);
+		node.set_null();
 		Pop();
 	}
-
-	void NodeBuilder::OnAlias(const Mark& /*mark*/, anchor_t anchor)
+	
+	void NodeBuilder::OnAlias(const Mark& /* mark */, anchor_t anchor)
 	{
-		Node& node = *m_anchors[anchor];
-		Insert(node);
-		node.MarkAsAliased();
-	}
-
-	void NodeBuilder::OnScalar(const Mark& mark, const std::string& tag, anchor_t anchor, const std::string& value)
-	{
-		Node& node = Push(anchor);
-		node.Init(NodeType::Scalar, mark, tag);
-		node.SetScalarData(value);
+		detail::node& node = *m_anchors[anchor];
+		Push(node);
 		Pop();
 	}
-
-	void NodeBuilder::OnSequenceStart(const Mark& mark, const std::string& tag, anchor_t anchor)
+	
+	void NodeBuilder::OnScalar(const Mark& /* mark */, const std::string& tag, anchor_t anchor, const std::string& value)
 	{
-		Node& node = Push(anchor);
-		node.Init(NodeType::Sequence, mark, tag);
+		detail::node& node = Push(anchor);
+		node.set_scalar(value);
+		node.set_tag(tag);
+		Pop();
 	}
-
+	
+	void NodeBuilder::OnSequenceStart(const Mark& /* mark */, const std::string& tag, anchor_t anchor)
+	{
+		detail::node& node = Push(anchor);
+		node.set_tag(tag);
+		node.set_type(NodeType::Sequence);
+	}
+	
 	void NodeBuilder::OnSequenceEnd()
 	{
 		Pop();
 	}
-
-	void NodeBuilder::OnMapStart(const Mark& mark, const std::string& tag, anchor_t anchor)
+	
+	void NodeBuilder::OnMapStart(const Mark& /* mark */, const std::string& tag, anchor_t anchor)
 	{
-		Node& node = Push(anchor);
-		node.Init(NodeType::Map, mark, tag);
-		m_didPushKey.push(false);
+		detail::node& node = Push(anchor);
+		node.set_type(NodeType::Map);
+		node.set_tag(tag);
+		m_mapDepth++;
 	}
-
+	
 	void NodeBuilder::OnMapEnd()
 	{
-		m_didPushKey.pop();
+		assert(m_mapDepth > 0);
+		m_mapDepth--;
 		Pop();
 	}
-	
-	Node& NodeBuilder::Push(anchor_t anchor)
+
+	detail::node& NodeBuilder::Push(anchor_t anchor)
 	{
-		Node& node = Push();
+		detail::node& node = m_pMemory->create_node();
 		RegisterAnchor(anchor, node);
+		Push(node);
 		return node;
 	}
 	
-	Node& NodeBuilder::Push()
+	void NodeBuilder::Push(detail::node& node)
 	{
-		if(!m_initializedRoot) {
-			m_initializedRoot = true;
-			return m_root;
-		}
+		const bool needsKey = (!m_stack.empty() && m_stack.back()->type() == NodeType::Map && m_keys.size() < m_mapDepth);
 		
-		Node& node = m_root.CreateNode();
-		m_stack.push(&node);
-		return node;
-	}
-	
-	Node& NodeBuilder::Top()
-	{
-		return m_stack.empty() ? m_root : *m_stack.top();
+		m_stack.push_back(&node);
+		if(needsKey)
+			m_keys.push_back(PushedKey(&node, false));
 	}
 	
 	void NodeBuilder::Pop()
 	{
-		assert(!m_finished);
-		if(m_stack.empty()) {
-			m_finished = true;
+		assert(!m_stack.empty());
+		if(m_stack.size() == 1) {
+			m_pRoot = m_stack[0];
+			m_stack.pop_back();
 			return;
 		}
 		
-		Node& node = *m_stack.top();
-		m_stack.pop();
-		Insert(node);
-	}
-	
-	void NodeBuilder::Insert(Node& node)
-	{
-		Node& curTop = Top();
-		switch(curTop.Type()) {
-			case NodeType::Null:
-			case NodeType::Scalar:
-				assert(false);
-				break;
-			case NodeType::Sequence:
-				curTop.Append(node);
-				break;
-			case NodeType::Map:
-				assert(!m_didPushKey.empty());
-				if(m_didPushKey.top()) {
-					assert(!m_pendingKeys.empty());
+		detail::node& node = *m_stack.back();
+		m_stack.pop_back();
 
-					Node& key = *m_pendingKeys.top();
-					m_pendingKeys.pop();
-					curTop.Insert(key, node);
-					m_didPushKey.top() = false;
-				} else {
-					m_pendingKeys.push(&node);
-					m_didPushKey.top() = true;
-				}
-				break;
+		detail::node& collection = *m_stack.back();
+		
+		if(collection.type() == NodeType::Sequence) {
+			collection.push_back(node, m_pMemory);
+		} else if(collection.type() == NodeType::Map) {
+			assert(!m_keys.empty());
+			PushedKey& key = m_keys.back();
+			if(key.second) {
+				collection.insert(*key.first, node, m_pMemory);
+				m_keys.pop_back();
+			} else {
+				key.second = true;
+			}
+		} else {
+			assert(false);
+			m_stack.clear();
 		}
 	}
 
-	void NodeBuilder::RegisterAnchor(anchor_t anchor, Node& node)
+	void NodeBuilder::RegisterAnchor(anchor_t anchor, detail::node& node)
 	{
 		if(anchor) {
 			assert(anchor == m_anchors.size());

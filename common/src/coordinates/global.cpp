@@ -1,82 +1,52 @@
 #include "common/common.h"
-#include "server_types.h"
+#include "coordinates/coordinates.h"
 
 namespace om {
 namespace coords {
 
-global::global(server::vector3d v) {
-    x = v.x;
-    y = v.y;
-    z = v.z;
+Screen Global::ToScreen(ScreenSystem &state) const {
+  const vmml::Vector4f Global(x, y, z, 1);
+  vmml::Vector3f screenC = state.globalToScreenMat() * Global;
+  return Screen(vmml::Vector2i(screenC.x, screenC.y), state);
 }
 
-screen global::toScreen(screenSystem *state) const
-{
-    const vmml::Vector4f global(x, y, z, 1);
-    vmml::Vector3f screenC = state->GlobalToScreenMat() * global;
-    return screen(vmml::Vector2i(screenC.x, screenC.y), state);
+Data Global::ToData(const VolumeSystem &vol, const int mipLevel) const {
+  const vmml::Vector4f Global(x, y, z, 1);
+  vmml::Vector3f dataC = vol.GlobalToDataMat(mipLevel) * Global;
+  return Data(dataC, vol, mipLevel);
 }
 
-data global::toData(const volumeSystem *vol, const int mipLevel) const
-{
-    const vmml::Vector4f global(x, y, z, 1);
-    vmml::Vector3f dataC = vol->GlobalToDataMat(mipLevel) * global;
-    return data(dataC, vol, mipLevel);
+Chunk Global::ToChunk(const VolumeSystem &vol, const int mipLevel) const {
+  return ToData(vol, mipLevel).ToChunk();
 }
 
-chunk global::toChunk(const volumeSystem *vol, const int mipLevel) const
-{
-    return toData(vol, mipLevel).toChunk();
+Norm Global::ToNorm(const VolumeSystem &vol) const {
+  const vmml::Vector4f Global(x, y, z, 1);
+  vmml::Vector3f normC = vol.GlobalToNormMat() * Global;
+  return Norm(normC, vol);
 }
 
-norm global::toNorm(const volumeSystem *vol) const
-{
-    const vmml::Vector4f global(x, y, z, 1);
-    vmml::Vector3f normC = vol->GlobalToNormMat() * global;
-    return norm(normC, vol);
+Global Global::FromOffsetCoords(Vector3i vec, const VolumeSystem &vol) {
+  return Global(vec - vol.AbsOffset());
 }
 
-global global::fromOffsetCoords(Vector3i vec, const volumeSystem * vol)
-{
-    return global(vec - vol->GetAbsOffset());
+Vector3i Global::WithAbsOffset(const VolumeSystem &vol) const {
+  return *this + vol.AbsOffset();
 }
 
-Vector3i global::withAbsOffset(const volumeSystem * vol) const
-{
-    return *this + vol->GetAbsOffset();
+NormBbox GlobalBbox::ToNormBbox(const VolumeSystem &vol) const {
+  Global min = _min;
+  Global max = _max;
+
+  return NormBbox(min.ToNorm(vol), max.ToNorm(vol));
 }
 
-global::operator server::vector3d () const {
-    server::vector3d out;
-    out.x = x;
-    out.y = y;
-    out.z = z;
-    return out;
+DataBbox GlobalBbox::ToDataBbox(const VolumeSystem &vol, int mipLevel) const {
+  Global min = _min;
+  Global max = _max;
+
+  return DataBbox(min.ToData(vol, mipLevel), max.ToData(vol, mipLevel));
 }
 
-normBbox globalBbox::toNormBbox(const volumeSystem *vol) const
-{
-    global min = _min;
-    global max = _max;
-
-    return normBbox(min.toNorm(vol), max.toNorm(vol));
-}
-
-dataBbox globalBbox::toDataBbox(const volumeSystem *vol, int mipLevel) const
-{
-    global min = _min;
-    global max = _max;
-
-    return dataBbox(min.toData(vol, mipLevel), max.toData(vol, mipLevel));
-}
-
-globalBbox::operator server::bbox() const{
-    server::bbox out;
-
-    out.min = global(_min);
-    out.max = global(_max);
-    return out;
-}
-
-} // namespace coords
-} // namespace om
+}  // namespace coords
+}  // namespace om

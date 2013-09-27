@@ -1,76 +1,71 @@
 #pragma once
 
+#include <cstring>
+#include "enum/enum.hpp"
+
 namespace om {
 namespace common {
 
-enum ZeroMem {
-    ZERO_FILL,
-    DONT_ZERO_FILL
+enum class ZeroMem {
+  ZERO_FILL,
+  DONT_ZERO_FILL
 };
-enum Blocking {
-    BLOCKING,
-    NON_BLOCKING
+enum class Blocking {
+  BLOCKING,
+  NON_BLOCKING
 };
-enum ShouldUpdateAsType{
-    UPDATE_AS_TYPE,
-    DONT_UPDATE_AS_TYPE
+enum class SetValid {
+  SET_VALID,
+  SET_NOT_VALID
 };
-enum SetValid{
-    SET_VALID,
-    SET_NOT_VALID
+enum class AffinityGraph {
+  NO_AFFINITY,
+  X_AFFINITY,
+  Y_AFFINITY,
+  Z_AFFINITY
 };
-enum ShouldThrottle {
-    THROTTLE,
-    DONT_THROTTLE
+enum class ShouldBufferWrites {
+  BUFFER_WRITES,
+  DONT_BUFFER_WRITES
 };
-enum ShouldFifo {
-    FIFO,
-    DONT_FIFO
+enum class AllowOverwrite {
+  WRITE_ONCE,
+  OVERWRITE
 };
-enum AffinityGraph {
-    NO_AFFINITY,
-    X_AFFINITY,
-    Y_AFFINITY,
-    Z_AFFINITY
+enum class AddOrSubtract {
+  ADD,
+  SUBTRACT
 };
-enum ShouldBufferWrites {
-    BUFFER_WRITES,
-    DONT_BUFFER_WRITES
-};
-enum AllowOverwrite {
-    WRITE_ONCE,
-    OVERWRITE
-};
-enum AddOrSubtract {
-    ADD,
-    SUBTRACT
-};
-enum ShouldForce {
-    FORCE,
-    DONT_FORCE
-};
-enum Direction {
-    LEFT,
-    RIGHT,
-    UP,
-    DOWN
-};
-enum Safe {
-    SAFE,
-    NOT_SAFE
-};
-enum ReadOrReread {
-    READ,
-    REREAD
-};
-// WARNING: used for serialization by OmSegmentPage,
-//  and values should fit inside uint8_t
-enum SegListType {
-    WORKING = 0,
-    VALID = 1,
-    UNCERTAIN = 2
+enum class Direction {
+  LEFT,
+  RIGHT,
+  UP,
+  DOWN
 };
 
-} // common
-} // om
+enum class SegListType : uint8_t {
+  WORKING = 0,
+  VALID = 1,
+  UNCERTAIN = 2
+};
 
+enum class CacheGroup {
+  MESH_CACHE = 1,
+  TILE_CACHE
+};
+
+inline std::ostream& operator<<(std::ostream& out, const CacheGroup& c) {
+  if (CacheGroup::MESH_CACHE == c) {
+    out << "MESH_CACHE";
+  } else {
+    out << "TILE_CACHE";
+  }
+  return out;
+}
+
+BOOST_ENUM_VALUES(DataType, std::string,
+                  (UNKNOWN)("unknown")(INT8)("int8_t")(UINT8)("uint8_t")(INT32)(
+                      "int32_t")(UINT32)("uint32_t")(FLOAT)("float"))
+
+}  // common
+}  // om

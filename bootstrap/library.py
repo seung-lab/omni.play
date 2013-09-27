@@ -60,3 +60,7 @@ class LibraryMetadata:
     @staticmethod
     def breakpad():
         return LibraryMetadata("breakpad")
+
+    @staticmethod
+    def netlib():
+        return LibraryMetadata("netlib")

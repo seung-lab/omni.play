@@ -1,37 +1,33 @@
 #pragma once
 
+#include "common/macro.hpp"
 #include "vmmlib/vmmlib.h"
 
 namespace om {
 namespace coords {
 
-class global;
-class screenSystem;
+class Global;
+class ScreenSystem;
 
-class screen : public vmml::Vector2i
-{
-private:
-    typedef vmml::Vector2i base_t;
-    const screenSystem * system_;
+class Screen : public vmml::Vector2i {
+ private:
+  typedef vmml::Vector2i base_t;
 
-public:
-    screen(base_t v, const screenSystem * system)
-        : base_t(v)
-        , system_(system)
-    { }
+ public:
+  Screen(base_t v, const ScreenSystem& system) : base_t(v), system_(&system) {}
 
-    screen(int x, int y, const screenSystem * system)
-        : base_t(x, y)
-        , system_(system)
-    { }
+  Screen(int x, int y, const ScreenSystem& system)
+      : base_t(x, y), system_(&system) {}
 
-    screen(const screen& coord)
-        : base_t(coord)
-        , system_(coord.system_)
-    { }
+  Screen(const Screen& coord) : base_t(coord), system_(coord.system_) {}
 
-    global toGlobal() const ;
+  Global ToGlobal() const;
+
+  const ScreenSystem& system() const { return *system_; }
+
+ private:
+  const ScreenSystem* system_;
 };
 
-} // namespace coords
-} // namespace om
+}  // namespace coords
+}  // namespace om

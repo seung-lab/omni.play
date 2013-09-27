@@ -2,7 +2,11 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
+#include "datalayer/paths.hpp"
+#include "volume/metadataDataSource.hpp"
 #include "volume/volume.h"
+#include "volume/segmentation.h"
+#include <memory>
 
 using ::testing::_;
 using namespace ::zi::mesh;
@@ -10,63 +14,72 @@ using namespace ::zi::mesh;
 namespace om {
 namespace test {
 
-const char* URI = "test/data/test.omni.files/";
-TEST(ServerHandlerTest, get_tiles)
-{
-	std::vector<server::tile>  ret;
-	const volume::volume channel(URI, common::CHANNEL);
-	const volume::volume segmentation(URI, common::SEGMENTATION);
-	const coords::chunk chunk(0, vmml::Vector3i(0));
-	const coords::chunk chunk2(1, vmml::Vector3i(0));
+class ServerHandlerTest : public ::testing::Test {
+ public:
+  ServerHandlerTest() {
+    file::Paths p("test/data/test.omni");
+    channel.reset(new volume::Volume(p.Channel(1)));
+    segmentation.reset(new volume::Segmentation(p.Segmentation(1)));
+  }
 
-	handler::get_tiles(ret, channel, chunk, common::XY_VIEW, 0, 3);
-	EXPECT_TRUE(ret.size() > 0);
-	handler::get_tiles(ret, channel, chunk2, common::XZ_VIEW, 0, 3);
-	EXPECT_TRUE(ret.size() > 0);
+ protected:
+  std::unique_ptr<volume::Volume> channel;
+  std::unique_ptr<volume::Segmentation> segmentation;
+};
 
-	handler::get_tiles(ret, segmentation, chunk, common::XY_VIEW, 0, 3);
-	EXPECT_TRUE(ret.size() > 0);
-	handler::get_tiles(ret, segmentation, chunk2, common::XZ_VIEW, 0, 3);
-	EXPECT_TRUE(ret.size() > 0);
+TEST_F(ServerHandlerTest, get_tiles) {
+  std::vector<server::tile> ret;
+  const coords::Chunk chunk(0, vmml::Vector3i(0));
+
+  handler::get_tiles(ret, *channel, chunk, common::XY_VIEW, 0, 3);
+  EXPECT_TRUE(ret.size() > 0);
+  handler::get_tiles(ret, *channel, chunk, common::XZ_VIEW, 0, 3);
+  EXPECT_TRUE(ret.size() > 0);
+
+  handler::get_tiles(ret, *segmentation, chunk, common::XY_VIEW, 0, 3);
+  EXPECT_TRUE(ret.size() > 0);
+  handler::get_tiles(ret, *segmentation, chunk, common::XZ_VIEW, 0, 3);
+  EXPECT_TRUE(ret.size() > 0);
 }
 
-TEST(ServerHandlerTest, get_seg_list_data)
-{
-	std::map<int, server::segData> ret;
-	const volume::volume segmentation(URI, common::SEGMENTATION);
-	std::set<int32_t> segIds;
-	segIds.insert(5);
-	segIds.insert(7);
-	segIds.insert(9);
-	segIds.insert(11);
+TEST_F(ServerHandlerTest, get_seg_list_data) {
+  std::map<int, server::segData> ret;
+  std::set<int32_t> segIds;
+  segIds.insert(5);
+  segIds.insert(7);
+  segIds.insert(9);
+  segIds.insert(11);
 
-	handler::get_seg_list_data(ret, segmentation, segIds);
+  handler::get_seg_list_data(ret, *segmentation, segIds);
 }
 
-TEST(ServerHandlerTest, get_mesh)
-{
-	std::string ret;
-	const volume::volume segmentation(URI, common::SEGMENTATION);
-	const server::vector3i chunk;
-	int32_t segId = 100;
+TEST_F(ServerHandlerTest, get_mesh) {
+  std::string ret;
+  const server::vector3i chunk;
+  int32_t segId = 100;
 
-	handler::get_mesh(ret, segmentation, chunk, 0, segId);
-	EXPECT_TRUE(ret.size() > 0);
-	handler::get_mesh(ret, segmentation, chunk, 1, segId);
-	EXPECT_TRUE(ret.size() > 0);
+  handler::get_mesh(ret, *segmentation, chunk, 0, segId);
+  EXPECT_TRUE(ret.size() > 0);
+  handler::get_mesh(ret, *segmentation, chunk, 1, segId);
+  EXPECT_TRUE(ret.size() > 0);
 }
 
-TEST(ServerHandlerTest, get_obj)
-{
-	std::string ret;
-	const volume::volume segmentation(URI, common::SEGMENTATION);
-	const server::vector3i chunk;
-	int32_t segId = 100;
+TEST_F(ServerHandlerTest, get_obj) {
+  std::string ret;
+  const server::vector3i chunk;
+  int32_t segId = 100;
 
-	handler::get_obj(ret, segmentation, chunk, 0, segId);
-	EXPECT_TRUE(ret.size() > 0);
-	handler::get_obj(ret, segmentation, chunk, 1, segId);
-	EXPECT_TRUE(ret.size() > 0);
+  handler::get_obj(ret, *segmentation, chunk, 0, segId);
+  EXPECT_TRUE(ret.size() > 0);
+  handler::get_obj(ret, *segmentation, chunk, 1, segId);
+  EXPECT_TRUE(ret.size() > 0);
 }
 
-}} // namespace om::test::
+TEST_F(ServerHandlerTest, get_mst) {
+  std::vector<server::affinity> ret;
+
+  handler::get_mst(ret, *segmentation);
+  EXPECT_TRUE(ret.size() > 0);
+}
+}
+}  // namespace om::test::

@@ -3,29 +3,28 @@
 #include "common/stoppable.h"
 #include "common/common.h"
 #include "zi/utility.h"
-#include "zi/mutex.h"
+#include <zi/mutex.hpp>
 
 namespace om {
-namespace threads {
+namespace thread {
 
-class threadPoolManager : private om::singletonBase<threadPoolManager> {
-private:
-    zi::mutex lock_;
-    std::set<common::stoppable*> pools_;
+class ThreadPoolManager : private om::SingletonBase<ThreadPoolManager> {
+ private:
+  zi::mutex lock_;
+  std::set<common::stoppable*> pools_;
 
-public:
-    static void StopAll();
-    static void Add(common::stoppable*);
-    static void Remove(common::stoppable*);
+ public:
+  static void StopAll();
+  static void Add(common::stoppable*);
+  static void Remove(common::stoppable*);
 
-private:
-    threadPoolManager()
-    {}
+ private:
+  ThreadPoolManager() {}
 
-    ~threadPoolManager();
+  ~ThreadPoolManager();
 
-    friend class zi::singleton<threadPoolManager>;
+  friend class zi::singleton<ThreadPoolManager>;
 };
 
-} // namespace threads
-} // namespace om
+}  // namespace threads
+}  // namespace om

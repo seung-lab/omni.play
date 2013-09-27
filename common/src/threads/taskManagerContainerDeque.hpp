@@ -18,96 +18,82 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "zi/mutex.h"
-#include "utility/smartPtr.hpp"
-
+#include <zi/mutex.hpp>
 #include <zi/concurrency/runnable.hpp>
 #include <deque>
 
-class taskManagerContainerDeque {
-private:
-    typedef boost::shared_ptr< zi::concurrency_::runnable > task_t;
-    std::deque<task_t> queue_;
+class TaskManagerContainerDeque {
+ private:
+  typedef std::shared_ptr<zi::concurrency_::runnable> task_t;
+  std::deque<task_t> queue_;
 
-    zi::spinlock lock_;
+  zi::spinlock lock_;
 
-    template< class Function >
-    inline task_t wrapFunction(const Function& task)
-    {
-        return boost::shared_ptr< zi::concurrency_::runnable_function_wrapper >
-                           ( new zi::concurrency_::runnable_function_wrapper( task ) );
+  template <class Function>
+  inline task_t wrapFunction(const Function& task) {
+    return std::shared_ptr<zi::concurrency_::runnable_function_wrapper>(
+        new zi::concurrency_::runnable_function_wrapper(task));
+  }
+
+ public:
+  std::size_t size() const {
+    zi::guard g(lock_);
+    return queue_.size();
+  }
+
+  bool empty() const {
+    zi::guard g(lock_);
+    return queue_.empty();
+  }
+
+  void clear() {
+    zi::guard g(lock_);
+    queue_.clear();
+  }
+
+  task_t get_front() {
+    zi::guard g(lock_);
+    if (queue_.empty()) {
+      return task_t();
     }
+    task_t ret = queue_.front();
+    queue_.pop_front();
+    return ret;
+  }
 
-public:
-    std::size_t size() const
-    {
-        zi::guard g(lock_);
-        return queue_.size();
-    }
+  // push_front
+  void push_front(task_t task) {
+    zi::guard g(lock_);
+    queue_.push_front(task);
+  }
 
-    bool empty() const
-    {
-        zi::guard g(lock_);
-        return queue_.empty();
-    }
+  template <class Runnable>
+  void push_front(std::shared_ptr<Runnable> task) {
+    zi::guard g(lock_);
+    queue_.push_front(task);
+  }
 
-    void clear()
-    {
-        zi::guard g(lock_);
-        queue_.clear();
-    }
+  template <class Function>
+  void push_front(const Function& task) {
+    zi::guard g(lock_);
+    queue_.push_front(wrapFunction(task));
+  }
 
-    task_t get_front()
-    {
-        zi::guard g(lock_);
-        if(queue_.empty()){
-            return task_t();
-        }
-        task_t ret = queue_.front();
-        queue_.pop_front();
-        return ret;
-    }
+  // push_back
+  void push_back(task_t task) {
+    zi::guard g(lock_);
+    queue_.push_back(task);
+  }
 
-//push_front
-    void push_front(task_t task)
-    {
-        zi::guard g(lock_);
-        queue_.push_front( task );
-    }
+  template <class Runnable>
+  void push_back(std::shared_ptr<Runnable> task) {
+    zi::guard g(lock_);
+    queue_.push_back(task);
+  }
 
-    template< class Runnable >
-    void push_front(boost::shared_ptr<Runnable> task)
-    {
-        zi::guard g(lock_);
-        queue_.push_front( task );
-    }
-
-    template< class Function >
-    void push_front(const Function& task)
-    {
-        zi::guard g(lock_);
-        queue_.push_front(wrapFunction(task));
-    }
-
-//push_back
-    void push_back(task_t task)
-    {
-        zi::guard g(lock_);
-        queue_.push_back( task );
-    }
-
-    template< class Runnable >
-    void push_back(boost::shared_ptr<Runnable> task)
-    {
-        zi::guard g(lock_);
-        queue_.push_back( task );
-    }
-
-    template< class Function >
-    void push_back(const Function& task)
-    {
-        zi::guard g(lock_);
-        queue_.push_back(wrapFunction(task));
-    }
+  template <class Function>
+  void push_back(const Function& task) {
+    zi::guard g(lock_);
+    queue_.push_back(wrapFunction(task));
+  }
 };
-

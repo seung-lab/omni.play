@@ -22,7 +22,10 @@ namespace Test
 
 		if(!RunSpecTests())
 			passed = false;
-		
+
+		if(!RunNodeTests())
+			passed = false;
+
 		if(passed)
 			std::cout << "All tests passed!\n";
 	}

@@ -1,82 +1,75 @@
 #pragma once
 
-/**
- * Exception handeling.
- *
- * OmException is the parent exception class. Subclasses can be
- * formed as described in the example code below.
- *
- * Brett Warne - bwarne@mit.edu - 2/6/09
- */
-
 #include "common/common.h"
 
-#include <boost/lexical_cast.hpp>
 #include <boost/format.hpp>
 #include <cstdarg>
 #include <exception>
 
 namespace om {
 
-class exception : public std::exception {
-public:
-    exception(const std::string& name,
-                const std::string& msg)
-        : fullMessage_(name + ": " + msg)
-    {}
+class Exception : public std::exception {
+ public:
+  Exception(const std::string& name, const std::string& msg)
+      : fullMessage_(name + ": " + msg) {}
 
-    virtual ~exception() throw() {}
+  virtual ~Exception() throw() {}
 
-    virtual const char* what() const throw()
-    {
-        return fullMessage_.c_str();
-    }
+  virtual const char* what() const throw() { return fullMessage_.c_str(); }
 
-protected:
-    const std::string fullMessage_;
+ protected:
+  const std::string fullMessage_;
 };
 
-class accessException : public exception {
-public:
-    accessException(const std::string& msg)
-        : exception("accessException", msg) { }
+class AccessException : public Exception {
+ public:
+  AccessException(const std::string& msg) : Exception("AccessException", msg) {}
 };
 
-class argException : public exception {
-public:
-    argException(const std::string& msg)
-        : exception("argException", msg) { }
+class ArgException : public Exception {
+ public:
+  ArgException(const std::string& msg) : Exception("ArgException", msg) {}
+
+  template <class T>
+  ArgException(const std::string& msg, const T& s)
+      : Exception("ArgException", msg + "; arg was: " + std::to_string(s)) {}
 };
 
-class formatException : public exception {
-public:
-    formatException(const std::string& msg)
-        : exception("formatException", msg) { }
+class FormatException : public Exception {
+ public:
+  FormatException(const std::string& msg) : Exception("FormatException", msg) {}
 };
 
-class ioException : public exception {
-public:
-    ioException(const char* msg)
-        : exception("ioException", std::string(msg))
-    {}
-    ioException(const std::string& msg)
-        : exception("ioException", msg)
-    {}
-    ioException(const char* msg, const std::string& fnp)
-        : exception("ioException", str(boost::format("%1%: %2%") % fnp % msg))
-    {}
+class IoException : public Exception {
+ public:
+  IoException(const char* msg) : Exception("IoException", std::string(msg)) {}
+  IoException(const std::string& msg) : Exception("IoException", msg) {}
+  IoException(const char* msg, const std::string& fnp)
+      : Exception("IoException", str(boost::format("%1%: %2%") % fnp % msg)) {}
 };
 
-class modificationException : public exception {
-public:
-    modificationException(const std::string& msg)
-        : exception("modificationException", msg) { }
+class ModificationException : public Exception {
+ public:
+  ModificationException(const std::string& msg)
+      : Exception("ModificationException", msg) {}
 };
 
-class verifyException : public exception {
-public:
-    verifyException(const std::string& msg)
-        : exception("verifyException", msg) { }
+class VerifyException : public Exception {
+ public:
+  VerifyException(const std::string& msg) : Exception("VerifyException", msg) {}
 };
 
-} // namespace om
+class InvalidOperationException : public Exception {
+ public:
+  InvalidOperationException(const std::string& msg)
+      : Exception("InvalidOperationException", msg) {}
+};
+
+class NotImplementedException : public Exception {
+ public:
+  NotImplementedException() : Exception("NotImplementedException", "") {}
+  NotImplementedException(const std::string& method)
+      : Exception("NotImplementedException", method) {}
+};
+
+}  // namespace om

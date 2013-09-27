@@ -26,41 +26,38 @@ using namespace ::apache::thrift::concurrency;
 
 using namespace ::om::server;
 
-int main(int argc, char *argv[])
-{
-    zi::parse_arguments(argc, argv, true);
-    if ( ZiARG_daemonize )
-    {
-        if(!::zi::system::daemonize(true, true)) {
-            std::cerr << "Error trying to daemonize." << std::endl;
-            return -1;
-        }
+int main(int argc, char *argv[]) {
+  zi::parse_arguments(argc, argv, true);
+  if (ZiARG_daemonize) {
+    if (!::zi::system::daemonize(true, true)) {
+      log_errors(unknown) << "Error trying to daemonize.";
+      return -1;
     }
+  }
 
-    int port = ZiARG_port;
-    std::string mesher = ZiARG_mesher;
-    int mesher_port = ZiARG_mport;
-    boost::shared_ptr<serverHandler> handler(new serverHandler(mesher, mesher_port));
-    boost::shared_ptr<TProcessor> processor(new serverProcessor(handler));
-    boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
-    boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
-    boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+  int port = ZiARG_port;
+  boost::shared_ptr<serverHandler> handler(
+      new serverHandler(ZiARG_mesher, ZiARG_mport));
+  boost::shared_ptr<TProcessor> processor(new serverProcessor(handler));
+  boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
+  boost::shared_ptr<TTransportFactory> transportFactory(
+      new TBufferedTransportFactory());
+  boost::shared_ptr<TProtocolFactory> protocolFactory(
+      new TBinaryProtocolFactory());
 
-    boost::shared_ptr<ThreadManager> threadManager(ThreadManager::newSimpleThreadManager(32));
-    boost::shared_ptr<PosixThreadFactory> threadFactory(new PosixThreadFactory());
+  boost::shared_ptr<ThreadManager> threadManager =
+      ThreadManager::newSimpleThreadManager(32);
+  auto threadFactory = boost::make_shared<PosixThreadFactory>();
 
-    threadManager->threadFactory(threadFactory);
-    threadManager->start();
+  threadManager->threadFactory(threadFactory);
+  threadManager->start();
 
-//    TThreadPoolServer server(processor, serverTransport, transportFactory,
-//                             protocolFactory, threadManager);
+  auto server = boost::make_shared<TNonblockingServer>(
+      processor, transportFactory, transportFactory, protocolFactory,
+      protocolFactory, port, threadManager);
 
-    boost::shared_ptr<TNonblockingServer> server(
-        new TNonblockingServer(processor, transportFactory, transportFactory,
-                               protocolFactory, protocolFactory, port, threadManager));
-
-    handler->setServer(server); // For Service Shutdown
-    handler->setThreadManager(threadManager); // For thread busyness checking
-    server->serve();
-    return 0;
+  handler->setServer(server);                // For Service Shutdown
+  handler->setThreadManager(threadManager);  // For thread busyness checking
+  server->serve();
+  return 0;
 }
