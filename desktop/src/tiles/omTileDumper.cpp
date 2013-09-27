@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
@@ -37,21 +37,21 @@ void OmTileDumper::DumpTiles()
         for (int z = 0; z < mip_coord_dims.z; ++z){
             for (int y = 0; y < mip_coord_dims.y; y+=chunkDim){
                 for (int x = 0; x < mip_coord_dims.x; x+=chunkDim){
-                    saveTile(out, mipLevel, x, y, z, XY_VIEW);
+                    saveTile(out, mipLevel, x, y, z, om::common::XY_VIEW);
                 }
             }
         }
         for (int z = 0; z < mip_coord_dims.z; z+=chunkDim){
             for (int y = 0; y < mip_coord_dims.y; ++y){
                 for (int x = 0; x < mip_coord_dims.x; x+=chunkDim){
-                    saveTile(out, mipLevel, x, y, z, XZ_VIEW);
+                    saveTile(out, mipLevel, x, y, z, om::common::XZ_VIEW);
                 }
             }
         }
         for (int z = 0; z < mip_coord_dims.z; z+=chunkDim){
             for (int y = 0; y < mip_coord_dims.y; y+=chunkDim){
                 for (int x = 0; x < mip_coord_dims.x; ++x){
-                    saveTile(out, mipLevel, x, y, z, ZY_VIEW);
+                    saveTile(out, mipLevel, x, y, z, om::common::ZY_VIEW);
                 }
             }
         }
@@ -61,7 +61,7 @@ void OmTileDumper::DumpTiles()
 
 void OmTileDumper::saveTile(QDataStream& out, const int mipLevel,
                             const int x, const int y, const int z,
-                            const ViewType viewType)
+                            const om::common::ViewType viewType)
 {
     const om::globalCoord coord = om::globalCoord(x, y, z);
     const om::chunkCoord chunk = coord.toChunkCoord(vol_, mipLevel);

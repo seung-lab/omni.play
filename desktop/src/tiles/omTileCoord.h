@@ -1,32 +1,34 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
+#include "coordinates/chunkCoord.h"
+#include "segment/coloring.hpp"
 
 class OmMipVolume;
 class OmViewGroupState;
 
-typedef boost::tuple<om::chunkCoord, ViewType, uint8_t,
+typedef boost::tuple<om::chunkCoord, om::common::ViewType, uint8_t,
                      OmMipVolume*, uint32_t, OmViewGroupState*,
-                     OmSegmentColorCacheType> OmTileCoordKey;
+                     om::segment::coloring> OmTileCoordKey;
 
 class OmTileCoord : public OmTileCoordKey {
 public:
     OmTileCoord();
 
-    OmTileCoord(const om::chunkCoord&, ViewType, uint8_t,
+    OmTileCoord(const om::chunkCoord&, om::common::ViewType, uint8_t,
                 OmMipVolume*, uint32_t,
-                OmViewGroupState*, OmSegmentColorCacheType);
+                OmViewGroupState*, om::segment::coloring);
 
-    OmTileCoord(const om::chunkCoord&, ViewType, uint8_t,
+    OmTileCoord(const om::chunkCoord&, om::common::ViewType, uint8_t,
                 OmMipVolume*, uint32_t,
-                OmViewGroupState*, ObjectType);
+                OmViewGroupState*, om::common::ObjectType);
 
     inline const om::chunkCoord& getCoord() const {
         return this->get<0>();
     }
-    inline ViewType getViewType() const {
+    inline om::common::ViewType getViewType() const {
         return this->get<1>();
     }
     inline uint8_t getDepth() const {
@@ -41,7 +43,7 @@ public:
     inline OmViewGroupState* getViewGroupState() const {
         return this->get<5>();
     }
-    inline OmSegmentColorCacheType getSegmentColorCacheType() const {
+    inline om::segment::coloring getSegmentColorCacheType() const {
         return this->get<6>();
     }
 

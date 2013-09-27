@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/om.hpp"
+#include "common/point2d.hpp"
 #include "zi/omMutex.h"
 
 #include <map>

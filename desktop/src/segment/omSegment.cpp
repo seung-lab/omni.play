@@ -1,5 +1,5 @@
 #include "segment/lowLevel/omSegmentChildren.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentIterator.h"
@@ -8,7 +8,7 @@
 void OmSegment::setParent(OmSegment* parent, const double threshold)
 {
     if(parent_){
-        throw OmArgException("parent already set");
+        throw om::ArgException("parent already set");
     }
 
     parent_ = parent;
@@ -32,7 +32,7 @@ void OmSegment::reRandomizeColor()
     RandomizeColor();
 }
 
-void OmSegment::SetColor(const OmColor& color){
+void OmSegment::SetColor(const om::common::Color& color){
     data_->color = color;
 }
 
@@ -97,11 +97,11 @@ void OmSegment::SetEnabled( const bool isEnabled){
     segments_->setSegmentEnabled( data_->value, isEnabled );
 }
 
-OmID OmSegment::GetSegmentationID(){
+om::common::ID OmSegment::GetSegmentationID(){
     return segments_->GetSegmentationID();
 }
 
-OmSegID OmSegment::RootID(){
+om::common::SegID OmSegment::RootID(){
     return segments_->findRootID(data_->value);
 }
 

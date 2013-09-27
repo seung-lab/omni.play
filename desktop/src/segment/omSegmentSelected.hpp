@@ -1,7 +1,7 @@
 #pragma once
 
 #include "actions/omActions.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "events/omEvents.h"
 #include "segment/omSegmentSelector.h"
 #include "system/cache/omCacheManager.h"
@@ -58,9 +58,9 @@ public:
         OmSegment* seg = instance().sdw_.GetSegment();
 
         if(seg->IsValidListType()){
-            OmActions::ValidateSegment(instance().sdw_, om::SET_NOT_VALID);
+            OmActions::ValidateSegment(instance().sdw_, om::common::SetValid::SET_NOT_VALID);
         } else {
-            OmActions::ValidateSegment(instance().sdw_, om::SET_VALID);
+            OmActions::ValidateSegment(instance().sdw_, om::common::SetValid::SET_VALID);
         }
 
         OmEvents::SegmentModified();

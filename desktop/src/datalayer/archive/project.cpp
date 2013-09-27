@@ -1,7 +1,7 @@
 #include "datalayer/archive/project.h"
 #include "datalayer/archive/channel.h"
 #include "datalayer/archive/segmentation.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/omFileHelpers.h"
 #include "datalayer/fs/omFile.hpp"
 #include "project/omProject.h"
@@ -49,7 +49,7 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
         ss << " line: " << e.mark.line;
         ss << " col: " << e.mark.column;
         ss << " pos: " << e.mark.pos;
-        throw OmIoException(ss.str());
+        throw om::IoException(ss.str());
     }
     postLoad();
 }

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "events/omEvents.h"
 #include "gui/widgets/omCursors.h"
 #include "system/omConnect.hpp"
@@ -11,11 +10,10 @@
 class OmDoubleSpinBox : public QDoubleSpinBox {
 Q_OBJECT
 public:
-    OmDoubleSpinBox(QWidget* d,
-                    const om::ShouldUpdateAsType updateAsType)
+    OmDoubleSpinBox(QWidget* d, const bool updateAsType)
         : QDoubleSpinBox(d)
     {
-        if(om::UPDATE_AS_TYPE == updateAsType)
+        if(updateAsType)
         {
             om::connect(this, SIGNAL(valueChanged(double)),
                         this, SLOT(valueChanged()));

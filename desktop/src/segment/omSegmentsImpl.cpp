@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "project/omProjectGlobals.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
@@ -25,7 +25,7 @@ OmSegmentsImpl::~OmSegmentsImpl()
 
 OmSegment* OmSegmentsImpl::AddSegment()
 {
-    const OmSegID newValue = getNextValue();
+    const om::common::SegID newValue = getNextValue();
 
     assert(newValue);
 
@@ -34,7 +34,7 @@ OmSegment* OmSegmentsImpl::AddSegment()
     return newSeg;
 }
 
-OmSegment* OmSegmentsImpl::AddSegment(const OmSegID value)
+OmSegment* OmSegmentsImpl::AddSegment(const om::common::SegID value)
 {
     if(0 == value){
         return NULL;
@@ -51,7 +51,7 @@ OmSegment* OmSegmentsImpl::AddSegment(const OmSegID value)
     return seg;
 }
 
-OmSegment* OmSegmentsImpl::GetOrAddSegment(const OmSegID val)
+OmSegment* OmSegmentsImpl::GetOrAddSegment(const om::common::SegID val)
 {
     if(0 == val){
         return NULL;
@@ -181,7 +181,7 @@ OmSegmentsImpl::JoinFromUserAction(const OmSegmentEdge& e)
 std::pair<bool, OmSegmentEdge>
 OmSegmentsImpl::JoinEdgeFromUser(const OmSegmentEdge& e)
 {
-    const OmSegID childRootID = segmentGraph_.Root(e.childID);
+    const om::common::SegID childRootID = segmentGraph_.Root(e.childID);
     OmSegment* childRoot = store_->GetSegment(childRootID);
     OmSegment* parent = store_->GetSegment(e.parentID);
     OmSegment* parentRoot = FindRoot(parent);
@@ -222,34 +222,34 @@ OmSegmentsImpl::JoinEdgeFromUser(const OmSegmentEdge& e)
 }
 
 std::pair<bool, OmSegmentEdge>
-OmSegmentsImpl::JoinFromUserAction(const OmSegID parentID,
-                                   const OmSegID childUnknownDepthID)
+OmSegmentsImpl::JoinFromUserAction(const om::common::SegID parentID,
+                                   const om::common::SegID childUnknownDepthID)
 {
     const double threshold = 2.0f;
     return JoinFromUserAction(OmSegmentEdge(parentID, childUnknownDepthID,
                                             threshold));
 }
 
-OmSegIDsSet OmSegmentsImpl::JoinTheseSegments(const OmSegIDsSet& segmentList)
+om::common::SegIDSet OmSegmentsImpl::JoinTheseSegments(const om::common::SegIDSet& segmentList)
 {
     if(segmentList.size() < 2){
-        return OmSegIDsSet();
+        return om::common::SegIDSet();
     }
 
-    OmSegIDsSet set = segmentList; // Join() could modify list
+    om::common::SegIDSet set = segmentList; // Join() could modify list
 
-    OmSegIDsSet ret; // segments actually joined
+    om::common::SegIDSet ret; // segments actually joined
 
     // The first Segment Id is the parent we join to
-    OmSegIDsSet::const_iterator iter = set.begin();
-    const OmSegID parentID = *iter;
+    om::common::SegIDSet::const_iterator iter = set.begin();
+    const om::common::SegID parentID = *iter;
     ++iter;
 
     // We then iterate through the Segment Ids and join
     // each one to the parent
     while (iter != set.end())
     {
-        const OmSegID segID = *iter;
+        const om::common::SegID segID = *iter;
 
         std::pair<bool, OmSegmentEdge> edge =
             JoinFromUserAction(parentID, segID);
@@ -270,25 +270,25 @@ OmSegIDsSet OmSegmentsImpl::JoinTheseSegments(const OmSegIDsSet& segmentList)
     return ret;
 }
 
-OmSegIDsSet OmSegmentsImpl::UnJoinTheseSegments(const OmSegIDsSet& segmentList)
+om::common::SegIDSet OmSegmentsImpl::UnJoinTheseSegments(const om::common::SegIDSet& segmentList)
 {
     if(segmentList.size() < 2){
-        return OmSegIDsSet();
+        return om::common::SegIDSet();
     }
 
-    OmSegIDsSet set = segmentList; // split() could modify list
-    OmSegIDsSet ret;
+    om::common::SegIDSet set = segmentList; // split() could modify list
+    om::common::SegIDSet ret;
 
     // The first Segment Id is the parent we split from
-    OmSegIDsSet::const_iterator iter = set.begin();
-    const OmSegID parentID = *iter;
+    om::common::SegIDSet::const_iterator iter = set.begin();
+    const om::common::SegID parentID = *iter;
     ++iter;
 
     // We then iterate through the Segment Ids and split
     // each one from the parent
     while (iter != set.end())
     {
-        const OmSegID segID = *iter;
+        const om::common::SegID segID = *iter;
 
         OmSegment* child= store_->GetSegment(segID);
 
@@ -372,7 +372,7 @@ void OmSegmentsImpl::Flush(){
     store_->Flush();
 }
 
-bool OmSegmentsImpl::AreAnySegmentsInValidList(const OmSegIDsSet& ids)
+bool OmSegmentsImpl::AreAnySegmentsInValidList(const om::common::SegIDSet& ids)
 {
     FOR_EACH(iter, ids)
     {

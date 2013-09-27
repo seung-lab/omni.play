@@ -1,7 +1,7 @@
 #pragma once
 
 #include "view3d/omView3dWidget.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omSegmentation.h"
 #include <QFont>
 
@@ -9,7 +9,7 @@ struct annotation
 {
     QString text;
     om::globalCoord point;
-    OmColor color;
+    om::common::Color color;
 };
 
 class AnnotationsWidget : public OmView3dWidget {
@@ -20,6 +20,6 @@ class AnnotationsWidget : public OmView3dWidget {
 
     private:
         QFont font_;
-        static const float DIST_CUTOFF = 100.0f;
+    constexpr static const float DIST_CUTOFF = 100.0f;
         OmViewGroupState *vgs_;
 };

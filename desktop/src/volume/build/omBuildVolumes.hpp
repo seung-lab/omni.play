@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utility/omTimer.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "project/omProject.h"
 #include "actions/omActions.h"
 #include "utility/omStringHelpers.h"
@@ -34,7 +34,7 @@ protected:
     bool checkSettings()
     {
         if( !are_file_names_valid()){
-            throw OmArgException("Error: file list contains invalid files");
+            throw om::ArgException("Error: file list contains invalid files");
         }
 
         return true;

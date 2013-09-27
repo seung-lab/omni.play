@@ -12,20 +12,20 @@ private:
     OmSegmentation *const segmentation_;
     OmSegments *const segments_;
     OmViewGroupState *const vgs_;
-    const om::shared_ptr<OmVolumeCuller> culler_;
+    const std::shared_ptr<OmVolumeCuller> culler_;
     const OmBitfield drawOptions_;
     OmMeshSegmentList *const rootSegList_;
 
     OmSegPtrList rootSegs_;
-    om::shared_ptr<std::deque<OmSegChunk*> > chunks_;
-    om::shared_ptr<OmMeshPlan> sortedSegments_;
+    std::shared_ptr<std::deque<OmSegChunk*> > chunks_;
+    std::shared_ptr<OmMeshPlan> sortedSegments_;
 
     bool notAllSegmentsFound_;
 
 public:
     OmMeshDrawPlanner(OmSegmentation* segmentation,
                       OmViewGroupState* vgs,
-                      om::shared_ptr<OmVolumeCuller> culler,
+                      std::shared_ptr<OmVolumeCuller> culler,
                       const OmBitfield drawOptions,
                       OmMeshSegmentList* rootSegList)
         : segmentation_(segmentation)
@@ -37,16 +37,16 @@ public:
         , notAllSegmentsFound_(false)
     {}
 
-    om::shared_ptr<OmMeshPlan>
-    BuildPlan(om::shared_ptr<std::deque<OmSegChunk*> > chunks)
+    std::shared_ptr<OmMeshPlan>
+    BuildPlan(std::shared_ptr<std::deque<OmSegChunk*> > chunks)
     {
         chunks_ = chunks;
-        sortedSegments_ = om::make_shared<OmMeshPlan>();
+        sortedSegments_ = std::make_shared<OmMeshPlan>();
         doBuildPlan();
         return sortedSegments_;
     }
 
-    om::shared_ptr<std::deque<OmSegChunk*> > GetChunkList(){
+    std::shared_ptr<std::deque<OmSegChunk*> > GetChunkList(){
         return chunks_;
     }
 
@@ -83,14 +83,14 @@ private:
         //check to filter for relevant data values
         if(checkDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED))
         {
-            const OmSegIDsSet ids = segments_->GetSelectedSegmentIDs();
+            const om::common::SegIDSet ids = segments_->GetSelectedSegmentIDs();
             FOR_EACH(iter, ids){
                 rootSegs_.push_back(segments_->GetSegment(*iter));
             }
 
         } else if (checkDrawOption(DRAWOP_SEGMENT_FILTER_UNSELECTED))
         {
-            const OmSegIDsSet ids = segments_->GetEnabledSegmentIDs();
+            const om::common::SegIDSet ids = segments_->GetEnabledSegmentIDs();
             FOR_EACH(iter, ids){
                 rootSegs_.push_back(segments_->GetSegment(*iter));
             }

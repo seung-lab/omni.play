@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/old.hpp"
 #include "omCamera.h"
 #include "omView3dWidget.h"
 #include "omView3dUi.h"
@@ -8,8 +9,9 @@
 #include "events/details/omViewEvent.h"
 #include "events/details/omSegmentEvent.h"
 #include "events/details/omPreferenceEvent.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 
+#include <boost/ptr_container/ptr_vector.hpp>
 #include <QGLWidget>
 #include <QTimer>
 #include <QtGui>
@@ -105,7 +107,7 @@ private:
     bool gestureEvent(QGestureEvent *event);
     OmView3dUi mView3dUi;
     OmViewGroupState* vgs_;
-    boost::scoped_ptr<QTime> mElapsed;
+    std::unique_ptr<QTime> mElapsed;
     QTimer mDrawTimer;
     OmCamera mCamera;
 

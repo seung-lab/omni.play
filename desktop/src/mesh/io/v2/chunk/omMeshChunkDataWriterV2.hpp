@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterTaskV2.hpp"
 #include "utility/omLockedPODs.hpp"
@@ -61,13 +61,13 @@ public:
 
     template <typename T>
     void Append(const OmMeshCoord meshCoord,
-                om::shared_ptr<T> data,
+                std::shared_ptr<T> data,
                 OmMeshFilePart& entry,
                 const int64_t count,
                 const int64_t numBytes)
     {
         if(0 != (numBytes % sizeof(T))){
-            throw OmIoException("numBytes is not a multiple of type size");
+            throw om::IoException("numBytes is not a multiple of type size");
         }
 
         const int64_t numElements = numBytes / sizeof(T);
@@ -94,12 +94,12 @@ private:
         const bool fileDidNotExist = !file.exists();
 
         if(!file.open(QIODevice::ReadWrite)){
-            throw OmIoException("could not open", fnp_);
+            throw om::IoException("could not open");
         }
 
         if(fileDidNotExist){
             if(!file.resize(defaultFileSizeMB * om::math::bytesPerMB)){
-                throw OmIoException("could not resize larger", fnp_);
+                throw om::IoException("could not resize larger");
             }
             curEndOfFile_ = 0;
         } else {
@@ -117,7 +117,7 @@ private:
         QFile file(fnp_);
         if(file.size() <= curEndOfFile_){
             if(!file.resize(curEndOfFile_ * defaultFileExpansionFactor)){
-                throw OmIoException("could not shrink", fnp_);
+                throw om::IoException("could not shrink");
             }
         }
     }
@@ -129,7 +129,7 @@ private:
         QFile file(fnp_);
         if(file.size() > curEndOfFile_ ){
             if(!file.resize(curEndOfFile_)){
-                throw OmIoException("could not resize larger", fnp_);
+                throw om::IoException("could not resize larger");
             }
         }
     }

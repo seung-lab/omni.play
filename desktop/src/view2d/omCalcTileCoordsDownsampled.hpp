@@ -8,10 +8,10 @@
 
 class OmCalcTileCoordsDownsampled {
 private:
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
 
 public:
-    OmCalcTileCoordsDownsampled(const ViewType viewType)
+    OmCalcTileCoordsDownsampled(const om::common::ViewType viewType)
         : viewType_(viewType)
     {}
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class Headless {
 public:
@@ -11,7 +11,7 @@ public:
     void RunHeadless(const QString& headlessCMD, const QString& fName);
 
 private:
-    OmID segmentationID_;
+    om::common::ID segmentationID_;
 
     void processLine(const QString& line, const QString& fName);
     void runInteractive(const QString& fName);

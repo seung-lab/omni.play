@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "events/omEvents.h"
 #include "segment/lists/omSegmentLists.h"
 #include "system/cache/omCacheManager.h"

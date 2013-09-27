@@ -5,29 +5,30 @@
  *	Brett Warne - bwarne@mit.edu - 2/24/09
  */
 
-#include "common/omCommon.h"
+#include "coordinates/chunkCoord.h"
+#include "common/common.h"
 
 class OmMeshCoord {
- public:
-	OmMeshCoord();
-    OmMeshCoord( const om::chunkCoord&, OmSegID );
+public:
+    OmMeshCoord();
+    OmMeshCoord( const om::chunkCoord&, om::common::SegID );
 
-	void operator=( const OmMeshCoord& rhs );
-	bool operator==( const OmMeshCoord& rhs ) const;
-	bool operator!=( const OmMeshCoord& rhs ) const;
-	bool operator<( const OmMeshCoord& rhs ) const;
+    void operator=( const OmMeshCoord& rhs );
+    bool operator==( const OmMeshCoord& rhs ) const;
+    bool operator!=( const OmMeshCoord& rhs ) const;
+    bool operator<( const OmMeshCoord& rhs ) const;
 
     om::chunkCoord MipChunkCoord;
-	OmSegID DataValue;
+    om::common::SegID DataValue;
 
     const om::chunkCoord& Coord() const {
-		return MipChunkCoord;
-	}
+        return MipChunkCoord;
+    }
 
-	OmSegID SegID() const {
-		return DataValue;
-	}
+    om::common::SegID SegID() const {
+        return DataValue;
+    }
 
-	friend std::ostream& operator<<(std::ostream &out, const OmMeshCoord &in);
+    friend std::ostream& operator<<(std::ostream &out, const OmMeshCoord &in);
 };
 

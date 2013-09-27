@@ -49,15 +49,15 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol)
     OmThreadPool threadPool;
     threadPool.start();
 
-    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         vol->GetMipChunkCoords();
 
     FOR_EACH(iter, *coordsPtr)
     {
         const om::chunkCoord& coord = *iter;
 
-        om::shared_ptr<OmSegmentationChunkBuildTask> task =
-            om::make_shared<OmSegmentationChunkBuildTask>(coord,
+        std::shared_ptr<OmSegmentationChunkBuildTask> task =
+            std::make_shared<OmSegmentationChunkBuildTask>(coord,
                                                           vol->Segments(),
                                                           vol);
         threadPool.push_back(task);

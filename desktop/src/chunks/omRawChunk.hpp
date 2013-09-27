@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
-#include "utility/omSmartPtr.hpp"
+#include "utility/malloc.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
@@ -20,7 +20,7 @@ private:
     const QString memMapFileName_;
     const uint64_t numBytes_;
 
-    om::shared_ptr<T> data_;
+    std::shared_ptr<T> data_;
     T* dataRaw_;
 
     bool dirty_;
@@ -80,7 +80,7 @@ public:
         return dataRaw_;
     }
 
-    om::shared_ptr<T> SharedPtr(){
+    std::shared_ptr<T> SharedPtr(){
         return data_;
     }
 
@@ -91,17 +91,17 @@ private:
 
         QFile file(memMapFileName_);
         if(!file.open(QIODevice::ReadOnly)){
-            throw OmIoException("could not open", memMapFileName_);
+            throw om::IoException("could not open");
         }
 
         file.seek(chunkOffset_);
 
-        data_ = OmSmartPtr<T>::MallocNumBytes(numBytes_, om::DONT_ZERO_FILL);
+        data_ = om::mem::Malloc<T>::NumBytes(numBytes_, om::mem::ZeroFill::DONT);
         char* dataAsCharPtr = (char*)(data_.get());
         const uint64_t readSize = file.read(dataAsCharPtr, numBytes_);
 
         if( readSize != numBytes_) {
-            throw OmIoException("read failed");
+            throw om::IoException("read failed");
         }
 
         dataRaw_ = data_.get();
@@ -113,7 +113,7 @@ private:
 
         QFile file(memMapFileName_);
         if(!file.open(QIODevice::ReadWrite)){
-            throw OmIoException("could not open", memMapFileName_);
+            throw om::IoException("could not open");
         }
 
         file.seek(chunkOffset_);
@@ -121,7 +121,7 @@ private:
             file.write(reinterpret_cast<const char*>(dataRaw_), numBytes_);
 
         if( writeSize != numBytes_) {
-            throw OmIoException("write failed");
+            throw om::IoException("write failed");
         }
     }
 };

@@ -13,7 +13,7 @@ class SegmentationDataWrapper;
 
 class ElementListBox : private om::singletonBase<ElementListBox> {
 private:
-    boost::scoped_ptr<ElementListBoxImpl> impl_;
+    std::unique_ptr<ElementListBoxImpl> impl_;
 
 public:
     static QWidget* Widget();

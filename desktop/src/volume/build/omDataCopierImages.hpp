@@ -12,7 +12,7 @@ private:
     VOL *const vol_;
     const std::vector<QFileInfo>& files_;
 
-    std::vector<om::shared_ptr<QFile> > volFiles_;
+    std::vector<std::shared_ptr<QFile> > volFiles_;
 
 public:
     OmDataCopierImages(VOL* vol, const std::vector<QFileInfo>& files)
@@ -23,7 +23,7 @@ public:
 
     void ReplaceSlice(const int sliceNum)
     {
-        om::shared_ptr<QFile> mip0volFile = OmSimpleRawVol::Open(vol_, 0);
+        std::shared_ptr<QFile> mip0volFile = OmSimpleRawVol::Open(vol_, 0);
 
         const int depth = QImage(files_[0].absoluteFilePath()).depth();
 
@@ -38,7 +38,7 @@ public:
             imageLoader.ReplaceSlice(sliceNum);
 
         } else {
-            throw OmIoException("don't know how to import image with bpp of", depth);
+            throw om::IoException("don't know how to import image with bpp of");
         }
     }
 
@@ -50,7 +50,7 @@ protected:
 
         allocateData(determineDataType(depth));
 
-        om::shared_ptr<QFile> mip0volFile = volFiles_[0];
+        std::shared_ptr<QFile> mip0volFile = volFiles_[0];
 
         if(8 == depth)
         {
@@ -63,7 +63,7 @@ protected:
             imageLoader.Process();
 
         } else {
-            throw OmIoException("don't know how to import image with bpp of", depth);
+            throw om::IoException("don't know how to import image with bpp of");
         }
     }
 
@@ -75,7 +75,7 @@ protected:
         case 32:
             return OmVolDataType::UINT32;
         default:
-            throw OmIoException("don't know how to import image with bpp of", depth);
+            throw om::IoException("don't know how to import image with bpp of");
         }
     }
 

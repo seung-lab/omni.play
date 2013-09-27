@@ -52,18 +52,18 @@ void OmActionsImpl::ChangeSizethreshold(const SegmentationDataWrapper sdw,
 }
 
 //painting-related
-void OmActionsImpl::SetVoxel(const OmID segmentationID,
+void OmActionsImpl::SetVoxel(const om::common::ID segmentationID,
                              const om::globalCoord voxel,
-                             const OmSegID segmentID)
+                             const om::common::SegID segmentID)
 {
     (new OmVoxelSetValueAction(segmentationID,
                                voxel,
                                segmentID))->Run();
 }
 
-void OmActionsImpl::SetVoxels(const OmID segmentationID,
+void OmActionsImpl::SetVoxels(const om::common::ID segmentationID,
                               const std::set<om::globalCoord> voxels,
-                              const OmSegID segmentID)
+                              const om::common::SegID segmentID)
 {
     (new OmVoxelSetValueAction(segmentationID,
                                voxels,
@@ -72,7 +72,7 @@ void OmActionsImpl::SetVoxels(const OmID segmentationID,
 
 // segment-related
 void OmActionsImpl::ValidateSegment(const SegmentDataWrapper sdw,
-                                    const om::SetValid valid, const bool dontCenter)
+                                    const om::common::SetValid valid, const bool dontCenter)
 {
     OmSetSegmentValidRunner validator(sdw, valid);
     validator.Validate();
@@ -80,7 +80,7 @@ void OmActionsImpl::ValidateSegment(const SegmentDataWrapper sdw,
 }
 
 void OmActionsImpl::ValidateSelectedSegments(const SegmentationDataWrapper sdw,
-                                             const om::SetValid valid)
+                                             const om::common::SetValid valid)
 {
     OmSetSegmentsValidRunner validator(sdw, valid);
     validator.Validate();
@@ -91,7 +91,7 @@ void OmActionsImpl::UncertainSegment(const SegmentDataWrapper sdw,
                                      const bool uncertain)
 {
     bool shouldJump = OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
-    const OmSegID nextSegmentIDtoJumpTo =
+    const om::common::SegID nextSegmentIDtoJumpTo =
         OmSegmentUtils::GetNextSegIDinWorkingList(sdw);
 
     setUncertain(sdw, uncertain);
@@ -111,7 +111,7 @@ void OmActionsImpl::UncertainSegmentation(const SegmentationDataWrapper sdw,
                                           const bool uncertain)
 {
     bool shouldJump = OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
-    const OmSegID nextSegmentIDtoJumpTo =
+    const om::common::SegID nextSegmentIDtoJumpTo =
         OmSegmentUtils::GetNextSegIDinWorkingList(sdw);
 
     setUncertain(sdw, uncertain);
@@ -130,10 +130,10 @@ void OmActionsImpl::UncertainSegmentation(const SegmentationDataWrapper sdw,
 void OmActionsImpl::setUncertain(const SegmentDataWrapper& sdw,
                                  const bool uncertain)
 {
-    OmSegIDsSet set;
+    om::common::SegIDSet set;
     set.insert(sdw.FindRootID());
 
-    om::shared_ptr<std::set<OmSegment*> > children =
+    std::shared_ptr<std::set<OmSegment*> > children =
         OmSegmentUtils::GetAllChildrenSegments(sdw.Segments(), set);
 
     (new OmSegmentUncertainAction(sdw.MakeSegmentationDataWrapper(),
@@ -145,7 +145,7 @@ void OmActionsImpl::setUncertain(const SegmentationDataWrapper& sdw,
 {
     OmSegments* segments = sdw.Segments();
 
-    om::shared_ptr<std::set<OmSegment*> > children =
+    std::shared_ptr<std::set<OmSegment*> > children =
         OmSegmentUtils::GetAllChildrenSegments(segments,
                                                segments->GetSelectedSegmentIDs());
 
@@ -159,7 +159,7 @@ void OmActionsImpl::JoinSegmentsWrapper(const SegmentationDataWrapper sdw)
 }
 
 void OmActionsImpl::JoinSegmentsSet(const SegmentationDataWrapper sdw,
-                                    const OmSegIDsSet ids)
+                                    const om::common::SegIDSet ids)
 {
     OmJoinSegmentsRunner joiner(sdw, ids);
     joiner.Join();
@@ -199,14 +199,14 @@ void OmActionsImpl::CutSegment(const SegmentDataWrapper sdw)
     OmCutSegmentRunner::CutSegmentFromParent(sdw);
 }
 
-void OmActionsImpl::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params){
+void OmActionsImpl::SelectSegments(std::shared_ptr<OmSelectSegmentsParams> params){
     (new OmSegmentSelectAction(params))->Run();
 }
 
 // group-related
-void OmActionsImpl::CreateOrDeleteSegmentGroup(const OmID segmentationID,
-                                               const OmSegIDsSet selectedSegmentIDs,
-                                               const OmGroupName name,
+void OmActionsImpl::CreateOrDeleteSegmentGroup(const om::common::ID segmentationID,
+                                               const om::common::SegIDSet selectedSegmentIDs,
+                                               const om::common::GroupName name,
                                                const bool create)
 {
     (new OmSegmentGroupAction(segmentationID,

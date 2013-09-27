@@ -1,9 +1,8 @@
 #include "preferences2d.h"
-#include "common/omStd.h"
 #include "events/omEvents.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 
 Preferences2d::Preferences2d(QWidget * parent)
 	: QWidget(parent)

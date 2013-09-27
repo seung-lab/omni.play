@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/sidebars/right/rightImpl.h"
 #include "gui/sidebars/right/validationGroup/groupButtonTag.h"
 #include "gui/sidebars/right/validationGroup/setNotUncertain.hpp"

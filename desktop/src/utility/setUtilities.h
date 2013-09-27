@@ -5,8 +5,6 @@
 #ifndef OM_UTILITY_H
 #define OM_UTILITY_H
 
-#include "common/omStd.h"
-
 template <typename T>
 class OmSetUtils{
 public:

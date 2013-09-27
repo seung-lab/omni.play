@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "events/details/omView3dEvent.h"
 #include "gui/toolbars/mainToolbar/filterWidget.hpp"
 

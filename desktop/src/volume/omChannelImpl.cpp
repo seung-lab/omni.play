@@ -4,8 +4,8 @@
 #include "chunks/omChunk.h"
 #include "chunks/omChunkCache.hpp"
 #include "chunks/omChunkCache.hpp"
-#include "common/omCommon.h"
-#include "common/omDebug.h"
+#include "common/common.h"
+#include "common/logging.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
@@ -24,7 +24,7 @@ OmChannelImpl::OmChannelImpl()
     , tileCache_(new OmTileCacheChannel())
 {}
 
-OmChannelImpl::OmChannelImpl(OmID id)
+OmChannelImpl::OmChannelImpl(om::common::ID id)
     : OmManageableObject(id)
     , chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this))
     , volData_(new OmVolumeData())

@@ -45,7 +45,7 @@ private:
         out << "segID, 1 == working, 2 == valid, 3 == uncertain, isGlia\n";
         out << "example: 100,2,0\n";
 
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
+        for(om::common::SegID i = 1; i <= segments->getMaxValue(); ++i)
         {
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){
@@ -54,17 +54,17 @@ private:
 
             int category = 0;
             switch(seg->GetListType()){
-            case om::WORKING:
+            case om::common::SegListType::WORKING:
                 category = 1;
                 break;
-            case om::VALID:
+            case om::common::SegListType::VALID:
                 category = 2;
                 break;
-            case om::UNCERTAIN:
+            case om::common::SegListType::UNCERTAIN:
                 category = 3;
                 break;
             default:
-                throw OmArgException("unknown type");
+                throw om::ArgException("unknown type");
             }
 
             const int glia = isGlia(seg);
@@ -77,7 +77,7 @@ private:
 
     int isGlia(OmSegment* seg)
     {
-        const OmGroupIDsSet set = groups_->GetGroups(seg->RootID());
+        const auto set = groups_->GetGroups(seg->RootID());
 
         if(set.empty()){
             return 0;

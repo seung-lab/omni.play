@@ -3,5 +3,5 @@
 #include "utility/omSharedPtr.hpp"
 
 class OmMesh;
-typedef om::shared_ptr<OmMesh> OmMeshPtr;
+typedef std::shared_ptr<OmMesh> OmMeshPtr;
 

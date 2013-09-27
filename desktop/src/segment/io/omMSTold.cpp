@@ -31,7 +31,7 @@ void OmMSTold::ReadOld()
     OmHdf5* reader = OmProject::OldHDF5();
 
     if(!reader->dataset_exists(path)) {
-        throw OmIoException("did not find MST at path", path.getQString());
+        throw om::IoException("did not find MST at path", path.getQString());
     }
 
     mDend = reader->readDataset(path);

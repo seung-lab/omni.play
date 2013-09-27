@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "tiles/omTileCoord.h"
 #include "volume/omMipVolume.h"
 #include "viewGroup/omViewGroupState.h"
@@ -6,7 +6,7 @@
 
 OmTileCoord::OmTileCoord()
     : OmTileCoordKey(om::chunkCoord(),
-                     XY_VIEW,
+                     om::common::XY_VIEW,
                      -1,
                      NULL,
                      -1,
@@ -14,9 +14,9 @@ OmTileCoord::OmTileCoord()
                      SCC_NUMBER_OF_ENUMS)
 {}
 
-OmTileCoord::OmTileCoord(const om::chunkCoord& cc, ViewType view, uint8_t depth,
+OmTileCoord::OmTileCoord(const om::chunkCoord& cc, om::common::ViewType view, uint8_t depth,
                          OmMipVolume* vol, uint32_t freshness,
-                         OmViewGroupState* vgs, OmSegmentColorCacheType segColorType)
+                         OmViewGroupState* vgs, om::segment::coloring segColorType)
     : OmTileCoordKey(cc,
                      view,
                      depth,
@@ -26,9 +26,9 @@ OmTileCoord::OmTileCoord(const om::chunkCoord& cc, ViewType view, uint8_t depth,
                      segColorType)
 {}
 
-OmTileCoord::OmTileCoord(const om::chunkCoord& cc, ViewType view, uint8_t depth,
+OmTileCoord::OmTileCoord(const om::chunkCoord& cc, om::common::ViewType view, uint8_t depth,
                          OmMipVolume* vol, uint32_t freshness,
-                         OmViewGroupState* vgs, ObjectType objType)
+                         OmViewGroupState* vgs, om::common::ObjectType objType)
     : OmTileCoordKey(cc,
                      view,
                      depth,

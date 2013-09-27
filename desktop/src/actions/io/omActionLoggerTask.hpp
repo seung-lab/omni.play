@@ -29,7 +29,7 @@ private:
 template <typename T>
 class OmActionLoggerTask : public zi::runnable {
 public:
-    OmActionLoggerTask(om::shared_ptr<T> action,
+    OmActionLoggerTask(std::shared_ptr<T> action,
                        const std::string& doOrUndo,
                        QDir& logFolder)
         : action_(action)
@@ -44,7 +44,7 @@ public:
 
         QFile file(fnp);
         if(!file.open(QIODevice::WriteOnly)){
-            throw OmIoException("could not write", fnp);
+            throw om::IoException("could not write");
         }
 
         QDataStream out(&file);
@@ -60,7 +60,7 @@ public:
     }
 
 private:
-    const om::shared_ptr<T> action_;
+    const std::shared_ptr<T> action_;
     const std::string doOrUndo_;
     QDir logFolder_;
 

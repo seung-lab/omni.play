@@ -8,8 +8,8 @@ class OmChannelTileFilter : private om::singletonBase<OmChannelTileFilter> {
 private:
     static const uint8_t absMax_ = 255;
     static const int32_t defaultBrightness_ = 0;
-    static const double defaultContrast_ = 1;
-    static const double defaultGamma_ = 1.0;
+    constexpr static const double defaultContrast_ = 1;
+    constexpr static const double defaultGamma_ = 1.0;
 
 public:
     static void Filter(OmPooledTile<uint8_t>* slice)

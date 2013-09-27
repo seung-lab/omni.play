@@ -63,7 +63,7 @@ private:
     void checkSizes()
     {
         if(dendSizes_.y != dendValuesSizes_.x){
-            throw OmIoException("MST size mismatch");
+            throw om::IoException("MST size mismatch");
         }
     }
 

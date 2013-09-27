@@ -29,10 +29,10 @@ public:
     }
 
     template <typename T>
-    static void save(om::shared_ptr<T> actionImpl,
+    static void save(std::shared_ptr<T> actionImpl,
                      const std::string& str)
     {
-        om::shared_ptr<OmActionLoggerTask<T> >
+        std::shared_ptr<OmActionLoggerTask<T> >
             task(new OmActionLoggerTask<T>(actionImpl,
                                            str,
                                            impl().logFolder_));

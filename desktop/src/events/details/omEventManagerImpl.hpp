@@ -7,7 +7,7 @@
  * Brett Warne - bwarne@mit.edu - 2/11/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "events/details/omEvent.h"
 #include "events/details/omEventManager.h"
 #include "zi/omUtility.h"

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/scoped_ptr.hpp>
 #include "users/userSettings.h"
 
 #include <QString>
@@ -13,7 +12,7 @@ class usersImpl;
 
 class users {
 private:
-    boost::scoped_ptr<usersImpl> impl_;
+    std::unique_ptr<usersImpl> impl_;
 
 public:
     users();

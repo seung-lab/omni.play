@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/toolbars/toolbarManager.h"
 #include "segment/omSegmentSelected.hpp"
 #include "system/omAppState.hpp"
@@ -16,21 +16,21 @@ Q_OBJECT
 private:
     QWidget *const parent_;
 
-    boost::scoped_ptr<QShortcut> b_;
-    boost::scoped_ptr<QShortcut> comma_;
-    boost::scoped_ptr<QShortcut> greater_;
-    boost::scoped_ptr<QShortcut> j_;
-    boost::scoped_ptr<QShortcut> less_;
-    boost::scoped_ptr<QShortcut> m_;
-    boost::scoped_ptr<QShortcut> n_;
-    boost::scoped_ptr<QShortcut> period_;
-    boost::scoped_ptr<QShortcut> r_;
-    boost::scoped_ptr<QShortcut> k_;
-    boost::scoped_ptr<QShortcut> l_;
-    boost::scoped_ptr<QShortcut> slash_;
+    std::unique_ptr<QShortcut> b_;
+    std::unique_ptr<QShortcut> comma_;
+    std::unique_ptr<QShortcut> greater_;
+    std::unique_ptr<QShortcut> j_;
+    std::unique_ptr<QShortcut> less_;
+    std::unique_ptr<QShortcut> m_;
+    std::unique_ptr<QShortcut> n_;
+    std::unique_ptr<QShortcut> period_;
+    std::unique_ptr<QShortcut> r_;
+    std::unique_ptr<QShortcut> k_;
+    std::unique_ptr<QShortcut> l_;
+    std::unique_ptr<QShortcut> slash_;
 
 
-    void setShortcut(boost::scoped_ptr<QShortcut>& shortcut,
+    void setShortcut(std::unique_ptr<QShortcut>& shortcut,
                      const QKeySequence key,
                      const char* method)
     {
@@ -101,7 +101,7 @@ private Q_SLOTS:
 
     void keyJ()
     {
-        const OmIDsSet& segset = SegmentationDataWrapper::ValidIDs();
+        const om::common::IDSet& segset = SegmentationDataWrapper::ValidIDs();
 
         FOR_EACH(iter, segset){
             OmActions::JoinSegments(SegmentationDataWrapper(*iter));

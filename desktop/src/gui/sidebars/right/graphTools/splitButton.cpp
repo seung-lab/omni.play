@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/sidebars/right/graphTools/splitButton.h"

@@ -65,7 +65,7 @@ private:
         case 32:
             return OmDataWrapper<uint32_t>::produceNull();
         default:
-            throw OmIoException("unknown bpp");
+            throw om::IoException("unknown bpp");
         }
     }
 

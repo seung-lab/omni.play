@@ -9,8 +9,8 @@
 
 class SegmentDataWrapper {
 private:
-    OmSegID segmentID_;
-    OmID segmentationID_;
+    om::common::SegID segmentID_;
+    om::common::ID segmentationID_;
 
     // not allowed--allows wrappers to be implicitly converted!!!
     explicit SegmentDataWrapper(const SegmentationDataWrapper& sdw);
@@ -21,14 +21,14 @@ public:
         , segmentationID_(0)
     {}
 
-    SegmentDataWrapper(const OmID segmentationID,
-                       const OmSegID segmentID)
+    SegmentDataWrapper(const om::common::ID segmentationID,
+                       const om::common::SegID segmentID)
         : segmentID_(segmentID)
         , segmentationID_(segmentationID)
     {}
 
     SegmentDataWrapper(const OmSegmentation* segmentation,
-                       const OmSegID segmentID)
+                       const om::common::SegID segmentID)
         : segmentID_(segmentID)
         , segmentationID_(segmentation->getID())
     {}
@@ -38,7 +38,7 @@ public:
         , segmentationID_(seg->GetSegmentationID())
     {}
 
-    SegmentDataWrapper(const SegmentationDataWrapper& sdw, const OmSegID segID)
+    SegmentDataWrapper(const SegmentationDataWrapper& sdw, const om::common::SegID segID)
         : segmentID_(segID)
         , segmentationID_(sdw.GetSegmentationID())
     {}
@@ -49,7 +49,7 @@ public:
         segmentationID_ = sdw.segmentationID_;
     }
 
-    inline void SetSegmentID(const OmSegID segID){
+    inline void SetSegmentID(const om::common::SegID segID){
         segmentID_ = segID;
     }
 
@@ -73,7 +73,7 @@ public:
         return segmentID_ < rhs.segmentID_;
     }
 
-    inline OmSegID GetSegmentID() const {
+    inline om::common::SegID GetSegmentID() const {
         return segmentID_;
     }
 
@@ -148,7 +148,7 @@ public:
         return QString("%1").arg(getID());
     }
 
-    inline OmColor GetColorInt() const {
+    inline om::common::Color GetColorInt() const {
         return GetSegment()->GetColorInt();
     }
 
@@ -156,7 +156,7 @@ public:
         return GetSegment()->GetColorFloat();
     }
 
-    inline void SetColor(const OmColor& color) const {
+    inline void SetColor(const om::common::Color& color) const {
         GetSegment()->SetColor(color);
     }
 
@@ -190,19 +190,19 @@ public:
         return GetSegment()->size();
     }
 
-    inline OmID GetSegmentationID() const {
+    inline om::common::ID GetSegmentationID() const {
         return segmentationID_;
     }
 
-    inline OmSegID getID() const {
+    inline om::common::SegID getID() const {
         return segmentID_;
     }
 
-    inline OmSegID GetVoxelValue(const om::globalCoord& dataClickPoint) const {
+    inline om::common::SegID GetVoxelValue(const om::globalCoord& dataClickPoint) const {
         return GetSegmentation().GetVoxelValue(dataClickPoint);
     }
 
-    inline OmSegID FindRootID() const {
+    inline om::common::SegID FindRootID() const {
         return Segments()->findRootID(segmentID_);
     }
 

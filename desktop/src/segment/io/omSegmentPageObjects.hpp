@@ -1,16 +1,16 @@
 #pragma once
 
 #include "segment/omSegment.h"
-#include "utility/omSmartPtr.hpp"
+#include "utility/malloc.hpp"
 #include "utility/omTempFile.hpp"
 
 class OmSegmentPageObjects {
 private:
     const uint32_t pageSize_;
 
-    om::shared_ptr<OmSegment> segmentsPtr_;
+    std::shared_ptr<OmSegment> segmentsPtr_;
 
-    om::shared_ptr<OmTempFile<OmSegment> > tmpFile_;
+    std::shared_ptr<OmTempFile<OmSegment> > tmpFile_;
 
 public:
     OmSegmentPageObjects(const uint32_t pageSize)
@@ -19,7 +19,7 @@ public:
 
     OmSegment* MakeSegmentObjectPoolInMemory()
     {
-        segmentsPtr_ = OmSmartPtr<OmSegment>::NewNumElements(pageSize_);
+        segmentsPtr_ = om::mem::Malloc<OmSegment>::NewNumElements(pageSize_);
         return segmentsPtr_.get();
     }
 

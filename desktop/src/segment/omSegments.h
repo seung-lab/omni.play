@@ -22,55 +22,55 @@ public:
     void Flush();
 
     OmSegment* AddSegment();
-    OmSegment* AddSegment(OmSegID value);
-    OmSegment* GetSegment(const OmSegID);
-    OmSegment* GetSegmentUnsafe(const OmSegID);
-    OmSegment* GetOrAddSegment(const OmSegID);
+    OmSegment* AddSegment(om::common::SegID value);
+    OmSegment* GetSegment(const om::common::SegID);
+    OmSegment* GetSegmentUnsafe(const om::common::SegID);
+    OmSegment* GetOrAddSegment(const om::common::SegID);
 
-    bool IsSegmentValid(OmSegID seg);
+    bool IsSegmentValid(om::common::SegID seg);
 
-    OmSegID GetNumSegments();
-    OmSegID GetNumTopSegments();
+    om::common::SegID GetNumSegments();
+    om::common::SegID GetNumTopSegments();
 
     OmSegmentChildren* Children();
 
-    bool isSegmentEnabled(OmSegID segID);
-    void setSegmentEnabled(OmSegID segID, bool isEnabled);
-    OmSegIDsSet GetEnabledSegmentIDs();
+    bool isSegmentEnabled(om::common::SegID segID);
+    void setSegmentEnabled(om::common::SegID segID, bool isEnabled);
+    om::common::SegIDSet GetEnabledSegmentIDs();
     bool AreSegmentsEnabled();
 
-    bool IsSegmentSelected(OmSegID segID);
+    bool IsSegmentSelected(om::common::SegID segID);
     bool IsSegmentSelected(OmSegment* seg);
-    void setSegmentSelected(OmSegID segID, const bool, const bool);
-    const OmSegIDsSet GetSelectedSegmentIDs();
+    void setSegmentSelected(om::common::SegID segID, const bool, const bool);
+    const om::common::SegIDSet GetSelectedSegmentIDs();
     uint32_t NumberOfSelectedSegments();
     bool AreSegmentsSelected();
-    void UpdateSegmentSelection(const OmSegIDsSet& idsToSelect, const bool);
-    void AddToSegmentSelection(const OmSegIDsSet& idsToSelect);
-    void RemoveFromSegmentSelection(const OmSegIDsSet& idsToSelect);
+    void UpdateSegmentSelection(const om::common::SegIDSet& idsToSelect, const bool);
+    void AddToSegmentSelection(const om::common::SegIDSet& idsToSelect);
+    void RemoveFromSegmentSelection(const om::common::SegIDSet& idsToSelect);
 
-    QString getSegmentName(OmSegID segID);
-    void setSegmentName(OmSegID segID, QString name);
+    QString getSegmentName(om::common::SegID segID);
+    void setSegmentName(om::common::SegID segID, QString name);
 
-    QString getSegmentNote(OmSegID segID);
-    void setSegmentNote(OmSegID segID, QString note);
+    QString getSegmentNote(om::common::SegID segID);
+    void setSegmentNote(om::common::SegID segID, QString note);
 
-    OmSegID GetSegmentationID();
+    om::common::SegID GetSegmentationID();
 
     boost::optional<std::string> IsEdgeSplittable(const OmSegmentEdge& e);
     boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
     boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
 
     OmSegment* findRoot(OmSegment* segment);
-    OmSegment* findRoot(const OmSegID segID);
-    OmSegID findRootID(const OmSegID segID);
-    OmSegID findRootID(OmSegment* segment);
-    OmSegID findRootIDnoCache(const OmSegID segID);
+    OmSegment* findRoot(const om::common::SegID segID);
+    om::common::SegID findRootID(const om::common::SegID segID);
+    om::common::SegID findRootID(OmSegment* segment);
+    om::common::SegID findRootIDnoCache(const om::common::SegID segID);
 
     std::pair<bool, OmSegmentEdge> JoinEdge(const OmSegmentEdge& e);
     OmSegmentEdge SplitEdge(const OmSegmentEdge& e);
-    OmSegIDsSet JoinTheseSegments(const OmSegIDsSet& segmentList);
-    OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
+    om::common::SegIDSet JoinTheseSegments(const om::common::SegIDSet& segmentList);
+    om::common::SegIDSet UnJoinTheseSegments(const om::common::SegIDSet& segmentList);
 
     std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
     bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
@@ -82,7 +82,7 @@ public:
 
     void refreshTree();
 
-    bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
+    bool AreAnySegmentsInValidList(const om::common::SegIDSet& ids);
 
     uint64_t MSTfreshness() const;
 
@@ -95,8 +95,8 @@ private:
 
     OmSegmentation *const segmentation_;
 
-    boost::scoped_ptr<OmSegmentsStore> store_;
-    boost::scoped_ptr<OmSegmentsImpl> impl_;
+    std::unique_ptr<OmSegmentsStore> store_;
+    std::unique_ptr<OmSegmentsImpl> impl_;
 
     friend class OmSegmentColorizer;
     friend class SegmentTests;

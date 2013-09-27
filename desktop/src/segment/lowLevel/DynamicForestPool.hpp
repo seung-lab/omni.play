@@ -80,7 +80,7 @@ private:
         }
 
         if(newSize <= size_){
-            throw OmArgException("we can only grow, shrinking doesn't make sense!!!");
+            throw om::ArgException("we can only grow, shrinking doesn't make sense!!!");
         }
 
         resizeNumBytes(numBytes(size_), numBytes(newSize));

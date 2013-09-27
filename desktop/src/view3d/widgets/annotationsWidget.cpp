@@ -1,4 +1,4 @@
-#include "common/omGl.h"
+#include "utility/glInclude.h"
 #include "system/omStateManager.h"
 #include "view3d/omCamera.h"
 #include "view3d/omView3d.h"

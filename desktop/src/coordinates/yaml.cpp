@@ -1,10 +1,11 @@
-#include "common/omCommon.h"
-#include "utility/yaml/baseTypes.hpp"
+#include "common/common.h"
+#include "utility/yaml/omBaseTypes.hpp"
+#include "coordinates/globalCoord.h"
 
-namespace YAML 
+namespace YAML
 {
-    
-Emitter& operator<<(Emitter& e, const om::globalCoord& c) 
+
+Emitter& operator<<(Emitter& e, const om::globalCoord& c)
 {
     e << (Vector3f)c;
     return e;
@@ -27,5 +28,5 @@ void operator>>(const Node& n, om::globalBbox& box)
     AxisAlignedBoundingBox<float>& bbox = box;
     n >> bbox;
 }
-    
+
 } // namespace YAML

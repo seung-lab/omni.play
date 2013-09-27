@@ -57,7 +57,7 @@ void OmPagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
     prog->DidOne();
 }
 
-OmSegment* OmPagingPtrStore::AddSegment(const OmSegID value)
+OmSegment* OmPagingPtrStore::AddSegment(const om::common::SegID value)
 {
     const PageNum pageNum = value / pageSize_;
 
@@ -101,7 +101,7 @@ void OmPagingPtrStore::loadMetadata()
     QFile file(metadataPathQStr());
 
     if(!file.open(QIODevice::ReadOnly)){
-        throw OmIoException("error reading file", metadataPathQStr());
+        throw om::IoException("error reading file", metadataPathQStr());
     }
 
     QDataStream in(&file);
@@ -120,7 +120,7 @@ void OmPagingPtrStore::loadMetadata()
     }
 
     if(!in.atEnd()){
-        throw OmIoException("corrupt file?", metadataPathQStr());
+        throw om::IoException("corrupt file?", metadataPathQStr());
     }
 }
 

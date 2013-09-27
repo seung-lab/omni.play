@@ -7,10 +7,10 @@
 class OmBrushErase {
 public:
     static void EraseByClick(OmView2dState* state, const om::globalCoord& coord,
-                             const OmSegID segIDtoErase)
+                             const om::common::SegID segIDtoErase)
     {
-        om::shared_ptr<OmBrushOppInfo> info =
-            OmBrushOppInfoFactory::MakeOppInfo(state, coord, om::ADD);
+        std::shared_ptr<OmBrushOppInfo> info =
+            OmBrushOppInfoFactory::MakeOppInfo(state, coord, om::common::AddOrSubtract::ADD);
 
         OmBrushEraseCircle circle(info, segIDtoErase);
 
@@ -18,15 +18,15 @@ public:
     }
 
     static void EraseByLine(OmView2dState* state, const om::globalCoord& second,
-                            const OmSegID segIDtoErase)
+                            const om::common::SegID segIDtoErase)
     {
         const om::globalCoord& first = state->GetLastDataPoint();
 
-        om::shared_ptr<OmBrushOppInfo> info =
-            OmBrushOppInfoFactory::MakeOppInfo(state, first, om::ADD);
+        std::shared_ptr<OmBrushOppInfo> info =
+            OmBrushOppInfoFactory::MakeOppInfo(state, first, om::common::AddOrSubtract::ADD);
 
-        om::shared_ptr<OmBrushEraseLineTask> task =
-            om::make_shared<OmBrushEraseLineTask>(info, first, second, segIDtoErase);
+        std::shared_ptr<OmBrushEraseLineTask> task =
+            std::make_shared<OmBrushEraseLineTask>(info, first, second, segIDtoErase);
 
         OmView2dManager::AddTaskBack(task);
     }

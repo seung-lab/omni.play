@@ -12,7 +12,7 @@ namespace segchunk {
 class OmExtractSegTile{
 public:
     OmExtractSegTile(OmSegmentation* vol, const om::chunkCoord& coord,
-                     const ViewType plane, int depth)
+                     const om::common::ViewType plane, int depth)
         : vol_(vol)
         , coord_(coord)
         , plane_(plane)
@@ -25,7 +25,7 @@ public:
     }
 
     PooledTile32Ptr Extract(float*) const {
-        throw OmIoException("segmentation data shouldn't be float");
+        throw om::IoException("segmentation data shouldn't be float");
     }
 
 private:
@@ -60,7 +60,7 @@ private:
         OmRawChunkSlicer<T> slicer(128, d);
 
         OmProject::Globals().FileReadSemaphore().acquire(1);
-        boost::scoped_ptr<OmPooledTile<T> > rawTile(slicer.GetCopyAsPooledTile(plane_, depth_));
+        std::unique_ptr<OmPooledTile<T> > rawTile(slicer.GetCopyAsPooledTile(plane_, depth_));
         OmProject::Globals().FileReadSemaphore().release(1);
 
         OmTileFilters<T> filter(128);
@@ -72,7 +72,7 @@ private:
 
     OmSegmentation *const vol_;
     const om::chunkCoord coord_;
-    const ViewType plane_;
+    const om::common::ViewType plane_;
     const int depth_;
 };
 

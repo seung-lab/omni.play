@@ -1,5 +1,5 @@
 #include "actions/omActions.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "events/omEvents.h"
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/inspectors/segmentInspector.h"
@@ -85,7 +85,7 @@ bool OmSegmentContextMenu::isValid() const {
 }
 
 bool OmSegmentContextMenu::isUncertain() const {
-    return om::UNCERTAIN == sdw_.FindRoot()->GetListType();
+    return om::common::SegListType::UNCERTAIN == sdw_.FindRoot()->GetListType();
 }
 
 void OmSegmentContextMenu::addSelectionNames()
@@ -202,7 +202,7 @@ void OmSegmentContextMenu::randomizeSegmentColor()
 void OmSegmentContextMenu::setValid()
 {
     if(sdw_.IsSegmentValid()){
-        OmActions::ValidateSegment(sdw_, om::SET_VALID);
+        OmActions::ValidateSegment(sdw_, om::common::SetValid::SET_VALID);
         OmEvents::SegmentModified();
     }
 }
@@ -210,14 +210,14 @@ void OmSegmentContextMenu::setValid()
 void OmSegmentContextMenu::setNotValid()
 {
     if(sdw_.IsSegmentValid()){
-        OmActions::ValidateSegment(sdw_, om::SET_NOT_VALID);
+        OmActions::ValidateSegment(sdw_, om::common::SetValid::SET_NOT_VALID);
         OmEvents::SegmentModified();
     }
 }
 
 void OmSegmentContextMenu::showProperties()
 {
-    const OmSegID rootSegID = sdw_.FindRootID();
+    const om::common::SegID rootSegID = sdw_.FindRootID();
     SegmentDataWrapper sdw(sdw_.GetSegmentationID(), rootSegID);
 
     const QString title = QString("Segmentation %1: Segment %2")
@@ -235,7 +235,7 @@ void OmSegmentContextMenu::addPropertiesActions()
 
 void OmSegmentContextMenu::printChildren()
 {
-    om::shared_ptr<std::deque<std::string> > children = OmSegmentUtils::GetChildrenInfo(sdw_);
+    std::shared_ptr<std::deque<std::string> > children = OmSegmentUtils::GetChildrenInfo(sdw_);
 
     OmAskYesNoQuestion fileExport("Export children list to file?");
 
@@ -262,7 +262,7 @@ void OmSegmentContextMenu::printChildren()
 }
 
 void OmSegmentContextMenu::writeChildrenFile(const QString fnp, om::gui::progressBarDialog* dialog,
-                                             om::shared_ptr<std::deque<std::string> > children)
+                                             std::shared_ptr<std::deque<std::string> > children)
 {
     try
     {
@@ -299,7 +299,7 @@ void OmSegmentContextMenu::addGroups()
 
 void OmSegmentContextMenu::addDisableAction()
 {
-    const OmSegID segid = sdw_.FindRootID();
+    const om::common::SegID segid = sdw_.FindRootID();
     OmSegments* segments = sdw_.Segments();
 
     if(segments->isSegmentEnabled(segid)) {
@@ -309,7 +309,7 @@ void OmSegmentContextMenu::addDisableAction()
 
 void OmSegmentContextMenu::disableSegment()
 {
-    const OmSegID segid = sdw_.FindRootID();
+    const om::common::SegID segid = sdw_.FindRootID();
     OmSegments* segments = sdw_.Segments();
 
     segments->setSegmentEnabled(segid, false);

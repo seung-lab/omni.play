@@ -51,16 +51,16 @@ public:
             break;
 
         case Qt::Key_Right:
-            state_->Shift(om::RIGHT);
+            state_->Shift(om::common::Direction::RIGHT);
             break;
         case Qt::Key_Left:
-            state_->Shift(om::LEFT);
+            state_->Shift(om::common::Direction::LEFT);
             break;
         case Qt::Key_Up:
-            state_->Shift(om::UP);
+            state_->Shift(om::common::Direction::UP);
             break;
         case Qt::Key_Down:
-            state_->Shift(om::DOWN);
+            state_->Shift(om::common::Direction::DOWN);
             break;
 
         case Qt::Key_C:

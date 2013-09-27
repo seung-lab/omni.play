@@ -1,8 +1,10 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omVolumeTypes.hpp"
-#include "utility/omSmartPtr.hpp"
+#include "utility/malloc.hpp"
+
+#include <QString>
 
 #define OmDataWrapperRaw(c) (OmDataWrapper<int8_t>::produceNoFree(c))
 #define OmDataWrapperInvalid() (OmDataWrapper<int8_t>::produceNull())
@@ -23,27 +25,11 @@ enum OmDataAllocType {
 };
 }
 
-/* TODO: fixme
-   struct malloc_tag    { operator OmDataAllocType() const { return MALLOC; } };
-   struct new_array_tag { operator OmDataAllocType() const { return NEW_ARRAY; } };
-   struct none_tag      { operator OmDataAllocType() const { return NONE; } };
-   struct invalid_tag   { operator OmDataAllocType() const { return INVALID; } };
-
-   namespace om {
-
-   typedef malloc_tag    MALLOC;
-   typedef new_array_tag NEW_ARRAY;
-   typedef none_tag      NONE;
-   typedef invalid_tag   INVALID;
-
-   } // namespace om
-*/
-
 class OmDataWrapperBase {
 public:
     OmDataWrapperBase() {}
     virtual ~OmDataWrapperBase() {}
-    typedef om::shared_ptr<OmDataWrapperBase> ptr_type;
+    typedef std::shared_ptr<OmDataWrapperBase> ptr_type;
 
     template <class C> C* getPtr() {
         return (C*) getVoidPtr();
@@ -65,14 +51,14 @@ public:
     template <class T> friend class OmDataWrapper;
 };
 
-typedef om::shared_ptr<OmDataWrapperBase> OmDataWrapperPtr;
+typedef std::shared_ptr<OmDataWrapperBase> OmDataWrapperPtr;
 
 template <class T>
 class OmDataWrapper : public OmDataWrapperBase {
 public:
-    typedef om::shared_ptr<OmDataWrapper< T > > ptr_type;
+    typedef std::shared_ptr<OmDataWrapper< T > > ptr_type;
 
-    explicit OmDataWrapper(om::shared_ptr<T> sptr)
+    explicit OmDataWrapper(std::shared_ptr<T> sptr)
         : ptr_(sptr) {}
 
     static OmDataWrapperPtr produceNull() {
@@ -125,7 +111,7 @@ public:
         return ptr_.get();
     }
 
-    om::shared_ptr<T> Ptr(){
+    std::shared_ptr<T> Ptr(){
         return ptr_;
     }
 
@@ -150,19 +136,19 @@ public:
     }
 
 private:
-    const om::shared_ptr<T> ptr_;
+    const std::shared_ptr<T> ptr_;
 
-    static om::shared_ptr<T> wrapRawPtr(T* rawPtr, const om::OmDataAllocType d){
+    static std::shared_ptr<T> wrapRawPtr(T* rawPtr, const om::OmDataAllocType d){
         switch(d){
         case om::MALLOC:
-            return OmSmartPtr<T>::WrapMalloc(rawPtr);
+            return om::mem::Malloc<T>::WrapMalloc(rawPtr);
         case om::NEW_ARRAY:
-            return OmSmartPtr<T>::WrapNewArray(rawPtr);
+            return om::mem::Malloc<T>::WrapNewArray(rawPtr);
         case om::NONE:
-            return OmSmartPtr<T>::WrapNoFree(rawPtr);
+            return om::mem::Malloc<T>::WrapNoFree(rawPtr);
         case om::INVALID:
         default:
-            throw OmArgException("can't wrap invalid ptr");
+            throw om::ArgException("can't wrap invalid ptr");
         };
     }
 
@@ -174,7 +160,7 @@ private:
 
     void checkIfValid(){
         if(!ptr_){
-            throw OmIoException("OmDataWrapper: ptr not valid");
+            throw om::IoException("OmDataWrapper: ptr not valid");
         }
     }
 };
@@ -183,12 +169,12 @@ namespace om {
 namespace ptrs {
 
 template <typename T>
-static OmDataWrapperPtr Wrap(om::shared_ptr<T> sptr){
-    return om::make_shared<OmDataWrapper<T> >(sptr);
+static OmDataWrapperPtr Wrap(std::shared_ptr<T> sptr){
+    return std::make_shared<OmDataWrapper<T> >(sptr);
 }
 
 template <typename T>
-om::shared_ptr<T> UnWrap(const OmDataWrapperPtr wrap)
+std::shared_ptr<T> UnWrap(const OmDataWrapperPtr wrap)
 {
     OmDataWrapper<T>* dataPtrReint =
         reinterpret_cast<OmDataWrapper<T>*>(wrap.get());

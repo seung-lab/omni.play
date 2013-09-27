@@ -1,5 +1,5 @@
 #include "system/omConnect.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "filObjectInspector.h"
 #include "events/omEvents.h"
 #include "utility/dataWrappers.h"
@@ -8,7 +8,7 @@ FilObjectInspector::FilObjectInspector(QWidget * parent,
                                        const FilterDataWrapper & fdw )
     : QWidget(parent)
 {
-    fdw_ = om::make_shared<FilterDataWrapper>(fdw);
+    fdw_ = std::make_shared<FilterDataWrapper>(fdw);
 
     QVBoxLayout* overallContainer = new QVBoxLayout( this );
 

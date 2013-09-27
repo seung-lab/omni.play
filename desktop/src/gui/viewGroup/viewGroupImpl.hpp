@@ -14,8 +14,8 @@ private:
     MainWindow *const mainWindow_;
     OmViewGroupState *const vgs_;
 
-    boost::scoped_ptr<ViewGroupUtils> utils_;
-    boost::scoped_ptr<ViewGroupMainWindowUtils> mainWindowUtils_;
+    std::unique_ptr<ViewGroupUtils> utils_;
+    std::unique_ptr<ViewGroupMainWindowUtils> mainWindowUtils_;
 
 public:
     viewGroupImpl(MainWindow* mainWindow, OmViewGroupState* vgs)
@@ -27,17 +27,17 @@ public:
         om::connect(this, SIGNAL(signalAddView3D()),
                     this, SLOT(addView3D()));
 
-        om::connect(this, SIGNAL(signalAddView3D2View(const ViewType)),
-                    this, SLOT(addView3D2View(const ViewType)));
+        om::connect(this, SIGNAL(signalAddView3D2View(const om::common::ViewType)),
+                    this, SLOT(addView3D2View(const om::common::ViewType)));
 
         om::connect(this, SIGNAL(signalAddView3D4View()),
                     this, SLOT(addView3D4View()));
 
-        om::connect(this, SIGNAL(signalAddView2Dchannel(ChannelDataWrapper, ViewType)),
-                    this, SLOT(addView2Dchannel(ChannelDataWrapper, ViewType)));
+        om::connect(this, SIGNAL(signalAddView2Dchannel(ChannelDataWrapper, om::common::ViewType)),
+                    this, SLOT(addView2Dchannel(ChannelDataWrapper, om::common::ViewType)));
 
-        om::connect(this, SIGNAL(signalAddView2Dsegmentation(SegmentationDataWrapper, ViewType)),
-                    this, SLOT(addView2Dsegmentation(SegmentationDataWrapper, ViewType)));
+        om::connect(this, SIGNAL(signalAddView2Dsegmentation(SegmentationDataWrapper, om::common::ViewType)),
+                    this, SLOT(addView2Dsegmentation(SegmentationDataWrapper, om::common::ViewType)));
     }
 
     ~viewGroupImpl()
@@ -51,7 +51,7 @@ private Q_SLOTS:
         mainWindowUtils_->InsertDockIntoGroup4View(vgw);
     }
 
-    void addView3D2View(const ViewType viewType)
+    void addView3D2View(const om::common::ViewType viewType)
     {
         ViewGroupWidgetInfo vgw = utils_->CreateView3d();
         mainWindowUtils_->InsertDockIntoGroup2View(vgw, viewType);
@@ -63,7 +63,7 @@ private Q_SLOTS:
         mainWindowUtils_->InsertDockIntoGroup4View(vgw);
     }
 
-    void addView2Dchannel(const ChannelDataWrapper& cdw, const ViewType viewType)
+    void addView2Dchannel(const ChannelDataWrapper& cdw, const om::common::ViewType viewType)
     {
         ViewGroupWidgetInfo vgw = utils_->CreateView2dChannel(cdw, viewType);
 
@@ -72,7 +72,7 @@ private Q_SLOTS:
         utils_->wireDockWithView2d(vgw.widget, d);
     }
 
-    void addView2Dsegmentation(const SegmentationDataWrapper& sdw, const ViewType viewType)
+    void addView2Dsegmentation(const SegmentationDataWrapper& sdw, const om::common::ViewType viewType)
     {
         ViewGroupWidgetInfo vgw = utils_->CreateView2dSegmentation(sdw, viewType);
 
@@ -83,10 +83,10 @@ private Q_SLOTS:
 
 Q_SIGNALS:
     void signalAddView3D();
-    void signalAddView3D2View(const ViewType viewType);
+    void signalAddView3D2View(const om::common::ViewType viewType);
     void signalAddView3D4View();
-    void signalAddView2Dchannel(const ChannelDataWrapper& cdw, const ViewType viewType);
-    void signalAddView2Dsegmentation(const SegmentationDataWrapper& sdw, const ViewType viewType);
+    void signalAddView2Dchannel(const ChannelDataWrapper& cdw, const om::common::ViewType viewType);
+    void signalAddView2Dsegmentation(const SegmentationDataWrapper& sdw, const om::common::ViewType viewType);
 
 private:
     void deleteWidgets()
@@ -122,11 +122,11 @@ public:
         signalAddView3D4View();
     }
 
-    void AddView2Dchannel(const ChannelDataWrapper& cdw, const ViewType viewType){
+    void AddView2Dchannel(const ChannelDataWrapper& cdw, const om::common::ViewType viewType){
         signalAddView2Dchannel(cdw, viewType);
     }
 
-    void AddView2Dsegmentation(const SegmentationDataWrapper& sdw, const ViewType viewType){
+    void AddView2Dsegmentation(const SegmentationDataWrapper& sdw, const om::common::ViewType viewType){
         signalAddView2Dsegmentation(sdw, viewType);
     }
 
@@ -134,7 +134,7 @@ public:
     {
         deleteWidgets();
 
-        static const ViewType viewType = XY_VIEW;
+        static const om::common::ViewType viewType = om::common::XY_VIEW;
 
         const ChannelDataWrapper cdw = vgs_->Channel();
         if(utils_->canShowChannel(cdw)){
@@ -181,7 +181,7 @@ public:
     {
         deleteWidgets();
 
-        static const ViewType viewType = XY_VIEW;
+        static const om::common::ViewType viewType = om::common::XY_VIEW;
 
         const ChannelDataWrapper cdw = vgs_->Channel();
         const bool showChannel = utils_->canShowChannel(cdw);

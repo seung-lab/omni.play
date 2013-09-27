@@ -1,7 +1,6 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "actions/details/omUndoCommand.hpp"
 
 class OmSegment;
@@ -12,12 +11,12 @@ class OmSegmentValidateActionImpl;
 class OmSegmentValidateAction : public OmUndoCommand {
 
 public:
-    OmSegmentValidateAction(om::shared_ptr<OmSegmentValidateActionImpl> impl)
+    OmSegmentValidateAction(std::shared_ptr<OmSegmentValidateActionImpl> impl)
         : impl_(impl)
     {}
 
     OmSegmentValidateAction(const SegmentationDataWrapper& sdw,
-                            om::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                            std::shared_ptr<std::set<OmSegment*> > selectedSegments,
                             const bool valid);
 
 private:
@@ -26,6 +25,6 @@ private:
     std::string Description();
     void save(const std::string&);
 
-    om::shared_ptr<OmSegmentValidateActionImpl> impl_;
+    std::shared_ptr<OmSegmentValidateActionImpl> impl_;
 };
 

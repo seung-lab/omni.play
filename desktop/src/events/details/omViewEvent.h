@@ -6,7 +6,6 @@
  */
 
 #include "events/details/omEvent.h"
-#include "common/omStd.h"
 
 /*
  * View Event

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/sidebars/right/validationGroup/validationGroup.h"
 #include "gui/widgets/omButton.hpp"
 #include "actions/omActions.h"

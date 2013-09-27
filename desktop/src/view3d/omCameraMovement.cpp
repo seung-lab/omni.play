@@ -1,6 +1,6 @@
 #include "omCameraMovement.h"
 #include "omCamera.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 
 static const float EPSILON = 1.0e-5;
 
@@ -157,7 +157,6 @@ void OmCameraPan::Drag(const Vector2 < float >&point)
 	//update center
 	Vector3 < float >center = mpCamera->GetFocus();
 	Matrix3 < float >orbit_mat = mpCamera->mOrbitRotation.getRotationMatrix();
-	Matrix3 < float >lookat_mat = mpCamera->mLookAtRotation.getRotationMatrix();
 
 	//Matrix3<float> rotation_mat = orbit_mat * lookat_mat;
 

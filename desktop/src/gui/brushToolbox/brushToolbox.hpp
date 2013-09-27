@@ -9,7 +9,7 @@ class BrushToolbox : public OmToolModeEventListener,
                      public OmSegmentEventListener {
 private:
     QWidget *const parent_;
-    boost::scoped_ptr<BrushToolboxImpl> impl_;
+    std::unique_ptr<BrushToolboxImpl> impl_;
     OmViewGroupState *const vgs_;
 
     bool alreadyPoppedMenu_;

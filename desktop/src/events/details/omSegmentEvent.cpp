@@ -3,7 +3,7 @@
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type)
     : OmEvent(type, CLASS)
-    , params_(om::make_shared<OmSelectSegmentsParams>())
+    , params_(std::make_shared<OmSelectSegmentsParams>())
 {}
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
@@ -17,7 +17,7 @@ OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
 }
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
-                               om::shared_ptr<OmSelectSegmentsParams> params)
+                               std::shared_ptr<OmSelectSegmentsParams> params)
     : OmEvent(type, CLASS)
     , params_(params)
 {}
@@ -48,6 +48,6 @@ void OmSegmentEvent::Dispatch(OmEventListener* pListener)
         return;
 
     default:
-        throw OmArgException("unknown event type");
+        throw om::ArgException("unknown event type");
     }
 }

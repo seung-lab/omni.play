@@ -1,61 +1,45 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "system/omManageableObject.h"
+#include "common/common.h"
+#include "common/macro.hpp"
 #include "utility/color.hpp"
-#include "datalayer/archive/segmentation.h"
 
-class OmGroup : public OmManageableObject {
-public:
-    OmGroup(){}
+class OmGroup {
+ public:
+  OmGroup() {}
 
-    OmGroup(OmID id)
-        : OmManageableObject(id)
-    {
-        mColor =  om::utils::color::GetRandomColor();
+  OmGroup(om::common::ID id) : id_(id) {
+    mColor = om::utils::color::GetRandomColor();
+  }
+
+  OmGroup(const om::common::SegIDSet& ids) {
+    mColor = om::utils::color::GetRandomColor();
+    AddIds(ids);
+  }
+
+  virtual ~OmGroup() {}
+
+  void AddIds(const om::common::SegIDSet& ids) {
+    for (auto id : ids) {
+      mIDs.insert(id);
     }
+  }
 
-    OmGroup(const OmSegIDsSet& ids)
-    {
-        mColor =  om::utils::color::GetRandomColor();
-        AddIds(ids);
+  void RemoveIds(const om::common::SegIDSet& ids) {
+    for (auto id : ids) {
+      mIDs.erase(id);
     }
+  }
 
-    virtual ~OmGroup()
-    {}
+  om::common::GroupName GetName() const { return mName; }
 
-    void AddIds(const OmSegIDsSet& ids)
-    {
-        FOR_EACH(iter, ids) {
-            mIDs.insert(*iter);
-        }
-    }
+  const om::common::SegIDSet& ids() const { return mIDs; }
 
-    void RemoveIds(const OmSegIDsSet& ids)
-    {
-        FOR_EACH(iter, ids) {
-            mIDs.erase(*iter);
-        }
-    }
+ private:
+  om::common::SegIDSet mIDs;
+  om::common::Color mColor;
 
-    OmGroupName GetName() const {
-        return mName;
-    }
+  om::common::GroupName mName;
 
-    const OmSegIDsSet& GetIDs() const {
-        return mIDs;
-    }
-
-private:
-    OmSegIDsSet mIDs;
-    OmColor mColor;
-
-    OmGroupName mName;
-    friend class OmGroups;
-
-    friend YAML::Emitter &YAML::operator<<(YAML::Emitter & out, const OmGroup & g );
-    friend void YAML::operator>>(const YAML::Node & in, OmGroup & g );
-    friend QDataStream &operator<<(QDataStream & out, const OmGroup & g );
-    friend QDataStream &operator>>(QDataStream & in, OmGroup & g );
+  PROP_REF_SET(om::common::ID, id);
 };
-

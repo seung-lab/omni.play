@@ -44,11 +44,11 @@ private:
         if(sdwUnknownDepth.IsValidWrapper())
         {
             SegmentDataWrapper sdw = SegmentDataWrapper(sdwUnknownDepth.FindRoot());
-            pixmap = om::utils::color::OmColorAsQPixmap(sdw.GetColorInt());
+            pixmap = om::utils::color::ColorAsQPixmap(sdw.GetColorInt());
 
         } else {
-            OmColor black = { 0, 0, 0 };
-            pixmap = om::utils::color::OmColorAsQPixmap(black);
+            om::common::Color black = { 0, 0, 0 };
+            pixmap = om::utils::color::ColorAsQPixmap(black);
         }
 
         setIcon(QIcon(pixmap));
@@ -97,7 +97,7 @@ private:
 
 public:
     OmBrushSizeSpinBox(QWidget* parent)
-        : OmIntSpinBox(parent, om::UPDATE_AS_TYPE)
+        : OmIntSpinBox(parent, true)
     {
         setValue(OmStateManager::BrushSize()->Diameter());
         setSingleStep(1);

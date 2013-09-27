@@ -15,8 +15,8 @@
 
 class OmSegmentUtils {
 public:
-    om::shared_ptr<std::set<OmSegment*> >
-    static GetAllChildrenSegments(OmSegments* segments, const OmSegIDsSet& set)
+    std::shared_ptr<std::set<OmSegment*> >
+    static GetAllChildrenSegments(OmSegments* segments, const om::common::SegIDSet& set)
     {
         OmSegmentIterator iter(segments);
         iter.iterOverSegmentIDs(set);
@@ -31,7 +31,7 @@ public:
             seg = iter.getNextSegment();
         }
 
-        return om::shared_ptr<std::set<OmSegment*> >(children);
+        return std::shared_ptr<std::set<OmSegment*> >(children);
     }
 
     template <class A, class B>
@@ -50,7 +50,7 @@ public:
     }
 
     template <class B>
-    static void GetAllChildrenSegments(OmSegments* segments, const OmSegID segID, B& ret)
+    static void GetAllChildrenSegments(OmSegments* segments, const om::common::SegID segID, B& ret)
     {
         OmSegmentIterator iter(segments);
         iter.iterOverSegmentID(segID);
@@ -94,11 +94,11 @@ public:
         // 2 is the manual merge threshold
     }
 
-    om::shared_ptr<std::deque<std::string> >
+    std::shared_ptr<std::deque<std::string> >
     static GetChildrenInfo(const SegmentDataWrapper& sdw)
     {
-        om::shared_ptr<std::deque<std::string> > ret =
-            om::make_shared<std::deque<std::string> >();
+        std::shared_ptr<std::deque<std::string> > ret =
+            std::make_shared<std::deque<std::string> >();
 
         if(!sdw.IsSegmentValid()){
             return ret;
@@ -113,7 +113,7 @@ public:
         {
             OmSegment* parent = seg->getParent();
 
-            const OmSegID parentID = parent ? parent->value() : 0;
+            const om::common::SegID parentID = parent ? parent->value() : 0;
 
             const QString str = QString("%1 : %2, %3, %4")
                 .arg(seg->value())
@@ -152,22 +152,22 @@ public:
         }
     }
 
-    static OmSegID GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw){
+    static om::common::SegID GetNextSegIDinWorkingList(const SegmentDataWrapper& sdw){
         return sdw.GetSegmentation().SegmentLists()->GetNextSegIDinWorkingList(sdw);
     }
 
-    static OmSegID GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw){
+    static om::common::SegID GetNextSegIDinWorkingList(const SegmentationDataWrapper& sdw){
         return sdw.SegmentLists()->GetNextSegIDinWorkingList(sdw);
     }
 
-    static std::string ListTypeAsStr(const om::SegListType type)
+    static std::string ListTypeAsStr(const om::common::SegListType type)
     {
         switch(type){
-        case om::WORKING:
+        case om::common::SegListType::WORKING:
             return "working";
-        case om::VALID:
+        case om::common::SegListType::VALID:
             return "valid";
-        case om::UNCERTAIN:
+        case om::common::SegListType::UNCERTAIN:
             return "uncertain";
         default:
             return "unknown type";
@@ -177,11 +177,11 @@ public:
     static QColor SetSegColor(const SegmentDataWrapper& sdw, const QColor& color)
     {
         // max allowed color val is 128 to allow color to be highlighted
-        // const OmColor c = { std::min(128, color.red()),
+        // const om::common::Color c = { std::min(128, color.red()),
         //                     std::min(128, color.green()),
         //                     std::min(128, color.blue()) };
 
-        const OmColor c = {
+        const om::common::Color c = {
         	static_cast<uint8_t>(color.red()),
             static_cast<uint8_t>(color.green()),
             static_cast<uint8_t>(color.blue())
@@ -189,11 +189,11 @@ public:
 
         sdw.SetColor(c);
 
-        return om::utils::color::OmColorToQColor(c);
+        return om::utils::color::ColorToQColor(c);
     }
 
     static QColor SegColorAsQColor(const SegmentDataWrapper& sdw){
-        return om::utils::color::OmColorToQColor(sdw.GetColorInt());
+        return om::utils::color::ColorToQColor(sdw.GetColorInt());
     }
 
     template <class A, class B>

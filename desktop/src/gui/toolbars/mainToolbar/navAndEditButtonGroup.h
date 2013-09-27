@@ -1,6 +1,8 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include <map>
+#include "common/common.h"
+#include "gui/tools.hpp"
 
 #include <QButtonGroup>
 

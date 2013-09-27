@@ -1,6 +1,7 @@
 #pragma once
 
 #include "volume/omMipVolume.h"
+#include "coordinates/normCoord.h"
 
 class OmChunkMipping {
 private:

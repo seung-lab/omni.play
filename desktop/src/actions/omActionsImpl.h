@@ -1,7 +1,6 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmSegment;
 class OmSelectSegmentsParams;
@@ -12,7 +11,7 @@ class OmSegments;
 
 class OmActionsImpl {
 private:
-    boost::scoped_ptr<OmThreadPool> threadPool_;
+    std::unique_ptr<OmThreadPool> threadPool_;
 
 public:
     OmActionsImpl();
@@ -34,20 +33,20 @@ public:
                              const double threshold);
 
 // painting-related
-    void SetVoxel(const OmID segmentationId,
+    void SetVoxel(const om::common::ID segmentationId,
                   const om::globalCoord rVoxel,
-                  const OmSegID value);
+                  const om::common::SegID value);
 
-    void SetVoxels(const OmID segmentationId,
+    void SetVoxels(const om::common::ID segmentationId,
                    const std::set<om::globalCoord> rVoxels,
-                   const OmSegID value);
+                   const om::common::SegID value);
 
 // segment-related
     void ValidateSegment(const SegmentDataWrapper sdw,
-                         const om::SetValid valid, const bool dontCenter=false);
+                         const om::common::SetValid valid, const bool dontCenter=false);
 
     void ValidateSelectedSegments(const SegmentationDataWrapper sdw,
-                                  const om::SetValid valid);
+                                  const om::common::SetValid valid);
 
     void UncertainSegment(const SegmentDataWrapper sdw,
                           const bool uncertain);
@@ -57,19 +56,19 @@ public:
 
     void JoinSegmentsWrapper(const SegmentationDataWrapper sdw);
     void JoinSegmentsSet(const SegmentationDataWrapper sdw,
-                         const OmSegIDsSet ids);
+                         const om::common::SegIDSet ids);
 
     void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
     void ShatterSegment(OmSegment* seg);
 
     void CutSegment(const SegmentDataWrapper sdw);
 
-    void SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params);
+    void SelectSegments(std::shared_ptr<OmSelectSegmentsParams> params);
 
 // group-related
-    void CreateOrDeleteSegmentGroup(const OmID segmentationID,
-                                    const OmSegIDsSet selectedSegmentIDs,
-                                    const OmGroupName name,
+    void CreateOrDeleteSegmentGroup(const om::common::ID segmentationID,
+                                    const om::common::SegIDSet selectedSegmentIDs,
+                                    const om::common::GroupName name,
                                     const bool create);
 
 private:

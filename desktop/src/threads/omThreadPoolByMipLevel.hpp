@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "utility/omSystemInformation.h"
 #include "threads/omTaskManagerManager.h"
 #include "zi/omThreads.h"
@@ -9,7 +8,7 @@
 class OmThreadPoolByMipLevel {
 private:
     typedef zi::concurrency_::task_manager_tpl<OmMipLevelContainer> task_man_t;
-    boost::scoped_ptr<task_man_t> pool_;
+    std::unique_ptr<task_man_t> pool_;
 
 public:
     OmThreadPoolByMipLevel(){
@@ -42,7 +41,7 @@ public:
     void start(const uint32_t numWorkerThreads)
     {
         if(!numWorkerThreads){
-            throw OmIoException("please specify more than 0 threads");
+            throw om::IoException("please specify more than 0 threads");
         }
 
         pool_.reset(new task_man_t(numWorkerThreads));
@@ -78,7 +77,7 @@ public:
         pool_.reset();
     }
 
-    inline void insert(const int mipLevel, const om::shared_ptr<zi::runnable>& job)
+    inline void insert(const int mipLevel, const std::shared_ptr<zi::runnable>& job)
     {
         assert(pool_ && "pool not started");
         pool_->insert(mipLevel, job);

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "tiles/omTileTypes.hpp"
 #include "view2d/om2dPreferences.hpp"
 #include "view2d/omBlockingGetTiles.hpp"
@@ -15,7 +14,7 @@
 
 class OmTileDrawer{
 public:
-    OmTileDrawer(OmView2dState* state, const ViewType viewType)
+    OmTileDrawer(OmView2dState* state, const om::common::ViewType viewType)
         : state_(state)
         , viewType_(viewType)
         , blockingRedraw_(false)
@@ -41,14 +40,14 @@ public:
 
         OmMipVolume* vol = state_->getVol();
 
-        if(CHANNEL == vol->getVolumeType()){
+        if(om::common::CHANNEL == vol->getVolumeType()){
             drawChannelAndFilters(vol);
 
         } else {
 
             OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(vol);
             if(!seg) {
-            	throw new OmFormatException("Bad Cast to OmSegmentation.");
+            	throw new om::FormatException("Bad Cast to OmSegmentation.");
             }
             draw(seg);
         }
@@ -72,15 +71,15 @@ public:
 
 private:
     OmView2dState* state_;
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
 
     bool blockingRedraw_;
 
     int tileCount_;
     int tileCountIncomplete_;
-    boost::scoped_ptr<OmOpenGLTileDrawer> openglTileDrawer_;
-    boost::scoped_ptr<OmCalcTileCoordsDownsampled> tileCalcDownsampled_;
-    boost::scoped_ptr<OmBlockingGetTiles> blockingGetTiles_;
+    std::unique_ptr<OmOpenGLTileDrawer> openglTileDrawer_;
+    std::unique_ptr<OmCalcTileCoordsDownsampled> tileCalcDownsampled_;
+    std::unique_ptr<OmBlockingGetTiles> blockingGetTiles_;
 
     std::deque<OmTileAndVertices> tilesToDraw_;
     std::deque<OmTileAndVertices> oldTilesToDraw_;
@@ -147,7 +146,8 @@ private:
         FOR_EACH(tileCL, *tileCoordsAndLocations)
         {
             OmTilePtr tile;
-            OmTileCache::Get(tile, tileCL->tileCoord, om::NON_BLOCKING);
+            OmTileCache::Get(tile, tileCL->tileCoord,
+                             om::common::Blocking::NON_BLOCKING);
 
             if(tile)
             {
@@ -196,7 +196,7 @@ private:
 
         OmChannel* chan = reinterpret_cast<OmChannel*>(vol);
 		if(!chan) {
-        	throw new OmFormatException("Bad Cast to OmChannel.");
+        	throw new om::FormatException("Bad Cast to OmChannel.");
         }
 
         bool drawChannel = false;

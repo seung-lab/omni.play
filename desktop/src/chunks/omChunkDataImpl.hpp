@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "chunks/details/omPtrToChunkDataMemMapVol.h"
 #include "chunks/omChunkDataInterface.hpp"
 #include "chunks/omExtractChanTile.hpp"
@@ -98,7 +98,7 @@ public:
         return om::ptrs::Wrap(rawChunk.SharedPtr());
     }
 
-    OmPooledTile<uint8_t>* ExtractDataSlice8bit(const ViewType plane, const int depth)
+    OmPooledTile<uint8_t>* ExtractDataSlice8bit(const om::common::ViewType plane, const int depth)
     {
         dataAccessor<DATA> dataWrapper(ptrToChunkData_);
         DATA* data = dataWrapper.Data();

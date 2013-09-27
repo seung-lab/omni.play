@@ -83,7 +83,7 @@ public:
     }
 
 private:
-    boost::unordered_map<KEY, VAL> map_;
+    std::unordered_map<KEY, VAL> map_;
     zi::spinlock mutex_;
 };
 
@@ -129,7 +129,7 @@ public:
     }
 
 private:
-    boost::unordered_set<KEY> set_;
+    std::unordered_set<KEY> set_;
     zi::spinlock mutex_;
 };
 
@@ -225,12 +225,12 @@ public:
         mmap_.clear();
     }
 
-    om::shared_ptr<valsCont> removeKey(const KEY& key)
+    std::shared_ptr<valsCont> removeKey(const KEY& key)
     {
         zi::guard g(mutex_);
 
-        om::shared_ptr<valsCont> vals =
-            om::make_shared<valsCont>();
+        std::shared_ptr<valsCont> vals =
+            std::make_shared<valsCont>();
 
         std::pair<KViterator, KViterator> found =
             mmap_.equal_range(key);

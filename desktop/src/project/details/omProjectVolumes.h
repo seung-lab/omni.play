@@ -8,7 +8,7 @@
  *  Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/archive/project.h"
 
 class OmAffinityGraphManager;
@@ -45,9 +45,9 @@ public:
     }
 
 private:
-    const boost::scoped_ptr<OmChannelManager> channels_;
-    const boost::scoped_ptr<OmSegmentationManager> segmentations_;
-    const boost::scoped_ptr<OmAffinityGraphManager> affGraphs_;
+    const std::unique_ptr<OmChannelManager> channels_;
+    const std::unique_ptr<OmSegmentationManager> segmentations_;
+    const std::unique_ptr<OmAffinityGraphManager> affGraphs_;
 
     friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmProjectVolumes& p );
     friend void YAML::operator>>(const YAML::Node& in, OmProjectVolumes& p );

@@ -6,27 +6,27 @@
 template <typename T>
 class OmMemMappedFileQTNew : public OmIOnDiskFile<T> {
 public:
-    static om::shared_ptr<OmMemMappedFileQTNew<T> >
+    static std::shared_ptr<OmMemMappedFileQTNew<T> >
     CreateNumElements(const std::string& fnp, const int64_t numElements)
     {
         om::file::createFileNumElements<T>(fnp, numElements);
 
-        return om::make_shared<OmMemMappedFileQTNew<T> >(fnp);
+        return std::make_shared<OmMemMappedFileQTNew<T> >(fnp);
     }
 
-    static om::shared_ptr<OmMemMappedFileQTNew<T> >
-    CreateFromData(const std::string& fnp, om::shared_ptr<T> d,
+    static std::shared_ptr<OmMemMappedFileQTNew<T> >
+    CreateFromData(const std::string& fnp, std::shared_ptr<T> d,
                    const int64_t numElements)
     {
         om::file::createFileFromData<T>(fnp, d, numElements);
 
-        return om::make_shared<OmMemMappedFileQTNew<T> >(fnp);
+        return std::make_shared<OmMemMappedFileQTNew<T> >(fnp);
     }
 
 private:
     const std::string fnp_;
 
-    boost::scoped_ptr<QFile> file_;
+    std::unique_ptr<QFile> file_;
     T* data_;
     char* dataChar_;
 

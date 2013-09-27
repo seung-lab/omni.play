@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
+#include "common/enums.hpp"
 #include <QtGui>
 
 class CacheMonitorWidget : public QWidget {
@@ -13,6 +14,6 @@ Q_SIGNALS:
     void triggerCacheView();
 
 private:
-    QGroupBox* showDisplay(const QString&, const om::CacheGroup);
+    QGroupBox* showDisplay(const QString&, const om::common::CacheGroup);
 };
 

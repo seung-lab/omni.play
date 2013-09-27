@@ -1,10 +1,10 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "utility/malloc.hpp"
+#include "common/common.h"
 #include "chunks/omSegChunk.h"
 #include "chunks/omSegChunkDataInterface.hpp"
 #include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
-#include "common/om.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/image/omImage.hpp"
 #include "utility/segmentationDataWrapper.hpp"
@@ -18,7 +18,7 @@ private:
     const double threshold_;
     const QString fnp_;
 
-    om::shared_ptr<uint32_t> values_;
+    std::shared_ptr<uint32_t> values_;
     size_t numElements_;
 
     zi::rwmutex mutex_;
@@ -64,11 +64,11 @@ private:
         }
 
         if(!file.open(QIODevice::ReadOnly)) {
-            throw OmIoException("could not open", fnp_);
+            throw om::IoException("could not open");
         }
 
-        values_ = OmSmartPtr<uint32_t>::MallocNumBytes(file.size(),
-                                                       om::DONT_ZERO_FILL);
+        values_ = om::mem::Malloc<uint32_t>::NumBytes(file.size(),
+                                                       om::mem::ZeroFill::DONT);
         numElements_ = file.size() / sizeof(uint32_t);
 
         file.seek(0);
@@ -81,12 +81,12 @@ private:
     {
         OmSegChunk* chunk = segmentation_->GetChunk(coord_);
 
-        om::shared_ptr<uint32_t> rawDataPtr =
+        std::shared_ptr<uint32_t> rawDataPtr =
             chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
         uint32_t const*const rawData = rawDataPtr.get();
 
-        boost::unordered_set<uint32_t> segIDs;
+        std::unordered_set<uint32_t> segIDs;
 
         if(!qFuzzyCompare(1, threshold_))
         {
@@ -106,8 +106,8 @@ private:
             }
         }
 
-        values_ = OmSmartPtr<uint32_t>::MallocNumElements(segIDs.size(),
-                                                          om::DONT_ZERO_FILL);
+        values_ = om::mem::Malloc<uint32_t>::NumElements(segIDs.size(),
+                                                         om::mem::ZeroFill::DONT);
 
         std::copy(segIDs.begin(), segIDs.end(), values_.get());
         zi::sort(values_.get(), values_.get() + segIDs.size());
@@ -125,7 +125,7 @@ private:
         QFile file(fnp_);
 
         if(!file.open(QIODevice::WriteOnly)) {
-            throw OmIoException("could not open", fnp_);
+            throw om::IoException("could not open");
         }
 
         const int64_t numBytes = numElements_ * sizeof(uint32_t);

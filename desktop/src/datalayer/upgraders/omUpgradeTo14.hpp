@@ -71,7 +71,7 @@ private:
                 continue;
             }
 
-            om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+            std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
                 vol.GetMipChunkCoords(level);
 
             FOR_EACH(iter, *coordsPtr)

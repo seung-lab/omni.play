@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include <QString>
+#include "common/common.h"
 #include "boost/variant.hpp"
 #include "enum/enum.hpp"
 
@@ -34,7 +35,7 @@ public:
     static std::string GetTypeAsString(const OmVolDataType type);
     static QString GetTypeAsQString(const OmVolDataType type);
 
-    static OmVolDataType GetTypeFromString(const QString & type);
+    static OmVolDataType GetTypeFrstring(const QString & type);
 
     static int getHDF5FileType(const OmVolDataType type);
     static int getHDF5MemoryType(const OmVolDataType type);

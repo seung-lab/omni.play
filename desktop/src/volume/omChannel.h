@@ -13,7 +13,7 @@ class OmChannel : public OmChannelImpl {
 
 public:
     OmChannel();
-    OmChannel(OmID id);
+    OmChannel(om::common::ID id);
     virtual ~OmChannel();
 
     virtual QString GetDefaultHDF5DatasetName(){

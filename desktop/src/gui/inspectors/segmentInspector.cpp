@@ -1,5 +1,5 @@
 #include "system/omConnect.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "events/omEvents.h"
 #include "segmentInspector.h"
 #include "segment/omSegmentUtils.hpp"
@@ -36,7 +36,7 @@ void SegmentInspector::set_initial_values()
 
     notesEdit->setPlainText( sdw_.getNote() );
 
-    const QPixmap pixm = om::utils::color::OmColorAsQPixmap(sdw_.GetColorInt());
+    const QPixmap pixm = om::utils::color::ColorAsQPixmap(sdw_.GetColorInt());
     colorButton->setIcon(QIcon(pixm));
 
     sizeNoChildren->setText( OmStringHelpers::HumanizeNumQT(sdw_.getSize()));
@@ -67,9 +67,9 @@ void SegmentInspector::setSegObjColor()
 
     color = OmSegmentUtils::SetSegColor(sdw_, color);
 
-    std::cout << "set color to " << color << "\n";
+    //std::cout << "set color to " << color << "\n";
 
-    const QPixmap pixm = om::utils::color::OmColorAsQPixmap(sdw_.GetColorInt());
+    const QPixmap pixm = om::utils::color::ColorAsQPixmap(sdw_.GetColorInt());
     colorButton->setIcon(QIcon(pixm));
 
     colorButton->update();

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omChannelTileFilter.hpp"
@@ -10,7 +10,7 @@ Q_OBJECT
 
 public:
     BrightnessSpinBox(QWidget* d)
-        : OmIntSpinBox(d, om::UPDATE_AS_TYPE)
+        : OmIntSpinBox(d, true)
     {
         setSingleStep(1);
         setRange(-255, 255);

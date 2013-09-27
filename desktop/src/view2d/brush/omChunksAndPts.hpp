@@ -5,12 +5,12 @@
 class OmChunksAndPts {
 private:
     OmSegmentation *const vol_;
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
 
     std::set<om::dataCoord> pts_;
 
 public:
-    OmChunksAndPts(OmSegmentation* vol, const ViewType viewType)
+    OmChunksAndPts(OmSegmentation* vol, const om::common::ViewType viewType)
         : vol_(vol)
         , viewType_(viewType)
     {}
@@ -31,16 +31,16 @@ public:
         }
     }
 
-	om::shared_ptr<boost::unordered_set<OmSegID> >
+	std::shared_ptr<std::unordered_set<om::common::SegID> >
     GetSegIDs()
     {
         OmSliceCache sliceCache(vol_, viewType_);
 
-        om::shared_ptr<boost::unordered_set<OmSegID> > ret =
-            om::make_shared<boost::unordered_set<OmSegID> >();
+        std::shared_ptr<std::unordered_set<om::common::SegID> > ret =
+            std::make_shared<std::unordered_set<om::common::SegID> >();
 
         FOR_EACH(pt, pts_) {
-        	OmSegID id = sliceCache.GetVoxelValue(*pt);
+        	om::common::SegID id = sliceCache.GetVoxelValue(*pt);
             if(id) {
             	ret->insert(id);
             }

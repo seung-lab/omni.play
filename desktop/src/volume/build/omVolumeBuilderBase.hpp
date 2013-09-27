@@ -1,7 +1,7 @@
 #pragma once
 
 #include "chunks/omChunkCache.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
@@ -146,7 +146,7 @@ private:
     void checkChunkDims()
     {
         if(vol_->Coords().GetChunkDimension() % 2){
-            throw OmFormatException("chunk dimensions must be even");
+            throw om::FormatException("chunk dimensions must be even");
         }
     }
 

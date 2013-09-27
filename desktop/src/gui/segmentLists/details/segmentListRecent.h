@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "segment/lists/omSegmentLists.h"
 #include "utility/dataWrappers.h"
@@ -23,7 +23,7 @@ private:
         return sdw_.SegmentLists()->SizeRecent();
     }
 
-    om::shared_ptr<GUIPageOfSegments>
+    std::shared_ptr<GUIPageOfSegments>
     getPageSegments(const GUIPageRequest& request)
     {
         return sdw_.SegmentLists()->GetSegmentGUIPageRecent(request);

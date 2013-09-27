@@ -15,7 +15,7 @@ class usersImpl {
 private:
     const QString usersFolderRoot_;
     QString userFolder_;
-    boost::scoped_ptr<userSettings> settings_;
+    std::unique_ptr<userSettings> settings_;
 
 public:
     usersImpl()

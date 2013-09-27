@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/recentFileList.h"
 #include "system/omLocalPreferences.hpp"
 

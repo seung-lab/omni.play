@@ -1,25 +1,25 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omString.hpp"
+#include "common/common.h"
+#include "common/string.hpp"
 #include "system/omGroups.h"
 #include "utility/omCopyFirstN.hpp"
 #include "utility/dataWrappers.h"
 
 class OmSegmentGroupActionImpl {
 private:
-    OmID mSegmentationId;
-    OmGroupName mName;
+    om::common::ID mSegmentationId;
+    om::common::GroupName mName;
     bool mCreate;
-    OmSegIDsSet mSelectedSegmentIds;
+    om::common::SegIDSet mSelectedSegmentIds;
 
 public:
     OmSegmentGroupActionImpl()
     {}
 
-    OmSegmentGroupActionImpl(const OmID segmentationId,
-                             const OmSegIDsSet& selectedSegmentIds,
-                             const OmGroupName name,
+    OmSegmentGroupActionImpl(const om::common::ID segmentationId,
+                             const om::common::SegIDSet& selectedSegmentIds,
+                             const om::common::GroupName name,
                              const bool create)
         : mSegmentationId(segmentationId)
         , mName(name)
@@ -56,7 +56,7 @@ public:
         static const int max = 5;
 
         const std::string nums =
-            om::utils::MakeShortStrList<OmSegIDsSet, OmSegID>(mSelectedSegmentIds, max);
+            om::utils::MakeShortStrList<om::common::SegIDSet, om::common::SegID>(mSelectedSegmentIds, max);
 
         const std::string prefix("Grouped: ");
 

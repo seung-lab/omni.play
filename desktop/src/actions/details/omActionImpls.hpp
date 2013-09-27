@@ -22,7 +22,7 @@ public:
 class OmSegmentationThresholdChangeAction
     : public OmActionBase<OmSegmentationThresholdChangeActionImpl>{
 public:
-    OmSegmentationThresholdChangeAction(om::shared_ptr<OmSegmentationThresholdChangeActionImpl> impl)
+    OmSegmentationThresholdChangeAction(std::shared_ptr<OmSegmentationThresholdChangeActionImpl> impl)
     {
         impl_ = impl;
     }
@@ -30,7 +30,7 @@ public:
     OmSegmentationThresholdChangeAction(const SegmentationDataWrapper sdw,
                                         const double threshold)
     {
-        impl_ = om::make_shared<OmSegmentationThresholdChangeActionImpl>(sdw, threshold);
+        impl_ = std::make_shared<OmSegmentationThresholdChangeActionImpl>(sdw, threshold);
         SetUndoable(true);
     }
 };
@@ -39,7 +39,7 @@ public:
 class OmSegmentationSizeThresholdChangeAction
     : public OmActionBase<OmSegmentationSizeThresholdChangeActionImpl>{
 public:
-    OmSegmentationSizeThresholdChangeAction(om::shared_ptr<OmSegmentationSizeThresholdChangeActionImpl> impl)
+    OmSegmentationSizeThresholdChangeAction(std::shared_ptr<OmSegmentationSizeThresholdChangeActionImpl> impl)
     {
         impl_ = impl;
     }
@@ -47,7 +47,7 @@ public:
     OmSegmentationSizeThresholdChangeAction(const SegmentationDataWrapper sdw,
                                             const double threshold)
     {
-        impl_ = om::make_shared<OmSegmentationSizeThresholdChangeActionImpl>(sdw, threshold);
+        impl_ = std::make_shared<OmSegmentationSizeThresholdChangeActionImpl>(sdw, threshold);
         SetUndoable(true);
     }
 };
@@ -55,29 +55,29 @@ public:
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 class OmSegmentSelectAction : public OmActionBase<OmSegmentSelectActionImpl>{
 public:
-    OmSegmentSelectAction(om::shared_ptr<OmSegmentSelectActionImpl> impl)
+    OmSegmentSelectAction(std::shared_ptr<OmSegmentSelectActionImpl> impl)
     {
         impl_ = impl;
     }
 
-    OmSegmentSelectAction(om::shared_ptr<OmSelectSegmentsParams> params)
+    OmSegmentSelectAction(std::shared_ptr<OmSelectSegmentsParams> params)
     {
-        impl_ = om::make_shared<OmSegmentSelectActionImpl>(params);
+        impl_ = std::make_shared<OmSegmentSelectActionImpl>(params);
     }
 };
 
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 class OmSegmentJoinAction : public OmActionBase<OmSegmentJoinActionImpl>{
 public:
-    OmSegmentJoinAction(om::shared_ptr<OmSegmentJoinActionImpl> impl)
+    OmSegmentJoinAction(std::shared_ptr<OmSegmentJoinActionImpl> impl)
     {
         impl_ = impl;
     }
 
     OmSegmentJoinAction(const SegmentationDataWrapper& sdw,
-                        const OmSegIDsSet& ids)
+                        const om::common::SegIDSet& ids)
     {
-        impl_ = om::make_shared<OmSegmentJoinActionImpl>(sdw, ids);
+        impl_ = std::make_shared<OmSegmentJoinActionImpl>(sdw, ids);
         SetUndoable(true);
     }
 
@@ -98,17 +98,17 @@ public:
 #include "actions/details/omSegmentGroupActionImpl.hpp"
 class OmSegmentGroupAction : public OmActionBase<OmSegmentGroupActionImpl>{
 public:
-    OmSegmentGroupAction(om::shared_ptr<OmSegmentGroupActionImpl> impl)
+    OmSegmentGroupAction(std::shared_ptr<OmSegmentGroupActionImpl> impl)
     {
         impl_ = impl;
     }
 
-    OmSegmentGroupAction(const OmID segmentationId,
-                         const OmSegIDsSet& selectedSegmentIds,
-                         const OmGroupName name,
+    OmSegmentGroupAction(const om::common::ID segmentationId,
+                         const om::common::SegIDSet& selectedSegmentIds,
+                         const om::common::GroupName name,
                          const bool create)
     {
-        impl_ = om::make_shared<OmSegmentGroupActionImpl>(segmentationId,
+        impl_ = std::make_shared<OmSegmentGroupActionImpl>(segmentationId,
                                                              selectedSegmentIds,
                                                              name,
                                                              create);

@@ -22,7 +22,7 @@ void OmUpdateBoundingBoxes::Update()
     OmThreadPool pool;
     pool.start();
 
-    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         vol_->GetMipChunkCoords(0);
 
     FOR_EACH(iter, *coordsPtr)

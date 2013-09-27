@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "events/omEvents.h"
 #include "project/omProject.h"
 #include "system/omConnect.hpp"
@@ -16,7 +16,7 @@ class FilterWidgetImpl : public QSlider {
 Q_OBJECT
 
 private:
-    static const double delta_ = 0.1;
+    constexpr static const double delta_ = 0.1;
 
     bool slideAlphaForward_;
 
@@ -137,12 +137,12 @@ private Q_SLOTS:
     }
 
 private:
-    OmID getChannelID()
+    om::common::ID getChannelID()
     {
         return 1;
     }
 
-    OmID getFilterID()
+    om::common::ID getFilterID()
     {
         return 1;
     }

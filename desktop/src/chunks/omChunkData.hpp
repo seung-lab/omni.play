@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
 #include "chunks/omChunkDataInterface.hpp"
@@ -27,7 +27,7 @@ public:
             return new dataImpl<float>(vol, coord);
         case OmVolDataType::UNKNOWN:
         default:
-            throw OmIoException("data type not handled");
+            throw om::IoException("data type not handled");
         };
     }
 };

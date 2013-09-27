@@ -6,15 +6,15 @@
 
 OmMeshDrawer::OmMeshDrawer(OmSegmentation* segmentation)
     : segmentation_(segmentation)
-    , rootSegLists_(om::make_shared<OmMeshSegmentList>(segmentation))
-    , cache_(om::make_shared<OmMeshPlanCache>(segmentation_,
+    , rootSegLists_(std::make_shared<OmMeshSegmentList>(segmentation))
+    , cache_(std::make_shared<OmMeshPlanCache>(segmentation_,
                                                  rootSegLists_.get()))
     , numPrevRedraws_(0)
 {}
 
 boost::optional<std::pair<float,float> >
 OmMeshDrawer::Draw(OmViewGroupState* vgs,
-                   om::shared_ptr<OmVolumeCuller> culler,
+                   std::shared_ptr<OmVolumeCuller> culler,
                    const OmBitfield drawOptions)
 {
     if(!segmentation_->MeshManager(1)->Metadata()->IsBuilt()){
@@ -22,7 +22,7 @@ OmMeshDrawer::Draw(OmViewGroupState* vgs,
         return boost::optional<std::pair<float,float> >();
     }
 
-    om::shared_ptr<OmMeshPlan> sortedSegments =
+    std::shared_ptr<OmMeshPlan> sortedSegments =
         cache_->GetSegmentsToDraw(vgs, culler, drawOptions);
 
     // FOR_EACH(iter, *sortedSegments) {
@@ -47,7 +47,7 @@ OmMeshDrawer::Draw(OmViewGroupState* vgs,
     }
 }
 
-void OmMeshDrawer::updateNumPrevRedraws(om::shared_ptr<OmVolumeCuller> culler)
+void OmMeshDrawer::updateNumPrevRedraws(std::shared_ptr<OmVolumeCuller> culler)
 {
     if(!culler_ || !culler_->equals(culler)){
         culler_ = culler;

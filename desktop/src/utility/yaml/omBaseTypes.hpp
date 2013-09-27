@@ -1,12 +1,12 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
+#include "common/colors.h"
 #include "yaml-cpp/yaml.h"
 
 #include <QHash>
 
-class QString;
+#include <zi/for_each.hpp>
 
 namespace YAML {
 
@@ -15,8 +15,7 @@ inline Emitter &operator<<(Emitter& out, const QString& s) {
 }
 
 inline void operator>>(const Node& in, QString& s) {
-    std::string str;
-    in >> str;
+    auto str = in.as<std::string>();
 
     if(str == "~") // NULL Value from YAML
         str = "";
@@ -24,7 +23,7 @@ inline void operator>>(const Node& in, QString& s) {
     s = QString::fromStdString(str);
 }
 
-inline Emitter& operator<<(Emitter& out, const OmColor& c)
+inline Emitter& operator<<(Emitter& out, const om::common::Color& c)
 {
     out << Flow << BeginSeq;
     out << (uint32_t)c.red;
@@ -35,16 +34,12 @@ inline Emitter& operator<<(Emitter& out, const OmColor& c)
     return out;
 }
 
-inline void operator>>(const Node& node, OmColor& c)
+inline void operator>>(const Node& node, om::common::Color& c)
 {
     // workaround: Reading into uint8_ts appears to be bugged out.
-    int temp;
-    node[0] >> temp;
-    c.red = temp;
-    node[1] >> temp;
-    c.green = temp;
-    node[2] >> temp;
-    c.blue = temp;
+    c.red = node[0].as<uint8_t>();
+    c.green = node[1].as<uint8_t>();
+    c.blue = node[2].as<uint8_t>();
 }
 
 template<class T>
@@ -58,9 +53,9 @@ Emitter &operator<<(Emitter& out, const Vector3<T>& p)
 template<class T>
 void operator>>(const Node& in, Vector3<T>& p)
 {
-    in[0] >> p.x;
-    in[1] >> p.y;
-    in[2] >> p.z;
+    p.x = in[0].as<T>();
+    p.y = in[1].as<T>();
+    p.z = in[2].as<T>();
 }
 
 template<class T>
@@ -106,24 +101,23 @@ void operator>>(const Node& in, vmml::AxisAlignedBoundingBox<T>& b)
 }
 
 template<class T>
-Emitter &operator<<(Emitter& out, const boost::unordered_set<T>& s)
+Emitter &operator<<(Emitter& out, const std::unordered_set<T>& set)
 {
     out << Flow << BeginSeq;
-    FOR_EACH(it, s)
+    for(const auto& s : set)
     {
-        out << *it;
+        out << s;
     }
     out <<  EndSeq;
     return out;
 }
 
 template<class T>
-void operator>>(const Node& in, boost::unordered_set<T>& s)
+void operator>>(const Node& in, std::unordered_set<T>& s)
 {
     FOR_EACH(it, in)
     {
-        T item;
-        *it >> item;
+        T item = it->as<T>();
         s.insert(item);
     }
 }
@@ -168,12 +162,11 @@ Emitter &operator<<(Emitter& out, const QHash<K, V>& p)
 template<class K, class V>
 void operator>>(const Node& in, QHash<K, V>& p)
 {
-    FOR_EACH(it, in)
-    {
+    for(const auto& kv : in){
         K key;
         V value;
-        it.first() >> key;
-        it.second() >> value;
+        kv.first >> key;
+        kv.second  >> value;
         p.insert(key, value);
     }
 }

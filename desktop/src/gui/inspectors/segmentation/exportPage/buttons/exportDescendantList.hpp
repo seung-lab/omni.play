@@ -38,7 +38,7 @@ private:
 
         QTextStream out(&file);
 
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
+        for(om::common::SegID i = 1; i <= segments->getMaxValue(); ++i)
         {
             OmSegment* seg = segments->GetSegment(i);
 
@@ -62,7 +62,7 @@ private:
     }
 
 private:
-    QString getIds(const OmSegID segID, OmSegments* segments)
+    QString getIds(const om::common::SegID segID, OmSegments* segments)
     {
         OmSegmentIterator iter(segments);
         iter.iterOverSegmentID(segID);

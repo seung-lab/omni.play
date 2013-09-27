@@ -4,9 +4,9 @@
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
 
 OmSegmentUncertainAction::OmSegmentUncertainAction(const SegmentationDataWrapper& sdw,
-                                                   om::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                                                   std::shared_ptr<std::set<OmSegment*> > selectedSegments,
                                                    const bool uncertain)
-    : impl_(om::make_shared<OmSegmentUncertainActionImpl>(sdw,
+    : impl_(std::make_shared<OmSegmentUncertainActionImpl>(sdw,
                                                              selectedSegments,
                                                              uncertain))
 {

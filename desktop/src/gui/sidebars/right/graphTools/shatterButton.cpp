@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/sidebars/right/graphTools/shatterButton.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "system/omStateManager.h"

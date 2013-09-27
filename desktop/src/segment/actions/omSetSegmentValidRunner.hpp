@@ -6,13 +6,13 @@
 class OmSetSegmentValidRunner {
 private:
     const SegmentDataWrapper sdw_;
-    const om::SetValid validEnum_;
+    const om::common::SetValid validEnum_;
 
-    OmSegID nextSegmentIDtoJumpTo_;
+    om::common::SegID nextSegmentIDtoJumpTo_;
 
 public:
     OmSetSegmentValidRunner(const SegmentDataWrapper& sdw,
-                            const om::SetValid validEnum)
+                            const om::common::SetValid validEnum)
         : sdw_(sdw)
         , validEnum_(validEnum)
     {
@@ -22,14 +22,14 @@ public:
     void Validate()
     {
         bool valid = false;
-        if(om::SET_VALID == validEnum_){
+        if(om::common::SetValid::SET_VALID == validEnum_){
             valid = true;
         }
 
-        OmSegIDsSet set;
+        om::common::SegIDSet set;
         set.insert(sdw_.FindRootID());
 
-        om::shared_ptr<std::set<OmSegment*> > children =
+        std::shared_ptr<std::set<OmSegment*> > children =
             OmSegmentUtils::GetAllChildrenSegments(sdw_.Segments(), set);
 
         (new OmSegmentValidateAction(sdw_.MakeSegmentationDataWrapper(),
@@ -40,7 +40,7 @@ public:
     {
         OmSegments* segments = sdw_.Segments();
 
-        const bool segmentGettingSetAsValid = om::SET_VALID == validEnum_;
+        const bool segmentGettingSetAsValid = om::common::SetValid::SET_VALID == validEnum_;
         const bool shouldJump =
             OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
 
@@ -65,13 +65,13 @@ public:
 class OmSetSegmentsValidRunner {
 private:
     const SegmentationDataWrapper sdw_;
-    const om::SetValid validEnum_;
+    const om::common::SetValid validEnum_;
 
-    OmSegID nextSegmentIDtoJumpTo_;
+    om::common::SegID nextSegmentIDtoJumpTo_;
 
 public:
     OmSetSegmentsValidRunner(const SegmentationDataWrapper& sdw,
-                             const om::SetValid validEnum)
+                             const om::common::SetValid validEnum)
         : sdw_(sdw)
         , validEnum_(validEnum)
     {
@@ -81,13 +81,13 @@ public:
     void Validate()
     {
         bool valid = false;
-        if(om::SET_VALID == validEnum_){
+        if(om::common::SetValid::SET_VALID == validEnum_){
             valid = true;
         }
 
         OmSegments* segments = sdw_.Segments();
 
-        om::shared_ptr<std::set<OmSegment*> > children =
+        std::shared_ptr<std::set<OmSegment*> > children =
             OmSegmentUtils::GetAllChildrenSegments(segments,
                                                    segments->GetSelectedSegmentIDs());
 
@@ -96,7 +96,7 @@ public:
 
     void JumpToNextSegment()
     {
-        const bool segmentGettingSetAsValid = om::SET_VALID == validEnum_;
+        const bool segmentGettingSetAsValid = om::common::SetValid::SET_VALID == validEnum_;
         const bool shouldJump =
             OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
 

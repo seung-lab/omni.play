@@ -12,9 +12,9 @@ private:
     OmViewGroupState *const vgs_;
     ViewGroupUtils *const utils_;
 
-    static const ViewType upperLeft_ = XY_VIEW;
-    static const ViewType upperRight_ = ZY_VIEW;
-    static const ViewType lowerLeft_ = XZ_VIEW;
+    static const om::common::ViewType upperLeft_ = om::common::XY_VIEW;
+    static const om::common::ViewType upperRight_ = om::common::ZY_VIEW;
+    static const om::common::ViewType lowerLeft_ = om::common::XZ_VIEW;
 
 public:
     ViewGroupMainWindowUtils(MainWindow* mainWindow, OmViewGroupState* vgs, ViewGroupUtils* utils)
@@ -23,7 +23,7 @@ public:
         , utils_(utils)
     {}
 
-    void InsertDockIntoGroup2View(ViewGroupWidgetInfo& vgw, const ViewType viewType)
+    void InsertDockIntoGroup2View(ViewGroupWidgetInfo& vgw, const om::common::ViewType viewType)
     {
         if(0 == getNumDockWidgets())
         {
@@ -34,17 +34,17 @@ public:
 
         QDockWidget* dockToSplit = NULL;
 
-        if(utils_->doesDockWidgetExist(CHANNEL, viewType)){
-            dockToSplit = utils_->getDockWidget(CHANNEL, viewType);
+        if(utils_->doesDockWidgetExist(om::common::CHANNEL, viewType)){
+            dockToSplit = utils_->getDockWidget(om::common::CHANNEL, viewType);
 
-        } else if(utils_->doesDockWidgetExist(SEGMENTATION, viewType)){
-            dockToSplit = utils_->getDockWidget(SEGMENTATION, viewType);
+        } else if(utils_->doesDockWidgetExist(om::common::SEGMENTATION, viewType)){
+            dockToSplit = utils_->getDockWidget(om::common::SEGMENTATION, viewType);
 
-        } else if(utils_->doesDockWidgetExist(AFFINITY, viewType)){
-            dockToSplit = utils_->getDockWidget(AFFINITY, viewType);
+        } else if(utils_->doesDockWidgetExist(om::common::AFFINITY, viewType)){
+            dockToSplit = utils_->getDockWidget(om::common::AFFINITY, viewType);
 
         } else {
-            throw OmArgException("don't know where to put dock");
+            throw om::ArgException("don't know where to put dock");
         }
 
         InsertBySplitting(vgw, dockToSplit);
@@ -149,12 +149,12 @@ private:
             if(upperLeft_ == vgw.viewType){
 
             } else if(upperRight_ == vgw.viewType){
-                if(utils_->doesDockWidgetExist(CHANNEL, upperLeft_)){
-                    dock = utils_->getDockWidget(CHANNEL, upperLeft_);
+                if(utils_->doesDockWidgetExist(om::common::CHANNEL, upperLeft_)){
+                    dock = utils_->getDockWidget(om::common::CHANNEL, upperLeft_);
                 }
             } else {
-                if(utils_->doesDockWidgetExist(CHANNEL, upperLeft_)){
-                    dock = utils_->getDockWidget(CHANNEL, upperLeft_);
+                if(utils_->doesDockWidgetExist(om::common::CHANNEL, upperLeft_)){
+                    dock = utils_->getDockWidget(om::common::CHANNEL, upperLeft_);
                 }
                 vgw.Dir(Qt::Vertical);
             }
@@ -164,22 +164,22 @@ private:
             if(upperLeft_ == vgw.viewType){
 
             } else if(upperRight_ == vgw.viewType){
-                if(utils_->doesDockWidgetExist(SEGMENTATION, upperLeft_)){
-                    dock = utils_->getDockWidget(SEGMENTATION, upperLeft_);
+                if(utils_->doesDockWidgetExist(om::common::SEGMENTATION, upperLeft_)){
+                    dock = utils_->getDockWidget(om::common::SEGMENTATION, upperLeft_);
                 }
             } else {
-                if(utils_->doesDockWidgetExist(SEGMENTATION, upperLeft_)){
-                    dock = utils_->getDockWidget(SEGMENTATION, upperLeft_);
+                if(utils_->doesDockWidgetExist(om::common::SEGMENTATION, upperLeft_)){
+                    dock = utils_->getDockWidget(om::common::SEGMENTATION, upperLeft_);
                 }
                 vgw.Dir(Qt::Vertical);
             }
 
         } else {
-            if(utils_->doesDockWidgetExist(CHANNEL, upperRight_)){
-                dock = utils_->getDockWidget(CHANNEL, upperRight_);
+            if(utils_->doesDockWidgetExist(om::common::CHANNEL, upperRight_)){
+                dock = utils_->getDockWidget(om::common::CHANNEL, upperRight_);
             } else {
-                if(utils_->doesDockWidgetExist(SEGMENTATION, upperRight_)){
-                    dock = utils_->getDockWidget(SEGMENTATION, upperRight_);
+                if(utils_->doesDockWidgetExist(om::common::SEGMENTATION, upperRight_)){
+                    dock = utils_->getDockWidget(om::common::SEGMENTATION, upperRight_);
                 }
             }
             vgw.Dir(Qt::Vertical);
@@ -205,15 +205,15 @@ private:
     }
 
 public:
-    ViewType UpperLeft() const {
+    om::common::ViewType UpperLeft() const {
         return upperLeft_;
     }
 
-    ViewType UpperRight() const {
+    om::common::ViewType UpperRight() const {
         return upperRight_;
     }
 
-    ViewType LowerLeft() const {
+    om::common::ViewType LowerLeft() const {
         return lowerLeft_;
     }
 };

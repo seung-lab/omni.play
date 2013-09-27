@@ -13,7 +13,7 @@ class OmSegmentCutActionImpl;
 class OmSegmentCutAction : public OmUndoCommand {
 
 public:
-    OmSegmentCutAction(om::shared_ptr<OmSegmentCutActionImpl> impl)
+    OmSegmentCutAction(std::shared_ptr<OmSegmentCutActionImpl> impl)
         : impl_(impl)
     {}
 
@@ -25,6 +25,6 @@ private:
     std::string Description();
     void save(const std::string& comment);
 
-    om::shared_ptr<OmSegmentCutActionImpl> impl_;
+    std::shared_ptr<OmSegmentCutActionImpl> impl_;
 };
 

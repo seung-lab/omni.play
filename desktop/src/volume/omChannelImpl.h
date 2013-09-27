@@ -6,7 +6,6 @@
  * Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
-#include "common/omStd.h"
 #include "system/omManageableObject.h"
 #include "volume/omFilter2dManager.h"
 #include "volume/omMipVolume.h"
@@ -21,7 +20,7 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
 public:
     OmChannelImpl();
-    OmChannelImpl(OmID id);
+    OmChannelImpl(om::common::ID id);
     virtual ~OmChannelImpl();
 
     virtual QString GetDefaultHDF5DatasetName() = 0;
@@ -39,11 +38,11 @@ public:
     bool LoadVolDataIfFoldersExist();
     void UpdateFromVolResize();
 
-    ObjectType getVolumeType() const {
-        return CHANNEL;
+    om::common::ObjectType getVolumeType() const {
+        return om::common::CHANNEL;
     }
 
-    OmID getID() const {
+    om::common::ID getID() const {
         return GetID();
     }
 
@@ -81,10 +80,10 @@ protected:
     OmChannelImpl(const OmChannelImpl&);
     OmChannelImpl& operator= (const OmChannelImpl&);
 
-    boost::scoped_ptr<om::channel::folder> folder_;
-    boost::scoped_ptr<OmChunkCache<OmChannelImpl, OmChunk> > chunkCache_;
-    boost::scoped_ptr<OmVolumeData> volData_;
-    boost::scoped_ptr<OmTileCacheChannel> tileCache_;
+    std::unique_ptr<om::channel::folder> folder_;
+    std::unique_ptr<OmChunkCache<OmChannelImpl, OmChunk> > chunkCache_;
+    std::unique_ptr<OmVolumeData> volData_;
+    std::unique_ptr<OmTileCacheChannel> tileCache_;
 
     OmFilter2dManager filterManager_;
 

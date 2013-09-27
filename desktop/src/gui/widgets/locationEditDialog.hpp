@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "system/omConnect.hpp"
 
@@ -13,7 +13,7 @@ class DimSpinBox : public OmIntSpinBox
 	float& val_;
 public:
 	DimSpinBox(float& val, QWidget* parent)
-		: OmIntSpinBox(parent, om::DONT_UPDATE_AS_TYPE)
+		: OmIntSpinBox(parent, false)
 		, val_(val)
 	{
 		setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());

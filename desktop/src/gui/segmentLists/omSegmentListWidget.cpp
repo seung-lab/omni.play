@@ -1,4 +1,4 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/guiUtils.hpp"
 #include "gui/inspectors/segmentInspector.h"
 #include "gui/segmentLists/details/segmentListBase.h"
@@ -34,10 +34,10 @@ OmSegmentListWidget::OmSegmentListWidget(SegmentListBase* slist,
 
 bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
                                    const SegmentDataWrapper segmentJustSelected,
-                                   om::shared_ptr<GUIPageOfSegments> segIDs )
+                                   std::shared_ptr<GUIPageOfSegments> segIDs )
 {
     bool makeTabActive = false;
-    const OmSegID segIDjustSelected = segmentJustSelected.GetSegmentID();
+    const om::common::SegID segIDjustSelected = segmentJustSelected.GetSegmentID();
 
     setUpdatesEnabled( false );
     clear();

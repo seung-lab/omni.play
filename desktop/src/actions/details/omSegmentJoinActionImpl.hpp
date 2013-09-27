@@ -1,19 +1,19 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/actions/omJoinSegments.hpp"
 
 class OmSegmentJoinActionImpl {
 private:
     SegmentationDataWrapper sdw_;
-    OmSegIDsSet segIDs_;
+    om::common::SegIDSet segIDs_;
 
 public:
     OmSegmentJoinActionImpl()
     {}
 
     OmSegmentJoinActionImpl(const SegmentationDataWrapper& sdw,
-                            const OmSegIDsSet& segIDs)
+                            const om::common::SegIDSet& segIDs)
         : sdw_(sdw)
         , segIDs_(segIDs)
     {}
@@ -39,7 +39,7 @@ public:
         static const int max = 5;
 
         const std::string nums =
-            om::utils::MakeShortStrList<OmSegIDsSet, OmSegID>(segIDs_, max);
+            om::utils::MakeShortStrList<om::common::SegIDSet, om::common::SegID>(segIDs_, max);
 
         return "Joined segments: " + nums;
     }

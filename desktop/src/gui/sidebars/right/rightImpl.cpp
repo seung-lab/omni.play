@@ -1,5 +1,5 @@
 #include "viewGroup/omViewGroupState.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "events/omEvents.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/sidebars/right/rightImpl.h"

@@ -17,7 +17,7 @@ inline std::ostream& operator<<(std::ostream& out, const OmMeshFilePart& mfp)
 }
 
 struct OmMeshDataEntry {
-    OmSegID segID;
+    om::common::SegID segID;
     bool wasMeshed;
     bool hasMeshData;
     OmMeshFilePart vertexIndex;
@@ -41,7 +41,7 @@ inline std::ostream& operator<<(std::ostream& out, const OmMeshDataEntry& mde)
 namespace om {
 namespace meshio_ {
 
-static OmMeshDataEntry MakeEmptyEntry(const OmSegID segID)
+static OmMeshDataEntry MakeEmptyEntry(const om::common::SegID segID)
 {
     static const OmMeshFilePart empty = {0, 0, 0, 0};
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omMipVolume.h"
@@ -16,7 +16,7 @@ private:
     const QString fnp_;
     const uint64_t numBytes_;
 
-    boost::scoped_ptr<QFile> file_;
+    std::unique_ptr<QFile> file_;
     T* dataRaw_;
 
 public:
@@ -52,12 +52,12 @@ private:
         file_.reset(new QFile(fnp_));
 
         if(!file_->open(QIODevice::ReadOnly)){
-            throw OmIoException("could not open", fnp_);
+            throw om::IoException("could not open", fnp_);
         }
 
         uchar* map = file_->map(chunkOffset_, numBytes_);
         if(!map){
-            throw OmIoException("could not map", fnp_);
+            throw om::IoException("could not map", fnp_);
         }
 
         dataRaw_ = reinterpret_cast<T*>(map);

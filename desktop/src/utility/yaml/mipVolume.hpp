@@ -48,7 +48,7 @@ public:
 
         std::string volDataType;
         in["type"] >> volDataType;
-        vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(QString::fromStdString(volDataType));
+        vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFrstring(QString::fromStdString(volDataType));
 
         vol_.LoadPath();
     }

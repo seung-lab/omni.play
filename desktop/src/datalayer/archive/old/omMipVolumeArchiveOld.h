@@ -83,7 +83,7 @@ private:
         {
             QString volDataType;
             in >> volDataType;
-            vol.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+            vol.mVolDataType = OmVolumeTypeHelpers::GetTypeFrstring(volDataType);
 
         } else {
             vol.mVolDataType = OmVolDataType::UNKNOWN;

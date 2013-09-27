@@ -1,7 +1,6 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmAffinityChannel;
 class OmChannelImpl;
@@ -15,7 +14,7 @@ public:
     static OmDataPath getDefaultDatasetName();
     static OmDataPath getProjectArchiveNameQT();
 
-    static OmDataPath getSegmentPagePath(const OmID segmentationID,
+    static OmDataPath getSegmentPagePath(const om::common::ID segmentationID,
                                          const uint32_t pageNum );
 
     static std::string getMeshFileName(const OmMeshCoord& meshCoord);

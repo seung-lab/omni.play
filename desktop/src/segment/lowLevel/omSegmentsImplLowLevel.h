@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/lowLevel/store/omSegmentStore.hpp"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"
@@ -25,7 +25,7 @@ public:
 
     void growGraphIfNeeded(OmSegment* newSeg);
 
-    inline OmSegID GetNumSegments() const {
+    inline om::common::SegID GetNumSegments() const {
         return mNumSegs;
     }
 
@@ -46,7 +46,7 @@ public:
         return store_->GetSegment(segmentGraph_.Root(segment->value()));
     }
 
-    inline OmSegID FindRootID(OmSegment* segment)
+    inline om::common::SegID FindRootID(OmSegment* segment)
     {
         if(!segment){
             return 0;
@@ -59,7 +59,7 @@ public:
         return segmentGraph_.Root(segment->value());
     }
 
-    inline OmSegment* FindRoot(const OmSegID segID)
+    inline OmSegment* FindRoot(const om::common::SegID segID)
     {
         if(!segID){
             return 0;
@@ -68,7 +68,7 @@ public:
         return store_->GetSegment(segmentGraph_.Root(segID));
     }
 
-    inline OmSegID FindRootID(const OmSegID segID)
+    inline om::common::SegID FindRootID(const om::common::SegID segID)
     {
         if(!segID){
             return 0;
@@ -77,11 +77,11 @@ public:
         return segmentGraph_.Root(segID);
     }
 
-    QString getSegmentName(OmSegID segID);
-    void setSegmentName(OmSegID segID, QString name);
+    QString getSegmentName(om::common::SegID segID);
+    void setSegmentName(om::common::SegID segID, QString name);
 
-    QString getSegmentNote(OmSegID segID);
-    void setSegmentNote(OmSegID segID, QString note);
+    QString getSegmentNote(om::common::SegID segID);
+    void setSegmentNote(om::common::SegID segID, QString note);
 
     void turnBatchModeOn(const bool batchMode);
 
@@ -112,16 +112,16 @@ public:
 protected:
     OmSegmentation *const segmentation_;
     OmSegmentsStore *const store_;
-    const boost::scoped_ptr<OmSegmentSelection> segmentSelection_;
-    const boost::scoped_ptr<OmEnabledSegments> enabledSegments_;
+    const std::unique_ptr<OmSegmentSelection> segmentSelection_;
+    const std::unique_ptr<OmEnabledSegments> enabledSegments_;
 
     OmLockedUint32 maxValue_;
     uint32_t mNumSegs;
 
-    QHash< OmID, QString > segmentCustomNames;
-    QHash< OmID, QString > segmentNotes;
+    QHash< om::common::ID, QString > segmentCustomNames;
+    QHash< om::common::ID, QString > segmentNotes;
 
-    inline OmSegID getNextValue(){
+    inline om::common::SegID getNextValue(){
         return maxValue_.inc();
     }
 

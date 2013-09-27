@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmMipVolume;
 class OmViewGroupState;
@@ -19,6 +19,6 @@ private:
 
     void saveTile(QDataStream&, const int,
                   const int, const int, const int,
-                  const ViewType);
+                  const om::common::ViewType);
 };
 

@@ -2,7 +2,7 @@
 
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/segmentLists/elementListBox.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/dataWrappers.h"
 #include "segment/lists/omSegmentLists.h"
 
@@ -22,13 +22,13 @@ private:
     }
 
     uint64_t Size(){
-        return sdw_.SegmentLists()->Size(om::VALID);
+        return sdw_.SegmentLists()->Size(om::common::SegListType::VALID);
     }
 
-    om::shared_ptr<GUIPageOfSegments>
+    std::shared_ptr<GUIPageOfSegments>
     getPageSegments(const GUIPageRequest& request)
     {
-        return sdw_.SegmentLists()->GetSegmentGUIPage(om::VALID, request);
+        return sdw_.SegmentLists()->GetSegmentGUIPage(om::common::SegListType::VALID, request);
     }
 
     int getPreferredTabIndex(){

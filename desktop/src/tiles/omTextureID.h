@@ -12,8 +12,9 @@
  * Rachel Shearer - rshearer@mit.edu - 3/17/09
  */
 
-#include "common/omGl.h"
-#include "common/omCommon.h"
+#include "utility/glInclude.h"
+#include "common/common.h"
+#include "common/colors.h"
 
 #include <QImage>
 
@@ -24,7 +25,7 @@ template <class> class OmPooledTile;
 class OmTextureID {
 public:
     OmTextureID(const int tileDim, OmPooledTile<uint8_t>*);
-    OmTextureID(const int tileDim, OmPooledTile<OmColorARGB>*);
+    OmTextureID(const int tileDim, OmPooledTile<om::common::ColorARGB>*);
 
     virtual ~OmTextureID();
 
@@ -39,7 +40,7 @@ public:
     GLuint GetTextureID() const
     {
         if(!textureID_){
-            throw OmIoException("texture not yet built");
+            throw om::IoException("texture not yet built");
         }
         return *textureID_;
     }
@@ -60,7 +61,7 @@ public:
         case OMTILE_NEEDTEXTUREBUILT:
             return QImage::Format_Indexed8;
         default:
-            throw OmArgException("unknown flag");
+            throw om::ArgException("unknown flag");
         }
     }
 
@@ -72,7 +73,7 @@ public:
         case OMTILE_NEEDTEXTUREBUILT:
             return GL_LUMINANCE;
         default:
-            throw OmArgException("unknown flag");
+            throw om::ArgException("unknown flag");
         }
     }
 
@@ -84,7 +85,7 @@ public:
         case OMTILE_NEEDTEXTUREBUILT:
             return GL_LUMINANCE;
         default:
-            throw OmArgException("unknown flag");
+            throw om::ArgException("unknown flag");
         }
     }
 
@@ -96,7 +97,7 @@ public:
         case OMTILE_NEEDTEXTUREBUILT:
             return GL_UNSIGNED_BYTE;
         default:
-            throw OmArgException("unknown flag");
+            throw om::ArgException("unknown flag");
         }
     }
 
@@ -108,7 +109,7 @@ public:
 
 private:
     const int tileDim_;
-    boost::scoped_ptr<OmPooledTileWrapper> pooledTile_;
+    std::unique_ptr<OmPooledTileWrapper> pooledTile_;
 
     enum OmTileFlag {
         OMTILE_NEEDCOLORMAP,

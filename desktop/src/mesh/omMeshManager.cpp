@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "mesh/io/omMeshConvertV1toV2.hpp"
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
@@ -91,14 +91,14 @@ void OmMeshManager::inferMeshMetadata()
 
 OmMeshPtr OmMeshManager::Produce(const OmMeshCoord& coord)
 {
-    return om::make_shared<OmMesh>(segmentation_,
+    return std::make_shared<OmMesh>(segmentation_,
                                    coord,
                                    this,
                                    dataCache_.get());
 }
 
 void OmMeshManager::GetMesh(OmMeshPtr& ptr, const OmMeshCoord& coord,
-                            const om::Blocking blocking)
+                            const om::common::Blocking blocking)
 {
     dataCache_->Get(ptr, coord, blocking);
 }

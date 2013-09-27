@@ -1,5 +1,6 @@
-#include "common/omDebug.h"
-#include "common/omGl.h"
+#include "gl.h"
+#include "common/logging.h"
+#include "utility/glInclude.h"
 #include "mesh/drawer/omMeshDrawer.h"
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/omMeshManager.h"
@@ -22,6 +23,7 @@
 #include "widgets/omViewBoxWidget.h"
 #include "widgets/annotationsWidget.h"
 
+#include <zi/zargs/zargs.hpp>
 DECLARE_ZiARG_bool(noView3dThrottle);
 
 namespace om {
@@ -326,14 +328,14 @@ bool OmView3d::pickPoint(const Vector2i& point2di, std::vector<uint32_t>& rNames
     rNamesVec.clear();
 
     //setup selection mode
-    startPicking(point2di.x, point2di.y, mCamera.GetPerspective().array);
+    om::gl::startPicking(point2di.x, point2di.y, mCamera.GetPerspective().array);
 
     //render selectable points
     Draw(DRAWOP_LEVEL_ALL | DRAWOP_SEGMENT_FILTER_SELECTED | DRAWOP_RENDERMODE_SELECTION);
     Draw(DRAWOP_LEVEL_ALL | DRAWOP_SEGMENT_FILTER_UNSELECTED | DRAWOP_RENDERMODE_SELECTION);
 
     //get number of hits
-    int hits = stopPicking();
+    int hits = om::gl::stopPicking();
 
     //if hits < 0, then buffer overflow
     if(hits < 0)
@@ -352,7 +354,7 @@ bool OmView3d::pickPoint(const Vector2i& point2di, std::vector<uint32_t>& rNames
 
     //pointer to closest hit names
     int *pNames;
-    processHits(hits, &pNames, &numNames);
+    om::gl::processHits(hits, &pNames, &numNames);
 
     //add names from array to names vec
     for(int i = 0; i < numNames; i++) {
@@ -373,9 +375,9 @@ SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2di)
         return SegmentDataWrapper();
     }
 
-    //ensure valid OmIDsSet
-    const OmID segmentationID = result[0];
-    const OmSegID segmentID = result[1];
+    //ensure valid om::common::IDSet
+    const om::common::ID segmentationID = result[0];
+    const om::common::SegID segmentID = result[1];
     SegmentDataWrapper sdw(segmentationID, segmentID);
 
     if(!sdw.IsSegmentValid()){
@@ -397,7 +399,7 @@ bool OmView3d::UnprojectPoint(Vector2i point2di, Vector3f & point3d)
 
     //unproject point2di
     double point3dv[3];
-    if(unprojectPixel(point2di.x, point2di.y, point3dv) < 0)
+    if(om::gl::unprojectPixel(point2di.x, point2di.y, point3dv) < 0)
         return false;
 
     //return point3d
@@ -522,7 +524,7 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
             continue;
         }
 
-        om::shared_ptr<OmVolumeCuller> newCuller =
+        std::shared_ptr<OmVolumeCuller> newCuller =
             culler.GetTransformedCuller(vol->Coords().NormToGlobalMat(),
                                         vol->Coords().GlobalToNormMat());
 

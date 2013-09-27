@@ -19,11 +19,11 @@ public:
 
     void Rewrite()
     {
-        boost::unordered_set<uint32_t> values;
+        std::unordered_set<uint32_t> values;
         findUniqueValues(values);
         values.erase(0);
 
-        boost::unordered_map<uint32_t, uint32_t> compactedValues;
+        std::unordered_map<uint32_t, uint32_t> compactedValues;
         compactedValues[0] = 0;
 
         int newValue = 1;
@@ -37,9 +37,9 @@ public:
     }
 
 private:
-    void findUniqueValues(boost::unordered_set<uint32_t>& values)
+    void findUniqueValues(std::unordered_set<uint32_t>& values)
     {
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol_->GetMipChunkCoords(0);
         const uint32_t numChunks = coordsPtr->size();
 
@@ -55,7 +55,7 @@ private:
 
             OmSegChunk* chunk = vol_->GetChunk(coord);
 
-            om::shared_ptr<uint32_t> dataPtr =
+            std::shared_ptr<uint32_t> dataPtr =
                 chunk->SegData()->GetCopyOfChunkDataAsUint32();
             uint32_t const*const data = dataPtr.get();
 
@@ -65,9 +65,9 @@ private:
         }
     }
 
-    void doRewriteVol(const boost::unordered_map<uint32_t, uint32_t>& compact)
+    void doRewriteVol(const std::unordered_map<uint32_t, uint32_t>& compact)
     {
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol_->GetMipChunkCoords(0);
         const uint32_t numChunks = coordsPtr->size();
 

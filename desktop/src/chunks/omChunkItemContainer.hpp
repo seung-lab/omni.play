@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omContainer.hpp"
+#include "common/common.h"
+#include "common/container.hpp"
 #include "chunks/omChunkItemContainerMatrix.hpp"
 #include "zi/omMutex.h"
 
@@ -62,7 +62,7 @@ public:
         const std::size_t mipLevel = coord.Level;
 
         if(mipLevel >= mips_.size()){
-            throw OmArgException("invalid mip level");
+            throw om::ArgException("invalid mip level");
         }
 
         return mips_[mipLevel]->Get(coord);

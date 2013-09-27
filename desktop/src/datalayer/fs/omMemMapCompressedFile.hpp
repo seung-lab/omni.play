@@ -8,23 +8,23 @@
 template <typename T>
 class OmMemMapCompressedFile : public OmIOnDiskFile<T> {
 public:
-    static om::shared_ptr<OmMemMapCompressedFile<T> >
+    static std::shared_ptr<OmMemMapCompressedFile<T> >
     CreateNumElements(const std::string& fnp, const int64_t numElements)
     {
-        om::shared_ptr<T> d = OmSmartPtr<T>::MallocNumElements(numElements,
-                                                                  om::ZERO_FILL);
+        std::shared_ptr<T> d = om::mem::Malloc<T>::MallocNumElements(numElements,
+                                                                  om::common::ZeroMem::ZERO_FILL);
         om::file::compressToFileNumElements(d, numElements, fnp);
 
-        return om::make_shared<OmMemMapCompressedFile<T> >(fnp);
+        return std::make_shared<OmMemMapCompressedFile<T> >(fnp);
     }
 
-    static om::shared_ptr<OmMemMapCompressedFile<T> >
-    CreateFromData(const std::string& fnp, om::shared_ptr<T> d,
+    static std::shared_ptr<OmMemMapCompressedFile<T> >
+    CreateFromData(const std::string& fnp, std::shared_ptr<T> d,
                    const int64_t numElements)
     {
         om::file::compressToFileNumElements(d, numElements, fnp);
 
-        return om::make_shared<OmMemMapCompressedFile<T> >(fnp);
+        return std::make_shared<OmMemMapCompressedFile<T> >(fnp);
     }
 
 private:

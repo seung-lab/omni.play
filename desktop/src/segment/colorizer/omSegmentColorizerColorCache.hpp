@@ -7,13 +7,13 @@ class OmSegmentColorizerColorCache : public zi::rwmutex {
 private:
     LockedUint32 size_;
 
-    struct OmColorWithFreshness
+    struct om::common::ColorWithFreshness
     {
-        OmColor color;
+        om::common::Color color;
         uint64_t freshness;
     };
 
-    std::vector<OmColorWithFreshness> cache_;
+    std::vector<om::common::ColorWithFreshness> cache_;
 
     struct colorizer_mutex_pool_tag;
     typedef zi::spinlock::pool<colorizer_mutex_pool_tag>::guard spinlock_guard_t;
@@ -35,7 +35,7 @@ public:
         cache_.resize(newSize);
     }
 
-    inline void Get(const uint32_t val, uint64_t& freshness, OmColor& color)
+    inline void Get(const uint32_t val, uint64_t& freshness, om::common::Color& color)
     {
 		spinlock_guard_t g(val);
         freshness = cache_[val].freshness;
@@ -43,7 +43,7 @@ public:
     }
 
     inline void Set(const uint32_t val, const uint64_t freshness,
-                    const OmColor& color)
+                    const om::common::Color& color)
     {
         spinlock_guard_t g(val);
         cache_[val].freshness = freshness;

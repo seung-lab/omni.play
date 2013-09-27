@@ -56,16 +56,16 @@ public:
         FOR_EACH(iter, segs)
         {
             OmSegment* seg = *iter;
-            const OmSegID segID = seg->value();
+            const om::common::SegID segID = seg->value();
             segToGroupNum_[segID] = groupNum;
         }
     }
 
-    inline bool InSameValidGroup(const OmSegID segID1, const OmSegID segID2) const {
+    inline bool InSameValidGroup(const om::common::SegID segID1, const om::common::SegID segID2) const {
         return segToGroupNum_[segID1] == segToGroupNum_[segID2];
     }
 
-    inline uint32_t Get(const OmSegID segID) const {
+    inline uint32_t Get(const om::common::SegID segID) const {
           return segToGroupNum_[segID];
     }
 
@@ -105,7 +105,7 @@ private:
         maxGroupNum_.set(maxGroupNum);
 
         if(!in.atEnd()){
-            throw OmIoException("corrupt file?", filePath);
+            throw om::IoException("corrupt file?");
         }
     }
 

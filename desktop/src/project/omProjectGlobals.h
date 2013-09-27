@@ -17,13 +17,13 @@ namespace om { class users; }
 
 class OmProjectGlobals {
 private:
-    boost::scoped_ptr<OmRandColorFile> randColorFile_;
-    boost::scoped_ptr<om::users> users_;
-    boost::scoped_ptr<OmView2dManagerImpl> v2dManagerImpl_;
-    boost::scoped_ptr<OmStateManagerImpl> stateMan_;
-    boost::scoped_ptr<OmEventManagerImpl> eventMan_;
-    boost::scoped_ptr<OmActionsImpl> actions_;
-    boost::scoped_ptr<OmActionLogger> actionLogger_;
+    std::unique_ptr<OmRandColorFile> randColorFile_;
+    std::unique_ptr<om::users> users_;
+    std::unique_ptr<OmView2dManagerImpl> v2dManagerImpl_;
+    std::unique_ptr<OmStateManagerImpl> stateMan_;
+    std::unique_ptr<OmEventManagerImpl> eventMan_;
+    std::unique_ptr<OmActionsImpl> actions_;
+    std::unique_ptr<OmActionLogger> actionLogger_;
 
     zi::semaphore fileReadThrottle_;
 

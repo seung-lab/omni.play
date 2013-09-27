@@ -1,7 +1,8 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omDebug.h"
+#include "gui/tools.hpp"
+#include "common/common.h"
+#include "common/logging.h"
 #include "events/omEvents.h"
 #include "viewGroup/omBrushSize.hpp"
 #include "system/omUndoStack.hpp"

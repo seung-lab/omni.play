@@ -5,7 +5,7 @@
 * Author(s): Matt Wimer
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "project/omProject.h"
 #include "system/omGroups.h"
 #include "gui/widgets/omGroupListWidget.h"
@@ -20,32 +20,29 @@
 class OmViewGroupState;
 
 class GroupsTable : public QWidget {
-Q_OBJECT
-public:
-    GroupsTable(OmViewGroupState* vgs);
+  Q_OBJECT public : GroupsTable(OmViewGroupState& vgs);
 
-    static void Repopulate(OmSegID id = 0);
+  static void Repopulate(om::common::SegID id = 0);
 
-    void populateGroupTable(OmGroupID id);
+  void populateGroupTable(om::common::GroupID id);
 
-    void SetSegmentID(const OmSegID seg){
-        seg_ = seg;
-    }
+  void SetSegmentID(const om::common::SegID seg) { seg_ = seg; }
 
-private Q_SLOTS:
-    void doDeleteAction();
+ private
+Q_SLOTS:
+  void doDeleteAction();
 
-private:
-    OmViewGroupState *const vgs_;
-    const SegmentationDataWrapper sdw_;
+ private:
+  OmViewGroupState& vgs_;
+  const SegmentationDataWrapper sdw_;
 
-    OmSegID seg_;
-    OmGroupID groupid_;
+  om::common::SegID seg_;
+  om::common::GroupID groupid_;
 
-    void populateGroupsList();
+  void populateGroupsList();
 
-    QGridLayout* mLayout;
-    OmGroupListWidget* mGroupsList;
-    QTableWidget* mGroupsTable;
-    QMenu* mMenu;
+  QGridLayout* mLayout;
+  OmGroupListWidget* mGroupsList;
+  QTableWidget* mGroupsTable;
+  QMenu* mMenu;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omChannelTileFilter.hpp"
@@ -13,7 +13,7 @@ Q_OBJECT
 
 public:
     ContrastSpinBox(QWidget* d)
-        : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE)
+        : OmDoubleSpinBox(d, true)
      {
         setSingleStep(0.05);
         setRange(-5, 5);

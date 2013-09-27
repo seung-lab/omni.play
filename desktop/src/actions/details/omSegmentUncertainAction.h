@@ -1,7 +1,7 @@
 #pragma once
 
 #include "actions/details/omUndoCommand.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmSegment;
 class SegmentDataWrapper;
@@ -11,12 +11,12 @@ class OmSegmentUncertainActionImpl;
 class OmSegmentUncertainAction : public OmUndoCommand {
 
 public:
-    OmSegmentUncertainAction(om::shared_ptr<OmSegmentUncertainActionImpl> impl)
+    OmSegmentUncertainAction(std::shared_ptr<OmSegmentUncertainActionImpl> impl)
         : impl_(impl)
     {}
 
     OmSegmentUncertainAction(const SegmentationDataWrapper& sdw,
-                             om::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                             std::shared_ptr<std::set<OmSegment*> > selectedSegments,
                              const bool valid);
 private:
     void Action();
@@ -24,7 +24,7 @@ private:
     std::string Description();
     void save(const std::string&);
 
-    om::shared_ptr<OmSegmentUncertainActionImpl> impl_;
+    std::shared_ptr<OmSegmentUncertainActionImpl> impl_;
 
 };
 

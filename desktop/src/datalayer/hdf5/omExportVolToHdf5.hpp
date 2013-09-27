@@ -60,7 +60,7 @@ private:
             hdfExport->open();
         }
 
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol->GetMipChunkCoords(0);
 
         FOR_EACH(iter, *coordsPtr){
@@ -94,7 +94,7 @@ private:
 
         OmSegChunk* chunk = vol->GetChunk(coord);
 
-        om::shared_ptr<uint32_t> rawDataPtr =
+        std::shared_ptr<uint32_t> rawDataPtr =
             chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
         if(rerootSegments)

@@ -8,7 +8,8 @@
  * The culler also keeps track of it's position of the camera and camera's focus.
  */
 
-#include "common/omCommon.h"
+#include "coordinates/normCoord.h"
+#include "common/common.h"
 #include "omDrawOptions.h"
 
 class OmVolumeCuller {
@@ -20,12 +21,12 @@ public:
     Visibility TestChunk(const om::normBbox&);
     const om::normCoord& GetPosition() const;
 
-    om::shared_ptr<OmVolumeCuller>
+    std::shared_ptr<OmVolumeCuller>
     GetTransformedCuller(const Matrix4f&, const Matrix4f&);
 
     bool operator ==(const OmVolumeCuller& c) const;
     bool operator !=(const OmVolumeCuller& c) const;
-    bool equals(const om::shared_ptr<OmVolumeCuller>& c){
+    bool equals(const std::shared_ptr<OmVolumeCuller>& c){
         return *this == *c;
     }
 

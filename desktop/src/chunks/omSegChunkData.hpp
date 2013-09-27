@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "chunks/omSegChunkDataInterface.hpp"
 #include "chunks/omSegChunkDataImpl.hpp"
 
@@ -33,7 +33,7 @@ public:
 
         case OmVolDataType::UNKNOWN:
         default:
-            throw OmIoException("data type not handled");
+            throw om::IoException("data type not handled");
         };
     }
 };

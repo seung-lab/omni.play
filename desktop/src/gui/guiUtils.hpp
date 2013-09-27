@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 #include <QtGui>
 
@@ -26,7 +26,7 @@ public:
 			return true;
 			break;
 		default:
-			throw OmArgException("unknown state?");
+			throw om::ArgException("unknown state?");
 		}
 	}
 

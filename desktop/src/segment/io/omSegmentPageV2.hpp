@@ -3,7 +3,7 @@
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "segment/omSegmentTypes.h"
-#include "utility/omSmartPtr.hpp"
+#include "utility/malloc.hpp"
 #include "volume/omSegmentationFolder.h"
 
 class OmSegmentPageV2 {
@@ -19,7 +19,7 @@ public:
         , pageSize_(pageSize)
     {}
 
-    om::shared_ptr<OmSegmentDataV3> Read()
+    std::shared_ptr<OmSegmentDataV3> Read()
     {
         printf("rewriting segment page %d from ver2 to ver3\n", pageNum_);
 
@@ -27,8 +27,8 @@ public:
         om::file::openFileRO(file);
         OmSegmentDataV2* oldData = om::file::mapFile<OmSegmentDataV2>(&file);
 
-        om::shared_ptr<OmSegmentDataV3> ret =
-            OmSmartPtr<OmSegmentDataV3>::MallocNumElements(pageSize_, om::ZERO_FILL);
+        std::shared_ptr<OmSegmentDataV3> ret =
+            om::mem::Malloc<OmSegmentDataV3>::MallocNumElements(pageSize_, om::common::ZeroMem::ZERO_FILL);
         OmSegmentDataV3* newSegmentData = ret.get();
 
         for(uint32_t i = 0; i < pageSize_; ++i)
@@ -39,9 +39,9 @@ public:
             newSegmentData[i].bounds = oldData[i].bounds;
 
             if(oldData[i].immutable){
-                newSegmentData[i].listType = om::VALID;
+                newSegmentData[i].listType = om::common::SegListType::VALID;
             } else {
-                newSegmentData[i].listType = om::WORKING;
+                newSegmentData[i].listType = om::common::SegListType::WORKING;
             }
         }
 

@@ -5,7 +5,7 @@
 #include "utility/omStringHelpers.h"
 #include "zi/omMutex.h"
 
-OmCacheGroup::OmCacheGroup(const om::CacheGroup cacheGroup)
+OmCacheGroup::OmCacheGroup(const om::common::CacheGroup cacheGroup)
     : cacheGroup_(cacheGroup)
     , maxAllowedSize_(0)
 {}
@@ -34,11 +34,11 @@ void OmCacheGroup::SetMaxSizeMB(const int64_t size)
     maxAllowedSize_ = size * static_cast<int64_t>(om::math::bytesPerMB);
 }
 
-QList<OmCacheInfo> OmCacheGroup::GetCacheInfo()
+std::vector<OmCacheInfo> OmCacheGroup::GetCacheInfo()
 {
     zi::rwmutex::read_guard lock(lock_);
 
-    QList<OmCacheInfo> infos;
+    std::vector<OmCacheInfo> infos;
     FOR_EACH(iter, caches_){
         OmCacheBase* cache = *iter;
 
@@ -49,7 +49,7 @@ QList<OmCacheInfo> OmCacheGroup::GetCacheInfo()
         name << *cache;
         info.name = name.str();
 
-        infos << info;
+        infos.push_back(info);
     }
     return infos;
 }

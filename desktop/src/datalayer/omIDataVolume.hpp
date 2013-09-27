@@ -1,11 +1,11 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 template <typename T>
-class OmIDataVolume {
+class IDataVolume {
 public:
-	virtual ~OmIDataVolume(){}
+	virtual ~IDataVolume(){}
 
 	virtual void Load() = 0;
 	virtual void Create(const std::map<int, Vector3i> &) = 0;

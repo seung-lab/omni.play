@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "project/omProject.h"
 #include "system/cache/omCacheManager.h"
 #include "segment/omSegmentUncertain.hpp"
@@ -9,12 +9,12 @@ class OmSegmentUncertainActionImpl{
 private:
 	SegmentationDataWrapper sdw_;
 	bool uncertain_;
-	om::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+	std::shared_ptr<std::set<OmSegment*> > selectedSegments_;
 
 public:
 	OmSegmentUncertainActionImpl() {}
 	OmSegmentUncertainActionImpl(const SegmentationDataWrapper& sdw,
-								 om::shared_ptr<std::set<OmSegment*> > selectedSegments,
+								 std::shared_ptr<std::set<OmSegment*> > selectedSegments,
 								 const bool uncertain)
 		: sdw_(sdw)
 		, uncertain_(uncertain)

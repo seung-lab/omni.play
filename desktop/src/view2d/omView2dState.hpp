@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "coordinates/normCoord.h"
 #include "events/omEvents.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omLocalPreferences.hpp"
@@ -14,6 +14,7 @@
 #include "events/details/omViewEvent.h"
 #include "volume/omMipVolume.h"
 #include "view2d/view2dCoords.hpp"
+#include "coordinates/screenCoord.h"
 
 #include "vmmlib/vmmlib.h"
 using namespace vmml;
@@ -33,11 +34,11 @@ class OmBrushSize;
 class OmView2dState {
 private:
     OmMipVolume* vol_;
-    const ObjectType objType_;
+    const om::common::ObjectType objType_;
     OmViewGroupState *const vgs_;
     OmZoomLevel *const zoomLevel_;
 
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
     const std::string name_;
 
     bool scribbling_;
@@ -53,14 +54,14 @@ private:
 
     bool overrideToolModeForPan_;
 
-    OmSegID segIDforPainting_;
+    om::common::SegID segIDforPainting_;
 
     om::view2dCoords coords_;
 
 public:
     OmView2dState(OmMipVolume* vol,
                   OmViewGroupState* vgs,
-                  const ViewType viewType,
+                  const om::common::ViewType viewType,
                   const QSize& size,
                   const std::string name)
         : vol_(vol)
@@ -92,7 +93,7 @@ public:
         return coords_;
     }
 
-    void Shift(const om::Direction dir)
+    void Shift(const om::common::Direction dir)
     {
         const float numberOfSlicestoAdvance = 2 * om::math::pow2int(getMipLevel());
         om::globalCoord loc = Location();
@@ -204,7 +205,7 @@ public:
     }
 
     // viewtype
-    inline ViewType getViewType() const {
+    inline om::common::ViewType getViewType() const {
         return viewType_;
     }
 
@@ -323,11 +324,11 @@ public:
     }
 
     // whether overall view2d widget is displaying a channel or a segmentation
-    inline ObjectType getObjectType() const {
+    inline om::common::ObjectType getObjectType() const {
         return objType_;
     }
 
-    inline OmID GetSegmentationID() const {
+    inline om::common::ID GetSegmentationID() const {
         return vgs_->Segmentation().GetID();
     }
 
@@ -357,11 +358,11 @@ public:
         overrideToolModeForPan_ = b;
     }
 
-    inline OmSegID GetSegIDForPainting(){
+    inline om::common::SegID GetSegIDForPainting(){
         return segIDforPainting_;
     }
 
-    inline void SetSegIDForPainting(const OmSegID segID){
+    inline void SetSegIDForPainting(const om::common::SegID segID){
         segIDforPainting_ = segID;
     }
 };

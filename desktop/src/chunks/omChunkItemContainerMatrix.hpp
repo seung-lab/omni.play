@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include <boost/multi_array.hpp>
 
 template <typename VOL, typename T>
@@ -45,7 +45,7 @@ public:
         {
             std::ostringstream stm;
             stm << "invald coordinate: " << coord;
-            throw OmArgException(stm.str());
+            throw om::ArgException(stm.str());
         }
 
         if(!array_[x][y][z]){

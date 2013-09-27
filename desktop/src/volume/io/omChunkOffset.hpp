@@ -22,9 +22,6 @@ public:
         const int64_t offset =
             slabSize*chunkPos.z + rowSize*chunkPos.y + chunkSize*chunkPos.x;
 
-        ZiLOG(DEBUG, io) << "offset is: " << offset
-                        << " (" << volDims << ") for "
-                        << coord.Coordinate << "\n";
         return offset;
     }
 };

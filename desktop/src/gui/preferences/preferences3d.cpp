@@ -3,7 +3,7 @@
 #include "events/omEvents.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 
 #include <QtGui>
 

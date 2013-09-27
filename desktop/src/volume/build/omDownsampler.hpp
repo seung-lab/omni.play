@@ -52,15 +52,15 @@ public:
         OmThreadPool threadPool;
         threadPool.start(3);
 
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol_->GetMipChunkCoords(0);
 
         FOR_EACH(iter, *coordsPtr)
         {
             const om::chunkCoord& coord = *iter;
 
-            om::shared_ptr<DownsampleVoxelTask<T> > task =
-                om::make_shared<DownsampleVoxelTask<T> >(vol_,
+            std::shared_ptr<DownsampleVoxelTask<T> > task =
+                std::make_shared<DownsampleVoxelTask<T> >(vol_,
                                                             mips_,
                                                             mippingInfo_,
                                                             coord,

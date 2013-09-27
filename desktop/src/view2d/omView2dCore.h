@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "view2d/omOnScreenTileCoords.h"
 
 #include <QWidget>
@@ -25,7 +25,7 @@ class OmView2dCore : public OmView2dWidgetBase {
 Q_OBJECT
 
 public:
-    inline ViewType GetViewType() const {
+    inline om::common::ViewType GetViewType() const {
         return viewType_;
     }
 
@@ -37,7 +37,7 @@ public Q_SLOTS:
     void dockVisibilityChanged(const bool visible);
 
 protected:
-    OmView2dCore(QWidget *, OmMipVolume*, OmViewGroupState*, const ViewType,
+    OmView2dCore(QWidget *, OmMipVolume*, OmViewGroupState*, const om::common::ViewType,
                  const std::string& name);
 
     virtual ~OmView2dCore();
@@ -54,12 +54,12 @@ protected:
     bool blockingRedraw_;
 
 private:
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
     const std::string name_;
 
-    boost::scoped_ptr<OmView2dState> state_;
-    boost::scoped_ptr<OmTileDrawer> tileDrawer_;
-    boost::scoped_ptr<OmScreenPainter> screenPainter_;
+    std::unique_ptr<OmView2dState> state_;
+    std::unique_ptr<OmTileDrawer> tileDrawer_;
+    std::unique_ptr<OmScreenPainter> screenPainter_;
 
 
     void setupMainGLpaintOp();

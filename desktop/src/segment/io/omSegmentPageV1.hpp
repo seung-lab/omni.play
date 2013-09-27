@@ -1,13 +1,13 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/archive/old/omDataArchiveSegment.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "segment/omSegmentTypes.h"
 
-#include "utility/omSmartPtr.hpp"
+#include "utility/malloc.hpp"
 
 class OmSegmentPageV1 {
 private:
@@ -23,13 +23,13 @@ public:
         , pageSize_(pageSize)
     {}
 
-    om::shared_ptr<OmSegmentDataV3> Read()
+    std::shared_ptr<OmSegmentDataV3> Read()
     {
         printf("rewriting segment page %d from HDF5\n", pageNum_);
 
-        om::shared_ptr<OmSegmentDataV2> oldSegmentDataPtr =
-            OmSmartPtr<OmSegmentDataV2>::MallocNumElements(pageSize_,
-                                                           om::ZERO_FILL);
+        std::shared_ptr<OmSegmentDataV2> oldSegmentDataPtr =
+            om::mem::Malloc<OmSegmentDataV2>::MallocNumElements(pageSize_,
+                                                           om::common::ZeroMem::ZERO_FILL);
 
         OmSegmentDataV2* oldSegmentData = oldSegmentDataPtr.get();
 
@@ -37,8 +37,8 @@ public:
                                           oldSegmentData,
                                           pageSize_);
 
-        om::shared_ptr<OmSegmentDataV3> ret =
-            OmSmartPtr<OmSegmentDataV3>::MallocNumElements(pageSize_, om::ZERO_FILL);
+        std::shared_ptr<OmSegmentDataV3> ret =
+            om::mem::Malloc<OmSegmentDataV3>::MallocNumElements(pageSize_, om::common::ZeroMem::ZERO_FILL);
         OmSegmentDataV3* newSegmentData = ret.get();
 
         for(uint32_t i = 0; i < pageSize_; ++i)
@@ -49,9 +49,9 @@ public:
             newSegmentData[i].bounds = oldSegmentData[i].bounds;
 
             if(oldSegmentData[i].immutable){
-                newSegmentData[i].listType = om::VALID;
+                newSegmentData[i].listType = om::common::SegListType::VALID;
             } else {
-                newSegmentData[i].listType = om::WORKING;
+                newSegmentData[i].listType = om::common::SegListType::WORKING;
             }
         }
 

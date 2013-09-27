@@ -7,24 +7,25 @@ class OmAffinityGraph;
 
 class OmAffinityChannel : public OmChannel {
 private:
-    const om::AffinityGraph affinity_;
+    const om::common::AffinityGraph affinity_;
 
-    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmAffinityGraph& chan);
+    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
+                                           const OmAffinityGraph& chan);
 
 public:
-    OmAffinityChannel(const om::AffinityGraph aff)
+    OmAffinityChannel(const om::common::AffinityGraph aff)
         : OmChannel()
         , affinity_(aff)
     {
-        if (!(aff == om::X_AFFINITY ||
-              aff == om::Y_AFFINITY ||
-              aff == om::Z_AFFINITY))
+        if (!(aff == om::common::AffinityGraph::X_AFFINITY ||
+              aff == om::common::AffinityGraph::Y_AFFINITY ||
+              aff == om::common::AffinityGraph::Z_AFFINITY))
         {
-            throw OmArgException("Bad Affinity Type.");
+            throw om::ArgException("Bad Affinity Type.");
         }
     }
 
-    OmAffinityChannel(OmID id, const om::AffinityGraph aff)
+    OmAffinityChannel(om::common::ID id, const om::common::AffinityGraph aff)
         : OmChannel(id)
         , affinity_(aff)
     {}
@@ -32,7 +33,7 @@ public:
     ~OmAffinityChannel()
     { }
 
-    om::AffinityGraph GetAffinity() const {
+    om::common::AffinityGraph GetAffinity() const {
         return affinity_;
     }
 
@@ -44,14 +45,14 @@ public:
     {
         switch(affinity_)
         {
-        case om::X_AFFINITY:
+        case om::common::AffinityGraph::X_AFFINITY:
             return str( boost::format("affinity/affinity%1%/X") % GetID());
-        case om::Y_AFFINITY:
+        case om::common::AffinityGraph::Y_AFFINITY:
             return str( boost::format("affinity/affinity%1%/Y") % GetID());
-        case om::Z_AFFINITY:
+        case om::common::AffinityGraph::Z_AFFINITY:
             return str( boost::format("affinity/affinity%1%/Z") % GetID());
         default:
-            throw OmArgException("unknown arg");
+            throw om::ArgException("unknown arg");
         }
     }
 };

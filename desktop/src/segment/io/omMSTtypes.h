@@ -1,7 +1,5 @@
 #pragma once
 
-#include "common/omStd.h"
-
 struct OmMSTEdge {
     uint32_t number;
     uint32_t node1ID;

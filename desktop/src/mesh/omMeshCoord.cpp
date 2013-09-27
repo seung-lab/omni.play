@@ -1,5 +1,5 @@
 #include "omMeshCoord.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 
 OmMeshCoord::OmMeshCoord()
 {
@@ -7,7 +7,7 @@ OmMeshCoord::OmMeshCoord()
     DataValue = -1;
 }
 
-OmMeshCoord::OmMeshCoord(const om::chunkCoord & rMipChunkCoord, OmSegID dataValue)
+OmMeshCoord::OmMeshCoord(const om::chunkCoord & rMipChunkCoord, om::common::SegID dataValue)
     : MipChunkCoord(rMipChunkCoord)
     , DataValue(dataValue)
 {

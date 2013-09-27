@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 /**
  * metadata file format:
@@ -49,7 +49,7 @@ public:
     Vector3i GetMip0Dims() const
     {
         if(!segmentationFiles_.count(0)){
-            throw OmIoException("no mip zero vol defined");
+            throw om::IoException("no mip zero vol defined");
         }
         const SegmentationLine& segLine = segmentationFiles_.at(0);
 
@@ -61,7 +61,7 @@ public:
     int GetColorDepth() const
     {
         if(!segmentationFiles_.count(0)){
-            throw OmIoException("no mip zero vol defined");
+            throw om::IoException("no mip zero vol defined");
         }
         const SegmentationLine& segLine = segmentationFiles_.at(0);
 
@@ -87,7 +87,7 @@ public:
     QString MstFileName() const
     {
         if(!dendCounter_){
-            throw OmIoException("no MST found");
+            throw om::IoException("no MST found");
         }
 
         return dendLine_.fnp;
@@ -96,7 +96,7 @@ public:
     int MstBitsPerNode() const
     {
         if(!dendCounter_){
-            throw OmIoException("no MST found");
+            throw om::IoException("no MST found");
         }
 
         return dendLine_.bpp;
@@ -105,7 +105,7 @@ public:
     int MstNumEdges() const
     {
         if(!dendCounter_){
-            throw OmIoException("no MST found");
+            throw om::IoException("no MST found");
         }
 
         return dendLine_.numEdges;
@@ -128,7 +128,7 @@ private:
         }
 
         if(2 != tokens.size()){
-            throw OmIoException("invalid line", line);
+            throw om::IoException("invalid line");
         }
 
         if("segmentation" == tokens[0]){
@@ -138,7 +138,7 @@ private:
             parseLineDend(tokens[1]);
 
         } else {
-            throw OmIoException("invalid line", line);
+            throw om::IoException("invalid line");
         }
     }
 
@@ -147,7 +147,7 @@ private:
     {
         const QStringList args = tokens.split(' ', QString::SkipEmptyParts);
         if(5 != args.size()){
-            throw OmIoException("invalid line args", tokens);
+            throw om::IoException("invalid line args");
         }
 
         SegmentationLine segInfo = { args[0],
@@ -164,11 +164,11 @@ private:
     {
         const QStringList args = tokens.split(' ', QString::SkipEmptyParts);
         if(3 != args.size()){
-            throw OmIoException("invalid line args", tokens);
+            throw om::IoException("invalid line args");
         }
 
         if(dendCounter_){
-            throw OmIoException("more than one dend found");
+            throw om::IoException("more than one dend found");
         }
 
         DendLine dendInfo = { args[0],
@@ -184,7 +184,7 @@ private:
     {
         QFile file(fnp_);
         if(!file.open(QIODevice::ReadOnly)){
-            throw OmIoException("could not open", fnp_);
+            throw om::IoException("could not open");
         }
 
         QTextStream in(&file);

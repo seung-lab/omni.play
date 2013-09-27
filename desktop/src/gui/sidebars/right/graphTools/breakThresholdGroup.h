@@ -1,7 +1,7 @@
 #pragma once
 
 #include "actions/omActions.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "events/omEvents.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
@@ -14,7 +14,7 @@ class BreakThresholdGroup : public OmDoubleSpinBox {
 Q_OBJECT
 public:
     BreakThresholdGroup(GraphTools* d, OmViewGroupState* vgs)
-        : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE)
+        : OmDoubleSpinBox(d, true)
         , vgs_(vgs)
     {
         setSingleStep(0.002);

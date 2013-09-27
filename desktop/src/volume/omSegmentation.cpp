@@ -2,8 +2,8 @@
 #include "chunks/omChunkCache.hpp"
 #include "chunks/omSegChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
-#include "common/omCommon.h"
-#include "common/omDebug.h"
+#include "common/common.h"
+#include "common/logging.h"
 #include "datalayer/omDataPaths.h"
 #include "mesh/drawer/omMeshDrawer.h"
 #include "mesh/omMeshManagers.hpp"
@@ -41,7 +41,7 @@ OmSegmentation::OmSegmentation()
 {}
 
 // used by OmGenericManager
-OmSegmentation::OmSegmentation(OmID id)
+OmSegmentation::OmSegmentation(om::common::ID id)
     : OmManageableObject(id)
     , loader_(new om::segmentation::loader(this))
     , uniqueChunkValues_(new OmChunkUniqueValuesManager(this))
@@ -209,12 +209,12 @@ void OmSegmentation::SetVoxelValue(const om::globalCoord& vox, const uint32_t va
 
 bool OmSegmentation::SetVoxelValueIfSelected(const om::globalCoord& vox, const uint32_t val)
 {
-    const OmSegIDsSet selection = Segments()->GetSelectedSegmentIDs();
+    const om::common::SegIDSet selection = Segments()->GetSelectedSegmentIDs();
     if(selection.size() > 0)
     {
         om::chunkCoord leaf_mip_coord = vox.toChunkCoord(this, 0);
         OmSegChunk* chunk = GetChunk(leaf_mip_coord);
-        OmSegID target = Segments()->findRootID(
+        om::common::SegID target = Segments()->findRootID(
             chunk->GetVoxelValue(vox.toDataCoord(this, 0)));
         
         if(selection.count(target) == 0) {

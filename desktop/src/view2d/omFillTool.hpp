@@ -7,7 +7,7 @@ class OmFillTool {
 private:
     const SegmentDataWrapper sdw_;
     const uint32_t newSegID_;
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
     OmSegmentation& vol_;
     const om::globalBbox segDataExtent_;
     OmSegments *const segments_;
@@ -15,7 +15,7 @@ private:
     zi::semaphore semaphore_;
 
 public:
-    OmFillTool(const SegmentDataWrapper& sdw, const ViewType viewType)
+    OmFillTool(const SegmentDataWrapper& sdw, const om::common::ViewType viewType)
         : sdw_(sdw)
         , newSegID_(sdw.getID())
         , viewType_(viewType)
@@ -33,7 +33,7 @@ public:
             return;
         }
 
-        const OmSegID segIDtoReplace =
+        const om::common::SegID segIDtoReplace =
             segments_->findRootID(vol_.GetVoxelValue(v));
 
         vol_.SetVoxelValue(v, newSegID_);
@@ -64,7 +64,7 @@ public:
 
 private:
 
-    void doFill(const om::globalCoord voxelLocStart, const OmSegID segIDtoReplace)
+    void doFill(const om::globalCoord voxelLocStart, const om::common::SegID segIDtoReplace)
     {
         std::deque<om::globalCoord> voxels;
         voxels.push_back(voxelLocStart);
@@ -80,7 +80,7 @@ private:
                 continue;
             }
 
-            const OmSegID curSegID = vol_.GetVoxelValue(v);
+            const om::common::SegID curSegID = vol_.GetVoxelValue(v);
 
             if(newSegID_ == curSegID){
                 continue;
@@ -94,7 +94,7 @@ private:
 
             vol_.SetVoxelValue(v, newSegID_);
 
-            // TODO: assumes XY_VIEW for now
+            // TODO: assumes om::common::XY_VIEW for now
             voxels.push_back(om::globalCoord(v.x - 1, v.y,     v.z));
             voxels.push_back(om::globalCoord(v.x + 1, v.y,     v.z));
             voxels.push_back(om::globalCoord(v.x,     v.y - 1, v.z));

@@ -1,6 +1,6 @@
 #include "actions/io/omActionDumper.h"
 #include "actions/omActions.h"
-#include "common/omException.h"
+#include "common/exception.h"
 #include "gui/cacheMonitorDialog.h"
 #include "gui/groupsTable/groupsTable.h"
 #include "gui/mainWindow/centralWidget.hpp"
@@ -479,7 +479,7 @@ void MainWindow::openCacheMonitor()
     mMenuBar->GetOpenCacheMonitorAct()->setChecked(true);
 }
 
-void MainWindow::cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId)
+void MainWindow::cleanViewsOnVolumeChange(om::common::ObjectType objectType, om::common::ID objectId)
 {
     QString unwantedView3DTitle = "3D";
 

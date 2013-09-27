@@ -1,11 +1,11 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentCutAction.h"
 #include "actions/details/omSegmentCutActionImpl.hpp"
 #include "segment/omFindCommonEdge.hpp"
 
 OmSegmentCutAction::OmSegmentCutAction(const SegmentDataWrapper& sdw)
-    : impl_(om::make_shared<OmSegmentCutActionImpl>(sdw))
+    : impl_(std::make_shared<OmSegmentCutActionImpl>(sdw))
 {
     SetUndoable(true);
 }

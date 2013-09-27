@@ -18,7 +18,7 @@ private:
     SegmentationDataWrapper sdw_;
     OmSegmentation& seg_;
 
-    typedef om::shared_ptr<om::gui::progress> prog_t;
+    typedef std::shared_ptr<om::gui::progress> prog_t;
 
 public:
     OmBuildSegmentation()
@@ -65,7 +65,7 @@ public:
         printf("assuming channel 1\n");
         ChannelDataWrapper cdw(1);
         if(!cdw.IsValidWrapper()){
-            throw OmIoException("no channel 1");
+            throw om::IoException("no channel 1");
         }
 
         OmChannel& chann = cdw.GetChannel();
@@ -80,7 +80,7 @@ public:
     }
 
     void LoadDendrogram(){
-        throw OmIoException("not implemented");
+        throw om::IoException("not implemented");
     }
 
 private:

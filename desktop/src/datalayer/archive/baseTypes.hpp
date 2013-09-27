@@ -1,7 +1,6 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "yaml-cpp/yaml.h"
 
 #include <QHash>
@@ -85,7 +84,7 @@ void operator>>(const YAML::Node& in, vmml::AxisAlignedBoundingBox<T>& b)
 }
 
 template<class T>
-YAML::Emitter &operator<<(YAML::Emitter& out, const boost::unordered_set<T>& s)
+YAML::Emitter &operator<<(YAML::Emitter& out, const std::unordered_set<T>& s)
 {
     out << YAML::Flow << YAML::BeginSeq;
     FOR_EACH(it, s)
@@ -97,7 +96,7 @@ YAML::Emitter &operator<<(YAML::Emitter& out, const boost::unordered_set<T>& s)
 }
 
 template<class T>
-void operator>>(const YAML::Node& in, boost::unordered_set<T>& s)
+void operator>>(const YAML::Node& in, std::unordered_set<T>& s)
 {
     FOR_EACH(it, in)
     {

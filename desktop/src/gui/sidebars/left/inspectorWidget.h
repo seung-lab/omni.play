@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "zi/omUtility.h"
 
 #include <QtCore/QVariant>
@@ -32,11 +32,11 @@ public:
     void addAffinityToVolume();
 
     void refreshWidgetData();
-    void rebuildSegmentLists(const OmID segmentationID, const OmSegID segID);
+    void rebuildSegmentLists(const om::common::ID segmentationID, const om::common::SegID segID);
 
 Q_SIGNALS:
-    void triggerChannelView(OmID chan_id, ViewType vtype);
-    void triggerSegmentationView(OmID primary_id, ViewType vtype);
+    void triggerChannelView(om::common::ID chan_id, om::common::ViewType vtype);
+    void triggerSegmentationView(om::common::ID primary_id, om::common::ViewType vtype);
 
 protected:
     static const int ENABLED_COL = 0;
@@ -59,8 +59,8 @@ private Q_SLOTS:
 
     void doDataSrcContextMenuVolAdd(QAction* act);
 
-    void openChannelView(OmID chan_id, ViewType vtype);
-    void openSegmentationView(OmID primary_id, ViewType vtype);
+    void openChannelView(om::common::ID chan_id, om::common::ViewType vtype);
+    void openSegmentationView(om::common::ID primary_id, om::common::ViewType vtype);
 
 private:
     MainWindow* const mainWindow_;
@@ -110,12 +110,12 @@ private:
     ChannelInspector* channelInspectorWidget_;
     FilObjectInspector* filObjectInspectorWidget_;
 
-    void populateChannelInspector(OmID c_id);
+    void populateChannelInspector(om::common::ID c_id);
     void populateSegmentationInspector( SegmentationDataWrapper sdw);
 
     InspectorProperties* inspectorProperties_;
 
-    ViewType getViewType(QAction* act);
+    om::common::ViewType getViewType(QAction* act);
 
     void updateSegmentListBox( SegmentationDataWrapper sdw );
 

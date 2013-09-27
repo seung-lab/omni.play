@@ -1,14 +1,13 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmSegment;
 
 struct SegInfo
 {
     OmSegment* seg;
-    OmSegID segID;
+    om::common::SegID segID;
     int64_t sizeIncludingChildren;
     int64_t numChildren;
 };
@@ -23,7 +22,7 @@ struct GUIPageRequest
 {
     uint32_t offset;
     int numToGet;
-    OmSegID startSeg;
+    om::common::SegID startSeg;
 };
 
 namespace om {
@@ -47,7 +46,7 @@ struct LargestSegInfoFirst : std::binary_function <SegInfo, SegInfo, bool>
 
 };
 
-om::shared_ptr<GUIPageOfSegments> getPage(const std::vector<SegInfo> list,
+std::shared_ptr<GUIPageOfSegments> getPage(const std::vector<SegInfo> list,
                                              const uint32_t startIndex,
                                              const uint32_t numToGet);
 

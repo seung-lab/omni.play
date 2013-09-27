@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/fs/omMemMappedFileQT.hpp"
 #include "datalayer/omIDataVolume.hpp"
@@ -18,10 +18,10 @@
 template <typename T> class OmIOnDiskFile;
 
 template <typename T>
-class OmMemMappedVolumeImpl : public OmIDataVolume<T> {
+class OmMemMappedVolumeImpl : public IDataVolume<T> {
 private:
     OmMipVolume* vol_;
-    std::vector<om::shared_ptr<OmIOnDiskFile<T> > > maps_;
+    std::vector<std::shared_ptr<OmIOnDiskFile<T> > > maps_;
 
     typedef OmMemMappedFileReadQT<T> reader_t;
     typedef OmMemMappedFileWriteQT<T> writer_t;
@@ -75,7 +75,7 @@ public:
 
             maps_[level] = writer_t::WriterNumBytes(getFileName(level),
                                                    size,
-                                                   om::DONT_ZERO_FILL);
+                                                   om::common::ZeroMem::DONT_ZERO_FILL);
         }
 
         printf("OmMemMappedVolume: done allocating data\n");

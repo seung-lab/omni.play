@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/omLockedPODs.hpp"
 #include "utility/omPrimeNumbers.hpp"
 #include "utility/omSystemInformation.h"
@@ -92,7 +92,7 @@ public:
         , numBuckets_(computeNumBuckets())
     {
         if(0 != numBytesPerPage_ % numBytesPerTile_){
-            throw OmArgException("invalid size");
+            throw om::ArgException("invalid size");
         }
 
         freeTileLists_.resize(numBuckets_);

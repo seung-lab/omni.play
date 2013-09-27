@@ -1,5 +1,7 @@
 #pragma once
 
+#include "coordinates/chunkCoord.h"
+#include "coordinates/dataCoord.h"
 #include "volume/omVolCoords.hpp"
 #include "datalayer/archive/channel.h"
 
@@ -74,7 +76,7 @@ public:
     // Calculate the data dimensions needed to contain the volume at a given compression level.
     // TODO: should this be factored out?
     inline Vector3i MipLevelDataDimensions(const int level) const {
-        Vector3i dims = GetExtent().toDataBbox(vol_, level).getMax();
+        Vector3i dims = GetExtent().ToDataBbox(vol_, level).getMax();
         if(dims.x == 0) {
             dims.x = 1;
         }

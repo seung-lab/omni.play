@@ -7,7 +7,7 @@
 class CrosshairOpeningSizeSpinBox : public OmIntSpinBox {
 public:
 	CrosshairOpeningSizeSpinBox(QWidget* p)
-		: OmIntSpinBox(p, om::UPDATE_AS_TYPE)
+		: OmIntSpinBox(p, om::common::Direction::UPDATE_AS_TYPE)
 	{
 		setSingleStep(1);
 		setMinimum(0);

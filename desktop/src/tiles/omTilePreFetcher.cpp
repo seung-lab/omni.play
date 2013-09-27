@@ -26,8 +26,8 @@ void OmTilePreFetcher::RunTasks(const std::list<OmTileDrawer*>& drawers)
     {
         OmTileDrawer* drawer = *iter;
 
-        om::shared_ptr<OmTilePreFetcherTask> task =
-            om::make_shared<OmTilePreFetcherTask>(drawer->GetState());
+        std::shared_ptr<OmTilePreFetcherTask> task =
+            std::make_shared<OmTilePreFetcherTask>(drawer->GetState());
 
         mThreadPool.push_front(task);
     }

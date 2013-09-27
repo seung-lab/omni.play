@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
+#include "common/old.hpp"
 
 class OmMeshPlanCache;
 class OmSegmentation;
@@ -12,10 +13,10 @@ class OmMeshDrawerImpl;
 class OmMeshDrawer {
 private:
     OmSegmentation *const segmentation_;
-    om::shared_ptr<OmMeshSegmentList> rootSegLists_;
-    om::shared_ptr<OmMeshPlanCache> cache_;
+    std::shared_ptr<OmMeshSegmentList> rootSegLists_;
+    std::shared_ptr<OmMeshPlanCache> cache_;
 
-    om::shared_ptr<OmVolumeCuller> culler_;
+    std::shared_ptr<OmVolumeCuller> culler_;
     int numPrevRedraws_;
 
 public:
@@ -24,12 +25,12 @@ public:
     virtual ~OmMeshDrawer(){}
 
     boost::optional<std::pair<float,float> >
-    Draw(OmViewGroupState*, om::shared_ptr<OmVolumeCuller>,
+    Draw(OmViewGroupState*, std::shared_ptr<OmVolumeCuller>,
          const OmBitfield drawOptions);
 
 private:
     void printDrawInfo(const OmMeshDrawerImpl& drawer);
     int getAllowedDrawTime();
-    void updateNumPrevRedraws(om::shared_ptr<OmVolumeCuller> culler);
+    void updateNumPrevRedraws(std::shared_ptr<OmVolumeCuller> culler);
 };
 

@@ -201,7 +201,7 @@ private:
 
     void selectSegments()
     {
-        om::AddOrSubtract addOrSubtractSegments = altKey_ ? om::SUBTRACT : om::ADD;
+        om::common::AddOrSubtract addOrSubtractSegments = altKey_ ? om::common::AddOrSubtract::SUBTRACT : om::common::AddOrSubtract::ADD;
 
         OmBrushSelect::SelectByClick(state_, dataClickPoint_, addOrSubtractSegments);
     }
@@ -247,7 +247,7 @@ private:
             return;
         }
 
-        const OmID segmentID = sdw.getID();
+        const om::common::ID segmentID = sdw.getID();
 
         OmSegmentSelected::Set(sdw);
 
@@ -277,7 +277,7 @@ private:
     {
         OmMipVolume* vol = state_->getVol();
 
-        if(SEGMENTATION == vol->getVolumeType())
+        if(om::common::SEGMENTATION == vol->getVolumeType())
         {
             OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(vol);
             return getSelectedSegmentSegmentation(seg);
@@ -308,7 +308,7 @@ private:
     boost::optional<SegmentDataWrapper>
     getSelectedSegmentSegmentation(OmSegmentation* segmentation)
     {
-        const OmSegID segmentID = segmentation->GetVoxelValue(dataClickPoint_);
+        const om::common::SegID segmentID = segmentation->GetVoxelValue(dataClickPoint_);
 
         if(!segmentID){
             return boost::optional<SegmentDataWrapper>();

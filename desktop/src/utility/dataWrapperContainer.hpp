@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/channelDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/affinityGraphDataWrapper.hpp"
@@ -15,20 +15,20 @@ private:
 public:
     DataWrapperContainer(){}
 
-    DataWrapperContainer(const ObjectType obj_type, const OmID obj_id)
+    DataWrapperContainer(const om::common::ObjectType obj_type, const om::common::ID obj_id)
     {
         switch (obj_type){
-        case CHANNEL:
+        case om::common::CHANNEL:
             cdw_ = boost::optional<ChannelDataWrapper>(obj_id);
             break;
-        case SEGMENTATION:
+        case om::common::SEGMENTATION:
             sdw_ = boost::optional<SegmentationDataWrapper>(obj_id);
             break;
-        case AFFINITY:
+        case om::common::AFFINITY:
             adw_ = boost::optional<AffinityGraphDataWrapper>(obj_id);
             break;
         default:
-            throw OmArgException("unknown type");
+            throw om::ArgException("unknown type");
         }
     }
 
@@ -48,25 +48,25 @@ public:
     bool isChannel() const {
         return cdw_;
     }
-    
+
     bool isAffinityGraph() const {
         return adw_;
     }
 
-    ObjectType getType() const
+    om::common::ObjectType getType() const
     {
         if(cdw_){
-            return CHANNEL;
+            return om::common::CHANNEL;
         }
-        
+
         if(sdw_){
-            return SEGMENTATION;
+            return om::common::SEGMENTATION;
         }
-        
+
         if(adw_){
-            return AFFINITY;
+            return om::common::AFFINITY;
         }
-        throw OmArgException("uninitialized");
+        throw om::ArgException("uninitialized");
     }
 
     SegmentationDataWrapper GetSDW() const {
@@ -76,9 +76,9 @@ public:
     ChannelDataWrapper getChannelDataWrapper() const {
         return *cdw_;
     }
-    
+
     AffinityGraphDataWrapper GetADW() const {
         return *adw_;
-    }   
+    }
 };
 

@@ -1,6 +1,6 @@
 #include "actions/omActions.h"
 #include "gui/sidebars/right/validationGroup/groupButtonTag.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 #include "events/omEvents.h"

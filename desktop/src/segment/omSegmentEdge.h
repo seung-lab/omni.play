@@ -1,6 +1,9 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
+#include <QtGlobal>
+
+class QDataStream;
 
 class OmSegmentEdge {
 public:
@@ -11,7 +14,7 @@ public:
         , valid(false)
     {}
 
-    OmSegmentEdge(const OmSegID p, const OmSegID c, const double t)
+    OmSegmentEdge(const om::common::SegID p, const om::common::SegID c, const double t)
         : parentID(p)
         , childID(c)
         , threshold(t)
@@ -30,8 +33,8 @@ public:
                 valid == rhs.valid );
     }
 
-    OmSegID parentID;
-    OmSegID childID;
+    om::common::SegID parentID;
+    om::common::SegID childID;
     double threshold;
     bool valid;
 

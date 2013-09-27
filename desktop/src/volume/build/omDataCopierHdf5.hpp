@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
@@ -19,7 +19,7 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL>{
 private:
     VOL *const vol_;
     const OmDataPath path_;
-    const om::AffinityGraph aff_;
+    const om::common::AffinityGraph aff_;
 
     Vector3i volSize_;
     OmHdf5* hdf5reader_;
@@ -29,7 +29,7 @@ public:
     OmDataCopierHdf5(VOL* vol,
                      const OmDataPath& path,
                      const std::string fnp,
-                     const om::AffinityGraph aff)
+                     const om::common::AffinityGraph aff)
         : OmDataCopierBase<VOL>(vol)
         , vol_(vol)
         , path_(path)
@@ -59,7 +59,7 @@ private:
         OmThreadPool threadPool;
         threadPool.start(3);
 
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol_->GetMipChunkCoords(0);
 
         OmSimpleProgress prog(coordsPtr->size(), "HDF5 chunk copy");
@@ -67,8 +67,8 @@ private:
         FOR_EACH(iter, *coordsPtr){
             const om::chunkCoord& coord = *iter;
 
-            om::shared_ptr<OmDataCopierHdf5Task<VOL> > task =
-                om::make_shared<OmDataCopierHdf5Task<VOL> >(vol_,
+            std::shared_ptr<OmDataCopierHdf5Task<VOL> > task =
+                std::make_shared<OmDataCopierHdf5Task<VOL> >(vol_,
                                                                path_,
                                                                aff_,
                                                                volSize_,
@@ -86,7 +86,7 @@ private:
 
     void allocateData(const OmVolDataType type)
     {
-        std::vector<om::shared_ptr<QFile> > volFiles =
+        std::vector<std::shared_ptr<QFile> > volFiles =
             OmVolumeAllocater::AllocateData(vol_, type);
 
         mip0fnp_ = QFileInfo(*volFiles[0]).absoluteFilePath();

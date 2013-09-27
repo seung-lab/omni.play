@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omDebug.h"
+#include "common/common.h"
+#include "common/logging.h"
 #include "utility/omStringHelpers.h"
 #include "datalayer/omDataWrapper.h"
 #include "chunks/omChunk.h"
@@ -18,7 +18,7 @@ template <typename VOL, typename T>
 class OmLoadImage {
 private:
     VOL *const vol_;
-    const om::shared_ptr<QFile> mip0volFile_;
+    const std::shared_ptr<QFile> mip0volFile_;
     const Vector3i mip0dims_;
     const std::vector<QFileInfo>& files_;
     const int totalNumImages_;
@@ -42,7 +42,7 @@ private:
     bool shouldPreallocate_;
 
 public:
-    OmLoadImage(VOL* vol, om::shared_ptr<QFile> mip0volFile,
+    OmLoadImage(VOL* vol, std::shared_ptr<QFile> mip0volFile,
                 const std::vector<QFileInfo>& files)
         : vol_(vol)
         , mip0volFile_(mip0volFile)
@@ -169,8 +169,8 @@ private:
                 QImage tileQT = img.copy(startX, startY, tileWidth_, tileHeight_);
                 uint8_t const*const tileDataQT = tileQT.bits();
 
-                om::shared_ptr<T> tile = OmSmartPtr<T>::MallocNumBytes(tileSizeBytes_,
-                                                                       om::DONT_ZERO_FILL);
+                std::shared_ptr<T> tile = om::mem::Malloc<T>::NumBytes(tileSizeBytes_,
+                                                                       om::mem::ZeroFill::DONT);
 
                 std::copy(tileDataQT, tileDataQT + tileSizeBytes_, tile.get());
 
@@ -184,7 +184,7 @@ private:
         }
     }
 
-    void tileWriterTask(om::shared_ptr<T> tile, const om::chunkCoord coord, const int sliceNum)
+    void tileWriterTask(std::shared_ptr<T> tile, const om::chunkCoord coord, const int sliceNum)
     {
         const uint64_t chunkOffset = getChunkOffset(coord);
 

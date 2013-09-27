@@ -50,7 +50,7 @@ public:
 
         QString volDataType;
         in["type"] >> volDataType;
-        vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+        vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFrstring(volDataType);
 
         vol_.LoadPath();
     }

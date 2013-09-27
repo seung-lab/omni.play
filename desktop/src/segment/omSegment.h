@@ -13,6 +13,7 @@
 #include "segment/omSegmentChildrenTypes.h"
 #include "segment/omSegmentEdge.h"
 #include "zi/omMutex.h"
+#include "coordinates/dataCoord.h"
 
 class OmSegments;
 
@@ -27,7 +28,7 @@ public:
         , freshnessForMeshes_(0)
     {}
 
-    inline OmSegID value() const {
+    inline om::common::SegID value() const {
         return data_->value;
     }
 
@@ -36,7 +37,7 @@ public:
 
     void reRandomizeColor();
 
-    inline OmColor GetColorInt() const {
+    inline om::common::Color GetColorInt() const {
         return data_->color;
     }
 
@@ -47,7 +48,7 @@ public:
                          data_->color.blue  / 255. );
     }
 
-    void SetColor(const OmColor&);
+    void SetColor(const om::common::Color&);
     void SetColor(const Vector3i&);
     void SetColor(const Vector3f&);
 
@@ -71,14 +72,14 @@ public:
     }
 
     inline bool IsValidListType() const {
-        return om::VALID == static_cast<om::SegListType>(*listType_);
+        return om::common::SegListType::VALID == static_cast<om::common::SegListType>(*listType_);
     }
 
-    inline om::SegListType GetListType() const {
-        return static_cast<om::SegListType>(*listType_);
+    inline om::common::SegListType GetListType() const {
+        return static_cast<om::common::SegListType>(*listType_);
     }
 
-    inline void SetListType(const om::SegListType type){
+    inline void SetListType(const om::common::SegListType type){
         (*listType_) = static_cast<uint8_t>(type);
     }
 
@@ -94,9 +95,9 @@ public:
 
     const segChildCont_t& GetChildren();
 
-    OmSegID RootID();
+    om::common::SegID RootID();
 
-    OmID GetSegmentationID();
+    om::common::ID GetSegmentationID();
 
     inline double getThreshold() const {
         return threshold_;

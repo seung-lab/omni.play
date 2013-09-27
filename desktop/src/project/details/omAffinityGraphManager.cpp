@@ -1,6 +1,6 @@
 #include "project/details/omAffinityGraphManager.h"
 
-OmAffinityGraph& OmAffinityGraphManager::Get(const OmID id){
+OmAffinityGraph& OmAffinityGraphManager::Get(const om::common::ID id){
     return graphs_.Get(id);
 }
 
@@ -8,22 +8,22 @@ OmAffinityGraph& OmAffinityGraphManager::Add(){
     return graphs_.Add();
 }
 
-void OmAffinityGraphManager::Remove(const OmID id){
+void OmAffinityGraphManager::Remove(const om::common::ID id){
     graphs_.Remove(id);
 }
 
-bool OmAffinityGraphManager::IsValid(const OmID id){
+bool OmAffinityGraphManager::IsValid(const om::common::ID id){
     return graphs_.IsValid(id);
 }
 
-const OmIDsSet& OmAffinityGraphManager::GetValidIds(){
+const om::common::IDSet& OmAffinityGraphManager::GetValidIds(){
     return graphs_.GetValidIds();
 }
 
-bool OmAffinityGraphManager::IsEnabled(const OmID id){
+bool OmAffinityGraphManager::IsEnabled(const om::common::ID id){
     return graphs_.IsEnabled(id);
 }
 
-void OmAffinityGraphManager::SetEnabled(const OmID id, const bool enable){
+void OmAffinityGraphManager::SetEnabled(const om::common::ID id, const bool enable){
     graphs_.SetEnabled(id, enable);
 }

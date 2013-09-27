@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "viewGroup/omViewGroupState.h"
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/color.hpp"
@@ -57,7 +57,7 @@ public:
     }
 
 private:
-	typedef om::system::ManagedObject<om::annotation::data> managedAnnotation;
+    typedef om::system::ManagedObject<om::annotation::data> managedAnnotation;
 
 public:
 
@@ -73,8 +73,8 @@ public:
 
             FOR_EACH(iter, annotations)
             {
-            	om::annotation::data& a = *iter->Object;
-            	managedAnnotation& ma = *iter;
+                om::annotation::data& a = *iter->Object;
+                managedAnnotation& ma = *iter;
 
                 QTreeWidgetItem *row = new QTreeWidgetItem(this);
                 row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable |
@@ -84,7 +84,7 @@ public:
                 Qt::CheckState enabled = iter->Enabled ? Qt::Checked : Qt::Unchecked;
                 row->setCheckState(ENABLE_COL, enabled);
                 row->setTextAlignment(ENABLE_COL, Qt::AlignCenter);
-                row->setIcon(COLOR_COL, om::utils::color::OmColorAsQPixmap(a.color));
+                row->setIcon(COLOR_COL, om::utils::color::ColorAsQPixmap(a.color));
                 row->setText(TEXT_COL, QString::fromStdString(a.comment));
                 setLocationText(row, a);
                 row->setText(SIZE_COL, QString::number(a.size));
@@ -107,7 +107,7 @@ public:
     void ViewRedrawEvent() {}
     void ViewBlockingRedrawEvent() {}
     void CoordSystemChangeEvent() {
-       	populate();
+        populate();
     }
 
 private Q_SLOTS:
@@ -126,31 +126,31 @@ private Q_SLOTS:
 
     void doEdit(QTreeWidgetItem* item, int column)
     {
-    	using namespace om::utils;
+        using namespace om::utils;
 
-		managedAnnotation* ann = getAnnotation(item);
-		if(!ann) {
-			return;
-		}
+        managedAnnotation* ann = getAnnotation(item);
+        if(!ann) {
+            return;
+        }
         if (column == COLOR_COL)
         {
-        	QColor color = color::OmColorToQColor(ann->Object->color);
-        	color = QColorDialog::getColor(color, this);
+            QColor color = om::utils::color::ColorToQColor(ann->Object->color);
+            color = QColorDialog::getColor(color, this);
 
             if (!color.isValid()) {
                 return;
             }
 
-            ann->Object->color = color::QColorToOmColor(color);
-            item->setIcon(COLOR_COL, color::OmColorAsQPixmap(ann->Object->color));
+            ann->Object->color = om::utils::color::QColorToColor(color);
+            item->setIcon(COLOR_COL, om::utils::color::ColorAsQPixmap(ann->Object->color));
         }
 
         if (column == POSITION_COL)
         {
-        	om::globalCoord c = ann->Object->coord.toGlobalCoord();
-        	LocationEditDialog::EditLocation(c, this);
-        	ann->Object->coord = c.toDataCoord(ann->Object->coord.volume(), 0);
-			setLocationText(item, *ann->Object);
+            om::globalCoord c = ann->Object->coord.toGlobalCoord();
+            LocationEditDialog::EditLocation(c, this);
+            ann->Object->coord = c.toDataCoord(ann->Object->coord.volume(), 0);
+            setLocationText(item, *ann->Object);
         }
     }
 
@@ -158,24 +158,24 @@ private Q_SLOTS:
     {
         managedAnnotation* ann = getAnnotation(item);
         if(!ann) {
-        	return;
+            return;
         }
 
-    	if(column == ENABLE_COL) {
-			ann->Enabled = item->checkState(ENABLE_COL) == Qt::Checked;
-		}
+        if(column == ENABLE_COL) {
+            ann->Enabled = item->checkState(ENABLE_COL) == Qt::Checked;
+        }
 
         if(column == TEXT_COL) {
             ann->Object->comment = item->text(TEXT_COL).toStdString();
         }
 
         if(column == SIZE_COL) {
-        	bool success;
+            bool success;
             double size = item->text(SIZE_COL).toDouble(&success);
             if(success) {
-            	ann->Object->size = size;
+                ann->Object->size = size;
             } else {
-            	item->setText(SIZE_COL, QString::number(ann->Object->size));
+                item->setText(SIZE_COL, QString::number(ann->Object->size));
             }
         }
 
@@ -193,11 +193,11 @@ protected:
             {
                 managedAnnotation* selected = getAnnotation(selectedItem);
                 if(!selected) {
-                	return;
+                    return;
                 }
                 om::annotation::manager* manager = getManager(selectedItem);
                 if(!manager) {
-                	return;
+                    return;
                 }
                 manager->Remove(selected->ID);
                 delete selectedItem;
@@ -212,7 +212,7 @@ private:
     {
         managedAnnotation* annotation = getAnnotation(item);
         if(!annotation) {
-        	return;
+            return;
         }
 
         vgs_->View2dState()->SetScaledSliceDepth(annotation->Object->coord.toGlobalCoord());
@@ -222,15 +222,15 @@ private:
 
     static managedAnnotation* getAnnotation(QTreeWidgetItem* item)
     {
-    	QVariant data = item->data(POSITION_COL, Qt::UserRole);
-		void* ptr = data.value<void *>();
-    	return (managedAnnotation*)ptr;
+        QVariant data = item->data(POSITION_COL, Qt::UserRole);
+        void* ptr = data.value<void *>();
+        return (managedAnnotation*)ptr;
     }
 
     static om::annotation::manager* getManager(QTreeWidgetItem* item)
     {
         return static_cast<om::annotation::manager*>(
-        item->data(TEXT_COL, Qt::UserRole).value<void *>());
+            item->data(TEXT_COL, Qt::UserRole).value<void *>());
     }
 
     QTreeWidgetItem* getSelected()
@@ -263,12 +263,12 @@ private:
 
     void setLocationText(QTreeWidgetItem* row, const om::annotation::data& a)
     {
-    	globalCoord c = a.coord.toGlobalCoord();
-    	std::stringstream ss;
-    	ss << c.x << ", "
-    	   << c.y << ", "
-    	   << c.z;
-    	row->setText(POSITION_COL, QString::fromStdString(ss.str()));
+        globalCoord c = a.coord.toGlobalCoord();
+        std::stringstream ss;
+        ss << c.x << ", "
+           << c.y << ", "
+           << c.z;
+        row->setText(POSITION_COL, QString::fromStdString(ss.str()));
     }
 
     OmViewGroupState *vgs_;

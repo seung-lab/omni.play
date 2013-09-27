@@ -16,7 +16,7 @@ class OmView2d : public OmView2dCore {
     Q_OBJECT
 
 public:
-    OmView2d(const ViewType, QWidget*, OmViewGroupState*, OmMipVolume*,
+    OmView2d(const om::common::ViewType, QWidget*, OmViewGroupState*, OmMipVolume*,
              const std::string& name);
     ~OmView2d();
 
@@ -61,10 +61,10 @@ private:
     OmView2dState *const state_;
     QDockWidget* complimentaryDock_;
 
-    boost::scoped_ptr<OmMouseEvents> mouseEvents_;
-    boost::scoped_ptr<OmKeyEvents> keyEvents_;
-    boost::scoped_ptr<OmView2dEvents> events_;
-    boost::scoped_ptr<OmView2dZoom> zoom_;
+    std::unique_ptr<OmMouseEvents> mouseEvents_;
+    std::unique_ptr<OmKeyEvents> keyEvents_;
+    std::unique_ptr<OmView2dEvents> events_;
+    std::unique_ptr<OmView2dZoom> zoom_;
 
     void unlinkComplimentaryDock();
 };

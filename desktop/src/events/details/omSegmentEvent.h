@@ -6,7 +6,7 @@
  */
 
 #include "events/details/omEvent.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmSegmentAction;
 class OmSelectSegmentsParams;
@@ -19,7 +19,7 @@ public:
     OmSegmentEvent(QEvent::Type type);
     OmSegmentEvent(QEvent::Type type, const SegmentationDataWrapper& sdw,
                    const bool stayOnPage);
-    OmSegmentEvent(QEvent::Type type, om::shared_ptr<OmSelectSegmentsParams> params);
+    OmSegmentEvent(QEvent::Type type, std::shared_ptr<OmSelectSegmentsParams> params);
 
     void Dispatch(OmEventListener *);
 
@@ -41,8 +41,8 @@ public:
     }
 
 private:
-    om::shared_ptr<OmSelectSegmentsParams> params_;
-    boost::scoped_ptr<OmSegmentGUIparams> guiParams_;
+    std::shared_ptr<OmSelectSegmentsParams> params_;
+    std::unique_ptr<OmSegmentGUIparams> guiParams_;
 };
 
 class OmSegmentEventListener : public OmEventListener {

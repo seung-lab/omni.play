@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "yaml-cpp/yaml.h"
 #include "system/omGenericManager.hpp"
 #include "utility/yaml/baseTypes.hpp"

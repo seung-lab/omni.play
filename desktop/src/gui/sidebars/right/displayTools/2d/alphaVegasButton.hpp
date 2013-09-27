@@ -15,7 +15,7 @@ public:
     {}
 
 private:
-    boost::scoped_ptr<OmAlphaVegasMode> vegas_;
+    std::unique_ptr<OmAlphaVegasMode> vegas_;
 
     void doAction()
     {

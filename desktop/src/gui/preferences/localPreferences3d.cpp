@@ -1,7 +1,7 @@
 #include "system/omConnect.hpp"
 #include "gui/guiUtils.hpp"
 #include "gui/preferences/localPreferences3d.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "system/omLocalPreferences.hpp"
 #include "events/omEvents.h"
 #include "view3d/om3dPreferences.hpp"

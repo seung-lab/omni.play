@@ -116,20 +116,20 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst)
     timer.PrintDone();
 }
 
-bool OmSegmentGraph::sizeCheck(const OmSegID a, const OmSegID b, const double threshold)
+bool OmSegmentGraph::sizeCheck(const om::common::SegID a, const om::common::SegID b, const double threshold)
 {
     return threshold == 0 ||
            ((segmentListsLL_->GetSizeWithChildren(Root(a)) +
              segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold);
 }
 
-bool OmSegmentGraph::joinInternal(const OmSegID parentID,
-                                  const OmSegID childUnknownDepthID,
+bool OmSegmentGraph::joinInternal(const om::common::SegID parentID,
+                                  const om::common::SegID childUnknownDepthID,
                                   const double threshold,
                                   const int edgeNumber)
 {
-    const OmSegID childRootID = Root(childUnknownDepthID);
-    const OmSegID parentRootID = Root(parentID);
+    const om::common::SegID childRootID = Root(childUnknownDepthID);
+    const om::common::SegID parentRootID = Root(parentID);
 
     if(childRootID == parentRootID){
         return false;
@@ -159,7 +159,7 @@ bool OmSegmentGraph::joinInternal(const OmSegID parentID,
 }
 
 
-bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
+bool OmSegmentGraph::splitChildFromParentInternal( const om::common::SegID childID )
 {
     OmSegment* child = mCache->SegmentStore()->GetSegment( childID );
 

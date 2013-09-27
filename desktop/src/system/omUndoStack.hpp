@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/widgets/omAskYesNoQuestion.hpp"
 #include "system/omConnect.hpp"
 
@@ -12,7 +12,7 @@ Q_OBJECT
 
 private:
     QUndoStack undoStack_;
-    boost::scoped_ptr<QShortcut> undoShortcut_;
+    std::unique_ptr<QShortcut> undoShortcut_;
 
 private Q_SLOTS:
     void push(QUndoCommand* cmd){

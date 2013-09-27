@@ -1,7 +1,6 @@
 #pragma once
 
 #include "events/details/omEvent.h"
-#include "common/omStd.h"
 
 /*
  * User Interface Event

@@ -34,7 +34,7 @@ private:
     template< class Function >
     inline task_t wrapFunction(const Function& task)
     {
-        return om::shared_ptr< zi::concurrency_::runnable_function_wrapper >
+        return std::shared_ptr< zi::concurrency_::runnable_function_wrapper >
                            ( new zi::concurrency_::runnable_function_wrapper( task ) );
     }
 
@@ -76,7 +76,7 @@ public:
     }
 
     template< class Runnable >
-    void push_front(om::shared_ptr<Runnable> task)
+    void push_front(std::shared_ptr<Runnable> task)
     {
         zi::guard g(lock_);
         queue_.push_front( task );
@@ -97,7 +97,7 @@ public:
     }
 
     template< class Runnable >
-    void push_back(om::shared_ptr<Runnable> task)
+    void push_back(std::shared_ptr<Runnable> task)
     {
         zi::guard g(lock_);
         queue_.push_back( task );

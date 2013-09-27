@@ -114,10 +114,10 @@ private:
     inline void selectSegments()
     {
         if(altKey_){
-            OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::SUBTRACT);
+            OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::common::AddOrSubtract::SUBTRACT);
 
         } else {
-            OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::ADD);
+            OmBrushSelect::SelectByLine(state_, dataClickPoint_, om::common::AddOrSubtract::ADD);
         }
 
         state_->SetLastDataPoint(dataClickPoint_);
@@ -131,7 +131,7 @@ private:
 
     void paint()
     {
-        const OmSegID segmentValueToPaint = state_->GetSegIDForPainting();
+        const om::common::SegID segmentValueToPaint = state_->GetSegIDForPainting();
 
         assert(segmentValueToPaint);
 

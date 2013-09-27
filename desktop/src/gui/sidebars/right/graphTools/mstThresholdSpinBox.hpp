@@ -1,7 +1,7 @@
 #pragma once
 
 #include "actions/omActions.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "events/details/omRefreshMSTthreshold.h"
 #include "events/omEvents.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
@@ -16,7 +16,7 @@ class MSTThresholdSpinBox
 Q_OBJECT
 public:
     MSTThresholdSpinBox(GraphTools* d)
-        : OmDoubleSpinBox(d, om::DONT_UPDATE_AS_TYPE)
+        : OmDoubleSpinBox(d, false)
         , mParent(d)
     {
         setSingleStep(0.002);

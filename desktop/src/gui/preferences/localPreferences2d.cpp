@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/preferences/checkboxHideCrosshairs.hpp"
 #include "gui/preferences/localPreferences2d.h"
 #include "gui/preferences/spinBoxCrosshairOpeningSize.hpp"
@@ -26,17 +26,17 @@ QGroupBox* LocalPreferences2d::makeGeneralPropBox()
 
     layout->addWidget(new OmLabelHBox(widget,
                                     new CrosshairOpeningSizeSpinBox(widget),
-                                    om::LEFT_SIDE,
+                                    om::common::Direction::LEFT_SIDE,
                                     "Crosshair Opening Size"));
 
     layout->addWidget(new OmLabelHBox(widget,
                       				  new MipRateSpinBox(widget),
-                      				  om::LEFT_SIDE,
+                      				  om::common::Direction::LEFT_SIDE,
                       				  "Mip Rate"));
 
     layout->addWidget(new OmLabelHBox(widget,
                                       new ScrollRateSpinBox(widget),
-                                      om::LEFT_SIDE,
+                                      om::common::Direction::LEFT_SIDE,
                                       "Scroll Rate"));
 
     return widget;

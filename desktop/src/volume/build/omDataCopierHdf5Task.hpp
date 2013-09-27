@@ -1,7 +1,7 @@
 #pragma once
 
 #include "chunks/omChunk.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
@@ -20,7 +20,7 @@ class OmDataCopierHdf5Task : public zi::runnable {
 private:
     VOL *const vol_;
     const OmDataPath path_;
-    const om::AffinityGraph aff_;
+    const om::common::AffinityGraph aff_;
 
     const Vector3i volSize_;
     OmHdf5 *const hdf5reader_;
@@ -35,7 +35,7 @@ private:
 public:
     OmDataCopierHdf5Task(VOL* vol,
                          const OmDataPath& path,
-                         const om::AffinityGraph aff,
+                         const om::common::AffinityGraph aff,
                          const Vector3i volSize,
                          OmHdf5 *const hdf5reader,
                          const QString mip0fnp,
@@ -87,8 +87,8 @@ private:
         //weirdness w/ hdf5 and/or boost::multi_arry requires flipping x/z
         //TODO: figure out!
         OmImage<T, 3> partialChunk(OmExtents[dataSize.z]
-		                                    [dataSize.y]
-		                                    [dataSize.x],
+                                   [dataSize.y]
+                                   [dataSize.x],
                                    data->getPtr<T>());
 
         const Vector3i chunkSize = chunkExtent.getDimensions();
@@ -115,7 +115,7 @@ private:
             return doResizePartialChunk<float>(data, chunkExtent, dataExtent);
         case OmVolDataType::UNKNOWN:
         default:
-            throw OmIoException("unknown data type");
+            throw om::IoException("unknown data type");
         }
     }
 
@@ -128,7 +128,7 @@ private:
 
         QFile file(mip0fnp_);
         if(!file.open(QIODevice::ReadWrite)){
-            throw OmIoException("could not open file", mip0fnp_);
+            throw om::IoException("could not open file");
         }
 
         file.seek(chunkOffset);
@@ -154,7 +154,7 @@ private:
         intersect_extent.intersect(volExtent);
 
         if(intersect_extent.isEmpty()) {
-            throw OmIoException("should not have happened");
+            throw om::IoException("should not have happened");
         }
 
         OmDataWrapperPtr partialChunk =

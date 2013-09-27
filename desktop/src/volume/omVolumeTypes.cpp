@@ -17,7 +17,7 @@ int OmVolumeTypeHelpers::getHDF5FileType(const OmVolDataType type)
         return H5T_IEEE_F32LE;
     case OmVolDataType::UNKNOWN:
     default:
-        throw OmIoException("unknown data type");
+        throw om::IoException("unknown data type");
     }
 }
 
@@ -37,7 +37,7 @@ int OmVolumeTypeHelpers::getHDF5MemoryType(const OmVolDataType type)
         return H5T_NATIVE_FLOAT;
     case OmVolDataType::UNKNOWN:
     default:
-        throw OmIoException("unknown data type");
+        throw om::IoException("unknown data type");
     }
 }
 
@@ -49,7 +49,7 @@ QString OmVolumeTypeHelpers::GetTypeAsQString(const OmVolDataType type){
     return QString::fromStdString(GetTypeAsString(type));
 }
 
-OmVolDataType OmVolumeTypeHelpers::GetTypeFromString(const QString & type)
+OmVolDataType OmVolumeTypeHelpers::GetTypeFrstring(const QString & type)
 {
     boost::optional<OmVolDataType> ret =
         OmVolDataType::get_by_value(type.toStdString());
@@ -58,6 +58,6 @@ OmVolDataType OmVolumeTypeHelpers::GetTypeFromString(const QString & type)
         return *ret;
     }
 
-    throw OmIoException("invalid type", type);
+    throw om::IoException("invalid type");
 }
 

@@ -6,8 +6,8 @@ std::ostream& operator<<(std::ostream &out, const OmBrushOppInfo& i)
         << i.viewType << ", "
         << "brushDia: " << i.brushDia << ", "
         << "depth: " << i.depth << ", "
-        << "ptsInCircle: " << i.ptsInCircle.size() << ", "
-        << "AddOrSubtract: " << i.addOrSubract;
+        << "ptsInCircle: " << i.ptsInCircle.size() << ", ";
+    //<< "AddOrSubtract: " << i.addOrSubract;
 
     return out;
 }

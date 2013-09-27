@@ -10,10 +10,10 @@
 
 class OmMouseEvents{
 private:
-    boost::scoped_ptr<OmMouseEventMove> move_;
-    boost::scoped_ptr<OmMouseEventPress> press_;
-    boost::scoped_ptr<OmMouseEventRelease> release_;
-    boost::scoped_ptr<OmMouseEventWheel> wheel_;
+    std::unique_ptr<OmMouseEventMove> move_;
+    std::unique_ptr<OmMouseEventPress> press_;
+    std::unique_ptr<OmMouseEventRelease> release_;
+    std::unique_ptr<OmMouseEventWheel> wheel_;
 
 public:
     OmMouseEvents(OmView2d* v2d, OmView2dState* state)

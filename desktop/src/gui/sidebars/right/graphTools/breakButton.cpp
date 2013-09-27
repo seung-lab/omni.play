@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/sidebars/right/graphTools/breakButton.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "system/cache/omCacheManager.h"

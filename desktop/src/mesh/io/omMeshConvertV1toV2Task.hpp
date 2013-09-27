@@ -12,8 +12,8 @@ private:
     OmSegmentation *const segmentation_;
     const double threshold_;
 
-    boost::scoped_ptr<OmMeshReaderV1> hdf5Reader_;
-    boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
+    std::unique_ptr<OmMeshReaderV1> hdf5Reader_;
+    std::unique_ptr<OmMeshWriterV2> meshWriter_;
 
 public:
     OmMeshConvertV1toV2Task(OmMeshManager* meshManager)
@@ -28,7 +28,7 @@ public:
     {
         printf("copying mesh data...\n");
 
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             segmentation_->GetMipChunkCoords();
 
         FOR_EACH(iter, *coordsPtr)
@@ -65,7 +65,7 @@ private:
                 continue;
             }
 
-            om::shared_ptr<OmDataForMeshLoad> mesh =
+            std::shared_ptr<OmDataForMeshLoad> mesh =
                 hdf5Reader_->Read(*segID, coord);
 
             meshWriter_->Save(*segID, coord, mesh,

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/dataWrappers.h"
 #include "view3d/omSegmentPickPoint.h"
 
@@ -59,5 +59,5 @@ private:
     void doRefresh();
 
     static void writeChildrenFile(const QString fnp, om::gui::progressBarDialog* dialog,
-                                  om::shared_ptr<std::deque<std::string> > children);
+                                  std::shared_ptr<std::deque<std::string> > children);
 };

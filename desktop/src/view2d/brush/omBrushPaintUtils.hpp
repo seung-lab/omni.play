@@ -11,7 +11,7 @@
 class OmBrushPaintUtils {
 public:
     static void PaintPts(OmBrushOppInfo* info, om::pt3d_list_t* pts,
-                         const OmSegID segIDtoPaint)
+                         const om::common::SegID segIDtoPaint)
     {
         const om::globalBbox& segDataExtent = info->segmentation->Coords().GetExtent();
 
@@ -65,7 +65,7 @@ private:
         //     ptsInChunks[chunkCoord].insert(chunkPos);
         // }
 
-        const OmIDsSet& segset = SegmentationDataWrapper::ValidIDs();
+        const om::common::IDSet& segset = SegmentationDataWrapper::ValidIDs();
 
         FOR_EACH(iter, segset)
         {

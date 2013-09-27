@@ -10,8 +10,7 @@
 #include "actions/io/omActionLogger.hpp"
 #include "actions/io/omActionReplayer.hpp"
 #include "actions/omActions.h"
-#include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/archive/old/omDataArchiveProject.h"
 #include "datalayer/archive/project.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -51,7 +50,7 @@ private:
     bool isReadOnly_;
 
     OmProjectVolumes volumes_;
-    boost::scoped_ptr<OmProjectGlobals> globals_;
+    std::unique_ptr<OmProjectGlobals> globals_;
 
 public:
     OmProjectImpl()
@@ -78,7 +77,7 @@ public:
     OmHdf5* OldHDF5()
     {
         if(!oldHDF5_){
-            throw OmIoException("no old hdf5 file present");
+            throw om::IoException("no old hdf5 file present");
         }
         return oldHDF5_;
     }
@@ -171,7 +170,7 @@ private:
         if(!dir.exists())
         {
             if(!dir.mkpath(dirStr)){
-                throw OmIoException("could not make path", dirStr);
+                throw om::IoException("could not make path");
             }
         }
     }
@@ -179,7 +178,7 @@ private:
     void doLoad(const QString& fnp, QWidget* guiParent)
     {
         if(!QFile::exists(fnp)){
-            throw OmIoException("Project file not found at", fnp);
+            throw om::IoException("Project file not found at");
         }
 
         omniFile_ = fnp;
@@ -202,7 +201,7 @@ private:
             const int userWasSelected = chooser->exec();
 
             if(!userWasSelected){
-                throw OmIoException("user not choosen");
+                throw om::IoException("user not choosen");
             }
         }
 
@@ -248,7 +247,7 @@ private:
     {
         QFile file(omniFile_);
         if(!file.open(QIODevice::WriteOnly)) {
-            throw OmIoException("could not open", omniFile_);
+            throw om::IoException("could not open");
         }
     }
 
@@ -277,7 +276,7 @@ private:
         QFile newProjectMetadafile(OmFileNames::ProjectMetadataFileOld());
 
         if(!newProjectMetadafile.open(QIODevice::WriteOnly)) {
-            throw OmIoException("could not open", projectMetadataFile_);
+            throw om::IoException("could not open");
         }
 
         newProjectMetadafile.write(data, size);

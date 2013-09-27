@@ -1,10 +1,8 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "utility/yaml/omYaml.hpp"
+#include "common/common.h"
 
 namespace om {
-
 
 // TODO: Locking?
 class userSettings

@@ -6,7 +6,7 @@
 
 class OmBrushSelectUtils {
 public:
-    om::shared_ptr<boost::unordered_set<OmSegID> >
+    std::shared_ptr<std::unordered_set<om::common::SegID> >
     static FindSegIDsFromPoints(OmBrushOppInfo* info,
                                 om::pt3d_list_t* pts)
     {
@@ -17,7 +17,7 @@ public:
         return chunksAndPts.GetSegIDs();
     }
 
-    void static SendEvent(OmBrushOppInfo* info, boost::unordered_set<OmSegID>* segIDs)
+    void static SendEvent(OmBrushOppInfo* info, std::unordered_set<om::common::SegID>* segIDs)
     {
         OmSegmentSelector selector(info->segmentation->GetSDW(),
                                    NULL, "view2d_selector");
@@ -28,7 +28,7 @@ public:
         selector.AugmentListOnly(true);
         selector.AddOrSubtract(info->addOrSubract);
 
-        if(om::ADD == info->addOrSubract){
+        if(om::common::AddOrSubtract::ADD == info->addOrSubract){
             selector.InsertSegments(segIDs);
 
         } else {

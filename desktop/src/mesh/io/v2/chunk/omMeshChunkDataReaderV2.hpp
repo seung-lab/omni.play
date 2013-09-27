@@ -1,7 +1,7 @@
 #pragma once
 
 #include "volume/omSegmentationFolder.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "chunks/omChunk.h"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
@@ -27,14 +27,14 @@ public:
 
     // no locking needed
     template <typename T>
-    om::shared_ptr<T> Read(const OmMeshFilePart& entry)
+    std::shared_ptr<T> Read(const OmMeshFilePart& entry)
     {
         const int64_t numBytes = entry.totalBytes;
 
         assert(numBytes);
 
-        om::shared_ptr<T> ret =
-            OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
+        std::shared_ptr<T> ret =
+            om::mem::Malloc<T>::MallocNumBytes(numBytes, om::common::ZeroMem::DONT_ZERO_FILL);
 
         char* dataCharPtr = reinterpret_cast<char*>(ret.get());
 
@@ -44,7 +44,7 @@ public:
 
         if(!reader.seek(entry.offsetIntoFile))
         {
-            throw OmIoException("could not seek to " +
+            throw om::IoException("could not seek to " +
                                 om::string::num(entry.offsetIntoFile));
         }
 
@@ -55,7 +55,7 @@ public:
             std::cout << "could not read data; numBytes is " << numBytes
                       << ", but only read " << bytesRead << "\n"
                       << std::flush;
-            throw OmIoException("could not read fully file", fnp_);
+            throw om::IoException("could not read fully file", fnp_);
         }
 
         return ret;

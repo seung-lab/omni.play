@@ -5,12 +5,12 @@
 
 class OmBrushPaintLine {
 private:
-    const om::shared_ptr<OmBrushOppInfo> info_;
-    const OmSegID segIDtoPaint_;
+    const std::shared_ptr<OmBrushOppInfo> info_;
+    const om::common::SegID segIDtoPaint_;
 
 public:
-    OmBrushPaintLine(om::shared_ptr<OmBrushOppInfo> info,
-                     const OmSegID segIDtoPaint)
+    OmBrushPaintLine(std::shared_ptr<OmBrushOppInfo> info,
+                     const om::common::SegID segIDtoPaint)
         : info_(info)
         , segIDtoPaint_(segIDtoPaint)
     {}
@@ -22,7 +22,7 @@ public:
     {
         OmBrushOppLine lineOpp(info_);
 
-        om::shared_ptr<om::pt3d_list_t> pts = lineOpp.GetPts(first, second);
+        std::shared_ptr<om::pt3d_list_t> pts = lineOpp.GetPts(first, second);
 
         OmBrushPaintUtils::PaintPts(info_.get(), pts.get(), segIDtoPaint_);
     }

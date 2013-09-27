@@ -1,5 +1,7 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omMipVolume.h"
+#include "globalCoord.h"
+#include "normCoord.h"
 
 namespace om {
 
@@ -21,7 +23,7 @@ normBbox::normBbox(normCoord min, normCoord max)
     , vol_(min.volume())
 {
     if(min.volume() != max.volume()) {
-        throw OmArgException("min and max coords come from different volumes");
+        throw om::ArgException("min and max coords come from different volumes");
     }
 }
 

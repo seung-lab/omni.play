@@ -30,7 +30,7 @@ public Q_SLOTS:
 private:
     OmViewGroupState *const vgs_;
 
-    boost::scoped_ptr<QWidget> widget_;
+    std::unique_ptr<QWidget> widget_;
 
     QVBoxLayout* mainLayout_;
 

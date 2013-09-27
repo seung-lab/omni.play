@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
@@ -38,24 +38,24 @@ public:
         return false;
     }
 
-    inline om::shared_ptr<OmDataForMeshLoad>
+    inline std::shared_ptr<OmDataForMeshLoad>
     Read(const OmMeshCoord& meshCoord){
         return Read(meshCoord.SegID(), meshCoord.Coord());
     }
 
-    inline om::shared_ptr<OmDataForMeshLoad>
-    Read(const OmSegID segID, const om::chunkCoord& coord)
+    inline std::shared_ptr<OmDataForMeshLoad>
+    Read(const om::common::SegID segID, const om::chunkCoord& coord)
     {
         try{
             return doRead(segID, coord);
         } catch(...){
-            return om::make_shared<OmDataForMeshLoad>();
+            return std::make_shared<OmDataForMeshLoad>();
         }
     }
 
 private:
 
-    bool isMeshDataPresent(const OmSegID segID, const om::chunkCoord& coord)
+    bool isMeshDataPresent(const om::common::SegID segID, const om::chunkCoord& coord)
     {
         try{
             return doIsMeshDataPresent(segID, coord);
@@ -64,7 +64,7 @@ private:
         }
     }
 
-    bool doIsMeshDataPresent(const OmSegID segID, const om::chunkCoord& coord)
+    bool doIsMeshDataPresent(const om::common::SegID segID, const om::chunkCoord& coord)
     {
         const OmMeshCoord meshCoord(coord, segID);
 
@@ -84,11 +84,11 @@ private:
         return true;
     }
 
-    om::shared_ptr<OmDataForMeshLoad>
-    doRead(const OmSegID segID, const om::chunkCoord& coord)
+    std::shared_ptr<OmDataForMeshLoad>
+    doRead(const om::common::SegID segID, const om::chunkCoord& coord)
     {
-        om::shared_ptr<OmDataForMeshLoad> ret =
-            om::make_shared<OmDataForMeshLoad>();
+        std::shared_ptr<OmDataForMeshLoad> ret =
+            std::make_shared<OmDataForMeshLoad>();
 
         const OmMeshCoord meshCoord(coord, segID);
 
@@ -107,7 +107,7 @@ private:
 
         ret->HasData(true);
 
-        std::pair<int, om::shared_ptr<uint32_t> > trian =
+        std::pair<int, std::shared_ptr<uint32_t> > trian =
             copyOutData<uint32_t>(path, "trianoffset.dat" );
         if(trian.first){
             ret->SetTrianData(trian.second,
@@ -115,7 +115,7 @@ private:
                               trian.first);
         }
 
-        std::pair<int, om::shared_ptr<uint32_t> > strips =
+        std::pair<int, std::shared_ptr<uint32_t> > strips =
             copyOutData<uint32_t>(path, "stripoffset.dat" );
         if(strips.first){
             ret->SetStripData(strips.second,
@@ -123,7 +123,7 @@ private:
                               strips.first);
         }
 
-        std::pair<int, om::shared_ptr<uint32_t> > vertexIndex =
+        std::pair<int, std::shared_ptr<uint32_t> > vertexIndex =
             copyOutData<uint32_t>(path, "vertexoffset.dat" );
         if(vertexIndex.first){
             ret->SetVertexIndex(vertexIndex.second,
@@ -131,7 +131,7 @@ private:
                                 vertexIndex.first);
         }
 
-        std::pair<int, om::shared_ptr<float> > vertexData =
+        std::pair<int, std::shared_ptr<float> > vertexData =
             copyOutData<float>(path, "vertex.dat" );
         if(vertexData.first){
             ret->SetVertexData(vertexData.second,
@@ -155,7 +155,7 @@ private:
     }
 
     template <typename T>
-    std::pair<int, om::shared_ptr<T> >
+    std::pair<int, std::shared_ptr<T> >
     copyOutData(const std::string& path, const std::string& fileName)
     {
         const OmDataPath fpath( path + fileName );
@@ -163,7 +163,7 @@ private:
         int size;
         OmDataWrapperPtr wrappedData = reader_->readDataset(fpath, &size);
 
-        om::shared_ptr<T> data;
+        std::shared_ptr<T> data;
         if(size){
             data = om::ptrs::UnWrap<T>(wrappedData);
         }

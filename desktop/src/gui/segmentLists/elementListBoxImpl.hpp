@@ -1,7 +1,7 @@
 #pragma once
 
 #include "actions/omSelectSegmentParams.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "events/details/omSegmentEvent.h"
 #include "gui/segmentLists/details/segmentListRecent.h"
 #include "gui/segmentLists/details/segmentListUncertain.h"
@@ -120,7 +120,7 @@ private:
 
     void updateValidBar(const SegmentationDataWrapper& sdw)
     {
-        const uint64_t valid = sdw.SegmentLists()->NumVoxels(om::VALID);
+        const uint64_t valid = sdw.SegmentLists()->NumVoxels(om::common::SegListType::VALID);
 
         percentValidated_->SetMaximum(sdw.SegmentLists()->TotalNumVoxels());
         percentValidated_->SetValue(valid);

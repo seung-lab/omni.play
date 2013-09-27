@@ -48,7 +48,7 @@ public:
 
         QString volDataType;
         in >> volDataType;
-        vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+        vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFrstring(volDataType);
 
         vol_.LoadPath();
 
@@ -71,7 +71,7 @@ private:
         }
 
         if(!file.open(QIODevice::ReadOnly)){
-            throw OmIoException("error reading file", filePath);
+            throw om::IoException("error reading file", filePath);
         }
 
         QDataStream in(&file);
@@ -88,7 +88,7 @@ private:
         vol_.Coords().SetAbsOffset(offset);
 
         if(!in.atEnd()){
-            throw OmIoException("corrupt file?", filePath);
+            throw om::IoException("corrupt file?", filePath);
         }
     }
 

@@ -2,7 +2,7 @@
 #include "view3d/omCamera.h"
 #include "view3d/omView3d.h"
 #include "mesh/omVolumeCuller.h"
-#include "common/omGl.h"
+#include "utility/glInclude.h"
 
 static const float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
 

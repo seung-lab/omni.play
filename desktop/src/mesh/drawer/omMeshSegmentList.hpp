@@ -1,8 +1,8 @@
 #pragma once
 
 #include "chunks/omSegChunk.h"
-#include "common/omCommon.h"
-#include "common/omDebug.h"
+#include "common/common.h"
+#include "common/logging.h"
 #include "mesh/drawer/omMeshSegmentListTask.h"
 #include "mesh/drawer/omMeshSegmentListTypes.hpp"
 #include "threads/omTaskManager.hpp"
@@ -51,8 +51,8 @@ public:
         { // add coord to list to be fetched
             spList = OmSegPtrListValid(true);
 
-            om::shared_ptr<OmMeshSegmentListTask> task
-                = om::make_shared<OmMeshSegmentListTask>(chunk,
+            std::shared_ptr<OmMeshSegmentListTask> task
+                = std::make_shared<OmMeshSegmentListTask>(chunk,
                                                          rootSeg,
                                                          this,
                                                          segmentation_);

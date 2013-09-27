@@ -4,13 +4,13 @@
 
 class OmBrushOppCircle {
 private:
-    const om::shared_ptr<OmBrushOppInfo> info_;
+    const std::shared_ptr<OmBrushOppInfo> info_;
     const int brushDia_;
     const int depth_;
-    const ViewType viewType_;
+    const om::common::ViewType viewType_;
 
 public:
-    OmBrushOppCircle(om::shared_ptr<OmBrushOppInfo> info)
+    OmBrushOppCircle(std::shared_ptr<OmBrushOppInfo> info)
         : info_(info)
         , brushDia_(info_->brushDia)
         , depth_(info_->depth)
@@ -20,11 +20,11 @@ public:
     virtual ~OmBrushOppCircle()
     {}
 
-    om::shared_ptr<om::pt3d_list_t>
+    std::shared_ptr<om::pt3d_list_t>
     GetPts(const om::globalCoord& xyzCoord)
     {
-        om::shared_ptr<om::pt3d_list_t> ret =
-            om::make_shared<om::pt3d_list_t>();
+        std::shared_ptr<om::pt3d_list_t> ret =
+            std::make_shared<om::pt3d_list_t>();
 
         OmBrushOppUtils::GetPts(info_.get(), ret.get(), xyzCoord, viewType_);
 

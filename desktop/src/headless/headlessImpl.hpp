@@ -73,7 +73,7 @@ public:
         OmProject::Save();
     }
 
-    static void loadHDF5seg(const QString file, OmID& segmentationID_)
+    static void loadHDF5seg(const QString file, om::common::ID& segmentationID_)
     {
         OmBuildSegmentation bs;
         bs.addFileNameAndPath(file);
@@ -82,7 +82,7 @@ public:
         segmentationID_ = bs.GetDataWrapper().GetID();
     }
 
-    static void ClearMST(const OmID segmentationID)
+    static void ClearMST(const om::common::ID segmentationID)
     {
         SegmentationDataWrapper sdw(segmentationID);
 
@@ -103,13 +103,13 @@ public:
 
         OmSegments* segments = sdw.Segments();
 
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
+        for(om::common::SegID i = 1; i <= segments->getMaxValue(); ++i)
         {
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){
                 continue;
             }
-            seg->SetListType(om::WORKING);
+            seg->SetListType(om::common::SegListType::WORKING);
         }
 
         sdw.ValidGroupNum()->Clear();
@@ -118,13 +118,13 @@ public:
         OmActions::Save();
     }
 
-    static void RecolorAllSegments(const OmID segmentationID)
+    static void RecolorAllSegments(const om::common::ID segmentationID)
     {
         SegmentationDataWrapper sdw(segmentationID);
 
         OmSegments* segments = sdw.Segments();
 
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
+        for(om::common::SegID i = 1; i <= segments->getMaxValue(); ++i)
         {
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){
@@ -136,7 +136,7 @@ public:
         OmActions::Save();
     }
 
-    static void RebuildCenterOfSegmentData(const OmID segmentationID)
+    static void RebuildCenterOfSegmentData(const om::common::ID segmentationID)
     {
         SegmentationDataWrapper sdw(segmentationID);
         OmSegmentCenter::RebuildCenterOfSegmentData(sdw);
@@ -181,28 +181,28 @@ public:
                   << "\n";
     }
 
-    static void ReValidateEveryObject(const OmID segmentationID)
+    static void ReValidateEveryObject(const om::common::ID segmentationID)
     {
         SegmentationDataWrapper sdw(segmentationID);
         OmSegmentUtils::ReValidateEveryObject(sdw);
         OmActions::Save();
     }
 
-    static void DumpSegmentColorHistograms(const OmID segmentationID){
+    static void DumpSegmentColorHistograms(const om::common::ID segmentationID){
         dumpRootSegmentColorHistograms(segmentationID, false);
     }
 
-    static void DumpRootSegmentColorHistograms(const OmID segmentationID){
+    static void DumpRootSegmentColorHistograms(const om::common::ID segmentationID){
         dumpRootSegmentColorHistograms(segmentationID, true);
     }
 
 private:
-    static void dumpRootSegmentColorHistograms(const OmID segmentationID,
+    static void dumpRootSegmentColorHistograms(const om::common::ID segmentationID,
                                                const bool findRoot)
     {
         SegmentationDataWrapper sdw(segmentationID);
 
-        std::map<OmColor, int> segColorHist;
+        std::map<om::common::Color, int> segColorHist;
 
         static const int min_variance = 120;
 
@@ -213,7 +213,7 @@ private:
                     const int avg2 = ( r*r + g*g + b*b ) / 3;
                     const int v = avg2 - avg*avg;
                     if(v >= min_variance){
-                        const OmColor color = {r, g, b};
+                        const om::common::Color color = {r, g, b};
                         segColorHist[color] = 0;
                     }
                 }
@@ -225,7 +225,7 @@ private:
                   << " colors\n";
 
         OmSegments* segments = sdw.Segments();
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i){
+        for(om::common::SegID i = 1; i <= segments->getMaxValue(); ++i){
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){
                 continue;
@@ -233,7 +233,7 @@ private:
             if(findRoot){
                 seg = segments->findRoot(seg);
             }
-            const OmColor color = seg->GetColorInt();
+            const om::common::Color color = seg->GetColorInt();
 
             ++(segColorHist[color]);
         }
@@ -247,7 +247,7 @@ private:
         if(data.open(QFile::WriteOnly | QFile::Truncate)) {
             printf("writing segment file %s\n", qPrintable(outFile));
         } else{
-            throw OmIoException("could not open file", outFile);
+            throw om::IoException("could not open file");
         }
 
         QTextStream out(&data);
@@ -255,14 +255,14 @@ private:
         out << "red\tgreen\tblue\tnum\n";
 
         FOR_EACH(iter, segColorHist){
-            out << iter->first << "\t"
-                << iter->second << "\n";
+            //out << iter->first << "\t"
+            //    << iter->second << "\n";
         }
     }
 
 public:
 
-    static void TimeSegChunkReads(const OmID segmentationID,
+    static void TimeSegChunkReads(const om::common::ID segmentationID,
                                   const bool randomize,
                                   const bool useMeshChunk)
     {
@@ -273,7 +273,7 @@ public:
 
         double timeSecs = 0;
 
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol.GetMipChunkCoords();
         std::deque<om::chunkCoord>& coords = *coordsPtr;
         const uint32_t numChunks = coords.size();
@@ -315,7 +315,7 @@ public:
         std::cout << megsPerSec << " MB/sec\n";
     }
 
-    static void Mesh(const OmID segmentationID)
+    static void Mesh(const om::common::ID segmentationID)
     {
         const SegmentationDataWrapper sdw(segmentationID);
         OmBuildSegmentation bs(sdw);
@@ -355,7 +355,7 @@ public:
         OmMeshManagers* meshManagers = sdw.GetSegmentation().MeshManagers();
         OmMeshManager* meshManager = meshManagers->GetManager(1);
 
-        boost::scoped_ptr<OmMeshWriterV2> meshWriter(new OmMeshWriterV2(meshManager));
+        std::unique_ptr<OmMeshWriterV2> meshWriter(new OmMeshWriterV2(meshManager));
 
         meshWriter->CheckEverythingWasMeshed();
     }

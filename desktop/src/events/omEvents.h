@@ -1,7 +1,9 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
+class QWidget;
+class QString;
 class OmSelectSegmentsParams;
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
@@ -15,7 +17,7 @@ public:
     static void SegmentGUIlist(const SegmentationDataWrapper& sdw,
                                const bool stayOnPage);
     static void SegmentModified();
-    static void SegmentModified(om::shared_ptr<OmSelectSegmentsParams> params);
+    static void SegmentModified(std::shared_ptr<OmSelectSegmentsParams> params);
     static void SegmentSelected();
     static void ViewCenterChanged();
     static void View3dRecenter();

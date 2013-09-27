@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "segment/lists/omSegmentLists.h"
 #include "utility/dataWrappers.h"
@@ -20,13 +20,13 @@ private:
     }
 
     uint64_t Size() {
-        return sdw_.SegmentLists()->Size(om::UNCERTAIN);
+        return sdw_.SegmentLists()->Size(om::common::SegListType::UNCERTAIN);
     }
 
-    om::shared_ptr<GUIPageOfSegments>
+    std::shared_ptr<GUIPageOfSegments>
     getPageSegments(const GUIPageRequest& request)
     {
-        return sdw_.SegmentLists()->GetSegmentGUIPage(om::UNCERTAIN, request);
+        return sdw_.SegmentLists()->GetSegmentGUIPage(om::common::SegListType::UNCERTAIN, request);
     }
 
     int getPreferredTabIndex(){

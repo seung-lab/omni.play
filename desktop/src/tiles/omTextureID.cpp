@@ -1,5 +1,5 @@
 #include "tiles/pools/omPooledTile.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "tiles/cache/omTileCache.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 #include "tiles/omTextureID.h"
@@ -11,7 +11,7 @@ OmTextureID::OmTextureID(const int tileDim, OmPooledTile<uint8_t>* data)
     , context_(NULL)
 {}
 
-OmTextureID::OmTextureID(const int tileDim, OmPooledTile<OmColorARGB>* data)
+OmTextureID::OmTextureID(const int tileDim, OmPooledTile<om::common::ColorARGB>* data)
     : tileDim_(tileDim)
     , pooledTile_(data)
     , flag_(OMTILE_NEEDCOLORMAP)
@@ -31,7 +31,7 @@ OmTextureID::~OmTextureID()
 void* OmTextureID::GetTileData() const
 {
     if(!pooledTile_){
-        throw OmIoException("no data");
+        throw om::IoException("no data");
     }
 
     return pooledTile_->GetDataVoid();

@@ -17,6 +17,6 @@ void OmToolModeEvent::Dispatch(OmEventListener * pListener)
         return;
 
     default:
-        throw OmArgException("unknown event type");
+        throw om::ArgException("unknown event type");
     }
 }

@@ -19,7 +19,7 @@ void OmActionDumper::Dump(const QString& fnp)
 {
     QFile file(fnp);
     if(!file.open(QIODevice::WriteOnly)){
-        throw OmIoException("could not open", fnp);
+        throw om::IoException("could not open");
     }
 
     out_.reset(new QTextStream(&file));
@@ -39,7 +39,7 @@ void OmActionDumper::readAndDumpFile(const QFileInfo& fileInfo)
 {
     QFile file(fileInfo.absoluteFilePath());
     if(!file.open(QIODevice::ReadOnly)){
-        throw OmIoException("could not open", file.fileName());
+        throw om::IoException("could not open");
     }
 
     QDataStream in(&file);
@@ -62,11 +62,11 @@ void OmActionDumper::readAndDumpFile(const QFileInfo& fileInfo)
     QString postfix;
     in >> postfix;
     if("OMNI_LOG" != postfix){
-        throw OmIoException("bad postfix", file.fileName());
+        throw om::IoException("bad postfix");
     }
 
     if(!in.atEnd()){
-        throw OmIoException("corrupt log file dectected", file.fileName());
+        throw om::IoException("corrupt log file dectected");
     }
 }
 
@@ -109,6 +109,6 @@ void OmActionDumper::dispatchAction(const QString& actionName, QDataStream& in,
          doDumpFile<OmProjectSaveAction, OmProjectSaveActionImpl>(in, fnp);
          break;
      default:
-         throw OmArgException("unknown action", actionName);
+         throw om::ArgException("unknown action");
      };
 }

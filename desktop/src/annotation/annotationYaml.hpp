@@ -2,8 +2,8 @@
 
 #include "annotation/annotation.h"
 #include "yaml-cpp/yaml.h"
-#include "utility/yaml/baseTypes.hpp"
-#include "utility/yaml/omYaml.hpp"
+#include "utility/yaml/omBaseTypes.hpp"
+#include "coordinates/yaml.h"
 
 namespace YAML {
 

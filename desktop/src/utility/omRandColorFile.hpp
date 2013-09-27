@@ -1,7 +1,8 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omString.hpp"
+#include "common/colors.h"
+#include "common/common.h"
+#include "common/string.hpp"
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/omRand.hpp"
@@ -12,8 +13,8 @@ private:
 
     const std::string fnp_;
 
-    om::shared_ptr<QFile> file_;
-    OmColor* values_;
+    std::shared_ptr<QFile> file_;
+    om::common::Color* values_;
     int64_t numEntries_;
 
     friend class OmProjectGlobals;
@@ -28,14 +29,14 @@ public:
     ~OmRandColorFile()
     {}
 
-    OmColor GetRandomColor()
+    om::common::Color GetRandomColor()
     {
         assert(values_);
         const int index = OmRand::GetRandomInt(0, numEntries_-1);
         return values_[index];
     }
 
-    OmColor GetRandomColor(const uint32_t segID)
+    om::common::Color GetRandomColor(const uint32_t segID)
     {
         assert(values_);
         const int index = segID % numEntries_;
@@ -54,14 +55,14 @@ private:
     void mapReadOnly()
     {
         if(!om::file::exists(fnp_)){
-            throw OmIoException("file doesn't exist", fnp_);
+            throw om::IoException("file doesn't exist", fnp_);
         }
 
         om::file::openFileRO(file_, fnp_);
 
-        values_ = om::file::mapFile<OmColor>(file_.get());
+        values_ = om::file::mapFile<om::common::Color>(file_.get());
 
-        numEntries_ = file_->size() / sizeof(OmColor);
+        numEntries_ = file_->size() / sizeof(om::common::Color);
     }
 
     std::string fileName() const
@@ -73,7 +74,7 @@ private:
         return s.str();
     }
 
-    static void buildColorTable(std::vector<OmColor>& colorTable)
+    static void buildColorTable(std::vector<om::common::Color>& colorTable)
     {
         // make sure to change version_ if color table algorithm changes...
 
@@ -91,7 +92,7 @@ private:
                     const int v = avg2 - avg*avg;
 
                     if(v >= min_variance){
-                        const OmColor color = {
+                        const om::common::Color color = {
                         	static_cast<uint8_t>(r),
                         	static_cast<uint8_t>(g),
                         	static_cast<uint8_t>(b)
@@ -108,7 +109,7 @@ private:
 
     void setupFile()
     {
-        std::vector<OmColor> colorTable;
+        std::vector<om::common::Color> colorTable;
 
         buildColorTable(colorTable);
 

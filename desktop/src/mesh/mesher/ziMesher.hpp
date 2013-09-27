@@ -2,7 +2,7 @@
 
 #include "chunks/omChunkUtils.hpp"
 #include "chunks/omSegChunk.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "mesh/mesher/MeshCollector.hpp"
 #include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/io/omMeshMetadata.hpp"
@@ -63,11 +63,11 @@ public:
     //     OmChunkUtils::RefindUniqueChunkValues(segmentation_->GetID());
     // }
 
-    om::shared_ptr<om::gui::progress> Progress(){
+    std::shared_ptr<om::gui::progress> Progress(){
         return progress_.Progress();
     }
 
-    void Progress(om::shared_ptr<om::gui::progress> p){
+    void Progress(std::shared_ptr<om::gui::progress> p){
         progress_.Progress(p);
     }
 
@@ -81,7 +81,7 @@ private:
     std::map<om::chunkCoord, MeshCollector*> chunkCollectors_;
 
     OmMeshManager *const meshManager_;
-    boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
+    std::unique_ptr<OmMeshWriterV2> meshWriter_;
 
     const int numParallelChunks_;
     const int numThreadsPerChunk_;
@@ -91,7 +91,7 @@ private:
 
     void init()
     {
-        om::shared_ptr<std::deque<om::chunkCoord> > levelZeroChunks =
+        std::shared_ptr<std::deque<om::chunkCoord> > levelZeroChunks =
             segmentation_->GetMipChunkCoords(0);
 
         progress_.SetTotalNumChunks(levelZeroChunks->size());
@@ -159,7 +159,7 @@ private:
         // corner case: no MIP levels >0
         while (c.getLevel() <= rootMipLevel_)
         {
-            std::deque<OmSegID> commonIDs;
+            std::deque<om::common::SegID> commonIDs;
 
             const ChunkUniqueValues segIDs =
                 segmentation_->ChunkUniqueValues()->Values(c, threshold_);
@@ -243,7 +243,7 @@ private:
 
         OmChunkUtils::RewriteChunkAtThreshold(segmentation_, chunkData, threshold_);
 
-        const OmSegID* chunkDataRaw = static_cast< const OmSegID* >( chunkData.getScalarPtr() );
+        const om::common::SegID* chunkDataRaw = static_cast< const om::common::SegID* >( chunkData.getScalarPtr() );
 
         cube_marcher.marche( reinterpret_cast< const int* >(chunkDataRaw), 129, 129, 129 );
     }
@@ -283,7 +283,7 @@ private:
 
 	        FOR_EACH( it, cube_marcher.meshes() )
 	        {
-	            const OmSegID segID = it->first;
+	            const om::common::SegID segID = it->first;
 
 	            if(segIDs.contains(segID))
 	            {

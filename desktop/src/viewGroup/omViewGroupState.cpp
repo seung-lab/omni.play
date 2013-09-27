@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "events/omEvents.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/toolbars/toolbarManager.h"
@@ -50,15 +50,15 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
 OmViewGroupState::~OmViewGroupState()
 {}
 
-OmPooledTile<OmColorARGB>* OmViewGroupState::ColorTile(uint32_t const*const imageData,
+OmPooledTile<om::common::ColorARGB>* OmViewGroupState::ColorTile(uint32_t const*const imageData,
                                                        const int tileDim,
                                                        const OmTileCoord& key)
 {
     return colorizers_->ColorTile(imageData, tileDim, key);
 }
 
-OmSegmentColorCacheType
-OmViewGroupState::determineColorizationType(const ObjectType objType)
+om::segment::coloring
+OmViewGroupState::determineColorizationType(const om::common::ObjectType objType)
 {
     switch(objType){
     case CHANNEL:
@@ -111,7 +111,7 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
     	break;
     }
 
-    throw OmArgException("unknown objType");
+    throw om::ArgException("unknown objType");
 }
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm)

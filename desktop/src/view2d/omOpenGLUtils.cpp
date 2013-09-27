@@ -1,5 +1,5 @@
+#include "utility/glInclude.h"
 #include "view2d/omOpenGLUtils.h"
-#include "common/omGl.h"
 
 void om::opengl_::SetupGLblendColor(const bool haveAlphaGoBlack, const float alpha,
                                     const bool shouldBrightenAlpha)

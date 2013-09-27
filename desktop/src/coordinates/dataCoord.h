@@ -1,11 +1,10 @@
 #pragma once
 
+#include "common/common.h"
 #include "vmmlib/vmmlib.h"
 using namespace vmml;
 
 class OmMipVolume;
-
-
 
 namespace om {
 
@@ -31,8 +30,8 @@ public:
     chunkCoord toChunkCoord() const;
     Vector3i toChunkVec() const;
     int toChunkOffset() const;
-    int toTileOffset(ViewType) const;
-    int toTileDepth(ViewType) const;
+    int toTileOffset(common::ViewType) const;
+    int toTileDepth(common::ViewType) const;
 
     inline int level() const {
         return mipLevel_;

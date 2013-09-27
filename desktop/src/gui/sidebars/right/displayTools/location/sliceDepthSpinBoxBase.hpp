@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "events/details/omViewEvent.h"
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "utility/dataWrappers.h"
@@ -17,7 +17,7 @@ Q_OBJECT
 
 public:
     SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState* vgs)
-        : OmIntSpinBox(d, om::UPDATE_AS_TYPE)
+        : OmIntSpinBox(d, true)
         , vgs_(vgs)
     {
         setValue(0);
@@ -34,7 +34,7 @@ public:
 private:
     OmViewGroupState *const vgs_;
 
-    virtual ViewType viewType() const = 0;
+    virtual om::common::ViewType viewType() const = 0;
 
     OmMipVolume* getVol()
     {

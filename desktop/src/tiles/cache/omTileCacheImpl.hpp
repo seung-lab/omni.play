@@ -1,8 +1,7 @@
 #pragma once
 
 #include "tiles/cache/omTileCacheThreadPool.hpp"
-#include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "system/omStateManager.h"
 #include "tiles/cache/omTileCacheChannel.hpp"
 #include "tiles/cache/omTileCacheEventListener.hpp"
@@ -24,8 +23,8 @@ DECLARE_ZiARG_bool(noTilePrefetch);
 
 class OmTileCacheImpl {
 private:
-    boost::scoped_ptr<OmTilePreFetcher> preFetcher_;
-    boost::scoped_ptr<OmTileCacheEventListener> listener_;
+    std::unique_ptr<OmTilePreFetcher> preFetcher_;
+    std::unique_ptr<OmTileCacheEventListener> listener_;
 
     OmTileCacheThreadPool threadPool_;
 
@@ -90,7 +89,7 @@ public:
         }
     }
 
-    void Get(OmTilePtr& tile, const OmTileCoord& key, const om::Blocking blocking)
+    void Get(OmTilePtr& tile, const OmTileCoord& key, const om::common::Blocking blocking)
     {
         if(isChannel(key)){
             getChanVol(key)->Get(tile, key, blocking);

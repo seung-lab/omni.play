@@ -60,7 +60,7 @@ public:
                     {
                         OmSegChunk* chunk = vol->GetChunk(mip_coord);
 
-                        om::shared_ptr<uint32_t> rawDataPtr =
+                        std::shared_ptr<uint32_t> rawDataPtr =
                             chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
                         OmImage<uint32_t, 3> chunkImage(OmExtents[128][128][128],
@@ -78,12 +78,12 @@ public:
         return retImage;
     }
 
-    static void RefindUniqueChunkValues(const OmID segmentationID_)
+    static void RefindUniqueChunkValues(const om::common::ID segmentationID_)
     {
         SegmentationDataWrapper sdw(segmentationID_);
         OmSegmentation& vol = sdw.GetSegmentation();
 
-        om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
             vol.GetMipChunkCoords();
 
         const uint32_t numChunks = coordsPtr->size();

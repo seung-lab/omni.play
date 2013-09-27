@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheManager.h"
 #include "system/cache/omLockedCacheObjects.hpp"
@@ -17,7 +16,7 @@
 template <typename KEY, typename PTR>
 class OmGetSetCache : public OmCacheBase {
 private:
-    const om::CacheGroup cacheGroup_;
+    const om::common::CacheGroup cacheGroup_;
     const int64_t entrySize_;
 
     zi::spinlock lock_;
@@ -29,7 +28,7 @@ private:
     LockedKeyMultiIndex<KEY> full_mru_;
 
 public:
-    OmGetSetCache(const om::CacheGroup cacheGroup, const std::string& cacheName,
+    OmGetSetCache(const om::common::CacheGroup cacheGroup, const std::string& cacheName,
                   const int64_t entrySize)
         : OmCacheBase(cacheName, cacheGroup)
         , cacheGroup_(cacheGroup)

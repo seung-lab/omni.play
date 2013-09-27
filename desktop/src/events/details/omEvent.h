@@ -5,8 +5,7 @@
  *  Brett Warne - bwarne@mit.edu - 4/6/09
  */
 
-#include "common/omStd.h"
-#include "common/omException.h"
+#include "common/exception.h"
 
 #include <QObject>
 #include <QEvent>
@@ -50,7 +49,7 @@ public:
         case 9000:
             return "OM_NON_FATAL_EVENT_CLASS";
         default:
-            throw OmArgException("unknown event class");
+            throw om::ArgException("unknown event class");
         }
     }
 

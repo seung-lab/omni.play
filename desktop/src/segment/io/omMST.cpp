@@ -6,7 +6,7 @@
 #include "segment/io/omMST.h"
 #include "segment/io/omMSTold.h"
 #include "segment/omSegments.h"
-#include "utility/omSmartPtr.hpp"
+#include "utility/malloc.hpp"
 #include "utility/omStringHelpers.h"
 #include "volume/omSegmentationFolder.h"
 
@@ -44,7 +44,7 @@ void OmMST::Read()
 
         const QString is32bit("; is Omni running on a 32-bit OS?");
 
-        throw OmIoException(err + is32bit);
+        throw om::IoException(err + is32bit);
     }
 
     for(uint32_t i = 0; i < numEdges_; ++i){
@@ -58,7 +58,7 @@ void OmMST::create()
 
     edgesPtr_ = writer_t::WriterNumElements(filePathActual(),
                                             numEdges_,
-                                            om::ZERO_FILL);
+                                            om::common::ZeroMem::ZERO_FILL);
 
     edges_ = edgesPtr_->GetPtr();
 }

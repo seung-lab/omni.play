@@ -17,7 +17,7 @@ private:
     const OmUUID uuid_;
     const std::string fnp_;
 
-    boost::scoped_ptr<QFile> file_;
+    std::unique_ptr<QFile> file_;
     T* data_;
 
 public:
@@ -27,7 +27,7 @@ public:
         , data_(NULL)
     {
         if(om::file::exists(fnp_)){ // should be VERY unlikely
-            throw OmIoException("unique file already found");
+            throw om::IoException("unique file already found");
         }
 
         // race here is possible, if VERY, VERY unlikely...

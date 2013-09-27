@@ -22,16 +22,16 @@ public:
     /**
      * returns NULL if segment was never instantiated;
      **/
-    OmSegment* GetSegment(const OmSegID segID){
+    OmSegment* GetSegment(const om::common::SegID segID){
         return getSegment(segID, om::SAFE);
     }
 
-    OmSegment* GetSegmentUnsafe(const OmSegID segID){
+    OmSegment* GetSegmentUnsafe(const om::common::SegID segID){
         return getSegment(segID, om::NOT_SAFE);
     }
 
 private:
-    inline OmSegment* getSegment(const OmSegID segID, const om::Safe isSafe)
+    inline OmSegment* getSegment(const om::common::SegID segID, const om::Safe isSafe)
     {
         const uint32_t pageNum = segID / pageSize_;
 
@@ -54,7 +54,7 @@ private:
     }
 
     inline OmSegment* doGetSegment(const std::vector<OmSegmentPage*>& pages,
-                                   const uint32_t pageNum, const OmSegID segID,
+                                   const uint32_t pageNum, const om::common::SegID segID,
                                    const om::Safe /* isSafe */)
     {
         // if(om::NOT_SAFE == isSafe)
@@ -74,14 +74,14 @@ private:
         OmSegmentPage& page = *pages[pageNum];
         OmSegment* ret = &(page[segID % pageSize_]);
 
-        const OmSegID loadedID = ret->data_->value;
+        const om::common::SegID loadedID = ret->data_->value;
 
         if(!loadedID){
             return NULL;
         }
 
         if(loadedID != segID){
-            throw OmIoException("corruption detected in segment page");
+            throw om::IoException("corruption detected in segment page");
         }
 
         return ret;

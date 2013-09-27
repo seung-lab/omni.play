@@ -1,6 +1,8 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
+
+class QString;
 
 class OmFileHelpers{
 public:

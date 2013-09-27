@@ -76,7 +76,7 @@ OmProjectGlobals& OmProject::Globals(){
 }
 
 bool OmProject::IsOpen(){
-    return instance().impl_;
+    return static_cast<bool>(instance().impl_);
 }
 
 #include "actions/omActions.h"

@@ -29,7 +29,7 @@ public:
         dirty_ = true;
     }
 
-    om::shared_ptr<GUIPageOfSegments>
+    std::shared_ptr<GUIPageOfSegments>
     GetSegmentGUIPage(const GUIPageRequest& request)
     {
         zi::guard g(lock_);

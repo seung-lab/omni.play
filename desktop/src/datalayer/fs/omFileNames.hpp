@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "datalayer/fs/omFile.hpp"
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
@@ -72,7 +72,7 @@ public:
             .arg(level);
 
         if(subPath.startsWith("/")){
-            throw OmIoException("not a relative path: " + subPath.toStdString());
+            throw om::IoException("not a relative path: " + subPath.toStdString());
         }
 
         return FilesFolder() + QLatin1String("/") + subPath;
@@ -88,7 +88,7 @@ public:
 
         if(!QDir(fullPath).exists()){
             if(!QDir().mkpath(fullPath)){
-                throw OmIoException("could not create folder", fullPath);
+                throw om::IoException("could not create folder");
             }
         }
 
@@ -100,7 +100,7 @@ public:
 
         const QString fnp_clean = QDir::cleanPath(fnp);
 
-        ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
+        //ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
 
         return fnp_clean;
     }
@@ -116,7 +116,7 @@ public:
     static QString ProjectMetadataFile(){
         return FilesFolder() + "/projectMetadata.yaml";
     }
-    
+
     static QString OldHDF5projectFileName(){
         return FilesFolder() + "/oldProjectFile.hdf5";
     }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/omSegmentPointers.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "volume/omSegmentation.h"
@@ -21,7 +21,7 @@ public:
 
     bool populate(const bool doScrollToSelectedSegment,
                   const SegmentDataWrapper segmentJustSelected,
-                  om::shared_ptr<GUIPageOfSegments>);
+                  std::shared_ptr<GUIPageOfSegments>);
 
     static std::string eventSenderName();
 

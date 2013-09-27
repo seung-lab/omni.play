@@ -16,7 +16,7 @@ class view2dCoords
 private:
     OmViewGroupState * vgs_;
     OmZoomLevel * zoomLevel_;
-    ViewType viewType_;
+    om::common::ViewType viewType_;
     Vector4i totalViewport_; //lower left x, lower left y, width, height
 
     Matrix4f screenToGlobalMat_;
@@ -36,7 +36,7 @@ private:
 
 public:
     view2dCoords(OmViewGroupState* vgs,
-                 ViewType viewType)
+                 om::common::ViewType viewType)
         : vgs_(vgs)
         , zoomLevel_(vgs->ZoomLevel())
         , viewType_(viewType)
@@ -89,21 +89,21 @@ public:
         // selection matrices by viewType with twisty s to g translations and scaling
         switch(viewType_)
         {
-            case XY_VIEW:
+            case om::common::XY_VIEW:
                 globalToScreenMat_.m00 = 1;
                 globalToScreenMat_.m11 = 1;
                 screenToGlobalMat_.m00 = 1;
                 screenToGlobalMat_.m11 = 1;
                 break;
 
-            case XZ_VIEW:
+            case om::common::XZ_VIEW:
                 globalToScreenMat_.m00 = 1;
                 globalToScreenMat_.m12 = 1;
                 screenToGlobalMat_.m00 = 1;
                 screenToGlobalMat_.m21 = 1;
                 break;
 
-            case ZY_VIEW:
+            case om::common::ZY_VIEW:
                 globalToScreenMat_.m02 = 1;
                 globalToScreenMat_.m11 = 1;
                 screenToGlobalMat_.m20 = 1;

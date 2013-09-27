@@ -11,11 +11,11 @@ class extractChanTile{
 private:
     OmMipVolume *const vol_;
     const om::chunkCoord coord_;
-    const ViewType plane_;
+    const om::common::ViewType plane_;
     const int depth_;
 
 public:
-    extractChanTile(OmMipVolume* vol, const om::chunkCoord& coord, const ViewType plane, int depth)
+    extractChanTile(OmMipVolume* vol, const om::chunkCoord& coord, const om::common::ViewType plane, int depth)
         : vol_(vol)
         , coord_(coord)
         , plane_(plane)
@@ -31,7 +31,7 @@ private:
     template <typename T>
     OmPooledTile<uint8_t>* extractDataSlice8bit(T* d)
     {
-        boost::scoped_ptr<OmPooledTile<T> > rawTile(getRawSlice(d));
+        std::unique_ptr<OmPooledTile<T> > rawTile(getRawSlice(d));
         OmTileFilters<T> filter(128);
         return filter.recastToUint8(rawTile.get());
     }
@@ -42,7 +42,7 @@ private:
 
     OmPooledTile<uint8_t>* extractDataSlice8bit(float* d)
     {
-        boost::scoped_ptr<OmPooledTile<float> > rawTile(getRawSlice(d));
+        std::unique_ptr<OmPooledTile<float> > rawTile(getRawSlice(d));
 
         OmTileFilters<float> filter(128);
 

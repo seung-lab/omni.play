@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omException.h"
-#include "utility/omSmartPtr.hpp"
+#include "common/exception.h"
+#include "utility/malloc.hpp"
 
 #include <vector>
 #include <QFile>
@@ -45,7 +45,7 @@ void openFileRO(PTR& file, const std::string& fnp)
 {
     file.reset(new QFile(QString::fromStdString(fnp)));
     if(!file->open(QIODevice::ReadOnly)){
-        throw OmIoException("could not open file read only", fnp);
+        throw om::IoException("could not open file read only", fnp);
     }
 }
 
@@ -54,7 +54,7 @@ void openFileAppend(PTR& file, const std::string& fnp)
 {
     file.reset(new QFile(QString::fromStdString(fnp)));
     if(!file->open(QIODevice::Append)){
-        throw OmIoException("could not open file read/write append", fnp);
+        throw om::IoException("could not open file read/write append", fnp);
     }
 }
 
@@ -63,7 +63,7 @@ void openFileRW(PTR& file, const std::string& fnp)
 {
     file.reset(new QFile(QString::fromStdString(fnp)));
     if(!file->open(QIODevice::ReadWrite)){
-        throw OmIoException("could not open file read/write", fnp);
+        throw om::IoException("could not open file read/write");
     }
 }
 
@@ -73,7 +73,7 @@ void openFileWO(PTR& file, const std::string& fnp)
     file.reset(new QFile(QString::fromStdString(fnp)));
 
     if(!file->open(QIODevice::WriteOnly)){
-        throw OmIoException("could not open file for writing", fnp);
+        throw om::IoException("could not open file for writing");
     }
 }
 
@@ -81,9 +81,9 @@ template <typename T>
 T* mapFile(QFile* file)
 {
     uchar* map = file->map(0, file->size());
-    
+
     if(!map){
-        throw OmIoException("could not map file", file->fileName());
+        throw om::IoException("could not map file");
     }
 
     file->close();
@@ -97,7 +97,7 @@ T* mapFile(PTR& file)
     uchar* map = file->map(0, file->size());
 
     if(!map){
-        throw OmIoException("could not map file", file->fileName());
+        throw om::IoException("could not map file");
     }
 
     file->close();
@@ -106,23 +106,23 @@ T* mapFile(PTR& file)
 }
 
 template <typename T>
-om::shared_ptr<T> readAll(QFile* file)
+std::shared_ptr<T> readAll(QFile* file)
 {
     const int64_t numBytes = file->size();
 
     if(0 != numBytes % sizeof(T)){
-        throw OmIoException("file size not even multiple of sizeof(type)");
+        throw om::IoException("file size not even multiple of sizeof(type)");
     }
 
-    om::shared_ptr<T> ret =
-        OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
+    std::shared_ptr<T> ret =
+        om::mem::Malloc<T>::MallocNumBytes(numBytes, om::common::ZeroMem::DONT_ZERO_FILL);
 
     char* dataChar = reinterpret_cast<char*>(ret.get());
 
     const int64_t numBytesRead = file->read(dataChar, numBytes);
 
     if(numBytesRead != numBytes){
-        throw OmIoException("could not read entire file");
+        throw om::IoException("could not read entire file");
     }
 
     return ret;
@@ -130,7 +130,7 @@ om::shared_ptr<T> readAll(QFile* file)
 
 
 template <typename T>
-om::shared_ptr<T> readAll(QFile& file) {
+std::shared_ptr<T> readAll(QFile& file) {
     return readAll<T>(&file);
 }
 
@@ -146,12 +146,12 @@ void writeVec(QFile& file, const std::vector<T>& vec)
     const int numBytesWritten = file.write(data, numBytes);
 
     if(numBytesWritten != numBytes){
-        throw OmIoException("could not fully write file", file.fileName());
+        throw om::IoException("could not fully write file");
     }
 }
 
 template <typename T>
-void writeNumElements(QFile& file, const om::shared_ptr<T> ptr,
+void writeNumElements(QFile& file, const std::shared_ptr<T> ptr,
                       const int64_t numElements)
 {
     const int64_t numBytes = numElements * sizeof(T);
@@ -163,7 +163,7 @@ void writeNumElements(QFile& file, const om::shared_ptr<T> ptr,
     const int numBytesWritten = file.write(data, numBytes);
 
     if(numBytesWritten != numBytes){
-        throw OmIoException("could not fully write file", file.fileName());
+        throw om::IoException("could not fully write file");
     }
 }
 
@@ -174,14 +174,14 @@ void createFileNumElements(const std::string& fnp, const int64_t numElements)
 
     openFileWO(file);
 
-    om::shared_ptr<T> empty = OmSmartPtr<T>::MallocNumElements(numElements,
-                                                                  om::ZERO_FILL);
+    std::shared_ptr<T> empty = om::mem::Malloc<T>::MallocNumElements(numElements,
+                                                                  om::common::ZeroMem::ZERO_FILL);
 
     writeNumElements(file, empty, numElements);
 }
 
 template <typename T>
-void createFileFromData(const std::string& fnp, const om::shared_ptr<T> ptr,
+void createFileFromData(const std::string& fnp, const std::shared_ptr<T> ptr,
                         const int64_t numElements)
 {
     QFile file(QString::fromStdString(fnp));

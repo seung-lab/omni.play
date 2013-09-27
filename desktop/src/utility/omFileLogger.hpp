@@ -6,8 +6,8 @@ class OmFileLogger {
 private:
     QString outFile_;
 
-    boost::scoped_ptr<QFile> file_;
-    boost::scoped_ptr<QTextStream> out_;
+    std::unique_ptr<QFile> file_;
+    std::unique_ptr<QTextStream> out_;
 
     zi::spinlock lock_;
 
@@ -31,7 +31,7 @@ public:
             printf("writing log file %s\n", qPrintable(outFile_));
 
         } else{
-            throw OmIoException("could not open file", outFile_);
+            throw om::IoException("could not open file", outFile_);
         }
 
         out_.reset(new QTextStream(file_.get()));

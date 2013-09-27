@@ -1,5 +1,5 @@
-#include "common/omCommon.h"
-#include "common/omDebug.h"
+#include "common/common.h"
+#include "common/logging.h"
 #include "volume/omMipVolume.h"
 
 namespace om {
@@ -20,7 +20,7 @@ chunkCoord::chunkCoord(int Level, const Vector3i & coord)
     , Coordinate(coord)
 {
     if (coord.x < 0 || coord.y < 0 || coord.z < 0) {
-        throw OmArgException("Bad Chunk Coord");
+        throw om::ArgException("Bad Chunk Coord");
     }
 }
 
@@ -29,7 +29,7 @@ chunkCoord::chunkCoord(int level, int x, int y, int z)
     , Coordinate(Vector3i(x, y, z))
 {
     if (x < 0 || y < 0 || z < 0) {
-        throw OmArgException("Bad Chunk Coord");
+        throw om::ArgException("Bad Chunk Coord");
     }
 }
 

@@ -12,6 +12,9 @@ using namespace vmml;
 
 #include <iostream>
 
+class QString;
+class OmMipVolume;
+
 namespace om {
 
 class dataBbox;

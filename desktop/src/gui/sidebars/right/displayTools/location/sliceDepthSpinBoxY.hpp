@@ -15,8 +15,8 @@ public:
     }
 
 private:
-    virtual ViewType viewType() const {
-        return XZ_VIEW;
+    virtual om::common::ViewType viewType() const {
+        return om::common::XZ_VIEW;
     }
 };
 

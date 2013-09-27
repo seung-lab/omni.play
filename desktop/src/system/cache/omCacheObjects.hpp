@@ -1,10 +1,15 @@
 #pragma once
 
+#define BOOST_BIND_NO_PLACEHOLDERS
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/identity.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/sequenced_index.hpp>
 
+#include <list>
+#include <map>
+#include <unordered_map>
+#include <vector>
 #include <zi/for_each.hpp>
 
 template <typename KEY>

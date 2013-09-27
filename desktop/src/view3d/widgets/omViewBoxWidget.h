@@ -20,7 +20,7 @@ private:
                        const Vector3i& v2,
                        const Vector3i& v3);
 
-    void draw2dBox(const ViewType plane,
+    void draw2dBox(const om::common::ViewType plane,
                    const Vector2f& min,
                    const Vector2f& max,
                    const float depth);
@@ -31,17 +31,17 @@ private:
 //                          std::vector<OmTilePtr>);
 // 
 //     bool getTextureMax(Vector3f coord,
-//                        ViewType plane,
+//                        om::common::ViewType plane,
 //                        Vector2f& dataMax,
 //                        Vector2f& spaceMax );
 // 
 //     bool getTextureMin(Vector3f coord,
-//                        ViewType plane,
+//                        om::common::ViewType plane,
 //                        Vector2f & dataMin,
 //                        Vector2f & spaceMin);
 
     void draw2dBoxWrapper(OmViewGroupView2dState* view2dState,
-                          const ViewType viewType);
+                          const om::common::ViewType viewType);
 
 };
 

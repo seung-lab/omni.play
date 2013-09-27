@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omDebug.h"
+#include "common/common.h"
+#include "common/logging.h"
 #include "common/omGl.h"
 #include "mesh/drawer/omMeshPlan.h"
 #include "mesh/omMesh.h"
@@ -201,7 +201,7 @@ private:
 
     inline void colorMesh(OmSegment* segment)
     {
-        OmSegmentColorCacheType sccType;
+        om::segment::coloring sccType;
 
         if( vgs_->shouldVolumeBeShownBroken() ) {
             sccType = SCC_SEGMENTATION_BREAK_BLACK;
@@ -212,7 +212,7 @@ private:
         applyColor( segment, sccType);
     }
 
-    void applyColor(OmSegment* seg, const OmSegmentColorCacheType sccType)
+    void applyColor(OmSegment* seg, const om::segment::coloring sccType)
     {
         if(seg->getParent() && sccType != SCC_SEGMENTATION_BREAK_BLACK){
             applyColor(segments_->findRoot(seg), sccType);

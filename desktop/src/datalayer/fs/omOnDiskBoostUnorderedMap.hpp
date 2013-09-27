@@ -9,7 +9,7 @@
 #include <boost/interprocess/managed_mapped_file.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
 
-#include <boost/unordered_map.hpp>     //boost::unordered_map
+#include <boost/unordered_map.hpp>     //std::unordered_map
 #include <functional>                  //std::equal_to
 #include <boost/functional/hash.hpp>   //boost::hash
 
@@ -60,7 +60,7 @@ private:
     typedef bi::allocator<ValueType,
                           bi::managed_mapped_file::segment_manager> allocator_t;
 
-    typedef boost::unordered_map<KEY
+    typedef std::unordered_map<KEY
                                  , VAL
                                  , boost::hash<KEY>
                                  , std::equal_to<KEY>
@@ -71,11 +71,11 @@ private:
 
     onDiskHash_t* hash_;
 
-    om::shared_ptr<bi::managed_mapped_file> file_;
+    std::shared_ptr<bi::managed_mapped_file> file_;
 
     void create()
     {
-        file_ = om::make_shared<bi::managed_mapped_file>(bi::create_only,
+        file_ = std::make_shared<bi::managed_mapped_file>(bi::create_only,
                                                             fnp_.c_str(),
                                                             InitialNumBytes);
 
@@ -88,7 +88,7 @@ private:
 
     void open()
     {
-        file_ = om::make_shared<bi::managed_mapped_file>(bi::open_only,
+        file_ = std::make_shared<bi::managed_mapped_file>(bi::open_only,
                                                             fnp_.c_str());
 
         hash_ = file_->find_or_construct<onDiskHash_t>("MyHashMap")
@@ -118,7 +118,7 @@ private:
                   << "..." << std::flush;
 
         if(!bi::managed_mapped_file::grow(fnp_.c_str(), newSize)){
-            throw OmIoException("could not resize file");
+            throw om::IoException("could not resize file");
         }
 
         std::cout << "done\n";

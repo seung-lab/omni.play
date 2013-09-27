@@ -42,19 +42,19 @@ std::vector<OmSegmentPage*> OmSegmentsStore::Pages()
     return segmentPages_->Pages();
 }
 
-OmSegment* OmSegmentsStore::GetSegment(const OmSegID value){
+OmSegment* OmSegmentsStore::GetSegment(const om::common::SegID value){
     return cachedStore_->GetSegment(value);
 }
 
-OmSegment* OmSegmentsStore::GetSegmentUnsafe(const OmSegID value){
+OmSegment* OmSegmentsStore::GetSegmentUnsafe(const om::common::SegID value){
     return cachedStore_->GetSegmentUnsafe(value);
 }
 
-OmSegID OmSegmentsStore::Root(const OmSegID segID){
+om::common::SegID OmSegmentsStore::Root(const om::common::SegID segID){
     return cacheRootIDs_->Root(segID);
 }
 
-OmSegment* OmSegmentsStore::AddSegment(const OmSegID value)
+OmSegment* OmSegmentsStore::AddSegment(const om::common::SegID value)
 {
     zi::guard g(pagesLock_);
     return segmentPages_->AddSegment(value);
@@ -69,7 +69,7 @@ void OmSegmentsStore::Flush()
 /**
  * a segment ptr is invalid if it is NULL, or has an ID of 0
  **/
-bool OmSegmentsStore::IsSegmentValid(const OmSegID value)
+bool OmSegmentsStore::IsSegmentValid(const om::common::SegID value)
 {
     if(!value){
         return false;

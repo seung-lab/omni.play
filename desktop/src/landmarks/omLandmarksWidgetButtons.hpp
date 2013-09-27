@@ -93,9 +93,9 @@ private:
     {
         FOR_EACH(id, SegmentationDataWrapper::ValidIDs())
         {
-            const OmID segmentationID = *id;
+            const om::common::ID segmentationID = *id;
 
-            OmSegIDsSet set;
+            om::common::SegIDSet set;
 
             FOR_EACH(iter, pts_)
             {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
@@ -50,7 +50,7 @@ private:
     template <typename C>
     void doSet(const C& segs, const bool isValid)
     {
-        const om::SegListType listType = isValid ? om::VALID : om::WORKING;
+        const om::common::SegListType listType = isValid ? om::common::SegListType::VALID : om::common::SegListType::WORKING;
 
         FOR_EACH(iter, segs)
         {

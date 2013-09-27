@@ -32,7 +32,7 @@ public:
 private:
     OmView3d *const view3d_;
     OmViewGroupState* vgs_;
-    boost::scoped_ptr<OmMacOSXGestures> macGestures_;
+    std::unique_ptr<OmMacOSXGestures> macGestures_;
     OmSegmentContextMenu segmentContextMenu_;
     SegmentDataWrapper prevSDW_;
 

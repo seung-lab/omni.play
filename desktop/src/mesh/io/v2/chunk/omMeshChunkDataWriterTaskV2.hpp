@@ -29,7 +29,7 @@ public:
     }
 
     template <typename T>
-    void Write(om::shared_ptr<T> dataRawPtr)
+    void Write(std::shared_ptr<T> dataRawPtr)
     {
         const char* dataCharPtr =
             reinterpret_cast<const char*>(dataRawPtr.get());
@@ -42,11 +42,11 @@ private:
     {
         QFile writer(fnp_);
         if( !writer.open(QIODevice::ReadWrite)) {
-            throw OmIoException("could not open", fnp_);
+            throw om::IoException("could not open");
         }
 
         if(!writer.seek(offsetIntoFile_)){
-            throw OmIoException("could not seek to " +
+            throw om::IoException("could not seek to " +
                                 om::string::num(offsetIntoFile_));
         }
 
@@ -56,7 +56,7 @@ private:
             std::cout << "could not write data; numBytes is " << numBytes_
                       << ", but only wrote " << bytesWritten << "\n"
                       << std::flush;
-            throw OmIoException("could not write fully file", fnp_);
+            throw om::IoException("could not write fully file");
         }
     }
 };

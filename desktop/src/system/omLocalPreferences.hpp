@@ -1,11 +1,10 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "zi/omUtility.h"
 #include "utility/localPrefFiles.h"
 #include "utility/omSystemInformation.h"
 #include "system/cache/omCacheManager.h"
-#include "common/omDebug.h"
 
 class OmLocalPreferences : private om::singletonBase<OmLocalPreferences> {
 public:

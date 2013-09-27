@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 #include <QMainWindow>
 #include <QFrame>
@@ -30,7 +30,7 @@ public:
     void openProject( QString fileNameAndPath );
     void openProject( QString fileName, QString pathName );
 
-    void cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId);
+    void cleanViewsOnVolumeChange(om::common::ObjectType objectType, om::common::ID objectId);
     void updateStatusBar( QString msg );
 
     inline OmViewGroupState* GetViewGroupState(){
@@ -74,24 +74,24 @@ private:
     bool editsMade;
 
     InspectorWidget* inspector_;
-    boost::scoped_ptr<QDockWidget> inspectorDock_;
+    std::unique_ptr<QDockWidget> inspectorDock_;
 
     QUndoView* undoView_;
-    boost::scoped_ptr<QDockWidget> undoViewDock_;
+    std::unique_ptr<QDockWidget> undoViewDock_;
 
     GroupsTable* groupsTable_;
-    boost::scoped_ptr<QDockWidget> groupsTableDock_;
+    std::unique_ptr<QDockWidget> groupsTableDock_;
 
     CacheMonitorDialog* cacheMonitorDialog_;
 
-    boost::scoped_ptr<Preferences> preferences_;
+    std::unique_ptr<Preferences> preferences_;
 
     QLabel* statusBarLabel;
 
     ToolBarManager* toolBarManager_;
     MenuBar* mMenuBar;
 
-    boost::scoped_ptr<OmViewGroupState> vgs_;
+    std::unique_ptr<OmViewGroupState> vgs_;
 
     QAction* panAct;
     QAction* zoomAct;
@@ -108,7 +108,7 @@ private:
 
     QToolBar* fakeToolbarForMac_;
 
-    boost::scoped_ptr<OmGlobalKeyPress> globalKeys_;
-    boost::scoped_ptr<MainWindowEvents> events_;
+    std::unique_ptr<OmGlobalKeyPress> globalKeys_;
+    std::unique_ptr<MainWindowEvents> events_;
 };
 

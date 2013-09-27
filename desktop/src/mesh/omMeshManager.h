@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "mesh/omMeshTypes.h"
 
 #include <boost/scoped_ptr.hpp>
@@ -37,7 +36,7 @@ public:
 
     OmMeshPtr Produce(const OmMeshCoord&);
 
-    void GetMesh(OmMeshPtr&, const OmMeshCoord&, const om::Blocking);
+    void GetMesh(OmMeshPtr&, const OmMeshCoord&, const om::common::Blocking);
 
     void UncacheMesh(const OmMeshCoord& coord);
 
@@ -65,12 +64,12 @@ private:
     OmSegmentation *const segmentation_;
     const double threshold_;
 
-    const boost::scoped_ptr<OmMeshCache> dataCache_;
-    const boost::scoped_ptr<OmMeshFilePtrCache> filePtrCache_;
-    const boost::scoped_ptr<OmMeshMetadata> metadata_;
+    const std::unique_ptr<OmMeshCache> dataCache_;
+    const std::unique_ptr<OmMeshFilePtrCache> filePtrCache_;
+    const std::unique_ptr<OmMeshMetadata> metadata_;
 
-    boost::scoped_ptr<OmMeshReaderV2> reader_;
-    boost::scoped_ptr<OmMeshConvertV1toV2> converter_;
+    std::unique_ptr<OmMeshReaderV2> reader_;
+    std::unique_ptr<OmMeshConvertV1toV2> converter_;
 
     void HandleFetchUpdate();
 

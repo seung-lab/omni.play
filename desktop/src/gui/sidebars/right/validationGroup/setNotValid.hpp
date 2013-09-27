@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/sidebars/right/validationGroup/validationGroup.h"
 #include "gui/widgets/omButton.hpp"
 #include "actions/omActions.h"
@@ -24,7 +24,7 @@ private:
             return;
         }
 
-        OmActions::ValidateSelectedSegments(sdw, om::SET_NOT_VALID);
+        OmActions::ValidateSelectedSegments(sdw, om::common::SetValid::SET_NOT_VALID);
 
         OmEvents::SegmentModified();
     }

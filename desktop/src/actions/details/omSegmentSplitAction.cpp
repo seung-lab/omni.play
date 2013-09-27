@@ -1,4 +1,4 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentSplitAction.h"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
@@ -6,7 +6,7 @@
 
 OmSegmentSplitAction::OmSegmentSplitAction(const SegmentationDataWrapper & sdw,
                                            const OmSegmentEdge & edge )
-    : impl_(om::make_shared<OmSegmentSplitActionImpl>(sdw, edge))
+    : impl_(std::make_shared<OmSegmentSplitActionImpl>(sdw, edge))
 {
     SetUndoable(true);
 }

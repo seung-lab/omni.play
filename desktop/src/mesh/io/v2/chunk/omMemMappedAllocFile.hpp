@@ -13,7 +13,7 @@ private:
     const double threshold_;
     const QString fnp_;
 
-    boost::scoped_ptr<QFile> file_;
+    std::unique_ptr<QFile> file_;
     OmMeshDataEntry* table_;
     uint32_t numEntries_;
 
@@ -29,7 +29,7 @@ public:
         , numEntries_(0)
     {}
 
-	bool CreateIfNeeded()
+    bool CreateIfNeeded()
     {
         QFile file(fnp_);
         if(file.exists()){
@@ -110,12 +110,12 @@ private:
         }
 
         if(!file_->open(QIODevice::ReadWrite)) {
-            throw OmIoException("could not open", fnp_);
+            throw om::IoException("could not open");
         }
 
         uchar* map = file_->map(0, file_->size());
         if(!map){
-            throw OmIoException("could not map", fnp_);
+            throw om::IoException("could not map");
         }
 
         file_->close();
@@ -130,21 +130,21 @@ private:
             segmentation_->ChunkUniqueValues()->Values(coord_, threshold_);
 
         if(!segIDs.size()){
-        	std::cout << "No unique values in " << coord_ << std::endl;
+            std::cout << "No unique values in " << coord_ << std::endl;
             return;
         }
 
         file_.reset(new QFile(fnp_));
 
         if(!file_->open(QIODevice::ReadWrite)) {
-            throw OmIoException("could not open", fnp_);
+            throw om::IoException("could not open");
         }
 
         file_->resize(segIDs.size() * sizeof(OmMeshDataEntry));
 
         uchar* map = file_->map(0, file_->size());
         if(!map){
-            throw OmIoException("could not map", fnp_);
+            throw om::IoException("could not map");
         }
 
         file_->close();
@@ -162,7 +162,7 @@ private:
     }
 
     struct ResetEntry {
-        OmMeshDataEntry operator()(const OmSegID segID) const {
+        OmMeshDataEntry operator()(const om::common::SegID segID) const {
             return om::meshio_::MakeEmptyEntry(segID);
         }
     };

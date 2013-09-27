@@ -3,14 +3,14 @@
 #include "segment/colorizer/omSegmentColorizerImpl.hpp"
 #include "segment/colorizer/omSegmentColors.hpp"
 #include "system/cache/omCacheManager.h"
-#include "utility/omSmartPtr.hpp"
+#include "utility/malloc.hpp"
 #include "utility/omTimer.hpp"
 
 const std::vector<uint8_t> OmSegmentColorizer::SelectedColorLookupTable =
     OmSegmentColors::makeLookupTable();
 
 OmSegmentColorizer::OmSegmentColorizer(OmSegments* segments,
-                                       const OmSegmentColorCacheType sccType,
+                                       const om::segment::coloring sccType,
                                        const int tileDim,
                                        OmViewGroupState* vgs)
 {
@@ -31,19 +31,19 @@ void OmSegmentColorizer::setup()
     freshness_.set(OmCacheManager::GetFreshness());
 
     // resize cache, if needed
-    const OmSegID curSize = params_.segments->getMaxValue() + 1;
+    const om::common::SegID curSize = params_.segments->getMaxValue() + 1;
 
     if(curSize != colorCache_.Size()){
         colorCache_.Resize(curSize);
     }
 }
 
-OmPooledTile<OmColorARGB>*
+OmPooledTile<om::common::ColorARGB>*
 OmSegmentColorizer::ColorTile(uint32_t const* imageData)
 {
     setup();
 
-    OmPooledTile<OmColorARGB>* colorMappedDataPtr = new OmPooledTile<OmColorARGB>();
+    OmPooledTile<om::common::ColorARGB>* colorMappedDataPtr = new OmPooledTile<om::common::ColorARGB>();
 
     // OmTimer timer;
 

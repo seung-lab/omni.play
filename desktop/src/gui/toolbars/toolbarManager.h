@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "gui/tools.hpp"
+#include "common/common.h"
 
 #include <QtGui>
 
@@ -29,8 +30,8 @@ public:
 private:
     MainWindow *const mainWindow_;
 
-    boost::scoped_ptr<MainToolBar> mainToolBar_;
-    boost::scoped_ptr<om::sidebars::right> rightSideBar_;
+    std::unique_ptr<MainToolBar> mainToolBar_;
+    std::unique_ptr<om::sidebars::right> rightSideBar_;
 
     void deleteMainBar();
 };

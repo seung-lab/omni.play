@@ -1,6 +1,7 @@
-#include "common/omCommon.h"
-#include "common/omDebug.h"
-#include "common/omGl.h"
+#include "view3d/gl.h"
+#include "common/common.h"
+#include "common/logging.h"
+#include "utility/glInclude.h"
 #include "omViewBoxWidget.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
@@ -33,9 +34,9 @@ void OmViewBoxWidget::Draw()
 
     if (Om3dPreferences::get2DViewFrameIn3D())
     {
-        draw2dBoxWrapper(view2dState, XY_VIEW);
-        draw2dBoxWrapper(view2dState, XZ_VIEW);
-        draw2dBoxWrapper(view2dState, ZY_VIEW);
+        draw2dBoxWrapper(view2dState, om::common::XY_VIEW);
+        draw2dBoxWrapper(view2dState, om::common::XZ_VIEW);
+        draw2dBoxWrapper(view2dState, om::common::ZY_VIEW);
     }
 
     if(Om3dPreferences::getDrawCrosshairsIn3D()){
@@ -46,7 +47,7 @@ void OmViewBoxWidget::Draw()
 }
 
 void OmViewBoxWidget::draw2dBoxWrapper(OmViewGroupView2dState* view2dState,
-                                       const ViewType viewType)
+                                       const om::common::ViewType viewType)
 {
 //    drawChannelData(viewType, OmStateManager::GetViewDrawable(viewType));
     draw2dBox(viewType,
@@ -76,7 +77,7 @@ void OmViewBoxWidget::drawLines(Vector3i depth)
 
     float distance = ((float)Om3dPreferences::getCrosshairValue())/10.0;
 
-    glColor3fv(OMGL_BLUE);
+    glColor3fv(om::gl::OMGL_BLUE);
     v0 = Vector3i(depth.x, depth.y, depth.z-distance);
     v1 = Vector3i(depth.x, depth.y, depth.z+distance);
     glBegin(GL_LINE_STRIP);
@@ -84,7 +85,7 @@ void OmViewBoxWidget::drawLines(Vector3i depth)
     glVertex3iv(v1.array);
     glEnd();
 
-    glColor3fv(OMGL_GREEN);
+    glColor3fv(om::gl::OMGL_GREEN);
     v0 = Vector3i(depth.x, depth.y-distance, depth.z);
     v1 = Vector3i(depth.x, depth.y+distance, depth.z);
     glBegin(GL_LINE_STRIP);
@@ -92,7 +93,7 @@ void OmViewBoxWidget::drawLines(Vector3i depth)
     glVertex3iv(v1.array);
     glEnd();
 
-    glColor3fv(OMGL_RED);
+    glColor3fv(om::gl::OMGL_RED);
     v0 = Vector3i(depth.x-distance, depth.y, depth.z);
     v1 = Vector3i(depth.x+distance, depth.y, depth.z);
     glBegin(GL_LINE_STRIP);
@@ -104,7 +105,7 @@ void OmViewBoxWidget::drawLines(Vector3i depth)
 /**
  *  Draw a given orthogonal slice of a bbox given the plane and offset of plane
  */
-void OmViewBoxWidget::draw2dBox(const ViewType plane,
+void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
                                 const Vector2f& min,
                                 const Vector2f& max,
                                 const float depth)
@@ -112,24 +113,24 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 	Vector3i v0, v1, v2, v3;
 
     switch (plane) {
-    case XY_VIEW:
-        glColor3fv(OMGL_BLUE);
+    case om::common::XY_VIEW:
+        glColor3fv(om::gl::OMGL_BLUE);
         v0 = Vector3i(min.x, min.y, depth);
         v1 = Vector3i(max.x, min.y, depth);
         v2 = Vector3i(max.x, max.y, depth);
         v3 = Vector3i(min.x, max.y, depth);
         break;
 
-    case XZ_VIEW:
-        glColor3fv(OMGL_GREEN);
+    case om::common::XZ_VIEW:
+        glColor3fv(om::gl::OMGL_GREEN);
         v0 = Vector3i(min.x, depth, min.y);
         v1 = Vector3i(min.x, depth, max.y);
         v2 = Vector3i(max.x, depth, max.y);
         v3 = Vector3i(max.x, depth, min.y);
         break;
 
-    case ZY_VIEW:
-        glColor3fv(OMGL_RED);
+    case om::common::ZY_VIEW:
+        glColor3fv(om::gl::OMGL_RED);
         v0 = Vector3i(depth, min.y, min.x);
         v1 = Vector3i(depth, max.y, min.x);
         v2 = Vector3i(depth, max.y, max.x);
@@ -144,38 +145,38 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //                                       std::vector<OmTilePtr> drawables)
 // {
 //     ChannelDataWrapper cdw(1);
-// 
+//
 //     if(!Om3dPreferences::get2DViewPaneIn3D() || !cdw.IsChannelValid()){
 //         return;
 //     }
-// 
+//
 //     OmChannel& channel = cdw.GetChannel();
 //     Vector3f resolution = channel.Coords().GetResolution();
 //     Vector3i extents = channel.Coords().GetDataDimensions();
-// 
+//
 //     glColor3fv(OMGL_WHITE);
 //     glEnable(GL_TEXTURE_2D);
 //     glDepthMask(GL_TRUE);
-// 
+//
 //     Vector2f dataMin,dataMax,spaceMin,spaceMax;
-// 
+//
 //     FOR_EACH(it, drawables)
 //     {
 //         OmTilePtr d = *it;
-// 
+//
 //         const int level = d->GetTileCoord().getLevel();
 //         const Vector3f tileLength = resolution*128.0*om::math::pow2int(level);
-// 
+//
 //         const DataCoord thisCoord = d->GetTileCoord().getDataCoord();
 //         //debug ("FIXME", "thisCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(thisCoord));
 //         const NormCoord normCoord =
 //             channel.Coords().DataToNormCoord(d->GetTileCoord().getDataCoord());
-// 
+//
 //         //debug ("FIXME", "normCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(normCoord));
 //         glBindTexture(GL_TEXTURE_2D, d->GetTexture().GetTextureID());
 //         glBegin(GL_QUADS);
-// 
-//         if (plane == XY_VIEW) {
+//
+//         if (plane == om::common::XY_VIEW) {
 //             if (getTextureMax(thisCoord, plane, dataMax, spaceMax)){
 //                 spaceMax.x = thisCoord.x + tileLength.x;
 //                 spaceMax.y = thisCoord.y + tileLength.y;
@@ -190,17 +191,17 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //             }
 //             glTexCoord2f(dataMin.x, dataMin.y);  /* lower left corner of image */
 //             glVertex3f(spaceMin.x, spaceMin.y,thisCoord.z);
-// 
+//
 //             glTexCoord2f(dataMax.x, dataMin.y);  /* lower right corner of image */
 //             glVertex3f(spaceMax.x, spaceMin.y,thisCoord.z);
-// 
+//
 //             glTexCoord2f(dataMax.x, dataMax.y);  /* upper right corner of image */
 //             glVertex3f(spaceMax.x, spaceMax.y, thisCoord.z);
-// 
+//
 //             glTexCoord2f(dataMin.x, dataMax.y);  /* upper left corner of image */
 //             glVertex3f(spaceMin.x, spaceMax.y, thisCoord.z);
 //             glEnd();
-//         } else if (plane == XZ_VIEW) {
+//         } else if (plane == om::common::XZ_VIEW) {
 //             if (getTextureMax(thisCoord, plane, dataMax, spaceMax)){
 //                 spaceMax.x = thisCoord.x + tileLength.x;
 //                 spaceMax.y = thisCoord.z + tileLength.z;
@@ -215,17 +216,17 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //             }
 //             glTexCoord2f(dataMin.x, dataMin.y);  /* lower left corner of image */
 //             glVertex3f(spaceMin.x, thisCoord.y,spaceMin.y);
-// 
+//
 //             glTexCoord2f(dataMax.x, dataMin.y);  /* lower right corner of image */
 //             glVertex3f(spaceMax.x, thisCoord.y,spaceMin.y);
-// 
+//
 //             glTexCoord2f(dataMax.x, dataMax.y);  /* upper right corner of image */
 //             glVertex3f(spaceMax.x, thisCoord.y,spaceMax.y);
-// 
+//
 //             glTexCoord2f(dataMin.x, dataMax.y);  /* upper left corner of image */
 //             glVertex3f(spaceMin.x, thisCoord.y,spaceMax.y);
 //             glEnd();
-//         } else if (plane == ZY_VIEW) {
+//         } else if (plane == om::common::ZY_VIEW) {
 //             if (getTextureMax(thisCoord, plane, dataMax, spaceMax)){
 //                 spaceMax.x = thisCoord.z + tileLength.z;
 //                 spaceMax.y = thisCoord.y + tileLength.y;
@@ -238,20 +239,20 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //                 dataMin.x = 0.0;
 //                 dataMin.y = 0.0;
 //             }
-// 
+//
 //             //debug ("chandata", "dataMin.(x,y): (%f,%f)\n", dataMin.x,dataMin.y);
 //             //debug ("chandata", "dataMax.(x,y): (%f,%f)\n", dataMax.x,dataMax.y);
 //             //debug ("chandata", "spaceMin.(x,y): (%f,%f)\n", spaceMin.x,spaceMin.y);
 //             //debug ("chandata", "spaceMax.(x,y): (%f,%f)\n", spaceMax.x,spaceMax.y);
 //             glTexCoord2f(dataMin.x, dataMin.y);  /* lower left corner of image */
 //             glVertex3f(thisCoord.x,spaceMin.x,spaceMin.y);
-// 
+//
 //             glTexCoord2f(dataMax.x, dataMin.y);  /* lower right corner of image */
 //             glVertex3f(thisCoord.x,spaceMax.x ,spaceMin.y);
-// 
+//
 //             glTexCoord2f(dataMax.x, dataMax.y);  /* upper right corner of image */
 //             glVertex3f(thisCoord.x,spaceMax.x,spaceMax.y);
-// 
+//
 //             glTexCoord2f(dataMin.x, dataMax.y);  /* upper left corner of image */
 //             glVertex3f(thisCoord.x,spaceMin.x,spaceMax.y);
 //             glEnd();
@@ -264,7 +265,7 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 // }
 
 // bool OmViewBoxWidget::getTextureMax(Vector3f coord,
-//                                     ViewType plane,
+//                                     om::common::ViewType plane,
 //                                     Vector2f & dataMax,
 //                                     Vector2f & spaceMax)
 // {
@@ -277,9 +278,9 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //     DataCoord maxData= channel.Coords().NormToDataCoord(maxNorm);
 //     DataCoord maxLimit = maxData.compareMinimum(coord+tileLength);
 //     bool result;
-// 
+//
 //     switch (plane) {
-//     case XY_VIEW:
+//     case om::common::XY_VIEW:
 //         if (maxLimit.x>maxScreen.x) spaceMax.x=maxScreen.x; else spaceMax.x=maxLimit.x;
 //         if (maxLimit.y>maxScreen.y) spaceMax.y=maxScreen.y; else spaceMax.y=maxLimit.y;
 //         dataMax.x = (spaceMax.x-coord.x)/tileLength.x;
@@ -287,7 +288,7 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //         result = ((coord.x + tileLength.x) < spaceMax.x);
 //         result = result && ((coord.y + tileLength.y) < spaceMax.y);
 //         break;
-//     case XZ_VIEW:
+//     case om::common::XZ_VIEW:
 //         if (maxLimit.x>maxScreen.x) spaceMax.x=maxScreen.x; else spaceMax.x=maxLimit.x;
 //         if (maxLimit.z>maxScreen.y) spaceMax.y=maxScreen.y; else spaceMax.y=maxLimit.z;
 //         dataMax.x = (spaceMax.x-coord.x)/tileLength.x;
@@ -295,7 +296,7 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //         result = ((coord.x + tileLength.x) < spaceMax.x);
 //         result = result && ((coord.z + tileLength.z) < spaceMax.y);
 //         break;
-//     case ZY_VIEW:
+//     case om::common::ZY_VIEW:
 //         if (maxLimit.z>maxScreen.y) spaceMax.y=maxScreen.y; else spaceMax.y=maxLimit.z;
 //         if (maxLimit.y>maxScreen.x) spaceMax.x=maxScreen.x; else spaceMax.x=maxLimit.y;
 //         dataMax.x = (spaceMax.x-coord.y)/tileLength.y;
@@ -312,9 +313,9 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 // bool
 // OmViewBoxWidget::getTextureMin(Vector3f coord,ViewType plane, Vector2f & dataMin, Vector2f & spaceMin)
 // {
-// 
+//
 //     OmChannel& channel = OmProject::Volumes().Channels().GetChannel( 1);
-// 
+//
 //     Vector3f resolution = channel.Coords().GetDataResolution();
 //     Vector3f tileLength = resolution*128.0;
 //     Vector2f minScreen = vgs_->View2dState()->GetViewSliceMin(plane);
@@ -323,9 +324,9 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //     DataCoord minData= channel.Coords().NormToDataCoord(minNorm);
 //     DataCoord minLimit = minData.compareMaximum(coord);
 //     bool result;
-// 
+//
 //     switch (plane) {
-//     case XY_VIEW:
+//     case om::common::XY_VIEW:
 //         if (minLimit.x<minScreen.x) spaceMin.x=minScreen.x; else spaceMin.x=minLimit.x;
 //         if (minLimit.y<minScreen.y) spaceMin.y=minScreen.y; else spaceMin.y=minLimit.y;
 //         dataMin.x = (spaceMin.x - coord.x)/tileLength.x;
@@ -333,7 +334,7 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //         result = (coord.x > spaceMin.x);
 //         result = result && (coord.y > spaceMin.y);
 //         break;
-//     case XZ_VIEW:
+//     case om::common::XZ_VIEW:
 //         if (minLimit.x<minScreen.x) spaceMin.x=minScreen.x; else spaceMin.x=minLimit.x;
 //         if (minLimit.z<minScreen.y) spaceMin.y=minScreen.y; else spaceMin.y=minLimit.z;
 //         dataMin.x = (spaceMin.x - coord.x)/tileLength.x;
@@ -341,7 +342,7 @@ void OmViewBoxWidget::draw2dBox(const ViewType plane,
 //         result = (coord.x > spaceMin.x);
 //         result = result && (coord.z > spaceMin.y);
 //         break;
-//     case ZY_VIEW:
+//     case om::common::ZY_VIEW:
 //         if (minLimit.z<minScreen.y) spaceMin.y=minScreen.y; else spaceMin.y=minLimit.z;
 //         if (minLimit.y<minScreen.x) spaceMin.x=minScreen.x; else spaceMin.x=minLimit.y;
 //         dataMin.x = (spaceMin.x - coord.y)/tileLength.y;

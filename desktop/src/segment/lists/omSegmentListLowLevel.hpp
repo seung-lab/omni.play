@@ -86,7 +86,7 @@ public:
         runRefreshGUIlists(om::FORCE);
     }
     
-    inline int64_t GetSizeWithChildren(const OmSegID segID) {
+    inline int64_t GetSizeWithChildren(const om::common::SegID segID) {
 //         if(segID >= list_.size()){
 //             std::cout << "segment " << segID << "not found\n";
 //             return 0;
@@ -114,7 +114,7 @@ private:
 
     void doAddSegment(OmSegment* seg)
     {
-        const OmSegID segID = seg->value();
+        const om::common::SegID segID = seg->value();
 
         if(segID >= list_.size()){
             list_.resize(segID + 10);
@@ -240,17 +240,17 @@ private:
         buildPool.push_back(
             zi::run_fn(
                 zi::bind(&OmSegmentListLowLevel::buildGUIlist,
-                         this, om::WORKING)));
+                         this, om::common::SegListType::WORKING)));
 
         buildPool.push_back(
             zi::run_fn(
                 zi::bind(&OmSegmentListLowLevel::buildGUIlist,
-                         this, om::VALID)));
+                         this, om::common::SegListType::VALID)));
 
         buildPool.push_back(
             zi::run_fn(
                 zi::bind(&OmSegmentListLowLevel::buildGUIlist,
-                         this, om::UNCERTAIN)));
+                         this, om::common::SegListType::UNCERTAIN)));
 
         buildPool.join();
 
@@ -263,15 +263,15 @@ private:
 
     void copyGlobalList()
     {
-        om::shared_ptr<OmSegmentListGlobal> globalList =
-            om::make_shared<OmSegmentListGlobal>(list_);
+        std::shared_ptr<OmSegmentListGlobal> globalList =
+            std::make_shared<OmSegmentListGlobal>(list_);
         segmentLists_->Swap(globalList);
     }
 
-    void buildGUIlist(const om::SegListType listType)
+    void buildGUIlist(const om::common::SegListType listType)
     {
-        om::shared_ptr<OmSegmentListForGUI> guiList =
-            om::make_shared<OmSegmentListForGUI>(listType);
+        std::shared_ptr<OmSegmentListForGUI> guiList =
+            std::make_shared<OmSegmentListForGUI>(listType);
         guiList->Build(list_);
         segmentLists_->Swap(guiList);
     }

@@ -8,10 +8,11 @@
  *  Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "zi/omUtility.h"
 #include "datalayer/archive/project.h"
 
+class QWidget;
 class OmChannel;
 class OmSegmentation;
 class OmHdf5;
@@ -21,7 +22,7 @@ class OmProjectGlobals;
 
 class OmProject : private om::singletonBase<OmProject> {
 private:
-    boost::scoped_ptr<OmProjectImpl> impl_;
+    std::unique_ptr<OmProjectImpl> impl_;
 
 public:
     //project IO
@@ -53,7 +54,7 @@ private:
     static void setFileVersion(const int fileVersion);
     friend class OmDataArchiveProject;
     friend class om::data::archive::project;
-    
+
     friend QDataStream &operator<<(QDataStream & out, const OmProject & p );
     friend QDataStream &operator>>(QDataStream & in, OmProject & p );
 

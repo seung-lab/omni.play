@@ -1,5 +1,5 @@
 #include "actions/omActions.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/sidebars/right/graphTools/joinButton.h"
 #include "segment/omSegments.h"
@@ -22,7 +22,7 @@ void JoinButton::doAction()
     }
 
     OmSegmentation& seg = sdw.GetSegmentation();
-    const OmSegIDsSet ids = seg.Segments()->GetSelectedSegmentIDs();
+    const om::common::SegIDSet ids = seg.Segments()->GetSelectedSegmentIDs();
     OmActions::JoinSegments(sdw, ids);
 
     mParent->updateGui();

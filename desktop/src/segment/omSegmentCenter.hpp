@@ -120,7 +120,7 @@ public:
 
         OmSegments* segments = sdw.Segments();
 
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
+        for(om::common::SegID i = 1; i <= segments->getMaxValue(); ++i)
         {
             OmSegment* seg = segments->GetSegment(i);
             if(!seg){

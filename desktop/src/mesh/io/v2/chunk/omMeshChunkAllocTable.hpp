@@ -9,9 +9,9 @@ class OmMeshFilePtrCache;
 class OmMeshChunkAllocTableV2 {
 private:
     OmMeshFilePtrCache *const filePtrCache_;
-    boost::scoped_ptr<OmMemMappedAllocFile> file_;
+    std::unique_ptr<OmMemMappedAllocFile> file_;
 
-    LockedSet<OmSegID> segsBeingSaved_;
+    LockedSet<om::common::SegID> segsBeingSaved_;
     zi::rwmutex lock_;
 
 public:
@@ -34,7 +34,7 @@ public:
     }
 
     // avoid over-lapping writes for meshes with same segment ID
-    bool CanContinueMeshSave(const OmSegID segID)
+    bool CanContinueMeshSave(const om::common::SegID segID)
     {
         if(segsBeingSaved_.insertSinceWasntPresent(segID)){
             return true;
@@ -43,7 +43,7 @@ public:
         return false;
     }
 
-    void SegmentMeshSaveDone(const OmSegID segID){
+    void SegmentMeshSaveDone(const om::common::SegID segID){
         segsBeingSaved_.erase(segID);
     }
 
@@ -66,7 +66,7 @@ public:
         return true;
     }
 
-    inline bool Contains(const OmSegID segID)
+    inline bool Contains(const om::common::SegID segID)
     {
         OmMeshDataEntry e;
         e.segID = segID;
@@ -81,7 +81,7 @@ public:
 
         OmMeshDataEntry* entry = file_->Find(newEntry);
         if(!entry){
-            throw OmIoException("unknown segment ID");
+            throw om::IoException("unknown segment ID");
         }
 
         assert(newEntry.segID == entry->segID);
@@ -89,7 +89,7 @@ public:
         (*entry) = newEntry;
     }
 
-    const OmMeshDataEntry Find(const OmSegID segID)
+    const OmMeshDataEntry Find(const om::common::SegID segID)
     {
         zi::rwmutex::write_guard g(lock_);
 
@@ -100,7 +100,7 @@ public:
 
         OmMeshDataEntry* entry = file_->Find(e);
         if(!entry){
-            throw OmIoException("unknown segment ID");
+            throw om::IoException("unknown segment ID");
         }
 
         return *entry;

@@ -28,11 +28,11 @@ public:
         }
     }
 
-    inline OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*const imageData,
+    inline OmPooledTile<om::common::ColorARGB>* ColorTile(uint32_t const*const imageData,
                                                 const int tileDim,
                                                 const OmTileCoord& key)
     {
-        const OmSegmentColorCacheType sccType =
+        const om::segment::coloring sccType =
             key.getSegmentColorCacheType();
 
         {
@@ -48,10 +48,10 @@ public:
 private:
     void setupColorizer(const int tileDim,
                         const OmTileCoord& key,
-                        const OmSegmentColorCacheType sccType)
+                        const om::segment::coloring sccType)
     {
         if(SEGMENTATION != key.getVolume()->getVolumeType()){
-            throw OmIoException("can only color segmentations");
+            throw om::IoException("can only color segmentations");
         }
 
         SegmentationDataWrapper sdw(key.getVolume()->getID());
