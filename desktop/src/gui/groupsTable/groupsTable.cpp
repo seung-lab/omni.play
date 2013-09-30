@@ -57,7 +57,7 @@ void GroupsTable::populateGroupsList() {
   }
 
   log_debugs(unknown) << "repopulating..";
-  mGroupsList->populate(*sdw_.GetSegmentation());
+  mGroupsList->populate(sdw_.GetSegmentation());
 }
 
 void GroupsTable::Repopulate(om::common::SegID id) {

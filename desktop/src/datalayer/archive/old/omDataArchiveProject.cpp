@@ -17,7 +17,7 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp, OmProjectImpl* projec
 {
     QFile file(fnp);
 
-    om::file::openFileRO(file);
+    om::file::old::openFileRO(file);
 
     QDataStream in(&file);
     in.setByteOrder(QDataStream::LittleEndian);
@@ -33,7 +33,7 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp, OmProjectImpl* projec
             QString("can not open file: file version is (%1), but Omni expecting (%2)")
             .arg(fileVersion_)
             .arg(Latest_Project_Version);
-        throw om::IoException(err);
+        throw om::IoException(err.toStdString());
     }
 
     in >> (*project);
@@ -48,7 +48,7 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp, OmProjectImpl* projec
     if(fileVersion_ < Latest_Project_Version)
     {
         upgrade();
-        ArchiveWrite(fnp, project);
+        //ArchiveWrite(fnp, project);
     }
 
     postLoad();
@@ -97,22 +97,4 @@ void OmDataArchiveProject::upgrade()
     } else if(fileVersion_ < 20){
         OmUpgraders::to20();
     }
-}
-
-void OmDataArchiveProject::ArchiveWrite(const QString& fnp, OmProjectImpl* project)
-{
-    QFile file(fnp);
-    if(!file.open(QIODevice::WriteOnly)){
-        throw om::IoException("could not open", fnp);
-    }
-
-    QDataStream out(&file);
-    out.setByteOrder(QDataStream::LittleEndian);
-    out.setVersion(QDataStream::Qt_4_6);
-
-    OmProject::setFileVersion(Latest_Project_Version);
-
-    out << Latest_Project_Version;
-    out << (*project);
-    out << Omni_Postfix;
 }

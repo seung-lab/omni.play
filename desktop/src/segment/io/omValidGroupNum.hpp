@@ -91,7 +91,7 @@ private:
             return;
         }
 
-        om::file::openFileRO(file);
+        om::file::old::openFileRO(file);
 
         QDataStream in(&file);
         in.setByteOrder(QDataStream::LittleEndian);
@@ -115,7 +115,7 @@ private:
 
         QFile file(filePath);
 
-        om::file::openFileWO(file);
+        om::file::old::openFileWO(file);
 
         QDataStream out(&file);
         out.setByteOrder(QDataStream::LittleEndian);

@@ -8,14 +8,14 @@
 class OmSegmentListTypePage {
 private:
     OmSegmentation *const vol_;
-    const PageNum pageNum_;
+    const om::common::PageNum pageNum_;
     const uint32_t pageSize_;
     const std::string fnp_;
 
     std::shared_ptr<OmIOnDiskFile<uint8_t> > data_;
 
 public:
-    OmSegmentListTypePage(OmSegmentation* vol, const PageNum pageNum, const uint32_t pageSize)
+    OmSegmentListTypePage(OmSegmentation* vol, const om::common::PageNum pageNum, const uint32_t pageSize)
         : vol_(vol)
         , pageNum_(pageNum)
         , pageSize_(pageSize)

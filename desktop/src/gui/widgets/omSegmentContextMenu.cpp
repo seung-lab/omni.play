@@ -267,8 +267,8 @@ void OmSegmentContextMenu::writeChildrenFile(const QString fnp, om::gui::progres
     try
     {
         QFile file(fnp);
-        om::file::openFileWO(file);
-        om::file::writeStrings(file, *children, dialog);
+        om::file::old::openFileWO(file);
+        om::file::old::writeStrings(file, *children, dialog);
 
         dialog->TellDone("wrote file " + fnp);
 
@@ -279,22 +279,21 @@ void OmSegmentContextMenu::writeChildrenFile(const QString fnp, om::gui::progres
 
 void OmSegmentContextMenu::addGroups()
 {
-    OmGroups* groups = sdw_.GetSegmentation().Groups();
-    OmGroupIDsSet set = groups->GetGroups(sdw_.FindRootID());
-    OmGroupID firstID = 0;
-    QString groupsStr = "Groups: ";
+    auto* groups = sdw_.GetSegmentation().Groups();
+    auto set = groups->GetGroups(sdw_.FindRootID());
+    om::common::GroupID firstID = 0;
+    std::string groupsStr = "Groups: ";
 
-    Q_FOREACH(OmGroupID id, set)
-    {
+    for(const auto& id : set){
         if(!firstID) {
             firstID = id;
         }
-        OmGroup & group = groups->GetGroup(id);
+        auto& group = groups->GetGroup(id);
         groupsStr += group.GetName() + " + ";
 
         printf("here\n");
     }
-    addAction(groupsStr);
+    addAction(QString::fromStdString(groupsStr));
 }
 
 void OmSegmentContextMenu::addDisableAction()

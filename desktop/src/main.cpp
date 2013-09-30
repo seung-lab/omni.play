@@ -25,26 +25,6 @@ DEFINE_ZiLOG(segmentSelector, false);
 #include "system/omStateManager.h"
 #include <QFileInfo>
 #include <QApplication>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
-#include <boost/filesystem.hpp>
-
-class Omni;
-
-// class MyApplication : public QApplication
-// {
-// private:
-// 	Omni* o_;
-// public:
-// 	MyApplication(int argc, char **argv, Omni* o)
-// 		: QApplication(argc, argv)
-// 		, o_(o)
-// 	{}
-
-// 	bool notify ( QObject * receiver, QEvent * e );
-// };
 
 class Omni{
 private:
@@ -102,7 +82,7 @@ private:
     {
         qRegisterMetaType<om::tool::mode>("om::tool::mode");
         qRegisterMetaType<om::common::ID>("om::common::ID");
-        qRegisterMetaType<ViewType>("ViewType");
+        qRegisterMetaType<om::common::ViewType>("ViewType");
         qRegisterMetaType<uint32_t>("uint32_t");
         qRegisterMetaType<ChannelDataWrapper>("ChannelDataWrapper");
         qRegisterMetaType<SegmentationDataWrapper>("SegmentationDataWrapper");
@@ -165,16 +145,6 @@ private:
         return 0;
     }
 };
-
-// bool MyApplication::notify ( QObject * receiver, QEvent * e )
-// {
-// 	try {
-// 		QApplication::notify(receiver, e);
-// 	} catch (OmException e) {
-// 		o_->eh().WriteMinidump();
-// 		throw;
-// 	}
-// }
 
 int main(int argc, char *argv[])
 {

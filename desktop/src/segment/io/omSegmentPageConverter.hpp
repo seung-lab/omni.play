@@ -12,7 +12,7 @@ public:
         OmSegmentDataV3* rawV3 = dataV3.get();
 
         std::shared_ptr<OmSegmentDataV4> ret =
-            om::mem::Malloc<OmSegmentDataV4>::MallocNumElements(pageSize, om::common::ZeroMem::ZERO_FILL);
+            om::mem::Malloc<OmSegmentDataV4>::NumElements(pageSize, om::mem::ZeroFill::ZERO);
         OmSegmentDataV4* rawV4 = ret.get();
 
         for(uint32_t i = 0; i < pageSize; ++i)
@@ -33,12 +33,12 @@ public:
         OmSegmentDataV3* rawV3 = dataV3.get();
 
         std::shared_ptr<uint8_t> ret =
-            om::mem::Malloc<uint8_t>::MallocNumElements(pageSize, om::common::ZeroMem::ZERO_FILL);
+            om::mem::Malloc<uint8_t>::NumElements(pageSize, om::mem::ZeroFill::ZERO);
         uint8_t* raw = ret.get();
 
         for(uint32_t i = 0; i < pageSize; ++i)
         {
-            raw[i] = rawV3[i].listType;
+            raw[i] = static_cast<int>(rawV3[i].listType);
         }
 
         return ret;

@@ -8,6 +8,8 @@
 #include "system/omGenericManager.hpp"
 #include "datalayer/archive/filter.h"
 
+#include <QDataStream>
+
 class OmFilter2d;
 
 class OmFilter2dManager {

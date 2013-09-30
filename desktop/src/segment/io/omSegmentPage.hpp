@@ -13,7 +13,7 @@ class OmSegmentPage {
 private:
     OmSegmentation* segmentation_;
     OmSegments* segments_;
-    PageNum pageNum_;
+    om::common::PageNum pageNum_;
     uint32_t pageSize_;
 
     std::shared_ptr<OmSegmentPageVersion> versionInfo_;
@@ -38,7 +38,7 @@ public:
         , listTypePage_(NULL)
     {}
 
-    OmSegmentPage(OmSegmentation* segmentation, const PageNum pageNum,
+    OmSegmentPage(OmSegmentation* segmentation, const om::common::PageNum pageNum,
                   const uint32_t pageSize)
         : segmentation_(segmentation)
         , segments_(segmentation_->Segments())

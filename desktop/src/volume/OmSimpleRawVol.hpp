@@ -9,7 +9,7 @@ public:
 
         std::shared_ptr<QFile> file = std::make_shared<QFile>(QString::fromStdString(fname));
 
-        om::file::openFileRW(*file);
+        om::file::old::openFileRW(*file);
 
         return file;
     }

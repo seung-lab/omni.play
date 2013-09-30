@@ -33,7 +33,7 @@ inline void merge(const std::set<T>& a, const std::set<T>& b, std::set<T>& c) {
 
 template <typename T>
 inline void mergeBintoA(std::set<T>& a, const std::set<T>& b) {
-  for (auto& c : b) {
+  for (const auto& c : b) {
     a.insert(c);
   }
 }

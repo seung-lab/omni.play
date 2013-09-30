@@ -2,6 +2,7 @@
 
 #include "volume/omSegmentation.h"
 #include "volume/omChannel.h"
+#include "common_qdatastream.hpp"
 
 #include <QDataStream>
 

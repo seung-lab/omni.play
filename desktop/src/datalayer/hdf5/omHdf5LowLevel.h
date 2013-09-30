@@ -9,6 +9,7 @@ typedef LONG_PTR ssize_t;
 #include "common/common.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omDataPath.h"
+#include "coordinates/dataCoord.h"
 
 class OmHdf5LowLevel {
 public:

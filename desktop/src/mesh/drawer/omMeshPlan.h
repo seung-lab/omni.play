@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+#include "coordinates/chunkCoord.h"
 #include "segment/omSegment.h"
 
 struct LargestSegmentFirst {

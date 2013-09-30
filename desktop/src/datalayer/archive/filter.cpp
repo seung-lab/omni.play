@@ -5,6 +5,46 @@
 #include "utility/yaml/genericManager.hpp"
 
 namespace YAML {
+void operator>>(const YAML::Node& in, uint32_t& p){
+    p = in.as<uint32_t>();
+}
+inline YAML::Emitter &operator<<(YAML::Emitter& out, const QString& s) {
+    return out << s.toStdString();
+}
+
+inline void operator>>(const YAML::Node& in, QString& s) {
+    std::string str = in.as<std::string>();
+
+    if(str == "~") // NULL Value from YAML
+        str = "";
+
+    s = QString::fromStdString(str);
+}
+
+void operator>>(const YAML::Node& in, double& p){
+    p = in.as<double>();
+}
+template<class T>
+YAML::Emitter &operator<<(YAML::Emitter& out, const std::unordered_set<T>& s)
+{
+    out << YAML::Flow << YAML::BeginSeq;
+    for(const auto& e : s){
+        out << e;
+    }
+    out << YAML:: EndSeq;
+    return out;
+}
+
+template<class T>
+void operator>>(const YAML::Node& in, std::unordered_set<T>& s)
+{
+    FOR_EACH(it, in)
+    {
+        T item;
+        *it >> item;
+        s.insert(item);
+    }
+}
 
 Emitter &operator<<(Emitter& out, const OmFilter2dManager& fm)
 {

@@ -20,7 +20,6 @@ private:
 public:
     usersImpl()
         : usersFolderRoot_(usersFolderRoot())
-        , settings_(NULL)
     {}
 
     void SwitchToDefaultUser(){
@@ -51,7 +50,7 @@ public:
     inline std::string UsersRootFolder() const {
         return usersFolderRoot_.toStdString();
     }
-    
+
     inline userSettings& UserSettings() {
         return *settings_;
     }
@@ -75,7 +74,7 @@ private:
 
     void fixSegmentationFolderSymlinks()
     {
-        const std::vector<om::fs::segmentationFolderInfo> segmentationFolders =
+        const auto segmentationFolders =
             om::fs::segmentationFolders::Find();
 
         FOR_EACH(iter, segmentationFolders)
@@ -113,7 +112,7 @@ private:
         const QDir filesDir(vol->Folder()->GetVolPath());
         return filesDir.absolutePath() + QLatin1String("/segments/");
     }
-    
+
     void loadUserSettings()
     {
         if(settings_.get() == NULL || settings_->getFilename() != settingsFilename())
@@ -123,7 +122,7 @@ private:
             settings_->Load();
         }
     }
-    
+
     inline std::string settingsFilename() {
         return userFolder_.toStdString() + "/settings.yaml";
     }

@@ -14,6 +14,7 @@
 #include "volume/omFilter2d.h"
 #include "mesh/omMeshManagers.hpp"
 
+#include "common_yaml.hpp"
 #include <qtextstream.h>
 #include <fstream>
 #include <sstream>
@@ -23,32 +24,25 @@ namespace data {
 namespace archive {
 
 void project::Read(const QString& fnp, OmProjectImpl* project) {
-    using namespace YAML;
 
-    std::ifstream fin(fnp.toStdString().c_str());
+    try{
+        auto docs = YAML::LoadAllFromFile(fnp.toStdString());
 
-    try
-    {
-        Parser parser(fin);
+        {
+            auto doc = docs[0];
+            int ver;
+            doc["version"] >> ver;
+            OmProject::setFileVersion(ver);
+        }
 
-        Node doc;
-        parser.GetNextDocument(doc);
-
-        int ver;
-        doc["version"] >> ver;
-        OmProject::setFileVersion(ver);
-
-        parser.GetNextDocument(doc);
+        auto& doc = docs[1];
         doc >> (*project);
     }
-    catch(Exception e)
+    catch(std::exception& e)
     {
         std::stringstream ss;
-        ss << e.msg << "\n";
+        ss << e.what() << "\n";
         ss << fnp.toStdString();
-        ss << " line: " << e.mark.line;
-        ss << " col: " << e.mark.column;
-        ss << " pos: " << e.mark.pos;
         throw om::IoException(ss.str());
     }
     postLoad();
@@ -78,7 +72,7 @@ void project::Write(const QString& fnp, OmProjectImpl* project) {
 
     QFile file(fnp);
 
-    om::file::openFileWO(file);
+    om::file::old::openFileWO(file);
 
     QTextStream out(&file);
 

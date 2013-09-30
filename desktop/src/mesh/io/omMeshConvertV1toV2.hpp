@@ -62,7 +62,8 @@ public:
             hdf5Reader_->Read(segID, coord);
 
         meshWriter_->Save(segID, coord, mesh,
-                          om::common::ShouldBufferWrites::BUFFER_WRITES, om::WRITE_ONCE);
+                          om::common::ShouldBufferWrites::BUFFER_WRITES,
+                          om::common::AllowOverwrite::WRITE_ONCE);
 
         return mesh;
     }

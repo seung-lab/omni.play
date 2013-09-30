@@ -1,7 +1,7 @@
 #include "actions/omActions.h"
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/logging.h"
-#include "common/omSet.hpp"
+#include "common/set.hpp"
 #include "project/omProject.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentSelected.hpp"

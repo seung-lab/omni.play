@@ -9,6 +9,7 @@
 
 namespace om {
 namespace file {
+namespace old {
 
 void openFileRO(QFile& file);
 void openFileRW(QFile& file);
@@ -115,7 +116,7 @@ std::shared_ptr<T> readAll(QFile* file)
     }
 
     std::shared_ptr<T> ret =
-        om::mem::Malloc<T>::MallocNumBytes(numBytes, om::common::ZeroMem::DONT_ZERO_FILL);
+        om::mem::Malloc<T>::NumBytes(numBytes, om::mem::ZeroFill::DONT);
 
     char* dataChar = reinterpret_cast<char*>(ret.get());
 
@@ -174,8 +175,8 @@ void createFileNumElements(const std::string& fnp, const int64_t numElements)
 
     openFileWO(file);
 
-    std::shared_ptr<T> empty = om::mem::Malloc<T>::MallocNumElements(numElements,
-                                                                  om::common::ZeroMem::ZERO_FILL);
+    std::shared_ptr<T> empty = om::mem::Malloc<T>::NumElements(numElements,
+                                                               om::mem::ZeroFill::ZERO);
 
     writeNumElements(file, empty, numElements);
 }
@@ -217,5 +218,6 @@ void writeStrings(QFile& file, const T& strings, PROGRESS* progress)
 }
 
 } // namespace file
+}
 } // namespace om
 

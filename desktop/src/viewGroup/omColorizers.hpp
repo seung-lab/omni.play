@@ -1,8 +1,9 @@
 #pragma once
 
+#include "segment/coloring.hpp"
 #include "zi/omMutex.h"
 
-#include <boost/array.hpp>
+#include <array>
 
 class OmViewGroupState;
 
@@ -11,7 +12,7 @@ private:
     OmViewGroupState *const vgs_;
 
     zi::spinlock lock_;
-    boost::array<OmSegmentColorizer*, SCC_NUMBER_OF_ENUMS> colorizers_;
+    std::array<OmSegmentColorizer*, om::segment::coloring::NUMBER_OF_ENUMS> colorizers_;
 
 public:
     OmColorizers(OmViewGroupState* vgs)
@@ -50,7 +51,7 @@ private:
                         const OmTileCoord& key,
                         const om::segment::coloring sccType)
     {
-        if(SEGMENTATION != key.getVolume()->getVolumeType()){
+        if(om::common::SEGMENTATION != key.getVolume()->getVolumeType()){
             throw om::IoException("can only color segmentations");
         }
 

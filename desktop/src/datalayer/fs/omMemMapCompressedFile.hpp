@@ -1,6 +1,6 @@
 #pragma once
 
-#include "datalayer/fs/omCompressedFile.h"
+#include "datalayer/compressedFile.h"
 #include "datalayer/fs/omIOnDiskFile.h"
 #include "datalayer/fs/omFile.hpp"
 #include "utility/omTempFile.hpp"
@@ -11,8 +11,8 @@ public:
     static std::shared_ptr<OmMemMapCompressedFile<T> >
     CreateNumElements(const std::string& fnp, const int64_t numElements)
     {
-        std::shared_ptr<T> d = om::mem::Malloc<T>::MallocNumElements(numElements,
-                                                                  om::common::ZeroMem::ZERO_FILL);
+        std::shared_ptr<T> d = om::mem::Malloc<T>::NumElements(numElements,
+                                                                  om::mem::ZeroFill::ZERO);
         om::file::compressToFileNumElements(d, numElements, fnp);
 
         return std::make_shared<OmMemMapCompressedFile<T> >(fnp);
@@ -58,9 +58,9 @@ public:
                                          tmpFileName);
 
         // overwrite old version (don't use mvFile: temp file could be on different volume...)
-        om::file::cpFile(tmpFileName, fnp_);
+        om::file::old::cpFile(tmpFileName, fnp_);
 
-        om::file::rmFile(tmpFileName);
+        om::file::old::rmFile(tmpFileName);
     }
 
     virtual T* GetPtr() const {

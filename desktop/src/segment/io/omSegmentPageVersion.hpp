@@ -13,13 +13,13 @@ private:
     static const int CurrentFileVersion = 4;
 
     OmSegmentation *const vol_;
-    const PageNum pageNum_;
+    const om::common::PageNum pageNum_;
     const QString fnp_;
 
     int version_;
 
 public:
-    OmSegmentPageVersion(OmSegmentation* vol, const PageNum pageNum)
+    OmSegmentPageVersion(OmSegmentation* vol, const om::common::PageNum pageNum)
         : vol_(vol)
         , pageNum_(pageNum)
         , fnp_(versionFilePath())
@@ -53,7 +53,7 @@ private:
     {
         QFile file(fnp_);
 
-        om::file::openFileRW(file);
+        om::file::old::openFileRW(file);
 
         QDataStream out(&file);
         out.setByteOrder( QDataStream::LittleEndian );
@@ -66,7 +66,7 @@ private:
     {
         QFile file(fnp_);
 
-        om::file::openFileRO(file);
+        om::file::old::openFileRO(file);
 
         QDataStream in(&file);
         in.setByteOrder( QDataStream::LittleEndian );
@@ -75,7 +75,7 @@ private:
         in >> version_;
 
         if(!in.atEnd()){
-            throw om::IoException("corrupt file?", versionFilePath());
+            throw om::IoException("corrupt file?");
         }
     }
 

@@ -52,7 +52,7 @@ data* manager::parse(const YAML::Node& n)
 
 void manager::Load() {
     std::string fnp = filePathV1();
-    if(!om::file::exists(fnp)) {
+    if(!om::file::old::exists(fnp)) {
         std::cout << "Unable to find Annotations file.  Creating new one." << std::endl;
         return;
     }

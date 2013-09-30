@@ -1,8 +1,8 @@
 #pragma once
 
 #include "common/common.h"
-#include "common/genericManager.hpp"
-#include <QVector>
+#include "system/omGenericManager.hpp"
+
 #include <unordered_map>
 
 class OmSegmentation;
@@ -27,10 +27,13 @@ class OmGroups : boost::noncopyable {
   om::common::ID GetSegmentationID();
   void populateGroupsList();
 
+  OmGenericManager<OmGroup> mGroupManager;
+  std::unordered_map<om::common::GroupName, om::common::GroupID> mGroupsByName;
+
  private:
   void setGroupIDs(const om::common::SegIDSet& set, OmGroup* group, bool doSet);
 
   OmSegmentation* mSegmentation;
-  om::common::GenericManager<OmGroup> mGroupManager;
-  std::unordered_map<om::common::GroupName, om::common::GroupID> mGroupsByName;
+
+
 };

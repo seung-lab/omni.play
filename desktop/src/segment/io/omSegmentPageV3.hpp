@@ -7,14 +7,14 @@
 class OmSegmentPageV3 {
 private:
     OmSegmentation *const vol_;
-    const PageNum pageNum_;
+    const om::common::PageNum pageNum_;
     const uint32_t pageSize_;
     const std::string fnp_;
 
     std::shared_ptr<OmIOnDiskFile<OmSegmentDataV3> > segmentsDataPtr_;
 
 public:
-    OmSegmentPageV3(OmSegmentation* vol, const PageNum pageNum, const uint32_t pageSize)
+    OmSegmentPageV3(OmSegmentation* vol, const om::common::PageNum pageNum, const uint32_t pageSize)
         : vol_(vol)
         , pageNum_(pageNum)
         , pageSize_(pageSize)
@@ -46,9 +46,9 @@ public:
     {
         QFile file(memMapPathQStrV3());
 
-        om::file::openFileRO(file);
+        om::file::old::openFileRO(file);
 
-        return om::file::readAll<OmSegmentDataV3>(file);
+        return om::file::old::readAll<OmSegmentDataV3>(file);
     }
 
     void Flush(){

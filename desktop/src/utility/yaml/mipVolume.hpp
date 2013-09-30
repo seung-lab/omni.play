@@ -46,8 +46,7 @@ public:
 
         in["build state"] >> vol_.mBuildState;
 
-        std::string volDataType;
-        in["type"] >> volDataType;
+        std::string volDataType = in["type"].as<std::string>();
         vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFrstring(QString::fromStdString(volDataType));
 
         vol_.LoadPath();

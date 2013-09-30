@@ -7,6 +7,7 @@
 #include "datalayer/hdf5/omHdf5.h"
 
 #include <QDataStream>
+#include "common_qdatastream.hpp"
 
 static const QString Omni_Postfix("OMNI");
 const int Omni_Segment_Version = 2;

@@ -1,8 +1,11 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
 #include "volume/omVolumeTypes.hpp"
 
+namespace om { class dataCoord; }
 class OmSegChunk;
 class OmSegments;
 class OmSegmentation;

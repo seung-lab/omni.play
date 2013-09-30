@@ -278,12 +278,6 @@ void Headless::compareSegs(const QString& line) {
     const int id1 = OmStringHelpers::getUInt(segmentationIDs[0]);
     const int id2 = OmStringHelpers::getUInt(segmentationIDs[1]);
 
-    bool verbose = 0;
-
-    if (3 == args.size()){
-        verbose = (bool) OmStringHelpers::getUInt(args[2]);
-    }
-
     if(!SegmentationDataWrapper(id1).IsSegmentationValid()){
         printf("Segmentation %i is not a valid segmentation.\n",id1);
         return;

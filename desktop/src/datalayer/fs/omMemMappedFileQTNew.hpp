@@ -9,7 +9,7 @@ public:
     static std::shared_ptr<OmMemMappedFileQTNew<T> >
     CreateNumElements(const std::string& fnp, const int64_t numElements)
     {
-        om::file::createFileNumElements<T>(fnp, numElements);
+        om::file::old::createFileNumElements<T>(fnp, numElements);
 
         return std::make_shared<OmMemMappedFileQTNew<T> >(fnp);
     }
@@ -18,7 +18,7 @@ public:
     CreateFromData(const std::string& fnp, std::shared_ptr<T> d,
                    const int64_t numElements)
     {
-        om::file::createFileFromData<T>(fnp, d, numElements);
+        om::file::old::createFileFromData<T>(fnp, d, numElements);
 
         return std::make_shared<OmMemMappedFileQTNew<T> >(fnp);
     }
@@ -67,8 +67,8 @@ public:
 private:
     void map()
     {
-        om::file::openFileRW(file_, fnp_);
-        data_ = om::file::mapFile<T>(file_);
+        om::file::old::openFileRW(file_, fnp_);
+        data_ = om::file::old::mapFile<T>(file_);
         dataChar_ = reinterpret_cast<char*>(data_);
     }
 };

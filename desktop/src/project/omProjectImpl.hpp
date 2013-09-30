@@ -210,7 +210,7 @@ private:
         OmActionLogger::Reset();
 
 
-        if (om::file::exists(projectMetadataFile_.toStdString()))
+        if (om::file::old::exists(projectMetadataFile_.toStdString()))
             om::data::archive::project::Read(projectMetadataFile_, this);
         else
             OmDataArchiveProject::ArchiveRead(OmFileNames::ProjectMetadataFileOld(), this);

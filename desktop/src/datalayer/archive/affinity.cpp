@@ -1,5 +1,4 @@
 #include "yaml-cpp/yaml.h"
-#include "utility/yaml/omYaml.hpp"
 #include "volume/omAffinityGraph.h"
 #include "volume/omAffinityChannel.h"
 #include "volume/omChannel.h"
@@ -7,6 +6,8 @@
 #include "datalayer/archive/affinity.h"
 #include "utility/yaml/genericManager.hpp"
 #include "utility/yaml/mipVolume.hpp"
+
+#include "common_yaml.hpp"
 
 namespace YAML {
 

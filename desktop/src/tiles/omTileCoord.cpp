@@ -3,6 +3,7 @@
 #include "volume/omMipVolume.h"
 #include "viewGroup/omViewGroupState.h"
 #include "view2d/omView2dConverters.hpp"
+#include "segment/coloring.hpp"
 
 OmTileCoord::OmTileCoord()
     : OmTileCoordKey(om::chunkCoord(),
@@ -11,7 +12,7 @@ OmTileCoord::OmTileCoord()
                      NULL,
                      -1,
                      NULL,
-                     SCC_NUMBER_OF_ENUMS)
+                     om::segment::coloring::NUMBER_OF_ENUMS)
 {}
 
 OmTileCoord::OmTileCoord(const om::chunkCoord& cc, om::common::ViewType view, uint8_t depth,
@@ -40,28 +41,29 @@ OmTileCoord::OmTileCoord(const om::chunkCoord& cc, om::common::ViewType view, ui
 
 OmTileCoord OmTileCoord::Downsample() const
 {
-	int newDepth = (getDepth() +
-		(OmView2dConverters::GetViewTypeDepth(getCoord().Coordinate, getViewType()) % 2) * 128) / 2;
-	return OmTileCoord(getCoord().ParentCoord(),
-	                   getViewType(),
-	                   newDepth,
-	                   getVolume(),
-	                   getFreshness(),
-	                   getViewGroupState(),
-	                   getSegmentColorCacheType());
+    int newDepth = (getDepth() +
+                    (OmView2dConverters::GetViewTypeDepth(getCoord().Coordinate, getViewType()) % 2) * 128) / 2;
+    return OmTileCoord(getCoord().ParentCoord(),
+                       getViewType(),
+                       newDepth,
+                       getVolume(),
+                       getFreshness(),
+                       getViewGroupState(),
+                       getSegmentColorCacheType());
 }
 
 
 std::ostream& operator<<(std::ostream &out, const OmTileCoord &c)
 {
-    out << "["
-        << c.getCoord() << ", "
-        << c.getViewType() << ", "
-        << int(c.getDepth()) << ", "
-        << c.getVolume()->GetName() << ", "
-        << c.getFreshness() << ", "
-        << c.getSegmentColorCacheType()
-        << "]";
-
+/*
+  out << "["
+  << c.getCoord() << ", "
+  << c.getViewType() << ", "
+  << int(c.getDepth()) << ", "
+  << c.getVolume()->GetName() << ", "
+  << c.getFreshness() << "--"
+  << c.getSegmentColorCacheType()
+  << "]";
+*/
     return out;
 }

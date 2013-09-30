@@ -1,5 +1,6 @@
+#include <QtGlobal>
 #include "omVolumeCuller.h"
-#include "common/omGl.h"
+#include "utility/glInclude.h"
 #include "common/logging.h"
 
 OmVolumeCuller::OmVolumeCuller(const Matrix4f & projmodelview,

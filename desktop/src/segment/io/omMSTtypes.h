@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <iostream>
+
 struct OmMSTEdge {
     uint32_t number;
     uint32_t node1ID;

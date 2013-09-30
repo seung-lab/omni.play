@@ -15,6 +15,7 @@ private:
     double threshold_;
     double sizeThreshold_;
     bool showAnnotations_;
+    double alpha_;
 
 public:
     userSettings(std::string filename)

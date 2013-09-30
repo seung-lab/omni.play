@@ -1,5 +1,7 @@
 #include "datalayer/archive/old/omMipVolumeArchive.h"
 #include "project/omProject.h"
+#include "common_qdatastream.hpp"
+
 
 QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c)
 {

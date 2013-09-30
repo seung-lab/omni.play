@@ -40,7 +40,7 @@ bool OmHdf5LowLevel::dataset_exists(){
  */
 OmDataWrapperPtr OmHdf5LowLevel::readDataset(int *size)
 {
-    debug(hdf5verbose, "in %s: path is %s\n", __FUNCTION__, getPath());
+    //debug(hdf5verbose, "in %s: path is %s\n", __FUNCTION__, getPath());
 
     if(!OmHdf5Utils::group_exists(fileId, getPath())){
         *size = 0;
@@ -105,7 +105,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readDataset(int *size)
 
 void OmHdf5LowLevel::allocateDataset(int size, OmDataWrapperPtr data)
 {
-    debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+    //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
     herr_t status;
 
@@ -155,7 +155,7 @@ void OmHdf5LowLevel::allocateDataset(int size, OmDataWrapperPtr data)
  */
 void OmHdf5LowLevel::group_create_tree(const char* path)
 {
-    //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+    ////debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
     std::string curPath;
     const QStringList splits = QString(path).split('/');
@@ -175,7 +175,7 @@ void OmHdf5LowLevel::group_create_tree(const char* path)
 
 void OmHdf5LowLevel::dataset_delete_create_tree()
 {
-    debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+    //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
     //get position of last slash
     std::string name_str(getPath());
@@ -195,7 +195,7 @@ void OmHdf5LowLevel::dataset_delete_create_tree()
 Vector3i  OmHdf5LowLevel::getChunkedDatasetDims(const om::common::AffinityGraph affin)
 {
     om::common::AffinityGraph aff = affin;
-    debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+    //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
     herr_t status;
 
@@ -247,7 +247,7 @@ Vector3i  OmHdf5LowLevel::getChunkedDatasetDims(const om::common::AffinityGraph 
             throw om::IoException("Could not close HDF5 dataset.");
         }
 
-        debug(hdf5image, "dims are %d:%d:%d; maxdims are %d:%d:%d\n", DEBUGV3(dims), DEBUGV3(maxdims));
+        //debug(hdf5image, "dims are %d:%d:%d; maxdims are %d:%d:%d\n", //DEBUGV3(dims), //DEBUGV3(maxdims));
         //printf("dims4 are %i:%i:%i:%i\n", dims4.array[0], dims4.array[1], dims4.array[2], dims4.array[3]);
 
         //flip from hdf5 version
@@ -275,8 +275,8 @@ Vector3i  OmHdf5LowLevel::getChunkedDatasetDims(const om::common::AffinityGraph 
             throw om::IoException("Could not close HDF5 dataset.");
         }
 
-        debug(hdf5image, "dims are %d:%d:%d; maxdims are %d:%d:%d\n",
-              DEBUGV3(dims), DEBUGV3(maxdims));
+        //debug(hdf5image, "dims are %d:%d:%d; maxdims are %d:%d:%d\n",
+              //DEBUGV3(dims), //DEBUGV3(maxdims));
 
         //flip from hdf5 version
         return Vector3i (dims.z, dims.y, dims.x);
@@ -292,7 +292,7 @@ void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
 {
     herr_t ret;
     const int rank = 3;
-    debug(hdf5verbose, "OmHDF5LowLevel: in %s...i\n", __FUNCTION__);
+    //debug(hdf5verbose, "OmHDF5LowLevel: in %s...i\n", __FUNCTION__);
 
     //Creates a new property as an instance of a property list class.
     hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
@@ -353,7 +353,7 @@ void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
 
 void OmHdf5LowLevel::writeChunk(const om::dataBbox& extent, OmDataWrapperPtr data)
 {
-    debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+    //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
     //Opens an existing dataset.
     hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
@@ -452,7 +452,7 @@ OmDataWrapperPtr OmHdf5LowLevel::GetChunkDataType()
 OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
                                            const om::common::AffinityGraph aff)
 {
-    debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+    //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
     //Opens an existing dataset.
     //hid_t H5Dopen(hid_t loc_id, const char *name  )
@@ -481,8 +481,8 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
 
     Vector3<hsize_t> block = extent.getDimensions();
     Vector3<hsize_t> block_flipped(block.z, block.y, block.x);
-    debug(hdf5image, "start:%i,%i,%i\n", DEBUGV3(start));
-    debug(hdf5image, "block:%i,%i,%i\n", DEBUGV3(block));
+    //debug(hdf5image, "start:%i,%i,%i\n", //DEBUGV3(start));
+    //debug(hdf5image, "block:%i,%i,%i\n", //DEBUGV3(block));
     herr_t ret;
     hid_t mem_dataspace_id;
     OmDataWrapperPtr data;
@@ -553,7 +553,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
         }
 
         printf("aff = %i\n", aff);
-        memcpy(imageData3, &imageData[size*(aff-1)/3], size/3);
+        memcpy(imageData3, &imageData[size*((int)aff-1)/3], size/3);
 
         free(imageData);
     } else {
@@ -626,7 +626,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const om::dataBbox& extent,
 
 Vector3i OmHdf5LowLevel::getDatasetDims()
 {
-    debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+    //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
     Vector3<hsize_t> dims(0,0,0);
 

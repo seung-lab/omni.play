@@ -32,8 +32,8 @@ public:
 
     std::shared_ptr<T> GetCopyOfTile(const om::common::ViewType viewType, const int offsetNumTiles)
     {
-        std::shared_ptr<T> tilePtr = om::mem::Malloc<T>::MallocNumElements(elementsPerTile_,
-                                                                     om::common::ZeroMem::DONT_ZERO_FILL);
+        std::shared_ptr<T> tilePtr = om::mem::Malloc<T>::NumElements(elementsPerTile_,
+                                                                     om::mem::ZeroFill::DONT);
         sliceTile(viewType, offsetNumTiles, tilePtr.get());
 
         return tilePtr;

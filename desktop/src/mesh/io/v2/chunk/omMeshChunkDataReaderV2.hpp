@@ -33,14 +33,14 @@ public:
 
         assert(numBytes);
 
-        std::shared_ptr<T> ret =
-            om::mem::Malloc<T>::MallocNumBytes(numBytes, om::common::ZeroMem::DONT_ZERO_FILL);
+        auto ret =
+            om::mem::Malloc<T>::NumBytes(numBytes, om::mem::ZeroFill::DONT);
 
         char* dataCharPtr = reinterpret_cast<char*>(ret.get());
 
         QFile reader(fnp_);
 
-        om::file::openFileRO(reader);
+        om::file::old::openFileRO(reader);
 
         if(!reader.seek(entry.offsetIntoFile))
         {
@@ -55,7 +55,7 @@ public:
             std::cout << "could not read data; numBytes is " << numBytes
                       << ", but only read " << bytesRead << "\n"
                       << std::flush;
-            throw om::IoException("could not read fully file", fnp_);
+            throw om::IoException("could not read fully file");
         }
 
         return ret;

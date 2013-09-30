@@ -1,8 +1,9 @@
 #pragma once
 
+#include "view3d/gl.h"
 #include "common/common.h"
 #include "common/logging.h"
-#include "common/omGl.h"
+#include "utility/glInclude.h"
 #include "mesh/drawer/omMeshPlan.h"
 #include "mesh/omMesh.h"
 #include "mesh/omMeshManagers.hpp"
@@ -69,7 +70,7 @@ public:
 
         //draw volume axis
         if(checkDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
-            glDrawPositiveAxis();
+            om::gl::glDrawPositiveAxis();
         }
 
         //return if no chunk level drawing
@@ -184,8 +185,8 @@ private:
             clippedNormExtent.getMax() - clippedNormExtent.getMin();
 
         //transform model view
-        glTranslatefv(translate.array);
-        glScalefv(scale.array);
+        om::gl::glTranslatefv(translate.array);
+        om::gl::glScalefv(scale.array);
 
         glTranslatef(0.5, 0.5, 0.5);
         glColor3f(0.5, 0.5, 0.5);
@@ -204,9 +205,9 @@ private:
         om::segment::coloring sccType;
 
         if( vgs_->shouldVolumeBeShownBroken() ) {
-            sccType = SCC_SEGMENTATION_BREAK_BLACK;
+            sccType = om::segment::coloring::SEGMENTATION_BREAK_BLACK;
         } else {
-            sccType = SCC_SEGMENTATION;
+            sccType = om::segment::coloring::SEGMENTATION;
         }
 
         applyColor( segment, sccType);
@@ -214,13 +215,13 @@ private:
 
     void applyColor(OmSegment* seg, const om::segment::coloring sccType)
     {
-        if(seg->getParent() && sccType != SCC_SEGMENTATION_BREAK_BLACK){
+        if(seg->getParent() && sccType != om::segment::coloring::SEGMENTATION_BREAK_BLACK){
             applyColor(segments_->findRoot(seg), sccType);
             return;
         }
 
         Vector3f hyperColor;
-        if(SCC_SEGMENTATION_BREAK_BLACK != sccType) {
+        if(om::segment::coloring::SEGMENTATION_BREAK_BLACK != sccType) {
             hyperColor = seg->GetColorFloat() * 2.;
         } else {
 
@@ -245,7 +246,7 @@ private:
             glColor3fv(OmPreferences::GetVector3f(om::PREF_VIEW3D_HIGHLIGHT_COLOR_V3F).array);
 
         } else if (checkDrawOption(DRAWOP_SEGMENT_COLOR_TRANSPARENT)){
-            glColor3fva(hyperColor.array,
+            om::gl::glColor3fva(hyperColor.array,
                         OmPreferences::GetFloat(om::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
 
         } else if (Om3dPreferences::getDoDiscoBall()){
@@ -262,7 +263,7 @@ private:
         static float dir = 1;
 
         glEnable(GL_BLEND);
-        glColor3fva(hyperColor.array, s / 200. + .4);
+        om::gl::glColor3fva(hyperColor.array, s / 200. + .4);
 
         s += .1 * dir;
 

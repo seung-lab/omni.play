@@ -31,7 +31,7 @@ public:
     }
 
     static std::string TempFileName(const OmUUID& uuid){
-        return om::file::tempPath() + "/omni.temp." + uuid.Str();
+        return om::file::old::tempPath() + "/omni.temp." + uuid.Str();
     }
 
     static QString AddOmniExtensionIfNeeded(const QString& str)

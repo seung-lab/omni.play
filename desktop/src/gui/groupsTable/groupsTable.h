@@ -2,7 +2,7 @@
 
 /* Widget for editing and inspecting groups.
  *
-* Author(s): Matt Wimer
+ * Author(s): Matt Wimer
  */
 
 #include "common/common.h"
@@ -20,29 +20,29 @@
 class OmViewGroupState;
 
 class GroupsTable : public QWidget {
-  Q_OBJECT public : GroupsTable(OmViewGroupState& vgs);
+Q_OBJECT public : GroupsTable(OmViewGroupState& vgs);
 
-  static void Repopulate(om::common::SegID id = 0);
+    static void Repopulate(om::common::SegID id = 0);
 
-  void populateGroupTable(om::common::GroupID id);
+    void populateGroupTable(om::common::GroupID id);
 
-  void SetSegmentID(const om::common::SegID seg) { seg_ = seg; }
+    void SetSegmentID(const om::common::SegID seg) { seg_ = seg; }
 
- private
+private
 Q_SLOTS:
-  void doDeleteAction();
+    void doDeleteAction();
 
- private:
-  OmViewGroupState& vgs_;
-  const SegmentationDataWrapper sdw_;
+private:
+    OmViewGroupState& vgs_;
+    const SegmentationDataWrapper sdw_;
 
-  om::common::SegID seg_;
-  om::common::GroupID groupid_;
+    om::common::SegID seg_;
+    om::common::GroupID groupid_;
 
-  void populateGroupsList();
+    void populateGroupsList();
 
-  QGridLayout* mLayout;
-  OmGroupListWidget* mGroupsList;
-  QTableWidget* mGroupsTable;
-  QMenu* mMenu;
+    QGridLayout* mLayout;
+    OmGroupListWidget* mGroupsList;
+    QTableWidget* mGroupsTable;
+    QMenu* mMenu;
 };

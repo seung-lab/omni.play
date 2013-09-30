@@ -46,7 +46,7 @@ public:
 private:
     void createOrLoad()
     {
-        if(!om::file::exists(fnp_)){
+        if(!om::file::old::exists(fnp_)){
             setupFile();
         }
         mapReadOnly();
@@ -54,13 +54,13 @@ private:
 
     void mapReadOnly()
     {
-        if(!om::file::exists(fnp_)){
+        if(!om::file::old::exists(fnp_)){
             throw om::IoException("file doesn't exist", fnp_);
         }
 
-        om::file::openFileRO(file_, fnp_);
+        om::file::old::openFileRO(file_, fnp_);
 
-        values_ = om::file::mapFile<om::common::Color>(file_.get());
+        values_ = om::file::old::mapFile<om::common::Color>(file_.get());
 
         numEntries_ = file_->size() / sizeof(om::common::Color);
     }
@@ -115,9 +115,9 @@ private:
 
         QFile file(QString::fromStdString(fnp_));
 
-        om::file::openFileRW(file);
+        om::file::old::openFileRW(file);
 
-        om::file::writeVec(file, colorTable);
+        om::file::old::writeVec(file, colorTable);
     }
 };
 

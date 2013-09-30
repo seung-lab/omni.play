@@ -9,11 +9,11 @@
 class OmSegmentPageV2 {
 private:
     OmSegmentation *const vol_;
-    const PageNum pageNum_;
+    const om::common::PageNum pageNum_;
     const uint32_t pageSize_;
 
 public:
-    OmSegmentPageV2(OmSegmentation* vol, const PageNum pageNum, const uint32_t pageSize)
+    OmSegmentPageV2(OmSegmentation* vol, const om::common::PageNum pageNum, const uint32_t pageSize)
         : vol_(vol)
         , pageNum_(pageNum)
         , pageSize_(pageSize)
@@ -24,11 +24,11 @@ public:
         printf("rewriting segment page %d from ver2 to ver3\n", pageNum_);
 
         QFile file(memMapPathQStrV2());
-        om::file::openFileRO(file);
-        OmSegmentDataV2* oldData = om::file::mapFile<OmSegmentDataV2>(&file);
+        om::file::old::openFileRO(file);
+        OmSegmentDataV2* oldData = om::file::old::mapFile<OmSegmentDataV2>(&file);
 
         std::shared_ptr<OmSegmentDataV3> ret =
-            om::mem::Malloc<OmSegmentDataV3>::MallocNumElements(pageSize_, om::common::ZeroMem::ZERO_FILL);
+            om::mem::Malloc<OmSegmentDataV3>::NumElements(pageSize_, om::mem::ZeroFill::ZERO);
         OmSegmentDataV3* newSegmentData = ret.get();
 
         for(uint32_t i = 0; i < pageSize_; ++i)

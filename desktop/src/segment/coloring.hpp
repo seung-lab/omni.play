@@ -3,7 +3,7 @@
 namespace om {
 namespace segment {
 
-enum class coloring {
+enum coloring {
   FILTER_BLACK_BRIGHTEN_SELECT = 0,
   FILTER_COLOR_BRIGHTEN_SELECT,
   FILTER_BREAK,

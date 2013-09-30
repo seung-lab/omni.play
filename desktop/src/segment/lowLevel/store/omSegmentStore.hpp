@@ -4,6 +4,7 @@
 #include "zi/omMutex.h"
 #include "datalayer/archive/segmentation.h"
 
+class QDataStream;
 class OmCacheSegRootIDs;
 class OmCacheSegStore;
 class OmPagingPtrStore;

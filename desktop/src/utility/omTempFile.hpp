@@ -26,19 +26,19 @@ public:
         , fnp_(makeFileName())
         , data_(NULL)
     {
-        if(om::file::exists(fnp_)){ // should be VERY unlikely
+        if(om::file::old::exists(fnp_)){ // should be VERY unlikely
             throw om::IoException("unique file already found");
         }
 
         // race here is possible, if VERY, VERY unlikely...
 
-        om::file::openFileRW(file_, fnp_);
+        om::file::old::openFileRW(file_, fnp_);
     }
 
     virtual ~OmTempFile()
     {
         file_.reset();
-        om::file::rmFile(fnp_);
+        om::file::old::rmFile(fnp_);
     }
 
     const std::string& FileName() const {
@@ -46,7 +46,7 @@ public:
     }
 
     void ResizeNumBytes(const int64_t numBytes){
-        om::file::resizeFileNumBytes(file_.get(), numBytes);
+        om::file::old::resizeFileNumBytes(file_.get(), numBytes);
     }
 
     void ResizeNumElements(const int64_t numElements){
@@ -54,7 +54,7 @@ public:
     }
 
     T* Map(){
-        return data_ = om::file::mapFile<T>(file_.get());
+        return data_ = om::file::old::mapFile<T>(file_.get());
     }
 
     int64_t NumBytes() const {

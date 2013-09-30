@@ -1,19 +1,18 @@
-
 #include "yaml-cpp/yaml.h"
 #include "users/userSettings.h"
-#include "datalayer/file.h"
+#include "datalayer/fs/omFile.hpp"
 #include <fstream>
 
 namespace om {
 
 void userSettings::Load() {
-  if (om::file::exists(filename_)) {
-    YAML::Node in = YAML::LoadFile(filename_.string());
+  if (om::file::old::exists(filename_)) {
+    YAML::Node in = YAML::LoadFile(filename_);
 
     threshold_ = in["threshold"].as<double>(defaultThreshold_);
     sizeThreshold_ = in["sizeThreshold"].as<double>(defaultSizeThreshold_);
     showAnnotations_ = in["showAnnotations"].as<bool>(defaultShowAnnotations_);
-    alpha_ = in["alpha"].as<double>(defaultAlpha_);
+    alpha_ = in["alpha"].as<double>(0.2);
   }
 }
 
@@ -24,7 +23,7 @@ void userSettings::Save() {
   n["showAnnotations"] = showAnnotations_;
   n["alpha"] = alpha_;
 
-  std::ofstream out(filename_.string());
+  std::ofstream out(filename_);
   YAML::Emitter e(out);
   e << YAML::BeginDoc << n << YAML::EndDoc;
 }

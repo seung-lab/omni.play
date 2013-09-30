@@ -24,7 +24,7 @@ void OmPagingPtrStore::loadAllSegmentPages()
 {
     loadMetadata();
 
-    const PageNum maxNum = *std::max_element(validPageNums_.begin(),
+    const auto maxNum = *std::max_element(validPageNums_.begin(),
                                              validPageNums_.end());
     resizeVectorIfNeeded(maxNum);
 
@@ -35,7 +35,7 @@ void OmPagingPtrStore::loadAllSegmentPages()
 
     FOR_EACH(iter, validPageNums_)
     {
-        const PageNum pageNum = *iter;
+        const auto pageNum = *iter;
 
         pool.push_back(
             zi::run_fn(
@@ -47,7 +47,7 @@ void OmPagingPtrStore::loadAllSegmentPages()
     prog.Join();
 }
 
-void OmPagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
+void OmPagingPtrStore::loadPage(const om::common::PageNum pageNum, OmSimpleProgress* prog)
 {
     pages_[pageNum] = new OmSegmentPage(vol_,
                                         pageNum,
@@ -59,7 +59,7 @@ void OmPagingPtrStore::loadPage(const PageNum pageNum, OmSimpleProgress* prog)
 
 OmSegment* OmPagingPtrStore::AddSegment(const om::common::SegID value)
 {
-    const PageNum pageNum = value / pageSize_;
+    const auto pageNum = value / pageSize_;
 
     if(!validPageNums_.count(pageNum))
     {
@@ -82,7 +82,7 @@ OmSegment* OmPagingPtrStore::AddSegment(const om::common::SegID value)
     return ret;
 }
 
-void OmPagingPtrStore::resizeVectorIfNeeded(const PageNum pageNum)
+void OmPagingPtrStore::resizeVectorIfNeeded(const om::common::PageNum pageNum)
 {
     if( pageNum >= pages_.size() ){
         pages_.resize( (1+pageNum) * 2 );
@@ -101,7 +101,7 @@ void OmPagingPtrStore::loadMetadata()
     QFile file(metadataPathQStr());
 
     if(!file.open(QIODevice::ReadOnly)){
-        throw om::IoException("error reading file", metadataPathQStr());
+        throw om::IoException("error reading file");
     }
 
     QDataStream in(&file);
@@ -113,14 +113,14 @@ void OmPagingPtrStore::loadMetadata()
     in >> version;
     in >> pageSize_;
 
-    QSet<PageNum> validPageNumbers;
+    QSet<om::common::PageNum> validPageNumbers;
     in >> validPageNumbers;
     FOR_EACH(iter, validPageNumbers){
         validPageNums_.insert(*iter);
     }
 
     if(!in.atEnd()){
-        throw om::IoException("corrupt file?", metadataPathQStr());
+        throw om::IoException("corrupt file?");
     }
 }
 
@@ -130,7 +130,7 @@ void OmPagingPtrStore::storeMetadata()
 
     QFile file(path);
 
-    om::file::openFileWO(file);
+    om::file::old::openFileWO(file);
 
     QDataStream out(&file);
     out.setByteOrder( QDataStream::LittleEndian );
@@ -141,7 +141,7 @@ void OmPagingPtrStore::storeMetadata()
     out << version;
     out << pageSize_;
 
-    QSet<PageNum> validPageNumbers;
+    QSet<om::common::PageNum> validPageNumbers;
     FOR_EACH(iter, validPageNums_){
         validPageNumbers.insert(*iter);
     }

@@ -21,10 +21,10 @@ void OmSegment::RandomizeColor()
 {
     data_->color =  om::utils::color::GetRandomColor(data_->color);
 
-    debugs(segmentBuild) << "final color values: "
-                         << (int)data_->color.red << ","
-                         << (int)data_->color.green << ","
-                         << (int)data_->color.blue << "\n";
+    //debugs(segmentBuild) << "final color values: "
+    //<< (int)data_->color.red << ","
+    //                   << (int)data_->color.green << ","
+    //                   << (int)data_->color.blue << "\n";
 }
 
 void OmSegment::reRandomizeColor()

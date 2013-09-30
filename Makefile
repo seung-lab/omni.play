@@ -295,7 +295,7 @@ DESKTOP_INCLUDES = $(INCLUDES) \
 				  -I$(EXTERNAL)/qt/include/QtGui \
 				  -I$(EXTERNAL)/qt/include/QtNetwork \
 				  -I$(EXTERNAL)/qt/include \
-				  -I$(EXTERNAL)/hdf5/include \
+				  -isystem$(EXTERNAL)/hdf5/include \
 				  -I$(BASE64)/include \
 				  -I$(BREAKPAD)
 

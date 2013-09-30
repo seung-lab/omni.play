@@ -60,7 +60,7 @@ private:
 
         QFile file(fpath);
 
-        om::file::openFileAppend(file);
+        om::file::old::openFileAppend(file);
 
         QTextStream out(&file);
 

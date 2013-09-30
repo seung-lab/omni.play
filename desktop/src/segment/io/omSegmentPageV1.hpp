@@ -12,11 +12,11 @@
 class OmSegmentPageV1 {
 private:
     OmSegmentation *const segmentation_;
-    const PageNum pageNum_;
+    const om::common::PageNum pageNum_;
     const uint32_t pageSize_;
 
 public:
-    OmSegmentPageV1(OmSegmentation* segmentation, const PageNum pageNum,
+    OmSegmentPageV1(OmSegmentation* segmentation, const om::common::PageNum pageNum,
                     const uint32_t pageSize)
         : segmentation_(segmentation)
         , pageNum_(pageNum)
@@ -28,8 +28,8 @@ public:
         printf("rewriting segment page %d from HDF5\n", pageNum_);
 
         std::shared_ptr<OmSegmentDataV2> oldSegmentDataPtr =
-            om::mem::Malloc<OmSegmentDataV2>::MallocNumElements(pageSize_,
-                                                           om::common::ZeroMem::ZERO_FILL);
+            om::mem::Malloc<OmSegmentDataV2>::NumElements(pageSize_,
+                                                           om::mem::ZeroFill::ZERO);
 
         OmSegmentDataV2* oldSegmentData = oldSegmentDataPtr.get();
 
@@ -38,7 +38,7 @@ public:
                                           pageSize_);
 
         std::shared_ptr<OmSegmentDataV3> ret =
-            om::mem::Malloc<OmSegmentDataV3>::MallocNumElements(pageSize_, om::common::ZeroMem::ZERO_FILL);
+            om::mem::Malloc<OmSegmentDataV3>::NumElements(pageSize_, om::mem::ZeroFill::ZERO);
         OmSegmentDataV3* newSegmentData = ret.get();
 
         for(uint32_t i = 0; i < pageSize_; ++i)

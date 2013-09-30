@@ -1,5 +1,6 @@
 #pragma once
 
+#include "coordinates/chunkCoord.h"
 #include "common/common.h"
 #include <boost/multi_array.hpp>
 

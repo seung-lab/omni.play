@@ -1,8 +1,7 @@
 #pragma once
 
+#include "common/enums.hpp"
 #include "mesh/omMeshTypes.h"
-
-#include <boost/scoped_ptr.hpp>
 
 class OmMeshCache;
 class OmMeshConvertV1toV2;

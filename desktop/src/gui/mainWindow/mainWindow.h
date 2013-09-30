@@ -12,7 +12,7 @@ class GroupsTable;
 class InspectorWidget;
 class MainWindowEvents;
 class MenuBar;
-class OmException;
+namespace om { class Exception; }
 class OmGlobalKeyPress;
 class OmSegmentEvent;
 class OmViewGroupState;
@@ -48,7 +48,7 @@ protected:
     void SegmentModificationEvent(OmSegmentEvent* event);
 
 public Q_SLOTS:
-    void spawnErrorDialog(OmException &e);
+    void spawnErrorDialog(om::Exception &e);
     void saveProject();
 
 private Q_SLOTS:

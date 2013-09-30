@@ -40,7 +40,7 @@ public:
 		std::shared_ptr<OmFileWriteQT<T> > writer =
 			OmFileWriteQT<T>::WriterNumBytes(fnp_.toStdString(),
 											 numBytes,
-											 om::common::ZeroMem::DONT_ZERO_FILL);
+											 om::mem::ZeroFill::DONT);
 		memcpy(writer->GetPtr(), &vec_[0], numBytes);
 		writer->Flush();
 	}

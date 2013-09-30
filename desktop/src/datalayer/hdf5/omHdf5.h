@@ -1,5 +1,6 @@
 #pragma once
 
+#include "coordinates/dataCoord.h"
 #include "common/common.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"

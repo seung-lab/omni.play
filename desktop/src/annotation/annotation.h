@@ -1,5 +1,7 @@
 #pragma once
 
+#include "coordinates/dataCoord.h"
+#include "coordinates/globalCoord.h"
 #include "common/common.h"
 #include "datalayer/fs/omFile.hpp"
 #include "system/manager.hpp"

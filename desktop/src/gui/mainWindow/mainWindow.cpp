@@ -83,7 +83,7 @@ void MainWindow::newProject()
         const QString fileNameAndPath = OmProject::New(fnp);
         updateGuiFromProjectCreateOrOpen(fileNameAndPath);
 
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -123,7 +123,7 @@ void MainWindow::addChannelToVolume()
             inspector_->addChannelToVolume();
         }
 
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -139,7 +139,7 @@ void MainWindow::addSegmentationToVolume()
             inspector_->addSegmentationToVolume();
         }
 
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -161,7 +161,7 @@ void MainWindow::dumpActionLog()
         dumper.Dump(fnp);
         OmTellInfo("Wrote action log to " + fnp);
 
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -247,7 +247,7 @@ void MainWindow::openProject()
         //open project at fpath
         openProject(fileNameAndPath);
 
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -259,7 +259,7 @@ void MainWindow::openProject(QString fileNameAndPath)
         QCoreApplication::processEvents();
         updateGuiFromProjectCreateOrOpen(fileNameAndPath);
 
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -269,7 +269,7 @@ void MainWindow::closeProject()
     try {
         closeProjectIfOpen();
 
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -310,7 +310,7 @@ void MainWindow::openInspector()
         addDockWidget(Qt::LeftDockWidgetArea, inspectorDock_.get());
         mMenuBar->GetWindowMenu()->addAction(inspectorDock_->toggleViewAction());
 
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -343,7 +343,7 @@ void MainWindow::openUndoView()
 
         undoView_->setStack(OmStateManager::UndoStack().Get());
 
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -361,7 +361,7 @@ void MainWindow::openGroupsTable()
             return;
         }
 
-        groupsTable_ = new GroupsTable(vgs_.get());
+        groupsTable_ = new GroupsTable(*vgs_.get());
 
         groupsTableDock_.reset(new QDockWidget(tr("Groups"), this));
         groupsTableDock_->setAllowedAreas(Qt::AllDockWidgetAreas);
@@ -372,7 +372,7 @@ void MainWindow::openGroupsTable()
         addDockWidget(Qt::TopDockWidgetArea, groupsTableDock_.get());
         mMenuBar->GetWindowMenu()->addAction(groupsTableDock_->toggleViewAction());
 
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -387,7 +387,7 @@ void MainWindow::open3dView()
 
         vgs_->GetViewGroup()->AddView3D();
 
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -399,7 +399,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         if(!closeProjectIfOpen()){
             event->ignore();
         }
-    } catch(OmException& e) {
+    } catch(om::Exception& e) {
         spawnErrorDialog(e);
     }
 }
@@ -414,7 +414,7 @@ int MainWindow::checkForSave()
     return msgBox.exec();
 }
 
-void MainWindow::spawnErrorDialog(OmException& e)
+void MainWindow::spawnErrorDialog(om::Exception& e)
 {
     const QString errorMessage(e.what());
 
@@ -492,10 +492,10 @@ void MainWindow::cleanViewsOnVolumeChange(om::common::ObjectType objectType, om:
 
     QString unwantedView2DTitle;
     switch (objectType){
-    case CHANNEL:
+    case om::common::CHANNEL:
         unwantedView2DTitle = "channel" + QString::number(objectId);
         break;
-    case SEGMENTATION:
+    case om::common::SEGMENTATION:
         unwantedView2DTitle = "segmentation" + QString::number(objectId);
         break;
     default:

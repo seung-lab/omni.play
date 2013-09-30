@@ -61,52 +61,52 @@ om::segment::coloring
 OmViewGroupState::determineColorizationType(const om::common::ObjectType objType)
 {
     switch(objType){
-    case CHANNEL:
+    case om::common::CHANNEL:
         if(mShowValid)
         {
             if(mShowValidInColor){
-                return SCC_FILTER_VALID;
+                return om::segment::coloring::FILTER_VALID;
             }
-            return SCC_FILTER_VALID_BLACK;
+            return om::segment::coloring::FILTER_VALID_BLACK;
         }
 
         if(shouldVolumeBeShownBroken()){
-            return SCC_FILTER_BREAK;
+            return om::segment::coloring::FILTER_BREAK;
         }
 
         if(brightenSelected_)
         {
             if(mShowFilterInColor){
-                return SCC_FILTER_COLOR_BRIGHTEN_SELECT;
+                return om::segment::coloring::FILTER_COLOR_BRIGHTEN_SELECT;
             }
 
-            return SCC_FILTER_BLACK_BRIGHTEN_SELECT;
+            return om::segment::coloring::FILTER_BLACK_BRIGHTEN_SELECT;
         }
 
         if(mShowFilterInColor){
-            return SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT;
+            return om::segment::coloring::FILTER_COLOR_DONT_BRIGHTEN_SELECT;
         }
 
-        return SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT;
+        return om::segment::coloring::FILTER_BLACK_DONT_BRIGHTEN_SELECT;
 
-    case SEGMENTATION:
+    case om::common::SEGMENTATION:
         if(mShowValid)
         {
             if(mShowValidInColor){
-                return SCC_SEGMENTATION_VALID;
+                return om::segment::coloring::SEGMENTATION_VALID;
             }
-            return SCC_SEGMENTATION_VALID_BLACK;
+            return om::segment::coloring::SEGMENTATION_VALID_BLACK;
         }
 
         if(shouldVolumeBeShownBroken())
         {
             if(mShowFilterInColor){
-                return SCC_SEGMENTATION_BREAK_COLOR;
+                return om::segment::coloring::SEGMENTATION_BREAK_COLOR;
             }
-            return SCC_SEGMENTATION_BREAK_BLACK;
+            return om::segment::coloring::SEGMENTATION_BREAK_BLACK;
         }
 
-        return SCC_SEGMENTATION;
+        return om::segment::coloring::SEGMENTATION;
     default:
     	break;
     }

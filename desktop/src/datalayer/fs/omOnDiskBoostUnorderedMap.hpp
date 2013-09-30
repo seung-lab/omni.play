@@ -38,7 +38,7 @@ public:
     }
 
     ~OmOnDiskBoostUnorderedMap(){
-        om::file::rmFile(fnp_);
+        om::file::old::rmFile(fnp_);
     }
 
     void insert(const KEY& key, const VAL& val)
@@ -108,7 +108,7 @@ private:
     {
         close();
 
-        const uint64_t oldSize = om::file::numBytes(fnp_);
+        const uint64_t oldSize = om::file::old::numBytes(fnp_);
         const uint64_t newSize = 5 * oldSize;
 
         std::cout << "\tgrowing file from "

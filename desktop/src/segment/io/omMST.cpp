@@ -37,14 +37,14 @@ void OmMST::Read()
 
     if( expectedSize != edgesPtr_->Size())
     {
-        const QString err =
+        QString err =
             QString("mst sizes did not match: file was %1, but expected %2")
             .arg(edgesPtr_->Size())
             .arg(expectedSize);
 
         const QString is32bit("; is Omni running on a 32-bit OS?");
-
-        throw om::IoException(err + is32bit);
+        err += is32bit;
+        throw om::IoException(err.toStdString());
     }
 
     for(uint32_t i = 0; i < numEdges_; ++i){
@@ -58,7 +58,7 @@ void OmMST::create()
 
     edgesPtr_ = writer_t::WriterNumElements(filePathActual(),
                                             numEdges_,
-                                            om::common::ZeroMem::ZERO_FILL);
+                                            om::mem::ZeroFill::ZERO);
 
     edges_ = edgesPtr_->GetPtr();
 }
@@ -130,11 +130,11 @@ void OmMST::SetUserThreshold(const double t)
 void OmMST::SetUserSizeThreshold(const double t)
 {
     zi::rwmutex::write_guard g(thresholdLock_);
-    
+
     if(qFuzzyCompare(t, UserSizeThreshold())){
         return;
     }
     OmProject::Globals().Users().UserSettings().setSizeThreshold(t);
-    
+
     vol_->Segments()->refreshTree();
 }

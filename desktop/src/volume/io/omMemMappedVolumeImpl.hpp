@@ -75,7 +75,7 @@ public:
 
             maps_[level] = writer_t::WriterNumBytes(getFileName(level),
                                                    size,
-                                                   om::common::ZeroMem::DONT_ZERO_FILL);
+                                                    om::common::ZeroMem::DONT_ZERO_FILL);
         }
 
         printf("OmMemMappedVolume: done allocating data\n");

@@ -3,7 +3,7 @@
 #include "mesh/omMeshManagers.hpp"
 #include "chunks/omChunkUtils.hpp"
 #include "chunks/omSegChunk.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/omMeshParams.hpp"
@@ -88,7 +88,8 @@ private:
             tris_.push_back(t);
             TriStripCollector* pt = t.get();
             meshWriter_->Save(*id, coord, pt,
-                              om::BUFFER_WRITES, om::OVERWRITE);
+                              om::common::ShouldBufferWrites::BUFFER_WRITES,
+                              om::common::AllowOverwrite::OVERWRITE);
         }
     }
 
@@ -112,7 +113,7 @@ private:
     void check(){
         printf("checking mesh data\n");
 
-        om::shared_ptr<std::deque<om::chunkCoord> > coords =
+        auto coords =
             segmentation_->GetMipChunkCoords(0);
 
         FOR_EACH(cc, *coords){
@@ -121,9 +122,9 @@ private:
             {
                 OmMeshPtr mesh;
                 segmentation_->MeshManagers()->GetMesh(mesh, *cc, *id, 1,
-                                                       om::BLOCKING);
+                                                       om::common::Blocking::BLOCKING);
                 if(!mesh){
-                    throw OmIoException("no mesh found");
+                    throw om::IoException("no mesh found");
                 }
 
                 OmDataForMeshLoad* data = mesh->Data();
@@ -134,13 +135,13 @@ private:
                 for(int i = 0; i < *id; ++i){
                     float ff = *id + 0.1;
                     if(!qFuzzyCompare(vd[i], ff)){
-                        throw OmIoException("bad vertex data");
+                        throw om::IoException("bad vertex data");
                     }
                     if(vi[i] != (*id + 1)){
-                        throw OmIoException("bad vertex index data");
+                        throw om::IoException("bad vertex index data");
                     }
                     if(sd[i] != (*id + 2)){
-                        throw OmIoException("bad strip data");
+                        throw om::IoException("bad strip data");
                     }
                 }
             }

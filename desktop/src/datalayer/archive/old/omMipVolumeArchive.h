@@ -6,6 +6,7 @@
 #include "volume/omVolCoordsMipped.hpp"
 #include "volume/omVolumeTypes.hpp"
 
+#include "common_qdatastream.hpp"
 #include <QDataStream>
 
 template <typename VOL>
@@ -28,7 +29,7 @@ public:
 
         out << vol_.mBuildState;
 
-        const QString type =
+        const auto type =
             OmVolumeTypeHelpers::GetTypeAsQString(vol_.mVolDataType);
         out << type;
         std::cout << "saved type as " << type.toStdString() << "\n";
@@ -60,6 +61,8 @@ private:
         return vol_.Folder()->GetVolPath() + "abs_coord.ver1";
     }
 
+
+
     void load()
     {
         const QString filePath = filePathV1();
@@ -71,7 +74,7 @@ private:
         }
 
         if(!file.open(QIODevice::ReadOnly)){
-            throw om::IoException("error reading file", filePath);
+            throw om::IoException("error reading file");
         }
 
         QDataStream in(&file);
@@ -88,7 +91,7 @@ private:
         vol_.Coords().SetAbsOffset(offset);
 
         if(!in.atEnd()){
-            throw om::IoException("corrupt file?", filePath);
+            throw om::IoException("corrupt file?");
         }
     }
 
@@ -98,7 +101,7 @@ private:
 
         QFile file(filePath);
 
-        om::file::openFileWO(file);
+        om::file::old::openFileWO(file);
 
         QDataStream out(&file);
         out.setByteOrder(QDataStream::LittleEndian);

@@ -37,7 +37,7 @@ private:
         const QString outFile = OmProject::OmniFile() + ".segments.txt";
 
         QFile file(outFile);
-        om::file::openFileWO(file);
+        om::file::old::openFileWO(file);
 
         printf("writing segment file %s\n", qPrintable(outFile));
 

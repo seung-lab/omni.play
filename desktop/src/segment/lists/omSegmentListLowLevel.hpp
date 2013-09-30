@@ -31,14 +31,14 @@ public:
     ~OmSegmentListLowLevel(){
         threadPool_.join();
     }
-    
+
     void Init(OmSegmentsImplLowLevel* cache, const size_t size)
     {
         cache_ = cache;
-        
+
         doResize(size);
         doBuildInitialSegmentList();
-        
+
         // use threadPool as serial job queue;
         // more than 1 thread requires locking, and dealing w/ out-of-order
         //  manipulations of tree modifiations that are order-sensative
@@ -79,13 +79,13 @@ public:
     }
 
     inline void RefreshGUIlists(){
-        runRefreshGUIlists(om::DONT_FORCE);
+        runRefreshGUIlists(false);
     }
 
     inline void ForceRefreshGUIlists(){
-        runRefreshGUIlists(om::FORCE);
+        runRefreshGUIlists(true);
     }
-    
+
     inline int64_t GetSizeWithChildren(const om::common::SegID segID) {
 //         if(segID >= list_.size()){
 //             std::cout << "segment " << segID << "not found\n";
@@ -93,13 +93,13 @@ public:
 //         }
         return list_[segID].sizeIncludingChildren;
     }
-    
+
     inline int64_t GetSizeWithChildren(OmSegment* seg){
         return GetSizeWithChildren(seg->value());
     }
 
 private:
-    inline void runRefreshGUIlists(const om::ShouldForce force)
+    inline void runRefreshGUIlists(const bool force)
     {
         threadPool_.push_back(
             zi::run_fn(
@@ -221,9 +221,9 @@ private:
         recreateGUIlists_ = true;
     }
 
-    void doRecreateGUIlists(const om::ShouldForce force)
+    void doRecreateGUIlists(const bool force)
     {
-        if(om::DONT_FORCE == force && !recreateGUIlists_){
+        if(!force && !recreateGUIlists_){
             return;
         }
 

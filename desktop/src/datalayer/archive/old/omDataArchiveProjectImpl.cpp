@@ -25,26 +25,12 @@
 
 #include <QSet>
 
-QDataStream &operator<<(QDataStream& out, const OmProjectImpl& p)
-{
-    out << OmPreferences::instance();
-    out << p.volumes_;
-    return out;
-}
-
 QDataStream &operator>>(QDataStream& in, OmProjectImpl& p)
 {
     in >> OmPreferences::instance();
     in >> p.volumes_;
 
     return in;
-}
-
-QDataStream &operator<<(QDataStream& out, const OmProjectVolumes& p)
-{
-    out << *p.channels_;
-    out << *p.segmentations_;
-    return out;
 }
 
 QDataStream &operator>>(QDataStream& in, OmProjectVolumes& p)
@@ -54,17 +40,6 @@ QDataStream &operator>>(QDataStream& in, OmProjectVolumes& p)
 
     return in;
 }
-
-QDataStream &operator<<(QDataStream& out, const OmPreferences& p)
-{
-    out << p.stringPrefs_;
-    out << p.floatPrefs_;
-    out << p.intPrefs_;
-    out << p.boolPrefs_;
-    out << p.v3fPrefs_;
-    return out;
-}
-
 QDataStream &operator>>(QDataStream& in, OmPreferences& p)
 {
     in >> p.stringPrefs_;
@@ -79,26 +54,10 @@ QDataStream &operator>>(QDataStream& in, OmPreferences& p)
  * Channel
  */
 
-QDataStream &operator<<(QDataStream& out, const OmChannelManager& cm)
-{
-    OmGenericManagerArchive::Save(out, cm.manager_);
-    return out;
-}
-
 QDataStream &operator>>(QDataStream& in, OmChannelManager& cm)
 {
     OmGenericManagerArchive::Load(in, cm.manager_);
     return in;
-}
-
-QDataStream& operator<<(QDataStream& out, const OmChannel& chan)
-{
-    OmMipVolumeArchive<const OmChannel> volArchive(chan);
-    volArchive.Store(out);
-
-    out << chan.filterManager_;
-
-    return out;
 }
 
 QDataStream& operator>>(QDataStream& in, OmChannel& chan)
@@ -150,26 +109,10 @@ void OmDataArchiveProjectImpl::LoadNewChannel(QDataStream& in, OmChannel& chan)
  * Filter
  */
 
-QDataStream &operator<<(QDataStream& out, const OmFilter2dManager& fm)
-{
-    OmGenericManagerArchive::Save(out, fm.filters_);
-    return out;
-}
-
 QDataStream &operator>>(QDataStream& in, OmFilter2dManager& fm)
 {
     OmGenericManagerArchive::Load(in, fm.filters_);
     return in;
-}
-
-QDataStream &operator<<(QDataStream& out, const OmFilter2d& f)
-{
-    OmMipVolumeArchiveOld::StoreOmManageableObject(out, f);
-    out << f.alpha_;
-    out << f.chanID_;
-    out << f.segID_;
-
-    return out;
 }
 
 QDataStream &operator>>(QDataStream& in, OmFilter2d& f)
@@ -186,32 +129,10 @@ QDataStream &operator>>(QDataStream& in, OmFilter2d& f)
  * Segmentation and related
  */
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentationManager& m)
-{
-    OmGenericManagerArchive::Save(out, m.manager_);
-    return out;
-}
-
 QDataStream &operator>>(QDataStream & in, OmSegmentationManager& m)
 {
     OmGenericManagerArchive::Load(in, m.manager_);
     return in;
-}
-
-QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg)
-{
-    OmMipVolumeArchive<const OmSegmentation> volArchive(seg);
-    volArchive.Store(out);
-
-    out << (*seg.segments_);
-    out << seg.mst_->numEdges_;
-
-    double dead = 0;
-    out << dead;
-
-    out << (*seg.groups_);
-
-    return out;
 }
 
 QDataStream &operator>>(QDataStream& in, OmSegmentation& seg)
@@ -305,38 +226,11 @@ void OmDataArchiveProjectImpl::LoadNewSegmentation(QDataStream& in, OmSegmentati
     seg.segments_->refreshTree();
 }
 
-QDataStream &operator<<(QDataStream& out, const OmSegments& sc)
-{
-    out << (*sc.impl_);
-
-    return out;
-}
-
 QDataStream &operator>>(QDataStream& in, OmSegments& sc)
 {
     in >> (*sc.impl_);
 
     return in;
-}
-
-QDataStream &operator<<(QDataStream& out, const OmSegmentsImpl& sc)
-{
-    OmPagingPtrStore* segmentPages = sc.store_->segmentPages_;
-    out << (*segmentPages);
-
-    out << false; // TODO: DEAD: was sc.segmentSelection_->allSelected_;
-    out << false; //TODO: DEAD: was sc.mAllEnabled;
-    out << sc.maxValue_.get();
-
-    out << sc.enabledSegments_->enabled_;
-    out << sc.segmentSelection_->selected_;
-
-    out << sc.segmentCustomNames;
-    out << sc.segmentNotes;
-
-    out << sc.mNumSegs;
-
-    return out;
 }
 
 QDataStream &operator>>(QDataStream& in, OmSegmentsImpl& sc)
@@ -386,19 +280,9 @@ QDataStream &operator>>(QDataStream& in, OmSegmentsImpl& sc)
     return in;
 }
 
-QDataStream &operator<<(QDataStream& out, const OmPagingPtrStore&)
-{
-    QSet<PageNum> nums;
-    quint32 size = 0;
-
-    out << nums;
-    out << size;
-    return out;
-}
-
 QDataStream &operator>>(QDataStream& in, OmPagingPtrStore& ps)
 {
-    QSet<PageNum> validPageNumbers;
+    QSet<om::common::PageNum> validPageNumbers;
     quint32 size;
 
     in >> validPageNumbers;
@@ -411,12 +295,13 @@ QDataStream &operator>>(QDataStream& in, OmPagingPtrStore& ps)
 
 QDataStream &operator<<(QDataStream& out, const OmSegmentEdge& se)
 {
-    out << se.parentID;
-    out << se.childID;
+        out << se.parentID;
+        out << se.childID;
     out << se.threshold;
 
-    return out;
+        return out;
 }
+
 
 QDataStream &operator>>(QDataStream& in, OmSegmentEdge& se)
 {
@@ -427,40 +312,25 @@ QDataStream &operator>>(QDataStream& in, OmSegmentEdge& se)
     return in;
 }
 
-QDataStream &operator<<(QDataStream& out, const OmGroups& g)
-{
-    OmGenericManagerArchive::Save(out, g.mGroupManager);
-    out << g.mGroupsByName;
-
-    return out;
-}
-
 QDataStream &operator>>(QDataStream& in, OmGroups& g)
 {
     OmGenericManagerArchive::Load(in, g.mGroupManager);
-    in >> g.mGroupsByName;
+    QHash<QString, uint32_t> junk;
+    in >> junk;
 
     return in;
-}
-
-QDataStream &operator<<(QDataStream& out, const OmGroup& g)
-{
-    OmMipVolumeArchiveOld::StoreOmManageableObject(out, g);
-    out << g.mName;
-    out << g.mIDs;
-
-    return out;
 }
 
 QDataStream &operator>>(QDataStream& in, OmGroup& g)
 {
     if(OmProject::GetFileVersion() > 11) {
-        OmMipVolumeArchiveOld::LoadOmManageableObject(in, g);
+        // no longer OmMipVolumeArchiveOld::LoadOmManageableObject(in, g);
     }
-    in >> g.mName;
+    QString dead;
+    in >> dead;
     if(OmProject::GetFileVersion() > 11) {
-        in >> g.mIDs;
+        std::set<uint32_t> s;
+        in >> s;
     }
-
     return in;
 }

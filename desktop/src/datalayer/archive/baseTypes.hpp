@@ -4,6 +4,7 @@
 #include "yaml-cpp/yaml.h"
 
 #include <QHash>
+#include <zi/for_each.hpp>
 
 class QString;
 
@@ -16,8 +17,7 @@ inline YAML::Emitter &operator<<(YAML::Emitter& out, const QString& s) {
 }
 
 inline void operator>>(const YAML::Node& in, QString& s) {
-    std::string str;
-    in >> str;
+    std::string str = in.as<std::string>();
 
     if(str == "~") // NULL Value from YAML
         str = "";
@@ -87,9 +87,8 @@ template<class T>
 YAML::Emitter &operator<<(YAML::Emitter& out, const std::unordered_set<T>& s)
 {
     out << YAML::Flow << YAML::BeginSeq;
-    FOR_EACH(it, s)
-    {
-        out << *it;
+    for(const auto& e : s){
+        out << e;
     }
     out << YAML:: EndSeq;
     return out;
@@ -146,12 +145,11 @@ YAML::Emitter &operator<<(YAML::Emitter& out, const QHash<Key, T>& p)
 template<class Key, class T>
 void operator>>(const YAML::Node& in, QHash<Key, T>& p)
 {
-    FOR_EACH(it, in)
-    {
+    for(const auto& kv : p){
         Key key;
         T value;
-        it.first() >> key;
-        it.second() >> value;
+        kv.first >> key;
+        kv.second >> value;
         p.insert(key, value);
     }
 }

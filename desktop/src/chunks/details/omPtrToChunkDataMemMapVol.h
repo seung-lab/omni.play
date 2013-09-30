@@ -18,7 +18,7 @@ public:
         : rawData_(boost::get<DATA*>(vol->VolData()->getChunkPtrRaw(coord)))
     {}
 
-    inline DATA* GetRawData(DATA*){
+    virtual DATA* GetRawData(DATA*){
         return rawData_;
     }
 };

@@ -142,8 +142,8 @@ private:
 
         const int numVoxelsInChunk = chunk_->Mipping().NumVoxels();
 
-        std::shared_ptr<uint32_t> ret = om::mem::Malloc<uint32_t>::MallocNumElements(numVoxelsInChunk,
-                                                                               om::common::ZeroMem::DONT_ZERO_FILL);
+        auto ret = om::mem::Malloc<uint32_t>::NumElements(numVoxelsInChunk,
+                                                          om::mem::ZeroFill::DONT);
         std::copy(dataRaw,
                   dataRaw + numVoxelsInChunk,
                   ret.get());

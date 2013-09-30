@@ -66,17 +66,16 @@ void OmGroupListWidget::populate(OmSegmentation& seg)
 
     clear();
 
-    OmGroupIDsSet set = groups->GetGroups();
+    auto set = groups->GetGroups();
 
-    OmGroupID firstID = 0;
-
-    Q_FOREACH(OmGroupID id, set) {
+    auto firstID = 0;
+    for(const auto& id : set){
         if(!firstID) {
             firstID = id;
         }
-        QTreeWidgetItem *row = new QTreeWidgetItem(this);
+        auto* row = new QTreeWidgetItem(this);
         OmGroup& group = groups->GetGroup(id);
-        row->setText(0, group.GetName());
+        row->setText(0, QString::fromStdString(group.GetName()));
         row->setData(0, Qt::UserRole, qVariantFromValue(id));
         row->setFlags(Qt::ItemIsSelectable |
                       Qt::ItemIsEditable |
