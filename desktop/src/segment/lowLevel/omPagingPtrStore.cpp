@@ -6,156 +6,129 @@
 
 #include <QSet>
 
-static const uint32_t DEFAULT_PAGE_SIZE = 100000; // about 4.8 MB on disk
+static const uint32_t DEFAULT_PAGE_SIZE = 100000;  // about 4.8 MB on disk
 
 OmPagingPtrStore::OmPagingPtrStore(OmSegmentation* vol)
-    : vol_(vol)
-    , pageSize_(DEFAULT_PAGE_SIZE)
-{}
+    : vol_(vol), pageSize_(DEFAULT_PAGE_SIZE) {}
 
-OmPagingPtrStore::~OmPagingPtrStore()
-{
-    FOR_EACH(iter, validPageNums_){
-        delete pages_[*iter];
-    }
+OmPagingPtrStore::~OmPagingPtrStore() {
+  FOR_EACH(iter, validPageNums_) { delete pages_[*iter]; }
 }
 
-void OmPagingPtrStore::loadAllSegmentPages()
-{
-    loadMetadata();
+void OmPagingPtrStore::loadAllSegmentPages() {
+  loadMetadata();
 
-    const auto maxNum = *std::max_element(validPageNums_.begin(),
-                                             validPageNums_.end());
-    resizeVectorIfNeeded(maxNum);
+  const auto maxNum =
+      *std::max_element(validPageNums_.begin(), validPageNums_.end());
+  resizeVectorIfNeeded(maxNum);
 
-    OmSimpleProgress prog(validPageNums_.size(), "Segment page load");
+  OmSimpleProgress prog(validPageNums_.size(), "Segment page load");
 
-    OmThreadPool pool;
-    pool.start();
+  OmThreadPool pool;
+  pool.start();
 
-    FOR_EACH(iter, validPageNums_)
-    {
-        const auto pageNum = *iter;
+  FOR_EACH(iter, validPageNums_) {
+    const auto pageNum = *iter;
 
-        pool.push_back(
-            zi::run_fn(
-                zi::bind(&OmPagingPtrStore::loadPage,
-                         this, pageNum, &prog)));
-    }
+    pool.push_back(zi::run_fn(
+        zi::bind(&OmPagingPtrStore::loadPage, this, pageNum, &prog)));
+  }
 
-    pool.join();
-    prog.Join();
+  pool.join();
+  prog.Join();
 }
 
-void OmPagingPtrStore::loadPage(const om::common::PageNum pageNum, OmSimpleProgress* prog)
-{
-    pages_[pageNum] = new OmSegmentPage(vol_,
-                                        pageNum,
-                                        pageSize_);
-    pages_[pageNum]->Load();
+void OmPagingPtrStore::loadPage(const om::common::PageNum pageNum,
+                                OmSimpleProgress* prog) {
+  pages_[pageNum] = new OmSegmentPage(vol_, pageNum, pageSize_);
+  pages_[pageNum]->Load();
 
-    prog->DidOne();
+  prog->DidOne();
 }
 
-OmSegment* OmPagingPtrStore::AddSegment(const om::common::SegID value)
-{
-    const auto pageNum = value / pageSize_;
+OmSegment* OmPagingPtrStore::AddSegment(const om::common::SegID value) {
+  const auto pageNum = value / pageSize_;
 
-    if(!validPageNums_.count(pageNum))
-    {
-        resizeVectorIfNeeded(pageNum);
-        validPageNums_.insert(pageNum);
+  if (!validPageNums_.count(pageNum)) {
+    resizeVectorIfNeeded(pageNum);
+    validPageNums_.insert(pageNum);
 
-        pages_[pageNum] = new OmSegmentPage(vol_,
-                                            pageNum,
-                                            pageSize_);
-        pages_[pageNum]->Create();
+    pages_[pageNum] = new OmSegmentPage(vol_, pageNum, pageSize_);
+    pages_[pageNum]->Create();
 
-        storeMetadata();
-    }
+    storeMetadata();
+  }
 
-    OmSegmentPage& page = *pages_[pageNum];
-    OmSegment* ret = &(page[ value % pageSize_]);
+  OmSegmentPage& page = *pages_[pageNum];
+  OmSegment* ret = &(page[value % pageSize_]);
 
-    ret->data_->value = value;
+  ret->data_->value = value;
 
-    return ret;
+  return ret;
 }
 
-void OmPagingPtrStore::resizeVectorIfNeeded(const om::common::PageNum pageNum)
-{
-    if( pageNum >= pages_.size() ){
-        pages_.resize( (1+pageNum) * 2 );
-    }
+void OmPagingPtrStore::resizeVectorIfNeeded(const om::common::PageNum pageNum) {
+  if (pageNum >= pages_.size()) {
+    pages_.resize((1 + pageNum) * 2);
+  }
 }
 
-QString OmPagingPtrStore::metadataPathQStr()
-{
-    return QString::fromStdString(
-        vol_->Folder()->GetVolSegmentsPathAbs("segment_pages.data")
-        );
+QString OmPagingPtrStore::metadataPathQStr() {
+  return QString::fromStdString(
+      vol_->Folder()->GetVolSegmentsPathAbs("segment_pages.data"));
 }
 
-void OmPagingPtrStore::loadMetadata()
-{
-    QFile file(metadataPathQStr());
+void OmPagingPtrStore::loadMetadata() {
+  QFile file(metadataPathQStr());
 
-    if(!file.open(QIODevice::ReadOnly)){
-        throw om::IoException("error reading file");
-    }
+  if (!file.open(QIODevice::ReadOnly)) {
+    throw om::IoException("error reading file");
+  }
 
-    QDataStream in(&file);
-    in.setByteOrder( QDataStream::LittleEndian );
-    in.setVersion(QDataStream::Qt_4_6);
+  QDataStream in(&file);
+  in.setByteOrder(QDataStream::LittleEndian);
+  in.setVersion(QDataStream::Qt_4_6);
 
-    int version;
+  int version;
 
-    in >> version;
-    in >> pageSize_;
+  in >> version;
+  in >> pageSize_;
 
-    QSet<om::common::PageNum> validPageNumbers;
-    in >> validPageNumbers;
-    FOR_EACH(iter, validPageNumbers){
-        validPageNums_.insert(*iter);
-    }
+  QSet<om::common::PageNum> validPageNumbers;
+  in >> validPageNumbers;
+  FOR_EACH(iter, validPageNumbers) { validPageNums_.insert(*iter); }
 
-    if(!in.atEnd()){
-        throw om::IoException("corrupt file?");
-    }
+  if (!in.atEnd()) {
+    throw om::IoException("corrupt file?");
+  }
 }
 
-void OmPagingPtrStore::storeMetadata()
-{
-    const QString path = metadataPathQStr();
+void OmPagingPtrStore::storeMetadata() {
+  const QString path = metadataPathQStr();
 
-    QFile file(path);
+  QFile file(path);
 
-    om::file::old::openFileWO(file);
+  om::file::old::openFileWO(file);
 
-    QDataStream out(&file);
-    out.setByteOrder( QDataStream::LittleEndian );
-    out.setVersion(QDataStream::Qt_4_6);
+  QDataStream out(&file);
+  out.setByteOrder(QDataStream::LittleEndian);
+  out.setVersion(QDataStream::Qt_4_6);
 
-    static const int version = 1;
+  static const int version = 1;
 
-    out << version;
-    out << pageSize_;
+  out << version;
+  out << pageSize_;
 
-    QSet<om::common::PageNum> validPageNumbers;
-    FOR_EACH(iter, validPageNums_){
-        validPageNumbers.insert(*iter);
-    }
-    out << validPageNumbers;
+  QSet<om::common::PageNum> validPageNumbers;
+  FOR_EACH(iter, validPageNums_) { validPageNumbers.insert(*iter); }
+  out << validPageNumbers;
 }
 
-void OmPagingPtrStore::Flush()
-{
-    if(validPageNums_.empty()){
-        storeMetadata();
+void OmPagingPtrStore::Flush() {
+  if (validPageNums_.empty()) {
+    storeMetadata();
 
-    } else {
-        FOR_EACH(iter, validPageNums_){
-            pages_[*iter]->Flush();
-        }
-    }
+  } else {
+    FOR_EACH(iter, validPageNums_) { pages_[*iter]->Flush(); }
+  }
 }

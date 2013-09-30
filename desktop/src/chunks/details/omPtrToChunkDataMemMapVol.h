@@ -10,18 +10,15 @@ namespace chunk {
 
 template <typename DATA>
 class ptrToChunkDataMemMapVol : public ptrToChunkDataBase {
-private:
-    DATA *const rawData_;
+ private:
+  DATA* const rawData_;
 
-public:
-    ptrToChunkDataMemMapVol(OmMipVolume* vol, const om::chunkCoord& coord)
-        : rawData_(boost::get<DATA*>(vol->VolData()->getChunkPtrRaw(coord)))
-    {}
+ public:
+  ptrToChunkDataMemMapVol(OmMipVolume* vol, const om::chunkCoord& coord)
+      : rawData_(boost::get<DATA*>(vol->VolData()->getChunkPtrRaw(coord))) {}
 
-    virtual DATA* GetRawData(DATA*){
-        return rawData_;
-    }
+  virtual DATA* GetRawData(DATA*) { return rawData_; }
 };
 
-} // namespace chunk
-} // namespace om
+}  // namespace chunk
+}  // namespace om

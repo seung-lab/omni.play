@@ -13,8 +13,7 @@
 namespace om {
 namespace utility {
 
-template <typename T, std::size_t D>
-class imageCopiedData {
+template <typename T, std::size_t D> class imageCopiedData {
  public:
   typedef typename boost::multi_array<T, D> container_t;
   typedef dimension<D> dimension_t;
@@ -41,8 +40,7 @@ class imageCopiedData {
   std::shared_ptr<container_t> data_;
 };
 
-template <typename T, std::size_t D>
-class imageRefData {
+template <typename T, std::size_t D> class imageRefData {
  public:
   typedef typename boost::multi_array_ref<T, D> container_t;
   typedef dimension<D> dimension_t;
@@ -65,8 +63,7 @@ class imageRefData {
   std::shared_ptr<container_t> data_;
 };
 
-template <typename T, std::size_t D>
-class imageConstRefData {
+template <typename T, std::size_t D> class imageConstRefData {
  public:
   typedef typename boost::const_multi_array_ref<T, D> container_t;
   typedef dimension<D> dimension_t;
@@ -135,8 +132,7 @@ class image {
     }
   }
 
-  template <typename O>
-  void import(O* data, size_t len) {
+  template <typename O> void import(O* data, size_t len) {
     if (d_.data_) {
       d_.data_->assign(data, data + len);
     }

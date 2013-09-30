@@ -2,5 +2,5 @@
 #include "utility/dataWrappers.h"
 
 std::vector<OmFilter2d*> ChannelDataWrapper::GetFilters() const {
-    return GetChannel().FilterManager().GetFilters();
+  return GetChannel().FilterManager().GetFilters();
 }

@@ -25,7 +25,7 @@ class MetadataManager {
 
   bool HasMetadata() const {
     zi::guard g(lock_);
-    return (bool)meta_;
+    return (bool) meta_;
   }
 
   std::string& name() const {

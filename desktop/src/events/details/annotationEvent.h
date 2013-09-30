@@ -10,32 +10,31 @@
 
 namespace om {
 namespace events {
-    
+
 class annotationEvent : public OmEvent {
 
-public:
-    annotationEvent(QEvent::Type type);
+ public:
+  annotationEvent(QEvent::Type type);
 
-    void Dispatch(OmEventListener *);
+  void Dispatch(OmEventListener*);
 
-    static const OmEventClass CLASS  = OM_ANNOTATION_EVENT_CLASS;
+  static const OmEventClass CLASS = OM_ANNOTATION_EVENT_CLASS;
 
-    static const QEvent::Type ANNOTATION_OBJECT_MODIFICATION = (QEvent::Type) (CLASS);
+  static const QEvent::Type ANNOTATION_OBJECT_MODIFICATION =
+      (QEvent::Type)(CLASS);
 
-private:
+ private:
 
 };
 
 class annotationEventListener : public OmEventListener {
 
-public:
-    annotationEventListener()
-        : OmEventListener(annotationEvent::CLASS)
-    {}
+ public:
+  annotationEventListener() : OmEventListener(annotationEvent::CLASS) {}
 
-    //add/remove Annotation, change state, change selection
-    virtual void AnnotationModificationEvent(annotationEvent* event) = 0;
+  //add/remove Annotation, change state, change selection
+  virtual void AnnotationModificationEvent(annotationEvent* event) = 0;
 };
 
-} // namespace events
-} // namespace om
+}  // namespace events
+}  // namespace om

@@ -7,69 +7,59 @@
 #include "volume/omMipVolume.h"
 #include "zi/omThreads.h"
 
-template <typename T>
-class OmDownsampler {
-private:
-    OmMipVolume *const vol_;
-    OmMemMappedVolumeImpl<T> *const files_;
+template <typename T> class OmDownsampler {
+ private:
+  OmMipVolume* const vol_;
+  OmMemMappedVolumeImpl<T>* const files_;
 
-    std::vector<MipLevelInfo> mips_;
-    MippingInfo mippingInfo_;
+  std::vector<MipLevelInfo> mips_;
+  MippingInfo mippingInfo_;
 
-public:
-    OmDownsampler(OmMipVolume* vol, OmMemMappedVolumeImpl<T>* files)
-        : vol_(vol)
-        , files_(files)
-    {
-        mippingInfo_.maxMipLevel = vol_->Coords().GetRootMipLevel();
+ public:
+  OmDownsampler(OmMipVolume* vol, OmMemMappedVolumeImpl<T>* files)
+      : vol_(vol), files_(files) {
+    mippingInfo_.maxMipLevel = vol_->Coords().GetRootMipLevel();
 
-        const Vector3<uint64_t> chunkDims = vol_->Coords().GetChunkDimensions();
+    const Vector3<uint64_t> chunkDims = vol_->Coords().GetChunkDimensions();
 
-        mippingInfo_.chunkDims = chunkDims;
-        mippingInfo_.chunkSize = chunkDims.x * chunkDims.y * chunkDims.z;
-        mippingInfo_.tileSize = chunkDims.x * chunkDims.y;
+    mippingInfo_.chunkDims = chunkDims;
+    mippingInfo_.chunkSize = chunkDims.x * chunkDims.y * chunkDims.z;
+    mippingInfo_.tileSize = chunkDims.x * chunkDims.y;
 
-        mips_.resize(mippingInfo_.maxMipLevel + 1);
+    mips_.resize(mippingInfo_.maxMipLevel + 1);
 
-        for(int i=0; i <= mippingInfo_.maxMipLevel; ++i)
-        {
-            mips_[i].factor = om::math::pow2int(i);
+    for (int i = 0; i <= mippingInfo_.maxMipLevel; ++i) {
+      mips_[i].factor = om::math::pow2int(i);
 
-            const Vector3i dims = vol_->Coords().getDimsRoundedToNearestChunk(i);
-            mips_[i].volDims = dims;
-            mips_[i].volSlabSize = dims.x * dims.y * chunkDims.z;
-            mips_[i].volSliceSize = dims.x * dims.y;
-            mips_[i].volRowSize = dims.x * chunkDims.y * chunkDims.z;
-            mips_[i].totalVoxels = dims.x * dims.y * dims.z;
-        }
+      const Vector3i dims = vol_->Coords().getDimsRoundedToNearestChunk(i);
+      mips_[i].volDims = dims;
+      mips_[i].volSlabSize = dims.x * dims.y * chunkDims.z;
+      mips_[i].volSliceSize = dims.x * dims.y;
+      mips_[i].volRowSize = dims.x * chunkDims.y * chunkDims.z;
+      mips_[i].totalVoxels = dims.x * dims.y * dims.z;
+    }
+  }
+
+  void DownsampleChooseOneVoxelOfNine() {
+    OmTimer timer;
+    printf("downsampling...\n");
+
+    OmThreadPool threadPool;
+    threadPool.start(3);
+
+    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+        vol_->GetMipChunkCoords(0);
+
+    FOR_EACH(iter, *coordsPtr) {
+      const om::chunkCoord& coord = *iter;
+
+      std::shared_ptr<DownsampleVoxelTask<T> > task =
+          std::make_shared<DownsampleVoxelTask<T> >(vol_, mips_, mippingInfo_,
+                                                    coord, files_);
+      threadPool.push_back(task);
     }
 
-    void DownsampleChooseOneVoxelOfNine()
-    {
-        OmTimer timer;
-        printf("downsampling...\n");
-
-        OmThreadPool threadPool;
-        threadPool.start(3);
-
-        std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
-            vol_->GetMipChunkCoords(0);
-
-        FOR_EACH(iter, *coordsPtr)
-        {
-            const om::chunkCoord& coord = *iter;
-
-            std::shared_ptr<DownsampleVoxelTask<T> > task =
-                std::make_shared<DownsampleVoxelTask<T> >(vol_,
-                                                            mips_,
-                                                            mippingInfo_,
-                                                            coord,
-                                                            files_);
-            threadPool.push_back(task);
-        }
-
-        threadPool.join();
-        printf("\t downsampling done in %f secs\n", timer.s_elapsed());
-    }
+    threadPool.join();
+    printf("\t downsampling done in %f secs\n", timer.s_elapsed());
+  }
 };
-

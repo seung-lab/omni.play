@@ -6,32 +6,23 @@
 #include "tiles/omChannelTileFilter.hpp"
 
 class BrightnessSpinBox : public OmIntSpinBox {
-Q_OBJECT
+  Q_OBJECT public : BrightnessSpinBox(QWidget* d) : OmIntSpinBox(d, true) {
+    setSingleStep(1);
+    setRange(-255, 255);
+    setInitialGUIThresholdValue();
+  }
 
-public:
-    BrightnessSpinBox(QWidget* d)
-        : OmIntSpinBox(d, true)
-    {
-        setSingleStep(1);
-        setRange(-255, 255);
-        setInitialGUIThresholdValue();
-    }
+  QString Label() const { return "Brightness"; }
 
-    QString Label() const {
-        return "Brightness";
-    }
+ private:
 
-private:
+  void actUponValueChange(const int val) {
+    OmChannelTileFilter::SetBrightnessShift(val);
+    OmTileCache::ClearChannel();
+    OmEvents::Redraw2dBlocking();
+  }
 
-    void actUponValueChange(const int val)
-    {
-        OmChannelTileFilter::SetBrightnessShift(val);
-        OmTileCache::ClearChannel();
-        OmEvents::Redraw2dBlocking();
-    }
-
-    void setInitialGUIThresholdValue(){
-        setValue(OmChannelTileFilter::GetBrightnessShift());
-    }
+  void setInitialGUIThresholdValue() {
+    setValue(OmChannelTileFilter::GetBrightnessShift());
+  }
 };
-

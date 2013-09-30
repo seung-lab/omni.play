@@ -8,8 +8,7 @@ namespace datalayer {
 /**
  * IDataSource models a map as a source of data organized by key:value.
  */
-template <typename TKey, typename TValue>
-class IDataSource {
+template <typename TKey, typename TValue> class IDataSource {
  public:
   virtual ~IDataSource() {}
   virtual std::shared_ptr<TValue> Get(const TKey&, bool async = false) = 0;

@@ -18,8 +18,7 @@ class png : public stage {
   png(uint32_t width, uint32_t height, bool exact)
       : width_(width), height_(height), exact_(exact) {}
 
-  template <typename T>
-  data_var operator()(const Data<T>& in) const {
+  template <typename T> data_var operator()(const Data<T>& in) const {
     throw ArgException("Unsupported Data Type.");
   }
 
@@ -123,7 +122,7 @@ class png : public stage {
                       single transparent color for non-paletted images
         (PNG_INFO_tRNS)
         num_trans - number of transparent entries (PNG_INFO_tRNS)*/
-      uint8_t trans_alpha[] = {0};
+      uint8_t trans_alpha[] = { 0 };
       png_set_tRNS(png_ptr, info_ptr, trans_alpha, 1, nullptr);
     }
 

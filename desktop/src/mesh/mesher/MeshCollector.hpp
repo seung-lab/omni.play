@@ -13,77 +13,62 @@
 
 #include <vector>
 
-class MeshCollector
-{
-private:
-    const om::chunkCoord coord_ ;
-    OmMeshWriterV2 *const meshIO_;
+class MeshCollector {
+ private:
+  const om::chunkCoord coord_;
+  OmMeshWriterV2* const meshIO_;
 
-    zi::spinlock lock_;
+  zi::spinlock lock_;
 
-    typedef zi::unordered_map< om::common::SegID, TriStripCollector* > map_t;
-    map_t meshes_;
+  typedef zi::unordered_map<om::common::SegID, TriStripCollector*> map_t;
+  map_t meshes_;
 
-public:
-    MeshCollector( const om::chunkCoord& coord,
-                           OmMeshWriterV2* meshIO )
-        : coord_( coord ),
-          meshIO_( meshIO ),
-          lock_(),
-          meshes_()
-    {}
+ public:
+  MeshCollector(const om::chunkCoord& coord, OmMeshWriterV2* meshIO)
+      : coord_(coord), meshIO_(meshIO), lock_(), meshes_() {}
 
-    ~MeshCollector()
+  ~MeshCollector() {
+    FOR_EACH(iter, meshes_) { delete iter->second; }
+  }
+
+  void registerMeshPart(const om::common::SegID segID) {
+    TriStripCollector* tsc = NULL;
+
     {
-        FOR_EACH(iter, meshes_){
-            delete iter->second;
-        }
+      zi::guard g(lock_);
+
+      if (0 == meshes_.count(segID)) {
+        tsc = meshes_[segID] = new TriStripCollector();
+
+      } else {
+        tsc = meshes_[segID];
+      }
     }
 
-    void registerMeshPart( const om::common::SegID segID )
-    {
-        TriStripCollector* tsc = NULL;
+    tsc->registerPart();
+  }
 
-        {
-            zi::guard g( lock_ );
+  TriStripCollector* getMesh(const om::common::SegID segID) {
+    zi::guard g(lock_);
 
-            if ( 0 == meshes_.count( segID ) )
-            {
-                tsc = meshes_[ segID ] = new TriStripCollector();
-
-            } else {
-                tsc = meshes_[ segID ];
-            }
-        }
-
-        tsc->registerPart();
+    if (meshes_.count(segID) == 0) {
+      return NULL;
     }
 
-    TriStripCollector* getMesh( const om::common::SegID segID )
-    {
-        zi::guard g( lock_ );
+    return meshes_[segID];
+  }
 
-        if ( meshes_.count( segID ) == 0 )
-        {
-            return NULL;
-        }
+  void save(const om::common::SegID segID) {
+    TriStripCollector* mesh = getMesh(segID);
 
-        return meshes_[ segID ];
+    if (!mesh) {
+      std::cout << "skipping save for segID " << segID << " in coord " << coord_
+                << "\n";
+      return;
     }
 
-    void save( const om::common::SegID segID )
-    {
-        TriStripCollector* mesh = getMesh( segID );
-
-        if(!mesh)
-        {
-            std::cout << "skipping save for segID " << segID
-                      << " in coord " << coord_ << "\n";
-            return;
-        }
-
-        meshIO_->Save(segID, coord_, mesh,
-                      om::common::ShouldBufferWrites::BUFFER_WRITES,
-                      om::common::AllowOverwrite::OVERWRITE);
-    }
+    meshIO_->Save(segID, coord_, mesh,
+                  om::common::ShouldBufferWrites::BUFFER_WRITES,
+                  om::common::AllowOverwrite::OVERWRITE);
+  }
 };

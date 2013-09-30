@@ -10,11 +10,9 @@
 namespace om {
 namespace common {
 
-template <typename T>
-struct GenericManagerWriter;
+template <typename T> struct GenericManagerWriter;
 
-template <typename T, typename Lock = zi::spinlock>
-class GenericManager {
+template <typename T, typename Lock = zi::spinlock> class GenericManager {
  private:
   static const uint32_t DEFAULT_MAP_SIZE = 10;
 
@@ -38,15 +36,14 @@ class GenericManager {
     // from http://stackoverflow.com/a/4325900
     // intentionally complex - simplification causes regressions
     typedef char type_must_be_complete[sizeof(T) ? 1 : -1];
-    (void)sizeof(type_must_be_complete);
+    (void) sizeof(type_must_be_complete);
     for (auto i = 1; i < size_; ++i) {
       delete vec_[i];
     }
   }
 
   // managed accessors
-  template <typename... TArgs>
-  inline T& Add(TArgs... args) {
+  template <typename... TArgs> inline T& Add(TArgs... args) {
     zi::guard g(lock_);
 
     const ID id = nextId_;

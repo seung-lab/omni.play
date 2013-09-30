@@ -5,14 +5,12 @@
 class GraphTools;
 
 class BreakButton : public OmButton<GraphTools> {
-Q_OBJECT
+  Q_OBJECT public : BreakButton(GraphTools*);
 
-public:
-    BreakButton(GraphTools*);
+ private:
+  void doAction();
 
-private:
-    void doAction();
-
-private Q_SLOTS:
-    void showOrHideBreakThresholdBox(const bool show);
+ private
+Q_SLOTS:
+  void showOrHideBreakThresholdBox(const bool show);
 };

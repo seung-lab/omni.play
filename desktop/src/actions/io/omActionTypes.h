@@ -7,17 +7,17 @@ namespace om {
 namespace actions_ {
 
 enum ActionTypes {
-    OmSegmentValidateAction,
-    OmSegmentSplitAction,
-    OmSegmentCutAction,
-    OmSegmentJoinAction,
-    OmSegmentSelectAction,
-    OmSegmentGroupAction,
-    OmSegmentUncertainAction,
-    OmVolxelSetvalueAction,
-    OmSegmentationThresholdChangeAction,
-    OmProjectCloseAction,
-    OmProjectSaveAction,
+  OmSegmentValidateAction,
+  OmSegmentSplitAction,
+  OmSegmentCutAction,
+  OmSegmentJoinAction,
+  OmSegmentSelectAction,
+  OmSegmentGroupAction,
+  OmSegmentUncertainAction,
+  OmVolxelSetvalueAction,
+  OmSegmentationThresholdChangeAction,
+  OmProjectCloseAction,
+  OmProjectSaveAction,
 };
 
 typedef std::map<QString, ActionTypes> typeMap_t;
@@ -27,6 +27,5 @@ typeMap_t registerActionTypes();
 
 static const typeMap_t actionStrToType_ = registerActionTypes();
 
-} // namespace actions_
-} // namespace om
-
+}  // namespace actions_
+}  // namespace om

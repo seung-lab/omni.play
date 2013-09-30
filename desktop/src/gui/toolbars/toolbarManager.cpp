@@ -5,53 +5,40 @@
 #include "viewGroup/omViewGroupState.h"
 
 ToolBarManager::ToolBarManager(MainWindow* mainWindow)
-    : QWidget(mainWindow)
-    , mainWindow_(mainWindow)
-{
-    OmAppState::SetToolBarManager(this);
+    : QWidget(mainWindow), mainWindow_(mainWindow) {
+  OmAppState::SetToolBarManager(this);
 }
 
-ToolBarManager::~ToolBarManager()
-{}
+ToolBarManager::~ToolBarManager() {}
 
-void ToolBarManager::UpdateReadOnlyRelatedWidgets()
-{
-    if(mainToolBar_){
-        mainToolBar_->UpdateToolbar();
-    }
+void ToolBarManager::UpdateReadOnlyRelatedWidgets() {
+  if (mainToolBar_) {
+    mainToolBar_->UpdateToolbar();
+  }
 }
 
-void ToolBarManager::deleteMainBar()
-{
-    if(mainToolBar_)
-    {
-        mainWindow_->removeToolBar(mainToolBar_.get());
-        mainToolBar_.reset();
-    }
+void ToolBarManager::deleteMainBar() {
+  if (mainToolBar_) {
+    mainWindow_->removeToolBar(mainToolBar_.get());
+    mainToolBar_.reset();
+  }
 }
 
-void ToolBarManager::UpdateGuiFromProjectLoadOrOpen(OmViewGroupState* vgs)
-{
-    deleteMainBar();
-    mainToolBar_.reset(new MainToolBar(mainWindow_));
+void ToolBarManager::UpdateGuiFromProjectLoadOrOpen(OmViewGroupState* vgs) {
+  deleteMainBar();
+  mainToolBar_.reset(new MainToolBar(mainWindow_));
 
-    rightSideBar_.reset(new om::sidebars::right(mainWindow_, vgs));
+  rightSideBar_.reset(new om::sidebars::right(mainWindow_, vgs));
 
-    vgs->SetToolBarManager(this);
+  vgs->SetToolBarManager(this);
 }
 
-void ToolBarManager::UpdateGuiFromProjectClose(){
-    deleteMainBar();
-}
+void ToolBarManager::UpdateGuiFromProjectClose() { deleteMainBar(); }
 
-void ToolBarManager::SetSplittingOff(){
-    rightSideBar_->SetSplittingOff();
-}
+void ToolBarManager::SetSplittingOff() { rightSideBar_->SetSplittingOff(); }
 
-void ToolBarManager::SetShatteringOff(){
-    rightSideBar_->SetShatteringOff();
-}
+void ToolBarManager::SetShatteringOff() { rightSideBar_->SetShatteringOff(); }
 
-void ToolBarManager::SetTool(const om::tool::mode tool){
-    mainToolBar_->SetTool(tool);
+void ToolBarManager::SetTool(const om::tool::mode tool) {
+  mainToolBar_->SetTool(tool);
 }

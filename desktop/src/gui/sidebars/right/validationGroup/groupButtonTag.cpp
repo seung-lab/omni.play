@@ -6,29 +6,23 @@
 #include "events/omEvents.h"
 #include "segment/omSegments.h"
 
-GroupButtonTag::GroupButtonTag(ValidationGroup * d)
-    : OmButton<ValidationGroup>( d,
-                                 "Group As:",
-                                 "",
-                                 false)
-{}
+GroupButtonTag::GroupButtonTag(ValidationGroup* d)
+    : OmButton<ValidationGroup>(d, "Group As:", "", false) {}
 
-void GroupButtonTag::doAction()
-{
-    //debug(dendbar, "ValidationGroup::specialGroupAdd\n");
+void GroupButtonTag::doAction() {
+  //debug(dendbar, "ValidationGroup::specialGroupAdd\n");
 
-    SegmentationDataWrapper sdw = mParent->GetSDW();
+  SegmentationDataWrapper sdw = mParent->GetSDW();
 
-    if(!sdw.IsSegmentationValid()){
-        return;
-    }
+  if (!sdw.IsSegmentationValid()) {
+    return;
+  }
 
-    OmSegmentation & seg = sdw.GetSegmentation();
+  OmSegmentation& seg = sdw.GetSegmentation();
 
-    OmActions::CreateOrDeleteSegmentGroup(seg.GetID(),
-                                          seg.Segments()->GetSelectedSegmentIDs(),
-                                          mParent->getGroupNameFromGUI().toStdString(),
-                                          true);
+  OmActions::CreateOrDeleteSegmentGroup(
+      seg.GetID(), seg.Segments()->GetSelectedSegmentIDs(),
+      mParent->getGroupNameFromGUI().toStdString(), true);
 
-    OmEvents::SegmentModified();
+  OmEvents::SegmentModified();
 }

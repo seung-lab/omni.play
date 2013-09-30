@@ -6,4 +6,3 @@
 #include "utility/filterDataWrapper.hpp"
 #include "utility/dataWrapperContainer.hpp"
 #include "utility/affinityGraphDataWrapper.hpp"
-

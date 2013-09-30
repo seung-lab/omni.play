@@ -54,8 +54,7 @@ class Chunk : public vmml::Vector3i {
 }  // namespace om
 
 namespace std {
-template <>
-struct hash<om::coords::Chunk> {
+template <> struct hash<om::coords::Chunk> {
   size_t operator()(const om::coords::Chunk& c) const {
     std::hash<int> hasher;
     std::size_t h1 = hasher(c.mipLevel());

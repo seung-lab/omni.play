@@ -5,16 +5,12 @@
 namespace om {
 namespace segmentEdge {
 
-    static OmSegmentEdge MakeEdge(){
-        return OmSegmentEdge();
-    }
+static OmSegmentEdge MakeEdge() { return OmSegmentEdge(); }
 
-    static OmSegmentEdge MakeEdge(OmSegment* childSeg)
-    {
-        return OmSegmentEdge(childSeg->getParent()->value(),
-                             childSeg->value(),
-                             childSeg->getThreshold());
-    }
+static OmSegmentEdge MakeEdge(OmSegment* childSeg) {
+  return OmSegmentEdge(childSeg->getParent()->value(), childSeg->value(),
+                       childSeg->getThreshold());
+}
 
-} // namespace segmentEdge
-} // namespace om
+}  // namespace segmentEdge
+}  // namespace om

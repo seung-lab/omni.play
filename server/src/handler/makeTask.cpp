@@ -20,12 +20,7 @@ namespace handler {
  * Direction from Pre into Post
  */
 enum class Direction {
-  XMin,
-  XMax,
-  YMin,
-  YMax,
-  ZMin,
-  ZMax,
+  XMin, XMax, YMin, YMax, ZMin, ZMax,
 };
 
 void conditionalJoin(zi::disjoint_sets<uint32_t>& sets, uint32_t id1,
@@ -106,7 +101,7 @@ std::map<int32_t, int32_t> makeSeed(
   uint32_t largestSize = 0;
 
   for (auto& seg : bundle) {
-    if (((double)mappingCounts[seg]) / ((double)sizes[seg]) >=
+    if (((double) mappingCounts[seg]) / ((double) sizes[seg]) >=
         FALSE_OBJ_RATIO_THR) {
       ret[seg] = sizes[seg];
     }

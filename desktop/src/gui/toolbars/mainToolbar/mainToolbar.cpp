@@ -12,76 +12,69 @@
 #include "gui/toolbars/mainToolbar/showAnnotationsTools.hpp"
 
 MainToolBar::MainToolBar(MainWindow* mainWindow)
-    : QToolBar("Tools", mainWindow)
-    , mainWindow_(mainWindow)
-    , saveButton(new SaveButton(this))
-    , openViewGroupButton_(new OpenViewGroupButton(mainWindow))
-    , openSingleViewButton_(new OpenSingleViewButton(mainWindow))
-    , openDoubleViewButton_(new OpenDualViewButton(mainWindow))
-    , volumeRefreshButton(new VolumeRefreshButton(mainWindow))
-    , navEditButtons_(new NavAndEditButtonGroup(mainWindow))
-{
-    mainWindow_->addToolbarTop(this);
+    : QToolBar("Tools", mainWindow),
+      mainWindow_(mainWindow),
+      saveButton(new SaveButton(this)),
+      openViewGroupButton_(new OpenViewGroupButton(mainWindow)),
+      openSingleViewButton_(new OpenSingleViewButton(mainWindow)),
+      openDoubleViewButton_(new OpenDualViewButton(mainWindow)),
+      volumeRefreshButton(new VolumeRefreshButton(mainWindow)),
+      navEditButtons_(new NavAndEditButtonGroup(mainWindow)) {
+  mainWindow_->addToolbarTop(this);
 
-    addWidget(saveButton);
-    addSeparator();
+  addWidget(saveButton);
+  addSeparator();
 
-    addNavEditButtons();
-    addSeparator();
+  addNavEditButtons();
+  addSeparator();
 
-    addWidget(openSingleViewButton_);
-    addWidget(openDoubleViewButton_);
-    addWidget(openViewGroupButton_);
-    // addWidget(volumeRefreshButton);
-    addSeparator();
+  addWidget(openSingleViewButton_);
+  addWidget(openDoubleViewButton_);
+  addWidget(openViewGroupButton_);
+  // addWidget(volumeRefreshButton);
+  addSeparator();
 
-    addWidget(new QLabel("Alpha Level: ",this));
-    FilterWidget::Create();
-    addWidget(FilterWidget::Widget());
+  addWidget(new QLabel("Alpha Level: ", this));
+  FilterWidget::Create();
+  addWidget(FilterWidget::Widget());
 
-    addWidget(new FilterToBlackCheckbox(this));
+  addWidget(new FilterToBlackCheckbox(this));
 
-    addWidget(new ShowPaintTools(this, mainWindow_->GetViewGroupState()));
-    addWidget(new ShowAnnotationsTools(this, mainWindow_->GetViewGroupState()));
+  addWidget(new ShowPaintTools(this, mainWindow_->GetViewGroupState()));
+  addWidget(new ShowAnnotationsTools(this, mainWindow_->GetViewGroupState()));
 }
 
-void MainToolBar::setReadOnlyWidgetsEnabled()
-{
-    const bool toBeEnabled = OmProject::IsOpen();
+void MainToolBar::setReadOnlyWidgetsEnabled() {
+  const bool toBeEnabled = OmProject::IsOpen();
 
-    saveButton->setEnabled(toBeEnabled);
+  saveButton->setEnabled(toBeEnabled);
 
-    navEditButtons_->SetReadOnlyWidgetsEnabled(toBeEnabled);
+  navEditButtons_->SetReadOnlyWidgetsEnabled(toBeEnabled);
 
-    openSingleViewButton_->setEnabled(toBeEnabled);
-    openDoubleViewButton_->setEnabled(toBeEnabled);
-    openViewGroupButton_->setEnabled(toBeEnabled);
+  openSingleViewButton_->setEnabled(toBeEnabled);
+  openDoubleViewButton_->setEnabled(toBeEnabled);
+  openViewGroupButton_->setEnabled(toBeEnabled);
 
-    volumeRefreshButton->setEnabled(toBeEnabled);
+  volumeRefreshButton->setEnabled(toBeEnabled);
 
-    FilterWidget::Widget()->setEnabled(toBeEnabled);
+  FilterWidget::Widget()->setEnabled(toBeEnabled);
 }
 
-void MainToolBar::setModifyWidgetsEnabled()
-{
-    const bool toBeEnabled = OmProject::IsOpen() && !OmProject::IsReadOnly();
+void MainToolBar::setModifyWidgetsEnabled() {
+  const bool toBeEnabled = OmProject::IsOpen() && !OmProject::IsReadOnly();
 
-    navEditButtons_->SetModifyWidgetsEnabled(toBeEnabled);
+  navEditButtons_->SetModifyWidgetsEnabled(toBeEnabled);
 }
 
-void MainToolBar::UpdateToolbar()
-{
-    setReadOnlyWidgetsEnabled();
-    setModifyWidgetsEnabled();
+void MainToolBar::UpdateToolbar() {
+  setReadOnlyWidgetsEnabled();
+  setModifyWidgetsEnabled();
 }
 
-void MainToolBar::SetTool(const om::tool::mode tool){
-    navEditButtons_->SetTool(tool);
+void MainToolBar::SetTool(const om::tool::mode tool) {
+  navEditButtons_->SetTool(tool);
 }
 
-void MainToolBar::addNavEditButtons()
-{
-    Q_FOREACH( QAbstractButton* b, navEditButtons_->buttons() ){
-        addWidget(b);
-    }
+void MainToolBar::addNavEditButtons() {
+  Q_FOREACH(QAbstractButton * b, navEditButtons_->buttons()) { addWidget(b); }
 }

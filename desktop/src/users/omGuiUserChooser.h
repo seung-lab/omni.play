@@ -3,6 +3,6 @@
 #include <QDialog>
 
 class OmGuiUserChooser : public QDialog {
-public:
-    OmGuiUserChooser(QWidget *const parent);
+ public:
+  OmGuiUserChooser(QWidget *const parent);
 };

@@ -5,74 +5,69 @@
 #include "mesh/omMeshManager.h"
 
 OmMeshDrawer::OmMeshDrawer(OmSegmentation* segmentation)
-    : segmentation_(segmentation)
-    , rootSegLists_(std::make_shared<OmMeshSegmentList>(segmentation))
-    , cache_(std::make_shared<OmMeshPlanCache>(segmentation_,
-                                                 rootSegLists_.get()))
-    , numPrevRedraws_(0)
-{}
+    : segmentation_(segmentation),
+      rootSegLists_(std::make_shared<OmMeshSegmentList>(segmentation)),
+      cache_(std::make_shared<OmMeshPlanCache>(segmentation_,
+                                               rootSegLists_.get())),
+      numPrevRedraws_(0) {}
 
-boost::optional<std::pair<float,float> >
-OmMeshDrawer::Draw(OmViewGroupState* vgs,
-                   std::shared_ptr<OmVolumeCuller> culler,
-                   const OmBitfield drawOptions)
-{
-    if(!segmentation_->MeshManager(1)->Metadata()->IsBuilt()){
-        // printf("no meshes found\n");
-        return boost::optional<std::pair<float,float> >();
-    }
+boost::optional<std::pair<float, float> > OmMeshDrawer::Draw(
+    OmViewGroupState* vgs, std::shared_ptr<OmVolumeCuller> culler,
+    const OmBitfield drawOptions) {
+  if (!segmentation_->MeshManager(1)->Metadata()->IsBuilt()) {
+    // printf("no meshes found\n");
+    return boost::optional<std::pair<float, float> >();
+  }
 
-    std::shared_ptr<OmMeshPlan> sortedSegments =
-        cache_->GetSegmentsToDraw(vgs, culler, drawOptions);
+  std::shared_ptr<OmMeshPlan> sortedSegments =
+      cache_->GetSegmentsToDraw(vgs, culler, drawOptions);
 
-    // FOR_EACH(iter, *sortedSegments) {
-    // 	std::cout << iter->first->value() << ":" << iter->second << " ";
-    // }
-    // std::cout << std::endl;
+  // FOR_EACH(iter, *sortedSegments) {
+  // 	std::cout << iter->first->value() << ":" << iter->second << " ";
+  // }
+  // std::cout << std::endl;
 
-    updateNumPrevRedraws(culler);
+  updateNumPrevRedraws(culler);
 
-    OmMeshDrawerImpl drawer(segmentation_, vgs, drawOptions,
-                            sortedSegments.get());
+  OmMeshDrawerImpl drawer(segmentation_, vgs, drawOptions,
+                          sortedSegments.get());
 
-    drawer.Draw(getAllowedDrawTime());
+  drawer.Draw(getAllowedDrawTime());
 
-    if(drawer.RedrawNeeded())
-    {
-        std::pair<float,float> p(drawer.NumVoxelsDrawn(),
-                                 drawer.TotalVoxelsPresent());
-        return  boost::optional<std::pair<float,float> >(p);
-    }else {
-        return boost::optional<std::pair<float,float> >();
-    }
+  if (drawer.RedrawNeeded()) {
+    std::pair<float, float> p(drawer.NumVoxelsDrawn(),
+                              drawer.TotalVoxelsPresent());
+    return boost::optional<std::pair<float, float> >(p);
+  } else {
+    return boost::optional<std::pair<float, float> >();
+  }
 }
 
-void OmMeshDrawer::updateNumPrevRedraws(std::shared_ptr<OmVolumeCuller> culler)
-{
-    if(!culler_ || !culler_->equals(culler)){
-        culler_ = culler;
-        numPrevRedraws_ = 0;
-        return;
-    }
+void OmMeshDrawer::updateNumPrevRedraws(
+    std::shared_ptr<OmVolumeCuller> culler) {
+  if (!culler_ || !culler_->equals(culler)) {
+    culler_ = culler;
+    numPrevRedraws_ = 0;
+    return;
+  }
 
-    ++numPrevRedraws_;
+  ++numPrevRedraws_;
 }
 
-int OmMeshDrawer::getAllowedDrawTime()
-{
-    static const int maxElapsedDrawTimeMS = 50; // attempt 20 fps...
-    static const int maxAllowedDrawTime = 250;
-    static const int numRoundsBeforeUpMaxTime = 10;
+int OmMeshDrawer::getAllowedDrawTime() {
+  static const int maxElapsedDrawTimeMS = 50;  // attempt 20 fps...
+  static const int maxAllowedDrawTime = 250;
+  static const int numRoundsBeforeUpMaxTime = 10;
 
-    if(numPrevRedraws_ < numRoundsBeforeUpMaxTime){
-        return maxElapsedDrawTimeMS;
-    }
+  if (numPrevRedraws_ < numRoundsBeforeUpMaxTime) {
+    return maxElapsedDrawTimeMS;
+  }
 
-    const int maxRedrawMS =
-        (numPrevRedraws_ / numRoundsBeforeUpMaxTime) * maxElapsedDrawTimeMS;
-    if(maxRedrawMS > maxAllowedDrawTime){
-        return maxAllowedDrawTime;
-    }
+  const int maxRedrawMS =
+      (numPrevRedraws_ / numRoundsBeforeUpMaxTime) * maxElapsedDrawTimeMS;
+  if (maxRedrawMS > maxAllowedDrawTime) {
+    return maxAllowedDrawTime;
+  }
 
-    return maxRedrawMS;
+  return maxRedrawMS;
 }

@@ -7,64 +7,51 @@
 #include "events/omEvents.h"
 
 class OmSplitting {
-private:
-    bool showSplit_;
-    ToolBarManager* toolBarManager_;
+ private:
+  bool showSplit_;
+  ToolBarManager* toolBarManager_;
 
-    boost::optional<om::globalCoord> coordBeingSplit_;
-    SegmentDataWrapper segmentBeingSplit_;
+  boost::optional<om::globalCoord> coordBeingSplit_;
+  SegmentDataWrapper segmentBeingSplit_;
 
-public:
-    OmSplitting()
-        : showSplit_(false)
-        , toolBarManager_(NULL)
-    {}
+ public:
+  OmSplitting() : showSplit_(false), toolBarManager_(NULL) {}
 
-    inline bool ShowSplit() const {
-        return showSplit_;
-    }
+  inline bool ShowSplit() const { return showSplit_; }
 
-    const SegmentDataWrapper& Segment() const {
-        return segmentBeingSplit_;
-    }
+  const SegmentDataWrapper& Segment() const { return segmentBeingSplit_; }
 
-    const boost::optional<om::globalCoord>& Coord() const {
-        return coordBeingSplit_;
-    }
+  const boost::optional<om::globalCoord>& Coord() const {
+    return coordBeingSplit_;
+  }
 
-    void SetToolBarManager(ToolBarManager* tbm){
-        toolBarManager_ = tbm;
-    }
+  void SetToolBarManager(ToolBarManager* tbm) { toolBarManager_ = tbm; }
 
-    void EnterSplitMode()
-    {
-        showSplit_ = true;
+  void EnterSplitMode() {
+    showSplit_ = true;
 
-        OmStateManager::SetToolModeAndSendEvent(om::tool::SPLIT);
-        OmEvents::Redraw3d();
-        OmEvents::Redraw2d();
-    }
+    OmStateManager::SetToolModeAndSendEvent(om::tool::SPLIT);
+    OmEvents::Redraw3d();
+    OmEvents::Redraw2d();
+  }
 
-    void ExitSplitMode()
-    {
-        showSplit_ = false;
-        coordBeingSplit_.reset();
+  void ExitSplitMode() {
+    showSplit_ = false;
+    coordBeingSplit_.reset();
 
-        OmStateManager::SetOldToolModeAndSendEvent();
-        OmEvents::Redraw3d();
-        OmEvents::Redraw2d();
-    }
+    OmStateManager::SetOldToolModeAndSendEvent();
+    OmEvents::Redraw3d();
+    OmEvents::Redraw2d();
+  }
 
-    void ExitSplitModeFixButton()
-    {
-        toolBarManager_->SetSplittingOff();
-        ExitSplitMode();
-    }
+  void ExitSplitModeFixButton() {
+    toolBarManager_->SetSplittingOff();
+    ExitSplitMode();
+  }
 
-    void SetFirstSplitPoint(const SegmentDataWrapper& sdw, const om::globalCoord& coord)
-    {
-        segmentBeingSplit_ = sdw;
-        coordBeingSplit_ = boost::optional<om::globalCoord>(coord);
-    }
+  void SetFirstSplitPoint(const SegmentDataWrapper& sdw,
+                          const om::globalCoord& coord) {
+    segmentBeingSplit_ = sdw;
+    coordBeingSplit_ = boost::optional<om::globalCoord>(coord);
+  }
 };
-

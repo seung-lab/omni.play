@@ -10,85 +10,70 @@
 #include "zi/omMutex.h"
 
 class OmMeshSegmentList {
-private:
-    static const int MAX_THREADS = 3;
-    OmSegmentation *const segmentation_;
+ private:
+  static const int MAX_THREADS = 3;
+  OmSegmentation* const segmentation_;
 
-public:
-    OmMeshSegmentList(OmSegmentation* segmentation)
-        : segmentation_(segmentation)
-    {
-        threadPool_.start(MAX_THREADS);
+ public:
+  OmMeshSegmentList(OmSegmentation* segmentation)
+      : segmentation_(segmentation) {
+    threadPool_.start(MAX_THREADS);
+  }
+
+  ~OmMeshSegmentList() {
+    threadPool_.clear();
+    threadPool_.stop();
+  }
+
+  boost::optional<OmSegPtrList> GetFromCacheIfReady(OmSegChunk* chunk,
+                                                    OmSegment* rootSeg) {
+    zi::guard g(lock_);
+
+    OmSegPtrListValid& spList = mSegmentListCache[makeKey(chunk, rootSeg)];
+
+    if (spList.isFetching) {  // coord already in queue to be fetched
+      return boost::optional<OmSegPtrList>();
     }
 
-    ~OmMeshSegmentList()
-    {
-        threadPool_.clear();
-        threadPool_.stop();
+    // remove from cache if freshness is too old
+    const uint32_t currentFreshness = rootSeg->getFreshnessForMeshes();
+    if (spList.isValid && currentFreshness != spList.freshness) {
+      spList.list.clear();
+      spList.isValid = false;
     }
 
-    boost::optional<OmSegPtrList>
-    GetFromCacheIfReady(OmSegChunk* chunk, OmSegment* rootSeg)
-    {
-        zi::guard g(lock_);
+    if (!spList.isValid) {  // add coord to list to be fetched
+      spList = OmSegPtrListValid(true);
 
-        OmSegPtrListValid& spList =
-            mSegmentListCache[makeKey(chunk, rootSeg)];
+      std::shared_ptr<OmMeshSegmentListTask> task =
+          std::make_shared<OmMeshSegmentListTask>(chunk, rootSeg, this,
+                                                  segmentation_);
 
-        if(spList.isFetching){ // coord already in queue to be fetched
-            return boost::optional<OmSegPtrList>();
-        }
-
-        // remove from cache if freshness is too old
-        const uint32_t currentFreshness = rootSeg->getFreshnessForMeshes();
-        if(spList.isValid && currentFreshness != spList.freshness)
-        {
-            spList.list.clear();
-            spList.isValid = false;
-        }
-
-        if(!spList.isValid)
-        { // add coord to list to be fetched
-            spList = OmSegPtrListValid(true);
-
-            std::shared_ptr<OmMeshSegmentListTask> task
-                = std::make_shared<OmMeshSegmentListTask>(chunk,
-                                                         rootSeg,
-                                                         this,
-                                                         segmentation_);
-
-            threadPool_.push_back(task);
-            return boost::optional<OmSegPtrList>();
-        }
-
-        // coord was valid
-        return boost::optional<OmSegPtrList>(spList.list);
+      threadPool_.push_back(task);
+      return boost::optional<OmSegPtrList>();
     }
 
-    void AddToCache(OmSegChunk* chunk, OmSegment* rootSeg,
-                    const OmSegPtrList & segmentsToDraw)
-    {
-        zi::guard g(lock_);
+    // coord was valid
+    return boost::optional<OmSegPtrList>(spList.list);
+  }
 
-        mSegmentListCache[makeKey(chunk, rootSeg)]
-            = OmSegPtrListValid(segmentsToDraw,
-                                rootSeg->getFreshnessForMeshes());
-    }
+  void AddToCache(OmSegChunk* chunk, OmSegment* rootSeg,
+                  const OmSegPtrList& segmentsToDraw) {
+    zi::guard g(lock_);
 
-private:
-    std::map<OmMeshSegListKey, OmSegPtrListValid> mSegmentListCache;
-    OmThreadPool threadPool_;
-    zi::mutex lock_;
+    mSegmentListCache[makeKey(chunk, rootSeg)] =
+        OmSegPtrListValid(segmentsToDraw, rootSeg->getFreshnessForMeshes());
+  }
 
-    OmMeshSegListKey makeKey(OmSegChunk* chunk, OmSegment* rootSeg)
-    {
-        const om::chunkCoord& c = chunk->GetCoordinate();
-        return OmMeshSegListKey(rootSeg->GetSegmentationID(),
-                                rootSeg->value(),
-                                c.Level,
-                                c.Coordinate.x,
-                                c.Coordinate.y,
-                                c.Coordinate.z);
-    }
+ private:
+  std::map<OmMeshSegListKey, OmSegPtrListValid> mSegmentListCache;
+  OmThreadPool threadPool_;
+  zi::mutex lock_;
+
+  OmMeshSegListKey makeKey(OmSegChunk* chunk, OmSegment* rootSeg) {
+    const om::chunkCoord& c = chunk->GetCoordinate();
+    return OmMeshSegListKey(rootSeg->GetSegmentationID(), rootSeg->value(),
+                            c.Level, c.Coordinate.x, c.Coordinate.y,
+                            c.Coordinate.z);
+  }
 };
-

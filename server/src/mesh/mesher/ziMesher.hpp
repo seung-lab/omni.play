@@ -250,9 +250,9 @@ class ziMesher {
         cube_marcher.fill_simplifier<double>(*spfy, segID, 0, 0, 0, scale.at(2),
                                              scale.at(1), scale.at(0));
 
-        manager.push_back(zi::run_fn(zi::bind(&ziMesher::processSingleSegment,
-                                              this, segID, maxScale, translate,
-                                              spfy, &occurances_[coord])));
+        manager.push_back(zi::run_fn(
+            zi::bind(&ziMesher::processSingleSegment, this, segID, maxScale,
+                     translate, spfy, &occurances_[coord])));
       }
     }
 

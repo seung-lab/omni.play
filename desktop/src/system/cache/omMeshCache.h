@@ -7,12 +7,11 @@
 class OmMeshManager;
 
 class OmMeshCache : public OmThreadedMeshCache {
-public:
-    OmMeshCache(OmMeshManager * parent);
+ public:
+  OmMeshCache(OmMeshManager *parent);
 
-    OmMeshPtr HandleCacheMiss(const OmMeshCoord &meshCoord);
+  OmMeshPtr HandleCacheMiss(const OmMeshCoord &meshCoord);
 
-private:
-    OmMeshManager *const meshMan_;
+ private:
+  OmMeshManager *const meshMan_;
 };
-

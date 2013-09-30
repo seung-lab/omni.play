@@ -7,9 +7,8 @@ class MainWindow;
 class VolumeRefreshButton : public OmButton<MainWindow> {
 
  public:
-	VolumeRefreshButton(MainWindow * mw);
+  VolumeRefreshButton(MainWindow* mw);
 
  private:
-	void doAction();
+  void doAction();
 };
-

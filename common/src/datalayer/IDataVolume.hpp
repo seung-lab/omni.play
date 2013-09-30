@@ -5,8 +5,7 @@
 namespace om {
 namespace datalayer {
 
-template <typename T>
-class IDataVolume {
+template <typename T> class IDataVolume {
  public:
   virtual ~IDataVolume() {}
 

@@ -9,26 +9,21 @@
 #include "common/common.h"
 
 class OmMeshCoord {
-public:
-    OmMeshCoord();
-    OmMeshCoord( const om::chunkCoord&, om::common::SegID );
+ public:
+  OmMeshCoord();
+  OmMeshCoord(const om::chunkCoord&, om::common::SegID);
 
-    void operator=( const OmMeshCoord& rhs );
-    bool operator==( const OmMeshCoord& rhs ) const;
-    bool operator!=( const OmMeshCoord& rhs ) const;
-    bool operator<( const OmMeshCoord& rhs ) const;
+  void operator=(const OmMeshCoord& rhs);
+  bool operator==(const OmMeshCoord& rhs) const;
+  bool operator!=(const OmMeshCoord& rhs) const;
+  bool operator<(const OmMeshCoord& rhs) const;
 
-    om::chunkCoord MipChunkCoord;
-    om::common::SegID DataValue;
+  om::chunkCoord MipChunkCoord;
+  om::common::SegID DataValue;
 
-    const om::chunkCoord& Coord() const {
-        return MipChunkCoord;
-    }
+  const om::chunkCoord& Coord() const { return MipChunkCoord; }
 
-    om::common::SegID SegID() const {
-        return DataValue;
-    }
+  om::common::SegID SegID() const { return DataValue; }
 
-    friend std::ostream& operator<<(std::ostream &out, const OmMeshCoord &in);
+  friend std::ostream& operator<<(std::ostream& out, const OmMeshCoord& in);
 };
-

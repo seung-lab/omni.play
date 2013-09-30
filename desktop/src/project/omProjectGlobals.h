@@ -13,57 +13,42 @@ class OmView2dManagerImpl;
 class OmUsers;
 class QWidget;
 
-namespace om { class users; }
+namespace om {
+class users;
+}
 
 class OmProjectGlobals {
-private:
-    std::unique_ptr<OmRandColorFile> randColorFile_;
-    std::unique_ptr<om::users> users_;
-    std::unique_ptr<OmView2dManagerImpl> v2dManagerImpl_;
-    std::unique_ptr<OmStateManagerImpl> stateMan_;
-    std::unique_ptr<OmEventManagerImpl> eventMan_;
-    std::unique_ptr<OmActionsImpl> actions_;
-    std::unique_ptr<OmActionLogger> actionLogger_;
+ private:
+  std::unique_ptr<OmRandColorFile> randColorFile_;
+  std::unique_ptr<om::users> users_;
+  std::unique_ptr<OmView2dManagerImpl> v2dManagerImpl_;
+  std::unique_ptr<OmStateManagerImpl> stateMan_;
+  std::unique_ptr<OmEventManagerImpl> eventMan_;
+  std::unique_ptr<OmActionsImpl> actions_;
+  std::unique_ptr<OmActionLogger> actionLogger_;
 
-    zi::semaphore fileReadThrottle_;
+  zi::semaphore fileReadThrottle_;
 
-public:
-    OmProjectGlobals();
-    ~OmProjectGlobals();
+ public:
+  OmProjectGlobals();
+  ~OmProjectGlobals();
 
-    void Init();
-    void GUIinit(QWidget* widget);
+  void Init();
+  void GUIinit(QWidget* widget);
 
-    inline OmRandColorFile& RandColorFile(){
-        return *randColorFile_;
-    }
+  inline OmRandColorFile& RandColorFile() { return *randColorFile_; }
 
-    inline OmView2dManagerImpl& View2dManagerImpl(){
-        return *v2dManagerImpl_;
-    }
+  inline OmView2dManagerImpl& View2dManagerImpl() { return *v2dManagerImpl_; }
 
-    inline OmStateManagerImpl& StateManagerImpl(){
-        return *stateMan_;
-    }
+  inline OmStateManagerImpl& StateManagerImpl() { return *stateMan_; }
 
-    inline OmEventManagerImpl& EventManImpl(){
-        return *eventMan_;
-    }
+  inline OmEventManagerImpl& EventManImpl() { return *eventMan_; }
 
-    inline OmActionsImpl& Actions(){
-        return *actions_;
-    }
+  inline OmActionsImpl& Actions() { return *actions_; }
 
-    inline OmActionLogger& ActionLogger(){
-        return *actionLogger_;
-    }
+  inline OmActionLogger& ActionLogger() { return *actionLogger_; }
 
-    inline zi::semaphore& FileReadSemaphore(){
-        return fileReadThrottle_;
-    }
+  inline zi::semaphore& FileReadSemaphore() { return fileReadThrottle_; }
 
-    inline om::users& Users(){
-        return *users_;
-    }
+  inline om::users& Users() { return *users_; }
 };
-

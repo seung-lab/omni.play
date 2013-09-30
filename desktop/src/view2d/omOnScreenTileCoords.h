@@ -7,29 +7,31 @@ class OmView2dState;
 class OmFilter2d;
 
 class OmOnScreenTileCoords {
-public:
-    OmOnScreenTileCoords(OmView2dState*, OmMipVolume*);
+ public:
+  OmOnScreenTileCoords(OmView2dState *, OmMipVolume *);
 
-    OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations();
-    OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations(const int);
+  OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations();
+  OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations(const int);
 
-private:
-    OmView2dState *const state_;
-    OmMipVolume *const vol_;
-    const om::common::ViewType viewType_;
-    OmViewGroupState *const vgs_;
+ private:
+  OmView2dState *const state_;
+  OmMipVolume *const vol_;
+  const om::common::ViewType viewType_;
+  OmViewGroupState *const vgs_;
 
-    int mipLevel_;
-    OmTileCoordsAndLocationsPtr tileCoordsAndLocations_;
+  int mipLevel_;
+  OmTileCoordsAndLocationsPtr tileCoordsAndLocations_;
 
-    uint64_t freshness_;
+  uint64_t freshness_;
 
-    void doComputeCoordsAndLocations(const int depthOffset);
-    GLfloatBox computeVertices(const om::chunkCoord& coord, const OmMipVolume* vol);
-    void computeTile(const om::chunkCoord&, const int);
-    void makeTileCoordFromFilter(OmFilter2d*, const om::chunkCoord &, const int);
-    OmTileCoord makeTileCoord(const om::chunkCoord&, const int, OmMipVolume*, int);
+  void doComputeCoordsAndLocations(const int depthOffset);
+  GLfloatBox computeVertices(const om::chunkCoord &coord,
+                             const OmMipVolume *vol);
+  void computeTile(const om::chunkCoord &, const int);
+  void makeTileCoordFromFilter(OmFilter2d *, const om::chunkCoord &, const int);
+  OmTileCoord makeTileCoord(const om::chunkCoord &, const int, OmMipVolume *,
+                            int);
 
-    friend std::ostream& operator<<(std::ostream &out, const OmOnScreenTileCoords& c);
+  friend std::ostream &operator<<(std::ostream &out,
+                                  const OmOnScreenTileCoords &c);
 };
-

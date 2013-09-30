@@ -32,11 +32,10 @@ class Tile {
 }  // namespace om::coords::
 
 namespace std {
-template <>
-struct hash<om::coords::Tile> {
+template <> struct hash<om::coords::Tile> {
   size_t operator()(const om::coords::Tile &t) const {
     std::size_t h1 = std::hash<om::coords::Chunk>()(t.chunk());
-    std::size_t h2 = std::hash<int>()((int)t.viewType());
+    std::size_t h2 = std::hash<int>()((int) t.viewType());
     std::size_t h3 = std::hash<uint8_t>()(t.depth());
     return h1 ^ (h2 << 1) ^ (h3 << 1);
   }

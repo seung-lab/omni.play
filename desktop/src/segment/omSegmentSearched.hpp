@@ -8,26 +8,18 @@
 #include "zi/omUtility.h"
 
 class OmSegmentSearched : private om::singletonBase<OmSegmentSearched> {
-public:
-	static void Delete(){
-		instance().sdw_ = SegmentDataWrapper();
-	}
+ public:
+  static void Delete() { instance().sdw_ = SegmentDataWrapper(); }
 
-	static void Set(const SegmentDataWrapper& sdw)
-	{
-		instance().sdw_ = sdw;
-	}
+  static void Set(const SegmentDataWrapper& sdw) { instance().sdw_ = sdw; }
 
-	static SegmentDataWrapper Get() {
-		return instance().sdw_;
-	}
+  static SegmentDataWrapper Get() { return instance().sdw_; }
 
-private:
-	OmSegmentSearched(){}
-	~OmSegmentSearched(){}
+ private:
+  OmSegmentSearched() {}
+  ~OmSegmentSearched() {}
 
-	SegmentDataWrapper sdw_;
+  SegmentDataWrapper sdw_;
 
-	friend class zi::singleton<OmSegmentSearched>;
+  friend class zi::singleton<OmSegmentSearched>;
 };
-

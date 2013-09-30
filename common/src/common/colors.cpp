@@ -4,14 +4,14 @@ namespace om {
 namespace common {
 
 std::ostream& operator<<(std::ostream& out, const Color& c) {
-  out << "[r" << (int)c.red << ",g" << (int)c.green << ",b" << (int)c.blue
-      << "]";
+  out << "[r" << (int) c.red << ",g" << (int) c.green << ",b" << (int)
+      c.blue << "]";
   return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const ColorARGB& c) {
-  out << "[a" << (int)c.alpha << ",r" << (int)c.red << ",g" << (int)c.green
-      << ",b" << (int)c.blue << "]";
+  out << "[a" << (int) c.alpha << ",r" << (int) c.red << ",g" << (int)
+      c.green << ",b" << (int) c.blue << "]";
   return out;
 }
 

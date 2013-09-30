@@ -13,128 +13,111 @@
 double OmMST::DefaultThreshold = 0.999;
 
 OmMST::OmMST(OmSegmentation* segmentation)
-    : vol_(segmentation)
-    , numEdges_(0)
-    , edges_(NULL)
-{}
+    : vol_(segmentation), numEdges_(0), edges_(NULL) {}
 
-std::string OmMST::filePathActual(){
-    return vol_->Folder()->GetVolSegmentsPathAbs("mst.data");
+std::string OmMST::filePathActual() {
+  return vol_->Folder()->GetVolSegmentsPathAbs("mst.data");
 }
 
-void OmMST::Read()
-{
-    if(!numEdges_)
-    {
-        printf("no MST found\n");
-        return;
-    }
+void OmMST::Read() {
+  if (!numEdges_) {
+    printf("no MST found\n");
+    return;
+  }
 
-    edgesPtr_ = reader_t::Reader(filePathActual());
-    edges_ = edgesPtr_->GetPtr();
+  edgesPtr_ = reader_t::Reader(filePathActual());
+  edges_ = edgesPtr_->GetPtr();
 
-    const uint64_t expectedSize = numEdges_ * sizeof(OmMSTEdge);
+  const uint64_t expectedSize = numEdges_ * sizeof(OmMSTEdge);
 
-    if( expectedSize != edgesPtr_->Size())
-    {
-        QString err =
-            QString("mst sizes did not match: file was %1, but expected %2")
-            .arg(edgesPtr_->Size())
-            .arg(expectedSize);
+  if (expectedSize != edgesPtr_->Size()) {
+    QString err =
+        QString("mst sizes did not match: file was %1, but expected %2")
+            .arg(edgesPtr_->Size()).arg(expectedSize);
 
-        const QString is32bit("; is Omni running on a 32-bit OS?");
-        err += is32bit;
-        throw om::IoException(err.toStdString());
-    }
+    const QString is32bit("; is Omni running on a 32-bit OS?");
+    err += is32bit;
+    throw om::IoException(err.toStdString());
+  }
 
-    for(uint32_t i = 0; i < numEdges_; ++i){
-        edges_[i].wasJoined = 0; // always zero out
-    }
+  for (uint32_t i = 0; i < numEdges_; ++i) {
+    edges_[i].wasJoined = 0;  // always zero out
+  }
 }
 
-void OmMST::create()
-{
-    assert(numEdges_);
+void OmMST::create() {
+  assert(numEdges_);
 
-    edgesPtr_ = writer_t::WriterNumElements(filePathActual(),
-                                            numEdges_,
-                                            om::mem::ZeroFill::ZERO);
+  edgesPtr_ = writer_t::WriterNumElements(filePathActual(), numEdges_,
+                                          om::mem::ZeroFill::ZERO);
 
-    edges_ = edgesPtr_->GetPtr();
+  edges_ = edgesPtr_->GetPtr();
 }
 
-void OmMST::Import(const std::vector<OmMSTImportEdge>& importEdges)
-{
-    numEdges_ = importEdges.size();
+void OmMST::Import(const std::vector<OmMSTImportEdge>& importEdges) {
+  numEdges_ = importEdges.size();
 
-    create();
+  create();
 
-    for(uint32_t i = 0; i < numEdges_; ++i)
-    {
-        edges_[i].number    = i;
-        edges_[i].node1ID   = importEdges[i].node1ID;
-        edges_[i].node2ID   = importEdges[i].node2ID;
-        edges_[i].threshold = importEdges[i].threshold;
-        edges_[i].userSplit = 0;
-        edges_[i].userJoin  = 0;
-        edges_[i].wasJoined = 0; // always zero out
-    }
+  for (uint32_t i = 0; i < numEdges_; ++i) {
+    edges_[i].number = i;
+    edges_[i].node1ID = importEdges[i].node1ID;
+    edges_[i].node2ID = importEdges[i].node2ID;
+    edges_[i].threshold = importEdges[i].threshold;
+    edges_[i].userSplit = 0;
+    edges_[i].userJoin = 0;
+    edges_[i].wasJoined = 0;  // always zero out
+  }
 
-    Flush();
+  Flush();
 }
 
-void OmMST::convert()
-{
-    // numEdges_ already set by OmDataArchiveProject
-    if(!numEdges_)
-    {
-        printf("no MST found\n");
-        return;
-    }
+void OmMST::convert() {
+  // numEdges_ already set by OmDataArchiveProject
+  if (!numEdges_) {
+    printf("no MST found\n");
+    return;
+  }
 
-    OmMSTold old(vol_);
-    old.ReadOld();
+  OmMSTold old(vol_);
+  old.ReadOld();
 
-    if(!old.IsPopulated())
-    {
-        printf("old MST not populated\n");
-        return;
-    }
+  if (!old.IsPopulated()) {
+    printf("old MST not populated\n");
+    return;
+  }
 
-    create();
+  create();
 
-    old.MoveData(edges_, numEdges_);
+  old.MoveData(edges_, numEdges_);
 
-    Flush();
+  Flush();
 }
 
-void OmMST::Flush()
-{
-    if(numEdges_){
-        edgesPtr_->Flush();
-    }
+void OmMST::Flush() {
+  if (numEdges_) {
+    edgesPtr_->Flush();
+  }
 }
 
-void OmMST::SetUserThreshold(const double t)
-{
-    zi::rwmutex::write_guard g(thresholdLock_);
+void OmMST::SetUserThreshold(const double t) {
+  zi::rwmutex::write_guard g(thresholdLock_);
 
-    if(qFuzzyCompare(t, UserThreshold())){
-        return;
-    }
-    OmProject::Globals().Users().UserSettings().setThreshold(t);
+  if (qFuzzyCompare(t, UserThreshold())) {
+    return;
+  }
+  OmProject::Globals().Users().UserSettings().setThreshold(t);
 
-    vol_->Segments()->refreshTree();
+  vol_->Segments()->refreshTree();
 }
 
-void OmMST::SetUserSizeThreshold(const double t)
-{
-    zi::rwmutex::write_guard g(thresholdLock_);
+void OmMST::SetUserSizeThreshold(const double t) {
+  zi::rwmutex::write_guard g(thresholdLock_);
 
-    if(qFuzzyCompare(t, UserSizeThreshold())){
-        return;
-    }
-    OmProject::Globals().Users().UserSettings().setSizeThreshold(t);
+  if (qFuzzyCompare(t, UserSizeThreshold())) {
+    return;
+  }
+  OmProject::Globals().Users().UserSettings().setSizeThreshold(t);
 
-    vol_->Segments()->refreshTree();
+  vol_->Segments()->refreshTree();
 }

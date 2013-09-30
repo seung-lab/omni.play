@@ -9,23 +9,22 @@ class SegmentDataWrapper;
 class SegmentationDataWrapper;
 
 class OmSegmentIterator {
-public:
-    explicit OmSegmentIterator(OmSegments*);
-    explicit OmSegmentIterator(const SegmentationDataWrapper& sdw);
-    explicit OmSegmentIterator(const SegmentDataWrapper& sdw);
+ public:
+  explicit OmSegmentIterator(OmSegments*);
+  explicit OmSegmentIterator(const SegmentationDataWrapper& sdw);
+  explicit OmSegmentIterator(const SegmentDataWrapper& sdw);
 
-    void iterOverSegmentID(const om::common::SegID segID);
-    void iterOverSegmentIDs(const om::common::SegIDSet& set);
-    void iterOverSelectedIDs();
-    void iterOverEnabledIDs();
+  void iterOverSegmentID(const om::common::SegID segID);
+  void iterOverSegmentIDs(const om::common::SegIDSet& set);
+  void iterOverSelectedIDs();
+  void iterOverEnabledIDs();
 
-    OmSegment* getNextSegment();
-    bool empty();
+  OmSegment* getNextSegment();
+  bool empty();
 
-    OmSegmentIterator & operator = (const OmSegmentIterator & other);
+  OmSegmentIterator& operator=(const OmSegmentIterator& other);
 
-private:
-    OmSegments* segments_;
-    std::deque<OmSegment*> segs_;
+ private:
+  OmSegments* segments_;
+  std::deque<OmSegment*> segs_;
 };
-

@@ -54,7 +54,7 @@ class MesherConnector : public zi::enable_singleton_of_this<MesherConnector> {
         log_debugs(unknown) << "Unable to open transport.";
       }
     }
-    catch (apache::thrift::TException& tx) {
+    catch (apache::thrift::TException & tx) {
       throw(tx);
     }
 
@@ -195,7 +195,7 @@ class serverHandler : virtual public serverIf,
         log_errors(unknown) << "Unable to open transport.";
       }
     }
-    catch (apache::thrift::TException& tx) {
+    catch (apache::thrift::TException & tx) {
       throw(tx);
     }
 

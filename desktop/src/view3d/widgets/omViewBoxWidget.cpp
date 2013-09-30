@@ -14,131 +14,121 @@
 #include "zi/omUtility.h"
 
 OmViewBoxWidget::OmViewBoxWidget(OmView3d* view3d, OmViewGroupState* vgs)
-    : OmView3dWidget(view3d)
-    , vgs_(vgs)
-{}
+    : OmView3dWidget(view3d), vgs_(vgs) {}
 
 /**
  *  Draw the three orthogonal slices from of the view box
  */
-void OmViewBoxWidget::Draw()
-{
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glDisable(GL_LIGHTING);
+void OmViewBoxWidget::Draw() {
+  glPushAttrib(GL_ALL_ATTRIB_BITS);
+  glDisable(GL_LIGHTING);
 
-    //set line width
-    static const int RECT_WIREFRAME_LINE_WIDTH = 2;
-    glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
+  //set line width
+  static const int RECT_WIREFRAME_LINE_WIDTH = 2;
+  glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
 
-    OmViewGroupView2dState* view2dState = vgs_->View2dState();
+  OmViewGroupView2dState* view2dState = vgs_->View2dState();
 
-    if (Om3dPreferences::get2DViewFrameIn3D())
-    {
-        draw2dBoxWrapper(view2dState, om::common::XY_VIEW);
-        draw2dBoxWrapper(view2dState, om::common::XZ_VIEW);
-        draw2dBoxWrapper(view2dState, om::common::ZY_VIEW);
-    }
+  if (Om3dPreferences::get2DViewFrameIn3D()) {
+    draw2dBoxWrapper(view2dState, om::common::XY_VIEW);
+    draw2dBoxWrapper(view2dState, om::common::XZ_VIEW);
+    draw2dBoxWrapper(view2dState, om::common::ZY_VIEW);
+  }
 
-    if(Om3dPreferences::getDrawCrosshairsIn3D()){
-        drawLines(view2dState->GetScaledSliceDepth());
-    }
+  if (Om3dPreferences::getDrawCrosshairsIn3D()) {
+    drawLines(view2dState->GetScaledSliceDepth());
+  }
 
-    glPopAttrib();
+  glPopAttrib();
 }
 
 void OmViewBoxWidget::draw2dBoxWrapper(OmViewGroupView2dState* view2dState,
-                                       const om::common::ViewType viewType)
-{
-//    drawChannelData(viewType, OmStateManager::GetViewDrawable(viewType));
-    draw2dBox(viewType,
-              view2dState->GetViewSliceMin(viewType),
-              view2dState->GetViewSliceMax(viewType),
-              view2dState->GetScaledSliceDepth(viewType));
+                                       const om::common::ViewType viewType) {
+  //    drawChannelData(viewType, OmStateManager::GetViewDrawable(viewType));
+  draw2dBox(viewType, view2dState->GetViewSliceMin(viewType),
+            view2dState->GetViewSliceMax(viewType),
+            view2dState->GetScaledSliceDepth(viewType));
 }
 
 /**
  *  Draw a rectangle given the verticies in counter-clockwise order
  */
 void OmViewBoxWidget::drawRectangle(const Vector3i& v0, const Vector3i& v1,
-                                    const Vector3i& v2, const Vector3i& v3)
-{
-    glBegin(GL_LINE_STRIP);
-    glVertex3iv(v0.array);
-    glVertex3iv(v1.array);
-    glVertex3iv(v2.array);
-    glVertex3iv(v3.array);
-    glVertex3iv(v0.array);
-    glEnd();
+                                    const Vector3i& v2, const Vector3i& v3) {
+  glBegin(GL_LINE_STRIP);
+  glVertex3iv(v0.array);
+  glVertex3iv(v1.array);
+  glVertex3iv(v2.array);
+  glVertex3iv(v3.array);
+  glVertex3iv(v0.array);
+  glEnd();
 }
 
-void OmViewBoxWidget::drawLines(Vector3i depth)
-{
-    Vector3i v0, v1;
+void OmViewBoxWidget::drawLines(Vector3i depth) {
+  Vector3i v0, v1;
 
-    float distance = ((float)Om3dPreferences::getCrosshairValue())/10.0;
+  float distance = ((float) Om3dPreferences::getCrosshairValue()) / 10.0;
 
-    glColor3fv(om::gl::OMGL_BLUE);
-    v0 = Vector3i(depth.x, depth.y, depth.z-distance);
-    v1 = Vector3i(depth.x, depth.y, depth.z+distance);
-    glBegin(GL_LINE_STRIP);
-    glVertex3iv(v0.array);
-    glVertex3iv(v1.array);
-    glEnd();
+  glColor3fv(om::gl::OMGL_BLUE);
+  v0 = Vector3i(depth.x, depth.y, depth.z - distance);
+  v1 = Vector3i(depth.x, depth.y, depth.z + distance);
+  glBegin(GL_LINE_STRIP);
+  glVertex3iv(v0.array);
+  glVertex3iv(v1.array);
+  glEnd();
 
-    glColor3fv(om::gl::OMGL_GREEN);
-    v0 = Vector3i(depth.x, depth.y-distance, depth.z);
-    v1 = Vector3i(depth.x, depth.y+distance, depth.z);
-    glBegin(GL_LINE_STRIP);
-    glVertex3iv(v0.array);
-    glVertex3iv(v1.array);
-    glEnd();
+  glColor3fv(om::gl::OMGL_GREEN);
+  v0 = Vector3i(depth.x, depth.y - distance, depth.z);
+  v1 = Vector3i(depth.x, depth.y + distance, depth.z);
+  glBegin(GL_LINE_STRIP);
+  glVertex3iv(v0.array);
+  glVertex3iv(v1.array);
+  glEnd();
 
-    glColor3fv(om::gl::OMGL_RED);
-    v0 = Vector3i(depth.x-distance, depth.y, depth.z);
-    v1 = Vector3i(depth.x+distance, depth.y, depth.z);
-    glBegin(GL_LINE_STRIP);
-    glVertex3iv(v0.array);
-    glVertex3iv(v1.array);
-    glEnd();
+  glColor3fv(om::gl::OMGL_RED);
+  v0 = Vector3i(depth.x - distance, depth.y, depth.z);
+  v1 = Vector3i(depth.x + distance, depth.y, depth.z);
+  glBegin(GL_LINE_STRIP);
+  glVertex3iv(v0.array);
+  glVertex3iv(v1.array);
+  glEnd();
 }
 
 /**
  *  Draw a given orthogonal slice of a bbox given the plane and offset of plane
  */
 void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
-                                const Vector2f& min,
-                                const Vector2f& max,
-                                const float depth)
-{
-	Vector3i v0, v1, v2, v3;
+                                const Vector2f& min, const Vector2f& max,
+                                const float depth) {
+  Vector3i v0, v1, v2, v3;
 
-    switch (plane) {
+  switch (plane) {
     case om::common::XY_VIEW:
-        glColor3fv(om::gl::OMGL_BLUE);
-        v0 = Vector3i(min.x, min.y, depth);
-        v1 = Vector3i(max.x, min.y, depth);
-        v2 = Vector3i(max.x, max.y, depth);
-        v3 = Vector3i(min.x, max.y, depth);
-        break;
+      glColor3fv(om::gl::OMGL_BLUE);
+      v0 = Vector3i(min.x, min.y, depth);
+      v1 = Vector3i(max.x, min.y, depth);
+      v2 = Vector3i(max.x, max.y, depth);
+      v3 = Vector3i(min.x, max.y, depth);
+      break;
 
     case om::common::XZ_VIEW:
-        glColor3fv(om::gl::OMGL_GREEN);
-        v0 = Vector3i(min.x, depth, min.y);
-        v1 = Vector3i(min.x, depth, max.y);
-        v2 = Vector3i(max.x, depth, max.y);
-        v3 = Vector3i(max.x, depth, min.y);
-        break;
+      glColor3fv(om::gl::OMGL_GREEN);
+      v0 = Vector3i(min.x, depth, min.y);
+      v1 = Vector3i(min.x, depth, max.y);
+      v2 = Vector3i(max.x, depth, max.y);
+      v3 = Vector3i(max.x, depth, min.y);
+      break;
 
     case om::common::ZY_VIEW:
-        glColor3fv(om::gl::OMGL_RED);
-        v0 = Vector3i(depth, min.y, min.x);
-        v1 = Vector3i(depth, max.y, min.x);
-        v2 = Vector3i(depth, max.y, max.x);
-        v3 = Vector3i(depth, min.y, max.x);
-        break;
-    }
+      glColor3fv(om::gl::OMGL_RED);
+      v0 = Vector3i(depth, min.y, min.x);
+      v1 = Vector3i(depth, max.y, min.x);
+      v2 = Vector3i(depth, max.y, max.x);
+      v3 = Vector3i(depth, min.y, max.x);
+      break;
+  }
 
-    drawRectangle(v0, v1, v2, v3);
+  drawRectangle(v0, v1, v2, v3);
 }
 
 // void OmViewBoxWidget::drawChannelData(ViewType plane,
@@ -165,14 +155,17 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //         OmTilePtr d = *it;
 //
 //         const int level = d->GetTileCoord().getLevel();
-//         const Vector3f tileLength = resolution*128.0*om::math::pow2int(level);
+//         const Vector3f tileLength =
+// resolution*128.0*om::math::pow2int(level);
 //
 //         const DataCoord thisCoord = d->GetTileCoord().getDataCoord();
-//         //debug ("FIXME", "thisCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(thisCoord));
+//         //debug ("FIXME", "thisCoord.(x,y,z): (%f,%f,%f)\n",
+// DEBUGV3(thisCoord));
 //         const NormCoord normCoord =
 //             channel.Coords().DataToNormCoord(d->GetTileCoord().getDataCoord());
 //
-//         //debug ("FIXME", "normCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(normCoord));
+//         //debug ("FIXME", "normCoord.(x,y,z): (%f,%f,%f)\n",
+// DEBUGV3(normCoord));
 //         glBindTexture(GL_TEXTURE_2D, d->GetTexture().GetTextureID());
 //         glBegin(GL_QUADS);
 //
@@ -189,16 +182,20 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //                 dataMin.x = 0.0;
 //                 dataMin.y = 0.0;
 //             }
-//             glTexCoord2f(dataMin.x, dataMin.y);  /* lower left corner of image */
+//             glTexCoord2f(dataMin.x, dataMin.y);  /* lower left corner of
+// image */
 //             glVertex3f(spaceMin.x, spaceMin.y,thisCoord.z);
 //
-//             glTexCoord2f(dataMax.x, dataMin.y);  /* lower right corner of image */
+//             glTexCoord2f(dataMax.x, dataMin.y);  /* lower right corner of
+// image */
 //             glVertex3f(spaceMax.x, spaceMin.y,thisCoord.z);
 //
-//             glTexCoord2f(dataMax.x, dataMax.y);  /* upper right corner of image */
+//             glTexCoord2f(dataMax.x, dataMax.y);  /* upper right corner of
+// image */
 //             glVertex3f(spaceMax.x, spaceMax.y, thisCoord.z);
 //
-//             glTexCoord2f(dataMin.x, dataMax.y);  /* upper left corner of image */
+//             glTexCoord2f(dataMin.x, dataMax.y);  /* upper left corner of
+// image */
 //             glVertex3f(spaceMin.x, spaceMax.y, thisCoord.z);
 //             glEnd();
 //         } else if (plane == om::common::XZ_VIEW) {
@@ -214,16 +211,20 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //                 dataMin.x = 0.0;
 //                 dataMin.y = 0.0;
 //             }
-//             glTexCoord2f(dataMin.x, dataMin.y);  /* lower left corner of image */
+//             glTexCoord2f(dataMin.x, dataMin.y);  /* lower left corner of
+// image */
 //             glVertex3f(spaceMin.x, thisCoord.y,spaceMin.y);
 //
-//             glTexCoord2f(dataMax.x, dataMin.y);  /* lower right corner of image */
+//             glTexCoord2f(dataMax.x, dataMin.y);  /* lower right corner of
+// image */
 //             glVertex3f(spaceMax.x, thisCoord.y,spaceMin.y);
 //
-//             glTexCoord2f(dataMax.x, dataMax.y);  /* upper right corner of image */
+//             glTexCoord2f(dataMax.x, dataMax.y);  /* upper right corner of
+// image */
 //             glVertex3f(spaceMax.x, thisCoord.y,spaceMax.y);
 //
-//             glTexCoord2f(dataMin.x, dataMax.y);  /* upper left corner of image */
+//             glTexCoord2f(dataMin.x, dataMax.y);  /* upper left corner of
+// image */
 //             glVertex3f(spaceMin.x, thisCoord.y,spaceMax.y);
 //             glEnd();
 //         } else if (plane == om::common::ZY_VIEW) {
@@ -240,20 +241,28 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //                 dataMin.y = 0.0;
 //             }
 //
-//             //debug ("chandata", "dataMin.(x,y): (%f,%f)\n", dataMin.x,dataMin.y);
-//             //debug ("chandata", "dataMax.(x,y): (%f,%f)\n", dataMax.x,dataMax.y);
-//             //debug ("chandata", "spaceMin.(x,y): (%f,%f)\n", spaceMin.x,spaceMin.y);
-//             //debug ("chandata", "spaceMax.(x,y): (%f,%f)\n", spaceMax.x,spaceMax.y);
-//             glTexCoord2f(dataMin.x, dataMin.y);  /* lower left corner of image */
+//             //debug ("chandata", "dataMin.(x,y): (%f,%f)\n",
+// dataMin.x,dataMin.y);
+//             //debug ("chandata", "dataMax.(x,y): (%f,%f)\n",
+// dataMax.x,dataMax.y);
+//             //debug ("chandata", "spaceMin.(x,y): (%f,%f)\n",
+// spaceMin.x,spaceMin.y);
+//             //debug ("chandata", "spaceMax.(x,y): (%f,%f)\n",
+// spaceMax.x,spaceMax.y);
+//             glTexCoord2f(dataMin.x, dataMin.y);  /* lower left corner of
+// image */
 //             glVertex3f(thisCoord.x,spaceMin.x,spaceMin.y);
 //
-//             glTexCoord2f(dataMax.x, dataMin.y);  /* lower right corner of image */
+//             glTexCoord2f(dataMax.x, dataMin.y);  /* lower right corner of
+// image */
 //             glVertex3f(thisCoord.x,spaceMax.x ,spaceMin.y);
 //
-//             glTexCoord2f(dataMax.x, dataMax.y);  /* upper right corner of image */
+//             glTexCoord2f(dataMax.x, dataMax.y);  /* upper right corner of
+// image */
 //             glVertex3f(thisCoord.x,spaceMax.x,spaceMax.y);
 //
-//             glTexCoord2f(dataMin.x, dataMax.y);  /* upper left corner of image */
+//             glTexCoord2f(dataMin.x, dataMax.y);  /* upper left corner of
+// image */
 //             glVertex3f(thisCoord.x,spaceMin.x,spaceMax.y);
 //             glEnd();
 //         }
@@ -281,24 +290,30 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //
 //     switch (plane) {
 //     case om::common::XY_VIEW:
-//         if (maxLimit.x>maxScreen.x) spaceMax.x=maxScreen.x; else spaceMax.x=maxLimit.x;
-//         if (maxLimit.y>maxScreen.y) spaceMax.y=maxScreen.y; else spaceMax.y=maxLimit.y;
+//         if (maxLimit.x>maxScreen.x) spaceMax.x=maxScreen.x; else
+// spaceMax.x=maxLimit.x;
+//         if (maxLimit.y>maxScreen.y) spaceMax.y=maxScreen.y; else
+// spaceMax.y=maxLimit.y;
 //         dataMax.x = (spaceMax.x-coord.x)/tileLength.x;
 //         dataMax.y = (spaceMax.y-coord.y)/tileLength.y;
 //         result = ((coord.x + tileLength.x) < spaceMax.x);
 //         result = result && ((coord.y + tileLength.y) < spaceMax.y);
 //         break;
 //     case om::common::XZ_VIEW:
-//         if (maxLimit.x>maxScreen.x) spaceMax.x=maxScreen.x; else spaceMax.x=maxLimit.x;
-//         if (maxLimit.z>maxScreen.y) spaceMax.y=maxScreen.y; else spaceMax.y=maxLimit.z;
+//         if (maxLimit.x>maxScreen.x) spaceMax.x=maxScreen.x; else
+// spaceMax.x=maxLimit.x;
+//         if (maxLimit.z>maxScreen.y) spaceMax.y=maxScreen.y; else
+// spaceMax.y=maxLimit.z;
 //         dataMax.x = (spaceMax.x-coord.x)/tileLength.x;
 //         dataMax.y = (spaceMax.y-coord.z)/tileLength.z;
 //         result = ((coord.x + tileLength.x) < spaceMax.x);
 //         result = result && ((coord.z + tileLength.z) < spaceMax.y);
 //         break;
 //     case om::common::ZY_VIEW:
-//         if (maxLimit.z>maxScreen.y) spaceMax.y=maxScreen.y; else spaceMax.y=maxLimit.z;
-//         if (maxLimit.y>maxScreen.x) spaceMax.x=maxScreen.x; else spaceMax.x=maxLimit.y;
+//         if (maxLimit.z>maxScreen.y) spaceMax.y=maxScreen.y; else
+// spaceMax.y=maxLimit.z;
+//         if (maxLimit.y>maxScreen.x) spaceMax.x=maxScreen.x; else
+// spaceMax.x=maxLimit.y;
 //         dataMax.x = (spaceMax.x-coord.y)/tileLength.y;
 //         dataMax.y = (spaceMax.y-coord.z)/tileLength.z;
 //         result = ((coord.y + tileLength.y) < spaceMax.x);
@@ -311,7 +326,8 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 // }
 
 // bool
-// OmViewBoxWidget::getTextureMin(Vector3f coord,ViewType plane, Vector2f & dataMin, Vector2f & spaceMin)
+// OmViewBoxWidget::getTextureMin(Vector3f coord,ViewType plane, Vector2f &
+// dataMin, Vector2f & spaceMin)
 // {
 //
 //     OmChannel& channel = OmProject::Volumes().Channels().GetChannel( 1);
@@ -327,24 +343,30 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //
 //     switch (plane) {
 //     case om::common::XY_VIEW:
-//         if (minLimit.x<minScreen.x) spaceMin.x=minScreen.x; else spaceMin.x=minLimit.x;
-//         if (minLimit.y<minScreen.y) spaceMin.y=minScreen.y; else spaceMin.y=minLimit.y;
+//         if (minLimit.x<minScreen.x) spaceMin.x=minScreen.x; else
+// spaceMin.x=minLimit.x;
+//         if (minLimit.y<minScreen.y) spaceMin.y=minScreen.y; else
+// spaceMin.y=minLimit.y;
 //         dataMin.x = (spaceMin.x - coord.x)/tileLength.x;
 //         dataMin.y = (spaceMin.y - coord.y)/tileLength.y;
 //         result = (coord.x > spaceMin.x);
 //         result = result && (coord.y > spaceMin.y);
 //         break;
 //     case om::common::XZ_VIEW:
-//         if (minLimit.x<minScreen.x) spaceMin.x=minScreen.x; else spaceMin.x=minLimit.x;
-//         if (minLimit.z<minScreen.y) spaceMin.y=minScreen.y; else spaceMin.y=minLimit.z;
+//         if (minLimit.x<minScreen.x) spaceMin.x=minScreen.x; else
+// spaceMin.x=minLimit.x;
+//         if (minLimit.z<minScreen.y) spaceMin.y=minScreen.y; else
+// spaceMin.y=minLimit.z;
 //         dataMin.x = (spaceMin.x - coord.x)/tileLength.x;
 //         dataMin.y = (spaceMin.y - coord.z)/tileLength.z;
 //         result = (coord.x > spaceMin.x);
 //         result = result && (coord.z > spaceMin.y);
 //         break;
 //     case om::common::ZY_VIEW:
-//         if (minLimit.z<minScreen.y) spaceMin.y=minScreen.y; else spaceMin.y=minLimit.z;
-//         if (minLimit.y<minScreen.x) spaceMin.x=minScreen.x; else spaceMin.x=minLimit.y;
+//         if (minLimit.z<minScreen.y) spaceMin.y=minScreen.y; else
+// spaceMin.y=minLimit.z;
+//         if (minLimit.y<minScreen.x) spaceMin.x=minScreen.x; else
+// spaceMin.x=minLimit.y;
 //         dataMin.x = (spaceMin.x - coord.y)/tileLength.y;
 //         dataMin.y = (spaceMin.y - coord.z)/tileLength.z;
 //         result = (coord.z > spaceMin.y);

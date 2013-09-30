@@ -23,103 +23,89 @@ class OmPooledTileWrapper;
 template <class> class OmPooledTile;
 
 class OmTextureID {
-public:
-    OmTextureID(const int tileDim, OmPooledTile<uint8_t>*);
-    OmTextureID(const int tileDim, OmPooledTile<om::common::ColorARGB>*);
+ public:
+  OmTextureID(const int tileDim, OmPooledTile<uint8_t>*);
+  OmTextureID(const int tileDim, OmPooledTile<om::common::ColorARGB>*);
 
-    virtual ~OmTextureID();
+  virtual ~OmTextureID();
 
-    int GetWidth() const {
-        return tileDim_;
+  int GetWidth() const { return tileDim_; }
+
+  int GetHeight() const { return tileDim_; }
+
+  GLuint GetTextureID() const {
+    if (!textureID_) {
+      throw om::IoException("texture not yet built");
     }
+    return *textureID_;
+  }
 
-    int GetHeight() const {
-        return tileDim_;
+  void* GetTileData() const;
+
+  uchar* GetTileDataUChar() const;
+
+  bool NeedToBuildTexture() const { return (flag_ != OMTILE_GOOD); }
+
+  QImage::Format GetQTimageFormat() const {
+    switch (flag_) {
+      case OMTILE_NEEDCOLORMAP:
+        return QImage::Format_ARGB32_Premultiplied;
+      case OMTILE_NEEDTEXTUREBUILT:
+        return QImage::Format_Indexed8;
+      default:
+        throw om::ArgException("unknown flag");
     }
+  }
 
-    GLuint GetTextureID() const
-    {
-        if(!textureID_){
-            throw om::IoException("texture not yet built");
-        }
-        return *textureID_;
+  GLint GetGLinternalFormat() const {
+    switch (flag_) {
+      case OMTILE_NEEDCOLORMAP:
+        return GL_RGBA8;
+      case OMTILE_NEEDTEXTUREBUILT:
+        return GL_LUMINANCE;
+      default:
+        throw om::ArgException("unknown flag");
     }
+  }
 
-    void* GetTileData() const;
-
-    uchar* GetTileDataUChar() const;
-
-    bool NeedToBuildTexture() const {
-        return (flag_ != OMTILE_GOOD);
+  GLenum GetGLdataFormat() const {
+    switch (flag_) {
+      case OMTILE_NEEDCOLORMAP:
+        return GL_BGRA;
+      case OMTILE_NEEDTEXTUREBUILT:
+        return GL_LUMINANCE;
+      default:
+        throw om::ArgException("unknown flag");
     }
+  }
 
-    QImage::Format GetQTimageFormat() const
-    {
-        switch(flag_){
-        case OMTILE_NEEDCOLORMAP:
-            return QImage::Format_ARGB32_Premultiplied;
-        case OMTILE_NEEDTEXTUREBUILT:
-            return QImage::Format_Indexed8;
-        default:
-            throw om::ArgException("unknown flag");
-        }
+  GLenum GetPixelDataType() const {
+    switch (flag_) {
+      case OMTILE_NEEDCOLORMAP:
+        return GL_UNSIGNED_INT_8_8_8_8;
+      case OMTILE_NEEDTEXTUREBUILT:
+        return GL_UNSIGNED_BYTE;
+      default:
+        throw om::ArgException("unknown flag");
     }
+  }
 
-    GLint GetGLinternalFormat() const
-    {
-        switch(flag_){
-        case OMTILE_NEEDCOLORMAP:
-            return GL_RGBA8;
-        case OMTILE_NEEDTEXTUREBUILT:
-            return GL_LUMINANCE;
-        default:
-            throw om::ArgException("unknown flag");
-        }
-    }
+  void TextureBindComplete(QGLContext const* context, const GLuint textureID);
 
-    GLenum GetGLdataFormat() const
-    {
-        switch(flag_){
-        case OMTILE_NEEDCOLORMAP:
-            return GL_BGRA;
-        case OMTILE_NEEDTEXTUREBUILT:
-            return GL_LUMINANCE;
-        default:
-            throw om::ArgException("unknown flag");
-        }
-    }
+  QGLContext const* Context() const { return context_; }
 
-    GLenum GetPixelDataType() const
-    {
-        switch(flag_){
-        case OMTILE_NEEDCOLORMAP:
-            return GL_UNSIGNED_INT_8_8_8_8;
-        case OMTILE_NEEDTEXTUREBUILT:
-            return GL_UNSIGNED_BYTE;
-        default:
-            throw om::ArgException("unknown flag");
-        }
-    }
+ private:
+  const int tileDim_;
+  std::unique_ptr<OmPooledTileWrapper> pooledTile_;
 
-    void TextureBindComplete(QGLContext const* context, const GLuint textureID);
+  enum OmTileFlag {
+    OMTILE_NEEDCOLORMAP,
+    OMTILE_NEEDTEXTUREBUILT,
+    OMTILE_GOOD
+  };
+  OmTileFlag flag_;
 
-    QGLContext const* Context() const {
-        return context_;
-    }
+  boost::optional<GLuint> textureID_;
 
-private:
-    const int tileDim_;
-    std::unique_ptr<OmPooledTileWrapper> pooledTile_;
-
-    enum OmTileFlag {
-        OMTILE_NEEDCOLORMAP,
-        OMTILE_NEEDTEXTUREBUILT,
-        OMTILE_GOOD
-    };
-    OmTileFlag flag_;
-
-    boost::optional<GLuint> textureID_;
-
-    QGLContext const* context_;
+  QGLContext const* context_;
 };
-

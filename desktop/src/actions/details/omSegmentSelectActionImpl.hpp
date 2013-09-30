@@ -10,88 +10,81 @@
 #include "utility/omCopyFirstN.hpp"
 
 class OmSegmentSelectActionImpl {
-private:
-    std::shared_ptr<OmSelectSegmentsParams> params_;
+ private:
+  std::shared_ptr<OmSelectSegmentsParams> params_;
 
-public:
-    OmSegmentSelectActionImpl()
-    {}
+ public:
+  OmSegmentSelectActionImpl() {}
 
-    OmSegmentSelectActionImpl(std::shared_ptr<OmSelectSegmentsParams> params)
-        : params_(params)
-    {}
+  OmSegmentSelectActionImpl(std::shared_ptr<OmSelectSegmentsParams> params)
+      : params_(params) {}
 
-    void Execute()
-    {
-    	OmSegments* segments = params_->sdw.Segments();
+  void Execute() {
+    OmSegments* segments = params_->sdw.Segments();
 
-        if(params_->augmentListOnly)
-		{
-            if(om::common::AddOrSubtract::ADD == params_->addOrSubtract){
-                segments->AddToSegmentSelection(params_->newSelectedIDs);
+    if (params_->augmentListOnly) {
+      if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
+        segments->AddToSegmentSelection(params_->newSelectedIDs);
 
-            } else {
-                segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
-            }
+      } else {
+        segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
+      }
 
-        }else{
-                segments->UpdateSegmentSelection(params_->newSelectedIDs,
-                                                 params_->addToRecentList);
-        }
-
-        OmEvents::SegmentModified(params_);
+    } else {
+      segments->UpdateSegmentSelection(params_->newSelectedIDs,
+                                       params_->addToRecentList);
     }
 
-    void Undo()
-    {
-        OmSegments* segments = params_->sdw.Segments();
+    OmEvents::SegmentModified(params_);
+  }
 
-        if(params_->augmentListOnly)
-		{
-            if(om::common::AddOrSubtract::ADD == params_->addOrSubtract){
-                segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
+  void Undo() {
+    OmSegments* segments = params_->sdw.Segments();
 
-            } else {
-                segments->AddToSegmentSelection(params_->newSelectedIDs);
-            }
+    if (params_->augmentListOnly) {
+      if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
+        segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
 
-        }else{
-            segments->UpdateSegmentSelection(params_->oldSelectedIDs,
-                                             params_->addToRecentList);
-        }
+      } else {
+        segments->AddToSegmentSelection(params_->newSelectedIDs);
+      }
 
-        OmEvents::SegmentModified(params_);
+    } else {
+      segments->UpdateSegmentSelection(params_->oldSelectedIDs,
+                                       params_->addToRecentList);
     }
 
-    std::string Description() const
-    {
-        static const int max = 5;
+    OmEvents::SegmentModified(params_);
+  }
 
-        const std::string nums =
-            om::utils::MakeShortStrList<om::common::SegIDSet, om::common::SegID>(params_->newSelectedIDs, max);
+  std::string Description() const {
+    static const int max = 5;
 
-        std::string prefix("Selected segments: ");
+    const std::string nums =
+        om::utils::MakeShortStrList<om::common::SegIDSet, om::common::SegID>(
+            params_->newSelectedIDs, max);
 
-        if(params_->augmentListOnly){
-            if(om::common::AddOrSubtract::ADD == params_->addOrSubtract){
-                prefix = "Added segments: ";
-            }else{
-                prefix = "Removed segments: ";
-            }
-        }
+    std::string prefix("Selected segments: ");
 
-        return prefix + nums;
+    if (params_->augmentListOnly) {
+      if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
+        prefix = "Added segments: ";
+      } else {
+        prefix = "Removed segments: ";
+      }
     }
 
-    QString classNameForLogFile() const {
-        return "OmSegmentSelectAction";
-    }
+    return prefix + nums;
+  }
 
-private:
-    template <typename T> friend class OmActionLoggerThread;
-    friend QDataStream &operator<<(QDataStream&, const OmSegmentSelectActionImpl&);
-    friend QDataStream &operator>>(QDataStream&, OmSegmentSelectActionImpl&);
+  QString classNameForLogFile() const { return "OmSegmentSelectAction"; }
 
-    friend QTextStream& operator<<(QTextStream& out, const OmSegmentSelectActionImpl&);
+ private:
+  template <typename T> friend class OmActionLoggerThread;
+  friend QDataStream& operator<<(QDataStream&,
+                                 const OmSegmentSelectActionImpl&);
+  friend QDataStream& operator>>(QDataStream&, OmSegmentSelectActionImpl&);
+
+  friend QTextStream& operator<<(QTextStream& out,
+                                 const OmSegmentSelectActionImpl&);
 };
-

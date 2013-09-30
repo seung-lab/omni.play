@@ -5,18 +5,14 @@
 #include "events/omEvents.h"
 
 class ShowCrosshairsCheckbox : public OmCheckBoxWidget {
-public:
-	ShowCrosshairsCheckbox(QWidget* p)
-		: OmCheckBoxWidget(p, "Show crosshairs")
-	{
-		set(Om2dPreferences::ShowCrosshairs());
-	}
+ public:
+  ShowCrosshairsCheckbox(QWidget* p) : OmCheckBoxWidget(p, "Show crosshairs") {
+    set(Om2dPreferences::ShowCrosshairs());
+  }
 
-private:
-	void doAction(const bool isChecked)
-	{
-		Om2dPreferences::ShowCrosshairs(isChecked);
-		OmEvents::Redraw2d();
-	}
+ private:
+  void doAction(const bool isChecked) {
+    Om2dPreferences::ShowCrosshairs(isChecked);
+    OmEvents::Redraw2d();
+  }
 };
-

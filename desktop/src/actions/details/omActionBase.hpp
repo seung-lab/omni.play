@@ -4,38 +4,25 @@
 #include "actions/io/omActionLogger.hpp"
 #include "common/common.h"
 
-template <typename IMPL>
-class OmActionBase : public OmUndoCommand {
-protected:
-    std::shared_ptr<IMPL> impl_;
+template <typename IMPL> class OmActionBase : public OmUndoCommand {
+ protected:
+  std::shared_ptr<IMPL> impl_;
 
-public:
-    OmActionBase()
-        : impl_(std::make_shared<IMPL>())
-    {}
+ public:
+  OmActionBase() : impl_(std::make_shared<IMPL>()) {}
 
-    OmActionBase(std::shared_ptr<IMPL> impl)
-        : impl_(impl)
-    {}
+  OmActionBase(std::shared_ptr<IMPL> impl) : impl_(impl) {}
 
-    virtual ~OmActionBase()
-    {}
+  virtual ~OmActionBase() {}
 
-protected:
-    virtual void Action(){
-        impl_->Execute();
-    }
+ protected:
+  virtual void Action() { impl_->Execute(); }
 
-    virtual void UndoAction(){
-        impl_->Undo();
-    }
+  virtual void UndoAction() { impl_->Undo(); }
 
-    virtual std::string Description(){
-        return impl_->Description();
-    }
+  virtual std::string Description() { return impl_->Description(); }
 
-    virtual void save(const std::string& comment){
-        OmActionLogger::save(impl_, comment);
-    }
+  virtual void save(const std::string& comment) {
+    OmActionLogger::save(impl_, comment);
+  }
 };
-

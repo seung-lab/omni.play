@@ -7,23 +7,18 @@
 #include "viewGroup/omViewGroupState.h"
 
 ShatterButton::ShatterButton(GraphTools* d)
-    : OmButton<GraphTools>( d,
-                            "Shatter",
-                            "Shatter object mode",
-                            true)
-{
-    om::connect(this, SIGNAL(clicked(bool)),
-                this, SLOT(enterOrExitShatterMode(bool)));
+    : OmButton<GraphTools>(d, "Shatter", "Shatter object mode", true) {
+  om::connect(this, SIGNAL(clicked(bool)), this,
+              SLOT(enterOrExitShatterMode(bool)));
 }
 
-void ShatterButton::enterOrExitShatterMode(const bool inShatterMode)
-{
-	if(inShatterMode) {
-		OmStateManager::SetToolModeAndSendEvent(om::tool::SHATTER);
-	} else {
-		OmStateManager::SetOldToolModeAndSendEvent();
-	}
+void ShatterButton::enterOrExitShatterMode(const bool inShatterMode) {
+  if (inShatterMode) {
+    OmStateManager::SetToolModeAndSendEvent(om::tool::SHATTER);
+  } else {
+    OmStateManager::SetOldToolModeAndSendEvent();
+  }
 
-    OmEvents::Redraw3d();
-    OmEvents::Redraw2d();
+  OmEvents::Redraw3d();
+  OmEvents::Redraw2d();
 }

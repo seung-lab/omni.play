@@ -8,40 +8,31 @@
 #include <QtGui>
 
 class OmDoubleSpinBox : public QDoubleSpinBox {
-Q_OBJECT
-public:
-    OmDoubleSpinBox(QWidget* d, const bool updateAsType)
-        : QDoubleSpinBox(d)
-    {
-        if(updateAsType)
-        {
-            om::connect(this, SIGNAL(valueChanged(double)),
-                        this, SLOT(valueChanged()));
+  Q_OBJECT public : OmDoubleSpinBox(QWidget* d, const bool updateAsType)
+                    : QDoubleSpinBox(d) {
+    if (updateAsType) {
+      om::connect(this, SIGNAL(valueChanged(double)), this,
+                  SLOT(valueChanged()));
 
-        } else {
-            om::connect(this, SIGNAL(editingFinished()),
-                        this, SLOT(valueChanged()));
-        }
+    } else {
+      om::connect(this, SIGNAL(editingFinished()), this, SLOT(valueChanged()));
     }
+  }
 
-private Q_SLOTS:
-    void valueChanged()
-    {
-        actUponValueChange(getGUIvalue());
-        OmEvents::Redraw2d();
-        OmEvents::Redraw3d();
-    }
+ private
+Q_SLOTS:
+  void valueChanged() {
+    actUponValueChange(getGUIvalue());
+    OmEvents::Redraw2d();
+    OmEvents::Redraw3d();
+  }
 
-protected:
-    double getGUIvalue(){
-        return value();
-    }
+ protected:
+  double getGUIvalue() { return value(); }
 
-    void setGUIvalue(const double newThreshold){
-        setValue(newThreshold);
-    }
+  void setGUIvalue(const double newThreshold) { setValue(newThreshold); }
 
-    virtual void setInitialGUIThresholdValue() {};
-    virtual void actUponValueChange(const double threshold) = 0;
+  virtual void setInitialGUIThresholdValue() {}
+  ;
+  virtual void actUponValueChange(const double threshold) = 0;
 };
-

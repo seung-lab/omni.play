@@ -6,39 +6,32 @@
 #include "zi/omMutex.h"
 
 class OmBlockingGetTiles {
-private:
-    std::deque<OmTileAndVertices>& tilesToDraw_;
+ private:
+  std::deque<OmTileAndVertices>& tilesToDraw_;
 
-    zi::spinlock lock_;
+  zi::spinlock lock_;
 
-public:
-    OmBlockingGetTiles(std::deque<OmTileAndVertices>& tilesToDraw)
-        : tilesToDraw_(tilesToDraw)
-    {}
+ public:
+  OmBlockingGetTiles(std::deque<OmTileAndVertices>& tilesToDraw)
+      : tilesToDraw_(tilesToDraw) {}
 
-    void GetAll(OmTileCoordsAndLocationsPtr tileCoordsAndLocations)
+  void GetAll(OmTileCoordsAndLocationsPtr tileCoordsAndLocations) {
+    zi::for_each(tileCoordsAndLocations->begin(), tileCoordsAndLocations->end(),
+                 zi::bind(&OmBlockingGetTiles::getTile, this, _1));
+  }
+
+ private:
+  void getTile(const OmTileCoordAndVertices& tileCL) {
+    static const TextureVectices defaultTextureVectices = { { 0.f, 1.f },
+                                                            { 1.f, 0.f } };
+
+    OmTilePtr tile;
+    OmTileCache::BlockingCreate(tile, tileCL.tileCoord);
+
+    OmTileAndVertices tv = { tile, tileCL.vertices, defaultTextureVectices };
     {
-        zi::for_each(tileCoordsAndLocations->begin(),
-                     tileCoordsAndLocations->end(),
-                     zi::bind(&OmBlockingGetTiles::getTile, this, _1));
+      zi::guard g(lock_);
+      tilesToDraw_.push_back(tv);
     }
-
-private:
-    void getTile(const OmTileCoordAndVertices& tileCL)
-    {
-        static const TextureVectices defaultTextureVectices =
-            { {0.f, 1.f}, {1.f, 0.f} };
-
-        OmTilePtr tile;
-        OmTileCache::BlockingCreate(tile, tileCL.tileCoord);
-
-        OmTileAndVertices tv = {tile,
-                                tileCL.vertices,
-                                defaultTextureVectices};
-        {
-            zi::guard g(lock_);
-            tilesToDraw_.push_back(tv);
-        }
-    }
+  }
 };
-

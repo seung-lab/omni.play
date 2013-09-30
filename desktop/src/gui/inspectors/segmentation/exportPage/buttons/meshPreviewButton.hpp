@@ -8,23 +8,17 @@ namespace om {
 namespace segmentationInspector {
 
 class MeshPreviewButton : public OmButton<PageExport> {
-public:
-    MeshPreviewButton(PageExport * d)
-        : OmButton<PageExport>( d,
-                                "Mesh Preview",
-                                "preview mesh",
-                                false)
-    {}
+ public:
+  MeshPreviewButton(PageExport* d)
+      : OmButton<PageExport>(d, "Mesh Preview", "preview mesh", false) {}
 
-private:
-    void doAction()
-    {
-        // const SegmentationDataWrapper& sdw = mParent->GetSDW();
+ private:
+  void doAction() {
+    // const SegmentationDataWrapper& sdw = mParent->GetSDW();
 
-        // new MeshPreviewer(this, sdw, mParent->GetViewGroupState());
-    }
+    // new MeshPreviewer(this, sdw, mParent->GetViewGroupState());
+  }
 };
 
-} // namespace segmentationInspector
-} // namespace om
-
+}  // namespace segmentationInspector
+}  // namespace om

@@ -11,8 +11,7 @@ namespace pipeline {
 
 class getChunk : public stage {
  public:
-  template <typename T>
-  data_var operator()(const chunk::Chunk<T>& in) const {
+  template <typename T> data_var operator()(const chunk::Chunk<T>& in) const {
     return Data<T>(in.data(), in.length());
   }
 };
@@ -27,8 +26,7 @@ class writeChunk : boost::static_visitor<> {
  public:
   writeChunk(dataSrcs file, coords::Data dc) : file_(file), dc_(dc) {}
 
-  template <typename T>
-  void operator()(const Data<T>& toWrite) {
+  template <typename T> void operator()(const Data<T>& toWrite) {
     auto* file = boost::get<datalayer::MemMappedFile<T>>(file_);
     if (!file) {
       throw ArgException("Trying to write the wrong type of data.");

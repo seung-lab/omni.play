@@ -8,35 +8,25 @@
 
 #include <boost/make_shared.hpp>
 
-class OmMouseEvents{
-private:
-    std::unique_ptr<OmMouseEventMove> move_;
-    std::unique_ptr<OmMouseEventPress> press_;
-    std::unique_ptr<OmMouseEventRelease> release_;
-    std::unique_ptr<OmMouseEventWheel> wheel_;
+class OmMouseEvents {
+ private:
+  std::unique_ptr<OmMouseEventMove> move_;
+  std::unique_ptr<OmMouseEventPress> press_;
+  std::unique_ptr<OmMouseEventRelease> release_;
+  std::unique_ptr<OmMouseEventWheel> wheel_;
 
-public:
-    OmMouseEvents(OmView2d* v2d, OmView2dState* state)
-        : move_(new OmMouseEventMove(v2d, state))
-        , press_(new OmMouseEventPress(v2d, state))
-        , release_(new OmMouseEventRelease(v2d, state))
-        , wheel_(new OmMouseEventWheel(v2d, state))
-    {}
+ public:
+  OmMouseEvents(OmView2d* v2d, OmView2dState* state)
+      : move_(new OmMouseEventMove(v2d, state)),
+        press_(new OmMouseEventPress(v2d, state)),
+        release_(new OmMouseEventRelease(v2d, state)),
+        wheel_(new OmMouseEventWheel(v2d, state)) {}
 
-    void Press(QMouseEvent* event){
-        press_->Press(event);
-    }
+  void Press(QMouseEvent* event) { press_->Press(event); }
 
-    void Move(QMouseEvent* event){
-        move_->Move(event);
-    }
+  void Move(QMouseEvent* event) { move_->Move(event); }
 
-    void Release(QMouseEvent* event){
-        release_->Release(event);
-    }
+  void Release(QMouseEvent* event) { release_->Release(event); }
 
-    void Wheel(QWheelEvent* event){
-        wheel_->Wheel(event);
-    }
+  void Wheel(QWheelEvent* event) { wheel_->Wheel(event); }
 };
-

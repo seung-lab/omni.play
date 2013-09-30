@@ -39,8 +39,7 @@ class mapData {
     }
   }
 
-  template <typename T>
-  void init(std::string fnp) {
+  template <typename T> void init(std::string fnp) {
     file_ = datalayer::MemMappedFile<T>(fnp);
   }
 

@@ -4,62 +4,51 @@
 #include "project/details/omChannelManager.h"
 
 class FilterDataWrapper {
-private:
-    om::common::ID mID;
-    om::common::ID mChannelID;
+ private:
+  om::common::ID mID;
+  om::common::ID mChannelID;
 
-public:
-    FilterDataWrapper()
-    {}
+ public:
+  FilterDataWrapper() {}
 
-    FilterDataWrapper(const om::common::ID channelID, const om::common::ID id)
-        : mID(id)
-        , mChannelID(channelID)
-    {}
+  FilterDataWrapper(const om::common::ID channelID, const om::common::ID id)
+      : mID(id), mChannelID(channelID) {}
 
-    om::common::ID getChannelID() const {
-        return mChannelID;
+  om::common::ID getChannelID() const { return mChannelID; }
+
+  om::common::ID GetID() const { return mID; }
+
+  OmChannel& GetChannel() const {
+    return OmProject::Volumes().Channels().GetChannel(mChannelID);
+  }
+
+  bool isValid() const {
+    if (OmProject::Volumes().Channels().IsChannelValid(mChannelID)) {
+      if (GetChannel().FilterManager().IsFilterValid(mID)) {
+        return true;
+      }
     }
 
-    om::common::ID GetID() const {
-        return mID;
+    return false;
+  }
+
+  OmFilter2d* getFilter() const {
+    if (!isValid()) {
+      return NULL;
     }
 
-    OmChannel& GetChannel() const {
-        return OmProject::Volumes().Channels().GetChannel(mChannelID);
+    return &GetChannel().FilterManager().GetFilter(mID);
+  }
+
+  QString getName() const {
+    OmFilter2d* f = getFilter();
+    if (!f) {
+      return "";
     }
+    return QString::fromStdString(f->GetName());
+  }
 
-    bool isValid() const
-    {
-        if( OmProject::Volumes().Channels().IsChannelValid(mChannelID) ){
-            if( GetChannel().FilterManager().IsFilterValid(mID) ){
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    OmFilter2d* getFilter() const
-    {
-        if(!isValid()){
-            return NULL;
-        }
-
-        return &GetChannel().FilterManager().GetFilter(mID);
-    }
-
-    QString getName() const
-    {
-        OmFilter2d* f = getFilter();
-        if(!f){
-            return "";
-        }
-        return QString::fromStdString(f->GetName());
-    }
-
-    bool isEnabled() const {
-        return GetChannel().FilterManager().IsFilterEnabled(mID);
-    }
+  bool isEnabled() const {
+    return GetChannel().FilterManager().IsFilterEnabled(mID);
+  }
 };
-

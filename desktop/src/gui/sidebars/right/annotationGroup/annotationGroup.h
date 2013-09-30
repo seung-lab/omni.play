@@ -5,24 +5,19 @@
 
 class OmViewGroupState;
 
-
 namespace om {
 namespace sidebars {
 
 class rightImpl;
 
 class AnnotationGroup : public OmWidget {
-Q_OBJECT
-public:
-    AnnotationGroup(rightImpl*, OmViewGroupState *);
+  Q_OBJECT public : AnnotationGroup(rightImpl *, OmViewGroupState *);
 
-    QString getName(){
-        return "Annotations";
-    }
+  QString getName() { return "Annotations"; }
 
-private:
-    OmViewGroupState *const vgs_;
+ private:
+  OmViewGroupState *const vgs_;
 };
 
-} // namespace sidebars
-} // namespace om
+}  // namespace sidebars
+}  // namespace om

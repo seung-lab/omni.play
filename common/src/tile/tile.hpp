@@ -9,8 +9,7 @@
 namespace om {
 namespace tile {
 
-template <typename T>
-class Tile {
+template <typename T> class Tile {
  public:
   Tile(coords::Tile coord, coords::VolumeSystem vol)
       : coord_(coord), vol_(vol) {

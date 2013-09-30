@@ -6,21 +6,19 @@
 #include "zi/omMutex.h"
 
 class OmThreadPoolManager : private om::singletonBase<OmThreadPoolManager> {
-private:
-    zi::mutex lock_;
-    std::set<om::common::stoppable*> pools_;
+ private:
+  zi::mutex lock_;
+  std::set<om::common::stoppable*> pools_;
 
-public:
-    static void StopAll();
-    static void Add(om::common::stoppable*);
-    static void Remove(om::common::stoppable*);
+ public:
+  static void StopAll();
+  static void Add(om::common::stoppable*);
+  static void Remove(om::common::stoppable*);
 
-private:
-    OmThreadPoolManager()
-    {}
+ private:
+  OmThreadPoolManager() {}
 
-    ~OmThreadPoolManager();
+  ~OmThreadPoolManager();
 
-    friend class zi::singleton<OmThreadPoolManager>;
+  friend class zi::singleton<OmThreadPoolManager>;
 };
-

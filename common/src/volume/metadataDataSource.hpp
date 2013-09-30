@@ -186,9 +186,9 @@ class MetadataDataSource
     ret->ChunkDim = volume["coords"]["chunkDim"].as<int>(128);
     ret->RootMipLevel = volume["coords"]["mMipRootLevel"].as<int>();
 
-    dims.x = om::math::roundUp((int)dims.x, ret->ChunkDim);
-    dims.y = om::math::roundUp((int)dims.y, ret->ChunkDim);
-    dims.z = om::math::roundUp((int)dims.z, ret->ChunkDim);
+    dims.x = om::math::roundUp((int) dims.x, ret->ChunkDim);
+    dims.y = om::math::roundUp((int) dims.y, ret->ChunkDim);
+    dims.z = om::math::roundUp((int) dims.z, ret->ChunkDim);
 
     ret->Bounds = coords::GlobalBbox(absOffset, absOffset + dims);
 

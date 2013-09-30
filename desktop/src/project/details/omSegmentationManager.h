@@ -8,29 +8,28 @@
 class OmProjectVolumes;
 
 class OmSegmentationManager {
-private:
-    OmProjectVolumes *const volumes_;
+ private:
+  OmProjectVolumes* const volumes_;
 
-public:
-    OmSegmentationManager(OmProjectVolumes* volumes)
-        : volumes_(volumes)
-    {}
+ public:
+  OmSegmentationManager(OmProjectVolumes* volumes) : volumes_(volumes) {}
 
-    OmSegmentation& GetSegmentation(const om::common::ID id);
-    OmSegmentation& AddSegmentation();
-    void RemoveSegmentation(const om::common::ID id);
-    bool IsSegmentationValid(const om::common::ID id);
-    const om::common::IDSet & GetValidSegmentationIds();
-    bool IsSegmentationEnabled(const om::common::ID id);
-    void SetSegmentationEnabled(const om::common::ID id, const bool enable);
-    const std::vector<OmSegmentation*> GetPtrVec() const;
+  OmSegmentation& GetSegmentation(const om::common::ID id);
+  OmSegmentation& AddSegmentation();
+  void RemoveSegmentation(const om::common::ID id);
+  bool IsSegmentationValid(const om::common::ID id);
+  const om::common::IDSet& GetValidSegmentationIds();
+  bool IsSegmentationEnabled(const om::common::ID id);
+  void SetSegmentationEnabled(const om::common::ID id, const bool enable);
+  const std::vector<OmSegmentation*> GetPtrVec() const;
 
-private:
-    OmGenericManager<OmSegmentation> manager_;
+ private:
+  OmGenericManager<OmSegmentation> manager_;
 
-    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmSegmentationManager&);
-    friend void YAML::operator>>(const YAML::Node& in, OmSegmentationManager&);
-    friend QDataStream& operator<<(QDataStream& out, const OmSegmentationManager&);
-    friend QDataStream& operator>>(QDataStream& in, OmSegmentationManager&);
+  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
+                                         const OmSegmentationManager&);
+  friend void YAML::operator>>(const YAML::Node& in, OmSegmentationManager&);
+  friend QDataStream& operator<<(QDataStream& out,
+                                 const OmSegmentationManager&);
+  friend QDataStream& operator>>(QDataStream& in, OmSegmentationManager&);
 };
-

@@ -7,62 +7,53 @@
 #include "volume/omSegmentationFolder.h"
 
 class OmSegmentPageV2 {
-private:
-    OmSegmentation *const vol_;
-    const om::common::PageNum pageNum_;
-    const uint32_t pageSize_;
+ private:
+  OmSegmentation* const vol_;
+  const om::common::PageNum pageNum_;
+  const uint32_t pageSize_;
 
-public:
-    OmSegmentPageV2(OmSegmentation* vol, const om::common::PageNum pageNum, const uint32_t pageSize)
-        : vol_(vol)
-        , pageNum_(pageNum)
-        , pageSize_(pageSize)
-    {}
+ public:
+  OmSegmentPageV2(OmSegmentation* vol, const om::common::PageNum pageNum,
+                  const uint32_t pageSize)
+      : vol_(vol), pageNum_(pageNum), pageSize_(pageSize) {}
 
-    std::shared_ptr<OmSegmentDataV3> Read()
-    {
-        printf("rewriting segment page %d from ver2 to ver3\n", pageNum_);
+  std::shared_ptr<OmSegmentDataV3> Read() {
+    printf("rewriting segment page %d from ver2 to ver3\n", pageNum_);
 
-        QFile file(memMapPathQStrV2());
-        om::file::old::openFileRO(file);
-        OmSegmentDataV2* oldData = om::file::old::mapFile<OmSegmentDataV2>(&file);
+    QFile file(memMapPathQStrV2());
+    om::file::old::openFileRO(file);
+    OmSegmentDataV2* oldData = om::file::old::mapFile<OmSegmentDataV2>(&file);
 
-        std::shared_ptr<OmSegmentDataV3> ret =
-            om::mem::Malloc<OmSegmentDataV3>::NumElements(pageSize_, om::mem::ZeroFill::ZERO);
-        OmSegmentDataV3* newSegmentData = ret.get();
+    std::shared_ptr<OmSegmentDataV3> ret =
+        om::mem::Malloc<OmSegmentDataV3>::NumElements(pageSize_,
+                                                      om::mem::ZeroFill::ZERO);
+    OmSegmentDataV3* newSegmentData = ret.get();
 
-        for(uint32_t i = 0; i < pageSize_; ++i)
-        {
-            newSegmentData[i].value = oldData[i].value;
-            newSegmentData[i].color = oldData[i].color;
-            newSegmentData[i].size = oldData[i].size;
-            newSegmentData[i].bounds = oldData[i].bounds;
+    for (uint32_t i = 0; i < pageSize_; ++i) {
+      newSegmentData[i].value = oldData[i].value;
+      newSegmentData[i].color = oldData[i].color;
+      newSegmentData[i].size = oldData[i].size;
+      newSegmentData[i].bounds = oldData[i].bounds;
 
-            if(oldData[i].immutable){
-                newSegmentData[i].listType = om::common::SegListType::VALID;
-            } else {
-                newSegmentData[i].listType = om::common::SegListType::WORKING;
-            }
-        }
-
-        return ret;
+      if (oldData[i].immutable) {
+        newSegmentData[i].listType = om::common::SegListType::VALID;
+      } else {
+        newSegmentData[i].listType = om::common::SegListType::WORKING;
+      }
     }
 
-private:
+    return ret;
+  }
 
-   std::string memMapPathV2(){
-        return memMapPathQStrV2().toStdString();
-    }
+ private:
 
-    QString memMapPathQStrV2()
-    {
-        const QString fname = QString("segment_page%2.%3")
-            .arg(pageNum_)
-            .arg("data");
+  std::string memMapPathV2() { return memMapPathQStrV2().toStdString(); }
 
-        return QString::fromStdString(
-            vol_->Folder()->GetVolSegmentsPathAbs(fname.toStdString())
-            );
-    }
+  QString memMapPathQStrV2() {
+    const QString fname =
+        QString("segment_page%2.%3").arg(pageNum_).arg("data");
+
+    return QString::fromStdString(
+        vol_->Folder()->GetVolSegmentsPathAbs(fname.toStdString()));
+  }
 };
-

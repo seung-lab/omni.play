@@ -4,11 +4,8 @@
 #include "project/details/omSegmentationManager.h"
 
 OmProjectVolumes::OmProjectVolumes()
-    : channels_(new OmChannelManager())
-    , segmentations_(new OmSegmentationManager(this))
-    , affGraphs_(new OmAffinityGraphManager())
-{}
+    : channels_(new OmChannelManager()),
+      segmentations_(new OmSegmentationManager(this)),
+      affGraphs_(new OmAffinityGraphManager()) {}
 
-OmProjectVolumes::~OmProjectVolumes()
-{}
-
+OmProjectVolumes::~OmProjectVolumes() {}

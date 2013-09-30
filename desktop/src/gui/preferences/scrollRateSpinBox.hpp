@@ -5,21 +5,17 @@
 #include "events/omEvents.h"
 
 class ScrollRateSpinBox : public OmIntSpinBox {
-public:
-    ScrollRateSpinBox(QWidget* p)
-        : OmIntSpinBox(p, true)
-    {
-        setSingleStep(1);
-        setMinimum(1);
-        setMaximum(10);
-        setValue(Om2dPreferences::ScrollRate());
-    }
+ public:
+  ScrollRateSpinBox(QWidget* p) : OmIntSpinBox(p, true) {
+    setSingleStep(1);
+    setMinimum(1);
+    setMaximum(10);
+    setValue(Om2dPreferences::ScrollRate());
+  }
 
-private:
-    void actUponValueChange(const int val)
-    {
-        Om2dPreferences::ScrollRate(val);
-        OmEvents::Redraw2d();
-    }
+ private:
+  void actUponValueChange(const int val) {
+    Om2dPreferences::ScrollRate(val);
+    OmEvents::Redraw2d();
+  }
 };
-

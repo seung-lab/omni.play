@@ -35,5 +35,4 @@ class OmGroups : boost::noncopyable {
 
   OmSegmentation* mSegmentation;
 
-
 };

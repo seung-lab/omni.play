@@ -6,8 +6,7 @@
 namespace om {
 namespace data {
 
-template <typename T>
-class PagedStoragePolicy {
+template <typename T> class PagedStoragePolicy {
  public:
   typedef size_t index_type;
   typedef datalayer::Vector<index_type, T> page_type;

@@ -11,8 +11,7 @@
 namespace zi {
 namespace detail {
 
-template <class T>
-class rwlock_impl : zi::non_copyable {
+template <class T> class rwlock_impl : zi::non_copyable {
  private:
   typedef T client_type;
   typedef zi::unordered_map<T, std::size_t> client_set;

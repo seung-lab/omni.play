@@ -2,18 +2,15 @@
 
 #include "yaml-cpp/yaml.h"
 
-namespace om
-{
+namespace om {
 class globalCoord;
 class globalBbox;
-} // namespace om
+}  // namespace om
 
-
-namespace YAML
-{
+namespace YAML {
 Emitter& operator<<(Emitter&, const om::globalCoord&);
 void operator>>(const Node&, om::globalCoord&);
 Emitter& operator<<(Emitter&, const om::globalBbox&);
 void operator>>(const Node&, om::globalBbox&);
 
-} // namespace YAML
+}  // namespace YAML

@@ -8,25 +8,22 @@ namespace om {
 namespace displayTools {
 
 class BrightenSelected : public OmCheckBoxWidget {
-private:
-    OmViewGroupState* vgs_;
+ private:
+  OmViewGroupState* vgs_;
 
-public:
-    BrightenSelected(QWidget* parent, OmViewGroupState* vgs)
-        : OmCheckBoxWidget(parent, "Brighten Selected Segments")
-        , vgs_(vgs)
-    {
-        setChecked(true);
-    }
+ public:
+  BrightenSelected(QWidget* parent, OmViewGroupState* vgs)
+      : OmCheckBoxWidget(parent, "Brighten Selected Segments"), vgs_(vgs) {
+    setChecked(true);
+  }
 
-private:
-    virtual void doAction(const bool isChecked)
-    {
-        vgs_->BrightenSelected(isChecked);
-        OmCacheManager::TouchFreshness();
-        OmEvents::Redraw2d();
-    }
+ private:
+  virtual void doAction(const bool isChecked) {
+    vgs_->BrightenSelected(isChecked);
+    OmCacheManager::TouchFreshness();
+    OmEvents::Redraw2d();
+  }
 };
 
-} // namespace displayTools
-} // namespace om
+}  // namespace displayTools
+}  // namespace om

@@ -4,56 +4,49 @@
 #include "segment/actions/omJoinSegments.hpp"
 
 class OmSegmentJoinActionImpl {
-private:
-    SegmentationDataWrapper sdw_;
-    om::common::SegIDSet segIDs_;
+ private:
+  SegmentationDataWrapper sdw_;
+  om::common::SegIDSet segIDs_;
 
-public:
-    OmSegmentJoinActionImpl()
-    {}
+ public:
+  OmSegmentJoinActionImpl() {}
 
-    OmSegmentJoinActionImpl(const SegmentationDataWrapper& sdw,
-                            const om::common::SegIDSet& segIDs)
-        : sdw_(sdw)
-        , segIDs_(segIDs)
-    {}
+  OmSegmentJoinActionImpl(const SegmentationDataWrapper& sdw,
+                          const om::common::SegIDSet& segIDs)
+      : sdw_(sdw), segIDs_(segIDs) {}
 
-    void Execute()
-    {
-        OmJoinSegments joiner(sdw_, segIDs_);
-        segIDs_ = joiner.Join();
+  void Execute() {
+    OmJoinSegments joiner(sdw_, segIDs_);
+    segIDs_ = joiner.Join();
+  }
+
+  void Undo() {
+    OmJoinSegments joiner(sdw_, segIDs_);
+    segIDs_ = joiner.UnJoin();
+  }
+
+  std::string Description() {
+    if (segIDs_.empty()) {
+      return "did not join segments";
     }
 
-    void Undo()
-    {
-        OmJoinSegments joiner(sdw_, segIDs_);
-        segIDs_ = joiner.UnJoin();
-    }
+    static const int max = 5;
 
-    std::string Description()
-    {
-        if(segIDs_.empty()){
-            return "did not join segments";
-        }
+    const std::string nums =
+        om::utils::MakeShortStrList<om::common::SegIDSet, om::common::SegID>(
+            segIDs_, max);
 
-        static const int max = 5;
+    return "Joined segments: " + nums;
+  }
 
-        const std::string nums =
-            om::utils::MakeShortStrList<om::common::SegIDSet, om::common::SegID>(segIDs_, max);
+  QString classNameForLogFile() const { return "OmSegmentJoinAction"; }
 
-        return "Joined segments: " + nums;
-    }
+ private:
+  template <typename T> friend class OmActionLoggerThread;
 
-    QString classNameForLogFile() const {
-        return "OmSegmentJoinAction";
-    }
+  friend class QDataStream& operator<<(QDataStream&,
+                                       const OmSegmentJoinActionImpl&);
+  friend class QDataStream& operator>>(QDataStream&, OmSegmentJoinActionImpl&);
 
-private:
-    template <typename T> friend class OmActionLoggerThread;
-
-    friend class QDataStream &operator<<(QDataStream&, const OmSegmentJoinActionImpl&);
-    friend class QDataStream &operator>>(QDataStream&, OmSegmentJoinActionImpl&);
-
-    friend QTextStream& operator<<(QTextStream&, const OmSegmentJoinActionImpl&);
+  friend QTextStream& operator<<(QTextStream&, const OmSegmentJoinActionImpl&);
 };
-

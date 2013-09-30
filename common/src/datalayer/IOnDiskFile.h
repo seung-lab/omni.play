@@ -5,8 +5,7 @@
 namespace om {
 namespace datalayer {
 
-template <typename T>
-class IOnDiskFile {
+template <typename T> class IOnDiskFile {
  public:
   virtual ~IOnDiskFile() {}
 

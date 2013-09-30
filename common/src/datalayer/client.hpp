@@ -25,8 +25,8 @@ class ClientDS : public IDataSource<TKey, TValue> {
   }
 
   virtual ~ClientDS() {}
-  virtual std::shared_ptr<TValue> Get(const TKey& key,
-                                      bool async = false) override {
+  virtual std::shared_ptr<TValue> Get(const TKey& key, bool async = false)
+      override {
     network::http::Request request(
         network::http::path(APIVersionTag(), endpoint_, key));
     request.accept() = http_interface::mime_type();

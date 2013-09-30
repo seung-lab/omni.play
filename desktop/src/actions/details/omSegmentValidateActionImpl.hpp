@@ -5,69 +5,61 @@
 #include "segment/actions/omSetSegmentValid.hpp"
 
 class OmSegmentValidateActionImpl {
-private:
-    SegmentationDataWrapper sdw_;
-    bool valid_;
-    std::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+ private:
+  SegmentationDataWrapper sdw_;
+  bool valid_;
+  std::shared_ptr<std::set<OmSegment*> > selectedSegments_;
 
-public:
-    OmSegmentValidateActionImpl() {}
+ public:
+  OmSegmentValidateActionImpl() {}
 
-    OmSegmentValidateActionImpl(const SegmentationDataWrapper& sdw,
-                                std::shared_ptr<std::set<OmSegment*> > selectedSegments,
-                                const bool valid)
-        : sdw_(sdw)
-        , valid_(valid)
-        , selectedSegments_(selectedSegments)
-    {}
+  OmSegmentValidateActionImpl(
+      const SegmentationDataWrapper& sdw,
+      std::shared_ptr<std::set<OmSegment*> > selectedSegments, const bool valid)
+      : sdw_(sdw), valid_(valid), selectedSegments_(selectedSegments) {}
 
-    void Execute()
-    {
-        OmSetSegmentValid validator(sdw_);
-        validator.Set(*selectedSegments_, valid_);
+  void Execute() {
+    OmSetSegmentValid validator(sdw_);
+    validator.Set(*selectedSegments_, valid_);
 
-        OmCacheManager::TouchFreshness();
+    OmCacheManager::TouchFreshness();
+  }
+
+  void Undo() {
+    OmSetSegmentValid validator(sdw_);
+    validator.Set(*selectedSegments_, !valid_);
+
+    OmCacheManager::TouchFreshness();
+  }
+
+  std::string Description() const {
+    QString lineItem;
+    if (valid_) {
+      lineItem = QString("Validated: ");
+    } else {
+      lineItem = QString("Invalidated: ");
     }
 
-    void Undo()
-    {
-        OmSetSegmentValid validator(sdw_);
-        validator.Set(*selectedSegments_, !valid_);
-
-        OmCacheManager::TouchFreshness();
+    int count = 0;
+    FOR_EACH(iter, *selectedSegments_) {
+      lineItem += QString("seg %1 + ").arg((*iter)->value());
+      if (count > 10) {
+        break;
+      }
+      count++;
     }
 
-    std::string Description() const
-    {
-        QString lineItem;
-        if(valid_) {
-            lineItem = QString("Validated: ");
-        } else {
-            lineItem = QString("Invalidated: ");
-        }
+    return lineItem.toStdString();
+  }
 
-        int count = 0;
-        FOR_EACH(iter, *selectedSegments_)
-        {
-            lineItem += QString("seg %1 + ").arg((*iter)->value());
-            if(count > 10){
-                break;
-            }
-            count++;
-        }
+  QString classNameForLogFile() const { return "OmSegmentValidateAction"; }
 
-        return lineItem.toStdString();
-    }
+ private:
+  template <typename T> friend class OmActionLoggerThread;
 
-    QString classNameForLogFile() const {
-        return "OmSegmentValidateAction";
-    }
-
-private:
-    template <typename T> friend class OmActionLoggerThread;
-
-    friend QDataStream& operator<<(QDataStream&, const OmSegmentValidateActionImpl&);
-    friend QDataStream& operator>>(QDataStream&, OmSegmentValidateActionImpl&);
-    friend QTextStream& operator<<(QTextStream&, const OmSegmentValidateActionImpl&);
+  friend QDataStream& operator<<(QDataStream&,
+                                 const OmSegmentValidateActionImpl&);
+  friend QDataStream& operator>>(QDataStream&, OmSegmentValidateActionImpl&);
+  friend QTextStream& operator<<(QTextStream&,
+                                 const OmSegmentValidateActionImpl&);
 };
-

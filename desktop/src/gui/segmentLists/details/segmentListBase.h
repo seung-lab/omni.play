@@ -15,69 +15,64 @@ class SegmentInspector;
 class OmViewGroupState;
 
 class SegmentListBase : public QWidget {
-    Q_OBJECT
+  Q_OBJECT public : SegmentListBase(QWidget*, OmViewGroupState*);
 
-public:
-    SegmentListBase(QWidget*, OmViewGroupState*);
+  void populate() { populateByPage(); }
 
-    void populate(){
-        populateByPage();
-    }
+  void populateByPage();
+  void populateBySegment(const bool doScrollToSelectedSegment,
+                         const SegmentDataWrapper segmentJustSelected);
 
-    void populateByPage();
-    void populateBySegment(const bool doScrollToSelectedSegment,
-                           const SegmentDataWrapper segmentJustSelected);
+  void makeSegmentationActive(const SegmentDataWrapper& sdw,
+                              const bool doScroll);
 
-    void makeSegmentationActive(const SegmentDataWrapper& sdw,
-                                const bool doScroll );
+  void MakeSegmentationActive(const SegmentationDataWrapper& sdw);
 
-    void MakeSegmentationActive(const SegmentationDataWrapper& sdw);
+  void userJustClickedInThisSegmentList();
+  void rebuildSegmentList(const SegmentDataWrapper& sdw);
 
-    void userJustClickedInThisSegmentList();
-    void rebuildSegmentList(const SegmentDataWrapper& sdw);
+  void RefreshPage(const SegmentationDataWrapper& sdw);
 
-    void RefreshPage(const SegmentationDataWrapper& sdw);
+  virtual bool shouldSelectedSegmentsBeAddedToRecentList() = 0;
 
-    virtual bool shouldSelectedSegmentsBeAddedToRecentList() = 0;
+ public
+Q_SLOTS:
+  void goToNextPage();
+  void goToPrevPage();
+  void goToEndPage();
+  void goToStartPage();
+  void searchChanged();
 
-public Q_SLOTS:
-    void goToNextPage();
-    void goToPrevPage();
-    void goToEndPage();
-    void goToStartPage();
-    void searchChanged();
+ protected:
+  virtual QString getTabTitle() = 0;
+  virtual uint64_t Size() = 0;
+  virtual int getPreferredTabIndex() = 0;
+  virtual void makeTabActiveIfContainsJumpedToSegment() = 0;
+  virtual std::shared_ptr<GUIPageOfSegments> getPageSegments(
+      const GUIPageRequest& request) = 0;
 
-protected:
-    virtual QString getTabTitle() = 0;
-    virtual uint64_t Size() = 0;
-    virtual int getPreferredTabIndex() = 0;
-    virtual void makeTabActiveIfContainsJumpedToSegment() = 0;
-    virtual std::shared_ptr<GUIPageOfSegments>
-    getPageSegments(const GUIPageRequest& request) = 0;
+  QVBoxLayout* layout;
+  QPushButton* prevButton;
+  QPushButton* nextButton;
+  QPushButton* startButton;
+  QPushButton* endButton;
+  QLineEdit* searchEdit;
 
-    QVBoxLayout* layout;
-    QPushButton* prevButton;
-    QPushButton* nextButton;
-    QPushButton* startButton;
-    QPushButton* endButton;
-    QLineEdit* searchEdit;
+  OmSegmentListWidget* segmentListWidget;
 
-    OmSegmentListWidget* segmentListWidget;
+  SegmentationDataWrapper sdw_;
+  bool haveValidSDW;
 
-    SegmentationDataWrapper sdw_;
-    bool haveValidSDW;
+  QMenu* contextMenu;
+  QAction* propAct;
+  int getNumSegmentsPerPage();
+  void setupPageButtons();
 
-    QMenu* contextMenu;
-    QAction* propAct;
-    int getNumSegmentsPerPage();
-    void setupPageButtons();
+  int currentPageNum_;
+  quint32 getTotalNumberOfSegments();
 
-    int currentPageNum_;
-    quint32 getTotalNumberOfSegments();
+  OmViewGroupState* vgs_;
 
-    OmViewGroupState * vgs_;
-
-    void searchOne(const QString& text);
-    void searchMany(const QStringList& args);
+  void searchOne(const QString& text);
+  void searchMany(const QStringList& args);
 };
-

@@ -8,19 +8,15 @@ class GroupsTable;
 
 class OmGroupListWidget : public QTreeWidget {
 
- Q_OBJECT
+  Q_OBJECT public : OmGroupListWidget(GroupsTable* gt);
 
- public:
-	OmGroupListWidget(GroupsTable * gt);
+  void populate(OmSegmentation& seg);
 
-	void populate(OmSegmentation & seg);
-
-	static std::string eventSenderName();
+  static std::string eventSenderName();
 
  private:
-	GroupsTable * mGroupsTable;
-	void mousePressEvent(QMouseEvent * event);
-	void keyPressEvent(QKeyEvent * event);
-	void populateTable();
+  GroupsTable* mGroupsTable;
+  void mousePressEvent(QMouseEvent* event);
+  void keyPressEvent(QKeyEvent* event);
+  void populateTable();
 };
-

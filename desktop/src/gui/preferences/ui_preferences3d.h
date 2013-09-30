@@ -27,56 +27,52 @@
 #include <QtGui/QSpacerItem>
 #include <QtGui/QWidget>
 
-QT_BEGIN_NAMESPACE
+QT_BEGIN_NAMESPACE class Ui_preferences3d {
+ public:
+  QGridLayout *gridLayout_2;
+  QGroupBox *groupBox_2;
+  QGridLayout *gridLayout_3;
+  QLabel *fovLabel;
+  QLabel *fovSliderLabel;
+  QSlider *fovSlider;
+  QLabel *nearplaneLabel;
+  QLabel *nearplaneSliderLabel;
+  QSlider *nearplaneSlider;
+  QLabel *farplaneLabel;
+  QLabel *farplaneSliderLabel;
+  QSlider *farplaneSlider;
+  QGroupBox *groupBox_3;
+  QGridLayout *gridLayout_4;
+  QHBoxLayout *horizontalLayout;
+  QLabel *styleLabel;
+  QComboBox *styleComboBox;
+  QSpacerItem *horizontalSpacer;
+  QCheckBox *infoCheckBox;
+  QCheckBox *axisCheckBox;
+  QCheckBox *chunksCheckBox;
+  QCheckBox *focusCheckBox;
+  QGroupBox *groupBox;
+  QGridLayout *gridLayout;
+  QCheckBox *antiAliasingCheckBox;
+  QHBoxLayout *horizontalLayout_4;
+  QLabel *bgColorLabel;
+  QPushButton *bgColorPicker;
+  QSpacerItem *horizontalSpacer_4;
+  QCheckBox *highlightCheckBox;
+  QHBoxLayout *horizontalLayout_2;
+  QSpacerItem *horizontalSpacer_3;
+  QLabel *colorLabel;
+  QPushButton *highlightColorPicker;
+  QSpacerItem *horizontalSpacer_2;
+  QCheckBox *transparentCheckBox;
+  QHBoxLayout *horizontalLayout_3;
+  QLabel *alphaLabel;
+  QLabel *transparencySliderLabel;
+  QSlider *transparencySlider;
 
-class Ui_preferences3d
-{
-public:
-    QGridLayout *gridLayout_2;
-    QGroupBox *groupBox_2;
-    QGridLayout *gridLayout_3;
-    QLabel *fovLabel;
-    QLabel *fovSliderLabel;
-    QSlider *fovSlider;
-    QLabel *nearplaneLabel;
-    QLabel *nearplaneSliderLabel;
-    QSlider *nearplaneSlider;
-    QLabel *farplaneLabel;
-    QLabel *farplaneSliderLabel;
-    QSlider *farplaneSlider;
-    QGroupBox *groupBox_3;
-    QGridLayout *gridLayout_4;
-    QHBoxLayout *horizontalLayout;
-    QLabel *styleLabel;
-    QComboBox *styleComboBox;
-    QSpacerItem *horizontalSpacer;
-    QCheckBox *infoCheckBox;
-    QCheckBox *axisCheckBox;
-    QCheckBox *chunksCheckBox;
-    QCheckBox *focusCheckBox;
-    QGroupBox *groupBox;
-    QGridLayout *gridLayout;
-    QCheckBox *antiAliasingCheckBox;
-    QHBoxLayout *horizontalLayout_4;
-    QLabel *bgColorLabel;
-    QPushButton *bgColorPicker;
-    QSpacerItem *horizontalSpacer_4;
-    QCheckBox *highlightCheckBox;
-    QHBoxLayout *horizontalLayout_2;
-    QSpacerItem *horizontalSpacer_3;
-    QLabel *colorLabel;
-    QPushButton *highlightColorPicker;
-    QSpacerItem *horizontalSpacer_2;
-    QCheckBox *transparentCheckBox;
-    QHBoxLayout *horizontalLayout_3;
-    QLabel *alphaLabel;
-    QLabel *transparencySliderLabel;
-    QSlider *transparencySlider;
-
-    void setupUi(QWidget *preferences3d)
-    {
+  void setupUi(QWidget *preferences3d) {
     if (preferences3d->objectName().isEmpty())
-        preferences3d->setObjectName(QString::fromUtf8("preferences3d"));
+      preferences3d->setObjectName(QString::fromUtf8("preferences3d"));
     preferences3d->resize(554, 729);
     gridLayout_2 = new QGridLayout(preferences3d);
     gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
@@ -111,7 +107,8 @@ public:
     gridLayout_3->addWidget(nearplaneLabel, 1, 0, 1, 1);
 
     nearplaneSliderLabel = new QLabel(groupBox_2);
-    nearplaneSliderLabel->setObjectName(QString::fromUtf8("nearplaneSliderLabel"));
+    nearplaneSliderLabel->setObjectName(
+        QString::fromUtf8("nearplaneSliderLabel"));
     nearplaneSliderLabel->setMinimumSize(QSize(35, 0));
 
     gridLayout_3->addWidget(nearplaneSliderLabel, 1, 1, 1, 1);
@@ -132,7 +129,8 @@ public:
     gridLayout_3->addWidget(farplaneLabel, 2, 0, 1, 1);
 
     farplaneSliderLabel = new QLabel(groupBox_2);
-    farplaneSliderLabel->setObjectName(QString::fromUtf8("farplaneSliderLabel"));
+    farplaneSliderLabel->setObjectName(
+        QString::fromUtf8("farplaneSliderLabel"));
     farplaneSliderLabel->setMinimumSize(QSize(35, 0));
 
     gridLayout_3->addWidget(farplaneSliderLabel, 2, 1, 1, 1);
@@ -146,7 +144,6 @@ public:
     farplaneSlider->setTickInterval(100);
 
     gridLayout_3->addWidget(farplaneSlider, 2, 2, 1, 1);
-
 
     gridLayout_2->addWidget(groupBox_2, 1, 0, 1, 1);
 
@@ -171,10 +168,10 @@ public:
 
     horizontalLayout->addWidget(styleComboBox);
 
-    horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    horizontalSpacer =
+        new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     horizontalLayout->addItem(horizontalSpacer);
-
 
     gridLayout_4->addLayout(horizontalLayout, 4, 0, 1, 1);
 
@@ -198,7 +195,6 @@ public:
 
     gridLayout_4->addWidget(focusCheckBox, 3, 0, 1, 1);
 
-
     gridLayout_2->addWidget(groupBox_3, 2, 0, 1, 1);
 
     groupBox = new QGroupBox(preferences3d);
@@ -206,7 +202,8 @@ public:
     gridLayout = new QGridLayout(groupBox);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
     antiAliasingCheckBox = new QCheckBox(groupBox);
-    antiAliasingCheckBox->setObjectName(QString::fromUtf8("antiAliasingCheckBox"));
+    antiAliasingCheckBox->setObjectName(
+        QString::fromUtf8("antiAliasingCheckBox"));
 
     gridLayout->addWidget(antiAliasingCheckBox, 0, 0, 1, 1);
 
@@ -222,15 +219,16 @@ public:
     QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
     sizePolicy1.setHorizontalStretch(0);
     sizePolicy1.setVerticalStretch(0);
-    sizePolicy1.setHeightForWidth(bgColorPicker->sizePolicy().hasHeightForWidth());
+    sizePolicy1.setHeightForWidth(
+        bgColorPicker->sizePolicy().hasHeightForWidth());
     bgColorPicker->setSizePolicy(sizePolicy1);
 
     horizontalLayout_4->addWidget(bgColorPicker);
 
-    horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    horizontalSpacer_4 =
+        new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     horizontalLayout_4->addItem(horizontalSpacer_4);
-
 
     gridLayout->addLayout(horizontalLayout_4, 1, 0, 1, 1);
 
@@ -241,7 +239,8 @@ public:
 
     horizontalLayout_2 = new QHBoxLayout();
     horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
-    horizontalSpacer_3 = new QSpacerItem(30, 20, QSizePolicy::Maximum, QSizePolicy::Minimum);
+    horizontalSpacer_3 =
+        new QSpacerItem(30, 20, QSizePolicy::Maximum, QSizePolicy::Minimum);
 
     horizontalLayout_2->addItem(horizontalSpacer_3);
 
@@ -251,21 +250,24 @@ public:
     horizontalLayout_2->addWidget(colorLabel);
 
     highlightColorPicker = new QPushButton(groupBox);
-    highlightColorPicker->setObjectName(QString::fromUtf8("highlightColorPicker"));
-    sizePolicy1.setHeightForWidth(highlightColorPicker->sizePolicy().hasHeightForWidth());
+    highlightColorPicker->setObjectName(
+        QString::fromUtf8("highlightColorPicker"));
+    sizePolicy1.setHeightForWidth(
+        highlightColorPicker->sizePolicy().hasHeightForWidth());
     highlightColorPicker->setSizePolicy(sizePolicy1);
 
     horizontalLayout_2->addWidget(highlightColorPicker);
 
-    horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    horizontalSpacer_2 =
+        new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     horizontalLayout_2->addItem(horizontalSpacer_2);
-
 
     gridLayout->addLayout(horizontalLayout_2, 3, 0, 1, 1);
 
     transparentCheckBox = new QCheckBox(groupBox);
-    transparentCheckBox->setObjectName(QString::fromUtf8("transparentCheckBox"));
+    transparentCheckBox->setObjectName(
+        QString::fromUtf8("transparentCheckBox"));
 
     gridLayout->addWidget(transparentCheckBox, 4, 0, 1, 1);
 
@@ -277,7 +279,8 @@ public:
     horizontalLayout_3->addWidget(alphaLabel);
 
     transparencySliderLabel = new QLabel(groupBox);
-    transparencySliderLabel->setObjectName(QString::fromUtf8("transparencySliderLabel"));
+    transparencySliderLabel->setObjectName(
+        QString::fromUtf8("transparencySliderLabel"));
     transparencySliderLabel->setMinimumSize(QSize(40, 0));
     transparencySliderLabel->setMaximumSize(QSize(25, 16777215));
 
@@ -292,61 +295,82 @@ public:
 
     horizontalLayout_3->addWidget(transparencySlider);
 
-
     gridLayout->addLayout(horizontalLayout_3, 5, 0, 1, 1);
-
 
     gridLayout_2->addWidget(groupBox, 0, 0, 1, 1);
 
-
     retranslateUi(preferences3d);
-    om::connect(farplaneSlider, SIGNAL(valueChanged(int)), farplaneSliderLabel, SLOT(setNum(int)));
-    om::connect(nearplaneSlider, SIGNAL(valueChanged(int)), nearplaneSliderLabel, SLOT(setNum(int)));
-    om::connect(fovSlider, SIGNAL(valueChanged(int)), fovSliderLabel, SLOT(setNum(int)));
+    om::connect(farplaneSlider, SIGNAL(valueChanged(int)), farplaneSliderLabel,
+                SLOT(setNum(int)));
+    om::connect(nearplaneSlider, SIGNAL(valueChanged(int)),
+                nearplaneSliderLabel, SLOT(setNum(int)));
+    om::connect(fovSlider, SIGNAL(valueChanged(int)), fovSliderLabel,
+                SLOT(setNum(int)));
 
     QMetaObject::connectSlotsByName(preferences3d);
-    } // setupUi
+  }  // setupUi
 
-    void retranslateUi(QWidget *preferences3d)
-    {
+  void retranslateUi(QWidget *preferences3d) {
     preferences3d->setWindowTitle(QString());
-    groupBox_2->setTitle(QApplication::translate("preferences3d", "Camera", 0, QApplication::UnicodeUTF8));
-    fovLabel->setText(QApplication::translate("preferences3d", "Field of View:", 0, QApplication::UnicodeUTF8));
+    groupBox_2->setTitle(QApplication::translate("preferences3d", "Camera", 0,
+                                                 QApplication::UnicodeUTF8));
+    fovLabel->setText(QApplication::translate("preferences3d", "Field of View:",
+                                              0, QApplication::UnicodeUTF8));
     fovSliderLabel->setText(QString());
-    nearplaneLabel->setText(QApplication::translate("preferences3d", "Near Plane:", 0, QApplication::UnicodeUTF8));
+    nearplaneLabel->setText(QApplication::translate(
+        "preferences3d", "Near Plane:", 0, QApplication::UnicodeUTF8));
     nearplaneSliderLabel->setText(QString());
-    farplaneLabel->setText(QApplication::translate("preferences3d", "Far Plane:", 0, QApplication::UnicodeUTF8));
+    farplaneLabel->setText(QApplication::translate(
+        "preferences3d", "Far Plane:", 0, QApplication::UnicodeUTF8));
     farplaneSliderLabel->setText(QString());
-    groupBox_3->setTitle(QApplication::translate("preferences3d", "Options", 0, QApplication::UnicodeUTF8));
-    styleLabel->setText(QApplication::translate("preferences3d", "Style:", 0, QApplication::UnicodeUTF8));
+    groupBox_3->setTitle(QApplication::translate("preferences3d", "Options", 0,
+                                                 QApplication::UnicodeUTF8));
+    styleLabel->setText(QApplication::translate("preferences3d", "Style:", 0,
+                                                QApplication::UnicodeUTF8));
     styleComboBox->clear();
-    styleComboBox->insertItems(0, QStringList()
-     << QApplication::translate("preferences3d", "Crosshairs", 0, QApplication::UnicodeUTF8)
-     << QApplication::translate("preferences3d", "Ball", 0, QApplication::UnicodeUTF8)
-    );
-    infoCheckBox->setText(QApplication::translate("preferences3d", "Show Information", 0, QApplication::UnicodeUTF8));
-    axisCheckBox->setText(QApplication::translate("preferences3d", "Show Axis", 0, QApplication::UnicodeUTF8));
-    chunksCheckBox->setText(QApplication::translate("preferences3d", "Show Chunks", 0, QApplication::UnicodeUTF8));
-    focusCheckBox->setText(QApplication::translate("preferences3d", "Show Focus", 0, QApplication::UnicodeUTF8));
-    groupBox->setTitle(QApplication::translate("preferences3d", "Drawing", 0, QApplication::UnicodeUTF8));
-    antiAliasingCheckBox->setText(QApplication::translate("preferences3d", "Anti-aliasing", 0, QApplication::UnicodeUTF8));
-    bgColorLabel->setText(QApplication::translate("preferences3d", "Background Color:", 0, QApplication::UnicodeUTF8));
+    styleComboBox->insertItems(
+        0,
+        QStringList() << QApplication::translate("preferences3d", "Crosshairs",
+                                                 0, QApplication::UnicodeUTF8)
+                      << QApplication::translate("preferences3d", "Ball", 0,
+                                                 QApplication::UnicodeUTF8));
+    infoCheckBox->setText(QApplication::translate(
+        "preferences3d", "Show Information", 0, QApplication::UnicodeUTF8));
+    axisCheckBox->setText(QApplication::translate(
+        "preferences3d", "Show Axis", 0, QApplication::UnicodeUTF8));
+    chunksCheckBox->setText(QApplication::translate(
+        "preferences3d", "Show Chunks", 0, QApplication::UnicodeUTF8));
+    focusCheckBox->setText(QApplication::translate(
+        "preferences3d", "Show Focus", 0, QApplication::UnicodeUTF8));
+    groupBox->setTitle(QApplication::translate("preferences3d", "Drawing", 0,
+                                               QApplication::UnicodeUTF8));
+    antiAliasingCheckBox->setText(QApplication::translate(
+        "preferences3d", "Anti-aliasing", 0, QApplication::UnicodeUTF8));
+    bgColorLabel->setText(QApplication::translate(
+        "preferences3d", "Background Color:", 0, QApplication::UnicodeUTF8));
     bgColorPicker->setText(QString());
-    highlightCheckBox->setText(QApplication::translate("preferences3d", "Highlight Selected", 0, QApplication::UnicodeUTF8));
-    colorLabel->setText(QApplication::translate("preferences3d", "Color:", 0, QApplication::UnicodeUTF8));
+    highlightCheckBox->setText(QApplication::translate(
+        "preferences3d", "Highlight Selected", 0, QApplication::UnicodeUTF8));
+    colorLabel->setText(QApplication::translate("preferences3d", "Color:", 0,
+                                                QApplication::UnicodeUTF8));
     highlightColorPicker->setText(QString());
-    transparentCheckBox->setText(QApplication::translate("preferences3d", "Transparent Unselected Segments", 0, QApplication::UnicodeUTF8));
-    alphaLabel->setText(QApplication::translate("preferences3d", "Alpha:", 0, QApplication::UnicodeUTF8));
-    transparencySliderLabel->setText(QApplication::translate("preferences3d", "0", 0, QApplication::UnicodeUTF8));
+    transparentCheckBox->setText(QApplication::translate(
+        "preferences3d", "Transparent Unselected Segments", 0,
+        QApplication::UnicodeUTF8));
+    alphaLabel->setText(QApplication::translate("preferences3d", "Alpha:", 0,
+                                                QApplication::UnicodeUTF8));
+    transparencySliderLabel->setText(QApplication::translate(
+        "preferences3d", "0", 0, QApplication::UnicodeUTF8));
     Q_UNUSED(preferences3d);
-    } // retranslateUi
+  }  // retranslateUi
 
 };
 
 namespace Ui {
-    class preferences3d: public Ui_preferences3d {};
-} // namespace Ui
+class preferences3d : public Ui_preferences3d {
+};
+}  // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif // UI_PREFERENCES3D_H
+#endif  // UI_PREFERENCES3D_H

@@ -8,26 +8,22 @@
 #include "utility/segmentationDataWrapper.hpp"
 
 class SetNotUncertain : public OmButton<ValidationGroup> {
-public:
-    SetNotUncertain(ValidationGroup *d)
-        : OmButton<ValidationGroup>( d,
-                                     "Not Uncertain",
-                                     "Not uncertain about selected objects",
-                                     false)
-    {}
+ public:
+  SetNotUncertain(ValidationGroup *d)
+      : OmButton<ValidationGroup>(d, "Not Uncertain",
+                                  "Not uncertain about selected objects",
+                                  false) {}
 
-private:
-    void doAction()
-    {
-        //debug(dendbar, "ValidationGroup::addGroup\n");
-        SegmentationDataWrapper sdw = mParent->GetSDW();
-        if(!sdw.IsSegmentationValid()){
-            return;
-        }
-
-        OmActions::UncertainSegmentation(sdw, false);
-
-        OmEvents::SegmentModified();
+ private:
+  void doAction() {
+    //debug(dendbar, "ValidationGroup::addGroup\n");
+    SegmentationDataWrapper sdw = mParent->GetSDW();
+    if (!sdw.IsSegmentationValid()) {
+      return;
     }
-};
 
+    OmActions::UncertainSegmentation(sdw, false);
+
+    OmEvents::SegmentModified();
+  }
+};

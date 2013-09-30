@@ -9,32 +9,28 @@
 
 class OmPreferenceEvent : public OmEvent {
 
-public:
-    OmPreferenceEvent(QEvent::Type type, int preference);
+ public:
+  OmPreferenceEvent(QEvent::Type type, int preference);
 
-    void Dispatch(OmEventListener *);
+  void Dispatch(OmEventListener *);
 
-    //class
-    static const OmEventClass CLASS  = OM_PREFERENCE_EVENT_CLASS;
+  //class
+  static const OmEventClass CLASS = OM_PREFERENCE_EVENT_CLASS;
 
-    //events
-    static const QEvent::Type PREFERENCE_CHANGE = (QEvent::Type) (CLASS);
+  //events
+  static const QEvent::Type PREFERENCE_CHANGE = (QEvent::Type)(CLASS);
 
-    int GetPreference(){
-        return mPreference;
-    }
+  int GetPreference() { return mPreference; }
 
-private:
-    int mPreference;
+ private:
+  int mPreference;
 };
 
 class OmPreferenceEventListener : public OmEventListener {
 
-public:
-    OmPreferenceEventListener() : OmEventListener(OmPreferenceEvent::CLASS) { };
+ public:
+  OmPreferenceEventListener() : OmEventListener(OmPreferenceEvent::CLASS) {}
+  ;
 
-    virtual void PreferenceChangeEvent(OmPreferenceEvent * event) = 0;
+  virtual void PreferenceChangeEvent(OmPreferenceEvent *event) = 0;
 };
-
-
-

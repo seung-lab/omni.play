@@ -216,8 +216,7 @@ class Paths {
   }
 
  private:
-  template <typename T>
-  static path toPath(T i) {
+  template <typename T> static path toPath(T i) {
     return path(std::to_string(i));
   }
 

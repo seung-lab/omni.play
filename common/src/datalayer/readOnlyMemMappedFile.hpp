@@ -10,8 +10,7 @@ typedef boost::iostreams::mapped_file mapped_file;
 namespace om {
 namespace datalayer {
 
-template <typename T>
-class ReadOnlyMemMappedFile {
+template <typename T> class ReadOnlyMemMappedFile {
  public:
   // for boost::variant
   ReadOnlyMemMappedFile() : fnp_(std::string("")) {}
@@ -42,7 +41,7 @@ class ReadOnlyMemMappedFile {
 
   std::string GetBaseFileName() const { return fnp_; }
 
-  bool IsMapped() const { return (bool)file_; }
+  bool IsMapped() const { return (bool) file_; }
 
  private:
   std::string fnp_;

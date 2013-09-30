@@ -14,40 +14,36 @@ class SegmentListBase;
 class GUIPageOfSegment;
 
 class OmSegmentListWidget : public QTreeWidget {
-Q_OBJECT
+  Q_OBJECT public : OmSegmentListWidget(SegmentListBase*, OmViewGroupState*);
 
-public:
-    OmSegmentListWidget(SegmentListBase*, OmViewGroupState*);
+  bool populate(const bool doScrollToSelectedSegment,
+                const SegmentDataWrapper segmentJustSelected,
+                std::shared_ptr<GUIPageOfSegments>);
 
-    bool populate(const bool doScrollToSelectedSegment,
-                  const SegmentDataWrapper segmentJustSelected,
-                  std::shared_ptr<GUIPageOfSegments>);
+  static std::string eventSenderName();
 
-    static std::string eventSenderName();
+ private:
+  void mousePressEvent(QMouseEvent* event);
+  void keyPressEvent(QKeyEvent* event);
 
-private:
-    void mousePressEvent(QMouseEvent* event);
-    void keyPressEvent(QKeyEvent* event);
+  SegmentListBase* segmentListBase;
+  OmViewGroupState* const vgs_;
 
-    SegmentListBase* segmentListBase;
-    OmViewGroupState *const vgs_;
+  SegmentDataWrapper getCurrentlySelectedSegment();
+  bool isSegmentSelected();
+  void segmentRightClick(QMouseEvent* event);
+  void segmentLeftClick();
 
-    SegmentDataWrapper getCurrentlySelectedSegment();
-    bool isSegmentSelected();
-    void segmentRightClick(QMouseEvent* event);
-    void segmentLeftClick();
+  void setRowFlags(QTreeWidgetItem* row);
 
-    void setRowFlags(QTreeWidgetItem* row);
+  void segmentShowContexMenu(QMouseEvent* event);
 
-    void segmentShowContexMenu(QMouseEvent* event);
+  static const int ID_COL = 0;
+  static const int NUM_PIECES_COL = 1;
+  static const int SIZE_COL = 2;
+  static const int USER_DATA_COL = 3;
 
-    static const int ID_COL = 0;
-    static const int NUM_PIECES_COL = 1;
-    static const int SIZE_COL = 2;
-    static const int USER_DATA_COL = 3;
+  OmSegmentContextMenu mSegmentContextMenu;
 
-    OmSegmentContextMenu mSegmentContextMenu;
-
-    void centerSegment(const SegmentationDataWrapper&);
+  void centerSegment(const SegmentationDataWrapper&);
 };
-

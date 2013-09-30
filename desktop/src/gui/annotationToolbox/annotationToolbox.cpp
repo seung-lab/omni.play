@@ -5,18 +5,16 @@ namespace om {
 namespace gui {
 
 AnnotationToolbox::AnnotationToolbox(QWidget* parent, OmViewGroupState* vgs)
-    : QDialog(parent, Qt::Tool)
-{
-    setAttribute(Qt::WA_ShowWithoutActivating);
+    : QDialog(parent, Qt::Tool) {
+  setAttribute(Qt::WA_ShowWithoutActivating);
 
-    QVBoxLayout* layout = new QVBoxLayout;
-    layout->addWidget(new ColorButton(this, vgs));
-    layout->addWidget(new AnnotationLineEdit(this, vgs));
-    layout->addWidget(new AnnotationSizeSpinBox(this, vgs));
+  QVBoxLayout* layout = new QVBoxLayout;
+  layout->addWidget(new ColorButton(this, vgs));
+  layout->addWidget(new AnnotationLineEdit(this, vgs));
+  layout->addWidget(new AnnotationSizeSpinBox(this, vgs));
 
-    setLayout(layout);
+  setLayout(layout);
 }
 
-
-} // namespace gui
-} // namespace om
+}  // namespace gui
+}  // namespace om

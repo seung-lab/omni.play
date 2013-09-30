@@ -32,7 +32,7 @@ class VectorFileDataSource
     try {
       doPut(key, data);
     }
-    catch (Exception& e) {
+    catch (Exception & e) {
       log_errors(unknown) << "Unable to Write FileDataSource: " << e.what();
       return false;
     }
@@ -52,7 +52,7 @@ class VectorFileDataSource
 
       return ret;
     }
-    catch (Exception& e) {
+    catch (Exception & e) {
       log_errors(io) << "Unable to Load FileDataSource: " << e.what();
       return std::shared_ptr<Vector<TKey, TValue>>();
     }

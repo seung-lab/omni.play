@@ -40,7 +40,8 @@ struct ReadWriteInt : ReadWriteMutex {
   int64_t value;
 };
 struct ReadWriteCounterMap : ReadWriteMutex,
-                             std::map<std::string, ReadWriteInt> {};
+                             std::map<std::string, ReadWriteInt> {
+};
 
 /**
  * Base Facebook service implementation in C++.

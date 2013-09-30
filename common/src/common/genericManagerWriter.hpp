@@ -8,8 +8,7 @@
 namespace om {
 namespace common {
 
-template <class T>
-struct GenericManagerWriter {
+template <class T> struct GenericManagerWriter {
   static YAML::Node encode(const GenericManager<T>& gm) {
     YAML::Node node;
     node["size"] = gm.size_;

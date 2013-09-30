@@ -67,13 +67,13 @@ class VertexIndexDataSourceImpl {
                                entry->vertexIndex.count,
                                entry->vertexIndex.totalBytes);
 
-    ret->Data().SetStripData(read<uint32_t>(entry->stripData, dataFile),
-                             entry->stripData.count,
-                             entry->stripData.totalBytes);
+    ret->Data()
+        .SetStripData(read<uint32_t>(entry->stripData, dataFile),
+                      entry->stripData.count, entry->stripData.totalBytes);
 
-    ret->Data().SetVertexData(read<float>(entry->vertexData, dataFile),
-                              entry->vertexData.count,
-                              entry->vertexData.totalBytes);
+    ret->Data()
+        .SetVertexData(read<float>(entry->vertexData, dataFile),
+                       entry->vertexData.count, entry->vertexData.totalBytes);
 
     return ret;
   }
@@ -111,9 +111,9 @@ class VertexIndexDataSourceImpl {
       writers_[dataFilePath]->Open(dataFilePath);
     }
 
-    writers_[dataFilePath]->Append(entry->vertexIndex,
-                                   mesh->Data().VertexIndex(),
-                                   mesh->Data().VertexIndexNumBytes());
+    writers_[dataFilePath]
+        ->Append(entry->vertexIndex, mesh->Data().VertexIndex(),
+                 mesh->Data().VertexIndexNumBytes());
     writers_[dataFilePath]->Append(entry->stripData, mesh->Data().StripData(),
                                    mesh->Data().StripDataNumBytes());
     writers_[dataFilePath]->Append(entry->vertexData, mesh->Data().VertexData(),

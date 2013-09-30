@@ -5,8 +5,7 @@
 namespace om {
 namespace data {
 
-template <typename T>
-class FileStoragePolicy {
+template <typename T> class FileStoragePolicy {
  public:
   FileStoragePolicy(file::path fnp) : fnp_(fnp) { file::readAll(fnp_, data_); }
 

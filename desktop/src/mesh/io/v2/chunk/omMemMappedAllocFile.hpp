@@ -7,202 +7,176 @@
 #include "volume/omSegmentation.h"
 
 class OmMemMappedAllocFile {
-private:
-    OmSegmentation *const segmentation_;
-    const om::chunkCoord coord_;
-    const double threshold_;
-    const QString fnp_;
+ private:
+  OmSegmentation* const segmentation_;
+  const om::chunkCoord coord_;
+  const double threshold_;
+  const QString fnp_;
 
-    std::unique_ptr<QFile> file_;
-    OmMeshDataEntry* table_;
-    uint32_t numEntries_;
+  std::unique_ptr<QFile> file_;
+  OmMeshDataEntry* table_;
+  uint32_t numEntries_;
 
-public:
-    OmMemMappedAllocFile(OmSegmentation* segmentation,
-                         const om::chunkCoord& coord,
-                         const double threshold)
-        : segmentation_(segmentation)
-        , coord_(coord)
-        , threshold_(threshold)
-        , fnp_(filePath())
-        , table_(NULL)
-        , numEntries_(0)
-    {}
+ public:
+  OmMemMappedAllocFile(OmSegmentation* segmentation,
+                       const om::chunkCoord& coord, const double threshold)
+      : segmentation_(segmentation),
+        coord_(coord),
+        threshold_(threshold),
+        fnp_(filePath()),
+        table_(NULL),
+        numEntries_(0) {}
 
-    bool CreateIfNeeded()
-    {
-        QFile file(fnp_);
-        if(file.exists()){
-            return false;
-        }
-
-        setupFile();
-        return true;
+  bool CreateIfNeeded() {
+    QFile file(fnp_);
+    if (file.exists()) {
+      return false;
     }
 
-    bool CheckEverythingWasMeshed()
-    {
-        bool allGood = true;
+    setupFile();
+    return true;
+  }
 
-        for(uint32_t i = 0; i < numEntries_; ++i)
-        {
-            if(!table_[i].wasMeshed)
-            {
-                allGood = false;
+  bool CheckEverythingWasMeshed() {
+    bool allGood = true;
 
-                std::cout << "missing mesh: "
-                          << "segID " << table_[i].segID
-                          << " in coord " << coord_
-                          << "\n";
-            }
-        }
+    for (uint32_t i = 0; i < numEntries_; ++i) {
+      if (!table_[i].wasMeshed) {
+        allGood = false;
 
-        return allGood;
+        std::cout << "missing mesh: "
+                  << "segID " << table_[i].segID << " in coord " << coord_
+                  << "\n";
+      }
     }
 
-    OmMeshDataEntry* Find(const OmMeshDataEntry& entry)
-    {
-        if(!table_){
-            return NULL;
-        }
+    return allGood;
+  }
 
-        OmMeshDataEntry* iter =
-            std::lower_bound(table_,
-                             table_ + numEntries_,
-                             entry,
-                             compareBySegID);
-
-        if(iter == table_ + numEntries_ ||
-           iter->segID != entry.segID)
-        {
-            return NULL;
-        }
-
-        return iter;
+  OmMeshDataEntry* Find(const OmMeshDataEntry& entry) {
+    if (!table_) {
+      return NULL;
     }
 
-    void Unmap()
-    {
-        file_.reset();
-        table_ = NULL;
-        numEntries_ = 0;
+    OmMeshDataEntry* iter =
+        std::lower_bound(table_, table_ + numEntries_, entry, compareBySegID);
+
+    if (iter == table_ + numEntries_ || iter->segID != entry.segID) {
+      return NULL;
     }
 
-    inline bool MapIfNeeded()
-    {
-        if(file_){
-            return false;
-        }
+    return iter;
+  }
 
-        map();
+  void Unmap() {
+    file_.reset();
+    table_ = NULL;
+    numEntries_ = 0;
+  }
 
-        return true;
+  inline bool MapIfNeeded() {
+    if (file_) {
+      return false;
     }
 
-private:
+    map();
 
-    void map()
-    {
-        file_.reset(new QFile(fnp_));
+    return true;
+  }
 
-        if(!file_->exists()){
-            return;
-        }
+ private:
 
-        if(!file_->open(QIODevice::ReadWrite)) {
-            throw om::IoException("could not open");
-        }
+  void map() {
+    file_.reset(new QFile(fnp_));
 
-        uchar* map = file_->map(0, file_->size());
-        if(!map){
-            throw om::IoException("could not map");
-        }
-
-        file_->close();
-
-        table_ = reinterpret_cast<OmMeshDataEntry*>(map);
-        numEntries_ = file_->size() / sizeof(OmMeshDataEntry);
+    if (!file_->exists()) {
+      return;
     }
 
-    void setupFile()
-    {
-        const ChunkUniqueValues segIDs =
-            segmentation_->ChunkUniqueValues()->Values(coord_, threshold_);
-
-        if(!segIDs.size()){
-            std::cout << "No unique values in " << coord_ << std::endl;
-            return;
-        }
-
-        file_.reset(new QFile(fnp_));
-
-        if(!file_->open(QIODevice::ReadWrite)) {
-            throw om::IoException("could not open");
-        }
-
-        file_->resize(segIDs.size() * sizeof(OmMeshDataEntry));
-
-        uchar* map = file_->map(0, file_->size());
-        if(!map){
-            throw om::IoException("could not map");
-        }
-
-        file_->close();
-
-        table_ = reinterpret_cast<OmMeshDataEntry*>(map);
-        numEntries_ = segIDs.size();
-
-        resetTable(segIDs);
-        sortTable();
-
-        // std::cout << "in chunk " << coord_
-        //           << ", found "
-        //           << om::string::humanizeNum(numEntries_)
-        //           << " segment IDs\n";
+    if (!file_->open(QIODevice::ReadWrite)) {
+      throw om::IoException("could not open");
     }
 
-    struct ResetEntry {
-        OmMeshDataEntry operator()(const om::common::SegID segID) const {
-            return om::meshio_::MakeEmptyEntry(segID);
-        }
-    };
-
-    void resetTable(const ChunkUniqueValues& segIDs)
-    {
-        assert(table_);
-
-        zi::transform(segIDs.begin(),
-                      segIDs.end(),
-                      table_,
-                      ResetEntry());
+    uchar* map = file_->map(0, file_->size());
+    if (!map) {
+      throw om::IoException("could not map");
     }
 
-    void sortTable()
-    {
-        assert(table_);
+    file_->close();
 
-        zi::sort(table_,
-                 table_ + numEntries_,
-                 compareBySegID);
+    table_ = reinterpret_cast<OmMeshDataEntry*>(map);
+    numEntries_ = file_->size() / sizeof(OmMeshDataEntry);
+  }
+
+  void setupFile() {
+    const ChunkUniqueValues segIDs =
+        segmentation_->ChunkUniqueValues()->Values(coord_, threshold_);
+
+    if (!segIDs.size()) {
+      std::cout << "No unique values in " << coord_ << std::endl;
+      return;
     }
 
-    static bool compareBySegID(const OmMeshDataEntry& a,
-                               const OmMeshDataEntry& b){
-        return a.segID < b.segID;
+    file_.reset(new QFile(fnp_));
+
+    if (!file_->open(QIODevice::ReadWrite)) {
+      throw om::IoException("could not open");
     }
 
-    QString filePath()
-    {
-        const QString volPath = segmentation_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
+    file_->resize(segIDs.size() * sizeof(OmMeshDataEntry));
 
-        if(!QDir(volPath).exists()){
-            segmentation_->Folder()->MakeMeshChunkFolderPath(threshold_, coord_);
-        }
-
-        const QString fullPath = QString("%1meshAllocTable.ver2")
-            .arg(volPath);
-
-        return fullPath;
+    uchar* map = file_->map(0, file_->size());
+    if (!map) {
+      throw om::IoException("could not map");
     }
+
+    file_->close();
+
+    table_ = reinterpret_cast<OmMeshDataEntry*>(map);
+    numEntries_ = segIDs.size();
+
+    resetTable(segIDs);
+    sortTable();
+
+    // std::cout << "in chunk " << coord_
+    //           << ", found "
+    //           << om::string::humanizeNum(numEntries_)
+    //           << " segment IDs\n";
+  }
+
+  struct ResetEntry {
+    OmMeshDataEntry operator()(const om::common::SegID segID) const {
+      return om::meshio_::MakeEmptyEntry(segID);
+    }
+  };
+
+  void resetTable(const ChunkUniqueValues& segIDs) {
+    assert(table_);
+
+    zi::transform(segIDs.begin(), segIDs.end(), table_, ResetEntry());
+  }
+
+  void sortTable() {
+    assert(table_);
+
+    zi::sort(table_, table_ + numEntries_, compareBySegID);
+  }
+
+  static bool compareBySegID(const OmMeshDataEntry& a,
+                             const OmMeshDataEntry& b) {
+    return a.segID < b.segID;
+  }
+
+  QString filePath() {
+    const QString volPath =
+        segmentation_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
+
+    if (!QDir(volPath).exists()) {
+      segmentation_->Folder()->MakeMeshChunkFolderPath(threshold_, coord_);
+    }
+
+    const QString fullPath = QString("%1meshAllocTable.ver2").arg(volPath);
+
+    return fullPath;
+  }
 };
-

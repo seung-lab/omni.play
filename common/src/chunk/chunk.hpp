@@ -9,8 +9,7 @@
 namespace om {
 namespace chunk {
 
-template <typename T>
-class Chunk {
+template <typename T> class Chunk {
  public:
   Chunk(coords::Chunk coord, coords::VolumeSystem vol)
       : coord_(coord),

@@ -4,26 +4,24 @@
 
 class OmRefreshMSTthresholdEvent : public OmEvent {
 
-public:
-    OmRefreshMSTthresholdEvent();
+ public:
+  OmRefreshMSTthresholdEvent();
 
-    void Dispatch(OmEventListener*);
+  void Dispatch(OmEventListener*);
 
-    //class
-    static const OmEventClass CLASS = OM_REFRESH_MST_THRESHOLD_EVENT_CLASS;
+  //class
+  static const OmEventClass CLASS = OM_REFRESH_MST_THRESHOLD_EVENT_CLASS;
 
-    //events
-    static const QEvent::Type REFRESH_MST_THRESHOLD = (QEvent::Type) (CLASS);
+  //events
+  static const QEvent::Type REFRESH_MST_THRESHOLD = (QEvent::Type)(CLASS);
 };
 
 class OmRefreshMSTthresholdEventListener : public OmEventListener {
 
-public:
-    OmRefreshMSTthresholdEventListener()
-        : OmEventListener(OmRefreshMSTthresholdEvent::CLASS)
-    {};
+ public:
+  OmRefreshMSTthresholdEventListener()
+      : OmEventListener(OmRefreshMSTthresholdEvent::CLASS) {}
+  ;
 
-    virtual void RefreshMSTEvent(OmRefreshMSTthresholdEvent*)
-    {}
+  virtual void RefreshMSTEvent(OmRefreshMSTthresholdEvent*) {}
 };
-

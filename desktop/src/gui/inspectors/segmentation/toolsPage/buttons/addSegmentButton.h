@@ -6,34 +6,27 @@
 #include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
 
-
 namespace om {
 namespace segmentationInspector {
 
 class AddSegmentButton : public OmButton<PageTools> {
-public:
-    AddSegmentButton(PageTools* d)
-        : OmButton<PageTools>(d,
-                                 "Add Segment",
-                                 "Add Segment",
-                                 false)
-    {}
+ public:
+  AddSegmentButton(PageTools* d)
+      : OmButton<PageTools>(d, "Add Segment", "Add Segment", false) {}
 
-private:
-    void doAction()
-    {
-        const SegmentationDataWrapper& sdw = mParent->GetSDW();
+ private:
+  void doAction() {
+    const SegmentationDataWrapper& sdw = mParent->GetSDW();
 
-        OmSegment* newSeg = sdw.Segments()->AddSegment();
+    OmSegment* newSeg = sdw.Segments()->AddSegment();
 
-        ElementListBox::RebuildLists(SegmentDataWrapper(newSeg));
+    ElementListBox::RebuildLists(SegmentDataWrapper(newSeg));
 
-        OmSegmentSelector sel(sdw, this, "addSegmentButton" );
-        sel.selectJustThisSegment(newSeg->value(), true);
-        sel.sendEvent();
-    }
+    OmSegmentSelector sel(sdw, this, "addSegmentButton");
+    sel.selectJustThisSegment(newSeg->value(), true);
+    sel.sendEvent();
+  }
 };
 
-} // namespace segmentationInspector
-} // namespace om
-
+}  // namespace segmentationInspector
+}  // namespace om

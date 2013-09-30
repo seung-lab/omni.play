@@ -27,8 +27,7 @@ class Mesh {
 }  // namespace om::coords::
 
 namespace std {
-template <>
-struct hash<om::coords::Mesh> {
+template <> struct hash<om::coords::Mesh> {
   size_t operator()(const om::coords::Mesh& m) const {
     std::size_t h1 = std::hash<om::coords::Chunk>()(m.mipChunkCoord());
     std::size_t h2 = std::hash<om::common::SegID>()(m.segID());

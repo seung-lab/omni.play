@@ -23,142 +23,129 @@
 #endif
 
 OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
-    : OmManageableObject()
-    , viewGroup_(new ViewGroup(mainWindow, this))
-    , view2dState_(new OmViewGroupView2dState())
-    , colorizers_(new OmColorizers(this))
-    , zoomLevel_(new OmZoomLevel())
-    , splitting_(new OmSplitting())
-    , landmarks_(new OmLandmarks(mainWindow))
-    , cdw_(new ChannelDataWrapper(1))
-    , sdw_(new SegmentationDataWrapper(1))
+    : OmManageableObject(),
+      viewGroup_(new ViewGroup(mainWindow, this)),
+      view2dState_(new OmViewGroupView2dState()),
+      colorizers_(new OmColorizers(this)),
+      zoomLevel_(new OmZoomLevel()),
+      splitting_(new OmSplitting()),
+      landmarks_(new OmLandmarks(mainWindow)),
+      cdw_(new ChannelDataWrapper(1)),
+      sdw_(new SegmentationDataWrapper(1))
 #ifdef ZI_OS_MACOS
-    , context3d_(new QGLWidget())
+      ,
+      context3d_(new QGLWidget())
 #endif
-    , toolBarManager_(NULL)
-    , brightenSelected_(true)
-    , annotationSize_(3)
-{
-    mBreakThreshold = 0;
-    mDustThreshold = 90;
-    mShatter = false;
-    mShowValid = false;
-    mShowValidInColor = false;
-    mShowFilterInColor = false;
+      ,
+      toolBarManager_(NULL),
+      brightenSelected_(true),
+      annotationSize_(3) {
+  mBreakThreshold = 0;
+  mDustThreshold = 90;
+  mShatter = false;
+  mShowValid = false;
+  mShowValidInColor = false;
+  mShowFilterInColor = false;
 }
 
-OmViewGroupState::~OmViewGroupState()
-{}
+OmViewGroupState::~OmViewGroupState() {}
 
-OmPooledTile<om::common::ColorARGB>* OmViewGroupState::ColorTile(uint32_t const*const imageData,
-                                                       const int tileDim,
-                                                       const OmTileCoord& key)
-{
-    return colorizers_->ColorTile(imageData, tileDim, key);
+OmPooledTile<om::common::ColorARGB>* OmViewGroupState::ColorTile(
+    uint32_t const* const imageData, const int tileDim,
+    const OmTileCoord& key) {
+  return colorizers_->ColorTile(imageData, tileDim, key);
 }
 
-om::segment::coloring
-OmViewGroupState::determineColorizationType(const om::common::ObjectType objType)
-{
-    switch(objType){
+om::segment::coloring OmViewGroupState::determineColorizationType(
+    const om::common::ObjectType objType) {
+  switch (objType) {
     case om::common::CHANNEL:
-        if(mShowValid)
-        {
-            if(mShowValidInColor){
-                return om::segment::coloring::FILTER_VALID;
-            }
-            return om::segment::coloring::FILTER_VALID_BLACK;
+      if (mShowValid) {
+        if (mShowValidInColor) {
+          return om::segment::coloring::FILTER_VALID;
+        }
+        return om::segment::coloring::FILTER_VALID_BLACK;
+      }
+
+      if (shouldVolumeBeShownBroken()) {
+        return om::segment::coloring::FILTER_BREAK;
+      }
+
+      if (brightenSelected_) {
+        if (mShowFilterInColor) {
+          return om::segment::coloring::FILTER_COLOR_BRIGHTEN_SELECT;
         }
 
-        if(shouldVolumeBeShownBroken()){
-            return om::segment::coloring::FILTER_BREAK;
-        }
+        return om::segment::coloring::FILTER_BLACK_BRIGHTEN_SELECT;
+      }
 
-        if(brightenSelected_)
-        {
-            if(mShowFilterInColor){
-                return om::segment::coloring::FILTER_COLOR_BRIGHTEN_SELECT;
-            }
+      if (mShowFilterInColor) {
+        return om::segment::coloring::FILTER_COLOR_DONT_BRIGHTEN_SELECT;
+      }
 
-            return om::segment::coloring::FILTER_BLACK_BRIGHTEN_SELECT;
-        }
-
-        if(mShowFilterInColor){
-            return om::segment::coloring::FILTER_COLOR_DONT_BRIGHTEN_SELECT;
-        }
-
-        return om::segment::coloring::FILTER_BLACK_DONT_BRIGHTEN_SELECT;
+      return om::segment::coloring::FILTER_BLACK_DONT_BRIGHTEN_SELECT;
 
     case om::common::SEGMENTATION:
-        if(mShowValid)
-        {
-            if(mShowValidInColor){
-                return om::segment::coloring::SEGMENTATION_VALID;
-            }
-            return om::segment::coloring::SEGMENTATION_VALID_BLACK;
+      if (mShowValid) {
+        if (mShowValidInColor) {
+          return om::segment::coloring::SEGMENTATION_VALID;
         }
+        return om::segment::coloring::SEGMENTATION_VALID_BLACK;
+      }
 
-        if(shouldVolumeBeShownBroken())
-        {
-            if(mShowFilterInColor){
-                return om::segment::coloring::SEGMENTATION_BREAK_COLOR;
-            }
-            return om::segment::coloring::SEGMENTATION_BREAK_BLACK;
+      if (shouldVolumeBeShownBroken()) {
+        if (mShowFilterInColor) {
+          return om::segment::coloring::SEGMENTATION_BREAK_COLOR;
         }
+        return om::segment::coloring::SEGMENTATION_BREAK_BLACK;
+      }
 
-        return om::segment::coloring::SEGMENTATION;
+      return om::segment::coloring::SEGMENTATION;
     default:
-    	break;
-    }
+      break;
+  }
 
-    throw om::ArgException("unknown objType");
+  throw om::ArgException("unknown objType");
 }
 
-void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm)
-{
-    toolBarManager_ = tbm;
-    splitting_->SetToolBarManager(tbm);
+void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm) {
+  toolBarManager_ = tbm;
+  splitting_->SetToolBarManager(tbm);
 }
 
 ToolBarManager* OmViewGroupState::GetToolBarManager() {
-    return toolBarManager_;
+  return toolBarManager_;
 }
 
-void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)
-{
-    mShowValid = mode;
-    mShowValidInColor = inColor;
-    OmEvents::Redraw3d();
-    OmEvents::Redraw2d();
+void OmViewGroupState::SetShowValidMode(bool mode, bool inColor) {
+  mShowValid = mode;
+  mShowValidInColor = inColor;
+  OmEvents::Redraw3d();
+  OmEvents::Redraw2d();
 }
 
-void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(const bool inColor)
-{
-    mShowFilterInColor = inColor;
-    OmEvents::Redraw2d();
+void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(
+    const bool inColor) {
+  mShowFilterInColor = inColor;
+  OmEvents::Redraw2d();
 }
 
-bool OmViewGroupState::shouldVolumeBeShownBroken()
-{
-    return mShatter || splitting_->ShowSplit();
+bool OmViewGroupState::shouldVolumeBeShownBroken() {
+  return mShatter || splitting_->ShowSplit();
 }
 
-void OmViewGroupState::setTool(const om::tool::mode tool){
-    toolBarManager_->SetTool(tool);
+void OmViewGroupState::setTool(const om::tool::mode tool) {
+  toolBarManager_->SetTool(tool);
 }
 
-SegmentationDataWrapper OmViewGroupState::Segmentation() const {
-    return *sdw_;
-}
+SegmentationDataWrapper OmViewGroupState::Segmentation() const { return *sdw_; }
 
-ChannelDataWrapper OmViewGroupState::Channel() const{
-    return *cdw_;
-}
+ChannelDataWrapper OmViewGroupState::Channel() const { return *cdw_; }
 
 bool OmViewGroupState::getAnnotationVisible() {
-    return OmProject::Globals().Users().UserSettings().getAnnotationVisible();
+  return OmProject::Globals().Users().UserSettings().getAnnotationVisible();
 }
 
 void OmViewGroupState::setAnnotationVisible(bool visible) {
-    OmProject::Globals().Users().UserSettings().setAnnotationVisible(visible);
+  OmProject::Globals().Users().UserSettings().setAnnotationVisible(visible);
 }

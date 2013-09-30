@@ -4,8 +4,6 @@
 #include "gui/widgets/omTellInfo.hpp"
 
 class MainWindowEvents : public OmNonFatalEventListener {
-public:
-    void NonFatalEvent(OmNonFatalEvent* err){
-        OmTellInfo info(err->Error());
-    }
+ public:
+  void NonFatalEvent(OmNonFatalEvent* err) { OmTellInfo info(err->Error()); }
 };

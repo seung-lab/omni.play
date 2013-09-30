@@ -10,315 +10,272 @@
 #include "utility/dataWrappers.h"
 
 OmSegments::OmSegments(OmSegmentation* segmentation)
-    : segmentation_(segmentation)
-    , store_(new OmSegmentsStore(segmentation))
-    , impl_(new OmSegmentsImpl(segmentation, store_.get()))
-{}
+    : segmentation_(segmentation),
+      store_(new OmSegmentsStore(segmentation)),
+      impl_(new OmSegmentsImpl(segmentation, store_.get())) {}
 
-OmSegments::~OmSegments()
-{}
+OmSegments::~OmSegments() {}
 
-om::common::SegID OmSegments::GetSegmentationID(){
-    return segmentation_->GetID();
+om::common::SegID OmSegments::GetSegmentationID() {
+  return segmentation_->GetID();
 }
 
-void OmSegments::refreshTree()
-{
-    zi::guard g(mutex_);
-    impl_->refreshTree();
+void OmSegments::refreshTree() {
+  zi::guard g(mutex_);
+  impl_->refreshTree();
 }
 
-uint32_t OmSegments::getPageSize()
-{
-    // locked internally
-    return store_->PageSize();
+uint32_t OmSegments::getPageSize() {
+  // locked internally
+  return store_->PageSize();
 }
 
-OmSegment* OmSegments::AddSegment()
-{
-    zi::guard g(mutex_);
-    return impl_->AddSegment();
+OmSegment* OmSegments::AddSegment() {
+  zi::guard g(mutex_);
+  return impl_->AddSegment();
 }
 
-OmSegment* OmSegments::AddSegment(om::common::SegID value)
-{
-    zi::guard g(mutex_);
-    return impl_->AddSegment(value);
+OmSegment* OmSegments::AddSegment(om::common::SegID value) {
+  zi::guard g(mutex_);
+  return impl_->AddSegment(value);
 }
 
-OmSegment* OmSegments::GetOrAddSegment(const om::common::SegID val)
-{
-    zi::guard g(mutex_);
-    return impl_->GetOrAddSegment(val);
+OmSegment* OmSegments::GetOrAddSegment(const om::common::SegID val) {
+  zi::guard g(mutex_);
+  return impl_->GetOrAddSegment(val);
 }
 
-bool OmSegments::IsSegmentValid(om::common::SegID seg)
-{
-    // locked internally
-    return store_->IsSegmentValid(seg);
+bool OmSegments::IsSegmentValid(om::common::SegID seg) {
+  // locked internally
+  return store_->IsSegmentValid(seg);
 }
 
-OmSegment* OmSegments::GetSegment(const om::common::SegID value)
-{
-    // locked internally
-    return store_->GetSegment(value);
+OmSegment* OmSegments::GetSegment(const om::common::SegID value) {
+  // locked internally
+  return store_->GetSegment(value);
 }
 
-OmSegment* OmSegments::GetSegmentUnsafe(const om::common::SegID value)
-{
-    // locked internally
-    return store_->GetSegmentUnsafe(value);
+OmSegment* OmSegments::GetSegmentUnsafe(const om::common::SegID value) {
+  // locked internally
+  return store_->GetSegmentUnsafe(value);
 }
 
-om::common::SegID OmSegments::GetNumSegments()
-{
-    zi::guard g(mutex_);
-    return impl_->GetNumSegments();
+om::common::SegID OmSegments::GetNumSegments() {
+  zi::guard g(mutex_);
+  return impl_->GetNumSegments();
 }
 
-uint32_t OmSegments::GetNumTopSegments()
-{
-    // locked internally
+uint32_t OmSegments::GetNumTopSegments() {
+  // locked internally
 
-    if(segmentation_){
-        return segmentation_->SegmentLists()->GetNumTopLevelSegs();
-    }
+  if (segmentation_) {
+    return segmentation_->SegmentLists()->GetNumTopLevelSegs();
+  }
 
-    return 0;
+  return 0;
 }
 
-bool OmSegments::AreSegmentsSelected()
-{
-    zi::guard g(mutex_);
-    return impl_->SegmentSelection().AreSegmentsSelected();
+bool OmSegments::AreSegmentsSelected() {
+  zi::guard g(mutex_);
+  return impl_->SegmentSelection().AreSegmentsSelected();
 }
 
-uint32_t OmSegments::NumberOfSelectedSegments()
-{
-    zi::guard g(mutex_);
-    return impl_->SegmentSelection().NumberOfSelectedSegments();
+uint32_t OmSegments::NumberOfSelectedSegments() {
+  zi::guard g(mutex_);
+  return impl_->SegmentSelection().NumberOfSelectedSegments();
 }
 
-const om::common::SegIDSet OmSegments::GetSelectedSegmentIDs()
-{
-    zi::guard g(mutex_);
-    return impl_->SegmentSelection().GetSelectedSegmentIDs();
+const om::common::SegIDSet OmSegments::GetSelectedSegmentIDs() {
+  zi::guard g(mutex_);
+  return impl_->SegmentSelection().GetSelectedSegmentIDs();
 }
 
-om::common::SegIDSet OmSegments::GetEnabledSegmentIDs()
-{
-    zi::guard g(mutex_);
-    return impl_->EnabledSegments().GetEnabledSegmentIDs();
+om::common::SegIDSet OmSegments::GetEnabledSegmentIDs() {
+  zi::guard g(mutex_);
+  return impl_->EnabledSegments().GetEnabledSegmentIDs();
 }
 
-bool OmSegments::isSegmentEnabled(om::common::SegID segID)
-{
-    zi::guard g(mutex_);
-    return impl_->EnabledSegments().IsEnabled(segID);
+bool OmSegments::isSegmentEnabled(om::common::SegID segID) {
+  zi::guard g(mutex_);
+  return impl_->EnabledSegments().IsEnabled(segID);
 }
 
-bool OmSegments::IsSegmentSelected(om::common::SegID segID)
-{
-    zi::guard g(mutex_);
-    return impl_->SegmentSelection().isSegmentSelected(segID);
+bool OmSegments::IsSegmentSelected(om::common::SegID segID) {
+  zi::guard g(mutex_);
+  return impl_->SegmentSelection().isSegmentSelected(segID);
 }
 
-bool OmSegments::IsSegmentSelected(OmSegment* seg)
-{
-    zi::guard g(mutex_);
-    return impl_->SegmentSelection().isSegmentSelected(seg->value());
+bool OmSegments::IsSegmentSelected(OmSegment* seg) {
+  zi::guard g(mutex_);
+  return impl_->SegmentSelection().isSegmentSelected(seg->value());
 }
 
-void OmSegments::setSegmentEnabled(om::common::SegID segID, bool isEnabled)
-{
-    zi::guard g(mutex_);
-    impl_->EnabledSegments().SetEnabled(segID, isEnabled);
+void OmSegments::setSegmentEnabled(om::common::SegID segID, bool isEnabled) {
+  zi::guard g(mutex_);
+  impl_->EnabledSegments().SetEnabled(segID, isEnabled);
 }
 
 void OmSegments::setSegmentSelected(om::common::SegID segID,
-                                         const bool isSelected,
-                                         const bool addToRecentList)
-{
-    zi::guard g(mutex_);
-    impl_->SegmentSelection().setSegmentSelected(segID, isSelected, addToRecentList);
+                                    const bool isSelected,
+                                    const bool addToRecentList) {
+  zi::guard g(mutex_);
+  impl_->SegmentSelection()
+      .setSegmentSelected(segID, isSelected, addToRecentList);
 }
 
-void OmSegments::setSegmentName(om::common::SegID segID, QString name)
-{
-    zi::guard g(mutex_);
-    impl_->setSegmentName(segID, name);
+void OmSegments::setSegmentName(om::common::SegID segID, QString name) {
+  zi::guard g(mutex_);
+  impl_->setSegmentName(segID, name);
 }
 
-QString OmSegments::getSegmentName(om::common::SegID segID)
-{
-    zi::guard g(mutex_);
-    return impl_->getSegmentName(segID);
+QString OmSegments::getSegmentName(om::common::SegID segID) {
+  zi::guard g(mutex_);
+  return impl_->getSegmentName(segID);
 }
 
-void OmSegments::setSegmentNote(om::common::SegID segID, QString note)
-{
-    zi::guard g(mutex_);
-    impl_->setSegmentNote(segID, note);
+void OmSegments::setSegmentNote(om::common::SegID segID, QString note) {
+  zi::guard g(mutex_);
+  impl_->setSegmentNote(segID, note);
 }
 
-QString OmSegments::getSegmentNote(om::common::SegID segID)
-{
-    zi::guard g(mutex_);
-    return impl_->getSegmentNote(segID);
+QString OmSegments::getSegmentNote(om::common::SegID segID) {
+  zi::guard g(mutex_);
+  return impl_->getSegmentNote(segID);
 }
 
-OmSegment* OmSegments::findRoot(OmSegment* segment)
-{
-    // locked internally
-    return store_->GetSegment(store_->Root(segment->value()));
+OmSegment* OmSegments::findRoot(OmSegment* segment) {
+  // locked internally
+  return store_->GetSegment(store_->Root(segment->value()));
 }
 
-OmSegment* OmSegments::findRoot(const om::common::SegID segID)
-{
-    // locked internally
-    return store_->GetSegment(store_->Root(segID));
+OmSegment* OmSegments::findRoot(const om::common::SegID segID) {
+  // locked internally
+  return store_->GetSegment(store_->Root(segID));
 }
 
-om::common::SegID OmSegments::findRootID(const om::common::SegID segID)
-{
-    // locked internally
+om::common::SegID OmSegments::findRootID(const om::common::SegID segID) {
+  // locked internally
 
-    if(!segID){
-        return 0;
-    }
+  if (!segID) {
+    return 0;
+  }
 
-    return store_->Root(segID);
+  return store_->Root(segID);
 }
 
-om::common::SegID OmSegments::findRootID(OmSegment* segment)
-{
-    // locked internally
-    return findRootID(segment->value());
+om::common::SegID OmSegments::findRootID(OmSegment* segment) {
+  // locked internally
+  return findRootID(segment->value());
 }
 
-om::common::SegID OmSegments::findRootIDnoCache(const om::common::SegID segID)
-{
-    zi::guard g(mutex_);
-    return impl_->FindRootID(segID);
+om::common::SegID OmSegments::findRootIDnoCache(const om::common::SegID segID) {
+  zi::guard g(mutex_);
+  return impl_->FindRootID(segID);
 }
 
-om::common::SegIDSet OmSegments::JoinTheseSegments(const om::common::SegIDSet & segmentList)
-{
-    zi::guard g(mutex_);
-    return impl_->JoinTheseSegments(segmentList);
+om::common::SegIDSet OmSegments::JoinTheseSegments(
+    const om::common::SegIDSet& segmentList) {
+  zi::guard g(mutex_);
+  return impl_->JoinTheseSegments(segmentList);
 }
 
-om::common::SegIDSet OmSegments::UnJoinTheseSegments(const om::common::SegIDSet & segmentList)
-{
-    zi::guard g(mutex_);
-    return impl_->UnJoinTheseSegments(segmentList);
+om::common::SegIDSet OmSegments::UnJoinTheseSegments(
+    const om::common::SegIDSet& segmentList) {
+  zi::guard g(mutex_);
+  return impl_->UnJoinTheseSegments(segmentList);
 }
 
-uint32_t OmSegments::getMaxValue()
-{
-    // self-locking integer
-    return impl_->getMaxValue();
+uint32_t OmSegments::getMaxValue() {
+  // self-locking integer
+  return impl_->getMaxValue();
 }
 
-void OmSegments::UpdateSegmentSelection(const om::common::SegIDSet & idsToSelect,
-                                             const bool addToRecentList)
-{
-    zi::guard g(mutex_);
-    return impl_->SegmentSelection().UpdateSegmentSelection(idsToSelect, addToRecentList);
+void OmSegments::UpdateSegmentSelection(const om::common::SegIDSet& idsToSelect,
+                                        const bool addToRecentList) {
+  zi::guard g(mutex_);
+  return impl_->SegmentSelection()
+      .UpdateSegmentSelection(idsToSelect, addToRecentList);
 }
 
-void OmSegments::AddToSegmentSelection(const om::common::SegIDSet& idsToSelect)
-{
-    zi::guard g(mutex_);
-    return impl_->SegmentSelection().AddToSegmentSelection(idsToSelect);
+void OmSegments::AddToSegmentSelection(
+    const om::common::SegIDSet& idsToSelect) {
+  zi::guard g(mutex_);
+  return impl_->SegmentSelection().AddToSegmentSelection(idsToSelect);
 }
 
-void OmSegments::RemoveFromSegmentSelection(const om::common::SegIDSet& idsToSelect)
-{
-    zi::guard g(mutex_);
-    return impl_->SegmentSelection().RemoveFromSegmentSelection(idsToSelect);
+void OmSegments::RemoveFromSegmentSelection(
+    const om::common::SegIDSet& idsToSelect) {
+  zi::guard g(mutex_);
+  return impl_->SegmentSelection().RemoveFromSegmentSelection(idsToSelect);
 }
 
-std::pair<bool, OmSegmentEdge> OmSegments::JoinEdge(const OmSegmentEdge& e)
-{
-    zi::guard g(mutex_);
-    return impl_->JoinFromUserAction(e);
+std::pair<bool, OmSegmentEdge> OmSegments::JoinEdge(const OmSegmentEdge& e) {
+  zi::guard g(mutex_);
+  return impl_->JoinFromUserAction(e);
 }
 
-OmSegmentEdge OmSegments::SplitEdge(const OmSegmentEdge & e)
-{
-    zi::guard g(mutex_);
-    return impl_->SplitEdgeUserAction(e);
+OmSegmentEdge OmSegments::SplitEdge(const OmSegmentEdge& e) {
+  zi::guard g(mutex_);
+  return impl_->SplitEdgeUserAction(e);
 }
 
-bool OmSegments::AreSegmentsEnabled()
-{
-    zi::guard g(mutex_);
-    return impl_->EnabledSegments().AnyEnabled();
+bool OmSegments::AreSegmentsEnabled() {
+  zi::guard g(mutex_);
+  return impl_->EnabledSegments().AnyEnabled();
 }
 
-void OmSegments::StartCaches()
-{
-    zi::guard g(mutex_);
-    store_->StartCaches();
+void OmSegments::StartCaches() {
+  zi::guard g(mutex_);
+  store_->StartCaches();
 }
 
-void OmSegments::Flush()
-{
-    zi::guard g(mutex_);
-    return impl_->Flush();
+void OmSegments::Flush() {
+  zi::guard g(mutex_);
+  return impl_->Flush();
 }
 
-bool OmSegments::AreAnySegmentsInValidList(const om::common::SegIDSet& ids)
-{
-    zi::guard g(mutex_);
-    return impl_->AreAnySegmentsInValidList(ids);
+bool OmSegments::AreAnySegmentsInValidList(const om::common::SegIDSet& ids) {
+  zi::guard g(mutex_);
+  return impl_->AreAnySegmentsInValidList(ids);
 }
 
-uint64_t OmSegments::MSTfreshness() const
-{
-    // locked number
-    return impl_->MSTfreshness();
+uint64_t OmSegments::MSTfreshness() const {
+  // locked number
+  return impl_->MSTfreshness();
 }
 
-OmSegmentChildren* OmSegments::Children()
-{
-    // TODO: needs locking!
-    return impl_->Children();
+OmSegmentChildren* OmSegments::Children() {
+  // TODO: needs locking!
+  return impl_->Children();
 }
 
-boost::optional<std::string> OmSegments::IsEdgeSplittable(const OmSegmentEdge& e)
-{
-    zi::guard g(mutex_);
-    return impl_->IsEdgeSplittable(e);
+boost::optional<std::string> OmSegments::IsEdgeSplittable(
+    const OmSegmentEdge& e) {
+  zi::guard g(mutex_);
+  return impl_->IsEdgeSplittable(e);
 }
 
-boost::optional<std::string> OmSegments::IsSegmentSplittable(OmSegment* child)
-{
-    zi::guard g(mutex_);
-    return impl_->IsSegmentSplittable(child);
+boost::optional<std::string> OmSegments::IsSegmentSplittable(OmSegment* child) {
+  zi::guard g(mutex_);
+  return impl_->IsSegmentSplittable(child);
 }
 
-boost::optional<std::string> OmSegments::IsSegmentCuttable(OmSegment* seg)
-{
-    zi::guard g(mutex_);
-    return impl_->IsSegmentCuttable(seg);
+boost::optional<std::string> OmSegments::IsSegmentCuttable(OmSegment* seg) {
+  zi::guard g(mutex_);
+  return impl_->IsSegmentCuttable(seg);
 }
 
-std::vector<OmSegmentEdge> OmSegments::CutSegment(OmSegment* seg)
-{
-    zi::guard g(mutex_);
-    return impl_->CutSegment(seg);
+std::vector<OmSegmentEdge> OmSegments::CutSegment(OmSegment* seg) {
+  zi::guard g(mutex_);
+  return impl_->CutSegment(seg);
 }
 
-bool OmSegments::JoinEdges(const std::vector<OmSegmentEdge>& edges)
-{
-    zi::guard g(mutex_);
-    return impl_->JoinEdges(edges);
+bool OmSegments::JoinEdges(const std::vector<OmSegmentEdge>& edges) {
+  zi::guard g(mutex_);
+  return impl_->JoinEdges(edges);
 }
 
-std::vector<OmSegmentEdge> OmSegments::Shatter(OmSegment* seg)
-{
-   zi::guard g(mutex_);
-   return impl_->Shatter(seg);
+std::vector<OmSegmentEdge> OmSegments::Shatter(OmSegment* seg) {
+  zi::guard g(mutex_);
+  return impl_->Shatter(seg);
 }

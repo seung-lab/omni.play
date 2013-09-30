@@ -23,7 +23,7 @@ using namespace facebook::fb303;
 using apache::thrift::concurrency::Guard;
 
 FacebookBase::FacebookBase(std::string name) : name_(name) {
-  aliveSince_ = (int64_t)time(nullptr);
+  aliveSince_ = (int64_t) time(nullptr);
 }
 
 inline void FacebookBase::getName(std::string& _return) { _return = name_; }

@@ -19,7 +19,7 @@ using namespace vmml;
 // C++14 make_unique, ala http://stackoverflow.com/q/7038357
 namespace std {
 template <typename T, typename... Args>
-std::unique_ptr<T> make_unique(Args&&... args) {
+std::unique_ptr<T> make_unique(Args&& ... args) {
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 };
@@ -55,8 +55,7 @@ typedef uint32_t GroupID;
 typedef std::string GroupName;
 typedef std::unordered_set<GroupID> GroupIDSet;
 
-template <typename T>
-T twist(T vec, ViewType view) {
+template <typename T> T twist(T vec, ViewType view) {
   T out(vec);
   switch (view) {
     case XY_VIEW:

@@ -4,49 +4,39 @@
 #include "utility/fuzzyStdObjs.hpp"
 
 class OmThresholdsInChunk {
-private:
-    OmSegmentation *const segmentation_;
-    const om::chunkCoord coord_;
+ private:
+  OmSegmentation* const segmentation_;
+  const om::chunkCoord coord_;
 
-    typedef DoubleFuzzyStdMap<OmChunkUniqueValuesPerThreshold*> map_t;
-    typedef map_t::iterator iterator;
-    typedef map_t::value_type value_t;
+  typedef DoubleFuzzyStdMap<OmChunkUniqueValuesPerThreshold*> map_t;
+  typedef map_t::iterator iterator;
+  typedef map_t::value_type value_t;
 
-    map_t valByThres_;
-    zi::mutex lock_;
+  map_t valByThres_;
+  zi::mutex lock_;
 
-public:
-    OmThresholdsInChunk(OmSegmentation* segmentation,
-                        const om::chunkCoord& coord)
-        : segmentation_(segmentation)
-        , coord_(coord)
-    {}
+ public:
+  OmThresholdsInChunk(OmSegmentation* segmentation, const om::chunkCoord& coord)
+      : segmentation_(segmentation), coord_(coord) {}
 
-    ~OmThresholdsInChunk()
-    {
-        zi::guard g(lock_);
-        FOR_EACH(iter, valByThres_){
-            delete iter->second;
-        }
+  ~OmThresholdsInChunk() {
+    zi::guard g(lock_);
+    FOR_EACH(iter, valByThres_) { delete iter->second; }
+  }
+
+  OmChunkUniqueValuesPerThreshold* Get(const double threshold) {
+    zi::guard g(lock_);
+
+    iterator iter = valByThres_.lower_bound(threshold);
+
+    if (iter != valByThres_.end() &&
+        !(valByThres_.key_comp()(threshold, iter->first))) {
+      return iter->second;
     }
 
-    OmChunkUniqueValuesPerThreshold* Get(const double threshold)
-    {
-        zi::guard g(lock_);
-
-        iterator iter = valByThres_.lower_bound(threshold);
-
-        if(iter != valByThres_.end() && !(valByThres_.key_comp()(threshold, iter->first)))
-        {
-            return iter->second;
-        }
-
-        iterator p = valByThres_.insert(iter,
-                                        value_t(threshold,
-                                                new OmChunkUniqueValuesPerThreshold(segmentation_,
-                                                                                    coord_,
-                                                                                    threshold)));
-        return p->second;
-    }
+    iterator p = valByThres_.insert(
+        iter, value_t(threshold, new OmChunkUniqueValuesPerThreshold(
+                                     segmentation_, coord_, threshold)));
+    return p->second;
+  }
 };
-

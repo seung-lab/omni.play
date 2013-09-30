@@ -6,8 +6,7 @@ namespace om {
 namespace chunks {
 
 // TODO: refactor for non-square chunk dims
-template <typename T>
-class rawChunkSlicer {
+template <typename T> class rawChunkSlicer {
  private:
   const int chunkDim_;         // usually 128
   const int elementsPerTile_;  // chunkDim^2

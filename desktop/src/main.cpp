@@ -8,9 +8,9 @@ ZiARG_bool(noView3dThrottle, false, "disable View3d throttling");
 
 #include <zi/logging.hpp>
 USE_ZiLOGGING(STDOUT);
-DEFINE_ZiLOG(memmap, false );
-DEFINE_ZiLOG(mesh, false );
-DEFINE_ZiLOG(hdf5verbose, false );
+DEFINE_ZiLOG(memmap, false);
+DEFINE_ZiLOG(mesh, false);
+DEFINE_ZiLOG(hdf5verbose, false);
 DEFINE_ZiLOG(io, false);
 DEFINE_ZiLOG(segmentlist, false);
 DEFINE_ZiLOG(tiles, false);
@@ -26,129 +26,115 @@ DEFINE_ZiLOG(segmentSelector, false);
 #include <QFileInfo>
 #include <QApplication>
 
-class Omni{
-private:
-    int argc_;
-    char **argv_;
-    QString fileToOpen_;
+class Omni {
+ private:
+  int argc_;
+  char **argv_;
+  QString fileToOpen_;
 
-public:
-    Omni(int argc, char **argv)
-        : argc_(argc)
-        , argv_(argv)
-    {}
+ public:
+  Omni(int argc, char **argv) : argc_(argc), argv_(argv) {}
 
-    int Run()
-    {
-        checkRemainingArgs();
+  int Run() {
+    checkRemainingArgs();
 
-        fileToOpen_ = getFileToOpen();
+    fileToOpen_ = getFileToOpen();
 
-        if(ZiARG_importHDF5seg.size() > 0){
-            return importHDF5seg();
-        }
-
-        if(shouldRunHeadless()){
-            return runHeadless();
-        }
-
-        return runGUI();
+    if (ZiARG_importHDF5seg.size() > 0) {
+      return importHDF5seg();
     }
 
-private:
-    bool shouldRunHeadless()
-    {
+    if (shouldRunHeadless()) {
+      return runHeadless();
+    }
+
+    return runGUI();
+  }
+
+ private:
+  bool shouldRunHeadless() {
 // from QT docs
 #ifdef Q_WS_X11
-        bool useGUI = getenv("DISPLAY") != 0;
+    bool useGUI = getenv("DISPLAY") != 0;
 #else
-        bool useGUI = true;
+    bool useGUI = true;
 #endif
-        const bool headless = ZiARG_headless;
+    const bool headless = ZiARG_headless;
 
-        if(!useGUI && !headless)
-        {
-            printf("No GUI detected; Running headless....\n");
-            return true;
+    if (!useGUI && !headless) {
+      printf("No GUI detected; Running headless....\n");
+      return true;
 
-        } else if(headless){
-            return true;
-        }
-
-        return false;
+    } else if (headless) {
+      return true;
     }
 
-    void registerTypes()
-    {
-        qRegisterMetaType<om::tool::mode>("om::tool::mode");
-        qRegisterMetaType<om::common::ID>("om::common::ID");
-        qRegisterMetaType<om::common::ViewType>("ViewType");
-        qRegisterMetaType<uint32_t>("uint32_t");
-        qRegisterMetaType<ChannelDataWrapper>("ChannelDataWrapper");
-        qRegisterMetaType<SegmentationDataWrapper>("SegmentationDataWrapper");
-        qRegisterMetaType<std::string>("std::string");
+    return false;
+  }
+
+  void registerTypes() {
+    qRegisterMetaType<om::tool::mode>("om::tool::mode");
+    qRegisterMetaType<om::common::ID>("om::common::ID");
+    qRegisterMetaType<om::common::ViewType>("ViewType");
+    qRegisterMetaType<uint32_t>("uint32_t");
+    qRegisterMetaType<ChannelDataWrapper>("ChannelDataWrapper");
+    qRegisterMetaType<SegmentationDataWrapper>("SegmentationDataWrapper");
+    qRegisterMetaType<std::string>("std::string");
+  }
+
+  int runHeadless() {
+    const QString headlessCMD = QString::fromStdString(ZiARG_cmdfile);
+
+    Headless h;
+    h.RunHeadless(headlessCMD, fileToOpen_);
+    return 0;
+  }
+
+  int runGUI() {
+    // leak QApplication to avoid "~QX11PixmapData(): QPixmap objects" error
+    QApplication *app = new QApplication(argc_, argv_, this);
+    Q_INIT_RESOURCE(resources);
+    registerTypes();
+
+    OmQTApp::SetAppFontSize();
+
+    MainWindow mainWin;
+    mainWin.show();
+
+    if (fileToOpen_ != "") {
+      mainWin.openProject(fileToOpen_);
     }
 
-    int runHeadless()
-    {
-        const QString headlessCMD = QString::fromStdString(ZiARG_cmdfile);
+    return app->exec();
+  }
 
-        Headless h;
-        h.RunHeadless(headlessCMD, fileToOpen_);
-        return 0;
+  void checkRemainingArgs() {
+    if (argc_ > 2) {
+      printf("too many arguments given:\n");
+      for (int i = 1; i < argc_; ++i) {
+        printf("\t(%d) %s\n", i, argv_[i]);
+      }
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  QString getFileToOpen() {
+    if (2 == argc_) {
+      return QString(argv_[1]);
     }
 
-    int runGUI()
-    {
-        // leak QApplication to avoid "~QX11PixmapData(): QPixmap objects" error
-        QApplication* app = new QApplication(argc_, argv_, this);
-        Q_INIT_RESOURCE(resources);
-        registerTypes();
+    return "";
+  }
 
-        OmQTApp::SetAppFontSize();
-
-        MainWindow mainWin;
-        mainWin.show();
-
-        if(fileToOpen_ != ""){
-            mainWin.openProject(fileToOpen_);
-        }
-
-        return app->exec();
-    }
-
-    void checkRemainingArgs()
-    {
-        if( argc_ > 2)
-        {
-            printf("too many arguments given:\n");
-            for(int i = 1; i < argc_; ++i){
-                printf("\t(%d) %s\n", i, argv_[i]);
-            }
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    QString getFileToOpen()
-    {
-        if(2 == argc_){
-            return QString(argv_[1]);
-        }
-
-        return "";
-    }
-
-    int importHDF5seg()
-    {
-        HeadlessImpl::importHDF5seg(ZiARG_importHDF5seg);
-        OmProject::Close();
-        return 0;
-    }
+  int importHDF5seg() {
+    HeadlessImpl::importHDF5seg(ZiARG_importHDF5seg);
+    OmProject::Close();
+    return 0;
+  }
 };
 
-int main(int argc, char *argv[])
-{
-    zi::parse_arguments(argc, argv, true);
+int main(int argc, char *argv[]) {
+  zi::parse_arguments(argc, argv, true);
 
-    return Omni(argc, argv).Run();
+  return Omni(argc, argv).Run();
 }

@@ -4,10 +4,9 @@
 #include "gui/sidebars/right/validationGroup/validationGroup.h"
 
 class ShowValidatedButton : public OmButton<ValidationGroup> {
-public:
-    ShowValidatedButton(ValidationGroup *);
+ public:
+  ShowValidatedButton(ValidationGroup *);
 
-private:
-    void doAction();
+ private:
+  void doAction();
 };
-

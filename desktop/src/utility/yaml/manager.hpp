@@ -5,8 +5,6 @@
 #include "system/manager.hpp"
 #include "utility/yaml/baseTypes.hpp"
 
-namespace YAML{
+namespace YAML {
 
-
-
-} // namespace YAML
+}  // namespace YAML

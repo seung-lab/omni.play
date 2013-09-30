@@ -24,5 +24,5 @@ QTextStream& operator<<(QTextStream& out, const OmSegmentSplitActionImpl&);
 QTextStream& operator<<(QTextStream& out, const OmSegmentCutActionImpl&);
 QTextStream& operator<<(QTextStream& out, const OmSegmentUncertainActionImpl&);
 QTextStream& operator<<(QTextStream& out, const OmSegmentValidateActionImpl&);
-QTextStream& operator<<(QTextStream& out, const OmSegmentationThresholdChangeActionImpl&);
-
+QTextStream& operator<<(QTextStream& out,
+                        const OmSegmentationThresholdChangeActionImpl&);

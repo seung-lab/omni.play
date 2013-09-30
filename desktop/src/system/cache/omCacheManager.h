@@ -11,35 +11,34 @@ class OmTileCache;
 class OmCacheManagerImpl;
 
 class OmCacheManager : private om::singletonBase<OmCacheManager> {
-private:
-    std::unique_ptr<OmCacheManagerImpl> impl_;
+ private:
+  std::unique_ptr<OmCacheManagerImpl> impl_;
 
-    inline static OmCacheManagerImpl* impl(){
-        return instance().impl_.get();
-    }
+  inline static OmCacheManagerImpl* impl() { return instance().impl_.get(); }
 
-public:
-    static std::vector<OmCacheInfo> GetCacheInfo(const om::common::CacheGroup group);
-    static void AddCache(const om::common::CacheGroup group, OmCacheBase* base);
-    static void RemoveCache(const om::common::CacheGroup group, OmCacheBase* base);
+ public:
+  static std::vector<OmCacheInfo> GetCacheInfo(
+      const om::common::CacheGroup group);
+  static void AddCache(const om::common::CacheGroup group, OmCacheBase* base);
+  static void RemoveCache(const om::common::CacheGroup group,
+                          OmCacheBase* base);
 
-    static void SignalCachesToCloseDown();
-    static void UpdateCacheSizeFromLocalPrefs();
+  static void SignalCachesToCloseDown();
+  static void UpdateCacheSizeFromLocalPrefs();
 
-    static void Delete();
-    static void Reset();
+  static void Delete();
+  static void Reset();
 
-    static void TouchFreshness();
-    static uint64_t GetFreshness();
+  static void TouchFreshness();
+  static uint64_t GetFreshness();
 
-    static void ClearCacheContents();
+  static void ClearCacheContents();
 
-    static bool AmClosingDown();
+  static bool AmClosingDown();
 
-private:
-    OmCacheManager();
-    ~OmCacheManager();
+ private:
+  OmCacheManager();
+  ~OmCacheManager();
 
-    friend class zi::singleton<OmCacheManager>;
+  friend class zi::singleton<OmCacheManager>;
 };
-

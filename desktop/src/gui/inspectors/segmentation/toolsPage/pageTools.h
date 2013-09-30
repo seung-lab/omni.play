@@ -7,20 +7,17 @@ namespace om {
 namespace segmentationInspector {
 
 class PageTools : public QWidget {
-private:
-    const SegmentationDataWrapper sdw_;
+ private:
+  const SegmentationDataWrapper sdw_;
 
-public:
-    PageTools(QWidget* parent, const SegmentationDataWrapper& sdw);
+ public:
+  PageTools(QWidget* parent, const SegmentationDataWrapper& sdw);
 
-    const SegmentationDataWrapper& GetSDW() const {
-        return sdw_;
-    }
+  const SegmentationDataWrapper& GetSDW() const { return sdw_; }
 
-private:        
-    QGroupBox* makeToolsBox();  
+ private:
+  QGroupBox* makeToolsBox();
 };
 
-} // namespace segmentationInspector
-} // namespace om
-
+}  // namespace segmentationInspector
+}  // namespace om

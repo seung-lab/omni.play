@@ -18,8 +18,7 @@ class chunkDataReader {
   ~chunkDataReader() {}
 
   // no locking needed
-  template <typename T>
-  std::shared_ptr<T> Read(const FilePart& entry) {
+  template <typename T> std::shared_ptr<T> Read(const FilePart& entry) {
     const int64_t numBytes = entry.totalBytes;
 
     assert(numBytes);

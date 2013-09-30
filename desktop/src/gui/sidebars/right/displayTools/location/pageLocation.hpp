@@ -13,39 +13,33 @@ namespace om {
 namespace displayTools {
 
 class PageLocation : public QWidget {
-Q_OBJECT
+  Q_OBJECT private : OmViewGroupState* const vgs_;
 
-private:
-    OmViewGroupState *const vgs_;
+ public:
+  PageLocation(QWidget* parent, OmViewGroupState* vgs)
+      : QWidget(parent), vgs_(vgs) {
+    QVBoxLayout* box = new QVBoxLayout(this);
 
-public:
-    PageLocation(QWidget* parent, OmViewGroupState* vgs)
-        : QWidget(parent)
-        , vgs_(vgs)
-    {
-        QVBoxLayout* box = new QVBoxLayout(this);
+    box->addWidget(makeWidget(new SliceDepthSpinBoxX(this, vgs_)));
+    box->addWidget(makeWidget(new SliceDepthSpinBoxY(this, vgs_)));
+    box->addWidget(makeWidget(new SliceDepthSpinBoxZ(this, vgs_)));
+    box->addWidget(new saveLocationButton(this, vgs_));
+    box->addStretch(1);
+  }
 
-        box->addWidget(makeWidget(new SliceDepthSpinBoxX(this, vgs_)));
-        box->addWidget(makeWidget(new SliceDepthSpinBoxY(this, vgs_)));
-        box->addWidget(makeWidget(new SliceDepthSpinBoxZ(this, vgs_)));
-        box->addWidget(new saveLocationButton(this, vgs_));
-        box->addStretch(1);
-    }
+ private:
+  QWidget* makeWidget(SliceDepthSpinBoxBase* w) {
+    QWidget* ret = new QWidget(this);
+    QHBoxLayout* box = new QHBoxLayout(ret);
 
-private:
-    QWidget* makeWidget(SliceDepthSpinBoxBase* w)
-    {
-        QWidget* ret = new QWidget(this);
-        QHBoxLayout* box = new QHBoxLayout(ret);
+    box->addWidget(new QLabel(w->Label(), ret));
+    box->addWidget(w, 1);
 
-        box->addWidget(new QLabel(w->Label(), ret));
-        box->addWidget(w, 1);
+    box->setContentsMargins(0, 0, 0, 0);
 
-        box->setContentsMargins(0,0,0,0);
-
-        return ret;
-    }
+    return ret;
+  }
 };
 
-} // namespace displayTools
-} // namespace om
+}  // namespace displayTools
+}  // namespace om

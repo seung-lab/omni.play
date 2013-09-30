@@ -6,50 +6,47 @@
 // make a shallow copy of state information to avoid any locking issues
 //  with mTotalViewport
 OmTilePreFetcherTask::OmTilePreFetcherTask(OmView2dState* state)
-    : state_(new OmView2dState(*state))
-{}
+    : state_(new OmView2dState(*state)) {}
 
-void OmTilePreFetcherTask::run()
-{
-    onScreenTileCoords_.reset(new OmOnScreenTileCoords(state_.get(), state_->getVol()));
+void OmTilePreFetcherTask::run() {
+  onScreenTileCoords_.reset(
+      new OmOnScreenTileCoords(state_.get(), state_->getVol()));
 
-    const int maxPrefetchDepth = 32;
+  const int maxPrefetchDepth = 32;
 
-    for(int i = 1; i < maxPrefetchDepth; ++i)
-    {
-        if(shouldExitEarly()){
-            return;
-        }
-        preLoadDepth(i);
-
-        if(shouldExitEarly()){
-            return;
-        }
-        preLoadDepth(-i);
+  for (int i = 1; i < maxPrefetchDepth; ++i) {
+    if (shouldExitEarly()) {
+      return;
     }
+    preLoadDepth(i);
+
+    if (shouldExitEarly()) {
+      return;
+    }
+    preLoadDepth(-i);
+  }
 }
 
-void OmTilePreFetcherTask::preLoadDepth(const int depthOffset)
-{
-    OmTileCoordsAndLocationsPtr tilesCoordsToFetch =
-        onScreenTileCoords_->ComputeCoordsAndLocations(depthOffset);
+void OmTilePreFetcherTask::preLoadDepth(const int depthOffset) {
+  OmTileCoordsAndLocationsPtr tilesCoordsToFetch =
+      onScreenTileCoords_->ComputeCoordsAndLocations(depthOffset);
 
-    int count = 0;
-    FOR_EACH(tileCL, *tilesCoordsToFetch)
-    {
-        if(shouldExitEarly()){
-            //debug(tiles, "OmTilePreFetcherTask: fetched %d tiles, aborting\n", count);
-            return;
-        }
-
-        ++count;
-
-        OmTileCache::Prefetch(tileCL->tileCoord, depthOffset);
+  int count = 0;
+  FOR_EACH(tileCL, *tilesCoordsToFetch) {
+    if (shouldExitEarly()) {
+      //debug(tiles, "OmTilePreFetcherTask: fetched %d tiles, aborting\n",
+      //count);
+      return;
     }
 
-    //debug(tiles, "OmTilePreFetcherTask: fetched %d tiles\n", count);
+    ++count;
+
+    OmTileCache::Prefetch(tileCL->tileCoord, depthOffset);
+  }
+
+  //debug(tiles, "OmTilePreFetcherTask: fetched %d tiles\n", count);
 }
 
-bool OmTilePreFetcherTask::shouldExitEarly(){
-    return OmTileCache::AreDrawersActive();
+bool OmTilePreFetcherTask::shouldExitEarly() {
+  return OmTileCache::AreDrawersActive();
 }

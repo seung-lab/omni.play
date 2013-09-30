@@ -11,8 +11,7 @@
 namespace om {
 namespace datalayer {
 
-template <typename T>
-class FilePtrCache {
+template <typename T> class FilePtrCache {
  public:
   FilePtrCache(size_t cacheSize = 50) : cacheSize_(cacheSize) {}
 

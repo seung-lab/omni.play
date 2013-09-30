@@ -4,26 +4,17 @@
 #include "project/omProject.h"
 
 class OmProjectSaveActionImpl {
-public:
-    OmProjectSaveActionImpl()
-    {}
+ public:
+  OmProjectSaveActionImpl() {}
 
-    void Execute(){
-        OmProject::Save();
-    }
+  void Execute() { OmProject::Save(); }
 
-    void Undo()
-    {}
+  void Undo() {}
 
-    std::string Description() const {
-        return "Saved";
-    }
+  std::string Description() const { return "Saved"; }
 
-    QString classNameForLogFile() const {
-        return "OmProjectSaveAction";
-    }
+  QString classNameForLogFile() const { return "OmProjectSaveAction"; }
 
-private:
-    template <typename T> friend class OmActionLoggerThread;
+ private:
+  template <typename T> friend class OmActionLoggerThread;
 };
-

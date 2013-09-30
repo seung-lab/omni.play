@@ -10,8 +10,7 @@
 namespace om {
 namespace cache {
 
-template <typename KEY>
-class KeyMultiIndex {
+template <typename KEY> class KeyMultiIndex {
  public:
   virtual ~KeyMultiIndex() {}
 
@@ -29,7 +28,7 @@ class KeyMultiIndex {
   inline void touch(const KEY& key) {
     std::pair<iterator, bool> p = list_.push_back(key);
     if (!p.second)  // key already in list
-    {
+        {
       list_.relocate(list_.end(), p.first);
     }
   }

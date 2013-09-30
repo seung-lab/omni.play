@@ -11,38 +11,31 @@
 #include "volume/omSegmentation.h"
 
 class BreakThresholdGroup : public OmDoubleSpinBox {
-Q_OBJECT
-public:
-    BreakThresholdGroup(GraphTools* d, OmViewGroupState* vgs)
-        : OmDoubleSpinBox(d, true)
-        , vgs_(vgs)
-    {
-        setSingleStep(0.002);
-        setMaximum(1.0);
-        setDecimals(3);
-        setInitialGUIThresholdValue();
-    }
+  Q_OBJECT public : BreakThresholdGroup(GraphTools* d, OmViewGroupState* vgs)
+                    : OmDoubleSpinBox(d, true), vgs_(vgs) {
+    setSingleStep(0.002);
+    setMaximum(1.0);
+    setDecimals(3);
+    setInitialGUIThresholdValue();
+  }
 
-private:
-    OmViewGroupState *const vgs_;
+ private:
+  OmViewGroupState* const vgs_;
 
-    void setInitialGUIThresholdValue()
-    {
-        static const double threshold = 1.;
+  void setInitialGUIThresholdValue() {
+    static const double threshold = 1.;
 
-        setGUIvalue(threshold);
+    setGUIvalue(threshold);
 
-        vgs_->setBreakThreshold(threshold);
-    }
+    vgs_->setBreakThreshold(threshold);
+  }
 
-    void actUponValueChange(const double threshold)
-    {
-        vgs_->setBreakThreshold(threshold);
+  void actUponValueChange(const double threshold) {
+    vgs_->setBreakThreshold(threshold);
 
-        // todo: don't use same freshness as normal tiles
-        OmCacheManager::TouchFreshness();
-        OmEvents::Redraw2d();
-        OmEvents::Redraw3d();
-    }
+    // todo: don't use same freshness as normal tiles
+    OmCacheManager::TouchFreshness();
+    OmEvents::Redraw2d();
+    OmEvents::Redraw3d();
+  }
 };
-

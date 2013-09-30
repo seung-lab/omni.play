@@ -4,50 +4,46 @@
 /*
  * Construct and initialize references.
  */
-OmViewEvent::OmViewEvent(QEvent::Type type)
-    : OmEvent(type, CLASS)
-{
-
-}
+OmViewEvent::OmViewEvent(QEvent::Type type) : OmEvent(type, CLASS) {}
 
 /*
  * Dispatch event based on event type.
  */
-void OmViewEvent::Dispatch(OmEventListener * pListener)
-{
+void OmViewEvent::Dispatch(OmEventListener *pListener) {
 
-    //cast to proper listener
-    OmViewEventListener *p_cast_listener = dynamic_cast < OmViewEventListener * >(pListener);
-    assert(p_cast_listener);
+  //cast to proper listener
+  OmViewEventListener *p_cast_listener =
+      dynamic_cast<OmViewEventListener *>(pListener);
+  assert(p_cast_listener);
 
-    switch (type()) {
+  switch (type()) {
 
     case OmViewEvent::VIEW_BOX_CHANGE:
-        p_cast_listener->ViewBoxChangeEvent();
-        return;
+      p_cast_listener->ViewBoxChangeEvent();
+      return;
 
     case OmViewEvent::VIEW_CENTER_CHANGE:
-        p_cast_listener->ViewCenterChangeEvent();
-        return;
+      p_cast_listener->ViewCenterChangeEvent();
+      return;
 
     case OmViewEvent::VIEW_POS_CHANGE:
-        p_cast_listener->ViewPosChangeEvent();
-        return;
+      p_cast_listener->ViewPosChangeEvent();
+      return;
 
     case OmViewEvent::REDRAW:
-        p_cast_listener->ViewRedrawEvent();
-        return;
+      p_cast_listener->ViewRedrawEvent();
+      return;
 
     case OmViewEvent::REDRAW_BLOCKING:
-        p_cast_listener->ViewBlockingRedrawEvent();
-        return;
+      p_cast_listener->ViewBlockingRedrawEvent();
+      return;
 
     case OmViewEvent::COORD_SYSTEM_CHANGE:
-        p_cast_listener->CoordSystemChangeEvent();
-        return;
+      p_cast_listener->CoordSystemChangeEvent();
+      return;
 
     default:
-        throw om::ArgException("unknown event type");
-    }
+      throw om::ArgException("unknown event type");
+  }
 
 }

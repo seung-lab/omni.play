@@ -7,7 +7,8 @@
 namespace om {
 namespace network {
 namespace http {
-struct V1 {};
+struct V1 {
+};
 
 // Must implement om::network::http::partial_path for each key type.  Tag is
 // used to differentiate multiple API versions.
@@ -17,8 +18,7 @@ uri path(Tag tag, uri root, const TKey& key) {
 }
 
 // Boring default implementation.  Partially specialize for specific data types.
-template <typename T, typename VersionTag = V1>
-struct interface {
+template <typename T, typename VersionTag = V1> struct interface {
   static std::string mime_type() { return "application/octet-stream"; }
   static std::string serialize(std::shared_ptr<T> data) {
     return std::string();

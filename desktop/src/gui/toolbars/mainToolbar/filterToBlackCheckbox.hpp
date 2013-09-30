@@ -5,21 +5,17 @@
 #include "events/omEvents.h"
 
 class FilterToBlackCheckbox : public OmCheckBoxWidget {
-public:
-    FilterToBlackCheckbox(QWidget* p)
-        : OmCheckBoxWidget(p, "Fade To Black")
-    {
-        // set initial state of checkbox without having doAction called...
-        blockSignals(true);
-        setChecked(Om2dPreferences::HaveAlphaGoToBlack());
-        blockSignals(false);
-    }
+ public:
+  FilterToBlackCheckbox(QWidget* p) : OmCheckBoxWidget(p, "Fade To Black") {
+    // set initial state of checkbox without having doAction called...
+    blockSignals(true);
+    setChecked(Om2dPreferences::HaveAlphaGoToBlack());
+    blockSignals(false);
+  }
 
-private:
-    void doAction(const bool isChecked)
-    {
-        Om2dPreferences::HaveAlphaGoToBlack(isChecked);
-        OmEvents::Redraw2d();
-    }
+ private:
+  void doAction(const bool isChecked) {
+    Om2dPreferences::HaveAlphaGoToBlack(isChecked);
+    OmEvents::Redraw2d();
+  }
 };
-

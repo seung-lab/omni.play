@@ -260,9 +260,8 @@ void ServiceTracker::reportCheckpoint() {
 
   // log checkpoint
   stringstream message;
-  message << "checkpoint_time:" << check_interval
-          << " checkpoint_services:" << check_count
-          << " checkpoint_speed_sum:" << check_duration
+  message << "checkpoint_time:" << check_interval << " checkpoint_services:"
+          << check_count << " checkpoint_speed_sum:" << check_duration
           << " lifetime_time:" << life_interval
           << " lifetime_services:" << life_count;
   if (featureThreadCheck_ && threadManager_ != nullptr) {

@@ -10,73 +10,67 @@ class OmViewGroupState;
 class OmSegments;
 
 class OmActionsImpl {
-private:
-    std::unique_ptr<OmThreadPool> threadPool_;
+ private:
+  std::unique_ptr<OmThreadPool> threadPool_;
 
-public:
-    OmActionsImpl();
-    ~OmActionsImpl();
+ public:
+  OmActionsImpl();
+  ~OmActionsImpl();
 
-    inline OmThreadPool& ThreadPool(){
-        return *threadPool_;
-    }
+  inline OmThreadPool& ThreadPool() { return *threadPool_; }
 
-// project-related
-    void Save();
-    void Close();
+  // project-related
+  void Save();
+  void Close();
 
-// MST-related
-    void ChangeMSTthreshold(const SegmentationDataWrapper sdw,
-                            const double threshold);
+  // MST-related
+  void ChangeMSTthreshold(const SegmentationDataWrapper sdw,
+                          const double threshold);
 
-    void ChangeSizethreshold(const SegmentationDataWrapper sdw,
-                             const double threshold);
+  void ChangeSizethreshold(const SegmentationDataWrapper sdw,
+                           const double threshold);
 
-// painting-related
-    void SetVoxel(const om::common::ID segmentationId,
-                  const om::globalCoord rVoxel,
-                  const om::common::SegID value);
+  // painting-related
+  void SetVoxel(const om::common::ID segmentationId,
+                const om::globalCoord rVoxel, const om::common::SegID value);
 
-    void SetVoxels(const om::common::ID segmentationId,
-                   const std::set<om::globalCoord> rVoxels,
-                   const om::common::SegID value);
+  void SetVoxels(const om::common::ID segmentationId,
+                 const std::set<om::globalCoord> rVoxels,
+                 const om::common::SegID value);
 
-// segment-related
-    void ValidateSegment(const SegmentDataWrapper sdw,
-                         const om::common::SetValid valid, const bool dontCenter=false);
+  // segment-related
+  void ValidateSegment(const SegmentDataWrapper sdw,
+                       const om::common::SetValid valid,
+                       const bool dontCenter = false);
 
-    void ValidateSelectedSegments(const SegmentationDataWrapper sdw,
-                                  const om::common::SetValid valid);
+  void ValidateSelectedSegments(const SegmentationDataWrapper sdw,
+                                const om::common::SetValid valid);
 
-    void UncertainSegment(const SegmentDataWrapper sdw,
-                          const bool uncertain);
+  void UncertainSegment(const SegmentDataWrapper sdw, const bool uncertain);
 
-    void UncertainSegmentation(const SegmentationDataWrapper sdw,
-                               const bool uncertain);
+  void UncertainSegmentation(const SegmentationDataWrapper sdw,
+                             const bool uncertain);
 
-    void JoinSegmentsWrapper(const SegmentationDataWrapper sdw);
-    void JoinSegmentsSet(const SegmentationDataWrapper sdw,
-                         const om::common::SegIDSet ids);
+  void JoinSegmentsWrapper(const SegmentationDataWrapper sdw);
+  void JoinSegmentsSet(const SegmentationDataWrapper sdw,
+                       const om::common::SegIDSet ids);
 
-    void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
-    void ShatterSegment(OmSegment* seg);
+  void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
+  void ShatterSegment(OmSegment* seg);
 
-    void CutSegment(const SegmentDataWrapper sdw);
+  void CutSegment(const SegmentDataWrapper sdw);
 
-    void SelectSegments(std::shared_ptr<OmSelectSegmentsParams> params);
+  void SelectSegments(std::shared_ptr<OmSelectSegmentsParams> params);
 
-// group-related
-    void CreateOrDeleteSegmentGroup(const om::common::ID segmentationID,
-                                    const om::common::SegIDSet selectedSegmentIDs,
-                                    const om::common::GroupName name,
-                                    const bool create);
+  // group-related
+  void CreateOrDeleteSegmentGroup(const om::common::ID segmentationID,
+                                  const om::common::SegIDSet selectedSegmentIDs,
+                                  const om::common::GroupName name,
+                                  const bool create);
 
-private:
-    void setUncertain(const SegmentDataWrapper& sdw,
-                      const bool uncertain);
+ private:
+  void setUncertain(const SegmentDataWrapper& sdw, const bool uncertain);
 
-    void setUncertain(const SegmentationDataWrapper& sdw,
-                      const bool uncertain);
+  void setUncertain(const SegmentationDataWrapper& sdw, const bool uncertain);
 
 };
-

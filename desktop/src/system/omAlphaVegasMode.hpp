@@ -6,33 +6,26 @@
 
 #include <qthread.h>
 
-class OmAlphaVegasMode: public QThread {
-public:
-    OmAlphaVegasMode()
-        : stop_(false)
-    {
-        start();
+class OmAlphaVegasMode : public QThread {
+ public:
+  OmAlphaVegasMode() : stop_(false) { start(); }
+
+  ~OmAlphaVegasMode() {
+    stop_ = true;
+    wait();
+  }
+
+  void run() {
+    Q_FOREVER {
+      if (stop_) {
+        return;
+      }
+
+      FilterWidget::Cycle();
+      QThread::msleep(666);
     }
+  }
 
-    ~OmAlphaVegasMode()
-    {
-        stop_ = true;
-        wait();
-    }
-
-    void run()
-    {
-        Q_FOREVER{
-            if(stop_){
-                return;
-            }
-
-            FilterWidget::Cycle();
-            QThread::msleep(666);
-        }
-    }
-
-private:
-    bool stop_;
+ private:
+  bool stop_;
 };
-

@@ -54,8 +54,7 @@ class VoxelGetter : public datalayer::IDataSource<coords::Global, T> {
   struct chunk_extractor : public boost::static_visitor<T> {
     chunk_extractor(size_t offset) : offset(offset) {}
 
-    template <typename TChunk>
-    T operator()(const Chunk<TChunk>& chunk) const {
+    template <typename TChunk> T operator()(const Chunk<TChunk>& chunk) const {
       throw ArgException("Trying to get the wrong type of data from a volume.");
     }
 

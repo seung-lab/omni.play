@@ -8,16 +8,16 @@ namespace om {
 namespace channel {
 
 class folder {
-private:
-    OmChannelImpl *const vol_;
+ private:
+  OmChannelImpl* const vol_;
 
-public:
-    folder(OmChannelImpl* chan);
+ public:
+  folder(OmChannelImpl* chan);
 
-    QString GetVolPath() const;
-    QString RelativeVolPath() const;
-    QString MakeVolFolder() const;
+  QString GetVolPath() const;
+  QString RelativeVolPath() const;
+  QString MakeVolFolder() const;
 };
 
-} // namespace channel
-} // namespace om
+}  // namespace channel
+}  // namespace om

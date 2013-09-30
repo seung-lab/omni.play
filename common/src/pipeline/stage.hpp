@@ -7,8 +7,7 @@
 namespace om {
 namespace pipeline {
 
-template <typename T>
-struct Data {
+template <typename T> struct Data {
   size_t size;
   std::shared_ptr<T> data;
 
@@ -29,8 +28,7 @@ typedef boost::variant<Data<bool>, Data<char>, Data<int8_t>, Data<uint8_t>,
 
 typedef boost::static_visitor<data_var> stage;
 
-template <typename T>
-data_var operator>>(const data_var& d, const T& v) {
+template <typename T> data_var operator>>(const data_var& d, const T& v) {
   return boost::apply_visitor(v, d);
 }
 

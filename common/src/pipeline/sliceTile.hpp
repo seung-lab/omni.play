@@ -10,8 +10,7 @@ namespace pipeline {
 
 class getTile : public stage {
  public:
-  template <typename T>
-  data_var operator()(const tile::Tile<T>& in) const {
+  template <typename T> data_var operator()(const tile::Tile<T>& in) const {
     return Data<T>(in.data(), in.length());
   }
 };

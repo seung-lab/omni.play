@@ -8,12 +8,10 @@ namespace om {
 namespace mem {
 
 enum class ZeroFill {
-  DONT,
-  ZERO
+  DONT, ZERO
 };
 
-template <typename T>
-class Malloc {
+template <typename T> class Malloc {
  public:
   static std::shared_ptr<T> inline NumBytesZero(const uint64_t numBytes) {
     return NumBytes(numBytes, ZeroFill::ZERO);

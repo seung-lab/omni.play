@@ -22,53 +22,42 @@ namespace rebuilder {
 
 class segmentation {
 
-private:
-    OmSegmentation* vol_;
+ private:
+  OmSegmentation* vol_;
 
-public:
-    segmentation(OmSegmentation* vol)
-        : vol_(vol)
-    {}
+ public:
+  segmentation(OmSegmentation* vol) : vol_(vol) {}
 
-    segmentation(const SegmentationDataWrapper& sdw)
-    {
-        vol_ = sdw.GetSegmentationPtr();
-    }
+  segmentation(const SegmentationDataWrapper& sdw) {
+    vol_ = sdw.GetSegmentationPtr();
+  }
 
-    void Rebuild()
-    {
-        setVolAsBuilding();
+  void Rebuild() {
+    setVolAsBuilding();
 
-        OmVolumeAllocater::ReAllocateDownsampledVolumes(vol_);
+    OmVolumeAllocater::ReAllocateDownsampledVolumes(vol_);
 
-        downsample();
-        processVol();
+    downsample();
+    processVol();
 
-        setVolAsBuilt();
+    setVolAsBuilt();
 
-        vol_->LoadVolData();
+    vol_->LoadVolData();
 
-        HeadlessImpl::ClearMST(vol_->GetID());
-    }
+    HeadlessImpl::ClearMST(vol_->GetID());
+  }
 
-private:
-    virtual void downsample(){
-        vol_->VolData()->downsample(vol_);
-    }
+ private:
+  virtual void downsample() { vol_->VolData()->downsample(vol_); }
 
-    virtual void processVol()
-    {
-        OmVolumeProcessor processor;
-        processor.BuildThreadedVolume(vol_);
-    }
+  virtual void processVol() {
+    OmVolumeProcessor processor;
+    processor.BuildThreadedVolume(vol_);
+  }
 
-    void setVolAsBuilding(){
-        vol_->SetBuildState(MIPVOL_BUILDING);
-    }
+  void setVolAsBuilding() { vol_->SetBuildState(MIPVOL_BUILDING); }
 
-    void setVolAsBuilt(){
-        vol_->SetBuildState(MIPVOL_BUILT);
-    }
+  void setVolAsBuilt() { vol_->SetBuildState(MIPVOL_BUILT); }
 };
 
 }

@@ -5,8 +5,7 @@
 namespace om {
 namespace datalayer {
 
-template <typename TKey, typename TValue>
-struct Vector {
+template <typename TKey, typename TValue> struct Vector {
   Vector(const TKey& key) : Key(key) {}
 
   TKey Key;

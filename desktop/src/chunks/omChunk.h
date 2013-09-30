@@ -14,46 +14,40 @@
 class OmChannel;
 class OmChannelImpl;
 class OmSegmentation;
-namespace om { namespace chunk { class dataInterface; } }
+namespace om {
+namespace chunk {
+class dataInterface;
+}
+}
 
 class OmChunk {
-public:
-    OmChunk(OmChannel* vol, const om::chunkCoord& coord);
-    OmChunk(OmChannelImpl* vol, const om::chunkCoord& coord);
-    OmChunk(OmSegmentation* vol, const om::chunkCoord& coord);
+ public:
+  OmChunk(OmChannel* vol, const om::chunkCoord& coord);
+  OmChunk(OmChannelImpl* vol, const om::chunkCoord& coord);
+  OmChunk(OmSegmentation* vol, const om::chunkCoord& coord);
 
-    virtual ~OmChunk();
+  virtual ~OmChunk();
 
-    bool ContainsVoxel(const om::dataCoord& vox) const {
-        return vox.volume() == vol_ &&  
-               vox.level() == GetLevel() &&
-               mipping_.GetExtent().contains(vox);
-    }
+  bool ContainsVoxel(const om::dataCoord& vox) const {
+    return vox.volume() == vol_ && vox.level() == GetLevel() &&
+           mipping_.GetExtent().contains(vox);
+  }
 
-public:
-    const om::chunkCoord& GetCoordinate() const {
-        return coord_;
-    }
-    int GetLevel() const {
-        return coord_.Level;
-    }
-    const om::dataCoord GetDimensions() const {
-        return mipping_.GetExtent().getUnitDimensions();
-    }
+ public:
+  const om::chunkCoord& GetCoordinate() const { return coord_; }
+  int GetLevel() const { return coord_.Level; }
+  const om::dataCoord GetDimensions() const {
+    return mipping_.GetExtent().getUnitDimensions();
+  }
 
-    om::chunk::dataInterface* Data(){
-        return chunkData_.get();
-    }
+  om::chunk::dataInterface* Data() { return chunkData_.get(); }
 
-    OmChunkMipping& Mipping(){
-        return mipping_;
-    }
+  OmChunkMipping& Mipping() { return mipping_; }
 
-protected:
-    const om::chunkCoord coord_;
-    const std::unique_ptr<om::chunk::dataInterface> chunkData_;
-    const OmMipVolume * const vol_;
+ protected:
+  const om::chunkCoord coord_;
+  const std::unique_ptr<om::chunk::dataInterface> chunkData_;
+  const OmMipVolume* const vol_;
 
-    OmChunkMipping mipping_;
+  OmChunkMipping mipping_;
 };
-

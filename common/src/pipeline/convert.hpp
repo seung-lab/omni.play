@@ -7,8 +7,7 @@
 namespace om {
 namespace pipeline {
 
-template <typename T>
-class Convert : public boost::static_visitor<Data<T>> {
+template <typename T> class Convert : public boost::static_visitor<Data<T>> {
  public:
   template <typename TIn>
   Data<T> operator()(const chunk::Chunk<TIn>& chunk) const {
@@ -26,12 +25,12 @@ class Convert : public boost::static_visitor<Data<T>> {
 };
 
 template <typename T>
-Data<T> operator>>(const chunk::ChunkVar& d, const Convert<T>& v) {
+    Data<T> operator>>(const chunk::ChunkVar& d, const Convert<T>& v) {
   return boost::apply_visitor(v, d);
 }
 
 template <typename T>
-Data<T> operator>>(const tile::TileVar& d, const Convert<T>& v) {
+    Data<T> operator>>(const tile::TileVar& d, const Convert<T>& v) {
   return boost::apply_visitor(v, d);
 }
 }

@@ -12,38 +12,34 @@
 #include "utility/dataWrappers.h"
 #include <QToolBox>
 
-om::sidebars::rightImpl::rightImpl(MainWindow* mainWindow, OmViewGroupState* vgs)
-    : QWidget(mainWindow)
-    , mainWindow_(mainWindow)
-    , vgs_(vgs)
-{
-    OmAppState::SetRightToolBar(this);
+om::sidebars::rightImpl::rightImpl(MainWindow* mainWindow,
+                                   OmViewGroupState* vgs)
+    : QWidget(mainWindow), mainWindow_(mainWindow), vgs_(vgs) {
+  OmAppState::SetRightToolBar(this);
 
-    graphTools_ = new GraphTools(this, vgs_);
-    ValidationGroup* validationGroup = new ValidationGroup(this, vgs_);
-    DisplayTools* displayTools = new DisplayTools(this, vgs_);
-    AnnotationGroup* annotationGroup = new AnnotationGroup(this, vgs_);
+  graphTools_ = new GraphTools(this, vgs_);
+  ValidationGroup* validationGroup = new ValidationGroup(this, vgs_);
+  DisplayTools* displayTools = new DisplayTools(this, vgs_);
+  AnnotationGroup* annotationGroup = new AnnotationGroup(this, vgs_);
 
-    QVBoxLayout* vbox = new QVBoxLayout(this);
-    vbox->addWidget(wrapWithGroupBox(graphTools_));
-    vbox->addWidget(wrapWithGroupBox(validationGroup));
-    vbox->addWidget(wrapWithGroupBox(displayTools));
-    vbox->addWidget(wrapWithGroupBox(annotationGroup), 1);
-    setMaximumSize(250, 2000);
+  QVBoxLayout* vbox = new QVBoxLayout(this);
+  vbox->addWidget(wrapWithGroupBox(graphTools_));
+  vbox->addWidget(wrapWithGroupBox(validationGroup));
+  vbox->addWidget(wrapWithGroupBox(displayTools));
+  vbox->addWidget(wrapWithGroupBox(annotationGroup), 1);
+  setMaximumSize(250, 2000);
 }
 
-SegmentationDataWrapper om::sidebars::rightImpl::GetSDW(){
-    return vgs_->Segmentation();
+SegmentationDataWrapper om::sidebars::rightImpl::GetSDW() {
+  return vgs_->Segmentation();
 }
 
-void om::sidebars::rightImpl::updateGui(){
-    OmEvents::Redraw2d();
+void om::sidebars::rightImpl::updateGui() { OmEvents::Redraw2d(); }
+
+void om::sidebars::rightImpl::SetSplittingOff() {
+  graphTools_->SetSplittingOff();
 }
 
-void om::sidebars::rightImpl::SetSplittingOff(){
-    graphTools_->SetSplittingOff();
-}
-
-void om::sidebars::rightImpl::SetShatteringOff(){
-    graphTools_->SetShatteringOff();
+void om::sidebars::rightImpl::SetShatteringOff() {
+  graphTools_->SetShatteringOff();
 }

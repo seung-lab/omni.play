@@ -100,8 +100,7 @@ void GroupsTable::populateGroupTable(om::common::GroupID id) {
 
     QPushButton* colorButton = new QPushButton();
     colorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3) }")
-                                   .arg(color.red)
-                                   .arg(color.green)
+                                   .arg(color.red).arg(color.green)
                                    .arg(color.blue));
     mGroupsTable->setCellWidget(count, 1, colorButton);
     mGroupsTable->setItem(count, 2,

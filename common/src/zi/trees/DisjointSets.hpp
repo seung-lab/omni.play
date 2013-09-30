@@ -8,8 +8,7 @@
 
 namespace zi {
 
-template <typename T>
-class DisjointSets {
+template <typename T> class DisjointSets {
 
  private:
   struct Node {

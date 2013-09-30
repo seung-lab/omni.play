@@ -5,25 +5,23 @@
 class OmVoxelSetValueActionImpl;
 
 class OmVoxelSetValueAction : public OmUndoCommand {
-public:
-    OmVoxelSetValueAction(std::shared_ptr<OmVoxelSetValueActionImpl> impl)
-        : impl_(impl)
-    {}
+ public:
+  OmVoxelSetValueAction(std::shared_ptr<OmVoxelSetValueActionImpl> impl)
+      : impl_(impl) {}
 
-    OmVoxelSetValueAction(const om::common::ID segmentationId,
-                          const om::globalCoord& rVoxel,
-                          const om::common::SegID value);
+  OmVoxelSetValueAction(const om::common::ID segmentationId,
+                        const om::globalCoord& rVoxel,
+                        const om::common::SegID value);
 
-    OmVoxelSetValueAction(const om::common::ID segmentationId,
-                          const std::set<om::globalCoord>&rVoxels,
-                          const om::common::SegID value);
+  OmVoxelSetValueAction(const om::common::ID segmentationId,
+                        const std::set<om::globalCoord>& rVoxels,
+                        const om::common::SegID value);
 
-private:
-    void Action();
-    void UndoAction();
-    std::string Description();
-    void save(const std::string&);
+ private:
+  void Action();
+  void UndoAction();
+  std::string Description();
+  void save(const std::string&);
 
-    std::shared_ptr<OmVoxelSetValueActionImpl> impl_;
+  std::shared_ptr<OmVoxelSetValueActionImpl> impl_;
 };
-

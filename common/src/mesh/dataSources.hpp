@@ -5,8 +5,7 @@
 
 namespace om {
 namespace datalayer {
-template <typename TKey, typename TValue>
-class DataSourceHierarchy;
+template <typename TKey, typename TValue> class DataSourceHierarchy;
 }
 namespace mesh {
 

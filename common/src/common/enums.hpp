@@ -7,51 +7,36 @@ namespace om {
 namespace common {
 
 enum class ZeroMem {
-  ZERO_FILL,
-  DONT_ZERO_FILL
+  ZERO_FILL, DONT_ZERO_FILL
 };
 enum class Blocking {
-  BLOCKING,
-  NON_BLOCKING
+  BLOCKING, NON_BLOCKING
 };
 enum class SetValid {
-  SET_VALID,
-  SET_NOT_VALID
+  SET_VALID, SET_NOT_VALID
 };
 enum class AffinityGraph {
-  NO_AFFINITY,
-  X_AFFINITY,
-  Y_AFFINITY,
-  Z_AFFINITY
+  NO_AFFINITY, X_AFFINITY, Y_AFFINITY, Z_AFFINITY
 };
 enum class ShouldBufferWrites {
-  BUFFER_WRITES,
-  DONT_BUFFER_WRITES
+  BUFFER_WRITES, DONT_BUFFER_WRITES
 };
 enum class AllowOverwrite {
-  WRITE_ONCE,
-  OVERWRITE
+  WRITE_ONCE, OVERWRITE
 };
 enum class AddOrSubtract {
-  ADD,
-  SUBTRACT
+  ADD, SUBTRACT
 };
 enum class Direction {
-  LEFT,
-  RIGHT,
-  UP,
-  DOWN
+  LEFT, RIGHT, UP, DOWN
 };
 
 enum class SegListType : uint8_t {
-  WORKING = 0,
-  VALID = 1,
-  UNCERTAIN = 2
+  WORKING = 0, VALID = 1, UNCERTAIN = 2
 };
 
 enum class CacheGroup {
-  MESH_CACHE = 1,
-  TILE_CACHE
+  MESH_CACHE = 1, TILE_CACHE
 };
 
 inline std::ostream& operator<<(std::ostream& out, const CacheGroup& c) {

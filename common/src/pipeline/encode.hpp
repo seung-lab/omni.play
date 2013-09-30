@@ -8,8 +8,7 @@ namespace pipeline {
 
 class encode : public stage {
  public:
-  template <typename T>
-  data_var operator()(const Data<T>& in) const {
+  template <typename T> data_var operator()(const Data<T>& in) const {
     return doEncode(reinterpret_cast<const char*>(in.data.get()),
                     in.size * sizeof(T));
   }

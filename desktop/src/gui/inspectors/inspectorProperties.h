@@ -11,37 +11,30 @@ class OmViewGroupState;
 class InspectorProperties : public QDialog,
                             public OmUserInterfaceEventListener,
                             public OmSegmentEventListener {
-Q_OBJECT
+  Q_OBJECT public : InspectorProperties(QWidget* parent, OmViewGroupState* vgs);
 
-public:
-    InspectorProperties(QWidget *parent, OmViewGroupState * vgs);
+  virtual ~InspectorProperties();
 
-    virtual ~InspectorProperties();
+  void SetOrReplaceWidget(QWidget* incomingWidget, const QString& title);
 
-    void SetOrReplaceWidget(QWidget *incomingWidget, const QString& title);
+  OmViewGroupState* GetViewGroupState() { return vgs_; }
 
-    OmViewGroupState* GetViewGroupState(){
-        return vgs_;
-    }
+ public
+Q_SLOTS:
+  void CloseDialog();
 
-public Q_SLOTS:
-    void CloseDialog();
+ private:
+  OmViewGroupState* const vgs_;
 
-private:
-    OmViewGroupState *const vgs_;
+  std::unique_ptr<QWidget> widget_;
 
-    std::unique_ptr<QWidget> widget_;
+  QVBoxLayout* mainLayout_;
 
-    QVBoxLayout* mainLayout_;
+  void UpdateSegmentPropWidgetEvent(OmUserInterfaceEvent*);
 
-    void UpdateSegmentPropWidgetEvent(OmUserInterfaceEvent*);
+  void SegmentGUIlistEvent(OmSegmentEvent*) {}
 
-    void SegmentGUIlistEvent(OmSegmentEvent*)
-    {}
+  void SegmentSelectedEvent(OmSegmentEvent*) {}
 
-    void SegmentSelectedEvent(OmSegmentEvent*)
-    {}
-
-    void SegmentModificationEvent(OmSegmentEvent* event);
+  void SegmentModificationEvent(OmSegmentEvent* event);
 };
-

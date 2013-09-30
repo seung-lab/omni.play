@@ -5,41 +5,31 @@
 #include "view2d/omView2dState.hpp"
 #include "zi/omUtility.h"
 
-OmTilePreFetcher::OmTilePreFetcher()
-{
-    int maxThreads = 2;
-    if(OmSystemInformation::get_num_cores() < 3){
-        maxThreads = 1;
-    }
+OmTilePreFetcher::OmTilePreFetcher() {
+  int maxThreads = 2;
+  if (OmSystemInformation::get_num_cores() < 3) {
+    maxThreads = 1;
+  }
 
-    mThreadPool.start(maxThreads);
+  mThreadPool.start(maxThreads);
 }
 
-OmTilePreFetcher::~OmTilePreFetcher()
-{
-    Shutdown();
+OmTilePreFetcher::~OmTilePreFetcher() { Shutdown(); }
+
+void OmTilePreFetcher::RunTasks(const std::list<OmTileDrawer*>& drawers) {
+  FOR_EACH(iter, drawers) {
+    OmTileDrawer* drawer = *iter;
+
+    std::shared_ptr<OmTilePreFetcherTask> task =
+        std::make_shared<OmTilePreFetcherTask>(drawer->GetState());
+
+    mThreadPool.push_front(task);
+  }
 }
 
-void OmTilePreFetcher::RunTasks(const std::list<OmTileDrawer*>& drawers)
-{
-    FOR_EACH(iter, drawers)
-    {
-        OmTileDrawer* drawer = *iter;
+void OmTilePreFetcher::ClearTasks() { mThreadPool.clear(); }
 
-        std::shared_ptr<OmTilePreFetcherTask> task =
-            std::make_shared<OmTilePreFetcherTask>(drawer->GetState());
-
-        mThreadPool.push_front(task);
-    }
-}
-
-void OmTilePreFetcher::ClearTasks()
-{
-    mThreadPool.clear();
-}
-
-void OmTilePreFetcher::Shutdown()
-{
-    mThreadPool.clear();
-    mThreadPool.stop();
+void OmTilePreFetcher::Shutdown() {
+  mThreadPool.clear();
+  mThreadPool.stop();
 }

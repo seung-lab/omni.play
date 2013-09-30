@@ -9,23 +9,18 @@ namespace om {
 namespace segmentationInspector {
 
 class RebuildCenterOfSegmentDataButton : public OmButton<PageExport> {
-public:
-    RebuildCenterOfSegmentDataButton(PageExport * d)
-        : OmButton<PageExport>( d,
-                                  "Rebuild segment center data",
-                                  "Rebuild",
-                                  false)
-    {}
+ public:
+  RebuildCenterOfSegmentDataButton(PageExport* d)
+      : OmButton<PageExport>(d, "Rebuild segment center data", "Rebuild",
+                             false) {}
 
-private:
-    void doAction()
-    {
-        const SegmentationDataWrapper& sdw = mParent->GetSDW();
-        OmSegmentCenter::RebuildCenterOfSegmentData(sdw);
-        OmActions::Save();
-    }
+ private:
+  void doAction() {
+    const SegmentationDataWrapper& sdw = mParent->GetSDW();
+    OmSegmentCenter::RebuildCenterOfSegmentData(sdw);
+    OmActions::Save();
+  }
 };
 
-} // namespace segmentationInspector
-} // namespace om
-
+}  // namespace segmentationInspector
+}  // namespace om

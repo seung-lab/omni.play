@@ -12,19 +12,17 @@ class OmSegmentShatterActionImpl;
 
 class OmSegmentShatterAction : public OmUndoCommand {
 
-public:
-    OmSegmentShatterAction(std::shared_ptr<OmSegmentShatterActionImpl> impl)
-        : impl_(impl)
-    {}
+ public:
+  OmSegmentShatterAction(std::shared_ptr<OmSegmentShatterActionImpl> impl)
+      : impl_(impl) {}
 
-    OmSegmentShatterAction(const SegmentDataWrapper& sdw);
+  OmSegmentShatterAction(const SegmentDataWrapper& sdw);
 
-private:
-    void Action();
-    void UndoAction();
-    std::string Description();
-    void save(const std::string& comment);
+ private:
+  void Action();
+  void UndoAction();
+  std::string Description();
+  void save(const std::string& comment);
 
-    std::shared_ptr<OmSegmentShatterActionImpl> impl_;
+  std::shared_ptr<OmSegmentShatterActionImpl> impl_;
 };
-

@@ -11,23 +11,21 @@ namespace om {
 namespace segmentation {
 
 class loader {
-private:
-    OmSegmentation *const vol_;
+ private:
+  OmSegmentation* const vol_;
 
-public:
-    loader(OmSegmentation* vol)
-        : vol_(vol)
-    {}
+ public:
+  loader(OmSegmentation* vol) : vol_(vol) {}
 
-    void LoadSegmentPages(OmPagingPtrStore& ps,
-                          QSet<om::common::PageNum>& validPageNumbers,
-                          uint32_t size);
+  void LoadSegmentPages(OmPagingPtrStore& ps,
+                        QSet<om::common::PageNum>& validPageNumbers,
+                        uint32_t size);
 
-    void LoadSegmentPages(OmPagingPtrStore& ps);
+  void LoadSegmentPages(OmPagingPtrStore& ps);
 
-private:
-    void rebuildSegments();
+ private:
+  void rebuildSegments();
 };
 
-} // namespace segmentation
-} // namespace om
+}  // namespace segmentation
+}  // namespace om

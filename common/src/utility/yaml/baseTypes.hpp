@@ -10,8 +10,7 @@ using namespace vmml;
 
 namespace YAML {
 
-template <>
-struct convert<om::common::Color> {
+template <> struct convert<om::common::Color> {
   static Node encode(const om::common::Color& c) {
     Node node;
     node.push_back(c.red);
@@ -32,8 +31,7 @@ struct convert<om::common::Color> {
   }
 };
 
-template <class T>
-struct convert<Vector3<T>> {
+template <class T> struct convert<Vector3<T>> {
   static Node encode(const Vector3<T>& p) {
     Node node;
     node.push_back(p.x);
@@ -54,8 +52,7 @@ struct convert<Vector3<T>> {
   }
 };
 
-template <class T>
-struct convert<Matrix4<T>> {
+template <class T> struct convert<Matrix4<T>> {
   static Node encode(const Matrix4<T>& m) {
     Node node;
     for (auto i = 0; i < 16; i++) {
@@ -76,8 +73,7 @@ struct convert<Matrix4<T>> {
   }
 };
 
-template <class T>
-struct convert<AxisAlignedBoundingBox<T>> {
+template <class T> struct convert<AxisAlignedBoundingBox<T>> {
   static Node encode(const AxisAlignedBoundingBox<T>& aabb) {
     Node node;
     node["min"] = aabb.getMin();
@@ -96,8 +92,7 @@ struct convert<AxisAlignedBoundingBox<T>> {
   }
 };
 
-template <class T>
-struct convert<std::unordered_set<T>> {
+template <class T> struct convert<std::unordered_set<T>> {
   static Node encode(const std::unordered_set<T>& set) {
     Node node;
     for (auto& n : set) {
@@ -124,8 +119,7 @@ struct convert<std::unordered_set<T>> {
   }
 };
 
-template <class T>
-struct convert<std::set<T>> {
+template <class T> struct convert<std::set<T>> {
   static Node encode(const std::set<T>& set) {
     Node node;
     for (auto& n : set) {

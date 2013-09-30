@@ -5,8 +5,7 @@
 namespace om {
 namespace thread {
 
-template <class ARG, class T>
-struct IndivArgPolicy {
+template <class ARG, class T> struct IndivArgPolicy {
 
   std::function<void(T*, const ARG& arg)> func;
   T* classInstantiation;
@@ -22,8 +21,7 @@ struct IndivArgPolicy {
   }
 };
 
-template <class ARG, class T>
-struct VectorArgPolicy {
+template <class ARG, class T> struct VectorArgPolicy {
 
   std::function<void(T*, const std::vector<ARG>& args)> func;
   T* classInstantiation;
@@ -59,8 +57,7 @@ class ThreadPoolBatched {
 
   ~ThreadPoolBatched() { JoinPool(); }
 
-  template <typename U>
-  void Start(U func, T* classInstantiation) {
+  template <typename U> void Start(U func, T* classInstantiation) {
     const int numWokers = utility::systemInformation::get_num_cores();
     Start(func, classInstantiation, numWokers);
   }

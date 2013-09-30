@@ -35,9 +35,8 @@ class OmGroup {
 
   const om::common::SegIDSet& ids() const { return mIDs; }
 
-    om::common::ID id(){ return id_; }
-    om::common::ID GetID() { return id(); }
-
+  om::common::ID id() { return id_; }
+  om::common::ID GetID() { return id(); }
 
  private:
   om::common::SegIDSet mIDs;
@@ -45,10 +44,9 @@ class OmGroup {
 
   om::common::GroupName mName;
 
-    om::common::ID id_;
+  om::common::ID id_;
 
-
-    friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const OmGroup& g);
-    friend void YAML::operator>>(const YAML::Node& in, OmGroup& g);
+  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmGroup& g);
+  friend void YAML::operator>>(const YAML::Node& in, OmGroup& g);
 
 };

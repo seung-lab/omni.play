@@ -6,39 +6,24 @@
 #include "utility/dataWrappers.h"
 
 class SegmentListRecent : public SegmentListBase {
-    Q_OBJECT
+  Q_OBJECT public : SegmentListRecent(QWidget* parent, OmViewGroupState* vgs)
+                    : SegmentListBase(parent, vgs) {}
 
-    public:
-    SegmentListRecent(QWidget * parent,
-                      OmViewGroupState* vgs)
-        : SegmentListBase(parent, vgs)
-    {}
+ private:
+  QString getTabTitle() { return QString("Recent"); }
 
-private:
-    QString getTabTitle(){
-        return QString("Recent");
-    }
+  uint64_t Size() { return sdw_.SegmentLists()->SizeRecent(); }
 
-    uint64_t Size() {
-        return sdw_.SegmentLists()->SizeRecent();
-    }
+  std::shared_ptr<GUIPageOfSegments> getPageSegments(
+      const GUIPageRequest& request) {
+    return sdw_.SegmentLists()->GetSegmentGUIPageRecent(request);
+  }
 
-    std::shared_ptr<GUIPageOfSegments>
-    getPageSegments(const GUIPageRequest& request)
-    {
-        return sdw_.SegmentLists()->GetSegmentGUIPageRecent(request);
-    }
+  int getPreferredTabIndex() { return 3; }
 
-    int getPreferredTabIndex(){
-        return 3;
-    }
+  void makeTabActiveIfContainsJumpedToSegment() {
+    // don't jump to this tab
+  }
 
-    void makeTabActiveIfContainsJumpedToSegment(){
-        // don't jump to this tab
-    }
-
-    bool shouldSelectedSegmentsBeAddedToRecentList(){
-        return false;
-    }
+  bool shouldSelectedSegmentsBeAddedToRecentList() { return false; }
 };
-

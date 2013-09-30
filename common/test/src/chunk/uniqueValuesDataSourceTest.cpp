@@ -17,7 +17,7 @@ TEST(Chunk_UniqueValuesFileDataSource, Get) {
 
   std::shared_ptr<chunk::UniqueValues> values =
       uvfds.Get(coords::Chunk(0, 0, 0, 0));
-  ASSERT_TRUE((bool)values);
+  ASSERT_TRUE((bool) values);
   ASSERT_GT(values->Values.size(), 0);
 
   values = uvfds.Get(coords::Chunk(100, 0, 0, 0));

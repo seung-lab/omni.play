@@ -9,73 +9,68 @@
 #include "volume/build/omVolumeProcessor.h"
 #include "segment/io/omUserEdges.hpp"
 
-void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps,
-                                                QSet<om::common::PageNum>& validPageNumbers,
-                                                uint32_t size)
-{
-    if(OmProject::GetFileVersion() < 17)
-    {
-        vol_->Folder()->MakeUserSegmentsFolder();
+void om::segmentation::loader::LoadSegmentPages(
+    OmPagingPtrStore& ps, QSet<om::common::PageNum>& validPageNumbers,
+    uint32_t size) {
+  if (OmProject::GetFileVersion() < 17) {
+    vol_->Folder()->MakeUserSegmentsFolder();
 
-        ps.pageSize_ = size;
+    ps.pageSize_ = size;
 
-        FOR_EACH(iter, validPageNumbers){
-            ps.validPageNums_.insert(*iter);
-        }
+    FOR_EACH(iter, validPageNumbers) { ps.validPageNums_.insert(*iter); }
 
-        ps.storeMetadata(); // segment data hasn't been loaded yet, so can't Flush pages
+    ps.storeMetadata();  // segment data hasn't been loaded yet, so can't Flush
+                         // pages
+  }
+
+  if (vol_->IsBuilt()) {
+    const QString fullPath =
+        QString::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
+
+    if (OmFileHelpers::IsFolderEmpty(fullPath)) {
+      rebuildSegments();
+
+    } else {
+      ps.loadAllSegmentPages();
     }
-
-    if(vol_->IsBuilt())
-    {
-        const QString fullPath = QString::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
-
-        if(OmFileHelpers::IsFolderEmpty(fullPath)){
-            rebuildSegments();
-
-        } else {
-            ps.loadAllSegmentPages();
-        }
-    }
+  }
 }
 
-void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps)
-{
-    if(vol_->IsBuilt())
-    {
-        const QString fullPath = QString::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
+void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps) {
+  if (vol_->IsBuilt()) {
+    const QString fullPath =
+        QString::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
 
-        if(OmFileHelpers::IsFolderEmpty(fullPath)){
-            rebuildSegments();
+    if (OmFileHelpers::IsFolderEmpty(fullPath)) {
+      rebuildSegments();
 
-        } else {
-            ps.loadAllSegmentPages();
-        }
+    } else {
+      ps.loadAllSegmentPages();
     }
+  }
 }
 
-void om::segmentation::loader::rebuildSegments()
-{
-    std::cout << "no segment folder; rebuild segment data?\n==> (y/N)  " << std::flush;
+void om::segmentation::loader::rebuildSegments() {
+  std::cout << "no segment folder; rebuild segment data?\n==> (y/N)  "
+            << std::flush;
 
-    std::string answer;
-    std::getline(std::cin, answer);
+  std::string answer;
+  std::getline(std::cin, answer);
 
-    om::string::downcase(answer);
+  om::string::downcase(answer);
 
-    if(om::string::startsWith(answer, "y"))
-    {
-        vol_->LoadVolData();
+  if (om::string::startsWith(answer, "y")) {
+    vol_->LoadVolData();
 
-        vol_->VolData()->downsample(vol_);
+    vol_->VolData()->downsample(vol_);
 
-        vol_->Segments()->StartCaches();
+    vol_->Segments()->StartCaches();
 
-        OmVolumeProcessor processor;
-        processor.BuildThreadedVolume(vol_);
+    OmVolumeProcessor processor;
+    processor.BuildThreadedVolume(vol_);
 
-        vol_->Segments()->Flush();
+    vol_->Segments()->Flush();
 
-        vol_->MSTUserEdges()->Save();
-    }
+    vol_->MSTUserEdges()->Save();
+  }
 }

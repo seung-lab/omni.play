@@ -8,15 +8,10 @@
 class OmChannelImpl;
 
 class OmTileCacheChannel : public OmThreadedTileCache {
-public:
-    OmTileCacheChannel()
-        : OmThreadedTileCache("Channel Tiles", 128*128)
-    {}
+ public:
+  OmTileCacheChannel() : OmThreadedTileCache("Channel Tiles", 128 * 128) {}
 
-    virtual ~OmTileCacheChannel()
-    {}
+  virtual ~OmTileCacheChannel() {}
 
-    void Load(OmChannelImpl*)
-    {}
+  void Load(OmChannelImpl*) {}
 };
-

@@ -15,69 +15,55 @@ class OmSegmentation;
 #include <QDataStream>
 
 class OmMeshManager {
-public:
-    OmMeshManager(OmSegmentation* segmentation,
-                  const double threshold);
-    ~OmMeshManager();
+ public:
+  OmMeshManager(OmSegmentation* segmentation, const double threshold);
+  ~OmMeshManager();
 
-    void Create();
-    void Load();
+  void Create();
+  void Load();
 
-    OmSegmentation* GetSegmentation() const{
-        return segmentation_;
-    }
+  OmSegmentation* GetSegmentation() const { return segmentation_; }
 
-    double Threshold() const {
-        return threshold_;
-    }
+  double Threshold() const { return threshold_; }
 
-    void CloseDownThreads();
+  void CloseDownThreads();
 
-    OmMeshPtr Produce(const OmMeshCoord&);
+  OmMeshPtr Produce(const OmMeshCoord&);
 
-    void GetMesh(OmMeshPtr&, const OmMeshCoord&, const om::common::Blocking);
+  void GetMesh(OmMeshPtr&, const OmMeshCoord&, const om::common::Blocking);
 
-    void UncacheMesh(const OmMeshCoord& coord);
+  void UncacheMesh(const OmMeshCoord& coord);
 
-    void ClearCache();
+  void ClearCache();
 
-    OmMeshReaderV2* Reader(){
-        return reader_.get();
-    }
+  OmMeshReaderV2* Reader() { return reader_.get(); }
 
-    OmMeshMetadata* Metadata(){
-        return metadata_.get();
-    }
+  OmMeshMetadata* Metadata() { return metadata_.get(); }
 
-    void ActivateConversionFromV1ToV2();
+  void ActivateConversionFromV1ToV2();
 
-    OmMeshConvertV1toV2* Converter(){
-        return converter_.get();
-    }
+  OmMeshConvertV1toV2* Converter() { return converter_.get(); }
 
-    OmMeshFilePtrCache* FilePtrCache(){
-        return filePtrCache_.get();
-    }
+  OmMeshFilePtrCache* FilePtrCache() { return filePtrCache_.get(); }
 
-private:
-    OmSegmentation *const segmentation_;
-    const double threshold_;
+ private:
+  OmSegmentation* const segmentation_;
+  const double threshold_;
 
-    const std::unique_ptr<OmMeshCache> dataCache_;
-    const std::unique_ptr<OmMeshFilePtrCache> filePtrCache_;
-    const std::unique_ptr<OmMeshMetadata> metadata_;
+  const std::unique_ptr<OmMeshCache> dataCache_;
+  const std::unique_ptr<OmMeshFilePtrCache> filePtrCache_;
+  const std::unique_ptr<OmMeshMetadata> metadata_;
 
-    std::unique_ptr<OmMeshReaderV2> reader_;
-    std::unique_ptr<OmMeshConvertV1toV2> converter_;
+  std::unique_ptr<OmMeshReaderV2> reader_;
+  std::unique_ptr<OmMeshConvertV1toV2> converter_;
 
-    void HandleFetchUpdate();
+  void HandleFetchUpdate();
 
-    void inferMeshMetadata();
-    void loadThreadhold1();
-    void loadThreadholdNon1();
-    void moveOldMetadataFile();
+  void inferMeshMetadata();
+  void loadThreadhold1();
+  void loadThreadholdNon1();
+  void moveOldMetadataFile();
 
-    friend QDataStream &operator<<(QDataStream&, const OmMeshManager&);
-    friend QDataStream &operator>>(QDataStream&, OmMeshManager&);
+  friend QDataStream& operator<<(QDataStream&, const OmMeshManager&);
+  friend QDataStream& operator>>(QDataStream&, OmMeshManager&);
 };
-

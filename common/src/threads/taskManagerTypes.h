@@ -6,8 +6,7 @@ namespace om {
 namespace thread {
 
 class TaskManagerContainerMipSorted;
-template <class>
-class TaskManager;
+template <class> class TaskManager;
 
 typedef TaskManager<TaskManagerContainerDeque> ThreadPool;
 }

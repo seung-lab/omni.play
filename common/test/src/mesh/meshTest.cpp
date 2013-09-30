@@ -35,7 +35,7 @@ TEST_F(Mesh_VertexIndexMeshes, GetMesh) {
   VertexIndexDataSource meshes(testPath, &uvm);
   std::shared_ptr<VertexIndexMesh> mesh =
       meshes.Get(coords::Mesh(coords::Chunk(0, 0, 0, 0), 1));
-  EXPECT_TRUE((bool)mesh);
+  EXPECT_TRUE((bool) mesh);
   EXPECT_TRUE(mesh->Data().VertexIndex());
   EXPECT_TRUE(mesh->Data().StripData());
   EXPECT_TRUE(mesh->Data().VertexData());

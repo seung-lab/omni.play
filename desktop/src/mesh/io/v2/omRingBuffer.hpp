@@ -4,53 +4,45 @@
 #include "zi/omUtility.h"
 #include "zi/omMutex.h"
 
-template <typename T>
-class OmRingBuffer {
-private:
-    const uint32_t maxSize_;
-    uint32_t curPos_;
+template <typename T> class OmRingBuffer {
+ private:
+  const uint32_t maxSize_;
+  uint32_t curPos_;
 
-    zi::rwmutex lock_;
-    std::vector<T*> buffer_;
+  zi::rwmutex lock_;
+  std::vector<T*> buffer_;
 
-public:
-    OmRingBuffer(const uint32_t maxSize = 50)
-        : maxSize_(maxSize)
-        , curPos_(0)
-    {
-        zi::rwmutex::write_guard g(lock_);
-        buffer_.resize(maxSize_, NULL);
+ public:
+  OmRingBuffer(const uint32_t maxSize = 50) : maxSize_(maxSize), curPos_(0) {
+    zi::rwmutex::write_guard g(lock_);
+    buffer_.resize(maxSize_, NULL);
+  }
+
+  void Clear() {
+    zi::rwmutex::write_guard g(lock_);
+    om::container::clear(buffer_);
+    buffer_.resize(maxSize_, NULL);
+    curPos_ = 0;
+  }
+
+  void Put(T* item) {
+    zi::rwmutex::write_guard g(lock_);
+
+    if (item == buffer_[curPos_]) {
+      return;
     }
 
-    void Clear()
-    {
-        zi::rwmutex::write_guard g(lock_);
-        om::container::clear(buffer_);
-        buffer_.resize(maxSize_, NULL);
-        curPos_ = 0;
+    if (buffer_[curPos_]) {
+      //printf("ring buffer is unmapping file...");
+      buffer_[curPos_]->Unmap();
     }
 
-    void Put(T* item)
-    {
-        zi::rwmutex::write_guard g(lock_);
+    buffer_[curPos_] = item;
 
-        if(item == buffer_[curPos_]){
-            return;
-        }
+    ++curPos_;
 
-        if(buffer_[curPos_])
-        {
-            //printf("ring buffer is unmapping file...");
-            buffer_[curPos_]->Unmap();
-        }
-
-        buffer_[curPos_] = item;
-
-        ++curPos_;
-
-        if(maxSize_ == curPos_){
-            curPos_ = 0;
-        }
+    if (maxSize_ == curPos_) {
+      curPos_ = 0;
     }
+  }
 };
-

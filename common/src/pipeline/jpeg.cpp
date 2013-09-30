@@ -11,8 +11,9 @@ data_var jpeg::compress(int pixelsize, int jpegsubsamp, uint8_t* in) const {
                  height_, pixelsize,
                  reinterpret_cast<unsigned char*>(out.data.get()), &buffSize,
                  jpegsubsamp, 90,  // quality
-                 0) != 0)          // flags
-  {
+                 0) !=
+      0)  // flags
+      {
     throw IoException(tjGetErrorStr());
   }
 

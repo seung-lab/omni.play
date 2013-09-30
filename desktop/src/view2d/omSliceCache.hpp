@@ -19,51 +19,47 @@
  */
 
 class OmSliceCache {
-private:
-    OmSegmentation *const vol_;
-    const om::common::ViewType viewType_;
-    const int chunkDim_;
+ private:
+  OmSegmentation* const vol_;
+  const om::common::ViewType viewType_;
+  const int chunkDim_;
 
-    // ignore mip level--always 0
-    // x, y, z, depth
-    typedef boost::tuple<int, int, int, int> OmSliceKey;
+  // ignore mip level--always 0
+  // x, y, z, depth
+  typedef boost::tuple<int, int, int, int> OmSliceKey;
 
-    std::map<OmSliceKey, PooledTile32Ptr> cache_;
+  std::map<OmSliceKey, PooledTile32Ptr> cache_;
 
-public:
-    OmSliceCache(OmSegmentation* vol, const om::common::ViewType viewType)
-        : vol_(vol)
-        , viewType_(viewType)
-        , chunkDim_(vol->Coords().GetChunkDimension())
-    {}
+ public:
+  OmSliceCache(OmSegmentation* vol, const om::common::ViewType viewType)
+      : vol_(vol),
+        viewType_(viewType),
+        chunkDim_(vol->Coords().GetChunkDimension()) {}
 
-    om::common::SegID GetVoxelValue(const om::dataCoord& coord)
-    {
-        const int depthInChunk = coord.toTileDepth(viewType_);
-        
-        PooledTile32Ptr slicePtr = GetSlice(coord.toChunkCoord(), depthInChunk);
+  om::common::SegID GetVoxelValue(const om::dataCoord& coord) {
+    const int depthInChunk = coord.toTileDepth(viewType_);
 
-        uint32_t const*const sliceData = slicePtr->GetData();
+    PooledTile32Ptr slicePtr = GetSlice(coord.toChunkCoord(), depthInChunk);
 
-        const uint32_t offset = coord.toTileOffset(viewType_);
+    uint32_t const* const sliceData = slicePtr->GetData();
 
-        return sliceData[offset];
+    const uint32_t offset = coord.toTileOffset(viewType_);
+
+    return sliceData[offset];
+  }
+
+  PooledTile32Ptr GetSlice(const om::chunkCoord& chunkCoord,
+                           const int depthInChunk) {
+    const OmSliceKey key(chunkCoord.Coordinate.x, chunkCoord.Coordinate.y,
+                         chunkCoord.Coordinate.z, depthInChunk);
+
+    if (cache_.count(key)) {
+      return cache_[key];
     }
 
-    PooledTile32Ptr GetSlice(const om::chunkCoord& chunkCoord, const int depthInChunk)
-    {
-        const OmSliceKey key(chunkCoord.Coordinate.x,
-                             chunkCoord.Coordinate.y,
-                             chunkCoord.Coordinate.z,
-                             depthInChunk);
+    OmSegChunk* chunk = vol_->GetChunk(chunkCoord);
 
-        if(cache_.count(key)){
-            return cache_[key];
-        }
-
-        OmSegChunk* chunk = vol_->GetChunk(chunkCoord);
-
-        return cache_[key] = chunk->SegData()->ExtractDataSlice32bit(viewType_, depthInChunk);
-    }
+    return cache_[key] =
+               chunk->SegData()->ExtractDataSlice32bit(viewType_, depthInChunk);
+  }
 };
-

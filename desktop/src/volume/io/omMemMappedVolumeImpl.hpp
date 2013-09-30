@@ -17,96 +17,76 @@
 
 template <typename T> class OmIOnDiskFile;
 
-template <typename T>
-class OmMemMappedVolumeImpl : public IDataVolume<T> {
-private:
-    OmMipVolume* vol_;
-    std::vector<std::shared_ptr<OmIOnDiskFile<T> > > maps_;
+template <typename T> class OmMemMappedVolumeImpl : public IDataVolume<T> {
+ private:
+  OmMipVolume* vol_;
+  std::vector<std::shared_ptr<OmIOnDiskFile<T> > > maps_;
 
-    typedef OmMemMappedFileReadQT<T> reader_t;
-    typedef OmMemMappedFileWriteQT<T> writer_t;
+  typedef OmMemMappedFileReadQT<T> reader_t;
+  typedef OmMemMappedFileWriteQT<T> writer_t;
 
-public:
+ public:
 
-    // for boost::varient
-    OmMemMappedVolumeImpl()
-    {}
+  // for boost::varient
+  OmMemMappedVolumeImpl() {}
 
-   OmMemMappedVolumeImpl(OmMipVolume* vol)
-        : vol_(vol)
-    {}
+  OmMemMappedVolumeImpl(OmMipVolume* vol) : vol_(vol) {}
 
-    virtual ~OmMemMappedVolumeImpl()
-    {}
+  virtual ~OmMemMappedVolumeImpl() {}
 
-    OmRawDataPtrs GetType() const {
-        return (T*)0;
+  OmRawDataPtrs GetType() const { return (T*)0; }
+
+  void Load() {
+    std::cout << "loaded mem maps\n";
+
+    resizeMapsVector();
+
+    for (size_t level = 0; level < maps_.size(); ++level) {
+      maps_[level] = reader_t::Reader(getFileName(level));
+    }
+  }
+
+  void Create(const std::map<int, Vector3i>& levelsAndDims) {
+    resizeMapsVector();
+
+    const int64_t bps = GetBytesPerVoxel();
+
+    FOR_EACH(it, levelsAndDims) {
+      const int level = it->first;
+      const Vector3<int64_t> dims = it->second;
+      const int64_t size = dims.x * dims.y * dims.z * bps;
+
+      std::cout << "mip " << level
+                << ": size is: " << om::string::humanizeNum(size) << " ("
+                << dims.x << "," << dims.y << "," << dims.z << ")\n";
+
+      maps_[level] = writer_t::WriterNumBytes(
+          getFileName(level), size, om::common::ZeroMem::DONT_ZERO_FILL);
     }
 
-    void Load()
-    {
-        std::cout << "loaded mem maps\n";
+    printf("OmMemMappedVolume: done allocating data\n");
+  }
 
-        resizeMapsVector();
+  T* GetPtr(const int level) const { return maps_[level]->GetPtr(); }
 
-        for(size_t level = 0; level < maps_.size(); ++level) {
-            maps_[level] = reader_t::Reader(getFileName(level));
-        }
-    }
+  T* GetChunkPtr(const om::chunkCoord& coord) const {
+    const int level = coord.Level;
+    const uint64_t offset =
+        OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
+    T* ret = maps_[level]->GetPtrWithOffset(offset);
+    assert(ret);
+    return ret;
+  }
 
-    void Create(const std::map<int, Vector3i>& levelsAndDims)
-    {
-        resizeMapsVector();
+  int GetBytesPerVoxel() const { return sizeof(T); }
 
-        const int64_t bps = GetBytesPerVoxel();
+ private:
 
-        FOR_EACH(it, levelsAndDims)
-        {
-            const int level = it->first;
-            const Vector3<int64_t> dims = it->second;
-            const int64_t size = dims.x * dims.y * dims.z * bps;
+  void resizeMapsVector() {
+    maps_.resize(vol_->Coords().GetRootMipLevel() + 1);
+  }
 
-            std::cout << "mip " << level << ": size is: "
-                      << om::string::humanizeNum(size)
-                      << " (" << dims.x
-                      << "," << dims.y
-                      << "," << dims.z
-                      << ")\n";
-
-            maps_[level] = writer_t::WriterNumBytes(getFileName(level),
-                                                   size,
-                                                    om::common::ZeroMem::DONT_ZERO_FILL);
-        }
-
-        printf("OmMemMappedVolume: done allocating data\n");
-    }
-
-    T* GetPtr(const int level) const {
-        return maps_[level]->GetPtr();
-    }
-
-    T* GetChunkPtr(const om::chunkCoord& coord) const
-    {
-        const int level = coord.Level;
-        const uint64_t offset =
-            OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
-        T* ret = maps_[level]->GetPtrWithOffset(offset);
-        assert(ret);
-        return ret;
-    }
-
-    int GetBytesPerVoxel() const {
-        return sizeof(T);
-    }
-
-private:
-
-    void resizeMapsVector(){
-        maps_.resize(vol_->Coords().GetRootMipLevel() + 1);
-    }
-
-    std::string getFileName(const int level) const {
-        return OmFileNames::GetMemMapFileName(vol_, level);
-    }
+  std::string getFileName(const int level) const {
+    return OmFileNames::GetMemMapFileName(vol_, level);
+  }
 };
-

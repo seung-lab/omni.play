@@ -7,13 +7,11 @@
 #include <chrono>
 
 namespace om {
-template <typename T>
-static size_t size(const std::shared_ptr<T>& val) {
+template <typename T> static size_t size(const std::shared_ptr<T>& val) {
   return sizeof(T);
 }
 
-template <typename T>
-static std::string key(const T& key) {
+template <typename T> static std::string key(const T& key) {
   return std::to_string(key);
 }
 

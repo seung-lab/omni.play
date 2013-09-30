@@ -17,12 +17,12 @@ class unchunk  //: public stage
       : vs_(vs), dims_(vs_.DataDimensions()) {}
 
   inline size_t target_offset(coords::Data d) const {
-    return d.x + ((size_t)d.y) * dims_.x + ((size_t)d.z) * dims_.x * dims_.y;
+    return d.x + ((size_t) d.y) * dims_.x + ((size_t) d.z) * dims_.x * dims_.y;
   }
 
   template <typename T>
   Data<T> operator()(const datalayer::MemMappedFile<T>& in) const {
-    Data<T> out(((size_t)dims_.x) * dims_.y * dims_.z);
+    Data<T> out(((size_t) dims_.x) * dims_.y * dims_.z);
     T* outPtr = out.data.get();
 
     const Vector3i dims = vs_.ChunkDimensions();

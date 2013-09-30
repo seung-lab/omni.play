@@ -7,9 +7,9 @@ class OmViewGroupState;
 class OmSegments;
 
 class SegmentColorParams {
-public:
-    om::segment::coloring sccType;
-    uint32_t numElements;
-    OmViewGroupState* vgs;
-    OmSegments* segments;
+ public:
+  om::segment::coloring sccType;
+  uint32_t numElements;
+  OmViewGroupState* vgs;
+  OmSegments* segments;
 };

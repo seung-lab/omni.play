@@ -3,25 +3,17 @@
 #include "common/common.h"
 
 class OmProjectCloseActionImpl {
-public:
-    OmProjectCloseActionImpl()
-    {}
+ public:
+  OmProjectCloseActionImpl() {}
 
-    void Execute()
-    {}
+  void Execute() {}
 
-    void Undo()
-    {}
+  void Undo() {}
 
-    std::string Description() const {
-        return "Closed";
-    }
+  std::string Description() const { return "Closed"; }
 
-    QString classNameForLogFile() const {
-        return "OmProjectCloseAction";
-    }
+  QString classNameForLogFile() const { return "OmProjectCloseAction"; }
 
-private:
-    template <typename T> friend class OmActionLoggerThread;
+ private:
+  template <typename T> friend class OmActionLoggerThread;
 };
-

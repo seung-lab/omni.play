@@ -65,9 +65,9 @@ class VolumeSystem {
   inline Vector3i DataDimensions() const { return dataDimensions_; }
 
   inline void SetDataDimensions(const Vector3f& dim) {
-    dataDimensions_.x = om::math::roundUp((int)dim.x, chunkDimensions_.x);
-    dataDimensions_.y = om::math::roundUp((int)dim.y, chunkDimensions_.y);
-    dataDimensions_.z = om::math::roundUp((int)dim.z, chunkDimensions_.z);
+    dataDimensions_.x = om::math::roundUp((int) dim.x, chunkDimensions_.x);
+    dataDimensions_.y = om::math::roundUp((int) dim.y, chunkDimensions_.y);
+    dataDimensions_.z = om::math::roundUp((int) dim.z, chunkDimensions_.z);
 
     updateNormMat();
   }

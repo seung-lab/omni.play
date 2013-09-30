@@ -11,26 +11,24 @@
 
 class OmChannel : public OmChannelImpl {
 
-public:
-    OmChannel();
-    OmChannel(om::common::ID id);
-    virtual ~OmChannel();
+ public:
+  OmChannel();
+  OmChannel(om::common::ID id);
+  virtual ~OmChannel();
 
-    virtual QString GetDefaultHDF5DatasetName(){
-        return "chanSingle";
-    }
+  virtual QString GetDefaultHDF5DatasetName() { return "chanSingle"; }
 
-private:
+ private:
 
-    friend class OmBuildChannel;
-    template <class T> friend class OmVolumeBuilder;
-    template <class T> friend class OmVolumeBuilderHdf5;
-    template <class T> friend class OmVolumeBuilderImages;
-    template <class T> friend class OmVolumeImporter;
+  friend class OmBuildChannel;
+  template <class T> friend class OmVolumeBuilder;
+  template <class T> friend class OmVolumeBuilderHdf5;
+  template <class T> friend class OmVolumeBuilderImages;
+  template <class T> friend class OmVolumeImporter;
 
-    friend QDataStream& operator<<(QDataStream& out, const OmChannel&);
-    friend QDataStream& operator>>(QDataStream& in, OmChannel&);
-    friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmChannel& chan);
-    friend void YAML::operator>>(const YAML::Node& in, OmChannel& chan);
+  friend QDataStream& operator<<(QDataStream& out, const OmChannel&);
+  friend QDataStream& operator>>(QDataStream& in, OmChannel&);
+  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
+                                         const OmChannel& chan);
+  friend void YAML::operator>>(const YAML::Node& in, OmChannel& chan);
 };
-

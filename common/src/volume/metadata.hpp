@@ -44,15 +44,13 @@ struct Metadata {
 
   friend std::ostream& operator<<(std::ostream& out, const Metadata& m) {
     return out << "{" << std::endl << "Name: " << m.Name << std::endl
-               << "UUID: " << m.UUID.Str() << std::endl
-               << "Bounds: " << m.Bounds << std::endl
-               << "Resolution: " << m.Resolution << std::endl
-               << "ChunkDim: " << m.ChunkDim << std::endl
+               << "UUID: " << m.UUID.Str() << std::endl << "Bounds: "
+               << m.Bounds << std::endl << "Resolution: " << m.Resolution
+               << std::endl << "ChunkDim: " << m.ChunkDim << std::endl
                << "RootMipLevel: " << m.RootMipLevel << std::endl
-               << "DataType: " << m.DataType << std::endl
-               << "VolumeType: " << m.VolumeType << std::endl
-               << "NumSegments: " << m.NumSegments << std::endl
-               << "MaxSegments: " << m.MaxSegments << std::endl
+               << "DataType: " << m.DataType << std::endl << "VolumeType: "
+               << m.VolumeType << std::endl << "NumSegments: " << m.NumSegments
+               << std::endl << "MaxSegments: " << m.MaxSegments << std::endl
                << "NumEdges: " << m.NumEdges << std::endl << "}" << std::endl;
   }
 };

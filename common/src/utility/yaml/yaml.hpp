@@ -14,8 +14,7 @@ class Util {
  public:
   // based on
   // http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
-  template <typename T>
-  static std::vector<T> Parse(const std::string& fnp) {
+  template <typename T> static std::vector<T> Parse(const std::string& fnp) {
     YAML::Node doc;
     Read(fnp, doc);
 

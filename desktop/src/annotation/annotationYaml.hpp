@@ -7,18 +7,17 @@
 
 namespace YAML {
 
-Emitter& operator<<(Emitter& out, const om::annotation::data& data)
-{
-    out << Flow;
+Emitter& operator<<(Emitter& out, const om::annotation::data& data) {
+  out << Flow;
 
-    out << BeginMap;
-    out << Key << "coord" << Value << data.coord.toGlobalCoord();
-    out << Key << "comment" << Value << data.comment;
-    out << Key << "color" << Value << data.color;
-    out << Key << "size" << Value << data.size;
-    out << EndMap;
+  out << BeginMap;
+  out << Key << "coord" << Value << data.coord.toGlobalCoord();
+  out << Key << "comment" << Value << data.comment;
+  out << Key << "color" << Value << data.color;
+  out << Key << "size" << Value << data.size;
+  out << EndMap;
 
-    return out;
+  return out;
 }
 
-} // namespace YAML
+}  // namespace YAML

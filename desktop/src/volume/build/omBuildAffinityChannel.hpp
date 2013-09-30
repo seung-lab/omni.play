@@ -8,46 +8,37 @@
 #include "zi/omThreads.h"
 
 class OmBuildAffinityChannel : public OmBuildVolumes {
-private:
-	OmAffinityChannel *const affChan_;
-	const om::common::AffinityGraph aff_;
+ private:
+  OmAffinityChannel* const affChan_;
+  const om::common::AffinityGraph aff_;
 
-public:
-	OmBuildAffinityChannel(OmAffinityChannel* chan,
-						   const om::common::AffinityGraph aff)
-		: OmBuildVolumes()
-		, affChan_(chan)
-		, aff_(aff)
-	{}
+ public:
+  OmBuildAffinityChannel(OmAffinityChannel* chan,
+                         const om::common::AffinityGraph aff)
+      : OmBuildVolumes(), affChan_(chan), aff_(aff) {}
 
-	void BuildBlocking()
-	{
-		do_build_channel();
-	}
+  void BuildBlocking() { do_build_channel(); }
 
-	void BuildNonBlocking()
-	{
-		zi::thread th( zi::run_fn( zi::bind( &OmBuildAffinityChannel::do_build_channel, this)));
-		th.start();
-	}
+  void BuildNonBlocking() {
+    zi::thread th(
+        zi::run_fn(zi::bind(&OmBuildAffinityChannel::do_build_channel, this)));
+    th.start();
+  }
 
-	void do_build_channel()
-	{
-		const QString type = "affinity channel";
+  void do_build_channel() {
+    const QString type = "affinity channel";
 
-		if( !checkSettings() ){
-			return;
-		}
+    if (!checkSettings()) {
+      return;
+    }
 
-		OmTimer build_timer;
-		startTiming(type, build_timer);
+    OmTimer build_timer;
+    startTiming(type, build_timer);
 
-		OmVolumeBuilder<OmChannel> builder(affChan_,
-										   mFileNamesAndPaths,
-										   affChan_->GetDefaultHDF5DatasetName());
-		builder.Build(aff_);
+    OmVolumeBuilder<OmChannel> builder(affChan_, mFileNamesAndPaths,
+                                       affChan_->GetDefaultHDF5DatasetName());
+    builder.Build(aff_);
 
-		stopTimingAndSave(type, build_timer);
-	}
+    stopTimingAndSave(type, build_timer);
+  }
 };
-

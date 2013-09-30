@@ -15,154 +15,138 @@
 #include <sstream>
 #include <QFileInfoList>
 
-template <typename VOL>
-class OmDataCopierHdf5Task : public zi::runnable {
-private:
-    VOL *const vol_;
-    const OmDataPath path_;
-    const om::common::AffinityGraph aff_;
+template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
+ private:
+  VOL* const vol_;
+  const OmDataPath path_;
+  const om::common::AffinityGraph aff_;
 
-    const Vector3i volSize_;
-    OmHdf5 *const hdf5reader_;
-    const QString mip0fnp_;
-    const om::chunkCoord coord_;
+  const Vector3i volSize_;
+  OmHdf5* const hdf5reader_;
+  const QString mip0fnp_;
+  const om::chunkCoord coord_;
 
-    OmSimpleProgress* prog_;
+  OmSimpleProgress* prog_;
 
-    OmChunk* chunk_;
-    bool resizedChunk_;
+  OmChunk* chunk_;
+  bool resizedChunk_;
 
-public:
-    OmDataCopierHdf5Task(VOL* vol,
-                         const OmDataPath& path,
-                         const om::common::AffinityGraph aff,
-                         const Vector3i volSize,
-                         OmHdf5 *const hdf5reader,
-                         const QString mip0fnp,
-                         const om::chunkCoord& coord,
-                         OmSimpleProgress* prog)
-        : vol_(vol)
-        , path_(path)
-        , aff_(aff)
-        , volSize_(volSize)
-        , hdf5reader_(hdf5reader)
-        , mip0fnp_(mip0fnp)
-        , coord_(coord)
-        , prog_(prog)
-        , resizedChunk_(false)
-    {
-        chunk_ = vol_->GetChunk(coord_);
+ public:
+  OmDataCopierHdf5Task(VOL* vol, const OmDataPath& path,
+                       const om::common::AffinityGraph aff,
+                       const Vector3i volSize, OmHdf5* const hdf5reader,
+                       const QString mip0fnp, const om::chunkCoord& coord,
+                       OmSimpleProgress* prog)
+      : vol_(vol),
+        path_(path),
+        aff_(aff),
+        volSize_(volSize),
+        hdf5reader_(hdf5reader),
+        mip0fnp_(mip0fnp),
+        coord_(coord),
+        prog_(prog),
+        resizedChunk_(false) {
+    chunk_ = vol_->GetChunk(coord_);
+  }
+
+  virtual ~OmDataCopierHdf5Task() {}
+
+  void run() {
+    OmTimer timer;
+
+    copyIntoChunk();
+
+    std::ostringstream stm;
+    stm << "copied ";
+    if (resizedChunk_) {
+      stm << "and resized ";
     }
+    stm << "HDF5 chunk: " << coord_ << " in " << timer.s_elapsed() << " secs ";
 
-    virtual ~OmDataCopierHdf5Task()
-    {}
+    prog_->DidOne(stm.str());
+  }
 
-    void run()
-    {
-        OmTimer timer;
-
-        copyIntoChunk();
-
-        std::ostringstream stm;
-        stm << "copied ";
-        if(resizedChunk_){
-            stm << "and resized ";
-        }
-        stm << "HDF5 chunk: " << coord_
-            << " in " << timer.s_elapsed() << " secs ";
-
-        prog_->DidOne(stm.str());
-    }
-
-private:
-    template <typename T>
-    OmDataWrapperPtr doResizePartialChunk(OmDataWrapperPtr data,
-                                          const om::dataBbox& chunkExtent,
-                                          const om::dataBbox& dataExtent)
-    {
-        resizedChunk_ = true;
-
-        const Vector3i dataSize = dataExtent.getDimensions();
-
-        //weirdness w/ hdf5 and/or boost::multi_arry requires flipping x/z
-        //TODO: figure out!
-        OmImage<T, 3> partialChunk(OmExtents[dataSize.z]
-                                   [dataSize.y]
-                                   [dataSize.x],
-                                   data->getPtr<T>());
-
-        const Vector3i chunkSize = chunkExtent.getDimensions();
-
-        partialChunk.resize(chunkSize);
-
-        return om::ptrs::Wrap(partialChunk.getMallocCopyOfData());
-    }
-
-    OmDataWrapperPtr resizePartialChunk(OmDataWrapperPtr data,
+ private:
+  template <typename T>
+  OmDataWrapperPtr doResizePartialChunk(OmDataWrapperPtr data,
                                         const om::dataBbox& chunkExtent,
-                                        const om::dataBbox& dataExtent)
-    {
-        switch(data->getVolDataType().index()){
-        case OmVolDataType::INT8:
-            return doResizePartialChunk<int8_t>(data, chunkExtent, dataExtent);
-        case OmVolDataType::UINT8:
-            return doResizePartialChunk<uint8_t>(data, chunkExtent, dataExtent);
-        case OmVolDataType::INT32:
-            return doResizePartialChunk<int32_t>(data, chunkExtent, dataExtent);
-        case OmVolDataType::UINT32:
-            return doResizePartialChunk<uint32_t>(data, chunkExtent, dataExtent);
-        case OmVolDataType::FLOAT:
-            return doResizePartialChunk<float>(data, chunkExtent, dataExtent);
-        case OmVolDataType::UNKNOWN:
-        default:
-            throw om::IoException("unknown data type");
-        }
+                                        const om::dataBbox& dataExtent) {
+    resizedChunk_ = true;
+
+    const Vector3i dataSize = dataExtent.getDimensions();
+
+    //weirdness w/ hdf5 and/or boost::multi_arry requires flipping x/z
+    //TODO: figure out!
+    OmImage<T, 3> partialChunk(OmExtents[dataSize.z][dataSize.y][dataSize.x],
+                               data->getPtr<T>());
+
+    const Vector3i chunkSize = chunkExtent.getDimensions();
+
+    partialChunk.resize(chunkSize);
+
+    return om::ptrs::Wrap(partialChunk.getMallocCopyOfData());
+  }
+
+  OmDataWrapperPtr resizePartialChunk(OmDataWrapperPtr data,
+                                      const om::dataBbox& chunkExtent,
+                                      const om::dataBbox& dataExtent) {
+    switch (data->getVolDataType().index()) {
+      case OmVolDataType::INT8:
+        return doResizePartialChunk<int8_t>(data, chunkExtent, dataExtent);
+      case OmVolDataType::UINT8:
+        return doResizePartialChunk<uint8_t>(data, chunkExtent, dataExtent);
+      case OmVolDataType::INT32:
+        return doResizePartialChunk<int32_t>(data, chunkExtent, dataExtent);
+      case OmVolDataType::UINT32:
+        return doResizePartialChunk<uint32_t>(data, chunkExtent, dataExtent);
+      case OmVolDataType::FLOAT:
+        return doResizePartialChunk<float>(data, chunkExtent, dataExtent);
+      case OmVolDataType::UNKNOWN:
+      default:
+        throw om::IoException("unknown data type");
+    }
+  }
+
+  void copyIntoChunk() {
+    OmDataWrapperPtr data = getChunkData();
+
+    const uint64_t chunkOffset =
+        OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord_);
+
+    QFile file(mip0fnp_);
+    if (!file.open(QIODevice::ReadWrite)) {
+      throw om::IoException("could not open file");
     }
 
-    void copyIntoChunk()
-    {
-        OmDataWrapperPtr data = getChunkData();
+    file.seek(chunkOffset);
+    file.write(data->getPtr<const char>(), chunk_->Mipping().NumBytes());
+  }
 
-        const uint64_t chunkOffset =
-            OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord_);
+  OmDataWrapperPtr getChunkData() {
+    // get chunk data bbox
+    const om::dataBbox& chunkExtent = chunk_->Mipping().GetExtent();
 
-        QFile file(mip0fnp_);
-        if(!file.open(QIODevice::ReadWrite)){
-            throw om::IoException("could not open file");
-        }
+    const om::dataBbox volExtent(
+        om::dataCoord(Vector3i::ZERO, vol_, chunk_->GetLevel()),
+        om::dataCoord(volSize_, vol_, chunk_->GetLevel()));
 
-        file.seek(chunkOffset);
-        file.write(data->getPtr<const char>(), chunk_->Mipping().NumBytes());
+    //if data extent contains given extent, read full chunk
+    if (volExtent.contains(chunkExtent)) {
+      return hdf5reader_->readChunk(path_, chunkExtent, aff_);
     }
 
-    OmDataWrapperPtr getChunkData()
-    {
-        // get chunk data bbox
-        const om::dataBbox& chunkExtent = chunk_->Mipping().GetExtent();
+    // else, read what we can, and resize
 
-        const om::dataBbox volExtent(om::dataCoord(Vector3i::ZERO, vol_, chunk_->GetLevel()),
-                                     om::dataCoord(volSize_, vol_, chunk_->GetLevel()));
+    om::dataBbox intersect_extent = chunkExtent;
+    intersect_extent.intersect(volExtent);
 
-        //if data extent contains given extent, read full chunk
-        if (volExtent.contains(chunkExtent)) {
-            return hdf5reader_->readChunk(path_, chunkExtent, aff_);
-        }
-
-        // else, read what we can, and resize
-
-        om::dataBbox intersect_extent = chunkExtent;
-        intersect_extent.intersect(volExtent);
-
-        if(intersect_extent.isEmpty()) {
-            throw om::IoException("should not have happened");
-        }
-
-        OmDataWrapperPtr partialChunk =
-            hdf5reader_->readChunk(path_, intersect_extent, aff_);
-
-        return resizePartialChunk(partialChunk,
-                                  chunkExtent,
-                                  intersect_extent);
+    if (intersect_extent.isEmpty()) {
+      throw om::IoException("should not have happened");
     }
+
+    OmDataWrapperPtr partialChunk =
+        hdf5reader_->readChunk(path_, intersect_extent, aff_);
+
+    return resizePartialChunk(partialChunk, chunkExtent, intersect_extent);
+  }
 };
-

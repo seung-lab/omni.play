@@ -32,8 +32,7 @@ size_t size(const mesh::DegenerateStripMesh& m);
 
 namespace network {
 namespace http {
-template <>
-struct interface<mesh::DegenerateStripMesh> {
+template <> struct interface<mesh::DegenerateStripMesh> {
   static std::string mime_type() { return "application/octet-stream"; }
   static std::string serialize(
       std::shared_ptr<mesh::DegenerateStripMesh> data) {

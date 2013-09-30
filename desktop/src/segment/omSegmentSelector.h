@@ -8,33 +8,32 @@ class OmSelectSegmentsParams;
 class SegmentationDataWrapper;
 
 class OmSegmentSelector {
-public:
-    OmSegmentSelector(const SegmentationDataWrapper& sdw,
-                      void* sender,
-                      const std::string& cmt);
+ public:
+  OmSegmentSelector(const SegmentationDataWrapper& sdw, void* sender,
+                    const std::string& cmt);
 
-    void selectJustThisSegment(const om::common::SegID segID, const bool isSelected);
-    void augmentSelectedSet(const om::common::SegID segID, const bool isSelected);
+  void selectJustThisSegment(const om::common::SegID segID,
+                             const bool isSelected);
+  void augmentSelectedSet(const om::common::SegID segID, const bool isSelected);
 
-    void InsertSegments(const std::unordered_set<om::common::SegID>* segIDs);
-    void RemoveSegments(const std::unordered_set<om::common::SegID>* segIDs);
+  void InsertSegments(const std::unordered_set<om::common::SegID>* segIDs);
+  void RemoveSegments(const std::unordered_set<om::common::SegID>* segIDs);
 
-    void selectJustThisSegment_toggle(const om::common::SegID segID);
-    void augmentSelectedSet_toggle(const om::common::SegID segID);
+  void selectJustThisSegment_toggle(const om::common::SegID segID);
+  void augmentSelectedSet_toggle(const om::common::SegID segID);
 
-    bool sendEvent();
-    void selectNoSegments();
+  bool sendEvent();
+  void selectNoSegments();
 
-    void ShouldScroll(const bool shouldScroll);
-    void AddToRecentList(const bool addToRecentList);
-    void AutoCenter(const bool autoCenter);
-    void AugmentListOnly(const bool augmentListOnly);
-    void AddOrSubtract(const om::common::AddOrSubtract addSegments);
+  void ShouldScroll(const bool shouldScroll);
+  void AddToRecentList(const bool addToRecentList);
+  void AutoCenter(const bool autoCenter);
+  void AugmentListOnly(const bool augmentListOnly);
+  void AddOrSubtract(const om::common::AddOrSubtract addSegments);
 
-private:
-    OmSegments* segments_;
-    std::shared_ptr<OmSelectSegmentsParams> params_;
+ private:
+  OmSegments* segments_;
+  std::shared_ptr<OmSelectSegmentsParams> params_;
 
-    void setSelectedSegment(const om::common::SegID segID);
+  void setSelectedSegment(const om::common::SegID segID);
 };
-

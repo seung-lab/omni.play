@@ -13,8 +13,7 @@ typedef boost::iostreams::mapped_file mapped_file;
 namespace om {
 namespace datalayer {
 
-template <typename T>
-class MemMappedFile : public IOnDiskFile<T> {
+template <typename T> class MemMappedFile : public IOnDiskFile<T> {
  public:
   static MemMappedFile<T> CreateNumElements(const std::string& fnp,
                                             const int64_t numElements) {
@@ -74,11 +73,10 @@ class MemMappedFile : public IOnDiskFile<T> {
 
   virtual file::path GetBaseFileName() const { return fnp_; }
 
-  virtual bool IsMapped() const { return (bool)file_; }
+  virtual bool IsMapped() const { return (bool) file_; }
 };
 
-template <typename T>
-class MemMappedFileRO {
+template <typename T> class MemMappedFileRO {
  public:
   // for boost::variant
   MemMappedFileRO() : fnp_("") {}
@@ -109,7 +107,7 @@ class MemMappedFileRO {
 
   virtual file::path GetBaseFileName() const { return fnp_; }
 
-  virtual bool IsMapped() const { return (bool)file_; }
+  virtual bool IsMapped() const { return (bool) file_; }
 
  private:
   file::path fnp_;
