@@ -1,3 +1,4 @@
+//#include "view3d/view3d.h"
 #include "common/logging.h"
 #include "gui/guiUtils.hpp"
 #include "gui/inspectors/channel/channelInspector.hpp"
@@ -236,7 +237,7 @@ void InspectorWidget::leftClickOnFilterItem(QTreeWidgetItem* current) {
 
 void InspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem* current) {
   if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-    doShowDataSrcContextMenu(current);
+      doShowDataSrcContextMenu(current);
   } else {
     addToSplitterDataSource(current);
   }
@@ -352,7 +353,7 @@ void InspectorWidget::doShowDataSrcContextMenu(QTreeWidgetItem* dataSrcItem) {
       break;
 
     case om::common::SEGMENTATION:
-      showSegmentationContextMenu();
+        showSegmentationContextMenu();
       break;
 
     case om::common::AFFINITY:
@@ -391,6 +392,9 @@ QMenu* InspectorWidget::makeContextMenuBase(QTreeWidget* parent) {
   propAct_ = new QAction(tr("&Properties"), parent);
   propAct_->setStatusTip(tr("Opens properties"));
 
+  newView3dAct_ = new QAction(tr("New View3d"), parent);
+  newView3dAct_->setStatusTip(tr("Open New View3d"));
+
   delAct_ = new QAction(tr("&Delete"), parent);
   propAct_->setStatusTip(tr("Deletes a Volume"));
 
@@ -399,6 +403,7 @@ QMenu* InspectorWidget::makeContextMenuBase(QTreeWidget* parent) {
   contextMenu_->addAction(xzAct_);
   contextMenu_->addAction(yzAct_);
   contextMenu_->addAction(propAct_);
+  contextMenu_->addAction(newView3dAct_);
   contextMenu_->addAction(delAct_);
 
   return contextMenu_;
@@ -473,6 +478,9 @@ void InspectorWidget::selectSegmentationView(QAction* act) {
 
   } else if (examMSTAct_ == act) {
     showMSTtable(sdw);
+
+  } else if (newView3dAct_ == act){
+      showNewView3d();
 
   } else {
     triggerSegmentationView(sdw.GetID(), getViewType(act));
@@ -551,4 +559,8 @@ void InspectorWidget::updateSegmentListBox(SegmentationDataWrapper sdw) {
 
 void InspectorWidget::showMSTtable(SegmentationDataWrapper sdw) {
   new MstViewer(this, sdw);
+}
+
+void InspectorWidget::showNewView3d() {
+//    new om::v3d::View3d(this, vgs_);
 }

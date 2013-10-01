@@ -98,6 +98,7 @@ Q_SLOTS:
   QAction* xzAct_;
   QAction* yzAct_;
   QAction* propAct_;
+  QAction* newView3dAct_;
   QAction* delAct_;
   QAction* examMSTAct_;
 
@@ -121,4 +122,5 @@ Q_SLOTS:
   void updateSegmentListBox(SegmentationDataWrapper sdw);
 
   void showMSTtable(SegmentationDataWrapper sdw);
+  void showNewView3d();
 };
