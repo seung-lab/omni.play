@@ -178,6 +178,9 @@ docs:
 	doxygen Doxyfile
 
 # Common  #################################################
+CURL_INCLUDES = $(shell pkg-config --cflags libcurl)
+CURL_LIBS = $(shell pkg-config --libs libcurl)
+
 INCLUDES    =   -I$(HERE) \
 		-I$(HERE)/common/src \
 		-I$(HERE)/common/include \
@@ -190,7 +193,7 @@ INCLUDES    =   -I$(HERE) \
 		-I$(HERE)/zi_lib \
 		-I$(BASE64)/include \
 		-I$(EXTERNAL)/boost/include \
-		-I$(EXTERNAL)/netlib/include
+		$(CURL_INCLUDES)
 
 LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/boost/lib/libboost_iostreams.a \
@@ -200,7 +203,8 @@ LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/boost/lib/libboost_regex.a \
 	   $(EXTERNAL)/boost/lib/libboost_date_time.a \
 	   $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
-	   -lpthread -lrt -lGLU -lGL -lz
+	   -lpthread -lrt -lGLU -lGL -lz \
+	   $(CURL_LIBS)
 
 $(BUILDDIR)/common/%.d: common/src/%.cpp
 	$(call make_d, $(INCLUDES))
@@ -295,7 +299,7 @@ DESKTOP_INCLUDES = $(INCLUDES) \
 				  -I$(EXTERNAL)/qt/include/QtGui \
 				  -I$(EXTERNAL)/qt/include/QtNetwork \
 				  -I$(EXTERNAL)/qt/include \
-				  -isystem$(EXTERNAL)/hdf5/include \
+				  -I$(EXTERNAL)/hdf5/include \
 				  -I$(BASE64)/include \
 				  -I$(BREAKPAD)
 

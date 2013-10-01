@@ -13,8 +13,8 @@ struct V1 {
 // Must implement om::network::http::partial_path for each key type.  Tag is
 // used to differentiate multiple API versions.
 template <typename TKey, typename Tag = V1>
-uri path(Tag tag, uri root, const TKey& key) {
-  return root << partial_path(tag, key);
+std::string path(Tag tag, const std::string& root, const TKey& key) {
+  return root + "/" + partial_path(tag, key);
 }
 
 // Boring default implementation.  Partially specialize for specific data types.
