@@ -20,9 +20,9 @@ std::string manager::filePathV1() const {
 void manager::Add(globalCoord coord, const std::string& comment,
                   const om::common::Color& color, double size) {
   base_t::Add(new data(coord.toDataCoord(vol_, 0), comment, color, size));
-  OmEvents::AnnotationEvent();
-  OmEvents::Redraw2d();
-  OmEvents::Redraw3d();
+  om::event::AnnotationObjectModified();
+  om::event::Redraw2d();
+  om::event::Redraw3d();
 }
 
 void manager::Save() const {

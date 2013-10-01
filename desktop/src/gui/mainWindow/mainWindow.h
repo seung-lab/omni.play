@@ -12,15 +12,16 @@ class GroupsTable;
 class InspectorWidget;
 class MainWindowEvents;
 class MenuBar;
-namespace om {
-class Exception;
-}
 class OmGlobalKeyPress;
-class OmSegmentEvent;
 class OmViewGroupState;
 class Preferences;
 class ToolBarManager;
 class ViewGroup;
+
+namespace om {
+class Exception;
+namespace event { class SegmentEvent; }
+}
 
 class MainWindow : public QMainWindow {
   Q_OBJECT public : MainWindow();
@@ -43,7 +44,7 @@ class MainWindow : public QMainWindow {
  protected:
   void closeEvent(QCloseEvent* event);
 
-  void SegmentModificationEvent(OmSegmentEvent* event);
+  void SegmentModificationEvent(om::event::SegmentEvent* event);
 
  public
 Q_SLOTS:

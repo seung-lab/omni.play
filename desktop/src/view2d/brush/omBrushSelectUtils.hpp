@@ -1,6 +1,6 @@
 #pragma once
 
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "segment/omSegmentSelector.h"
 #include "view2d/brush/omChunksAndPts.hpp"
 
@@ -36,6 +36,6 @@ class OmBrushSelectUtils {
 
     selector.sendEvent();
 
-    OmEvents::Redraw3d();
+    om::event::Redraw3d();
   }
 };

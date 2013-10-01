@@ -1,6 +1,6 @@
 #include "system/omConnect.hpp"
 #include "common/logging.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "segmentInspector.h"
 #include "segment/omSegmentUtils.hpp"
 #include "system/cache/omCacheManager.h"
@@ -50,7 +50,7 @@ void SegmentInspector::set_initial_values() {
 
 void SegmentInspector::nameEditChanged() {
   sdw_.setName(nameEdit->text());
-  OmEvents::SegmentModified();
+  om::event::SegmentModified();
 }
 
 void SegmentInspector::setSegObjColor() {
@@ -73,8 +73,8 @@ void SegmentInspector::setSegObjColor() {
 
   OmSegmentSelected::Set(sdw_);
   OmCacheManager::TouchFreshness();
-  OmEvents::Redraw2d();
-  OmEvents::Redraw3d();
+  om::event::Redraw2d();
+  om::event::Redraw3d();
 }
 
 QGroupBox* SegmentInspector::makeSourcesBox() {

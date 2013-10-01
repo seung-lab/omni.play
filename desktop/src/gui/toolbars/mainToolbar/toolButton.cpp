@@ -1,5 +1,5 @@
 #include "gui/toolbars/mainToolbar/toolButton.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "system/omStateManager.h"
 
 ToolButton::ToolButton(QWidget* parent, const QString& title,

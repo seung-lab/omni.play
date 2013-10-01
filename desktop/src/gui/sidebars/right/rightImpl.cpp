@@ -1,6 +1,6 @@
 #include "viewGroup/omViewGroupState.h"
 #include "common/logging.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/sidebars/right/rightImpl.h"
 #include "gui/sidebars/right/displayTools/displayTools.h"
@@ -34,7 +34,7 @@ SegmentationDataWrapper om::sidebars::rightImpl::GetSDW() {
   return vgs_->Segmentation();
 }
 
-void om::sidebars::rightImpl::updateGui() { OmEvents::Redraw2d(); }
+void om::sidebars::rightImpl::updateGui() { om::event::Redraw2d(); }
 
 void om::sidebars::rightImpl::SetSplittingOff() {
   graphTools_->SetSplittingOff();

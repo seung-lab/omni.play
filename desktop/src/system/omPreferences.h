@@ -8,7 +8,7 @@
  */
 
 #include "common/common.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "system/omPreferenceDefinitions.h"
 #include "zi/omUtility.h"
 #include "datalayer/archive/project.h"
@@ -83,7 +83,7 @@ class OmPreferences : private om::singletonBase<OmPreferences> {
   QHash<int, Vector3f> v3fPrefs_;
 
   static void postEvent(const om::PrefEnum key) {
-    OmEvents::PreferenceChange(key);
+    om::event::PreferenceChange(key);
   }
 
   friend class zi::singleton<OmPreferences>;

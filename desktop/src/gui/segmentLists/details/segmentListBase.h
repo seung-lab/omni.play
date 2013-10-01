@@ -1,11 +1,12 @@
 #pragma once
 
-#include "common/common.h"
-#include "utility/dataWrappers.h"
-
+#include <memory>
 #include <QtGui>
 #include <QWidget>
 
+#include "utility/segmentationDataWrapper.hpp"
+
+class SegmentDataWrapper;
 class GUIPageRequest;
 class GUIPageOfSegments;
 class OmViewGroupState;

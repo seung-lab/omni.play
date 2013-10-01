@@ -1,7 +1,6 @@
 #pragma once
 
-#include "events/details/omUserInterfaceEvent.h"
-#include "events/details/omSegmentEvent.h"
+#include "events/listeners.h"
 
 #include <QtGui>
 #include <QWidget>
@@ -9,8 +8,8 @@
 class OmViewGroupState;
 
 class InspectorProperties : public QDialog,
-                            public OmUserInterfaceEventListener,
-                            public OmSegmentEventListener {
+                            public om::event::UIEventListener,
+                            public om::event::SegmentEventListener {
   Q_OBJECT public : InspectorProperties(QWidget* parent, OmViewGroupState* vgs);
 
   virtual ~InspectorProperties();
@@ -24,17 +23,14 @@ Q_SLOTS:
   void CloseDialog();
 
  private:
-  OmViewGroupState* const vgs_;
+  OmViewGroupState* vgs_;
 
   std::unique_ptr<QWidget> widget_;
 
   QVBoxLayout* mainLayout_;
 
-  void UpdateSegmentPropWidgetEvent(OmUserInterfaceEvent*);
-
-  void SegmentGUIlistEvent(OmSegmentEvent*) {}
-
-  void SegmentSelectedEvent(OmSegmentEvent*) {}
-
-  void SegmentModificationEvent(OmSegmentEvent* event);
+  void UpdateSegmentPropWidgetEvent(om::event::UIEvent*);
+  void SegmentGUIlistEvent(om::event::SegmentEvent*) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent*) {}
+  void SegmentModificationEvent(om::event::SegmentEvent* event);
 };

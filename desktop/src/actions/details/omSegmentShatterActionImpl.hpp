@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "project/omProject.h"
 #include "segment/lists/omSegmentLists.h"
 #include "system/cache/omCacheManager.h"
@@ -50,13 +50,13 @@ class OmSegmentShatterActionImpl {
   void notify() const {
     std::cout << desc.toStdString() << "\n";
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
 
     sdw_.GetSegmentation().SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   template <typename T> friend class OmActionLoggerThread;

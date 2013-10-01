@@ -1,6 +1,6 @@
 #pragma once
 
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "segment/io/omSegmentPage.hpp"
 #include "segment/lists/omSegmentListForGUI.hpp"
 #include "segment/lists/omSegmentListGlobal.hpp"
@@ -218,7 +218,7 @@ class OmSegmentListLowLevel {
 
     timer.Print("Rebuilt segment GUI lists");
 
-    OmEvents::SegmentGUIlist(cache_->GetSDW(), true);
+    om::event::SegmentGUIlist(cache_->GetSDW(), true);
   }
 
   void copyGlobalList() {

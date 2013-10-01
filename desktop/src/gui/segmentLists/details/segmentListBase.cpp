@@ -1,7 +1,5 @@
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/common.h"
-#include "common/logging.h"
-#include "events/details/omSegmentEvent.h"
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/segmentLists/elementListBox.hpp"
 #include "gui/segmentLists/omSegmentListWidget.h"
@@ -14,7 +12,8 @@
 #include "segment/omSegmentUtils.hpp"
 #include "segment/omSegments.h"
 #include "system/omConnect.hpp"
-#include "utility/dataWrappers.h"
+#include "utility/segmentDataWrapper.hpp"
+#include "utility/segmentationDataWrapper.hpp"
 #include "volume/omSegmentation.h"
 
 SegmentListBase::SegmentListBase(QWidget* parent, OmViewGroupState* vgs)

@@ -85,7 +85,7 @@ class OmMouseEventMove {
 
   inline void doPan() {
     mousePan();
-    OmEvents::Redraw3d();
+    om::event::Redraw3d();
   }
 
   inline void setState(QMouseEvent* event) {

@@ -1,40 +1,24 @@
 #pragma once
 
-/*
- *
- * Brett Warne - bwarne@mit.edu - 3/14/09
- */
-
-#include "events/details/omEvent.h"
-#include "common/common.h"
+#include "events/details/event.h"
 
 namespace om {
-namespace events {
+namespace event {
 
-class annotationEvent : public OmEvent {
-
+class AnnotationEvent : public Event {
  public:
-  annotationEvent(QEvent::Type type);
+  static const QEvent::Type OBJECT_MODIFIED;
 
-  void Dispatch(OmEventListener*);
+  AnnotationEvent(QEvent::Type type) : Event(Klass::annotation, type) {}
 
-  static const OmEventClass CLASS = OM_ANNOTATION_EVENT_CLASS;
+  void Dispatch(Listener* base) {
+    auto* list = dynamic_cast<AnnotationEventListener*>(base);
+    assert(list);
 
-  static const QEvent::Type ANNOTATION_OBJECT_MODIFICATION =
-      (QEvent::Type)(CLASS);
-
- private:
-
+    if (type_ == OBJECT_MODIFIED)
+      return list->AnnotationModificationEvent(this);
+    throw om::ArgException("unknown event type");
+  }
 };
-
-class annotationEventListener : public OmEventListener {
-
- public:
-  annotationEventListener() : OmEventListener(annotationEvent::CLASS) {}
-
-  //add/remove Annotation, change state, change selection
-  virtual void AnnotationModificationEvent(annotationEvent* event) = 0;
-};
-
-}  // namespace events
-}  // namespace om
+}
+}  // om::event::

@@ -88,7 +88,7 @@ class OmTileDrawer {
     const bool finished = openglTileDrawer_->DrawTiles(tilesToDraw_);
 
     if (!finished) {
-      OmEvents::Redraw2d();
+      om::event::Redraw2d();
     }
   }
 

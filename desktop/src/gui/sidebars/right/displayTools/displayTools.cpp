@@ -17,6 +17,6 @@ DisplayTools::DisplayTools(om::sidebars::rightImpl* d, OmViewGroupState* vgs)
 }
 
 void DisplayTools::updateGui() {
-  OmEvents::Redraw2d();
-  OmEvents::Redraw3d();
+  om::event::Redraw2d();
+  om::event::Redraw3d();
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "segment/lists/omSegmentLists.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
@@ -36,13 +36,13 @@ class OmSegmentCutActionImpl {
 
     std::cout << desc.toStdString() << "\n";
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
 
     sdw_.GetSegmentation().SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   void Undo() {
@@ -60,17 +60,17 @@ class OmSegmentCutActionImpl {
     desc = QString("Uncut seg %1").arg(seg->value());
 
     if (!ret) {
-      OmEvents::NonFatalEvent("Could not fully undo cut");
+      om::event::NonFatalEventOccured("Could not fully undo cut");
       desc += " with errors";
     }
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
 
     sdw_.GetSegmentation().SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   std::string Description() const { return desc.toStdString(); }

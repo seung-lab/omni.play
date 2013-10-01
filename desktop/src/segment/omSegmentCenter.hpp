@@ -78,8 +78,8 @@ class OmSegmentCenter {
 
     vgs->View2dState()->SetScaledSliceDepth(voxelDC->toGlobalCoord());
 
-    OmEvents::ViewCenterChanged();
-    OmEvents::View3dRecenter();
+    om::event::ViewCenterChanged();
+    om::event::View3dRecenter();
   }
 
   static boost::optional<float> ComputeCameraDistanceForSelectedSegments() {

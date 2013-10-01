@@ -1,12 +1,15 @@
 #pragma once
 
+#include <memory>
 #include <zi/concurrency/semaphore.hpp>
-
-#include <boost/scoped_ptr.hpp>
 
 class OmActionLogger;
 class OmActionsImpl;
-class OmEventManagerImpl;
+namespace om {
+namespace event {
+class ManagerImpl;
+}
+}
 class OmRandColorFile;
 class OmStateManagerImpl;
 class OmView2dManagerImpl;
@@ -23,7 +26,7 @@ class OmProjectGlobals {
   std::unique_ptr<om::users> users_;
   std::unique_ptr<OmView2dManagerImpl> v2dManagerImpl_;
   std::unique_ptr<OmStateManagerImpl> stateMan_;
-  std::unique_ptr<OmEventManagerImpl> eventMan_;
+  std::unique_ptr<om::event::ManagerImpl> eventMan_;
   std::unique_ptr<OmActionsImpl> actions_;
   std::unique_ptr<OmActionLogger> actionLogger_;
 
@@ -42,7 +45,7 @@ class OmProjectGlobals {
 
   inline OmStateManagerImpl& StateManagerImpl() { return *stateMan_; }
 
-  inline OmEventManagerImpl& EventManImpl() { return *eventMan_; }
+  inline om::event::ManagerImpl& EventManImpl() { return *eventMan_; }
 
   inline OmActionsImpl& Actions() { return *actions_; }
 

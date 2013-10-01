@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "project/omProject.h"
 #include "segment/lists/omSegmentLists.h"
 #include "system/cache/omCacheManager.h"
@@ -33,13 +33,13 @@ class OmSegmentSplitActionImpl {
 
     std::cout << desc.toStdString() << "\n";
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
 
     sdw.SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   void Undo() {
@@ -62,13 +62,13 @@ class OmSegmentSplitActionImpl {
     desc =
         QString("Joined seg %1 to %2").arg(mEdge.childID).arg(mEdge.parentID);
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
 
     sdw.SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   std::string Description() const { return desc.toStdString(); }

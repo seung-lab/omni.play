@@ -2,7 +2,7 @@
 
 #include "actions/omActions.h"
 #include "common/logging.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
 #include "system/cache/omCacheManager.h"
@@ -35,7 +35,7 @@ class BreakThresholdGroup : public OmDoubleSpinBox {
 
     // todo: don't use same freshness as normal tiles
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 };

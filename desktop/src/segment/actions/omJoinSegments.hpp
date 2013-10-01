@@ -4,7 +4,7 @@
 #include "segment/omSegmentUtils.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/actions/omSetSegmentValid.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 class OmJoinSegments {
  private:
@@ -25,8 +25,8 @@ class OmJoinSegments {
     const om::common::SegIDSet ret = runOpp(join);
 
     sdw_.SegmentLists()->RefreshGUIlists();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
 
     return ret;
   }

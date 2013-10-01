@@ -138,7 +138,7 @@ class OmMouseEventPress {
     const om::globalCoord newloc = screenc.toGlobalCoord();
     state_->setLocation(newloc);
 
-    OmEvents::ViewCenterChanged();
+    om::event::ViewCenterChanged();
   }
 
   void mouseLeftButton() {

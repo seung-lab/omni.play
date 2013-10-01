@@ -77,7 +77,7 @@ void OmView2dCore::dockVisibilityChanged(const bool visible) {
 void OmView2dCore::Initialize() { state_->Coords().setTotalViewport(size()); }
 
 void OmView2dCore::Resize(int width, int height) {
-  OmEvents::ViewCenterChanged();
+  om::event::ViewCenterChanged();
 
   state_->Coords().setTotalViewport(width, height);
   state_->SetViewSliceOnPan();
@@ -107,6 +107,6 @@ void OmView2dCore::PaintOther() {
   }
 
   if (!IsDrawComplete()) {
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 }

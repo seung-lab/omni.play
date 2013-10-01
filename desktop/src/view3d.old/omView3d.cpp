@@ -1,3 +1,4 @@
+#include "events/details/preferenceEvent.h"
 #include "gl.h"
 #include "common/logging.h"
 #include "utility/glInclude.h"
@@ -232,7 +233,7 @@ void OmView3d::wheelEvent(QWheelEvent* event) { mouseWheelEvent(event); }
  *  Calls function for relevant preferences and redraws,
  *  otherwise event is ignored.
  */
-void OmView3d::PreferenceChangeEvent(OmPreferenceEvent* event) {
+void OmView3d::PreferenceChangeEvent(om::event::PreferenceEvent* event) {
   switch (event->GetPreference()) {
 
     case om::PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL:
@@ -266,7 +267,7 @@ void OmView3d::PreferenceChangeEvent(OmPreferenceEvent* event) {
   myUpdate();
 }
 
-void OmView3d::SegmentModificationEvent(OmSegmentEvent*) { myUpdate(); }
+void OmView3d::SegmentModificationEvent(om::event::SegmentEvent*) { myUpdate(); }
 
 void OmView3d::ViewBoxChangeEvent() { myUpdate(); }
 

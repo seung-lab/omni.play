@@ -21,7 +21,7 @@ class ContrastSpinBox : public OmDoubleSpinBox {
   void actUponValueChange(const double threshold) {
     OmChannelTileFilter::SetContrastValue(threshold);
     OmTileCache::ClearChannel();
-    OmEvents::Redraw2dBlocking();
+    om::event::Redraw2dBlocking();
   }
 
   void setInitialGUIThresholdValue() {

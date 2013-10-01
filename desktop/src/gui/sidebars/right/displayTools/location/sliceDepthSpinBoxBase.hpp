@@ -1,7 +1,6 @@
 #pragma once
 
-#include "common/logging.h"
-#include "events/details/omViewEvent.h"
+#include "events/listeners.h"
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "utility/dataWrappers.h"
 #include "view2d/omView2dConverters.hpp"
@@ -11,7 +10,8 @@
 
 #include <limits>
 
-class SliceDepthSpinBoxBase : public OmIntSpinBox, public OmViewEventListener {
+class SliceDepthSpinBoxBase : public OmIntSpinBox,
+                              public om::event::View2dEventListener {
   Q_OBJECT public : SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState* vgs)
                     : OmIntSpinBox(d, true), vgs_(vgs) {
     setValue(0);
@@ -52,18 +52,15 @@ class SliceDepthSpinBoxBase : public OmIntSpinBox, public OmViewEventListener {
     }
 
     vg2ds()->SetScaledSliceDepth(viewType(), depth);
-    OmEvents::Redraw2d();
-    OmEvents::ViewCenterChanged();
-    OmEvents::View3dRecenter();
+    om::event::Redraw2d();
+    om::event::ViewCenterChanged();
+    om::event::View3dRecenter();
   }
 
   void update() {
     blockSignals(true);
-
     const int depth = vg2ds()->GetScaledSliceDepth(viewType());
-
     setValue(depth);
-
     blockSignals(false);
   }
 

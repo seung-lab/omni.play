@@ -1,6 +1,6 @@
 #include "actions/omActions.h"
 #include "common/logging.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/inspectors/segmentInspector.h"
 #include "gui/widgets/omAskYesNoQuestion.hpp"
@@ -174,7 +174,7 @@ void OmSegmentContextMenu::randomizeColor() {
   segment->reRandomizeColor();
 
   OmCacheManager::TouchFreshness();
-  OmEvents::Redraw2d();
+  om::event::Redraw2d();
 }
 
 void OmSegmentContextMenu::randomizeSegmentColor() {
@@ -182,20 +182,20 @@ void OmSegmentContextMenu::randomizeSegmentColor() {
   segment->reRandomizeColor();
 
   OmCacheManager::TouchFreshness();
-  OmEvents::Redraw2d();
+  om::event::Redraw2d();
 }
 
 void OmSegmentContextMenu::setValid() {
   if (sdw_.IsSegmentValid()) {
     OmActions::ValidateSegment(sdw_, om::common::SetValid::SET_VALID);
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
   }
 }
 
 void OmSegmentContextMenu::setNotValid() {
   if (sdw_.IsSegmentValid()) {
     OmActions::ValidateSegment(sdw_, om::common::SetValid::SET_NOT_VALID);
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
   }
 }
 
@@ -206,7 +206,7 @@ void OmSegmentContextMenu::showProperties() {
   const QString title = QString("Segmentation %1: Segment %2")
       .arg(sdw.GetSegmentationID()).arg(rootSegID);
 
-  OmEvents::UpdateSegmentPropBox(new SegmentInspector(sdw, this), title);
+  om::event::UpdateSegmentPropBox(new SegmentInspector(sdw, this), title);
 }
 
 void OmSegmentContextMenu::addPropertiesActions() {

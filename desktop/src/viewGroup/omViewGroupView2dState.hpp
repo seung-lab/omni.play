@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 /**
  * Global viewing location across all volumes
@@ -77,7 +77,7 @@ class OmViewGroupView2dState {
       xz_.depth = depths.y;
       xy_.depth = depths.z;
     }
-    OmEvents::ViewBoxChanged();
+    om::event::ViewBoxChanged();
   }
 
   inline void SetScaledSliceDepth(const om::common::ViewType plane,
@@ -86,7 +86,7 @@ class OmViewGroupView2dState {
       zi::guard g(lock_);
       getPlane(plane).depth = depth;
     }
-    OmEvents::ViewBoxChanged();
+    om::event::ViewBoxChanged();
   }
 
   // minimum coordiante of view slice

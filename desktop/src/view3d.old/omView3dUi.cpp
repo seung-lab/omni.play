@@ -1,5 +1,5 @@
 #include "actions/omActions.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "landmarks/omLandmarks.hpp"
 #include "mesh/omDrawOptions.h"
 #include "project/omProject.h"
@@ -359,7 +359,7 @@ void OmView3dUi::crosshair(QMouseEvent* event) {
 
   vgs_->View2dState()->SetScaledSliceDepth(pickPoint.coord);
 
-  OmEvents::ViewCenterChanged();
+  om::event::ViewCenterChanged();
 }
 
 OmSegmentPickPoint OmView3dUi::pickVoxelMouseCrosshair(QMouseEvent* event) {

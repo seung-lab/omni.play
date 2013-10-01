@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/logging.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "gui/widgets/omCursors.h"
 #include "system/omConnect.hpp"
 
@@ -23,8 +23,8 @@ class OmDoubleSpinBox : public QDoubleSpinBox {
 Q_SLOTS:
   void valueChanged() {
     actUponValueChange(getGUIvalue());
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
  protected:

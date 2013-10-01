@@ -1,6 +1,8 @@
-#include "gui/inspectors/segmentInspector.h"
 #include "actions/omSelectSegmentParams.hpp"
+#include "events/details/uiEvent.h"
+#include "events/details/segmentEvent.h"
 #include "gui/inspectors/inspectorProperties.h"
+#include "gui/inspectors/segmentInspector.h"
 #include "viewGroup/omViewGroupState.h"
 
 InspectorProperties::InspectorProperties(QWidget* parent, OmViewGroupState* vgs)
@@ -34,11 +36,11 @@ void InspectorProperties::SetOrReplaceWidget(QWidget* newWidget,
 }
 
 void InspectorProperties::UpdateSegmentPropWidgetEvent(
-    OmUserInterfaceEvent* event) {
-  SetOrReplaceWidget(event->Widget(), event->Title());
+    om::event::UIEvent* event) {
+    SetOrReplaceWidget(event->Widget(), event->Title());
 }
 
-void InspectorProperties::SegmentModificationEvent(OmSegmentEvent* event) {
+void InspectorProperties::SegmentModificationEvent(om::event::SegmentEvent* event) {
   if (!isVisible()) {
     return;
   }

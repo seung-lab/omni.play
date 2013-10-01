@@ -1,6 +1,6 @@
 #pragma once
 
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "view2d/om2dPreferences.hpp"

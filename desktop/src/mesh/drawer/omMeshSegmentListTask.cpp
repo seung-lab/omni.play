@@ -3,7 +3,7 @@
 #include "mesh/drawer/omMeshSegmentListTask.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentIterator.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "chunks/omChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 
@@ -26,6 +26,6 @@ void OmMeshSegmentListTask::run() {
   }
 
   rootSegLists_->AddToCache(mChunk, mRootSeg, segmentsToDraw);
-  OmEvents::Redraw3d();
+  om::event::Redraw3d();
   //	printf("done..(%u)\n", mRootSeg->value);
 }

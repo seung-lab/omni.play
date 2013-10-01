@@ -1,7 +1,7 @@
 #include "system/omConnect.hpp"
 #include "common/logging.h"
 #include "filObjectInspector.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "utility/dataWrappers.h"
 
 FilObjectInspector::FilObjectInspector(QWidget* parent,
@@ -37,7 +37,7 @@ void FilObjectInspector::saveFilterAlphaValue() {}
 void FilObjectInspector::setFilAlpha(int alpha) {
   if (fdw_->isValid()) {
     fdw_->getFilter()->SetAlpha((double) alpha / 100.00);
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 }
 

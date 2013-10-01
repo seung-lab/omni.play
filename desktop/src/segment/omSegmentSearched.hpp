@@ -3,7 +3,7 @@
 #include "actions/omActions.h"
 #include "common/common.h"
 #include "system/cache/omCacheManager.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "utility/dataWrappers.h"
 #include "zi/omUtility.h"
 

@@ -60,10 +60,8 @@ bool OmProject::IsOpen() { return static_cast<bool>(instance().impl_); }
 
 #include "actions/omActions.h"
 #include "segment/omSegmentSelected.hpp"
-#include "events/details/omEventManager.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 #include "threads/omThreadPoolManager.h"
-#include "zi/omThreads.h"
 
 void OmProject::Close() {
   if (!IsOpen()) {

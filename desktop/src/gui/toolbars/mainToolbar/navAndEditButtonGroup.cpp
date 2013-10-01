@@ -1,4 +1,4 @@
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "gui/toolbars/mainToolbar/navAndEditButtonGroup.h"
 #include "gui/toolbars/mainToolbar/toolButton.h"
 #include "gui/toolbars/mainToolbar/toolButton.h"

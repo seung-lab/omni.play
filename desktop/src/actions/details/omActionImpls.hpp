@@ -81,7 +81,7 @@ class OmSegmentJoinAction : public OmActionBase<OmSegmentJoinActionImpl> {
   virtual void UndoAction() {
     impl_->Undo();
     SetDescription();
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 };
 

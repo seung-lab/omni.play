@@ -66,12 +66,12 @@ Q_SLOTS:
 
   void keyLess() {
     OmStateManager::BrushSize()->DecreaseSize();
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
   void keyGreater() {
     OmStateManager::BrushSize()->IncreaseSize();
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
   void keyJ() {
@@ -81,8 +81,8 @@ Q_SLOTS:
       OmActions::JoinSegments(SegmentationDataWrapper(*iter));
     }
 
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
  public:

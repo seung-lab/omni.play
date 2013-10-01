@@ -21,7 +21,7 @@ OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
 
   state_->SetIntialWindowState();
   OmCursors::setToolCursor(this);
-  OmEvents::ViewCenterChanged();
+  om::event::ViewCenterChanged();
 }
 
 OmView2d::~OmView2d() { unlinkComplimentaryDock(); }
@@ -70,7 +70,7 @@ void OmView2d::keyPressEvent(QKeyEvent* event) {
 
 void OmView2d::ResetWidget() {
   state_->ResetWindowState();
-  OmEvents::ViewCenterChanged();
+  om::event::ViewCenterChanged();
   Redraw();
 }
 

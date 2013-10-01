@@ -4,7 +4,7 @@
 #include "system/omConnect.hpp"
 #include "gui/widgets/omButton.hpp"
 #include "viewGroup/omViewGroupState.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 namespace om {
 namespace sidebars {
@@ -20,8 +20,8 @@ class ToggleAnnotationButton : public OmButton<QWidget> {
 
   void doAction() {
     vgs_->setAnnotationVisible(!this->isChecked());
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 };
 

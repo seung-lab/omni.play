@@ -1,6 +1,6 @@
 #pragma once
 
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "actions/omActions.h"
 #include "tiles/cache/omTileCache.h"
 #include "view2d/brush/omBrushOppTypes.h"
@@ -34,7 +34,7 @@ class OmBrushPaintUtils {
 
     removeModifiedTiles();
 
-    OmEvents::Redraw2dBlocking();
+    om::event::Redraw2dBlocking();
   }
 
  private:

@@ -17,7 +17,7 @@ class GammaSpinBox : public OmDoubleSpinBox {
   void actUponValueChange(const double threshold) {
     OmChannelTileFilter::SetGamma(threshold);
     OmTileCache::ClearChannel();
-    OmEvents::Redraw2dBlocking();
+    om::event::Redraw2dBlocking();
   }
 
   void setInitialGUIThresholdValue() {

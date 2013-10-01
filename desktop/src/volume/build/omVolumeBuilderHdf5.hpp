@@ -1,7 +1,7 @@
 #pragma once
 
 #include "volume/build/omMSTImportHdf5.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "volume/build/omVolumeBuilderBase.hpp"
 #include "volume/build/omDataCopierHdf5.hpp"
 #include "datalayer/hdf5/omHdf5.h"

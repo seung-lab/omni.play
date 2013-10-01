@@ -7,7 +7,7 @@
 #include "segment/lists/omSegmentListsTypes.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "utility/dataWrappers.h"
 #include "utility/omStringHelpers.h"
 #include "viewGroup/omViewGroupState.h"

@@ -65,7 +65,7 @@ class OmKeyEvents {
       case Qt::Key_PageUp:
         blockingKeyDown_.restart();
         state_->MoveUpStackCloserToViewer();
-        OmEvents::ViewCenterChanged();
+        om::event::ViewCenterChanged();
         break;
 
       case Qt::Key_S:
@@ -73,7 +73,7 @@ class OmKeyEvents {
       case Qt::Key_PageDown:
         blockingKeyDown_.restart();
         state_->MoveDownStackFartherFromViewer();
-        OmEvents::ViewCenterChanged();
+        om::event::ViewCenterChanged();
         break;
 
       case Qt::Key_Tab: {

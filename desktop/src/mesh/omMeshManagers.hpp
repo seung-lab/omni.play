@@ -107,7 +107,7 @@ class OmMeshManagers {
   }
   
   //call redraw to force mesh to reload
-  OmEvents::Redraw3d();
+  om::event::Redraw3d();
       }
   */
 

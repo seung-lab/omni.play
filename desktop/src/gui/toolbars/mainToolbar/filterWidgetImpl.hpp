@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "project/omProject.h"
 #include "system/omConnect.hpp"
 #include "utility/dataWrappers.h"
@@ -129,7 +129,7 @@ Q_SLOTS:
 
   void moveSliderTab(const double alpha) {
     this->setValue(alpha * 100);
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
   boost::optional<double> doGetFilterAlpha() {

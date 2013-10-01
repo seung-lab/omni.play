@@ -53,7 +53,7 @@ class OmFillTool {
 
     clearCaches();
 
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
  private:

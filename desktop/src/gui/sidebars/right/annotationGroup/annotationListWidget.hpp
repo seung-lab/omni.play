@@ -1,18 +1,16 @@
 #pragma once
 
-#include "common/common.h"
-#include "viewGroup/omViewGroupState.h"
-#include "utility/segmentationDataWrapper.hpp"
-#include "utility/color.hpp"
 #include "annotation/annotation.h"
-#include "events/details/omEventManager.h"
-#include "events/details/annotationEvent.h"
-#include "viewGroup/omViewGroupView2dState.hpp"
-#include "view2d/omView2dConverters.hpp"
-#include "utility/dataWrappers.h"
-#include "system/omConnect.hpp"
-#include "events/details/omViewEvent.h"
+#include "common/common.h"
+#include "events/listeners.h"
 #include "gui/widgets/locationEditDialog.hpp"
+#include "system/omConnect.hpp"
+#include "utility/color.hpp"
+#include "view2d/omView2dConverters.hpp"
+#include "viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupView2dState.hpp"
+#include "utility/segmentationDataWrapper.hpp"
+#include "utility/channelDataWrapper.hpp"
 
 #include <QtGui>
 #include <QDialog>
@@ -22,8 +20,8 @@ namespace om {
 namespace sidebars {
 
 class AnnotationListWidget : public QTreeWidget,
-                             public om::events::annotationEventListener,
-                             public OmViewEventListener {
+                             public om::event::AnnotationEventListener,
+                             public om::event::View2dEventListener {
   Q_OBJECT public : AnnotationListWidget(QWidget* parent, OmViewGroupState* vgs)
                     : QTreeWidget(parent), vgs_(vgs) {
     setSelectionMode(QAbstractItemView::SingleSelection);
@@ -88,7 +86,7 @@ class AnnotationListWidget : public QTreeWidget,
     }
   }
 
-  void AnnotationModificationEvent(om::events::annotationEvent*) { populate(); }
+  void AnnotationModificationEvent(om::event::AnnotationEvent*) { populate(); }
 
   // View Event Listener Implementation
   void ViewBoxChangeEvent() {}
@@ -162,8 +160,8 @@ Q_SLOTS:
       }
     }
 
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
  protected:
@@ -181,8 +179,8 @@ Q_SLOTS:
         }
         manager->Remove(selected->ID);
         delete selectedItem;
-        OmEvents::Redraw2d();
-        OmEvents::Redraw3d();
+        om::event::Redraw2d();
+        om::event::Redraw3d();
       }
     }
   }
@@ -196,8 +194,8 @@ Q_SLOTS:
 
     vgs_->View2dState()
         ->SetScaledSliceDepth(annotation->Object->coord.toGlobalCoord());
-    OmEvents::ViewCenterChanged();
-    OmEvents::View3dRecenter();
+    om::event::ViewCenterChanged();
+    om::event::View3dRecenter();
   }
 
   static managedAnnotation* getAnnotation(QTreeWidgetItem* item) {

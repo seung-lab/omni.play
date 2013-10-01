@@ -2,7 +2,8 @@
 
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/logging.h"
-#include "events/details/omSegmentEvent.h"
+#include "events/details/segmentEvent.h"
+#include "events/listeners.h"
 #include "gui/segmentLists/details/segmentListRecent.h"
 #include "gui/segmentLists/details/segmentListUncertain.h"
 #include "gui/segmentLists/details/segmentListValid.h"
@@ -21,7 +22,7 @@
 class OmViewGroupState;
 
 class ElementListBoxImpl : public QGroupBox,
-                           public OmSegmentEventListener,
+                           public om::event::SegmentEventListener,
                            public SegmentListKeyPressEventListener {
   Q_OBJECT protected : void keyPressEvent(QKeyEvent* event) {
     SegmentListKeyPressEventListener::keyPressEvent(event);
@@ -44,7 +45,7 @@ class ElementListBoxImpl : public QGroupBox,
   SegmentationDataWrapper sdw_;
   bool haveValidSDW_;
 
-  virtual void SegmentGUIlistEvent(OmSegmentEvent* event) {
+  virtual void SegmentGUIlistEvent(om::event::SegmentEvent* event) {
     const SegmentationDataWrapper& sdw = event->GUIparams().sdw;
 
     if (event->GUIparams().stayOnPage) {
@@ -64,7 +65,7 @@ class ElementListBoxImpl : public QGroupBox,
     return params.shouldScroll;
   }
 
-  virtual void SegmentModificationEvent(OmSegmentEvent* event) {
+  virtual void SegmentModificationEvent(om::event::SegmentEvent* event) {
     if (!event->Params().shouldScroll) {
       return;
     }
@@ -106,7 +107,7 @@ class ElementListBoxImpl : public QGroupBox,
     }
   }
 
-  void SegmentSelectedEvent(OmSegmentEvent*) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent*) {}
 
   void updateValidBar(const SegmentationDataWrapper& sdw) {
     const uint64_t valid =

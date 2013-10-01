@@ -1,7 +1,7 @@
 #pragma once
 
 #include "coordinates/normCoord.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
@@ -11,7 +11,7 @@
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
-#include "events/details/omViewEvent.h"
+#include "events/events.h"
 #include "volume/omMipVolume.h"
 #include "view2d/view2dCoords.hpp"
 #include "coordinates/screenCoord.h"
@@ -92,7 +92,7 @@ class OmView2dState {
     OmView2dConverters::ShiftPanDirection(loc, numberOfSlicestoAdvance, dir,
                                           viewType_);
     setLocation(loc);
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
     coords_.UpdateTransformationMatrices();
   }
 
@@ -110,7 +110,7 @@ class OmView2dState {
     vgs_->View2dState()->SetViewSliceMax(viewType_, get2ptsInPlane(max));
     vgs_->View2dState()->SetViewSliceMin(viewType_, get2ptsInPlane(min));
 
-    OmEvents::Redraw3d();
+    om::event::Redraw3d();
   }
 
   inline void ChangeViewCenter() {
@@ -143,7 +143,7 @@ class OmView2dState {
     coords_.UpdateTransformationMatrices();
 
     OmTileCache::ClearAll();
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
   inline void MoveUpStackCloserToViewer(int steps = 1) {
@@ -178,7 +178,7 @@ class OmView2dState {
 
     setLocation(Location() + difference);
 
-    OmEvents::ViewCenterChanged();
+    om::event::ViewCenterChanged();
 
     if (difference != Vector3f::ZERO) {
       mousePanStartingPt_.reset(cursorLocation);

@@ -5,7 +5,7 @@
 #include "common/string.hpp"
 #include "project/omProject.h"
 #include "project/omProject.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "utility/dataWrappers.h"
 #include "utility/omCopyFirstN.hpp"
 
@@ -35,7 +35,7 @@ class OmSegmentSelectActionImpl {
                                        params_->addToRecentList);
     }
 
-    OmEvents::SegmentModified(params_);
+    om::event::SegmentModified(params_);
   }
 
   void Undo() {
@@ -54,7 +54,7 @@ class OmSegmentSelectActionImpl {
                                        params_->addToRecentList);
     }
 
-    OmEvents::SegmentModified(params_);
+    om::event::SegmentModified(params_);
   }
 
   std::string Description() const {

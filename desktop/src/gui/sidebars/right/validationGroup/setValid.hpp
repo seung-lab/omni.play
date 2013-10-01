@@ -4,7 +4,7 @@
 #include "gui/sidebars/right/validationGroup/validationGroup.h"
 #include "gui/widgets/omButton.hpp"
 #include "actions/omActions.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 class SetValid : public OmButton<ValidationGroup> {
  public:
@@ -23,6 +23,6 @@ class SetValid : public OmButton<ValidationGroup> {
 
     OmActions::ValidateSelectedSegments(sdw, om::common::SetValid::SET_VALID);
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
   }
 };

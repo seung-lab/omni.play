@@ -1,10 +1,10 @@
 #pragma once
 
-#include "events/details/omViewEvent.h"
+#include "events/listeners.h"
 
 class OmTileCacheImpl;
 
-class OmTileCacheEventListener : public OmViewEventListener {
+class OmTileCacheEventListener : public om::event::View2dEventListener {
  private:
   OmTileCacheImpl* const cache_;
 

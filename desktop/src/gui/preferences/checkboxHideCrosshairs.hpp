@@ -2,7 +2,7 @@
 
 #include "view2d/om2dPreferences.hpp"
 #include "gui/widgets/omCheckBoxWidget.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 class ShowCrosshairsCheckbox : public OmCheckBoxWidget {
  public:
@@ -13,6 +13,6 @@ class ShowCrosshairsCheckbox : public OmCheckBoxWidget {
  private:
   void doAction(const bool isChecked) {
     Om2dPreferences::ShowCrosshairs(isChecked);
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 };

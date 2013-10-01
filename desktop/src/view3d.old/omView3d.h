@@ -5,10 +5,7 @@
 #include "omView3dWidget.h"
 #include "omView3dUi.h"
 
-#include "events/details/omView3dEvent.h"
-#include "events/details/omViewEvent.h"
-#include "events/details/omSegmentEvent.h"
-#include "events/details/omPreferenceEvent.h"
+#include "events/listeners.h"
 #include "common/common.h"
 
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -19,10 +16,10 @@
 class OmViewGroupState;
 
 class OmView3d : public QGLWidget,
-                 public OmPreferenceEventListener,
-                 public OmSegmentEventListener,
-                 public OmView3dEventListener,
-                 public OmViewEventListener {
+                 public om::event::PreferenceEventListener,
+                 public om::event::SegmentEventListener,
+                 public om::event::View2dEventListener,
+                 public om::event::View3dEventListener {
   Q_OBJECT public : OmView3d(QWidget *, OmViewGroupState *);
   ~OmView3d();
 
@@ -53,10 +50,10 @@ class OmView3d : public QGLWidget,
   void pinchTriggered(QPinchGesture *gesture);
 
   //omni events
-  void SegmentModificationEvent(OmSegmentEvent *event);
-  void SegmentGUIlistEvent(OmSegmentEvent *) {}
-  void SegmentSelectedEvent(OmSegmentEvent *) {}
-  void PreferenceChangeEvent(OmPreferenceEvent *event);
+  void SegmentModificationEvent(om::event::SegmentEvent *event);
+  void SegmentGUIlistEvent(om::event::SegmentEvent *) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent *) {}
+    void PreferenceChangeEvent(om::event::PreferenceEvent *event);
   void ViewBoxChangeEvent();
   void View3dRedrawEvent();
   void View3dRedrawEventFromCache();

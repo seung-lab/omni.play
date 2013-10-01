@@ -10,7 +10,7 @@
 #include "mesh/omVolumeCuller.h"
 #include "segment/omSegmentPointers.h"
 #include "segment/omSegmentUtils.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
@@ -90,7 +90,7 @@ class OmMeshDrawerImpl {
     glPopMatrix();
 
     if (redrawNeeded_) {
-      OmEvents::Redraw3d();
+      om::event::Redraw3d();
     }
   }
 

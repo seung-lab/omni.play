@@ -1,7 +1,7 @@
 #pragma once
 
 #include "actions/details/omSegmentCutAction.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "segment/omSegmentEdgeUtils.hpp"
 #include "utility/segmentDataWrapper.hpp"
 
@@ -16,7 +16,7 @@ class OmCutSegmentRunner {
 
     if (notCuttable) {
       const QString err = QString::fromStdString(*notCuttable);
-      OmEvents::NonFatalEvent(err);
+      om::event::NonFatalEventOccured(err);
       return;
     }
 

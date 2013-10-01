@@ -1,5 +1,5 @@
 #include "common/logging.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/toolbars/toolbarManager.h"
 #include "gui/viewGroup/viewGroup.h"
@@ -120,14 +120,14 @@ ToolBarManager* OmViewGroupState::GetToolBarManager() {
 void OmViewGroupState::SetShowValidMode(bool mode, bool inColor) {
   mShowValid = mode;
   mShowValidInColor = inColor;
-  OmEvents::Redraw3d();
-  OmEvents::Redraw2d();
+  om::event::Redraw3d();
+  om::event::Redraw2d();
 }
 
 void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(
     const bool inColor) {
   mShowFilterInColor = inColor;
-  OmEvents::Redraw2d();
+  om::event::Redraw2d();
 }
 
 bool OmViewGroupState::shouldVolumeBeShownBroken() {

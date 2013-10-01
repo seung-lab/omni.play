@@ -2,7 +2,7 @@
 
 #include "actions/omActions.h"
 #include "common/common.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "segment/omSegmentSelector.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
@@ -22,7 +22,7 @@ class OmSegmentSelected : private om::singletonBase<OmSegmentSelected> {
 
   static void SetSegmentForPainting(const SegmentDataWrapper& sdw) {
     instance().sdwForPainting_ = sdw;
-    OmEvents::SegmentSelected();
+    om::event::SegmentSelected();
   }
 
   static void RandomizeColor() {
@@ -31,7 +31,7 @@ class OmSegmentSelected : private om::singletonBase<OmSegmentSelected> {
     }
     instance().sdw_.RandomizeColor();
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
   static void AugmentSelection(const SegmentDataWrapper& sdw) {
@@ -56,7 +56,7 @@ class OmSegmentSelected : private om::singletonBase<OmSegmentSelected> {
                                  om::common::SetValid::SET_VALID);
     }
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
   }
 
  private:

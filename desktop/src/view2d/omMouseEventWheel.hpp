@@ -66,6 +66,6 @@ class OmMouseEventWheel {
 
     event->accept();
 
-    OmEvents::Redraw3d();
+    om::event::Redraw3d();
   }
 };

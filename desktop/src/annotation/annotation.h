@@ -5,7 +5,7 @@
 #include "common/common.h"
 #include "datalayer/fs/omFile.hpp"
 #include "system/manager.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 #include <QDataStream>
 #include <QFile>

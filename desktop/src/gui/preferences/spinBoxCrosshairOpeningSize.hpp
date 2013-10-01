@@ -2,7 +2,7 @@
 
 #include "view2d/om2dPreferences.hpp"
 #include "gui/widgets/omIntSpinBox.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 class CrosshairOpeningSizeSpinBox : public OmIntSpinBox {
  public:
@@ -16,6 +16,6 @@ class CrosshairOpeningSizeSpinBox : public OmIntSpinBox {
  private:
   void actUponValueChange(const int val) {
     Om2dPreferences::CrosshairHoleSize(val);
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 };

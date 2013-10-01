@@ -112,7 +112,7 @@ template <typename VOL> class OmVolumeBuilderBase {
     printf("************************\n");
 
     OmActions::ChangeMSTthreshold(vol->GetSDW(), OmMST::DefaultThreshold);
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
   }
 
   void setVolAsBuilding() { vol_->SetBuildState(MIPVOL_BUILDING); }

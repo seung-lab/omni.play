@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/logging.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "system/omConnect.hpp"
 
 #include <QtGui>
@@ -23,7 +23,7 @@ Q_SLOTS:
 
   void spinboxChanged() {
     actUponValueChange(value());
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
  protected:

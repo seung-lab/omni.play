@@ -39,7 +39,7 @@ class MeshTest {
   const double threshold_;
 
   OmMeshManager* const meshManager_;
-  boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
+    std::unique_ptr<OmMeshWriterV2> meshWriter_;
 
   const int numParallelChunks_;
   const int numThreadsPerChunk_;
@@ -48,8 +48,7 @@ class MeshTest {
     zi::task_manager::simple manager(numParallelChunks_);
     manager.start();
 
-    om::shared_ptr<std::deque<om::chunkCoord> > coords =
-        segmentation_->GetMipChunkCoords(0);
+    auto coords = segmentation_->GetMipChunkCoords(0);
 
     FOR_EACH(cc, *coords) {
       manager.push_back(

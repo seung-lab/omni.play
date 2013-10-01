@@ -1,5 +1,5 @@
 #include "preferences2d.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "common/logging.h"

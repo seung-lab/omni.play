@@ -1,7 +1,7 @@
 #pragma once
 
 #include "actions/omActions.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
 #include "segment/io/omMST.h"

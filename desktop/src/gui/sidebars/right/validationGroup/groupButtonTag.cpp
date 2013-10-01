@@ -3,7 +3,7 @@
 #include "common/logging.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "segment/omSegments.h"
 
 GroupButtonTag::GroupButtonTag(ValidationGroup* d)
@@ -24,5 +24,5 @@ void GroupButtonTag::doAction() {
       seg.GetID(), seg.Segments()->GetSelectedSegmentIDs(),
       mParent->getGroupNameFromGUI().toStdString(), true);
 
-  OmEvents::SegmentModified();
+  om::event::SegmentModified();
 }

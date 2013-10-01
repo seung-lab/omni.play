@@ -1,6 +1,6 @@
 #pragma once
 
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "gui/sidebars/right/displayTools/2d/brightenSelected.hpp"
 #include "gui/sidebars/right/displayTools/2d/brightnessSpinBox.hpp"
 #include "gui/sidebars/right/displayTools/2d/contrastSpinBox.hpp"

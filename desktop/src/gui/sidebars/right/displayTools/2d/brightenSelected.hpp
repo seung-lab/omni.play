@@ -21,7 +21,7 @@ class BrightenSelected : public OmCheckBoxWidget {
   virtual void doAction(const bool isChecked) {
     vgs_->BrightenSelected(isChecked);
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 };
 

@@ -19,7 +19,7 @@ class BrightnessSpinBox : public OmIntSpinBox {
   void actUponValueChange(const int val) {
     OmChannelTileFilter::SetBrightnessShift(val);
     OmTileCache::ClearChannel();
-    OmEvents::Redraw2dBlocking();
+    om::event::Redraw2dBlocking();
   }
 
   void setInitialGUIThresholdValue() {
