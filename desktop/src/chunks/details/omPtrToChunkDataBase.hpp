@@ -8,6 +8,9 @@ namespace chunk {
 // TODO: Get rid of this!
 class ptrToChunkDataBase {
  public:
+
+  virtual ~ptrToChunkDataBase() {}
+
   virtual void Release() {}
 
   virtual int8_t* GetRawData(int8_t*) { return NULL; }
