@@ -1,8 +1,8 @@
 #include "utility/glInclude.h"
 #include "system/omStateManager.h"
-#include "view3d/omCamera.h"
-#include "view3d/omView3d.h"
-#include "view3d/widgets/omInfoWidget.h"
+#include "../omCamera.h"
+#include "../omView3d.h"
+#include "omInfoWidget.h"
 
 static const float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
 

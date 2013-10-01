@@ -5,7 +5,7 @@
 #include "segment/omSegments.h"
 #include "segment/omSegmentSelector.h"
 #include "utility/dataWrappers.h"
-#include "view3d/omView3d.h"
+#include "view3d.old/omView3d.h"
 #include "chunks/omChunk.h"
 #include "volume/omSegmentation.h"
 #include "zi/omUtility.h"
@@ -39,7 +39,7 @@ void MeshPreviewerImpl::mesh() {
 
   /*
       segmentation.MeshManagers()->MeshChunk(coord);
-  
+
       OmChunk* chunk;
       segmentation.GetChunk(chunk, coord);
   // select all segments

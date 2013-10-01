@@ -1,8 +1,8 @@
 #pragma once
 
 #include "tiles/omTileTypes.hpp"
-#include "view3d/omCamera.h"
-#include "view3d/omView3dWidget.h"
+#include "../omCamera.h"
+#include "../omView3dWidget.h"
 
 class OmViewGroupState;
 class OmViewGroupView2dState;

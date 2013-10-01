@@ -1,8 +1,8 @@
 #include "utility/glInclude.h"
 #include "system/omStateManager.h"
-#include "view3d/omCamera.h"
-#include "view3d/omView3d.h"
-#include "view3d/widgets/annotationsWidget.h"
+#include "../omCamera.h"
+#include "../omView3d.h"
+#include "annotationsWidget.h"
 #include "annotation/annotation.h"
 #include "viewGroup/omViewGroupState.h"
 

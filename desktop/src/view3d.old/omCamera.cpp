@@ -1,7 +1,7 @@
 #include "omCamera.h"
 #include "utility/glInclude.h"
 #include "common/logging.h"
-#include "view3d/gl.h"
+#include "gl.h"
 
 static const float INITIAL_DISTANCE = 20;
 static const Vector3f INITIAL_DIRECTION(1, 0, 0);  //direction

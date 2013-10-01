@@ -1,6 +1,6 @@
 #pragma once
 
-#include "view3d/gl.h"
+#include "view3d.old/gl.h"
 #include "common/common.h"
 #include "common/logging.h"
 #include "utility/glInclude.h"
@@ -15,7 +15,7 @@
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "utility/omTimer.hpp"
-#include "view3d/om3dPreferences.hpp"
+#include "view3d.old/om3dPreferences.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "chunks/omChunk.h"
 

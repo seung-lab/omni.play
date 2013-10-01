@@ -1,6 +1,6 @@
 #pragma once
 
-#include "view3d/omView3dWidget.h"
+#include "../omView3dWidget.h"
 #include <QFont>
 
 class OmInfoWidget : public OmView3dWidget {

@@ -1,6 +1,6 @@
 #include "omSelectionWidget.h"
-#include "view3d/omCamera.h"
-#include "view3d/omView3d.h"
+#include "../omCamera.h"
+#include "../omView3d.h"
 #include "mesh/omVolumeCuller.h"
 #include "utility/glInclude.h"
 

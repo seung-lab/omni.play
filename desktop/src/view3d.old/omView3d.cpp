@@ -14,7 +14,7 @@
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
-#include "view3d/omView3d.h"
+#include "omView3d.h"
 #include "viewGroup/omViewGroupState.h"
 #include "widgets/omChunkExtentWidget.h"
 #include "widgets/omInfoWidget.h"
@@ -28,7 +28,7 @@ DECLARE_ZiARG_bool(noView3dThrottle);
 
 namespace om {
 namespace v3d {
-
+namespace old {
 enum widgets {
   selection = 0,
   viewbox,
@@ -37,7 +37,7 @@ enum widgets {
   perc_done,
   annotations
 };
-
+}
 }  // namespace v3d
 }  // namespace om
 
@@ -389,22 +389,22 @@ void OmView3d::UpdateEnabledWidgets() {
   //set widgets enabled
   bool highlight_widget_state =
       OmPreferences::GetBoolean(om::PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL);
-  widgets_[om::v3d::selection].enabled = highlight_widget_state;
+  widgets_[om::v3d::old::selection].enabled = highlight_widget_state;
 
   bool viewbox_widget_state =
       OmPreferences::GetBoolean(om::PREF_VIEW3D_SHOW_VIEWBOX_BOOL);
-  widgets_[om::v3d::viewbox].enabled = viewbox_widget_state;
+  widgets_[om::v3d::old::viewbox].enabled = viewbox_widget_state;
 
   bool info_widget_state =
       OmPreferences::GetBoolean(om::PREF_VIEW3D_SHOW_INFO_BOOL);
-  widgets_[om::v3d::info].enabled = info_widget_state;
+  widgets_[om::v3d::old::info].enabled = info_widget_state;
 
   bool extent_widget =
       OmPreferences::GetBoolean(om::PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL);
-  widgets_[om::v3d::chunk_extent].enabled = extent_widget;
+  widgets_[om::v3d::old::chunk_extent].enabled = extent_widget;
 
-  widgets_[om::v3d::perc_done].enabled = true;
-  widgets_[om::v3d::annotations].enabled = true;
+  widgets_[om::v3d::old::perc_done].enabled = true;
+  widgets_[om::v3d::old::annotations].enabled = true;
 }
 
 /////////////////////////////////

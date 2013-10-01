@@ -6,7 +6,7 @@
  */
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "utility/dataWrappers.h"
-#include "view3d/omSegmentPickPoint.h"
+#include "omSegmentPickPoint.h"
 
 #include <QtGui>
 

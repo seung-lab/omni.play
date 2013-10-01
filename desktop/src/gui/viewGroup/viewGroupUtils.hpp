@@ -6,7 +6,7 @@
 #include "gui/widgets/omTellInfo.hpp"
 #include "utility/dataWrappers.h"
 #include "view2d/omView2d.h"
-#include "view3d/omView3d.h"
+#include "view3d.old/omView3d.h"
 #include "viewGroup/omViewGroupState.h"
 
 #include <QtGui>

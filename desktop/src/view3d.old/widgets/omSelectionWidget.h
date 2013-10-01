@@ -5,7 +5,7 @@
  *
  */
 
-#include "view3d/omView3dWidget.h"
+#include "../omView3dWidget.h"
 
 class OmSelectionWidget : public OmView3dWidget {
 

@@ -17,7 +17,7 @@
 #include "system/omGroups.h"
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
-#include "view3d/omSegmentPickPoint.h"
+#include "view3d.old/omSegmentPickPoint.h"
 #include "viewGroup/omSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 

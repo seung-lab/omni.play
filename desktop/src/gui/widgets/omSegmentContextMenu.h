@@ -2,7 +2,7 @@
 
 #include "common/common.h"
 #include "utility/dataWrappers.h"
-#include "view3d/omSegmentPickPoint.h"
+#include "view3d.old/omSegmentPickPoint.h"
 
 #include <QMenu>
 

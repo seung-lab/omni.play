@@ -4,7 +4,7 @@
 #include "common/logging.h"
 #include "system/omLocalPreferences.hpp"
 #include "events/omEvents.h"
-#include "view3d/om3dPreferences.hpp"
+#include "view3d.old/om3dPreferences.hpp"
 
 #include <QtGui>
 

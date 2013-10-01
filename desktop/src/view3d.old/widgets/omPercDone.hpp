@@ -1,11 +1,11 @@
 #pragma once
 
-#include "view3d/omView3dWidget.h"
+#include "../omView3dWidget.h"
 #include "utility/glInclude.h"
 #include "system/omStateManager.h"
-#include "view3d/omCamera.h"
-#include "view3d/omView3d.h"
-#include "view3d/widgets/omInfoWidget.h"
+#include "../omCamera.h"
+#include "../omView3d.h"
+#include "omInfoWidget.h"
 
 #include <QFont>
 
