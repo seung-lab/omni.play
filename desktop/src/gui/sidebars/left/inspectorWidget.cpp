@@ -237,7 +237,7 @@ void InspectorWidget::leftClickOnFilterItem(QTreeWidgetItem* current) {
 
 void InspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem* current) {
   if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-      doShowDataSrcContextMenu(current);
+    doShowDataSrcContextMenu(current);
   } else {
     addToSplitterDataSource(current);
   }
@@ -353,7 +353,7 @@ void InspectorWidget::doShowDataSrcContextMenu(QTreeWidgetItem* dataSrcItem) {
       break;
 
     case om::common::SEGMENTATION:
-        showSegmentationContextMenu();
+      showSegmentationContextMenu();
       break;
 
     case om::common::AFFINITY:
@@ -479,8 +479,8 @@ void InspectorWidget::selectSegmentationView(QAction* act) {
   } else if (examMSTAct_ == act) {
     showMSTtable(sdw);
 
-  } else if (newView3dAct_ == act){
-      showNewView3d();
+  } else if (newView3dAct_ == act) {
+    showNewView3d();
 
   } else {
     triggerSegmentationView(sdw.GetID(), getViewType(act));
@@ -562,5 +562,5 @@ void InspectorWidget::showMSTtable(SegmentationDataWrapper sdw) {
 }
 
 void InspectorWidget::showNewView3d() {
-//    new om::v3d::View3d(this, vgs_);
+  //    new om::v3d::View3d(this, vgs_);
 }

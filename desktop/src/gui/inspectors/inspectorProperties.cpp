@@ -37,10 +37,11 @@ void InspectorProperties::SetOrReplaceWidget(QWidget* newWidget,
 
 void InspectorProperties::UpdateSegmentPropWidgetEvent(
     om::event::UIEvent* event) {
-    SetOrReplaceWidget(event->Widget(), event->Title());
+  SetOrReplaceWidget(event->Widget(), event->Title());
 }
 
-void InspectorProperties::SegmentModificationEvent(om::event::SegmentEvent* event) {
+void InspectorProperties::SegmentModificationEvent(
+    om::event::SegmentEvent* event) {
   if (!isVisible()) {
     return;
   }

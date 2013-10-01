@@ -38,9 +38,8 @@ class OmSegmentationThresholdChangeActionImpl {
 
   void Undo() {
     if (!sdw_.IsSegmentationValid()) {
-      throw om::ArgException(
-          "Invalid SegmentationDataWrapper "
-          "(OmSegmentationThresholdChangeActionImpl::Undo)");
+      throw om::ArgException("Invalid SegmentationDataWrapper "
+                             "(OmSegmentationThresholdChangeActionImpl::Undo)");
     }
     OmSegmentation& seg = sdw_.GetSegmentation();
 
@@ -60,13 +59,12 @@ class OmSegmentationThresholdChangeActionImpl {
   }
 
  private:
-  template <typename T>
-  friend class OmActionLoggerThread;
+  template <typename T> friend class OmActionLoggerThread;
 
   friend class QDataStream& operator<<(
       QDataStream&, const OmSegmentationThresholdChangeActionImpl&);
-  friend class QDataStream& operator>>(
-      QDataStream&, OmSegmentationThresholdChangeActionImpl&);
+  friend class QDataStream& operator>>(QDataStream&,
+                                       OmSegmentationThresholdChangeActionImpl&);
   friend class QTextStream& operator<<(
       QTextStream& out, const OmSegmentationThresholdChangeActionImpl& a);
 };

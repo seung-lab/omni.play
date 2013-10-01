@@ -6,7 +6,8 @@
 #include "gui/inspectors/segmentInspector.h"
 #include "gui/inspectors/inspectorProperties.h"
 
-class UpdateSegmentPropertiesDialogImpl : public om::event::SegmentEventListener {
+class UpdateSegmentPropertiesDialogImpl
+    : public om::event::SegmentEventListener {
  private:
   InspectorProperties* const ip_;
 

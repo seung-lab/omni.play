@@ -267,7 +267,9 @@ void OmView3d::PreferenceChangeEvent(om::event::PreferenceEvent* event) {
   myUpdate();
 }
 
-void OmView3d::SegmentModificationEvent(om::event::SegmentEvent*) { myUpdate(); }
+void OmView3d::SegmentModificationEvent(om::event::SegmentEvent*) {
+  myUpdate();
+}
 
 void OmView3d::ViewBoxChangeEvent() { myUpdate(); }
 

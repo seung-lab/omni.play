@@ -20,7 +20,9 @@ class ViewGroup;
 
 namespace om {
 class Exception;
-namespace event { class SegmentEvent; }
+namespace event {
+class SegmentEvent;
+}
 }
 
 class MainWindow : public QMainWindow {

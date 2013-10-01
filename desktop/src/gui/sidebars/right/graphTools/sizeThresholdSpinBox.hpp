@@ -11,7 +11,7 @@
 class SizeThresholdSpinBox : public OmDoubleSpinBox,
                              public om::event::MSTEventListener {
   Q_OBJECT public : SizeThresholdSpinBox(GraphTools* d)
-      : OmDoubleSpinBox(d, false), mParent(d) {
+                    : OmDoubleSpinBox(d, false), mParent(d) {
     setSingleStep(1);
     setMaximum(std::numeric_limits<double>::infinity());
     setDecimals(0);

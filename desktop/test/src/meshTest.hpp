@@ -39,7 +39,7 @@ class MeshTest {
   const double threshold_;
 
   OmMeshManager* const meshManager_;
-    std::unique_ptr<OmMeshWriterV2> meshWriter_;
+  std::unique_ptr<OmMeshWriterV2> meshWriter_;
 
   const int numParallelChunks_;
   const int numThreadsPerChunk_;

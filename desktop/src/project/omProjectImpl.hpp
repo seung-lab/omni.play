@@ -112,7 +112,7 @@ class OmProjectImpl {
 
   bool IsReadOnly() const { return isReadOnly_; }
 
-    OmProjectGlobals& Globals() { return *globals_; }
+  OmProjectGlobals& Globals() { return *globals_; }
 
  private:
 

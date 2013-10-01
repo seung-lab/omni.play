@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "events/details/segmentEvent.h"
 #include "events/listeners.h"
 #include "gui/widgets/omCursors.h"

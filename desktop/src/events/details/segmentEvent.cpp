@@ -5,11 +5,11 @@ namespace om {
 namespace event {
 
 const QEvent::Type SegmentEvent::MODIFIED =
-    (QEvent::Type)QEvent::registerEventType();
+    (QEvent::Type) QEvent::registerEventType();
 const QEvent::Type SegmentEvent::SEGMENT_GUI_LIST =
-    (QEvent::Type)QEvent::registerEventType();
+    (QEvent::Type) QEvent::registerEventType();
 const QEvent::Type SegmentEvent::SEGMENT_SELECTED =
-    (QEvent::Type)QEvent::registerEventType();
+    (QEvent::Type) QEvent::registerEventType();
 
 SegmentEvent::SegmentEvent(QEvent::Type type)
     : Event(Klass::segment, type),

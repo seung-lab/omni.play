@@ -4,6 +4,6 @@ namespace om {
 namespace event {
 
 const QEvent::Type AnnotationEvent::OBJECT_MODIFIED =
-    (QEvent::Type)QEvent::registerEventType();
+    (QEvent::Type) QEvent::registerEventType();
 }
 }

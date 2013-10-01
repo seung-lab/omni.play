@@ -53,7 +53,7 @@ class OmView3d : public QGLWidget,
   void SegmentModificationEvent(om::event::SegmentEvent *event);
   void SegmentGUIlistEvent(om::event::SegmentEvent *) {}
   void SegmentSelectedEvent(om::event::SegmentEvent *) {}
-    void PreferenceChangeEvent(om::event::PreferenceEvent *event);
+  void PreferenceChangeEvent(om::event::PreferenceEvent *event);
   void ViewBoxChangeEvent();
   void View3dRedrawEvent();
   void View3dRedrawEventFromCache();
