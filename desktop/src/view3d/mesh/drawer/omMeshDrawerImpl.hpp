@@ -19,17 +19,16 @@ namespace v3d {
 
 class DrawerImpl {
  public:
-    DrawerImpl(//mesh::DisplayListCachedDataSource& meshes,
-             const OmMipVolCoords& system,
-             const common::ID segmentationID)
-        : //meshes_(meshes),
+  DrawerImpl(  //mesh::DisplayListCachedDataSource& meshes,
+      const OmMipVolCoords& system, const common::ID segmentationID)
+      :  //meshes_(meshes),
         system_(system),
         segmentationID_(segmentationID),
         context_(QGLContext::currentContext()) {
-        if(!context_) {
-            std::cout << "WARNING: QLContext was 0" << std::endl;
-            //   throw VerifyException("QGLContext should never be 0");
-        }
+    if (!context_) {
+      std::cout << "WARNING: QLContext was 0" << std::endl;
+      //   throw VerifyException("QGLContext should never be 0");
+    }
   }
 
   /**
@@ -73,8 +72,8 @@ class DrawerImpl {
 
  private:
 
-    void drawSegment(const common::SegID segID, const om::chunkCoord& coord,
-                     const Vector3f& color) {
+  void drawSegment(const common::SegID segID, const om::chunkCoord& coord,
+                   const Vector3f& color) {
 
     //mesh::DisplayListMeshCoord dlc = {coords::Mesh(coord, segID), context_};
     //auto mesh = meshes_.Get(dlc, true);
@@ -101,7 +100,7 @@ class DrawerImpl {
   }
 
  private:
-    //mesh::DisplayListCachedDataSource& meshes_;
+  //mesh::DisplayListCachedDataSource& meshes_;
   const OmMipVolCoords& system_;
   const common::ID segmentationID_;
   QGLContext const* const context_;

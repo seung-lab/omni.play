@@ -71,9 +71,8 @@ class MeshSegmentList {
     zi::guard g(lock_);
 
     mSegmentListCache[makeKey(coord, rootSeg.value(), shouldVolumeBeShownBroken,
-                              breakThreshold)] =
-        SegPtrAndColorListValid(segmentsToDraw,
-                                rootSeg.getFreshnessForMeshes());
+                              breakThreshold)] = SegPtrAndColorListValid(
+        segmentsToDraw, rootSeg.getFreshnessForMeshes());
   }
 
  private:
@@ -81,13 +80,12 @@ class MeshSegmentList {
   om::thread::ThreadPool threadPool_;
   zi::mutex lock_;
 
-  MeshSegListKey makeKey(const om::chunkCoord& coord,
-                           om::common::SegID segID,
-                           bool shouldVolumeBeShownBroken,
-                           float breakThreshold) {
-      return MeshSegListKey(vol_.id(), segID, coord.mipLevel(), coord.X(),
-                            coord.Y(), coord.Z(), shouldVolumeBeShownBroken,
-                            breakThreshold);
+  MeshSegListKey makeKey(const om::chunkCoord& coord, om::common::SegID segID,
+                         bool shouldVolumeBeShownBroken, float breakThreshold) {
+    return MeshSegListKey(vol_.id(), segID, coord.mipLevel(), coord.X(),
+                          coord.Y(), coord.Z(), shouldVolumeBeShownBroken,
+                          breakThreshold);
   }
 };
-}} //namespace
+}
+}  //namespace

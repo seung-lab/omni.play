@@ -39,8 +39,7 @@ OmSegmentation::OmSegmentation()
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
       annotations_(new om::annotation::manager(this)),
-      uniqueValuesDS_(new om::chunk::CachedUniqueValuesDataSource(this))
- {}
+      uniqueValuesDS_(new om::chunk::CachedUniqueValuesDataSource(this)) {}
 
 // used by OmGenericManager
 OmSegmentation::OmSegmentation(om::common::ID id)
@@ -60,8 +59,7 @@ OmSegmentation::OmSegmentation(om::common::ID id)
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
       annotations_(new om::annotation::manager(this)),
-      uniqueValuesDS_(new om::chunk::CachedUniqueValuesDataSource(this))
- {
+      uniqueValuesDS_(new om::chunk::CachedUniqueValuesDataSource(this)) {
   LoadPath();
 
   segments_->StartCaches();

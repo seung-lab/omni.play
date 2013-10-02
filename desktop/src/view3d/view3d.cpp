@@ -30,22 +30,22 @@ View3d::View3d(QWidget* parent, OmViewGroupState& vgs)
     : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent,
                 vgs->get3dContext())
 #else
-    : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent)
+      : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent)
 #endif
-      ,
-      prefs_(new om::prefs::View3d()),
-      widgets_(new Widgets(*this, vgs)),
-      ui_(new Ui(*this, vgs)),
-      drawStatus_(new DrawStatus()),
-      camera_(new Camera()),
-      omniEventListener_(new OmniEventListener(*this, vgs)),
-      segmentations_(SegmentationDataWrapper::GetPtrVec()),
-      vgs_(vgs){
+        ,
+        prefs_(new om::prefs::View3d()),
+        widgets_(new Widgets(*this, vgs)),
+        ui_(new Ui(*this, vgs)),
+        drawStatus_(new DrawStatus()),
+        camera_(new Camera()),
+        omniEventListener_(new OmniEventListener(*this, vgs)),
+        segmentations_(SegmentationDataWrapper::GetPtrVec()),
+        vgs_(vgs) {
 
-    const auto& primary_coords = vgs.Segmentation().GetSegmentation().Coords();
+  const auto& primary_coords = vgs.Segmentation().GetSegmentation().Coords();
 
-    drawer_.reset(new Drawer(*prefs_, *widgets_, *drawStatus_, *camera_,
-                             segmentations_, vgs, primary_coords));
+  drawer_.reset(new Drawer(*prefs_, *widgets_, *drawStatus_, *camera_,
+                           segmentations_, vgs, primary_coords));
 
   // set keyboard policy
   setFocusPolicy(Qt::ClickFocus);
@@ -95,7 +95,7 @@ void View3d::initializeGL() {
   glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);  // cause ambient and
                                                       // diffust to track color
 
-  float black[4] = {0, 0, 0, 0};
+  float black[4] = { 0, 0, 0, 0 };
   glMaterialfv(GL_FRONT, GL_AMBIENT, black);
   glMaterialfv(GL_FRONT, GL_SPECULAR, black);
 
@@ -317,20 +317,20 @@ void View3d::setCameraPerspective() {
  */
 void View3d::initLights() {
   // set up light colors (ambient, diffuse, specular)
-  GLfloat lightKa[] = {.2f, .2f, .2f, 1.0f};  // ambient light
-  GLfloat lightKd[] = {.7f, .7f, .7f, 1.0f};  // diffuse light
-  GLfloat lightKs[] = {1, 1, 1, 1};           // specular light
+  GLfloat lightKa[] = { .2f, .2f, .2f, 1.0f };  // ambient light
+  GLfloat lightKd[] = { .7f, .7f, .7f, 1.0f };  // diffuse light
+  GLfloat lightKs[] = { 1, 1, 1, 1 };           // specular light
   glLightfv(GL_LIGHT0, GL_AMBIENT, lightKa);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, lightKd);
   glLightfv(GL_LIGHT0, GL_SPECULAR, lightKs);
 
-  float specReflection[] = {0.8f, 0.8f, 0.8f, 1.0f};
+  float specReflection[] = { 0.8f, 0.8f, 0.8f, 1.0f };
   glMaterialfv(GL_FRONT, GL_SPECULAR, specReflection);
 
   glMateriali(GL_FRONT, GL_SHININESS, 96);
 
   // position the light
-  float lightPos[4] = {0, 0, 1000, 1};  // positional light
+  float lightPos[4] = { 0, 0, 1000, 1 };  // positional light
   glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 
   glEnable(GL_LIGHT0);  // enable light source after configuration

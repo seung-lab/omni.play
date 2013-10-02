@@ -134,17 +134,17 @@ dataCoord chunkCoord::toDataCoord(const OmMipVolume *vol) const {
   return dataCoord(Coordinate * vol->Coords().GetChunkDimensions(), vol, Level);
 }
 
-dataCoord chunkCoord::toDataCoord(const OmMipVolCoords& system) const {
+dataCoord chunkCoord::toDataCoord(const OmMipVolCoords &system) const {
   return dataCoord(Coordinate * system.GetChunkDimensions(), system, Level);
 }
 
-dataBbox chunkCoord::chunkBoundingBox(const OmMipVolume* vol) const {
+dataBbox chunkCoord::chunkBoundingBox(const OmMipVolume *vol) const {
   const dataCoord min = toDataCoord(vol);
   const dataCoord max = min + vol->Coords().GetChunkDimensions();
   return dataBbox(min, max);
 }
 
-dataBbox chunkCoord::BoundingBox(const OmMipVolCoords& system) const {
+dataBbox chunkCoord::BoundingBox(const OmMipVolCoords &system) const {
   const dataCoord min = toDataCoord(system);
   const dataCoord max = min + system.GetChunkDimensions();
   return dataBbox(min, max);

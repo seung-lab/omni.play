@@ -17,7 +17,11 @@
 
 class OmProjectImpl;
 
-namespace om { namespace prefs { class View3d; }}
+namespace om {
+namespace prefs {
+class View3d;
+}
+}
 
 class OmPreferences : private om::singletonBase<OmPreferences> {
  public:

@@ -101,8 +101,7 @@ class ziMesher {
     log_debugs(unknown) << "\ndone meshing...";
   }
 
-  void addValuesFromChunkAndDownsampledChunks(
-      const om::chunkCoord& mip0coord) {
+  void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord) {
     const std::shared_ptr<om::chunk::UniqueValues> segIDs =
         segmentation_.ChunkUniqueValues()->Get(mip0coord);
 
@@ -169,8 +168,8 @@ class ziMesher {
   }
 
   template <typename C>
-  void registerSegIDs(const om::chunkCoord& mip0coord,
-                      const om::chunkCoord& c, const C& segIDs) {
+  void registerSegIDs(const om::chunkCoord& mip0coord, const om::chunkCoord& c,
+                      const C& segIDs) {
     if (chunkCollectors_.count(c) == 0) {
       chunkCollectors_.insert(
           std::make_pair(c, new MeshCollector(c, meshWriter_.get())));

@@ -14,11 +14,7 @@ namespace v3d {
 class CameraArcBall;
 
 enum class CameraMovementType {
-  NONE,
-  PAN,
-  ZOOM,
-  ORBIT_ROTATE,
-  LOOKAT_ROTATE
+  NONE, PAN, ZOOM, ORBIT_ROTATE, LOOKAT_ROTATE
 };
 
 class Camera {

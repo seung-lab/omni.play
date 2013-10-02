@@ -11,7 +11,11 @@
 #include "volume/omMipVolume.h"
 #include "datalayer/archive/segmentation.h"
 
-namespace om { namespace chunk { class CachedUniqueValuesDataSource; }}
+namespace om {
+namespace chunk {
+class CachedUniqueValuesDataSource;
+}
+}
 class OmChunk;
 class OmChunkUniqueValuesManager;
 class OmGroups;
@@ -105,9 +109,9 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   void RebuildSegments();
 
  public:
-    om::chunk::CachedUniqueValuesDataSource& UniqueValuesDS() const {
-        return *uniqueValuesDS_;
-    }
+  om::chunk::CachedUniqueValuesDataSource& UniqueValuesDS() const {
+    return *uniqueValuesDS_;
+  }
 
   inline OmChunkUniqueValuesManager* ChunkUniqueValues() {
     return uniqueChunkValues_.get();
@@ -127,9 +131,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   }
   inline OmTileCacheSegmentation* TileCache() { return tileCache_.get(); }
   inline om::segmentation::folder* Folder() const { return folder_.get(); }
-  inline om::annotation::manager& Annotations() const {
-      return *annotations_;
-  }
+  inline om::annotation::manager& Annotations() const { return *annotations_; }
   inline om::segmentation::loader* Loader() const { return loader_.get(); }
 
  private:

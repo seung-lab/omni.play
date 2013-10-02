@@ -15,7 +15,7 @@ namespace v3d {
 
 class View3d;
 
-static float TEXT_COLOR[4] = {1, 1, 1, 0.8};
+static float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
 
 class Widget {
  protected:

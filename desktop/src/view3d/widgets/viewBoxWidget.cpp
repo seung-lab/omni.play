@@ -67,7 +67,7 @@ void ViewBoxWidget::drawRectangle(const Vector3i& v0, const Vector3i& v1,
 void ViewBoxWidget::drawLines(Vector3i depth) {
   Vector3i v0, v1;
 
-  float distance = ((float)Om3dPreferences::getCrosshairValue()) / 10.0;
+  float distance = ((float) Om3dPreferences::getCrosshairValue()) / 10.0;
 
   glColor3fv(om::gl::OMGL_BLUE);
   v0 = Vector3i(depth.x, depth.y, depth.z - distance);

@@ -2,6 +2,6 @@
 #include "system/omPreferences.h"
 
 om::prefs::View3d OmPreferences::V3dPrefs() {
-    om::prefs::View3d p;
-    return p;
+  om::prefs::View3d p;
+  return p;
 }

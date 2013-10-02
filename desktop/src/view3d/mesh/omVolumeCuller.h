@@ -20,13 +20,13 @@ namespace v3d {
 class VolumeCuller {
  public:
   VolumeCuller(const Matrix4f& projmodelview, const om::coords::Norm& pos,
-                 const om::coords::Norm& focus);
+               const om::coords::Norm& focus);
 
   Visibility TestChunk(const om::coords::NormBbox&) const;
   const om::coords::Norm& GetPosition() const;
 
   std::shared_ptr<VolumeCuller> GetTransformedCuller(const Matrix4f&,
-                                                       const Matrix4f&);
+                                                     const Matrix4f&);
 
   bool operator==(const VolumeCuller& c) const;
   bool operator!=(const VolumeCuller& c) const;
@@ -38,4 +38,5 @@ class VolumeCuller {
 
   FrustumCullerf mFrustumCuller;
 };
-}} // namespace
+}
+}  // namespace

@@ -30,7 +30,9 @@ void MeshSegmentListTask::run() {
         continue;
       }
       auto color = determineColor(seg);
-      segmentsToDraw.push_back({seg, color});
+      segmentsToDraw.push_back({
+        seg, color
+      });
     }
     seg = segIter.getNextSegment();
   }
@@ -75,4 +77,5 @@ bool MeshSegmentListTask::useParentColor(OmSegment* seg) {
          seg->getThreshold() < 2;
   // 2 is the manual merge threshold
 }
-}} // namespace
+}
+}  // namespace

@@ -65,4 +65,5 @@ void glDrawPositiveAxis(int size = 3);
 void omglWireCube(GLdouble size);
 void omglSolidCube(GLdouble size);
 }
-}}  // om::gl::old::
+}
+}  // om::gl::old::

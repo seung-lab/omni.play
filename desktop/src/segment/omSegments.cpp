@@ -14,8 +14,7 @@ OmSegments::OmSegments(OmSegmentation* segmentation)
     : segmentation_(segmentation),
       store_(new OmSegmentsStore(segmentation)),
       impl_(new OmSegmentsImpl(segmentation, store_.get())),
-      selection_(new om::segment::Selection(this))
-      {}
+      selection_(new om::segment::Selection(this)) {}
 
 OmSegments::~OmSegments() {}
 
@@ -151,7 +150,7 @@ OmSegment* OmSegments::findRoot(OmSegment* segment) {
   return store_->GetSegment(store_->Root(segment->value()));
 }
 OmSegment* OmSegments::FindRoot(OmSegment* segment) {
-    return findRoot(segment);
+  return findRoot(segment);
 }
 
 OmSegment* OmSegments::findRoot(const om::common::SegID segID) {
@@ -286,6 +285,4 @@ std::vector<OmSegmentEdge> OmSegments::Shatter(OmSegment* seg) {
   return impl_->Shatter(seg);
 }
 
-om::segment::Selection& OmSegments::Selection() const {
-    return *selection_;
-}
+om::segment::Selection& OmSegments::Selection() const { return *selection_; }

@@ -52,7 +52,7 @@ void OmSegmentContextMenu::Refresh(const OmSegmentPickPoint& pickPoint,
 }
 
 void OmSegmentContextMenu::Refresh(const om::landmarks::sdwAndPt& pickPoint,
-                                   OmViewGroupState& vgs){
+                                   OmViewGroupState& vgs) {
   sdw_ = pickPoint.sdw;
   coord_ = pickPoint.coord;
   vgs_ = &vgs;

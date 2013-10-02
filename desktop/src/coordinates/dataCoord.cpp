@@ -22,8 +22,7 @@ dataCoord::dataCoord(int x, int y, int z, const OmMipVolume* vol, int mipLevel)
   }
 }
 
-dataCoord::dataCoord(base_t v, const OmMipVolCoords& system,
-                     int mipLevel)
+dataCoord::dataCoord(base_t v, const OmMipVolCoords& system, int mipLevel)
     : base_t(v), vol_(system.vol()), mipLevel_(mipLevel) {
   if (mipLevel > vol_->Coords().GetRootMipLevel()) {
     throw om::ArgException("Invalid Mip level.");
@@ -113,9 +112,7 @@ globalBbox dataBbox::toGlobalBbox() const {
 normBbox dataBbox::toNormBbox() const {
   return normBbox(getMin().toNormCoord(), getMax().toNormCoord());
 }
-normBbox dataBbox::ToNormBbox() const {
-    return toNormBbox();
-}
+normBbox dataBbox::ToNormBbox() const { return toNormBbox(); }
 
 dataBbox dataBbox::atDifferentLevel(int newLevel) const {
   return dataBbox(getMin().atDifferentLevel(newLevel),

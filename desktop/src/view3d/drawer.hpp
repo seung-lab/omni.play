@@ -36,13 +36,13 @@ class Drawer {
         drawStatus_(drawStatus),
         camera_(camera),
         vgs_(vgs),
-        system_(system){
+        system_(system) {
     for (auto* vol : segmentations) {
-        drawInfos_.emplace_back(std::make_unique<MeshDrawInfo>(*vol, vgs));
+      drawInfos_.emplace_back(std::make_unique<MeshDrawInfo>(*vol, vgs));
     }
   }
 
-  ~Drawer() {  }
+  ~Drawer() {}
 
   void PrimaryDraw() {
     drawStatus_.Reset();
@@ -102,10 +102,9 @@ class Drawer {
     camera_.DrawFocusAxis();
 
     // setup culler to current projection-modelview matrix
-    OmVolumeCuller mainCuller(
-        camera_.GetProjModelViewMatrix(),
-        normCoord(camera_.GetPosition(), system_),
-        normCoord(camera_.GetFocus(), system_));
+    OmVolumeCuller mainCuller(camera_.GetProjModelViewMatrix(),
+                              normCoord(camera_.GetPosition(), system_),
+                              normCoord(camera_.GetFocus(), system_));
 
     // Draw meshes!
     for (auto& info : drawInfos_) {

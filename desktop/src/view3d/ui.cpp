@@ -372,7 +372,7 @@ om::landmarks::sdwAndPt Ui::pickVoxelMouseCrosshair(QMouseEvent* event) {
     return om::landmarks::sdwAndPt();
   }
 
-  om::landmarks::sdwAndPt ret = {sdw, point3d};
+  om::landmarks::sdwAndPt ret = { sdw, point3d };
 
   return ret;
 }

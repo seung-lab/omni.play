@@ -23,9 +23,9 @@ class MeshSegmentListTask : public zi::runnable {
 
  public:
   MeshSegmentListTask(MeshSegmentList& rootSegLists,
-                        om::chunk::CachedUniqueValuesDataSource& cuvds,
-                        OmSegments& segments, om::chunkCoord coord,
-                        OmSegment& rootSeg, const om::v3d::key& key)
+                      om::chunk::CachedUniqueValuesDataSource& cuvds,
+                      OmSegments& segments, om::chunkCoord coord,
+                      OmSegment& rootSeg, const om::v3d::key& key)
       : rootSegLists_(rootSegLists),
         chunkUniqueValues_(cuvds),
         segments_(segments),
@@ -39,4 +39,5 @@ class MeshSegmentListTask : public zi::runnable {
   Vector3f determineColor(OmSegment*);
   bool useParentColor(OmSegment*);
 };
-}} //namespace
+}
+}  //namespace

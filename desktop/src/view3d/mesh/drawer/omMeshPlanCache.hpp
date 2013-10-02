@@ -26,8 +26,8 @@ class PlanCache {
 
   std::shared_ptr<MeshPlan> GetPlan(const OmVolumeCuller& culler,
                                     const bool changed) {
-    key k = {OmCacheManager::GetFreshness(),   vgs_.getDustThreshold(),
-             vgs_.shouldVolumeBeShownBroken(), vgs_.getBreakThreshold()};
+    key k = { OmCacheManager::GetFreshness(), vgs_.getDustThreshold(),
+              vgs_.shouldVolumeBeShownBroken(), vgs_.getBreakThreshold() };
 
     if (changed) {
       planner_.Reset();

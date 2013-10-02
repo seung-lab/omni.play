@@ -24,4 +24,5 @@ class SegPtrAndColorListValid {
   uint32_t freshness;
   bool isFetching;
 };
-}} // namespace
+}
+}  // namespace

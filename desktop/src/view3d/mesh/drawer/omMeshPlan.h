@@ -34,8 +34,12 @@ class MeshPlan : public MeshPlanStruct {
 
   void Add(OmSegment* seg, const om::chunkCoord& coord, float distance,
            const Vector3f& color) {
-    insert(std::make_pair(MeshPlanKey({seg, distance}),
-                          MeshPlanPayload({coord, color})));
+    insert(std::make_pair(MeshPlanKey({
+      seg, distance
+    }),
+                          MeshPlanPayload({
+      coord, color
+    })));
   }
 
   bool HasAllSegments() const { return allSegmentsFound_; }

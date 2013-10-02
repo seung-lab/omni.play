@@ -24,14 +24,15 @@ class FindChunksToDraw {
   drawChunks_t& chunksToDraw_;
 
  public:
-  FindChunksToDraw(const OmMipVolCoords& coords,
-                   drawChunks_t& chunksToDraw)
+  FindChunksToDraw(const OmMipVolCoords& coords, drawChunks_t& chunksToDraw)
       : system_(coords), chunksToDraw_(chunksToDraw) {
     stack_.reserve(system_.ComputeTotalNumChunks());
   }
 
   void Find(const OmVolumeCuller& culler) {
-    stack_.push_back({system_.RootMipChunkCoordinate(), true});
+    stack_.push_back({
+      system_.RootMipChunkCoordinate(), true
+    });
 
     while (!stack_.empty()) {
       auto se = stack_.back();
@@ -74,12 +75,16 @@ class FindChunksToDraw {
 
     auto d = shouldChunkBeDrawn(culler, cc);
     if (d.shouldDraw) {
-      chunksToDraw_.push_back({cc, d.distance});
+      chunksToDraw_.push_back({
+        cc, d.distance
+      });
 
     } else {
       const auto children = cc.ChildrenCoords();
       for (auto& child_cc : children) {
-        stack_.push_back({child_cc, testVis});
+        stack_.push_back({
+          child_cc, testVis
+        });
       }
     }
   }
@@ -97,7 +102,7 @@ class FindChunksToDraw {
                                         const om::chunkCoord& chunk) {
     // draw if MIP 0
     if (0 == chunk.mipLevel()) {
-      return {true, 0};
+      return { true, 0 };
     }
 
     const auto normExtent = chunk.BoundingBox(system_).ToNormBbox();
@@ -108,7 +113,7 @@ class FindChunksToDraw {
     const float distance = (normExtent.getMax() - center).length();
 
     // if distance too large, just draw it - else keep breaking it down
-    return {camera_to_center > distance, distance};
+    return { camera_to_center > distance, distance };
   }
 };
 }

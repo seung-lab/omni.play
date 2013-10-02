@@ -5,15 +5,13 @@
 namespace om {
 namespace v3d {
 VolumeCuller::VolumeCuller(const Matrix4f& projmodelview,
-                               const om::coords::Norm& pos,
-                               const om::coords::Norm& focus)
+                           const om::coords::Norm& pos,
+                           const om::coords::Norm& focus)
     : mProjModelView(projmodelview), mPosition(pos), mFocus(focus) {
   mFrustumCuller.setup(mProjModelView);
 }
 
-const om::coords::Norm& VolumeCuller::GetPosition() const {
-  return mPosition;
-}
+const om::coords::Norm& VolumeCuller::GetPosition() const { return mPosition; }
 
 std::shared_ptr<VolumeCuller> VolumeCuller::GetTransformedCuller(
     const Matrix4f& mat, const Matrix4f& matInv) {
@@ -23,8 +21,7 @@ std::shared_ptr<VolumeCuller> VolumeCuller::GetTransformedCuller(
       om::coords::Norm(matInv * mFocus, vol));
 }
 
-Visibility VolumeCuller::TestChunk(
-    const om::coords::NormBbox& normBox) const {
+Visibility VolumeCuller::TestChunk(const om::coords::NormBbox& normBox) const {
   return mFrustumCuller.testAabb(normBox);
 }
 
@@ -59,4 +56,5 @@ bool VolumeCuller::operator==(const VolumeCuller& c) const {
 bool VolumeCuller::operator!=(const VolumeCuller& c) const {
   return !(*this == c);
 }
-}} //namespace
+}
+}  //namespace

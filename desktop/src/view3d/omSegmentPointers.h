@@ -11,4 +11,5 @@ struct SegPtrAndColor {
 };
 typedef std::deque<SegPtrAndColor> SegPtrAndColorList;
 
-}} // namespace
+}
+}  // namespace

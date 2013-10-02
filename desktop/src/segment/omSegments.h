@@ -13,7 +13,11 @@ class OmSegmentsImpl;
 class OmSegmentsStore;
 class OmSegmentDataWrapper;
 
-namespace om { namespace segment { class Selection; }}
+namespace om {
+namespace segment {
+class Selection;
+}
+}
 
 class OmSegments {
  public:

@@ -33,9 +33,7 @@ class OmMipVolCoords : public OmVolCoords {
 
   virtual ~OmMipVolCoords() {}
 
-    const OmMipVolume* vol() const {
-        return vol_;
-    }
+  const OmMipVolume* vol() const { return vol_; }
 
   //mip level method
 
@@ -110,7 +108,7 @@ class OmMipVolCoords : public OmVolCoords {
   // Returns true if given MipCoordinate is a valid coordinate within the
   // MipVolume.
   inline bool ContainsMipChunk(const om::chunkCoord& rMipCoord) const {
-      return ContainsMipChunkCoord(rMipCoord);
+    return ContainsMipChunkCoord(rMipCoord);
   }
 
   inline bool ContainsMipChunkCoord(const om::chunkCoord& rMipCoord) const {

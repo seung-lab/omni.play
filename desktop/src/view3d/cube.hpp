@@ -10,12 +10,13 @@ class cube {
     v[0][2] = v[3][2] = v[4][2] = v[7][2] = 1;
     v[1][2] = v[2][2] = v[5][2] = v[6][2] = -1;
   }
-  GLfloat n[6][3] = {/* Normals for the 6 faces of a cube. */
-                     {-1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {1.0, 0.0, 0.0},
-                     {0.0, -1.0, 0.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, -1.0}};
-  GLint faces[6][4] = {/* Vertex indices for the 6 faces of a cube. */
-                       {0, 1, 2, 3}, {3, 2, 6, 7}, {7, 6, 5, 4}, {4, 5, 1, 0},
-                       {5, 6, 2, 1}, {7, 4, 0, 3}};
+  GLfloat n[6][3] = { /* Normals for the 6 faces of a cube. */
+                      { -1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }, { 1.0, 0.0, 0.0 },
+                      { 0.0, -1.0, 0.0 }, { 0.0, 0.0, 1.0 },
+                      { 0.0, 0.0, -1.0 } };
+  GLint faces[6][4] = { /* Vertex indices for the 6 faces of a cube. */
+                        { 0, 1, 2, 3 }, { 3, 2, 6, 7 }, { 7, 6, 5, 4 },
+                        { 4, 5, 1, 0 }, { 5, 6, 2, 1 }, { 7, 4, 0, 3 } };
   GLfloat v[8][3]; /* Will be filled in with X,Y,Z vertexes. */
 
   void drawBox() {

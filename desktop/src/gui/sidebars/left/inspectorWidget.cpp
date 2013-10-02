@@ -561,6 +561,4 @@ void InspectorWidget::showMSTtable(SegmentationDataWrapper sdw) {
   new MstViewer(this, sdw);
 }
 
-void InspectorWidget::showNewView3d() {
-    new om::v3d::View3d(this, *vgs_);
-}
+void InspectorWidget::showNewView3d() { new om::v3d::View3d(this, *vgs_); }

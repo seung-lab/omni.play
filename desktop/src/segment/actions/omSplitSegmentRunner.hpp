@@ -8,7 +8,7 @@ class OmSplitSegmentRunner {
   static void FindAndSplitSegments(const SegmentDataWrapper curSDW,
                                    OmViewGroupState& vgs,
                                    const om::globalCoord curClickPt) {
-      FindAndSplitSegments(curSDW, &vgs, curClickPt);
+    FindAndSplitSegments(curSDW, &vgs, curClickPt);
   }
 
   static void FindAndSplitSegments(const SegmentDataWrapper curSDW,

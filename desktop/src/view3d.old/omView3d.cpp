@@ -307,7 +307,8 @@ bool OmView3d::pickPoint(const Vector2i& point2di,
   rNamesVec.clear();
 
   //setup selection mode
-  om::gl::old::startPicking(point2di.x, point2di.y, mCamera.GetPerspective().array);
+  om::gl::old::startPicking(point2di.x, point2di.y,
+                            mCamera.GetPerspective().array);
 
   //render selectable points
   Draw(DRAWOP_LEVEL_ALL | DRAWOP_SEGMENT_FILTER_SELECTED |
