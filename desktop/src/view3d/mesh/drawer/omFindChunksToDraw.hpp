@@ -7,24 +7,24 @@ namespace om {
 namespace v3d {
 
 struct CoordAndDistance {
-  om::coords::Chunk coord;
+  om::chunkCoord coord;
   float distance;
 };
 typedef std::deque<CoordAndDistance> drawChunks_t;
 
 class FindChunksToDraw {
  private:
-  const om::coords::VolumeSystem& system_;
+  const OmMipVolCoords& system_;
 
   struct stackEntry {
-    om::coords::Chunk cc;
+    om::chunkCoord cc;
     bool testVis;
   };
   std::vector<stackEntry> stack_;
   drawChunks_t& chunksToDraw_;
 
  public:
-  FindChunksToDraw(const om::coords::VolumeSystem& coords,
+  FindChunksToDraw(const OmMipVolCoords& coords,
                    drawChunks_t& chunksToDraw)
       : system_(coords), chunksToDraw_(chunksToDraw) {
     stack_.reserve(system_.ComputeTotalNumChunks());
@@ -48,14 +48,14 @@ class FindChunksToDraw {
    *  drawn or the recursive draw process is called on its children.
    */
   inline void determineChunksToDraw(const OmVolumeCuller& culler,
-                                    const om::coords::Chunk& cc, bool testVis) {
+                                    const om::chunkCoord& cc, bool testVis) {
     if (!system_.ContainsMipChunk(cc)) {
       return;
     }
 
     if (testVis) {
       // check if frustum contains chunk
-      auto bounds = cc.BoundingBox(system_).ToNormBbox();
+      const auto bounds = cc.BoundingBox(system_).toNormBbox();
 
       switch (culler.TestChunk(bounds)) {
         case VISIBILITY_NONE:
@@ -94,7 +94,7 @@ class FindChunksToDraw {
    * or if we should continue refining so as to draw children.
    */
   inline distanceRet shouldChunkBeDrawn(const OmVolumeCuller& culler,
-                                        const om::coords::Chunk& chunk) {
+                                        const om::chunkCoord& chunk) {
     // draw if MIP 0
     if (0 == chunk.mipLevel()) {
       return {true, 0};

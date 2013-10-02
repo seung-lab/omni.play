@@ -2,8 +2,8 @@
 
 #include "datalayer/dataSource.hpp"
 #include "mesh/dataSources.hpp"
-#include "mesh/displayListMesh.hpp"
-#include "mesh/displayListMeshDataSources.hpp"
+#include "view3d/mesh/displayListMesh.hpp"
+#include "view3d/mesh/displayListMeshDataSources.hpp"
 
 class QGLContext;
 

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "viewGroup/omViewGroupState.h"
-#include "mesh/drawer/omFindChunksToDraw.hpp"
-#include "mesh/drawer/omMeshPlan.h"
-#include "mesh/drawer/omMeshSegmentList.hpp"
+#include "view3d/mesh/drawer/omFindChunksToDraw.hpp"
+#include "view3d/mesh/drawer/omMeshPlan.h"
+#include "view3d/mesh/drawer/omMeshSegmentList.hpp"
 #include "volume/omSegmentation.h"
 #include "segment/selection.hpp"
 
@@ -12,20 +12,18 @@ namespace v3d {
 
 class MeshDrawPlanner {
  private:
-  const coords::VolumeSystem& coords_;
   OmSegments& segments_;
-  OmMeshSegmentList& rootSegList_;
+  MeshSegmentList& rootSegList_;
   FindChunksToDraw findChunks_;
 
   drawChunks_t drawChunks_;
 
  public:
-  MeshDrawPlanner(const coords::VolumeSystem& coords, OmSegments& segments,
-                  OmMeshSegmentList& rootSegList)
-      : coords_(coords),
-        segments_(segments),
+  MeshDrawPlanner(const OmMipVolCoords& system, OmSegments& segments,
+                  MeshSegmentList& rootSegList)
+      : segments_(segments),
         rootSegList_(rootSegList),
-        findChunks_(coords_, drawChunks_) {}
+        findChunks_(system, drawChunks_) {}
 
   void Reset() { drawChunks_.clear(); }
 

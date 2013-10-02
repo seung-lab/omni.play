@@ -1,12 +1,15 @@
 #pragma once
 
 #include "common/common.h"
-#include "segment/omSegmentPointers.h"
+#include "view3d/omSegmentPointers.h"
+
+namespace om {
+namespace v3d {
 
 // segmentation ID, segment ID, mip level, x, y, z,
 //   bool shouldVolumeBeShownBroken, float breakThreshold
 typedef std::tuple<om::common::ID, om::common::SegID, int, int, int, int, bool,
-                   float> OmMeshSegListKey;
+                   float> MeshSegListKey;
 
 class SegPtrAndColorListValid {
  public:
@@ -21,3 +24,4 @@ class SegPtrAndColorListValid {
   uint32_t freshness;
   bool isFetching;
 };
+}} // namespace

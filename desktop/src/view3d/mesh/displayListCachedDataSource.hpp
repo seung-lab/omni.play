@@ -2,8 +2,8 @@
 
 #include "mesh/dataSources.hpp"
 #include "datalayer/cacheDataSource.hpp"
-#include "mesh/displayListMeshDataSources.hpp"
-#include "mesh/displayListMeshDataSource.hpp"
+#include "view3d/mesh/displayListMeshDataSources.hpp"
+#include "view3d/mesh/displayListMeshDataSource.hpp"
 #include "datalayer/dataSourceHierarchy.hpp"
 
 namespace om {

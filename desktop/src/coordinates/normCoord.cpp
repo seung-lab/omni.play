@@ -2,8 +2,13 @@
 #include "volume/omMipVolume.h"
 #include "globalCoord.h"
 #include "normCoord.h"
+#include "volume/omVolCoordsMipped.hpp"
 
 namespace om {
+
+normCoord::normCoord(base_t v, const OmMipVolCoords& system)
+    : base_t(v), vol_(system.vol()) {}
+
 
 globalCoord normCoord::toGlobalCoord() const {
   const vmml::Vector4f norm(x, y, z, 1);

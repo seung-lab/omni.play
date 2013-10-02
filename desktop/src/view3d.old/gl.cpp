@@ -9,6 +9,7 @@
 
 namespace om {
 namespace gl {
+namespace old {
 
 #define SELEC_BUFF_SIZE 2560
 static GLuint selectBuf[SELEC_BUFF_SIZE];
@@ -256,4 +257,5 @@ void glDrawPositiveAxis(int size) {
   glPopMatrix();
 }
 }
-}  // om::gl::
+}  // om::gl::old::
+}

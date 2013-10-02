@@ -46,6 +46,7 @@ class OmMipVolume {
   virtual om::common::ID getID() const = 0;
 
   inline bool IsBuilt() { return MIPVOL_BUILT == mBuildState; }
+  inline bool built() { return MIPVOL_BUILT == mBuildState; }
 
   std::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords() const;
   std::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords(

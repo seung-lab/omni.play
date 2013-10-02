@@ -51,6 +51,15 @@ void OmSegmentContextMenu::Refresh(const OmSegmentPickPoint& pickPoint,
   doRefresh();
 }
 
+void OmSegmentContextMenu::Refresh(const om::landmarks::sdwAndPt& pickPoint,
+                                   OmViewGroupState& vgs){
+  sdw_ = pickPoint.sdw;
+  coord_ = pickPoint.coord;
+  vgs_ = &vgs;
+
+  doRefresh();
+}
+
 void OmSegmentContextMenu::doRefresh() {
   //clear old menu actions
   clear();

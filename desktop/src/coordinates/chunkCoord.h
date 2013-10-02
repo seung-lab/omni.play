@@ -16,6 +16,7 @@ using namespace vmml;
 
 class QString;
 class OmMipVolume;
+class OmMipVolCoords;
 
 namespace om {
 
@@ -45,12 +46,18 @@ class chunkCoord {
 
   //access
   inline int getLevel() const { return Level; }
+  inline int mipLevel() const { return Level; }
   inline int X() const { return Coordinate.x; }
   inline int Y() const { return Coordinate.y; }
   inline int Z() const { return Coordinate.z; }
 
   dataCoord toDataCoord(const OmMipVolume*) const;
   dataBbox chunkBoundingBox(const OmMipVolume*) const;
+
+  dataCoord toDataCoord(const OmMipVolCoords& system) const;
+  dataBbox BoundingBox(const OmMipVolCoords& system) const;
+
+  std::vector<om::chunkCoord> ChildrenCoords() const;
 
   //operators
   void operator=(const chunkCoord& rhs);

@@ -11,6 +11,7 @@
 #include "volume/omMipVolume.h"
 #include "datalayer/archive/segmentation.h"
 
+namespace om { namespace chunk { class CachedUniqueValuesDataSource; }}
 class OmChunk;
 class OmChunkUniqueValuesManager;
 class OmGroups;
@@ -69,6 +70,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   }
 
   inline om::common::ID getID() const { return GetID(); }
+  inline om::common::ID id() const { return GetID(); }
 
   virtual int GetBytesPerVoxel() const;
   virtual int GetBytesPerSlice() const;
@@ -103,6 +105,10 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   void RebuildSegments();
 
  public:
+    om::chunk::CachedUniqueValuesDataSource& UniqueValuesDS() const {
+        return *uniqueValuesDS_;
+    }
+
   inline OmChunkUniqueValuesManager* ChunkUniqueValues() {
     return uniqueChunkValues_.get();
   }
@@ -121,8 +127,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   }
   inline OmTileCacheSegmentation* TileCache() { return tileCache_.get(); }
   inline om::segmentation::folder* Folder() const { return folder_.get(); }
-  inline om::annotation::manager* Annotations() const {
-    return annotations_.get();
+  inline om::annotation::manager& Annotations() const {
+      return *annotations_;
   }
   inline om::segmentation::loader* Loader() const { return loader_.get(); }
 
@@ -143,6 +149,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<OmRawSegTileCache> volSliceCache_;
   std::unique_ptr<OmTileCacheSegmentation> tileCache_;
   std::unique_ptr<om::annotation::manager> annotations_;
+  std::unique_ptr<om::chunk::CachedUniqueValuesDataSource> uniqueValuesDS_;
 
   template <class T> friend class OmVolumeBuilder;
   template <class T> friend class OmVolumeBuilderHdf5;

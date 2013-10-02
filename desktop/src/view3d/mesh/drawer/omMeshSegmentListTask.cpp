@@ -1,13 +1,17 @@
 #include "segment/omSegmentUtils.hpp"
 #include "common/common.h"
-#include "mesh/drawer/omMeshSegmentList.hpp"
-#include "mesh/drawer/omMeshSegmentListTask.h"
+#include "view3d/mesh/drawer/omMeshSegmentList.hpp"
+#include "view3d/mesh/drawer/omMeshSegmentListTask.h"
 #include "segment/coloring.hpp"
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegments.h"
-#include "chunk/uniqueValuesFileDataSource.hpp"
+//#include "chunk/uniqueValuesFileDataSource.hpp"
+#include "chunks/uniqueValuesDSH.hpp"
 
-void OmMeshSegmentListTask::run() {
+namespace om {
+namespace v3d {
+
+void MeshSegmentListTask::run() {
   const auto chunkSegIDs = chunkUniqueValues_.Get(coord_);
 
   if (!chunkSegIDs) {
@@ -36,7 +40,7 @@ void OmMeshSegmentListTask::run() {
   // log_debugs(unknown) << "done: " << rootSeg->value;
 }
 
-Vector3f OmMeshSegmentListTask::determineColor(OmSegment* seg) {
+Vector3f MeshSegmentListTask::determineColor(OmSegment* seg) {
   using namespace om::segment;
 
   coloring sccType;
@@ -66,8 +70,9 @@ Vector3f OmMeshSegmentListTask::determineColor(OmSegment* seg) {
   return seg->GetColorFloat();
 }
 
-bool OmMeshSegmentListTask::useParentColor(OmSegment* seg) {
+bool MeshSegmentListTask::useParentColor(OmSegment* seg) {
   return seg->getParent() && seg->getThreshold() > key_.breakThreshold &&
          seg->getThreshold() < 2;
   // 2 is the manual merge threshold
 }
+}} // namespace

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "mesh/drawer/struct.hpp"
-#include "mesh/drawer/omMeshPlan.h"
-#include "mesh/drawer/omMeshDrawPlanner.hpp"
+#include "view3d/mesh/drawer/struct.hpp"
+#include "view3d/mesh/drawer/omMeshPlan.h"
+#include "view3d/mesh/drawer/omMeshDrawPlanner.hpp"
 #include "system/cache/omCacheManager.h"
 
 namespace om {
@@ -10,8 +10,7 @@ namespace v3d {
 
 class PlanCache {
  private:
-  OmSegmentation& vol_;
-  OmMeshSegmentList& rootSegLists_;
+  MeshSegmentList& rootSegLists_;
   OmViewGroupState& vgs_;
   MeshDrawPlanner planner_;
 
@@ -19,12 +18,11 @@ class PlanCache {
   std::map<key, std::shared_ptr<MeshPlan>> meshPlans_;
 
  public:
-  PlanCache(OmSegmentation& vol, OmMeshSegmentList& rootSegLists,
-            OmViewGroupState& vgs)
-      : vol_(vol),
-        rootSegLists_(rootSegLists),
+  PlanCache(const OmMipVolCoords& system, OmSegments& segments,
+            MeshSegmentList& rootSegLists, OmViewGroupState& vgs)
+      : rootSegLists_(rootSegLists),
         vgs_(vgs),
-        planner_(vol_.Coords(), vol_.Segments(), rootSegLists_) {}
+        planner_(system, segments, rootSegLists_) {}
 
   std::shared_ptr<MeshPlan> GetPlan(const OmVolumeCuller& culler,
                                     const bool changed) {

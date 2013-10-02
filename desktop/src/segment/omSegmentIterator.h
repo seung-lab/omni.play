@@ -11,6 +11,7 @@ class SegmentationDataWrapper;
 class OmSegmentIterator {
  public:
   explicit OmSegmentIterator(OmSegments*);
+  explicit OmSegmentIterator(OmSegments&);
   explicit OmSegmentIterator(const SegmentationDataWrapper& sdw);
   explicit OmSegmentIterator(const SegmentDataWrapper& sdw);
 

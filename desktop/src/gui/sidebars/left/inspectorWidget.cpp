@@ -1,4 +1,4 @@
-//#include "view3d/view3d.h"
+#include "view3d/view3d.h"
 #include "common/logging.h"
 #include "gui/guiUtils.hpp"
 #include "gui/inspectors/channel/channelInspector.hpp"
@@ -562,5 +562,5 @@ void InspectorWidget::showMSTtable(SegmentationDataWrapper sdw) {
 }
 
 void InspectorWidget::showNewView3d() {
-  //    new om::v3d::View3d(this, vgs_);
+    new om::v3d::View3d(this, *vgs_);
 }

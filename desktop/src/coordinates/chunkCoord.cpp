@@ -103,13 +103,50 @@ void chunkCoord::ChildrenCoords(chunkCoord *pChildren) const {
 
 }
 
+// WARNING: may contain coords that aren't acually in the volume!
+std::vector<om::chunkCoord> chunkCoord::ChildrenCoords() const {
+  auto pc = chunkCoord(Level - 1, X() * 2, Y() * 2, Z() * 2);
+
+  std::vector<om::chunkCoord> sibs;
+  if (pc.Level < 0) {
+    return sibs;
+  }
+
+  auto c = pc.PrimarySiblingCoord();
+
+  int level = c.Level;
+  int x = c.X();
+  int y = c.Y();
+  int z = c.Z();
+
+  sibs.push_back(c);
+  sibs.emplace_back(chunkCoord(level, x + 1, y, z));
+  sibs.emplace_back(chunkCoord(level, x + 1, y + 1, z));
+  sibs.emplace_back(chunkCoord(level, x, y + 1, z));
+  sibs.emplace_back(chunkCoord(level, x, y, z + 1));
+  sibs.emplace_back(chunkCoord(level, x + 1, y, z + 1));
+  sibs.emplace_back(chunkCoord(level, x + 1, y + 1, z + 1));
+  sibs.emplace_back(chunkCoord(level, x, y + 1, z + 1));
+  return sibs;
+}
+
 dataCoord chunkCoord::toDataCoord(const OmMipVolume *vol) const {
   return dataCoord(Coordinate * vol->Coords().GetChunkDimensions(), vol, Level);
 }
 
-dataBbox chunkCoord::chunkBoundingBox(const OmMipVolume *vol) const {
+dataCoord chunkCoord::toDataCoord(const OmMipVolCoords& system) const {
+  return dataCoord(Coordinate * system.GetChunkDimensions(), system, Level);
+}
+
+dataBbox chunkCoord::chunkBoundingBox(const OmMipVolume* vol) const {
   const dataCoord min = toDataCoord(vol);
   const dataCoord max = min + vol->Coords().GetChunkDimensions();
+  return dataBbox(min, max);
+}
+
+dataBbox chunkCoord::BoundingBox(const OmMipVolCoords& system) const {
+  const dataCoord min = toDataCoord(system);
+  const dataCoord max = min + system.GetChunkDimensions();
   return dataBbox(min, max);
 }
 

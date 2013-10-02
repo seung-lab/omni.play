@@ -15,19 +15,21 @@
 #include "common/common.h"
 #include "coordinates/coordinates.h"
 
-class OmVolumeCuller {
+namespace om {
+namespace v3d {
+class VolumeCuller {
  public:
-  OmVolumeCuller(const Matrix4f& projmodelview, const om::coords::Norm& pos,
+  VolumeCuller(const Matrix4f& projmodelview, const om::coords::Norm& pos,
                  const om::coords::Norm& focus);
 
   Visibility TestChunk(const om::coords::NormBbox&) const;
   const om::coords::Norm& GetPosition() const;
 
-  std::shared_ptr<OmVolumeCuller> GetTransformedCuller(const Matrix4f&,
+  std::shared_ptr<VolumeCuller> GetTransformedCuller(const Matrix4f&,
                                                        const Matrix4f&);
 
-  bool operator==(const OmVolumeCuller& c) const;
-  bool operator!=(const OmVolumeCuller& c) const;
+  bool operator==(const VolumeCuller& c) const;
+  bool operator!=(const VolumeCuller& c) const;
 
  private:
   const Matrix4f mProjModelView;
@@ -36,3 +38,4 @@ class OmVolumeCuller {
 
   FrustumCullerf mFrustumCuller;
 };
+}} // namespace

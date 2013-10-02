@@ -6,6 +6,12 @@
 class OmSplitSegmentRunner {
  public:
   static void FindAndSplitSegments(const SegmentDataWrapper curSDW,
+                                   OmViewGroupState& vgs,
+                                   const om::globalCoord curClickPt) {
+      FindAndSplitSegments(curSDW, &vgs, curClickPt);
+  }
+
+  static void FindAndSplitSegments(const SegmentDataWrapper curSDW,
                                    OmViewGroupState* vgs,
                                    const om::globalCoord curClickPt) {
     const boost::optional<om::globalCoord> prevClickPt =

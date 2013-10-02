@@ -8,6 +8,7 @@
 #include "threads/omTaskManager.hpp"
 #include "volume/omMipVolume.h"
 #include "zi/omMutex.h"
+#include "segment/omSegment.h"
 
 class OmMeshSegmentList {
  private:

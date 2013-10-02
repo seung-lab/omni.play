@@ -13,6 +13,8 @@ class OmSegmentsImpl;
 class OmSegmentsStore;
 class OmSegmentDataWrapper;
 
+namespace om { namespace segment { class Selection; }}
+
 class OmSegments {
  public:
   OmSegments(OmSegmentation* segmentation);
@@ -63,6 +65,7 @@ class OmSegments {
   boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
 
   OmSegment* findRoot(OmSegment* segment);
+  OmSegment* FindRoot(OmSegment* segment);
   OmSegment* findRoot(const om::common::SegID segID);
   om::common::SegID findRootID(const om::common::SegID segID);
   om::common::SegID findRootID(OmSegment* segment);
@@ -91,6 +94,8 @@ class OmSegments {
 
   inline const OmSegmentation* getSegmentation() const { return segmentation_; }
 
+  om::segment::Selection& Selection() const;
+
  private:
   zi::mutex mutex_;
 
@@ -98,6 +103,7 @@ class OmSegments {
 
   std::unique_ptr<OmSegmentsStore> store_;
   std::unique_ptr<OmSegmentsImpl> impl_;
+  std::unique_ptr<om::segment::Selection> selection_;
 
   friend class OmSegmentColorizer;
   friend class SegmentTests;

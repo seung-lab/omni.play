@@ -33,6 +33,10 @@ class OmMipVolCoords : public OmVolCoords {
 
   virtual ~OmMipVolCoords() {}
 
+    const OmMipVolume* vol() const {
+        return vol_;
+    }
+
   //mip level method
 
   // Calculate MipRootLevel using GetChunkDimension().
@@ -105,6 +109,10 @@ class OmMipVolCoords : public OmVolCoords {
 
   // Returns true if given MipCoordinate is a valid coordinate within the
   // MipVolume.
+  inline bool ContainsMipChunk(const om::chunkCoord& rMipCoord) const {
+      return ContainsMipChunkCoord(rMipCoord);
+  }
+
   inline bool ContainsMipChunkCoord(const om::chunkCoord& rMipCoord) const {
     //if level is greater than root level
     if (rMipCoord.Level < 0 || rMipCoord.Level > GetRootMipLevel()) {

@@ -307,7 +307,7 @@ bool OmView3d::pickPoint(const Vector2i& point2di,
   rNamesVec.clear();
 
   //setup selection mode
-  om::gl::startPicking(point2di.x, point2di.y, mCamera.GetPerspective().array);
+  om::gl::old::startPicking(point2di.x, point2di.y, mCamera.GetPerspective().array);
 
   //render selectable points
   Draw(DRAWOP_LEVEL_ALL | DRAWOP_SEGMENT_FILTER_SELECTED |
@@ -316,7 +316,7 @@ bool OmView3d::pickPoint(const Vector2i& point2di,
        DRAWOP_RENDERMODE_SELECTION);
 
   //get number of hits
-  int hits = om::gl::stopPicking();
+  int hits = om::gl::old::stopPicking();
 
   //if hits < 0, then buffer overflow
   if (hits < 0) {
@@ -334,7 +334,7 @@ bool OmView3d::pickPoint(const Vector2i& point2di,
 
   //pointer to closest hit names
   int* pNames;
-  om::gl::processHits(hits, &pNames, &numNames);
+  om::gl::old::processHits(hits, &pNames, &numNames);
 
   //add names from array to names vec
   for (int i = 0; i < numNames; i++) {
@@ -377,7 +377,7 @@ bool OmView3d::UnprojectPoint(Vector2i point2di, Vector3f& point3d) {
 
   //unproject point2di
   double point3dv[3];
-  if (om::gl::unprojectPixel(point2di.x, point2di.y, point3dv) < 0)
+  if (om::gl::old::unprojectPixel(point2di.x, point2di.y, point3dv) < 0)
     return false;
 
   //return point3d

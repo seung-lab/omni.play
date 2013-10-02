@@ -83,8 +83,7 @@ void Ui::shatterModeMouseReleased(QMouseEvent* event) {
     return;
   }
 
-  OmActions::ShatterSegment(pickPoint.sdw.MakeSegmentationDataWrapper(),
-                            pickPoint.sdw.GetSegment());
+  OmActions::ShatterSegment(pickPoint.sdw.GetSegment());
   vgs_.GetToolBarManager()->SetShatteringOff();
   OmStateManager::SetOldToolModeAndSendEvent();
 }
@@ -109,7 +108,7 @@ bool Ui::annotate(QMouseEvent* event) {
     return false;
   }
 
-  auto& manager = pickPoint.sdw.GetSegmentation()->Annotations();
+  auto& manager = pickPoint.sdw.GetSegmentation().Annotations();
 
   manager.Add(pickPoint.coord, vgs_.getAnnotationString(),
               vgs_.getAnnotationColor(), vgs_.getAnnotationSize());
@@ -315,7 +314,7 @@ SegmentDataWrapper Ui::pickSegmentMouse(QMouseEvent* event, const bool drag) {
 ///////           Segment Context Menu
 
 void Ui::showSegmentContextMenu(QMouseEvent* event) {
-  const om::landmarks::sdwAndPt pickPoint = pickVoxelMouseCrosshair(event);
+  const auto pickPoint = pickVoxelMouseCrosshair(event);
 
   view3d_.updateGL();
 
@@ -329,7 +328,7 @@ void Ui::showSegmentContextMenu(QMouseEvent* event) {
 }
 
 void Ui::centerAxisOfRotation(QMouseEvent* event) {
-  const om::landmarks::sdwAndPt pickPoint = pickVoxelMouseCrosshair(event);
+  const auto pickPoint = pickVoxelMouseCrosshair(event);
 
   view3d_.updateGL();
 
@@ -344,7 +343,7 @@ void Ui::centerAxisOfRotation(QMouseEvent* event) {
 }
 
 void Ui::crosshair(QMouseEvent* event) {
-  const om::landmarks::sdwAndPt pickPoint = pickVoxelMouseCrosshair(event);
+  const auto pickPoint = pickVoxelMouseCrosshair(event);
 
   view3d_.updateGL();
 
@@ -352,24 +351,24 @@ void Ui::crosshair(QMouseEvent* event) {
     return;
   }
 
-  vgs_.View2dState().SetScaledSliceDepth(pickPoint.coord);
+  vgs_.View2dState()->SetScaledSliceDepth(pickPoint.coord);
 
   om::event::ViewCenterChanged();
 }
 
 om::landmarks::sdwAndPt Ui::pickVoxelMouseCrosshair(QMouseEvent* event) {
   // extract event properties
-  const Vector2i Vector2i(event->x(), event->y());
+  const Vector2i vec(event->x(), event->y());
 
   view3d_.updateGL();
 
-  const SegmentDataWrapper sdw = view3d_.PickPoint(Vector2i);
+  const SegmentDataWrapper sdw = view3d_.PickPoint(vec);
   if (!sdw.IsSegmentValid()) {
     return om::landmarks::sdwAndPt();
   }
 
   Vector3f point3d;
-  if (!view3d_.UnprojectPoint(Vector2i, point3d)) {
+  if (!view3d_.UnprojectPoint(vec, point3d)) {
     return om::landmarks::sdwAndPt();
   }
 

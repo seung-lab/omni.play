@@ -66,6 +66,10 @@ class OmSegmentCenter {
   }
 
  public:
+  static void CenterSegment(OmViewGroupState& vgs) {
+      CenterSegment(&vgs);
+  }
+
   static void CenterSegment(OmViewGroupState* vgs) {
     const SegmentationDataWrapper sdw = vgs->Segmentation();
 

@@ -21,7 +21,7 @@ class OmVolumeCuller {
   OmVolumeCuller(const Matrix4f& projmodelview, const om::normCoord& pos,
                  const om::normCoord& focus);
 
-  Visibility TestChunk(const om::normBbox&);
+  Visibility TestChunk(const om::normBbox&) const;
   const om::normCoord& GetPosition() const;
 
   std::shared_ptr<OmVolumeCuller> GetTransformedCuller(const Matrix4f&,

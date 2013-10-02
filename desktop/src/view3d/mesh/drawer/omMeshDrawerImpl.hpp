@@ -1,15 +1,16 @@
 #pragma once
 
 #include "events/events.h"
-#include "mesh/drawer/omMeshPlan.h"
-#include "mesh/drawer/percDone.hpp"
-#include "mesh/omVolumeCuller.h"
+#include "view3d/mesh/drawer/omMeshPlan.h"
+#include "view3d/mesh/drawer/percDone.hpp"
+#include "view3d/mesh/omVolumeCuller.h"
 #include "segment/omSegmentPointers.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 #include "utility/timer.hpp"
 #include "view3d/gl.h"
 #include "viewGroup/omViewGroupState.h"
-#include "mesh/displayListCachedDataSource.hpp"
+#include "view3d/mesh/displayListCachedDataSource.hpp"
+#include "mesh/omMeshManagers.hpp"
 
 #include <QGLContext>
 
@@ -18,16 +19,17 @@ namespace v3d {
 
 class DrawerImpl {
  public:
-  DrawerImpl(mesh::DisplayListCachedDataSource& meshes,
-             const coords::VolumeSystem& system,
+    DrawerImpl(//mesh::DisplayListCachedDataSource& meshes,
+             const OmMipVolCoords& system,
              const common::ID segmentationID)
-      : meshes_(meshes),
+        : //meshes_(meshes),
         system_(system),
         segmentationID_(segmentationID),
         context_(QGLContext::currentContext()) {
-    // if(!context_) {
-    //   throw VerifyException("QGLContext should never be 0");
-    // }
+        if(!context_) {
+            std::cout << "WARNING: QLContext was 0" << std::endl;
+            //   throw VerifyException("QGLContext should never be 0");
+        }
   }
 
   /**
@@ -70,12 +72,17 @@ class DrawerImpl {
   const v3d::PercDone& getPercDone() const { return perc_done_; }
 
  private:
-  void drawSegment(const common::SegID segID, const coords::Chunk& coord,
-                   const Vector3f& color) {
 
-    mesh::DisplayListMeshCoord dlc = {coords::Mesh(coord, segID), context_};
+    void drawSegment(const common::SegID segID, const om::chunkCoord& coord,
+                     const Vector3f& color) {
 
-    auto mesh = meshes_.Get(dlc, true);
+    //mesh::DisplayListMeshCoord dlc = {coords::Mesh(coord, segID), context_};
+    //auto mesh = meshes_.Get(dlc, true);
+
+    SegmentationDataWrapper sdw(segmentationID_);
+    OmSegmentation& vol = sdw.GetSegmentation();
+    OmMeshPtr mesh;
+    vol.MeshManagers()->GetMesh(mesh, coord, segID, 1);
 
     if (!mesh) {
       perc_done_.missingMesh();
@@ -87,15 +94,15 @@ class DrawerImpl {
 
     // draw mesh
     glPushName(segID);
-    mesh->Draw();
+    mesh->Draw(context_);
     glPopName();
 
     perc_done_.justDrew(mesh);
   }
 
  private:
-  mesh::DisplayListCachedDataSource& meshes_;
-  const coords::VolumeSystem& system_;
+    //mesh::DisplayListCachedDataSource& meshes_;
+  const OmMipVolCoords& system_;
   const common::ID segmentationID_;
   QGLContext const* const context_;
 

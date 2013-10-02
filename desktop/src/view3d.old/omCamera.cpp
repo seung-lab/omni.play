@@ -207,7 +207,7 @@ void OmCamera::DrawFocusAxis() {
   glScalef(scale, scale, scale);
 
   //draw axis
-  om::gl::glDrawAxis(2);
+  om::gl::old::glDrawAxis(2);
 
   //restore original modelview
   glMatrixMode(GL_MODELVIEW);

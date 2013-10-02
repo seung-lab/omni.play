@@ -8,11 +8,14 @@
 #include "segment/omSegmentsImpl.h"
 #include "volume/omSegmentation.h"
 #include "utility/dataWrappers.h"
+#include "segment/selection.hpp"
 
 OmSegments::OmSegments(OmSegmentation* segmentation)
     : segmentation_(segmentation),
       store_(new OmSegmentsStore(segmentation)),
-      impl_(new OmSegmentsImpl(segmentation, store_.get())) {}
+      impl_(new OmSegmentsImpl(segmentation, store_.get())),
+      selection_(new om::segment::Selection(this))
+      {}
 
 OmSegments::~OmSegments() {}
 
@@ -147,6 +150,9 @@ OmSegment* OmSegments::findRoot(OmSegment* segment) {
   // locked internally
   return store_->GetSegment(store_->Root(segment->value()));
 }
+OmSegment* OmSegments::FindRoot(OmSegment* segment) {
+    return findRoot(segment);
+}
 
 OmSegment* OmSegments::findRoot(const om::common::SegID segID) {
   // locked internally
@@ -278,4 +284,8 @@ bool OmSegments::JoinEdges(const std::vector<OmSegmentEdge>& edges) {
 std::vector<OmSegmentEdge> OmSegments::Shatter(OmSegment* seg) {
   zi::guard g(mutex_);
   return impl_->Shatter(seg);
+}
+
+om::segment::Selection& OmSegments::Selection() const {
+    return *selection_;
 }

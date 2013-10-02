@@ -60,8 +60,7 @@ class AnnotationListWidget : public QTreeWidget,
     FOR_EACH(it, SegmentationDataWrapper::ValidIDs()) {
       SegmentationDataWrapper sdw(*it);
 
-      om::annotation::manager& annotations =
-          *sdw.GetSegmentation().Annotations();
+      auto& annotations = sdw.GetSegmentation().Annotations();
 
       FOR_EACH(iter, annotations) {
         om::annotation::data& a = *iter->Object;

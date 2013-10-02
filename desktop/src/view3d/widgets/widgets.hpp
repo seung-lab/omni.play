@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include "system/preferences3d.hpp"
 #include "system/omPreferences.h"
 #include "view3d/widgets/annotationsWidget.h"
 #include "view3d/widgets/base.h"

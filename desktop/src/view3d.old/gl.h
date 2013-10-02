@@ -6,7 +6,7 @@
 
 namespace om {
 namespace gl {
-
+namespace old {
 /*
  * Standard Colors
  */
@@ -65,4 +65,4 @@ void glDrawPositiveAxis(int size = 3);
 void omglWireCube(GLdouble size);
 void omglSolidCube(GLdouble size);
 }
-}  // om::gl::
+}}  // om::gl::old::

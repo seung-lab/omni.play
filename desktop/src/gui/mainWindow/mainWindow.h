@@ -26,7 +26,8 @@ class SegmentEvent;
 }
 
 class MainWindow : public QMainWindow {
-  Q_OBJECT public : MainWindow();
+  Q_OBJECT
+public : MainWindow();
   ~MainWindow();
 
   void openProject(QString fileNameAndPath);

@@ -1,32 +1,33 @@
 #pragma once
 
-#include "coordinates/chunk.h"
-#include "mesh/drawer/struct.hpp"
-#include "chunk/dataSources.hpp"
+#include "view3d/mesh/drawer/struct.hpp"
 
 class OmSegment;
 class OmSegments;
-class OmMeshSegmentList;
 class OmSegmentation;
 
-class OmMeshSegmentListTask : public zi::runnable {
+namespace om {
+namespace v3d {
+class MeshSegmentList;
+
+class MeshSegmentListTask : public zi::runnable {
  private:
-  OmMeshSegmentList& rootSegLists_;
-  om::chunk::UniqueValuesDS& chunkUniqueValues_;
+  MeshSegmentList& rootSegLists_;
+  om::chunk::CachedUniqueValuesDataSource& chunkUniqueValues_;
   OmSegments& segments_;
 
-  const om::coords::Chunk coord_;
+  const om::chunkCoord coord_;
   OmSegment& rootSeg_;
 
   const om::v3d::key key_;
 
  public:
-  OmMeshSegmentListTask(OmMeshSegmentList& rootSegLists,
-                        om::chunk::UniqueValuesDS& chunkUniqueValues,
-                        OmSegments& segments, om::coords::Chunk coord,
+  MeshSegmentListTask(MeshSegmentList& rootSegLists,
+                        om::chunk::CachedUniqueValuesDataSource& cuvds,
+                        OmSegments& segments, om::chunkCoord coord,
                         OmSegment& rootSeg, const om::v3d::key& key)
       : rootSegLists_(rootSegLists),
-        chunkUniqueValues_(chunkUniqueValues),
+        chunkUniqueValues_(cuvds),
         segments_(segments),
         coord_(coord),
         rootSeg_(rootSeg),
@@ -38,3 +39,4 @@ class OmMeshSegmentListTask : public zi::runnable {
   Vector3f determineColor(OmSegment*);
   bool useParentColor(OmSegment*);
 };
+}} //namespace

@@ -5,6 +5,7 @@
 using namespace vmml;
 
 class OmMipVolume;
+class OmMipVolCoords;
 
 namespace om {
 
@@ -23,6 +24,7 @@ class dataCoord : public vmml::Vector3i {
  public:
   dataCoord(base_t v, const OmMipVolume* vol, int mipLevel);
   dataCoord(int x, int y, int z, const OmMipVolume* vol, int mipLevel);
+  dataCoord(base_t v, const OmMipVolCoords& system, int mipLevel);
 
   globalCoord toGlobalCoord() const;
   normCoord toNormCoord() const;
@@ -90,6 +92,7 @@ class dataBbox : public vmml::AxisAlignedBoundingBox<int> {
 
   globalBbox toGlobalBbox() const;
   normBbox toNormBbox() const;
+  normBbox ToNormBbox() const;
 
   inline int level() { return mipLevel_; }
 

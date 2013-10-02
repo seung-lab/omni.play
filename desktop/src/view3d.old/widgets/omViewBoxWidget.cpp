@@ -69,7 +69,7 @@ void OmViewBoxWidget::drawLines(Vector3i depth) {
 
   float distance = ((float) Om3dPreferences::getCrosshairValue()) / 10.0;
 
-  glColor3fv(om::gl::OMGL_BLUE);
+  glColor3fv(om::gl::old::OMGL_BLUE);
   v0 = Vector3i(depth.x, depth.y, depth.z - distance);
   v1 = Vector3i(depth.x, depth.y, depth.z + distance);
   glBegin(GL_LINE_STRIP);
@@ -77,7 +77,7 @@ void OmViewBoxWidget::drawLines(Vector3i depth) {
   glVertex3iv(v1.array);
   glEnd();
 
-  glColor3fv(om::gl::OMGL_GREEN);
+  glColor3fv(om::gl::old::OMGL_GREEN);
   v0 = Vector3i(depth.x, depth.y - distance, depth.z);
   v1 = Vector3i(depth.x, depth.y + distance, depth.z);
   glBegin(GL_LINE_STRIP);
@@ -85,7 +85,7 @@ void OmViewBoxWidget::drawLines(Vector3i depth) {
   glVertex3iv(v1.array);
   glEnd();
 
-  glColor3fv(om::gl::OMGL_RED);
+  glColor3fv(om::gl::old::OMGL_RED);
   v0 = Vector3i(depth.x - distance, depth.y, depth.z);
   v1 = Vector3i(depth.x + distance, depth.y, depth.z);
   glBegin(GL_LINE_STRIP);
@@ -104,7 +104,7 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 
   switch (plane) {
     case om::common::XY_VIEW:
-      glColor3fv(om::gl::OMGL_BLUE);
+      glColor3fv(om::gl::old::OMGL_BLUE);
       v0 = Vector3i(min.x, min.y, depth);
       v1 = Vector3i(max.x, min.y, depth);
       v2 = Vector3i(max.x, max.y, depth);
@@ -112,7 +112,7 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
       break;
 
     case om::common::XZ_VIEW:
-      glColor3fv(om::gl::OMGL_GREEN);
+      glColor3fv(om::gl::old::OMGL_GREEN);
       v0 = Vector3i(min.x, depth, min.y);
       v1 = Vector3i(min.x, depth, max.y);
       v2 = Vector3i(max.x, depth, max.y);
@@ -120,7 +120,7 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
       break;
 
     case om::common::ZY_VIEW:
-      glColor3fv(om::gl::OMGL_RED);
+      glColor3fv(om::gl::old::OMGL_RED);
       v0 = Vector3i(depth, min.y, min.x);
       v1 = Vector3i(depth, max.y, min.x);
       v2 = Vector3i(depth, max.y, max.x);

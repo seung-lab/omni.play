@@ -20,7 +20,7 @@ std::shared_ptr<OmVolumeCuller> OmVolumeCuller::GetTransformedCuller(
       om::normCoord(matInv * mFocus, vol));
 }
 
-Visibility OmVolumeCuller::TestChunk(const om::normBbox& normBox) {
+Visibility OmVolumeCuller::TestChunk(const om::normBbox& normBox) const {
   return mFrustumCuller.testAabb(normBox);
 }
 

@@ -14,7 +14,7 @@ void AnnotationsWidget::Draw() {
     return;
   }
 
-  Vector3f camPos = view3d_.GetCamera().GetPosition();
+  const auto& camPos = view3d_.GetCamera().GetPosition();
 
   glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -22,8 +22,8 @@ void AnnotationsWidget::Draw() {
 
   for (OmSegmentation* vol : view3d_.Segmentations()) {
     FOR_EACH(it, vol->Annotations().Enabled()) {
-      om::annotation::data& data = *it->Object;
-      const om::coords::Global coord = data.coord.ToGlobal();
+      const auto& data = *it->Object;
+      const auto coord = data.coord.toGlobalCoord();
       float dist = camPos.distance(coord);
 
       glPushMatrix();

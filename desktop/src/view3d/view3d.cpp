@@ -40,9 +40,13 @@ View3d::View3d(QWidget* parent, OmViewGroupState& vgs)
       camera_(new Camera()),
       omniEventListener_(new OmniEventListener(*this, vgs)),
       segmentations_(SegmentationDataWrapper::GetPtrVec()),
-      vgs_(vgs),
-      drawer_(new Drawer(*prefs_, *widgets_, *drawStatus_, *camera_,
-                         segmentations_, vgs)) {
+      vgs_(vgs){
+
+    const auto& primary_coords = vgs.Segmentation().GetSegmentation().Coords();
+
+    drawer_.reset(new Drawer(*prefs_, *widgets_, *drawStatus_, *camera_,
+                             segmentations_, vgs, primary_coords));
+
   // set keyboard policy
   setFocusPolicy(Qt::ClickFocus);
   setAttribute(Qt::WA_AcceptTouchEvents);

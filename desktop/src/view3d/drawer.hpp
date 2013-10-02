@@ -24,30 +24,25 @@ class Drawer {
   DrawStatus& drawStatus_;
   Camera& camera_;
   OmViewGroupState& vgs_;
-  OmSegmentation& vol_;
-
-  std::vector<MeshDrawInfo*> drawInfos_;
+  const OmMipVolCoords& system_;
+  std::vector<std::unique_ptr<MeshDrawInfo>> drawInfos_;
 
  public:
   Drawer(prefs::View3d& prefs, Widgets& widgets, DrawStatus& drawStatus,
          Camera& camera, const std::vector<OmSegmentation*>& segmentations,
-         OmViewGroupState& vgs)
+         OmViewGroupState& vgs, const OmMipVolCoords& system)
       : prefs_(prefs),
         widgets_(widgets),
         drawStatus_(drawStatus),
         camera_(camera),
         vgs_(vgs),
-        vol_(*vgs_.Segmentation().GetSegmentation()) {  // TODO: Fix this.
+        system_(system){
     for (auto* vol : segmentations) {
-      drawInfos_.push_back(new MeshDrawInfo(*vol, vgs));
+        drawInfos_.emplace_back(std::make_unique<MeshDrawInfo>(*vol, vgs));
     }
   }
 
-  ~Drawer() {
-    for (auto* info : drawInfos_) {
-      delete info;
-    }
-  }
+  ~Drawer() {  }
 
   void PrimaryDraw() {
     drawStatus_.Reset();
@@ -109,11 +104,11 @@ class Drawer {
     // setup culler to current projection-modelview matrix
     OmVolumeCuller mainCuller(
         camera_.GetProjModelViewMatrix(),
-        coords::Norm(camera_.GetPosition(), vol_.Coords()),
-        coords::Norm(camera_.GetFocus(), vol_.Coords()));
+        normCoord(camera_.GetPosition(), system_),
+        normCoord(camera_.GetFocus(), system_));
 
     // Draw meshes!
-    for (auto* info : drawInfos_) {
+    for (auto& info : drawInfos_) {
       auto& vol = info->Vol();
       if (!vol.built()) {
         continue;

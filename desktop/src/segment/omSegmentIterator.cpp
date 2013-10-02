@@ -7,6 +7,8 @@
 
 OmSegmentIterator::OmSegmentIterator(OmSegments* cache) : segments_(cache) {}
 
+OmSegmentIterator::OmSegmentIterator(OmSegments& cache) : segments_(&cache) {}
+
 OmSegmentIterator::OmSegmentIterator(const SegmentationDataWrapper& sdw)
     : segments_(sdw.Segments()) {}
 

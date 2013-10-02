@@ -1,5 +1,5 @@
 #pragma once
 
-#include "segment/omSegment.h"
+class OmSegment;
 
 typedef std::deque<OmSegment*> OmSegPtrList;

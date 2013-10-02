@@ -17,6 +17,8 @@
 
 class OmProjectImpl;
 
+namespace om { namespace prefs { class View3d; }}
+
 class OmPreferences : private om::singletonBase<OmPreferences> {
  public:
   static void Delete() {
@@ -71,6 +73,8 @@ class OmPreferences : private om::singletonBase<OmPreferences> {
     instance().v3fPrefs_[key] = value;
     postEvent(key);
   }
+
+  static om::prefs::View3d V3dPrefs();
 
  private:
   OmPreferences() {}

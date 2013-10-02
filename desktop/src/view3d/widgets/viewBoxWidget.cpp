@@ -27,7 +27,7 @@ void ViewBoxWidget::Draw() {
   static const int RECT_WIREFRAME_LINE_WIDTH = 2;
   glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
 
-  OmViewGroupView2dState& view2dState = vgs_.View2dState();
+  auto& view2dState = *vgs_.View2dState();
 
   if (Om3dPreferences::get2DViewFrameIn3D()) {
     draw2dBoxWrapper(view2dState, om::common::ViewType::XY_VIEW);

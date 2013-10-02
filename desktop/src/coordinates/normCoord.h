@@ -3,6 +3,7 @@
 #include "vmmlib/vmmlib.h"
 
 class OmMipVolume;
+class OmMipVolCoords;
 
 namespace om {
 
@@ -16,7 +17,7 @@ class normCoord : public vmml::Vector3f {
 
  public:
   normCoord(base_t v, const OmMipVolume *vol) : base_t(v), vol_(vol) {}
-
+  normCoord(base_t v, const OmMipVolCoords& system);
   normCoord(float x, float y, float z, const OmMipVolume *vol)
       : base_t(x, y, z), vol_(vol) {}
 

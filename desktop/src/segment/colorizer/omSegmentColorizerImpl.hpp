@@ -137,7 +137,7 @@ class OmSegmentColorizerImpl {
 
           if (!qFuzzyCompare(1, breakThreshold_)) {
             // WARNING: operation is O(depth of MST)
-            segToShow = OmSegmentUtils::GetSegmentBasedOnThreshold(
+            segToShow = OmSegmentUtils::GetSegmentFromThreshold(
                 seg, breakThreshold_);
           }
 

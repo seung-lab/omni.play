@@ -59,8 +59,8 @@ class OmSegmentUtils {
     }
   }
 
-  static OmSegment* GetSegmentBasedOnThreshold(OmSegment* seg,
-                                               const float breakThreshold) {
+  static OmSegment* GetSegmentFromThreshold(OmSegment* seg,
+                                            const float breakThreshold) {
     // WARNING: operation is O(depth of MST)
 
     OmSegment* segWalker = seg;

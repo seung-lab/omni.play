@@ -20,6 +20,7 @@
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationLoader.h"
 #include "volume/omUpdateBoundingBoxes.h"
+#include "chunks/uniqueValuesDSH.hpp"
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
@@ -37,7 +38,9 @@ OmSegmentation::OmSegmentation()
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
-      annotations_(new om::annotation::manager(this)) {}
+      annotations_(new om::annotation::manager(this)),
+      uniqueValuesDS_(new om::chunk::CachedUniqueValuesDataSource(this))
+ {}
 
 // used by OmGenericManager
 OmSegmentation::OmSegmentation(om::common::ID id)
@@ -56,7 +59,9 @@ OmSegmentation::OmSegmentation(om::common::ID id)
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
-      annotations_(new om::annotation::manager(this)) {
+      annotations_(new om::annotation::manager(this)),
+      uniqueValuesDS_(new om::chunk::CachedUniqueValuesDataSource(this))
+ {
   LoadPath();
 
   segments_->StartCaches();

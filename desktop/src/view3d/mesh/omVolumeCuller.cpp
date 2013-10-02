@@ -2,27 +2,28 @@
 #include "coordinates/coordinates.h"
 
 #include <QtGlobal>
-
-OmVolumeCuller::OmVolumeCuller(const Matrix4f& projmodelview,
+namespace om {
+namespace v3d {
+VolumeCuller::VolumeCuller(const Matrix4f& projmodelview,
                                const om::coords::Norm& pos,
                                const om::coords::Norm& focus)
     : mProjModelView(projmodelview), mPosition(pos), mFocus(focus) {
   mFrustumCuller.setup(mProjModelView);
 }
 
-const om::coords::Norm& OmVolumeCuller::GetPosition() const {
+const om::coords::Norm& VolumeCuller::GetPosition() const {
   return mPosition;
 }
 
-std::shared_ptr<OmVolumeCuller> OmVolumeCuller::GetTransformedCuller(
+std::shared_ptr<VolumeCuller> VolumeCuller::GetTransformedCuller(
     const Matrix4f& mat, const Matrix4f& matInv) {
   auto& vol = mPosition.volume();
-  return std::make_shared<OmVolumeCuller>(
+  return std::make_shared<VolumeCuller>(
       mProjModelView * mat, om::coords::Norm(matInv * mPosition, vol),
       om::coords::Norm(matInv * mFocus, vol));
 }
 
-Visibility OmVolumeCuller::TestChunk(
+Visibility VolumeCuller::TestChunk(
     const om::coords::NormBbox& normBox) const {
   return mFrustumCuller.testAabb(normBox);
 }
@@ -50,11 +51,12 @@ bool vecSame(const Vector3<float>& a, const Vector3<float>& b) {
          qFuzzyCompare(a.z, b.z);
 }
 
-bool OmVolumeCuller::operator==(const OmVolumeCuller& c) const {
+bool VolumeCuller::operator==(const VolumeCuller& c) const {
   return matrciesAreSame(mProjModelView, c.mProjModelView) &&
          vecSame(mPosition, c.mPosition) && vecSame(mFocus, c.mFocus);
 }
 
-bool OmVolumeCuller::operator!=(const OmVolumeCuller& c) const {
+bool VolumeCuller::operator!=(const VolumeCuller& c) const {
   return !(*this == c);
 }
+}} //namespace

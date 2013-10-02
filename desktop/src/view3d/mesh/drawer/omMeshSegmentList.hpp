@@ -1,30 +1,33 @@
 #pragma once
 
-#include "mesh/drawer/struct.hpp"
+#include "view3d/mesh/drawer/struct.hpp"
 #include "common/common.h"
-#include "mesh/drawer/omMeshSegmentListTask.h"
-#include "mesh/drawer/omMeshSegmentListTypes.hpp"
+#include "view3d/mesh/drawer/omMeshSegmentListTask.h"
+#include "view3d/mesh/drawer/omMeshSegmentListTypes.hpp"
 #include "threads/taskManager.hpp"
 #include "segment/omSegment.h"
 #include "volume/omSegmentation.h"
 #include <map>
 
-class OmMeshSegmentList {
+namespace om {
+namespace v3d {
+
+class MeshSegmentList {
  private:
   static const int MAX_THREADS = 3;
   OmSegmentation& vol_;
 
  public:
-  OmMeshSegmentList(OmSegmentation& vol) : vol_(vol) {
+  MeshSegmentList(OmSegmentation& vol) : vol_(vol) {
     threadPool_.start(MAX_THREADS);
   }
 
-  ~OmMeshSegmentList() {
+  ~MeshSegmentList() {
     threadPool_.clear();
     threadPool_.stop();
   }
 
-  boost::optional<SegPtrAndColorList> Get(const om::coords::Chunk& coord,
+  boost::optional<SegPtrAndColorList> Get(const om::chunkCoord& coord,
                                           om::common::SegID segID,
                                           const om::v3d::key& key) {
     zi::guard g(lock_);
@@ -37,7 +40,7 @@ class OmMeshSegmentList {
     }
 
     // remove from cache if freshness is too old
-    auto* rootSeg = vol_.Segments().GetSegment(segID);
+    auto* rootSeg = vol_.Segments()->GetSegment(segID);
     if (!rootSeg) {
       return boost::optional<SegPtrAndColorList>();
     }
@@ -51,8 +54,8 @@ class OmMeshSegmentList {
     if (!spList.isValid) {  // add coord to list to be fetched
       spList = SegPtrAndColorListValid(true);
 
-      auto task = std::make_shared<OmMeshSegmentListTask>(
-          *this, vol_.UniqueValuesDS(), vol_.Segments(), coord, *rootSeg, key);
+      auto task = std::make_shared<MeshSegmentListTask>(
+          *this, vol_.UniqueValuesDS(), *vol_.Segments(), coord, *rootSeg, key);
 
       threadPool_.push_back(task);
       return boost::optional<SegPtrAndColorList>();
@@ -62,7 +65,7 @@ class OmMeshSegmentList {
     return boost::optional<SegPtrAndColorList>(spList.list);
   }
 
-  void AddToCache(const om::coords::Chunk& coord, OmSegment& rootSeg,
+  void AddToCache(const om::chunkCoord& coord, OmSegment& rootSeg,
                   bool shouldVolumeBeShownBroken, float breakThreshold,
                   const SegPtrAndColorList& segmentsToDraw) {
     zi::guard g(lock_);
@@ -74,16 +77,17 @@ class OmMeshSegmentList {
   }
 
  private:
-  std::map<OmMeshSegListKey, SegPtrAndColorListValid> mSegmentListCache;
+  std::map<MeshSegListKey, SegPtrAndColorListValid> mSegmentListCache;
   om::thread::ThreadPool threadPool_;
   zi::mutex lock_;
 
-  OmMeshSegListKey makeKey(const om::coords::Chunk& coord,
+  MeshSegListKey makeKey(const om::chunkCoord& coord,
                            om::common::SegID segID,
                            bool shouldVolumeBeShownBroken,
                            float breakThreshold) {
-    return OmMeshSegListKey(vol_.id(), segID, coord.mipLevel(), coord.x,
-                            coord.y, coord.z, shouldVolumeBeShownBroken,
+      return MeshSegListKey(vol_.id(), segID, coord.mipLevel(), coord.X(),
+                            coord.Y(), coord.Z(), shouldVolumeBeShownBroken,
                             breakThreshold);
   }
 };
+}} //namespace

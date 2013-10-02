@@ -1,5 +1,6 @@
 #pragma once
 
+#include "segment/omSegment.h"
 #include "segment/omSegments.h"
 
 namespace om {
