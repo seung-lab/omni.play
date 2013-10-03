@@ -13,6 +13,7 @@
 class OmGlobalKeyPress : public QWidget {
   Q_OBJECT private : QWidget* const parent_;
 
+  std::unique_ptr<QShortcut> a_;
   std::unique_ptr<QShortcut> b_;
   std::unique_ptr<QShortcut> comma_;
   std::unique_ptr<QShortcut> greater_;
@@ -26,8 +27,8 @@ class OmGlobalKeyPress : public QWidget {
   std::unique_ptr<QShortcut> l_;
   std::unique_ptr<QShortcut> slash_;
 
-  void setShortcut(std::unique_ptr<QShortcut>& shortcut, const QKeySequence key,
-                   const char* method) {
+  void setShortcut(std::unique_ptr<QShortcut>& shortcut,
+                   const QKeySequence key, const char* method) {
     shortcut.reset(new QShortcut(parent_));
     shortcut->setKey(key);
     shortcut->setContext(Qt::ApplicationShortcut);
@@ -36,7 +37,7 @@ class OmGlobalKeyPress : public QWidget {
   }
 
   void setTool(const om::tool::mode tool) {
-    ToolBarManager* tbm = OmAppState::GetToolBarManager();
+    auto* tbm = OmAppState::GetToolBarManager();
     if (tbm) {
       tbm->SetTool(tool);
     }
@@ -44,24 +45,14 @@ class OmGlobalKeyPress : public QWidget {
 
  private
 Q_SLOTS:
+  void keyA() { setTool(om::tool::ANNOTATE); }
   void keyB() { setTool(om::tool::PAN); }
-
   void keyN() { setTool(om::tool::SELECT); }
-
   void keyM() { setTool(om::tool::PAINT); }
-
   void keyComma() { setTool(om::tool::ERASE); }
-
   void keyPeriod() { setTool(om::tool::FILL); }
-
   void keyK() { setTool(om::tool::CUT); }
-
   void keyL() { setTool(om::tool::LANDMARK); }
-
-  // void keySlash(){
-  // 	setTool(om::tool::KALINA);
-  // }
-
   void keyR() { OmSegmentSelected::RandomizeColor(); }
 
   void keyLess() {
@@ -75,11 +66,9 @@ Q_SLOTS:
   }
 
   void keyJ() {
-    const auto& segset = SegmentationDataWrapper::ValidIDs();
-
-    FOR_EACH(iter, segset) {
-      OmActions::JoinSegments(SegmentationDataWrapper(*iter));
-    }
+      for(const auto& id : SegmentationDataWrapper::ValidIDs()){
+          OmActions::JoinSegments(SegmentationDataWrapper(id));
+      }
 
     om::event::Redraw2d();
     om::event::Redraw3d();
@@ -87,6 +76,7 @@ Q_SLOTS:
 
  public:
   OmGlobalKeyPress(QWidget* parent) : QWidget(parent), parent_(parent) {
+    setShortcut(a_, QKeySequence(Qt::Key_A), SLOT(keyA()));
     setShortcut(b_, QKeySequence(Qt::Key_B), SLOT(keyB()));
     setShortcut(j_, QKeySequence(Qt::Key_J), SLOT(keyJ()));
     setShortcut(comma_, QKeySequence(Qt::Key_Comma), SLOT(keyComma()));
