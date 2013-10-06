@@ -1,8 +1,9 @@
 #pragma once
 
 class OmChannelMetadata {
- private:
+private:
 
- public:
+public:
 
 };
+

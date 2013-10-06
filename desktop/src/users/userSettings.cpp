@@ -1,31 +1,39 @@
-#include "yaml-cpp-old/yaml.h"
 #include "users/userSettings.h"
+#include "yaml-cpp-old/yaml.h"
 #include "datalayer/fs/omFile.hpp"
 #include <fstream>
 
 namespace om {
 
-void userSettings::Load() {
-  if (om::file::old::exists(filename_)) {
-    YAMLold::Node in = YAMLold::LoadFile(filename_);
+void userSettings::Load()
+{
+    using namespace YAMLold;
 
-    threshold_ = in["threshold"].as<double>(defaultThreshold_);
-    sizeThreshold_ = in["sizeThreshold"].as<double>(defaultSizeThreshold_);
-    showAnnotations_ = in["showAnnotations"].as<bool>(defaultShowAnnotations_);
-    alpha_ = in["alpha"].as<double>(0.2);
-  }
+    if(om::file::old::exists(filename_))
+    {
+        Node in;
+        om::yaml::util::Read(filename_, in);
+
+        om::yaml::util::OptionalRead(in, "threshold", threshold_, defaultThreshold_);
+        om::yaml::util::OptionalRead(in, "sizeThreshold", sizeThreshold_, defaultSizeThreshold_);
+        om::yaml::util::OptionalRead(in, "showAnnotations", showAnnotations_, defaultShowAnnotations_);
+    }
 }
 
-void userSettings::Save() {
-  YAMLold::Node n;
-  n["threshold"] = threshold_;
-  n["sizeThreshold"] = sizeThreshold_;
-  n["showAnnotations"] = showAnnotations_;
-  n["alpha"] = alpha_;
+void userSettings::Save()
+{
+    using namespace YAMLold;
 
-  std::ofstream out(filename_);
-  YAMLold::Emitter e(out);
-  e << YAMLold::BeginDoc << n << YAMLold::EndDoc;
+    Emitter out;
+
+    out << BeginDoc << BeginMap;
+    out << Key << "threshold" << Value << threshold_;
+    out << Key << "sizeThreshold" << Value << sizeThreshold_;
+    out << Key << "showAnnotations" << Value << showAnnotations_;
+    out << EndMap << EndDoc;
+
+    om::yaml::util::Write(filename_, out);
 }
 
-}  // namespace om
+
+} // namespace om
