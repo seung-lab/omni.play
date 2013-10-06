@@ -47,9 +47,9 @@ class OmSegmentsStore {
   om::common::SegID Root(const om::common::SegID segID);
 
  private:
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
                                          const OmSegmentsImpl&);
-  friend void YAML::operator>>(const YAML::Node& in, OmSegmentsImpl&);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegmentsImpl&);
   friend QDataStream& operator<<(QDataStream& out, const OmSegmentsImpl&);
   friend QDataStream& operator>>(QDataStream& in, OmSegmentsImpl&);
 };

@@ -1,4 +1,4 @@
-#include "yaml-cpp/yaml.h"
+#include "yaml-cpp-old/yaml.h"
 #include "users/userSettings.h"
 #include "datalayer/fs/omFile.hpp"
 #include <fstream>
@@ -7,7 +7,7 @@ namespace om {
 
 void userSettings::Load() {
   if (om::file::old::exists(filename_)) {
-    YAML::Node in = YAML::LoadFile(filename_);
+    YAMLold::Node in = YAMLold::LoadFile(filename_);
 
     threshold_ = in["threshold"].as<double>(defaultThreshold_);
     sizeThreshold_ = in["sizeThreshold"].as<double>(defaultSizeThreshold_);
@@ -17,15 +17,15 @@ void userSettings::Load() {
 }
 
 void userSettings::Save() {
-  YAML::Node n;
+  YAMLold::Node n;
   n["threshold"] = threshold_;
   n["sizeThreshold"] = sizeThreshold_;
   n["showAnnotations"] = showAnnotations_;
   n["alpha"] = alpha_;
 
   std::ofstream out(filename_);
-  YAML::Emitter e(out);
-  e << YAML::BeginDoc << n << YAML::EndDoc;
+  YAMLold::Emitter e(out);
+  e << YAMLold::BeginDoc << n << YAMLold::EndDoc;
 }
 
 }  // namespace om

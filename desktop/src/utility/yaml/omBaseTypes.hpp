@@ -2,13 +2,13 @@
 
 #include "common/common.h"
 #include "common/colors.h"
-#include "yaml-cpp/yaml.h"
+#include "yaml-cpp-old/yaml.h"
 
 #include <QHash>
 
 #include <zi/for_each.hpp>
 
-namespace YAML {
+namespace YAMLold {
 
 inline Emitter& operator<<(Emitter& out, const QString& s) {
   return out << s.toStdString();
@@ -17,7 +17,7 @@ inline Emitter& operator<<(Emitter& out, const QString& s) {
 inline void operator>>(const Node& in, QString& s) {
   auto str = in.as<std::string>();
 
-  if (str == "~")  // NULL Value from YAML
+  if (str == "~")  // NULL Value from YAMLold
     str = "";
 
   s = QString::fromStdString(str);
@@ -145,4 +145,4 @@ template <class K, class V> void operator>>(const Node& in, QHash<K, V>& p) {
   }
 }
 
-}  // namespace YAML
+}  // namespace YAMLold

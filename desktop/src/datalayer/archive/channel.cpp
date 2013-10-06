@@ -1,5 +1,5 @@
 #include "coordinates/yaml.h"
-#include "yaml-cpp/yaml.h"
+#include "yaml-cpp-old/yaml.h"
 #include "project/details/omChannelManager.h"
 #include "utility/yaml/mipVolume.hpp"
 #include "utility/yaml/baseTypes.hpp"
@@ -8,7 +8,7 @@
 
 #include "common_yaml.hpp"
 
-namespace YAML {
+namespace YAMLold {
 
 Emitter& operator<<(Emitter& out, const OmChannelManager& cm) {
   out << BeginMap;
@@ -80,4 +80,4 @@ void operator>>(const Node& in, OmMipVolCoords& c) {
   c.SetAbsOffset(offset);
 }
 
-}  // namespace YAML
+}  // namespace YAMLold

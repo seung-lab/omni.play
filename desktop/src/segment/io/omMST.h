@@ -75,7 +75,7 @@ class OmMST {
 
   friend class OmDataArchiveProjectImpl;
   friend QDataStream& operator<<(QDataStream& out, const OmSegmentation& seg);
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
                                          const OmSegmentation& seg);
-  friend void YAML::operator>>(const YAML::Node& in, OmSegmentation& seg);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegmentation& seg);
 };

@@ -28,16 +28,16 @@ void manager::Add(globalCoord coord, const std::string& comment,
 void manager::Save() const {
   std::string fnp = filePathV1();
 
-  YAML::Emitter e;
+  YAMLold::Emitter e;
 
-  e << YAML::BeginDoc;
+  e << YAMLold::BeginDoc;
   base_t::Save(e);
-  e << YAML::EndDoc;
+  e << YAMLold::EndDoc;
 
   om::yaml::Util::Write(fnp, e);
 }
 
-data* manager::parse(const YAML::Node& n) {
+data* manager::parse(const YAMLold::Node& n) {
   globalCoord c;
   n["coord"] >> c;
   auto comment = n["comment"].as<std::string>();
@@ -54,12 +54,12 @@ void manager::Load() {
     return;
   }
 
-  YAML::Node n;
+  YAMLold::Node n;
   try {
     om::yaml::Util::Read(fnp, n);
     base_t::Load(n);
   }
-  catch (YAML::Exception e) {
+  catch (YAMLold::Exception e) {
     std::stringstream ss;
     ss << "Error Loading Annotations: " << e.what() << ".\n";
     throw om::IoException(ss.str());

@@ -1,4 +1,4 @@
-#include "yaml-cpp/yaml.h"
+#include "yaml-cpp-old/yaml.h"
 #include "datalayer/archive/segmentation.h"
 #include "utility/yaml/mipVolume.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
@@ -20,7 +20,7 @@
 #include <QSet>
 #include "common_yaml.hpp"
 
-namespace YAML {
+namespace YAMLold {
 
 Emitter& operator<<(Emitter& out, const OmSegmentationManager& m) {
   out << BeginMap;
@@ -146,4 +146,4 @@ void operator>>(const Node& in, OmGroup& g) {
   in["Ids"] >> g.mIDs;
 }
 
-}  // namespace YAML
+}  // namespace YAMLold

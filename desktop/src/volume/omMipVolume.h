@@ -17,7 +17,7 @@ class OmChunk;
 class OmVolume;
 class OmVolumeData;
 
-namespace YAML {
+namespace YAMLold {
 template <class T> class mipVolume;
 }
 
@@ -87,7 +87,7 @@ class OmMipVolume {
   template <class T> friend class OmVolumeBuilderHdf5;
   template <class T> friend class OmVolumeBuilderImages;
   template <class T> friend class OmMipVolumeArchive;
-  template <class T> friend class YAML::mipVolume;
+  template <class T> friend class YAMLold::mipVolume;
 
   friend class OmChunk;
   friend class OmMipVolumeArchiveOld;

@@ -10,7 +10,7 @@
 #include "datalayer/archive/filter.h"
 #include <QString>
 
-namespace YAML {
+namespace YAMLold {
 template <class T> class mipVolume;
 }
 
@@ -37,7 +37,7 @@ class OmManageableObject {
 
   template <class T> friend class OmMipVolumeArchive;
   friend class OmMipVolumeArchiveOld;
-  template <class T> friend class YAML::mipVolume;
-  friend void YAML::operator>>(const YAML::Node& in, OmGroup& g);
-  friend void YAML::operator>>(const YAML::Node& in, OmFilter2d& f);
+  template <class T> friend class YAMLold::mipVolume;
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmGroup& g);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmFilter2d& f);
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "yaml-cpp/yaml.h"
+#include "yaml-cpp-old/yaml.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/omChannelFolder.h"
@@ -20,21 +20,21 @@ template <typename VOL> class mipVolume {
  public:
   mipVolume(VOL& vol) : vol_(vol) {}
 
-  void Store(YAML::Emitter& out) const {
-    out << YAML::Key << "id" << YAML::Value << vol_.id_;
-    out << YAML::Key << "custom name" << YAML::Value << vol_.customName_;
-    out << YAML::Key << "note" << YAML::Value << vol_.note_;
+  void Store(YAMLold::Emitter& out) const {
+    out << YAMLold::Key << "id" << YAMLold::Value << vol_.id_;
+    out << YAMLold::Key << "custom name" << YAMLold::Value << vol_.customName_;
+    out << YAMLold::Key << "note" << YAMLold::Value << vol_.note_;
 
-    out << YAML::Key << "coords" << YAML::Value << vol_.Coords();
+    out << YAMLold::Key << "coords" << YAMLold::Value << vol_.Coords();
 
-    out << YAML::Key << "build state" << YAML::Value << vol_.mBuildState;
+    out << YAMLold::Key << "build state" << YAMLold::Value << vol_.mBuildState;
 
     const std::string type =
         OmVolumeTypeHelpers::GetTypeAsString(vol_.mVolDataType);
-    out << YAML::Key << "type" << YAML::Value << type;
+    out << YAMLold::Key << "type" << YAMLold::Value << type;
   }
 
-  void Load(const YAML::Node& in) {
+  void Load(const YAMLold::Node& in) {
     in["id"] >> vol_.id_;
     in["custom name"] >> vol_.customName_;
     in["note"] >> vol_.note_;

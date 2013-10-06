@@ -1,12 +1,12 @@
 #pragma once
 
-#include "yaml-cpp/yaml.h"
+#include "yaml-cpp-old/yaml.h"
 
 class OmAffinityGraphManager;
 class OmAffinityGraph;
 class OmAffinityChannel;
 
-namespace YAML {
+namespace YAMLold {
 
 Emitter& operator<<(Emitter& out, const OmAffinityGraphManager& cm);
 void operator>>(const Node& in, OmAffinityGraphManager& cm);
@@ -15,4 +15,4 @@ void operator>>(const Node& in, OmAffinityGraph& chan);
 Emitter& operator<<(Emitter& out, const OmAffinityChannel& c);
 void operator>>(const Node& in, OmAffinityChannel& c);
 
-}  // namespace YAML
+}  // namespace YAMLold

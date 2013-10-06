@@ -28,7 +28,7 @@ class OmChannel : public OmChannelImpl {
 
   friend QDataStream& operator<<(QDataStream& out, const OmChannel&);
   friend QDataStream& operator>>(QDataStream& in, OmChannel&);
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
                                          const OmChannel& chan);
-  friend void YAML::operator>>(const YAML::Node& in, OmChannel& chan);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmChannel& chan);
 };

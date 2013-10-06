@@ -67,8 +67,8 @@ class OmFilter2d : public OmManageableObject {
 
   void reset();
 
-  friend YAML::Emitter &YAML::operator<<(YAML::Emitter &, const OmFilter2d &);
-  friend void YAML::operator>>(const YAML::Node &, OmFilter2d &);
+  friend YAMLold::Emitter &YAMLold::operator<<(YAMLold::Emitter &, const OmFilter2d &);
+  friend void YAMLold::operator>>(const YAMLold::Node &, OmFilter2d &);
   friend QDataStream &operator<<(QDataStream &, const OmFilter2d &);
   friend QDataStream &operator>>(QDataStream &, OmFilter2d &);
 };

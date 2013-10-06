@@ -4,7 +4,7 @@
 #include "volume/omFilter2d.h"
 #include "utility/yaml/genericManager.hpp"
 
-namespace YAML {
+namespace YAMLold {
 
 Emitter& operator<<(Emitter& out, const OmFilter2dManager& fm) {
   out << BeginMap;
@@ -39,4 +39,4 @@ void operator>>(const Node& in, OmFilter2d& f) {
   in["seg id"] >> f.segID_;
 }
 
-}  // namespace YAML
+}  // namespace YAMLold

@@ -1,4 +1,4 @@
-#include "yaml-cpp/yaml.h"
+#include "yaml-cpp-old/yaml.h"
 #include "volume/omAffinityGraph.h"
 #include "volume/omAffinityChannel.h"
 #include "volume/omChannel.h"
@@ -9,7 +9,7 @@
 
 #include "common_yaml.hpp"
 
-namespace YAML {
+namespace YAMLold {
 
 Emitter& operator<<(Emitter& out, const OmAffinityGraphManager& cm) {
   out << BeginMap;
@@ -66,4 +66,4 @@ void operator>>(const Node& in, OmAffinityChannel& c) {
   c.LoadVolDataIfFoldersExist();
 }
 
-}  // namespace YAML
+}  // namespace YAMLold

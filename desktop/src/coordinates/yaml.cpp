@@ -2,7 +2,7 @@
 #include "utility/yaml/omBaseTypes.hpp"
 #include "coordinates/globalCoord.h"
 
-namespace YAML {
+namespace YAMLold {
 
 Emitter& operator<<(Emitter& e, const om::globalCoord& c) {
   e << (Vector3f) c;
@@ -24,4 +24,4 @@ void operator>>(const Node& n, om::globalBbox& box) {
   n >> bbox;
 }
 
-}  // namespace YAML
+}  // namespace YAMLold

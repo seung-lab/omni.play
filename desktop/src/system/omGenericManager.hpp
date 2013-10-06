@@ -10,7 +10,7 @@ class OmSegmentation;
 class OmFilter2d;
 class OmGroup;
 
-namespace YAML {
+namespace YAMLold {
 class genericManager;
 }
 
@@ -157,5 +157,5 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
   }
 
   friend class OmGenericManagerArchive;
-  friend class YAML::genericManager;
+  friend class YAMLold::genericManager;
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QString>
-#include "yaml-cpp/yaml.h"
+#include "yaml-cpp-old/yaml.h"
 
 class OmProjectImpl;
 class OmPreferences;
@@ -26,13 +26,13 @@ class project {
 }  // namespace data
 }  // namespace om
 
-namespace YAML {
+namespace YAMLold {
 
-YAML::Emitter& operator<<(YAML::Emitter& out, const OmProjectImpl& p);
-void operator>>(const YAML::Node& in, OmProjectImpl& p);
-YAML::Emitter& operator<<(YAML::Emitter& out, const OmPreferences& p);
-void operator>>(const YAML::Node& in, OmPreferences& p);
-YAML::Emitter& operator<<(YAML::Emitter& out, const OmProjectVolumes& p);
-void operator>>(const YAML::Node& in, OmProjectVolumes& p);
+YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmProjectImpl& p);
+void operator>>(const YAMLold::Node& in, OmProjectImpl& p);
+YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmPreferences& p);
+void operator>>(const YAMLold::Node& in, OmPreferences& p);
+YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmProjectVolumes& p);
+void operator>>(const YAMLold::Node& in, OmProjectVolumes& p);
 
-}  // namespace YAML
+}  // namespace YAMLold

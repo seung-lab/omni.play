@@ -46,7 +46,7 @@ class OmGroup {
 
   om::common::ID id_;
 
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out, const OmGroup& g);
-  friend void YAML::operator>>(const YAML::Node& in, OmGroup& g);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out, const OmGroup& g);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmGroup& g);
 
 };

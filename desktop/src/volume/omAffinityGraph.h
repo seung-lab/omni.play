@@ -15,9 +15,9 @@ class OmAffinityGraph : public OmManageableObject {
   std::map<om::common::AffinityGraph, std::shared_ptr<OmAffinityChannel> >
       channels_;
 
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
                                          const OmAffinityGraph& chan);
-  friend void YAML::operator>>(const YAML::Node& in, OmAffinityGraph& chan);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmAffinityGraph& chan);
 
  public:
   OmAffinityGraph();

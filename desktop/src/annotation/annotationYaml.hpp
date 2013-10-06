@@ -1,11 +1,11 @@
 #pragma once
 
 #include "annotation/annotation.h"
-#include "yaml-cpp/yaml.h"
+#include "yaml-cpp-old/yaml.h"
 #include "utility/yaml/omBaseTypes.hpp"
 #include "coordinates/yaml.h"
 
-namespace YAML {
+namespace YAMLold {
 
 Emitter& operator<<(Emitter& out, const om::annotation::data& data) {
   out << Flow;
@@ -20,4 +20,4 @@ Emitter& operator<<(Emitter& out, const om::annotation::data& data) {
   return out;
 }
 
-}  // namespace YAML
+}  // namespace YAMLold

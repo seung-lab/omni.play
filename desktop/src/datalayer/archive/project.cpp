@@ -26,7 +26,7 @@ namespace archive {
 void project::Read(const QString& fnp, OmProjectImpl* project) {
 
   try {
-    auto docs = YAML::LoadAllFromFile(fnp.toStdString());
+    auto docs = YAMLold::LoadAllFromFile(fnp.toStdString());
 
     {
       auto doc = docs[0];
@@ -48,7 +48,7 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
 }
 
 void project::Write(const QString& fnp, OmProjectImpl* project) {
-  using namespace YAML;
+  using namespace YAMLold;
 
   Emitter emitter;
 
@@ -107,7 +107,7 @@ void project::postLoad() {
 }  // namespace data
 }  // namespace om
 
-namespace YAML {
+namespace YAMLold {
 
 Emitter& operator<<(Emitter& out, const OmProjectImpl& p) {
   out << BeginMap;
@@ -154,4 +154,4 @@ void operator>>(const Node& in, OmProjectVolumes& p) {
   in["Segmentations"] >> *p.segmentations_;
 }
 
-}  // namespace YAML
+}  // namespace YAMLold

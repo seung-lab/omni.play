@@ -14,8 +14,8 @@ class OmSegmentSelection {
 
   om::common::SegIDSet selected_;
 
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
-  friend void YAML::operator>>(const YAML::Node&, OmSegmentsImpl&);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter&, const OmSegmentsImpl&);
+  friend void YAMLold::operator>>(const YAMLold::Node&, OmSegmentsImpl&);
   friend QDataStream& operator<<(QDataStream&, const OmSegmentsImpl&);
   friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);
 

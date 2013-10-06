@@ -39,9 +39,9 @@ class OmProjectVolumes {
   const std::unique_ptr<OmSegmentationManager> segmentations_;
   const std::unique_ptr<OmAffinityGraphManager> affGraphs_;
 
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
                                          const OmProjectVolumes& p);
-  friend void YAML::operator>>(const YAML::Node& in, OmProjectVolumes& p);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmProjectVolumes& p);
   friend QDataStream& operator<<(QDataStream& out, const OmProjectVolumes& p);
   friend QDataStream& operator>>(QDataStream& in, OmProjectVolumes& p);
 };

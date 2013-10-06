@@ -1,6 +1,6 @@
 #pragma once
 
-#include <yaml-cpp/yaml.h>
+#include <yaml-cpp-old/yaml.h>
 #include "system/omGenericManager.hpp"
 #include "datalayer/archive/baseTypes.hpp"
 
@@ -11,20 +11,20 @@ namespace archive {
 class genericManager {
  public:
   template <class T>
-  static void Save(YAML::Emitter& out, const OmGenericManager<T>& gm) {
-    out << YAML::Key << "size" << YAML::Value << gm.size_;
-    out << YAML::Key << "valid set" << YAML::Value << gm.validSet_;
-    out << YAML::Key << "enabled set" << YAML::Value << gm.enabledSet_;
-    out << YAML::Key << "next id" << YAML::Value << gm.nextId_;
+  static void Save(YAMLold::Emitter& out, const OmGenericManager<T>& gm) {
+    out << YAMLold::Key << "size" << YAMLold::Value << gm.size_;
+    out << YAMLold::Key << "valid set" << YAMLold::Value << gm.validSet_;
+    out << YAMLold::Key << "enabled set" << YAMLold::Value << gm.enabledSet_;
+    out << YAMLold::Key << "next id" << YAMLold::Value << gm.nextId_;
 
-    out << YAML::Key << "values" << YAML::Value << YAML::BeginSeq;
+    out << YAMLold::Key << "values" << YAMLold::Value << YAMLold::BeginSeq;
     FOR_EACH(iter, gm.validSet_) { out << *gm.vec_[*iter]; }
-    out << YAML::EndSeq;
+    out << YAMLold::EndSeq;
   }
 
   template <class T>
-  static void Load(const YAML::Node& in, OmGenericManager<T>& gm,
-                   void (*parse)(const YAML::Node&, T*) = NULL) {
+  static void Load(const YAMLold::Node& in, OmGenericManager<T>& gm,
+                   void (*parse)(const YAMLold::Node&, T*) = NULL) {
     in["size"] >> gm.size_;
     in["valid set"] >> gm.validSet_;
     in["enabled set"] >> gm.enabledSet_;

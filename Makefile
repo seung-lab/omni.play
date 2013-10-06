@@ -148,6 +148,7 @@ TEST_INCLUDES = -I$(GMOCK)/include \
 			   -I$(GMOCK)/gtest \
 
 YAML_SOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
+YAML_SOURCES += $(shell find desktop/include/yaml-cpp-old/src -iname "*.cpp" )
 YAML_DEPS = $(YAML_SOURCES:.cpp=.o)
 
 LIB64_DEPS = $(BASE64)/src/cencode.o
@@ -161,7 +162,9 @@ all: common server desktop urtm valid export
 clean:
 	$(ECHO) Cleaning...
 	$(RM) -rf bin $(GENDIR) build
-	$(RM) -f common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d desktop/lib/strnatcmp.o
+	$(RM) -f common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
+	$(RM) -f desktop/include/yaml-cpp-old/src/*.o desktop/include/yaml-cpp-old/src/*.d
+	$(RM) -f desktop/lib/strnatcmp.o
 	$(FIND) desktop/src -iname "*\.moc\.cpp" -delete 2> /dev/null
 	$(FIND) common/include -iname "*\.o" -delete 2> /dev/null
 
@@ -189,6 +192,7 @@ INCLUDES    =   -I$(HERE) \
 		-I$(HERE)/common/include/gmock-1.6.0/gtest \
 		-I$(HERE)/common/include/gmock-1.6.0/gtest/include \
 		-I$(HERE)/common/include/yaml-cpp/include \
+		-I$(HERE)/desktop/include/yaml-cpp-old/include \
 		-I$(EXTERNAL)/libjpeg/include \
 		-I$(HERE)/zi_lib \
 		-I$(BASE64)/include \

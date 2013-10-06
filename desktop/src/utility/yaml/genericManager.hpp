@@ -1,11 +1,11 @@
 #pragma once
 
 #include "common/common.h"
-#include "yaml-cpp/yaml.h"
+#include "yaml-cpp-old/yaml.h"
 #include "system/omGenericManager.hpp"
 #include "utility/yaml/baseTypes.hpp"
 
-namespace YAML {
+namespace YAMLold {
 
 class genericManager {
  public:
@@ -41,4 +41,4 @@ class genericManager {
   }
 };
 
-}  // namespace YAML
+}  // namespace YAMLold
