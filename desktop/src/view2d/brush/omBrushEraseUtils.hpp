@@ -76,7 +76,7 @@ class OmBrushEraseUtils {
     //     ptsInChunks[chunkCoord].insert(chunkPos);
     // }
 
-    const om::common::SegIDSet& segset = SegmentationDataWrapper::ValidIDs();
+    const auto& segset = SegmentationDataWrapper::ValidIDs();
 
     FOR_EACH(iter, segset) {
       SegmentationDataWrapper sdw(*iter);
