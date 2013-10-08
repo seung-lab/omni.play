@@ -12,7 +12,8 @@ class OmEnabledSegments {
 
   om::common::SegIDSet enabled_;
 
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter&, const OmSegmentsImpl&);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter&,
+                                               const OmSegmentsImpl&);
   friend void YAMLold::operator>>(const YAMLold::Node&, OmSegmentsImpl&);
   friend QDataStream& operator<<(QDataStream&, const OmSegmentsImpl&);
   friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);

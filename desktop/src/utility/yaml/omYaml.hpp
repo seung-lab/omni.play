@@ -8,80 +8,77 @@ namespace om {
 namespace yaml {
 
 class util {
-public:
-    // based on http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
-    template <typename T>
-    static std::vector<T> Parse(const std::string& fnp)
-    {
-        if(!om::file::old::exists(fnp)){
-            throw om::IoException("could not find file");
-        }
-
-        std::ifstream fin(fnp.c_str());
-
-        YAMLold::Parser parser(fin);
-
-        YAMLold::Node doc;
-
-        parser.GetNextDocument(doc);
-
-        std::vector<T> ret;
-
-        for(uint32_t i = 0; i < doc.size(); ++i)
-        {
-            T newDoc;
-            doc[i] >> newDoc;
-            ret.push_back(newDoc);
-        }
-
-        return ret;
+ public:
+  // based on
+  // http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
+  template <typename T> static std::vector<T> Parse(const std::string& fnp) {
+    if (!om::file::old::exists(fnp)) {
+      throw om::IoException("could not find file");
     }
 
-    // based on http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
-    static void Read(const std::string& fnp, YAMLold::Node& node)
-    {
-        if(!om::file::old::exists(fnp)){
-            throw om::IoException("could not find file");
-        }
+    std::ifstream fin(fnp.c_str());
 
-        std::ifstream fin(fnp.c_str());
+    YAMLold::Parser parser(fin);
 
-        YAMLold::Parser parser(fin);
+    YAMLold::Node doc;
 
-        parser.GetNextDocument(node);
+    parser.GetNextDocument(doc);
+
+    std::vector<T> ret;
+
+    for (uint32_t i = 0; i < doc.size(); ++i) {
+      T newDoc;
+      doc[i] >> newDoc;
+      ret.push_back(newDoc);
     }
 
-    // based on http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
-    static void Write(const std::string& fnp, YAMLold::Emitter& emitter)
-    {
-        std::ofstream fout(fnp.c_str());
+    return ret;
+  }
 
-        fout << emitter.c_str();
-
-        fout.close();
+  // based on
+  // http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
+  static void Read(const std::string& fnp, YAMLold::Node& node) {
+    if (!om::file::old::exists(fnp)) {
+      throw om::IoException("could not find file");
     }
 
-    template <typename T>
-    static void OptionalRead(const YAMLold::Node& n, const std::string& name, T &data, const T &defaultValue)
-    {
-        if(n.FindValue(name)) {
-            n[name] >> data;
-        } else {
-            data = defaultValue;
-        }
-    }
+    std::ifstream fin(fnp.c_str());
 
-    template <typename T>
-    static void OptionalRead(const YAMLold::Node& n, const std::string& name, boost::optional<T> &data)
-    {
-        if(n.FindValue(name)) {
-            T read;
-            n[name] >> read;
-            data = read;
-        }
+    YAMLold::Parser parser(fin);
+
+    parser.GetNextDocument(node);
+  }
+
+  // based on
+  // http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
+  static void Write(const std::string& fnp, YAMLold::Emitter& emitter) {
+    std::ofstream fout(fnp.c_str());
+
+    fout << emitter.c_str();
+
+    fout.close();
+  }
+
+  template <typename T>
+  static void OptionalRead(const YAMLold::Node& n, const std::string& name,
+                           T& data, const T& defaultValue) {
+    if (n.FindValue(name)) {
+      n[name] >> data;
+    } else {
+      data = defaultValue;
     }
+  }
+
+  template <typename T>
+  static void OptionalRead(const YAMLold::Node& n, const std::string& name,
+                           boost::optional<T>& data) {
+    if (n.FindValue(name)) {
+      T read;
+      n[name] >> read;
+      data = read;
+    }
+  }
 };
 
-} // namespace yaml
-} // namespace om
-
+}  // namespace yaml
+}  // namespace om

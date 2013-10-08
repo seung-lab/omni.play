@@ -12,36 +12,35 @@ class OmSegmentation;
 class OmGroup;
 
 class OmGroups : boost::noncopyable {
-public:
-    typedef std::unordered_set<uint32_t> GroupIDSet;
+ public:
+  typedef std::unordered_set<uint32_t> GroupIDSet;
 
-    OmGroups(OmSegmentation * seg);
-    ~OmGroups();
+  OmGroups(OmSegmentation *seg);
+  ~OmGroups();
 
-    OmGroup & AddGroup(std::string);
-    OmGroup & GetGroup(uint32_t);
-    OmGroup & GetGroup(std::string);
+  OmGroup &AddGroup(std::string);
+  OmGroup &GetGroup(uint32_t);
+  OmGroup &GetGroup(std::string);
 
-    uint32_t GetIDFromName(std::string);
-    void SetGroup(const om::common::SegIDSet & set, std::string name);
-    void UnsetGroup(const om::common::SegIDSet & set, std::string name);
+  uint32_t GetIDFromName(std::string);
+  void SetGroup(const om::common::SegIDSet &set, std::string name);
+  void UnsetGroup(const om::common::SegIDSet &set, std::string name);
 
-    GroupIDSet GetGroups();
-    GroupIDSet GetGroups(om::common::SegID);
+  GroupIDSet GetGroups();
+  GroupIDSet GetGroups(om::common::SegID);
 
-    void populateGroupsList();
+  void populateGroupsList();
 
+ private:
+  void setGroupIDs(const om::common::SegIDSet &set, OmGroup *group, bool doSet);
 
-private:
-    void setGroupIDs(const om::common::SegIDSet & set, OmGroup * group, bool doSet);
+  OmSegmentation *mSegmentation;
+  OmGenericManager<OmGroup> mGroupManager;
+  QHash<QString, uint32_t> mGroupsByName;
 
-    OmSegmentation * mSegmentation;
-    OmGenericManager<OmGroup> mGroupManager;
-    QHash<QString, uint32_t> mGroupsByName;
-
-    friend YAMLold::Emitter &YAMLold::operator<<(YAMLold::Emitter & out, const OmGroups &);
-    friend void YAMLold::operator>>(const YAMLold::Node & in, OmGroups &);
-    friend QDataStream &operator<<(QDataStream & out, const OmGroups &);
-    friend QDataStream &operator>>(QDataStream & in, OmGroups &);
+  friend YAMLold::Emitter &YAMLold::operator<<(YAMLold::Emitter &out,
+                                               const OmGroups &);
+  friend void YAMLold::operator>>(const YAMLold::Node &in, OmGroups &);
+  friend QDataStream &operator<<(QDataStream &out, const OmGroups &);
+  friend QDataStream &operator>>(QDataStream &in, OmGroups &);
 };
-

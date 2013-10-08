@@ -40,7 +40,7 @@ class OmProjectVolumes {
   const std::unique_ptr<OmAffinityGraphManager> affGraphs_;
 
   friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                         const OmProjectVolumes& p);
+                                               const OmProjectVolumes& p);
   friend void YAMLold::operator>>(const YAMLold::Node& in, OmProjectVolumes& p);
   friend QDataStream& operator<<(QDataStream& out, const OmProjectVolumes& p);
   friend QDataStream& operator>>(QDataStream& in, OmProjectVolumes& p);

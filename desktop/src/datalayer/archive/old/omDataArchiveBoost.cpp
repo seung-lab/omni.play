@@ -2,41 +2,38 @@
 #include "zi/omUtility.h"
 #include <QDataStream>
 
-QDataStream &operator<<(QDataStream & out, const om::common::SegIDSet & set )
-{
-    out << (quint32)set.size();
+QDataStream &operator<<(QDataStream &out, const om::common::SegIDSet &set) {
+  out << (quint32) set.size();
 
-    for(const auto& e : set){
-        out << e;
-    }
+  for (const auto &e : set) {
+    out << e;
+  }
 
-    return out;
+  return out;
 }
 
-QDataStream &operator>>(QDataStream & in, om::common::SegIDSet & set )
-{
-    quint32 size;
-    in >> size;
+QDataStream &operator>>(QDataStream &in, om::common::SegIDSet &set) {
+  quint32 size;
+  in >> size;
 
-    om::common::ID id;
-    for( quint32 i = 0; i < size; ++i ){
-        in >> id;
-        set.insert(id);
-    }
+  om::common::ID id;
+  for (quint32 i = 0; i < size; ++i) {
+    in >> id;
+    set.insert(id);
+  }
 
-    return in;
+  return in;
 }
 
-QDataStream &operator>>(QDataStream & in, om::common::IDSet & set )
-{
-    quint32 size;
-    in >> size;
+QDataStream &operator>>(QDataStream &in, om::common::IDSet &set) {
+  quint32 size;
+  in >> size;
 
-    om::common::ID id;
-    for( quint32 i = 0; i < size; ++i ){
-        in >> id;
-        set.insert(id);
-    }
+  om::common::ID id;
+  for (quint32 i = 0; i < size; ++i) {
+    in >> id;
+    set.insert(id);
+  }
 
-    return in;
+  return in;
 }

@@ -113,7 +113,7 @@ class OmSegments {
   friend class SegmentTests;
 
   friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                         const OmSegments& sc);
+                                               const OmSegments& sc);
   friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegments& sc);
   friend QDataStream& operator<<(QDataStream& out, const OmSegments& sc);
   friend QDataStream& operator>>(QDataStream& in, OmSegments& sc);

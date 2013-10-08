@@ -108,7 +108,7 @@ class Omni {
 
   QString getFileToOpen() {
     if (2 == argc_) {
-        return QString(argv_[1]);
+      return QString(argv_[1]);
     }
     return "";
   }

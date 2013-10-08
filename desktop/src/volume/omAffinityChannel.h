@@ -10,7 +10,7 @@ class OmAffinityChannel : public OmChannel {
   const om::common::AffinityGraph affinity_;
 
   friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                         const OmAffinityGraph& chan);
+                                               const OmAffinityGraph& chan);
 
  public:
   OmAffinityChannel(const om::common::AffinityGraph aff)

@@ -258,7 +258,7 @@ class OmProjectImpl {
   friend class OmProject;
 
   friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                         const OmProjectImpl& p);
+                                               const OmProjectImpl& p);
   friend void YAMLold::operator>>(const YAMLold::Node& in, OmProjectImpl& p);
   friend QDataStream& operator<<(QDataStream& out, const OmProjectImpl& p);
   friend QDataStream& operator>>(QDataStream& in, OmProjectImpl& p);

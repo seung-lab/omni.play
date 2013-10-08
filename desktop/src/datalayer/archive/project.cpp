@@ -23,155 +23,143 @@ namespace data {
 namespace archive {
 
 void project::Read(const QString& fnp, OmProjectImpl* project) {
-    using namespace YAMLold;
+  using namespace YAMLold;
 
-    std::ifstream fin(fnp.toStdString().c_str());
+  std::ifstream fin(fnp.toStdString().c_str());
 
-    try
-    {
-        Parser parser(fin);
+  try {
+    Parser parser(fin);
 
-        Node doc;
-        parser.GetNextDocument(doc);
+    Node doc;
+    parser.GetNextDocument(doc);
 
-        int ver;
-        doc["version"] >> ver;
-        OmProject::setFileVersion(ver);
+    int ver;
+    doc["version"] >> ver;
+    OmProject::setFileVersion(ver);
 
-        parser.GetNextDocument(doc);
-        doc >> (*project);
-    }
-    catch(Exception e)
-    {
-/*
-        std::stringstream ss;
-        ss << e.what() << "\n";
-        ss << fnp.toStdString();
-        ss << " line: " << e.mark.line;
-        ss << " col: " << e.mark.column;
-        ss << " pos: " << e.mark.pos;
-        throw om::IoException(ss.str());
-*/
-        throw;
-    }
-    postLoad();
+    parser.GetNextDocument(doc);
+    doc >> (*project);
+  }
+  catch (Exception e) {
+    /*
+            std::stringstream ss;
+            ss << e.what() << "\n";
+            ss << fnp.toStdString();
+            ss << " line: " << e.mark.line;
+            ss << " col: " << e.mark.column;
+            ss << " pos: " << e.mark.pos;
+            throw om::IoException(ss.str());
+    */
+    throw;
+  }
+  postLoad();
 }
 
 void project::Write(const QString& fnp, OmProjectImpl* project) {
-    using namespace YAMLold;
+  using namespace YAMLold;
 
-    Emitter emitter;
+  Emitter emitter;
 
-    emitter << BeginDoc << BeginMap;
-    emitter << Key << "version" << Value << Latest_Project_Version;
-    emitter << EndMap << EndDoc;
+  emitter << BeginDoc << BeginMap;
+  emitter << Key << "version" << Value << Latest_Project_Version;
+  emitter << EndMap << EndDoc;
 
-    emitter << BeginDoc;
-    emitter << *project;
-    emitter << EndDoc;
+  emitter << BeginDoc;
+  emitter << *project;
+  emitter << EndDoc;
 
-    const QString fnpOld = fnp + ".old";
+  const QString fnpOld = fnp + ".old";
 
-    try {
-        if(OmFileHelpers::DoesFileExist(fnp)){
-            OmFileHelpers::MoveFile(fnp, fnpOld);
-        }
-    } catch(...)
-    {}
+  try {
+    if (OmFileHelpers::DoesFileExist(fnp)) {
+      OmFileHelpers::MoveFile(fnp, fnpOld);
+    }
+  }
+  catch (...) {
+  }
 
-    QFile file(fnp);
+  QFile file(fnp);
 
-    om::file::old::openFileWO(file);
+  om::file::old::openFileWO(file);
 
-    QTextStream out(&file);
+  QTextStream out(&file);
 
-    OmProject::setFileVersion(Latest_Project_Version);
+  OmProject::setFileVersion(Latest_Project_Version);
 
-    out << emitter.c_str();
+  out << emitter.c_str();
 }
 
-void project::postLoad()
-{
-    FOR_EACH(iter, ChannelDataWrapper::ValidIDs())
-    {
-        const ChannelDataWrapper cdw(*iter);
+void project::postLoad() {
+  FOR_EACH(iter, ChannelDataWrapper::ValidIDs()) {
+    const ChannelDataWrapper cdw(*iter);
 
-        if(cdw.IsBuilt())
-        {
-            std::vector<OmFilter2d*> filters = cdw.GetFilters();
+    if (cdw.IsBuilt()) {
+      std::vector<OmFilter2d*> filters = cdw.GetFilters();
 
-            FOR_EACH(fiter, filters)
-            {
-                OmFilter2d* filter = *fiter;
-                filter->Load();
-            }
-        }
+      FOR_EACH(fiter, filters) {
+        OmFilter2d* filter = *fiter;
+        filter->Load();
+      }
     }
+  }
 
-    FOR_EACH(iter, SegmentationDataWrapper::ValidIDs())
-    {
-        const SegmentationDataWrapper sdw(*iter);
-        if(sdw.IsBuilt()){
-            sdw.GetSegmentation().MeshManagers()->Load();
-        }
+  FOR_EACH(iter, SegmentationDataWrapper::ValidIDs()) {
+    const SegmentationDataWrapper sdw(*iter);
+    if (sdw.IsBuilt()) {
+      sdw.GetSegmentation().MeshManagers()->Load();
     }
+  }
 }
 
-} // namespace archive
-} // namespace data
-} // namespace om
+}  // namespace archive
+}  // namespace data
+}  // namespace om
 
 namespace YAMLold {
 
-Emitter &operator<<(Emitter& out, const OmProjectImpl& p)
-{
-    out << BeginMap;
-    out << Key << "Preferences" << Value << OmPreferences::instance();
-    out << Key << "Volumes" << Value << p.volumes_;
-    out << EndMap;
-    return out;
+Emitter& operator<<(Emitter& out, const OmProjectImpl& p) {
+  out << BeginMap;
+  out << Key << "Preferences" << Value << OmPreferences::instance();
+  out << Key << "Volumes" << Value << p.volumes_;
+  out << EndMap;
+  return out;
 }
 
-void operator>>(const Node& in, OmProjectImpl& p)
-{
-    in["Preferences"] >> OmPreferences::instance();
-    in["Volumes"] >> p.volumes_;
+void operator>>(const Node& in, OmProjectImpl& p) {
+  in["Preferences"] >> OmPreferences::instance();
+  in["Volumes"] >> p.volumes_;
 }
 
-Emitter &operator<<(Emitter& out, const OmPreferences& p)
-{
-    out << BeginMap;
-    out << Key << "String Preferences" << Value << p.stringPrefs_;
-    out << Key << "Float Preferences" << Value << p.floatPrefs_;
-    out << Key << "Int Preferences" << Value << p.intPrefs_;
-    out << Key << "Bool Preferences" << Value << p.boolPrefs_;
-    out << Key << "V3f Preferences" << Value << p.v3fPrefs_;
-    out << EndMap;
-    return out;
+Emitter& operator<<(Emitter& out, const OmPreferences& p) {
+  out << BeginMap;
+  out << Key << "String Preferences" << Value << p.stringPrefs_;
+  out << Key << "Float Preferences" << Value << p.floatPrefs_;
+  out << Key << "Int Preferences" << Value << p.intPrefs_;
+  out << Key << "Bool Preferences" << Value << p.boolPrefs_;
+  out << Key << "V3f Preferences" << Value << p.v3fPrefs_;
+  out << EndMap;
+  return out;
 }
 
-void operator>>(const Node& in, OmPreferences& p)
-{
-    in["String Preferences"] >> p.stringPrefs_;
-    in["Float Preferences"] >> p.floatPrefs_;
-    in["Int Preferences"] >> p.intPrefs_;
-    in["Bool Preferences"] >> p.boolPrefs_;
-    in["V3f Preferences"] >> p.v3fPrefs_;
+void operator>>(const Node& in, OmPreferences& p) {
+  in["String Preferences"] >> p.stringPrefs_;
+  in["Float Preferences"] >> p.floatPrefs_;
+  in["Int Preferences"] >> p.intPrefs_;
+  in["Bool Preferences"] >> p.boolPrefs_;
+  in["V3f Preferences"] >> p.v3fPrefs_;
 }
 
-Emitter &operator<<(Emitter& out, const OmProjectVolumes& p)
-{
-    out << BeginMap;
-    out << Key << "Channels" << Value << *p.channels_;
-    out << Key << "Segmentations" << Value << *p.segmentations_;
-    out << EndMap;
-    return out;
+Emitter& operator<<(Emitter& out, const OmProjectVolumes& p) {
+  out << BeginMap;
+  out << Key << "Channels" << Value << *p.channels_;
+  out << Key << "Segmentations" << Value << *p.segmentations_;
+  out << EndMap;
+  return out;
 }
 
-void operator>>(const Node& in, OmProjectVolumes& p)
-{
-    in["Channels"] >> *p.channels_;
-    in["Segmentations"] >> *p.segmentations_;
+void operator>>(const Node& in, OmProjectVolumes& p) {
+  in["Channels"] >> *p.channels_;
+  in["Segmentations"] >> *p.segmentations_;
 }
 
-} // namespace YAMLold
+}  // namespace YAMLold

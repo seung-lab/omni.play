@@ -21,6 +21,7 @@ class OmAffinityGraphManager {
                                  const OmAffinityGraphManager&);
   friend QDataStream& operator>>(QDataStream& in, OmAffinityGraphManager&);
   friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                         const OmAffinityGraphManager&);
-  friend void YAMLold::operator>>(const YAMLold::Node& in, OmAffinityGraphManager&);
+                                               const OmAffinityGraphManager&);
+  friend void YAMLold::operator>>(const YAMLold::Node& in,
+                                  OmAffinityGraphManager&);
 };

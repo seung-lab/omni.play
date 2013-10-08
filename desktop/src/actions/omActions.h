@@ -75,8 +75,8 @@ class OmActions : om::singletonBase<OmActions> {
   // group-related
   static void CreateOrDeleteSegmentGroup(
       const om::common::ID segmentationID,
-      const om::common::SegIDSet& selectedSegmentIDs,
-      const std::string name, const bool create);
+      const om::common::SegIDSet& selectedSegmentIDs, const std::string name,
+      const bool create);
 
  private:
   OmActions() {}

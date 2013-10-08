@@ -53,7 +53,8 @@ class OmSegmentsImpl : public OmSegmentsImplLowLevel {
   void resetGlobalThreshold(OmMST* mst);
 
   friend class OmSegmentColorizer;
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter&, const OmSegmentsImpl&);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter&,
+                                               const OmSegmentsImpl&);
   friend void YAMLold::operator>>(const YAMLold::Node&, OmSegmentsImpl&);
   friend QDataStream& operator<<(QDataStream&, const OmSegmentsImpl&);
   friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);
