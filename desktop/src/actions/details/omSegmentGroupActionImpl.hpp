@@ -9,7 +9,7 @@
 class OmSegmentGroupActionImpl {
  private:
   om::common::ID mSegmentationId;
-  om::common::GroupName mName;
+  std::string mName;
   bool mCreate;
   om::common::SegIDSet mSelectedSegmentIds;
 
@@ -18,7 +18,7 @@ class OmSegmentGroupActionImpl {
 
   OmSegmentGroupActionImpl(const om::common::ID segmentationId,
                            const om::common::SegIDSet& selectedSegmentIds,
-                           const om::common::GroupName name, const bool create)
+                           const std::string name, const bool create)
       : mSegmentationId(segmentationId),
         mName(name),
         mCreate(create),

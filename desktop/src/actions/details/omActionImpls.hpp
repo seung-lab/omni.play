@@ -94,7 +94,7 @@ class OmSegmentGroupAction : public OmActionBase<OmSegmentGroupActionImpl> {
 
   OmSegmentGroupAction(const om::common::ID segmentationId,
                        const om::common::SegIDSet& selectedSegmentIds,
-                       const om::common::GroupName name, const bool create) {
+                       const std::string name, const bool create) {
     impl_ = std::make_shared<OmSegmentGroupActionImpl>(
         segmentationId, selectedSegmentIds, name, create);
     SetUndoable(true);

@@ -65,7 +65,7 @@ class OmActionsImpl {
   // group-related
   void CreateOrDeleteSegmentGroup(const om::common::ID segmentationID,
                                   const om::common::SegIDSet selectedSegmentIDs,
-                                  const om::common::GroupName name,
+                                  const std::string name,
                                   const bool create);
 
  private:

@@ -26,26 +26,26 @@ namespace YAMLold {
     Emitter& operator<<(Emitter& out, const OmAffinityGraph& graph)
     {
         out << BeginMap;
-        out << Key << "X Affinity" << Value << *graph.GetChannel(om::X_AFFINITY);
-        out << Key << "Y Affinity" << Value << *graph.GetChannel(om::Y_AFFINITY);
-        out << Key << "Z Affinity" << Value << *graph.GetChannel(om::Z_AFFINITY);
+        out << Key << "X Affinity" << Value << *graph.GetChannel(om::common::AffinityGraph::X_AFFINITY);
+        out << Key << "Y Affinity" << Value << *graph.GetChannel(om::common::AffinityGraph::Y_AFFINITY);
+        out << Key << "Z Affinity" << Value << *graph.GetChannel(om::common::AffinityGraph::Z_AFFINITY);
         out << EndMap;
         return out;
     }
     
     void operator>>(const Node& in, OmAffinityGraph& graph)
     {
-        graph.channels_[om::X_AFFINITY] = 
-            om::make_shared<OmAffinityChannel>(graph.GetID(), om::X_AFFINITY);
-        in["X Affinity"] >> *graph.GetChannel(om::X_AFFINITY);
+        graph.channels_[om::common::AffinityGraph::X_AFFINITY] = 
+            om::make_shared<OmAffinityChannel>(graph.GetID(), om::common::AffinityGraph::X_AFFINITY);
+        in["X Affinity"] >> *graph.GetChannel(om::common::AffinityGraph::X_AFFINITY);
         
-        graph.channels_[om::Y_AFFINITY] = 
-            om::make_shared<OmAffinityChannel>(graph.GetID(), om::Y_AFFINITY);
-        in["Y Affinity"] >> *graph.GetChannel(om::Y_AFFINITY);
+        graph.channels_[om::common::AffinityGraph::Y_AFFINITY] = 
+            om::make_shared<OmAffinityChannel>(graph.GetID(), om::common::AffinityGraph::Y_AFFINITY);
+        in["Y Affinity"] >> *graph.GetChannel(om::common::AffinityGraph::Y_AFFINITY);
         
-        graph.channels_[om::Z_AFFINITY] = 
-            om::make_shared<OmAffinityChannel>(graph.GetID(), om::Z_AFFINITY);
-        in["Z Affinity"] >> *graph.GetChannel(om::Z_AFFINITY);
+        graph.channels_[om::common::AffinityGraph::Z_AFFINITY] = 
+            om::make_shared<OmAffinityChannel>(graph.GetID(), om::common::AffinityGraph::Z_AFFINITY);
+        in["Z Affinity"] >> *graph.GetChannel(om::common::AffinityGraph::Z_AFFINITY);
     }
     
     Emitter& operator<<(Emitter& out, const OmAffinityChannel& c)

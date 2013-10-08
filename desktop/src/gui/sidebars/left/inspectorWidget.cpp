@@ -91,7 +91,7 @@ void InspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem* row,
 void InspectorWidget::populateDataSrcListWidget() {
   dataSrcListWidget_->clear();
 
-  const om::common::IDSet& validChanIDs = ChannelDataWrapper::ValidIDs();
+  const auto& validChanIDs = ChannelDataWrapper::ValidIDs();
   FOR_EACH(iter, validChanIDs) {
     const om::common::ID channID = *iter;
     DataWrapperContainer dwc(om::common::CHANNEL, channID);
@@ -104,7 +104,7 @@ void InspectorWidget::populateDataSrcListWidget() {
     setRowFlagsAndCheckState(row, GuiUtils::getCheckState(cdw.isEnabled()));
   }
 
-  const om::common::IDSet& validSegIDs = SegmentationDataWrapper::ValidIDs();
+  const auto& validSegIDs = SegmentationDataWrapper::ValidIDs();
   FOR_EACH(iter, validSegIDs) {
     const om::common::ID segmenID = *iter;
     DataWrapperContainer dwc(om::common::SEGMENTATION, segmenID);
@@ -117,7 +117,7 @@ void InspectorWidget::populateDataSrcListWidget() {
     setRowFlagsAndCheckState(row, GuiUtils::getCheckState(sdw.isEnabled()));
   }
 
-  const om::common::IDSet& validAffIDs = AffinityGraphDataWrapper::ValidIDs();
+  const auto& validAffIDs = AffinityGraphDataWrapper::ValidIDs();
   FOR_EACH(iter, validAffIDs) {
     const om::common::ID affID = *iter;
     DataWrapperContainer dwc(om::common::AFFINITY, affID);

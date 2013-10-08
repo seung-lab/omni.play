@@ -4,6 +4,8 @@
 #include "common/colors.h"
 #include "yaml-cpp-old/yaml.h"
 
+#include <unordered_set>
+#include <unordered_map>
 #include <QHash>
 #include <zi/for_each.hpp>
 
@@ -176,6 +178,33 @@ void operator>>(const Node& in, QHash<K, V>& p)
         it.first() >> key;
         it.second() >> value;
         p.insert(key, value);
+    }
+}
+
+template<class Key, class T>
+YAMLold::Emitter &operator<<(YAMLold::Emitter& out, const std::unordered_map<Key, T>& p)
+{
+    out << YAMLold::BeginMap;
+    for(const auto& kv : p)
+    {
+        out << YAMLold::Key << kv.first;
+        out << YAMLold::Value << kv.second;
+    }
+    out << YAMLold::EndMap;
+
+    return out;
+}
+
+template<class Key, class T>
+void operator>>(const YAMLold::Node& in, std::unordered_map<Key, T>& p)
+{
+    FOR_EACH(it, in)
+    {
+        Key key;
+        T value;
+        it.first() >> key;
+        it.second() >> value;
+        p[key] = value;
     }
 }
 

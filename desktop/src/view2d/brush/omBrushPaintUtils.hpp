@@ -61,7 +61,7 @@ class OmBrushPaintUtils {
     //     ptsInChunks[chunkCoord].insert(chunkPos);
     // }
 
-    const om::common::IDSet& segset = SegmentationDataWrapper::ValidIDs();
+    const auto& segset = SegmentationDataWrapper::ValidIDs();
 
     FOR_EACH(iter, segset) {
       SegmentationDataWrapper sdw(*iter);

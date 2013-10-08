@@ -1,82 +1,96 @@
 #include "system/omGroup.h"
 #include "system/omGroups.h"
+#include "system/omManageableObject.h"
 #include "gui/groupsTable/groupsTable.h"
 
-OmGroups::OmGroups(OmSegmentation* seg) : mSegmentation(seg) {}
+OmGroups::OmGroups(OmSegmentation * seg)
+    : mSegmentation(seg)
+{}
 
-OmGroups::~OmGroups() {}
+OmGroups::~OmGroups()
+{}
 
-OmGroup& OmGroups::AddGroup(om::common::GroupName name) {
-  throw om::NotImplementedException("OmGroups::AddGroup");
-  // log_debugs(groups, "adding group for seg\n");
-  // OmGroup & group = mGroupManager.Add();
-  // group.mName = name;
+OmGroup & OmGroups::AddGroup(std::string name)
+{
+    //debug(groups, "adding group for seg\n");
+    OmGroup & group = mGroupManager.Add();
+    group.mName = name;
 
-  // mGroupsByName[name] = group.id();
+    mGroupsByName.insert(QString::fromStdString(name), group.GetID());
 
-  // GroupsTable::Repopulate();
+    GroupsTable::Repopulate();
 
-  // return group;
+    return group;
 }
 
-void OmGroups::setGroupIDs(const om::common::SegIDSet& set, OmGroup* group,
-                           bool add) {
-  log_debugs(unknown) << "adding ids";
-  if (add) {
-    group->AddIds(set);
-  } else {
-    group->RemoveIds(set);
-  }
-  GroupsTable::Repopulate(group->id());
-}
-
-void OmGroups::SetGroup(const om::common::SegIDSet& set,
-                        om::common::GroupName name) {
-  if (!mGroupsByName[name]) {
-    setGroupIDs(set, &AddGroup(name), true);
-  } else {
-    setGroupIDs(set, &GetGroup(name), true);
-  }
-  GroupsTable::Repopulate();
-}
-
-void OmGroups::UnsetGroup(const om::common::SegIDSet& set,
-                          om::common::GroupName name) {
-  if (!mGroupsByName[name]) {
-    return;
-  } else {
-    setGroupIDs(set, &GetGroup(name), false);
-  }
-
-  GroupsTable::Repopulate();
-}
-
-OmGroup& OmGroups::GetGroup(om::common::GroupName name) {
-  return mGroupManager.Get(mGroupsByName[name]);
-}
-
-OmGroup& OmGroups::GetGroup(om::common::GroupID id) {
-  return mGroupManager.Get(id);
-}
-
-om::common::GroupIDSet OmGroups::GetGroups() {
-  om::common::GroupIDSet set;
-  for (auto kv : mGroupsByName) {
-    set.insert(kv.second);
-    log_debugs(unknown) << "got";
-  }
-  return set;
-}
-
-om::common::GroupIDSet OmGroups::GetGroups(om::common::SegID seg) {
-  om::common::GroupIDSet set;
-
-  for (auto& kv : mGroupsByName) {
-    OmGroup& group = GetGroup(kv.second);
-    om::common::SegIDSet ids = group.ids();
-    if (ids.count(seg) > 0) {
-      set.insert(kv.second);
+void OmGroups::setGroupIDs(const om::common::SegIDSet & set, OmGroup * group, bool add)
+{
+    printf("adding ids\n");
+    if(add) {
+        group->AddIds(set);
+    } else {
+        group->RemoveIds(set);
     }
-  }
-  return set;
+    GroupsTable::Repopulate(group->GetID());
 }
+
+void OmGroups::SetGroup(const om::common::SegIDSet & set, std::string s)
+{
+    QString name = QString::fromStdString(s);
+    if(!mGroupsByName[name]) {
+        setGroupIDs(set, &AddGroup(s), true);
+    } else {
+        setGroupIDs(set, &GetGroup(s), true);
+    }
+    GroupsTable::Repopulate();
+}
+
+void OmGroups::UnsetGroup(const om::common::SegIDSet & set, std::string s)
+{
+    QString name = QString::fromStdString(s);
+    if(!mGroupsByName[name]) {
+        return;
+    } else {
+        setGroupIDs(set, &GetGroup(s), false);
+    }
+
+    GroupsTable::Repopulate();
+}
+
+OmGroup & OmGroups::GetGroup(std::string s)
+{
+    QString name = QString::fromStdString(s);
+    return mGroupManager.Get(mGroupsByName[name]);
+}
+
+OmGroup & OmGroups::GetGroup(uint32_t id)
+{
+    return mGroupManager.Get(id);
+}
+
+OmGroups::GroupIDSet OmGroups::GetGroups()
+{
+    OmGroups::GroupIDSet set;
+    FOR_EACH(iter, mGroupsByName)
+    {
+        set.insert(*iter);
+        printf("got\n");
+    }
+    return set;
+}
+
+OmGroups::GroupIDSet OmGroups::GetGroups(om::common::SegID seg)
+{
+    OmGroups::GroupIDSet set;
+
+    FOR_EACH(iter, mGroupsByName)
+    {
+        auto& group = GetGroup(*iter);
+        auto ids = group.GetIDs();
+        if(ids.count(seg) > 0) {
+            set.insert(*iter);
+        }
+    }
+    return set;
+}
+

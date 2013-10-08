@@ -48,12 +48,6 @@ typedef std::set<SegID> SegIDSet;
 std::ostream& operator<<(std::ostream& out, const SegIDSet& in);
 
 typedef uint32_t PageNum;
-/**
- * "group" types
- */
-typedef uint32_t GroupID;
-typedef std::string GroupName;
-typedef std::unordered_set<GroupID> GroupIDSet;
 
 template <typename T> T twist(T vec, ViewType view) {
   T out(vec);

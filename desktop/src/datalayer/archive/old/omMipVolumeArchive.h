@@ -1,5 +1,7 @@
 #pragma once
 
+#include "datalayer/archive/old/utilsOld.hpp"
+#include "coordinates/yaml.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/omChannelFolder.h"
 #include "volume/omMipVolume.h"
@@ -71,7 +73,7 @@ private:
         }
 
         if(!file.open(QIODevice::ReadOnly)){
-            throw OmIoException("error reading file", filePath);
+            throw om::IoException("error reading file");
         }
 
         QDataStream in(&file);
@@ -88,7 +90,7 @@ private:
         vol_.Coords().SetAbsOffset(offset);
 
         if(!in.atEnd()){
-            throw OmIoException("corrupt file?", filePath);
+            throw om::IoException("corrupt file?");
         }
     }
 
@@ -98,7 +100,7 @@ private:
 
         QFile file(filePath);
 
-        om::file::openFileWO(file);
+        om::file::old::openFileWO(file);
 
         QDataStream out(&file);
         out.setByteOrder(QDataStream::LittleEndian);
@@ -113,4 +115,3 @@ private:
 
 QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c);
 QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c);
-

@@ -72,7 +72,7 @@ void GroupsTable::Repopulate(om::common::SegID id) {
   }
 }
 
-void GroupsTable::populateGroupTable(om::common::GroupID id) {
+void GroupsTable::populateGroupTable(uint32_t id) {
   groupid_ = id;
 
   if (!sdw_.IsSegmentationValid()) {
@@ -82,7 +82,7 @@ void GroupsTable::populateGroupTable(om::common::GroupID id) {
   OmGroup& group = sdw_.Groups()->GetGroup(id);
   OmSegments* cache = sdw_.Segments();
 
-  const om::common::SegIDSet& set = group.ids();
+  const auto& set = group.GetIDs();
   mGroupsTable->setRowCount(set.size());
   int count = 0;
 

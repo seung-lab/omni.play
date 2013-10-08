@@ -47,7 +47,7 @@ QString OmVolumeTypeHelpers::GetTypeAsQString(const OmVolDataType type) {
   return QString::fromStdString(GetTypeAsString(type));
 }
 
-OmVolDataType OmVolumeTypeHelpers::GetTypeFrstring(const QString& type) {
+OmVolDataType OmVolumeTypeHelpers::GetTypeFromString(const QString& type) {
   boost::optional<OmVolDataType> ret =
       OmVolDataType::get_by_value(type.toStdString());
 

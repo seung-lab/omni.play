@@ -175,7 +175,7 @@ void OmActionsImpl::SelectSegments(
 void OmActionsImpl::CreateOrDeleteSegmentGroup(
     const om::common::ID segmentationID,
     const om::common::SegIDSet selectedSegmentIDs,
-    const om::common::GroupName name, const bool create) {
+    const std::string name, const bool create) {
   (new OmSegmentGroupAction(segmentationID, selectedSegmentIDs, name, create))
       ->Run();
 }

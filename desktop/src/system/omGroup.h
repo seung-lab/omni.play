@@ -1,52 +1,63 @@
 #pragma once
 
 #include "common/common.h"
-#include "common/macro.hpp"
+#include "common/colors.h"
+#include "system/omManageableObject.h"
 #include "utility/color.hpp"
+#include "datalayer/archive/segmentation.h"
 
-class OmGroup {
- public:
-  OmGroup() {}
+class OmGroup : public OmManageableObject {
+public:
 
-  OmGroup(om::common::ID id) : id_(id) {
-    mColor = om::utils::color::GetRandomColor();
-  }
+    OmGroup(){}
 
-  OmGroup(const om::common::SegIDSet& ids) {
-    mColor = om::utils::color::GetRandomColor();
-    AddIds(ids);
-  }
-
-  virtual ~OmGroup() {}
-
-  void AddIds(const om::common::SegIDSet& ids) {
-    for (auto id : ids) {
-      mIDs.insert(id);
+    OmGroup(om::common::ID id)
+        : OmManageableObject(id)
+    {
+        mColor =  om::utils::color::GetRandomColor();
     }
-  }
 
-  void RemoveIds(const om::common::SegIDSet& ids) {
-    for (auto id : ids) {
-      mIDs.erase(id);
+    OmGroup(const om::common::SegIDSet& ids)
+    {
+        mColor =  om::utils::color::GetRandomColor();
+        AddIds(ids);
     }
-  }
 
-  om::common::GroupName GetName() const { return mName; }
+    virtual ~OmGroup()
+    {}
 
-  const om::common::SegIDSet& ids() const { return mIDs; }
+    void AddIds(const om::common::SegIDSet& ids)
+    {
+        FOR_EACH(iter, ids) {
+            mIDs.insert(*iter);
+        }
+    }
 
-  om::common::ID id() { return id_; }
-  om::common::ID GetID() { return id(); }
+    void RemoveIds(const om::common::SegIDSet& ids)
+    {
+        FOR_EACH(iter, ids) {
+            mIDs.erase(*iter);
+        }
+    }
 
- private:
-  om::common::SegIDSet mIDs;
-  om::common::Color mColor;
+    std::string GetName() const {
+        return mName;
+    }
 
-  om::common::GroupName mName;
+    const om::common::SegIDSet& GetIDs() const {
+        return mIDs;
+    }
 
-  om::common::ID id_;
+private:
+    om::common::SegIDSet mIDs;
+    om::common::Color mColor;
 
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out, const OmGroup& g);
-  friend void YAMLold::operator>>(const YAMLold::Node& in, OmGroup& g);
+    std::string mName;
+    friend class OmGroups;
 
+    friend YAMLold::Emitter &YAMLold::operator<<(YAMLold::Emitter & out, const OmGroup & g );
+    friend void YAMLold::operator>>(const YAMLold::Node & in, OmGroup & g );
+    friend QDataStream &operator<<(QDataStream & out, const OmGroup & g );
+    friend QDataStream &operator>>(QDataStream & in, OmGroup & g );
 };
+

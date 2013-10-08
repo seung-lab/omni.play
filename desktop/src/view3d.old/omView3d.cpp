@@ -355,7 +355,7 @@ SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2di) {
     return SegmentDataWrapper();
   }
 
-  //ensure valid om::common::IDSet
+  //ensure valid om::common::SegIDSet
   const om::common::ID segmentationID = result[0];
   const om::common::SegID segmentID = result[1];
   SegmentDataWrapper sdw(segmentationID, segmentID);

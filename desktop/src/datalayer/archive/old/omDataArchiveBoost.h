@@ -1,10 +1,10 @@
 #pragma once
 
 #include "common/common.h"
+#include <QDataStream>
 
-QDataStream &operator<<(QDataStream & out, const om::common::IDSet & set );
-QDataStream &operator>>(QDataStream & in, OmIDsSet & set );
+QDataStream &operator<<(QDataStream & out, const om::common::SegIDSet& );
+QDataStream &operator>>(QDataStream & in, om::common::SegIDSet&);
 
-QDataStream &operator<<(QDataStream & out, const om::common::IDSet & set );
-QDataStream &operator>>(QDataStream & in, OmSegIDsSet & set );
+QDataStream &operator>>(QDataStream & in, om::common::IDSet&);
 

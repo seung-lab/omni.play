@@ -582,7 +582,7 @@ void Headless::removeSeg(const QString& line) {
 }
 
 void Headless::lsChan() {
-  const om::common::IDSet& chanset = ChannelDataWrapper::ValidIDs();
+  const auto& chanset = ChannelDataWrapper::ValidIDs();
 
   if (chanset.empty()) {
     printf("No channels present.\n");
@@ -598,7 +598,7 @@ void Headless::lsChan() {
 }
 
 void Headless::lsSeg() {
-  const om::common::IDSet& segset = SegmentationDataWrapper::ValidIDs();
+  const auto& segset = SegmentationDataWrapper::ValidIDs();
 
   if (segset.empty()) {
     printf("No segmentations present.\n");

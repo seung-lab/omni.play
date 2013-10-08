@@ -10,7 +10,7 @@ VolumeRefreshButton::VolumeRefreshButton(MainWindow* parent)
 }
 
 void VolumeRefreshButton::doAction() {
-  const om::common::IDSet& set = SegmentationDataWrapper::ValidIDs();
+  const auto& set = SegmentationDataWrapper::ValidIDs();
 
   FOR_EACH(iter, set) { printf("fixme!!!!!!!!!!!!!!\n"); }
 }

@@ -94,13 +94,15 @@ public:
     obj& Add(T* toAdd, size_t id = 0, bool enabled = true)
     {
         zi::guard g(lock_);
-        if(id == 0 || isValid(id)) {
+        if (id == 0 || isValid(id)) {
             id = next_;
         }
-        objs_[id].ID = id;
-        objs_[id].Enabled = enabled;
-        objs_[id].Object = toAdd;
+        auto& obj = objs_[id];
+        obj.ID = id;
+        obj.Enabled = enabled;
+        obj.Object = toAdd;
         findNext();
+        return obj;
     }
 
     bool IsValid(om::common::ID id)
@@ -146,7 +148,7 @@ public:
     {
     	if(in.FindValue("size")) // Old Manager Format
     	{
-            om::common::IDSet valid, enabled;
+            om::common::SegIDSet valid, enabled;
             in["valid set"] >> valid;
             in["enabled set"] >> enabled;
 

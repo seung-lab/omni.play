@@ -24,7 +24,7 @@ class GroupsTable : public QWidget {
 
   static void Repopulate(om::common::SegID id = 0);
 
-  void populateGroupTable(om::common::GroupID id);
+  void populateGroupTable(uint32_t id);
 
   void SetSegmentID(const om::common::SegID seg) { seg_ = seg; }
 
@@ -37,7 +37,7 @@ Q_SLOTS:
   const SegmentationDataWrapper sdw_;
 
   om::common::SegID seg_;
-  om::common::GroupID groupid_;
+  uint32_t groupid_;
 
   void populateGroupsList();
 

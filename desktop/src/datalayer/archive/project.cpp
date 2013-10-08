@@ -7,7 +7,7 @@
 #include "project/omProject.h"
 #include "system/omPreferences.h"
 #include "project/omProjectImpl.hpp"
-#include "utility/yaml/baseTypes.hpp"
+#include "utility/yaml/omBaseTypes.hpp"
 #include "utility/channelDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/segmentDataWrapper.hpp"
@@ -43,13 +43,16 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
     }
     catch(Exception e)
     {
+/*
         std::stringstream ss;
-        ss << e.msg << "\n";
+        ss << e.what() << "\n";
         ss << fnp.toStdString();
         ss << " line: " << e.mark.line;
         ss << " col: " << e.mark.column;
         ss << " pos: " << e.mark.pos;
-        throw OmIoException(ss.str());
+        throw om::IoException(ss.str());
+*/
+        throw;
     }
     postLoad();
 }
@@ -78,7 +81,7 @@ void project::Write(const QString& fnp, OmProjectImpl* project) {
 
     QFile file(fnp);
 
-    om::file::openFileWO(file);
+    om::file::old::openFileWO(file);
 
     QTextStream out(&file);
 

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "yaml-cpp-old/yaml.h"
-#include "volume/omVolumeTypes.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/omChannelFolder.h"
 #include "volume/omSegmentationFolder.h"
+#include "volume/omVolumeTypes.hpp"
+#include "yaml-cpp-old/yaml.h"
 
 #include <QString>
 #include <QFile>

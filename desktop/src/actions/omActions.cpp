@@ -110,7 +110,7 @@ void OmActions::SelectSegments(std::shared_ptr<OmSelectSegmentsParams> params) {
 void OmActions::CreateOrDeleteSegmentGroup(
     const om::common::ID segmentationID,
     const om::common::SegIDSet& selectedSegmentIDs,
-    const om::common::GroupName name, const bool create) {
+    const std::string name, const bool create) {
   pool().push_back(
       zi::run_fn(zi::bind(&OmActionsImpl::CreateOrDeleteSegmentGroup, impl(),
                           segmentationID, selectedSegmentIDs, name, create)));

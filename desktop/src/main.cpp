@@ -3,26 +3,18 @@ ZiARG_bool(headless, false, "run Omni without GUI");
 ZiARG_string(cmdfile, "", "run automated script file");
 ZiARG_int64(psn, 0, "mac OSX proces ID");
 ZiARG_bool(noTilePrefetch, false, "disable tile prefetcher");
-ZiARG_string(importHDF5seg, "", "create new Omni project file from data");
 ZiARG_bool(noView3dThrottle, false, "disable View3d throttling");
 
-#include <zi/logging.hpp>
-USE_ZiLOGGING(STDOUT);
-DEFINE_ZiLOG(memmap, false);
-DEFINE_ZiLOG(mesh, false);
-DEFINE_ZiLOG(hdf5verbose, false);
-DEFINE_ZiLOG(io, false);
-DEFINE_ZiLOG(segmentlist, false);
-DEFINE_ZiLOG(tiles, false);
-DEFINE_ZiLOG(tilesVerbose, false);
-DEFINE_ZiLOG(threadpool, false);
-DEFINE_ZiLOG(segmentSelector, false);
+#include "common/logging.h"
 
+#include "common/common.h"
+#include "gui/tools.hpp"
 #include "gui/mainWindow/mainWindow.h"
+#include "utility/channelDataWrapper.hpp"
+#include "utility/segmentationDataWrapper.hpp"
 #include "headless/headless.h"
-#include "headless/headlessImpl.hpp"
 #include "system/omQTApp.hpp"
-#include "system/omStateManager.h"
+
 #include <QFileInfo>
 #include <QApplication>
 
@@ -33,16 +25,14 @@ class Omni {
   QString fileToOpen_;
 
  public:
-  Omni(int argc, char **argv) : argc_(argc), argv_(argv) {}
+  Omni(int argc, char **argv) : argc_(argc), argv_(argv) {
+    om::logging::initLogging("~/.omni/omni.log");
+  }
 
   int Run() {
     checkRemainingArgs();
 
     fileToOpen_ = getFileToOpen();
-
-    if (ZiARG_importHDF5seg.size() > 0) {
-      return importHDF5seg();
-    }
 
     if (shouldRunHeadless()) {
       return runHeadless();
@@ -62,7 +52,7 @@ class Omni {
     const bool headless = ZiARG_headless;
 
     if (!useGUI && !headless) {
-      printf("No GUI detected; Running headless....\n");
+      log_infos(unknown) << "No GUI detected; Running headless....";
       return true;
 
     } else if (headless) {
@@ -75,7 +65,7 @@ class Omni {
   void registerTypes() {
     qRegisterMetaType<om::tool::mode>("om::tool::mode");
     qRegisterMetaType<om::common::ID>("om::common::ID");
-    qRegisterMetaType<om::common::ViewType>("ViewType");
+    qRegisterMetaType<om::common::ViewType>("om::common::ViewType");
     qRegisterMetaType<uint32_t>("uint32_t");
     qRegisterMetaType<ChannelDataWrapper>("ChannelDataWrapper");
     qRegisterMetaType<SegmentationDataWrapper>("SegmentationDataWrapper");
@@ -83,16 +73,14 @@ class Omni {
   }
 
   int runHeadless() {
-    const QString headlessCMD = QString::fromStdString(ZiARG_cmdfile);
-
     Headless h;
-    h.RunHeadless(headlessCMD, fileToOpen_);
+    h.RunHeadless(QString::fromStdString(ZiARG_cmdfile), fileToOpen_);
     return 0;
   }
 
   int runGUI() {
     // leak QApplication to avoid "~QX11PixmapData(): QPixmap objects" error
-    QApplication *app = new QApplication(argc_, argv_, this);
+    auto *app = new QApplication(argc_, argv_, this);
     Q_INIT_RESOURCE(resources);
     registerTypes();
 
@@ -110,9 +98,9 @@ class Omni {
 
   void checkRemainingArgs() {
     if (argc_ > 2) {
-      printf("too many arguments given:\n");
-      for (int i = 1; i < argc_; ++i) {
-        printf("\t(%d) %s\n", i, argv_[i]);
+      log_errors(unknown) << "too many arguments given:";
+      for (auto i = 1; i < argc_; ++i) {
+        log_debug(unknown, "\t(%d) %s", i, argv_[i]);
       }
       exit(EXIT_FAILURE);
     }
@@ -120,21 +108,13 @@ class Omni {
 
   QString getFileToOpen() {
     if (2 == argc_) {
-      return QString(argv_[1]);
+        return QString(argv_[1]);
     }
-
     return "";
-  }
-
-  int importHDF5seg() {
-    HeadlessImpl::importHDF5seg(ZiARG_importHDF5seg);
-    OmProject::Close();
-    return 0;
   }
 };
 
 int main(int argc, char *argv[]) {
   zi::parse_arguments(argc, argv, true);
-
   return Omni(argc, argv).Run();
 }

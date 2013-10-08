@@ -265,7 +265,7 @@ void OmSegmentContextMenu::writeChildrenFile(
 void OmSegmentContextMenu::addGroups() {
   auto* groups = sdw_.GetSegmentation().Groups();
   auto set = groups->GetGroups(sdw_.FindRootID());
-  om::common::GroupID firstID = 0;
+  uint32_t firstID = 0;
   std::string groupsStr = "Groups: ";
 
   for (const auto& id : set) {
@@ -290,8 +290,8 @@ void OmSegmentContextMenu::addDisableAction() {
 }
 
 void OmSegmentContextMenu::disableSegment() {
-  const om::common::SegID segid = sdw_.FindRootID();
-  OmSegments* segments = sdw_.Segments();
+  const auto segid = sdw_.FindRootID();
+  auto* segments = sdw_.Segments();
 
   segments->setSegmentEnabled(segid, false);
 }
