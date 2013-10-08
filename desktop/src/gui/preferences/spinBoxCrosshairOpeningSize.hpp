@@ -5,21 +5,18 @@
 #include "events/omEvents.h"
 
 class CrosshairOpeningSizeSpinBox : public OmIntSpinBox {
-public:
-	CrosshairOpeningSizeSpinBox(QWidget* p)
-		: OmIntSpinBox(p, om::UPDATE_AS_TYPE)
-	{
-		setSingleStep(1);
-		setMinimum(0);
-		setMaximum(100);
-		setValue(Om2dPreferences::CrosshairHoleSize());
-	}
+ public:
+  CrosshairOpeningSizeSpinBox(QWidget* p)
+      : OmIntSpinBox(p, om::UPDATE_AS_TYPE) {
+    setSingleStep(1);
+    setMinimum(0);
+    setMaximum(100);
+    setValue(Om2dPreferences::CrosshairHoleSize());
+  }
 
-private:
-	void actUponValueChange(const int val)
-	{
-		Om2dPreferences::CrosshairHoleSize(val);
-		OmEvents::Redraw2d();
-	}
+ private:
+  void actUponValueChange(const int val) {
+    Om2dPreferences::CrosshairHoleSize(val);
+    OmEvents::Redraw2d();
+  }
 };
-

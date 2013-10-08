@@ -6,72 +6,69 @@ namespace om {
 namespace segmentationInspector {
 
 class segVolBuilder {
-private:
-    const SegmentationDataWrapper sdw_;
-    const QString whatOrHowToBuild_;
-    const QFileInfoList fileNamesAndPaths_;
+ private:
+  const SegmentationDataWrapper sdw_;
+  const QString whatOrHowToBuild_;
+  const QFileInfoList fileNamesAndPaths_;
 
-public:
-    segVolBuilder(const SegmentationDataWrapper& sdw,
-                  const QString& whatOrHowToBuild,
-                  const QFileInfoList& fileNamesAndPaths)
-        : sdw_(sdw)
-        , whatOrHowToBuild_(whatOrHowToBuild)
-        , fileNamesAndPaths_(fileNamesAndPaths)
-    {}
+ public:
+  segVolBuilder(const SegmentationDataWrapper& sdw,
+                const QString& whatOrHowToBuild,
+                const QFileInfoList& fileNamesAndPaths)
+      : sdw_(sdw),
+        whatOrHowToBuild_(whatOrHowToBuild),
+        fileNamesAndPaths_(fileNamesAndPaths) {}
 
-    void Build()
-    {
-        OmBuildSegmentation bs(sdw_);
+  void Build() {
+    OmBuildSegmentation bs(sdw_);
 
-        bs.setFileNamesAndPaths(fileNamesAndPaths_);
+    bs.setFileNamesAndPaths(fileNamesAndPaths_);
 
-        if ("Data" == whatOrHowToBuild_){
-            bs.BuildImage();
+    if ("Data" == whatOrHowToBuild_) {
+      bs.BuildImage();
 
-        } else if ("Mesh" == whatOrHowToBuild_){
-            bs.BuildMesh();
+    } else if ("Mesh" == whatOrHowToBuild_) {
+      bs.BuildMesh();
 
-        } else if ("Data & Mesh" == whatOrHowToBuild_){
-            bs.BuildAndMeshSegmentation();
+    } else if ("Data & Mesh" == whatOrHowToBuild_) {
+      bs.BuildAndMeshSegmentation();
 
-        } else if ("Load Dendrogram" == whatOrHowToBuild_){
-            bs.LoadDendrogram();
+    } else if ("Load Dendrogram" == whatOrHowToBuild_) {
+      bs.LoadDendrogram();
 
-        } else if( "Blank Volume" == whatOrHowToBuild_){
-            bs.BuildBlankVolume();
+    } else if ("Blank Volume" == whatOrHowToBuild_) {
+      bs.BuildBlankVolume();
 
-        } else {
-            throw OmArgException("unknown option", whatOrHowToBuild_);
-        }
+    } else {
+      throw OmArgException("unknown option", whatOrHowToBuild_);
     }
+  }
 
-    void Build(om::shared_ptr<om::gui::progress> p)
-    {
-        OmBuildSegmentation bs(sdw_);
+  void Build(om::shared_ptr<om::gui::progress> p) {
+    OmBuildSegmentation bs(sdw_);
 
-        bs.setFileNamesAndPaths(fileNamesAndPaths_);
+    bs.setFileNamesAndPaths(fileNamesAndPaths_);
 
-        if ("Data" == whatOrHowToBuild_){
-            bs.BuildImage();
+    if ("Data" == whatOrHowToBuild_) {
+      bs.BuildImage();
 
-        } else if ("Mesh" == whatOrHowToBuild_){
-            bs.BuildMesh(p);
+    } else if ("Mesh" == whatOrHowToBuild_) {
+      bs.BuildMesh(p);
 
-        } else if ("Data & Mesh" == whatOrHowToBuild_){
-            bs.BuildAndMeshSegmentation(p);
+    } else if ("Data & Mesh" == whatOrHowToBuild_) {
+      bs.BuildAndMeshSegmentation(p);
 
-        } else if ("Load Dendrogram" == whatOrHowToBuild_){
-            bs.LoadDendrogram();
+    } else if ("Load Dendrogram" == whatOrHowToBuild_) {
+      bs.LoadDendrogram();
 
-        } else if( "Blank Volume" == whatOrHowToBuild_){
-            bs.BuildBlankVolume();
+    } else if ("Blank Volume" == whatOrHowToBuild_) {
+      bs.BuildBlankVolume();
 
-        } else {
-            throw OmArgException("unknown option", whatOrHowToBuild_);
-        }
+    } else {
+      throw OmArgException("unknown option", whatOrHowToBuild_);
     }
+  }
 };
 
-} // namespace segmentationInspector
-} // namespace om
+}  // namespace segmentationInspector
+}  // namespace om

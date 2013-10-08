@@ -6,12 +6,12 @@
 namespace om {
 namespace landmarks {
 
-struct sdwAndPt{
-    SegmentDataWrapper sdw;
-    om::globalCoord coord;
+struct sdwAndPt {
+  SegmentDataWrapper sdw;
+  om::globalCoord coord;
 };
 
 std::string outputPt(const sdwAndPt& d);
 
-} // namespace landmarks
-} // namespace om
+}  // namespace landmarks
+}  // namespace om

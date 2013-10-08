@@ -5,34 +5,31 @@
 #include "view2d/brush/omBrushSelectLineTask.hpp"
 
 class OmBrushSelect {
-public:
-    static void SelectByClick(OmView2dState* state, const om::globalCoord& coord,
-                              const om::AddOrSubtract addSegments)
-    {
-        // std::cout << "mouse click data coord: " << coord << "\n";
+ public:
+  static void SelectByClick(OmView2dState* state, const om::globalCoord& coord,
+                            const om::AddOrSubtract addSegments) {
+    // std::cout << "mouse click data coord: " << coord << "\n";
 
-        om::shared_ptr<OmBrushOppInfo> info =
-            OmBrushOppInfoFactory::MakeOppInfo(state, coord, addSegments);
+    om::shared_ptr<OmBrushOppInfo> info =
+        OmBrushOppInfoFactory::MakeOppInfo(state, coord, addSegments);
 
-        OmBrushSelectCircle circle(info);
+    OmBrushSelectCircle circle(info);
 
-        circle.SelectCircle(coord);
-    }
+    circle.SelectCircle(coord);
+  }
 
-    static void SelectByLine(OmView2dState* state, const om::globalCoord& second,
-                             const om::AddOrSubtract addSegments)
-    {
-        const om::globalCoord& first = state->GetLastDataPoint();
+  static void SelectByLine(OmView2dState* state, const om::globalCoord& second,
+                           const om::AddOrSubtract addSegments) {
+    const om::globalCoord& first = state->GetLastDataPoint();
 
-        om::shared_ptr<OmBrushOppInfo> info =
-            OmBrushOppInfoFactory::MakeOppInfo(state, first, addSegments);
+    om::shared_ptr<OmBrushOppInfo> info =
+        OmBrushOppInfoFactory::MakeOppInfo(state, first, addSegments);
 
-        // std::cout << *info << ", " << first << ", " << second << "\n";
+    // std::cout << *info << ", " << first << ", " << second << "\n";
 
-        om::shared_ptr<OmBrushSelectLineTask> task =
-            om::make_shared<OmBrushSelectLineTask>(info, first, second);
+    om::shared_ptr<OmBrushSelectLineTask> task =
+        om::make_shared<OmBrushSelectLineTask>(info, first, second);
 
-        OmView2dManager::AddTaskBack(task);
-    }
+    OmView2dManager::AddTaskBack(task);
+  }
 };
-

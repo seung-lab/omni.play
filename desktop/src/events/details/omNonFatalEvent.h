@@ -4,32 +4,28 @@
 #include "common/omStd.h"
 
 class OmNonFatalEvent : public OmEvent {
-private:
-    const QString err_;
+ private:
+  const QString err_;
 
-public:
-    OmNonFatalEvent(const QString& err);
+ public:
+  OmNonFatalEvent(const QString& err);
 
-    void Dispatch(OmEventListener*);
+  void Dispatch(OmEventListener*);
 
-    //class
-    static const OmEventClass CLASS = OM_NON_FATAL_EVENT_CLASS;
+  //class
+  static const OmEventClass CLASS = OM_NON_FATAL_EVENT_CLASS;
 
-    //events
-    static const QEvent::Type NON_FATAL_ERROR_OCCURED = (QEvent::Type) (CLASS);
+  //events
+  static const QEvent::Type NON_FATAL_ERROR_OCCURED = (QEvent::Type)(CLASS);
 
-    QString Error() const {
-        return err_;
-    }
+  QString Error() const { return err_; }
 };
 
 class OmNonFatalEventListener : public OmEventListener {
 
-public:
-    OmNonFatalEventListener()
-        : OmEventListener(OmNonFatalEvent::CLASS)
-    {};
+ public:
+  OmNonFatalEventListener() : OmEventListener(OmNonFatalEvent::CLASS) {}
+  ;
 
-    virtual void NonFatalEvent(OmNonFatalEvent*) = 0;
+  virtual void NonFatalEvent(OmNonFatalEvent*) = 0;
 };
-

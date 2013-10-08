@@ -4,24 +4,19 @@
 #include "actions/details/omSegmentShatterActionImpl.hpp"
 #include "segment/omFindCommonEdge.hpp"
 
-OmSegmentShatterAction::OmSegmentShatterAction(const SegmentDataWrapper & sdw)
-    : impl_(om::make_shared<OmSegmentShatterActionImpl>(sdw))
-{
-    SetUndoable(true);
+OmSegmentShatterAction::OmSegmentShatterAction(const SegmentDataWrapper& sdw)
+    : impl_(om::make_shared<OmSegmentShatterActionImpl>(sdw)) {
+  SetUndoable(true);
 }
 
-void OmSegmentShatterAction::Action(){
-    impl_->Execute();
+void OmSegmentShatterAction::Action() { impl_->Execute(); }
+
+void OmSegmentShatterAction::UndoAction() { impl_->Undo(); }
+
+std::string OmSegmentShatterAction::Description() {
+  return impl_->Description();
 }
 
-void OmSegmentShatterAction::UndoAction(){
-    impl_->Undo();
-}
-
-std::string OmSegmentShatterAction::Description(){
-    return impl_->Description();
-}
-
-void OmSegmentShatterAction::save(const std::string& comment){
-    OmActionLogger::save(impl_, comment);
+void OmSegmentShatterAction::save(const std::string& comment) {
+  OmActionLogger::save(impl_, comment);
 }

@@ -11,10 +11,7 @@
 #include <QKeyEvent>
 
 class OmGlobalKeyPress : public QWidget {
-  Q_OBJECT
-
- private:
-  QWidget* const parent_;
+  Q_OBJECT private : QWidget* const parent_;
 
   boost::scoped_ptr<QShortcut> a_;
   boost::scoped_ptr<QShortcut> b_;

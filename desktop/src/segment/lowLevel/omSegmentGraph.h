@@ -15,62 +15,50 @@ class OmSegmentation;
 class OmValidGroupNum;
 
 class OmSegmentGraph {
-public:
-    OmSegmentGraph();
-    ~OmSegmentGraph();
+ public:
+  OmSegmentGraph();
+  ~OmSegmentGraph();
 
-    void Initialize(OmSegmentation* segmentation,
-                    OmSegmentsImplLowLevel* cache);
-    bool DoesGraphNeedToBeRefreshed(const uint32_t maxValue);
-    void GrowGraphIfNeeded(OmSegment* newSeg);
+  void Initialize(OmSegmentation* segmentation, OmSegmentsImplLowLevel* cache);
+  bool DoesGraphNeedToBeRefreshed(const uint32_t maxValue);
+  void GrowGraphIfNeeded(OmSegment* newSeg);
 
-    void RefreshGUIlists();
+  void RefreshGUIlists();
 
-    inline uint64_t MSTfreshness() const {
-        return forest_->Freshness();
-    }
-    inline OmSegID Root(const OmSegID segID){
-        return forest_->Root(segID);
-    }
-    inline void Cut(const OmSegID segID){
-        forest_->Cut(segID);
-    }
-    inline void Join(const OmSegID childRootID, const OmSegID parentRootID){
-        forest_->Join(childRootID, parentRootID);
-    }
+  inline uint64_t MSTfreshness() const { return forest_->Freshness(); }
+  inline OmSegID Root(const OmSegID segID) { return forest_->Root(segID); }
+  inline void Cut(const OmSegID segID) { forest_->Cut(segID); }
+  inline void Join(const OmSegID childRootID, const OmSegID parentRootID) {
+    forest_->Join(childRootID, parentRootID);
+  }
 
-    void SetGlobalThreshold(OmMST* mst);
-    void ResetGlobalThreshold(OmMST* mst);
+  void SetGlobalThreshold(OmMST* mst);
+  void ResetGlobalThreshold(OmMST* mst);
 
-    void UpdateSizeListsFromJoin(OmSegment* root, OmSegment* child);
-    void UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* child);
+  void UpdateSizeListsFromJoin(OmSegment* root, OmSegment* child);
+  void UpdateSizeListsFromSplit(OmSegment* parent, OmSegment* child);
 
-    OmSegmentChildren* Children(){
-        return children_.get();
-    }
+  OmSegmentChildren* Children() { return children_.get(); }
 
-    //Do stuff
+  //Do stuff
 
-private:
-    OmSegmentation* segmentation_;
-    OmValidGroupNum* validGroupNum_;
-    OmSegmentsImplLowLevel* mCache;
-    OmSegmentsStore* segmentPages_;
+ private:
+  OmSegmentation* segmentation_;
+  OmValidGroupNum* validGroupNum_;
+  OmSegmentsImplLowLevel* mCache;
+  OmSegmentsStore* segmentPages_;
 
-    boost::scoped_ptr<OmDynamicForestCache> forest_;
-    boost::scoped_ptr<OmSegmentChildren> children_;
-    OmSegmentListLowLevel* segmentListsLL_;
+  boost::scoped_ptr<OmDynamicForestCache> forest_;
+  boost::scoped_ptr<OmSegmentChildren> children_;
+  OmSegmentListLowLevel* segmentListsLL_;
 
-    bool joinInternal(const OmSegID parentID,
-                      const OmSegID childUnknownDepthID,
-                      const double threshold,
-                      const int edgeNumber);
+  bool joinInternal(const OmSegID parentID, const OmSegID childUnknownDepthID,
+                    const double threshold, const int edgeNumber);
 
-    bool splitChildFromParentInternal(const OmSegID childID);
+  bool splitChildFromParentInternal(const OmSegID childID);
 
-    SizeAndNumPieces computeSegmentSizeWithChildren(OmSegment* seg);
-    std::vector<OmSegment*> segsTempVec_;
-    
-    bool sizeCheck(const OmSegID a, const OmSegID b, const double threshold);
+  SizeAndNumPieces computeSegmentSizeWithChildren(OmSegment* seg);
+  std::vector<OmSegment*> segsTempVec_;
+
+  bool sizeCheck(const OmSegID a, const OmSegID b, const double threshold);
 };
-

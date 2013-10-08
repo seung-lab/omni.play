@@ -21,73 +21,54 @@ class OmSegmentation;
 
 namespace om {
 enum FilterType {
-    OVERLAY_CHANNEL,
-    OVERLAY_SEGMENTATION,
-    OVERLAY_NONE
+  OVERLAY_CHANNEL,
+  OVERLAY_SEGMENTATION,
+  OVERLAY_NONE
 };
-} // namespace om
+}  // namespace om
 
 class OmFilter2d : public OmManageableObject {
-public:
-    OmFilter2d();
-    OmFilter2d(const OmID);
+ public:
+  OmFilter2d();
+  OmFilter2d(const OmID);
 
-    void Load();
+  void Load();
 
-    std::string GetName(){
-        return "filter" + om::string::num(GetID());
-    }
+  std::string GetName() { return "filter" + om::string::num(GetID()); }
 
-    inline void SetAlpha(const double alpha){
-        alpha_ = alpha;
-    }
+  inline void SetAlpha(const double alpha) { alpha_ = alpha; }
 
-    inline double GetAlpha(){
-        return alpha_;
-    }
+  inline double GetAlpha() { return alpha_; }
 
-    void SetSegmentation(const OmID id);
-    void SetChannel(const OmID id);
+  void SetSegmentation(const OmID id);
+  void SetChannel(const OmID id);
 
-    inline bool HasValidVol() const {
-        return om::OVERLAY_NONE != filterType_;
-    }
+  inline bool HasValidVol() const { return om::OVERLAY_NONE != filterType_; }
 
-    inline om::FilterType FilterType() const {
-        return filterType_;
-    }
+  inline om::FilterType FilterType() const { return filterType_; }
 
-    inline OmChannel* GetChannel() const {
-        return *channVolPtr_;
-    }
+  inline OmChannel *GetChannel() const { return *channVolPtr_; }
 
-    inline OmSegmentation* GetSegmentation() const {
-        return *segVolPtr_;
-    }
+  inline OmSegmentation *GetSegmentation() const { return *segVolPtr_; }
 
-    inline OmID GetChannelID() const{
-        return chanID_;
-    }
+  inline OmID GetChannelID() const { return chanID_; }
 
-    inline OmID GetSegmentationID() const{
-        return segID_;
-    }
+  inline OmID GetSegmentationID() const { return segID_; }
 
-private:
-    double alpha_;
-    om::FilterType filterType_;
+ private:
+  double alpha_;
+  om::FilterType filterType_;
 
-    boost::optional<OmChannel*> channVolPtr_;
-    boost::optional<OmSegmentation*> segVolPtr_;
+  boost::optional<OmChannel *> channVolPtr_;
+  boost::optional<OmSegmentation *> segVolPtr_;
 
-    OmID chanID_;
-    OmID segID_;
+  OmID chanID_;
+  OmID segID_;
 
-    void reset();
+  void reset();
 
-    friend YAML::Emitter &YAML::operator<<(YAML::Emitter&, const OmFilter2d&);
-    friend void YAML::operator>>(const YAML::Node&, OmFilter2d&);
-    friend QDataStream &operator<<(QDataStream&, const OmFilter2d&);
-    friend QDataStream &operator>>(QDataStream&, OmFilter2d&);
+  friend YAML::Emitter &YAML::operator<<(YAML::Emitter &, const OmFilter2d &);
+  friend void YAML::operator>>(const YAML::Node &, OmFilter2d &);
+  friend QDataStream &operator<<(QDataStream &, const OmFilter2d &);
+  friend QDataStream &operator>>(QDataStream &, OmFilter2d &);
 };
-

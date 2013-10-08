@@ -16,30 +16,29 @@ using namespace apache::thrift::transport;
 namespace om {
 namespace datalayer {
 
-// Thread local.  Lifetime of the data cached is tied to the lifetime of this object.
-class cache
-{
-private:
-    boost::unordered_map<std::string, std::string> data_;
-    boost::shared_ptr<TTransport> managerTransport_;
-    boost::shared_ptr<server::storage_managerClient> manager_;
+// Thread local.  Lifetime of the data cached is tied to the lifetime of this
+// object.
+class cache {
+ private:
+  boost::unordered_map<std::string, std::string> data_;
+  boost::shared_ptr<TTransport> managerTransport_;
+  boost::shared_ptr<server::storage_managerClient> manager_;
 
-public:
-    cache();
-    ~cache();
+ public:
+  cache();
+  ~cache();
 
-    template<typename T>
-    T Get(const std::string& key)
-    {
-        if(data_.find(key) == data_.end()) {
-            loadData(key);
-        }
-
-        return T(data_[key].data, data_[key].size);
+  template <typename T> T Get(const std::string& key) {
+    if (data_.find(key) == data_.end()) {
+      loadData(key);
     }
 
-private:
-    void loadData(const std::string& key);
+    return T(data_[key].data, data_[key].size);
+  }
+
+ private:
+  void loadData(const std::string& key);
 };
 
-}} // namespace om::datalayer::
+}
+}  // namespace om::datalayer::

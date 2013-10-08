@@ -8,10 +8,9 @@ namespace om {
 namespace channelInspector {
 
 class PagesWidget : public QStackedWidget {
-public:
-    PagesWidget(QWidget* parent, const ChannelDataWrapper& cdw);
+ public:
+  PagesWidget(QWidget* parent, const ChannelDataWrapper& cdw);
 };
 
-} // namespace segmentationInspector
-} // namespace om
-
+}  // namespace segmentationInspector
+}  // namespace om

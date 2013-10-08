@@ -11,37 +11,31 @@
 class OmFilter2d;
 
 class OmFilter2dManager {
-public:
-    OmFilter2dManager();
+ public:
+  OmFilter2dManager();
 
-    inline OmFilter2d& GetFilter(OmID id){
-        return filters_.Get(id);
-    }
+  inline OmFilter2d& GetFilter(OmID id) { return filters_.Get(id); }
 
-    inline const OmIDsSet& GetValidFilterIds() const {
-        return filters_.GetValidIds();
-    }
+  inline const OmIDsSet& GetValidFilterIds() const {
+    return filters_.GetValidIds();
+  }
 
-    inline bool IsFilterEnabled(OmID id) const {
-        return filters_.IsEnabled(id);
-    }
+  inline bool IsFilterEnabled(OmID id) const { return filters_.IsEnabled(id); }
 
-    inline bool IsFilterValid(OmID id) const {
-        return filters_.IsValid(id);
-    }
+  inline bool IsFilterValid(OmID id) const { return filters_.IsValid(id); }
 
-    OmFilter2d& AddFilter();
+  OmFilter2d& AddFilter();
 
-    inline std::vector<OmFilter2d*> GetFilters() const {
-        return filters_.GetPtrVec();
-    }
+  inline std::vector<OmFilter2d*> GetFilters() const {
+    return filters_.GetPtrVec();
+  }
 
-private:
-    OmGenericManager<OmFilter2d> filters_;
+ private:
+  OmGenericManager<OmFilter2d> filters_;
 
-    friend YAML::Emitter &YAML::operator<<(YAML::Emitter&, const OmFilter2dManager&);
-    friend void YAML::operator>>(const YAML::Node&, OmFilter2dManager& );
-    friend QDataStream &operator<<(QDataStream&, const OmFilter2dManager&);
-    friend QDataStream &operator>>(QDataStream&, OmFilter2dManager& );
+  friend YAML::Emitter& YAML::operator<<(YAML::Emitter&,
+                                         const OmFilter2dManager&);
+  friend void YAML::operator>>(const YAML::Node&, OmFilter2dManager&);
+  friend QDataStream& operator<<(QDataStream&, const OmFilter2dManager&);
+  friend QDataStream& operator>>(QDataStream&, OmFilter2dManager&);
 };
-

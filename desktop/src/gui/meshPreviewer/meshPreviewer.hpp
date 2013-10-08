@@ -8,36 +8,32 @@
 class OmViewGroupState;
 
 class MeshPreviewerImpl : public QWidget {
-public:
-	MeshPreviewerImpl(QWidget* parent,
-					  const SegmentationDataWrapper& sdw,
-					  OmViewGroupState* vgs);
+ public:
+  MeshPreviewerImpl(QWidget* parent, const SegmentationDataWrapper& sdw,
+                    OmViewGroupState* vgs);
 
-private:
-	SegmentationDataWrapper sdw_;
-	OmViewGroupState* vgs_;
+ private:
+  SegmentationDataWrapper sdw_;
+  OmViewGroupState* vgs_;
 
-	void mesh();
+  void mesh();
 
-	friend class PreviewButton;
+  friend class PreviewButton;
 };
 
 class MeshPreviewer : public QDialog {
-public:
-	MeshPreviewer(QWidget * p,
-				  const SegmentationDataWrapper& sdw,
-				  OmViewGroupState* vgs)
-		: QDialog(p)
-	{
-		MeshPreviewerImpl* v = new MeshPreviewerImpl(p, sdw, vgs);
+ public:
+  MeshPreviewer(QWidget* p, const SegmentationDataWrapper& sdw,
+                OmViewGroupState* vgs)
+      : QDialog(p) {
+    MeshPreviewerImpl* v = new MeshPreviewerImpl(p, sdw, vgs);
 
-		QVBoxLayout* layout = new QVBoxLayout(this);
-		layout->addWidget(v);
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->addWidget(v);
 
-		setWindowTitle(tr("Mesh Previewer"));
-		resize(500, 400);
+    setWindowTitle(tr("Mesh Previewer"));
+    resize(500, 400);
 
-		show();
- 	}
+    show();
+  }
 };
-

@@ -6,22 +6,18 @@
 
 class MainWindow;
 
-class CacheMonitorDialog : public QDialog
-{
-    Q_OBJECT
+class CacheMonitorDialog : public QDialog {
+  Q_OBJECT public : CacheMonitorDialog(QWidget* parent);
+  ~CacheMonitorDialog();
 
-    public:
-    CacheMonitorDialog( QWidget * parent);
-    ~CacheMonitorDialog();
+ private
+Q_SLOTS:
+  void Refresh();
+  void done(int);
 
-private Q_SLOTS:
-    void Refresh();
-    void done(int);
-
-private:
-    QVBoxLayout* layout;
-    QTimer* mTimer;
-    CacheMonitorWidget* mCacheMonitorWidget;
-    bool mDying;
+ private:
+  QVBoxLayout* layout;
+  QTimer* mTimer;
+  CacheMonitorWidget* mCacheMonitorWidget;
+  bool mDying;
 };
-

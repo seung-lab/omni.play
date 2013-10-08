@@ -11,25 +11,26 @@
 #include "zi/omMutex.h"
 
 class OmSegmentation;
-namespace om { namespace segchunk { class dataInterface; } }
+namespace om {
+namespace segchunk {
+class dataInterface;
+}
+}
 
 class OmSegChunk : public OmChunk {
-private:
-    OmSegmentation *const vol_;
-    const boost::scoped_ptr<om::segchunk::dataInterface> segChunkData_;
+ private:
+  OmSegmentation* const vol_;
+  const boost::scoped_ptr<om::segchunk::dataInterface> segChunkData_;
 
-    std::set<OmSegID> modifiedSegIDs_;
-    zi::spinlock modifiedSegIDsLock_;
+  std::set<OmSegID> modifiedSegIDs_;
+  zi::spinlock modifiedSegIDsLock_;
 
-public:
-    OmSegChunk(OmSegmentation* vol, const om::chunkCoord& coord);
-    virtual ~OmSegChunk();
+ public:
+  OmSegChunk(OmSegmentation* vol, const om::chunkCoord& coord);
+  virtual ~OmSegChunk();
 
-    uint32_t GetVoxelValue(const om::dataCoord& vox);
-    void SetVoxelValue(const om::dataCoord& vox, const uint32_t value);
+  uint32_t GetVoxelValue(const om::dataCoord& vox);
+  void SetVoxelValue(const om::dataCoord& vox, const uint32_t value);
 
-    om::segchunk::dataInterface* SegData(){
-        return segChunkData_.get();
-    }
+  om::segchunk::dataInterface* SegData() { return segChunkData_.get(); }
 };
-

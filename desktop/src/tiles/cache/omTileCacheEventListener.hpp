@@ -5,17 +5,16 @@
 class OmTileCacheImpl;
 
 class OmTileCacheEventListener : public OmViewEventListener {
-private:
-    OmTileCacheImpl *const cache_;
+ private:
+  OmTileCacheImpl* const cache_;
 
-    virtual void ViewBoxChangeEvent() {}
-    virtual void ViewPosChangeEvent() {}
-    virtual void ViewRedrawEvent() {}
-    virtual void ViewBlockingRedrawEvent() {}
-    virtual void CoordSystemChangeEvent() {}
-    virtual void ViewCenterChangeEvent();
+  virtual void ViewBoxChangeEvent() {}
+  virtual void ViewPosChangeEvent() {}
+  virtual void ViewRedrawEvent() {}
+  virtual void ViewBlockingRedrawEvent() {}
+  virtual void CoordSystemChangeEvent() {}
+  virtual void ViewCenterChangeEvent();
 
-public:
-    OmTileCacheEventListener(OmTileCacheImpl* cache);
+ public:
+  OmTileCacheEventListener(OmTileCacheImpl* cache);
 };
-

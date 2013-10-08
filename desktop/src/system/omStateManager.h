@@ -18,26 +18,25 @@ class OmBrushSize;
 class OmStateManagerImpl;
 
 class OmStateManager : private om::singletonBase<OmStateManager> {
-private:
-    inline static OmStateManagerImpl& impl(){
-        return OmProject::Globals().StateManagerImpl();
-    }
+ private:
+  inline static OmStateManagerImpl& impl() {
+    return OmProject::Globals().StateManagerImpl();
+  }
 
-public:
-    static OmBrushSize* BrushSize();
+ public:
+  static OmBrushSize* BrushSize();
 
-    //tool mode
-    static om::tool::mode GetToolMode();
-    static void SetToolModeAndSendEvent(const om::tool::mode mode);
-    static void SetOldToolModeAndSendEvent();
+  //tool mode
+  static om::tool::mode GetToolMode();
+  static void SetToolModeAndSendEvent(const om::tool::mode mode);
+  static void SetOldToolModeAndSendEvent();
 
-    //undostack
-    static OmUndoStack& UndoStack();
+  //undostack
+  static OmUndoStack& UndoStack();
 
-private:
-    OmStateManager();
-    ~OmStateManager();
+ private:
+  OmStateManager();
+  ~OmStateManager();
 
-    friend class zi::singleton<OmStateManager>;
+  friend class zi::singleton<OmStateManager>;
 };
-

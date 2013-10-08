@@ -13,19 +13,19 @@ namespace landmarks {
 class widget;
 
 class dialog : public QDialog {
-private:
-    OmLandmarks *const landmarks_;
-    widget* widget_;
+ private:
+  OmLandmarks* const landmarks_;
+  widget* widget_;
 
-    QVBoxLayout* mainLayout_;
+  QVBoxLayout* mainLayout_;
 
-public:
-    dialog(QWidget *const parent, OmLandmarks* landmarks);
+ public:
+  dialog(QWidget* const parent, OmLandmarks* landmarks);
 
-    void Reset(const std::vector<sdwAndPt>& pts);
+  void Reset(const std::vector<sdwAndPt>& pts);
 
-    void ClearPtsAndHide();
+  void ClearPtsAndHide();
 };
 
-} // namespace landmarks
-} // namespace om
+}  // namespace landmarks
+}  // namespace om

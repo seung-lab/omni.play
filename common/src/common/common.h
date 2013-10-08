@@ -10,12 +10,16 @@
 #include "server_types.h"
 
 // needed for coordinates
-namespace om { namespace common {
-    enum viewType { XY_VIEW, XZ_VIEW, ZY_VIEW };
-    std::ostream& operator<<(std::ostream &out, const viewType& vt);
-}}
-
-
+namespace om {
+namespace common {
+enum viewType {
+  XY_VIEW,
+  XZ_VIEW,
+  ZY_VIEW
+};
+std::ostream& operator<<(std::ostream& out, const viewType& vt);
+}
+}
 
 #include "coordinates/coordinates.h"
 #include <zi/for_each.hpp>
@@ -28,14 +32,17 @@ namespace common {
  */
 //id typedefs
 typedef uint32_t id;
-typedef boost::unordered_set< id > idSet;
+typedef boost::unordered_set<id> idSet;
 
 //bit field
 typedef unsigned int bitfield;
 
 //objects
 //slices
-enum objectType { CHANNEL, SEGMENTATION };
+enum objectType {
+  CHANNEL,
+  SEGMENTATION
+};
 
 /**
  * "segment" types
@@ -59,59 +66,54 @@ typedef boost::unordered_set<groupId> groupIdSet;
 /**
  * color cache enum
  */
-enum segmentColorCacheType { SCC_FILTER_BLACK_BRIGHTEN_SELECT = 0,
-                             SCC_FILTER_COLOR_BRIGHTEN_SELECT,
-                             SCC_FILTER_BREAK,
-                             SCC_FILTER_VALID,
-                             SCC_FILTER_VALID_BLACK,
-                             SCC_SEGMENTATION,
-                             SCC_SEGMENTATION_BREAK_BLACK,
-                             SCC_SEGMENTATION_BREAK_COLOR,
-                             SCC_SEGMENTATION_VALID,
-                             SCC_SEGMENTATION_VALID_BLACK,
-                             SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT,
-                             SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT,
-                             SCC_NUMBER_OF_ENUMS };
+enum segmentColorCacheType {
+  SCC_FILTER_BLACK_BRIGHTEN_SELECT = 0,
+  SCC_FILTER_COLOR_BRIGHTEN_SELECT,
+  SCC_FILTER_BREAK,
+  SCC_FILTER_VALID,
+  SCC_FILTER_VALID_BLACK,
+  SCC_SEGMENTATION,
+  SCC_SEGMENTATION_BREAK_BLACK,
+  SCC_SEGMENTATION_BREAK_COLOR,
+  SCC_SEGMENTATION_VALID,
+  SCC_SEGMENTATION_VALID_BLACK,
+  SCC_FILTER_BLACK_DONT_BRIGHTEN_SELECT,
+  SCC_FILTER_COLOR_DONT_BRIGHTEN_SELECT,
+  SCC_NUMBER_OF_ENUMS
+};
 
 /**
  * cache-type enum
  */
 enum cacheGroup {
-    MESH_CACHE = 1,
-    TILE_CACHE
+  MESH_CACHE = 1,
+  TILE_CACHE
 };
 
-std::ostream& operator<<(std::ostream &out, const cacheGroup& c);
+std::ostream& operator<<(std::ostream& out, const cacheGroup& c);
 viewType Convert(server::viewType::type type);
 server::viewType::type Convert(viewType type);
-inline Vector3i Convert(server::vector3i v) {
-    return Vector3i(v.x, v.y, v.z);
-}
+inline Vector3i Convert(server::vector3i v) { return Vector3i(v.x, v.y, v.z); }
 
-template<typename T>
-T twist(T vec, viewType view)
-{
-    T out(vec);
-    switch(view)
-    {
+template <typename T> T twist(T vec, viewType view) {
+  T out(vec);
+  switch (view) {
     case XY_VIEW:
-        break;
+      break;
     case XZ_VIEW:
-        out.x = vec.x;
-        out.y = vec.z;
-        out.z = vec.y;
-        break;
+      out.x = vec.x;
+      out.y = vec.z;
+      out.z = vec.y;
+      break;
     case ZY_VIEW:
-        out.x = vec.z;
-        out.y = vec.y;
-        out.z = vec.x;
-        break;
-    }
+      out.x = vec.z;
+      out.y = vec.y;
+      out.z = vec.x;
+      break;
+  }
 
-    return out;
+  return out;
 }
 
-} // common
-} // om
-
-
+}  // common
+}  // om

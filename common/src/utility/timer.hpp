@@ -13,63 +13,42 @@ namespace om {
 namespace utility {
 
 class timer {
-private:
-    zi::wall_timer timer_;
+ private:
+  zi::wall_timer timer_;
 
-public:
-    timer()
-        : timer_()
-    {}
+ public:
+  timer() : timer_() {}
 
-    ~timer()
-    {}
+  ~timer() {}
 
-    void start(){
-        timer_.reset();
-    }
+  void start() { timer_.reset(); }
 
-    void restart(){
-        timer_.restart();
-    }
+  void restart() { timer_.restart(); }
 
-    void reset(){
-        timer_.restart();
-    }
+  void reset() { timer_.restart(); }
 
-    double us_elapsed(){
-        return timer_.elapsed< zi::in_usecs >();
-    }
+  double us_elapsed() { return timer_.elapsed<zi::in_usecs>(); }
 
-    double ms_elapsed(){
-        return timer_.elapsed< zi::in_msecs >();
-    }
+  double ms_elapsed() { return timer_.elapsed<zi::in_msecs>(); }
 
-    double s_elapsed(){
-        return timer_.elapsed< zi::in_usecs >() / 1000000.;
-    }
+  double s_elapsed() { return timer_.elapsed<zi::in_usecs>() / 1000000.; }
 
-    void Print(const std::string str)
-    {
-        const double timeSecs = s_elapsed();
+  void Print(const std::string str) {
+    const double timeSecs = s_elapsed();
 
-        std::cout << str << " in "
-                  << std::fixed << std::setprecision(2)
-                  << timeSecs << " secs\n";
-    }
+    std::cout << str << " in " << std::fixed << std::setprecision(2) << timeSecs
+              << " secs\n";
+  }
 
-    void PrintV(const std::string str)
-    {
-        const double timeSecs = s_elapsed();
+  void PrintV(const std::string str) {
+    const double timeSecs = s_elapsed();
 
-        std::cout << str << " in "
-                  << std::fixed << std::setprecision(10)
-                  << timeSecs << " secs\n";
-    }
+    std::cout << str << " in " << std::fixed << std::setprecision(10)
+              << timeSecs << " secs\n";
+  }
 
-    void PrintDone(){
-        Print("done");
-    }
+  void PrintDone() { Print("done"); }
 };
 
-} // namespace utility
-} // namespace om
+}  // namespace utility
+}  // namespace om

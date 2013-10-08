@@ -4,27 +4,24 @@
 #include "view2d/brush/omBrushEraseLine.hpp"
 
 class OmBrushEraseLineTask : public zi::runnable {
-private:
-    const om::shared_ptr<OmBrushOppInfo> info_;
-    const om::globalCoord first_;
-    const om::globalCoord second_;
-    const OmSegID segIDtoErase_;
+ private:
+  const om::shared_ptr<OmBrushOppInfo> info_;
+  const om::globalCoord first_;
+  const om::globalCoord second_;
+  const OmSegID segIDtoErase_;
 
-public:
-    OmBrushEraseLineTask(om::shared_ptr<OmBrushOppInfo> info,
-                         const om::globalCoord& first,
-                         const om::globalCoord& second,
-                         const OmSegID segIDtoErase)
-        : info_(info)
-        , first_(first)
-        , second_(second)
-        , segIDtoErase_(segIDtoErase)
-    {}
+ public:
+  OmBrushEraseLineTask(om::shared_ptr<OmBrushOppInfo> info,
+                       const om::globalCoord& first,
+                       const om::globalCoord& second,
+                       const OmSegID segIDtoErase)
+      : info_(info),
+        first_(first),
+        second_(second),
+        segIDtoErase_(segIDtoErase) {}
 
-    void run()
-    {
-        OmBrushEraseLine line(info_, segIDtoErase_);
-        line.EraseLine(first_, second_);
-    }
+  void run() {
+    OmBrushEraseLine line(info_, segIDtoErase_);
+    line.EraseLine(first_, second_);
+  }
 };
-

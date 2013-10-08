@@ -4,11 +4,9 @@ namespace om {
 namespace mainwindow {
 
 class centralWidget : public QWidget {
-public:
-    centralWidget(QWidget* parent)
-        : QWidget(parent)
-    {}
+ public:
+  centralWidget(QWidget* parent) : QWidget(parent) {}
 };
 
-} // namespace mainwindow
-} // namespace om
+}  // namespace mainwindow
+}  // namespace om

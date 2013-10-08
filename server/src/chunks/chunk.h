@@ -9,43 +9,37 @@
 namespace om {
 namespace chunks {
 
-template<typename T>
-class Chunk
-{
-private:
-    Chunk<T>* data_;
+template <typename T> class Chunk {
+ private:
+  Chunk<T>* data_;
 
-public:
-    Chunk(char* data, size_t size)
-    {
-        if(size != sizeof(Chunk<T>)) {
-            throw argException("Chunk Data is the wrong size");
-            data_ = reinterpret_cast<Chunk<T> >(data);
-        }
+ public:
+  Chunk(char* data, size_t size) {
+    if (size != sizeof(Chunk<T>)) {
+      throw argException("Chunk Data is the wrong size");
+      data_ = reinterpret_cast<Chunk<T> >(data);
+    }
+  }
+
+  const T& operator[](uint i) const {
+    if (i >= 128 * 128 * 128) {
+      throw argException("chunk index out of bounds.");
     }
 
-    const T& operator[](uint i) const
-    {
-        if(i >= 128*128*128) {
-            throw argException("chunk index out of bounds.");
-        }
+    return data_->data[i];
+  }
 
-        return data_->data[i];
+  T& operator[](uint i) {
+    if (i >= 128 * 128 * 128) {
+      throw argException("chunk index out of bounds.");
     }
 
-    T& operator[](uint i) {
-        if(i >= 128*128*128) {
-            throw argException("chunk index out of bounds.");
-        }
-
-        return data_->data[i];
-    }
+    return data_->data[i];
+  }
 };
 
-typedef boost::variant<Chunk<int8_t>,
-                       Chunk<uint8_t>,
-                       Chunk<int32_t>,
-                       Chunk<uint32_t>,
-                       Chunk<float> > ChunkVar;
+typedef boost::variant<Chunk<int8_t>, Chunk<uint8_t>, Chunk<int32_t>,
+                       Chunk<uint32_t>, Chunk<float> > ChunkVar;
 
-}} // namespace om::chunks::
+}
+}  // namespace om::chunks::

@@ -4,15 +4,11 @@
 #include <QtGui>
 
 class CacheMonitorWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    CacheMonitorWidget(QWidget *parent);
+  Q_OBJECT public : CacheMonitorWidget(QWidget* parent);
 
 Q_SIGNALS:
-    void triggerCacheView();
+  void triggerCacheView();
 
-private:
-    QGroupBox* showDisplay(const QString&, const om::CacheGroup);
+ private:
+  QGroupBox* showDisplay(const QString&, const om::CacheGroup);
 };
-

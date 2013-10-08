@@ -11,50 +11,48 @@ class SegmentationDataWrapper;
 class SplitButton;
 class ShatterButton;
 
-namespace om { namespace sidebars { class rightImpl; } }
+namespace om {
+namespace sidebars {
+class rightImpl;
+}
+}
 
 class GraphTools : public OmWidget {
-Q_OBJECT
-public:
-    GraphTools(om::sidebars::rightImpl*, OmViewGroupState* vgs);
+  Q_OBJECT public : GraphTools(om::sidebars::rightImpl*, OmViewGroupState* vgs);
 
-    void SetSplittingOff();
-    void SetShatteringOff();
+  void SetSplittingOff();
+  void SetShatteringOff();
 
-    OmViewGroupState* GetViewGroupState() const {
-        return vgs_;
-    }
+  OmViewGroupState* GetViewGroupState() const { return vgs_; }
 
-    SegmentationDataWrapper GetSDW();
-    void updateGui();
+  SegmentationDataWrapper GetSDW();
+  void updateGui();
 
-    void HideBreakThreasholdBox();
-    void ShowBreakThreasholdBox();
+  void HideBreakThreasholdBox();
+  void ShowBreakThreasholdBox();
 
-    QString getName(){
-        return "Graph Tools";
-    }
+  QString getName() { return "Graph Tools"; }
 
-private Q_SLOTS:
-    void setSplittingOff();
-    void setShatteringOff();
+ private
+Q_SLOTS:
+  void setSplittingOff();
+  void setShatteringOff();
 
 Q_SIGNALS:
-    void signalSplittingOff();
-    void signalShatteringOff();
+  void signalSplittingOff();
+  void signalShatteringOff();
 
-private:
-    om::sidebars::rightImpl *const mParent;
-    OmViewGroupState *const vgs_;
+ private:
+  om::sidebars::rightImpl* const mParent;
+  OmViewGroupState* const vgs_;
 
-    SplitButton* splitButton;
-    ShatterButton* shatterButton;
+  SplitButton* splitButton;
+  ShatterButton* shatterButton;
 
-    MSTThresholdSpinBox* threshold_;
-    SizeThresholdSpinBox* sizeThreshold_;
+  MSTThresholdSpinBox* threshold_;
+  SizeThresholdSpinBox* sizeThreshold_;
 
-    QWidget* thresholdBox();
-    QWidget* makeBreakThresholdBox();
-    QWidget* breakThresholdBox_;
+  QWidget* thresholdBox();
+  QWidget* makeBreakThresholdBox();
+  QWidget* breakThresholdBox_;
 };
-

@@ -10,208 +10,183 @@ namespace om {
 namespace segmentationInspector {
 
 class SourceBox : public QGroupBox {
-Q_OBJECT
+  Q_OBJECT private : const SegmentationDataWrapper& sdw_;
 
-private:
-    const SegmentationDataWrapper& sdw_;
+  QLineEdit* volNameEdit_;
+  QLabel* directoryLabel_;
+  QLineEdit* directoryEdit_;
+  QLineEdit* regExEdit_;
+  QListWidget* fileList_;
 
-    QLineEdit* volNameEdit_;
-    QLabel* directoryLabel_;
-    QLineEdit* directoryEdit_;
-    QLineEdit* regExEdit_;
-    QListWidget* fileList_;
+ public:
+  SourceBox(QWidget* parent, const QString& title,
+            const SegmentationDataWrapper& sdw)
+      : QGroupBox(title, parent), sdw_(sdw) {
+    addWidgets();
+    populateFileListWidget();
+  }
 
-public:
-    SourceBox(QWidget* parent, const QString& title, const SegmentationDataWrapper& sdw)
-        : QGroupBox(title, parent)
-        , sdw_(sdw)
-    {
-        addWidgets();
-        populateFileListWidget();
+  QFileInfoList GetFilesToBuild() {
+    QFileInfoList files = getSelectedFileNames();
+    if (files.empty()) {
+      files = getFilteredDir().entryInfoList();
     }
 
-    QFileInfoList GetFilesToBuild()
-    {
-        QFileInfoList files = getSelectedFileNames();
-        if(files.empty()){
-            files = getFilteredDir().entryInfoList();
-        }
+    return SortHelpers::SortNaturally(files);
+  }
 
-        return SortHelpers::SortNaturally(files);
+ private
+Q_SLOTS:
+  void browse() {
+    QString dir = QFileDialog::getExistingDirectory(
+        this, tr("Choose Directory"), "", QFileDialog::ShowDirsOnly);
+    if (dir != "") {
+      directoryEdit_->setText(dir);
+      updateFileList();
+    }
+  }
+
+  void regexChanged() { updateFileList(); }
+
+  void changeSegmentationName() {
+    sdw_.GetSegmentation().SetCustomName(volNameEdit_->text());
+  }
+
+ private:
+  QFileInfoList getSelectedFileNames() {
+    QList<QListWidgetItem*> selectedItems = fileList_->selectedItems();
+
+    QFileInfoList ret;
+
+    QDir dir = getDirPath();
+
+    FOR_EACH(iter, selectedItems) {
+      QListWidgetItem* item = *iter;
+      ret.push_back(QFileInfo(dir, item->text()));
     }
 
-private Q_SLOTS:
-    void browse()
-    {
-        QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
-                                                        "", QFileDialog::ShowDirsOnly);
-        if (dir != "") {
-            directoryEdit_->setText(dir);
-            updateFileList();
-        }
-    }
+    return ret;
+  }
 
-    void regexChanged(){
-        updateFileList();
-    }
+  QDir getDirPath() { return QDir(directoryEdit_->text()); }
 
-    void changeSegmentationName(){
-        sdw_.GetSegmentation().SetCustomName(volNameEdit_->text());
-    }
+  QDir getFilteredDir() {
+    const QString regex = regExEdit_->text();
+    QDir dir = getDirPath();
 
-private:
-    QFileInfoList getSelectedFileNames()
-    {
-        QList<QListWidgetItem*> selectedItems = fileList_->selectedItems();
+    dir.setSorting(QDir::Name);
+    dir.setFilter(QDir::Files);
 
-        QFileInfoList ret;
+    QStringList filters;
+    filters << regex;
 
-        QDir dir = getDirPath();
+    dir.setNameFilters(filters);
 
-        FOR_EACH(iter, selectedItems)
-        {
-            QListWidgetItem* item = *iter;
-            ret.push_back(QFileInfo(dir, item->text()));
-        }
+    return dir;
+  }
 
-        return ret;
-    }
+  QStringList getFileList() {
+    QStringList files = getFilteredDir().entryList();
+    return SortHelpers::SortNaturally(files);
+  }
 
-    QDir getDirPath(){
-        return QDir(directoryEdit_->text());
-    }
+  void updateFileList() {
+    fileList_->clear();
 
-    QDir getFilteredDir()
-    {
-        const QString regex = regExEdit_->text();
-        QDir dir = getDirPath();
+    const QStringList files = getFileList();
+    FOR_EACH(iter, files) { fileList_->addItem(*iter); }
 
-        dir.setSorting( QDir::Name );
-        dir.setFilter( QDir::Files );
+    fileList_->update();
+  }
 
-        QStringList filters;
-        filters << regex;
+  void addVolNameWidget(QGridLayout* grid, const int row) {
+    QLabel* nameLabel = new QLabel(this);
+    nameLabel->setObjectName(QString::fromUtf8("nameLabel"));
+    nameLabel->setText("Name:");
+    grid->addWidget(nameLabel, row, 0);
 
-        dir.setNameFilters( filters );
+    volNameEdit_ = new QLineEdit(this);
+    volNameEdit_->setObjectName(QString::fromUtf8("volNameEdit_"));
+    volNameEdit_->setMinimumWidth(200);
 
-        return dir;
-    }
+    volNameEdit_->setText(sdw_.GetName());
 
-    QStringList getFileList()
-    {
-        QStringList files = getFilteredDir().entryList();
-        return SortHelpers::SortNaturally( files );
-    }
+    om::connect(volNameEdit_, SIGNAL(editingFinished()), this,
+                SLOT(changeSegmentationName()));
+    grid->addWidget(volNameEdit_, row, 1);
+  }
 
-    void updateFileList()
-    {
-        fileList_->clear();
+  void addDirWidget(QGridLayout* grid, const int row) {
+    directoryLabel_ = new QLabel(this);
+    directoryLabel_->setObjectName(QString::fromUtf8("directoryLabel_"));
+    directoryLabel_->setText("Directory:");
+    grid->addWidget(directoryLabel_, row, 0);
 
-        const QStringList files = getFileList();
-        FOR_EACH(iter, files){
-            fileList_->addItem(*iter);
-        }
+    directoryEdit_ = new QLineEdit(this);
+    directoryEdit_->setObjectName(QString::fromUtf8("directoryEdit_"));
+    directoryEdit_->setMinimumWidth(200);
+    directoryEdit_->setReadOnly(true);
+    grid->addWidget(directoryEdit_, row, 1);
+  }
 
-        fileList_->update();
-    }
+  void addBrowseButton(QGridLayout* grid, const int row) {
+    QPushButton* browseButton = new QPushButton(this);
+    browseButton->setObjectName(QString::fromUtf8("browseButton"));
+    browseButton->setText("Browse");
 
-    void addVolNameWidget(QGridLayout* grid, const int row)
-    {
-        QLabel* nameLabel = new QLabel(this);
-        nameLabel->setObjectName(QString::fromUtf8("nameLabel"));
-        nameLabel->setText("Name:");
-        grid->addWidget(nameLabel, row, 0);
+    om::connect(browseButton, SIGNAL(clicked()), this, SLOT(browse()));
+    grid->addWidget(browseButton, row, 1);
+  }
 
-        volNameEdit_ = new QLineEdit(this);
-        volNameEdit_->setObjectName(QString::fromUtf8("volNameEdit_"));
-        volNameEdit_->setMinimumWidth(200);
+  void addRegExBox(QGridLayout* grid, const int row) {
+    QLabel* patternLabel = new QLabel(this);
+    patternLabel->setObjectName(QString::fromUtf8("patternLabel"));
+    patternLabel->setText("Pattern:");
+    patternLabel->setToolTip("(i.e. data.%d.tif)");
+    grid->addWidget(patternLabel, row, 0);
 
-        volNameEdit_->setText(sdw_.GetName());
+    regExEdit_ = new QLineEdit(this);
+    regExEdit_->setObjectName(QString::fromUtf8("regExEdit_"));
+    regExEdit_->setText("*");
+    regExEdit_->setMinimumWidth(200);
 
-        om::connect(volNameEdit_, SIGNAL(editingFinished()),
-                    this, SLOT(changeSegmentationName()));
-        grid->addWidget(volNameEdit_, row, 1);
-    }
+    om::connect(regExEdit_, SIGNAL(textChanged(const QString&)), this,
+                SLOT(regexChanged()));
+    grid->addWidget(regExEdit_, row, 1);
+  }
 
-    void addDirWidget(QGridLayout* grid, const int row)
-    {
-        directoryLabel_ = new QLabel(this);
-        directoryLabel_->setObjectName(QString::fromUtf8("directoryLabel_"));
-        directoryLabel_->setText("Directory:");
-        grid->addWidget(directoryLabel_, row, 0);
+  void addFileListWidget(QGridLayout* grid, const int row) {
+    fileList_ = new QListWidget(this);
+    fileList_->setObjectName(QString::fromUtf8("fileList_"));
+    QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    sizePolicy1.setHorizontalStretch(0);
+    sizePolicy1.setVerticalStretch(0);
+    sizePolicy1.setHeightForWidth(fileList_->sizePolicy().hasHeightForWidth());
+    fileList_->setSizePolicy(sizePolicy1);
+    fileList_->setMaximumSize(QSize(16777215, 85));
 
-        directoryEdit_ = new QLineEdit(this);
-        directoryEdit_->setObjectName(QString::fromUtf8("directoryEdit_"));
-        directoryEdit_->setMinimumWidth(200);
-        directoryEdit_->setReadOnly(true);
-        grid->addWidget(directoryEdit_, row, 1);
-    }
+    grid->addWidget(fileList_, row, 1);
+  }
 
-    void addBrowseButton(QGridLayout* grid, const int row)
-    {
-        QPushButton* browseButton = new QPushButton(this);
-        browseButton->setObjectName(QString::fromUtf8("browseButton"));
-        browseButton->setText("Browse");
+  void addWidgets() {
+    QGridLayout* grid = new QGridLayout(this);
 
-        om::connect(browseButton, SIGNAL(clicked()),
-                    this, SLOT(browse()));
-        grid->addWidget(browseButton, row, 1);
-    }
+    addVolNameWidget(grid, 0);
+    addDirWidget(grid, 1);
+    addBrowseButton(grid, 2);
+    addRegExBox(grid, 3);
+    addFileListWidget(grid, 4);
+  }
 
-    void addRegExBox(QGridLayout* grid, const int row)
-    {
-        QLabel* patternLabel = new QLabel(this);
-        patternLabel->setObjectName(QString::fromUtf8("patternLabel"));
-        patternLabel->setText("Pattern:");
-        patternLabel->setToolTip("(i.e. data.%d.tif)");
-        grid->addWidget(patternLabel, row, 0);
+  void populateFileListWidget() {
+    //TODO: use path from where import files were orginally...
 
-        regExEdit_ = new QLineEdit(this);
-        regExEdit_->setObjectName(QString::fromUtf8("regExEdit_"));
-        regExEdit_->setText( "*" );
-        regExEdit_->setMinimumWidth(200);
+    const QString folder = QFileInfo(OmProject::OmniFile()).absolutePath();
+    directoryEdit_->setText(folder);
 
-        om::connect(regExEdit_, SIGNAL(textChanged(const QString&)),
-                    this, SLOT(regexChanged()));
-        grid->addWidget(regExEdit_, row, 1);
-    }
-
-    void addFileListWidget(QGridLayout* grid, const int row)
-    {
-        fileList_ = new QListWidget(this);
-        fileList_->setObjectName(QString::fromUtf8("fileList_"));
-        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(fileList_->sizePolicy().hasHeightForWidth());
-        fileList_->setSizePolicy(sizePolicy1);
-        fileList_->setMaximumSize(QSize(16777215, 85));
-
-        grid->addWidget(fileList_, row, 1 );
-    }
-
-    void addWidgets()
-    {
-        QGridLayout* grid = new QGridLayout( this );
-
-        addVolNameWidget(grid, 0);
-        addDirWidget(grid, 1);
-        addBrowseButton(grid, 2);
-        addRegExBox(grid, 3);
-        addFileListWidget(grid, 4);
-    }
-
-    void populateFileListWidget()
-    {
-        //TODO: use path from where import files were orginally...
-
-        const QString folder = QFileInfo(OmProject::OmniFile()).absolutePath();
-        directoryEdit_->setText(folder);
-
-        updateFileList();
-    }
+    updateFileList();
+  }
 };
 
-} // namespace segmentationInspector
-} // namespace om
-
+}  // namespace segmentationInspector
+}  // namespace om

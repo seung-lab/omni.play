@@ -6,4 +6,3 @@
 template <class> class OmPooledTile;
 
 typedef om::shared_ptr<OmPooledTile<uint32_t> > PooledTile32Ptr;
-

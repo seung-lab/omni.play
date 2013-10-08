@@ -5,112 +5,92 @@
 #include "segment/omSegmentIterator.h"
 #include "utility/color.hpp"
 
-void OmSegment::setParent(OmSegment* parent, const double threshold)
-{
-    if(parent_){
-        throw OmArgException("parent already set");
-    }
+void OmSegment::setParent(OmSegment* parent, const double threshold) {
+  if (parent_) {
+    throw OmArgException("parent already set");
+  }
 
-    parent_ = parent;
-    threshold_ = threshold;
+  parent_ = parent;
+  threshold_ = threshold;
 }
 
 /////////////////////////////////
 ///////     Color
-void OmSegment::RandomizeColor()
-{
-    data_->color =  om::utils::color::GetRandomColor(data_->color);
+void OmSegment::RandomizeColor() {
+  data_->color = om::utils::color::GetRandomColor(data_->color);
 
-    debugs(segmentBuild) << "final color values: "
-                         << (int)data_->color.red << ","
-                         << (int)data_->color.green << ","
-                         << (int)data_->color.blue << "\n";
+  debugs(segmentBuild) << "final color values: " << (int)
+      data_->color.red << "," << (int) data_->color.green << "," << (int)
+      data_->color.blue << "\n";
 }
 
-void OmSegment::reRandomizeColor()
-{
-    RandomizeColor();
+void OmSegment::reRandomizeColor() { RandomizeColor(); }
+
+void OmSegment::SetColor(const OmColor& color) { data_->color = color; }
+
+void OmSegment::SetColor(const Vector3i& color) {
+  data_->color.red = static_cast<uint8_t>(color.x);
+  data_->color.green = static_cast<uint8_t>(color.y);
+  data_->color.blue = static_cast<uint8_t>(color.z);
 }
 
-void OmSegment::SetColor(const OmColor& color){
-    data_->color = color;
+void OmSegment::SetColor(const Vector3f& color) {
+  data_->color.red = static_cast<uint8_t>(color.x * 255);
+  data_->color.green = static_cast<uint8_t>(color.y * 255);
+  data_->color.blue = static_cast<uint8_t>(color.z * 255);
 }
 
-void OmSegment::SetColor(const Vector3i& color)
-{
-    data_->color.red  = static_cast<uint8_t>(color.x);
-    data_->color.green = static_cast<uint8_t>(color.y);
-    data_->color.blue = static_cast<uint8_t>(color.z);
+QString OmSegment::GetNote() {
+  QString customNote = segments_->getSegmentNote(data_->value);
+
+  if (parent_) {
+    customNote += "Parent: " + QString::number(parent_->value()) + "; ";
+  }
+
+  // if( !segmentsJoinedIntoMe_.empty() ){
+  //   customNote += "Number of Children: "
+  //     + QString::number( segmentsJoinedIntoMe_.size() )
+  //     + "; ";
+  // }
+
+  return customNote;
 }
 
-void OmSegment::SetColor(const Vector3f& color)
-{
-    data_->color.red  = static_cast<uint8_t>(color.x * 255);
-    data_->color.green = static_cast<uint8_t>(color.y * 255);
-    data_->color.blue = static_cast<uint8_t>(color.z * 255);
+void OmSegment::SetNote(const QString& note) {
+  segments_->setSegmentNote(data_->value, note);
 }
 
-QString OmSegment::GetNote()
-{
-    QString customNote = segments_->getSegmentNote(data_->value);
+QString OmSegment::GetName() { return segments_->getSegmentName(data_->value); }
 
-    if(parent_ ){
-        customNote += "Parent: "
-            + QString::number(parent_->value())
-            + "; ";
-    }
-
-    // if( !segmentsJoinedIntoMe_.empty() ){
-    //   customNote += "Number of Children: "
-    //     + QString::number( segmentsJoinedIntoMe_.size() )
-    //     + "; ";
-    // }
-
-    return customNote;
+void OmSegment::SetName(const QString& name) {
+  segments_->setSegmentName(data_->value, name);
 }
 
-void OmSegment::SetNote(const QString& note){
-    segments_->setSegmentNote( data_->value, note );
+bool OmSegment::IsSelected() {
+  return segments_->IsSegmentSelected(data_->value);
 }
 
-QString OmSegment::GetName(){
-    return segments_->getSegmentName( data_->value );
+void OmSegment::SetSelected(const bool isSelected, const bool addToRecentList) {
+  segments_->setSegmentSelected(data_->value, isSelected, addToRecentList);
 }
 
-void OmSegment::SetName(const QString& name){
-    segments_->setSegmentName( data_->value, name );
+bool OmSegment::IsEnabled() {
+  return segments_->isSegmentEnabled(data_->value);
 }
 
-bool OmSegment::IsSelected(){
-    return segments_->IsSegmentSelected( data_->value );
+void OmSegment::SetEnabled(const bool isEnabled) {
+  segments_->setSegmentEnabled(data_->value, isEnabled);
 }
 
-void OmSegment::SetSelected( const bool isSelected, const bool addToRecentList ){
-    segments_->setSegmentSelected( data_->value, isSelected, addToRecentList );
+OmID OmSegment::GetSegmentationID() { return segments_->GetSegmentationID(); }
+
+OmSegID OmSegment::RootID() { return segments_->findRootID(data_->value); }
+
+const segChildCont_t& OmSegment::GetChildren() {
+  return segments_->Children()->GetChildren(this);
 }
 
-bool OmSegment::IsEnabled(){
-    return segments_->isSegmentEnabled( data_->value );
-}
-
-void OmSegment::SetEnabled( const bool isEnabled){
-    segments_->setSegmentEnabled( data_->value, isEnabled );
-}
-
-OmID OmSegment::GetSegmentationID(){
-    return segments_->GetSegmentationID();
-}
-
-OmSegID OmSegment::RootID(){
-    return segments_->findRootID(data_->value);
-}
-
-const segChildCont_t& OmSegment::GetChildren(){
-    return segments_->Children()->GetChildren(this);
-}
-
-const om::dataBbox OmSegment::BoundingBox() const
-{
-    zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
-    return om::dataBbox(data_->bounds, segments_->getSegmentation(), 0);
+const om::dataBbox OmSegment::BoundingBox() const {
+  zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
+  return om::dataBbox(data_->bounds, segments_->getSegmentation(), 0);
 }

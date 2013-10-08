@@ -27,24 +27,21 @@ using namespace std;
 using namespace facebook::fb303;
 using namespace apache::thrift::concurrency;
 
-
 uint64_t ServiceTracker::CHECKPOINT_MINIMUM_INTERVAL_SECONDS = 60;
 int ServiceTracker::LOG_LEVEL = 5;
 
-
 ServiceTracker::ServiceTracker(facebook::fb303::FacebookBase *handler,
                                void (*logMethod)(int, const string &),
-                               bool featureCheckpoint,
-                               bool featureStatusCheck,
+                               bool featureCheckpoint, bool featureStatusCheck,
                                bool featureThreadCheck,
                                Stopwatch::Unit stopwatchUnit)
-  : handler_(handler), logMethod_(logMethod),
-    featureCheckpoint_(featureCheckpoint),
-    featureStatusCheck_(featureStatusCheck),
-    featureThreadCheck_(featureThreadCheck),
-    stopwatchUnit_(stopwatchUnit),
-    checkpointServices_(0)
-{
+    : handler_(handler),
+      logMethod_(logMethod),
+      featureCheckpoint_(featureCheckpoint),
+      featureStatusCheck_(featureStatusCheck),
+      featureThreadCheck_(featureThreadCheck),
+      stopwatchUnit_(stopwatchUnit),
+      checkpointServices_(0) {
   if (featureCheckpoint_) {
     time_t now = time(NULL);
     checkpointTime_ = now;
@@ -74,9 +71,7 @@ ServiceTracker::ServiceTracker(facebook::fb303::FacebookBase *handler,
  *                                           object instantiated at the start
  *                                           of the service method.
  */
-void
-ServiceTracker::startService(const ServiceMethod &serviceMethod)
-{
+void ServiceTracker::startService(const ServiceMethod &serviceMethod) {
   // note: serviceMethod.timer_ automatically starts at construction.
 
   // log service start
@@ -91,8 +86,8 @@ ServiceTracker::startService(const ServiceMethod &serviceMethod)
     // service method's point of view, a status of STOPPING is a green
     // light.
     facebook::fb303::fb_status::type status = handler_->getStatus();
-    if (status != facebook::fb303::fb_status::ALIVE
-        && status != facebook::fb303::fb_status::STOPPING) {
+    if (status != facebook::fb303::fb_status::ALIVE &&
+        status != facebook::fb303::fb_status::STOPPING) {
       if (status == facebook::fb303::fb_status::STARTING) {
         throw ServiceException("Server starting up; please try again later");
       } else {
@@ -109,9 +104,8 @@ ServiceTracker::startService(const ServiceMethod &serviceMethod)
       size_t idle_count = threadManager_->idleWorkerCount();
       if (idle_count == 0) {
         stringstream message;
-        message << "service " << serviceMethod.signature_
-                << ": all threads (" << threadManager_->workerCount()
-                << ") in use";
+        message << "service " << serviceMethod.signature_ << ": all threads ("
+                << threadManager_->workerCount() << ") in use";
         logMethod_(3, message.str());
       }
     }
@@ -128,17 +122,14 @@ ServiceTracker::startService(const ServiceMethod &serviceMethod)
  * @return int64_t Elapsed units (see stopwatchUnit_) since ServiceMethod
  *                 instantiation.
  */
-int64_t
-ServiceTracker::stepService(const ServiceMethod &serviceMethod,
-                            const string &stepName)
-{
+int64_t ServiceTracker::stepService(const ServiceMethod &serviceMethod,
+                                    const string &stepName) {
   stringstream message;
   string elapsed_label;
-  int64_t elapsed = serviceMethod.timer_.elapsedUnits(stopwatchUnit_,
-                                                      &elapsed_label);
-  message << serviceMethod.signature_
-          << ' ' << stepName
-          << " [" << elapsed_label << ']';
+  int64_t elapsed =
+      serviceMethod.timer_.elapsedUnits(stopwatchUnit_, &elapsed_label);
+  message << serviceMethod.signature_ << ' ' << stepName << " ["
+          << elapsed_label << ']';
   logMethod_(5, message.str());
   return elapsed;
 }
@@ -150,16 +141,13 @@ ServiceTracker::stepService(const ServiceMethod &serviceMethod,
  *                                           object instantiated at the start
  *                                           of the service method.
  */
-void
-ServiceTracker::finishService(const ServiceMethod &serviceMethod)
-{
+void ServiceTracker::finishService(const ServiceMethod &serviceMethod) {
   // log end of service
   stringstream message;
   string duration_label;
-  int64_t duration = serviceMethod.timer_.elapsedUnits(stopwatchUnit_,
-                                                       &duration_label);
-  message << serviceMethod.signature_
-          << " finish [" << duration_label << ']';
+  int64_t duration =
+      serviceMethod.timer_.elapsedUnits(stopwatchUnit_, &duration_label);
+  message << serviceMethod.signature_ << " finish [" << duration_label << ']';
   logMethod_(5, message.str());
 
   // count, record, and maybe report service statistics
@@ -205,8 +193,8 @@ ServiceTracker::finishService(const ServiceMethod &serviceMethod)
           iter->second.first++;
           iter->second.second += duration;
         } else {
-          checkpointServiceDuration_.insert(make_pair(serviceMethod.name_,
-                                                      make_pair(1, duration)));
+          checkpointServiceDuration_.insert(
+              make_pair(serviceMethod.name_, make_pair(1, duration)));
         }
 
         // maybe report checkpoint
@@ -217,7 +205,8 @@ ServiceTracker::finishService(const ServiceMethod &serviceMethod)
           reportCheckpoint();
         }
 
-      } catch (...) {
+      }
+      catch (...) {
         statisticsMutex_.unlock();
         throw;
       }
@@ -236,9 +225,7 @@ ServiceTracker::finishService(const ServiceMethod &serviceMethod)
  * mutex.
  *
  */
-void
-ServiceTracker::reportCheckpoint()
-{
+void ServiceTracker::reportCheckpoint() {
   time_t now = time(NULL);
 
   uint64_t check_count = checkpointServices_;
@@ -250,13 +237,11 @@ ServiceTracker::reportCheckpoint()
   map<string, pair<uint64_t, uint64_t> >::iterator iter;
   uint64_t count;
   for (iter = checkpointServiceDuration_.begin();
-       iter != checkpointServiceDuration_.end();
-       iter++) {
+       iter != checkpointServiceDuration_.end(); iter++) {
     count = iter->second.first;
     handler_->setCounter(string("checkpoint_count_") + iter->first, count);
     if (count == 0) {
-      handler_->setCounter(string("checkpoint_speed_") + iter->first,
-                           0);
+      handler_->setCounter(string("checkpoint_speed_") + iter->first, 0);
     } else {
       handler_->setCounter(string("checkpoint_speed_") + iter->first,
                            iter->second.second / count);
@@ -277,9 +262,8 @@ ServiceTracker::reportCheckpoint()
 
   // log checkpoint
   stringstream message;
-  message << "checkpoint_time:" << check_interval
-          << " checkpoint_services:" << check_count
-          << " checkpoint_speed_sum:" << check_duration
+  message << "checkpoint_time:" << check_interval << " checkpoint_services:"
+          << check_count << " checkpoint_speed_sum:" << check_duration
           << " lifetime_time:" << life_interval
           << " lifetime_services:" << life_count;
   if (featureThreadCheck_ && threadManager_ != NULL) {
@@ -297,10 +281,8 @@ ServiceTracker::reportCheckpoint()
  *
  * @param shared_ptr<ThreadManager> threadManager The server's thread manager.
  */
-void
-ServiceTracker::setThreadManager(boost::shared_ptr<ThreadManager>
-                                 threadManager)
-{
+void ServiceTracker::setThreadManager(
+    boost::shared_ptr<ThreadManager> threadManager) {
   threadManager_ = threadManager;
 }
 
@@ -316,9 +298,7 @@ ServiceTracker::setThreadManager(boost::shared_ptr<ThreadManager>
  *                  are used to indicate higher levels of detail.
  * @param string message The message to log.
  */
-void
-ServiceTracker::defaultLogMethod(int level, const string &message)
-{
+void ServiceTracker::defaultLogMethod(int level, const string &message) {
   if (level <= LOG_LEVEL) {
     string level_string;
     time_t now = time(NULL);
@@ -326,82 +306,73 @@ ServiceTracker::defaultLogMethod(int level, const string &message)
     ctime_r(&now, now_pretty);
     now_pretty[24] = '\0';
     switch (level) {
-    case 1:
-      level_string = "CRITICAL";
-      break;
-    case 2:
-      level_string = "ERROR";
-      break;
-    case 3:
-      level_string = "WARNING";
-      break;
-    case 5:
-      level_string = "DEBUG";
-      break;
-    case 4:
-    default:
-      level_string = "INFO";
-      break;
+      case 1:
+        level_string = "CRITICAL";
+        break;
+      case 2:
+        level_string = "ERROR";
+        break;
+      case 3:
+        level_string = "WARNING";
+        break;
+      case 5:
+        level_string = "DEBUG";
+        break;
+      case 4:
+      default:
+        level_string = "INFO";
+        break;
     }
-    cout << '[' << level_string << "] [" << now_pretty << "] "
-         << message << endl;
+    cout << '[' << level_string << "] [" << now_pretty << "] " << message
+         << endl;
   }
 }
-
 
 /**
  * Creates a Stopwatch, which can report the time elapsed since its
  * creation.
  *
  */
-Stopwatch::Stopwatch()
-{
-  gettimeofday(&startTime_, NULL);
-}
+Stopwatch::Stopwatch() { gettimeofday(&startTime_, NULL); }
 
-void
-Stopwatch::reset()
-{
-  gettimeofday(&startTime_, NULL);
-}
+void Stopwatch::reset() { gettimeofday(&startTime_, NULL); }
 
-uint64_t
-Stopwatch::elapsedUnits(Stopwatch::Unit unit, string *label) const
-{
+uint64_t Stopwatch::elapsedUnits(Stopwatch::Unit unit, string *label) const {
   timeval now_time;
   gettimeofday(&now_time, NULL);
   time_t duration_secs = now_time.tv_sec - startTime_.tv_sec;
 
   uint64_t duration_units;
   switch (unit) {
-  case UNIT_SECONDS:
-    duration_units = duration_secs
-      + (now_time.tv_usec - startTime_.tv_usec + 500000) / 1000000;
-    if (NULL != label) {
-      stringstream ss_label;
-      ss_label << duration_units << " secs";
-      label->assign(ss_label.str());
-    }
-    break;
-  case UNIT_MICROSECONDS:
-    duration_units = duration_secs * 1000000
-      + now_time.tv_usec - startTime_.tv_usec;
-    if (NULL != label) {
-      stringstream ss_label;
-      ss_label << duration_units << " us";
-      label->assign(ss_label.str());
-    }
-    break;
-  case UNIT_MILLISECONDS:
-  default:
-    duration_units = duration_secs * 1000
-      + (now_time.tv_usec - startTime_.tv_usec + 500) / 1000;
-    if (NULL != label) {
-      stringstream ss_label;
-      ss_label << duration_units << " ms";
-      label->assign(ss_label.str());
-    }
-    break;
+    case UNIT_SECONDS:
+      duration_units =
+          duration_secs +
+          (now_time.tv_usec - startTime_.tv_usec + 500000) / 1000000;
+      if (NULL != label) {
+        stringstream ss_label;
+        ss_label << duration_units << " secs";
+        label->assign(ss_label.str());
+      }
+      break;
+    case UNIT_MICROSECONDS:
+      duration_units =
+          duration_secs * 1000000 + now_time.tv_usec - startTime_.tv_usec;
+      if (NULL != label) {
+        stringstream ss_label;
+        ss_label << duration_units << " us";
+        label->assign(ss_label.str());
+      }
+      break;
+    case UNIT_MILLISECONDS:
+    default:
+      duration_units = duration_secs * 1000 +
+                       (now_time.tv_usec - startTime_.tv_usec + 500) / 1000;
+      if (NULL != label) {
+        stringstream ss_label;
+        ss_label << duration_units << " ms";
+        label->assign(ss_label.str());
+      }
+      break;
   }
   return duration_units;
 }
@@ -425,13 +396,12 @@ Stopwatch::elapsedUnits(Stopwatch::Unit unit, string *label) const
  * @param const string &signature A signature uniquely identifying the method
  *                                invocation (usually name plus parameters).
  */
-ServiceMethod::ServiceMethod(ServiceTracker *tracker,
-                             const string &name,
-                             const string &signature,
-                             bool featureLogOnly)
-  : tracker_(tracker), name_(name), signature_(signature),
-    featureLogOnly_(featureLogOnly)
-{
+ServiceMethod::ServiceMethod(ServiceTracker *tracker, const string &name,
+                             const string &signature, bool featureLogOnly)
+    : tracker_(tracker),
+      name_(name),
+      signature_(signature),
+      featureLogOnly_(featureLogOnly) {
   // note: timer_ automatically starts at construction.
 
   // invoke tracker to start service
@@ -442,12 +412,9 @@ ServiceMethod::ServiceMethod(ServiceTracker *tracker,
   tracker_->startService(*this);
 }
 
-ServiceMethod::ServiceMethod(ServiceTracker *tracker,
-                             const string &name,
-                             uint64_t id,
-                             bool featureLogOnly)
-  : tracker_(tracker), name_(name), featureLogOnly_(featureLogOnly)
-{
+ServiceMethod::ServiceMethod(ServiceTracker *tracker, const string &name,
+                             uint64_t id, bool featureLogOnly)
+    : tracker_(tracker), name_(name), featureLogOnly_(featureLogOnly) {
   // note: timer_ automatically starts at construction.
   stringstream ss_signature;
   ss_signature << name << " (" << id << ')';
@@ -461,21 +428,19 @@ ServiceMethod::ServiceMethod(ServiceTracker *tracker,
   tracker_->startService(*this);
 }
 
-ServiceMethod::~ServiceMethod()
-{
+ServiceMethod::~ServiceMethod() {
   // invoke tracker to finish service
   // note: Not expecting an exception from this code, but
   // finishService() might conceivably throw an out-of-memory
   // exception.
   try {
     tracker_->finishService(*this);
-  } catch (...) {
+  }
+  catch (...) {
     // don't throw
   }
 }
 
-uint64_t
-ServiceMethod::step(const std::string &stepName)
-{
+uint64_t ServiceMethod::step(const std::string &stepName) {
   return tracker_->stepService(*this, stepName);
 }

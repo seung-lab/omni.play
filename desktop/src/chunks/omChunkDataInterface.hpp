@@ -2,8 +2,7 @@
 
 #include "datalayer/omDataWrapper.h"
 
-template <class>
-class OmPooledTile;
+template <class> class OmPooledTile;
 
 namespace om {
 namespace chunk {

@@ -4,9 +4,8 @@ namespace om {
 namespace common {
 
 struct stoppable {
-    virtual void StoppableStop() = 0;
+  virtual void StoppableStop() = 0;
 };
 
-} // namespace common
-} // namespace om
-
+}  // namespace common
+}  // namespace om

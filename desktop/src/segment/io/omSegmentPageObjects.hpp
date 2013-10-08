@@ -5,31 +5,26 @@
 #include "utility/omTempFile.hpp"
 
 class OmSegmentPageObjects {
-private:
-    const uint32_t pageSize_;
+ private:
+  const uint32_t pageSize_;
 
-    om::shared_ptr<OmSegment> segmentsPtr_;
+  om::shared_ptr<OmSegment> segmentsPtr_;
 
-    om::shared_ptr<OmTempFile<OmSegment> > tmpFile_;
+  om::shared_ptr<OmTempFile<OmSegment> > tmpFile_;
 
-public:
-    OmSegmentPageObjects(const uint32_t pageSize)
-        : pageSize_(pageSize)
-    {}
+ public:
+  OmSegmentPageObjects(const uint32_t pageSize) : pageSize_(pageSize) {}
 
-    OmSegment* MakeSegmentObjectPoolInMemory()
-    {
-        segmentsPtr_ = OmSmartPtr<OmSegment>::NewNumElements(pageSize_);
-        return segmentsPtr_.get();
-    }
+  OmSegment* MakeSegmentObjectPoolInMemory() {
+    segmentsPtr_ = OmSmartPtr<OmSegment>::NewNumElements(pageSize_);
+    return segmentsPtr_.get();
+  }
 
-    OmSegment* MakeSegmentObjectPoolOnDisk()
-    {
-        tmpFile_.reset(new OmTempFile<OmSegment>());
+  OmSegment* MakeSegmentObjectPoolOnDisk() {
+    tmpFile_.reset(new OmTempFile<OmSegment>());
 
-        tmpFile_->ResizeNumElements(pageSize_);
+    tmpFile_->ResizeNumElements(pageSize_);
 
-        return tmpFile_->Map();
-    }
+    return tmpFile_->Map();
+  }
 };
-

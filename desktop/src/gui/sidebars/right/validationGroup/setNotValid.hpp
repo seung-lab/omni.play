@@ -7,26 +7,21 @@
 #include "events/omEvents.h"
 
 class SetNotValid : public OmButton<ValidationGroup> {
-public:
-    SetNotValid(ValidationGroup *d)
-        : OmButton<ValidationGroup>( d,
-                                     "Not Valid",
-                                     "Unlock selected objects",
-                                     false)
-    {}
+ public:
+  SetNotValid(ValidationGroup *d)
+      : OmButton<ValidationGroup>(d, "Not Valid", "Unlock selected objects",
+                                  false) {}
 
-private:
-    void doAction()
-    {
-        //debug(dendbar, "ValidationGroup::deleteGroup\n");
-        SegmentationDataWrapper sdw = mParent->GetSDW();
-        if(!sdw.IsSegmentationValid()){
-            return;
-        }
-
-        OmActions::ValidateSelectedSegments(sdw, om::SET_NOT_VALID);
-
-        OmEvents::SegmentModified();
+ private:
+  void doAction() {
+    //debug(dendbar, "ValidationGroup::deleteGroup\n");
+    SegmentationDataWrapper sdw = mParent->GetSDW();
+    if (!sdw.IsSegmentationValid()) {
+      return;
     }
-};
 
+    OmActions::ValidateSelectedSegments(sdw, om::SET_NOT_VALID);
+
+    OmEvents::SegmentModified();
+  }
+};

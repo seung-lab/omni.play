@@ -29,15 +29,19 @@
 #include <string>
 #include <map>
 
-namespace facebook { namespace fb303 {
+namespace facebook {
+namespace fb303 {
 
 using apache::thrift::concurrency::Mutex;
 using apache::thrift::concurrency::ReadWriteMutex;
 using apache::thrift::server::TServer;
 
-struct ReadWriteInt : ReadWriteMutex {int64_t value;};
+struct ReadWriteInt : ReadWriteMutex {
+  int64_t value;
+};
 struct ReadWriteCounterMap : ReadWriteMutex,
-                             std::map<std::string, ReadWriteInt> {};
+                             std::map<std::string, ReadWriteInt> {
+};
 
 /**
  * Base Facebook service implementation in C++.
@@ -57,7 +61,7 @@ class FacebookBase : virtual public FacebookServiceIf {
 
   void setOption(const std::string& key, const std::string& value);
   void getOption(std::string& _return, const std::string& key);
-  void getOptions(std::map<std::string, std::string> & _return);
+  void getOptions(std::map<std::string, std::string>& _return);
 
   int64_t aliveSince();
 
@@ -78,9 +82,7 @@ class FacebookBase : virtual public FacebookServiceIf {
   /**
    * Set server handle for shutdown method
    */
-  void setServer(boost::shared_ptr<TServer> server) {
-    server_ = server;
-  }
+  void setServer(boost::shared_ptr<TServer> server) { server_ = server; }
 
   void getCpuProfile(std::string& _return, int32_t durSecs) { _return = ""; }
 
@@ -98,6 +100,7 @@ class FacebookBase : virtual public FacebookServiceIf {
 
 };
 
-}} // facebook::tb303
+}
+}  // facebook::tb303
 
-#endif // _FACEBOOK_TB303_FACEBOOKBASE_H_
+#endif  // _FACEBOOK_TB303_FACEBOOKBASE_H_

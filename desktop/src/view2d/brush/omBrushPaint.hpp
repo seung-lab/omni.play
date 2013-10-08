@@ -5,30 +5,28 @@
 #include "view2d/brush/omBrushPaintLineTask.hpp"
 
 class OmBrushPaint {
-public:
-    static void PaintByClick(OmView2dState* state, const om::globalCoord& coord,
-                             const OmSegID segIDtoPaint)
-    {
-        om::shared_ptr<OmBrushOppInfo> info =
-            OmBrushOppInfoFactory::MakeOppInfo(state, coord, om::ADD);
+ public:
+  static void PaintByClick(OmView2dState* state, const om::globalCoord& coord,
+                           const OmSegID segIDtoPaint) {
+    om::shared_ptr<OmBrushOppInfo> info =
+        OmBrushOppInfoFactory::MakeOppInfo(state, coord, om::ADD);
 
-        OmBrushPaintCircle circle(info, segIDtoPaint);
+    OmBrushPaintCircle circle(info, segIDtoPaint);
 
-        circle.PaintCircle(coord);
-    }
+    circle.PaintCircle(coord);
+  }
 
-    static void PaintByLine(OmView2dState* state, const om::globalCoord& second,
-                            const OmSegID segIDtoPaint)
-    {
-        const om::globalCoord& first = state->GetLastDataPoint();
+  static void PaintByLine(OmView2dState* state, const om::globalCoord& second,
+                          const OmSegID segIDtoPaint) {
+    const om::globalCoord& first = state->GetLastDataPoint();
 
-        om::shared_ptr<OmBrushOppInfo> info =
-            OmBrushOppInfoFactory::MakeOppInfo(state, first, om::ADD);
+    om::shared_ptr<OmBrushOppInfo> info =
+        OmBrushOppInfoFactory::MakeOppInfo(state, first, om::ADD);
 
-        om::shared_ptr<OmBrushPaintLineTask> task =
-            om::make_shared<OmBrushPaintLineTask>(info, first, second, segIDtoPaint);
+    om::shared_ptr<OmBrushPaintLineTask> task =
+        om::make_shared<OmBrushPaintLineTask>(info, first, second,
+                                              segIDtoPaint);
 
-        OmView2dManager::AddTaskBack(task);
-    }
+    OmView2dManager::AddTaskBack(task);
+  }
 };
-

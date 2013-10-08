@@ -13,74 +13,66 @@ namespace om {
 namespace segmentationInspector {
 
 class ExportDescendantList : public OmButton<PageExport> {
-public:
-    ExportDescendantList(PageExport * d)
-        : OmButton<PageExport>( d,
-                                "Export Segment Descendant List",
-                                "Export Segment Descendant List",
-                                false)
-    {}
+ public:
+  ExportDescendantList(PageExport* d)
+      : OmButton<PageExport>(d, "Export Segment Descendant List",
+                             "Export Segment Descendant List", false) {}
 
-private:
-    void doAction()
-    {
-        const SegmentationDataWrapper& sdw = mParent->GetSDW();
+ private:
+  void doAction() {
+    const SegmentationDataWrapper& sdw = mParent->GetSDW();
 
-        OmSegments* segments = sdw.Segments();
+    OmSegments* segments = sdw.Segments();
 
-        const QString outFile = OmProject::OmniFile() + ".segmentsDescendantChildren.txt";
+    const QString outFile =
+        OmProject::OmniFile() + ".segmentsDescendantChildren.txt";
 
-        QFile file(outFile);
+    QFile file(outFile);
 
-        om::file::openFileWO(file);
+    om::file::openFileWO(file);
 
-        printf("writing segment file %s\n", qPrintable(outFile));
+    printf("writing segment file %s\n", qPrintable(outFile));
 
-        QTextStream out(&file);
+    QTextStream out(&file);
 
-        for(OmSegID i = 1; i <= segments->getMaxValue(); ++i)
-        {
-            OmSegment* seg = segments->GetSegment(i);
+    for (OmSegID i = 1; i <= segments->getMaxValue(); ++i) {
+      OmSegment* seg = segments->GetSegment(i);
 
-            if(!seg){
-                continue;
-            }
+      if (!seg) {
+        continue;
+      }
 
-            out << i << ": ";
+      out << i << ": ";
 
-            if(seg->getParent())
-            {
-                out << "child\n";
-                continue;
-            }
+      if (seg->getParent()) {
+        out << "child\n";
+        continue;
+      }
 
-            QString ids = getIds(i, segments);
-            out << ids << "\n";
-        }
-
-        printf("\tdone!\n");
+      QString ids = getIds(i, segments);
+      out << ids << "\n";
     }
 
-private:
-    QString getIds(const OmSegID segID, OmSegments* segments)
-    {
-        OmSegmentIterator iter(segments);
-        iter.iterOverSegmentID(segID);
+    printf("\tdone!\n");
+  }
 
-        OmSegment* seg = iter.getNextSegment();
+ private:
+  QString getIds(const OmSegID segID, OmSegments* segments) {
+    OmSegmentIterator iter(segments);
+    iter.iterOverSegmentID(segID);
 
-        QStringList ids;
+    OmSegment* seg = iter.getNextSegment();
 
-        while(NULL != seg)
-        {
-            ids << QString::number(seg->value());
-            seg = iter.getNextSegment();
-        }
+    QStringList ids;
 
-        return ids.join(",");
+    while (NULL != seg) {
+      ids << QString::number(seg->value());
+      seg = iter.getNextSegment();
     }
+
+    return ids.join(",");
+  }
 };
 
-} // namespace segmentationInspector
-} // namespace om
-
+}  // namespace segmentationInspector
+}  // namespace om

@@ -12,19 +12,17 @@ class OmSegmentCutActionImpl;
 
 class OmSegmentCutAction : public OmUndoCommand {
 
-public:
-    OmSegmentCutAction(om::shared_ptr<OmSegmentCutActionImpl> impl)
-        : impl_(impl)
-    {}
+ public:
+  OmSegmentCutAction(om::shared_ptr<OmSegmentCutActionImpl> impl)
+      : impl_(impl) {}
 
-    OmSegmentCutAction(const SegmentDataWrapper& sdw);
+  OmSegmentCutAction(const SegmentDataWrapper& sdw);
 
-private:
-    void Action();
-    void UndoAction();
-    std::string Description();
-    void save(const std::string& comment);
+ private:
+  void Action();
+  void UndoAction();
+  std::string Description();
+  void save(const std::string& comment);
 
-    om::shared_ptr<OmSegmentCutActionImpl> impl_;
+  om::shared_ptr<OmSegmentCutActionImpl> impl_;
 };
-

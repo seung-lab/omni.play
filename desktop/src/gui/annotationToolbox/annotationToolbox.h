@@ -11,96 +11,83 @@
 namespace om {
 namespace gui {
 
-class ColorButton : public OmButton<QWidget>
-{
-    private:
-        OmViewGroupState *vgs_;
-        QColor cur_;
+class ColorButton : public OmButton<QWidget> {
+ private:
+  OmViewGroupState* vgs_;
+  QColor cur_;
 
-    public:
-        ColorButton(QWidget* d, OmViewGroupState *vgs)
-        : OmButton<QWidget>(d, "", "Choose a Color", false)
-        , vgs_(vgs)
-        , cur_(QColor(255,0,0))
-        {
-            updateColor();
-        }
+ public:
+  ColorButton(QWidget* d, OmViewGroupState* vgs)
+      : OmButton<QWidget>(d, "", "Choose a Color", false),
+        vgs_(vgs),
+        cur_(QColor(255, 0, 0)) {
+    updateColor();
+  }
 
-    private:
-        void updateColor()
-        {
-            vgs_->setAnnotationColor(om::utils::color::QColorToOmColor(cur_));
+ private:
+  void updateColor() {
+    vgs_->setAnnotationColor(om::utils::color::QColorToOmColor(cur_));
 
-            const QPixmap pixm =  om::utils::color::MakeQPixmap(cur_);
-            setIcon(QIcon(pixm));
+    const QPixmap pixm = om::utils::color::MakeQPixmap(cur_);
+    setIcon(QIcon(pixm));
 
-            update();
-        }
+    update();
+  }
 
-        void doAction()
-        {
-            QColor color = QColorDialog::getColor(cur_, this);
+  void doAction() {
+    QColor color = QColorDialog::getColor(cur_, this);
 
-            if (!color.isValid()) {
-                return;
-            }
+    if (!color.isValid()) {
+      return;
+    }
 
-            cur_ = color;
-            updateColor();
-        }
+    cur_ = color;
+    updateColor();
+  }
 };
 
-class AnnotationLineEdit : public QLineEdit
-{
-Q_OBJECT
+class AnnotationLineEdit : public QLineEdit {
+  Q_OBJECT private : OmViewGroupState* vgs_;
 
-private:
-    OmViewGroupState* vgs_;
+ private
+Q_SLOTS:
+  void update(const QString& text) {
+    vgs_->setAnnotationString(text.toStdString());
+  }
 
-private Q_SLOTS:
-    void update(const QString &text) {
-        vgs_->setAnnotationString(text.toStdString());
-    }
-
-public:
-    AnnotationLineEdit(QWidget* d, OmViewGroupState* vgs)
-    : QLineEdit(d)
-    , vgs_(vgs)
-    {
-    	setText("Annotation");
-        om::connect(this, SIGNAL(textChanged(const QString&)),
-                    this, SLOT(update(const QString&)));
-    }
+ public:
+  AnnotationLineEdit(QWidget* d, OmViewGroupState* vgs)
+      : QLineEdit(d), vgs_(vgs) {
+    setText("Annotation");
+    om::connect(this, SIGNAL(textChanged(const QString&)), this,
+                SLOT(update(const QString&)));
+  }
 };
 
-class AnnotationSizeSpinBox : public OmDoubleSpinBox
-{
-private:
-    OmViewGroupState* vgs_;
+class AnnotationSizeSpinBox : public OmDoubleSpinBox {
+ private:
+  OmViewGroupState* vgs_;
 
-    void actUponValueChange(const double value) {
-        vgs_->setAnnotationSize(value);
-    }
+  void actUponValueChange(const double value) {
+    vgs_->setAnnotationSize(value);
+  }
 
-public:
-    AnnotationSizeSpinBox(QWidget* d, OmViewGroupState* vgs)
-    : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE)
-    , vgs_(vgs)
-    {
-    	setSingleStep(0.1);
-		setMinimum(0);
-		setMaximum(10);
-		setValue(vgs_->getAnnotationSize());
-    }
+ public:
+  AnnotationSizeSpinBox(QWidget* d, OmViewGroupState* vgs)
+      : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE), vgs_(vgs) {
+    setSingleStep(0.1);
+    setMinimum(0);
+    setMaximum(10);
+    setValue(vgs_->getAnnotationSize());
+  }
 };
 
 class AnnotationToolbox : public QDialog {
-    public:
-        AnnotationToolbox(QWidget* parent, OmViewGroupState* vgs);
+ public:
+  AnnotationToolbox(QWidget* parent, OmViewGroupState* vgs);
 
-        virtual ~AnnotationToolbox()
-        {}
+  virtual ~AnnotationToolbox() {}
 };
 
-} // namespace gui
-} // namespace om
+}  // namespace gui
+}  // namespace om

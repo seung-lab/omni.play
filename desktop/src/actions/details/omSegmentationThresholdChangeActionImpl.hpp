@@ -10,58 +10,55 @@
 #include "utility/dataWrappers.h"
 
 class OmSegmentationThresholdChangeActionImpl {
-private:
-    SegmentationDataWrapper sdw_;
-    float threshold_;
-    float oldThreshold_;
+ private:
+  SegmentationDataWrapper sdw_;
+  float threshold_;
+  float oldThreshold_;
 
-public:
-    OmSegmentationThresholdChangeActionImpl()
-    {}
+ public:
+  OmSegmentationThresholdChangeActionImpl() {}
 
-    OmSegmentationThresholdChangeActionImpl(const SegmentationDataWrapper sdw,
-                                            const double threshold)
-        : sdw_(sdw)
-        , threshold_(threshold)
-    {}
+  OmSegmentationThresholdChangeActionImpl(const SegmentationDataWrapper sdw,
+                                          const double threshold)
+      : sdw_(sdw), threshold_(threshold) {}
 
-    void Execute()
-    {
-        OmSegmentation& seg = sdw_.GetSegmentation();
+  void Execute() {
+    OmSegmentation& seg = sdw_.GetSegmentation();
 
-        oldThreshold_ = seg.GetDendThreshold();
+    oldThreshold_ = seg.GetDendThreshold();
 
-        seg.SetDendThreshold(threshold_);
+    seg.SetDendThreshold(threshold_);
 
-        OmEvents::RefreshMSTthreshold();
+    OmEvents::RefreshMSTthreshold();
 
-        OmEvents::SegmentModified();
-    }
+    OmEvents::SegmentModified();
+  }
 
-    void Undo()
-    {
-        OmSegmentation& seg = sdw_.GetSegmentation();
+  void Undo() {
+    OmSegmentation& seg = sdw_.GetSegmentation();
 
-        seg.SetDendThreshold(oldThreshold_);
+    seg.SetDendThreshold(oldThreshold_);
 
-        OmEvents::RefreshMSTthreshold();
+    OmEvents::RefreshMSTthreshold();
 
-        OmEvents::SegmentModified();
-    }
+    OmEvents::SegmentModified();
+  }
 
-    std::string Description() const {
-        return "Threshold: " + om::string::num(threshold_);
-    }
+  std::string Description() const {
+    return "Threshold: " + om::string::num(threshold_);
+  }
 
-    QString classNameForLogFile() const {
-        return "OmSegmentationThresholdChangeAction";
-    }
+  QString classNameForLogFile() const {
+    return "OmSegmentationThresholdChangeAction";
+  }
 
-private:
-    template <typename T> friend class OmActionLoggerThread;
+ private:
+  template <typename T> friend class OmActionLoggerThread;
 
-    friend class QDataStream &operator<<(QDataStream&, const OmSegmentationThresholdChangeActionImpl&);
-    friend class QDataStream &operator>>(QDataStream&, OmSegmentationThresholdChangeActionImpl&);
-    friend class QTextStream &operator<<(QTextStream& out, const OmSegmentationThresholdChangeActionImpl& a);
+  friend class QDataStream& operator<<(
+      QDataStream&, const OmSegmentationThresholdChangeActionImpl&);
+  friend class QDataStream& operator>>(QDataStream&,
+                                       OmSegmentationThresholdChangeActionImpl&);
+  friend class QTextStream& operator<<(
+      QTextStream& out, const OmSegmentationThresholdChangeActionImpl& a);
 };
-

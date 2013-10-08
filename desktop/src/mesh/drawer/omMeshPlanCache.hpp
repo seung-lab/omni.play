@@ -5,112 +5,98 @@
 #include "system/cache/omCacheManager.h"
 
 class OmMeshPlanCache {
-private:
-    OmSegmentation *const segmentation_;
-    OmMeshSegmentList *const rootSegLists_;
+ private:
+  OmSegmentation* const segmentation_;
+  OmMeshSegmentList* const rootSegLists_;
 
-    struct CachedDataEnry
-    {
-        om::shared_ptr<OmMeshPlan> sortedSegments;
-        uint64_t freshness;
-        uint64_t dustThreshold;
-    };
+  struct CachedDataEnry {
+    om::shared_ptr<OmMeshPlan> sortedSegments;
+    uint64_t freshness;
+    uint64_t dustThreshold;
+  };
 
-    struct CachedData
-    {
-        om::shared_ptr<OmVolumeCuller> culler;
-        om::shared_ptr<std::deque<OmSegChunk*> > chunks;
-        std::map<OmBitfield, CachedDataEnry> dataByBitfield;
-    };
+  struct CachedData {
+    om::shared_ptr<OmVolumeCuller> culler;
+    om::shared_ptr<std::deque<OmSegChunk*> > chunks;
+    std::map<OmBitfield, CachedDataEnry> dataByBitfield;
+  };
 
-    CachedData cachedData_;
+  CachedData cachedData_;
 
-public:
-    OmMeshPlanCache(OmSegmentation* segmentation,
-                    OmMeshSegmentList* rootSegLists)
-        : segmentation_(segmentation)
-        , rootSegLists_(rootSegLists)
-    {}
+ public:
+  OmMeshPlanCache(OmSegmentation* segmentation, OmMeshSegmentList* rootSegLists)
+      : segmentation_(segmentation), rootSegLists_(rootSegLists) {}
 
-    om::shared_ptr<OmMeshPlan>
-    GetSegmentsToDraw(OmViewGroupState* vgs,
-                      om::shared_ptr<OmVolumeCuller> culler,
-                      const OmBitfield drawOptions)
-    {
-        om::shared_ptr<OmMeshPlan> sortedSegments =
-            getCachedSegments(vgs, culler, drawOptions);
+  om::shared_ptr<OmMeshPlan> GetSegmentsToDraw(
+      OmViewGroupState* vgs, om::shared_ptr<OmVolumeCuller> culler,
+      const OmBitfield drawOptions) {
+    om::shared_ptr<OmMeshPlan> sortedSegments =
+        getCachedSegments(vgs, culler, drawOptions);
 
-        if(sortedSegments){
-            return sortedSegments;
-        }
-
-        return buildPlan(vgs, culler, drawOptions);
+    if (sortedSegments) {
+      return sortedSegments;
     }
 
-private:
+    return buildPlan(vgs, culler, drawOptions);
+  }
 
-    /** cached segment list should be the same if
-     *  1.) cullers are the same
-     *  2.) same segments are selected (i.e. same global freshness)
-     *  3.) same View3d dusting threshold
-     *
-     *  a list gets cached ONLY once all segments have been added to the list
-     **/
-    om::shared_ptr<OmMeshPlan>
-    getCachedSegments(OmViewGroupState* vgs,
-                      om::shared_ptr<OmVolumeCuller> culler,
-                      const OmBitfield drawOptions)
-    {
-        if(!cachedData_.culler){
-            return om::shared_ptr<OmMeshPlan>();
-        }
+ private:
 
-        if(!cachedData_.culler->equals(culler))
-        {
-            cachedData_.dataByBitfield.clear();
-            cachedData_.chunks.reset();
-            return om::shared_ptr<OmMeshPlan>();
-        }
-
-        if(!cachedData_.dataByBitfield.count(drawOptions)){
-            return om::shared_ptr<OmMeshPlan>();
-        }
-
-        const CachedDataEnry& entry = cachedData_.dataByBitfield[drawOptions];
-
-        if(entry.freshness == OmCacheManager::GetFreshness() &&
-           entry.dustThreshold == vgs->getDustThreshold())
-        {
-            return entry.sortedSegments;
-        }
-
-        return om::shared_ptr<OmMeshPlan>();
+  /** cached segment list should be the same if
+   *  1.) cullers are the same
+   *  2.) same segments are selected (i.e. same global freshness)
+   *  3.) same View3d dusting threshold
+   *
+   *  a list gets cached ONLY once all segments have been added to the list
+   **/
+  om::shared_ptr<OmMeshPlan> getCachedSegments(
+      OmViewGroupState* vgs, om::shared_ptr<OmVolumeCuller> culler,
+      const OmBitfield drawOptions) {
+    if (!cachedData_.culler) {
+      return om::shared_ptr<OmMeshPlan>();
     }
 
-    om::shared_ptr<OmMeshPlan>
-    buildPlan(OmViewGroupState* vgs,
-              om::shared_ptr<OmVolumeCuller> culler,
-              const OmBitfield drawOptions)
-    {
-        OmMeshDrawPlanner planner(segmentation_, vgs, culler, drawOptions,
-                                  rootSegLists_);
-
-        om::shared_ptr<OmMeshPlan> sortedSegments =
-            planner.BuildPlan(cachedData_.chunks);
-
-        if(!planner.SegmentsMissing()){
-            CachedDataEnry data;
-            data.sortedSegments = sortedSegments;
-            data.freshness = OmCacheManager::GetFreshness();
-            data.dustThreshold = vgs->getDustThreshold();
-
-            cachedData_.dataByBitfield[drawOptions] = data;
-        }
-
-        cachedData_.culler = culler;
-        cachedData_.chunks = planner.GetChunkList();
-
-        return sortedSegments;
+    if (!cachedData_.culler->equals(culler)) {
+      cachedData_.dataByBitfield.clear();
+      cachedData_.chunks.reset();
+      return om::shared_ptr<OmMeshPlan>();
     }
+
+    if (!cachedData_.dataByBitfield.count(drawOptions)) {
+      return om::shared_ptr<OmMeshPlan>();
+    }
+
+    const CachedDataEnry& entry = cachedData_.dataByBitfield[drawOptions];
+
+    if (entry.freshness == OmCacheManager::GetFreshness() &&
+        entry.dustThreshold == vgs->getDustThreshold()) {
+      return entry.sortedSegments;
+    }
+
+    return om::shared_ptr<OmMeshPlan>();
+  }
+
+  om::shared_ptr<OmMeshPlan> buildPlan(OmViewGroupState* vgs,
+                                       om::shared_ptr<OmVolumeCuller> culler,
+                                       const OmBitfield drawOptions) {
+    OmMeshDrawPlanner planner(segmentation_, vgs, culler, drawOptions,
+                              rootSegLists_);
+
+    om::shared_ptr<OmMeshPlan> sortedSegments =
+        planner.BuildPlan(cachedData_.chunks);
+
+    if (!planner.SegmentsMissing()) {
+      CachedDataEnry data;
+      data.sortedSegments = sortedSegments;
+      data.freshness = OmCacheManager::GetFreshness();
+      data.dustThreshold = vgs->getDustThreshold();
+
+      cachedData_.dataByBitfield[drawOptions] = data;
+    }
+
+    cachedData_.culler = culler;
+    cachedData_.chunks = planner.GetChunkList();
+
+    return sortedSegments;
+  }
 };
-

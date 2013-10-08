@@ -9,70 +9,61 @@
 #include "viewGroup/omViewGroupState.h"
 
 class OmSegmentShatterActionImpl {
-private:
-    SegmentDataWrapper sdw_;
-    std::vector<OmSegmentEdge> removed_;
-    QString desc;
+ private:
+  SegmentDataWrapper sdw_;
+  std::vector<OmSegmentEdge> removed_;
+  QString desc;
 
-public:
-    OmSegmentShatterActionImpl()
-    {}
+ public:
+  OmSegmentShatterActionImpl() {}
 
-    OmSegmentShatterActionImpl(const SegmentDataWrapper& sdw)
-        : sdw_(sdw)
-        , desc("Shattering: ")
-    {}
+  OmSegmentShatterActionImpl(const SegmentDataWrapper& sdw)
+      : sdw_(sdw), desc("Shattering: ") {}
 
-    void Execute()
-    {
-    	removed_ = sdw_.GetSegmentation().Segments()->Shatter(sdw_.GetSegment());
+  void Execute() {
+    removed_ = sdw_.GetSegmentation().Segments()->Shatter(sdw_.GetSegment());
 
-        desc = QString("Shatter seg %1").arg(sdw_.GetSegmentID());
-        notify();
+    desc = QString("Shatter seg %1").arg(sdw_.GetSegmentID());
+    notify();
+  }
+
+  void Undo() {
+    FOR_EACH(e, removed_) {
+      std::pair<bool, OmSegmentEdge> edge =
+          sdw_.GetSegmentation().Segments()->JoinEdge(*e);
+
+      if (!edge.first) {
+        std::cout << "edge could not be rejoined...\n";
+        return;
+      }
     }
 
-    void Undo()
-    {
-    	FOR_EACH(e, removed_)
-    	{
-    		std::pair<bool, OmSegmentEdge> edge = sdw_.GetSegmentation().Segments()->JoinEdge(*e);
+    desc = QString("Unshattered %1").arg(sdw_.GetSegmentID());
+    notify();
+  }
 
-    		if(!edge.first)
-    		{
-    		    std::cout << "edge could not be rejoined...\n";
-    		    return;
-    		}
-		}
+  std::string Description() const { return desc.toStdString(); }
 
-        desc = QString("Unshattered %1").arg(sdw_.GetSegmentID());
-		notify();
-    }
+  QString classNameForLogFile() const { return "OmSegmentShatterAction"; }
 
-    std::string Description() const {
-        return desc.toStdString();
-    }
+ private:
+  void notify() const {
+    std::cout << desc.toStdString() << "\n";
 
-    QString classNameForLogFile() const {
-        return "OmSegmentShatterAction";
-    }
+    OmEvents::SegmentModified();
 
-private:
-	void notify() const
-	{
-		std::cout << desc.toStdString() << "\n";
+    sdw_.GetSegmentation().SegmentLists()->RefreshGUIlists();
 
-        OmEvents::SegmentModified();
+    OmCacheManager::TouchFreshness();
+    OmEvents::Redraw2d();
+    OmEvents::Redraw3d();
+  }
 
-        sdw_.GetSegmentation().SegmentLists()->RefreshGUIlists();
-
-        OmCacheManager::TouchFreshness();
-        OmEvents::Redraw2d();
-        OmEvents::Redraw3d();
-	}
-
-    template <typename T> friend class OmActionLoggerThread;
-    friend class QDataStream &operator<<(QDataStream&, const OmSegmentShatterActionImpl&);
-    friend class QDataStream &operator>>(QDataStream&, OmSegmentShatterActionImpl&);
-    friend QTextStream& operator<<(QTextStream& out, const OmSegmentShatterActionImpl&);
+  template <typename T> friend class OmActionLoggerThread;
+  friend class QDataStream& operator<<(QDataStream&,
+                                       const OmSegmentShatterActionImpl&);
+  friend class QDataStream& operator>>(QDataStream&,
+                                       OmSegmentShatterActionImpl&);
+  friend QTextStream& operator<<(QTextStream& out,
+                                 const OmSegmentShatterActionImpl&);
 };
-

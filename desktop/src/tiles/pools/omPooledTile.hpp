@@ -4,33 +4,22 @@
 #include "tiles/pools/omTilePools.hpp"
 
 class OmPooledTileWrapper {
-public:
-    virtual ~OmPooledTileWrapper()
-    {}
+ public:
+  virtual ~OmPooledTileWrapper() {}
 
-    virtual void* GetDataVoid() = 0;
+  virtual void* GetDataVoid() = 0;
 };
 
-template <typename T>
-class OmPooledTile : public OmPooledTileWrapper {
-private:
-    T *const tile_;
+template <typename T> class OmPooledTile : public OmPooledTileWrapper {
+ private:
+  T* const tile_;
 
-public:
-    OmPooledTile()
-        : tile_(OmTilePools::GetPool<T>().GetTile())
-    {}
+ public:
+  OmPooledTile() : tile_(OmTilePools::GetPool<T>().GetTile()) {}
 
-    virtual ~OmPooledTile(){
-        OmTilePools::GetPool<T>().FreeTile(tile_);
-    }
+  virtual ~OmPooledTile() { OmTilePools::GetPool<T>().FreeTile(tile_); }
 
-    T* GetData(){
-        return tile_;
-    }
+  T* GetData() { return tile_; }
 
-    void* GetDataVoid(){
-        return tile_;
-    }
+  void* GetDataVoid() { return tile_; }
 };
-

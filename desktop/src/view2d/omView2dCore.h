@@ -22,47 +22,39 @@ class OmViewGroupState;
 #endif
 
 class OmView2dCore : public OmView2dWidgetBase {
-Q_OBJECT
+  Q_OBJECT public : inline ViewType GetViewType() const { return viewType_; }
 
-public:
-    inline ViewType GetViewType() const {
-        return viewType_;
-    }
+  bool IsDrawComplete();
+  int GetTileCount();
+  int GetTileCountIncomplete();
 
-    bool IsDrawComplete();
-    int GetTileCount();
-    int GetTileCountIncomplete();
+ public
+Q_SLOTS:
+  void dockVisibilityChanged(const bool visible);
 
-public Q_SLOTS:
-    void dockVisibilityChanged(const bool visible);
+ protected:
+  OmView2dCore(QWidget*, OmMipVolume*, OmViewGroupState*, const ViewType,
+               const std::string& name);
 
-protected:
-    OmView2dCore(QWidget *, OmMipVolume*, OmViewGroupState*, const ViewType,
-                 const std::string& name);
+  virtual ~OmView2dCore();
 
-    virtual ~OmView2dCore();
+  inline OmView2dState* State() { return state_.get(); }
 
-    inline OmView2dState* State() {
-        return state_.get();
-    }
+  void Initialize();
+  void Paint3D();
+  void PaintOther();
+  void Resize(int width, int height);
 
-    void Initialize();
-    void Paint3D();
-    void PaintOther();
-    void Resize(int width, int height);
+  bool blockingRedraw_;
 
-    bool blockingRedraw_;
+ private:
+  const ViewType viewType_;
+  const std::string name_;
 
-private:
-    const ViewType viewType_;
-    const std::string name_;
+  boost::scoped_ptr<OmView2dState> state_;
+  boost::scoped_ptr<OmTileDrawer> tileDrawer_;
+  boost::scoped_ptr<OmScreenPainter> screenPainter_;
 
-    boost::scoped_ptr<OmView2dState> state_;
-    boost::scoped_ptr<OmTileDrawer> tileDrawer_;
-    boost::scoped_ptr<OmScreenPainter> screenPainter_;
-
-
-    void setupMainGLpaintOp();
-    void teardownMainGLpaintOp();
+  void setupMainGLpaintOp();
+  void teardownMainGLpaintOp();
 };
-

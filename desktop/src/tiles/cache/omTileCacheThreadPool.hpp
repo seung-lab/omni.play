@@ -6,53 +6,45 @@
 #include "tiles/omTileCoord.h"
 
 class OmTileCacheThreadPool {
-private:
-    typedef OmTileCoord key_t;
+ private:
+  typedef OmTileCoord key_t;
 
-    std::set<key_t> currentlyFetching_;
-    typedef std::set<key_t>::iterator iterator;
+  std::set<key_t> currentlyFetching_;
+  typedef std::set<key_t>::iterator iterator;
 
-    OmTaskManager<OmTaskManagerContainerMipSorted> threadPool_;
+  OmTaskManager<OmTaskManagerContainerMipSorted> threadPool_;
 
-    zi::spinlock lock_;
+  zi::spinlock lock_;
 
-public:
-    void start(){
-        threadPool_.start();
+ public:
+  void start() { threadPool_.start(); }
+
+  void clear() {
+    zi::guard g(lock_);
+    currentlyFetching_.clear();
+    threadPool_.clear();
+  }
+
+  void stop() {
+    zi::guard g(lock_);
+    currentlyFetching_.clear();
+    threadPool_.stop();
+  }
+
+  template <typename PtrToMemFunc, typename KlassInstance>
+  void QueueUpIfKeyNotPresent(const key_t& key, PtrToMemFunc ptrMemFunc,
+                              KlassInstance klassInstance) {
+    zi::guard g(lock_);
+
+    if (insertSinceDidNotHaveKey(key)) {
+      threadPool_.insert(key.getCoord().getLevel(),
+                         zi::run_fn(zi::bind(ptrMemFunc, klassInstance, key)));
     }
+  }
 
-    void clear()
-    {
-        zi::guard g(lock_);
-        currentlyFetching_.clear();
-        threadPool_.clear();
-    }
-
-    void stop()
-    {
-        zi::guard g(lock_);
-        currentlyFetching_.clear();
-        threadPool_.stop();
-    }
-
-    template <typename PtrToMemFunc, typename KlassInstance>
-    void QueueUpIfKeyNotPresent(const key_t& key, PtrToMemFunc ptrMemFunc,
-                                KlassInstance klassInstance)
-    {
-        zi::guard g(lock_);
-
-        if(insertSinceDidNotHaveKey(key))
-        {
-            threadPool_.insert(key.getCoord().getLevel(),
-                               zi::run_fn(
-                                   zi::bind(ptrMemFunc, klassInstance, key)));
-        }
-    }
-
-private:
-    inline bool insertSinceDidNotHaveKey(const key_t& k)
-    {
-        std::pair<iterator, bool> p = currentlyFetching_.insert(k);
-        return p.second;
-    }
+ private:
+  inline bool insertSinceDidNotHaveKey(const key_t& k) {
+    std::pair<iterator, bool> p = currentlyFetching_.insert(k);
+    return p.second;
+  }
 };

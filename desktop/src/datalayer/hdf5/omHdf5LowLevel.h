@@ -11,33 +11,32 @@ typedef LONG_PTR ssize_t;
 #include "datalayer/omDataPath.h"
 
 class OmHdf5LowLevel {
-public:
-    explicit OmHdf5LowLevel(const int id);
+ public:
+  explicit OmHdf5LowLevel(const int id);
 
-    void setPath(const OmDataPath & p);
-    const char* getPath();
+  void setPath(const OmDataPath& p);
+  const char* getPath();
 
-    bool group_exists();
-    void group_delete();
-    void group_create();
-    void group_create_tree(const char*);
+  bool group_exists();
+  void group_delete();
+  void group_create();
+  void group_create_tree(const char*);
 
-    bool dataset_exists();
-    void dataset_delete_create_tree();
-    Vector3i getDatasetDims();
-    OmDataWrapperPtr readDataset(int* size = NULL);
-    void allocateDataset(int size, OmDataWrapperPtr data);
+  bool dataset_exists();
+  void dataset_delete_create_tree();
+  Vector3i getDatasetDims();
+  OmDataWrapperPtr readDataset(int* size = NULL);
+  void allocateDataset(int size, OmDataWrapperPtr data);
 
-    Vector3i getChunkedDatasetDims(const om::AffinityGraph aff);
-    void allocateChunkedDataset(const Vector3i&,
-                                const Vector3i&,
-                                const OmVolDataType);
-    OmDataWrapperPtr readChunk(const om::dataBbox&, const om::AffinityGraph aff);
-    void writeChunk(const om::dataBbox&, OmDataWrapperPtr);
-    OmDataWrapperPtr GetChunkDataType();
+  Vector3i getChunkedDatasetDims(const om::AffinityGraph aff);
+  void allocateChunkedDataset(const Vector3i&, const Vector3i&,
+                              const OmVolDataType);
+  OmDataWrapperPtr readChunk(const om::dataBbox&, const om::AffinityGraph aff);
+  void writeChunk(const om::dataBbox&, OmDataWrapperPtr);
+  OmDataWrapperPtr GetChunkDataType();
 
-private:
-    // hid_t is typedef'd to int in H5Ipublic.h
-    const int fileId;
-    OmDataPath path;
+ private:
+  // hid_t is typedef'd to int in H5Ipublic.h
+  const int fileId;
+  OmDataPath path;
 };

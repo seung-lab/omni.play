@@ -8,30 +8,23 @@ namespace om {
 namespace segmentationInspector {
 
 class ExportButton : public OmButton<PageExport> {
-public:
-    ExportButton(PageExport * d)
-        : OmButton<PageExport>( d,
-                                  "Export and reroot segments",
-                                  "Export",
-                                  false)
-    {
-    }
+ public:
+  ExportButton(PageExport* d)
+      : OmButton<PageExport>(d, "Export and reroot segments", "Export", false) {
+  }
 
-private:
-    void doAction()
-    {
-        const QString fileName =
-            QFileDialog::getSaveFileName(this, tr("Export As"));
+ private:
+  void doAction() {
+    const QString fileName =
+        QFileDialog::getSaveFileName(this, tr("Export As"));
 
-        if (fileName == NULL)
-            return;
+    if (fileName == NULL) return;
 
-        const SegmentationDataWrapper& sdw = mParent->GetSDW();
+    const SegmentationDataWrapper& sdw = mParent->GetSDW();
 
-        OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, true);
-    }
+    OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, true);
+  }
 };
 
-} // namespace segmentationInspector
-} // namespace om
-
+}  // namespace segmentationInspector
+}  // namespace om

@@ -14,24 +14,25 @@ namespace archive {
 static const int Latest_Project_Version = 25;
 
 class project {
-public:
-    static void Read(const QString& fnp, OmProjectImpl* project);
-    static void Write(const QString& fnp, OmProjectImpl* project);
-private:
-    static void postLoad();    
+ public:
+  static void Read(const QString& fnp, OmProjectImpl* project);
+  static void Write(const QString& fnp, OmProjectImpl* project);
+
+ private:
+  static void postLoad();
 };
 
-} // namespace archive
-} // namespace data
-} // namespace om
+}  // namespace archive
+}  // namespace data
+}  // namespace om
 
 namespace YAML {
-    
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmProjectImpl& p);
+
+YAML::Emitter& operator<<(YAML::Emitter& out, const OmProjectImpl& p);
 void operator>>(const YAML::Node& in, OmProjectImpl& p);
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmPreferences& p);
+YAML::Emitter& operator<<(YAML::Emitter& out, const OmPreferences& p);
 void operator>>(const YAML::Node& in, OmPreferences& p);
-YAML::Emitter &operator<<(YAML::Emitter& out, const OmProjectVolumes& p);
+YAML::Emitter& operator<<(YAML::Emitter& out, const OmProjectVolumes& p);
 void operator>>(const YAML::Node& in, OmProjectVolumes& p);
 
-} // namespace YAML
+}  // namespace YAML

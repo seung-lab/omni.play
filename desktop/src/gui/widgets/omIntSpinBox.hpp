@@ -8,33 +8,28 @@
 #include <QtGui>
 
 class OmIntSpinBox : public QSpinBox {
-Q_OBJECT
-public:
-    OmIntSpinBox(QWidget * d,
-                 const om::ShouldUpdateAsType updateAsType)
-        : QSpinBox(d)
-    {
-        if(om::UPDATE_AS_TYPE == updateAsType)
-        {
-            om::connect(this, SIGNAL(valueChanged(int)),
-                        this, SLOT(spinboxChanged()));
+  Q_OBJECT public
+      : OmIntSpinBox(QWidget* d, const om::ShouldUpdateAsType updateAsType)
+        : QSpinBox(d) {
+    if (om::UPDATE_AS_TYPE == updateAsType) {
+      om::connect(this, SIGNAL(valueChanged(int)), this,
+                  SLOT(spinboxChanged()));
 
-        } else {
-            om::connect(this, SIGNAL(editingFinished()),
-                        this, SLOT(spinboxChanged()) );
-        }
+    } else {
+      om::connect(this, SIGNAL(editingFinished()), this,
+                  SLOT(spinboxChanged()));
     }
+  }
 
-private Q_SLOTS:
+ private
+Q_SLOTS:
 
-    void spinboxChanged()
-    {
-        actUponValueChange(value());
-        OmEvents::Redraw2d();
-    }
+  void spinboxChanged() {
+    actUponValueChange(value());
+    OmEvents::Redraw2d();
+  }
 
-protected:
-    virtual void setInitialGUIThresholdValue(){}
-    virtual void actUponValueChange(const int value) = 0;
+ protected:
+  virtual void setInitialGUIThresholdValue() {}
+  virtual void actUponValueChange(const int value) = 0;
 };
-

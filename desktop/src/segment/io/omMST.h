@@ -18,72 +18,64 @@ template <class> class OmFileReadQT;
 template <class> class OmFileWriteQT;
 class QDataStream;
 
-
 class OmMST {
-public:
-    OmMST(OmSegmentation* segmentation);
+ public:
+  OmMST(OmSegmentation* segmentation);
 
-    ~OmMST()
-    {}
+  ~OmMST() {}
 
-    static double DefaultThreshold;
+  static double DefaultThreshold;
 
-    void Read();
-    void Flush();
+  void Read();
+  void Flush();
 
-    void Import(const std::vector<OmMSTImportEdge>& edges);
+  void Import(const std::vector<OmMSTImportEdge>& edges);
 
-    inline bool IsValid() const {
-        return numEdges_ > 0;
-    }
+  inline bool IsValid() const { return numEdges_ > 0; }
 
-    inline uint32_t NumEdges() const {
-        return numEdges_;
-    }
+  inline uint32_t NumEdges() const { return numEdges_; }
 
-    inline double UserThreshold() const {
-        return OmProject::Globals().Users().UserSettings().getThreshold();
-    }
+  inline double UserThreshold() const {
+    return OmProject::Globals().Users().UserSettings().getThreshold();
+  }
 
-    inline double UserSizeThreshold() const {
-        return OmProject::Globals().Users().UserSettings().getSizeThreshold();
-    }
+  inline double UserSizeThreshold() const {
+    return OmProject::Globals().Users().UserSettings().getSizeThreshold();
+  }
 
-    void SetUserThreshold(const double t);
-    void SetUserSizeThreshold(const double t);
+  void SetUserThreshold(const double t);
+  void SetUserSizeThreshold(const double t);
 
-    inline OmMSTEdge* Edges(){
-        return edges_;
-    }
+  inline OmMSTEdge* Edges() { return edges_; }
 
-private:
-    OmSegmentation *const vol_;
+ private:
+  OmSegmentation* const vol_;
 
-    uint32_t numEdges_;
+  uint32_t numEdges_;
 
-    zi::rwmutex thresholdLock_;
+  zi::rwmutex thresholdLock_;
 
-    om::shared_ptr<OmIOnDiskFile<OmMSTEdge> > edgesPtr_;
-    OmMSTEdge* edges_;
+  om::shared_ptr<OmIOnDiskFile<OmMSTEdge> > edgesPtr_;
+  OmMSTEdge* edges_;
 
-    void create();
-    void convert();
+  void create();
+  void convert();
 
-    // read MST via full load into memory
-    typedef OmFileReadQT<OmMSTEdge> reader_t;
-    typedef OmFileWriteQT<OmMSTEdge> writer_t;
+  // read MST via full load into memory
+  typedef OmFileReadQT<OmMSTEdge> reader_t;
+  typedef OmFileWriteQT<OmMSTEdge> writer_t;
 
-    // read MST via mem map
-    // typedef OmMemMappedFileReadQT<OmMSTEdge> reader_t;
-    // typedef OmMemMappedFileWriteQT<OmMSTEdge> writer_t;
+  // read MST via mem map
+  // typedef OmMemMappedFileReadQT<OmMSTEdge> reader_t;
+  // typedef OmMemMappedFileWriteQT<OmMSTEdge> writer_t;
 
-    std::string filePathActual();
+  std::string filePathActual();
 
-    friend class SegmentTests1;
+  friend class SegmentTests1;
 
-    friend class OmDataArchiveProjectImpl;
-    friend QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg);
-    friend YAML::Emitter &YAML::operator<<(YAML::Emitter& out, const OmSegmentation& seg);
-    friend void YAML::operator>>(const YAML::Node& in, OmSegmentation& seg);
+  friend class OmDataArchiveProjectImpl;
+  friend QDataStream& operator<<(QDataStream& out, const OmSegmentation& seg);
+  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
+                                         const OmSegmentation& seg);
+  friend void YAML::operator>>(const YAML::Node& in, OmSegmentation& seg);
 };
-

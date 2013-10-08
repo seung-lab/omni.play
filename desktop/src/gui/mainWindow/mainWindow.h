@@ -21,94 +21,90 @@ class ToolBarManager;
 class ViewGroup;
 
 class MainWindow : public QMainWindow {
-Q_OBJECT
+  Q_OBJECT public : MainWindow();
+  ~MainWindow();
 
-public:
-    MainWindow();
-    ~MainWindow();
+  void openProject(QString fileNameAndPath);
+  void openProject(QString fileName, QString pathName);
 
-    void openProject( QString fileNameAndPath );
-    void openProject( QString fileName, QString pathName );
+  void cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId);
+  void updateStatusBar(QString msg);
 
-    void cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId);
-    void updateStatusBar( QString msg );
+  inline OmViewGroupState* GetViewGroupState() { return vgs_.get(); }
 
-    inline OmViewGroupState* GetViewGroupState(){
-        return vgs_.get();
-    }
+  void addToolbarTop(QToolBar* b);
+  void addToolbarRight(QToolBar* b);
 
-    void addToolbarTop(QToolBar* b);
-    void addToolbarRight(QToolBar* b);
+  friend class ViewGroupMainWindowUtils;
 
-    friend class ViewGroupMainWindowUtils;
+ protected:
+  void closeEvent(QCloseEvent* event);
 
-protected:
-    void closeEvent(QCloseEvent* event);
+  void SegmentModificationEvent(OmSegmentEvent* event);
 
-    void SegmentModificationEvent(OmSegmentEvent* event);
+ public
+Q_SLOTS:
+  void spawnErrorDialog(OmException& e);
+  void saveProject();
 
-public Q_SLOTS:
-    void spawnErrorDialog(OmException &e);
-    void saveProject();
+ private
+Q_SLOTS:
+  void newProject();
+  void openProject();
+  void openRecentFile();
+  void closeProject();
 
-private Q_SLOTS:
-    void newProject();
-    void openProject();
-    void openRecentFile();
-    void closeProject();
+  void openInspector();
+  void openUndoView();
+  void openCacheMonitor();
+  void openGroupsTable();
 
-    void openInspector();
-    void openUndoView();
-    void openCacheMonitor();
-    void openGroupsTable();
+  void open3dView();
 
-    void open3dView();
+  void showEditPreferencesDialog();
+  void showEditLocalPreferencesDialog();
+  void addChannelToVolume();
+  void addSegmentationToVolume();
+  void dumpActionLog();
 
-    void showEditPreferencesDialog();
-    void showEditLocalPreferencesDialog();
-    void addChannelToVolume();
-    void addSegmentationToVolume();
-    void dumpActionLog();
+ private:
+  bool editsMade;
 
-private:
-    bool editsMade;
+  InspectorWidget* inspector_;
+  boost::scoped_ptr<QDockWidget> inspectorDock_;
 
-    InspectorWidget* inspector_;
-    boost::scoped_ptr<QDockWidget> inspectorDock_;
+  QUndoView* undoView_;
+  boost::scoped_ptr<QDockWidget> undoViewDock_;
 
-    QUndoView* undoView_;
-    boost::scoped_ptr<QDockWidget> undoViewDock_;
+  GroupsTable* groupsTable_;
+  boost::scoped_ptr<QDockWidget> groupsTableDock_;
 
-    GroupsTable* groupsTable_;
-    boost::scoped_ptr<QDockWidget> groupsTableDock_;
+  CacheMonitorDialog* cacheMonitorDialog_;
 
-    CacheMonitorDialog* cacheMonitorDialog_;
+  boost::scoped_ptr<Preferences> preferences_;
 
-    boost::scoped_ptr<Preferences> preferences_;
+  QLabel* statusBarLabel;
 
-    QLabel* statusBarLabel;
+  ToolBarManager* toolBarManager_;
+  MenuBar* mMenuBar;
 
-    ToolBarManager* toolBarManager_;
-    MenuBar* mMenuBar;
+  boost::scoped_ptr<OmViewGroupState> vgs_;
 
-    boost::scoped_ptr<OmViewGroupState> vgs_;
+  QAction* panAct;
+  QAction* zoomAct;
 
-    QAction* panAct;
-    QAction* zoomAct;
+  bool closeProjectIfOpen();
+  int checkForSave();
+  void createStatusBar();
+  void resetViewGroup();
 
-    bool closeProjectIfOpen();
-    int checkForSave();
-    void createStatusBar();
-    void resetViewGroup();
+  void updateGuiFromProjectCreateOrOpen(QString fileName);
+  void updateReadOnlyRelatedWidgets();
+  void windowTitleClear();
+  void windowTitleSet(QString title);
 
-    void updateGuiFromProjectCreateOrOpen( QString fileName );
-    void updateReadOnlyRelatedWidgets();
-    void windowTitleClear();
-    void windowTitleSet(QString title);
+  QToolBar* fakeToolbarForMac_;
 
-    QToolBar* fakeToolbarForMac_;
-
-    boost::scoped_ptr<OmGlobalKeyPress> globalKeys_;
-    boost::scoped_ptr<MainWindowEvents> events_;
+  boost::scoped_ptr<OmGlobalKeyPress> globalKeys_;
+  boost::scoped_ptr<MainWindowEvents> events_;
 };
-

@@ -9,54 +9,43 @@
 #include <QSize>
 
 class OmStateManagerImpl {
-private:
-    om::tool::mode toolModeCur_;
-    om::tool::mode toolModePrev_;
+ private:
+  om::tool::mode toolModeCur_;
+  om::tool::mode toolModePrev_;
 
-    OmBrushSize brushSize_;
-    OmUndoStack undoStack_;
+  OmBrushSize brushSize_;
+  OmUndoStack undoStack_;
 
-public:
-    OmStateManagerImpl()
-        : toolModeCur_(om::tool::PAN)
-        , toolModePrev_(om::tool::PAN)
-    {}
+ public:
+  OmStateManagerImpl()
+      : toolModeCur_(om::tool::PAN), toolModePrev_(om::tool::PAN) {}
 
-    OmBrushSize* BrushSize() {
-        return &brushSize_;
+  OmBrushSize* BrushSize() { return &brushSize_; }
+
+  /////////////////////////////////
+  ///////          Tool Mode
+
+  inline om::tool::mode GetToolMode() const { return toolModeCur_; }
+
+  inline void SetToolModeAndSendEvent(const om::tool::mode tool) {
+    if (tool == toolModeCur_) {
+      return;
     }
 
-/////////////////////////////////
-///////          Tool Mode
+    toolModePrev_ = toolModeCur_;
+    toolModeCur_ = tool;
 
-    inline om::tool::mode GetToolMode() const {
-        return toolModeCur_;
-    }
+    OmEvents::ToolChange();
+  }
 
-    inline void SetToolModeAndSendEvent(const om::tool::mode tool)
-    {
-        if (tool == toolModeCur_){
-            return;
-        }
+  inline void SetOldToolModeAndSendEvent() {
+    std::swap(toolModePrev_, toolModeCur_);
 
-        toolModePrev_ = toolModeCur_;
-        toolModeCur_ = tool;
+    OmEvents::ToolChange();
+  }
 
-        OmEvents::ToolChange();
-    }
+  /////////////////////////////////
+  ///////          UndoStack
 
-    inline void SetOldToolModeAndSendEvent()
-    {
-        std::swap(toolModePrev_, toolModeCur_);
-
-        OmEvents::ToolChange();
-    }
-
-/////////////////////////////////
-///////          UndoStack
-
-    inline OmUndoStack& UndoStack(){
-        return undoStack_;
-    }
+  inline OmUndoStack& UndoStack() { return undoStack_; }
 };
-

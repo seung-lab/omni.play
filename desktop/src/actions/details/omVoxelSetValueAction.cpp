@@ -5,36 +5,27 @@
 OmVoxelSetValueAction::OmVoxelSetValueAction(const OmID segmentationId,
                                              const om::globalCoord& rVoxel,
                                              const OmSegID value)
-    : impl_(om::make_shared<OmVoxelSetValueActionImpl>(segmentationId,
-                                                          rVoxel,
-                                                          value))
-{
-    mUndoable = false;
+    : impl_(om::make_shared<OmVoxelSetValueActionImpl>(segmentationId, rVoxel,
+                                                       value)) {
+  mUndoable = false;
 }
 
-OmVoxelSetValueAction::OmVoxelSetValueAction(const OmID segmentationId,
-                                             const std::set<om::globalCoord>& rVoxels,
-                                             const OmSegID value)
-    : impl_(om::make_shared<OmVoxelSetValueActionImpl>(segmentationId,
-                                                          rVoxels,
-                                                          value))
-{
-    mUndoable = false;
+OmVoxelSetValueAction::OmVoxelSetValueAction(
+    const OmID segmentationId, const std::set<om::globalCoord>& rVoxels,
+    const OmSegID value)
+    : impl_(om::make_shared<OmVoxelSetValueActionImpl>(segmentationId, rVoxels,
+                                                       value)) {
+  mUndoable = false;
 }
 
-void OmVoxelSetValueAction::Action(){
-    impl_->Execute();
+void OmVoxelSetValueAction::Action() { impl_->Execute(); }
+
+void OmVoxelSetValueAction::UndoAction() { impl_->Undo(); }
+
+std::string OmVoxelSetValueAction::Description() {
+  return impl_->Description();
 }
 
-void OmVoxelSetValueAction::UndoAction(){
-    impl_->Undo();
+void OmVoxelSetValueAction::save(const std::string& comment) {
+  OmActionLogger::save(impl_, comment);
 }
-
-std::string OmVoxelSetValueAction::Description(){
-    return impl_->Description();
-}
-
-void OmVoxelSetValueAction::save(const std::string & comment){
-    OmActionLogger::save(impl_, comment);
-}
-

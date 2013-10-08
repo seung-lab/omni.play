@@ -5,16 +5,12 @@
 class GraphTools;
 
 class SplitButton : public OmButton<GraphTools> {
-Q_OBJECT
+  Q_OBJECT public : SplitButton(GraphTools *);
 
-public:
-    SplitButton(GraphTools *);
+ private:
+  void doAction() {}
 
-private:
-    void doAction()
-    {}
-
-private Q_SLOTS:
-    void enterOrExitSplitMode(const bool show);
+ private
+Q_SLOTS:
+  void enterOrExitSplitMode(const bool show);
 };
-

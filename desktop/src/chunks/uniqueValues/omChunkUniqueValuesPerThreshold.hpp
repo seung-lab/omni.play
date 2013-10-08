@@ -12,143 +12,133 @@
 #include "volume/omSegmentationFolder.h"
 
 class OmChunkUniqueValuesPerThreshold {
-private:
-    OmSegmentation *const segmentation_;
-    const om::chunkCoord coord_;
-    const double threshold_;
-    const QString fnp_;
+ private:
+  OmSegmentation* const segmentation_;
+  const om::chunkCoord coord_;
+  const double threshold_;
+  const QString fnp_;
 
-    om::shared_ptr<uint32_t> values_;
-    size_t numElements_;
+  om::shared_ptr<uint32_t> values_;
+  size_t numElements_;
 
-    zi::rwmutex mutex_;
+  zi::rwmutex mutex_;
 
-public:
-    OmChunkUniqueValuesPerThreshold(OmSegmentation* segmentation,
-                                    const om::chunkCoord& coord,
-                                    const double threshold)
-        : segmentation_(segmentation)
-        , coord_(coord)
-        , threshold_(threshold)
-        , fnp_(filePath())
-        , numElements_(0)
-    {}
+ public:
+  OmChunkUniqueValuesPerThreshold(OmSegmentation* segmentation,
+                                  const om::chunkCoord& coord,
+                                  const double threshold)
+      : segmentation_(segmentation),
+        coord_(coord),
+        threshold_(threshold),
+        fnp_(filePath()),
+        numElements_(0) {}
 
-    ChunkUniqueValues Values()
-    {
-        zi::rwmutex::write_guard g(mutex_);
+  ChunkUniqueValues Values() {
+    zi::rwmutex::write_guard g(mutex_);
 
-        if(!values_){
-            load();
-        }
-
-        return ChunkUniqueValues(values_, numElements_);
+    if (!values_) {
+      load();
     }
 
-    ChunkUniqueValues RereadChunk()
-    {
-        zi::rwmutex::write_guard g(mutex_);
+    return ChunkUniqueValues(values_, numElements_);
+  }
 
-        findValues();
+  ChunkUniqueValues RereadChunk() {
+    zi::rwmutex::write_guard g(mutex_);
 
-        return ChunkUniqueValues(values_, numElements_);
+    findValues();
+
+    return ChunkUniqueValues(values_, numElements_);
+  }
+
+ private:
+  void load() {
+    QFile file(fnp_);
+    if (!file.exists()) {
+      findValues();
+      return;
     }
 
-private:
-    void load()
-    {
-        QFile file(fnp_);
-        if(!file.exists()){
-            findValues();
-            return;
-        }
-
-        if(!file.open(QIODevice::ReadOnly)) {
-            throw OmIoException("could not open", fnp_);
-        }
-
-        values_ = OmSmartPtr<uint32_t>::MallocNumBytes(file.size(),
-                                                       om::DONT_ZERO_FILL);
-        numElements_ = file.size() / sizeof(uint32_t);
-
-        file.seek(0);
-
-        char* data = reinterpret_cast<char*>(values_.get());
-        file.read(data, file.size());
+    if (!file.open(QIODevice::ReadOnly)) {
+      throw OmIoException("could not open", fnp_);
     }
 
-    void findValues()
-    {
-        OmSegChunk* chunk = segmentation_->GetChunk(coord_);
+    values_ =
+        OmSmartPtr<uint32_t>::MallocNumBytes(file.size(), om::DONT_ZERO_FILL);
+    numElements_ = file.size() / sizeof(uint32_t);
 
-        om::shared_ptr<uint32_t> rawDataPtr =
-            chunk->SegData()->GetCopyOfChunkDataAsUint32();
+    file.seek(0);
 
-        uint32_t const*const rawData = rawDataPtr.get();
+    char* data = reinterpret_cast<char*>(values_.get());
+    file.read(data, file.size());
+  }
 
-        boost::unordered_set<uint32_t> segIDs;
+  void findValues() {
+    OmSegChunk* chunk = segmentation_->GetChunk(coord_);
 
-        if(!qFuzzyCompare(1, threshold_))
-        {
-            OmSegments* segments = segmentation_->Segments();
-            segmentation_->SetDendThreshold(threshold_);
+    om::shared_ptr<uint32_t> rawDataPtr =
+        chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
-            for(size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
-                if( 0 != rawData[i]) {
-                    segIDs.insert(segments->findRootID(rawData[i]));
-                }
-            }
-        } else {
-            for(size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i){
-                if( 0 != rawData[i]) {
-                    segIDs.insert(rawData[i]);
-                }
-            }
+    uint32_t const* const rawData = rawDataPtr.get();
+
+    boost::unordered_set<uint32_t> segIDs;
+
+    if (!qFuzzyCompare(1, threshold_)) {
+      OmSegments* segments = segmentation_->Segments();
+      segmentation_->SetDendThreshold(threshold_);
+
+      for (size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i) {
+        if (0 != rawData[i]) {
+          segIDs.insert(segments->findRootID(rawData[i]));
         }
-
-        values_ = OmSmartPtr<uint32_t>::MallocNumElements(segIDs.size(),
-                                                          om::DONT_ZERO_FILL);
-
-        std::copy(segIDs.begin(), segIDs.end(), values_.get());
-        zi::sort(values_.get(), values_.get() + segIDs.size());
-
-        numElements_ = segIDs.size();
-
-        std::cout << "ChunkUniqueValues: chunk " << coord_
-                  << " has " << numElements_ << " unique values\n";
-
-        store();
+      }
+    } else {
+      for (size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i) {
+        if (0 != rawData[i]) {
+          segIDs.insert(rawData[i]);
+        }
+      }
     }
 
-    void store()
-    {
-        QFile file(fnp_);
+    values_ = OmSmartPtr<uint32_t>::MallocNumElements(segIDs.size(),
+                                                      om::DONT_ZERO_FILL);
 
-        if(!file.open(QIODevice::WriteOnly)) {
-            throw OmIoException("could not open", fnp_);
-        }
+    std::copy(segIDs.begin(), segIDs.end(), values_.get());
+    zi::sort(values_.get(), values_.get() + segIDs.size());
 
-        const int64_t numBytes = numElements_ * sizeof(uint32_t);
-        file.resize(numBytes);
+    numElements_ = segIDs.size();
 
-        const char* data = reinterpret_cast<const char*>(values_.get());
+    std::cout << "ChunkUniqueValues: chunk " << coord_ << " has "
+              << numElements_ << " unique values\n";
 
-        file.write(data, numBytes);
+    store();
+  }
+
+  void store() {
+    QFile file(fnp_);
+
+    if (!file.open(QIODevice::WriteOnly)) {
+      throw OmIoException("could not open", fnp_);
     }
 
-    QString filePath()
-    {
-        const QString volPath = segmentation_->Folder()->GetChunkFolderPath(coord_);
+    const int64_t numBytes = numElements_ * sizeof(uint32_t);
+    file.resize(numBytes);
 
-        if(!QDir(volPath).exists()){
-            segmentation_->Folder()->MakeChunkFolderPath(coord_);
-        }
+    const char* data = reinterpret_cast<const char*>(values_.get());
 
-        const QString fullPath = QString("%1uniqeValues.%2.ver1")
-            .arg(volPath)
-            .arg(QString::number(threshold_, 'f', 4));
+    file.write(data, numBytes);
+  }
 
-        return fullPath;
+  QString filePath() {
+    const QString volPath = segmentation_->Folder()->GetChunkFolderPath(coord_);
+
+    if (!QDir(volPath).exists()) {
+      segmentation_->Folder()->MakeChunkFolderPath(coord_);
     }
+
+    const QString fullPath = QString("%1uniqeValues.%2.ver1").arg(volPath)
+        .arg(QString::number(threshold_, 'f', 4));
+
+    return fullPath;
+  }
 };
-

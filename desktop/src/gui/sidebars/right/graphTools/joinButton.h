@@ -4,10 +4,9 @@
 class GraphTools;
 
 class JoinButton : public OmButton<GraphTools> {
-public:
-    JoinButton(GraphTools *);
+ public:
+  JoinButton(GraphTools *);
 
-private:
-    void doAction();
+ private:
+  void doAction();
 };
-

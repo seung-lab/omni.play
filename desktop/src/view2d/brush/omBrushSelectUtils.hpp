@@ -5,39 +5,36 @@
 #include "view2d/brush/omChunksAndPts.hpp"
 
 class OmBrushSelectUtils {
-public:
-    om::shared_ptr<boost::unordered_set<OmSegID> >
-    static FindSegIDsFromPoints(OmBrushOppInfo* info,
-                                om::pt3d_list_t* pts)
-    {
-        OmChunksAndPts chunksAndPts(info->segmentation, info->viewType);
+ public:
+  om::shared_ptr<boost::unordered_set<OmSegID> > static FindSegIDsFromPoints(
+      OmBrushOppInfo* info, om::pt3d_list_t* pts) {
+    OmChunksAndPts chunksAndPts(info->segmentation, info->viewType);
 
-        chunksAndPts.AddAllPtsThatIntersectVol(pts);
+    chunksAndPts.AddAllPtsThatIntersectVol(pts);
 
-        return chunksAndPts.GetSegIDs();
+    return chunksAndPts.GetSegIDs();
+  }
+
+  void static SendEvent(OmBrushOppInfo* info,
+                        boost::unordered_set<OmSegID>* segIDs) {
+    OmSegmentSelector selector(info->segmentation->GetSDW(), NULL,
+                               "view2d_selector");
+
+    selector.ShouldScroll(false);
+    selector.AddToRecentList(false);
+    selector.AutoCenter(false);
+    selector.AugmentListOnly(true);
+    selector.AddOrSubtract(info->addOrSubract);
+
+    if (om::ADD == info->addOrSubract) {
+      selector.InsertSegments(segIDs);
+
+    } else {
+      selector.RemoveSegments(segIDs);
     }
 
-    void static SendEvent(OmBrushOppInfo* info, boost::unordered_set<OmSegID>* segIDs)
-    {
-        OmSegmentSelector selector(info->segmentation->GetSDW(),
-                                   NULL, "view2d_selector");
+    selector.sendEvent();
 
-        selector.ShouldScroll(false);
-        selector.AddToRecentList(false);
-        selector.AutoCenter(false);
-        selector.AugmentListOnly(true);
-        selector.AddOrSubtract(info->addOrSubract);
-
-        if(om::ADD == info->addOrSubract){
-            selector.InsertSegments(segIDs);
-
-        } else {
-            selector.RemoveSegments(segIDs);
-        }
-
-        selector.sendEvent();
-
-        OmEvents::Redraw3d();
-    }
+    OmEvents::Redraw3d();
+  }
 };
-

@@ -5,12 +5,11 @@
 class OmProjectImpl;
 
 class OmDataArchiveProject {
-public:
-    static void ArchiveRead(const QString& fnp, OmProjectImpl* project);
-    static void ArchiveWrite(const QString& fnp, OmProjectImpl* project);
+ public:
+  static void ArchiveRead(const QString& fnp, OmProjectImpl* project);
+  static void ArchiveWrite(const QString& fnp, OmProjectImpl* project);
 
-private:
-    static void upgrade();
-    static void postLoad();
+ private:
+  static void upgrade();
+  static void postLoad();
 };
-

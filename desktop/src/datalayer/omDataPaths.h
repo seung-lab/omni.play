@@ -11,18 +11,16 @@ class OmMeshManager;
 class OmSegmentation;
 
 class OmDataPaths {
-public:
-    static OmDataPath getDefaultDatasetName();
-    static OmDataPath getProjectArchiveNameQT();
+ public:
+  static OmDataPath getDefaultDatasetName();
+  static OmDataPath getProjectArchiveNameQT();
 
-    static OmDataPath getSegmentPagePath(const OmID segmentationID,
-                                         const uint32_t pageNum );
+  static OmDataPath getSegmentPagePath(const OmID segmentationID,
+                                       const uint32_t pageNum);
 
-    static std::string getMeshFileName(const OmMeshCoord& meshCoord);
+  static std::string getMeshFileName(const OmMeshCoord& meshCoord);
 
-    static std::string getDirectoryPath(OmChannelImpl const*const chan);
+  static std::string getDirectoryPath(OmChannelImpl const* const chan);
 
-    static std::string Hdf5VolData(const std::string& dirPath,
-                                   const int level);
+  static std::string Hdf5VolData(const std::string& dirPath, const int level);
 };
-

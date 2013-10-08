@@ -8,30 +8,22 @@ namespace om {
 namespace channelInspector {
 
 class ExportButton : public OmButton<PageExport> {
-public:
-    ExportButton(PageExport * d)
-        : OmButton<PageExport>( d,
-                                  "Export",
-                                  "Export",
-                                  false)
-    {
-    }
+ public:
+  ExportButton(PageExport* d)
+      : OmButton<PageExport>(d, "Export", "Export", false) {}
 
-private:
-    void doAction()
-    {
-        const QString fileName =
-            QFileDialog::getSaveFileName(this, tr("Export As"));
+ private:
+  void doAction() {
+    const QString fileName =
+        QFileDialog::getSaveFileName(this, tr("Export As"));
 
-        if (fileName == NULL)
-            return;
+    if (fileName == NULL) return;
 
-        const ChannelDataWrapper& cdw = mParent->GetCDW();
+    const ChannelDataWrapper& cdw = mParent->GetCDW();
 
-        OmExportVolToHdf5::Export(cdw.GetChannel(), fileName);
-    }
+    OmExportVolToHdf5::Export(cdw.GetChannel(), fileName);
+  }
 };
 
-} // namespace channelInspector
-} // namespace om
-
+}  // namespace channelInspector
+}  // namespace om

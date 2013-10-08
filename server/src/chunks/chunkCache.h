@@ -7,14 +7,10 @@
 namespace om {
 namespace chunks {
 
-template <typename T>
-class cache
-{
-private:
-    boost::unordered_map<  Chunk<T> >
-public:
-
-private:
+template <typename T> class cache {
+ private:
+  boost::unordered_map<Chunk<T> > public : private:
 };
 
-}} // namespace om::chunks::
+}
+}  // namespace om::chunks::

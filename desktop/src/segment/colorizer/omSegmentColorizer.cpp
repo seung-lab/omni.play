@@ -12,50 +12,47 @@ const std::vector<uint8_t> OmSegmentColorizer::SelectedColorLookupTable =
 OmSegmentColorizer::OmSegmentColorizer(OmSegments* segments,
                                        const OmSegmentColorCacheType sccType,
                                        const int tileDim,
-                                       OmViewGroupState* vgs)
-{
-    freshness_.set(0);
+                                       OmViewGroupState* vgs) {
+  freshness_.set(0);
 
-    params_.sccType = sccType;
-    params_.numElements = tileDim * tileDim;
-    params_.vgs = vgs;
-    params_.segments = segments;
+  params_.sccType = sccType;
+  params_.numElements = tileDim * tileDim;
+  params_.vgs = vgs;
+  params_.segments = segments;
 }
 
-OmSegmentColorizer::~OmSegmentColorizer()
-{}
+OmSegmentColorizer::~OmSegmentColorizer() {}
 
-void OmSegmentColorizer::setup()
-{
-    // update freshness
-    freshness_.set(OmCacheManager::GetFreshness());
+void OmSegmentColorizer::setup() {
+  // update freshness
+  freshness_.set(OmCacheManager::GetFreshness());
 
-    // resize cache, if needed
-    const OmSegID curSize = params_.segments->getMaxValue() + 1;
+  // resize cache, if needed
+  const OmSegID curSize = params_.segments->getMaxValue() + 1;
 
-    if(curSize != colorCache_.Size()){
-        colorCache_.Resize(curSize);
-    }
+  if (curSize != colorCache_.Size()) {
+    colorCache_.Resize(curSize);
+  }
 }
 
-OmPooledTile<OmColorARGB>*
-OmSegmentColorizer::ColorTile(uint32_t const* imageData)
-{
-    setup();
+OmPooledTile<OmColorARGB>* OmSegmentColorizer::ColorTile(
+    uint32_t const* imageData) {
+  setup();
 
-    OmPooledTile<OmColorARGB>* colorMappedDataPtr = new OmPooledTile<OmColorARGB>();
+  OmPooledTile<OmColorARGB>* colorMappedDataPtr =
+      new OmPooledTile<OmColorARGB>();
 
-    // OmTimer timer;
+  // OmTimer timer;
 
-    {
-        //prevent vectors from being resized while we're reading
-        zi::rwmutex::read_guard g(colorCache_);
+  {
+    //prevent vectors from being resized while we're reading
+    zi::rwmutex::read_guard g(colorCache_);
 
-        OmSegmentColorizerImpl c(params_, colorCache_, freshness_.get());
-        c.ColorTile(imageData, colorMappedDataPtr->GetData());
-    }
+    OmSegmentColorizerImpl c(params_, colorCache_, freshness_.get());
+    c.ColorTile(imageData, colorMappedDataPtr->GetData());
+  }
 
-    // timer.PrintV("done coloring tile");
+  // timer.PrintV("done coloring tile");
 
-    return colorMappedDataPtr;
+  return colorMappedDataPtr;
 }

@@ -10,69 +10,58 @@
 #include "volume/omSegmentation.h"
 #include <limits>
 
-class SizeThresholdSpinBox
-    : public OmDoubleSpinBox,
-      public OmRefreshMSTthresholdEventListener
-{
-Q_OBJECT
-public:
-    SizeThresholdSpinBox(GraphTools* d)
-        : OmDoubleSpinBox(d, om::DONT_UPDATE_AS_TYPE)
-        , mParent(d)
-    {
-        setSingleStep(1);
-        setMaximum(std::numeric_limits<double>::infinity());
-        setDecimals(0);
-        setInitialGUIThresholdValue();
+class SizeThresholdSpinBox : public OmDoubleSpinBox,
+                             public OmRefreshMSTthresholdEventListener {
+  Q_OBJECT public : SizeThresholdSpinBox(GraphTools* d)
+                    : OmDoubleSpinBox(d, om::DONT_UPDATE_AS_TYPE), mParent(d) {
+    setSingleStep(1);
+    setMaximum(std::numeric_limits<double>::infinity());
+    setDecimals(0);
+    setInitialGUIThresholdValue();
+  }
+
+ private:
+  GraphTools* const mParent;
+
+  virtual void RefreshMSTEvent(OmRefreshMSTthresholdEvent*) {
+    boost::optional<double> threshold = getCurVolThreshold();
+    if (threshold) {
+      setGUIvalue(*threshold);
+    }
+  }
+
+  void setInitialGUIThresholdValue() {
+    double t = 10000;
+
+    boost::optional<double> threshold = getCurVolThreshold();
+    if (threshold) {
+      t = *threshold;
     }
 
-private:
-    GraphTools *const mParent;
+    setGUIvalue(t);
+  }
 
-    virtual void RefreshMSTEvent(OmRefreshMSTthresholdEvent*)
-    {
-        boost::optional<double> threshold = getCurVolThreshold();
-        if(threshold){
-            setGUIvalue(*threshold);
-        }
+  void actUponValueChange(const double newThreshold) {
+    boost::optional<double> threshold = getCurVolThreshold();
+    if (!threshold) {
+      return;
     }
 
-    void setInitialGUIThresholdValue()
-    {
-        double t = 10000;
-
-        boost::optional<double> threshold = getCurVolThreshold();
-        if(threshold){
-            t = *threshold;
-        }
-
-        setGUIvalue(t);
+    if (qFuzzyCompare(*threshold, newThreshold)) {
+      return;
     }
 
-    void actUponValueChange(const double newThreshold)
-    {
-        boost::optional<double> threshold = getCurVolThreshold();
-        if(!threshold){
-            return;
-        }
+    OmActions::ChangeSizethreshold(mParent->GetSDW(), newThreshold);
+  }
 
-        if(qFuzzyCompare(*threshold, newThreshold)){
-            return;
-        }
+  boost::optional<double> getCurVolThreshold() {
+    SegmentationDataWrapper sdw = mParent->GetSDW();
 
-        OmActions::ChangeSizethreshold(mParent->GetSDW(), newThreshold);
+    if (!sdw.IsSegmentationValid()) {
+      return boost::optional<double>();
     }
 
-    boost::optional<double> getCurVolThreshold()
-    {
-       SegmentationDataWrapper sdw = mParent->GetSDW();
-
-       if(!sdw.IsSegmentationValid()){
-           return boost::optional<double>();
-       }
-
-       OmSegmentation& seg = sdw.GetSegmentation();
-       return boost::optional<double>(seg.GetSizeThreshold());
-    }
+    OmSegmentation& seg = sdw.GetSegmentation();
+    return boost::optional<double>(seg.GetSizeThreshold());
+  }
 };
-

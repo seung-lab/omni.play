@@ -19,88 +19,77 @@
 #include <float.h>
 
 OmChannelImpl::OmChannelImpl()
-    : chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this))
-    , volData_(new OmVolumeData())
-    , tileCache_(new OmTileCacheChannel())
-{}
+    : chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this)),
+      volData_(new OmVolumeData()),
+      tileCache_(new OmTileCacheChannel()) {}
 
 OmChannelImpl::OmChannelImpl(OmID id)
-    : OmManageableObject(id)
-    , chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this))
-    , volData_(new OmVolumeData())
-    , tileCache_(new OmTileCacheChannel())
-{
-    LoadPath();
+    : OmManageableObject(id),
+      chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this)),
+      volData_(new OmVolumeData()),
+      tileCache_(new OmTileCacheChannel()) {
+  LoadPath();
 
-    filterManager_.AddFilter();
+  filterManager_.AddFilter();
 }
 
-OmChannelImpl::~OmChannelImpl()
-{}
+OmChannelImpl::~OmChannelImpl() {}
 
-void OmChannelImpl::LoadPath(){
-    folder_.reset(new om::channel::folder(this));
+void OmChannelImpl::LoadPath() { folder_.reset(new om::channel::folder(this)); }
+
+std::string OmChannelImpl::GetName() {
+  return "channel" + om::string::num(GetID());
 }
 
-std::string OmChannelImpl::GetName(){
-    return "channel" + om::string::num(GetID());
-}
-
-std::string OmChannelImpl::GetNameHyphen(){
-    return "channel-" + om::string::num(GetID());
+std::string OmChannelImpl::GetNameHyphen() {
+  return "channel-" + om::string::num(GetID());
 }
 
 std::string OmChannelImpl::GetDirectoryPath() const {
-    return folder_->RelativeVolPath().toStdString();
+  return folder_->RelativeVolPath().toStdString();
 }
 
-void OmChannelImpl::CloseDownThreads()
-{}
+void OmChannelImpl::CloseDownThreads() {}
 
-bool OmChannelImpl::LoadVolData()
-{
-    if(IsBuilt())
-    {
-        UpdateFromVolResize();
-        volData_->load(this);
-        tileCache_->Load(this);
-        return true;
-    }
+bool OmChannelImpl::LoadVolData() {
+  if (IsBuilt()) {
+    UpdateFromVolResize();
+    volData_->load(this);
+    tileCache_->Load(this);
+    return true;
+  }
 
-    return false;
+  return false;
 }
 
-bool OmChannelImpl::LoadVolDataIfFoldersExist()
-{
-    //assume level 0 data always present
-    const QString path = OmFileNames::GetVolDataFolderPath(this, 0);
+bool OmChannelImpl::LoadVolDataIfFoldersExist() {
+  //assume level 0 data always present
+  const QString path = OmFileNames::GetVolDataFolderPath(this, 0);
 
-    if(QDir(path).exists())
-    {
-        return LoadVolData();
-    }
+  if (QDir(path).exists()) {
+    return LoadVolData();
+  }
 
-    return false;
+  return false;
 }
 
-int OmChannelImpl::GetBytesPerVoxel() const{
-    return volData_->GetBytesPerVoxel();
+int OmChannelImpl::GetBytesPerVoxel() const {
+  return volData_->GetBytesPerVoxel();
 }
 
 int OmChannelImpl::GetBytesPerSlice() const {
-    return GetBytesPerVoxel()*128*128;
+  return GetBytesPerVoxel() * 128 * 128;
 }
 
-void OmChannelImpl::SetVolDataType(const OmVolDataType type)
-{
-    mVolDataType = type;
-    volData_->SetDataType(this);
+void OmChannelImpl::SetVolDataType(const OmVolDataType type) {
+  mVolDataType = type;
+  volData_->SetDataType(this);
 }
 
-OmChunk* OmChannelImpl::GetChunk(const om::chunkCoord& coord){
-    return chunkCache_->GetChunk(coord);
+OmChunk* OmChannelImpl::GetChunk(const om::chunkCoord& coord) {
+  return chunkCache_->GetChunk(coord);
 }
 
-void OmChannelImpl::UpdateFromVolResize(){
-    chunkCache_->UpdateFromVolResize();
+void OmChannelImpl::UpdateFromVolResize() {
+  chunkCache_->UpdateFromVolResize();
 }

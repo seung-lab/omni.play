@@ -5,17 +5,16 @@
 #include "datalayer/memMappedFile.hpp"
 
 namespace om {
-namespace segment
-{
+namespace segment {
 
-class graph
-{
-public:
-	graph();
-	~graph();
+class graph {
+ public:
+  graph();
+  ~graph();
 
-private:
-	
+ private:
+
 };
 
-}}
+}
+}

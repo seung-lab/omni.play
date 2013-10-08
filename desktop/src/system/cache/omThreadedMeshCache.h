@@ -16,168 +16,144 @@
  */
 
 class OmThreadedMeshCache : public OmCacheBase {
-private:
-    typedef OmMeshCoord key_t;
-    typedef OmMeshPtr ptr_t;
+ private:
+  typedef OmMeshCoord key_t;
+  typedef OmMeshPtr ptr_t;
 
-    OmThreadPool threadPool_;
-    LockedInt64 curSize_;
+  OmThreadPool threadPool_;
+  LockedInt64 curSize_;
 
-    LockedCacheMap<key_t, ptr_t> cache_;
-    LockedKeySet<key_t> currentlyFetching_;
-    LockedBool killingCache_;
+  LockedCacheMap<key_t, ptr_t> cache_;
+  LockedKeySet<key_t> currentlyFetching_;
+  LockedBool killingCache_;
 
-    struct OldCache {
-        std::map<key_t,ptr_t> map;
-        KeyMultiIndex<key_t> list;
-    };
-    LockedList<om::shared_ptr<OldCache> > cachesToClean_;
+  struct OldCache {
+    std::map<key_t, ptr_t> map;
+    KeyMultiIndex<key_t> list;
+  };
+  LockedList<om::shared_ptr<OldCache> > cachesToClean_;
 
-    int numThreads(){
-        return 2;
+  int numThreads() { return 2; }
+
+ public:
+  OmThreadedMeshCache(const om::CacheGroup group, const std::string& name)
+      : OmCacheBase(name, group) {
+    OmCacheManager::AddCache(group, this);
+    threadPool_.start(numThreads());
+  }
+
+  virtual ~OmThreadedMeshCache() {
+    CloseDownThreads();
+    OmCacheManager::RemoveCache(cacheGroup_, this);
+  }
+
+  virtual void Get(ptr_t& ptr, const key_t& key, const om::Blocking blocking) {
+    if (cache_.assignIfHadKey(key, ptr)) {
+      return;
     }
 
-public:
-    OmThreadedMeshCache(const om::CacheGroup group,
-                        const std::string& name)
-        : OmCacheBase(name, group)
-    {
-        OmCacheManager::AddCache(group, this);
-        threadPool_.start(numThreads());
+    if (om::BLOCKING == blocking) {
+      ptr = loadItem(key);
+      return;
     }
 
-    virtual ~OmThreadedMeshCache()
-    {
-        CloseDownThreads();
-        OmCacheManager::RemoveCache(cacheGroup_, this);
+    if (zi::system::cpu_count == threadPool_.getTaskCount()) {
+      return;  // restrict number of tasks to process
     }
 
-    virtual void Get(ptr_t& ptr, const key_t& key, const om::Blocking blocking)
-    {
-        if(cache_.assignIfHadKey(key, ptr)){
-            return;
-        }
+    if (currentlyFetching_.insertSinceDidNotHaveKey(key)) {
+      threadPool_.push_back(zi::run_fn(
+          zi::bind(&OmThreadedMeshCache::handleCacheMissThread, this, key)));
+    }
+  }
 
-        if(om::BLOCKING == blocking)
-        {
-            ptr = loadItem(key);
-            return;
-        }
+  virtual ptr_t HandleCacheMiss(const key_t& key) = 0;
 
-        if(zi::system::cpu_count == threadPool_.getTaskCount())
-        {
-            return; // restrict number of tasks to process
-        }
+  void Remove(const key_t& key) {
+    ptr_t ptr = cache_.erase(key);
+    if (!ptr) {
+      return;
+    }
+    curSize_.sub(ptr->NumBytes());
+  }
 
-        if(currentlyFetching_.insertSinceDidNotHaveKey(key))
-        {
-            threadPool_.push_back(
-                zi::run_fn(
-                    zi::bind(&OmThreadedMeshCache::handleCacheMissThread,
-                             this, key)));
-        }
+  void RemoveOldest(const int64_t numBytesToRemove) {
+    int64_t numBytesRemoved = 0;
+
+    while (numBytesRemoved < numBytesToRemove) {
+      if (cache_.empty()) {
+        return;
+      }
+
+      const ptr_t ptr = cache_.remove_oldest();
+
+      if (!ptr) {
+        continue;
+      }
+
+      const int64_t removedBytes = ptr->NumBytes();
+      numBytesRemoved += removedBytes;
+      curSize_.sub(removedBytes);
+    }
+  }
+
+  void Clean() {
+    if (cachesToClean_.empty()) {
+      return;
     }
 
-    virtual ptr_t HandleCacheMiss(const key_t& key) = 0;
+    // avoid contention on cacheToClean by swapping in new, empty list
+    std::list<om::shared_ptr<OldCache> > oldCaches;
+    cachesToClean_.swap(oldCaches);
+  }
 
-    void Remove(const key_t& key)
-    {
-        ptr_t ptr = cache_.erase(key);
-        if(!ptr){
-            return;
-        }
-        curSize_.sub(ptr->NumBytes());
+  void Clear() {
+    cache_.clear();
+    currentlyFetching_.clear();
+    curSize_.set(0);
+  }
+
+  void ClearFetchQueue() {
+    threadPool_.clear();
+    currentlyFetching_.clear();
+  }
+
+  void InvalidateCache() {
+    ClearFetchQueue();
+
+    // add current cache to list to be cleaned later by OmCacheMan thread
+    om::shared_ptr<OldCache> cache(new OldCache());
+
+    cache_.swap(cache->map, cache->list);
+    cachesToClean_.push_back(cache);
+
+    curSize_.set(0);
+  }
+
+  int64_t GetCacheSize() const { return curSize_.get(); }
+
+  void CloseDownThreads() {
+    killingCache_.set(true);
+    threadPool_.stop();
+    cache_.clear();
+    currentlyFetching_.clear();
+  }
+
+ private:
+  void handleCacheMissThread(const key_t key) {
+    if (killingCache_.get()) {
+      return;
     }
 
-    void RemoveOldest(const int64_t numBytesToRemove)
-    {
-        int64_t numBytesRemoved = 0;
+    loadItem(key);
+  }
 
-        while(numBytesRemoved < numBytesToRemove)
-        {
-            if(cache_.empty()){
-                return;
-            }
-
-            const ptr_t ptr = cache_.remove_oldest();
-
-            if(!ptr){
-                continue;
-            }
-
-            const int64_t removedBytes = ptr->NumBytes();
-            numBytesRemoved += removedBytes;
-            curSize_.sub(removedBytes);
-        }
+  ptr_t loadItem(const key_t& key) {
+    ptr_t ptr = HandleCacheMiss(key);
+    const bool wasInserted = cache_.set(key, ptr);
+    if (wasInserted) {
+      curSize_.add(ptr->NumBytes());
     }
-
-    void Clean()
-    {
-        if(cachesToClean_.empty()){
-            return;
-        }
-
-        // avoid contention on cacheToClean by swapping in new, empty list
-        std::list<om::shared_ptr<OldCache> > oldCaches;
-        cachesToClean_.swap(oldCaches);
-    }
-
-    void Clear()
-    {
-        cache_.clear();
-        currentlyFetching_.clear();
-        curSize_.set(0);
-    }
-
-    void ClearFetchQueue()
-    {
-        threadPool_.clear();
-        currentlyFetching_.clear();
-    }
-
-    void InvalidateCache()
-    {
-        ClearFetchQueue();
-
-        // add current cache to list to be cleaned later by OmCacheMan thread
-        om::shared_ptr<OldCache> cache(new OldCache());
-
-        cache_.swap(cache->map, cache->list);
-        cachesToClean_.push_back(cache);
-
-        curSize_.set(0);
-    }
-
-    int64_t GetCacheSize() const {
-        return curSize_.get();
-    }
-
-    void CloseDownThreads()
-    {
-        killingCache_.set(true);
-        threadPool_.stop();
-        cache_.clear();
-        currentlyFetching_.clear();
-    }
-
-private:
-    void handleCacheMissThread(const key_t key)
-    {
-        if(killingCache_.get()){
-            return;
-        }
-
-        loadItem(key);
-    }
-
-    ptr_t loadItem(const key_t& key)
-    {
-        ptr_t ptr = HandleCacheMiss(key);
-        const bool wasInserted = cache_.set(key, ptr);
-        if(wasInserted){
-            curSize_.add(ptr->NumBytes());
-        }
-        return ptr;
-    }
+    return ptr;
+  }
 };
-

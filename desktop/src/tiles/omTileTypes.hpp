@@ -4,4 +4,3 @@
 
 class OmTile;
 typedef om::shared_ptr<OmTile> OmTilePtr;
-

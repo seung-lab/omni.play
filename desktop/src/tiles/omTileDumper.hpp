@@ -5,20 +5,18 @@
 class OmMipVolume;
 class OmViewGroupState;
 
-class OmTileDumper{
-public:
-    OmTileDumper(OmMipVolume* vol, const QString& dumpfile,
-                 OmViewGroupState* vgs);
+class OmTileDumper {
+ public:
+  OmTileDumper(OmMipVolume* vol, const QString& dumpfile,
+               OmViewGroupState* vgs);
 
-    void DumpTiles();
+  void DumpTiles();
 
-private:
-    OmMipVolume *const vol_;
-    const QString dumpfile_;
-    OmViewGroupState *const vgs_;
+ private:
+  OmMipVolume* const vol_;
+  const QString dumpfile_;
+  OmViewGroupState* const vgs_;
 
-    void saveTile(QDataStream&, const int,
-                  const int, const int, const int,
-                  const ViewType);
+  void saveTile(QDataStream&, const int, const int, const int, const int,
+                const ViewType);
 };
-

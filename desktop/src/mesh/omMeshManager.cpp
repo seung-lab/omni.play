@@ -11,112 +11,92 @@
 
 OmMeshManager::OmMeshManager(OmSegmentation* segmentation,
                              const double threshold)
-    : segmentation_(segmentation)
-    , threshold_(threshold)
-    , dataCache_(new OmMeshCache(this))
-    , filePtrCache_(new OmMeshFilePtrCache(segmentation_, threshold))
-    , metadata_(new OmMeshMetadata(segmentation_, threshold_))
-{}
+    : segmentation_(segmentation),
+      threshold_(threshold),
+      dataCache_(new OmMeshCache(this)),
+      filePtrCache_(new OmMeshFilePtrCache(segmentation_, threshold)),
+      metadata_(new OmMeshMetadata(segmentation_, threshold_)) {}
 
-OmMeshManager::~OmMeshManager()
-{}
+OmMeshManager::~OmMeshManager() {}
 
-void OmMeshManager::Create()
-{
-    const QString path = segmentation_->Folder()->GetMeshThresholdFolderPath(threshold_);
+void OmMeshManager::Create() {
+  const QString path =
+      segmentation_->Folder()->GetMeshThresholdFolderPath(threshold_);
 
-    OmFileHelpers::RemoveDir(path);
+  OmFileHelpers::RemoveDir(path);
 
-    segmentation_->Folder()->MakeMeshThresholdFolderPath(threshold_);
+  segmentation_->Folder()->MakeMeshThresholdFolderPath(threshold_);
 
-    reader_.reset(new OmMeshReaderV2(this));
+  reader_.reset(new OmMeshReaderV2(this));
 }
 
-void OmMeshManager::Load()
-{
-    if(qFuzzyCompare(1, threshold_)){
-        loadThreadhold1();
+void OmMeshManager::Load() {
+  if (qFuzzyCompare(1, threshold_)) {
+    loadThreadhold1();
 
-    }else {
-        loadThreadholdNon1();
-    }
+  } else {
+    loadThreadholdNon1();
+  }
 
-    reader_.reset(new OmMeshReaderV2(this));
+  reader_.reset(new OmMeshReaderV2(this));
 }
 
-void OmMeshManager::loadThreadhold1()
-{
-    if(!metadata_->Load()){
-        inferMeshMetadata();
-    }
+void OmMeshManager::loadThreadhold1() {
+  if (!metadata_->Load()) {
+    inferMeshMetadata();
+  }
 
-    if(metadata_->IsBuilt())
-    {
-        if(metadata_->IsHDF5())
-        {
-            if(OmProject::HasOldHDF5()){
-                ActivateConversionFromV1ToV2();
-            }
-            // TODO: else? mesh conversion probably wasn't finished...
-        }
+  if (metadata_->IsBuilt()) {
+    if (metadata_->IsHDF5()) {
+      if (OmProject::HasOldHDF5()) {
+        ActivateConversionFromV1ToV2();
+      }
+      // TODO: else? mesh conversion probably wasn't finished...
     }
+  }
 }
 
-void OmMeshManager::loadThreadholdNon1()
-{
-    if(!metadata_->Load()){
-        std::cout << "could not load mesh for " << threshold_ << "\n";
-    }
+void OmMeshManager::loadThreadholdNon1() {
+  if (!metadata_->Load()) {
+    std::cout << "could not load mesh for " << threshold_ << "\n";
+  }
 }
 
-void OmMeshManager::inferMeshMetadata()
-{
-    if(!OmProject::HasOldHDF5())
-    {
-        printf("no HDF5 file found\n");
-        return;
-    }
+void OmMeshManager::inferMeshMetadata() {
+  if (!OmProject::HasOldHDF5()) {
+    printf("no HDF5 file found\n");
+    return;
+  }
 
-    OmMeshReaderV1 hdf5Reader(segmentation_);
+  OmMeshReaderV1 hdf5Reader(segmentation_);
 
-    if(hdf5Reader.IsAnyMeshDataPresent())
-    {
-        metadata_->SetMeshedAndStorageAsHDF5();
-        printf("HDF5 meshes found\n");
-        return;
-    }
+  if (hdf5Reader.IsAnyMeshDataPresent()) {
+    metadata_->SetMeshedAndStorageAsHDF5();
+    printf("HDF5 meshes found\n");
+    return;
+  }
 
-    printf("no HDF5 meshes found\n");
+  printf("no HDF5 meshes found\n");
 }
 
-OmMeshPtr OmMeshManager::Produce(const OmMeshCoord& coord)
-{
-    return om::make_shared<OmMesh>(segmentation_,
-                                   coord,
-                                   this,
-                                   dataCache_.get());
+OmMeshPtr OmMeshManager::Produce(const OmMeshCoord& coord) {
+  return om::make_shared<OmMesh>(segmentation_, coord, this, dataCache_.get());
 }
 
 void OmMeshManager::GetMesh(OmMeshPtr& ptr, const OmMeshCoord& coord,
-                            const om::Blocking blocking)
-{
-    dataCache_->Get(ptr, coord, blocking);
+                            const om::Blocking blocking) {
+  dataCache_->Get(ptr, coord, blocking);
 }
 
-void OmMeshManager::UncacheMesh(const OmMeshCoord & coord){
-    dataCache_->Remove(coord);
+void OmMeshManager::UncacheMesh(const OmMeshCoord& coord) {
+  dataCache_->Remove(coord);
 }
 
-void OmMeshManager::CloseDownThreads(){
-    dataCache_->CloseDownThreads();
+void OmMeshManager::CloseDownThreads() { dataCache_->CloseDownThreads(); }
+
+void OmMeshManager::ActivateConversionFromV1ToV2() {
+  converter_.reset(new OmMeshConvertV1toV2(this));
+  converter_->Start();
 }
 
-void OmMeshManager::ActivateConversionFromV1ToV2()
-{
-    converter_.reset(new OmMeshConvertV1toV2(this));
-    converter_->Start();
-}
-
-void OmMeshManager::ClearCache(){
-    dataCache_->Clear();
-}
+void OmMeshManager::ClearCache() { dataCache_->Clear(); }

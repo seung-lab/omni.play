@@ -9,17 +9,13 @@
 class OmSegmentation;
 
 class OmTileCacheSegmentation : public OmThreadedTileCache {
-public:
-    OmTileCacheSegmentation()
-        : OmThreadedTileCache("Segmentation Tiles", 128*128*4)
-    {}
+ public:
+  OmTileCacheSegmentation()
+      : OmThreadedTileCache("Segmentation Tiles", 128 * 128 * 4) {}
 
-    virtual ~OmTileCacheSegmentation()
-    {}
+  virtual ~OmTileCacheSegmentation() {}
 
-    void Load(OmSegmentation*)
-    {}
+  void Load(OmSegmentation*) {}
 
-    friend class OmCacheManager;
+  friend class OmCacheManager;
 };
-

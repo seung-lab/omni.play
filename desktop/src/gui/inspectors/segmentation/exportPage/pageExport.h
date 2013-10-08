@@ -8,22 +8,19 @@ namespace om {
 namespace segmentationInspector {
 
 class PageExport : public QWidget {
-private:
-    const SegmentationDataWrapper sdw_;
+ private:
+  const SegmentationDataWrapper sdw_;
 
-public:
-    PageExport(QWidget* parent, const SegmentationDataWrapper& sdw);
+ public:
+  PageExport(QWidget* parent, const SegmentationDataWrapper& sdw);
 
-    const SegmentationDataWrapper& GetSDW() const {
-        return sdw_;
-    }
+  const SegmentationDataWrapper& GetSDW() const { return sdw_; }
 
-private:
-    QPlainTextEdit* notesEdit_;
+ private:
+  QPlainTextEdit* notesEdit_;
 
-    QGroupBox* makeActionsBox();
+  QGroupBox* makeActionsBox();
 };
 
-} // namespace segmentationInspector
-} // namespace om
-
+}  // namespace segmentationInspector
+}  // namespace om

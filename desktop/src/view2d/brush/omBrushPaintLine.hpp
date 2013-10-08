@@ -4,27 +4,22 @@
 #include "view2d/brush/omBrushPaintUtils.hpp"
 
 class OmBrushPaintLine {
-private:
-    const om::shared_ptr<OmBrushOppInfo> info_;
-    const OmSegID segIDtoPaint_;
+ private:
+  const om::shared_ptr<OmBrushOppInfo> info_;
+  const OmSegID segIDtoPaint_;
 
-public:
-    OmBrushPaintLine(om::shared_ptr<OmBrushOppInfo> info,
-                     const OmSegID segIDtoPaint)
-        : info_(info)
-        , segIDtoPaint_(segIDtoPaint)
-    {}
+ public:
+  OmBrushPaintLine(om::shared_ptr<OmBrushOppInfo> info,
+                   const OmSegID segIDtoPaint)
+      : info_(info), segIDtoPaint_(segIDtoPaint) {}
 
-    virtual ~OmBrushPaintLine()
-    {}
+  virtual ~OmBrushPaintLine() {}
 
-    void PaintLine(const om::globalCoord& first, const om::globalCoord& second)
-    {
-        OmBrushOppLine lineOpp(info_);
+  void PaintLine(const om::globalCoord& first, const om::globalCoord& second) {
+    OmBrushOppLine lineOpp(info_);
 
-        om::shared_ptr<om::pt3d_list_t> pts = lineOpp.GetPts(first, second);
+    om::shared_ptr<om::pt3d_list_t> pts = lineOpp.GetPts(first, second);
 
-        OmBrushPaintUtils::PaintPts(info_.get(), pts.get(), segIDtoPaint_);
-    }
+    OmBrushPaintUtils::PaintPts(info_.get(), pts.get(), segIDtoPaint_);
+  }
 };
-

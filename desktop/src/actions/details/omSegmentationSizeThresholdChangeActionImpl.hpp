@@ -10,58 +10,55 @@
 #include "utility/dataWrappers.h"
 
 class OmSegmentationSizeThresholdChangeActionImpl {
-private:
-    SegmentationDataWrapper sdw_;
-    double threshold_;
-    double oldThreshold_;
+ private:
+  SegmentationDataWrapper sdw_;
+  double threshold_;
+  double oldThreshold_;
 
-public:
-    OmSegmentationSizeThresholdChangeActionImpl()
-    {}
+ public:
+  OmSegmentationSizeThresholdChangeActionImpl() {}
 
-    OmSegmentationSizeThresholdChangeActionImpl(const SegmentationDataWrapper sdw,
-                                                const double threshold)
-        : sdw_(sdw)
-        , threshold_(threshold)
-    {}
+  OmSegmentationSizeThresholdChangeActionImpl(const SegmentationDataWrapper sdw,
+                                              const double threshold)
+      : sdw_(sdw), threshold_(threshold) {}
 
-    void Execute()
-    {
-        OmSegmentation& seg = sdw_.GetSegmentation();
+  void Execute() {
+    OmSegmentation& seg = sdw_.GetSegmentation();
 
-        oldThreshold_ = seg.GetSizeThreshold();
+    oldThreshold_ = seg.GetSizeThreshold();
 
-        seg.SetSizeThreshold(threshold_);
+    seg.SetSizeThreshold(threshold_);
 
-        OmEvents::RefreshMSTthreshold();
+    OmEvents::RefreshMSTthreshold();
 
-        OmEvents::SegmentModified();
-    }
+    OmEvents::SegmentModified();
+  }
 
-    void Undo()
-    {
-        OmSegmentation& seg = sdw_.GetSegmentation();
+  void Undo() {
+    OmSegmentation& seg = sdw_.GetSegmentation();
 
-        seg.SetSizeThreshold(oldThreshold_);
+    seg.SetSizeThreshold(oldThreshold_);
 
-        OmEvents::RefreshMSTthreshold();
+    OmEvents::RefreshMSTthreshold();
 
-        OmEvents::SegmentModified();
-    }
+    OmEvents::SegmentModified();
+  }
 
-    std::string Description() const {
-        return "Threshold: " + om::string::num(threshold_);
-    }
+  std::string Description() const {
+    return "Threshold: " + om::string::num(threshold_);
+  }
 
-    QString classNameForLogFile() const {
-        return "OmSegmentationThresholdChangeAction";
-    }
+  QString classNameForLogFile() const {
+    return "OmSegmentationThresholdChangeAction";
+  }
 
-private:
-    template <typename T> friend class OmActionLoggerThread;
+ private:
+  template <typename T> friend class OmActionLoggerThread;
 
-    friend class QDataStream &operator<<(QDataStream&, const OmSegmentationSizeThresholdChangeActionImpl&);
-    friend class QDataStream &operator>>(QDataStream&, OmSegmentationSizeThresholdChangeActionImpl&);
-    friend class QTextStream &operator<<(QTextStream& out, const OmSegmentationSizeThresholdChangeActionImpl& a);
+  friend class QDataStream& operator<<(
+      QDataStream&, const OmSegmentationSizeThresholdChangeActionImpl&);
+  friend class QDataStream& operator>>(QDataStream&,
+                                       OmSegmentationSizeThresholdChangeActionImpl&);
+  friend class QTextStream& operator<<(
+      QTextStream& out, const OmSegmentationSizeThresholdChangeActionImpl& a);
 };
-

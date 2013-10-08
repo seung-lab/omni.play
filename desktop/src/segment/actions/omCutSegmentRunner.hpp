@@ -6,21 +6,20 @@
 #include "utility/segmentDataWrapper.hpp"
 
 class OmCutSegmentRunner {
-public:
+ public:
 
-     static void CutSegmentFromParent(const SegmentDataWrapper& sdw)
-     {
-         OmSegment* seg = sdw.GetSegment();
+  static void CutSegmentFromParent(const SegmentDataWrapper& sdw) {
+    OmSegment* seg = sdw.GetSegment();
 
-         boost::optional<std::string> notCuttable = sdw.Segments()->IsSegmentCuttable(seg);
+    boost::optional<std::string> notCuttable =
+        sdw.Segments()->IsSegmentCuttable(seg);
 
-         if(notCuttable)
-         {
-             const QString err = QString::fromStdString(*notCuttable);
-             OmEvents::NonFatalEvent(err);
-             return;
-         }
+    if (notCuttable) {
+      const QString err = QString::fromStdString(*notCuttable);
+      OmEvents::NonFatalEvent(err);
+      return;
+    }
 
-		 (new OmSegmentCutAction(sdw))->Run();
-     }
+    (new OmSegmentCutAction(sdw))->Run();
+  }
 };

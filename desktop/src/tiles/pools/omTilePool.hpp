@@ -8,181 +8,160 @@
 
 #include <boost/ptr_container/ptr_list.hpp>
 
-template <typename T>
-class MallocArrayWrapper {
-private:
-    T *const v_;
+template <typename T> class MallocArrayWrapper {
+ private:
+  T* const v_;
 
-public:
-    MallocArrayWrapper(T* v)
-        : v_(v)
-    {}
+ public:
+  MallocArrayWrapper(T* v) : v_(v) {}
 
-    ~MallocArrayWrapper(){
-        free(v_);
-    }
+  ~MallocArrayWrapper() { free(v_); }
 };
 
-template <typename T>
-class OmTilePool {
-private:
-    const uint32_t numElementsPerTile_;
-    const uint32_t numBytesPerTile_;
-    const uint32_t numBytesPerPage_;
-    const uint32_t numTilesPerPage_;
-    const uint32_t numElementsPerPage_;
+template <typename T> class OmTilePool {
+ private:
+  const uint32_t numElementsPerTile_;
+  const uint32_t numBytesPerTile_;
+  const uint32_t numBytesPerPage_;
+  const uint32_t numTilesPerPage_;
+  const uint32_t numElementsPerPage_;
 
-    const uint64_t numBuckets_;
+  const uint64_t numBuckets_;
 
-    zi::spinlock pagesLock_;
-    boost::ptr_list<MallocArrayWrapper<T> > pages_;
+  zi::spinlock pagesLock_;
+  boost::ptr_list<MallocArrayWrapper<T> > pages_;
 
-    struct FreeTileList {
-        std::deque<T*> freeTiles;
-        zi::spinlock lock;
-    };
+  struct FreeTileList {
+    std::deque<T*> freeTiles;
+    zi::spinlock lock;
+  };
 
-    std::vector<FreeTileList*> freeTileLists_; // size is fixed
+  std::vector<FreeTileList*> freeTileLists_;  // size is fixed
 
-    LockedUint32 curIndex_;
+  LockedUint32 curIndex_;
 
-    // needs to return prime number
-    static uint64_t computeNumBuckets()
+  // needs to return prime number
+  static uint64_t computeNumBuckets() {
+    const int numCores = OmSystemInformation::get_num_cores();
+    return om::constants::getNextBiggestPrime(2 * numCores);
+  }
+
+  void checkForLeaks() {
+    uint32_t numPages;
     {
-        const int numCores = OmSystemInformation::get_num_cores();
-        return om::constants::getNextBiggestPrime(2 * numCores);
+      zi::guard g(pagesLock_);
+      numPages = pages_.size();
     }
 
-    void checkForLeaks()
-    {
-        uint32_t numPages;
-        {
-            zi::guard g(pagesLock_);
-            numPages = pages_.size();
-        }
+    const uint32_t numExpectedFreeTiles = numPages * numTilesPerPage_;
 
-        const uint32_t numExpectedFreeTiles = numPages * numTilesPerPage_;
-
-        if(!numExpectedFreeTiles){
-            return;
-        }
-
-        uint32_t numTilesPresent = 0;
-        for(uint32_t i = 0; i < numBuckets_; ++i)
-        {
-            zi::guard g(freeTileLists_[i]->lock);
-            numTilesPresent += freeTileLists_[i]->freeTiles.size();
-        }
-
-        if(numExpectedFreeTiles != numTilesPresent)
-        {
-            std::cout << "missing tiles: expected " << numExpectedFreeTiles
-                      << ", but only have " << numTilesPresent << "\n";
-        }
+    if (!numExpectedFreeTiles) {
+      return;
     }
 
-public:
-    OmTilePool(const int megsPerPage,
-               const int numElementsPerTile)
-        : numElementsPerTile_(numElementsPerTile)
-        , numBytesPerTile_(sizeof(T) * numElementsPerTile)
-        , numBytesPerPage_(megsPerPage * om::math::bytesPerMB)
-        , numTilesPerPage_(numBytesPerPage_ / numBytesPerTile_)
-        , numElementsPerPage_(numTilesPerPage_ * numElementsPerTile)
-        , numBuckets_(computeNumBuckets())
-    {
-        if(0 != numBytesPerPage_ % numBytesPerTile_){
-            throw OmArgException("invalid size");
-        }
-
-        freeTileLists_.resize(numBuckets_);
-        for(uint32_t i = 0; i < numBuckets_; ++i){
-            freeTileLists_[i] = new FreeTileList();
-        }
-
-        curIndex_.set(0);
+    uint32_t numTilesPresent = 0;
+    for (uint32_t i = 0; i < numBuckets_; ++i) {
+      zi::guard g(freeTileLists_[i]->lock);
+      numTilesPresent += freeTileLists_[i]->freeTiles.size();
     }
 
-    ~OmTilePool()
-    {
-        checkForLeaks();
+    if (numExpectedFreeTiles != numTilesPresent) {
+      std::cout << "missing tiles: expected " << numExpectedFreeTiles
+                << ", but only have " << numTilesPresent << "\n";
+    }
+  }
 
-        for(uint32_t i = 0; i < numBuckets_; ++i){
-            delete freeTileLists_[i];
-        }
+ public:
+  OmTilePool(const int megsPerPage, const int numElementsPerTile)
+      : numElementsPerTile_(numElementsPerTile),
+        numBytesPerTile_(sizeof(T) * numElementsPerTile),
+        numBytesPerPage_(megsPerPage * om::math::bytesPerMB),
+        numTilesPerPage_(numBytesPerPage_ / numBytesPerTile_),
+        numElementsPerPage_(numTilesPerPage_ * numElementsPerTile),
+        numBuckets_(computeNumBuckets()) {
+    if (0 != numBytesPerPage_ % numBytesPerTile_) {
+      throw OmArgException("invalid size");
     }
 
-    T* GetTile()
-    {
-        T* tile = doGet();
-
-        if(!tile){
-            tile = allocatePage();
-        }
-
-        return tile;
+    freeTileLists_.resize(numBuckets_);
+    for (uint32_t i = 0; i < numBuckets_; ++i) {
+      freeTileLists_[i] = new FreeTileList();
     }
 
-    void FreeTile(T* tile)
-    {
-        const int index = reinterpret_cast<uint64_t>(tile) % numBuckets_;
+    curIndex_.set(0);
+  }
 
-        FreeTileList* ftl = freeTileLists_[ index ];
+  ~OmTilePool() {
+    checkForLeaks();
 
-        {
-            zi::guard g(ftl->lock);
-            ftl->freeTiles.push_back(tile);
-        }
+    for (uint32_t i = 0; i < numBuckets_; ++i) {
+      delete freeTileLists_[i];
+    }
+  }
+
+  T* GetTile() {
+    T* tile = doGet();
+
+    if (!tile) {
+      tile = allocatePage();
     }
 
-private:
-    T* allocatePage()
+    return tile;
+  }
+
+  void FreeTile(T* tile) {
+    const int index = reinterpret_cast<uint64_t>(tile) % numBuckets_;
+
+    FreeTileList* ftl = freeTileLists_[index];
+
     {
-        T* newPage = static_cast<T*>(malloc(numBytesPerPage_));
+      zi::guard g(ftl->lock);
+      ftl->freeTiles.push_back(tile);
+    }
+  }
 
-        if(!newPage){
-            throw std::bad_alloc();
-        }
+ private:
+  T* allocatePage() {
+    T* newPage = static_cast<T*>(malloc(numBytesPerPage_));
 
-        {
-            zi::guard g(pagesLock_);
-            pages_.push_back(new MallocArrayWrapper<T>(newPage));
-        }
-
-        for(uint32_t i = numElementsPerTile_; // skip first tile
-            i < numElementsPerPage_;
-            i += numElementsPerTile_)
-        {
-            T* tile = &newPage[i];
-
-            const int index = reinterpret_cast<uint64_t>(tile) % numBuckets_;
-
-            FreeTileList* ftl = freeTileLists_[ index ];
-
-            {
-                zi::guard g(ftl->lock);
-                ftl->freeTiles.push_back(tile);
-            }
-        }
-
-        return newPage;
+    if (!newPage) {
+      throw std::bad_alloc();
     }
 
-    T* doGet()
     {
-        FreeTileList* ftl = freeTileLists_[ curIndex_.inc() % numBuckets_ ];
-
-        T* tile = NULL;
-        {
-            zi::guard g(ftl->lock);
-            if(!ftl->freeTiles.empty())
-            {
-                tile = ftl->freeTiles.back();
-                ftl->freeTiles.pop_back();
-            }
-        }
-
-        return tile;
+      zi::guard g(pagesLock_);
+      pages_.push_back(new MallocArrayWrapper<T>(newPage));
     }
+
+    for (uint32_t i = numElementsPerTile_;  // skip first tile
+         i < numElementsPerPage_; i += numElementsPerTile_) {
+      T* tile = &newPage[i];
+
+      const int index = reinterpret_cast<uint64_t>(tile) % numBuckets_;
+
+      FreeTileList* ftl = freeTileLists_[index];
+
+      {
+        zi::guard g(ftl->lock);
+        ftl->freeTiles.push_back(tile);
+      }
+    }
+
+    return newPage;
+  }
+
+  T* doGet() {
+    FreeTileList* ftl = freeTileLists_[curIndex_.inc() % numBuckets_];
+
+    T* tile = NULL;
+    {
+      zi::guard g(ftl->lock);
+      if (!ftl->freeTiles.empty()) {
+        tile = ftl->freeTiles.back();
+        ftl->freeTiles.pop_back();
+      }
+    }
+
+    return tile;
+  }
 };
-

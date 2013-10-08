@@ -6,24 +6,18 @@
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 
-JoinButton::JoinButton(GraphTools * d)
-    : OmButton<GraphTools>( d,
-                            "Join",
-                            "Join objects",
-                            false)
-{
-}
+JoinButton::JoinButton(GraphTools* d)
+    : OmButton<GraphTools>(d, "Join", "Join objects", false) {}
 
-void JoinButton::doAction()
-{
-    SegmentationDataWrapper sdw = mParent->GetSDW();
-    if(!sdw.IsSegmentationValid()){
-        return;
-    }
+void JoinButton::doAction() {
+  SegmentationDataWrapper sdw = mParent->GetSDW();
+  if (!sdw.IsSegmentationValid()) {
+    return;
+  }
 
-    OmSegmentation& seg = sdw.GetSegmentation();
-    const OmSegIDsSet ids = seg.Segments()->GetSelectedSegmentIDs();
-    OmActions::JoinSegments(sdw, ids);
+  OmSegmentation& seg = sdw.GetSegmentation();
+  const OmSegIDsSet ids = seg.Segments()->GetSelectedSegmentIDs();
+  OmActions::JoinSegments(sdw, ids);
 
-    mParent->updateGui();
+  mParent->updateGui();
 }

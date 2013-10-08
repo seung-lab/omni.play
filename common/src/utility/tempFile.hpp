@@ -14,61 +14,47 @@
 namespace om {
 namespace utility {
 
-template <class T>
-class tempFile {
-private:
-    const UUID uuid_;
-    const std::string fnp_;
+template <class T> class tempFile {
+ private:
+  const UUID uuid_;
+  const std::string fnp_;
 
-    boost::scoped_ptr<QFile> file_;
-    T* data_;
+  boost::scoped_ptr<QFile> file_;
+  T* data_;
 
-public:
-    tempFile()
-        : uuid_(UUID())
-        , fnp_(makeFileName())
-        , data_(NULL)
-    {
-        if(om::file::exists(fnp_)){ // should be VERY unlikely
-            throw ioException("unique file already found");
-        }
-
-        // race here is possible, if VERY, VERY unlikely...
-
-        om::file::openFileRW(file_, fnp_);
+ public:
+  tempFile() : uuid_(UUID()), fnp_(makeFileName()), data_(NULL) {
+    if (om::file::exists(fnp_)) {  // should be VERY unlikely
+      throw ioException("unique file already found");
     }
 
-    virtual ~tempFile()
-    {
-        file_.reset();
-        om::file::rmFile(fnp_);
-    }
+    // race here is possible, if VERY, VERY unlikely...
 
-    const std::string& FileName() const {
-        return fnp_;
-    }
+    om::file::openFileRW(file_, fnp_);
+  }
 
-    void ResizeNumBytes(const int64_t numBytes){
-        om::file::resizeFileNumBytes(file_.get(), numBytes);
-    }
+  virtual ~tempFile() {
+    file_.reset();
+    om::file::rmFile(fnp_);
+  }
 
-    void ResizeNumElements(const int64_t numElements){
-        ResizeNumBytes(numElements * sizeof(T));
-    }
+  const std::string& FileName() const { return fnp_; }
 
-    T* Map(){
-        return data_ = om::file::mapFile<T>(file_.get());
-    }
+  void ResizeNumBytes(const int64_t numBytes) {
+    om::file::resizeFileNumBytes(file_.get(), numBytes);
+  }
 
-    int64_t NumBytes() const {
-        return file_->size();
-    }
+  void ResizeNumElements(const int64_t numElements) {
+    ResizeNumBytes(numElements * sizeof(T));
+  }
 
-private:
-    std::string makeFileName() const {
-        return OmFileNames::TempFileName(uuid_);
-    }
+  T* Map() { return data_ = om::file::mapFile<T>(file_.get()); }
+
+  int64_t NumBytes() const { return file_->size(); }
+
+ private:
+  std::string makeFileName() const { return OmFileNames::TempFileName(uuid_); }
 };
 
-} // namespace utility
-} // namespace om
+}  // namespace utility
+}  // namespace om

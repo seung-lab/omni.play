@@ -4,4 +4,3 @@
 
 class OmMesh;
 typedef om::shared_ptr<OmMesh> OmMeshPtr;
-

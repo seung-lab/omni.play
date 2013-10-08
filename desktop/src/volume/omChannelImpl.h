@@ -13,83 +13,74 @@
 
 class OmTileCacheChannel;
 class OmVolumeData;
-template <typename,typename> class OmChunkCache;
+template <typename, typename> class OmChunkCache;
 
-namespace om { namespace channel { class folder; } }
+namespace om {
+namespace channel {
+class folder;
+}
+}
 
 class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
-public:
-    OmChannelImpl();
-    OmChannelImpl(OmID id);
-    virtual ~OmChannelImpl();
+ public:
+  OmChannelImpl();
+  OmChannelImpl(OmID id);
+  virtual ~OmChannelImpl();
 
-    virtual QString GetDefaultHDF5DatasetName() = 0;
+  virtual QString GetDefaultHDF5DatasetName() = 0;
 
-    OmVolumeData* VolData() {
-        return volData_.get();
-    }
+  OmVolumeData* VolData() { return volData_.get(); }
 
-    std::string GetName();
-    std::string GetNameHyphen();
-    std::string GetDirectoryPath() const;
-    void LoadPath();
+  std::string GetName();
+  std::string GetNameHyphen();
+  std::string GetDirectoryPath() const;
+  void LoadPath();
 
-    bool LoadVolData();
-    bool LoadVolDataIfFoldersExist();
-    void UpdateFromVolResize();
+  bool LoadVolData();
+  bool LoadVolDataIfFoldersExist();
+  void UpdateFromVolResize();
 
-    ObjectType getVolumeType() const {
-        return CHANNEL;
-    }
+  ObjectType getVolumeType() const { return CHANNEL; }
 
-    OmID getID() const {
-        return GetID();
-    }
+  OmID getID() const { return GetID(); }
 
-    virtual int GetBytesPerVoxel() const;
-    virtual int GetBytesPerSlice() const;
+  virtual int GetBytesPerVoxel() const;
+  virtual int GetBytesPerSlice() const;
 
-    void CloseDownThreads();
+  void CloseDownThreads();
 
-    OmFilter2dManager& FilterManager(){
-        return filterManager_;
-    }
+  OmFilter2dManager& FilterManager() { return filterManager_; }
 
-    void SetVolDataType(const OmVolDataType);
+  void SetVolDataType(const OmVolDataType);
 
-    OmChunk* GetChunk(const om::chunkCoord& coord);
+  OmChunk* GetChunk(const om::chunkCoord& coord);
 
-    inline std::vector<OmFilter2d*> GetFilters() const {
-        return filterManager_.GetFilters();
-    }
+  inline std::vector<OmFilter2d*> GetFilters() const {
+    return filterManager_.GetFilters();
+  }
 
-    OmChunkCache<OmChannelImpl, OmChunk>* ChunkCache(){
-        return chunkCache_.get();
-    }
+  OmChunkCache<OmChannelImpl, OmChunk>* ChunkCache() {
+    return chunkCache_.get();
+  }
 
-    inline OmTileCacheChannel* TileCache(){
-        return tileCache_.get();
-    }
+  inline OmTileCacheChannel* TileCache() { return tileCache_.get(); }
 
-    inline om::channel::folder* Folder() const {
-        return folder_.get();
-    }
+  inline om::channel::folder* Folder() const { return folder_.get(); }
 
-protected:
-    //protected copy constructor and assignment operator to prevent copy
-    OmChannelImpl(const OmChannelImpl&);
-    OmChannelImpl& operator= (const OmChannelImpl&);
+ protected:
+  //protected copy constructor and assignment operator to prevent copy
+  OmChannelImpl(const OmChannelImpl&);
+  OmChannelImpl& operator=(const OmChannelImpl&);
 
-    boost::scoped_ptr<om::channel::folder> folder_;
-    boost::scoped_ptr<OmChunkCache<OmChannelImpl, OmChunk> > chunkCache_;
-    boost::scoped_ptr<OmVolumeData> volData_;
-    boost::scoped_ptr<OmTileCacheChannel> tileCache_;
+  boost::scoped_ptr<om::channel::folder> folder_;
+  boost::scoped_ptr<OmChunkCache<OmChannelImpl, OmChunk> > chunkCache_;
+  boost::scoped_ptr<OmVolumeData> volData_;
+  boost::scoped_ptr<OmTileCacheChannel> tileCache_;
 
-    OmFilter2dManager filterManager_;
+  OmFilter2dManager filterManager_;
 
-private:
-    friend class OmChannelImplChunkBuildTask;
-    friend class OmDataArchiveProjectImpl;
+ private:
+  friend class OmChannelImplChunkBuildTask;
+  friend class OmDataArchiveProjectImpl;
 };
-

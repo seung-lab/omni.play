@@ -22,14 +22,11 @@
 using namespace facebook::fb303;
 using apache::thrift::concurrency::Guard;
 
-FacebookBase::FacebookBase(std::string name) :
-  name_(name) {
+FacebookBase::FacebookBase(std::string name) : name_(name) {
   aliveSince_ = (int64_t) time(NULL);
 }
 
-inline void FacebookBase::getName(std::string& _return) {
-  _return = name_;
-}
+inline void FacebookBase::getName(std::string& _return) { _return = name_; }
 
 void FacebookBase::setOption(const std::string& key, const std::string& value) {
   Guard g(optionsLock_);
@@ -41,7 +38,7 @@ void FacebookBase::getOption(std::string& _return, const std::string& key) {
   _return = options_[key];
 }
 
-void FacebookBase::getOptions(std::map<std::string, std::string> & _return) {
+void FacebookBase::getOptions(std::map<std::string, std::string>& _return) {
   Guard g(optionsLock_);
   _return = options_;
 }
@@ -58,7 +55,7 @@ int64_t FacebookBase::incrementCounter(const std::string& key, int64_t amount) {
     // we need to check again to make sure someone didn't create this key
     // already while we released the lock
     it = counters_.find(key);
-    if(it == counters_.end()){
+    if (it == counters_.end()) {
       counters_[key].value = amount;
       counters_.release();
       return amount;
@@ -97,9 +94,8 @@ void FacebookBase::getCounters(std::map<std::string, int64_t>& _return) {
   // we need to lock the whole thing and actually build the map since we don't
   // want our read/write structure to go over the wire
   counters_.acquireRead();
-  for(ReadWriteCounterMap::iterator it = counters_.begin();
-      it != counters_.end(); it++)
-  {
+  for (ReadWriteCounterMap::iterator it = counters_.begin();
+       it != counters_.end(); it++) {
     _return[it->first] = it->second.value;
   }
   counters_.release();
@@ -118,7 +114,4 @@ int64_t FacebookBase::getCounter(const std::string& key) {
   return rv;
 }
 
-inline int64_t FacebookBase::aliveSince() {
-  return aliveSince_;
-}
-
+inline int64_t FacebookBase::aliveSince() { return aliveSince_; }

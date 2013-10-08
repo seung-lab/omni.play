@@ -4,50 +4,40 @@
 #include "zi/omMutex.h"
 
 class OmSegmentColorizerColorCache : public zi::rwmutex {
-private:
-    LockedUint32 size_;
+ private:
+  LockedUint32 size_;
 
-    struct OmColorWithFreshness
-    {
-        OmColor color;
-        uint64_t freshness;
-    };
+  struct OmColorWithFreshness {
+    OmColor color;
+    uint64_t freshness;
+  };
 
-    std::vector<OmColorWithFreshness> cache_;
+  std::vector<OmColorWithFreshness> cache_;
 
-    struct colorizer_mutex_pool_tag;
-    typedef zi::spinlock::pool<colorizer_mutex_pool_tag>::guard spinlock_guard_t;
+  struct colorizer_mutex_pool_tag;
+  typedef zi::spinlock::pool<colorizer_mutex_pool_tag>::guard spinlock_guard_t;
 
-public:
-    OmSegmentColorizerColorCache()
-    {
-        size_.set(0);
-    }
+ public:
+  OmSegmentColorizerColorCache() { size_.set(0); }
 
-    inline uint32_t Size() const {
-        return size_.get();
-    }
+  inline uint32_t Size() const { return size_.get(); }
 
-    inline void Resize(const uint32_t newSize)
-    {
-        zi::rwmutex::write_guard g(*this);
-        size_.set(newSize);
-        cache_.resize(newSize);
-    }
+  inline void Resize(const uint32_t newSize) {
+    zi::rwmutex::write_guard g(*this);
+    size_.set(newSize);
+    cache_.resize(newSize);
+  }
 
-    inline void Get(const uint32_t val, uint64_t& freshness, OmColor& color)
-    {
-		spinlock_guard_t g(val);
-        freshness = cache_[val].freshness;
-        color = cache_[val].color;
-    }
+  inline void Get(const uint32_t val, uint64_t& freshness, OmColor& color) {
+    spinlock_guard_t g(val);
+    freshness = cache_[val].freshness;
+    color = cache_[val].color;
+  }
 
-    inline void Set(const uint32_t val, const uint64_t freshness,
-                    const OmColor& color)
-    {
-        spinlock_guard_t g(val);
-        cache_[val].freshness = freshness;
-        cache_[val].color = color;
-    }
+  inline void Set(const uint32_t val, const uint64_t freshness,
+                  const OmColor& color) {
+    spinlock_guard_t g(val);
+    cache_[val].freshness = freshness;
+    cache_[val].color = color;
+  }
 };
-

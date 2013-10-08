@@ -8,32 +8,23 @@
 namespace om {
 namespace pipeline {
 
-template<typename T>
-struct data
-{
-    boost::shared_ptr<T> data;
-    uint64_t size;
+template <typename T> struct data {
+  boost::shared_ptr<T> data;
+  uint64_t size;
 };
 
-typedef boost::variant<datalayer::memMappedFile<int8_t>,
-                       datalayer::memMappedFile<uint8_t>,
-                       datalayer::memMappedFile<int32_t>,
-                       datalayer::memMappedFile<uint32_t>,
-                       datalayer::memMappedFile<float> > dataSrcs;
+typedef boost::variant<
+    datalayer::memMappedFile<int8_t>, datalayer::memMappedFile<uint8_t>,
+    datalayer::memMappedFile<int32_t>, datalayer::memMappedFile<uint32_t>,
+    datalayer::memMappedFile<float> > dataSrcs;
 
-typedef boost::variant<data<bool>,
-                       data<char>,
-                       data<int8_t>,
-                       data<uint8_t>,
-                       data<int32_t>,
-                       data<uint32_t>,
-                       data<float> > data_var;
+typedef boost::variant<data<bool>, data<char>, data<int8_t>, data<uint8_t>,
+                       data<int32_t>, data<uint32_t>, data<float> > data_var;
 
 typedef boost::static_visitor<data_var> stage;
 
-template<typename T>
-data_var operator>>(const data_var& d, const T& v) {
-    return boost::apply_visitor(v, d);
+template <typename T> data_var operator>>(const data_var& d, const T& v) {
+  return boost::apply_visitor(v, d);
 }
 
 /*

@@ -8,20 +8,20 @@ namespace om {
 namespace gui {
 
 class userChooserWidget : public QWidget {
-private:
-    OmGuiUserChooser *const chooser_;
+ private:
+  OmGuiUserChooser* const chooser_;
 
-    std::vector<std::string> users_;
+  std::vector<std::string> users_;
 
-public:
-    userChooserWidget(OmGuiUserChooser* chooser);
+ public:
+  userChooserWidget(OmGuiUserChooser* chooser);
 
-    void Done();
+  void Done();
 
-private:
-    void setup();
-    static std::vector<std::string> findUsers();
+ private:
+  void setup();
+  static std::vector<std::string> findUsers();
 };
 
-} // namespace gui
-} // namespace om
+}  // namespace gui
+}  // namespace om

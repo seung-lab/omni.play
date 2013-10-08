@@ -5,21 +5,17 @@
 #include "events/omEvents.h"
 
 class MipRateSpinBox : public OmDoubleSpinBox {
-public:
-	MipRateSpinBox(QWidget* p)
-		: OmDoubleSpinBox(p, om::UPDATE_AS_TYPE)
-	{
-		setSingleStep(0.1);
-		setMinimum(0);
-		setMaximum(10);
-		setValue(Om2dPreferences::MipRate());
-	}
+ public:
+  MipRateSpinBox(QWidget* p) : OmDoubleSpinBox(p, om::UPDATE_AS_TYPE) {
+    setSingleStep(0.1);
+    setMinimum(0);
+    setMaximum(10);
+    setValue(Om2dPreferences::MipRate());
+  }
 
-private:
-	void actUponValueChange(const double val)
-	{
-		Om2dPreferences::MipRate(val);
-		OmEvents::Redraw2d();
-	}
+ private:
+  void actUponValueChange(const double val) {
+    Om2dPreferences::MipRate(val);
+    OmEvents::Redraw2d();
+  }
 };
-

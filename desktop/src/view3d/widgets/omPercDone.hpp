@@ -11,75 +11,67 @@
 
 class OmPercDone : public OmView3dWidget {
 
-public:
-    OmPercDone(OmView3d* view3d)
-        : OmView3dWidget(view3d)
-    {
-        //set font properties
-        mFont = QFont("Helvetica", 12);
-        mFont.setWeight(QFont::Bold);
-        mFont.setItalic(true);
+ public:
+  OmPercDone(OmView3d* view3d) : OmView3dWidget(view3d) {
+    //set font properties
+    mFont = QFont("Helvetica", 12);
+    mFont.setWeight(QFont::Bold);
+    mFont.setItalic(true);
+  }
+
+  virtual void Draw() {
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    //glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT); // lighting and color mask
+    glDisable(GL_LIGHTING);  // need to disable lighting for proper text color
+
+    static const float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
+    glColor4fv(TEXT_COLOR);  // set text color
+
+    determineText();
+
+    glPopAttrib();
+  }
+
+ private:
+  QFont mFont;
+
+  void determineText() {
+    if (View3dPtr()->MeshesFound()) {
+      showPercVolDone();
+    } else {
+      drawText("No meshes");
+    }
+  }
+
+  void showPercVolDone() {
+    const std::list<std::pair<float, float> >& percVolDone =
+        View3dPtr()->PercVolDone();
+
+    if (percVolDone.empty()) {
+      return;
     }
 
-    virtual void Draw()
-    {
-        glPushAttrib(GL_ALL_ATTRIB_BITS);
-        //glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT); // lighting and color mask
-        glDisable(GL_LIGHTING);	// need to disable lighting for proper text color
-
-        static const float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
-        glColor4fv(TEXT_COLOR);	// set text color
-
-        determineText();
-
-        glPopAttrib();
+    float num = 0;
+    float denom = 0;
+    FOR_EACH(iter, percVolDone) {
+      num += iter->first;
+      denom += iter->second;
     }
 
-private:
-    QFont mFont;
+    const float val = num / denom;
 
-    void determineText()
-    {
-        if(View3dPtr()->MeshesFound()){
-            showPercVolDone();
-        } else {
-            drawText("No meshes");
-        }
-    }
+    const QString str = QString("%1%").arg(QString::number(val * 100., 'f', 2));
 
-    void showPercVolDone()
-    {
-        const std::list<std::pair<float,float> >& percVolDone =
-            View3dPtr()->PercVolDone();
+    drawText(str);
+  }
 
-        if(percVolDone.empty()){
-            return;
-        }
+  void drawText(const QString& str) {
+    static const int widthPerLetter = 11;
+    const int width = widthPerLetter * str.size();
 
-        float num = 0;
-        float denom = 0;
-        FOR_EACH(iter, percVolDone){
-            num += iter->first;
-            denom += iter->second;
-        }
+    const int x = View3dPtr()->width() - width;
+    const int y = View3dPtr()->height() - 15;
 
-        const float val = num / denom;
-
-        const QString str = QString("%1%")
-            .arg(QString::number(val*100., 'f', 2));
-
-        drawText(str);
-    }
-
-    void drawText(const QString& str)
-    {
-        static const int widthPerLetter = 11;
-        const int width = widthPerLetter * str.size();
-
-        const int x = View3dPtr()->width() - width;
-        const int y = View3dPtr()->height() - 15;
-
-        View3dPtr()->renderText(x, y, qPrintable(str), mFont);
-    }
+    View3dPtr()->renderText(x, y, qPrintable(str), mFont);
+  }
 };
-

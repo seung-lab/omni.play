@@ -10,27 +10,24 @@ class OmSegments;
 template <class> class OmPooledTile;
 
 class OmSegmentColorizer {
-public:
-    OmSegmentColorizer(OmSegments*,
-                       const OmSegmentColorCacheType,
-                       const int tileDim,
-                       OmViewGroupState* vgs);
+ public:
+  OmSegmentColorizer(OmSegments*, const OmSegmentColorCacheType,
+                     const int tileDim, OmViewGroupState* vgs);
 
-    ~OmSegmentColorizer();
+  ~OmSegmentColorizer();
 
-    OmPooledTile<OmColorARGB>* ColorTile(uint32_t const*const imageData);
+  OmPooledTile<OmColorARGB>* ColorTile(uint32_t const* const imageData);
 
-    static const std::vector<uint8_t> SelectedColorLookupTable;
+  static const std::vector<uint8_t> SelectedColorLookupTable;
 
-private:
-    OmSegmentColorizerColorCache colorCache_;
+ private:
+  OmSegmentColorizerColorCache colorCache_;
 
-    SegmentColorParams params_;
+  SegmentColorParams params_;
 
-    LockedUint64 freshness_;
+  LockedUint64 freshness_;
 
-    void setup();
+  void setup();
 
-    friend class SegmentTests1;
+  friend class SegmentTests1;
 };
-

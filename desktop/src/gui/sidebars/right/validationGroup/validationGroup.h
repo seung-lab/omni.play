@@ -13,43 +13,44 @@ class ShowValidatedButton;
 class SegmentationDataWrapper;
 class OmViewGroupState;
 
-namespace om { namespace sidebars { class rightImpl; } }
+namespace om {
+namespace sidebars {
+class rightImpl;
+}
+}
 
 class ValidationGroup : public OmWidget {
-Q_OBJECT
-public:
-    ValidationGroup(om::sidebars::rightImpl*, OmViewGroupState* vgs);
-    QString getGroupNameFromGUI();
-    bool isShowValidChecked();
+  Q_OBJECT public
+      : ValidationGroup(om::sidebars::rightImpl*, OmViewGroupState* vgs);
+  QString getGroupNameFromGUI();
+  bool isShowValidChecked();
 
-    QString getName(){
-        return "Validation";
-    }
+  QString getName() { return "Validation"; }
 
-    OmViewGroupState* GetViewGroupState() const;
+  OmViewGroupState* GetViewGroupState() const;
 
-    SegmentationDataWrapper GetSDW() const;
+  SegmentationDataWrapper GetSDW() const;
 
-private Q_SLOTS:
-    void changeMapColors();
+ private
+Q_SLOTS:
+  void changeMapColors();
 
-private:
-    OmViewGroupState *const vgs_;
+ private:
+  OmViewGroupState* const vgs_;
 
-    QButtonGroup * validGroup;
-    QRadioButton * showValid;
-    QRadioButton * dontShowValid;
-    QLineEdit* mGroupName;
+  QButtonGroup* validGroup;
+  QRadioButton* showValid;
+  QRadioButton* dontShowValid;
+  QLineEdit* mGroupName;
 
-    SetValid* setSelectionValid;
-    SetNotValid* setSelectionNotValid;
+  SetValid* setSelectionValid;
+  SetNotValid* setSelectionNotValid;
 
-    SetUncertain* setSelectionUncertain;
-    SetNotUncertain* setSelectionNotUncertain;
+  SetUncertain* setSelectionUncertain;
+  SetNotUncertain* setSelectionNotUncertain;
 
-    GroupButtonTag * groupButtonTag;
-    ShowValidatedButton * showValidatedButton;
+  GroupButtonTag* groupButtonTag;
+  ShowValidatedButton* showValidatedButton;
 
-    QWidget* addSelectedSegmentButtons();
+  QWidget* addSelectedSegmentButtons();
 };
-

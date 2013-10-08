@@ -6,17 +6,16 @@
 
 class OmTileDrawer;
 
-class OmTilePreFetcher{
-public:
-    OmTilePreFetcher();
-    ~OmTilePreFetcher();
+class OmTilePreFetcher {
+ public:
+  OmTilePreFetcher();
+  ~OmTilePreFetcher();
 
-    void RunTasks(const std::list<OmTileDrawer*>&);
-    void ClearTasks();
+  void RunTasks(const std::list<OmTileDrawer*>&);
+  void ClearTasks();
 
-    void Shutdown();
+  void Shutdown();
 
-private:
-    OmThreadPool mThreadPool;
+ private:
+  OmThreadPool mThreadPool;
 };
-

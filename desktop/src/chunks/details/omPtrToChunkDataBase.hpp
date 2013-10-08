@@ -22,8 +22,7 @@ class ptrToChunkDataBase {
   virtual float* GetRawData(float*) { return NULL; }
 };
 
-template <typename DATA>
-class dataAccessor {
+template <typename DATA> class dataAccessor {
  private:
   ptrToChunkDataBase* const ptr_;
   DATA* const data_;

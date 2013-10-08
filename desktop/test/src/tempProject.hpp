@@ -6,22 +6,16 @@
 namespace om {
 namespace test {
 
-class tempProject
-{
-private:
-	std::string fnp_;
-public:
-	tempProject()
-		: fnp_("/tmp/" + OmUUID().Str())
-	{
-		OmProject::New(fnp_);
-	}
-	~tempProject()
-	{
-		
-	}
+class tempProject {
+ private:
+  std::string fnp_;
 
-	/* data */
+ public:
+  tempProject() : fnp_("/tmp/" + OmUUID().Str()) { OmProject::New(fnp_); }
+  ~tempProject() {}
+
+  /* data */
 };
 
-}} // namespace om::test::
+}
+}  // namespace om::test::

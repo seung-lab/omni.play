@@ -21,20 +21,20 @@
 #include <zi/config/config.hpp>
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-#  include <memory>
-#  define ZI_SHARED_PTR_NAMESPACE ::std
+#include <memory>
+#define ZI_SHARED_PTR_NAMESPACE ::std
 #else
-#    include <boost/shared_ptr.hpp>
-#    include <boost/make_shared.hpp>
-#    define ZI_SHARED_PTR_NAMESPACE ::boost
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+#define ZI_SHARED_PTR_NAMESPACE ::boost
 #endif
 
 namespace om {
 
-using ZI_SHARED_PTR_NAMESPACE::shared_ptr ;
+using ZI_SHARED_PTR_NAMESPACE::shared_ptr;
 using ZI_SHARED_PTR_NAMESPACE::make_shared;
 using ZI_SHARED_PTR_NAMESPACE::weak_ptr;
 
-} //namespace om
+}  //namespace om
 
 #undef ZI_SHARED_PTR_NAMESPACE

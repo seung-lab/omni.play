@@ -13,37 +13,32 @@ namespace om {
 namespace sidebars {
 
 class rightImpl : public QWidget {
-Q_OBJECT
-public:
-    rightImpl(MainWindow* mw, OmViewGroupState* vgs);
+  Q_OBJECT public : rightImpl(MainWindow* mw, OmViewGroupState* vgs);
 
-    void updateGui();
+  void updateGui();
 
-    void SetSplittingOff();
-    void SetShatteringOff();
+  void SetSplittingOff();
+  void SetShatteringOff();
 
-    SegmentationDataWrapper GetSDW();
+  SegmentationDataWrapper GetSDW();
 
-    static bool GetShowGroupsMode();
+  static bool GetShowGroupsMode();
 
-private:
-    template <class T>
-    QWidget* wrapWithGroupBox(T* widget)
-    {
-        QGroupBox* gbox = new QGroupBox(widget->getName(), this);
-        QVBoxLayout* vbox = new QVBoxLayout(gbox);
-        vbox->addWidget(widget);
-        gbox->setContentsMargins(0,0,0,0);
+ private:
+  template <class T> QWidget* wrapWithGroupBox(T* widget) {
+    QGroupBox* gbox = new QGroupBox(widget->getName(), this);
+    QVBoxLayout* vbox = new QVBoxLayout(gbox);
+    vbox->addWidget(widget);
+    gbox->setContentsMargins(0, 0, 0, 0);
 
-        return gbox;
-    }
+    return gbox;
+  }
 
-    MainWindow *const mainWindow_;
-    OmViewGroupState *const vgs_;
+  MainWindow* const mainWindow_;
+  OmViewGroupState* const vgs_;
 
-    GraphTools* graphTools_;
+  GraphTools* graphTools_;
 };
 
-} // namespace sidebars
-} // namespace om
-
+}  // namespace sidebars
+}  // namespace om

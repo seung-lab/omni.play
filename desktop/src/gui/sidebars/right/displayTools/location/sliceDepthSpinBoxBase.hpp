@@ -11,89 +11,69 @@
 
 #include <limits>
 
-class SliceDepthSpinBoxBase : public OmIntSpinBox,
-                              public OmViewEventListener {
-Q_OBJECT
+class SliceDepthSpinBoxBase : public OmIntSpinBox, public OmViewEventListener {
+  Q_OBJECT public : SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState* vgs)
+                    : OmIntSpinBox(d, om::UPDATE_AS_TYPE), vgs_(vgs) {
+    setValue(0);
+    setSingleStep(1);
+    setMaximum(std::numeric_limits<int32_t>::max());
+  }
 
-public:
-    SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState* vgs)
-        : OmIntSpinBox(d, om::UPDATE_AS_TYPE)
-        , vgs_(vgs)
+  QSize sizeHint() const { return QSize(50, height()); }
+
+  virtual QString Label() const = 0;
+
+ private:
+  OmViewGroupState* const vgs_;
+
+  virtual ViewType viewType() const = 0;
+
+  OmMipVolume* getVol() {
     {
-        setValue(0);
-        setSingleStep(1);
-        setMaximum(std::numeric_limits<int32_t>::max());
+      const ChannelDataWrapper cdw = vgs_->Channel();
+      if (cdw.IsValidWrapper()) {
+        return cdw.GetChannelPtr();
+      }
     }
 
-    QSize sizeHint () const {
-        return QSize(50, height());
-    }
-
-    virtual QString Label() const = 0;
-
-private:
-    OmViewGroupState *const vgs_;
-
-    virtual ViewType viewType() const = 0;
-
-    OmMipVolume* getVol()
     {
-        {
-            const ChannelDataWrapper cdw = vgs_->Channel();
-            if(cdw.IsValidWrapper()){
-                return cdw.GetChannelPtr();
-            }
-        }
-
-        {
-            const SegmentationDataWrapper sdw = vgs_->Segmentation();
-            if(sdw.IsValidWrapper()){
-                return sdw.GetSegmentationPtr();
-            }
-        }
-
-        return NULL;
+      const SegmentationDataWrapper sdw = vgs_->Segmentation();
+      if (sdw.IsValidWrapper()) {
+        return sdw.GetSegmentationPtr();
+      }
     }
 
-    void actUponValueChange(const int depth)
-    {
-        if(NULL == vg2ds()){
-            return;
-        }
+    return NULL;
+  }
 
-        vg2ds()->SetScaledSliceDepth(viewType(), depth);
-        OmEvents::Redraw2d();
-        OmEvents::ViewCenterChanged();
-        OmEvents::View3dRecenter();
+  void actUponValueChange(const int depth) {
+    if (NULL == vg2ds()) {
+      return;
     }
 
-    void update()
-    {
-        blockSignals(true);
+    vg2ds()->SetScaledSliceDepth(viewType(), depth);
+    OmEvents::Redraw2d();
+    OmEvents::ViewCenterChanged();
+    OmEvents::View3dRecenter();
+  }
 
-        const int depth = vg2ds()->GetScaledSliceDepth(viewType());
+  void update() {
+    blockSignals(true);
 
-        setValue(depth);
+    const int depth = vg2ds()->GetScaledSliceDepth(viewType());
 
-        blockSignals(false);
-    }
+    setValue(depth);
 
-    inline OmViewGroupView2dState* vg2ds() const {
-        return vgs_->View2dState();
-    }
+    blockSignals(false);
+  }
 
-    // OmViewEventListener
-    void ViewBoxChangeEvent(){
-        update();
-    }
-    void ViewCenterChangeEvent(){
-        update();
-    }
-    void CoordSystemChangeEvent() {
-        update();
-    }
-    void ViewPosChangeEvent(){}
-    void ViewRedrawEvent(){}
-    void ViewBlockingRedrawEvent(){}
+  inline OmViewGroupView2dState* vg2ds() const { return vgs_->View2dState(); }
+
+  // OmViewEventListener
+  void ViewBoxChangeEvent() { update(); }
+  void ViewCenterChangeEvent() { update(); }
+  void CoordSystemChangeEvent() { update(); }
+  void ViewPosChangeEvent() {}
+  void ViewRedrawEvent() {}
+  void ViewBlockingRedrawEvent() {}
 };
-

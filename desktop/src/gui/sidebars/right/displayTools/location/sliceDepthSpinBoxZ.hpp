@@ -3,20 +3,11 @@
 #include "gui/sidebars/right/displayTools/location/sliceDepthSpinBoxBase.hpp"
 
 class SliceDepthSpinBoxZ : public SliceDepthSpinBoxBase {
-Q_OBJECT
+  Q_OBJECT public : SliceDepthSpinBoxZ(QWidget* d, OmViewGroupState* vgs)
+                    : SliceDepthSpinBoxBase(d, vgs) {}
 
-public:
-    SliceDepthSpinBoxZ(QWidget* d, OmViewGroupState* vgs)
-        : SliceDepthSpinBoxBase(d, vgs)
-    {}
+  virtual QString Label() const { return "Z"; }
 
-    virtual QString Label() const {
-        return "Z";
-    }
-
-private:
-    virtual ViewType viewType() const {
-        return XY_VIEW;
-    }
+ private:
+  virtual ViewType viewType() const { return XY_VIEW; }
 };
-

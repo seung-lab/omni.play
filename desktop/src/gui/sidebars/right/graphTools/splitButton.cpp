@@ -6,22 +6,17 @@
 #include "viewGroup/omSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 
-SplitButton::SplitButton(GraphTools * d)
-    : OmButton<GraphTools>( d,
-                            "Split",
-                            "Split object mode",
-                            true)
-{
-    om::connect(this, SIGNAL(clicked(bool)),
-                this, SLOT(enterOrExitSplitMode(bool)));
+SplitButton::SplitButton(GraphTools* d)
+    : OmButton<GraphTools>(d, "Split", "Split object mode", true) {
+  om::connect(this, SIGNAL(clicked(bool)), this,
+              SLOT(enterOrExitSplitMode(bool)));
 }
 
-void SplitButton::enterOrExitSplitMode(const bool inSplitMode)
-{
-    if(inSplitMode){
-        mParent->GetViewGroupState()->Splitting()->EnterSplitMode();
+void SplitButton::enterOrExitSplitMode(const bool inSplitMode) {
+  if (inSplitMode) {
+    mParent->GetViewGroupState()->Splitting()->EnterSplitMode();
 
-    } else {
-        mParent->GetViewGroupState()->Splitting()->ExitSplitMode();
-    }
+  } else {
+    mParent->GetViewGroupState()->Splitting()->ExitSplitMode();
+  }
 }

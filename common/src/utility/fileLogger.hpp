@@ -6,47 +6,39 @@
 #include <fstream>
 
 namespace om {
-namespace utility {    
+namespace utility {
 
 class fileLogger {
-private:
-    std::string outFile_;
+ private:
+  std::string outFile_;
 
-    std::ofstream out_;
-    
-    zi::spinlock lock_;
+  std::ofstream out_;
 
-public:
-    fileLogger()
-    {}
+  zi::spinlock lock_;
 
-    ~fileLogger()
-    {
-        out_.close();
+ public:
+  fileLogger() {}
+
+  ~fileLogger() { out_.close(); }
+
+  void Start(const std::string& name) {
+    outFile_ = name;
+
+    if (out_.open(name)) {
+      std::cout << "writing log file " << outFile_ << std::endl;
+
+    } else {
+      throw ioException("could not open file", outFile_);
     }
+  }
 
-    void Start(const std::string& name)
-    {
-        outFile_ = name;
+  void Log(const std::string& str) {
+    zi::guard g(lock_);
+    (*out_) << str << "\n";
+  }
 
-        if(out_.open(name)) {
-            std::cout << "writing log file " << outFile_ << std::endl;
-
-        } else{
-            throw ioException("could not open file", outFile_);
-        }
-    }
-
-    void Log(const std::string& str)
-    {
-        zi::guard g(lock_);
-        (*out_) << str << "\n";
-    }
-
-    void Log(const std::ostringstream& stm) {
-        Log(stm.str());
-    }
+  void Log(const std::ostringstream& stm) { Log(stm.str()); }
 };
 
-} // namespace utility
-} // namespace om
+}  // namespace utility
+}  // namespace om

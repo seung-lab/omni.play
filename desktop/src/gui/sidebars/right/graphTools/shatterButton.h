@@ -5,15 +5,12 @@
 class GraphTools;
 
 class ShatterButton : public OmButton<GraphTools> {
-Q_OBJECT
+  Q_OBJECT public : ShatterButton(GraphTools*);
 
-public:
-    ShatterButton(GraphTools*);
+ private:
+  void doAction() {}
 
-private:
-    void doAction()
-    {}
-
-private Q_SLOTS:
-    void enterOrExitShatterMode(const bool show);
+ private
+Q_SLOTS:
+  void enterOrExitShatterMode(const bool show);
 };

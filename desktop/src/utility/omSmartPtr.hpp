@@ -4,75 +4,57 @@
 #include "common/omString.hpp"
 #include "common/omCommon.h"
 
-template <typename T>
-class OmSmartPtr {
-public:
-    static om::shared_ptr<T>
-    inline MallocNumBytes(const uint64_t numBytes,
-                          const om::ZeroMem shouldZeroMem)
-    {
-        T* rawPtr = static_cast<T*>(malloc(numBytes));
+template <typename T> class OmSmartPtr {
+ public:
+  static om::shared_ptr<T> inline MallocNumBytes(
+      const uint64_t numBytes, const om::ZeroMem shouldZeroMem) {
+    T* rawPtr = static_cast<T*>(malloc(numBytes));
 
-        if(!rawPtr)
-        {
-            const std::string err = "could not allocate "
-                + om::string::num(numBytes)
-                +" bytes of data";
-            std::cerr << err << "\n" << std::flush;
-            throw std::bad_alloc();
-        }
-
-        if(om::ZERO_FILL == shouldZeroMem){
-            memset(rawPtr, 0, numBytes);
-        }
-
-        return WrapMalloc(rawPtr);
+    if (!rawPtr) {
+      const std::string err =
+          "could not allocate " + om::string::num(numBytes) + " bytes of data";
+      std::cerr << err << "\n" << std::flush;
+      throw std::bad_alloc();
     }
 
-    static om::shared_ptr<T>
-    inline MallocNumElements(const uint64_t numElements,
-                             const om::ZeroMem shouldZeroMem)
-    {
-        return MallocNumBytes(numElements * sizeof(T), shouldZeroMem);
+    if (om::ZERO_FILL == shouldZeroMem) {
+      memset(rawPtr, 0, numBytes);
     }
 
-    static om::shared_ptr<T>
-    inline NewNumElements(const uint64_t numElements)
-    {
-        return WrapNewArray(new T[numElements]);
-    }
+    return WrapMalloc(rawPtr);
+  }
 
-    static om::shared_ptr<T>
-    inline WrapNewArray(T* rawPtr){
-        return om::shared_ptr<T>(rawPtr, deallocatorNewArray());
-    }
+  static om::shared_ptr<T> inline MallocNumElements(
+      const uint64_t numElements, const om::ZeroMem shouldZeroMem) {
+    return MallocNumBytes(numElements * sizeof(T), shouldZeroMem);
+  }
 
-    static om::shared_ptr<T>
-    inline WrapNoFree(T* rawPtr){
-        return om::shared_ptr<T>(rawPtr, deallocatorDoNothing());
-    }
+  static om::shared_ptr<T> inline NewNumElements(const uint64_t numElements) {
+    return WrapNewArray(new T[numElements]);
+  }
 
-    static om::shared_ptr<T>
-    inline WrapMalloc(T* rawPtr){
-        return om::shared_ptr<T>(rawPtr, deallocatorMalloc());
-    }
+  static om::shared_ptr<T> inline WrapNewArray(T* rawPtr) {
+    return om::shared_ptr<T>(rawPtr, deallocatorNewArray());
+  }
 
-private:
-    struct deallocatorDoNothing {
-        void operator()(T*){
-        }
-    };
+  static om::shared_ptr<T> inline WrapNoFree(T* rawPtr) {
+    return om::shared_ptr<T>(rawPtr, deallocatorDoNothing());
+  }
 
-    struct deallocatorNewArray {
-        void operator()(T* ptr){
-            delete [] ptr;
-        }
-    };
+  static om::shared_ptr<T> inline WrapMalloc(T* rawPtr) {
+    return om::shared_ptr<T>(rawPtr, deallocatorMalloc());
+  }
 
-    struct deallocatorMalloc {
-        void operator()(T* ptr){
-            free(ptr);
-        }
-    };
+ private:
+  struct deallocatorDoNothing {
+    void operator()(T*) {}
+  };
+
+  struct deallocatorNewArray {
+    void operator()(T* ptr) { delete[] ptr; }
+  };
+
+  struct deallocatorMalloc {
+    void operator()(T* ptr) { free(ptr); }
+  };
 };
-
