@@ -60,7 +60,7 @@ class OmOpenGLTileDrawer {
     glBegin(GL_QUADS);
 
     glTexCoord2f(textureVectices.upperLeft.x, textureVectices.lowerRight.y);
-        /* lower left corner */
+    /* lower left corner */
     glVertex2f(vertices.lowerLeft.x, vertices.lowerLeft.y);
     //         std::cout << "\ttex: " << textureVectices.upperLeft.x
     //                   << ", " << textureVectices.lowerRight.y << "\n";
@@ -68,7 +68,7 @@ class OmOpenGLTileDrawer {
     //                   << ", " << vertices.lowerLeft.y << "\n";
 
     glTexCoord2f(textureVectices.lowerRight.x, textureVectices.lowerRight.y);
-        /* lower right corner */
+    /* lower right corner */
     glVertex2f(vertices.lowerRight.x, vertices.lowerRight.y);
     //         std::cout << "\ttex: " << textureVectices.lowerRight.x
     //                   << ", " << textureVectices.lowerRight.y << "\n";
@@ -76,7 +76,7 @@ class OmOpenGLTileDrawer {
     //                   << ", " << vertices.lowerRight.y << "\n";
 
     glTexCoord2f(textureVectices.lowerRight.x, textureVectices.upperLeft.y);
-        /* upper right corner */
+    /* upper right corner */
     glVertex2f(vertices.upperRight.x, vertices.upperRight.y);
     //         std::cout << "\ttex: " << textureVectices.lowerRight.x
     //                   << ", " << textureVectices.upperLeft.y << "\n";
@@ -84,7 +84,7 @@ class OmOpenGLTileDrawer {
     //                   << ", " << vertices.upperRight.y << "\n";
 
     glTexCoord2f(textureVectices.upperLeft.x, textureVectices.upperLeft.y);
-        /* upper left corner */
+    /* upper left corner */
     glVertex2f(vertices.upperLeft.x, vertices.upperLeft.y);
     //         std::cout << "\ttex: " << textureVectices.upperLeft.x
     //                   << ", " << textureVectices.upperLeft.y << "\n";
