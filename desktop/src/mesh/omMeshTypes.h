@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utility/omSharedPtr.hpp"
+#include <memory>
 
 class OmMesh;
 typedef std::shared_ptr<OmMesh> OmMeshPtr;

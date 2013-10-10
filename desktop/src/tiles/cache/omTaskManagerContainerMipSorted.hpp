@@ -1,7 +1,6 @@
 #pragma once
 
 #include "zi/omMutex.h"
-#include "utility/omSharedPtr.hpp"
 
 #include <zi/concurrency/runnable.hpp>
 #include <map>

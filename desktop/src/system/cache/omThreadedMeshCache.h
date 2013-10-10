@@ -1,5 +1,8 @@
 #pragma once
 
+#include "mesh/omMesh.h"
+#include "mesh/omMeshTypes.h"
+#include "mesh/omMeshCoord.h"
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheManager.h"
 #include "system/cache/omLockedCacheObjects.hpp"

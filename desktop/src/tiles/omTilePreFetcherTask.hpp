@@ -1,9 +1,6 @@
 #pragma once
 
-#include "utility/omSharedPtr.hpp"
 #include "zi/omThreads.h"
-
-#include <boost/scoped_ptr.hpp>
 
 class OmView2dState;
 class OmOnScreenTileCoords;

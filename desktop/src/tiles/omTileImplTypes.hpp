@@ -2,7 +2,6 @@
 
 #include "utility/glInclude.h"
 #include "tiles/omTileCoord.h"
-#include "utility/omSharedPtr.hpp"
 #include "tiles/omTileTypes.hpp"
 
 #include <deque>

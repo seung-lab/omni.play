@@ -1,7 +1,6 @@
 #pragma once
 
 #include "segment/io/omMSTtypes.h"
-#include "utility/omSharedPtr.hpp"
 #include "zi/omMutex.h"
 #include "datalayer/archive/segmentation.h"
 #include "project/omProject.h"

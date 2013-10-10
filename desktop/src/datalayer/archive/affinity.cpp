@@ -35,17 +35,17 @@ Emitter& operator<<(Emitter& out, const OmAffinityGraph& graph) {
 
 void operator>>(const Node& in, OmAffinityGraph& graph) {
   graph.channels_[om::common::AffinityGraph::X_AFFINITY] =
-      om::make_shared<OmAffinityChannel>(graph.GetID(),
+      std::make_shared<OmAffinityChannel>(graph.GetID(),
                                          om::common::AffinityGraph::X_AFFINITY);
   in["X Affinity"] >> *graph.GetChannel(om::common::AffinityGraph::X_AFFINITY);
 
   graph.channels_[om::common::AffinityGraph::Y_AFFINITY] =
-      om::make_shared<OmAffinityChannel>(graph.GetID(),
+      std::make_shared<OmAffinityChannel>(graph.GetID(),
                                          om::common::AffinityGraph::Y_AFFINITY);
   in["Y Affinity"] >> *graph.GetChannel(om::common::AffinityGraph::Y_AFFINITY);
 
   graph.channels_[om::common::AffinityGraph::Z_AFFINITY] =
-      om::make_shared<OmAffinityChannel>(graph.GetID(),
+      std::make_shared<OmAffinityChannel>(graph.GetID(),
                                          om::common::AffinityGraph::Z_AFFINITY);
   in["Z Affinity"] >> *graph.GetChannel(om::common::AffinityGraph::Z_AFFINITY);
 }
