@@ -11,11 +11,6 @@
 #include "volume/omMipVolume.h"
 #include "datalayer/archive/segmentation.h"
 
-namespace om {
-namespace chunk {
-class CachedUniqueValuesDataSource;
-}
-}
 class OmChunk;
 class OmChunkUniqueValuesManager;
 class OmMST;
@@ -108,12 +103,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   void RebuildSegments();
 
  public:
-  om::chunk::CachedUniqueValuesDataSource& UniqueValuesDS() const {
-    return *uniqueValuesDS_;
-  }
-
-  inline OmChunkUniqueValuesManager* ChunkUniqueValues() {
-    return uniqueChunkValues_.get();
+  inline OmChunkUniqueValuesManager& UniqueValuesDS() {
+      return *uniqueChunkValues_;
   }
   inline OmMST* MST() { return mst_.get(); }
   inline OmMeshDrawer* MeshDrawer() { return meshDrawer_.get(); }
@@ -148,7 +139,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<OmRawSegTileCache> volSliceCache_;
   std::unique_ptr<OmTileCacheSegmentation> tileCache_;
   std::unique_ptr<om::annotation::manager> annotations_;
-  std::unique_ptr<om::chunk::CachedUniqueValuesDataSource> uniqueValuesDS_;
 
   template <class T> friend class OmVolumeBuilder;
   template <class T> friend class OmVolumeBuilderHdf5;

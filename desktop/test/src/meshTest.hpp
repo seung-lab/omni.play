@@ -69,13 +69,13 @@ class MeshTest {
     }
   };
 
-  LockedVector<boost::shared_ptr<MockTriStripCollector> > tris_;
+  LockedVector<std::shared_ptr<MockTriStripCollector> > tris_;
 
   void processChunk(om::chunkCoord coord) {
     FOR_EACH(id,
-             segmentation_->ChunkUniqueValues()->Values(coord, threshold_)) {
-      boost::shared_ptr<MockTriStripCollector> t =
-          boost::make_shared<MockTriStripCollector>(*id);
+             segmentation_->UniqueValuesDS().Values(coord, threshold_)) {
+      auto t =
+          std::make_shared<MockTriStripCollector>(*id);
       tris_.push_back(t);
       TriStripCollector* pt = t.get();
       meshWriter_->Save(*id, coord, pt,
@@ -105,7 +105,7 @@ class MeshTest {
     auto coords = segmentation_->GetMipChunkCoords(0);
 
     FOR_EACH(cc, *coords) {
-      FOR_EACH(id, segmentation_->ChunkUniqueValues()->Values(*cc, 1)) {
+      FOR_EACH(id, segmentation_->UniqueValuesDS().Values(*cc, 1)) {
         OmMeshPtr mesh;
         segmentation_->MeshManagers()
             ->GetMesh(mesh, *cc, *id, 1, om::common::Blocking::BLOCKING);

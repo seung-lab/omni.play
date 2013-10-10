@@ -26,7 +26,7 @@
 class ziMesher {
  public:
   ziMesher(OmSegmentation* segmentation, const double threshold)
-      : segmentation_(segmentation),
+      : vol_(segmentation),
         rootMipLevel_(segmentation->Coords().GetRootMipLevel()),
         threshold_(threshold),
         chunkCollectors_(),
@@ -53,9 +53,9 @@ class ziMesher {
   // void RemeshFullVolume()
   // {
   // if(redownsample){
-  //     segmentation_->VolData()->downsample(segmentation_);
+  //     vol_->VolData()->downsample(vol_);
   // }
-  //     OmChunkUtils::RefindUniqueChunkValues(segmentation_->GetID());
+  //     OmChunkUtils::RefindUniqueChunkValues(vol_->GetID());
   // }
 
   std::shared_ptr<om::gui::progress> Progress() { return progress_.Progress(); }
@@ -64,7 +64,7 @@ class ziMesher {
 
  private:
 
-  OmSegmentation* const segmentation_;
+  OmSegmentation* const vol_;
   const int rootMipLevel_;
   const double threshold_;
 
@@ -82,7 +82,7 @@ class ziMesher {
 
   void init() {
     std::shared_ptr<std::deque<om::chunkCoord> > levelZeroChunks =
-        segmentation_->GetMipChunkCoords(0);
+        vol_->GetMipChunkCoords(0);
 
     progress_.SetTotalNumChunks(levelZeroChunks->size());
 
@@ -107,7 +107,7 @@ class ziMesher {
 
   void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord) {
     const ChunkUniqueValues segIDs =
-        segmentation_->ChunkUniqueValues()->Values(mip0coord, threshold_);
+        vol_->UniqueValuesDS().Values(mip0coord, threshold_);
 
     chunkCollectors_.insert(std::make_pair(
         mip0coord, new MeshCollector(mip0coord, meshWriter_.get())));
@@ -143,7 +143,7 @@ class ziMesher {
       std::deque<om::common::SegID> commonIDs;
 
       const ChunkUniqueValues segIDs =
-          segmentation_->ChunkUniqueValues()->Values(c, threshold_);
+          vol_->UniqueValuesDS().Values(c, threshold_);
 
       FOR_EACH(cid, segIDsMip0) {
         if (segIDs.contains(*cid)) {
@@ -210,9 +210,9 @@ class ziMesher {
   void setupMarchingCube(zi::mesh::marching_cubes<int>& cube_marcher,
                          OmSegChunk* chunk) {
     OmImage<uint32_t, 3> chunkData =
-        OmChunkUtils::GetMeshOmImageData(segmentation_, chunk);
+        OmChunkUtils::GetMeshOmImageData(vol_, chunk);
 
-    OmChunkUtils::RewriteChunkAtThreshold(segmentation_, chunkData, threshold_);
+    OmChunkUtils::RewriteChunkAtThreshold(vol_, chunkData, threshold_);
 
     const om::common::SegID* chunkDataRaw =
         static_cast<const om::common::SegID*>(chunkData.getScalarPtr());
@@ -222,9 +222,9 @@ class ziMesher {
   }
 
   void processChunk(om::chunkCoord coord) {
-    static const int chunkDim = segmentation_->Coords().GetChunkDimension();
+    static const int chunkDim = vol_->Coords().GetChunkDimension();
 
-    OmSegChunk* chunk = segmentation_->GetChunk(coord);
+    OmSegChunk* chunk = vol_->GetChunk(coord);
 
     const om::normBbox& dstBbox = chunk->Mipping().GetNormExtent();
 
@@ -241,8 +241,7 @@ class ziMesher {
     scale /= maxScale;
     scale *= 0.5;
 
-    const ChunkUniqueValues segIDs =
-        segmentation_->ChunkUniqueValues()->Values(coord, threshold_);
+    const auto segIDs = vol_->UniqueValuesDS().Values(coord, threshold_);
 
     if (segIDs.size() > 0) {
       zi::mesh::marching_cubes<int> cube_marcher;

@@ -9,7 +9,7 @@
 
 void OmMeshSegmentListTask::run() {
   const ChunkUniqueValues chunkSegIDs =
-      segmentation_->ChunkUniqueValues()->Values(mChunk->GetCoordinate(), 1);
+      segmentation_->UniqueValuesDS().Values(mChunk->GetCoordinate(), 1);
 
   OmSegmentIterator segIter(mRootSeg->Segments());
   segIter.iterOverSegmentID(mRootSeg->value());
@@ -27,5 +27,5 @@ void OmMeshSegmentListTask::run() {
 
   rootSegLists_->AddToCache(mChunk, mRootSeg, segmentsToDraw);
   om::event::Redraw3d();
-  //	printf("done..(%u)\n", mRootSeg->value);
+  // printf("done..(%u)\n", mRootSeg->value);
 }

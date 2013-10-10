@@ -27,6 +27,14 @@ class ChunkUniqueValues {
     return true;
   }
 
+  // glue code for datalayerrefactor merge
+  const ChunkUniqueValues* operator->() const {
+      return this;
+  }
+  bool operator!() const {
+        return true;
+    }
+
   // assume we are sorted
   inline uint32_t const* find(const uint32_t val) const {
     uint32_t const* iter = std::lower_bound(begin(), end(), val);

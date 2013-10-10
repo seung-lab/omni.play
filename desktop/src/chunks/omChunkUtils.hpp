@@ -74,9 +74,7 @@ class OmChunkUtils {
     SegmentationDataWrapper sdw(segmentationID_);
     OmSegmentation& vol = sdw.GetSegmentation();
 
-    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
-        vol.GetMipChunkCoords();
-
+    auto coordsPtr = vol.GetMipChunkCoords();
     const uint32_t numChunks = coordsPtr->size();
 
     int counter = 0;
@@ -88,7 +86,7 @@ class OmChunkUtils {
       printf("\rfinding values in chunk %d of %d...", counter, numChunks);
       fflush(stdout);
 
-      vol.ChunkUniqueValues()->RereadChunk(coord, 1);
+      vol.UniqueValuesDS().RereadChunk(coord, 1);
     }
   }
 };

@@ -47,7 +47,7 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
  private:
   bool processChunk(const om::chunkCoord& coord) {
     const ChunkUniqueValues segIDs =
-        segmentation_->ChunkUniqueValues()->Values(coord, 1);
+        segmentation_->UniqueValuesDS().Values(coord, 1);
 
     FOR_EACH(segID, segIDs) {
       if (OmCacheManager::AmClosingDown()) {
@@ -59,7 +59,7 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
         continue;
       }
 
-      std::shared_ptr<OmDataForMeshLoad> mesh =
+      auto mesh =
           hdf5Reader_->Read(*segID, coord);
 
       meshWriter_->Save(*segID, coord, mesh,

@@ -110,7 +110,7 @@ class OmMemMappedAllocFile {
 
   void setupFile() {
     const ChunkUniqueValues segIDs =
-        segmentation_->ChunkUniqueValues()->Values(coord_, threshold_);
+        segmentation_->UniqueValuesDS().Values(coord_, threshold_);
 
     if (!segIDs.size()) {
       std::cout << "No unique values in " << coord_ << std::endl;

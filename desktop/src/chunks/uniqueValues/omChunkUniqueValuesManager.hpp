@@ -23,6 +23,10 @@ class OmChunkUniqueValuesManager {
     return thresholdsInChunk->Get(threshold)->Values();
   }
 
+    ChunkUniqueValues Get(const om::chunkCoord& coord){
+        return Values(coord, 1);
+  }
+
   ChunkUniqueValues RereadChunk(const om::chunkCoord& coord,
                                 const double threshold) {
     OmThresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);

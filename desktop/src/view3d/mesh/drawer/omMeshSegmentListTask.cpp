@@ -6,7 +6,7 @@
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegments.h"
 //#include "chunk/uniqueValuesFileDataSource.hpp"
-#include "chunks/uniqueValuesDSH.hpp"
+#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 
 namespace om {
 namespace v3d {

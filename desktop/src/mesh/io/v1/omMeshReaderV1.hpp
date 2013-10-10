@@ -23,8 +23,7 @@ class OmMeshReaderV1 {
   bool IsAnyMeshDataPresent() {
     const om::chunkCoord coord(0, 0, 0, 0);
 
-    const ChunkUniqueValues segIDs =
-        segmentation_->ChunkUniqueValues()->Values(coord, 1);
+    const auto segIDs = segmentation_->UniqueValuesDS().Values(coord, 1);
 
     FOR_EACH(iter, segIDs) {
       if (isMeshDataPresent(*iter, coord)) {
