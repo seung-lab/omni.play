@@ -9,7 +9,7 @@
 #include "utility/timer.hpp"
 #include "view3d/gl.h"
 #include "viewGroup/omViewGroupState.h"
-#include "view3d/mesh/meshCache.hpp"
+#include "view3d/mesh/cacheWrapper.hpp"
 
 #include <QGLContext>
 

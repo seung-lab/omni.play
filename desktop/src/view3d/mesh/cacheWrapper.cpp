@@ -2,7 +2,7 @@
 #include "mesh/omMeshTypes.h"
 #include "mesh/omMeshCoord.h"
 #include "mesh/omMeshManager.h"
-#include "view3d/mesh/meshCache.hpp"
+#include "view3d/mesh/cacheWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 
 namespace om {
@@ -13,7 +13,7 @@ CacheWrapper::CacheWrapper(om::common::ID segmentationID){
     SegmentationDataWrapper sdw(segmentationID);
     auto* vol = sdw.GetSegmentationPtr();
     meshManager_.reset(new OmMeshManager(vol, 1.0));
-    meshManager_->Create();
+    meshManager_->Load();
 }
 
 CacheWrapper::~CacheWrapper()

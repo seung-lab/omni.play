@@ -24,7 +24,7 @@ void Create(const std::string& fnp) {
   OmProject::Save();
 
   // fill it (sutpidly)
-  om::shared_ptr<QFile> mip0volFile = OmSimpleRawVol::Open(&seg, 0);
+  auto mip0volFile = OmSimpleRawVol::Open(&seg, 0);
   const uint64_t numVoxels = SIDE_SIZE * SIDE_SIZE * SIDE_SIZE;
   const uint32_t maxSeg = SIDE_SIZE * 3;
   std::vector<uint32_t> data(numVoxels);
