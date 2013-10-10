@@ -34,7 +34,7 @@ class OmSegmentJoinActionImpl {
     static const int max = 5;
 
     const std::string nums =
-        om::utils::StringHelpers::MakeShortStrList<om::common::SegIDSet, om::common::SegID>(
+        om::utils::MakeShortStrList<om::common::SegIDSet, om::common::SegID>(
             segIDs_, max);
 
     return "Joined segments: " + nums;

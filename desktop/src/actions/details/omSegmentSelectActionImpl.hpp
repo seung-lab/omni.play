@@ -7,7 +7,7 @@
 #include "project/omProject.h"
 #include "events/events.h"
 #include "utility/dataWrappers.h"
-#include "utility/omCopyFirstN.hpp"
+#include "utility/copyFirstN.hpp"
 
 class OmSegmentSelectActionImpl {
  private:
