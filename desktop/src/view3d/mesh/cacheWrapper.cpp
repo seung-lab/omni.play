@@ -16,10 +16,13 @@ CacheWrapper::CacheWrapper(om::common::ID segmentationID){
     meshManager_->Load();
 }
 
-CacheWrapper::~CacheWrapper()
-{}
+CacheWrapper::~CacheWrapper(){
+    meshManager_->CloseDownThreads();
+}
 
 OmMeshPtr CacheWrapper::Get(const om::chunkCoord& coord, const om::common::SegID segID){
+    std::cout << "getting mesh: " << coord
+              << "; segID: " << segID << std::endl;
     OmMeshPtr mesh;
     OmMeshCoord meshCoord(coord, segID);
     meshManager_->GetMesh(mesh, meshCoord,

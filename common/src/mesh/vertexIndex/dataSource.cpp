@@ -46,8 +46,7 @@ class VertexIndexDataSourceImpl {
   std::shared_ptr<VertexIndexMesh> getMesh(const coords::Mesh& coord) {
     auto ret = std::make_shared<VertexIndexMesh>(coord);
 
-    datalayer::MemMappedFile<DataEntry> table =
-        getAllocFile(coord.mipChunkCoord());
+    auto table = getAllocFile(coord.mipChunkCoord());
     DataEntry* entry = getDataEntry(table, coord);
 
     if (!entry || !entry->wasMeshed) {
