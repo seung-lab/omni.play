@@ -104,7 +104,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
  public:
   inline OmChunkUniqueValuesManager& UniqueValuesDS() {
-      return *uniqueChunkValues_;
+    return *uniqueChunkValues_;
   }
   inline OmMST* MST() { return mst_.get(); }
   inline OmMeshDrawer* MeshDrawer() { return meshDrawer_.get(); }

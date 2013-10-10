@@ -55,8 +55,7 @@ class MeshSegmentList {
       spList = SegPtrAndColorListValid(true);
 
       auto task = std::make_shared<MeshSegmentListTask>(
-          *this, vol_.UniqueValuesDS(), *vol_.Segments(), coord, *rootSeg,
-          key);
+          *this, vol_.UniqueValuesDS(), *vol_.Segments(), coord, *rootSeg, key);
 
       threadPool_.push_back(task);
       return boost::optional<SegPtrAndColorList>();

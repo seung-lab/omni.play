@@ -19,10 +19,10 @@ namespace v3d {
 class DrawerImpl {
  public:
   DrawerImpl(const OmMipVolCoords& system, const common::ID segmentationID)
-      :  system_(system),
+      : system_(system),
         segmentationID_(segmentationID),
-         context_(QGLContext::currentContext()),
-         meshes_(segmentationID) {
+        context_(QGLContext::currentContext()),
+        meshes_(segmentationID) {
     if (!context_) {
       std::cout << "WARNING: QLContext was 0" << std::endl;
       //   throw VerifyException("QGLContext should never be 0");

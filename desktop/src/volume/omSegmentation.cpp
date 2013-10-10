@@ -35,8 +35,7 @@ OmSegmentation::OmSegmentation()
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
-      annotations_(new om::annotation::manager(this))
-{}
+      annotations_(new om::annotation::manager(this)) {}
 
 // used by OmGenericManager
 OmSegmentation::OmSegmentation(om::common::ID id)
@@ -54,8 +53,7 @@ OmSegmentation::OmSegmentation(om::common::ID id)
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
-      annotations_(new om::annotation::manager(this))
-{
+      annotations_(new om::annotation::manager(this)) {
   LoadPath();
 
   segments_->StartCaches();

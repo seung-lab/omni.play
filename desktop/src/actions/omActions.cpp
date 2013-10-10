@@ -105,4 +105,3 @@ void OmActions::SelectSegments(std::shared_ptr<OmSelectSegmentsParams> params) {
   pool().push_back(
       zi::run_fn(zi::bind(&OmActionsImpl::SelectSegments, impl(), params)));
 }
-

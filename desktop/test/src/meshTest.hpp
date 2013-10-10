@@ -72,10 +72,8 @@ class MeshTest {
   LockedVector<std::shared_ptr<MockTriStripCollector> > tris_;
 
   void processChunk(om::chunkCoord coord) {
-    FOR_EACH(id,
-             segmentation_->UniqueValuesDS().Values(coord, threshold_)) {
-      auto t =
-          std::make_shared<MockTriStripCollector>(*id);
+    FOR_EACH(id, segmentation_->UniqueValuesDS().Values(coord, threshold_)) {
+      auto t = std::make_shared<MockTriStripCollector>(*id);
       tris_.push_back(t);
       TriStripCollector* pt = t.get();
       meshWriter_->Save(*id, coord, pt,

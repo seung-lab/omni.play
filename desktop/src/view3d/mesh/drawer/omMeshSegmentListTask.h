@@ -25,9 +25,9 @@ class MeshSegmentListTask : public zi::runnable {
  public:
   MeshSegmentListTask(MeshSegmentList& rootSegLists,
                       //om::chunk::CachedUniqueValuesDataSource& cuvds,
-                      OmChunkUniqueValuesManager& cuvds,
-                      OmSegments& segments, om::chunkCoord coord,
-                      OmSegment& rootSeg, const om::v3d::key& key)
+                      OmChunkUniqueValuesManager& cuvds, OmSegments& segments,
+                      om::chunkCoord coord, OmSegment& rootSeg,
+                      const om::v3d::key& key)
       : rootSegLists_(rootSegLists),
         chunkUniqueValues_(cuvds),
         segments_(segments),

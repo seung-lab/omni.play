@@ -25,8 +25,7 @@ class OmSegmentationChunkBuildTask : public zi::runnable {
 
     chunk->SegData()->ProcessChunk(isMIPzero, segments_);
 
-    const auto segIDs =
-        vol_->UniqueValuesDS().RereadChunk(coord_, 1);
+    const auto segIDs = vol_->UniqueValuesDS().RereadChunk(coord_, 1);
 
     // std::cout << "chunk " << coord_
     //           << " has " << segIDs.size()

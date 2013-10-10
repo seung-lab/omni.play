@@ -15,8 +15,7 @@ class ExportSegmentList : public OmButton<PageExport> {
  public:
   ExportSegmentList(PageExport* d)
       : OmButton<PageExport>(d, "Export Segment Info (Valid)",
-                             "export segment info", false)
-    {}
+                             "export segment info", false) {}
 
  private:
   void doAction() {

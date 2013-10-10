@@ -59,8 +59,7 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
         continue;
       }
 
-      auto mesh =
-          hdf5Reader_->Read(*segID, coord);
+      auto mesh = hdf5Reader_->Read(*segID, coord);
 
       meshWriter_->Save(*segID, coord, mesh,
                         om::common::ShouldBufferWrites::DONT_BUFFER_WRITES,
