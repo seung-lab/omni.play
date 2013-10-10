@@ -1,6 +1,5 @@
 #include "common/logging.h"
 #include "gui/sidebars/right/rightImpl.h"
-#include "gui/sidebars/right/validationGroup/groupButtonTag.h"
 #include "gui/sidebars/right/validationGroup/setNotUncertain.hpp"
 #include "gui/sidebars/right/validationGroup/setNotValid.hpp"
 #include "gui/sidebars/right/validationGroup/setUncertain.hpp"
@@ -21,7 +20,6 @@ ValidationGroup::ValidationGroup(om::sidebars::rightImpl* d,
       setSelectionNotValid(new SetNotValid(this)),
       setSelectionUncertain(new SetUncertain(this)),
       setSelectionNotUncertain(new SetNotUncertain(this)),
-      groupButtonTag(new GroupButtonTag(this)),
       showValidatedButton(new ShowValidatedButton(this)) {
   validGroup = new QButtonGroup();
   showValid = new QRadioButton("In Color");
@@ -46,7 +44,6 @@ ValidationGroup::ValidationGroup(om::sidebars::rightImpl* d,
   box->addWidget(showValidatedButton, 2, 0, 1, 2);
   box->addWidget(showValid, 3, 0, 1, 1);
   box->addWidget(dontShowValid, 3, 1, 1, 1);
-  box->addWidget(groupButtonTag, 4, 0, 1, 1);
   box->addWidget(mGroupName, 4, 1, 1, 1);
 }
 

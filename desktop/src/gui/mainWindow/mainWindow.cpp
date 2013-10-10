@@ -2,7 +2,6 @@
 #include "actions/omActions.h"
 #include "common/exception.h"
 #include "gui/cacheMonitorDialog.h"
-#include "gui/groupsTable/groupsTable.h"
 #include "gui/mainWindow/centralWidget.hpp"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/mainWindow/mainWindowEvents.hpp"
@@ -186,7 +185,6 @@ bool MainWindow::closeProjectIfOpen() {
   inspectorDock_.reset();
   undoViewDock_.reset();
   preferences_.reset();
-  groupsTableDock_.reset();
   globalKeys_.reset();
 
   // get rid of remaining QDockWidgets (View2d/3d, etc.)
@@ -331,34 +329,6 @@ void MainWindow::openUndoView() {
     mMenuBar->GetWindowMenu()->addAction(undoViewDock_->toggleViewAction());
 
     undoView_->setStack(OmStateManager::UndoStack().Get());
-
-  }
-  catch (om::Exception & e) {
-    spawnErrorDialog(e);
-  }
-}
-
-void MainWindow::openGroupsTable() {
-  try {
-    if (!OmProject::IsOpen()) {
-      return;
-    }
-
-    if (groupsTableDock_) {
-      groupsTableDock_->show();
-      return;
-    }
-
-    groupsTable_ = new GroupsTable(*vgs_.get());
-
-    groupsTableDock_.reset(new QDockWidget(tr("Groups"), this));
-    groupsTableDock_->setAllowedAreas(Qt::AllDockWidgetAreas);
-
-    groupsTable_->setParent(groupsTableDock_.get());
-    groupsTableDock_->setWidget(groupsTable_);
-
-    addDockWidget(Qt::TopDockWidgetArea, groupsTableDock_.get());
-    mMenuBar->GetWindowMenu()->addAction(groupsTableDock_->toggleViewAction());
 
   }
   catch (om::Exception & e) {

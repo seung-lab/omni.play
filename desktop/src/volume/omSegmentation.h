@@ -18,7 +18,6 @@ class CachedUniqueValuesDataSource;
 }
 class OmChunk;
 class OmChunkUniqueValuesManager;
-class OmGroups;
 class OmMST;
 class OmMeshDrawer;
 class OmMeshManager;
@@ -116,7 +115,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   inline OmChunkUniqueValuesManager* ChunkUniqueValues() {
     return uniqueChunkValues_.get();
   }
-  inline OmGroups* Groups() { return groups_.get(); }
   inline OmMST* MST() { return mst_.get(); }
   inline OmMeshDrawer* MeshDrawer() { return meshDrawer_.get(); }
   inline OmMeshManagers* MeshManagers() { return meshManagers_.get(); }
@@ -138,7 +136,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<om::segmentation::folder> folder_;
   std::unique_ptr<om::segmentation::loader> loader_;
   std::unique_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
-  std::unique_ptr<OmGroups> groups_;
   std::unique_ptr<OmMST> mst_;
   std::unique_ptr<OmMeshDrawer> meshDrawer_;
   std::unique_ptr<OmMeshManagers> meshManagers_;

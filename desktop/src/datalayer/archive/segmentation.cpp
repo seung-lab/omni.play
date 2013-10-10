@@ -12,8 +12,6 @@
 #include "segment/io/omMST.h"
 #include "segment/io/omValidGroupNum.hpp"
 #include "project/details/omSegmentationManager.h"
-#include "system/omGroups.h"
-#include "system/omGroup.h"
 #include "volume/omSegmentationLoader.h"
 #include "utility/yaml/genericManager.hpp"
 
@@ -39,7 +37,6 @@ Emitter& operator<<(Emitter& out, const OmSegmentation& seg) {
 
   out << Key << "Segments" << Value << (*seg.segments_);
   out << Key << "Num Edges" << Value << seg.mst_->numEdges_;
-  out << Key << "Groups" << Value << (*seg.groups_);
   out << EndMap;
 
   return out;
@@ -51,7 +48,6 @@ void operator>>(const Node& in, OmSegmentation& seg) {
 
   in["Segments"] >> (*seg.segments_);
   in["Num Edges"] >> seg.mst_->numEdges_;
-  in["Groups"] >> (*seg.groups_);
 
   seg.LoadVolDataIfFoldersExist();
 
@@ -115,38 +111,6 @@ void operator>>(const Node& in, OmSegmentEdge& se) {
   in["Parent Id"] >> se.parentID;
   in["Child Id"] >> se.childID;
   in["Threshold"] >> se.threshold;
-}
-
-Emitter& operator<<(Emitter& out, const OmGroups& g) {
-  out << BeginMap;
-  genericManager::Save(out, g.mGroupManager);
-  out << Key << "Group Names" << Value << g.mGroupsByName;
-  out << EndMap;
-  return out;
-}
-
-void operator>>(const Node& in, OmGroups& g) {
-  genericManager::Load(in, g.mGroupManager);
-  in["Group Names"] >> g.mGroupsByName;
-}
-
-Emitter& operator<<(Emitter& out, const OmGroup& g) {
-  out << BeginMap;
-  out << Key << "Id" << Value << g.GetID();
-  out << Key << "Note" << Value << g.GetNote();
-  out << Key << "Custom Name" << Value << g.GetCustomName();
-  out << Key << "Name" << Value << g.mName;
-  out << Key << "Ids" << Value << g.mIDs;
-  out << EndMap;
-  return out;
-}
-
-void operator>>(const Node& in, OmGroup& g) {
-  in["Id"] >> g.id_;
-  in["Note"] >> g.note_;
-  in["Custom Name"] >> g.customName_;
-  in["Name"] >> g.mName;
-  in["Ids"] >> g.mIDs;
 }
 
 }  // namespace YAMLold

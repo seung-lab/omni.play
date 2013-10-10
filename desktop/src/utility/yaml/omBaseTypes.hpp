@@ -110,17 +110,17 @@ template <class T> void operator>>(const Node& in, std::unordered_set<T>& s) {
   }
 }
 
-// template<class T>
-// Emitter &operator<<(Emitter& out, const std::set<T>& s)
-// {
-//     out << Flow << BeginSeq;
-//     FOR_EACH(it, s)
-//     {
-//         out << *it;
-//     }
-//     out <<  EndSeq;
-//     return out;
-// }
+ template<class T>
+ Emitter &operator<<(Emitter& out, const std::set<T>& s)
+ {
+     out << Flow << BeginSeq;
+     FOR_EACH(it, s)
+     {
+         out << *it;
+     }
+     out <<  EndSeq;
+     return out;
+ }
 
 template <class T> void operator>>(const Node& in, std::set<T>& s) {
   FOR_EACH(it, in) {

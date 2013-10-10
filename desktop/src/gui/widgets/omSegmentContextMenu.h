@@ -31,7 +31,6 @@ class OmSegmentContextMenu : public QMenu {
   void addColorActions();
   void addGroupActions();
   void addPropertiesActions();
-  void addGroups();
   void addDisableAction();
 
  private

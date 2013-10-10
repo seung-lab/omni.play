@@ -4,8 +4,6 @@
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegments.h"
-#include "system/omGroup.h"
-#include "system/omGroups.h"
 #include "utility/dataWrappers.h"
 
 #include <QTextStream>
@@ -17,16 +15,12 @@ class ExportSegmentList : public OmButton<PageExport> {
  public:
   ExportSegmentList(PageExport* d)
       : OmButton<PageExport>(d, "Export Segment Info (Valid)",
-                             "export segment info", false),
-        groups_(NULL) {}
+                             "export segment info", false)
+    {}
 
  private:
-  OmGroups* groups_;
-
   void doAction() {
     const SegmentationDataWrapper& sdw = mParent->GetSDW();
-
-    groups_ = sdw.GetSegmentation().Groups();
 
     OmSegments* segments = sdw.Segments();
 
@@ -38,7 +32,7 @@ class ExportSegmentList : public OmButton<PageExport> {
     printf("writing segment file %s\n", qPrintable(outFile));
 
     QTextStream out(&file);
-    out << "segID, 1 == working, 2 == valid, 3 == uncertain, isGlia\n";
+    out << "segID, 1 == working, 2 == valid, 3 == uncertain\n";
     out << "example: 100,2,0\n";
 
     for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
@@ -62,30 +56,10 @@ class ExportSegmentList : public OmButton<PageExport> {
           throw om::ArgException("unknown type");
       }
 
-      const int glia = isGlia(seg);
-
-      out << i << "," << category << "," << glia << "\n";
+      out << i << "," << category << "\n";
     }
 
     printf("\tdone!\n");
-  }
-
-  int isGlia(OmSegment* seg) {
-    const auto set = groups_->GetGroups(seg->RootID());
-
-    if (set.empty()) {
-      return 0;
-    }
-
-    FOR_EACH(iter, set) {
-      OmGroup& group = groups_->GetGroup(*iter);
-
-      if ("glia" == group.GetName()) {
-        return 1;
-      }
-    }
-
-    return 0;
   }
 };
 

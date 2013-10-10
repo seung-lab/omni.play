@@ -62,11 +62,6 @@ class OmActionsImpl {
 
   void SelectSegments(std::shared_ptr<OmSelectSegmentsParams> params);
 
-  // group-related
-  void CreateOrDeleteSegmentGroup(const om::common::ID segmentationID,
-                                  const om::common::SegIDSet selectedSegmentIDs,
-                                  const std::string name, const bool create);
-
  private:
   void setUncertain(const SegmentDataWrapper& sdw, const bool uncertain);
 

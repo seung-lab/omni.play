@@ -84,9 +84,6 @@ void OmActionDumper::dispatchAction(const QString& actionName, QDataStream& in,
     case om::actions_::OmSegmentSelectAction:
       doDumpFile<OmSegmentSelectAction, OmSegmentSelectActionImpl>(in, fnp);
       break;
-    case om::actions_::OmSegmentGroupAction:
-      doDumpFile<OmSegmentGroupAction, OmSegmentGroupActionImpl>(in, fnp);
-      break;
     case om::actions_::OmSegmentUncertainAction:
       doDumpFile<OmSegmentUncertainAction, OmSegmentUncertainActionImpl>(in,
                                                                          fnp);

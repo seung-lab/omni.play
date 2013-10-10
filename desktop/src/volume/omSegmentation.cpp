@@ -12,7 +12,6 @@
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegments.h"
-#include "system/omGroups.h"
 #include "tiles/cache/omTileCacheSegmentation.hpp"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "volume/build/omVolumeAllocater.hpp"
@@ -26,7 +25,6 @@
 OmSegmentation::OmSegmentation()
     : loader_(new om::segmentation::loader(this)),
       uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
-      groups_(new OmGroups(this)),
       mst_(new OmMST(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
@@ -46,7 +44,6 @@ OmSegmentation::OmSegmentation(om::common::ID id)
     : OmManageableObject(id),
       loader_(new om::segmentation::loader(this)),
       uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
-      groups_(new OmGroups(this)),
       mst_(new OmMST(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),

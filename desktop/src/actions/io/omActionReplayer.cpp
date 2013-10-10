@@ -73,9 +73,6 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
     case om::actions_::OmSegmentSelectAction:
       doReplayFile<OmSegmentSelectAction, OmSegmentSelectActionImpl>(in);
       break;
-    case om::actions_::OmSegmentGroupAction:
-      doReplayFile<OmSegmentGroupAction, OmSegmentGroupActionImpl>(in);
-      break;
     case om::actions_::OmSegmentUncertainAction:
       doReplayFile<OmSegmentUncertainAction, OmSegmentUncertainActionImpl>(in);
       break;
@@ -90,6 +87,7 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
     case om::actions_::OmProjectSaveAction:
       throw om::ArgException("should not have received this action");
     default:
+        // TODO: or skip it?
       throw om::ArgException("unknown action");
   }
   ;

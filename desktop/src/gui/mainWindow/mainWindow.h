@@ -8,7 +8,6 @@
 #include <QLabel>
 
 class CacheMonitorDialog;
-class GroupsTable;
 class InspectorWidget;
 class MainWindowEvents;
 class MenuBar;
@@ -63,7 +62,6 @@ Q_SLOTS:
   void openInspector();
   void openUndoView();
   void openCacheMonitor();
-  void openGroupsTable();
 
   void open3dView();
 
@@ -81,9 +79,6 @@ Q_SLOTS:
 
   QUndoView* undoView_;
   std::unique_ptr<QDockWidget> undoViewDock_;
-
-  GroupsTable* groupsTable_;
-  std::unique_ptr<QDockWidget> groupsTableDock_;
 
   CacheMonitorDialog* cacheMonitorDialog_;
 

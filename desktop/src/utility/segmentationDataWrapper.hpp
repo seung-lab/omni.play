@@ -141,7 +141,5 @@ class SegmentationDataWrapper {
     return Segments()->GetSelectedSegmentIDs();
   }
 
-  inline OmGroups* Groups() const { return GetSegmentation().Groups(); }
-
   inline bool IsBuilt() const { return GetSegmentation().IsBuilt(); }
 };

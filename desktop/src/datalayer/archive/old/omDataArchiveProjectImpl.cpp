@@ -1,4 +1,5 @@
 #include "common/common.h"
+#include "common/colors.h"
 #include "datalayer/archive/old/omDataArchiveBoost.h"
 #include "datalayer/archive/old/omDataArchiveProjectImpl.h"
 #include "datalayer/archive/old/omGenericManagerArchive.hpp"
@@ -18,12 +19,26 @@
 #include "segment/omSegmentsImpl.h"
 #include "system/omGenericManager.hpp"
 #include "system/omGenericManager.hpp"
-#include "system/omGroup.h"
-#include "system/omGroups.h"
 #include "system/omPreferences.h"
 #include "volume/omSegmentationLoader.h"
 
 #include <QSet>
+
+struct DummyGroup : public OmManageableObject {
+    om::common::SegIDSet mIDs;
+    om::common::Color mColor;
+    QString mName;
+    friend class DummyGroups;
+    friend QDataStream &operator>>(QDataStream & in, DummyGroup & g );
+};
+
+struct DummyGroups {
+    // dummy sink
+    OmGenericManager<DummyGroup> mGroupManager;
+    QHash<QString, uint32_t> mGroupsByName;
+    friend QDataStream &operator>>(QDataStream & in, DummyGroups &);
+};
+
 
 QDataStream& operator>>(QDataStream& in, OmProjectImpl& p) {
   in >> OmPreferences::instance();
@@ -158,7 +173,8 @@ void OmDataArchiveProjectImpl::LoadOldSegmentation(QDataStream& in,
   double dead;
   in >> dead;
 
-  in >> (*seg.groups_);
+  DummyGroups dg;
+  in >> dg;
 
   if (OmProject::GetFileVersion() > 13) {
     seg.LoadVolDataIfFoldersExist();
@@ -200,7 +216,8 @@ void OmDataArchiveProjectImpl::LoadNewSegmentation(QDataStream& in,
   double dead;
   in >> dead;
 
-  in >> (*seg.groups_);
+  DummyGroups dg;
+  in >> dg;
 
   seg.LoadVolDataIfFoldersExist();
 
@@ -280,20 +297,20 @@ QDataStream& operator>>(QDataStream& in, OmSegmentEdge& se) {
   return in;
 }
 
-QDataStream& operator>>(QDataStream& in, OmGroups& g) {
+QDataStream& operator>>(QDataStream& in, DummyGroups& g) {
   OmGenericManagerArchive::Load(in, g.mGroupManager);
   in >> g.mGroupsByName;
 
   return in;
 }
 
-QDataStream& operator>>(QDataStream& in, OmGroup& g) {
+QDataStream& operator>>(QDataStream& in, DummyGroup& g) {
   if (OmProject::GetFileVersion() > 11) {
     OmMipVolumeArchiveOld::LoadOmManageableObject(in, g);
   }
   QString name;
   in >> name;
-  g.mName = name.toStdString();
+  g.mName = name;
   if (OmProject::GetFileVersion() > 11) {
     in >> g.mIDs;
   }

@@ -5,7 +5,6 @@
 #include "volume/omSegmentation.h"
 #include "datalayer/archive/old/omDataArchiveWrappers.h"
 
-#include "actions/details/omSegmentGroupActionImpl.hpp"
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
@@ -165,30 +164,6 @@ QDataStream& operator>>(QDataStream& in, OmSegmentShatterActionImpl& a) {
 
   in >> a.sdw_;
   in >> a.desc;
-
-  return in;
-}
-
-QDataStream& operator<<(QDataStream& out, const OmSegmentGroupActionImpl& a) {
-  int version = 1;
-  out << version;
-  out << a.mSegmentationId;
-  out << QString::fromStdString(a.mName);
-  out << a.mCreate;
-  out << a.mSelectedSegmentIds;
-
-  return out;
-}
-
-QDataStream& operator>>(QDataStream& in, OmSegmentGroupActionImpl& a) {
-  int version;
-  in >> version;
-  in >> a.mSegmentationId;
-  QString name;
-  in >> name;
-  a.mName = name.toStdString();
-  in >> a.mCreate;
-  in >> a.mSelectedSegmentIds;
 
   return in;
 }

@@ -1,6 +1,5 @@
 #include "actions/io/omActionOperatorsText.h"
 
-#include "actions/details/omSegmentGroupActionImpl.hpp"
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
@@ -37,10 +36,6 @@ QTextStream& operator<<(QTextStream& out, const OmProjectCloseActionImpl&) {
 }
 
 QTextStream& operator<<(QTextStream& out, const OmProjectSaveActionImpl&) {
-  return out;
-}
-
-QTextStream& operator<<(QTextStream& out, const OmSegmentGroupActionImpl&) {
   return out;
 }
 

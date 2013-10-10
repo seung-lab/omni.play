@@ -84,19 +84,3 @@ class OmSegmentJoinAction : public OmActionBase<OmSegmentJoinActionImpl> {
     om::event::Redraw2d();
   }
 };
-
-#include "actions/details/omSegmentGroupActionImpl.hpp"
-class OmSegmentGroupAction : public OmActionBase<OmSegmentGroupActionImpl> {
- public:
-  OmSegmentGroupAction(std::shared_ptr<OmSegmentGroupActionImpl> impl) {
-    impl_ = impl;
-  }
-
-  OmSegmentGroupAction(const om::common::ID segmentationId,
-                       const om::common::SegIDSet& selectedSegmentIds,
-                       const std::string name, const bool create) {
-    impl_ = std::make_shared<OmSegmentGroupActionImpl>(
-        segmentationId, selectedSegmentIds, name, create);
-    SetUndoable(true);
-  }
-};

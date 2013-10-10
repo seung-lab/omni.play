@@ -13,8 +13,6 @@
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
 #include "system/cache/omCacheManager.h"
-#include "system/omGroup.h"
-#include "system/omGroups.h"
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
 #include "view3d.old/omSegmentPickPoint.h"
@@ -85,7 +83,6 @@ void OmSegmentContextMenu::doRefresh() {
   addPropertiesActions();
 
   addSeparator();
-  addGroups();
 }
 
 bool OmSegmentContextMenu::isValid() const {
@@ -260,24 +257,6 @@ void OmSegmentContextMenu::writeChildrenFile(
   catch (...) {
     dialog->TellDone("failed writing file " + fnp);
   }
-}
-
-void OmSegmentContextMenu::addGroups() {
-  auto* groups = sdw_.GetSegmentation().Groups();
-  auto set = groups->GetGroups(sdw_.FindRootID());
-  uint32_t firstID = 0;
-  std::string groupsStr = "Groups: ";
-
-  for (const auto& id : set) {
-    if (!firstID) {
-      firstID = id;
-    }
-    auto& group = groups->GetGroup(id);
-    groupsStr += group.GetName() + " + ";
-
-    printf("here\n");
-  }
-  addAction(QString::fromStdString(groupsStr));
 }
 
 void OmSegmentContextMenu::addDisableAction() {

@@ -8,7 +8,6 @@ class SetValid;
 class SetNotValid;
 class SetUncertain;
 class SetNotUncertain;
-class GroupButtonTag;
 class ShowValidatedButton;
 class SegmentationDataWrapper;
 class OmViewGroupState;
@@ -49,7 +48,6 @@ Q_SLOTS:
   SetUncertain* setSelectionUncertain;
   SetNotUncertain* setSelectionNotUncertain;
 
-  GroupButtonTag* groupButtonTag;
   ShowValidatedButton* showValidatedButton;
 
   QWidget* addSelectedSegmentButtons();
