@@ -561,4 +561,20 @@ void InspectorWidget::showMSTtable(SegmentationDataWrapper sdw) {
   new MstViewer(this, sdw);
 }
 
-void InspectorWidget::showNewView3d() { new om::v3d::View3d(this, *vgs_); }
+class NewView3d : public QDialog {
+ public:
+    NewView3d(QWidget* p, OmViewGroupState& vgs)
+        : QDialog(p) {
+        auto* v3d = new om::v3d::View3d(p, vgs);
+
+        auto* layout = new QVBoxLayout(this);
+        layout->addWidget(v3d);
+
+        setWindowTitle(tr("New View3d"));
+        resize(500, 400);
+
+        show();
+  }
+};
+
+void InspectorWidget::showNewView3d() { new NewView3d(this, *vgs_); }
