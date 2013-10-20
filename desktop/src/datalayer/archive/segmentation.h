@@ -7,8 +7,8 @@ class OmSegmentation;
 class OmSegments;
 class OmSegmentsImpl;
 class OmSegmentEdge;
-class OmGroups;
-class OmGroup;
+class DummyGroups;
+class DummyGroup;
 
 namespace YAMLold {
 
@@ -23,9 +23,8 @@ YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmSegmentsImpl& sc);
 void operator>>(const YAMLold::Node& in, OmSegmentsImpl& sc);
 YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmSegmentEdge& se);
 void operator>>(const YAMLold::Node& in, OmSegmentEdge& se);
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmGroups& g);
-void operator>>(const YAMLold::Node& in, OmGroups& g);
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmGroup& g);
-void operator>>(const YAMLold::Node& in, OmGroup& g);
+
+YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const DummyGroups& g);
+YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const DummyGroup& g);
 
 }  // namespace YAMLold

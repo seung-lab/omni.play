@@ -14,6 +14,7 @@
 #include "project/details/omSegmentationManager.h"
 #include "volume/omSegmentationLoader.h"
 #include "utility/yaml/genericManager.hpp"
+#include "datalayer/archive/dummy.hpp"
 
 #include <QSet>
 
@@ -37,6 +38,10 @@ Emitter& operator<<(Emitter& out, const OmSegmentation& seg) {
 
   out << Key << "Segments" << Value << (*seg.segments_);
   out << Key << "Num Edges" << Value << seg.mst_->numEdges_;
+
+  DummyGroups dg;
+  out << Key << "Groups" << Value << dg;
+
   out << EndMap;
 
   return out;
@@ -111,6 +116,25 @@ void operator>>(const Node& in, OmSegmentEdge& se) {
   in["Parent Id"] >> se.parentID;
   in["Child Id"] >> se.childID;
   in["Threshold"] >> se.threshold;
+}
+
+Emitter& operator<<(Emitter& out, const DummyGroups& g) {
+  out << BeginMap;
+  genericManager::Save(out, g.mGroupManager);
+  out << Key << "Group Names" << Value << g.mGroupsByName;
+  out << EndMap;
+  return out;
+}
+
+Emitter& operator<<(Emitter& out, const DummyGroup& g) {
+  out << BeginMap;
+  out << Key << "Id" << Value << g.GetID();
+  out << Key << "Note" << Value << g.GetNote();
+  out << Key << "Custom Name" << Value << g.GetCustomName();
+  out << Key << "Name" << Value << g.mName;
+  out << Key << "Ids" << Value << g.mIDs;
+  out << EndMap;
+  return out;
 }
 
 }  // namespace YAMLold

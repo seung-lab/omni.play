@@ -38,6 +38,5 @@ class OmManageableObject {
   template <class T> friend class OmMipVolumeArchive;
   friend class OmMipVolumeArchiveOld;
   template <class T> friend class YAMLold::mipVolume;
-  friend void YAMLold::operator>>(const YAMLold::Node& in, OmGroup& g);
   friend void YAMLold::operator>>(const YAMLold::Node& in, OmFilter2d& f);
 };
