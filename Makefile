@@ -34,8 +34,8 @@ ARFLAGS =   rcs
 CC       =  $(AT)gcc
 CXX      =  $(AT)g++ -std=c++11
 THRIFT   =  $(AT)$(EXTERNAL)/thrift/bin/thrift
-MOC      =  $(AT)$(EXTERNAL)/qt/bin/moc
-RCC      =  $(AT)$(EXTERNAL)/qt/bin/rcc
+MOC      =  $(AT)/usr/bin/moc
+RCC      =  $(AT)/usr/bin/rcc
 DUMPSYMS =  $(AT)$(EXTERNAL)/breakpad/bin/dump_syms
 FPIC     =  -fPIC
 
@@ -194,7 +194,7 @@ INCLUDES    =   -I$(HERE) \
 		-I$(HERE)/common/include/yaml-cpp/include \
 		-I$(HERE)/desktop/include/yaml-cpp-old/include \
 		-I$(EXTERNAL)/libjpeg/include \
-		-I$(HERE)/zi_lib \
+		-isystem$(HERE)/zi_lib \
 		-I$(BASE64)/include \
 		-I$(EXTERNAL)/boost/include \
 		$(CURL_INCLUDES)
@@ -292,6 +292,8 @@ $(BINDIR)/omni.server.test: $(SERVER_TEST_DEPS) $(SERVER_TEST_MAIN)
 server: common $(BINDIR)/omni.server $(BINDIR)/omni.server.test
 
 # Desktop  #################################################
+QT_LIBRARIES = QtGui QtNetwork QtCore QtOpenGL
+QT_FLAGS = $(shell pkg-config --cflags $(QT_LIBRARIES))
 DESKTOP_INCLUDES = $(INCLUDES) \
 				  -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop/include \
@@ -305,15 +307,12 @@ DESKTOP_INCLUDES = $(INCLUDES) \
 				  -I$(EXTERNAL)/qt/include \
 				  -I$(EXTERNAL)/hdf5/include \
 				  -I$(BASE64)/include \
-				  -I$(BREAKPAD)
+			          $(QT_FLAGS)
 
+QT_LIBS = $(shell pkg-config --libs $(QT_LIBRARIES))
 DESKTOPLIBS = $(LIBS) \
 			  $(EXTERNAL)/hdf5/lib/libhdf5.a \
-			  -L$(EXTERNAL)/qt/lib \
-			  -lQtGui \
-			  -lQtNetwork \
-			  -lQtCore \
-			  -lQtOpenGL
+			  $(QT_LIBS)
 
 $(BUILDDIR)/desktop/%.d: desktop/src/%.cpp
 	$(call make_d, $(DESKTOP_INCLUDES))
