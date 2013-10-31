@@ -25,10 +25,10 @@ class OmColorizers {
     FOR_EACH(iter, colorizers_) { delete *iter; }
   }
 
-  inline OmPooledTile<om::common::ColorARGB>* ColorTile(
+  inline std::shared_ptr<om::common::ColorARGB> ColorTile(
       uint32_t const* const imageData, const int tileDim,
       const OmTileCoord& key) {
-    const om::segment::coloring sccType = key.getSegmentColorCacheType();
+    auto sccType = key.getSegmentColorCacheType();
 
     {
       zi::guard g(lock_);

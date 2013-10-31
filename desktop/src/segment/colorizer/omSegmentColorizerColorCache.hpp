@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/colors.h"
 #include "utility/omLockedPODs.hpp"
 #include "zi/omMutex.h"
 

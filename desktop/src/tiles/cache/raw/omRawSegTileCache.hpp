@@ -2,8 +2,6 @@
 
 #include "volume/omMipVolume.h"
 #include "system/cache/omGetSetCache.hpp"
-#include "tiles/pools/omPooledTile.hpp"
-#include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -26,7 +24,7 @@ class OmRawSegTileCache {
  private:
   OmMipVolume* const vol_;
 
-  typedef OmGetSetCache<OmVolSliceKey, PooledTile32Ptr> cache_t;
+  typedef OmGetSetCache<OmVolSliceKey, std::shared_ptr<uint32_t>> cache_t;
   std::unique_ptr<cache_t> cache_;
 
  public:
@@ -39,14 +37,14 @@ class OmRawSegTileCache {
 
   void Clear() { cache_->Clear(); }
 
-  PooledTile32Ptr Get(const om::chunkCoord& chunkCoord, const int sliceDepth,
+  std::shared_ptr<uint32_t> Get(const om::chunkCoord& chunkCoord, const int sliceDepth,
                       const om::common::ViewType viewType) {
     const OmVolSliceKey key(chunkCoord, sliceDepth, viewType);
     return cache_->Get(key);
   }
 
   void Set(const om::chunkCoord& chunkCoord, const int sliceDepth,
-           const om::common::ViewType viewType, PooledTile32Ptr tile) {
+           const om::common::ViewType viewType, std::shared_ptr<uint32_t> tile) {
     const OmVolSliceKey key(chunkCoord, sliceDepth, viewType);
     cache_->Set(key, tile);
   }

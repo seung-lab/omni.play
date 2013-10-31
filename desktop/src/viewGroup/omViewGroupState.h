@@ -20,7 +20,6 @@ class SegmentDataWrapper;
 class SegmentationDataWrapper;
 class ToolBarManager;
 class ViewGroup;
-template <class> class OmPooledTile;
 
 class OmViewGroupState : public OmManageableObject {
  private:
@@ -95,9 +94,9 @@ class OmViewGroupState : public OmManageableObject {
 
   om::segment::coloring determineColorizationType(const om::common::ObjectType);
 
-  OmPooledTile<om::common::ColorARGB>* ColorTile(uint32_t const* const,
-                                                 const int tileDim,
-                                                 const OmTileCoord&);
+  std::shared_ptr<om::common::ColorARGB> ColorTile(uint32_t const* const,
+                                                   const int tileDim,
+                                                   const OmTileCoord&);
 
   ChannelDataWrapper Channel() const;
   SegmentationDataWrapper Segmentation() const;

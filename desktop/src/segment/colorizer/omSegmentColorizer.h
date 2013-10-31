@@ -7,7 +7,6 @@
 
 class OmSegment;
 class OmSegments;
-template <class> class OmPooledTile;
 
 class OmSegmentColorizer {
  public:
@@ -16,7 +15,7 @@ class OmSegmentColorizer {
 
   ~OmSegmentColorizer();
 
-  OmPooledTile<om::common::ColorARGB>* ColorTile(
+  std::shared_ptr<om::common::ColorARGB> ColorTile(
       uint32_t const* const imageData);
 
   static const std::vector<uint8_t> SelectedColorLookupTable;

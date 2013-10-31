@@ -322,11 +322,11 @@ $(BUILDDIR)/desktop/%.o: desktop/src/%.cpp
 %.moc.cpp: %.hpp
 	$(ECHO) "[MOC] Generating $<"
 	$(MKDIR) -p $(dir $@)
-	$(MOC) $(DEFINES) $(DESKTOP_INCLUDES) -o $@ $<
+	$(MOC) -o $@ $<
 %.moc.cpp: %.h
 	$(ECHO) "[MOC] Generating $<"
 	$(MKDIR) -p $(dir $@)
-	$(MOC) $(DEFINES) $(DESKTOP_INCLUDES) -o $@ $<
+	$(MOC) -o $@ $<
 %.rcc.cpp: %.qrc
 	$(ECHO) "[RCC] Generating $@"
 	$(MKDIR) -p $(dir $@)

@@ -2,15 +2,12 @@
 
 #include "datalayer/omDataWrapper.h"
 
-template <class>
-class OmPooledTile;
-
 namespace om {
 namespace chunk {
 
 class dataInterface {
  public:
-  virtual OmPooledTile<uint8_t>* ExtractDataSlice8bit(
+  virtual std::shared_ptr<uint8_t> ExtractDataSlice8bit(
       const om::common::ViewType, const int) = 0;
 
   virtual ~dataInterface() {}

@@ -19,13 +19,11 @@
 #include <QImage>
 
 class QGLContext;
-class OmPooledTileWrapper;
-template <class> class OmPooledTile;
 
 class OmTextureID {
  public:
-  OmTextureID(const int tileDim, OmPooledTile<uint8_t>*);
-  OmTextureID(const int tileDim, OmPooledTile<om::common::ColorARGB>*);
+  OmTextureID(const int tileDim, std::shared_ptr<uint8_t>);
+  OmTextureID(const int tileDim, std::shared_ptr<om::common::ColorARGB>);
 
   virtual ~OmTextureID();
 
@@ -42,7 +40,7 @@ class OmTextureID {
 
   void* GetTileData() const;
 
-  uchar* GetTileDataUChar() const;
+  uint8_t* GetTileDataUChar() const;
 
   bool NeedToBuildTexture() const { return (flag_ != OMTILE_GOOD); }
 
@@ -96,7 +94,10 @@ class OmTextureID {
 
  private:
   const int tileDim_;
-  std::unique_ptr<OmPooledTileWrapper> pooledTile_;
+
+  bool is8bit_;
+  std::shared_ptr<uint8_t> tile8_;
+  std::shared_ptr<om::common::ColorARGB> tile32_;
 
   enum OmTileFlag {
     OMTILE_NEEDCOLORMAP,

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "tiles/pools/omPooledTile.hpp"
 #include "tiles/omTileFilters.hpp"
 #include "zi/omUtility.h"
 
@@ -12,20 +11,20 @@ class OmChannelTileFilter : private om::singletonBase<OmChannelTileFilter> {
   constexpr static const double defaultGamma_ = 1.0;
 
  public:
-  static void Filter(OmPooledTile<uint8_t>* slice) {
+  static void Filter(std::shared_ptr<uint8_t> slice) {
     // TODO: don't recreate filter every time
     OmTileFilters<uint8_t> filter(128);
 
     if (defaultBrightness_ != instance().brightnessShift_) {
-      filter.Brightness(slice, absMax_, instance().brightnessShift_);
+        filter.Brightness(slice.get(), absMax_, instance().brightnessShift_);
     }
 
     if (!qFuzzyCompare(defaultContrast_, instance().contrastValue_)) {
-      filter.Contrast(slice, absMax_, instance().contrastValue_);
+        filter.Contrast(slice.get(), absMax_, instance().contrastValue_);
     }
 
     if (!qFuzzyCompare(defaultGamma_, instance().gamma_)) {
-      filter.Gamma(slice, instance().gamma_);
+        filter.Gamma(slice.get(), instance().gamma_);
     }
   }
 

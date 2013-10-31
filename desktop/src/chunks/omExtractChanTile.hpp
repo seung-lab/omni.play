@@ -19,23 +19,23 @@ class extractChanTile {
                   const om::common::ViewType plane, int depth)
       : vol_(vol), coord_(coord), plane_(plane), depth_(depth) {}
 
-  template <typename T> OmPooledTile<uint8_t>* Extract(T* d) {
+  template <typename T> std::shared_ptr<uint8_t> Extract(T* d) {
     return extractDataSlice8bit(d);
   }
 
  private:
-  template <typename T> OmPooledTile<uint8_t>* extractDataSlice8bit(T* d) {
-    std::unique_ptr<OmPooledTile<T> > rawTile(getRawSlice(d));
+  template <typename T> std::shared_ptr<uint8_t> extractDataSlice8bit(T* d) {
+    auto rawTile = getRawSlice(d);
     OmTileFilters<T> filter(128);
     return filter.recastToUint8(rawTile.get());
   }
 
-  OmPooledTile<uint8_t>* extractDataSlice8bit(uint8_t* d) {
+  std::shared_ptr<uint8_t> extractDataSlice8bit(uint8_t* d) {
     return getRawSlice(d);
   }
 
-  OmPooledTile<uint8_t>* extractDataSlice8bit(float* d) {
-    std::unique_ptr<OmPooledTile<float> > rawTile(getRawSlice(d));
+  std::shared_ptr<uint8_t> extractDataSlice8bit(float* d) {
+    std::shared_ptr<float> rawTile = getRawSlice(d);
 
     OmTileFilters<float> filter(128);
 
@@ -48,11 +48,11 @@ class extractChanTile {
     return filter.rescaleAndCast<uint8_t>(rawTile.get(), mn, mx, 255.0);
   }
 
-  template <typename T> inline OmPooledTile<T>* getRawSlice(T* d) const {
+  template <typename T> inline std::shared_ptr<T> getRawSlice(T* d) const {
     OmRawChunkSlicer<T> slicer(128, d);
 
     OmProject::Globals().FileReadSemaphore().acquire(1);
-    OmPooledTile<T>* tile = slicer.GetCopyAsPooledTile(plane_, depth_);
+    auto tile = slicer.GetCopyOfTile(plane_, depth_);
     OmProject::Globals().FileReadSemaphore().release(1);
 
     return tile;

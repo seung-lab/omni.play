@@ -1,19 +1,21 @@
-#include "tiles/pools/omPooledTile.hpp"
+
 #include "common/logging.h"
 #include "tiles/cache/omTileCache.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 #include "tiles/omTextureID.h"
 
-OmTextureID::OmTextureID(const int tileDim, OmPooledTile<uint8_t>* data)
+OmTextureID::OmTextureID(const int tileDim, std::shared_ptr<uint8_t> data)
     : tileDim_(tileDim),
-      pooledTile_(data),
+      is8bit_(true),
+      tile8_(data),
       flag_(OMTILE_NEEDTEXTUREBUILT),
       context_(NULL) {}
 
 OmTextureID::OmTextureID(const int tileDim,
-                         OmPooledTile<om::common::ColorARGB>* data)
+                         std::shared_ptr<om::common::ColorARGB> data)
     : tileDim_(tileDim),
-      pooledTile_(data),
+      is8bit_(false),
+      tile32_(data),
       flag_(OMTILE_NEEDCOLORMAP),
       context_(NULL) {}
 
@@ -27,15 +29,18 @@ OmTextureID::~OmTextureID() {
 }
 
 void* OmTextureID::GetTileData() const {
-  if (!pooledTile_) {
+  if (!tile8_ && !tile32_){
     throw om::IoException("no data");
   }
 
-  return pooledTile_->GetDataVoid();
+  if(is8bit_){
+      return static_cast<void*>(tile8_.get());
+  }
+  return static_cast<void*>(tile32_.get());
 }
 
-uchar* OmTextureID::GetTileDataUChar() const {
-  return static_cast<uchar*>(GetTileData());
+uint8_t* OmTextureID::GetTileDataUChar() const {
+  return static_cast<uint8_t*>(GetTileData());
 }
 
 void OmTextureID::TextureBindComplete(QGLContext const* context,
@@ -45,5 +50,6 @@ void OmTextureID::TextureBindComplete(QGLContext const* context,
 
   assert(context && "context should never be 0");
   context_ = context;
-  pooledTile_.reset();
+  tile8_.reset();
+  tile32_.reset();
 }

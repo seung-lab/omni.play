@@ -50,7 +50,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
 
 OmViewGroupState::~OmViewGroupState() {}
 
-OmPooledTile<om::common::ColorARGB>* OmViewGroupState::ColorTile(
+std::shared_ptr<om::common::ColorARGB> OmViewGroupState::ColorTile(
     uint32_t const* const imageData, const int tileDim,
     const OmTileCoord& key) {
   return colorizers_->ColorTile(imageData, tileDim, key);
@@ -58,11 +58,12 @@ OmPooledTile<om::common::ColorARGB>* OmViewGroupState::ColorTile(
 
 om::segment::coloring OmViewGroupState::determineColorizationType(
     const om::common::ObjectType objType) {
+
   switch (objType) {
     case om::common::CHANNEL:
       if (mShowValid) {
         if (mShowValidInColor) {
-          return om::segment::coloring::FILTER_VALID;
+            return om::segment::coloring::FILTER_VALID;
         }
         return om::segment::coloring::FILTER_VALID_BLACK;
       }

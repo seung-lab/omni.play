@@ -39,7 +39,7 @@ template <typename DATA> class dataImpl : public dataInterface {
 
   ~dataImpl() { delete ptrToChunkData_; }
 
-  PooledTile32Ptr ExtractDataSlice32bit(const om::common::ViewType plane,
+  std::shared_ptr<uint32_t> ExtractDataSlice32bit(const om::common::ViewType plane,
                                         const int depth) {
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);
     DATA* data = dataWrapper.Data();

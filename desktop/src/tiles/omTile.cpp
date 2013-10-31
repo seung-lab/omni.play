@@ -2,7 +2,6 @@
 #include "chunks/omChunkData.hpp"
 #include "chunks/omSegChunk.h"
 #include "system/cache/omCacheBase.h"
-#include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
 #include "tiles/omChannelTileFilter.hpp"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
@@ -32,7 +31,7 @@ void OmTile::load8bitChannelTile() {
   OmChannel* chan = reinterpret_cast<OmChannel*>(getVol());
   OmChunk* chunk = chan->GetChunk(mipChunkCoord_);
 
-  OmPooledTile<uint8_t>* tileData =
+  auto tileData =
       chunk->Data()->ExtractDataSlice8bit(key_.getViewType(), getDepth());
 
   OmChannelTileFilter::Filter(tileData);
@@ -44,11 +43,11 @@ void OmTile::load32bitSegmentationTile() {
   OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(getVol());
   OmSegChunk* chunk = seg->GetChunk(mipChunkCoord_);
 
-  PooledTile32Ptr imageData =
+  auto imageData =
       chunk->SegData()->ExtractDataSlice32bit(key_.getViewType(), getDepth());
 
-  OmPooledTile<om::common::ColorARGB>* colorMappedData = key_
-      .getViewGroupState()->ColorTile(imageData->GetData(), tileLength_, key_);
+  auto colorMappedData = key_
+      .getViewGroupState()->ColorTile(imageData.get(), tileLength_, key_);
 
   texture_.reset(new OmTextureID(tileLength_, colorMappedData));
 }

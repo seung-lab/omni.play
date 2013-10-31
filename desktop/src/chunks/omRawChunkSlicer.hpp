@@ -1,10 +1,6 @@
 #pragma once
 
-#include "project/omProject.h"
-#include "project/omProjectGlobals.h"
-#include "tiles/pools/omPooledTile.hpp"
-#include "tiles/pools/omTilePool.hpp"
-#include "utility/malloc.hpp"
+#include "tiles/make_tile.hpp"
 
 template <typename T> class OmRawChunkSlicer {
  private:
@@ -19,19 +15,9 @@ template <typename T> class OmRawChunkSlicer {
         elementsPerTile_(chunkDim * chunkDim),
         chunkPtr_(chunkPtr) {}
 
-  OmPooledTile<T>* GetCopyAsPooledTile(const om::common::ViewType viewType,
-                                       const int offsetNumTiles) {
-    OmPooledTile<T>* pooledTile = new OmPooledTile<T>();
-
-    sliceTile(viewType, offsetNumTiles, pooledTile->GetData());
-
-    return pooledTile;
-  }
-
   std::shared_ptr<T> GetCopyOfTile(const om::common::ViewType viewType,
                                    const int offsetNumTiles) {
-    std::shared_ptr<T> tilePtr = om::mem::Malloc<T>::NumElements(
-        elementsPerTile_, om::mem::ZeroFill::DONT);
+      auto tilePtr = om::tile::Make<T>();
     sliceTile(viewType, offsetNumTiles, tilePtr.get());
 
     return tilePtr;
