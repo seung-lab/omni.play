@@ -29,12 +29,12 @@ OmTextureID::~OmTextureID() {
 }
 
 void* OmTextureID::GetTileData() const {
-  if (!tile8_ && !tile32_){
+  if (!tile8_ && !tile32_) {
     throw om::IoException("no data");
   }
 
-  if(is8bit_){
-      return static_cast<void*>(tile8_.get());
+  if (is8bit_) {
+    return static_cast<void*>(tile8_.get());
   }
   return static_cast<void*>(tile32_.get());
 }

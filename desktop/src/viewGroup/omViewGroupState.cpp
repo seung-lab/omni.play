@@ -63,7 +63,7 @@ om::segment::coloring OmViewGroupState::determineColorizationType(
     case om::common::CHANNEL:
       if (mShowValid) {
         if (mShowValidInColor) {
-            return om::segment::coloring::FILTER_VALID;
+          return om::segment::coloring::FILTER_VALID;
         }
         return om::segment::coloring::FILTER_VALID_BLACK;
       }

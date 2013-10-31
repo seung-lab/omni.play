@@ -17,7 +17,7 @@ template <typename T> class OmRawChunkSlicer {
 
   std::shared_ptr<T> GetCopyOfTile(const om::common::ViewType viewType,
                                    const int offsetNumTiles) {
-      auto tilePtr = om::tile::Make<T>();
+    auto tilePtr = om::tile::Make<T>();
     sliceTile(viewType, offsetNumTiles, tilePtr.get());
 
     return tilePtr;

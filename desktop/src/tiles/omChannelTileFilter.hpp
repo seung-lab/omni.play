@@ -16,15 +16,15 @@ class OmChannelTileFilter : private om::singletonBase<OmChannelTileFilter> {
     OmTileFilters<uint8_t> filter(128);
 
     if (defaultBrightness_ != instance().brightnessShift_) {
-        filter.Brightness(slice.get(), absMax_, instance().brightnessShift_);
+      filter.Brightness(slice.get(), absMax_, instance().brightnessShift_);
     }
 
     if (!qFuzzyCompare(defaultContrast_, instance().contrastValue_)) {
-        filter.Contrast(slice.get(), absMax_, instance().contrastValue_);
+      filter.Contrast(slice.get(), absMax_, instance().contrastValue_);
     }
 
     if (!qFuzzyCompare(defaultGamma_, instance().gamma_)) {
-        filter.Gamma(slice.get(), instance().gamma_);
+      filter.Gamma(slice.get(), instance().gamma_);
     }
   }
 

@@ -49,7 +49,7 @@ class OmSliceCache {
   }
 
   std::shared_ptr<uint32_t> GetSlice(const om::chunkCoord& chunkCoord,
-                           const int depthInChunk) {
+                                     const int depthInChunk) {
     const OmSliceKey key(chunkCoord.Coordinate.x, chunkCoord.Coordinate.y,
                          chunkCoord.Coordinate.z, depthInChunk);
 

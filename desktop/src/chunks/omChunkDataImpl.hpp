@@ -85,8 +85,8 @@ template <typename DATA> class dataImpl : public dataInterface {
     return om::ptrs::Wrap(rawChunk.SharedPtr());
   }
 
-  std::shared_ptr<uint8_t> ExtractDataSlice8bit(const om::common::ViewType plane,
-                                              const int depth) {
+  std::shared_ptr<uint8_t> ExtractDataSlice8bit(
+      const om::common::ViewType plane, const int depth) {
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);
     DATA* data = dataWrapper.Data();
 

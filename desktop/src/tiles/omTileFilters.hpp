@@ -12,23 +12,21 @@ template <typename T> class OmTileFilters {
       : chunkDim_(chunkDim), elementsPerTile_(chunkDim * chunkDim) {}
 
   void Brightness(T* tile, const T absMax, const int32_t shift) {
-    zi::transform(tile, tile + elementsPerTile_,
-                  tile, ChangeBrightness<T>(absMax, shift));
+    zi::transform(tile, tile + elementsPerTile_, tile,
+                  ChangeBrightness<T>(absMax, shift));
   }
 
   void Contrast(T* tile, const T absMax, const double contrast) {
-    zi::transform(tile, tile + elementsPerTile_,
-                  tile, ChangeContrast<T>(absMax, contrast));
+    zi::transform(tile, tile + elementsPerTile_, tile,
+                  ChangeContrast<T>(absMax, contrast));
   }
 
   void Gamma(T* tile, const double gamma) {
-    zi::transform(tile, tile + elementsPerTile_,
-                  tile, ChangeGamma<T>(gamma));
+    zi::transform(tile, tile + elementsPerTile_, tile, ChangeGamma<T>(gamma));
   }
 
-  template <typename C>
-  std::shared_ptr<C> recast(T* oldTile) const {
-      auto ret = om::tile::Make<C>();
+  template <typename C> std::shared_ptr<C> recast(T* oldTile) const {
+    auto ret = om::tile::Make<C>();
 
     std::copy(oldTile, oldTile + elementsPerTile_, ret.get());
 
@@ -39,18 +37,17 @@ template <typename T> class OmTileFilters {
     return recast<uint8_t>(oldTile);
   }
 
-  inline std::shared_ptr<uint32_t> recastToUint32(
-      T* oldTile) const {
+  inline std::shared_ptr<uint32_t> recastToUint32(T* oldTile) const {
     return recast<uint32_t>(oldTile);
   }
 
   template <typename C>
   std::shared_ptr<C> rescaleAndCast(T* oldTile, const T rangeMin,
                                     const T rangeMax, const T absMax) const {
-      auto ret = om::tile::Make<C>();
+    auto ret = om::tile::Make<C>();
 
-    zi::transform(oldTile, oldTile + elementsPerTile_,
-                  ret.get(), Rescale<T, C>(rangeMin, rangeMax, absMax));
+    zi::transform(oldTile, oldTile + elementsPerTile_, ret.get(),
+                  Rescale<T, C>(rangeMin, rangeMax, absMax));
 
     return ret;
   }

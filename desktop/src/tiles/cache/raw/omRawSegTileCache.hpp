@@ -37,14 +37,16 @@ class OmRawSegTileCache {
 
   void Clear() { cache_->Clear(); }
 
-  std::shared_ptr<uint32_t> Get(const om::chunkCoord& chunkCoord, const int sliceDepth,
-                      const om::common::ViewType viewType) {
+  std::shared_ptr<uint32_t> Get(const om::chunkCoord& chunkCoord,
+                                const int sliceDepth,
+                                const om::common::ViewType viewType) {
     const OmVolSliceKey key(chunkCoord, sliceDepth, viewType);
     return cache_->Get(key);
   }
 
   void Set(const om::chunkCoord& chunkCoord, const int sliceDepth,
-           const om::common::ViewType viewType, std::shared_ptr<uint32_t> tile) {
+           const om::common::ViewType viewType,
+           std::shared_ptr<uint32_t> tile) {
     const OmVolSliceKey key(chunkCoord, sliceDepth, viewType);
     cache_->Set(key, tile);
   }

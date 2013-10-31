@@ -27,8 +27,8 @@ class OmGlobalKeyPress : public QWidget {
   std::unique_ptr<QShortcut> l_;
   std::unique_ptr<QShortcut> slash_;
 
-  void setShortcut(std::unique_ptr<QShortcut>& shortcut,
-                   const QKeySequence key, const char* method) {
+  void setShortcut(std::unique_ptr<QShortcut>& shortcut, const QKeySequence key,
+                   const char* method) {
     shortcut.reset(new QShortcut(parent_));
     shortcut->setKey(key);
     shortcut->setContext(Qt::ApplicationShortcut);
@@ -66,9 +66,9 @@ Q_SLOTS:
   }
 
   void keyJ() {
-      for(const auto& id : SegmentationDataWrapper::ValidIDs()){
-          OmActions::JoinSegments(SegmentationDataWrapper(id));
-      }
+    for (const auto& id : SegmentationDataWrapper::ValidIDs()) {
+      OmActions::JoinSegments(SegmentationDataWrapper(id));
+    }
 
     om::event::Redraw2d();
     om::event::Redraw3d();

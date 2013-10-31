@@ -20,8 +20,8 @@ class dataInterface {
 
   virtual void RefreshBoundingData(OmSegments* segments) = 0;
 
-  virtual std::shared_ptr<uint32_t> ExtractDataSlice32bit(const om::common::ViewType,
-                                                const int) = 0;
+  virtual std::shared_ptr<uint32_t> ExtractDataSlice32bit(
+      const om::common::ViewType, const int) = 0;
   virtual std::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32() = 0;
 
   virtual void RewriteChunk(const std::unordered_map<uint32_t, uint32_t>&) = 0;

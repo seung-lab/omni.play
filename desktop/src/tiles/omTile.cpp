@@ -46,8 +46,8 @@ void OmTile::load32bitSegmentationTile() {
   auto imageData =
       chunk->SegData()->ExtractDataSlice32bit(key_.getViewType(), getDepth());
 
-  auto colorMappedData = key_
-      .getViewGroupState()->ColorTile(imageData.get(), tileLength_, key_);
+  auto colorMappedData =
+      key_.getViewGroupState()->ColorTile(imageData.get(), tileLength_, key_);
 
   texture_.reset(new OmTextureID(tileLength_, colorMappedData));
 }

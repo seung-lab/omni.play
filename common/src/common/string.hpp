@@ -25,14 +25,15 @@ template <typename T> static std::string num(const T& num) {
 }
 
 template <typename T> static T toNum(const std::string& str) {
-    T ret = 0;
-    try {
-        ret = boost::lexical_cast<T>(str);
-    } catch(boost::bad_lexical_cast &){
-        std::cout << "bad cast from '" << str << "' to number" << std::endl;
-        throw;
-    }
-    return ret;
+  T ret = 0;
+  try {
+    ret = boost::lexical_cast<T>(str);
+  }
+  catch (boost::bad_lexical_cast&) {
+    std::cout << "bad cast from '" << str << "' to number" << std::endl;
+    throw;
+  }
+  return ret;
 }
 
 template <typename T>

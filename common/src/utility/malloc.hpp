@@ -35,7 +35,8 @@ template <typename T> class Malloc {
     return NumElements(numElements, ZeroFill::ZERO);
   }
 
-  static std::shared_ptr<T> inline NumElementsDontZero(const uint64_t numElements) {
+  static std::shared_ptr<T> inline NumElementsDontZero(
+      const uint64_t numElements) {
     return NumElements(numElements, ZeroFill::DONT);
   }
 

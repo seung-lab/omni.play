@@ -14,4 +14,3 @@ struct DummyGroups {
   QHash<QString, uint32_t> mGroupsByName;
   friend QDataStream& operator>>(QDataStream& in, DummyGroups&);
 };
-
