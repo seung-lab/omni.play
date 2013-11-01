@@ -6,8 +6,11 @@
 #include "utility/dataWrappers.h"
 
 class SegmentListUncertain : public SegmentListBase {
-  Q_OBJECT public : SegmentListUncertain(QWidget* parent, OmViewGroupState* vgs)
-                    : SegmentListBase(parent, vgs) {}
+  Q_OBJECT;
+  ;
+ public:
+  SegmentListUncertain(QWidget* parent, OmViewGroupState* vgs)
+      : SegmentListBase(parent, vgs) {}
 
  private:
   QString getTabTitle() { return QString("Uncertain"); }

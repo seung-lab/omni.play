@@ -8,7 +8,10 @@ namespace om {
 namespace channelInspector {
 
 class PageMetadata : public QWidget {
-  Q_OBJECT private : const ChannelDataWrapper cdw_;
+  Q_OBJECT;
+  ;
+ private:
+  const ChannelDataWrapper cdw_;
 
  public:
   PageMetadata(QWidget* parent, const ChannelDataWrapper& cdw)

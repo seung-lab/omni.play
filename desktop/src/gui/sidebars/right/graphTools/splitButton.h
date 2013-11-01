@@ -5,7 +5,10 @@
 class GraphTools;
 
 class SplitButton : public OmButton<GraphTools> {
-  Q_OBJECT public : SplitButton(GraphTools *);
+  Q_OBJECT;
+  ;
+ public:
+  SplitButton(GraphTools *);
 
  private:
   void doAction() {}

@@ -8,7 +8,10 @@ namespace om {
 namespace channelInspector {
 
 class PageBuilder : public QWidget {
-  Q_OBJECT private : const ChannelDataWrapper cdw_;
+  Q_OBJECT;
+  ;
+ private:
+  const ChannelDataWrapper cdw_;
 
   SourceBox* const sourceBox_;
   QComboBox* buildComboBox_;

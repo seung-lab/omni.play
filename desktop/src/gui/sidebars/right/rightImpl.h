@@ -13,7 +13,10 @@ namespace om {
 namespace sidebars {
 
 class rightImpl : public QWidget {
-  Q_OBJECT public : rightImpl(MainWindow* mw, OmViewGroupState* vgs);
+  Q_OBJECT;
+  ;
+ public:
+  rightImpl(MainWindow* mw, OmViewGroupState* vgs);
 
   void updateGui();
 

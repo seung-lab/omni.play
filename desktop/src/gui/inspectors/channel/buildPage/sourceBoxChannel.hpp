@@ -10,7 +10,10 @@ namespace om {
 namespace channelInspector {
 
 class SourceBox : public QGroupBox {
-  Q_OBJECT private : const ChannelDataWrapper& cdw_;
+  Q_OBJECT;
+  ;
+ private:
+  const ChannelDataWrapper& cdw_;
 
   QLineEdit* volNameEdit_;
   QLabel* directoryLabel_;

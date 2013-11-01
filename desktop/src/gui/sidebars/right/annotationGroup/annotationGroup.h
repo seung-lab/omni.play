@@ -11,7 +11,10 @@ namespace sidebars {
 class rightImpl;
 
 class AnnotationGroup : public OmWidget {
-  Q_OBJECT public : AnnotationGroup(rightImpl *, OmViewGroupState *);
+  Q_OBJECT;
+  ;
+ public:
+  AnnotationGroup(rightImpl *, OmViewGroupState *);
 
   QString getName() { return "Annotations"; }
 

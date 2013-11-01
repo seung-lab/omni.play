@@ -7,8 +7,11 @@
 #include <limits>
 
 class Dust3DThresholdGroup : public OmIntSpinBox {
-  Q_OBJECT public : Dust3DThresholdGroup(QWidget* parent, OmViewGroupState* vgs)
-                    : OmIntSpinBox(parent, true), vgs_(vgs) {
+  Q_OBJECT;
+  ;
+ public:
+  Dust3DThresholdGroup(QWidget* parent, OmViewGroupState* vgs)
+      : OmIntSpinBox(parent, true), vgs_(vgs) {
     setSingleStep(5);
     setMaximum(std::numeric_limits<int32_t>::max());
     setInitialGUIThresholdValue();

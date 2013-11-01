@@ -8,7 +8,9 @@
 #include <QShortcut>
 
 class OmUndoStack : private QObject {
-  Q_OBJECT private : QUndoStack undoStack_;
+  Q_OBJECT;
+ private:
+  QUndoStack undoStack_;
   std::unique_ptr<QShortcut> undoShortcut_;
 
  private

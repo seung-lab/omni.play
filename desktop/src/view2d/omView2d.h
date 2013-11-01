@@ -13,9 +13,10 @@ class OmView2dZoom;
 class SegmentDataWrapper;
 
 class OmView2d : public OmView2dCore {
-  Q_OBJECT public
-      : OmView2d(const om::common::ViewType, QWidget *, OmViewGroupState *,
-                 OmMipVolume *, const std::string &name);
+  Q_OBJECT;
+ public:
+  OmView2d(const om::common::ViewType, QWidget *, OmViewGroupState *,
+           OmMipVolume *, const std::string &name);
   ~OmView2d();
 
   void SetComplimentaryDockWidget(QDockWidget *dock) {

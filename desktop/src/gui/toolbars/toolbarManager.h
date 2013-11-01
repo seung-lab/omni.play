@@ -16,7 +16,10 @@ class right;
 }
 
 class ToolBarManager : public QWidget {
-  Q_OBJECT public : ToolBarManager(MainWindow *mw);
+  Q_OBJECT;
+  ;
+ public:
+  ToolBarManager(MainWindow *mw);
   ~ToolBarManager();
 
   void UpdateReadOnlyRelatedWidgets();

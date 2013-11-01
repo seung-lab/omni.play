@@ -19,8 +19,10 @@ class rightImpl;
 }
 
 class ValidationGroup : public OmWidget {
-  Q_OBJECT public
-      : ValidationGroup(om::sidebars::rightImpl*, OmViewGroupState* vgs);
+  Q_OBJECT;
+  ;
+ public:
+  ValidationGroup(om::sidebars::rightImpl*, OmViewGroupState* vgs);
   QString getGroupNameFromGUI();
   bool isShowValidChecked();
 

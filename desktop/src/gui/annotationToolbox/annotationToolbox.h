@@ -47,7 +47,10 @@ class ColorButton : public OmButton<QWidget> {
 };
 
 class AnnotationLineEdit : public QLineEdit {
-  Q_OBJECT private : OmViewGroupState* vgs_;
+  Q_OBJECT;
+  ;
+ private:
+  OmViewGroupState* vgs_;
 
  private
 Q_SLOTS:

@@ -11,7 +11,7 @@ def mkdir_p(path):
         else:
             raise
 
-inpath = "common/src"
+inpath = "desktop/src/gui"
 outPath = "/home/mjp/htmldiff"
 p = os.path.join(outPath, inpath)
 if os.path.exists(p):
@@ -49,6 +49,14 @@ def makeIndex(diffs):
             f.write('<li><a href="{f}">{name}</a></li>'.format(f=d, name=d))
         f.write("</ul></body></html>")
 
+ignorePostFix = ["~", ".moc.cpp", ".qrc", ".rcc.cpp"]
+
+def ignoreFile(fn):
+    for pf in ignorePostFix:
+        if fn.endswith(pf):
+            return True
+    return False
+
 def run():
     d = os.path.dirname(os.path.abspath(__file__))
     d = os.path.join(d, "../")
@@ -58,7 +66,7 @@ def run():
 
     for root, dirs, files in os.walk(path):
         for fn in files:
-            if fn.endswith("~"):
+            if ignoreFile(fn):
                 continue
             fnp = os.path.abspath(os.path.join(root, fn))
             ofnp = fnp.replace("omni.staging", "omni.dlr")

@@ -10,7 +10,10 @@ class OmViewGroupState;
 class InspectorProperties : public QDialog,
                             public om::event::UIEventListener,
                             public om::event::SegmentEventListener {
-  Q_OBJECT public : InspectorProperties(QWidget* parent, OmViewGroupState* vgs);
+  Q_OBJECT;
+  ;
+ public:
+  InspectorProperties(QWidget* parent, OmViewGroupState* vgs);
 
   virtual ~InspectorProperties();
 

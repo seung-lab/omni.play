@@ -168,8 +168,8 @@ class HTTP : private SingletonBase<HTTP> {
     long code;
     err = curl_easy_getinfo(h->Handle, CURLINFO_RESPONSE_CODE, &code);
     if (err) {
-      log_debugs(HTTP) << "CURL Error with response: "
-                       << curl_easy_strerror(err);
+      log_debugs(HTTP)
+          << "CURL Error with response: " << curl_easy_strerror(err);
       return false;
     }
 
@@ -245,8 +245,7 @@ class HTTP : private SingletonBase<HTTP> {
     return result;
   }
 
-  template <typename T>
-  static std::string url_encode(T val) {
+  template <typename T> static std::string url_encode(T val) {
     return url_encode(std::to_string(val).c_str());
   }
   static std::string url_encode(std::string val) {
@@ -279,8 +278,8 @@ class HTTP : private SingletonBase<HTTP> {
     long code;
     auto err = curl_easy_getinfo(h, CURLINFO_RESPONSE_CODE, &code);
     if (err) {
-      log_debugs(HTTP) << "CURL Error with response: "
-                       << curl_easy_strerror(err);
+      log_debugs(HTTP)
+          << "CURL Error with response: " << curl_easy_strerror(err);
       return -1;
     }
     log_debugs(HTTP) << "HTTP Response Code: " << code;

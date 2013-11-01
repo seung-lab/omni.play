@@ -17,8 +17,11 @@ class OmViewGroupState;
 class SegmentationDataWrapper;
 
 class InspectorWidget : public QWidget {
-  Q_OBJECT public : InspectorWidget(QWidget* parent, MainWindow* mainWindow,
-                                    OmViewGroupState* vgs);
+  Q_OBJECT;
+  ;
+ public:
+  InspectorWidget(QWidget* parent, MainWindow* mainWindow,
+                  OmViewGroupState* vgs);
   ~InspectorWidget();
 
   OmViewGroupState* GetViewGroupState() { return vgs_; }

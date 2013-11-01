@@ -3,7 +3,10 @@
 #include <QtGui>
 
 class LocalPreferencesMeshing : public QWidget {
-  Q_OBJECT public : LocalPreferencesMeshing(QWidget* parent);
+  Q_OBJECT;
+  ;
+ public:
+  LocalPreferencesMeshing(QWidget* parent);
 
  private
 Q_SLOTS:

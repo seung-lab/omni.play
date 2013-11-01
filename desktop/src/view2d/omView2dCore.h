@@ -22,9 +22,9 @@ class OmViewGroupState;
 #endif
 
 class OmView2dCore : public OmView2dWidgetBase {
-  Q_OBJECT public : inline om::common::ViewType GetViewType() const {
-    return viewType_;
-  }
+  Q_OBJECT;
+ public:
+  inline om::common::ViewType GetViewType() const { return viewType_; }
 
   bool IsDrawComplete();
   int GetTileCount();

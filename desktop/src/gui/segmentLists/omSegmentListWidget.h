@@ -14,7 +14,10 @@ class SegmentListBase;
 class GUIPageOfSegment;
 
 class OmSegmentListWidget : public QTreeWidget {
-  Q_OBJECT public : OmSegmentListWidget(SegmentListBase*, OmViewGroupState*);
+  Q_OBJECT;
+  ;
+ public:
+  OmSegmentListWidget(SegmentListBase*, OmViewGroupState*);
 
   bool populate(const bool doScrollToSelectedSegment,
                 const SegmentDataWrapper segmentJustSelected,

@@ -7,8 +7,10 @@
 class FilterDataWrapper;
 
 class FilObjectInspector : public QWidget {
-  Q_OBJECT public
-      : FilObjectInspector(QWidget *parent, const FilterDataWrapper &fdw);
+  Q_OBJECT;
+  ;
+ public:
+  FilObjectInspector(QWidget *parent, const FilterDataWrapper &fdw);
 
  private
 Q_SLOTS:

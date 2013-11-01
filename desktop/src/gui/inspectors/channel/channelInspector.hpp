@@ -11,7 +11,10 @@
 // http://doc.qt.nokia.com/latest/dialogs-configdialog-configdialog-cpp.html
 
 class ChannelInspector : public QDialog {
-  Q_OBJECT private : InspectorProperties* const parentDialog_;
+  Q_OBJECT;
+  ;
+ private:
+  InspectorProperties* const parentDialog_;
   const ChannelDataWrapper cdw_;
 
   om::channelInspector::PageSelector* pageSelector_;

@@ -8,8 +8,10 @@
 #include <QtGui>
 
 class OmDoubleSpinBox : public QDoubleSpinBox {
-  Q_OBJECT public : OmDoubleSpinBox(QWidget* d, const bool updateAsType)
-                    : QDoubleSpinBox(d) {
+  Q_OBJECT;
+  ;
+ public:
+  OmDoubleSpinBox(QWidget* d, const bool updateAsType) : QDoubleSpinBox(d) {
     if (updateAsType) {
       om::connect(this, SIGNAL(valueChanged(double)), this,
                   SLOT(valueChanged()));

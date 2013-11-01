@@ -11,7 +11,9 @@
 #include <QKeyEvent>
 
 class OmGlobalKeyPress : public QWidget {
-  Q_OBJECT private : QWidget* const parent_;
+  Q_OBJECT;
+ private:
+  QWidget* const parent_;
 
   std::unique_ptr<QShortcut> a_;
   std::unique_ptr<QShortcut> b_;

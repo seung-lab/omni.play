@@ -6,8 +6,11 @@
 #include "utility/dataWrappers.h"
 
 class SegmentListRecent : public SegmentListBase {
-  Q_OBJECT public : SegmentListRecent(QWidget* parent, OmViewGroupState* vgs)
-                    : SegmentListBase(parent, vgs) {}
+  Q_OBJECT;
+  ;
+ public:
+  SegmentListRecent(QWidget* parent, OmViewGroupState* vgs)
+      : SegmentListBase(parent, vgs) {}
 
  private:
   QString getTabTitle() { return QString("Recent"); }

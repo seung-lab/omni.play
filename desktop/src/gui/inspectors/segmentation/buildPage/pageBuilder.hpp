@@ -8,7 +8,10 @@ namespace om {
 namespace segmentationInspector {
 
 class PageBuilder : public QWidget {
-  Q_OBJECT private : const SegmentationDataWrapper sdw_;
+  Q_OBJECT;
+  ;
+ private:
+  const SegmentationDataWrapper sdw_;
 
   SourceBox* const sourceBox_;
   QComboBox* buildComboBox_;

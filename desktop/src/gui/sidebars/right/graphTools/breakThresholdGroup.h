@@ -11,8 +11,11 @@
 #include "volume/omSegmentation.h"
 
 class BreakThresholdGroup : public OmDoubleSpinBox {
-  Q_OBJECT public : BreakThresholdGroup(GraphTools* d, OmViewGroupState* vgs)
-                    : OmDoubleSpinBox(d, true), vgs_(vgs) {
+  Q_OBJECT;
+  ;
+ public:
+  BreakThresholdGroup(GraphTools* d, OmViewGroupState* vgs)
+      : OmDoubleSpinBox(d, true), vgs_(vgs) {
     setSingleStep(0.002);
     setMaximum(1.0);
     setDecimals(3);

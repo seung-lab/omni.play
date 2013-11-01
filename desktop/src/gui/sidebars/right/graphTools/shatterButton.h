@@ -5,7 +5,10 @@
 class GraphTools;
 
 class ShatterButton : public OmButton<GraphTools> {
-  Q_OBJECT public : ShatterButton(GraphTools*);
+  Q_OBJECT;
+  ;
+ public:
+  ShatterButton(GraphTools*);
 
  private:
   void doAction() {}

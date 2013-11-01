@@ -8,7 +8,10 @@ namespace om {
 namespace gui {
 
 class viewGroupImpl : public QObject {
-  Q_OBJECT private : MainWindow* const mainWindow_;
+  Q_OBJECT;
+  ;
+ private:
+  MainWindow* const mainWindow_;
   OmViewGroupState* const vgs_;
 
   std::unique_ptr<ViewGroupUtils> utils_;

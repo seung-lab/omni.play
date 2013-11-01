@@ -7,7 +7,10 @@
 #include <QtGui>
 
 class OmIntSpinBox : public QSpinBox {
-  Q_OBJECT public : OmIntSpinBox(QWidget* d, bool updateAsType) : QSpinBox(d) {
+  Q_OBJECT;
+  ;
+ public:
+  OmIntSpinBox(QWidget* d, bool updateAsType) : QSpinBox(d) {
     if (updateAsType) {
       om::connect(this, SIGNAL(valueChanged(int)), this,
                   SLOT(spinboxChanged()));

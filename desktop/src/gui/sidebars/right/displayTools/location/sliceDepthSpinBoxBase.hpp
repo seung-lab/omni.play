@@ -12,8 +12,11 @@
 
 class SliceDepthSpinBoxBase : public OmIntSpinBox,
                               public om::event::View2dEventListener {
-  Q_OBJECT public : SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState* vgs)
-                    : OmIntSpinBox(d, true), vgs_(vgs) {
+  Q_OBJECT;
+  ;
+ public:
+  SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState* vgs)
+      : OmIntSpinBox(d, true), vgs_(vgs) {
     setValue(0);
     setSingleStep(1);
     setMaximum(std::numeric_limits<int32_t>::max());

@@ -5,7 +5,10 @@
 #include "tiles/omChannelTileFilter.hpp"
 
 class GammaSpinBox : public OmDoubleSpinBox {
-  Q_OBJECT public : GammaSpinBox(QWidget* d) : OmDoubleSpinBox(d, true) {
+  Q_OBJECT;
+  ;
+ public:
+  GammaSpinBox(QWidget* d) : OmDoubleSpinBox(d, true) {
     setSingleStep(0.05);
     setRange(-5, 5);
     setInitialGUIThresholdValue();

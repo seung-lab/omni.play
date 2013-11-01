@@ -9,7 +9,10 @@
 #include <limits>
 
 class ContrastSpinBox : public OmDoubleSpinBox {
-  Q_OBJECT public : ContrastSpinBox(QWidget* d) : OmDoubleSpinBox(d, true) {
+  Q_OBJECT;
+  ;
+ public:
+  ContrastSpinBox(QWidget* d) : OmDoubleSpinBox(d, true) {
     setSingleStep(0.05);
     setRange(-5, 5);
     setInitialGUIThresholdValue();

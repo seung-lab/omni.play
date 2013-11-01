@@ -12,8 +12,10 @@ class rightImpl;
 }
 
 class DisplayTools : public QWidget {
-  Q_OBJECT public
-      : DisplayTools(om::sidebars::rightImpl*, OmViewGroupState* vgs);
+  Q_OBJECT;
+  ;
+ public:
+  DisplayTools(om::sidebars::rightImpl*, OmViewGroupState* vgs);
 
   OmViewGroupState* GetViewGroupState() { return vgs_; }
 

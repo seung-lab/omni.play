@@ -7,8 +7,11 @@
 #include "segment/lists/omSegmentLists.h"
 
 class SegmentListValid : public SegmentListBase {
-  Q_OBJECT public : SegmentListValid(QWidget* parent, OmViewGroupState* vgs)
-                    : SegmentListBase(parent, vgs) {}
+  Q_OBJECT;
+  ;
+ public:
+  SegmentListValid(QWidget* parent, OmViewGroupState* vgs)
+      : SegmentListBase(parent, vgs) {}
 
  private:
   QString getTabTitle() { return QString("Valid"); }

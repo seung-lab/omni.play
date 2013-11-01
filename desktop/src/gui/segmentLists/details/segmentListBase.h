@@ -16,7 +16,10 @@ class SegmentInspector;
 class OmViewGroupState;
 
 class SegmentListBase : public QWidget {
-  Q_OBJECT public : SegmentListBase(QWidget*, OmViewGroupState*);
+  Q_OBJECT;
+  ;
+ public:
+  SegmentListBase(QWidget*, OmViewGroupState*);
 
   void populate() { populateByPage(); }
 

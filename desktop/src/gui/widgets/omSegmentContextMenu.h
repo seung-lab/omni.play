@@ -17,8 +17,10 @@ class progressBarDialog;
 
 class OmSegmentContextMenu : public QMenu {
 
-  Q_OBJECT public : void Refresh(const SegmentDataWrapper& sdw,
-                                 OmViewGroupState* vgs);
+  Q_OBJECT;
+  ;
+ public:
+  void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs);
   void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs,
                const om::globalCoord coord);
   void Refresh(const OmSegmentPickPoint& pickPoint, OmViewGroupState* vgs);

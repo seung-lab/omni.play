@@ -18,7 +18,10 @@ namespace om {
 namespace displayTools {
 
 class Page2d : public QWidget {
-  Q_OBJECT private : OmViewGroupState* const vgs_;
+  Q_OBJECT;
+  ;
+ private:
+  OmViewGroupState* const vgs_;
 
   QButtonGroup* validGroup_;
   QRadioButton* showValid_;

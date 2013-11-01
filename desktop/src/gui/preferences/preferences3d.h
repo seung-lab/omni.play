@@ -4,7 +4,10 @@
 #include "ui_preferences3d.h"
 
 class Preferences3d : public QWidget, public Ui::preferences3d {
-  Q_OBJECT public : Preferences3d(QWidget *parent);
+  Q_OBJECT;
+  ;
+ public:
+  Preferences3d(QWidget *parent);
 
  private
 Q_SLOTS:

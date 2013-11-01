@@ -11,7 +11,10 @@ namespace om {
 namespace gui {
 
 class progressBarDialog : public QDialog {
-  Q_OBJECT private : std::shared_ptr<progress> progress_;
+  Q_OBJECT;
+  ;
+ private:
+  std::shared_ptr<progress> progress_;
   progressBar<uint64_t>* progressBar_;
 
   OmThreadPool threadPool_;
