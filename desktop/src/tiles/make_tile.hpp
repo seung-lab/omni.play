@@ -1,5 +1,7 @@
 #pragma once
 
+#include <typeinfo>
+
 #include <zi/mutex.hpp>
 #include "utility/malloc.hpp"
 
@@ -25,6 +27,8 @@ class Cache {
 
 public:
     Cache(){
+        //std::cout << "started cache: " << typeid(T).name() << std::endl;
+
         zi::guard g(lock_);
         avail_.reserve(NumTiles);
         for(uint32_t i = 0; i < NumTiles; ++i){
