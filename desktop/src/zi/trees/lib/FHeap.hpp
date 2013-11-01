@@ -1,3 +1,4 @@
+#pragma once
 /*
  * AUTHORS:
  *   Aleksandar Zlateski <zlateski@mit.edu>

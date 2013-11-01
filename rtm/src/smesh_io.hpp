@@ -1,3 +1,4 @@
+#pragma once
 //
 // Copyright (C) 2012  Aleksandar Zlateski <zlateski@mit.edu>
 // ----------------------------------------------------------

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef ZI_RWLOCK_SERVER_HPP
 #define ZI_RWLOCK_SERVER_HPP
 

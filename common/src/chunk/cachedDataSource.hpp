@@ -1,3 +1,4 @@
+#pragma once
 
 #include "chunk/dataSource.h"
 #include "datalayer/dataSourceHierarchy.hpp"

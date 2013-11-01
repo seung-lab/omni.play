@@ -1,3 +1,4 @@
+#pragma once
 /** @mainpage
  *  @author Brett Warme, Rachel Welles Shearer, Matthew Wimer, Michael Purcaro,
  * Clay Didier, Aleksandar Zlateski, Tan Zong Xuan, Matthew Balkam

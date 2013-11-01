@@ -1,3 +1,4 @@
+#pragma once
 #ifndef ZI_MESHING_DETAIL_VEC_HASH_HPP
 #define ZI_MESHING_DETAIL_VEC_HASH_HPP
 

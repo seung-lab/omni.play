@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Brett Warne - bwarne@mit.edu - 2/6/09
  */
