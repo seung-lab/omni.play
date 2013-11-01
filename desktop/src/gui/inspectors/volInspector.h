@@ -12,7 +12,7 @@
 
 class OmVolInspector : public QGroupBox {
   Q_OBJECT;
-  ;
+
  private:
   OmMipVolume& vol_;
   QGridLayout* grid_;

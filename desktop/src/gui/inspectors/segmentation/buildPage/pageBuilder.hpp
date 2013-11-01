@@ -9,7 +9,7 @@ namespace segmentationInspector {
 
 class PageBuilder : public QWidget {
   Q_OBJECT;
-  ;
+
  private:
   const SegmentationDataWrapper sdw_;
 

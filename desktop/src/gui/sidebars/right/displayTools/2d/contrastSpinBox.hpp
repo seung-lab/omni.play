@@ -10,7 +10,7 @@
 
 class ContrastSpinBox : public OmDoubleSpinBox {
   Q_OBJECT;
-  ;
+
  public:
   ContrastSpinBox(QWidget* d) : OmDoubleSpinBox(d, true) {
     setSingleStep(0.05);

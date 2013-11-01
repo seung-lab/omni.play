@@ -10,7 +10,7 @@ namespace displayTools {
 
 class Page3d : public QWidget {
   Q_OBJECT;
-  ;
+
  private:
   OmViewGroupState* const vgs_;
 

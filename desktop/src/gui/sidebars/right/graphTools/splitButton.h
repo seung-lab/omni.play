@@ -6,7 +6,7 @@ class GraphTools;
 
 class SplitButton : public OmButton<GraphTools> {
   Q_OBJECT;
-  ;
+
  public:
   SplitButton(GraphTools *);
 

@@ -9,7 +9,7 @@ namespace gui {
 
 class viewGroupImpl : public QObject {
   Q_OBJECT;
-  ;
+
  private:
   MainWindow* const mainWindow_;
   OmViewGroupState* const vgs_;

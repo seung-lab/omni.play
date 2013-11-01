@@ -8,7 +8,7 @@
 
 class SegmentListWorking : public SegmentListBase {
   Q_OBJECT;
-  ;
+
  public:
   SegmentListWorking(QWidget* parent, OmViewGroupState* vgs)
       : SegmentListBase(parent, vgs) {}

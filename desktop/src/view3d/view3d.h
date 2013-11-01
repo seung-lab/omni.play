@@ -26,6 +26,7 @@ class Widgets;
 
 class View3d : public QGLWidget {
   Q_OBJECT;
+
  public:
   View3d(QWidget*, OmViewGroupState&);
   ~View3d();

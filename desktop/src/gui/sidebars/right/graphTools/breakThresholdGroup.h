@@ -12,7 +12,7 @@
 
 class BreakThresholdGroup : public OmDoubleSpinBox {
   Q_OBJECT;
-  ;
+
  public:
   BreakThresholdGroup(GraphTools* d, OmViewGroupState* vgs)
       : OmDoubleSpinBox(d, true), vgs_(vgs) {

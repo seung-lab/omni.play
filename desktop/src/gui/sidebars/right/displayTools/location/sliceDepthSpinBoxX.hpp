@@ -4,7 +4,7 @@
 
 class SliceDepthSpinBoxX : public SliceDepthSpinBoxBase {
   Q_OBJECT;
-  ;
+
  public:
   SliceDepthSpinBoxX(QWidget* d, OmViewGroupState* vgs)
       : SliceDepthSpinBoxBase(d, vgs) {}

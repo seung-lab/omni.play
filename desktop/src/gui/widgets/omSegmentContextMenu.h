@@ -18,7 +18,7 @@ class progressBarDialog;
 class OmSegmentContextMenu : public QMenu {
 
   Q_OBJECT;
-  ;
+
  public:
   void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs);
   void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs,

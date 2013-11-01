@@ -8,7 +8,7 @@
 
 class Dust3DThresholdGroup : public OmIntSpinBox {
   Q_OBJECT;
-  ;
+
  public:
   Dust3DThresholdGroup(QWidget* parent, OmViewGroupState* vgs)
       : OmIntSpinBox(parent, true), vgs_(vgs) {

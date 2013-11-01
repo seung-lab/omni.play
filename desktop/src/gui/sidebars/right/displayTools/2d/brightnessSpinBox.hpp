@@ -7,7 +7,7 @@
 
 class BrightnessSpinBox : public OmIntSpinBox {
   Q_OBJECT;
-  ;
+
  public:
   BrightnessSpinBox(QWidget* d) : OmIntSpinBox(d, true) {
     setSingleStep(1);

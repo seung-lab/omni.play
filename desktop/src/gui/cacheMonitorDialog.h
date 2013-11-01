@@ -8,7 +8,7 @@ class MainWindow;
 
 class CacheMonitorDialog : public QDialog {
   Q_OBJECT;
-  ;
+
  public:
   CacheMonitorDialog(QWidget* parent);
   ~CacheMonitorDialog();

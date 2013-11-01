@@ -19,7 +19,7 @@ class rightImpl;
 
 class GraphTools : public OmWidget {
   Q_OBJECT;
-  ;
+
  public:
   GraphTools(om::sidebars::rightImpl*, OmViewGroupState* vgs);
 

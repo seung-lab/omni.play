@@ -10,7 +10,7 @@ class ToolButton;
 
 class NavAndEditButtonGroup : public QButtonGroup {
   Q_OBJECT;
-  ;
+
  public:
   explicit NavAndEditButtonGroup(QWidget*);
 

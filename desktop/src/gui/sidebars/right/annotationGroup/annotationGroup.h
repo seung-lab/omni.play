@@ -12,7 +12,7 @@ class rightImpl;
 
 class AnnotationGroup : public OmWidget {
   Q_OBJECT;
-  ;
+
  public:
   AnnotationGroup(rightImpl *, OmViewGroupState *);
 

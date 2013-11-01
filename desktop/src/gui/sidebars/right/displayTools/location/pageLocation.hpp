@@ -14,7 +14,7 @@ namespace displayTools {
 
 class PageLocation : public QWidget {
   Q_OBJECT;
-  ;
+
  private:
   OmViewGroupState* const vgs_;
 

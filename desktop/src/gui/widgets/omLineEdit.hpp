@@ -5,7 +5,7 @@
 
 class OmLineEdit : public QLineEdit {
   Q_OBJECT;
-  ;
+
  public:
   OmLineEdit(QWidget* parent) : QLineEdit(parent) {
     om::connect(this, SIGNAL(editingFinished()), this,

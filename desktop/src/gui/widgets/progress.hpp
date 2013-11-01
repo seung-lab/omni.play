@@ -9,7 +9,7 @@ namespace gui {
 
 class progress : public QObject {
   Q_OBJECT;
-  ;
+
  private:
   LockedUint32 numTotal_;
   LockedUint32 numDone_;

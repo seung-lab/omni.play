@@ -9,7 +9,7 @@
 
 class OmDoubleSpinBox : public QDoubleSpinBox {
   Q_OBJECT;
-  ;
+
  public:
   OmDoubleSpinBox(QWidget* d, const bool updateAsType) : QDoubleSpinBox(d) {
     if (updateAsType) {

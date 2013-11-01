@@ -6,7 +6,7 @@
 
 class CacheMonitorWidget : public QWidget {
   Q_OBJECT;
-  ;
+
  public:
   CacheMonitorWidget(QWidget* parent);
 

@@ -11,7 +11,7 @@
 class MSTThresholdSpinBox : public OmDoubleSpinBox,
                             public om::event::MSTEventListener {
   Q_OBJECT;
-  ;
+
  public:
   MSTThresholdSpinBox(GraphTools* d) : OmDoubleSpinBox(d, false), mParent(d) {
     setSingleStep(0.002);

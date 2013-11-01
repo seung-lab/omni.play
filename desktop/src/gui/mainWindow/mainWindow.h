@@ -26,7 +26,7 @@ class SegmentEvent;
 
 class MainWindow : public QMainWindow {
   Q_OBJECT;
-  ;
+
  public:
   MainWindow();
   ~MainWindow();

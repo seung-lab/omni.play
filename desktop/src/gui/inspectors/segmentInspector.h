@@ -7,7 +7,7 @@
 
 class SegmentInspector : public QWidget {
   Q_OBJECT;
-  ;
+
  public:
   SegmentInspector(const SegmentDataWrapper& sdw, QWidget* parent);
 

@@ -7,7 +7,7 @@
 
 class SegmentListUncertain : public SegmentListBase {
   Q_OBJECT;
-  ;
+
  public:
   SegmentListUncertain(QWidget* parent, OmViewGroupState* vgs)
       : SegmentListBase(parent, vgs) {}

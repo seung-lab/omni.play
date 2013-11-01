@@ -23,7 +23,7 @@ class PageLink : public QListWidgetItem {
 
 class PageSelector : public QListWidget {
   Q_OBJECT;
-  ;
+
  public:
   PageSelector(QWidget* parent) : QListWidget(parent) {
     setViewMode(QListView::IconMode);

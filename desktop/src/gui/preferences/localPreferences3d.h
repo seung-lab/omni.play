@@ -4,7 +4,7 @@
 
 class LocalPreferences3d : public QWidget {
   Q_OBJECT;
-  ;
+
  public:
   LocalPreferences3d(QWidget* parent);
 

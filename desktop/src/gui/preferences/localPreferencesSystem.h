@@ -4,7 +4,7 @@
 
 class LocalPreferencesSystem : public QWidget {
   Q_OBJECT;
-  ;
+
  public:
   LocalPreferencesSystem(QWidget* parent);
 

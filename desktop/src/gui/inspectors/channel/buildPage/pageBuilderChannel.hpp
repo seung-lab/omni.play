@@ -9,7 +9,7 @@ namespace channelInspector {
 
 class PageBuilder : public QWidget {
   Q_OBJECT;
-  ;
+
  private:
   const ChannelDataWrapper cdw_;
 

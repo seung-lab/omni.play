@@ -8,7 +8,7 @@
 
 class OmIntSpinBox : public QSpinBox {
   Q_OBJECT;
-  ;
+
  public:
   OmIntSpinBox(QWidget* d, bool updateAsType) : QSpinBox(d) {
     if (updateAsType) {

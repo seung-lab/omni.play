@@ -25,7 +25,7 @@ class ElementListBoxImpl : public QGroupBox,
                            public om::event::SegmentEventListener,
                            public SegmentListKeyPressEventListener {
   Q_OBJECT;
-  ;
+
  protected:
   void keyPressEvent(QKeyEvent* event) {
     SegmentListKeyPressEventListener::keyPressEvent(event);

@@ -12,6 +12,7 @@
 
 class OmGlobalKeyPress : public QWidget {
   Q_OBJECT;
+
  private:
   QWidget* const parent_;
 

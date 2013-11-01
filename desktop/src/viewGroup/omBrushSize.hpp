@@ -6,6 +6,7 @@
 
 class OmBrushSize : public QObject {
   Q_OBJECT;
+
  private:
   static const int defaultBrushDia = 8;
 

@@ -4,7 +4,7 @@
 
 class LocalPreferencesMeshing : public QWidget {
   Q_OBJECT;
-  ;
+
  public:
   LocalPreferencesMeshing(QWidget* parent);
 

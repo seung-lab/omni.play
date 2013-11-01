@@ -6,7 +6,7 @@
 
 class GammaSpinBox : public OmDoubleSpinBox {
   Q_OBJECT;
-  ;
+
  public:
   GammaSpinBox(QWidget* d) : OmDoubleSpinBox(d, true) {
     setSingleStep(0.05);

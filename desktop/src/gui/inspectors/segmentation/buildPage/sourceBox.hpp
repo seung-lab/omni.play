@@ -11,7 +11,7 @@ namespace segmentationInspector {
 
 class SourceBox : public QGroupBox {
   Q_OBJECT;
-  ;
+
  private:
   const SegmentationDataWrapper& sdw_;
 

@@ -13,7 +13,7 @@ class rightImpl;
 
 class DisplayTools : public QWidget {
   Q_OBJECT;
-  ;
+
  public:
   DisplayTools(om::sidebars::rightImpl*, OmViewGroupState* vgs);
 

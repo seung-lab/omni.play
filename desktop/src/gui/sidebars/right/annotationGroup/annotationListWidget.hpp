@@ -23,7 +23,7 @@ class AnnotationListWidget : public QTreeWidget,
                              public om::event::AnnotationEventListener,
                              public om::event::View2dEventListener {
   Q_OBJECT;
-  ;
+
  public:
   AnnotationListWidget(QWidget* parent, OmViewGroupState* vgs)
       : QTreeWidget(parent), vgs_(vgs) {

@@ -48,7 +48,7 @@ class ColorButton : public OmButton<QWidget> {
 
 class AnnotationLineEdit : public QLineEdit {
   Q_OBJECT;
-  ;
+
  private:
   OmViewGroupState* vgs_;
 

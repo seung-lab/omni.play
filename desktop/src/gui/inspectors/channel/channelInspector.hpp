@@ -12,7 +12,7 @@
 
 class ChannelInspector : public QDialog {
   Q_OBJECT;
-  ;
+
  private:
   InspectorProperties* const parentDialog_;
   const ChannelDataWrapper cdw_;

@@ -11,7 +11,7 @@ namespace channelInspector {
 
 class SourceBox : public QGroupBox {
   Q_OBJECT;
-  ;
+
  private:
   const ChannelDataWrapper& cdw_;
 

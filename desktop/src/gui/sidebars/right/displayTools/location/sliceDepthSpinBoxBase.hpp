@@ -13,7 +13,7 @@
 class SliceDepthSpinBoxBase : public OmIntSpinBox,
                               public om::event::View2dEventListener {
   Q_OBJECT;
-  ;
+
  public:
   SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState* vgs)
       : OmIntSpinBox(d, true), vgs_(vgs) {

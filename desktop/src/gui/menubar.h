@@ -8,7 +8,7 @@ class MainWindow;
 
 class MenuBar : public QWidget {
   Q_OBJECT;
-  ;
+
  public:
   MenuBar(MainWindow* mw);
 

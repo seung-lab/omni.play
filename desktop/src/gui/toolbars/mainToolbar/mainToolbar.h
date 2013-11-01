@@ -16,7 +16,7 @@ class VolumeRefreshButton;
 
 class MainToolBar : public QToolBar {
   Q_OBJECT;
-  ;
+
  public:
   MainToolBar(MainWindow *mw);
 

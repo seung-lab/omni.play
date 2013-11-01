@@ -17,7 +17,7 @@ class OmViewGroupState;
 
 class SegmentListBase : public QWidget {
   Q_OBJECT;
-  ;
+
  public:
   SegmentListBase(QWidget*, OmViewGroupState*);
 

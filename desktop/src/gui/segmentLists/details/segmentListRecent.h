@@ -7,7 +7,7 @@
 
 class SegmentListRecent : public SegmentListBase {
   Q_OBJECT;
-  ;
+
  public:
   SegmentListRecent(QWidget* parent, OmViewGroupState* vgs)
       : SegmentListBase(parent, vgs) {}

@@ -14,7 +14,7 @@
 
 class FilterWidgetImpl : public QSlider {
   Q_OBJECT;
-  ;
+
  private:
   constexpr static const double delta_ = 0.1;
 

@@ -12,7 +12,7 @@
 
 class SegmentationInspector : public QDialog {
   Q_OBJECT;
-  ;
+
  private:
   InspectorProperties* const parentDialog_;
   const SegmentationDataWrapper sdw_;

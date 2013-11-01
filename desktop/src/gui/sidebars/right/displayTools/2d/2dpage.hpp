@@ -19,7 +19,7 @@ namespace displayTools {
 
 class Page2d : public QWidget {
   Q_OBJECT;
-  ;
+
  private:
   OmViewGroupState* const vgs_;
 

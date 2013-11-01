@@ -21,6 +21,7 @@ class OmView3d : public QGLWidget,
                  public om::event::View2dEventListener,
                  public om::event::View3dEventListener {
   Q_OBJECT;
+
  public:
   OmView3d(QWidget *, OmViewGroupState *);
   ~OmView3d();

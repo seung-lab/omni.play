@@ -5,7 +5,7 @@
 
 class Preferences2d : public QWidget {
   Q_OBJECT;
-  ;
+
  public:
   Preferences2d(QWidget *parent);
 

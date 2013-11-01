@@ -15,7 +15,7 @@ class GUIPageOfSegment;
 
 class OmSegmentListWidget : public QTreeWidget {
   Q_OBJECT;
-  ;
+
  public:
   OmSegmentListWidget(SegmentListBase*, OmViewGroupState*);
 
