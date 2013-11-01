@@ -11,8 +11,10 @@ def mkdir_p(path):
         else:
             raise
 
-inpath = "desktop/src/gui"
-outPath = "/home/mjp/htmldiff"
+curpath = os.path.dirname(os.path.abspath(__file__))
+curpath = os.path.abspath(os.path.join(curpath, "../"))
+inpath = "desktop/src"
+outPath = "/home/postgresql/mjp/htmldiff"
 p = os.path.join(outPath, inpath)
 if os.path.exists(p):
     shutil.rmtree(p)
@@ -39,15 +41,21 @@ def makeDiff(fnp, ofnp):
         f.write(diff)
     return True, hfnp
 
-def makeIndex(diffs):
+def makeIndex(diffs, otherFNPs):
     fnp = os.path.join(outPath, "index.html")
     with open(fnp, "w") as f:
         f.write("<html><body><ul>")
         for d in diffs:
             d = d.replace(outPath + "/", "")
-            print d
             f.write('<li><a href="{f}">{name}</a></li>'.format(f=d, name=d))
-        f.write("</ul></body></html>")
+        f.write("</ul>")
+        f.write("<hr><h2>Missing</h2>")
+        f.write("<ul>")
+        for d in otherFNPs:
+            d = d.replace(outPath + "/", "")
+            f.write('<li>{name}</li>'.format(f=d, name=d))
+        f.write("</ul>")
+        f.write("</body></html>")
 
 ignorePostFix = ["~", ".moc.cpp", ".qrc", ".rcc.cpp"]
 
@@ -62,14 +70,26 @@ def run():
     d = os.path.join(d, "../")
     path = os.path.join("{d}/{f}".format(d=d, f=inpath))
 
-    diffs = []
+    thisPath = "omni.staging"
+    thatPath = "omni.dlr"
 
+    otherFNPs = set()
+    for root, dirs, files in os.walk(path.replace(thisPath, thatPath)):
+        for fn in files:
+            if ignoreFile(fn):
+                continue
+            fnp = os.path.abspath(os.path.join(root, fn))
+            otherFNPs.add(fnp)
+
+    diffs = []
     for root, dirs, files in os.walk(path):
         for fn in files:
             if ignoreFile(fn):
                 continue
             fnp = os.path.abspath(os.path.join(root, fn))
             ofnp = fnp.replace("omni.staging", "omni.dlr")
+            if ofnp in otherFNPs:
+                otherFNPs.remove(ofnp)
             if not os.path.exists(ofnp):
                 print "missing", ofnp
                 continue
@@ -77,6 +97,6 @@ def run():
             if wasDiff:
                 print "difference in:", fnp, "to", ofnp
                 diffs.append(hfnp)
-    makeIndex(diffs)
+    makeIndex(diffs, otherFNPs)
 
 run()
