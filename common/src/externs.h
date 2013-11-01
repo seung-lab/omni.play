@@ -1,0 +1,31 @@
+#pragma once
+
+// extern template class std::vector<Cell>;
+// extern template class std::vector<FreeTileList*>;
+// extern template class std::vector<GLuint>;
+// extern template class std::vector<MeshCollector*>;
+// extern template class std::vector<MeshDrawInfo*>;
+// extern template class std::vector<MipLevelInfo>;
+// extern template class std::vector<OmChannel*>;
+// extern template class std::vector<OmColorWithFreshness>;
+// extern template class std::vector<om::common::Color>;
+// extern template class std::vector<om::coords::Chunk>;
+// extern template class std::vector<OmFilter2d*>;
+// extern template class std::vector<om::landmarks::sdwAndPt>;
+// extern template class std::vector<OmSegment>;
+// extern template class std::vector<OmSegment*>;
+// extern template class std::vector<OmSegmentation*>;
+// extern template class std::vector<om::segment::UserEdge>;
+// extern template class std::vector<OmTilePtr>;
+// extern template class std::vector<QFileInfo>;
+// extern template class std::vector<RootAndMSTFreshnes>;
+// extern template class std::vector<sdwAndPt>;
+// extern template class std::vector<segChildCont_t>;
+// extern template class std::vector<segid>;
+// extern template class std::vector<SegInfo>;
+// extern template class std::vector<stackEntry>;
+// extern template class std::vector<std::string>;
+// extern template class std::vector<Task*>;
+// extern template class std::vector<Vector2i>;
+// extern template class std::vector<volumeFolderInfo>;
+// extern template class std::vector<zi::vl::vec3d>;

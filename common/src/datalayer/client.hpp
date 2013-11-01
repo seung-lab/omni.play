@@ -11,9 +11,17 @@
 
 namespace om {
 namespace datalayer {
+
+#define SET_OPT(h, opt, val, bad_ret)                                        \
+  err = curl_easy_setopt(h, opt, val);                                       \
+  if (err != CURLE_OK) {                                                     \
+    log_debugs(HTTP) << "Failed to set " << #opt << curl_easy_strerror(err); \
+    return bad_ret;                                                          \
+  }
+
 template <typename TKey, typename TValue,
           typename APIVersionTag = network::http::V1,
-          typename DataVersionTag = network::http::V1>
+          typename DataVersionTag = network::http::V1, typename... Policies>
 class ClientDS : public IDataSource<TKey, TValue> {
   typedef network::http::interface<TValue, DataVersionTag> http_interface;
 
@@ -29,35 +37,38 @@ class ClientDS : public IDataSource<TKey, TValue> {
       return std::shared_ptr<TValue>();
     }
     auto p = network::http::path(APIVersionTag(), endpoint_, key);
-    auto err = curl_easy_setopt(h->Handle, CURLOPT_URL, p.c_str());
-    if (err != CURLE_OK) {
-      log_errors(HTTP) << "Failed to set url: " << p << " "
-                       << curl_easy_strerror(err);
-      return false;
-    }
+    CURLcode err;
 
-    err = curl_easy_setopt(h->Handle, CURLOPT_WRITEFUNCTION, &write_data);
-    if (err != CURLE_OK) {
-      log_errors(HTTP)
-          << "Failed to set write callback: " << curl_easy_strerror(err);
-      return false;
-    }
-
+    SET_OPT(h->Handle, CURLOPT_URL, p.c_str(), std::shared_ptr<TValue>());
+    SET_OPT(h->Handle, CURLOPT_FOLLOWLOCATION, 1, std::shared_ptr<TValue>());
+    SET_OPT(h->Handle, CURLOPT_WRITEFUNCTION, &write_data,
+            std::shared_ptr<TValue>());
     std::stringstream ss;
-    err = curl_easy_setopt(h->Handle, CURLOPT_WRITEDATA, &ss);
-    if (err != CURLE_OK) {
-      log_errors(HTTP)
-          << "Failed to set write data: " << curl_easy_strerror(err);
-      return false;
+    SET_OPT(h->Handle, CURLOPT_WRITEDATA, &ss, std::shared_ptr<TValue>());
+
+    if (!call_all(Policies::add_get_options(h->Handle, key)...)) {
+      return std::shared_ptr<TValue>();
     }
 
     err = curl_easy_perform(h->Handle);
     if (err) {
-      log_errors(HTTP) << "CURL Error getting: " << key
+      log_debugs(HTTP) << "CURL Error getting: " << key << " "
                        << curl_easy_strerror(err);
       return std::shared_ptr<TValue>();
     }
-    return http_interface::deserialize(key, ss.str());
+
+    long code;
+    err = curl_easy_getinfo(h->Handle, CURLINFO_RESPONSE_CODE, &code);
+    if (err) {
+      log_debugs(HTTP) << "CURL Error with response: " << key
+                       << curl_easy_strerror(err);
+      return std::shared_ptr<TValue>();
+    }
+    log_debugs(HTTP) << "HTTP Response Code: " << code;
+
+    auto str = ss.str();
+    log_debugs(HTTP) << "HTTP Response: " << str;
+    return http_interface::deserialize(key, str);
   }
 
   virtual bool Put(const TKey& key, std::shared_ptr<TValue> value,
@@ -68,38 +79,21 @@ class ClientDS : public IDataSource<TKey, TValue> {
       return false;
     }
     auto p = network::http::path(APIVersionTag(), endpoint_, key);
-    auto err = curl_easy_setopt(h->Handle, CURLOPT_URL, p.c_str());
-    if (err != CURLE_OK) {
-      log_errors(HTTP) << "Failed to set url: " << p << " "
-                       << curl_easy_strerror(err);
-      return false;
-    }
-
-    err = curl_easy_setopt(h->Handle, CURLOPT_READFUNCTION, &read_data);
-    if (err != CURLE_OK) {
-      log_errors(HTTP)
-          << "Failed to set read callback: " << curl_easy_strerror(err);
-      return false;
-    }
-
+    CURLcode err;
+    SET_OPT(h->Handle, CURLOPT_URL, p.c_str(), false);
+    SET_OPT(h->Handle, CURLOPT_FOLLOWLOCATION, 1, false);
+    SET_OPT(h->Handle, CURLOPT_READFUNCTION, &read_data, false);
     std::stringstream ss(http_interface::serialize(value));
-    err = curl_easy_setopt(h->Handle, CURLOPT_READDATA, &ss);
-    if (err != CURLE_OK) {
-      log_errors(HTTP)
-          << "Failed to set read data: " << curl_easy_strerror(err);
-      return false;
-    }
+    SET_OPT(h->Handle, CURLOPT_READDATA, &ss, false);
+    SET_OPT(h->Handle, CURLOPT_UPLOAD, 1, false);
 
-    err = curl_easy_setopt(h->Handle, CURLOPT_UPLOAD, 1);
-    if (err != CURLE_OK) {
-      log_errors(HTTP)
-          << "Failed to set upload option: " << curl_easy_strerror(err);
+    if (!call_all(Policies::add_put_options(h->Handle, key, value)...)) {
       return false;
     }
 
     err = curl_easy_perform(h->Handle);
     if (err) {
-      log_errors(HTTP) << "CURL Error putting: " << key
+      log_debugs(HTTP) << "CURL Error uploading: " << key
                        << curl_easy_strerror(err);
       return false;
     }
@@ -111,6 +105,21 @@ class ClientDS : public IDataSource<TKey, TValue> {
   virtual bool is_persisted() const override { return true; }
 
  private:
+  template <typename... Types> bool call_all(CURLcode err, Types... t) {
+    if (!call_all(err)) {
+      return false;
+    }
+    return call_all(t...);
+  }
+  bool call_all(CURLcode err) {
+    if (err) {
+      log_debugs(HTTP) << "CURL Error: " << curl_easy_strerror(err);
+      return false;
+    }
+    return true;
+  }
+  bool call_all() { return true; }
+
   // Reimplement to avoid copies.
   static size_t write_data(char* buffer, size_t size, size_t nmemb,
                            std::ostream* stream) {
@@ -140,8 +149,10 @@ class ClientDS : public IDataSource<TKey, TValue> {
   };
   typedef utility::ResourcePool<handle> handle_pool;
 
-  PROP_CONST_REF(std::string, endpoint);
+  PROP_REF_SET(std::string, endpoint);
   handle_pool handlePool_;
 };
+
+#undef SET_OPT
 }
 }  // namespace datalayer::

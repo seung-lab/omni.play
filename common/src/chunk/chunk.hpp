@@ -46,6 +46,12 @@ template <typename T> class Chunk {
   std::shared_ptr<T> data_;
 };
 
+extern template class Chunk<int8_t>;
+extern template class Chunk<uint8_t>;
+extern template class Chunk<int32_t>;
+extern template class Chunk<uint32_t>;
+extern template class Chunk<float>;
+
 typedef boost::variant<Chunk<int8_t>, Chunk<uint8_t>, Chunk<int32_t>,
                        Chunk<uint32_t>, Chunk<float>> ChunkVar;
 }

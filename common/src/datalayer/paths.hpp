@@ -203,6 +203,7 @@ class Paths {
   }
 
   // Misc
+  static path CookieFile() { return "~/.omni/cookies"; }
 
   static path AddOmniExtensionIfNeeded(path fnp) {
     if (extension(fnp) != ".omni") {

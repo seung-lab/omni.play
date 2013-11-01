@@ -5,14 +5,15 @@ import os, sys, difflib, time, errno, shutil
 def mkdir_p(path):
     try:
         os.makedirs(path)
-    except OSError as exc: # Python >2.5
+    except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else:
             raise
 
+inpath = "common/src"
 outPath = "/home/mjp/htmldiff"
-p = os.path.join(outPath, "common")
+p = os.path.join(outPath, inpath)
 if os.path.exists(p):
     shutil.rmtree(p)
 mkdir_p(p)
@@ -51,7 +52,7 @@ def makeIndex(diffs):
 def run():
     d = os.path.dirname(os.path.abspath(__file__))
     d = os.path.join(d, "../")
-    path = os.path.join("{d}/{f}/src".format(d=d, f="common"))
+    path = os.path.join("{d}/{f}".format(d=d, f=inpath))
 
     diffs = []
 

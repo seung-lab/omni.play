@@ -37,7 +37,7 @@ class LocalPrefFilesImpl {
       throw om::IoException("invalid preference found");
     }
 
-    return om::string::toNum<T>(lines[0].toStdString());
+    return boost::lexical_cast<T>(lines[0].toStdString());
   }
 
   template <typename T>

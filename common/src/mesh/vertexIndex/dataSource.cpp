@@ -10,6 +10,8 @@
 #include <limits>
 #include <unordered_map>
 
+extern template class std::vector<uint32_t>;
+
 namespace om {
 namespace mesh {
 
@@ -46,7 +48,8 @@ class VertexIndexDataSourceImpl {
   std::shared_ptr<VertexIndexMesh> getMesh(const coords::Mesh& coord) {
     auto ret = std::make_shared<VertexIndexMesh>(coord);
 
-    auto table = getAllocFile(coord.mipChunkCoord());
+    datalayer::MemMappedFile<DataEntry> table =
+        getAllocFile(coord.mipChunkCoord());
     DataEntry* entry = getDataEntry(table, coord);
 
     if (!entry || !entry->wasMeshed) {

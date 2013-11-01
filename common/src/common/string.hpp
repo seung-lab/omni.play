@@ -24,18 +24,6 @@ template <typename T> static std::string num(const T& num) {
   return std::to_string(num);
 }
 
-template <typename T> static T toNum(const std::string& str) {
-  T ret = 0;
-  try {
-    ret = boost::lexical_cast<T>(str);
-  }
-  catch (boost::bad_lexical_cast&) {
-    std::cout << "bad cast from '" << str << "' to number" << std::endl;
-    throw;
-  }
-  return ret;
-}
-
 template <typename T>
 static std::string join(const T& in, const std::string sep = ", ") {
   // works on containers of strings, ints, etc.

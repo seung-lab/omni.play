@@ -37,7 +37,12 @@ template <typename T> class ResourcePool {
 
   struct Lease {
    public:
-    Lease(ResourcePool& pool) : pool_(pool), ptr_(pool.get()) {}
+    Lease(ResourcePool& pool, bool spin = false)
+        : pool_(pool), ptr_(pool.get()) {
+      while (spin && !ptr_ && !pool_.closing_) {
+        ptr_ = pool_.get();
+      }
+    }
     ~Lease() { pool_.release(ptr_); }
     Lease(const Lease&) = delete;
     Lease& operator=(const Lease&) = delete;
