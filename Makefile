@@ -34,8 +34,9 @@ ARFLAGS =   rcs
 CC       =  $(AT)gcc
 CXX      =  $(AT)g++ -std=c++11
 THRIFT   =  $(AT)$(EXTERNAL)/thrift/bin/thrift
-MOC      =  $(AT)/usr/bin/moc
-RCC      =  $(AT)/usr/bin/rcc
+MOC      =  $(AT)$(EXTERNAL)/qt/bin/moc
+RCC      =  $(AT)$(EXTERNAL)/qt/bin/rcc
+
 DUMPSYMS =  $(AT)$(EXTERNAL)/breakpad/bin/dump_syms
 FPIC     =  -fPIC
 
