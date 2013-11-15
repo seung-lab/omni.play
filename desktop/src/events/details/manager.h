@@ -2,7 +2,6 @@
 
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
-#include "zi/utility.h"
 
 namespace om {
 namespace event {

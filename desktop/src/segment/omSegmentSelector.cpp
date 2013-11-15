@@ -53,15 +53,13 @@ void OmSegmentSelector::setSelectedSegment(const om::common::SegID segID) {
   OmSegmentSelected::Set(params_->sdw);
 }
 
-void OmSegmentSelector::InsertSegments(
-    const std::unordered_set<om::common::SegID>* segIDs) {
+void OmSegmentSelector::InsertSegments(const om::common::SegIDSet* segIDs) {
   FOR_EACH(iter, *segIDs) {
     params_->newSelectedIDs.insert(segments_->findRootID(*iter));
   }
 }
 
-void OmSegmentSelector::RemoveSegments(
-    const std::unordered_set<om::common::SegID>* segIDs) {
+void OmSegmentSelector::RemoveSegments(const om::common::SegIDSet* segIDs) {
   params_->newSelectedIDs.clear();
 
   FOR_EACH(iter, *segIDs) {
@@ -131,7 +129,7 @@ bool OmSegmentSelector::sendEvent() {
     }
   }
 
-  //debugs(segmentSelector) << params_->oldSelectedIDs << "\n";
+  // debugs(segmentSelector) << params_->oldSelectedIDs << "\n";
 
   if (params_->augmentListOnly) {
     // disable undo option for now

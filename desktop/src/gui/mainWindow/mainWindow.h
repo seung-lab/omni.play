@@ -12,17 +12,12 @@ class InspectorWidget;
 class MainWindowEvents;
 class MenuBar;
 class OmGlobalKeyPress;
+class OmSegmentEvent;
 class OmViewGroupState;
 class Preferences;
 class ToolBarManager;
+class LoginToolBar;
 class ViewGroup;
-
-namespace om {
-class Exception;
-namespace event {
-class SegmentEvent;
-}
-}
 
 class MainWindow : public QMainWindow {
   Q_OBJECT;
@@ -31,8 +26,7 @@ class MainWindow : public QMainWindow {
   MainWindow();
   ~MainWindow();
 
-  void openProject(QString fileNameAndPath);
-  void openProject(QString fileName, QString pathName);
+  bool openProject(QString fileNameAndPath);
 
   void cleanViewsOnVolumeChange(om::common::ObjectType objectType,
                                 om::common::ID objectId);
@@ -48,7 +42,7 @@ class MainWindow : public QMainWindow {
  protected:
   void closeEvent(QCloseEvent* event);
 
-  void SegmentModificationEvent(om::event::SegmentEvent* event);
+  void SegmentModificationEvent(OmSegmentEvent* event);
 
  public
 Q_SLOTS:
@@ -58,7 +52,7 @@ Q_SLOTS:
  private
 Q_SLOTS:
   void newProject();
-  void openProject();
+  bool openProject();
   void openRecentFile();
   void closeProject();
 
@@ -89,15 +83,17 @@ Q_SLOTS:
 
   QLabel* statusBarLabel;
 
-  ToolBarManager* toolBarManager_;
   MenuBar* mMenuBar;
+  LoginToolBar* loginToolBar_;
+  ToolBarManager* toolBarManager_;
 
   std::unique_ptr<OmViewGroupState> vgs_;
 
   QAction* panAct;
   QAction* zoomAct;
 
-  bool closeProjectIfOpen();
+  bool loadProject(std::string fileNameAndPath);
+  bool closeProjectIfOpen(bool);
   int checkForSave();
   void createStatusBar();
   void resetViewGroup();

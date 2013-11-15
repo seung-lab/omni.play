@@ -16,6 +16,8 @@ enum Klass {
   ui,
   view2d,
   view3d,
+  task,
+  connection,
   NUM_TOTAL
 };
 }

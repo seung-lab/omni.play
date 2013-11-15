@@ -1,28 +1,29 @@
 #pragma once
 
 #include "common/common.h"
-#include "zi/omUtility.h"
+#include "zi/utility.h"
 #include "utility/localPrefFiles.h"
-#include "utility/omSystemInformation.h"
+#include "utility/systemInformation.h"
 #include "system/cache/omCacheManager.h"
 
-class OmLocalPreferences : private om::singletonBase<OmLocalPreferences> {
+class OmLocalPreferences : private om::SingletonBase<OmLocalPreferences> {
  public:
-
   // font
   static bool FontSizeWasSet() {
     return LocalPrefFiles::SettingExists("fontSize");
   }
+
   static int32_t FontSize() {
     return LocalPrefFiles::readSettingNumber<int32_t>("fontSize", 12);
   }
+
   static void FontSize(const int fontSize) {
     LocalPrefFiles::writeSettingNumber<int32_t>("fontSize", fontSize);
   }
 
   // max number of mesh worker threads
   static int32_t numAllowedWorkerThreads() {
-    const int numCoresRaw = OmSystemInformation::get_num_cores();
+    const int numCoresRaw = om::utility::systemInformation::get_num_cores();
     int numCores = numCoresRaw - 1;
     if (numCoresRaw < 2) {
       numCores = 2;
@@ -30,16 +31,18 @@ class OmLocalPreferences : private om::singletonBase<OmLocalPreferences> {
 
     return LocalPrefFiles::readSettingNumber<int32_t>("numThreads", numCores);
   }
+
   static void setNumAllowedWorkerThreads(const int32_t numThreads) {
     LocalPrefFiles::writeSettingNumber<int32_t>("numThreads", numThreads);
   }
 
   // RAM size
   static uint32_t getMeshCacheSizeMB() {
-    const unsigned int defaultRet =
-        OmSystemInformation::get_total_system_memory_megs() / 3;
+    auto defaultRet =
+        om::utility::systemInformation::get_total_system_memory_megs() / 3;
     return LocalPrefFiles::readSettingNumber<uint32_t>("ram", defaultRet);
   }
+
   static void setMeshCacheSizeMB(const uint32_t size) {
     LocalPrefFiles::writeSettingNumber<uint32_t>("ram", size);
     OmCacheManager::UpdateCacheSizeFromLocalPrefs();
@@ -47,10 +50,11 @@ class OmLocalPreferences : private om::singletonBase<OmLocalPreferences> {
 
   // VRAM size
   static uint32_t getTileCacheSizeMB() {
-    const unsigned int defaultRet =
-        OmSystemInformation::get_total_system_memory_megs() / 4;
+    auto defaultRet =
+        om::utility::systemInformation::get_total_system_memory_megs() / 4;
     return LocalPrefFiles::readSettingNumber<uint32_t>("vram", defaultRet);
   }
+
   static void setTileCacheSizeMB(const uint32_t size) {
     LocalPrefFiles::writeSettingNumber<uint32_t>("vram", size);
     OmCacheManager::UpdateCacheSizeFromLocalPrefs();
@@ -61,6 +65,7 @@ class OmLocalPreferences : private om::singletonBase<OmLocalPreferences> {
     QStringList empty;
     return LocalPrefFiles::readSettingQStringList("recentlyOpenedFiles", empty);
   }
+
   static void setRecentlyUsedFilesNames(const QStringList& values) {
     LocalPrefFiles::writeSettingQStringList("recentlyOpenedFiles", values);
   }
@@ -70,6 +75,7 @@ class OmLocalPreferences : private om::singletonBase<OmLocalPreferences> {
     QString defaultPath = "/tmp";
     return LocalPrefFiles::readSettingQString("sratchPath", defaultPath);
   }
+
   static void setScratchPath(const QString& scratchPath) {
     LocalPrefFiles::writeSettingQString("sratchPath", scratchPath);
   }
@@ -80,9 +86,30 @@ class OmLocalPreferences : private om::singletonBase<OmLocalPreferences> {
     return LocalPrefFiles::readSettingBool(
         "shouldJumpToNextSegmentAfterValidate", defaultVal);
   }
+
   static void SetShouldJumpToNextSegmentAfterValidate(const bool val) {
     LocalPrefFiles::writeSettingBool("shouldJumpToNextSegmentAfterValidate",
                                      val);
+  }
+
+  // Login endpoint
+  static QString getEndpoint() {
+    QString defaultEndpoint = "https://eyewire.org";
+    return LocalPrefFiles::readSettingQString("endpoint", defaultEndpoint);
+  }
+
+  static void setEndpoint(const QString& endpoint) {
+    LocalPrefFiles::writeSettingQString("endpoint", endpoint);
+  }
+
+  // Login username
+  static QString getUsername() {
+    QString defaultUsername = "";
+    return LocalPrefFiles::readSettingQString("username", defaultUsername);
+  }
+
+  static void setUsername(const QString& username) {
+    LocalPrefFiles::writeSettingQString("username", username);
   }
 
  private:

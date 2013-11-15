@@ -11,7 +11,6 @@ QString OmProject::New(const QString& fnp) {
 
   try {
     return instance().impl_->New(fnp);
-
   }
   catch (...) {
     instance().impl_.reset();
@@ -21,12 +20,21 @@ QString OmProject::New(const QString& fnp) {
 
 void OmProject::Save() { instance().impl_->Save(); }
 
+// This will check if a project is open and will close it if necessary
+void OmProject::SafeLoad(const QString& fileNameAndPath, QWidget* guiParent) {
+  if (IsOpen(fileNameAndPath)) {
+    return;
+  } else {
+    Close();
+    Load(fileNameAndPath, guiParent);
+  }
+}
+
 void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent) {
   instance().impl_.reset(new OmProjectImpl());
 
   try {
     instance().impl_->Load(fileNameAndPath, guiParent);
-
   }
   catch (...) {
     instance().impl_.reset();
@@ -58,6 +66,13 @@ OmProjectGlobals& OmProject::Globals() { return instance().impl_->Globals(); }
 
 bool OmProject::IsOpen() { return static_cast<bool>(instance().impl_); }
 
+bool OmProject::IsOpen(const QString& fileNameAndPath) {
+  if (!instance().impl_) {
+    return false;
+  }
+  return fileNameAndPath == OmProject::OmniFile();
+}
+
 #include "actions/omActions.h"
 #include "segment/omSegmentSelected.hpp"
 #include "system/omOpenGLGarbageCollector.hpp"
@@ -79,13 +94,13 @@ void OmProject::Close() {
   // OmProject must be deleted here, remaining singletons close cleanly
   instance().impl_.reset();
 
-  //delete all singletons
+  // delete all singletons
   OmSegmentSelected::Delete();
   OmOpenGLGarbageCollector::Clear();
   OmPreferences::Delete();
-  //OmLocalPreferences
+  // OmLocalPreferences
 
-  //close project data
+  // close project data
   OmCacheManager::Delete();
 
   OmHdf5Manager::Delete();

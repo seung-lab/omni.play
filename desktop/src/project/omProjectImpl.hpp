@@ -1,12 +1,5 @@
 #pragma once
 
-/*
- *  Manages data structures that are shared between various parts of the
- *    system.
- *
- *  Brett Warne - bwarne@mit.edu - 3/14/09
- */
-
 #include "actions/io/omActionLogger.hpp"
 #include "actions/io/omActionReplayer.hpp"
 #include "actions/omActions.h"
@@ -33,6 +26,7 @@
 #include "datalayer/fs/omFile.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "datalayer/archive/project.h"
+#include "system/account.h"
 
 #include <QDir>
 #include <QFile>
@@ -70,10 +64,10 @@ class OmProjectImpl {
     return oldHDF5_;
   }
 
-  //volume management
+  // volume management
   OmProjectVolumes& Volumes() { return volumes_; }
 
-  //project IO
+  // project IO
   QString New(const QString& fileNameAndPathIn) {
     const QString fnp_rel =
         OmFileNames::AddOmniExtensionIfNeeded(fileNameAndPathIn);
@@ -88,7 +82,6 @@ class OmProjectImpl {
     try {
       const QFileInfo projectFile(fileNameAndPath);
       doLoad(projectFile.absoluteFilePath(), guiParent);
-
     }
     catch (...) {
       globals_.reset();
@@ -115,7 +108,6 @@ class OmProjectImpl {
   OmProjectGlobals& Globals() { return *globals_; }
 
  private:
-
   void doNew(const QString& fnp) {
     omniFile_ = fnp;
     filesFolder_ = fnp + ".files";
@@ -166,8 +158,9 @@ class OmProjectImpl {
       migrateFromHdf5();
 
     setupGlobals();
-
-    if (guiParent) {
+    if (om::system::Account::IsLoggedIn()) {
+      globals_->Users().SwitchToUser(om::system::Account::username());
+    } else if (guiParent) {
       OmGuiUserChooser* chooser = new OmGuiUserChooser(guiParent);
       const int userWasSelected = chooser->exec();
 

@@ -27,6 +27,11 @@ void ViewPosChanged();
 void CoordSystemChanged();
 void PreferenceChange(const int key);
 
+void TaskChange();
+
+void BeforeConnectionChange();
+void ConnectionChanged();
+
 void UpdateSegmentPropBox(QWidget* widget, const QString& title);
 
 // used to update GUI spin box value from do/undo action

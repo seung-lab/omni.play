@@ -9,6 +9,8 @@
 #include "events/details/uiEvent.h"
 #include "events/details/view2dEvent.h"
 #include "events/details/view3dEvent.h"
+#include "events/details/taskEvent.h"
+#include "events/details/connectionEvent.h"
 #include "events/events.h"
 
 namespace om {
@@ -63,6 +65,12 @@ void CoordSystemChanged() {
 
 void PreferenceChange(const int key) {
   Manager::Post(new PreferenceEvent(PreferenceEvent::PREFERENCE_CHANGE, key));
+}
+
+void TaskChange() { Manager::Post(new TaskEvent(TaskEvent::TASK_CHANGE)); }
+
+void ConnectionChanged() {
+  Manager::Post(new ConnectionEvent(ConnectionEvent::CONNECTION_CHANGE));
 }
 
 void UpdateSegmentPropBox(QWidget* widget, const QString& title) {

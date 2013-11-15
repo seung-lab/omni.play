@@ -27,11 +27,11 @@ class OmChunksAndPts {
     }
   }
 
-  std::shared_ptr<std::unordered_set<om::common::SegID> > GetSegIDs() {
+  std::shared_ptr<om::common::SegIDSet> GetSegIDs() {
     OmSliceCache sliceCache(vol_, viewType_);
 
-    std::shared_ptr<std::unordered_set<om::common::SegID> > ret =
-        std::make_shared<std::unordered_set<om::common::SegID> >();
+    std::shared_ptr<om::common::SegIDSet> ret =
+        std::make_shared<om::common::SegIDSet>();
 
     FOR_EACH(pt, pts_) {
       om::common::SegID id = sliceCache.GetVoxelValue(*pt);

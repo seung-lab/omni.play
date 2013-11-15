@@ -6,8 +6,7 @@
 
 class OmBrushSelectUtils {
  public:
-  std::shared_ptr<
-      std::unordered_set<om::common::SegID> > static FindSegIDsFromPoints(
+  std::shared_ptr<om::common::SegIDSet> static FindSegIDsFromPoints(
       OmBrushOppInfo* info, om::pt3d_list_t* pts) {
     OmChunksAndPts chunksAndPts(info->segmentation, info->viewType);
 
@@ -16,8 +15,7 @@ class OmBrushSelectUtils {
     return chunksAndPts.GetSegIDs();
   }
 
-  void static SendEvent(OmBrushOppInfo* info,
-                        std::unordered_set<om::common::SegID>* segIDs) {
+  void static SendEvent(OmBrushOppInfo* info, om::common::SegIDSet* segIDs) {
     OmSegmentSelector selector(info->segmentation->GetSDW(), NULL,
                                "view2d_selector");
 

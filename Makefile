@@ -45,7 +45,7 @@ FPIC     =  -fPIC
 
 # Compile Flags ############################
 CWARN       =   -Wall -Wno-sign-compare -Wunused-variable -Wreturn-type -Wno-unused-local-typedefs
-CXXWARN     =   $(CWARN) -Wno-deprecated -Woverloaded-virtual -Wunused-but-set-variable -Wno-switch -Wno-unused-value
+CXXWARN     =   $(CWARN) -Wno-deprecated -Woverloaded-virtual -Wunused-but-set-variable -Wno-switch -Wno-unused-value -Wno-comment
 
 CPP_DEPFLAGS        =   --std=c++11 -MM -MG -MP -MT "$(@:.d=.o)"
 CPP_INLINE_DEPFLAGS =   -MMD -MP -MT "$(@)" -MF $(@:.o=.T)

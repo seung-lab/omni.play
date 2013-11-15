@@ -2,7 +2,9 @@
 #include "gui/sidebars/left/inspectorWidget.h"
 #include "gui/sidebars/right/rightImpl.h"
 #include "system/omAppState.hpp"
-#include "zi/omUtility.h"
+#include "zi/utility.h"
+#include "project/omProject.h"
+#include "gui/taskSelector/taskSelector.h"
 
 #include <QApplication>
 
@@ -16,7 +18,12 @@ void OmAppState::SetInspector(InspectorWidget* miw) {
   instance().inspectorWidget_ = miw;
 }
 
+void OmAppState::SetTaskSelector(TaskSelector* ts) {
+  instance().taskSelector_ = ts;
+}
+
 void OmAppState::SetMainWindow(MainWindow* mw) { instance().mainWindow_ = mw; }
+MainWindow* OmAppState::GetMainWindow() { return instance().mainWindow_; }
 
 void OmAppState::UpdateStatusBar(const QString& msg) {
   instance().mainWindow_->updateStatusBar(msg);
@@ -27,7 +34,7 @@ QSize OmAppState::GetViewBoxSizeHint() {
   if (!mw) {
     mw = QApplication::activeWindow();
     if (!mw) {
-      printf("warning: assuming window size is 1000x640\n");
+      log_debugs(unknown) << "warning: assuming window size is 1000x640";
       return QSize(1000, 640);
     }
   }
@@ -48,4 +55,26 @@ QSize OmAppState::GetViewBoxSizeHint() {
 
 void OmAppState::SetToolBarManager(ToolBarManager* tbm) {
   instance().toolBarManager_ = tbm;
+}
+
+bool OmAppState::OpenProject(std::string fileNameAndPath) {
+  QString fnp = QString::fromStdString(fileNameAndPath);
+  if (instance().mainWindow_) {
+    return instance().mainWindow_->openProject(fnp);
+  } else {
+    try {
+      OmProject::SafeLoad(fnp);
+      return true;
+    }
+    catch (om::Exception& e) {
+      log_debugs(task) << "Exception thrown: " << e.what();
+      return false;
+    }
+  }
+}
+
+void OmAppState::OpenTaskSelector() {
+  if (instance().taskSelector_) {
+    instance().taskSelector_->show();
+  }
 }

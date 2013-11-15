@@ -29,7 +29,7 @@ class OmBrushEraseUtils {
 
     OmSliceCache sliceCache(info->segmentation, info->viewType);
 
-    virtual std::shared_ptr<std::unordered_set<om::common::SegID> >
+    virtual std::shared_ptr<om::common::SegIDSet>
         segIDsAndPts = sliceCache.GetSegIDs(chunksAndPts, info->depth);
 
     FOR_EACH(iter, *pts) {

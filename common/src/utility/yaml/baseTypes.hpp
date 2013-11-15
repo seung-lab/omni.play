@@ -10,7 +10,8 @@ using namespace vmml;
 
 namespace YAML {
 
-template <> struct convert<om::common::Color> {
+template <>
+struct convert<om::common::Color> {
   static Node encode(const om::common::Color& c) {
     Node node;
     node.push_back(c.red);
@@ -31,7 +32,8 @@ template <> struct convert<om::common::Color> {
   }
 };
 
-template <class T> struct convert<Vector3<T>> {
+template <class T>
+struct convert<Vector3<T>> {
   static Node encode(const Vector3<T>& p) {
     Node node;
     node.push_back(p.x);
@@ -52,7 +54,8 @@ template <class T> struct convert<Vector3<T>> {
   }
 };
 
-template <class T> struct convert<Matrix4<T>> {
+template <class T>
+struct convert<Matrix4<T>> {
   static Node encode(const Matrix4<T>& m) {
     Node node;
     for (auto i = 0; i < 16; i++) {
@@ -73,7 +76,8 @@ template <class T> struct convert<Matrix4<T>> {
   }
 };
 
-template <class T> struct convert<AxisAlignedBoundingBox<T>> {
+template <class T>
+struct convert<AxisAlignedBoundingBox<T>> {
   static Node encode(const AxisAlignedBoundingBox<T>& aabb) {
     Node node;
     node["min"] = aabb.getMin();
@@ -92,7 +96,8 @@ template <class T> struct convert<AxisAlignedBoundingBox<T>> {
   }
 };
 
-template <class T> struct convert<std::unordered_set<T>> {
+template <class T>
+struct convert<std::unordered_set<T>> {
   static Node encode(const std::unordered_set<T>& set) {
     Node node;
     for (auto& n : set) {
@@ -119,7 +124,8 @@ template <class T> struct convert<std::unordered_set<T>> {
   }
 };
 
-template <class T> struct convert<std::set<T>> {
+template <class T>
+struct convert<std::set<T>> {
   static Node encode(const std::set<T>& set) {
     Node node;
     for (auto& n : set) {
@@ -142,6 +148,38 @@ template <class T> struct convert<std::set<T>> {
       tmp.insert(val);
     }
     set = std::move(tmp);
+    return true;
+  }
+};
+
+template <class TKey, class TValue>
+struct convert<std::unordered_map<TKey, TValue>> {
+  static Node encode(const std::unordered_map<TKey, TValue>& map) {
+    Node node;
+    for (auto& n : map) {
+      node[n.first] = n.second;
+    }
+    return node;
+  }
+
+  static bool decode(const Node& node, std::unordered_map<TKey, TValue>& map) {
+    if (!node.IsMap()) {
+      return false;
+    }
+    std::unordered_map<TKey, TValue> tmp;
+
+    for (auto& n : node) {
+      TKey key;
+      if (!convert<TKey>::decode(n.first, key)) {
+        return false;
+      }
+      TValue val;
+      if (!convert<TValue>::decode(n.second, val)) {
+        return false;
+      }
+      tmp[key] = val;
+    }
+    map = std::move(tmp);
     return true;
   }
 };

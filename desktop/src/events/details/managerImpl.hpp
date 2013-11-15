@@ -8,7 +8,6 @@
 #include "events/details/event.h"
 #include "events/details/manager.h"
 #include "zi/utility.h"
-#include <zi/mutex.hpp>
 
 namespace om {
 namespace event {

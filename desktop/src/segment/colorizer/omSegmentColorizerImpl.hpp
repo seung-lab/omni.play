@@ -8,7 +8,7 @@
 #include "utility/omLockedObjects.h"
 #include "viewGroup/omViewGroupState.h"
 
-static const om::common::Color blackColor = { 0, 0, 0 };
+static const om::common::Color blackColor = {0, 0, 0};
 
 class OmSegmentColorizerImpl {
  private:
@@ -21,8 +21,8 @@ class OmSegmentColorizerImpl {
   const float breakThreshold_;
 
   bool anySegmentsSelected_;
-  std::unordered_set<om::common::SegID> selectedSegIDs_;
-  std::unordered_set<om::common::SegID> enabledSegIDs_;
+  om::common::SegIDSet selectedSegIDs_;
+  om::common::SegIDSet enabledSegIDs_;
 
  public:
   OmSegmentColorizerImpl(SegmentColorParams& params,
@@ -35,20 +35,18 @@ class OmSegmentColorizerImpl {
         breakThreshold_(params_.vgs->getBreakThreshold()) {
     const om::common::SegIDSet selected =
         params.segments->GetSelectedSegmentIDs();
-    selectedSegIDs_ =
-        std::unordered_set<om::common::SegID>(selected.begin(), selected.end());
+    selectedSegIDs_ = om::common::SegIDSet(selected.begin(), selected.end());
 
     const om::common::SegIDSet enabled =
         params.segments->GetEnabledSegmentIDs();
-    enabledSegIDs_ =
-        std::unordered_set<om::common::SegID>(enabled.begin(), enabled.end());
+    enabledSegIDs_ = om::common::SegIDSet(enabled.begin(), enabled.end());
 
     anySegmentsSelected_ = !selectedSegIDs_.empty() || !enabledSegIDs_.empty();
   }
 
   void ColorTile(uint32_t const* const d,
                  om::common::ColorARGB* colorMappedData) {
-    PrevSegAndColor prev = { 0, blackColor };
+    PrevSegAndColor prev = {0, blackColor};
     uint32_t maxSize = colorCache_.Size();
 
     for (uint32_t i = 0; i < params_.numElements; ++i) {
@@ -97,7 +95,7 @@ class OmSegmentColorizerImpl {
   }
 
   om::common::Color getVoxelColorForView2d(const om::common::SegID segID) {
-    //OmSegment* seg = getSegment(segID);
+    // OmSegment* seg = getSegment(segID);
     OmSegment* seg = getSegment(segID);
 
     if (!seg) {
@@ -188,11 +186,9 @@ class OmSegmentColorizerImpl {
   // TODO: might be faster to compute: lookup could affect cache lines
   static inline om::common::Color makeMutedColor(
       const om::common::Color& color) {
-    const om::common::Color ret = {
-      OmSegmentColors::MakeMutedColor(color.red),
-      OmSegmentColors::MakeMutedColor(color.green),
-      OmSegmentColors::MakeMutedColor(color.blue)
-    };
+    const om::common::Color ret = {OmSegmentColors::MakeMutedColor(color.red),
+                                   OmSegmentColors::MakeMutedColor(color.green),
+                                   OmSegmentColors::MakeMutedColor(color.blue)};
     return ret;
   }
 
@@ -200,10 +196,9 @@ class OmSegmentColorizerImpl {
   static inline om::common::Color makeSelectedColor(
       const om::common::Color& color) {
     const om::common::Color ret = {
-      OmSegmentColorizer::SelectedColorLookupTable[color.red],
-      OmSegmentColorizer::SelectedColorLookupTable[color.green],
-      OmSegmentColorizer::SelectedColorLookupTable[color.blue]
-    };
+        OmSegmentColorizer::SelectedColorLookupTable[color.red],
+        OmSegmentColorizer::SelectedColorLookupTable[color.green],
+        OmSegmentColorizer::SelectedColorLookupTable[color.blue]};
     return ret;
   }
 };

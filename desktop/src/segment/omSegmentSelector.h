@@ -16,8 +16,8 @@ class OmSegmentSelector {
                              const bool isSelected);
   void augmentSelectedSet(const om::common::SegID segID, const bool isSelected);
 
-  void InsertSegments(const std::unordered_set<om::common::SegID>* segIDs);
-  void RemoveSegments(const std::unordered_set<om::common::SegID>* segIDs);
+  void InsertSegments(const om::common::SegIDSet* segIDs);
+  void RemoveSegments(const om::common::SegIDSet* segIDs);
 
   void selectJustThisSegment_toggle(const om::common::SegID segID);
   void augmentSelectedSet_toggle(const om::common::SegID segID);

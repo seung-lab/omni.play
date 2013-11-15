@@ -65,5 +65,15 @@ struct View3dEventListener : public Listener {
   virtual void View3dRedrawEvent() = 0;
   virtual void View3dRecenter() = 0;
 };
+
+struct TaskEventListener : public Listener {
+  TaskEventListener() : Listener(Klass::task) {}
+  virtual void TaskChangeEvent() = 0;
+};
+
+struct ConnectionEventListener : public Listener {
+  ConnectionEventListener() : Listener(Klass::task) {}
+  virtual void ConnectionChangeEvent() = 0;
+};
 }
 }  // om::event::
