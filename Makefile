@@ -312,8 +312,13 @@ DESKTOP_INCLUDES = $(INCLUDES) \
 
 # QT_LIBS = $(shell pkg-config --libs $(QT_LIBRARIES))
 DESKTOPLIBS = $(LIBS) \
-			  $(EXTERNAL)/hdf5/lib/libhdf5.a \
-			  # $(QT_LIBS)
+					$(EXTERNAL)/hdf5/lib/libhdf5.a \
+					-L$(EXTERNAL)/qt/lib \
+					-lQtGui \
+					-lQtNetwork \
+					-lQtCore \
+					-lQtOpenGL
+					# $(QT_LIBS)
 
 $(BUILDDIR)/desktop/%.d: desktop/src/%.cpp
 	$(call make_d, $(DESKTOP_INCLUDES))
