@@ -15,6 +15,7 @@ class InspectorProperties;
 class MainWindow;
 class OmViewGroupState;
 class SegmentationDataWrapper;
+class TaskInfoWidget;
 
 class InspectorWidget : public QWidget {
   Q_OBJECT;
@@ -71,6 +72,7 @@ Q_SLOTS:
 
   QTreeWidget* dataSrcListWidget_;
   QTreeWidget* filterListWidget_;
+  TaskInfoWidget* taskInfoWidget_;
 
   void deleteSegmentation(SegmentationDataWrapper sdw);
   void deleteChannel(ChannelDataWrapper cdw);
@@ -88,7 +90,7 @@ Q_SLOTS:
 
   void populateFilterListWidget(ChannelDataWrapper cdw);
 
-  QTreeWidget* setupDataSrcList();
+  QWidget* setupDataSrcList();
   QTreeWidget* setupFilterList();
   ChannelDataWrapper getCurrentlySelectedChannel();
   SegmentationDataWrapper getCurrentlySelectedSegmentation();

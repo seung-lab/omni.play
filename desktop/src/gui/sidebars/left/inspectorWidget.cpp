@@ -9,6 +9,7 @@
 #include "gui/mstViewer.hpp"
 #include "gui/segmentLists/elementListBox.hpp"
 #include "gui/sidebars/left/inspectorWidget.h"
+#include "gui/sidebars/left/taskInfo.h"
 #include "gui/viewGroup/viewGroup.h"
 #include "gui/widgets/omAskQuestion.hpp"
 #include "segment/omSegment.h"
@@ -17,6 +18,7 @@
 #include "system/omConnect.hpp"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
+#include "task/taskManager.h"
 
 #include <QtGui>
 #include <QMessageBox>
@@ -290,7 +292,10 @@ void InspectorWidget::rebuildSegmentLists(const om::common::ID segmentationID,
 //////////////////////////////
 ///////// Data Source Box Stuff
 //////////////////////////////
-QTreeWidget* InspectorWidget::setupDataSrcList() {
+QWidget* InspectorWidget::setupDataSrcList() {
+  using namespace om::task;
+  Task* t = TaskManager::currentTask().get();
+
   dataSrcListWidget_ = new QTreeWidget(this);
   dataSrcListWidget_->setAlternatingRowColors(false);
   dataSrcListWidget_->setColumnCount(3);
@@ -309,7 +314,17 @@ QTreeWidget* InspectorWidget::setupDataSrcList() {
               SIGNAL(customContextMenuRequested(const QPoint&)), this,
               SLOT(showDataSrcContextMenu(const QPoint&)));
 
-  return dataSrcListWidget_;
+  if (t) {
+    taskInfoWidget_ = new TaskInfoWidget(this);
+    auto tabbed = new QTabWidget(this);
+    tabbed->insertTab(0, taskInfoWidget_, tr("Task"));
+    tabbed->insertTab(1, dataSrcListWidget_, tr("Volumes"));
+    tabbed->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    return tabbed;
+  } else {
+    taskInfoWidget_ = nullptr;
+    return dataSrcListWidget_;
+  }
 }
 
 void InspectorWidget::showDataSrcContextMenu(const QPoint& menuPoint) {
