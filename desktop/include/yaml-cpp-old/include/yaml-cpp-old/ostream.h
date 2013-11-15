@@ -1,5 +1,5 @@
-#ifndef OSTREAM_H_62B23520_7C8E_11DE_8A39_0800200C9A66
-#define OSTREAM_H_62B23520_7C8E_11DE_8A39_0800200C9A66
+#ifndef OSTREAM_H_62B23520_7C8E_11DE_8A39_0800200C9A66_OLD
+#define OSTREAM_H_62B23520_7C8E_11DE_8A39_0800200C9A66_OLD
 
 #if !defined(__GNUC__) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || (__GNUC__ >= 4) // GCC supports "pragma once" correctly since 3.4
 #pragma once
@@ -37,4 +37,4 @@ namespace YAMLold
 	ostream& operator << (ostream& out, char ch);
 }
 
-#endif // OSTREAM_H_62B23520_7C8E_11DE_8A39_0800200C9A66
+#endif // OSTREAM_H_62B23520_7C8E_11DE_8A39_0800200C9A66_OLD
