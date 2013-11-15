@@ -293,8 +293,8 @@ $(BINDIR)/omni.server.test: $(SERVER_TEST_DEPS) $(SERVER_TEST_MAIN)
 server: common $(BINDIR)/omni.server $(BINDIR)/omni.server.test
 
 # Desktop  #################################################
-QT_LIBRARIES = QtGui QtNetwork QtCore QtOpenGL
-QT_FLAGS = $(shell pkg-config --cflags $(QT_LIBRARIES))
+# QT_LIBRARIES = QtGui QtNetwork QtCore QtOpenGL
+# QT_FLAGS = $(shell pkg-config --cflags $(QT_LIBRARIES))
 DESKTOP_INCLUDES = $(INCLUDES) \
 				  -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop/include \
@@ -308,12 +308,12 @@ DESKTOP_INCLUDES = $(INCLUDES) \
 				  -I$(EXTERNAL)/qt/include \
 				  -I$(EXTERNAL)/hdf5/include \
 				  -I$(BASE64)/include \
-			          $(QT_FLAGS)
+			          # $(QT_FLAGS)
 
-QT_LIBS = $(shell pkg-config --libs $(QT_LIBRARIES))
+# QT_LIBS = $(shell pkg-config --libs $(QT_LIBRARIES))
 DESKTOPLIBS = $(LIBS) \
 			  $(EXTERNAL)/hdf5/lib/libhdf5.a \
-			  $(QT_LIBS)
+			  # $(QT_LIBS)
 
 $(BUILDDIR)/desktop/%.d: desktop/src/%.cpp
 	$(call make_d, $(DESKTOP_INCLUDES))
