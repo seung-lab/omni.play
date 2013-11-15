@@ -61,7 +61,7 @@ class OmValidGroupNum {
  private:
   QString filePathV1() const {
     return QString::fromStdString(
-        vol_->Folder()->GetVolSegmentsPathAbs("valid_group_num.data.ver1"));
+        vol_->Folder()->GetVolUserSegmentsPathAbs("valid_group_num.data.ver1"));
   }
 
   void load() {

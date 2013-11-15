@@ -108,9 +108,7 @@ bool ComparisonTask::Start() {
 
   OmCacheManager::TouchFreshness();
   sdw.SegmentLists()->RefreshGUIlists();
-  OmSegmentSelector selector(sdw, nullptr, "Select the segments");
-  selector.selectNoSegments();
-  selector.InsertSegments(&allSeeds);
+  sdw.Segments()->UpdateSegmentSelection(allSeeds, true);
 
   return true;
 }

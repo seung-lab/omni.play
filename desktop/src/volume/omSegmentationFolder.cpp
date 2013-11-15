@@ -8,13 +8,19 @@
 om::segmentation::folder::folder(OmSegmentation* vol) : vol_(vol) {}
 
 std::string om::segmentation::folder::GetVolSegmentsPathAbs() {
-  return str(boost::format("%1%/segmentations/segmentation%2%/segments") %
-             OmProject::Globals().Users().UsersFolder() % vol_->GetID());
+  return str(boost::format("%1%/segments") % GetVolPath().toStdString());
 }
 
 std::string om::segmentation::folder::GetVolSegmentsPathAbs(
     const std::string& subFile) {
   return str(boost::format("%1%/%2%") % GetVolSegmentsPathAbs() % subFile);
+}
+
+std::string om::segmentation::folder::GetVolUserSegmentsPathAbs(
+    const std::string& subFile) {
+  return str(boost::format("%1%/segmentations/segmentation%2%/segments/%3%") %
+             OmProject::Globals().Users().UsersFolder()
+             % vol_->GetID() % subFile);
 }
 
 QString om::segmentation::folder::RelativeVolPath() {

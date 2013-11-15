@@ -34,9 +34,7 @@ bool TracingTask::Start() {
   if (!sdw.IsValidWrapper()) {
     return false;
   }
-  OmSegmentSelector selector(sdw, nullptr, "Select the segments");
-  selector.selectNoSegments();
-  selector.InsertSegments(&seed_);
+  sdw.Segments()->UpdateSegmentSelection(seed_, true);
   return true;
 }
 
