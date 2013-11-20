@@ -21,20 +21,22 @@ QString OmProject::New(const QString& fnp) {
 void OmProject::Save() { instance().impl_->Save(); }
 
 // This will check if a project is open and will close it if necessary
-void OmProject::SafeLoad(const QString& fileNameAndPath, QWidget* guiParent) {
-  if (IsOpen(fileNameAndPath)) {
+void OmProject::SafeLoad(const std::string& fileNameAndPath, QWidget* guiParent,
+                         const std::string& username) {
+  if (IsOpen(fileNameAndPath, username)) {
     return;
   } else {
     Close();
-    Load(fileNameAndPath, guiParent);
+    Load(fileNameAndPath, guiParent, username);
   }
 }
 
-void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent) {
-  instance().impl_.reset(new OmProjectImpl());
+void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent,
+                     const std::string& username) {
+  instance().impl_ = std::make_unique<OmProjectImpl>();
 
   try {
-    instance().impl_->Load(fileNameAndPath, guiParent);
+    instance().impl_->Load(fileNameAndPath, guiParent, username);
   }
   catch (...) {
     instance().impl_.reset();
@@ -66,11 +68,12 @@ OmProjectGlobals& OmProject::Globals() { return instance().impl_->Globals(); }
 
 bool OmProject::IsOpen() { return static_cast<bool>(instance().impl_); }
 
-bool OmProject::IsOpen(const QString& fileNameAndPath) {
+bool OmProject::IsOpen(const om::file::path& fileNameAndPath,
+                       const std::string& username) {
   if (!instance().impl_) {
     return false;
   }
-  return fileNameAndPath == OmProject::OmniFile();
+  return instance().impl_->IsOpen(fileNameAndPath, username);
 }
 
 #include "actions/omActions.h"

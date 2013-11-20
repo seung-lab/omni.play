@@ -15,19 +15,21 @@ class usersImpl {
  private:
   const QString usersFolderRoot_;
   QString userFolder_;
+  std::string currentUser_;
   std::unique_ptr<userSettings> settings_;
-  const std::string defaultUser_ = "_default";
 
  public:
   usersImpl() : usersFolderRoot_(usersFolderRoot()) {}
 
   void SwitchToDefaultUser() {
-    userFolder_ = QDir(usersFolderRoot_ + QString::fromStdString(defaultUser_))
-                      .absolutePath();
+    userFolder_ =
+        QDir(usersFolderRoot_ + QString::fromStdString(om::users::defaultUser))
+            .absolutePath();
     loadUserSettings();
   }
 
   void SwitchToUser(const std::string& userName) {
+    currentUser_ = userName;
     userFolder_ = QDir(usersFolderRoot_ + QString::fromStdString(userName))
                       .absolutePath();
     log_variable(userFolder_.toStdString());
@@ -39,6 +41,8 @@ class usersImpl {
     }
     loadUserSettings();
   }
+
+  inline const std::string& CurrentUser() const { return currentUser_; }
 
   QString LogFolderPath() { return userFolder_ + QLatin1String("/logFiles"); }
 
@@ -120,7 +124,8 @@ class usersImpl {
       using namespace boost::filesystem;
 
       string userFolder = userFolder_.toStdString();
-      string defaultUserFolder = usersFolderRoot_.toStdString() + defaultUser_;
+      string defaultUserFolder =
+          usersFolderRoot_.toStdString() + om::users::defaultUser;
 
       string userSegments =
           userFolder + "/segmentations/segmentation1/segments/";

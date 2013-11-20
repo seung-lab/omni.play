@@ -14,6 +14,7 @@
 #include "segment/omSegmentSelector.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "segment/lowLevel/omSegmentChildren.hpp"
+#include "users/omUsers.h"
 
 namespace om {
 namespace task {
@@ -26,7 +27,7 @@ ComparisonTask::ComparisonTask(uint32_t id, uint32_t cellId,
 ComparisonTask::~ComparisonTask() {}
 
 bool ComparisonTask::Start() {
-  if (!OmAppState::OpenProject(path_)) {
+  if (!OmAppState::OpenProject(path_, om::users::defaultUser)) {
     return false;
   }
   const SegmentationDataWrapper sdw(1);

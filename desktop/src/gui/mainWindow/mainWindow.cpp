@@ -221,7 +221,7 @@ void MainWindow::openRecentFile() {
     return;
   }
 
-  openProject(action->data().toString());
+  openProject(action->data().toString().toStdString(), "");
 }
 
 bool MainWindow::openProject() {
@@ -239,7 +239,7 @@ bool MainWindow::openProject() {
     if (fileNameAndPath == nullptr) return false;
 
     // open project at fpath
-    loadProject(fileNameAndPath.toStdString());
+    loadProject(fileNameAndPath.toStdString(), "");
     return true;
   }
   catch (om::Exception& e) {
@@ -248,20 +248,22 @@ bool MainWindow::openProject() {
   }
 }
 
-bool MainWindow::openProject(QString fileNameAndPath) {
-  if (OmProject::IsOpen(fileNameAndPath)) {
+bool MainWindow::openProject(const std::string& fileNameAndPath,
+                             const std::string& username) {
+  if (OmProject::IsOpen(fileNameAndPath, username)) {
     return true;
   }
   if (closeProjectIfOpen(false)) {
-    return loadProject(fileNameAndPath.toStdString());
+    return loadProject(fileNameAndPath, username);
   } else {
     return false;
   }
 }
 
-bool MainWindow::loadProject(std::string fileNameAndPath) {
+bool MainWindow::loadProject(const std::string& fileNameAndPath,
+                             const std::string& username) {
   try {
-    OmProject::Load(QString::fromStdString(fileNameAndPath), this);
+    OmProject::Load(fileNameAndPath, this, username);
     QCoreApplication::processEvents();
     updateGuiFromProjectCreateOrOpen(fileNameAndPath.c_str());
     return true;

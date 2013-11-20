@@ -57,13 +57,13 @@ void OmAppState::SetToolBarManager(ToolBarManager* tbm) {
   instance().toolBarManager_ = tbm;
 }
 
-bool OmAppState::OpenProject(std::string fileNameAndPath) {
-  QString fnp = QString::fromStdString(fileNameAndPath);
+bool OmAppState::OpenProject(const std::string& fileNameAndPath,
+                             const std::string& userName) {
   if (instance().mainWindow_) {
-    return instance().mainWindow_->openProject(fnp);
+    return instance().mainWindow_->openProject(fileNameAndPath, userName);
   } else {
     try {
-      OmProject::SafeLoad(fnp);
+      OmProject::SafeLoad(fileNameAndPath, nullptr, userName);
       return true;
     }
     catch (om::Exception& e) {

@@ -42,7 +42,7 @@ class OmAppState : private om::SingletonBase<OmAppState> {
 
   static QSize GetViewBoxSizeHint();
 
-  static bool OpenProject(std::string fileNameAndPath);
+  static bool OpenProject(const std::string& fileNameAndPath, const std::string& username);
   static void OpenTaskSelector();
 
  private:

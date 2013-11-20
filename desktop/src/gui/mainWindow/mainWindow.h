@@ -26,7 +26,8 @@ class MainWindow : public QMainWindow {
   MainWindow();
   ~MainWindow();
 
-  bool openProject(QString fileNameAndPath);
+  bool openProject(const std::string& fileNameAndPath,
+                   const std::string& username);
 
   void cleanViewsOnVolumeChange(om::common::ObjectType objectType,
                                 om::common::ID objectId);
@@ -92,7 +93,8 @@ Q_SLOTS:
   QAction* panAct;
   QAction* zoomAct;
 
-  bool loadProject(std::string fileNameAndPath);
+  bool loadProject(const std::string& fileNameAndPath,
+                   const std::string& username);
   bool closeProjectIfOpen(bool);
   int checkForSave();
   void createStatusBar();

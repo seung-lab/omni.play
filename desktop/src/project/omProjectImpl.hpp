@@ -78,10 +78,11 @@ class OmProjectImpl {
     return fnp;
   }
 
-  void Load(const QString& fileNameAndPath, QWidget* guiParent) {
+  void Load(const QString& fileNameAndPath, QWidget* guiParent,
+            const std::string& username) {
     try {
       const QFileInfo projectFile(fileNameAndPath);
-      doLoad(projectFile.absoluteFilePath(), guiParent);
+      doLoad(projectFile.absoluteFilePath(), guiParent, username);
     }
     catch (...) {
       globals_.reset();
@@ -141,7 +142,8 @@ class OmProjectImpl {
     }
   }
 
-  void doLoad(const QString& fnp, QWidget* guiParent) {
+  void doLoad(const QString& fnp, QWidget* guiParent,
+              const std::string& username) {
     if (!QFile::exists(fnp)) {
       throw om::IoException("Project file not found at");
     }
@@ -158,8 +160,8 @@ class OmProjectImpl {
       migrateFromHdf5();
 
     setupGlobals();
-    if (om::system::Account::IsLoggedIn()) {
-      globals_->Users().SwitchToUser(om::system::Account::username());
+    if (!username.empty()) {
+      globals_->Users().SwitchToUser(username);
     } else if (guiParent) {
       OmGuiUserChooser* chooser = new OmGuiUserChooser(guiParent);
       const int userWasSelected = chooser->exec();
@@ -182,6 +184,12 @@ class OmProjectImpl {
     globals_->Users().UserSettings().Load();
 
     OmActionReplayer::Replay();
+  }
+
+  bool IsOpen(const om::file::path& fileNameAndPath,
+              const std::string& username) {
+    return fileNameAndPath == omniFile_.toStdString() &&
+           username == globals_->Users().CurrentUser();
   }
 
   void doCreate() {

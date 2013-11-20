@@ -19,12 +19,15 @@ class users {
 
   ~users();
 
+  static const std::string defaultUser;
+
   void SwitchToDefaultUser();
   void SwitchToUser(const std::string& userName);
 
   QString LogFolderPath();
   void SetupFolders();
 
+  const std::string& CurrentUser() const;
   std::string UsersFolder();
   std::string UsersRootFolder();
   userSettings& UserSettings();

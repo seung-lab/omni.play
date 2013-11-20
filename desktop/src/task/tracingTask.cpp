@@ -27,7 +27,8 @@ TracingTask::TracingTask(uint32_t id, uint32_t cellId, const std::string& path,
 TracingTask::~TracingTask() {}
 
 bool TracingTask::Start() {
-  if (path_.empty() || !OmAppState::OpenProject(path_)) {
+  if (path_.empty() ||
+      !OmAppState::OpenProject(path_, om::system::Account::username())) {
     return false;
   }
   const SegmentationDataWrapper sdw(1);

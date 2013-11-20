@@ -14,6 +14,7 @@
 #include "segment/omSegmentSelector.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "segment/lowLevel/omSegmentChildren.hpp"
+#include "users/omUsers.h"
 
 namespace om {
 namespace task {
@@ -31,7 +32,8 @@ ReapingTask::ReapingTask(uint32_t id, uint32_t cellId, const std::string& path,
 ReapingTask::~ReapingTask() {}
 
 bool ReapingTask::Start() {
-  if (path_.empty() || !OmAppState::OpenProject(path_)) {
+  if (path_.empty() ||
+      !OmAppState::OpenProject(path_, om::users::defaultUser)) {
     return false;
   }
   const SegmentationDataWrapper sdw(1);

@@ -90,7 +90,7 @@ class Omni {
     mainWin.show();
 
     if (fileToOpen_ != "") {
-      mainWin.openProject(fileToOpen_);
+      mainWin.openProject(fileToOpen_.toStdString(), "");
     }
 
     return app->exec();
