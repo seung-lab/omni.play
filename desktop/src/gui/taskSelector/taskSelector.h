@@ -9,6 +9,12 @@
 #include "task/tracingTask.h"
 #include "network/http/http.hpp"
 
+namespace om {
+namespace task {
+class Dataset;
+}
+}
+
 class TaskSelector : public QDialog {
   Q_OBJECT;
 
@@ -18,6 +24,7 @@ class TaskSelector : public QDialog {
  public
 Q_SLOTS:
   void updateEnabled();
+  void updateCells();
   void traceClicked();
   void compareClicked();
   void reapClicked();
@@ -26,10 +33,12 @@ Q_SLOTS:
   virtual void showEvent(QShowEvent* event) override;
 
  private:
+  om::task::Dataset* dataset();
   uint32_t cellID();
   uint32_t taskID();
   void getTasks();
 
+  QComboBox* datasetCombo_;
   QRadioButton* allCellsRadio_;
   QRadioButton* cellRadio_;
   QRadioButton* taskRadio_;
@@ -42,5 +51,5 @@ Q_SLOTS:
   std::shared_ptr<om::task::Task> traceTask_;
   std::shared_ptr<om::task::Task> compareTask_;
   std::shared_ptr<om::task::Task> reapTask_;
-  std::shared_ptr<std::vector<om::task::Cell>> cells_;
+  std::shared_ptr<std::vector<om::task::Dataset>> datasets_;
 };

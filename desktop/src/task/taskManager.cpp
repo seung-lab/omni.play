@@ -49,7 +49,7 @@ std::shared_ptr<Task> TaskManager::GetComparisonTask(int cellID) {
     std::string taskURI = system::Account::endpoint() + "/1.0/comparison_task";
     if (cellID) {
       taskURI += "?cell=" + std::to_string(cellID);
-    } 
+    }
 
     return network::HTTP::GET_JSON<ComparisonTask>(taskURI);
   }
@@ -87,9 +87,21 @@ std::shared_ptr<Task> TaskManager::GetReapTask(int taskID) {
   return std::shared_ptr<Task>();
 }
 
-std::shared_ptr<std::vector<Cell>> TaskManager::GetCells() {
+std::shared_ptr<std::vector<Dataset>> TaskManager::GetDatasets() {
   try {
-    std::string cellURI = system::Account::endpoint() + "/api/v1/task/cell";
+    std::string datasetURI = system::Account::endpoint() + "/1.0/dataset";
+    return network::HTTP::GET_JSON<std::vector<Dataset>>(datasetURI);
+  }
+  catch (om::Exception e) {
+    log_debugs(Task) << "Failed loading datasets: " << e.what();
+  }
+  return std::shared_ptr<std::vector<Dataset>>();
+}
+
+std::shared_ptr<std::vector<Cell>> TaskManager::GetCells(int datasetID) {
+  try {
+    std::string cellURI = system::Account::endpoint() + "/1.0/cell?dataset=" +
+                          std::to_string(datasetID);
     return network::HTTP::GET_JSON<std::vector<Cell>>(cellURI);
   }
   catch (om::Exception e) {

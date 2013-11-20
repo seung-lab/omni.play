@@ -3,6 +3,7 @@
 #include <memory>
 #include "zi/utility.h"
 #include "task/cell.h"
+#include "task/dataset.h"
 #include "events/listeners.h"
 
 namespace om {
@@ -27,7 +28,8 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   static std::shared_ptr<Task> GetComparisonTaskByID(int taskID);
 
   static std::shared_ptr<Task> GetReapTask(int taskID);
-  static std::shared_ptr<std::vector<Cell>> GetCells();
+  static std::shared_ptr<std::vector<Dataset>> GetDatasets();
+  static std::shared_ptr<std::vector<Cell>> GetCells(int datasetID);
   static bool LoadTask(const std::shared_ptr<Task>& task);
   static bool FinishTask();
 
