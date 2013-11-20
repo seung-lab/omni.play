@@ -1,5 +1,6 @@
 #include <zi/arguments.hpp>
 
+#include "common/logging.h"
 #include "serverHandler.hpp"
 #include <protocol/TBinaryProtocol.h>
 #include <server/TSimpleServer.h>
@@ -17,6 +18,7 @@ ZiARG_int32(port, 9090, "Server's port");
 ZiARG_bool(daemonize, true, "Run as daemon");
 ZiARG_string(mesher, "localhost", "Mesher's address");
 ZiARG_int32(mport, 9090, "Mesher's port");
+ZiARG_string(logfile, "/var/log/omni/omni.server.log", "Log file location");
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -35,6 +37,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  om::logging::initLogging(ZiARG_logfile, false);
   int port = ZiARG_port;
   boost::shared_ptr<serverHandler> handler(
       new serverHandler(ZiARG_mesher, ZiARG_mport));

@@ -54,7 +54,7 @@ class MesherConnector : public zi::enable_singleton_of_this<MesherConnector> {
         log_debugs(unknown) << "Unable to open transport.";
       }
     }
-    catch (apache::thrift::TException & tx) {
+    catch (apache::thrift::TException& tx) {
       throw(tx);
     }
 
@@ -81,7 +81,7 @@ class serverHandler : virtual public serverIf,
   serverHandler(std::string mesherHost, int32_t mesherPort)
       : FacebookBase("omni.server"),
         status_(fb_status::STARTING),
-        serviceTracker_(this),
+        serviceTracker_(this, &serverHandler::logMethod),
         mesherHost_(mesherHost),
         mesherPort_(mesherPort) {
     status_ = fb_status::ALIVE;
@@ -195,7 +195,7 @@ class serverHandler : virtual public serverIf,
         log_errors(unknown) << "Unable to open transport.";
       }
     }
-    catch (apache::thrift::TException & tx) {
+    catch (apache::thrift::TException& tx) {
       throw(tx);
     }
 
@@ -203,6 +203,10 @@ class serverHandler : virtual public serverIf,
   }
 
  private:
+  static void logMethod(int, const std::string& str) {
+    log_info(Server) << str;
+  }
+
   std::string volumePath(const metadata& meta) {
     if (meta.vol_type == volType::CHANNEL) {
       return meta.uri + "/channels/channel1/";
