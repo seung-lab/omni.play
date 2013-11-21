@@ -54,16 +54,16 @@ struct convert<om::task::Dataset> {
       c.id_ = node["id"].as<int>();
       c.name_ = node["name"].as<std::string>();
       c.description_ = node["description"].as<std::string>();
-      c.created_ = node["created"].as<om::time::time>();
-      c.deleted_ = node["deleted"].as<om::time::time>();
-      c.completed_ = node["completed"].as<om::time::time>();
-      c.lastmodified_ = node["lastmodified"].as<om::time::time>();
+      // c.created_ = node["created"].as<om::time::time>();
+      // c.deleted_ = node["deleted"].as<om::time::time>();
+      // c.completed_ = node["completed"].as<om::time::time>();
+      // c.lastmodified_ = node["lastmodified"].as<om::time::time>();
       c.overlap_ = node["overlap"].as<int>();
       c.min_overlap_volume_ = node["min_overlap_volume"].as<int>();
       return true;
     }
-    catch (std::exception e) {
-      log_debugs(std::string("Error Decoding Dataset: ") + e.what());
+    catch (YAML::Exception e) {
+      log_debugs(YAML) << std::string("Error Decoding Dataset: ") + e.what();
       return false;
     }
   }

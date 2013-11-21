@@ -120,9 +120,13 @@ uint32_t TaskSelector::cellID() {
   if (!cells) {
     return 0;
   }
+  auto cellsref = *cells;
   if (cellRadio_->isChecked()) {
-    return (*cells)[cellCombo_->itemData(cellCombo_->currentIndex()).toInt()]
-        .CellID;
+    auto idx = cellCombo_->itemData(cellCombo_->currentIndex()).toInt();
+    if (idx || idx >= cellsref.size()) {
+      return 0;
+    }
+    return cellsref[idx].CellID;
   }
   return 0;
 }

@@ -24,8 +24,8 @@ struct convert<om::time::time> {
       c = om::time::time_from_string(node.as<std::string>());
       return true;
     }
-    catch (std::exception e) {
-      log_debugs(std::string("Error Decoding time: ") + e.what());
+    catch (YAML::Exception e) {
+      log_debugs(YAML) << std::string("Error Decoding time: ") + e.what();
       return false;
     }
   }
