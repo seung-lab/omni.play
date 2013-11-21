@@ -122,6 +122,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   inline om::segmentation::folder* Folder() const { return folder_.get(); }
   inline om::annotation::manager& Annotations() const { return *annotations_; }
   inline om::segmentation::loader* Loader() const { return loader_.get(); }
+  void ClearUserChangesAndSave();
 
  private:
   std::unique_ptr<om::segmentation::folder> folder_;

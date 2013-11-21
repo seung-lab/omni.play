@@ -94,6 +94,10 @@ bool ComparisonTask::Start() {
       }
     }
   }
+
+  // reset user edges etc
+  segmentation->ClearUserChangesAndSave();
+
   for (auto& edge : edgesToAdd) {
     sdw.Segments()->JoinEdge(OmSegmentEdge(edge.first, edge.second, 1.0));
   }

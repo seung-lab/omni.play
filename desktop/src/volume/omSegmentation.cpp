@@ -19,6 +19,7 @@
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationLoader.h"
 #include "volume/omUpdateBoundingBoxes.h"
+#include "actions/omActions.h"
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
@@ -215,4 +216,34 @@ void OmSegmentation::UpdateFromVolResize() {
 
 std::string OmSegmentation::GetDirectoryPath() const {
   return folder_->RelativeVolPath().toStdString();
+}
+
+void OmSegmentation::ClearUserChangesAndSave() {
+  OmMSTEdge* edges = MST()->Edges();
+
+  for (uint32_t i = 0; i < MST()->NumEdges(); ++i) {
+    edges[i].userSplit = 0;
+    edges[i].userJoin = 0;
+    edges[i].wasJoined = 0;
+  }
+
+  MST()->Flush();
+
+  MSTUserEdges()->Clear();
+  MSTUserEdges()->Save();
+
+  OmSegments* segments = Segments();
+
+  for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
+    OmSegment* seg = segments->GetSegment(i);
+    if (!seg) {
+      continue;
+    }
+    seg->SetListType(om::common::SegListType::WORKING);
+  }
+
+  ValidGroupNum()->Clear();
+  ValidGroupNum()->Save();
+
+  OmActions::Save();
 }

@@ -41,6 +41,9 @@ bool ReapingTask::Start() {
     return false;
   }
 
+  // reset user edges etc
+  sdw.GetSegmentationPtr()->ClearUserChangesAndSave();
+
   common::SegIDSet truth;
   for (auto& seg : aggregate_.Segments) {
     truth.insert(seg.first);

@@ -153,5 +153,8 @@ bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
 
 bool TaskManager::FinishTask() { return LoadTask(std::shared_ptr<Task>()); }
 
+std::shared_ptr<Task> TaskManager::FindInterruptedTask() {
+}
+
 }  // namespace om::task::
 }  // namespace om::

@@ -81,35 +81,11 @@ class HeadlessImpl {
 
   static void ClearMST(const om::common::ID segmentationID) {
     SegmentationDataWrapper sdw(segmentationID);
-
-    OmMST* mst = sdw.MST();
-    OmMSTEdge* edges = mst->Edges();
-
-    for (uint32_t i = 0; i < mst->NumEdges(); ++i) {
-      edges[i].userSplit = 0;
-      edges[i].userJoin = 0;
-      edges[i].wasJoined = 0;
+    if (!sdw.IsValidWrapper()) {
+      printf("Invalid segmentationID: %d\n", segmentationID);
+      return;
     }
-
-    mst->Flush();
-
-    sdw.GetSegmentation().MSTUserEdges()->Clear();
-    sdw.GetSegmentation().MSTUserEdges()->Save();
-
-    OmSegments* segments = sdw.Segments();
-
-    for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
-      OmSegment* seg = segments->GetSegment(i);
-      if (!seg) {
-        continue;
-      }
-      seg->SetListType(om::common::SegListType::WORKING);
-    }
-
-    sdw.ValidGroupNum()->Clear();
-    sdw.ValidGroupNum()->Save();
-
-    OmActions::Save();
+    sdw.GetSegmentation().ClearUserChangesAndSave();
   }
 
   static void RecolorAllSegments(const om::common::ID segmentationID) {
