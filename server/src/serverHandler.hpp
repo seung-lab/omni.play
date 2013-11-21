@@ -204,7 +204,7 @@ class serverHandler : virtual public serverIf,
 
  private:
   static void logMethod(int, const std::string& str) {
-    log_info(Server) << str;
+    log_infos(Server) << str;
   }
 
   std::string volumePath(const metadata& meta) {
