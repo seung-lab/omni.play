@@ -229,8 +229,8 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
       postSelected,
       [&sizes](const coords::Data&, uint32_t seg_id) { sizes[seg_id]++; });
 
-  std::unordered_map<uint32_t, std::set<uint32_t>> newSeedSets;
-  std::unordered_map<uint32_t, std::set<uint32_t>> preSideSets;
+  std::unordered_map<uint32_t, common::SegIDSet> newSeedSets;
+  std::unordered_map<uint32_t, common::SegIDSet> preSideSets;
   std::unordered_map<uint32_t, bool> escapes;
   for (auto& i : included) {
     escapes[sets.find_set(i)] = false;
@@ -246,19 +246,20 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   }
 
   for (auto& seed : newSeedSets) {
+    log_infos(unknown) << "[" << om::string::join(seed.second) << "]";
     if (escapes[seed.first]) {
       seeds.push_back(makeSeed(seed.second, mappingCounts, sizes));
-      log_debugs(unknown) << "Spawned!";
+      log_infos(unknown) << "Spawned!";
       std::stringstream ss;
       for (auto& seg : preSideSets[seed.first]) {
         ss << seg << ",";
       }
-      log_debugs(unknown) << "Pre Side: " << ss.str();
+      log_infos(unknown) << "Pre Side: " << ss.str();
 
       for (auto& seg : seeds.back()) {
         ss << seg.first << ",";
       }
-      log_debugs(unknown) << "Post Side: " << ss.str();
+      log_infos(unknown) << "Post Side: " << ss.str();
     }
   }
 }
