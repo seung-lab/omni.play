@@ -21,6 +21,9 @@
 #include "volume/omUpdateBoundingBoxes.h"
 #include "actions/omActions.h"
 
+#include <QCoreApplication>
+#include "gui/widgets/omTellInfo.hpp"
+
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
     : loader_(new om::segmentation::loader(this)),
@@ -219,6 +222,15 @@ std::string OmSegmentation::GetDirectoryPath() const {
 }
 
 void OmSegmentation::ClearUserChangesAndSave() {
+  //something is murky, had to do this at the beginning 
+  //before other stuff in this function
+  OmActions::ChangeMSTthreshold(SegmentationDataWrapper(getID()), 0.999);
+  //SetDendThreshold(0.999);
+  //OmCacheManager::TouchFreshness();
+  //QCoreApplication::processEvents();
+  OmTellInfo("Hey you are ready to start the comparison task :)\n"
+      "(This dialog here is a hack to get it to work...for now)");
+
   OmMSTEdge* edges = MST()->Edges();
 
   for (uint32_t i = 0; i < MST()->NumEdges(); ++i) {
