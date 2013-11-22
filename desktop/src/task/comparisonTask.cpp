@@ -7,6 +7,7 @@
 #include "segment/types.hpp"
 #include "segment/omSegments.h"
 #include "segment/selection.hpp"
+#include "segment/omSegmentUtils.hpp"
 #include "system/account.h"
 #include "network/http/http.hpp"
 #include "system/cache/omCacheManager.h"
@@ -115,6 +116,8 @@ bool ComparisonTask::Start() {
   sdw.SegmentLists()->RefreshGUIlists();
   sdw.Segments()->UpdateSegmentSelection(allSeeds, true);
 
+  om::event::Redraw2d();
+  om::event::Redraw3d();
   return true;
 }
 
@@ -136,18 +139,16 @@ bool ComparisonTask::Submit() {
     return false;
   }
 
-  const SegmentationDataWrapper sdw(1);
-
-  const auto& rootIDs = sdw.Segments()->Selection().GetSelectedSegmentIDs();
-  auto& childrenTable = *sdw.Segments()->Children();
-
   std::unordered_map<common::SegID, int> segIDs;
-  for (auto id : rootIDs) {
-    segIDs[id] = 1;
-    const auto& segments = childrenTable.GetChildren(id);
-    for (OmSegment* seg : segments) {
-      segIDs[seg->value()] = 1;
-    }
+  const SegmentationDataWrapper sdw(1);
+  if (!sdw.IsValidWrapper()) {
+    return false;
+  }
+  const auto& rootIDs = sdw.Segments()->Selection().GetSelectedSegmentIDs();
+  const auto& segments =
+      OmSegmentUtils::GetAllChildrenSegments(sdw.Segments(), rootIDs);
+  for (OmSegment* seg : *segments) {
+    segIDs[seg->value()] = 1;
   }
 
   auto uri = system::Account::endpoint() + "/api/v1/task";

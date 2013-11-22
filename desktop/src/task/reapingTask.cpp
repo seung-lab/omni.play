@@ -4,6 +4,7 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "segment/omSegments.h"
 #include "segment/selection.hpp"
+#include "segment/omSegmentUtils.hpp"
 #include "system/account.h"
 #include "network/http/http.hpp"
 #include "gui/mainWindow/mainWindow.h"
@@ -68,21 +69,16 @@ bool ReapingTask::Submit() {
     return false;
   }
 
+  std::unordered_map<common::SegID, int> segIDs;
   const SegmentationDataWrapper sdw(1);
   if (!sdw.IsValidWrapper()) {
     return false;
   }
-
   const auto& rootIDs = sdw.Segments()->Selection().GetSelectedSegmentIDs();
-  auto& childrenTable = *sdw.Segments()->Children();
-
-  std::unordered_map<common::SegID, int> segIDs;
-  for (auto id : rootIDs) {
-    segIDs[id] = 1;
-    const auto& segments = childrenTable.GetChildren(id);
-    for (OmSegment* seg : segments) {
-      segIDs[seg->value()] = 1;
-    }
+  const auto& segments =
+      OmSegmentUtils::GetAllChildrenSegments(sdw.Segments(), rootIDs);
+  for (OmSegment* seg : *segments) {
+    segIDs[seg->value()] = 1;
   }
 
   auto uri = system::Account::endpoint() + "/api/v1/task";
