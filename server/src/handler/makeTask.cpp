@@ -1,4 +1,5 @@
 #include "chunk/voxelGetter.hpp"
+#include "utility/volumeWalker.hpp"
 #include "common/common.h"
 #include "handler/handler.h"
 #include "volume/metadataManager.h"
@@ -165,6 +166,8 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   log_infos(unknown) << "Getting Seeds\n" << pre.Endpoint() << '\n'
                      << post.Endpoint();
 
+  std::set<uint32_t> sel(selected.begin(), selected.end());
+
   auto preBounds = pre.Metadata().bounds();
   auto postBounds = post.Metadata().bounds();
   auto dir = getDirection(preBounds, postBounds);
@@ -175,57 +178,56 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   std::unordered_map<uint32_t, int> sizes;
 
   zi::disjoint_sets<uint32_t> sets(range.x * range.y * range.z);
-  std::set<uint32_t> included;
+  std::set<uint32_t> included, postSelected;
 
   chunk::Voxels<uint32_t> preGetter(pre.ChunkDS(), pre.Coords());
   chunk::Voxels<uint32_t> postGetter(post.ChunkDS(), pre.Coords());
+  utility::VolumeWalker<uint32_t> walker(bounds.ToDataBbox(pre.Coords(), 0),
+                                         preGetter, &pre.UniqueValuesDS());
 
-  for (auto i = bounds.getMin().x + 1; i < bounds.getMax().x; i++) {
-    for (auto j = bounds.getMin().y + 1; j < bounds.getMax().y; j++) {
-      for (auto k = bounds.getMin().z + 1; k < bounds.getMax().z; k++) {
-        const coords::Global g(i, j, k);
-        uint32_t seg_id = preGetter.GetValue(g);
-        uint32_t post_seg_id = postGetter.GetValue(g);
+  walker.foreach_voxel_in_set(sel,
+                              [&](const coords::Data& dc, uint32_t seg_id) {
+    coords::Global g = dc.ToGlobal();
+    uint32_t post_seg_id = postGetter.GetValue(dc);
 
-        sizes[post_seg_id]++;
+    postSelected.insert(post_seg_id);
+    mappingCounts[post_seg_id]++;
 
-        if (!selected.count(seg_id)) {
-          continue;
-        }
+    uint32_t proxy = toProxy(g, range, bounds);
+    assert(proxy == toProxy(fromProxy(proxy, range, bounds), range, bounds));
+    included.insert(proxy);
 
-        mappingCounts[post_seg_id]++;
-
-        uint32_t proxy = toProxy(g, range, bounds);
-        assert(proxy ==
-               toProxy(fromProxy(proxy, range, bounds), range, bounds));
-        included.insert(proxy);
-
-        const coords::Global g1(i - 1, j, k);
-        uint32_t seg_id1 = preGetter.GetValue(g1);
-        if (selected.count(seg_id1)) {
-          auto p1 = toProxy(g1, range, bounds);
-          included.insert(p1);
-          conditionalJoin(sets, proxy, p1);
-        }
-
-        const coords::Global g2(i, j - 1, k);
-        uint32_t seg_id2 = preGetter.GetValue(g2);
-        if (selected.count(seg_id2)) {
-          auto p2 = toProxy(g2, range, bounds);
-          included.insert(p2);
-          conditionalJoin(sets, proxy, p2);
-        }
-
-        const coords::Global g3(i, j, k - 1);
-        uint32_t seg_id3 = preGetter.GetValue(g3);
-        if (selected.count(seg_id3)) {
-          auto p3 = toProxy(g3, range, bounds);
-          included.insert(p3);
-          conditionalJoin(sets, proxy, p3);
-        }
-      }
+    const coords::Global g1(g.x - 1, g.y, g.z);
+    uint32_t seg_id1 = preGetter.GetValue(g1);
+    if (sel.count(seg_id1)) {
+      auto p1 = toProxy(g1, range, bounds);
+      included.insert(p1);
+      conditionalJoin(sets, proxy, p1);
     }
-  }
+
+    const coords::Global g2(g.x, g.y - 1, g.z);
+    uint32_t seg_id2 = preGetter.GetValue(g2);
+    if (sel.count(seg_id2)) {
+      auto p2 = toProxy(g2, range, bounds);
+      included.insert(p2);
+      conditionalJoin(sets, proxy, p2);
+    }
+
+    const coords::Global g3(g.x, g.y, g.z - 1);
+    uint32_t seg_id3 = preGetter.GetValue(g3);
+    if (sel.count(seg_id3)) {
+      auto p3 = toProxy(g3, range, bounds);
+      included.insert(p3);
+      conditionalJoin(sets, proxy, p3);
+    }
+  });
+
+  utility::VolumeWalker<uint32_t> postWalker(
+      bounds.ToDataBbox(post.Coords(), 0), postGetter, &post.UniqueValuesDS());
+
+  postWalker.foreach_voxel_in_set(
+      postSelected,
+      [&sizes](const coords::Data&, uint32_t seg_id) { sizes[seg_id]++; });
 
   std::unordered_map<uint32_t, std::set<uint32_t>> newSeedSets;
   std::unordered_map<uint32_t, std::set<uint32_t>> preSideSets;
