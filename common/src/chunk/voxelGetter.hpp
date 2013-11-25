@@ -95,11 +95,11 @@ class Voxels {
       : chunkDS_(chunkDS),
         coordSystem_(coordSystem),
         cacheSize_(cacheSize),
-        cache_(boost::extents[coordSystem_.RootMipLevel()]
+        cache_(boost::extents[coordSystem_.RootMipLevel() + 1]
                              [coordSystem_.ChunkDimensions().x]
                              [coordSystem_.ChunkDimensions().y]
                              [coordSystem_.ChunkDimensions().z]),
-        chunks_(boost::extents[coordSystem_.RootMipLevel()]
+        chunks_(boost::extents[coordSystem_.RootMipLevel() + 1]
                               [coordSystem_.ChunkDimensions().x]
                               [coordSystem_.ChunkDimensions().y]
                               [coordSystem_.ChunkDimensions().z]) {}
