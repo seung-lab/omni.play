@@ -9,7 +9,7 @@ template <typename T>
 class VolumeWalker {
  public:
   VolumeWalker(const coords::DataBbox& bounds, chunk::Voxels<T>& voxels,
-               chunk::UniqueValuesDS* uniqueVals)
+               chunk::UniqueValuesDS* uniqueVals = nullptr)
       : bounds_(bounds), voxels_(voxels), uniqueVals_(uniqueVals) {}
 
   void foreach_voxel(std::function<void(const coords::Data&, T value)> func) {
