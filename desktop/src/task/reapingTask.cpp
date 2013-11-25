@@ -51,16 +51,7 @@ bool ReapingTask::Start() {
   }
   sdw.Segments()->JoinTheseSegments(truth);
 
-  OmSegmentSelector selector(sdw, nullptr, "Select the segments");
-  selector.selectNoSegments();
-  selector.InsertSegments(&truth);
-
-  auto* mw = OmAppState::GetMainWindow();
-  if (mw) {
-    auto& vgs = *mw->GetViewGroupState();
-    vgs.GetViewGroup()->AddAllViews();
-    OmSegmentCenter::CenterSegment(vgs);
-  }
+  sdw.Segments()->UpdateSegmentSelection(truth, true);
   return true;
 }
 
