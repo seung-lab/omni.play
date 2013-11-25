@@ -1,5 +1,9 @@
 # -*- Makefile -*-
 
+ifeq ($(shell uname), Darwin)
+OSX=true
+endif
+
 HERE        =       .
 EXTERNAL    =   $(HERE)/external/libs
 BREAKPAD    =   $(HERE)/external/srcs/google-breakpad/src
@@ -30,6 +34,10 @@ AR      =   $(AT)ar
 TAR     =   $(AT)tar
 FIND     =   $(AT)find
 ARFLAGS =   rcs
+
+ifeq ($OSX,true)
+INT     =   $(AT)install_name_tool
+endif
 
 CC       =  $(AT)gcc
 CXX      =  $(AT)g++ -std=c++11
@@ -156,8 +164,13 @@ LIB64_DEPS = $(BASE64)/src/cencode.o
 
 TEST_DEPS = $(GMOCK)/src/gmock-all.o $(GMOCK)/gtest/src/gtest-all.o
 
+ifeq ($OSX, true)
+.PHONY: all
+all: app
+else
 .PHONY: all
 all: common server desktop urtm valid export
+endif
 
 .PHONY: clean
 clean:
@@ -300,11 +313,6 @@ DESKTOP_INCLUDES = $(INCLUDES) \
 				  -I$(HERE)/desktop/include \
 				  -I$(HERE)/desktop/lib \
 				  -I$(HERE)/desktop \
-				  -I$(EXTERNAL)/qt/include/Qt \
-				  -I$(EXTERNAL)/qt/include/QtCore \
-				  -I$(EXTERNAL)/qt/include/QtOpenGL \
-				  -I$(EXTERNAL)/qt/include/QtGui \
-				  -I$(EXTERNAL)/qt/include/QtNetwork \
 				  -I$(EXTERNAL)/qt/include \
 				  -I$(EXTERNAL)/hdf5/include \
 				  -I$(BASE64)/include \
@@ -313,12 +321,36 @@ DESKTOP_INCLUDES = $(INCLUDES) \
 # QT_LIBS = $(shell pkg-config --libs $(QT_LIBRARIES))
 DESKTOPLIBS = $(LIBS) \
 					$(EXTERNAL)/hdf5/lib/libhdf5.a \
-					-L$(EXTERNAL)/qt/lib \
-					-lQtGui \
-					-lQtNetwork \
-					-lQtCore \
-					-lQtOpenGL
 					# $(QT_LIBS)
+
+ifeq ($OSX,true)
+DESKTOP_INCLUDES += -I$(EXTERNAL)/qt/lib/Qt.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtCore.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtOpenGL.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtGui.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtNetwork.framework/Headers \
+
+DESKTOPLIBS += -F$(EXTERNAL)/qt/lib \
+				       -framework QtCore \
+				       -framework QtOpenGL \
+				       -framework QtGui \
+				       -framework QtNetwork \
+				       -framework OpenGL \
+				       -framework GLUT \
+else
+DESKTOP_INCLUDES += -I$(EXTERNAL)/qt/include/Qt \
+				            -I$(EXTERNAL)/qt/include/QtCore \
+				            -I$(EXTERNAL)/qt/include/QtOpenGL \
+				            -I$(EXTERNAL)/qt/include/QtGui \
+				            -I$(EXTERNAL)/qt/include/QtNetwork \
+					
+
+DESKTOPLIBS += -L$(EXTERNAL)/qt/lib \
+					     -lQtGui \
+					     -lQtNetwork \
+					     -lQtCore \
+					     -lQtOpenGL
+endif
 
 $(BUILDDIR)/desktop/%.d: desktop/src/%.cpp
 	$(call make_d, $(DESKTOP_INCLUDES))
@@ -376,6 +408,54 @@ symbols: omni.desktop.sym
 .PHONY: desktop
 
 desktop: common $(BINDIR)/omni.desktop $(BINDIR)/omni.desktop.test
+
+ifeq ($OSX, true)
+APPDIR = $(BINDIR)/omni.desktop.app
+APPBINDIR = $(APPDIR)/Contents/MacOS
+APPFRAMEDIR = $(APPDIR)/Contents/Frameworks
+APPRESCDIR = $(APPDIR)/Contents/Resources
+
+QtMenuNib = external/srcs/qt-everywhere-opensource-src-4.8.2/src/gui/mac/qt_menu.nib
+
+QtCore = $(abspath $(EXTERNAL)/qt/lib/QtCore.framework/Versions/4/QtCore)
+QtGui = $(abspath $(EXTERNAL)/qt/lib/QtGui.framework/Versions/4/QtGui)
+QtNetwork = $(abspath $(EXTERNAL)/qt/lib/QtNetwork.framework/Versions/4/QtNetwork)
+QtOpenGL = $(abspath $(EXTERNAL)/qt/lib/QtOpenGL.framework/Versions/4/QtOpenGL)
+
+.PHONY: app
+app: $(BINDIR)/omni.desktop
+	$(ECHO) "Assembling App..."
+	$(MKDIR) -p $(APPBINDIR)
+	$(MKDIR) -p $(APPFRAMEDIR)
+	$(MKDIR) -p $(APPRESCDIR)
+
+	$(CP) $(BINDIR)/omni.desktop $(APPBINDIR)
+
+	$(CP) $(QtCore) $(APPFRAMEDIR)
+	$(CP) $(QtGui) $(APPFRAMEDIR)
+	$(CP) $(QtNetwork) $(APPFRAMEDIR)
+	$(CP) $(QtOpenGL) $(APPFRAMEDIR)
+
+	$(CP) -R $(QtMenuNib) $(APPRESCDIR)
+
+	$(INT) -id @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtCore
+	$(INT) -id @executable_path/../Frameworks/QtGui $(APPFRAMEDIR)/QtGui
+	$(INT) -id @executable_path/../Frameworks/QtNetwork $(APPFRAMEDIR)/QtNetwork
+	$(INT) -id @executable_path/../Frameworks/QtOpenGL $(APPFRAMEDIR)/QtOpenGL
+
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtGui
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtNetwork
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtOpenGL
+	$(INT) -change $(QtGui) @executable_path/../Frameworks/QtGui $(APPFRAMEDIR)/QtOpenGL
+
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtGui) @executable_path/../Frameworks/QtGui $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtNetwork) @executable_path/../Frameworks/QtNetwork $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtOpenGL) @executable_path/../Frameworks/QtOpenGL $(APPBINDIR)/omni.desktop
+
+	$(TAR) -zcvf $(BINDIR)/omni.tar.gz -C $(BINDIR) omni.desktop.app
+
+endif
 
 # URTM  #################################################
 URTM_INCLUDES = $(SERVER_INCLUDES) \
