@@ -12,6 +12,9 @@
 
 #include "math.hpp"
 
+// needed for OSX
+typedef unsigned int uint;
+
 // needed for coordinates
 #include <vmmlib/vmmlib.h>
 using namespace vmml;
@@ -19,7 +22,7 @@ using namespace vmml;
 // C++14 make_unique, ala http://stackoverflow.com/q/7038357
 namespace std {
 template <typename T, typename... Args>
-std::unique_ptr<T> make_unique(Args&& ... args) {
+std::unique_ptr<T> make_unique(Args&&... args) {
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 };
@@ -49,7 +52,8 @@ std::ostream& operator<<(std::ostream& out, const SegIDSet& in);
 
 typedef uint32_t PageNum;
 
-template <typename T> T twist(T vec, ViewType view) {
+template <typename T>
+T twist(T vec, ViewType view) {
   T out(vec);
   switch (view) {
     case XY_VIEW:
