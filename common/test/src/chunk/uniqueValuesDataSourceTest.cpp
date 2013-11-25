@@ -35,7 +35,11 @@ TEST(Chunk_UniqueValuesFileDataSource, Completeness) {
 
   utility::VolumeWalker<uint32_t> walker(cc.BoundingBox(s.Coords()), vg);
   std::set<uint32_t> voxels;
-  walker.foreach_voxel([&](coords::Data, uint32_t val) { voxels.insert(val); });
+  walker.foreach_voxel([&](coords::Data, uint32_t val) {
+    if (val) {
+      voxels.insert(val);
+    }
+  });
 
   auto uv = s.UniqueValuesDS().Get(cc);
 
