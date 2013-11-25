@@ -1,7 +1,7 @@
 # -*- Makefile -*-
 
 ifeq ($(shell uname), Darwin)
-OSX=true
+OSX = true
 endif
 
 HERE        =       .
@@ -35,7 +35,7 @@ TAR     =   $(AT)tar
 FIND     =   $(AT)find
 ARFLAGS =   rcs
 
-ifeq ($OSX,true)
+ifdef OSX
 INT     =   $(AT)install_name_tool
 endif
 
@@ -164,7 +164,7 @@ LIB64_DEPS = $(BASE64)/src/cencode.o
 
 TEST_DEPS = $(GMOCK)/src/gmock-all.o $(GMOCK)/gtest/src/gtest-all.o
 
-ifeq ($OSX, true)
+ifdef OSX
 .PHONY: all
 all: app
 else
@@ -307,7 +307,35 @@ server: common $(BINDIR)/omni.server $(BINDIR)/omni.server.test
 
 # Desktop  #################################################
 # QT_LIBRARIES = QtGui QtNetwork QtCore QtOpenGL
-# QT_FLAGS = $(shell pkg-config --cflags $(QT_LIBRARIES))
+ifdef OSX
+QTINCLUDES = -I$(EXTERNAL)/qt/lib/Qt.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtCore.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtOpenGL.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtGui.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtNetwork.framework/Headers \
+
+QTLIBS = -F$(EXTERNAL)/qt/lib \
+				       -framework QtCore \
+				       -framework QtOpenGL \
+				       -framework QtGui \
+				       -framework QtNetwork \
+				       -framework OpenGL \
+				       -framework GLUT
+else
+QTINCLUDES = -I$(EXTERNAL)/qt/include/Qt \
+				            -I$(EXTERNAL)/qt/include/QtCore \
+				            -I$(EXTERNAL)/qt/include/QtOpenGL \
+				            -I$(EXTERNAL)/qt/include/QtGui \
+				            -I$(EXTERNAL)/qt/include/QtNetwork \
+					
+
+QTLIBS = -L$(EXTERNAL)/qt/lib \
+					     -lQtGui \
+					     -lQtNetwork \
+					     -lQtCore \
+					     -lQtOpenGL
+endif
+
 DESKTOP_INCLUDES = $(INCLUDES) \
 				  -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop/include \
@@ -316,41 +344,12 @@ DESKTOP_INCLUDES = $(INCLUDES) \
 				  -I$(EXTERNAL)/qt/include \
 				  -I$(EXTERNAL)/hdf5/include \
 				  -I$(BASE64)/include \
-			          # $(QT_FLAGS)
+			    $(QTINCLUDES)
 
-# QT_LIBS = $(shell pkg-config --libs $(QT_LIBRARIES))
 DESKTOPLIBS = $(LIBS) \
 					$(EXTERNAL)/hdf5/lib/libhdf5.a \
-					# $(QT_LIBS)
+					$(QTLIBS)
 
-ifeq ($OSX,true)
-DESKTOP_INCLUDES += -I$(EXTERNAL)/qt/lib/Qt.framework/Headers \
-				            -I$(EXTERNAL)/qt/lib/QtCore.framework/Headers \
-				            -I$(EXTERNAL)/qt/lib/QtOpenGL.framework/Headers \
-				            -I$(EXTERNAL)/qt/lib/QtGui.framework/Headers \
-				            -I$(EXTERNAL)/qt/lib/QtNetwork.framework/Headers \
-
-DESKTOPLIBS += -F$(EXTERNAL)/qt/lib \
-				       -framework QtCore \
-				       -framework QtOpenGL \
-				       -framework QtGui \
-				       -framework QtNetwork \
-				       -framework OpenGL \
-				       -framework GLUT \
-else
-DESKTOP_INCLUDES += -I$(EXTERNAL)/qt/include/Qt \
-				            -I$(EXTERNAL)/qt/include/QtCore \
-				            -I$(EXTERNAL)/qt/include/QtOpenGL \
-				            -I$(EXTERNAL)/qt/include/QtGui \
-				            -I$(EXTERNAL)/qt/include/QtNetwork \
-					
-
-DESKTOPLIBS += -L$(EXTERNAL)/qt/lib \
-					     -lQtGui \
-					     -lQtNetwork \
-					     -lQtCore \
-					     -lQtOpenGL
-endif
 
 $(BUILDDIR)/desktop/%.d: desktop/src/%.cpp
 	$(call make_d, $(DESKTOP_INCLUDES))
