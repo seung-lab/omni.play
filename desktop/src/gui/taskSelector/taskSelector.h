@@ -38,6 +38,8 @@ Q_SLOTS:
   uint32_t taskID();
   void getTasks();
 
+  bool populating_;
+
   QComboBox* datasetCombo_;
   QRadioButton* allCellsRadio_;
   QRadioButton* cellRadio_;

@@ -2,7 +2,7 @@
 
 using namespace om::task;
 
-TaskSelector::TaskSelector(QWidget* p) : QDialog(p) {
+TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
   QGridLayout* layout = new QGridLayout(this);
 
   datasetCombo_ = new QComboBox(this);
@@ -51,6 +51,7 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p) {
 }
 
 void TaskSelector::showEvent(QShowEvent* event) {
+  populating_ = true;
   datasets_ = TaskManager::GetDatasets();
 
   datasetCombo_->clear();
@@ -64,9 +65,14 @@ void TaskSelector::showEvent(QShowEvent* event) {
     }
   }
   updateCells();
+  populating_ = false;
 }
 
 void TaskSelector::updateCells() {
+  if (populating_) {
+    return;
+  }
+
   cellCombo_->clear();
   if (dataset()) {
     auto cells = dataset()->cells();
@@ -123,7 +129,7 @@ uint32_t TaskSelector::cellID() {
   auto cellsref = *cells;
   if (cellRadio_->isChecked()) {
     auto idx = cellCombo_->itemData(cellCombo_->currentIndex()).toInt();
-    if (idx || idx >= cellsref.size()) {
+    if (idx >= cellsref.size()) {
       return 0;
     }
     return cellsref[idx].CellID;
