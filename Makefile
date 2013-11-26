@@ -498,7 +498,8 @@ valid: common $(BINDIR)/omni.valid
 EXPORT_INCLUDES = $(INCLUDES) \
 				 -I$(HERE)/export/src
 
-EXPORTLIBS = $(LIBS)
+EXPORTLIBS = $(LIBS) \
+					$(EXTERNAL)/boost/lib/libboost_program_options.a \
 
 $(BUILDDIR)/export/%.d: export/src/%.cpp
 	$(call make_d, $(EXPORT_INCLUDES))
