@@ -11,12 +11,13 @@ bool UniqueValuesValid::Check() const {
   chunk::Voxels<uint32_t> vg(vol_.ChunkDS(), vol_.Coords());
 
   auto chunks = vol_.Coords().MipChunkCoords();
-
   {
     Controller::Context c("Chunks");
 
     VALID_FOR(i, 0, chunks->size(), 1) {
       coords::Chunk cc = (*chunks)[i];
+      Controller::Context c(cc);
+
       auto uv = vol_.UniqueValuesDS().Get(cc);
 
       utility::VolumeWalker<uint32_t> walker(cc.BoundingBox(vol_.Coords()), vg);

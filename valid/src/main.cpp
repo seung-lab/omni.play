@@ -20,6 +20,7 @@ ZiARG_bool(sample, true, "Don't check everything, just sample.");
 #include "controller.hpp"
 #include "volume.h"
 #include "mesh.h"
+#include "uniqueValues.h"
 
 using namespace om;
 using namespace om::valid;
@@ -42,9 +43,8 @@ int TestVolume(std::string path) {
                  ZiARG_only.end();
     ZiARG_cuvm = std::find(ZiARG_only.begin(), ZiARG_only.end(), "cuvm") !=
                  ZiARG_only.end();
-    ZiARG_segment =
-        std::find(ZiARG_only.begin(), ZiARG_only.end(), "segment") !=
-        ZiARG_only.end();
+    ZiARG_segment = std::find(ZiARG_only.begin(), ZiARG_only.end(),
+                              "segment") != ZiARG_only.end();
     ZiARG_mst = std::find(ZiARG_only.begin(), ZiARG_only.end(), "mst") !=
                 ZiARG_only.end();
   }
@@ -68,6 +68,16 @@ int TestVolume(std::string path) {
 
     VolumeValid cv(seg, ZiARG_level);
     if (!cv.Check()) {
+      std::cout << path << " failed." << std::endl;
+      return 1;
+    }
+  }
+
+  if (ZiARG_cuvm) {
+    Controller::Context c("UniqueValues");
+
+    UniqueValuesValid uvv(seg, ZiARG_level);
+    if (!uvv.Check()) {
       std::cout << path << " failed." << std::endl;
       return 1;
     }
@@ -97,6 +107,8 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  om::logging::initLogging("", false);
+
   if (ZiARG_only.size() > 0) {
     ZiARG_chan = std::find(ZiARG_only.begin(), ZiARG_only.end(), "chan") !=
                  ZiARG_only.end();
@@ -106,9 +118,8 @@ int main(int argc, char *argv[]) {
                  ZiARG_only.end();
     ZiARG_cuvm = std::find(ZiARG_only.begin(), ZiARG_only.end(), "cuvm") !=
                  ZiARG_only.end();
-    ZiARG_segment =
-        std::find(ZiARG_only.begin(), ZiARG_only.end(), "segment") !=
-        ZiARG_only.end();
+    ZiARG_segment = std::find(ZiARG_only.begin(), ZiARG_only.end(),
+                              "segment") != ZiARG_only.end();
     ZiARG_mst = std::find(ZiARG_only.begin(), ZiARG_only.end(), "mst") !=
                 ZiARG_only.end();
   }
