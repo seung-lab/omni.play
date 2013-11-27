@@ -17,11 +17,17 @@ class VolumeWalker {
   }
 
   void foreach_voxel_in_set(
-      const std::set<T>& toIter,
+      const std::set<T>& included,
       std::function<void(const coords::Data&, T value)> func) {
 
+    auto wrappedFunc = [&included, func](const coords::Data& coord, T value) {
+      if (included.count(value)) {
+        func(coord, value);
+      }
+    };
+
     if (uniqueVals_ == nullptr) {
-      foreach_voxel_internal(bounds_, func);
+      foreach_voxel_internal(bounds_, wrappedFunc);
     }
 
     coords::Chunk currChunk = bounds_.getMin().ToChunk();
@@ -32,9 +38,9 @@ class VolumeWalker {
         for (; currChunk.z < maxChunk.z; ++currChunk.z) {
 
           auto vals = uniqueVals_->Get(currChunk);
-          if (vals && contains_one(*vals, toIter)) {
+          if ((bool)vals && contains(*vals, included)) {
             foreach_voxel_internal(currChunk.BoundingBox(bounds_.volume()),
-                                   func);
+                                   wrappedFunc);
           }
         }
         currChunk.z = bounds_.getMin().z;
@@ -44,7 +50,7 @@ class VolumeWalker {
   }
 
  private:
-  bool contains_one(const chunk::UniqueValues& uv, const std::set<T>& values) {
+  bool contains(const chunk::UniqueValues& uv, const std::set<T>& values) {
     for (auto& v : values) {
       if (uv.contains(v)) {
         return true;
