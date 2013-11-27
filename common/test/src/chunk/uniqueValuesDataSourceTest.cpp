@@ -29,7 +29,6 @@ TEST(Chunk_UniqueValuesFileDataSource, Get) {
 
 TEST(Chunk_UniqueValuesFileDataSource, Completeness) {
   volume::Segmentation s(URI);
-  log_variable(s.Coords().RootMipLevel());
   Voxels<uint32_t> vg(s.ChunkDS(), s.Coords());
   coords::Chunk cc(0, 1, 0, 1);
 
