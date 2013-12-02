@@ -136,15 +136,12 @@ class usersImpl {
       permissions(userFolder, all_all);
       om::file::MkDir(userSegments);
       permissions(userSegments, all_all);
-
-      om::file::CopyFile(defaultUserSegments + "mstUserEdges.data",
-                         userSegments + "mstUserEdges.data");
-      om::file::CopyFile(defaultUserSegments + "valid_group_num.data.ver1",
-                         userSegments + "valid_group_num.data.ver1");
-      permissions(userSegments + "mstUserEdges.data",
-                  all_all ^ owner_exe ^ group_exe ^ others_exe);
-      permissions(userSegments + "valid_group_num.data.ver1",
-                  all_all ^ owner_exe ^ group_exe ^ others_exe);
+      auto it = directory_iterator(defaultUserSegments);
+      for (; it != directory_iterator(); ++it) {
+        auto to = userSegments / it->path().filename();
+        copy_file(*it, to);
+        permissions(to, all_all ^ owner_exe ^ group_exe ^ others_exe);
+      }
     }
     catch (const boost::filesystem::filesystem_error& e) {
       log_errors(project / user) << "Error creating user segementation data: "

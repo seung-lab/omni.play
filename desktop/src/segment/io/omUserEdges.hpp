@@ -98,6 +98,6 @@ class OmUserEdges {
  private:
   QString filePathQStr() {
     return QString::fromStdString(
-        vol_->Folder()->GetVolUserSegmentsPathAbs("mstUserEdges.data"));
+        vol_->Folder()->GetVolSegmentsPathAbs("mstUserEdges.data"));
   }
 };

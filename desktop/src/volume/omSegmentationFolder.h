@@ -21,7 +21,6 @@ class folder {
 
   std::string GetVolSegmentsPathAbs();
   std::string GetVolSegmentsPathAbs(const std::string& subFolder);
-  std::string GetVolUserSegmentsPathAbs(const std::string& subFolder);
 
   QString RelativeVolPath();
 
