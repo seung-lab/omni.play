@@ -30,20 +30,20 @@ class VolumeWalker {
       foreach_voxel_internal(bounds_, wrappedFunc);
     }
 
-    coords::Chunk currChunk = bounds_.getMin().ToChunk();
+    coords::Chunk minChunk = bounds_.getMin().ToChunk();
     coords::Chunk maxChunk = bounds_.getMax().ToChunk();
+    auto currChunk = minChunk;
 
-    for (currChunk.z = bounds_.getMin().z; currChunk.z < maxChunk.z;
-         ++currChunk.z) {
-      for (currChunk.y = bounds_.getMin().y; currChunk.y < maxChunk.y;
-           ++currChunk.y) {
-        for (currChunk.x = bounds_.getMin().x; currChunk.x < maxChunk.x;
+    for (currChunk.z = minChunk.z; currChunk.z <= maxChunk.z; ++currChunk.z) {
+      for (currChunk.y = minChunk.y; currChunk.y <= maxChunk.y; ++currChunk.y) {
+        for (currChunk.x = minChunk.x; currChunk.x <= maxChunk.x;
              ++currChunk.x) {
-
           auto vals = uniqueVals_->Get(currChunk);
+
           if ((bool)vals && contains(*vals, included)) {
-            foreach_voxel_internal(currChunk.BoundingBox(bounds_.volume()),
-                                   wrappedFunc);
+            auto chunkbb = currChunk.BoundingBox(bounds_.volume());
+            chunkbb.intersect(bounds_);
+            foreach_voxel_internal(chunkbb, wrappedFunc);
           }
         }
       }
@@ -64,7 +64,6 @@ class VolumeWalker {
       const coords::DataBbox& bounds,
       std::function<void(const coords::Data&, T value)> func) {
     coords::Data curr = bounds.getMin();
-    log_variable(bounds);
     try {
       for (curr.z = bounds.getMin().z; curr.z < bounds.getMax().z; ++curr.z) {
         for (curr.y = bounds.getMin().y; curr.y < bounds.getMax().y; ++curr.y) {

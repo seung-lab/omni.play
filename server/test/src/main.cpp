@@ -3,6 +3,6 @@
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
-  om::logging::initLogging("", false);
+  om::logging::initLogging("", true);
   return RUN_ALL_TESTS();
 }

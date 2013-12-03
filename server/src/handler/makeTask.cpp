@@ -193,10 +193,11 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   utility::VolumeWalker<uint32_t> walker(iterBounds.ToDataBbox(pre.Coords(), 0),
                                          preGetter, &pre.UniqueValuesDS());
 
-  walker.foreach_voxel([&](const coords::Data& dc, uint32_t seg_id) {
-    if (!sel.count(seg_id)) {
-      return;
-    }
+  walker.foreach_voxel_in_set(sel,
+                              [&](const coords::Data& dc, uint32_t seg_id) {
+    // if (!sel.count(seg_id)) {
+    //   return;
+    // }
 
     coords::Global g = dc.ToGlobal();
     uint32_t post_seg_id = postGetter.GetValue(dc);
