@@ -44,8 +44,9 @@ inline Vector3i slab(const coords::GlobalBbox& bounds) {
 
 inline uint32_t toProxy(const coords::Global& g, const Vector3i& slab,
                         const coords::GlobalBbox& bounds) {
-  auto min = bounds.getMin();
-  return slab.x * slab.y * (g.z - min.z) + slab.x * (g.y - min.y) + g.x - min.x;
+  Vector3i min = bounds.getMin();
+  return slab.x * slab.y * ((int)g.z - min.z) + slab.x * ((int)g.y - min.y) +
+         (int)g.x - min.x;
 }
 
 inline coords::Global fromProxy(const uint32_t proxy, const Vector3i& slab,
@@ -62,27 +63,29 @@ inline Direction getDirection(const coords::GlobalBbox& pre,
   bounds.intersect(post);
   assert(!bounds.isEmpty());
 
-  if (bounds.getMin().x > post.getMin().x) {
-    return Direction::XMin;
+  auto dims = bounds.getDimensions();
+
+  if (dims.x < dims.y && dims.x < dims.z) {
+    if (bounds.getMin().x > post.getMin().x) {
+      return Direction::XMin;
+    } else {
+      return Direction::XMax;
+    }
   }
 
-  if (bounds.getMin().y > post.getMin().y) {
-    return Direction::YMin;
+  if (dims.y < dims.x && dims.x < dims.z) {
+    if (bounds.getMin().y > post.getMin().y) {
+      return Direction::YMin;
+    } else {
+      return Direction::YMax;
+    }
   }
 
   if (bounds.getMin().z > post.getMin().z) {
     return Direction::ZMin;
+  } else {
+    return Direction::ZMax;
   }
-
-  if (bounds.getMax().x < post.getMax().x) {
-    return Direction::XMax;
-  }
-
-  if (bounds.getMax().y < post.getMax().y) {
-    return Direction::YMax;
-  }
-
-  return Direction::ZMax;
 }
 
 inline bool inCriticalRegion(const coords::Global& g,
@@ -182,11 +185,19 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
 
   chunk::Voxels<uint32_t> preGetter(pre.ChunkDS(), pre.Coords());
   chunk::Voxels<uint32_t> postGetter(post.ChunkDS(), pre.Coords());
-  utility::VolumeWalker<uint32_t> walker(bounds.ToDataBbox(pre.Coords(), 0),
+
+  // Offset iteration bounds by 1 so we don't exceed the volume.
+  auto iterBounds = bounds;
+  iterBounds.setMin(bounds.getMin() + 1);
+
+  utility::VolumeWalker<uint32_t> walker(iterBounds.ToDataBbox(pre.Coords(), 0),
                                          preGetter, &pre.UniqueValuesDS());
 
-  walker.foreach_voxel_in_set(sel,
-                              [&](const coords::Data& dc, uint32_t seg_id) {
+  walker.foreach_voxel([&](const coords::Data& dc, uint32_t seg_id) {
+    if (!sel.count(seg_id)) {
+      return;
+    }
+
     coords::Global g = dc.ToGlobal();
     uint32_t post_seg_id = postGetter.GetValue(dc);
 
@@ -194,7 +205,6 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     mappingCounts[post_seg_id]++;
 
     uint32_t proxy = toProxy(g, range, bounds);
-    assert(proxy == toProxy(fromProxy(proxy, range, bounds), range, bounds));
     included.insert(proxy);
 
     const coords::Global g1(g.x - 1, g.y, g.z);
@@ -246,7 +256,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   }
 
   for (auto& seed : newSeedSets) {
-    log_infos(unknown) << "[" << om::string::join(seed.second) << "]";
+
     if (escapes[seed.first]) {
       seeds.push_back(makeSeed(seed.second, mappingCounts, sizes));
       log_infos(unknown) << "Spawned!";

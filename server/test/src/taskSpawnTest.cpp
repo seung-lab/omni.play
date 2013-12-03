@@ -25,7 +25,7 @@ TEST(TaskSpawnTest, Case1) {
 
   std::vector<std::map<int32_t, int32_t>> seedIds;
   handler::get_seeds(seedIds, pre, segs, post);
-  EXPECT_GT(0, seedIds.size());
+  EXPECT_GT(seedIds.size(), 0);
 }
 
 // TEST(TaskSpawnTest, Case2) {

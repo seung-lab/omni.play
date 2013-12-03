@@ -105,13 +105,7 @@ class Voxels {
                               [coordSystem_.ChunkDimensions().z]) {}
 
   T GetValue(const coords::Global& key) {
-    auto chunkCoord = key.ToChunk(coordSystem_, 0);
-    auto c = chunk(chunkCoord);
-    if (!c) {
-      return 0;
-    }
-    auto dataCoord = key.ToData(coordSystem_, 0);
-    return (*c)[dataCoord.ToChunkOffset()];
+    return GetValue(key.ToData(coordSystem_, 0));
   }
 
   T GetValue(const coords::Data& key) {
