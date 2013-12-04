@@ -5,7 +5,8 @@
 #include "datalayer/fs/omFile.hpp"
 #include "utility/omTempFile.hpp"
 
-template <typename T> class OmMemMapCompressedFile : public OmIOnDiskFile<T> {
+template <typename T>
+class OmMemMapCompressedFile : public OmIOnDiskFile<T> {
  public:
   static std::shared_ptr<OmMemMapCompressedFile<T> > CreateNumElements(
       const std::string& fnp, const int64_t numElements) {
@@ -32,7 +33,7 @@ template <typename T> class OmMemMapCompressedFile : public OmIOnDiskFile<T> {
 
  public:
   OmMemMapCompressedFile(const std::string& fnp)
-      : fnp_(fnp), data_(NULL), dataChar_(NULL) {
+      : fnp_(fnp), data_(nullptr), dataChar_(nullptr) {
     uncompressAndMap();
   }
 

@@ -29,7 +29,7 @@ class ViewGroupMainWindowUtils {
       return;
     }
 
-    QDockWidget* dockToSplit = NULL;
+    QDockWidget* dockToSplit = nullptr;
 
     if (utils_->doesDockWidgetExist(om::common::CHANNEL, viewType)) {
       dockToSplit = utils_->getDockWidget(om::common::CHANNEL, viewType);
@@ -49,8 +49,8 @@ class ViewGroupMainWindowUtils {
   }
 
   DockWidgetPair InsertDockIntoGroup4View(ViewGroupWidgetInfo& vgw) {
-    QDockWidget* dock = NULL;
-    QDockWidget* dockToTabify = NULL;
+    QDockWidget* dock = nullptr;
+    QDockWidget* dockToTabify = nullptr;
 
     if (0 == getNumDockWidgets()) {
       dock = makeDockWidget(vgw);
@@ -67,7 +67,7 @@ class ViewGroupMainWindowUtils {
       }
     }
 
-    DockWidgetPair ret = { dock, dockToTabify };
+    DockWidgetPair ret = {dock, dockToTabify};
 
     return ret;
   }
@@ -86,8 +86,8 @@ class ViewGroupMainWindowUtils {
 
     QDockWidget* dock = makeDockWidget(vgw);
 
-    //debug(viewGroup, "\t inserting %s by splitting...\n",
-    //qPrintable(dock->objectName()));
+    // debug(viewGroup, "\t inserting %s by splitting...\n",
+    // qPrintable(dock->objectName()));
 
     mainWindow_->splitDockWidget(biggest, dock, dir);
 
@@ -110,8 +110,8 @@ class ViewGroupMainWindowUtils {
   QDockWidget* insertByTabbing(ViewGroupWidgetInfo& vgw,
                                QDockWidget* widgetToTabify) {
     QDockWidget* dock = makeDockWidget(vgw);
-    //debug(viewGroup, "\t inserting %s by tabbing...\n",
-    //qPrintable(dock->objectName()));
+    // debug(viewGroup, "\t inserting %s by tabbing...\n",
+    // qPrintable(dock->objectName()));
     mainWindow_->tabifyDockWidget(widgetToTabify, dock);
 
     return dock;
@@ -179,10 +179,10 @@ class ViewGroupMainWindowUtils {
 
   QDockWidget* chooseDockToTabify(ViewGroupWidgetInfo& vgw) {
     if (VIEW3D == vgw.widgetType) {
-      return NULL;
+      return nullptr;
     }
 
-    QDockWidget* widgetToTabify = NULL;
+    QDockWidget* widgetToTabify = nullptr;
     const QString complimentaryObjName =
         utils_->makeComplimentaryObjectName(vgw);
 

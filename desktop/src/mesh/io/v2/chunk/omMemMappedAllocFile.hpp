@@ -24,7 +24,7 @@ class OmMemMappedAllocFile {
         coord_(coord),
         threshold_(threshold),
         fnp_(filePath()),
-        table_(NULL),
+        table_(nullptr),
         numEntries_(0) {}
 
   bool CreateIfNeeded() {
@@ -55,14 +55,14 @@ class OmMemMappedAllocFile {
 
   OmMeshDataEntry* Find(const OmMeshDataEntry& entry) {
     if (!table_) {
-      return NULL;
+      return nullptr;
     }
 
     OmMeshDataEntry* iter =
         std::lower_bound(table_, table_ + numEntries_, entry, compareBySegID);
 
     if (iter == table_ + numEntries_ || iter->segID != entry.segID) {
-      return NULL;
+      return nullptr;
     }
 
     return iter;
@@ -70,7 +70,7 @@ class OmMemMappedAllocFile {
 
   void Unmap() {
     file_.reset();
-    table_ = NULL;
+    table_ = nullptr;
     numEntries_ = 0;
   }
 
@@ -85,7 +85,6 @@ class OmMemMappedAllocFile {
   }
 
  private:
-
   void map() {
     file_.reset(new QFile(fnp_));
 

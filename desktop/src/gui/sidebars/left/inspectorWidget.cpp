@@ -38,7 +38,7 @@ InspectorWidget::InspectorWidget(QWidget* parent, MainWindow* mainWindow,
   ElementListBox::Create(vgs_);
   verticalLayout->addWidget(ElementListBox::Widget());
 
-  channelInspectorWidget_ = NULL;
+  channelInspectorWidget_ = nullptr;
 
   QMetaObject::connectSlotsByName(this);
 
@@ -56,7 +56,7 @@ InspectorWidget::InspectorWidget(QWidget* parent, MainWindow* mainWindow,
 
 InspectorWidget::~InspectorWidget() {
   ElementListBox::Delete();
-  OmAppState::SetInspector(NULL);
+  OmAppState::SetInspector(nullptr);
 }
 
 void InspectorWidget::openChannelView(om::common::ID chanID,
@@ -127,7 +127,7 @@ void InspectorWidget::populateDataSrcListWidget() {
     QTreeWidgetItem* row = new QTreeWidgetItem(dataSrcListWidget_);
     row->setText(NAME_COL, adw.GetName());
     row->setText(ID_COL, QString("%1").arg(adw.GetID()));
-    //row->setText(NOTE_COL, adw.getNote());
+    // row->setText(NOTE_COL, adw.getNote());
     row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
     setRowFlagsAndCheckState(row, GuiUtils::getCheckState(adw.isEnabled()));
   }
@@ -161,10 +161,10 @@ void InspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw) {
     row->setText(NAME_COL, filter.getName());
     row->setText(ID_COL, QString("%1").arg(filter.GetID()));
     row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(filter));
-    //row->setText(NOTE_COL, filter->getNote());
+    // row->setText(NOTE_COL, filter->getNote());
     row->setText(NOTE_COL, "");
     setRowFlagsAndCheckState(row, GuiUtils::getCheckState(true));
-    //row->setSelected(seg.isSelected());
+    // row->setSelected(seg.isSelected());
   }
 
   filterListWidget_->selectionModel()->blockSignals(false);
@@ -348,12 +348,12 @@ QMenu* InspectorWidget::makeDataSrcContextMenu(QTreeWidget* parent) {
 
   addSegmentationAct_ = new QAction(tr("Add Segmentation"), parent);
 
-  //addAffinityAct_ = new QAction(tr("Add Affinity"), parent);
+  // addAffinityAct_ = new QAction(tr("Add Affinity"), parent);
 
   contextMenuDataSrc_ = new QMenu(parent);
   contextMenuDataSrc_->addAction(addChannelAct_);
   contextMenuDataSrc_->addAction(addSegmentationAct_);
-  //contextMenuDataSrc_->addAction(addAffinityAct_);
+  // contextMenuDataSrc_->addAction(addAffinityAct_);
 
   return contextMenuDataSrc_;
 }

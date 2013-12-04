@@ -37,7 +37,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
       context3d_(new QGLWidget())
 #endif
       ,
-      toolBarManager_(NULL),
+      toolBarManager_(nullptr),
       brightenSelected_(true),
       annotationSize_(3) {
   mBreakThreshold = 0;

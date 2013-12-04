@@ -16,7 +16,7 @@
 
 OmSegmentsImpl::OmSegmentsImpl(OmSegmentation* segmentation,
                                OmSegmentsStore* segmentPages)
-    : OmSegmentsImplLowLevel(segmentation, segmentPages), userEdges_(NULL) {}
+    : OmSegmentsImplLowLevel(segmentation, segmentPages), userEdges_(nullptr) {}
 
 OmSegmentsImpl::~OmSegmentsImpl() {}
 
@@ -32,7 +32,7 @@ OmSegment* OmSegmentsImpl::AddSegment() {
 
 OmSegment* OmSegmentsImpl::AddSegment(const om::common::SegID value) {
   if (0 == value) {
-    return NULL;
+    return nullptr;
   }
 
   OmSegment* seg = store_->AddSegment(value);
@@ -48,12 +48,12 @@ OmSegment* OmSegmentsImpl::AddSegment(const om::common::SegID value) {
 
 OmSegment* OmSegmentsImpl::GetOrAddSegment(const om::common::SegID val) {
   if (0 == val) {
-    return NULL;
+    return nullptr;
   }
 
   OmSegment* seg = store_->GetSegment(val);
 
-  if (NULL == seg) {
+  if (nullptr == seg) {
     seg = AddSegment(val);
   }
 
@@ -116,7 +116,7 @@ OmSegmentEdge OmSegmentsImpl::splitChildFromParentNoTest(OmSegment* child) {
 
   segmentGraph_.Children()->RemoveChild(parent, child);
   segmentGraph_.Cut(child->value());
-  child->setParent(NULL);
+  child->setParent(nullptr);
   child->setThreshold(0);
 
   FindRoot(parent)->touchFreshnessForMeshes();
@@ -177,10 +177,11 @@ std::pair<bool, OmSegmentEdge> OmSegmentsImpl::JoinEdgeFromUser(
   }
 
   if (childRoot->IsValidListType() != parent->IsValidListType()) {
-    printf("not joining child %d to parent %d: child immutability is %d, but "
-           "parent's is %d\n",
-           childRoot->value(), parent->value(), childRoot->IsValidListType(),
-           parent->IsValidListType());
+    printf(
+        "not joining child %d to parent %d: child immutability is %d, but "
+        "parent's is %d\n",
+        childRoot->value(), parent->value(), childRoot->IsValidListType(),
+        parent->IsValidListType());
     return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
   }
 
@@ -405,7 +406,7 @@ std::vector<OmSegmentEdge> OmSegmentsImpl::Shatter(OmSegment* segUnknownRoot) {
       segmentGraph_.Children()->GetChildren(seg);
   FOR_EACH(iter, childrenRoot) { segs.push_back(*iter); }
 
-  OmSegment* segRet = NULL;
+  OmSegment* segRet = nullptr;
   std::vector<OmSegmentEdge> edges;
 
   while (!segs.empty()) {

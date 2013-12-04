@@ -56,7 +56,7 @@ void SegmentListBase::populateByPage() {
   const bool shouldThisTabBeMadeActive =
       segmentListWidget->populate(false, SegmentDataWrapper(), segIDs);
 
-  //debug(segmentlist, "bye!\n");
+  // debug(segmentlist, "bye!\n");
 
   if (shouldThisTabBeMadeActive) {
     makeTabActiveIfContainsJumpedToSegment();
@@ -82,7 +82,7 @@ void SegmentListBase::populateBySegment(
   const bool shouldThisTabBeMadeActive = segmentListWidget->populate(
       doScrollToSelectedSegment, segmentJustSelected, segIDs);
 
-  //debug(segmentlist, "bye!\n");
+  // debug(segmentlist, "bye!\n");
 
   if (shouldThisTabBeMadeActive) {
     makeTabActiveIfContainsJumpedToSegment();
@@ -207,7 +207,7 @@ void SegmentListBase::searchOne(const QString& text) {
 
   OmSegmentSearched::Set(sdw);
 
-  OmSegmentSelector sel(sdw_, NULL, "segmentlistbase");
+  OmSegmentSelector sel(sdw_, nullptr, "segmentlistbase");
   sel.selectJustThisSegment(segID, true);
   sel.AutoCenter(true);
   sel.sendEvent();
@@ -216,7 +216,7 @@ void SegmentListBase::searchOne(const QString& text) {
 }
 
 void SegmentListBase::searchMany(const QStringList& args) {
-  OmSegmentSelector sel(sdw_, NULL, "segmentlistbase");
+  OmSegmentSelector sel(sdw_, nullptr, "segmentlistbase");
 
   // TODO: allow modifiers (like "-" to remove a segment from the selection)
 

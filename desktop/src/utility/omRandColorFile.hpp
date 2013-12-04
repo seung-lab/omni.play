@@ -20,7 +20,7 @@ class OmRandColorFile {
   friend class OmProjectGlobals;
 
  public:
-  OmRandColorFile() : fnp_(fileName()), values_(NULL), numEntries_(0) {}
+  OmRandColorFile() : fnp_(fileName()), values_(nullptr), numEntries_(0) {}
 
   ~OmRandColorFile() {}
 
@@ -81,9 +81,9 @@ class OmRandColorFile {
           const int v = avg2 - avg * avg;
 
           if (v >= min_variance) {
-            const om::common::Color color = { static_cast<uint8_t>(r),
-                                              static_cast<uint8_t>(g),
-                                              static_cast<uint8_t>(b) };
+            const om::common::Color color = {static_cast<uint8_t>(r),
+                                             static_cast<uint8_t>(g),
+                                             static_cast<uint8_t>(b)};
             colorTable.push_back(color);
           }
         }

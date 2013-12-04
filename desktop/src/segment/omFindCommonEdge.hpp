@@ -24,7 +24,7 @@ class OmFindCommonEdge {
     OmSegment* s1 = seg1;
     while (0 != s1->parent_) {
       if (s1->parent_ == seg2) {
-        //debug(split, "splitting child from a direct parent\n");
+        // debug(split, "splitting child from a direct parent\n");
         return om::segmentEdge::MakeEdge(s1);
       }
       s1 = s1->parent_;
@@ -33,7 +33,7 @@ class OmFindCommonEdge {
     OmSegment* s2 = seg2;
     while (0 != s2->parent_) {
       if (s2->parent_ == seg1) {
-        //debug(split, "splitting child from a direct parent\n");
+        // debug(split, "splitting child from a direct parent\n");
         return om::segmentEdge::MakeEdge(s2);
       }
       s2 = s2->parent_;
@@ -43,9 +43,9 @@ class OmFindCommonEdge {
 
     OmSegment* one;
 
-    for (one = seg1; one != NULL; one = one->parent_) {
+    for (one = seg1; one != nullptr; one = one->parent_) {
       OmSegment* two;
-      for (two = seg2; two != NULL && one != two; two = two->parent_) {
+      for (two = seg2; two != nullptr && one != two; two = two->parent_) {
       }
 
       if (one == two) {

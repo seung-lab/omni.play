@@ -110,7 +110,7 @@ class usersImpl {
   }
 
   void loadUserSettings() {
-    if (settings_.get() == NULL ||
+    if (settings_.get() == nullptr ||
         settings_->getFilename() != settingsFilename()) {
       std::cout << "Reloading User Settings...\n";
       settings_.reset(new userSettings(settingsFilename()));

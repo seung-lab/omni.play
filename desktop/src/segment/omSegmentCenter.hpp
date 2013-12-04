@@ -8,7 +8,6 @@
 
 class OmSegmentCenter {
  private:
-
   boost::optional<om::dataBbox> static computeSelectedSegmentBoundingBox(
       const SegmentationDataWrapper& sdw) {
     om::dataBbox box(sdw.GetSegmentationPtr(), 0);
@@ -19,7 +18,7 @@ class OmSegmentCenter {
     const int max = 5000;
 
     OmSegment* seg = iter.getNextSegment();
-    for (int i = 0; i < max && NULL != seg; ++i) {
+    for (int i = 0; i < max && nullptr != seg; ++i) {
       const om::dataBbox segBox = seg->BoundingBox();
       if (segBox.isEmpty()) {
         continue;

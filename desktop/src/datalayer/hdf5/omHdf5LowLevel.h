@@ -26,7 +26,7 @@ class OmHdf5LowLevel {
   bool dataset_exists();
   void dataset_delete_create_tree();
   Vector3i getDatasetDims();
-  OmDataWrapperPtr readDataset(int* size = NULL);
+  OmDataWrapperPtr readDataset(int* size = nullptr);
   void allocateDataset(int size, OmDataWrapperPtr data);
 
   Vector3i getChunkedDatasetDims(const om::common::AffinityGraph aff);

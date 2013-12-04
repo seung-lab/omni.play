@@ -20,9 +20,9 @@ class OmSegments;
 class OmSegment {
  public:
   OmSegment()
-      : data_(NULL),
-        segments_(NULL),
-        parent_(NULL),
+      : data_(nullptr),
+        segments_(nullptr),
+        parent_(nullptr),
         threshold_(0),
         edgeNumber_(-1),
         freshnessForMeshes_(0) {}

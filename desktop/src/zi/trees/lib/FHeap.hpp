@@ -17,9 +17,11 @@
 namespace zi {
 namespace Trees {
 
-template <typename T> class FHeapable;
+template <typename T>
+class FHeapable;
 
-template <typename T> class FHeap {
+template <typename T>
+class FHeap {
  public:
   typedef T value_t;
   typedef FHeapable<T> heapable_t;
@@ -27,9 +29,12 @@ template <typename T> class FHeap {
   ~FHeap() { clear(); }
   void clear();
   void push(const T &v);
-  template <typename C> void push(const T &v, C &hp);
-  template <typename C> void erase(C &hp);
-  template <typename C> C *topNode() {
+  template <typename C>
+  void push(const T &v, C &hp);
+  template <typename C>
+  void erase(C &hp);
+  template <typename C>
+  C *topNode() {
     return reinterpret_cast<C *>(min_->heapable_);
   }
   T top() { return min_->value_; }
@@ -51,7 +56,8 @@ template <typename T> class FHeap {
   int size_;
 };
 
-template <typename T> void FHeap<T>::push(const T &v) {
+template <typename T>
+void FHeap<T>::push(const T &v) {
   Node *node = new Node(v);
   addToRootList(node);
   ++size_;
@@ -68,31 +74,36 @@ void FHeap<T>::push(const T &v, C &hp) {
   ++size_;
 }
 
-template <typename T> template <typename C> void FHeap<T>::erase(C &hp) {
+template <typename T>
+template <typename C>
+void FHeap<T>::erase(C &hp) {
   assert(hp.heap_ == this);
   assert(hp.node_->heapable_ == &hp);
 
   Node *node = hp.node_;
 
-  if (node->parent_ != NULL) cut(node, NULL);
+  if (node->parent_ != nullptr) cut(node, nullptr);
 
   min_ = node;
   pop();
 }
 
-template <typename T> void FHeap<T>::heapLink(FHeap::Node *y, FHeap::Node *x) {
+template <typename T>
+void FHeap<T>::heapLink(FHeap::Node *y, FHeap::Node *x) {
   removeFromRootList(y);
   x->addChild(y);
   y->mark_ = false;
 }
 
-template <typename T> void FHeap<T>::cut(FHeap::Node *x, FHeap::Node *) {
+template <typename T>
+void FHeap<T>::cut(FHeap::Node *x, FHeap::Node *) {
   x->detach();
   x->mark_ = 0;
   addToRootList(x);
 }
 
-template <typename T> void FHeap<T>::cascadingCut(FHeap::Node *y) {
+template <typename T>
+void FHeap<T>::cascadingCut(FHeap::Node *y) {
   Node *z = y->parent_;
   while (z != 0) {
     if (!y->mark_) {
@@ -105,10 +116,11 @@ template <typename T> void FHeap<T>::cascadingCut(FHeap::Node *y) {
   }
 }
 
-template <typename T> void FHeap<T>::pop() {
-  min_->heapable_ = NULL;
+template <typename T>
+void FHeap<T>::pop() {
+  min_->heapable_ = nullptr;
   Node *x = min_->child_;
-  if (x != NULL) {
+  if (x != nullptr) {
     do {
       x->parent_ = 0;
       x = x->right_;
@@ -122,7 +134,7 @@ template <typename T> void FHeap<T>::pop() {
   removeFromRootList(min_);
   if (min_->right_ == min_) {
     delete min_;
-    min_ = NULL;
+    min_ = nullptr;
   } else {
     Node *toDel = min_;
     min_ = min_->right_;
@@ -133,8 +145,9 @@ template <typename T> void FHeap<T>::pop() {
   --size_;
 }
 
-template <typename T> void FHeap<T>::addToRootList(FHeap::Node *x) {
-  if (min_ == NULL || min_->value_ > x->value_) min_ = x;
+template <typename T>
+void FHeap<T>::addToRootList(FHeap::Node *x) {
+  if (min_ == nullptr || min_->value_ > x->value_) min_ = x;
   if (rootList_) {
     x->right_ = rootList_;
     x->left_ = rootList_->left_;
@@ -145,7 +158,8 @@ template <typename T> void FHeap<T>::addToRootList(FHeap::Node *x) {
   }
 }
 
-template <typename T> void FHeap<T>::removeFromRootList(FHeap::Node *x) {
+template <typename T>
+void FHeap<T>::removeFromRootList(FHeap::Node *x) {
   x->right_->left_ = x->left_;
   x->left_->right_ = x->right_;
   if (rootList_ == x) {
@@ -153,8 +167,9 @@ template <typename T> void FHeap<T>::removeFromRootList(FHeap::Node *x) {
   }
 }
 
-template <typename T> void FHeap<T>::clear() {
-  if (rootList_ == NULL) return;
+template <typename T>
+void FHeap<T>::clear() {
+  if (rootList_ == nullptr) return;
 
   Node *z = rootList_, *n;
   do {
@@ -164,39 +179,41 @@ template <typename T> void FHeap<T>::clear() {
     z = n;
   } while (z != rootList_);
 
-  min_ = rootList_ = NULL;
+  min_ = rootList_ = nullptr;
 }
 
-template <typename T> void FHeap<T>::consolidate() {
-  Node *A[45] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  0, 0, 0 };
+template <typename T>
+void FHeap<T>::consolidate() {
+  Node *A[45] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   Node *z = min_, *n;
   int maxd = 0;
   do {
     n = z->right_;
     z->left_ = z->right_ = z;
     int d = z->degree_;
-    while (A[d] != NULL) {
+    while (A[d] != nullptr) {
       if (A[d]->value_ < z->value_) {
         heapLink(z, A[d]);
         z = A[d];
       } else {
         heapLink(A[d], z);
       }
-      A[d] = NULL;
+      A[d] = nullptr;
       ++d;
     }
     A[d] = z;
     if (d > maxd) maxd = d;
     z = n;
   } while (z != min_);
-  rootList_ = NULL;
+  rootList_ = nullptr;
   for (int d = 0; d <= maxd; d++)
     if (A[d] != 0) addToRootList(A[d]);
 }
 
-template <typename T> struct FHeap<T>::Node {
+template <typename T>
+struct FHeap<T>::Node {
   typedef typename FHeap::Node self_t;
   typedef typename FHeap::Node *self_ptr;
   typedef typename FHeap::value_t value_t;
@@ -231,13 +248,13 @@ template <typename T> struct FHeap<T>::Node {
   }
   void detach() {
     --parent_->degree_;
-    parent_->child_ = (left_ != this) ? left_ : NULL;
+    parent_->child_ = (left_ != this) ? left_ : nullptr;
     left_->right_ = right_;
     right_->left_ = left_;
-    parent_ = NULL;
+    parent_ = nullptr;
   }
   void clearChildren() {
-    if (child_ == NULL) return;
+    if (child_ == nullptr) return;
     Node *z = child_, *n;
     do {
       n = z->right_;
@@ -248,12 +265,11 @@ template <typename T> struct FHeap<T>::Node {
   }
 };
 
-template <typename T> class FHeapable {
+template <typename T>
+class FHeapable {
  public:
-  FHeapable() {}
-  ;
-  virtual ~FHeapable() {}
-  ;
+  FHeapable() {};
+  virtual ~FHeapable() {};
 
  protected:
   typedef typename FHeap<T>::Node node_t;
@@ -261,7 +277,6 @@ template <typename T> class FHeapable {
   FHeap<T> *heap_;
   node_t *node_;
 };
-
 }
 }
 

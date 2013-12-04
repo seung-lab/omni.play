@@ -46,11 +46,11 @@ class SliceDepthSpinBoxBase : public OmIntSpinBox,
       }
     }
 
-    return NULL;
+    return nullptr;
   }
 
   void actUponValueChange(const int depth) {
-    if (NULL == vg2ds()) {
+    if (nullptr == vg2ds()) {
       return;
     }
 

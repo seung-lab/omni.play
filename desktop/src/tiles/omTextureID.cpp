@@ -9,7 +9,7 @@ OmTextureID::OmTextureID(const int tileDim, std::shared_ptr<uint8_t> data)
       is8bit_(true),
       tile8_(data),
       flag_(OMTILE_NEEDTEXTUREBUILT),
-      context_(NULL) {}
+      context_(nullptr) {}
 
 OmTextureID::OmTextureID(const int tileDim,
                          std::shared_ptr<om::common::ColorARGB> data)
@@ -17,7 +17,7 @@ OmTextureID::OmTextureID(const int tileDim,
       is8bit_(false),
       tile32_(data),
       flag_(OMTILE_NEEDCOLORMAP),
-      context_(NULL) {}
+      context_(nullptr) {}
 
 OmTextureID::~OmTextureID() {
   if (textureID_) {

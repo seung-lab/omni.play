@@ -16,7 +16,7 @@ class OmGenericManagerArchive {
     in >> gm.validSet_;
     in >> gm.enabledSet_;
 
-    gm.vec_.resize(gm.size_, NULL);
+    gm.vec_.resize(gm.size_, nullptr);
 
     for (uint32_t i = 0; i < gm.validSet_.size(); ++i) {
       T* t = new T();

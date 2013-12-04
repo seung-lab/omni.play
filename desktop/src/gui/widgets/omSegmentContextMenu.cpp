@@ -59,7 +59,7 @@ void OmSegmentContextMenu::Refresh(const om::landmarks::sdwAndPt& pickPoint,
 }
 
 void OmSegmentContextMenu::doRefresh() {
-  //clear old menu actions
+  // clear old menu actions
   clear();
 
   addSelectionNames();
@@ -210,7 +210,8 @@ void OmSegmentContextMenu::showProperties() {
   SegmentDataWrapper sdw(sdw_.GetSegmentationID(), rootSegID);
 
   const QString title = QString("Segmentation %1: Segment %2")
-      .arg(sdw.GetSegmentationID()).arg(rootSegID);
+                            .arg(sdw.GetSegmentationID())
+                            .arg(rootSegID);
 
   om::event::UpdateSegmentPropBox(new SegmentInspector(sdw, this), title);
 }
@@ -230,11 +231,12 @@ void OmSegmentContextMenu::printChildren() {
     const QString fnp =
         QFileDialog::getSaveFileName(this, "Children list file name");
 
-    if (NULL == fnp) {
+    if (nullptr == fnp) {
       return;
     }
 
-    om::gui::progressBarDialog* dialog = new om::gui::progressBarDialog(NULL);
+    om::gui::progressBarDialog* dialog =
+        new om::gui::progressBarDialog(nullptr);
     dialog->push_back(zi::run_fn(zi::bind(
         OmSegmentContextMenu::writeChildrenFile, fnp, dialog, children)));
 
@@ -252,7 +254,6 @@ void OmSegmentContextMenu::writeChildrenFile(
     om::file::old::writeStrings(file, *children, dialog);
 
     dialog->TellDone("wrote file " + fnp);
-
   }
   catch (...) {
     dialog->TellDone("failed writing file " + fnp);

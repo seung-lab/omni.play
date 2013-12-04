@@ -41,7 +41,7 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
   selectionModel()->blockSignals(true);
   selectionModel()->clearSelection();
 
-  QTreeWidgetItem* rowToJumpTo = NULL;
+  QTreeWidgetItem* rowToJumpTo = nullptr;
 
   assert(100 >= segIDs->segs.size() && "too many segments returned");
 
@@ -78,7 +78,7 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 
   GuiUtils::autoResizeColumnWidths(this, 3);
 
-  if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
+  if (doScrollToSelectedSegment && rowToJumpTo != nullptr) {
     scrollToItem(rowToJumpTo);
   }
 
@@ -93,7 +93,7 @@ void OmSegmentListWidget::segmentLeftClick() {
   segmentListBase->userJustClickedInThisSegmentList();
 
   QTreeWidgetItem* current = currentItem();
-  if (NULL == current) {
+  if (nullptr == current) {
     printf("FIXME: current segment not set\n");
     return;
   }
@@ -158,7 +158,7 @@ void OmSegmentListWidget::segmentShowContexMenu(QMouseEvent* event) {
 }
 
 bool OmSegmentListWidget::isSegmentSelected() {
-  if (NULL == currentItem()) {
+  if (nullptr == currentItem()) {
     return false;
   }
   return true;

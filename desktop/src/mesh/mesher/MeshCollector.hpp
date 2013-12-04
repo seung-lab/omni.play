@@ -32,7 +32,7 @@ class MeshCollector {
   }
 
   void registerMeshPart(const om::common::SegID segID) {
-    TriStripCollector* tsc = NULL;
+    TriStripCollector* tsc = nullptr;
 
     {
       zi::guard g(lock_);
@@ -52,7 +52,7 @@ class MeshCollector {
     zi::guard g(lock_);
 
     if (meshes_.count(segID) == 0) {
-      return NULL;
+      return nullptr;
     }
 
     return meshes_[segID];

@@ -22,7 +22,7 @@ class OmHdf5Impl {
   void allocateChunkedDataset(const OmDataPath&, const Vector3i&,
                               const Vector3i&, const OmVolDataType);
 
-  OmDataWrapperPtr readDataset(const OmDataPath&, int* = NULL);
+  OmDataWrapperPtr readDataset(const OmDataPath&, int* = nullptr);
   void allocateDataset(const OmDataPath&, int, const OmDataWrapperPtr data);
   void writeDataset(const OmDataPath& path, int size,
                     const OmDataWrapperPtr data);

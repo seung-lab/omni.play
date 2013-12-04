@@ -5,7 +5,7 @@
 om::landmarks::dialog::dialog(QWidget* const parent, OmLandmarks* landmarks)
     : QDialog(parent, Qt::Tool),
       landmarks_(landmarks),
-      widget_(NULL),
+      widget_(nullptr),
       mainLayout_(new QVBoxLayout()) {
   setLayout(mainLayout_);
 }

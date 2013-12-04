@@ -23,7 +23,7 @@ class OmSegmentUtils {
 
     std::set<OmSegment*>* children = new std::set<OmSegment*>();
 
-    while (NULL != seg) {
+    while (nullptr != seg) {
       children->insert(seg);
       seg = iter.getNextSegment();
     }
@@ -39,7 +39,7 @@ class OmSegmentUtils {
 
     OmSegment* seg = iter.getNextSegment();
 
-    while (NULL != seg) {
+    while (nullptr != seg) {
       ret.push_back(seg);
       seg = iter.getNextSegment();
     }
@@ -53,7 +53,7 @@ class OmSegmentUtils {
 
     OmSegment* seg = iter.getNextSegment();
 
-    while (NULL != seg) {
+    while (nullptr != seg) {
       ret.push_back(seg);
       seg = iter.getNextSegment();
     }
@@ -98,13 +98,16 @@ class OmSegmentUtils {
 
     OmSegment* seg = iter.getNextSegment();
 
-    while (NULL != seg) {
+    while (nullptr != seg) {
       OmSegment* parent = seg->getParent();
 
       const om::common::SegID parentID = parent ? parent->value() : 0;
 
-      const QString str = QString("%1 : %2, %3, %4").arg(seg->value())
-          .arg(parentID).arg(seg->getThreshold()).arg(seg->size());
+      const QString str = QString("%1 : %2, %3, %4")
+                              .arg(seg->value())
+                              .arg(parentID)
+                              .arg(seg->getThreshold())
+                              .arg(seg->size());
 
       std::string line = str.toStdString();
       ret->push_back(line);
@@ -165,9 +168,9 @@ class OmSegmentUtils {
     //                     std::min(128, color.green()),
     //                     std::min(128, color.blue()) };
 
-    const om::common::Color c = { static_cast<uint8_t>(color.red()),
-                                  static_cast<uint8_t>(color.green()),
-                                  static_cast<uint8_t>(color.blue()) };
+    const om::common::Color c = {static_cast<uint8_t>(color.red()),
+                                 static_cast<uint8_t>(color.green()),
+                                 static_cast<uint8_t>(color.blue())};
 
     sdw.SetColor(c);
 

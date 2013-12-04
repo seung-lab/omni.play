@@ -19,7 +19,8 @@ static const uint64_t InitialNumMB = 10;
 static const uint64_t InitialNumBytes = om::math::bytesPerMB * InitialNumMB;
 static const uint64_t MinNumBytesBeforeGrowing = 20000;
 
-template <class KEY, class VAL> class OmOnDiskBoostUnorderedMap {
+template <class KEY, class VAL>
+class OmOnDiskBoostUnorderedMap {
  private:
   const OmUUID uuid_;
   const std::string fnp_;
@@ -77,7 +78,7 @@ template <class KEY, class VAL> class OmOnDiskBoostUnorderedMap {
   }
 
   void close() {
-    hash_ = NULL;
+    hash_ = nullptr;
     file_.reset();
   }
 

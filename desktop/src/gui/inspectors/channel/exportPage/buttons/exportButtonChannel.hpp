@@ -17,7 +17,7 @@ class ExportButton : public OmButton<PageExport> {
     const QString fileName =
         QFileDialog::getSaveFileName(this, tr("Export As"));
 
-    if (fileName == NULL) return;
+    if (fileName == nullptr) return;
 
     const ChannelDataWrapper& cdw = mParent->GetCDW();
 

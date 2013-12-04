@@ -5,15 +5,15 @@
 namespace om {
 namespace mesh {
 
-static const GLuint nullptr_VBO_ID = 0;
+static const GLuint NULL_VBO_ID = 0;
 
 struct VertexIndexMeshImpl {
   GLuint VertexDataVboId;
   GLuint VertexIndexDataVboId;
 
   VertexIndexMeshImpl() {
-    VertexDataVboId = nullptr_VBO_ID;
-    VertexIndexDataVboId = nullptr_VBO_ID;
+    VertexDataVboId = NULL_VBO_ID;
+    VertexIndexDataVboId = NULL_VBO_ID;
   }
 
   ~VertexIndexMeshImpl() {
@@ -23,8 +23,8 @@ struct VertexIndexMeshImpl {
   }
 
   bool isVbo() {
-    return (nullptr_VBO_ID != VertexDataVboId) ||
-           (nullptr_VBO_ID != VertexIndexDataVboId);
+    return (NULL_VBO_ID != VertexDataVboId) ||
+           (NULL_VBO_ID != VertexIndexDataVboId);
   }
 
   /*
@@ -36,7 +36,7 @@ struct VertexIndexMeshImpl {
   GLuint createVbo(const void* data, int dataSize, GLenum target,
                    GLenum usage) {
     // 0 is reserved, glGenBuffersARB() will return non-zero id if success
-    GLuint id = nullptr_VBO_ID;
+    GLuint id = NULL_VBO_ID;
 
     glGenBuffersARB(1, &id);                         // create a vbo
     glBindBufferARB(target, id);                     // activate vbo id to use
@@ -49,12 +49,12 @@ struct VertexIndexMeshImpl {
     glGetBufferParameterivARB(target, GL_BUFFER_SIZE_ARB, &bufferSize);
     if (dataSize != bufferSize) {
       glDeleteBuffersARB(1, &id);
-      id = nullptr_VBO_ID;
+      id = NULL_VBO_ID;
       log_errors(Mesh) << "Not enough memory to load VBO";
     }
 
     // unbind
-    glBindBufferARB(target, nullptr_VBO_ID);
+    glBindBufferARB(target, NULL_VBO_ID);
 
     return id;
   }
@@ -92,8 +92,8 @@ struct VertexIndexMeshImpl {
     glDeleteBuffersARB(1, &VertexDataVboId);
     glDeleteBuffersARB(1, &VertexIndexDataVboId);
 
-    VertexDataVboId = nullptr_VBO_ID;
-    VertexIndexDataVboId = nullptr_VBO_ID;
+    VertexDataVboId = NULL_VBO_ID;
+    VertexIndexDataVboId = NULL_VBO_ID;
   }
 };
 
@@ -151,8 +151,8 @@ void VertexIndexMesh::Draw() {
   glDisableClientState(GL_NORMAL_ARRAY);
 
   // release VBOs: gl*Pointer() return to normal
-  glBindBufferARB(GL_ARRAY_BUFFER_ARB, nullptr_VBO_ID);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nullptr_VBO_ID);
+  glBindBufferARB(GL_ARRAY_BUFFER_ARB, NULL_VBO_ID);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, NULL_VBO_ID);
 
   glPopAttrib();
 }

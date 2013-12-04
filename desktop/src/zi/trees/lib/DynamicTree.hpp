@@ -15,11 +15,10 @@
 
 namespace Seung {
 
-template <typename T> class DynamicTree {
+template <typename T>
+class DynamicTree {
  public:
-
-  virtual ~DynamicTree() {}
-  ;
+  virtual ~DynamicTree() {};
 
   virtual DynamicTree* rotateLeft();
   virtual DynamicTree* rotateRight();
@@ -44,43 +43,50 @@ template <typename T> class DynamicTree {
 
  protected:
   DynamicTree()
-      : left_(NULL), right_(NULL), parent_(NULL), pathParent_(NULL), key_("") {}
+      : left_(nullptr),
+        right_(nullptr),
+        parent_(nullptr),
+        pathParent_(nullptr),
+        key_("") {}
   DynamicTree(const T& key)
-      : left_(NULL),
-        right_(NULL),
-        parent_(NULL),
-        pathParent_(NULL),
+      : left_(nullptr),
+        right_(nullptr),
+        parent_(nullptr),
+        pathParent_(nullptr),
         key_(key) {}
   DynamicTree(const T& key, DynamicTree* left, DynamicTree* right,
               DynamicTree* parent)
       : left_(left),
         right_(right),
         parent_(parent),
-        pathParent_(NULL),
+        pathParent_(nullptr),
         key_(key) {}
 
   DynamicTree* left_, *right_, *parent_, *pathParent_;
   T key_;
 };
 
-template <typename T> DynamicTree<T>* DynamicTree<T>::makeTree(const T& key) {
+template <typename T>
+DynamicTree<T>* DynamicTree<T>::makeTree(const T& key) {
   return new DynamicTree(key);
 }
 
-template <typename T> DynamicTree<T>* DynamicTree<T>::cut() {
+template <typename T>
+DynamicTree<T>* DynamicTree<T>::cut() {
   access();
-  if (left_ != NULL) {
+  if (left_ != nullptr) {
     DynamicTree* toRet = left_;
-    left_->parent_ = NULL;
-    left_ = NULL;
+    left_->parent_ = nullptr;
+    left_ = nullptr;
     return toRet->findMax();
   }
   return this;
 }
 
-template <typename T> DynamicTree<T>* DynamicTree<T>::join(DynamicTree* w) {
+template <typename T>
+DynamicTree<T>* DynamicTree<T>::join(DynamicTree* w) {
   access();
-  assert(left_ == NULL);
+  assert(left_ == nullptr);
 
   w->access();
   left_ = w;
@@ -89,44 +95,47 @@ template <typename T> DynamicTree<T>* DynamicTree<T>::join(DynamicTree* w) {
   return this;
 }
 
-template <typename T> DynamicTree<T>* DynamicTree<T>::findRoot() {
+template <typename T>
+DynamicTree<T>* DynamicTree<T>::findRoot() {
   access();
   DynamicTree* v = this;
-  while (v->left_ != NULL) {
+  while (v->left_ != nullptr) {
     v = v->left_;
   }
   return v->splay();
 }
 
-template <typename T> DynamicTree<T>* DynamicTree<T>::access() {
+template <typename T>
+DynamicTree<T>* DynamicTree<T>::access() {
   splay();
   if (right_) {
     right_->pathParent_ = this;
-    right_->parent_ = NULL;
-    right_ = NULL;
+    right_->parent_ = nullptr;
+    right_ = nullptr;
   }
   DynamicTree* w, *v = this;
 
-  while (v->pathParent_ != NULL) {
+  while (v->pathParent_ != nullptr) {
     w = v->pathParent_;
     w->splay();
-    if (w->right_ != NULL) {
+    if (w->right_ != nullptr) {
       w->right_->pathParent_ = w;
-      w->right_->parent_ = NULL;
+      w->right_->parent_ = nullptr;
     }
     w->right_ = v;
     v->parent_ = w;
-    v->pathParent_ = NULL;
+    v->pathParent_ = nullptr;
     v = w;
   }
   return splay();
 }
 
-template <typename T> DynamicTree<T>* DynamicTree<T>::rotateLeft() {
-  assert(right_ != NULL);
+template <typename T>
+DynamicTree<T>* DynamicTree<T>::rotateLeft() {
+  assert(right_ != nullptr);
 
   DynamicTree* x(right_), *z(parent_);
-  if (z != NULL) {
+  if (z != nullptr) {
     if (z->left_ == this) {
       z->left_ = x;
     } else {
@@ -141,16 +150,17 @@ template <typename T> DynamicTree<T>* DynamicTree<T>::rotateLeft() {
   x->parent_ = z;
   parent_ = x;
 
-  if (right_ != NULL) right_->parent_ = this;
+  if (right_ != nullptr) right_->parent_ = this;
 
   return this;
 }
 
-template <typename T> DynamicTree<T>* DynamicTree<T>::rotateRight() {
-  assert(left_ != NULL);
+template <typename T>
+DynamicTree<T>* DynamicTree<T>::rotateRight() {
+  assert(left_ != nullptr);
 
   DynamicTree* x(left_), *z(parent_);
-  if (z != NULL) {
+  if (z != nullptr) {
     if (z->right_ == this) {
       z->right_ = x;
     } else {
@@ -165,46 +175,49 @@ template <typename T> DynamicTree<T>* DynamicTree<T>::rotateRight() {
   x->parent_ = z;
   parent_ = x;
 
-  if (left_ != NULL) left_->parent_ = this;
+  if (left_ != nullptr) left_->parent_ = this;
 
   return this;
 }
 
-template <typename T> DynamicTree<T>* DynamicTree<T>::splay() {
+template <typename T>
+DynamicTree<T>* DynamicTree<T>::splay() {
   DynamicTree* g;
-  while (parent_ != NULL) {
+  while (parent_ != nullptr) {
     g = parent_->parent_;
     if (this == parent_->left_) {
-      if ((g != NULL) && (parent_ == g->left_)) g->rotateRight();
+      if ((g != nullptr) && (parent_ == g->left_)) g->rotateRight();
       parent_->rotateRight();
     } else {
       assert(this == parent_->right_);
-      if ((g != NULL) && (parent_ == g->right_)) g->rotateLeft();
+      if ((g != nullptr) && (parent_ == g->right_)) g->rotateLeft();
       parent_->rotateLeft();
     }
   }
   return this;
 }
 
-template <typename T> void DynamicTree<T>::printTree(int d) {
+template <typename T>
+void DynamicTree<T>::printTree(int d) {
   if (left_) left_->printTree(d + 1);
-  //std::cout << std::string(d, ' ') << key_ << " ("
+  // std::cout << std::string(d, ' ') << key_ << " ("
   //          << (pathParent_?pathParent_->key_ : T()) << ")" << std::endl;
   if (right_) right_->printTree(d + 1);
 }
 
-template <typename T> DynamicTree<T>* DynamicTree<T>::findMin() {
+template <typename T>
+DynamicTree<T>* DynamicTree<T>::findMin() {
   DynamicTree* x = this;
-  while (x->left_ != NULL) x = x->left_;
+  while (x->left_ != nullptr) x = x->left_;
   return x->splay();
 }
 
-template <typename T> DynamicTree<T>* DynamicTree<T>::findMax() {
+template <typename T>
+DynamicTree<T>* DynamicTree<T>::findMax() {
   DynamicTree* x = this;
-  while (x->right_ != NULL) x = x->right_;
+  while (x->right_ != nullptr) x = x->right_;
   return x->splay();
 }
-
 };
 
 #endif

@@ -18,7 +18,7 @@ class OmColorizers {
  public:
   OmColorizers(OmViewGroupState* vgs) : vgs_(vgs) {
     std::fill(colorizers_.begin(), colorizers_.end(),
-              static_cast<OmSegmentColorizer*>(NULL));
+              static_cast<OmSegmentColorizer*>(nullptr));
   }
 
   ~OmColorizers() {

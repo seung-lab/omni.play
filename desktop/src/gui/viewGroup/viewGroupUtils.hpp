@@ -108,7 +108,7 @@ class ViewGroupUtils {
     QList<QDockWidget*> widgets = findDockWidgets(objName);
 
     if (widgets.isEmpty()) {
-      return NULL;
+      return nullptr;
     } else if (widgets.size() > 1) {
       throw om::ArgException("too many widgets");
     }
@@ -139,7 +139,7 @@ class ViewGroupUtils {
   }
 
   QDockWidget* getBiggestDockWidget() {
-    QDockWidget* biggest = NULL;
+    QDockWidget* biggest = nullptr;
     uint64_t biggest_area = 0;
 
     Q_FOREACH(QDockWidget * dock, getAllDockWidgets()) {
@@ -180,7 +180,6 @@ class ViewGroupUtils {
     OmTellInfo("segmentation " + om::string::num(sdw.GetID()) +
                " is not built");
     return false;
-
   }
 
   void wireDockWithView2d(QWidget* widget, DockWidgetPair d) {

@@ -15,7 +15,7 @@ class OmSplitting {
   SegmentDataWrapper segmentBeingSplit_;
 
  public:
-  OmSplitting() : showSplit_(false), toolBarManager_(NULL) {}
+  OmSplitting() : showSplit_(false), toolBarManager_(nullptr) {}
 
   inline bool ShowSplit() const { return showSplit_; }
 

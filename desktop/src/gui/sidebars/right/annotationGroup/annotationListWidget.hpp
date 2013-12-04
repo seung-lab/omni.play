@@ -56,7 +56,6 @@ class AnnotationListWidget : public QTreeWidget,
   typedef om::system::ManagedObject<om::annotation::data> managedAnnotation;
 
  public:
-
   void populate() {
     clear();
 
@@ -194,8 +193,8 @@ Q_SLOTS:
       return;
     }
 
-    vgs_->View2dState()
-        ->SetScaledSliceDepth(annotation->Object->coord.toGlobalCoord());
+    vgs_->View2dState()->SetScaledSliceDepth(
+        annotation->Object->coord.toGlobalCoord());
     om::event::ViewCenterChanged();
     om::event::View3dRecenter();
   }
@@ -216,7 +215,7 @@ Q_SLOTS:
     if (items.length() > 0) {
       return items[0];
     }
-    return NULL;
+    return nullptr;
   }
 
   OmMipVolume* getVol() {
@@ -234,7 +233,7 @@ Q_SLOTS:
       }
     }
 
-    return NULL;
+    return nullptr;
   }
 
   void setLocationText(QTreeWidgetItem* row, const om::annotation::data& a) {

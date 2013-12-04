@@ -29,13 +29,13 @@ class OmSegmentPage {
 
  public:
   OmSegmentPage()
-      : segmentation_(NULL),
-        segments_(NULL),
+      : segmentation_(nullptr),
+        segments_(nullptr),
         pageNum_(0),
         pageSize_(0),
-        objectPool_(NULL),
-        segmentsData_(NULL),
-        listTypePage_(NULL) {}
+        objectPool_(nullptr),
+        segmentsData_(nullptr),
+        listTypePage_(nullptr) {}
 
   OmSegmentPage(OmSegmentation* segmentation, const om::common::PageNum pageNum,
                 const uint32_t pageSize)
@@ -43,9 +43,9 @@ class OmSegmentPage {
         segments_(segmentation_->Segments()),
         pageNum_(pageNum),
         pageSize_(pageSize),
-        objectPool_(NULL),
-        segmentsData_(NULL),
-        listTypePage_(NULL) {
+        objectPool_(nullptr),
+        segmentsData_(nullptr),
+        listTypePage_(nullptr) {
     versionInfo_ =
         std::make_shared<OmSegmentPageVersion>(segmentation_, pageNum_);
 
@@ -131,7 +131,8 @@ class OmSegmentPage {
     }
   }
 
-  template <class C> void convert(C& page) {
+  template <class C>
+  void convert(C& page) {
     std::shared_ptr<OmSegmentDataV3> dataV3 = page.Read();
 
     std::shared_ptr<OmSegmentDataV4> dataV4 =

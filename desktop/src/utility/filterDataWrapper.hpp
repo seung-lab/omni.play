@@ -34,7 +34,7 @@ class FilterDataWrapper {
 
   OmFilter2d* getFilter() const {
     if (!isValid()) {
-      return NULL;
+      return nullptr;
     }
 
     return &GetChannel().FilterManager().GetFilter(mID);

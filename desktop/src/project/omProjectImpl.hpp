@@ -47,7 +47,7 @@ class OmProjectImpl {
   std::unique_ptr<OmProjectGlobals> globals_;
 
  public:
-  OmProjectImpl() : oldHDF5_(NULL), fileVersion_(0), isReadOnly_(false) {}
+  OmProjectImpl() : oldHDF5_(nullptr), fileVersion_(0), isReadOnly_(false) {}
 
   ~OmProjectImpl() {}
 
@@ -55,7 +55,7 @@ class OmProjectImpl {
 
   const QString& OmniFile() { return omniFile_; }
 
-  bool HasOldHDF5() const { return NULL != oldHDF5_; }
+  bool HasOldHDF5() const { return nullptr != oldHDF5_; }
 
   OmHdf5* OldHDF5() {
     if (!oldHDF5_) {

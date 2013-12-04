@@ -19,18 +19,22 @@
 
 #include "mex.h"
 
-template <typename T> struct MexType {
+template <typename T>
+struct MexType {
   static mxClassID CLASS;
   static bool CHECK(const mxArray *pa);
 };
 
-template <typename T> mxClassID MexType<T>::CLASS = mxUNKNOWN_CLASS;
-template <typename T> bool MexType<T>::CHECK(const mxArray *pa) {
+template <typename T>
+mxClassID MexType<T>::CLASS = mxUNKNOWN_CLASS;
+template <typename T>
+bool MexType<T>::CHECK(const mxArray *pa) {
   return false;
 }
 
 #define MEX_TYPE_SPEC_CLASS(_DTYPE_, _MXTYPE_, _MXCFN_) \
-  template <> struct MexType<_DTYPE_> {                 \
+  template <>                                           \
+  struct MexType<_DTYPE_> {                             \
     static mxClassID CLASS;                             \
     static bool CHECK(const mxArray *pa);               \
   };                                                    \
@@ -45,7 +49,8 @@ MEX_TYPE_SPEC_CLASS(uint64_t, mxUINT64_CLASS, mxIsUint64)
 MEX_TYPE_SPEC_CLASS(float, mxSINGLE_CLASS, mxIsSingle)
 MEX_TYPE_SPEC_CLASS(double, mxDOUBLE_CLASS, mxIsDouble)
 
-template <typename T> T getMexScalar(const mxArray *prhs) {
+template <typename T>
+T getMexScalar(const mxArray *prhs) {
   double d = mxGetScalar(prhs);
   return boost::lexical_cast<T>(d);
 }
@@ -88,7 +93,7 @@ template <typename T> T getMexScalar(const mxArray *prhs) {
   const _DTYPE_ *_VAR_##Data = (const _DTYPE_ *)mxGetData(_VAR_)
 
 #define DECLARE_MEX_SCALAR(_VAR_, _PRHS_, _DTYPE_) \
-  const _DTYPE_ _VAR_ = (const _DTYPE_) mxGetScalar(_PRHS_)
+  const _DTYPE_ _VAR_ = (const _DTYPE_)mxGetScalar(_PRHS_)
 
 #define DECLARE_MEX_DOUBLE(_VAR_, _PRHS_) \
   DECLARE_MEX_SCALAR(_VAR_, _PRHS_, double)
@@ -98,22 +103,22 @@ template <typename T> T getMexScalar(const mxArray *prhs) {
 #define MEX_ASSERT(_BE_TRUE_, _MSG_) \
   if (!(_BE_TRUE_)) mexErrMsgTxt(_MSG_)
 
-#define DECLARE_MEX_RET_ARRAY(_VAR_, _PLHS_, _DTYPE_, ...)        \
-  mwSize _VAR_##Dims[] = { __VA_ARGS__ };                         \
-  mwSize _VAR_##NoDims = ARRAYSIZE(_VAR_##Dims);                  \
-  _PLHS_ = mxCreateNumericArray(_VAR_##NoDims, _VAR_##Dims,       \
-                                MexType<_DTYPE_>::CLASS, mxREAL); \
-  if (_PLHS_ == NULL) mexErrMsgTxt("Unable to output" #_PLHS_);   \
+#define DECLARE_MEX_RET_ARRAY(_VAR_, _PLHS_, _DTYPE_, ...)         \
+  mwSize _VAR_##Dims[] = {__VA_ARGS__};                            \
+  mwSize _VAR_##NoDims = ARRAYSIZE(_VAR_##Dims);                   \
+  _PLHS_ = mxCreateNumericArray(_VAR_##NoDims, _VAR_##Dims,        \
+                                MexType<_DTYPE_>::CLASS, mxREAL);  \
+  if (_PLHS_ == nullptr) mexErrMsgTxt("Unable to output" #_PLHS_); \
   _DTYPE_ *_VAR_##Data = (_DTYPE_ *)mxGetData(_PLHS_)
 
 #define DECLARE_MEX_RET_ARRAY_V(_VAR_, _PLHS_, _NDIM_, _DIMS_, _DTYPE_)      \
   _PLHS_ =                                                                   \
       mxCreateNumericArray(_NDIM_, _DIMS_, MexType<_DTYPE_>::CLASS, mxREAL); \
-  if (_PLHS_ == NULL) mexErrMsgTxt("Unable to output" #_PLHS_);              \
+  if (_PLHS_ == nullptr) mexErrMsgTxt("Unable to output" #_PLHS_);           \
   mwSize _VAR_##NoElements = mxGetNumberOfElements(_PLHS_);                  \
   _DTYPE_ *_VAR_##Data = (_DTYPE_ *)mxGetData(_PLHS_)
 
-#define MEX_RET_SCALAR(_VAR_) mxCreateDoubleScalar((double) _VAR_);
+#define MEX_RET_SCALAR(_VAR_) mxCreateDoubleScalar((double)_VAR_);
 
 #define MEX_ASSERT_NDIM(_VAR_, _NDIM_) \
   MEX_ASSERT(_VAR_##NoDims == _NDIM_, #_VAR_ " doesn't have " #_NDIM_ " dims")
@@ -129,20 +134,20 @@ template <typename T> T getMexScalar(const mxArray *prhs) {
 #define MEX_ASSERT_EQ(_VAR1_, _VAR2_) \
   MEX_ASSERT(_VAR1_ == _VAR2_, #_VAR1_ " != " #_VAR2_)
 
-#define DECLARE_MEX_RET_CELL(_VAR_, _PLHS_, ...)                \
-  mwSize _VAR_##Dims[] = { __VA_ARGS__ };                       \
-  mwSize _VAR_##NoDims = ARRAYSIZE(_VAR_##Dims);                \
-  _PLHS_ = mxCreateCellArray(_VAR_##NoDims, _VAR_##Dims);       \
-  if (_PLHS_ == NULL) mexErrMsgTxt("Unable to output" #_PLHS_); \
+#define DECLARE_MEX_RET_CELL(_VAR_, _PLHS_, ...)                   \
+  mwSize _VAR_##Dims[] = {__VA_ARGS__};                            \
+  mwSize _VAR_##NoDims = ARRAYSIZE(_VAR_##Dims);                   \
+  _PLHS_ = mxCreateCellArray(_VAR_##NoDims, _VAR_##Dims);          \
+  if (_PLHS_ == nullptr) mexErrMsgTxt("Unable to output" #_PLHS_); \
   mxArray *_VAR_ = _PLHS_
 
 #define MAKE_MEX_ARRAY(_VAR_, _DTYPE_, ...)                               \
-  mwSize _VAR_##Dims[] = { __VA_ARGS__ };                                 \
+  mwSize _VAR_##Dims[] = {__VA_ARGS__};                                   \
   mwSize _VAR_##NoDims = ARRAYSIZE(_VAR_##Dims);                          \
   mxArray *_VAR_ = mxCreateNumericArray(_VAR_##NoDims, _VAR_##Dims,       \
                                         MexType<_DTYPE_>::CLASS, mxREAL); \
   const mwSize _VAR_##NoElements = mxGetNumberOfElements(_VAR_);          \
-  if (_VAR_ == NULL) mexErrMsgTxt("Unable to output" #_VAR_);             \
+  if (_VAR_ == nullptr) mexErrMsgTxt("Unable to output" #_VAR_);          \
   _DTYPE_ *_VAR_##Data = (_DTYPE_ *)mxGetData(_VAR_)
 
 #define MEX_RETURN     \

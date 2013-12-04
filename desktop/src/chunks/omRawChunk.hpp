@@ -11,7 +11,8 @@
 
 #include <QFile>
 
-template <typename T> class OmRawChunk {
+template <typename T>
+class OmRawChunk {
  private:
   OmMipVolume* const vol_;
   const om::chunkCoord coord_;
@@ -35,7 +36,7 @@ template <typename T> class OmRawChunk {
         chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord)),
         memMapFileName_(OmFileNames::GetMemMapFileNameQT(vol, coord.Level)),
         numBytes_(128 * 128 * 128 * vol_->GetBytesPerVoxel()),
-        dataRaw_(NULL),
+        dataRaw_(nullptr),
         dirty_(false) {
     readData();
   }

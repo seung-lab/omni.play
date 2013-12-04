@@ -18,7 +18,7 @@ PageBuilder::PageBuilder(QWidget* parent, const SegmentationDataWrapper& sdw)
 }
 
 void PageBuilder::build() {
-  auto* dialog = new om::gui::progressBarDialog(NULL);
+  auto* dialog = new om::gui::progressBarDialog(nullptr);
 
   dialog->push_back(zi::run_fn(
       zi::bind(PageBuilder::doBuild, sdw_, buildComboBox_->currentText(),

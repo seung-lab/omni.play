@@ -5,10 +5,10 @@
 #include "volume/omSegmentation.h"
 
 OmSegmentGraph::OmSegmentGraph()
-    : segmentation_(NULL),
-      mCache(NULL),
-      segmentPages_(NULL),
-      segmentListsLL_(NULL) {
+    : segmentation_(nullptr),
+      mCache(nullptr),
+      segmentPages_(nullptr),
+      segmentListsLL_(nullptr) {
   segsTempVec_.reserve(100);
 }
 
@@ -106,9 +106,9 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst) {
 bool OmSegmentGraph::sizeCheck(const om::common::SegID a,
                                const om::common::SegID b,
                                const double threshold) {
-  return threshold == 0 || ((segmentListsLL_->GetSizeWithChildren(Root(a)) +
-                             segmentListsLL_->GetSizeWithChildren(Root(b))) <
-                            threshold);
+  return threshold == 0 ||
+         ((segmentListsLL_->GetSizeWithChildren(Root(a)) +
+           segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold);
 }
 
 bool OmSegmentGraph::joinInternal(const om::common::SegID parentID,
@@ -139,7 +139,7 @@ bool OmSegmentGraph::joinInternal(const om::common::SegID parentID,
 
   parentRoot->touchFreshnessForMeshes();
 
-  //UpdateSizeListsFromJoin(parentRoot, childRoot );
+  // UpdateSizeListsFromJoin(parentRoot, childRoot );
   segmentListsLL_->UpdateSizeListsFromJoin(parentRoot, childRoot);
 
   return true;
@@ -164,7 +164,7 @@ bool OmSegmentGraph::splitChildFromParentInternal(
 
   children_->RemoveChild(parent, child);
   Cut(childID);
-  child->setParent(NULL);  // TODO: also set threshold??
+  child->setParent(nullptr);  // TODO: also set threshold??
   child->setEdgeNumber(-1);
 
   OmSegment* parentRoot = mCache->FindRoot(parent);
@@ -218,6 +218,6 @@ SizeAndNumPieces OmSegmentGraph::computeSegmentSizeWithChildren(
     ++numPieces;
   }
 
-  SizeAndNumPieces ret = { numVoxels, numPieces };
+  SizeAndNumPieces ret = {numVoxels, numPieces};
   return ret;
 }

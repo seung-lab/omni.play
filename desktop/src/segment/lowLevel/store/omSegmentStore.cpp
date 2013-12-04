@@ -58,7 +58,7 @@ void OmSegmentsStore::Flush() {
 }
 
 /**
- * a segment ptr is invalid if it is NULL, or has an ID of 0
+ * a segment ptr is invalid if it is nullptr, or has an ID of 0
  **/
 bool OmSegmentsStore::IsSegmentValid(const om::common::SegID value) {
   if (!value) {

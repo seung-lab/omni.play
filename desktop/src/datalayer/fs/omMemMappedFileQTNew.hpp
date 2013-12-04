@@ -3,7 +3,8 @@
 #include "datalayer/fs/omIOnDiskFile.h"
 #include "datalayer/fs/omFile.hpp"
 
-template <typename T> class OmMemMappedFileQTNew : public OmIOnDiskFile<T> {
+template <typename T>
+class OmMemMappedFileQTNew : public OmIOnDiskFile<T> {
  public:
   static std::shared_ptr<OmMemMappedFileQTNew<T> > CreateNumElements(
       const std::string& fnp, const int64_t numElements) {
@@ -30,7 +31,7 @@ template <typename T> class OmMemMappedFileQTNew : public OmIOnDiskFile<T> {
 
  public:
   OmMemMappedFileQTNew(const std::string& fnp)
-      : fnp_(fnp), data_(NULL), dataChar_(NULL), numBytes_(0) {
+      : fnp_(fnp), data_(nullptr), dataChar_(nullptr), numBytes_(0) {
     map();
   }
 

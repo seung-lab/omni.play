@@ -15,20 +15,20 @@ class OmHdf5 {
 
   const std::string& getFileNameAndPath() const { return fnp_; }
 
-  //file
+  // file
   void open();
   void close();
   void create();
   void flush();
 
-  //group
+  // group
   bool group_exists(const OmDataPath& path);
   void group_delete(const OmDataPath& path);
 
-  //data set
+  // data set
   bool dataset_exists(const OmDataPath& path);
 
-  //image I/O
+  // image I/O
   Vector3i getChunkedDatasetDims(const OmDataPath& path,
                                  const om::common::AffinityGraph aff);
   void allocateChunkedDataset(const OmDataPath&, const Vector3i&,
@@ -36,8 +36,8 @@ class OmHdf5 {
   void dataset_image_write_trim(const OmDataPath&, const om::dataBbox&,
                                 OmDataWrapperPtr data);
 
-  //data set raw
-  OmDataWrapperPtr readDataset(const OmDataPath& path, int* size = NULL);
+  // data set raw
+  OmDataWrapperPtr readDataset(const OmDataPath& path, int* size = nullptr);
   void writeDataset(const OmDataPath& path, int size,
                     const OmDataWrapperPtr data);
   OmDataWrapperPtr readChunk(const OmDataPath& path,

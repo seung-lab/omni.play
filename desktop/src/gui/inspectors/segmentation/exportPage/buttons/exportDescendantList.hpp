@@ -65,7 +65,7 @@ class ExportDescendantList : public OmButton<PageExport> {
 
     QStringList ids;
 
-    while (NULL != seg) {
+    while (nullptr != seg) {
       ids << QString::number(seg->value());
       seg = iter.getNextSegment();
     }

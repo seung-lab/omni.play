@@ -6,8 +6,8 @@
 #include "segment/coloring.hpp"
 
 OmTileCoord::OmTileCoord()
-    : OmTileCoordKey(om::chunkCoord(), om::common::XY_VIEW, -1, NULL, -1, NULL,
-                     om::segment::coloring::NUMBER_OF_ENUMS) {}
+    : OmTileCoordKey(om::chunkCoord(), om::common::XY_VIEW, -1, nullptr, -1,
+                     nullptr, om::segment::coloring::NUMBER_OF_ENUMS) {}
 
 OmTileCoord::OmTileCoord(const om::chunkCoord& cc, om::common::ViewType view,
                          uint8_t depth, OmMipVolume* vol, uint32_t freshness,

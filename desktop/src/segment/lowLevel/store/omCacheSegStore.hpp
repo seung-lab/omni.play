@@ -19,7 +19,7 @@ class OmCacheSegStore {
         numInitialPages_(initialPages_.size()) {}
 
   /**
-   * returns NULL if segment was never instantiated;
+   * returns nullptr if segment was never instantiated;
    **/
   OmSegment* GetSegment(const om::common::SegID segID) {
     return getSegment(segID, true);
@@ -46,7 +46,8 @@ class OmCacheSegStore {
       // copy;
       //   comparing vector sizes is NOT sufficient, as segments can be added in
       // any order,
-      //   thus there may be NULL pages in the copy of the vector that don't get
+      //   thus there may be nullptr pages in the copy of the vector that don't
+      // get
       // updated
       //   when initialized in the sgemtn store
       const std::vector<OmSegmentPage*> curPages = store_->Pages();
@@ -66,11 +67,11 @@ class OmCacheSegStore {
     // }
 
     if (pageNum >= pages.size()) {
-      return NULL;
+      return nullptr;
     }
 
     if (!pages[pageNum]) {
-      return NULL;
+      return nullptr;
     }
 
     OmSegmentPage& page = *pages[pageNum];
@@ -79,7 +80,7 @@ class OmCacheSegStore {
     const om::common::SegID loadedID = ret->data_->value;
 
     if (!loadedID) {
-      return NULL;
+      return nullptr;
     }
 
     if (loadedID != segID) {

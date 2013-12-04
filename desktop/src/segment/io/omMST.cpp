@@ -13,7 +13,7 @@
 double OmMST::DefaultThreshold = 0.999;
 
 OmMST::OmMST(OmSegmentation* segmentation)
-    : vol_(segmentation), numEdges_(0), edges_(NULL) {}
+    : vol_(segmentation), numEdges_(0), edges_(nullptr) {}
 
 std::string OmMST::filePathActual() {
   return vol_->Folder()->GetVolSegmentsPathAbs("mst.data");
@@ -33,7 +33,8 @@ void OmMST::Read() {
   if (expectedSize != edgesPtr_->Size()) {
     QString err =
         QString("mst sizes did not match: file was %1, but expected %2")
-            .arg(edgesPtr_->Size()).arg(expectedSize);
+            .arg(edgesPtr_->Size())
+            .arg(expectedSize);
 
     const QString is32bit("; is Omni running on a 32-bit OS?");
     err += is32bit;

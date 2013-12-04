@@ -39,7 +39,7 @@ void OmActionsImpl::ChangeSizethreshold(const SegmentationDataWrapper sdw,
   (new OmSegmentationSizeThresholdChangeAction(sdw, threshold))->Run();
 }
 
-//painting-related
+// painting-related
 void OmActionsImpl::SetVoxel(const om::common::ID segmentationID,
                              const om::globalCoord voxel,
                              const om::common::SegID segmentID) {
@@ -78,7 +78,7 @@ void OmActionsImpl::UncertainSegment(const SegmentDataWrapper sdw,
   setUncertain(sdw, uncertain);
 
   if (shouldJump && uncertain && nextSegmentIDtoJumpTo) {
-    OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), NULL,
+    OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), nullptr,
                           "jump after validate");
     sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
     sel.AutoCenter(true);
@@ -96,7 +96,7 @@ void OmActionsImpl::UncertainSegmentation(const SegmentationDataWrapper sdw,
   setUncertain(sdw, uncertain);
 
   if (shouldJump && uncertain && nextSegmentIDtoJumpTo) {
-    OmSegmentSelector sel(sdw, NULL, "jump after validate");
+    OmSegmentSelector sel(sdw, nullptr, "jump after validate");
     sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
     sel.AutoCenter(true);
     sel.sendEvent();

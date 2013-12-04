@@ -46,7 +46,7 @@ class OmSetSegmentValidRunner {
 
     if (justOneSegmentSelected && segmentGettingSetAsValid && shouldJump &&
         nextSegmentIDtoJumpTo_ && !dontCenter) {
-      OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), NULL,
+      OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), nullptr,
                             "jump after validate");
       sel.selectJustThisSegment(nextSegmentIDtoJumpTo_, true);
       sel.AutoCenter(true);
@@ -91,7 +91,7 @@ class OmSetSegmentsValidRunner {
         OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
 
     if (shouldJump && segmentGettingSetAsValid && nextSegmentIDtoJumpTo_) {
-      OmSegmentSelector sel(sdw_, NULL, "jump after validate");
+      OmSegmentSelector sel(sdw_, nullptr, "jump after validate");
       sel.selectJustThisSegment(nextSegmentIDtoJumpTo_, true);
       sel.AutoCenter(true);
       sel.sendEvent();

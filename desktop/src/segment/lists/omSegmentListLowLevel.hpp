@@ -23,7 +23,7 @@ class OmSegmentListLowLevel {
 
  public:
   OmSegmentListLowLevel(OmSegmentLists* segmentLists)
-      : segmentLists_(segmentLists), cache_(NULL), recreateGUIlists_(true) {}
+      : segmentLists_(segmentLists), cache_(nullptr), recreateGUIlists_(true) {}
 
   ~OmSegmentListLowLevel() { threadPool_.join(); }
 
@@ -104,7 +104,7 @@ class OmSegmentListLowLevel {
       size = 1;  // for newly-added segment
     }
 
-    const SegInfo info = { seg, seg->value(), size, 0 };
+    const SegInfo info = {seg, seg->value(), size, 0};
     list_[seg->value()] = info;
   }
 
@@ -124,8 +124,8 @@ class OmSegmentListLowLevel {
 
       for (uint32_t i = 0; i < pageSize; ++i) {
         OmSegment* seg = &(page[i]);
-        if (seg->value())  //seg will never be NULL
-            {
+        if (seg->value())  // seg will never be nullptr
+        {
           ++numSegs;
           addSegment(seg);
         }

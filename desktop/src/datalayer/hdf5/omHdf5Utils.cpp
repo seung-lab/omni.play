@@ -5,7 +5,7 @@
 #include "hdf5.h"
 
 void OmHdf5Utils::group_create(const int fileId, const char* path) {
-  //Creates a new empty group and links it into the file.
+  // Creates a new empty group and links it into the file.
   hid_t group_id = H5Gcreate2(fileId, path, 0, H5P_DEFAULT, H5P_DEFAULT);
   if (group_id < 0) {
     throw om::IoException("Could not create HDF5 group \"" + std::string(path) +
@@ -27,7 +27,7 @@ void OmHdf5Utils::group_delete(const int fileId, const char* path) {
 
 bool OmHdf5Utils::group_exists(const int fileId, const char* path) {
   H5E_BEGIN_TRY {
-    herr_t ret = H5Gget_objinfo(fileId, path, 0, NULL);
+    herr_t ret = H5Gget_objinfo(fileId, path, 0, nullptr);
     if (ret < 0) {
       return false;
     }
@@ -38,15 +38,15 @@ bool OmHdf5Utils::group_exists(const int fileId, const char* path) {
 bool OmHdf5Utils::dataset_exists(const int fileId, const char* path) {
   hid_t dataset_id;
 
-  //Try to open a data set
-  //Turn off error printing idea from http://www.fiberbundle.net/index.html
+  // Try to open a data set
+  // Turn off error printing idea from http://www.fiberbundle.net/index.html
   H5E_BEGIN_TRY { dataset_id = H5Dopen2(fileId, path, H5P_DEFAULT); }
   H5E_END_TRY
 
-      //if failure, then assume doesn't exist
-      if (dataset_id < 0) return false;
+  // if failure, then assume doesn't exist
+  if (dataset_id < 0) return false;
 
-  //Closes the specified dataset.
+  // Closes the specified dataset.
   herr_t ret = H5Dclose(dataset_id);
   if (ret < 0) {
     throw om::IoException("Could not close HDF5 dataset " + std::string(path));
@@ -56,7 +56,7 @@ bool OmHdf5Utils::dataset_exists(const int fileId, const char* path) {
 }
 
 void OmHdf5Utils::dataset_delete(const int fileId, const char* path) {
-  //Removes the link to an object from a group.
+  // Removes the link to an object from a group.
   herr_t err = H5Gunlink(fileId, path);
   if (err < 0) {
     throw om::IoException("Could not unlink HDF5 dataset " + std::string(path));
@@ -70,7 +70,7 @@ void OmHdf5Utils::dataset_delete_if_exists(const int fileId, const char* path) {
 }
 
 OmDataWrapperPtr OmHdf5Utils::getNullDataWrapper(const int dstype) {
-  OmDataWrapperPtr dw = getDataWrapper(NULL, dstype, om::NONE);
+  OmDataWrapperPtr dw = getDataWrapper(nullptr, dstype, om::NONE);
   return dw;
 }
 

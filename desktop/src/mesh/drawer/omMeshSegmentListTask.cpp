@@ -17,7 +17,7 @@ void OmMeshSegmentListTask::run() {
 
   OmSegPtrList segmentsToDraw;
 
-  while (NULL != seg) {
+  while (nullptr != seg) {
     if (chunkSegIDs.contains(seg->value())) {
       segmentsToDraw.push_back(seg);
     }

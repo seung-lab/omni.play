@@ -24,8 +24,8 @@ class OmNewFileDialog {
    **/
   QString GetNewFileName() {
     const QString fnp_raw = newDialog();
-    if (NULL == fnp_raw) {
-      return NULL;
+    if (nullptr == fnp_raw) {
+      return nullptr;
     }
 
     const QString fnp = OmFileNames::AddOmniExtensionIfNeeded(fnp_raw);
@@ -42,8 +42,8 @@ class OmNewFileDialog {
  private:
   QString loopUntilStringsMatch(const QString& old) {
     const QString fnp = newDialog(old);
-    if (NULL == fnp) {
-      return NULL;
+    if (nullptr == fnp) {
+      return nullptr;
     }
     if (fnp == old) {
       return fnp;

@@ -11,7 +11,8 @@
  * Michael Purcaro (Feb 2011)
  */
 
-template <class T> class OmTempFile {
+template <class T>
+class OmTempFile {
  private:
   const OmUUID uuid_;
   const std::string fnp_;
@@ -20,7 +21,7 @@ template <class T> class OmTempFile {
   T* data_;
 
  public:
-  OmTempFile() : uuid_(OmUUID()), fnp_(makeFileName()), data_(NULL) {
+  OmTempFile() : uuid_(OmUUID()), fnp_(makeFileName()), data_(nullptr) {
     if (om::file::old::exists(fnp_)) {  // should be VERY unlikely
       throw om::IoException("unique file already found");
     }

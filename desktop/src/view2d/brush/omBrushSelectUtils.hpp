@@ -16,7 +16,7 @@ class OmBrushSelectUtils {
   }
 
   void static SendEvent(OmBrushOppInfo* info, om::common::SegIDSet* segIDs) {
-    OmSegmentSelector selector(info->segmentation->GetSDW(), NULL,
+    OmSegmentSelector selector(info->segmentation->GetSDW(), nullptr,
                                "view2d_selector");
 
     selector.ShouldScroll(false);

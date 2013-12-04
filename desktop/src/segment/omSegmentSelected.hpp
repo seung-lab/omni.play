@@ -35,7 +35,7 @@ class OmSegmentSelected : private om::singletonBase<OmSegmentSelected> {
   }
 
   static void AugmentSelection(const SegmentDataWrapper& sdw) {
-    OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), NULL,
+    OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), nullptr,
                           "OmSegmentSelected");
     sel.augmentSelectedSet(sdw.getID(), true);
     sel.sendEvent();

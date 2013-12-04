@@ -133,10 +133,10 @@ class OmWatershedMetadata {
       throw om::IoException("invalid line args");
     }
 
-    SegmentationLine segInfo = { args[0], OmStringHelpers::getInt(args[1]),
-                                 OmStringHelpers::getInt(args[2]),
-                                 OmStringHelpers::getInt(args[3]),
-                                 OmStringHelpers::getInt(args[4]) };
+    SegmentationLine segInfo = {
+        args[0],                          OmStringHelpers::getInt(args[1]),
+        OmStringHelpers::getInt(args[2]), OmStringHelpers::getInt(args[3]),
+        OmStringHelpers::getInt(args[4])};
 
     segmentationFiles_[segmentationCounter_++] = segInfo;
   }
@@ -152,8 +152,8 @@ class OmWatershedMetadata {
       throw om::IoException("more than one dend found");
     }
 
-    DendLine dendInfo = { args[0], OmStringHelpers::getInt(args[1]),
-                          OmStringHelpers::getInt(args[2]) };
+    DendLine dendInfo = {args[0], OmStringHelpers::getInt(args[1]),
+                         OmStringHelpers::getInt(args[2])};
 
     dendLine_ = dendInfo;
 
@@ -170,7 +170,7 @@ class OmWatershedMetadata {
 
     while (1) {
       const QString line = in.readLine();
-      if (NULL == line || "" == line || line.startsWith("#")) {
+      if (nullptr == line || "" == line || line.startsWith("#")) {
         break;
       }
 

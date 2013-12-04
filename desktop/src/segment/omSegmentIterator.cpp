@@ -37,7 +37,7 @@ bool OmSegmentIterator::empty() { return segs_.empty(); }
 
 OmSegment* OmSegmentIterator::getNextSegment() {
   if (segs_.empty()) {
-    return NULL;
+    return nullptr;
   }
 
   OmSegment* segRet = segs_.back();

@@ -33,7 +33,7 @@ class OmLandmarks {
       return;
     }
 
-    om::landmarks::sdwAndPt s = { sdw, dataClickPoint };
+    om::landmarks::sdwAndPt s = {sdw, dataClickPoint};
 
     pts_.push_back(s);
     segments_.insert(sdw);
@@ -50,7 +50,7 @@ class OmLandmarks {
 
  private:
   void showMenu() {
-    if (dialog_ == NULL) {
+    if (dialog_ == nullptr) {
       dialog_.reset(new om::landmarks::dialog(parent_, this));
     }
     dialog_->Reset(pts_);

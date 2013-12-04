@@ -34,8 +34,8 @@ class OmFileNames {
   }
 
   static QString AddOmniExtensionIfNeeded(const QString& str) {
-    if (NULL == str) {
-      return NULL;
+    if (nullptr == str) {
+      return nullptr;
     }
 
     QString fnp = str;
@@ -54,9 +54,9 @@ class OmFileNames {
     return FilesFolder().toStdString() + "/rand_colors.raw";
   }
 
-  //TODO: cleanup!
-  //ex:
-  ///home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
+  // TODO: cleanup!
+  // ex:
+  /// home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
   template <typename T>
   static std::string GetMemMapFileName(T* vol, const int level) {
     return GetMemMapFileNameQT(vol, level).toStdString();
@@ -64,8 +64,10 @@ class OmFileNames {
 
   template <typename T>
   static QString GetVolDataFolderPath(T* vol, const int level) {
-    const QString subPath = QString("%1/%2/")
-        .arg(QString::fromStdString(vol->GetDirectoryPath())).arg(level);
+    const QString subPath =
+        QString("%1/%2/")
+            .arg(QString::fromStdString(vol->GetDirectoryPath()))
+            .arg(level);
 
     if (subPath.startsWith("/")) {
       throw om::IoException("not a relative path: " + subPath.toStdString());
@@ -89,12 +91,12 @@ class OmFileNames {
 
     const std::string volType = vol->getVolDataTypeAsStr();
 
-    const QString fnp = QString("/%1/volume.%2.raw").arg(fullPath)
-        .arg(QString::fromStdString(volType));
+    const QString fnp = QString("/%1/volume.%2.raw").arg(fullPath).arg(
+        QString::fromStdString(volType));
 
     const QString fnp_clean = QDir::cleanPath(fnp);
 
-    //ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
+    // ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
 
     return fnp_clean;
   }

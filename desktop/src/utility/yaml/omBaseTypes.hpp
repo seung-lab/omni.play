@@ -21,7 +21,7 @@ inline void operator>>(const Node& in, QString& s) {
   std::string str;
   in >> str;
 
-  if (str == "~")  // NULL Value from YAML
+  if (str == "~")  // nullptr Value from YAML
     str = "";
 
   s = QString::fromStdString(str);
@@ -29,9 +29,9 @@ inline void operator>>(const Node& in, QString& s) {
 
 inline Emitter& operator<<(Emitter& out, const om::common::Color& c) {
   out << Flow << BeginSeq;
-  out << (uint32_t) c.red;
-  out << (uint32_t) c.green;
-  out << (uint32_t) c.blue;
+  out << (uint32_t)c.red;
+  out << (uint32_t)c.green;
+  out << (uint32_t)c.blue;
   out << EndSeq;
 
   return out;
@@ -48,19 +48,22 @@ inline void operator>>(const Node& node, om::common::Color& c) {
   c.blue = temp;
 }
 
-template <class T> Emitter& operator<<(Emitter& out, const Vector3<T>& p) {
+template <class T>
+Emitter& operator<<(Emitter& out, const Vector3<T>& p) {
   out << Flow;
   out << BeginSeq << p.x << p.y << p.z << EndSeq;
   return out;
 }
 
-template <class T> void operator>>(const Node& in, Vector3<T>& p) {
+template <class T>
+void operator>>(const Node& in, Vector3<T>& p) {
   in[0] >> p.x;
   in[1] >> p.y;
   in[2] >> p.z;
 }
 
-template <class T> Emitter& operator<<(Emitter& out, const Matrix4<T>& p) {
+template <class T>
+Emitter& operator<<(Emitter& out, const Matrix4<T>& p) {
   out << Flow << BeginSeq;
   for (int i = 0; i < 16; i++) {
     out << p.array[i];
@@ -69,7 +72,8 @@ template <class T> Emitter& operator<<(Emitter& out, const Matrix4<T>& p) {
   return out;
 }
 
-template <class T> void operator>>(const Node& in, Matrix4<T>& p) {
+template <class T>
+void operator>>(const Node& in, Matrix4<T>& p) {
   T f[16];
   for (int i = 0; i < 16; i++) {
     in[i] >> f[i];
@@ -87,7 +91,7 @@ Emitter& operator<<(Emitter& out, const vmml::AxisAlignedBoundingBox<T>& b) {
 }
 
 template <class T>
-    void operator>>(const Node& in, vmml::AxisAlignedBoundingBox<T>& b) {
+void operator>>(const Node& in, vmml::AxisAlignedBoundingBox<T>& b) {
   Vector3<T> min, max;
   in["min"] >> min;
   in["max"] >> max;
@@ -102,7 +106,8 @@ Emitter& operator<<(Emitter& out, const std::unordered_set<T>& s) {
   return out;
 }
 
-template <class T> void operator>>(const Node& in, std::unordered_set<T>& s) {
+template <class T>
+void operator>>(const Node& in, std::unordered_set<T>& s) {
   FOR_EACH(it, in) {
     T item;
     *it >> item;
@@ -110,14 +115,16 @@ template <class T> void operator>>(const Node& in, std::unordered_set<T>& s) {
   }
 }
 
-template <class T> Emitter& operator<<(Emitter& out, const std::set<T>& s) {
+template <class T>
+Emitter& operator<<(Emitter& out, const std::set<T>& s) {
   out << Flow << BeginSeq;
   FOR_EACH(it, s) { out << *it; }
   out << EndSeq;
   return out;
 }
 
-template <class T> void operator>>(const Node& in, std::set<T>& s) {
+template <class T>
+void operator>>(const Node& in, std::set<T>& s) {
   FOR_EACH(it, in) {
     T item;
     *it >> item;
@@ -137,7 +144,8 @@ Emitter& operator<<(Emitter& out, const QHash<K, V>& p) {
   return out;
 }
 
-template <class K, class V> void operator>>(const Node& in, QHash<K, V>& p) {
+template <class K, class V>
+void operator>>(const Node& in, QHash<K, V>& p) {
   FOR_EACH(it, in) {
     K key;
     V value;
@@ -161,7 +169,7 @@ YAMLold::Emitter& operator<<(YAMLold::Emitter& out,
 }
 
 template <class Key, class T>
-    void operator>>(const YAMLold::Node& in, std::unordered_map<Key, T>& p) {
+void operator>>(const YAMLold::Node& in, std::unordered_map<Key, T>& p) {
   FOR_EACH(it, in) {
     Key key;
     T value;

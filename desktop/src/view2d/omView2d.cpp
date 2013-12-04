@@ -10,7 +10,7 @@ OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
                    const std::string& name)
     : OmView2dCore(parent, vol, vgs, viewtype, name),
       state_(State()),
-      complimentaryDock_(NULL),
+      complimentaryDock_(nullptr),
       mouseEvents_(new OmMouseEvents(this, state_)),
       keyEvents_(new OmKeyEvents(this, state_)),
       events_(new OmView2dEvents(this, state_)),
@@ -35,7 +35,7 @@ void OmView2d::unlinkComplimentaryDock() {
   QWidget* compWidget = complimentaryDock_->widget();
   if (compWidget) {
     OmView2d* v2d = static_cast<OmView2d*>(compWidget);
-    v2d->SetComplimentaryDockWidget(NULL);
+    v2d->SetComplimentaryDockWidget(nullptr);
   }
 }
 

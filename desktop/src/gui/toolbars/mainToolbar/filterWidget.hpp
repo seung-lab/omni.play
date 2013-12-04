@@ -19,7 +19,7 @@ class FilterWidget : private om::singletonBase<FilterWidget> {
   static void DecreaseAlpha() { instance().impl_->DecreaseAlpha(); }
 
  private:
-  FilterWidget() : impl_(NULL) {}
+  FilterWidget() : impl_(nullptr) {}
   ~FilterWidget() {}
 
   friend class zi::singleton<FilterWidget>;

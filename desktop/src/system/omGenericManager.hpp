@@ -14,7 +14,8 @@ namespace YAMLold {
 class genericManager;
 }
 
-template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
+template <typename T, typename Lock = zi::spinlock>
+class OmGenericManager {
  protected:
   static const uint32_t DEFAULT_MAP_SIZE = 10;
 
@@ -31,7 +32,7 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
 
  public:
   OmGenericManager() : nextId_(1), size_(DEFAULT_MAP_SIZE) {
-    vec_.resize(DEFAULT_MAP_SIZE, NULL);
+    vec_.resize(DEFAULT_MAP_SIZE, nullptr);
   }
 
   ~OmGenericManager() {
@@ -40,7 +41,7 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
     }
   }
 
-  //managed accessors
+  // managed accessors
   inline T& Add() {
     zi::guard g(lock_);
 
@@ -78,12 +79,12 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
     om::container::eraseRemove(vecValidPtrs_, t);
 
     delete t;
-    vec_[id] = NULL;
+    vec_[id] = nullptr;
 
     findAndSetNextValidID();
   }
 
-  //valid
+  // valid
   inline bool IsValid(const om::common::ID id) const {
     zi::guard g(lock_);
     return !isIDinvalid(id);
@@ -95,7 +96,7 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
     return validSet_;
   }
 
-  //enabled
+  // enabled
   inline bool IsEnabled(const om::common::ID id) const {
     zi::guard g(lock_);
     throwIfInvalidID(id);
@@ -131,7 +132,7 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
 
  private:
   inline bool isIDinvalid(const om::common::ID id) const {
-    return id < 1 || id >= size_ || NULL == vec_[id];
+    return id < 1 || id >= size_ || nullptr == vec_[id];
   }
 
   inline void throwIfInvalidID(const om::common::ID id) const {
@@ -145,7 +146,7 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
     // search to fill in holes in number map
     //  (holes could be present from object deletion...)
     for (uint32_t i = 1; i < size_; ++i) {
-      if (NULL == vec_[i]) {
+      if (nullptr == vec_[i]) {
         nextId_ = i;
         return;
       }
@@ -153,7 +154,7 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
 
     nextId_ = size_;
     size_ *= 2;
-    vec_.resize(size_, NULL);
+    vec_.resize(size_, nullptr);
   }
 
   friend class OmGenericManagerArchive;

@@ -27,7 +27,7 @@ class genericManager {
     in["valid set"] >> gm.validSet_;
     in["enabled set"] >> gm.enabledSet_;
     in["next id"] >> gm.nextId_;
-    gm.vec_.resize(gm.size_, NULL);
+    gm.vec_.resize(gm.size_, nullptr);
 
     int idx = 0;
     FOR_EACH(i, gm.validSet_) {

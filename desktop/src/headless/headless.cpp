@@ -265,8 +265,9 @@ void Headless::compareSegs(const QString& line) {
   QStringList segmentationIDs = args[1].split(',', QString::SkipEmptyParts);
 
   if (segmentationIDs.size() < 2) {
-    printf("Not enough segmentation IDs specified. Please specify as "
-           "'id1,id2'.\n");
+    printf(
+        "Not enough segmentation IDs specified. Please specify as "
+        "'id1,id2'.\n");
     return;
   }
 
@@ -307,7 +308,7 @@ void Headless::dumpSegTiles(const QString& line) {
 
   SegmentationDataWrapper sdw(segID);
 
-  OmViewGroupState* vgs = new OmViewGroupState(NULL);
+  OmViewGroupState* vgs = new OmViewGroupState(nullptr);
   OmTileDumper dumper(sdw.GetSegmentationPtr(), fileNameAndPath, vgs);
   dumper.DumpTiles();
 }
@@ -327,7 +328,7 @@ void Headless::dumpChannTiles(const QString& line) {
 
   ChannelDataWrapper cdw(chanID);
 
-  OmViewGroupState* vgs = new OmViewGroupState(NULL);
+  OmViewGroupState* vgs = new OmViewGroupState(nullptr);
   OmTileDumper dumper(cdw.GetChannelPtr(), file, vgs);
   dumper.DumpTiles();
 }
@@ -384,8 +385,8 @@ void Headless::ls() {
 void Headless::lsl() {
   QFileInfoList entrylist = QDir::current().entryInfoList();
   Q_FOREACH(QFileInfo f, entrylist) {
-    QString line = QString("%1%2").arg(f.fileName(), -20, ' ')
-        .arg(QString::number((double) f.size() / om::math::bytesPerMB, 'f', 3));
+    QString line = QString("%1%2").arg(f.fileName(), -20, ' ').arg(
+        QString::number((double)f.size() / om::math::bytesPerMB, 'f', 3));
     printf("%s\n", qPrintable(line));
   }
 }
@@ -489,7 +490,7 @@ void Headless::loadTIFFchann(const QString& line) {
     if (!f.isFile()) {
       continue;
     }
-    //printf("adding %s/\n", qPrintable(f.canonicalFilePath()));
+    // printf("adding %s/\n", qPrintable(f.canonicalFilePath()));
     bc.addFileNameAndPath(f.canonicalFilePath());
   }
   bc.Build();
@@ -512,7 +513,7 @@ void Headless::loadTIFFseg(const QString& line) {
     if (!f.isFile()) {
       continue;
     }
-    //printf("adding %s/\n", qPrintable(f.canonicalFilePath()));
+    // printf("adding %s/\n", qPrintable(f.canonicalFilePath()));
     bs.addFileNameAndPath(f.canonicalFilePath());
   }
 
@@ -776,7 +777,6 @@ void Headless::refindUniqueChunkValues() {
     return;
   }
   OmChunkUtils::RefindUniqueChunkValues(segmentationID_);
-
 }
 
 void Headless::importWatershed(const QString& line) {
@@ -876,8 +876,9 @@ void Headless::replaceSegSlice(const QString& line) {
   QStringList args = line.split(':', QString::SkipEmptyParts);
 
   if (args.size() < 4) {
-    printf("Please enter as "
-           "replaceSegSlice::segmentationID::fileName::sliceNum.\n");
+    printf(
+        "Please enter as "
+        "replaceSegSlice::segmentationID::fileName::sliceNum.\n");
     return;
   }
 

@@ -24,13 +24,13 @@ class genericManager {
 
   template <class T>
   static void Load(const YAMLold::Node& in, OmGenericManager<T>& gm,
-                   void (*parse)(const YAMLold::Node&, T*) = NULL) {
+                   void (*parse)(const YAMLold::Node&, T*) = nullptr) {
     in["size"] >> gm.size_;
     in["valid set"] >> gm.validSet_;
     in["enabled set"] >> gm.enabledSet_;
     in["next id"] >> gm.nextId_;
 
-    gm.vec_.resize(gm.size_, NULL);
+    gm.vec_.resize(gm.size_, nullptr);
 
     for (uint32_t i = 0; i < gm.validSet_.size(); ++i) {
       T* t = new T();
