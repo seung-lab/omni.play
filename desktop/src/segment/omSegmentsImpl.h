@@ -38,6 +38,7 @@ class OmSegmentsImpl : public OmSegmentsImplLowLevel {
   std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
   bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
   std::vector<OmSegmentEdge> Shatter(OmSegment* seg);
+  void ClearUserEdges();
 
  private:
   OmUserEdges* userEdges_;

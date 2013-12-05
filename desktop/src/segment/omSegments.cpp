@@ -285,4 +285,9 @@ std::vector<OmSegmentEdge> OmSegments::Shatter(OmSegment* seg) {
   return impl_->Shatter(seg);
 }
 
+void OmSegments::ClearUserEdges() {
+  zi::guard g(mutex_);
+  return impl_->ClearUserEdges();
+}
+
 om::segment::Selection& OmSegments::Selection() const { return *selection_; }

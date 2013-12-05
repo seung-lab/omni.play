@@ -100,7 +100,7 @@ bool ComparisonTask::Start() {
   segmentation->ClearUserChangesAndSave();
 
   for (auto& edge : edgesToAdd) {
-    sdw.Segments()->JoinEdge(OmSegmentEdge(edge.first, edge.second, 1.0));
+    sdw.Segments()->JoinEdge(OmSegmentEdge(edge.first, edge.second, 2.0));
   }
   common::SegIDSet consensusRoots;
   for (const auto& flag : segFlags) {

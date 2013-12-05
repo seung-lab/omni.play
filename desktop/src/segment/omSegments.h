@@ -85,6 +85,7 @@ class OmSegments {
   std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
   bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
   std::vector<OmSegmentEdge> Shatter(OmSegment* seg);
+  void ClearUserEdges();
 
   uint32_t getPageSize();
 

@@ -110,6 +110,9 @@ boost::optional<std::string> OmSegmentsImpl::IsSegmentCuttable(OmSegment* seg) {
 
 OmSegmentEdge OmSegmentsImpl::splitChildFromParentNoTest(OmSegment* child) {
   OmSegment* parent = child->getParent();
+  if (!parent) {
+    return OmSegmentEdge();
+  }
 
   OmSegmentEdge edgeThatGotBroken(parent->value(), child->value(),
                                   child->getThreshold());
@@ -421,4 +424,15 @@ std::vector<OmSegmentEdge> OmSegmentsImpl::Shatter(OmSegment* segUnknownRoot) {
   }
 
   return edges;
+}
+
+void OmSegmentsImpl::ClearUserEdges() {
+  // make a copy. splitting the edges in the loop modifies the list.
+  auto edges = userEdges_->Edges();
+  for (auto& edge : edges) {
+    if (edge.isValid()) {
+      splitChildFromParentNoTest(store_->GetSegment(edge.childID));
+    }
+  }
+  refreshTree();
 }

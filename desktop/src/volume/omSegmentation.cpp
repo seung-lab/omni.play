@@ -222,27 +222,18 @@ std::string OmSegmentation::GetDirectoryPath() const {
 }
 
 void OmSegmentation::ClearUserChangesAndSave() {
-  //something is murky, had to do this at the beginning 
-  //before other stuff in this function
-  OmActions::ChangeMSTthreshold(SegmentationDataWrapper(getID()), 0.999);
-  //SetDendThreshold(0.999);
-  //OmCacheManager::TouchFreshness();
-  //QCoreApplication::processEvents();
-  OmTellInfo("Hey you are ready to start the comparison task :)\n"
-      "(This dialog here is a hack to get it to work...for now)");
-
   OmMSTEdge* edges = MST()->Edges();
-
   for (uint32_t i = 0; i < MST()->NumEdges(); ++i) {
     edges[i].userSplit = 0;
     edges[i].userJoin = 0;
-    edges[i].wasJoined = 0;
   }
 
-  MST()->Flush();
+  segments_->ClearUserEdges();
 
-  MSTUserEdges()->Clear();
-  MSTUserEdges()->Save();
+  OmActions::ChangeMSTthreshold(SegmentationDataWrapper(getID()), 0.999);
+  QCoreApplication::processEvents();
+  OmTellInfo("Hey you are ready to start the comparison/reaping task :)\n"
+      "(This dialog here is a hack to get it to work...)");
 
   OmSegments* segments = Segments();
 
