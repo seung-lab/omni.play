@@ -242,11 +242,12 @@ void OmSegmentation::ClearUserChangesAndSave() {
     if (!seg) {
       continue;
     }
+    seg->RandomizeColor();
     seg->SetListType(om::common::SegListType::WORKING);
   }
 
   ValidGroupNum()->Clear();
-  ValidGroupNum()->Save();
 
+  OmCacheManager::TouchFreshness();
   OmActions::Save();
 }
