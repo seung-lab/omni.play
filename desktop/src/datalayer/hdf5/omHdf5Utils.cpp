@@ -77,7 +77,7 @@ OmDataWrapperPtr OmHdf5Utils::getNullDataWrapper(const int dstype) {
 void OmHdf5Utils::printTypeInfo(const int dstype) {
   OmDataWrapperPtr dw = getNullDataWrapper(dstype);
   std::string type = dw->getTypeAsString();
-  printf("type is %s\n", type.c_str());
+  log_infos << "type is " << type.c_str();
 }
 
 int OmHdf5Utils::getSizeofType(const int dstype) {

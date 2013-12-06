@@ -26,8 +26,6 @@ class OmCompactVolValues {
     int newValue = 1;
     FOR_EACH(iter, values) { compactedValues[*iter] = newValue++; }
 
-    printf("\n");
-
     doRewriteVol(compactedValues);
   }
 
@@ -43,7 +41,7 @@ class OmCompactVolValues {
       const om::chunkCoord& coord = *iter;
 
       ++counter;
-      printf("\rreading chunk %d of %d...", counter, numChunks);
+      log_info("\rreading chunk %d of %d...", counter, numChunks);
       fflush(stdout);
 
       OmSegChunk* chunk = vol_->GetChunk(coord);
@@ -69,8 +67,7 @@ class OmCompactVolValues {
       const om::chunkCoord& coord = *iter;
 
       ++counter;
-      printf("\rrewriting chunk %d of %d...", counter, numChunks);
-      fflush(stdout);
+      log_info("rewriting chunk %d of %d...", counter, numChunks);
 
       OmSegChunk* chunk = vol_->GetChunk(coord);
 

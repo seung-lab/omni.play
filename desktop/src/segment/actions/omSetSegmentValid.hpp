@@ -23,7 +23,7 @@ class OmSetSegmentValid {
 
     const std::string notValid = valid ? "" : " NOT";
 
-    std::cout << "setting " << selectedSegments.size() << " segments as"
+    log_infos << "setting " << selectedSegments.size() << " segments as"
               << notValid << " valid..." << std::flush;
 
     doSet(selectedSegments, valid);
@@ -33,16 +33,19 @@ class OmSetSegmentValid {
     timer.PrintDone();
   }
 
-  template <typename C> void SetAsNotValidForJoin(const C& segs) {
+  template <typename C>
+  void SetAsNotValidForJoin(const C& segs) {
     doSet(segs, false);
   }
 
-  template <typename C> void SetAsValidForJoin(const C& segs) {
+  template <typename C>
+  void SetAsValidForJoin(const C& segs) {
     doSet(segs, true);
   }
 
  private:
-  template <typename C> void doSet(const C& segs, const bool isValid) {
+  template <typename C>
+  void doSet(const C& segs, const bool isValid) {
     const om::common::SegListType listType =
         isValid ? om::common::SegListType::VALID
                 : om::common::SegListType::WORKING;

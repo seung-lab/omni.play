@@ -88,7 +88,7 @@ class OmOnDiskBoostUnorderedMap {
     const uint64_t oldSize = om::file::old::numBytes(fnp_);
     const uint64_t newSize = 5 * oldSize;
 
-    std::cout << "\tgrowing file from " << om::string::bytesToMB(oldSize)
+    log_infos << "\tgrowing file from " << om::string::bytesToMB(oldSize)
               << " to " << om::string::bytesToMB(newSize) << "..."
               << std::flush;
 
@@ -96,7 +96,7 @@ class OmOnDiskBoostUnorderedMap {
       throw om::IoException("could not resize file");
     }
 
-    std::cout << "done\n";
+    log_infos << "done\n";
 
     open();
   }

@@ -9,7 +9,8 @@
 #include <QFile>
 #include <QFileInfo>
 
-template <typename T> class OmMemMappedFileQTbase : public OmIOnDiskFile<T> {
+template <typename T>
+class OmMemMappedFileQTbase : public OmIOnDiskFile<T> {
  protected:
   const std::string fnp_;
   std::shared_ptr<QFile> file_;
@@ -17,10 +18,7 @@ template <typename T> class OmMemMappedFileQTbase : public OmIOnDiskFile<T> {
 
   OmMemMappedFileQTbase(const std::string& fnp) : fnp_(fnp) {}
 
-  virtual ~OmMemMappedFileQTbase() {
-    file_->unmap(map_);
-    //debugs(memmap) << "closing file " << GetBaseFileName() << "\n";
-  }
+  virtual ~OmMemMappedFileQTbase() { file_->unmap(map_); }
 
   uint64_t Size() const { return file_->size(); }
 
@@ -33,7 +31,7 @@ template <typename T> class OmMemMappedFileQTbase : public OmIOnDiskFile<T> {
   }
 
   void map() {
-    //std::cout << "file size is " << file_->size() << "\n";
+    // log_infos << "file size is " << file_->size();
     map_ = file_->map(0, file_->size());
     if (!map_) {
       throw om::IoException("could not map file");
@@ -60,7 +58,6 @@ template <typename T> class OmMemMappedFileQTbase : public OmIOnDiskFile<T> {
 template <typename T>
 class OmMemMappedFileReadQT : public OmMemMappedFileQTbase<T> {
  public:
-
   static std::shared_ptr<OmMemMappedFileReadQT<T> > Reader(
       const std::string& fnp) {
     OmMemMappedFileReadQT* ret = new OmMemMappedFileReadQT(fnp, 0);
@@ -74,7 +71,7 @@ class OmMemMappedFileReadQT : public OmMemMappedFileQTbase<T> {
     checkFileSize(numBytes);
     this->map();
 
-    //debug(memmap, "opened file %s\n", this->GetAbsFileName().c_str());
+    // debug(memmap, "opened file %s\n", this->GetAbsFileName().c_str());
   }
 
   // optional check of expected file size
@@ -86,7 +83,8 @@ class OmMemMappedFileReadQT : public OmMemMappedFileQTbase<T> {
     if (this->file_->size() != numBytes) {
       const QString err = QString(
           "error: input file size of %1 bytes doesn't match expected size %d")
-          .arg(this->file_->size()).arg(numBytes);
+                              .arg(this->file_->size())
+                              .arg(numBytes);
       throw om::IoException(err.toStdString());
     }
   }
@@ -95,7 +93,6 @@ class OmMemMappedFileReadQT : public OmMemMappedFileQTbase<T> {
 template <typename T>
 class OmMemMappedFileWriteQT : public OmMemMappedFileQTbase<T> {
  public:
-
   static std::shared_ptr<OmMemMappedFileWriteQT<T> > WriterNumBytes(
       const std::string& fnp, const int64_t numBytes,
       const om::common::ZeroMem shouldZeroFill) {
@@ -127,14 +124,12 @@ class OmMemMappedFileWriteQT : public OmMemMappedFileQTbase<T> {
                             om::string::num(numBytes) + " bytes");
     }
 
-    //TODO: allocate space??
+    // TODO: allocate space??
     this->map();
 
     if (om::common::ZeroMem::ZERO_FILL == shouldZeroFill) {
       memset(this->map_, 0, numBytes);
     }
-
-    //debugs(memmap) << "created file " << this->GetAbsFileName() << "\n";
   }
 
   void checkFileSize(const int64_t numBytes) {

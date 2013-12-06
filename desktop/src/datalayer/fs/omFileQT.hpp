@@ -8,7 +8,8 @@
 #include <QFileInfo>
 #include <boost/make_shared.hpp>
 
-template <typename T> class OmFileQTbase : public OmIOnDiskFile<T> {
+template <typename T>
+class OmFileQTbase : public OmIOnDiskFile<T> {
  protected:
   const std::string fnp_;
   std::shared_ptr<QFile> file_;
@@ -55,7 +56,7 @@ template <typename T> class OmFileQTbase : public OmIOnDiskFile<T> {
     if (writeBytes != numBytes) {
       throw om::IoException("could not write fully file", fnp_);
     }
-    printf("flushed %s\n", fnp_.c_str());
+    log_infos << "flushed " << fnp_.c_str();
   }
 
   T* GetPtr() const { return data_.get(); }
@@ -76,9 +77,9 @@ template <typename T> class OmFileQTbase : public OmIOnDiskFile<T> {
   }
 };
 
-template <typename T> class OmFileReadQT : public OmFileQTbase<T> {
+template <typename T>
+class OmFileReadQT : public OmFileQTbase<T> {
  public:
-
   static std::shared_ptr<OmFileReadQT<T> > Reader(const std::string& fnp) {
     OmFileReadQT* ret = new OmFileReadQT(fnp, 0);
     return std::shared_ptr<OmFileReadQT<T> >(ret);
@@ -91,7 +92,7 @@ template <typename T> class OmFileReadQT : public OmFileQTbase<T> {
     checkFileSize(numBytes);
     this->readIn();
 
-    //debug(file, "opened file %s\n", this->GetAbsFileName().c_str());
+    // debug(file, "opened file %s\n", this->GetAbsFileName().c_str());
   }
 
   // optional check of expected file size
@@ -103,13 +104,15 @@ template <typename T> class OmFileReadQT : public OmFileQTbase<T> {
     if (this->file_->size() != numBytes) {
       const QString err = QString(
           "error: input file size of %1 bytes doesn't match expected size %d")
-          .arg(this->file_->size()).arg(numBytes);
+                              .arg(this->file_->size())
+                              .arg(numBytes);
       throw om::IoException(err.toStdString());
     }
   }
 };
 
-template <typename T> class OmFileWriteQT : public OmFileQTbase<T> {
+template <typename T>
+class OmFileWriteQT : public OmFileQTbase<T> {
  public:
   static std::shared_ptr<OmFileWriteQT<T> > WriterNumBytes(
       const std::string& fnp, const int64_t numBytes,
@@ -135,7 +138,7 @@ template <typename T> class OmFileWriteQT : public OmFileQTbase<T> {
     QFile::remove(QString::fromStdString(fnp));
     this->open();
     this->file_->resize(numBytes);
-    //TODO: allocate space??
+    // TODO: allocate space??
     const int64_t bytesRead = this->readIn();
 
     if (bytesRead != numBytes) {
@@ -146,7 +149,7 @@ template <typename T> class OmFileWriteQT : public OmFileQTbase<T> {
       memset(this->data_.get(), 0, numBytes);
     }
 
-    //debug(file, "created file %s\n", this->GetAbsFileName().c_str());
+    // debug(file, "created file %s\n", this->GetAbsFileName().c_str());
   }
 
   void checkFileSize(const int64_t numBytes) {

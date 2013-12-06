@@ -16,7 +16,7 @@ class view2dCoords {
   OmViewGroupState* vgs_;
   OmZoomLevel* zoomLevel_;
   om::common::ViewType viewType_;
-  Vector4i totalViewport_;  //lower left x, lower left y, width, height
+  Vector4i totalViewport_;  // lower left x, lower left y, width, height
 
   Matrix4f screenToGlobalMat_;
   Matrix4f globalToScreenMat_;
@@ -111,7 +111,7 @@ class view2dCoords {
 
     // if(screenToGlobalMat_.m03 != screenToGlobalMat_.m03) // is NAN
     // {
-    //     std::cout << screenToGlobalMat_ << std::endl
+    //     log_infos << screenToGlobalMat_ << std::endl
     //     << location << std::endl
     //     << pan << std::endl;
     // }

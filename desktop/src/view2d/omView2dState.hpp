@@ -133,7 +133,7 @@ class OmView2dState {
   void ResetWindowState() {
     static const om::normCoord midPoint(0.5, 0.5, 0.5, vol_);
 
-    std::cout << vol_->Coords().GetDataDimensions() << std::endl;
+    log_infos << vol_->Coords().GetDataDimensions() << std::endl;
 
     om::globalCoord loc = midPoint.toGlobalCoord();
     setLocation(loc);
@@ -151,8 +151,8 @@ class OmView2dState {
         om::math::pow2int(getMipLevel()) *
         getViewTypeDepth(vol_->Coords().GetResolution()) * steps;
     const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
-    vgs_->View2dState()
-        ->SetScaledSliceDepth(viewType_, depth + numberOfSlicestoAdvance);
+    vgs_->View2dState()->SetScaledSliceDepth(viewType_,
+                                             depth + numberOfSlicestoAdvance);
 
     coords_.UpdateTransformationMatrices();
   }
@@ -162,8 +162,8 @@ class OmView2dState {
         om::math::pow2int(getMipLevel()) *
         getViewTypeDepth(vol_->Coords().GetResolution()) * steps;
     const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
-    vgs_->View2dState()
-        ->SetScaledSliceDepth(viewType_, depth - numberOfSlicestoAdvance);
+    vgs_->View2dState()->SetScaledSliceDepth(viewType_,
+                                             depth - numberOfSlicestoAdvance);
 
     coords_.UpdateTransformationMatrices();
   }
@@ -223,7 +223,8 @@ class OmView2dState {
     return OmView2dConverters::Get2PtsInPlane<T>(vec, viewType_);
   }
 
-  template <typename T> inline T getViewTypeDepth(const Vector3<T>& vec) const {
+  template <typename T>
+  inline T getViewTypeDepth(const Vector3<T>& vec) const {
     return OmView2dConverters::GetViewTypeDepth(vec, viewType_);
   }
 

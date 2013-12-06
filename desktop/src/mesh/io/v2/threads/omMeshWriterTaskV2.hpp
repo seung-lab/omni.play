@@ -11,7 +11,8 @@
 #include "mesh/omMeshManager.h"
 #include "zi/omThreads.h"
 
-template <typename U> class OmMeshWriterTaskV2 : public zi::runnable {
+template <typename U>
+class OmMeshWriterTaskV2 : public zi::runnable {
  private:
   OmSegmentation* const seg_;
   OmMeshFilePtrCache* const filePtrCache_;
@@ -62,7 +63,7 @@ template <typename U> class OmMeshWriterTaskV2 : public zi::runnable {
         writeOutData(chunk_data, mesh_, OmMeshCoord(coord_, segID_));
 
     if (!entry.wasMeshed) {
-      std::cout << "Wrote unmeshed Entry..." << std::endl;
+      log_infos << "Wrote unmeshed Entry..." << std::endl;
     }
 
     chunk_table->Set(entry);
@@ -138,20 +139,17 @@ template <typename U> class OmMeshWriterTaskV2 : public zi::runnable {
   }
 
   void printInfoAboutSkippedSegment(std::shared_ptr<OmDataForMeshLoad>) {
-    std::cout << "skipping segID " << segID_ << " in chunk " << coord_ << "\n";
+    log_infos << "skipping segID " << segID_ << " in chunk " << coord_;
   }
 
   void printInfoAboutSkippedSegment(TriStripCollector* triStrips) {
-    printf(".");
-
     const int vertexData = triStrips->data_.size();
     const int vertexIndex = triStrips->indices_.size();
     const int stripsSize = triStrips->strips_.size();
 
-    std::cout << "skipping segID " << segID_ << " in chunk " << coord_
+    log_infos << "skipping segID " << segID_ << " in chunk " << coord_
               << "; vertexData size (" << vertexData << ")"
               << "; vertexIndex size (" << vertexIndex << ")"
-              << "; stripsSize size (" << stripsSize << ")"
-              << "\n";
+              << "; stripsSize size (" << stripsSize << ")";
   }
 };

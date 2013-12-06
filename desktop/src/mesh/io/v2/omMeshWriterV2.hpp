@@ -35,7 +35,7 @@ class OmMeshWriterV2 {
 
     bool allGood = true;
 
-    std::cout << "\nchecking that all segments were meshed...\n";
+    log_infos << "\nchecking that all segments were meshed...\n";
 
     FOR_EACH(iter, *coordsPtr) {
       OmMeshChunkAllocTableV2* chunk_table =
@@ -47,10 +47,10 @@ class OmMeshWriterV2 {
     }
 
     if (allGood) {
-      std::cout << "all segments meshed!\n";
+      log_infos << "all segments meshed!\n";
 
     } else {
-      std::cout << "\nERROR: some segments not meshed!\n";
+      log_infos << "\nERROR: some segments not meshed!\n";
       throw om::IoException("some segments not meshed");
     }
 
@@ -102,7 +102,7 @@ class OmMeshWriterV2 {
     static const uint32_t maxNumberTasks = 500;
     const uint32_t curNumberTasks = filePtrCache_->NumTasks();
     if (curNumberTasks > maxNumberTasks) {
-      std::cout << "write back queue size " << curNumberTasks << "\n";
+      log_infos << "write back queue size " << curNumberTasks;
     }
 
     if (om::common::ShouldBufferWrites::BUFFER_WRITES == buffferWrites &&

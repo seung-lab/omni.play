@@ -15,7 +15,8 @@
 
 #include <QFileInfo>
 
-template <typename VOL> class OmVolumeBuilderBase {
+template <typename VOL>
+class OmVolumeBuilderBase {
  private:
   VOL* const vol_;
 
@@ -99,17 +100,17 @@ template <typename VOL> class OmVolumeBuilderBase {
 
  private:
   void loadDendrogramWrapper(OmSegmentation* vol) {
-    printf("************************\n");
-    printf("loading MST...\n");
+    log_infos << "************************";
+    log_infos << "loading MST...";
 
     if (!loadDendrogram(vol)) {
-      printf("no MST found\n");
-      printf("************************\n");
+      log_infos << "no MST found";
+      log_infos << "************************";
       return;
     }
 
-    printf("Segmentation MST load done\n");
-    printf("************************\n");
+    log_infos << "Segmentation MST load done";
+    log_infos << "************************";
 
     OmActions::ChangeMSTthreshold(vol->GetSDW(), OmMST::DefaultThreshold);
     om::event::SegmentModified();

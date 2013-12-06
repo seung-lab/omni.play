@@ -51,7 +51,7 @@ void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps) {
 }
 
 void om::segmentation::loader::rebuildSegments() {
-  std::cout << "no segment folder; rebuild segment data?\n==> (y/N)  "
+  log_infos << "no segment folder; rebuild segment data?\n==> (y/N)  "
             << std::flush;
 
   std::string answer;

@@ -12,7 +12,7 @@ class OmSegmentCutActionImpl {
  private:
   SegmentDataWrapper sdw_;
   QVector<OmSegmentEdge> edges_;
-  QString desc;  //TODO: rename to desc_
+  QString desc;  // TODO: rename to desc_
 
  public:
   OmSegmentCutActionImpl() {}
@@ -34,7 +34,7 @@ class OmSegmentCutActionImpl {
 
     desc = QString("Cut seg %1; %2 edges").arg(seg->value()).arg(edges.size());
 
-    std::cout << desc.toStdString() << "\n";
+    log_infos << desc.toStdString();
 
     om::event::SegmentModified();
 
@@ -78,7 +78,8 @@ class OmSegmentCutActionImpl {
   QString classNameForLogFile() const { return "OmSegmentCutAction"; }
 
  private:
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
   friend class QDataStream& operator<<(QDataStream&,
                                        const OmSegmentCutActionImpl&);
   friend class QDataStream& operator>>(QDataStream&, OmSegmentCutActionImpl&);

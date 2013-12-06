@@ -82,7 +82,6 @@ void processHits(GLint hits, int **ppNamesRet, int *pNumNamesRet) {
   GLuint *ptrNames = nullptr;
   GLuint numberOfNames = 0;
 
-  // printf ("hits = %d\n", hits);
   // find closest hit
   ptr = (GLuint *)buffer;
   minZ = 0xffffffff;
@@ -122,8 +121,8 @@ int unprojectPixel(int x, int y, GLdouble point[]) {
   glGetDoublev(GL_PROJECTION_MATRIX, projection);
   glGetIntegerv(GL_VIEWPORT, viewport);
 
-  winX = (float) x;
-  winY = (float) viewport[3] - (float) y;
+  winX = (float)x;
+  winY = (float)viewport[3] - (float)y;
   glReadPixels(x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
 
   // if invalid depth buffer value (1.0f is cleared buffer value)
@@ -159,11 +158,18 @@ void popGlState() {
 /////////////////////////////////
 ///////          Shapes Macros
 static void drawBox(GLfloat size, GLenum type) {
-  static GLfloat n[6][3] = { { -1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 },
-                             { 1.0, 0.0, 0.0 }, { 0.0, -1.0, 0.0 },
-                             { 0.0, 0.0, 1.0 }, { 0.0, 0.0, -1.0 } };
-  static GLint faces[6][4] = { { 0, 1, 2, 3 }, { 3, 2, 6, 7 }, { 7, 6, 5, 4 },
-                               { 4, 5, 1, 0 }, { 5, 6, 2, 1 }, { 7, 4, 0, 3 } };
+  static GLfloat n[6][3] = {{-1.0, 0.0, 0.0},
+                            {0.0, 1.0, 0.0},
+                            {1.0, 0.0, 0.0},
+                            {0.0, -1.0, 0.0},
+                            {0.0, 0.0, 1.0},
+                            {0.0, 0.0, -1.0}};
+  static GLint faces[6][4] = {{0, 1, 2, 3},
+                              {3, 2, 6, 7},
+                              {7, 6, 5, 4},
+                              {4, 5, 1, 0},
+                              {5, 6, 2, 1},
+                              {7, 4, 0, 3}};
   GLfloat v[8][3];
   GLint i;
 

@@ -82,7 +82,8 @@ class OmTileDrawer {
     tileCountIncomplete_ = 0;
   }
 
-  template <typename V> void draw(V* vol) {
+  template <typename V>
+  void draw(V* vol) {
     determineWhichTilesToDraw(vol);
 
     const bool finished = openglTileDrawer_->DrawTiles(tilesToDraw_);
@@ -121,8 +122,8 @@ class OmTileDrawer {
   }
 
   void getTilesNonBlocking(OmTileCoordsAndLocationsPtr tileCoordsAndLocations) {
-    static const TextureVectices defaultTextureVectices = { { 0.f, 1.f },
-                                                            { 1.f, 0.f } };
+    static const TextureVectices defaultTextureVectices = {{0.f, 1.f},
+                                                           {1.f, 0.f}};
 
     FOR_EACH(tileCL, *tileCoordsAndLocations) {
       OmTilePtr tile;
@@ -130,11 +131,10 @@ class OmTileDrawer {
                        om::common::Blocking::NON_BLOCKING);
 
       if (tile) {
-        OmTileAndVertices tv = { tile, tileCL->vertices,
-                                 defaultTextureVectices };
+        OmTileAndVertices tv = {tile, tileCL->vertices, defaultTextureVectices};
         tilesToDraw_.push_back(tv);
 
-        // std::cout << "drawing tile: " << tileCL->tileCoord << "\n";
+        // log_infos << "drawing tile: " << tileCL->tileCoord;
 
       } else {
         ++tileCountIncomplete_;
@@ -187,10 +187,9 @@ class OmTileDrawer {
       if (om::OVERLAY_NONE == filterType ||
           alpha <
               0.05)  // don't bother drawing segmentation if user won't see it
-          {
+      {
         drawChannel = true;
         continue;
-
       }
 
       if (om::OVERLAY_CHANNEL == filterType) {

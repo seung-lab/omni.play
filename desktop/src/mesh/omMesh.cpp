@@ -123,9 +123,9 @@ void OmMesh::makeDisplayList(QGLContext const* context) {
     uint32_t* stripOffsetSizeData = data_->StripData();
     for (uint32_t idx = 0; idx < data_->StripDataCount(); ++idx) {
       glDrawElements(
-          GL_TRIANGLE_STRIP,  // triangle strip
-          stripOffsetSizeData[2 * idx + 1],  // elements in strip
-          GL_UNSIGNED_INT,  // type
+          GL_TRIANGLE_STRIP,                           // triangle strip
+          stripOffsetSizeData[2 * idx + 1],            // elements in strip
+          GL_UNSIGNED_INT,                             // type
           (GLuint*)0 + stripOffsetSizeData[2 * idx]);  // strip offset
     }
   }
@@ -135,9 +135,9 @@ void OmMesh::makeDisplayList(QGLContext const* context) {
     uint32_t* trianOffsetSizeData = data_->TrianData();
     for (uint32_t idx = 0; idx < data_->TrianDataCount(); ++idx) {
       glDrawElements(
-          GL_TRIANGLES,  // triangle trian
-          trianOffsetSizeData[2 * idx + 1],  // elements in trian
-          GL_UNSIGNED_INT,  // type
+          GL_TRIANGLES,                                // triangle trian
+          trianOffsetSizeData[2 * idx + 1],            // elements in trian
+          GL_UNSIGNED_INT,                             // type
           (GLuint*)0 + trianOffsetSizeData[2 * idx]);  // trian offset
     }
   }
@@ -192,7 +192,7 @@ GLuint OmMesh::createVbo(const void* data, int dataSize, GLenum target,
   if (dataSize != bufferSize) {
     glDeleteBuffersARB(1, &id);
     id = NULL_VBO_ID;
-    printf("Not enough memory to load VBO\n");
+    log_infos << "Not enough memory to load VBO";
   }
 
   // unbind

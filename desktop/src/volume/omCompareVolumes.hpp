@@ -25,22 +25,23 @@ class OmCompareVolumes {
    * Returns true if two given volumes are exactly the same.
    * Prints all positions where volumes differ if verbose flag is set.
    */
-  template <typename VOL> static bool compareVolumes(VOL* vol1, VOL* vol2) {
-    //check if dimensions are the same
+  template <typename VOL>
+  static bool compareVolumes(VOL* vol1, VOL* vol2) {
+    // check if dimensions are the same
     if (vol1->Coords().GetExtent().getUnitDimensions() !=
         vol2->Coords().GetExtent().getUnitDimensions()) {
-      printf("Volumes differ: Different dimensions.\n");
+      log_infos << "Volumes differ: Different dimensions.";
       return false;
     }
 
-    //root mip level should be the same if data dimensions are the same
+    // root mip level should be the same if data dimensions are the same
     if (vol1->Coords().GetRootMipLevel() != vol2->Coords().GetRootMipLevel()) {
-      printf("Volumes differ: Different number of MIP levels.\n");
+      log_infos << "Volumes differ: Different number of MIP levels.";
       return false;
     }
 
     for (int level = 0; level <= vol1->Coords().GetRootMipLevel(); ++level) {
-      printf("Comparing mip level %i\n", level);
+      log_infos << "Comparing mip level " << level;
 
       std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
           vol1->GetMipChunkCoords(level);
@@ -52,7 +53,7 @@ class OmCompareVolumes {
           continue;
         }
 
-        std::cout << "\tchunks differ at " << coord << "; aborting...\n";
+        log_infos << "\tchunks differ at " << coord << "; aborting...\n";
         return false;
       }
     }
@@ -70,12 +71,12 @@ class OmCompareVolumes {
     OmChunk* chunk2 = vol2->GetChunk(coord);
 
     if (chunk1->GetCoordinate() != chunk2->GetCoordinate()) {
-      printf("Chunks differ: Different coords.\n");
+      log_infos << "Chunks differ: Different coords.";
       return false;
     }
 
     if (chunk1->GetDimensions() != chunk2->GetDimensions()) {
-      printf("Chunks differ: Different dimensions.\n");
+      log_infos << "Chunks differ: Different dimensions.";
       return false;
     }
 

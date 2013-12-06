@@ -17,7 +17,8 @@
 
 namespace zi {
 
-template <typename T> class DynamicForestPool {
+template <typename T>
+class DynamicForestPool {
  private:
   struct Node {
     T l_, r_, p_, pp_;
@@ -34,7 +35,6 @@ template <typename T> class DynamicForestPool {
   ~DynamicForestPool() { free(x_); }
 
  private:
-
   uint64_t numBytes() const { return numBytes(size_); }
 
   static uint64_t numBytes(const size_t s) { return s * sizeof(Node); }
@@ -197,7 +197,7 @@ template <typename T> class DynamicForestPool {
       print(x_[d].l_, o + 2);
     }
 
-    std::cout << std::string(o, ' ') << d << " (" << x_[d].l_ << ", "
+    log_infos << std::string(o, ' ') << d << " (" << x_[d].l_ << ", "
               << x_[d].r_ << ", " << x_[d].p_ << ", " << x_[d].pp_ << ")"
               << std::endl;
 
@@ -209,7 +209,7 @@ template <typename T> class DynamicForestPool {
  public:
   void Print(const int d) {
     print(d + 1, 0);
-    std::cout << "---\n";
+    log_infos << "---\n";
   }
 
   void Clear() { clear(); }
@@ -227,7 +227,6 @@ template <typename T> class DynamicForestPool {
       x_[x_[n + 1].l_].p_ = 0;
       x_[n + 1].l_ = 0;
     }
-
   }
 
   void Join(const T n, const T w) {

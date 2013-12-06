@@ -39,27 +39,28 @@ class OmBuildVolumes {
   }
 
   void startTiming(const QString& type, OmTimer& timer) {
-    printf("starting %s build...\n", qPrintable(type));
+    log_info("starting %s build...\n", qPrintable(type));
     timer.start();
   }
 
   void stopTimingAndSave(const QString& type, OmTimer& timer) {
     OmActions::Save();
     const double time = timer.s_elapsed();
-    printf("done: %s build performed in (%.6f secs)\n", qPrintable(type), time);
-    printf("************\n");
+    log_info("done: %s build performed in (%.6f secs)\n", qPrintable(type),
+             time);
+    log_infos << "************";
   }
 
  private:
   bool are_file_names_valid() {
     if (mFileNamesAndPaths.empty()) {
-      printf("\tError: can't build: no files selected\n");
+      log_infos << "\tError: can't build: no files selected";
       return false;
     }
 
     FOR_EACH(iter, mFileNamesAndPaths) {
       if (!iter->exists()) {
-        printf("file does not exist: %s\n", qPrintable(iter->filePath()));
+        log_infos << "file does not exist: " << qPrintable(iter->filePath());
         return false;
       }
 
@@ -68,7 +69,7 @@ class OmBuildVolumes {
           "h5" == ext || "hdf5" == ext) {
 
       } else {
-        printf("invalid file: %s\n", qPrintable(iter->filePath()));
+        log_infos << "invalid file: " << qPrintable(iter->filePath());
         return false;
       }
     }

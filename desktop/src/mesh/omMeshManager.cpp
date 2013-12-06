@@ -58,13 +58,13 @@ void OmMeshManager::loadThreadhold1() {
 
 void OmMeshManager::loadThreadholdNon1() {
   if (!metadata_->Load()) {
-    std::cout << "could not load mesh for " << threshold_ << "\n";
+    log_infos << "could not load mesh for " << threshold_;
   }
 }
 
 void OmMeshManager::inferMeshMetadata() {
   if (!OmProject::HasOldHDF5()) {
-    printf("no HDF5 file found\n");
+    log_infos << "no HDF5 file found";
     return;
   }
 
@@ -72,11 +72,11 @@ void OmMeshManager::inferMeshMetadata() {
 
   if (hdf5Reader.IsAnyMeshDataPresent()) {
     metadata_->SetMeshedAndStorageAsHDF5();
-    printf("HDF5 meshes found\n");
+    log_infos << "HDF5 meshes found";
     return;
   }
 
-  printf("no HDF5 meshes found\n");
+  log_infos << "no HDF5 meshes found";
 }
 
 OmMeshPtr OmMeshManager::Produce(const OmMeshCoord& coord) {

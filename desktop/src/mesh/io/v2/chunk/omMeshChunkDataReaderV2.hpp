@@ -21,7 +21,8 @@ class OmMeshChunkDataReaderV2 {
   ~OmMeshChunkDataReaderV2() {}
 
   // no locking needed
-  template <typename T> std::shared_ptr<T> Read(const OmMeshFilePart& entry) {
+  template <typename T>
+  std::shared_ptr<T> Read(const OmMeshFilePart& entry) {
     const int64_t numBytes = entry.totalBytes;
 
     assert(numBytes);
@@ -42,8 +43,8 @@ class OmMeshChunkDataReaderV2 {
     const int64_t bytesRead = reader.read(dataCharPtr, numBytes);
 
     if (bytesRead != numBytes) {
-      std::cout << "could not read data; numBytes is " << numBytes
-                << ", but only read " << bytesRead << "\n" << std::flush;
+      log_infos << "could not read data; numBytes is " << numBytes
+                << ", but only read " << bytesRead;
       throw om::IoException("could not read fully file");
     }
 

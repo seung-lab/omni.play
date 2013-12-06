@@ -64,7 +64,7 @@ void SegmentInspector::setSegObjColor() {
 
   color = OmSegmentUtils::SetSegColor(sdw_, color);
 
-  //std::cout << "set color to " << color << "\n";
+  // log_infos << "set color to " << color;
 
   const QPixmap pixm = om::utils::color::ColorAsQPixmap(sdw_.GetColorInt());
   colorButton->setIcon(QIcon(pixm));

@@ -31,7 +31,7 @@ class OmSegmentSplitActionImpl {
     desc =
         QString("Split seg %1 from %2").arg(mEdge.childID).arg(mEdge.parentID);
 
-    std::cout << desc.toStdString() << "\n";
+    log_infos << desc.toStdString();
 
     om::event::SegmentModified();
 
@@ -48,12 +48,12 @@ class OmSegmentSplitActionImpl {
     std::pair<bool, OmSegmentEdge> edge = sdw.Segments()->JoinEdge(mEdge);
 
     if (!mEdge.childID || !mEdge.parentID) {
-      printf("Can't undo a join that probably failed.\n");
+      log_infos << "Can't undo a join that probably failed.";
       return;
     }
 
     if (!edge.first) {
-      std::cout << "edge could not be rejoined...\n";
+      log_infos << "edge could not be rejoined...";
       return;
     }
 
@@ -76,7 +76,8 @@ class OmSegmentSplitActionImpl {
   QString classNameForLogFile() const { return "OmSegmentSplitAction"; }
 
  private:
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
   friend class QDataStream& operator<<(QDataStream&,
                                        const OmSegmentSplitActionImpl&);
   friend class QDataStream& operator>>(QDataStream&, OmSegmentSplitActionImpl&);

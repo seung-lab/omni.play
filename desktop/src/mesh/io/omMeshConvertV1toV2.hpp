@@ -43,8 +43,7 @@ class OmMeshConvertV1toV2 {
     const om::chunkCoord& coord = meshCoord.Coord();
 
     if (!meshWriter_->Contains(segID, coord)) {
-      std::cout << "did not find segID " << segID << " in chunk " << coord
-                << "\n";
+      log_infos << "did not find segID " << segID << " in chunk " << coord;
       return std::make_shared<OmDataForMeshLoad>();
     }
 

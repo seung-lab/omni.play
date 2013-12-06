@@ -12,5 +12,5 @@ VolumeRefreshButton::VolumeRefreshButton(MainWindow* parent)
 void VolumeRefreshButton::doAction() {
   const auto& set = SegmentationDataWrapper::ValidIDs();
 
-  FOR_EACH(iter, set) { printf("fixme!!!!!!!!!!!!!!\n"); }
+  FOR_EACH(iter, set) { log_errors << "fixme!!!!!!!!!!!!!!"; }
 }

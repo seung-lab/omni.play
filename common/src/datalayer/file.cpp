@@ -46,7 +46,7 @@ void RemoveDir(const path& folder) {
   if (exists(status(folder))) {
     log_debugs << "removing folder " << folder << "... ";
     if (remove_all(folder)) {
-      log_debugs << "done!\n";
+      log_debugs << "done!";
     } else {
       throw IoException("could not remove folder", folder.string());
     }

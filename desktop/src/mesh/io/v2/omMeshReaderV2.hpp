@@ -40,8 +40,8 @@ class OmMeshReaderV2 {
     const OmMeshDataEntry entry = chunk_table->Find(segID);
 
     if (!entry.wasMeshed) {
-      std::cout << "Warning: did not yet mesh " << segID << " in coord "
-                << coord << "\n" << std::flush;
+      log_infos << "Warning: did not yet mesh " << segID << " in coord "
+                << coord;
       return ret;
     }
 

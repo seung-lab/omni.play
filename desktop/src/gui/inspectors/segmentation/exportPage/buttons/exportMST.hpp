@@ -24,7 +24,7 @@ class ExportMST : public OmButton<PageExport> {
 
     QFile data(outFile);
     if (data.open(QFile::WriteOnly | QFile::Truncate)) {
-      printf("writing segment file %s\n", qPrintable(outFile));
+      log_infos << "writing segment file " << qPrintable(outFile);
     } else {
       throw om::IoException("could not open file");
     }
@@ -63,9 +63,8 @@ class ExportMST : public OmButton<PageExport> {
       out << "\n";
     }
 
-    printf("\tdone!\n");
+    log_infos << "\tdone!";
   }
-
 };
 
 }  // namespace segmentationInspector

@@ -31,7 +31,7 @@ class ExportDescendantList : public OmButton<PageExport> {
 
     om::file::old::openFileWO(file);
 
-    printf("writing segment file %s\n", qPrintable(outFile));
+    log_infos << "writing segment file " << qPrintable(outFile);
 
     QTextStream out(&file);
 
@@ -53,7 +53,7 @@ class ExportDescendantList : public OmButton<PageExport> {
       out << ids << "\n";
     }
 
-    printf("\tdone!\n");
+    log_infos << "\tdone!";
   }
 
  private:

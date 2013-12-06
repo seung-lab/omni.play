@@ -35,10 +35,10 @@ class OmSegmentUncertain {
     OmTimer timer;
 
     if (uncertain_) {
-      std::cout << "setting " << selectedSegments_->size()
+      log_infos << "setting " << selectedSegments_->size()
                 << " segments as uncertain..." << std::flush;
     } else {
-      std::cout << "setting " << selectedSegments_->size()
+      log_infos << "setting " << selectedSegments_->size()
                 << " segments as NOT uncertain..." << std::flush;
     }
 

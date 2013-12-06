@@ -117,7 +117,7 @@ void OmOnScreenTileCoords::computeTile(const om::chunkCoord& chunkCoord,
       makeTileCoord(chunkCoord, depthOffset, vol_, freshness_),
       computeVertices(chunkCoord, vol_)};
 
-  // std::cout << chunkCoord << ":" << depthOffset << " - " << pair.tileCoord <<
+  // log_infos << chunkCoord << ":" << depthOffset << " - " << pair.tileCoord <<
   // std::endl;
   tileCoordsAndLocations_->push_back(pair);
 }

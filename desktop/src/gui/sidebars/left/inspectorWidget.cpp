@@ -258,7 +258,7 @@ om::common::ViewType InspectorWidget::getViewType(QAction* act) {
 }
 
 void InspectorWidget::nameEditChanged() {
-  printf("FIXME: purcaro: sourceEditChangedSeg\n");
+  log_errors << "purcaro: sourceEditChangedSeg";
   /*
       QVariant result = proxyModel->data(view->currentIndex(),
     Qt::UserRole);

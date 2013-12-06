@@ -25,16 +25,16 @@ class OmVolumeBuilderImages : public OmVolumeBuilderBase<VOL> {
   virtual Vector3i getMip0Dims() {
     QImage img(files_[0].absoluteFilePath());
     const Vector3i dims(img.width(), img.height(), files_.size());
-    std::cout << "dims are " << dims << "\n";
+    log_infos << "dims are " << dims;
     return dims;
   }
 
   virtual void rewriteMip0Volume(OmSegmentation* vol) {
-    printf("rewriting segment IDs...\n");
+    log_infos << "rewriting segment IDs...";
 
     OmCompactVolValues rewriter(vol);
     rewriter.Rewrite();
 
-    printf("done!\n");
+    log_infos << "done!";
   }
 };

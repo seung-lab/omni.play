@@ -9,10 +9,10 @@ class SegmentListKeyPressEventListener {
   void keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
       case Qt::Key_Down:
-        printf("segment list key down\n");
+        log_infos << "segment list key down";
         break;
       case Qt::Key_Up:
-        printf("segment list key up\n");
+        log_infos << "segment list key up";
         break;
     }
   }

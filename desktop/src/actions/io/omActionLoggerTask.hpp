@@ -24,7 +24,8 @@ class OmActionLoggerTaskCounter
   friend class zi::singleton<OmActionLoggerTaskCounter>;
 };
 
-template <typename T> class OmActionLoggerTask : public zi::runnable {
+template <typename T>
+class OmActionLoggerTask : public zi::runnable {
  public:
   OmActionLoggerTask(std::shared_ptr<T> action, const std::string& doOrUndo,
                      QDir& logFolder)
@@ -48,7 +49,7 @@ template <typename T> class OmActionLoggerTask : public zi::runnable {
     out << (*action_);
     out << Omni_Postfix;
 
-    // printf("wrote log file %s\n", qPrintable(file.fileName()));
+    // log_info("wrote log file %s", qPrintable(file.fileName()));
   }
 
  private:

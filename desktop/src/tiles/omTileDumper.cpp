@@ -23,15 +23,12 @@ void OmTileDumper::DumpTiles() {
   for (int mipLevel = 0; mipLevel <= vol_->Coords().GetRootMipLevel();
        ++mipLevel) {
 
-    //dim of miplevel in mipchunks
+    // dim of miplevel in mipchunks
     const int chunkDim = vol_->Coords().GetChunkDimension();
     const Vector3i mip_coord_dims =
         vol_->Coords().MipLevelDimensionsInMipChunks(mipLevel) * chunkDim;
 
-    //printf("dims: %i,%i,%i\n", mip_coord_dims.x, mip_coord_dims.y,
-    //mip_coord_dims.z);
-
-    //for all coords
+    // for all coords
     for (int z = 0; z < mip_coord_dims.z; ++z) {
       for (int y = 0; y < mip_coord_dims.y; y += chunkDim) {
         for (int x = 0; x < mip_coord_dims.x; x += chunkDim) {
@@ -53,7 +50,6 @@ void OmTileDumper::DumpTiles() {
         }
       }
     }
-
   }
 }
 
@@ -82,8 +78,10 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel, const int x,
 
   QGLWidget::convertToGLFormat(img);
 
-  img.save(dumpfile_ + QString("-%1-%2.%3.%4-%5.png").arg(mipLevel).arg(x)
-                           .arg(y).arg(z).arg(viewType));
+  img.save(
+      dumpfile_ +
+      QString("-%1-%2.%3.%4-%5.png").arg(mipLevel).arg(x).arg(y).arg(z).arg(
+          viewType));
 
   out.writeBytes(tileData, numBytes);
 }

@@ -12,12 +12,12 @@ class OmFindCommonEdge {
     }
 
     if (segments->findRoot(seg1) != segments->findRoot(seg2)) {
-      printf("can't split disconnected objects\n");
+      log_infos << "can't split disconnected objects";
       return om::segmentEdge::MakeEdge();
     }
 
     if (seg1 == seg2) {
-      printf("can't split object from self\n");
+      log_infos << "can't split object from self";
       return om::segmentEdge::MakeEdge();
     }
 

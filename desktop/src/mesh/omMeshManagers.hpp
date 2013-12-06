@@ -88,24 +88,24 @@ class OmMeshManagers {
           mesher.addChunkCoord(coord);
           mesher.mesh();
       }
-  
+
       void RebuildChunk(const om::chunkCoord&,
                         const om::common::SegIDSet& )
       {
           assert(0);
   //build chunk volume data and analyze data
-  //	OmMipVolume::BuildChunk(mipCoord);
-  
+  //  OmMipVolume::BuildChunk(mipCoord);
+
   //rebuild mesh data only if entire volume data has been built
   if (IsVolumeDataBuilt()) {
   }
-  
+
   //remove mesh from cache to force it to reload
   foreach( const om::common::SegID & val, rModifiedValues ){
   OmMeshCoord mip_mesh_coord = OmMeshCoord(mipCoord, val);
   mMipMeshManager->UncacheMesh(mip_mesh_coord);
   }
-  
+
   //call redraw to force mesh to reload
   om::event::Redraw3d();
       }
@@ -139,7 +139,7 @@ class OmMeshManagers {
       const QString& str = *iter;
       const double threshold = OmStringHelpers::getDouble(str);
       thresholds_.insert(threshold);
-      std::cout << "found mesh threshold " << threshold << "\n";
+      log_infos << "found mesh threshold " << threshold;
     }
   }
 };

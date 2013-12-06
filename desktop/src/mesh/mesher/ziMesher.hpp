@@ -35,8 +35,10 @@ class ziMesher {
         numParallelChunks_(numberParallelChunks()),
         numThreadsPerChunk_(zi::system::cpu_count / 2),
         downScallingFactor_(OmMeshParams::GetDownScallingFactor()) {
-    printf("ziMesher: will process %d chunks at a time\n", numParallelChunks_);
-    printf("ziMesher: will use %d threads per chunk\n", numThreadsPerChunk_);
+    log_infos << "ziMesher: will process " << numParallelChunks_
+              << " chunks at a time";
+    log_infos << "ziMesher: will use " << numThreadsPerChunk_
+              << " threads per chunk";
   }
 
   ~ziMesher() {
@@ -63,7 +65,6 @@ class ziMesher {
   void Progress(std::shared_ptr<om::gui::progress> p) { progress_.Progress(p); }
 
  private:
-
   OmSegmentation* const vol_;
   const int rootMipLevel_;
   const double threshold_;
@@ -90,7 +91,7 @@ class ziMesher {
       addValuesFromChunkAndDownsampledChunks(*it);
     }
 
-    std::cout << "\nstarting meshing..." << std::endl;
+    log_infos << "\nstarting meshing..." << std::endl;
 
     zi::task_manager::simple manager(numParallelChunks_);
     manager.start();
@@ -102,7 +103,7 @@ class ziMesher {
 
     manager.join();
 
-    std::cout << "\ndone meshing..." << std::endl;
+    log_infos << "\ndone meshing..." << std::endl;
   }
 
   void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord) {
@@ -119,7 +120,7 @@ class ziMesher {
     }
 
     downsampleSegThroughAllMipLevels(mip0coord, segIDs);
-    //downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
+    // downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
   }
 
   void downsampleSegThroughAllMipLevels(const om::chunkCoord& mip0coord,
@@ -270,7 +271,7 @@ class ziMesher {
 
       manager.join();
     } else {
-      std::cout << "Skipping Chunk " << coord << " b/c there's nothing in there"
+      log_infos << "Skipping Chunk " << coord << " b/c there's nothing in there"
                 << std::endl;
     }
 

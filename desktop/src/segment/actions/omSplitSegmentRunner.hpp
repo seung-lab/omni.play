@@ -30,7 +30,7 @@ class OmSplitSegmentRunner {
       }
 
       if (seg1 == seg2) {
-        std::cout << "can't split--same segment\n";
+        log_infos << "can't split--same segment\n";
         return;
       }
 

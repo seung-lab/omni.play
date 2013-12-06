@@ -21,7 +21,7 @@ std::string OmMST::filePathActual() {
 
 void OmMST::Read() {
   if (!numEdges_) {
-    printf("no MST found\n");
+    log_infos << "no MST found";
     return;
   }
 
@@ -76,7 +76,7 @@ void OmMST::Import(const std::vector<OmMSTImportEdge>& importEdges) {
 void OmMST::convert() {
   // numEdges_ already set by OmDataArchiveProject
   if (!numEdges_) {
-    printf("no MST found\n");
+    log_infos << "no MST found";
     return;
   }
 
@@ -84,7 +84,7 @@ void OmMST::convert() {
   old.ReadOld();
 
   if (!old.IsPopulated()) {
-    printf("old MST not populated\n");
+    log_infos << "old MST not populated";
     return;
   }
 

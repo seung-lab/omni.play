@@ -26,7 +26,7 @@ class OmBuildSegmentation : public OmBuildVolumes {
   OmBuildSegmentation(const SegmentationDataWrapper& sdw)
       : OmBuildVolumes(), sdw_(sdw), seg_(sdw_.GetSegmentation()) {}
 
-  virtual ~OmBuildSegmentation() { printf("OmBuildSegmentation done!\n"); }
+  virtual ~OmBuildSegmentation() { log_infos << "OmBuildSegmentation done!"; }
 
   SegmentationDataWrapper& GetDataWrapper() { return sdw_; }
 
@@ -41,7 +41,7 @@ class OmBuildSegmentation : public OmBuildVolumes {
   void BuildMesh(prog_t p) { do_build_seg_mesh(p); }
 
   void BuildBlankVolume() {
-    printf("assuming channel 1\n");
+    log_infos << "assuming channel 1";
     ChannelDataWrapper cdw(1);
     if (!cdw.IsValidWrapper()) {
       throw om::IoException("no channel 1");
@@ -55,7 +55,7 @@ class OmBuildSegmentation : public OmBuildVolumes {
 
     OmActions::Save();
 
-    printf("allocated blank volume\n");
+    log_infos << "allocated blank volume";
   }
 
   void LoadDendrogram() { throw om::IoException("not implemented"); }
@@ -81,8 +81,8 @@ class OmBuildSegmentation : public OmBuildVolumes {
 
     stopTimingAndSave(type, build_timer);
 
-    printf("Segmentation image COMPLETELY done\n");
-    printf("************************\n");
+    log_infos << "Segmentation image COMPLETELY done";
+    log_infos << "************************";
   }
 
   void do_build_seg_mesh(prog_t p) {

@@ -24,7 +24,6 @@ class AffinityGraphDataWrapper {
 
   inline OmAffinityGraph& GetAffinityGraph() const {
     if (!affGraph_) {
-      //printf("cached segmentation...\n");
       affGraph_ = boost::optional<OmAffinityGraph&>(
           OmProject::Volumes().AffinityGraphs().Get(id_));
     }
@@ -42,7 +41,7 @@ class AffinityGraphDataWrapper {
   OmAffinityGraph& Create() {
     auto& a = OmProject::Volumes().AffinityGraphs().Add();
     id_ = a.GetID();
-    printf("create affinity graph %d\n", id_);
+    log_infos << "create affinity graph " << id_;
     return a;
   }
 };

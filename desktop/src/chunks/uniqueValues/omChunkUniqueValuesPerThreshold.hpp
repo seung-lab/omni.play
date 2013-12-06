@@ -108,8 +108,8 @@ class OmChunkUniqueValuesPerThreshold {
 
     numElements_ = segIDs.size();
 
-    std::cout << "ChunkUniqueValues: chunk " << coord_ << " has "
-              << numElements_ << " unique values\n";
+    log_infos << "ChunkUniqueValues: chunk " << coord_ << " has "
+              << numElements_ << " unique values";
 
     store();
   }
@@ -136,8 +136,8 @@ class OmChunkUniqueValuesPerThreshold {
       segmentation_->Folder()->MakeChunkFolderPath(coord_);
     }
 
-    const QString fullPath = QString("%1uniqeValues.%2.ver1").arg(volPath)
-        .arg(QString::number(threshold_, 'f', 4));
+    const QString fullPath = QString("%1uniqeValues.%2.ver1").arg(volPath).arg(
+        QString::number(threshold_, 'f', 4));
 
     return fullPath;
   }

@@ -59,7 +59,7 @@ void OmSegmentGraph::SetGlobalThreshold(OmMST* mst) {
 }
 
 void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst) {
-  std::cout << "\t" << om::string::humanizeNum(mst->NumEdges()) << " edges..."
+  log_infos << "\t" << om::string::humanizeNum(mst->NumEdges()) << " edges..."
             << std::flush;
 
   OmTimer timer;

@@ -18,7 +18,7 @@ class OmSegmentPageV2 {
       : vol_(vol), pageNum_(pageNum), pageSize_(pageSize) {}
 
   std::shared_ptr<OmSegmentDataV3> Read() {
-    printf("rewriting segment page %d from ver2 to ver3\n", pageNum_);
+    log_infos << "rewriting segment page " << pageNum_ << " from ver2 to ver3";
 
     QFile file(memMapPathQStrV2());
     om::file::old::openFileRO(file);
@@ -46,7 +46,6 @@ class OmSegmentPageV2 {
   }
 
  private:
-
   std::string memMapPathV2() { return memMapPathQStrV2().toStdString(); }
 
   QString memMapPathQStrV2() {

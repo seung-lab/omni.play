@@ -25,12 +25,13 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp,
 
   in >> fileVersion_;
   OmProject::setFileVersion(fileVersion_);
-  printf("Omni file version is %d\n", fileVersion_);
+  log_infos << "Omni file version is " << fileVersion_;
 
   if (fileVersion_ < 10 || fileVersion_ > Latest_Project_Version) {
     const QString err = QString(
         "can not open file: file version is (%1), but Omni expecting (%2)")
-        .arg(fileVersion_).arg(Latest_Project_Version);
+                            .arg(fileVersion_)
+                            .arg(Latest_Project_Version);
     throw om::IoException(err.toStdString());
   }
 

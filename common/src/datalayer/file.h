@@ -121,7 +121,7 @@ void writeStrings(const path& file, const T& strings) {
   std::ofstream out(file.c_str());
   log_debugs << "Writing: " << file.string();
   for (auto& s : strings) {
-    out << s << "\n";
+    out << s << std::endl;
   }
   out.close();
 }
@@ -134,7 +134,7 @@ void writeStrings(const path& file, const T& strings, PROGRESS* progress) {
   log_debugs << "Writing: " << file.string();
 
   for (auto& s : strings) {
-    out << s << "\n";
+    out << s << std::endl;
     progress->SetDone(1);
   }
   out.close();

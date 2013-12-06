@@ -96,8 +96,6 @@ class OmFileNames {
 
     const QString fnp_clean = QDir::cleanPath(fnp);
 
-    // ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
-
     return fnp_clean;
   }
 

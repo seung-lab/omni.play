@@ -46,7 +46,7 @@ class OmSegmentGraphInitialLoad {
   }
 
   void SetGlobalThreshold(OmMST* mst) {
-    std::cout << "\t" << om::string::humanizeNum(mst->NumEdges()) << " edges..."
+    log_infos << "\t" << om::string::humanizeNum(mst->NumEdges()) << " edges..."
               << std::flush;
 
     OmTimer timer;
@@ -85,7 +85,6 @@ class OmSegmentGraphInitialLoad {
   }
 
  private:
-
   inline om::common::SegID Root(const om::common::SegID segID) {
     return forest_->Root(segID);
   }
@@ -97,9 +96,9 @@ class OmSegmentGraphInitialLoad {
 
   bool sizeCheck(const om::common::SegID a, const om::common::SegID b,
                  const double threshold) {
-    return threshold == 0 || ((segmentListsLL_->GetSizeWithChildren(Root(a)) +
-                               segmentListsLL_->GetSizeWithChildren(Root(b))) <
-                              threshold);
+    return threshold == 0 ||
+           ((segmentListsLL_->GetSizeWithChildren(Root(a)) +
+             segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold);
   }
 
   bool initialJoinInternal(const om::common::SegID parentID,
@@ -118,7 +117,7 @@ class OmSegmentGraphInitialLoad {
 
     Join(childRootID, parentID);
 
-    TaskArgs t = { childRootID, parentID, parentRootID, threshold, edgeNumber };
+    TaskArgs t = {childRootID, parentID, parentRootID, threshold, edgeNumber};
 
     joinTaskPool_.AddOrSpawnTasks(t);
 

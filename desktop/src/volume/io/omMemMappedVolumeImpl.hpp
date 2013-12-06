@@ -15,9 +15,11 @@
 #include <zi/mutex.hpp>
 #include <QFile>
 
-template <typename T> class OmIOnDiskFile;
+template <typename T>
+class OmIOnDiskFile;
 
-template <typename T> class OmMemMappedVolumeImpl : public IDataVolume<T> {
+template <typename T>
+class OmMemMappedVolumeImpl : public IDataVolume<T> {
  private:
   OmMipVolume* vol_;
   std::vector<std::shared_ptr<OmIOnDiskFile<T> > > maps_;
@@ -26,7 +28,6 @@ template <typename T> class OmMemMappedVolumeImpl : public IDataVolume<T> {
   typedef OmMemMappedFileWriteQT<T> writer_t;
 
  public:
-
   // for boost::varient
   OmMemMappedVolumeImpl() {}
 
@@ -37,7 +38,7 @@ template <typename T> class OmMemMappedVolumeImpl : public IDataVolume<T> {
   OmRawDataPtrs GetType() const { return (T*)0; }
 
   void Load() {
-    std::cout << "loaded mem maps\n";
+    log_infos << "loaded mem maps\n";
 
     resizeMapsVector();
 
@@ -56,7 +57,7 @@ template <typename T> class OmMemMappedVolumeImpl : public IDataVolume<T> {
       const Vector3<int64_t> dims = it->second;
       const int64_t size = dims.x * dims.y * dims.z * bps;
 
-      std::cout << "mip " << level
+      log_infos << "mip " << level
                 << ": size is: " << om::string::humanizeNum(size) << " ("
                 << dims.x << "," << dims.y << "," << dims.z << ")\n";
 
@@ -64,7 +65,7 @@ template <typename T> class OmMemMappedVolumeImpl : public IDataVolume<T> {
           getFileName(level), size, om::common::ZeroMem::DONT_ZERO_FILL);
     }
 
-    printf("OmMemMappedVolume: done allocating data\n");
+    log_infos << "OmMemMappedVolume: done allocating data";
   }
 
   T* GetPtr(const int level) const { return maps_[level]->GetPtr(); }
@@ -81,7 +82,6 @@ template <typename T> class OmMemMappedVolumeImpl : public IDataVolume<T> {
   int GetBytesPerVoxel() const { return sizeof(T); }
 
  private:
-
   void resizeMapsVector() {
     maps_.resize(vol_->Coords().GetRootMipLevel() + 1);
   }

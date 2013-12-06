@@ -35,7 +35,7 @@ class OmExportVolToHdf5 {
   template <typename VOL>
   void exportVol(VOL* vol, const QString& fileNameAndPath,
                  const bool rerootSegments) {
-    printf("starting export...\n");
+    log_infos << "starting export...";
 
     OmHdf5* hdfExport = OmHdf5Manager::Get(fileNameAndPath, false);
     OmDataPath fpath("main");
@@ -67,7 +67,7 @@ class OmExportVolToHdf5 {
 
     hdfExport->close();
 
-    printf("\nexport done!\n");
+    log_infos << "export done!";
   }
 
   OmDataWrapperPtr exportChunk(OmChannel* vol, const om::chunkCoord& coord,
@@ -78,7 +78,7 @@ class OmExportVolToHdf5 {
 
   OmDataWrapperPtr exportChunk(OmSegmentation* vol, const om::chunkCoord& coord,
                                const bool rerootSegments) {
-    std::cout << "\r\texporting " << coord << std::flush;
+    log_infos << "\r\texporting " << coord << std::flush;
 
     OmSegChunk* chunk = vol->GetChunk(coord);
 

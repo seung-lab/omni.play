@@ -166,8 +166,8 @@ class OmMouseEventPress {
         fill();
         break;
       case om::tool::LANDMARK:
-        state_->getViewGroupState()->Landmarks()
-            .Add(getSelectedSegment(), dataClickPoint_);
+        state_->getViewGroupState()->Landmarks().Add(getSelectedSegment(),
+                                                     dataClickPoint_);
         break;
       case om::tool::CUT:
         doFindAndCutSegment();
@@ -223,7 +223,7 @@ class OmMouseEventPress {
   void doSelectSegment(const SegmentDataWrapper& sdw,
                        const bool augment_selection) {
     if (!sdw.IsSegmentValid()) {
-      printf("not valid\n");
+      log_infos << "not valid";
       return;
     }
 

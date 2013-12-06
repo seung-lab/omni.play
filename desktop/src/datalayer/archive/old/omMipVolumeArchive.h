@@ -10,7 +10,8 @@
 
 #include <QDataStream>
 
-template <typename VOL> class OmMipVolumeArchive {
+template <typename VOL>
+class OmMipVolumeArchive {
  private:
   VOL& vol_;
 
@@ -29,7 +30,7 @@ template <typename VOL> class OmMipVolumeArchive {
     const QString type =
         OmVolumeTypeHelpers::GetTypeAsQString(vol_.mVolDataType);
     out << type;
-    std::cout << "saved type as " << type.toStdString() << "\n";
+    log_infos << "saved type as " << type.toStdString();
 
     save();
   }

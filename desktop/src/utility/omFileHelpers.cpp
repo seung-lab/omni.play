@@ -22,10 +22,10 @@ bool OmFileHelpers::IsFileReadOnly(const std::string& fileNameAndPath) {
 void OmFileHelpers::RemoveDir(const QString& folder) {
   QDir filesDir(folder);
   if (filesDir.exists()) {
-    printf("removing folder %s...", qPrintable(folder));
+    log_infos << "removing folder " << qPrintable(folder);
     fflush(stdout);
     if (removeDir(folder)) {
-      printf("done!\n");
+      log_infos << "done!";
     } else {
       throw om::IoException("could not remove folder");
     }
@@ -54,8 +54,8 @@ void OmFileHelpers::MoveFile(const QString& from_fnp, const QString& to_fnp) {
     throw om::IoException("could not rename file to");
 
   } else {
-    std::cout << "moved file from " << from_fnp.toStdString() << "\n\tto "
-              << to_fnp.toStdString() << "\n";
+    log_infos << "moved file from " << from_fnp.toStdString() << "\n\tto "
+              << to_fnp.toStdString();
   }
 }
 
@@ -109,7 +109,7 @@ void OmFileHelpers::MoveAllFiles(const QString& fromDirQT,
   for (; iter != dir_end; ++iter) {
     boost::filesystem::path path = *iter;
 
-    std::cout << "moving file/folder: " << path.string() << "\n";
+    log_infos << "moving file/folder: " << path.string();
     boost::filesystem::rename(path, toDir);
   }
 }
@@ -123,7 +123,6 @@ bool OmFileHelpers::MkDir(const std::string& dirName) {
 
   try {
     return boost::filesystem::create_directories(path);
-
   }
   catch (...) {
     throw om::IoException("could not create directory");

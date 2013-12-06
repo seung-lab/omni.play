@@ -29,7 +29,7 @@ class OmLandmarks {
     }
 
     if (segments_.count(sdw)) {
-      std::cout << "skipping " << sdw << ": already present\n";
+      log_infos << "skipping " << sdw << ": already present\n";
       return;
     }
 

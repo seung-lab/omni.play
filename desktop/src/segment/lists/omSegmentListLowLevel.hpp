@@ -67,7 +67,7 @@ class OmSegmentListLowLevel {
 
   inline int64_t GetSizeWithChildren(const om::common::SegID segID) {
     //         if(segID >= list_.size()){
-    //             std::cout << "segment " << segID << "not found\n";
+    //             log_infos << "segment " << segID << "not found\n";
     //             return 0;
     //         }
     return list_[segID].sizeIncludingChildren;
@@ -134,9 +134,9 @@ class OmSegmentListLowLevel {
 
     // saftey check
     if (cache_->GetNumSegments() != numSegs) {
-      std::cout << "number of segments found changed from "
+      log_infos << "number of segments found changed from "
                 << om::string::humanizeNum(cache_->GetNumSegments()) << " to "
-                << om::string::humanizeNum(numSegs) << "\n";
+                << om::string::humanizeNum(numSegs);
       cache_->SetNumSegments(numSegs);
     }
 

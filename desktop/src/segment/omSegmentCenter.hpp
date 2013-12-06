@@ -109,7 +109,7 @@ class OmSegmentCenter {
   }
 
   static void RebuildCenterOfSegmentData(const SegmentationDataWrapper& sdw) {
-    printf("rebuilding segment bounding box data...\n");
+    log_infos << "rebuilding segment bounding box data...";
 
     OmSegments* segments = sdw.Segments();
 

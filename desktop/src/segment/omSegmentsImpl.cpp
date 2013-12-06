@@ -63,7 +63,7 @@ OmSegment* OmSegmentsImpl::GetOrAddSegment(const om::common::SegID val) {
 OmSegmentEdge OmSegmentsImpl::SplitEdgeUserAction(const OmSegmentEdge& e) {
   boost::optional<std::string> splittableTest = IsEdgeSplittable(e);
   if (splittableTest) {
-    std::cout << "Split error: " << *splittableTest << "\n";
+    log_infos << "Split error: " << *splittableTest;
     return OmSegmentEdge();
   }
 
@@ -174,13 +174,13 @@ std::pair<bool, OmSegmentEdge> OmSegmentsImpl::JoinEdgeFromUser(
   OmSegment* parentRoot = FindRoot(parent);
 
   if (childRoot == parentRoot) {
-    printf("cycle found in user manual edge; skipping edge %d, %d, %f\n",
-           e.childID, e.parentID, e.threshold);
+    log_info("cycle found in user manual edge; skipping edge %d, %d, %f\n",
+             e.childID, e.parentID, e.threshold);
     return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
   }
 
   if (childRoot->IsValidListType() != parent->IsValidListType()) {
-    printf(
+    log_info(
         "not joining child %d to parent %d: child immutability is %d, but "
         "parent's is %d\n",
         childRoot->value(), parent->value(), childRoot->IsValidListType(),
@@ -281,7 +281,7 @@ om::common::SegIDSet OmSegmentsImpl::UnJoinTheseSegments(
       ret.insert(segID);
 
     } else {
-      std::cout << "Split error: " << *splittableTest << "\n";
+      log_infos << "Split error: " << *splittableTest;
     }
 
     ++iter;
@@ -305,7 +305,7 @@ void OmSegmentsImpl::refreshTree() {
   OmMST* mst = segmentation_->MST();
 
   if (!mst->IsValid()) {
-    printf("no graph found...\n");
+    log_infos << "no graph found...";
   }
 
   if (segmentGraph_.DoesGraphNeedToBeRefreshed(maxValue_.get())) {
@@ -323,20 +323,20 @@ void OmSegmentsImpl::refreshTree() {
   RefreshGUIlists();
   touchFreshness();
 
-  printf("done\n");
+  log_infos << "done";
 }
 
 void OmSegmentsImpl::setGlobalThreshold(OmMST* mst) {
-  printf("setting global threshold to %f...\n", mst->UserThreshold());
-  printf("setting size threshold to %f...\n", mst->UserSizeThreshold());
+  log_infos << "setting global threshold to " << mst->UserThreshold();
+  log_infos << "setting size threshold to " << mst->UserSizeThreshold();
 
   segmentGraph_.SetGlobalThreshold(mst);
   SegmentSelection().Clear();
 }
 
 void OmSegmentsImpl::resetGlobalThreshold(OmMST* mst) {
-  printf("resetting global threshold to %f...\n", mst->UserThreshold());
-  printf("resetting size threshold to %f...\n", mst->UserSizeThreshold());
+  log_infos << "resetting global threshold to " << mst->UserThreshold();
+  log_infos << "resetting size threshold to " << mst->UserSizeThreshold();
 
   segmentGraph_.ResetGlobalThreshold(mst);
   rerootSegmentLists();

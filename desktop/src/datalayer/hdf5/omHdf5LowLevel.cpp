@@ -238,11 +238,6 @@ Vector3i OmHdf5LowLevel::getChunkedDatasetDims(
       throw om::IoException("Could not close HDF5 dataset.");
     }
 
-    // debug(hdf5image, "dims are %d:%d:%d; maxdims are %d:%d:%d\n",
-    ////DEBUGV3(dims), //DEBUGV3(maxdims));
-    // printf("dims4 are %i:%i:%i:%i\n", dims4.array[0], dims4.array[1],
-    // dims4.array[2], dims4.array[3]);
-
     // flip from hdf5 version
     return Vector3i(dims4.array[3], dims4.array[2], dims4.array[1]);
   } else if (3 == rank) {
@@ -521,12 +516,12 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(
     ret = H5Dread(dataset_id, data->getHdf5MemoryType(), mem_dataspace_id,
                   dataspace_id, H5P_DEFAULT, imageData);
     if (ret < 0) {
-      std::cout << "ERROR: extexts were " << extent << "\n";
+      log_infos << "ERROR: extexts were " << extent;
       throw om::IoException("Error while reading HDF5 dataset \"" +
                             std::string(getPath()) + "\"");
     }
 
-    printf("aff = %i\n", aff);
+    log_infos << "aff = " << (int)aff;
     memcpy(imageData3, &imageData[size * ((int)aff - 1) / 3], size / 3);
 
     free(imageData);
@@ -537,7 +532,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(
     if (ret < 0) throw om::IoException("Could not select HDF5 hyperslab.");
 
     // Creates a new simple dataspace and opens it for access.
-    std::cout << "\tBlock: " << block << std::endl;
+    log_infos << "\tBlock: " << block << std::endl;
     mem_dataspace_id = H5Screate_simple(3, block.array, nullptr);
     if (mem_dataspace_id < 0) {
       throw om::IoException(
@@ -562,7 +557,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(
     ret = H5Dread(dataset_id, data->getHdf5MemoryType(), mem_dataspace_id,
                   dataspace_id, H5P_DEFAULT, imageData);
     if (ret < 0) {
-      std::cout << "ERROR: extexts were " << extent << "\n";
+      log_infos << "ERROR: extexts were " << extent;
       throw om::IoException("Error while reading HDF5 dataset \"" +
                             std::string(getPath()) + "\"");
     }

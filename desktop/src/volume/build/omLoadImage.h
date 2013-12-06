@@ -14,7 +14,8 @@
 #include <QFileInfoList>
 #include <QImage>
 
-template <typename VOL, typename T> class OmLoadImage {
+template <typename VOL, typename T>
+class OmLoadImage {
  private:
   VOL* const vol_;
   const std::shared_ptr<QFile> mip0volFile_;
@@ -68,7 +69,7 @@ template <typename VOL, typename T> class OmLoadImage {
       processSlice(fnp, i);
     }
 
-    std::cout << "\nwaiting for tile writes to complete..." << std::flush;
+    log_infos << "\nwaiting for tile writes to complete..." << std::flush;
 
     limit_.acquire(numTilesToWrite_);
 
@@ -76,7 +77,7 @@ template <typename VOL, typename T> class OmLoadImage {
 
     mip0volFile_->flush();
 
-    std::cout << "done\n";
+    log_infos << "done\n";
   }
 
   void ReplaceSlice(const int sliceNum) {
@@ -86,26 +87,28 @@ template <typename VOL, typename T> class OmLoadImage {
 
     processSlice(files_[0].absoluteFilePath(), sliceNum);
 
-    std::cout << "\nwaiting for tile writes to complete..." << std::flush;
+    log_infos << "\nwaiting for tile writes to complete..." << std::flush;
 
     limit_.acquire(numTilesToWrite_);
 
     taskMan_.join();
 
-    std::cout << "done\n";
+    log_infos << "done\n";
   }
 
  private:
   void processSlice(const QString& fn, const int sliceNum) {
-    msg_ = QString("(%1 of %2) loading image %3...").arg(sliceNum + 1)
-        .arg(totalNumImages_).arg(fn);
-    printf("\n%s", qPrintable(fn));
+    msg_ = QString("(%1 of %2) loading image %3...")
+               .arg(sliceNum + 1)
+               .arg(totalNumImages_)
+               .arg(fn);
+    log_infos << qPrintable(fn);
 
     QImage img(fn);
 
     if (img.isNull()) {
-      printf("\tcould not read image data for %s; skipping...\n",
-             qPrintable(fn));
+      log_infos << "\tcould not read image data for " << qPrintable(fn)
+                << "; skipping...";
       return;
     }
 
@@ -117,8 +120,8 @@ template <typename VOL, typename T> class OmLoadImage {
       return chunkOffsets_[coord];
     }
 
-    //if chunk was not in map, assume chunk is unallocated...
-    //TODO: just use OmRawChunk...
+    // if chunk was not in map, assume chunk is unallocated...
+    // TODO: just use OmRawChunk...
     const uint64_t offset =
         OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
 

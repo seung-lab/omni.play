@@ -14,12 +14,12 @@ void tri_strip_to_obj(const float_type* points, const std::size_t points_length,
                       const index_type* strips,
                       const std::size_t strips_length) {
   for (auto i = 0; i < points_length; i += 6) {
-    std::cout << "v " << points[i] << ' ' << points[i + 1] << ' '
+    log_infos << "v " << points[i] << ' ' << points[i + 1] << ' '
               << points[i + 2] << '\n';
   }
 
   for (auto i = 3; i < points_length; i += 6) {
-    std::cout << "n " << points[i] << ' ' << points[i + 1] << ' '
+    log_infos << "n " << points[i] << ' ' << points[i + 1] << ' '
               << points[i + 2] << '\n';
   }
 
@@ -27,10 +27,10 @@ void tri_strip_to_obj(const float_type* points, const std::size_t points_length,
     bool even = true;
     for (auto j = strips[i]; j < strips[i + 1] - 1; ++j) {
       if (even) {
-        std::cout << "f " << indices[j] << ' ' << indices[j + 1] << ' '
+        log_infos << "f " << indices[j] << ' ' << indices[j + 1] << ' '
                   << indices[j + 1] << '\n';
       } else {
-        std::cout << "f " << indices[j + 2] << ' ' << indices[j + 1] << ' '
+        log_infos << "f " << indices[j + 2] << ' ' << indices[j + 1] << ' '
                   << indices[j] << '\n';
       }
       even = !even;

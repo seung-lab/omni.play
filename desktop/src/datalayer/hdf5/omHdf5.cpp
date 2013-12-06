@@ -14,7 +14,7 @@ void OmHdf5::open() {
 
   hdf5_ = std::make_shared<OmHdf5Impl>(fnp_, readOnly_);
 
-  std::cout << "opened hdf5 file " << fnp_ << "\n";
+  log_infos << "opened hdf5 file " << fnp_;
 }
 
 void OmHdf5::close() {

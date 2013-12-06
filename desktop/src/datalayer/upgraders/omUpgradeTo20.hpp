@@ -12,7 +12,7 @@ class OmUpgradeTo20 {
 
  private:
   void groupUpValidSegments(const SegmentationDataWrapper& sdw) {
-    printf("rewriting valid segment data...\n");
+    log_infos << "rewriting valid segment data...";
     OmSegmentUtils::ReValidateEveryObject(sdw);
   }
 };

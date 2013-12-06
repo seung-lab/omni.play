@@ -43,14 +43,14 @@ class OmChunkUtils {
           const int lenY = y ? 1 : 128;
           const int lenX = x ? 1 : 128;
 
-          //form mip coord
+          // form mip coord
           const om::chunkCoord& currentCoord = chunk->GetCoordinate();
 
           const om::chunkCoord mip_coord(
               currentCoord.getLevel(), currentCoord.X() + x,
               currentCoord.Y() + y, currentCoord.Z() + z);
 
-          //skip invalid mip coord
+          // skip invalid mip coord
           if (vol->Coords().ContainsMipChunkCoord(mip_coord)) {
             OmSegChunk* chunk = vol->GetChunk(mip_coord);
 
@@ -83,7 +83,7 @@ class OmChunkUtils {
       const om::chunkCoord& coord = *iter;
 
       ++counter;
-      printf("\rfinding values in chunk %d of %d...", counter, numChunks);
+      log_info("\rfinding values in chunk %d of %d...", counter, numChunks);
       fflush(stdout);
 
       vol.UniqueValuesDS().RereadChunk(coord, 1);

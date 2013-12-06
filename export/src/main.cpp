@@ -197,7 +197,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
     }
   }
 
-  std::cout << exporter->Write() << std::endl;
+  log_infos << exporter->Write() << std::endl;
 
   return 0;
 }
@@ -232,7 +232,7 @@ int exportMST(const Options& opt, int argc, char* argv[]) {
   volume::Segmentation seg(p.Segmentation(1));
 
   for (auto& e : seg.Edges()) {
-    std::cout << e.number << "," << e.node1ID << "," << e.node2ID << ","
+    log_infos << e.number << "," << e.node1ID << "," << e.node2ID << ","
               << e.threshold << std::endl;
   }
 

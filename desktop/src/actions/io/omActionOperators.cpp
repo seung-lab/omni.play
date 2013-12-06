@@ -121,7 +121,8 @@ QDataStream& operator<<(QDataStream& out, const Vector3<T>& v) {
   return out;
 }
 
-template <class T> QDataStream& operator>>(QDataStream& in, Vector3<T>& v) {
+template <class T>
+QDataStream& operator>>(QDataStream& in, Vector3<T>& v) {
   in >> v.array[0];
   in >> v.array[1];
   in >> v.array[2];
@@ -276,7 +277,7 @@ QDataStream& operator>>(QDataStream& in,
   if (version > 1) {
     in >> id;
   } else {
-    printf("WARNGING: guessing segmentation ID...\n");
+    log_infos << "WARNGING: guessing segmentation ID...";
   }
 
   a.sdw_ = SegmentationDataWrapper(id);
@@ -307,7 +308,7 @@ QDataStream& operator>>(QDataStream& in,
   if (version > 1) {
     in >> id;
   } else {
-    printf("WARNGING: guessing segmentation ID...\n");
+    log_infos << "WARNGING: guessing segmentation ID...";
   }
 
   a.sdw_ = SegmentationDataWrapper(id);
@@ -319,7 +320,7 @@ QDataStream& operator<<(QDataStream& out, const OmVoxelSetValueActionImpl& a) {
   int version = 1;
   out << version;
   out << a.mSegmentationId;
-  //out << a.mOldVoxelValues;	//FIXME
+  // out << a.mOldVoxelValues;  //FIXME
   out << a.mNewValue;
 
   return out;
@@ -329,7 +330,7 @@ QDataStream& operator>>(QDataStream& in, OmVoxelSetValueActionImpl& a) {
   int version;
   in >> version;
   in >> a.mSegmentationId;
-  //in >> a.mOldVoxelValues;	//FIXME
+  // in >> a.mOldVoxelValues; //FIXME
   in >> a.mNewValue;
 
   return in;

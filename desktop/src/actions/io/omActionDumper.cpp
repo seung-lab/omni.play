@@ -51,7 +51,7 @@ void OmActionDumper::readAndDumpFile(const QFileInfo& fileInfo) {
   QString actionName;
   in >> actionName;
 
-  printf("dumping %s: %i\n", qPrintable(fileInfo.fileName()), logVersion);
+  log_info("dumping %s: %i", qPrintable(fileInfo.fileName()), logVersion);
 
   dispatchAction(actionName, in, fileInfo.fileName());
 
@@ -103,6 +103,5 @@ void OmActionDumper::dispatchAction(const QString& actionName, QDataStream& in,
       break;
     default:
       throw om::ArgException("unknown action");
-  }
-  ;
+  };
 }

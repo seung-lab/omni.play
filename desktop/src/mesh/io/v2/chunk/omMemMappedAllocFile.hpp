@@ -44,9 +44,8 @@ class OmMemMappedAllocFile {
       if (!table_[i].wasMeshed) {
         allGood = false;
 
-        std::cout << "missing mesh: "
-                  << "segID " << table_[i].segID << " in coord " << coord_
-                  << "\n";
+        log_infos << "missing mesh: "
+                  << "segID " << table_[i].segID << " in coord " << coord_;
       }
     }
 
@@ -112,7 +111,7 @@ class OmMemMappedAllocFile {
         segmentation_->UniqueValuesDS().Values(coord_, threshold_);
 
     if (!segIDs.size()) {
-      std::cout << "No unique values in " << coord_ << std::endl;
+      log_infos << "No unique values in " << coord_ << std::endl;
       return;
     }
 
@@ -137,7 +136,7 @@ class OmMemMappedAllocFile {
     resetTable(segIDs);
     sortTable();
 
-    // std::cout << "in chunk " << coord_
+    // log_infos << "in chunk " << coord_
     //           << ", found "
     //           << om::string::humanizeNum(numEntries_)
     //           << " segment IDs\n";

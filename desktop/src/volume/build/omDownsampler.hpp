@@ -7,7 +7,8 @@
 #include "volume/omMipVolume.h"
 #include "zi/omThreads.h"
 
-template <typename T> class OmDownsampler {
+template <typename T>
+class OmDownsampler {
  private:
   OmMipVolume* const vol_;
   OmMemMappedVolumeImpl<T>* const files_;
@@ -42,7 +43,7 @@ template <typename T> class OmDownsampler {
 
   void DownsampleChooseOneVoxelOfNine() {
     OmTimer timer;
-    printf("downsampling...\n");
+    log_infos << "downsampling...";
 
     OmThreadPool threadPool;
     threadPool.start(3);
@@ -60,6 +61,6 @@ template <typename T> class OmDownsampler {
     }
 
     threadPool.join();
-    printf("\t downsampling done in %f secs\n", timer.s_elapsed());
+    log_infos << "\t downsampling done in " << timer.s_elapsed() << " secs";
   }
 };

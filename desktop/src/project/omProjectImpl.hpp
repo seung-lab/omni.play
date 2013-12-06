@@ -99,7 +99,7 @@ class OmProjectImpl {
 
     globals_->Users().UserSettings().Save();
 
-    printf("omni project saved!\n");
+    log_infos << "omni project saved!";
   }
 
   int GetFileVersion() const { return fileVersion_; }

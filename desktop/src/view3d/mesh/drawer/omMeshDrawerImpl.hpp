@@ -24,7 +24,7 @@ class DrawerImpl {
         context_(QGLContext::currentContext()),
         meshes_(segmentationID) {
     if (!context_) {
-      std::cout << "WARNING: QLContext was 0" << std::endl;
+      log_infos << "WARNING: QLContext was 0" << std::endl;
       //   throw VerifyException("QGLContext should never be 0");
     }
   }
@@ -69,7 +69,6 @@ class DrawerImpl {
   const v3d::PercDone& getPercDone() const { return perc_done_; }
 
  private:
-
   void drawSegment(const common::SegID segID, const om::chunkCoord& coord,
                    const Vector3f& color) {
 
@@ -92,7 +91,7 @@ class DrawerImpl {
   }
 
  private:
-  //mesh::DisplayListCachedDataSource& meshes_;
+  // mesh::DisplayListCachedDataSource& meshes_;
   const OmMipVolCoords& system_;
   const common::ID segmentationID_;
   QGLContext const* const context_;

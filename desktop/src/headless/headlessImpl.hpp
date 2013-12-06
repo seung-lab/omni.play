@@ -36,7 +36,7 @@ class HeadlessImpl {
     try {
       printf("Please wait: Opening project \"%s\"...\n", qPrintable(fName));
       OmProject::Load(fName);
-      //Set current working directory to file path
+      // Set current working directory to file path
       QDir::setCurrent(QFileInfo(fName).absolutePath());
       printf("Opened project \"%s\"\n", qPrintable(fName));
     }
@@ -117,8 +117,8 @@ class HeadlessImpl {
 
     vol.Coords().SetResolution(dims);
 
-    std::cout << "\tvolume data resolution set to "
-              << vol.Coords().GetResolution() << "\n";
+    log_infos << "\tvolume data resolution set to "
+              << vol.Coords().GetResolution();
   }
 
   template <typename T>
@@ -128,14 +128,14 @@ class HeadlessImpl {
 
     vol.Coords().SetAbsOffset(dims);
 
-    std::cout << "\tvolume data abs offset set to "
-              << vol.Coords().GetAbsOffset() << "\n";
+    log_infos << "\tvolume data abs offset set to "
+              << vol.Coords().GetAbsOffset();
   }
 
   static void SetMeshDownScallingFactor(const double factor) {
     OmMeshParams::SetDownScallingFactor(factor);
-    std::cout << "mesh downscalling factor set to "
-              << OmMeshParams::GetDownScallingFactor() << "\n";
+    log_infos << "mesh downscalling factor set to "
+              << OmMeshParams::GetDownScallingFactor();
   }
 
   static void ReValidateEveryObject(const om::common::ID segmentationID) {
@@ -169,14 +169,14 @@ class HeadlessImpl {
           const int avg2 = (r * r + g * g + b * b) / 3;
           const int v = avg2 - avg * avg;
           if (v >= min_variance) {
-            const om::common::Color color = { r, g, b };
+            const om::common::Color color = {r, g, b};
             segColorHist[color] = 0;
           }
         }
       }
     }
 
-    std::cout << "found " << om::string::humanizeNum(segColorHist.size())
+    log_infos << "found " << om::string::humanizeNum(segColorHist.size())
               << " colors\n";
 
     OmSegments* segments = sdw.Segments();
@@ -210,13 +210,12 @@ class HeadlessImpl {
     out << "red\tgreen\tblue\tnum\n";
 
     FOR_EACH(iter, segColorHist) {
-      //out << iter->first << "\t"
+      // out << iter->first << "\t"
       //    << iter->second << "\n";
     }
   }
 
  public:
-
   static void TimeSegChunkReads(const om::common::ID segmentationID,
                                 const bool randomize, const bool useMeshChunk) {
     SegmentationDataWrapper sdw(segmentationID);
@@ -249,22 +248,22 @@ class HeadlessImpl {
     }
 
     const Vector3i chunkDims = vol.Coords().GetChunkDimensions();
-    const double totalMegs =
-        static_cast<double>(chunkDims.x) * static_cast<double>(chunkDims.y) *
-        static_cast<double>(chunkDims.z) *
-        static_cast<double>(vol.GetBytesPerVoxel()) *
-        static_cast<double>(numChunks) /
-        static_cast<double>(om::math::bytesPerMB);
+    const double totalMegs = static_cast<double>(chunkDims.x) *
+                             static_cast<double>(chunkDims.y) *
+                             static_cast<double>(chunkDims.z) *
+                             static_cast<double>(vol.GetBytesPerVoxel()) *
+                             static_cast<double>(numChunks) /
+                             static_cast<double>(om::math::bytesPerMB);
     const double megsPerSec = totalMegs / timeSecs;
 
-    std::cout << "raw chunk read ";
+    log_infos << "raw chunk read ";
     if (useMeshChunk) {
-      std::cout << "(fseek and read): ";
+      log_infos << "(fseek and read): ";
     } else {
-      std::cout << "(get copy of whole chunk using mesh reader): ";
+      log_infos << "(get copy of whole chunk using mesh reader): ";
     }
 
-    std::cout << megsPerSec << " MB/sec\n";
+    log_infos << megsPerSec << " MB/sec\n";
   }
 
   static void Mesh(const om::common::ID segmentationID) {
@@ -290,7 +289,7 @@ class HeadlessImpl {
     OmActionDumper dumper;
     const QString fnp("/tmp/actionDump.txt");
     dumper.Dump(fnp);
-    std::cout << "wrote action log to " << fnp.toStdString() << "\n";
+    log_infos << "wrote action log to " << fnp.toStdString();
   }
 
   static void DownsampleChannel(const ChannelDataWrapper& cdw) {
@@ -325,5 +324,4 @@ class HeadlessImpl {
                                     const QString fileName) {
     OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, false);
   }
-
 };

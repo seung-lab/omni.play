@@ -241,7 +241,7 @@ void OmSegmentContextMenu::printChildren() {
         OmSegmentContextMenu::writeChildrenFile, fnp, dialog, children)));
 
   } else {
-    FOR_EACH(iter, *children) { std::cout << iter->c_str() << "\n"; }
+    FOR_EACH(iter, *children) { log_infos << iter->c_str(); }
   }
 }
 

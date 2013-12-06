@@ -40,7 +40,7 @@ void OmActionReplayer::replayFile(const QFileInfo& fileInfo) {
   QString actionName;
   in >> actionName;
 
-  printf("replaying %s: %i\n", qPrintable(fileInfo.fileName()), logVersion);
+  log_info("replaying %s: %i", qPrintable(fileInfo.fileName()), logVersion);
 
   dispatchAction(actionName, in);
 
@@ -89,12 +89,11 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
     default:
       // TODO: or skip it?
       throw om::ArgException("unknown action");
-  }
-  ;
+  };
 }
 
 void OmActionReplayer::doReplay() {
-  printf("checking for replay...\n");
+  log_infos << "checking for replay...";
   QDir logdir = OmActionLogger::LogFolder();
 
   static const QString lockName = ".action.replay.lock";
@@ -103,7 +102,7 @@ void OmActionReplayer::doReplay() {
   if (logdir.exists(lockName)) {
     OmActions::GenerateCloseAction();
     logdir.rmdir(lockName);
-    printf("previous replay failed; not replaying\n");
+    log_infos << "previous replay failed; not replaying";
     return;
   }
 
@@ -124,10 +123,10 @@ void OmActionReplayer::doReplay() {
   }
 
   if (0 == filesToReplay.size()) {
-    printf("nothing to replay\n");
+    log_infos << "nothing to replay";
   } else {
     FOR_EACH(iter, filesToReplay) { replayFile(*iter); }
-    std::cout << "replayed " << filesToReplay.size() << " files\n";
+    log_infos << "replayed " << filesToReplay.size() << " files";
   }
 
   logdir.rmdir(lockName);

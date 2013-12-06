@@ -139,7 +139,7 @@ void OmActionsImpl::JoinSegmentsSet(const SegmentationDataWrapper sdw,
 
 void OmActionsImpl::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2) {
   if (seg1 == seg2) {
-    std::cout << "can't split--same segment\n";
+    log_infos << "can't split--same segment";
     return;
   }
 
@@ -149,7 +149,7 @@ void OmActionsImpl::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2) {
       OmFindCommonEdge::FindClosestCommonEdge(sdw.Segments(), seg1, seg2);
 
   if (!edge.isValid()) {
-    printf("edge was not splittable\n");
+    log_infos << "edge was not splittable";
     return;
   }
 

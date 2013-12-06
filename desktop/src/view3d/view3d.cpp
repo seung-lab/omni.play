@@ -207,7 +207,7 @@ bool View3d::pickPoint(const Vector2i& vec, std::vector<uint32_t>& rNamesVec) {
   // if hits < 0, then buffer overflow
   if (hits < 0) {
 
-    log_errors << "View3d::PickPoint: hit buffer overflow: " << hits << "\n";
+    log_errors << "View3d::PickPoint: hit buffer overflow: " << hits;
     return false;
   }
 

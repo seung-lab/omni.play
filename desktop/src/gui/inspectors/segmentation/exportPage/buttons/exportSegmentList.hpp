@@ -28,7 +28,7 @@ class ExportSegmentList : public OmButton<PageExport> {
     QFile file(outFile);
     om::file::old::openFileWO(file);
 
-    printf("writing segment file %s\n", qPrintable(outFile));
+    log_infos << "writing segment file \n" << qPrintable(outFile);
 
     QTextStream out(&file);
     out << "segID, 1 == working, 2 == valid, 3 == uncertain\n";
@@ -58,7 +58,7 @@ class ExportSegmentList : public OmButton<PageExport> {
       out << i << "," << category << "\n";
     }
 
-    printf("\tdone!\n");
+    log_infos << "\tdone!\n";
   }
 };
 

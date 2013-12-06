@@ -43,13 +43,13 @@ void OmDataArchiveSegment::archiveRead() {
 void OmDataArchiveSegment::attemptOldSegmentRead() {
   // segments weren't versioned
 
-  printf("segment load: file version is %d\n", omniFileVersion_);
+  log_infos << "segment load: file version is " << omniFileVersion_;
   const bool dataReadCorrect = readSegmentsOld(false);
 
   if (!dataReadCorrect) {
     // reread, don't read mBounds
     // warning: will leak corrupt OmSegments...
-    printf("intial segment load failed; rereading\n");
+    log_infos << "intial segment load failed; rereading";
     const bool dataReadCorrectOverride = readSegmentsOld(true);
     if (!dataReadCorrectOverride) {
       throw om::IoException("corrupt segment list detected");
@@ -99,7 +99,7 @@ void OmDataArchiveSegment::readSegmentsNew() {
   in.setVersion(QDataStream::Qt_4_6);
 
   in >> segmentFileVersion_;
-  printf("segment load: segment version is %d\n", segmentFileVersion_);
+  log_infos << "segment load: segment version is " << segmentFileVersion_;
 
   for (uint32_t i = 0; i < pageSize_; ++i) {
     bool valid;

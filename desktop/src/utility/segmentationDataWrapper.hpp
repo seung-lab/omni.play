@@ -60,7 +60,7 @@ class SegmentationDataWrapper {
   OmSegmentation& Create() {
     OmSegmentation& s = OmProject::Volumes().Segmentations().AddSegmentation();
     id_ = s.GetID();
-    printf("create segmentation %d\n", id_);
+    log_infos << "create segmentation " << id_;
     segmentation_ = boost::optional<OmSegmentation&>(s);
     return s;
   }
@@ -87,7 +87,6 @@ class SegmentationDataWrapper {
 
   inline OmSegmentation& GetSegmentation() const {
     if (!segmentation_) {
-      //printf("cached segmentation...\n");
       segmentation_ = boost::optional<OmSegmentation&>(
           OmProject::Volumes().Segmentations().GetSegmentation(id_));
     }

@@ -23,9 +23,9 @@ boost::optional<std::pair<float, float> > OmMeshDrawer::Draw(
       cache_->GetSegmentsToDraw(vgs, culler, drawOptions);
 
   // FOR_EACH(iter, *sortedSegments) {
-  // 	std::cout << iter->first->value() << ":" << iter->second << " ";
+  //  log_infos << iter->first->value() << ":" << iter->second << " ";
   // }
-  // std::cout << std::endl;
+  // log_infos << std::endl;
 
   updateNumPrevRedraws(culler);
 

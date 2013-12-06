@@ -14,7 +14,8 @@
 
 #include <QFileInfoList>
 
-template <typename VOL> class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
+template <typename VOL>
+class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
  private:
   VOL* const vol_;
   const OmDataPath path_;
@@ -31,10 +32,10 @@ template <typename VOL> class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
     hdf5reader_ = OmHdf5Manager::Get(fnp, true);
     hdf5reader_->open();
 
-    std::cout << "importHDF5: source path is: " << path_ << "\n";
+    log_infos << "importHDF5: source path is: " << path_;
 
     volSize_ = hdf5reader_->getChunkedDatasetDims(path_, aff_);
-    std::cout << "importHDF5: source vol dims: " << volSize_ << "\n";
+    log_infos << "importHDF5: source vol dims: " << volSize_;
   }
 
   ~OmDataCopierHdf5() { hdf5reader_->close(); }
@@ -44,7 +45,7 @@ template <typename VOL> class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
     allocateData(determineDataType());
 
     OmTimer timer;
-    printf("copying in HDF5 data...\n");
+    log_infos << "copying in HDF5 data...";
 
     OmThreadPool threadPool;
     threadPool.start(3);
@@ -65,7 +66,7 @@ template <typename VOL> class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
 
     threadPool.join();
 
-    printf("\nHDF5 data copy done in %f secs\n", timer.s_elapsed());
+    log_infos << "HDF5 data copy done in " << timer.s_elapsed() << " secs";
   }
 
   void allocateData(const OmVolDataType type) {

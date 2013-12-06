@@ -21,11 +21,11 @@ class OmSimpleProgress {
     cur_.set(0);
 
     threadPool_.start(1);
-    std::cout << title << "\n";
+    log_infos << title;
   }
 
   ~OmSimpleProgress() {
-    std::cout << "done with " << title_ << "\n";
+    log_infos << "done with " << title_;
     threadPool_.join();
   }
 
@@ -61,6 +61,6 @@ class OmSimpleProgress {
       str += pad;
     }
 
-    std::cout << str << "\r" << std::flush;
+    log_infos << str << "\r" << std::flush;
   }
 };

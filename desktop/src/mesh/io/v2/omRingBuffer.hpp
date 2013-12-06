@@ -34,7 +34,6 @@ class OmRingBuffer {
     }
 
     if (buffer_[curPos_]) {
-      // printf("ring buffer is unmapping file...");
       buffer_[curPos_]->Unmap();
     }
 

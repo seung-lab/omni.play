@@ -48,7 +48,7 @@ class OmUserEdges {
       AddEdgeFromProjectLoad(e);
     }
 
-    printf("loaded %d user edges\n", edges_.size());
+    log_infos << "loaded " << edges_.size() << "user edges";
 
     if (!in.atEnd()) {
       throw om::IoException("corrupt file?");
@@ -74,13 +74,13 @@ class OmUserEdges {
     out << size;
     FOR_EACH(iter, edges_) { out << *iter; }
 
-    printf("saved %s\n", qPrintable(path));
+    log_infos << "saved " << qPrintable(path);
   }
 
   void AddEdgeFromProjectLoad(OmSegmentEdge e) {
     if (0 == e.childID || 0 == e.parentID || std::isnan(e.threshold)) {
-      printf("warning: bad edge found: %d, %d, %f\n", e.parentID, e.childID,
-             e.threshold);
+      log_info("warning: bad edge found: %d, %d, %f\n", e.parentID, e.childID,
+               e.threshold);
       return;
     }
     e.valid = true;

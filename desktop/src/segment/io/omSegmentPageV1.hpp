@@ -21,7 +21,7 @@ class OmSegmentPageV1 {
       : segmentation_(segmentation), pageNum_(pageNum), pageSize_(pageSize) {}
 
   std::shared_ptr<OmSegmentDataV3> Read() {
-    printf("rewriting segment page %d from HDF5\n", pageNum_);
+    log_infos << "rewriting segment page " << pageNum_ << " from HDF5";
 
     std::shared_ptr<OmSegmentDataV2> oldSegmentDataPtr =
         om::mem::Malloc<OmSegmentDataV2>::NumElements(pageSize_,

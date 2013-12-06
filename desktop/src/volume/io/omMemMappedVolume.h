@@ -9,10 +9,11 @@ class OmMemMappedVolume {
  public:
   OmMemMappedVolume() {}
 
-  template <typename VOL> void load(VOL* vol) {
+  template <typename VOL>
+  void load(VOL* vol) {
     SetDataType(vol);
     loadMemMapFiles();
-    printf("loaded data\n");
+    log_infos << "loaded data";
   }
 
   template <typename VOL>
@@ -27,11 +28,12 @@ class OmMemMappedVolume {
 
   void downsample(OmMipVolume* vol);
 
-  template <typename VOL> void SetDataType(VOL* vol) {
-    printf("setting up volume data...\n");
+  template <typename VOL>
+  void SetDataType(VOL* vol) {
+    log_infos << "setting up volume data...";
 
     if (OmVolDataType::UNKNOWN == vol->mVolDataType.index()) {
-      printf("unknown data type--old file? attempting to infer type...\n");
+      log_infos << "unknown data type--old file? attempting to infer type...";
 
       if (OmProject::HasOldHDF5()) {
         vol->mVolDataType = OmHdf5ChunkUtils::DetermineOldVolType(vol);

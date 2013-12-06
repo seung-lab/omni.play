@@ -27,7 +27,7 @@ class OmSegmentationChunkBuildTask : public zi::runnable {
 
     const auto segIDs = vol_->UniqueValuesDS().RereadChunk(coord_, 1);
 
-    // std::cout << "chunk " << coord_
+    // log_infos << "chunk " << coord_
     //           << " has " << segIDs.size()
     //           << " values\n";
 
@@ -55,7 +55,6 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol) {
   }
 
   threadPool.join();
-  //printf("max is %g\n", mMaxVal);
 }
 
 void OmVolumeProcessor::doBuildThreadedVolume(OmChannel*) {}

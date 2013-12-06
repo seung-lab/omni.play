@@ -8,8 +8,6 @@ class OmBrushSelect {
  public:
   static void SelectByClick(OmView2dState* state, const om::globalCoord& coord,
                             const om::common::AddOrSubtract addSegments) {
-    // std::cout << "mouse click data coord: " << coord << "\n";
-
     std::shared_ptr<OmBrushOppInfo> info =
         OmBrushOppInfoFactory::MakeOppInfo(state, coord, addSegments);
 
@@ -24,8 +22,6 @@ class OmBrushSelect {
 
     std::shared_ptr<OmBrushOppInfo> info =
         OmBrushOppInfoFactory::MakeOppInfo(state, first, addSegments);
-
-    // std::cout << *info << ", " << first << ", " << second << "\n";
 
     std::shared_ptr<OmBrushSelectLineTask> task =
         std::make_shared<OmBrushSelectLineTask>(info, first, second);

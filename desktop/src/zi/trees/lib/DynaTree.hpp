@@ -455,7 +455,7 @@ void DNMTREE<T>::splay() {
 template <typename T>
 void DNMTREE<T>::printTree(int d) {
   if (left_) left_->printTree(d + 1);
-  // std::cout << std::string(d, ' ') << key_ << " ("
+  // log_infos << std::string(d, ' ') << key_ << " ("
   //          << (pathParent_?pathParent_->key_ : T()) << ")" << std::endl;
   if (right_) right_->printTree(d + 1);
 }

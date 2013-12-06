@@ -47,7 +47,7 @@ class OmRawChunk {
 
   void Flush() {
     if (dirty_) {
-      std::cout << "flushing " << coord_ << "\n";
+      log_infos << "flushing " << coord_;
       writeData();
       dirty_ = false;
     }

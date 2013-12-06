@@ -12,10 +12,10 @@ class Controller : public zi::enable_singleton_of_this<Controller> {
  public:
   class Context {
    public:
-    Context(std::string text) : Text { text }
-    { Controller::PushContext(this); }
+    Context(std::string text) : Text{text} { Controller::PushContext(this); }
 
-    template <typename T> Context(T obj) {
+    template <typename T>
+    Context(T obj) {
       std::stringstream ss;
       ss << obj;
       Text = ss.str();
@@ -37,7 +37,8 @@ class Controller : public zi::enable_singleton_of_this<Controller> {
     return true;
   }
 
-  template <typename T> static bool Test(bool result, T obj) {
+  template <typename T>
+  static bool Test(bool result, T obj) {
     std::stringstream ss;
     ss << obj;
     return Test(result, ss.str());
@@ -57,7 +58,8 @@ class Controller : public zi::enable_singleton_of_this<Controller> {
     return true;
   }
 
-  template <typename T> static bool MultiTest(bool result, T obj, int count) {
+  template <typename T>
+  static bool MultiTest(bool result, T obj, int count) {
     std::stringstream ss;
     ss << obj;
     return MultiTest(result, ss.str(), count);
@@ -92,18 +94,20 @@ class Controller : public zi::enable_singleton_of_this<Controller> {
     return binned;
   }
 
-  template <typename... TArgs> static void Say(TArgs... args) {
+  template <typename... TArgs>
+  static void Say(TArgs... args) {
     if (!instance().quiet_) {
       instance().print_context();
       say(args...);
-      std::cout << std::endl;
+      log_infos << std::endl;
     }
   }
 
-  template <typename... TArgs> static void SayFail(TArgs... args) {
+  template <typename... TArgs>
+  static void SayFail(TArgs... args) {
     if (!instance().quiet_ || instance().fail_) {
       say(args...);
-      std::cout << ":";
+      log_infos << ":";
     }
   }
 
@@ -121,17 +125,20 @@ class Controller : public zi::enable_singleton_of_this<Controller> {
 
   void print_context() const {
     for (int i = 0; i < context_.size(); ++i) {
-      std::cout << "[" << context_[i]->Text << "]";
+      log_infos << "[" << context_[i]->Text << "]";
     }
-    std::cout << ":";
+    log_infos << ":";
   }
 
   template <typename T, typename... TArgs>
   static void say(T toSay, TArgs... args) {
-    std::cout << toSay;
+    log_infos << toSay;
     say(args...);
   }
-  template <typename T> static void say(T toSay) { std::cout << toSay; }
+  template <typename T>
+  static void say(T toSay) {
+    log_infos << toSay;
+  }
   static void say() {}
 
   friend class zi::singleton<Controller>;

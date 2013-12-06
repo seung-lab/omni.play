@@ -129,8 +129,6 @@ bool OmSegmentSelector::sendEvent() {
     }
   }
 
-  // debugs(segmentSelector) << params_->oldSelectedIDs << "\n";
-
   if (params_->augmentListOnly) {
     // disable undo option for now
     OmSegments* segments = params_->sdw.Segments();

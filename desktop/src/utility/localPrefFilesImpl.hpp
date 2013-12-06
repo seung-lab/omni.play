@@ -31,7 +31,8 @@ class LocalPrefFilesImpl {
   }
 
   // number
-  template <typename T> inline T readSettingNumber(const QString& setting) {
+  template <typename T>
+  inline T readSettingNumber(const QString& setting) {
     QStringList lines = readFile(setting);
     if (0 == lines.size()) {
       throw om::IoException("invalid preference found");
@@ -95,7 +96,6 @@ class LocalPrefFilesImpl {
   }
 
  private:
-
   QDir prefFolder_;
 
   LocalPrefFilesImpl() { setupPrefFolder(); }
@@ -112,7 +112,7 @@ class LocalPrefFilesImpl {
     }
 
     if (QDir::home().mkdir(omniFolderName)) {
-      printf("made folder %s\n", qPrintable(omniFolderPath));
+      log_infos << "made folder " << qPrintable(omniFolderPath);
       prefFolder_ = dir;
     } else {
       throw om::IoException("could not create folder");

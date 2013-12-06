@@ -33,14 +33,14 @@ class OmTimer {
   void Print(const std::string str) {
     const double timeSecs = s_elapsed();
 
-    std::cout << str << " in " << std::fixed << std::setprecision(2) << timeSecs
+    log_infos << str << " in " << std::fixed << std::setprecision(2) << timeSecs
               << " secs\n";
   }
 
   void PrintV(const std::string str) {
     const double timeSecs = s_elapsed();
 
-    std::cout << str << " in " << std::fixed << std::setprecision(10)
+    log_infos << str << " in " << std::fixed << std::setprecision(10)
               << timeSecs << " secs\n";
   }
 
