@@ -21,7 +21,7 @@ class OmVolumeProcessor {
       throw om::IoException("volume build failed");
     }
 
-    log_info("OmVolumeBuilder: BuildThreadedVolume() done : %.6f secs\n",
+    log_info("OmVolumeBuilder: BuildThreadedVolume() done : %.6f secs",
              timer.s_elapsed());
   }
 

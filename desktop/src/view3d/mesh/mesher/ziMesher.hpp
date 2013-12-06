@@ -85,7 +85,7 @@ class ziMesher {
       addValuesFromChunkAndDownsampledChunks(chunk);
     }
 
-    log_debugs << "\nstarting meshing...";
+    log_debugs << "starting meshing...";
 
     zi::task_manager::simple manager(numParallelChunks_);
     manager.start();
@@ -97,7 +97,7 @@ class ziMesher {
 
     manager.join();
 
-    log_debugs << "\ndone meshing...";
+    log_debugs << "done meshing...";
   }
 
   void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord) {

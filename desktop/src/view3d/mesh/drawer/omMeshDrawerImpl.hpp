@@ -24,7 +24,7 @@ class DrawerImpl {
         context_(QGLContext::currentContext()),
         meshes_(segmentationID) {
     if (!context_) {
-      log_infos << "WARNING: QLContext was 0" << std::endl;
+      log_infos << "WARNING: QLContext was 0";
       //   throw VerifyException("QGLContext should never be 0");
     }
   }

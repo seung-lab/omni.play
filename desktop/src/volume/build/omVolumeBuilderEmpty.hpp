@@ -12,12 +12,12 @@ class OmVolumeBuilderEmpty : public OmVolumeBuilderBase<VOL> {
 
  protected:
   virtual void importSourceData() {
-    log_infos << "WARNING: assuming int8 typename\n";
+    log_infos << "WARNING: assuming int8 typename";
     OmVolumeAllocater::AllocateData(vol_, OmVolDataType::INT8);
   }
 
   virtual Vector3i getMip0Dims() {
-    log_infos << "WARNING: assuming hard-coded dims of 4864, 20992, 12982\n";
+    log_infos << "WARNING: assuming hard-coded dims of 4864, 20992, 12982";
     return Vector3i(4864, 20992, 12928);
   }
 };

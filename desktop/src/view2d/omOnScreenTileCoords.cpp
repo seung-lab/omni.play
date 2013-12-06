@@ -22,7 +22,7 @@ OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state,
 }
 
 std::ostream& operator<<(std::ostream& out, const OmOnScreenTileCoords& c) {
-  out << c.mipLevel_ << std::endl;
+  out << c.mipLevel_;
   return out;
 }
 

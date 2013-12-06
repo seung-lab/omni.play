@@ -33,8 +33,6 @@ bool OmHdf5LowLevel::dataset_exists() {
  * method used to read meshes and .dat files from disk
  */
 OmDataWrapperPtr OmHdf5LowLevel::readDataset(int* size) {
-  // debug(hdf5verbose, "in %s: path is %s\n", __FUNCTION__, getPath());
-
   if (!OmHdf5Utils::group_exists(fileId, getPath())) {
     *size = 0;
     return OmDataWrapperInvalid();
@@ -98,8 +96,6 @@ OmDataWrapperPtr OmHdf5LowLevel::readDataset(int* size) {
 }
 
 void OmHdf5LowLevel::allocateDataset(int size, OmDataWrapperPtr data) {
-  // debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
   herr_t status;
 
   // Creates a new simple dataspace and opens it for access.
@@ -147,8 +143,6 @@ void OmHdf5LowLevel::allocateDataset(int size, OmDataWrapperPtr data) {
  *  Creates nested group tree.  Ignores already existing groups.
  */
 void OmHdf5LowLevel::group_create_tree(const char* path) {
-  ////debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
   std::string curPath;
   const QStringList splits = QString(path).split('/');
   FOR_EACH(iter, splits) {
@@ -165,8 +159,6 @@ void OmHdf5LowLevel::group_create_tree(const char* path) {
 ///////          Dataset private
 
 void OmHdf5LowLevel::dataset_delete_create_tree() {
-  // debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
   // get position of last slash
   std::string name_str(getPath());
   size_t pos_last_slash = name_str.find_last_of(std::string("/"));
@@ -185,8 +177,6 @@ void OmHdf5LowLevel::dataset_delete_create_tree() {
 Vector3i OmHdf5LowLevel::getChunkedDatasetDims(
     const om::common::AffinityGraph affin) {
   om::common::AffinityGraph aff = affin;
-  // debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
   herr_t status;
 
   // Opens an existing dataset.
@@ -262,9 +252,6 @@ Vector3i OmHdf5LowLevel::getChunkedDatasetDims(
       throw om::IoException("Could not close HDF5 dataset.");
     }
 
-    // debug(hdf5image, "dims are %d:%d:%d; maxdims are %d:%d:%d\n",
-    // DEBUGV3(dims), //DEBUGV3(maxdims));
-
     // flip from hdf5 version
     return Vector3i(dims.z, dims.y, dims.x);
   }
@@ -278,8 +265,6 @@ void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
                                             const OmVolDataType type) {
   herr_t ret;
   const int rank = 3;
-  // debug(hdf5verbose, "OmHDF5LowLevel: in %s...i\n", __FUNCTION__);
-
   // Creates a new property as an instance of a property list class.
   hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
   if (plist_id < 0) {
@@ -340,8 +325,6 @@ void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
 
 void OmHdf5LowLevel::writeChunk(const om::dataBbox& extent,
                                 OmDataWrapperPtr data) {
-  // debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
   // Opens an existing dataset.
   hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
   if (dataset_id < 0) {
@@ -432,8 +415,6 @@ OmDataWrapperPtr OmHdf5LowLevel::GetChunkDataType() {
 
 OmDataWrapperPtr OmHdf5LowLevel::readChunk(
     const om::dataBbox& extent, const om::common::AffinityGraph aff) {
-  // debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
   // Opens an existing dataset.
   // hid_t H5Dopen(hid_t loc_id, const char *name  )
   hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
@@ -460,8 +441,6 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(
 
   Vector3<hsize_t> block = extent.getDimensions();
   Vector3<hsize_t> block_flipped(block.z, block.y, block.x);
-  // debug(hdf5image, "start:%i,%i,%i\n", //DEBUGV3(start));
-  // debug(hdf5image, "block:%i,%i,%i\n", //DEBUGV3(block));
   herr_t ret;
   hid_t mem_dataspace_id;
   OmDataWrapperPtr data;
@@ -532,7 +511,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(
     if (ret < 0) throw om::IoException("Could not select HDF5 hyperslab.");
 
     // Creates a new simple dataspace and opens it for access.
-    log_infos << "\tBlock: " << block << std::endl;
+    log_infos << "\tBlock: " << block;
     mem_dataspace_id = H5Screate_simple(3, block.array, nullptr);
     if (mem_dataspace_id < 0) {
       throw om::IoException(
@@ -580,8 +559,6 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(
 }
 
 Vector3i OmHdf5LowLevel::getDatasetDims() {
-  // debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
   Vector3<hsize_t> dims(0, 0, 0);
 
   herr_t status;

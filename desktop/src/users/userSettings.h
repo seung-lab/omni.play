@@ -25,7 +25,7 @@ class userSettings {
         threshold_(defaultThreshold_),
         sizeThreshold_(defaultSizeThreshold_),
         showAnnotations_(defaultShowAnnotations_) {
-    log_infos << "New User Settings\n";
+    log_infos << "New User Settings";
   }
 
   void Load();

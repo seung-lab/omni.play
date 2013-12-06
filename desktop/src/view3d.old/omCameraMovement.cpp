@@ -26,17 +26,17 @@ void OmCameraArcBall::Click(const Vector2<float>& point) {
 }
 
 void OmCameraArcBall::Drag(const Vector2<float>& point) {
-  //find end vector
+  // find end vector
   MapPointToSphere(point, mEndVector);
 
-  //get perpendicular to start and end vectors
+  // get perpendicular to start and end vectors
   Vector3<float> perp_vector;
   perp_vector.cross(mStartVector, mEndVector);
 
-  //compute length of perpendicular
-  if (perp_vector.length() > EPSILON) {  //if non-zero
+  // compute length of perpendicular
+  if (perp_vector.length() > EPSILON) {  // if non-zero
 
-    //update specific matrix depending on what type of rotation
+    // update specific matrix depending on what type of rotation
     Quaternion<float> rotation;
 
     switch (mpCamera->mMovementType) {
@@ -52,7 +52,7 @@ void OmCameraArcBall::Drag(const Vector2<float>& point) {
         assert(false);
     }
 
-    //apply new rotation to old rotation
+    // apply new rotation to old rotation
     rotation = Quaternion<float>(Vector3<float>::dot(mStartVector, mEndVector),
                                  perp_vector) *
                mStartRotation;
@@ -74,37 +74,37 @@ void OmCameraArcBall::Drag(const Vector2<float>& point) {
 }
 
 /*
- *	Returns a vector on a sphere mapped from a given point in the viewport.
+ *  Returns a vector on a sphere mapped from a given point in the viewport.
  */
 void OmCameraArcBall::MapPointToSphere(const Vector2<float>& point,
                                        Vector3<float>& vector) {
-  //get viewport and scale
+  // get viewport and scale
   const Vector4<int>& r_viewport = mpCamera->mViewport;
-  //assert((viewport.width > 1) && (viewport.height > 1));
+  // assert((viewport.width > 1) && (viewport.height > 1));
   if ((r_viewport.width < 1) || (r_viewport.height < 1)) return;
 
-  //get adjusted dimensions of viewport
+  // get adjusted dimensions of viewport
   mAdjustWidth = 1.0f / ((r_viewport.width - 1) * 0.5f);
   mAdjustHeight = 1.0f / ((r_viewport.height - 1) * 0.5f);
 
-  //scale point from [0, dim) to [-1, 1]
+  // scale point from [0, dim) to [-1, 1]
   Vector2<float> scaled_point = Vector2<float>(point.x * mAdjustWidth - 1.0f,
                                                1.0f - point.y * mAdjustHeight);
 
-  //get square length
+  // get square length
   float sqr_length = scaled_point.lengthSquared();
 
-  //if point outside of arcball sphere
+  // if point outside of arcball sphere
   if (sqr_length > 1.0f) {
 
-    //return normalized point on sphere
+    // return normalized point on sphere
     float norm = 1.0f / sqrtf(sqr_length);
     vector.x = scaled_point.x * norm;
     vector.y = scaled_point.y * norm;
     vector.z = 0;
 
   } else {
-    //return vector to point mapped inside the sphere
+    // return vector to point mapped inside the sphere
     vector.x = scaled_point.x;
     vector.y = scaled_point.y;
     vector.z = sqrtf(1.0f - sqr_length);
@@ -150,17 +150,17 @@ void OmCameraPan::Drag(const Vector2<float>& point) {
   Vector2<float> move(cr - sr, cu - su);
   move *= -distance / d;
 
-  //update center
+  // update center
   Vector3<float> center = mpCamera->GetFocus();
   Matrix3<float> orbit_mat = mpCamera->mOrbitRotation.getRotationMatrix();
 
-  //Matrix3<float> rotation_mat = orbit_mat * lookat_mat;
+  // Matrix3<float> rotation_mat = orbit_mat * lookat_mat;
 
-  //update center
+  // update center
   center = mStartCenter + orbit_mat.getRow(0) * move.x +
            orbit_mat.getRow(1) * move.y;
 
-  //update pan matrix
+  // update pan matrix
   mpCamera->SetFocus(center);
 }
 
@@ -170,14 +170,12 @@ void OmCameraPan::Drag(const Vector2<float>& point) {
 //////////
 
 void OmCameraZoom::Click(const Vector2<float>& point) {
-  ////debug(view3d, "zooming: click: x=%f, y=%f\n", point.x, point.y);
   mOldViewMatrix = mpCamera->GetModelViewMatrix();
   mStartDistance = mpCamera->GetDistance();
   mStartPoint = point;
 }
 
 void OmCameraZoom::Drag(const Vector2<float>& point) {
-  ////debug(view3d, "zooming: drag: x=%f, y=%f\n", point.x, point.y);
   const Vector4<int>& r_viewport = mpCamera->mViewport;
   int sy = mStartPoint[1] - r_viewport[1];
   int cy = point.y - r_viewport[1];

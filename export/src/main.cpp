@@ -197,7 +197,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
     }
   }
 
-  log_infos << exporter->Write() << std::endl;
+  log_infos << exporter->Write();
 
   return 0;
 }
@@ -233,7 +233,7 @@ int exportMST(const Options& opt, int argc, char* argv[]) {
 
   for (auto& e : seg.Edges()) {
     log_infos << e.number << "," << e.node1ID << "," << e.node2ID << ","
-              << e.threshold << std::endl;
+              << e.threshold;
   }
 
   return 0;

@@ -9,8 +9,7 @@ ShowValidatedButton::ShowValidatedButton(ValidationGroup* d)
                                 true) {}
 
 void ShowValidatedButton::doAction() {
-  //debug(valid, "om::sidebars::rightImpl::mapColors(%i)\n", isChecked());
   // Using !(not) because check happens after this fuction.
-  mParent->GetViewGroupState()
-      ->SetShowValidMode(!isChecked(), mParent->isShowValidChecked());
+  mParent->GetViewGroupState()->SetShowValidMode(!isChecked(),
+                                                 mParent->isShowValidChecked());
 }

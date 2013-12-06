@@ -63,7 +63,7 @@ class OmMeshWriterTaskV2 : public zi::runnable {
         writeOutData(chunk_data, mesh_, OmMeshCoord(coord_, segID_));
 
     if (!entry.wasMeshed) {
-      log_infos << "Wrote unmeshed Entry..." << std::endl;
+      log_infos << "Wrote unmeshed Entry...";
     }
 
     chunk_table->Set(entry);

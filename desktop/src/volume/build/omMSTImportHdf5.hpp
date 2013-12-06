@@ -91,7 +91,7 @@ class OmMSTImportHdf5 {
     int numBytes;
     dend_ = hdf5->readDataset(datasetName, &numBytes);
 
-    log_info("\tdendrogram is %s x %s (%s bytes)\n",
+    log_info("\tdendrogram is %s x %s (%s bytes)",
              om::string::humanizeNum(dendSizes_.x).c_str(),
              om::string::humanizeNum(dendSizes_.y).c_str(),
              om::string::humanizeNum(numBytes).c_str());
@@ -112,7 +112,7 @@ class OmMSTImportHdf5 {
     int numBytes;
     dendValues_ = hdf5->readDataset(datasetName, &numBytes);
 
-    log_info("\tdendrogram values is %s x %s (%s bytes)\n",
+    log_info("\tdendrogram values is %s x %s (%s bytes)",
              om::string::humanizeNum(dendValuesSizes_.x).c_str(),
              om::string::humanizeNum(dendValuesSizes_.y).c_str(),
              om::string::humanizeNum(numBytes).c_str());
@@ -146,12 +146,12 @@ class OmMSTImportHdf5 {
     edges_.swap(valid);
 
     if (!diff) {
-      log_infos << "checked MST: all edges good!\n";
+      log_infos << "checked MST: all edges good!";
 
     } else {
       log_infos << "checked MST: "
                 << "removed " << diff << " invalid edges; " << newSize
-                << " edges left\n";
+                << " edges left";
     }
   }
 };

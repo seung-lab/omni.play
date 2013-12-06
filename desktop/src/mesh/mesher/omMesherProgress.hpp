@@ -31,7 +31,7 @@ class progress {
 
     log_infos << "finished chunk: " << coord << "; " << chunksLeft
               << " chunks left "
-              << "(" << total << " total)" << std::endl;
+              << "(" << total << " total)";
   }
 };
 

@@ -66,10 +66,6 @@ class OmSegmentListLowLevel {
   inline void ForceRefreshGUIlists() { runRefreshGUIlists(true); }
 
   inline int64_t GetSizeWithChildren(const om::common::SegID segID) {
-    //         if(segID >= list_.size()){
-    //             log_infos << "segment " << segID << "not found\n";
-    //             return 0;
-    //         }
     return list_[segID].sizeIncludingChildren;
   }
 

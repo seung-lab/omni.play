@@ -70,8 +70,6 @@ class OmMemMappedFileReadQT : public OmMemMappedFileQTbase<T> {
     this->open();
     checkFileSize(numBytes);
     this->map();
-
-    // debug(memmap, "opened file %s\n", this->GetAbsFileName().c_str());
   }
 
   // optional check of expected file size

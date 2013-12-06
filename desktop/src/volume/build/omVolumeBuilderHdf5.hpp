@@ -41,8 +41,6 @@ class OmVolumeBuilderHdf5 : public OmVolumeBuilderBase<VOL> {
 
     const Vector3i dims = hdf5->getChunkedDatasetDims(datasetName_, aff_);
 
-    //debug(hfd5image, "dims are %i,%i,%i\n", DEBUGV3(dims));
-
     hdf5->close();
 
     return dims;

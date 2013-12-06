@@ -99,7 +99,6 @@ class Controller : public zi::enable_singleton_of_this<Controller> {
     if (!instance().quiet_) {
       instance().print_context();
       say(args...);
-      log_infos << std::endl;
     }
   }
 

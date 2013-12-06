@@ -79,7 +79,7 @@ class OmUserEdges {
 
   void AddEdgeFromProjectLoad(OmSegmentEdge e) {
     if (0 == e.childID || 0 == e.parentID || std::isnan(e.threshold)) {
-      log_info("warning: bad edge found: %d, %d, %f\n", e.parentID, e.childID,
+      log_info("warning: bad edge found: %d, %d, %f", e.parentID, e.childID,
                e.threshold);
       return;
     }

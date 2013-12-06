@@ -96,7 +96,7 @@ class OmOnDiskBoostUnorderedMap {
       throw om::IoException("could not resize file");
     }
 
-    log_infos << "done\n";
+    log_infos << "done";
 
     open();
   }

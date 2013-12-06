@@ -56,8 +56,6 @@ void SegmentListBase::populateByPage() {
   const bool shouldThisTabBeMadeActive =
       segmentListWidget->populate(false, SegmentDataWrapper(), segIDs);
 
-  // debug(segmentlist, "bye!\n");
-
   if (shouldThisTabBeMadeActive) {
     makeTabActiveIfContainsJumpedToSegment();
   }
@@ -81,8 +79,6 @@ void SegmentListBase::populateBySegment(
 
   const bool shouldThisTabBeMadeActive = segmentListWidget->populate(
       doScrollToSelectedSegment, segmentJustSelected, segIDs);
-
-  // debug(segmentlist, "bye!\n");
 
   if (shouldThisTabBeMadeActive) {
     makeTabActiveIfContainsJumpedToSegment();

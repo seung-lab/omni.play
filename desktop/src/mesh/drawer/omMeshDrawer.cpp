@@ -15,17 +15,11 @@ boost::optional<std::pair<float, float> > OmMeshDrawer::Draw(
     OmViewGroupState* vgs, std::shared_ptr<OmVolumeCuller> culler,
     const OmBitfield drawOptions) {
   if (!segmentation_->MeshManager(1)->Metadata()->IsBuilt()) {
-    // printf("no meshes found\n");
     return boost::optional<std::pair<float, float> >();
   }
 
   std::shared_ptr<OmMeshPlan> sortedSegments =
       cache_->GetSegmentsToDraw(vgs, culler, drawOptions);
-
-  // FOR_EACH(iter, *sortedSegments) {
-  //  log_infos << iter->first->value() << ":" << iter->second << " ";
-  // }
-  // log_infos << std::endl;
 
   updateNumPrevRedraws(culler);
 

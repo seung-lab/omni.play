@@ -27,9 +27,8 @@ class checkChunk : public boost::static_visitor<bool> {
         }
       }
     }
-    log_infos << prefix_ << "Different Values Found: " << counts.size()
-              << std::endl;
-    log_infos << prefix_ << "Zero Values Found: " << counts[0] << std::endl;
+    log_infos << prefix_ << "Different Values Found: " << counts.size();
+    log_infos << prefix_ << "Zero Values Found: " << counts[0];
 
     return counts.size() > 1;
   }

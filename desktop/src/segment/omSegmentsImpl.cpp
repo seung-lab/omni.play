@@ -174,7 +174,7 @@ std::pair<bool, OmSegmentEdge> OmSegmentsImpl::JoinEdgeFromUser(
   OmSegment* parentRoot = FindRoot(parent);
 
   if (childRoot == parentRoot) {
-    log_info("cycle found in user manual edge; skipping edge %d, %d, %f\n",
+    log_info("cycle found in user manual edge; skipping edge %d, %d, %f",
              e.childID, e.parentID, e.threshold);
     return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
   }
@@ -182,7 +182,7 @@ std::pair<bool, OmSegmentEdge> OmSegmentsImpl::JoinEdgeFromUser(
   if (childRoot->IsValidListType() != parent->IsValidListType()) {
     log_info(
         "not joining child %d to parent %d: child immutability is %d, but "
-        "parent's is %d\n",
+        "parent's is %d",
         childRoot->value(), parent->value(), childRoot->IsValidListType(),
         parent->IsValidListType());
     return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());

@@ -91,7 +91,7 @@ class ziMesher {
       addValuesFromChunkAndDownsampledChunks(*it);
     }
 
-    log_infos << "\nstarting meshing..." << std::endl;
+    log_infos << "starting meshing...";
 
     zi::task_manager::simple manager(numParallelChunks_);
     manager.start();
@@ -103,7 +103,7 @@ class ziMesher {
 
     manager.join();
 
-    log_infos << "\ndone meshing..." << std::endl;
+    log_infos << "done meshing...";
   }
 
   void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord) {
@@ -271,8 +271,8 @@ class ziMesher {
 
       manager.join();
     } else {
-      log_infos << "Skipping Chunk " << coord << " b/c there's nothing in there"
-                << std::endl;
+      log_infos << "Skipping Chunk " << coord
+                << " b/c there's nothing in there";
     }
 
     progress_.ChunkCompleted(coord);

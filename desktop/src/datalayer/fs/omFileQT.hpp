@@ -91,8 +91,6 @@ class OmFileReadQT : public OmFileQTbase<T> {
     this->open();
     checkFileSize(numBytes);
     this->readIn();
-
-    // debug(file, "opened file %s\n", this->GetAbsFileName().c_str());
   }
 
   // optional check of expected file size
@@ -148,8 +146,6 @@ class OmFileWriteQT : public OmFileQTbase<T> {
     if (om::mem::ZeroFill::ZERO == shouldZeroFill) {
       memset(this->data_.get(), 0, numBytes);
     }
-
-    // debug(file, "created file %s\n", this->GetAbsFileName().c_str());
   }
 
   void checkFileSize(const int64_t numBytes) {

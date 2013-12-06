@@ -34,7 +34,7 @@ class OmMeshChunkAllocTableV2 {
     if (segsBeingSaved_.insertSinceWasntPresent(segID)) {
       return true;
     }
-    printf("mesh already being saved...\n");
+    log_infos << "mesh already being saved...";
     return false;
   }
 

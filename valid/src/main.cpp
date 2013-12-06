@@ -30,7 +30,7 @@ int TestVolume(std::string path) {
 
   om::file::Paths p(path);
   if (!file::exists(p.FilesFolder())) {
-    log_infos << "Bad Path." << std::endl;
+    log_infos << "Bad Path.";
     return 2;
   }
 
@@ -56,7 +56,7 @@ int TestVolume(std::string path) {
 
     VolumeValid cv(chan, ZiARG_level);
     if (!cv.Check()) {
-      log_infos << path << " failed." << std::endl;
+      log_infos << path << " failed.";
       return 1;
     }
   }
@@ -68,7 +68,7 @@ int TestVolume(std::string path) {
 
     VolumeValid cv(seg, ZiARG_level);
     if (!cv.Check()) {
-      log_infos << path << " failed." << std::endl;
+      log_infos << path << " failed.";
       return 1;
     }
   }
@@ -78,7 +78,7 @@ int TestVolume(std::string path) {
 
     UniqueValuesValid uvv(seg, ZiARG_level);
     if (!uvv.Check()) {
-      log_infos << path << " failed." << std::endl;
+      log_infos << path << " failed.";
       return 1;
     }
   }
@@ -88,13 +88,13 @@ int TestVolume(std::string path) {
 
     MeshValid mv(seg.Endpoint(), seg.Coords(), ZiARG_level);
     if (!mv.Check()) {
-      log_infos << path << " failed." << std::endl;
+      log_infos << path << " failed.";
       return 1;
     }
   }
 
   if (Controller::HasFailed()) {
-    log_infos << path << " failed." << std::endl;
+    log_infos << path << " failed.";
   }
 
   return Controller::HasFailed();
@@ -103,7 +103,7 @@ int TestVolume(std::string path) {
 int main(int argc, char *argv[]) {
   zi::parse_arguments(argc, argv, true);
   if (argc < 2) {
-    log_infos << "Usage: omni.valid [Options] path..." << std::endl;
+    log_infos << "Usage: omni.valid [Options] path...";
     return 1;
   }
 

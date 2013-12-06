@@ -155,7 +155,6 @@ void Preferences3d::on_styleComboBox_currentIndexChanged() {
 }
 
 void Preferences3d::alphaSliderValueChanged(int val) {
-  ////debug(genone,"slider value changed = %i\n", val);
   transparencySliderLabel->setNum(val / (50.0));
 
   OmPreferences::SetFloat(om::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT,

@@ -14,7 +14,6 @@ class SetNotValid : public OmButton<ValidationGroup> {
 
  private:
   void doAction() {
-    //debug(dendbar, "ValidationGroup::deleteGroup\n");
     SegmentationDataWrapper sdw = mParent->GetSDW();
     if (!sdw.IsSegmentationValid()) {
       return;

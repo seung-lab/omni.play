@@ -24,7 +24,7 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
         meshWriter_(new OmMeshWriterV2(meshManager)) {}
 
   void run() {
-    printf("copying mesh data...\n");
+    log_infos << "copying mesh data...";
 
     std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         segmentation_->GetMipChunkCoords();
@@ -41,7 +41,7 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
 
     meshManager_->Metadata()->SetMeshedAndStorageAsChunkFiles();
 
-    printf("mesh conversion done!\n");
+    log_infos << "mesh conversion done!";
   }
 
  private:

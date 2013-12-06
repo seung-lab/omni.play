@@ -69,7 +69,7 @@ class OmLoadImage {
       processSlice(fnp, i);
     }
 
-    log_infos << "\nwaiting for tile writes to complete..." << std::flush;
+    log_infos << "waiting for tile writes to complete...";
 
     limit_.acquire(numTilesToWrite_);
 
@@ -77,7 +77,7 @@ class OmLoadImage {
 
     mip0volFile_->flush();
 
-    log_infos << "done\n";
+    log_infos << "done";
   }
 
   void ReplaceSlice(const int sliceNum) {
@@ -87,13 +87,13 @@ class OmLoadImage {
 
     processSlice(files_[0].absoluteFilePath(), sliceNum);
 
-    log_infos << "\nwaiting for tile writes to complete..." << std::flush;
+    log_infos << "\nwaiting for tile writes to complete...";
 
     limit_.acquire(numTilesToWrite_);
 
     taskMan_.join();
 
-    log_infos << "done\n";
+    log_infos << "done";
   }
 
  private:

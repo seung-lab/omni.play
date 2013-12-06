@@ -35,7 +35,7 @@ class OmMeshWriterV2 {
 
     bool allGood = true;
 
-    log_infos << "\nchecking that all segments were meshed...\n";
+    log_infos << "checking that all segments were meshed...";
 
     FOR_EACH(iter, *coordsPtr) {
       OmMeshChunkAllocTableV2* chunk_table =
@@ -47,10 +47,10 @@ class OmMeshWriterV2 {
     }
 
     if (allGood) {
-      log_infos << "all segments meshed!\n";
+      log_infos << "all segments meshed!";
 
     } else {
-      log_infos << "\nERROR: some segments not meshed!\n";
+      log_infos << "ERROR: some segments not meshed!";
       throw om::IoException("some segments not meshed");
     }
 

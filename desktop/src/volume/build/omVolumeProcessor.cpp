@@ -27,10 +27,6 @@ class OmSegmentationChunkBuildTask : public zi::runnable {
 
     const auto segIDs = vol_->UniqueValuesDS().RereadChunk(coord_, 1);
 
-    // log_infos << "chunk " << coord_
-    //           << " has " << segIDs.size()
-    //           << " values\n";
-
     if (isMIPzero) {
       // vol_->updateMinMax(chunk->GetMinValue(),
       //                    chunk->GetMaxValue());

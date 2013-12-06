@@ -4,8 +4,6 @@
 #include <QFile>
 
 void OmHdf5FileUtils::file_create(const std::string& fpath) {
-  //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
   QFile file(QString::fromStdString(fpath));
   if (!file.exists()) {
     hid_t fileId =
@@ -21,9 +19,6 @@ void OmHdf5FileUtils::file_create(const std::string& fpath) {
 }
 
 hid_t OmHdf5FileUtils::file_open(std::string fpath, const bool readOnly) {
-  //debug(hdf5, "%s: opened HDF file\n", __FUNCTION__ );
-  //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
   const unsigned int totalCacheSizeMB = 256;
 
   // number of elements (objects) in the raw data chunk cache (default 521)

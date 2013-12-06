@@ -27,8 +27,6 @@ class Cache {
 
  public:
   Cache() {
-    // log_infos << "started cache: " << typeid(T).name() << std::endl;
-
     zi::guard g(lock_);
     avail_.reserve(NumTiles);
     for (uint32_t i = 0; i < NumTiles; ++i) {
@@ -45,15 +43,12 @@ class Cache {
     auto& arr = cache_[idx];
     auto* ptr = &arr[0];
 
-    // log_infos << "allocating idx: " << idx << std::endl;
-
     return std::shared_ptr<T>(ptr, [this, idx](T*) { this->done(idx); });
   }
 
   void done(uint32_t idx) {
     zi::guard g(lock_);
     avail_.push_back(idx);
-    // log_infos << "released idx: " << idx << std::endl;
   }
 };
 

@@ -12,7 +12,7 @@ OmSegmentsStore::~OmSegmentsStore() {}
 
 void OmSegmentsStore::StartCaches() {
   if (cachedStore_) {
-    log_infos << "not restarting caches\n";
+    log_infos << "not restarting caches";
     return;
   }
 

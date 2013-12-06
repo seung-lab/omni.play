@@ -108,13 +108,6 @@ class view2dCoords {
         screenToGlobalMat_.m11 = 1;
         break;
     }
-
-    // if(screenToGlobalMat_.m03 != screenToGlobalMat_.m03) // is NAN
-    // {
-    //     log_infos << screenToGlobalMat_ << std::endl
-    //     << location << std::endl
-    //     << pan << std::endl;
-    // }
   }
 
   inline const Matrix4f& ScreenToGlobalMat() const {

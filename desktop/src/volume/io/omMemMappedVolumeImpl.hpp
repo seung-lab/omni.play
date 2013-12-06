@@ -38,7 +38,7 @@ class OmMemMappedVolumeImpl : public IDataVolume<T> {
   OmRawDataPtrs GetType() const { return (T*)0; }
 
   void Load() {
-    log_infos << "loaded mem maps\n";
+    log_infos << "loaded mem maps";
 
     resizeMapsVector();
 
@@ -59,7 +59,7 @@ class OmMemMappedVolumeImpl : public IDataVolume<T> {
 
       log_infos << "mip " << level
                 << ": size is: " << om::string::humanizeNum(size) << " ("
-                << dims.x << "," << dims.y << "," << dims.z << ")\n";
+                << dims.x << "," << dims.y << "," << dims.z << ")";
 
       maps_[level] = writer_t::WriterNumBytes(
           getFileName(level), size, om::common::ZeroMem::DONT_ZERO_FILL);

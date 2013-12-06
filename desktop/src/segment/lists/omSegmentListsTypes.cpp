@@ -11,7 +11,7 @@ std::shared_ptr<GUIPageOfSegments> om::segLists::getPage(
   }
 
   if (startIndex > list.size()) {
-    log_infos << startIndex << " > " << list.size() << std::endl;
+    log_infos << startIndex << " > " << list.size();
     assert(0 && "illegal page request");
   }
 

@@ -112,7 +112,7 @@ class usersImpl {
   void loadUserSettings() {
     if (settings_.get() == nullptr ||
         settings_->getFilename() != settingsFilename()) {
-      log_infos << "Reloading User Settings...\n";
+      log_infos << "Reloading User Settings...";
       settings_.reset(new userSettings(settingsFilename()));
       settings_->Load();
     }

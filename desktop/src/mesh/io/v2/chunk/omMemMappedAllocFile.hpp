@@ -111,7 +111,7 @@ class OmMemMappedAllocFile {
         segmentation_->UniqueValuesDS().Values(coord_, threshold_);
 
     if (!segIDs.size()) {
-      log_infos << "No unique values in " << coord_ << std::endl;
+      log_infos << "No unique values in " << coord_;
       return;
     }
 
@@ -135,11 +135,6 @@ class OmMemMappedAllocFile {
 
     resetTable(segIDs);
     sortTable();
-
-    // log_infos << "in chunk " << coord_
-    //           << ", found "
-    //           << om::string::humanizeNum(numEntries_)
-    //           << " segment IDs\n";
   }
 
   struct ResetEntry {

@@ -39,15 +39,14 @@ class OmBuildVolumes {
   }
 
   void startTiming(const QString& type, OmTimer& timer) {
-    log_info("starting %s build...\n", qPrintable(type));
+    log_infos << "starting " << qPrintable(type) << " build...";
     timer.start();
   }
 
   void stopTimingAndSave(const QString& type, OmTimer& timer) {
     OmActions::Save();
     const double time = timer.s_elapsed();
-    log_info("done: %s build performed in (%.6f secs)\n", qPrintable(type),
-             time);
+    log_info("done: %s build performed in (%.6f secs)", qPrintable(type), time);
     log_infos << "************";
   }
 

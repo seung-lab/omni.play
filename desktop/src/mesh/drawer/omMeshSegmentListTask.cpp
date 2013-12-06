@@ -27,5 +27,4 @@ void OmMeshSegmentListTask::run() {
 
   rootSegLists_->AddToCache(mChunk, mRootSeg, segmentsToDraw);
   om::event::Redraw3d();
-  // printf("done..(%u)\n", mRootSeg->value);
 }

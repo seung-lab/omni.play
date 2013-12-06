@@ -47,20 +47,9 @@ class OmSimpleProgress {
     }
   }
 
-  void printDone() { timer_.Print("\ndone with " + title_); }
+  void printDone() { timer_.Print("done with " + title_); }
 
   void coutLine(const std::string& prefix) {
-    std::ostringstream stm;
-    stm << "\r\t" << prefix << ": " << cur_.get() << " of " << max_;
-
-    std::string str = stm.str();
-    if (str.size() > lineLen_) {
-      lineLen_ = str.size();
-    } else {
-      std::string pad(lineLen_ - str.size(), ' ');
-      str += pad;
-    }
-
-    log_infos << str << "\r" << std::flush;
+    log_infos << prefix << ": " << cur_.get() << " of " << max_;
   }
 };

@@ -34,8 +34,6 @@ void OmTilePreFetcherTask::preLoadDepth(const int depthOffset) {
   int count = 0;
   FOR_EACH(tileCL, *tilesCoordsToFetch) {
     if (shouldExitEarly()) {
-      //debug(tiles, "OmTilePreFetcherTask: fetched %d tiles, aborting\n",
-      //count);
       return;
     }
 
@@ -43,8 +41,6 @@ void OmTilePreFetcherTask::preLoadDepth(const int depthOffset) {
 
     OmTileCache::Prefetch(tileCL->tileCoord, depthOffset);
   }
-
-  //debug(tiles, "OmTilePreFetcherTask: fetched %d tiles\n", count);
 }
 
 bool OmTilePreFetcherTask::shouldExitEarly() {

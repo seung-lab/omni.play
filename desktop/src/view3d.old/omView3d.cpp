@@ -50,18 +50,18 @@ OmView3d::OmView3d(QWidget* parent, OmViewGroupState* vgs)
     : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent,
                 vgs->get3dContext())
 #else
-      : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent)
+    : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent)
 #endif
-        ,
-        mView3dUi(this, vgs),
-        vgs_(vgs),
-        meshesFound_(false),
-        segmentations_(SegmentationDataWrapper::GetPtrVec()) {
-  //set keyboard policy
+      ,
+      mView3dUi(this, vgs),
+      vgs_(vgs),
+      meshesFound_(false),
+      segmentations_(SegmentationDataWrapper::GetPtrVec()) {
+  // set keyboard policy
   setFocusPolicy(Qt::ClickFocus);
   setAttribute(Qt::WA_AcceptTouchEvents);
 
-  //setup widgets
+  // setup widgets
   widgets_.push_back(new OmSelectionWidget(this));  // index = 0
   widgets_.push_back(new OmViewBoxWidget(this, vgs));
   widgets_.push_back(new OmInfoWidget(this));
@@ -69,7 +69,7 @@ OmView3d::OmView3d(QWidget* parent, OmViewGroupState* vgs)
   widgets_.push_back(new OmPercDone(this));
   widgets_.push_back(new AnnotationsWidget(this, vgs));
 
-  //update enabled state of widgets
+  // update enabled state of widgets
   UpdateEnabledWidgets();
 
   mDrawTimer.stop();
@@ -105,34 +105,33 @@ OmCamera& OmView3d::GetCamera() { return mCamera; }
 void OmView3d::initializeGL()
     // The initializeGL() function is called just once, before paintGL() is
     // called.
-    {
+{
 
   glShadeModel(GL_SMOOTH);  // shading mathod: GL_SMOOTH or GL_FLAT
   glPixelStorei(GL_UNPACK_ALIGNMENT, 4);  // 4-byte pixel alignment
 
   // enable /disable features
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  //glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-  //glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+  // glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+  // glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_LIGHTING);
   glEnable(GL_NORMALIZE);  // normalize normals for lighting
-                           //glEnable(GL_TEXTURE_2D);
+  // glEnable(GL_TEXTURE_2D);
 
-  //glEnable(GL_CULL_FACE);  // enable culling
-  //glCullFace(GL_BACK);  // specify backface culling
+  // glEnable(GL_CULL_FACE);  // enable culling
+  // glCullFace(GL_BACK);  // specify backface culling
 
-  //set material properties
+  // set material properties
   glEnable(GL_COLOR_MATERIAL);  // cause material to track current color
-  glColorMaterial(
-      GL_FRONT,
-      GL_AMBIENT_AND_DIFFUSE);  // cause ambient and diffust to track color
+  glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);  // cause ambient and
+                                                      // diffust to track color
 
-  float black[4] = { 0, 0, 0, 0 };
+  float black[4] = {0, 0, 0, 0};
   glMaterialfv(GL_FRONT, GL_AMBIENT, black);
   glMaterialfv(GL_FRONT, GL_SPECULAR, black);
 
-  //set drawing properties
+  // set drawing properties
 
   SetBackgroundColor();    // background color
   glClearStencil(0);       // clear stencil buffer
@@ -142,14 +141,14 @@ void OmView3d::initializeGL()
 
   SetBlending();
   glEnable(GL_BLEND);  // enable blending for transparency
-  //glBlendFunc(GL_SRC_ALPHA, GL_ONE);  // set blend function
+  // glBlendFunc(GL_SRC_ALPHA, GL_ONE);  // set blend function
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  //glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
+  // glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
 
   initLights();
 
   Vector4i viewport(0, 0, 400, 300);
-  mCamera.SetViewport(viewport);  //set viewport
+  mCamera.SetViewport(viewport);  // set viewport
 
   SetCameraPerspective();  // camera props
 }
@@ -254,7 +253,7 @@ void OmView3d::PreferenceChangeEvent(om::event::PreferenceEvent* event) {
     case om::PREF_VIEW3D_CAMERA_FAR_PLANE_FLT:
     case om::PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT:
     case om::PREF_VIEW3D_CAMERA_FOV_FLT:
-      //SetCameraPerspective();
+      // SetCameraPerspective();
       break;
 
     case om::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT:
@@ -303,46 +302,46 @@ void OmView3d::View3dRecenter() {
  */
 bool OmView3d::pickPoint(const Vector2i& point2di,
                          std::vector<uint32_t>& rNamesVec) {
-  //clear name vector
+  // clear name vector
   rNamesVec.clear();
 
-  //setup selection mode
+  // setup selection mode
   om::gl::old::startPicking(point2di.x, point2di.y,
                             mCamera.GetPerspective().array);
 
-  //render selectable points
+  // render selectable points
   Draw(DRAWOP_LEVEL_ALL | DRAWOP_SEGMENT_FILTER_SELECTED |
        DRAWOP_RENDERMODE_SELECTION);
   Draw(DRAWOP_LEVEL_ALL | DRAWOP_SEGMENT_FILTER_UNSELECTED |
        DRAWOP_RENDERMODE_SELECTION);
 
-  //get number of hits
+  // get number of hits
   int hits = om::gl::old::stopPicking();
 
-  //if hits < 0, then buffer overflow
+  // if hits < 0, then buffer overflow
   if (hits < 0) {
-    printf("OmView3d::PickPoint: hit buffer overflow: %d\n", hits);
+    log_infos << "OmView3d::PickPoint: hit buffer overflow: " << hits;
     return false;
   }
 
-  //if no hits, success
+  // if no hits, success
   if (hits == 0) {
     return true;
   }
 
-  //number of names in closest hit
+  // number of names in closest hit
   int numNames;
 
-  //pointer to closest hit names
+  // pointer to closest hit names
   int* pNames;
   om::gl::old::processHits(hits, &pNames, &numNames);
 
-  //add names from array to names vec
+  // add names from array to names vec
   for (int i = 0; i < numNames; i++) {
     rNamesVec.push_back(pNames[i]);
   }
 
-  //success
+  // success
   return true;
 }
 
@@ -350,12 +349,12 @@ SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2di) {
   std::vector<uint32_t> result;
   const bool valid_pick = pickPoint(point2di, result);
 
-  //if valid and return count
+  // if valid and return count
   if (!valid_pick || (result.size() != 3)) {
     return SegmentDataWrapper();
   }
 
-  //ensure valid om::common::SegIDSet
+  // ensure valid om::common::SegIDSet
   const om::common::ID segmentationID = result[0];
   const om::common::SegID segmentID = result[1];
   SegmentDataWrapper sdw(segmentationID, segmentID);
@@ -373,15 +372,15 @@ SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2di) {
  */
 
 bool OmView3d::UnprojectPoint(Vector2i point2di, Vector3f& point3d) {
-  //apply camera modelview matrix
+  // apply camera modelview matrix
   mCamera.ApplyModelview();
 
-  //unproject point2di
+  // unproject point2di
   double point3dv[3];
   if (om::gl::old::unprojectPixel(point2di.x, point2di.y, point3dv) < 0)
     return false;
 
-  //return point3d
+  // return point3d
   point3d = Vector3f(point3dv[0], point3dv[1], point3dv[2]);
   return true;
 }
@@ -390,7 +389,7 @@ bool OmView3d::UnprojectPoint(Vector2i point2di, Vector3f& point3d) {
 ///////          Widget Methods
 
 void OmView3d::UpdateEnabledWidgets() {
-  //set widgets enabled
+  // set widgets enabled
   bool highlight_widget_state =
       OmPreferences::GetBoolean(om::PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL);
   widgets_[om::v3d::old::selection].enabled = highlight_widget_state;
@@ -428,24 +427,24 @@ void OmView3d::Draw(OmBitfield cullerOptions) {
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
 
-  //apply camera modelview matrix
+  // apply camera modelview matrix
   mCamera.ApplyModelview();
 
   percVolDone_.clear();
 
-  //if drawing volumes
+  // if drawing volumes
   if (cullerOptions & DRAWOP_LEVEL_VOLUME) {
-    //if in rendering mode
+    // if in rendering mode
     if (cullerOptions & DRAWOP_RENDERMODE_RENDER) {
-      //draw selected and write to stencil (for use with highlighting outline)
+      // draw selected and write to stencil (for use with highlighting outline)
       glEnable(GL_STENCIL_TEST);
       glStencilFunc(GL_ALWAYS, 1, 0xFFFF);
       glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
       DrawVolumes(cullerOptions | DRAWOP_SEGMENT_FILTER_SELECTED);
       glDisable(GL_STENCIL_TEST);
 
-      //draw unselected (i.e. enabled) segments
-      //if transparent unselected, disable writing to depth buffer
+      // draw unselected (i.e. enabled) segments
+      // if transparent unselected, disable writing to depth buffer
       if (OmPreferences::GetBoolean(
               om::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
         glDepthMask(GL_FALSE);
@@ -454,11 +453,11 @@ void OmView3d::Draw(OmBitfield cullerOptions) {
       DrawVolumes(cullerOptions | DRAWOP_SEGMENT_FILTER_UNSELECTED |
                   DRAWOP_SEGMENT_COLOR_TRANSPARENT);
 
-      //always renable writing to depth buffer
+      // always renable writing to depth buffer
       glDepthMask(GL_TRUE);
     }
 
-    //if in selection mode
+    // if in selection mode
     if (cullerOptions & DRAWOP_RENDERMODE_SELECTION) {
       DrawVolumes(cullerOptions);
     }
@@ -468,7 +467,7 @@ void OmView3d::Draw(OmBitfield cullerOptions) {
     DrawWidgets();
   }
 
-  //pop to init modelview
+  // pop to init modelview
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
 }
@@ -477,11 +476,11 @@ void OmView3d::Draw(OmBitfield cullerOptions) {
  *  Draw VolumeManager to using this View3d's camera.
  */
 void OmView3d::DrawVolumes(OmBitfield cullerOptions) {
-  //draw focus axis
+  // draw focus axis
   mCamera.DrawFocusAxis();
 
   const OmSegmentation* seg = vgs_->Segmentation().GetSegmentationPtr();
-  //setup culler to current projection-modelview matrix
+  // setup culler to current projection-modelview matrix
   OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
                         om::normCoord(mCamera.GetPosition(), seg),
                         om::normCoord(mCamera.GetFocus(), seg));
@@ -566,20 +565,20 @@ void OmView3d::DrawWidgets() {
  */
 void OmView3d::initLights() {
   // set up light colors (ambient, diffuse, specular)
-  GLfloat lightKa[] = { .2f, .2f, .2f, 1.0f };  // ambient light
-  GLfloat lightKd[] = { .7f, .7f, .7f, 1.0f };  // diffuse light
-  GLfloat lightKs[] = { 1, 1, 1, 1 };           // specular light
+  GLfloat lightKa[] = {.2f, .2f, .2f, 1.0f};  // ambient light
+  GLfloat lightKd[] = {.7f, .7f, .7f, 1.0f};  // diffuse light
+  GLfloat lightKs[] = {1, 1, 1, 1};           // specular light
   glLightfv(GL_LIGHT0, GL_AMBIENT, lightKa);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, lightKd);
   glLightfv(GL_LIGHT0, GL_SPECULAR, lightKs);
 
-  float specReflection[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+  float specReflection[] = {0.8f, 0.8f, 0.8f, 1.0f};
   glMaterialfv(GL_FRONT, GL_SPECULAR, specReflection);
 
   glMateriali(GL_FRONT, GL_SHININESS, 96);
 
   // position the light
-  float lightPos[4] = { 0, 0, 1000, 1 };  // positional light
+  float lightPos[4] = {0, 0, 1000, 1};  // positional light
   glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 
   glEnable(GL_LIGHT0);  // enable light source after configuration

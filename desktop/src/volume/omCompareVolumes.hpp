@@ -53,7 +53,7 @@ class OmCompareVolumes {
           continue;
         }
 
-        log_infos << "\tchunks differ at " << coord << "; aborting...\n";
+        log_infos << "\tchunks differ at " << coord << "; aborting...";
         return false;
       }
     }

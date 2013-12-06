@@ -41,7 +41,7 @@ class OmMeshFilePtrCache {
   void FlushMappedFiles() {
     log_infos << "flushing mesh allocation tables..." << std::flush;
     mappedFiles_.Clear();
-    log_infos << "done\n";
+    log_infos << "done";
   }
 
   void AddTaskBack(const std::shared_ptr<zi::runnable> job) {
