@@ -28,18 +28,18 @@ class MetadataDataSource
     int number;
     try {
       if (parseUri(uri, path, volType, number)) {
-        log_debugs(io) << "Loading Metadata " << path << " : " << number;
+        log_debugs << "Loading Metadata " << path << " : " << number;
         return loadYaml(path, volType, number);
       } else {
         return std::shared_ptr<Metadata>();
       }
     }
     catch (YAML::Exception e) {
-      log_debugs(io) << "Failed Loading Metadata: " << e.what();
+      log_debugs << "Failed Loading Metadata: " << e.what();
       return std::shared_ptr<Metadata>();
     }
     catch (Exception e) {
-      log_debugs(io) << "Failed Loading Metadata: " << e.what();
+      log_debugs << "Failed Loading Metadata: " << e.what();
       return std::shared_ptr<Metadata>();
     }
   }
@@ -51,18 +51,18 @@ class MetadataDataSource
     int number;
     try {
       if (parseUri(uri, path, volType, number)) {
-        log_debugs(io) << "Writing Metadata " << path << " : " << number;
+        log_debugs << "Writing Metadata " << path << " : " << number;
         return writeYaml(path, volType, number, metadata);
       } else {
         return false;
       }
     }
     catch (YAML::Exception e) {
-      log_debugs(io) << "Failed Writing Metadata: " << e.what();
+      log_debugs << "Failed Writing Metadata: " << e.what();
       return false;
     }
     catch (Exception e) {
-      log_debugs(io) << "Failed Writing Metadata: " << e.what();
+      log_debugs << "Failed Writing Metadata: " << e.what();
       return false;
     }
   }
@@ -186,9 +186,9 @@ class MetadataDataSource
     ret->ChunkDim = volume["coords"]["chunkDim"].as<int>(128);
     ret->RootMipLevel = volume["coords"]["mMipRootLevel"].as<int>();
 
-    dims.x = om::math::roundUp((int) dims.x, ret->ChunkDim);
-    dims.y = om::math::roundUp((int) dims.y, ret->ChunkDim);
-    dims.z = om::math::roundUp((int) dims.z, ret->ChunkDim);
+    dims.x = om::math::roundUp((int)dims.x, ret->ChunkDim);
+    dims.y = om::math::roundUp((int)dims.y, ret->ChunkDim);
+    dims.z = om::math::roundUp((int)dims.z, ret->ChunkDim);
 
     ret->Bounds = coords::GlobalBbox(absOffset, absOffset + dims);
 

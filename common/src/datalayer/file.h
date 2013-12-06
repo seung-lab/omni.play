@@ -51,7 +51,8 @@ bool IsSymlink(const path& fileName);
 path tempPath();
 path tempFile();
 
-template <typename T> void readAll(const path& fnp, std::vector<T>& vec) {
+template <typename T>
+void readAll(const path& fnp, std::vector<T>& vec) {
   const size_t bytes = numBytes(fnp);
   const size_t elements = bytes / sizeof(T);
   const size_t extra = bytes % sizeof(T);
@@ -115,9 +116,10 @@ void writeNumElements(const path& fnp, const std::shared_ptr<T> ptr,
   file.write(data, numBytes);
 }
 
-template <typename T> void writeStrings(const path& file, const T& strings) {
+template <typename T>
+void writeStrings(const path& file, const T& strings) {
   std::ofstream out(file.c_str());
-  log_debugs(Io) << "Writing: " << file.string();
+  log_debugs << "Writing: " << file.string();
   for (auto& s : strings) {
     out << s << "\n";
   }
@@ -129,7 +131,7 @@ void writeStrings(const path& file, const T& strings, PROGRESS* progress) {
   progress->SetTotal(strings.size());
 
   std::ofstream out(file.c_str());
-  log_debugs(Io) << "Writing: " << file.string();
+  log_debugs << "Writing: " << file.string();
 
   for (auto& s : strings) {
     out << s << "\n";

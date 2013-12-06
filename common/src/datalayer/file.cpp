@@ -44,9 +44,9 @@ path tempFile() { return tempPath() / boost::filesystem::unique_path(); }
 
 void RemoveDir(const path& folder) {
   if (exists(status(folder))) {
-    log_debugs(unknown) << "removing folder " << folder << "... ";
+    log_debugs << "removing folder " << folder << "... ";
     if (remove_all(folder)) {
-      log_debugs(unknown) << "done!\n";
+      log_debugs << "done!\n";
     } else {
       throw IoException("could not remove folder", folder.string());
     }
@@ -65,8 +65,8 @@ void MoveFile(const path& from_fnp, const path& to_fnp) {
   }
 
   rename(from_fnp, to_fnp);
-  log_debugs(unknown) << "moved file from " << from_fnp.string() << "\tto "
-                      << to_fnp.string();
+  log_debugs << "moved file from " << from_fnp.string() << "\tto "
+             << to_fnp.string();
 }
 
 void CopyFile(const path& from_fnp, const path& to_fnp, bool overwrite) {
@@ -104,7 +104,7 @@ void MoveAllFiles(const path& fromDir, const path& toDir) {
   for (; iter != dir_end; ++iter) {
     path path = *iter;
 
-    log_debugs(unknown) << "moving file/folder: " << path.string();
+    log_debugs << "moving file/folder: " << path.string();
     rename(path, toDir);
   }
 }

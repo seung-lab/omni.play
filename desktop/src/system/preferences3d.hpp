@@ -35,11 +35,13 @@ struct View3d {
   void SignalChange() { om::event::PreferenceChange(0); }
 
   void Load() {
-    log_errors(unknown) << "om::prefs::View3d::Load() not yet implemented\n";
+
+    log_errors << "om::prefs::View3d::Load() not yet implemented\n";
   }
 
   void Save() {
-    log_errors(unknown) << "om::prefs::View3d::Save() not yet implemented\n";
+
+    log_errors << "om::prefs::View3d::Save() not yet implemented\n";
   }
 };
 }

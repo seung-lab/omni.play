@@ -16,9 +16,9 @@ void MetadataManager::Update() {
   auto meta = mds_.Get(uri_.string());
   if (meta) {
     meta_ = meta;
-    log_infos(io) << "Updated Metadata";
+    log_infos << "Updated Metadata";
   } else {
-    log_infos(io) << "Unable to get Metadata: " << uri_;
+    log_infos << "Unable to get Metadata: " << uri_;
     return;
   }
 

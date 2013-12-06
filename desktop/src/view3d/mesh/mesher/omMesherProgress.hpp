@@ -29,9 +29,9 @@ class progress {
     const uint32_t total = progress_->GetTotal();
     const uint32_t chunksLeft = total - progress_->GetDone();
 
-    log_debugs(unknown) << "finished chunk: " << coord << "; " << chunksLeft
-                        << " chunks left "
-                        << "(" << total << " total)";
+    log_debugs << "finished chunk: " << coord << "; " << chunksLeft
+               << " chunks left "
+               << "(" << total << " total)";
   }
 };
 

@@ -100,7 +100,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
   if (meshVM.count("path")) {
     path = meshVM["path"].as<std::string>();
   } else {
-    log_debugs(a) << "Failed path";
+    log_debugs << "Failed path";
     return getHelp(opt, argc, argv);
   }
 
@@ -113,29 +113,28 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
     boost::split(strs, resolutionStr, boost::is_any_of(","));
 
     if (strs.size() != 3) {
-      log_debugs(a) << "Failed res size " << strs.size() << " : "
-                    << resolutionStr;
+      log_debugs << "Failed res size " << strs.size() << " : " << resolutionStr;
       return getHelp(opt, argc, argv);
     }
 
     int x = std::stoi(strs[0]);
     if (!x) {
-      log_debugs(a) << "Failed resolution x";
+      log_debugs << "Failed resolution x";
       return getHelp(opt, argc, argv);
     }
     int y = std::stoi(strs[1]);
     if (!y) {
-      log_debugs(a) << "Failed resolution y";
+      log_debugs << "Failed resolution y";
       return getHelp(opt, argc, argv);
     }
     int z = std::stoi(strs[2]);
     if (!z) {
-      log_debugs(a) << "Failed resolution z";
+      log_debugs << "Failed resolution z";
       return getHelp(opt, argc, argv);
     }
     resolution = Vector3i(x, y, z);
   } else {
-    log_debugs(a) << "Failed resolution";
+    log_debugs << "Failed resolution";
     return getHelp(opt, argc, argv);
   }
 
@@ -143,7 +142,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
   if (meshVM.count("scale")) {
     scale = meshVM["scale"].as<float>();
   } else {
-    log_debugs(a) << "Failed scale";
+    log_debugs << "Failed scale";
     return getHelp(opt, argc, argv);
   }
 
@@ -151,7 +150,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
   if (meshVM.count("mip")) {
     mip = meshVM["mip"].as<uint8_t>();
   } else {
-    log_debugs(a) << "Failed mip";
+    log_debugs << "Failed mip";
     return getHelp(opt, argc, argv);
   }
 
@@ -159,7 +158,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
   if (meshVM.count("id")) {
     id = meshVM["id"].as<uint32_t>();
   } else {
-    log_debugs(a) << "Failed id";
+    log_debugs << "Failed id";
     return getHelp(opt, argc, argv);
   }
 
@@ -167,7 +166,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
   if (meshVM.count("obj")) {
     obj = meshVM["obj"].as<bool>();
   } else {
-    log_debugs(a) << "Failed obj";
+    log_debugs << "Failed obj";
     return getHelp(opt, argc, argv);
   }
 
@@ -225,7 +224,7 @@ int exportMST(const Options& opt, int argc, char* argv[]) {
   if (mstVM.count("path")) {
     path = mstVM["path"].as<std::string>();
   } else {
-    log_debugs(a) << "Failed path";
+    log_debugs << "Failed path";
     return getHelp(opt, argc, argv);
   }
 

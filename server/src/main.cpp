@@ -32,7 +32,8 @@ int main(int argc, char *argv[]) {
   zi::parse_arguments(argc, argv, true);
   if (ZiARG_daemonize) {
     if (!::zi::system::daemonize(true, true)) {
-      log_errors(unknown) << "Error trying to daemonize.";
+
+      log_errors << "Error trying to daemonize.";
       return -1;
     }
   }

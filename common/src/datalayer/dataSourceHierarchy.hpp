@@ -44,7 +44,7 @@ class DataSourceHierarchy : public IDataSource<TKey, TValue> {
       // Don't start too many or double queue.  It's okay to fail.
       if (threadPool_.getTaskCount() < numThreads_) {
         // if (!currentlyFetching_.insertSinceDidNotHaveKey(key)) {
-        //   log_debugs(DSH) << "Already Getting " << key;
+        //   log_debugs << "Already Getting " << key;
         //   return std::shared_ptr<TValue>();
         // }
         threadPool_.push_back(
@@ -68,7 +68,7 @@ class DataSourceHierarchy : public IDataSource<TKey, TValue> {
   }
 
   template <typename T, typename... ARGS>
-  void Register(size_t priority, ARGS&& ... args) {
+  void Register(size_t priority, ARGS&&... args) {
     if (priority >= sources_.size()) {
       sources_.emplace_back(std::make_unique<T>(args...));
     } else {

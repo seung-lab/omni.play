@@ -60,7 +60,6 @@ class ziMesher {
   void Progress(std::shared_ptr<om::gui::progress> p) { progress_.Progress(p); }
 
  private:
-
   OmSegmentation& segmentation_;
   const int rootMipLevel_;
 
@@ -86,7 +85,7 @@ class ziMesher {
       addValuesFromChunkAndDownsampledChunks(chunk);
     }
 
-    log_debugs(unknown) << "\nstarting meshing...";
+    log_debugs << "\nstarting meshing...";
 
     zi::task_manager::simple manager(numParallelChunks_);
     manager.start();
@@ -98,7 +97,7 @@ class ziMesher {
 
     manager.join();
 
-    log_debugs(unknown) << "\ndone meshing...";
+    log_debugs << "\ndone meshing...";
   }
 
   void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord) {
@@ -274,8 +273,8 @@ class ziMesher {
 
       manager.join();
     } else {
-      log_debugs(unknown) << "Skipping Chunk " << coord
-                          << " b/c there's nothing in there";
+      log_debugs << "Skipping Chunk " << coord
+                 << " b/c there's nothing in there";
     }
 
     progress_.ChunkCompleted(coord);

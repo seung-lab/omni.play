@@ -59,8 +59,8 @@ class MeshCollector {
     TriStripCollector* mesh = getMesh(segID);
 
     if (!mesh) {
-      log_debugs(unknown) << "skipping save for segID " << segID << " in coord "
-                          << coord_;
+      log_debugs << "skipping save for segID " << segID << " in coord "
+                 << coord_;
       return;
     }
 

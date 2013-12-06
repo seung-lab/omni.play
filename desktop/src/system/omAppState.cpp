@@ -34,7 +34,7 @@ QSize OmAppState::GetViewBoxSizeHint() {
   if (!mw) {
     mw = QApplication::activeWindow();
     if (!mw) {
-      log_debugs(unknown) << "warning: assuming window size is 1000x640";
+      log_debugs << "warning: assuming window size is 1000x640";
       return QSize(1000, 640);
     }
   }
@@ -67,7 +67,7 @@ bool OmAppState::OpenProject(const std::string& fileNameAndPath,
       return true;
     }
     catch (om::Exception& e) {
-      log_debugs(task) << "Exception thrown: " << e.what();
+      log_debugs << "Exception thrown: " << e.what();
       return false;
     }
   }

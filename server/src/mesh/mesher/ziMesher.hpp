@@ -43,10 +43,8 @@ class ziMesher {
         numParallelChunks_(numberParallelChunks()),
         numThreadsPerChunk_(zi::system::cpu_count / 2),
         downScallingFactor_(meshParams::GetDownScallingFactor()) {
-    log_infos(mesh, "ziMesher: will process %d chunks at a time",
-              numParallelChunks_);
-    log_infos(mesh, "ziMesher: will use %d threads per chunk",
-              numThreadsPerChunk_);
+    log_info("ziMesher: will process %d chunks at a time", numParallelChunks_);
+    log_info("ziMesher: will use %d threads per chunk", numThreadsPerChunk_);
   }
 
   ~ziMesher() {
@@ -70,7 +68,6 @@ class ziMesher {
   //     chunkUtils::RefindUniqueChunkValues(vol_.id());
   // }
  private:
-
   void init() {
     std::shared_ptr<std::deque<coords::Chunk>> levelZeroChunks =
         vol_.CoordSystem().MipChunkCoords(0);
@@ -81,7 +78,7 @@ class ziMesher {
       addValuesFromChunkAndDownsampledChunks(*it);
     }
 
-    log_debugs(unknown) << "starting meshing...";
+    log_debugs << "starting meshing...";
 
     zi::task_manager::simple manager(numParallelChunks_);
     manager.start();
@@ -93,7 +90,7 @@ class ziMesher {
 
     manager.join();
 
-    log_debugs(unknown) << "done meshing...";
+    log_debugs << "done meshing...";
   }
 
   void addValuesFromChunkAndDownsampledChunks(const coords::Chunk& mip0coord) {
@@ -250,9 +247,9 @@ class ziMesher {
         cube_marcher.fill_simplifier<double>(*spfy, segID, 0, 0, 0, scale.at(2),
                                              scale.at(1), scale.at(0));
 
-        manager.push_back(zi::run_fn(
-            zi::bind(&ziMesher::processSingleSegment, this, segID, maxScale,
-                     translate, spfy, &occurances_[coord])));
+        manager.push_back(zi::run_fn(zi::bind(&ziMesher::processSingleSegment,
+                                              this, segID, maxScale, translate,
+                                              spfy, &occurances_[coord])));
       }
     }
 

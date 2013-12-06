@@ -58,7 +58,7 @@ struct convert<om::task::TracingTask> {
       return true;
     }
     catch (std::exception e) {
-      log_debugs(std::string("Error Decoding TracingTask: ") + e.what());
+      log_debugs << std::string("Error Decoding TracingTask: ") + e.what();
       return false;
     }
   }

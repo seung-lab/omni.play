@@ -78,7 +78,7 @@ struct convert<om::task::ComparisonTask> {
       return true;
     }
     catch (std::exception e) {
-      log_debugs(std::string("Error Decoding ComparisonTask: ") + e.what());
+      log_debugs << std::string("Error Decoding ComparisonTask: ") + e.what();
       return false;
     }
   }

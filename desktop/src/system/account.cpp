@@ -46,7 +46,7 @@ Account::LoginResult Account::Login(const std::string& username,
     return LoginResult::SUCCESS;
   }
   catch (YAML::Exception e) {
-    log_debugs(Account) << "Failed logging in: " << e.what();
+    log_debugs << "Failed logging in: " << e.what();
     om::event::ConnectionChanged();
     return LoginResult::CONNECTION_ERROR;
   }

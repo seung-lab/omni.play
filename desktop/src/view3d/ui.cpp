@@ -333,8 +333,7 @@ void Ui::centerAxisOfRotation(QMouseEvent* event) {
   view3d_.updateGL();
 
   if (!pickPoint.sdw.IsSegmentValid()) {
-    log_errors(View3d) << "Invalid pickPoint "
-                       << pickPoint.sdw.GetSegmentationID();
+    log_errors << "Invalid pickPoint " << pickPoint.sdw.GetSegmentationID();
     return;
   }
 
@@ -372,7 +371,7 @@ om::landmarks::sdwAndPt Ui::pickVoxelMouseCrosshair(QMouseEvent* event) {
     return om::landmarks::sdwAndPt();
   }
 
-  om::landmarks::sdwAndPt ret = { sdw, point3d };
+  om::landmarks::sdwAndPt ret = {sdw, point3d};
 
   return ret;
 }

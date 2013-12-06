@@ -26,7 +26,7 @@ std::shared_ptr<Task> TaskManager::GetTask(int cellID) {
     return network::HTTP::GET_JSON<TracingTask>(taskURI);
   }
   catch (om::Exception e) {
-    log_debugs(Task) << "Failed loading task: " << e.what();
+    log_debugs << "Failed loading task: " << e.what();
   }
   return std::shared_ptr<Task>();
 }
@@ -39,7 +39,7 @@ std::shared_ptr<Task> TaskManager::GetTaskByID(int taskID) {
     return network::HTTP::GET_JSON<TracingTask>(taskURI);
   }
   catch (om::Exception e) {
-    log_debugs(Task) << "Failed loading task: " << e.what();
+    log_debugs << "Failed loading task: " << e.what();
   }
   return std::shared_ptr<Task>();
 }
@@ -54,7 +54,7 @@ std::shared_ptr<Task> TaskManager::GetComparisonTask(int cellID) {
     return network::HTTP::GET_JSON<ComparisonTask>(taskURI);
   }
   catch (om::Exception e) {
-    log_debugs(Task) << "Failed loading task: " << e.what();
+    log_debugs << "Failed loading task: " << e.what();
   }
   return std::shared_ptr<Task>();
 }
@@ -70,19 +70,19 @@ std::shared_ptr<Task> TaskManager::GetReapTask(int taskID) {
 
     auto task = network::HTTP::GET_JSON<ReapingTask>(taskURI);
     if (!task) {
-      log_debugs(Task) << "No task... Bailing.";
+      log_debugs << "No task... Bailing.";
       return task;
     }
 
     auto agg = network::HTTP::GET_JSON<Aggregate>(taskURI + "/aggregate");
     if (agg) {
       task->set_aggregate(std::move(*agg));
-      log_debugs(Task) << "Setting Aggregate.";
+      log_debugs << "Setting Aggregate.";
     }
     return task;
   }
   catch (om::Exception e) {
-    log_debugs(Task) << "Failed loading task: " << e.what();
+    log_debugs << "Failed loading task: " << e.what();
   }
   return std::shared_ptr<Task>();
 }
@@ -93,7 +93,7 @@ std::shared_ptr<std::vector<Dataset>> TaskManager::GetDatasets() {
     return network::HTTP::GET_JSON<std::vector<Dataset>>(datasetURI);
   }
   catch (om::Exception e) {
-    log_debugs(Task) << "Failed loading datasets: " << e.what();
+    log_debugs << "Failed loading datasets: " << e.what();
   }
   return std::shared_ptr<std::vector<Dataset>>();
 }
@@ -105,7 +105,7 @@ std::shared_ptr<std::vector<Cell>> TaskManager::GetCells(int datasetID) {
     return network::HTTP::GET_JSON<std::vector<Cell>>(cellURI);
   }
   catch (om::Exception e) {
-    log_debugs(Task) << "Failed loading cells: " << e.what();
+    log_debugs << "Failed loading cells: " << e.what();
   }
   return std::shared_ptr<std::vector<Cell>>();
 }
@@ -117,7 +117,7 @@ bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
   if (task == current) {
     return true;
   } else if (current) {
-    log_debugs(Task) << "Finishing current task " << current->Id();
+    log_debugs << "Finishing current task " << current->Id();
     // TODO: headless
     QMessageBox box(
         QMessageBox::Question, "Save current task?",
@@ -134,9 +134,9 @@ bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
   }
   current = task;
   if (current) {
-    log_debugs(Task) << "Changed current task " << current->Id();
+    log_debugs << "Changed current task " << current->Id();
   } else {
-    log_debugs(Task) << "Changed current task nullptr";
+    log_debugs << "Changed current task nullptr";
   }
   om::event::TaskChange();
   if (!task) {
@@ -144,7 +144,7 @@ bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
   }
 
   if (!task->Start()) {
-    log_debugs(Task) << "Failed starting task " << task->Id();
+    log_debugs << "Failed starting task " << task->Id();
     current = nullptr;
     return false;
   }
@@ -153,8 +153,7 @@ bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
 
 bool TaskManager::FinishTask() { return LoadTask(std::shared_ptr<Task>()); }
 
-std::shared_ptr<Task> TaskManager::FindInterruptedTask() {
-}
+std::shared_ptr<Task> TaskManager::FindInterruptedTask() {}
 
 }  // namespace om::task::
 }  // namespace om::

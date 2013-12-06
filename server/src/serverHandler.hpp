@@ -51,7 +51,7 @@ class MesherConnector : public zi::enable_singleton_of_this<MesherConnector> {
     try {
       transport->open();
       if (!transport->isOpen()) {
-        log_debugs(unknown) << "Unable to open transport.";
+        log_debugs << "Unable to open transport.";
       }
     }
     catch (apache::thrift::TException& tx) {
@@ -192,7 +192,8 @@ class serverHandler : virtual public serverIf,
     try {
       transport->open();
       if (!transport->isOpen()) {
-        log_errors(unknown) << "Unable to open transport.";
+
+        log_errors << "Unable to open transport.";
       }
     }
     catch (apache::thrift::TException& tx) {
@@ -203,9 +204,7 @@ class serverHandler : virtual public serverIf,
   }
 
  private:
-  static void logMethod(int, const std::string& str) {
-    log_infos(Server) << str;
-  }
+  static void logMethod(int, const std::string& str) { log_infos << str; }
 
   std::string volumePath(const metadata& meta) {
     if (meta.vol_type == volType::CHANNEL) {

@@ -50,7 +50,7 @@ struct VertexIndexMeshImpl {
     if (dataSize != bufferSize) {
       glDeleteBuffersARB(1, &id);
       id = NULL_VBO_ID;
-      log_errors(Mesh) << "Not enough memory to load VBO";
+      log_errors << "Not enough memory to load VBO";
     }
 
     // unbind
@@ -103,7 +103,7 @@ VertexIndexMesh::VertexIndexMesh(const coords::Mesh& coord)
 void VertexIndexMesh::Draw() {
   if (!impl_->isVbo()) {
     if (!impl_->createVbo(data_)) {
-      log_errors(Mesh) << "Failed to create VBO";
+      log_errors << "Failed to create VBO";
       return;
     }
   }

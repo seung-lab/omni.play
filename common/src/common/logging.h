@@ -29,33 +29,30 @@ enum severity_level {
   error
 };
 
-typedef boost::log::sources::severity_channel_logger_mt<
-    severity_level, std::string> my_logger_mt;
+typedef boost::log::sources::severity_logger_mt<severity_level> my_logger_mt;
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", severity_level);
 BOOST_LOG_INLINE_GLOBAL_LOGGER_INIT(logger, my_logger_mt) {
-  return my_logger_mt(boost::log::keywords::channel = "general");
+  return my_logger_mt();
 }
 }
 }  // namespace om::logging::
 
-#define log_debugs(x) \
-  BOOST_LOG_CHANNEL_SEV(om::logging::logger::get(), #x, om::logging::debug)
-#define log_debug(x, ...)                                                   \
-  BOOST_LOG_CHANNEL_SEV(om::logging::logger::get(), #x, om::logging::debug) \
+#define log_debugs BOOST_LOG_SEV(om::logging::logger::get(), om::logging::debug)
+#define log_debug(...)                                          \
+  BOOST_LOG_SEV(om::logging::logger::get(), om::logging::debug) \
       << om::logging::my_printf(__VA_ARGS__)
 
-#define log_infos(x) \
-  BOOST_LOG_CHANNEL_SEV(om::logging::logger::get(), #x, om::logging::info)
-#define log_info(x, ...)                                                   \
-  BOOST_LOG_CHANNEL_SEV(om::logging::logger::get(), #x, om::logging::info) \
+#define log_infos BOOST_LOG_SEV(om::logging::logger::get(), om::logging::info)
+#define log_info(...)                                          \
+  BOOST_LOG_SEV(om::logging::logger::get(), om::logging::info) \
       << om::logging::my_printf(__VA_ARGS__)
 
-#define log_errors(x)                                                       \
-  BOOST_LOG_CHANNEL_SEV(om::logging::logger::get(), #x, om::logging::error) \
+#define log_errors                                              \
+  BOOST_LOG_SEV(om::logging::logger::get(), om::logging::error) \
       << __FILE__ << ":" << __LINE__ << ":" << BOOST_CURRENT_FUNCTION << ": "
-#define log_error(x, ...)                                                   \
-  BOOST_LOG_CHANNEL_SEV(om::logging::logger::get(), #x, om::logging::error) \
+#define log_error(...)                                          \
+  BOOST_LOG_SEV(om::logging::logger::get(), om::logging::error) \
       << om::logging::my_printf(__VA_ARGS__)
 
-#define log_variable(var) log_debugs(variable) << #var << "=" << var;
+#define log_variable(var) log_debugs << #var << "=" << var;

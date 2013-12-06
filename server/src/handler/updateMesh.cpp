@@ -35,7 +35,8 @@ class Sender : public boost::static_visitor<> {
         modifiedSegIds_(modifiedSegIds),
         segId_(segId) {}
 
-  template <typename T> void operator()(chunk::Chunk<T> in) const {
+  template <typename T>
+  void operator()(chunk::Chunk<T> in) const {
     using namespace boost;
     typedef multi_array_ref<T, 3> array;
     typedef typename array::template array_view<3>::type array_view;
@@ -94,14 +95,14 @@ class Sender : public boost::static_visitor<> {
     bool succeded = false;
     do {
       try {
-        log_debugs(mesh) << "Sending: " << segId_ << " - " << location << " | ["
-                         << size.x << ", " << size.y << ", " << size.z << "] "
-                         << out.size() << " bytes.";
+        log_debugs << "Sending: " << segId_ << " - " << location << " | ["
+                   << size.x << ", " << size.y << ", " << size.z << "] "
+                   << out.size() << " bytes.";
         rtm->maskedUpdate(string::num(segId_), loc, size, out, mask);
         succeded = true;
       }
-      catch (apache::thrift::TException & tx) {
-        log_debugs(mesh) << "Unable to update RTM: " << tx.what();
+      catch (apache::thrift::TException& tx) {
+        log_debugs << "Unable to update RTM: " << tx.what();
         sleep(1000);
         rtm = connect_();
       }

@@ -12,11 +12,11 @@
 namespace om {
 namespace datalayer {
 
-#define SET_OPT(h, opt, val, bad_ret)                                        \
-  err = curl_easy_setopt(h, opt, val);                                       \
-  if (err != CURLE_OK) {                                                     \
-    log_debugs(HTTP) << "Failed to set " << #opt << curl_easy_strerror(err); \
-    return bad_ret;                                                          \
+#define SET_OPT(h, opt, val, bad_ret)                                  \
+  err = curl_easy_setopt(h, opt, val);                                 \
+  if (err != CURLE_OK) {                                               \
+    log_debugs << "Failed to set " << #opt << curl_easy_strerror(err); \
+    return bad_ret;                                                    \
   }
 
 template <typename TKey, typename TValue,
@@ -29,11 +29,11 @@ class ClientDS : public IDataSource<TKey, TValue> {
   ClientDS(std::string endpoint) : endpoint_(endpoint), handlePool_(100) {}
   virtual ~ClientDS() {}
 
-  virtual std::shared_ptr<TValue> Get(const TKey& key, bool async = false)
-      override {
+  virtual std::shared_ptr<TValue> Get(const TKey& key,
+                                      bool async = false) override {
     typename handle_pool::Lease h(handlePool_);
     if (!h) {
-      log_debugs(HTTP) << "Out of connections!";
+      log_debugs << "Out of connections!";
       return std::shared_ptr<TValue>();
     }
     auto p = network::http::path(APIVersionTag(), endpoint_, key);
@@ -52,22 +52,22 @@ class ClientDS : public IDataSource<TKey, TValue> {
 
     err = curl_easy_perform(h->Handle);
     if (err) {
-      log_debugs(HTTP) << "CURL Error getting: " << key << " "
-                       << curl_easy_strerror(err);
+      log_debugs << "CURL Error getting: " << key << " "
+                 << curl_easy_strerror(err);
       return std::shared_ptr<TValue>();
     }
 
     long code;
     err = curl_easy_getinfo(h->Handle, CURLINFO_RESPONSE_CODE, &code);
     if (err) {
-      log_debugs(HTTP) << "CURL Error with response: " << key
-                       << curl_easy_strerror(err);
+      log_debugs << "CURL Error with response: " << key
+                 << curl_easy_strerror(err);
       return std::shared_ptr<TValue>();
     }
-    log_debugs(HTTP) << "HTTP Response Code: " << code;
+    log_debugs << "HTTP Response Code: " << code;
 
     auto str = ss.str();
-    log_debugs(HTTP) << "HTTP Response: " << str;
+    log_debugs << "HTTP Response: " << str;
     return http_interface::deserialize(key, str);
   }
 
@@ -75,7 +75,7 @@ class ClientDS : public IDataSource<TKey, TValue> {
                    bool async = false) override {
     typename handle_pool::Lease h(handlePool_);
     if (!h) {
-      log_debugs(HTTP) << "Out of connections!";
+      log_debugs << "Out of connections!";
       return false;
     }
     auto p = network::http::path(APIVersionTag(), endpoint_, key);
@@ -93,8 +93,7 @@ class ClientDS : public IDataSource<TKey, TValue> {
 
     err = curl_easy_perform(h->Handle);
     if (err) {
-      log_debugs(HTTP) << "CURL Error uploading: " << key
-                       << curl_easy_strerror(err);
+      log_debugs << "CURL Error uploading: " << key << curl_easy_strerror(err);
       return false;
     }
     return true;
@@ -105,7 +104,8 @@ class ClientDS : public IDataSource<TKey, TValue> {
   virtual bool is_persisted() const override { return true; }
 
  private:
-  template <typename... Types> bool call_all(CURLcode err, Types... t) {
+  template <typename... Types>
+  bool call_all(CURLcode err, Types... t) {
     if (!call_all(err)) {
       return false;
     }
@@ -113,7 +113,7 @@ class ClientDS : public IDataSource<TKey, TValue> {
   }
   bool call_all(CURLcode err) {
     if (err) {
-      log_debugs(HTTP) << "CURL Error: " << curl_easy_strerror(err);
+      log_debugs << "CURL Error: " << curl_easy_strerror(err);
       return false;
     }
     return true;

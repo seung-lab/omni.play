@@ -53,7 +53,8 @@ std::shared_ptr<chunk::ChunkVar> FileDataSource::Get(const coords::Chunk& coord,
     return boost::apply_visitor(ChunkSlicer(coord, coordSystem_), file);
   }
   catch (Exception e) {
-    log_errors(unknown) << "Unable to read from ChunkDS: " << e.what();
+
+    log_errors << "Unable to read from ChunkDS: " << e.what();
     return std::shared_ptr<chunk::ChunkVar>();
   }
 }

@@ -18,7 +18,8 @@ class chunkDataReader {
   ~chunkDataReader() {}
 
   // no locking needed
-  template <typename T> std::shared_ptr<T> Read(const FilePart& entry) {
+  template <typename T>
+  std::shared_ptr<T> Read(const FilePart& entry) {
     const int64_t numBytes = entry.totalBytes;
 
     assert(numBytes);
@@ -38,7 +39,7 @@ class chunkDataReader {
     reader.read(dataCharPtr, numBytes);
 
     if (reader.fail()) {
-      log_errors(io) << "could not read data; numBytes is " << numBytes;
+      log_errors << "could not read data; numBytes is " << numBytes;
       throw IoException("could not read fully file", fnp_.string());
     }
 

@@ -55,7 +55,7 @@ struct convert<om::task::Cell> {
       return true;
     }
     catch (std::exception e) {
-      log_debugs(std::string("Error Decoding Cell: ") + e.what());
+      log_debugs << std::string("Error Decoding Cell: ") + e.what();
       return false;
     }
   }

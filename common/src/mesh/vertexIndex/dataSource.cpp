@@ -25,7 +25,7 @@ class VertexIndexDataSourceImpl {
   DataEntry* getDataEntry(const datalayer::MemMappedFile<DataEntry>& table,
                           const coords::Mesh& coord) const {
     if (!table.IsMapped()) {
-      log_errors(io) << "Table is not mapped: " << table.GetBaseFileName();
+      log_errors << "Table is not mapped: " << table.GetBaseFileName();
       return nullptr;
     }
 
@@ -33,12 +33,12 @@ class VertexIndexDataSourceImpl {
     DataEntry* entry =
         std::lower_bound(table.begin(), table.end(), target, compareBySegID);
     if (entry == table.end() || entry->segID != coord.segID()) {
-      log_errors(io) << "DataEntry not found in table.";
+      log_errors << "DataEntry not found in table.";
       return nullptr;
     }
 
     if (!entry || !entry->wasMeshed || !entry->hasMeshData) {
-      log_errors(io) << "DataEntry not found.";
+      log_errors << "DataEntry not found.";
       return nullptr;
     }
 
@@ -69,13 +69,13 @@ class VertexIndexDataSourceImpl {
                                entry->vertexIndex.count,
                                entry->vertexIndex.totalBytes);
 
-    ret->Data()
-        .SetStripData(read<uint32_t>(entry->stripData, dataFile),
-                      entry->stripData.count, entry->stripData.totalBytes);
+    ret->Data().SetStripData(read<uint32_t>(entry->stripData, dataFile),
+                             entry->stripData.count,
+                             entry->stripData.totalBytes);
 
-    ret->Data()
-        .SetVertexData(read<float>(entry->vertexData, dataFile),
-                       entry->vertexData.count, entry->vertexData.totalBytes);
+    ret->Data().SetVertexData(read<float>(entry->vertexData, dataFile),
+                              entry->vertexData.count,
+                              entry->vertexData.totalBytes);
 
     return ret;
   }
@@ -113,9 +113,9 @@ class VertexIndexDataSourceImpl {
       writers_[dataFilePath]->Open(dataFilePath);
     }
 
-    writers_[dataFilePath]
-        ->Append(entry->vertexIndex, mesh->Data().VertexIndex(),
-                 mesh->Data().VertexIndexNumBytes());
+    writers_[dataFilePath]->Append(entry->vertexIndex,
+                                   mesh->Data().VertexIndex(),
+                                   mesh->Data().VertexIndexNumBytes());
     writers_[dataFilePath]->Append(entry->stripData, mesh->Data().StripData(),
                                    mesh->Data().StripDataNumBytes());
     writers_[dataFilePath]->Append(entry->vertexData, mesh->Data().VertexData(),
@@ -140,7 +140,7 @@ class VertexIndexDataSourceImpl {
       std::copy(data, &data[numBytes], dataCharPtr);
     }
     catch (std::exception e) {
-      log_errors(io) << "could not read mesh data: " << e.what();
+      log_errors << "could not read mesh data: " << e.what();
       return std::shared_ptr<T>();
     }
 
@@ -188,7 +188,7 @@ class VertexIndexDataSourceImpl {
         uniqueValuesSource_->Get(coord);
 
     if (!segIDs || !segIDs.get()->Values.size()) {
-      log_errors(io) << "No unique values in " << coord;
+      log_errors << "No unique values in " << coord;
       return;
     }
 

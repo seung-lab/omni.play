@@ -10,11 +10,11 @@ namespace gl {
 /*
  * Standard Colors
  */
-static const float OMGL_WHITE[3] = { 1, 1, 1 };
-static const float OMGL_BLACK[3] = { 0, 0, 0 };
-static const float OMGL_RED[3] = { 1, 0, 0 };
-static const float OMGL_GREEN[3] = { 0, 1, 0 };
-static const float OMGL_BLUE[3] = { 0, 0, 1 };
+static const float OMGL_WHITE[3] = {1, 1, 1};
+static const float OMGL_BLACK[3] = {0, 0, 0};
+static const float OMGL_RED[3] = {1, 0, 0};
+static const float OMGL_GREEN[3] = {0, 1, 0};
+static const float OMGL_BLUE[3] = {0, 0, 1};
 
 /*
  * Macro to check for silent errors that OpenGL builds up.
@@ -24,7 +24,8 @@ static const float OMGL_BLUE[3] = { 0, 0, 1 };
 inline void CHECK_OPENGL_ERROR() {
   GLenum error;
   while ((error = glGetError()) != GL_NO_ERROR) {
-    log_errors(unknown) << "opengl failed with error " << gluErrorString(error);
+
+    log_errors << "opengl failed with error " << gluErrorString(error);
   }
 }
 

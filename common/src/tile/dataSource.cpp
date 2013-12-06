@@ -20,7 +20,7 @@ std::shared_ptr<tile::TileVar> FileDataSource::Get(const coords::Tile& coord,
     return file >> TileSlicer(coord, coordSystem_);
   }
   catch (Exception e) {
-    log_errors(io) << "Error reading from TileDS: " << e.what();
+    log_errors << "Error reading from TileDS: " << e.what();
     return std::shared_ptr<tile::TileVar>();
   }
 }

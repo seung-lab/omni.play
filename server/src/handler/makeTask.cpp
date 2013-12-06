@@ -166,8 +166,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
                const volume::Segmentation& pre,
                const std::set<int32_t>& selected,
                const volume::Segmentation& post) {
-  log_infos(unknown) << "Getting Seeds\n" << pre.Endpoint() << '\n'
-                     << post.Endpoint();
+  log_infos << "Getting Seeds\n" << pre.Endpoint() << '\n' << post.Endpoint();
 
   std::set<uint32_t> sel(selected.begin(), selected.end());
 
@@ -260,17 +259,17 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
 
     if (escapes[seed.first]) {
       seeds.push_back(makeSeed(seed.second, mappingCounts, sizes));
-      log_infos(unknown) << "Spawned!";
+      log_infos << "Spawned!";
       std::stringstream ss;
       for (auto& seg : preSideSets[seed.first]) {
         ss << seg << ",";
       }
-      log_infos(unknown) << "Pre Side: " << ss.str();
+      log_infos << "Pre Side: " << ss.str();
 
       for (auto& seg : seeds.back()) {
         ss << seg.first << ",";
       }
-      log_infos(unknown) << "Post Side: " << ss.str();
+      log_infos << "Post Side: " << ss.str();
     }
   }
 }

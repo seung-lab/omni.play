@@ -11,7 +11,8 @@
 namespace om {
 namespace datalayer {
 
-template <typename T> class FilePtrCache {
+template <typename T>
+class FilePtrCache {
  public:
   FilePtrCache(size_t cacheSize = 50) : cacheSize_(cacheSize) {}
 
@@ -19,7 +20,7 @@ template <typename T> class FilePtrCache {
     MemMappedFile<T> ret;
     if (!cache_.assignIfHadKey(fnp, ret)) {
       if (!file::exists(fnp)) {
-        log_errors(io) << "Unable to map: " << fnp;
+        log_errors << "Unable to map: " << fnp;
         return ret;
       }
 

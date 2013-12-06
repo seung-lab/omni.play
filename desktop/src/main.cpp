@@ -52,7 +52,7 @@ class Omni {
     const bool headless = ZiARG_headless;
 
     if (!useGUI && !headless) {
-      log_infos(unknown) << "No GUI detected; Running headless....";
+      log_infos << "No GUI detected; Running headless....";
       return true;
 
     } else if (headless) {
@@ -98,9 +98,10 @@ class Omni {
 
   void checkRemainingArgs() {
     if (argc_ > 2) {
-      log_errors(unknown) << "too many arguments given:";
+
+      log_errors << "too many arguments given:";
       for (auto i = 1; i < argc_; ++i) {
-        log_debug(unknown, "\t(%d) %s", i, argv_[i]);
+        log_debug("\t(%d) %s", i, argv_[i]);
       }
       exit(EXIT_FAILURE);
     }

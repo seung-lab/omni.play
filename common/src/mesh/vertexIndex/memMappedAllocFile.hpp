@@ -21,8 +21,8 @@ class memMappedAllocFile {
       if (!table_[i].wasMeshed) {
         allGood = false;
 
-        log_debugs(io) << "missing mesh: "
-                       << "segID " << table_[i].segID;
+        log_debugs << "missing mesh: "
+                   << "segID " << table_[i].segID;
       }
     }
 

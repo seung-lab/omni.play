@@ -63,7 +63,7 @@ struct convert<om::task::Dataset> {
       return true;
     }
     catch (YAML::Exception e) {
-      log_debugs(YAML) << std::string("Error Decoding Dataset: ") + e.what();
+      log_debugs << std::string("Error Decoding Dataset: ") + e.what();
       return false;
     }
   }

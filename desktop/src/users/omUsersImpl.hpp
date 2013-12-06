@@ -144,8 +144,7 @@ class usersImpl {
       }
     }
     catch (const boost::filesystem::filesystem_error& e) {
-      log_errors(project / user) << "Error creating user segementation data: "
-                                 << e.what();
+      log_errors << "Error creating user segementation data: " << e.what();
       throw om::IoException(e.what());
     }
   }

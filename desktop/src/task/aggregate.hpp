@@ -26,7 +26,7 @@ struct convert<om::task::Aggregate> {
       return true;
     }
     catch (std::exception e) {
-      log_debugs(std::string("Error Decoding Aggregate: ") + e.what());
+      log_debugs << std::string("Error Decoding Aggregate: ") + e.what();
       return false;
     }
   }

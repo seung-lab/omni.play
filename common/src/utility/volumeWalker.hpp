@@ -75,7 +75,7 @@ class VolumeWalker {
       }
     }
     catch (Exception e) {
-      log_debugs(Voxels) << curr << " " << e.what();
+      log_debugs << curr << " " << e.what();
     }
   }
 

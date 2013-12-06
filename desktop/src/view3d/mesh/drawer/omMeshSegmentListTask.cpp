@@ -30,16 +30,14 @@ void MeshSegmentListTask::run() {
         continue;
       }
       auto color = determineColor(seg);
-      segmentsToDraw.push_back({
-        seg, color
-      });
+      segmentsToDraw.push_back({seg, color});
     }
     seg = segIter.getNextSegment();
   }
 
   rootSegLists_.AddToCache(coord_, rootSeg_, key_.shouldVolumeBeShownBroken,
                            key_.breakThreshold, segmentsToDraw);
-  // log_debugs(unknown) << "done: " << rootSeg->value;
+  // log_debugs << "done: " << rootSeg->value;
 }
 
 Vector3f MeshSegmentListTask::determineColor(OmSegment* seg) {

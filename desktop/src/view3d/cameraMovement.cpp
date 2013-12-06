@@ -170,14 +170,14 @@ void CameraPan::Drag(const Vector2<float>& point) {
 //////////
 
 void CameraZoom::Click(const Vector2<float>& point) {
-  // log_debugs(view3d, "zooming: click: x=%f, y=%f\n", point.x, point.y);
+  // log_debug("zooming: click: x=%f, y=%f\n", point.x, point.y);
   oldViewMatrix_ = camera_.GetModelViewMatrix();
   startDistance_ = camera_.GetDistance();
   startPoint_ = point;
 }
 
 void CameraZoom::Drag(const Vector2<float>& point) {
-  // log_debugs(view3d, "zooming: drag: x=%f, y=%f\n", point.x, point.y);
+  // log_debug("zooming: drag: x=%f, y=%f\n", point.x, point.y);
   const Vector4<int>& vp = camera_.viewport();
   int sy = startPoint_[1] - vp[1];
   int cy = point.y - vp[1];

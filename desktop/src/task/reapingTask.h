@@ -64,7 +64,7 @@ struct convert<om::task::ReapingTask> {
       return true;
     }
     catch (std::exception e) {
-      log_debugs(std::string("Error Decoding ReapingTask: ") + e.what());
+      log_debugs << std::string("Error Decoding ReapingTask: ") + e.what();
       return false;
     }
   }

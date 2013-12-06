@@ -26,7 +26,7 @@ Volume::Volume(boost::filesystem::path uri)
                                                        Coords())),
       chunkDS_(std::make_unique<chunk::CachedDataSource>(
           uri, metaManager_->dataType(), Coords())) {
-  log_debugs(unknown) << "Initialized Volume";
+  log_debugs << "Initialized Volume";
 }
 
 Volume::~Volume() {}

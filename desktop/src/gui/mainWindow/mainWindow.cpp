@@ -392,7 +392,7 @@ void MainWindow::spawnErrorDialog(om::Exception& e) {
 
   OmTellInfo errorBox(errorMessage);
 
-  log_debugs(unknown) << "Exception thrown: " << qPrintable(errorMessage);
+  log_debugs << "Exception thrown: " << qPrintable(errorMessage);
 }
 
 void MainWindow::updateReadOnlyRelatedWidgets() {

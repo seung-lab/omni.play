@@ -25,7 +25,7 @@ struct convert<om::time::time> {
       return true;
     }
     catch (YAML::Exception e) {
-      log_debugs(YAML) << std::string("Error Decoding time: ") + e.what();
+      log_debugs << std::string("Error Decoding time: ") + e.what();
       return false;
     }
   }

@@ -44,10 +44,10 @@ MesherPtr makeMesher(std::string host, int port) {
   try {
     transport->open();
     if (!transport->isOpen()) {
-      log_errors(io) << "WTF!!!!";
+      log_errors << "WTF!!!!";
     }
   }
-  catch (apache::thrift::TException & tx) {
+  catch (apache::thrift::TException &tx) {
     throw(tx);
   }
 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
   zi::parse_arguments(argc, argv, true);
 
   if (!file::exists(ZiARG_path)) {
-    log_errors(io) << "Project not found.";
+    log_errors << "Project not found.";
   }
 
   om::file::Paths p(ZiARG_path);

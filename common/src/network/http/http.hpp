@@ -14,20 +14,20 @@
 
 namespace om {
 namespace network {
-#define SET_OPT(h, opt, val, bad_ret)                                        \
-  err = curl_easy_setopt(h, opt, val);                                       \
-  if (err != CURLE_OK) {                                                     \
-    log_debugs(HTTP) << "Failed to set " << #opt << curl_easy_strerror(err); \
-    return bad_ret;                                                          \
+#define SET_OPT(h, opt, val, bad_ret)                                  \
+  err = curl_easy_setopt(h, opt, val);                                 \
+  if (err != CURLE_OK) {                                               \
+    log_debugs << "Failed to set " << #opt << curl_easy_strerror(err); \
+    return bad_ret;                                                    \
   }
 
 class HTTP : private SingletonBase<HTTP> {
  public:
   static std::string GET(const std::string& uri) {
-    log_debugs(HTTP) << "HTTP GET: " << uri;
+    log_debugs << "HTTP GET: " << uri;
     typename handle_pool::Lease h(instance().HandlePool, true);
     if (!h) {
-      log_debugs(HTTP) << "Unable to get curl handle!";
+      log_debugs << "Unable to get curl handle!";
       return std::string();
     }
 
@@ -45,8 +45,8 @@ class HTTP : private SingletonBase<HTTP> {
 
     err = curl_easy_perform(h->Handle);
     if (err) {
-      log_debugs(HTTP) << "CURL Error getting: " << uri << " "
-                       << curl_easy_strerror(err);
+      log_debugs << "CURL Error getting: " << uri << " "
+                 << curl_easy_strerror(err);
       return std::string();
     }
 
@@ -56,7 +56,7 @@ class HTTP : private SingletonBase<HTTP> {
     }
 
     auto str = ss.str();
-    log_debugs(HTTP) << "HTTP Response: " << str;
+    log_debugs << "HTTP Response: " << str;
     return str;
   }
 
@@ -73,16 +73,16 @@ class HTTP : private SingletonBase<HTTP> {
       val.reset(new T(node.as<T>()));
     }
     catch (YAML::Exception e) {
-      log_debugs(Task) << "Failed loading JSON: " << e.what();
+      log_debugs << "Failed loading JSON: " << e.what();
     }
     return val;
   }
 
   static bool PUT(const std::string& uri, const std::string& data) {
-    log_debugs(HTTP) << "HTTP PUT: " << uri;
+    log_debugs << "HTTP PUT: " << uri;
     typename handle_pool::Lease h(instance().HandlePool, true);
     if (!h) {
-      log_debugs(HTTP) << "Unable to get curl handle!";
+      log_debugs << "Unable to get curl handle!";
       return false;
     }
 
@@ -101,8 +101,7 @@ class HTTP : private SingletonBase<HTTP> {
 
     err = curl_easy_perform(h->Handle);
     if (err) {
-      log_debugs(HTTP) << "CURL Error uploading: " << uri
-                       << curl_easy_strerror(err);
+      log_debugs << "CURL Error uploading: " << uri << curl_easy_strerror(err);
       return false;
     }
 
@@ -125,7 +124,7 @@ class HTTP : private SingletonBase<HTTP> {
       return true;
     }
     catch (YAML::Exception e) {
-      log_debugs(Task) << "Failed converting to JSON: " << e.what();
+      log_debugs << "Failed converting to JSON: " << e.what();
       return false;
     }
   }
@@ -133,10 +132,10 @@ class HTTP : private SingletonBase<HTTP> {
   template <typename... TRest>
   static boost::optional<std::string> POST(const std::string& uri,
                                            TRest... rest) {
-    log_debugs(HTTP) << "HTTP POST: " << uri;
+    log_debugs << "HTTP POST: " << uri;
     typename handle_pool::Lease h(instance().HandlePool, true);
     if (!h) {
-      log_debugs(HTTP) << "Unable to get curl handle!";
+      log_debugs << "Unable to get curl handle!";
       return false;
     }
 
@@ -148,7 +147,7 @@ class HTTP : private SingletonBase<HTTP> {
     SET_OPT(h->Handle, CURLOPT_POST, 1, false);
 
     auto post = postString(rest...);
-    log_debugs(HTTP) << "Posting: " << post;
+    log_debugs << "Posting: " << post;
     SET_OPT(h->Handle, CURLOPT_POSTFIELDS, post.c_str(), false);
     if (post.empty()) {
       SET_OPT(h->Handle, CURLOPT_POSTFIELDSIZE, 0, false);
@@ -164,15 +163,14 @@ class HTTP : private SingletonBase<HTTP> {
 
     err = curl_easy_perform(h->Handle);
     if (err) {
-      log_debugs(HTTP) << "CURL Error getting: " << curl_easy_strerror(err);
+      log_debugs << "CURL Error getting: " << curl_easy_strerror(err);
       return false;
     }
 
     long code;
     err = curl_easy_getinfo(h->Handle, CURLINFO_RESPONSE_CODE, &code);
     if (err) {
-      log_debugs(HTTP) << "CURL Error with response: "
-                       << curl_easy_strerror(err);
+      log_debugs << "CURL Error with response: " << curl_easy_strerror(err);
       return false;
     }
 
@@ -282,11 +280,10 @@ class HTTP : private SingletonBase<HTTP> {
     long code;
     auto err = curl_easy_getinfo(h, CURLINFO_RESPONSE_CODE, &code);
     if (err) {
-      log_debugs(HTTP) << "CURL Error with response: "
-                       << curl_easy_strerror(err);
+      log_debugs << "CURL Error with response: " << curl_easy_strerror(err);
       return -1;
     }
-    log_debugs(HTTP) << "HTTP Response Code: " << code;
+    log_debugs << "HTTP Response Code: " << code;
     return code;
   }
   // Reimplement to avoid copies.

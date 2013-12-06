@@ -29,7 +29,6 @@ class MacOSXGestures {
   }
 
  private:
-
   void pinchTriggered(QPinchGesture *gesture) {
     const QPinchGesture::ChangeFlags changeFlags = gesture->changeFlags();
 
@@ -72,13 +71,13 @@ class MacOSXGestures {
     if (gesture->state() == Qt::GestureFinished) {
       if (gesture->horizontalDirection() == QSwipeGesture::Left ||
           gesture->verticalDirection() == QSwipeGesture::Up) {
-        log_debugs(unknown) << "swipe 1";
+        log_debugs << "swipe 1";
         // goPrevImage();
       } else {
-        log_debugs(unknown) << "swipe 2";
+        log_debugs << "swipe 2";
         // goNextImage();
       }
-      log_debugs(unknown) << "swipe 3";
+      log_debugs << "swipe 3";
       view3d_.update();
     }
   }
