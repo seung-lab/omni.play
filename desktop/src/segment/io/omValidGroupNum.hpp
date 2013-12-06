@@ -37,7 +37,8 @@ class OmValidGroupNum {
     maxGroupNum_.set(initialGroupNum_);
   }
 
-  template <typename C> void Set(const C& segs, const bool isValid) {
+  template <typename C>
+  void Set(const C& segs, const bool isValid) {
     const uint32_t groupNum = isValid ? maxGroupNum_.inc() : noGroupNum_;
 
     FOR_EACH(iter, segs) {
@@ -107,7 +108,7 @@ class OmValidGroupNum {
 
     const quint64 maxGroupNum = maxGroupNum_.get();
     out << maxGroupNum;
-    
-    printf("saved %s\n", qPrintable(filePath));
+
+    log_infos << "saved " << qPrintable(filePath);
   }
 };
