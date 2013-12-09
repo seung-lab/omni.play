@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "gui/tools.hpp"
+#include "common/common.h"
 
 #include <QtGui>
 
@@ -15,7 +16,10 @@ class right;
 }
 
 class ToolBarManager : public QWidget {
-  Q_OBJECT public : ToolBarManager(MainWindow *mw);
+  Q_OBJECT;
+
+ public:
+  ToolBarManager(MainWindow *mw);
   ~ToolBarManager();
 
   void UpdateReadOnlyRelatedWidgets();
@@ -30,8 +34,8 @@ class ToolBarManager : public QWidget {
  private:
   MainWindow *const mainWindow_;
 
-  boost::scoped_ptr<MainToolBar> mainToolBar_;
-  boost::scoped_ptr<om::sidebars::right> rightSideBar_;
+  std::unique_ptr<MainToolBar> mainToolBar_;
+  std::unique_ptr<om::sidebars::right> rightSideBar_;
 
   void deleteMainBar();
 };

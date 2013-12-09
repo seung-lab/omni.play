@@ -1,6 +1,5 @@
 #pragma once
 
-#include <zi/for_each.hpp>
 #include <zi/parallel/algorithm.hpp>
 
 namespace om {
@@ -34,14 +33,18 @@ inline void merge(const std::set<T>& a, const std::set<T>& b, std::set<T>& c) {
 
 template <typename T>
 inline void mergeBintoA(std::set<T>& a, const std::set<T>& b) {
-  FOR_EACH(iter, b) { a.insert(*iter); }
+  for (auto& c : b) {
+    a.insert(c);
+  }
 }
 
 template <typename T>
-inline void mergeBintoA(boost::unordered_set<T>& a,
-                        const boost::unordered_set<T>& b) {
-  FOR_EACH(iter, b) { a.insert(*iter); }
+inline void mergeBintoA(std::unordered_set<T>& a,
+                        const std::unordered_set<T>& b) {
+  for (auto& c : b) {
+    a.insert(c);
+  }
 }
 
-}  //set
-}  //om
+}  // set
+}  // om

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "bits/omImage_traits.hpp"
-#include "common/omCommon.h"
-#include "utility/omSmartPtr.hpp"
+#include "common/common.h"
+#include "utility/malloc.hpp"
 #include "zi/omUtility.h"
 
 #include <algorithm>
@@ -19,22 +19,22 @@ template <typename T, std::size_t D> class OmImageCopiedData {
 
   OmImageCopiedData(OmDimension<D> extent) : extent_(extent), data_() {
     data_ =
-        om::shared_ptr<container_t>(new container_t(extent.getBoostExtent()));
+        std::shared_ptr<container_t>(new container_t(extent.getBoostExtent()));
   }
 
   OmImageCopiedData(OmDimension<D> extent, T* data) : extent_(extent), data_() {
     data_ =
-        om::shared_ptr<container_t>(new container_t(extent.getBoostExtent()));
+        std::shared_ptr<container_t>(new container_t(extent.getBoostExtent()));
     data_->assign(data, data + data_->num_elements());
   }
 
-  OmImageCopiedData(om::shared_ptr<container_t> data, OmDimension<D> extent)
+  OmImageCopiedData(std::shared_ptr<container_t> data, OmDimension<D> extent)
       : extent_(extent), data_(data) {}
 
   virtual ~OmImageCopiedData() {}
 
   OmDimension<D> extent_;
-  om::shared_ptr<container_t> data_;
+  std::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D> class OmImageRefData {
@@ -47,17 +47,17 @@ template <typename T, std::size_t D> class OmImageRefData {
   OmImageRefData(OmDimension<D> extent) : extent_(extent), data_() {}
 
   OmImageRefData(OmDimension<D> extent, T* data) : extent_(extent), data_() {
-    data_ = om::shared_ptr<container_t>(
+    data_ = std::shared_ptr<container_t>(
         new container_t(data, extent.getBoostExtent()));
   }
 
-  OmImageRefData(om::shared_ptr<container_t> data, OmDimension<D> extent)
+  OmImageRefData(std::shared_ptr<container_t> data, OmDimension<D> extent)
       : extent_(extent), data_(data) {}
 
   virtual ~OmImageRefData() {}
 
   OmDimension<D> extent_;
-  om::shared_ptr<container_t> data_;
+  std::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D> class OmImageConstRefData {
@@ -71,17 +71,17 @@ template <typename T, std::size_t D> class OmImageConstRefData {
 
   OmImageConstRefData(OmDimension<D> extent, T* data)
       : extent_(extent), data_() {
-    data_ = om::shared_ptr<container_t>(
+    data_ = std::shared_ptr<container_t>(
         new container_t(data, extent.getBoostExtent()));
   }
 
-  OmImageConstRefData(om::shared_ptr<container_t> data, OmDimension<D> extent)
+  OmImageConstRefData(std::shared_ptr<container_t> data, OmDimension<D> extent)
       : extent_(extent), data_(data) {}
 
   virtual ~OmImageConstRefData() {}
 
   OmDimension<D> extent_;
-  om::shared_ptr<container_t> data_;
+  std::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D,
@@ -97,7 +97,8 @@ class OmImage {
   OmImage(OmDimension<D> extent, T* data)
       : d_(container_t<T, D>(extent, data)) {}
 
-  OmImage(om::shared_ptr<boost::multi_array<T, D> > data, OmDimension<D> extent)
+  OmImage(std::shared_ptr<boost::multi_array<T, D> > data,
+          OmDimension<D> extent)
       : d_(container_t<T, D>(data, extent)) {}
 
   virtual ~OmImage() {}
@@ -137,14 +138,14 @@ class OmImage {
     }
   }
 
-  om::shared_ptr<T> getMallocCopyOfData() const {
+  std::shared_ptr<T> getMallocCopyOfData() const {
     if (!d_.data_) {
-      return om::shared_ptr<T>();
+      return std::shared_ptr<T>();
     }
 
     const int numBytes = d_.data_->num_elements() * sizeof(T);
-    om::shared_ptr<T> ret =
-        OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
+    std::shared_ptr<T> ret =
+        om::mem::Malloc<T>::NumBytes(numBytes, om::mem::ZeroFill::DONT);
     memcpy(ret.get(), d_.data_->data(), numBytes);
     return ret;
   }

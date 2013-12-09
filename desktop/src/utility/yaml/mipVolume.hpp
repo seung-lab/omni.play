@@ -1,15 +1,15 @@
 #pragma once
 
-#include "yaml-cpp/yaml.h"
-#include "volume/omVolumeTypes.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/omChannelFolder.h"
 #include "volume/omSegmentationFolder.h"
+#include "volume/omVolumeTypes.hpp"
+#include "yaml-cpp-old/yaml.h"
 
 #include <QString>
 #include <QFile>
 
-namespace YAML {
+namespace YAMLold {
 
 template <typename VOL> class mipVolume {
  private:
@@ -50,4 +50,4 @@ template <typename VOL> class mipVolume {
   }
 };
 
-}  // namespace YAML
+}  // namespace YAMLold

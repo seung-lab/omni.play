@@ -7,27 +7,29 @@
 
 OmSegmentIterator::OmSegmentIterator(OmSegments* cache) : segments_(cache) {}
 
+OmSegmentIterator::OmSegmentIterator(OmSegments& cache) : segments_(&cache) {}
+
 OmSegmentIterator::OmSegmentIterator(const SegmentationDataWrapper& sdw)
     : segments_(sdw.Segments()) {}
 
 OmSegmentIterator::OmSegmentIterator(const SegmentDataWrapper& sdw)
     : segments_(sdw.Segments()) {}
 
-void OmSegmentIterator::iterOverSegmentID(const OmSegID segID) {
+void OmSegmentIterator::iterOverSegmentID(const om::common::SegID segID) {
   segs_.push_back(segments_->GetSegment(segID));
 }
 
 void OmSegmentIterator::iterOverSelectedIDs() {
-  const OmSegIDsSet ids = segments_->GetSelectedSegmentIDs();
+  const om::common::SegIDSet ids = segments_->GetSelectedSegmentIDs();
   FOR_EACH(iter, ids) { segs_.push_back(segments_->GetSegment(*iter)); }
 }
 
 void OmSegmentIterator::iterOverEnabledIDs() {
-  const OmSegIDsSet ids = segments_->GetEnabledSegmentIDs();
+  const om::common::SegIDSet ids = segments_->GetEnabledSegmentIDs();
   FOR_EACH(iter, ids) { segs_.push_back(segments_->GetSegment(*iter)); }
 }
 
-void OmSegmentIterator::iterOverSegmentIDs(const OmSegIDsSet& set) {
+void OmSegmentIterator::iterOverSegmentIDs(const om::common::SegIDSet& set) {
   FOR_EACH(iter, set) { segs_.push_back(segments_->GetSegment(*iter)); }
 }
 
@@ -35,7 +37,7 @@ bool OmSegmentIterator::empty() { return segs_.empty(); }
 
 OmSegment* OmSegmentIterator::getNextSegment() {
   if (segs_.empty()) {
-    return NULL;
+    return nullptr;
   }
 
   OmSegment* segRet = segs_.back();

@@ -1,7 +1,9 @@
 #pragma once
 
+#include "segment/colorizer/omSegmentColorizerTypes.h"
 #include "system/omManageableObject.h"
-#include <common/omColors.h>
+#include "common/colors.h"
+#include "gui/tools.hpp"
 
 class QGLWidget;
 class ChannelDataWrapper;
@@ -18,22 +20,21 @@ class SegmentDataWrapper;
 class SegmentationDataWrapper;
 class ToolBarManager;
 class ViewGroup;
-template <class> class OmPooledTile;
 
 class OmViewGroupState : public OmManageableObject {
  private:
-  boost::scoped_ptr<ViewGroup> viewGroup_;
-  boost::scoped_ptr<OmViewGroupView2dState> view2dState_;
-  boost::scoped_ptr<OmColorizers> colorizers_;
-  boost::scoped_ptr<OmZoomLevel> zoomLevel_;
-  boost::scoped_ptr<OmSplitting> splitting_;
-  boost::scoped_ptr<OmLandmarks> landmarks_;
+  std::unique_ptr<ViewGroup> viewGroup_;
+  std::unique_ptr<OmViewGroupView2dState> view2dState_;
+  std::unique_ptr<OmColorizers> colorizers_;
+  std::unique_ptr<OmZoomLevel> zoomLevel_;
+  std::unique_ptr<OmSplitting> splitting_;
+  std::unique_ptr<OmLandmarks> landmarks_;
 
-  boost::scoped_ptr<ChannelDataWrapper> cdw_;
-  boost::scoped_ptr<SegmentationDataWrapper> sdw_;
+  std::unique_ptr<ChannelDataWrapper> cdw_;
+  std::unique_ptr<SegmentationDataWrapper> sdw_;
 
 #ifdef ZI_OS_MACOS
-  boost::scoped_ptr<QGLWidget> context3d_;
+  std::unique_ptr<QGLWidget> context3d_;
 #endif
 
   float mBreakThreshold;
@@ -49,7 +50,7 @@ class OmViewGroupState : public OmManageableObject {
   bool brightenSelected_;
 
   //annotation stuff
-  OmColor annotationColor_;
+  om::common::Color annotationColor_;
   std::string annotationString_;
   double annotationSize_;
 
@@ -91,10 +92,11 @@ class OmViewGroupState : public OmManageableObject {
     return mShowFilterInColor;
   }
 
-  OmSegmentColorCacheType determineColorizationType(const ObjectType);
+  om::segment::coloring determineColorizationType(const om::common::ObjectType);
 
-  OmPooledTile<OmColorARGB>* ColorTile(uint32_t const* const, const int tileDim,
-                                       const OmTileCoord&);
+  std::shared_ptr<om::common::ColorARGB> ColorTile(uint32_t const* const,
+                                                   const int tileDim,
+                                                   const OmTileCoord&);
 
   ChannelDataWrapper Channel() const;
   SegmentationDataWrapper Segmentation() const;
@@ -103,9 +105,11 @@ class OmViewGroupState : public OmManageableObject {
 
   inline OmLandmarks& Landmarks() { return *landmarks_; }
 
-  inline const OmColor& getAnnotationColor() { return annotationColor_; }
+  inline const om::common::Color& getAnnotationColor() {
+    return annotationColor_;
+  }
 
-  inline void setAnnotationColor(const OmColor& color) {
+  inline void setAnnotationColor(const om::common::Color& color) {
     annotationColor_ = color;
   }
 

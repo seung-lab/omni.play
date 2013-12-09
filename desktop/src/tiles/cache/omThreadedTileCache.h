@@ -1,7 +1,6 @@
 #pragma once
 
 #include "tiles/cache/omTileCacheThreadPool.hpp"
-#include "common/om.hpp"
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheManager.h"
 #include "system/cache/omLockedCacheObjects.hpp"
@@ -34,7 +33,7 @@ class OmThreadedTileCache : public OmCacheBase {
     std::map<key_t, ptr_t> map;
     KeyMultiIndex<key_t> list;
   };
-  LockedList<om::shared_ptr<OldCache> > cachesToClean_;
+  LockedList<std::shared_ptr<OldCache> > cachesToClean_;
 
   OmTilesToPrefetch tilesToPrefetch_;
 
@@ -42,19 +41,20 @@ class OmThreadedTileCache : public OmCacheBase {
 
  public:
   OmThreadedTileCache(const std::string& name, const int bytesPerTile)
-      : OmCacheBase(name, om::TILE_CACHE),
+      : OmCacheBase(name, om::common::CacheGroup::TILE_CACHE),
         bytesPerTile_(bytesPerTile),
         threadPool_(OmTileCache::ThreadPool()) {
     freshness_.set(0);
 
-    OmCacheManager::AddCache(om::TILE_CACHE, this);
+    OmCacheManager::AddCache(om::common::CacheGroup::TILE_CACHE, this);
   }
 
   virtual ~OmThreadedTileCache() {
     OmCacheManager::RemoveCache(cacheGroup_, this);
   }
 
-  virtual void Get(ptr_t& ptr, const key_t& key, const om::Blocking blocking) {
+  virtual void Get(ptr_t& ptr, const key_t& key,
+                   const om::common::Blocking blocking) {
     if (freshness_.get() < key.getFreshness()) {
       InvalidateCache();
       freshness_.set(key.getFreshness());
@@ -64,7 +64,7 @@ class OmThreadedTileCache : public OmCacheBase {
       return;
     }
 
-    if (om::BLOCKING == blocking) {
+    if (om::common::Blocking::BLOCKING == blocking) {
       ptr = loadItem(key);
       return;
     }
@@ -120,7 +120,7 @@ class OmThreadedTileCache : public OmCacheBase {
     }
 
     // avoid contention on cacheToClean by swapping in new, empty list
-    std::list<om::shared_ptr<OldCache> > oldCaches;
+    std::list<std::shared_ptr<OldCache> > oldCaches;
     cachesToClean_.swap(oldCaches);
   }
 
@@ -135,7 +135,7 @@ class OmThreadedTileCache : public OmCacheBase {
     ClearFetchQueue();
 
     // add current cache to list to be cleaned later by OmCacheMan thread
-    om::shared_ptr<OldCache> cache(new OldCache());
+    std::shared_ptr<OldCache> cache(new OldCache());
 
     cache_.swap(cache->map, cache->list);
     cachesToClean_.push_back(cache);

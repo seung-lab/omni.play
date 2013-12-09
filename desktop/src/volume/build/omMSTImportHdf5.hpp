@@ -58,7 +58,7 @@ class OmMSTImportHdf5 {
 
   void checkSizes() {
     if (dendSizes_.y != dendValuesSizes_.x) {
-      throw OmIoException("MST size mismatch");
+      throw om::IoException("MST size mismatch");
     }
   }
 
@@ -79,7 +79,7 @@ class OmMSTImportHdf5 {
     OmDataPath datasetName("dend");
 
     if (!hdf5->dataset_exists(datasetName)) {
-      printf("no dendrogram dataset found\n");
+      log_infos << "no dendrogram dataset found";
       return false;
     }
 
@@ -91,10 +91,10 @@ class OmMSTImportHdf5 {
     int numBytes;
     dend_ = hdf5->readDataset(datasetName, &numBytes);
 
-    printf("\tdendrogram is %s x %s (%s bytes)\n",
-           om::string::humanizeNum(dendSizes_.x).c_str(),
-           om::string::humanizeNum(dendSizes_.y).c_str(),
-           om::string::humanizeNum(numBytes).c_str());
+    log_info("\tdendrogram is %s x %s (%s bytes)",
+             om::string::humanizeNum(dendSizes_.x).c_str(),
+             om::string::humanizeNum(dendSizes_.y).c_str(),
+             om::string::humanizeNum(numBytes).c_str());
 
     return true;
   }
@@ -103,7 +103,7 @@ class OmMSTImportHdf5 {
     OmDataPath datasetName("dendValues");
 
     if (!hdf5->dataset_exists(datasetName)) {
-      printf("no dendrogram values dataset found\n");
+      log_infos << "no dendrogram values dataset found";
       return false;
     }
 
@@ -112,10 +112,10 @@ class OmMSTImportHdf5 {
     int numBytes;
     dendValues_ = hdf5->readDataset(datasetName, &numBytes);
 
-    printf("\tdendrogram values is %s x %s (%s bytes)\n",
-           om::string::humanizeNum(dendValuesSizes_.x).c_str(),
-           om::string::humanizeNum(dendValuesSizes_.y).c_str(),
-           om::string::humanizeNum(numBytes).c_str());
+    log_info("\tdendrogram values is %s x %s (%s bytes)",
+             om::string::humanizeNum(dendValuesSizes_.x).c_str(),
+             om::string::humanizeNum(dendValuesSizes_.y).c_str(),
+             om::string::humanizeNum(numBytes).c_str());
 
     return true;
   }
@@ -136,7 +136,7 @@ class OmMSTImportHdf5 {
         }
       }
 
-      std::cout << "MST edge import: skipping: " << edges_[i] << "\n";
+      log_infos << "MST edge import: skipping: " << edges_[i];
     }
 
     const uint32_t oldSize = edges_.size();
@@ -146,12 +146,12 @@ class OmMSTImportHdf5 {
     edges_.swap(valid);
 
     if (!diff) {
-      std::cout << "checked MST: all edges good!\n";
+      log_infos << "checked MST: all edges good!";
 
     } else {
-      std::cout << "checked MST: "
+      log_infos << "checked MST: "
                 << "removed " << diff << " invalid edges; " << newSize
-                << " edges left\n";
+                << " edges left";
     }
   }
 };

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "tiles/omTileTypes.hpp"
 #include "view2d/om2dPreferences.hpp"
 #include "view2d/omBlockingGetTiles.hpp"
@@ -15,7 +14,7 @@
 
 class OmTileDrawer {
  public:
-  OmTileDrawer(OmView2dState* state, const ViewType viewType)
+  OmTileDrawer(OmView2dState* state, const om::common::ViewType viewType)
       : state_(state),
         viewType_(viewType),
         blockingRedraw_(false),
@@ -36,14 +35,14 @@ class OmTileDrawer {
 
     OmMipVolume* vol = state_->getVol();
 
-    if (CHANNEL == vol->getVolumeType()) {
+    if (om::common::CHANNEL == vol->getVolumeType()) {
       drawChannelAndFilters(vol);
 
     } else {
 
       OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(vol);
       if (!seg) {
-        throw new OmFormatException("Bad Cast to OmSegmentation.");
+        throw new om::FormatException("Bad Cast to OmSegmentation.");
       }
       draw(seg);
     }
@@ -59,15 +58,15 @@ class OmTileDrawer {
 
  private:
   OmView2dState* state_;
-  const ViewType viewType_;
+  const om::common::ViewType viewType_;
 
   bool blockingRedraw_;
 
   int tileCount_;
   int tileCountIncomplete_;
-  boost::scoped_ptr<OmOpenGLTileDrawer> openglTileDrawer_;
-  boost::scoped_ptr<OmCalcTileCoordsDownsampled> tileCalcDownsampled_;
-  boost::scoped_ptr<OmBlockingGetTiles> blockingGetTiles_;
+  std::unique_ptr<OmOpenGLTileDrawer> openglTileDrawer_;
+  std::unique_ptr<OmCalcTileCoordsDownsampled> tileCalcDownsampled_;
+  std::unique_ptr<OmBlockingGetTiles> blockingGetTiles_;
 
   std::deque<OmTileAndVertices> tilesToDraw_;
   std::deque<OmTileAndVertices> oldTilesToDraw_;
@@ -83,13 +82,14 @@ class OmTileDrawer {
     tileCountIncomplete_ = 0;
   }
 
-  template <typename V> void draw(V* vol) {
+  template <typename V>
+  void draw(V* vol) {
     determineWhichTilesToDraw(vol);
 
     const bool finished = openglTileDrawer_->DrawTiles(tilesToDraw_);
 
     if (!finished) {
-      OmEvents::Redraw2d();
+      om::event::Redraw2d();
     }
   }
 
@@ -122,19 +122,19 @@ class OmTileDrawer {
   }
 
   void getTilesNonBlocking(OmTileCoordsAndLocationsPtr tileCoordsAndLocations) {
-    static const TextureVectices defaultTextureVectices = { { 0.f, 1.f },
-                                                            { 1.f, 0.f } };
+    static const TextureVectices defaultTextureVectices = {{0.f, 1.f},
+                                                           {1.f, 0.f}};
 
     FOR_EACH(tileCL, *tileCoordsAndLocations) {
       OmTilePtr tile;
-      OmTileCache::Get(tile, tileCL->tileCoord, om::NON_BLOCKING);
+      OmTileCache::Get(tile, tileCL->tileCoord,
+                       om::common::Blocking::NON_BLOCKING);
 
       if (tile) {
-        OmTileAndVertices tv = { tile, tileCL->vertices,
-                                 defaultTextureVectices };
+        OmTileAndVertices tv = {tile, tileCL->vertices, defaultTextureVectices};
         tilesToDraw_.push_back(tv);
 
-        // std::cout << "drawing tile: " << tileCL->tileCoord << "\n";
+        // log_infos << "drawing tile: " << tileCL->tileCoord;
 
       } else {
         ++tileCountIncomplete_;
@@ -170,7 +170,7 @@ class OmTileDrawer {
 
     OmChannel* chan = reinterpret_cast<OmChannel*>(vol);
     if (!chan) {
-      throw new OmFormatException("Bad Cast to OmChannel.");
+      throw new om::FormatException("Bad Cast to OmChannel.");
     }
 
     bool drawChannel = false;
@@ -187,10 +187,9 @@ class OmTileDrawer {
       if (om::OVERLAY_NONE == filterType ||
           alpha <
               0.05)  // don't bother drawing segmentation if user won't see it
-          {
+      {
         drawChannel = true;
         continue;
-
       }
 
       if (om::OVERLAY_CHANNEL == filterType) {

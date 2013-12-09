@@ -1,3 +1,4 @@
+#pragma once
 
 #include "gui/widgets/omButton.hpp"
 #include "system/omAlphaVegasMode.hpp"
@@ -11,7 +12,7 @@ class AlphaVegasButton : public OmButton<QWidget> {
       : OmButton<QWidget>(dt, "Vegas Mode", "cycle alpha slider", true) {}
 
  private:
-  boost::scoped_ptr<OmAlphaVegasMode> vegas_;
+  std::unique_ptr<OmAlphaVegasMode> vegas_;
 
   void doAction() {
     if (vegas_) {

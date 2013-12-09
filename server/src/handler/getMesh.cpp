@@ -1,6 +1,8 @@
 #include <limits>
 #include <zi/utility/assert.hpp>
 
+#include "datalayer/file.h"
+#include "datalayer/paths.hpp"
 #include "datalayer/memMappedFile.hpp"
 
 #include "handler/handler.h"
@@ -8,31 +10,18 @@
 
 #include "common/common.h"
 #include "volume/volume.h"
+#include "volume/segmentation.h"
 #include "utility/timer.hpp"
 #include "utility/UUID.hpp"
 
-#include "mesh/meshReader.hpp"
+#include "mesh/vertexIndex/data.hpp"
+#include "mesh/vertexIndex/meshReader.hpp"
 //#include "mesh/mesher/ziMesher.hpp"
 
-using namespace std;
 using namespace boost;
 
 namespace om {
 namespace handler {
-
-template <typename T>
-void writeFile(const std::string& fnp, T const* const data,
-               const uint64_t numBytes) {
-  using namespace std;
-  std::ofstream file(fnp.c_str(), std::ios::out | std::ios::binary);
-
-  file.write(reinterpret_cast<const char*>(data), numBytes);
-
-  //    Appears to be failing even though the file gets written...
-  //    if(file.fail()){
-  //        throw ioException("could not write file", fnp);
-  //    }
-}
 
 std::string tri_strip_to_obj(const float* points,
                              const std::size_t points_length,
@@ -43,23 +32,23 @@ std::string tri_strip_to_obj(const float* points,
   std::stringstream ss;
   ZI_ASSERT(points_length % 6 == 0);
 
-  for (std::size_t i = 0; i < points_length; i += 6) {
+  for (auto i = 0; i < points_length; i += 6) {
     ss << "v " << points[i] << ' ' << points[i + 1] << ' ' << points[i + 2]
        << '\n';
   }
 
-  for (std::size_t i = 0; i < points_length; i += 6) {
+  for (auto i = 0; i < points_length; i += 6) {
     ss << "vn " << points[i + 3] << ' ' << points[i + 4] << ' ' << points[i + 5]
        << '\n';
   }
 
-  for (std::size_t i = 0; i < strips_length; i += 2) {
+  for (auto i = 0; i < strips_length; i += 2) {
     if (strips[i] == strips[i + 1]) {
       continue;
     }
 
     bool even = true;
-    for (uint32_t j = strips[i]; j < strips[i] + strips[i + 1] - 2; ++j) {
+    for (auto j = strips[i]; j < strips[i] + strips[i + 1] - 2; ++j) {
       if (even) {
         ss << "f " << indices[j] + 1 << "//" << indices[j] + 1 << ' '
            << indices[j + 1] + 1 << "//" << indices[j + 1] + 1 << ' '
@@ -83,26 +72,26 @@ void tri_strip_to_degenerate(std::vector<float>& newpoints, const float* points,
                              const std::size_t strips_length) {
   ZI_ASSERT(points_length % 6 == 0);
 
-  for (std::size_t i = 0; i < strips_length; i += 2) {
+  for (auto i = 0; i < strips_length; i += 2) {
     if (i > 0) {
-      for (uint32_t k = 0; k < 6; ++k) {
+      for (auto k = 0; k < 6; ++k) {
         newpoints.push_back(
             points[indices[strips[i - 2] + strips[i - 1] - 1] * 6 + k]);
       }
 
       if ((newpoints.size() / 6) % 2 == 0) {
-        for (uint32_t k = 0; k < 6; ++k) {
+        for (auto k = 0; k < 6; ++k) {
           newpoints.push_back(points[indices[strips[i]] * 6 + k]);
         }
       }
 
-      for (uint32_t k = 0; k < 6; ++k) {
+      for (auto k = 0; k < 6; ++k) {
         newpoints.push_back(points[indices[strips[i]] * 6 + k]);
       }
     }
 
-    for (uint32_t j = strips[i]; j < strips[i] + strips[i + 1]; ++j) {
-      for (uint32_t k = 0; k < 6; ++k) {
+    for (auto j = strips[i]; j < strips[i] + strips[i + 1]; ++j) {
+      for (auto k = 0; k < 6; ++k) {
         newpoints.push_back(points[indices[j] * 6 + k]);
       }
     }
@@ -114,47 +103,43 @@ void tri_strip_to_degenerate(std::vector<float>& newpoints, const float* points,
   }
 }
 
-boost::shared_ptr<mesh::data> loadData(coords::chunk cc, const std::string& uri,
-                                       uint32_t segId) {
-  boost::shared_ptr<mesh::data> data;
+std::shared_ptr<mesh::VertexIndexData> loadData(coords::Chunk cc,
+                                                const file::path& uri,
+                                                uint32_t segId) {
+  std::shared_ptr<mesh::VertexIndexData> data;
 
   try {
     mesh::reader reader(uri, cc);
-    mesh::dataEntry* de = reader.GetDataEntry(segId);
+    const mesh::DataEntry* de = reader.GetDataEntry(segId);
     if (!de || !de->wasMeshed) {
-      return boost::shared_ptr<mesh::data>();
+      return std::shared_ptr<mesh::VertexIndexData>();
     }
 
     data = reader.Read(segId);
   }
-  catch (exception e) {
-    return boost::shared_ptr<mesh::data>();
+  catch (Exception e) {
+    return std::shared_ptr<mesh::VertexIndexData>();
   }
 
   if (!data.get()) {
-    return boost::shared_ptr<mesh::data>();
+    return std::shared_ptr<mesh::VertexIndexData>();
   }
 
   if (data->TrianDataCount()) {
-    return boost::shared_ptr<mesh::data>();
+    return std::shared_ptr<mesh::VertexIndexData>();
   }
 
   if (!data->HasData()) {
-    return boost::shared_ptr<mesh::data>();
+    return std::shared_ptr<mesh::VertexIndexData>();
   }
 
   return data;
 }
 
-const char* MESH_RELATIVE_PATH = "segmentations/segmentation1/meshes/";
-
-void get_mesh(std::string& _return, const volume::volume& vol,
+void get_mesh(std::string& _return, const volume::Segmentation& vol,
               const server::vector3i& chunk, int32_t mipLevel, int32_t segId) {
-  const utility::UUID uuid;
-
-  coords::chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
-  boost::shared_ptr<mesh::data> data =
-      loadData(cc, vol.Uri() + MESH_RELATIVE_PATH, segId);
+  coords::Chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
+  auto data = loadData(cc, vol.Endpoint(), segId);
 
   if (!data.get()) {
     return;
@@ -170,11 +155,10 @@ void get_mesh(std::string& _return, const volume::volume& vol,
                         newVertexData.size() * sizeof(float));
 }
 
-void get_obj(std::string& _return, const volume::volume& vol,
+void get_obj(std::string& _return, const volume::Segmentation& vol,
              const server::vector3i& chunk, int32_t mipLevel, int32_t segId) {
-  coords::chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
-  boost::shared_ptr<mesh::data> data =
-      loadData(cc, vol.Uri() + MESH_RELATIVE_PATH, segId);
+  coords::Chunk cc(mipLevel, chunk.x, chunk.y, chunk.z);
+  auto data = loadData(cc, vol.Endpoint(), segId);
 
   if (!data.get()) {
     return;
@@ -184,6 +168,5 @@ void get_obj(std::string& _return, const volume::volume& vol,
                              data->VertexIndex(), data->VertexIndexCount(),
                              data->StripData(), data->StripDataCount() * 2);
 }
-
 }
 }  // namespace om::handler::

@@ -1,7 +1,5 @@
 #include "actions/omSelectSegmentParams.hpp"
-#include "common/omCommon.h"
-#include "common/omDebug.h"
-#include "events/details/omSegmentEvent.h"
+#include "common/common.h"
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/segmentLists/elementListBox.hpp"
 #include "gui/segmentLists/omSegmentListWidget.h"
@@ -14,7 +12,8 @@
 #include "segment/omSegmentUtils.hpp"
 #include "segment/omSegments.h"
 #include "system/omConnect.hpp"
-#include "utility/dataWrappers.h"
+#include "utility/segmentDataWrapper.hpp"
+#include "utility/segmentationDataWrapper.hpp"
 #include "volume/omSegmentation.h"
 
 SegmentListBase::SegmentListBase(QWidget* parent, OmViewGroupState* vgs)
@@ -50,14 +49,12 @@ void SegmentListBase::populateByPage() {
   request.numToGet = getNumSegmentsPerPage();
   request.startSeg = 0;
 
-  om::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
+  std::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
 
   currentPageNum_ = segIDs->pageNum;
 
   const bool shouldThisTabBeMadeActive =
       segmentListWidget->populate(false, SegmentDataWrapper(), segIDs);
-
-  debug(segmentlist, "bye!\n");
 
   if (shouldThisTabBeMadeActive) {
     makeTabActiveIfContainsJumpedToSegment();
@@ -76,14 +73,12 @@ void SegmentListBase::populateBySegment(
   request.numToGet = getNumSegmentsPerPage();
   request.startSeg = segmentJustSelected.GetSegmentID();
 
-  om::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
+  std::shared_ptr<GUIPageOfSegments> segIDs = getPageSegments(request);
 
   currentPageNum_ = segIDs->pageNum;
 
   const bool shouldThisTabBeMadeActive = segmentListWidget->populate(
       doScrollToSelectedSegment, segmentJustSelected, segIDs);
-
-  debug(segmentlist, "bye!\n");
 
   if (shouldThisTabBeMadeActive) {
     makeTabActiveIfContainsJumpedToSegment();
@@ -199,7 +194,7 @@ void SegmentListBase::searchChanged() {
 }
 
 void SegmentListBase::searchOne(const QString& text) {
-  const OmSegID segID = text.toInt();
+  const om::common::SegID segID = text.toInt();
   SegmentDataWrapper sdw(sdw_, segID);
 
   if (!sdw.IsSegmentValid()) {
@@ -208,7 +203,7 @@ void SegmentListBase::searchOne(const QString& text) {
 
   OmSegmentSearched::Set(sdw);
 
-  OmSegmentSelector sel(sdw_, NULL, "segmentlistbase");
+  OmSegmentSelector sel(sdw_, nullptr, "segmentlistbase");
   sel.selectJustThisSegment(segID, true);
   sel.AutoCenter(true);
   sel.sendEvent();
@@ -217,12 +212,12 @@ void SegmentListBase::searchOne(const QString& text) {
 }
 
 void SegmentListBase::searchMany(const QStringList& args) {
-  OmSegmentSelector sel(sdw_, NULL, "segmentlistbase");
+  OmSegmentSelector sel(sdw_, nullptr, "segmentlistbase");
 
   // TODO: allow modifiers (like "-" to remove a segment from the selection)
 
   FOR_EACH(iter, args) {
-    const OmSegID segID = iter->toInt();
+    const om::common::SegID segID = iter->toInt();
     SegmentDataWrapper sdw(sdw_, segID);
 
     if (!sdw.IsSegmentValid()) {

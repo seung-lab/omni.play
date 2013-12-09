@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 /**
  * metadata file format:
@@ -44,7 +44,7 @@ class OmWatershedMetadata {
 
   Vector3i GetMip0Dims() const {
     if (!segmentationFiles_.count(0)) {
-      throw OmIoException("no mip zero vol defined");
+      throw om::IoException("no mip zero vol defined");
     }
     const SegmentationLine& segLine = segmentationFiles_.at(0);
 
@@ -53,7 +53,7 @@ class OmWatershedMetadata {
 
   int GetColorDepth() const {
     if (!segmentationFiles_.count(0)) {
-      throw OmIoException("no mip zero vol defined");
+      throw om::IoException("no mip zero vol defined");
     }
     const SegmentationLine& segLine = segmentationFiles_.at(0);
 
@@ -77,7 +77,7 @@ class OmWatershedMetadata {
 
   QString MstFileName() const {
     if (!dendCounter_) {
-      throw OmIoException("no MST found");
+      throw om::IoException("no MST found");
     }
 
     return dendLine_.fnp;
@@ -85,7 +85,7 @@ class OmWatershedMetadata {
 
   int MstBitsPerNode() const {
     if (!dendCounter_) {
-      throw OmIoException("no MST found");
+      throw om::IoException("no MST found");
     }
 
     return dendLine_.bpp;
@@ -93,7 +93,7 @@ class OmWatershedMetadata {
 
   int MstNumEdges() const {
     if (!dendCounter_) {
-      throw OmIoException("no MST found");
+      throw om::IoException("no MST found");
     }
 
     return dendLine_.numEdges;
@@ -112,7 +112,7 @@ class OmWatershedMetadata {
     }
 
     if (2 != tokens.size()) {
-      throw OmIoException("invalid line", line);
+      throw om::IoException("invalid line");
     }
 
     if ("segmentation" == tokens[0]) {
@@ -122,7 +122,7 @@ class OmWatershedMetadata {
       parseLineDend(tokens[1]);
 
     } else {
-      throw OmIoException("invalid line", line);
+      throw om::IoException("invalid line");
     }
   }
 
@@ -130,13 +130,13 @@ class OmWatershedMetadata {
   void parseLineSegmentation(const QString& tokens) {
     const QStringList args = tokens.split(' ', QString::SkipEmptyParts);
     if (5 != args.size()) {
-      throw OmIoException("invalid line args", tokens);
+      throw om::IoException("invalid line args");
     }
 
-    SegmentationLine segInfo = { args[0], OmStringHelpers::getInt(args[1]),
-                                 OmStringHelpers::getInt(args[2]),
-                                 OmStringHelpers::getInt(args[3]),
-                                 OmStringHelpers::getInt(args[4]) };
+    SegmentationLine segInfo = {
+        args[0],                          OmStringHelpers::getInt(args[1]),
+        OmStringHelpers::getInt(args[2]), OmStringHelpers::getInt(args[3]),
+        OmStringHelpers::getInt(args[4])};
 
     segmentationFiles_[segmentationCounter_++] = segInfo;
   }
@@ -145,15 +145,15 @@ class OmWatershedMetadata {
   void parseLineDend(const QString& tokens) {
     const QStringList args = tokens.split(' ', QString::SkipEmptyParts);
     if (3 != args.size()) {
-      throw OmIoException("invalid line args", tokens);
+      throw om::IoException("invalid line args");
     }
 
     if (dendCounter_) {
-      throw OmIoException("more than one dend found");
+      throw om::IoException("more than one dend found");
     }
 
-    DendLine dendInfo = { args[0], OmStringHelpers::getInt(args[1]),
-                          OmStringHelpers::getInt(args[2]) };
+    DendLine dendInfo = {args[0], OmStringHelpers::getInt(args[1]),
+                         OmStringHelpers::getInt(args[2])};
 
     dendLine_ = dendInfo;
 
@@ -163,14 +163,14 @@ class OmWatershedMetadata {
   void readFile() {
     QFile file(fnp_);
     if (!file.open(QIODevice::ReadOnly)) {
-      throw OmIoException("could not open", fnp_);
+      throw om::IoException("could not open");
     }
 
     QTextStream in(&file);
 
     while (1) {
       const QString line = in.readLine();
-      if (NULL == line || "" == line || line.startsWith("#")) {
+      if (nullptr == line || "" == line || line.startsWith("#")) {
         break;
       }
 

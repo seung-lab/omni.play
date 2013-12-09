@@ -1,7 +1,7 @@
 #include "system/omConnect.hpp"
 #include "localPreferencesSystem.h"
 #include "gui/guiUtils.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "system/omLocalPreferences.hpp"
 
 LocalPreferencesSystem::LocalPreferencesSystem(QWidget* parent)

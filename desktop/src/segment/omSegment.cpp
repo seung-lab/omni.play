@@ -1,5 +1,5 @@
 #include "segment/lowLevel/omSegmentChildren.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentIterator.h"
@@ -7,7 +7,7 @@
 
 void OmSegment::setParent(OmSegment* parent, const double threshold) {
   if (parent_) {
-    throw OmArgException("parent already set");
+    throw om::ArgException("parent already set");
   }
 
   parent_ = parent;
@@ -18,15 +18,13 @@ void OmSegment::setParent(OmSegment* parent, const double threshold) {
 ///////     Color
 void OmSegment::RandomizeColor() {
   data_->color = om::utils::color::GetRandomColor(data_->color);
-
-  debugs(segmentBuild) << "final color values: " << (int)
-      data_->color.red << "," << (int) data_->color.green << "," << (int)
-      data_->color.blue << "\n";
 }
 
 void OmSegment::reRandomizeColor() { RandomizeColor(); }
 
-void OmSegment::SetColor(const OmColor& color) { data_->color = color; }
+void OmSegment::SetColor(const om::common::Color& color) {
+  data_->color = color;
+}
 
 void OmSegment::SetColor(const Vector3i& color) {
   data_->color.red = static_cast<uint8_t>(color.x);
@@ -82,9 +80,13 @@ void OmSegment::SetEnabled(const bool isEnabled) {
   segments_->setSegmentEnabled(data_->value, isEnabled);
 }
 
-OmID OmSegment::GetSegmentationID() { return segments_->GetSegmentationID(); }
+om::common::ID OmSegment::GetSegmentationID() {
+  return segments_->GetSegmentationID();
+}
 
-OmSegID OmSegment::RootID() { return segments_->findRootID(data_->value); }
+om::common::SegID OmSegment::RootID() {
+  return segments_->findRootID(data_->value);
+}
 
 const segChildCont_t& OmSegment::GetChildren() {
   return segments_->Children()->GetChildren(this);

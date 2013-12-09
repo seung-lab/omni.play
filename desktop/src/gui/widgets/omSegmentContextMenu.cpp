@@ -1,6 +1,6 @@
 #include "actions/omActions.h"
-#include "common/omDebug.h"
-#include "events/omEvents.h"
+#include "common/logging.h"
+#include "events/events.h"
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/inspectors/segmentInspector.h"
 #include "gui/widgets/omAskYesNoQuestion.hpp"
@@ -13,11 +13,9 @@
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
 #include "system/cache/omCacheManager.h"
-#include "system/omGroup.h"
-#include "system/omGroups.h"
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
-#include "view3d/omSegmentPickPoint.h"
+#include "view3d.old/omSegmentPickPoint.h"
 #include "viewGroup/omSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 
@@ -51,8 +49,17 @@ void OmSegmentContextMenu::Refresh(const OmSegmentPickPoint& pickPoint,
   doRefresh();
 }
 
+void OmSegmentContextMenu::Refresh(const om::landmarks::sdwAndPt& pickPoint,
+                                   OmViewGroupState& vgs) {
+  sdw_ = pickPoint.sdw;
+  coord_ = pickPoint.coord;
+  vgs_ = &vgs;
+
+  doRefresh();
+}
+
 void OmSegmentContextMenu::doRefresh() {
-  //clear old menu actions
+  // clear old menu actions
   clear();
 
   addSelectionNames();
@@ -76,7 +83,6 @@ void OmSegmentContextMenu::doRefresh() {
   addPropertiesActions();
 
   addSeparator();
-  addGroups();
 }
 
 bool OmSegmentContextMenu::isValid() const {
@@ -84,7 +90,7 @@ bool OmSegmentContextMenu::isValid() const {
 }
 
 bool OmSegmentContextMenu::isUncertain() const {
-  return om::UNCERTAIN == sdw_.FindRoot()->GetListType();
+  return om::common::SegListType::UNCERTAIN == sdw_.FindRoot()->GetListType();
 }
 
 void OmSegmentContextMenu::addSelectionNames() {
@@ -174,7 +180,7 @@ void OmSegmentContextMenu::randomizeColor() {
   segment->reRandomizeColor();
 
   OmCacheManager::TouchFreshness();
-  OmEvents::Redraw2d();
+  om::event::Redraw2d();
 }
 
 void OmSegmentContextMenu::randomizeSegmentColor() {
@@ -182,31 +188,32 @@ void OmSegmentContextMenu::randomizeSegmentColor() {
   segment->reRandomizeColor();
 
   OmCacheManager::TouchFreshness();
-  OmEvents::Redraw2d();
+  om::event::Redraw2d();
 }
 
 void OmSegmentContextMenu::setValid() {
   if (sdw_.IsSegmentValid()) {
-    OmActions::ValidateSegment(sdw_, om::SET_VALID);
-    OmEvents::SegmentModified();
+    OmActions::ValidateSegment(sdw_, om::common::SetValid::SET_VALID);
+    om::event::SegmentModified();
   }
 }
 
 void OmSegmentContextMenu::setNotValid() {
   if (sdw_.IsSegmentValid()) {
-    OmActions::ValidateSegment(sdw_, om::SET_NOT_VALID);
-    OmEvents::SegmentModified();
+    OmActions::ValidateSegment(sdw_, om::common::SetValid::SET_NOT_VALID);
+    om::event::SegmentModified();
   }
 }
 
 void OmSegmentContextMenu::showProperties() {
-  const OmSegID rootSegID = sdw_.FindRootID();
+  const om::common::SegID rootSegID = sdw_.FindRootID();
   SegmentDataWrapper sdw(sdw_.GetSegmentationID(), rootSegID);
 
   const QString title = QString("Segmentation %1: Segment %2")
-      .arg(sdw.GetSegmentationID()).arg(rootSegID);
+                            .arg(sdw.GetSegmentationID())
+                            .arg(rootSegID);
 
-  OmEvents::UpdateSegmentPropBox(new SegmentInspector(sdw, this), title);
+  om::event::UpdateSegmentPropBox(new SegmentInspector(sdw, this), title);
 }
 
 void OmSegmentContextMenu::addPropertiesActions() {
@@ -215,7 +222,7 @@ void OmSegmentContextMenu::addPropertiesActions() {
 }
 
 void OmSegmentContextMenu::printChildren() {
-  om::shared_ptr<std::deque<std::string> > children =
+  std::shared_ptr<std::deque<std::string> > children =
       OmSegmentUtils::GetChildrenInfo(sdw_);
 
   OmAskYesNoQuestion fileExport("Export children list to file?");
@@ -224,55 +231,37 @@ void OmSegmentContextMenu::printChildren() {
     const QString fnp =
         QFileDialog::getSaveFileName(this, "Children list file name");
 
-    if (NULL == fnp) {
+    if (nullptr == fnp) {
       return;
     }
 
-    om::gui::progressBarDialog* dialog = new om::gui::progressBarDialog(NULL);
+    om::gui::progressBarDialog* dialog =
+        new om::gui::progressBarDialog(nullptr);
     dialog->push_back(zi::run_fn(zi::bind(
         OmSegmentContextMenu::writeChildrenFile, fnp, dialog, children)));
 
   } else {
-    FOR_EACH(iter, *children) { std::cout << iter->c_str() << "\n"; }
+    FOR_EACH(iter, *children) { log_infos << iter->c_str(); }
   }
 }
 
 void OmSegmentContextMenu::writeChildrenFile(
     const QString fnp, om::gui::progressBarDialog* dialog,
-    om::shared_ptr<std::deque<std::string> > children) {
+    std::shared_ptr<std::deque<std::string> > children) {
   try {
     QFile file(fnp);
-    om::file::openFileWO(file);
-    om::file::writeStrings(file, *children, dialog);
+    om::file::old::openFileWO(file);
+    om::file::old::writeStrings(file, *children, dialog);
 
     dialog->TellDone("wrote file " + fnp);
-
   }
   catch (...) {
     dialog->TellDone("failed writing file " + fnp);
   }
 }
 
-void OmSegmentContextMenu::addGroups() {
-  OmGroups* groups = sdw_.GetSegmentation().Groups();
-  OmGroupIDsSet set = groups->GetGroups(sdw_.FindRootID());
-  OmGroupID firstID = 0;
-  QString groupsStr = "Groups: ";
-
-  Q_FOREACH(OmGroupID id, set) {
-    if (!firstID) {
-      firstID = id;
-    }
-    OmGroup& group = groups->GetGroup(id);
-    groupsStr += group.GetName() + " + ";
-
-    printf("here\n");
-  }
-  addAction(groupsStr);
-}
-
 void OmSegmentContextMenu::addDisableAction() {
-  const OmSegID segid = sdw_.FindRootID();
+  const om::common::SegID segid = sdw_.FindRootID();
   OmSegments* segments = sdw_.Segments();
 
   if (segments->isSegmentEnabled(segid)) {
@@ -281,8 +270,8 @@ void OmSegmentContextMenu::addDisableAction() {
 }
 
 void OmSegmentContextMenu::disableSegment() {
-  const OmSegID segid = sdw_.FindRootID();
-  OmSegments* segments = sdw_.Segments();
+  const auto segid = sdw_.FindRootID();
+  auto* segments = sdw_.Segments();
 
   segments->setSegmentEnabled(segid, false);
 }

@@ -1,42 +1,46 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/omIDataWriter.h"
 
-class OmDummyWriter : public OmIDataWriter {
+class OmDummyWriter : public om::common::IDataWriter {
  public:
   OmDummyWriter(const std::string &) {}
 
-  void open() {}
-  ;
-  void close() {}
-  ;
+  void open() {};
+  void close() {};
   void flush() {
-    printf("%s: write operation should not have happened...\n", __FUNCTION__);
+    log_infos << __FUNCTION__
+              << ": write operation should not have happened...";
   }
 
-  //file
+  // file
   void create() {
-    printf("%s: write operation should not have happened...\n", __FUNCTION__);
+    log_infos << __FUNCTION__
+              << ": write operation should not have happened...";
   }
 
-  //group
+  // group
   void group_delete(const OmDataPath &) {
-    printf("%s: write operation should not have happened...\n", __FUNCTION__);
+    log_infos << __FUNCTION__
+              << ": write operation should not have happened...";
   }
 
-  //image I/O
+  // image I/O
   void allocateChunkedDataset(const OmDataPath &, const Vector3i &,
                               const Vector3i &, const OmVolDataType) {
-    printf("%s: write operation should not have happened...\n", __FUNCTION__);
+    log_infos << __FUNCTION__
+              << ": write operation should not have happened...";
   }
 
   void writeChunk(const OmDataPath &, DataBbox, OmDataWrapperPtr) {
-    printf("%s: write operation should not have happened...\n", __FUNCTION__);
+    log_infos << __FUNCTION__
+              << ": write operation should not have happened...";
   }
 
-  //data set raw
+  // data set raw
   void writeDataset(const OmDataPath &, int, const OmDataWrapperPtr) {
-    printf("%s: write operation should not have happened...\n", __FUNCTION__);
+    log_infos << __FUNCTION__
+              << ": write operation should not have happened...";
   }
 };

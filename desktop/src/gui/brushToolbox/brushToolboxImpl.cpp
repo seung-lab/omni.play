@@ -1,4 +1,4 @@
-#include "events/details/omSegmentEvent.h"
+#include "events/listeners.h"
 #include "gui/brushToolbox/brushToolboxImpl.h"
 #include "gui/segmentLists/elementListBox.hpp"
 #include "gui/widgets/omButton.hpp"
@@ -8,13 +8,15 @@
 #include "segment/omSegmentUtils.hpp"
 #include "segment/omSegments.h"
 #include "system/omStateManager.h"
-#include "utility/dataWrappers.h"
+#include "utility/segmentDataWrapper.hpp"
+#include "utility/segmentationDataWrapper.hpp"
 #include "viewGroup/omBrushSize.hpp"
 #include "viewGroup/omViewGroupState.h"
 
 #include <limits>
 
-class BrushColor : public OmButton<QWidget>, public OmSegmentEventListener {
+class BrushColor : public OmButton<QWidget>,
+                   public om::event::SegmentEventListener {
  public:
   BrushColor(QWidget* d) : OmButton<QWidget>(d, "", "Brush Color", false) {
     update();
@@ -23,9 +25,9 @@ class BrushColor : public OmButton<QWidget>, public OmSegmentEventListener {
  private:
   void doAction() {}
 
-  void SegmentModificationEvent(OmSegmentEvent*) {}
-  void SegmentGUIlistEvent(OmSegmentEvent*) {}
-  void SegmentSelectedEvent(OmSegmentEvent*) { update(); }
+  void SegmentModificationEvent(om::event::SegmentEvent*) {}
+  void SegmentGUIlistEvent(om::event::SegmentEvent*) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent*) { update(); }
 
   void update() {
     SegmentDataWrapper sdwUnknownDepth =
@@ -35,11 +37,11 @@ class BrushColor : public OmButton<QWidget>, public OmSegmentEventListener {
 
     if (sdwUnknownDepth.IsValidWrapper()) {
       SegmentDataWrapper sdw = SegmentDataWrapper(sdwUnknownDepth.FindRoot());
-      pixmap = om::utils::color::OmColorAsQPixmap(sdw.GetColorInt());
+      pixmap = om::utils::color::ColorAsQPixmap(sdw.GetColorInt());
 
     } else {
-      OmColor black = { 0, 0, 0 };
-      pixmap = om::utils::color::OmColorAsQPixmap(black);
+      om::common::Color black = { 0, 0, 0 };
+      pixmap = om::utils::color::ColorAsQPixmap(black);
     }
 
     setIcon(QIcon(pixmap));
@@ -77,12 +79,11 @@ class OmBrushSizeSpinBox : public OmIntSpinBox {
 
   virtual void actUponValueChange(const int value) {
     OmStateManager::BrushSize()->SetDiameter(value);
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
  public:
-  OmBrushSizeSpinBox(QWidget* parent)
-      : OmIntSpinBox(parent, om::UPDATE_AS_TYPE) {
+  OmBrushSizeSpinBox(QWidget* parent) : OmIntSpinBox(parent, true) {
     setValue(OmStateManager::BrushSize()->Diameter());
     setSingleStep(1);
     setMinimum(1);

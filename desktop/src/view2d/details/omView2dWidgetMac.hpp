@@ -39,7 +39,7 @@ class OmView2dWidgetBase : public QWidget {
   }
 
  private:
-  boost::scoped_ptr<QGLPixelBuffer> buffer_;
+  std::unique_ptr<QGLPixelBuffer> buffer_;
   OmViewGroupState* vgs_;
 
 };

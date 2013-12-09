@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/omSegments.h"
 #include "segment/lists/omSegmentLists.h"
 #include "utility/dataWrappers.h"
@@ -12,7 +12,7 @@ class OmSegmentUncertain {
  public:
   static void SetAsUncertain(
       const SegmentationDataWrapper& sdw,
-      om::shared_ptr<std::set<OmSegment*> > selectedSegments,
+      std::shared_ptr<std::set<OmSegment*> > selectedSegments,
       const bool uncertain) {
     OmSegmentUncertain uncertainer(sdw, selectedSegments, uncertain);
     uncertainer.setAsUncertain();
@@ -20,11 +20,11 @@ class OmSegmentUncertain {
 
  private:
   const SegmentationDataWrapper& sdw_;
-  const om::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+  const std::shared_ptr<std::set<OmSegment*> > selectedSegments_;
   const bool uncertain_;
 
   OmSegmentUncertain(const SegmentationDataWrapper& sdw,
-                     om::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                     std::shared_ptr<std::set<OmSegment*> > selectedSegments,
                      const bool uncertain)
       : sdw_(sdw), selectedSegments_(selectedSegments), uncertain_(uncertain) {}
 
@@ -35,10 +35,10 @@ class OmSegmentUncertain {
     OmTimer timer;
 
     if (uncertain_) {
-      std::cout << "setting " << selectedSegments_->size()
+      log_infos << "setting " << selectedSegments_->size()
                 << " segments as uncertain..." << std::flush;
     } else {
-      std::cout << "setting " << selectedSegments_->size()
+      log_infos << "setting " << selectedSegments_->size()
                 << " segments as NOT uncertain..." << std::flush;
     }
 
@@ -46,9 +46,9 @@ class OmSegmentUncertain {
       OmSegment* seg = *iter;
 
       if (uncertain_) {
-        seg->SetListType(om::UNCERTAIN);
+        seg->SetListType(om::common::SegListType::UNCERTAIN);
       } else {
-        seg->SetListType(om::WORKING);
+        seg->SetListType(om::common::SegListType::WORKING);
       }
     }
 

@@ -2,11 +2,11 @@
 
 #include "view2d/om2dPreferences.hpp"
 #include "gui/widgets/omDoubleSpinBox.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 class MipRateSpinBox : public OmDoubleSpinBox {
  public:
-  MipRateSpinBox(QWidget* p) : OmDoubleSpinBox(p, om::UPDATE_AS_TYPE) {
+  MipRateSpinBox(QWidget* p) : OmDoubleSpinBox(p, true) {
     setSingleStep(0.1);
     setMinimum(0);
     setMaximum(10);
@@ -16,6 +16,6 @@ class MipRateSpinBox : public OmDoubleSpinBox {
  private:
   void actUponValueChange(const double val) {
     Om2dPreferences::MipRate(val);
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 };

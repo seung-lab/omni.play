@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
@@ -23,7 +23,7 @@ class OmSetSegmentValid {
 
     const std::string notValid = valid ? "" : " NOT";
 
-    std::cout << "setting " << selectedSegments.size() << " segments as"
+    log_infos << "setting " << selectedSegments.size() << " segments as"
               << notValid << " valid..." << std::flush;
 
     doSet(selectedSegments, valid);
@@ -33,17 +33,22 @@ class OmSetSegmentValid {
     timer.PrintDone();
   }
 
-  template <typename C> void SetAsNotValidForJoin(const C& segs) {
+  template <typename C>
+  void SetAsNotValidForJoin(const C& segs) {
     doSet(segs, false);
   }
 
-  template <typename C> void SetAsValidForJoin(const C& segs) {
+  template <typename C>
+  void SetAsValidForJoin(const C& segs) {
     doSet(segs, true);
   }
 
  private:
-  template <typename C> void doSet(const C& segs, const bool isValid) {
-    const om::SegListType listType = isValid ? om::VALID : om::WORKING;
+  template <typename C>
+  void doSet(const C& segs, const bool isValid) {
+    const om::common::SegListType listType =
+        isValid ? om::common::SegListType::VALID
+                : om::common::SegListType::WORKING;
 
     FOR_EACH(iter, segs) {
       OmSegment* seg = *iter;

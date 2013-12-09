@@ -1,6 +1,6 @@
 #include "actions/io/omActionLogger.hpp"
 #include "actions/omActionsImpl.h"
-#include "events/details/omEventManagerImpl.hpp"
+#include "events/details/managerImpl.hpp"
 #include "project/omProjectGlobals.h"
 #include "system/omStateManagerImpl.hpp"
 #include "users/omUsers.h"
@@ -8,12 +8,12 @@
 #include "view2d/omView2dManagerImpl.hpp"
 
 OmProjectGlobals::OmProjectGlobals()
-    : randColorFile_(new OmRandColorFile()),
-      users_(new om::users()),
-      v2dManagerImpl_(new OmView2dManagerImpl()),
-      stateMan_(new OmStateManagerImpl()),
-      eventMan_(new OmEventManagerImpl()),
-      actions_(new OmActionsImpl()),
+    : randColorFile_(std::make_unique<OmRandColorFile>()),
+      users_(std::make_unique<om::users>()),
+      v2dManagerImpl_(std::make_unique<OmView2dManagerImpl>()),
+      stateMan_(std::make_unique<OmStateManagerImpl>()),
+      eventMan_(std::make_unique<om::event::ManagerImpl>()),
+      actions_(std::make_unique<OmActionsImpl>()),
       actionLogger_(new OmActionLogger()) {}
 
 OmProjectGlobals::~OmProjectGlobals() {}

@@ -91,5 +91,5 @@ static const boost::array<int, 1000> first1000Primes = {
 
 int getNextBiggestPrime(const int num);
 
-}  // namespace constants
+}  // namespace utility
 }  // namespace om

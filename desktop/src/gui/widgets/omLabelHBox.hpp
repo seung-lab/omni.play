@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 #include <QtGui>
 
@@ -23,16 +23,16 @@ class OmLabelHBox : public QGroupBox {
         layout_(new QHBoxLayout(this)),
         label_(new QLabel(this)) {
     switch (labelSide) {
-      case om::LEFT_SIDE:
+      case om::Side::LEFT_SIDE:
         layout_->addWidget(label_);
         layout_->addWidget(w);
         break;
-      case om::RIGHT_SIDE:
+      case om::Side::RIGHT_SIDE:
         layout_->addWidget(w);
         layout_->addWidget(label_);
         break;
       default:
-        throw OmArgException("unknown side");
+        throw om::ArgException("unknown side");
     }
 
     setContentsMargins(0, 0, 0, 0);

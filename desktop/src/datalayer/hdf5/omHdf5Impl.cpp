@@ -1,5 +1,5 @@
-#include "common/omDebug.h"
-#include "common/omException.h"
+#include "common/logging.h"
+#include "common/exception.h"
 #include "datalayer/hdf5/omHdf5Impl.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/hdf5/omHdf5FileUtils.hpp"
@@ -7,7 +7,7 @@
 OmHdf5Impl::OmHdf5Impl(const std::string& fileName, const bool readOnly)
     : mReadOnly(readOnly) {
   fileId = OmHdf5FileUtils::file_open(fileName, mReadOnly);
-  hdf_ = om::make_shared<OmHdf5LowLevel>(fileId);
+  hdf_ = std::make_shared<OmHdf5LowLevel>(fileId);
 }
 
 OmHdf5Impl::~OmHdf5Impl() { OmHdf5FileUtils::file_close(fileId); }
@@ -54,15 +54,15 @@ void OmHdf5Impl::writeDataset(const OmDataPath& path, int size,
   hdf_->allocateDataset(size, data);
 }
 
-Vector3i OmHdf5Impl::getChunkedDatasetDims(const OmDataPath& path,
-                                           const om::AffinityGraph aff) {
+Vector3i OmHdf5Impl::getChunkedDatasetDims(
+    const OmDataPath& path, const om::common::AffinityGraph aff) {
   hdf_->setPath(path);
   return hdf_->getChunkedDatasetDims(aff);
 }
 
 OmDataWrapperPtr OmHdf5Impl::readChunk(const OmDataPath& path,
                                        const om::dataBbox& dataExtent,
-                                       const om::AffinityGraph aff) {
+                                       const om::common::AffinityGraph aff) {
   hdf_->setPath(path);
   return hdf_->readChunk(dataExtent, aff);
 }

@@ -50,17 +50,15 @@ class MockRealTimeMesher : public RealTimeMesherIf {
   MOCK_METHOD1(remesh, void(const std::string&));
 };
 
+boost::shared_ptr<zi::mesh::RealTimeMesherIf> makeMockMesher() {
+  boost::shared_ptr<MockRealTimeMesher> mesher(new MockRealTimeMesher());
+  EXPECT_CALL(*mesher, maskedUpdate(_, _, _, _, _));
+  return mesher;
+}
+
 TEST(UpdateMeshTest, MaskedUpdate) {
-  MockRealTimeMesher mesher;
-
-  om::volume::volume vol("test/data/test.omni.files/",
-                         coords::globalBbox(coords::global(0, 0, 0),
-                                            coords::global(255, 255, 159)),
-                         vmml::Vector3i::ONE, server::dataType::UINT32,
-                         server::volType::SEGMENTATION, vmml::Vector3i(128));
-
-  int times = vol.CoordSystem().GetMipChunkCoords(0)->size();
-  EXPECT_CALL(mesher, maskedUpdate(_, _, _, _, _)).Times(times);
+  volume::Segmentation vol(
+      "test/data/test.omni.files/segmentations/segmentation1");
 
   std::set<uint32_t> added;
   added.insert(238);
@@ -70,20 +68,19 @@ TEST(UpdateMeshTest, MaskedUpdate) {
 
   uint32_t segId = 37;
 
-  handler::modify_global_mesh_data(&mesher, vol, added, modified, segId);
+  handler::modify_global_mesh_data(makeMockMesher, vol, added, modified, segId);
 }
 
 // TEST(ThriftTest, UpdateTest)
 // {
-// 	server::serverHandler handler("18.4.45.150", 9099);
-// 	boost::shared_ptr<zi::mesh::RealTimeMesherClient> client =
+//  server::serverHandler handler("18.4.45.150", 9099);
+//  boost::shared_ptr<zi::mesh::RealTimeMesherClient> client =
 // handler.makeMesher();
-// 	zi::mesh::RealTimeMesherIf* mesher = client.get();
-// 	zi::mesh::Vector3i loc,size;
-// 	size.x = size.y = size.z = 1;
-// 	loc.x = loc.y = loc.z = 1;
-// 	mesher->update("61", loc, size, "1atartfrtfrftrtt");
+//  zi::mesh::RealTimeMesherIf* mesher = client.get();
+//  zi::mesh::Vector3i loc,size;
+//  size.x = size.y = size.z = 1;
+//  loc.x = loc.y = loc.z = 1;
+//  mesher->update("61", loc, size, "1atartfrtfrftrtt");
 // }
-
 }
 }  // namespace om::test::

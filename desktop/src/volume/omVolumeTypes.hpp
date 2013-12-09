@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include <QString>
+#include "common/common.h"
 #include "boost/variant.hpp"
 #include "enum/enum.hpp"
 

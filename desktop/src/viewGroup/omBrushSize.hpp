@@ -5,7 +5,10 @@
 #include <QObject>
 
 class OmBrushSize : public QObject {
-  Q_OBJECT private : static const int defaultBrushDia = 8;
+  Q_OBJECT;
+
+ private:
+  static const int defaultBrushDia = 8;
 
   OmPointsInCircle circlePts_;
   std::vector<om::point2di> ptsInBrush_;

@@ -1,18 +1,18 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omDebug.h"
-#include "events/omEvents.h"
+#include "common/logging.h"
+#include "events/events.h"
 #include "gui/widgets/omCursors.h"
 #include "system/omConnect.hpp"
 
 #include <QtGui>
 
 class OmDoubleSpinBox : public QDoubleSpinBox {
-  Q_OBJECT public
-      : OmDoubleSpinBox(QWidget* d, const om::ShouldUpdateAsType updateAsType)
-        : QDoubleSpinBox(d) {
-    if (om::UPDATE_AS_TYPE == updateAsType) {
+  Q_OBJECT;
+
+ public:
+  OmDoubleSpinBox(QWidget* d, const bool updateAsType) : QDoubleSpinBox(d) {
+    if (updateAsType) {
       om::connect(this, SIGNAL(valueChanged(double)), this,
                   SLOT(valueChanged()));
 
@@ -25,8 +25,8 @@ class OmDoubleSpinBox : public QDoubleSpinBox {
 Q_SLOTS:
   void valueChanged() {
     actUponValueChange(getGUIvalue());
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
  protected:

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "common/enums.hpp"
+#include "coordinates/chunkCoord.h"
 #include "system/omManageableObject.h"
 #include "datalayer/archive/affinity.h"
-#include "common/omString.hpp"
+#include "common/string.hpp"
 
 class OmChunk;
 class OmAffinityChannel;
@@ -10,28 +12,32 @@ template <typename T> class OmRawChunk;
 
 class OmAffinityGraph : public OmManageableObject {
  private:
-  std::map<om::AffinityGraph, om::shared_ptr<OmAffinityChannel> > channels_;
+  std::map<om::common::AffinityGraph, std::shared_ptr<OmAffinityChannel> >
+      channels_;
 
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
-                                         const OmAffinityGraph& chan);
-  friend void YAML::operator>>(const YAML::Node& in, OmAffinityGraph& chan);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmAffinityGraph& chan);
+  friend void YAMLold::operator>>(const YAMLold::Node& in,
+                                  OmAffinityGraph& chan);
 
  public:
   OmAffinityGraph();
-  OmAffinityGraph(const OmID id);
+  OmAffinityGraph(const om::common::ID id);
   virtual ~OmAffinityGraph();
 
   void ImportAllChannels(const QString& hdf5fnp);
 
-  void ImportSingleChannel(const QString& hdf5fnp, const om::AffinityGraph aff);
+  void ImportSingleChannel(const QString& hdf5fnp,
+                           const om::common::AffinityGraph aff);
 
-  OmAffinityChannel* GetChannel(const om::AffinityGraph aff) const;
+  OmAffinityChannel* GetChannel(const om::common::AffinityGraph aff) const;
 
   inline std::string GetName() { return "affinity" + om::string::num(GetID()); }
 
-  OmChunk* MipChunk(const om::AffinityGraph aff, const om::chunkCoord& coord);
+  OmChunk* MipChunk(const om::common::AffinityGraph aff,
+                    const om::chunkCoord& coord);
 
-  om::shared_ptr<OmRawChunk<float> > RawChunk(const om::AffinityGraph aff,
-                                              const om::chunkCoord& coord);
+  std::shared_ptr<OmRawChunk<float> > RawChunk(
+      const om::common::AffinityGraph aff, const om::chunkCoord& coord);
 
 };

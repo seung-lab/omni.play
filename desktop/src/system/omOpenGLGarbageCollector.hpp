@@ -19,10 +19,11 @@
  * Matt Wimer mwimer@mit.edu 10/21/09
  **/
 
-#include "common/omCommon.h"
-#include "common/omContainer.hpp"
-#include "common/omGl.h"
+#include "common/common.h"
+#include "common/container.hpp"
+#include "utility/glInclude.h"
 #include "utility/omTimer.hpp"
+#include <map>
 
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"

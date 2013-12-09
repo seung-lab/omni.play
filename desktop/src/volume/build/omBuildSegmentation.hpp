@@ -1,7 +1,7 @@
 #pragma once
 
 #include "actions/omActions.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
 #include "segment/io/omMST.h"
@@ -18,7 +18,7 @@ class OmBuildSegmentation : public OmBuildVolumes {
   SegmentationDataWrapper sdw_;
   OmSegmentation& seg_;
 
-  typedef om::shared_ptr<om::gui::progress> prog_t;
+  typedef std::shared_ptr<om::gui::progress> prog_t;
 
  public:
   OmBuildSegmentation() : OmBuildVolumes(), seg_(sdw_.Create()) {}
@@ -26,7 +26,7 @@ class OmBuildSegmentation : public OmBuildVolumes {
   OmBuildSegmentation(const SegmentationDataWrapper& sdw)
       : OmBuildVolumes(), sdw_(sdw), seg_(sdw_.GetSegmentation()) {}
 
-  virtual ~OmBuildSegmentation() { printf("OmBuildSegmentation done!\n"); }
+  virtual ~OmBuildSegmentation() { log_infos << "OmBuildSegmentation done!"; }
 
   SegmentationDataWrapper& GetDataWrapper() { return sdw_; }
 
@@ -41,10 +41,10 @@ class OmBuildSegmentation : public OmBuildVolumes {
   void BuildMesh(prog_t p) { do_build_seg_mesh(p); }
 
   void BuildBlankVolume() {
-    printf("assuming channel 1\n");
+    log_infos << "assuming channel 1";
     ChannelDataWrapper cdw(1);
     if (!cdw.IsValidWrapper()) {
-      throw OmIoException("no channel 1");
+      throw om::IoException("no channel 1");
     }
 
     OmChannel& chann = cdw.GetChannel();
@@ -55,10 +55,10 @@ class OmBuildSegmentation : public OmBuildVolumes {
 
     OmActions::Save();
 
-    printf("allocated blank volume\n");
+    log_infos << "allocated blank volume";
   }
 
-  void LoadDendrogram() { throw OmIoException("not implemented"); }
+  void LoadDendrogram() { throw om::IoException("not implemented"); }
 
  private:
   void do_build_seg_image_and_mesh(prog_t p) {
@@ -81,8 +81,8 @@ class OmBuildSegmentation : public OmBuildVolumes {
 
     stopTimingAndSave(type, build_timer);
 
-    printf("Segmentation image COMPLETELY done\n");
-    printf("************************\n");
+    log_infos << "Segmentation image COMPLETELY done";
+    log_infos << "************************";
   }
 
   void do_build_seg_mesh(prog_t p) {

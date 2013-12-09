@@ -51,7 +51,7 @@ class LongRangeConnectionButton : public OmButton<om::landmarks::widget> {
 
     QFile file(fpath);
 
-    om::file::openFileAppend(file);
+    om::file::old::openFileAppend(file);
 
     QTextStream out(&file);
 
@@ -78,9 +78,9 @@ class JoinButton : public OmButton<om::landmarks::widget> {
  private:
   void doAction() {
     FOR_EACH(id, SegmentationDataWrapper::ValidIDs()) {
-      const OmID segmentationID = *id;
+      const om::common::ID segmentationID = *id;
 
-      OmSegIDsSet set;
+      om::common::SegIDSet set;
 
       FOR_EACH(iter, pts_) {
         const SegmentDataWrapper& sdw = iter->sdw;

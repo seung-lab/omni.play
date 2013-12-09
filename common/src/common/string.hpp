@@ -3,6 +3,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/range/algorithm/copy.hpp>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/range/adaptor/transformed.hpp>
@@ -20,21 +21,19 @@ inline bool startsWith(const std::string& str, const std::string& prefix) {
 }
 
 template <typename T> static std::string num(const T& num) {
-  return boost::lexical_cast<std::string>(num);
+  return std::to_string(num);
 }
 
-template <typename T> static T toNum(const std::string& str) {
-  return boost::lexical_cast<T>(str);
-}
-
-// from
-// http://stackoverflow.com/questions/3804183/how-to-nicely-output-a-list-of-separated-strings
 template <typename T>
 static std::string join(const T& in, const std::string sep = ", ") {
+  // works on containers of strings, ints, etc.
+
   std::vector<std::string> tmp;
   tmp.reserve(in.size());
 
-  FOR_EACH(s, in) { tmp.push_back(boost::lexical_cast<std::string>(*s)); }
+  for (auto& s : in) {
+    tmp.push_back(boost::lexical_cast<std::string>(s));
+  }
 
   return boost::algorithm::join(tmp, sep);
 }
@@ -64,6 +63,5 @@ template <typename T> inline static std::string bytesToMB(const T num) {
   const int64_t size = static_cast<int64_t>(num) / bytes_per_mb;
   return humanizeNum(size) + "MB";
 }
-
 };
 };

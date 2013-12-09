@@ -14,15 +14,15 @@ OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state,
       viewType_(state->getViewType()),
       vgs_(state->getViewGroupState()),
       mipLevel_(state->getMipLevel()),
-      tileCoordsAndLocations_(om::make_shared<OmTileCoordsAndLocations>()) {
+      tileCoordsAndLocations_(std::make_shared<OmTileCoordsAndLocations>()) {
   freshness_ = 0;
-  if (SEGMENTATION == vol_->getVolumeType()) {
+  if (om::common::SEGMENTATION == vol_->getVolumeType()) {
     freshness_ = OmCacheManager::GetFreshness();
   }
 }
 
 std::ostream& operator<<(std::ostream& out, const OmOnScreenTileCoords& c) {
-  out << c.mipLevel_ << std::endl;
+  out << c.mipLevel_;
   return out;
 }
 
@@ -37,7 +37,7 @@ OmTileCoordsAndLocationsPtr OmOnScreenTileCoords::ComputeCoordsAndLocations(
   }
 
   OmTileCoordsAndLocationsPtr ret = tileCoordsAndLocations_;
-  tileCoordsAndLocations_ = om::make_shared<OmTileCoordsAndLocations>();
+  tileCoordsAndLocations_ = std::make_shared<OmTileCoordsAndLocations>();
 
   return ret;
 }
@@ -50,7 +50,7 @@ int numChunks(om::chunkCoord min, om::chunkCoord max) {
 
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset) {
   om::globalBbox bounds = vol_->Coords().GetExtent();
-  om::dataBbox dataBounds = bounds.toDataBbox(vol_, mipLevel_);
+  om::dataBbox dataBounds = bounds.ToDataBbox(vol_, mipLevel_);
 
   int dataDepth =
       state_->getViewTypeDepth(state_->Location().toDataCoord(vol_, mipLevel_));
@@ -92,7 +92,6 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset) {
       }
     }
   }
-
 }
 
 void OmOnScreenTileCoords::computeTile(const om::chunkCoord& chunkCoord,
@@ -102,8 +101,8 @@ void OmOnScreenTileCoords::computeTile(const om::chunkCoord& chunkCoord,
   }
 
   if (depthOffset)  // i.e. if we are pre-fetching
-      {
-    if (CHANNEL == vol_->getVolumeType()) {
+  {
+    if (om::common::CHANNEL == vol_->getVolumeType()) {
       OmChannel* chan = reinterpret_cast<OmChannel*>(vol_);
 
       const std::vector<OmFilter2d*> filters = chan->GetFilters();
@@ -114,11 +113,11 @@ void OmOnScreenTileCoords::computeTile(const om::chunkCoord& chunkCoord,
     }
   }
 
-  OmTileCoordAndVertices pair = { makeTileCoord(chunkCoord, depthOffset, vol_,
-                                                freshness_),
-                                  computeVertices(chunkCoord, vol_) };
+  OmTileCoordAndVertices pair = {
+      makeTileCoord(chunkCoord, depthOffset, vol_, freshness_),
+      computeVertices(chunkCoord, vol_)};
 
-  // std::cout << chunkCoord << ":" << depthOffset << " - " << pair.tileCoord <<
+  // log_infos << chunkCoord << ":" << depthOffset << " - " << pair.tileCoord <<
   // std::endl;
   tileCoordsAndLocations_->push_back(pair);
 }
@@ -128,7 +127,7 @@ void OmOnScreenTileCoords::makeTileCoordFromFilter(
     const int depthOffset) {
   const om::FilterType filterType = filter->FilterType();
 
-  OmMipVolume* vol = NULL;
+  OmMipVolume* vol = nullptr;
   int freshness = 0;
 
   if (om::OVERLAY_NONE == filterType) {
@@ -142,9 +141,9 @@ void OmOnScreenTileCoords::makeTileCoordFromFilter(
     freshness = OmCacheManager::GetFreshness();
   }
 
-  OmTileCoordAndVertices pair = { makeTileCoord(chunkCoord, depthOffset, vol,
-                                                freshness),
-                                  computeVertices(chunkCoord, vol) };
+  OmTileCoordAndVertices pair = {
+      makeTileCoord(chunkCoord, depthOffset, vol, freshness),
+      computeVertices(chunkCoord, vol)};
 
   tileCoordsAndLocations_->push_back(pair);
 }

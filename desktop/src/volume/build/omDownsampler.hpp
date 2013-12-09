@@ -7,7 +7,8 @@
 #include "volume/omMipVolume.h"
 #include "zi/omThreads.h"
 
-template <typename T> class OmDownsampler {
+template <typename T>
+class OmDownsampler {
  private:
   OmMipVolume* const vol_;
   OmMemMappedVolumeImpl<T>* const files_;
@@ -42,24 +43,24 @@ template <typename T> class OmDownsampler {
 
   void DownsampleChooseOneVoxelOfNine() {
     OmTimer timer;
-    printf("downsampling...\n");
+    log_infos << "downsampling...";
 
     OmThreadPool threadPool;
     threadPool.start(3);
 
-    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         vol_->GetMipChunkCoords(0);
 
     FOR_EACH(iter, *coordsPtr) {
       const om::chunkCoord& coord = *iter;
 
-      om::shared_ptr<DownsampleVoxelTask<T> > task =
-          om::make_shared<DownsampleVoxelTask<T> >(vol_, mips_, mippingInfo_,
-                                                   coord, files_);
+      std::shared_ptr<DownsampleVoxelTask<T> > task =
+          std::make_shared<DownsampleVoxelTask<T> >(vol_, mips_, mippingInfo_,
+                                                    coord, files_);
       threadPool.push_back(task);
     }
 
     threadPool.join();
-    printf("\t downsampling done in %f secs\n", timer.s_elapsed());
+    log_infos << "\t downsampling done in " << timer.s_elapsed() << " secs";
   }
 };

@@ -15,8 +15,8 @@ class view2dCoords {
  private:
   OmViewGroupState* vgs_;
   OmZoomLevel* zoomLevel_;
-  ViewType viewType_;
-  Vector4i totalViewport_;  //lower left x, lower left y, width, height
+  om::common::ViewType viewType_;
+  Vector4i totalViewport_;  // lower left x, lower left y, width, height
 
   Matrix4f screenToGlobalMat_;
   Matrix4f globalToScreenMat_;
@@ -33,7 +33,7 @@ class view2dCoords {
   }
 
  public:
-  view2dCoords(OmViewGroupState* vgs, ViewType viewType)
+  view2dCoords(OmViewGroupState* vgs, om::common::ViewType viewType)
       : vgs_(vgs), zoomLevel_(vgs->ZoomLevel()), viewType_(viewType) {}
 
   // Update the Transformation Matricies based on changes to scale, location or
@@ -87,34 +87,27 @@ class view2dCoords {
     // selection matrices by viewType with twisty s to g translations and
     // scaling
     switch (viewType_) {
-      case XY_VIEW:
+      case om::common::XY_VIEW:
         globalToScreenMat_.m00 = 1;
         globalToScreenMat_.m11 = 1;
         screenToGlobalMat_.m00 = 1;
         screenToGlobalMat_.m11 = 1;
         break;
 
-      case XZ_VIEW:
+      case om::common::XZ_VIEW:
         globalToScreenMat_.m00 = 1;
         globalToScreenMat_.m12 = 1;
         screenToGlobalMat_.m00 = 1;
         screenToGlobalMat_.m21 = 1;
         break;
 
-      case ZY_VIEW:
+      case om::common::ZY_VIEW:
         globalToScreenMat_.m02 = 1;
         globalToScreenMat_.m11 = 1;
         screenToGlobalMat_.m20 = 1;
         screenToGlobalMat_.m11 = 1;
         break;
     }
-
-    // if(screenToGlobalMat_.m03 != screenToGlobalMat_.m03) // is NAN
-    // {
-    //     std::cout << screenToGlobalMat_ << std::endl
-    //     << location << std::endl
-    //     << pan << std::endl;
-    // }
   }
 
   inline const Matrix4f& ScreenToGlobalMat() const {

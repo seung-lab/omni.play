@@ -1,9 +1,9 @@
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/sidebars/right/graphTools/shatterButton.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "system/omStateManager.h"
 #include "system/omConnect.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "viewGroup/omViewGroupState.h"
 
 ShatterButton::ShatterButton(GraphTools* d)
@@ -19,6 +19,6 @@ void ShatterButton::enterOrExitShatterMode(const bool inShatterMode) {
     OmStateManager::SetOldToolModeAndSendEvent();
   }
 
-  OmEvents::Redraw3d();
-  OmEvents::Redraw2d();
+  om::event::Redraw3d();
+  om::event::Redraw2d();
 }

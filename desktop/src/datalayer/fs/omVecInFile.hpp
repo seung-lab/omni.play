@@ -15,7 +15,7 @@ template <typename T> class OmVectorInFile {
   bool Exists() const { return QFile::exists(fnp_); }
 
   void Load() {
-    om::shared_ptr<OmFileReadQT<T> > reader =
+    std::shared_ptr<OmFileReadQT<T> > reader =
         OmFileReadQT<T>::Reader(fnp_.toStdString());
 
     const uint64_t numBytes = reader->FileSizeBytes();
@@ -28,8 +28,9 @@ template <typename T> class OmVectorInFile {
     const uint32_t numElements = vec_.size();
     const uint64_t numBytes = numElements * sizeof(T);
 
-    om::shared_ptr<OmFileWriteQT<T> > writer = OmFileWriteQT<T>::WriterNumBytes(
-        fnp_.toStdString(), numBytes, om::DONT_ZERO_FILL);
+    std::shared_ptr<OmFileWriteQT<T> > writer =
+        OmFileWriteQT<T>::WriterNumBytes(fnp_.toStdString(), numBytes,
+                                         om::mem::ZeroFill::DONT);
     memcpy(writer->GetPtr(), &vec_[0], numBytes);
     writer->Flush();
   }

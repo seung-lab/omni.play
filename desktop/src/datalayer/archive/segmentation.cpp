@@ -1,4 +1,4 @@
-
+#include "utility/yaml/omBaseTypes.hpp"
 #include "datalayer/archive/segmentation.h"
 #include "utility/yaml/mipVolume.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
@@ -12,14 +12,13 @@
 #include "segment/io/omMST.h"
 #include "segment/io/omValidGroupNum.hpp"
 #include "project/details/omSegmentationManager.h"
-#include "system/omGroups.h"
-#include "system/omGroup.h"
 #include "volume/omSegmentationLoader.h"
 #include "utility/yaml/genericManager.hpp"
+#include "datalayer/archive/dummy.hpp"
 
 #include <QSet>
 
-namespace YAML {
+namespace YAMLold {
 
 Emitter& operator<<(Emitter& out, const OmSegmentationManager& m) {
   out << BeginMap;
@@ -39,7 +38,10 @@ Emitter& operator<<(Emitter& out, const OmSegmentation& seg) {
 
   out << Key << "Segments" << Value << (*seg.segments_);
   out << Key << "Num Edges" << Value << seg.mst_->numEdges_;
-  out << Key << "Groups" << Value << (*seg.groups_);
+
+  DummyGroups dg;
+  out << Key << "Groups" << Value << dg;
+
   out << EndMap;
 
   return out;
@@ -51,7 +53,6 @@ void operator>>(const Node& in, OmSegmentation& seg) {
 
   in["Segments"] >> (*seg.segments_);
   in["Num Edges"] >> seg.mst_->numEdges_;
-  in["Groups"] >> (*seg.groups_);
 
   seg.LoadVolDataIfFoldersExist();
 
@@ -117,7 +118,7 @@ void operator>>(const Node& in, OmSegmentEdge& se) {
   in["Threshold"] >> se.threshold;
 }
 
-Emitter& operator<<(Emitter& out, const OmGroups& g) {
+Emitter& operator<<(Emitter& out, const DummyGroups& g) {
   out << BeginMap;
   genericManager::Save(out, g.mGroupManager);
   out << Key << "Group Names" << Value << g.mGroupsByName;
@@ -125,12 +126,7 @@ Emitter& operator<<(Emitter& out, const OmGroups& g) {
   return out;
 }
 
-void operator>>(const Node& in, OmGroups& g) {
-  genericManager::Load(in, g.mGroupManager);
-  in["Group Names"] >> g.mGroupsByName;
-}
-
-Emitter& operator<<(Emitter& out, const OmGroup& g) {
+Emitter& operator<<(Emitter& out, const DummyGroup& g) {
   out << BeginMap;
   out << Key << "Id" << Value << g.GetID();
   out << Key << "Note" << Value << g.GetNote();
@@ -141,12 +137,4 @@ Emitter& operator<<(Emitter& out, const OmGroup& g) {
   return out;
 }
 
-void operator>>(const Node& in, OmGroup& g) {
-  in["Id"] >> g.id_;
-  in["Note"] >> g.note_;
-  in["Custom Name"] >> g.customName_;
-  in["Name"] >> g.mName;
-  in["Ids"] >> g.mIDs;
-}
-
-}  // namespace YAML
+}  // namespace YAMLold

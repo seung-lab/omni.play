@@ -1,10 +1,11 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/build/omVolumeAllocater.hpp"
 #include "volume/omVolumeTypes.hpp"
 
-template <typename VOL> class OmDataCopierBase {
+template <typename VOL>
+class OmDataCopierBase {
  private:
   VOL* const vol_;
 
@@ -14,7 +15,7 @@ template <typename VOL> class OmDataCopierBase {
   void Import() {
     OmTimer timer;
 
-    printf("\timporting data...\n");
+    log_infos << "importing data...";
 
     doImport();
 

@@ -1,13 +1,12 @@
 #pragma once
 
 #include "actions/io/omActionLogger.hpp"
-#include "common/omCommon.h"
-#include "common/omString.hpp"
-#include "events/details/omSegmentEvent.h"
-#include "events/omEvents.h"
+#include "common/common.h"
+#include "common/string.hpp"
+#include "events/events.h"
 #include "gui/sidebars/right/rightImpl.h"
 #include "system/omAppState.hpp"
-#include "utility/dataWrappers.h"
+#include "utility/segmentationDataWrapper.hpp"
 
 class OmSegmentationSizeThresholdChangeActionImpl {
  private:
@@ -23,25 +22,30 @@ class OmSegmentationSizeThresholdChangeActionImpl {
       : sdw_(sdw), threshold_(threshold) {}
 
   void Execute() {
+    if (!sdw_.IsSegmentationValid()) {
+      throw om::ArgException(
+          "Invalid SegmentationDataWrapper "
+          "(OmSegmentationSizeThresholdChangeActionImpl::Execute)");
+    }
     OmSegmentation& seg = sdw_.GetSegmentation();
-
     oldThreshold_ = seg.GetSizeThreshold();
-
     seg.SetSizeThreshold(threshold_);
 
-    OmEvents::RefreshMSTthreshold();
-
-    OmEvents::SegmentModified();
+    om::event::RefreshMSTthreshold();
+    om::event::SegmentModified();
   }
 
   void Undo() {
+    if (!sdw_.IsSegmentationValid()) {
+      throw om::ArgException(
+          "Invalid SegmentationDataWrapper "
+          "(OmSegmentationSizeThresholdChangeActionImpl::Undo)");
+    }
     OmSegmentation& seg = sdw_.GetSegmentation();
-
     seg.SetSizeThreshold(oldThreshold_);
 
-    OmEvents::RefreshMSTthreshold();
-
-    OmEvents::SegmentModified();
+    om::event::RefreshMSTthreshold();
+    om::event::SegmentModified();
   }
 
   std::string Description() const {

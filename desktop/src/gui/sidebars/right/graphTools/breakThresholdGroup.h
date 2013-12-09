@@ -1,8 +1,8 @@
 #pragma once
 
 #include "actions/omActions.h"
-#include "common/omDebug.h"
-#include "events/omEvents.h"
+#include "common/logging.h"
+#include "events/events.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
 #include "system/cache/omCacheManager.h"
@@ -11,8 +11,11 @@
 #include "volume/omSegmentation.h"
 
 class BreakThresholdGroup : public OmDoubleSpinBox {
-  Q_OBJECT public : BreakThresholdGroup(GraphTools* d, OmViewGroupState* vgs)
-                    : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE), vgs_(vgs) {
+  Q_OBJECT;
+
+ public:
+  BreakThresholdGroup(GraphTools* d, OmViewGroupState* vgs)
+      : OmDoubleSpinBox(d, true), vgs_(vgs) {
     setSingleStep(0.002);
     setMaximum(1.0);
     setDecimals(3);
@@ -35,7 +38,7 @@ class BreakThresholdGroup : public OmDoubleSpinBox {
 
     // todo: don't use same freshness as normal tiles
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 };

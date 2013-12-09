@@ -1,4 +1,4 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/archive/old/omDataArchiveProject.h"
 #include "datalayer/archive/old/omDataArchiveProjectImpl.h"
 #include "datalayer/upgraders/omUpgraders.hpp"
@@ -17,7 +17,7 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp,
                                        OmProjectImpl* project) {
   QFile file(fnp);
 
-  om::file::openFileRO(file);
+  om::file::old::openFileRO(file);
 
   QDataStream in(&file);
   in.setByteOrder(QDataStream::LittleEndian);
@@ -25,13 +25,14 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp,
 
   in >> fileVersion_;
   OmProject::setFileVersion(fileVersion_);
-  printf("Omni file version is %d\n", fileVersion_);
+  log_infos << "Omni file version is " << fileVersion_;
 
   if (fileVersion_ < 10 || fileVersion_ > Latest_Project_Version) {
     const QString err = QString(
         "can not open file: file version is (%1), but Omni expecting (%2)")
-        .arg(fileVersion_).arg(Latest_Project_Version);
-    throw OmIoException(err);
+                            .arg(fileVersion_)
+                            .arg(Latest_Project_Version);
+    throw om::IoException(err.toStdString());
   }
 
   in >> (*project);
@@ -40,12 +41,12 @@ void OmDataArchiveProject::ArchiveRead(const QString& fnp,
   in >> omniPostfix;
 
   if (Omni_Postfix != omniPostfix || !in.atEnd()) {
-    throw OmIoException("corruption detected in Omni file");
+    throw om::IoException("corruption detected in Omni file");
   }
 
   if (fileVersion_ < Latest_Project_Version) {
     upgrade();
-    ArchiveWrite(fnp, project);
+    // TODO: Save after upgrade??
   }
 
   postLoad();
@@ -86,22 +87,4 @@ void OmDataArchiveProject::upgrade() {
   } else if (fileVersion_ < 20) {
     OmUpgraders::to20();
   }
-}
-
-void OmDataArchiveProject::ArchiveWrite(const QString& fnp,
-                                        OmProjectImpl* project) {
-  QFile file(fnp);
-  if (!file.open(QIODevice::WriteOnly)) {
-    throw OmIoException("could not open", fnp);
-  }
-
-  QDataStream out(&file);
-  out.setByteOrder(QDataStream::LittleEndian);
-  out.setVersion(QDataStream::Qt_4_6);
-
-  OmProject::setFileVersion(Latest_Project_Version);
-
-  out << Latest_Project_Version;
-  out << (*project);
-  out << Omni_Postfix;
 }

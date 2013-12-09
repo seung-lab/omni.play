@@ -1,7 +1,7 @@
 #pragma once
 
 #include "chunks/omChunk.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
@@ -19,7 +19,7 @@ template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
  private:
   VOL* const vol_;
   const OmDataPath path_;
-  const om::AffinityGraph aff_;
+  const om::common::AffinityGraph aff_;
 
   const Vector3i volSize_;
   OmHdf5* const hdf5reader_;
@@ -33,9 +33,10 @@ template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
 
  public:
   OmDataCopierHdf5Task(VOL* vol, const OmDataPath& path,
-                       const om::AffinityGraph aff, const Vector3i volSize,
-                       OmHdf5* const hdf5reader, const QString mip0fnp,
-                       const om::chunkCoord& coord, OmSimpleProgress* prog)
+                       const om::common::AffinityGraph aff,
+                       const Vector3i volSize, OmHdf5* const hdf5reader,
+                       const QString mip0fnp, const om::chunkCoord& coord,
+                       OmSimpleProgress* prog)
       : vol_(vol),
         path_(path),
         aff_(aff),
@@ -102,7 +103,7 @@ template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
         return doResizePartialChunk<float>(data, chunkExtent, dataExtent);
       case OmVolDataType::UNKNOWN:
       default:
-        throw OmIoException("unknown data type");
+        throw om::IoException("unknown data type");
     }
   }
 
@@ -114,7 +115,7 @@ template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
 
     QFile file(mip0fnp_);
     if (!file.open(QIODevice::ReadWrite)) {
-      throw OmIoException("could not open file", mip0fnp_);
+      throw om::IoException("could not open file");
     }
 
     file.seek(chunkOffset);
@@ -140,7 +141,7 @@ template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
     intersect_extent.intersect(volExtent);
 
     if (intersect_extent.isEmpty()) {
-      throw OmIoException("should not have happened");
+      throw om::IoException("should not have happened");
     }
 
     OmDataWrapperPtr partialChunk =

@@ -3,30 +3,30 @@
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "segment/omSegmentTypes.h"
-#include "utility/omSmartPtr.hpp"
+#include "utility/malloc.hpp"
 #include "volume/omSegmentationFolder.h"
 
 class OmSegmentPageV2 {
  private:
   OmSegmentation* const vol_;
-  const PageNum pageNum_;
+  const om::common::PageNum pageNum_;
   const uint32_t pageSize_;
 
  public:
-  OmSegmentPageV2(OmSegmentation* vol, const PageNum pageNum,
+  OmSegmentPageV2(OmSegmentation* vol, const om::common::PageNum pageNum,
                   const uint32_t pageSize)
       : vol_(vol), pageNum_(pageNum), pageSize_(pageSize) {}
 
-  om::shared_ptr<OmSegmentDataV3> Read() {
-    printf("rewriting segment page %d from ver2 to ver3\n", pageNum_);
+  std::shared_ptr<OmSegmentDataV3> Read() {
+    log_infos << "rewriting segment page " << pageNum_ << " from ver2 to ver3";
 
     QFile file(memMapPathQStrV2());
-    om::file::openFileRO(file);
-    OmSegmentDataV2* oldData = om::file::mapFile<OmSegmentDataV2>(&file);
+    om::file::old::openFileRO(file);
+    OmSegmentDataV2* oldData = om::file::old::mapFile<OmSegmentDataV2>(&file);
 
-    om::shared_ptr<OmSegmentDataV3> ret =
-        OmSmartPtr<OmSegmentDataV3>::MallocNumElements(pageSize_,
-                                                       om::ZERO_FILL);
+    std::shared_ptr<OmSegmentDataV3> ret =
+        om::mem::Malloc<OmSegmentDataV3>::NumElements(pageSize_,
+                                                      om::mem::ZeroFill::ZERO);
     OmSegmentDataV3* newSegmentData = ret.get();
 
     for (uint32_t i = 0; i < pageSize_; ++i) {
@@ -36,9 +36,9 @@ class OmSegmentPageV2 {
       newSegmentData[i].bounds = oldData[i].bounds;
 
       if (oldData[i].immutable) {
-        newSegmentData[i].listType = om::VALID;
+        newSegmentData[i].listType = om::common::SegListType::VALID;
       } else {
-        newSegmentData[i].listType = om::WORKING;
+        newSegmentData[i].listType = om::common::SegListType::WORKING;
       }
     }
 
@@ -46,7 +46,6 @@ class OmSegmentPageV2 {
   }
 
  private:
-
   std::string memMapPathV2() { return memMapPathQStrV2().toStdString(); }
 
   QString memMapPathQStrV2() {

@@ -1,4 +1,4 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "view2d/omView2dState.hpp"
 #include "volume/omMipVolume.h"
 
@@ -47,7 +47,7 @@ normBbox globalBbox::toNormBbox(const OmMipVolume *vol) const {
   return normBbox(min.toNormCoord(vol), max.toNormCoord(vol));
 }
 
-dataBbox globalBbox::toDataBbox(const OmMipVolume *vol, int mipLevel) const {
+dataBbox globalBbox::ToDataBbox(const OmMipVolume *vol, int mipLevel) const {
   globalCoord min = _min;
   globalCoord max = _max;
 

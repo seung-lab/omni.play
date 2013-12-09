@@ -1,29 +1,29 @@
 #pragma once
 
 #include "actions/omSelectSegmentParams.hpp"
-#include "common/omCommon.h"
-#include "common/omString.hpp"
+#include "common/common.h"
+#include "common/string.hpp"
 #include "project/omProject.h"
 #include "project/omProject.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "utility/dataWrappers.h"
-#include "utility/omCopyFirstN.hpp"
+#include "utility/copyFirstN.hpp"
 
 class OmSegmentSelectActionImpl {
  private:
-  om::shared_ptr<OmSelectSegmentsParams> params_;
+  std::shared_ptr<OmSelectSegmentsParams> params_;
 
  public:
   OmSegmentSelectActionImpl() {}
 
-  OmSegmentSelectActionImpl(om::shared_ptr<OmSelectSegmentsParams> params)
+  OmSegmentSelectActionImpl(std::shared_ptr<OmSelectSegmentsParams> params)
       : params_(params) {}
 
   void Execute() {
     OmSegments* segments = params_->sdw.Segments();
 
     if (params_->augmentListOnly) {
-      if (om::ADD == params_->addOrSubtract) {
+      if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
         segments->AddToSegmentSelection(params_->newSelectedIDs);
 
       } else {
@@ -35,14 +35,14 @@ class OmSegmentSelectActionImpl {
                                        params_->addToRecentList);
     }
 
-    OmEvents::SegmentModified(params_);
+    om::event::SegmentModified(params_);
   }
 
   void Undo() {
     OmSegments* segments = params_->sdw.Segments();
 
     if (params_->augmentListOnly) {
-      if (om::ADD == params_->addOrSubtract) {
+      if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
         segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
 
       } else {
@@ -54,19 +54,20 @@ class OmSegmentSelectActionImpl {
                                        params_->addToRecentList);
     }
 
-    OmEvents::SegmentModified(params_);
+    om::event::SegmentModified(params_);
   }
 
   std::string Description() const {
     static const int max = 5;
 
-    const std::string nums = om::utils::MakeShortStrList<OmSegIDsSet, OmSegID>(
-        params_->newSelectedIDs, max);
+    const std::string nums =
+        om::utils::MakeShortStrList<om::common::SegIDSet, om::common::SegID>(
+            params_->newSelectedIDs, max);
 
     std::string prefix("Selected segments: ");
 
     if (params_->augmentListOnly) {
-      if (om::ADD == params_->addOrSubtract) {
+      if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
         prefix = "Added segments: ";
       } else {
         prefix = "Removed segments: ";

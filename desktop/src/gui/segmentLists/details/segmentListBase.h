@@ -1,11 +1,12 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "utility/dataWrappers.h"
-
+#include <memory>
 #include <QtGui>
 #include <QWidget>
 
+#include "utility/segmentationDataWrapper.hpp"
+
+class SegmentDataWrapper;
 class GUIPageRequest;
 class GUIPageOfSegments;
 class OmViewGroupState;
@@ -15,7 +16,10 @@ class SegmentInspector;
 class OmViewGroupState;
 
 class SegmentListBase : public QWidget {
-  Q_OBJECT public : SegmentListBase(QWidget*, OmViewGroupState*);
+  Q_OBJECT;
+
+ public:
+  SegmentListBase(QWidget*, OmViewGroupState*);
 
   void populate() { populateByPage(); }
 
@@ -48,7 +52,7 @@ Q_SLOTS:
   virtual uint64_t Size() = 0;
   virtual int getPreferredTabIndex() = 0;
   virtual void makeTabActiveIfContainsJumpedToSegment() = 0;
-  virtual om::shared_ptr<GUIPageOfSegments> getPageSegments(
+  virtual std::shared_ptr<GUIPageOfSegments> getPageSegments(
       const GUIPageRequest& request) = 0;
 
   QVBoxLayout* layout;

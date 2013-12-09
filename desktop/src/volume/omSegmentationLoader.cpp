@@ -9,9 +9,9 @@
 #include "volume/build/omVolumeProcessor.h"
 #include "segment/io/omUserEdges.hpp"
 
-void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps,
-                                                QSet<PageNum>& validPageNumbers,
-                                                uint32_t size) {
+void om::segmentation::loader::LoadSegmentPages(
+    OmPagingPtrStore& ps, QSet<om::common::PageNum>& validPageNumbers,
+    uint32_t size) {
   if (OmProject::GetFileVersion() < 17) {
     vol_->Folder()->MakeUserSegmentsFolder();
 
@@ -51,7 +51,7 @@ void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps) {
 }
 
 void om::segmentation::loader::rebuildSegments() {
-  std::cout << "no segment folder; rebuild segment data?\n==> (y/N)  "
+  log_infos << "no segment folder; rebuild segment data?\n==> (y/N)  "
             << std::flush;
 
   std::string answer;

@@ -8,6 +8,7 @@ using namespace vmml;
 #include "coordinates/screen.h"
 #include "coordinates/norm.h"
 #include "coordinates/chunk.h"
+#include "coordinates/mesh.h"
+#include "coordinates/tile.h"
 #include "coordinates/screenSystem.h"
 #include "coordinates/volumeSystem.h"
-#include "coordinates/yaml.h"

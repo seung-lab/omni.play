@@ -8,10 +8,11 @@
 
 class OmCalcTileCoordsDownsampled {
  private:
-  const ViewType viewType_;
+  const om::common::ViewType viewType_;
 
  public:
-  OmCalcTileCoordsDownsampled(const ViewType viewType) : viewType_(viewType) {}
+  OmCalcTileCoordsDownsampled(const om::common::ViewType viewType)
+      : viewType_(viewType) {}
 
   void TryDownsample(const OmTileCoordAndVertices& tcv,
                      std::deque<OmTileAndVertices>& tilesToDraw) {

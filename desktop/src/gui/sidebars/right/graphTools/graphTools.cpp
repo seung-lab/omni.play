@@ -1,4 +1,4 @@
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "gui/sidebars/right/graphTools/breakButton.h"
 #include "gui/sidebars/right/graphTools/breakThresholdGroup.h"
 #include "gui/sidebars/right/rightImpl.h"
@@ -63,7 +63,7 @@ QWidget* GraphTools::thresholdBox() {
   return widget;
 }
 
-void GraphTools::updateGui() { OmEvents::Redraw2d(); }
+void GraphTools::updateGui() { om::event::Redraw2d(); }
 
 SegmentationDataWrapper GraphTools::GetSDW() { return mParent->GetSDW(); }
 

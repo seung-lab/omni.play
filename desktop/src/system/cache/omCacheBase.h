@@ -5,20 +5,21 @@
  * Brett Warne - bwarne@mit.edu - 7/15/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
+#include "common/enums.hpp"
 
 class OmCacheBase {
  protected:
   const std::string cacheName_;
-  const om::CacheGroup cacheGroup_;
+  const om::common::CacheGroup cacheGroup_;
 
  public:
-  OmCacheBase(const std::string& cacheName, const om::CacheGroup group)
+  OmCacheBase(const std::string& cacheName, const om::common::CacheGroup group)
       : cacheName_(cacheName), cacheGroup_(group) {}
 
   virtual ~OmCacheBase() {}
 
-  om::CacheGroup Group() const { return cacheGroup_; }
+  om::common::CacheGroup Group() const { return cacheGroup_; }
 
   virtual void Clean() = 0;
   virtual void RemoveOldest(const int64_t numBytes) = 0;

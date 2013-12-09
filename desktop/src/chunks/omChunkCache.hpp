@@ -8,7 +8,7 @@
 
 template <typename VOL, typename CHUNK> class OmChunkCache {
  private:
-  boost::scoped_ptr<OmChunkItemContainer<VOL, CHUNK> > chunks_;
+  std::unique_ptr<OmChunkItemContainer<VOL, CHUNK> > chunks_;
 
   void UpdateFromVolResize() { chunks_->UpdateFromVolResize(); }
 

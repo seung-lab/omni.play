@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/fs/omMemMappedFileQT.hpp"
 #include "datalayer/omIDataVolume.hpp"
@@ -15,18 +15,19 @@
 #include <zi/mutex.hpp>
 #include <QFile>
 
-template <typename T> class OmIOnDiskFile;
+template <typename T>
+class OmIOnDiskFile;
 
-template <typename T> class OmMemMappedVolumeImpl : public OmIDataVolume<T> {
+template <typename T>
+class OmMemMappedVolumeImpl : public IDataVolume<T> {
  private:
   OmMipVolume* vol_;
-  std::vector<om::shared_ptr<OmIOnDiskFile<T> > > maps_;
+  std::vector<std::shared_ptr<OmIOnDiskFile<T> > > maps_;
 
   typedef OmMemMappedFileReadQT<T> reader_t;
   typedef OmMemMappedFileWriteQT<T> writer_t;
 
  public:
-
   // for boost::varient
   OmMemMappedVolumeImpl() {}
 
@@ -37,7 +38,7 @@ template <typename T> class OmMemMappedVolumeImpl : public OmIDataVolume<T> {
   OmRawDataPtrs GetType() const { return (T*)0; }
 
   void Load() {
-    std::cout << "loaded mem maps\n";
+    log_infos << "loaded mem maps";
 
     resizeMapsVector();
 
@@ -56,15 +57,15 @@ template <typename T> class OmMemMappedVolumeImpl : public OmIDataVolume<T> {
       const Vector3<int64_t> dims = it->second;
       const int64_t size = dims.x * dims.y * dims.z * bps;
 
-      std::cout << "mip " << level
+      log_infos << "mip " << level
                 << ": size is: " << om::string::humanizeNum(size) << " ("
-                << dims.x << "," << dims.y << "," << dims.z << ")\n";
+                << dims.x << "," << dims.y << "," << dims.z << ")";
 
-      maps_[level] = writer_t::WriterNumBytes(getFileName(level), size,
-                                              om::DONT_ZERO_FILL);
+      maps_[level] = writer_t::WriterNumBytes(
+          getFileName(level), size, om::common::ZeroMem::DONT_ZERO_FILL);
     }
 
-    printf("OmMemMappedVolume: done allocating data\n");
+    log_infos << "OmMemMappedVolume: done allocating data";
   }
 
   T* GetPtr(const int level) const { return maps_[level]->GetPtr(); }
@@ -81,7 +82,6 @@ template <typename T> class OmMemMappedVolumeImpl : public OmIDataVolume<T> {
   int GetBytesPerVoxel() const { return sizeof(T); }
 
  private:
-
   void resizeMapsVector() {
     maps_.resize(vol_->Coords().GetRootMipLevel() + 1);
   }

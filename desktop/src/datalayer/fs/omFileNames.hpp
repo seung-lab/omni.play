@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "datalayer/fs/omFile.hpp"
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
@@ -30,12 +30,12 @@ class OmFileNames {
   }
 
   static std::string TempFileName(const OmUUID& uuid) {
-    return om::file::tempPath() + "/omni.temp." + uuid.Str();
+    return om::file::old::tempPath() + "/omni.temp." + uuid.Str();
   }
 
   static QString AddOmniExtensionIfNeeded(const QString& str) {
-    if (NULL == str) {
-      return NULL;
+    if (nullptr == str) {
+      return nullptr;
     }
 
     QString fnp = str;
@@ -54,9 +54,9 @@ class OmFileNames {
     return FilesFolder().toStdString() + "/rand_colors.raw";
   }
 
-  //TODO: cleanup!
-  //ex:
-  ///home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
+  // TODO: cleanup!
+  // ex:
+  /// home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
   template <typename T>
   static std::string GetMemMapFileName(T* vol, const int level) {
     return GetMemMapFileNameQT(vol, level).toStdString();
@@ -64,11 +64,13 @@ class OmFileNames {
 
   template <typename T>
   static QString GetVolDataFolderPath(T* vol, const int level) {
-    const QString subPath = QString("%1/%2/")
-        .arg(QString::fromStdString(vol->GetDirectoryPath())).arg(level);
+    const QString subPath =
+        QString("%1/%2/")
+            .arg(QString::fromStdString(vol->GetDirectoryPath()))
+            .arg(level);
 
     if (subPath.startsWith("/")) {
-      throw OmIoException("not a relative path: " + subPath.toStdString());
+      throw om::IoException("not a relative path: " + subPath.toStdString());
     }
 
     return FilesFolder() + QLatin1String("/") + subPath;
@@ -83,18 +85,16 @@ class OmFileNames {
 
     if (!QDir(fullPath).exists()) {
       if (!QDir().mkpath(fullPath)) {
-        throw OmIoException("could not create folder", fullPath);
+        throw om::IoException("could not create folder");
       }
     }
 
     const std::string volType = vol->getVolDataTypeAsStr();
 
-    const QString fnp = QString("/%1/volume.%2.raw").arg(fullPath)
-        .arg(QString::fromStdString(volType));
+    const QString fnp = QString("/%1/volume.%2.raw").arg(fullPath).arg(
+        QString::fromStdString(volType));
 
     const QString fnp_clean = QDir::cleanPath(fnp);
-
-    ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
 
     return fnp_clean;
   }

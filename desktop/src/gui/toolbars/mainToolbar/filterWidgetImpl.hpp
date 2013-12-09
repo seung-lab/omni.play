@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "events/omEvents.h"
+#include "common/common.h"
+#include "events/events.h"
 #include "project/omProject.h"
 #include "system/omConnect.hpp"
 #include "utility/dataWrappers.h"
@@ -13,7 +13,10 @@
 #include <QSlider>
 
 class FilterWidgetImpl : public QSlider {
-  Q_OBJECT private : static const double delta_ = 0.1;
+  Q_OBJECT;
+
+ private:
+  constexpr static const double delta_ = 0.1;
 
   bool slideAlphaForward_;
 
@@ -115,9 +118,9 @@ Q_SLOTS:
   }
 
  private:
-  OmID getChannelID() { return 1; }
+  om::common::ID getChannelID() { return 1; }
 
-  OmID getFilterID() { return 1; }
+  om::common::ID getFilterID() { return 1; }
 
   void initSilderTab() {
     const boost::optional<double> alpha = doGetFilterAlpha();
@@ -129,7 +132,7 @@ Q_SLOTS:
 
   void moveSliderTab(const double alpha) {
     this->setValue(alpha * 100);
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
   boost::optional<double> doGetFilterAlpha() {

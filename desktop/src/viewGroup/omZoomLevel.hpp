@@ -1,5 +1,5 @@
 #pragma once
-#include <events/omEvents.h>
+#include <events/events.h>
 #include <cmath>
 #include "view2d/om2dPreferences.hpp"
 

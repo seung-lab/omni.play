@@ -1,11 +1,11 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "yaml-cpp/yaml.h"
+#include "common/common.h"
+#include "yaml-cpp-old/yaml.h"
 #include "system/omGenericManager.hpp"
-#include "utility/yaml/baseTypes.hpp"
+#include "utility/yaml/omBaseTypes.hpp"
 
-namespace YAML {
+namespace YAMLold {
 
 class genericManager {
  public:
@@ -27,7 +27,7 @@ class genericManager {
     in["valid set"] >> gm.validSet_;
     in["enabled set"] >> gm.enabledSet_;
     in["next id"] >> gm.nextId_;
-    gm.vec_.resize(gm.size_, NULL);
+    gm.vec_.resize(gm.size_, nullptr);
 
     int idx = 0;
     FOR_EACH(i, gm.validSet_) {
@@ -41,4 +41,4 @@ class genericManager {
   }
 };
 
-}  // namespace YAML
+}  // namespace YAMLold

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "zi/mutex.h"
 #include "zi/utility.h"
 
 #include <boost/random/mersenne_twister.hpp>
@@ -10,7 +9,7 @@
 namespace om {
 namespace utility {
 
-class rand : private om::singletonBase<rand> {
+class rand : private om::SingletonBase<rand> {
  private:
   boost::mt19937 gen_;
 
@@ -22,7 +21,7 @@ class rand : private om::singletonBase<rand> {
     zi::guard g(instance().lock_);
 
     boost::uniform_int<> dist(min, max);
-    boost::variate_generator<boost::mt19937&, boost::uniform_int<> > rrand(
+    boost::variate_generator<boost::mt19937&, boost::uniform_int<>> rrand(
         instance().gen_, dist);
     return rrand();
   }

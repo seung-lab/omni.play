@@ -17,27 +17,25 @@
 #include <zi/mesh/marching_cubes.hpp>
 #include <zi/shared_ptr.hpp>
 
-#include "zi/threads.h"
-
 namespace om {
 namespace mesh {
 
 class ziMesher {
  private:
-  const volume::volume& vol_;
+  const volume::Volume& vol_;
   const int rootMipLevel_;
 
-  std::map<coords::chunk, std::vector<MeshCollector*> > occurances_;
-  std::map<coords::chunk, MeshCollector*> chunkCollectors_;
+  std::map<coords::Chunk, std::vector<MeshCollector*>> occurances_;
+  std::map<coords::Chunk, MeshCollector*> chunkCollectors_;
 
   const int numParallelChunks_;
   const int numThreadsPerChunk_;
   const double downScallingFactor_;
 
  public:
-  ziMesher(const volume::volume& vol, const double threshold)
+  ziMesher(const volume::Volume& vol, const double threshold)
       : vol_(vol),
-        rootMipLevel_(vol.CoordinateSystem()().GetRootMipLevel()),
+        rootMipLevel_(vol.CoordinateSystem()().RootMipLevel()),
         threshold_(threshold),
         chunkCollectors_(),
         mesh::manager_(vol.MeshManager(threshold)),
@@ -45,8 +43,8 @@ class ziMesher {
         numParallelChunks_(numberParallelChunks()),
         numThreadsPerChunk_(zi::system::cpu_count / 2),
         downScallingFactor_(meshParams::GetDownScallingFactor()) {
-    printf("ziMesher: will process %d chunks at a time\n", numParallelChunks_);
-    printf("ziMesher: will use %d threads per chunk\n", numThreadsPerChunk_);
+    log_info("ziMesher: will process %d chunks at a time", numParallelChunks_);
+    log_info("ziMesher: will use %d threads per chunk", numThreadsPerChunk_);
   }
 
   ~ziMesher() {
@@ -59,7 +57,7 @@ class ziMesher {
     meshWriter_->Join();
     meshWriter_->CheckEverythingWasMeshed();
 
-    mesh::manager_->Metadata()->SetMeshedAndStorageAsChunkFiles();
+    mesh::manager_->Metadata().SetMeshedAndStorageAsChunkFiles();
   }
 
   // void RemeshFullVolume()
@@ -67,13 +65,12 @@ class ziMesher {
   // if(redownsample){
   //     vol_.VolData()->downsample(vol_);
   // }
-  //     chunkUtils::RefindUniqueChunkValues(vol_.GetID());
+  //     chunkUtils::RefindUniqueChunkValues(vol_.id());
   // }
  private:
-
   void init() {
-    boost::shared_ptr<std::deque<coords::chunk> > levelZeroChunks =
-        vol_.CoordSystem().GetMipChunkCoords(0);
+    std::shared_ptr<std::deque<coords::Chunk>> levelZeroChunks =
+        vol_.CoordSystem().MipChunkCoords(0);
 
     progress_.SetTotalNumChunks(levelZeroChunks->size());
 
@@ -81,7 +78,7 @@ class ziMesher {
       addValuesFromChunkAndDownsampledChunks(*it);
     }
 
-    std::cout << "\nstarting meshing...\n";
+    log_debugs << "starting meshing...";
 
     zi::task_manager::simple manager(numParallelChunks_);
     manager.start();
@@ -93,10 +90,10 @@ class ziMesher {
 
     manager.join();
 
-    std::cout << "\ndone meshing...\n";
+    log_debugs << "done meshing...";
   }
 
-  void addValuesFromChunkAndDownsampledChunks(const coords::chunk& mip0coord) {
+  void addValuesFromChunkAndDownsampledChunks(const coords::Chunk& mip0coord) {
     const ChunkUniqueValues segIDs =
         vol_.ChunkUniqueValues()->Values(mip0coord, threshold_);
 
@@ -110,12 +107,12 @@ class ziMesher {
     }
 
     downsampleSegThroughAllMipLevels(mip0coord, segIDs);
-    //downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
+    // downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
   }
 
-  void downsampleSegThroughAllMipLevels(const coords::chunk& mip0coord,
+  void downsampleSegThroughAllMipLevels(const coords::Chunk& mip0coord,
                                         const ChunkUniqueValues& segIDsMip0) {
-    coords::chunk c = mip0coord.ParentCoord();
+    coords::Chunk c = mip0coord.ParentCoord();
 
     // corner case: no MIP levels >0
     while (c.getLevel() <= rootMipLevel_) {
@@ -126,11 +123,11 @@ class ziMesher {
   }
 
   void downsampleSegThroughViewableMipLevels(
-      const coords::chunk& mip0coord, const ChunkUniqueValues& segIDsMip0) {
-    coords::chunk c = mip0coord.ParentCoord();
+      const coords::Chunk& mip0coord, const ChunkUniqueValues& segIDsMip0) {
+    coords::Chunk c = mip0coord.ParentCoord();
 
     corner case : no MIP levels > 0 while (c.getLevel() <= rootMipLevel_) {
-      std::deque<common::segId> commonIDs;
+      std::deque<common::SegID> commonIDs;
 
       const ChunkUniqueValues segIDs =
           vol_.ChunkUniqueValues()->Values(c, threshold_);
@@ -152,7 +149,7 @@ class ziMesher {
   }
 
   template <typename C>
-  void registerSegIDs(const coords::chunk& mip0coord, const coords::chunk& c,
+  void registerSegIDs(const coords::Chunk& mip0coord, const coords::Chunk& c,
                       const C& segIDs) {
     if (chunkCollectors_.count(c) == 0) {
       chunkCollectors_.insert(
@@ -166,7 +163,7 @@ class ziMesher {
 
   void processSingleSegment(
       int id, double scale, zi::vl::vec3d trans,
-      zi::shared_ptr<zi::mesh::simplifier<double> > simplifier,
+      zi::shared_ptr<zi::mesh::simplifier<double>> simplifier,
       std::vector<MeshCollector*>* targets) {
     double max_err = 90.0;
 
@@ -204,15 +201,15 @@ class ziMesher {
 
     chunkUtils::RewriteChunkAtThreshold(vol_, chunkData, threshold_);
 
-    const common::segId* chunkDataRaw =
-        static_cast<const common::segId*>(chunkData.getScalarPtr());
+    const common::SegID* chunkDataRaw =
+        static_cast<const common::SegID*>(chunkData.getScalarPtr());
 
     cube_marcher.marche(reinterpret_cast<const int*>(chunkDataRaw), 129, 129,
                         129);
   }
 
-  void processChunk(coords::chunk coord) {
-    static const int chunkDim = vol_.CoordinateSystem()().GetChunkDimension();
+  void processChunk(coords::Chunk coord) {
+    static const int chunkDim = vol_.CoordinateSystem()().ChunkDimension();
 
     segChunk* chunk = vol_.GetChunk(coord);
 
@@ -241,18 +238,18 @@ class ziMesher {
     manager.start();
 
     FOR_EACH(it, cube_marcher.meshes()) {
-      const common::segId segID = it->first;
+      const common::SegID segID = it->first;
 
       if (segIDs.contains(segID)) {
-        zi::shared_ptr<zi::mesh::simplifier<double> > spfy(
+        zi::shared_ptr<zi::mesh::simplifier<double>> spfy(
             new zi::mesh::simplifier<double>(0));
 
         cube_marcher.fill_simplifier<double>(*spfy, segID, 0, 0, 0, scale.at(2),
                                              scale.at(1), scale.at(0));
 
-        manager.push_back(zi::run_fn(
-            zi::bind(&ziMesher::processSingleSegment, this, segID, maxScale,
-                     translate, spfy, &occurances_[coord])));
+        manager.push_back(zi::run_fn(zi::bind(&ziMesher::processSingleSegment,
+                                              this, segID, maxScale, translate,
+                                              spfy, &occurances_[coord])));
       }
     }
 
@@ -278,6 +275,5 @@ class ziMesher {
     return numChunks;
   }
 };
-
 }
 }  // namespace om::mesh

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/lowLevel/omDynamicForestCache.hpp"
 #include "segment/lowLevel/omSegmentLowLevelTypes.h"
 #include "threads/omTaskManagerTypes.h"
@@ -26,9 +26,12 @@ class OmSegmentGraph {
   void RefreshGUIlists();
 
   inline uint64_t MSTfreshness() const { return forest_->Freshness(); }
-  inline OmSegID Root(const OmSegID segID) { return forest_->Root(segID); }
-  inline void Cut(const OmSegID segID) { forest_->Cut(segID); }
-  inline void Join(const OmSegID childRootID, const OmSegID parentRootID) {
+  inline om::common::SegID Root(const om::common::SegID segID) {
+    return forest_->Root(segID);
+  }
+  inline void Cut(const om::common::SegID segID) { forest_->Cut(segID); }
+  inline void Join(const om::common::SegID childRootID,
+                   const om::common::SegID parentRootID) {
     forest_->Join(childRootID, parentRootID);
   }
 
@@ -48,17 +51,19 @@ class OmSegmentGraph {
   OmSegmentsImplLowLevel* mCache;
   OmSegmentsStore* segmentPages_;
 
-  boost::scoped_ptr<OmDynamicForestCache> forest_;
-  boost::scoped_ptr<OmSegmentChildren> children_;
+  std::unique_ptr<OmDynamicForestCache> forest_;
+  std::unique_ptr<OmSegmentChildren> children_;
   OmSegmentListLowLevel* segmentListsLL_;
 
-  bool joinInternal(const OmSegID parentID, const OmSegID childUnknownDepthID,
+  bool joinInternal(const om::common::SegID parentID,
+                    const om::common::SegID childUnknownDepthID,
                     const double threshold, const int edgeNumber);
 
-  bool splitChildFromParentInternal(const OmSegID childID);
+  bool splitChildFromParentInternal(const om::common::SegID childID);
 
   SizeAndNumPieces computeSegmentSizeWithChildren(OmSegment* seg);
   std::vector<OmSegment*> segsTempVec_;
 
-  bool sizeCheck(const OmSegID a, const OmSegID b, const double threshold);
+  bool sizeCheck(const om::common::SegID a, const om::common::SegID b,
+                 const double threshold);
 };

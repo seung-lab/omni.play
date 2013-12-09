@@ -21,23 +21,23 @@ template <typename T, std::size_t D> class imageCopiedData {
   imageCopiedData() {}
 
   imageCopiedData(dimension<D> extent) : extent_(extent), data_() {
-    data_ = boost::shared_ptr<container_t>(
-        new container_t(extent.getBoostExtent()));
+    data_ =
+        std::shared_ptr<container_t>(new container_t(extent.getBoostExtent()));
   }
 
   imageCopiedData(dimension<D> extent, T* data) : extent_(extent), data_() {
-    data_ = boost::shared_ptr<container_t>(
-        new container_t(extent.getBoostExtent()));
+    data_ =
+        std::shared_ptr<container_t>(new container_t(extent.getBoostExtent()));
     data_->assign(data, data + data_->num_elements());
   }
 
-  imageCopiedData(boost::shared_ptr<container_t> data, dimension<D> extent)
+  imageCopiedData(std::shared_ptr<container_t> data, dimension<D> extent)
       : extent_(extent), data_(data) {}
 
   virtual ~imageCopiedData() {}
 
   dimension<D> extent_;
-  boost::shared_ptr<container_t> data_;
+  std::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D> class imageRefData {
@@ -50,17 +50,17 @@ template <typename T, std::size_t D> class imageRefData {
   imageRefData(dimension<D> extent) : extent_(extent), data_() {}
 
   imageRefData(dimension<D> extent, T* data) : extent_(extent), data_() {
-    data_ = boost::shared_ptr<container_t>(
+    data_ = std::shared_ptr<container_t>(
         new container_t(data, extent.getBoostExtent()));
   }
 
-  imageRefData(boost::shared_ptr<container_t> data, dimension<D> extent)
+  imageRefData(std::shared_ptr<container_t> data, dimension<D> extent)
       : extent_(extent), data_(data) {}
 
   virtual ~imageRefData() {}
 
   dimension<D> extent_;
-  boost::shared_ptr<container_t> data_;
+  std::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D> class imageConstRefData {
@@ -73,17 +73,17 @@ template <typename T, std::size_t D> class imageConstRefData {
   imageConstRefData(dimension<D> extent) : extent_(extent), data_() {}
 
   imageConstRefData(dimension<D> extent, T* data) : extent_(extent), data_() {
-    data_ = boost::shared_ptr<container_t>(
+    data_ = std::shared_ptr<container_t>(
         new container_t(data, extent.getBoostExtent()));
   }
 
-  imageConstRefData(boost::shared_ptr<container_t> data, dimension<D> extent)
+  imageConstRefData(std::shared_ptr<container_t> data, dimension<D> extent)
       : extent_(extent), data_(data) {}
 
   virtual ~imageConstRefData() {}
 
   dimension<D> extent_;
-  boost::shared_ptr<container_t> data_;
+  std::shared_ptr<container_t> data_;
 };
 
 template <typename T, std::size_t D,
@@ -98,7 +98,7 @@ class image {
 
   image(dimension<D> extent, T* data) : d_(container_t<T, D>(extent, data)) {}
 
-  image(boost::shared_ptr<boost::multi_array<T, D> > data, dimension<D> extent)
+  image(std::shared_ptr<boost::multi_array<T, D>> data, dimension<D> extent)
       : d_(container_t<T, D>(data, extent)) {}
 
   virtual ~image() {}
@@ -138,13 +138,13 @@ class image {
     }
   }
 
-  boost::shared_ptr<T> getMallocCopyOfData() const {
+  std::shared_ptr<T> getMallocCopyOfData() const {
     if (!d_.data_) {
-      return boost::shared_ptr<T>();
+      return std::shared_ptr<T>();
     }
 
     const int numBytes = d_.data_->num_elements() * sizeof(T);
-    boost::shared_ptr<T> ret = smartPtr<T>::MallocNumBytes(numBytes);
+    std::shared_ptr<T> ret = smartPtr<T>::MallocNumBytes(numBytes);
     memcpy(ret.get(), d_.data_->data(), numBytes);
     return ret;
   }
@@ -168,14 +168,8 @@ class image {
     d_.data_->resize(boost::extents[dims.x][dims.y][dims.z]);
   }
 
-  template <
-      typename T1, std::size_t D1,
-      template <typename DATATYPE1, std::size_t DATASIZE1> class container_t1>
-  friend class image;
-
  private:
   container_t<T, D> d_;
 };
-
 }
 }  // namespace om::utility

@@ -8,7 +8,10 @@ namespace om {
 namespace channelInspector {
 
 class PageBuilder : public QWidget {
-  Q_OBJECT private : const ChannelDataWrapper cdw_;
+  Q_OBJECT;
+
+ private:
+  const ChannelDataWrapper cdw_;
 
   SourceBox* const sourceBox_;
   QComboBox* buildComboBox_;
@@ -27,7 +30,8 @@ class PageBuilder : public QWidget {
  private
 Q_SLOTS:
   void build() {
-    om::gui::progressBarDialog* dialog = new om::gui::progressBarDialog(NULL);
+    om::gui::progressBarDialog* dialog =
+        new om::gui::progressBarDialog(nullptr);
 
     dialog->push_back(zi::run_fn(
         zi::bind(PageBuilder::doBuild, cdw_, buildComboBox_->currentText(),

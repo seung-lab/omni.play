@@ -7,14 +7,14 @@ void OmThreadPoolManager::StopAll() {
   // as threadpools close down, there are potential races on the pool mutex,
   //  so use copy of pools_
 
-  std::set<om::stoppable*> pools;
+  std::set<om::common::stoppable*> pools;
   {
     zi::guard g(instance().lock_);
     pools = instance().pools_;
   }
 
   FOR_EACH(iter, pools) {
-    om::stoppable* pool = *iter;
+    auto* pool = *iter;
 
     {
       zi::guard g(instance().lock_);
@@ -27,12 +27,12 @@ void OmThreadPoolManager::StopAll() {
   }
 }
 
-void OmThreadPoolManager::Add(om::stoppable* p) {
+void OmThreadPoolManager::Add(om::common::stoppable* p) {
   zi::guard g(instance().lock_);
   instance().pools_.insert(p);
 }
 
-void OmThreadPoolManager::Remove(om::stoppable* p) {
+void OmThreadPoolManager::Remove(om::common::stoppable* p) {
   zi::guard g(instance().lock_);
   instance().pools_.erase(p);
 }

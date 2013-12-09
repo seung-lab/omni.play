@@ -4,8 +4,10 @@
 #include <QtGui>
 
 class OmCheckBoxWidget : public QCheckBox {
-  Q_OBJECT public : OmCheckBoxWidget(QWidget* p, const QString& title)
-                    : QCheckBox(title, p) {
+  Q_OBJECT;
+
+ public:
+  OmCheckBoxWidget(QWidget* p, const QString& title) : QCheckBox(title, p) {
     om::connect(this, SIGNAL(stateChanged(int)), this, SLOT(action(int)));
   }
 

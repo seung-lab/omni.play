@@ -1,17 +1,12 @@
 #pragma once
 
-#include "zi/mutex.h"
-#include "zi/utility.h"
-
 #include <list>
 #include <map>
 #include <set>
 #include <utility>
 #include <iterator>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/tr1/unordered_set.hpp>
+#include <unordered_set>
+#include <unordered_map>
 
 namespace om {
 namespace utility {
@@ -19,7 +14,6 @@ namespace utility {
 template <typename VAL> class LockedVector {
  public:
   virtual ~LockedVector() {}
-
   bool empty() {
     zi::guard g(mutex_);
     return vector_.empty();
@@ -49,7 +43,6 @@ template <typename VAL> class LockedVector {
 template <typename KEY, typename VAL> class LockedBoostMap {
  public:
   virtual ~LockedBoostMap() {}
-
   bool empty() {
     zi::guard g(mutex_);
     return map_.empty();
@@ -69,34 +62,29 @@ template <typename KEY, typename VAL> class LockedBoostMap {
   }
 
  private:
-  boost::unordered_map<KEY, VAL> map_;
+  std::unordered_map<KEY, VAL> map_;
   zi::spinlock mutex_;
 };
 
 template <typename KEY> class LockedBoostSet {
  public:
   virtual ~LockedBoostSet() {}
-
   bool empty() {
     zi::guard g(mutex_);
     return set_.empty();
   }
-
   void insert(const KEY& key) {
     zi::guard g(mutex_);
     set_.insert(key);
   }
-
   void erase(const KEY& key) {
     zi::guard g(mutex_);
     set_.erase(key);
   }
-
   void clear() {
     zi::guard g(mutex_);
     set_.clear();
   }
-
   bool insertSinceWasntPresent(const KEY& key) {
     zi::guard g(mutex_);
     if (set_.count(key)) {
@@ -108,34 +96,29 @@ template <typename KEY> class LockedBoostSet {
   }
 
  private:
-  boost::unordered_set<KEY> set_;
+  std::unordered_set<KEY> set_;
   zi::spinlock mutex_;
 };
 
 template <typename KEY> class LockedSet {
  public:
   virtual ~LockedSet() {}
-
   bool empty() {
     zi::guard g(mutex_);
     return set_.empty();
   }
-
   void erase(const KEY& key) {
     zi::guard g(mutex_);
     set_.erase(key);
   }
-
   void insert(const KEY& key) {
     zi::guard g(mutex_);
     set_.insert(key);
   }
-
   void clear() {
     zi::guard g(mutex_);
     set_.clear();
   }
-
   bool insertSinceWasntPresent(const KEY& key) {
     zi::guard g(mutex_);
     if (set_.count(key)) {
@@ -178,7 +161,6 @@ template <typename KEY> class LockedList {
 
 template <typename KEY, typename VAL> class LockedMultiMap {
  public:
-  typedef typename std::multimap<KEY, VAL>::iterator KViterator;
   typedef std::list<VAL> valsCont;
 
   virtual ~LockedMultiMap() {}
@@ -187,22 +169,18 @@ template <typename KEY, typename VAL> class LockedMultiMap {
     zi::guard g(mutex_);
     mmap_.insert(std::pair<KEY, VAL>(key, val));
   }
-
   void clear() {
     zi::guard g(mutex_);
     mmap_.clear();
   }
-
-  boost::shared_ptr<valsCont> removeKey(const KEY& key) {
+  std::shared_ptr<valsCont> removeKey(const KEY& key) {
     zi::guard g(mutex_);
 
-    boost::shared_ptr<valsCont> vals = om::make_shared<valsCont>();
+    auto vals = std::make_shared<valsCont>();
 
-    std::pair<KViterator, KViterator> found = mmap_.equal_range(key);
-
-    KViterator it;
-    for (it = found.first; it != found.second; ++it) {
-      vals->push_back(it->second);
+    auto found = mmap_.equal_range(key);
+    for (auto& it : found) {
+      vals->push_back(it.second);
     }
 
     mmap_.erase(key);

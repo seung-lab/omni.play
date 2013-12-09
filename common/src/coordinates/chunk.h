@@ -1,69 +1,67 @@
 #pragma once
 
-/*
- * chunk represents a location in Mip Space given by a level (or mip
- * resolution),
- *  and an x,y,z coordinate.  This is stored in a four element tuple as [level,
- * (x,y,z)].
- *
- * Brett Warne - bwarne@mit.edu - 2/24/09
- */
-
-#include "vmmlib/vmmlib.h"
-using namespace vmml;
-
 #include <iostream>
+#include "common/macro.hpp"
+
+#include <vmmlib/vmmlib.h>
+using namespace vmml;
+#include "coordinates/global.h"
 
 namespace om {
 namespace coords {
 
-class dataBbox;
-class data;
-class volumeSystem;
+class DataBbox;
+class Data;
+class VolumeSystem;
 
-class chunk {
+class Chunk : public vmml::Vector3i {
 
  public:
-  chunk();
-  chunk(int, const Vector3i&);
-  chunk(int level, int, int, int);
+  Chunk(int, const Vector3i&);
+  Chunk(int level, int, int, int);
 
-  //static const chunk NULL_COORD;
+  std::string GetCoordsAsString() const;
 
-  std::string getCoordsAsString() const;
+  inline bool IsLeaf() const { return 0 == mipLevel_; }
 
-  //property
-  inline bool IsLeaf() const { return 0 == Level; }
+  // family coordinate methods
+  Chunk ParentCoord() const;
+  Chunk PrimarySiblingCoord() const;
+  std::vector<Chunk> SiblingCoords() const;
+  Chunk PrimaryChildCoord() const;
+  std::vector<Chunk> ChildrenCoords() const;
 
-  //family coordinate methods
-  chunk ParentCoord() const;
-  chunk PrimarySiblingCoord() const;
-  void SiblingCoords(chunk* pSiblings) const;
-  chunk PrimaryChildCoord() const;
-  void ChildrenCoords(chunk* pChildren) const;
+  Data ToData(const VolumeSystem&) const;
+  DataBbox BoundingBox(const VolumeSystem&) const;
+  uint64_t PtrOffset(const VolumeSystem&, int64_t) const;
+  int SliceDepth(const VolumeSystem&, Global, om::common::ViewType) const;
 
-  //access
-  inline int getLevel() const { return Level; }
-  inline int X() const { return Coordinate.x; }
-  inline int Y() const { return Coordinate.y; }
-  inline int Z() const { return Coordinate.z; }
+  void operator=(const Chunk& rhs);
+  bool operator==(const Chunk& rhs) const;
+  bool operator!=(const Chunk& rhs) const;
+  bool operator<(const Chunk& rhs) const;
 
-  data toData(const volumeSystem*) const;
-  dataBbox chunkBoundingBox(const volumeSystem*) const;
-  uint64_t chunkPtrOffset(const volumeSystem*, int64_t) const;
-  int sliceDepth(const volumeSystem*, global, common::viewType) const;
+  inline std::string keyStr() const { return GetCoordsAsString(); }
 
-  //operators
-  void operator=(const chunk& rhs);
-  bool operator==(const chunk& rhs) const;
-  bool operator!=(const chunk& rhs) const;
-  bool operator<(const chunk& rhs) const;
+ private:
+  typedef Vector3i base_t;
+  PROP_CONST_REF(int, mipLevel);
 
-  int Level;
-  Vector3i Coordinate;
-
-  friend std::ostream& operator<<(std::ostream& out, const chunk& in);
+  friend std::ostream& operator<<(std::ostream& out, const Chunk& in);
 };
 
 }  // namespace coords
 }  // namespace om
+
+namespace std {
+template <> struct hash<om::coords::Chunk> {
+  size_t operator()(const om::coords::Chunk& c) const {
+    std::hash<int> hasher;
+    std::size_t h1 = hasher(c.mipLevel());
+    std::size_t h2 = hasher(c.x);
+    std::size_t h3 = hasher(c.y);
+    std::size_t h4 = hasher(c.z);
+    return h1 ^ (h2 << 1) ^ (h3 << 2) ^ (h4 << 3);
+  }
+};
+}

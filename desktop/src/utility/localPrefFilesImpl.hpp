@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omString.hpp"
-#include "common/omCommon.h"
+#include "common/string.hpp"
+#include "common/common.h"
 #include "zi/omUtility.h"
 
 #include <QDir>
@@ -31,13 +31,14 @@ class LocalPrefFilesImpl {
   }
 
   // number
-  template <typename T> inline T readSettingNumber(const QString& setting) {
+  template <typename T>
+  inline T readSettingNumber(const QString& setting) {
     QStringList lines = readFile(setting);
     if (0 == lines.size()) {
-      throw OmIoException("invalid preference found", setting);
+      throw om::IoException("invalid preference found");
     }
 
-    return om::string::toNum<T>(lines[0].toStdString());
+    return boost::lexical_cast<T>(lines[0].toStdString());
   }
 
   template <typename T>
@@ -46,7 +47,7 @@ class LocalPrefFilesImpl {
 
     QFile file(fnp);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-      throw OmIoException("could not write file", fnp);
+      throw om::IoException("could not write file");
     }
 
     QTextStream out(&file);
@@ -57,7 +58,7 @@ class LocalPrefFilesImpl {
   inline QString readSettingQString(const QString& setting) {
     const QStringList lines = readFile(setting);
     if (1 != lines.size()) {
-      throw OmIoException("no preference found", setting);
+      throw om::IoException("no preference found");
     }
 
     return lines[0];
@@ -69,7 +70,7 @@ class LocalPrefFilesImpl {
 
     QFile file(fnp);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-      throw OmIoException("could not write file", fnp);
+      throw om::IoException("could not write file");
     }
 
     QTextStream out(&file);
@@ -87,7 +88,7 @@ class LocalPrefFilesImpl {
 
     QFile file(fnp);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-      throw OmIoException("could not write file", fnp);
+      throw om::IoException("could not write file");
     }
 
     QTextStream out(&file);
@@ -95,7 +96,6 @@ class LocalPrefFilesImpl {
   }
 
  private:
-
   QDir prefFolder_;
 
   LocalPrefFilesImpl() { setupPrefFolder(); }
@@ -112,10 +112,10 @@ class LocalPrefFilesImpl {
     }
 
     if (QDir::home().mkdir(omniFolderName)) {
-      printf("made folder %s\n", qPrintable(omniFolderPath));
+      log_infos << "made folder " << qPrintable(omniFolderPath);
       prefFolder_ = dir;
     } else {
-      throw OmIoException("could not create folder", omniFolderPath);
+      throw om::IoException("could not create folder");
     }
   }
 
@@ -128,7 +128,7 @@ class LocalPrefFilesImpl {
 
     QFile file(fnp);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      throw OmIoException("could not read file", fnp);
+      throw om::IoException("could not read file");
     }
 
     QStringList lines;

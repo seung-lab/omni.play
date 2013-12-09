@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/yaml/omYaml.hpp"
 
 namespace om {
@@ -25,7 +25,7 @@ class userSettings {
         threshold_(defaultThreshold_),
         sizeThreshold_(defaultSizeThreshold_),
         showAnnotations_(defaultShowAnnotations_) {
-    std::cout << "New User Settings\n";
+    log_infos << "New User Settings";
   }
 
   void Load();
@@ -45,7 +45,6 @@ class userSettings {
   inline float getAnnotationVisible() { return showAnnotations_; }
 
   inline void setAnnotationVisible(float val) { showAnnotations_ = val; }
-
 };
 
 }  // namespace om

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/om.hpp"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
 #include "tiles/omTileCoord.h"
@@ -21,7 +20,7 @@ class OmOpenGLTileDrawer {
  public:
   OmOpenGLTileDrawer()
       : allowedDrawTimeMS_(20)  // 30 fps goal
-        {}
+  {}
 
   /**
    * return number of tiles that were not drawn if time ran out...
@@ -53,43 +52,42 @@ class OmOpenGLTileDrawer {
 
     glBindTexture(GL_TEXTURE_2D, texture.GetTextureID());
 
-    //         std::cout << "drawing: " << tile->GetTileCoord() << " - "
-    //                   << vertices.lowerLeft << " to " << vertices.upperRight
-    //                   << "\n";
+    //         log_infos << "drawing: " << tile->GetTileCoord() << " - "
+    //                   << vertices.lowerLeft << " to " << vertices.upperRight;
 
     glBegin(GL_QUADS);
 
     glTexCoord2f(textureVectices.upperLeft.x, textureVectices.lowerRight.y);
     /* lower left corner */
     glVertex2f(vertices.lowerLeft.x, vertices.lowerLeft.y);
-    //         std::cout << "\ttex: " << textureVectices.upperLeft.x
-    //                   << ", " << textureVectices.lowerRight.y << "\n";
-    //         std::cout << "\tvertex: " << vertices.lowerLeft.x
-    //                   << ", " << vertices.lowerLeft.y << "\n";
+    //         log_infos << "\ttex: " << textureVectices.upperLeft.x
+    //                   << ", " << textureVectices.lowerRight.y;
+    //         log_infos << "\tvertex: " << vertices.lowerLeft.x
+    //                   << ", " << vertices.lowerLeft.y;
 
     glTexCoord2f(textureVectices.lowerRight.x, textureVectices.lowerRight.y);
     /* lower right corner */
     glVertex2f(vertices.lowerRight.x, vertices.lowerRight.y);
-    //         std::cout << "\ttex: " << textureVectices.lowerRight.x
-    //                   << ", " << textureVectices.lowerRight.y << "\n";
-    //         std::cout << "\tvertex: " << vertices.lowerRight.x
-    //                   << ", " << vertices.lowerRight.y << "\n";
+    //         log_infos << "\ttex: " << textureVectices.lowerRight.x
+    //                   << ", " << textureVectices.lowerRight.y;
+    //         log_infos << "\tvertex: " << vertices.lowerRight.x
+    //                   << ", " << vertices.lowerRight.y;
 
     glTexCoord2f(textureVectices.lowerRight.x, textureVectices.upperLeft.y);
     /* upper right corner */
     glVertex2f(vertices.upperRight.x, vertices.upperRight.y);
-    //         std::cout << "\ttex: " << textureVectices.lowerRight.x
-    //                   << ", " << textureVectices.upperLeft.y << "\n";
-    //         std::cout << "\tvertex: " << vertices.upperRight.x
-    //                   << ", " << vertices.upperRight.y << "\n";
+    //         log_infos << "\ttex: " << textureVectices.lowerRight.x
+    //                   << ", " << textureVectices.upperLeft.y;
+    //         log_infos << "\tvertex: " << vertices.upperRight.x
+    //                   << ", " << vertices.upperRight.y;
 
     glTexCoord2f(textureVectices.upperLeft.x, textureVectices.upperLeft.y);
     /* upper left corner */
     glVertex2f(vertices.upperLeft.x, vertices.upperLeft.y);
-    //         std::cout << "\ttex: " << textureVectices.upperLeft.x
-    //                   << ", " << textureVectices.upperLeft.y << "\n";
-    //         std::cout << "\tvertex: " << vertices.upperLeft.x
-    //                   << ", " << vertices.upperLeft.y << "\n";
+    //         log_infos << "\ttex: " << textureVectices.upperLeft.x
+    //                   << ", " << textureVectices.upperLeft.y;
+    //         log_infos << "\tvertex: " << vertices.upperLeft.x
+    //                   << ", " << vertices.upperLeft.y;
 
     glEnd();
   }

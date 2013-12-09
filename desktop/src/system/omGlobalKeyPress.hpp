@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/toolbars/toolbarManager.h"
 #include "segment/omSegmentSelected.hpp"
 #include "system/omAppState.hpp"
@@ -11,24 +11,27 @@
 #include <QKeyEvent>
 
 class OmGlobalKeyPress : public QWidget {
-  Q_OBJECT private : QWidget* const parent_;
+  Q_OBJECT;
 
-  boost::scoped_ptr<QShortcut> a_;
-  boost::scoped_ptr<QShortcut> b_;
-  boost::scoped_ptr<QShortcut> comma_;
-  boost::scoped_ptr<QShortcut> greater_;
-  boost::scoped_ptr<QShortcut> j_;
-  boost::scoped_ptr<QShortcut> less_;
-  boost::scoped_ptr<QShortcut> m_;
-  boost::scoped_ptr<QShortcut> n_;
-  boost::scoped_ptr<QShortcut> period_;
-  boost::scoped_ptr<QShortcut> r_;
-  boost::scoped_ptr<QShortcut> k_;
-  boost::scoped_ptr<QShortcut> l_;
-  boost::scoped_ptr<QShortcut> slash_;
+ private:
+  QWidget* const parent_;
 
-  void setShortcut(boost::scoped_ptr<QShortcut>& shortcut,
-                   const QKeySequence key, const char* method) {
+  std::unique_ptr<QShortcut> a_;
+  std::unique_ptr<QShortcut> b_;
+  std::unique_ptr<QShortcut> comma_;
+  std::unique_ptr<QShortcut> greater_;
+  std::unique_ptr<QShortcut> j_;
+  std::unique_ptr<QShortcut> less_;
+  std::unique_ptr<QShortcut> m_;
+  std::unique_ptr<QShortcut> n_;
+  std::unique_ptr<QShortcut> period_;
+  std::unique_ptr<QShortcut> r_;
+  std::unique_ptr<QShortcut> k_;
+  std::unique_ptr<QShortcut> l_;
+  std::unique_ptr<QShortcut> slash_;
+
+  void setShortcut(std::unique_ptr<QShortcut>& shortcut, const QKeySequence key,
+                   const char* method) {
     shortcut.reset(new QShortcut(parent_));
     shortcut->setKey(key);
     shortcut->setContext(Qt::ApplicationShortcut);
@@ -37,7 +40,7 @@ class OmGlobalKeyPress : public QWidget {
   }
 
   void setTool(const om::tool::mode tool) {
-    ToolBarManager* tbm = OmAppState::GetToolBarManager();
+    auto* tbm = OmAppState::GetToolBarManager();
     if (tbm) {
       tbm->SetTool(tool);
     }
@@ -46,42 +49,32 @@ class OmGlobalKeyPress : public QWidget {
  private
 Q_SLOTS:
   void keyA() { setTool(om::tool::ANNOTATE); }
-
   void keyB() { setTool(om::tool::PAN); }
-
   void keyN() { setTool(om::tool::SELECT); }
-
   void keyM() { setTool(om::tool::PAINT); }
-
   void keyComma() { setTool(om::tool::ERASE); }
-
   void keyPeriod() { setTool(om::tool::FILL); }
-
   void keyK() { setTool(om::tool::CUT); }
-
   void keyL() { setTool(om::tool::LANDMARK); }
-
   void keyR() { OmSegmentSelected::RandomizeColor(); }
 
   void keyLess() {
     OmStateManager::BrushSize()->DecreaseSize();
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
   void keyGreater() {
     OmStateManager::BrushSize()->IncreaseSize();
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
   void keyJ() {
-    const OmIDsSet& segset = SegmentationDataWrapper::ValidIDs();
-
-    FOR_EACH(iter, segset) {
-      OmActions::JoinSegments(SegmentationDataWrapper(*iter));
+    for (const auto& id : SegmentationDataWrapper::ValidIDs()) {
+      OmActions::JoinSegments(SegmentationDataWrapper(id));
     }
 
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
  public:

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common/omStd.h"
+#include <cstdint>
+#include <iostream>
 
 struct OmMSTEdge {
   uint32_t number;

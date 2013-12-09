@@ -9,27 +9,29 @@ namespace chunk {
 class ptrToChunkDataBase {
  public:
   virtual ~ptrToChunkDataBase() {}
+
   virtual void Release() {}
 
-  virtual int8_t* GetRawData(int8_t*) { return NULL; }
+  virtual int8_t* GetRawData(int8_t*) { return nullptr; }
 
-  virtual uint8_t* GetRawData(uint8_t*) { return NULL; }
+  virtual uint8_t* GetRawData(uint8_t*) { return nullptr; }
 
-  virtual int32_t* GetRawData(int32_t*) { return NULL; }
+  virtual int32_t* GetRawData(int32_t*) { return nullptr; }
 
-  virtual uint32_t* GetRawData(uint32_t*) { return NULL; }
+  virtual uint32_t* GetRawData(uint32_t*) { return nullptr; }
 
-  virtual float* GetRawData(float*) { return NULL; }
+  virtual float* GetRawData(float*) { return nullptr; }
 };
 
-template <typename DATA> class dataAccessor {
+template <typename DATA>
+class dataAccessor {
  private:
   ptrToChunkDataBase* const ptr_;
   DATA* const data_;
 
  public:
   dataAccessor(ptrToChunkDataBase* ptr)
-      : ptr_(ptr), data_(ptr_->GetRawData(static_cast<DATA*>(NULL))) {}
+      : ptr_(ptr), data_(ptr_->GetRawData(static_cast<DATA*>(nullptr))) {}
 
   ~dataAccessor() { ptr_->Release(); }
 

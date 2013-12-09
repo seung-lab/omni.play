@@ -3,12 +3,11 @@
 #include "threads/taskManagerContainerDeque.hpp"
 
 namespace om {
-namespace threads {
+namespace thread {
 
-class taskManagerContainerMipSorted;
-template <class> class taskManager;
+class TaskManagerContainerMipSorted;
+template <class> class TaskManager;
 
-typedef taskManager<taskManagerContainerDeque> threadPool;
-
+typedef TaskManager<TaskManagerContainerDeque> ThreadPool;
 }
 }

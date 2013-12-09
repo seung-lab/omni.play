@@ -1,7 +1,13 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omMipVolume.h"
+#include "globalCoord.h"
+#include "normCoord.h"
+#include "volume/omVolCoordsMipped.hpp"
 
 namespace om {
+
+normCoord::normCoord(base_t v, const OmMipVolCoords& system)
+    : base_t(v), vol_(system.vol()) {}
 
 globalCoord normCoord::toGlobalCoord() const {
   const vmml::Vector4f norm(x, y, z, 1);
@@ -16,7 +22,7 @@ dataCoord normCoord::toDataCoord(int mipLevel) const {
 normBbox::normBbox(normCoord min, normCoord max)
     : base_t(min, max), vol_(min.volume()) {
   if (min.volume() != max.volume()) {
-    throw OmArgException("min and max coords come from different volumes");
+    throw om::ArgException("min and max coords come from different volumes");
   }
 }
 

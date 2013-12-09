@@ -1,10 +1,10 @@
 #include "system/omConnect.hpp"
 #include "gui/guiUtils.hpp"
 #include "gui/preferences/localPreferences3d.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "system/omLocalPreferences.hpp"
-#include "events/omEvents.h"
-#include "view3d/om3dPreferences.hpp"
+#include "events/events.h"
+#include "view3d.old/om3dPreferences.hpp"
 
 #include <QtGui>
 
@@ -91,25 +91,25 @@ void LocalPreferences3d::on_crosshairSlider_valueChanged() {
   Om3dPreferences::setCrosshairValue(value);
   float distance = ((float) value) / 20.0;
   crosshairValue->setNum(distance);
-  OmEvents::Redraw3d();
+  om::event::Redraw3d();
 }
 
 void LocalPreferences3d::on_viewSquareCheckBox_stateChanged() {
   const bool val = GuiUtils::getBoolState(viewSquareCheckBox->checkState());
   Om3dPreferences::set2DViewFrameIn3D(val);
-  OmEvents::Redraw3d();
+  om::event::Redraw3d();
 }
 
 void LocalPreferences3d::on_viewPaneCheckBox_stateChanged() {
   const bool val = GuiUtils::getBoolState(viewPaneCheckBox->checkState());
   Om3dPreferences::set2DViewPaneIn3D(val);
-  OmEvents::Redraw3d();
+  om::event::Redraw3d();
 }
 
 void LocalPreferences3d::on_discoCheckBox_stateChanged() {
   const bool val = GuiUtils::getBoolState(discoCheckBox->checkState());
   Om3dPreferences::setDoDiscoBall(val);
-  OmEvents::Redraw3d();
+  om::event::Redraw3d();
 }
 
 void LocalPreferences3d::on_crosshairCheckBox_stateChanged() {
@@ -118,5 +118,5 @@ void LocalPreferences3d::on_crosshairCheckBox_stateChanged() {
   crosshairSlider->setEnabled(val);
   crosshairValue->setEnabled(val);
   crosshairLabel->setEnabled(val);
-  OmEvents::Redraw3d();
+  om::event::Redraw3d();
 }

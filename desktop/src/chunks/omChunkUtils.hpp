@@ -43,18 +43,18 @@ class OmChunkUtils {
           const int lenY = y ? 1 : 128;
           const int lenX = x ? 1 : 128;
 
-          //form mip coord
+          // form mip coord
           const om::chunkCoord& currentCoord = chunk->GetCoordinate();
 
           const om::chunkCoord mip_coord(
               currentCoord.getLevel(), currentCoord.X() + x,
               currentCoord.Y() + y, currentCoord.Z() + z);
 
-          //skip invalid mip coord
+          // skip invalid mip coord
           if (vol->Coords().ContainsMipChunkCoord(mip_coord)) {
             OmSegChunk* chunk = vol->GetChunk(mip_coord);
 
-            om::shared_ptr<uint32_t> rawDataPtr =
+            std::shared_ptr<uint32_t> rawDataPtr =
                 chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
             OmImage<uint32_t, 3> chunkImage(OmExtents[128][128][128],
@@ -70,13 +70,11 @@ class OmChunkUtils {
     return retImage;
   }
 
-  static void RefindUniqueChunkValues(const OmID segmentationID_) {
+  static void RefindUniqueChunkValues(const om::common::ID segmentationID_) {
     SegmentationDataWrapper sdw(segmentationID_);
     OmSegmentation& vol = sdw.GetSegmentation();
 
-    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
-        vol.GetMipChunkCoords();
-
+    auto coordsPtr = vol.GetMipChunkCoords();
     const uint32_t numChunks = coordsPtr->size();
 
     int counter = 0;
@@ -85,10 +83,10 @@ class OmChunkUtils {
       const om::chunkCoord& coord = *iter;
 
       ++counter;
-      printf("\rfinding values in chunk %d of %d...", counter, numChunks);
+      log_info("\rfinding values in chunk %d of %d...", counter, numChunks);
       fflush(stdout);
 
-      vol.ChunkUniqueValues()->RereadChunk(coord, 1);
+      vol.UniqueValuesDS().RereadChunk(coord, 1);
     }
   }
 };

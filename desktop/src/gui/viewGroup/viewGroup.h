@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 #include <QtGui>
 
@@ -19,9 +19,10 @@ class ViewGroup {
   ViewGroup(MainWindow*, OmViewGroupState*);
   ~ViewGroup();
 
-  void AddView2Dchannel(const ChannelDataWrapper& cdw, const ViewType vtype);
+  void AddView2Dchannel(const ChannelDataWrapper& cdw,
+                        const om::common::ViewType vtype);
   void AddView2Dsegmentation(const SegmentationDataWrapper& sdw,
-                             const ViewType vtype);
+                             const om::common::ViewType vtype);
 
   void AddView3D();
   void AddView3D4View();
@@ -33,5 +34,5 @@ class ViewGroup {
  private:
   MainWindow* const mainWindow_;
 
-  boost::scoped_ptr<om::gui::viewGroupImpl> impl_;
+  std::unique_ptr<om::gui::viewGroupImpl> impl_;
 };

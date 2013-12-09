@@ -10,7 +10,7 @@
  *  Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/archive/project.h"
 
 class OmAffinityGraphManager;
@@ -35,13 +35,13 @@ class OmProjectVolumes {
   const OmAffinityGraphManager& AffinityGraphs() const { return *affGraphs_; }
 
  private:
-  const boost::scoped_ptr<OmChannelManager> channels_;
-  const boost::scoped_ptr<OmSegmentationManager> segmentations_;
-  const boost::scoped_ptr<OmAffinityGraphManager> affGraphs_;
+  const std::unique_ptr<OmChannelManager> channels_;
+  const std::unique_ptr<OmSegmentationManager> segmentations_;
+  const std::unique_ptr<OmAffinityGraphManager> affGraphs_;
 
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
-                                         const OmProjectVolumes& p);
-  friend void YAML::operator>>(const YAML::Node& in, OmProjectVolumes& p);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmProjectVolumes& p);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmProjectVolumes& p);
   friend QDataStream& operator<<(QDataStream& out, const OmProjectVolumes& p);
   friend QDataStream& operator>>(QDataStream& in, OmProjectVolumes& p);
 };

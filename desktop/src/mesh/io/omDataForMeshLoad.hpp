@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmDataForMeshLoad {
  public:
@@ -27,7 +27,7 @@ class OmDataForMeshLoad {
   // vertex index data
   inline uint32_t* VertexIndex() const { return vertexIndex_.get(); }
 
-  inline om::shared_ptr<uint32_t> VertexIndexSharedPtr() const {
+  inline std::shared_ptr<uint32_t> VertexIndexSharedPtr() const {
     return vertexIndex_;
   }
 
@@ -35,7 +35,7 @@ class OmDataForMeshLoad {
 
   inline uint64_t VertexIndexNumBytes() const { return vertexIndexNumBytes_; }
 
-  void SetVertexIndex(om::shared_ptr<uint32_t> vertexIndex,
+  void SetVertexIndex(std::shared_ptr<uint32_t> vertexIndex,
                       const uint32_t vertexIndexCount,
                       const uint64_t numBytes) {
     vertexIndex_ = vertexIndex;
@@ -46,7 +46,7 @@ class OmDataForMeshLoad {
   // strip data
   inline uint32_t* StripData() const { return stripData_.get(); }
 
-  inline om::shared_ptr<uint32_t> StripDataSharedPtr() const {
+  inline std::shared_ptr<uint32_t> StripDataSharedPtr() const {
     return stripData_;
   }
 
@@ -54,7 +54,7 @@ class OmDataForMeshLoad {
 
   inline uint64_t StripDataNumBytes() const { return stripDataNumBytes_; }
 
-  void SetStripData(om::shared_ptr<uint32_t> stripData,
+  void SetStripData(std::shared_ptr<uint32_t> stripData,
                     const uint32_t stripDataCount, const uint64_t numBytes) {
     stripData_ = stripData;
     stripDataCount_ = stripDataCount;
@@ -64,7 +64,7 @@ class OmDataForMeshLoad {
   //  vertex data
   inline float* VertexData() const { return vertexData_.get(); }
 
-  inline om::shared_ptr<float> VertexDataSharedPtr() const {
+  inline std::shared_ptr<float> VertexDataSharedPtr() const {
     return vertexData_;
   }
 
@@ -72,7 +72,7 @@ class OmDataForMeshLoad {
 
   inline uint64_t VertexDataNumBytes() const { return vertexDataNumBytes_; }
 
-  void SetVertexData(om::shared_ptr<float> vertexData,
+  void SetVertexData(std::shared_ptr<float> vertexData,
                      const uint32_t vertexDataCount, const uint64_t numBytes) {
     vertexData_ = vertexData;
     vertexDataCount_ = vertexDataCount;
@@ -82,7 +82,7 @@ class OmDataForMeshLoad {
   // triangle data
   inline uint32_t* TrianData() const { return trianData_.get(); }
 
-  inline om::shared_ptr<uint32_t> TrianDataSharedPtr() const {
+  inline std::shared_ptr<uint32_t> TrianDataSharedPtr() const {
     return trianData_;
   }
 
@@ -90,7 +90,7 @@ class OmDataForMeshLoad {
 
   inline uint64_t TrianDataNumBytes() const { return trianDataNumBytes_; }
 
-  void SetTrianData(om::shared_ptr<uint32_t> trianData,
+  void SetTrianData(std::shared_ptr<uint32_t> trianData,
                     const uint32_t trianDataCount, const uint64_t numBytes) {
     trianData_ = trianData;
     trianDataCount_ = trianDataCount;
@@ -100,19 +100,19 @@ class OmDataForMeshLoad {
  private:
   bool hasData_;
 
-  om::shared_ptr<uint32_t> vertexIndex_;
+  std::shared_ptr<uint32_t> vertexIndex_;
   uint32_t vertexIndexCount_;
   uint64_t vertexIndexNumBytes_;
 
-  om::shared_ptr<uint32_t> stripData_;
+  std::shared_ptr<uint32_t> stripData_;
   uint32_t stripDataCount_;
   uint64_t stripDataNumBytes_;
 
-  om::shared_ptr<float> vertexData_;
+  std::shared_ptr<float> vertexData_;
   uint32_t vertexDataCount_;
   uint64_t vertexDataNumBytes_;
 
-  om::shared_ptr<uint32_t> trianData_;
+  std::shared_ptr<uint32_t> trianData_;
   uint32_t trianDataCount_;
   uint64_t trianDataNumBytes_;
 };

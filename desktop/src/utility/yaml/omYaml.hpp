@@ -1,8 +1,7 @@
 #pragma once
 
-#include "yaml-cpp/yaml.h"
+#include "yaml-cpp-old/yaml.h"
 #include "datalayer/fs/omFile.hpp"
-
 #include <fstream>
 
 namespace om {
@@ -13,15 +12,15 @@ class util {
   // based on
   // http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
   template <typename T> static std::vector<T> Parse(const std::string& fnp) {
-    if (!om::file::exists(fnp)) {
-      throw OmIoException("could not find file", fnp);
+    if (!om::file::old::exists(fnp)) {
+      throw om::IoException("could not find file");
     }
 
     std::ifstream fin(fnp.c_str());
 
-    YAML::Parser parser(fin);
+    YAMLold::Parser parser(fin);
 
-    YAML::Node doc;
+    YAMLold::Node doc;
 
     parser.GetNextDocument(doc);
 
@@ -38,21 +37,21 @@ class util {
 
   // based on
   // http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
-  static void Read(const std::string& fnp, YAML::Node& node) {
-    if (!om::file::exists(fnp)) {
-      throw OmIoException("could not find file", fnp);
+  static void Read(const std::string& fnp, YAMLold::Node& node) {
+    if (!om::file::old::exists(fnp)) {
+      throw om::IoException("could not find file");
     }
 
     std::ifstream fin(fnp.c_str());
 
-    YAML::Parser parser(fin);
+    YAMLold::Parser parser(fin);
 
     parser.GetNextDocument(node);
   }
 
   // based on
   // http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
-  static void Write(const std::string& fnp, YAML::Emitter& emitter) {
+  static void Write(const std::string& fnp, YAMLold::Emitter& emitter) {
     std::ofstream fout(fnp.c_str());
 
     fout << emitter.c_str();
@@ -61,7 +60,7 @@ class util {
   }
 
   template <typename T>
-  static void OptionalRead(const YAML::Node& n, const std::string& name,
+  static void OptionalRead(const YAMLold::Node& n, const std::string& name,
                            T& data, const T& defaultValue) {
     if (n.FindValue(name)) {
       n[name] >> data;
@@ -71,7 +70,7 @@ class util {
   }
 
   template <typename T>
-  static void OptionalRead(const YAML::Node& n, const std::string& name,
+  static void OptionalRead(const YAMLold::Node& n, const std::string& name,
                            boost::optional<T>& data) {
     if (n.FindValue(name)) {
       T read;

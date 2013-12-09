@@ -1,12 +1,12 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/viewGroup/viewGroupWidgetInfo.h"
 #include "gui/widgets/omTellInfo.hpp"
 #include "utility/dataWrappers.h"
 #include "view2d/omView2d.h"
-#include "view3d/omView3d.h"
+#include "view3d.old/omView3d.h"
 #include "viewGroup/omViewGroupState.h"
 
 #include <QtGui>
@@ -39,32 +39,34 @@ class ViewGroupUtils {
 
   QString makeObjectName() { return "3d_" + viewGroupName(); }
 
-  QString getViewName(const std::string& volName, const ViewType viewType) {
+  QString getViewName(const std::string& volName,
+                      const om::common::ViewType viewType) {
     return QString::fromStdString(volName) + " -- " +
            getViewTypeAsStr(viewType) + " View";
   }
 
-  QString getViewTypeAsStr(const ViewType viewType) {
+  QString getViewTypeAsStr(const om::common::ViewType viewType) {
     switch (viewType) {
-      case XY_VIEW:
+      case om::common::XY_VIEW:
         return "XY";
-      case XZ_VIEW:
+      case om::common::XZ_VIEW:
         return "XZ";
-      case ZY_VIEW:
+      case om::common::ZY_VIEW:
         return "ZY";
       default:
-        throw OmArgException("unknown viewtype");
+        throw om::ArgException("unknown viewtype");
     }
   }
 
-  QString makeObjectName(const ObjectType voltype, const ViewType viewType) {
+  QString makeObjectName(const om::common::ObjectType voltype,
+                         const om::common::ViewType viewType) {
     QString name;
 
-    if (CHANNEL == voltype) {
+    if (om::common::CHANNEL == voltype) {
       name = "channel_";
-    } else if (SEGMENTATION == voltype) {
+    } else if (om::common::SEGMENTATION == voltype) {
       name = "segmentation_";
-    } else if (AFFINITY == voltype) {
+    } else if (om::common::AFFINITY == voltype) {
       name = "affinity_";
     }
 
@@ -75,11 +77,11 @@ class ViewGroupUtils {
 
   QString makeObjectName(ViewGroupWidgetInfo& vgw) {
     if (VIEW2D_CHAN == vgw.widgetType) {
-      return makeObjectName(CHANNEL, vgw.viewType);
+      return makeObjectName(om::common::CHANNEL, vgw.viewType);
     }
 
     if (VIEW2D_SEG == vgw.widgetType) {
-      return makeObjectName(SEGMENTATION, vgw.viewType);
+      return makeObjectName(om::common::SEGMENTATION, vgw.viewType);
     }
 
     return makeObjectName();
@@ -87,18 +89,18 @@ class ViewGroupUtils {
 
   QString makeComplimentaryObjectName(ViewGroupWidgetInfo& vgw) {
     if (VIEW2D_CHAN == vgw.widgetType) {
-      return makeObjectName(SEGMENTATION, vgw.viewType);
+      return makeObjectName(om::common::SEGMENTATION, vgw.viewType);
     }
 
     if (VIEW2D_SEG == vgw.widgetType) {
-      return makeObjectName(CHANNEL, vgw.viewType);
+      return makeObjectName(om::common::CHANNEL, vgw.viewType);
     }
 
     return "";
   }
 
-  QDockWidget* getDockWidget(const ObjectType voltype,
-                             const ViewType viewType) {
+  QDockWidget* getDockWidget(const om::common::ObjectType voltype,
+                             const om::common::ViewType viewType) {
     return getDockWidget(makeObjectName(voltype, viewType));
   }
 
@@ -106,15 +108,16 @@ class ViewGroupUtils {
     QList<QDockWidget*> widgets = findDockWidgets(objName);
 
     if (widgets.isEmpty()) {
-      return NULL;
+      return nullptr;
     } else if (widgets.size() > 1) {
-      throw OmArgException("too many widgets");
+      throw om::ArgException("too many widgets");
     }
 
     return widgets[0];
   }
 
-  bool doesDockWidgetExist(const ObjectType voltype, const ViewType viewType) {
+  bool doesDockWidgetExist(const om::common::ObjectType voltype,
+                           const om::common::ViewType viewType) {
     return doesDockWidgetExist(makeObjectName(voltype, viewType));
   }
 
@@ -136,7 +139,7 @@ class ViewGroupUtils {
   }
 
   QDockWidget* getBiggestDockWidget() {
-    QDockWidget* biggest = NULL;
+    QDockWidget* biggest = nullptr;
     uint64_t biggest_area = 0;
 
     Q_FOREACH(QDockWidget * dock, getAllDockWidgets()) {
@@ -177,7 +180,6 @@ class ViewGroupUtils {
     OmTellInfo("segmentation " + om::string::num(sdw.GetID()) +
                " is not built");
     return false;
-
   }
 
   void wireDockWithView2d(QWidget* widget, DockWidgetPair d) {
@@ -208,7 +210,7 @@ class ViewGroupUtils {
   }
 
   ViewGroupWidgetInfo CreateView2dChannel(const ChannelDataWrapper& cdw,
-                                          const ViewType viewType) {
+                                          const om::common::ViewType viewType) {
     OmChannel& chan = cdw.GetChannel();
 
     const QString name = getViewName(chan.GetName(), viewType);
@@ -226,7 +228,7 @@ class ViewGroupUtils {
   }
 
   ViewGroupWidgetInfo CreateView2dSegmentation(
-      const SegmentationDataWrapper& sdw, const ViewType viewType) {
+      const SegmentationDataWrapper& sdw, const om::common::ViewType viewType) {
     const QString name = getViewName(sdw.GetName().toStdString(), viewType);
 
     ViewGroupWidgetInfo vgw(name, VIEW2D_SEG, viewType);

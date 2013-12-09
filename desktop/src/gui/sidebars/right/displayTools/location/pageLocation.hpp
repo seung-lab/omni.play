@@ -13,7 +13,10 @@ namespace om {
 namespace displayTools {
 
 class PageLocation : public QWidget {
-  Q_OBJECT private : OmViewGroupState* const vgs_;
+  Q_OBJECT;
+
+ private:
+  OmViewGroupState* const vgs_;
 
  public:
   PageLocation(QWidget* parent, OmViewGroupState* vgs)

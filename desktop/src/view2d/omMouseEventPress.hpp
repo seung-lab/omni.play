@@ -138,7 +138,7 @@ class OmMouseEventPress {
     const om::globalCoord newloc = screenc.toGlobalCoord();
     state_->setLocation(newloc);
 
-    OmEvents::ViewCenterChanged();
+    om::event::ViewCenterChanged();
   }
 
   void mouseLeftButton() {
@@ -166,8 +166,8 @@ class OmMouseEventPress {
         fill();
         break;
       case om::tool::LANDMARK:
-        state_->getViewGroupState()->Landmarks()
-            .Add(getSelectedSegment(), dataClickPoint_);
+        state_->getViewGroupState()->Landmarks().Add(getSelectedSegment(),
+                                                     dataClickPoint_);
         break;
       case om::tool::CUT:
         doFindAndCutSegment();
@@ -188,7 +188,9 @@ class OmMouseEventPress {
   }
 
   void selectSegments() {
-    om::AddOrSubtract addOrSubtractSegments = altKey_ ? om::SUBTRACT : om::ADD;
+    om::common::AddOrSubtract addOrSubtractSegments =
+        altKey_ ? om::common::AddOrSubtract::SUBTRACT
+                : om::common::AddOrSubtract::ADD;
 
     OmBrushSelect::SelectByClick(state_, dataClickPoint_,
                                  addOrSubtractSegments);
@@ -221,11 +223,11 @@ class OmMouseEventPress {
   void doSelectSegment(const SegmentDataWrapper& sdw,
                        const bool augment_selection) {
     if (!sdw.IsSegmentValid()) {
-      printf("not valid\n");
+      log_infos << "not valid";
       return;
     }
 
-    const OmID segmentID = sdw.getID();
+    const om::common::ID segmentID = sdw.getID();
 
     OmSegmentSelected::Set(sdw);
 
@@ -254,7 +256,7 @@ class OmMouseEventPress {
   boost::optional<SegmentDataWrapper> getSelectedSegment() {
     OmMipVolume* vol = state_->getVol();
 
-    if (SEGMENTATION == vol->getVolumeType()) {
+    if (om::common::SEGMENTATION == vol->getVolumeType()) {
       OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(vol);
       return getSelectedSegmentSegmentation(seg);
     }
@@ -281,7 +283,8 @@ class OmMouseEventPress {
 
   boost::optional<SegmentDataWrapper> getSelectedSegmentSegmentation(
       OmSegmentation* segmentation) {
-    const OmSegID segmentID = segmentation->GetVoxelValue(dataClickPoint_);
+    const om::common::SegID segmentID =
+        segmentation->GetVoxelValue(dataClickPoint_);
 
     if (!segmentID) {
       return boost::optional<SegmentDataWrapper>();
@@ -325,8 +328,7 @@ class OmMouseEventPress {
   }
 
   void addAnnotation() {
-    om::annotation::manager& manager =
-        *state_->GetSDW().GetSegmentationPtr()->Annotations();
+    auto& manager = state_->GetSDW().GetSegmentationPtr()->Annotations();
     OmViewGroupState* vgs = state_->getViewGroupState();
 
     manager.Add(dataClickPoint_, vgs->getAnnotationString(),

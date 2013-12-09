@@ -11,7 +11,10 @@ namespace om {
 namespace gui {
 
 class progressBarDialog : public QDialog {
-  Q_OBJECT private : om::shared_ptr<progress> progress_;
+  Q_OBJECT;
+
+ private:
+  std::shared_ptr<progress> progress_;
   progressBar<uint64_t>* progressBar_;
 
   OmThreadPool threadPool_;
@@ -37,18 +40,18 @@ class progressBarDialog : public QDialog {
 
  public:
   progressBarDialog(QWidget* parent)
-      : QDialog(parent), progress_(om::make_shared<progress>()) {
+      : QDialog(parent), progress_(std::make_shared<progress>()) {
     init();
   }
 
-  progressBarDialog(QWidget* parent, om::shared_ptr<progress> progress)
+  progressBarDialog(QWidget* parent, std::shared_ptr<progress> progress)
       : QDialog(parent), progress_(progress) {
     init();
   }
 
   ~progressBarDialog() {}
 
-  om::shared_ptr<progress> Progress() { return progress_; }
+  std::shared_ptr<progress> Progress() { return progress_; }
 
   void SetTotal(const uint32_t total) { progress_->SetTotal(total); }
 

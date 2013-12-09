@@ -1,21 +1,31 @@
-#include "common/omCommon.h"
+#include "volume/omVolCoordsMipped.hpp"
+#include "common/common.h"
 #include "volume/omMipVolume.h"
-#include "common/omException.h"
+#include "common/exception.h"
 #include "view2d/omView2dConverters.hpp"
+#include "globalCoord.h"
+#include "normCoord.h"
 
 namespace om {
 
 dataCoord::dataCoord(dataCoord::base_t v, const OmMipVolume* vol, int mipLevel)
     : base_t(v), vol_(vol), mipLevel_(mipLevel) {
   if (mipLevel > vol_->Coords().GetRootMipLevel()) {
-    throw OmArgException("Invalid Mip level.");
+    throw om::ArgException("Invalid Mip level.");
   }
 }
 
 dataCoord::dataCoord(int x, int y, int z, const OmMipVolume* vol, int mipLevel)
     : base_t(x, y, z), vol_(vol), mipLevel_(mipLevel) {
   if (mipLevel > vol_->Coords().GetRootMipLevel()) {
-    throw OmArgException("Invalid Mip level.");
+    throw om::ArgException("Invalid Mip level.");
+  }
+}
+
+dataCoord::dataCoord(base_t v, const OmMipVolCoords& system, int mipLevel)
+    : base_t(v), vol_(system.vol()), mipLevel_(mipLevel) {
+  if (mipLevel > vol_->Coords().GetRootMipLevel()) {
+    throw om::ArgException("Invalid Mip level.");
   }
 }
 
@@ -44,29 +54,29 @@ int dataCoord::toChunkOffset() const {
   return dims.x * dims.y * chunkVec.z + dims.x * chunkVec.y + chunkVec.x;
 }
 
-int dataCoord::toTileOffset(ViewType viewType) const {
+int dataCoord::toTileOffset(common::ViewType viewType) const {
   const Vector3i dims = vol_->Coords().GetChunkDimensions();
   const Vector3i chunkVec = toChunkVec();
 
   switch (viewType) {
-    case XY_VIEW:
+    case om::common::XY_VIEW:
       return dims.x * chunkVec.y + chunkVec.x;
-    case XZ_VIEW:
+    case om::common::XZ_VIEW:
       return dims.x * chunkVec.z + chunkVec.x;
-    case ZY_VIEW:
+    case om::common::ZY_VIEW:
       return dims.z * chunkVec.y + chunkVec.z;
   }
 
   return -1;
 }
 
-int dataCoord::toTileDepth(ViewType viewType) const {
+int dataCoord::toTileDepth(common::ViewType viewType) const {
   return OmView2dConverters::GetViewTypeDepth(toChunkVec(), viewType);
 }
 
 dataCoord dataCoord::atDifferentLevel(int newLevel) const {
   if (newLevel > vol_->Coords().GetRootMipLevel()) {
-    throw OmArgException("Invalid Mip level.");
+    throw om::ArgException("Invalid Mip level.");
   }
 
   if (newLevel == mipLevel_) {
@@ -81,11 +91,11 @@ dataCoord dataCoord::atDifferentLevel(int newLevel) const {
 dataBbox::dataBbox(dataCoord min, dataCoord max)
     : base_t(min, max), vol_(min.volume()), mipLevel_(min.level()) {
   if (min.volume() != max.volume()) {
-    throw OmArgException("min and max coords come from different volumes");
+    throw om::ArgException("min and max coords come from different volumes");
   }
 
   if (min.level() != max.level()) {
-    throw OmArgException("min and max coords come from different mip levels");
+    throw om::ArgException("min and max coords come from different mip levels");
   }
 }
 
@@ -102,6 +112,7 @@ globalBbox dataBbox::toGlobalBbox() const {
 normBbox dataBbox::toNormBbox() const {
   return normBbox(getMin().toNormCoord(), getMax().toNormCoord());
 }
+normBbox dataBbox::ToNormBbox() const { return toNormBbox(); }
 
 dataBbox dataBbox::atDifferentLevel(int newLevel) const {
   return dataBbox(getMin().atDifferentLevel(newLevel),

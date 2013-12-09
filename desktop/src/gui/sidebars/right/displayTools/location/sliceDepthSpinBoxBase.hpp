@@ -1,7 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
-#include "events/details/omViewEvent.h"
+#include "events/listeners.h"
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "utility/dataWrappers.h"
 #include "view2d/omView2dConverters.hpp"
@@ -11,9 +10,13 @@
 
 #include <limits>
 
-class SliceDepthSpinBoxBase : public OmIntSpinBox, public OmViewEventListener {
-  Q_OBJECT public : SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState* vgs)
-                    : OmIntSpinBox(d, om::UPDATE_AS_TYPE), vgs_(vgs) {
+class SliceDepthSpinBoxBase : public OmIntSpinBox,
+                              public om::event::View2dEventListener {
+  Q_OBJECT;
+
+ public:
+  SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState* vgs)
+      : OmIntSpinBox(d, true), vgs_(vgs) {
     setValue(0);
     setSingleStep(1);
     setMaximum(std::numeric_limits<int32_t>::max());
@@ -26,7 +29,7 @@ class SliceDepthSpinBoxBase : public OmIntSpinBox, public OmViewEventListener {
  private:
   OmViewGroupState* const vgs_;
 
-  virtual ViewType viewType() const = 0;
+  virtual om::common::ViewType viewType() const = 0;
 
   OmMipVolume* getVol() {
     {
@@ -43,27 +46,24 @@ class SliceDepthSpinBoxBase : public OmIntSpinBox, public OmViewEventListener {
       }
     }
 
-    return NULL;
+    return nullptr;
   }
 
   void actUponValueChange(const int depth) {
-    if (NULL == vg2ds()) {
+    if (nullptr == vg2ds()) {
       return;
     }
 
     vg2ds()->SetScaledSliceDepth(viewType(), depth);
-    OmEvents::Redraw2d();
-    OmEvents::ViewCenterChanged();
-    OmEvents::View3dRecenter();
+    om::event::Redraw2d();
+    om::event::ViewCenterChanged();
+    om::event::View3dRecenter();
   }
 
   void update() {
     blockSignals(true);
-
     const int depth = vg2ds()->GetScaledSliceDepth(viewType());
-
     setValue(depth);
-
     blockSignals(false);
   }
 

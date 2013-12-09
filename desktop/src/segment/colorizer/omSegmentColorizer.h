@@ -1,22 +1,22 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/colorizer/omSegmentColorizerColorCache.hpp"
 #include "segment/colorizer/omSegmentColorizerTypes.h"
 #include "utility/omLockedPODs.hpp"
 
 class OmSegment;
 class OmSegments;
-template <class> class OmPooledTile;
 
 class OmSegmentColorizer {
  public:
-  OmSegmentColorizer(OmSegments*, const OmSegmentColorCacheType,
+  OmSegmentColorizer(OmSegments*, const om::segment::coloring,
                      const int tileDim, OmViewGroupState* vgs);
 
   ~OmSegmentColorizer();
 
-  OmPooledTile<OmColorARGB>* ColorTile(uint32_t const* const imageData);
+  std::shared_ptr<om::common::ColorARGB> ColorTile(
+      uint32_t const* const imageData);
 
   static const std::vector<uint8_t> SelectedColorLookupTable;
 

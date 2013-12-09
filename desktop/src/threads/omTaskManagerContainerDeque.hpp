@@ -19,7 +19,6 @@
 //
 
 #include "zi/omMutex.h"
-#include "utility/omSharedPtr.hpp"
 
 #include <zi/concurrency/runnable.hpp>
 #include <deque>
@@ -32,7 +31,7 @@ class OmTaskManagerContainerDeque {
   zi::spinlock lock_;
 
   template <class Function> inline task_t wrapFunction(const Function& task) {
-    return om::shared_ptr<zi::concurrency_::runnable_function_wrapper>(
+    return std::shared_ptr<zi::concurrency_::runnable_function_wrapper>(
         new zi::concurrency_::runnable_function_wrapper(task));
   }
 
@@ -68,7 +67,7 @@ class OmTaskManagerContainerDeque {
     queue_.push_front(task);
   }
 
-  template <class Runnable> void push_front(om::shared_ptr<Runnable> task) {
+  template <class Runnable> void push_front(std::shared_ptr<Runnable> task) {
     zi::guard g(lock_);
     queue_.push_front(task);
   }
@@ -84,7 +83,7 @@ class OmTaskManagerContainerDeque {
     queue_.push_back(task);
   }
 
-  template <class Runnable> void push_back(om::shared_ptr<Runnable> task) {
+  template <class Runnable> void push_back(std::shared_ptr<Runnable> task) {
     zi::guard g(lock_);
     queue_.push_back(task);
   }

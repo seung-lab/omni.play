@@ -1,5 +1,7 @@
 #pragma once
 
+#include "coordinates/chunkCoord.h"
+#include "coordinates/dataCoord.h"
 #include "volume/omVolCoords.hpp"
 #include "datalayer/archive/channel.h"
 
@@ -19,9 +21,9 @@ class OmMipVolCoords : public OmVolCoords {
   friend class OmDataArchiveProject;
   friend class OmMipVolumeArchiveOld;
 
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
-                                         const OmMipVolCoords& c);
-  friend void YAML::operator>>(const YAML::Node& in, OmMipVolCoords& c);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmMipVolCoords& c);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmMipVolCoords& c);
   friend QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c);
   friend QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c);
 
@@ -30,6 +32,8 @@ class OmMipVolCoords : public OmVolCoords {
       : mMipLeafDim(0), mMipRootLevel(0), vol_(vol) {}
 
   virtual ~OmMipVolCoords() {}
+
+  const OmMipVolume* vol() const { return vol_; }
 
   //mip level method
 
@@ -68,7 +72,7 @@ class OmMipVolCoords : public OmVolCoords {
   // compression level.
   // TODO: should this be factored out?
   inline Vector3i MipLevelDataDimensions(const int level) const {
-    Vector3i dims = GetExtent().toDataBbox(vol_, level).getMax();
+    Vector3i dims = GetExtent().ToDataBbox(vol_, level).getMax();
     if (dims.x == 0) {
       dims.x = 1;
     }
@@ -103,6 +107,10 @@ class OmMipVolCoords : public OmVolCoords {
 
   // Returns true if given MipCoordinate is a valid coordinate within the
   // MipVolume.
+  inline bool ContainsMipChunk(const om::chunkCoord& rMipCoord) const {
+    return ContainsMipChunkCoord(rMipCoord);
+  }
+
   inline bool ContainsMipChunkCoord(const om::chunkCoord& rMipCoord) const {
     //if level is greater than root level
     if (rMipCoord.Level < 0 || rMipCoord.Level > GetRootMipLevel()) {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/scoped_ptr.hpp>
 #include "users/userSettings.h"
 
 #include <QString>
@@ -13,12 +12,14 @@ class usersImpl;
 
 class users {
  private:
-  boost::scoped_ptr<usersImpl> impl_;
+  std::unique_ptr<usersImpl> impl_;
 
  public:
   users();
 
   ~users();
+
+  static const std::string defaultUser;
 
   void SwitchToDefaultUser();
   void SwitchToUser(const std::string& userName);
@@ -26,6 +27,7 @@ class users {
   QString LogFolderPath();
   void SetupFolders();
 
+  const std::string& CurrentUser() const;
   std::string UsersFolder();
   std::string UsersRootFolder();
   userSettings& UserSettings();

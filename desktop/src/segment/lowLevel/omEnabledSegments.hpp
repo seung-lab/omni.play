@@ -10,10 +10,11 @@ class OmEnabledSegments {
  private:
   OmSegmentsImplLowLevel* const cache_;
 
-  OmSegIDsSet enabled_;
+  om::common::SegIDSet enabled_;
 
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
-  friend void YAML::operator>>(const YAML::Node&, OmSegmentsImpl&);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter&,
+                                               const OmSegmentsImpl&);
+  friend void YAMLold::operator>>(const YAMLold::Node&, OmSegmentsImpl&);
   friend QDataStream& operator<<(QDataStream&, const OmSegmentsImpl&);
   friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);
 
@@ -21,17 +22,17 @@ class OmEnabledSegments {
   OmEnabledSegments(OmSegmentsImplLowLevel* cache) : cache_(cache) {}
 
   inline void Reroot() {
-    OmSegIDsSet old = enabled_;
+    om::common::SegIDSet old = enabled_;
     enabled_.clear();
 
     FOR_EACH(iter, old) { enabled_.insert(cache_->FindRootID(*iter)); }
   }
 
-  inline OmSegIDsSet GetEnabledSegmentIDs() { return enabled_; }
+  inline om::common::SegIDSet GetEnabledSegmentIDs() { return enabled_; }
 
   inline uint32_t Size() const { return enabled_.size(); }
 
-  inline bool IsEnabled(const OmSegID segID) const {
+  inline bool IsEnabled(const om::common::SegID segID) const {
     if (enabled_.empty()) {
       return false;
     }
@@ -40,8 +41,8 @@ class OmEnabledSegments {
 
   inline bool AnyEnabled() const { return enabled_.size(); }
 
-  inline void SetEnabled(const OmSegID segID, const bool isEnabled) {
-    const OmSegID rootID = cache_->FindRootID(segID);
+  inline void SetEnabled(const om::common::SegID segID, const bool isEnabled) {
+    const om::common::SegID rootID = cache_->FindRootID(segID);
 
     cache_->touchFreshness();
 

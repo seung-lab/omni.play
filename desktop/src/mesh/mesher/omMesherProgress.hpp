@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/widgets/progress.hpp"
 
 namespace om {
@@ -8,14 +8,14 @@ namespace mesher {
 
 class progress {
  private:
-  om::shared_ptr<om::gui::progress> progress_;
+  std::shared_ptr<om::gui::progress> progress_;
 
  public:
-  progress() : progress_(om::make_shared<om::gui::progress>()) {}
+  progress() : progress_(std::make_shared<om::gui::progress>()) {}
 
-  om::shared_ptr<om::gui::progress> Progress() { return progress_; }
+  std::shared_ptr<om::gui::progress> Progress() { return progress_; }
 
-  void Progress(om::shared_ptr<om::gui::progress> p) { progress_ = p; }
+  void Progress(std::shared_ptr<om::gui::progress> p) { progress_ = p; }
 
   void SetTotalNumChunks(const uint32_t totalNumChunks) {
     progress_->SetTotal(totalNumChunks);
@@ -29,10 +29,9 @@ class progress {
     const uint32_t total = progress_->GetTotal();
     const uint32_t chunksLeft = total - progress_->GetDone();
 
-    std::cout << "finished chunk: " << coord << "; " << chunksLeft
+    log_infos << "finished chunk: " << coord << "; " << chunksLeft
               << " chunks left "
-              << "(" << total << " total)" << std::endl;
-
+              << "(" << total << " total)";
   }
 };
 

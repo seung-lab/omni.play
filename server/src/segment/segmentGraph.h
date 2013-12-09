@@ -13,8 +13,6 @@ class graph {
   ~graph();
 
  private:
-
 };
-
 }
 }

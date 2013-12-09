@@ -1,7 +1,8 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omString.hpp"
+#include "common/colors.h"
+#include "common/common.h"
+#include "common/string.hpp"
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/omRand.hpp"
@@ -12,24 +13,24 @@ class OmRandColorFile {
 
   const std::string fnp_;
 
-  om::shared_ptr<QFile> file_;
-  OmColor* values_;
+  std::shared_ptr<QFile> file_;
+  om::common::Color* values_;
   int64_t numEntries_;
 
   friend class OmProjectGlobals;
 
  public:
-  OmRandColorFile() : fnp_(fileName()), values_(NULL), numEntries_(0) {}
+  OmRandColorFile() : fnp_(fileName()), values_(nullptr), numEntries_(0) {}
 
   ~OmRandColorFile() {}
 
-  OmColor GetRandomColor() {
+  om::common::Color GetRandomColor() {
     assert(values_);
     const int index = OmRand::GetRandomInt(0, numEntries_ - 1);
     return values_[index];
   }
 
-  OmColor GetRandomColor(const uint32_t segID) {
+  om::common::Color GetRandomColor(const uint32_t segID) {
     assert(values_);
     const int index = segID % numEntries_;
     return values_[index];
@@ -37,22 +38,22 @@ class OmRandColorFile {
 
  private:
   void createOrLoad() {
-    if (!om::file::exists(fnp_)) {
+    if (!om::file::old::exists(fnp_)) {
       setupFile();
     }
     mapReadOnly();
   }
 
   void mapReadOnly() {
-    if (!om::file::exists(fnp_)) {
-      throw OmIoException("file doesn't exist", fnp_);
+    if (!om::file::old::exists(fnp_)) {
+      throw om::IoException("file doesn't exist", fnp_);
     }
 
-    om::file::openFileRO(file_, fnp_);
+    om::file::old::openFileRO(file_, fnp_);
 
-    values_ = om::file::mapFile<OmColor>(file_.get());
+    values_ = om::file::old::mapFile<om::common::Color>(file_.get());
 
-    numEntries_ = file_->size() / sizeof(OmColor);
+    numEntries_ = file_->size() / sizeof(om::common::Color);
   }
 
   std::string fileName() const {
@@ -63,7 +64,7 @@ class OmRandColorFile {
     return s.str();
   }
 
-  static void buildColorTable(std::vector<OmColor>& colorTable) {
+  static void buildColorTable(std::vector<om::common::Color>& colorTable) {
     // make sure to change version_ if color table algorithm changes...
 
     static const int min_variance = 120;
@@ -80,9 +81,9 @@ class OmRandColorFile {
           const int v = avg2 - avg * avg;
 
           if (v >= min_variance) {
-            const OmColor color = { static_cast<uint8_t>(r),
-                                    static_cast<uint8_t>(g),
-                                    static_cast<uint8_t>(b) };
+            const om::common::Color color = {static_cast<uint8_t>(r),
+                                             static_cast<uint8_t>(g),
+                                             static_cast<uint8_t>(b)};
             colorTable.push_back(color);
           }
         }
@@ -93,14 +94,14 @@ class OmRandColorFile {
   }
 
   void setupFile() {
-    std::vector<OmColor> colorTable;
+    std::vector<om::common::Color> colorTable;
 
     buildColorTable(colorTable);
 
     QFile file(QString::fromStdString(fnp_));
 
-    om::file::openFileRW(file);
+    om::file::old::openFileRW(file);
 
-    om::file::writeVec(file, colorTable);
+    om::file::old::writeVec(file, colorTable);
   }
 };

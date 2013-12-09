@@ -5,16 +5,16 @@
 
 class OmBrushEraseLineTask : public zi::runnable {
  private:
-  const om::shared_ptr<OmBrushOppInfo> info_;
+  const std::shared_ptr<OmBrushOppInfo> info_;
   const om::globalCoord first_;
   const om::globalCoord second_;
-  const OmSegID segIDtoErase_;
+  const om::common::SegID segIDtoErase_;
 
  public:
-  OmBrushEraseLineTask(om::shared_ptr<OmBrushOppInfo> info,
+  OmBrushEraseLineTask(std::shared_ptr<OmBrushOppInfo> info,
                        const om::globalCoord& first,
                        const om::globalCoord& second,
-                       const OmSegID segIDtoErase)
+                       const om::common::SegID segIDtoErase)
       : info_(info),
         first_(first),
         second_(second),

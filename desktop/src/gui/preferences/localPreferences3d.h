@@ -3,7 +3,10 @@
 #include <QtGui>
 
 class LocalPreferences3d : public QWidget {
-  Q_OBJECT public : LocalPreferences3d(QWidget* parent);
+  Q_OBJECT;
+
+ public:
+  LocalPreferences3d(QWidget* parent);
 
  private
 Q_SLOTS:

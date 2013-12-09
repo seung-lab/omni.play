@@ -1,4 +1,4 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "gui/guiUtils.hpp"
 #include "gui/inspectors/segmentInspector.h"
 #include "gui/segmentLists/details/segmentListBase.h"
@@ -7,7 +7,7 @@
 #include "segment/lists/omSegmentListsTypes.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "utility/dataWrappers.h"
 #include "utility/omStringHelpers.h"
 #include "viewGroup/omViewGroupState.h"
@@ -31,16 +31,17 @@ OmSegmentListWidget::OmSegmentListWidget(SegmentListBase* slist,
 
 bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
                                    const SegmentDataWrapper segmentJustSelected,
-                                   om::shared_ptr<GUIPageOfSegments> segIDs) {
+                                   std::shared_ptr<GUIPageOfSegments> segIDs) {
   bool makeTabActive = false;
-  const OmSegID segIDjustSelected = segmentJustSelected.GetSegmentID();
+  const om::common::SegID segIDjustSelected =
+      segmentJustSelected.GetSegmentID();
 
   setUpdatesEnabled(false);
   clear();
   selectionModel()->blockSignals(true);
   selectionModel()->clearSelection();
 
-  QTreeWidgetItem* rowToJumpTo = NULL;
+  QTreeWidgetItem* rowToJumpTo = nullptr;
 
   assert(100 >= segIDs->segs.size() && "too many segments returned");
 
@@ -77,7 +78,7 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 
   GuiUtils::autoResizeColumnWidths(this, 3);
 
-  if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
+  if (doScrollToSelectedSegment && rowToJumpTo != nullptr) {
     scrollToItem(rowToJumpTo);
   }
 
@@ -92,8 +93,8 @@ void OmSegmentListWidget::segmentLeftClick() {
   segmentListBase->userJustClickedInThisSegmentList();
 
   QTreeWidgetItem* current = currentItem();
-  if (NULL == current) {
-    printf("FIXME: current segment not set\n");
+  if (nullptr == current) {
+    log_errors << "current segment not set";
     return;
   }
   QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
@@ -157,7 +158,7 @@ void OmSegmentListWidget::segmentShowContexMenu(QMouseEvent* event) {
 }
 
 bool OmSegmentListWidget::isSegmentSelected() {
-  if (NULL == currentItem()) {
+  if (nullptr == currentItem()) {
     return false;
   }
   return true;

@@ -1,5 +1,5 @@
-#include "common/omDebug.h"
-#include "common/omGl.h"
+#include "common/logging.h"
+#include "utility/glInclude.h"
 #include "mesh/io/omMeshConvertV1toV2.hpp"
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/io/v2/omMeshReaderV2.hpp"
@@ -46,10 +46,10 @@ bool OmMesh::createVbo() {
   }
 
   if (isVbo()) {
-    throw OmIoException("should not already be vbo");
+    throw om::IoException("should not already be vbo");
   }
 
-  //create the VBO for the vertex data
+  // create the VBO for the vertex data
   vertexDataVboId_ = createVbo(data_->VertexData(), data_->VertexDataNumBytes(),
                                GL_ARRAY_BUFFER_ARB, GL_STATIC_DRAW_ARB);
 
@@ -57,7 +57,7 @@ bool OmMesh::createVbo() {
     return false;
   }
 
-  //create VBO for the vertex index data
+  // create VBO for the vertex index data
   vertexIndexDataVboId_ =
       createVbo(data_->VertexIndex(), data_->VertexIndexNumBytes(),
                 GL_ARRAY_BUFFER_ARB, GL_STATIC_DRAW_ARB);
@@ -71,7 +71,7 @@ bool OmMesh::createVbo() {
 
 void OmMesh::deleteVbo() {
   if (!isVbo()) {
-    throw OmIoException("not a vbo");
+    throw om::IoException("not a vbo");
   }
 
   glDeleteBuffersARB(1, &vertexDataVboId_);
@@ -96,25 +96,25 @@ void OmMesh::makeDisplayList(QGLContext const* context) {
 
   ////bind VBOs so gl*Pointer() operations are offset instead of real pointers
 
-  //bind vertex data VBO
+  // bind vertex data VBO
   glBindBufferARB(GL_ARRAY_BUFFER_ARB, vertexDataVboId_);
 
-  //specify vector size for interleaved vector data
+  // specify vector size for interleaved vector data
   uint32_t vector_size = 3 * sizeof(GL_FLOAT);
 
-  //specify normal (type, stride, pointer)
+  // specify normal (type, stride, pointer)
   glNormalPointer(GL_FLOAT, 2 * vector_size, (void*)vector_size);
 
-  //specify vertex (coordinates, type, stride, pointer)
+  // specify vertex (coordinates, type, stride, pointer)
   glVertexPointer(3, GL_FLOAT, 2 * vector_size, 0);
 
   ////bind vertex index data VBO
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, vertexIndexDataVboId_);
 
-  //specify index pointer (type, stride, pointer)
+  // specify index pointer (type, stride, pointer)
   glIndexPointer(GL_UNSIGNED_INT, 0, 0);
 
-  //activate client state vertex and normal array
+  // activate client state vertex and normal array
   glEnableClientState(GL_NORMAL_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -122,10 +122,11 @@ void OmMesh::makeDisplayList(QGLContext const* context) {
   if (data_->StripDataCount()) {
     uint32_t* stripOffsetSizeData = data_->StripData();
     for (uint32_t idx = 0; idx < data_->StripDataCount(); ++idx) {
-      glDrawElements(GL_TRIANGLE_STRIP,                 //triangle strip
-                     stripOffsetSizeData[2 * idx + 1],  //elements in strip
-                     GL_UNSIGNED_INT,                   //type
-                     (GLuint*)0 + stripOffsetSizeData[2 * idx]);  //strip offset
+      glDrawElements(
+          GL_TRIANGLE_STRIP,                           // triangle strip
+          stripOffsetSizeData[2 * idx + 1],            // elements in strip
+          GL_UNSIGNED_INT,                             // type
+          (GLuint*)0 + stripOffsetSizeData[2 * idx]);  // strip offset
     }
   }
 
@@ -133,14 +134,15 @@ void OmMesh::makeDisplayList(QGLContext const* context) {
   if (data_->TrianDataCount()) {
     uint32_t* trianOffsetSizeData = data_->TrianData();
     for (uint32_t idx = 0; idx < data_->TrianDataCount(); ++idx) {
-      glDrawElements(GL_TRIANGLES,                      //triangle trian
-                     trianOffsetSizeData[2 * idx + 1],  //elements in trian
-                     GL_UNSIGNED_INT,                   //type
-                     (GLuint*)0 + trianOffsetSizeData[2 * idx]);  //trian offset
+      glDrawElements(
+          GL_TRIANGLES,                                // triangle trian
+          trianOffsetSizeData[2 * idx + 1],            // elements in trian
+          GL_UNSIGNED_INT,                             // type
+          (GLuint*)0 + trianOffsetSizeData[2 * idx]);  // trian offset
     }
   }
 
-  //disable client state
+  // disable client state
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
 
@@ -190,7 +192,7 @@ GLuint OmMesh::createVbo(const void* data, int dataSize, GLenum target,
   if (dataSize != bufferSize) {
     glDeleteBuffersARB(1, &id);
     id = NULL_VBO_ID;
-    printf("Not enough memory to load VBO\n");
+    log_infos << "Not enough memory to load VBO";
   }
 
   // unbind

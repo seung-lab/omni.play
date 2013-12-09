@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmSegmentation;
 class OmSegments;
@@ -12,14 +12,15 @@ class OmSegmentSelector {
   OmSegmentSelector(const SegmentationDataWrapper& sdw, void* sender,
                     const std::string& cmt);
 
-  void selectJustThisSegment(const OmSegID segID, const bool isSelected);
-  void augmentSelectedSet(const OmSegID segID, const bool isSelected);
+  void selectJustThisSegment(const om::common::SegID segID,
+                             const bool isSelected);
+  void augmentSelectedSet(const om::common::SegID segID, const bool isSelected);
 
-  void InsertSegments(const boost::unordered_set<OmSegID>* segIDs);
-  void RemoveSegments(const boost::unordered_set<OmSegID>* segIDs);
+  void InsertSegments(const om::common::SegIDSet* segIDs);
+  void RemoveSegments(const om::common::SegIDSet* segIDs);
 
-  void selectJustThisSegment_toggle(const OmSegID segID);
-  void augmentSelectedSet_toggle(const OmSegID segID);
+  void selectJustThisSegment_toggle(const om::common::SegID segID);
+  void augmentSelectedSet_toggle(const om::common::SegID segID);
 
   bool sendEvent();
   void selectNoSegments();
@@ -28,11 +29,11 @@ class OmSegmentSelector {
   void AddToRecentList(const bool addToRecentList);
   void AutoCenter(const bool autoCenter);
   void AugmentListOnly(const bool augmentListOnly);
-  void AddOrSubtract(const om::AddOrSubtract addSegments);
+  void AddOrSubtract(const om::common::AddOrSubtract addSegments);
 
  private:
   OmSegments* segments_;
-  om::shared_ptr<OmSelectSegmentsParams> params_;
+  std::shared_ptr<OmSelectSegmentsParams> params_;
 
-  void setSelectedSegment(const OmSegID segID);
+  void setSelectedSegment(const om::common::SegID segID);
 };

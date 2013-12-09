@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "system/cache/omCacheManager.h"
 #include "segment/actions/omSetSegmentValid.hpp"
 
@@ -8,14 +8,14 @@ class OmSegmentValidateActionImpl {
  private:
   SegmentationDataWrapper sdw_;
   bool valid_;
-  om::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+  std::shared_ptr<std::set<OmSegment*> > selectedSegments_;
 
  public:
   OmSegmentValidateActionImpl() {}
 
   OmSegmentValidateActionImpl(
       const SegmentationDataWrapper& sdw,
-      om::shared_ptr<std::set<OmSegment*> > selectedSegments, const bool valid)
+      std::shared_ptr<std::set<OmSegment*> > selectedSegments, const bool valid)
       : sdw_(sdw), valid_(valid), selectedSegments_(selectedSegments) {}
 
   void Execute() {

@@ -42,7 +42,7 @@ class OmMeshMetadata {
   bool IsHDF5() const {
     zi::guard g(lock_);
     if (!meshVersion_) {
-      throw OmIoException("meshes not yet built");
+      throw om::IoException("meshes not yet built");
     }
     return 1 == meshVersion_;
   }
@@ -74,7 +74,7 @@ class OmMeshMetadata {
     }
 
     if (!file.open(QIODevice::ReadOnly)) {
-      throw OmIoException("error reading file", fnp_);
+      throw om::IoException("error reading file");
     }
 
     QDataStream in(&file);
@@ -86,7 +86,7 @@ class OmMeshMetadata {
     in >> meshVersion_;
 
     if (!in.atEnd()) {
-      throw OmIoException("corrupt file?", fnp_);
+      throw om::IoException("corrupt file?");
     }
 
     return true;
@@ -96,7 +96,7 @@ class OmMeshMetadata {
     QFile file(fnp_);
 
     if (!file.open(QIODevice::WriteOnly)) {
-      throw OmIoException("could not write file", fnp_);
+      throw om::IoException("could not write file");
     }
 
     QDataStream out(&file);

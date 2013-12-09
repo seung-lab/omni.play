@@ -23,7 +23,7 @@ template <typename T> class DisjointSets {
 
   DisjointSets(size_t s) : size_(s), nSets_(s) {
     x_ = new Node[s];
-    for (size_t i = 0; i < s; ++i) x_[i].p = i;
+    for (auto i = 0; i < s; ++i) x_[i].p = i;
   }
 
   inline T findSet(T id) const {
@@ -56,7 +56,7 @@ template <typename T> class DisjointSets {
   }
 
   inline void clear() {
-    for (size_t i = 0; i < size_; ++i) {
+    for (auto i = 0; i < size_; ++i) {
       x_[i].p = i;
       x_[i].r = 0;
     }
@@ -66,7 +66,5 @@ template <typename T> class DisjointSets {
   size_t size() const { return size_; }
   size_t noOfSets() const { return nSets_; }
   ~DisjointSets() { free(x_); }
-
 };
-
 }

@@ -1,18 +1,16 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "viewGroup/omViewGroupState.h"
-#include "utility/segmentationDataWrapper.hpp"
-#include "utility/color.hpp"
 #include "annotation/annotation.h"
-#include "events/details/omEventManager.h"
-#include "events/details/annotationEvent.h"
-#include "viewGroup/omViewGroupView2dState.hpp"
-#include "view2d/omView2dConverters.hpp"
-#include "utility/dataWrappers.h"
-#include "system/omConnect.hpp"
-#include "events/details/omViewEvent.h"
+#include "common/common.h"
+#include "events/listeners.h"
 #include "gui/widgets/locationEditDialog.hpp"
+#include "system/omConnect.hpp"
+#include "utility/color.hpp"
+#include "view2d/omView2dConverters.hpp"
+#include "viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupView2dState.hpp"
+#include "utility/segmentationDataWrapper.hpp"
+#include "utility/channelDataWrapper.hpp"
 
 #include <QtGui>
 #include <QDialog>
@@ -22,10 +20,13 @@ namespace om {
 namespace sidebars {
 
 class AnnotationListWidget : public QTreeWidget,
-                             public om::events::annotationEventListener,
-                             public OmViewEventListener {
-  Q_OBJECT public : AnnotationListWidget(QWidget* parent, OmViewGroupState* vgs)
-                    : QTreeWidget(parent), vgs_(vgs) {
+                             public om::event::AnnotationEventListener,
+                             public om::event::View2dEventListener {
+  Q_OBJECT;
+
+ public:
+  AnnotationListWidget(QWidget* parent, OmViewGroupState* vgs)
+      : QTreeWidget(parent), vgs_(vgs) {
     setSelectionMode(QAbstractItemView::SingleSelection);
     setAlternatingRowColors(true);
 
@@ -55,15 +56,13 @@ class AnnotationListWidget : public QTreeWidget,
   typedef om::system::ManagedObject<om::annotation::data> managedAnnotation;
 
  public:
-
   void populate() {
     clear();
 
     FOR_EACH(it, SegmentationDataWrapper::ValidIDs()) {
       SegmentationDataWrapper sdw(*it);
 
-      om::annotation::manager& annotations =
-          *sdw.GetSegmentation().Annotations();
+      auto& annotations = sdw.GetSegmentation().Annotations();
 
       FOR_EACH(iter, annotations) {
         om::annotation::data& a = *iter->Object;
@@ -76,7 +75,7 @@ class AnnotationListWidget : public QTreeWidget,
         Qt::CheckState enabled = iter->Enabled ? Qt::Checked : Qt::Unchecked;
         row->setCheckState(ENABLE_COL, enabled);
         row->setTextAlignment(ENABLE_COL, Qt::AlignCenter);
-        row->setIcon(COLOR_COL, om::utils::color::OmColorAsQPixmap(a.color));
+        row->setIcon(COLOR_COL, om::utils::color::ColorAsQPixmap(a.color));
         row->setText(TEXT_COL, QString::fromStdString(a.comment));
         setLocationText(row, a);
         row->setText(SIZE_COL, QString::number(a.size));
@@ -88,7 +87,7 @@ class AnnotationListWidget : public QTreeWidget,
     }
   }
 
-  void AnnotationModificationEvent(om::events::annotationEvent*) { populate(); }
+  void AnnotationModificationEvent(om::event::AnnotationEvent*) { populate(); }
 
   // View Event Listener Implementation
   void ViewBoxChangeEvent() {}
@@ -118,15 +117,16 @@ Q_SLOTS:
       return;
     }
     if (column == COLOR_COL) {
-      QColor color = color::OmColorToQColor(ann->Object->color);
+      QColor color = om::utils::color::ColorToQColor(ann->Object->color);
       color = QColorDialog::getColor(color, this);
 
       if (!color.isValid()) {
         return;
       }
 
-      ann->Object->color = color::QColorToOmColor(color);
-      item->setIcon(COLOR_COL, color::OmColorAsQPixmap(ann->Object->color));
+      ann->Object->color = om::utils::color::QColorToColor(color);
+      item->setIcon(COLOR_COL,
+                    om::utils::color::ColorAsQPixmap(ann->Object->color));
     }
 
     if (column == POSITION_COL) {
@@ -161,8 +161,8 @@ Q_SLOTS:
       }
     }
 
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
  protected:
@@ -180,8 +180,8 @@ Q_SLOTS:
         }
         manager->Remove(selected->ID);
         delete selectedItem;
-        OmEvents::Redraw2d();
-        OmEvents::Redraw3d();
+        om::event::Redraw2d();
+        om::event::Redraw3d();
       }
     }
   }
@@ -193,10 +193,10 @@ Q_SLOTS:
       return;
     }
 
-    vgs_->View2dState()
-        ->SetScaledSliceDepth(annotation->Object->coord.toGlobalCoord());
-    OmEvents::ViewCenterChanged();
-    OmEvents::View3dRecenter();
+    vgs_->View2dState()->SetScaledSliceDepth(
+        annotation->Object->coord.toGlobalCoord());
+    om::event::ViewCenterChanged();
+    om::event::View3dRecenter();
   }
 
   static managedAnnotation* getAnnotation(QTreeWidgetItem* item) {
@@ -215,7 +215,7 @@ Q_SLOTS:
     if (items.length() > 0) {
       return items[0];
     }
-    return NULL;
+    return nullptr;
   }
 
   OmMipVolume* getVol() {
@@ -225,6 +225,8 @@ Q_SLOTS:
         return cdw.GetChannelPtr();
       }
     }
+    return NULL;
+  }
 
     {
       const SegmentationDataWrapper sdw = vgs_->Segmentation();
@@ -233,7 +235,7 @@ Q_SLOTS:
       }
     }
 
-    return NULL;
+    return nullptr;
   }
 
   void setLocationText(QTreeWidgetItem* row, const om::annotation::data& a) {

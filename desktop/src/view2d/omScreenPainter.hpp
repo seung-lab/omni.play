@@ -1,6 +1,6 @@
 #pragma once
 
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "view2d/om2dPreferences.hpp"
@@ -68,7 +68,7 @@ class OmScreenPainter {
   OmView2dCore* const v2d_;
   OmView2dState* const state_;
 
-  const ViewType viewType_;
+  const om::common::ViewType viewType_;
   const bool shouldDisplayInfo_;
 
   // current state
@@ -99,14 +99,14 @@ class OmScreenPainter {
 
   QColor getPenColor() const {
     switch (viewType_) {
-      case XY_VIEW:
+      case om::common::XY_VIEW:
         return QColor(Qt::white);
-      case XZ_VIEW:
+      case om::common::XZ_VIEW:
         return QColor(Qt::white);
-      case ZY_VIEW:
+      case om::common::ZY_VIEW:
         return QColor(Qt::white);
       default:
-        throw OmArgException("invalid view type");
+        throw om::ArgException("invalid view type");
     }
   }
 
@@ -182,14 +182,14 @@ class OmScreenPainter {
 
   std::pair<QColor, QColor> getCursorColors() const {
     switch (viewType_) {
-      case XY_VIEW:
+      case om::common::XY_VIEW:
         return std::make_pair(Qt::green, Qt::red);
-      case XZ_VIEW:
+      case om::common::XZ_VIEW:
         return std::make_pair(Qt::blue, Qt::red);
-      case ZY_VIEW:
+      case om::common::ZY_VIEW:
         return std::make_pair(Qt::green, Qt::blue);
       default:
-        throw OmArgException("invalid viewtype");
+        throw om::ArgException("invalid viewtype");
     }
   }
 
@@ -218,8 +218,7 @@ class OmScreenPainter {
     FOR_EACH(i, SegmentationDataWrapper::ValidIDs()) {
       SegmentationDataWrapper sdw(*i);
 
-      om::annotation::manager& annotations =
-          *sdw.GetSegmentation().Annotations();
+      auto& annotations = sdw.GetSegmentation().Annotations();
 
       FOR_EACH(it, annotations.Enabled()) {
         om::annotation::data& a = *it->Object;

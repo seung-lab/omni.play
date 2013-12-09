@@ -5,7 +5,7 @@
 class OmJoinSegmentsRunner {
  private:
   SegmentationDataWrapper sdw_;
-  OmSegIDsSet ids_;
+  om::common::SegIDSet ids_;
 
  public:
   explicit OmJoinSegmentsRunner(const SegmentationDataWrapper& sdw)
@@ -16,7 +16,7 @@ class OmJoinSegmentsRunner {
   }
 
   OmJoinSegmentsRunner(const SegmentationDataWrapper& sdw,
-                       const OmSegIDsSet& ids)
+                       const om::common::SegIDSet& ids)
       : sdw_(sdw), ids_(ids) {}
 
   void Join() { (new OmSegmentJoinAction(sdw_, ids_))->Run(); }

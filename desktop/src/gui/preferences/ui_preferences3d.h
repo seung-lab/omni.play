@@ -1,3 +1,4 @@
+#pragma once
 /********************************************************************************
 ** Form generated from reading ui file 'preferences3d.ui'
 **

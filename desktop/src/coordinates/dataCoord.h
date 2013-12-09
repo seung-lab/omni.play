@@ -1,9 +1,11 @@
 #pragma once
 
+#include "common/common.h"
 #include "vmmlib/vmmlib.h"
 using namespace vmml;
 
 class OmMipVolume;
+class OmMipVolCoords;
 
 namespace om {
 
@@ -22,14 +24,15 @@ class dataCoord : public vmml::Vector3i {
  public:
   dataCoord(base_t v, const OmMipVolume* vol, int mipLevel);
   dataCoord(int x, int y, int z, const OmMipVolume* vol, int mipLevel);
+  dataCoord(base_t v, const OmMipVolCoords& system, int mipLevel);
 
   globalCoord toGlobalCoord() const;
   normCoord toNormCoord() const;
   chunkCoord toChunkCoord() const;
   Vector3i toChunkVec() const;
   int toChunkOffset() const;
-  int toTileOffset(ViewType) const;
-  int toTileDepth(ViewType) const;
+  int toTileOffset(common::ViewType) const;
+  int toTileDepth(common::ViewType) const;
 
   inline int level() const { return mipLevel_; }
 
@@ -89,6 +92,7 @@ class dataBbox : public vmml::AxisAlignedBoundingBox<int> {
 
   globalBbox toGlobalBbox() const;
   normBbox toNormBbox() const;
+  normBbox ToNormBbox() const;
 
   inline int level() { return mipLevel_; }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "zi/omMutex.h"
 
 #include <QList>
@@ -10,7 +10,7 @@ class OmCacheInfo;
 
 class OmCacheGroup {
  public:
-  OmCacheGroup(const om::CacheGroup cacheGroup);
+  OmCacheGroup(const om::common::CacheGroup cacheGroup);
 
   void AddCache(OmCacheBase* cache);
   void RemoveCache(OmCacheBase* cache);
@@ -22,10 +22,10 @@ class OmCacheGroup {
   void ClearCacheContents();
   void SignalCachesToCloseDown();
 
-  QList<OmCacheInfo> GetCacheInfo();
+  std::vector<OmCacheInfo> GetCacheInfo();
 
  private:
-  const om::CacheGroup cacheGroup_;
+  const om::common::CacheGroup cacheGroup_;
   int64_t maxAllowedSize_;
 
   zi::rwmutex lock_;

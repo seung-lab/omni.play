@@ -1,10 +1,6 @@
 #pragma once
 
-#include "project/omProject.h"
-#include "project/omProjectGlobals.h"
-#include "tiles/pools/omPooledTile.hpp"
-#include "tiles/pools/omTilePool.hpp"
-#include "utility/omSmartPtr.hpp"
+#include "tiles/make_tile.hpp"
 
 template <typename T> class OmRawChunkSlicer {
  private:
@@ -19,36 +15,27 @@ template <typename T> class OmRawChunkSlicer {
         elementsPerTile_(chunkDim * chunkDim),
         chunkPtr_(chunkPtr) {}
 
-  OmPooledTile<T>* GetCopyAsPooledTile(const ViewType viewType,
-                                       const int offsetNumTiles) {
-    OmPooledTile<T>* pooledTile = new OmPooledTile<T>();
-
-    sliceTile(viewType, offsetNumTiles, pooledTile->GetData());
-
-    return pooledTile;
-  }
-
-  om::shared_ptr<T> GetCopyOfTile(const ViewType viewType,
-                                  const int offsetNumTiles) {
-    om::shared_ptr<T> tilePtr =
-        OmSmartPtr<T>::MallocNumElements(elementsPerTile_, om::DONT_ZERO_FILL);
+  std::shared_ptr<T> GetCopyOfTile(const om::common::ViewType viewType,
+                                   const int offsetNumTiles) {
+    auto tilePtr = om::tile::Make<T>();
     sliceTile(viewType, offsetNumTiles, tilePtr.get());
 
     return tilePtr;
   }
 
  private:
-  void sliceTile(const ViewType viewType, const int offsetNumTiles, T* tile) {
+  void sliceTile(const om::common::ViewType viewType, const int offsetNumTiles,
+                 T* tile) {
     switch (viewType) {
 
-      case XY_VIEW: {
+      case om::common::XY_VIEW: {
         // skip to requested XY plane, then copy entire plane
         T const* const start = chunkPtr_ + offsetNumTiles * elementsPerTile_;
         T const* const end = start + elementsPerTile_;
         std::copy(start, end, tile);
       } break;
 
-      case XZ_VIEW: {
+      case om::common::XZ_VIEW: {
         // skip to first scanline, then copy every scanline in XZ plane
         T const* start = chunkPtr_ + chunkDim_ * offsetNumTiles;
         for (int i = 0; i < elementsPerTile_; i += chunkDim_) {
@@ -57,7 +44,7 @@ template <typename T> class OmRawChunkSlicer {
         }
       } break;
 
-      case ZY_VIEW: {
+      case om::common::ZY_VIEW: {
         // skip to first voxel in plane, then copy every voxel,
         //   advancing each time to the next scanline
         T const* start = chunkPtr_ + offsetNumTiles;
@@ -70,7 +57,7 @@ template <typename T> class OmRawChunkSlicer {
       } break;
 
       default:
-        throw OmArgException("unknown plane");
+        throw om::ArgException("unknown plane");
     }
     ;
   }

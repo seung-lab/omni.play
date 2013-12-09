@@ -1,8 +1,12 @@
 #pragma once
 
-#include "tiles/cache/raw/omRawSegTileCacheTypes.hpp"
+#include <unordered_map>
+
 #include "volume/omVolumeTypes.hpp"
 
+namespace om {
+class dataCoord;
+}
 class OmSegChunk;
 class OmSegments;
 class OmSegmentation;
@@ -16,11 +20,11 @@ class dataInterface {
 
   virtual void RefreshBoundingData(OmSegments* segments) = 0;
 
-  virtual PooledTile32Ptr ExtractDataSlice32bit(const ViewType, const int) = 0;
-  virtual om::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32() = 0;
+  virtual std::shared_ptr<uint32_t> ExtractDataSlice32bit(
+      const om::common::ViewType, const int) = 0;
+  virtual std::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32() = 0;
 
-  virtual void RewriteChunk(
-      const boost::unordered_map<uint32_t, uint32_t>&) = 0;
+  virtual void RewriteChunk(const std::unordered_map<uint32_t, uint32_t>&) = 0;
 
   virtual uint32_t SetVoxelValue(const om::dataCoord& voxel,
                                  const uint32_t val) = 0;

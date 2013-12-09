@@ -1,15 +1,15 @@
 #pragma once
 
-#include "events/details/omSegmentEvent.h"
-#include "events/details/omToolModeEvent.h"
+#include "events/listeners.h"
 #include "gui/brushToolbox/brushToolboxImpl.h"
 #include "system/omStateManager.h"
+#include "gui/tools.hpp"
 
-class BrushToolbox : public OmToolModeEventListener,
-                     public OmSegmentEventListener {
+class BrushToolbox : public om::event::ToolModeEventListener,
+                     public om::event::SegmentEventListener {
  private:
   QWidget* const parent_;
-  boost::scoped_ptr<BrushToolboxImpl> impl_;
+  std::unique_ptr<BrushToolboxImpl> impl_;
   OmViewGroupState* const vgs_;
 
   bool alreadyPoppedMenu_;
@@ -22,9 +22,9 @@ class BrushToolbox : public OmToolModeEventListener,
     Show();
   }
 
-  void SegmentModificationEvent(OmSegmentEvent*) {}
-  void SegmentGUIlistEvent(OmSegmentEvent*) {}
-  void SegmentSelectedEvent(OmSegmentEvent*) { showForFirstTime(); }
+  void SegmentModificationEvent(om::event::SegmentEvent*) {}
+  void SegmentGUIlistEvent(om::event::SegmentEvent*) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent*) { showForFirstTime(); }
 
   void ToolModeChangeEvent() {
     if (alreadyPoppedMenu_) {

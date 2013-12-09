@@ -6,7 +6,7 @@ int om::utility::getNextBiggestPrime(const int num) {
       std::lower_bound(first1000Primes.begin(), first1000Primes.end(), num);
 
   if (nextBiggestPrime == first1000Primes.end()) {
-    throw ioException("couldn't find next biggest prime");
+    throw IoException("couldn't find next biggest prime");
   }
 
   return *nextBiggestPrime;

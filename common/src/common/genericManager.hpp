@@ -1,59 +1,54 @@
 #pragma once
 
-/*
- * Templated generic manager for a objects that have an
- *   (common::id id) constructor.
- *
- *  NOT thread-safe
- *
- * Brett Warne - bwarne@mit.edu - 2/20/09
- */
-
 #include "common/common.h"
+#include "common/string.hpp"
 #include "common/exception.h"
 #include "common/container.hpp"
 #include "zi/mutex.hpp"
-
-namespace YAML {
-class genericManager;
-}
+#include "yaml-cpp/yaml.h"
 
 namespace om {
 namespace common {
 
-template <typename T, typename Lock = zi::spinlock> class genericManager {
+template <typename T> struct GenericManagerWriter;
+
+template <typename T, typename Lock = zi::spinlock> class GenericManager {
  private:
   static const uint32_t DEFAULT_MAP_SIZE = 10;
 
-  id nextId_;
+  ID nextId_;
   uint32_t size_;
 
   std::vector<T*> vec_;
   std::vector<T*> vecValidPtrs_;
 
-  idSet validSet_;    // keys in map (fast iteration)
-  idSet enabledSet_;  // enabled keys in map
+  IDSet validSet_;    // keys in map (fast iteration)
+  IDSet enabledSet_;  // enabled keys in map
 
   Lock lock_;
 
  public:
-  genericManager() : nextId_(1), size_(DEFAULT_MAP_SIZE) {
-    vec_.resize(DEFAULT_MAP_SIZE, NULL);
+  GenericManager() : nextId_(1), size_(DEFAULT_MAP_SIZE) {
+    vec_.resize(DEFAULT_MAP_SIZE, nullptr);
   }
 
-  ~genericManager() {
-    for (uint32_t i = 1; i < size_; ++i) {
+  ~GenericManager() {
+    // from http://stackoverflow.com/a/4325900
+    // intentionally complex - simplification causes regressions
+    typedef char type_must_be_complete[sizeof(T) ? 1 : -1];
+    (void) sizeof(type_must_be_complete);
+    for (auto i = 1; i < size_; ++i) {
       delete vec_[i];
     }
   }
 
-  //managed accessors
-  inline T& Add() {
+  // managed accessors
+  template <typename... TArgs> inline T& Add(TArgs... args) {
     zi::guard g(lock_);
 
-    const id id = nextId_;
+    const ID id = nextId_;
 
-    T* t = new T(id);
+    T* t = new T(id, args...);
     vec_[id] = t;
     vecValidPtrs_.push_back(t);
 
@@ -65,14 +60,32 @@ template <typename T, typename Lock = zi::spinlock> class genericManager {
     return *vec_[id];
   }
 
-  inline T& Get(const id id) const {
+  inline bool Insert(ID id, T* value) {
+    zi::guard g(lock_);
+
+    if (isIDvalid(id)) {
+      return false;
+    }
+
+    vec_[id] = value;
+    vecValidPtrs_.push_back(value);
+
+    findAndSetNextValidID();
+
+    validSet_.insert(id);
+    enabledSet_.insert(id);
+
+    return true;
+  }
+
+  inline T& Get(const ID id) const {
     zi::guard g(lock_);
 
     throwIfInvalidID(id);
     return *vec_[id];
   }
 
-  void Remove(const id id) {
+  void Remove(const ID id) {
     zi::guard g(lock_);
 
     throwIfInvalidID(id);
@@ -85,31 +98,31 @@ template <typename T, typename Lock = zi::spinlock> class genericManager {
     container::eraseRemove(vecValidPtrs_, t);
 
     delete t;
-    vec_[id] = NULL;
+    vec_[id] = nullptr;
 
     findAndSetNextValidID();
   }
 
-  //valid
-  inline bool IsValid(const id id) const {
+  // valid
+  inline bool IsValid(const ID id) const {
     zi::guard g(lock_);
-    return !isIDinvalid(id);
+    return isIDvalid(id);
   }
 
   // TODO: Remove return of ref to ensure locking of vector is not circumvented
-  inline const idSet& GetValidIds() const {
+  inline const IDSet& GetValidIds() const {
     zi::guard g(lock_);
     return validSet_;
   }
 
-  //enabled
-  inline bool IsEnabled(const id id) const {
+  // enabled
+  inline bool IsEnabled(const ID id) const {
     zi::guard g(lock_);
     throwIfInvalidID(id);
     return enabledSet_.count(id);
   }
 
-  inline void SetEnabled(const id id, const bool enable) {
+  inline void SetEnabled(const ID id, const bool enable) {
     zi::guard g(lock_);
     throwIfInvalidID(id);
 
@@ -121,7 +134,7 @@ template <typename T, typename Lock = zi::spinlock> class genericManager {
   }
 
   // TODO: Remove return of ref to ensure locking of vector is not circumvented
-  inline const idSet& GetEnabledIds() const {
+  inline const IDSet& GetEnabledIds() const {
     zi::guard g(lock_);
     return enabledSet_;
   }
@@ -137,22 +150,23 @@ template <typename T, typename Lock = zi::spinlock> class genericManager {
   }
 
  private:
-  inline bool isIDinvalid(const id id) const {
-    return id < 1 || id >= size_ || NULL == vec_[id];
+  inline bool isIDvalid(const ID id) const {
+    return 0 < id && id < size_ && nullptr != vec_[id];
   }
 
-  inline void throwIfInvalidID(const id id) const {
-    if (isIDinvalid(id)) {
-      assert(0 && "invalid ID");
-      throw common::accessException("Cannot get object with id: " + id);
+  inline void throwIfInvalidID(const ID id) const {
+    if (!isIDvalid(id)) {
+      // assert(0 && "Cannot get object with id: ");
+      throw AccessException("Cannot get object with id: " +
+                            om::string::num(id));
     }
   }
 
   void findAndSetNextValidID() {
     // search to fill in holes in number map
     //  (holes could be present from object deletion...)
-    for (uint32_t i = 1; i < size_; ++i) {
-      if (NULL == vec_[i]) {
+    for (auto i = 1; i < size_; ++i) {
+      if (nullptr == vec_[i]) {
         nextId_ = i;
         return;
       }
@@ -160,10 +174,10 @@ template <typename T, typename Lock = zi::spinlock> class genericManager {
 
     nextId_ = size_;
     size_ *= 2;
-    vec_.resize(size_, NULL);
+    vec_.resize(size_, nullptr);
   }
 
-  friend class YAML::genericManager;
+  friend struct GenericManagerWriter<T>;
 };
 
 }  // namespace common

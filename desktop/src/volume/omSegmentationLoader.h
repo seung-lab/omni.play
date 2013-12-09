@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class OmSegmentation;
 class OmPagingPtrStore;
@@ -17,7 +17,8 @@ class loader {
  public:
   loader(OmSegmentation* vol) : vol_(vol) {}
 
-  void LoadSegmentPages(OmPagingPtrStore& ps, QSet<PageNum>& validPageNumbers,
+  void LoadSegmentPages(OmPagingPtrStore& ps,
+                        QSet<om::common::PageNum>& validPageNumbers,
                         uint32_t size);
 
   void LoadSegmentPages(OmPagingPtrStore& ps);

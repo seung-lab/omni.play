@@ -1,4 +1,4 @@
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "gui/toolbars/mainToolbar/navAndEditButtonGroup.h"
 #include "gui/toolbars/mainToolbar/toolButton.h"
 #include "gui/toolbars/mainToolbar/toolButton.h"
@@ -112,7 +112,7 @@ void NavAndEditButtonGroup::findAndSetTool(const om::tool::mode tool) {
     id = modifyToolIDsByToolMode_.at(tool);
 
   } else {
-    throw OmArgException("tool not found");
+    throw om::ArgException("tool not found");
   }
 
   ToolButton* button = allToolsByID_.at(id);

@@ -1,11 +1,9 @@
 #include "datalayer/hdf5/omHdf5FileUtils.hpp"
-#include "common/omDebug.h"
-#include "common/omException.h"
+#include "common/logging.h"
+#include "common/exception.h"
 #include <QFile>
 
 void OmHdf5FileUtils::file_create(const std::string& fpath) {
-  //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
   QFile file(QString::fromStdString(fpath));
   if (!file.exists()) {
     hid_t fileId =
@@ -13,7 +11,7 @@ void OmHdf5FileUtils::file_create(const std::string& fpath) {
     if (fileId < 0) {
       const std::string errMsg = "Could not create HDF5 file: " + fpath + "\n";
       fprintf(stderr, "%s", errMsg.c_str());
-      throw OmIoException(errMsg);
+      throw om::IoException(errMsg);
     }
 
     file_close(fileId);
@@ -21,9 +19,6 @@ void OmHdf5FileUtils::file_create(const std::string& fpath) {
 }
 
 hid_t OmHdf5FileUtils::file_open(std::string fpath, const bool readOnly) {
-  //debug(hdf5, "%s: opened HDF file\n", __FUNCTION__ );
-  //debug(hdf5verbose, "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
   const unsigned int totalCacheSizeMB = 256;
 
   // number of elements (objects) in the raw data chunk cache (default 521)
@@ -40,7 +35,7 @@ hid_t OmHdf5FileUtils::file_open(std::string fpath, const bool readOnly) {
   herr_t err =
       H5Pset_cache(fapl, mdc_nelmts, rdcc_nelmts, rdcc_nbytes, rdcc_w0);
   if (err < 0) {
-    throw OmIoException("Could not setup HDF5 file cache.");
+    throw om::IoException("Could not setup HDF5 file cache.");
   }
 
   hid_t fileId;
@@ -52,7 +47,7 @@ hid_t OmHdf5FileUtils::file_open(std::string fpath, const bool readOnly) {
 
   if (fileId < 0) {
     const std::string errMsg = "Could not open HDF5 file: " + fpath + "\n";
-    throw OmIoException(errMsg);
+    throw om::IoException(errMsg);
   }
 
   return fileId;
@@ -66,6 +61,6 @@ void OmHdf5FileUtils::file_close(hid_t fileId) {
   flush(fileId);
   herr_t ret = H5Fclose(fileId);
   if (ret < 0) {
-    throw OmIoException("Could not close HDF5 file.");
+    throw om::IoException("Could not close HDF5 file.");
   }
 }

@@ -1,24 +1,22 @@
 #include "datalayer/archive/old/omDataArchiveBoost.h"
-
 #include "zi/omUtility.h"
 #include <QDataStream>
 
-QDataStream &operator<<(QDataStream &out, const OmIDsSet &set) {
+QDataStream &operator<<(QDataStream &out, const om::common::SegIDSet &set) {
   out << (quint32) set.size();
 
-  OmIDsSet::const_iterator iter;
-  for (iter = set.begin(); iter != set.end(); ++iter) {
-    out << *iter;
+  for (const auto &e : set) {
+    out << e;
   }
 
   return out;
 }
 
-QDataStream &operator>>(QDataStream &in, OmIDsSet &set) {
+QDataStream &operator>>(QDataStream &in, om::common::SegIDSet &set) {
   quint32 size;
   in >> size;
 
-  OmID id;
+  om::common::ID id;
   for (quint32 i = 0; i < size; ++i) {
     in >> id;
     set.insert(id);
@@ -27,19 +25,11 @@ QDataStream &operator>>(QDataStream &in, OmIDsSet &set) {
   return in;
 }
 
-QDataStream &operator<<(QDataStream &out, const OmSegIDsSet &set) {
-  out << (quint32) set.size();
-
-  FOR_EACH(iter, set) { out << *iter; }
-
-  return out;
-}
-
-QDataStream &operator>>(QDataStream &in, OmSegIDsSet &set) {
+QDataStream &operator>>(QDataStream &in, om::common::IDSet &set) {
   quint32 size;
   in >> size;
 
-  OmID id;
+  om::common::ID id;
   for (quint32 i = 0; i < size; ++i) {
     in >> id;
     set.insert(id);

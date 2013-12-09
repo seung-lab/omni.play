@@ -13,46 +13,46 @@ class OmSegmentPage {
  private:
   OmSegmentation* segmentation_;
   OmSegments* segments_;
-  PageNum pageNum_;
+  om::common::PageNum pageNum_;
   uint32_t pageSize_;
 
-  om::shared_ptr<OmSegmentPageVersion> versionInfo_;
+  std::shared_ptr<OmSegmentPageVersion> versionInfo_;
 
-  om::shared_ptr<OmSegmentPageObjects> objectPoolPtr_;
+  std::shared_ptr<OmSegmentPageObjects> objectPoolPtr_;
   OmSegment* objectPool_;
 
-  om::shared_ptr<OmSegmentPageV4> segmentsDataPtr_;
+  std::shared_ptr<OmSegmentPageV4> segmentsDataPtr_;
   OmSegmentDataV4* segmentsData_;
 
-  om::shared_ptr<OmSegmentListTypePage> listTypePagePtr_;
+  std::shared_ptr<OmSegmentListTypePage> listTypePagePtr_;
   uint8_t* listTypePage_;
 
  public:
   OmSegmentPage()
-      : segmentation_(NULL),
-        segments_(NULL),
+      : segmentation_(nullptr),
+        segments_(nullptr),
         pageNum_(0),
         pageSize_(0),
-        objectPool_(NULL),
-        segmentsData_(NULL),
-        listTypePage_(NULL) {}
+        objectPool_(nullptr),
+        segmentsData_(nullptr),
+        listTypePage_(nullptr) {}
 
-  OmSegmentPage(OmSegmentation* segmentation, const PageNum pageNum,
+  OmSegmentPage(OmSegmentation* segmentation, const om::common::PageNum pageNum,
                 const uint32_t pageSize)
       : segmentation_(segmentation),
         segments_(segmentation_->Segments()),
         pageNum_(pageNum),
         pageSize_(pageSize),
-        objectPool_(NULL),
-        segmentsData_(NULL),
-        listTypePage_(NULL) {
+        objectPool_(nullptr),
+        segmentsData_(nullptr),
+        listTypePage_(nullptr) {
     versionInfo_ =
-        om::make_shared<OmSegmentPageVersion>(segmentation_, pageNum_);
+        std::make_shared<OmSegmentPageVersion>(segmentation_, pageNum_);
 
     segmentsDataPtr_ =
-        om::make_shared<OmSegmentPageV4>(segmentation_, pageNum_, pageSize_);
+        std::make_shared<OmSegmentPageV4>(segmentation_, pageNum_, pageSize_);
 
-    listTypePagePtr_ = om::make_shared<OmSegmentListTypePage>(
+    listTypePagePtr_ = std::make_shared<OmSegmentListTypePage>(
         segmentation_, pageNum_, pageSize_);
 
     makeSegmentObjectPool();
@@ -112,7 +112,7 @@ class OmSegmentPage {
   void loadSegmentsData() {
     switch (versionInfo_->Get()) {
       case 0:
-        throw OmArgException("bad segment page version number");
+        throw om::ArgException("bad segment page version number");
       case 1:
         convertFromHDF5();
         break;
@@ -126,19 +126,20 @@ class OmSegmentPage {
         loadV4();
         break;
       default:
-        throw OmArgException("unknown segment page version number: " +
-                             om::string::num(versionInfo_->Get()));
+        throw om::ArgException("unknown segment page version number: " +
+                               om::string::num(versionInfo_->Get()));
     }
   }
 
-  template <class C> void convert(C& page) {
-    om::shared_ptr<OmSegmentDataV3> dataV3 = page.Read();
+  template <class C>
+  void convert(C& page) {
+    std::shared_ptr<OmSegmentDataV3> dataV3 = page.Read();
 
-    om::shared_ptr<OmSegmentDataV4> dataV4 =
+    std::shared_ptr<OmSegmentDataV4> dataV4 =
         OmSegmentPageConverter::ConvertPageV3toV4(dataV3, pageSize_);
     segmentsData_ = segmentsDataPtr_->Import(dataV4);
 
-    om::shared_ptr<uint8_t> listType =
+    std::shared_ptr<uint8_t> listType =
         OmSegmentPageConverter::ConvertPageV3toV4ListType(dataV3, pageSize_);
     listTypePage_ = listTypePagePtr_->Import(listType);
 

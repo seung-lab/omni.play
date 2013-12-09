@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "gui/tools.hpp"
+#include "common/common.h"
 #include "gui/widgets/omButton.hpp"
 
 class ToolButton : public OmButton<QWidget> {

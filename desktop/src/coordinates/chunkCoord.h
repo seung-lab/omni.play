@@ -14,6 +14,10 @@ using namespace vmml;
 
 #include <iostream>
 
+class QString;
+class OmMipVolume;
+class OmMipVolCoords;
+
 namespace om {
 
 class dataBbox;
@@ -26,22 +30,23 @@ class chunkCoord {
   chunkCoord(int, const Vector3i&);
   chunkCoord(int level, int, int, int);
 
-  //static const chunkCoord NULL_COORD;
+  // static const chunkCoord nullptr_COORD;
 
   QString getCoordsAsString() const;
 
-  //property
+  // property
   inline bool IsLeaf() const { return 0 == Level; }
 
-  //family coordinate methods
+  // family coordinate methods
   chunkCoord ParentCoord() const;
   chunkCoord PrimarySiblingCoord() const;
   void SiblingCoords(chunkCoord* pSiblings) const;  // TODO: C array? Really???
   chunkCoord PrimaryChildCoord() const;
   void ChildrenCoords(chunkCoord* pChildren) const;  // TODO: C array? Really???
 
-  //access
+  // access
   inline int getLevel() const { return Level; }
+  inline int mipLevel() const { return Level; }
   inline int X() const { return Coordinate.x; }
   inline int Y() const { return Coordinate.y; }
   inline int Z() const { return Coordinate.z; }
@@ -49,7 +54,12 @@ class chunkCoord {
   dataCoord toDataCoord(const OmMipVolume*) const;
   dataBbox chunkBoundingBox(const OmMipVolume*) const;
 
-  //operators
+  dataCoord toDataCoord(const OmMipVolCoords& system) const;
+  dataBbox BoundingBox(const OmMipVolCoords& system) const;
+
+  std::vector<om::chunkCoord> ChildrenCoords() const;
+
+  // operators
   void operator=(const chunkCoord& rhs);
   bool operator==(const chunkCoord& rhs) const;
   bool operator!=(const chunkCoord& rhs) const;

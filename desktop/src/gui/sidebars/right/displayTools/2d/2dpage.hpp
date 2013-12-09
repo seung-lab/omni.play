@@ -1,6 +1,6 @@
 #pragma once
 
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "gui/sidebars/right/displayTools/2d/brightenSelected.hpp"
 #include "gui/sidebars/right/displayTools/2d/brightnessSpinBox.hpp"
 #include "gui/sidebars/right/displayTools/2d/contrastSpinBox.hpp"
@@ -18,7 +18,10 @@ namespace om {
 namespace displayTools {
 
 class Page2d : public QWidget {
-  Q_OBJECT private : OmViewGroupState* const vgs_;
+  Q_OBJECT;
+
+ private:
+  OmViewGroupState* const vgs_;
 
   QButtonGroup* validGroup_;
   QRadioButton* showValid_;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omChannelTileFilter.hpp"
@@ -9,8 +9,10 @@
 #include <limits>
 
 class ContrastSpinBox : public OmDoubleSpinBox {
-  Q_OBJECT public : ContrastSpinBox(QWidget* d)
-                    : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE) {
+  Q_OBJECT;
+
+ public:
+  ContrastSpinBox(QWidget* d) : OmDoubleSpinBox(d, true) {
     setSingleStep(0.05);
     setRange(-5, 5);
     setInitialGUIThresholdValue();
@@ -22,7 +24,7 @@ class ContrastSpinBox : public OmDoubleSpinBox {
   void actUponValueChange(const double threshold) {
     OmChannelTileFilter::SetContrastValue(threshold);
     OmTileCache::ClearChannel();
-    OmEvents::Redraw2dBlocking();
+    om::event::Redraw2dBlocking();
   }
 
   void setInitialGUIThresholdValue() {

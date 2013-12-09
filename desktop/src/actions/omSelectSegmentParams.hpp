@@ -1,13 +1,12 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/dataWrappers.h"
 
 struct OmSelectSegmentsParams {
   SegmentDataWrapper sdw;
-  OmSegIDsSet newSelectedIDs;
-  OmSegIDsSet oldSelectedIDs;
+  om::common::SegIDSet newSelectedIDs;
+  om::common::SegIDSet oldSelectedIDs;
   void* sender;
   std::string comment;
   bool shouldScroll;
@@ -15,7 +14,7 @@ struct OmSelectSegmentsParams {
   bool autoCenter;
 
   bool augmentListOnly;
-  om::AddOrSubtract addOrSubtract;
+  om::common::AddOrSubtract addOrSubtract;
 };
 
 struct OmSegmentGUIparams {

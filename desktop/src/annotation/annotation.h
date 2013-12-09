@@ -1,9 +1,12 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "coordinates/dataCoord.h"
+#include "coordinates/globalCoord.h"
+#include "common/common.h"
+#include "common/colors.h"
 #include "datalayer/fs/omFile.hpp"
 #include "system/manager.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 #include <QDataStream>
 #include <QFile>
@@ -17,10 +20,11 @@ namespace annotation {
 struct data {
   dataCoord coord;
   std::string comment;
-  OmColor color;
+  om::common::Color color;
   double size;
 
-  data(dataCoord coord, std::string comment, OmColor color, double size)
+  data(dataCoord coord, std::string comment, om::common::Color color,
+       double size)
       : coord(coord), comment(comment), color(color), size(size) {}
 
   inline void setCoord(const om::globalCoord& c) {
@@ -38,14 +42,14 @@ class manager : public system::Manager<data> {
   manager(OmSegmentation* vol) : vol_(vol) {}
   virtual ~manager() {}
 
-  void Add(globalCoord coord, const std::string& comment, const OmColor& color,
-           double size);
+  void Add(globalCoord coord, const std::string& comment,
+           const om::common::Color& color, double size);
 
   void Load();
   void Save() const;
 
  protected:
-  data* parse(const YAML::Node& n);
+  data* parse(const YAMLold::Node& n);
   std::string getFileName() { return filePathV1(); }
 
  private:

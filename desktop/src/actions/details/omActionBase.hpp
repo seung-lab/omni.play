@@ -2,16 +2,16 @@
 
 #include "actions/details/omUndoCommand.hpp"
 #include "actions/io/omActionLogger.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 
 template <typename IMPL> class OmActionBase : public OmUndoCommand {
  protected:
-  om::shared_ptr<IMPL> impl_;
+  std::shared_ptr<IMPL> impl_;
 
  public:
-  OmActionBase() : impl_(om::make_shared<IMPL>()) {}
+  OmActionBase() : impl_(std::make_shared<IMPL>()) {}
 
-  OmActionBase(om::shared_ptr<IMPL> impl) : impl_(impl) {}
+  OmActionBase(std::shared_ptr<IMPL> impl) : impl_(impl) {}
 
   virtual ~OmActionBase() {}
 

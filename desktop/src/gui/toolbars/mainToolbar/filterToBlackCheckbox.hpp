@@ -2,7 +2,7 @@
 
 #include "view2d/om2dPreferences.hpp"
 #include "gui/widgets/omCheckBoxWidget.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 class FilterToBlackCheckbox : public OmCheckBoxWidget {
  public:
@@ -16,6 +16,6 @@ class FilterToBlackCheckbox : public OmCheckBoxWidget {
  private:
   void doAction(const bool isChecked) {
     Om2dPreferences::HaveAlphaGoToBlack(isChecked);
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 };

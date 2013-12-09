@@ -36,7 +36,7 @@ class HeadlessImpl {
     try {
       printf("Please wait: Opening project \"%s\"...\n", qPrintable(fName));
       OmProject::Load(fName);
-      //Set current working directory to file path
+      // Set current working directory to file path
       QDir::setCurrent(QFileInfo(fName).absolutePath());
       printf("Opened project \"%s\"\n", qPrintable(fName));
     }
@@ -71,7 +71,7 @@ class HeadlessImpl {
     OmProject::Save();
   }
 
-  static void loadHDF5seg(const QString file, OmID& segmentationID_) {
+  static void loadHDF5seg(const QString file, om::common::ID& segmentationID_) {
     OmBuildSegmentation bs;
     bs.addFileNameAndPath(file);
     bs.BuildImage();
@@ -79,45 +79,21 @@ class HeadlessImpl {
     segmentationID_ = bs.GetDataWrapper().GetID();
   }
 
-  static void ClearMST(const OmID segmentationID) {
+  static void ClearMST(const om::common::ID segmentationID) {
     SegmentationDataWrapper sdw(segmentationID);
-
-    OmMST* mst = sdw.MST();
-    OmMSTEdge* edges = mst->Edges();
-
-    for (uint32_t i = 0; i < mst->NumEdges(); ++i) {
-      edges[i].userSplit = 0;
-      edges[i].userJoin = 0;
-      edges[i].wasJoined = 0;
+    if (!sdw.IsValidWrapper()) {
+      printf("Invalid segmentationID: %d\n", segmentationID);
+      return;
     }
-
-    mst->Flush();
-
-    sdw.GetSegmentation().MSTUserEdges()->Clear();
-    sdw.GetSegmentation().MSTUserEdges()->Save();
-
-    OmSegments* segments = sdw.Segments();
-
-    for (OmSegID i = 1; i <= segments->getMaxValue(); ++i) {
-      OmSegment* seg = segments->GetSegment(i);
-      if (!seg) {
-        continue;
-      }
-      seg->SetListType(om::WORKING);
-    }
-
-    sdw.ValidGroupNum()->Clear();
-    sdw.ValidGroupNum()->Save();
-
-    OmActions::Save();
+    sdw.GetSegmentation().ClearUserChangesAndSave();
   }
 
-  static void RecolorAllSegments(const OmID segmentationID) {
+  static void RecolorAllSegments(const om::common::ID segmentationID) {
     SegmentationDataWrapper sdw(segmentationID);
 
     OmSegments* segments = sdw.Segments();
 
-    for (OmSegID i = 1; i <= segments->getMaxValue(); ++i) {
+    for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
       OmSegment* seg = segments->GetSegment(i);
       if (!seg) {
         continue;
@@ -128,7 +104,7 @@ class HeadlessImpl {
     OmActions::Save();
   }
 
-  static void RebuildCenterOfSegmentData(const OmID segmentationID) {
+  static void RebuildCenterOfSegmentData(const om::common::ID segmentationID) {
     SegmentationDataWrapper sdw(segmentationID);
     OmSegmentCenter::RebuildCenterOfSegmentData(sdw);
     OmActions::Save();
@@ -141,8 +117,8 @@ class HeadlessImpl {
 
     vol.Coords().SetResolution(dims);
 
-    std::cout << "\tvolume data resolution set to "
-              << vol.Coords().GetResolution() << "\n";
+    log_infos << "\tvolume data resolution set to "
+              << vol.Coords().GetResolution();
   }
 
   template <typename T>
@@ -152,36 +128,37 @@ class HeadlessImpl {
 
     vol.Coords().SetAbsOffset(dims);
 
-    std::cout << "\tvolume data abs offset set to "
-              << vol.Coords().GetAbsOffset() << "\n";
+    log_infos << "\tvolume data abs offset set to "
+              << vol.Coords().GetAbsOffset();
   }
 
   static void SetMeshDownScallingFactor(const double factor) {
     OmMeshParams::SetDownScallingFactor(factor);
-    std::cout << "mesh downscalling factor set to "
-              << OmMeshParams::GetDownScallingFactor() << "\n";
+    log_infos << "mesh downscalling factor set to "
+              << OmMeshParams::GetDownScallingFactor();
   }
 
-  static void ReValidateEveryObject(const OmID segmentationID) {
+  static void ReValidateEveryObject(const om::common::ID segmentationID) {
     SegmentationDataWrapper sdw(segmentationID);
     OmSegmentUtils::ReValidateEveryObject(sdw);
     OmActions::Save();
   }
 
-  static void DumpSegmentColorHistograms(const OmID segmentationID) {
+  static void DumpSegmentColorHistograms(const om::common::ID segmentationID) {
     dumpRootSegmentColorHistograms(segmentationID, false);
   }
 
-  static void DumpRootSegmentColorHistograms(const OmID segmentationID) {
+  static void DumpRootSegmentColorHistograms(
+      const om::common::ID segmentationID) {
     dumpRootSegmentColorHistograms(segmentationID, true);
   }
 
  private:
-  static void dumpRootSegmentColorHistograms(const OmID segmentationID,
-                                             const bool findRoot) {
+  static void dumpRootSegmentColorHistograms(
+      const om::common::ID segmentationID, const bool findRoot) {
     SegmentationDataWrapper sdw(segmentationID);
 
-    std::map<OmColor, int> segColorHist;
+    std::map<om::common::Color, int> segColorHist;
 
     static const int min_variance = 120;
 
@@ -192,18 +169,18 @@ class HeadlessImpl {
           const int avg2 = (r * r + g * g + b * b) / 3;
           const int v = avg2 - avg * avg;
           if (v >= min_variance) {
-            const OmColor color = { r, g, b };
+            const om::common::Color color = {r, g, b};
             segColorHist[color] = 0;
           }
         }
       }
     }
 
-    std::cout << "found " << om::string::humanizeNum(segColorHist.size())
+    log_infos << "found " << om::string::humanizeNum(segColorHist.size())
               << " colors\n";
 
     OmSegments* segments = sdw.Segments();
-    for (OmSegID i = 1; i <= segments->getMaxValue(); ++i) {
+    for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
       OmSegment* seg = segments->GetSegment(i);
       if (!seg) {
         continue;
@@ -211,7 +188,7 @@ class HeadlessImpl {
       if (findRoot) {
         seg = segments->findRoot(seg);
       }
-      const OmColor color = seg->GetColorInt();
+      const om::common::Color color = seg->GetColorInt();
 
       ++(segColorHist[color]);
     }
@@ -225,7 +202,7 @@ class HeadlessImpl {
     if (data.open(QFile::WriteOnly | QFile::Truncate)) {
       printf("writing segment file %s\n", qPrintable(outFile));
     } else {
-      throw OmIoException("could not open file", outFile);
+      throw om::IoException("could not open file");
     }
 
     QTextStream out(&data);
@@ -233,14 +210,14 @@ class HeadlessImpl {
     out << "red\tgreen\tblue\tnum\n";
 
     FOR_EACH(iter, segColorHist) {
-      out << iter->first << "\t" << iter->second << "\n";
+      // out << iter->first << "\t"
+      //    << iter->second << "\n";
     }
   }
 
  public:
-
-  static void TimeSegChunkReads(const OmID segmentationID, const bool randomize,
-                                const bool useMeshChunk) {
+  static void TimeSegChunkReads(const om::common::ID segmentationID,
+                                const bool randomize, const bool useMeshChunk) {
     SegmentationDataWrapper sdw(segmentationID);
     OmSegmentation& vol = sdw.GetSegmentation();
 
@@ -248,7 +225,7 @@ class HeadlessImpl {
 
     double timeSecs = 0;
 
-    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         vol.GetMipChunkCoords();
     std::deque<om::chunkCoord>& coords = *coordsPtr;
     const uint32_t numChunks = coords.size();
@@ -256,6 +233,7 @@ class HeadlessImpl {
     if (randomize) {
       zi::random_shuffle(coords.begin(), coords.end());
     }
+  }
 
     for (uint32_t i = 0; i < numChunks; ++i) {
       printf("\rreading chunk %d of %d...", i, numChunks);
@@ -271,25 +249,25 @@ class HeadlessImpl {
     }
 
     const Vector3i chunkDims = vol.Coords().GetChunkDimensions();
-    const double totalMegs =
-        static_cast<double>(chunkDims.x) * static_cast<double>(chunkDims.y) *
-        static_cast<double>(chunkDims.z) *
-        static_cast<double>(vol.GetBytesPerVoxel()) *
-        static_cast<double>(numChunks) /
-        static_cast<double>(om::math::bytesPerMB);
+    const double totalMegs = static_cast<double>(chunkDims.x) *
+                             static_cast<double>(chunkDims.y) *
+                             static_cast<double>(chunkDims.z) *
+                             static_cast<double>(vol.GetBytesPerVoxel()) *
+                             static_cast<double>(numChunks) /
+                             static_cast<double>(om::math::bytesPerMB);
     const double megsPerSec = totalMegs / timeSecs;
 
-    std::cout << "raw chunk read ";
+    log_infos << "raw chunk read ";
     if (useMeshChunk) {
-      std::cout << "(fseek and read): ";
+      log_infos << "(fseek and read): ";
     } else {
-      std::cout << "(get copy of whole chunk using mesh reader): ";
+      log_infos << "(get copy of whole chunk using mesh reader): ";
     }
 
-    std::cout << megsPerSec << " MB/sec\n";
+    log_infos << megsPerSec << " MB/sec\n";
   }
 
-  static void Mesh(const OmID segmentationID) {
+  static void Mesh(const om::common::ID segmentationID) {
     const SegmentationDataWrapper sdw(segmentationID);
     OmBuildSegmentation bs(sdw);
     bs.BuildMesh();
@@ -312,7 +290,7 @@ class HeadlessImpl {
     OmActionDumper dumper;
     const QString fnp("/tmp/actionDump.txt");
     dumper.Dump(fnp);
-    std::cout << "wrote action log to " << fnp.toStdString() << "\n";
+    log_infos << "wrote action log to " << fnp.toStdString();
   }
 
   static void DownsampleChannel(const ChannelDataWrapper& cdw) {
@@ -324,8 +302,7 @@ class HeadlessImpl {
     OmMeshManagers* meshManagers = sdw.GetSegmentation().MeshManagers();
     OmMeshManager* meshManager = meshManagers->GetManager(1);
 
-    boost::scoped_ptr<OmMeshWriterV2> meshWriter(
-        new OmMeshWriterV2(meshManager));
+    std::unique_ptr<OmMeshWriterV2> meshWriter(new OmMeshWriterV2(meshManager));
 
     meshWriter->CheckEverythingWasMeshed();
   }
@@ -348,5 +325,4 @@ class HeadlessImpl {
                                     const QString fileName) {
     OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, false);
   }
-
 };

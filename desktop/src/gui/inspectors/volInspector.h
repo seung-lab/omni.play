@@ -11,7 +11,10 @@
 #include <QPushButton>
 
 class OmVolInspector : public QGroupBox {
-  Q_OBJECT private : OmMipVolume& vol_;
+  Q_OBJECT;
+
+ private:
+  OmMipVolume& vol_;
   QGridLayout* grid_;
   QLineEdit* resX_;
   QLineEdit* resY_;

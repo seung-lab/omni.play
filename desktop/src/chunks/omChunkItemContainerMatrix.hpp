@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "coordinates/chunkCoord.h"
+#include "common/common.h"
 #include <boost/multi_array.hpp>
 
 template <typename VOL, typename T> class OmChunkItemContainerMatrix {
@@ -40,7 +41,7 @@ template <typename VOL, typename T> class OmChunkItemContainerMatrix {
     if (x >= x_ || y >= y_ || z >= z_) {
       std::ostringstream stm;
       stm << "invald coordinate: " << coord;
-      throw OmArgException(stm.str());
+      throw om::ArgException(stm.str());
     }
 
     if (!array_[x][y][z]) {

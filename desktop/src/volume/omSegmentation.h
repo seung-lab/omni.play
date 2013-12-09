@@ -5,7 +5,6 @@
  * Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
-#include "common/om.hpp"
 #include "datalayer/omDataWrapper.h"
 #include "mesh/omMeshTypes.h"
 #include "system/omManageableObject.h"
@@ -14,7 +13,6 @@
 
 class OmChunk;
 class OmChunkUniqueValuesManager;
-class OmGroups;
 class OmMST;
 class OmMeshDrawer;
 class OmMeshManager;
@@ -52,7 +50,7 @@ class manager;
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
  public:
   OmSegmentation();
-  OmSegmentation(OmID id);
+  OmSegmentation(om::common::ID id);
   virtual ~OmSegmentation();
 
   std::string GetName();
@@ -65,9 +63,12 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   bool LoadVolDataIfFoldersExist();
   void UpdateFromVolResize();
 
-  inline ObjectType getVolumeType() const { return SEGMENTATION; }
+  inline om::common::ObjectType getVolumeType() const {
+    return om::common::SEGMENTATION;
+  }
 
-  inline OmID getID() const { return GetID(); }
+  inline om::common::ID getID() const { return GetID(); }
+  inline om::common::ID id() const { return GetID(); }
 
   virtual int GetBytesPerVoxel() const;
   virtual int GetBytesPerSlice() const;
@@ -102,10 +103,9 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   void RebuildSegments();
 
  public:
-  inline OmChunkUniqueValuesManager* ChunkUniqueValues() {
-    return uniqueChunkValues_.get();
+  inline OmChunkUniqueValuesManager& UniqueValuesDS() {
+    return *uniqueChunkValues_;
   }
-  inline OmGroups* Groups() { return groups_.get(); }
   inline OmMST* MST() { return mst_.get(); }
   inline OmMeshDrawer* MeshDrawer() { return meshDrawer_.get(); }
   inline OmMeshManagers* MeshManagers() { return meshManagers_.get(); }
@@ -120,28 +120,26 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   }
   inline OmTileCacheSegmentation* TileCache() { return tileCache_.get(); }
   inline om::segmentation::folder* Folder() const { return folder_.get(); }
-  inline om::annotation::manager* Annotations() const {
-    return annotations_.get();
-  }
+  inline om::annotation::manager& Annotations() const { return *annotations_; }
   inline om::segmentation::loader* Loader() const { return loader_.get(); }
+  void ClearUserChangesAndSave();
 
  private:
-  boost::scoped_ptr<om::segmentation::folder> folder_;
-  boost::scoped_ptr<om::segmentation::loader> loader_;
-  boost::scoped_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
-  boost::scoped_ptr<OmGroups> groups_;
-  boost::scoped_ptr<OmMST> mst_;
-  boost::scoped_ptr<OmMeshDrawer> meshDrawer_;
-  boost::scoped_ptr<OmMeshManagers> meshManagers_;
-  boost::scoped_ptr<OmChunkCache<OmSegmentation, OmSegChunk> > chunkCache_;
-  boost::scoped_ptr<OmSegments> segments_;
-  boost::scoped_ptr<OmSegmentLists> segmentLists_;
-  boost::scoped_ptr<OmUserEdges> mstUserEdges_;
-  boost::scoped_ptr<OmValidGroupNum> validGroupNum_;
-  boost::scoped_ptr<OmVolumeData> volData_;
-  boost::scoped_ptr<OmRawSegTileCache> volSliceCache_;
-  boost::scoped_ptr<OmTileCacheSegmentation> tileCache_;
-  boost::scoped_ptr<om::annotation::manager> annotations_;
+  std::unique_ptr<om::segmentation::folder> folder_;
+  std::unique_ptr<om::segmentation::loader> loader_;
+  std::unique_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
+  std::unique_ptr<OmMST> mst_;
+  std::unique_ptr<OmMeshDrawer> meshDrawer_;
+  std::unique_ptr<OmMeshManagers> meshManagers_;
+  std::unique_ptr<OmChunkCache<OmSegmentation, OmSegChunk> > chunkCache_;
+  std::unique_ptr<OmSegments> segments_;
+  std::unique_ptr<OmSegmentLists> segmentLists_;
+  std::unique_ptr<OmUserEdges> mstUserEdges_;
+  std::unique_ptr<OmValidGroupNum> validGroupNum_;
+  std::unique_ptr<OmVolumeData> volData_;
+  std::unique_ptr<OmRawSegTileCache> volSliceCache_;
+  std::unique_ptr<OmTileCacheSegmentation> tileCache_;
+  std::unique_ptr<om::annotation::manager> annotations_;
 
   template <class T> friend class OmVolumeBuilder;
   template <class T> friend class OmVolumeBuilderHdf5;
@@ -155,9 +153,9 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   friend class SegmentTests1;
 
   friend class OmDataArchiveProjectImpl;
-  friend void YAML::operator>>(const YAML::Node& in, OmSegmentation&);
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
-                                         const OmSegmentation&);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegmentation&);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmSegmentation&);
   friend QDataStream& operator>>(QDataStream& in, OmSegmentation&);
   friend QDataStream& operator<<(QDataStream& out, const OmSegmentation&);
 };

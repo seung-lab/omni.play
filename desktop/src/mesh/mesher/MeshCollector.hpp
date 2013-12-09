@@ -20,7 +20,7 @@ class MeshCollector {
 
   zi::spinlock lock_;
 
-  typedef zi::unordered_map<OmSegID, TriStripCollector*> map_t;
+  typedef zi::unordered_map<om::common::SegID, TriStripCollector*> map_t;
   map_t meshes_;
 
  public:
@@ -31,8 +31,8 @@ class MeshCollector {
     FOR_EACH(iter, meshes_) { delete iter->second; }
   }
 
-  void registerMeshPart(const OmSegID segID) {
-    TriStripCollector* tsc = NULL;
+  void registerMeshPart(const om::common::SegID segID) {
+    TriStripCollector* tsc = nullptr;
 
     {
       zi::guard g(lock_);
@@ -48,25 +48,27 @@ class MeshCollector {
     tsc->registerPart();
   }
 
-  TriStripCollector* getMesh(const OmSegID segID) {
+  TriStripCollector* getMesh(const om::common::SegID segID) {
     zi::guard g(lock_);
 
     if (meshes_.count(segID) == 0) {
-      return NULL;
+      return nullptr;
     }
 
     return meshes_[segID];
   }
 
-  void save(const OmSegID segID) {
+  void save(const om::common::SegID segID) {
     TriStripCollector* mesh = getMesh(segID);
 
     if (!mesh) {
-      std::cout << "skipping save for segID " << segID << " in coord " << coord_
-                << "\n";
+      log_infos << "skipping save for segID " << segID << " in coord "
+                << coord_;
       return;
     }
 
-    meshIO_->Save(segID, coord_, mesh, om::BUFFER_WRITES, om::OVERWRITE);
+    meshIO_->Save(segID, coord_, mesh,
+                  om::common::ShouldBufferWrites::BUFFER_WRITES,
+                  om::common::AllowOverwrite::OVERWRITE);
   }
 };

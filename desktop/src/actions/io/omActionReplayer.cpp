@@ -24,7 +24,7 @@ void OmActionReplayer::Replay() {
 void OmActionReplayer::replayFile(const QFileInfo& fileInfo) {
   QFile file(fileInfo.absoluteFilePath());
   if (!file.open(QIODevice::ReadOnly)) {
-    throw OmIoException("could not open", file.fileName());
+    throw om::IoException("could not open");
   }
 
   QDataStream in(&file);
@@ -40,18 +40,18 @@ void OmActionReplayer::replayFile(const QFileInfo& fileInfo) {
   QString actionName;
   in >> actionName;
 
-  printf("replaying %s: %i\n", qPrintable(fileInfo.fileName()), logVersion);
+  log_info("replaying %s: %i", qPrintable(fileInfo.fileName()), logVersion);
 
   dispatchAction(actionName, in);
 
   QString postfix;
   in >> postfix;
   if ("OMNI_LOG" != postfix) {
-    throw OmIoException("bad postfix", file.fileName());
+    throw om::IoException("bad postfix");
   }
 
   if (!in.atEnd()) {
-    throw OmIoException("corrupt log file dectected", file.fileName());
+    throw om::IoException("corrupt log file dectected");
   }
 }
 
@@ -73,9 +73,6 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
     case om::actions_::OmSegmentSelectAction:
       doReplayFile<OmSegmentSelectAction, OmSegmentSelectActionImpl>(in);
       break;
-    case om::actions_::OmSegmentGroupAction:
-      doReplayFile<OmSegmentGroupAction, OmSegmentGroupActionImpl>(in);
-      break;
     case om::actions_::OmSegmentUncertainAction:
       doReplayFile<OmSegmentUncertainAction, OmSegmentUncertainActionImpl>(in);
       break;
@@ -88,15 +85,15 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
       break;
     case om::actions_::OmProjectCloseAction:
     case om::actions_::OmProjectSaveAction:
-      throw OmArgException("should not have received this action");
+      throw om::ArgException("should not have received this action");
     default:
-      throw OmArgException("unknown action", actionName);
-  }
-  ;
+      // TODO: or skip it?
+      throw om::ArgException("unknown action");
+  };
 }
 
 void OmActionReplayer::doReplay() {
-  printf("checking for replay...\n");
+  log_infos << "checking for replay...";
   QDir logdir = OmActionLogger::LogFolder();
 
   static const QString lockName = ".action.replay.lock";
@@ -105,7 +102,7 @@ void OmActionReplayer::doReplay() {
   if (logdir.exists(lockName)) {
     OmActions::GenerateCloseAction();
     logdir.rmdir(lockName);
-    printf("previous replay failed; not replaying\n");
+    log_infos << "previous replay failed; not replaying";
     return;
   }
 
@@ -126,10 +123,10 @@ void OmActionReplayer::doReplay() {
   }
 
   if (0 == filesToReplay.size()) {
-    printf("nothing to replay\n");
+    log_infos << "nothing to replay";
   } else {
     FOR_EACH(iter, filesToReplay) { replayFile(*iter); }
-    std::cout << "replayed " << filesToReplay.size() << " files\n";
+    log_infos << "replayed " << filesToReplay.size() << " files";
   }
 
   logdir.rmdir(lockName);

@@ -1,9 +1,7 @@
 #pragma once
 
-#include "common/om.hpp"
+#include "common/enums.hpp"
 #include "mesh/omMeshTypes.h"
-
-#include <boost/scoped_ptr.hpp>
 
 class OmMeshCache;
 class OmMeshConvertV1toV2;
@@ -32,7 +30,7 @@ class OmMeshManager {
 
   OmMeshPtr Produce(const OmMeshCoord&);
 
-  void GetMesh(OmMeshPtr&, const OmMeshCoord&, const om::Blocking);
+  void GetMesh(OmMeshPtr&, const OmMeshCoord&, const om::common::Blocking);
 
   void UncacheMesh(const OmMeshCoord& coord);
 
@@ -52,12 +50,12 @@ class OmMeshManager {
   OmSegmentation* const segmentation_;
   const double threshold_;
 
-  const boost::scoped_ptr<OmMeshCache> dataCache_;
-  const boost::scoped_ptr<OmMeshFilePtrCache> filePtrCache_;
-  const boost::scoped_ptr<OmMeshMetadata> metadata_;
+  const std::unique_ptr<OmMeshCache> dataCache_;
+  const std::unique_ptr<OmMeshFilePtrCache> filePtrCache_;
+  const std::unique_ptr<OmMeshMetadata> metadata_;
 
-  boost::scoped_ptr<OmMeshReaderV2> reader_;
-  boost::scoped_ptr<OmMeshConvertV1toV2> converter_;
+  std::unique_ptr<OmMeshReaderV2> reader_;
+  std::unique_ptr<OmMeshConvertV1toV2> converter_;
 
   void HandleFetchUpdate();
 

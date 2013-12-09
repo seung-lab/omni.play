@@ -45,16 +45,16 @@ class OmKeyEvents {
         break;
 
       case Qt::Key_Right:
-        state_->Shift(om::RIGHT);
+        state_->Shift(om::common::Direction::RIGHT);
         break;
       case Qt::Key_Left:
-        state_->Shift(om::LEFT);
+        state_->Shift(om::common::Direction::LEFT);
         break;
       case Qt::Key_Up:
-        state_->Shift(om::UP);
+        state_->Shift(om::common::Direction::UP);
         break;
       case Qt::Key_Down:
-        state_->Shift(om::DOWN);
+        state_->Shift(om::common::Direction::DOWN);
         break;
 
       case Qt::Key_C:
@@ -65,7 +65,7 @@ class OmKeyEvents {
       case Qt::Key_PageUp:
         blockingKeyDown_.restart();
         state_->MoveUpStackCloserToViewer();
-        OmEvents::ViewCenterChanged();
+        om::event::ViewCenterChanged();
         break;
 
       case Qt::Key_S:
@@ -73,7 +73,7 @@ class OmKeyEvents {
       case Qt::Key_PageDown:
         blockingKeyDown_.restart();
         state_->MoveDownStackFartherFromViewer();
-        OmEvents::ViewCenterChanged();
+        om::event::ViewCenterChanged();
         break;
 
       case Qt::Key_Tab: {

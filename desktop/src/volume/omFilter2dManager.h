@@ -4,9 +4,11 @@
  *  Matt Wimer mwimer@mit.edu Oct13, 2009
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "system/omGenericManager.hpp"
 #include "datalayer/archive/filter.h"
+
+#include <QDataStream>
 
 class OmFilter2d;
 
@@ -14,15 +16,19 @@ class OmFilter2dManager {
  public:
   OmFilter2dManager();
 
-  inline OmFilter2d& GetFilter(OmID id) { return filters_.Get(id); }
+  inline OmFilter2d& GetFilter(om::common::ID id) { return filters_.Get(id); }
 
-  inline const OmIDsSet& GetValidFilterIds() const {
+  inline const om::common::IDSet& GetValidFilterIds() const {
     return filters_.GetValidIds();
   }
 
-  inline bool IsFilterEnabled(OmID id) const { return filters_.IsEnabled(id); }
+  inline bool IsFilterEnabled(om::common::ID id) const {
+    return filters_.IsEnabled(id);
+  }
 
-  inline bool IsFilterValid(OmID id) const { return filters_.IsValid(id); }
+  inline bool IsFilterValid(om::common::ID id) const {
+    return filters_.IsValid(id);
+  }
 
   OmFilter2d& AddFilter();
 
@@ -33,9 +39,9 @@ class OmFilter2dManager {
  private:
   OmGenericManager<OmFilter2d> filters_;
 
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter&,
-                                         const OmFilter2dManager&);
-  friend void YAML::operator>>(const YAML::Node&, OmFilter2dManager&);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter&,
+                                               const OmFilter2dManager&);
+  friend void YAMLold::operator>>(const YAMLold::Node&, OmFilter2dManager&);
   friend QDataStream& operator<<(QDataStream&, const OmFilter2dManager&);
   friend QDataStream& operator>>(QDataStream&, OmFilter2dManager&);
 };

@@ -6,26 +6,30 @@
 #endif
 
 
-#include "yaml-cpp/ostream.h"
+#include "emitterstate.h"
+#include "yaml-cpp/ostream_wrapper.h"
 #include <string>
 
 namespace YAML
 {
     class Binary;
     
+    struct StringFormat { enum value { Plain, SingleQuoted, DoubleQuoted, Literal }; };
+
 	namespace Utils
 	{
-		bool WriteString(ostream& out, const std::string& str, bool inFlow, bool escapeNonAscii);
-		bool WriteSingleQuotedString(ostream& out, const std::string& str);
-		bool WriteDoubleQuotedString(ostream& out, const std::string& str, bool escapeNonAscii);
-		bool WriteLiteralString(ostream& out, const std::string& str, int indent);
-		bool WriteChar(ostream& out, char ch);
-		bool WriteComment(ostream& out, const std::string& str, int postCommentIndent);
-		bool WriteAlias(ostream& out, const std::string& str);
-		bool WriteAnchor(ostream& out, const std::string& str);
-		bool WriteTag(ostream& out, const std::string& str, bool verbatim);
-		bool WriteTagWithPrefix(ostream& out, const std::string& prefix, const std::string& tag);
-		bool WriteBinary(ostream& out, const Binary& binary);
+        StringFormat::value ComputeStringFormat(const std::string& str, EMITTER_MANIP strFormat, FlowType::value flowType, bool escapeNonAscii);
+        
+		bool WriteSingleQuotedString(ostream_wrapper& out, const std::string& str);
+		bool WriteDoubleQuotedString(ostream_wrapper& out, const std::string& str, bool escapeNonAscii);
+		bool WriteLiteralString(ostream_wrapper& out, const std::string& str, int indent);
+		bool WriteChar(ostream_wrapper& out, char ch);
+		bool WriteComment(ostream_wrapper& out, const std::string& str, int postCommentIndent);
+		bool WriteAlias(ostream_wrapper& out, const std::string& str);
+		bool WriteAnchor(ostream_wrapper& out, const std::string& str);
+		bool WriteTag(ostream_wrapper& out, const std::string& str, bool verbatim);
+		bool WriteTagWithPrefix(ostream_wrapper& out, const std::string& prefix, const std::string& tag);
+		bool WriteBinary(ostream_wrapper& out, const Binary& binary);
 	}
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omMipVolume.h"
 #include "utility/omStringHelpers.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -9,14 +9,14 @@
 
 class OmVolumeAllocater {
  public:
-  static std::vector<om::shared_ptr<QFile> > AllocateData(
+  static std::vector<std::shared_ptr<QFile> > AllocateData(
       OmMipVolume* vol, const OmVolDataType type) {
     assert(OmVolDataType::UNKNOWN != type.index());
     vol->SetVolDataType(type);
 
     const int maxLevel = vol->Coords().GetRootMipLevel();
 
-    std::vector<om::shared_ptr<QFile> > volFiles(maxLevel + 1);
+    std::vector<std::shared_ptr<QFile> > volFiles(maxLevel + 1);
 
     for (int level = 0; level <= maxLevel; ++level) {
       const Vector3<uint64_t> dims =
@@ -25,11 +25,11 @@ class OmVolumeAllocater {
       volFiles[level] = createFile(vol, level, dims);
     }
 
-    printf("\tdone allocating volume for all mip levels; data type is %s\n",
-           OmVolumeTypeHelpers::GetTypeAsString(type).c_str());
+    log_infos << "\tdone allocating volume for all mip levels; data type is "
+              << OmVolumeTypeHelpers::GetTypeAsString(type).c_str();
 
     vol->VolData()->load(vol);
-    std::cout << "volumes memory mapped\n";
+    log_infos << "volumes memory mapped";
 
     return volFiles;
   }
@@ -37,7 +37,7 @@ class OmVolumeAllocater {
   static void ReAllocateDownsampledVolumes(OmMipVolume* vol) {
     const int maxLevel = vol->Coords().GetRootMipLevel();
 
-    std::vector<om::shared_ptr<QFile> > volFiles(maxLevel + 1);
+    std::vector<std::shared_ptr<QFile> > volFiles(maxLevel + 1);
 
     for (int level = 1; level <= maxLevel; ++level) {
       const Vector3<uint64_t> dims =
@@ -45,31 +45,33 @@ class OmVolumeAllocater {
 
       volFiles[level] = createFile(vol, level, dims);
     }
+    file->seek(size - 1);
+    file->putChar(0);
+    file->flush();
 
-    printf("\tdone reallocating volume for all mip levels\n");
+    log_infos << "\tdone reallocating volume for all mip levels";
 
     vol->VolData()->load(vol);
-    std::cout << "volumes memory mapped\n";
+    log_infos << "volumes memory mapped";
   }
 
  private:
-
-  static om::shared_ptr<QFile> createFile(OmMipVolume* vol, const int level,
-                                          const Vector3<uint64_t>& dims) {
+  static std::shared_ptr<QFile> createFile(OmMipVolume* vol, const int level,
+                                           const Vector3<uint64_t>& dims) {
     const uint64_t bps = vol->GetBytesPerVoxel();
     const uint64_t size = dims.x * dims.y * dims.z * bps;
 
-    std::cout << "mip " << level
+    log_infos << "mip " << level
               << ": size is: " << om::string::humanizeNum(size) << " ("
-              << dims.x << "," << dims.y << "," << dims.z << ")\n";
+              << dims.x << "," << dims.y << "," << dims.z << ")";
 
     const std::string fnpStr = OmFileNames::GetMemMapFileName(vol, level);
     const QString fnp = QString::fromStdString(fnpStr);
     QFile::remove(fnp);
-    om::shared_ptr<QFile> file(om::make_shared<QFile>(fnp));
+    std::shared_ptr<QFile> file(std::make_shared<QFile>(fnp));
     file->resize(size);
     if (!file->open(QIODevice::ReadWrite)) {
-      throw OmIoException("could not open file " + fnpStr);
+      throw om::IoException("could not open file " + fnpStr);
     }
     file->seek(size - 1);
     file->putChar(0);

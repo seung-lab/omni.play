@@ -9,8 +9,8 @@
 
 class SegmentDataWrapper {
  private:
-  OmSegID segmentID_;
-  OmID segmentationID_;
+  om::common::SegID segmentID_;
+  om::common::ID segmentationID_;
 
   // not allowed--allows wrappers to be implicitly converted!!!
   explicit SegmentDataWrapper(const SegmentationDataWrapper& sdw);
@@ -18,17 +18,19 @@ class SegmentDataWrapper {
  public:
   SegmentDataWrapper() : segmentID_(0), segmentationID_(0) {}
 
-  SegmentDataWrapper(const OmID segmentationID, const OmSegID segmentID)
+  SegmentDataWrapper(const om::common::ID segmentationID,
+                     const om::common::SegID segmentID)
       : segmentID_(segmentID), segmentationID_(segmentationID) {}
 
   SegmentDataWrapper(const OmSegmentation* segmentation,
-                     const OmSegID segmentID)
+                     const om::common::SegID segmentID)
       : segmentID_(segmentID), segmentationID_(segmentation->getID()) {}
 
   explicit SegmentDataWrapper(OmSegment* seg)
       : segmentID_(seg->value()), segmentationID_(seg->GetSegmentationID()) {}
 
-  SegmentDataWrapper(const SegmentationDataWrapper& sdw, const OmSegID segID)
+  SegmentDataWrapper(const SegmentationDataWrapper& sdw,
+                     const om::common::SegID segID)
       : segmentID_(segID), segmentationID_(sdw.GetSegmentationID()) {}
 
   inline void set(const SegmentDataWrapper& sdw) {
@@ -36,7 +38,9 @@ class SegmentDataWrapper {
     segmentationID_ = sdw.segmentationID_;
   }
 
-  inline void SetSegmentID(const OmSegID segID) { segmentID_ = segID; }
+  inline void SetSegmentID(const om::common::SegID segID) {
+    segmentID_ = segID;
+  }
 
   SegmentDataWrapper& operator=(const SegmentDataWrapper& sdw) {
     if (this != &sdw) {
@@ -55,7 +59,7 @@ class SegmentDataWrapper {
     return segmentID_ < rhs.segmentID_;
   }
 
-  inline OmSegID GetSegmentID() const { return segmentID_; }
+  inline om::common::SegID GetSegmentID() const { return segmentID_; }
 
   bool operator==(const SegmentDataWrapper& sdw) const {
     return segmentID_ == sdw.segmentID_ &&
@@ -118,13 +122,15 @@ class SegmentDataWrapper {
 
   inline QString getIDstr() const { return QString("%1").arg(getID()); }
 
-  inline OmColor GetColorInt() const { return GetSegment()->GetColorInt(); }
+  inline om::common::Color GetColorInt() const {
+    return GetSegment()->GetColorInt();
+  }
 
   inline Vector3f GetColorFloat() const {
     return GetSegment()->GetColorFloat();
   }
 
-  inline void SetColor(const OmColor& color) const {
+  inline void SetColor(const om::common::Color& color) const {
     GetSegment()->SetColor(color);
   }
 
@@ -152,15 +158,16 @@ class SegmentDataWrapper {
 
   inline uint64_t getSize() const { return GetSegment()->size(); }
 
-  inline OmID GetSegmentationID() const { return segmentationID_; }
+  inline om::common::ID GetSegmentationID() const { return segmentationID_; }
 
-  inline OmSegID getID() const { return segmentID_; }
+  inline om::common::SegID getID() const { return segmentID_; }
 
-  inline OmSegID GetVoxelValue(const om::globalCoord& dataClickPoint) const {
+  inline om::common::SegID GetVoxelValue(
+      const om::globalCoord& dataClickPoint) const {
     return GetSegmentation().GetVoxelValue(dataClickPoint);
   }
 
-  inline OmSegID FindRootID() const {
+  inline om::common::SegID FindRootID() const {
     return Segments()->findRootID(segmentID_);
   }
 

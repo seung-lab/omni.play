@@ -18,7 +18,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "common/om.hpp"
 #include "threads/omTaskManagerImpl.hpp"
 #include "threads/omTaskManagerTypes.h"
 #include "utility/omSystemInformation.h"
@@ -28,13 +27,13 @@
 
 template <typename TaskContainer> class OmTaskManager {
  private:
-  typedef om::shared_ptr<zi::concurrency_::runnable> task_t;
+  typedef std::shared_ptr<zi::concurrency_::runnable> task_t;
 
   TaskContainer tasks_;
 
   // shared_ptr to support enable_shared_from_this
   typedef OmTaskManagerImpl<TaskContainer> manager_t;
-  om::shared_ptr<manager_t> manager_;
+  std::shared_ptr<manager_t> manager_;
 
  public:
   OmTaskManager() {}
@@ -63,7 +62,7 @@ template <typename TaskContainer> class OmTaskManager {
 
   void start(const uint32_t numWorkerThreads) {
     if (!numWorkerThreads) {
-      throw OmIoException("please specify more than 0 threads");
+      throw om::IoException("please specify more than 0 threads");
     }
 
     const uint32_t max_size = std::numeric_limits<uint32_t>::max();
@@ -116,7 +115,7 @@ template <typename TaskContainer> class OmTaskManager {
     wake_manager();
   }
 
-  template <typename Runnable> void push_front(om::shared_ptr<Runnable> task) {
+  template <typename Runnable> void push_front(std::shared_ptr<Runnable> task) {
     tasks_.push_front(task);
     wake_manager();
   }
@@ -132,7 +131,7 @@ template <typename TaskContainer> class OmTaskManager {
     wake_manager();
   }
 
-  template <typename Runnable> void push_back(om::shared_ptr<Runnable> task) {
+  template <typename Runnable> void push_back(std::shared_ptr<Runnable> task) {
     tasks_.push_back(task);
     wake_manager();
   }
@@ -148,7 +147,7 @@ template <typename TaskContainer> class OmTaskManager {
     wake_manager();
   }
 
-  template <typename Runnable> void insert(om::shared_ptr<Runnable> task) {
+  template <typename Runnable> void insert(std::shared_ptr<Runnable> task) {
     tasks_.insert(task);
     wake_manager();
   }
@@ -165,7 +164,7 @@ template <typename TaskContainer> class OmTaskManager {
   }
 
   template <typename ARG, class Runnable>
-  void insert(const ARG& arg, om::shared_ptr<Runnable> task) {
+  void insert(const ARG& arg, std::shared_ptr<Runnable> task) {
     tasks_.insert(arg, task);
     wake_manager();
   }

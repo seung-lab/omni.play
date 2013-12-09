@@ -4,7 +4,7 @@
 #include "system/omStateManager.h"
 #include "gui/toolbars/toolbarManager.h"
 #include "system/cache/omCacheManager.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 class OmSplitting {
  private:
@@ -15,7 +15,7 @@ class OmSplitting {
   SegmentDataWrapper segmentBeingSplit_;
 
  public:
-  OmSplitting() : showSplit_(false), toolBarManager_(NULL) {}
+  OmSplitting() : showSplit_(false), toolBarManager_(nullptr) {}
 
   inline bool ShowSplit() const { return showSplit_; }
 
@@ -31,8 +31,8 @@ class OmSplitting {
     showSplit_ = true;
 
     OmStateManager::SetToolModeAndSendEvent(om::tool::SPLIT);
-    OmEvents::Redraw3d();
-    OmEvents::Redraw2d();
+    om::event::Redraw3d();
+    om::event::Redraw2d();
   }
 
   void ExitSplitMode() {
@@ -40,8 +40,8 @@ class OmSplitting {
     coordBeingSplit_.reset();
 
     OmStateManager::SetOldToolModeAndSendEvent();
-    OmEvents::Redraw3d();
-    OmEvents::Redraw2d();
+    om::event::Redraw3d();
+    om::event::Redraw2d();
   }
 
   void ExitSplitModeFixButton() {

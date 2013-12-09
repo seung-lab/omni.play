@@ -12,7 +12,7 @@
  * Matthew Wimer - mwimer@mit.edu - 11/13/09
  */
 
-#include "common/omString.hpp"
+#include "common/string.hpp"
 #include "system/omManageableObject.h"
 #include "datalayer/archive/project.h"
 
@@ -30,7 +30,7 @@ enum FilterType {
 class OmFilter2d : public OmManageableObject {
  public:
   OmFilter2d();
-  OmFilter2d(const OmID);
+  OmFilter2d(const om::common::ID);
 
   void Load();
 
@@ -40,8 +40,8 @@ class OmFilter2d : public OmManageableObject {
 
   inline double GetAlpha() { return alpha_; }
 
-  void SetSegmentation(const OmID id);
-  void SetChannel(const OmID id);
+  void SetSegmentation(const om::common::ID id);
+  void SetChannel(const om::common::ID id);
 
   inline bool HasValidVol() const { return om::OVERLAY_NONE != filterType_; }
 
@@ -51,9 +51,9 @@ class OmFilter2d : public OmManageableObject {
 
   inline OmSegmentation *GetSegmentation() const { return *segVolPtr_; }
 
-  inline OmID GetChannelID() const { return chanID_; }
+  inline om::common::ID GetChannelID() const { return chanID_; }
 
-  inline OmID GetSegmentationID() const { return segID_; }
+  inline om::common::ID GetSegmentationID() const { return segID_; }
 
  private:
   double alpha_;
@@ -62,13 +62,14 @@ class OmFilter2d : public OmManageableObject {
   boost::optional<OmChannel *> channVolPtr_;
   boost::optional<OmSegmentation *> segVolPtr_;
 
-  OmID chanID_;
-  OmID segID_;
+  om::common::ID chanID_;
+  om::common::ID segID_;
 
   void reset();
 
-  friend YAML::Emitter &YAML::operator<<(YAML::Emitter &, const OmFilter2d &);
-  friend void YAML::operator>>(const YAML::Node &, OmFilter2d &);
+  friend YAMLold::Emitter &YAMLold::operator<<(YAMLold::Emitter &,
+                                               const OmFilter2d &);
+  friend void YAMLold::operator>>(const YAMLold::Node &, OmFilter2d &);
   friend QDataStream &operator<<(QDataStream &, const OmFilter2d &);
   friend QDataStream &operator>>(QDataStream &, OmFilter2d &);
 };

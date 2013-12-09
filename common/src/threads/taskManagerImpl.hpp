@@ -36,12 +36,12 @@
 #include <limits>
 
 namespace om {
-namespace threads {
+namespace thread {
 
 template <class TaskContainer>
-class taskManagerImpl
+class TaskManagerImpl
     : public zi::runnable,
-      public zi::enable_shared_from_this<taskManagerImpl<TaskContainer> >,
+      public zi::enable_shared_from_this<TaskManagerImpl<TaskContainer>>,
       public common::stoppable {
   typedef zi::shared_ptr<zi::concurrency_::runnable> task_t;
 
@@ -67,7 +67,7 @@ class taskManagerImpl
   TaskContainer& tasks_;
 
  public:
-  taskManagerImpl(const uint32_t worker_limit, const uint32_t max_size,
+  TaskManagerImpl(const uint32_t worker_limit, const uint32_t max_size,
                   TaskContainer& tasks)
       : worker_count_(0),
         worker_limit_(worker_limit),
@@ -76,13 +76,13 @@ class taskManagerImpl
         max_size_(max_size),
         state_(IDLE),
         tasks_(tasks) {
-    threadPoolManager::Add(this);
+    ThreadPoolManager::Add(this);
   }
 
-  ~taskManagerImpl() {
+  ~TaskManagerImpl() {
     // remove before stopping (else threadPoolManager may also attempt to
     //   stop pool during its own shutdown...)
-    threadPoolManager::Remove(this);
+    ThreadPoolManager::Remove(this);
     stop();
   }
 
@@ -258,7 +258,6 @@ class taskManagerImpl
       }
     }
   }
-
 };
 
 }  // namespace threads

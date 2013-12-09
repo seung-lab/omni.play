@@ -7,8 +7,10 @@
 class FilterDataWrapper;
 
 class FilObjectInspector : public QWidget {
-  Q_OBJECT public
-      : FilObjectInspector(QWidget *parent, const FilterDataWrapper &fdw);
+  Q_OBJECT;
+
+ public:
+  FilObjectInspector(QWidget *parent, const FilterDataWrapper &fdw);
 
  private
 Q_SLOTS:
@@ -20,7 +22,7 @@ Q_SLOTS:
  private:
   QSlider *alphaSlider;
 
-  om::shared_ptr<FilterDataWrapper> fdw_;
+  std::shared_ptr<FilterDataWrapper> fdw_;
 
   QLineEdit *chanEdit;
   QLineEdit *segEdit;

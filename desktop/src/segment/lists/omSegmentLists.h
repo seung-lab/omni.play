@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/enums.hpp"
 #include "segment/lists/omSegmentListsTypes.hpp"
 #include "zi/omMutex.h"
 
@@ -15,25 +16,25 @@ class OmSegmentLists {
  private:
   zi::rwmutex lock_;
 
-  boost::scoped_ptr<OmSegmentListLowLevel> segmentListsLL_;
+  std::unique_ptr<OmSegmentListLowLevel> segmentListsLL_;
 
-  om::shared_ptr<OmSegmentListGlobal> globalList_;
-  om::shared_ptr<OmSegmentListForGUI> working_;
-  om::shared_ptr<OmSegmentListForGUI> uncertain_;
-  om::shared_ptr<OmSegmentListForGUI> valid_;
+  std::shared_ptr<OmSegmentListGlobal> globalList_;
+  std::shared_ptr<OmSegmentListForGUI> working_;
+  std::shared_ptr<OmSegmentListForGUI> uncertain_;
+  std::shared_ptr<OmSegmentListForGUI> valid_;
 
-  boost::scoped_ptr<OmSegmentListByMRU> recent_;
+  std::unique_ptr<OmSegmentListByMRU> recent_;
 
-  inline OmSegmentListForGUI* get(const om::SegListType type) {
+  inline OmSegmentListForGUI* get(const om::common::SegListType type) {
     switch (type) {
-      case om::VALID:
+      case om::common::SegListType::VALID:
         return valid_.get();
-      case om::WORKING:
+      case om::common::SegListType::WORKING:
         return working_.get();
-      case om::UNCERTAIN:
+      case om::common::SegListType::UNCERTAIN:
         return uncertain_.get();
       default:
-        throw OmArgException("unknown type");
+        throw om::ArgException("unknown type");
     }
   }
 
@@ -47,28 +48,28 @@ class OmSegmentLists {
 
   void TouchRecent(OmSegment* seg);
 
-  void Swap(om::shared_ptr<OmSegmentListForGUI>& list);
-  void Swap(om::shared_ptr<OmSegmentListGlobal>& globalList);
+  void Swap(std::shared_ptr<OmSegmentListForGUI>& list);
+  void Swap(std::shared_ptr<OmSegmentListGlobal>& globalList);
 
-  size_t Size(const om::SegListType type);
+  size_t Size(const om::common::SegListType type);
   size_t SizeRecent();
 
   uint64_t GetNumTopLevelSegs();
   int64_t TotalNumVoxels();
-  int64_t NumVoxels(const om::SegListType type);
+  int64_t NumVoxels(const om::common::SegListType type);
 
-  om::shared_ptr<GUIPageOfSegments> GetSegmentGUIPageRecent(
+  std::shared_ptr<GUIPageOfSegments> GetSegmentGUIPageRecent(
       const GUIPageRequest& request);
 
-  om::shared_ptr<GUIPageOfSegments> GetSegmentGUIPage(
-      const om::SegListType type, const GUIPageRequest& request);
+  std::shared_ptr<GUIPageOfSegments> GetSegmentGUIPage(
+      const om::common::SegListType type, const GUIPageRequest& request);
 
-  OmSegID GetNextSegIDinWorkingList(const SegmentDataWrapper&);
-  OmSegID GetNextSegIDinWorkingList(const SegmentationDataWrapper&);
+  om::common::SegID GetNextSegIDinWorkingList(const SegmentDataWrapper&);
+  om::common::SegID GetNextSegIDinWorkingList(const SegmentationDataWrapper&);
 
-  int64_t GetSizeWithChildren(const OmSegID segID);
+  int64_t GetSizeWithChildren(const om::common::SegID segID);
   int64_t GetSizeWithChildren(OmSegment* seg);
 
-  int64_t GetNumChildren(const OmSegID segID);
+  int64_t GetNumChildren(const om::common::SegID segID);
   int64_t GetNumChildren(OmSegment* seg);
 };

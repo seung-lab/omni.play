@@ -1,6 +1,7 @@
+#include <QtGlobal>
 #include "omVolumeCuller.h"
-#include "common/omGl.h"
-#include "common/omDebug.h"
+#include "utility/glInclude.h"
+#include "common/logging.h"
 
 OmVolumeCuller::OmVolumeCuller(const Matrix4f& projmodelview,
                                const om::normCoord& pos,
@@ -11,15 +12,15 @@ OmVolumeCuller::OmVolumeCuller(const Matrix4f& projmodelview,
 
 const om::normCoord& OmVolumeCuller::GetPosition() const { return mPosition; }
 
-om::shared_ptr<OmVolumeCuller> OmVolumeCuller::GetTransformedCuller(
+std::shared_ptr<OmVolumeCuller> OmVolumeCuller::GetTransformedCuller(
     const Matrix4f& mat, const Matrix4f& matInv) {
   const OmMipVolume* vol = mPosition.volume();
-  return om::make_shared<OmVolumeCuller>(mProjModelView * mat,
-                                         om::normCoord(matInv * mPosition, vol),
-                                         om::normCoord(matInv * mFocus, vol));
+  return std::make_shared<OmVolumeCuller>(
+      mProjModelView * mat, om::normCoord(matInv * mPosition, vol),
+      om::normCoord(matInv * mFocus, vol));
 }
 
-Visibility OmVolumeCuller::TestChunk(const om::normBbox& normBox) {
+Visibility OmVolumeCuller::TestChunk(const om::normBbox& normBox) const {
   return mFrustumCuller.testAabb(normBox);
 }
 

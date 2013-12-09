@@ -1,8 +1,6 @@
 #pragma once
 
-#include "common/std.h"
-
-#include <zi/for_each.hpp>
+#include <vector>
 #include <zi/utility/container_utilities.hpp>
 
 namespace om {
@@ -15,7 +13,9 @@ template <typename T> void eraseRemove(std::vector<T>& v, const T val) {
 }
 
 template <typename U> void clearPtrVec(std::vector<U*>& vec) {
-  FOR_EACH(iter, vec) { delete *iter; }
+  for (auto* u : vec) {
+    delete u;
+  }
 }
 
 }  // namespace container

@@ -26,7 +26,7 @@ class OmSegmentListByMRU {
     dirty_ = true;
   }
 
-  om::shared_ptr<GUIPageOfSegments> GetSegmentGUIPage(
+  std::shared_ptr<GUIPageOfSegments> GetSegmentGUIPage(
       const GUIPageRequest& request) {
     zi::guard g(lock_);
 

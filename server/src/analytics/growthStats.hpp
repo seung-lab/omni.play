@@ -13,9 +13,9 @@
 namespace om {
 namespace analytics {
 
-inline void get_growth(std::vector<std::pair<double, uint64_t> >* _return,
+inline void get_growth(std::vector<std::pair<double, uint64_t>>* _return,
                        const uint32_t& seed,
-                       const std::vector<segments::data>& data,
+                       const std::vector<segment::Data>& data,
                        const std::vector<segments::edge>& mst_in) {
   std::vector<segments::mstEdge> mst(mst_in);
   std::sort(mst.begin(), mst.end());

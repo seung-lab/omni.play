@@ -1,7 +1,8 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omString.hpp"
+#include <QString>
+#include "common/common.h"
+#include "common/string.hpp"
 #include "zi/omUtility.h"
 
 class OmStringHelpers {
@@ -18,7 +19,7 @@ class OmStringHelpers {
     if (ok) {
       return ret;
     }
-    throw OmIoException("could not parse to uint32_t", arg);
+    throw om::IoException("could not parse to uint32_t");
   }
 
   static int32_t getInt(const QString& arg) {
@@ -27,7 +28,7 @@ class OmStringHelpers {
     if (ok) {
       return ret;
     }
-    throw OmIoException("could not parse to int32_t", arg);
+    throw om::IoException("could not parse to int32_t");
   }
 
   static bool getBool(const QString& arg) {
@@ -47,7 +48,7 @@ class OmStringHelpers {
     if (ok) {
       return ret;
     }
-    throw OmIoException("could not parse to double", arg);
+    throw om::IoException("could not parse to double");
   }
 
   static float getFloat(const QString& arg) {
@@ -56,6 +57,6 @@ class OmStringHelpers {
     if (ok) {
       return ret;
     }
-    throw OmIoException("could not parse to float", arg);
+    throw om::IoException("could not parse to float");
   }
 };

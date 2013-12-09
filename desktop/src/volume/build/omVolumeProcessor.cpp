@@ -25,12 +25,7 @@ class OmSegmentationChunkBuildTask : public zi::runnable {
 
     chunk->SegData()->ProcessChunk(isMIPzero, segments_);
 
-    const ChunkUniqueValues segIDs =
-        vol_->ChunkUniqueValues()->RereadChunk(coord_, 1);
-
-    // std::cout << "chunk " << coord_
-    //           << " has " << segIDs.size()
-    //           << " values\n";
+    const auto segIDs = vol_->UniqueValuesDS().RereadChunk(coord_, 1);
 
     if (isMIPzero) {
       // vol_->updateMinMax(chunk->GetMinValue(),
@@ -43,20 +38,19 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol) {
   OmThreadPool threadPool;
   threadPool.start();
 
-  om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+  std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
       vol->GetMipChunkCoords();
 
   FOR_EACH(iter, *coordsPtr) {
     const om::chunkCoord& coord = *iter;
 
-    om::shared_ptr<OmSegmentationChunkBuildTask> task =
-        om::make_shared<OmSegmentationChunkBuildTask>(coord, vol->Segments(),
-                                                      vol);
+    std::shared_ptr<OmSegmentationChunkBuildTask> task =
+        std::make_shared<OmSegmentationChunkBuildTask>(coord, vol->Segments(),
+                                                       vol);
     threadPool.push_back(task);
   }
 
   threadPool.join();
-  //printf("max is %g\n", mMaxVal);
 }
 
 void OmVolumeProcessor::doBuildThreadedVolume(OmChannel*) {}

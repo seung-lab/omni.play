@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omException.h"
-#include "common/omContainer.hpp"
+#include "common/common.h"
+#include "common/exception.h"
+#include "common/container.hpp"
 #include "zi/mutex.hpp"
 
 class OmChannel;
@@ -10,28 +10,29 @@ class OmSegmentation;
 class OmFilter2d;
 class OmGroup;
 
-namespace YAML {
+namespace YAMLold {
 class genericManager;
 }
 
-template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
+template <typename T, typename Lock = zi::spinlock>
+class OmGenericManager {
  protected:
   static const uint32_t DEFAULT_MAP_SIZE = 10;
 
-  OmID nextId_;
+  om::common::ID nextId_;
   uint32_t size_;
 
   std::vector<T*> vec_;
   std::vector<T*> vecValidPtrs_;
 
-  OmIDsSet validSet_;    // keys in map (fast iteration)
-  OmIDsSet enabledSet_;  // enabled keys in map
+  om::common::IDSet validSet_;    // keys in map (fast iteration)
+  om::common::IDSet enabledSet_;  // enabled keys in map
 
   Lock lock_;
 
  public:
   OmGenericManager() : nextId_(1), size_(DEFAULT_MAP_SIZE) {
-    vec_.resize(DEFAULT_MAP_SIZE, NULL);
+    vec_.resize(DEFAULT_MAP_SIZE, nullptr);
   }
 
   ~OmGenericManager() {
@@ -40,11 +41,11 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
     }
   }
 
-  //managed accessors
+  // managed accessors
   inline T& Add() {
     zi::guard g(lock_);
 
-    const OmID id = nextId_;
+    const om::common::ID id = nextId_;
 
     T* t = new T(id);
     vec_[id] = t;
@@ -58,14 +59,14 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
     return *vec_[id];
   }
 
-  inline T& Get(const OmID id) const {
+  inline T& Get(const om::common::ID id) const {
     zi::guard g(lock_);
 
     throwIfInvalidID(id);
     return *vec_[id];
   }
 
-  void Remove(const OmID id) {
+  void Remove(const om::common::ID id) {
     zi::guard g(lock_);
 
     throwIfInvalidID(id);
@@ -78,31 +79,31 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
     om::container::eraseRemove(vecValidPtrs_, t);
 
     delete t;
-    vec_[id] = NULL;
+    vec_[id] = nullptr;
 
     findAndSetNextValidID();
   }
 
-  //valid
-  inline bool IsValid(const OmID id) const {
+  // valid
+  inline bool IsValid(const om::common::ID id) const {
     zi::guard g(lock_);
     return !isIDinvalid(id);
   }
 
   // TODO: Remove return of ref to ensure locking of vector is not circumvented
-  inline const OmIDsSet& GetValidIds() const {
+  inline const om::common::IDSet& GetValidIds() const {
     zi::guard g(lock_);
     return validSet_;
   }
 
-  //enabled
-  inline bool IsEnabled(const OmID id) const {
+  // enabled
+  inline bool IsEnabled(const om::common::ID id) const {
     zi::guard g(lock_);
     throwIfInvalidID(id);
     return enabledSet_.count(id);
   }
 
-  inline void SetEnabled(const OmID id, const bool enable) {
+  inline void SetEnabled(const om::common::ID id, const bool enable) {
     zi::guard g(lock_);
     throwIfInvalidID(id);
 
@@ -114,7 +115,7 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
   }
 
   // TODO: Remove return of ref to ensure locking of vector is not circumvented
-  inline const OmIDsSet& GetEnabledIds() const {
+  inline const om::common::IDSet& GetEnabledIds() const {
     zi::guard g(lock_);
     return enabledSet_;
   }
@@ -130,14 +131,14 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
   }
 
  private:
-  inline bool isIDinvalid(const OmID id) const {
-    return id < 1 || id >= size_ || NULL == vec_[id];
+  inline bool isIDinvalid(const om::common::ID id) const {
+    return id < 1 || id >= size_ || nullptr == vec_[id];
   }
 
-  inline void throwIfInvalidID(const OmID id) const {
+  inline void throwIfInvalidID(const om::common::ID id) const {
     if (isIDinvalid(id)) {
       assert(0 && "invalid ID");
-      throw OmAccessException("Cannot get object with id: " + id);
+      throw om::AccessException("Cannot get object with id: " + id);
     }
   }
 
@@ -145,7 +146,7 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
     // search to fill in holes in number map
     //  (holes could be present from object deletion...)
     for (uint32_t i = 1; i < size_; ++i) {
-      if (NULL == vec_[i]) {
+      if (nullptr == vec_[i]) {
         nextId_ = i;
         return;
       }
@@ -153,9 +154,9 @@ template <typename T, typename Lock = zi::spinlock> class OmGenericManager {
 
     nextId_ = size_;
     size_ *= 2;
-    vec_.resize(size_, NULL);
+    vec_.resize(size_, nullptr);
   }
 
   friend class OmGenericManagerArchive;
-  friend class YAML::genericManager;
+  friend class YAMLold::genericManager;
 };

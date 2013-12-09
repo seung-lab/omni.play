@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omDebug.h"
+#include "common/common.h"
+#include "common/logging.h"
 #include "utility/omStringHelpers.h"
 #include "datalayer/omDataWrapper.h"
 #include "chunks/omChunk.h"
@@ -14,10 +14,11 @@
 #include <QFileInfoList>
 #include <QImage>
 
-template <typename VOL, typename T> class OmLoadImage {
+template <typename VOL, typename T>
+class OmLoadImage {
  private:
   VOL* const vol_;
-  const om::shared_ptr<QFile> mip0volFile_;
+  const std::shared_ptr<QFile> mip0volFile_;
   const Vector3i mip0dims_;
   const std::vector<QFileInfo>& files_;
   const int totalNumImages_;
@@ -41,7 +42,7 @@ template <typename VOL, typename T> class OmLoadImage {
   bool shouldPreallocate_;
 
  public:
-  OmLoadImage(VOL* vol, om::shared_ptr<QFile> mip0volFile,
+  OmLoadImage(VOL* vol, std::shared_ptr<QFile> mip0volFile,
               const std::vector<QFileInfo>& files)
       : vol_(vol),
         mip0volFile_(mip0volFile),
@@ -68,7 +69,7 @@ template <typename VOL, typename T> class OmLoadImage {
       processSlice(fnp, i);
     }
 
-    std::cout << "\nwaiting for tile writes to complete..." << std::flush;
+    log_infos << "waiting for tile writes to complete...";
 
     limit_.acquire(numTilesToWrite_);
 
@@ -76,7 +77,7 @@ template <typename VOL, typename T> class OmLoadImage {
 
     mip0volFile_->flush();
 
-    std::cout << "done\n";
+    log_infos << "done";
   }
 
   void ReplaceSlice(const int sliceNum) {
@@ -86,26 +87,28 @@ template <typename VOL, typename T> class OmLoadImage {
 
     processSlice(files_[0].absoluteFilePath(), sliceNum);
 
-    std::cout << "\nwaiting for tile writes to complete..." << std::flush;
+    log_infos << "\nwaiting for tile writes to complete...";
 
     limit_.acquire(numTilesToWrite_);
 
     taskMan_.join();
 
-    std::cout << "done\n";
+    log_infos << "done";
   }
 
  private:
   void processSlice(const QString& fn, const int sliceNum) {
-    msg_ = QString("(%1 of %2) loading image %3...").arg(sliceNum + 1)
-        .arg(totalNumImages_).arg(fn);
-    printf("\n%s", qPrintable(fn));
+    msg_ = QString("(%1 of %2) loading image %3...")
+               .arg(sliceNum + 1)
+               .arg(totalNumImages_)
+               .arg(fn);
+    log_infos << qPrintable(fn);
 
     QImage img(fn);
 
     if (img.isNull()) {
-      printf("\tcould not read image data for %s; skipping...\n",
-             qPrintable(fn));
+      log_infos << "\tcould not read image data for " << qPrintable(fn)
+                << "; skipping...";
       return;
     }
 
@@ -117,8 +120,8 @@ template <typename VOL, typename T> class OmLoadImage {
       return chunkOffsets_[coord];
     }
 
-    //if chunk was not in map, assume chunk is unallocated...
-    //TODO: just use OmRawChunk...
+    // if chunk was not in map, assume chunk is unallocated...
+    // TODO: just use OmRawChunk...
     const uint64_t offset =
         OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
 
@@ -154,8 +157,8 @@ template <typename VOL, typename T> class OmLoadImage {
         QImage tileQT = img.copy(startX, startY, tileWidth_, tileHeight_);
         uint8_t const* const tileDataQT = tileQT.bits();
 
-        om::shared_ptr<T> tile =
-            OmSmartPtr<T>::MallocNumBytes(tileSizeBytes_, om::DONT_ZERO_FILL);
+        std::shared_ptr<T> tile = om::mem::Malloc<T>::NumBytes(
+            tileSizeBytes_, om::mem::ZeroFill::DONT);
 
         std::copy(tileDataQT, tileDataQT + tileSizeBytes_, tile.get());
 
@@ -168,7 +171,7 @@ template <typename VOL, typename T> class OmLoadImage {
     }
   }
 
-  void tileWriterTask(om::shared_ptr<T> tile, const om::chunkCoord coord,
+  void tileWriterTask(std::shared_ptr<T> tile, const om::chunkCoord coord,
                       const int sliceNum) {
     const uint64_t chunkOffset = getChunkOffset(coord);
 

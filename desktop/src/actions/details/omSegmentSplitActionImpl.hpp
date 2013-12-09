@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "events/omEvents.h"
+#include "common/common.h"
+#include "events/events.h"
 #include "project/omProject.h"
 #include "segment/lists/omSegmentLists.h"
 #include "system/cache/omCacheManager.h"
@@ -11,7 +11,7 @@
 class OmSegmentSplitActionImpl {
  private:
   OmSegmentEdge mEdge;
-  OmID mSegmentationID;
+  om::common::ID mSegmentationID;
   QString desc;
 
  public:
@@ -31,15 +31,15 @@ class OmSegmentSplitActionImpl {
     desc =
         QString("Split seg %1 from %2").arg(mEdge.childID).arg(mEdge.parentID);
 
-    std::cout << desc.toStdString() << "\n";
+    log_infos << desc.toStdString();
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
 
     sdw.SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   void Undo() {
@@ -48,12 +48,12 @@ class OmSegmentSplitActionImpl {
     std::pair<bool, OmSegmentEdge> edge = sdw.Segments()->JoinEdge(mEdge);
 
     if (!mEdge.childID || !mEdge.parentID) {
-      printf("Can't undo a join that probably failed.\n");
+      log_infos << "Can't undo a join that probably failed.";
       return;
     }
 
     if (!edge.first) {
-      std::cout << "edge could not be rejoined...\n";
+      log_infos << "edge could not be rejoined...";
       return;
     }
 
@@ -62,13 +62,13 @@ class OmSegmentSplitActionImpl {
     desc =
         QString("Joined seg %1 to %2").arg(mEdge.childID).arg(mEdge.parentID);
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
 
     sdw.SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   std::string Description() const { return desc.toStdString(); }
@@ -76,7 +76,8 @@ class OmSegmentSplitActionImpl {
   QString classNameForLogFile() const { return "OmSegmentSplitAction"; }
 
  private:
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
   friend class QDataStream& operator<<(QDataStream&,
                                        const OmSegmentSplitActionImpl&);
   friend class QDataStream& operator>>(QDataStream&, OmSegmentSplitActionImpl&);

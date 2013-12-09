@@ -2,10 +2,10 @@
 
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/iterator/filter_iterator.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <zi/mutex.hpp>
 
-#include "common/omException.h"
+#include "common/exception.h"
 #include "utility/omLockedPODs.hpp"
 #include "utility/yaml/manager.hpp"
 
@@ -13,7 +13,7 @@ namespace om {
 namespace system {
 
 template <typename T> struct ManagedObject {
-  OmID ID;
+  om::common::ID ID;
   bool Enabled;
   zi::spinlock Lock;
   T* Object;
@@ -22,7 +22,7 @@ template <typename T> struct ManagedObject {
 }
 }
 
-namespace YAML {
+namespace YAMLold {
 
 template <typename T>
 Emitter& operator<<(Emitter& out, const om::system::ManagedObject<T>& data) {
@@ -43,7 +43,7 @@ namespace system {
 template <typename T> class Manager {
  public:
   typedef ManagedObject<T> obj;
-  typedef boost::unordered_map<OmID, obj> coll;
+  typedef std::unordered_map<om::common::ID, obj> coll;
 
  private:
   struct get_value : std::unary_function<typename coll::value_type, obj&> {
@@ -89,27 +89,29 @@ template <typename T> class Manager {
     if (id == 0 || isValid(id)) {
       id = next_;
     }
-    objs_[id].ID = id;
-    objs_[id].Enabled = enabled;
-    objs_[id].Object = toAdd;
+    auto& obj = objs_[id];
+    obj.ID = id;
+    obj.Enabled = enabled;
+    obj.Object = toAdd;
     findNext();
+    return obj;
   }
 
-  bool IsValid(OmID id) {
+  bool IsValid(om::common::ID id) {
     zi::guard g(lock_);
     return isValid(id);
   }
 
-  obj& Get(OmID id) {
+  obj& Get(om::common::ID id) {
     zi::guard g(lock_);
     iterator iter = objs_.find(id);
     if (iter != end()) {
-      throw OmArgException("Bad id");
+      throw om::ArgException("Bad id");
     }
     return iter->second;
   }
 
-  void Remove(OmID id) {
+  void Remove(om::common::ID id) {
     zi::guard g(lock_);
     if (isValid(id)) {
       zi::guard g2(objs_[id].Lock);
@@ -121,16 +123,16 @@ template <typename T> class Manager {
     }
   }
 
-  void Save(YAML::Emitter& out) const {
-    out << YAML::BeginSeq;
+  void Save(YAMLold::Emitter& out) const {
+    out << YAMLold::BeginSeq;
     FOR_EACH(iter, objs_) { out << iter->second; }
-    out << YAML::EndSeq;
+    out << YAMLold::EndSeq;
   }
 
-  void Load(const YAML::Node& in) {
+  void Load(const YAMLold::Node& in) {
     if (in.FindValue("size"))  // Old Manager Format
         {
-      OmIDsSet valid, enabled;
+      om::common::SegIDSet valid, enabled;
       in["valid set"] >> valid;
       in["enabled set"] >> enabled;
 
@@ -187,9 +189,9 @@ template <typename T> class Manager {
   inline enabled Enabled() { return enabled(this); }
 
  protected:
-  virtual T* parse(const YAML::Node& in) = 0;
+  virtual T* parse(const YAMLold::Node& in) = 0;
 
-  inline bool isValid(OmID id) { return objs_.count(id) > 0; }
+  inline bool isValid(om::common::ID id) { return objs_.count(id) > 0; }
 
   void findNext() {
     for (int i = next_;; ++i) {

@@ -12,9 +12,9 @@ class ViewGroupMainWindowUtils {
   OmViewGroupState* const vgs_;
   ViewGroupUtils* const utils_;
 
-  static const ViewType upperLeft_ = XY_VIEW;
-  static const ViewType upperRight_ = ZY_VIEW;
-  static const ViewType lowerLeft_ = XZ_VIEW;
+  static const om::common::ViewType upperLeft_ = om::common::XY_VIEW;
+  static const om::common::ViewType upperRight_ = om::common::ZY_VIEW;
+  static const om::common::ViewType lowerLeft_ = om::common::XZ_VIEW;
 
  public:
   ViewGroupMainWindowUtils(MainWindow* mainWindow, OmViewGroupState* vgs,
@@ -22,34 +22,35 @@ class ViewGroupMainWindowUtils {
       : mainWindow_(mainWindow), vgs_(vgs), utils_(utils) {}
 
   void InsertDockIntoGroup2View(ViewGroupWidgetInfo& vgw,
-                                const ViewType viewType) {
+                                const om::common::ViewType viewType) {
     if (0 == getNumDockWidgets()) {
       QDockWidget* dock = makeDockWidget(vgw);
       mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, dock);
       return;
     }
 
-    QDockWidget* dockToSplit = NULL;
+    QDockWidget* dockToSplit = nullptr;
 
-    if (utils_->doesDockWidgetExist(CHANNEL, viewType)) {
-      dockToSplit = utils_->getDockWidget(CHANNEL, viewType);
+    if (utils_->doesDockWidgetExist(om::common::CHANNEL, viewType)) {
+      dockToSplit = utils_->getDockWidget(om::common::CHANNEL, viewType);
 
-    } else if (utils_->doesDockWidgetExist(SEGMENTATION, viewType)) {
-      dockToSplit = utils_->getDockWidget(SEGMENTATION, viewType);
+    } else if (utils_->doesDockWidgetExist(om::common::SEGMENTATION,
+                                           viewType)) {
+      dockToSplit = utils_->getDockWidget(om::common::SEGMENTATION, viewType);
 
-    } else if (utils_->doesDockWidgetExist(AFFINITY, viewType)) {
-      dockToSplit = utils_->getDockWidget(AFFINITY, viewType);
+    } else if (utils_->doesDockWidgetExist(om::common::AFFINITY, viewType)) {
+      dockToSplit = utils_->getDockWidget(om::common::AFFINITY, viewType);
 
     } else {
-      throw OmArgException("don't know where to put dock");
+      throw om::ArgException("don't know where to put dock");
     }
 
     InsertBySplitting(vgw, dockToSplit);
   }
 
   DockWidgetPair InsertDockIntoGroup4View(ViewGroupWidgetInfo& vgw) {
-    QDockWidget* dock = NULL;
-    QDockWidget* dockToTabify = NULL;
+    QDockWidget* dock = nullptr;
+    QDockWidget* dockToTabify = nullptr;
 
     if (0 == getNumDockWidgets()) {
       dock = makeDockWidget(vgw);
@@ -66,7 +67,7 @@ class ViewGroupMainWindowUtils {
       }
     }
 
-    DockWidgetPair ret = { dock, dockToTabify };
+    DockWidgetPair ret = {dock, dockToTabify};
 
     return ret;
   }
@@ -84,9 +85,6 @@ class ViewGroupMainWindowUtils {
     const Qt::Orientation dir = vgw.Dir();
 
     QDockWidget* dock = makeDockWidget(vgw);
-
-    //debug(viewGroup, "\t inserting %s by splitting...\n",
-    //qPrintable(dock->objectName()));
 
     mainWindow_->splitDockWidget(biggest, dock, dir);
 
@@ -109,8 +107,6 @@ class ViewGroupMainWindowUtils {
   QDockWidget* insertByTabbing(ViewGroupWidgetInfo& vgw,
                                QDockWidget* widgetToTabify) {
     QDockWidget* dock = makeDockWidget(vgw);
-    //debug(viewGroup, "\t inserting %s by tabbing...\n",
-    //qPrintable(dock->objectName()));
     mainWindow_->tabifyDockWidget(widgetToTabify, dock);
 
     return dock;
@@ -137,12 +133,12 @@ class ViewGroupMainWindowUtils {
       if (upperLeft_ == vgw.viewType) {
 
       } else if (upperRight_ == vgw.viewType) {
-        if (utils_->doesDockWidgetExist(CHANNEL, upperLeft_)) {
-          dock = utils_->getDockWidget(CHANNEL, upperLeft_);
+        if (utils_->doesDockWidgetExist(om::common::CHANNEL, upperLeft_)) {
+          dock = utils_->getDockWidget(om::common::CHANNEL, upperLeft_);
         }
       } else {
-        if (utils_->doesDockWidgetExist(CHANNEL, upperLeft_)) {
-          dock = utils_->getDockWidget(CHANNEL, upperLeft_);
+        if (utils_->doesDockWidgetExist(om::common::CHANNEL, upperLeft_)) {
+          dock = utils_->getDockWidget(om::common::CHANNEL, upperLeft_);
         }
         vgw.Dir(Qt::Vertical);
       }
@@ -151,22 +147,23 @@ class ViewGroupMainWindowUtils {
       if (upperLeft_ == vgw.viewType) {
 
       } else if (upperRight_ == vgw.viewType) {
-        if (utils_->doesDockWidgetExist(SEGMENTATION, upperLeft_)) {
-          dock = utils_->getDockWidget(SEGMENTATION, upperLeft_);
+        if (utils_->doesDockWidgetExist(om::common::SEGMENTATION, upperLeft_)) {
+          dock = utils_->getDockWidget(om::common::SEGMENTATION, upperLeft_);
         }
       } else {
-        if (utils_->doesDockWidgetExist(SEGMENTATION, upperLeft_)) {
-          dock = utils_->getDockWidget(SEGMENTATION, upperLeft_);
+        if (utils_->doesDockWidgetExist(om::common::SEGMENTATION, upperLeft_)) {
+          dock = utils_->getDockWidget(om::common::SEGMENTATION, upperLeft_);
         }
         vgw.Dir(Qt::Vertical);
       }
 
     } else {
-      if (utils_->doesDockWidgetExist(CHANNEL, upperRight_)) {
-        dock = utils_->getDockWidget(CHANNEL, upperRight_);
+      if (utils_->doesDockWidgetExist(om::common::CHANNEL, upperRight_)) {
+        dock = utils_->getDockWidget(om::common::CHANNEL, upperRight_);
       } else {
-        if (utils_->doesDockWidgetExist(SEGMENTATION, upperRight_)) {
-          dock = utils_->getDockWidget(SEGMENTATION, upperRight_);
+        if (utils_->doesDockWidgetExist(om::common::SEGMENTATION,
+                                        upperRight_)) {
+          dock = utils_->getDockWidget(om::common::SEGMENTATION, upperRight_);
         }
       }
       vgw.Dir(Qt::Vertical);
@@ -177,10 +174,10 @@ class ViewGroupMainWindowUtils {
 
   QDockWidget* chooseDockToTabify(ViewGroupWidgetInfo& vgw) {
     if (VIEW3D == vgw.widgetType) {
-      return NULL;
+      return nullptr;
     }
 
-    QDockWidget* widgetToTabify = NULL;
+    QDockWidget* widgetToTabify = nullptr;
     const QString complimentaryObjName =
         utils_->makeComplimentaryObjectName(vgw);
 
@@ -192,11 +189,11 @@ class ViewGroupMainWindowUtils {
   }
 
  public:
-  ViewType UpperLeft() const { return upperLeft_; }
+  om::common::ViewType UpperLeft() const { return upperLeft_; }
 
-  ViewType UpperRight() const { return upperRight_; }
+  om::common::ViewType UpperRight() const { return upperRight_; }
 
-  ViewType LowerLeft() const { return lowerLeft_; }
+  om::common::ViewType LowerLeft() const { return lowerLeft_; }
 };
 
 }  // namespace gui

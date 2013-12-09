@@ -6,5 +6,5 @@ OmTileCacheEventListener::OmTileCacheEventListener(OmTileCacheImpl* cache)
 
 void OmTileCacheEventListener::ViewCenterChangeEvent() {
   cache_->ClearFetchQueues();
-  OmEvents::Redraw2d();
+  om::event::Redraw2d();
 }

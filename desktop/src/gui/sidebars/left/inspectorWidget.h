@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "zi/omUtility.h"
 
 #include <QtCore/QVariant>
@@ -15,10 +15,14 @@ class InspectorProperties;
 class MainWindow;
 class OmViewGroupState;
 class SegmentationDataWrapper;
+class TaskInfoWidget;
 
 class InspectorWidget : public QWidget {
-  Q_OBJECT public : InspectorWidget(QWidget* parent, MainWindow* mainWindow,
-                                    OmViewGroupState* vgs);
+  Q_OBJECT;
+
+ public:
+  InspectorWidget(QWidget* parent, MainWindow* mainWindow,
+                  OmViewGroupState* vgs);
   ~InspectorWidget();
 
   OmViewGroupState* GetViewGroupState() { return vgs_; }
@@ -28,11 +32,13 @@ class InspectorWidget : public QWidget {
   void addAffinityToVolume();
 
   void refreshWidgetData();
-  void rebuildSegmentLists(const OmID segmentationID, const OmSegID segID);
+  void rebuildSegmentLists(const om::common::ID segmentationID,
+                           const om::common::SegID segID);
 
 Q_SIGNALS:
-  void triggerChannelView(OmID chan_id, ViewType vtype);
-  void triggerSegmentationView(OmID primary_id, ViewType vtype);
+  void triggerChannelView(om::common::ID chan_id, om::common::ViewType vtype);
+  void triggerSegmentationView(om::common::ID primary_id,
+                               om::common::ViewType vtype);
 
  protected:
   static const int ENABLED_COL = 0;
@@ -56,8 +62,9 @@ Q_SLOTS:
 
   void doDataSrcContextMenuVolAdd(QAction* act);
 
-  void openChannelView(OmID chan_id, ViewType vtype);
-  void openSegmentationView(OmID primary_id, ViewType vtype);
+  void openChannelView(om::common::ID chan_id, om::common::ViewType vtype);
+  void openSegmentationView(om::common::ID primary_id,
+                            om::common::ViewType vtype);
 
  private:
   MainWindow* const mainWindow_;
@@ -65,6 +72,7 @@ Q_SLOTS:
 
   QTreeWidget* dataSrcListWidget_;
   QTreeWidget* filterListWidget_;
+  TaskInfoWidget* taskInfoWidget_;
 
   void deleteSegmentation(SegmentationDataWrapper sdw);
   void deleteChannel(ChannelDataWrapper cdw);
@@ -82,7 +90,7 @@ Q_SLOTS:
 
   void populateFilterListWidget(ChannelDataWrapper cdw);
 
-  QTreeWidget* setupDataSrcList();
+  QWidget* setupDataSrcList();
   QTreeWidget* setupFilterList();
   ChannelDataWrapper getCurrentlySelectedChannel();
   SegmentationDataWrapper getCurrentlySelectedSegmentation();
@@ -95,6 +103,7 @@ Q_SLOTS:
   QAction* xzAct_;
   QAction* yzAct_;
   QAction* propAct_;
+  QAction* newView3dAct_;
   QAction* delAct_;
   QAction* examMSTAct_;
 
@@ -108,14 +117,15 @@ Q_SLOTS:
   ChannelInspector* channelInspectorWidget_;
   FilObjectInspector* filObjectInspectorWidget_;
 
-  void populateChannelInspector(OmID c_id);
+  void populateChannelInspector(om::common::ID c_id);
   void populateSegmentationInspector(SegmentationDataWrapper sdw);
 
   InspectorProperties* inspectorProperties_;
 
-  ViewType getViewType(QAction* act);
+  om::common::ViewType getViewType(QAction* act);
 
   void updateSegmentListBox(SegmentationDataWrapper sdw);
 
   void showMSTtable(SegmentationDataWrapper sdw);
+  void showNewView3d();
 };

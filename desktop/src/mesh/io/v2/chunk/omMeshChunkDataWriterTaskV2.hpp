@@ -18,35 +18,36 @@ class OmMeshChunkDataWriterTaskV2 {
         offsetIntoFile_(offsetIntoFile),
         numBytes_(numBytes) {}
 
-  template <typename T> void Write(const std::vector<T>& vec) {
+  template <typename T>
+  void Write(const std::vector<T>& vec) {
     const char* dataCharPtr = reinterpret_cast<const char*>(&vec[0]);
     doWrite(dataCharPtr);
   }
 
-  template <typename T> void Write(om::shared_ptr<T> dataRawPtr) {
+  template <typename T>
+  void Write(std::shared_ptr<T> dataRawPtr) {
     const char* dataCharPtr = reinterpret_cast<const char*>(dataRawPtr.get());
     doWrite(dataCharPtr);
   }
 
  private:
-
   void doWrite(const char* dataCharPtr) {
     QFile writer(fnp_);
     if (!writer.open(QIODevice::ReadWrite)) {
-      throw OmIoException("could not open", fnp_);
+      throw om::IoException("could not open");
     }
 
     if (!writer.seek(offsetIntoFile_)) {
-      throw OmIoException("could not seek to " +
-                          om::string::num(offsetIntoFile_));
+      throw om::IoException("could not seek to " +
+                            om::string::num(offsetIntoFile_));
     }
 
     const int64_t bytesWritten = writer.write(dataCharPtr, numBytes_);
 
     if (bytesWritten != numBytes_) {
-      std::cout << "could not write data; numBytes is " << numBytes_
-                << ", but only wrote " << bytesWritten << "\n" << std::flush;
-      throw OmIoException("could not write fully file", fnp_);
+      log_infos << "could not write data; numBytes is " << numBytes_
+                << ", but only wrote " << bytesWritten;
+      throw om::IoException("could not write fully file");
     }
   }
 };

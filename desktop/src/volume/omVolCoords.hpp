@@ -7,9 +7,10 @@
  *  Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
-#include "common/omCommon.h"
-#include "events/omEvents.h"
+#include "common/common.h"
+#include "events/events.h"
 #include "zi/concurrency.hpp"
+#include "coordinates/globalCoord.h"
 
 class OmVolCoords {
  protected:
@@ -40,7 +41,7 @@ class OmVolCoords {
     dataDimensions_.y = om::math::roundUp((int) dim.y, chunkDim_);
     dataDimensions_.z = om::math::roundUp((int) dim.z, chunkDim_);
     updateNormMat();
-    OmEvents::CoordSystemChanged();
+    om::event::CoordSystemChanged();
   }
 
   // chunk dims
@@ -67,7 +68,7 @@ class OmVolCoords {
     dataToGlobal_.getInverse(globalToData_);
     normToGlobal_.setTranslation(absOffset);
     normToGlobal_.getInverse(globalToNorm_);
-    OmEvents::CoordSystemChanged();
+    om::event::CoordSystemChanged();
   }
 
   inline Vector3i GetResolution() const {
@@ -83,7 +84,7 @@ class OmVolCoords {
 
     dataToGlobal_.getInverse(globalToData_);
     updateNormMat();
-    OmEvents::CoordSystemChanged();
+    om::event::CoordSystemChanged();
   }
 
  protected:

@@ -3,77 +3,85 @@
 #include <QDir>
 #include <boost/filesystem.hpp>
 
-int64_t om::file::numBytes(const std::string& fnp) {
-  if (!om::file::exists(fnp)) {
-    throw OmIoException("file not found", fnp);
+namespace om {
+namespace file {
+namespace old {
+
+int64_t numBytes(const std::string& fnp) {
+  if (!exists(fnp)) {
+    throw om::IoException("file not found", fnp);
   }
   return QFile(QString::fromStdString(fnp)).size();
 }
 
-void om::file::openFileRO(QFile& file) {
+void openFileRO(QFile& file) {
   if (!file.open(QIODevice::ReadOnly)) {
-    throw OmIoException("could not open file read only", file.fileName());
+    throw om::IoException("could not open file read only");
   }
 }
 
-void om::file::openFileRW(QFile& file) {
+void openFileRW(QFile& file) {
   if (!file.open(QIODevice::ReadWrite)) {
-    throw OmIoException("could not open file read/write", file.fileName());
+    throw om::IoException("could not open file read/write");
   }
 }
 
-void om::file::openFileWO(QFile& file) {
+void openFileWO(QFile& file) {
   if (!file.open(QIODevice::WriteOnly | QFile::Truncate)) {
-    throw OmIoException("could not open file for write", file.fileName());
+    throw om::IoException("could not open file for write");
   }
 }
 
-void om::file::openFileAppend(QFile& file) {
+void openFileAppend(QFile& file) {
   if (!file.open(QIODevice::Append)) {
-    throw OmIoException("could not open file for write", file.fileName());
+    throw om::IoException("could not open file for write");
   }
 }
 
-void om::file::resizeFileNumBytes(QFile* file, const int64_t numBytes) {
+void resizeFileNumBytes(QFile* file, const int64_t numBytes) {
   if (!file->resize(numBytes)) {
-    throw OmIoException("could not resize file to " +
-                        om::string::num(numBytes) + " bytes");
+    throw om::IoException("could not resize file to " +
+                          om::string::num(numBytes) + " bytes");
   }
 }
 
-void om::file::rmFile(const std::string& fnp) {
+void rmFile(const std::string& fnp) {
   const QString f = QString::fromStdString(fnp);
 
   if (QFile::exists(f)) {
     if (!QFile::remove(f)) {
-      throw OmIoException("could not remove previous file", f);
+      throw om::IoException("could not remove previous file");
     }
   }
 }
 
-bool om::file::exists(const std::string& fnp) {
+bool exists(const std::string& fnp) {
   return QFile::exists(QString::fromStdString(fnp));
 }
 
-std::string om::file::tempPath() { return QDir::tempPath().toStdString(); }
+std::string tempPath() { return QDir::tempPath().toStdString(); }
 
-void om::file::mvFile(const std::string& old_fnp, const std::string& new_fnp) {
+void mvFile(const std::string& old_fnp, const std::string& new_fnp) {
   try {
     boost::filesystem::rename(old_fnp, new_fnp);
 
   }
   catch (...) {
-    throw OmIoException("could not mv file", old_fnp);
+    throw om::IoException("could not mv file");
   }
 }
 
-void om::file::cpFile(const std::string& from_fnp, const std::string& to_fnp) {
+void cpFile(const std::string& from_fnp, const std::string& to_fnp) {
   try {
     rmFile(to_fnp);
     boost::filesystem::copy_file(from_fnp, to_fnp);
 
   }
   catch (...) {
-    throw OmIoException("could not mv file", from_fnp);
+    throw om::IoException("could not mv file");
   }
 }
+
+}
+}
+}  // namespace

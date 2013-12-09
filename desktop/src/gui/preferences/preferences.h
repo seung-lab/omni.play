@@ -4,7 +4,10 @@
 #include <QWidget>
 
 class Preferences : public QDialog {
-  Q_OBJECT public : Preferences(QWidget *parent);
+  Q_OBJECT;
+
+ public:
+  Preferences(QWidget *parent);
   void showProjectPreferences();
   void showLocalPreferences();
 

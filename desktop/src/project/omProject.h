@@ -1,19 +1,12 @@
 #pragma once
 
-/*
- *  Manages data structures that are shared between various parts of the system.
- * Making centralized
- *  changes in the StateManager will send events that cause the other interested
- * systems to be
- *  notified and synchronized.
- *
- *  Brett Warne - bwarne@mit.edu - 3/14/09
- */
+#include <QString>
+#include "common/common.h"
+#include "zi/utility.h"
+#include "datalayer/file.h"
+#include "datalayer/paths.hpp"
 
-#include "common/omCommon.h"
-#include "zi/omUtility.h"
-#include "datalayer/archive/project.h"
-
+class QWidget;
 class OmChannel;
 class OmSegmentation;
 class OmHdf5;
@@ -21,19 +14,31 @@ class OmProjectImpl;
 class OmProjectVolumes;
 class OmProjectGlobals;
 
-class OmProject : private om::singletonBase<OmProject> {
+class OmProject : private om::SingletonBase<OmProject> {
  private:
-  boost::scoped_ptr<OmProjectImpl> impl_;
+  std::unique_ptr<OmProjectImpl> impl_;
 
  public:
-  //project IO
+  // project IO
   static QString New(const QString& fileNameAndPath);
-  static void Load(const QString& fileNameAndPath, QWidget* guiParent = NULL);
+  static void Load(const std::string& fileNameAndPath,
+                   QWidget* guiParent = nullptr,
+                   const std::string& username = std::string()) {
+    return Load(QString::fromStdString(fileNameAndPath), guiParent, username);
+  }
+  static void Load(const QString& fileNameAndPath, QWidget* guiParent = nullptr,
+                   const std::string& username = std::string());
+  // SafeLoad() will check if a project is open and will close it if necessary.
+  static void SafeLoad(const std::string& fileNameAndPath,
+                       QWidget* guiParent = nullptr,
+                       const std::string& username = std::string());
   static void Save();
   static void Close();
 
   static bool IsReadOnly();
   static bool IsOpen();
+  static bool IsOpen(const om::file::path& fileNameAndPath,
+                     const std::string& username);
 
   static const QString& FilesFolder();
   static const QString& OmniFile();
@@ -41,23 +46,18 @@ class OmProject : private om::singletonBase<OmProject> {
   static bool HasOldHDF5();
   static OmHdf5* OldHDF5();
 
-  //volume management
+  // volume management
   static OmProjectVolumes& Volumes();
 
   static int GetFileVersion();
 
   static OmProjectGlobals& Globals();
 
+  static void setFileVersion(const int fileVersion);
+
  private:
   OmProject();
   ~OmProject();
-
-  static void setFileVersion(const int fileVersion);
-  friend class OmDataArchiveProject;
-  friend class om::data::archive::project;
-
-  friend QDataStream& operator<<(QDataStream& out, const OmProject& p);
-  friend QDataStream& operator>>(QDataStream& in, OmProject& p);
 
   friend class zi::singleton<OmProject>;
 };

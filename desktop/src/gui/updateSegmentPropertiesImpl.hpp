@@ -6,7 +6,8 @@
 #include "gui/inspectors/segmentInspector.h"
 #include "gui/inspectors/inspectorProperties.h"
 
-class UpdateSegmentPropertiesDialogImpl : public OmSegmentEventListener {
+class UpdateSegmentPropertiesDialogImpl
+    : public om::event::SegmentEventListener {
  private:
   InspectorProperties* const ip_;
 
@@ -15,11 +16,11 @@ class UpdateSegmentPropertiesDialogImpl : public OmSegmentEventListener {
 
   ~UpdateSegmentPropertiesDialogImpl() {}
 
-  void SegmentGUIlistEvent(OmSegmentEvent*) {}
+  void SegmentGUIlistEvent(om::event::SegmentEvent*) {}
 
-  void SegmentSelectedEvent(OmSegmentEvent*) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent*) {}
 
-  void SegmentModificationEvent(OmSegmentEvent* event) {
+  void SegmentModificationEvent(om::event::SegmentEvent* event) {
     if (!ip_ || !ip_->WidgetIsViewable()) {
       return;
     }

@@ -87,12 +87,11 @@ template <> struct dimension<0> {
 
   static const dimension<0> ONE();
   static const dimension<0> ZERO();
-
 };
 
-//namespace {
-//template<> dimension<0> dimension<0>::ONE  = dimension<0>();
-//template<> dimension<0> dimension<0>::ZERO = dimension<0>();
+// namespace {
+// template<> dimension<0> dimension<0>::ONE  = dimension<0>();
+// template<> dimension<0> dimension<0>::ZERO = dimension<0>();
 //}
 
 template <int I, int D> struct MakeBoostRange {
@@ -122,7 +121,6 @@ template <int I, int D> struct MakeBoostRange {
     return range[boost::multi_array_types::index_range(
         from.dimValue_, from.dimValue_ + len.dimValue_)];
   }
-
 };
 
 template <int D> struct MakeBoostRange<0, D> {
@@ -136,10 +134,8 @@ template <int D> struct MakeBoostRange<0, D> {
                                                              dimension<0>) {
     return boost::detail::multi_array::index_gen<0, D>();
   }
-
 };
 
 static dimension<0> extents;
-
 }
 }  // namespace om::utility

@@ -33,8 +33,8 @@ class OmView2dZoom {
   void doMouseZoom(const int numSteps) {
     zoomLevel_->MouseWheelZoom(numSteps, state_->IsLevelLocked());
 
-    OmEvents::ViewPosChanged();
+    om::event::ViewPosChanged();
     state_->SetViewSliceOnPan();
-    OmEvents::ViewCenterChanged();
+    om::event::ViewCenterChanged();
   }
 };

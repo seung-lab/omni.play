@@ -21,35 +21,35 @@
 class OmSliceCache {
  private:
   OmSegmentation* const vol_;
-  const ViewType viewType_;
+  const om::common::ViewType viewType_;
   const int chunkDim_;
 
   // ignore mip level--always 0
   // x, y, z, depth
   typedef boost::tuple<int, int, int, int> OmSliceKey;
 
-  std::map<OmSliceKey, PooledTile32Ptr> cache_;
+  std::map<OmSliceKey, std::shared_ptr<uint32_t>> cache_;
 
  public:
-  OmSliceCache(OmSegmentation* vol, const ViewType viewType)
+  OmSliceCache(OmSegmentation* vol, const om::common::ViewType viewType)
       : vol_(vol),
         viewType_(viewType),
         chunkDim_(vol->Coords().GetChunkDimension()) {}
 
-  OmSegID GetVoxelValue(const om::dataCoord& coord) {
+  om::common::SegID GetVoxelValue(const om::dataCoord& coord) {
     const int depthInChunk = coord.toTileDepth(viewType_);
 
-    PooledTile32Ptr slicePtr = GetSlice(coord.toChunkCoord(), depthInChunk);
+    auto slicePtr = GetSlice(coord.toChunkCoord(), depthInChunk);
 
-    uint32_t const* const sliceData = slicePtr->GetData();
+    uint32_t const* const sliceData = slicePtr.get();
 
     const uint32_t offset = coord.toTileOffset(viewType_);
 
     return sliceData[offset];
   }
 
-  PooledTile32Ptr GetSlice(const om::chunkCoord& chunkCoord,
-                           const int depthInChunk) {
+  std::shared_ptr<uint32_t> GetSlice(const om::chunkCoord& chunkCoord,
+                                     const int depthInChunk) {
     const OmSliceKey key(chunkCoord.Coordinate.x, chunkCoord.Coordinate.y,
                          chunkCoord.Coordinate.z, depthInChunk);
 

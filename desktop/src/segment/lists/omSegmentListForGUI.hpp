@@ -1,23 +1,23 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/lists/omSegmentListsTypes.hpp"
 #include "zi/omUtility.h"
 
 class OmSegmentListForGUI {
  private:
-  const om::SegListType listType_;
+  const om::common::SegListType listType_;
 
   std::vector<SegInfo> bySize_;
-  boost::unordered_map<OmSegID, uint32_t> index_;
+  std::unordered_map<om::common::SegID, uint32_t> index_;
 
   int64_t totalNumVoxels_;
 
  public:
-  OmSegmentListForGUI(const om::SegListType listType)
+  OmSegmentListForGUI(const om::common::SegListType listType)
       : listType_(listType), totalNumVoxels_(0) {}
 
-  inline om::SegListType Type() const { return listType_; }
+  inline om::common::SegListType Type() const { return listType_; }
 
   void Build(const std::vector<SegInfo>& globalList) {
     bySize_.clear();
@@ -35,7 +35,7 @@ class OmSegmentListForGUI {
 
   int64_t TotalNumVoxels() const { return totalNumVoxels_; }
 
-  om::shared_ptr<GUIPageOfSegments> GetSegmentGUIPage(
+  std::shared_ptr<GUIPageOfSegments> GetSegmentGUIPage(
       const GUIPageRequest& request) {
     if (!request.startSeg) {
       return om::segLists::getPage(bySize_, request.offset, request.numToGet);
@@ -44,13 +44,13 @@ class OmSegmentListForGUI {
     return getPageContainingSegment(request.startSeg, request.numToGet);
   }
 
-  boost::optional<SegInfo> GetNextSegID(const OmSegID segID) {
+  boost::optional<SegInfo> GetNextSegID(const om::common::SegID segID) {
     if (!index_.count(segID)) {
       return boost::optional<SegInfo>();
     }
 
-    const OmSegID segIndex = index_[segID];
-    const OmSegID nextSegIndex = segIndex + 1;
+    const om::common::SegID segIndex = index_[segID];
+    const om::common::SegID nextSegIndex = segIndex + 1;
 
     if (bySize_.size() == nextSegIndex) {
       return boost::optional<SegInfo>();
@@ -59,17 +59,17 @@ class OmSegmentListForGUI {
     return bySize_[nextSegIndex];
   }
 
-  boost::optional<SegInfo> Get(const OmSegID segID) {
+  boost::optional<SegInfo> Get(const om::common::SegID segID) {
     if (!index_.count(segID)) {
       return boost::optional<SegInfo>();
     }
-    const OmSegID segIndex = index_[segID];
+    const om::common::SegID segIndex = index_[segID];
     return boost::optional<SegInfo>(bySize_[segIndex]);
   }
 
  private:
-  om::shared_ptr<GUIPageOfSegments> getPageContainingSegment(
-      const OmSegID segID, const int numToGet) {
+  std::shared_ptr<GUIPageOfSegments> getPageContainingSegment(
+      const om::common::SegID segID, const int numToGet) {
     if (!index_.count(segID)) {
       return om::segLists::getPage(bySize_, 0, numToGet);
     }

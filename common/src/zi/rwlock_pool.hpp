@@ -1,12 +1,10 @@
-#ifndef ZI_RWLOCK_POOL_HPP
-#define ZI_RWLOCK_POOL_HPP 1
+#pragma once
 
 #include <zi/bits/unordered_map.hpp>
 #include <zi/bits/unordered_set.hpp>
 #include <zi/concurrency.hpp>
 #include <zi/utility/non_copyable.hpp>
 #include <zi/utility/assert.hpp>
-#include <zi/utility/for_each.hpp>
 
 #include <cstddef>
 
@@ -119,6 +117,7 @@ template <class T> class rwlock_impl : zi::non_copyable {
       writer_waiting_ = true;
       writer_cv_.wait(m);
     }
+  }
 
     writer_ = client;
     has_writer_ = true;
@@ -175,7 +174,6 @@ template <class T> class rwlock_impl : zi::non_copyable {
       }
     }
   }
-
 };
 
 template <class ClientType, class LockType>
@@ -206,7 +204,9 @@ class rwlock_pool : zi::non_copyable {
   rwlock_pool() : mutex_(), locks_() {}
 
   ~rwlock_pool() {
-    FOR_EACH(it, locks_) { delete it->second; }
+    for (auto kv : locks_) {
+      delete kv.second;
+    }
   }
 
   void acquire_read(const ClientType& client, const LockType& lid) const {
@@ -293,10 +293,7 @@ class rwlock_pool : zi::non_copyable {
     zi::mutex::guard g(mutex_);
     return find_or_insert_lock_nl(lid)->is_reader(client);
   }
-
 };
 
 }  // namespace detail
 }  // namespace zi
-
-#endif

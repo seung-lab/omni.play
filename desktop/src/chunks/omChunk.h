@@ -46,7 +46,7 @@ class OmChunk {
 
  protected:
   const om::chunkCoord coord_;
-  const boost::scoped_ptr<om::chunk::dataInterface> chunkData_;
+  const std::unique_ptr<om::chunk::dataInterface> chunkData_;
   const OmMipVolume* const vol_;
 
   OmChunkMipping mipping_;

@@ -3,19 +3,19 @@
 #include "threads/taskManager.hpp"
 
 namespace om {
-namespace threads {
+namespace thread {
 
 template <class ARG, class T> struct IndivArgPolicy {
 
-  boost::function<void(T*, const ARG& arg)> func;
+  std::function<void(T*, const ARG& arg)> func;
   T* classInstantiation;
 
-  void run(boost::shared_ptr<std::vector<ARG> > argsPtr) {
+  void run(std::shared_ptr<std::vector<ARG>> argsPtr) {
     const std::vector<ARG>& args = *argsPtr;
 
     const size_t size = args.size();
 
-    for (size_t i = 0; i < size; ++i) {
+    for (auto i = 0; i < size; ++i) {
       func(classInstantiation, args[i]);
     }
   }
@@ -23,10 +23,10 @@ template <class ARG, class T> struct IndivArgPolicy {
 
 template <class ARG, class T> struct VectorArgPolicy {
 
-  boost::function<void(T*, const std::vector<ARG>& args)> func;
+  std::function<void(T*, const std::vector<ARG>& args)> func;
   T* classInstantiation;
 
-  void run(boost::shared_ptr<std::vector<ARG> > argsPtr) {
+  void run(std::shared_ptr<std::vector<ARG>> argsPtr) {
     const std::vector<ARG>& args = *argsPtr;
 
     func(classInstantiation, args);
@@ -34,31 +34,31 @@ template <class ARG, class T> struct VectorArgPolicy {
 };
 
 template <class ARG, class T, template <class, class> class ARG_RUNNER>
-class threadPoolBatched {
+class ThreadPoolBatched {
  private:
   const size_t taskVecSize_;
 
   ARG_RUNNER<ARG, T> runner_;
 
-  threadPool pool_;
+  ThreadPool pool_;
 
   typedef std::vector<ARG> args_t;
-  boost::shared_ptr<args_t> args_;
+  std::shared_ptr<args_t> args_;
 
   void resetArgs() {
-    args_ = om::make_shared<args_t>();
+    args_ = std::make_shared<args_t>();
     args_->reserve(taskVecSize_);
   }
 
  public:
-  threadPoolBatched() : taskVecSize_(1000) {}
+  ThreadPoolBatched() : taskVecSize_(1000) {}
 
-  threadPoolBatched(const int taskVecSize) : taskVecSize_(taskVecSize) {}
+  ThreadPoolBatched(const int taskVecSize) : taskVecSize_(taskVecSize) {}
 
-  ~threadPoolBatched() { JoinPool(); }
+  ~ThreadPoolBatched() { JoinPool(); }
 
   template <typename U> void Start(U func, T* classInstantiation) {
-    const int numWokers = systemInformation::get_num_cores();
+    const int numWokers = utility::systemInformation::get_num_cores();
     Start(func, classInstantiation, numWokers);
   }
 
@@ -75,7 +75,7 @@ class threadPoolBatched {
   inline void AddOrSpawnTasks(const ARG& t) {
     if (args_->size() >= taskVecSize_) {
       pool_.push_back(
-          zi::run_fn(zi::bind(&threadPoolBatched::worker, this, args_)));
+          zi::run_fn(zi::bind(&ThreadPoolBatched::worker, this, args_)));
 
       resetArgs();
     }
@@ -86,7 +86,7 @@ class threadPoolBatched {
   void JoinPool() {
     if (!args_->empty()) {
       pool_.push_back(
-          zi::run_fn(zi::bind(&threadPoolBatched::worker, this, args_)));
+          zi::run_fn(zi::bind(&ThreadPoolBatched::worker, this, args_)));
 
       resetArgs();
     }
@@ -96,7 +96,7 @@ class threadPoolBatched {
 
  private:
 
-  void worker(boost::shared_ptr<args_t> argsPtr) { runner_.run(argsPtr); }
+  void worker(std::shared_ptr<args_t> argsPtr) { runner_.run(argsPtr); }
 };
 
 }  // namespace threads

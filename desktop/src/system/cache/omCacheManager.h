@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
+#include "common/enums.hpp"
 #include "zi/omUtility.h"
 
 class OmCacheBase;
@@ -11,14 +12,16 @@ class OmCacheManagerImpl;
 
 class OmCacheManager : private om::singletonBase<OmCacheManager> {
  private:
-  boost::scoped_ptr<OmCacheManagerImpl> impl_;
+  std::unique_ptr<OmCacheManagerImpl> impl_;
 
   inline static OmCacheManagerImpl* impl() { return instance().impl_.get(); }
 
  public:
-  static QList<OmCacheInfo> GetCacheInfo(const om::CacheGroup group);
-  static void AddCache(const om::CacheGroup group, OmCacheBase* base);
-  static void RemoveCache(const om::CacheGroup group, OmCacheBase* base);
+  static std::vector<OmCacheInfo> GetCacheInfo(
+      const om::common::CacheGroup group);
+  static void AddCache(const om::common::CacheGroup group, OmCacheBase* base);
+  static void RemoveCache(const om::common::CacheGroup group,
+                          OmCacheBase* base);
 
   static void SignalCachesToCloseDown();
   static void UpdateCacheSizeFromLocalPrefs();

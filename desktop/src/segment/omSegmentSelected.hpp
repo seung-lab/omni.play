@@ -1,8 +1,8 @@
 #pragma once
 
 #include "actions/omActions.h"
-#include "common/omCommon.h"
-#include "events/omEvents.h"
+#include "common/common.h"
+#include "events/events.h"
 #include "segment/omSegmentSelector.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
@@ -22,7 +22,7 @@ class OmSegmentSelected : private om::singletonBase<OmSegmentSelected> {
 
   static void SetSegmentForPainting(const SegmentDataWrapper& sdw) {
     instance().sdwForPainting_ = sdw;
-    OmEvents::SegmentSelected();
+    om::event::SegmentSelected();
   }
 
   static void RandomizeColor() {
@@ -31,11 +31,11 @@ class OmSegmentSelected : private om::singletonBase<OmSegmentSelected> {
     }
     instance().sdw_.RandomizeColor();
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
   static void AugmentSelection(const SegmentDataWrapper& sdw) {
-    OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), NULL,
+    OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), nullptr,
                           "OmSegmentSelected");
     sel.augmentSelectedSet(sdw.getID(), true);
     sel.sendEvent();
@@ -49,12 +49,14 @@ class OmSegmentSelected : private om::singletonBase<OmSegmentSelected> {
     OmSegment* seg = instance().sdw_.GetSegment();
 
     if (seg->IsValidListType()) {
-      OmActions::ValidateSegment(instance().sdw_, om::SET_NOT_VALID);
+      OmActions::ValidateSegment(instance().sdw_,
+                                 om::common::SetValid::SET_NOT_VALID);
     } else {
-      OmActions::ValidateSegment(instance().sdw_, om::SET_VALID);
+      OmActions::ValidateSegment(instance().sdw_,
+                                 om::common::SetValid::SET_VALID);
     }
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
   }
 
  private:

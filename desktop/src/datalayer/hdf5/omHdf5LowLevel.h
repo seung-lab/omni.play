@@ -6,9 +6,10 @@
 typedef LONG_PTR ssize_t;
 #endif
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omDataPath.h"
+#include "coordinates/dataCoord.h"
 
 class OmHdf5LowLevel {
  public:
@@ -25,13 +26,14 @@ class OmHdf5LowLevel {
   bool dataset_exists();
   void dataset_delete_create_tree();
   Vector3i getDatasetDims();
-  OmDataWrapperPtr readDataset(int* size = NULL);
+  OmDataWrapperPtr readDataset(int* size = nullptr);
   void allocateDataset(int size, OmDataWrapperPtr data);
 
-  Vector3i getChunkedDatasetDims(const om::AffinityGraph aff);
+  Vector3i getChunkedDatasetDims(const om::common::AffinityGraph aff);
   void allocateChunkedDataset(const Vector3i&, const Vector3i&,
                               const OmVolDataType);
-  OmDataWrapperPtr readChunk(const om::dataBbox&, const om::AffinityGraph aff);
+  OmDataWrapperPtr readChunk(const om::dataBbox&,
+                             const om::common::AffinityGraph aff);
   void writeChunk(const om::dataBbox&, OmDataWrapperPtr);
   OmDataWrapperPtr GetChunkDataType();
 

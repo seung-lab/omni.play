@@ -1,12 +1,16 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
+#include <QtGlobal>
+
+class QDataStream;
 
 class OmSegmentEdge {
  public:
   OmSegmentEdge() : parentID(0), childID(0), threshold(-100), valid(false) {}
 
-  OmSegmentEdge(const OmSegID p, const OmSegID c, const double t)
+  OmSegmentEdge(const om::common::SegID p, const om::common::SegID c,
+                const double t)
       : parentID(p), childID(c), threshold(t), valid(true) {}
 
   bool isValid() const { return valid; }
@@ -16,8 +20,8 @@ class OmSegmentEdge {
             qFuzzyCompare(threshold, rhs.threshold) && valid == rhs.valid);
   }
 
-  OmSegID parentID;
-  OmSegID childID;
+  om::common::SegID parentID;
+  om::common::SegID childID;
   double threshold;
   bool valid;
 

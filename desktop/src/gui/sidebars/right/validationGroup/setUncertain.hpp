@@ -1,10 +1,10 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/sidebars/right/validationGroup/validationGroup.h"
 #include "gui/widgets/omButton.hpp"
 #include "actions/omActions.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 class SetUncertain : public OmButton<ValidationGroup> {
  public:
@@ -14,7 +14,6 @@ class SetUncertain : public OmButton<ValidationGroup> {
 
  private:
   void doAction() {
-    //debug(dendbar, "ValidationGroup::addGroup\n");
     SegmentationDataWrapper sdw = mParent->GetSDW();
     if (!sdw.IsSegmentationValid()) {
       return;
@@ -22,6 +21,6 @@ class SetUncertain : public OmButton<ValidationGroup> {
 
     OmActions::UncertainSegmentation(sdw, true);
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
   }
 };

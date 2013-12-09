@@ -1,6 +1,6 @@
 #pragma once
 
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "actions/omActions.h"
 #include "tiles/cache/omTileCache.h"
 #include "view2d/brush/omBrushOppTypes.h"
@@ -11,7 +11,7 @@
 class OmBrushEraseUtils {
  public:
   static void ErasePts(OmBrushOppInfo* info, om::pt3d_list_t* pts,
-                       const OmSegID segIDtoErase) {
+                       const om::common::SegID segIDtoErase) {
     const om::globalBbox& segDataExtent =
         info->segmentation->Coords().GetDataExtent();
 
@@ -29,7 +29,7 @@ class OmBrushEraseUtils {
 
     OmSliceCache sliceCache(info->segmentation, info->viewType);
 
-    virtual om::shared_ptr<boost::unordered_set<OmSegID> >
+    virtual std::shared_ptr<om::common::SegIDSet>
         segIDsAndPts = sliceCache.GetSegIDs(chunksAndPts, info->depth);
 
     FOR_EACH(iter, *pts) {
@@ -49,7 +49,7 @@ class OmBrushEraseUtils {
 
     removeModifiedTiles();
 
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
  private:
@@ -76,7 +76,7 @@ class OmBrushEraseUtils {
     //     ptsInChunks[chunkCoord].insert(chunkPos);
     // }
 
-    const OmIDsSet& segset = SegmentationDataWrapper::ValidIDs();
+    const auto& segset = SegmentationDataWrapper::ValidIDs();
 
     FOR_EACH(iter, segset) {
       SegmentationDataWrapper sdw(*iter);

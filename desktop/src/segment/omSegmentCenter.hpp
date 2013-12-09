@@ -8,7 +8,6 @@
 
 class OmSegmentCenter {
  private:
-
   boost::optional<om::dataBbox> static computeSelectedSegmentBoundingBox(
       const SegmentationDataWrapper& sdw) {
     om::dataBbox box(sdw.GetSegmentationPtr(), 0);
@@ -19,7 +18,7 @@ class OmSegmentCenter {
     const int max = 5000;
 
     OmSegment* seg = iter.getNextSegment();
-    for (int i = 0; i < max && NULL != seg; ++i) {
+    for (int i = 0; i < max && nullptr != seg; ++i) {
       const om::dataBbox segBox = seg->BoundingBox();
       if (segBox.isEmpty()) {
         continue;
@@ -66,6 +65,8 @@ class OmSegmentCenter {
   }
 
  public:
+  static void CenterSegment(OmViewGroupState& vgs) { CenterSegment(&vgs); }
+
   static void CenterSegment(OmViewGroupState* vgs) {
     const SegmentationDataWrapper sdw = vgs->Segmentation();
 
@@ -78,8 +79,8 @@ class OmSegmentCenter {
 
     vgs->View2dState()->SetScaledSliceDepth(voxelDC->toGlobalCoord());
 
-    OmEvents::ViewCenterChanged();
-    OmEvents::View3dRecenter();
+    om::event::ViewCenterChanged();
+    om::event::View3dRecenter();
   }
 
   static boost::optional<float> ComputeCameraDistanceForSelectedSegments() {
@@ -108,11 +109,11 @@ class OmSegmentCenter {
   }
 
   static void RebuildCenterOfSegmentData(const SegmentationDataWrapper& sdw) {
-    printf("rebuilding segment bounding box data...\n");
+    log_infos << "rebuilding segment bounding box data...";
 
     OmSegments* segments = sdw.Segments();
 
-    for (OmSegID i = 1; i <= segments->getMaxValue(); ++i) {
+    for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
       OmSegment* seg = segments->GetSegment(i);
       if (!seg) {
         continue;

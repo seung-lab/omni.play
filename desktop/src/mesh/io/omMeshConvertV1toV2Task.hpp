@@ -12,8 +12,8 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
   OmSegmentation* const segmentation_;
   const double threshold_;
 
-  boost::scoped_ptr<OmMeshReaderV1> hdf5Reader_;
-  boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
+  std::unique_ptr<OmMeshReaderV1> hdf5Reader_;
+  std::unique_ptr<OmMeshWriterV2> meshWriter_;
 
  public:
   OmMeshConvertV1toV2Task(OmMeshManager* meshManager)
@@ -24,9 +24,9 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
         meshWriter_(new OmMeshWriterV2(meshManager)) {}
 
   void run() {
-    printf("copying mesh data...\n");
+    log_infos << "copying mesh data...";
 
-    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         segmentation_->GetMipChunkCoords();
 
     FOR_EACH(iter, *coordsPtr) {
@@ -41,13 +41,13 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
 
     meshManager_->Metadata()->SetMeshedAndStorageAsChunkFiles();
 
-    printf("mesh conversion done!\n");
+    log_infos << "mesh conversion done!";
   }
 
  private:
   bool processChunk(const om::chunkCoord& coord) {
     const ChunkUniqueValues segIDs =
-        segmentation_->ChunkUniqueValues()->Values(coord, 1);
+        segmentation_->UniqueValuesDS().Values(coord, 1);
 
     FOR_EACH(segID, segIDs) {
       if (OmCacheManager::AmClosingDown()) {
@@ -59,10 +59,11 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
         continue;
       }
 
-      om::shared_ptr<OmDataForMeshLoad> mesh = hdf5Reader_->Read(*segID, coord);
+      auto mesh = hdf5Reader_->Read(*segID, coord);
 
-      meshWriter_->Save(*segID, coord, mesh, om::DONT_BUFFER_WRITES,
-                        om::WRITE_ONCE);
+      meshWriter_->Save(*segID, coord, mesh,
+                        om::common::ShouldBufferWrites::DONT_BUFFER_WRITES,
+                        om::common::AllowOverwrite::WRITE_ONCE);
     }
 
     return true;

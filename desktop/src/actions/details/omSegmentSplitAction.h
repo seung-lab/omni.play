@@ -13,7 +13,7 @@ class OmSegmentSplitActionImpl;
 class OmSegmentSplitAction : public OmUndoCommand {
 
  public:
-  OmSegmentSplitAction(om::shared_ptr<OmSegmentSplitActionImpl> impl)
+  OmSegmentSplitAction(std::shared_ptr<OmSegmentSplitActionImpl> impl)
       : impl_(impl) {}
 
   OmSegmentSplitAction(const SegmentationDataWrapper& sdw,
@@ -25,5 +25,5 @@ class OmSegmentSplitAction : public OmUndoCommand {
   std::string Description();
   void save(const std::string& comment);
 
-  om::shared_ptr<OmSegmentSplitActionImpl> impl_;
+  std::shared_ptr<OmSegmentSplitActionImpl> impl_;
 };

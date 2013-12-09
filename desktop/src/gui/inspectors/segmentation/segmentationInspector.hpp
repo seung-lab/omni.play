@@ -11,7 +11,10 @@
 // http://doc.qt.nokia.com/latest/dialogs-configdialog-configdialog-cpp.html
 
 class SegmentationInspector : public QDialog {
-  Q_OBJECT private : InspectorProperties* const parentDialog_;
+  Q_OBJECT;
+
+ private:
+  InspectorProperties* const parentDialog_;
   const SegmentationDataWrapper sdw_;
 
   om::segmentationInspector::PageSelector* pageSelector_;

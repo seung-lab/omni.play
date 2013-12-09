@@ -5,10 +5,10 @@
 #include "volume/omSegmentation.h"
 
 OmSegmentGraph::OmSegmentGraph()
-    : segmentation_(NULL),
-      mCache(NULL),
-      segmentPages_(NULL),
-      segmentListsLL_(NULL) {
+    : segmentation_(nullptr),
+      mCache(nullptr),
+      segmentPages_(nullptr),
+      segmentListsLL_(nullptr) {
   segsTempVec_.reserve(100);
 }
 
@@ -59,7 +59,7 @@ void OmSegmentGraph::SetGlobalThreshold(OmMST* mst) {
 }
 
 void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst) {
-  std::cout << "\t" << om::string::humanizeNum(mst->NumEdges()) << " edges..."
+  log_infos << "\t" << om::string::humanizeNum(mst->NumEdges()) << " edges..."
             << std::flush;
 
   OmTimer timer;
@@ -103,19 +103,20 @@ void OmSegmentGraph::ResetGlobalThreshold(OmMST* mst) {
   timer.PrintDone();
 }
 
-bool OmSegmentGraph::sizeCheck(const OmSegID a, const OmSegID b,
+bool OmSegmentGraph::sizeCheck(const om::common::SegID a,
+                               const om::common::SegID b,
                                const double threshold) {
-  return threshold == 0 || ((segmentListsLL_->GetSizeWithChildren(Root(a)) +
-                             segmentListsLL_->GetSizeWithChildren(Root(b))) <
-                            threshold);
+  return threshold == 0 ||
+         ((segmentListsLL_->GetSizeWithChildren(Root(a)) +
+           segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold);
 }
 
-bool OmSegmentGraph::joinInternal(const OmSegID parentID,
-                                  const OmSegID childUnknownDepthID,
+bool OmSegmentGraph::joinInternal(const om::common::SegID parentID,
+                                  const om::common::SegID childUnknownDepthID,
                                   const double threshold,
                                   const int edgeNumber) {
-  const OmSegID childRootID = Root(childUnknownDepthID);
-  const OmSegID parentRootID = Root(parentID);
+  const om::common::SegID childRootID = Root(childUnknownDepthID);
+  const om::common::SegID parentRootID = Root(parentID);
 
   if (childRootID == parentRootID) {
     return false;
@@ -138,13 +139,14 @@ bool OmSegmentGraph::joinInternal(const OmSegID parentID,
 
   parentRoot->touchFreshnessForMeshes();
 
-  //UpdateSizeListsFromJoin(parentRoot, childRoot );
+  // UpdateSizeListsFromJoin(parentRoot, childRoot );
   segmentListsLL_->UpdateSizeListsFromJoin(parentRoot, childRoot);
 
   return true;
 }
 
-bool OmSegmentGraph::splitChildFromParentInternal(const OmSegID childID) {
+bool OmSegmentGraph::splitChildFromParentInternal(
+    const om::common::SegID childID) {
   OmSegment* child = mCache->SegmentStore()->GetSegment(childID);
 
   if (child->getThreshold() > 1) {
@@ -162,7 +164,7 @@ bool OmSegmentGraph::splitChildFromParentInternal(const OmSegID childID) {
 
   children_->RemoveChild(parent, child);
   Cut(childID);
-  child->setParent(NULL);  // TODO: also set threshold??
+  child->setParent(nullptr);  // TODO: also set threshold??
   child->setEdgeNumber(-1);
 
   OmSegment* parentRoot = mCache->FindRoot(parent);
@@ -216,6 +218,6 @@ SizeAndNumPieces OmSegmentGraph::computeSegmentSizeWithChildren(
     ++numPieces;
   }
 
-  SizeAndNumPieces ret = { numVoxels, numPieces };
+  SizeAndNumPieces ret = {numVoxels, numPieces};
   return ret;
 }

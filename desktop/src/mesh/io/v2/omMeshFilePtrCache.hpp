@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
@@ -17,8 +17,8 @@ class OmMeshFilePtrCache {
   OmSegmentation* const segmentation_;
   const double threshold_;
 
-  std::map<om::chunkCoord, om::shared_ptr<OmMeshChunkAllocTableV2> > tables_;
-  std::map<om::chunkCoord, om::shared_ptr<OmMeshChunkDataWriterV2> > data_;
+  std::map<om::chunkCoord, std::shared_ptr<OmMeshChunkAllocTableV2> > tables_;
+  std::map<om::chunkCoord, std::shared_ptr<OmMeshChunkDataWriterV2> > data_;
   zi::rwmutex lock_;
 
   OmThreadPool threadPool_;
@@ -39,12 +39,12 @@ class OmMeshFilePtrCache {
   void Stop() { threadPool_.stop(); }
 
   void FlushMappedFiles() {
-    std::cout << "flushing mesh allocation tables..." << std::flush;
+    log_infos << "flushing mesh allocation tables..." << std::flush;
     mappedFiles_.Clear();
-    std::cout << "done\n";
+    log_infos << "done";
   }
 
-  void AddTaskBack(const om::shared_ptr<zi::runnable> job) {
+  void AddTaskBack(const std::shared_ptr<zi::runnable> job) {
     threadPool_.push_back(job);
   }
 
@@ -58,7 +58,7 @@ class OmMeshFilePtrCache {
     zi::rwmutex::write_guard g(lock_);
 
     if (!tables_.count(coord)) {
-      tables_[coord] = om::make_shared<OmMeshChunkAllocTableV2>(
+      tables_[coord] = std::make_shared<OmMeshChunkAllocTableV2>(
           this, segmentation_, coord, threshold_);
     }
 
@@ -69,7 +69,7 @@ class OmMeshFilePtrCache {
     zi::rwmutex::write_guard g(lock_);
 
     if (!data_.count(coord)) {
-      data_[coord] = om::make_shared<OmMeshChunkDataWriterV2>(
+      data_[coord] = std::make_shared<OmMeshChunkDataWriterV2>(
           segmentation_, coord, threshold_);
     }
 

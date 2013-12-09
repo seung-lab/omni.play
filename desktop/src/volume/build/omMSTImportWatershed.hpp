@@ -14,7 +14,7 @@ class OmMSTImportWatershed {
   bool Import(const QString& fnp, const int bitsPerNode,
               const uint32_t numEdges) {
     if (32 != bitsPerNode) {
-      throw OmIoException("only know how to process 32-bit node values");
+      throw om::IoException("only know how to process 32-bit node values");
     }
 
     OmVectorInFile<OmMSTImportEdge> edges(fnp);
@@ -24,7 +24,7 @@ class OmMSTImportWatershed {
       const QString err =
           QString("number of edges mismatch: have %1, but expected %2")
               .arg(edges.Vector().size()).arg(numEdges);
-      throw OmIoException(err);
+      throw om::IoException(err.toStdString());
     }
 
     vol_->MST()->Import(edges.Vector());

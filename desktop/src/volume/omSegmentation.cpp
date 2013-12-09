@@ -2,8 +2,8 @@
 #include "chunks/omChunkCache.hpp"
 #include "chunks/omSegChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
-#include "common/omCommon.h"
-#include "common/omDebug.h"
+#include "common/common.h"
+#include "common/logging.h"
 #include "datalayer/omDataPaths.h"
 #include "mesh/drawer/omMeshDrawer.h"
 #include "mesh/omMeshManagers.hpp"
@@ -12,7 +12,6 @@
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegments.h"
-#include "system/omGroups.h"
 #include "tiles/cache/omTileCacheSegmentation.hpp"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "volume/build/omVolumeAllocater.hpp"
@@ -20,12 +19,15 @@
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationLoader.h"
 #include "volume/omUpdateBoundingBoxes.h"
+#include "actions/omActions.h"
+
+#include <QCoreApplication>
+#include "gui/widgets/omTellInfo.hpp"
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
     : loader_(new om::segmentation::loader(this)),
       uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
-      groups_(new OmGroups(this)),
       mst_(new OmMST(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
@@ -40,11 +42,10 @@ OmSegmentation::OmSegmentation()
       annotations_(new om::annotation::manager(this)) {}
 
 // used by OmGenericManager
-OmSegmentation::OmSegmentation(OmID id)
+OmSegmentation::OmSegmentation(om::common::ID id)
     : OmManageableObject(id),
       loader_(new om::segmentation::loader(this)),
       uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
-      groups_(new OmGroups(this)),
       mst_(new OmMST(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
@@ -191,11 +192,11 @@ void OmSegmentation::SetVoxelValue(const om::globalCoord& vox,
 
 bool OmSegmentation::SetVoxelValueIfSelected(const om::globalCoord& vox,
                                              const uint32_t val) {
-  const OmSegIDsSet selection = Segments()->GetSelectedSegmentIDs();
+  const om::common::SegIDSet selection = Segments()->GetSelectedSegmentIDs();
   if (selection.size() > 0) {
     om::chunkCoord leaf_mip_coord = vox.toChunkCoord(this, 0);
     OmSegChunk* chunk = GetChunk(leaf_mip_coord);
-    OmSegID target =
+    om::common::SegID target =
         Segments()->findRootID(chunk->GetVoxelValue(vox.toDataCoord(this, 0)));
 
     if (selection.count(target) == 0) {
@@ -218,4 +219,35 @@ void OmSegmentation::UpdateFromVolResize() {
 
 std::string OmSegmentation::GetDirectoryPath() const {
   return folder_->RelativeVolPath().toStdString();
+}
+
+void OmSegmentation::ClearUserChangesAndSave() {
+  OmMSTEdge* edges = MST()->Edges();
+  for (uint32_t i = 0; i < MST()->NumEdges(); ++i) {
+    edges[i].userSplit = 0;
+    edges[i].userJoin = 0;
+  }
+
+  segments_->ClearUserEdges();
+
+  OmActions::ChangeMSTthreshold(SegmentationDataWrapper(getID()), 0.999);
+  QCoreApplication::processEvents();
+  OmTellInfo("Hey you are ready to start the comparison/reaping task :)\n"
+      "(This dialog here is a hack to get it to work...)");
+
+  OmSegments* segments = Segments();
+
+  for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
+    OmSegment* seg = segments->GetSegment(i);
+    if (!seg) {
+      continue;
+    }
+    seg->RandomizeColor();
+    seg->SetListType(om::common::SegListType::WORKING);
+  }
+
+  ValidGroupNum()->Clear();
+
+  OmCacheManager::TouchFreshness();
+  OmActions::Save();
 }

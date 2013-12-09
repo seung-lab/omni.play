@@ -1,9 +1,12 @@
 #pragma once
 
-#include "events/details/omNonFatalEvent.h"
+#include "events/details/nonFatalEvent.h"
+#include "events/listeners.h"
 #include "gui/widgets/omTellInfo.hpp"
 
-class MainWindowEvents : public OmNonFatalEventListener {
+class MainWindowEvents : public om::event::NonFatalEventListener {
  public:
-  void NonFatalEvent(OmNonFatalEvent* err) { OmTellInfo info(err->Error()); }
+  void NonFatalEvent(om::event::NonFatalEvent* err) {
+    OmTellInfo logInfos(err->Error());
+  }
 };

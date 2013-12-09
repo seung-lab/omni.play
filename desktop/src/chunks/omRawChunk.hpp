@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
-#include "utility/omSmartPtr.hpp"
+#include "utility/malloc.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
@@ -11,7 +11,8 @@
 
 #include <QFile>
 
-template <typename T> class OmRawChunk {
+template <typename T>
+class OmRawChunk {
  private:
   OmMipVolume* const vol_;
   const om::chunkCoord coord_;
@@ -19,7 +20,7 @@ template <typename T> class OmRawChunk {
   const QString memMapFileName_;
   const uint64_t numBytes_;
 
-  om::shared_ptr<T> data_;
+  std::shared_ptr<T> data_;
   T* dataRaw_;
 
   bool dirty_;
@@ -35,7 +36,7 @@ template <typename T> class OmRawChunk {
         chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord)),
         memMapFileName_(OmFileNames::GetMemMapFileNameQT(vol, coord.Level)),
         numBytes_(128 * 128 * 128 * vol_->GetBytesPerVoxel()),
-        dataRaw_(NULL),
+        dataRaw_(nullptr),
         dirty_(false) {
     readData();
   }
@@ -46,7 +47,7 @@ template <typename T> class OmRawChunk {
 
   void Flush() {
     if (dirty_) {
-      std::cout << "flushing " << coord_ << "\n";
+      log_infos << "flushing " << coord_;
       writeData();
       dirty_ = false;
     }
@@ -63,7 +64,7 @@ template <typename T> class OmRawChunk {
 
   T* Data() { return dataRaw_; }
 
-  om::shared_ptr<T> SharedPtr() { return data_; }
+  std::shared_ptr<T> SharedPtr() { return data_; }
 
  private:
   void readData() {
@@ -71,17 +72,17 @@ template <typename T> class OmRawChunk {
 
     QFile file(memMapFileName_);
     if (!file.open(QIODevice::ReadOnly)) {
-      throw OmIoException("could not open", memMapFileName_);
+      throw om::IoException("could not open");
     }
 
     file.seek(chunkOffset_);
 
-    data_ = OmSmartPtr<T>::MallocNumBytes(numBytes_, om::DONT_ZERO_FILL);
+    data_ = om::mem::Malloc<T>::NumBytes(numBytes_, om::mem::ZeroFill::DONT);
     char* dataAsCharPtr = (char*)(data_.get());
     const uint64_t readSize = file.read(dataAsCharPtr, numBytes_);
 
     if (readSize != numBytes_) {
-      throw OmIoException("read failed");
+      throw om::IoException("read failed");
     }
 
     dataRaw_ = data_.get();
@@ -92,7 +93,7 @@ template <typename T> class OmRawChunk {
 
     QFile file(memMapFileName_);
     if (!file.open(QIODevice::ReadWrite)) {
-      throw OmIoException("could not open", memMapFileName_);
+      throw om::IoException("could not open");
     }
 
     file.seek(chunkOffset_);
@@ -100,7 +101,7 @@ template <typename T> class OmRawChunk {
         file.write(reinterpret_cast<const char*>(dataRaw_), numBytes_);
 
     if (writeSize != numBytes_) {
-      throw OmIoException("write failed");
+      throw om::IoException("write failed");
     }
   }
 };

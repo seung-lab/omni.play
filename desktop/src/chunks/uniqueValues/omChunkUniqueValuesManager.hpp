@@ -7,7 +7,7 @@
 class OmChunkUniqueValuesManager {
  private:
   typedef OmChunkItemContainer<OmSegmentation, OmThresholdsInChunk> cont_t;
-  boost::scoped_ptr<cont_t> chunks_;
+  std::unique_ptr<cont_t> chunks_;
 
   void UpdateFromVolResize() { chunks_->UpdateFromVolResize(); }
 
@@ -21,6 +21,10 @@ class OmChunkUniqueValuesManager {
                            const double threshold) {
     OmThresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
     return thresholdsInChunk->Get(threshold)->Values();
+  }
+
+  ChunkUniqueValues Get(const om::chunkCoord& coord) {
+    return Values(coord, 1);
   }
 
   ChunkUniqueValues RereadChunk(const om::chunkCoord& coord,

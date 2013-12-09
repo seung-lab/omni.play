@@ -1,12 +1,14 @@
-
 #include "users/userSettings.h"
+#include "yaml-cpp-old/yaml.h"
+#include "datalayer/fs/omFile.hpp"
+#include <fstream>
 
 namespace om {
 
 void userSettings::Load() {
-  using namespace YAML;
+  using namespace YAMLold;
 
-  if (om::file::exists(filename_)) {
+  if (om::file::old::exists(filename_)) {
     Node in;
     om::yaml::util::Read(filename_, in);
 
@@ -20,7 +22,7 @@ void userSettings::Load() {
 }
 
 void userSettings::Save() {
-  using namespace YAML;
+  using namespace YAMLold;
 
   Emitter out;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "datalayer/archive/old/utilsOld.hpp"
+#include "coordinates/yaml.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/omChannelFolder.h"
 #include "volume/omMipVolume.h"
@@ -8,7 +10,8 @@
 
 #include <QDataStream>
 
-template <typename VOL> class OmMipVolumeArchive {
+template <typename VOL>
+class OmMipVolumeArchive {
  private:
   VOL& vol_;
 
@@ -27,7 +30,7 @@ template <typename VOL> class OmMipVolumeArchive {
     const QString type =
         OmVolumeTypeHelpers::GetTypeAsQString(vol_.mVolDataType);
     out << type;
-    std::cout << "saved type as " << type.toStdString() << "\n";
+    log_infos << "saved type as " << type.toStdString();
 
     save();
   }
@@ -65,7 +68,7 @@ template <typename VOL> class OmMipVolumeArchive {
     }
 
     if (!file.open(QIODevice::ReadOnly)) {
-      throw OmIoException("error reading file", filePath);
+      throw om::IoException("error reading file");
     }
 
     QDataStream in(&file);
@@ -82,7 +85,7 @@ template <typename VOL> class OmMipVolumeArchive {
     vol_.Coords().SetAbsOffset(offset);
 
     if (!in.atEnd()) {
-      throw OmIoException("corrupt file?", filePath);
+      throw om::IoException("corrupt file?");
     }
   }
 
@@ -91,7 +94,7 @@ template <typename VOL> class OmMipVolumeArchive {
 
     QFile file(filePath);
 
-    om::file::openFileWO(file);
+    om::file::old::openFileWO(file);
 
     QDataStream out(&file);
     out.setByteOrder(QDataStream::LittleEndian);

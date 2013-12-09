@@ -1,10 +1,10 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "utility/malloc.hpp"
+#include "common/common.h"
 #include "chunks/omSegChunk.h"
 #include "chunks/omSegChunkDataInterface.hpp"
 #include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
-#include "common/om.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "utility/image/omImage.hpp"
 #include "utility/segmentationDataWrapper.hpp"
@@ -18,7 +18,7 @@ class OmChunkUniqueValuesPerThreshold {
   const double threshold_;
   const QString fnp_;
 
-  om::shared_ptr<uint32_t> values_;
+  std::shared_ptr<uint32_t> values_;
   size_t numElements_;
 
   zi::rwmutex mutex_;
@@ -60,11 +60,11 @@ class OmChunkUniqueValuesPerThreshold {
     }
 
     if (!file.open(QIODevice::ReadOnly)) {
-      throw OmIoException("could not open", fnp_);
+      throw om::IoException("could not open");
     }
 
-    values_ =
-        OmSmartPtr<uint32_t>::MallocNumBytes(file.size(), om::DONT_ZERO_FILL);
+    values_ = om::mem::Malloc<uint32_t>::NumBytes(file.size(),
+                                                  om::mem::ZeroFill::DONT);
     numElements_ = file.size() / sizeof(uint32_t);
 
     file.seek(0);
@@ -76,12 +76,12 @@ class OmChunkUniqueValuesPerThreshold {
   void findValues() {
     OmSegChunk* chunk = segmentation_->GetChunk(coord_);
 
-    om::shared_ptr<uint32_t> rawDataPtr =
+    std::shared_ptr<uint32_t> rawDataPtr =
         chunk->SegData()->GetCopyOfChunkDataAsUint32();
 
     uint32_t const* const rawData = rawDataPtr.get();
 
-    boost::unordered_set<uint32_t> segIDs;
+    std::unordered_set<uint32_t> segIDs;
 
     if (!qFuzzyCompare(1, threshold_)) {
       OmSegments* segments = segmentation_->Segments();
@@ -100,16 +100,16 @@ class OmChunkUniqueValuesPerThreshold {
       }
     }
 
-    values_ = OmSmartPtr<uint32_t>::MallocNumElements(segIDs.size(),
-                                                      om::DONT_ZERO_FILL);
+    values_ = om::mem::Malloc<uint32_t>::NumElements(segIDs.size(),
+                                                     om::mem::ZeroFill::DONT);
 
     std::copy(segIDs.begin(), segIDs.end(), values_.get());
     zi::sort(values_.get(), values_.get() + segIDs.size());
 
     numElements_ = segIDs.size();
 
-    std::cout << "ChunkUniqueValues: chunk " << coord_ << " has "
-              << numElements_ << " unique values\n";
+    log_infos << "ChunkUniqueValues: chunk " << coord_ << " has "
+              << numElements_ << " unique values";
 
     store();
   }
@@ -118,7 +118,7 @@ class OmChunkUniqueValuesPerThreshold {
     QFile file(fnp_);
 
     if (!file.open(QIODevice::WriteOnly)) {
-      throw OmIoException("could not open", fnp_);
+      throw om::IoException("could not open");
     }
 
     const int64_t numBytes = numElements_ * sizeof(uint32_t);
@@ -136,8 +136,8 @@ class OmChunkUniqueValuesPerThreshold {
       segmentation_->Folder()->MakeChunkFolderPath(coord_);
     }
 
-    const QString fullPath = QString("%1uniqeValues.%2.ver1").arg(volPath)
-        .arg(QString::number(threshold_, 'f', 4));
+    const QString fullPath = QString("%1uniqeValues.%2.ver1").arg(volPath).arg(
+        QString::number(threshold_, 'f', 4));
 
     return fullPath;
   }

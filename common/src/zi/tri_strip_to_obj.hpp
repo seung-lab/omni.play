@@ -1,3 +1,4 @@
+#pragma once
 #ifndef TRI_STRIP_TO_OBJ_HPP
 #define TRI_STRIP_TO_OBJ_HPP 1
 
@@ -12,19 +13,19 @@ void tri_strip_to_obj(const float_type* points, const std::size_t points_length,
                       const std::size_t indices_length,
                       const index_type* strips,
                       const std::size_t strips_length) {
-  for (std::size_t i = 0; i < points_length; i += 6) {
+  for (auto i = 0; i < points_length; i += 6) {
     std::cout << "v " << points[i] << ' ' << points[i + 1] << ' '
               << points[i + 2] << '\n';
   }
 
-  for (std::size_t i = 3; i < points_length; i += 6) {
+  for (auto i = 3; i < points_length; i += 6) {
     std::cout << "n " << points[i] << ' ' << points[i + 1] << ' '
               << points[i + 2] << '\n';
   }
 
-  for (std::size_t i = 0; i < strips_length; i += 2) {
+  for (auto i = 0; i < strips_length; i += 2) {
     bool even = true;
-    for (index_type j = strips[i]; j < strips[i + 1] - 1; ++j) {
+    for (auto j = strips[i]; j < strips[i + 1] - 1; ++j) {
       if (even) {
         std::cout << "f " << indices[j] << ' ' << indices[j + 1] << ' '
                   << indices[j + 1] << '\n';
@@ -35,7 +36,6 @@ void tri_strip_to_obj(const float_type* points, const std::size_t points_length,
       even = !even;
     }
   }
-
 }
 
 }  // namesapce zi

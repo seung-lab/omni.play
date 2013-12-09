@@ -5,12 +5,12 @@
 #include "view2d/omView2dEvents.hpp"
 #include "view2d/omView2dZoom.hpp"
 
-OmView2d::OmView2d(const ViewType viewtype, QWidget* parent,
+OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
                    OmViewGroupState* vgs, OmMipVolume* vol,
                    const std::string& name)
     : OmView2dCore(parent, vol, vgs, viewtype, name),
       state_(State()),
-      complimentaryDock_(NULL),
+      complimentaryDock_(nullptr),
       mouseEvents_(new OmMouseEvents(this, state_)),
       keyEvents_(new OmKeyEvents(this, state_)),
       events_(new OmView2dEvents(this, state_)),
@@ -21,7 +21,7 @@ OmView2d::OmView2d(const ViewType viewtype, QWidget* parent,
 
   state_->SetIntialWindowState();
   OmCursors::setToolCursor(this);
-  OmEvents::ViewCenterChanged();
+  om::event::ViewCenterChanged();
 }
 
 OmView2d::~OmView2d() { unlinkComplimentaryDock(); }
@@ -35,7 +35,7 @@ void OmView2d::unlinkComplimentaryDock() {
   QWidget* compWidget = complimentaryDock_->widget();
   if (compWidget) {
     OmView2d* v2d = static_cast<OmView2d*>(compWidget);
-    v2d->SetComplimentaryDockWidget(NULL);
+    v2d->SetComplimentaryDockWidget(nullptr);
   }
 }
 
@@ -70,7 +70,7 @@ void OmView2d::keyPressEvent(QKeyEvent* event) {
 
 void OmView2d::ResetWidget() {
   state_->ResetWindowState();
-  OmEvents::ViewCenterChanged();
+  om::event::ViewCenterChanged();
   Redraw();
 }
 

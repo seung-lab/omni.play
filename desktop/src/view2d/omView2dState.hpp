@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omDebug.h"
-#include "events/omEvents.h"
+#include "coordinates/normCoord.h"
+#include "events/events.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
@@ -11,9 +11,10 @@
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
-#include "events/details/omViewEvent.h"
+#include "events/events.h"
 #include "volume/omMipVolume.h"
 #include "view2d/view2dCoords.hpp"
+#include "coordinates/screenCoord.h"
 
 #include "vmmlib/vmmlib.h"
 using namespace vmml;
@@ -33,11 +34,11 @@ class OmBrushSize;
 class OmView2dState {
  private:
   OmMipVolume* vol_;
-  const ObjectType objType_;
+  const om::common::ObjectType objType_;
   OmViewGroupState* const vgs_;
   OmZoomLevel* const zoomLevel_;
 
-  const ViewType viewType_;
+  const om::common::ViewType viewType_;
   const std::string name_;
 
   bool scribbling_;
@@ -53,13 +54,13 @@ class OmView2dState {
 
   bool overrideToolModeForPan_;
 
-  OmSegID segIDforPainting_;
+  om::common::SegID segIDforPainting_;
 
   om::view2dCoords coords_;
 
  public:
   OmView2dState(OmMipVolume* vol, OmViewGroupState* vgs,
-                const ViewType viewType, const QSize& size,
+                const om::common::ViewType viewType, const QSize& size,
                 const std::string name)
       : vol_(vol),
         objType_(vol->getVolumeType()),
@@ -85,13 +86,13 @@ class OmView2dState {
 
   inline const om::view2dCoords& Coords() const { return coords_; }
 
-  void Shift(const om::Direction dir) {
+  void Shift(const om::common::Direction dir) {
     const float numberOfSlicestoAdvance = 2 * om::math::pow2int(getMipLevel());
     om::globalCoord loc = Location();
     OmView2dConverters::ShiftPanDirection(loc, numberOfSlicestoAdvance, dir,
                                           viewType_);
     setLocation(loc);
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
     coords_.UpdateTransformationMatrices();
   }
 
@@ -109,7 +110,7 @@ class OmView2dState {
     vgs_->View2dState()->SetViewSliceMax(viewType_, get2ptsInPlane(max));
     vgs_->View2dState()->SetViewSliceMin(viewType_, get2ptsInPlane(min));
 
-    OmEvents::Redraw3d();
+    om::event::Redraw3d();
   }
 
   inline void ChangeViewCenter() {
@@ -132,7 +133,7 @@ class OmView2dState {
   void ResetWindowState() {
     static const om::normCoord midPoint(0.5, 0.5, 0.5, vol_);
 
-    std::cout << vol_->Coords().GetDataDimensions() << std::endl;
+    log_infos << vol_->Coords().GetDataDimensions() << std::endl;
 
     om::globalCoord loc = midPoint.toGlobalCoord();
     setLocation(loc);
@@ -142,7 +143,7 @@ class OmView2dState {
     coords_.UpdateTransformationMatrices();
 
     OmTileCache::ClearAll();
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
   inline void MoveUpStackCloserToViewer(int steps = 1) {
@@ -150,8 +151,8 @@ class OmView2dState {
         om::math::pow2int(getMipLevel()) *
         getViewTypeDepth(vol_->Coords().GetResolution()) * steps;
     const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
-    vgs_->View2dState()
-        ->SetScaledSliceDepth(viewType_, depth + numberOfSlicestoAdvance);
+    vgs_->View2dState()->SetScaledSliceDepth(viewType_,
+                                             depth + numberOfSlicestoAdvance);
 
     coords_.UpdateTransformationMatrices();
   }
@@ -161,8 +162,8 @@ class OmView2dState {
         om::math::pow2int(getMipLevel()) *
         getViewTypeDepth(vol_->Coords().GetResolution()) * steps;
     const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
-    vgs_->View2dState()
-        ->SetScaledSliceDepth(viewType_, depth - numberOfSlicestoAdvance);
+    vgs_->View2dState()->SetScaledSliceDepth(viewType_,
+                                             depth - numberOfSlicestoAdvance);
 
     coords_.UpdateTransformationMatrices();
   }
@@ -177,7 +178,7 @@ class OmView2dState {
 
     setLocation(Location() + difference);
 
-    OmEvents::ViewCenterChanged();
+    om::event::ViewCenterChanged();
 
     if (difference != Vector3f::ZERO) {
       mousePanStartingPt_.reset(cursorLocation);
@@ -188,7 +189,7 @@ class OmView2dState {
   inline const std::string& getName() const { return name_; }
 
   // viewtype
-  inline ViewType getViewType() const { return viewType_; }
+  inline om::common::ViewType getViewType() const { return viewType_; }
 
   // volume
   inline OmMipVolume* getVol() const { return vol_; }
@@ -222,7 +223,8 @@ class OmView2dState {
     return OmView2dConverters::Get2PtsInPlane<T>(vec, viewType_);
   }
 
-  template <typename T> inline T getViewTypeDepth(const Vector3<T>& vec) const {
+  template <typename T>
+  inline T getViewTypeDepth(const Vector3<T>& vec) const {
     return OmView2dConverters::GetViewTypeDepth(vec, viewType_);
   }
 
@@ -280,9 +282,11 @@ class OmView2dState {
   }
 
   // whether overall view2d widget is displaying a channel or a segmentation
-  inline ObjectType getObjectType() const { return objType_; }
+  inline om::common::ObjectType getObjectType() const { return objType_; }
 
-  inline OmID GetSegmentationID() const { return vgs_->Segmentation().GetID(); }
+  inline om::common::ID GetSegmentationID() const {
+    return vgs_->Segmentation().GetID();
+  }
 
   inline SegmentationDataWrapper GetSDW() const { return vgs_->Segmentation(); }
 
@@ -303,9 +307,9 @@ class OmView2dState {
     overrideToolModeForPan_ = b;
   }
 
-  inline OmSegID GetSegIDForPainting() { return segIDforPainting_; }
+  inline om::common::SegID GetSegIDForPainting() { return segIDforPainting_; }
 
-  inline void SetSegIDForPainting(const OmSegID segID) {
+  inline void SetSegIDForPainting(const om::common::SegID segID) {
     segIDforPainting_ = segID;
   }
 };

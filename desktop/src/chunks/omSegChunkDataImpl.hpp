@@ -39,7 +39,8 @@ template <typename DATA> class dataImpl : public dataInterface {
 
   ~dataImpl() { delete ptrToChunkData_; }
 
-  PooledTile32Ptr ExtractDataSlice32bit(const ViewType plane, const int depth) {
+  std::shared_ptr<uint32_t> ExtractDataSlice32bit(
+      const om::common::ViewType plane, const int depth) {
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);
     DATA* data = dataWrapper.Data();
 
@@ -56,7 +57,7 @@ template <typename DATA> class dataImpl : public dataInterface {
     OmChunkVoxelWalker iter(128);
 
     for (iter.begin(); iter < iter.end(); ++iter) {
-      const OmSegID val = static_cast<OmSegID>(*data++);
+      const om::common::SegID val = static_cast<om::common::SegID>(*data++);
 
       if (val) {
         p.processVoxel(val, *iter);
@@ -72,7 +73,7 @@ template <typename DATA> class dataImpl : public dataInterface {
 
     OmChunkVoxelWalker iter(128);
     for (iter.begin(); iter < iter.end(); ++iter) {
-      const OmSegID val = static_cast<OmSegID>(*data++);
+      const om::common::SegID val = static_cast<om::common::SegID>(*data++);
       if (val) {
         p.processVoxel(val, *iter);
       }
@@ -98,7 +99,7 @@ template <typename DATA> class dataImpl : public dataInterface {
     return data[voxel.toChunkOffset()];
   }
 
-  void RewriteChunk(const boost::unordered_map<uint32_t, uint32_t>& vals) {
+  void RewriteChunk(const std::unordered_map<uint32_t, uint32_t>& vals) {
     OmRawChunk<DATA> rawChunk(vol_, chunk_->GetCoordinate());
     rawChunk.SetDirty();
 
@@ -111,7 +112,7 @@ template <typename DATA> class dataImpl : public dataInterface {
     }
   }
 
-  om::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32() {
+  std::shared_ptr<uint32_t> GetCopyOfChunkDataAsUint32() {
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);
     DATA* data = dataWrapper.Data();
 
@@ -119,28 +120,28 @@ template <typename DATA> class dataImpl : public dataInterface {
   }
 
  private:
-  template <typename T> om::shared_ptr<uint32_t> getChunkAs32bit(T*) const {
+  template <typename T> std::shared_ptr<uint32_t> getChunkAs32bit(T*) const {
     OmRawChunk<T> rawChunk(vol_, chunk_->GetCoordinate());
 
-    om::shared_ptr<T> data = rawChunk.SharedPtr();
+    std::shared_ptr<T> data = rawChunk.SharedPtr();
     T* dataRaw = data.get();
 
     const int numVoxelsInChunk = chunk_->Mipping().NumVoxels();
 
-    om::shared_ptr<uint32_t> ret = OmSmartPtr<uint32_t>::MallocNumElements(
-        numVoxelsInChunk, om::DONT_ZERO_FILL);
+    auto ret = om::mem::Malloc<uint32_t>::NumElements(numVoxelsInChunk,
+                                                      om::mem::ZeroFill::DONT);
     std::copy(dataRaw, dataRaw + numVoxelsInChunk, ret.get());
 
     return ret;
   }
 
-  om::shared_ptr<uint32_t> getChunkAs32bit(uint32_t*) const {
+  std::shared_ptr<uint32_t> getChunkAs32bit(uint32_t*) const {
     OmRawChunk<uint32_t> rawChunk(vol_, chunk_->GetCoordinate());
     return rawChunk.SharedPtr();
   }
 
-  om::shared_ptr<uint32_t> getChunkAs32bit(float*) const {
-    throw OmIoException("can't deal with float data!");
+  std::shared_ptr<uint32_t> getChunkAs32bit(float*) const {
+    throw om::IoException("can't deal with float data!");
   }
 };
 

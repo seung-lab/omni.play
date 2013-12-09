@@ -7,8 +7,8 @@
  * Brett Warne - bwarne@mit.edu - 4/8/09
  */
 
-#include "common/omCommon.h"
-#include "events/omEvents.h"
+#include "common/common.h"
+#include "events/events.h"
 #include "system/omPreferenceDefinitions.h"
 #include "zi/omUtility.h"
 #include "datalayer/archive/project.h"
@@ -16,6 +16,12 @@
 #include <QHash>
 
 class OmProjectImpl;
+
+namespace om {
+namespace prefs {
+class View3d;
+}
+}
 
 class OmPreferences : private om::singletonBase<OmPreferences> {
  public:
@@ -72,6 +78,8 @@ class OmPreferences : private om::singletonBase<OmPreferences> {
     postEvent(key);
   }
 
+  static om::prefs::View3d V3dPrefs();
+
  private:
   OmPreferences() {}
   ~OmPreferences() {}
@@ -83,15 +91,17 @@ class OmPreferences : private om::singletonBase<OmPreferences> {
   QHash<int, Vector3f> v3fPrefs_;
 
   static void postEvent(const om::PrefEnum key) {
-    OmEvents::PreferenceChange(key);
+    om::event::PreferenceChange(key);
   }
 
   friend class zi::singleton<OmPreferences>;
 
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmPreferences&);
-  friend void YAML::operator>>(const YAML::Node&, OmPreferences&);
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmProjectImpl&);
-  friend void YAML::operator>>(const YAML::Node&, OmProjectImpl&);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter&,
+                                               const OmPreferences&);
+  friend void YAMLold::operator>>(const YAMLold::Node&, OmPreferences&);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter&,
+                                               const OmProjectImpl&);
+  friend void YAMLold::operator>>(const YAMLold::Node&, OmProjectImpl&);
   friend QDataStream& operator<<(QDataStream&, const OmPreferences&);
   friend QDataStream& operator>>(QDataStream&, OmPreferences&);
   friend QDataStream& operator<<(QDataStream&, const OmProjectImpl&);

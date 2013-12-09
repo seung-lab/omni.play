@@ -40,11 +40,11 @@ class segVolBuilder {
       bs.BuildBlankVolume();
 
     } else {
-      throw OmArgException("unknown option", whatOrHowToBuild_);
+      throw om::ArgException("unknown option");
     }
   }
 
-  void Build(om::shared_ptr<om::gui::progress> p) {
+  void Build(std::shared_ptr<om::gui::progress> p) {
     OmBuildSegmentation bs(sdw_);
 
     bs.setFileNamesAndPaths(fileNamesAndPaths_);
@@ -65,7 +65,7 @@ class segVolBuilder {
       bs.BuildBlankVolume();
 
     } else {
-      throw OmArgException("unknown option", whatOrHowToBuild_);
+      throw om::ArgException("unknown option");
     }
   }
 };

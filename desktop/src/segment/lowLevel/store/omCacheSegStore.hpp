@@ -19,18 +19,19 @@ class OmCacheSegStore {
         numInitialPages_(initialPages_.size()) {}
 
   /**
-   * returns NULL if segment was never instantiated;
+   * returns nullptr if segment was never instantiated;
    **/
-  OmSegment* GetSegment(const OmSegID segID) {
-    return getSegment(segID, om::SAFE);
+  OmSegment* GetSegment(const om::common::SegID segID) {
+    return getSegment(segID, true);
   }
 
-  OmSegment* GetSegmentUnsafe(const OmSegID segID) {
-    return getSegment(segID, om::NOT_SAFE);
+  OmSegment* GetSegmentUnsafe(const om::common::SegID segID) {
+    return getSegment(segID, false);
   }
 
  private:
-  inline OmSegment* getSegment(const OmSegID segID, const om::Safe isSafe) {
+  inline OmSegment* getSegment(const om::common::SegID segID,
+                               const bool isSafe) {
     const uint32_t pageNum = segID / pageSize_;
 
     if (pageNum < numInitialPages_) {
@@ -45,7 +46,8 @@ class OmCacheSegStore {
       // copy;
       //   comparing vector sizes is NOT sufficient, as segments can be added in
       // any order,
-      //   thus there may be NULL pages in the copy of the vector that don't get
+      //   thus there may be nullptr pages in the copy of the vector that don't
+      // get
       // updated
       //   when initialized in the sgemtn store
       const std::vector<OmSegmentPage*> curPages = store_->Pages();
@@ -55,8 +57,9 @@ class OmCacheSegStore {
   }
 
   inline OmSegment* doGetSegment(const std::vector<OmSegmentPage*>& pages,
-                                 const uint32_t pageNum, const OmSegID segID,
-                                 const om::Safe /* isSafe */) {
+                                 const uint32_t pageNum,
+                                 const om::common::SegID segID,
+                                 const bool /* isSafe */) {
     // if(om::NOT_SAFE == isSafe)
     // {
     //     OmSegmentPage& page = *pages[pageNum];
@@ -64,24 +67,24 @@ class OmCacheSegStore {
     // }
 
     if (pageNum >= pages.size()) {
-      return NULL;
+      return nullptr;
     }
 
     if (!pages[pageNum]) {
-      return NULL;
+      return nullptr;
     }
 
     OmSegmentPage& page = *pages[pageNum];
     OmSegment* ret = &(page[segID % pageSize_]);
 
-    const OmSegID loadedID = ret->data_->value;
+    const om::common::SegID loadedID = ret->data_->value;
 
     if (!loadedID) {
-      return NULL;
+      return nullptr;
     }
 
     if (loadedID != segID) {
-      throw OmIoException("corruption detected in segment page");
+      throw om::IoException("corruption detected in segment page");
     }
 
     return ret;

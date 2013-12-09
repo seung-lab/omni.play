@@ -12,20 +12,20 @@ namespace segchunk {
 class OmExtractSegTile {
  public:
   OmExtractSegTile(OmSegmentation* vol, const om::chunkCoord& coord,
-                   const ViewType plane, int depth)
+                   const om::common::ViewType plane, int depth)
       : vol_(vol), coord_(coord), plane_(plane), depth_(depth) {}
 
-  template <typename T> inline PooledTile32Ptr Extract(T* d) const {
+  template <typename T> inline std::shared_ptr<uint32_t> Extract(T* d) const {
     return getCachedTile(d);
   }
 
-  PooledTile32Ptr Extract(float*) const {
-    throw OmIoException("segmentation data shouldn't be float");
+  std::shared_ptr<uint32_t> Extract(float*) const {
+    throw om::IoException("segmentation data shouldn't be float");
   }
 
  private:
-  template <typename T> PooledTile32Ptr getCachedTile(T* d) const {
-    PooledTile32Ptr dataPtr = vol_->SliceCache()->Get(coord_, depth_, plane_);
+  template <typename T> std::shared_ptr<uint32_t> getCachedTile(T* d) const {
+    auto dataPtr = vol_->SliceCache()->Get(coord_, depth_, plane_);
 
     if (!dataPtr) {
       dataPtr = getTile(d);
@@ -35,34 +35,31 @@ class OmExtractSegTile {
     return dataPtr;
   }
 
-  PooledTile32Ptr getTile(uint32_t* d) const {
+  std::shared_ptr<uint32_t> getTile(uint32_t* d) const {
     OmRawChunkSlicer<uint32_t> slicer(128, d);
 
     OmProject::Globals().FileReadSemaphore().acquire(1);
-    OmPooledTile<uint32_t>* tile = slicer.GetCopyAsPooledTile(plane_, depth_);
+    auto tile = slicer.GetCopyOfTile(plane_, depth_);
     OmProject::Globals().FileReadSemaphore().release(1);
 
-    return PooledTile32Ptr(tile);
+    return tile;
   }
 
-  template <typename T> PooledTile32Ptr getTile(T* d) const {
+  template <typename T> std::shared_ptr<uint32_t> getTile(T* d) const {
     OmRawChunkSlicer<T> slicer(128, d);
 
     OmProject::Globals().FileReadSemaphore().acquire(1);
-    boost::scoped_ptr<OmPooledTile<T> > rawTile(
-        slicer.GetCopyAsPooledTile(plane_, depth_));
+    auto rawTile = slicer.GetCopyOfTile(plane_, depth_);
     OmProject::Globals().FileReadSemaphore().release(1);
 
     OmTileFilters<T> filter(128);
 
-    OmPooledTile<uint32_t>* tile = filter.recastToUint32(rawTile.get());
-
-    return PooledTile32Ptr(tile);
+    return filter.recastToUint32(rawTile.get());
   }
 
   OmSegmentation* const vol_;
   const om::chunkCoord coord_;
-  const ViewType plane_;
+  const om::common::ViewType plane_;
   const int depth_;
 };
 

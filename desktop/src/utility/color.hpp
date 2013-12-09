@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "project/omProjectGlobals.h"
 #include "utility/omRandColorFile.hpp"
 #include <QColor>
@@ -12,6 +12,7 @@ namespace utils {
 class color {
  private:
   enum ColorIndexInternal {
+    NONE,
     RED,
     GREEN,
     BLUE
@@ -19,14 +20,14 @@ class color {
 
  public:
 
-  static inline OmColor GetRandomColor() {
+  static inline om::common::Color GetRandomColor() {
     return OmProject::Globals().RandColorFile().GetRandomColor();
   }
 
-  static inline OmColor GetRandomColor(const OmColor old) {
-    ColorIndexInternal olc;
-    ColorIndexInternal nsc;
-    OmColor ret = GetRandomColor();
+  static inline om::common::Color GetRandomColor(const om::common::Color old) {
+    ColorIndexInternal olc = NONE;
+    ColorIndexInternal nsc = NONE;
+    om::common::Color ret = GetRandomColor();
 
     if (old.red > old.blue && old.red > old.green) {
       olc = RED;
@@ -59,19 +60,19 @@ class color {
     return ret;
   }
 
-  static QColor OmColorToQColor(const OmColor color) {
+  static QColor ColorToQColor(const om::common::Color color) {
     return qRgb(color.red, color.green, color.blue);
   }
 
-  static OmColor QColorToOmColor(const QColor color) {
-    OmColor c = { static_cast<uint8_t>(color.red()),
-                  static_cast<uint8_t>(color.green()),
-                  static_cast<uint8_t>(color.blue()) };
+  static om::common::Color QColorToColor(const QColor color) {
+    om::common::Color c = { static_cast<uint8_t>(color.red()),
+                            static_cast<uint8_t>(color.green()),
+                            static_cast<uint8_t>(color.blue()) };
     return c;
   }
 
-  static QPixmap OmColorAsQPixmap(const OmColor& color) {
-    return MakeQPixmap(OmColorToQColor(color));
+  static QPixmap ColorAsQPixmap(const om::common::Color& color) {
+    return MakeQPixmap(ColorToQColor(color));
   }
 
   static QPixmap MakeQPixmap(const QColor& color) {

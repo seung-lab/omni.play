@@ -1,15 +1,15 @@
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "mesh/drawer/omMeshSegmentList.hpp"
 #include "mesh/drawer/omMeshSegmentListTask.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentIterator.h"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "chunks/omChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 
 void OmMeshSegmentListTask::run() {
   const ChunkUniqueValues chunkSegIDs =
-      segmentation_->ChunkUniqueValues()->Values(mChunk->GetCoordinate(), 1);
+      segmentation_->UniqueValuesDS().Values(mChunk->GetCoordinate(), 1);
 
   OmSegmentIterator segIter(mRootSeg->Segments());
   segIter.iterOverSegmentID(mRootSeg->value());
@@ -17,7 +17,7 @@ void OmMeshSegmentListTask::run() {
 
   OmSegPtrList segmentsToDraw;
 
-  while (NULL != seg) {
+  while (nullptr != seg) {
     if (chunkSegIDs.contains(seg->value())) {
       segmentsToDraw.push_back(seg);
     }
@@ -26,6 +26,5 @@ void OmMeshSegmentListTask::run() {
   }
 
   rootSegLists_->AddToCache(mChunk, mRootSeg, segmentsToDraw);
-  OmEvents::Redraw3d();
-  //	printf("done..(%u)\n", mRootSeg->value);
+  om::event::Redraw3d();
 }

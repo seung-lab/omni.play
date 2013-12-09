@@ -1,7 +1,6 @@
 #pragma once
 
 #include "zi/omMutex.h"
-#include "utility/omSharedPtr.hpp"
 
 #include <zi/concurrency/runnable.hpp>
 #include <map>
@@ -16,7 +15,7 @@ class OmTaskManagerContainerMipSorted {
   zi::spinlock lock_;
 
   template <class Function> inline task_t wrapFunction(const Function& task) {
-    return om::shared_ptr<zi::concurrency_::runnable_function_wrapper>(
+    return std::shared_ptr<zi::concurrency_::runnable_function_wrapper>(
         new zi::concurrency_::runnable_function_wrapper(task));
   }
 
@@ -53,7 +52,7 @@ class OmTaskManagerContainerMipSorted {
   }
 
   template <typename ARG, class Runnable>
-  void insert(const ARG& arg, om::shared_ptr<Runnable> task) {
+  void insert(const ARG& arg, std::shared_ptr<Runnable> task) {
     zi::guard g(lock_);
     queue_.insert(std::make_pair(arg, task));
   }

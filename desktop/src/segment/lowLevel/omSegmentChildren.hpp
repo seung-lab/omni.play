@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentChildrenTypes.h"
 
@@ -13,7 +13,8 @@ class OmSegmentChildren {
 
   inline void Resize(const size_t size) { list_.resize(size); }
 
-  inline const segChildCont_t& GetChildren(const OmSegID segID) const {
+  inline const segChildCont_t& GetChildren(
+      const om::common::SegID segID) const {
     return list_[segID];
   }
 
@@ -21,7 +22,7 @@ class OmSegmentChildren {
     return list_[seg->value()];
   }
 
-  inline void AddChild(const OmSegID segID, OmSegment* child) {
+  inline void AddChild(const om::common::SegID segID, OmSegment* child) {
     list_[segID].insert(child);
   }
 
@@ -29,7 +30,7 @@ class OmSegmentChildren {
     list_[seg->value()].insert(child);
   }
 
-  inline void RemoveChild(const OmSegID segID, OmSegment* child) {
+  inline void RemoveChild(const om::common::SegID segID, OmSegment* child) {
     list_[segID].erase(child);
   }
 

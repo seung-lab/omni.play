@@ -8,7 +8,6 @@ class SetValid;
 class SetNotValid;
 class SetUncertain;
 class SetNotUncertain;
-class GroupButtonTag;
 class ShowValidatedButton;
 class SegmentationDataWrapper;
 class OmViewGroupState;
@@ -20,8 +19,10 @@ class rightImpl;
 }
 
 class ValidationGroup : public OmWidget {
-  Q_OBJECT public
-      : ValidationGroup(om::sidebars::rightImpl*, OmViewGroupState* vgs);
+  Q_OBJECT;
+
+ public:
+  ValidationGroup(om::sidebars::rightImpl*, OmViewGroupState* vgs);
   QString getGroupNameFromGUI();
   bool isShowValidChecked();
 
@@ -49,7 +50,6 @@ Q_SLOTS:
   SetUncertain* setSelectionUncertain;
   SetNotUncertain* setSelectionNotUncertain;
 
-  GroupButtonTag* groupButtonTag;
   ShowValidatedButton* showValidatedButton;
 
   QWidget* addSelectedSegmentButtons();

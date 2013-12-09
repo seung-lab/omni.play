@@ -1,19 +1,19 @@
 #pragma once
 
 #include "actions/omActions.h"
-#include "common/omDebug.h"
-#include "events/details/omRefreshMSTthreshold.h"
-#include "events/omEvents.h"
+#include "events/listeners.h"
+#include "events/events.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
-#include "utility/dataWrappers.h"
-#include "volume/omSegmentation.h"
+
 #include <limits>
 
 class SizeThresholdSpinBox : public OmDoubleSpinBox,
-                             public OmRefreshMSTthresholdEventListener {
-  Q_OBJECT public : SizeThresholdSpinBox(GraphTools* d)
-                    : OmDoubleSpinBox(d, om::DONT_UPDATE_AS_TYPE), mParent(d) {
+                             public om::event::MSTEventListener {
+  Q_OBJECT;
+
+ public:
+  SizeThresholdSpinBox(GraphTools* d) : OmDoubleSpinBox(d, false), mParent(d) {
     setSingleStep(1);
     setMaximum(std::numeric_limits<double>::infinity());
     setDecimals(0);
@@ -23,8 +23,8 @@ class SizeThresholdSpinBox : public OmDoubleSpinBox,
  private:
   GraphTools* const mParent;
 
-  virtual void RefreshMSTEvent(OmRefreshMSTthresholdEvent*) {
-    boost::optional<double> threshold = getCurVolThreshold();
+  virtual void RefreshMSTEvent(om::event::MSTEvent*) {
+    auto threshold = getCurVolThreshold();
     if (threshold) {
       setGUIvalue(*threshold);
     }
@@ -33,7 +33,7 @@ class SizeThresholdSpinBox : public OmDoubleSpinBox,
   void setInitialGUIThresholdValue() {
     double t = 10000;
 
-    boost::optional<double> threshold = getCurVolThreshold();
+    auto threshold = getCurVolThreshold();
     if (threshold) {
       t = *threshold;
     }
@@ -41,27 +41,6 @@ class SizeThresholdSpinBox : public OmDoubleSpinBox,
     setGUIvalue(t);
   }
 
-  void actUponValueChange(const double newThreshold) {
-    boost::optional<double> threshold = getCurVolThreshold();
-    if (!threshold) {
-      return;
-    }
-
-    if (qFuzzyCompare(*threshold, newThreshold)) {
-      return;
-    }
-
-    OmActions::ChangeSizethreshold(mParent->GetSDW(), newThreshold);
-  }
-
-  boost::optional<double> getCurVolThreshold() {
-    SegmentationDataWrapper sdw = mParent->GetSDW();
-
-    if (!sdw.IsSegmentationValid()) {
-      return boost::optional<double>();
-    }
-
-    OmSegmentation& seg = sdw.GetSegmentation();
-    return boost::optional<double>(seg.GetSizeThreshold());
-  }
+  void actUponValueChange(const double newThreshold);
+  boost::optional<double> getCurVolThreshold();
 };

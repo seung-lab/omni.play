@@ -1,17 +1,17 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omDebug.h"
-#include "events/omEvents.h"
+#include "common/logging.h"
+#include "events/events.h"
 #include "system/omConnect.hpp"
 
 #include <QtGui>
 
 class OmIntSpinBox : public QSpinBox {
-  Q_OBJECT public
-      : OmIntSpinBox(QWidget* d, const om::ShouldUpdateAsType updateAsType)
-        : QSpinBox(d) {
-    if (om::UPDATE_AS_TYPE == updateAsType) {
+  Q_OBJECT;
+
+ public:
+  OmIntSpinBox(QWidget* d, bool updateAsType) : QSpinBox(d) {
+    if (updateAsType) {
       om::connect(this, SIGNAL(valueChanged(int)), this,
                   SLOT(spinboxChanged()));
 
@@ -26,7 +26,7 @@ Q_SLOTS:
 
   void spinboxChanged() {
     actUponValueChange(value());
-    OmEvents::Redraw2d();
+    om::event::Redraw2d();
   }
 
  protected:

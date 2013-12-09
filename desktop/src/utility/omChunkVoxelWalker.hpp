@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omException.h"
+#include "common/common.h"
+#include "common/exception.h"
 
 #include <boost/iterator/iterator_facade.hpp>
 
@@ -22,7 +22,7 @@ class OmChunkVoxelWalker : public boost::iterator_facade<
 
   bool operator<(const OmChunkVoxelWalker& rhs) const {
     if (chunkDim_ != rhs.chunkDim_) {
-      throw OmArgException("different dimensions not allowed");
+      throw om::ArgException("different dimensions not allowed");
     }
     return (x < rhs.x && y < rhs.y && z < rhs.z);
   }
@@ -55,7 +55,7 @@ class OmChunkVoxelWalker : public boost::iterator_facade<
 
   bool equal(OmChunkVoxelWalker const& rhs) const {
     if (chunkDim_ != rhs.chunkDim_) {
-      throw OmArgException("different dimensions not allowed");
+      throw om::ArgException("different dimensions not allowed");
     }
     return this->curPos_ == rhs.curPos_;
   }
@@ -63,7 +63,7 @@ class OmChunkVoxelWalker : public boost::iterator_facade<
   const Vector3i& dereference() const { return curPos_; }
 
   bool operator!=(const OmChunkVoxelWalker&) const {
-    throw OmArgException("not implemented");
+    throw om::ArgException("not implemented");
   }
 
   friend class boost::iterator_core_access;

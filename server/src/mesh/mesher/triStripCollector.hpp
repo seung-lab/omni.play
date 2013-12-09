@@ -52,18 +52,18 @@ class TriStripCollector {
 
     uint32_t ilen = indices_.size();
 
-    for (std::size_t i = 0; i < starts.size(); ++i) {
+    for (auto i = 0; i < starts.size(); ++i) {
       strips_.push_back(starts[i] + ilen);
       strips_.push_back(lengths[i]);
     }
 
     uint32_t vlen = data_.size() / 6;
 
-    for (std::size_t i = 0; i < indices.size(); ++i) {
+    for (auto i = 0; i < indices.size(); ++i) {
       indices_.push_back(indices[i] + vlen);
     }
 
-    for (std::size_t i = 0; i < points.size(); ++i) {
+    for (auto i = 0; i < points.size(); ++i) {
       zi::vl::vec3d p = (points[i] * scale) + trans;
       zi::vl::vec3d n = zi::vl::norm(normals[i]);
 

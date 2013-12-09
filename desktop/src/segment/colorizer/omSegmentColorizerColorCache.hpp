@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/colors.h"
 #include "utility/omLockedPODs.hpp"
 #include "zi/omMutex.h"
 
@@ -7,12 +8,12 @@ class OmSegmentColorizerColorCache : public zi::rwmutex {
  private:
   LockedUint32 size_;
 
-  struct OmColorWithFreshness {
-    OmColor color;
+  struct ColorWithFreshness {
+    om::common::Color color;
     uint64_t freshness;
   };
 
-  std::vector<OmColorWithFreshness> cache_;
+  std::vector<ColorWithFreshness> cache_;
 
   struct colorizer_mutex_pool_tag;
   typedef zi::spinlock::pool<colorizer_mutex_pool_tag>::guard spinlock_guard_t;
@@ -28,14 +29,15 @@ class OmSegmentColorizerColorCache : public zi::rwmutex {
     cache_.resize(newSize);
   }
 
-  inline void Get(const uint32_t val, uint64_t& freshness, OmColor& color) {
+  inline void Get(const uint32_t val, uint64_t& freshness,
+                  om::common::Color& color) {
     spinlock_guard_t g(val);
     freshness = cache_[val].freshness;
     color = cache_[val].color;
   }
 
   inline void Set(const uint32_t val, const uint64_t freshness,
-                  const OmColor& color) {
+                  const om::common::Color& color) {
     spinlock_guard_t g(val);
     cache_[val].freshness = freshness;
     cache_[val].color = color;

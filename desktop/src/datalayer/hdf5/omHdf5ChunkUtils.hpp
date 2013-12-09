@@ -11,7 +11,7 @@ class OmHdf5ChunkUtils {
  public:
   static OmVolDataType DetermineOldVolType(OmMipVolume* vol) {
     if (!OmProject::HasOldHDF5()) {
-      throw OmIoException("no hdf5 to read from!");
+      throw om::IoException("no hdf5 to read from!");
     }
     OmHdf5* reader = OmProject::OldHDF5();
 
@@ -25,7 +25,7 @@ class OmHdf5ChunkUtils {
 
   static OmDataWrapperPtr ReadChunkData(OmMipVolume* vol, OmChunk* chunk) {
     if (!OmProject::HasOldHDF5()) {
-      throw OmIoException("no hdf5 to read from!");
+      throw om::IoException("no hdf5 to read from!");
     }
     OmHdf5* reader = OmProject::OldHDF5();
 
@@ -33,7 +33,8 @@ class OmHdf5ChunkUtils {
         OmDataPaths::Hdf5VolData(vol->GetDirectoryPath(), chunk->GetLevel());
 
     OmDataWrapperPtr data =
-        reader->readChunk(path, chunk->Mipping().GetExtent(), om::NO_AFFINITY);
+        reader->readChunk(path, chunk->Mipping().GetExtent(),
+                          om::common::AffinityGraph::NO_AFFINITY);
 
     return data;
   }
@@ -41,7 +42,7 @@ class OmHdf5ChunkUtils {
   template <typename VOL>
   static bool VolumeExistsInHDF5(VOL* vol, const int mipLevel) {
     if (!OmProject::HasOldHDF5()) {
-      throw OmIoException("no hdf5 to read from!");
+      throw om::IoException("no hdf5 to read from!");
     }
     OmHdf5* reader = OmProject::OldHDF5();
 

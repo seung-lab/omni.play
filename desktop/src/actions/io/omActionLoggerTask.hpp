@@ -24,9 +24,10 @@ class OmActionLoggerTaskCounter
   friend class zi::singleton<OmActionLoggerTaskCounter>;
 };
 
-template <typename T> class OmActionLoggerTask : public zi::runnable {
+template <typename T>
+class OmActionLoggerTask : public zi::runnable {
  public:
-  OmActionLoggerTask(om::shared_ptr<T> action, const std::string& doOrUndo,
+  OmActionLoggerTask(std::shared_ptr<T> action, const std::string& doOrUndo,
                      QDir& logFolder)
       : action_(action), doOrUndo_(doOrUndo), logFolder_(logFolder) {}
 
@@ -36,7 +37,7 @@ template <typename T> class OmActionLoggerTask : public zi::runnable {
 
     QFile file(fnp);
     if (!file.open(QIODevice::WriteOnly)) {
-      throw OmIoException("could not write", fnp);
+      throw om::IoException("could not write");
     }
 
     QDataStream out(&file);
@@ -48,11 +49,11 @@ template <typename T> class OmActionLoggerTask : public zi::runnable {
     out << (*action_);
     out << Omni_Postfix;
 
-    // printf("wrote log file %s\n", qPrintable(file.fileName()));
+    // log_info("wrote log file %s", qPrintable(file.fileName()));
   }
 
  private:
-  const om::shared_ptr<T> action_;
+  const std::shared_ptr<T> action_;
   const std::string doOrUndo_;
   QDir logFolder_;
 

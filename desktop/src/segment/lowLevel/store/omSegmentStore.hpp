@@ -1,9 +1,10 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "zi/omMutex.h"
 #include "datalayer/archive/segmentation.h"
 
+class QDataStream;
 class OmCacheSegRootIDs;
 class OmCacheSegStore;
 class OmPagingPtrStore;
@@ -16,12 +17,12 @@ class OmSegmentsStore {
  private:
   OmSegmentation* const segmentation_;
 
-  const boost::scoped_ptr<OmPagingPtrStore> segmentPagesPtr_;
+  const std::unique_ptr<OmPagingPtrStore> segmentPagesPtr_;
   OmPagingPtrStore* const segmentPages_;
   zi::spinlock pagesLock_;
 
-  boost::scoped_ptr<OmCacheSegStore> cachedStore_;
-  boost::scoped_ptr<OmCacheSegRootIDs> cacheRootIDs_;
+  std::unique_ptr<OmCacheSegStore> cachedStore_;
+  std::unique_ptr<OmCacheSegRootIDs> cacheRootIDs_;
 
  public:
   OmSegmentsStore(OmSegmentation* segmentation);
@@ -34,21 +35,21 @@ class OmSegmentsStore {
   void Flush();
 
   // segments
-  OmSegment* AddSegment(const OmSegID value);
-  bool IsSegmentValid(const OmSegID value);
+  OmSegment* AddSegment(const om::common::SegID value);
+  bool IsSegmentValid(const om::common::SegID value);
 
   // caching
   void StartCaches();
-  OmSegment* GetSegment(const OmSegID value);
-  OmSegment* GetSegmentUnsafe(const OmSegID value);
+  OmSegment* GetSegment(const om::common::SegID value);
+  OmSegment* GetSegmentUnsafe(const om::common::SegID value);
 
   // WARNING: do not call from inside OmSegmentsImpl or OmSegmentsImplLowLevel
-  OmSegID Root(const OmSegID segID);
+  om::common::SegID Root(const om::common::SegID segID);
 
  private:
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
-                                         const OmSegmentsImpl&);
-  friend void YAML::operator>>(const YAML::Node& in, OmSegmentsImpl&);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmSegmentsImpl&);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegmentsImpl&);
   friend QDataStream& operator<<(QDataStream& out, const OmSegmentsImpl&);
   friend QDataStream& operator>>(QDataStream& in, OmSegmentsImpl&);
 };

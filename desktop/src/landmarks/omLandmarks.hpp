@@ -8,13 +8,13 @@
 class OmLandmarks {
  private:
   QWidget* parent_;
-  boost::scoped_ptr<om::landmarks::dialog> dialog_;
+  std::unique_ptr<om::landmarks::dialog> dialog_;
 
   std::set<SegmentDataWrapper> segments_;
   std::vector<om::landmarks::sdwAndPt> pts_;
 
  public:
-  OmLandmarks(QWidget* parent) : parent_(parent), dialog_(NULL) {}
+  OmLandmarks(QWidget* parent) : parent_(parent) {}
 
   void Add(boost::optional<SegmentDataWrapper> sdwIn,
            const om::globalCoord& dataClickPoint) {
@@ -29,11 +29,11 @@ class OmLandmarks {
     }
 
     if (segments_.count(sdw)) {
-      std::cout << "skipping " << sdw << ": already present\n";
+      log_infos << "skipping " << sdw << ": already present";
       return;
     }
 
-    om::landmarks::sdwAndPt s = { sdw, dataClickPoint };
+    om::landmarks::sdwAndPt s = {sdw, dataClickPoint};
 
     pts_.push_back(s);
     segments_.insert(sdw);
@@ -50,7 +50,7 @@ class OmLandmarks {
 
  private:
   void showMenu() {
-    if (dialog_ == NULL) {
+    if (dialog_ == nullptr) {
       dialog_.reset(new om::landmarks::dialog(parent_, this));
     }
     dialog_->Reset(pts_);

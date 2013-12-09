@@ -5,79 +5,87 @@
 namespace om {
 namespace coords {
 
-volumeSystem::volumeSystem()
+VolumeSystem::VolumeSystem()
     : dataToGlobal_(Matrix4f::IDENTITY),
       globalToData_(Matrix4f::IDENTITY),
       normToGlobal_(Matrix4f::IDENTITY),
       globalToNorm_(Matrix4f::IDENTITY),
+      chunkDimensions_(Vector3i(DefaultChunkDim)),
       resolution_(Vector3i::ONE),
-      chunkDim_(DefaultChunkDim),
-      mMipRootLevel(0) {
-  SetDataDimensions(
-      Vector3i(DefaultChunkDim, DefaultChunkDim, DefaultChunkDim));
+      rootMipLevel_(0) {
+  SetDataDimensions(Vector3i(DefaultChunkDim));
 
   UpdateRootLevel();
 }
 
-void volumeSystem::UpdateRootLevel() {
-  //determine max level
-  Vector3i source_dims = GetDataDimensions();
-  int max_source_dim = source_dims.getMaxComponent();
-  int mipchunk_dim = GetChunkDimension();
-
-  if (max_source_dim <= mipchunk_dim) {
-    mMipRootLevel = 0;
+void VolumeSystem::UpdateRootLevel() {
+  float ratio =
+      (Vector3f(DataDimensions()) / chunkDimensions_).getMaxComponent();
+  if (ratio <= 1) {
+    rootMipLevel_ = 0;
   } else {
-    mMipRootLevel =
-        ceil(log((float)(max_source_dim) / mipchunk_dim) / log(2.0f));
+    rootMipLevel_ = ceil(log(ratio) / log(2.0f));
   }
 }
 
-globalBbox volumeSystem::GetDataExtent() const {
-  Vector3f abs = GetAbsOffset();
-  return globalBbox(abs, abs - Vector3f::ONE + dataDimensions_);
+GlobalBbox VolumeSystem::Extent() const {
+  Vector3f abs = AbsOffset();
+  return GlobalBbox(abs, abs - Vector3f::ONE + DataDimensions() * Resolution());
 }
 
-bool volumeSystem::ContainsMipChunk(const chunk& rMipCoord) const {
-  //if level is greater than root level
-  if (rMipCoord.Level < 0 || rMipCoord.Level > GetRootMipLevel()) {
+bool VolumeSystem::ContainsMipChunk(const Chunk& rMipCoord) const {
+  // if level is greater than root level
+  if (rMipCoord.mipLevel() < 0 || rMipCoord.mipLevel() > RootMipLevel()) {
     return false;
   }
 
-  //convert to data box in leaf (MIP 0)
-  globalBbox bbox = rMipCoord.chunkBoundingBox(this).toGlobalBbox();
+  // convert to data box in leaf (MIP 0)
+  GlobalBbox bbox = rMipCoord.BoundingBox(*this).ToGlobalBbox();
 
-  bbox.intersect(GetDataExtent());
+  bbox.intersect(Extent());
   if (bbox.isEmpty()) {
     return false;
   }
 
-  //else valid mip coord
+  // else valid mip coord
   return true;
 }
 
-chunk volumeSystem::RootMipChunkCoordinate() const {
-  return chunk(mMipRootLevel, Vector3i::ZERO);
+Chunk VolumeSystem::RootMipChunkCoordinate() const {
+  return Chunk(rootMipLevel_, Vector3i::ZERO);
 }
 
-boost::shared_ptr<std::deque<coords::chunk> > volumeSystem::GetMipChunkCoords()
+std::shared_ptr<std::vector<coords::Chunk>> VolumeSystem::MipChunkCoords()
     const {
-  std::deque<coords::chunk>* coords = new std::deque<coords::chunk>();
-
-  for (int level = 0; level <= mMipRootLevel; ++level) {
-    addChunkCoordsForLevel(level, coords);
+  auto ret = std::make_shared<std::vector<coords::Chunk>>();
+  for (auto level = 0; level <= rootMipLevel_; ++level) {
+    addChunkCoordsForLevel(level, ret.get());
   }
-
-  return boost::shared_ptr<std::deque<coords::chunk> >(coords);
+  return ret;
 }
 
-boost::shared_ptr<std::deque<coords::chunk> > volumeSystem::GetMipChunkCoords(
+std::shared_ptr<std::vector<coords::Chunk>> VolumeSystem::MipChunkCoords(
     const int mipLevel) const {
-  std::deque<coords::chunk>* coords = new std::deque<coords::chunk>();
+  auto ret = std::make_shared<std::vector<coords::Chunk>>();
+  addChunkCoordsForLevel(mipLevel, ret.get());
+  return ret;
+}
 
-  addChunkCoordsForLevel(mipLevel, coords);
+void VolumeSystem::addChunkCoordsForLevel(
+    const int mipLevel, std::vector<coords::Chunk>* coords) const {
+  const Vector3i dims = MipLevelDimensionsInMipChunks(mipLevel);
+  coords->reserve(coords->size() + dims.x * dims.y * dims.z);
+  for (auto z = 0; z < dims.z; ++z) {
+    for (auto y = 0; y < dims.y; ++y) {
+      for (auto x = 0; x < dims.x; ++x) {
+        coords->push_back(coords::Chunk(mipLevel, x, y, z));
+      }
+    }
+  }
+}
 
-  return boost::shared_ptr<std::deque<coords::chunk> >(coords);
+Vector3i VolumeSystem::MipLevelDataDimensions(const int level) const {
+  return Extent().ToDataBbox(*this, level).getMax();
 }
 
 }  // namespace coords

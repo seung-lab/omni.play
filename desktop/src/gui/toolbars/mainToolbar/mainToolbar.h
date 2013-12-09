@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
+#include "gui/tools.hpp"
 
 #include <QtGui>
 
@@ -14,7 +15,10 @@ class SaveButton;
 class VolumeRefreshButton;
 
 class MainToolBar : public QToolBar {
-  Q_OBJECT public : MainToolBar(MainWindow *mw);
+  Q_OBJECT;
+
+ public:
+  MainToolBar(MainWindow *mw);
 
   void UpdateToolbar();
   void SetTool(const om::tool::mode tool);

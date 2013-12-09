@@ -7,14 +7,14 @@
 class OmSegmentPageV3 {
  private:
   OmSegmentation* const vol_;
-  const PageNum pageNum_;
+  const om::common::PageNum pageNum_;
   const uint32_t pageSize_;
   const std::string fnp_;
 
-  om::shared_ptr<OmIOnDiskFile<OmSegmentDataV3> > segmentsDataPtr_;
+  std::shared_ptr<OmIOnDiskFile<OmSegmentDataV3> > segmentsDataPtr_;
 
  public:
-  OmSegmentPageV3(OmSegmentation* vol, const PageNum pageNum,
+  OmSegmentPageV3(OmSegmentation* vol, const om::common::PageNum pageNum,
                   const uint32_t pageSize)
       : vol_(vol), pageNum_(pageNum), pageSize_(pageSize), fnp_(path()) {}
 
@@ -26,22 +26,22 @@ class OmSegmentPageV3 {
 
   OmSegmentDataV3* Load() {
     segmentsDataPtr_ =
-        om::make_shared<OmMemMappedFileQTNew<OmSegmentDataV3> >(fnp_);
+        std::make_shared<OmMemMappedFileQTNew<OmSegmentDataV3> >(fnp_);
     return segmentsDataPtr_->GetPtr();
   }
 
-  OmSegmentDataV3* Import(om::shared_ptr<OmSegmentDataV3> data) {
+  OmSegmentDataV3* Import(std::shared_ptr<OmSegmentDataV3> data) {
     segmentsDataPtr_ = OmMemMappedFileQTNew<OmSegmentDataV3>::CreateFromData(
         fnp_, data, pageSize_);
     return segmentsDataPtr_->GetPtr();
   }
 
-  om::shared_ptr<OmSegmentDataV3> Read() const {
+  std::shared_ptr<OmSegmentDataV3> Read() const {
     QFile file(memMapPathQStrV3());
 
-    om::file::openFileRO(file);
+    om::file::old::openFileRO(file);
 
-    return om::file::readAll<OmSegmentDataV3>(file);
+    return om::file::old::readAll<OmSegmentDataV3>(file);
   }
 
   void Flush() { segmentsDataPtr_->Flush(); }

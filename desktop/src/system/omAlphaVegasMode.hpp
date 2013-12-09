@@ -1,7 +1,5 @@
 #pragma once
 
-#include "common/omDebug.h"
-#include "events/details/omView3dEvent.h"
 #include "gui/toolbars/mainToolbar/filterWidget.hpp"
 
 #include <qthread.h>

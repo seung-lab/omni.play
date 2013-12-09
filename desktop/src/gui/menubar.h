@@ -7,7 +7,10 @@
 class MainWindow;
 
 class MenuBar : public QWidget {
-  Q_OBJECT public : MenuBar(MainWindow* mw);
+  Q_OBJECT;
+
+ public:
+  MenuBar(MainWindow* mw);
 
   void UpdateReadOnlyRelatedWidgets();
   void AddRecentFile(const QString& fnp);
@@ -44,7 +47,6 @@ class MenuBar : public QWidget {
   QAction* openOmniInspector_;
   QAction* openUndoViewAct_;
   QAction* openCacheMonitorAct_;
-  QAction* openGroupsTableAct_;
 
   QAction* open3DAct_;
 

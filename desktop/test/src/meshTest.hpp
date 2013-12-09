@@ -3,7 +3,7 @@
 #include "mesh/omMeshManagers.hpp"
 #include "chunks/omChunkUtils.hpp"
 #include "chunks/omSegChunk.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/omMeshParams.hpp"
@@ -39,7 +39,7 @@ class MeshTest {
   const double threshold_;
 
   OmMeshManager* const meshManager_;
-  boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
+  std::unique_ptr<OmMeshWriterV2> meshWriter_;
 
   const int numParallelChunks_;
   const int numThreadsPerChunk_;
@@ -48,8 +48,7 @@ class MeshTest {
     zi::task_manager::simple manager(numParallelChunks_);
     manager.start();
 
-    om::shared_ptr<std::deque<om::chunkCoord> > coords =
-        segmentation_->GetMipChunkCoords(0);
+    auto coords = segmentation_->GetMipChunkCoords(0);
 
     FOR_EACH(cc, *coords) {
       manager.push_back(
@@ -70,16 +69,16 @@ class MeshTest {
     }
   };
 
-  LockedVector<boost::shared_ptr<MockTriStripCollector> > tris_;
+  LockedVector<std::shared_ptr<MockTriStripCollector> > tris_;
 
   void processChunk(om::chunkCoord coord) {
-    FOR_EACH(id,
-             segmentation_->ChunkUniqueValues()->Values(coord, threshold_)) {
-      boost::shared_ptr<MockTriStripCollector> t =
-          boost::make_shared<MockTriStripCollector>(*id);
+    FOR_EACH(id, segmentation_->UniqueValuesDS().Values(coord, threshold_)) {
+      auto t = std::make_shared<MockTriStripCollector>(*id);
       tris_.push_back(t);
       TriStripCollector* pt = t.get();
-      meshWriter_->Save(*id, coord, pt, om::BUFFER_WRITES, om::OVERWRITE);
+      meshWriter_->Save(*id, coord, pt,
+                        om::common::ShouldBufferWrites::BUFFER_WRITES,
+                        om::common::AllowOverwrite::OVERWRITE);
     }
   }
 
@@ -101,15 +100,15 @@ class MeshTest {
   void check() {
     printf("checking mesh data\n");
 
-    om::shared_ptr<std::deque<om::chunkCoord> > coords =
-        segmentation_->GetMipChunkCoords(0);
+    auto coords = segmentation_->GetMipChunkCoords(0);
 
     FOR_EACH(cc, *coords) {
-      FOR_EACH(id, segmentation_->ChunkUniqueValues()->Values(*cc, 1)) {
+      FOR_EACH(id, segmentation_->UniqueValuesDS().Values(*cc, 1)) {
         OmMeshPtr mesh;
-        segmentation_->MeshManagers()->GetMesh(mesh, *cc, *id, 1, om::BLOCKING);
+        segmentation_->MeshManagers()
+            ->GetMesh(mesh, *cc, *id, 1, om::common::Blocking::BLOCKING);
         if (!mesh) {
-          throw OmIoException("no mesh found");
+          throw om::IoException("no mesh found");
         }
 
         OmDataForMeshLoad* data = mesh->Data();
@@ -120,13 +119,13 @@ class MeshTest {
         for (int i = 0; i < *id; ++i) {
           float ff = *id + 0.1;
           if (!qFuzzyCompare(vd[i], ff)) {
-            throw OmIoException("bad vertex data");
+            throw om::IoException("bad vertex data");
           }
           if (vi[i] != (*id + 1)) {
-            throw OmIoException("bad vertex index data");
+            throw om::IoException("bad vertex index data");
           }
           if (sd[i] != (*id + 2)) {
-            throw OmIoException("bad strip data");
+            throw om::IoException("bad strip data");
           }
         }
       }

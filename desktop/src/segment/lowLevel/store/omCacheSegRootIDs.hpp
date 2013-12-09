@@ -43,7 +43,7 @@ class OmCacheSegRootIDs {
     }
   }
 
-  OmSegID Root(const OmSegID segID) {
+  om::common::SegID Root(const om::common::SegID segID) {
     const uint32_t pageNum = segID / pageSize_;
 
     if (pageNum >= numInitialPages_) {  // not caching those pages, yet
@@ -61,7 +61,7 @@ class OmCacheSegRootIDs {
       }
     }
 
-    const OmSegID rootSegID = segments_->findRootIDnoCache(segID);
+    const om::common::SegID rootSegID = segments_->findRootIDnoCache(segID);
 
     {
       zi::spinlock::pool<cache_root_segment_id_initial_tag>::guard g(segID);

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "events/omEvents.h"
+#include "common/common.h"
+#include "events/events.h"
 #include "project/omProject.h"
 #include "segment/lists/omSegmentLists.h"
 #include "system/cache/omCacheManager.h"
@@ -33,7 +33,7 @@ class OmSegmentShatterActionImpl {
           sdw_.GetSegmentation().Segments()->JoinEdge(*e);
 
       if (!edge.first) {
-        std::cout << "edge could not be rejoined...\n";
+        log_infos << "edge could not be rejoined...";
         return;
       }
     }
@@ -48,18 +48,19 @@ class OmSegmentShatterActionImpl {
 
  private:
   void notify() const {
-    std::cout << desc.toStdString() << "\n";
+    log_infos << desc.toStdString();
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
 
     sdw_.GetSegmentation().SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
   friend class QDataStream& operator<<(QDataStream&,
                                        const OmSegmentShatterActionImpl&);
   friend class QDataStream& operator>>(QDataStream&,

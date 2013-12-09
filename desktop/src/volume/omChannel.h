@@ -13,7 +13,7 @@ class OmChannel : public OmChannelImpl {
 
  public:
   OmChannel();
-  OmChannel(OmID id);
+  OmChannel(om::common::ID id);
   virtual ~OmChannel();
 
   virtual QString GetDefaultHDF5DatasetName() { return "chanSingle"; }
@@ -28,7 +28,7 @@ class OmChannel : public OmChannelImpl {
 
   friend QDataStream& operator<<(QDataStream& out, const OmChannel&);
   friend QDataStream& operator>>(QDataStream& in, OmChannel&);
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
-                                         const OmChannel& chan);
-  friend void YAML::operator>>(const YAML::Node& in, OmChannel& chan);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmChannel& chan);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmChannel& chan);
 };

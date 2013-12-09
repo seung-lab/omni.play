@@ -25,7 +25,7 @@ class chunkVoxelWalker : public boost::iterator_facade<
 
   bool operator<(const chunkVoxelWalker& rhs) const {
     if (chunkDim_ != rhs.chunkDim_) {
-      throw argException("different dimensions not allowed");
+      throw ArgException("different dimensions not allowed");
     }
     return (x < rhs.x && y < rhs.y && z < rhs.z);
   }
@@ -58,7 +58,7 @@ class chunkVoxelWalker : public boost::iterator_facade<
 
   bool equal(chunkVoxelWalker const& rhs) const {
     if (chunkDim_ != rhs.chunkDim_) {
-      throw argException("different dimensions not allowed");
+      throw ArgException("different dimensions not allowed");
     }
     return this->curPos_ == rhs.curPos_;
   }
@@ -66,11 +66,11 @@ class chunkVoxelWalker : public boost::iterator_facade<
   const Vector3i& dereference() const { return curPos_; }
 
   bool operator!=(const chunkVoxelWalker&) const {
-    throw argException("not implemented");
+    throw ArgException("not implemented");
   }
 
   friend class boost::iterator_core_access;
 };
 
-}  //namespace utility
-}  //namespace om
+}  // namespace utility
+}  // namespace om

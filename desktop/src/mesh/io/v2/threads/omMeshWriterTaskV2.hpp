@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
+#include "common/enums.hpp"
 #include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
@@ -11,19 +11,21 @@
 #include "mesh/omMeshManager.h"
 #include "zi/omThreads.h"
 
-template <typename U> class OmMeshWriterTaskV2 : public zi::runnable {
+template <typename U>
+class OmMeshWriterTaskV2 : public zi::runnable {
  private:
   OmSegmentation* const seg_;
   OmMeshFilePtrCache* const filePtrCache_;
-  const OmSegID segID_;
+  const om::common::SegID segID_;
   const om::chunkCoord coord_;
   const U mesh_;
-  const om::AllowOverwrite allowOverwrite_;
+  const om::common::AllowOverwrite allowOverwrite_;
 
  public:
   OmMeshWriterTaskV2(OmSegmentation* seg, OmMeshFilePtrCache* filePtrCache,
-                     const OmSegID segID, const om::chunkCoord& coord,
-                     const U mesh, const om::AllowOverwrite allowOverwrite)
+                     const om::common::SegID segID, const om::chunkCoord& coord,
+                     const U mesh,
+                     const om::common::AllowOverwrite allowOverwrite)
       : seg_(seg),
         filePtrCache_(filePtrCache),
         segID_(segID),
@@ -47,7 +49,7 @@ template <typename U> class OmMeshWriterTaskV2 : public zi::runnable {
       return;
     }
 
-    if (om::WRITE_ONCE == allowOverwrite_) {
+    if (om::common::AllowOverwrite::WRITE_ONCE == allowOverwrite_) {
       const OmMeshDataEntry entry = chunk_table->Find(segID_);
       if (entry.wasMeshed) {
         chunk_table->SegmentMeshSaveDone(segID_);
@@ -61,7 +63,7 @@ template <typename U> class OmMeshWriterTaskV2 : public zi::runnable {
         writeOutData(chunk_data, mesh_, OmMeshCoord(coord_, segID_));
 
     if (!entry.wasMeshed) {
-      std::cout << "Wrote unmeshed Entry..." << std::endl;
+      log_infos << "Wrote unmeshed Entry...";
     }
 
     chunk_table->Set(entry);
@@ -71,7 +73,7 @@ template <typename U> class OmMeshWriterTaskV2 : public zi::runnable {
 
  private:
   OmMeshDataEntry writeOutData(OmMeshChunkDataWriterV2* chunk_data,
-                               om::shared_ptr<OmDataForMeshLoad> data,
+                               std::shared_ptr<OmDataForMeshLoad> data,
                                const OmMeshCoord& meshCoord) {
     OmMeshDataEntry entry = om::meshio_::MakeEmptyEntry(meshCoord.SegID());
 
@@ -136,21 +138,18 @@ template <typename U> class OmMeshWriterTaskV2 : public zi::runnable {
     return entry;
   }
 
-  void printInfoAboutSkippedSegment(om::shared_ptr<OmDataForMeshLoad>) {
-    std::cout << "skipping segID " << segID_ << " in chunk " << coord_ << "\n";
+  void printInfoAboutSkippedSegment(std::shared_ptr<OmDataForMeshLoad>) {
+    log_infos << "skipping segID " << segID_ << " in chunk " << coord_;
   }
 
   void printInfoAboutSkippedSegment(TriStripCollector* triStrips) {
-    printf(".");
-
     const int vertexData = triStrips->data_.size();
     const int vertexIndex = triStrips->indices_.size();
     const int stripsSize = triStrips->strips_.size();
 
-    std::cout << "skipping segID " << segID_ << " in chunk " << coord_
+    log_infos << "skipping segID " << segID_ << " in chunk " << coord_
               << "; vertexData size (" << vertexData << ")"
               << "; vertexIndex size (" << vertexIndex << ")"
-              << "; stripsSize size (" << stripsSize << ")"
-              << "\n";
+              << "; stripsSize size (" << stripsSize << ")";
   }
 };

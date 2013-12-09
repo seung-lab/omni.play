@@ -1,6 +1,6 @@
 #include "system/omConnect.hpp"
-#include "common/omDebug.h"
-#include "events/omEvents.h"
+#include "common/logging.h"
+#include "events/events.h"
 #include "segmentInspector.h"
 #include "segment/omSegmentUtils.hpp"
 #include "system/cache/omCacheManager.h"
@@ -33,7 +33,7 @@ void SegmentInspector::set_initial_values() {
 
   notesEdit->setPlainText(sdw_.getNote());
 
-  const QPixmap pixm = om::utils::color::OmColorAsQPixmap(sdw_.GetColorInt());
+  const QPixmap pixm = om::utils::color::ColorAsQPixmap(sdw_.GetColorInt());
   colorButton->setIcon(QIcon(pixm));
 
   sizeNoChildren->setText(OmStringHelpers::HumanizeNumQT(sdw_.getSize()));
@@ -50,7 +50,7 @@ void SegmentInspector::set_initial_values() {
 
 void SegmentInspector::nameEditChanged() {
   sdw_.setName(nameEdit->text());
-  OmEvents::SegmentModified();
+  om::event::SegmentModified();
 }
 
 void SegmentInspector::setSegObjColor() {
@@ -64,17 +64,17 @@ void SegmentInspector::setSegObjColor() {
 
   color = OmSegmentUtils::SetSegColor(sdw_, color);
 
-  std::cout << "set color to " << color << "\n";
+  // log_infos << "set color to " << color;
 
-  const QPixmap pixm = om::utils::color::OmColorAsQPixmap(sdw_.GetColorInt());
+  const QPixmap pixm = om::utils::color::ColorAsQPixmap(sdw_.GetColorInt());
   colorButton->setIcon(QIcon(pixm));
 
   colorButton->update();
 
   OmSegmentSelected::Set(sdw_);
   OmCacheManager::TouchFreshness();
-  OmEvents::Redraw2d();
-  OmEvents::Redraw3d();
+  om::event::Redraw2d();
+  om::event::Redraw3d();
 }
 
 QGroupBox* SegmentInspector::makeSourcesBox() {

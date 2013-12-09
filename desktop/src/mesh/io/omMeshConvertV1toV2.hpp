@@ -10,9 +10,9 @@ class OmMeshConvertV1toV2 {
   OmSegmentation* const segmentation_;
   const double threshold_;
 
-  boost::scoped_ptr<OmMeshReaderV1> hdf5Reader_;
-  boost::scoped_ptr<OmMeshReaderV2> meshReader_;
-  boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
+  std::unique_ptr<OmMeshReaderV1> hdf5Reader_;
+  std::unique_ptr<OmMeshReaderV2> meshReader_;
+  std::unique_ptr<OmMeshWriterV2> meshWriter_;
 
   OmThreadPool threadPool_;
 
@@ -30,31 +30,32 @@ class OmMeshConvertV1toV2 {
   void Start() {
     threadPool_.start(1);
 
-    om::shared_ptr<OmMeshConvertV1toV2Task> task =
-        om::make_shared<OmMeshConvertV1toV2Task>(meshManager_);
+    std::shared_ptr<OmMeshConvertV1toV2Task> task =
+        std::make_shared<OmMeshConvertV1toV2Task>(meshManager_);
 
     threadPool_.push_back(task);
   }
 
   // migrate mesh
-  om::shared_ptr<OmDataForMeshLoad> ReadAndConvert(
+  std::shared_ptr<OmDataForMeshLoad> ReadAndConvert(
       const OmMeshCoord& meshCoord) {
-    const OmSegID segID = meshCoord.SegID();
+    const om::common::SegID segID = meshCoord.SegID();
     const om::chunkCoord& coord = meshCoord.Coord();
 
     if (!meshWriter_->Contains(segID, coord)) {
-      std::cout << "did not find segID " << segID << " in chunk " << coord
-                << "\n";
-      return om::make_shared<OmDataForMeshLoad>();
+      log_infos << "did not find segID " << segID << " in chunk " << coord;
+      return std::make_shared<OmDataForMeshLoad>();
     }
 
     if (meshWriter_->WasMeshed(segID, coord)) {
       return meshReader_->Read(segID, coord);
     }
 
-    om::shared_ptr<OmDataForMeshLoad> mesh = hdf5Reader_->Read(segID, coord);
+    std::shared_ptr<OmDataForMeshLoad> mesh = hdf5Reader_->Read(segID, coord);
 
-    meshWriter_->Save(segID, coord, mesh, om::BUFFER_WRITES, om::WRITE_ONCE);
+    meshWriter_->Save(segID, coord, mesh,
+                      om::common::ShouldBufferWrites::BUFFER_WRITES,
+                      om::common::AllowOverwrite::WRITE_ONCE);
 
     return mesh;
   }

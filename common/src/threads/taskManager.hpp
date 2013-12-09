@@ -26,22 +26,22 @@
 #include <zi/meta/enable_if.hpp>
 
 namespace om {
-namespace threads {
+namespace thread {
 
-template <typename TaskContainer> class taskManager {
+template <typename TaskContainer> class TaskManager {
  private:
-  typedef boost::shared_ptr<zi::concurrency_::runnable> task_t;
+  typedef std::shared_ptr<zi::concurrency_::runnable> task_t;
 
   TaskContainer tasks_;
 
   // shared_ptr to support enable_shared_from_this
-  typedef taskManagerImpl<TaskContainer> manager_t;
-  boost::shared_ptr<manager_t> manager_;
+  typedef TaskManagerImpl<TaskContainer> manager_t;
+  std::shared_ptr<manager_t> manager_;
 
  public:
-  taskManager() {}
+  TaskManager() {}
 
-  ~taskManager() { join(); }
+  ~TaskManager() { join(); }
 
   std::size_t empty() { return tasks_.empty(); }
 
@@ -65,7 +65,7 @@ template <typename TaskContainer> class taskManager {
 
   void start(const uint32_t numWorkerThreads) {
     if (!numWorkerThreads) {
-      throw ioException("please specify more than 0 threads");
+      throw IoException("please specify more than 0 threads");
     }
 
     const uint32_t max_size = std::numeric_limits<uint32_t>::max();
@@ -97,7 +97,7 @@ template <typename TaskContainer> class taskManager {
 
   void remove_workers(std::size_t count) { manager_->remove_workers(count); }
 
-  //status
+  // status
   bool wasStarted() { return manager_; }
 
   inline int getTaskCount() const { return tasks_.size(); }
@@ -112,14 +112,13 @@ template <typename TaskContainer> class taskManager {
     return getNumWorkerThreads();
   }
 
-  //push_front
+  // push_front
   void push_front(task_t task) {
     tasks_.push_front(task);
     wake_manager();
   }
 
-  template <typename Runnable>
-  void push_front(boost::shared_ptr<Runnable> task) {
+  template <typename Runnable> void push_front(std::shared_ptr<Runnable> task) {
     tasks_.push_front(task);
     wake_manager();
   }
@@ -129,14 +128,13 @@ template <typename TaskContainer> class taskManager {
     wake_manager();
   }
 
-  //push_back
+  // push_back
   void push_back(task_t task) {
     tasks_.push_back(task);
     wake_manager();
   }
 
-  template <typename Runnable>
-  void push_back(boost::shared_ptr<Runnable> task) {
+  template <typename Runnable> void push_back(std::shared_ptr<Runnable> task) {
     tasks_.push_back(task);
     wake_manager();
   }
@@ -146,13 +144,13 @@ template <typename TaskContainer> class taskManager {
     wake_manager();
   }
 
-  //insert
+  // insert
   void insert(task_t task) {
     tasks_.insert(task);
     wake_manager();
   }
 
-  template <typename Runnable> void insert(boost::shared_ptr<Runnable> task) {
+  template <typename Runnable> void insert(std::shared_ptr<Runnable> task) {
     tasks_.insert(task);
     wake_manager();
   }
@@ -162,14 +160,14 @@ template <typename TaskContainer> class taskManager {
     wake_manager();
   }
 
-  //insert w/ arg
+  // insert w/ arg
   template <typename ARG> void insert(const ARG& arg, task_t task) {
     tasks_.insert(arg, task);
     wake_manager();
   }
 
   template <typename ARG, class Runnable>
-  void insert(const ARG& arg, boost::shared_ptr<Runnable> task) {
+  void insert(const ARG& arg, std::shared_ptr<Runnable> task) {
     tasks_.insert(arg, task);
     wake_manager();
   }

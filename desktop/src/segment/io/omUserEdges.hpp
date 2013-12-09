@@ -26,7 +26,7 @@ class OmUserEdges {
     QFile file(path);
 
     if (!file.open(QIODevice::ReadOnly)) {
-      throw OmIoException("error reading file", path);
+      throw om::IoException("error reading file");
     }
 
     QDataStream in(&file);
@@ -37,7 +37,7 @@ class OmUserEdges {
     in >> version;
 
     if (CurrentFileVersion != version) {
-      throw OmIoException("versions differ");
+      throw om::IoException("versions differ");
     }
 
     int size;
@@ -48,10 +48,10 @@ class OmUserEdges {
       AddEdgeFromProjectLoad(e);
     }
 
-    printf("loaded %d user edges\n", edges_.size());
+    log_infos << "loaded " << edges_.size() << "user edges";
 
     if (!in.atEnd()) {
-      throw OmIoException("corrupt file?", path);
+      throw om::IoException("corrupt file?");
     }
   }
 
@@ -61,7 +61,7 @@ class OmUserEdges {
     QFile file(path);
 
     if (!file.open(QIODevice::WriteOnly)) {
-      throw OmIoException("could not write file", path);
+      throw om::IoException("could not write file");
     }
 
     QDataStream out(&file);
@@ -74,13 +74,13 @@ class OmUserEdges {
     out << size;
     FOR_EACH(iter, edges_) { out << *iter; }
 
-    printf("saved %s\n", qPrintable(path));
+    log_infos << "saved " << qPrintable(path);
   }
 
   void AddEdgeFromProjectLoad(OmSegmentEdge e) {
     if (0 == e.childID || 0 == e.parentID || std::isnan(e.threshold)) {
-      printf("warning: bad edge found: %d, %d, %f\n", e.parentID, e.childID,
-             e.threshold);
+      log_info("warning: bad edge found: %d, %d, %f", e.parentID, e.childID,
+               e.threshold);
       return;
     }
     e.valid = true;

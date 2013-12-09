@@ -1,6 +1,6 @@
 #pragma once
 
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "actions/omActions.h"
 #include "tiles/cache/omTileCache.h"
 #include "view2d/brush/omBrushOppTypes.h"
@@ -11,7 +11,7 @@
 class OmBrushPaintUtils {
  public:
   static void PaintPts(OmBrushOppInfo* info, om::pt3d_list_t* pts,
-                       const OmSegID segIDtoPaint) {
+                       const om::common::SegID segIDtoPaint) {
     const om::globalBbox& segDataExtent =
         info->segmentation->Coords().GetExtent();
 
@@ -34,7 +34,7 @@ class OmBrushPaintUtils {
 
     removeModifiedTiles();
 
-    OmEvents::Redraw2dBlocking();
+    om::event::Redraw2dBlocking();
   }
 
  private:
@@ -61,7 +61,7 @@ class OmBrushPaintUtils {
     //     ptsInChunks[chunkCoord].insert(chunkPos);
     // }
 
-    const OmIDsSet& segset = SegmentationDataWrapper::ValidIDs();
+    const auto& segset = SegmentationDataWrapper::ValidIDs();
 
     FOR_EACH(iter, segset) {
       SegmentationDataWrapper sdw(*iter);

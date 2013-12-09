@@ -1,15 +1,15 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 class ChunkUniqueValues {
  private:
-  const om::shared_ptr<uint32_t> segIDsPtr_;
+  const std::shared_ptr<uint32_t> segIDsPtr_;
   const size_t size_;
   uint32_t const* const segIDs_;
 
  public:
-  ChunkUniqueValues(om::shared_ptr<uint32_t> segIDsPtr, const size_t size)
+  ChunkUniqueValues(std::shared_ptr<uint32_t> segIDsPtr, const size_t size)
       : segIDsPtr_(segIDsPtr), size_(size), segIDs_(segIDsPtr_.get()) {}
 
   inline size_t size() const { return size_; }
@@ -26,6 +26,10 @@ class ChunkUniqueValues {
     }
     return true;
   }
+
+  // glue code for datalayerrefactor merge
+  const ChunkUniqueValues* operator->() const { return this; }
+  bool operator!() const { return true; }
 
   // assume we are sorted
   inline uint32_t const* find(const uint32_t val) const {

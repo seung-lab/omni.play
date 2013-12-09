@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
@@ -14,11 +14,12 @@
 
 #include <QFileInfoList>
 
-template <typename VOL> class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
+template <typename VOL>
+class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
  private:
   VOL* const vol_;
   const OmDataPath path_;
-  const om::AffinityGraph aff_;
+  const om::common::AffinityGraph aff_;
 
   Vector3i volSize_;
   OmHdf5* hdf5reader_;
@@ -26,15 +27,15 @@ template <typename VOL> class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
 
  public:
   OmDataCopierHdf5(VOL* vol, const OmDataPath& path, const std::string fnp,
-                   const om::AffinityGraph aff)
+                   const om::common::AffinityGraph aff)
       : OmDataCopierBase<VOL>(vol), vol_(vol), path_(path), aff_(aff) {
     hdf5reader_ = OmHdf5Manager::Get(fnp, true);
     hdf5reader_->open();
 
-    std::cout << "importHDF5: source path is: " << path_ << "\n";
+    log_infos << "importHDF5: source path is: " << path_;
 
     volSize_ = hdf5reader_->getChunkedDatasetDims(path_, aff_);
-    std::cout << "importHDF5: source vol dims: " << volSize_ << "\n";
+    log_infos << "importHDF5: source vol dims: " << volSize_;
   }
 
   ~OmDataCopierHdf5() { hdf5reader_->close(); }
@@ -44,12 +45,12 @@ template <typename VOL> class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
     allocateData(determineDataType());
 
     OmTimer timer;
-    printf("copying in HDF5 data...\n");
+    log_infos << "copying in HDF5 data...";
 
     OmThreadPool threadPool;
     threadPool.start(3);
 
-    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         vol_->GetMipChunkCoords(0);
 
     OmSimpleProgress prog(coordsPtr->size(), "HDF5 chunk copy");
@@ -57,19 +58,19 @@ template <typename VOL> class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
     FOR_EACH(iter, *coordsPtr) {
       const om::chunkCoord& coord = *iter;
 
-      om::shared_ptr<OmDataCopierHdf5Task<VOL> > task =
-          om::make_shared<OmDataCopierHdf5Task<VOL> >(
+      std::shared_ptr<OmDataCopierHdf5Task<VOL> > task =
+          std::make_shared<OmDataCopierHdf5Task<VOL> >(
               vol_, path_, aff_, volSize_, hdf5reader_, mip0fnp_, coord, &prog);
       threadPool.push_back(task);
     }
 
     threadPool.join();
 
-    printf("\nHDF5 data copy done in %f secs\n", timer.s_elapsed());
+    log_infos << "HDF5 data copy done in " << timer.s_elapsed() << " secs";
   }
 
   void allocateData(const OmVolDataType type) {
-    std::vector<om::shared_ptr<QFile> > volFiles =
+    std::vector<std::shared_ptr<QFile> > volFiles =
         OmVolumeAllocater::AllocateData(vol_, type);
 
     mip0fnp_ = QFileInfo(*volFiles[0]).absoluteFilePath();

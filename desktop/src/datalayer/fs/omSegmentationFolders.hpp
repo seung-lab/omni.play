@@ -12,7 +12,6 @@ struct segmentationFolderInfo {
 
 class segmentationFolders {
  public:
-
   static std::vector<segmentationFolderInfo> Find() {
     const QString folder = OmFileNames::FilesFolder() + "/segmentations/";
     QDir dir(folder);
@@ -31,11 +30,11 @@ class segmentationFolders {
 
       const uint32_t num = OmStringHelpers::getUInt(str);
 
-      segmentationFolderInfo info = { folder + *iter, num };
+      segmentationFolderInfo info = {folder + *iter, num};
 
       ret.push_back(info);
 
-      std::cout << "found segmentation " << num << "\n";
+      log_infos << "found segmentation " << num;
     }
 
     return ret;

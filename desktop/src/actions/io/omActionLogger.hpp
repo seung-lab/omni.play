@@ -25,8 +25,8 @@ class OmActionLogger : private om::singletonBase<OmActionLogger> {
   inline static const QDir& LogFolder() { return impl().logFolder_; }
 
   template <typename T>
-  static void save(om::shared_ptr<T> actionImpl, const std::string& str) {
-    om::shared_ptr<OmActionLoggerTask<T> > task(
+  static void save(std::shared_ptr<T> actionImpl, const std::string& str) {
+    std::shared_ptr<OmActionLoggerTask<T> > task(
         new OmActionLoggerTask<T>(actionImpl, str, impl().logFolder_));
 
     impl().threadPool_.push_back(task);

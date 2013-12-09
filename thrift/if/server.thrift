@@ -48,6 +48,13 @@ struct tile
     3: binary data
 }
 
+struct affinity
+{
+    1: i32 a,
+    2: i32 b,
+    3: double aff
+}
+
 struct result
 {
     1: list<i32> selected
@@ -95,9 +102,11 @@ service server extends fb303.FacebookService
     string get_obj( 1: metadata vol,
                     2: vector3i chunk,
                     3: i32 mipLevel,
-                    4: i32 segId)
+                    4: i32 segId),
 
     list<map<i32, i32>> get_seeds( 1: metadata taskVolume,
 		                           2: set<i32> selected,
-		                           3: metadata adjacentVolume)
+		                           3: metadata adjacentVolume),
+
+    list<affinity> get_mst ( 1: metadata mst )
 }

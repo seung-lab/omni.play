@@ -9,7 +9,7 @@
 
 class SegmentationDataWrapper {
  public:
-  static const OmIDsSet& ValidIDs() {
+  static const om::common::IDSet& ValidIDs() {
     return OmProject::Volumes().Segmentations().GetValidSegmentationIds();
   }
 
@@ -17,18 +17,18 @@ class SegmentationDataWrapper {
     return OmProject::Volumes().Segmentations().GetPtrVec();
   }
 
-  static void Remove(const OmID id) {
+  static void Remove(const om::common::ID id) {
     OmProject::Volumes().Segmentations().RemoveSegmentation(id);
   }
 
  private:
-  OmID id_;
+  om::common::ID id_;
   mutable boost::optional<OmSegmentation&> segmentation_;
 
  public:
   SegmentationDataWrapper() : id_(0) {}
 
-  explicit SegmentationDataWrapper(const OmID ID) : id_(ID) {}
+  explicit SegmentationDataWrapper(const om::common::ID ID) : id_(ID) {}
 
   SegmentationDataWrapper(const SegmentationDataWrapper& sdw) : id_(sdw.id_) {}
 
@@ -53,14 +53,14 @@ class SegmentationDataWrapper {
     return !(*this == sdw);
   }
 
-  inline OmID GetSegmentationID() const { return id_; }
+  inline om::common::ID GetSegmentationID() const { return id_; }
 
-  inline OmID GetID() const { return id_; }
+  inline om::common::ID GetID() const { return id_; }
 
   OmSegmentation& Create() {
     OmSegmentation& s = OmProject::Volumes().Segmentations().AddSegmentation();
     id_ = s.GetID();
-    printf("create segmentation %d\n", id_);
+    log_infos << "create segmentation " << id_;
     segmentation_ = boost::optional<OmSegmentation&>(s);
     return s;
   }
@@ -71,7 +71,9 @@ class SegmentationDataWrapper {
     segmentation_.reset();
   }
 
-  inline ObjectType getType() const { return SEGMENTATION; }
+  inline om::common::ObjectType getType() const {
+    return om::common::SEGMENTATION;
+  }
 
   inline bool IsValidWrapper() const { return IsSegmentationValid(); }
 
@@ -85,7 +87,6 @@ class SegmentationDataWrapper {
 
   inline OmSegmentation& GetSegmentation() const {
     if (!segmentation_) {
-      //printf("cached segmentation...\n");
       segmentation_ = boost::optional<OmSegmentation&>(
           OmProject::Volumes().Segmentations().GetSegmentation(id_));
     }
@@ -135,11 +136,9 @@ class SegmentationDataWrapper {
     return GetSegmentation().Coords().GetResolution();
   }
 
-  inline const OmSegIDsSet GetSelectedSegmentIDs() const {
+  inline const om::common::SegIDSet GetSelectedSegmentIDs() const {
     return Segments()->GetSelectedSegmentIDs();
   }
-
-  inline OmGroups* Groups() const { return GetSegmentation().Groups(); }
 
   inline bool IsBuilt() const { return GetSegmentation().IsBuilt(); }
 };

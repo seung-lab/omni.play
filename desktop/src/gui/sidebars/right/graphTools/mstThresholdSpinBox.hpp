@@ -1,18 +1,19 @@
 #pragma once
 
 #include "actions/omActions.h"
-#include "common/omDebug.h"
-#include "events/details/omRefreshMSTthreshold.h"
-#include "events/omEvents.h"
+#include "events/listeners.h"
+#include "events/events.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
-#include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
+#include "utility/segmentationDataWrapper.hpp"
 
 class MSTThresholdSpinBox : public OmDoubleSpinBox,
-                            public OmRefreshMSTthresholdEventListener {
-  Q_OBJECT public : MSTThresholdSpinBox(GraphTools* d)
-                    : OmDoubleSpinBox(d, om::DONT_UPDATE_AS_TYPE), mParent(d) {
+                            public om::event::MSTEventListener {
+  Q_OBJECT;
+
+ public:
+  MSTThresholdSpinBox(GraphTools* d) : OmDoubleSpinBox(d, false), mParent(d) {
     setSingleStep(0.002);
     setMaximum(1.0);
     setDecimals(3);
@@ -22,7 +23,7 @@ class MSTThresholdSpinBox : public OmDoubleSpinBox,
  private:
   GraphTools* const mParent;
 
-  virtual void RefreshMSTEvent(OmRefreshMSTthresholdEvent*) {
+  virtual void RefreshMSTEvent(om::event::MSTEvent*) {
     boost::optional<double> threshold = getCurVolThreshold();
     if (threshold) {
       setGUIvalue(*threshold);

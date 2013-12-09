@@ -15,21 +15,34 @@ class usersImpl {
  private:
   const QString usersFolderRoot_;
   QString userFolder_;
-  boost::scoped_ptr<userSettings> settings_;
+  std::string currentUser_;
+  std::unique_ptr<userSettings> settings_;
 
  public:
-  usersImpl() : usersFolderRoot_(usersFolderRoot()), settings_(NULL) {}
+  usersImpl() : usersFolderRoot_(usersFolderRoot()) {}
 
   void SwitchToDefaultUser() {
-    userFolder_ = QDir(usersFolderRoot_ + "_default").absolutePath();
+    userFolder_ =
+        QDir(usersFolderRoot_ + QString::fromStdString(om::users::defaultUser))
+            .absolutePath();
     loadUserSettings();
   }
 
   void SwitchToUser(const std::string& userName) {
+    currentUser_ = userName;
     userFolder_ = QDir(usersFolderRoot_ + QString::fromStdString(userName))
-        .absolutePath();
+                      .absolutePath();
+    log_variable(userFolder_.toStdString());
+
+    // assuming SegmentationID 1:
+    if (!om::file::exists(userFolder_.toStdString() +
+                          "/segmentations/segmentation1/segments")) {
+      copySegmentsFromDefault();
+    }
     loadUserSettings();
   }
+
+  inline const std::string& CurrentUser() const { return currentUser_; }
 
   QString LogFolderPath() { return userFolder_ + QLatin1String("/logFiles"); }
 
@@ -48,7 +61,6 @@ class usersImpl {
   inline userSettings& UserSettings() { return *settings_; }
 
  private:
-
   QString usersFolderRoot() { return OmFileNames::FilesFolder() + "/users/"; }
 
   QString makeUserSegmentsFolder(const QString& folder) {
@@ -62,8 +74,7 @@ class usersImpl {
   }
 
   void fixSegmentationFolderSymlinks() {
-    const std::vector<om::fs::segmentationFolderInfo> segmentationFolders =
-        om::fs::segmentationFolders::Find();
+    const auto segmentationFolders = om::fs::segmentationFolders::Find();
 
     FOR_EACH(iter, segmentationFolders) {
       const QString folder = iter->path;
@@ -73,6 +84,9 @@ class usersImpl {
   }
 
   void fixSegmentFolderSymlink(const QString& folder) {
+    // Note this function and SetupFolders() are only called before a user is
+    // selected (the user is _default), although they may look like to be
+    // for any user.
     const QString oldSegmentsFolder = folder + "/segments";
     const QString userSegmentsFolder = makeUserSegmentsFolder(folder);
 
@@ -96,11 +110,42 @@ class usersImpl {
   }
 
   void loadUserSettings() {
-    if (settings_.get() == NULL ||
+    if (settings_.get() == nullptr ||
         settings_->getFilename() != settingsFilename()) {
-      std::cout << "Reloading User Settings...\n";
+      log_infos << "Reloading User Settings...";
       settings_.reset(new userSettings(settingsFilename()));
       settings_->Load();
+    }
+  }
+
+  void copySegmentsFromDefault() {
+    try {
+      using std::string;
+      using namespace boost::filesystem;
+
+      string userFolder = userFolder_.toStdString();
+      string defaultUserFolder =
+          usersFolderRoot_.toStdString() + om::users::defaultUser;
+
+      string userSegments =
+          userFolder + "/segmentations/segmentation1/segments/";
+      string defaultUserSegments =
+          defaultUserFolder + "/segmentations/segmentation1/segments/";
+
+      om::file::MkDir(userFolder);
+      permissions(userFolder, all_all);
+      om::file::MkDir(userSegments);
+      permissions(userSegments, all_all);
+      auto it = directory_iterator(defaultUserSegments);
+      for (; it != directory_iterator(); ++it) {
+        auto to = userSegments / it->path().filename();
+        copy_file(*it, to);
+        permissions(to, all_all ^ owner_exe ^ group_exe ^ others_exe);
+      }
+    }
+    catch (const boost::filesystem::filesystem_error& e) {
+      log_errors << "Error creating user segementation data: " << e.what();
+      throw om::IoException(e.what());
     }
   }
 

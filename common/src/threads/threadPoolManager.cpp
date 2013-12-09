@@ -2,11 +2,11 @@
 #include "threads/threadPoolManager.h"
 
 namespace om {
-namespace threads {
+namespace thread {
 
-threadPoolManager::~threadPoolManager() { StopAll(); }
+ThreadPoolManager::~ThreadPoolManager() { StopAll(); }
 
-void threadPoolManager::StopAll() {
+void ThreadPoolManager::StopAll() {
   // as threadpools close down, there are potential races on the pool mutex,
   //  so use copy of pools_
 
@@ -16,9 +16,7 @@ void threadPoolManager::StopAll() {
     pools = instance().pools_;
   }
 
-  FOR_EACH(iter, pools) {
-    common::stoppable* pool = *iter;
-
+  for (auto* pool : pools) {
     {
       zi::guard g(instance().lock_);
       if (!instance().pools_.count(pool)) {
@@ -30,14 +28,18 @@ void threadPoolManager::StopAll() {
   }
 }
 
-void threadPoolManager::Add(common::stoppable* p) {
-  zi::guard g(instance().lock_);
-  instance().pools_.insert(p);
+void ThreadPoolManager::Add(common::stoppable* p) {
+  if (p) {
+    zi::guard g(instance().lock_);
+    instance().pools_.insert(p);
+  }
 }
 
-void threadPoolManager::Remove(common::stoppable* p) {
-  zi::guard g(instance().lock_);
-  instance().pools_.erase(p);
+void ThreadPoolManager::Remove(common::stoppable* p) {
+  if (p) {
+    zi::guard g(instance().lock_);
+    instance().pools_.erase(p);
+  }
 }
 
 }  // namespace threads

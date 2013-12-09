@@ -8,20 +8,20 @@
 
 class OmBrushOppInfoFactory {
  public:
-  static om::shared_ptr<OmBrushOppInfo> MakeOppInfo(
+  static std::shared_ptr<OmBrushOppInfo> MakeOppInfo(
       OmView2dState* state, const om::globalCoord& coord,
-      const om::AddOrSubtract addOrSubract) {
+      const om::common::AddOrSubtract addOrSubract) {
     SegmentationDataWrapper sdw(state->GetSegmentationID());
     OmSegmentation* segmentation = sdw.GetSegmentationPtr();
 
-    const ViewType viewType = state->getViewType();
+    const om::common::ViewType viewType = state->getViewType();
     const int brushSize = state->getBrushSize()->Diameter();
     const int depth = state->getViewTypeDepth(coord);
 
     const std::vector<om::point2di>& ptsInCircle =
         state->getBrushSize()->GetPtsInCircle();
 
-    return om::make_shared<OmBrushOppInfo>(segmentation, viewType, brushSize,
-                                           depth, ptsInCircle, addOrSubract);
+    return std::make_shared<OmBrushOppInfo>(segmentation, viewType, brushSize,
+                                            depth, ptsInCircle, addOrSubract);
   }
 };

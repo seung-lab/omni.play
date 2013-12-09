@@ -7,8 +7,8 @@
  *  Brett Warne - bwarne@mit.edu - 3/7/09
  */
 
-#include "common/omCommon.h"
-#include "common/omGl.h"
+#include "common/common.h"
+#include "utility/glInclude.h"
 #include "mesh/omMeshTypes.h"
 #include "mesh/omMeshCoord.h"
 
@@ -42,7 +42,7 @@ class OmMesh {
 
   QGLContext const* context_;
 
-  om::shared_ptr<OmDataForMeshLoad> data_;
+  std::shared_ptr<OmDataForMeshLoad> data_;
 
   GLuint vertexDataVboId_;
   GLuint vertexIndexDataVboId_;

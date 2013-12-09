@@ -1,6 +1,8 @@
 #pragma once
 
-#include "common/om.hpp"
+#include "mesh/omMesh.h"
+#include "mesh/omMeshTypes.h"
+#include "mesh/omMeshCoord.h"
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheManager.h"
 #include "system/cache/omLockedCacheObjects.hpp"
@@ -8,6 +10,7 @@
 #include "utility/omLockedPODs.hpp"
 #include "threads/omTaskManager.hpp"
 #include "zi/omMutex.h"
+#include "common/enums.hpp"
 
 #include <zi/system.hpp>
 
@@ -31,12 +34,13 @@ class OmThreadedMeshCache : public OmCacheBase {
     std::map<key_t, ptr_t> map;
     KeyMultiIndex<key_t> list;
   };
-  LockedList<om::shared_ptr<OldCache> > cachesToClean_;
+  LockedList<std::shared_ptr<OldCache> > cachesToClean_;
 
   int numThreads() { return 2; }
 
  public:
-  OmThreadedMeshCache(const om::CacheGroup group, const std::string& name)
+  OmThreadedMeshCache(const om::common::CacheGroup group,
+                      const std::string& name)
       : OmCacheBase(name, group) {
     OmCacheManager::AddCache(group, this);
     threadPool_.start(numThreads());
@@ -47,12 +51,13 @@ class OmThreadedMeshCache : public OmCacheBase {
     OmCacheManager::RemoveCache(cacheGroup_, this);
   }
 
-  virtual void Get(ptr_t& ptr, const key_t& key, const om::Blocking blocking) {
+  virtual void Get(ptr_t& ptr, const key_t& key,
+                   const om::common::Blocking blocking) {
     if (cache_.assignIfHadKey(key, ptr)) {
       return;
     }
 
-    if (om::BLOCKING == blocking) {
+    if (om::common::Blocking::BLOCKING == blocking) {
       ptr = loadItem(key);
       return;
     }
@@ -103,7 +108,7 @@ class OmThreadedMeshCache : public OmCacheBase {
     }
 
     // avoid contention on cacheToClean by swapping in new, empty list
-    std::list<om::shared_ptr<OldCache> > oldCaches;
+    std::list<std::shared_ptr<OldCache> > oldCaches;
     cachesToClean_.swap(oldCaches);
   }
 
@@ -122,7 +127,7 @@ class OmThreadedMeshCache : public OmCacheBase {
     ClearFetchQueue();
 
     // add current cache to list to be cleaned later by OmCacheMan thread
-    om::shared_ptr<OldCache> cache(new OldCache());
+    std::shared_ptr<OldCache> cache(new OldCache());
 
     cache_.swap(cache->map, cache->list);
     cachesToClean_.push_back(cache);

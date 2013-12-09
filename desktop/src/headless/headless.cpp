@@ -1,6 +1,6 @@
 #include "actions/omActions.h"
 #include "chunks/omChunk.h"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "datalayer/fs/omMemMappedFileQT.hpp"
 #include "datalayer/omDataPaths.h"
 #include "gui/recentFileList.h"
@@ -235,12 +235,6 @@ void Headless::compareChanns(const QString& line) {
   int id1 = OmStringHelpers::getUInt(channelIDs[0]);
   int id2 = OmStringHelpers::getUInt(channelIDs[1]);
 
-  bool verbose = 0;
-
-  if (3 == args.size()) {
-    verbose = (bool) OmStringHelpers::getUInt(args[2]);
-  }
-
   if (!ChannelDataWrapper(id1).IsChannelValid()) {
     printf("Channel %i is not a valid channel.\n", id1);
     return;
@@ -271,19 +265,14 @@ void Headless::compareSegs(const QString& line) {
   QStringList segmentationIDs = args[1].split(',', QString::SkipEmptyParts);
 
   if (segmentationIDs.size() < 2) {
-    printf("Not enough segmentation IDs specified. Please specify as "
-           "'id1,id2'.\n");
+    printf(
+        "Not enough segmentation IDs specified. Please specify as "
+        "'id1,id2'.\n");
     return;
   }
 
   const int id1 = OmStringHelpers::getUInt(segmentationIDs[0]);
   const int id2 = OmStringHelpers::getUInt(segmentationIDs[1]);
-
-  bool verbose = 0;
-
-  if (3 == args.size()) {
-    verbose = (bool) OmStringHelpers::getUInt(args[2]);
-  }
 
   if (!SegmentationDataWrapper(id1).IsSegmentationValid()) {
     printf("Segmentation %i is not a valid segmentation.\n", id1);
@@ -307,7 +296,7 @@ void Headless::dumpSegTiles(const QString& line) {
   QStringList args = line.split(':', QString::SkipEmptyParts);
 
   QString fileNameAndPath = "/tmp/tiles.dump";
-  OmID segID = 1;
+  om::common::ID segID = 1;
 
   if (3 == args.size()) {
     segID = OmStringHelpers::getUInt(args[1]);
@@ -319,7 +308,7 @@ void Headless::dumpSegTiles(const QString& line) {
 
   SegmentationDataWrapper sdw(segID);
 
-  OmViewGroupState* vgs = new OmViewGroupState(NULL);
+  OmViewGroupState* vgs = new OmViewGroupState(nullptr);
   OmTileDumper dumper(sdw.GetSegmentationPtr(), fileNameAndPath, vgs);
   dumper.DumpTiles();
 }
@@ -327,7 +316,7 @@ void Headless::dumpSegTiles(const QString& line) {
 void Headless::dumpChannTiles(const QString& line) {
   QStringList args = line.split(':', QString::SkipEmptyParts);
   QString file = "/tmp/tiles";
-  OmID chanID = 1;
+  om::common::ID chanID = 1;
 
   if (3 == args.size()) {
     chanID = OmStringHelpers::getUInt(args[1]);
@@ -339,7 +328,7 @@ void Headless::dumpChannTiles(const QString& line) {
 
   ChannelDataWrapper cdw(chanID);
 
-  OmViewGroupState* vgs = new OmViewGroupState(NULL);
+  OmViewGroupState* vgs = new OmViewGroupState(nullptr);
   OmTileDumper dumper(cdw.GetChannelPtr(), file, vgs);
   dumper.DumpTiles();
 }
@@ -396,8 +385,8 @@ void Headless::ls() {
 void Headless::lsl() {
   QFileInfoList entrylist = QDir::current().entryInfoList();
   Q_FOREACH(QFileInfo f, entrylist) {
-    QString line = QString("%1%2").arg(f.fileName(), -20, ' ')
-        .arg(QString::number((double) f.size() / om::math::bytesPerMB, 'f', 3));
+    QString line = QString("%1%2").arg(f.fileName(), -20, ' ').arg(
+        QString::number((double)f.size() / om::math::bytesPerMB, 'f', 3));
     printf("%s\n", qPrintable(line));
   }
 }
@@ -482,7 +471,7 @@ void Headless::loadHDF5affgraph(const QString& line) {
   const QString& hdf5fnp = args[1];
 
   AffinityGraphDataWrapper agdw;
-  OmAffinityGraph& affGraph = agdw.Create();
+  auto& affGraph = agdw.Create();
   affGraph.ImportAllChannels(hdf5fnp);
 }
 
@@ -501,7 +490,7 @@ void Headless::loadTIFFchann(const QString& line) {
     if (!f.isFile()) {
       continue;
     }
-    //printf("adding %s/\n", qPrintable(f.canonicalFilePath()));
+    // printf("adding %s/\n", qPrintable(f.canonicalFilePath()));
     bc.addFileNameAndPath(f.canonicalFilePath());
   }
   bc.Build();
@@ -524,7 +513,7 @@ void Headless::loadTIFFseg(const QString& line) {
     if (!f.isFile()) {
       continue;
     }
-    //printf("adding %s/\n", qPrintable(f.canonicalFilePath()));
+    // printf("adding %s/\n", qPrintable(f.canonicalFilePath()));
     bs.addFileNameAndPath(f.canonicalFilePath());
   }
 
@@ -594,7 +583,7 @@ void Headless::removeSeg(const QString& line) {
 }
 
 void Headless::lsChan() {
-  const OmIDsSet& chanset = ChannelDataWrapper::ValidIDs();
+  const auto& chanset = ChannelDataWrapper::ValidIDs();
 
   if (chanset.empty()) {
     printf("No channels present.\n");
@@ -610,7 +599,7 @@ void Headless::lsChan() {
 }
 
 void Headless::lsSeg() {
-  const OmIDsSet& segset = SegmentationDataWrapper::ValidIDs();
+  const auto& segset = SegmentationDataWrapper::ValidIDs();
 
   if (segset.empty()) {
     printf("No segmentations present.\n");
@@ -640,7 +629,7 @@ void Headless::setChanResolution(const QString& line) {
     return;
   }
 
-  const OmID channID = OmStringHelpers::getUInt(res[0]);
+  const om::common::ID channID = OmStringHelpers::getUInt(res[0]);
   const float xRes = OmStringHelpers::getFloat(res[1]);
   const float yRes = OmStringHelpers::getFloat(res[2]);
   const float zRes = OmStringHelpers::getFloat(res[3]);
@@ -670,7 +659,7 @@ void Headless::setSegResolution(const QString& line) {
     return;
   }
 
-  const OmID segID = OmStringHelpers::getUInt(res[0]);
+  const om::common::ID segID = OmStringHelpers::getUInt(res[0]);
   const float xRes = OmStringHelpers::getFloat(res[1]);
   const float yRes = OmStringHelpers::getFloat(res[2]);
   const float zRes = OmStringHelpers::getFloat(res[3]);
@@ -700,7 +689,7 @@ void Headless::setChanAbsOffset(const QString& line) {
     return;
   }
 
-  const OmID segID = OmStringHelpers::getUInt(res[0]);
+  const om::common::ID segID = OmStringHelpers::getUInt(res[0]);
   const int xRes = OmStringHelpers::getUInt(res[1]);
   const int yRes = OmStringHelpers::getUInt(res[2]);
   const int zRes = OmStringHelpers::getUInt(res[3]);
@@ -730,7 +719,7 @@ void Headless::setSegAbsOffset(const QString& line) {
     return;
   }
 
-  const OmID segID = OmStringHelpers::getUInt(res[0]);
+  const om::common::ID segID = OmStringHelpers::getUInt(res[0]);
   const int xRes = OmStringHelpers::getUInt(res[1]);
   const int yRes = OmStringHelpers::getUInt(res[2]);
   const int zRes = OmStringHelpers::getUInt(res[3]);
@@ -788,7 +777,6 @@ void Headless::refindUniqueChunkValues() {
     return;
   }
   OmChunkUtils::RefindUniqueChunkValues(segmentationID_);
-
 }
 
 void Headless::importWatershed(const QString& line) {
@@ -810,7 +798,7 @@ void Headless::timeSegChunkReads(const QString& line) {
     return;
   }
 
-  const OmID segID = OmStringHelpers::getUInt(args[1]);
+  const om::common::ID segID = OmStringHelpers::getUInt(args[1]);
   const bool randomizeOrder = OmStringHelpers::getBool(args[2]);
   const bool useRawChunk = OmStringHelpers::getBool(args[3]);
 
@@ -846,7 +834,7 @@ void Headless::checkMeshes(const QString& line) {
     return;
   }
 
-  const OmID segID = OmStringHelpers::getUInt(args[1]);
+  const om::common::ID segID = OmStringHelpers::getUInt(args[1]);
 
   SegmentationDataWrapper sdw(segID);
 
@@ -868,7 +856,7 @@ void Headless::replaceChanSlice(const QString& line) {
     return;
   }
 
-  const OmID channelID = OmStringHelpers::getUInt(args[1]);
+  const om::common::ID channelID = OmStringHelpers::getUInt(args[1]);
 
   ChannelDataWrapper cdw(channelID);
 
@@ -888,12 +876,13 @@ void Headless::replaceSegSlice(const QString& line) {
   QStringList args = line.split(':', QString::SkipEmptyParts);
 
   if (args.size() < 4) {
-    printf("Please enter as "
-           "replaceSegSlice::segmentationID::fileName::sliceNum.\n");
+    printf(
+        "Please enter as "
+        "replaceSegSlice::segmentationID::fileName::sliceNum.\n");
     return;
   }
 
-  const OmID segmentationID = OmStringHelpers::getUInt(args[1]);
+  const om::common::ID segmentationID = OmStringHelpers::getUInt(args[1]);
 
   SegmentationDataWrapper sdw(segmentationID);
 
@@ -916,7 +905,7 @@ void Headless::exportSegRaw(const QString& line) {
     return;
   }
 
-  const OmID segID = OmStringHelpers::getUInt(args[1]);
+  const om::common::ID segID = OmStringHelpers::getUInt(args[1]);
 
   SegmentationDataWrapper sdw(segID);
 
@@ -936,7 +925,7 @@ void Headless::rebuildSegmentation(const QString& line) {
     return;
   }
 
-  const OmID segID = OmStringHelpers::getUInt(args[1]);
+  const om::common::ID segID = OmStringHelpers::getUInt(args[1]);
 
   SegmentationDataWrapper sdw(segID);
 
@@ -957,7 +946,7 @@ void Headless::exportSegReroot(const QString& line) {
     return;
   }
 
-  const OmID segID = OmStringHelpers::getUInt(args[1]);
+  const om::common::ID segID = OmStringHelpers::getUInt(args[1]);
 
   SegmentationDataWrapper sdw(segID);
 

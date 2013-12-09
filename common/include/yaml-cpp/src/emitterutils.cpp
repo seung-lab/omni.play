@@ -107,7 +107,7 @@ namespace YAML
 				return true;
 			}
 			
-			void WriteCodePoint(ostream& out, int codePoint) {
+			void WriteCodePoint(ostream_wrapper& out, int codePoint) {
 				if (codePoint < 0 || codePoint > 0x10FFFF) {
 					codePoint = REPLACEMENT_CHARACTER;
 				}
@@ -128,12 +128,12 @@ namespace YAML
 				}
 			}
 			
-			bool IsValidPlainScalar(const std::string& str, bool inFlow, bool allowOnlyAscii) {
+			bool IsValidPlainScalar(const std::string& str, FlowType::value flowType, bool allowOnlyAscii) {
 				if(str.empty())
 					return false;
 				
 				// first check the start
-				const RegEx& start = (inFlow ? Exp::PlainScalarInFlow() : Exp::PlainScalar());
+				const RegEx& start = (flowType == FlowType::Flow ? Exp::PlainScalarInFlow() : Exp::PlainScalar());
 				if(!start.Matches(str))
 					return false;
 				
@@ -142,7 +142,7 @@ namespace YAML
 					return false;
 
 				// then check until something is disallowed
-				const RegEx& disallowed = (inFlow ? Exp::EndScalarInFlow() : Exp::EndScalar())
+				const RegEx& disallowed = (flowType == FlowType::Flow ? Exp::EndScalarInFlow() : Exp::EndScalar())
 				                          || (Exp::BlankOrBreak() + Exp::Comment())
 				                          || Exp::NotPrintable()
 				                          || Exp::Utf8_ByteOrderMark()
@@ -152,7 +152,7 @@ namespace YAML
 				while(buffer) {
 					if(disallowed.Matches(buffer))
 						return false;
-					if(allowOnlyAscii && (0x7F < static_cast<unsigned char>(buffer[0]))) 
+					if(allowOnlyAscii && (0x80 <= static_cast<unsigned char>(buffer[0]))) 
 						return false;
 					++buffer;
 				}
@@ -160,30 +160,53 @@ namespace YAML
 				return true;
 			}
 
-			void WriteDoubleQuoteEscapeSequence(ostream& out, int codePoint) {
+			bool IsValidSingleQuotedScalar(const std::string& str, bool escapeNonAscii)
+            {
+                // TODO: check for non-printable characters?
+                for(std::size_t i=0;i<str.size();i++) {
+                    if(escapeNonAscii && (0x80 <= static_cast<unsigned char>(str[i])))
+                       return false;
+                    if(str[i] == '\n')
+                        return false;
+                }
+                return true;
+			}
+            
+            bool IsValidLiteralScalar(const std::string& str, FlowType::value flowType, bool escapeNonAscii)
+            {
+                if(flowType == FlowType::Flow)
+                    return false;
+
+                // TODO: check for non-printable characters?
+                for(std::size_t i=0;i<str.size();i++) {
+                    if(escapeNonAscii && (0x80 <= static_cast<unsigned char>(str[i])))
+                        return false;
+                }
+                return true;
+            }
+			
+            void WriteDoubleQuoteEscapeSequence(ostream_wrapper& out, int codePoint) {
 				static const char hexDigits[] = "0123456789abcdef";
 
-				char escSeq[] = "\\U00000000";
+                out << "\\";
 				int digits = 8;
-				if (codePoint < 0xFF) {
-					escSeq[1] = 'x';
+				if(codePoint < 0xFF) {
+                    out << "x";
 					digits = 2;
-				} else if (codePoint < 0xFFFF) {
-					escSeq[1] = 'u';
+				} else if(codePoint < 0xFFFF) {
+                    out << "u";
 					digits = 4;
-				}
+				} else {
+                    out << "U";
+                    digits = 8;
+                }
 
 				// Write digits into the escape sequence
-				int i = 2;
-				for (; digits > 0; --digits, ++i) {
-					escSeq[i] = hexDigits[(codePoint >> (4 * (digits - 1))) & 0xF];
-				}
-
-				escSeq[i] = 0; // terminate with NUL character
-				out << escSeq;
+				for (; digits > 0; --digits)
+					out << hexDigits[(codePoint >> (4 * (digits - 1))) & 0xF];
 			}
 
-			bool WriteAliasName(ostream& out, const std::string& str) {
+			bool WriteAliasName(ostream_wrapper& out, const std::string& str) {
 				int codePoint;
 				for(std::string::const_iterator i = str.begin();
 					GetNextCodePointAndAdvance(codePoint, i, str.end());
@@ -198,16 +221,31 @@ namespace YAML
 			}
 		}
 		
-		bool WriteString(ostream& out, const std::string& str, bool inFlow, bool escapeNonAscii)
-		{
-			if(IsValidPlainScalar(str, inFlow, escapeNonAscii)) {
-				out << str;
-				return true;
-			} else
-				return WriteDoubleQuotedString(out, str, escapeNonAscii);
-		}
-		
-		bool WriteSingleQuotedString(ostream& out, const std::string& str)
+        StringFormat::value ComputeStringFormat(const std::string& str, EMITTER_MANIP strFormat, FlowType::value flowType, bool escapeNonAscii)
+        {
+            switch(strFormat) {
+                case Auto:
+                    if(IsValidPlainScalar(str, flowType, escapeNonAscii))
+                        return StringFormat::Plain;
+                    return StringFormat::DoubleQuoted;
+                case SingleQuoted:
+                    if(IsValidSingleQuotedScalar(str, escapeNonAscii))
+                        return StringFormat::SingleQuoted;
+                    return StringFormat::DoubleQuoted;
+                case DoubleQuoted:
+                    return StringFormat::DoubleQuoted;
+                case Literal:
+                    if(IsValidLiteralScalar(str, flowType, escapeNonAscii))
+                        return StringFormat::Literal;
+                    return StringFormat::DoubleQuoted;
+                default:
+                    break;
+            }
+
+            return StringFormat::DoubleQuoted;
+        }
+
+		bool WriteSingleQuotedString(ostream_wrapper& out, const std::string& str)
 		{
 			out << "'";
 			int codePoint;
@@ -227,7 +265,7 @@ namespace YAML
 			return true;
 		}
 		
-		bool WriteDoubleQuotedString(ostream& out, const std::string& str, bool escapeNonAscii)
+		bool WriteDoubleQuotedString(ostream_wrapper& out, const std::string& str, bool escapeNonAscii)
 		{
 			out << "\"";
 			int codePoint;
@@ -235,24 +273,29 @@ namespace YAML
 				GetNextCodePointAndAdvance(codePoint, i, str.end());
 				) 
 			{
-				if (codePoint == '\"')
-					out << "\\\"";
-				else if (codePoint == '\\')
-					out << "\\\\";
-				else if (codePoint < 0x20 || (codePoint >= 0x80 && codePoint <= 0xA0)) // Control characters and non-breaking space
-					WriteDoubleQuoteEscapeSequence(out, codePoint);
-				else if (codePoint == 0xFEFF) // Byte order marks (ZWNS) should be escaped (YAML 1.2, sec. 5.2)	
-					WriteDoubleQuoteEscapeSequence(out, codePoint);
-				else if (escapeNonAscii && codePoint > 0x7E)
-					WriteDoubleQuoteEscapeSequence(out, codePoint);
-				else
-					WriteCodePoint(out, codePoint);
+                switch(codePoint) {
+                    case '\"': out << "\\\""; break;
+                    case '\\': out << "\\\\"; break;
+                    case '\n': out << "\\n"; break;
+                    case '\t': out << "\\t"; break;
+                    case '\r': out << "\\r"; break;
+                    case '\b': out << "\\b"; break;
+                    default:
+                        if(codePoint < 0x20 || (codePoint >= 0x80 && codePoint <= 0xA0)) // Control characters and non-breaking space
+                            WriteDoubleQuoteEscapeSequence(out, codePoint);
+                        else if (codePoint == 0xFEFF) // Byte order marks (ZWNS) should be escaped (YAML 1.2, sec. 5.2)	
+                            WriteDoubleQuoteEscapeSequence(out, codePoint);
+                        else if (escapeNonAscii && codePoint > 0x7E)
+                            WriteDoubleQuoteEscapeSequence(out, codePoint);
+                        else
+                            WriteCodePoint(out, codePoint);
+                }
 			}
 			out << "\"";
 			return true;
 		}
 
-		bool WriteLiteralString(ostream& out, const std::string& str, int indent)
+		bool WriteLiteralString(ostream_wrapper& out, const std::string& str, int indent)
 		{
 			out << "|\n";
 			out << IndentTo(indent);
@@ -269,7 +312,7 @@ namespace YAML
 			return true;
 		}
 		
-		bool WriteChar(ostream& out, char ch)
+		bool WriteChar(ostream_wrapper& out, char ch)
 		{
 			if(('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z'))
 				out << ch;
@@ -289,36 +332,39 @@ namespace YAML
 			return true;
 		}
 
-		bool WriteComment(ostream& out, const std::string& str, int postCommentIndent)
+		bool WriteComment(ostream_wrapper& out, const std::string& str, int postCommentIndent)
 		{
 			const unsigned curIndent = out.col();
 			out << "#" << Indentation(postCommentIndent);
+            out.set_comment();
 			int codePoint;
 			for(std::string::const_iterator i = str.begin();
 				GetNextCodePointAndAdvance(codePoint, i, str.end());
 				)
 			{
-				if(codePoint == '\n')
+				if(codePoint == '\n') {
 					out << "\n" << IndentTo(curIndent) << "#" << Indentation(postCommentIndent);
-				else
+                    out.set_comment();
+				} else {
 					WriteCodePoint(out, codePoint);
+                }
 			}
 			return true;
 		}
 
-		bool WriteAlias(ostream& out, const std::string& str)
+		bool WriteAlias(ostream_wrapper& out, const std::string& str)
 		{
 			out << "*";
 			return WriteAliasName(out, str);
 		}
 		
-		bool WriteAnchor(ostream& out, const std::string& str)
+		bool WriteAnchor(ostream_wrapper& out, const std::string& str)
 		{
 			out << "&";
 			return WriteAliasName(out, str);
 		}
 
-		bool WriteTag(ostream& out, const std::string& str, bool verbatim)
+		bool WriteTag(ostream_wrapper& out, const std::string& str, bool verbatim)
 		{
 			out << (verbatim ? "!<" : "!");
 			StringCharSource buffer(str.c_str(), str.size());
@@ -338,7 +384,7 @@ namespace YAML
 			return true;
 		}
 
-		bool WriteTagWithPrefix(ostream& out, const std::string& prefix, const std::string& tag)
+		bool WriteTagWithPrefix(ostream_wrapper& out, const std::string& prefix, const std::string& tag)
 		{
 			out << "!";
 			StringCharSource prefixBuffer(prefix.c_str(), prefix.size());
@@ -368,7 +414,7 @@ namespace YAML
 			return true;
 		}
 
-		bool WriteBinary(ostream& out, const Binary& binary)
+		bool WriteBinary(ostream_wrapper& out, const Binary& binary)
 		{
             WriteDoubleQuotedString(out, EncodeBase64(binary.data(), binary.size()), false);
             return true;

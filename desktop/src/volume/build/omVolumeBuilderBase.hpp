@@ -1,7 +1,7 @@
 #pragma once
 
 #include "chunks/omChunkCache.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
@@ -15,7 +15,8 @@
 
 #include <QFileInfo>
 
-template <typename VOL> class OmVolumeBuilderBase {
+template <typename VOL>
+class OmVolumeBuilderBase {
  private:
   VOL* const vol_;
 
@@ -99,20 +100,20 @@ template <typename VOL> class OmVolumeBuilderBase {
 
  private:
   void loadDendrogramWrapper(OmSegmentation* vol) {
-    printf("************************\n");
-    printf("loading MST...\n");
+    log_infos << "************************";
+    log_infos << "loading MST...";
 
     if (!loadDendrogram(vol)) {
-      printf("no MST found\n");
-      printf("************************\n");
+      log_infos << "no MST found";
+      log_infos << "************************";
       return;
     }
 
-    printf("Segmentation MST load done\n");
-    printf("************************\n");
+    log_infos << "Segmentation MST load done";
+    log_infos << "************************";
 
     OmActions::ChangeMSTthreshold(vol->GetSDW(), OmMST::DefaultThreshold);
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
   }
 
   void setVolAsBuilding() { vol_->SetBuildState(MIPVOL_BUILDING); }
@@ -121,7 +122,7 @@ template <typename VOL> class OmVolumeBuilderBase {
 
   void checkChunkDims() {
     if (vol_->Coords().GetChunkDimension() % 2) {
-      throw OmFormatException("chunk dimensions must be even");
+      throw om::FormatException("chunk dimensions must be even");
     }
   }
 

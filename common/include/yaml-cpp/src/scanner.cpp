@@ -51,6 +51,13 @@ namespace YAML
 		return m_tokens.front();
 	}
 
+    // mark
+    // . Returns the current mark in the stream
+    Mark Scanner::mark() const
+    {
+        return INPUT.mark();
+    }
+
 	// EnsureTokensInQueue
 	// . Scan until there's a valid token at the front of the queue,
 	//   or we're sure the queue is empty.
@@ -376,7 +383,7 @@ namespace YAML
 	// . Does not parse any more tokens.
 	void Scanner::ThrowParserException(const std::string& msg) const
 	{
-		Mark mark = Mark::null();
+		Mark mark = Mark::null_mark();
 		if(!m_tokens.empty()) {
 			const Token& token = m_tokens.front();
 			mark = token.mark;

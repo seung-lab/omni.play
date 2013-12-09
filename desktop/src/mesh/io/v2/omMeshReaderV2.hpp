@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
@@ -20,18 +20,18 @@ class OmMeshReaderV2 {
 
   ~OmMeshReaderV2() {}
 
-  inline om::shared_ptr<OmDataForMeshLoad> Read(const OmMeshCoord& meshCoord) {
+  inline std::shared_ptr<OmDataForMeshLoad> Read(const OmMeshCoord& meshCoord) {
     return Read(meshCoord.SegID(), meshCoord.Coord());
   }
 
-  om::shared_ptr<OmDataForMeshLoad> Read(const OmSegID segID,
-                                         const om::chunkCoord& coord) {
+  std::shared_ptr<OmDataForMeshLoad> Read(const om::common::SegID segID,
+                                          const om::chunkCoord& coord) {
     OmMeshChunkAllocTableV2* chunk_table = filePtrCache_->GetAllocTable(coord);
 
     OmMeshChunkDataReaderV2 chunk_data(segmentation_, coord, threshold_);
 
-    om::shared_ptr<OmDataForMeshLoad> ret =
-        om::make_shared<OmDataForMeshLoad>();
+    std::shared_ptr<OmDataForMeshLoad> ret =
+        std::make_shared<OmDataForMeshLoad>();
 
     if (!chunk_table->Contains(segID)) {
       return ret;
@@ -40,8 +40,8 @@ class OmMeshReaderV2 {
     const OmMeshDataEntry entry = chunk_table->Find(segID);
 
     if (!entry.wasMeshed) {
-      std::cout << "Warning: did not yet mesh " << segID << " in coord "
-                << coord << "\n" << std::flush;
+      log_infos << "Warning: did not yet mesh " << segID << " in coord "
+                << coord;
       return ret;
     }
 

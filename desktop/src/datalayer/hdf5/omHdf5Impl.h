@@ -18,25 +18,25 @@ class OmHdf5Impl {
   bool dataset_exists(const OmDataPath& path);
 
   Vector3i getChunkedDatasetDims(const OmDataPath& path,
-                                 const om::AffinityGraph aff);
+                                 const om::common::AffinityGraph aff);
   void allocateChunkedDataset(const OmDataPath&, const Vector3i&,
                               const Vector3i&, const OmVolDataType);
 
-  OmDataWrapperPtr readDataset(const OmDataPath&, int* = NULL);
+  OmDataWrapperPtr readDataset(const OmDataPath&, int* = nullptr);
   void allocateDataset(const OmDataPath&, int, const OmDataWrapperPtr data);
   void writeDataset(const OmDataPath& path, int size,
                     const OmDataWrapperPtr data);
 
   OmDataWrapperPtr readChunk(const OmDataPath& path,
                              const om::dataBbox& dataExtent,
-                             const om::AffinityGraph aff);
+                             const om::common::AffinityGraph aff);
   void writeChunk(const OmDataPath& path, om::dataBbox dataExtent,
                   OmDataWrapperPtr data);
   Vector3i getDatasetDims(const OmDataPath& path);
   OmDataWrapperPtr GetChunkDataType(const OmDataPath& path);
 
  private:
-  om::shared_ptr<OmHdf5LowLevel> hdf_;
+  std::shared_ptr<OmHdf5LowLevel> hdf_;
   const bool mReadOnly;
   int fileId;
 };

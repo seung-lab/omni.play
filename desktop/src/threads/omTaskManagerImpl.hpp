@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "common/omStoppable.h"
+#include "common/stoppable.h"
 #include "threads/omThreadPoolManager.h"
 
 #include <zi/concurrency/config.hpp>
@@ -39,7 +39,7 @@ template <class TaskContainer>
 class OmTaskManagerImpl
     : public zi::runnable,
       public zi::enable_shared_from_this<OmTaskManagerImpl<TaskContainer> >,
-      public om::stoppable {
+      public om::common::stoppable {
   typedef zi::shared_ptr<zi::concurrency_::runnable> task_t;
 
   enum state {

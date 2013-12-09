@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "tiles/omTileImplTypes.hpp"
 
 class OmView2dState;
@@ -16,7 +16,7 @@ class OmOnScreenTileCoords {
  private:
   OmView2dState *const state_;
   OmMipVolume *const vol_;
-  const ViewType viewType_;
+  const om::common::ViewType viewType_;
   OmViewGroupState *const vgs_;
 
   int mipLevel_;

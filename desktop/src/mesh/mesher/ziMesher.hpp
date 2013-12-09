@@ -2,7 +2,7 @@
 
 #include "chunks/omChunkUtils.hpp"
 #include "chunks/omSegChunk.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "mesh/mesher/MeshCollector.hpp"
 #include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/io/omMeshMetadata.hpp"
@@ -26,7 +26,7 @@
 class ziMesher {
  public:
   ziMesher(OmSegmentation* segmentation, const double threshold)
-      : segmentation_(segmentation),
+      : vol_(segmentation),
         rootMipLevel_(segmentation->Coords().GetRootMipLevel()),
         threshold_(threshold),
         chunkCollectors_(),
@@ -35,8 +35,10 @@ class ziMesher {
         numParallelChunks_(numberParallelChunks()),
         numThreadsPerChunk_(zi::system::cpu_count / 2),
         downScallingFactor_(OmMeshParams::GetDownScallingFactor()) {
-    printf("ziMesher: will process %d chunks at a time\n", numParallelChunks_);
-    printf("ziMesher: will use %d threads per chunk\n", numThreadsPerChunk_);
+    log_infos << "ziMesher: will process " << numParallelChunks_
+              << " chunks at a time";
+    log_infos << "ziMesher: will use " << numThreadsPerChunk_
+              << " threads per chunk";
   }
 
   ~ziMesher() {
@@ -53,18 +55,17 @@ class ziMesher {
   // void RemeshFullVolume()
   // {
   // if(redownsample){
-  //     segmentation_->VolData()->downsample(segmentation_);
+  //     vol_->VolData()->downsample(vol_);
   // }
-  //     OmChunkUtils::RefindUniqueChunkValues(segmentation_->GetID());
+  //     OmChunkUtils::RefindUniqueChunkValues(vol_->GetID());
   // }
 
-  om::shared_ptr<om::gui::progress> Progress() { return progress_.Progress(); }
+  std::shared_ptr<om::gui::progress> Progress() { return progress_.Progress(); }
 
-  void Progress(om::shared_ptr<om::gui::progress> p) { progress_.Progress(p); }
+  void Progress(std::shared_ptr<om::gui::progress> p) { progress_.Progress(p); }
 
  private:
-
-  OmSegmentation* const segmentation_;
+  OmSegmentation* const vol_;
   const int rootMipLevel_;
   const double threshold_;
 
@@ -72,7 +73,7 @@ class ziMesher {
   std::map<om::chunkCoord, MeshCollector*> chunkCollectors_;
 
   OmMeshManager* const meshManager_;
-  boost::scoped_ptr<OmMeshWriterV2> meshWriter_;
+  std::unique_ptr<OmMeshWriterV2> meshWriter_;
 
   const int numParallelChunks_;
   const int numThreadsPerChunk_;
@@ -81,8 +82,8 @@ class ziMesher {
   om::mesher::progress progress_;
 
   void init() {
-    om::shared_ptr<std::deque<om::chunkCoord> > levelZeroChunks =
-        segmentation_->GetMipChunkCoords(0);
+    std::shared_ptr<std::deque<om::chunkCoord> > levelZeroChunks =
+        vol_->GetMipChunkCoords(0);
 
     progress_.SetTotalNumChunks(levelZeroChunks->size());
 
@@ -90,7 +91,7 @@ class ziMesher {
       addValuesFromChunkAndDownsampledChunks(*it);
     }
 
-    std::cout << "\nstarting meshing..." << std::endl;
+    log_infos << "starting meshing...";
 
     zi::task_manager::simple manager(numParallelChunks_);
     manager.start();
@@ -102,12 +103,12 @@ class ziMesher {
 
     manager.join();
 
-    std::cout << "\ndone meshing..." << std::endl;
+    log_infos << "done meshing...";
   }
 
   void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord) {
     const ChunkUniqueValues segIDs =
-        segmentation_->ChunkUniqueValues()->Values(mip0coord, threshold_);
+        vol_->UniqueValuesDS().Values(mip0coord, threshold_);
 
     chunkCollectors_.insert(std::make_pair(
         mip0coord, new MeshCollector(mip0coord, meshWriter_.get())));
@@ -119,7 +120,7 @@ class ziMesher {
     }
 
     downsampleSegThroughAllMipLevels(mip0coord, segIDs);
-    //downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
+    // downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
   }
 
   void downsampleSegThroughAllMipLevels(const om::chunkCoord& mip0coord,
@@ -140,10 +141,10 @@ class ziMesher {
 
     // corner case: no MIP levels >0
     while (c.getLevel() <= rootMipLevel_) {
-      std::deque<OmSegID> commonIDs;
+      std::deque<om::common::SegID> commonIDs;
 
       const ChunkUniqueValues segIDs =
-          segmentation_->ChunkUniqueValues()->Values(c, threshold_);
+          vol_->UniqueValuesDS().Values(c, threshold_);
 
       FOR_EACH(cid, segIDsMip0) {
         if (segIDs.contains(*cid)) {
@@ -210,21 +211,21 @@ class ziMesher {
   void setupMarchingCube(zi::mesh::marching_cubes<int>& cube_marcher,
                          OmSegChunk* chunk) {
     OmImage<uint32_t, 3> chunkData =
-        OmChunkUtils::GetMeshOmImageData(segmentation_, chunk);
+        OmChunkUtils::GetMeshOmImageData(vol_, chunk);
 
-    OmChunkUtils::RewriteChunkAtThreshold(segmentation_, chunkData, threshold_);
+    OmChunkUtils::RewriteChunkAtThreshold(vol_, chunkData, threshold_);
 
-    const OmSegID* chunkDataRaw =
-        static_cast<const OmSegID*>(chunkData.getScalarPtr());
+    const om::common::SegID* chunkDataRaw =
+        static_cast<const om::common::SegID*>(chunkData.getScalarPtr());
 
     cube_marcher.marche(reinterpret_cast<const int*>(chunkDataRaw), 129, 129,
                         129);
   }
 
   void processChunk(om::chunkCoord coord) {
-    static const int chunkDim = segmentation_->Coords().GetChunkDimension();
+    static const int chunkDim = vol_->Coords().GetChunkDimension();
 
-    OmSegChunk* chunk = segmentation_->GetChunk(coord);
+    OmSegChunk* chunk = vol_->GetChunk(coord);
 
     const om::normBbox& dstBbox = chunk->Mipping().GetNormExtent();
 
@@ -241,8 +242,7 @@ class ziMesher {
     scale /= maxScale;
     scale *= 0.5;
 
-    const ChunkUniqueValues segIDs =
-        segmentation_->ChunkUniqueValues()->Values(coord, threshold_);
+    const auto segIDs = vol_->UniqueValuesDS().Values(coord, threshold_);
 
     if (segIDs.size() > 0) {
       zi::mesh::marching_cubes<int> cube_marcher;
@@ -252,7 +252,7 @@ class ziMesher {
       manager.start();
 
       FOR_EACH(it, cube_marcher.meshes()) {
-        const OmSegID segID = it->first;
+        const om::common::SegID segID = it->first;
 
         if (segIDs.contains(segID)) {
           zi::shared_ptr<zi::mesh::simplifier<double> > spfy(
@@ -271,8 +271,8 @@ class ziMesher {
 
       manager.join();
     } else {
-      std::cout << "Skipping Chunk " << coord << " b/c there's nothing in there"
-                << std::endl;
+      log_infos << "Skipping Chunk " << coord
+                << " b/c there's nothing in there";
     }
 
     progress_.ChunkCompleted(coord);

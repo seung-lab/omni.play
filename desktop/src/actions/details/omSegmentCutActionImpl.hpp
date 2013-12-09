@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "events/omEvents.h"
+#include "common/common.h"
+#include "events/events.h"
 #include "segment/lists/omSegmentLists.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
@@ -12,7 +12,7 @@ class OmSegmentCutActionImpl {
  private:
   SegmentDataWrapper sdw_;
   QVector<OmSegmentEdge> edges_;
-  QString desc;  //TODO: rename to desc_
+  QString desc;  // TODO: rename to desc_
 
  public:
   OmSegmentCutActionImpl() {}
@@ -34,15 +34,15 @@ class OmSegmentCutActionImpl {
 
     desc = QString("Cut seg %1; %2 edges").arg(seg->value()).arg(edges.size());
 
-    std::cout << desc.toStdString() << "\n";
+    log_infos << desc.toStdString();
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
 
     sdw_.GetSegmentation().SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   void Undo() {
@@ -60,17 +60,17 @@ class OmSegmentCutActionImpl {
     desc = QString("Uncut seg %1").arg(seg->value());
 
     if (!ret) {
-      OmEvents::NonFatalEvent("Could not fully undo cut");
+      om::event::NonFatalEventOccured("Could not fully undo cut");
       desc += " with errors";
     }
 
-    OmEvents::SegmentModified();
+    om::event::SegmentModified();
 
     sdw_.GetSegmentation().SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   std::string Description() const { return desc.toStdString(); }
@@ -78,7 +78,8 @@ class OmSegmentCutActionImpl {
   QString classNameForLogFile() const { return "OmSegmentCutAction"; }
 
  private:
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
   friend class QDataStream& operator<<(QDataStream&,
                                        const OmSegmentCutActionImpl&);
   friend class QDataStream& operator>>(QDataStream&, OmSegmentCutActionImpl&);

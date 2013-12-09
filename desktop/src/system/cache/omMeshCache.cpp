@@ -4,7 +4,8 @@
 #include <zi/system.hpp>
 
 OmMeshCache::OmMeshCache(OmMeshManager* parent)
-    : OmThreadedMeshCache(om::MESH_CACHE, "Meshes"), meshMan_(parent) {}
+    : OmThreadedMeshCache(om::common::CacheGroup::MESH_CACHE, "Meshes"),
+      meshMan_(parent) {}
 
 OmMeshPtr OmMeshCache::HandleCacheMiss(const OmMeshCoord& coord) {
   OmMeshPtr mesh = meshMan_->Produce(coord);

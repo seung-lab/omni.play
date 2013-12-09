@@ -1,16 +1,17 @@
 #include "segment/lists/omSegmentListsTypes.hpp"
 
-om::shared_ptr<GUIPageOfSegments> om::segLists::getPage(
+std::shared_ptr<GUIPageOfSegments> om::segLists::getPage(
     const std::vector<SegInfo> list, const uint32_t startIndex,
     const uint32_t numToGet) {
-  om::shared_ptr<GUIPageOfSegments> ret = om::make_shared<GUIPageOfSegments>();
+  std::shared_ptr<GUIPageOfSegments> ret =
+      std::make_shared<GUIPageOfSegments>();
 
   if (list.empty()) {
     return ret;
   }
 
   if (startIndex > list.size()) {
-    std::cout << startIndex << " > " << list.size() << std::endl;
+    log_infos << startIndex << " > " << list.size();
     assert(0 && "illegal page request");
   }
 

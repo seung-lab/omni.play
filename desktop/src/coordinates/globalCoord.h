@@ -42,7 +42,7 @@ class globalBbox : public AxisAlignedBoundingBox<float> {
   globalBbox(globalCoord min, globalCoord max) : base_t(min, max) {}
 
   normBbox toNormBbox(const OmMipVolume*) const;
-  dataBbox toDataBbox(const OmMipVolume*, int) const;
+  dataBbox ToDataBbox(const OmMipVolume*, int) const;
 };
 
 }  // namespace om

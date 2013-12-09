@@ -1,5 +1,5 @@
-#include "common/omCommon.h"
-#include "common/omDebug.h"
+#include "common/common.h"
+#include "common/logging.h"
 #include "volume/omMipVolume.h"
 
 namespace om {
@@ -14,14 +14,14 @@ chunkCoord::chunkCoord() : Level(-1), Coordinate(Vector3i(-1, -1, -1)) {}
 chunkCoord::chunkCoord(int Level, const Vector3i &coord)
     : Level(Level), Coordinate(coord) {
   if (coord.x < 0 || coord.y < 0 || coord.z < 0) {
-    throw OmArgException("Bad Chunk Coord");
+    throw om::ArgException("Bad Chunk Coord");
   }
 }
 
 chunkCoord::chunkCoord(int level, int x, int y, int z)
     : Level(level), Coordinate(Vector3i(x, y, z)) {
   if (x < 0 || y < 0 || z < 0) {
-    throw OmArgException("Bad Chunk Coord");
+    throw om::ArgException("Bad Chunk Coord");
   }
 }
 
@@ -103,13 +103,50 @@ void chunkCoord::ChildrenCoords(chunkCoord *pChildren) const {
 
 }
 
+// WARNING: may contain coords that aren't acually in the volume!
+std::vector<om::chunkCoord> chunkCoord::ChildrenCoords() const {
+  auto pc = chunkCoord(Level - 1, X() * 2, Y() * 2, Z() * 2);
+
+  std::vector<om::chunkCoord> sibs;
+  if (pc.Level < 0) {
+    return sibs;
+  }
+
+  auto c = pc.PrimarySiblingCoord();
+
+  int level = c.Level;
+  int x = c.X();
+  int y = c.Y();
+  int z = c.Z();
+
+  sibs.push_back(c);
+  sibs.emplace_back(chunkCoord(level, x + 1, y, z));
+  sibs.emplace_back(chunkCoord(level, x + 1, y + 1, z));
+  sibs.emplace_back(chunkCoord(level, x, y + 1, z));
+  sibs.emplace_back(chunkCoord(level, x, y, z + 1));
+  sibs.emplace_back(chunkCoord(level, x + 1, y, z + 1));
+  sibs.emplace_back(chunkCoord(level, x + 1, y + 1, z + 1));
+  sibs.emplace_back(chunkCoord(level, x, y + 1, z + 1));
+  return sibs;
+}
+
 dataCoord chunkCoord::toDataCoord(const OmMipVolume *vol) const {
   return dataCoord(Coordinate * vol->Coords().GetChunkDimensions(), vol, Level);
+}
+
+dataCoord chunkCoord::toDataCoord(const OmMipVolCoords &system) const {
+  return dataCoord(Coordinate * system.GetChunkDimensions(), system, Level);
 }
 
 dataBbox chunkCoord::chunkBoundingBox(const OmMipVolume *vol) const {
   const dataCoord min = toDataCoord(vol);
   const dataCoord max = min + vol->Coords().GetChunkDimensions();
+  return dataBbox(min, max);
+}
+
+dataBbox chunkCoord::BoundingBox(const OmMipVolCoords &system) const {
+  const dataCoord min = toDataCoord(system);
+  const dataCoord max = min + system.GetChunkDimensions();
   return dataBbox(min, max);
 }
 

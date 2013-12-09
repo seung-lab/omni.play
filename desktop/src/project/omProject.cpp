@@ -1,4 +1,4 @@
-#include "tiles/pools/omTilePools.hpp"
+
 #include "project/omProject.h"
 #include "project/omProjectImpl.hpp"
 
@@ -11,7 +11,6 @@ QString OmProject::New(const QString& fnp) {
 
   try {
     return instance().impl_->New(fnp);
-
   }
   catch (...) {
     instance().impl_.reset();
@@ -21,12 +20,23 @@ QString OmProject::New(const QString& fnp) {
 
 void OmProject::Save() { instance().impl_->Save(); }
 
-void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent) {
-  instance().impl_.reset(new OmProjectImpl());
+// This will check if a project is open and will close it if necessary
+void OmProject::SafeLoad(const std::string& fileNameAndPath, QWidget* guiParent,
+                         const std::string& username) {
+  if (IsOpen(fileNameAndPath, username)) {
+    return;
+  } else {
+    Close();
+    Load(fileNameAndPath, guiParent, username);
+  }
+}
+
+void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent,
+                     const std::string& username) {
+  instance().impl_ = std::make_unique<OmProjectImpl>();
 
   try {
-    instance().impl_->Load(fileNameAndPath, guiParent);
-
+    instance().impl_->Load(fileNameAndPath, guiParent, username);
   }
   catch (...) {
     instance().impl_.reset();
@@ -56,14 +66,20 @@ bool OmProject::IsReadOnly() { return instance().impl_->IsReadOnly(); }
 
 OmProjectGlobals& OmProject::Globals() { return instance().impl_->Globals(); }
 
-bool OmProject::IsOpen() { return instance().impl_; }
+bool OmProject::IsOpen() { return static_cast<bool>(instance().impl_); }
+
+bool OmProject::IsOpen(const om::file::path& fileNameAndPath,
+                       const std::string& username) {
+  if (!instance().impl_) {
+    return false;
+  }
+  return instance().impl_->IsOpen(fileNameAndPath, username);
+}
 
 #include "actions/omActions.h"
 #include "segment/omSegmentSelected.hpp"
-#include "events/details/omEventManager.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 #include "threads/omThreadPoolManager.h"
-#include "zi/omThreads.h"
 
 void OmProject::Close() {
   if (!IsOpen()) {
@@ -81,16 +97,14 @@ void OmProject::Close() {
   // OmProject must be deleted here, remaining singletons close cleanly
   instance().impl_.reset();
 
-  //delete all singletons
+  // delete all singletons
   OmSegmentSelected::Delete();
   OmOpenGLGarbageCollector::Clear();
   OmPreferences::Delete();
-  //OmLocalPreferences
+  // OmLocalPreferences
 
-  //close project data
+  // close project data
   OmCacheManager::Delete();
 
   OmHdf5Manager::Delete();
-
-  OmTilePools::Reset();
 }

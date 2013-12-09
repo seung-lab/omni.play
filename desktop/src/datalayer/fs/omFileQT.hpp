@@ -1,19 +1,19 @@
 #pragma once
 
-#include "common/om.hpp"
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "datalayer/fs/omIOnDiskFile.h"
-#include "utility/omSmartPtr.hpp"
+#include "utility/malloc.hpp"
 
 #include <QFile>
 #include <QFileInfo>
 #include <boost/make_shared.hpp>
 
-template <typename T> class OmFileQTbase : public OmIOnDiskFile<T> {
+template <typename T>
+class OmFileQTbase : public OmIOnDiskFile<T> {
  protected:
   const std::string fnp_;
-  om::shared_ptr<QFile> file_;
-  om::shared_ptr<T> data_;
+  std::shared_ptr<QFile> file_;
+  std::shared_ptr<T> data_;
   zi::mutex mutex_;
 
   OmFileQTbase(const std::string& fnp) : fnp_(fnp) {}
@@ -23,23 +23,24 @@ template <typename T> class OmFileQTbase : public OmIOnDiskFile<T> {
   uint64_t Size() const { return file_->size(); }
 
   void open() {
-    file_ = om::make_shared<QFile>(QString::fromStdString(fnp_));
+    file_ = std::make_shared<QFile>(QString::fromStdString(fnp_));
 
     if (!file_->open(QIODevice::ReadWrite)) {
-      throw OmIoException("could not open", fnp_);
+      throw om::IoException("could not open", fnp_);
     }
   }
 
   uint64_t readIn() {
     const uint64_t numBytes = file_->size();
 
-    data_ = OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
+    data_ = om::mem::Malloc<T>::NumBytes(numBytes, om::mem::ZeroFill::DONT);
     char* dataCharPtr = reinterpret_cast<char*>(data_.get());
     file_->seek(0);
     const uint64_t readBytes = file_->read(dataCharPtr, numBytes);
     if (readBytes != numBytes) {
-      throw OmIoException("could not read in fully file ", fnp_);
+      throw om::IoException("could not read in fully file ", fnp_);
     }
+  }
 
     return readBytes;
   }
@@ -54,9 +55,9 @@ template <typename T> class OmFileQTbase : public OmIOnDiskFile<T> {
     file_->seek(0);
     const uint64_t writeBytes = file_->write(dataCharPtr, numBytes);
     if (writeBytes != numBytes) {
-      throw OmIoException("could not write fully file", fnp_);
+      throw om::IoException("could not write fully file", fnp_);
     }
-    printf("flushed %s\n", fnp_.c_str());
+    log_infos << "flushed " << fnp_.c_str();
   }
 
   T* GetPtr() const { return data_.get(); }
@@ -77,12 +78,12 @@ template <typename T> class OmFileQTbase : public OmIOnDiskFile<T> {
   }
 };
 
-template <typename T> class OmFileReadQT : public OmFileQTbase<T> {
+template <typename T>
+class OmFileReadQT : public OmFileQTbase<T> {
  public:
-
-  static om::shared_ptr<OmFileReadQT<T> > Reader(const std::string& fnp) {
+  static std::shared_ptr<OmFileReadQT<T> > Reader(const std::string& fnp) {
     OmFileReadQT* ret = new OmFileReadQT(fnp, 0);
-    return om::shared_ptr<OmFileReadQT<T> >(ret);
+    return std::shared_ptr<OmFileReadQT<T> >(ret);
   }
 
  private:
@@ -91,8 +92,6 @@ template <typename T> class OmFileReadQT : public OmFileQTbase<T> {
     this->open();
     checkFileSize(numBytes);
     this->readIn();
-
-    debug(file, "opened file %s\n", this->GetAbsFileName().c_str());
   }
 
   // optional check of expected file size
@@ -104,55 +103,55 @@ template <typename T> class OmFileReadQT : public OmFileQTbase<T> {
     if (this->file_->size() != numBytes) {
       const QString err = QString(
           "error: input file size of %1 bytes doesn't match expected size %d")
-          .arg(this->file_->size()).arg(numBytes);
-      throw OmIoException(err.toStdString());
+                              .arg(this->file_->size())
+                              .arg(numBytes);
+      throw om::IoException(err.toStdString());
     }
   }
 };
 
-template <typename T> class OmFileWriteQT : public OmFileQTbase<T> {
+template <typename T>
+class OmFileWriteQT : public OmFileQTbase<T> {
  public:
-  static om::shared_ptr<OmFileWriteQT<T> > WriterNumBytes(
+  static std::shared_ptr<OmFileWriteQT<T> > WriterNumBytes(
       const std::string& fnp, const int64_t numBytes,
-      const om::ZeroMem shouldZeroFill) {
+      const om::mem::ZeroFill shouldZeroFill) {
     OmFileWriteQT<T>* ret = new OmFileWriteQT(fnp, numBytes, shouldZeroFill);
-    return om::shared_ptr<OmFileWriteQT<T> >(ret);
+    return std::shared_ptr<OmFileWriteQT<T> >(ret);
   }
 
-  static om::shared_ptr<OmFileWriteQT<T> > WriterNumElements(
+  static std::shared_ptr<OmFileWriteQT<T> > WriterNumElements(
       const std::string& fnp, const int64_t numElements,
-      const om::ZeroMem shouldZeroFill) {
+      const om::mem::ZeroFill shouldZeroFill) {
     const uint64_t numBytes = numElements * sizeof(T);
     OmFileWriteQT<T>* ret = new OmFileWriteQT(fnp, numBytes, shouldZeroFill);
-    return om::shared_ptr<OmFileWriteQT<T> >(ret);
+    return std::shared_ptr<OmFileWriteQT<T> >(ret);
   }
 
  private:
   OmFileWriteQT(const std::string& fnp, const int64_t numBytes,
-                const om::ZeroMem shouldZeroFill)
+                const om::mem::ZeroFill shouldZeroFill)
       : OmFileQTbase<T>(fnp) {
     checkFileSize(numBytes);
 
     QFile::remove(QString::fromStdString(fnp));
     this->open();
     this->file_->resize(numBytes);
-    //TODO: allocate space??
+    // TODO: allocate space??
     const int64_t bytesRead = this->readIn();
 
     if (bytesRead != numBytes) {
-      throw OmIoException("did't read right amount of data");
+      throw om::IoException("did't read right amount of data");
     }
 
-    if (om::ZERO_FILL == shouldZeroFill) {
+    if (om::mem::ZeroFill::ZERO == shouldZeroFill) {
       memset(this->data_.get(), 0, numBytes);
     }
-
-    debug(file, "created file %s\n", this->GetAbsFileName().c_str());
   }
 
   void checkFileSize(const int64_t numBytes) {
     if (!numBytes) {
-      throw OmIoException("size was 0");
+      throw om::IoException("size was 0");
     }
   }
 };

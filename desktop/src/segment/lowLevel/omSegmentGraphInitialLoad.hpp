@@ -20,9 +20,9 @@ class OmSegmentGraphInitialLoad {
   OmThreadPool pool_;
 
   struct TaskArgs {
-    OmSegID childRootID;
-    OmSegID parentID;
-    OmSegID parentRootID;
+    om::common::SegID childRootID;
+    om::common::SegID parentID;
+    om::common::SegID parentRootID;
     double threshold;
     int edgeNumber;
   };
@@ -46,7 +46,7 @@ class OmSegmentGraphInitialLoad {
   }
 
   void SetGlobalThreshold(OmMST* mst) {
-    std::cout << "\t" << om::string::humanizeNum(mst->NumEdges()) << " edges..."
+    log_infos << "\t" << om::string::humanizeNum(mst->NumEdges()) << " edges..."
               << std::flush;
 
     OmTimer timer;
@@ -85,24 +85,27 @@ class OmSegmentGraphInitialLoad {
   }
 
  private:
+  inline om::common::SegID Root(const om::common::SegID segID) {
+    return forest_->Root(segID);
+  }
 
-  inline OmSegID Root(const OmSegID segID) { return forest_->Root(segID); }
-
-  inline void Join(const OmSegID childRootID, const OmSegID parentRootID) {
+  inline void Join(const om::common::SegID childRootID,
+                   const om::common::SegID parentRootID) {
     forest_->Join(childRootID, parentRootID);
   }
 
-  bool sizeCheck(const OmSegID a, const OmSegID b, const double threshold) {
-    return threshold == 0 || ((segmentListsLL_->GetSizeWithChildren(Root(a)) +
-                               segmentListsLL_->GetSizeWithChildren(Root(b))) <
-                              threshold);
+  bool sizeCheck(const om::common::SegID a, const om::common::SegID b,
+                 const double threshold) {
+    return threshold == 0 ||
+           ((segmentListsLL_->GetSizeWithChildren(Root(a)) +
+             segmentListsLL_->GetSizeWithChildren(Root(b))) < threshold);
   }
 
-  bool initialJoinInternal(const OmSegID parentID,
-                           const OmSegID childUnknownDepthID,
+  bool initialJoinInternal(const om::common::SegID parentID,
+                           const om::common::SegID childUnknownDepthID,
                            const double threshold, const int edgeNumber) {
-    const OmSegID childRootID = Root(childUnknownDepthID);
-    const OmSegID parentRootID = Root(parentID);
+    const om::common::SegID childRootID = Root(childUnknownDepthID);
+    const om::common::SegID parentRootID = Root(parentID);
 
     if (childRootID == parentRootID) {
       return false;
@@ -114,7 +117,7 @@ class OmSegmentGraphInitialLoad {
 
     Join(childRootID, parentID);
 
-    TaskArgs t = { childRootID, parentID, parentRootID, threshold, edgeNumber };
+    TaskArgs t = {childRootID, parentID, parentRootID, threshold, edgeNumber};
 
     joinTaskPool_.AddOrSpawnTasks(t);
 

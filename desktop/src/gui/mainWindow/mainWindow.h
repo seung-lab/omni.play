@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 #include <QMainWindow>
 #include <QFrame>
@@ -8,26 +8,29 @@
 #include <QLabel>
 
 class CacheMonitorDialog;
-class GroupsTable;
 class InspectorWidget;
 class MainWindowEvents;
 class MenuBar;
-class OmException;
 class OmGlobalKeyPress;
 class OmSegmentEvent;
 class OmViewGroupState;
 class Preferences;
 class ToolBarManager;
+class LoginToolBar;
 class ViewGroup;
 
 class MainWindow : public QMainWindow {
-  Q_OBJECT public : MainWindow();
+  Q_OBJECT;
+
+ public:
+  MainWindow();
   ~MainWindow();
 
-  void openProject(QString fileNameAndPath);
-  void openProject(QString fileName, QString pathName);
+  bool openProject(const std::string& fileNameAndPath,
+                   const std::string& username);
 
-  void cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId);
+  void cleanViewsOnVolumeChange(om::common::ObjectType objectType,
+                                om::common::ID objectId);
   void updateStatusBar(QString msg);
 
   inline OmViewGroupState* GetViewGroupState() { return vgs_.get(); }
@@ -44,20 +47,19 @@ class MainWindow : public QMainWindow {
 
  public
 Q_SLOTS:
-  void spawnErrorDialog(OmException& e);
+  void spawnErrorDialog(om::Exception& e);
   void saveProject();
 
  private
 Q_SLOTS:
   void newProject();
-  void openProject();
+  bool openProject();
   void openRecentFile();
   void closeProject();
 
   void openInspector();
   void openUndoView();
   void openCacheMonitor();
-  void openGroupsTable();
 
   void open3dView();
 
@@ -71,29 +73,29 @@ Q_SLOTS:
   bool editsMade;
 
   InspectorWidget* inspector_;
-  boost::scoped_ptr<QDockWidget> inspectorDock_;
+  std::unique_ptr<QDockWidget> inspectorDock_;
 
   QUndoView* undoView_;
-  boost::scoped_ptr<QDockWidget> undoViewDock_;
-
-  GroupsTable* groupsTable_;
-  boost::scoped_ptr<QDockWidget> groupsTableDock_;
+  std::unique_ptr<QDockWidget> undoViewDock_;
 
   CacheMonitorDialog* cacheMonitorDialog_;
 
-  boost::scoped_ptr<Preferences> preferences_;
+  std::unique_ptr<Preferences> preferences_;
 
   QLabel* statusBarLabel;
 
-  ToolBarManager* toolBarManager_;
   MenuBar* mMenuBar;
+  LoginToolBar* loginToolBar_;
+  ToolBarManager* toolBarManager_;
 
-  boost::scoped_ptr<OmViewGroupState> vgs_;
+  std::unique_ptr<OmViewGroupState> vgs_;
 
   QAction* panAct;
   QAction* zoomAct;
 
-  bool closeProjectIfOpen();
+  bool loadProject(const std::string& fileNameAndPath,
+                   const std::string& username);
+  bool closeProjectIfOpen(bool);
   int checkForSave();
   void createStatusBar();
   void resetViewGroup();
@@ -105,6 +107,6 @@ Q_SLOTS:
 
   QToolBar* fakeToolbarForMac_;
 
-  boost::scoped_ptr<OmGlobalKeyPress> globalKeys_;
-  boost::scoped_ptr<MainWindowEvents> events_;
+  std::unique_ptr<OmGlobalKeyPress> globalKeys_;
+  std::unique_ptr<MainWindowEvents> events_;
 };

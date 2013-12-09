@@ -17,7 +17,9 @@ class ptrToChunkDataMemMapVol : public ptrToChunkDataBase {
   ptrToChunkDataMemMapVol(OmMipVolume* vol, const om::chunkCoord& coord)
       : rawData_(boost::get<DATA*>(vol->VolData()->getChunkPtrRaw(coord))) {}
 
-  inline DATA* GetRawData(DATA*) { return rawData_; }
+  using ptrToChunkDataBase::GetRawData;
+
+  virtual DATA* GetRawData(DATA*) { return rawData_; }
 };
 
 }  // namespace chunk

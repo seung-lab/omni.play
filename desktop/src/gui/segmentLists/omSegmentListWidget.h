@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "segment/omSegmentPointers.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "volume/omSegmentation.h"
@@ -14,11 +14,14 @@ class SegmentListBase;
 class GUIPageOfSegment;
 
 class OmSegmentListWidget : public QTreeWidget {
-  Q_OBJECT public : OmSegmentListWidget(SegmentListBase*, OmViewGroupState*);
+  Q_OBJECT;
+
+ public:
+  OmSegmentListWidget(SegmentListBase*, OmViewGroupState*);
 
   bool populate(const bool doScrollToSelectedSegment,
                 const SegmentDataWrapper segmentJustSelected,
-                om::shared_ptr<GUIPageOfSegments>);
+                std::shared_ptr<GUIPageOfSegments>);
 
   static std::string eventSenderName();
 

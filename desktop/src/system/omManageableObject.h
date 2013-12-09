@@ -5,12 +5,12 @@
  * Brett Warne - bwarne@mit.edu - 3/3/09
  */
 
-#include "common/omStd.h"
-#include "common/omException.h"
+#include "common/exception.h"
 #include "datalayer/archive/segmentation.h"
 #include "datalayer/archive/filter.h"
+#include <QString>
 
-namespace YAML {
+namespace YAMLold {
 template <class T> class mipVolume;
 }
 
@@ -18,9 +18,9 @@ class OmManageableObject {
  public:
   OmManageableObject() : id_(1) {}
 
-  explicit OmManageableObject(const OmID id) : id_(id) {}
+  explicit OmManageableObject(const om::common::ID id) : id_(id) {}
 
-  inline OmID GetID() const { return id_; }
+  inline om::common::ID GetID() const { return id_; }
 
   inline const QString& GetCustomName() const { return customName_; }
 
@@ -31,13 +31,12 @@ class OmManageableObject {
   inline void SetNote(const QString& note) { note_ = note; }
 
  protected:
-  OmID id_;
+  om::common::ID id_;
   QString note_;
   QString customName_;
 
   template <class T> friend class OmMipVolumeArchive;
   friend class OmMipVolumeArchiveOld;
-  template <class T> friend class YAML::mipVolume;
-  friend void YAML::operator>>(const YAML::Node& in, OmGroup& g);
-  friend void YAML::operator>>(const YAML::Node& in, OmFilter2d& f);
+  template <class T> friend class YAMLold::mipVolume;
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmFilter2d& f);
 };

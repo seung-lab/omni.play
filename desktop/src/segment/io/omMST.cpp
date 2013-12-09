@@ -6,14 +6,14 @@
 #include "segment/io/omMST.h"
 #include "segment/io/omMSTold.h"
 #include "segment/omSegments.h"
-#include "utility/omSmartPtr.hpp"
+#include "utility/malloc.hpp"
 #include "utility/omStringHelpers.h"
 #include "volume/omSegmentationFolder.h"
 
 double OmMST::DefaultThreshold = 0.999;
 
 OmMST::OmMST(OmSegmentation* segmentation)
-    : vol_(segmentation), numEdges_(0), edges_(NULL) {}
+    : vol_(segmentation), numEdges_(0), edges_(nullptr) {}
 
 std::string OmMST::filePathActual() {
   return vol_->Folder()->GetVolSegmentsPathAbs("mst.data");
@@ -21,7 +21,7 @@ std::string OmMST::filePathActual() {
 
 void OmMST::Read() {
   if (!numEdges_) {
-    printf("no MST found\n");
+    log_infos << "no MST found";
     return;
   }
 
@@ -31,13 +31,14 @@ void OmMST::Read() {
   const uint64_t expectedSize = numEdges_ * sizeof(OmMSTEdge);
 
   if (expectedSize != edgesPtr_->Size()) {
-    const QString err =
+    QString err =
         QString("mst sizes did not match: file was %1, but expected %2")
-            .arg(edgesPtr_->Size()).arg(expectedSize);
+            .arg(edgesPtr_->Size())
+            .arg(expectedSize);
 
     const QString is32bit("; is Omni running on a 32-bit OS?");
-
-    throw OmIoException(err + is32bit);
+    err += is32bit;
+    throw om::IoException(err.toStdString());
   }
 
   for (uint32_t i = 0; i < numEdges_; ++i) {
@@ -48,8 +49,8 @@ void OmMST::Read() {
 void OmMST::create() {
   assert(numEdges_);
 
-  edgesPtr_ =
-      writer_t::WriterNumElements(filePathActual(), numEdges_, om::ZERO_FILL);
+  edgesPtr_ = writer_t::WriterNumElements(filePathActual(), numEdges_,
+                                          om::mem::ZeroFill::ZERO);
 
   edges_ = edgesPtr_->GetPtr();
 }
@@ -75,7 +76,7 @@ void OmMST::Import(const std::vector<OmMSTImportEdge>& importEdges) {
 void OmMST::convert() {
   // numEdges_ already set by OmDataArchiveProject
   if (!numEdges_) {
-    printf("no MST found\n");
+    log_infos << "no MST found";
     return;
   }
 
@@ -83,7 +84,7 @@ void OmMST::convert() {
   old.ReadOld();
 
   if (!old.IsPopulated()) {
-    printf("old MST not populated\n");
+    log_infos << "old MST not populated";
     return;
   }
 

@@ -14,7 +14,10 @@ namespace om {
 namespace volumeInspector {
 
 class AbsCoordBox : public QGroupBox {
-  Q_OBJECT private : OmMipVolume& vol_;
+  Q_OBJECT;
+
+ private:
+  OmMipVolume& vol_;
   QGridLayout* grid_;
   QLineEdit* absOffsetX_;
   QLineEdit* absOffsetY_;

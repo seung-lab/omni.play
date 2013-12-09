@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "actions/io/omActionTypes.h"
 
 #include <QFileInfo>
@@ -9,7 +9,7 @@
 
 class OmActionDumper {
  private:
-  boost::scoped_ptr<QTextStream> out_;
+  std::unique_ptr<QTextStream> out_;
 
  public:
   OmActionDumper() {}

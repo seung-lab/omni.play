@@ -13,7 +13,7 @@ class OmMemMappedAllocFile {
   const double threshold_;
   const QString fnp_;
 
-  boost::scoped_ptr<QFile> file_;
+  std::unique_ptr<QFile> file_;
   OmMeshDataEntry* table_;
   uint32_t numEntries_;
 
@@ -24,7 +24,7 @@ class OmMemMappedAllocFile {
         coord_(coord),
         threshold_(threshold),
         fnp_(filePath()),
-        table_(NULL),
+        table_(nullptr),
         numEntries_(0) {}
 
   bool CreateIfNeeded() {
@@ -44,9 +44,8 @@ class OmMemMappedAllocFile {
       if (!table_[i].wasMeshed) {
         allGood = false;
 
-        std::cout << "missing mesh: "
-                  << "segID " << table_[i].segID << " in coord " << coord_
-                  << "\n";
+        log_infos << "missing mesh: "
+                  << "segID " << table_[i].segID << " in coord " << coord_;
       }
     }
 
@@ -55,14 +54,14 @@ class OmMemMappedAllocFile {
 
   OmMeshDataEntry* Find(const OmMeshDataEntry& entry) {
     if (!table_) {
-      return NULL;
+      return nullptr;
     }
 
     OmMeshDataEntry* iter =
         std::lower_bound(table_, table_ + numEntries_, entry, compareBySegID);
 
     if (iter == table_ + numEntries_ || iter->segID != entry.segID) {
-      return NULL;
+      return nullptr;
     }
 
     return iter;
@@ -70,7 +69,7 @@ class OmMemMappedAllocFile {
 
   void Unmap() {
     file_.reset();
-    table_ = NULL;
+    table_ = nullptr;
     numEntries_ = 0;
   }
 
@@ -85,7 +84,6 @@ class OmMemMappedAllocFile {
   }
 
  private:
-
   void map() {
     file_.reset(new QFile(fnp_));
 
@@ -94,12 +92,12 @@ class OmMemMappedAllocFile {
     }
 
     if (!file_->open(QIODevice::ReadWrite)) {
-      throw OmIoException("could not open", fnp_);
+      throw om::IoException("could not open");
     }
 
     uchar* map = file_->map(0, file_->size());
     if (!map) {
-      throw OmIoException("could not map", fnp_);
+      throw om::IoException("could not map");
     }
 
     file_->close();
@@ -110,24 +108,24 @@ class OmMemMappedAllocFile {
 
   void setupFile() {
     const ChunkUniqueValues segIDs =
-        segmentation_->ChunkUniqueValues()->Values(coord_, threshold_);
+        segmentation_->UniqueValuesDS().Values(coord_, threshold_);
 
     if (!segIDs.size()) {
-      std::cout << "No unique values in " << coord_ << std::endl;
+      log_infos << "No unique values in " << coord_;
       return;
     }
 
     file_.reset(new QFile(fnp_));
 
     if (!file_->open(QIODevice::ReadWrite)) {
-      throw OmIoException("could not open", fnp_);
+      throw om::IoException("could not open");
     }
 
     file_->resize(segIDs.size() * sizeof(OmMeshDataEntry));
 
     uchar* map = file_->map(0, file_->size());
     if (!map) {
-      throw OmIoException("could not map", fnp_);
+      throw om::IoException("could not map");
     }
 
     file_->close();
@@ -137,15 +135,10 @@ class OmMemMappedAllocFile {
 
     resetTable(segIDs);
     sortTable();
-
-    // std::cout << "in chunk " << coord_
-    //           << ", found "
-    //           << om::string::humanizeNum(numEntries_)
-    //           << " segment IDs\n";
   }
 
   struct ResetEntry {
-    OmMeshDataEntry operator()(const OmSegID segID) const {
+    OmMeshDataEntry operator()(const om::common::SegID segID) const {
       return om::meshio_::MakeEmptyEntry(segID);
     }
   };

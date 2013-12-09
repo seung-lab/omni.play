@@ -1,8 +1,7 @@
 #pragma once
 
-#include "common/omGl.h"
+#include "utility/glInclude.h"
 #include "tiles/omTileCoord.h"
-#include "utility/omSharedPtr.hpp"
 #include "tiles/omTileTypes.hpp"
 
 #include <deque>
@@ -39,6 +38,6 @@ struct OmTileAndVertices {
 };
 
 typedef std::deque<OmTileCoordAndVertices> OmTileCoordsAndLocations;
-typedef om::shared_ptr<OmTileCoordsAndLocations> OmTileCoordsAndLocationsPtr;
+typedef std::shared_ptr<OmTileCoordsAndLocations> OmTileCoordsAndLocationsPtr;
 
 std::ostream& operator<<(std::ostream& out, const TextureVectices& v);

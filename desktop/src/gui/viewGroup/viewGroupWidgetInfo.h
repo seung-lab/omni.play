@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 
 #include <QWidget>
 
@@ -17,7 +17,7 @@ class ViewGroupWidgetInfo {
       : name(in_name), widgetType(in_widgetType), dir_(Qt::Horizontal) {}
 
   ViewGroupWidgetInfo(const QString& in_name, const WIDGET_TYPE in_widgetType,
-                      const ViewType in_viewType)
+                      const om::common::ViewType in_viewType)
       : name(in_name),
         widgetType(in_widgetType),
         viewType(in_viewType),
@@ -27,7 +27,7 @@ class ViewGroupWidgetInfo {
   const QString name;
   const WIDGET_TYPE widgetType;
 
-  ViewType viewType;
+  om::common::ViewType viewType;
 
   Qt::Orientation Dir() const { return dir_; }
 

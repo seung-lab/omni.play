@@ -2,7 +2,8 @@
 
 class OmSegmentation;
 
-#include "common/omCommon.h"
+#include "coordinates/chunkCoord.h"
+#include "common/common.h"
 #include <QString>
 
 namespace om {

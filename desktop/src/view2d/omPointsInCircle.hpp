@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/om.hpp"
+#include "common/point2d.hpp"
 #include "zi/omMutex.h"
 
 #include <map>
@@ -37,10 +37,10 @@ class OmPointsInCircle {
         const int y = j - radius;
 
         if (x * x + y * y <= sqRadius) {
-          om::point2di p = { x, y };
+          om::point2di p = {x, y};
           pts.push_back(p);
 
-          // std::cout << "adding pt: " << x << ", " << y << "\n";
+          // log_infos << "adding pt: " << x << ", " << y;
         }
       }
     }

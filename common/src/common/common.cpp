@@ -5,47 +5,14 @@
 namespace om {
 namespace common {
 
-viewType Convert(server::viewType::type type) {
-  switch (type) {
-    case server::viewType::XY_VIEW:
-      return XY_VIEW;
-    case server::viewType::XZ_VIEW:
-      return XZ_VIEW;
-    case server::viewType::ZY_VIEW:
-      return ZY_VIEW;
-  }
-  throw argException("Bad viewType.");
-}
-
-server::viewType::type Convert(viewType type) {
-  switch (type) {
-    case XY_VIEW:
-      return server::viewType::XY_VIEW;
-    case XZ_VIEW:
-      return server::viewType::XZ_VIEW;
-    case ZY_VIEW:
-      return server::viewType::ZY_VIEW;
-  }
-  throw argException("Bad viewType.");
-}
-
-std::ostream& operator<<(std::ostream& out, const segIdSet& in) {
+std::ostream& operator<<(std::ostream& out, const SegIDSet& in) {
   const std::string joined = om::string::join(in);
 
   out << "[" << joined << "]";
   return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const cacheGroup& c) {
-  if (MESH_CACHE == c) {
-    out << "MESH_CACHE";
-  } else {
-    out << "TILE_CACHE";
-  }
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const viewType& vt) {
+std::ostream& operator<<(std::ostream& out, const ViewType& vt) {
   switch (vt) {
     case XY_VIEW:
       out << "XY_VIEW";
@@ -57,7 +24,7 @@ std::ostream& operator<<(std::ostream& out, const viewType& vt) {
       out << "ZY_VIEW";
       break;
     default:
-      throw argException("unknown viewtype");
+      throw ArgException("unknown viewtype");
   }
 
   return out;

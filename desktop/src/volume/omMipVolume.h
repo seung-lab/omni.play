@@ -6,7 +6,7 @@
  *  Brett Warne - bwarne@mit.edu - 7/19/09
  */
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolCoordsMipped.hpp"
@@ -17,7 +17,7 @@ class OmChunk;
 class OmVolume;
 class OmVolumeData;
 
-namespace YAML {
+namespace YAMLold {
 template <class T> class mipVolume;
 }
 
@@ -42,13 +42,14 @@ class OmMipVolume {
   virtual std::string GetName() = 0;
   virtual bool LoadVolData() = 0;
   virtual OmVolumeData* VolData() = 0;
-  virtual ObjectType getVolumeType() const = 0;
-  virtual OmID getID() const = 0;
+  virtual om::common::ObjectType getVolumeType() const = 0;
+  virtual om::common::ID getID() const = 0;
 
   inline bool IsBuilt() { return MIPVOL_BUILT == mBuildState; }
+  inline bool built() { return MIPVOL_BUILT == mBuildState; }
 
-  om::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords() const;
-  om::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords(
+  std::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords() const;
+  std::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords(
       const int mipLevel) const;
 
   //mip data accessors
@@ -86,7 +87,7 @@ class OmMipVolume {
   template <class T> friend class OmVolumeBuilderHdf5;
   template <class T> friend class OmVolumeBuilderImages;
   template <class T> friend class OmMipVolumeArchive;
-  template <class T> friend class YAML::mipVolume;
+  template <class T> friend class YAMLold::mipVolume;
 
   friend class OmChunk;
   friend class OmMipVolumeArchiveOld;

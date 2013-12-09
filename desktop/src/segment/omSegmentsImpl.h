@@ -16,26 +16,29 @@ class OmSegmentsImpl : public OmSegmentsImplLowLevel {
   void Flush();
 
   OmSegment* AddSegment();
-  OmSegment* AddSegment(OmSegID value);
-  OmSegment* GetOrAddSegment(const OmSegID val);
+  OmSegment* AddSegment(om::common::SegID value);
+  OmSegment* GetOrAddSegment(const om::common::SegID val);
 
   OmSegmentChildren* Children();
 
   std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmSegmentEdge& e);
   OmSegmentEdge SplitEdgeUserAction(const OmSegmentEdge& e);
-  OmSegIDsSet JoinTheseSegments(const OmSegIDsSet& segmentList);
-  OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
+  om::common::SegIDSet JoinTheseSegments(
+      const om::common::SegIDSet& segmentList);
+  om::common::SegIDSet UnJoinTheseSegments(
+      const om::common::SegIDSet& segmentList);
   boost::optional<std::string> IsEdgeSplittable(const OmSegmentEdge& e);
   boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
   boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
 
   void refreshTree();
 
-  bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
+  bool AreAnySegmentsInValidList(const om::common::SegIDSet& ids);
 
   std::vector<OmSegmentEdge> CutSegment(OmSegment* seg);
   bool JoinEdges(const std::vector<OmSegmentEdge>& edges);
   std::vector<OmSegmentEdge> Shatter(OmSegment* seg);
+  void ClearUserEdges();
 
  private:
   OmUserEdges* userEdges_;
@@ -43,15 +46,17 @@ class OmSegmentsImpl : public OmSegmentsImplLowLevel {
   OmSegmentEdge splitChildFromParentNoTest(OmSegment* child);
 
   std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(const OmSegmentEdge& e);
-  std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmID, const OmID);
+  std::pair<bool, OmSegmentEdge> JoinFromUserAction(const om::common::ID,
+                                                    const om::common::ID);
 
   void rerootSegmentLists();
   void setGlobalThreshold(OmMST* mst);
   void resetGlobalThreshold(OmMST* mst);
 
   friend class OmSegmentColorizer;
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter&, const OmSegmentsImpl&);
-  friend void YAML::operator>>(const YAML::Node&, OmSegmentsImpl&);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter&,
+                                               const OmSegmentsImpl&);
+  friend void YAMLold::operator>>(const YAMLold::Node&, OmSegmentsImpl&);
   friend QDataStream& operator<<(QDataStream&, const OmSegmentsImpl&);
   friend QDataStream& operator>>(QDataStream&, OmSegmentsImpl&);
 };

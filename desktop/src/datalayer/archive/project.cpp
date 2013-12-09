@@ -1,13 +1,13 @@
 #include "datalayer/archive/project.h"
 #include "datalayer/archive/channel.h"
 #include "datalayer/archive/segmentation.h"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "utility/omFileHelpers.h"
 #include "datalayer/fs/omFile.hpp"
 #include "project/omProject.h"
 #include "system/omPreferences.h"
 #include "project/omProjectImpl.hpp"
-#include "utility/yaml/baseTypes.hpp"
+#include "utility/yaml/omBaseTypes.hpp"
 #include "utility/channelDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/segmentDataWrapper.hpp"
@@ -23,7 +23,7 @@ namespace data {
 namespace archive {
 
 void project::Read(const QString& fnp, OmProjectImpl* project) {
-  using namespace YAML;
+  using namespace YAMLold;
 
   std::ifstream fin(fnp.toStdString().c_str());
 
@@ -41,19 +41,22 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
     doc >> (*project);
   }
   catch (Exception e) {
-    std::stringstream ss;
-    ss << e.msg << "\n";
-    ss << fnp.toStdString();
-    ss << " line: " << e.mark.line;
-    ss << " col: " << e.mark.column;
-    ss << " pos: " << e.mark.pos;
-    throw OmIoException(ss.str());
+    /*
+            std::stringstream ss;
+            ss << e.what() << "\n";
+            ss << fnp.toStdString();
+            ss << " line: " << e.mark.line;
+            ss << " col: " << e.mark.column;
+            ss << " pos: " << e.mark.pos;
+            throw om::IoException(ss.str());
+    */
+    throw;
   }
   postLoad();
 }
 
 void project::Write(const QString& fnp, OmProjectImpl* project) {
-  using namespace YAML;
+  using namespace YAMLold;
 
   Emitter emitter;
 
@@ -77,7 +80,7 @@ void project::Write(const QString& fnp, OmProjectImpl* project) {
 
   QFile file(fnp);
 
-  om::file::openFileWO(file);
+  om::file::old::openFileWO(file);
 
   QTextStream out(&file);
 
@@ -112,7 +115,7 @@ void project::postLoad() {
 }  // namespace data
 }  // namespace om
 
-namespace YAML {
+namespace YAMLold {
 
 Emitter& operator<<(Emitter& out, const OmProjectImpl& p) {
   out << BeginMap;
@@ -159,4 +162,4 @@ void operator>>(const Node& in, OmProjectVolumes& p) {
   in["Segmentations"] >> *p.segmentations_;
 }
 
-}  // namespace YAML
+}  // namespace YAMLold

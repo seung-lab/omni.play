@@ -1,7 +1,7 @@
 #pragma once
 
 #include "volume/build/omMSTImportHdf5.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "volume/build/omVolumeBuilderBase.hpp"
 #include "volume/build/omDataCopierHdf5.hpp"
 #include "datalayer/hdf5/omHdf5.h"
@@ -13,14 +13,15 @@ template <typename VOL>
 class OmVolumeBuilderHdf5 : public OmVolumeBuilderBase<VOL> {
  private:
   VOL* const vol_;
-  const om::AffinityGraph aff_;
+  const om::common::AffinityGraph aff_;
 
   std::string fnp_;
   OmDataPath datasetName_;
 
  public:
   OmVolumeBuilderHdf5(VOL* vol, const QFileInfo& file, const QString& hdf5path,
-                      const om::AffinityGraph aff = om::NO_AFFINITY)
+                      const om::common::AffinityGraph aff =
+                          om::common::AffinityGraph::NO_AFFINITY)
       : OmVolumeBuilderBase<VOL>(vol), vol_(vol), aff_(aff) {
     fnp_ = file.filePath().toStdString();
 
@@ -39,8 +40,6 @@ class OmVolumeBuilderHdf5 : public OmVolumeBuilderBase<VOL> {
     hdf5->open();
 
     const Vector3i dims = hdf5->getChunkedDatasetDims(datasetName_, aff_);
-
-    debug(hfd5image, "dims are %i,%i,%i\n", DEBUGV3(dims));
 
     hdf5->close();
 
@@ -64,7 +63,7 @@ class OmVolumeBuilderHdf5 : public OmVolumeBuilderBase<VOL> {
     }
 
     if (!hdf5->dataset_exists(datasetName_)) {
-      throw OmIoException("could not find dataset");
+      throw om::IoException("could not find dataset");
     }
 
     hdf5->close();

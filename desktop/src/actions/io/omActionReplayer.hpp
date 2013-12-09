@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "actions/io/omActionTypes.h"
 
 #include <QFileInfo>
@@ -18,7 +18,7 @@ class OmActionReplayer {
   void dispatchAction(const QString& actionName, QDataStream& in);
 
   template <typename ACTION, typename IMPL> void doReplayFile(QDataStream& in) {
-    om::shared_ptr<IMPL> impl(new IMPL());
+    std::shared_ptr<IMPL> impl(new IMPL());
     in >> (*impl);
 
     // action will be deleted by QUndoState...

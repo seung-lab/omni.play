@@ -6,7 +6,6 @@
  *  Rachel Shearer - rshearer@mit.edu
  */
 
-#include "common/omStd.h"
 #include "tiles/omTileCoord.h"
 
 class OmTextureID;
@@ -32,7 +31,7 @@ class OmTile {
   const int tileLength_;
   const om::chunkCoord mipChunkCoord_;
 
-  boost::scoped_ptr<OmTextureID> texture_;
+  std::unique_ptr<OmTextureID> texture_;
 
   void load8bitChannelTile();
   void load32bitSegmentationTile();
@@ -43,5 +42,5 @@ class OmTile {
 
   inline OmMipVolume* getVol() const { return key_.getVolume(); }
 
-  ObjectType getVolType() const;
+  om::common::ObjectType getVolType() const;
 };

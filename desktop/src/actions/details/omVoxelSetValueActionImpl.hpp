@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omCommon.h"
+#include "common/common.h"
+#include "common/common.h"
 #include "omVoxelSetValueAction.h"
 #include "segment/omSegmentSelected.hpp"
 #include "system/omStateManager.h"
@@ -10,20 +10,20 @@
 class OmVoxelSetValueActionImpl {
  private:
   //segmentation of voxels
-  OmID mSegmentationId;
+  om::common::ID mSegmentationId;
 
   //map of voxels to old values
-  std::map<om::globalCoord, OmSegID> mOldVoxelValues;
+  std::map<om::globalCoord, om::common::SegID> mOldVoxelValues;
 
   //new value of voxels
-  OmSegID mNewValue;
+  om::common::SegID mNewValue;
 
  public:
   OmVoxelSetValueActionImpl() {}
 
-  OmVoxelSetValueActionImpl(const OmID segmentationId,
+  OmVoxelSetValueActionImpl(const om::common::ID segmentationId,
                             const om::globalCoord& rVoxel,
-                            const OmSegID value) {
+                            const om::common::SegID value) {
     //store segmentation id
     mSegmentationId = segmentationId;
 
@@ -34,9 +34,9 @@ class OmVoxelSetValueActionImpl {
     mOldVoxelValues[rVoxel] = mNewValue;
   }
 
-  OmVoxelSetValueActionImpl(const OmID segmentationId,
+  OmVoxelSetValueActionImpl(const om::common::ID segmentationId,
                             const std::set<om::globalCoord>& rVoxels,
-                            const OmSegID value) {
+                            const om::common::SegID value) {
     //store segmentation id
     mSegmentationId = segmentationId;
 

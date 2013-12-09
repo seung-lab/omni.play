@@ -16,24 +16,22 @@ class OmCompactVolValues {
   OmCompactVolValues(OmSegmentation* vol) : vol_(vol) {}
 
   void Rewrite() {
-    boost::unordered_set<uint32_t> values;
+    std::unordered_set<uint32_t> values;
     findUniqueValues(values);
     values.erase(0);
 
-    boost::unordered_map<uint32_t, uint32_t> compactedValues;
+    std::unordered_map<uint32_t, uint32_t> compactedValues;
     compactedValues[0] = 0;
 
     int newValue = 1;
     FOR_EACH(iter, values) { compactedValues[*iter] = newValue++; }
 
-    printf("\n");
-
     doRewriteVol(compactedValues);
   }
 
  private:
-  void findUniqueValues(boost::unordered_set<uint32_t>& values) {
-    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+  void findUniqueValues(std::unordered_set<uint32_t>& values) {
+    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         vol_->GetMipChunkCoords(0);
     const uint32_t numChunks = coordsPtr->size();
 
@@ -43,12 +41,12 @@ class OmCompactVolValues {
       const om::chunkCoord& coord = *iter;
 
       ++counter;
-      printf("\rreading chunk %d of %d...", counter, numChunks);
+      log_info("\rreading chunk %d of %d...", counter, numChunks);
       fflush(stdout);
 
       OmSegChunk* chunk = vol_->GetChunk(coord);
 
-      om::shared_ptr<uint32_t> dataPtr =
+      std::shared_ptr<uint32_t> dataPtr =
           chunk->SegData()->GetCopyOfChunkDataAsUint32();
       uint32_t const* const data = dataPtr.get();
 
@@ -58,8 +56,8 @@ class OmCompactVolValues {
     }
   }
 
-  void doRewriteVol(const boost::unordered_map<uint32_t, uint32_t>& compact) {
-    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+  void doRewriteVol(const std::unordered_map<uint32_t, uint32_t>& compact) {
+    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         vol_->GetMipChunkCoords(0);
     const uint32_t numChunks = coordsPtr->size();
 
@@ -69,8 +67,7 @@ class OmCompactVolValues {
       const om::chunkCoord& coord = *iter;
 
       ++counter;
-      printf("\rrewriting chunk %d of %d...", counter, numChunks);
-      fflush(stdout);
+      log_info("rewriting chunk %d of %d...", counter, numChunks);
 
       OmSegChunk* chunk = vol_->GetChunk(coord);
 

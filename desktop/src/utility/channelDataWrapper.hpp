@@ -11,7 +11,7 @@ class FilterDataWrapper;
 
 class ChannelDataWrapper {
  public:
-  static const OmIDsSet& ValidIDs() {
+  static const om::common::IDSet& ValidIDs() {
     return OmProject::Volumes().Channels().GetValidChannelIds();
   }
 
@@ -19,26 +19,26 @@ class ChannelDataWrapper {
     return OmProject::Volumes().Channels().GetPtrVec();
   }
 
-  static void Remove(const OmID id) {
+  static void Remove(const om::common::ID id) {
     OmProject::Volumes().Channels().RemoveChannel(id);
   }
 
  private:
-  OmID id_;
+  om::common::ID id_;
 
  public:
   ChannelDataWrapper() : id_(0) {}
 
-  explicit ChannelDataWrapper(const OmID ID) : id_(ID) {}
+  explicit ChannelDataWrapper(const om::common::ID ID) : id_(ID) {}
 
-  inline OmID GetID() const { return id_; }
+  inline om::common::ID GetID() const { return id_; }
 
-  inline OmID GetChannelID() const { return id_; }
+  inline om::common::ID GetChannelID() const { return id_; }
 
   OmChannel& Create() {
     OmChannel& c = OmProject::Volumes().Channels().AddChannel();
     id_ = c.GetID();
-    printf("create channel %d\n", id_);
+    log_infos << "create channel " << id_;
     return c;
   }
 

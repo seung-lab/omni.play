@@ -1,17 +1,9 @@
 #pragma once
 
-/*
- *  Manages data structures that are shared between various parts of the
- *    system.
- *
- *  Brett Warne - bwarne@mit.edu - 3/14/09
- */
-
 #include "actions/io/omActionLogger.hpp"
 #include "actions/io/omActionReplayer.hpp"
 #include "actions/omActions.h"
-#include "common/om.hpp"
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "datalayer/archive/old/omDataArchiveProject.h"
 #include "datalayer/archive/project.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -34,6 +26,7 @@
 #include "datalayer/fs/omFile.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "datalayer/archive/project.h"
+#include "system/account.h"
 
 #include <QDir>
 #include <QFile>
@@ -51,10 +44,10 @@ class OmProjectImpl {
   bool isReadOnly_;
 
   OmProjectVolumes volumes_;
-  boost::scoped_ptr<OmProjectGlobals> globals_;
+  std::unique_ptr<OmProjectGlobals> globals_;
 
  public:
-  OmProjectImpl() : oldHDF5_(NULL), fileVersion_(0), isReadOnly_(false) {}
+  OmProjectImpl() : oldHDF5_(nullptr), fileVersion_(0), isReadOnly_(false) {}
 
   ~OmProjectImpl() {}
 
@@ -62,19 +55,19 @@ class OmProjectImpl {
 
   const QString& OmniFile() { return omniFile_; }
 
-  bool HasOldHDF5() const { return NULL != oldHDF5_; }
+  bool HasOldHDF5() const { return nullptr != oldHDF5_; }
 
   OmHdf5* OldHDF5() {
     if (!oldHDF5_) {
-      throw OmIoException("no old hdf5 file present");
+      throw om::IoException("no old hdf5 file present");
     }
     return oldHDF5_;
   }
 
-  //volume management
+  // volume management
   OmProjectVolumes& Volumes() { return volumes_; }
 
-  //project IO
+  // project IO
   QString New(const QString& fileNameAndPathIn) {
     const QString fnp_rel =
         OmFileNames::AddOmniExtensionIfNeeded(fileNameAndPathIn);
@@ -85,11 +78,11 @@ class OmProjectImpl {
     return fnp;
   }
 
-  void Load(const QString& fileNameAndPath, QWidget* guiParent) {
+  void Load(const QString& fileNameAndPath, QWidget* guiParent,
+            const std::string& username) {
     try {
       const QFileInfo projectFile(fileNameAndPath);
-      doLoad(projectFile.absoluteFilePath(), guiParent);
-
+      doLoad(projectFile.absoluteFilePath(), guiParent, username);
     }
     catch (...) {
       globals_.reset();
@@ -106,7 +99,7 @@ class OmProjectImpl {
 
     globals_->Users().UserSettings().Save();
 
-    printf("omni project saved!\n");
+    log_infos << "omni project saved!";
   }
 
   int GetFileVersion() const { return fileVersion_; }
@@ -116,7 +109,6 @@ class OmProjectImpl {
   OmProjectGlobals& Globals() { return *globals_; }
 
  private:
-
   void doNew(const QString& fnp) {
     omniFile_ = fnp;
     filesFolder_ = fnp + ".files";
@@ -145,14 +137,15 @@ class OmProjectImpl {
 
     if (!dir.exists()) {
       if (!dir.mkpath(dirStr)) {
-        throw OmIoException("could not make path", dirStr);
+        throw om::IoException("could not make path");
       }
     }
   }
 
-  void doLoad(const QString& fnp, QWidget* guiParent) {
+  void doLoad(const QString& fnp, QWidget* guiParent,
+              const std::string& username) {
     if (!QFile::exists(fnp)) {
-      throw OmIoException("Project file not found at", fnp);
+      throw om::IoException("Project file not found at");
     }
 
     omniFile_ = fnp;
@@ -167,13 +160,14 @@ class OmProjectImpl {
       migrateFromHdf5();
 
     setupGlobals();
-
-    if (guiParent) {
+    if (!username.empty()) {
+      globals_->Users().SwitchToUser(username);
+    } else if (guiParent) {
       OmGuiUserChooser* chooser = new OmGuiUserChooser(guiParent);
       const int userWasSelected = chooser->exec();
 
       if (!userWasSelected) {
-        throw OmIoException("user not choosen");
+        throw om::IoException("user not choosen");
       }
     }
 
@@ -181,7 +175,7 @@ class OmProjectImpl {
     OmTileCache::Reset();
     OmActionLogger::Reset();
 
-    if (om::file::exists(projectMetadataFile_.toStdString()))
+    if (om::file::old::exists(projectMetadataFile_.toStdString()))
       om::data::archive::project::Read(projectMetadataFile_, this);
     else
       OmDataArchiveProject::ArchiveRead(OmFileNames::ProjectMetadataFileOld(),
@@ -190,6 +184,12 @@ class OmProjectImpl {
     globals_->Users().UserSettings().Load();
 
     OmActionReplayer::Replay();
+  }
+
+  bool IsOpen(const om::file::path& fileNameAndPath,
+              const std::string& username) {
+    return fileNameAndPath == omniFile_.toStdString() &&
+           username == globals_->Users().CurrentUser();
   }
 
   void doCreate() {
@@ -216,7 +216,7 @@ class OmProjectImpl {
   void touchEmptyProjectFile() {
     QFile file(omniFile_);
     if (!file.open(QIODevice::WriteOnly)) {
-      throw OmIoException("could not open", omniFile_);
+      throw om::IoException("could not open");
     }
   }
 
@@ -243,7 +243,7 @@ class OmProjectImpl {
     QFile newProjectMetadafile(OmFileNames::ProjectMetadataFileOld());
 
     if (!newProjectMetadafile.open(QIODevice::WriteOnly)) {
-      throw OmIoException("could not open", projectMetadataFile_);
+      throw om::IoException("could not open");
     }
 
     newProjectMetadafile.write(data, size);
@@ -258,9 +258,9 @@ class OmProjectImpl {
 
   friend class OmProject;
 
-  friend YAML::Emitter& YAML::operator<<(YAML::Emitter& out,
-                                         const OmProjectImpl& p);
-  friend void YAML::operator>>(const YAML::Node& in, OmProjectImpl& p);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmProjectImpl& p);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmProjectImpl& p);
   friend QDataStream& operator<<(QDataStream& out, const OmProjectImpl& p);
   friend QDataStream& operator>>(QDataStream& in, OmProjectImpl& p);
 };

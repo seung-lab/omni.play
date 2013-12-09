@@ -37,22 +37,23 @@ class OmValidGroupNum {
     maxGroupNum_.set(initialGroupNum_);
   }
 
-  template <typename C> void Set(const C& segs, const bool isValid) {
+  template <typename C>
+  void Set(const C& segs, const bool isValid) {
     const uint32_t groupNum = isValid ? maxGroupNum_.inc() : noGroupNum_;
 
     FOR_EACH(iter, segs) {
       OmSegment* seg = *iter;
-      const OmSegID segID = seg->value();
+      const om::common::SegID segID = seg->value();
       segToGroupNum_[segID] = groupNum;
     }
   }
 
-  inline bool InSameValidGroup(const OmSegID segID1,
-                               const OmSegID segID2) const {
+  inline bool InSameValidGroup(const om::common::SegID segID1,
+                               const om::common::SegID segID2) const {
     return segToGroupNum_[segID1] == segToGroupNum_[segID2];
   }
 
-  inline uint32_t Get(const OmSegID segID) const {
+  inline uint32_t Get(const om::common::SegID segID) const {
     return segToGroupNum_[segID];
   }
 
@@ -73,7 +74,7 @@ class OmValidGroupNum {
       return;
     }
 
-    om::file::openFileRO(file);
+    om::file::old::openFileRO(file);
 
     QDataStream in(&file);
     in.setByteOrder(QDataStream::LittleEndian);
@@ -87,7 +88,7 @@ class OmValidGroupNum {
     maxGroupNum_.set(maxGroupNum);
 
     if (!in.atEnd()) {
-      throw OmIoException("corrupt file?", filePath);
+      throw om::IoException("corrupt file?");
     }
   }
 
@@ -96,7 +97,7 @@ class OmValidGroupNum {
 
     QFile file(filePath);
 
-    om::file::openFileWO(file);
+    om::file::old::openFileWO(file);
 
     QDataStream out(&file);
     out.setByteOrder(QDataStream::LittleEndian);
@@ -107,5 +108,7 @@ class OmValidGroupNum {
 
     const quint64 maxGroupNum = maxGroupNum_.get();
     out << maxGroupNum;
+
+    log_infos << "saved " << qPrintable(filePath);
   }
 };

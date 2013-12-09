@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/omCommon.h"
+#include "common/common.h"
 #include "mesh/io/omDataForMeshLoad.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
@@ -30,12 +30,12 @@ class OmMeshWriterV2 {
   void Join() { filePtrCache_->Join(); }
 
   bool CheckEverythingWasMeshed() {
-    om::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
         segmentation_->GetMipChunkCoords();
 
     bool allGood = true;
 
-    std::cout << "\nchecking that all segments were meshed...\n";
+    log_infos << "checking that all segments were meshed...";
 
     FOR_EACH(iter, *coordsPtr) {
       OmMeshChunkAllocTableV2* chunk_table =
@@ -47,26 +47,26 @@ class OmMeshWriterV2 {
     }
 
     if (allGood) {
-      std::cout << "all segments meshed!\n";
+      log_infos << "all segments meshed!";
 
     } else {
-      std::cout << "\nERROR: some segments not meshed!\n";
-      throw OmIoException("some segments not meshed");
+      log_infos << "ERROR: some segments not meshed!";
+      throw om::IoException("some segments not meshed");
     }
 
     return allGood;
   }
 
-  bool Contains(const OmSegID segID, const om::chunkCoord& coord) {
+  bool Contains(const om::common::SegID segID, const om::chunkCoord& coord) {
     OmMeshChunkAllocTableV2* chunk_table = filePtrCache_->GetAllocTable(coord);
     return chunk_table->Contains(segID);
   }
 
-  bool WasMeshed(const OmSegID segID, const om::chunkCoord& coord) {
+  bool WasMeshed(const om::common::SegID segID, const om::chunkCoord& coord) {
     OmMeshChunkAllocTableV2* chunk_table = filePtrCache_->GetAllocTable(coord);
 
     if (!chunk_table->Contains(segID)) {
-      throw OmIoException("segID not present");
+      throw om::IoException("segID not present");
     }
 
     const OmMeshDataEntry entry = chunk_table->Find(segID);
@@ -74,17 +74,17 @@ class OmMeshWriterV2 {
     return entry.wasMeshed;
   }
 
-  bool HasData(const OmSegID segID, const om::chunkCoord& coord) {
+  bool HasData(const om::common::SegID segID, const om::chunkCoord& coord) {
     OmMeshChunkAllocTableV2* chunk_table = filePtrCache_->GetAllocTable(coord);
 
     if (!chunk_table->Contains(segID)) {
-      throw OmIoException("segID not present");
+      throw om::IoException("segID not present");
     }
 
     const OmMeshDataEntry entry = chunk_table->Find(segID);
 
     if (!entry.wasMeshed) {
-      throw OmIoException("was not yet meshed");
+      throw om::IoException("was not yet meshed");
     }
 
     return entry.hasMeshData;
@@ -92,20 +92,21 @@ class OmMeshWriterV2 {
 
   // Save will take ownership of mesh data
   template <typename U>
-  void Save(const OmSegID segID, const om::chunkCoord& coord, const U data,
-            const om::ShouldBufferWrites buffferWrites,
-            const om::AllowOverwrite allowOverwrite) {
-    om::shared_ptr<OmMeshWriterTaskV2<U> > task =
-        om::make_shared<OmMeshWriterTaskV2<U> >(
+  void Save(const om::common::SegID segID, const om::chunkCoord& coord,
+            const U data, const om::common::ShouldBufferWrites buffferWrites,
+            const om::common::AllowOverwrite allowOverwrite) {
+    std::shared_ptr<OmMeshWriterTaskV2<U> > task =
+        std::make_shared<OmMeshWriterTaskV2<U> >(
             segmentation_, filePtrCache_, segID, coord, data, allowOverwrite);
 
     static const uint32_t maxNumberTasks = 500;
     const uint32_t curNumberTasks = filePtrCache_->NumTasks();
     if (curNumberTasks > maxNumberTasks) {
-      std::cout << "write back queue size " << curNumberTasks << "\n";
+      log_infos << "write back queue size " << curNumberTasks;
     }
 
-    if (om::BUFFER_WRITES == buffferWrites && curNumberTasks < maxNumberTasks) {
+    if (om::common::ShouldBufferWrites::BUFFER_WRITES == buffferWrites &&
+        curNumberTasks < maxNumberTasks) {
       filePtrCache_->AddTaskBack(task);
 
     } else {

@@ -16,7 +16,7 @@ void OmTileCache::Prefetch(const OmTileCoord& key, const int depthOffset) {
 void OmTileCache::QueueUp(const OmTileCoord& key) { impl()->QueueUp(key); }
 
 void OmTileCache::Get(OmTilePtr& tile, const OmTileCoord& key,
-                      const om::Blocking blocking) {
+                      const om::common::Blocking blocking) {
   impl()->Get(tile, key, blocking);
 }
 

@@ -10,10 +10,11 @@
 class OmBuildAffinityChannel : public OmBuildVolumes {
  private:
   OmAffinityChannel* const affChan_;
-  const om::AffinityGraph aff_;
+  const om::common::AffinityGraph aff_;
 
  public:
-  OmBuildAffinityChannel(OmAffinityChannel* chan, const om::AffinityGraph aff)
+  OmBuildAffinityChannel(OmAffinityChannel* chan,
+                         const om::common::AffinityGraph aff)
       : OmBuildVolumes(), affChan_(chan), aff_(aff) {}
 
   void BuildBlocking() { do_build_channel(); }

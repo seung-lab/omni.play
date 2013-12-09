@@ -93,7 +93,7 @@ class LocalPrefFiles : private om::singletonBase<LocalPrefFiles> {
  private:
   LocalPrefFiles() : impl_(new LocalPrefFilesImpl()) {}
 
-  om::shared_ptr<LocalPrefFilesImpl> impl_;
+  std::shared_ptr<LocalPrefFilesImpl> impl_;
 
   friend class zi::singleton<LocalPrefFiles>;
 };

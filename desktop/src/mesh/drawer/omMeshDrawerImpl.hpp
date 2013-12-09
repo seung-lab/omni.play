@@ -1,20 +1,21 @@
 #pragma once
 
-#include "common/omCommon.h"
-#include "common/omDebug.h"
-#include "common/omGl.h"
+#include "view3d.old/gl.h"
+#include "common/common.h"
+#include "common/logging.h"
+#include "utility/glInclude.h"
 #include "mesh/drawer/omMeshPlan.h"
 #include "mesh/omMesh.h"
 #include "mesh/omMeshManagers.hpp"
 #include "mesh/omVolumeCuller.h"
 #include "segment/omSegmentPointers.h"
 #include "segment/omSegmentUtils.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "utility/omTimer.hpp"
-#include "view3d/om3dPreferences.hpp"
+#include "view3d.old/om3dPreferences.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "chunks/omChunk.h"
 
@@ -66,7 +67,7 @@ class OmMeshDrawerImpl {
 
     //draw volume axis
     if (checkDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
-      glDrawPositiveAxis();
+      om::gl::old::glDrawPositiveAxis();
     }
 
     //return if no chunk level drawing
@@ -89,7 +90,7 @@ class OmMeshDrawerImpl {
     glPopMatrix();
 
     if (redrawNeeded_) {
-      OmEvents::Redraw3d();
+      om::event::Redraw3d();
     }
   }
 
@@ -169,8 +170,8 @@ class OmMeshDrawerImpl {
         clippedNormExtent.getMax() - clippedNormExtent.getMin();
 
     //transform model view
-    glTranslatefv(translate.array);
-    glScalefv(scale.array);
+    om::gl::old::glTranslatefv(translate.array);
+    om::gl::old::glScalefv(scale.array);
 
     glTranslatef(0.5, 0.5, 0.5);
     glColor3f(0.5, 0.5, 0.5);
@@ -185,25 +186,26 @@ class OmMeshDrawerImpl {
   }
 
   inline void colorMesh(OmSegment* segment) {
-    OmSegmentColorCacheType sccType;
+    om::segment::coloring sccType;
 
     if (vgs_->shouldVolumeBeShownBroken()) {
-      sccType = SCC_SEGMENTATION_BREAK_BLACK;
+      sccType = om::segment::coloring::SEGMENTATION_BREAK_BLACK;
     } else {
-      sccType = SCC_SEGMENTATION;
+      sccType = om::segment::coloring::SEGMENTATION;
     }
 
     applyColor(segment, sccType);
   }
 
-  void applyColor(OmSegment* seg, const OmSegmentColorCacheType sccType) {
-    if (seg->getParent() && sccType != SCC_SEGMENTATION_BREAK_BLACK) {
+  void applyColor(OmSegment* seg, const om::segment::coloring sccType) {
+    if (seg->getParent() &&
+        sccType != om::segment::coloring::SEGMENTATION_BREAK_BLACK) {
       applyColor(segments_->findRoot(seg), sccType);
       return;
     }
 
     Vector3f hyperColor;
-    if (SCC_SEGMENTATION_BREAK_BLACK != sccType) {
+    if (om::segment::coloring::SEGMENTATION_BREAK_BLACK != sccType) {
       hyperColor = seg->GetColorFloat() * 2.;
     } else {
 
@@ -213,7 +215,7 @@ class OmMeshDrawerImpl {
           // WARNING: recusive operation is O(depth of MST)
 
           OmSegment* segToShow =
-              OmSegmentUtils::GetSegmentBasedOnThreshold(seg, breakThreshold_);
+              OmSegmentUtils::GetSegmentFromThreshold(seg, breakThreshold_);
           applyColor(segToShow, sccType);
           return;
         }
@@ -228,8 +230,9 @@ class OmMeshDrawerImpl {
                      .array);
 
     } else if (checkDrawOption(DRAWOP_SEGMENT_COLOR_TRANSPARENT)) {
-      glColor3fva(hyperColor.array, OmPreferences::GetFloat(
-                                        om::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
+      om::gl::old::glColor3fva(
+          hyperColor.array,
+          OmPreferences::GetFloat(om::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
 
     } else if (Om3dPreferences::getDoDiscoBall()) {
       showAsDiscoBall(hyperColor);
@@ -244,7 +247,7 @@ class OmMeshDrawerImpl {
     static float dir = 1;
 
     glEnable(GL_BLEND);
-    glColor3fva(hyperColor.array, s / 200. + .4);
+    om::gl::old::glColor3fva(hyperColor.array, s / 200. + .4);
 
     s += .1 * dir;
 

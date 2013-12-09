@@ -10,7 +10,10 @@ namespace om {
 namespace segmentationInspector {
 
 class SourceBox : public QGroupBox {
-  Q_OBJECT private : const SegmentationDataWrapper& sdw_;
+  Q_OBJECT;
+
+ private:
+  const SegmentationDataWrapper& sdw_;
 
   QLineEdit* volNameEdit_;
   QLabel* directoryLabel_;

@@ -26,7 +26,7 @@ class ColorButton : public OmButton<QWidget> {
 
  private:
   void updateColor() {
-    vgs_->setAnnotationColor(om::utils::color::QColorToOmColor(cur_));
+    vgs_->setAnnotationColor(om::utils::color::QColorToColor(cur_));
 
     const QPixmap pixm = om::utils::color::MakeQPixmap(cur_);
     setIcon(QIcon(pixm));
@@ -47,7 +47,10 @@ class ColorButton : public OmButton<QWidget> {
 };
 
 class AnnotationLineEdit : public QLineEdit {
-  Q_OBJECT private : OmViewGroupState* vgs_;
+  Q_OBJECT;
+
+ private:
+  OmViewGroupState* vgs_;
 
  private
 Q_SLOTS:
@@ -74,7 +77,7 @@ class AnnotationSizeSpinBox : public OmDoubleSpinBox {
 
  public:
   AnnotationSizeSpinBox(QWidget* d, OmViewGroupState* vgs)
-      : OmDoubleSpinBox(d, om::UPDATE_AS_TYPE), vgs_(vgs) {
+      : OmDoubleSpinBox(d, true), vgs_(vgs) {
     setSingleStep(0.1);
     setMinimum(0);
     setMaximum(10);

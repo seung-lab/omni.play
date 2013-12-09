@@ -9,7 +9,7 @@
 #include <boost/interprocess/managed_mapped_file.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
 
-#include <boost/unordered_map.hpp>    //boost::unordered_map
+#include <boost/unordered_map.hpp>    //std::unordered_map
 #include <functional>                 //std::equal_to
 #include <boost/functional/hash.hpp>  //boost::hash
 
@@ -19,7 +19,8 @@ static const uint64_t InitialNumMB = 10;
 static const uint64_t InitialNumBytes = om::math::bytesPerMB * InitialNumMB;
 static const uint64_t MinNumBytesBeforeGrowing = 20000;
 
-template <class KEY, class VAL> class OmOnDiskBoostUnorderedMap {
+template <class KEY, class VAL>
+class OmOnDiskBoostUnorderedMap {
  private:
   const OmUUID uuid_;
   const std::string fnp_;
@@ -31,7 +32,7 @@ template <class KEY, class VAL> class OmOnDiskBoostUnorderedMap {
     create();
   }
 
-  ~OmOnDiskBoostUnorderedMap() { om::file::rmFile(fnp_); }
+  ~OmOnDiskBoostUnorderedMap() { om::file::old::rmFile(fnp_); }
 
   void insert(const KEY& key, const VAL& val) {
     if (file_->get_free_memory() < MinNumBytesBeforeGrowing) {
@@ -49,17 +50,17 @@ template <class KEY, class VAL> class OmOnDiskBoostUnorderedMap {
   typedef bi::allocator<ValueType, bi::managed_mapped_file::segment_manager>
       allocator_t;
 
-  typedef boost::unordered_map<KEY, VAL, boost::hash<KEY>, std::equal_to<KEY>,
-                               allocator_t> onDiskHash_t;
+  typedef std::unordered_map<KEY, VAL, boost::hash<KEY>, std::equal_to<KEY>,
+                             allocator_t> onDiskHash_t;
 
   typedef typename onDiskHash_t::iterator iterator_t;
 
   onDiskHash_t* hash_;
 
-  om::shared_ptr<bi::managed_mapped_file> file_;
+  std::shared_ptr<bi::managed_mapped_file> file_;
 
   void create() {
-    file_ = om::make_shared<bi::managed_mapped_file>(
+    file_ = std::make_shared<bi::managed_mapped_file>(
         bi::create_only, fnp_.c_str(), InitialNumBytes);
 
     hash_ = file_->construct<onDiskHash_t>("MyHashMap")(
@@ -69,7 +70,7 @@ template <class KEY, class VAL> class OmOnDiskBoostUnorderedMap {
 
   void open() {
     file_ =
-        om::make_shared<bi::managed_mapped_file>(bi::open_only, fnp_.c_str());
+        std::make_shared<bi::managed_mapped_file>(bi::open_only, fnp_.c_str());
 
     hash_ = file_->find_or_construct<onDiskHash_t>("MyHashMap")(
         100000, boost::hash<int>(), std::equal_to<int>(),
@@ -77,25 +78,25 @@ template <class KEY, class VAL> class OmOnDiskBoostUnorderedMap {
   }
 
   void close() {
-    hash_ = NULL;
+    hash_ = nullptr;
     file_.reset();
   }
 
   void grow() {
     close();
 
-    const uint64_t oldSize = om::file::numBytes(fnp_);
+    const uint64_t oldSize = om::file::old::numBytes(fnp_);
     const uint64_t newSize = 5 * oldSize;
 
-    std::cout << "\tgrowing file from " << om::string::bytesToMB(oldSize)
+    log_infos << "\tgrowing file from " << om::string::bytesToMB(oldSize)
               << " to " << om::string::bytesToMB(newSize) << "..."
               << std::flush;
 
     if (!bi::managed_mapped_file::grow(fnp_.c_str(), newSize)) {
-      throw OmIoException("could not resize file");
+      throw om::IoException("could not resize file");
     }
 
-    std::cout << "done\n";
+    log_infos << "done";
 
     open();
   }

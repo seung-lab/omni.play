@@ -3,7 +3,6 @@
 #include "gui/inspectors/segmentation/exportPage/buttons/exportDescendantList.hpp"
 #include "gui/inspectors/segmentation/exportPage/buttons/exportMST.hpp"
 #include "gui/inspectors/segmentation/exportPage/buttons/exportSegmentList.hpp"
-#include "gui/inspectors/segmentation/exportPage/buttons/meshPreviewButton.hpp"
 #include "gui/inspectors/segmentation/exportPage/buttons/segmentationInspectorButtons.hpp"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "utility/omStringHelpers.h"
@@ -30,9 +29,6 @@ QGroupBox* om::segmentationInspector::PageExport::makeActionsBox() {
 
   ExportMST* mstList = new ExportMST(this);
   gridAction->addWidget(mstList, 3, 1, 1, 1);
-
-  MeshPreviewButton* meshPreviewButton = new MeshPreviewButton(this);
-  gridAction->addWidget(meshPreviewButton, 5, 0, 1, 1);
 
   RebuildCenterOfSegmentDataButton* rebuildSegmentButton =
       new RebuildCenterOfSegmentDataButton(this);

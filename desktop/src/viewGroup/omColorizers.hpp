@@ -1,8 +1,9 @@
 #pragma once
 
+#include "segment/coloring.hpp"
 #include "zi/omMutex.h"
 
-#include <boost/array.hpp>
+#include <array>
 
 class OmViewGroupState;
 
@@ -11,22 +12,23 @@ class OmColorizers {
   OmViewGroupState* const vgs_;
 
   zi::spinlock lock_;
-  boost::array<OmSegmentColorizer*, SCC_NUMBER_OF_ENUMS> colorizers_;
+  std::array<OmSegmentColorizer*, om::segment::coloring::NUMBER_OF_ENUMS>
+      colorizers_;
 
  public:
   OmColorizers(OmViewGroupState* vgs) : vgs_(vgs) {
     std::fill(colorizers_.begin(), colorizers_.end(),
-              static_cast<OmSegmentColorizer*>(NULL));
+              static_cast<OmSegmentColorizer*>(nullptr));
   }
 
   ~OmColorizers() {
     FOR_EACH(iter, colorizers_) { delete *iter; }
   }
 
-  inline OmPooledTile<OmColorARGB>* ColorTile(uint32_t const* const imageData,
-                                              const int tileDim,
-                                              const OmTileCoord& key) {
-    const OmSegmentColorCacheType sccType = key.getSegmentColorCacheType();
+  inline std::shared_ptr<om::common::ColorARGB> ColorTile(
+      uint32_t const* const imageData, const int tileDim,
+      const OmTileCoord& key) {
+    auto sccType = key.getSegmentColorCacheType();
 
     {
       zi::guard g(lock_);
@@ -40,9 +42,9 @@ class OmColorizers {
 
  private:
   void setupColorizer(const int tileDim, const OmTileCoord& key,
-                      const OmSegmentColorCacheType sccType) {
-    if (SEGMENTATION != key.getVolume()->getVolumeType()) {
-      throw OmIoException("can only color segmentations");
+                      const om::segment::coloring sccType) {
+    if (om::common::SEGMENTATION != key.getVolume()->getVolumeType()) {
+      throw om::IoException("can only color segmentations");
     }
 
     SegmentationDataWrapper sdw(key.getVolume()->getID());

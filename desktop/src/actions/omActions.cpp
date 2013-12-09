@@ -35,30 +35,30 @@ void OmActions::ChangeSizethreshold(const SegmentationDataWrapper sdw,
 }
 
 //painting-related
-void OmActions::SetVoxel(const OmID segmentationID,
+void OmActions::SetVoxel(const om::common::ID segmentationID,
                          const om::globalCoord& voxel,
-                         const OmSegID segmentID) {
+                         const om::common::SegID segmentID) {
   pool().push_back(zi::run_fn(zi::bind(&OmActionsImpl::SetVoxel, impl(),
                                        segmentationID, voxel, segmentID)));
 }
 
-void OmActions::SetVoxels(const OmID segmentationID,
+void OmActions::SetVoxels(const om::common::ID segmentationID,
                           const std::set<om::globalCoord>& voxels,
-                          const OmSegID segmentID) {
+                          const om::common::SegID segmentID) {
   pool().push_back(zi::run_fn(zi::bind(&OmActionsImpl::SetVoxels, impl(),
                                        segmentationID, voxels, segmentID)));
 }
 
 // segment-related
 void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
-                                const om::SetValid valid,
+                                const om::common::SetValid valid,
                                 const bool dontCenter) {
   pool().push_back(zi::run_fn(zi::bind(&OmActionsImpl::ValidateSegment, impl(),
                                        sdw, valid, dontCenter)));
 }
 
 void OmActions::ValidateSelectedSegments(const SegmentationDataWrapper& sdw,
-                                         const om::SetValid valid) {
+                                         const om::common::SetValid valid) {
   pool().push_back(zi::run_fn(
       zi::bind(&OmActionsImpl::ValidateSelectedSegments, impl(), sdw, valid)));
 }
@@ -81,7 +81,7 @@ void OmActions::JoinSegments(const SegmentationDataWrapper& sdw) {
 }
 
 void OmActions::JoinSegments(const SegmentationDataWrapper& sdw,
-                             const OmSegIDsSet& ids) {
+                             const om::common::SegIDSet& ids) {
   pool().push_back(
       zi::run_fn(zi::bind(&OmActionsImpl::JoinSegmentsSet, impl(), sdw, ids)));
 }
@@ -101,16 +101,7 @@ void OmActions::CutSegment(const SegmentDataWrapper& sdw) {
       zi::run_fn(zi::bind(&OmActionsImpl::CutSegment, impl(), sdw)));
 }
 
-void OmActions::SelectSegments(om::shared_ptr<OmSelectSegmentsParams> params) {
+void OmActions::SelectSegments(std::shared_ptr<OmSelectSegmentsParams> params) {
   pool().push_back(
       zi::run_fn(zi::bind(&OmActionsImpl::SelectSegments, impl(), params)));
-}
-
-// group-related
-void OmActions::CreateOrDeleteSegmentGroup(
-    const OmID segmentationID, const OmSegIDsSet& selectedSegmentIDs,
-    const OmGroupName name, const bool create) {
-  pool().push_back(
-      zi::run_fn(zi::bind(&OmActionsImpl::CreateOrDeleteSegmentGroup, impl(),
-                          segmentationID, selectedSegmentIDs, name, create)));
 }

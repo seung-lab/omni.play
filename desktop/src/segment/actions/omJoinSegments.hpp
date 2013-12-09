@@ -4,33 +4,34 @@
 #include "segment/omSegmentUtils.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/actions/omSetSegmentValid.hpp"
-#include "events/omEvents.h"
+#include "events/events.h"
 
 class OmJoinSegments {
  private:
   SegmentationDataWrapper sdw_;
-  OmSegIDsSet ids_;
+  om::common::SegIDSet ids_;
 
  public:
-  OmJoinSegments(const SegmentationDataWrapper& sdw, const OmSegIDsSet& ids)
+  OmJoinSegments(const SegmentationDataWrapper& sdw,
+                 const om::common::SegIDSet& ids)
       : sdw_(sdw), ids_(ids) {}
 
-  OmSegIDsSet Join() { return run(true); }
+  om::common::SegIDSet Join() { return run(true); }
 
-  OmSegIDsSet UnJoin() { return run(false); }
+  om::common::SegIDSet UnJoin() { return run(false); }
 
  private:
-  inline OmSegIDsSet run(const bool join) {
-    const OmSegIDsSet ret = runOpp(join);
+  inline om::common::SegIDSet run(const bool join) {
+    const om::common::SegIDSet ret = runOpp(join);
 
     sdw_.SegmentLists()->RefreshGUIlists();
-    OmEvents::Redraw2d();
-    OmEvents::Redraw3d();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
 
     return ret;
   }
 
-  inline OmSegIDsSet runOpp(const bool join) {
+  inline om::common::SegIDSet runOpp(const bool join) {
     const bool anyValid = sdw_.Segments()->AreAnySegmentsInValidList(ids_);
 
     if (anyValid) {
@@ -40,7 +41,7 @@ class OmJoinSegments {
     return doOpp(join);
   }
 
-  inline OmSegIDsSet doOpp(const bool join) {
+  inline om::common::SegIDSet doOpp(const bool join) {
     if (join) {
       return sdw_.Segments()->JoinTheseSegments(ids_);
     }
@@ -54,14 +55,14 @@ class OmJoinSegments {
    *  3.) perform the join
    *  4.) (re)validate all segments
    */
-  OmSegIDsSet doOppValid(const bool join) {
+  om::common::SegIDSet doOppValid(const bool join) {
     std::deque<OmSegment*> segPtrs;
     OmSegmentUtils::GetAllChildrenSegments(sdw_, ids_, segPtrs);
 
     OmSetSegmentValid validator(sdw_);
     validator.SetAsNotValidForJoin(segPtrs);
 
-    const OmSegIDsSet idsActuallyJoined = doOpp(join);
+    const om::common::SegIDSet idsActuallyJoined = doOpp(join);
 
     validator.SetAsValidForJoin(segPtrs);
 

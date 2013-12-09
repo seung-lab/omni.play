@@ -1,13 +1,15 @@
 #pragma once
 
-#include "common/omDebug.h"
+#include "common/logging.h"
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omChannelTileFilter.hpp"
 
 class BrightnessSpinBox : public OmIntSpinBox {
-  Q_OBJECT public : BrightnessSpinBox(QWidget* d)
-                    : OmIntSpinBox(d, om::UPDATE_AS_TYPE) {
+  Q_OBJECT;
+
+ public:
+  BrightnessSpinBox(QWidget* d) : OmIntSpinBox(d, true) {
     setSingleStep(1);
     setRange(-255, 255);
     setInitialGUIThresholdValue();
@@ -20,7 +22,7 @@ class BrightnessSpinBox : public OmIntSpinBox {
   void actUponValueChange(const int val) {
     OmChannelTileFilter::SetBrightnessShift(val);
     OmTileCache::ClearChannel();
-    OmEvents::Redraw2dBlocking();
+    om::event::Redraw2dBlocking();
   }
 
   void setInitialGUIThresholdValue() {

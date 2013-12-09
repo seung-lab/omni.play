@@ -12,9 +12,9 @@ void OmHdf5::create() {
 void OmHdf5::open() {
   zi::rwmutex::write_guard g(fileLock);
 
-  hdf5_ = om::make_shared<OmHdf5Impl>(fnp_, readOnly_);
+  hdf5_ = std::make_shared<OmHdf5Impl>(fnp_, readOnly_);
 
-  std::cout << "opened hdf5 file " << fnp_ << "\n";
+  log_infos << "opened hdf5 file " << fnp_;
 }
 
 void OmHdf5::close() {
@@ -57,7 +57,7 @@ OmDataWrapperPtr OmHdf5::readDataset(const OmDataPath& path, int* size) {
 
 OmDataWrapperPtr OmHdf5::readChunk(const OmDataPath& path,
                                    const om::dataBbox& dataExtent,
-                                   const om::AffinityGraph aff) {
+                                   const om::common::AffinityGraph aff) {
   zi::rwmutex::write_guard g(fileLock);
   return hdf5_->readChunk(path, dataExtent, aff);
 }
@@ -84,7 +84,7 @@ void OmHdf5::writeDataset(const OmDataPath& path, int size,
 }
 
 Vector3i OmHdf5::getChunkedDatasetDims(const OmDataPath& path,
-                                       const om::AffinityGraph aff) {
+                                       const om::common::AffinityGraph aff) {
   zi::rwmutex::write_guard g(fileLock);
   return hdf5_->getChunkedDatasetDims(path, aff);
 }

@@ -8,7 +8,10 @@ namespace om {
 namespace segmentationInspector {
 
 class PageMetadata : public QWidget {
-  Q_OBJECT private : const SegmentationDataWrapper sdw_;
+  Q_OBJECT;
+
+ private:
+  const SegmentationDataWrapper sdw_;
 
  public:
   PageMetadata(QWidget* parent, const SegmentationDataWrapper& sdw)

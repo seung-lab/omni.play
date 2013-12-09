@@ -6,6 +6,12 @@
 class OmSplitSegmentRunner {
  public:
   static void FindAndSplitSegments(const SegmentDataWrapper curSDW,
+                                   OmViewGroupState& vgs,
+                                   const om::globalCoord curClickPt) {
+    FindAndSplitSegments(curSDW, &vgs, curClickPt);
+  }
+
+  static void FindAndSplitSegments(const SegmentDataWrapper curSDW,
                                    OmViewGroupState* vgs,
                                    const om::globalCoord curClickPt) {
     const boost::optional<om::globalCoord> prevClickPt =
@@ -24,7 +30,7 @@ class OmSplitSegmentRunner {
       }
 
       if (seg1 == seg2) {
-        std::cout << "can't split--same segment\n";
+        log_infos << "can't split--same segment";
         return;
       }
 
