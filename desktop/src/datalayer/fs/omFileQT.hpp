@@ -40,7 +40,6 @@ class OmFileQTbase : public OmIOnDiskFile<T> {
     if (readBytes != numBytes) {
       throw om::IoException("could not read in fully file ", fnp_);
     }
-  }
 
     return readBytes;
   }

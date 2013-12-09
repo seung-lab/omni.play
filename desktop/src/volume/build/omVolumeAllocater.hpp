@@ -45,9 +45,6 @@ class OmVolumeAllocater {
 
       volFiles[level] = createFile(vol, level, dims);
     }
-    file->seek(size - 1);
-    file->putChar(0);
-    file->flush();
 
     log_infos << "\tdone reallocating volume for all mip levels";
 

@@ -52,7 +52,6 @@ class Sender : public boost::static_visitor<> {
     if (max_.x <= localMin.x || max_.y <= localMin.y || max_.z <= localMin.z) {
       return;
     }
-  }
 
     auto location = min_.ToGlobal();
 

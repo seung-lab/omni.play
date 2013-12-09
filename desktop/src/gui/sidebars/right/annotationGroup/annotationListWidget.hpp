@@ -225,8 +225,6 @@ Q_SLOTS:
         return cdw.GetChannelPtr();
       }
     }
-    return NULL;
-  }
 
     {
       const SegmentationDataWrapper sdw = vgs_->Segmentation();

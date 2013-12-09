@@ -121,7 +121,6 @@ bool OmSegmentSelector::sendEvent() {
         return false;
       }
     }
-  }
 
   } else {
     if (params_->oldSelectedIDs == params_->newSelectedIDs) {

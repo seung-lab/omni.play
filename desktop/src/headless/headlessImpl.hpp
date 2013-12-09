@@ -233,7 +233,6 @@ class HeadlessImpl {
     if (randomize) {
       zi::random_shuffle(coords.begin(), coords.end());
     }
-  }
 
     for (uint32_t i = 0; i < numChunks; ++i) {
       printf("\rreading chunk %d of %d...", i, numChunks);
