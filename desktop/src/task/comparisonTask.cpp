@@ -66,7 +66,8 @@ bool ComparisonTask::Start() {
     if (v1 && v2 && v1 != v2 && segFlags.find(v1) != segFlags.end() &&
         segFlags.find(v2) != segFlags.end() &&
         segFlags.find(v1)->second == segFlags.find(v2)->second) {
-      edgesToAdd.insert({v1, v2});
+      edgesToAdd.insert(v1 > v2 ? std::make_pair(v1, v2)
+                                : std::make_pair(v2, v1));
     }
   };
   const auto& chunks = segmentation->GetMipChunkCoords(0);
@@ -155,7 +156,7 @@ bool ComparisonTask::Submit() {
   network::HTTP::POST(uri, std::make_pair("id", id_),
                       std::make_pair("plane", "xy"),
                       std::make_pair("segments", segIDs),
-                      std::make_pair("auth", 0), std::make_pair("status", 0));
+                      std::make_pair("auth", 1), std::make_pair("status", 0));
   return true;
 }
 
