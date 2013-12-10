@@ -20,6 +20,7 @@
 #include "volume/omSegmentationLoader.h"
 #include "volume/omUpdateBoundingBoxes.h"
 #include "actions/omActions.h"
+#include "actions/details/omActionImpls.hpp"
 
 #include <QCoreApplication>
 #include "gui/widgets/omTellInfo.hpp"
@@ -102,7 +103,7 @@ void OmSegmentation::SetSizeThreshold(const double t) {
 void OmSegmentation::CloseDownThreads() { meshManagers_->CloseDownThreads(); }
 
 bool OmSegmentation::LoadVolDataIfFoldersExist() {
-  //assume level 0 data always present
+  // assume level 0 data always present
   const QString path = OmFileNames::GetVolDataFolderPath(this, 0);
 
   if (QDir(path).exists()) {
@@ -149,7 +150,7 @@ void OmSegmentation::Flush() {
   annotations_->Save();
 }
 
-//TODO: make OmVolumeBuildBlank class, and move this in there (purcaro)
+// TODO: make OmVolumeBuildBlank class, and move this in there (purcaro)
 void OmSegmentation::BuildBlankVolume(const Vector3i& dims) {
   SetBuildState(MIPVOL_BUILDING);
 
@@ -170,12 +171,12 @@ quint32 OmSegmentation::GetVoxelValue(const om::globalCoord& vox) {
     return 0;
   }
 
-  //find mip_coord and offset
+  // find mip_coord and offset
   const om::chunkCoord mip0coord = vox.toChunkCoord(this, 0);
 
   OmSegChunk* chunk = GetChunk(mip0coord);
 
-  //get voxel data
+  // get voxel data
   return chunk->GetVoxelValue(vox.toDataCoord(this, 0));
 }
 
@@ -230,13 +231,7 @@ void OmSegmentation::ClearUserChangesAndSave() {
 
   segments_->ClearUserEdges();
 
-  OmActions::ChangeMSTthreshold(SegmentationDataWrapper(getID()), 0.999);
-  QCoreApplication::processEvents();
-  OmTellInfo("Hey you are ready to start the comparison/reaping task :)\n"
-      "(This dialog here is a hack to get it to work...)");
-
   OmSegments* segments = Segments();
-
   for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
     OmSegment* seg = segments->GetSegment(i);
     if (!seg) {
@@ -245,8 +240,12 @@ void OmSegmentation::ClearUserChangesAndSave() {
     seg->RandomizeColor();
     seg->SetListType(om::common::SegListType::WORKING);
   }
-
   ValidGroupNum()->Clear();
+
+  (new OmSegmentationThresholdChangeAction(SegmentationDataWrapper(getID()),
+                                           0.999))->RunNow();
+  //OmSegmentationThresholdChangeActionImpl(SegmentationDataWrapper(getID()),
+  //                                        0.999).Execute();
 
   OmCacheManager::TouchFreshness();
   OmActions::Save();
