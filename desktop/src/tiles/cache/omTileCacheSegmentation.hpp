@@ -2,8 +2,8 @@
 
 #include "tiles/cache/omThreadedTileCache.h"
 #include "tiles/omTile.h"
-#include "tiles/omTileCoord.h"
-#include "utility/omLockedObjects.h"
+#include "coordinates/tile.h"
+#include "utility/lockedObjects.hpp"
 
 class OmSegmentation;
 

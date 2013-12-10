@@ -26,7 +26,7 @@ class utils {
           const int lenX = x ? 1 : 128;
 
           // form mip coord
-          const coords::Chunk mip_coord(chunk.getLevel(), chunk.x + x,
+          const coords::Chunk mip_coord(chunk.mipLevel(), chunk.x + x,
                                         chunk.y + y, chunk.z + z);
 
           // skip invalid mip coord

@@ -55,7 +55,7 @@ bool ComparisonTask::Start() {
 
   OmSegmentation* segmentation = sdw.GetSegmentationPtr();
   const auto& volumeSystem = segmentation->Coords();
-  int chunkDim = volumeSystem.GetChunkDimension();
+  int chunkDim = volumeSystem.ChunkDimensions().x;
 
   // Brute force though the entire volume to find connected segments.
   // Adjacent segments will be joined together only if they are selected
@@ -77,20 +77,20 @@ bool ComparisonTask::Start() {
       continue;
     }
 
-    const auto& data = chunk.toDataCoord(volumeSystem);
+    const auto& data = chunk.ToData(volumeSystem);
     for (int x = 0; x < chunkDim; ++x) {
       for (int y = 0; y < chunkDim; ++y) {
         for (int z = 0; z < chunkDim; ++z) {
-          const om::dataCoord& coord = data + Vector3i(x, y, z);
-          auto v1 = segmentation->GetVoxelValue(coord.toGlobalCoord());
+          const om::coords::Data& coord = data + Vector3i(x, y, z);
+          auto v1 = segmentation->GetVoxelValue(coord.ToGlobal());
           auto v2 = segmentation->GetVoxelValue(
-              (coord + Vector3i(1, 0, 0)).toGlobalCoord());
+              (coord + Vector3i(1, 0, 0)).ToGlobal());
           testAndAddEdge(v1, v2);
           v2 = segmentation->GetVoxelValue(
-              (coord + Vector3i(0, 1, 0)).toGlobalCoord());
+              (coord + Vector3i(0, 1, 0)).ToGlobal());
           testAndAddEdge(v1, v2);
           v2 = segmentation->GetVoxelValue(
-              (coord + Vector3i(0, 0, 1)).toGlobalCoord());
+              (coord + Vector3i(0, 0, 1)).ToGlobal());
           testAndAddEdge(v1, v2);
         }
       }
@@ -123,7 +123,7 @@ bool ComparisonTask::Start() {
 }
 
 bool ComparisonTask::chunkHasUserSegments(
-    OmChunkUniqueValuesManager& uniqueValues, const om::chunkCoord& chunk,
+    OmChunkUniqueValuesManager& uniqueValues, const om::coords::Chunk& chunk,
     const std::unordered_map<common::SegID, int>& segFlags) {
 
   const auto uv = uniqueValues.Get(chunk);

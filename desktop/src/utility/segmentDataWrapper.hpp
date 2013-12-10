@@ -79,8 +79,8 @@ class SegmentDataWrapper {
       return false;
     }
 
-    return OmProject::Volumes().Segmentations()
-        .IsSegmentationValid(segmentationID_);
+    return OmProject::Volumes().Segmentations().IsSegmentationValid(
+        segmentationID_);
   }
 
   inline bool IsSegmentValid() const {
@@ -141,8 +141,8 @@ class SegmentDataWrapper {
   inline void setName(const QString& str) const { GetSegment()->SetName(str); }
 
   inline OmSegmentation& GetSegmentation() const {
-    return OmProject::Volumes().Segmentations()
-        .GetSegmentation(segmentationID_);
+    return OmProject::Volumes().Segmentations().GetSegmentation(
+        segmentationID_);
   }
 
   inline OmSegmentation* GetSegmentationPtr() const {
@@ -163,7 +163,7 @@ class SegmentDataWrapper {
   inline om::common::SegID getID() const { return segmentID_; }
 
   inline om::common::SegID GetVoxelValue(
-      const om::globalCoord& dataClickPoint) const {
+      const om::coords::Global& dataClickPoint) const {
     return GetSegmentation().GetVoxelValue(dataClickPoint);
   }
 

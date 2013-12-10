@@ -6,7 +6,8 @@
 
 class OmBrushPaint {
  public:
-  static void PaintByClick(OmView2dState* state, const om::globalCoord& coord,
+  static void PaintByClick(OmView2dState* state,
+                           const om::coords::Global& coord,
                            const om::common::SegID segIDtoPaint) {
     std::shared_ptr<OmBrushOppInfo> info = OmBrushOppInfoFactory::MakeOppInfo(
         state, coord, om::common::AddOrSubtract::ADD);
@@ -16,9 +17,10 @@ class OmBrushPaint {
     circle.PaintCircle(coord);
   }
 
-  static void PaintByLine(OmView2dState* state, const om::globalCoord& second,
+  static void PaintByLine(OmView2dState* state,
+                          const om::coords::Global& second,
                           const om::common::SegID segIDtoPaint) {
-    const om::globalCoord& first = state->GetLastDataPoint();
+    const om::coords::Global& first = state->GetLastDataPoint();
 
     std::shared_ptr<OmBrushOppInfo> info = OmBrushOppInfoFactory::MakeOppInfo(
         state, first, om::common::AddOrSubtract::ADD);

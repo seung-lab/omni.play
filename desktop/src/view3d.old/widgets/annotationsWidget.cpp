@@ -6,14 +6,13 @@
 #include "annotation/annotation.h"
 #include "viewGroup/omViewGroupState.h"
 
-static const float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
+static const float TEXT_COLOR[4] = {1, 1, 1, 0.8};
 
 AnnotationsWidget::AnnotationsWidget(OmView3d *view3d, OmViewGroupState *vgs)
     : OmView3dWidget(view3d), vgs_(vgs) {
-  //set font properties
+  // set font properties
   font_ = QFont("Helvetica", 12);
-}
-;
+};
 
 /////////////////////////////////
 ///////          Draw Methods
@@ -36,7 +35,7 @@ void AnnotationsWidget::Draw() {
 
     FOR_EACH(it, annotations.Enabled()) {
       om::annotation::data &a = *it->Object;
-      om::globalCoord coord = a.coord.toGlobalCoord();
+      om::coords::Global coord = a.coord.ToGlobal();
       float dist = camPos.distance(coord);
 
       glPushMatrix();
@@ -51,7 +50,6 @@ void AnnotationsWidget::Draw() {
                               font_);
       glPopMatrix();
     }
-
   }
 
   gluDeleteQuadric(quad);

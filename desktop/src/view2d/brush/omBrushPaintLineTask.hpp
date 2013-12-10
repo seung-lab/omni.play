@@ -6,14 +6,14 @@
 class OmBrushPaintLineTask : public zi::runnable {
  private:
   const std::shared_ptr<OmBrushOppInfo> info_;
-  const om::globalCoord first_;
-  const om::globalCoord second_;
+  const om::coords::Global first_;
+  const om::coords::Global second_;
   const om::common::SegID segIDtoPaint_;
 
  public:
   OmBrushPaintLineTask(std::shared_ptr<OmBrushOppInfo> info,
-                       const om::globalCoord& first,
-                       const om::globalCoord& second,
+                       const om::coords::Global& first,
+                       const om::coords::Global& second,
                        const om::common::SegID segIDtoPaint)
       : info_(info),
         first_(first),

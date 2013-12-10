@@ -117,8 +117,8 @@ class HeadlessImpl {
 
     vol.Coords().SetResolution(dims);
 
-    log_infos << "\tvolume data resolution set to "
-              << vol.Coords().GetResolution();
+    std::cout << "\tvolume data resolution set to "
+              << vol.Coords().Resolution();
   }
 
   template <typename T>
@@ -128,13 +128,12 @@ class HeadlessImpl {
 
     vol.Coords().SetAbsOffset(dims);
 
-    log_infos << "\tvolume data abs offset set to "
-              << vol.Coords().GetAbsOffset();
+    std::cout << "\tvolume data abs offset set to " << vol.Coords().AbsOffset();
   }
 
   static void SetMeshDownScallingFactor(const double factor) {
     OmMeshParams::SetDownScallingFactor(factor);
-    log_infos << "mesh downscalling factor set to "
+    std::cout << "mesh downscalling factor set to "
               << OmMeshParams::GetDownScallingFactor();
   }
 
@@ -176,7 +175,7 @@ class HeadlessImpl {
       }
     }
 
-    log_infos << "found " << om::string::humanizeNum(segColorHist.size())
+    std::cout << "found " << om::string::humanizeNum(segColorHist.size())
               << " colors\n";
 
     OmSegments* segments = sdw.Segments();
@@ -225,9 +224,9 @@ class HeadlessImpl {
 
     double timeSecs = 0;
 
-    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
         vol.GetMipChunkCoords();
-    std::deque<om::chunkCoord>& coords = *coordsPtr;
+    std::deque<om::coords::Chunk>& coords = *coordsPtr;
     const uint32_t numChunks = coords.size();
 
     if (randomize) {
@@ -247,7 +246,7 @@ class HeadlessImpl {
       timeSecs += timer.s_elapsed();
     }
 
-    const Vector3i chunkDims = vol.Coords().GetChunkDimensions();
+    const Vector3i chunkDims = vol.Coords().ChunkDimensions();
     const double totalMegs = static_cast<double>(chunkDims.x) *
                              static_cast<double>(chunkDims.y) *
                              static_cast<double>(chunkDims.z) *
@@ -256,14 +255,14 @@ class HeadlessImpl {
                              static_cast<double>(om::math::bytesPerMB);
     const double megsPerSec = totalMegs / timeSecs;
 
-    log_infos << "raw chunk read ";
+    std::cout << "raw chunk read ";
     if (useMeshChunk) {
-      log_infos << "(fseek and read): ";
+      std::cout << "(fseek and read): ";
     } else {
-      log_infos << "(get copy of whole chunk using mesh reader): ";
+      std::cout << "(get copy of whole chunk using mesh reader): ";
     }
 
-    log_infos << megsPerSec << " MB/sec\n";
+    std::cout << megsPerSec << " MB/sec\n";
   }
 
   static void Mesh(const om::common::ID segmentationID) {
@@ -289,7 +288,7 @@ class HeadlessImpl {
     OmActionDumper dumper;
     const QString fnp("/tmp/actionDump.txt");
     dumper.Dump(fnp);
-    log_infos << "wrote action log to " << fnp.toStdString();
+    std::cout << "wrote action log to " << fnp.toStdString();
   }
 
   static void DownsampleChannel(const ChannelDataWrapper& cdw) {

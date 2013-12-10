@@ -9,11 +9,11 @@
  * Michael Purcaro - purcaro@gmail.com
  */
 
+#include "coordinates/data.h"
 #include "segment/omSegmentTypes.h"
 #include "segment/omSegmentChildrenTypes.h"
 #include "segment/omSegmentEdge.h"
 #include "zi/omMutex.h"
-#include "coordinates/dataCoord.h"
 
 class OmSegments;
 
@@ -90,14 +90,14 @@ class OmSegment {
 
   inline void setThreshold(const double thres) { threshold_ = thres; }
 
-  const om::dataBbox BoundingBox() const;
+  const om::coords::DataBbox BoundingBox() const;
 
   inline void ClearBoundingBox() {
     zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
     data_->bounds.set(Vector3i::ZERO, Vector3i::ZERO);
   }
 
-  inline void AddToBoundingBox(const om::dataBbox& box) {
+  inline void AddToBoundingBox(const om::coords::DataBbox& box) {
     zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
     data_->bounds.merge(box);
   }

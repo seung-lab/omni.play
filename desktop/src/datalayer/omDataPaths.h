@@ -1,11 +1,11 @@
 #pragma once
 
 #include "common/common.h"
+#include "coordinates/mesh.h"
 
 class OmAffinityChannel;
 class OmChannelImpl;
 class OmDataPath;
-class OmMeshCoord;
 class OmMeshManager;
 class OmSegmentation;
 
@@ -17,7 +17,7 @@ class OmDataPaths {
   static OmDataPath getSegmentPagePath(const om::common::ID segmentationID,
                                        const uint32_t pageNum);
 
-  static std::string getMeshFileName(const OmMeshCoord& meshCoord);
+  static std::string getMeshFileName(const om::coords::Mesh& meshCoord);
 
   static std::string getDirectoryPath(OmChannelImpl const* const chan);
 

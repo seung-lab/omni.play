@@ -1,6 +1,5 @@
 #pragma once
 
-#include "coordinates/normCoord.h"
 #include "events/events.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omLocalPreferences.hpp"
@@ -13,8 +12,6 @@
 #include "viewGroup/omZoomLevel.hpp"
 #include "events/events.h"
 #include "volume/omMipVolume.h"
-#include "view2d/view2dCoords.hpp"
-#include "coordinates/screenCoord.h"
 
 #include "vmmlib/vmmlib.h"
 using namespace vmml;
@@ -45,10 +42,10 @@ class OmView2dState {
   Vector2i mousePoint_;
   bool isLevelLocked_;
 
-  boost::optional<om::screenCoord> mousePanStartingPt_;
+  boost::optional<om::coords::Screen> mousePanStartingPt_;
 
   // (x,y) coordinates only (no depth); needed for Bresenham
-  om::globalCoord lastDataPoint_;
+  om::coords::Global lastDataPoint_;
 
   OmBrushSize* const brushSize_;
 
@@ -56,7 +53,7 @@ class OmView2dState {
 
   om::common::SegID segIDforPainting_;
 
-  om::view2dCoords coords_;
+  om::coords::ScreenSystem coords_;
 
  public:
   OmView2dState(OmMipVolume* vol, OmViewGroupState* vgs,
@@ -75,37 +72,43 @@ class OmView2dState {
         brushSize_(OmStateManager::BrushSize()),
         overrideToolModeForPan_(false),
         segIDforPainting_(0),
-        coords_(vgs, viewType) {
-    coords_.setTotalViewport(size);
+        coords_(viewType) {
+    coords_.set_totalViewport(Vector4i(0, 0, size.width(), size.height()));
     zoomLevel_->Update(getMaxMipLevel());
 
+    UpdateTransformationMatrices();
+  }
+
+  inline om::coords::ScreenSystem& Coords() { return coords_; }
+
+  inline const om::coords::ScreenSystem& Coords() const { return coords_; }
+
+  inline void UpdateTransformationMatrices() {
+    coords_.set_zoomScale(zoomLevel_->GetZoomScale());
+    coords_.set_location(Location());
     coords_.UpdateTransformationMatrices();
   }
 
-  inline om::view2dCoords& Coords() { return coords_; }
-
-  inline const om::view2dCoords& Coords() const { return coords_; }
-
   void Shift(const om::common::Direction dir) {
     const float numberOfSlicestoAdvance = 2 * om::math::pow2int(getMipLevel());
-    om::globalCoord loc = Location();
+    om::coords::Global loc = Location();
     OmView2dConverters::ShiftPanDirection(loc, numberOfSlicestoAdvance, dir,
                                           viewType_);
     setLocation(loc);
     om::event::Redraw2d();
-    coords_.UpdateTransformationMatrices();
+    UpdateTransformationMatrices();
   }
 
   inline Vector2f ComputePanDistance() const {
-    Vector3f pan = coords_.GlobalToScreenMat().getTranslation();
+    Vector3f pan = coords_.globalToScreenMat().getTranslation();
     return OmView2dConverters::Get2PtsInPlane(pan, viewType_);
   }
 
   inline void SetViewSliceOnPan() {
-    const Vector4i& viewport = coords_.getTotalViewport();
-    om::globalCoord min = om::screenCoord(0, 0, this).toGlobalCoord();
-    om::globalCoord max =
-        om::screenCoord(viewport.width, viewport.height, this).toGlobalCoord();
+    const Vector4i& viewport = coords_.totalViewport();
+    om::coords::Global min = om::coords::Screen(0, 0, Coords()).ToGlobal();
+    om::coords::Global max = om::coords::Screen(viewport.width, viewport.height,
+                                                Coords()).ToGlobal();
 
     vgs_->View2dState()->SetViewSliceMax(viewType_, get2ptsInPlane(max));
     vgs_->View2dState()->SetViewSliceMin(viewType_, get2ptsInPlane(min));
@@ -114,7 +117,7 @@ class OmView2dState {
   }
 
   inline void ChangeViewCenter() {
-    coords_.UpdateTransformationMatrices();
+    UpdateTransformationMatrices();
     SetViewSliceOnPan();
   }
 
@@ -131,16 +134,16 @@ class OmView2dState {
   }
 
   void ResetWindowState() {
-    static const om::normCoord midPoint(0.5, 0.5, 0.5, vol_);
+    static const om::coords::Norm midPoint(0.5, 0.5, 0.5, vol_->Coords());
 
-    log_infos << vol_->Coords().GetDataDimensions() << std::endl;
+    log_infos << vol_->Coords().DataDimensions() << std::endl;
 
-    om::globalCoord loc = midPoint.toGlobalCoord();
+    om::coords::Global loc = midPoint.ToGlobal();
     setLocation(loc);
 
     zoomLevel_->Reset(getMaxMipLevel());
 
-    coords_.UpdateTransformationMatrices();
+    UpdateTransformationMatrices();
 
     OmTileCache::ClearAll();
     om::event::Redraw2d();
@@ -149,32 +152,32 @@ class OmView2dState {
   inline void MoveUpStackCloserToViewer(int steps = 1) {
     const int numberOfSlicestoAdvance =
         om::math::pow2int(getMipLevel()) *
-        getViewTypeDepth(vol_->Coords().GetResolution()) * steps;
+        getViewTypeDepth(vol_->Coords().Resolution()) * steps;
     const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
     vgs_->View2dState()->SetScaledSliceDepth(viewType_,
                                              depth + numberOfSlicestoAdvance);
 
-    coords_.UpdateTransformationMatrices();
+    UpdateTransformationMatrices();
   }
 
   inline void MoveDownStackFartherFromViewer(int steps = 1) {
     const int numberOfSlicestoAdvance =
         om::math::pow2int(getMipLevel()) *
-        getViewTypeDepth(vol_->Coords().GetResolution()) * steps;
+        getViewTypeDepth(vol_->Coords().Resolution()) * steps;
     const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
     vgs_->View2dState()->SetScaledSliceDepth(viewType_,
                                              depth - numberOfSlicestoAdvance);
 
-    coords_.UpdateTransformationMatrices();
+    UpdateTransformationMatrices();
   }
 
   // mouse movement
-  inline void DoMousePan(const om::screenCoord& cursorLocation) {
+  inline void DoMousePan(const om::coords::Screen& cursorLocation) {
     if (!mousePanStartingPt_) {
       return;
     }
-    const om::globalCoord difference =
-        mousePanStartingPt_->toGlobalCoord() - cursorLocation.toGlobalCoord();
+    const om::coords::Global difference =
+        mousePanStartingPt_->ToGlobal() - cursorLocation.ToGlobal();
 
     setLocation(Location() + difference);
 
@@ -204,7 +207,7 @@ class OmView2dState {
   // zoom and mip level
   inline float getZoomScale() const { return zoomLevel_->GetZoomScale(); }
   inline int getMipLevel() const { return zoomLevel_->GetMipLevel(); }
-  inline int getMaxMipLevel() const { return vol_->Coords().GetRootMipLevel(); }
+  inline int getMaxMipLevel() const { return vol_->Coords().RootMipLevel(); }
 
   // depth-related computation helpers
   template <typename T>
@@ -228,7 +231,7 @@ class OmView2dState {
     return OmView2dConverters::GetViewTypeDepth(vec, viewType_);
   }
 
-  inline float getViewTypeDepth(const om::globalCoord& vec) const {
+  inline float getViewTypeDepth(const om::coords::Global& vec) const {
     return OmView2dConverters::GetViewTypeDepth(vec, viewType_);
   }
 
@@ -237,7 +240,7 @@ class OmView2dState {
     OmView2dConverters::SetViewTypeDepth(vec, val, viewType_);
   }
 
-  inline void setViewTypeDepth(om::globalCoord& vec, const float val) const {
+  inline void setViewTypeDepth(om::coords::Global& vec, const float val) const {
     OmView2dConverters::SetViewTypeDepth(vec, val, viewType_);
   }
 
@@ -269,15 +272,15 @@ class OmView2dState {
   inline bool IsLevelLocked() const { return isLevelLocked_; }
   void ToggleLevelLock() { isLevelLocked_ = !isLevelLocked_; }
 
-  void SetMousePanStartingPt(const om::screenCoord& vec) {
+  void SetMousePanStartingPt(const om::coords::Screen& vec) {
     mousePanStartingPt_ = vec;
   }
 
   // last data point--coupled w/ click point?
-  inline const om::globalCoord& GetLastDataPoint() const {
+  inline const om::coords::Global& GetLastDataPoint() const {
     return lastDataPoint_;
   }
-  void SetLastDataPoint(const om::globalCoord& coord) {
+  void SetLastDataPoint(const om::coords::Global& coord) {
     lastDataPoint_ = coord;
   }
 
@@ -292,13 +295,13 @@ class OmView2dState {
 
   inline OmZoomLevel* ZoomLevel() { return zoomLevel_; }
 
-  inline om::globalCoord Location() {
+  inline om::coords::Global Location() {
     return vgs_->View2dState()->GetScaledSliceDepth();
   }
 
-  inline void setLocation(om::globalCoord loc) {
+  inline void setLocation(om::coords::Global loc) {
     vgs_->View2dState()->SetScaledSliceDepth(loc);
-    coords_.UpdateTransformationMatrices();
+    UpdateTransformationMatrices();
   }
 
   inline bool OverrideToolModeForPan() { return overrideToolModeForPan_; }

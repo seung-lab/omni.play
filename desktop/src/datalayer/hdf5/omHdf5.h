@@ -1,7 +1,7 @@
 #pragma once
 
-#include "coordinates/dataCoord.h"
 #include "common/common.h"
+#include "coordinates/data.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
 #include "zi/omMutex.h"
@@ -33,7 +33,7 @@ class OmHdf5 {
                                  const om::common::AffinityGraph aff);
   void allocateChunkedDataset(const OmDataPath&, const Vector3i&,
                               const Vector3i&, const OmVolDataType type);
-  void dataset_image_write_trim(const OmDataPath&, const om::dataBbox&,
+  void dataset_image_write_trim(const OmDataPath&, const om::coords::DataBbox&,
                                 OmDataWrapperPtr data);
 
   // data set raw
@@ -41,9 +41,9 @@ class OmHdf5 {
   void writeDataset(const OmDataPath& path, int size,
                     const OmDataWrapperPtr data);
   OmDataWrapperPtr readChunk(const OmDataPath& path,
-                             const om::dataBbox& dataExtent,
+                             const om::coords::DataBbox& dataExtent,
                              const om::common::AffinityGraph aff);
-  void writeChunk(const OmDataPath& path, om::dataBbox dataExtent,
+  void writeChunk(const OmDataPath& path, om::coords::DataBbox dataExtent,
                   OmDataWrapperPtr data);
   Vector3i getDatasetDims(const OmDataPath& path);
   OmDataWrapperPtr GetChunkDataType(const OmDataPath& path);

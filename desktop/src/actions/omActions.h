@@ -1,6 +1,5 @@
 #pragma once
 
-#include "coordinates/globalCoord.h"
 #include "common/common.h"
 #include "common/enums.hpp"
 #include "project/omProject.h"
@@ -40,11 +39,11 @@ class OmActions : om::singletonBase<OmActions> {
 
   // painting-related
   static void SetVoxel(const om::common::ID segmentationId,
-                       const om::globalCoord& rVoxel,
+                       const om::coords::Global& rVoxel,
                        const om::common::SegID value);
 
   static void SetVoxels(const om::common::ID segmentationId,
-                        const std::set<om::globalCoord>& rVoxels,
+                        const std::set<om::coords::Global>& rVoxels,
                         const om::common::SegID value);
 
   // segment-related

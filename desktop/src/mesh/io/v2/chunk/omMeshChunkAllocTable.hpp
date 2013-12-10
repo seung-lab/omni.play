@@ -2,7 +2,7 @@
 
 #include "datalayer/fs/omFileNames.hpp"
 #include "mesh/io/v2/chunk/omMemMappedAllocFile.hpp"
-#include "utility/omLockedObjects.h"
+#include "utility/lockedObjects.hpp"
 
 class OmMeshFilePtrCache;
 
@@ -11,12 +11,13 @@ class OmMeshChunkAllocTableV2 {
   OmMeshFilePtrCache* const filePtrCache_;
   std::unique_ptr<OmMemMappedAllocFile> file_;
 
-  LockedSet<om::common::SegID> segsBeingSaved_;
+  om::utility::LockedSet<om::common::SegID> segsBeingSaved_;
   zi::rwmutex lock_;
 
  public:
   OmMeshChunkAllocTableV2(OmMeshFilePtrCache* filePtrCache, OmSegmentation* seg,
-                          const om::chunkCoord& coord, const double threshold)
+                          const om::coords::Chunk& coord,
+                          const double threshold)
       : filePtrCache_(filePtrCache),
         file_(new OmMemMappedAllocFile(seg, coord, threshold)) {}
 

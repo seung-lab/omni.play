@@ -29,7 +29,7 @@ class OmTilesToPrefetch {
 
  public:
   void insert(const key_t& key, const int depthOffset) {
-    PrefetchKey pf = { depthOffset, key };
+    PrefetchKey pf = {depthOffset, key};
     {
       zi::guard g(prefetchKeysLock_);
       prefetchKeys_.insert(pf);

@@ -29,7 +29,8 @@ class OmViewGroupState;
 class OmVolumeCuller;
 class OmVolumeData;
 class SegmentationDataWrapper;
-template <typename, typename> class OmChunkCache;
+template <typename, typename>
+class OmChunkCache;
 
 namespace om {
 namespace segmentation {
@@ -93,11 +94,11 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
   void BuildBlankVolume(const Vector3i& dims);
 
-  OmSegChunk* GetChunk(const om::chunkCoord& coord);
+  OmSegChunk* GetChunk(const om::coords::Chunk& coord);
 
-  uint32_t GetVoxelValue(const om::globalCoord& vox);
-  void SetVoxelValue(const om::globalCoord& vox, const uint32_t value);
-  bool SetVoxelValueIfSelected(const om::globalCoord& vox,
+  uint32_t GetVoxelValue(const om::coords::Global& vox);
+  void SetVoxelValue(const om::coords::Global& vox, const uint32_t value);
+  bool SetVoxelValueIfSelected(const om::coords::Global& vox,
                                const uint32_t value);
 
   void RebuildSegments();
@@ -141,10 +142,14 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<OmTileCacheSegmentation> tileCache_;
   std::unique_ptr<om::annotation::manager> annotations_;
 
-  template <class T> friend class OmVolumeBuilder;
-  template <class T> friend class OmVolumeBuilderHdf5;
-  template <class T> friend class OmVolumeBuilderImages;
-  template <class T> friend class OmVolumeImporter;
+  template <class T>
+  friend class OmVolumeBuilder;
+  template <class T>
+  friend class OmVolumeBuilderHdf5;
+  template <class T>
+  friend class OmVolumeBuilderImages;
+  template <class T>
+  friend class OmVolumeImporter;
 
   friend class OmSegmentsImpl;
   friend class OmSegmentsImplLowLevel;

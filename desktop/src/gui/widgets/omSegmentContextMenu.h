@@ -22,7 +22,7 @@ class OmSegmentContextMenu : public QMenu {
  public:
   void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs);
   void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs,
-               const om::globalCoord coord);
+               const om::coords::Global coord);
   void Refresh(const OmSegmentPickPoint& pickPoint, OmViewGroupState* vgs);
   void Refresh(const om::landmarks::sdwAndPt& pickPoint, OmViewGroupState& vgs);
 
@@ -57,7 +57,7 @@ Q_SLOTS:
 
  private:
   SegmentDataWrapper sdw_;
-  om::globalCoord coord_;
+  om::coords::Global coord_;
   OmViewGroupState* vgs_;
 
   bool isValid() const;

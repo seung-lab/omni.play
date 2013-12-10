@@ -34,7 +34,6 @@ class MeshTest {
   }
 
  private:
-
   OmSegmentation* const segmentation_;
   const double threshold_;
 
@@ -57,7 +56,7 @@ class MeshTest {
 
     manager.join();
 
-    std::cout << "\ndone meshing..." << std::endl;
+    log_infos << "done meshing...";
   }
 
   class MockTriStripCollector : public TriStripCollector {
@@ -69,9 +68,9 @@ class MeshTest {
     }
   };
 
-  LockedVector<std::shared_ptr<MockTriStripCollector> > tris_;
+  om::utility::LockedVector<std::shared_ptr<MockTriStripCollector> > tris_;
 
-  void processChunk(om::chunkCoord coord) {
+  void processChunk(om::coords::Chunk coord) {
     FOR_EACH(id, segmentation_->UniqueValuesDS().Values(coord, threshold_)) {
       auto t = std::make_shared<MockTriStripCollector>(*id);
       tris_.push_back(t);
@@ -98,15 +97,15 @@ class MeshTest {
   }
 
   void check() {
-    printf("checking mesh data\n");
+    log_infos << "checking mesh data";
 
     auto coords = segmentation_->GetMipChunkCoords(0);
 
     FOR_EACH(cc, *coords) {
       FOR_EACH(id, segmentation_->UniqueValuesDS().Values(*cc, 1)) {
         OmMeshPtr mesh;
-        segmentation_->MeshManagers()
-            ->GetMesh(mesh, *cc, *id, 1, om::common::Blocking::BLOCKING);
+        segmentation_->MeshManagers()->GetMesh(mesh, *cc, *id, 1,
+                                               om::common::Blocking::BLOCKING);
         if (!mesh) {
           throw om::IoException("no mesh found");
         }
@@ -131,6 +130,6 @@ class MeshTest {
       }
     }
 
-    printf("data check ok!!\n");
+    log_infos << "data check ok!!";
   }
 };

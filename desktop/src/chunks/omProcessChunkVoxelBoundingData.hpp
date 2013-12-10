@@ -10,7 +10,7 @@ class ProcessChunkVoxelBoundingData {
  public:
   ProcessChunkVoxelBoundingData(OmSegChunk* chunk, OmSegments* segments)
       : chunk_(chunk),
-        minVertexOfChunk_(chunk_->Mipping().GetExtent().getMin()),
+        minVertexOfChunk_(chunk_->Mipping().Extent().getMin()),
         segments_(segments) {}
 
   ~ProcessChunkVoxelBoundingData() {
@@ -24,17 +24,17 @@ class ProcessChunkVoxelBoundingData {
   inline void processVoxel(const om::common::SegID val,
                            const Vector3i& voxelPos) {
     getOrAddSegment(val);
-    getBbox(val).get().merge(om::dataBbox(minVertexOfChunk_ + voxelPos,
-                                          minVertexOfChunk_ + voxelPos));
+    getBbox(val).get().merge(om::coords::DataBbox(
+        minVertexOfChunk_ + voxelPos, minVertexOfChunk_ + voxelPos));
   }
 
  private:
   OmSegChunk* const chunk_;
-  const om::dataCoord minVertexOfChunk_;
+  const om::coords::Data minVertexOfChunk_;
   OmSegments* const segments_;
 
   std::unordered_map<om::common::SegID, OmSegment*> cacheSegments_;
-  typedef std::unordered_map<om::common::SegID, om::dataBbox> bbox_map;
+  typedef std::unordered_map<om::common::SegID, om::coords::DataBbox> bbox_map;
   bbox_map bounds_;
 
   OmSegment* getOrAddSegment(const om::common::SegID val) {
@@ -44,7 +44,7 @@ class ProcessChunkVoxelBoundingData {
     return cacheSegments_[val];
   }
 
-  boost::optional<om::dataBbox&> getBbox(om::common::SegID id) {
+  boost::optional<om::coords::DataBbox&> getBbox(om::common::SegID id) {
     bbox_map::iterator bbox = bounds_.find(id);
     if (bbox != bounds_.end()) {
       return bbox->second;

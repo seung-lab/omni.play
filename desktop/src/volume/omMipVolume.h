@@ -7,9 +7,10 @@
  */
 
 #include "common/common.h"
+#include "coordinates/chunk.h"
+#include "coordinates/volumeSystem.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataWrapper.h"
-#include "volume/omVolCoordsMipped.hpp"
 
 class OmDataPath;
 class OmHdf5;
@@ -18,7 +19,8 @@ class OmVolume;
 class OmVolumeData;
 
 namespace YAMLold {
-template <class T> class mipVolume;
+template <class T>
+class mipVolume;
 }
 
 namespace om {
@@ -48,12 +50,12 @@ class OmMipVolume {
   inline bool IsBuilt() { return MIPVOL_BUILT == mBuildState; }
   inline bool built() { return MIPVOL_BUILT == mBuildState; }
 
-  std::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords() const;
-  std::shared_ptr<std::deque<om::chunkCoord> > GetMipChunkCoords(
+  std::shared_ptr<std::deque<om::coords::Chunk> > GetMipChunkCoords() const;
+  std::shared_ptr<std::deque<om::coords::Chunk> > GetMipChunkCoords(
       const int mipLevel) const;
 
-  //mip data accessors
-  bool ContainsVoxel(const om::globalCoord& vox);
+  // mip data accessors
+  bool ContainsVoxel(const om::coords::Global& vox);
 
   OmVolDataType getVolDataType() { return mVolDataType; }
 
@@ -66,28 +68,32 @@ class OmMipVolume {
   virtual int GetBytesPerVoxel() const = 0;
   virtual int GetBytesPerSlice() const = 0;
 
-  inline OmMipVolCoords& Coords() { return coords_; }
+  inline om::coords::VolumeSystem& Coords() { return coords_; }
 
-  inline const OmMipVolCoords& Coords() const { return coords_; }
+  inline const om::coords::VolumeSystem& Coords() const { return coords_; }
 
  protected:
-  //OmMipVolCoords coords_;
   OmVolDataType mVolDataType;
 
-  OmMipVolCoords coords_;
+  om::coords::VolumeSystem coords_;
 
   int mBuildState;
   void SetBuildState(const MipVolumeBuildState s) { mBuildState = s; }
 
   void addChunkCoordsForLevel(const int mipLevel,
-                              std::deque<om::chunkCoord>* coords) const;
+                              std::deque<om::coords::Chunk>* coords) const;
 
  private:
-  template <class T> friend class OmVolumeBuilderBase;
-  template <class T> friend class OmVolumeBuilderHdf5;
-  template <class T> friend class OmVolumeBuilderImages;
-  template <class T> friend class OmMipVolumeArchive;
-  template <class T> friend class YAMLold::mipVolume;
+  template <class T>
+  friend class OmVolumeBuilderBase;
+  template <class T>
+  friend class OmVolumeBuilderHdf5;
+  template <class T>
+  friend class OmVolumeBuilderImages;
+  template <class T>
+  friend class OmMipVolumeArchive;
+  template <class T>
+  friend class YAMLold::mipVolume;
 
   friend class OmChunk;
   friend class OmMipVolumeArchiveOld;

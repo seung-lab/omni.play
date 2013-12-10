@@ -5,7 +5,8 @@
 #include "chunks/omChunkItemContainerMatrix.hpp"
 #include "zi/omMutex.h"
 
-template <typename VOL, typename T> class OmChunkItemContainer {
+template <typename VOL, typename T>
+class OmChunkItemContainer {
  private:
   VOL* const vol_;
   ;
@@ -16,7 +17,7 @@ template <typename VOL, typename T> class OmChunkItemContainer {
   std::vector<matrix_t*> mips_;
 
   void setup() {
-    const int rootMipLevel = vol_->Coords().GetRootMipLevel();
+    const int rootMipLevel = vol_->Coords().RootMipLevel();
 
     std::vector<matrix_t*> newMips;
     newMips.resize(rootMipLevel + 1);
@@ -44,10 +45,10 @@ template <typename VOL, typename T> class OmChunkItemContainer {
 
   void Clear() { setup(); }
 
-  T* Get(const om::chunkCoord& coord) {
+  T* Get(const om::coords::Chunk& coord) {
     zi::guard g(lock_);
 
-    const std::size_t mipLevel = coord.Level;
+    const std::size_t mipLevel = coord.mipLevel();
 
     if (mipLevel >= mips_.size()) {
       throw om::ArgException("invalid mip level");

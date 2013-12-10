@@ -13,7 +13,7 @@ namespace segchunk {
 class dataFactory {
  public:
   static dataInterface* Produce(OmSegmentation* vol, OmSegChunk* chunk,
-                                const om::chunkCoord& coord) {
+                                const om::coords::Chunk& coord) {
     switch (vol->getVolDataType().index()) {
       case OmVolDataType::INT8:
         return new dataImpl<int8_t>(vol, chunk, coord);
@@ -33,8 +33,7 @@ class dataFactory {
       case OmVolDataType::UNKNOWN:
       default:
         throw om::IoException("data type not handled");
-    }
-    ;
+    };
   }
 };
 

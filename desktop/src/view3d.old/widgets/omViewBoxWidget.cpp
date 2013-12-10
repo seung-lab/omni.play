@@ -23,7 +23,7 @@ void OmViewBoxWidget::Draw() {
   glPushAttrib(GL_ALL_ATTRIB_BITS);
   glDisable(GL_LIGHTING);
 
-  //set line width
+  // set line width
   static const int RECT_WIREFRAME_LINE_WIDTH = 2;
   glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
 
@@ -67,7 +67,7 @@ void OmViewBoxWidget::drawRectangle(const Vector3i& v0, const Vector3i& v1,
 void OmViewBoxWidget::drawLines(Vector3i depth) {
   Vector3i v0, v1;
 
-  float distance = ((float) Om3dPreferences::getCrosshairValue()) / 10.0;
+  float distance = ((float)Om3dPreferences::getCrosshairValue()) / 10.0;
 
   glColor3fv(om::gl::old::OMGL_BLUE);
   v0 = Vector3i(depth.x, depth.y, depth.z - distance);
@@ -141,7 +141,7 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //     }
 //
 //     OmChannel& channel = cdw.GetChannel();
-//     Vector3f resolution = channel.Coords().GetResolution();
+//     Vector3f resolution = channel.Coords().Resolution();
 //     Vector3i extents = channel.Coords().GetDataDimensions();
 //
 //     glColor3fv(OMGL_WHITE);
@@ -154,7 +154,7 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //     {
 //         OmTilePtr d = *it;
 //
-//         const int level = d->GetTileCoord().getLevel();
+//         const int level = d->GetTileCoord().mipLevel();
 //         const Vector3f tileLength =
 // resolution*128.0*om::math::pow2int(level);
 //

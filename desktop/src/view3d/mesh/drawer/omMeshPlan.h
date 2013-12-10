@@ -19,7 +19,7 @@ struct MeshPlanKey {
 };
 
 struct MeshPlanPayload {
-  om::chunkCoord coord;
+  om::coords::Chunk coord;
   Vector3f color;
 };
 
@@ -32,14 +32,10 @@ class MeshPlan : public MeshPlanStruct {
  public:
   MeshPlan() : allSegmentsFound_(true) {}
 
-  void Add(OmSegment* seg, const om::chunkCoord& coord, float distance,
+  void Add(OmSegment* seg, const om::coords::Chunk& coord, float distance,
            const Vector3f& color) {
-    insert(std::make_pair(MeshPlanKey({
-      seg, distance
-    }),
-                          MeshPlanPayload({
-      coord, color
-    })));
+    insert(std::make_pair(MeshPlanKey({seg, distance}),
+                          MeshPlanPayload({coord, color})));
   }
 
   bool HasAllSegments() const { return allSegmentsFound_; }

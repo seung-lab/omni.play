@@ -7,21 +7,21 @@ class OmChunksAndPts {
   OmSegmentation* const vol_;
   const om::common::ViewType viewType_;
 
-  std::set<om::dataCoord> pts_;
+  std::set<om::coords::Data> pts_;
 
  public:
   OmChunksAndPts(OmSegmentation* vol, const om::common::ViewType viewType)
       : vol_(vol), viewType_(viewType) {}
 
   void AddAllPtsThatIntersectVol(om::pt3d_list_t* pts) {
-    const om::globalBbox& segDataExtent = vol_->Coords().GetExtent();
+    const om::coords::GlobalBbox& segDataExtent = vol_->Coords().Extent();
 
     FOR_EACH(iter, *pts) {
       if (!segDataExtent.contains(*iter)) {
         continue;
       }
 
-      om::dataCoord coord = iter->toDataCoord(vol_, 0);
+      om::coords::Data coord = iter->ToData(vol_->Coords(), 0);
 
       pts_.insert(coord);
     }

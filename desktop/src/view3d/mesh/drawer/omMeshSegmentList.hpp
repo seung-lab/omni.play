@@ -27,7 +27,7 @@ class MeshSegmentList {
     threadPool_.stop();
   }
 
-  boost::optional<SegPtrAndColorList> Get(const om::chunkCoord& coord,
+  boost::optional<SegPtrAndColorList> Get(const om::coords::Chunk& coord,
                                           om::common::SegID segID,
                                           const om::v3d::key& key) {
     zi::guard g(lock_);
@@ -65,14 +65,15 @@ class MeshSegmentList {
     return boost::optional<SegPtrAndColorList>(spList.list);
   }
 
-  void AddToCache(const om::chunkCoord& coord, OmSegment& rootSeg,
+  void AddToCache(const om::coords::Chunk& coord, OmSegment& rootSeg,
                   bool shouldVolumeBeShownBroken, float breakThreshold,
                   const SegPtrAndColorList& segmentsToDraw) {
     zi::guard g(lock_);
 
     mSegmentListCache[makeKey(coord, rootSeg.value(), shouldVolumeBeShownBroken,
-                              breakThreshold)] = SegPtrAndColorListValid(
-        segmentsToDraw, rootSeg.getFreshnessForMeshes());
+                              breakThreshold)] =
+        SegPtrAndColorListValid(segmentsToDraw,
+                                rootSeg.getFreshnessForMeshes());
   }
 
  private:
@@ -80,12 +81,12 @@ class MeshSegmentList {
   om::thread::ThreadPool threadPool_;
   zi::mutex lock_;
 
-  MeshSegListKey makeKey(const om::chunkCoord& coord, om::common::SegID segID,
+  MeshSegListKey makeKey(const om::coords::Chunk& coord,
+                         om::common::SegID segID,
                          bool shouldVolumeBeShownBroken, float breakThreshold) {
-    return MeshSegListKey(vol_.id(), segID, coord.mipLevel(), coord.X(),
-                          coord.Y(), coord.Z(), shouldVolumeBeShownBroken,
-                          breakThreshold);
+    return MeshSegListKey(vol_.id(), segID, coord.mipLevel(), coord.x, coord.y,
+                          coord.z, shouldVolumeBeShownBroken, breakThreshold);
   }
 };
 }
-}  //namespace
+}  // namespace

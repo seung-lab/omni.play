@@ -9,7 +9,6 @@ class OmMeshFilePtrCache;
 class OmMeshMetadata;
 class OmMeshReaderV2;
 class OmMesh;
-class OmMeshCoord;
 class OmSegmentation;
 
 #include <QDataStream>
@@ -28,11 +27,11 @@ class OmMeshManager {
 
   void CloseDownThreads();
 
-  OmMeshPtr Produce(const OmMeshCoord&);
+  OmMeshPtr Produce(const om::coords::Mesh&);
 
-  void GetMesh(OmMeshPtr&, const OmMeshCoord&, const om::common::Blocking);
+  void GetMesh(OmMeshPtr&, const om::coords::Mesh&, const om::common::Blocking);
 
-  void UncacheMesh(const OmMeshCoord& coord);
+  void UncacheMesh(const om::coords::Mesh& coord);
 
   void ClearCache();
 

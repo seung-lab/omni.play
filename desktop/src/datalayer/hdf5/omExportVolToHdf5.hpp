@@ -43,23 +43,23 @@ class OmExportVolToHdf5 {
     if (!QFile::exists(fileNameAndPath)) {
       hdfExport->create();
       hdfExport->open();
-      const Vector3i chunkSize = vol->Coords().GetChunkDimensions();
+      const Vector3i chunkSize = vol->Coords().ChunkDimensions();
       const Vector3i rounded_data_dims =
-          vol->Coords().getDimsRoundedToNearestChunk(0);
+          vol->Coords().DimsRoundedToNearestChunk(0);
       hdfExport->allocateChunkedDataset(fpath, rounded_data_dims, chunkSize,
                                         vol->getVolDataType());
     } else {
       hdfExport->open();
     }
 
-    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
         vol->GetMipChunkCoords(0);
 
     FOR_EACH(iter, *coordsPtr) {
-      const om::chunkCoord& coord = *iter;
+      const om::coords::Chunk& coord = *iter;
 
       OmDataWrapperPtr data = exportChunk(vol, coord, rerootSegments);
-      om::dataBbox chunk_data_bbox = coord.chunkBoundingBox(vol);
+      om::coords::DataBbox chunk_data_bbox = coord.BoundingBox(vol->Coords());
 
       hdfExport->writeChunk(OmDataPaths::getDefaultDatasetName(),
                             chunk_data_bbox, data);
@@ -70,13 +70,14 @@ class OmExportVolToHdf5 {
     log_infos << "export done!";
   }
 
-  OmDataWrapperPtr exportChunk(OmChannel* vol, const om::chunkCoord& coord,
+  OmDataWrapperPtr exportChunk(OmChannel* vol, const om::coords::Chunk& coord,
                                const bool) {
     OmChunk* chunk = vol->GetChunk(coord);
     return chunk->Data()->CopyOutChunkData();
   }
 
-  OmDataWrapperPtr exportChunk(OmSegmentation* vol, const om::chunkCoord& coord,
+  OmDataWrapperPtr exportChunk(OmSegmentation* vol,
+                               const om::coords::Chunk& coord,
                                const bool rerootSegments) {
     log_infos << "\r\texporting " << coord << std::flush;
 

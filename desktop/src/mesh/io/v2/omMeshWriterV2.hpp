@@ -7,7 +7,6 @@
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
 #include "mesh/io/v2/threads/omMeshWriterTaskV2.hpp"
 #include "mesh/mesher/TriStripCollector.hpp"
-#include "mesh/omMeshCoord.h"
 #include "mesh/omMeshManager.h"
 
 class OmMeshWriterV2 {
@@ -30,7 +29,7 @@ class OmMeshWriterV2 {
   void Join() { filePtrCache_->Join(); }
 
   bool CheckEverythingWasMeshed() {
-    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
         segmentation_->GetMipChunkCoords();
 
     bool allGood = true;
@@ -57,12 +56,13 @@ class OmMeshWriterV2 {
     return allGood;
   }
 
-  bool Contains(const om::common::SegID segID, const om::chunkCoord& coord) {
+  bool Contains(const om::common::SegID segID, const om::coords::Chunk& coord) {
     OmMeshChunkAllocTableV2* chunk_table = filePtrCache_->GetAllocTable(coord);
     return chunk_table->Contains(segID);
   }
 
-  bool WasMeshed(const om::common::SegID segID, const om::chunkCoord& coord) {
+  bool WasMeshed(const om::common::SegID segID,
+                 const om::coords::Chunk& coord) {
     OmMeshChunkAllocTableV2* chunk_table = filePtrCache_->GetAllocTable(coord);
 
     if (!chunk_table->Contains(segID)) {
@@ -74,7 +74,7 @@ class OmMeshWriterV2 {
     return entry.wasMeshed;
   }
 
-  bool HasData(const om::common::SegID segID, const om::chunkCoord& coord) {
+  bool HasData(const om::common::SegID segID, const om::coords::Chunk& coord) {
     OmMeshChunkAllocTableV2* chunk_table = filePtrCache_->GetAllocTable(coord);
 
     if (!chunk_table->Contains(segID)) {
@@ -92,7 +92,7 @@ class OmMeshWriterV2 {
 
   // Save will take ownership of mesh data
   template <typename U>
-  void Save(const om::common::SegID segID, const om::chunkCoord& coord,
+  void Save(const om::common::SegID segID, const om::coords::Chunk& coord,
             const U data, const om::common::ShouldBufferWrites buffferWrites,
             const om::common::AllowOverwrite allowOverwrite) {
     std::shared_ptr<OmMeshWriterTaskV2<U> > task =

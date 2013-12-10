@@ -38,7 +38,8 @@ class ComparisonTask : virtual public Task {
 
  private:
   static bool chunkHasUserSegments(
-      OmChunkUniqueValuesManager& uniqueValuesDS, const om::chunkCoord& chunk,
+      OmChunkUniqueValuesManager& uniqueValuesDS,
+      const om::coords::Chunk& chunk,
       const std::unordered_map<common::SegID, int>& segFlags);
 
   uint32_t id_;

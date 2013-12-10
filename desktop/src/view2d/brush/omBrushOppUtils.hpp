@@ -5,9 +5,8 @@
 
 class OmBrushOppUtils {
  public:
-
   static void GetPts(OmBrushOppInfo* info, om::pt3d_list_t* pts,
-                     const om::globalCoord& xyzCoord,
+                     const om::coords::Global& xyzCoord,
                      const om::common::ViewType viewType) {
     if (1 == info->brushDia) {
       pts->push_back(xyzCoord);

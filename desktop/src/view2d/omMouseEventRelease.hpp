@@ -9,7 +9,7 @@ class OmMouseEventRelease {
   OmView2d* const v2d_;
   OmView2dState* const state_;
 
-  om::globalCoord dataClickPoint_;
+  om::coords::Global dataClickPoint_;
 
  public:
   OmMouseEventRelease(OmView2d* v2d, OmView2dState* state)
@@ -35,7 +35,8 @@ class OmMouseEventRelease {
 
  private:
   void setState(QMouseEvent* event) {
-    om::screenCoord clicked(Vector2i(event->x(), event->y()), state_);
-    dataClickPoint_ = clicked.toGlobalCoord();
+    om::coords::Screen clicked(Vector2i(event->x(), event->y()),
+                               state_->Coords());
+    dataClickPoint_ = clicked.ToGlobal();
   }
 };

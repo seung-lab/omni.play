@@ -15,5 +15,5 @@ class OmUpdateBoundingBoxes {
   void Update();
 
  private:
-  void doUpdate(const om::chunkCoord& coord);
+  void doUpdate(const om::coords::Chunk& coord);
 };

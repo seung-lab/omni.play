@@ -27,18 +27,21 @@ QString om::segmentation::folder::GetVolPath() {
 }
 
 QString om::segmentation::folder::GetMeshChunkFolderPath(
-    const double threshold, const om::chunkCoord& coord) {
+    const double threshold, const om::coords::Chunk& coord) {
   const QDir filesDir(GetVolPath());
 
-  const QString subPath =
-      QString("/meshes/%1/%2/%3/%4/%5/").arg(QString::number(threshold, 'f', 4))
-          .arg(coord.getLevel()).arg(coord.X()).arg(coord.Y()).arg(coord.Z());
+  const QString subPath = QString("/meshes/%1/%2/%3/%4/%5/")
+                              .arg(QString::number(threshold, 'f', 4))
+                              .arg(coord.mipLevel())
+                              .arg(coord.x)
+                              .arg(coord.y)
+                              .arg(coord.z);
 
   return filesDir.absolutePath() + subPath;
 }
 
 QString om::segmentation::folder::MakeMeshChunkFolderPath(
-    const double threshold, const om::chunkCoord& coord) {
+    const double threshold, const om::coords::Chunk& coord) {
   static zi::rwmutex lock;
 
   const QString fullPath = GetMeshChunkFolderPath(threshold, coord);
@@ -95,17 +98,20 @@ QString om::segmentation::folder::GetChunksFolder() {
 }
 
 QString om::segmentation::folder::GetChunkFolderPath(
-    const om::chunkCoord& coord) {
+    const om::coords::Chunk& coord) {
   const QDir filesDir(GetVolPath());
 
-  const QString subPath = QString("/chunks/%1/%2/%3/%4/").arg(coord.getLevel())
-      .arg(coord.X()).arg(coord.Y()).arg(coord.Z());
+  const QString subPath = QString("/chunks/%1/%2/%3/%4/")
+                              .arg(coord.mipLevel())
+                              .arg(coord.x)
+                              .arg(coord.y)
+                              .arg(coord.z);
 
   return filesDir.absolutePath() + subPath;
 }
 
 QString om::segmentation::folder::MakeChunkFolderPath(
-    const om::chunkCoord& coord) {
+    const om::coords::Chunk& coord) {
   static zi::rwmutex lock;
 
   const QString fullPath = GetChunkFolderPath(coord);

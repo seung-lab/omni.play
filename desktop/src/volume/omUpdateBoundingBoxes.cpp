@@ -8,7 +8,7 @@
 OmUpdateBoundingBoxes::OmUpdateBoundingBoxes(OmSegmentation* vol)
     : vol_(vol), segments_(vol->Segments()) {}
 
-void OmUpdateBoundingBoxes::doUpdate(const om::chunkCoord& coord) {
+void OmUpdateBoundingBoxes::doUpdate(const om::coords::Chunk& coord) {
   OmSegChunk* chunk = vol_->GetChunk(coord);
 
   chunk->SegData()->RefreshBoundingData(segments_);
@@ -18,7 +18,7 @@ void OmUpdateBoundingBoxes::Update() {
   OmThreadPool pool;
   pool.start();
 
-  std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+  std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
       vol_->GetMipChunkCoords(0);
 
   FOR_EACH(iter, *coordsPtr) {

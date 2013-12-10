@@ -82,14 +82,14 @@ class OmMeshManagers {
   }
 
   /*
-      void MeshChunk(const om::chunkCoord& coord)
+      void MeshChunk(const om::coords::Chunk& coord)
       {
           ziMesher mesher(segmentation_, 1);
           mesher.addChunkCoord(coord);
           mesher.mesh();
       }
 
-      void RebuildChunk(const om::chunkCoord&,
+      void RebuildChunk(const om::coords::Chunk&,
                         const om::common::SegIDSet& )
       {
           assert(0);
@@ -102,7 +102,7 @@ class OmMeshManagers {
 
   //remove mesh from cache to force it to reload
   foreach( const om::common::SegID & val, rModifiedValues ){
-  OmMeshCoord mip_mesh_coord = OmMeshCoord(mipCoord, val);
+  om::coords::Mesh mip_mesh_coord = om::coords::Mesh(mipCoord, val);
   mMipMeshManager->UncacheMesh(mip_mesh_coord);
   }
 
@@ -111,12 +111,12 @@ class OmMeshManagers {
       }
   */
 
-  void GetMesh(OmMeshPtr& ptr, const om::chunkCoord& coord,
+  void GetMesh(OmMeshPtr& ptr, const om::coords::Chunk& coord,
                const om::common::SegID segID, const double threshold,
                const om::common::Blocking blocking =
                    om::common::Blocking::NON_BLOCKING) {
     return GetManager(threshold)
-        ->GetMesh(ptr, OmMeshCoord(coord, segID), blocking);
+        ->GetMesh(ptr, om::coords::Mesh(coord, segID), blocking);
   }
 
  private:

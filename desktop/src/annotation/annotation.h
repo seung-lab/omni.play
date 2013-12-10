@@ -1,8 +1,8 @@
 #pragma once
 
-#include "coordinates/dataCoord.h"
-#include "coordinates/globalCoord.h"
 #include "common/common.h"
+#include "coordinates/data.h"
+#include "coordinates/global.h"
 #include "common/colors.h"
 #include "datalayer/fs/omFile.hpp"
 #include "system/manager.hpp"
@@ -18,19 +18,19 @@ namespace om {
 namespace annotation {
 
 struct data {
-  dataCoord coord;
+  coords::Data coord;
   std::string comment;
-  om::common::Color color;
+  common::Color color;
   double size;
 
-  data(dataCoord coord, std::string comment, om::common::Color color,
+  data(coords::Data coord, std::string comment, common::Color color,
        double size)
       : coord(coord), comment(comment), color(color), size(size) {}
 
-  inline void setCoord(const om::globalCoord& c) {
-    coord = c.toDataCoord(coord.volume(), 0);
+  inline void setCoord(const coords::Global& c) {
+    coord = c.ToData(coord.volume(), 0);
   }
-  inline om::globalCoord getCoord() { return coord.toGlobalCoord(); }
+  inline coords::Global getCoord() { return coord.ToGlobal(); }
 };
 
 class manager : public system::Manager<data> {
@@ -42,8 +42,8 @@ class manager : public system::Manager<data> {
   manager(OmSegmentation* vol) : vol_(vol) {}
   virtual ~manager() {}
 
-  void Add(globalCoord coord, const std::string& comment,
-           const om::common::Color& color, double size);
+  void Add(coords::Global coord, const std::string& comment,
+           const common::Color& color, double size);
 
   void Load();
   void Save() const;

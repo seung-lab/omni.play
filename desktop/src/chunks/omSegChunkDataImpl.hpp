@@ -17,11 +17,12 @@ using om::chunk::dataAccessor;
 using om::chunk::ptrToChunkDataBase;
 using om::chunk::ptrToChunkDataMemMapVol;
 
-template <typename DATA> class dataImpl : public dataInterface {
+template <typename DATA>
+class dataImpl : public dataInterface {
  private:
   OmSegmentation* const vol_;
   OmSegChunk* const chunk_;
-  const om::chunkCoord coord_;
+  const om::coords::Chunk coord_;
 
   ptrToChunkDataBase* const ptrToChunkData_;
 
@@ -29,7 +30,8 @@ template <typename DATA> class dataImpl : public dataInterface {
   const int elementsPerSlice_;
 
  public:
-  dataImpl(OmSegmentation* vol, OmSegChunk* chunk, const om::chunkCoord& coord)
+  dataImpl(OmSegmentation* vol, OmSegChunk* chunk,
+           const om::coords::Chunk& coord)
       : vol_(vol),
         chunk_(chunk),
         coord_(coord),
@@ -80,11 +82,11 @@ template <typename DATA> class dataImpl : public dataInterface {
     }
   }
 
-  uint32_t SetVoxelValue(const om::dataCoord& voxel, const uint32_t val) {
+  uint32_t SetVoxelValue(const om::coords::Data& voxel, const uint32_t val) {
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);
     DATA* data = dataWrapper.Data();
 
-    const int offset = voxel.toChunkOffset();
+    const int offset = voxel.ToChunkOffset();
 
     const uint32_t oldVal = data[offset];
     data[offset] = val;
@@ -92,11 +94,11 @@ template <typename DATA> class dataImpl : public dataInterface {
     return oldVal;
   }
 
-  uint32_t GetVoxelValue(const om::dataCoord& voxel) {
+  uint32_t GetVoxelValue(const om::coords::Data& voxel) {
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);
     DATA* data = dataWrapper.Data();
 
-    return data[voxel.toChunkOffset()];
+    return data[voxel.ToChunkOffset()];
   }
 
   void RewriteChunk(const std::unordered_map<uint32_t, uint32_t>& vals) {
@@ -120,7 +122,8 @@ template <typename DATA> class dataImpl : public dataInterface {
   }
 
  private:
-  template <typename T> std::shared_ptr<uint32_t> getChunkAs32bit(T*) const {
+  template <typename T>
+  std::shared_ptr<uint32_t> getChunkAs32bit(T*) const {
     OmRawChunk<T> rawChunk(vol_, chunk_->GetCoordinate());
 
     std::shared_ptr<T> data = rawChunk.SharedPtr();

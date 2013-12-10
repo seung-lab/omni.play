@@ -14,7 +14,8 @@ class OmBrushSelectLine {
 
   virtual ~OmBrushSelectLine() {}
 
-  void SelectLine(const om::globalCoord& first, const om::globalCoord& second) {
+  void SelectLine(const om::coords::Global& first,
+                  const om::coords::Global& second) {
     OmBrushOppLine lineOpp(info_);
 
     std::shared_ptr<om::pt3d_list_t> pts = lineOpp.GetPts(first, second);

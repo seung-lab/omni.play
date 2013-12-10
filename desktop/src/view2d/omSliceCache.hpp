@@ -34,24 +34,24 @@ class OmSliceCache {
   OmSliceCache(OmSegmentation* vol, const om::common::ViewType viewType)
       : vol_(vol),
         viewType_(viewType),
-        chunkDim_(vol->Coords().GetChunkDimension()) {}
+        chunkDim_(vol->Coords().ChunkDimensions().x) {}
 
-  om::common::SegID GetVoxelValue(const om::dataCoord& coord) {
-    const int depthInChunk = coord.toTileDepth(viewType_);
+  om::common::SegID GetVoxelValue(const om::coords::Data& coord) {
+    const int depthInChunk = coord.ToTileDepth(viewType_);
 
-    auto slicePtr = GetSlice(coord.toChunkCoord(), depthInChunk);
+    auto slicePtr = GetSlice(coord.ToChunk(), depthInChunk);
 
     uint32_t const* const sliceData = slicePtr.get();
 
-    const uint32_t offset = coord.toTileOffset(viewType_);
+    const uint32_t offset = coord.ToTileOffset(viewType_);
 
     return sliceData[offset];
   }
 
-  std::shared_ptr<uint32_t> GetSlice(const om::chunkCoord& chunkCoord,
+  std::shared_ptr<uint32_t> GetSlice(const om::coords::Chunk& chunkCoord,
                                      const int depthInChunk) {
-    const OmSliceKey key(chunkCoord.Coordinate.x, chunkCoord.Coordinate.y,
-                         chunkCoord.Coordinate.z, depthInChunk);
+    const OmSliceKey key(chunkCoord.x, chunkCoord.y, chunkCoord.z,
+                         depthInChunk);
 
     if (cache_.count(key)) {
       return cache_[key];

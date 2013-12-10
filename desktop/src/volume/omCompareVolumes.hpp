@@ -28,26 +28,26 @@ class OmCompareVolumes {
   template <typename VOL>
   static bool compareVolumes(VOL* vol1, VOL* vol2) {
     // check if dimensions are the same
-    if (vol1->Coords().GetExtent().getUnitDimensions() !=
-        vol2->Coords().GetExtent().getUnitDimensions()) {
+    if (vol1->Coords().Extent().getUnitDimensions() !=
+        vol2->Coords().Extent().getUnitDimensions()) {
       log_infos << "Volumes differ: Different dimensions.";
       return false;
     }
 
     // root mip level should be the same if data dimensions are the same
-    if (vol1->Coords().GetRootMipLevel() != vol2->Coords().GetRootMipLevel()) {
+    if (vol1->Coords().RootMipLevel() != vol2->Coords().RootMipLevel()) {
       log_infos << "Volumes differ: Different number of MIP levels.";
       return false;
     }
 
-    for (int level = 0; level <= vol1->Coords().GetRootMipLevel(); ++level) {
+    for (int level = 0; level <= vol1->Coords().RootMipLevel(); ++level) {
       log_infos << "Comparing mip level " << level;
 
-      std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+      std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
           vol1->GetMipChunkCoords(level);
 
       FOR_EACH(iter, *coordsPtr) {
-        const om::chunkCoord& coord = *iter;
+        const om::coords::Chunk& coord = *iter;
 
         if (CompareChunks(coord, vol1, vol2)) {
           continue;
@@ -65,7 +65,8 @@ class OmCompareVolumes {
    * Returns true if two given chunks contain the exact same image data
    */
   template <typename VOL>
-  static bool CompareChunks(const om::chunkCoord& coord, VOL* vol1, VOL* vol2) {
+  static bool CompareChunks(const om::coords::Chunk& coord, VOL* vol1,
+                            VOL* vol2) {
     OmChunk* chunk1 = vol1->GetChunk(coord);
 
     OmChunk* chunk2 = vol2->GetChunk(coord);

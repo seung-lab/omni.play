@@ -2,7 +2,7 @@
 
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
-#include "tiles/omTileCoord.h"
+#include "coordinates/tile.h"
 #include "tiles/omTileTypes.hpp"
 #include "utility/omTimer.hpp"
 #include "zi/omUtility.h"

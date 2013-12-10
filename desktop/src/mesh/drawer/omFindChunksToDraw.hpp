@@ -22,18 +22,18 @@ class OmFindChunksToDraw {
   }
 
  private:
-
   /**
    * Recursively draw MipChunks within the Segmentation using the
    *  MipCoordinate hierarchy. Uses the OmVolumeCuller to determine
    *  the visibility of a MipChunk.  If visible, the MipChunk is either
    *  drawn or the recursive draw process is called on its children.
    */
-  void determineChunksToDraw(const om::chunkCoord& chunkCoord, bool testVis) {
+  void determineChunksToDraw(const om::coords::Chunk& chunkCoord,
+                             bool testVis) {
     OmSegChunk* chunk = segmentation_->GetChunk(chunkCoord);
 
     if (testVis) {
-      //check if frustum contains chunk
+      // check if frustum contains chunk
       switch (culler_->TestChunk(chunk->Mipping().GetNormExtent())) {
         case VISIBILITY_NONE:
           return;
@@ -60,27 +60,27 @@ class OmFindChunksToDraw {
   }
 
   /**
-   *	Given that the chunk is visible, determine if it should be drawn
-   *	or if we should continue refining so as to draw children.
+   *  Given that the chunk is visible, determine if it should be drawn
+   *  or if we should continue refining so as to draw children.
    */
   bool shouldChunkBeDrawn(OmSegChunk* chunk) {
     // draw if MIP 0
-    if (0 == chunk->GetCoordinate().Level) {
+    if (0 == chunk->GetCoordinate().mipLevel()) {
       return true;
     }
 
-    const om::normBbox& normExtent = chunk->Mipping().GetNormExtent();
-    const om::normBbox& clippedNormExtent =
+    const om::coords::NormBbox& normExtent = chunk->Mipping().GetNormExtent();
+    const om::coords::NormBbox& clippedNormExtent =
         chunk->Mipping().GetClippedNormExtent();
 
-    const om::normCoord camera = culler_->GetPosition();
-    const om::normCoord center = clippedNormExtent.getCenter();
+    const om::coords::Norm camera = culler_->GetPosition();
+    const om::coords::Norm center = clippedNormExtent.getCenter();
 
     const float camera_to_center = center.distance(camera);
     const float distance =
         (normExtent.getMax() - normExtent.getCenter()).length();
 
-    //if distance too large, just draw it - else keep breaking it down
+    // if distance too large, just draw it - else keep breaking it down
     return (camera_to_center > distance);
   }
 };

@@ -1,14 +1,15 @@
 #pragma once
 
+#include "coordinates/chunk.h"
 #include "common/enums.hpp"
-#include "coordinates/chunkCoord.h"
 #include "system/omManageableObject.h"
 #include "datalayer/archive/affinity.h"
 #include "common/string.hpp"
 
 class OmChunk;
 class OmAffinityChannel;
-template <typename T> class OmRawChunk;
+template <typename T>
+class OmRawChunk;
 
 class OmAffinityGraph : public OmManageableObject {
  private:
@@ -35,9 +36,8 @@ class OmAffinityGraph : public OmManageableObject {
   inline std::string GetName() { return "affinity" + om::string::num(GetID()); }
 
   OmChunk* MipChunk(const om::common::AffinityGraph aff,
-                    const om::chunkCoord& coord);
+                    const om::coords::Chunk& coord);
 
   std::shared_ptr<OmRawChunk<float> > RawChunk(
-      const om::common::AffinityGraph aff, const om::chunkCoord& coord);
-
+      const om::common::AffinityGraph aff, const om::coords::Chunk& coord);
 };

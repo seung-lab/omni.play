@@ -26,11 +26,11 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
   void run() {
     log_infos << "copying mesh data...";
 
-    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
         segmentation_->GetMipChunkCoords();
 
     FOR_EACH(iter, *coordsPtr) {
-      const om::chunkCoord& coord = *iter;
+      const om::coords::Chunk& coord = *iter;
 
       if (!processChunk(coord)) {
         return;
@@ -45,7 +45,7 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
   }
 
  private:
-  bool processChunk(const om::chunkCoord& coord) {
+  bool processChunk(const om::coords::Chunk& coord) {
     const ChunkUniqueValues segIDs =
         segmentation_->UniqueValuesDS().Values(coord, 1);
 

@@ -18,7 +18,7 @@ class PlanCache {
   std::map<key, std::shared_ptr<MeshPlan>> meshPlans_;
 
  public:
-  PlanCache(const OmMipVolCoords& system, OmSegments& segments,
+  PlanCache(const om::coords::VolumeSystem& system, OmSegments& segments,
             MeshSegmentList& rootSegLists, OmViewGroupState& vgs)
       : rootSegLists_(rootSegLists),
         vgs_(vgs),
@@ -26,8 +26,8 @@ class PlanCache {
 
   std::shared_ptr<MeshPlan> GetPlan(const OmVolumeCuller& culler,
                                     const bool changed) {
-    key k = { OmCacheManager::GetFreshness(), vgs_.getDustThreshold(),
-              vgs_.shouldVolumeBeShownBroken(), vgs_.getBreakThreshold() };
+    key k = {OmCacheManager::GetFreshness(),   vgs_.getDustThreshold(),
+             vgs_.shouldVolumeBeShownBroken(), vgs_.getBreakThreshold()};
 
     if (changed) {
       planner_.Reset();

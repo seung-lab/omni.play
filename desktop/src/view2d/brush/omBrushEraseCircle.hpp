@@ -15,7 +15,7 @@ class OmBrushEraseCircle {
 
   virtual ~OmBrushEraseCircle() {}
 
-  void EraseCircle(const om::globalCoord& coord) {
+  void EraseCircle(const om::coords::Global& coord) {
     OmBrushOppCircle circleOpp(info_);
 
     std::shared_ptr<om::pt3d_list_t> pts = circleOpp.GetPts(coord);

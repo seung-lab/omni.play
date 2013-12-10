@@ -22,22 +22,22 @@ class dataInterface;
 
 class OmChunk {
  public:
-  OmChunk(OmChannel* vol, const om::chunkCoord& coord);
-  OmChunk(OmChannelImpl* vol, const om::chunkCoord& coord);
-  OmChunk(OmSegmentation* vol, const om::chunkCoord& coord);
+  OmChunk(OmChannel* vol, const om::coords::Chunk& coord);
+  OmChunk(OmChannelImpl* vol, const om::coords::Chunk& coord);
+  OmChunk(OmSegmentation* vol, const om::coords::Chunk& coord);
 
   virtual ~OmChunk();
 
-  bool ContainsVoxel(const om::dataCoord& vox) const {
-    return vox.volume() == vol_ && vox.level() == GetLevel() &&
-           mipping_.GetExtent().contains(vox);
+  bool ContainsVoxel(const om::coords::Data& vox) const {
+    return &vox.volume() == &vol_->Coords() && vox.mipLevel() == GetLevel() &&
+           mipping_.Extent().contains(vox);
   }
 
  public:
-  const om::chunkCoord& GetCoordinate() const { return coord_; }
-  int GetLevel() const { return coord_.Level; }
-  const om::dataCoord GetDimensions() const {
-    return mipping_.GetExtent().getUnitDimensions();
+  const om::coords::Chunk& GetCoordinate() const { return coord_; }
+  int GetLevel() const { return coord_.mipLevel(); }
+  const om::coords::Data GetDimensions() const {
+    return mipping_.Extent().getUnitDimensions();
   }
 
   om::chunk::dataInterface* Data() { return chunkData_.get(); }
@@ -45,7 +45,7 @@ class OmChunk {
   OmChunkMipping& Mipping() { return mipping_; }
 
  protected:
-  const om::chunkCoord coord_;
+  const om::coords::Chunk coord_;
   const std::unique_ptr<om::chunk::dataInterface> chunkData_;
   const OmMipVolume* const vol_;
 

@@ -63,8 +63,8 @@ class ziMesher {
   OmSegmentation& segmentation_;
   const int rootMipLevel_;
 
-  std::map<om::chunkCoord, std::vector<MeshCollector*>> occurances_;
-  std::map<om::chunkCoord, MeshCollector*> chunkCollectors_;
+  std::map<om::coords::Chunk, std::vector<MeshCollector*>> occurances_;
+  std::map<om::coords::Chunk, MeshCollector*> chunkCollectors_;
 
   OmMeshManager& meshManager_;
   std::unique_ptr<OmMeshWriterV2> meshWriter_;
@@ -76,7 +76,7 @@ class ziMesher {
   om::mesher::progress progress_;
 
   void init() {
-    std::shared_ptr<std::vector<om::chunkCoord>> levelZeroChunks =
+    std::shared_ptr<std::vector<om::coords::Chunk>> levelZeroChunks =
         segmentation_.Coords().MipChunkCoords(0);
 
     progress_.SetTotalNumChunks(levelZeroChunks->size());
@@ -100,7 +100,8 @@ class ziMesher {
     log_debugs << "done meshing...";
   }
 
-  void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord) {
+  void addValuesFromChunkAndDownsampledChunks(
+      const om::coords::Chunk& mip0coord) {
     const std::shared_ptr<om::chunk::UniqueValues> segIDs =
         segmentation_.ChunkUniqueValues()->Get(mip0coord);
 
@@ -122,9 +123,9 @@ class ziMesher {
   }
 
   void downsampleSegThroughAllMipLevels(
-      const om::chunkCoord& mip0coord,
+      const om::coords::Chunk& mip0coord,
       const om::chunk::UniqueValues& segIDsMip0) {
-    om::chunkCoord c = mip0coord.ParentCoord();
+    om::coords::Chunk c = mip0coord.ParentCoord();
 
     // corner case: no MIP levels >0
     while (c.mipLevel() <= rootMipLevel_) {
@@ -135,9 +136,9 @@ class ziMesher {
   }
 
   void downsampleSegThroughViewableMipLevels(
-      const om::chunkCoord& mip0coord,
+      const om::coords::Chunk& mip0coord,
       const om::chunk::UniqueValues& segIDsMip0) {
-    om::chunkCoord c = mip0coord.ParentCoord();
+    om::coords::Chunk c = mip0coord.ParentCoord();
 
     // corner case: no MIP levels >0
     while (c.mipLevel() <= rootMipLevel_) {
@@ -167,8 +168,8 @@ class ziMesher {
   }
 
   template <typename C>
-  void registerSegIDs(const om::chunkCoord& mip0coord, const om::chunkCoord& c,
-                      const C& segIDs) {
+  void registerSegIDs(const om::coords::Chunk& mip0coord,
+                      const om::coords::Chunk& c, const C& segIDs) {
     if (chunkCollectors_.count(c) == 0) {
       chunkCollectors_.insert(
           std::make_pair(c, new MeshCollector(c, meshWriter_.get())));
@@ -215,7 +216,7 @@ class ziMesher {
   }
 
   void setupMarchingCube(zi::mesh::marching_cubes<int>& cube_marcher,
-                         const om::chunkCoord& chunk) {
+                         const om::coords::Chunk& chunk) {
     OmImage<uint32_t, 3> chunkData =
         OmChunkUtils::GetMeshOmImageData(segmentation_.ChunkDS(), chunk);
 
@@ -226,7 +227,7 @@ class ziMesher {
                         129);
   }
 
-  void processChunk(const om::chunkCoord& coord) {
+  void processChunk(const om::coords::Chunk& coord) {
     static const Vector3i chunkDims = segmentation_.Coords().ChunkDimensions();
 
     const auto& dstBbox = coord.BoundingBox(*segmentation_).ToNormBbox();

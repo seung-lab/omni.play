@@ -11,11 +11,12 @@ namespace segchunk {
 
 class OmExtractSegTile {
  public:
-  OmExtractSegTile(OmSegmentation* vol, const om::chunkCoord& coord,
+  OmExtractSegTile(OmSegmentation* vol, const om::coords::Chunk& coord,
                    const om::common::ViewType plane, int depth)
       : vol_(vol), coord_(coord), plane_(plane), depth_(depth) {}
 
-  template <typename T> inline std::shared_ptr<uint32_t> Extract(T* d) const {
+  template <typename T>
+  inline std::shared_ptr<uint32_t> Extract(T* d) const {
     return getCachedTile(d);
   }
 
@@ -24,7 +25,8 @@ class OmExtractSegTile {
   }
 
  private:
-  template <typename T> std::shared_ptr<uint32_t> getCachedTile(T* d) const {
+  template <typename T>
+  std::shared_ptr<uint32_t> getCachedTile(T* d) const {
     auto dataPtr = vol_->SliceCache()->Get(coord_, depth_, plane_);
 
     if (!dataPtr) {
@@ -45,7 +47,8 @@ class OmExtractSegTile {
     return tile;
   }
 
-  template <typename T> std::shared_ptr<uint32_t> getTile(T* d) const {
+  template <typename T>
+  std::shared_ptr<uint32_t> getTile(T* d) const {
     OmRawChunkSlicer<T> slicer(128, d);
 
     OmProject::Globals().FileReadSemaphore().acquire(1);
@@ -58,7 +61,7 @@ class OmExtractSegTile {
   }
 
   OmSegmentation* const vol_;
-  const om::chunkCoord coord_;
+  const om::coords::Chunk coord_;
   const om::common::ViewType plane_;
   const int depth_;
 };

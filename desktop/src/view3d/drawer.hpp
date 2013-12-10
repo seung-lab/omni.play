@@ -24,13 +24,13 @@ class Drawer {
   DrawStatus& drawStatus_;
   Camera& camera_;
   OmViewGroupState& vgs_;
-  const OmMipVolCoords& system_;
+  const om::coords::VolumeSystem& system_;
   std::vector<std::unique_ptr<MeshDrawInfo>> drawInfos_;
 
  public:
   Drawer(prefs::View3d& prefs, Widgets& widgets, DrawStatus& drawStatus,
          Camera& camera, const std::vector<OmSegmentation*>& segmentations,
-         OmViewGroupState& vgs, const OmMipVolCoords& system)
+         OmViewGroupState& vgs, const om::coords::VolumeSystem& system)
       : prefs_(prefs),
         widgets_(widgets),
         drawStatus_(drawStatus),
@@ -103,8 +103,8 @@ class Drawer {
 
     // setup culler to current projection-modelview matrix
     OmVolumeCuller mainCuller(camera_.GetProjModelViewMatrix(),
-                              normCoord(camera_.GetPosition(), system_),
-                              normCoord(camera_.GetFocus(), system_));
+                              om::coords::Norm(camera_.GetPosition(), system_),
+                              om::coords::Norm(camera_.GetFocus(), system_));
 
     // Draw meshes!
     for (auto& info : drawInfos_) {

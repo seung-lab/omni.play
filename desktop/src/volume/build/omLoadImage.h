@@ -37,7 +37,7 @@ class OmLoadImage {
   const uint32_t numTilesToWrite_;
   zi::semaphore limit_;
 
-  std::map<om::chunkCoord, uint64_t> chunkOffsets_;
+  std::map<om::coords::Chunk, uint64_t> chunkOffsets_;
 
   bool shouldPreallocate_;
 
@@ -50,9 +50,9 @@ class OmLoadImage {
         files_(files),
         totalNumImages_(files.size()),
         totalTilesInSlice_(mip0dims_.x * mip0dims_.y),
-        tileWidth_(vol_->Coords().GetChunkDimension()),
-        tileHeight_(vol_->Coords().GetChunkDimension()),
-        tilesPerChunk_(vol_->Coords().GetChunkDimension()),
+        tileWidth_(vol_->Coords().ChunkDimensions().x),
+        tileHeight_(vol_->Coords().ChunkDimensions().y),
+        tilesPerChunk_(vol_->Coords().ChunkDimensions().z),
         tileSizeBytes_(tileWidth_ * tileHeight_ * sizeof(T)),
         chunkSizeBytes_(tileSizeBytes_ * tilesPerChunk_),
         numTilesToWrite_(10000),
@@ -115,7 +115,7 @@ class OmLoadImage {
     doProcessSlice(img, sliceNum);
   }
 
-  uint64_t getChunkOffset(const om::chunkCoord& coord) {
+  uint64_t getChunkOffset(const om::coords::Chunk& coord) {
     if (chunkOffsets_.count(coord)) {
       return chunkOffsets_[coord];
     }
@@ -148,8 +148,9 @@ class OmLoadImage {
 
     for (int y = 0; y < mip0dims_.y; ++y) {
       for (int x = 0; x < mip0dims_.x; ++x) {
-        const om::chunkCoord coord = om::chunkCoord(0, x, y, z);
-        const om::dataBbox chunk_bbox = coord.chunkBoundingBox(vol_);
+        const om::coords::Chunk coord = om::coords::Chunk(0, x, y, z);
+        const om::coords::DataBbox chunk_bbox =
+            coord.BoundingBox(vol_->Coords());
 
         const int startX = chunk_bbox.getMin().x;
         const int startY = chunk_bbox.getMin().y;
@@ -171,7 +172,7 @@ class OmLoadImage {
     }
   }
 
-  void tileWriterTask(std::shared_ptr<T> tile, const om::chunkCoord coord,
+  void tileWriterTask(std::shared_ptr<T> tile, const om::coords::Chunk coord,
                       const int sliceNum) {
     const uint64_t chunkOffset = getChunkOffset(coord);
 

@@ -5,7 +5,6 @@
 #include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
 #include "mesh/io/v2/omRingBuffer.hpp"
-#include "mesh/omMeshCoord.h"
 #include "threads/omTaskManager.hpp"
 #include "zi/omMutex.h"
 
@@ -17,8 +16,9 @@ class OmMeshFilePtrCache {
   OmSegmentation* const segmentation_;
   const double threshold_;
 
-  std::map<om::chunkCoord, std::shared_ptr<OmMeshChunkAllocTableV2> > tables_;
-  std::map<om::chunkCoord, std::shared_ptr<OmMeshChunkDataWriterV2> > data_;
+  std::map<om::coords::Chunk, std::shared_ptr<OmMeshChunkAllocTableV2> >
+      tables_;
+  std::map<om::coords::Chunk, std::shared_ptr<OmMeshChunkDataWriterV2> > data_;
   zi::rwmutex lock_;
 
   OmThreadPool threadPool_;
@@ -54,7 +54,7 @@ class OmMeshFilePtrCache {
     mappedFiles_.Put(table);
   }
 
-  OmMeshChunkAllocTableV2* GetAllocTable(const om::chunkCoord& coord) {
+  OmMeshChunkAllocTableV2* GetAllocTable(const om::coords::Chunk& coord) {
     zi::rwmutex::write_guard g(lock_);
 
     if (!tables_.count(coord)) {
@@ -65,7 +65,7 @@ class OmMeshFilePtrCache {
     return tables_[coord].get();
   }
 
-  OmMeshChunkDataWriterV2* GetWriter(const om::chunkCoord& coord) {
+  OmMeshChunkDataWriterV2* GetWriter(const om::coords::Chunk& coord) {
     zi::rwmutex::write_guard g(lock_);
 
     if (!data_.count(coord)) {

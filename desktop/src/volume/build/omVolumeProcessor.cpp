@@ -9,19 +9,19 @@
 
 class OmSegmentationChunkBuildTask : public zi::runnable {
  private:
-  const om::chunkCoord coord_;
+  const om::coords::Chunk coord_;
   OmSegmentation* const vol_;
   OmSegments* const segments_;
 
  public:
-  OmSegmentationChunkBuildTask(const om::chunkCoord& coord,
+  OmSegmentationChunkBuildTask(const om::coords::Chunk& coord,
                                OmSegments* segments, OmSegmentation* vol)
       : coord_(coord), vol_(vol), segments_(segments) {}
 
   void run() {
     OmSegChunk* chunk = vol_->GetChunk(coord_);
 
-    const bool isMIPzero = (0 == coord_.Level);
+    const bool isMIPzero = (0 == coord_.mipLevel());
 
     chunk->SegData()->ProcessChunk(isMIPzero, segments_);
 
@@ -38,11 +38,11 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol) {
   OmThreadPool threadPool;
   threadPool.start();
 
-  std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+  std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
       vol->GetMipChunkCoords();
 
   FOR_EACH(iter, *coordsPtr) {
-    const om::chunkCoord& coord = *iter;
+    const om::coords::Chunk& coord = *iter;
 
     std::shared_ptr<OmSegmentationChunkBuildTask> task =
         std::make_shared<OmSegmentationChunkBuildTask>(coord, vol->Segments(),

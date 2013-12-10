@@ -1,16 +1,16 @@
 #pragma once
 
 #include "common/common.h"
+#include "coordinates/global.h"
 #include "common/enums.hpp"
 #include "common/point2d.hpp"
-#include "coordinates/globalCoord.h"
 
 class OmSegmentation;
 
 namespace om {
 typedef std::deque<point2di> pt2d_list_t;
-typedef std::deque<om::globalCoord> pt3d_list_t;
-};  //namespace om
+typedef std::deque<om::coords::Global> pt3d_list_t;
+};  // namespace om
 
 struct OmBrushOppInfo {
   OmSegmentation* const segmentation;

@@ -3,6 +3,7 @@
 #include "common/common.h"
 #include "segment/lists/omSegmentListsTypes.hpp"
 #include "zi/omUtility.h"
+#include <unordered_map>
 
 class OmSegmentListForGUI {
  private:

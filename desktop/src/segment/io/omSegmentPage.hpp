@@ -73,7 +73,8 @@ class OmSegmentPage {
       objectPool_[i].segments_ = segments_;
       objectPool_[i].data_ = &segmentsData_[i];
       objectPool_[i].listType_ = &listTypePage_[i];
-      objectPool_[i].data_->bounds = om::dataBbox(segmentation_, 0);
+      objectPool_[i].data_->bounds =
+          om::coords::DataBbox(segmentation_->Coords(), 0);
     }
   }
 

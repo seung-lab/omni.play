@@ -9,57 +9,57 @@
 
 class OmVoxelSetValueActionImpl {
  private:
-  //segmentation of voxels
+  // segmentation of voxels
   om::common::ID mSegmentationId;
 
-  //map of voxels to old values
-  std::map<om::globalCoord, om::common::SegID> mOldVoxelValues;
+  // map of voxels to old values
+  std::map<om::coords::Global, om::common::SegID> mOldVoxelValues;
 
-  //new value of voxels
+  // new value of voxels
   om::common::SegID mNewValue;
 
  public:
   OmVoxelSetValueActionImpl() {}
 
   OmVoxelSetValueActionImpl(const om::common::ID segmentationId,
-                            const om::globalCoord& rVoxel,
+                            const om::coords::Global& rVoxel,
                             const om::common::SegID value) {
-    //store segmentation id
+    // store segmentation id
     mSegmentationId = segmentationId;
 
-    //store new value
+    // store new value
     mNewValue = value;
 
-    //store old value of voxel
+    // store old value of voxel
     mOldVoxelValues[rVoxel] = mNewValue;
   }
 
   OmVoxelSetValueActionImpl(const om::common::ID segmentationId,
-                            const std::set<om::globalCoord>& rVoxels,
+                            const std::set<om::coords::Global>& rVoxels,
                             const om::common::SegID value) {
-    //store segmentation id
+    // store segmentation id
     mSegmentationId = segmentationId;
 
-    //store new value
+    // store new value
     mNewValue = value;
 
     // TODO: fixme???? mNewValue == "old value" ??????
-    //store old values of voxels
+    // store old values of voxels
     FOR_EACH(itr, rVoxels) { mOldVoxelValues[*itr] = mNewValue; }
   }
 
   void Execute() {
-    //set voxel
+    // set voxel
     OmSegmentation& r_segmentation =
         OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
 
-    //modified voxels
-    std::set<om::globalCoord> edited_voxels;
+    // modified voxels
+    std::set<om::coords::Global> edited_voxels;
 
     FOR_EACH(itr, mOldVoxelValues) {
-      //set voxel to new value
+      // set voxel to new value
       if (mNewValue == 0)  // erasing
-          {
+      {
         if (r_segmentation.SetVoxelValueIfSelected(itr->first, mNewValue)) {
           edited_voxels.insert(itr->first);
         }
@@ -71,15 +71,15 @@ class OmVoxelSetValueActionImpl {
   }
 
   void Undo() {
-    //set voxel
+    // set voxel
     OmSegmentation& r_segmentation =
         OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
 
-    //modified voxels
-    std::set<om::globalCoord> edited_voxels;
+    // modified voxels
+    std::set<om::coords::Global> edited_voxels;
 
     FOR_EACH(itr, mOldVoxelValues) {
-      //set voxel to prev value
+      // set voxel to prev value
       r_segmentation.SetVoxelValue(itr->first, itr->second);
       edited_voxels.insert(itr->first);
     }
@@ -101,10 +101,10 @@ class OmVoxelSetValueActionImpl {
   QString classNameForLogFile() const { return "OmVolxelSetvalueAction"; }
 
  private:
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
   friend class QDataStream& operator<<(QDataStream&,
                                        const OmVoxelSetValueActionImpl&);
   friend class QDataStream& operator>>(QDataStream&,
                                        OmVoxelSetValueActionImpl&);
-
 };

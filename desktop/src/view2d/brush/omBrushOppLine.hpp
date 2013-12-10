@@ -22,8 +22,8 @@ class OmBrushOppLine {
 
   virtual ~OmBrushOppLine() {}
 
-  std::shared_ptr<om::pt3d_list_t> GetPts(const om::globalCoord& first,
-                                          const om::globalCoord& second) {
+  std::shared_ptr<om::pt3d_list_t> GetPts(const om::coords::Global& first,
+                                          const om::coords::Global& second) {
     const Vector2i pt0 =
         OmView2dConverters::Get2PtsInPlane(first, info_->viewType);
     const Vector2i pt1 =
@@ -38,7 +38,6 @@ class OmBrushOppLine {
   }
 
  private:
-
   std::shared_ptr<om::pt3d_list_t> getPtsInRadiusedLine() {
     std::shared_ptr<om::pt3d_list_t> ret = std::make_shared<om::pt3d_list_t>();
 
@@ -48,7 +47,7 @@ class OmBrushOppLine {
     const int numPts = ptsInLineRadius1x_.size();
 
     for (int i = 0; i < numPts; ++i) {
-      const om::globalCoord xyzCoord =
+      const om::coords::Global xyzCoord =
           OmView2dConverters::MakeViewTypeVector3<float>(
               ptsInLineRadius1x_[i], ptsInLineRadius1y_[i], depth_, viewType_);
       OmBrushOppUtils::GetPts(info, pts, xyzCoord, viewType_);

@@ -8,12 +8,11 @@ void OmSegmentListByMRU::rebuildList() {
   vec_.clear();
   vec_.reserve(segs.size());
 
-  FOR_EACH(iter, segs) {
-    OmSegment* seg = *iter;
-
-    const SegInfo info = { seg, seg->value(),
-                           segmentLists_->GetSizeWithChildren(seg),
-                           segmentLists_->GetNumChildren(seg) };
+  for (auto& seg : segs) {
+    const SegInfo info = {seg,
+                          seg->value(),
+                          segmentLists_->GetSizeWithChildren(seg),
+                          segmentLists_->GetNumChildren(seg)};
 
     vec_.push_back(info);
   }

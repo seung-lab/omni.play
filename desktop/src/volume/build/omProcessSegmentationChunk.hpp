@@ -10,7 +10,7 @@ class OmProcessSegmentationChunk {
                              OmSegments* segments)
       : chunk_(chunk),
         computeSizes_(computeSizes),
-        minVertexOfChunk_(chunk_->Mipping().GetExtent().getMin()),
+        minVertexOfChunk_(chunk_->Mipping().Extent().getMin()),
         segments_(segments) {}
 
   ~OmProcessSegmentationChunk() {
@@ -19,7 +19,7 @@ class OmProcessSegmentationChunk {
       OmSegment* seg = iter->second;
       seg->addToSize(sizes_[val]);
       seg->AddToBoundingBox(
-          om::dataBbox(bounds_[val], minVertexOfChunk_.volume(), 0));
+          om::coords::DataBbox(bounds_[val], minVertexOfChunk_.volume(), 0));
     }
   }
 
@@ -31,14 +31,14 @@ class OmProcessSegmentationChunk {
 
     getOrAddSegment(val);
     sizes_[val] = 1 + sizes_[val];
-    bounds_[val].merge(om::dataBbox(minVertexOfChunk_ + voxelPos,
-                                    minVertexOfChunk_ + voxelPos));
+    bounds_[val].merge(om::coords::DataBbox(minVertexOfChunk_ + voxelPos,
+                                            minVertexOfChunk_ + voxelPos));
   }
 
  private:
   OmChunk* const chunk_;
   const bool computeSizes_;
-  const om::dataCoord minVertexOfChunk_;
+  const om::coords::Data minVertexOfChunk_;
   OmSegments* const segments_;
 
   std::unordered_map<om::common::SegID, OmSegment*> cacheSegments_;

@@ -61,16 +61,16 @@ class OmMeshDrawerImpl {
   void Draw(const int allowedDrawTimeMS) {
     OmOpenGLGarbageCollector::CleanDisplayLists(context_);
 
-    //transform to normal frame
+    // transform to normal frame
     glPushMatrix();
     glMultMatrixf(segmentation_->Coords().NormToGlobalMat().ml);
 
-    //draw volume axis
+    // draw volume axis
     if (checkDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
       om::gl::old::glDrawPositiveAxis();
     }
 
-    //return if no chunk level drawing
+    // return if no chunk level drawing
     if (!checkDrawOption(DRAWOP_LEVEL_CHUNKS)) {
       glPopMatrix();
       return;
@@ -105,7 +105,6 @@ class OmMeshDrawerImpl {
   bool RedrawNeeded() const { return redrawNeeded_; }
 
  private:
-
   inline bool checkDrawOption(const OmBitfield option) {
     return drawOptions_ & option;
   }
@@ -122,7 +121,7 @@ class OmMeshDrawerImpl {
     }
   }
 
-  void drawSegment(OmSegment* seg, const om::chunkCoord& coord) {
+  void drawSegment(OmSegment* seg, const om::coords::Chunk& coord) {
     OmMeshPtr mesh;
     segmentation_->MeshManagers()->GetMesh(mesh, coord, seg->value(), 1);
 
@@ -138,10 +137,10 @@ class OmMeshDrawerImpl {
     ++numSegsDrawn_;
     numVoxelsDrawn_ += seg->size();
 
-    //apply segment color
+    // apply segment color
     colorMesh(seg);
 
-    //draw mesh
+    // draw mesh
     glPushName(seg->value());
     glPushName(OMGL_NAME_MESH);
 
@@ -158,28 +157,28 @@ class OmMeshDrawerImpl {
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glPushMatrix();
 
-    //disable lighting for lines
+    // disable lighting for lines
     glDisable(GL_LIGHTING);
 
-    const om::normBbox& clippedNormExtent =
+    const om::coords::NormBbox& clippedNormExtent =
         chunk->Mipping().GetClippedNormExtent();
 
-    //translate and scale to chunk norm extent
+    // translate and scale to chunk norm extent
     const Vector3f translate = clippedNormExtent.getMin();
     const Vector3f scale =
         clippedNormExtent.getMax() - clippedNormExtent.getMin();
 
-    //transform model view
+    // transform model view
     om::gl::old::glTranslatefv(translate.array);
     om::gl::old::glScalefv(scale.array);
 
     glTranslatef(0.5, 0.5, 0.5);
     glColor3f(0.5, 0.5, 0.5);
-    //omglWireCube(1);
+    // omglWireCube(1);
     glTranslatef(-0.5, -0.5, -0.5);
 
-    //glScalefv( (Vector3f::ONE/scale).array);
-    //glTranslatefv( (-translate).array);
+    // glScalefv( (Vector3f::ONE/scale).array);
+    // glTranslatefv( (-translate).array);
 
     glPopMatrix();
     glPopAttrib();
@@ -224,7 +223,7 @@ class OmMeshDrawerImpl {
       hyperColor = seg->GetColorFloat();
     }
 
-    //check coloring options
+    // check coloring options
     if (checkDrawOption(DRAWOP_SEGMENT_COLOR_HIGHLIGHT)) {
       glColor3fv(OmPreferences::GetVector3f(om::PREF_VIEW3D_HIGHLIGHT_COLOR_V3F)
                      .array);

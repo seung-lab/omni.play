@@ -48,7 +48,6 @@ class OmMeshDrawPlanner {
   bool SegmentsMissing() const { return notAllSegmentsFound_; }
 
  private:
-
   inline bool checkDrawOption(const OmBitfield option) {
     return drawOptions_ & option;
   }
@@ -69,7 +68,7 @@ class OmMeshDrawPlanner {
   }
 
   void findRootSegments() {
-    //check to filter for relevant data values
+    // check to filter for relevant data values
     if (checkDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED)) {
       const om::common::SegIDSet ids = segments_->GetSelectedSegmentIDs();
       FOR_EACH(iter, ids) { rootSegs_.push_back(segments_->GetSegment(*iter)); }
@@ -100,7 +99,7 @@ class OmMeshDrawPlanner {
     }
   }
 
-  void addSegmentsToDraw(const om::chunkCoord& chunkCoord,
+  void addSegmentsToDraw(const om::coords::Chunk& chunkCoord,
                          const OmSegPtrList& segmentsToDraw) {
     FOR_EACH(iter, segmentsToDraw) {
       OmSegment* seg = *iter;

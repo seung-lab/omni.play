@@ -23,10 +23,10 @@ class DimSpinBox : public OmIntSpinBox {
 
 class LocationEditDialog : public QDialog {
  private:
-  om::globalCoord coord_;
+  om::coords::Global coord_;
 
  public:
-  LocationEditDialog(const om::globalCoord& coord, QWidget* parent)
+  LocationEditDialog(const om::coords::Global& coord, QWidget* parent)
       : QDialog(parent), coord_(coord) {
     setModal(true);
 
@@ -44,9 +44,9 @@ class LocationEditDialog : public QDialog {
     setLayout(layout);
   }
 
-  inline const om::globalCoord& Coord() const { return coord_; }
+  inline const om::coords::Global& Coord() const { return coord_; }
 
-  static void EditLocation(om::globalCoord& coord, QWidget* parent) {
+  static void EditLocation(om::coords::Global& coord, QWidget* parent) {
     LocationEditDialog dialog(coord, parent);
     if (dialog.exec() == QDialog::Accepted) {
       coord = dialog.Coord();

@@ -3,12 +3,12 @@
 #include "tiles/cache/omTileCacheThreadPool.hpp"
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheManager.h"
-#include "system/cache/omLockedCacheObjects.hpp"
+#include "utility/lockedObjects.hpp"
+#include "cache/lockedObjects.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/cache/omTilesToPrefetch.hpp"
 #include "tiles/omTile.h"
 #include "tiles/omTileTypes.hpp"
-#include "utility/omLockedObjects.h"
 #include "utility/omLockedPODs.hpp"
 
 #include <zi/system.hpp>
@@ -24,16 +24,16 @@ class OmThreadedTileCache : public OmCacheBase {
 
   const int bytesPerTile_;
 
-  LockedCacheMap<key_t, ptr_t> cache_;
+  om::cache::LockedCacheMap<key_t, ptr_t> cache_;
   LockedBool killingCache_;
 
   OmTileCacheThreadPool& threadPool_;
 
   struct OldCache {
     std::map<key_t, ptr_t> map;
-    KeyMultiIndex<key_t> list;
+    om::cache::KeyMultiIndex<key_t> list;
   };
-  LockedList<std::shared_ptr<OldCache> > cachesToClean_;
+  om::utility::LockedList<std::shared_ptr<OldCache> > cachesToClean_;
 
   OmTilesToPrefetch tilesToPrefetch_;
 
@@ -104,13 +104,13 @@ class OmThreadedTileCache : public OmCacheBase {
         return;
       }
 
-      const ptr_t ptr = cache_.remove_oldest();
+      auto ptr = cache_.remove_oldest();
 
-      if (!ptr) {
+      if (!ptr || ptr.get() == ptr_t()) {
         continue;
       }
 
-      numBytesRemoved += ptr->NumBytes();
+      numBytesRemoved += ptr.get()->NumBytes();
     }
   }
 

@@ -8,9 +8,10 @@
 
 class OmSegmentCenter {
  private:
-  boost::optional<om::dataBbox> static computeSelectedSegmentBoundingBox(
-      const SegmentationDataWrapper& sdw) {
-    om::dataBbox box(sdw.GetSegmentationPtr(), 0);
+  boost::
+      optional<om::coords::DataBbox> static computeSelectedSegmentBoundingBox(
+          const SegmentationDataWrapper& sdw) {
+    om::coords::DataBbox box(sdw.GetSegmentation().Coords(), 0);
 
     OmSegmentIterator iter(sdw.Segments());
     iter.iterOverSelectedIDs();
@@ -19,7 +20,7 @@ class OmSegmentCenter {
 
     OmSegment* seg = iter.getNextSegment();
     for (int i = 0; i < max && nullptr != seg; ++i) {
-      const om::dataBbox segBox = seg->BoundingBox();
+      const om::coords::DataBbox segBox = seg->BoundingBox();
       if (segBox.isEmpty()) {
         continue;
       }
@@ -30,38 +31,39 @@ class OmSegmentCenter {
     }
 
     if (box.isEmpty()) {
-      return boost::optional<om::dataBbox>();
+      return boost::optional<om::coords::DataBbox>();
     }
 
-    return boost::optional<om::dataBbox>(box);
+    return boost::optional<om::coords::DataBbox>(box);
   }
 
-  boost::optional<om::dataCoord> static findCenterOfSelectedSegments(
+  boost::optional<om::coords::Data> static findCenterOfSelectedSegments(
       const SegmentationDataWrapper& sdw) {
-    boost::optional<om::dataBbox> box = computeSelectedSegmentBoundingBox(sdw);
+    boost::optional<om::coords::DataBbox> box =
+        computeSelectedSegmentBoundingBox(sdw);
 
     if (!box) {
-      return boost::optional<om::dataCoord>();
+      return boost::optional<om::coords::Data>();
     }
 
-    const om::dataCoord ret = (box->getMin() + box->getMax()) / 2;
-    return boost::optional<om::dataCoord>(ret);
+    const om::coords::Data ret = (box->getMin() + box->getMax()) / 2;
+    return boost::optional<om::coords::Data>(ret);
   }
 
-  boost::optional<om::dataCoord> static findCenterOfSelectedSegments(
+  boost::optional<om::coords::Data> static findCenterOfSelectedSegments(
       const SegmentDataWrapper& sdw) {
     if (!sdw.IsSegmentValid()) {
-      return boost::optional<om::dataCoord>();
+      return boost::optional<om::coords::Data>();
     }
 
     OmSegment* seg = sdw.GetSegment();
-    const om::dataBbox& box = seg->BoundingBox();
+    const om::coords::DataBbox& box = seg->BoundingBox();
     if (box.isEmpty()) {
-      return boost::optional<om::dataCoord>();
+      return boost::optional<om::coords::Data>();
     }
 
-    const om::dataCoord ret = (box.getMin() + box.getMax()) / 2;
-    return boost::optional<om::dataCoord>(ret);
+    const om::coords::Data ret = (box.getMin() + box.getMax()) / 2;
+    return boost::optional<om::coords::Data>(ret);
   }
 
  public:
@@ -70,30 +72,31 @@ class OmSegmentCenter {
   static void CenterSegment(OmViewGroupState* vgs) {
     const SegmentationDataWrapper sdw = vgs->Segmentation();
 
-    const boost::optional<om::dataCoord> voxelDC =
+    const boost::optional<om::coords::Data> voxelDC =
         findCenterOfSelectedSegments(sdw);
 
     if (!voxelDC) {
       return;
     }
 
-    vgs->View2dState()->SetScaledSliceDepth(voxelDC->toGlobalCoord());
+    vgs->View2dState()->SetScaledSliceDepth(voxelDC->ToGlobal());
 
     om::event::ViewCenterChanged();
     om::event::View3dRecenter();
   }
 
   static boost::optional<float> ComputeCameraDistanceForSelectedSegments() {
-    om::globalBbox box;
+
+    om::coords::GlobalBbox box;
 
     FOR_EACH(iter, SegmentationDataWrapper::ValidIDs()) {
       SegmentationDataWrapper sdw(*iter);
 
-      const boost::optional<om::dataBbox> b =
+      const boost::optional<om::coords::DataBbox> b =
           computeSelectedSegmentBoundingBox(sdw);
 
       if (b) {
-        box.merge(b->toGlobalBbox());
+        box.merge(b->ToGlobalBbox());
       }
     }
 

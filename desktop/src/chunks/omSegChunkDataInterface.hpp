@@ -1,7 +1,7 @@
 #pragma once
 
 #include <unordered_map>
-
+#include "coordinates/data.h"
 #include "volume/omVolumeTypes.hpp"
 
 namespace om {
@@ -26,9 +26,9 @@ class dataInterface {
 
   virtual void RewriteChunk(const std::unordered_map<uint32_t, uint32_t>&) = 0;
 
-  virtual uint32_t SetVoxelValue(const om::dataCoord& voxel,
+  virtual uint32_t SetVoxelValue(const om::coords::Data& voxel,
                                  const uint32_t val) = 0;
-  virtual uint32_t GetVoxelValue(const om::dataCoord& voxel) = 0;
+  virtual uint32_t GetVoxelValue(const om::coords::Data& voxel) = 0;
 };
 
 }  // namespace segchunk

@@ -539,7 +539,7 @@ void Headless::loadChunk() {
 
   SegmentationDataWrapper sdw(segmentationID_);
   OmSegmentation& segmen = sdw.GetSegmentation();
-  om::chunkCoord chunk_coord(0, 0, 0, 0);
+  om::coords::Chunk chunk_coord(0, 0, 0, 0);
   OmChunk* chunk = segmen.GetChunk(chunk_coord);
   assert(chunk);
 }

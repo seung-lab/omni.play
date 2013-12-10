@@ -14,13 +14,13 @@ class OmVolumeAllocater {
     assert(OmVolDataType::UNKNOWN != type.index());
     vol->SetVolDataType(type);
 
-    const int maxLevel = vol->Coords().GetRootMipLevel();
+    const int maxLevel = vol->Coords().RootMipLevel();
 
     std::vector<std::shared_ptr<QFile> > volFiles(maxLevel + 1);
 
     for (int level = 0; level <= maxLevel; ++level) {
       const Vector3<uint64_t> dims =
-          vol->Coords().getDimsRoundedToNearestChunk(level);
+          vol->Coords().DimsRoundedToNearestChunk(level);
 
       volFiles[level] = createFile(vol, level, dims);
     }
@@ -35,13 +35,13 @@ class OmVolumeAllocater {
   }
 
   static void ReAllocateDownsampledVolumes(OmMipVolume* vol) {
-    const int maxLevel = vol->Coords().GetRootMipLevel();
+    const int maxLevel = vol->Coords().RootMipLevel();
 
     std::vector<std::shared_ptr<QFile> > volFiles(maxLevel + 1);
 
     for (int level = 1; level <= maxLevel; ++level) {
       const Vector3<uint64_t> dims =
-          vol->Coords().getDimsRoundedToNearestChunk(level);
+          vol->Coords().DimsRoundedToNearestChunk(level);
 
       volFiles[level] = createFile(vol, level, dims);
     }

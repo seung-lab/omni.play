@@ -6,7 +6,8 @@
  * cache is a mutex-lock map of chunk coords to OmChunk objects
  **/
 
-template <typename VOL, typename CHUNK> class OmChunkCache {
+template <typename VOL, typename CHUNK>
+class OmChunkCache {
  private:
   std::unique_ptr<OmChunkItemContainer<VOL, CHUNK> > chunks_;
 
@@ -18,5 +19,7 @@ template <typename VOL, typename CHUNK> class OmChunkCache {
  public:
   OmChunkCache(VOL* vol) : chunks_(new OmChunkItemContainer<VOL, CHUNK>(vol)) {}
 
-  CHUNK* GetChunk(const om::chunkCoord& coord) { return chunks_->Get(coord); }
+  CHUNK* GetChunk(const om::coords::Chunk& coord) {
+    return chunks_->Get(coord);
+  }
 };

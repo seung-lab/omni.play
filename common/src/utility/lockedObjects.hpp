@@ -11,7 +11,8 @@
 namespace om {
 namespace utility {
 
-template <typename VAL> class LockedVector {
+template <typename VAL>
+class LockedVector {
  public:
   virtual ~LockedVector() {}
   bool empty() {
@@ -34,13 +35,22 @@ template <typename VAL> class LockedVector {
     zi::guard g(mutex_);
     vector_.swap(vec);
   }
+  void push_back(const VAL& v) {
+    zi::guard g(mutex_);
+    vector_.push_back(v);
+  }
+  void push_back(VAL&& v) {
+    zi::guard g(mutex_);
+    vector_.push_back(v);
+  }
 
  private:
   std::vector<VAL> vector_;
   zi::spinlock mutex_;
 };
 
-template <typename KEY, typename VAL> class LockedBoostMap {
+template <typename KEY, typename VAL>
+class LockedBoostMap {
  public:
   virtual ~LockedBoostMap() {}
   bool empty() {
@@ -66,7 +76,8 @@ template <typename KEY, typename VAL> class LockedBoostMap {
   zi::spinlock mutex_;
 };
 
-template <typename KEY> class LockedBoostSet {
+template <typename KEY>
+class LockedBoostSet {
  public:
   virtual ~LockedBoostSet() {}
   bool empty() {
@@ -100,7 +111,8 @@ template <typename KEY> class LockedBoostSet {
   zi::spinlock mutex_;
 };
 
-template <typename KEY> class LockedSet {
+template <typename KEY>
+class LockedSet {
  public:
   virtual ~LockedSet() {}
   bool empty() {
@@ -134,7 +146,8 @@ template <typename KEY> class LockedSet {
   zi::spinlock mutex_;
 };
 
-template <typename KEY> class LockedList {
+template <typename KEY>
+class LockedList {
  public:
   virtual ~LockedList() {}
   bool empty() {
@@ -159,7 +172,8 @@ template <typename KEY> class LockedList {
   zi::spinlock mutex_;
 };
 
-template <typename KEY, typename VAL> class LockedMultiMap {
+template <typename KEY, typename VAL>
+class LockedMultiMap {
  public:
   typedef std::list<VAL> valsCont;
 

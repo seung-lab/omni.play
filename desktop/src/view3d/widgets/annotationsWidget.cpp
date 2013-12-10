@@ -23,7 +23,7 @@ void AnnotationsWidget::Draw() {
   for (OmSegmentation* vol : view3d_.Segmentations()) {
     FOR_EACH(it, vol->Annotations().Enabled()) {
       const auto& data = *it->Object;
-      const auto coord = data.coord.toGlobalCoord();
+      const auto coord = data.coord.ToGlobal();
       float dist = camPos.distance(coord);
 
       glPushMatrix();

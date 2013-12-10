@@ -1,11 +1,10 @@
 #pragma once
 
 #include "datalayer/archive/old/utilsOld.hpp"
-#include "coordinates/yaml.h"
+#include "utility/yaml/coords.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/omChannelFolder.h"
 #include "volume/omMipVolume.h"
-#include "volume/omVolCoordsMipped.hpp"
 #include "volume/omVolumeTypes.hpp"
 
 #include <QDataStream>
@@ -107,5 +106,5 @@ class OmMipVolumeArchive {
   }
 };
 
-QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c);
-QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c);
+QDataStream& operator<<(QDataStream& out, const om::coords::VolumeSystem& c);
+QDataStream& operator>>(QDataStream& in, om::coords::VolumeSystem& c);

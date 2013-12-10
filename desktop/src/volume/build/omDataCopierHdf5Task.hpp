@@ -15,7 +15,8 @@
 #include <sstream>
 #include <QFileInfoList>
 
-template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
+template <typename VOL>
+class OmDataCopierHdf5Task : public zi::runnable {
  private:
   VOL* const vol_;
   const OmDataPath path_;
@@ -24,7 +25,7 @@ template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
   const Vector3i volSize_;
   OmHdf5* const hdf5reader_;
   const QString mip0fnp_;
-  const om::chunkCoord coord_;
+  const om::coords::Chunk coord_;
 
   OmSimpleProgress* prog_;
 
@@ -35,7 +36,7 @@ template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
   OmDataCopierHdf5Task(VOL* vol, const OmDataPath& path,
                        const om::common::AffinityGraph aff,
                        const Vector3i volSize, OmHdf5* const hdf5reader,
-                       const QString mip0fnp, const om::chunkCoord& coord,
+                       const QString mip0fnp, const om::coords::Chunk& coord,
                        OmSimpleProgress* prog)
       : vol_(vol),
         path_(path),
@@ -68,15 +69,15 @@ template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
 
  private:
   template <typename T>
-  OmDataWrapperPtr doResizePartialChunk(OmDataWrapperPtr data,
-                                        const om::dataBbox& chunkExtent,
-                                        const om::dataBbox& dataExtent) {
+  OmDataWrapperPtr doResizePartialChunk(
+      OmDataWrapperPtr data, const om::coords::DataBbox& chunkExtent,
+      const om::coords::DataBbox& dataExtent) {
     resizedChunk_ = true;
 
     const Vector3i dataSize = dataExtent.getDimensions();
 
-    //weirdness w/ hdf5 and/or boost::multi_arry requires flipping x/z
-    //TODO: figure out!
+    // weirdness w/ hdf5 and/or boost::multi_arry requires flipping x/z
+    // TODO: figure out!
     OmImage<T, 3> partialChunk(OmExtents[dataSize.z][dataSize.y][dataSize.x],
                                data->getPtr<T>());
 
@@ -88,8 +89,8 @@ template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
   }
 
   OmDataWrapperPtr resizePartialChunk(OmDataWrapperPtr data,
-                                      const om::dataBbox& chunkExtent,
-                                      const om::dataBbox& dataExtent) {
+                                      const om::coords::DataBbox& chunkExtent,
+                                      const om::coords::DataBbox& dataExtent) {
     switch (data->getVolDataType().index()) {
       case OmVolDataType::INT8:
         return doResizePartialChunk<int8_t>(data, chunkExtent, dataExtent);
@@ -124,20 +125,20 @@ template <typename VOL> class OmDataCopierHdf5Task : public zi::runnable {
 
   OmDataWrapperPtr getChunkData() {
     // get chunk data bbox
-    const om::dataBbox& chunkExtent = chunk_->Mipping().GetExtent();
+    const om::coords::DataBbox& chunkExtent = chunk_->Mipping().Extent();
 
-    const om::dataBbox volExtent(
-        om::dataCoord(Vector3i::ZERO, vol_, chunk_->GetLevel()),
-        om::dataCoord(volSize_, vol_, chunk_->GetLevel()));
+    const om::coords::DataBbox volExtent(
+        om::coords::Data(Vector3i::ZERO, vol_->Coords(), chunk_->GetLevel()),
+        om::coords::Data(volSize_, vol_->Coords(), chunk_->GetLevel()));
 
-    //if data extent contains given extent, read full chunk
+    // if data extent contains given extent, read full chunk
     if (volExtent.contains(chunkExtent)) {
       return hdf5reader_->readChunk(path_, chunkExtent, aff_);
     }
 
     // else, read what we can, and resize
 
-    om::dataBbox intersect_extent = chunkExtent;
+    om::coords::DataBbox intersect_extent = chunkExtent;
     intersect_extent.intersect(volExtent);
 
     if (intersect_extent.isEmpty()) {

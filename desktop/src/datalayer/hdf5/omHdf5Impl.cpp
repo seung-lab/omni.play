@@ -47,10 +47,10 @@ void OmHdf5Impl::writeDataset(const OmDataPath& path, int size,
                               const OmDataWrapperPtr data) {
   hdf_->setPath(path);
 
-  //create tree and delete old data if exists
+  // create tree and delete old data if exists
   hdf_->dataset_delete_create_tree();
 
-  //create data
+  // create data
   hdf_->allocateDataset(size, data);
 }
 
@@ -61,13 +61,14 @@ Vector3i OmHdf5Impl::getChunkedDatasetDims(
 }
 
 OmDataWrapperPtr OmHdf5Impl::readChunk(const OmDataPath& path,
-                                       const om::dataBbox& dataExtent,
+                                       const om::coords::DataBbox& dataExtent,
                                        const om::common::AffinityGraph aff) {
   hdf_->setPath(path);
   return hdf_->readChunk(dataExtent, aff);
 }
 
-void OmHdf5Impl::writeChunk(const OmDataPath& path, om::dataBbox dataExtent,
+void OmHdf5Impl::writeChunk(const OmDataPath& path,
+                            om::coords::DataBbox dataExtent,
                             OmDataWrapperPtr data) {
   hdf_->setPath(path);
   hdf_->writeChunk(dataExtent, data);

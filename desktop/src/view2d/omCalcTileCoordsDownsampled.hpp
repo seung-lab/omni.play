@@ -17,20 +17,20 @@ class OmCalcTileCoordsDownsampled {
   void TryDownsample(const OmTileCoordAndVertices& tcv,
                      std::deque<OmTileAndVertices>& tilesToDraw) {
     OmMipVolume* vol = tcv.tileCoord.getVolume();
-    const int rootMipLevel = vol->Coords().GetRootMipLevel();
+    const int rootMipLevel = vol->Coords().RootMipLevel();
     OmTileCoord tileCoord = tcv.tileCoord;
 
-    while (tileCoord.getCoord().getLevel() < rootMipLevel) {
+    while (tileCoord.getCoord().mipLevel() < rootMipLevel) {
       tileCoord = tileCoord.Downsample();
 
       OmTilePtr downsampledTile;
       OmTileCache::GetDontQueue(downsampledTile, tileCoord);
 
       if (downsampledTile) {
-        OmTileAndVertices tv = { downsampledTile, tcv.vertices,
-                                 getTextureVertices(
-                                     tcv.tileCoord.getCoord(),
-                                     tileCoord.getCoord().getLevel()) };
+        OmTileAndVertices tv = {
+            downsampledTile, tcv.vertices,
+            getTextureVertices(tcv.tileCoord.getCoord(),
+                               tileCoord.getCoord().mipLevel())};
 
         tilesToDraw.push_back(tv);
         return;
@@ -40,11 +40,11 @@ class OmCalcTileCoordsDownsampled {
     OmTileCache::QueueUp(tileCoord);
   }
 
-  TextureVectices getTextureVertices(const om::chunkCoord& old,
+  TextureVectices getTextureVertices(const om::coords::Chunk& old,
                                      const int curMipLevel) {
     Vector2i chunkCoordsInPlane =
-        OmView2dConverters::Get2PtsInPlane(old.Coordinate, viewType_);
-    int mipDiff = om::math::pow2int(curMipLevel - old.getLevel());
+        OmView2dConverters::Get2PtsInPlane(old, viewType_);
+    int mipDiff = om::math::pow2int(curMipLevel - old.mipLevel());
     float inc = 1.0f / mipDiff;
     Vector2f textureRet(chunkCoordsInPlane.x % mipDiff * inc,
                         chunkCoordsInPlane.y % mipDiff * inc);

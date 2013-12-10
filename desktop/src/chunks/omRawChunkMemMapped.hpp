@@ -11,7 +11,7 @@ template <typename T>
 class OmRawChunkMemMapped {
  private:
   OmMipVolume* const vol_;
-  const om::chunkCoord coord_;
+  const om::coords::Chunk coord_;
   const uint64_t chunkOffset_;
   const QString fnp_;
   const uint64_t numBytes_;
@@ -20,11 +20,11 @@ class OmRawChunkMemMapped {
   T* dataRaw_;
 
  public:
-  OmRawChunkMemMapped(OmMipVolume* vol, const om::chunkCoord& coord)
+  OmRawChunkMemMapped(OmMipVolume* vol, const om::coords::Chunk& coord)
       : vol_(vol),
         coord_(coord),
         chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord)),
-        fnp_(OmFileNames::GetMemMapFileNameQT(vol, coord.Level)),
+        fnp_(OmFileNames::GetMemMapFileNameQT(vol, coord.mipLevel())),
         numBytes_(128 * 128 * 128 * vol_->GetBytesPerVoxel()),
         dataRaw_(nullptr) {
     mapData();

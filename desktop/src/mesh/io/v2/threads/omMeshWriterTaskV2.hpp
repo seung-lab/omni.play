@@ -7,7 +7,6 @@
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
-#include "mesh/omMeshCoord.h"
 #include "mesh/omMeshManager.h"
 #include "zi/omThreads.h"
 
@@ -17,14 +16,14 @@ class OmMeshWriterTaskV2 : public zi::runnable {
   OmSegmentation* const seg_;
   OmMeshFilePtrCache* const filePtrCache_;
   const om::common::SegID segID_;
-  const om::chunkCoord coord_;
+  const om::coords::Chunk coord_;
   const U mesh_;
   const om::common::AllowOverwrite allowOverwrite_;
 
  public:
   OmMeshWriterTaskV2(OmSegmentation* seg, OmMeshFilePtrCache* filePtrCache,
-                     const om::common::SegID segID, const om::chunkCoord& coord,
-                     const U mesh,
+                     const om::common::SegID segID,
+                     const om::coords::Chunk& coord, const U mesh,
                      const om::common::AllowOverwrite allowOverwrite)
       : seg_(seg),
         filePtrCache_(filePtrCache),
@@ -60,7 +59,7 @@ class OmMeshWriterTaskV2 : public zi::runnable {
     OmMeshChunkDataWriterV2* chunk_data = filePtrCache_->GetWriter(coord_);
 
     const OmMeshDataEntry entry =
-        writeOutData(chunk_data, mesh_, OmMeshCoord(coord_, segID_));
+        writeOutData(chunk_data, mesh_, om::coords::Mesh(coord_, segID_));
 
     if (!entry.wasMeshed) {
       log_infos << "Wrote unmeshed Entry...";
@@ -74,8 +73,8 @@ class OmMeshWriterTaskV2 : public zi::runnable {
  private:
   OmMeshDataEntry writeOutData(OmMeshChunkDataWriterV2* chunk_data,
                                std::shared_ptr<OmDataForMeshLoad> data,
-                               const OmMeshCoord& meshCoord) {
-    OmMeshDataEntry entry = om::meshio_::MakeEmptyEntry(meshCoord.SegID());
+                               const om::coords::Mesh& meshCoord) {
+    OmMeshDataEntry entry = om::meshio_::MakeEmptyEntry(meshCoord.segID());
 
     entry.wasMeshed = true;
 
@@ -109,12 +108,12 @@ class OmMeshWriterTaskV2 : public zi::runnable {
 
   OmMeshDataEntry writeOutData(OmMeshChunkDataWriterV2* chunk_data,
                                TriStripCollector* triStrips,
-                               const OmMeshCoord& meshCoord) {
+                               const om::coords::Mesh& meshCoord) {
     std::vector<float>& data = triStrips->data_;
     std::vector<uint32_t>& indices = triStrips->indices_;
     std::vector<uint32_t>& strips = triStrips->strips_;
 
-    OmMeshDataEntry entry = om::meshio_::MakeEmptyEntry(meshCoord.SegID());
+    OmMeshDataEntry entry = om::meshio_::MakeEmptyEntry(meshCoord.segID());
     entry.wasMeshed = true;
 
     // "empty mesh"

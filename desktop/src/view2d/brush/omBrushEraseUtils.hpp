@@ -12,7 +12,7 @@ class OmBrushEraseUtils {
  public:
   static void ErasePts(OmBrushOppInfo* info, om::pt3d_list_t* pts,
                        const om::common::SegID segIDtoErase) {
-    const om::globalBbox& segDataExtent =
+    const om::coords::GlobalBbox& segDataExtent =
         info->segmentation->Coords().GetDataExtent();
 
     std::set<Vector3i> voxelCoords;
@@ -56,11 +56,11 @@ class OmBrushEraseUtils {
   static void removeModifiedTiles() {
     // const int chunkDim = info->chunkDim;
 
-    // std::map<om::chunkCoord, std::set<Vector3i> > ptsInChunks;
+    // std::map<om::coords::Chunk, std::set<Vector3i> > ptsInChunks;
 
     // FOR_EACH(iter, voxelCoords)
     // {
-    //     const om::chunkCoord chunkCoord(0,
+    //     const om::coords::Chunk chunkCoord(0,
     //                                   iter->x / chunkDim,
     //                                   iter->y / chunkDim,
     //                                   iter->z / chunkDim);

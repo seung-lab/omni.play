@@ -60,9 +60,9 @@ class OmViewGroupView2dState {
 
   bool GetInitialized() const { return wasInitialized_; }
 
-  inline om::globalCoord GetScaledSliceDepth() const {
+  inline om::coords::Global GetScaledSliceDepth() const {
     zi::guard g(lock_);
-    return om::globalCoord(yz_.depth, xz_.depth, xy_.depth);
+    return om::coords::Global(yz_.depth, xz_.depth, xy_.depth);
   }
 
   inline float GetScaledSliceDepth(const om::common::ViewType plane) const {
@@ -70,7 +70,7 @@ class OmViewGroupView2dState {
     return getPlane(plane).depth;
   }
 
-  inline void SetScaledSliceDepth(const om::globalCoord& depths) {
+  inline void SetScaledSliceDepth(const om::coords::Global& depths) {
     {
       zi::guard g(lock_);
       yz_.depth = depths.x;

@@ -63,7 +63,7 @@ bool OmChannelImpl::LoadVolData() {
 }
 
 bool OmChannelImpl::LoadVolDataIfFoldersExist() {
-  //assume level 0 data always present
+  // assume level 0 data always present
   const QString path = OmFileNames::GetVolDataFolderPath(this, 0);
 
   if (QDir(path).exists()) {
@@ -86,7 +86,7 @@ void OmChannelImpl::SetVolDataType(const OmVolDataType type) {
   volData_->SetDataType(this);
 }
 
-OmChunk* OmChannelImpl::GetChunk(const om::chunkCoord& coord) {
+OmChunk* OmChannelImpl::GetChunk(const om::coords::Chunk& coord) {
   return chunkCache_->GetChunk(coord);
 }
 

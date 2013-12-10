@@ -13,11 +13,10 @@ typedef boost::tuple<int, int, int, int, int, om::common::ViewType>
 struct OmVolSliceKey : public OmVolSliceKey_t {
   OmVolSliceKey() : OmVolSliceKey_t(-1, -1, -1, -1, -1, om::common::XY_VIEW) {}
 
-  OmVolSliceKey(const om::chunkCoord& chunkCoord, const int sliceDepth,
+  OmVolSliceKey(const om::coords::Chunk& chunkCoord, const int sliceDepth,
                 const om::common::ViewType viewType)
-      : OmVolSliceKey_t(chunkCoord.Level, chunkCoord.Coordinate.x,
-                        chunkCoord.Coordinate.y, chunkCoord.Coordinate.z,
-                        sliceDepth, viewType) {}
+      : OmVolSliceKey_t(chunkCoord.mipLevel(), chunkCoord.x, chunkCoord.y,
+                        chunkCoord.z, sliceDepth, viewType) {}
 };
 
 class OmRawSegTileCache {
@@ -37,14 +36,14 @@ class OmRawSegTileCache {
 
   void Clear() { cache_->Clear(); }
 
-  std::shared_ptr<uint32_t> Get(const om::chunkCoord& chunkCoord,
+  std::shared_ptr<uint32_t> Get(const om::coords::Chunk& chunkCoord,
                                 const int sliceDepth,
                                 const om::common::ViewType viewType) {
     const OmVolSliceKey key(chunkCoord, sliceDepth, viewType);
     return cache_->Get(key);
   }
 
-  void Set(const om::chunkCoord& chunkCoord, const int sliceDepth,
+  void Set(const om::coords::Chunk& chunkCoord, const int sliceDepth,
            const om::common::ViewType viewType,
            std::shared_ptr<uint32_t> tile) {
     const OmVolSliceKey key(chunkCoord, sliceDepth, viewType);

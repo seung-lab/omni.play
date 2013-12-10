@@ -32,7 +32,7 @@ void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
 
 void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
                                    OmViewGroupState* vgs,
-                                   const om::globalCoord coord) {
+                                   const om::coords::Global coord) {
   sdw_ = sdw;
   vgs_ = vgs;
   coord_ = coord;

@@ -75,7 +75,7 @@ Q_SLOTS:
   }
 
   void updateLineEdits() {
-    const Vector3i absOffset = vol_.Coords().GetAbsOffset();
+    const Vector3i absOffset = vol_.Coords().AbsOffset();
 
     absOffsetX_->setText(QString::number(absOffset.x));
     absOffsetY_->setText(QString::number(absOffset.y));
