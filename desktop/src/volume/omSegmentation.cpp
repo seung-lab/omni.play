@@ -20,10 +20,6 @@
 #include "volume/omSegmentationLoader.h"
 #include "volume/omUpdateBoundingBoxes.h"
 #include "actions/omActions.h"
-#include "actions/details/omActionImpls.hpp"
-
-#include <QCoreApplication>
-#include "gui/widgets/omTellInfo.hpp"
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
@@ -242,10 +238,9 @@ void OmSegmentation::ClearUserChangesAndSave() {
   }
   ValidGroupNum()->Clear();
 
-  (new OmSegmentationThresholdChangeAction(SegmentationDataWrapper(getID()),
-                                           0.999))->RunNow();
-  //OmSegmentationThresholdChangeActionImpl(SegmentationDataWrapper(getID()),
-  //                                        0.999).Execute();
+  SetDendThreshold(0.999);
+  om::event::RefreshMSTthreshold();
+  om::event::SegmentModified();
 
   OmCacheManager::TouchFreshness();
   OmActions::Save();
