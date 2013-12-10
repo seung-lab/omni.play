@@ -238,7 +238,7 @@ void OmSegmentation::ClearUserChangesAndSave() {
   }
   ValidGroupNum()->Clear();
 
-  SetDendThreshold(0.999);
+  SetDendThreshold(OmMST::DefaultThreshold);
   om::event::RefreshMSTthreshold();
   om::event::SegmentModified();
 
