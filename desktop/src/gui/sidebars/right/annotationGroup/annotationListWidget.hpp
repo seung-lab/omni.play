@@ -26,7 +26,7 @@ class AnnotationListWidget : public QTreeWidget,
 
  public:
   AnnotationListWidget(QWidget* parent, OmViewGroupState* vgs)
-      : QTreeWidget(parent), vgs_(vgs) {
+      : QTreeWidget(parent), vgs_(vgs), editing_(false) {
     setSelectionMode(QAbstractItemView::SingleSelection);
     setAlternatingRowColors(true);
 
@@ -41,7 +41,6 @@ class AnnotationListWidget : public QTreeWidget,
 
     setFocusPolicy(Qt::StrongFocus);
     populate();
-
     om::connect(this, SIGNAL(itemSelectionChanged()), this,
                 SLOT(highlightSelected()));
     om::connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this,
@@ -135,6 +134,10 @@ Q_SLOTS:
       ann->Object->coord = c.ToData(ann->Object->coord.volume(), 0);
       setLocationText(item, *ann->Object);
     }
+
+    if (column == TEXT_COL) {
+      editing_ = true;
+    }
   }
 
   void itemEdited(QTreeWidgetItem* item, int column) {
@@ -149,6 +152,7 @@ Q_SLOTS:
 
     if (column == TEXT_COL) {
       ann->Object->comment = item->text(TEXT_COL).toStdString();
+      editing_ = false;
     }
 
     if (column == SIZE_COL) {
@@ -167,7 +171,8 @@ Q_SLOTS:
 
  protected:
   void keyReleaseEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Backspace || event->key() == Qt::Key_Delete) {
+    if (!editing_ &&
+        (event->key() == Qt::Key_Backspace || event->key() == Qt::Key_Delete)) {
       QTreeWidgetItem* selectedItem = getSelected();
       if (selectedItem) {
         managedAnnotation* selected = getAnnotation(selectedItem);
@@ -182,8 +187,15 @@ Q_SLOTS:
         delete selectedItem;
         om::event::Redraw2d();
         om::event::Redraw3d();
+        return;
       }
     }
+
+    if (editing_ && event->key() == Qt::Key_Escape) {
+      editing_ = false;
+    }
+
+    QTreeWidget::keyReleaseEvent(event);
   }
 
  private:
@@ -244,6 +256,7 @@ Q_SLOTS:
   }
 
   OmViewGroupState* vgs_;
+  bool editing_;
 
   static const int ENABLE_COL = 0;
   static const int COLOR_COL = 1;
