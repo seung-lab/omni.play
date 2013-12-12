@@ -67,8 +67,14 @@ void operator>>(const Node& in, OmMipVolCoords& c) {
   c.SetResolution(resolution);
 
   in["chunkDim"] >> c.chunkDim_;
-  in["mMipLeafDim"] >> c.mMipLeafDim;
-  in["mMipRootLevel"] >> c.mMipRootLevel;
+  int mMipLeafDim;
+  om::yaml::util::OptionalRead(in, "mMipLeafDim", mMipLeafDim, 0);
+  c.mMipLeafDim = mMipLeafDim;
+
+  int mMipRootLevel;
+  om::yaml::util::OptionalRead(in, "mMipRootLevel", mMipRootLevel, 0);
+  c.mMipRootLevel = mMipRootLevel;
+
   Vector3i offset;
   om::yaml::util::OptionalRead(in, "absOffset", offset, Vector3i::ZERO);
   c.SetAbsOffset(offset);
