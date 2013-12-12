@@ -44,31 +44,14 @@ MainToolBar::MainToolBar(MainWindow* mainWindow)
   addWidget(new ShowAnnotationsTools(this, mainWindow_->GetViewGroupState()));
 }
 
-void MainToolBar::setReadOnlyWidgetsEnabled() {
-  const bool toBeEnabled = OmProject::IsOpen();
-
+void MainToolBar::EnableWidgets() {
+  const bool toBeEnabled = !OmProject::IsReadOnly();
   saveButton->setEnabled(toBeEnabled);
-
-  navEditButtons_->SetReadOnlyWidgetsEnabled(toBeEnabled);
-
-  openSingleViewButton_->setEnabled(toBeEnabled);
-  openDoubleViewButton_->setEnabled(toBeEnabled);
-  openViewGroupButton_->setEnabled(toBeEnabled);
-
-  volumeRefreshButton->setEnabled(toBeEnabled);
-
-  FilterWidget::Widget()->setEnabled(toBeEnabled);
-}
-
-void MainToolBar::setModifyWidgetsEnabled() {
-  const bool toBeEnabled = OmProject::IsOpen() && !OmProject::IsReadOnly();
-
-  navEditButtons_->SetModifyWidgetsEnabled(toBeEnabled);
+  navEditButtons_->EnableModifyingWidgets(toBeEnabled);
 }
 
 void MainToolBar::UpdateToolbar() {
-  setReadOnlyWidgetsEnabled();
-  setModifyWidgetsEnabled();
+  EnableWidgets();
 }
 
 void MainToolBar::SetTool(const om::tool::mode tool) {

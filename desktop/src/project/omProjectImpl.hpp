@@ -41,13 +41,12 @@ class OmProjectImpl {
   QString omniFile_;
 
   int fileVersion_;
-  bool isReadOnly_;
 
   OmProjectVolumes volumes_;
   std::unique_ptr<OmProjectGlobals> globals_;
 
  public:
-  OmProjectImpl() : oldHDF5_(nullptr), fileVersion_(0), isReadOnly_(false) {}
+  OmProjectImpl() : oldHDF5_(nullptr), fileVersion_(0) {}
 
   ~OmProjectImpl() {}
 
@@ -91,6 +90,10 @@ class OmProjectImpl {
   }
 
   void Save() {
+    if (IsReadOnly()) {
+      log_errors << "Project saving should have been disabled in the UI.";
+      return;
+    }
     FOR_EACH(iter, SegmentationDataWrapper::ValidIDs()) {
       SegmentationDataWrapper(*iter).GetSegmentation().Flush();
     }
@@ -104,7 +107,9 @@ class OmProjectImpl {
 
   int GetFileVersion() const { return fileVersion_; }
 
-  bool IsReadOnly() const { return isReadOnly_; }
+  bool IsReadOnly() const {
+    return !globals_ || globals_->Users().CurrentUser() == om::users::defaultUser;
+  }
 
   OmProjectGlobals& Globals() { return *globals_; }
 

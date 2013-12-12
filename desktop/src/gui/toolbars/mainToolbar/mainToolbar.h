@@ -34,6 +34,5 @@ class MainToolBar : public QToolBar {
   NavAndEditButtonGroup *const navEditButtons_;
 
   void addNavEditButtons();
-  void setReadOnlyWidgetsEnabled();
-  void setModifyWidgetsEnabled();
+  void EnableWidgets();
 };
