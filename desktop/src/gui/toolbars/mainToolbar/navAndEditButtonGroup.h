@@ -16,8 +16,7 @@ class NavAndEditButtonGroup : public QButtonGroup {
 
   virtual ~NavAndEditButtonGroup() {}
 
-  void SetReadOnlyWidgetsEnabled(const bool toBeEnabled);
-  void SetModifyWidgetsEnabled(const bool toBeEnabled);
+  void EnableModifyingWidgets(const bool toBeEnabled);
   void SetTool(const om::tool::mode tool);
 
  private
@@ -30,12 +29,8 @@ Q_SIGNALS:
 
  private:
   int addButton(ToolButton* button);
-  void addNavButton(ToolButton* button);
-  void addModifyButton(ToolButton* button);
   void makeToolActive(ToolButton* button);
 
   std::map<int, ToolButton*> allToolsByID_;
-
-  std::map<om::tool::mode, int> navToolIDsByToolMode_;
-  std::map<om::tool::mode, int> modifyToolIDsByToolMode_;
+  std::map<om::tool::mode, ToolButton*> allToolsByMode_;
 };

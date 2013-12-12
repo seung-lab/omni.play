@@ -7,39 +7,39 @@
 
 NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
     : QButtonGroup(parent) {
-  addNavButton(new ToolButton(
+  addButton(new ToolButton(
       parent, "Pan", "Move Image", om::tool::PAN,
       ":/toolbars/mainToolbar/icons/1277962397_cursor_hand.png"));
 
-  addNavButton(new ToolButton(
+  addButton(new ToolButton(
       parent, "Select", "Select Object", om::tool::SELECT,
       ":/toolbars/mainToolbar/icons/1278008858_cursor_arrow.png"));
 
-  addModifyButton(
+  addButton(
       new ToolButton(parent, "Brush", "Paint", om::tool::PAINT,
                      ":/toolbars/mainToolbar/icons/1277962300_paint.png"));
 
-  addModifyButton(new ToolButton(
+  addButton(new ToolButton(
       parent, "Eraser", "Paint Black Voxel", om::tool::ERASE,
       ":/toolbars/mainToolbar/icons/1277962354_package-purge.png"));
 
-  addModifyButton(
+  addButton(
       new ToolButton(parent, "Fill", "Paint Can", om::tool::FILL,
                      ":/toolbars/mainToolbar/icons/1278015539_color_fill.png"));
 
-  addModifyButton(new ToolButton(
+  addButton(new ToolButton(
       parent, "Landmarks", "Landmarks", om::tool::LANDMARK,
       ":/toolbars/mainToolbar/icons/1308021634_keditbookmarks.png"));
 
-  addModifyButton(
+  addButton(
       new ToolButton(parent, "Cut", "Cut", om::tool::CUT,
                      ":/toolbars/mainToolbar/icons/1308183310_Scissors.png"));
 
-  addModifyButton(
+  addButton(
       new ToolButton(parent, "Annotate", "Annotate", om::tool::ANNOTATE,
                      ":/toolbars/mainToolbar/icons/kcmfontinst.png"));
 
-  // addNavButton(new ToolButton(parent, "Kalina",
+  // addButton(new ToolButton(parent, "Kalina",
   //                             "Do Crazy Stuff", om::tool::KALINA,
   //                             ":/toolbars/mainToolbar/icons/1308021634_keditbookmarks.png"));
 
@@ -54,17 +54,8 @@ int NavAndEditButtonGroup::addButton(ToolButton* button) {
   QButtonGroup::addButton(button);
   const int id = QButtonGroup::id(button);
   allToolsByID_[id] = button;
+  allToolsByMode_[button->getToolMode()] = button;
   return id;
-}
-
-void NavAndEditButtonGroup::addNavButton(ToolButton* button) {
-  const int id = addButton(button);
-  navToolIDsByToolMode_[button->getToolMode()] = id;
-}
-
-void NavAndEditButtonGroup::addModifyButton(ToolButton* button) {
-  const int id = addButton(button);
-  modifyToolIDsByToolMode_[button->getToolMode()] = id;
 }
 
 void NavAndEditButtonGroup::buttonWasClicked(const int id) {
@@ -76,26 +67,14 @@ void NavAndEditButtonGroup::makeToolActive(ToolButton* button) {
   OmStateManager::SetToolModeAndSendEvent(button->getToolMode());
 }
 
-void NavAndEditButtonGroup::SetReadOnlyWidgetsEnabled(const bool toBeEnabled) {
-  FOR_EACH(iter, navToolIDsByToolMode_) {
-    ToolButton* button = allToolsByID_.at(iter->second);
+void NavAndEditButtonGroup::EnableModifyingWidgets(const bool toBeEnabled) {
+  allToolsByMode_[om::tool::PAINT]->setEnabled(toBeEnabled);
+  allToolsByMode_[om::tool::ERASE]->setEnabled(toBeEnabled);
+  allToolsByMode_[om::tool::FILL]->setEnabled(toBeEnabled);
 
-    button->setEnabled(toBeEnabled);
-
-    if (om::tool::PAN == button->getToolMode()) {
-      if (toBeEnabled) {
-        button->setChecked(true);
-        makeToolActive(button);
-      }
-    }
-  }
-}
-
-void NavAndEditButtonGroup::SetModifyWidgetsEnabled(const bool toBeEnabled) {
-  FOR_EACH(iter, modifyToolIDsByToolMode_) {
-    ToolButton* button = allToolsByID_.at(iter->second);
-    button->setEnabled(toBeEnabled);
-  }
+  ToolButton* panButton = allToolsByMode_[om::tool::PAN];
+  panButton->setChecked(true);
+  makeToolActive(panButton);
 }
 
 void NavAndEditButtonGroup::SetTool(const om::tool::mode tool) {
@@ -103,19 +82,14 @@ void NavAndEditButtonGroup::SetTool(const om::tool::mode tool) {
 }
 
 void NavAndEditButtonGroup::findAndSetTool(const om::tool::mode tool) {
-  int id = 0;
-
-  if (navToolIDsByToolMode_.count(tool)) {
-    id = navToolIDsByToolMode_.at(tool);
-
-  } else if (modifyToolIDsByToolMode_.count(tool)) {
-    id = modifyToolIDsByToolMode_.at(tool);
-
+  ToolButton* button = nullptr;
+  auto it = allToolsByMode_.find(tool);
+  if (it != allToolsByMode_.end()) {
+    button = it->second;
   } else {
     throw om::ArgException("tool not found");
   }
 
-  ToolButton* button = allToolsByID_.at(id);
   button->setChecked(true);
   makeToolActive(button);
 }
