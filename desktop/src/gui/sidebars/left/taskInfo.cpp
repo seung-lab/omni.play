@@ -11,7 +11,7 @@ using namespace om::task;
 TaskInfoWidget::TaskInfoWidget(QWidget* parent) : QWidget(parent) {
   auto layout = new QFormLayout(this);
 
-  QLabel* id = new QLabel(tr("Task ID"), this);
+  QLabel* id = new QLabel(tr("Cube ID"), this);
   idLabel_ = new QLabel(this);
   layout->addRow(id, idLabel_);
 
