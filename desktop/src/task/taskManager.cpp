@@ -120,8 +120,8 @@ bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
     log_debugs << "Finishing current task " << current->Id();
     // TODO: headless
     QMessageBox box(
-        QMessageBox::Question, "Save current task?",
-        "Would you like to save your accomplishments on the current task?",
+        QMessageBox::Question, "Submit current task?",
+        "Would you like to submit your accomplishments on the current task?",
         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
     int result = box.exec();
     if (result == QMessageBox::Cancel) {
