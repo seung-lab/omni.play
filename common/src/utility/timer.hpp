@@ -36,15 +36,13 @@ class timer {
   void Print(const std::string str) {
     const double timeSecs = s_elapsed();
 
-    log_infos << str << " in " << std::fixed << std::setprecision(2) << timeSecs
-              << " secs";
+    log_info("%s in %.2f secs", str, timeSecs);
   }
 
   void PrintV(const std::string str) {
     const double timeSecs = s_elapsed();
 
-    log_infos << str << " in " << std::fixed << std::setprecision(10)
-              << timeSecs << " secs";
+    log_info("%s in %.10f secs", str, timeSecs);
   }
 
   void PrintDone() { Print("done"); }
