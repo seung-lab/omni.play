@@ -176,18 +176,20 @@ bool MainWindow::closeProjectIfOpen(bool closeTask) {
     return false;
   }
 
-  const int ret = checkForSave();
-  switch (ret) {
-    case QMessageBox::Save:
-      OmActions::Save();
-      break;
-    case QMessageBox::Discard:
-      // Don't Save was clicked
-      break;
-    case QMessageBox::Cancel:
-      return false;
-    default:
-      break;
+  if (!OmProject::IsReadOnly()) {
+    const int ret = checkForSave();
+    switch (ret) {
+      case QMessageBox::Save:
+        OmActions::Save();
+        break;
+      case QMessageBox::Discard:
+        // Don't Save was clicked
+        break;
+      case QMessageBox::Cancel:
+        return false;
+      default:
+        break;
+    }
   }
 
   inspectorDock_.reset();
