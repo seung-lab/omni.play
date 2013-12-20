@@ -150,7 +150,7 @@ class OmProjectImpl {
   void doLoad(const QString& fnp, QWidget* guiParent,
               const std::string& username) {
     if (!QFile::exists(fnp)) {
-      throw om::IoException("Project file not found at");
+      throw om::IoException("Project file not found at" + fnp.toStdString());
     }
 
     omniFile_ = fnp;
@@ -167,6 +167,8 @@ class OmProjectImpl {
     setupGlobals();
     if (!username.empty()) {
       globals_->Users().SwitchToUser(username);
+    } else if (om::system::Account::IsLoggedIn()) {
+      globals_->Users().SwitchToUser(om::system::Account::username());
     } else if (guiParent) {
       OmGuiUserChooser* chooser = new OmGuiUserChooser(guiParent);
       const int userWasSelected = chooser->exec();
