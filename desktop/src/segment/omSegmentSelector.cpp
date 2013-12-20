@@ -54,6 +54,7 @@ void OmSegmentSelector::setSelectedSegment(const om::common::SegID segID) {
 }
 
 void OmSegmentSelector::InsertSegments(const om::common::SegIDSet* segIDs) {
+  params_->newSelectedIDs.clear();
   FOR_EACH(iter, *segIDs) {
     params_->newSelectedIDs.insert(segments_->findRootID(*iter));
   }
@@ -129,19 +130,7 @@ bool OmSegmentSelector::sendEvent() {
     }
   }
 
-  if (params_->augmentListOnly) {
-    // disable undo option for now
-    OmSegments* segments = params_->sdw.Segments();
-
-    if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
-      segments->AddToSegmentSelection(params_->newSelectedIDs);
-    } else {
-      segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
-    }
-  } else {
-    OmActions::SelectSegments(params_);
-  }
-
+  OmActions::SelectSegments(params_);
   return true;
 }
 
