@@ -34,6 +34,9 @@ void LoginButton::onClicked() {
         errorText = tr("Unknown Error.");
         break;
     }
+    if (!om::system::Account::IsLoggedIn()) {
+      setText("Login");
+    }
     QMessageBox box(QMessageBox::Warning, "Error Logging In", errorText);
     box.exec();
     return;
