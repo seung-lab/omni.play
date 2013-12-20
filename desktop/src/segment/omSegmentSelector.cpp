@@ -55,8 +55,11 @@ void OmSegmentSelector::setSelectedSegment(const om::common::SegID segID) {
 
 void OmSegmentSelector::InsertSegments(const om::common::SegIDSet* segIDs) {
   params_->newSelectedIDs.clear();
-  FOR_EACH(iter, *segIDs) {
-    params_->newSelectedIDs.insert(segments_->findRootID(*iter));
+  for (auto id : *segIDs) {
+    auto rootID = segments_->findRootID(id);
+    if (params_->oldSelectedIDs.find(rootID) == params_->oldSelectedIDs.end()) {
+      params_->newSelectedIDs.insert(rootID);
+    }
   }
 }
 
