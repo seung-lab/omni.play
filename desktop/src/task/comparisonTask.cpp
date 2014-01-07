@@ -58,6 +58,8 @@ pairwise_overlap_map FindPairwiseOverlaps(const common::SegIDSet& set,
       }
       coords::DataBbox overlap = segA->BoundingBox();
       overlap.intersect(segB->BoundingBox());
+      overlap.setMin(overlap.getMin() - Vector3i::ONE);
+      overlap.setMax(overlap.getMax() + Vector3i::ONE);
       pairwiseOverlaps[overlap] = std::make_pair(a, b);
     }
   }
@@ -135,7 +137,6 @@ bool ComparisonTask::Start() {
   int allUsers = 0;
   int uid = 1;
   for (const auto& segs : userSegs_) {
-    log_debugs << "Considering uid: " << uid;
     allUsers |= uid;
     flagToUsername[uid] = segs.first;
     for (const auto& segID : segs.second) {
@@ -150,7 +151,6 @@ bool ComparisonTask::Start() {
       break;
     }
   }
-  log_debugs << "All uid: " << allUsers;
 
   // reset user edges etc
   log_debugs << "Clear Selection";
@@ -180,8 +180,6 @@ bool ComparisonTask::Start() {
   for (const auto& iter : flagToSet) {
     const int& flag = iter.first;
     const common::SegIDSet& set = iter.second;
-    log_debugs << "Considering flag: " << iter.first << " > "
-               << flagToUsername[iter.first];
 
     // agreed set is special. Calculate percent of total size and join all
     // together normally.
@@ -224,12 +222,9 @@ bool ComparisonTask::Start() {
       groupSizes[groupName] += seg->size();
     }
   }
-  for (const auto& pair : groupSizes) {
-    log_debugs << "Created: " << pair.first << " = " << pair.second;
-  }
 
   // Clump dust groups.
-  const int DUST_THRESHOLD = 300;
+  const int DUST_THRESHOLD = 1000;
   const auto groups = userSegs_;
   for (auto& group : groups) {
     if (group.first.find("agreed") != std::string::npos) {
