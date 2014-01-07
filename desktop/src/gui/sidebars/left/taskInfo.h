@@ -18,6 +18,8 @@ Q_SLOTS:
 
  private:
   void updateInfo();
+  size_t getSize(const std::pair<std::string, const om::common::SegIDSet>&)
+      const;
   QLabel* idLabel_;
   QLabel* cellIdLabel_;
   QPushButton* doneButton_;

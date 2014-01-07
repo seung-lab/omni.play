@@ -224,13 +224,13 @@ bool ComparisonTask::Start() {
   }
 
   // Clump dust groups.
-  const int DUST_THRESHOLD = 1000;
+  const double DUST_THRESHOLD = 0.01;
   const auto groups = userSegs_;
   for (auto& group : groups) {
     if (group.first.find("agreed") != std::string::npos) {
       continue;
     }
-    if (groupSizes[group.first] < DUST_THRESHOLD) {
+    if ((double)groupSizes[group.first] / totalSize < DUST_THRESHOLD) {
       userSegs_["dust"].insert(group.second.begin(), group.second.end());
       userSegs_.erase(group.first);
     }

@@ -14,9 +14,7 @@ class SegListToggleButton : public OmButton<QWidget> {
  public:
   SegListToggleButton(QWidget* d, std::string name, common::SegIDSet segIDs)
       : OmButton<QWidget>(d, QString::fromStdString(name), "", false),
-        segIDs_(segIDs) {
-    setFlat(true);
-  }
+        segIDs_(segIDs) {}
 
  private:
   common::SegIDSet segIDs_;
