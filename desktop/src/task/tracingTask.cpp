@@ -23,7 +23,9 @@ TracingTask::TracingTask() : id_(0), cellId_(0) {}
 
 TracingTask::TracingTask(uint32_t id, uint32_t cellId, const std::string& path,
                          common::SegIDSet&& seed)
-    : id_(id), cellId_(cellId), path_(path), seed_(seed) {}
+    : id_(id), cellId_(cellId), path_(path), seed_(seed) {
+  groups_["seed"] = seed_;
+}
 
 TracingTask::~TracingTask() {}
 

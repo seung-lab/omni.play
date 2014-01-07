@@ -1,5 +1,8 @@
 #pragma once
 
+#include <map>
+#include "common/common.h"
+
 namespace om {
 namespace task {
 
@@ -11,6 +14,7 @@ class Task {
   virtual bool Reaping() = 0;
   virtual bool Start() = 0;
   virtual bool Submit() = 0;
+  virtual const std::map<std::string, common::SegIDSet>& SegGroups() = 0;
 };
 
 }  // namespace om::task::

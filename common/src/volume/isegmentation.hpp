@@ -11,6 +11,7 @@ namespace volume {
 
 class ISegmentation : virtual public IVolume {
  public:
+  virtual ~ISegmentation() {}
   virtual mesh::VertexIndexMeshDS& MeshDS() const = 0;
   virtual chunk::UniqueValuesDS& UniqueValuesDS() const = 0;
   virtual segment::SegDataVector& SegData() const = 0;

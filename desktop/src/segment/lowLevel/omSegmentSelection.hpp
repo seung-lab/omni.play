@@ -40,7 +40,9 @@ class OmSegmentSelection {
     om::common::SegIDSet old = selected_;
     selected_.clear();
 
-    FOR_EACH(iter, old) { selected_.insert(cache_->FindRootID(*iter)); }
+    for (auto& id : old) {
+      selected_.insert(cache_->FindRootID(id));
+    }
   }
 
   inline bool AreSegmentsSelected() const { return !selected_.empty(); }
@@ -62,21 +64,40 @@ class OmSegmentSelection {
                               const bool addToRecentList) {
     selected_.clear();
 
-    FOR_EACH(iter, ids) {
-      setSegmentSelectedBatch(*iter, true, addToRecentList);
+    for (auto& id : ids) {
+      setSegmentSelectedBatch(id, true, addToRecentList);
     }
 
     cache_->touchFreshness();
   }
 
   void AddToSegmentSelection(const om::common::SegIDSet& ids) {
-    FOR_EACH(iter, ids) { setSegmentSelectedBatch(*iter, true, true); }
+    for (auto& id : ids) {
+      setSegmentSelectedBatch(id, true, true);
+    }
+
+    cache_->touchFreshness();
+  }
+
+  void ToggleSegmentSelection(const om::common::SegIDSet& ids) {
+    bool toggle = false;
+    for (auto& id : ids) {
+      if (!isSegmentSelected(id)) {
+        toggle = true;
+        break;
+      }
+    }
+    for (auto& id : ids) {
+      setSegmentSelectedBatch(id, toggle, true);
+    }
 
     cache_->touchFreshness();
   }
 
   void RemoveFromSegmentSelection(const om::common::SegIDSet& ids) {
-    FOR_EACH(iter, ids) { setSegmentSelectedBatch(*iter, false, false); }
+    for (auto& id : ids) {
+      setSegmentSelectedBatch(id, false, false);
+    }
 
     cache_->touchFreshness();
   }

@@ -2,7 +2,8 @@
 
 #include <QtGui>
 
-template <class T> class OmButton : public QPushButton {
+template <class T>
+class OmButton : public QPushButton {
  public:
   OmButton(T* mw, const QString& title, const QString& statusTip,
            const bool isCheckable)
@@ -30,12 +31,14 @@ template <class T> class OmButton : public QPushButton {
  protected:
   T* const mParent;
   virtual void doAction() = 0;
+  virtual void doRightClick() {}
 
- private:
   void mousePressEvent(QMouseEvent* event) {
     QPushButton::mousePressEvent(event);
     if (event->button() == Qt::LeftButton) {
       doAction();
+    } else if (event->button() == Qt::RightButton) {
+      doRightClick();
     }
   }
 };

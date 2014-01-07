@@ -24,7 +24,7 @@ class ComparisonTask : virtual public Task {
  public:
   // typedef std::unordered_map<common::SegID, int> SegFlagMap;
   // typedef common::SegIDSet SegFlagMap;
-  typedef std::set<common::SegIDSet> UserSegContainer;
+  typedef std::map<std::string, common::SegIDSet> UserSegContainer;
   ComparisonTask() : id_(0), cellId_(0) {};
   ComparisonTask(uint32_t id, uint32_t cellId, const std::string& path,
                  UserSegContainer&& userSegs);
@@ -35,6 +35,7 @@ class ComparisonTask : virtual public Task {
   virtual bool Reaping() { return false; }
   virtual bool Start();
   virtual bool Submit();
+  virtual const UserSegContainer& SegGroups() { return userSegs_; }
 
  private:
   static bool chunkHasUserSegments(
@@ -71,10 +72,11 @@ struct convert<om::task::ComparisonTask> {
       t.userSegs_.clear();
       for (const auto& val : validations) {
         om::common::SegIDSet segs;
+        auto userName = val["username"].as<std::string>();
         for (const auto& s : val["segments"]) {
           segs.insert(s.first.as<uint32_t>());
         }
-        t.userSegs_.insert(std::move(segs));
+        t.userSegs_[userName] = std::move(segs);
       }
       return true;
     }

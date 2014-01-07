@@ -9,7 +9,7 @@ class TaskInfoWidget : public QWidget, public om::event::TaskEventListener {
   TaskInfoWidget(QWidget* parent);
   ~TaskInfoWidget();
 
-  void TaskChangeEvent();
+  void TaskStartedEvent();
 
  public
 Q_SLOTS:
@@ -22,4 +22,5 @@ Q_SLOTS:
   QLabel* cellIdLabel_;
   QPushButton* doneButton_;
   QPushButton* taskSelectorButton_;
+  QFrame* buttons_;
 };

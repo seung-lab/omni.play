@@ -148,6 +148,7 @@ bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
     current = nullptr;
     return false;
   }
+  om::event::TaskStarted();
   return true;
 }
 

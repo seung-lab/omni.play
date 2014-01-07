@@ -33,16 +33,13 @@ template <typename, typename>
 class OmChunkCache;
 
 namespace om {
+namespace volume {
+class ISegmentation;
+}
 namespace segmentation {
 class folder;
-}
-}
-namespace om {
-namespace segmentation {
 class loader;
 }
-}
-namespace om {
 namespace annotation {
 class manager;
 }
@@ -123,6 +120,10 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   inline om::segmentation::folder* Folder() const { return folder_.get(); }
   inline om::annotation::manager& Annotations() const { return *annotations_; }
   inline om::segmentation::loader* Loader() const { return loader_.get(); }
+
+  inline om::volume::ISegmentation& CommonSegmentation() const {
+    return *commonSegmentation_;
+  }
   void ClearUserChangesAndSave();
 
  private:
@@ -141,6 +142,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<OmRawSegTileCache> volSliceCache_;
   std::unique_ptr<OmTileCacheSegmentation> tileCache_;
   std::unique_ptr<om::annotation::manager> annotations_;
+  std::unique_ptr<om::volume::ISegmentation> commonSegmentation_;
 
   template <class T>
   friend class OmVolumeBuilder;

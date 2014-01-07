@@ -1,4 +1,5 @@
 #include "gui/sidebars/left/taskInfo.h"
+#include "gui/sidebars/left/segListToggle.h"
 #include "task/task.h"
 #include "task/taskManager.h"
 #include "system/omAppState.hpp"
@@ -8,7 +9,9 @@
 
 using namespace om::task;
 
-TaskInfoWidget::TaskInfoWidget(QWidget* parent) : QWidget(parent) {
+TaskInfoWidget::TaskInfoWidget(QWidget* parent)
+    : QWidget(parent), buttons_(nullptr) {
+
   auto layout = new QFormLayout(this);
 
   QLabel* id = new QLabel(tr("Cube ID"), this);
@@ -19,7 +22,7 @@ TaskInfoWidget::TaskInfoWidget(QWidget* parent) : QWidget(parent) {
   cellIdLabel_ = new QLabel(this);
   layout->addRow(cellID, cellIdLabel_);
 
-  taskSelectorButton_ = new QPushButton(tr("Select Task"), this);
+  taskSelectorButton_ = new QPushButton(tr("Skip"), this);
   om::connect(taskSelectorButton_, SIGNAL(clicked()), this,
               SLOT(taskSelectorButtonPressed()));
   layout->addRow(taskSelectorButton_);
@@ -32,14 +35,31 @@ TaskInfoWidget::TaskInfoWidget(QWidget* parent) : QWidget(parent) {
 
 TaskInfoWidget::~TaskInfoWidget() {}
 
-void TaskInfoWidget::TaskChangeEvent() { updateInfo(); }
+void TaskInfoWidget::TaskStartedEvent() { updateInfo(); }
 
 void TaskInfoWidget::updateInfo() {
   auto task = om::task::TaskManager::currentTask().get();
 
   idLabel_->setText(task ? QString::number(task->Id()) : tr(""));
   cellIdLabel_->setText(task ? QString::number(task->CellId()) : tr(""));
+
+  auto l = dynamic_cast<QFormLayout*>(layout());
+
+  if (buttons_) {
+    l->removeWidget(buttons_);
+    delete buttons_;
+  }
+  buttons_ = new QFrame(this);
+  l->insertRow(2, buttons_);
+  auto buttonLayout = new QFormLayout(buttons_);
+  if (task) {
+    for (auto& g : task->SegGroups()) {
+      buttonLayout->addRow(
+          new om::gui::SegListToggleButton(buttons_, g.first, g.second));
+    }
+  }
 }
+
 void TaskInfoWidget::taskSelectorButtonPressed() {
   OmAppState::OpenTaskSelector();
 }

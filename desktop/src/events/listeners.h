@@ -68,7 +68,8 @@ struct View3dEventListener : public Listener {
 
 struct TaskEventListener : public Listener {
   TaskEventListener() : Listener(Klass::task) {}
-  virtual void TaskChangeEvent() = 0;
+  virtual void TaskChangeEvent() {}
+  virtual void TaskStartedEvent() {}
 };
 
 struct ConnectionEventListener : public Listener {

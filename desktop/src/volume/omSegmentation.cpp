@@ -20,6 +20,7 @@
 #include "volume/omSegmentationLoader.h"
 #include "volume/omUpdateBoundingBoxes.h"
 #include "actions/omActions.h"
+#include "volume/segmentation.h"
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
@@ -61,10 +62,12 @@ OmSegmentation::OmSegmentation(om::common::ID id)
   segments_->refreshTree();
 }
 
-OmSegmentation::~OmSegmentation() {}
+OmSegmentation::~OmSegmentation() { commonSegmentation_.reset(); }
 
 void OmSegmentation::LoadPath() {
   folder_.reset(new om::segmentation::folder(this));
+  commonSegmentation_.reset(
+      new om::volume::Segmentation(folder_->GetVolPath().toStdString()));
 }
 
 bool OmSegmentation::LoadVolData() {
