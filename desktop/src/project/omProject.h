@@ -49,6 +49,9 @@ class OmProject : private om::SingletonBase<OmProject> {
   // volume management
   static OmProjectVolumes& Volumes();
 
+  static OmSegmentation* GetChannel(uint id);
+  static OmSegmentation* GetSegmentation(uint id);
+
   static int GetFileVersion();
 
   static OmProjectGlobals& Globals();

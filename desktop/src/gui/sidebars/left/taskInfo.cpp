@@ -58,10 +58,10 @@ void TaskInfoWidget::updateInfo() {
     const auto& groups = task->SegGroups();
 
     // Order by size
-    std::vector<std::tuple<size_t, std::string, const om::common::SegIDSet*>>
+    std::vector<std::tuple<size_t, std::string, const om::task::SegGroup*>>
         orderedGroups;
     for (const auto& g : groups) {
-      orderedGroups.push_back(std::make_tuple(getSize(g), g.first, &g.second));
+      orderedGroups.push_back(std::make_tuple(getSize(g), g.name, &g));
     }
     std::sort(orderedGroups.begin(), orderedGroups.end());
 
@@ -69,28 +69,27 @@ void TaskInfoWidget::updateInfo() {
     for (auto iter = orderedGroups.rbegin(); iter != orderedGroups.rend();
          ++iter) {
       buttonLayout->addRow(new om::gui::SegListToggleButton(
-          buttons_, std::get<1>(*iter), *std::get<2>(*iter)));
+          buttons_, std::get<1>(*iter), std::get<2>(*iter)->segments));
     }
   }
 }
 
-size_t TaskInfoWidget::getSize(
-    const std::pair<std::string, const om::common::SegIDSet>& group) const {
+size_t TaskInfoWidget::getSize(const om::task::SegGroup& group) const {
   size_t max = std::numeric_limits<size_t>::max();
-  if (group.first.find("seed") != std::string::npos) {
+  if (group.type == om::task::SegGroup::GroupType::SEED) {
     return max;
-  } else if (group.first.find("agreed") != std::string::npos) {
+  } else if (group.type == om::task::SegGroup::GroupType::AGREED) {
     return max - 1;
-  } else if (group.first.find("all") != std::string::npos) {
+  } else if (group.type == om::task::SegGroup::GroupType::ALL) {
     return max - 2;
-  } else if (group.first.find("dust") != std::string::npos) {
+  } else if (group.type == om::task::SegGroup::GroupType::DUST) {
     return 0;
   }
   size_t size = 0;
   SegmentationDataWrapper sdw(1);
   if (sdw.IsValidWrapper()) {
     auto segments = sdw.Segments();
-    for (const auto& id : group.second) {
+    for (const auto& id : group.segments) {
       auto seg = segments->GetSegment(id);
       if (!seg) {
         continue;

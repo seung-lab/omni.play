@@ -117,14 +117,10 @@ class serverHandler : virtual public serverIf,
 
     std::set<uint32_t> addedIDs;
     std::set<uint32_t> modifiedIDs;
-    for (auto& id : addedSegIds) {
-      addedIDs.insert(id);
-      modifiedIDs.insert(id);
-    }
 
-    for (auto& id : deletedSegIds) {
-      modifiedIDs.insert(id);
-    }
+    addedIDs.insert(addedSegIds.begin(), addedSegIds.end());
+    modifiedIDs.insert(addedSegIds.begin(), addedSegIds.end());
+    modifiedIDs.insert(deletedSegIds.begin(), deletedSegIds.end());
 
     volume::Segmentation v(volumePath(meta));
     return handler::modify_global_mesh_data(
@@ -146,7 +142,7 @@ class serverHandler : virtual public serverIf,
     handler::get_obj(_return, v, chunk, mipLevel, segId);
   }
 
-  void get_seeds(std::vector<std::map<int32_t, int32_t> >& _return,
+  void get_seeds(std::vector<std::map<int32_t, int32_t>>& _return,
                  const metadata& taskVolume, const std::set<int32_t>& selected,
                  const metadata& adjacentVolume) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_seeds", "get_seeds");
@@ -156,8 +152,23 @@ class serverHandler : virtual public serverIf,
   }
 
   void get_mst(std::vector<affinity>& _return, const metadata& meta) {
+    ServiceMethod serviceMethod(&serviceTracker_, "get_mst", "get_mst");
     volume::Segmentation v(volumePath(meta));
     handler::get_mst(_return, v);
+  }
+
+  void get_connected_groups(
+      std::vector<group>& _return, const metadata& meta,
+      const std::map<std::string, std::set<int32_t>>& groups) {
+    ServiceMethod serviceMethod(&serviceTracker_, "get_connected_groups",
+                                "get_connected_groups");
+    volume::Segmentation v(volumePath(meta));
+
+    std::unordered_map<std::string, common::SegIDSet> gs;
+    for (const auto& group : groups) {
+      gs[group.first].insert(group.second.begin(), group.second.end());
+    }
+    handler::get_connected_groups(_return, v, gs);
   }
 
   // FB status monitor stuff

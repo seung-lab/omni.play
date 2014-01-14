@@ -1,7 +1,7 @@
 #pragma once
 
 #include <unordered_map>
-#include "task.h"
+#include "task/task.h"
 #include "common/common.h"
 #include "chunk/dataSources.hpp"
 #include "yaml-cpp/yaml.h"
@@ -22,12 +22,9 @@ namespace task {
 
 class ComparisonTask : virtual public Task {
  public:
-  // typedef std::unordered_map<common::SegID, int> SegFlagMap;
-  // typedef common::SegIDSet SegFlagMap;
-  typedef std::map<std::string, common::SegIDSet> UserSegContainer;
   ComparisonTask() : id_(0), cellId_(0) {};
   ComparisonTask(uint32_t id, uint32_t cellId, const std::string& path,
-                 UserSegContainer&& userSegs);
+                 std::vector<SegGroup>&& namedGroups);
   virtual ~ComparisonTask();
 
   virtual int Id() { return id_; }
@@ -35,7 +32,7 @@ class ComparisonTask : virtual public Task {
   virtual bool Reaping() { return false; }
   virtual bool Start();
   virtual bool Submit();
-  virtual const UserSegContainer& SegGroups() { return userSegs_; }
+  virtual const std::vector<SegGroup>& SegGroups() { return namedGroups_; }
 
  private:
   static bool chunkHasUserSegments(
@@ -46,7 +43,7 @@ class ComparisonTask : virtual public Task {
   uint32_t id_;
   uint32_t cellId_;
   std::string path_;
-  UserSegContainer userSegs_;
+  std::vector<SegGroup> namedGroups_;
 
   friend class YAML::convert<ComparisonTask>;
 };
@@ -68,16 +65,26 @@ struct convert<om::task::ComparisonTask> {
         t.path_ = t.path_.substr(0, t.path_.size() - 7);
       }
 
-      auto validations = node["validations"];
-      t.userSegs_.clear();
-      for (const auto& val : validations) {
+      auto subgroups = node["subgroups"];
+      t.namedGroups_.clear();
+      for (const auto& group : subgroups) {
         om::common::SegIDSet segs;
-        auto userName = val["username"].as<std::string>();
-        for (const auto& s : val["segments"]) {
-          segs.insert(s.first.as<uint32_t>());
+        om::task::SegGroup g;
+        g.name = group["name"].as<std::string>();
+        g.type = (om::task::SegGroup::GroupType)group["type"].as<int>();
+        for (const auto& s : group["segments"]) {
+          g.segments.insert(s.first.as<uint32_t>());
         }
-        t.userSegs_[userName] = std::move(segs);
+        t.namedGroups_.push_back(std::move(g));
       }
+
+      om::task::SegGroup seed;
+      seed.name = "seed";
+      seed.type = om::task::SegGroup::GroupType::SEED;
+      for (const auto& s : node["prior"]["segments"]) {
+        seed.segments.insert(s.first.as<uint32_t>());
+      }
+      t.namedGroups_.push_back(seed);
       return true;
     }
     catch (std::exception e) {

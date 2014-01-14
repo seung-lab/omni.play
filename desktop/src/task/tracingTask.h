@@ -1,6 +1,6 @@
 #pragma once
 
-#include "task.h"
+#include "task/task.h"
 #include "common/common.h"
 #include "yaml-cpp/yaml.h"
 
@@ -24,17 +24,14 @@ class TracingTask : virtual public Task {
   virtual bool Reaping() { return false; }
   virtual bool Start();
   virtual bool Submit();
-  virtual const std::map<std::string, common::SegIDSet>& SegGroups() {
-    log_variable(groups_.size());
-    return groups_;
-  }
+  virtual const std::vector<SegGroup>& SegGroups() { return groups_; }
 
  private:
   uint32_t id_;
   uint32_t cellId_;
   std::string path_;
   common::SegIDSet seed_;
-  std::map<std::string, common::SegIDSet> groups_;
+  std::vector<SegGroup> groups_;
   friend class YAML::convert<TracingTask>;
 };
 
@@ -60,7 +57,11 @@ struct convert<om::task::TracingTask> {
       for (const auto& s : seedYaml) {
         t.seed_.insert(s.first.as<uint32_t>());
       }
-      t.groups_["seed"] = t.seed_;
+      om::task::SegGroup seed;
+      seed.name = "seed";
+      seed.type = om::task::SegGroup::GroupType::SEED;
+      seed.segments = t.seed_;
+      t.groups_.push_back(seed);
       return true;
     }
     catch (std::exception e) {

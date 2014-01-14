@@ -28,9 +28,7 @@ ReapingTask::ReapingTask(uint32_t id, uint32_t cellId, const std::string& path,
       cellId_(cellId),
       path_(path),
       seed_(seed),
-      aggregate_(aggregate) {
-  groups_["seed"] = seed_;
-}
+      aggregate_(aggregate) {}
 
 ReapingTask::~ReapingTask() {}
 

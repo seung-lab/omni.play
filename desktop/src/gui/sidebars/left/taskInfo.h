@@ -2,6 +2,12 @@
 #include <QtGui>
 #include "events/listeners.h"
 
+namespace om {
+namespace task {
+struct SegGroup;
+}
+}
+
 class TaskInfoWidget : public QWidget, public om::event::TaskEventListener {
   Q_OBJECT;
 
@@ -18,8 +24,7 @@ Q_SLOTS:
 
  private:
   void updateInfo();
-  size_t getSize(const std::pair<std::string, const om::common::SegIDSet>&)
-      const;
+  size_t getSize(const om::task::SegGroup&) const;
   QLabel* idLabel_;
   QLabel* cellIdLabel_;
   QPushButton* doneButton_;

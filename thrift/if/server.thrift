@@ -83,6 +83,19 @@ struct metadata
     6: volType vol_type
 }
 
+enum groupType {
+    ALL = 1,
+    AGREED = 2,
+    USER = 3,
+    DUST = 4
+}
+
+struct group {
+    1: string name,
+    2: groupType type,
+    3: set<i32> segments
+}
+
 service server extends fb303.FacebookService
 {
     list<tile> get_tiles( 1: metadata vol, 2: vector3i chunk, 3: viewType view, 4: i32 mipLevel, 5: rangei depths ),
@@ -108,5 +121,7 @@ service server extends fb303.FacebookService
 		                           2: set<i32> selected,
 		                           3: metadata adjacentVolume),
 
-    list<affinity> get_mst ( 1: metadata mst )
+    list<affinity> get_mst ( 1: metadata mst ),
+
+    list<group> get_connected_groups( 1: metadata vol, 2: map<string, set<i32>> validations)
 }
