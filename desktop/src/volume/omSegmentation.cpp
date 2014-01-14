@@ -62,12 +62,10 @@ OmSegmentation::OmSegmentation(om::common::ID id)
   segments_->refreshTree();
 }
 
-OmSegmentation::~OmSegmentation() { commonSegmentation_.reset(); }
+OmSegmentation::~OmSegmentation() {}
 
 void OmSegmentation::LoadPath() {
   folder_.reset(new om::segmentation::folder(this));
-  commonSegmentation_.reset(
-      new om::volume::Segmentation(folder_->GetVolPath().toStdString()));
 }
 
 bool OmSegmentation::LoadVolData() {
