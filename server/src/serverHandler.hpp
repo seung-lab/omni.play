@@ -159,12 +159,12 @@ class serverHandler : virtual public serverIf,
 
   void get_connected_groups(
       std::vector<group>& _return, const metadata& meta,
-      const std::map<std::string, std::set<int32_t>>& groups) {
+      const std::map<int32_t, std::set<int32_t>>& groups) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_connected_groups",
                                 "get_connected_groups");
     volume::Segmentation v(volumePath(meta));
 
-    std::unordered_map<std::string, common::SegIDSet> gs;
+    std::unordered_map<int, common::SegIDSet> gs;
     for (const auto& group : groups) {
       gs[group.first].insert(group.second.begin(), group.second.end());
     }

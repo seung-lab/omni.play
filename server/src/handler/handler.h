@@ -50,6 +50,6 @@ void get_mst(std::vector<server::affinity>& _return,
 
 void get_connected_groups(
     std::vector<server::group>& _return, const volume::Segmentation& vol,
-    const std::unordered_map<std::string, common::SegIDSet>& groups);
+    const std::unordered_map<int, common::SegIDSet>& groups);
 }
 }

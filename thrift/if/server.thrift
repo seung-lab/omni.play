@@ -87,11 +87,12 @@ enum groupType {
     ALL = 1,
     AGREED = 2,
     USER = 3,
-    DUST = 4
+    DUST = 4,
+    PARTIAL = 5
 }
 
 struct group {
-    1: string name,
+    1: i32 user_id,
     2: groupType type,
     3: set<i32> segments
 }
@@ -123,5 +124,5 @@ service server extends fb303.FacebookService
 
     list<affinity> get_mst ( 1: metadata mst ),
 
-    list<group> get_connected_groups( 1: metadata vol, 2: map<string, set<i32>> validations)
+    list<group> get_connected_groups( 1: metadata vol, 2: map<i32, set<i32>> validations)
 }
