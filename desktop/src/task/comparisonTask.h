@@ -5,6 +5,7 @@
 #include "common/common.h"
 #include "chunk/dataSources.hpp"
 #include "yaml-cpp/yaml.h"
+#include "utility/yaml/baseTypes.hpp"
 
 namespace YAML {
 template <typename>
@@ -65,17 +66,20 @@ struct convert<om::task::ComparisonTask> {
         t.path_ = t.path_.substr(0, t.path_.size() - 7);
       }
 
-      auto subgroups = node["subgroups"];
+      auto groups = node["groups"];
       t.namedGroups_.clear();
-      for (const auto& group : subgroups) {
+      for (const auto& group : groups) {
         om::common::SegIDSet segs;
-        om::task::SegGroup g;
-        g.name = group["name"].as<std::string>();
-        g.type = (om::task::SegGroup::GroupType)group["type"].as<int>();
-        for (const auto& s : group["segments"]) {
-          g.segments.insert(s.first.as<uint32_t>());
+        auto name = group["username"].as<std::string>();
+        auto type = (om::task::SegGroup::GroupType)group["type"].as<int>();
+        int index = 1;
+        for (const auto& g : group["groups"]) {
+          om::task::SegGroup sg;
+          sg.name = name + " : " + std::to_string(index++);
+          sg.type = type;
+          sg.segments = g.as<std::set<uint32_t>>();
+          t.namedGroups_.push_back(std::move(sg));
         }
-        t.namedGroups_.push_back(std::move(g));
       }
 
       om::task::SegGroup seed;
