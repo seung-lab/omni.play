@@ -96,32 +96,28 @@ void get_connected_groups(
 
   // all is the group of all segments selected by anyone.  It's size is
   // totalSize.
-  _return.push_back(server::group());
-  auto& all = _return[0];
+  server::group all;
   all.type = server::groupType::ALL;
   size_t totalSize = 0;
   all.groups.emplace_back();
 
   // agreed is the group of all the segments selected by everyone.  It's size is
   // agreedSize.
-  _return.push_back(server::group());
-  auto& agreed = _return[1];
+  server::group agreed;
   agreed.type = server::groupType::AGREED;
   size_t aggreedSize = 0;
   agreed.groups.emplace_back();
 
   // partial is the group of all segments which are agreed on by some but not
   // all of the users.
-  _return.push_back(server::group());
-  auto& partial = _return[2];
+  server::group partial;
   partial.type = server::groupType::PARTIAL;
   partial.groups.emplace_back();
 
   // dust is the group of all segments which are grouped into small groups.
   // Small is defined as a percentage (DUST_THRESHOLD) of the totalSize.
   const double DUST_THRESHOLD = 0.01;
-  _return.push_back(server::group());
-  auto& dust = _return[3];
+  server::group dust;
   dust.type = server::groupType::DUST;
   dust.groups.emplace_back();
 
@@ -159,6 +155,10 @@ void get_connected_groups(
 
   log_debugs << "2. Group by Flag & Compute Total Size.";
   for (const auto& iter : segToFlag) {
+    if (iter.first > vol.SegData().size()) {
+      // Discard invalid segIDs
+      continue;
+    }
     all.groups.front().insert(iter.first);
     flagToSet[iter.second].insert(iter.first);
     totalSize += vol.SegData()[iter.first].size;
@@ -209,6 +209,10 @@ void get_connected_groups(
     }
     _return.push_back(g);
   }
+  _return.push_back(all);
+  _return.push_back(agreed);
+  _return.push_back(partial);
+  _return.push_back(dust);
 }
 }
 }
