@@ -94,7 +94,7 @@ enum groupType {
 struct group {
     1: i32 user_id,
     2: groupType type,
-    3: set<i32> segments
+    3: list<set<i32>> groups
 }
 
 service server extends fb303.FacebookService

@@ -42,7 +42,8 @@ pairwise_overlap_map FindPairwiseOverlaps(
   return pairwiseOverlaps;
 }
 
-zi::disjoint_sets<uint32_t> ConnectedComponents(
+std::vector<std::set<int>> ConnectedComponents(
+    const common::SegIDSet& idSet,
     const pairwise_overlap_map& map, chunk::Voxels<uint32_t>& voxels,
     const volume::Segmentation& segmentation) {
   zi::disjoint_sets<uint32_t> sets(segmentation.SegData().size());
@@ -74,7 +75,18 @@ zi::disjoint_sets<uint32_t> ConnectedComponents(
       sets.join(sets.find_set(pair.first), sets.find_set(pair.second));
     }
   }
-  return sets;
+  std::vector<std::set<int>> ret;
+  std::map<int, int> mapping;
+  for (auto segID : idSet) {
+    auto component = sets.find_set(segID);
+    if (mapping.find(component) == mapping.end()) {
+      mapping[component] = ret.size();
+      ret.emplace_back();
+    }
+    ret[mapping[component]].insert(segID);
+  }
+
+  return ret;
 }
 
 void get_connected_groups(
@@ -88,6 +100,7 @@ void get_connected_groups(
   auto& all = _return[0];
   all.type = server::groupType::ALL;
   size_t totalSize = 0;
+  all.groups.emplace_back();
 
   // agreed is the group of all the segments selected by everyone.  It's size is
   // agreedSize.
@@ -95,12 +108,14 @@ void get_connected_groups(
   auto& agreed = _return[1];
   agreed.type = server::groupType::AGREED;
   size_t aggreedSize = 0;
+  agreed.groups.emplace_back();
 
   // partial is the group of all segments which are agreed on by some but not
   // all of the users.
   _return.push_back(server::group());
   auto& partial = _return[2];
   partial.type = server::groupType::PARTIAL;
+  partial.groups.emplace_back();
 
   // dust is the group of all segments which are grouped into small groups.
   // Small is defined as a percentage (DUST_THRESHOLD) of the totalSize.
@@ -108,6 +123,7 @@ void get_connected_groups(
   _return.push_back(server::group());
   auto& dust = _return[3];
   dust.type = server::groupType::DUST;
+  dust.groups.emplace_back();
 
   // Here's the plan:
   //
@@ -124,13 +140,8 @@ void get_connected_groups(
   std::unordered_map<int, common::SegIDSet> flagToSet;
 
   // 3. Take flagToSet and we make one set for each connected component for a
-  // given flag.  Name each individually in (userGroups) and count their sizes
-  // (groupSizes).
-  std::map<int, common::SegIDSet> userGroups;
-  std::map<int, size_t> groupSizes;
-
-  // 4. Go through all the resultant userGroups.  The small ones are clumped
-  // into dust.  The rest get their own group in _return.
+  // given flag.  Go through all the resultant components.  The small ones are
+  // clumped into dust.  The rest get their own group in _return.
 
   log_debugs << "1. Flag Segments.";
   int uid = 1;
@@ -148,7 +159,7 @@ void get_connected_groups(
 
   log_debugs << "2. Group by Flag & Compute Total Size.";
   for (const auto& iter : segToFlag) {
-    all.segments.insert(iter.first);
+    all.groups.front().insert(iter.first);
     flagToSet[iter.second].insert(iter.first);
     totalSize += vol.SegData()[iter.first].size;
   }
@@ -166,41 +177,37 @@ void get_connected_groups(
       for (const auto& id : set) {
         aggreedSize += vol.SegData()[id].size;
       }
-      agreed.segments.insert(set.begin(), set.end());
+      agreed.groups.front().insert(set.begin(), set.end());
       continue;
     }
 
     auto flagUIDpair = flagToUserid.find(flag);
     // Check for partial agreement
     if (flagUIDpair == flagToUserid.end()) {
-      partial.segments.insert(set.begin(), set.end());
+      partial.groups.front().insert(set.begin(), set.end());
       continue;
     }
 
     auto uid = flagUIDpair->second;
 
     const auto pairwiseOverlaps = FindPairwiseOverlaps(set, vol);
-    auto components = ConnectedComponents(pairwiseOverlaps, voxels, vol);
+    server::group g;
+    g.user_id = uid;
+    g.type = server::groupType::USER;
+    auto components = ConnectedComponents(set, pairwiseOverlaps, voxels, vol);
 
-    // create new segment groups named by the users who picked them.
-    for (const auto& id : set) {
-      userGroups[uid].insert(id);
-      groupSizes[uid] += vol.SegData()[id].size;
+    for (const auto& c : components) {
+      size_t size = 0;
+      for (auto segID : c) {
+        size += vol.SegData()[segID].size;
+      }
+      if ((double)size / totalSize < DUST_THRESHOLD) {
+        dust.groups.front().insert(c.begin(), c.end());
+      } else {
+        g.groups.push_back(c);
+      }
     }
-  }
-
-  log_debugs << "4. Clump small groups into dust. _return the rest.";
-
-  for (auto& group : userGroups) {
-    if ((double)groupSizes[group.first] / totalSize < DUST_THRESHOLD) {
-      dust.segments.insert(group.second.begin(), group.second.end());
-    } else {
-      server::group g;
-      g.user_id = group.first;
-      g.type = server::groupType::USER;
-      g.segments.insert(group.second.begin(), group.second.end());
-      _return.push_back(g);
-    }
+    _return.push_back(g);
   }
 }
 }
