@@ -43,9 +43,8 @@ pairwise_overlap_map FindPairwiseOverlaps(
 }
 
 std::vector<std::set<int>> ConnectedComponents(
-    const common::SegIDSet& idSet,
-    const pairwise_overlap_map& map, chunk::Voxels<uint32_t>& voxels,
-    const volume::Segmentation& segmentation) {
+    const common::SegIDSet& idSet, const pairwise_overlap_map& map,
+    chunk::Voxels<uint32_t>& voxels, const volume::Segmentation& segmentation) {
   zi::disjoint_sets<uint32_t> sets(segmentation.SegData().size());
 
   for (const auto& overlap : map) {
@@ -116,7 +115,7 @@ void get_connected_groups(
 
   // dust is the group of all segments which are grouped into small groups.
   // Small is defined as a percentage (DUST_THRESHOLD) of the totalSize.
-  const double DUST_THRESHOLD = 0.01;
+  const int DUST_THRESHOLD = 300;
   server::group dust;
   dust.type = server::groupType::DUST;
   dust.groups.emplace_back();
@@ -201,7 +200,7 @@ void get_connected_groups(
       for (auto segID : c) {
         size += vol.SegData()[segID].size;
       }
-      if ((double)size / totalSize < DUST_THRESHOLD) {
+      if ((double)size < DUST_THRESHOLD) {
         dust.groups.front().insert(c.begin(), c.end());
       } else {
         g.groups.push_back(c);
