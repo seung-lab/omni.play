@@ -115,7 +115,7 @@ void get_connected_groups(
 
   // dust is the group of all segments which are grouped into small groups.
   // Small is defined as a percentage (DUST_THRESHOLD) of the totalSize.
-  const int DUST_THRESHOLD = 300;
+  const double DUST_THRESHOLD = 0.01;
   server::group dust;
   dust.type = server::groupType::DUST;
   dust.groups.emplace_back();
@@ -200,7 +200,7 @@ void get_connected_groups(
       for (auto segID : c) {
         size += vol.SegData()[segID].size;
       }
-      if ((double)size < DUST_THRESHOLD) {
+      if ((double)size / totalSize < DUST_THRESHOLD) {
         dust.groups.front().insert(c.begin(), c.end());
       } else {
         g.groups.push_back(c);
