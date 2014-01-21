@@ -29,5 +29,6 @@ Q_SLOTS:
   QLabel* cellIdLabel_;
   QPushButton* doneButton_;
   QPushButton* taskSelectorButton_;
+  QScrollArea* scrollable_;
   QFrame* buttons_;
 };

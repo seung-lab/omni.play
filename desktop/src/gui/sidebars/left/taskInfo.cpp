@@ -25,6 +25,9 @@ TaskInfoWidget::TaskInfoWidget(QWidget* parent)
   cellIdLabel_ = new QLabel(this);
   layout->addRow(cellID, cellIdLabel_);
 
+  scrollable_ = new QScrollArea(this);
+  layout->addRow(scrollable_);
+
   taskSelectorButton_ = new QPushButton(tr("Skip"), this);
   om::connect(taskSelectorButton_, SIGNAL(clicked()), this,
               SLOT(taskSelectorButtonPressed()));
@@ -45,15 +48,8 @@ void TaskInfoWidget::updateInfo() {
   idLabel_->setText(task ? QString::number(task->Id()) : tr(""));
   cellIdLabel_->setText(task ? QString::number(task->CellId()) : tr(""));
 
-  auto l = dynamic_cast<QFormLayout*>(layout());
-
-  if (buttons_) {
-    l->removeWidget(buttons_);
-    delete buttons_;
-  }
   buttons_ = new QFrame(this);
-  l->insertRow(2, buttons_);
-  auto buttonLayout = new QFormLayout(buttons_);
+  auto buttonLayout = new QVBoxLayout(buttons_);
   if (task) {
     const auto& groups = task->SegGroups();
 
@@ -61,17 +57,20 @@ void TaskInfoWidget::updateInfo() {
     std::vector<std::tuple<size_t, std::string, const om::task::SegGroup*>>
         orderedGroups;
     for (const auto& g : groups) {
-      orderedGroups.push_back(std::make_tuple(getSize(g), g.name, &g));
+      if (g.segments.size() > 0) {
+        orderedGroups.push_back(std::make_tuple(getSize(g), g.name, &g));
+      }
     }
     std::sort(orderedGroups.begin(), orderedGroups.end());
 
     // Insert largest to smallest
     for (auto iter = orderedGroups.rbegin(); iter != orderedGroups.rend();
          ++iter) {
-      buttonLayout->addRow(new om::gui::SegListToggleButton(
+      buttonLayout->addWidget(new om::gui::SegListToggleButton(
           buttons_, std::get<1>(*iter), std::get<2>(*iter)->segments));
     }
   }
+  scrollable_->setWidget(buttons_);
 }
 
 size_t TaskInfoWidget::getSize(const om::task::SegGroup& group) const {
