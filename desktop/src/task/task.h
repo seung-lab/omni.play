@@ -13,6 +13,7 @@ struct SegGroup {
     AGREED = 2,
     USER = 3,
     DUST = 4,
+    PARTIAL = 5
   };
   std::string name;
   GroupType type;

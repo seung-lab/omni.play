@@ -69,15 +69,32 @@ struct convert<om::task::ComparisonTask> {
       auto groups = node["groups"];
       t.namedGroups_.clear();
       for (const auto& group : groups) {
+        std::string name;
         om::common::SegIDSet segs;
-        auto name = group["username"].as<std::string>();
         auto type = (om::task::SegGroup::GroupType)group["type"].as<int>();
+        switch (type) {
+          case om::task::SegGroup::GroupType::ALL:
+            name = "All";
+            break;
+          case om::task::SegGroup::GroupType::AGREED:
+            name = "Agreed";
+            break;
+          case om::task::SegGroup::GroupType::USER:
+            name = group["username"].as<std::string>();
+            break;
+          case om::task::SegGroup::GroupType::DUST:
+            name = "Dust";
+            break;
+          case om::task::SegGroup::GroupType::PARTIAL:
+            name = "Partial";
+            break;
+        }
         int index = 1;
         for (const auto& g : group["groups"]) {
           om::task::SegGroup sg;
           sg.name = name + " : " + std::to_string(index++);
           sg.type = type;
-          sg.segments = g.as<std::set<uint32_t>>();
+          sg.segments = g.as<std::set<uint32_t>>(std::set<uint32_t>());
           t.namedGroups_.push_back(std::move(sg));
         }
       }
@@ -91,7 +108,7 @@ struct convert<om::task::ComparisonTask> {
       t.namedGroups_.push_back(seed);
       return true;
     }
-    catch (std::exception e) {
+    catch (YAML::Exception e) {
       log_debugs << std::string("Error Decoding ComparisonTask: ") + e.what();
       return false;
     }
