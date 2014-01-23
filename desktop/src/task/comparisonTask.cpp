@@ -43,7 +43,7 @@ bool ComparisonTask::Start() {
   OmSegmentation* segmentation = sdw.GetSegmentationPtr();
   OmSegments* segments = segmentation->Segments();
 
-  OmCacheManager::TouchFreshness();
+  segmentation->ClearUserChangesAndSave();
   sdw.SegmentLists()->RefreshGUIlists();
 
   auto allIter = std::find_if(
