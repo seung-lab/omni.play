@@ -167,14 +167,14 @@ class HTTP : private SingletonBase<HTTP> {
       return false;
     }
 
-    long code;
-    err = curl_easy_getinfo(h->Handle, CURLINFO_RESPONSE_CODE, &code);
-    if (err) {
-      log_debugs << "CURL Error with response: " << curl_easy_strerror(err);
-      return false;
+    auto resp = getResponseCode(h->Handle);
+    if (resp != 200) {
+      return std::string();
     }
 
-    return ss.str();
+    auto str = ss.str();
+    log_debugs << "HTTP Response: " << str;
+    return str;
   }
 
  private:
