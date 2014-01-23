@@ -96,10 +96,10 @@ bool ComparisonTask::Submit() {
   }
 
   auto uri = system::Account::endpoint() + "/1.0/cube/submit";
-  network::HTTP::POST(uri, std::make_pair("id", id_),
-                      std::make_pair("plane", "xy"),
-                      std::make_pair("segments", segIDs),
-                      std::make_pair("reap", 1), std::make_pair("status", 0));
+  network::HTTP::POST(
+      uri, std::make_pair("id", id_), std::make_pair("plane", "xy"),
+      std::make_pair("segments", segIDs), std::make_pair("reap", "true"),
+      std::make_pair("status", 0));
   return true;
 }
 
