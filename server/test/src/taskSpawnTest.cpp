@@ -104,7 +104,7 @@ TEST(TaskSpawnTest, Case2) {
   std::set<int32_t> expected{276782, 279057, 284363, 286329, 286869, 289497,
                              298489, 299114, 300193, 312528, 323571};
   // Check "expected" is the same as the keys in seedIds:
-  // If the size of the merge of two sets is different from the size of either
+  // If the size of the union of two sets is different from the size of either
   // set, the two sets are different.
   EXPECT_TRUE(seedIds[0].size() == expected.size());
   for (auto val : expected) {
