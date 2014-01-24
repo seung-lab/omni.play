@@ -162,6 +162,9 @@ coords::GlobalBbox getBounds(const coords::GlobalBbox& pre,
   return bounds;
 }
 
+// get the seeds in an adjacent volume given selected segments in a given volume
+//
+// TODO: Make this work independent of volume resolution.  Currently assumes 1,1,1
 void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
                const volume::Segmentation& pre,
                const std::set<int32_t>& selected,
@@ -183,11 +186,11 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   std::set<uint32_t> included, postSelected;
 
   chunk::Voxels<uint32_t> preGetter(pre.ChunkDS(), pre.Coords());
-  chunk::Voxels<uint32_t> postGetter(post.ChunkDS(), pre.Coords());
+  chunk::Voxels<uint32_t> postGetter(post.ChunkDS(), post.Coords());
 
   // Offset iteration bounds by 1 so we don't exceed the volume.
   auto iterBounds = bounds;
-  iterBounds.setMin(bounds.getMin() + 1);
+  iterBounds.setMin(bounds.getMin() + 1); // TODO assumes Res = 1,1,1
 
   utility::VolumeWalker<uint32_t> walker(iterBounds.ToDataBbox(pre.Coords(), 0),
                                          preGetter, &pre.UniqueValuesDS());
@@ -199,7 +202,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     // }
 
     coords::Global g = dc.ToGlobal();
-    uint32_t post_seg_id = postGetter.GetValue(dc);
+    uint32_t post_seg_id = postGetter.GetValue(g);
 
     postSelected.insert(post_seg_id);
     mappingCounts[post_seg_id]++;
@@ -207,7 +210,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     uint32_t proxy = toProxy(g, range, bounds);
     included.insert(proxy);
 
-    const coords::Global g1(g.x - 1, g.y, g.z);
+    const coords::Global g1(g.x - 1, g.y, g.z);// TODO assumes Res = 1,1,1
     uint32_t seg_id1 = preGetter.GetValue(g1);
     if (sel.count(seg_id1)) {
       auto p1 = toProxy(g1, range, bounds);
@@ -215,7 +218,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
       conditionalJoin(sets, proxy, p1);
     }
 
-    const coords::Global g2(g.x, g.y - 1, g.z);
+    const coords::Global g2(g.x, g.y - 1, g.z);// TODO assumes Res = 1,1,1
     uint32_t seg_id2 = preGetter.GetValue(g2);
     if (sel.count(seg_id2)) {
       auto p2 = toProxy(g2, range, bounds);
@@ -223,7 +226,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
       conditionalJoin(sets, proxy, p2);
     }
 
-    const coords::Global g3(g.x, g.y, g.z - 1);
+    const coords::Global g3(g.x, g.y, g.z - 1);// TODO assumes Res = 1,1,1
     uint32_t seg_id3 = preGetter.GetValue(g3);
     if (sel.count(seg_id3)) {
       auto p3 = toProxy(g3, range, bounds);
@@ -265,7 +268,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
         ss << seg << ",";
       }
       log_infos << "Pre Side: " << ss.str();
-
+      ss.str("");
       for (auto& seg : seeds.back()) {
         ss << seg.first << ",";
       }
