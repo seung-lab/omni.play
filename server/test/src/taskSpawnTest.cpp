@@ -185,13 +185,13 @@ TEST(TaskSpawnTest, Case3) {
   std::vector<std::map<int32_t, int32_t>> seedIds;
   handler::get_seeds(seedIds, pre, segs, post);
 
-  std::vector<std::set<int32_t>> expected{{247278, 263128}, {608763, 614337}};
+  std::vector<std::set<int32_t>> expected{{608763, 614337}, {247278, 263128}};
   EXPECT_EQ(seedIds.size(), expected.size());
   // Check "expected" is the same as the keys in seedIds:
   // If the size of the union of two sets is different from the size of either
   // set, the two sets are different.
   if (seedIds.size() == expected.size()) {
-    for (auto i = 0; i++; i<expected.size()) {
+    for (auto i = 0; i<expected.size(); ++i) {
       EXPECT_TRUE(seedIds[i].size() == expected[i].size());
       for (auto val : expected[i]) {
         seedIds[i][val] = 1;
