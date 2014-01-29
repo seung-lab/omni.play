@@ -6,6 +6,7 @@
 #include "chunk/dataSources.hpp"
 #include "yaml-cpp/yaml.h"
 #include "utility/yaml/baseTypes.hpp"
+#include "users/omUsers.h"
 
 namespace YAML {
 template <typename>
@@ -80,7 +81,7 @@ struct convert<om::task::ComparisonTask> {
             name = "Agreed";
             break;
           case om::task::SegGroup::GroupType::USER:
-            name = group["username"].as<std::string>();
+            name = group["username"].as<std::string>(om::users::defaultUser);
             break;
           case om::task::SegGroup::GroupType::DUST:
             name = "Dust";

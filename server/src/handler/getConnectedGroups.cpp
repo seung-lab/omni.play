@@ -91,7 +91,7 @@ std::vector<std::set<int>> ConnectedComponents(
 void get_connected_groups(
     std::vector<server::group>& _return, const volume::Segmentation& vol,
     const std::unordered_map<int, common::SegIDSet>& groups) {
-  log_debugs << "Starting Comparison Task.";
+  log_infos << "Making Comparison Task.";
 
   // all is the group of all segments selected by anyone.  It's size is
   // totalSize.
@@ -139,17 +139,24 @@ void get_connected_groups(
   // clumped into dust.  The rest get their own group in _return.
 
   log_debugs << "1. Flag Segments.";
-  int uid = 1;
+  int flag = 1;
   for (const auto& group : groups) {
-    agreedFlag |= uid;
-    flagToUserid[uid] = group.first;
+    auto uid = group.first;
+    if (uid < 2) {
+      // Skip (existing comparison) validation by the default user.
+      log_errors << "get_connected_groups: received user_id=" << uid
+                << " validation. Manually modified database record?";
+      continue;
+    }
+    agreedFlag |= flag;
+    flagToUserid[flag] = uid;
     for (const auto& segID : group.second) {
       if (segToFlag.find(segID) == segToFlag.end()) {
         segToFlag[segID] = 0;
       }
-      segToFlag[segID] |= uid;
+      segToFlag[segID] |= flag;
     }
-    uid <<= 1;
+    flag <<= 1;
   }
 
   log_debugs << "2. Group by Flag & Compute Total Size.";
