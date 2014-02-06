@@ -16,6 +16,16 @@ struct Vector {
     // Assumes sorted
     return std::binary_search(Values.begin(), Values.end(), value);
   }
+
+  template <typename ForwardIterator>
+  bool contains_any(ForwardIterator begin, ForwardIterator end) const {
+    for (; begin != end; ++begin) {
+      if (contains(*begin)) {
+        return true;
+      }
+    }
+    return false;
+  }
 };
 }
 }  // namespace om::datalayer::
