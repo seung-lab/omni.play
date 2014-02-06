@@ -100,17 +100,17 @@ TEST(TaskSpawnTest, Case2) {
   std::vector<std::map<int32_t, int32_t>> seedIds;
   handler::get_seeds(seedIds, pre, segs, post);
 
-  EXPECT_EQ(seedIds.size(), 1);
-  std::set<int32_t> expected{276782, 279057, 284363, 286329, 286869, 289497,
-                             298489, 299114, 300193, 312528, 323571};
+  ASSERT_EQ(1, seedIds.size());
+  std::set<int32_t> expected{276782, 279057, 284363, 286329, 286869,
+                             289497, 298489, 299114, 300193, 323571};
   // Check "expected" is the same as the keys in seedIds:
   // If the size of the union of two sets is different from the size of either
   // set, the two sets are different.
-  EXPECT_TRUE(seedIds[0].size() == expected.size());
+  EXPECT_EQ(expected.size(), seedIds[0].size());
   for (auto val : expected) {
     seedIds[0][val] = 1;
   }
-  EXPECT_TRUE(seedIds[0].size() == expected.size());
+  EXPECT_EQ(expected.size(), seedIds[0].size());
 }
 
 TEST(TaskSpawnTest, Case3) {
@@ -186,20 +186,19 @@ TEST(TaskSpawnTest, Case3) {
   handler::get_seeds(seedIds, pre, segs, post);
 
   std::vector<std::set<int32_t>> expected{{608763, 614337}, {247278, 263128}};
-  EXPECT_EQ(seedIds.size(), expected.size());
+  ASSERT_EQ(seedIds.size(), expected.size());
   // Check "expected" is the same as the keys in seedIds:
   // If the size of the union of two sets is different from the size of either
   // set, the two sets are different.
   if (seedIds.size() == expected.size()) {
-    for (auto i = 0; i<expected.size(); ++i) {
-      EXPECT_TRUE(seedIds[i].size() == expected[i].size());
+    for (auto i = 0; i < expected.size(); ++i) {
+      EXPECT_EQ(expected[i].size(), seedIds[i].size());
       for (auto val : expected[i]) {
         seedIds[i][val] = 1;
       }
-      EXPECT_TRUE(seedIds[i].size() == expected[i].size());
+      EXPECT_EQ(expected[i].size(), seedIds[i].size());
     }
   }
 }
-
 }
 }  // namespace om::test::
