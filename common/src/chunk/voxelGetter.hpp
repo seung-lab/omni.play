@@ -37,6 +37,7 @@ class VoxelGetter : public datalayer::IDataSource<coords::Global, T> {
   }
 
   T GetValue(const coords::Data& dataCoord) {
+    assert(&dataCoord.volume() == &coordSystem_);
     auto chunkCoord = dataCoord.ToChunk();
     auto chunk = chunkDS_.Get(chunkCoord);
     if (!chunk) {
@@ -109,6 +110,7 @@ class Voxels {
   }
 
   T GetValue(const coords::Data& key) {
+    assert(&key.volume() == &coordSystem_);
     auto chunkCoord = key.ToChunk();
     auto c = chunk(chunkCoord);
     if (!c) {
