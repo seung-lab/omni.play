@@ -39,6 +39,10 @@ class Data : public vmml::Vector3i {
     return Data(base_t::operator+(b), *volume_, mipLevel_);
   }
 
+  inline Data operator-(const Vector3i b) const {
+    return Data(base_t::operator-(b), *volume_, mipLevel_);
+  }
+
   inline Data operator*(const int scalar) const {
     return Data(base_t::operator*(scalar), *volume_, mipLevel_);
   }
