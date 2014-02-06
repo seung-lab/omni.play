@@ -43,6 +43,11 @@ TEST_F(ServerHandlerTest, get_tiles) {
 }
 
 TEST_F(ServerHandlerTest, get_seg_list_data) {
+  file::Paths p(
+      "/omniweb_data/x06/y59/"
+      "x06y59z28_s1587_13491_6483_e1842_13746_6738.omni");
+  volume::Segmentation seg(p.Segmentation(1));
+
   std::map<int, server::segData> ret;
   std::set<int32_t> segIds;
   segIds.insert(5);
@@ -50,7 +55,15 @@ TEST_F(ServerHandlerTest, get_seg_list_data) {
   segIds.insert(9);
   segIds.insert(11);
 
-  handler::get_seg_list_data(ret, *segmentation, segIds);
+  handler::get_seg_list_data(ret, seg, segIds);
+  for (const auto& pair : ret) {
+    const auto& data = pair.second;
+
+    EXPECT_GT(data.bounds.max.x, data.bounds.min.x);
+    EXPECT_GT(data.bounds.max.y, data.bounds.min.y);
+    EXPECT_GT(data.bounds.max.z, data.bounds.min.z);
+    EXPECT_GT(data.size, 0);
+  }
 }
 
 TEST_F(ServerHandlerTest, get_mesh) {
