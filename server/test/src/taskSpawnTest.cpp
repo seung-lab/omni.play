@@ -200,5 +200,34 @@ TEST(TaskSpawnTest, Case3) {
     }
   }
 }
+
+TEST(TaskSpawnTest, Case4) {
+  file::Paths prePaths(
+      "/omniweb_data/x04/y61/x04y61z28_s1139_13939_6483_e1394_14194_6738.omni");
+  file::Paths postPaths(
+      "/omniweb_data/x04/y62/x04y62z28_s1139_14163_6483_e1394_14418_6738.omni");
+  volume::Segmentation pre(prePaths.Segmentation(1));
+  volume::Segmentation post(postPaths.Segmentation(1));
+
+  std::set<int> segs{1739};
+
+  std::vector<std::map<int32_t, int32_t>> seedIds;
+  handler::get_seeds(seedIds, pre, segs, post);
+
+  std::vector<std::set<int32_t>> expected{{1363, 2420}};
+  ASSERT_EQ(seedIds.size(), expected.size());
+  // Check "expected" is the same as the keys in seedIds:
+  // If the size of the union of two sets is different from the size of either
+  // set, the two sets are different.
+  if (seedIds.size() == expected.size()) {
+    for (auto i = 0; i < expected.size(); ++i) {
+      EXPECT_EQ(expected[i].size(), seedIds[i].size());
+      for (auto val : expected[i]) {
+        seedIds[i][val] = 1;
+      }
+      EXPECT_EQ(expected[i].size(), seedIds[i].size());
+    }
+  }
+}
 }
 }  // namespace om::test::

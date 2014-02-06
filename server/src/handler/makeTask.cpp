@@ -29,6 +29,24 @@ enum class Direction {
   ZMax,
 };
 
+std::ostream& operator<<(std::ostream& out, const Direction& d) {
+  switch (d) {
+    case Direction::XMin:
+      return out << "XMin";
+    case Direction::XMax:
+      return out << "XMax";
+    case Direction::YMin:
+      return out << "YMin";
+    case Direction::YMax:
+      return out << "YMax";
+    case Direction::ZMin:
+      return out << "ZMin";
+    case Direction::ZMax:
+      return out << "ZMax";
+  }
+  return out;
+}
+
 inline Vector3i slab(const coords::GlobalBbox& bounds) {
   return Vector3i(bounds.getMax().x - bounds.getMin().x,
                   bounds.getMax().y - bounds.getMin().y,
@@ -65,7 +83,7 @@ inline Direction getDirection(const coords::GlobalBbox& pre,
     }
   }
 
-  if (dims.y < dims.x && dims.x < dims.z) {
+  if (dims.y < dims.x && dims.y < dims.z) {
     if (bounds.getMin().y > post.getMin().y) {
       return Direction::YMin;
     } else {
@@ -245,6 +263,9 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
         ss << seg.first << ", ";
       }
       log_infos << "Post Side: " << ss.str();
+    } else {
+      log_debugs << "Does not escape: "
+                 << om::string::join(preSideSets[seed.first]);
     }
   }
 }
