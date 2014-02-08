@@ -49,41 +49,51 @@ void TaskInfoWidget::updateInfo() {
   cellIdLabel_->setText(task ? QString::number(task->CellId()) : tr(""));
 
   buttons_ = new QFrame(this);
-  auto buttonLayout = new QVBoxLayout(buttons_);
+  auto buttonLayout = new QGridLayout(buttons_);
   if (task) {
     const auto& groups = task->SegGroups();
 
-    // Order by size
-    std::vector<std::tuple<size_t, std::string, const om::task::SegGroup*>>
+    // Order by type and size
+    std::map<om::task::SegGroup::GroupType, int> typeorder{
+        {SegGroup::GroupType::SEED, 1000},
+        {SegGroup::GroupType::ALL, 0},
+        {SegGroup::GroupType::AGREED, 100},
+        {SegGroup::GroupType::USER, 10},
+        {SegGroup::GroupType::DUST, 1},
+        {SegGroup::GroupType::PARTIAL, 50}, };
+    std::vector<std::tuple<int, std::string, size_t, const om::task::SegGroup*>>
         orderedGroups;
     for (const auto& g : groups) {
       if (g.segments.size() > 0) {
-        orderedGroups.push_back(std::make_tuple(getSize(g), g.name, &g));
+        orderedGroups.push_back(
+            std::make_tuple(typeorder[g.type], g.name, getSize(g), &g));
       }
     }
     std::sort(orderedGroups.begin(), orderedGroups.end());
 
     // Insert largest to smallest
-    for (auto iter = orderedGroups.rbegin(); iter != orderedGroups.rend();
-         ++iter) {
-      buttonLayout->addWidget(new om::gui::SegListToggleButton(
-          buttons_, std::get<1>(*iter), std::get<2>(*iter)->segments));
+    auto makeButton = [&](
+        std::tuple<int, std::string, size_t, const om::task::SegGroup*>& tup) {
+      auto text = std::get<1>(tup) + " : " + std::to_string(std::get<2>(tup));
+      return new om::gui::SegListToggleButton(buttons_, text,
+                                              std::get<3>(tup)->segments);
+    };
+    auto iter = orderedGroups.rbegin();
+    buttonLayout->addWidget(makeButton(*iter), 0, 0);
+    ++iter;
+    buttonLayout->addWidget(makeButton(*iter), 0, 1);
+    int nRows = (orderedGroups.size() + 1) / 2;
+    int count = 0;
+    for (++iter; iter != orderedGroups.rend(); ++iter) {
+      buttonLayout->addWidget(makeButton(*iter), count % (nRows - 1) + 1,
+                              count / (nRows - 1));
+      count++;
     }
   }
   scrollable_->setWidget(buttons_);
 }
 
 size_t TaskInfoWidget::getSize(const om::task::SegGroup& group) const {
-  size_t max = std::numeric_limits<size_t>::max();
-  if (group.type == om::task::SegGroup::GroupType::SEED) {
-    return max;
-  } else if (group.type == om::task::SegGroup::GroupType::AGREED) {
-    return max - 1;
-  } else if (group.type == om::task::SegGroup::GroupType::ALL) {
-    return max - 2;
-  } else if (group.type == om::task::SegGroup::GroupType::DUST) {
-    return 0;
-  }
   size_t size = 0;
   SegmentationDataWrapper sdw(1);
   if (sdw.IsValidWrapper()) {

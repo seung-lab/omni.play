@@ -90,10 +90,9 @@ struct convert<om::task::ComparisonTask> {
             name = "Partial";
             break;
         }
-        int index = 1;
         for (const auto& g : group["groups"]) {
           om::task::SegGroup sg;
-          sg.name = name + " : " + std::to_string(index++);
+          sg.name = name;
           sg.type = type;
           sg.segments = g.as<std::set<uint32_t>>(std::set<uint32_t>());
           t.namedGroups_.push_back(std::move(sg));
