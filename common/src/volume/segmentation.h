@@ -2,6 +2,7 @@
 
 #include "volume/volume.h"
 #include "volume/isegmentation.hpp"
+#include "datalayer/paths.hpp"
 
 namespace om {
 namespace mesh {
@@ -19,7 +20,7 @@ namespace volume {
 
 class Segmentation : public Volume, virtual public ISegmentation {
  public:
-  Segmentation(file::path uri);
+  Segmentation(file::Paths p, uint8_t id, std::string username = "_default");
   ~Segmentation();
 
   mesh::VertexIndexMeshDS& MeshDS() const;

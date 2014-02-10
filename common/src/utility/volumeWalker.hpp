@@ -12,13 +12,12 @@ class VolumeWalker {
                chunk::UniqueValuesDS* uniqueVals = nullptr)
       : bounds_(bounds), voxels_(voxels), uniqueVals_(uniqueVals) {}
 
-  void foreach_voxel(std::function<void(const coords::Data&, T value)> func) {
+  void foreach_voxel(std::function<void(const coords::Data&, T)> func) {
     foreach_voxel_internal(bounds_, func);
   }
 
-  void foreach_voxel_in_set(
-      const std::set<T>& included,
-      std::function<void(const coords::Data&, T value)> func) {
+  void foreach_voxel_in_set(const std::set<T>& included,
+                            std::function<void(const coords::Data&, T)> func) {
     auto wrappedFunc = [&included, func](const coords::Data& coord, T value) {
       if (included.count(value)) {
         func(coord, value);

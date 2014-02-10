@@ -15,8 +15,8 @@ namespace test {
 TEST(TaskSpawnTest, Case1) {
   file::Paths prePaths("/omniData/e2198/e2198_bc_s17_86_3_e24_101_16.omni");
   file::Paths postPaths("/omniData/e2198/e2198_bh_s18_86_16_e26_101_31.omni");
-  volume::Segmentation pre(prePaths.Segmentation(1));
-  volume::Segmentation post(postPaths.Segmentation(1));
+  volume::Segmentation pre(prePaths, 1);
+  volume::Segmentation post(postPaths, 1);
 
   std::set<int> segs({1037975, 1039368, 1039480, 1061408, 1062016,
                       1083185, 1084004, 1085998, 1090552, 1092491,
@@ -31,8 +31,8 @@ TEST(TaskSpawnTest, Case1) {
 TEST(TaskSpawnTest, Case2) {
   file::Paths prePaths("/omniData/e2198/e2198_dl_s16_101_1_e24_116_16.omni");
   file::Paths postPaths("/omniData/e2198/e2198_bc_s17_86_3_e24_101_16.omni");
-  volume::Segmentation pre(prePaths.Segmentation(1));
-  volume::Segmentation post(postPaths.Segmentation(1));
+  volume::Segmentation pre(prePaths, 1);
+  volume::Segmentation post(postPaths, 1);
 
   std::set<int> segs{
       1040709, 1040726, 1041361, 1041548, 1041738, 1041848, 1042484, 1042614,
@@ -116,8 +116,8 @@ TEST(TaskSpawnTest, Case2) {
 TEST(TaskSpawnTest, Case3) {
   file::Paths prePaths("/omniData/e2198/e2198_dl_s16_101_1_e24_116_16.omni");
   file::Paths postPaths("/omniData/e2198/e2198_dn_s16_116_1_e24_131_16.omni");
-  volume::Segmentation pre(prePaths.Segmentation(1));
-  volume::Segmentation post(postPaths.Segmentation(1));
+  volume::Segmentation pre(prePaths, 1);
+  volume::Segmentation post(postPaths, 1);
 
   std::set<int> segs{
       1040709, 1040726, 1041361, 1041548, 1041738, 1041848, 1042484, 1042614,
@@ -206,8 +206,8 @@ TEST(TaskSpawnTest, Case4) {
       "/omniweb_data/x04/y61/x04y61z28_s1139_13939_6483_e1394_14194_6738.omni");
   file::Paths postPaths(
       "/omniweb_data/x04/y62/x04y62z28_s1139_14163_6483_e1394_14418_6738.omni");
-  volume::Segmentation pre(prePaths.Segmentation(1));
-  volume::Segmentation post(postPaths.Segmentation(1));
+  volume::Segmentation pre(prePaths, 1);
+  volume::Segmentation post(postPaths, 1);
 
   std::set<int> segs{1739};
 

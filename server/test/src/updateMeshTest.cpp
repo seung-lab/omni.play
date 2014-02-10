@@ -57,8 +57,7 @@ boost::shared_ptr<zi::mesh::RealTimeMesherIf> makeMockMesher() {
 }
 
 TEST(UpdateMeshTest, MaskedUpdate) {
-  volume::Segmentation vol(
-      "test/data/test.omni.files/segmentations/segmentation1");
+  volume::Segmentation vol(file::Paths("test/data/test.omni"), 1);
 
   std::set<uint32_t> added;
   added.insert(238);

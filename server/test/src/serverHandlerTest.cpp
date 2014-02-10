@@ -19,7 +19,7 @@ class ServerHandlerTest : public ::testing::Test {
   ServerHandlerTest() {
     file::Paths p("test/data/test.omni");
     channel.reset(new volume::Volume(p.Channel(1)));
-    segmentation.reset(new volume::Segmentation(p.Segmentation(1)));
+    segmentation.reset(new volume::Segmentation(p, 1));
   }
 
  protected:
@@ -46,7 +46,7 @@ TEST_F(ServerHandlerTest, get_seg_list_data) {
   file::Paths p(
       "/omniweb_data/x06/y59/"
       "x06y59z28_s1587_13491_6483_e1842_13746_6738.omni");
-  volume::Segmentation seg(p.Segmentation(1));
+  volume::Segmentation seg(p, 1);
 
   std::map<int, server::segData> ret;
   std::set<int32_t> segIds;

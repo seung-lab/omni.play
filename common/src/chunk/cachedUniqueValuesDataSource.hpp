@@ -13,7 +13,7 @@ class CachedUniqueValuesDataSource : public UniqueValuesDSH {
   const size_t toCache_;  // TODO: Make dynamic (Cache Manager)
 
  public:
-  CachedUniqueValuesDataSource(file::path& volPath)
+  CachedUniqueValuesDataSource(file::path volPath)
       : chunk::UniqueValuesDSH(), toCache_(50) {
     Register<UniqueValuesFileDataSource>(0, volPath);
     Register<datalayer::CacheDataSource<coords::Chunk, chunk::UniqueValues>>(

@@ -7,17 +7,19 @@
 namespace om {
 namespace volume {
 
-Segmentation::Segmentation(file::path uri)
-    : Volume(uri),
-      uvmDS_(new chunk::CachedUniqueValuesDataSource(uri)),
-      meshDS_(new mesh::CachedDataSource(uri, uvmDS_.get())),
-      segDataDS_(new segment::FileDataSource(uri)),
+Segmentation::Segmentation(file::Paths p, uint8_t id, std::string username)
+    : Volume(p.Segmentation(id)),
+      uvmDS_(new chunk::CachedUniqueValuesDataSource(p.Segmentation(id))),
+      meshDS_(new mesh::CachedDataSource(p.Segmentation(id).string(),
+                                         uvmDS_.get())),
+      segDataDS_(new segment::FileDataSource(p.UserSegments(username, id))),
       segData_(new segment::SegDataVector(*segDataDS_, segment::PageSize,
                                           Metadata().numSegments() + 1)),
-      segListDataDS_(new segment::ListTypeFileDataSource(uri)),
+      segListDataDS_(
+          new segment::ListTypeFileDataSource(p.UserSegments(username, id))),
       segListData_(new segment::SegListDataVector(
           *segListDataDS_, segment::PageSize, Metadata().numSegments() + 1)),
-      mst_(new segment::EdgeVector(uri / file::Paths::Seg::MST())) {}
+      mst_(new segment::EdgeVector(p.UserMST(username, id))) {}
 
 Segmentation::~Segmentation() {}
 

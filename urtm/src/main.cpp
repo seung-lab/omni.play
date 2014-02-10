@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
   }
 
   om::file::Paths p(ZiARG_path);
-  volume::Segmentation v(p.Segmentation(1));
+  volume::Segmentation v(p, 1);
 
   return handler::modify_global_mesh_data(
       std::bind(makeMesher, ZiARG_mesher, ZiARG_mport), v, ZiARG_segs,
