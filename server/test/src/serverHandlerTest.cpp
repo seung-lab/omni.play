@@ -17,7 +17,7 @@ namespace test {
 class ServerHandlerTest : public ::testing::Test {
  public:
   ServerHandlerTest() {
-    file::Paths p("test/data/test.omni");
+    file::Paths p("test/data/test.omni.files/");
     channel.reset(new volume::Volume(p.Channel(1)));
     segmentation.reset(new volume::Segmentation(p, 1));
   }

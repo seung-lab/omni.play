@@ -104,6 +104,10 @@ class serverHandler : virtual public serverIf,
                          const std::set<int32_t>& segIds) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_seg_list_data",
                                 "get_seg_list_data");
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
+
     file::Paths p(meta.uri);
     volume::Segmentation v(p, 1);
     handler::get_seg_list_data(_return, v, segIds);
@@ -115,6 +119,10 @@ class serverHandler : virtual public serverIf,
                                int32_t segId) {
     ServiceMethod serviceMethod(&serviceTracker_, "modify_global_mesh_data",
                                 "modify_global_mesh_data");
+
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
 
     std::set<uint32_t> addedIDs;
     std::set<uint32_t> modifiedIDs;
@@ -133,6 +141,9 @@ class serverHandler : virtual public serverIf,
   void get_mesh(std::string& _return, const metadata& meta,
                 const vector3i& chunk, int32_t mipLevel, int32_t segId) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_mesh", "get_mesh");
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
     file::Paths p(meta.uri);
     volume::Segmentation v(p, 1);
     handler::get_mesh(_return, v, chunk, mipLevel, segId);
@@ -141,6 +152,9 @@ class serverHandler : virtual public serverIf,
   void get_obj(std::string& _return, const metadata& meta,
                const vector3i& chunk, int32_t mipLevel, int32_t segId) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_obj", "get_obj");
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
     file::Paths p(meta.uri);
     volume::Segmentation v(p, 1);
     handler::get_obj(_return, v, chunk, mipLevel, segId);
@@ -150,6 +164,16 @@ class serverHandler : virtual public serverIf,
                  const metadata& taskVolume, const std::set<int32_t>& selected,
                  const metadata& adjacentVolume) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_seeds", "get_seeds");
+
+    if (!file::Paths::IsValid(taskVolume.uri)) {
+      throw ArgException(
+          std::string("Invalid metadata uri: " + taskVolume.uri));
+    }
+    if (!file::Paths::IsValid(adjacentVolume.uri)) {
+      throw ArgException(
+          std::string("Invalid metadata uri: " + adjacentVolume.uri));
+    }
+
     file::Paths pathsTaskVolume(taskVolume.uri);
     volume::Segmentation task(pathsTaskVolume, 1);
     file::Paths pathsAdjacentVolume(adjacentVolume.uri);
@@ -159,6 +183,9 @@ class serverHandler : virtual public serverIf,
 
   void get_mst(std::vector<affinity>& _return, const metadata& meta) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_mst", "get_mst");
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
     file::Paths p(meta.uri);
     volume::Segmentation v(p, 1);
     handler::get_mst(_return, v);
@@ -169,6 +196,9 @@ class serverHandler : virtual public serverIf,
       const std::map<int32_t, std::set<int32_t>>& groups) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_connected_groups",
                                 "get_connected_groups");
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
     file::Paths p(meta.uri);
     volume::Segmentation v(p, 1);
 
@@ -226,6 +256,10 @@ class serverHandler : virtual public serverIf,
   static void logMethod(int, const std::string& str) { log_infos << str; }
 
   std::string volumePath(const metadata& meta) {
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
+
     file::Paths p(meta.uri);
     if (meta.vol_type == volType::CHANNEL) {
       return p.Channel(1).string();
