@@ -16,19 +16,19 @@ class FileDataSource : public datalayer::VectorFileDataSource<size_t, Data> {
 
  protected:
   virtual file::path relativePath(const size_t& key) const override {
-    return file::Paths::Seg::SegmentDataPage(key);
+    return file::Paths::File::SegmentDataPage(key);
   }
 };
 
 class ListTypeFileDataSource : public datalayer::CompressedVectorFileDataSource<
-    size_t, common::SegListType> {
+                                   size_t, common::SegListType> {
  public:
   ListTypeFileDataSource(file::path userVolumeRoot)
       : CompressedVectorFileDataSource(userVolumeRoot, PageSize) {}
 
  protected:
   virtual file::path relativePath(const size_t& key) const override {
-    return file::Paths::Seg::SegmentListTypesPage(key);
+    return file::Paths::File::SegmentListTypesPage(key);
   }
 };
 }
