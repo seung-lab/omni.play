@@ -54,17 +54,15 @@ TEST(GetConnectedGroupsTest, Simple) {
 
   auto dust = getByType(_return, om::server::groupType::DUST);
   EXPECT_EQ(1, dust.groups.size());
-  EXPECT_EQ(0, dust.groups.front().size());
+  EXPECT_EQ(1, dust.groups.front().size());
 
   auto two = getByID(_return, 2);
-  EXPECT_EQ(2, two.groups.size());
+  EXPECT_EQ(1, two.groups.size());
   EXPECT_EQ(1, two.groups.front().size());
-  EXPECT_EQ(1, two.groups.back().size());
 
   auto three = getByID(_return, 3);
-  EXPECT_EQ(2, three.groups.size());
-  EXPECT_EQ(1, three.groups.front().size());
-  EXPECT_EQ(1, three.groups.back().size());
+  EXPECT_EQ(1, three.groups.size());
+  EXPECT_EQ(2, three.groups.front().size());
 }
 }
 }  // namespace om::test::
