@@ -20,13 +20,21 @@ const server::group& getByType(const std::vector<server::group>& groups,
   return *iter;
 }
 
+const server::group& getByID(const std::vector<server::group>& groups, int id) {
+  auto iter =
+      std::find_if(groups.begin(), groups.end(),
+                   [id](const server::group& g) { return g.user_id == id; });
+  EXPECT_TRUE(iter != groups.end());
+  return *iter;
+}
+
 TEST(GetConnectedGroupsTest, Simple) {
   file::Paths p("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni");
-  volume::Segmentation vol(p.Segmentation(1));
+  volume::Segmentation vol(p, 1);
 
   std::unordered_map<int, common::SegIDSet> groups;
-  groups[1].insert({1, 2, 3, 4, 5});
-  groups[2].insert({1, 3, 5, 7, 9});
+  groups[2].insert({1, 2, 3, 4, 5});
+  groups[3].insert({1, 3, 5, 7, 9});
 
   std::vector<server::group> _return;
   handler::get_connected_groups(_return, vol, groups);
@@ -41,11 +49,22 @@ TEST(GetConnectedGroupsTest, Simple) {
   EXPECT_EQ(3, agreed.groups.front().size());
 
   auto partial = getByType(_return, om::server::groupType::PARTIAL);
-  EXPECT_EQ(0, partial.groups.size());
+  EXPECT_EQ(1, partial.groups.size());
+  EXPECT_EQ(0, partial.groups.front().size());
 
   auto dust = getByType(_return, om::server::groupType::DUST);
   EXPECT_EQ(1, dust.groups.size());
-  EXPECT_EQ(4, dust.groups.front().size());
+  EXPECT_EQ(0, dust.groups.front().size());
+
+  auto two = getByID(_return, 2);
+  EXPECT_EQ(2, two.groups.size());
+  EXPECT_EQ(1, two.groups.front().size());
+  EXPECT_EQ(1, two.groups.back().size());
+
+  auto three = getByID(_return, 3);
+  EXPECT_EQ(2, three.groups.size());
+  EXPECT_EQ(1, three.groups.front().size());
+  EXPECT_EQ(1, three.groups.back().size());
 }
 }
 }  // namespace om::test::
