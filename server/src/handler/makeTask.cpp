@@ -201,8 +201,14 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   auto iterBounds = bounds.ToDataBbox(pre.Coords(), 0);
   iterBounds.setMin(iterBounds.getMin() + 1);
 
-  utility::VolumeWalker<uint32_t> walker(iterBounds, preGetter,
-                                         &pre.UniqueValuesDS());
+  // This optimization is necessary for omni sized volumes and slower for
+  // eyewire sized volumes.  So don't do it if the overlap is too small.
+  chunk::UniqueValuesDS* cuvmDS = nullptr;
+  if (range.x * range.y * range.z > 128 * 128 * 128 * 4) {
+    cuvmDS = &pre.UniqueValuesDS();
+  }
+
+  utility::VolumeWalker<uint32_t> walker(iterBounds, preGetter, cuvmDS);
 
   walker.foreach_voxel_in_set(sel, [&](const coords::Data& dc, uint32_t) {
     uint32_t post_seg_id = postGetter.GetValue(dc.ToGlobal());

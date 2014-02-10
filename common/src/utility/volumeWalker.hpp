@@ -26,6 +26,7 @@ class VolumeWalker {
 
     if (uniqueVals_ == nullptr) {
       foreach_voxel_internal(bounds_, wrappedFunc);
+      return;
     }
 
     coords::Chunk minChunk = bounds_.getMin().ToChunk();
