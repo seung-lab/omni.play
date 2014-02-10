@@ -79,12 +79,17 @@ void TaskInfoWidget::updateInfo() {
                                               std::get<3>(tup)->segments);
     };
     auto iter = orderedGroups.rbegin();
-    buttonLayout->addWidget(makeButton(*iter), 0, 0);
-    ++iter;
-    buttonLayout->addWidget(makeButton(*iter), 0, 1);
+    if (iter != orderedGroups.rend()) {
+      buttonLayout->addWidget(makeButton(*iter), 0, 0);
+      ++iter;
+    }
+    if (iter != orderedGroups.rend()) {
+      buttonLayout->addWidget(makeButton(*iter), 0, 1);
+      ++iter;
+    }
     int nRows = (orderedGroups.size() + 1) / 2;
     int count = 0;
-    for (++iter; iter != orderedGroups.rend(); ++iter) {
+    for (; iter != orderedGroups.rend(); ++iter) {
       buttonLayout->addWidget(makeButton(*iter), count % (nRows - 1) + 1,
                               count / (nRows - 1));
       count++;
