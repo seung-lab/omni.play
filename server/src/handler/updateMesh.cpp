@@ -143,12 +143,11 @@ bool modify_global_mesh_data(ConnectionFunc c, const volume::Segmentation& vol,
 
   using namespace boost;
 
-  for (auto& cc : *vol.Coords().MipChunkCoords(0)) {
+  auto chunks = *vol.Coords().MipChunkCoords(0);
+  for (auto& cc : chunks) {
     if (!modified(vol.UniqueValuesDS().Get(cc), modifiedSegIds)) {
       continue;
     }
-
-    auto chunk = vol.ChunkDS().Get(cc);
 
     coords::DataBbox bounds = cc.BoundingBox(vol.Coords());
 
