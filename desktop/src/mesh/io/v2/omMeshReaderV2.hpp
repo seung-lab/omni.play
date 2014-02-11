@@ -20,12 +20,13 @@ class OmMeshReaderV2 {
 
   ~OmMeshReaderV2() {}
 
-  inline std::shared_ptr<OmDataForMeshLoad> Read(const OmMeshCoord& meshCoord) {
-    return Read(meshCoord.SegID(), meshCoord.Coord());
+  inline std::shared_ptr<OmDataForMeshLoad> Read(
+      const om::coords::Mesh& meshCoord) {
+    return Read(meshCoord.segID(), meshCoord.mipChunkCoord());
   }
 
   std::shared_ptr<OmDataForMeshLoad> Read(const om::common::SegID segID,
-                                          const om::chunkCoord& coord) {
+                                          const om::coords::Chunk& coord) {
     OmMeshChunkAllocTableV2* chunk_table = filePtrCache_->GetAllocTable(coord);
 
     OmMeshChunkDataReaderV2 chunk_data(segmentation_, coord, threshold_);

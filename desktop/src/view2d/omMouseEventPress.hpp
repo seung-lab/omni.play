@@ -28,7 +28,7 @@ class OmMouseEventPress {
   bool middleMouseButton_;
   om::tool::mode tool_;
   QMouseEvent* event_;
-  om::globalCoord dataClickPoint_;
+  om::coords::Global dataClickPoint_;
 
   friend class OmMouseEventState;
 
@@ -40,7 +40,7 @@ class OmMouseEventPress {
     setState(event);
 
     state_->SetMousePanStartingPt(
-        om::screenCoord(event->x(), event->y(), state_));
+        om::coords::Screen(event->x(), event->y(), state_->Coords()));
 
     if (leftMouseButton_) {
       if (om::tool::SPLIT == tool_) {
@@ -89,8 +89,8 @@ class OmMouseEventPress {
     middleMouseButton_ = event->buttons() & Qt::MiddleButton;
 
     tool_ = OmStateManager::GetToolMode();
-    om::screenCoord clicked(event->x(), event->y(), state_);
-    dataClickPoint_ = clicked.toGlobalCoord();
+    om::coords::Screen clicked(event->x(), event->y(), state_->Coords());
+    dataClickPoint_ = clicked.ToGlobal();
   }
 
   void doFindAndSplitSegment() {
@@ -133,9 +133,9 @@ class OmMouseEventPress {
   }
 
   void setDepth() {
-    const om::screenCoord screenc =
-        om::screenCoord(event_->x(), event_->y(), state_);
-    const om::globalCoord newloc = screenc.toGlobalCoord();
+    const om::coords::Screen screenc =
+        om::coords::Screen(event_->x(), event_->y(), state_->Coords());
+    const om::coords::Global newloc = screenc.ToGlobal();
     state_->setLocation(newloc);
 
     om::event::ViewCenterChanged();

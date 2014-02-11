@@ -32,10 +32,10 @@ class OmActionsImpl {
 
   // painting-related
   void SetVoxel(const om::common::ID segmentationId,
-                const om::globalCoord rVoxel, const om::common::SegID value);
+                const om::coords::Global rVoxel, const om::common::SegID value);
 
   void SetVoxels(const om::common::ID segmentationId,
-                 const std::set<om::globalCoord> rVoxels,
+                 const std::set<om::coords::Global> rVoxels,
                  const om::common::SegID value);
 
   // segment-related
@@ -66,5 +66,4 @@ class OmActionsImpl {
   void setUncertain(const SegmentDataWrapper& sdw, const bool uncertain);
 
   void setUncertain(const SegmentationDataWrapper& sdw, const bool uncertain);
-
 };

@@ -6,7 +6,8 @@
 
 class OmBrushSelect {
  public:
-  static void SelectByClick(OmView2dState* state, const om::globalCoord& coord,
+  static void SelectByClick(OmView2dState* state,
+                            const om::coords::Global& coord,
                             const om::common::AddOrSubtract addSegments) {
     std::shared_ptr<OmBrushOppInfo> info =
         OmBrushOppInfoFactory::MakeOppInfo(state, coord, addSegments);
@@ -16,9 +17,10 @@ class OmBrushSelect {
     circle.SelectCircle(coord);
   }
 
-  static void SelectByLine(OmView2dState* state, const om::globalCoord& second,
+  static void SelectByLine(OmView2dState* state,
+                           const om::coords::Global& second,
                            const om::common::AddOrSubtract addSegments) {
-    const om::globalCoord& first = state->GetLastDataPoint();
+    const om::coords::Global& first = state->GetLastDataPoint();
 
     std::shared_ptr<OmBrushOppInfo> info =
         OmBrushOppInfoFactory::MakeOppInfo(state, first, addSegments);

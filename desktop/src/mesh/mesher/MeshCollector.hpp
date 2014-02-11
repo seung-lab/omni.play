@@ -3,7 +3,6 @@
 #include "TriStripCollector.hpp"
 #include "mesh/io/v2/omMeshWriterV2.hpp"
 #include "mesh/omMesh.h"
-#include "mesh/omMeshCoord.h"
 
 #include <zi/bits/cstdint.hpp>
 #include <zi/bits/unordered_map.hpp>
@@ -15,7 +14,7 @@
 
 class MeshCollector {
  private:
-  const om::chunkCoord coord_;
+  const om::coords::Chunk coord_;
   OmMeshWriterV2* const meshIO_;
 
   zi::spinlock lock_;
@@ -24,7 +23,7 @@ class MeshCollector {
   map_t meshes_;
 
  public:
-  MeshCollector(const om::chunkCoord& coord, OmMeshWriterV2* meshIO)
+  MeshCollector(const om::coords::Chunk& coord, OmMeshWriterV2* meshIO)
       : coord_(coord), meshIO_(meshIO), lock_(), meshes_() {}
 
   ~MeshCollector() {

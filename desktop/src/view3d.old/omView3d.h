@@ -35,12 +35,12 @@ class OmView3d : public QGLWidget,
   inline bool MeshesFound() const { return meshesFound_; }
 
  protected:
-  //gl events
+  // gl events
   void initializeGL();
   void resizeGL(int width, int height);
   void paintGL();
 
-  //mouse events
+  // mouse events
   void mousePressEvent(QMouseEvent *event);
   void mouseReleaseEvent(QMouseEvent *event);
   void mouseMoveEvent(QMouseEvent *event);
@@ -52,7 +52,7 @@ class OmView3d : public QGLWidget,
   bool event(QEvent *e);
   void pinchTriggered(QPinchGesture *gesture);
 
-  //omni events
+  // omni events
   void SegmentModificationEvent(om::event::SegmentEvent *event);
   void SegmentGUIlistEvent(om::event::SegmentEvent *) {}
   void SegmentSelectedEvent(om::event::SegmentEvent *) {}
@@ -67,31 +67,31 @@ class OmView3d : public QGLWidget,
   void ViewBlockingRedrawEvent() {}
   void CoordSystemChangeEvent() {}
 
-  //edit actions
+  // edit actions
   void SelectSegment(QMouseEvent *event);
 
-  //voxel selection
+  // voxel selection
   void FocusSelectVoxel(QKeyEvent *event);
   void MouseSelectVoxel(QMouseEvent *event, bool drag);
-  void SelectVoxel(om::globalCoord &voxel, bool append);
+  void SelectVoxel(om::coords::Global &voxel, bool append);
 
-  //gl actions
+  // gl actions
   SegmentDataWrapper PickPoint(const Vector2i &point2di);
   bool UnprojectPoint(Vector2i point2di, Vector3f &point3d);
 
-  //draw methods
+  // draw methods
   void Draw(OmBitfield option);
   void DrawVolumes(OmBitfield option);
   void DrawWidgets();
   void doTimedDraw();
   void myUpdate();
 
-  //draw settings
+  // draw settings
   void SetBackgroundColor();
   void SetBlending();
   void SetCameraPerspective();
 
-  //widgets
+  // widgets
   void UpdateEnabledWidgets();
 
   QSize sizeHint() const;

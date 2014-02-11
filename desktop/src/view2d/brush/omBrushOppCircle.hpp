@@ -18,7 +18,7 @@ class OmBrushOppCircle {
 
   virtual ~OmBrushOppCircle() {}
 
-  std::shared_ptr<om::pt3d_list_t> GetPts(const om::globalCoord& xyzCoord) {
+  std::shared_ptr<om::pt3d_list_t> GetPts(const om::coords::Global& xyzCoord) {
     std::shared_ptr<om::pt3d_list_t> ret = std::make_shared<om::pt3d_list_t>();
 
     OmBrushOppUtils::GetPts(info_.get(), ret.get(), xyzCoord, viewType_);

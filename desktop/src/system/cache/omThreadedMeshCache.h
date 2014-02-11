@@ -1,12 +1,12 @@
+
 #pragma once
 
 #include "mesh/omMesh.h"
 #include "mesh/omMeshTypes.h"
-#include "mesh/omMeshCoord.h"
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheManager.h"
-#include "system/cache/omLockedCacheObjects.hpp"
-#include "utility/omLockedObjects.h"
+#include "cache/lockedObjects.hpp"
+#include "utility/lockedObjects.hpp"
 #include "utility/omLockedPODs.hpp"
 #include "threads/omTaskManager.hpp"
 #include "zi/omMutex.h"
@@ -20,21 +20,21 @@
 
 class OmThreadedMeshCache : public OmCacheBase {
  private:
-  typedef OmMeshCoord key_t;
+  typedef om::coords::Mesh key_t;
   typedef OmMeshPtr ptr_t;
 
   OmThreadPool threadPool_;
   LockedInt64 curSize_;
 
-  LockedCacheMap<key_t, ptr_t> cache_;
-  LockedKeySet<key_t> currentlyFetching_;
+  om::cache::LockedCacheMap<key_t, ptr_t> cache_;
+  om::cache::LockedKeySet<key_t> currentlyFetching_;
   LockedBool killingCache_;
 
   struct OldCache {
     std::map<key_t, ptr_t> map;
-    KeyMultiIndex<key_t> list;
+    om::cache::KeyMultiIndex<key_t> list;
   };
-  LockedList<std::shared_ptr<OldCache> > cachesToClean_;
+  om::utility::LockedList<std::shared_ptr<OldCache> > cachesToClean_;
 
   int numThreads() { return 2; }
 
@@ -75,11 +75,11 @@ class OmThreadedMeshCache : public OmCacheBase {
   virtual ptr_t HandleCacheMiss(const key_t& key) = 0;
 
   void Remove(const key_t& key) {
-    ptr_t ptr = cache_.erase(key);
-    if (!ptr) {
+    auto ptr = cache_.erase(key);
+    if (!ptr || ptr.get() == ptr_t()) {
       return;
     }
-    curSize_.sub(ptr->NumBytes());
+    curSize_.sub(ptr.get()->NumBytes());
   }
 
   void RemoveOldest(const int64_t numBytesToRemove) {
@@ -90,13 +90,13 @@ class OmThreadedMeshCache : public OmCacheBase {
         return;
       }
 
-      const ptr_t ptr = cache_.remove_oldest();
+      auto ptr = cache_.remove_oldest();
 
-      if (!ptr) {
+      if (!ptr || ptr.get() == ptr_t()) {
         continue;
       }
 
-      const int64_t removedBytes = ptr->NumBytes();
+      const int64_t removedBytes = ptr.get()->NumBytes();
       numBytesRemoved += removedBytes;
       curSize_.sub(removedBytes);
     }

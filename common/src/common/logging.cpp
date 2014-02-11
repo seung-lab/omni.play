@@ -51,9 +51,11 @@ void initLogging(std::string logfile, bool consoleLog) {
   c->add_sink(sink);
 
 #ifdef DEBUG_MODE
-  c->set_filter(expressions::is_in_range(severity, debug, error));
+  c->set_filter(expressions::is_in_range(
+      severity, debug, (om::logging::severity_level)(error + 1)));
 #else
-  c->set_filter(expressions::is_in_range(severity, info, error));
+  c->set_filter(expressions::is_in_range(
+      severity, info, (om::logging::severity_level)(error + 1)));
 #endif
 }
 

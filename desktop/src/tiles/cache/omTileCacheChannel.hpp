@@ -2,7 +2,7 @@
 
 #include "tiles/cache/omThreadedTileCache.h"
 #include "tiles/omTile.h"
-#include "tiles/omTileCoord.h"
+#include "coordinates/tile.h"
 #include "tiles/omTileTypes.hpp"
 
 class OmChannelImpl;

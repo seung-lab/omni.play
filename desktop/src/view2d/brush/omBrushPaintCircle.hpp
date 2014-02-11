@@ -15,7 +15,7 @@ class OmBrushPaintCircle {
 
   virtual ~OmBrushPaintCircle() {}
 
-  void PaintCircle(const om::globalCoord& coord) {
+  void PaintCircle(const om::coords::Global& coord) {
     OmBrushOppCircle circleOpp(info_);
 
     std::shared_ptr<om::pt3d_list_t> pts = circleOpp.GetPts(coord);

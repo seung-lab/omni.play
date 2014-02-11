@@ -323,7 +323,7 @@ void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
   }
 }
 
-void OmHdf5LowLevel::writeChunk(const om::dataBbox& extent,
+void OmHdf5LowLevel::writeChunk(const om::coords::DataBbox& extent,
                                 OmDataWrapperPtr data) {
   // Opens an existing dataset.
   hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
@@ -414,7 +414,7 @@ OmDataWrapperPtr OmHdf5LowLevel::GetChunkDataType() {
 }
 
 OmDataWrapperPtr OmHdf5LowLevel::readChunk(
-    const om::dataBbox& extent, const om::common::AffinityGraph aff) {
+    const om::coords::DataBbox& extent, const om::common::AffinityGraph aff) {
   // Opens an existing dataset.
   // hid_t H5Dopen(hid_t loc_id, const char *name  )
   hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);

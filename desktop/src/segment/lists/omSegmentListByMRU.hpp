@@ -1,7 +1,7 @@
 #pragma once
 
 #include "segment/omSegment.h"
-#include "system/cache/omCacheObjects.hpp"
+#include "cache/objects.hpp"
 #include "segment/lists/omSegmentListsTypes.hpp"
 
 class OmSegmentLists;
@@ -10,7 +10,7 @@ class OmSegmentListByMRU {
  private:
   OmSegmentLists* const segmentLists_;
 
-  KeyMultiIndex<OmSegment*> lru_;
+  om::cache::KeyMultiIndex<OmSegment*> lru_;
   std::vector<SegInfo> vec_;
   bool dirty_;
 

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <boost/filesystem.hpp>
-
+#include "datalayer/file.h"
 #include "volume/ivolume.hpp"
 #include "tile/dataSources.hpp"
 #include "chunk/dataSources.hpp"
@@ -26,7 +25,7 @@ struct Metadata;
 
 class Volume : virtual public IVolume {
  public:
-  Volume(boost::filesystem::path uri);
+  Volume(file::path uri);
   virtual ~Volume();
 
   tile::TileDS& TileDS() const override;

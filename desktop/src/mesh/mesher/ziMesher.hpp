@@ -27,7 +27,7 @@ class ziMesher {
  public:
   ziMesher(OmSegmentation* segmentation, const double threshold)
       : vol_(segmentation),
-        rootMipLevel_(segmentation->Coords().GetRootMipLevel()),
+        rootMipLevel_(segmentation->Coords().RootMipLevel()),
         threshold_(threshold),
         chunkCollectors_(),
         meshManager_(segmentation->MeshManager(threshold)),
@@ -69,8 +69,8 @@ class ziMesher {
   const int rootMipLevel_;
   const double threshold_;
 
-  std::map<om::chunkCoord, std::vector<MeshCollector*> > occurances_;
-  std::map<om::chunkCoord, MeshCollector*> chunkCollectors_;
+  std::map<om::coords::Chunk, std::vector<MeshCollector*> > occurances_;
+  std::map<om::coords::Chunk, MeshCollector*> chunkCollectors_;
 
   OmMeshManager* const meshManager_;
   std::unique_ptr<OmMeshWriterV2> meshWriter_;
@@ -82,7 +82,7 @@ class ziMesher {
   om::mesher::progress progress_;
 
   void init() {
-    std::shared_ptr<std::deque<om::chunkCoord> > levelZeroChunks =
+    std::shared_ptr<std::deque<om::coords::Chunk> > levelZeroChunks =
         vol_->GetMipChunkCoords(0);
 
     progress_.SetTotalNumChunks(levelZeroChunks->size());
@@ -106,7 +106,8 @@ class ziMesher {
     log_infos << "done meshing...";
   }
 
-  void addValuesFromChunkAndDownsampledChunks(const om::chunkCoord& mip0coord) {
+  void addValuesFromChunkAndDownsampledChunks(
+      const om::coords::Chunk& mip0coord) {
     const ChunkUniqueValues segIDs =
         vol_->UniqueValuesDS().Values(mip0coord, threshold_);
 
@@ -123,12 +124,12 @@ class ziMesher {
     // downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
   }
 
-  void downsampleSegThroughAllMipLevels(const om::chunkCoord& mip0coord,
+  void downsampleSegThroughAllMipLevels(const om::coords::Chunk& mip0coord,
                                         const ChunkUniqueValues& segIDsMip0) {
-    om::chunkCoord c = mip0coord.ParentCoord();
+    om::coords::Chunk c = mip0coord.ParentCoord();
 
     // corner case: no MIP levels >0
-    while (c.getLevel() <= rootMipLevel_) {
+    while (c.mipLevel() <= rootMipLevel_) {
       registerSegIDs(mip0coord, c, segIDsMip0);
 
       c = c.ParentCoord();
@@ -136,11 +137,11 @@ class ziMesher {
   }
 
   void downsampleSegThroughViewableMipLevels(
-      const om::chunkCoord& mip0coord, const ChunkUniqueValues& segIDsMip0) {
-    om::chunkCoord c = mip0coord.ParentCoord();
+      const om::coords::Chunk& mip0coord, const ChunkUniqueValues& segIDsMip0) {
+    om::coords::Chunk c = mip0coord.ParentCoord();
 
     // corner case: no MIP levels >0
-    while (c.getLevel() <= rootMipLevel_) {
+    while (c.mipLevel() <= rootMipLevel_) {
       std::deque<om::common::SegID> commonIDs;
 
       const ChunkUniqueValues segIDs =
@@ -163,8 +164,8 @@ class ziMesher {
   }
 
   template <typename C>
-  void registerSegIDs(const om::chunkCoord& mip0coord, const om::chunkCoord& c,
-                      const C& segIDs) {
+  void registerSegIDs(const om::coords::Chunk& mip0coord,
+                      const om::coords::Chunk& c, const C& segIDs) {
     if (chunkCollectors_.count(c) == 0) {
       chunkCollectors_.insert(
           std::make_pair(c, new MeshCollector(c, meshWriter_.get())));
@@ -222,12 +223,12 @@ class ziMesher {
                         129);
   }
 
-  void processChunk(om::chunkCoord coord) {
-    static const int chunkDim = vol_->Coords().GetChunkDimension();
+  void processChunk(om::coords::Chunk coord) {
+    static const int chunkDim = vol_->Coords().ChunkDimensions().x;
 
     OmSegChunk* chunk = vol_->GetChunk(coord);
 
-    const om::normBbox& dstBbox = chunk->Mipping().GetNormExtent();
+    const om::coords::NormBbox& dstBbox = chunk->Mipping().GetNormExtent();
 
     Vector3f dstDim = dstBbox.getDimensions();
 

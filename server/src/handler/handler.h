@@ -5,6 +5,8 @@
 #include "server.h"
 #include "RealTimeMesher.h"
 
+#include <unordered_map>
+
 namespace om {
 namespace volume {
 class Volume;
@@ -45,5 +47,9 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seedIds,
 
 void get_mst(std::vector<server::affinity>& _return,
              const volume::Segmentation& vol);
+
+void get_connected_groups(
+    std::vector<server::group>& _return, const volume::Segmentation& vol,
+    const std::unordered_map<int, common::SegIDSet>& groups);
 }
 }

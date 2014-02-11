@@ -72,7 +72,7 @@ class view2dCoords {
     const Vector3f pan = makeViewTypeVector3(
         totalViewport_.width / 2.0f, totalViewport_.height / 2.0f, 0.0f);
 
-    om::globalCoord location = vgs_->View2dState()->GetScaledSliceDepth();
+    om::coords::Global location = vgs_->View2dState()->GetScaledSliceDepth();
 
     // g to s scaling and translation
     globalToScreenMat_.setTranslation(

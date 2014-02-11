@@ -5,7 +5,7 @@
 #include "segment/colorizer/omSegmentColorizerTypes.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentUtils.hpp"
-#include "utility/omLockedObjects.h"
+#include "utility/lockedObjects.hpp"
 #include "viewGroup/omViewGroupState.h"
 
 static const om::common::Color blackColor = {0, 0, 0};

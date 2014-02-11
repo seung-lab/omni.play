@@ -2,7 +2,7 @@
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
-#include "tiles/omTileCoord.h"
+#include "coordinates/tile.h"
 #include "tiles/omTileDumper.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omMipVolume.h"
@@ -20,11 +20,11 @@ void OmTileDumper::DumpTiles() {
   file.open(QIODevice::WriteOnly);
   QDataStream out(&file);
 
-  for (int mipLevel = 0; mipLevel <= vol_->Coords().GetRootMipLevel();
+  for (int mipLevel = 0; mipLevel <= vol_->Coords().RootMipLevel();
        ++mipLevel) {
 
     // dim of miplevel in mipchunks
-    const int chunkDim = vol_->Coords().GetChunkDimension();
+    const int chunkDim = vol_->Coords().ChunkDimensions().x;
     const Vector3i mip_coord_dims =
         vol_->Coords().MipLevelDimensionsInMipChunks(mipLevel) * chunkDim;
 
@@ -56,12 +56,12 @@ void OmTileDumper::DumpTiles() {
 void OmTileDumper::saveTile(QDataStream& out, const int mipLevel, const int x,
                             const int y, const int z,
                             const om::common::ViewType viewType) {
-  const om::globalCoord coord = om::globalCoord(x, y, z);
-  const om::chunkCoord chunk = coord.toChunkCoord(vol_, mipLevel);
-  const om::dataCoord data = coord.toDataCoord(vol_, mipLevel);
+  const om::coords::Global coord = om::coords::Global(x, y, z);
+  const om::coords::Chunk chunk = coord.ToChunk(vol_->Coords(), mipLevel);
+  const om::coords::Data data = coord.ToData(vol_->Coords(), mipLevel);
   const int freshness = 0;
 
-  const OmTileCoord tileCoord(chunk, viewType, data.toTileOffset(viewType),
+  const OmTileCoord tileCoord(chunk, viewType, data.ToTileOffset(viewType),
                               vol_, freshness, vgs_, om::common::SEGMENTATION);
 
   OmTilePtr tile;

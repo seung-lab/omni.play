@@ -10,16 +10,17 @@
 namespace om {
 namespace chunk {
 
-template <typename DATA> class dataImpl : public dataInterface {
+template <typename DATA>
+class dataImpl : public dataInterface {
  private:
   OmMipVolume* const vol_;
-  const om::chunkCoord coord_;
+  const om::coords::Chunk coord_;
   const int numElementsPerSlice_;
   const int numElementsPerChunk_;
   ptrToChunkDataBase* const ptrToChunkData_;
 
  public:
-  dataImpl(OmMipVolume* vol, const om::chunkCoord& coord)
+  dataImpl(OmMipVolume* vol, const om::coords::Chunk& coord)
       : vol_(vol),
         coord_(coord),
         numElementsPerSlice_(128 * 128),

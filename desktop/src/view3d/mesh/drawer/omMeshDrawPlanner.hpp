@@ -19,7 +19,7 @@ class MeshDrawPlanner {
   drawChunks_t drawChunks_;
 
  public:
-  MeshDrawPlanner(const OmMipVolCoords& system, OmSegments& segments,
+  MeshDrawPlanner(const om::coords::VolumeSystem& system, OmSegments& segments,
                   MeshSegmentList& rootSegList)
       : segments_(segments),
         rootSegList_(rootSegList),

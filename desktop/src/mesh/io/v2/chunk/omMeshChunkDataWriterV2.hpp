@@ -14,7 +14,7 @@ class OmMeshChunkDataWriterV2 {
 
  private:
   OmSegmentation* const vol_;
-  const om::chunkCoord& coord_;
+  const om::coords::Chunk& coord_;
   const double threshold_;
   const QString fnp_;
 
@@ -23,7 +23,7 @@ class OmMeshChunkDataWriterV2 {
   zi::rwmutex lock_;
 
  public:
-  OmMeshChunkDataWriterV2(OmSegmentation* seg, const om::chunkCoord& coord,
+  OmMeshChunkDataWriterV2(OmSegmentation* seg, const om::coords::Chunk& coord,
                           const double threshold)
       : vol_(seg),
         coord_(coord),
@@ -36,7 +36,7 @@ class OmMeshChunkDataWriterV2 {
   ~OmMeshChunkDataWriterV2() { shrinkFileIfNeeded(); }
 
   template <typename T>
-  void Append(const OmMeshCoord meshCoord, std::vector<T>& data,
+  void Append(const om::coords::Mesh meshCoord, std::vector<T>& data,
               OmMeshFilePart& entry, const int64_t count) {
     const int64_t numBytes = sizeof(T) * data.size();
 
@@ -52,7 +52,7 @@ class OmMeshChunkDataWriterV2 {
   }
 
   template <typename T>
-  void Append(const OmMeshCoord meshCoord, std::shared_ptr<T> data,
+  void Append(const om::coords::Mesh meshCoord, std::shared_ptr<T> data,
               OmMeshFilePart& entry, const int64_t count,
               const int64_t numBytes) {
     if (0 != (numBytes % sizeof(T))) {

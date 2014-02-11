@@ -17,17 +17,17 @@ class OmChunkUniqueValuesManager {
   OmChunkUniqueValuesManager(OmSegmentation* segmentation)
       : chunks_(new cont_t(segmentation)) {}
 
-  ChunkUniqueValues Values(const om::chunkCoord& coord,
+  ChunkUniqueValues Values(const om::coords::Chunk& coord,
                            const double threshold) {
     OmThresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
     return thresholdsInChunk->Get(threshold)->Values();
   }
 
-  ChunkUniqueValues Get(const om::chunkCoord& coord) {
+  ChunkUniqueValues Get(const om::coords::Chunk& coord) {
     return Values(coord, 1);
   }
 
-  ChunkUniqueValues RereadChunk(const om::chunkCoord& coord,
+  ChunkUniqueValues RereadChunk(const om::coords::Chunk& coord,
                                 const double threshold) {
     OmThresholdsInChunk* thresholdsInChunk = chunks_->Get(coord);
     return thresholdsInChunk->Get(threshold)->RereadChunk();

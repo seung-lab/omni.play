@@ -28,9 +28,9 @@ class OmHdf5Impl {
                     const OmDataWrapperPtr data);
 
   OmDataWrapperPtr readChunk(const OmDataPath& path,
-                             const om::dataBbox& dataExtent,
+                             const om::coords::DataBbox& dataExtent,
                              const om::common::AffinityGraph aff);
-  void writeChunk(const OmDataPath& path, om::dataBbox dataExtent,
+  void writeChunk(const OmDataPath& path, om::coords::DataBbox dataExtent,
                   OmDataWrapperPtr data);
   Vector3i getDatasetDims(const OmDataPath& path);
   OmDataWrapperPtr GetChunkDataType(const OmDataPath& path);

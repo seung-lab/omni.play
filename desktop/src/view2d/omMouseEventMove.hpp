@@ -22,7 +22,7 @@ class OmMouseEventMove {
   bool middleMouseButton_;
   om::tool::mode tool_;
   QMouseEvent* event_;
-  om::globalCoord dataClickPoint_;
+  om::coords::Global dataClickPoint_;
 
   friend class OmMouseEventState;
 
@@ -100,8 +100,9 @@ class OmMouseEventMove {
     middleMouseButton_ = event->buttons() & Qt::MiddleButton;
 
     tool_ = OmStateManager::GetToolMode();
-    om::screenCoord clicked(Vector2i(event->x(), event->y()), state_);
-    dataClickPoint_ = clicked.toGlobalCoord();
+    om::coords::Screen clicked(Vector2i(event->x(), event->y()),
+                               state_->Coords());
+    dataClickPoint_ = clicked.ToGlobal();
   }
 
   inline void selectSegments() {
@@ -133,6 +134,7 @@ class OmMouseEventMove {
   }
 
   inline void mousePan() {
-    state_->DoMousePan(om::screenCoord(event_->x(), event_->y(), state_));
+    state_->DoMousePan(
+        om::coords::Screen(event_->x(), event_->y(), state_->Coords()));
   }
 };

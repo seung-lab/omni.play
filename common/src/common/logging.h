@@ -50,7 +50,7 @@ BOOST_LOG_INLINE_GLOBAL_LOGGER_INIT(logger, my_logger_mt) {
 
 #define log_errors                                              \
   BOOST_LOG_SEV(om::logging::logger::get(), om::logging::error) \
-      << __FILE__ << ":" << __LINE__ << ":" << BOOST_CURRENT_FUNCTION << ": "
+      << __FILE__ << ":" << __LINE__ << ":" << __FUNCTION__ << ": "
 #define log_error(...)                                          \
   BOOST_LOG_SEV(om::logging::logger::get(), om::logging::error) \
       << om::logging::my_printf(__VA_ARGS__)

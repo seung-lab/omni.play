@@ -1,6 +1,5 @@
 #include "system/cache/omThreadedMeshCache.h"
 #include "mesh/omMeshTypes.h"
-#include "mesh/omMeshCoord.h"
 #include "mesh/omMeshManager.h"
 #include "view3d/mesh/cacheWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
@@ -18,11 +17,11 @@ CacheWrapper::CacheWrapper(om::common::ID segmentationID) {
 
 CacheWrapper::~CacheWrapper() { meshManager_->CloseDownThreads(); }
 
-OmMeshPtr CacheWrapper::Get(const om::chunkCoord& coord,
+OmMeshPtr CacheWrapper::Get(const om::coords::Chunk& coord,
                             const om::common::SegID segID) {
   log_infos << "getting mesh: " << coord << "; segID: " << segID;
   OmMeshPtr mesh;
-  OmMeshCoord meshCoord(coord, segID);
+  om::coords::Mesh meshCoord(coord, segID);
   meshManager_->GetMesh(mesh, meshCoord, om::common::Blocking::NON_BLOCKING);
   return mesh;
 }

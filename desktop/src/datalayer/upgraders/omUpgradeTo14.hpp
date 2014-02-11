@@ -40,8 +40,8 @@ class OmUpgradeTo14 {
   void allocate(T& vol) {
     std::map<int, Vector3i> levelsAndDims;
 
-    for (int level = 0; level <= vol.Coords().GetRootMipLevel(); level++) {
-      levelsAndDims[level] = vol.Coords().getDimsRoundedToNearestChunk(level);
+    for (int level = 0; level <= vol.Coords().RootMipLevel(); level++) {
+      levelsAndDims[level] = vol.Coords().DimsRoundedToNearestChunk(level);
     }
 
     // allocate mem-mapped files...
@@ -55,13 +55,13 @@ class OmUpgradeTo14 {
     const uint32_t numChunks = vol.Coords().ComputeTotalNumChunks();
     uint32_t counter = 0;
 
-    for (int level = 0; level <= vol.Coords().GetRootMipLevel(); ++level) {
+    for (int level = 0; level <= vol.Coords().RootMipLevel(); ++level) {
       if (!OmHdf5ChunkUtils::VolumeExistsInHDF5(&vol, level)) {
         log_infos << "no HDF5 volume data found for mip " << level;
         continue;
       }
 
-      std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+      std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
           vol.GetMipChunkCoords(level);
 
       FOR_EACH(iter, *coordsPtr) {
@@ -75,7 +75,7 @@ class OmUpgradeTo14 {
   }
 
   template <typename T>
-  void copyChunk(T& vol, const om::chunkCoord& coord) {
+  void copyChunk(T& vol, const om::coords::Chunk& coord) {
     OmChunk* chunk = vol.GetChunk(coord);
 
     OmDataWrapperPtr hdf5 = OmHdf5ChunkUtils::ReadChunkData(&vol, chunk);

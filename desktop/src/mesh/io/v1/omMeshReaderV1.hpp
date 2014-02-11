@@ -5,7 +5,6 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "mesh/io/omDataForMeshLoad.hpp"
-#include "mesh/omMeshCoord.h"
 #include "chunks/omChunk.h"
 #include "volume/omSegmentation.h"
 #include "project/omProject.h"
@@ -21,7 +20,7 @@ class OmMeshReaderV1 {
   }
 
   bool IsAnyMeshDataPresent() {
-    const om::chunkCoord coord(0, 0, 0, 0);
+    const om::coords::Chunk coord(0, 0, 0, 0);
 
     const auto segIDs = segmentation_->UniqueValuesDS().Values(coord, 1);
 
@@ -34,12 +33,13 @@ class OmMeshReaderV1 {
     return false;
   }
 
-  inline std::shared_ptr<OmDataForMeshLoad> Read(const OmMeshCoord& meshCoord) {
-    return Read(meshCoord.SegID(), meshCoord.Coord());
+  inline std::shared_ptr<OmDataForMeshLoad> Read(
+      const om::coords::Mesh& meshCoord) {
+    return Read(meshCoord.segID(), meshCoord.mipChunkCoord());
   }
 
-  inline std::shared_ptr<OmDataForMeshLoad> Read(const om::common::SegID segID,
-                                                 const om::chunkCoord& coord) {
+  inline std::shared_ptr<OmDataForMeshLoad> Read(
+      const om::common::SegID segID, const om::coords::Chunk& coord) {
     try {
       return doRead(segID, coord);
     }
@@ -49,9 +49,8 @@ class OmMeshReaderV1 {
   }
 
  private:
-
   bool isMeshDataPresent(const om::common::SegID segID,
-                         const om::chunkCoord& coord) {
+                         const om::coords::Chunk& coord) {
     try {
       return doIsMeshDataPresent(segID, coord);
     }
@@ -61,8 +60,8 @@ class OmMeshReaderV1 {
   }
 
   bool doIsMeshDataPresent(const om::common::SegID segID,
-                           const om::chunkCoord& coord) {
-    const OmMeshCoord meshCoord(coord, segID);
+                           const om::coords::Chunk& coord) {
+    const om::coords::Mesh meshCoord(coord, segID);
 
     const std::string path = getDirectoryPath(meshCoord);
 
@@ -81,11 +80,11 @@ class OmMeshReaderV1 {
   }
 
   std::shared_ptr<OmDataForMeshLoad> doRead(const om::common::SegID segID,
-                                            const om::chunkCoord& coord) {
+                                            const om::coords::Chunk& coord) {
     std::shared_ptr<OmDataForMeshLoad> ret =
         std::make_shared<OmDataForMeshLoad>();
 
-    const OmMeshCoord meshCoord(coord, segID);
+    const om::coords::Mesh meshCoord(coord, segID);
 
     const std::string path = getDirectoryPath(meshCoord);
 
@@ -135,12 +134,12 @@ class OmMeshReaderV1 {
     return ret;
   }
 
-  std::string getDirectoryPath(const OmMeshCoord& meshCoord) {
-    const std::string p = str(
-        boost::format("%1%/%2%_%3%_%4%/mesh/%5%/") %
-        meshCoord.MipChunkCoord.Level % meshCoord.MipChunkCoord.Coordinate.x %
-        meshCoord.MipChunkCoord.Coordinate.y %
-        meshCoord.MipChunkCoord.Coordinate.z % meshCoord.DataValue);
+  std::string getDirectoryPath(const om::coords::Mesh& meshCoord) {
+    const std::string p =
+        str(boost::format("%1%/%2%_%3%_%4%/mesh/%5%/") %
+            meshCoord.mipChunkCoord().mipLevel() % meshCoord.mipChunkCoord().x %
+            meshCoord.mipChunkCoord().y % meshCoord.mipChunkCoord().z %
+            meshCoord.segID());
 
     return segmentation_->Folder()->RelativeVolPath().toStdString() + p;
   }

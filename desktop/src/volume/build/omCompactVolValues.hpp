@@ -31,14 +31,14 @@ class OmCompactVolValues {
 
  private:
   void findUniqueValues(std::unordered_set<uint32_t>& values) {
-    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
         vol_->GetMipChunkCoords(0);
     const uint32_t numChunks = coordsPtr->size();
 
     int counter = 0;
 
     FOR_EACH(iter, *coordsPtr) {
-      const om::chunkCoord& coord = *iter;
+      const om::coords::Chunk& coord = *iter;
 
       ++counter;
       log_info("\rreading chunk %d of %d...", counter, numChunks);
@@ -57,14 +57,14 @@ class OmCompactVolValues {
   }
 
   void doRewriteVol(const std::unordered_map<uint32_t, uint32_t>& compact) {
-    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
         vol_->GetMipChunkCoords(0);
     const uint32_t numChunks = coordsPtr->size();
 
     int counter = 0;
 
     FOR_EACH(iter, *coordsPtr) {
-      const om::chunkCoord& coord = *iter;
+      const om::coords::Chunk& coord = *iter;
 
       ++counter;
       log_info("rewriting chunk %d of %d...", counter, numChunks);

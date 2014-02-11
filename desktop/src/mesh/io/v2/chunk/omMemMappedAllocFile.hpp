@@ -9,7 +9,7 @@
 class OmMemMappedAllocFile {
  private:
   OmSegmentation* const segmentation_;
-  const om::chunkCoord coord_;
+  const om::coords::Chunk coord_;
   const double threshold_;
   const QString fnp_;
 
@@ -19,7 +19,7 @@ class OmMemMappedAllocFile {
 
  public:
   OmMemMappedAllocFile(OmSegmentation* segmentation,
-                       const om::chunkCoord& coord, const double threshold)
+                       const om::coords::Chunk& coord, const double threshold)
       : segmentation_(segmentation),
         coord_(coord),
         threshold_(threshold),

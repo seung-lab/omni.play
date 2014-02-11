@@ -33,7 +33,7 @@ class OmHdf5ChunkUtils {
         OmDataPaths::Hdf5VolData(vol->GetDirectoryPath(), chunk->GetLevel());
 
     OmDataWrapperPtr data =
-        reader->readChunk(path, chunk->Mipping().GetExtent(),
+        reader->readChunk(path, chunk->Mipping().Extent(),
                           om::common::AffinityGraph::NO_AFFINITY);
 
     return data;

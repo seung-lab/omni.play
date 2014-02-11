@@ -2,7 +2,7 @@
 
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheManager.h"
-#include "system/cache/omLockedCacheObjects.hpp"
+#include "cache/lockedObjects.hpp"
 #include "zi/omMutex.h"
 
 /**
@@ -13,7 +13,8 @@
  * Michael Purcaro 02/2011
  **/
 
-template <typename KEY, typename PTR> class OmGetSetCache : public OmCacheBase {
+template <typename KEY, typename PTR>
+class OmGetSetCache : public OmCacheBase {
  private:
   const om::common::CacheGroup cacheGroup_;
   const int64_t entrySize_;
@@ -24,7 +25,7 @@ template <typename KEY, typename PTR> class OmGetSetCache : public OmCacheBase {
 
   std::deque<KEY> mru_;  // most recent keys at end of list
 
-  LockedKeyMultiIndex<KEY> full_mru_;
+  om::cache::LockedKeyMultiIndex<KEY> full_mru_;
 
  public:
   OmGetSetCache(const om::common::CacheGroup cacheGroup,
@@ -80,10 +81,10 @@ template <typename KEY, typename PTR> class OmGetSetCache : public OmCacheBase {
       if (full_mru_.empty()) {
         return;
       }
-      const KEY key = full_mru_.remove_oldest();
-      {
+      auto key = full_mru_.remove_oldest();
+      if (key) {
         zi::guard g(lock_);
-        cache_.erase(key);
+        cache_.erase(key.get());
       }
     }
   }

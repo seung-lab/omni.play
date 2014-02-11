@@ -115,7 +115,7 @@ class ziMesher {
     coords::Chunk c = mip0coord.ParentCoord();
 
     // corner case: no MIP levels >0
-    while (c.getLevel() <= rootMipLevel_) {
+    while (c.mipLevel() <= rootMipLevel_) {
       registerSegIDs(mip0coord, c, segIDsMip0);
 
       c = c.ParentCoord();
@@ -126,7 +126,7 @@ class ziMesher {
       const coords::Chunk& mip0coord, const ChunkUniqueValues& segIDsMip0) {
     coords::Chunk c = mip0coord.ParentCoord();
 
-    corner case : no MIP levels > 0 while (c.getLevel() <= rootMipLevel_) {
+    corner case : no MIP levels > 0 while (c.mipLevel() <= rootMipLevel_) {
       std::deque<common::SegID> commonIDs;
 
       const ChunkUniqueValues segIDs =
@@ -209,7 +209,7 @@ class ziMesher {
   }
 
   void processChunk(coords::Chunk coord) {
-    static const int chunkDim = vol_.CoordinateSystem()().ChunkDimension();
+    static const int chunkDim = vol_.CoordinateSystem()().ChunkDimensions();
 
     segChunk* chunk = vol_.GetChunk(coord);
 

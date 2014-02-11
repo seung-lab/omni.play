@@ -1,43 +1,45 @@
 #pragma once
 
 #include "volume/omMipVolume.h"
-#include "coordinates/normCoord.h"
 
 class OmChunkMipping {
  private:
-  //octree properties
-  om::dataBbox dataExtent_;
-  om::normBbox normExtent_;         // extent of chunk in norm space
-  om::normBbox clippedNormExtent_;  // extent of contained data in norm space
-  om::chunkCoord coord_;
-  std::set<om::chunkCoord> childrenCoordinates_;
+  // octree properties
+  om::coords::DataBbox dataExtent_;
+  om::coords::NormBbox normExtent_;         // extent of chunk in norm space
+  om::coords::NormBbox clippedNormExtent_;  // extent of contained data in norm
+                                            // space
+  om::coords::Chunk coord_;
+  std::set<om::coords::Chunk> childrenCoordinates_;
 
   uint32_t numVoxels_;
   uint32_t numBytes_;
 
  public:
-  OmChunkMipping(OmMipVolume* vol, const om::chunkCoord& coord)
-      : dataExtent_(coord.chunkBoundingBox(vol)),
-        normExtent_(dataExtent_.toNormBbox()),
-        clippedNormExtent_(dataExtent_.toNormBbox()),
+  OmChunkMipping(OmMipVolume* vol, const om::coords::Chunk& coord)
+      : dataExtent_(coord.BoundingBox(vol->Coords())),
+        normExtent_(dataExtent_.ToNormBbox()),
+        clippedNormExtent_(dataExtent_.ToNormBbox()),
         coord_(coord),
         numVoxels_(vol->Coords().GetNumberOfVoxelsPerChunk()),
         numBytes_(numVoxels_ * vol->GetBytesPerVoxel()) {
-    //set children
+    // set children
     vol->Coords().ValidMipChunkCoordChildren(coord, childrenCoordinates_);
 
     clippedNormExtent_.intersect(AxisAlignedBoundingBox<float>::UNITBOX);
   }
 
-  inline const om::dataBbox& GetExtent() const { return dataExtent_; }
+  inline const om::coords::DataBbox& Extent() const { return dataExtent_; }
 
-  inline const om::normBbox& GetNormExtent() const { return normExtent_; }
+  inline const om::coords::NormBbox& GetNormExtent() const {
+    return normExtent_;
+  }
 
-  inline const om::normBbox& GetClippedNormExtent() const {
+  inline const om::coords::NormBbox& GetClippedNormExtent() const {
     return clippedNormExtent_;
   }
 
-  inline const std::set<om::chunkCoord>& GetChildrenCoordinates() const {
+  inline const std::set<om::coords::Chunk>& GetChildrenCoordinates() const {
     return childrenCoordinates_;
   }
 

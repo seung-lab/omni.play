@@ -84,7 +84,7 @@ class OmScreenPainter {
   }
 
   void drawBoundingBox(QPainter& painter) {
-    const Vector4i& vp = state_->Coords().getTotalViewport();
+    const Vector4i& vp = state_->Coords().totalViewport();
     painter.drawRect(vp.lowerLeftX, vp.lowerLeftY, vp.width - 1, vp.height - 1);
   }
 
@@ -114,7 +114,7 @@ class OmScreenPainter {
     int yTop = 45;
 
     const int xoffset = 10;
-    const int yTopOfText = state_->Coords().getTotalViewport().height - yTop;
+    const int yTopOfText = state_->Coords().totalViewport().height - yTop;
 
     OmDisplayInfo di(painter, pen, yTopOfText, xoffset);
 
@@ -132,9 +132,9 @@ class OmScreenPainter {
   }
 
   QString depthString() {
-    const om::globalCoord global = state_->Location();
-    const om::dataCoord data =
-        global.toDataCoord(state_->getVol(), state_->getMipLevel());
+    const om::coords::Global global = state_->Location();
+    const om::coords::Data data =
+        global.ToData(state_->getVol()->Coords(), state_->getMipLevel());
 
     const int globalDepth = state_->getViewTypeDepth(global);
     const int dataDepth = state_->getViewTypeDepth(data);
@@ -158,7 +158,7 @@ class OmScreenPainter {
   }
 
   void drawCursors(QPainter& painter) {
-    const Vector4i& vp = state_->Coords().getTotalViewport();
+    const Vector4i& vp = state_->Coords().totalViewport();
     const int fullHeight = vp.height;
     const int halfHeight = fullHeight / 2;
     const int fullWidth = vp.width;
@@ -223,9 +223,9 @@ class OmScreenPainter {
       FOR_EACH(it, annotations.Enabled()) {
         om::annotation::data& a = *it->Object;
 
-        if (!closeInDepth(a.coord.toGlobalCoord())) continue;
+        if (!closeInDepth(a.coord.ToGlobal())) continue;
 
-        om::screenCoord loc = a.coord.toGlobalCoord().toScreenCoord(state_);
+        om::coords::Screen loc = a.coord.ToGlobal().ToScreen(state_->Coords());
 
         QPen pen;
         pen.setColor(QColor::fromRgb(a.color.red, a.color.green, a.color.blue));
@@ -239,7 +239,7 @@ class OmScreenPainter {
 
   static const int DEPTH_CUTOFF = 20;
 
-  bool closeInDepth(om::globalCoord point) {
+  bool closeInDepth(om::coords::Global point) {
     int depth = state_->getViewTypeDepth(point);
     int plane = state_->getViewTypeDepth(state_->Location());
 

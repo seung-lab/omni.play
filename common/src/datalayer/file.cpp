@@ -20,7 +20,7 @@ using namespace boost::filesystem;
 
 uint64_t numBytes(const path& fnp) {
   if (!exists(fnp)) {
-    throw IoException("file not found", fnp.string());
+    return 0;
   }
   return boost::filesystem::file_size(fnp);
 }

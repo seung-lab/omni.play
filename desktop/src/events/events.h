@@ -28,6 +28,7 @@ void CoordSystemChanged();
 void PreferenceChange(const int key);
 
 void TaskChange();
+void TaskStarted();
 
 void BeforeConnectionChange();
 void ConnectionChanged();

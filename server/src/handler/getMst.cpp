@@ -12,16 +12,9 @@ namespace handler {
 
 void get_mst(std::vector<server::affinity>& _return,
              const volume::Segmentation& vol) {
-  if (!(vol.Metadata().volumeType() == common::ObjectType::SEGMENTATION)) {
-    return;
-  }
+  _return.resize(vol.Edges().size());
 
-  auto path = vol.Endpoint() / file::Paths::Seg::MST();
-
-  datalayer::MemMappedFile<segment::Edge> dataFile(path);
-  _return.resize(dataFile.Length());
-
-  for (auto& e : dataFile) {
+  for (auto& e : vol.Edges()) {
     server::affinity a;
     a.a = e.node1ID;
     a.b = e.node2ID;

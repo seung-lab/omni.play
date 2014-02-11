@@ -91,8 +91,6 @@ class usersImpl {
     const QString userSegmentsFolder = makeUserSegmentsFolder(folder);
 
     if (OmFileHelpers::IsSymlink(oldSegmentsFolder)) {
-      OmFileHelpers::RmFile(oldSegmentsFolder);
-      OmFileHelpers::Symlink(userSegmentsFolder, oldSegmentsFolder);
 
     } else if (OmFileHelpers::IsFolder(oldSegmentsFolder)) {
       OmFileHelpers::MoveFile(oldSegmentsFolder, userSegmentsFolder);

@@ -23,7 +23,7 @@ class progress {
 
   uint32_t GetTotalNumChunks() const { return progress_->GetTotal(); }
 
-  void ChunkCompleted(const om::chunkCoord& coord) {
+  void ChunkCompleted(const om::coords::Chunk& coord) {
     progress_->SetDone(1);
 
     const uint32_t total = progress_->GetTotal();

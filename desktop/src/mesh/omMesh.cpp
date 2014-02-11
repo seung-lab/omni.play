@@ -10,7 +10,7 @@
 
 static const GLuint NULL_VBO_ID = 0;
 
-OmMesh::OmMesh(OmSegmentation* seg, const OmMeshCoord& coord,
+OmMesh::OmMesh(OmSegmentation* seg, const om::coords::Mesh& coord,
                OmMeshManager* pMipMeshManager, OmMeshCache* cache)
     : segmentation_(seg),
       cache_(cache),
@@ -100,10 +100,10 @@ void OmMesh::makeDisplayList(QGLContext const* context) {
   glBindBufferARB(GL_ARRAY_BUFFER_ARB, vertexDataVboId_);
 
   // specify vector size for interleaved vector data
-  uint32_t vector_size = 3 * sizeof(GL_FLOAT);
+  size_t vector_size = 3 * sizeof(GL_FLOAT);
 
   // specify normal (type, stride, pointer)
-  glNormalPointer(GL_FLOAT, 2 * vector_size, (void*)vector_size);
+  glNormalPointer(GL_FLOAT, 2 * vector_size, (GLvoid*)vector_size);
 
   // specify vertex (coordinates, type, stride, pointer)
   glVertexPointer(3, GL_FLOAT, 2 * vector_size, 0);

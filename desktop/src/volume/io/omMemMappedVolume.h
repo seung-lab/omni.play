@@ -24,7 +24,7 @@ class OmMemMappedVolume {
 
   int GetBytesPerVoxel() const;
   OmRawDataPtrs GetVolPtr(const int level);
-  OmRawDataPtrs getChunkPtrRaw(const om::chunkCoord& coord);
+  OmRawDataPtrs getChunkPtrRaw(const om::coords::Chunk& coord);
 
   void downsample(OmMipVolume* vol);
 

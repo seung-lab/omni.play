@@ -112,6 +112,16 @@ class OmLocalPreferences : private om::SingletonBase<OmLocalPreferences> {
     LocalPrefFiles::writeSettingQString("username", username);
   }
 
+  // Dateset (Eyewire vs Omni)
+  static int getDataset() {
+    // Default to Omni (id=2)
+    return LocalPrefFiles::readSettingNumber("dataset", 2);
+  }
+
+  static void setDataset(int dataset) {
+    LocalPrefFiles::writeSettingNumber("dataset", dataset);
+  }
+
  private:
   OmLocalPreferences() {}
   ~OmLocalPreferences() {}

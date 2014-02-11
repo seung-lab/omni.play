@@ -17,7 +17,7 @@ class OmLandmarks {
   OmLandmarks(QWidget* parent) : parent_(parent) {}
 
   void Add(boost::optional<SegmentDataWrapper> sdwIn,
-           const om::globalCoord& dataClickPoint) {
+           const om::coords::Global& dataClickPoint) {
     if (!sdwIn) {
       return;
     }

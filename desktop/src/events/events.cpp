@@ -68,6 +68,7 @@ void PreferenceChange(const int key) {
 }
 
 void TaskChange() { Manager::Post(new TaskEvent(TaskEvent::TASK_CHANGE)); }
+void TaskStarted() { Manager::Post(new TaskEvent(TaskEvent::TASK_STARTED)); }
 
 void ConnectionChanged() {
   Manager::Post(new ConnectionEvent(ConnectionEvent::CONNECTION_CHANGE));

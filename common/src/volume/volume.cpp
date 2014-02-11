@@ -18,7 +18,7 @@ namespace volume {
 
 using namespace pipeline;
 
-Volume::Volume(boost::filesystem::path uri)
+Volume::Volume(file::path uri)
     : metaDS_(std::make_unique<MetadataDataSource>()),
       metaManager_(std::make_unique<MetadataManager>(*metaDS_, uri)),
       tileDS_(std::make_unique<tile::CachedDataSource>(uri,

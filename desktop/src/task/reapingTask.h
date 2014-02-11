@@ -25,6 +25,7 @@ class ReapingTask : virtual public Task {
   virtual bool Reaping() { return false; }
   virtual bool Start();
   virtual bool Submit();
+  virtual const std::vector<SegGroup>& SegGroups() { return groups_; }
 
   void set_aggregate(Aggregate&& aggregate) {
     aggregate_ = std::move(aggregate);
@@ -36,6 +37,7 @@ class ReapingTask : virtual public Task {
   std::string path_;
   common::SegIDSet seed_;
   Aggregate aggregate_;
+  std::vector<SegGroup> groups_;
   friend class YAML::convert<ReapingTask>;
 };
 
@@ -61,6 +63,11 @@ struct convert<om::task::ReapingTask> {
       for (const auto& s : seedYaml) {
         t.seed_.insert(s.first.as<uint32_t>());
       }
+      om::task::SegGroup seed;
+      seed.name = "seed";
+      seed.type = om::task::SegGroup::GroupType::SEED;
+      seed.segments = t.seed_;
+      t.groups_.push_back(seed);
       return true;
     }
     catch (std::exception e) {

@@ -38,9 +38,9 @@ class OmMeshConvertV1toV2 {
 
   // migrate mesh
   std::shared_ptr<OmDataForMeshLoad> ReadAndConvert(
-      const OmMeshCoord& meshCoord) {
-    const om::common::SegID segID = meshCoord.SegID();
-    const om::chunkCoord& coord = meshCoord.Coord();
+      const om::coords::Mesh& meshCoord) {
+    const om::common::SegID segID = meshCoord.segID();
+    const om::coords::Chunk& coord = meshCoord.mipChunkCoord();
 
     if (!meshWriter_->Contains(segID, coord)) {
       log_infos << "did not find segID " << segID << " in chunk " << coord;

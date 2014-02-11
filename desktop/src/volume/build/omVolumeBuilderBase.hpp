@@ -121,7 +121,7 @@ class OmVolumeBuilderBase {
   void setVolAsBuilt() { vol_->SetBuildState(MIPVOL_BUILT); }
 
   void checkChunkDims() {
-    if (vol_->Coords().GetChunkDimension() % 2) {
+    if (vol_->Coords().ChunkDimensions().x % 2) {
       throw om::FormatException("chunk dimensions must be even");
     }
   }
@@ -129,7 +129,7 @@ class OmVolumeBuilderBase {
   void updateMipProperties() {
     const Vector3i source_dims = getMip0Dims();
 
-    if (vol_->Coords().GetDataDimensions() != source_dims) {
+    if (vol_->Coords().DataDimensions() != source_dims) {
       vol_->Coords().SetDataDimensions(source_dims);
     }
 

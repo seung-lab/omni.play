@@ -1,4 +1,4 @@
-#include "coordinates/yaml.h"
+#include "coordinates/yaml.hpp"
 #include "datalayer/archive/filter.h"
 #include "project/details/omChannelManager.h"
 #include "utility/yaml/genericManager.hpp"

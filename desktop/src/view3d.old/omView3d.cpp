@@ -117,7 +117,7 @@ void OmView3d::initializeGL()
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_LIGHTING);
   glEnable(GL_NORMALIZE);  // normalize normals for lighting
-  // glEnable(GL_TEXTURE_2D);
+                           // glEnable(GL_TEXTURE_2D);
 
   // glEnable(GL_CULL_FACE);  // enable culling
   // glCullFace(GL_BACK);  // specify backface culling
@@ -285,7 +285,7 @@ void OmView3d::View3dRecenter() {
   }
 
   mCamera.SetDistance(*distance);
-  const om::globalCoord coord = vgs_->View2dState()->GetScaledSliceDepth();
+  const om::coords::Global coord = vgs_->View2dState()->GetScaledSliceDepth();
   mCamera.SetFocus(coord);
 
   updateGL();
@@ -482,8 +482,8 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions) {
   const OmSegmentation* seg = vgs_->Segmentation().GetSegmentationPtr();
   // setup culler to current projection-modelview matrix
   OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
-                        om::normCoord(mCamera.GetPosition(), seg),
-                        om::normCoord(mCamera.GetFocus(), seg));
+                        om::coords::Norm(mCamera.GetPosition(), seg->Coords()),
+                        om::coords::Norm(mCamera.GetFocus(), seg->Coords()));
 
   meshesFound_ = false;
 

@@ -8,7 +8,7 @@ class OmView2d;
 class OmMouseEventUtils {
  public:
   static void PickToolAddToSelection(const SegmentDataWrapper& sdw,
-                                     const om::globalCoord& dataClickPoint,
+                                     const om::coords::Global& dataClickPoint,
                                      OmView2d* v2d) {
     const om::common::SegID segID = sdw.GetVoxelValue(dataClickPoint);
     if (segID) {

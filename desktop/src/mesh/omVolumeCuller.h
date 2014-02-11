@@ -12,17 +12,17 @@
  * focus.
  */
 
-#include "coordinates/normCoord.h"
 #include "common/common.h"
+#include "coordinates/norm.h"
 #include "omDrawOptions.h"
 
 class OmVolumeCuller {
  public:
-  OmVolumeCuller(const Matrix4f& projmodelview, const om::normCoord& pos,
-                 const om::normCoord& focus);
+  OmVolumeCuller(const Matrix4f& projmodelview, const om::coords::Norm& pos,
+                 const om::coords::Norm& focus);
 
-  Visibility TestChunk(const om::normBbox&) const;
-  const om::normCoord& GetPosition() const;
+  Visibility TestChunk(const om::coords::NormBbox&) const;
+  const om::coords::Norm& GetPosition() const;
 
   std::shared_ptr<OmVolumeCuller> GetTransformedCuller(const Matrix4f&,
                                                        const Matrix4f&);
@@ -33,8 +33,8 @@ class OmVolumeCuller {
 
  private:
   const Matrix4f mProjModelView;
-  const om::normCoord mPosition;
-  const om::normCoord mFocus;
+  const om::coords::Norm mPosition;
+  const om::coords::Norm mFocus;
 
   FrustumCullerf mFrustumCuller;
 };

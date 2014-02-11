@@ -79,16 +79,16 @@ void OmMeshManager::inferMeshMetadata() {
   log_infos << "no HDF5 meshes found";
 }
 
-OmMeshPtr OmMeshManager::Produce(const OmMeshCoord& coord) {
+OmMeshPtr OmMeshManager::Produce(const om::coords::Mesh& coord) {
   return std::make_shared<OmMesh>(segmentation_, coord, this, dataCache_.get());
 }
 
-void OmMeshManager::GetMesh(OmMeshPtr& ptr, const OmMeshCoord& coord,
+void OmMeshManager::GetMesh(OmMeshPtr& ptr, const om::coords::Mesh& coord,
                             const om::common::Blocking blocking) {
   dataCache_->Get(ptr, coord, blocking);
 }
 
-void OmMeshManager::UncacheMesh(const OmMeshCoord& coord) {
+void OmMeshManager::UncacheMesh(const om::coords::Mesh& coord) {
   dataCache_->Remove(coord);
 }
 

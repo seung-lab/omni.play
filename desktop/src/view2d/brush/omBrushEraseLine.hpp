@@ -15,7 +15,8 @@ class OmBrushEraseLine {
 
   virtual ~OmBrushEraseLine() {}
 
-  void EraseLine(const om::globalCoord& first, const om::globalCoord& second) {
+  void EraseLine(const om::coords::Global& first,
+                 const om::coords::Global& second) {
     OmBrushOppLine lineOpp(info_);
 
     std::shared_ptr<om::pt3d_list_t> pts = lineOpp.GetPts(first, second);

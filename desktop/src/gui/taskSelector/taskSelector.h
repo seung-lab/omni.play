@@ -31,6 +31,7 @@ Q_SLOTS:
 
  protected:
   virtual void showEvent(QShowEvent* event) override;
+  virtual void accept() override;
 
  private:
   om::task::Dataset* dataset();

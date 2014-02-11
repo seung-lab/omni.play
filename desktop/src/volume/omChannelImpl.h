@@ -12,7 +12,8 @@
 
 class OmTileCacheChannel;
 class OmVolumeData;
-template <typename, typename> class OmChunkCache;
+template <typename, typename>
+class OmChunkCache;
 
 namespace om {
 namespace channel {
@@ -53,7 +54,7 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
   void SetVolDataType(const OmVolDataType);
 
-  OmChunk* GetChunk(const om::chunkCoord& coord);
+  OmChunk* GetChunk(const om::coords::Chunk& coord);
 
   inline std::vector<OmFilter2d*> GetFilters() const {
     return filterManager_.GetFilters();
@@ -68,7 +69,7 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
   inline om::channel::folder* Folder() const { return folder_.get(); }
 
  protected:
-  //protected copy constructor and assignment operator to prevent copy
+  // protected copy constructor and assignment operator to prevent copy
   OmChannelImpl(const OmChannelImpl&);
   OmChannelImpl& operator=(const OmChannelImpl&);
 

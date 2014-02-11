@@ -1,10 +1,11 @@
 #pragma once
 
-#include "coordinates/chunkCoord.h"
 #include "common/common.h"
+#include "coordinates/chunk.h"
 #include <boost/multi_array.hpp>
 
-template <typename VOL, typename T> class OmChunkItemContainerMatrix {
+template <typename VOL, typename T>
+class OmChunkItemContainerMatrix {
  private:
   VOL* const vol_;
 
@@ -33,10 +34,10 @@ template <typename VOL, typename T> class OmChunkItemContainerMatrix {
     }
   }
 
-  T* Get(const om::chunkCoord& coord) {
-    const int x = coord.Coordinate.x;
-    const int y = coord.Coordinate.y;
-    const int z = coord.Coordinate.z;
+  T* Get(const om::coords::Chunk& coord) {
+    const int x = coord.x;
+    const int y = coord.y;
+    const int z = coord.z;
 
     if (x >= x_ || y >= y_ || z >= z_) {
       std::ostringstream stm;

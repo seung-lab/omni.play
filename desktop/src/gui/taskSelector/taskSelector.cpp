@@ -1,4 +1,5 @@
 #include "gui/taskSelector/taskSelector.h"
+#include "system/omLocalPreferences.hpp"
 
 using namespace om::task;
 
@@ -56,12 +57,16 @@ void TaskSelector::showEvent(QShowEvent* event) {
 
   datasetCombo_->clear();
   if ((bool)datasets_) {
+    int prefDataset = OmLocalPreferences::getDataset();
     for (int i = 0; i < datasets_->size(); ++i) {
       Dataset& ds = (*datasets_)[i];
       ds.LoadCells();
       datasetCombo_->addItem(
           QString::fromStdString(std::to_string(ds.id()) + ". " + ds.name()),
           i);
+      if (ds.id() == prefDataset) {
+        datasetCombo_->setCurrentIndex(i);
+      }
     }
   }
   updateCells();
@@ -149,4 +154,10 @@ void TaskSelector::getTasks() {
     compareTask_ = TaskManager::GetComparisonTask(cellID());
     reapTask_ = std::shared_ptr<Task>();
   }
+}
+
+void TaskSelector::accept() {
+  int index = datasetCombo_->itemData(datasetCombo_->currentIndex()).toInt();
+  OmLocalPreferences::setDataset((*datasets_)[index].id());
+  QDialog::accept();
 }

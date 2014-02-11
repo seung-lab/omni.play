@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include "coordinates/chunkCoord.h"
+#include "coordinates/chunk.h"
 #include "segment/omSegment.h"
 
 struct LargestSegmentFirst {
@@ -10,7 +10,7 @@ struct LargestSegmentFirst {
   }
 };
 
-typedef std::multimap<OmSegment*, om::chunkCoord, LargestSegmentFirst>
+typedef std::multimap<OmSegment*, om::coords::Chunk, LargestSegmentFirst>
     OmMeshPlanStruct;
 
 class OmMeshPlan : public OmMeshPlanStruct {
@@ -20,7 +20,7 @@ class OmMeshPlan : public OmMeshPlanStruct {
  public:
   OmMeshPlan() : voxelCount_(0) {}
 
-  void Add(OmSegment* seg, const om::chunkCoord& coord) {
+  void Add(OmSegment* seg, const om::coords::Chunk& coord) {
     insert(std::make_pair(seg, coord));
     voxelCount_ += seg->size();
   }

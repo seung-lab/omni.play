@@ -12,7 +12,7 @@ class OmBrushSelectCircle {
 
   virtual ~OmBrushSelectCircle() {}
 
-  void SelectCircle(const om::globalCoord& coord) {
+  void SelectCircle(const om::coords::Global& coord) {
     OmBrushOppCircle circleOpp(info_);
 
     std::shared_ptr<om::pt3d_list_t> pts = circleOpp.GetPts(coord);

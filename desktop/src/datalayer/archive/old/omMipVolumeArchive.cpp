@@ -2,20 +2,20 @@
 #include "datalayer/archive/old/omMipVolumeArchive.h"
 #include "project/omProject.h"
 
-QDataStream& operator<<(QDataStream& out, const OmMipVolCoords& c) {
-  //out << c.normToDataMat_;
-  //out << c.normToDataInvMat_;
-  out << c.dataDimensions_;
-  //out << c.dataResolution_;
-  out << c.chunkDim_;
+QDataStream& operator<<(QDataStream& out, const om::coords::VolumeSystem& c) {
+  // out << c.normToDataMat_;
+  // out << c.normToDataInvMat_;
+  // out << c.DataDimensions();
+  // out << c.dataResolution_;
+  // out << c.ChunkDimensions().x;
 
-  out << c.mMipLeafDim;
-  out << c.mMipRootLevel;
+  // out << c.mMipLeafDim;
+  // out << c.mMipRootLevel;
 
   return out;
 }
 
-QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c) {
+QDataStream& operator>>(QDataStream& in, om::coords::VolumeSystem& c) {
   Matrix4f dummyMat;
   in >> dummyMat;  // normToDataMat_
   in >> dummyMat;  // normToDataInvMat_
@@ -25,14 +25,17 @@ QDataStream& operator>>(QDataStream& in, OmMipVolCoords& c) {
   Vector3f resolution;
   in >> resolution;
   c.SetResolution(resolution);
-  in >> c.chunkDim_;
+  int chunkDim;
+  in >> chunkDim;
+  c.SetChunkDimensions(Vector3i(chunkDim));
   QString dummyQString;
-  in >> dummyQString;  //c.unitString_
+  in >> dummyQString;  // c.unitString_
   Vector3f dummyVec;
-  in >> dummyVec;  //c.dataStretchValues_
+  in >> dummyVec;  // c.dataStretchValues_
 
-  in >> c.mMipLeafDim;
-  in >> c.mMipRootLevel;
+  int dummyInt;
+  in >> dummyInt;
+  in >> dummyInt;
 
   return in;
 }

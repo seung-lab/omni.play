@@ -18,7 +18,8 @@ namespace v3d {
 
 class DrawerImpl {
  public:
-  DrawerImpl(const OmMipVolCoords& system, const common::ID segmentationID)
+  DrawerImpl(const om::coords::VolumeSystem& system,
+             const common::ID segmentationID)
       : system_(system),
         segmentationID_(segmentationID),
         context_(QGLContext::currentContext()),
@@ -69,7 +70,7 @@ class DrawerImpl {
   const v3d::PercDone& getPercDone() const { return perc_done_; }
 
  private:
-  void drawSegment(const common::SegID segID, const om::chunkCoord& coord,
+  void drawSegment(const common::SegID segID, const om::coords::Chunk& coord,
                    const Vector3f& color) {
 
     auto mesh = meshes_.Get(coord, segID);
@@ -92,7 +93,7 @@ class DrawerImpl {
 
  private:
   // mesh::DisplayListCachedDataSource& meshes_;
-  const OmMipVolCoords& system_;
+  const om::coords::VolumeSystem& system_;
   const common::ID segmentationID_;
   QGLContext const* const context_;
   v3d::PercDone perc_done_;

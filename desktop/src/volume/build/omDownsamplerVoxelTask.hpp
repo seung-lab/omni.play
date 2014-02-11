@@ -4,12 +4,13 @@
 #include "volume/io/omMemMappedVolumeImpl.hpp"
 #include "volume/build/omDownsamplerTypes.hpp"
 
-template <typename T> class DownsampleVoxelTask : public zi::runnable {
+template <typename T>
+class DownsampleVoxelTask : public zi::runnable {
  private:
   OmMipVolume* const vol_;
   const std::vector<MipLevelInfo>& mips_;
   const MippingInfo& mippingInfo_;
-  const om::chunkCoord coord_;
+  const om::coords::Chunk coord_;
   const Vector3i srcChunkStartPos_;
 
   OmMemMappedVolumeImpl<T>* const files_;
@@ -18,19 +19,19 @@ template <typename T> class DownsampleVoxelTask : public zi::runnable {
  public:
   DownsampleVoxelTask(OmMipVolume* vol, const std::vector<MipLevelInfo>& mips,
                       const MippingInfo& mippingInfo,
-                      const om::chunkCoord& coord,
+                      const om::coords::Chunk& coord,
                       OmMemMappedVolumeImpl<T>* files)
       : vol_(vol),
         mips_(mips),
         mippingInfo_(mippingInfo),
         coord_(coord),
-        srcChunkStartPos_(coord_.chunkBoundingBox(vol_).getMin()),
+        srcChunkStartPos_(coord_.BoundingBox(vol_->Coords()).getMin()),
         files_(files) {
     rawChunks_.resize(mippingInfo.maxMipLevel + 1);
 
     for (int i = 1; i <= mippingInfo_.maxMipLevel; ++i) {
-      const Vector3i dstCoord = coord_.Coordinate / mips_[i].factor;
-      const om::chunkCoord coord(i, dstCoord);
+      const Vector3i dstCoord = coord_ / mips_[i].factor;
+      const om::coords::Chunk coord(i, dstCoord);
 
       rawChunks_[i] = files_->GetChunkPtr(coord);
     }

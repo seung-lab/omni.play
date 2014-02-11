@@ -4,6 +4,7 @@
 #include "volume/omSegmentationFolder.h"
 #include "utility/yaml/omYaml.hpp"
 #include "utility/yaml/manager.hpp"
+#include "utility/yaml/coords.h"
 
 #include <fstream>
 #include <sstream>
@@ -15,12 +16,12 @@ std::string manager::filePathV1() const {
   return vol_->Folder()->AnnotationFile().toStdString();
 }
 
-void manager::Add(globalCoord coord, const std::string& comment,
-                  const om::common::Color& color, double size) {
-  base_t::Add(new data(coord.toDataCoord(vol_, 0), comment, color, size));
-  om::event::AnnotationObjectModified();
-  om::event::Redraw2d();
-  om::event::Redraw3d();
+void manager::Add(coords::Global coord, const std::string& comment,
+                  const common::Color& color, double size) {
+  base_t::Add(new data(coord.ToData(vol_->Coords(), 0), comment, color, size));
+  event::AnnotationObjectModified();
+  event::Redraw2d();
+  event::Redraw3d();
 }
 
 void manager::Save() const {
@@ -32,40 +33,40 @@ void manager::Save() const {
   base_t::Save(e);
   e << YAMLold::EndDoc;
 
-  om::yaml::util::Write(fnp, e);
+  yaml::util::Write(fnp, e);
 }
 
 data* manager::parse(const YAMLold::Node& n) {
-  globalCoord c;
+  coords::Global c;
   n["coord"] >> c;
   std::string comment;
   n["comment"] >> comment;
-  om::common::Color color;
+  common::Color color;
   n["color"] >> color;
   double size;
   yaml::util::OptionalRead(n, "size", size, 3.0);
-  return new data(c.toDataCoord(vol_, 0), comment, color, size);
+  return new data(c.ToData(vol_->Coords(), 0), comment, color, size);
 }
 
 void manager::Load() {
   std::string fnp = filePathV1();
-  if (!om::file::old::exists(fnp)) {
+  if (!file::old::exists(fnp)) {
     log_infos << "Unable to find Annotations file.  Will create new one.";
     return;
   }
 
   YAMLold::Node n;
   try {
-    om::yaml::util::Read(fnp, n);
+    yaml::util::Read(fnp, n);
     base_t::Load(n);
   }
   catch (YAMLold::Exception e) {
     std::stringstream ss;
     ss << "Error Loading Annotations: " << e.what() << ".\n";
-    throw om::IoException(ss.str());
+    throw IoException(ss.str());
   }
 
   return;
 }
 }
-}  // namespace om::annotation::
+}  // namespace annotation::

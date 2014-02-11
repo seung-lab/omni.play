@@ -72,9 +72,8 @@ class OmMeshSegmentList {
   zi::mutex lock_;
 
   OmMeshSegListKey makeKey(OmSegChunk* chunk, OmSegment* rootSeg) {
-    const om::chunkCoord& c = chunk->GetCoordinate();
+    const om::coords::Chunk& c = chunk->GetCoordinate();
     return OmMeshSegListKey(rootSeg->GetSegmentationID(), rootSeg->value(),
-                            c.Level, c.Coordinate.x, c.Coordinate.y,
-                            c.Coordinate.z);
+                            c.mipLevel(), c.x, c.y, c.z);
   }
 };

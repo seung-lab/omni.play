@@ -7,7 +7,6 @@
 #include "chunk/uniqueValuesFileDataSource.hpp"
 #include "volume/segmentation.h"
 #include "common/logging.h"
-
 using namespace om;
 namespace po = boost::program_options;
 
@@ -171,13 +170,12 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
   }
 
   file::Paths p(path);
-  volume::Volume v(p.Segmentation(1));
+  volume::Segmentation v(p, 1);
 
   auto coords = v.Coords();
   coords.SetResolution(coords.Resolution() * resolution);
 
-  chunk::UniqueValuesFileDataSource uvfds(p.Segmentation(1));
-  mesh::VertexIndexDataSource meshDS(p.Segmentation(1), &uvfds);
+  auto& meshDS = v.MeshDS();
 
   std::unique_ptr<exporter::IMeshExporter> exporter;
   if (obj) {
@@ -229,7 +227,7 @@ int exportMST(const Options& opt, int argc, char* argv[]) {
   }
 
   file::Paths p(path);
-  volume::Segmentation seg(p.Segmentation(1));
+  volume::Segmentation seg(p, 1);
 
   for (auto& e : seg.Edges()) {
     log_infos << e.number << "," << e.node1ID << "," << e.node2ID << ","

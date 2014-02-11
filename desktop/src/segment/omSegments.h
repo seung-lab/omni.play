@@ -54,6 +54,7 @@ class OmSegments {
   void UpdateSegmentSelection(const om::common::SegIDSet& idsToSelect,
                               const bool);
   void AddToSegmentSelection(const om::common::SegIDSet& idsToSelect);
+  void ToggleSegmentSelection(const om::common::SegIDSet& idsToSelect);
   void RemoveFromSegmentSelection(const om::common::SegIDSet& idsToSelect);
 
   QString getSegmentName(om::common::SegID segID);

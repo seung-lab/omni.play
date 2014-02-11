@@ -8,9 +8,9 @@
  */
 
 #include "common/common.h"
+#include "coordinates/mesh.h"
 #include "utility/glInclude.h"
 #include "mesh/omMeshTypes.h"
-#include "mesh/omMeshCoord.h"
 
 class OmDataForMeshLoad;
 class OmMeshCache;
@@ -20,7 +20,8 @@ class QGLContext;
 
 class OmMesh {
  public:
-  OmMesh(OmSegmentation*, const OmMeshCoord&, OmMeshManager*, OmMeshCache*);
+  OmMesh(OmSegmentation*, const om::coords::Mesh&, OmMeshManager*,
+         OmMeshCache*);
 
   virtual ~OmMesh();
 
@@ -38,7 +39,7 @@ class OmMesh {
   OmMeshCache* const cache_;
   OmMeshManager* const meshMan_;
 
-  const OmMeshCoord meshCoord_;
+  const om::coords::Mesh meshCoord_;
 
   QGLContext const* context_;
 

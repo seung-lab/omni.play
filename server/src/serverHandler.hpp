@@ -85,7 +85,7 @@ class serverHandler : virtual public serverIf,
         mesherHost_(mesherHost),
         mesherPort_(mesherPort) {
     status_ = fb_status::ALIVE;
-    threadPool_.start();
+    threadPool_.start(1);
   }
 
   ~serverHandler() { threadPool_.stop(); }
@@ -104,7 +104,12 @@ class serverHandler : virtual public serverIf,
                          const std::set<int32_t>& segIds) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_seg_list_data",
                                 "get_seg_list_data");
-    volume::Segmentation v(volumePath(meta));
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
+
+    file::Paths p(meta.uri);
+    volume::Segmentation v(p, 1);
     handler::get_seg_list_data(_return, v, segIds);
   }
 
@@ -115,49 +120,96 @@ class serverHandler : virtual public serverIf,
     ServiceMethod serviceMethod(&serviceTracker_, "modify_global_mesh_data",
                                 "modify_global_mesh_data");
 
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
+    file::Paths p(meta.uri);
+
     std::set<uint32_t> addedIDs;
     std::set<uint32_t> modifiedIDs;
-    for (auto& id : addedSegIds) {
-      addedIDs.insert(id);
-      modifiedIDs.insert(id);
-    }
+    addedIDs.insert(addedSegIds.begin(), addedSegIds.end());
+    modifiedIDs.insert(addedSegIds.begin(), addedSegIds.end());
+    modifiedIDs.insert(deletedSegIds.begin(), deletedSegIds.end());
 
-    for (auto& id : deletedSegIds) {
-      modifiedIDs.insert(id);
-    }
+    auto rtmConnector = std::bind(&serverHandler::makeMesher, this);
 
-    volume::Segmentation v(volumePath(meta));
-    return handler::modify_global_mesh_data(
-        std::bind(&serverHandler::makeMesher, this), v, addedIDs, modifiedIDs,
-        segId);
+    threadPool_.push_back([p, rtmConnector, addedIDs, modifiedIDs, segId]() {
+      volume::Segmentation v(p, 1);
+      handler::modify_global_mesh_data(rtmConnector, v, addedIDs, modifiedIDs,
+                                       segId);
+    });
+    return true;
   }
 
   void get_mesh(std::string& _return, const metadata& meta,
                 const vector3i& chunk, int32_t mipLevel, int32_t segId) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_mesh", "get_mesh");
-    volume::Segmentation v(volumePath(meta));
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
+    file::Paths p(meta.uri);
+    volume::Segmentation v(p, 1);
     handler::get_mesh(_return, v, chunk, mipLevel, segId);
   }
 
   void get_obj(std::string& _return, const metadata& meta,
                const vector3i& chunk, int32_t mipLevel, int32_t segId) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_obj", "get_obj");
-    volume::Segmentation v(volumePath(meta));
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
+    file::Paths p(meta.uri);
+    volume::Segmentation v(p, 1);
     handler::get_obj(_return, v, chunk, mipLevel, segId);
   }
 
-  void get_seeds(std::vector<std::map<int32_t, int32_t> >& _return,
+  void get_seeds(std::vector<std::map<int32_t, int32_t>>& _return,
                  const metadata& taskVolume, const std::set<int32_t>& selected,
                  const metadata& adjacentVolume) {
     ServiceMethod serviceMethod(&serviceTracker_, "get_seeds", "get_seeds");
-    volume::Segmentation task(volumePath(taskVolume));
-    volume::Segmentation adj(volumePath(adjacentVolume));
+
+    if (!file::Paths::IsValid(taskVolume.uri)) {
+      throw ArgException(
+          std::string("Invalid metadata uri: " + taskVolume.uri));
+    }
+    if (!file::Paths::IsValid(adjacentVolume.uri)) {
+      throw ArgException(
+          std::string("Invalid metadata uri: " + adjacentVolume.uri));
+    }
+
+    file::Paths pathsTaskVolume(taskVolume.uri);
+    volume::Segmentation task(pathsTaskVolume, 1);
+    file::Paths pathsAdjacentVolume(adjacentVolume.uri);
+    volume::Segmentation adj(pathsAdjacentVolume, 1);
     handler::get_seeds(_return, task, selected, adj);
   }
 
   void get_mst(std::vector<affinity>& _return, const metadata& meta) {
-    volume::Segmentation v(volumePath(meta));
+    ServiceMethod serviceMethod(&serviceTracker_, "get_mst", "get_mst");
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
+    file::Paths p(meta.uri);
+    volume::Segmentation v(p, 1);
     handler::get_mst(_return, v);
+  }
+
+  void get_connected_groups(
+      std::vector<group>& _return, const metadata& meta,
+      const std::map<int32_t, std::set<int32_t>>& groups) {
+    ServiceMethod serviceMethod(&serviceTracker_, "get_connected_groups",
+                                "get_connected_groups");
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
+    file::Paths p(meta.uri);
+    volume::Segmentation v(p, 1);
+
+    std::unordered_map<int, common::SegIDSet> gs;
+    for (const auto& group : groups) {
+      gs[group.first].insert(group.second.begin(), group.second.end());
+    }
+    handler::get_connected_groups(_return, v, gs);
   }
 
   // FB status monitor stuff
@@ -207,10 +259,15 @@ class serverHandler : virtual public serverIf,
   static void logMethod(int, const std::string& str) { log_infos << str; }
 
   std::string volumePath(const metadata& meta) {
+    if (!file::Paths::IsValid(meta.uri)) {
+      throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
+    }
+
+    file::Paths p(meta.uri);
     if (meta.vol_type == volType::CHANNEL) {
-      return meta.uri + "/channels/channel1/";
+      return p.Channel(1).string();
     } else {
-      return meta.uri + "/segmentations/segmentation1/";
+      return p.Segmentation(1).string();
     }
   }
 };

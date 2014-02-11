@@ -44,14 +44,14 @@ class OmChunkUtils {
           const int lenX = x ? 1 : 128;
 
           // form mip coord
-          const om::chunkCoord& currentCoord = chunk->GetCoordinate();
+          const om::coords::Chunk& currentCoord = chunk->GetCoordinate();
 
-          const om::chunkCoord mip_coord(
-              currentCoord.getLevel(), currentCoord.X() + x,
-              currentCoord.Y() + y, currentCoord.Z() + z);
+          const om::coords::Chunk mip_coord(
+              currentCoord.mipLevel(), currentCoord.x + x, currentCoord.y + y,
+              currentCoord.z + z);
 
           // skip invalid mip coord
-          if (vol->Coords().ContainsMipChunkCoord(mip_coord)) {
+          if (vol->Coords().ContainsMipChunk(mip_coord)) {
             OmSegChunk* chunk = vol->GetChunk(mip_coord);
 
             std::shared_ptr<uint32_t> rawDataPtr =
@@ -80,7 +80,7 @@ class OmChunkUtils {
     int counter = 0;
 
     FOR_EACH(iter, *coordsPtr) {
-      const om::chunkCoord& coord = *iter;
+      const om::coords::Chunk& coord = *iter;
 
       ++counter;
       log_info("\rfinding values in chunk %d of %d...", counter, numChunks);

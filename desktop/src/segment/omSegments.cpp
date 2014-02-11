@@ -121,8 +121,8 @@ void OmSegments::setSegmentSelected(om::common::SegID segID,
                                     const bool isSelected,
                                     const bool addToRecentList) {
   zi::guard g(mutex_);
-  impl_->SegmentSelection()
-      .setSegmentSelected(segID, isSelected, addToRecentList);
+  impl_->SegmentSelection().setSegmentSelected(segID, isSelected,
+                                               addToRecentList);
 }
 
 void OmSegments::setSegmentName(om::common::SegID segID, QString name) {
@@ -198,14 +198,20 @@ uint32_t OmSegments::getMaxValue() {
 void OmSegments::UpdateSegmentSelection(const om::common::SegIDSet& idsToSelect,
                                         const bool addToRecentList) {
   zi::guard g(mutex_);
-  return impl_->SegmentSelection()
-      .UpdateSegmentSelection(idsToSelect, addToRecentList);
+  return impl_->SegmentSelection().UpdateSegmentSelection(idsToSelect,
+                                                          addToRecentList);
 }
 
 void OmSegments::AddToSegmentSelection(
     const om::common::SegIDSet& idsToSelect) {
   zi::guard g(mutex_);
   return impl_->SegmentSelection().AddToSegmentSelection(idsToSelect);
+}
+
+void OmSegments::ToggleSegmentSelection(
+    const om::common::SegIDSet& idsToSelect) {
+  zi::guard g(mutex_);
+  return impl_->SegmentSelection().ToggleSegmentSelection(idsToSelect);
 }
 
 void OmSegments::RemoveFromSegmentSelection(

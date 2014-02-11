@@ -56,13 +56,13 @@ OmDataWrapperPtr OmHdf5::readDataset(const OmDataPath& path, int* size) {
 }
 
 OmDataWrapperPtr OmHdf5::readChunk(const OmDataPath& path,
-                                   const om::dataBbox& dataExtent,
+                                   const om::coords::DataBbox& dataExtent,
                                    const om::common::AffinityGraph aff) {
   zi::rwmutex::write_guard g(fileLock);
   return hdf5_->readChunk(path, dataExtent, aff);
 }
 
-void OmHdf5::writeChunk(const OmDataPath& path, om::dataBbox dataExtent,
+void OmHdf5::writeChunk(const OmDataPath& path, om::coords::DataBbox dataExtent,
                         OmDataWrapperPtr data) {
   zi::rwmutex::write_guard g(fileLock);
   hdf5_->writeChunk(path, dataExtent, data);

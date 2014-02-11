@@ -7,32 +7,31 @@ namespace om {
 namespace v3d {
 
 struct CoordAndDistance {
-  om::chunkCoord coord;
+  om::coords::Chunk coord;
   float distance;
 };
 typedef std::deque<CoordAndDistance> drawChunks_t;
 
 class FindChunksToDraw {
  private:
-  const OmMipVolCoords& system_;
+  const om::coords::VolumeSystem& system_;
 
   struct stackEntry {
-    om::chunkCoord cc;
+    om::coords::Chunk cc;
     bool testVis;
   };
   std::vector<stackEntry> stack_;
   drawChunks_t& chunksToDraw_;
 
  public:
-  FindChunksToDraw(const OmMipVolCoords& coords, drawChunks_t& chunksToDraw)
+  FindChunksToDraw(const om::coords::VolumeSystem& coords,
+                   drawChunks_t& chunksToDraw)
       : system_(coords), chunksToDraw_(chunksToDraw) {
     stack_.reserve(system_.ComputeTotalNumChunks());
   }
 
   void Find(const OmVolumeCuller& culler) {
-    stack_.push_back({
-      system_.RootMipChunkCoordinate(), true
-    });
+    stack_.push_back({system_.RootMipChunkCoordinate(), true});
 
     while (!stack_.empty()) {
       auto se = stack_.back();
@@ -49,14 +48,14 @@ class FindChunksToDraw {
    *  drawn or the recursive draw process is called on its children.
    */
   inline void determineChunksToDraw(const OmVolumeCuller& culler,
-                                    const om::chunkCoord& cc, bool testVis) {
+                                    const om::coords::Chunk& cc, bool testVis) {
     if (!system_.ContainsMipChunk(cc)) {
       return;
     }
 
     if (testVis) {
       // check if frustum contains chunk
-      const auto bounds = cc.BoundingBox(system_).toNormBbox();
+      const auto bounds = cc.BoundingBox(system_).ToNormBbox();
 
       switch (culler.TestChunk(bounds)) {
         case VISIBILITY_NONE:
@@ -75,16 +74,12 @@ class FindChunksToDraw {
 
     auto d = shouldChunkBeDrawn(culler, cc);
     if (d.shouldDraw) {
-      chunksToDraw_.push_back({
-        cc, d.distance
-      });
+      chunksToDraw_.push_back({cc, d.distance});
 
     } else {
       const auto children = cc.ChildrenCoords();
       for (auto& child_cc : children) {
-        stack_.push_back({
-          child_cc, testVis
-        });
+        stack_.push_back({child_cc, testVis});
       }
     }
   }
@@ -99,10 +94,10 @@ class FindChunksToDraw {
    * or if we should continue refining so as to draw children.
    */
   inline distanceRet shouldChunkBeDrawn(const OmVolumeCuller& culler,
-                                        const om::chunkCoord& chunk) {
+                                        const om::coords::Chunk& chunk) {
     // draw if MIP 0
     if (0 == chunk.mipLevel()) {
-      return { true, 0 };
+      return {true, 0};
     }
 
     const auto normExtent = chunk.BoundingBox(system_).ToNormBbox();
@@ -113,7 +108,7 @@ class FindChunksToDraw {
     const float distance = (normExtent.getMax() - center).length();
 
     // if distance too large, just draw it - else keep breaking it down
-    return { camera_to_center > distance, distance };
+    return {camera_to_center > distance, distance};
   }
 };
 }

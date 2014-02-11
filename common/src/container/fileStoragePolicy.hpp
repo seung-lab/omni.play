@@ -5,9 +5,18 @@
 namespace om {
 namespace data {
 
-template <typename T> class FileStoragePolicy {
+template <typename T>
+class FileStoragePolicy {
  public:
-  FileStoragePolicy(file::path fnp) : fnp_(fnp) { file::readAll(fnp_, data_); }
+  FileStoragePolicy(file::path fnp) : fnp_(fnp) {
+    try {
+      file::readAll(fnp_, data_);
+    }
+    catch (IoException e) {
+      log_debugs << "Unable to load file: " << e.what();
+      data_.clear();
+    }
+  }
 
   size_t size() const { return data_.size(); }
   void resize(size_t n, const T& val) { data_.resize(n, val); }

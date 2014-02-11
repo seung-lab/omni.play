@@ -19,9 +19,9 @@ class OmDownsampler {
  public:
   OmDownsampler(OmMipVolume* vol, OmMemMappedVolumeImpl<T>* files)
       : vol_(vol), files_(files) {
-    mippingInfo_.maxMipLevel = vol_->Coords().GetRootMipLevel();
+    mippingInfo_.maxMipLevel = vol_->Coords().RootMipLevel();
 
-    const Vector3<uint64_t> chunkDims = vol_->Coords().GetChunkDimensions();
+    const Vector3<uint64_t> chunkDims = vol_->Coords().ChunkDimensions();
 
     mippingInfo_.chunkDims = chunkDims;
     mippingInfo_.chunkSize = chunkDims.x * chunkDims.y * chunkDims.z;
@@ -32,7 +32,7 @@ class OmDownsampler {
     for (int i = 0; i <= mippingInfo_.maxMipLevel; ++i) {
       mips_[i].factor = om::math::pow2int(i);
 
-      const Vector3i dims = vol_->Coords().getDimsRoundedToNearestChunk(i);
+      const Vector3i dims = vol_->Coords().DimsRoundedToNearestChunk(i);
       mips_[i].volDims = dims;
       mips_[i].volSlabSize = dims.x * dims.y * chunkDims.z;
       mips_[i].volSliceSize = dims.x * dims.y;
@@ -48,11 +48,11 @@ class OmDownsampler {
     OmThreadPool threadPool;
     threadPool.start(3);
 
-    std::shared_ptr<std::deque<om::chunkCoord> > coordsPtr =
+    std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
         vol_->GetMipChunkCoords(0);
 
     FOR_EACH(iter, *coordsPtr) {
-      const om::chunkCoord& coord = *iter;
+      const om::coords::Chunk& coord = *iter;
 
       std::shared_ptr<DownsampleVoxelTask<T> > task =
           std::make_shared<DownsampleVoxelTask<T> >(vol_, mips_, mippingInfo_,

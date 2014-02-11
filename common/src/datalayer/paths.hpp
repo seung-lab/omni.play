@@ -11,13 +11,9 @@ namespace file {
 
 class Paths {
  public:
-  Paths(const path& omniFile) : omniFile_(om::file::absolute(omniFile)) {
-    // TODO: More sophisticated handling (make sure it ends .omni and .files
-    // exists)
-    filesFolder_ = omniFile_;
-    filesFolder_ += ".files";
-  }
+  Paths(const path& file);
 
+  static bool IsValid(const path& file);
   path OmniFile() const { return omniFile_; }
   path FilesFolder() const { return filesFolder_; }
 
@@ -217,11 +213,12 @@ class Paths {
   }
 
  private:
-  template <typename T> static path toPath(T i) {
+  template <typename T>
+  static path toPath(T i) {
     return path(std::to_string(i));
   }
 
-  const path omniFile_;
+  path omniFile_;
   path filesFolder_;
 };
 }

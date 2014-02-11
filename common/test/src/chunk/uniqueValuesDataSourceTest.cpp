@@ -13,10 +13,11 @@ using namespace om::chunk;
 namespace om {
 namespace test {
 
-#define URI "test/data/test.omni.files/segmentations/segmentation1/"
+#define URI "test/data/test.omni"
 
 TEST(Chunk_UniqueValuesFileDataSource, Get) {
-  UniqueValuesFileDataSource uvfds(URI);
+  file::Paths p(URI);
+  UniqueValuesFileDataSource uvfds(p.Segmentation(1));
 
   std::shared_ptr<chunk::UniqueValues> values =
       uvfds.Get(coords::Chunk(0, 0, 0, 0));
@@ -28,7 +29,7 @@ TEST(Chunk_UniqueValuesFileDataSource, Get) {
 }
 
 TEST(Chunk_UniqueValuesFileDataSource, Completeness) {
-  volume::Segmentation s(URI);
+  volume::Segmentation s(file::Paths(URI), 1);
   Voxels<uint32_t> vg(s.ChunkDS(), s.Coords());
   coords::Chunk cc(0, 1, 0, 1);
 

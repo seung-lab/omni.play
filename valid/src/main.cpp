@@ -61,7 +61,7 @@ int TestVolume(std::string path) {
     }
   }
 
-  volume::Segmentation seg(p.Segmentation(1));
+  volume::Segmentation seg(p, 1);
 
   if (ZiARG_seg) {
     Controller::Context c("Segmentation");

@@ -12,10 +12,10 @@ class OmBrushPaintUtils {
  public:
   static void PaintPts(OmBrushOppInfo* info, om::pt3d_list_t* pts,
                        const om::common::SegID segIDtoPaint) {
-    const om::globalBbox& segDataExtent =
-        info->segmentation->Coords().GetExtent();
+    const om::coords::GlobalBbox& segDataExtent =
+        info->segmentation->Coords().Extent();
 
-    std::set<om::globalCoord> voxelCoords;
+    std::set<om::coords::Global> voxelCoords;
 
     FOR_EACH(iter, *pts) {
       if (!segDataExtent.contains(*iter)) {
@@ -41,11 +41,11 @@ class OmBrushPaintUtils {
   static void removeModifiedTiles() {
     // const int chunkDim = info->chunkDim;
 
-    // std::map<om::chunkCoord, std::set<Vector3i> > ptsInChunks;
+    // std::map<om::coords::Chunk, std::set<Vector3i> > ptsInChunks;
 
     // FOR_EACH(iter, voxelCoords)
     // {
-    //     const om::chunkCoord chunkCoord(0,
+    //     const om::coords::Chunk chunkCoord(0,
     //                                   iter->x / chunkDim,
     //                                   iter->y / chunkDim,
     //                                   iter->z / chunkDim);

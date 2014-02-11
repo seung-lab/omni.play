@@ -62,8 +62,8 @@ int main(int argc, char** argv) {
 
   const std::string fnp("/home/mjp/meshwritertest/test.omni");
 
-  Create(fnp);
-  TestMesh(fnp);
+  // Create(fnp);
+  // TestMesh(fnp);
 
   int ret = RUN_ALL_TESTS();
   return ret;

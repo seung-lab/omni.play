@@ -43,14 +43,17 @@ class OmMipVolumeArchiveOld {
     loadOldOmMipVolume(in, seg);
   }
 
-  template <typename VOL> void loadOldOmMipVolume(QDataStream& in, VOL& vol) {
+  template <typename VOL>
+  void loadOldOmMipVolume(QDataStream& in, VOL& vol) {
     if (fileVersion_ < 24) {
       QString dead;
       in >> dead;
     }
 
-    in >> vol.Coords().mMipLeafDim;
-    in >> vol.Coords().mMipRootLevel;
+    int mMipLeafDim;
+    in >> mMipLeafDim;
+    int mMipRootLevel;
+    in >> mMipRootLevel;
 
     if (fileVersion_ < 24) {
       qint32 dead;
@@ -79,7 +82,7 @@ class OmMipVolumeArchiveOld {
     vol.LoadPath();
   }
 
-  static void loadOldOmVolume(QDataStream& in, OmMipVolCoords& v) {
+  static void loadOldOmVolume(QDataStream& in, om::coords::VolumeSystem& v) {
     Matrix4f dummyMat;
     in >> dummyMat;  // normToDataMat_s
     in >> dummyMat;  // normToDataInvMat_
@@ -89,10 +92,12 @@ class OmMipVolumeArchiveOld {
     Vector3f resolution;
     in >> resolution;
     v.SetResolution(resolution);
-    in >> v.chunkDim_;
+    int chunkDim;
+    in >> chunkDim;
+    v.SetChunkDimensions(Vector3i(chunkDim));
     QString dummy;
-    in >> dummy;  //c.unitString_
+    in >> dummy;  // c.unitString_
     Vector3f dummyVec;
-    in >> dummyVec;  //c.dataStretchValues_
+    in >> dummyVec;  // c.dataStretchValues_
   }
 };

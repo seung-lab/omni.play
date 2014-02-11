@@ -13,7 +13,7 @@
 OmTile::OmTile(OmCacheBase* cache, const OmTileCoord& key)
     : cache_(cache),
       key_(key),
-      tileLength_(key.getVolume()->Coords().GetChunkDimension()),
+      tileLength_(key.getVolume()->Coords().ChunkDimensions().x),
       mipChunkCoord_(tileToMipCoord()) {}
 
 OmTile::~OmTile() {}
@@ -52,7 +52,7 @@ void OmTile::load32bitSegmentationTile() {
   texture_.reset(new OmTextureID(tileLength_, colorMappedData));
 }
 
-om::chunkCoord OmTile::tileToMipCoord() { return key_.getCoord(); }
+om::coords::Chunk OmTile::tileToMipCoord() { return key_.getCoord(); }
 
 int OmTile::getDepth() { return key_.getDepth(); }
 

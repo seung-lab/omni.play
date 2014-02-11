@@ -29,11 +29,22 @@ enum class Direction {
   ZMax,
 };
 
-void conditionalJoin(zi::disjoint_sets<uint32_t>& sets, uint32_t id1,
-                     uint32_t id2) {
-  uint32_t id1_rep = sets.find_set(id1);
-  uint32_t id2_rep = sets.find_set(id2);
-  sets.join(id1_rep, id2_rep);
+std::ostream& operator<<(std::ostream& out, const Direction& d) {
+  switch (d) {
+    case Direction::XMin:
+      return out << "XMin";
+    case Direction::XMax:
+      return out << "XMax";
+    case Direction::YMin:
+      return out << "YMin";
+    case Direction::YMax:
+      return out << "YMax";
+    case Direction::ZMin:
+      return out << "ZMin";
+    case Direction::ZMax:
+      return out << "ZMax";
+  }
+  return out;
 }
 
 inline Vector3i slab(const coords::GlobalBbox& bounds) {
@@ -42,19 +53,18 @@ inline Vector3i slab(const coords::GlobalBbox& bounds) {
                   bounds.getMax().z - bounds.getMin().z);
 }
 
-inline uint32_t toProxy(const coords::Global& g, const Vector3i& slab,
-                        const coords::GlobalBbox& bounds) {
-  Vector3i min = bounds.getMin();
-  return slab.x * slab.y * ((int)g.z - min.z) + slab.x * ((int)g.y - min.y) +
-         (int)g.x - min.x;
+inline uint32_t toProxy(const coords::Data& g, const Vector3i& slab,
+                        const coords::DataBbox& bounds) {
+  auto min = bounds.getMin();
+  return slab.x * slab.y * (g.z - min.z) + slab.x * (g.y - min.y) + g.x - min.x;
 }
 
-inline coords::Global fromProxy(const uint32_t proxy, const Vector3i& slab,
-                                const coords::GlobalBbox& bounds) {
+inline coords::Data fromProxy(const uint32_t proxy, const Vector3i& slab,
+                              const coords::DataBbox& bounds) {
   auto min = bounds.getMin();
-  return coords::Global(proxy % slab.x + min.x,
-                        (proxy % (slab.x * slab.y)) / slab.x + min.y,
-                        proxy / (slab.x * slab.y) + min.z);
+  return coords::Data(proxy % slab.x + min.x,
+                      (proxy % (slab.x * slab.y)) / slab.x + min.y,
+                      proxy / (slab.x * slab.y) + min.z, bounds.volume(), 0);
 }
 
 inline Direction getDirection(const coords::GlobalBbox& pre,
@@ -73,7 +83,7 @@ inline Direction getDirection(const coords::GlobalBbox& pre,
     }
   }
 
-  if (dims.y < dims.x && dims.x < dims.z) {
+  if (dims.y < dims.x && dims.y < dims.z) {
     if (bounds.getMin().y > post.getMin().y) {
       return Direction::YMin;
     } else {
@@ -162,6 +172,7 @@ coords::GlobalBbox getBounds(const coords::GlobalBbox& pre,
   return bounds;
 }
 
+// get the seeds in an adjacent volume given selected segments in a given volume
 void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
                const volume::Segmentation& pre,
                const std::set<int32_t>& selected,
@@ -174,6 +185,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   auto postBounds = post.Metadata().bounds();
   auto dir = getDirection(preBounds, postBounds);
   auto bounds = getBounds(preBounds, postBounds, dir);
+  auto proxyBounds = bounds.ToDataBbox(pre.Coords(), 0);
   const Vector3i range = slab(bounds);
 
   std::unordered_map<uint32_t, int> mappingCounts;
@@ -183,53 +195,43 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   std::set<uint32_t> included, postSelected;
 
   chunk::Voxels<uint32_t> preGetter(pre.ChunkDS(), pre.Coords());
-  chunk::Voxels<uint32_t> postGetter(post.ChunkDS(), pre.Coords());
+  chunk::Voxels<uint32_t> postGetter(post.ChunkDS(), post.Coords());
 
   // Offset iteration bounds by 1 so we don't exceed the volume.
-  auto iterBounds = bounds;
-  iterBounds.setMin(bounds.getMin() + 1);
+  auto iterBounds = bounds.ToDataBbox(pre.Coords(), 0);
+  iterBounds.setMin(iterBounds.getMin() + 1);
 
-  utility::VolumeWalker<uint32_t> walker(iterBounds.ToDataBbox(pre.Coords(), 0),
-                                         preGetter, &pre.UniqueValuesDS());
+  // This optimization is necessary for omni sized volumes and slower for
+  // eyewire sized volumes.  So don't do it if the overlap is too small.
+  chunk::UniqueValuesDS* cuvmDS = nullptr;
+  if (range.x * range.y * range.z > 128 * 128 * 128 * 4) {
+    cuvmDS = &pre.UniqueValuesDS();
+  }
 
-  walker.foreach_voxel_in_set(sel,
-                              [&](const coords::Data& dc, uint32_t seg_id) {
-    // if (!sel.count(seg_id)) {
-    //   return;
-    // }
+  utility::VolumeWalker<uint32_t> walker(iterBounds, preGetter, cuvmDS);
 
-    coords::Global g = dc.ToGlobal();
-    uint32_t post_seg_id = postGetter.GetValue(dc);
+  walker.foreach_voxel_in_set(sel, [&](const coords::Data& dc, uint32_t) {
+    uint32_t post_seg_id = postGetter.GetValue(dc.ToGlobal());
 
-    postSelected.insert(post_seg_id);
-    mappingCounts[post_seg_id]++;
+    if (post_seg_id) {
+      postSelected.insert(post_seg_id);
+      mappingCounts[post_seg_id]++;
+    }
 
-    uint32_t proxy = toProxy(g, range, bounds);
+    uint32_t proxy = toProxy(dc, range, proxyBounds);
     included.insert(proxy);
 
-    const coords::Global g1(g.x - 1, g.y, g.z);
-    uint32_t seg_id1 = preGetter.GetValue(g1);
-    if (sel.count(seg_id1)) {
-      auto p1 = toProxy(g1, range, bounds);
-      included.insert(p1);
-      conditionalJoin(sets, proxy, p1);
-    }
+    auto considerNeighbor = [&](const coords::Data d) {
+      if (selected.count(preGetter.GetValue(d))) {
+        auto p = toProxy(d, range, proxyBounds);
+        included.insert(p);
+        sets.join(sets.find_set(proxy), sets.find_set(p));
+      }
+    };
 
-    const coords::Global g2(g.x, g.y - 1, g.z);
-    uint32_t seg_id2 = preGetter.GetValue(g2);
-    if (sel.count(seg_id2)) {
-      auto p2 = toProxy(g2, range, bounds);
-      included.insert(p2);
-      conditionalJoin(sets, proxy, p2);
-    }
-
-    const coords::Global g3(g.x, g.y, g.z - 1);
-    uint32_t seg_id3 = preGetter.GetValue(g3);
-    if (sel.count(seg_id3)) {
-      auto p3 = toProxy(g3, range, bounds);
-      included.insert(p3);
-      conditionalJoin(sets, proxy, p3);
-    }
+    considerNeighbor(dc - Vector3i(1, 0, 0));
+    considerNeighbor(dc - Vector3i(0, 1, 0));
+    considerNeighbor(dc - Vector3i(0, 0, 1));
   });
 
   utility::VolumeWalker<uint32_t> postWalker(
@@ -246,11 +248,11 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     escapes[sets.find_set(i)] = false;
   }
   for (auto& i : included) {
-    const auto g = fromProxy(i, range, bounds);
+    const auto dc = fromProxy(i, range, proxyBounds);
     const auto root = sets.find_set(i);
-    newSeedSets[root].insert(postGetter.GetValue(g));
-    preSideSets[root].insert(preGetter.GetValue(g));
-    if (!escapes[root] && inCriticalRegion(g, bounds, dir)) {
+    newSeedSets[root].insert(postGetter.GetValue(dc.ToGlobal()));
+    preSideSets[root].insert(preGetter.GetValue(dc));
+    if (!escapes[root] && inCriticalRegion(dc.ToGlobal(), bounds, dir)) {
       escapes[root] = true;
     }
   }
@@ -260,16 +262,16 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     if (escapes[seed.first]) {
       seeds.push_back(makeSeed(seed.second, mappingCounts, sizes));
       log_infos << "Spawned!";
-      std::stringstream ss;
-      for (auto& seg : preSideSets[seed.first]) {
-        ss << seg << ",";
-      }
-      log_infos << "Pre Side: " << ss.str();
+      log_infos << "Pre Side: " << om::string::join(preSideSets[seed.first]);
 
+      std::stringstream ss;
       for (auto& seg : seeds.back()) {
-        ss << seg.first << ",";
+        ss << seg.first << ", ";
       }
       log_infos << "Post Side: " << ss.str();
+    } else {
+      log_debugs << "Does not escape: "
+                 << om::string::join(preSideSets[seed.first]);
     }
   }
 }

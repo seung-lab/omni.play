@@ -7,7 +7,6 @@ namespace om {
 class chunkCoord;
 }
 class OmMeshManager;
-class OmMeshCoord;
 
 namespace om {
 namespace v3d {
@@ -21,9 +20,8 @@ class CacheWrapper {
   CacheWrapper(om::common::ID segmentationID);
   ~CacheWrapper();
 
-  OmMeshPtr Get(const om::chunkCoord&, const om::common::SegID);
+  OmMeshPtr Get(const om::coords::Chunk&, const om::common::SegID);
 };
-
 }
 }
 }  // namespace
