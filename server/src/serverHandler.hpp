@@ -85,7 +85,7 @@ class serverHandler : virtual public serverIf,
         mesherHost_(mesherHost),
         mesherPort_(mesherPort) {
     status_ = fb_status::ALIVE;
-    threadPool_.start();
+    threadPool_.start(1);
   }
 
   ~serverHandler() { threadPool_.stop(); }
@@ -123,19 +123,22 @@ class serverHandler : virtual public serverIf,
     if (!file::Paths::IsValid(meta.uri)) {
       throw ArgException(std::string("Invalid metadata uri: " + meta.uri));
     }
+    file::Paths p(meta.uri);
 
     std::set<uint32_t> addedIDs;
     std::set<uint32_t> modifiedIDs;
-
     addedIDs.insert(addedSegIds.begin(), addedSegIds.end());
     modifiedIDs.insert(addedSegIds.begin(), addedSegIds.end());
     modifiedIDs.insert(deletedSegIds.begin(), deletedSegIds.end());
 
-    file::Paths p(meta.uri);
-    volume::Segmentation v(p, 1);
-    return handler::modify_global_mesh_data(
-        std::bind(&serverHandler::makeMesher, this), v, addedIDs, modifiedIDs,
-        segId);
+    auto rtmConnector = std::bind(&serverHandler::makeMesher, this);
+
+    threadPool_.push_back([p, rtmConnector, addedIDs, modifiedIDs, segId]() {
+      volume::Segmentation v(p, 1);
+      handler::modify_global_mesh_data(rtmConnector, v, addedIDs, modifiedIDs,
+                                       segId);
+    });
+    return true;
   }
 
   void get_mesh(std::string& _return, const metadata& meta,

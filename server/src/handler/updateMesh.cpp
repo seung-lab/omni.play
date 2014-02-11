@@ -95,14 +95,14 @@ class Sender : public boost::static_visitor<> {
     bool succeded = false;
     do {
       try {
-        log_debugs << "Sending: " << segId_ << " - " << location << " | ["
-                   << size.x << ", " << size.y << ", " << size.z << "] "
-                   << out.size() << " bytes.";
+        log_infos << "Sending: " << segId_ << " - " << location << " | ["
+                  << size.x << ", " << size.y << ", " << size.z << "] "
+                  << out.size() << " bytes.";
         rtm->maskedUpdate(string::num(segId_), loc, size, out, mask);
         succeded = true;
       }
       catch (apache::thrift::TException& tx) {
-        log_debugs << "Unable to update RTM: " << tx.what();
+        log_infos << "Unable to update RTM: " << tx.what();
         sleep(1000);
         rtm = connect_();
       }
