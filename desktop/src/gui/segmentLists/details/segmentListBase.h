@@ -19,7 +19,7 @@ class SegmentListBase : public QWidget {
   Q_OBJECT;
 
  public:
-  SegmentListBase(QWidget*, OmViewGroupState*);
+  SegmentListBase(QWidget*, OmViewGroupState&);
 
   void populate() { populateByPage(); }
 
@@ -75,7 +75,7 @@ Q_SLOTS:
   int currentPageNum_;
   quint32 getTotalNumberOfSegments();
 
-  OmViewGroupState* vgs_;
+  OmViewGroupState& vgs_;
 
   void searchOne(const QString& text);
   void searchMany(const QStringList& args);

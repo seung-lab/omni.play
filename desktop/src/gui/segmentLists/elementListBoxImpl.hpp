@@ -32,7 +32,7 @@ class ElementListBoxImpl : public QGroupBox,
   }
 
  private:
-  OmViewGroupState* const vgs_;
+  OmViewGroupState& vgs_;
 
   QTabWidget* mDataElementsTabs;
   QVBoxLayout* mOverallContainer;
@@ -121,12 +121,11 @@ class ElementListBoxImpl : public QGroupBox,
   }
 
   QString GetSegmentationGroupBoxTitle(SegmentationDataWrapper sdw) {
-    return QString("Segmentation %1: Segments").arg(sdw.GetID());
+    return QString("Segmentation %1: Segments").arg(sdw.id());
   }
 
  public:
-
-  ElementListBoxImpl(OmViewGroupState* vgs)
+  ElementListBoxImpl(OmViewGroupState& vgs)
       : QGroupBox(""),
         vgs_(vgs),
         mCurrentlyActiveTab(-1),
@@ -203,7 +202,6 @@ class ElementListBoxImpl : public QGroupBox,
   }
 
  private:
-
   void makeSegmentationActive(const SegmentationDataWrapper& sdw) {
     workingList_->MakeSegmentationActive(sdw);
     validList_->MakeSegmentationActive(sdw);

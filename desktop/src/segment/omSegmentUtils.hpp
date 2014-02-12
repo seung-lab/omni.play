@@ -94,8 +94,11 @@ class OmSegmentUtils {
 
       auto parentID = parent ? parent->value() : 0;
 
-      const QString str = QString("%1 : %2, %3, %4").arg(seg->value())
-          .arg(parentID).arg(seg->getThreshold()).arg(seg->size());
+      const QString str = QString("%1 : %2, %3, %4")
+                              .arg(seg->value())
+                              .arg(parentID)
+                              .arg(seg->getThreshold())
+                              .arg(seg->size());
 
       std::string line = str.toStdString();
       ret->push_back(line);
@@ -109,8 +112,8 @@ class OmSegmentUtils {
   static void ReValidateEveryObject(const SegmentationDataWrapper& sdw) {
     OmSegments* s = sdw.Segments();
     if (!s) {
-      log_debugs(unknown) << "Unable to ReValidateEveryObject.  Invalid "
-                             "SegmentationDataWrapper.";
+      log_debugs << "Unable to ReValidateEveryObject.  Invalid "
+                    "SegmentationDataWrapper.";
       return;
     }
     OmSegments& segments = *s;
@@ -162,9 +165,9 @@ class OmSegmentUtils {
     //                     std::min(128, color.green()),
     //                     std::min(128, color.blue()) };
 
-    const om::common::Color c = { static_cast<uint8_t>(color.red()),
-                                  static_cast<uint8_t>(color.green()),
-                                  static_cast<uint8_t>(color.blue()) };
+    const om::common::Color c = {static_cast<uint8_t>(color.red()),
+                                 static_cast<uint8_t>(color.green()),
+                                 static_cast<uint8_t>(color.blue())};
 
     sdw.SetColor(c);
 

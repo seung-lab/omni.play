@@ -16,7 +16,7 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "volume/omSegmentation.h"
 
-SegmentListBase::SegmentListBase(QWidget* parent, OmViewGroupState* vgs)
+SegmentListBase::SegmentListBase(QWidget* parent, OmViewGroupState& vgs)
     : QWidget(parent), haveValidSDW(false), currentPageNum_(0), vgs_(vgs) {
   layout = new QVBoxLayout(this);
 
