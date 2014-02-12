@@ -1,5 +1,7 @@
 #include "project/details/omAffinityGraphManager.h"
 
+template class om::common::GenericManager<OmAffinityGraph>;
+
 OmAffinityGraph& OmAffinityGraphManager::Get(const om::common::ID id) {
   return graphs_.Get(id);
 }

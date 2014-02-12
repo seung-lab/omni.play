@@ -1,14 +1,22 @@
 #pragma once
 
 #include "common/common.h"
-#include "system/omGenericManager.hpp"
+#include "common/genericManager.hpp"
 #include "volume/omChannel.h"
-#include "datalayer/archive/channel.h"
 
+namespace om {
+namespace volume {
+class MetadataDataSource;
+}
+}
+
+extern template class om::common::GenericManager<OmChannel>;
 class OmChannelManager {
  public:
-  OmChannel& GetChannel(const om::common::ID id);
+  OmChannel* GetChannel(const om::common::ID id);
   OmChannel& AddChannel();
+
+  void Load();
   void RemoveChannel(const om::common::ID id);
   bool IsChannelValid(const om::common::ID id);
   const om::common::IDSet& GetValidChannelIds();
@@ -17,11 +25,7 @@ class OmChannelManager {
   const std::vector<OmChannel*> GetPtrVec() const;
 
  private:
-  OmGenericManager<OmChannel> manager_;
+  om::common::GenericManager<OmChannel> manager_;
 
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                               const OmChannelManager&);
-  friend void YAMLold::operator>>(const YAMLold::Node& in, OmChannelManager&);
-  friend QDataStream& operator<<(QDataStream& out, const OmChannelManager&);
-  friend QDataStream& operator>>(QDataStream& in, OmChannelManager&);
+  friend class YAML::convert<OmChannelManager>;
 };

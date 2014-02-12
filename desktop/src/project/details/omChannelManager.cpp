@@ -1,31 +1,52 @@
+#include <boost/filesystem.hpp>
 #include "actions/omActions.h"
 #include "common/common.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/file.h"
+#include "datalayer/fs/volumeFolders.hpp"
 #include "project/details/omChannelManager.h"
-#include "volume/omChannelFolder.h"
+#include "volume/metadataDataSource.hpp"
 #include "volume/omFilter2d.h"
 
-OmChannel& OmChannelManager::GetChannel(const om::common::ID id) {
-  return manager_.Get(id);
+template class om::common::GenericManager<OmChannel>;
+
+OmChannel* OmChannelManager::GetChannel(const om::common::ID id) {
+  try {
+    return &manager_.Get(id);
+  }
+  catch (...) {
+    return nullptr;
+  }
 }
 
 OmChannel& OmChannelManager::AddChannel() {
-  OmChannel& vol = manager_.Add();
-  vol.Folder()->MakeVolFolder();
-  OmActions::Save();
-  return vol;
+  return manager_.Add(OmProject::Paths().Channels() / "channel");
+}
+
+void OmChannelManager::Load() {
+  for (auto& folder : om::fs::VolumeFolders::FindChannels()) {
+    om::file::path p = OmProject::Paths().Channels() / "channel";
+    p += std::to_string(folder.id);
+    if (om::volume::MetadataDataSource::GetStatic(p.string())) {
+      log_infos(io) << "Loading Channel " << folder.id;
+      manager_.Insert(
+          folder.id,
+          new OmChannel(folder.id, OmProject::Paths().Channels() / "channel"));
+    }
+  }
 }
 
 void OmChannelManager::RemoveChannel(const om::common::ID id) {
-  GetChannel(id).CloseDownThreads();
+  auto c = GetChannel(id);
+  if (c) {
+    c->CloseDownThreads();
 
-  //TODO: fixme
-  //OmDataPath path(GetChannel(id).GetDirectoryPath());
-  //OmProjectData::DeleteInternalData(path);
+    manager_.Remove(id);
+    om::file::RemoveDir(OmProject::Paths().Channel(id));
 
-  manager_.Remove(id);
-
-  OmActions::Save();
+    OmActions::Save();
+  } else {
+    log_debugs(unknown) << "Unable to remove channel " << id << ".  Not Found.";
+  }
 }
 
 bool OmChannelManager::IsChannelValid(const om::common::ID id) {

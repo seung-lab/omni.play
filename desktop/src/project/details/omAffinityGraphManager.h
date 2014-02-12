@@ -1,8 +1,10 @@
 #pragma once
 
 #include "common/common.h"
-#include "system/omGenericManager.hpp"
+#include "common/genericManager.hpp"
 #include "volume/omAffinityGraph.h"
+
+extern template class om::common::GenericManager<OmAffinityGraph>;
 
 class OmAffinityGraphManager {
  public:
@@ -15,13 +17,7 @@ class OmAffinityGraphManager {
   void SetEnabled(const om::common::ID id, const bool enable);
 
  private:
-  OmGenericManager<OmAffinityGraph> graphs_;
+  om::common::GenericManager<OmAffinityGraph> graphs_;
 
-  friend QDataStream& operator<<(QDataStream& out,
-                                 const OmAffinityGraphManager&);
-  friend QDataStream& operator>>(QDataStream& in, OmAffinityGraphManager&);
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                               const OmAffinityGraphManager&);
-  friend void YAMLold::operator>>(const YAMLold::Node& in,
-                                  OmAffinityGraphManager&);
+  friend class YAML::convert<OmAffinityGraphManager>;
 };

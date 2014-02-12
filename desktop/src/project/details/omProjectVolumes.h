@@ -1,17 +1,6 @@
 #pragma once
 
-/*
- *  Manages data structures that are shared between various parts of the system.
- * Making centralized
- *  changes in the StateManager will send events that cause the other interested
- * systems to be
- *  notified and synchronized.
- *
- *  Brett Warne - bwarne@mit.edu - 3/14/09
- */
-
 #include "common/common.h"
-#include "datalayer/archive/project.h"
 
 class OmAffinityGraphManager;
 class OmChannelManager;
@@ -38,10 +27,4 @@ class OmProjectVolumes {
   const std::unique_ptr<OmChannelManager> channels_;
   const std::unique_ptr<OmSegmentationManager> segmentations_;
   const std::unique_ptr<OmAffinityGraphManager> affGraphs_;
-
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                               const OmProjectVolumes& p);
-  friend void YAMLold::operator>>(const YAMLold::Node& in, OmProjectVolumes& p);
-  friend QDataStream& operator<<(QDataStream& out, const OmProjectVolumes& p);
-  friend QDataStream& operator>>(QDataStream& in, OmProjectVolumes& p);
 };
