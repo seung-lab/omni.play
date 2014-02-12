@@ -7,7 +7,6 @@
 #include "datalayer/omDataPaths.h"
 #include "mesh/drawer/omMeshDrawer.h"
 #include "mesh/omMeshManagers.hpp"
-#include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"

@@ -8,7 +8,6 @@
 #include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
 #include "mesh/omMeshParams.hpp"
 #include "project/omProject.h"
-#include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentUtils.hpp"

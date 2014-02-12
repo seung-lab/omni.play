@@ -1,5 +1,4 @@
 #include "datalayer/archive/old/omMetadataSegmentation.h"
-#include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/omSegments.h"

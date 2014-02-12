@@ -4,7 +4,6 @@
 #include "events/events.h"
 #include "mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
-#include "segment/io/omMST.h"
 #include "segment/omSegments.h"
 #include "threads/omTaskManager.hpp"
 #include "utility/dataWrappers.h"

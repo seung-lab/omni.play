@@ -8,7 +8,6 @@
 #include "mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
 #include "project/omProjectImpl.hpp"
-#include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lowLevel/omEnabledSegments.hpp"

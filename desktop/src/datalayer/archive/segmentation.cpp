@@ -9,7 +9,6 @@
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentsImpl.h"
-#include "segment/io/omMST.h"
 #include "segment/io/omValidGroupNum.hpp"
 #include "project/details/omSegmentationManager.h"
 #include "volume/omSegmentationLoader.h"

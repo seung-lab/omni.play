@@ -4,7 +4,6 @@
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataWrapper.h"
-#include "segment/io/omMST.h"
 #include "segment/omSegments.h"
 #include "volume/omSegmentation.h"
 

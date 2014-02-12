@@ -5,7 +5,7 @@
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
 #include "datalayer/fs/qtFile.hpp"
-#include "datalayer/archive/std_vector.hpp"
+// #include "datalayer/archive/std_vector.hpp"
 #include "volume/omSegmentation.h"
 
 #include <QVector>  //TODO: switch to mem-mapped file...
@@ -39,7 +39,8 @@ class OmValidGroupNum {
     maxGroupNum_.store(initialGroupNum_);
   }
 
-  template <typename C> void Set(const C& segs, const bool isValid) {
+  template <typename C>
+  void Set(const C& segs, const bool isValid) {
     const uint32_t groupNum = isValid ? ++maxGroupNum_ : noGroupNum_;
 
     for (OmSegment* seg : segs) {

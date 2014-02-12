@@ -1,6 +1,5 @@
 #pragma once
 
-#include "segment/io/omMST.h"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegments.h"
