@@ -49,16 +49,18 @@ bool ComparisonTask::Start() {
   auto allIter = std::find_if(
       namedGroups_.begin(), namedGroups_.end(),
       [](const SegGroup& g) { return g.type == SegGroup::GroupType::ALL; });
-
-  common::SegIDSet allRoots;
-  for (const auto& id : allIter->segments) {
-    auto rootID = segments->findRootID(id);
-    if (rootID) {
-      allRoots.insert(rootID);
+  if (allIter != namedGroups_.end()) {
+    common::SegIDSet allRoots;
+    for (const auto& id : allIter->segments) {
+      auto rootID = segments->findRootID(id);
+      if (rootID) {
+        allRoots.insert(rootID);
+      }
     }
+    segments->UpdateSegmentSelection(allRoots, true);
+  } else {
+    log_errors << "Missing All segments group.";
   }
-
-  segments->UpdateSegmentSelection(allRoots, true);
 
   om::event::Redraw2d();
   om::event::Redraw3d();
