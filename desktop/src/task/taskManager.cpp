@@ -60,6 +60,19 @@ std::shared_ptr<Task> TaskManager::GetComparisonTask(int cellID) {
 }
 
 std::shared_ptr<Task> TaskManager::GetComparisonTaskByID(int taskID) {
+  if (!taskID) {
+    return std::shared_ptr<Task>();
+  }
+
+  try {
+    std::string taskURI = system::Account::endpoint() + "/1.0/comparison_task";
+    taskURI += "?task=" + std::to_string(taskID);
+
+    return network::HTTP::GET_JSON<ComparisonTask>(taskURI);
+  }
+  catch (om::Exception e) {
+    log_debugs << "Failed loading task: " << e.what();
+  }
   return std::shared_ptr<Task>();
 }
 
