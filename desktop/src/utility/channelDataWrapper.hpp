@@ -8,6 +8,7 @@
 #include <QHash>
 
 class FilterDataWrapper;
+class OmFilter2d;
 
 class ChannelDataWrapper {
  public:
@@ -31,14 +32,14 @@ class ChannelDataWrapper {
 
   explicit ChannelDataWrapper(const om::common::ID ID) : id_(ID) {}
 
-  inline om::common::ID GetID() const { return id_; }
+  inline om::common::ID id() const { return id_; }
 
   inline om::common::ID GetChannelID() const { return id_; }
 
   OmChannel& Create() {
     OmChannel& c = OmProject::Volumes().Channels().AddChannel();
-    id_ = c.GetID();
-    log_infos << "create channel " << id_;
+    id_ = c.id();
+    log_debugs(unknown) << "create channel " << id_;
     return c;
   }
 
@@ -48,22 +49,21 @@ class ChannelDataWrapper {
   }
 
   inline QString GetName() const {
-    return QString::fromStdString(GetChannel().GetName());
+    auto c = GetChannel();
+    if (c) {
+      return QString::fromStdString(c->Name());
+    } else {
+      log_errors(DataWrappers) << "Invalid Channel: " << id_;
+      return "";
+    }
   }
 
   inline bool isEnabled() const {
     return OmProject::Volumes().Channels().IsChannelEnabled(id_);
   }
 
-  inline QString getNote() const { return GetChannel().GetNote(); }
-
-  inline OmChannel& GetChannel() const {
+  inline OmChannel* GetChannel() const {
     return OmProject::Volumes().Channels().GetChannel(id_);
-  }
-
-  inline OmChannel* GetChannelPtr() const {
-    OmChannel& chan = GetChannel();
-    return &chan;
   }
 
   inline bool IsValidWrapper() const { return IsChannelValid(); }
@@ -75,7 +75,15 @@ class ChannelDataWrapper {
     return OmProject::Volumes().Channels().IsChannelValid(id_);
   }
 
-  inline bool IsBuilt() const { return GetChannel().IsBuilt(); }
+  inline bool IsBuilt() const {
+    auto c = GetChannel();
+    if (c) {
+      return c->built();
+    } else {
+      log_errors(DataWrappers) << "Invalid Channel: " << id_;
+      return false;
+    }
+  }
 
   std::vector<OmFilter2d*> GetFilters() const;
 };
