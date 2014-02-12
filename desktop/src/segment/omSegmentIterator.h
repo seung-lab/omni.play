@@ -7,11 +7,15 @@ class OmSegment;
 class OmSegments;
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
+namespace om {
+namespace segment {
+class Selection;
+}
+}
 
 class OmSegmentIterator {
  public:
-  explicit OmSegmentIterator(OmSegments*);
-  explicit OmSegmentIterator(OmSegments&);
+  explicit OmSegmentIterator(const OmSegments&);
   explicit OmSegmentIterator(const SegmentationDataWrapper& sdw);
   explicit OmSegmentIterator(const SegmentDataWrapper& sdw);
 
@@ -26,6 +30,6 @@ class OmSegmentIterator {
   OmSegmentIterator& operator=(const OmSegmentIterator& other);
 
  private:
-  OmSegments* segments_;
+  const OmSegments* segments_;
   std::deque<OmSegment*> segs_;
 };

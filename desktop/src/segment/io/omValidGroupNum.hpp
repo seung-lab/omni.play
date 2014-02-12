@@ -1,32 +1,34 @@
 #pragma once
 
-#include "volume/omSegmentationFolder.h"
-#include "datalayer/archive/old/omDataArchiveStd.hpp"
-#include "datalayer/fs/omFileNames.hpp"
-#include "utility/omLockedPODs.hpp"
+#include <atomic>
+
+#include "segment/omSegment.h"
 #include "segment/omSegments.h"
-#include "utility/dataWrappers.h"
+#include "datalayer/fs/qtFile.hpp"
+#include "datalayer/archive/std_vector.hpp"
+#include "volume/omSegmentation.h"
 
 #include <QVector>  //TODO: switch to mem-mapped file...
 
+extern template class std::vector<uint32_t>;
+
 class OmValidGroupNum {
  private:
-  OmSegmentation* vol_;
+  OmSegmentation& vol_;
   int version_;
 
   const uint32_t noGroupNum_;
   const uint32_t initialGroupNum_;
 
-  LockedUint32 maxGroupNum_;
+  std::atomic<uint32_t> maxGroupNum_;
   std::vector<uint32_t> segToGroupNum_;
 
  public:
-  OmValidGroupNum(OmSegmentation* segmentation)
+  OmValidGroupNum(OmSegmentation& segmentation)
       : vol_(segmentation), version_(1), noGroupNum_(0), initialGroupNum_(1) {
-    maxGroupNum_.set(initialGroupNum_);
+    maxGroupNum_.store(initialGroupNum_);
+    load();
   }
-
-  void Load() { load(); }
 
   void Save() const { save(); }
 
@@ -34,15 +36,13 @@ class OmValidGroupNum {
 
   void Clear() {
     std::fill(segToGroupNum_.begin(), segToGroupNum_.end(), noGroupNum_);
-    maxGroupNum_.set(initialGroupNum_);
+    maxGroupNum_.store(initialGroupNum_);
   }
 
-  template <typename C>
-  void Set(const C& segs, const bool isValid) {
-    const uint32_t groupNum = isValid ? maxGroupNum_.inc() : noGroupNum_;
+  template <typename C> void Set(const C& segs, const bool isValid) {
+    const uint32_t groupNum = isValid ? ++maxGroupNum_ : noGroupNum_;
 
-    FOR_EACH(iter, segs) {
-      OmSegment* seg = *iter;
+    for (OmSegment* seg : segs) {
       const om::common::SegID segID = seg->value();
       segToGroupNum_[segID] = groupNum;
     }
@@ -60,10 +60,7 @@ class OmValidGroupNum {
   inline uint32_t Get(OmSegment* seg) const { return Get(seg->value()); }
 
  private:
-  QString filePathV1() const {
-    return QString::fromStdString(
-        vol_->Folder()->GetVolSegmentsPathAbs("valid_group_num.data.ver1"));
-  }
+  QString filePathV1() const;
 
   void load() {
     const QString filePath = filePathV1();
@@ -74,7 +71,7 @@ class OmValidGroupNum {
       return;
     }
 
-    om::file::old::openFileRO(file);
+    om::file::openFileRO(file);
 
     QDataStream in(&file);
     in.setByteOrder(QDataStream::LittleEndian);
@@ -85,10 +82,10 @@ class OmValidGroupNum {
 
     quint64 maxGroupNum;
     in >> maxGroupNum;
-    maxGroupNum_.set(maxGroupNum);
+    maxGroupNum_.store(maxGroupNum);
 
     if (!in.atEnd()) {
-      throw om::IoException("corrupt file?");
+      throw om::IoException("corrupt file?", filePath.toStdString());
     }
   }
 
@@ -97,7 +94,7 @@ class OmValidGroupNum {
 
     QFile file(filePath);
 
-    om::file::old::openFileWO(file);
+    om::file::openFileWO(file);
 
     QDataStream out(&file);
     out.setByteOrder(QDataStream::LittleEndian);
@@ -106,9 +103,7 @@ class OmValidGroupNum {
     out << version_;
     out << segToGroupNum_;
 
-    const quint64 maxGroupNum = maxGroupNum_.get();
+    const quint64 maxGroupNum = maxGroupNum_.load();
     out << maxGroupNum;
-
-    log_infos << "saved " << qPrintable(filePath);
   }
 };

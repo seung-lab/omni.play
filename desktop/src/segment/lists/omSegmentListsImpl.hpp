@@ -1,36 +1,28 @@
 #pragma once
 
 #include "events/events.h"
-#include "segment/io/omSegmentPage.hpp"
 #include "segment/lists/omSegmentListForGUI.hpp"
 #include "segment/lists/omSegmentListGlobal.hpp"
 #include "segment/lists/omSegmentLists.h"
-#include "segment/lowLevel/omSegmentsImplLowLevel.h"
-#include "threads/omTaskManager.hpp"
-#include "utility/omTimer.hpp"
+#include "segment/lowLevel/omSegmentLowLevelTypes.h"
+#include "segment/lowLevel/store.h"
+#include "segment/omSegments.h"
+#include "threads/taskManager.hpp"
+#include "utility/timer.hpp"
 #include "utility/segmentationDataWrapper.hpp"
+#include "common/string.hpp"
+#include "volume/metadataManager.h"
 
-class OmSegmentListLowLevel {
- private:
-  OmThreadPool threadPool_;
-
-  OmSegmentLists* const segmentLists_;
-
-  OmSegmentsImplLowLevel* cache_;
-
-  std::vector<SegInfo> list_;
-  bool recreateGUIlists_;
-
+class OmSegmentListsImpl {
  public:
-  OmSegmentListLowLevel(OmSegmentLists* segmentLists)
-      : segmentLists_(segmentLists), cache_(nullptr), recreateGUIlists_(true) {}
-
-  ~OmSegmentListLowLevel() { threadPool_.join(); }
-
-  void Init(OmSegmentsImplLowLevel* cache, const size_t size) {
-    cache_ = cache;
-
-    doResize(size);
+  OmSegmentListsImpl(OmSegmentLists& lists, om::volume::MetadataManager& meta,
+                     om::segment::Store& store, SegmentationDataWrapper sdw)
+      : store_(store),
+        meta_(meta),
+        segmentLists_(lists),
+        sdw_(sdw),
+        recreateGUIlists_(true) {
+    doResize(meta_.numSegments());
     doBuildInitialSegmentList();
 
     // use threadPool as serial job queue;
@@ -39,26 +31,28 @@ class OmSegmentListLowLevel {
     threadPool_.start(1);
   }
 
+  ~OmSegmentListsImpl() { threadPool_.join(); }
+
   void Resize(const size_t size) {
     threadPool_.push_back(
-        zi::run_fn(zi::bind(&OmSegmentListLowLevel::doResize, this, size)));
+        zi::run_fn(zi::bind(&OmSegmentListsImpl::doResize, this, size)));
   }
 
   inline void UpdateSizeListsFromJoin(OmSegment* root, OmSegment* child) {
     threadPool_.push_back(zi::run_fn(zi::bind(
-        &OmSegmentListLowLevel::doUpdateSizeListsFromJoin, this, root, child)));
+        &OmSegmentListsImpl::doUpdateSizeListsFromJoin, this, root, child)));
   }
 
   inline void UpdateSizeListsFromSplit(OmSegment* root, OmSegment* child,
                                        const SizeAndNumPieces& childInfo) {
     threadPool_.push_back(
-        zi::run_fn(zi::bind(&OmSegmentListLowLevel::doUpdateSizeListsFromSplit,
+        zi::run_fn(zi::bind(&OmSegmentListsImpl::doUpdateSizeListsFromSplit,
                             this, root, child, childInfo)));
   }
 
   void AddSegment(OmSegment* seg) {
     threadPool_.push_back(
-        zi::run_fn(zi::bind(&OmSegmentListLowLevel::doAddSegment, this, seg)));
+        zi::run_fn(zi::bind(&OmSegmentListsImpl::doAddSegment, this, seg)));
   }
 
   inline void RefreshGUIlists() { runRefreshGUIlists(false); }
@@ -66,6 +60,10 @@ class OmSegmentListLowLevel {
   inline void ForceRefreshGUIlists() { runRefreshGUIlists(true); }
 
   inline int64_t GetSizeWithChildren(const om::common::SegID segID) {
+    // if (segID >= list_.size()) {
+    //   log_debugs(unknown) << "segment " << segID << "not found";
+    //   return 0;
+    // }
     return list_[segID].sizeIncludingChildren;
   }
 
@@ -76,7 +74,7 @@ class OmSegmentListLowLevel {
  private:
   inline void runRefreshGUIlists(const bool force) {
     threadPool_.push_back(zi::run_fn(
-        zi::bind(&OmSegmentListLowLevel::doRecreateGUIlists, this, force)));
+        zi::bind(&OmSegmentListsImpl::doRecreateGUIlists, this, force)));
   }
 
   // avoid locking by adding to serial job list
@@ -100,40 +98,26 @@ class OmSegmentListLowLevel {
       size = 1;  // for newly-added segment
     }
 
-    const SegInfo info = {seg, seg->value(), size, 0};
+    const SegInfo info = { seg, seg->value(), size, 0 };
     list_[seg->value()] = info;
   }
 
   void doBuildInitialSegmentList() {
-    const std::vector<OmSegmentPage*> pages = cache_->SegmentStore()->Pages();
-    const uint32_t pageSize = cache_->SegmentStore()->PageSize();
-
     uint32_t numSegs = 0;
-
-    FOR_EACH(iter, pages) {
-      OmSegmentPage* pagePtr = *iter;
-      if (!pagePtr) {
-        continue;
-      }
-
-      OmSegmentPage& page = *pagePtr;
-
-      for (uint32_t i = 0; i < pageSize; ++i) {
-        OmSegment* seg = &(page[i]);
-        if (seg->value())  // seg will never be nullptr
-        {
-          ++numSegs;
-          addSegment(seg);
-        }
+    for (auto segId = 1; segId < meta_.numSegments(); segId++) {
+      OmSegment* seg = store_.GetSegment(segId);
+      if (seg && seg->value()) {
+        ++numSegs;
+        addSegment(seg);
       }
     }
 
     // saftey check
-    if (cache_->GetNumSegments() != numSegs) {
-      log_infos << "number of segments found changed from "
-                << om::string::humanizeNum(cache_->GetNumSegments()) << " to "
-                << om::string::humanizeNum(numSegs);
-      cache_->SetNumSegments(numSegs);
+    if (meta_.numSegments() != numSegs) {
+      log_debugs(unknown) << "number of segments found changed from "
+                          << om::string::humanizeNum(meta_.numSegments())
+                          << " to " << om::string::humanizeNum(numSegs);
+      meta_.set_numSegments(numSegs);
     }
 
     recreateGUIlists_ = true;
@@ -188,24 +172,24 @@ class OmSegmentListLowLevel {
       return;
     }
 
-    OmTimer timer;
+    om::utility::timer timer;
 
-    OmThreadPool buildPool;
+    om::thread::ThreadPool buildPool;
     buildPool.start(4);
 
     buildPool.push_back(
-        zi::run_fn(zi::bind(&OmSegmentListLowLevel::copyGlobalList, this)));
+        zi::run_fn(zi::bind(&OmSegmentListsImpl::copyGlobalList, this)));
 
     buildPool.push_back(
-        zi::run_fn(zi::bind(&OmSegmentListLowLevel::buildGUIlist, this,
+        zi::run_fn(zi::bind(&OmSegmentListsImpl::buildGUIlist, this,
                             om::common::SegListType::WORKING)));
 
     buildPool.push_back(
-        zi::run_fn(zi::bind(&OmSegmentListLowLevel::buildGUIlist, this,
+        zi::run_fn(zi::bind(&OmSegmentListsImpl::buildGUIlist, this,
                             om::common::SegListType::VALID)));
 
     buildPool.push_back(
-        zi::run_fn(zi::bind(&OmSegmentListLowLevel::buildGUIlist, this,
+        zi::run_fn(zi::bind(&OmSegmentListsImpl::buildGUIlist, this,
                             om::common::SegListType::UNCERTAIN)));
 
     buildPool.join();
@@ -214,19 +198,29 @@ class OmSegmentListLowLevel {
 
     timer.Print("Rebuilt segment GUI lists");
 
-    om::event::SegmentGUIlist(cache_->GetSDW(), true);
+    om::event::SegmentGUIlist(sdw_, true);
   }
 
   void copyGlobalList() {
-    std::shared_ptr<OmSegmentListGlobal> globalList =
-        std::make_shared<OmSegmentListGlobal>(list_);
-    segmentLists_->Swap(globalList);
+    auto globalList = std::make_shared<OmSegmentListGlobal>(list_);
+    segmentLists_.Swap(globalList);
   }
 
   void buildGUIlist(const om::common::SegListType listType) {
-    std::shared_ptr<OmSegmentListForGUI> guiList =
-        std::make_shared<OmSegmentListForGUI>(listType);
+    auto guiList = std::make_shared<OmSegmentListForGUI>(listType);
     guiList->Build(list_);
-    segmentLists_->Swap(guiList);
+    segmentLists_.Swap(guiList);
   }
+
+ private:
+  om::thread::ThreadPool threadPool_;
+
+  om::segment::Store& store_;
+  om::volume::MetadataManager& meta_;
+  OmSegmentLists& segmentLists_;
+
+  SegmentationDataWrapper sdw_;
+
+  std::vector<SegInfo> list_;
+  bool recreateGUIlists_;
 };

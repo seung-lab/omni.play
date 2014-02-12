@@ -1,22 +1,29 @@
 #include "actions/omActions.h"
 #include "actions/omSelectSegmentParams.hpp"
-#include "common/logging.h"
-#include "common/set.hpp"
+#include "utility/set.hpp"
 #include "project/omProject.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
-#include "utility/dataWrappers.h"
+#include "segment/selection.hpp"
 #include "volume/omSegmentation.h"
+#include "utility/segmentationDataWrapper.hpp"
 
 OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
                                      void* sender, const std::string& cmt)
-    : segments_(sdw.Segments()),
-      params_(std::make_shared<OmSelectSegmentsParams>()) {
+    : params_(std::make_shared<OmSelectSegmentsParams>()) {
+  if (!sdw.IsSegmentationValid()) {
+    throw om::ArgException("Invalid SegmentationDataWrapper "
+                           "(OmSegmentSelector::OmSegmentSelector)");
+  }
+
+  segments_ = sdw.Segments();
+  selection_ = &sdw.Segments()->Selection();
+
   params_->sdw = SegmentDataWrapper(sdw, 0);
   params_->sender = sender;
   params_->comment = cmt;
-  params_->oldSelectedIDs = segments_->GetSelectedSegmentIDs();
+  params_->oldSelectedIDs = selection_->GetSelectedSegmentIDs();
   params_->newSelectedIDs = params_->oldSelectedIDs;
   params_->autoCenter = false;
   params_->shouldScroll = true;
@@ -32,7 +39,7 @@ void OmSegmentSelector::selectJustThisSegment(
     const om::common::SegID segIDunknownLevel, const bool isSelected) {
   selectNoSegments();
 
-  const om::common::SegID segID = segments_->findRootID(segIDunknownLevel);
+  auto segID = segments_->FindRootID(segIDunknownLevel);
   if (!segID) {
     return;
   }
@@ -53,27 +60,25 @@ void OmSegmentSelector::setSelectedSegment(const om::common::SegID segID) {
   OmSegmentSelected::Set(params_->sdw);
 }
 
-void OmSegmentSelector::InsertSegments(const om::common::SegIDSet* segIDs) {
-  params_->newSelectedIDs.clear();
+void OmSegmentSelector::InsertSegments(
+    const std::unordered_set<om::common::SegID>* segIDs) {
   for (auto id : *segIDs) {
-    auto rootID = segments_->findRootID(id);
-    if (params_->oldSelectedIDs.find(rootID) == params_->oldSelectedIDs.end()) {
-      params_->newSelectedIDs.insert(rootID);
-    }
+    params_->newSelectedIDs.insert(segments_->FindRootID(id));
   }
 }
 
-void OmSegmentSelector::RemoveSegments(const om::common::SegIDSet* segIDs) {
+void OmSegmentSelector::RemoveSegments(
+    const std::unordered_set<om::common::SegID>* segIDs) {
   params_->newSelectedIDs.clear();
 
-  FOR_EACH(iter, *segIDs) {
-    params_->newSelectedIDs.insert(segments_->findRootID(*iter));
+  for (auto id : *segIDs) {
+    params_->newSelectedIDs.insert(segments_->FindRootID(id));
   }
 }
 
 void OmSegmentSelector::augmentSelectedSet(
     const om::common::SegID segIDunknownLevel, const bool isSelected) {
-  const om::common::SegID segID = segments_->findRootID(segIDunknownLevel);
+  const om::common::SegID segID = segments_->FindRootID(segIDunknownLevel);
 
   if (!segID) {
     return;
@@ -90,23 +95,23 @@ void OmSegmentSelector::augmentSelectedSet(
 
 void OmSegmentSelector::selectJustThisSegment_toggle(
     const om::common::SegID segIDunknownLevel) {
-  const om::common::SegID segID = segments_->findRootID(segIDunknownLevel);
+  const om::common::SegID segID = segments_->FindRootID(segIDunknownLevel);
   if (!segID) {
     return;
   }
 
-  const bool isSelected = segments_->IsSegmentSelected(segID);
+  const bool isSelected = selection_->IsSegmentSelected(segID);
   selectJustThisSegment(segID, !isSelected);
 }
 
 void OmSegmentSelector::augmentSelectedSet_toggle(
     const om::common::SegID segIDunknownLevel) {
-  const om::common::SegID segID = segments_->findRootID(segIDunknownLevel);
+  const om::common::SegID segID = segments_->FindRootID(segIDunknownLevel);
   if (!segID) {
     return;
   }
 
-  const bool isSelected = segments_->IsSegmentSelected(segID);
+  const bool isSelected = selection_->IsSegmentSelected(segID);
   augmentSelectedSet(segID, !isSelected);
 }
 
@@ -133,7 +138,21 @@ bool OmSegmentSelector::sendEvent() {
     }
   }
 
-  OmActions::SelectSegments(params_);
+  // log_debugs(segmentSelector) << params_->oldSelectedIDs << "\n";
+
+  if (params_->augmentListOnly) {
+    // disable undo option for now
+    om::segment::Selection* selection = params_->sdw.Selection();
+
+    if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
+      selection->AddToSegmentSelection(params_->newSelectedIDs);
+    } else {
+      selection->RemoveFromSegmentSelection(params_->newSelectedIDs);
+    }
+  } else {
+    OmActions::SelectSegments(params_);
+  }
+
   return true;
 }
 

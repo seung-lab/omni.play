@@ -1,8 +1,8 @@
 #pragma once
 
 #include "common/common.h"
-#include "common/enums.hpp"
 #include "common/colors.h"
+#include "common/enums.hpp"
 
 // for Microsft Windows compiler compatibility, may need #pragma pack
 // see http://gcc.gnu.org/onlinedocs/gcc/Structure_002dPacking-Pragmas.html

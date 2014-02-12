@@ -3,16 +3,15 @@
 #include "common/common.h"
 #include "segment/omSegments.h"
 #include "segment/lists/omSegmentLists.h"
-#include "utility/dataWrappers.h"
-#include "utility/omTimer.hpp"
+#include "utility/segmentationDataWrapper.hpp"
+#include "utility/timer.hpp"
 #include "volume/omSegmentation.h"
-#include "zi/omMutex.h"
 
 class OmSegmentUncertain {
  public:
   static void SetAsUncertain(
       const SegmentationDataWrapper& sdw,
-      std::shared_ptr<std::set<OmSegment*> > selectedSegments,
+      std::shared_ptr<std::set<OmSegment*>> selectedSegments,
       const bool uncertain) {
     OmSegmentUncertain uncertainer(sdw, selectedSegments, uncertain);
     uncertainer.setAsUncertain();
@@ -20,11 +19,11 @@ class OmSegmentUncertain {
 
  private:
   const SegmentationDataWrapper& sdw_;
-  const std::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+  const std::shared_ptr<std::set<OmSegment*>> selectedSegments_;
   const bool uncertain_;
 
   OmSegmentUncertain(const SegmentationDataWrapper& sdw,
-                     std::shared_ptr<std::set<OmSegment*> > selectedSegments,
+                     std::shared_ptr<std::set<OmSegment*>> selectedSegments,
                      const bool uncertain)
       : sdw_(sdw), selectedSegments_(selectedSegments), uncertain_(uncertain) {}
 
@@ -32,19 +31,17 @@ class OmSegmentUncertain {
     static zi::mutex mutex;
     zi::guard g(mutex);
 
-    OmTimer timer;
+    om::utility::timer timer;
 
     if (uncertain_) {
-      log_infos << "setting " << selectedSegments_->size()
-                << " segments as uncertain..." << std::flush;
+      log_debugs(unknown) << "setting " << selectedSegments_->size()
+                          << " segments as uncertain...";
     } else {
-      log_infos << "setting " << selectedSegments_->size()
-                << " segments as NOT uncertain..." << std::flush;
+      log_debugs(unknown) << "setting " << selectedSegments_->size()
+                          << " segments as NOT uncertain...";
     }
 
-    FOR_EACH(iter, *selectedSegments_) {
-      OmSegment* seg = *iter;
-
+    for (OmSegment* seg : *selectedSegments_) {
       if (uncertain_) {
         seg->SetListType(om::common::SegListType::UNCERTAIN);
       } else {

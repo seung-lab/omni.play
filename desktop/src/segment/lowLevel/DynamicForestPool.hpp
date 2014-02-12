@@ -11,14 +11,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <utility>
+#include "common/exception.h"
 
 //#define DYNAMIC_FOREST_ASSERT(x) (assert(x))
 #define DYNAMIC_FOREST_ASSERT(x) (static_cast<void>(sizeof(x)))
 
 namespace zi {
 
-template <typename T>
-class DynamicForestPool {
+template <typename T> class DynamicForestPool {
  private:
   struct Node {
     T l_, r_, p_, pp_;
@@ -35,6 +35,7 @@ class DynamicForestPool {
   ~DynamicForestPool() { free(x_); }
 
  private:
+
   uint64_t numBytes() const { return numBytes(size_); }
 
   static uint64_t numBytes(const size_t s) { return s * sizeof(Node); }
@@ -197,8 +198,9 @@ class DynamicForestPool {
       print(x_[d].l_, o + 2);
     }
 
-    log_infos << std::string(o, ' ') << d << " (" << x_[d].l_ << ", "
-              << x_[d].r_ << ", " << x_[d].p_ << ", " << x_[d].pp_ << ")";
+    log_debugs(unknown) << std::string(o, ' ') << d << " (" << x_[d].l_ << ", "
+                        << x_[d].r_ << ", " << x_[d].p_ << ", " << x_[d].pp_
+                        << ")";
 
     if (x_[d].r_) {
       print(x_[d].r_, o + 2);
@@ -208,7 +210,7 @@ class DynamicForestPool {
  public:
   void Print(const int d) {
     print(d + 1, 0);
-    log_infos << "---";
+    log_debugs(unknown) << "---";
   }
 
   void Clear() { clear(); }

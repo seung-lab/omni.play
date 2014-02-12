@@ -2,12 +2,11 @@
 
 #include "actions/omActions.h"
 #include "common/common.h"
-#include "system/cache/omCacheManager.h"
 #include "events/events.h"
-#include "utility/dataWrappers.h"
-#include "zi/omUtility.h"
+#include "zi/utility.h"
+#include "utility/segmentDataWrapper.hpp"
 
-class OmSegmentSearched : private om::singletonBase<OmSegmentSearched> {
+class OmSegmentSearched : private om::SingletonBase<OmSegmentSearched> {
  public:
   static void Delete() { instance().sdw_ = SegmentDataWrapper(); }
 

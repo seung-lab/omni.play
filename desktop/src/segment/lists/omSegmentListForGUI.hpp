@@ -1,9 +1,9 @@
 #pragma once
 
+#include <unordered_map>
 #include "common/common.h"
 #include "segment/lists/omSegmentListsTypes.hpp"
-#include "zi/omUtility.h"
-#include <unordered_map>
+#include "zi/utility.h"
 
 class OmSegmentListForGUI {
  private:
@@ -83,13 +83,15 @@ class OmSegmentListForGUI {
   }
 
   void makeIndex() {
-    for (uint32_t i = 0; i < bySize_.size(); ++i) {
+    for (auto i = 0; i < bySize_.size(); ++i) {
       index_[bySize_[i].seg->value()] = i;
     }
   }
 
   void makeSizeList(const std::vector<SegInfo>& globalList) {
-    FOR_EACH(iter, globalList) { processSegInfo(*iter); }
+    for (auto& info : globalList) {
+      processSegInfo(info);
+    }
 
     zi::sort(bySize_.begin(), bySize_.end(), om::segLists::CmpSegInfo);
   }

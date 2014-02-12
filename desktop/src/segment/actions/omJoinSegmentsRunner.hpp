@@ -11,7 +11,7 @@ class OmJoinSegmentsRunner {
   explicit OmJoinSegmentsRunner(const SegmentationDataWrapper& sdw)
       : sdw_(sdw) {
     if (sdw_.IsSegmentationValid()) {
-      ids_ = sdw_.Segments()->GetSelectedSegmentIDs();
+      ids_ = sdw_.Segments()->Selection().GetSelectedSegmentIDs();
     }
   }
 

@@ -2,7 +2,6 @@
 
 #include "actions/details/omSegmentCutAction.h"
 #include "events/events.h"
-#include "segment/omSegmentEdgeUtils.hpp"
 #include "utility/segmentDataWrapper.hpp"
 
 class OmCutSegmentRunner {
@@ -11,8 +10,7 @@ class OmCutSegmentRunner {
   static void CutSegmentFromParent(const SegmentDataWrapper& sdw) {
     OmSegment* seg = sdw.GetSegment();
 
-    boost::optional<std::string> notCuttable =
-        sdw.Segments()->IsSegmentCuttable(seg);
+    auto notCuttable = sdw.Segments()->IsSegmentCuttable(seg);
 
     if (notCuttable) {
       const QString err = QString::fromStdString(*notCuttable);

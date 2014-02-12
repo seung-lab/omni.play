@@ -7,49 +7,34 @@
 #include "segment/omSegmentUtils.hpp"
 #include "utility/lockedObjects.hpp"
 #include "viewGroup/omViewGroupState.h"
+#include "segment/selection.hpp"
 
-static const om::common::Color blackColor = {0, 0, 0};
+static const om::common::Color blackColor = { 0, 0, 0 };
 
 class OmSegmentColorizerImpl {
- private:
-  SegmentColorParams& params_;
-
-  OmSegments* const segments_;
-
-  OmSegmentColorizerColorCache& colorCache_;
-  const uint64_t freshness_;
-  const float breakThreshold_;
-
-  bool anySegmentsSelected_;
-  om::common::SegIDSet selectedSegIDs_;
-  om::common::SegIDSet enabledSegIDs_;
-
  public:
   OmSegmentColorizerImpl(SegmentColorParams& params,
                          OmSegmentColorizerColorCache& colorCache,
                          const uint64_t freshness)
       : params_(params),
         segments_(params_.segments),
+        selection_(params_.selection),
         colorCache_(colorCache),
         freshness_(freshness),
-        breakThreshold_(params_.vgs->getBreakThreshold()) {
-    const om::common::SegIDSet selected =
-        params.segments->GetSelectedSegmentIDs();
-    selectedSegIDs_ = om::common::SegIDSet(selected.begin(), selected.end());
+        breakThreshold_(params_.vgs.getBreakThreshold()) {
+    const om::common::SegIDSet selected = selection_.GetSelectedSegmentIDs();
+    selectedSegIDs_ =
+        std::unordered_set<om::common::SegID>(selected.begin(), selected.end());
 
-    const om::common::SegIDSet enabled =
-        params.segments->GetEnabledSegmentIDs();
-    enabledSegIDs_ = om::common::SegIDSet(enabled.begin(), enabled.end());
-
-    anySegmentsSelected_ = !selectedSegIDs_.empty() || !enabledSegIDs_.empty();
+    anySegmentsSelected_ = !selectedSegIDs_.empty();
   }
 
   void ColorTile(uint32_t const* const d,
                  om::common::ColorARGB* colorMappedData) {
-    PrevSegAndColor prev = {0, blackColor};
+    PrevSegAndColor prev = { 0, blackColor };
     uint32_t maxSize = colorCache_.Size();
 
-    for (uint32_t i = 0; i < params_.numElements; ++i) {
+    for (auto i = 0; i < params_.numElements; ++i) {
       colorMappedData[i].alpha = 255;  // required for Mac OS X?
 
       if (d[i] == prev.segID) {  // use memoized previous, non-zero color
@@ -90,8 +75,7 @@ class OmSegmentColorizerImpl {
   };
 
   inline OmSegment* getSegment(const om::common::SegID segID) {
-    // return segments_->GetSegmentUnsafe(segID);
-    return segments_->GetSegment(segID);
+    return segments_.GetSegment(segID);
   }
 
   om::common::Color getVoxelColorForView2d(const om::common::SegID segID) {
@@ -104,13 +88,12 @@ class OmSegmentColorizerImpl {
 
     OmSegment* segRoot = seg;
     if (segRoot->getParent()) {
-      segRoot = getSegment(segments_->findRootID(segID));
+      segRoot = getSegment(segments_.FindRootID(segID));
     }
 
     const om::common::Color segRootColor = segRoot->GetColorInt();
 
-    const bool isSelected = selectedSegIDs_.count(segRoot->value()) ||
-                            enabledSegIDs_.count(segRoot->value());
+    const bool isSelected = selectedSegIDs_.count(segRoot->value());
 
     switch (params_.sccType) {
       case om::segment::coloring::SEGMENTATION_VALID:
@@ -186,9 +169,11 @@ class OmSegmentColorizerImpl {
   // TODO: might be faster to compute: lookup could affect cache lines
   static inline om::common::Color makeMutedColor(
       const om::common::Color& color) {
-    const om::common::Color ret = {OmSegmentColors::MakeMutedColor(color.red),
-                                   OmSegmentColors::MakeMutedColor(color.green),
-                                   OmSegmentColors::MakeMutedColor(color.blue)};
+    const om::common::Color ret = {
+      OmSegmentColors::MakeMutedColor(color.red),
+      OmSegmentColors::MakeMutedColor(color.green),
+      OmSegmentColors::MakeMutedColor(color.blue)
+    };
     return ret;
   }
 
@@ -196,9 +181,23 @@ class OmSegmentColorizerImpl {
   static inline om::common::Color makeSelectedColor(
       const om::common::Color& color) {
     const om::common::Color ret = {
-        OmSegmentColorizer::SelectedColorLookupTable[color.red],
-        OmSegmentColorizer::SelectedColorLookupTable[color.green],
-        OmSegmentColorizer::SelectedColorLookupTable[color.blue]};
+      OmSegmentColorizer::SelectedColorLookupTable[color.red],
+      OmSegmentColorizer::SelectedColorLookupTable[color.green],
+      OmSegmentColorizer::SelectedColorLookupTable[color.blue]
+    };
     return ret;
   }
+
+ private:
+  SegmentColorParams& params_;
+
+  OmSegments& segments_;
+  om::segment::Selection& selection_;
+
+  OmSegmentColorizerColorCache& colorCache_;
+  const uint64_t freshness_;
+  const float breakThreshold_;
+
+  bool anySegmentsSelected_;
+  std::unordered_set<om::common::SegID> selectedSegIDs_;
 };

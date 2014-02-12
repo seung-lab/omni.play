@@ -1,33 +1,39 @@
 #pragma once
 
+#include <atomic>
+
 #include "common/common.h"
 #include "segment/colorizer/omSegmentColorizerColorCache.hpp"
 #include "segment/colorizer/omSegmentColorizerTypes.h"
-#include "utility/omLockedPODs.hpp"
+
+extern template class std::vector<uint8_t>;
 
 class OmSegment;
 class OmSegments;
+template <class> class OmPooledTile;
+
+namespace om {
+namespace segment {
+class Selection;
+}
+}
 
 class OmSegmentColorizer {
  public:
-  OmSegmentColorizer(OmSegments*, const om::segment::coloring,
-                     const int tileDim, OmViewGroupState* vgs);
+  OmSegmentColorizer(OmSegments&, om::segment::coloring, uint32_t tileDim,
+                     OmViewGroupState& vgs);
 
   ~OmSegmentColorizer();
 
-  std::shared_ptr<om::common::ColorARGB> ColorTile(
+  OmPooledTile<om::common::ColorARGB>* ColorTile(
       uint32_t const* const imageData);
 
   static const std::vector<uint8_t> SelectedColorLookupTable;
 
  private:
   OmSegmentColorizerColorCache colorCache_;
-
   SegmentColorParams params_;
-
-  LockedUint64 freshness_;
+  std::atomic<uint64_t> freshness_;
 
   void setup();
-
-  friend class SegmentTests1;
 };

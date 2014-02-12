@@ -3,18 +3,21 @@
 #include "segment/lists/omSegmentListGlobal.hpp"
 #include "utility/segmentDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
-#include "zi/omMutex.h"
-#include "zi/omUtility.h"
+#include "zi/utility.h"
 #include "segment/lists/omSegmentLists.h"
-#include "segment/lists/omSegmentListLowLevel.hpp"
+#include "segment/lists/omSegmentListsImpl.hpp"
 
-OmSegmentLists::OmSegmentLists()
-    : segmentListsLL_(new OmSegmentListLowLevel(this)),
-      globalList_(new OmSegmentListGlobal()),
+OmSegmentLists::OmSegmentLists(om::volume::MetadataManager& meta,
+                               om::segment::Store& store,
+                               SegmentationDataWrapper sdw)
+    : globalList_(new OmSegmentListGlobal()),
       working_(new OmSegmentListForGUI(om::common::SegListType::WORKING)),
       uncertain_(new OmSegmentListForGUI(om::common::SegListType::UNCERTAIN)),
       valid_(new OmSegmentListForGUI(om::common::SegListType::VALID)),
-      recent_(new OmSegmentListByMRU(this)) {}
+      recent_(new OmSegmentListByMRU(*this)) {
+  segmentListsLL_ =
+      std::make_unique<OmSegmentListsImpl>(*this, meta, store, sdw);
+}
 
 OmSegmentLists::~OmSegmentLists() {}
 
@@ -123,8 +126,8 @@ om::common::SegID OmSegmentLists::GetNextSegIDinWorkingList(
   std::vector<SegInfo> infos;
   infos.reserve(selectedIDs.size());
 
-  FOR_EACH(iter, selectedIDs) {
-    boost::optional<SegInfo> segInfo = working_->Get(*iter);
+  for (auto id : selectedIDs) {
+    boost::optional<SegInfo> segInfo = working_->Get(id);
     if (!segInfo) {
       continue;
     }
@@ -154,4 +157,13 @@ int64_t OmSegmentLists::GetNumChildren(const om::common::SegID segID) {
 int64_t OmSegmentLists::GetNumChildren(OmSegment* seg) {
   zi::rwmutex::read_guard g(lock_);
   return globalList_->GetNumChildren(seg);
+}
+
+void OmSegmentLists::UpdateSizeListsFromJoin(OmSegment* root,
+                                             OmSegment* child) {
+  segmentListsLL_->UpdateSizeListsFromJoin(root, child);
+}
+void OmSegmentLists::UpdateSizeListsFromSplit(
+    OmSegment* root, OmSegment* child, const SizeAndNumPieces& childInfo) {
+  segmentListsLL_->UpdateSizeListsFromSplit(root, child, childInfo);
 }

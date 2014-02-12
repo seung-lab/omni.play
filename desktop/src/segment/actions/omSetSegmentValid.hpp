@@ -1,57 +1,49 @@
 #pragma once
 
 #include "common/common.h"
-#include "segment/io/omMST.h"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegments.h"
-#include "utility/dataWrappers.h"
-#include "utility/omTimer.hpp"
+#include "utility/segmentationDataWrapper.hpp"
+#include "utility/timer.hpp"
 #include "volume/omSegmentation.h"
 
 class OmSetSegmentValid {
  private:
   const SegmentationDataWrapper& sdw_;
-  OmMSTEdge* const edges_;
+  om::segment::EdgeVector& edges_;
 
  public:
   OmSetSegmentValid(const SegmentationDataWrapper& sdw)
-      : sdw_(sdw), edges_(sdw.MST()->Edges()) {}
+      : sdw_(sdw), edges_(sdw.GetSegmentation()->Edges()) {}
 
   void Set(const std::set<OmSegment*>& selectedSegments, const bool valid) {
-    OmTimer timer;
+    om::utility::timer timer;
 
     const std::string notValid = valid ? "" : " NOT";
 
-    log_infos << "setting " << selectedSegments.size() << " segments as"
-              << notValid << " valid..." << std::flush;
+    log_debugs(unknown) << "setting " << selectedSegments.size()
+                        << " segments as" << notValid << " valid...";
 
     doSet(selectedSegments, valid);
-
     sdw_.SegmentLists()->RefreshGUIlists();
-
     timer.PrintDone();
   }
 
-  template <typename C>
-  void SetAsNotValidForJoin(const C& segs) {
+  template <typename C> void SetAsNotValidForJoin(const C& segs) {
     doSet(segs, false);
   }
 
-  template <typename C>
-  void SetAsValidForJoin(const C& segs) {
+  template <typename C> void SetAsValidForJoin(const C& segs) {
     doSet(segs, true);
   }
 
  private:
-  template <typename C>
-  void doSet(const C& segs, const bool isValid) {
-    const om::common::SegListType listType =
-        isValid ? om::common::SegListType::VALID
-                : om::common::SegListType::WORKING;
+  template <typename C> void doSet(const C& segs, const bool isValid) {
+    auto listType = isValid ? om::common::SegListType::VALID
+                            : om::common::SegListType::WORKING;
 
-    FOR_EACH(iter, segs) {
-      OmSegment* seg = *iter;
+    for (OmSegment* seg : segs) {
       seg->SetListType(listType);
       setSegEdge(seg, isValid);
     }

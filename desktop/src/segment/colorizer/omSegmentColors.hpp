@@ -2,6 +2,8 @@
 
 #include "common/common.h"
 
+extern template class std::vector<uint8_t>;
+
 class OmSegmentColors {
  private:
   static inline uint8_t makeSelectedColor(const uint8_t val) {
@@ -15,7 +17,7 @@ class OmSegmentColors {
 
   static std::vector<uint8_t> makeLookupTable() {
     std::vector<uint8_t> ret(256, 0);
-    for (int i = 0; i < 256; ++i) {
+    for (auto i = 0; i < 256; ++i) {
       ret[i] = makeSelectedColor(i);
     }
     return ret;

@@ -1,14 +1,13 @@
 #pragma once
 
 #include "actions/omActions.h"
-#include "common/common.h"
 #include "events/events.h"
 #include "segment/omSegmentSelector.h"
 #include "system/cache/omCacheManager.h"
-#include "utility/dataWrappers.h"
-#include "zi/omUtility.h"
+#include "zi/utility.h"
+#include "utility/segmentDataWrapper.hpp"
 
-class OmSegmentSelected : private om::singletonBase<OmSegmentSelected> {
+class OmSegmentSelected : private om::SingletonBase<OmSegmentSelected> {
  public:
   static void Delete() { instance().sdw_ = SegmentDataWrapper(); }
 
@@ -34,30 +33,8 @@ class OmSegmentSelected : private om::singletonBase<OmSegmentSelected> {
     om::event::Redraw2d();
   }
 
-  static void AugmentSelection(const SegmentDataWrapper& sdw) {
-    OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), nullptr,
-                          "OmSegmentSelected");
-    sel.augmentSelectedSet(sdw.getID(), true);
-    sel.sendEvent();
-  }
-
-  static void ToggleValid() {
-    if (!instance().sdw_.IsSegmentValid()) {
-      return;
-    }
-
-    OmSegment* seg = instance().sdw_.GetSegment();
-
-    if (seg->IsValidListType()) {
-      OmActions::ValidateSegment(instance().sdw_,
-                                 om::common::SetValid::SET_NOT_VALID);
-    } else {
-      OmActions::ValidateSegment(instance().sdw_,
-                                 om::common::SetValid::SET_VALID);
-    }
-
-    om::event::SegmentModified();
-  }
+  static void AugmentSelection(const SegmentDataWrapper& sdw);
+  static void ToggleValid();
 
  private:
   OmSegmentSelected() {}

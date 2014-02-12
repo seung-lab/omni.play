@@ -2,4 +2,8 @@
 
 class OmSegment;
 
-typedef std::deque<OmSegment*> OmSegPtrList;
+struct SegPtrAndColor {
+  OmSegment* seg;
+  Vector3f color;
+};
+typedef std::deque<SegPtrAndColor> SegPtrAndColorList;

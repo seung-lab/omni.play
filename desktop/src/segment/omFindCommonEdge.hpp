@@ -1,49 +1,54 @@
 #pragma once
 
+#include "segment/omSegment.h"
 #include "segment/omSegments.h"
-#include "segment/omSegmentEdgeUtils.hpp"
 
 class OmFindCommonEdge {
  public:
-  static OmSegmentEdge FindClosestCommonEdge(OmSegments* segments,
-                                             OmSegment* seg1, OmSegment* seg2) {
+  static om::segment::UserEdge FindClosestCommonEdge(OmSegments* segments,
+                                                     OmSegment* seg1,
+                                                     OmSegment* seg2) {
     if (!seg1 || !seg2) {
-      return om::segmentEdge::MakeEdge();
+      return om::segment::UserEdge();
     }
 
-    if (segments->findRoot(seg1) != segments->findRoot(seg2)) {
-      log_infos << "can't split disconnected objects";
-      return om::segmentEdge::MakeEdge();
+    if (segments->FindRoot(seg1) != segments->FindRoot(seg2)) {
+      log_debugs(unknown) << "can't split disconnected objects";
+      return om::segment::UserEdge();
     }
 
     if (seg1 == seg2) {
-      log_infos << "can't split object from self";
-      return om::segmentEdge::MakeEdge();
+      log_debugs(unknown) << "can't split object from self";
+      return om::segment::UserEdge();
     }
 
     OmSegment* s1 = seg1;
-    while (0 != s1->parent_) {
-      if (s1->parent_ == seg2) {
-        return om::segmentEdge::MakeEdge(s1);
+    while (0 != s1->getParent()) {
+      if (s1->getParent() == seg2) {
+        // log_debugs(split) << "splitting child from a direct parent";
+        return om::segment::UserEdge { s1->getParent()->value(), s1->value(),
+                                       s1->getThreshold(), true };
       }
-      s1 = s1->parent_;
+      s1 = s1->getParent();
     }
 
     OmSegment* s2 = seg2;
-    while (0 != s2->parent_) {
-      if (s2->parent_ == seg1) {
-        return om::segmentEdge::MakeEdge(s2);
+    while (0 != s2->getParent()) {
+      if (s2->getParent() == seg1) {
+        // log_debugs(split) << "splitting child from a direct parent";
+        return om::segment::UserEdge { s2->getParent()->value(), s2->value(),
+                                       s2->getThreshold(), true };
       }
-      s2 = s2->parent_;
+      s2 = s2->getParent();
     }
 
     OmSegment* nearestCommonPred = 0;
 
     OmSegment* one;
 
-    for (one = seg1; one != nullptr; one = one->parent_) {
+    for (one = seg1; one != nullptr; one = one->getParent()) {
       OmSegment* two;
-      for (two = seg2; two != nullptr && one != two; two = two->parent_) {
+      for (two = seg2; two != nullptr && one != two; two = two->getParent()) {
       }
 
       if (one == two) {
@@ -56,21 +61,23 @@ class OmFindCommonEdge {
 
     double minThresh = 100.0;
     OmSegment* minChild = 0;
-    for (one = seg1; one != nearestCommonPred; one = one->parent_) {
-      if (one->threshold_ < minThresh) {
-        minThresh = one->threshold_;
+    for (one = seg1; one != nearestCommonPred; one = one->getParent()) {
+      if (one->getThreshold() < minThresh) {
+        minThresh = one->getThreshold();
         minChild = one;
       }
     }
 
-    for (one = seg2; one != nearestCommonPred; one = one->parent_) {
-      if (one->threshold_ < minThresh) {
-        minThresh = one->threshold_;
+    for (one = seg2; one != nearestCommonPred; one = one->getParent()) {
+      if (one->getThreshold() < minThresh) {
+        minThresh = one->getThreshold();
         minChild = one;
       }
     }
 
     assert(minChild != 0);
-    return om::segmentEdge::MakeEdge(minChild);
+    return om::segment::UserEdge { minChild->getParent()->value(),
+                                   minChild->value(), minChild->getThreshold(),
+                                   true };
   }
 };

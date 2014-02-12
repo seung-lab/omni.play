@@ -2,6 +2,7 @@
 
 #include "segment/omSegmentUtils.hpp"
 #include "system/omLocalPreferences.hpp"
+#include "segment/selection.hpp"
 
 class OmSetSegmentValidRunner {
  private:
@@ -18,6 +19,10 @@ class OmSetSegmentValidRunner {
   }
 
   void Validate() {
+    if (!sdw_.IsSegmentValid()) {
+      return;
+    }
+
     bool valid = false;
     if (om::common::SetValid::SET_VALID == validEnum_) {
       valid = true;
@@ -26,8 +31,8 @@ class OmSetSegmentValidRunner {
     om::common::SegIDSet set;
     set.insert(sdw_.FindRootID());
 
-    std::shared_ptr<std::set<OmSegment*> > children =
-        OmSegmentUtils::GetAllChildrenSegments(sdw_.Segments(), set);
+    std::shared_ptr<std::set<OmSegment*>> children =
+        OmSegmentUtils::GetAllChildrenSegments(*sdw_.Segments(), set);
 
     (new OmSegmentValidateAction(sdw_.MakeSegmentationDataWrapper(), children,
                                  valid))->Run();
@@ -42,7 +47,7 @@ class OmSetSegmentValidRunner {
         OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
 
     const bool justOneSegmentSelected =
-        (1 == segments->NumberOfSelectedSegments());
+        (1 == segments->Selection().NumberOfSelectedSegments());
 
     if (justOneSegmentSelected && segmentGettingSetAsValid && shouldJump &&
         nextSegmentIDtoJumpTo_ && !dontCenter) {
@@ -70,6 +75,11 @@ class OmSetSegmentsValidRunner {
   }
 
   void Validate() {
+    if (!sdw_.IsSegmentationValid()) {
+      throw om::ArgException("Invalid SegmentationDataWrapper "
+                             "(OmSetSegmentValidRunner::Validate)");
+    }
+
     bool valid = false;
     if (om::common::SetValid::SET_VALID == validEnum_) {
       valid = true;
@@ -77,9 +87,9 @@ class OmSetSegmentsValidRunner {
 
     OmSegments* segments = sdw_.Segments();
 
-    std::shared_ptr<std::set<OmSegment*> > children =
+    std::shared_ptr<std::set<OmSegment*>> children =
         OmSegmentUtils::GetAllChildrenSegments(
-            segments, segments->GetSelectedSegmentIDs());
+            *segments, segments->Selection().GetSelectedSegmentIDs());
 
     (new OmSegmentValidateAction(sdw_, children, valid))->Run();
   }

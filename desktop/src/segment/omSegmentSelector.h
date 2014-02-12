@@ -1,11 +1,17 @@
 #pragma once
 
 #include "common/common.h"
+#include "common/enums.hpp"
 
 class OmSegmentation;
 class OmSegments;
 class OmSelectSegmentsParams;
 class SegmentationDataWrapper;
+namespace om {
+namespace segment {
+class Selection;
+}
+}
 
 class OmSegmentSelector {
  public:
@@ -16,8 +22,8 @@ class OmSegmentSelector {
                              const bool isSelected);
   void augmentSelectedSet(const om::common::SegID segID, const bool isSelected);
 
-  void InsertSegments(const om::common::SegIDSet* segIDs);
-  void RemoveSegments(const om::common::SegIDSet* segIDs);
+  void InsertSegments(const std::unordered_set<om::common::SegID>* segIDs);
+  void RemoveSegments(const std::unordered_set<om::common::SegID>* segIDs);
 
   void selectJustThisSegment_toggle(const om::common::SegID segID);
   void augmentSelectedSet_toggle(const om::common::SegID segID);
@@ -33,6 +39,7 @@ class OmSegmentSelector {
 
  private:
   OmSegments* segments_;
+  om::segment::Selection* selection_;
   std::shared_ptr<OmSelectSegmentsParams> params_;
 
   void setSelectedSegment(const om::common::SegID segID);

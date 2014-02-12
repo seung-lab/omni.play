@@ -1,6 +1,5 @@
 #pragma once
 
-#include "utility/dataWrappers.h"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegment.h"
@@ -9,26 +8,26 @@
 #include "segment/omSegmentSearched.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "utility/color.hpp"
+#include "utility/segmentationDataWrapper.hpp"
 
 #include <QPixmap>
 
 class OmSegmentUtils {
  public:
-  std::shared_ptr<std::set<OmSegment*> > static GetAllChildrenSegments(
-      OmSegments* segments, const om::common::SegIDSet& set) {
+  std::shared_ptr<std::set<OmSegment*>> static GetAllChildrenSegments(
+      const OmSegments& segments, const om::common::SegIDSet& set) {
     OmSegmentIterator iter(segments);
     iter.iterOverSegmentIDs(set);
 
     OmSegment* seg = iter.getNextSegment();
 
-    std::set<OmSegment*>* children = new std::set<OmSegment*>();
-
+    auto* children = new std::set<OmSegment*>();
     while (nullptr != seg) {
       children->insert(seg);
       seg = iter.getNextSegment();
     }
 
-    return std::shared_ptr<std::set<OmSegment*> >(children);
+    return std::shared_ptr<std::set<OmSegment*>>(children);
   }
 
   template <class A, class B>
@@ -46,7 +45,7 @@ class OmSegmentUtils {
   }
 
   template <class B>
-  static void GetAllChildrenSegments(OmSegments* segments,
+  static void GetAllChildrenSegments(const OmSegments& segments,
                                      const om::common::SegID segID, B& ret) {
     OmSegmentIterator iter(segments);
     iter.iterOverSegmentID(segID);
@@ -77,17 +76,9 @@ class OmSegmentUtils {
     return segWalker;
   }
 
-  inline static bool UseParentColorBasedOnThreshold(
-      OmSegment* seg, const float breakThreshold) {
-    return seg->getParent() && seg->getThreshold() > breakThreshold &&
-           seg->getThreshold() < 2;
-    // 2 is the manual merge threshold
-  }
-
-  std::shared_ptr<std::deque<std::string> > static GetChildrenInfo(
+  std::shared_ptr<std::deque<std::string>> static GetChildrenInfo(
       const SegmentDataWrapper& sdw) {
-    std::shared_ptr<std::deque<std::string> > ret =
-        std::make_shared<std::deque<std::string> >();
+    auto ret = std::make_shared<std::deque<std::string>>();
 
     if (!sdw.IsSegmentValid()) {
       return ret;
@@ -101,13 +92,10 @@ class OmSegmentUtils {
     while (nullptr != seg) {
       OmSegment* parent = seg->getParent();
 
-      const om::common::SegID parentID = parent ? parent->value() : 0;
+      auto parentID = parent ? parent->value() : 0;
 
-      const QString str = QString("%1 : %2, %3, %4")
-                              .arg(seg->value())
-                              .arg(parentID)
-                              .arg(seg->getThreshold())
-                              .arg(seg->size());
+      const QString str = QString("%1 : %2, %3, %4").arg(seg->value())
+          .arg(parentID).arg(seg->getThreshold()).arg(seg->size());
 
       std::string line = str.toStdString();
       ret->push_back(line);
@@ -119,12 +107,18 @@ class OmSegmentUtils {
   }
 
   static void ReValidateEveryObject(const SegmentationDataWrapper& sdw) {
-    OmSegments* segments = sdw.Segments();
+    OmSegments* s = sdw.Segments();
+    if (!s) {
+      log_debugs(unknown) << "Unable to ReValidateEveryObject.  Invalid "
+                             "SegmentationDataWrapper.";
+      return;
+    }
+    OmSegments& segments = *s;
 
     OmValidGroupNum* validGroupNum = sdw.ValidGroupNum();
 
-    for (uint32_t i = 1; i <= segments->getMaxValue(); ++i) {
-      OmSegment* seg = segments->GetSegment(i);
+    for (auto i = 1; i <= segments.maxValue(); ++i) {
+      OmSegment* seg = segments.GetSegment(i);
 
       // only process valid, root (i.e. parent == 0) segments
       if (!seg || !seg->IsValidListType() || seg->getParent()) {
@@ -140,7 +134,7 @@ class OmSegmentUtils {
 
   static om::common::SegID GetNextSegIDinWorkingList(
       const SegmentDataWrapper& sdw) {
-    return sdw.GetSegmentation().SegmentLists()->GetNextSegIDinWorkingList(sdw);
+    return GetNextSegIDinWorkingList(sdw.MakeSegmentationDataWrapper());
   }
 
   static om::common::SegID GetNextSegIDinWorkingList(
@@ -168,9 +162,9 @@ class OmSegmentUtils {
     //                     std::min(128, color.green()),
     //                     std::min(128, color.blue()) };
 
-    const om::common::Color c = {static_cast<uint8_t>(color.red()),
-                                 static_cast<uint8_t>(color.green()),
-                                 static_cast<uint8_t>(color.blue())};
+    const om::common::Color c = { static_cast<uint8_t>(color.red()),
+                                  static_cast<uint8_t>(color.green()),
+                                  static_cast<uint8_t>(color.blue()) };
 
     sdw.SetColor(c);
 
@@ -186,8 +180,8 @@ class OmSegmentUtils {
                          B& segPtrs) {
     OmSegments* cache = sdw.Segments();
 
-    FOR_EACH(iter, ids) {
-      OmSegment* seg = cache->GetSegment(*iter);
+    for (auto& id : ids) {
+      OmSegment* seg = cache->GetSegment(id);
 
       if (!seg) {
         continue;

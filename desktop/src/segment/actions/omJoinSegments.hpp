@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utility/dataWrappers.h"
+#include "utility/segmentationDataWrapper.hpp"
 #include "segment/omSegmentUtils.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/actions/omSetSegmentValid.hpp"

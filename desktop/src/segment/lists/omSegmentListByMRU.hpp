@@ -8,7 +8,7 @@ class OmSegmentLists;
 
 class OmSegmentListByMRU {
  private:
-  OmSegmentLists* const segmentLists_;
+  OmSegmentLists& segmentLists_;
 
   om::cache::KeyMultiIndex<OmSegment*> lru_;
   std::vector<SegInfo> vec_;
@@ -17,7 +17,7 @@ class OmSegmentListByMRU {
   zi::mutex lock_;
 
  public:
-  OmSegmentListByMRU(OmSegmentLists* segmentLists)
+  OmSegmentListByMRU(OmSegmentLists& segmentLists)
       : segmentLists_(segmentLists), dirty_(true) {}
 
   void Touch(OmSegment* seg) {
