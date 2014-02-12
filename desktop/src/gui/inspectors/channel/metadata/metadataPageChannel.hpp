@@ -24,11 +24,17 @@ class PageMetadata : public QWidget {
 
  private:
   QGroupBox* makeVolBox() {
-    return new OmVolInspector(cdw_.GetChannel(), this);
+    if (!cdw_.IsValidWrapper()) {
+      return nullptr;
+    }
+    return new OmVolInspector(*cdw_.GetChannel(), this);
   }
 
   QGroupBox* makeAbsCoordBox() {
-    return new om::volumeInspector::AbsCoordBox(cdw_.GetChannel(), this);
+    if (!cdw_.IsValidWrapper()) {
+      return nullptr;
+    }
+    return new om::volumeInspector::AbsCoordBox(*cdw_.GetChannel(), this);
   }
 };
 

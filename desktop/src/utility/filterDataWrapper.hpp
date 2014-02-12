@@ -18,13 +18,13 @@ class FilterDataWrapper {
 
   om::common::ID GetID() const { return mID; }
 
-  OmChannel& GetChannel() const {
+  OmChannel* GetChannel() const {
     return OmProject::Volumes().Channels().GetChannel(mChannelID);
   }
 
   bool isValid() const {
     if (OmProject::Volumes().Channels().IsChannelValid(mChannelID)) {
-      if (GetChannel().FilterManager().IsFilterValid(mID)) {
+      if (GetChannel()->FilterManager().IsFilterValid(mID)) {
         return true;
       }
     }
@@ -37,7 +37,7 @@ class FilterDataWrapper {
       return nullptr;
     }
 
-    return &GetChannel().FilterManager().GetFilter(mID);
+    return &GetChannel()->FilterManager().GetFilter(mID);
   }
 
   QString getName() const {
@@ -49,6 +49,10 @@ class FilterDataWrapper {
   }
 
   bool isEnabled() const {
-    return GetChannel().FilterManager().IsFilterEnabled(mID);
+    if (!isValid()) {
+      return false;
+    }
+
+    return GetChannel()->FilterManager().IsFilterEnabled(mID);
   }
 };

@@ -35,7 +35,7 @@ class SegmentationInspector : public QDialog {
   }
 
   QString Title() {
-    return QString("Segmentation %1 Inspector").arg(sdw_.GetID());
+    return QString("Segmentation %1 Inspector").arg(sdw_.id());
   }
 
  private

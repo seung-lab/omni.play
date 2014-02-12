@@ -38,8 +38,8 @@ class ChannelDataWrapper {
 
   OmChannel& Create() {
     OmChannel& c = OmProject::Volumes().Channels().AddChannel();
-    id_ = c.id();
-    log_debugs(unknown) << "create channel " << id_;
+    id_ = c.getID();
+    log_debugs << "create channel " << id_;
     return c;
   }
 
@@ -51,9 +51,9 @@ class ChannelDataWrapper {
   inline QString GetName() const {
     auto c = GetChannel();
     if (c) {
-      return QString::fromStdString(c->Name());
+      return QString::fromStdString(c->GetName());
     } else {
-      log_errors(DataWrappers) << "Invalid Channel: " << id_;
+      log_errors << "Invalid Channel: " << id_;
       return "";
     }
   }
@@ -80,7 +80,7 @@ class ChannelDataWrapper {
     if (c) {
       return c->built();
     } else {
-      log_errors(DataWrappers) << "Invalid Channel: " << id_;
+      log_errors << "Invalid Channel: " << id_;
       return false;
     }
   }

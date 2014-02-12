@@ -288,7 +288,7 @@ class OmView2dState {
   inline om::common::ObjectType getObjectType() const { return objType_; }
 
   inline om::common::ID GetSegmentationID() const {
-    return vgs_->Segmentation().GetID();
+    return vgs_->Segmentation().id();
   }
 
   inline SegmentationDataWrapper GetSDW() const { return vgs_->Segmentation(); }

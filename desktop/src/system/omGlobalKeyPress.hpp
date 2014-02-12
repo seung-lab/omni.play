@@ -7,6 +7,7 @@
 #include "system/omConnect.hpp"
 #include "system/omStateManager.h"
 #include "viewGroup/omBrushSize.hpp"
+#include "utility/segmentationDataWrapper.hpp"
 
 #include <QKeyEvent>
 

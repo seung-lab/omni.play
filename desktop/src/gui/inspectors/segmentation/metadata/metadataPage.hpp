@@ -3,6 +3,7 @@
 #include "gui/inspectors/volInspector.h"
 #include "utility/segmentationDataWrapper.hpp"
 #include "gui/inspectors/absCoordBox.hpp"
+#include "volume/omSegmentation.h"
 
 namespace om {
 namespace segmentationInspector {
@@ -24,11 +25,17 @@ class PageMetadata : public QWidget {
 
  private:
   QGroupBox* makeVolBox() {
-    return new OmVolInspector(sdw_.GetSegmentation(), this);
+    if (!sdw_.IsValidWrapper()) {
+      return nullptr;
+    }
+    return new OmVolInspector(*sdw_.GetSegmentation(), this);
   }
 
   QGroupBox* makeAbsCoordBox() {
-    return new om::volumeInspector::AbsCoordBox(sdw_.GetSegmentation(), this);
+    if (!sdw_.IsValidWrapper()) {
+      return nullptr;
+    }
+    return new om::volumeInspector::AbsCoordBox(*sdw_.GetSegmentation(), this);
   }
 };
 

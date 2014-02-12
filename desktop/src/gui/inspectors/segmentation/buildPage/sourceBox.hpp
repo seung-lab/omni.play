@@ -3,6 +3,7 @@
 #include "system/omConnect.hpp"
 #include "utility/sortHelpers.h"
 #include "utility/segmentationDataWrapper.hpp"
+#include "volume/omSegmentation.h"
 
 #include <QtGui>
 
@@ -25,6 +26,7 @@ class SourceBox : public QGroupBox {
   SourceBox(QWidget* parent, const QString& title,
             const SegmentationDataWrapper& sdw)
       : QGroupBox(title, parent), sdw_(sdw) {
+    assert(sdw_.IsValidWrapper());
     addWidgets();
     populateFileListWidget();
   }
@@ -52,7 +54,7 @@ Q_SLOTS:
   void regexChanged() { updateFileList(); }
 
   void changeSegmentationName() {
-    sdw_.GetSegmentation().SetCustomName(volNameEdit_->text());
+    sdw_.GetSegmentation()->SetCustomName(volNameEdit_->text());
   }
 
  private:
@@ -63,8 +65,7 @@ Q_SLOTS:
 
     QDir dir = getDirPath();
 
-    FOR_EACH(iter, selectedItems) {
-      QListWidgetItem* item = *iter;
+    for (auto& item : selectedItems) {
       ret.push_back(QFileInfo(dir, item->text()));
     }
 
@@ -97,7 +98,9 @@ Q_SLOTS:
     fileList_->clear();
 
     const QStringList files = getFileList();
-    FOR_EACH(iter, files) { fileList_->addItem(*iter); }
+    for (auto& file : files) {
+      fileList_->addItem(file);
+    }
 
     fileList_->update();
   }
@@ -112,7 +115,7 @@ Q_SLOTS:
     volNameEdit_->setObjectName(QString::fromUtf8("volNameEdit_"));
     volNameEdit_->setMinimumWidth(200);
 
-    volNameEdit_->setText(sdw_.GetName());
+    volNameEdit_->setText(sdw_->GetName());
 
     om::connect(volNameEdit_, SIGNAL(editingFinished()), this,
                 SLOT(changeSegmentationName()));
@@ -182,7 +185,7 @@ Q_SLOTS:
   }
 
   void populateFileListWidget() {
-    //TODO: use path from where import files were orginally...
+    // TODO: use path from where import files were orginally...
 
     const QString folder = QFileInfo(OmProject::OmniFile()).absolutePath();
     directoryEdit_->setText(folder);

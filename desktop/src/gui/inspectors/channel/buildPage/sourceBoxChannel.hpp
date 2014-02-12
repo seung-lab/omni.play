@@ -52,7 +52,9 @@ Q_SLOTS:
   void regexChanged() { updateFileList(); }
 
   void changeChannelName() {
-    cdw_.GetChannel().SetCustomName(volNameEdit_->text());
+    if (cdw_.IsValidWrapper()) {
+      cdw_.GetChannel()->SetCustomName(volNameEdit_->text());
+    }
   }
 
  private:
@@ -112,7 +114,9 @@ Q_SLOTS:
     volNameEdit_->setObjectName(QString::fromUtf8("volNameEdit_"));
     volNameEdit_->setMinimumWidth(200);
 
-    volNameEdit_->setText(cdw_.GetName());
+    if (cdw_.IsValidWrapper()) {
+      volNameEdit_->setText(cdw_.GetName());
+    }
 
     om::connect(volNameEdit_, SIGNAL(editingFinished()), this,
                 SLOT(changeChannelName()));
@@ -182,7 +186,7 @@ Q_SLOTS:
   }
 
   void populateFileListWidget() {
-    //TODO: use path from where import files were orginally...
+    // TODO: use path from where import files were orginally...
 
     const QString folder = QFileInfo(OmProject::OmniFile()).absolutePath();
     directoryEdit_->setText(folder);
