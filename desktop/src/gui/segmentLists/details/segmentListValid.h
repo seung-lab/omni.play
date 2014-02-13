@@ -10,7 +10,7 @@ class SegmentListValid : public SegmentListBase {
   Q_OBJECT;
 
  public:
-  SegmentListValid(QWidget* parent, OmViewGroupState* vgs)
+  SegmentListValid(QWidget* parent, OmViewGroupState& vgs)
       : SegmentListBase(parent, vgs) {}
 
  private:
@@ -22,8 +22,8 @@ class SegmentListValid : public SegmentListBase {
 
   std::shared_ptr<GUIPageOfSegments> getPageSegments(
       const GUIPageRequest& request) {
-    return sdw_.SegmentLists()
-        ->GetSegmentGUIPage(om::common::SegListType::VALID, request);
+    return sdw_.SegmentLists()->GetSegmentGUIPage(
+        om::common::SegListType::VALID, request);
   }
 
   int getPreferredTabIndex() { return 1; }

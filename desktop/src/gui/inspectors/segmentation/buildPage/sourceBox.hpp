@@ -115,7 +115,7 @@ Q_SLOTS:
     volNameEdit_->setObjectName(QString::fromUtf8("volNameEdit_"));
     volNameEdit_->setMinimumWidth(200);
 
-    volNameEdit_->setText(sdw_->GetName());
+    volNameEdit_->setText(sdw_.GetName());
 
     om::connect(volNameEdit_, SIGNAL(editingFinished()), this,
                 SLOT(changeSegmentationName()));

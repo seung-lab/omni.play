@@ -9,7 +9,7 @@ class SegmentListUncertain : public SegmentListBase {
   Q_OBJECT;
 
  public:
-  SegmentListUncertain(QWidget* parent, OmViewGroupState* vgs)
+  SegmentListUncertain(QWidget* parent, OmViewGroupState& vgs)
       : SegmentListBase(parent, vgs) {}
 
  private:
@@ -21,8 +21,8 @@ class SegmentListUncertain : public SegmentListBase {
 
   std::shared_ptr<GUIPageOfSegments> getPageSegments(
       const GUIPageRequest& request) {
-    return sdw_.SegmentLists()
-        ->GetSegmentGUIPage(om::common::SegListType::UNCERTAIN, request);
+    return sdw_.SegmentLists()->GetSegmentGUIPage(
+        om::common::SegListType::UNCERTAIN, request);
   }
 
   int getPreferredTabIndex() { return 2; }
