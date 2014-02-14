@@ -5,6 +5,7 @@
 #include "task/cell.h"
 #include "task/dataset.h"
 #include "events/listeners.h"
+#include "network/http/httpScope.hpp"
 
 namespace om {
 namespace task {
@@ -37,10 +38,11 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   void ConnectionChangeEvent();
 
  private:
-  TaskManager() : currentTask_(nullptr) {}
+  TaskManager() : currentTask_(nullptr), scope_() {}
   ~TaskManager();
 
   std::shared_ptr<Task> currentTask_;
+  network::HTTPScope scope_;
 
   friend class zi::singleton<TaskManager>;
 };

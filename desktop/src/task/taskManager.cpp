@@ -23,7 +23,7 @@ std::shared_ptr<Task> TaskManager::GetTask(int cellID) {
       taskURI += "/cell/" + std::to_string(cellID);
     }
 
-    return network::HTTP::GET_JSON<TracingTask>(taskURI);
+    return instance().scope_.GET<TracingTask>(taskURI);
   }
   catch (om::Exception e) {
     log_debugs << "Failed loading task: " << e.what();
@@ -36,7 +36,7 @@ std::shared_ptr<Task> TaskManager::GetTaskByID(int taskID) {
     std::string taskURI = system::Account::endpoint() +
                           "/api/v1/task/cell/0/task/" + std::to_string(taskID);
 
-    return network::HTTP::GET_JSON<TracingTask>(taskURI);
+    return network::ApplicationScope::GET<TracingTask>(taskURI);
   }
   catch (om::Exception e) {
     log_debugs << "Failed loading task: " << e.what();
@@ -51,7 +51,7 @@ std::shared_ptr<Task> TaskManager::GetComparisonTask(int cellID) {
       taskURI += "?cell=" + std::to_string(cellID);
     }
 
-    return network::HTTP::GET_JSON<ComparisonTask>(taskURI);
+    return instance().scope_.GET<ComparisonTask>(taskURI);
   }
   catch (om::Exception e) {
     log_debugs << "Failed loading task: " << e.what();
@@ -68,7 +68,7 @@ std::shared_ptr<Task> TaskManager::GetComparisonTaskByID(int taskID) {
     std::string taskURI = system::Account::endpoint() + "/1.0/comparison_task";
     taskURI += "?task=" + std::to_string(taskID);
 
-    return network::HTTP::GET_JSON<ComparisonTask>(taskURI);
+    return network::ApplicationScope::GET<ComparisonTask>(taskURI);
   }
   catch (om::Exception e) {
     log_debugs << "Failed loading task: " << e.what();
@@ -152,6 +152,7 @@ bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
     log_debugs << "Changed current task nullptr";
   }
   om::event::TaskChange();
+  instance().scope_.Refresh();
   if (!task) {
     return true;
   }

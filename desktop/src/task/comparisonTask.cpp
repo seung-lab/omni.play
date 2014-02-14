@@ -22,15 +22,17 @@
 namespace om {
 namespace task {
 
+ComparisonTask::ComparisonTask() : data_{0, 0, "", std::vector<SegGroup>{}} {}
+
 ComparisonTask::ComparisonTask(uint32_t id, uint32_t cellId,
                                const std::string& path,
                                std::vector<SegGroup>&& namedGroups)
-    : id_(id), cellId_(cellId), path_(path), namedGroups_(namedGroups) {}
+    : data_{id, cellId, path, namedGroups} {}
 
 ComparisonTask::~ComparisonTask() {}
 
 bool ComparisonTask::Start() {
-  if (!OmAppState::OpenProject(path_, om::users::defaultUser)) {
+  if (!OmAppState::OpenProject(data_.path, om::users::defaultUser)) {
     return false;
   }
   const SegmentationDataWrapper sdw(1);
@@ -47,9 +49,9 @@ bool ComparisonTask::Start() {
   sdw.SegmentLists()->RefreshGUIlists();
 
   auto allIter = std::find_if(
-      namedGroups_.begin(), namedGroups_.end(),
+      data_.namedGroups.begin(), data_.namedGroups.end(),
       [](const SegGroup& g) { return g.type == SegGroup::GroupType::ALL; });
-  if (allIter != namedGroups_.end()) {
+  if (allIter != data_.namedGroups.end()) {
     common::SegIDSet allRoots;
     for (const auto& id : allIter->segments) {
       auto rootID = segments->findRootID(id);
@@ -102,7 +104,7 @@ bool ComparisonTask::Submit() {
 
   auto uri = system::Account::endpoint() + "/1.0/cube/submit";
   network::HTTP::POST(
-      uri, std::make_pair("id", id_), std::make_pair("plane", "xy"),
+      uri, std::make_pair("id", data_.id), std::make_pair("plane", "xy"),
       std::make_pair("segments", segIDs), std::make_pair("reap", "true"),
       std::make_pair("status", 0));
   return true;
