@@ -7,6 +7,18 @@ namespace network {
 
 class HTTPScope {
  public:
+  HTTPScope(HTTPScope* parent = nullptr) : parent_(parent) {
+    if (parent_) {
+      parent_->insert(this);
+    }
+  }
+
+  ~HTTPScope() {
+    if (parent_) {
+      parent_->remove(this);
+    }
+  }
+
   template <typename T>
   typename std::enable_if<std::is_base_of<IHTTPRefreshable, T>::value,
                           std::shared_ptr<T>>::type
@@ -42,10 +54,35 @@ class HTTPScope {
     for (auto& d : dead) {
       cache_.erase(d);
     }
+
+    {
+      std::lock_guard<std::mutex> g(mut_);
+      for (auto& child : children_) {
+        child->Refresh();
+      }
+    }
   }
 
  private:
+  void insert(HTTPScope* child) {
+    std::lock_guard<std::mutex> g(mut_);
+    children_.push_back(child);
+  }
+
+  void remove(HTTPScope* child) {
+    std::lock_guard<std::mutex> g(mut_);
+    auto iter = std::find(children_.begin(), children_.end(), child);
+    if (iter != children_.end()) {
+      children_.erase(iter);
+    }
+  }
+
   std::unordered_map<std::string, std::weak_ptr<IHTTPRefreshable>> cache_;
+
+  HTTPScope* parent_;
+  std::vector<HTTPScope*> children_;
+
+  std::mutex mut_;
 };
 
 class ApplicationScope : private SingletonBase<ApplicationScope> {
