@@ -10,7 +10,8 @@ namespace system {
 
 Account::Account()
     : username_(OmLocalPreferences::getUsername().toStdString()),
-      endpoint_(OmLocalPreferences::getEndpoint().toStdString()) {}
+      endpoint_(OmLocalPreferences::getEndpoint().toStdString()),
+      scope_(network::ApplicationScope.Scope()) {}
 Account::~Account() {}
 
 bool Account::IsLoggedIn() {
@@ -43,6 +44,7 @@ Account::LoginResult Account::Login(const std::string& username,
     instance().username_ = username;
     instance().userid_ = node["user"]["id"].as<uint>(0);
     om::event::ConnectionChanged();
+    instance().scope_.Refresh();
     return LoginResult::SUCCESS;
   }
   catch (YAML::Exception e) {

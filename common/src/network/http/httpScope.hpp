@@ -94,6 +94,8 @@ class ApplicationScope : private SingletonBase<ApplicationScope> {
 
   static void Refresh() { instance().scope_.Refresh(); }
 
+  static HTTPScope& Scope() { return instance().scope_; }
+
  private:
   HTTPScope scope_;
   friend class zi::singleton<HTTP>;

@@ -24,6 +24,8 @@ class Account : private om::SingletonBase<Account> {
   static const std::string& endpoint();
   static void set_endpoint(const std::string& endpoint);
 
+  static network::HTTPScope& Scope() { return instance().scope_; }
+
  private:
   Account();
   ~Account();
@@ -31,6 +33,7 @@ class Account : private om::SingletonBase<Account> {
   std::string username_;
   uint userid_;
   std::string endpoint_;
+  HTTPScope scope_;
 
   friend class zi::singleton<Account>;
 };
