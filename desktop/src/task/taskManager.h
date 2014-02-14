@@ -6,6 +6,7 @@
 #include "task/dataset.h"
 #include "events/listeners.h"
 #include "network/http/httpScope.hpp"
+#include "system/account.h"
 
 namespace om {
 namespace task {
@@ -38,7 +39,7 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   void ConnectionChangeEvent();
 
  private:
-  TaskManager() : currentTask_(nullptr), scope_() {}
+  TaskManager() : currentTask_(nullptr), scope_(&system::Account::Scope()) {}
   ~TaskManager();
 
   std::shared_ptr<Task> currentTask_;

@@ -3,6 +3,7 @@
 #include "zi/utility.h"
 #include <string>
 #include <memory>
+#include "network/http/httpScope.hpp"
 
 namespace om {
 namespace system {
@@ -33,7 +34,7 @@ class Account : private om::SingletonBase<Account> {
   std::string username_;
   uint userid_;
   std::string endpoint_;
-  HTTPScope scope_;
+  network::HTTPScope scope_;
 
   friend class zi::singleton<Account>;
 };

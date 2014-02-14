@@ -11,7 +11,7 @@ namespace system {
 Account::Account()
     : username_(OmLocalPreferences::getUsername().toStdString()),
       endpoint_(OmLocalPreferences::getEndpoint().toStdString()),
-      scope_(network::ApplicationScope.Scope()) {}
+      scope_(&network::ApplicationScope::Scope()) {}
 Account::~Account() {}
 
 bool Account::IsLoggedIn() {
