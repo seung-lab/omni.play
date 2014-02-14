@@ -81,7 +81,7 @@ std::shared_ptr<Task> TaskManager::GetReapTask(int taskID) {
     std::string taskURI = system::Account::endpoint() +
                           "/api/v1/task/cell/0/task/" + std::to_string(taskID);
 
-    auto task = network::HTTP::GET_JSON<ReapingTask>(taskURI);
+    auto task = network::HTTP::GET<ReapingTask>(taskURI);
     if (!task) {
       log_debugs << "No task... Bailing.";
       return task;
