@@ -3,7 +3,7 @@
 #include "task/task.h"
 #include "common/common.h"
 #include "yaml-cpp/yaml.h"
-#include "network/http/http.hpp"
+#include "network/http/httpRefreshable.hpp"
 
 namespace YAML {
 template <typename>
@@ -13,12 +13,19 @@ class convert;
 namespace om {
 namespace task {
 
+struct TracingTaskData {
+  TracingTaskData() : id(0), cellId(0) {}
+  uint32_t id;
+  uint32_t cellId;
+  std::string path;
+  common::SegIDSet seed;
+  std::vector<SegGroup> groups;
+};
+
 class TracingTask : virtual public Task,
-                    virtual public network::IHTTPRefreshable {
+                    virtual public network::HTTPRefreshable<TracingTaskData> {
  public:
   TracingTask();
-  TracingTask(uint32_t id, uint32_t cellId, const std::string& path,
-              common::SegIDSet&& seed);
   virtual ~TracingTask();
 
   virtual int Id() { return data_.id; }
@@ -27,30 +34,6 @@ class TracingTask : virtual public Task,
   virtual bool Start();
   virtual bool Submit();
   virtual const std::vector<SegGroup>& SegGroups() { return data_.groups; }
-  virtual void Refresh(const std::string& data) {
-    if (!data.size()) {
-      return;
-    }
-
-    try {
-      auto node = YAML::Load(data);
-      data_ = node.as<Data>();
-    }
-    catch (YAML::Exception e) {
-      log_debugs << "Failed loading JSON: " << e.what();
-    }
-  }
-
-  struct Data {
-    uint32_t id;
-    uint32_t cellId;
-    std::string path;
-    common::SegIDSet seed;
-    std::vector<SegGroup> groups;
-  };
-
- private:
-  Data data_;
 };
 
 }  // namespace om::task::
@@ -59,8 +42,8 @@ class TracingTask : virtual public Task,
 namespace YAML {
 
 template <>
-struct convert<om::task::TracingTask::Data> {
-  static bool decode(const Node& node, om::task::TracingTask::Data& t) {
+struct convert<om::task::TracingTaskData> {
+  static bool decode(const Node& node, om::task::TracingTaskData& t) {
     try {
       t.id = node["id"].as<uint32_t>();
       t.cellId = node["cell"].as<uint32_t>();

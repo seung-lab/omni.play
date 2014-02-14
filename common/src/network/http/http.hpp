@@ -11,6 +11,7 @@
 #include <vector>
 #include <curl/curl.h>
 #include "yaml-cpp/yaml.h"
+#include "network/http/httpRefreshable.hpp"
 
 namespace om {
 namespace network {
@@ -20,11 +21,6 @@ namespace network {
     log_debugs << "Failed to set " << #opt << curl_easy_strerror(err); \
     return bad_ret;                                                    \
   }
-
-class IHTTPRefreshable {
- public:
-  virtual void Refresh(const std::string& result) = 0;
-};
 
 class HTTP : private SingletonBase<HTTP> {
  public:

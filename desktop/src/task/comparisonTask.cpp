@@ -22,12 +22,7 @@
 namespace om {
 namespace task {
 
-ComparisonTask::ComparisonTask() : data_{0, 0, "", std::vector<SegGroup>{}} {}
-
-ComparisonTask::ComparisonTask(uint32_t id, uint32_t cellId,
-                               const std::string& path,
-                               std::vector<SegGroup>&& namedGroups)
-    : data_{id, cellId, path, namedGroups} {}
+ComparisonTask::ComparisonTask() {}
 
 ComparisonTask::~ComparisonTask() {}
 

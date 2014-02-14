@@ -19,17 +19,7 @@
 namespace om {
 namespace task {
 
-TracingTask::TracingTask()
-    : data_{0, 0, "", common::SegIDSet{}, std::vector<SegGroup>{}} {}
-
-TracingTask::TracingTask(uint32_t id, uint32_t cellId, const std::string& path,
-                         common::SegIDSet&& seed)
-    : data_{id,
-            cellId,
-            path,
-            seed,
-            std::vector<SegGroup>{{"Seed", SegGroup::GroupType::SEED, seed}}} {}
-
+TracingTask::TracingTask() {}
 TracingTask::~TracingTask() {}
 
 bool TracingTask::Start() {
