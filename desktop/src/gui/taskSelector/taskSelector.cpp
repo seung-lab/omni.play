@@ -30,7 +30,7 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
   om::connect(taskRadio_, SIGNAL(toggled(bool)), this, SLOT(updateEnabled()));
   taskLineEdit_ = new QLineEdit(this);
   layout->addWidget(taskLineEdit_, 3, 2);
-  om::connect(taskLineEdit_, SIGNAL(returnPressed()), this,
+  om::connect(taskLineEdit_, SIGNAL(textEdited(const QString&)), this,
               SLOT(updateEnabled()));
 
   QHBoxLayout* buttonsLayout = new QHBoxLayout(this);
