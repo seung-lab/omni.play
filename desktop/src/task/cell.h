@@ -2,6 +2,7 @@
 
 #include "yaml-cpp/yaml.h"
 #include "common/logging.h"
+#include "network/http/httpRefreshable.hpp"
 
 namespace om {
 namespace task {
@@ -18,6 +19,8 @@ struct Cell {
   int32_t Growth;
   uint32_t Avail;
 };
+
+typedef network::HTTPRefreshableType<std::vector<Cell>> Cells;
 }
 }  // namespace om::task::
 

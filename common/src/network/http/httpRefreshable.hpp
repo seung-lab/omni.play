@@ -33,5 +33,43 @@ class HTTPRefreshable : public IHTTPRefreshable {
  protected:
   TData data_;
 };
+
+template <typename T>
+class HTTPRefreshablePOD : public IHTTPRefreshable {
+ public:
+  virtual ~HTTPRefreshablePOD() {}
+  virtual void Refresh(const std::string& data) {
+    if (!data.size()) {
+      return;
+    }
+
+    try {
+      auto node = YAML::Load(data);
+      YAML::convert<T>::decode(node, *this);
+    }
+    catch (YAML::Exception e) {
+      log_debugs << "Failed loading JSON: " << e.what();
+    }
+  }
+};
+
+template <typename T>
+class HTTPRefreshableType : public IHTTPRefreshable, public T {
+ public:
+  virtual ~HTTPRefreshableType() {}
+  virtual void Refresh(const std::string& data) {
+    if (!data.size()) {
+      return;
+    }
+
+    try {
+      auto node = YAML::Load(data);
+      YAML::convert<T>::decode(node, *this);
+    }
+    catch (YAML::Exception e) {
+      log_debugs << "Failed loading JSON: " << e.what();
+    }
+  }
+};
 }
 }  // namespace om::network::

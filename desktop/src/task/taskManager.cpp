@@ -100,27 +100,27 @@ std::shared_ptr<Task> TaskManager::GetReapTask(int taskID) {
   return std::shared_ptr<Task>();
 }
 
-std::shared_ptr<std::vector<Dataset>> TaskManager::GetDatasets() {
+std::shared_ptr<Datasets> TaskManager::GetDatasets() {
   try {
     std::string datasetURI = system::Account::endpoint() + "/1.0/dataset";
-    return network::HTTP::GET_JSON<std::vector<Dataset>>(datasetURI);
+    return network::ApplicationScope::GET<Datasets>(datasetURI);
   }
   catch (om::Exception e) {
     log_debugs << "Failed loading datasets: " << e.what();
   }
-  return std::shared_ptr<std::vector<Dataset>>();
+  return std::shared_ptr<Datasets>();
 }
 
-std::shared_ptr<std::vector<Cell>> TaskManager::GetCells(int datasetID) {
+std::shared_ptr<Cells> TaskManager::GetCells(int datasetID) {
   try {
     std::string cellURI = system::Account::endpoint() + "/1.0/cell?dataset=" +
                           std::to_string(datasetID);
-    return network::HTTP::GET_JSON<std::vector<Cell>>(cellURI);
+    return instance().scope_.GET<Cells>(cellURI);
   }
   catch (om::Exception e) {
     log_debugs << "Failed loading cells: " << e.what();
   }
-  return std::shared_ptr<std::vector<Cell>>();
+  return std::shared_ptr<Cells>();
 }
 
 void TaskManager::ConnectionChangeEvent() {}

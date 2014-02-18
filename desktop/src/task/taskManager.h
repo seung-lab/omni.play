@@ -30,8 +30,8 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   static std::shared_ptr<Task> GetComparisonTaskByID(int taskID);
 
   static std::shared_ptr<Task> GetReapTask(int taskID);
-  static std::shared_ptr<std::vector<Dataset>> GetDatasets();
-  static std::shared_ptr<std::vector<Cell>> GetCells(int datasetID);
+  static std::shared_ptr<Datasets> GetDatasets();
+  static std::shared_ptr<Cells> GetCells(int datasetID);
   static bool LoadTask(const std::shared_ptr<Task>& task);
   static bool FinishTask();
   static std::shared_ptr<Task> FindInterruptedTask();
