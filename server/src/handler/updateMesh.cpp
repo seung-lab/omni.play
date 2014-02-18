@@ -91,9 +91,14 @@ class Sender : public boost::static_visitor<> {
     size.y = shape[1];
     size.z = shape[2];
 
-    auto rtm = connect_();
     bool succeded = false;
-    do {
+    while (!succeded) {
+      auto rtm = connect_();
+      while (!rtm) {
+        log_infos << "Reconnecting to RTM.";
+        sleep(1000);
+        rtm = connect_();
+      }
       try {
         log_infos << "Sending: " << segId_ << " - " << location << " | ["
                   << size.x << ", " << size.y << ", " << size.z << "] "
@@ -102,11 +107,10 @@ class Sender : public boost::static_visitor<> {
         succeded = true;
       }
       catch (apache::thrift::TException& tx) {
-        log_infos << "Unable to update RTM: " << tx.what();
-        sleep(1000);
-        rtm = connect_();
+        log_errors << "Unable to update RTM: " << tx.what();
       }
-    } while (!succeded);
+      sleep(1000);
+    };
   }
 
  private:

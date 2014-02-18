@@ -51,11 +51,13 @@ class MesherConnector : public zi::enable_singleton_of_this<MesherConnector> {
     try {
       transport->open();
       if (!transport->isOpen()) {
-        log_debugs << "Unable to open transport.";
+        log_errors << "Unable to open transport.";
+        return MesherPtr();
       }
     }
     catch (apache::thrift::TException& tx) {
-      throw(tx);
+      log_errors << "Failed to connect to RTM: " << tx.what();
+      return MesherPtr();
     }
 
     return mesher;
