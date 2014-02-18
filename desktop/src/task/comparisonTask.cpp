@@ -59,6 +59,9 @@ bool ComparisonTask::Start() {
     }
     segments->UpdateSegmentSelection(allRoots, true);
   } else {
+    // clear any pre-existing selection (which could exist if the previous task
+    // happened to be in the same volume)
+    segments->UpdateSegmentSelection({}, true);
     log_errors << "Missing All segments group.";
   }
 
