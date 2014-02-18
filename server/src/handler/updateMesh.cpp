@@ -96,7 +96,7 @@ class Sender : public boost::static_visitor<> {
       auto rtm = connect_();
       while (!rtm) {
         log_infos << "Reconnecting to RTM.";
-        sleep(1000);
+        sleep(1);
         rtm = connect_();
       }
       try {
@@ -104,12 +104,11 @@ class Sender : public boost::static_visitor<> {
                   << size.x << ", " << size.y << ", " << size.z << "] "
                   << out.size() << " bytes.";
         rtm->maskedUpdate(string::num(segId_), loc, size, out, mask);
-        succeded = true;
+        return;
       }
       catch (apache::thrift::TException& tx) {
         log_errors << "Unable to update RTM: " << tx.what();
       }
-      sleep(1000);
     };
   }
 

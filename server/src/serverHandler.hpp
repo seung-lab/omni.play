@@ -136,6 +136,7 @@ class serverHandler : virtual public serverIf,
     auto rtmConnector = std::bind(&serverHandler::makeMesher, this);
 
     threadPool_.push_back([p, rtmConnector, addedIDs, modifiedIDs, segId]() {
+      log_infos << "Processing RTM Update for cell: " << segId;
       volume::Segmentation v(p, 1);
       handler::modify_global_mesh_data(rtmConnector, v, addedIDs, modifiedIDs,
                                        segId);
