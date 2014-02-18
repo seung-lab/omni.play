@@ -43,12 +43,13 @@ class MesherConnector : public zi::enable_singleton_of_this<MesherConnector> {
     using namespace apache::thrift::transport;
     using namespace apache::thrift::protocol;
 
-    auto socket = boost::make_shared<TSocket>(mesherHost_, mesherPort_);
-    auto transport = boost::make_shared<TFramedTransport>(socket);
-    auto protocol = boost::make_shared<TBinaryProtocol>(transport);
-    auto mesher = boost::make_shared<zi::mesh::RealTimeMesherClient>(protocol);
-
     try {
+      auto socket = boost::make_shared<TSocket>(mesherHost_, mesherPort_);
+      auto transport = boost::make_shared<TFramedTransport>(socket);
+      auto protocol = boost::make_shared<TBinaryProtocol>(transport);
+      auto mesher =
+          boost::make_shared<zi::mesh::RealTimeMesherClient>(protocol);
+
       transport->open();
       if (!transport->isOpen()) {
         log_errors << "Unable to open transport.";
