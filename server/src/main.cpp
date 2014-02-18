@@ -19,6 +19,7 @@ ZiARG_bool(daemonize, true, "Run as daemon");
 ZiARG_string(mesher, "localhost", "Mesher's address");
 ZiARG_int32(mport, 9090, "Mesher's port");
 ZiARG_string(logfile, "/var/log/omni/omni.server.log", "Log file location");
+ZiARG_bool(log, true, "Log to console.");
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -38,7 +39,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  om::logging::initLogging(ZiARG_logfile, false);
+  om::logging::initLogging(ZiARG_logfile, ZiARG_log);
   int port = ZiARG_port;
   boost::shared_ptr<serverHandler> handler(
       new serverHandler(ZiARG_mesher, ZiARG_mport));
