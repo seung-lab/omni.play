@@ -37,6 +37,7 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p) {
   cellRadio_->setChecked(true);
   traceButton_->setDefault(true);
   setWindowTitle(tr("Task Selector"));
+  layout->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 void TaskSelector::showEvent(QShowEvent* event) {
@@ -73,7 +74,7 @@ void TaskSelector::showEvent(QShowEvent* event) {
 void TaskSelector::updateCells() {
   cellCombo_->clear();
   auto dsid = datasetID();
-  if (dsid) {
+  if (!dsid) {
     return;
   }
 
@@ -128,7 +129,9 @@ int TaskSelector::datasetID() const {
   if (!datasets_) {
     return 0;
   }
-  return datasetCombo_->itemData(datasetCombo_->currentIndex()).toInt();
+  Dataset& ds = (*datasets_)
+      [datasetCombo_->itemData(datasetCombo_->currentIndex()).toInt()];
+  return ds.id;
 }
 
 uint32_t TaskSelector::cellID() const {
