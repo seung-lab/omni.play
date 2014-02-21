@@ -1,9 +1,9 @@
 #!/bin/bash
 
 project="$1"
-if [[ ! -d $project || ! -d $project/version/major || ! -d $project/version/minor ]]; then
+if [[ ! -d $project || ! -e $project/version/major || ! -e $project/version/minor ]]; then
   echo "Invalid project"
-  exit(1);
+  exit 1;
 fi
 
 version_major=`cat $project/version/major`
