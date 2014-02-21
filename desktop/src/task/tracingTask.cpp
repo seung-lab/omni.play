@@ -19,19 +19,24 @@
 namespace om {
 namespace task {
 
-TracingTask::TracingTask() {}
+TracingTask::TracingTask() : id_(0), cellId_(0) {}
+
+TracingTask::TracingTask(uint32_t id, uint32_t cellId, const std::string& path,
+                         common::SegIDSet&& seed)
+    : id_(id), cellId_(cellId), path_(path), seed_(seed) {}
+
 TracingTask::~TracingTask() {}
 
 bool TracingTask::Start() {
-  if (data_.path.empty() ||
-      !OmAppState::OpenProject(data_.path, om::system::Account::username())) {
+  if (path_.empty() ||
+      !OmAppState::OpenProject(path_, om::system::Account::username())) {
     return false;
   }
   const SegmentationDataWrapper sdw(1);
   if (!sdw.IsValidWrapper()) {
     return false;
   }
-  sdw.Segments()->UpdateSegmentSelection(data_.seed, true);
+  sdw.Segments()->UpdateSegmentSelection(seed_, true);
   return true;
 }
 
@@ -53,7 +58,7 @@ bool TracingTask::Submit() {
   }
 
   auto uri = system::Account::endpoint() + "/1.0/cube/submit";
-  network::HTTP::POST(uri, std::make_pair("id", data_.id),
+  network::HTTP::POST(uri, std::make_pair("id", id_),
                       std::make_pair("plane", "xy"),
                       std::make_pair("segments", segIDs),
                       std::make_pair("reap", 0), std::make_pair("status", 0));

@@ -34,13 +34,12 @@ Q_SLOTS:
   virtual void accept() override;
 
  private:
-  int datasetID() const;
-  uint32_t cellID() const;
-  uint32_t taskID() const;
+  om::task::Dataset* dataset();
+  uint32_t cellID();
+  uint32_t taskID();
   void getTasks();
-  std::shared_ptr<om::task::Task> traceTask() const;
-  std::shared_ptr<om::task::Task> compareTask() const;
-  std::shared_ptr<om::task::Task> reapTask() const;
+
+  bool populating_;
 
   QComboBox* datasetCombo_;
   QRadioButton* allCellsRadio_;
@@ -52,13 +51,8 @@ Q_SLOTS:
   QPushButton* compareButton_;
   QPushButton* reapButton_;
 
-  std::shared_ptr<om::task::Task> traceTaskAssigned_;
-  std::shared_ptr<om::task::Task> compareTaskAssigned_;
-
-  std::shared_ptr<om::task::Task> traceTaskByID_;
-  std::shared_ptr<om::task::Task> compareTaskByID_;
-  std::shared_ptr<om::task::Task> reapTaskByID_;
-
-  std::shared_ptr<om::task::Datasets> datasets_;
-  std::map<int, std::shared_ptr<om::task::Cells>> cells_;
+  std::shared_ptr<om::task::Task> traceTask_;
+  std::shared_ptr<om::task::Task> compareTask_;
+  std::shared_ptr<om::task::Task> reapTask_;
+  std::shared_ptr<std::vector<om::task::Dataset>> datasets_;
 };

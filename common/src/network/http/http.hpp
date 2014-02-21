@@ -11,7 +11,6 @@
 #include <vector>
 #include <curl/curl.h>
 #include "yaml-cpp/yaml.h"
-#include "network/http/httpRefreshable.hpp"
 
 namespace om {
 namespace network {
@@ -59,15 +58,6 @@ class HTTP : private SingletonBase<HTTP> {
     auto str = ss.str();
     log_debugs << "HTTP Response: " << str;
     return str;
-  }
-
-  template <typename T>
-  static typename std::enable_if<std::is_base_of<IHTTPRefreshable, T>::value,
-                                 std::shared_ptr<T>>::type
-  GET(const std::string& uri) {
-    std::shared_ptr<T> ret(new T());
-    ret->Refresh(GET(uri));
-    return ret;
   }
 
   template <typename T>

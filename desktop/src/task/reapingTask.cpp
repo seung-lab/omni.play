@@ -20,12 +20,21 @@
 namespace om {
 namespace task {
 
-ReapingTask::ReapingTask() {}
+ReapingTask::ReapingTask() : id_(0), cellId_(0) {}
+
+ReapingTask::ReapingTask(uint32_t id, uint32_t cellId, const std::string& path,
+                         common::SegIDSet&& seed, Aggregate&& aggregate)
+    : id_(id),
+      cellId_(cellId),
+      path_(path),
+      seed_(seed),
+      aggregate_(aggregate) {}
+
 ReapingTask::~ReapingTask() {}
 
 bool ReapingTask::Start() {
-  if (data_.path.empty() ||
-      !OmAppState::OpenProject(data_.path, om::users::defaultUser)) {
+  if (path_.empty() ||
+      !OmAppState::OpenProject(path_, om::users::defaultUser)) {
     return false;
   }
   const SegmentationDataWrapper sdw(1);
@@ -37,7 +46,7 @@ bool ReapingTask::Start() {
   sdw.GetSegmentationPtr()->ClearUserChangesAndSave();
 
   common::SegIDSet truth;
-  for (auto& seg : data_.aggregate.Segments) {
+  for (auto& seg : aggregate_.Segments) {
     truth.insert(seg.first);
   }
   sdw.Segments()->JoinTheseSegments(truth);
@@ -64,7 +73,7 @@ bool ReapingTask::Submit() {
   }
 
   auto uri = system::Account::endpoint() + "/1.0/cube/submit";
-  network::HTTP::POST(uri, std::make_pair("id", data_.id),
+  network::HTTP::POST(uri, std::make_pair("id", id_),
                       std::make_pair("plane", "xy"),
                       std::make_pair("segments", segIDs),
                       std::make_pair("reap", 1), std::make_pair("status", 0));

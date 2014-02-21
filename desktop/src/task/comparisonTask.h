@@ -7,7 +7,6 @@
 #include "yaml-cpp/yaml.h"
 #include "utility/yaml/baseTypes.hpp"
 #include "users/omUsers.h"
-#include "network/http/httpRefreshable.hpp"
 
 namespace YAML {
 template <typename>
@@ -23,33 +22,32 @@ class OmChunkUniqueValuesManager;
 namespace om {
 namespace task {
 
-struct ComparisonTaskData {
-  ComparisonTaskData() : id(0), cellId(0) {}
-  uint32_t id;
-  uint32_t cellId;
-  std::string path;
-  std::vector<SegGroup> namedGroups;
-};
-
-class ComparisonTask
-    : virtual public Task,
-      virtual public network::HTTPRefreshable<ComparisonTaskData> {
+class ComparisonTask : virtual public Task {
  public:
-  ComparisonTask();
+  ComparisonTask() : id_(0), cellId_(0) {};
+  ComparisonTask(uint32_t id, uint32_t cellId, const std::string& path,
+                 std::vector<SegGroup>&& namedGroups);
   virtual ~ComparisonTask();
 
-  virtual int Id() { return data_.id; }
-  virtual int CellId() { return data_.cellId; }
+  virtual int Id() { return id_; }
+  virtual int CellId() { return cellId_; }
   virtual bool Reaping() { return false; }
   virtual bool Start();
   virtual bool Submit();
-  virtual const std::vector<SegGroup>& SegGroups() { return data_.namedGroups; }
+  virtual const std::vector<SegGroup>& SegGroups() { return namedGroups_; }
 
  private:
   static bool chunkHasUserSegments(
       OmChunkUniqueValuesManager& uniqueValuesDS,
       const om::coords::Chunk& chunk,
       const std::unordered_map<common::SegID, int>& segFlags);
+
+  uint32_t id_;
+  uint32_t cellId_;
+  std::string path_;
+  std::vector<SegGroup> namedGroups_;
+
+  friend class YAML::convert<ComparisonTask>;
 };
 
 }  // namespace om::task::
@@ -58,18 +56,19 @@ class ComparisonTask
 namespace YAML {
 
 template <>
-struct convert<om::task::ComparisonTaskData> {
-  static bool decode(const Node& node, om::task::ComparisonTaskData& t) {
+struct convert<om::task::ComparisonTask> {
+  static bool decode(const Node& node, om::task::ComparisonTask& t) {
     try {
-      t.id = node["id"].as<uint32_t>();
-      t.cellId = node["cell"].as<uint32_t>();
-      t.path = node["data"]["channel"]["metadata"]["uri"].as<std::string>();
-      if (t.path.compare(t.path.size() - 7 - 1, std::string::npos, ".files/")) {
-        t.path = t.path.substr(0, t.path.size() - 7);
+      t.id_ = node["id"].as<uint32_t>();
+      t.cellId_ = node["cell"].as<uint32_t>();
+      t.path_ = node["data"]["channel"]["metadata"]["uri"].as<std::string>();
+      if (t.path_.compare(t.path_.size() - 7 - 1, std::string::npos,
+                          ".files/")) {
+        t.path_ = t.path_.substr(0, t.path_.size() - 7);
       }
 
       auto groups = node["groups"];
-      t.namedGroups.clear();
+      t.namedGroups_.clear();
       for (const auto& group : groups) {
         std::string name;
         om::common::SegIDSet segs;
@@ -96,7 +95,7 @@ struct convert<om::task::ComparisonTaskData> {
           sg.name = name;
           sg.type = type;
           sg.segments = g.as<std::set<uint32_t>>(std::set<uint32_t>());
-          t.namedGroups.push_back(std::move(sg));
+          t.namedGroups_.push_back(std::move(sg));
         }
       }
 
@@ -106,7 +105,7 @@ struct convert<om::task::ComparisonTaskData> {
       for (const auto& s : node["prior"]["segments"]) {
         seed.segments.insert(s.first.as<uint32_t>());
       }
-      t.namedGroups.push_back(seed);
+      t.namedGroups_.push_back(seed);
       return true;
     }
     catch (YAML::Exception e) {
