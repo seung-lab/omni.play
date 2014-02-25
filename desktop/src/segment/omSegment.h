@@ -27,7 +27,13 @@ class OmSegment {
         edgeNumber_(-1),
         freshnessForMeshes_(0) {}
 
-  inline om::common::SegID value() const { return data_->value; }
+  inline om::common::SegID value() const {
+    if (data_) {
+      return data_->value;
+    } else {
+      return 0;
+    }
+  }
 
   // color
   void RandomizeColor();
