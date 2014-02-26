@@ -11,6 +11,13 @@ version_minor=`cat $project/version/minor`
 version=$version_major"."$version_minor
 tag=$project"-"$version
 
+echo "#pragma once" > $project/src/version.hpp
+echo -n "#define OMNI_" >> $project/src/version.hpp
+echo -n $project | tr '[:lower:]' '[:upper:]' >> $project/src/version.hpp
+echo "_VERSION \""$version"\"" >> $project/src/version.hpp
+git add $project/src/version.hpp
+git commit -m "Update Version Define."
+
 git tag -a $tag -m ''
 
 echo $((version_minor+1)) > $project/version/minor
