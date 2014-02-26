@@ -1,0 +1,1 @@
+#define OMNI_SERVER_VERSION "1.0.2"
