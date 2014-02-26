@@ -8,8 +8,8 @@ zlib:
  uri: http://sourceforge.net/projects/libpng/files/zlib/1.2.6/zlib-1.2.6.tar.gz/download
 thrift:
  lib_folder: thrift
- ver: thrift-0.9.0
- uri: https://dist.apache.org/repos/dist/release/thrift/0.9.0/thrift-0.9.0.tar.gz
+ ver: thrift-0.9.1
+ uri: http://apache.spinellicreations.com/thrift/0.9.1/thrift-0.9.1.tar.gz
 jpeg:
  lib_folder: libjpeg
  ver: libjpeg-turbo-1.3.0
