@@ -4,6 +4,9 @@ ZiARG_string(cmdfile, "", "run automated script file");
 ZiARG_int64(psn, 0, "mac OSX proces ID");
 ZiARG_bool(noTilePrefetch, false, "disable tile prefetcher");
 ZiARG_bool(noView3dThrottle, false, "disable View3d throttling");
+ZiARG_bool(version, false, "Show omni version");
+
+#include "version.hpp"
 
 #include "common/logging.h"
 
@@ -117,5 +120,10 @@ class Omni {
 
 int main(int argc, char *argv[]) {
   zi::parse_arguments(argc, argv, true);
+
+  if (ZiARG_version) {
+    std::cout << "Omni Desktop Version " << OMNI_DESKTOP_VERSION << std::endl;
+  }
+
   return Omni(argc, argv).Run();
 }
