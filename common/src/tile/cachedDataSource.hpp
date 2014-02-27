@@ -14,7 +14,7 @@ class CachedDataSource : public tile::TileDSH {
  public:
   CachedDataSource(const file::path& path, const common::DataType& type,
                    const coords::VolumeSystem& system)
-      : tile::TileDSH(), toCache_(10000) {
+      : tile::TileDSH(), toCache_(10000) {  // 10000 * 64kb = 625MB
 
     Register<FileDataSource>(0, path, type, system);
     Register<datalayer::CacheDataSource<coords::Tile, tile::TileVar>>(0,

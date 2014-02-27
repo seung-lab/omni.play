@@ -13,7 +13,7 @@ class CachedDataSource : public om::chunk::ChunkDSH {
  public:
   CachedDataSource(const file::path& path, const common::DataType& type,
                    const coords::VolumeSystem& system)
-      : om::chunk::ChunkDSH(), toCache_(10000) {
+      : om::chunk::ChunkDSH(), toCache_(25) {  // 25 * 8MB = 200MB
 
     Register<FileDataSource>(0, path, type, system);
     Register<datalayer::CacheDataSource<coords::Chunk, chunk::ChunkVar>>(

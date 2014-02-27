@@ -15,7 +15,7 @@ class Voxels {
 
  public:
   Voxels(ChunkDS& chunkDS, const coords::VolumeSystem& coordSystem,
-         size_t cacheSize = 100)
+         size_t cacheSize = 25)
       : chunkDS_(chunkDS),
         coordSystem_(coordSystem),
         cacheSize_(cacheSize),
