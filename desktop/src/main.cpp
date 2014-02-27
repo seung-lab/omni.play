@@ -123,6 +123,7 @@ int main(int argc, char *argv[]) {
 
   if (ZiARG_version) {
     std::cout << "Omni Desktop Version " << OMNI_DESKTOP_VERSION << std::endl;
+    return (0);
   }
 
   return Omni(argc, argv).Run();
