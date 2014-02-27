@@ -16,6 +16,7 @@ namespace task {
 
 TaskManager::~TaskManager() {}
 
+template <typename T>
 std::shared_ptr<Task> TaskManager::CachedGet(const std::string& uri) {
   auto& cache = instance().cache_;
   auto iter = cache.find(uri);
@@ -23,7 +24,7 @@ std::shared_ptr<Task> TaskManager::CachedGet(const std::string& uri) {
     return iter->second;
   }
   try {
-    cache[uri] = network::HTTP::GET_JSON<TracingTask>(uri);
+    cache[uri] = network::HTTP::GET_JSON<T>(uri);
     return cache[uri];
   }
   catch (om::Exception e) {
@@ -37,7 +38,7 @@ std::shared_ptr<Task> TaskManager::GetTask(int cellID) {
   if (cellID) {
     uri += "/cell/" + std::to_string(cellID);
   }
-  return CachedGet(uri);
+  return CachedGet<TracingTask>(uri);
 }
 
 std::shared_ptr<Task> TaskManager::GetTaskByID(int taskID) {
@@ -46,7 +47,7 @@ std::shared_ptr<Task> TaskManager::GetTaskByID(int taskID) {
   if (taskID) {
     uri += "/cell/" + std::to_string(taskID);
   }
-  return CachedGet(uri);
+  return CachedGet<TracingTask>(uri);
 }
 
 std::shared_ptr<Task> TaskManager::GetComparisonTask(int cellID) {
@@ -54,7 +55,7 @@ std::shared_ptr<Task> TaskManager::GetComparisonTask(int cellID) {
   if (cellID) {
     uri += "?cell=" + std::to_string(cellID);
   }
-  return CachedGet(uri);
+  return CachedGet<ComparisonTask>(uri);
 }
 
 std::shared_ptr<Task> TaskManager::GetComparisonTaskByID(int taskID) {
@@ -65,7 +66,7 @@ std::shared_ptr<Task> TaskManager::GetComparisonTaskByID(int taskID) {
   std::string uri = system::Account::endpoint() + "/1.0/comparison_task";
   uri += "?task=" + std::to_string(taskID);
 
-  return CachedGet(uri);
+  return CachedGet<ComparisonTask>(uri);
 }
 
 std::shared_ptr<Task> TaskManager::GetReapTask(int taskID) {

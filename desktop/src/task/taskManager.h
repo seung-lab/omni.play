@@ -41,6 +41,7 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   TaskManager() : currentTask_(nullptr) {}
   ~TaskManager();
 
+  template <typename T>
   static std::shared_ptr<Task> CachedGet(const std::string& uri);
 
   std::shared_ptr<Task> currentTask_;
