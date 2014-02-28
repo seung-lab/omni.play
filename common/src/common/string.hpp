@@ -20,7 +20,8 @@ inline bool startsWith(const std::string& str, const std::string& prefix) {
   return boost::starts_with(str, prefix);
 }
 
-template <typename T> static std::string num(const T& num) {
+template <typename T>
+static std::string num(const T& num) {
   return std::to_string(num);
 }
 
@@ -36,6 +37,19 @@ static std::string join(const T& in, const std::string sep = ", ") {
   }
 
   return boost::algorithm::join(tmp, sep);
+}
+
+inline static std::vector<std::string> split(const std::string& in, char sep) {
+  std::vector<std::string> result;
+  size_t from = 0;
+  auto to = in.find(sep);
+  while (to != std::string::npos) {
+    result.emplace_back(in.substr(from, to));
+    from = to;
+    to = in.find(sep, from);
+  }
+
+  return result;
 }
 
 template <typename T>
@@ -57,7 +71,8 @@ inline static std::string humanizeNum(const T num, const char sep = ',') {
   return ret;
 }
 
-template <typename T> inline static std::string bytesToMB(const T num) {
+template <typename T>
+inline static std::string bytesToMB(const T num) {
   static const int64_t bytes_per_mb = 1048576;
 
   const int64_t size = static_cast<int64_t>(num) / bytes_per_mb;

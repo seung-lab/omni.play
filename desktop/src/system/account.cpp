@@ -22,9 +22,10 @@ Account::LoginResult Account::Login(const std::string& username,
   if (!task::TaskManager::FinishTask()) {
     return LoginResult::CANCELLED;
   }
-  std::string endpoint = instance().endpoint_;
-  endpoint += "/1.0/internal/account/authenticate/standard";
-  auto str = network::HTTP::POST(endpoint, std::make_pair("username", username),
+  auto login = instance().endpoint_;
+  login.set_scheme("https");
+  login.set_path("/1.0/internal/account/authenticate/standard");
+  auto str = network::HTTP::POST(login, std::make_pair("username", username),
                                  std::make_pair("password", password));
 
   instance().username_ = "";
@@ -52,8 +53,13 @@ Account::LoginResult Account::Login(const std::string& username,
   }
 }
 
-const std::string& Account::endpoint() { return instance().endpoint_; }
-void Account::set_endpoint(const std::string& endpoint) {
+network::Uri Account::endpoint() { return instance().endpoint_; }
+network::Uri Account::endpoint(const std::string& path) {
+  auto uri = instance().endpoint_;
+  uri.set_path(path);
+  return uri;
+}
+void Account::set_endpoint(network::Uri endpoint) {
   instance().endpoint_ = endpoint;
 }
 }

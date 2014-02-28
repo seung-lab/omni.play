@@ -15,7 +15,16 @@ LoginButton::LoginButton(QWidget* parent) : QPushButton("Login", parent) {
 void LoginButton::onClicked() {
   LoginDialog dialog(this);
   if (dialog.exec()) {
-    om::system::Account::set_endpoint(dialog.endpoint());
+    boost::optional<om::network::Uri> uri =
+        om::network::Uri::Parse(dialog.endpoint());
+    if (!uri) {
+      QMessageBox box(QMessageBox::Warning, "Error Logging In",
+                      "Invalid Endpoint");
+      box.exec();
+      return;
+    }
+    log_infos << "Connecting to: " << uri.get();
+    om::system::Account::set_endpoint(uri.get());
     auto res = om::system::Account::Login(dialog.username(), dialog.password());
     QString errorText;
     typedef om::system::Account::LoginResult LoginResult;

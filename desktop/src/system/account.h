@@ -1,6 +1,7 @@
 #pragma once
 
 #include "zi/utility.h"
+#include "network/uri.hpp"
 #include <string>
 #include <memory>
 
@@ -21,8 +22,9 @@ class Account : private om::SingletonBase<Account> {
   static LoginResult Login(const std::string& username,
                            const std::string& password);
 
-  static const std::string& endpoint();
-  static void set_endpoint(const std::string& endpoint);
+  static network::Uri endpoint();
+  static network::Uri endpoint(const std::string& path);
+  static void set_endpoint(network::Uri endpoint);
 
  private:
   Account();
@@ -30,7 +32,7 @@ class Account : private om::SingletonBase<Account> {
 
   std::string username_;
   uint userid_;
-  std::string endpoint_;
+  network::Uri endpoint_;
 
   friend class zi::singleton<Account>;
 };

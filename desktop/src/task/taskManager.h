@@ -4,10 +4,14 @@
 #include <unordered_map>
 #include "zi/utility.h"
 #include "task/cell.h"
+#include "task/taskInfo.hpp"
 #include "task/dataset.h"
 #include "events/listeners.h"
 
 namespace om {
+namespace network {
+class Uri;
+}
 namespace task {
 
 class Task;
@@ -23,12 +27,14 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   // static std::vector<Task*> ListTasks();
   // static std::vector<Task*> ListTasks(int cellID);
   static std::shared_ptr<Task> GetTask(int cellID = 0);
+  static std::shared_ptr<std::vector<TaskInfo>> GetTasks(int datasetID = 0,
+                                                         int cellID = 0,
+                                                         int maxWeight = 0);
   static std::shared_ptr<Task> GetTaskByID(int taskID);
 
   static std::shared_ptr<Task> GetComparisonTask(int cellID = 0);
   static std::shared_ptr<Task> GetComparisonTaskByID(int taskID);
 
-  static std::shared_ptr<Task> GetReapTask(int taskID);
   static std::shared_ptr<std::vector<Dataset>> GetDatasets();
   static std::shared_ptr<std::vector<Cell>> GetCells(int datasetID);
   static bool LoadTask(const std::shared_ptr<Task>& task);
@@ -42,7 +48,7 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   ~TaskManager();
 
   template <typename T>
-  static std::shared_ptr<Task> CachedGet(const std::string& uri);
+  static std::shared_ptr<Task> CachedGet(const network::Uri& uri);
 
   std::shared_ptr<Task> currentTask_;
 

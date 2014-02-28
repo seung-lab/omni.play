@@ -27,13 +27,13 @@ Q_SLOTS:
   void updateCells();
   void traceClicked();
   void compareClicked();
-  void reapClicked();
 
  protected:
   virtual void showEvent(QShowEvent* event) override;
   virtual void accept() override;
 
  private:
+  uint8_t datasetID();
   om::task::Dataset* dataset();
   uint32_t cellID();
   uint32_t taskID();
@@ -42,17 +42,14 @@ Q_SLOTS:
   bool populating_;
 
   QComboBox* datasetCombo_;
-  QRadioButton* allCellsRadio_;
-  QRadioButton* cellRadio_;
-  QRadioButton* taskRadio_;
   QComboBox* cellCombo_;
   QLineEdit* taskLineEdit_;
+  QTableWidget* taskTable_;
   QPushButton* traceButton_;
   QPushButton* compareButton_;
-  QPushButton* reapButton_;
+  QPushButton* closeButton_;
 
   std::shared_ptr<om::task::Task> traceTask_;
   std::shared_ptr<om::task::Task> compareTask_;
-  std::shared_ptr<om::task::Task> reapTask_;
   std::shared_ptr<std::vector<om::task::Dataset>> datasets_;
 };
