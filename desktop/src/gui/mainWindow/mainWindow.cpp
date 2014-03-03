@@ -172,11 +172,17 @@ bool MainWindow::closeProjectIfOpen(bool closeTask) {
     return true;
   }
 
-  if (closeTask && !om::task::TaskManager::FinishTask()) {
+  if (closeTask && !om::task::TaskManager::AttemptFinishTask()) {
     return false;
   }
 
-  if (!OmProject::IsReadOnly()) {
+  if (!OmProject::IsReadOnly() && closeTask) {
+    // closeTask:
+    // We skip this user confirmation and saving if we are starting a task -
+    // project saving is handled elsewhere. 
+    // Using closeTask as condition here is a hack. Ideally we should
+    // determine whether the project actually changed instead of building
+    // special logic for tasks.
     const int ret = checkForSave();
     switch (ret) {
       case QMessageBox::Save:

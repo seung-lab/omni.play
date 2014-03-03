@@ -113,10 +113,30 @@ std::shared_ptr<std::vector<Cell>> TaskManager::GetCells(int datasetID) {
 void TaskManager::ConnectionChangeEvent() {}
 
 bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
-  auto& current = instance().currentTask_;
-  if (task == current) {
+  instance().currentTask_ = task;
+  if (task) {
+    log_debugs << "Changed current task " << task->Id();
+  } else {
+    log_debugs << "Changed current task nullptr";
+  }
+  om::event::TaskChange();
+  instance().cache_.clear();
+  if (!task) {
     return true;
-  } else if (current) {
+  }
+
+  if (!task->Start()) {
+    log_debugs << "Failed starting task " << task->Id();
+    instance().currentTask_ = nullptr;
+    return false;
+  }
+  om::event::TaskStarted();
+  return true;
+}
+
+bool TaskManager::AttemptFinishTask() {
+  auto& current = instance().currentTask_;
+  if (current) {
     log_debugs << "Finishing current task " << current->Id();
     // TODO: headless
     QMessageBox box(
@@ -132,28 +152,18 @@ bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
       current->Submit();
     }
   }
-  current = task;
-  if (current) {
-    log_debugs << "Changed current task " << current->Id();
-  } else {
-    log_debugs << "Changed current task nullptr";
-  }
-  om::event::TaskChange();
-  instance().cache_.clear();
-  if (!task) {
-    return true;
-  }
-
-  if (!task->Start()) {
-    log_debugs << "Failed starting task " << task->Id();
-    current = nullptr;
-    return false;
-  }
-  om::event::TaskStarted();
-  return true;
+  return LoadTask(nullptr);
 }
 
-bool TaskManager::FinishTask() { return LoadTask(std::shared_ptr<Task>()); }
+bool TaskManager::SubmitTask() {
+  auto& current = instance().currentTask_;
+  if (!current) {
+    return true;
+  }
+  log_debugs << "Finishing current task " << current->Id();
+  current->Submit();
+  return LoadTask(nullptr);
+}
 
 std::shared_ptr<Task> TaskManager::FindInterruptedTask() {
   return std::shared_ptr<Task>();

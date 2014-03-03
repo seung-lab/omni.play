@@ -19,7 +19,7 @@ bool Account::IsLoggedIn() {
 
 Account::LoginResult Account::Login(const std::string& username,
                                     const std::string& password) {
-  if (!task::TaskManager::FinishTask()) {
+  if (!task::TaskManager::AttemptFinishTask()) {
     return LoginResult::CANCELLED;
   }
   auto login = instance().endpoint_;
