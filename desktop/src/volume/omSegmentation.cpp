@@ -244,5 +244,5 @@ void OmSegmentation::ClearUserChangesAndSave() {
   om::event::SegmentModified();
 
   OmCacheManager::TouchFreshness();
-  OmActions::Save();
+  OmProject::Save();
 }
