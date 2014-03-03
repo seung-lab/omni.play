@@ -128,6 +128,8 @@ bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
   if (!task->Start()) {
     log_debugs << "Failed starting task " << task->Id();
     instance().currentTask_ = nullptr;
+    om::event::TaskChange();
+    instance().cache_.clear();
     return false;
   }
   om::event::TaskStarted();
