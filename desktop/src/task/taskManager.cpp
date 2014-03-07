@@ -112,9 +112,9 @@ void TaskManager::ConnectionChangeEvent() {}
 bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
   instance().currentTask_ = task;
   if (task) {
-    log_debugs << "Changed current task " << task->Id();
+    log_infos << "Changed current task " << task->Id();
   } else {
-    log_debugs << "Changed current task nullptr";
+    log_infos << "Changed current task nullptr";
   }
   om::event::TaskChange();
   instance().cache_.clear();

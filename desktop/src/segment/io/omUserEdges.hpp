@@ -48,7 +48,7 @@ class OmUserEdges {
       AddEdgeFromProjectLoad(e);
     }
 
-    log_infos << "loaded " << edges_.size() << "user edges";
+    log_infos << "loaded " << edges_.size() << " user edges";
 
     if (!in.atEnd()) {
       throw om::IoException("corrupt file?");
