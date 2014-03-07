@@ -24,6 +24,7 @@ class TaskSelector : public QDialog {
  public
 Q_SLOTS:
   void updateEnabled();
+  void updateList();
   void updateCells();
   void traceClicked();
   void compareClicked();
@@ -32,11 +33,14 @@ Q_SLOTS:
   virtual void showEvent(QShowEvent* event) override;
   virtual void accept() override;
 
+  virtual QSize sizeHint() const override;
+
  private:
   uint8_t datasetID();
   om::task::Dataset* dataset();
   uint32_t cellID();
   uint32_t taskID();
+  int selectedTaskId();
   void getTasks();
 
   bool populating_;

@@ -62,9 +62,6 @@ std::shared_ptr<std::vector<TaskInfo>> TaskManager::GetTasks(int datasetID,
 std::shared_ptr<Task> TaskManager::GetTaskByID(int taskID) {
   auto uri = system::Account::endpoint(
       std::string("/api/v1/task/cell/0/task/") + std::to_string(taskID));
-  if (taskID) {
-    uri.AppendPath(std::string("cell/") + std::to_string(taskID));
-  }
   return CachedGet<TracingTask>(uri);
 }
 

@@ -14,15 +14,22 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
   cellCombo_ = new QComboBox(this);
   layout->addWidget(cellCombo_, 0, 2, 1, 2);
   om::connect(cellCombo_, SIGNAL(currentIndexChanged(int)), this,
-              SLOT(updateEnabled()));
+              SLOT(updateList()));
 
   taskLineEdit_ = new QLineEdit(this);
-  layout->addWidget(taskLineEdit_, 0, 5, 1, 1);
+  layout->addWidget(taskLineEdit_, 0, 4, 1, 2);
   om::connect(taskLineEdit_, SIGNAL(textEdited(const QString&)), this,
               SLOT(updateEnabled()));
 
   taskTable_ = new QTableWidget(this);
   taskTable_->setRowCount(10);
+  taskTable_->setSortingEnabled(true);
+  taskTable_->setSelectionBehavior(QAbstractItemView::SelectRows);
+  taskTable_->setSelectionMode(QAbstractItemView::SingleSelection);//TODO: diffferentiate list selection vs input box
+  taskTable_->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+  taskTable_->setEditTriggers(QAbstractItemView::NoEditTriggers);
+  taskTable_->setAlternatingRowColors(true);
+
   QStringList headerLabels;
   headerLabels << "Id"
                << "Cell"
@@ -31,6 +38,7 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
                << "Path";
   taskTable_->setColumnCount(headerLabels.size());
   taskTable_->setHorizontalHeaderLabels(headerLabels);
+  //om::connect(taskTable_, SIGNAL(clicked()), this, SLOT(traceClicked()));
 
   layout->addWidget(taskTable_, 1, 0, 1, 6);
 
@@ -50,6 +58,10 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
   setWindowTitle(tr("Task Selector"));
 }
 
+QSize TaskSelector::sizeHint() const {
+  return QSize(700, 800);
+}
+
 void TaskSelector::showEvent(QShowEvent* event) {
   populating_ = true;
   datasets_ = TaskManager::GetDatasets();
@@ -62,7 +74,7 @@ void TaskSelector::showEvent(QShowEvent* event) {
       ds.LoadCells();
       datasetCombo_->addItem(
           QString::fromStdString(std::to_string(ds.id()) + ". " + ds.name()),
-          i);
+          ds.id());
       if (ds.id() == prefDataset) {
         datasetCombo_->setCurrentIndex(i);
       }
@@ -90,17 +102,38 @@ void TaskSelector::updateCells() {
       }
     }
   }
-  updateEnabled();
+  updateList();
 }
 
-void TaskSelector::updateEnabled() { getTasks(); }
+void TaskSelector::updateList() { getTasks(); }
+
+void TaskSelector::updateEnabled() {
+  //TODO
+}
+
+int TaskSelector::selectedTaskId() {
+  auto row = taskTable_->currentRow();
+  int col = 0;  // colume 0 is task id
+  auto* taskIdItem = taskTable_->item(row, col);
+  if (!taskIdItem) {
+    log_infos << "No task selected";
+    return 0;
+  }
+  return taskIdItem->data(0).toInt();
+}
 
 void TaskSelector::traceClicked() {
-  TaskManager::LoadTask(traceTask_);
+  auto id = selectedTaskId();
+  log_debugs << "Tracing Task: " << id;
+  auto task = TaskManager::GetTaskByID(id);
+  TaskManager::LoadTask(task);
   accept();
 }
 void TaskSelector::compareClicked() {
-  TaskManager::LoadTask(compareTask_);
+  auto id = selectedTaskId();
+  log_debugs << "Comparison Task: " << id;
+  auto task = TaskManager::GetComparisonTaskByID(id);
+  TaskManager::LoadTask(task);
   accept();
 }
 
@@ -112,7 +145,11 @@ Dataset* TaskSelector::dataset() {
   if (!datasets_) {
     return nullptr;
   }
-  return &(*datasets_)[datasetID()];
+  int index = datasetCombo_->currentIndex();
+  if (index >= datasets_->size()) {
+    return nullptr;
+  }
+  return &(*datasets_)[index];
 }
 
 uint32_t TaskSelector::cellID() {
@@ -132,7 +169,6 @@ uint32_t TaskSelector::cellID() {
     return 0;
   }
   return cellsref[idx - 1].CellID;
-  return 0;
 }
 
 uint32_t TaskSelector::taskID() { return taskLineEdit_->text().toInt(); }
@@ -148,7 +184,9 @@ void TaskSelector::getTasks() {
   auto dsid = datasetID();
   auto cid = cellID();
   auto tasks = TaskManager::GetTasks(dsid, cid, 3);
-  for (size_t i = 0; i < std::min((size_t)10, tasks->size()); ++i) {
+  size_t i = 0;
+  taskTable_->setSortingEnabled(false);
+  for (; i < std::min((size_t)10, tasks->size()); ++i) {
     auto& t = (*tasks)[i];
 
     taskTable_->setItem(i, 0, makeTableItem(t.id));
@@ -157,11 +195,20 @@ void TaskSelector::getTasks() {
     taskTable_->setItem(i, 3, makeTableItem(t.inspected_weight == t.weight));
     taskTable_->setItem(i, 4, makeTableItem(QString::fromStdString(t.path)));
   }
+  // Clear the remaining table cells if they had contents:
+  for (; i < 10; ++i) {
+    for (auto j=0; j<5; j++) {
+      taskTable_->setItem(i, j, nullptr);
+    }
+  }
+  taskTable_->setSortingEnabled(true);
   taskTable_->resizeColumnsToContents();
+  //TODO
+  taskTable_->sortByColumn(4);
+  taskTable_->sortByColumn(2);
 }
 
 void TaskSelector::accept() {
-  int index = datasetCombo_->itemData(datasetCombo_->currentIndex()).toInt();
-  OmLocalPreferences::setDataset((*datasets_)[index].id());
+  OmLocalPreferences::setDataset(datasetID());
   QDialog::accept();
 }

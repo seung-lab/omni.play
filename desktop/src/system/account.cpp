@@ -23,7 +23,7 @@ Account::LoginResult Account::Login(const std::string& username,
     return LoginResult::CANCELLED;
   }
   auto login = instance().endpoint_;
-  login.set_scheme("https");
+  login.set_scheme("http");
   login.set_path("/1.0/internal/account/authenticate/standard");
   auto str = network::HTTP::POST(login, std::make_pair("username", username),
                                  std::make_pair("password", password));
