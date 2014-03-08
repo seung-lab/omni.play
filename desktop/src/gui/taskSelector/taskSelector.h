@@ -25,6 +25,7 @@ class TaskSelector : public QDialog {
 Q_SLOTS:
   void updateEnabled();
   void updateList();
+  void onManualEntry();
   void updateCells();
   void traceClicked();
   void compareClicked();

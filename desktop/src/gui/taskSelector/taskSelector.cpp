@@ -19,16 +19,10 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
   taskLineEdit_ = new QLineEdit(this);
   layout->addWidget(taskLineEdit_, 0, 4, 1, 2);
   om::connect(taskLineEdit_, SIGNAL(textEdited(const QString&)), this,
-              SLOT(updateEnabled()));
+              SLOT(onManualEntry()));
 
   taskTable_ = new QTableWidget(this);
   taskTable_->setRowCount(10);
-  taskTable_->setSortingEnabled(true);
-  taskTable_->setSelectionBehavior(QAbstractItemView::SelectRows);
-  taskTable_->setSelectionMode(QAbstractItemView::SingleSelection);//TODO: diffferentiate list selection vs input box
-  taskTable_->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-  taskTable_->setEditTriggers(QAbstractItemView::NoEditTriggers);
-  taskTable_->setAlternatingRowColors(true);
 
   QStringList headerLabels;
   headerLabels << "Id"
@@ -38,9 +32,15 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
                << "Path";
   taskTable_->setColumnCount(headerLabels.size());
   taskTable_->setHorizontalHeaderLabels(headerLabels);
-  //om::connect(taskTable_, SIGNAL(clicked()), this, SLOT(traceClicked()));
+
+  taskTable_->setSortingEnabled(true);
+  taskTable_->setSelectionBehavior(QAbstractItemView::SelectRows);
+  taskTable_->setSelectionMode(QAbstractItemView::SingleSelection);
+  taskTable_->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+  taskTable_->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
   layout->addWidget(taskTable_, 1, 0, 1, 6);
+  om::connect(taskTable_, SIGNAL(itemSelectionChanged()), this, SLOT(updateEnabled()));
 
   traceButton_ = new QPushButton(tr("Trace"), this);
   layout->addWidget(traceButton_, 2, 0);
@@ -59,7 +59,7 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
 }
 
 QSize TaskSelector::sizeHint() const {
-  return QSize(700, 800);
+  return QSize(900, 600);
 }
 
 void TaskSelector::showEvent(QShowEvent* event) {
@@ -105,10 +105,24 @@ void TaskSelector::updateCells() {
   updateList();
 }
 
-void TaskSelector::updateList() { getTasks(); }
+void TaskSelector::updateList() {
+  getTasks();
+  updateEnabled();
+}
 
 void TaskSelector::updateEnabled() {
-  //TODO
+  auto row = taskTable_->currentRow();
+  int col = 0;  // colume 0 is task id
+  auto* taskIdItem = taskTable_->item(row, col);
+  if (!taskIdItem) {
+    traceButton_->setEnabled(false);
+    compareButton_->setEnabled(false);
+  } else {
+    // TODO: need backend API facility to clean this up
+    auto task = TaskManager::GetTaskByID(selectedTaskId());
+    traceButton_->setEnabled(bool(task));
+    compareButton_->setEnabled(taskTable_->item(row, 3)->data(0).toBool());
+  }
 }
 
 int TaskSelector::selectedTaskId() {
@@ -206,6 +220,37 @@ void TaskSelector::getTasks() {
   //TODO
   taskTable_->sortByColumn(4);
   taskTable_->sortByColumn(2);
+}
+
+void TaskSelector::onManualEntry() {
+  auto text = taskLineEdit_->text().trimmed();
+  if (text.size()) {
+    taskTable_->setSortingEnabled(false);
+    for (size_t i=0; i < 10; ++i) {
+      for (auto j=0; j<5; j++) {
+        taskTable_->setItem(i, j, nullptr);
+      }
+    }
+    taskTable_->setSortingEnabled(true);
+
+    //TODO: clean up
+    auto taskId = text.toInt();
+    auto task = TaskManager::GetTaskByID(taskId);
+    auto compTask = TaskManager::GetComparisonTaskByID(taskId);
+    task = task ? task : compTask;
+    if (task) {
+      taskTable_->setItem(0, 0, makeTableItem(taskId));
+      taskTable_->setItem(0, 1, makeTableItem(task->CellId()));
+      //taskTable_->setItem(i, 2, makeTableItem(t.weight));
+      //taskTable_->setItem(i, 3, makeTableItem(t.inspected_weight == t.weight));
+      taskTable_->setItem(0, 3, makeTableItem(bool(compTask))); //...doesn't match real state
+      //taskTable_->setItem(i, 4, makeTableItem(QString::fromStdString(t.path)));
+      taskTable_->setCurrentCell(0,0);
+    }
+  } else {
+    getTasks();
+  }
+  updateEnabled();
 }
 
 void TaskSelector::accept() {
