@@ -16,18 +16,32 @@ using namespace boost::log;
 namespace om {
 namespace logging {
 
+size_t LOG_LIMIT;
+
 void log_formatter(record_view const& rec, formatting_ostream& strm) {
   strm << extract<attributes::current_thread_id::value_type>("ThreadID", rec)
        << ": ";
   strm << "[" << extract<severity_level>("Severity", rec) << "] ";
+  if (LOG_LIMIT) {
+    auto msg = extract<std::string>("Message", rec);
+    if (!msg) {
+      return;
+    }
+    auto message = msg.get();
+    if (message.size() > LOG_LIMIT) {
+      strm << message.substr(0, LOG_LIMIT) << "...";
+      return;
+    }
+  }
   strm << rec[expressions::smessage];
 }
 
-void initLogging(std::string logfile, bool consoleLog) {
+void initLogging(std::string logfile, bool consoleLog, size_t logLimit) {
+  LOG_LIMIT = logLimit;
+
   boost::shared_ptr<core> c = core::get();
   c->add_global_attribute("TimeStamp", attributes::local_clock());
   c->add_global_attribute("ThreadID", attributes::current_thread_id());
-
   // Create a backend and attach a couple of streams to it
   boost::shared_ptr<sinks::text_ostream_backend> backend =
       boost::make_shared<sinks::text_ostream_backend>();
