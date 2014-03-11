@@ -5,12 +5,13 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataWrapper.h"
 #include "segment/omSegments.h"
+#include "segment/types.hpp"
 #include "volume/omSegmentation.h"
 
 class OmMSTImportHdf5 {
  private:
   OmSegmentation* const vol_;
-  std::vector<OmMSTImportEdge> edges_;
+  std::vector<om::segment::ImportEdge> edges_;
 
  public:
   OmMSTImportHdf5(OmSegmentation* vol) : vol_(vol) {}
@@ -122,7 +123,7 @@ class OmMSTImportHdf5 {
   void checkSegmentIDs() {
     const uint32_t size = edges_.size();
 
-    std::vector<OmMSTImportEdge> valid;
+    std::vector<om::segment::ImportEdge> valid;
     valid.reserve(size);
 
     OmSegments* segments = vol_->Segments();

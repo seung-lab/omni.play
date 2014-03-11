@@ -10,6 +10,7 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationFolder.h"
+#include "segment/omSegments.h"
 
 class OmChunkUniqueValuesPerThreshold {
  private:
@@ -89,7 +90,7 @@ class OmChunkUniqueValuesPerThreshold {
 
       for (size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i) {
         if (0 != rawData[i]) {
-          segIDs.insert(segments->findRootID(rawData[i]));
+          segIDs.insert(segments->FindRootID(rawData[i]));
         }
       }
     } else {

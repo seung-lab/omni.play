@@ -1,19 +1,14 @@
 #pragma once
 
-/*
- *
- * Brett Warne - bwarne@mit.edu - 3/9/09
- */
-
 #include "datalayer/omDataWrapper.h"
 #include "mesh/omMeshTypes.h"
 #include "system/omManageableObject.h"
 #include "volume/omMipVolume.h"
 #include "datalayer/archive/segmentation.h"
+#include "segment/dataSources.hpp"
 
 class OmChunk;
 class OmChunkUniqueValuesManager;
-class OmMST;
 class OmMeshDrawer;
 class OmMeshManager;
 class OmMeshManagers;
@@ -104,7 +99,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   inline OmChunkUniqueValuesManager& UniqueValuesDS() {
     return *uniqueChunkValues_;
   }
-  inline OmMST* MST() { return mst_.get(); }
+  om::segment::EdgeVector* MST();
   inline OmMeshDrawer* MeshDrawer() { return meshDrawer_.get(); }
   inline OmMeshManagers* MeshManagers() { return meshManagers_.get(); }
   inline OmSegments* Segments() { return segments_.get(); }
@@ -127,7 +122,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<om::segmentation::folder> folder_;
   std::unique_ptr<om::segmentation::loader> loader_;
   std::unique_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
-  std::unique_ptr<OmMST> mst_;
+  std::unique_ptr<om::segment::EdgeVector> mst_;
   std::unique_ptr<OmMeshDrawer> meshDrawer_;
   std::unique_ptr<OmMeshManagers> meshManagers_;
   std::unique_ptr<OmChunkCache<OmSegmentation, OmSegChunk> > chunkCache_;

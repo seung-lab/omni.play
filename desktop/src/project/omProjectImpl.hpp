@@ -6,15 +6,17 @@
 #include "common/common.h"
 #include "datalayer/archive/old/omDataArchiveProject.h"
 #include "datalayer/archive/project.h"
+#include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
-#include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
+#include "datalayer/paths.hpp"
 #include "project/details/omProjectVolumes.h"
 #include "project/details/omSegmentationManager.h"
 #include "project/omProjectGlobals.h"
+#include "system/account.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omGenericManager.hpp"
 #include "system/omPreferences.h"
@@ -23,10 +25,7 @@
 #include "tiles/cache/omTileCache.h"
 #include "users/omGuiUserChooser.h"
 #include "utility/omFileHelpers.h"
-#include "datalayer/fs/omFile.hpp"
 #include "utility/segmentationDataWrapper.hpp"
-#include "datalayer/archive/project.h"
-#include "system/account.h"
 
 #include <QDir>
 #include <QFile>
@@ -37,8 +36,7 @@ class OmProjectImpl {
   QString projectMetadataFile_;
   QString oldHDF5projectFile_;
   OmHdf5* oldHDF5_;
-  QString filesFolder_;
-  QString omniFile_;
+  om::file::Paths paths_;
 
   int fileVersion_;
 
@@ -50,9 +48,15 @@ class OmProjectImpl {
 
   ~OmProjectImpl() {}
 
-  const QString& FilesFolder() { return filesFolder_; }
+  const QString& FilesFolder() {
+    return QString::fromStdString(paths_.FilesFolder());
+  }
 
-  const QString& OmniFile() { return omniFile_; }
+  const QString& OmniFile() {
+    return QString::fromStdString(paths_.OmniFile());
+  }
+
+  const om::file::Paths& Paths() { return paths_; }
 
   bool HasOldHDF5() const { return nullptr != oldHDF5_; }
 
@@ -108,15 +112,15 @@ class OmProjectImpl {
   int GetFileVersion() const { return fileVersion_; }
 
   bool IsReadOnly() const {
-    return !globals_ || globals_->Users().CurrentUser() == om::users::defaultUser;
+    return !globals_ ||
+           globals_->Users().CurrentUser() == om::users::defaultUser;
   }
 
   OmProjectGlobals& Globals() { return *globals_; }
 
  private:
   void doNew(const QString& fnp) {
-    omniFile_ = fnp;
-    filesFolder_ = fnp + ".files";
+    paths_ = om::file::Paths(fnp);
 
     projectMetadataFile_ = OmFileNames::ProjectMetadataFile();
     oldHDF5projectFile_ = "";
@@ -136,7 +140,7 @@ class OmProjectImpl {
   }
 
   void makeParentFolder() {
-    const QString dirStr = QFileInfo(omniFile_).absolutePath();
+    const QString dirStr = QFileInfo(OmniFile()).absolutePath();
 
     QDir dir(dirStr);
 
@@ -149,17 +153,16 @@ class OmProjectImpl {
 
   void doLoad(const QString& fnp, QWidget* guiParent,
               const std::string& username) {
-    if (!QFile::exists(fnp)) {
+    if (!om::file::Paths::IsValid(fnp.toStdString())) {
       throw om::IoException("Project file not found at" + fnp.toStdString());
     }
 
-    omniFile_ = fnp;
-    filesFolder_ = fnp + ".files";
+    paths_ = om::file::Paths(fnp);
 
     oldHDF5projectFile_ = OmFileNames::OldHDF5projectFileName();
     projectMetadataFile_ = OmFileNames::ProjectMetadataFile();
 
-    if (!QFileInfo(omniFile_).size())
+    if (!QFileInfo(OmniFile()).size())
       oldHDF5projectFile_ = "";
     else
       migrateFromHdf5();
@@ -195,17 +198,17 @@ class OmProjectImpl {
 
   bool IsOpen(const om::file::path& fileNameAndPath,
               const std::string& username) {
-    return fileNameAndPath == omniFile_.toStdString() &&
+    return fileNameAndPath == OmniFile().toStdString() &&
            username == globals_->Users().CurrentUser();
   }
 
   void doCreate() {
-    QFile projectFile(omniFile_);
+    QFile projectFile(OmniFile());
     if (projectFile.exists()) {
       projectFile.remove();
     }
 
-    OmFileHelpers::RemoveDir(filesFolder_);
+    OmFileHelpers::RemoveDir(FilesFolder());
     OmFileNames::MakeFilesFolder();
   }
 
@@ -221,7 +224,7 @@ class OmProjectImpl {
   }
 
   void touchEmptyProjectFile() {
-    QFile file(omniFile_);
+    QFile file(OmniFile());
     if (!file.open(QIODevice::WriteOnly)) {
       throw om::IoException("could not open");
     }
@@ -230,7 +233,7 @@ class OmProjectImpl {
   void migrateFromHdf5() {
     OmFileNames::MakeFilesFolder();
 
-    OmFileHelpers::MoveFile(omniFile_, oldHDF5projectFile_);
+    OmFileHelpers::MoveFile(OmniFile(), oldHDF5projectFile_);
 
     touchEmptyProjectFile();
 

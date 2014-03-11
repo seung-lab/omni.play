@@ -61,7 +61,7 @@ class MSTThresholdSpinBox : public OmDoubleSpinBox,
       return boost::optional<double>();
     }
 
-    OmSegmentation& seg = sdw.GetSegmentation();
+    OmSegmentation& seg = *sdw.GetSegmentation();
     return boost::optional<double>(seg.GetDendThreshold());
   }
 };

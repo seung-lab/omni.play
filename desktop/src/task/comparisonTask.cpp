@@ -52,7 +52,7 @@ bool ComparisonTask::Start() {
   if (allIter != namedGroups_.end()) {
     common::SegIDSet allRoots;
     for (const auto& id : allIter->segments) {
-      auto rootID = segments->findRootID(id);
+      auto rootID = segments->FindRootID(id);
       if (rootID) {
         allRoots.insert(rootID);
       }

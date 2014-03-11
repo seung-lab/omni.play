@@ -2,7 +2,6 @@
 
 #include "common/common.h"
 
-class OmMST;
 class OmSegment;
 class OmSegmentLists;
 class OmSegmentation;

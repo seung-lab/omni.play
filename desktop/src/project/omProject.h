@@ -13,6 +13,11 @@ class OmHdf5;
 class OmProjectImpl;
 class OmProjectVolumes;
 class OmProjectGlobals;
+namespace om {
+namespace file {
+class Paths;
+}
+}
 
 class OmProject : private om::SingletonBase<OmProject> {
  private:
@@ -42,6 +47,7 @@ class OmProject : private om::SingletonBase<OmProject> {
 
   static const QString& FilesFolder();
   static const QString& OmniFile();
+  static const om::file::Paths& Paths();
 
   static bool HasOldHDF5();
   static OmHdf5* OldHDF5();

@@ -92,7 +92,7 @@ class OmExportVolToHdf5 {
 
       for (uint32_t i = 0; i < chunk->Mipping().NumVoxels(); ++i) {
         if (0 != rawData[i]) {
-          rawData[i] = segments->findRootID(rawData[i]);
+          rawData[i] = segments->FindRootID(rawData[i]);
         }
       }
     }

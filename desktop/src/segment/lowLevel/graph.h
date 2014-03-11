@@ -4,7 +4,6 @@
 #include "segment/lowLevel/omSegmentLowLevelTypes.h"
 #include "threads/taskManagerTypes.h"
 
-class OmMST;
 class OmSegment;
 class OmValidGroupNum;
 class OmDynamicForestCache;

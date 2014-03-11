@@ -21,7 +21,7 @@ class OmChunkUtils {
 
     for (size_t i = 0; i < chunkData.size(); ++i) {
       if (0 != rawData[i]) {
-        rawData[i] = segments->findRootID(rawData[i]);
+        rawData[i] = segments->FindRootID(rawData[i]);
       }
     }
   }
@@ -72,7 +72,11 @@ class OmChunkUtils {
 
   static void RefindUniqueChunkValues(const om::common::ID segmentationID_) {
     SegmentationDataWrapper sdw(segmentationID_);
-    OmSegmentation& vol = sdw.GetSegmentation();
+    if (!sdw.IsValidWrapper()) {
+      return;
+    }
+
+    OmSegmentation& vol = *sdw.GetSegmentation();
 
     auto coordsPtr = vol.GetMipChunkCoords();
     const uint32_t numChunks = coordsPtr->size();

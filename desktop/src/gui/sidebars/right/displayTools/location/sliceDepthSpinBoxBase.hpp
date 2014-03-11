@@ -7,6 +7,7 @@
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "volume/omMipVolume.h"
+#include "volume/omSegmentation.h"
 
 #include <limits>
 
@@ -35,14 +36,14 @@ class SliceDepthSpinBoxBase : public OmIntSpinBox,
     {
       const ChannelDataWrapper cdw = vgs_->Channel();
       if (cdw.IsValidWrapper()) {
-        return cdw.GetChannelPtr();
+        return cdw.GetChannel();
       }
     }
 
     {
       const SegmentationDataWrapper sdw = vgs_->Segmentation();
       if (sdw.IsValidWrapper()) {
-        return sdw.GetSegmentationPtr();
+        return sdw.GetSegmentation();
       }
     }
 

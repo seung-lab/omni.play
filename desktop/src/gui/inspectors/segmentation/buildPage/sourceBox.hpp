@@ -4,6 +4,7 @@
 #include "utility/sortHelpers.h"
 #include "utility/segmentationDataWrapper.hpp"
 #include "volume/omSegmentation.h"
+#include "project/omProject.h"
 
 #include <QtGui>
 

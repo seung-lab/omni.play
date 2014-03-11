@@ -25,7 +25,6 @@
 OmSegmentation::OmSegmentation()
     : loader_(new om::segmentation::loader(this)),
       uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
-      mst_(new OmMST(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
       chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
@@ -43,7 +42,6 @@ OmSegmentation::OmSegmentation(om::common::ID id)
     : OmManageableObject(id),
       loader_(new om::segmentation::loader(this)),
       uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
-      mst_(new OmMST(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
       chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
@@ -78,6 +76,14 @@ bool OmSegmentation::LoadVolData() {
   }
 
   return false;
+}
+
+om::segment::EdgeVector* OmSegmentation::MST() {
+  if (!mst_) {
+    mst_.reset(new om::segment::EdgeVector(OmProject::Paths().UserMST(
+        OmProject::Globals().Users().CurrentUser(), GetID())));
+  }
+  return mst_.get();
 }
 
 std::string OmSegmentation::GetName() {

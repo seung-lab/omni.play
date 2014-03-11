@@ -16,7 +16,7 @@ class OmMSTImportWatershed {
       throw om::IoException("only know how to process 32-bit node values");
     }
 
-    OmVectorInFile<OmMSTImportEdge> edges(fnp);
+    OmVectorInFile<om::segment::ImportEdge> edges(fnp);
     edges.Load();
 
     if (edges.Vector().size() != numEdges) {
