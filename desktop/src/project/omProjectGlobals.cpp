@@ -12,7 +12,6 @@ OmProjectGlobals::OmProjectGlobals()
       users_(std::make_unique<om::users>()),
       v2dManagerImpl_(std::make_unique<OmView2dManagerImpl>()),
       stateMan_(std::make_unique<OmStateManagerImpl>()),
-      eventMan_(std::make_unique<om::event::ManagerImpl>()),
       actions_(std::make_unique<OmActionsImpl>()),
       actionLogger_(new OmActionLogger()) {}
 

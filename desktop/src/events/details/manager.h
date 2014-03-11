@@ -11,23 +11,16 @@ class Listener;
 class ManagerImpl;
 
 class Manager : om::SingletonBase<Manager> {
- private:
-  inline static ManagerImpl* impl() {
-    if (!OmProject::IsOpen()) {
-      return nullptr;
-    }
-    return &OmProject::Globals().EventManImpl();
-  }
-
  public:
   static void AddListener(Klass klass, Listener* listener);
   static void RemoveListener(Klass klass, Listener* listener);
   static void Post(Event* event);
 
  private:
-  Manager() {}
-  ~Manager() {}
+  Manager();
+  ~Manager();
 
+  std::unique_ptr<ManagerImpl> impl_;
   friend class zi::singleton<Manager>;
 };
 }
