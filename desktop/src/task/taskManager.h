@@ -7,6 +7,7 @@
 #include "task/taskInfo.hpp"
 #include "task/dataset.h"
 #include "events/listeners.h"
+#include "network/http/httpCache.hpp"
 
 namespace om {
 namespace network {
@@ -48,12 +49,12 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   TaskManager() : currentTask_(nullptr) {}
   ~TaskManager();
 
-  template <typename T>
-  static std::shared_ptr<Task> CachedGet(const network::Uri& uri);
-
   std::shared_ptr<Task> currentTask_;
 
-  std::unordered_map<std::string, std::shared_ptr<Task>> cache_;
+  network::HTTPCache<Task> taskCache_;
+  network::HTTPCache<std::vector<TaskInfo>> taskInfoCache_;
+  network::HTTPCache<std::vector<Dataset>> datasetCache_;
+  network::HTTPCache<std::vector<Cell>> cellsCache_;
 
   friend class zi::singleton<TaskManager>;
 };
