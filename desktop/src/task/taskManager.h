@@ -42,6 +42,7 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   static bool AttemptFinishTask();
   static bool SubmitTask();
   static std::shared_ptr<Task> FindInterruptedTask();
+  static void Refresh();
 
   void ConnectionChangeEvent();
 

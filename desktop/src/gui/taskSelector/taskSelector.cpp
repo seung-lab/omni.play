@@ -17,9 +17,13 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
               SLOT(updateList()));
 
   taskLineEdit_ = new QLineEdit(this);
-  layout->addWidget(taskLineEdit_, 0, 4, 1, 2);
+  layout->addWidget(taskLineEdit_, 0, 4);
   om::connect(taskLineEdit_, SIGNAL(textEdited(const QString&)), this,
               SLOT(onManualEntry()));
+
+  refreshButton_ = new QPushButton(tr("Refresh"), this);
+  layout->addWidget(refreshButton_, 0, 5);
+  om::connect(refreshButton_, SIGNAL(clicked()), this, SLOT(refreshClicked()));
 
   taskTable_ = new QTableWidget(this);
   taskTable_->setRowCount(10);
@@ -40,7 +44,8 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
   taskTable_->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
   layout->addWidget(taskTable_, 1, 0, 1, 6);
-  om::connect(taskTable_, SIGNAL(itemSelectionChanged()), this, SLOT(updateEnabled()));
+  om::connect(taskTable_, SIGNAL(itemSelectionChanged()), this,
+              SLOT(updateEnabled()));
 
   traceButton_ = new QPushButton(tr("Trace"), this);
   layout->addWidget(traceButton_, 2, 0);
@@ -56,11 +61,14 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
 
   traceButton_->setDefault(true);
   setWindowTitle(tr("Task Selector"));
+
+  for (int i = 0; i < layout->columnCount(); ++i) {
+    layout->setColumnMinimumWidth(i,
+                                  sizeHint().width() / layout->columnCount());
+  }
 }
 
-QSize TaskSelector::sizeHint() const {
-  return QSize(900, 600);
-}
+QSize TaskSelector::sizeHint() const { return QSize(900, 600); }
 
 void TaskSelector::showEvent(QShowEvent* event) {
   populating_ = true;
@@ -143,12 +151,18 @@ void TaskSelector::traceClicked() {
   TaskManager::LoadTask(task);
   accept();
 }
+
 void TaskSelector::compareClicked() {
   auto id = selectedTaskId();
   log_debugs << "Comparison Task: " << id;
   auto task = TaskManager::GetComparisonTaskByID(id);
   TaskManager::LoadTask(task);
   accept();
+}
+
+void TaskSelector::refreshClicked() {
+  TaskManager::Refresh();
+  getTasks();
 }
 
 uint8_t TaskSelector::datasetID() {
@@ -211,13 +225,13 @@ void TaskSelector::getTasks() {
   }
   // Clear the remaining table cells if they had contents:
   for (; i < 10; ++i) {
-    for (auto j=0; j<5; j++) {
+    for (auto j = 0; j < 5; j++) {
       taskTable_->setItem(i, j, nullptr);
     }
   }
   taskTable_->setSortingEnabled(true);
   taskTable_->resizeColumnsToContents();
-  //TODO
+  // TODO
   taskTable_->sortByColumn(4);
   taskTable_->sortByColumn(2);
 }
@@ -226,14 +240,14 @@ void TaskSelector::onManualEntry() {
   auto text = taskLineEdit_->text().trimmed();
   if (text.size()) {
     taskTable_->setSortingEnabled(false);
-    for (size_t i=0; i < 10; ++i) {
-      for (auto j=0; j<5; j++) {
+    for (size_t i = 0; i < 10; ++i) {
+      for (auto j = 0; j < 5; j++) {
         taskTable_->setItem(i, j, nullptr);
       }
     }
     taskTable_->setSortingEnabled(true);
 
-    //TODO: clean up
+    // TODO: clean up
     auto taskId = text.toInt();
     auto task = TaskManager::GetTaskByID(taskId);
     auto compTask = TaskManager::GetComparisonTaskByID(taskId);
@@ -241,11 +255,14 @@ void TaskSelector::onManualEntry() {
     if (task) {
       taskTable_->setItem(0, 0, makeTableItem(taskId));
       taskTable_->setItem(0, 1, makeTableItem(task->CellId()));
-      //taskTable_->setItem(i, 2, makeTableItem(t.weight));
-      //taskTable_->setItem(i, 3, makeTableItem(t.inspected_weight == t.weight));
-      taskTable_->setItem(0, 3, makeTableItem(bool(compTask))); //...doesn't match real state
-      //taskTable_->setItem(i, 4, makeTableItem(QString::fromStdString(t.path)));
-      taskTable_->setCurrentCell(0,0);
+      // taskTable_->setItem(i, 2, makeTableItem(t.weight));
+      // taskTable_->setItem(i, 3, makeTableItem(t.inspected_weight ==
+      // t.weight));
+      taskTable_->setItem(
+          0, 3, makeTableItem(bool(compTask)));  //...doesn't match real state
+                                                 // taskTable_->setItem(i, 4,
+      // makeTableItem(QString::fromStdString(t.path)));
+      taskTable_->setCurrentCell(0, 0);
     }
   } else {
     getTasks();

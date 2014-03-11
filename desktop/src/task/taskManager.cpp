@@ -146,6 +146,13 @@ bool TaskManager::SubmitTask() {
   return LoadTask(nullptr);
 }
 
+void TaskManager::Refresh() {
+  instance().taskCache_.Clear();
+  instance().taskInfoCache_.Clear();
+  instance().datasetCache_.Clear();
+  instance().cellsCache_.Clear();
+}
+
 std::shared_ptr<Task> TaskManager::FindInterruptedTask() {
   return std::shared_ptr<Task>();
 }
