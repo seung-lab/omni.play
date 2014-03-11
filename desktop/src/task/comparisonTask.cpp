@@ -52,6 +52,10 @@ bool ComparisonTask::Start() {
   if (allIter != namedGroups_.end()) {
     common::SegIDSet allRoots;
     for (const auto& id : allIter->segments) {
+      if (id <= 0 || id > segments->getMaxValue()) {
+        log_errors << "Invalid segment id " << id << " in 'All' segment group.";
+        continue;
+      }
       auto rootID = segments->findRootID(id);
       if (rootID) {
         allRoots.insert(rootID);

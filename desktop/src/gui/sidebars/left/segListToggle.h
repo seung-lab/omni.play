@@ -24,8 +24,17 @@ class SegListToggleButton : public OmButton<QWidget> {
     if (!sdw.IsValidWrapper()) {
       return;
     }
+    common::SegIDSet IDs(segIDs_);
+    auto maxID = sdw.Segments()->getMaxValue();
+    for (const auto& id : segIDs_) {
+      if (id <= 0 || id > maxID) {
+        log_errors << "Invalid segment id " << id << " in group \""
+                   << text().toStdString() << '"';
+        IDs.erase(id);
+      }
+    }
 
-    sdw.Segments()->ToggleSegmentSelection(segIDs_);
+    sdw.Segments()->ToggleSegmentSelection(IDs);
 
     om::event::Redraw2d();
     om::event::Redraw3d();
