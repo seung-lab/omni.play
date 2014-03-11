@@ -3,6 +3,9 @@
 
 using namespace om::task;
 
+#define TASK_ROWS 15
+#define TASK_COLS 6
+
 TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
   QGridLayout* layout = new QGridLayout(this);
 
@@ -26,7 +29,7 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
   om::connect(refreshButton_, SIGNAL(clicked()), this, SLOT(refreshClicked()));
 
   taskTable_ = new QTableWidget(this);
-  taskTable_->setRowCount(10);
+  taskTable_->setRowCount(TASK_ROWS);
 
   QStringList headerLabels;
   headerLabels << "Id"
@@ -215,7 +218,7 @@ void TaskSelector::getTasks() {
   auto tasks = TaskManager::GetTasks(dsid, cid, 3);
   size_t i = 0;
   taskTable_->setSortingEnabled(false);
-  for (; i < std::min((size_t)10, tasks->size()); ++i) {
+  for (; i < std::min((size_t)TASK_ROWS, tasks->size()); ++i) {
     auto& t = (*tasks)[i];
 
     taskTable_->setItem(i, 0, makeTableItem(t.id));
@@ -227,8 +230,8 @@ void TaskSelector::getTasks() {
         i, 5, makeTableItem(QString::fromStdString(om::string::join(t.users))));
   }
   // Clear the remaining table cells if they had contents:
-  for (; i < 10; ++i) {
-    for (auto j = 0; j < 5; j++) {
+  for (; i < TASK_ROWS; ++i) {
+    for (auto j = 0; j < TASK_COLS; j++) {
       taskTable_->setItem(i, j, nullptr);
     }
   }
@@ -243,8 +246,8 @@ void TaskSelector::onManualEntry() {
   auto text = taskLineEdit_->text().trimmed();
   if (text.size()) {
     taskTable_->setSortingEnabled(false);
-    for (size_t i = 0; i < 10; ++i) {
-      for (auto j = 0; j < 5; j++) {
+    for (size_t i = 0; i < TASK_ROWS; ++i) {
+      for (auto j = 0; j < TASK_COLS; j++) {
         taskTable_->setItem(i, j, nullptr);
       }
     }
