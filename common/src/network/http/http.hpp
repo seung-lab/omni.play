@@ -4,6 +4,7 @@
 #include "utility/resourcePool.hpp"
 #include "datalayer/paths.hpp"
 #include "zi/utility.h"
+#include "network/uri.hpp"
 
 #include <memory>
 #include <map>
@@ -23,6 +24,7 @@ namespace network {
 
 class HTTP : private SingletonBase<HTTP> {
  public:
+  static std::string GET(const network::Uri& uri) { return GET(uri.string()); }
   static std::string GET(const std::string& uri) {
     log_debugs << "HTTP GET: " << uri;
     typename handle_pool::Lease h(instance().HandlePool, true);
@@ -60,6 +62,10 @@ class HTTP : private SingletonBase<HTTP> {
     return str;
   }
 
+  template <typename T>
+  static std::shared_ptr<T> GET_JSON(const network::Uri& uri) {
+    return GET_JSON<T>(uri.string());
+  }
   template <typename T>
   static std::shared_ptr<T> GET_JSON(const std::string& uri) {
     std::string response = GET(uri);
@@ -114,6 +120,10 @@ class HTTP : private SingletonBase<HTTP> {
   }
 
   template <typename T>
+  static bool PUT_JSON(const network::Uri& uri, const T& val) {
+    return PUT_JSON(uri.string(), val);
+  }
+  template <typename T>
   static bool PUT_JSON(const std::string& uri, const T& val) {
     try {
       YAML::Emitter e;
@@ -129,6 +139,12 @@ class HTTP : private SingletonBase<HTTP> {
     }
   }
 
+  template <typename... TRest>
+  static boost::optional<std::string> POST(const network::Uri& uri,
+                                           TRest... rest) {
+    auto path = uri.string();
+    return POST<TRest...>(path, rest...);
+  }
   template <typename... TRest>
   static boost::optional<std::string> POST(const std::string& uri,
                                            TRest... rest) {

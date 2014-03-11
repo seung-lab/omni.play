@@ -43,22 +43,24 @@ class MesherConnector : public zi::enable_singleton_of_this<MesherConnector> {
     using namespace apache::thrift::transport;
     using namespace apache::thrift::protocol;
 
-    auto socket = boost::make_shared<TSocket>(mesherHost_, mesherPort_);
-    auto transport = boost::make_shared<TFramedTransport>(socket);
-    auto protocol = boost::make_shared<TBinaryProtocol>(transport);
-    auto mesher = boost::make_shared<zi::mesh::RealTimeMesherClient>(protocol);
-
     try {
+      auto socket = boost::make_shared<TSocket>(mesherHost_, mesherPort_);
+      auto transport = boost::make_shared<TFramedTransport>(socket);
+      auto protocol = boost::make_shared<TBinaryProtocol>(transport);
+      auto mesher =
+          boost::make_shared<zi::mesh::RealTimeMesherClient>(protocol);
+
       transport->open();
       if (!transport->isOpen()) {
-        log_debugs << "Unable to open transport.";
+        log_errors << "Unable to open transport.";
+        return MesherPtr();
       }
+      return mesher;
     }
-    catch (apache::thrift::TException& tx) {
-      throw(tx);
+    catch (apache::thrift::TException tx) {
+      log_errors << "Failed to connect to RTM: " << tx.what();
+      return MesherPtr();
     }
-
-    return mesher;
   }
 
   std::string mesherHost_;
@@ -69,23 +71,15 @@ class MesherConnector : public zi::enable_singleton_of_this<MesherConnector> {
 
 class serverHandler : virtual public serverIf,
                       public facebook::fb303::FacebookBase {
- private:
-  fb_status::type status_;
-  ServiceTracker serviceTracker_;
-
-  std::string mesherHost_;
-  int32_t mesherPort_;
-  thread::ThreadPool threadPool_;
-
  public:
   serverHandler(std::string mesherHost, int32_t mesherPort)
       : FacebookBase("omni.server"),
         status_(fb_status::STARTING),
-        serviceTracker_(this, &serverHandler::logMethod),
-        mesherHost_(mesherHost),
-        mesherPort_(mesherPort) {
+        serviceTracker_(this, &serverHandler::logMethod) {
     status_ = fb_status::ALIVE;
     threadPool_.start(1);
+    MesherConnector::set_mesherHost(mesherHost);
+    MesherConnector::set_mesherPort(mesherPort);
   }
 
   ~serverHandler() { threadPool_.stop(); }
@@ -131,12 +125,11 @@ class serverHandler : virtual public serverIf,
     modifiedIDs.insert(addedSegIds.begin(), addedSegIds.end());
     modifiedIDs.insert(deletedSegIds.begin(), deletedSegIds.end());
 
-    auto rtmConnector = std::bind(&serverHandler::makeMesher, this);
-
-    threadPool_.push_back([p, rtmConnector, addedIDs, modifiedIDs, segId]() {
+    threadPool_.push_back([p, addedIDs, modifiedIDs, segId]() {
+      log_infos << "Processing RTM Update for cell: " << segId;
       volume::Segmentation v(p, 1);
-      handler::modify_global_mesh_data(rtmConnector, v, addedIDs, modifiedIDs,
-                                       segId);
+      handler::modify_global_mesh_data(&MesherConnector::MakeMesher, v,
+                                       addedIDs, modifiedIDs, segId);
     });
     return true;
   }
@@ -221,41 +214,13 @@ class serverHandler : virtual public serverIf,
       apache::thrift::concurrency::ThreadManager> threadManager) {
     serviceTracker_.setThreadManager(threadManager);
   }
-  // private:
-  typedef boost::shared_ptr<zi::mesh::RealTimeMesherIf> MesherPtr;
-  MesherPtr makeMesher() {
-    using namespace apache::thrift;
-    using namespace apache::thrift::transport;
-    using namespace apache::thrift::protocol;
-
-    boost::shared_ptr<TSocket> socket =
-        boost::shared_ptr<TSocket>(new TSocket(mesherHost_, mesherPort_));
-
-    boost::shared_ptr<TTransport> transport =
-        boost::shared_ptr<TTransport>(new TFramedTransport(socket));
-
-    boost::shared_ptr<TProtocol> protocol =
-        boost::shared_ptr<TProtocol>(new TBinaryProtocol(transport));
-
-    boost::shared_ptr<zi::mesh::RealTimeMesherClient> mesher =
-        boost::shared_ptr<zi::mesh::RealTimeMesherClient>(
-            new zi::mesh::RealTimeMesherClient(protocol));
-
-    try {
-      transport->open();
-      if (!transport->isOpen()) {
-
-        log_errors << "Unable to open transport.";
-      }
-    }
-    catch (apache::thrift::TException& tx) {
-      throw(tx);
-    }
-
-    return mesher;
-  }
 
  private:
+  fb_status::type status_;
+  ServiceTracker serviceTracker_;
+
+  thread::ThreadPool threadPool_;
+
   static void logMethod(int, const std::string& str) { log_infos << str; }
 
   std::string volumePath(const metadata& meta) {

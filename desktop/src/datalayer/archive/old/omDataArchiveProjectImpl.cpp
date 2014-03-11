@@ -253,7 +253,7 @@ QDataStream& operator>>(QDataStream& in, OmSegmentsImpl& sc) {
       userEdges->AddEdgeFromProjectLoad(e);
     }
     userEdges->Save();
-    log_infos << "loaded " << userEdges->Edges().size() << "user edges";
+    log_infos << "loaded " << userEdges->Edges().size() << " user edges";
   } else {
     userEdges->Load();
   }

@@ -27,7 +27,8 @@ CFLAGS='-g -O2'
 --enable-gen-cpp
 --with-boost={libs}/boost""".format(libs=b.libs_fp())
 
-        b.prepareAndBuild()
+        b.prepare()
+        b.buildInSourceFolder()
 
     def libjpeg(self):
         b = self.makeBuilder(LibraryMetadata.jpeg())

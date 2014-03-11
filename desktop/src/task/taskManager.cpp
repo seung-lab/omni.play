@@ -2,12 +2,13 @@
 
 #include "taskManager.h"
 #include "task/task.h"
+#include "task/taskInfo.hpp"
 #include "task/tracingTask.h"
 #include "task/comparisonTask.h"
-#include "task/reapingTask.h"
 #include "task/aggregate.hpp"
 #include "system/account.h"
 #include "network/http/http.hpp"
+#include "network/uri.hpp"
 #include "yaml-cpp/yaml.h"
 #include "events/events.h"
 
@@ -17,80 +18,58 @@ namespace task {
 TaskManager::~TaskManager() {}
 
 std::shared_ptr<Task> TaskManager::GetTask(int cellID) {
-  try {
-    std::string taskURI = system::Account::endpoint() + "/api/v1/task";
-    if (cellID) {
-      taskURI += "/cell/" + std::to_string(cellID);
-    }
-
-    return network::HTTP::GET_JSON<TracingTask>(taskURI);
+  auto uri = system::Account::endpoint();
+  uri.set_path("/api/v1/task");
+  if (cellID) {
+    uri.AppendPath(std::string("/cell/") + std::to_string(cellID));
   }
-  catch (om::Exception e) {
-    log_debugs << "Failed loading task: " << e.what();
+  return instance().taskCache_.GET<TracingTask>(uri);
+}
+std::shared_ptr<std::vector<TaskInfo>> TaskManager::GetTasks(int datasetID,
+                                                             int cellID,
+                                                             int maxWeight) {
+  auto uri = system::Account::endpoint();
+  uri.set_path("/1.0/task");
+  if (cellID) {
+    uri.AddQueryParameter("cell", std::to_string(cellID));
+  } else if (datasetID) {
+    uri.AddQueryParameter("dataset", std::to_string(datasetID));
   }
-  return std::shared_ptr<Task>();
+  if (maxWeight) {
+    uri.AddQueryParameter("max_weight", std::to_string(maxWeight));
+  }
+  return instance().taskInfoCache_.GET(uri);
 }
 
 std::shared_ptr<Task> TaskManager::GetTaskByID(int taskID) {
-  try {
-    std::string taskURI = system::Account::endpoint() +
-                          "/api/v1/task/cell/0/task/" + std::to_string(taskID);
-
-    return network::HTTP::GET_JSON<TracingTask>(taskURI);
-  }
-  catch (om::Exception e) {
-    log_debugs << "Failed loading task: " << e.what();
-  }
-  return std::shared_ptr<Task>();
+  auto uri = system::Account::endpoint(
+      std::string("/api/v1/task/cell/0/task/") + std::to_string(taskID));
+  return instance().taskCache_.GET<TracingTask>(uri);
 }
 
 std::shared_ptr<Task> TaskManager::GetComparisonTask(int cellID) {
-  try {
-    std::string taskURI = system::Account::endpoint() + "/1.0/comparison_task";
-    if (cellID) {
-      taskURI += "?cell=" + std::to_string(cellID);
-    }
-
-    return network::HTTP::GET_JSON<ComparisonTask>(taskURI);
+  auto uri = system::Account::endpoint("/1.0/comparison_task");
+  if (cellID) {
+    uri.AddQueryParameter("cell", std::to_string(cellID));
   }
-  catch (om::Exception e) {
-    log_debugs << "Failed loading task: " << e.what();
-  }
-  return std::shared_ptr<Task>();
+  return instance().taskCache_.GET<ComparisonTask>(uri);
 }
 
 std::shared_ptr<Task> TaskManager::GetComparisonTaskByID(int taskID) {
-  return std::shared_ptr<Task>();
-}
-
-std::shared_ptr<Task> TaskManager::GetReapTask(int taskID) {
-  try {
-    std::string taskURI = system::Account::endpoint() +
-                          "/api/v1/task/cell/0/task/" + std::to_string(taskID);
-
-    auto task = network::HTTP::GET_JSON<ReapingTask>(taskURI);
-    if (!task) {
-      log_debugs << "No task... Bailing.";
-      return task;
-    }
-
-    auto agg = network::HTTP::GET_JSON<Aggregate>(taskURI + "/aggregate");
-    if (agg) {
-      task->set_aggregate(std::move(*agg));
-      log_debugs << "Setting Aggregate.";
-    }
-    return task;
+  if (!taskID) {
+    return std::shared_ptr<Task>();
   }
-  catch (om::Exception e) {
-    log_debugs << "Failed loading task: " << e.what();
-  }
-  return std::shared_ptr<Task>();
+
+  auto uri = system::Account::endpoint("/1.0/comparison_task");
+  uri.AddQueryParameter("task", std::to_string(taskID));
+
+  return instance().taskCache_.GET<ComparisonTask>(uri);
 }
 
 std::shared_ptr<std::vector<Dataset>> TaskManager::GetDatasets() {
   try {
-    std::string datasetURI = system::Account::endpoint() + "/1.0/dataset";
-    return network::HTTP::GET_JSON<std::vector<Dataset>>(datasetURI);
+    auto datasetURI = system::Account::endpoint("/1.0/dataset");
+    return instance().datasetCache_.GET(datasetURI);
   }
   catch (om::Exception e) {
     log_debugs << "Failed loading datasets: " << e.what();
@@ -100,9 +79,9 @@ std::shared_ptr<std::vector<Dataset>> TaskManager::GetDatasets() {
 
 std::shared_ptr<std::vector<Cell>> TaskManager::GetCells(int datasetID) {
   try {
-    std::string cellURI = system::Account::endpoint() + "/1.0/cell?dataset=" +
-                          std::to_string(datasetID);
-    return network::HTTP::GET_JSON<std::vector<Cell>>(cellURI);
+    auto cellURI = system::Account::endpoint("/1.0/cell");
+    cellURI.AddQueryParameter("dataset", std::to_string(datasetID));
+    return instance().cellsCache_.GET(cellURI);
   }
   catch (om::Exception e) {
     log_debugs << "Failed loading cells: " << e.what();
@@ -113,10 +92,32 @@ std::shared_ptr<std::vector<Cell>> TaskManager::GetCells(int datasetID) {
 void TaskManager::ConnectionChangeEvent() {}
 
 bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
-  auto& current = instance().currentTask_;
-  if (task == current) {
+  instance().currentTask_ = task;
+  if (task) {
+    log_infos << "Changed current task " << task->Id();
+  } else {
+    log_infos << "Changed current task nullptr";
+  }
+  om::event::TaskChange();
+  instance().taskCache_.Clear();
+  instance().taskInfoCache_.Clear();
+  if (!task) {
     return true;
-  } else if (current) {
+  }
+
+  if (!task->Start()) {
+    log_debugs << "Failed starting task " << task->Id();
+    instance().currentTask_ = nullptr;
+    om::event::TaskChange();
+    return false;
+  }
+  om::event::TaskStarted();
+  return true;
+}
+
+bool TaskManager::AttemptFinishTask() {
+  auto& current = instance().currentTask_;
+  if (current) {
     log_debugs << "Finishing current task " << current->Id();
     // TODO: headless
     QMessageBox box(
@@ -132,27 +133,25 @@ bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
       current->Submit();
     }
   }
-  current = task;
-  if (current) {
-    log_debugs << "Changed current task " << current->Id();
-  } else {
-    log_debugs << "Changed current task nullptr";
-  }
-  om::event::TaskChange();
-  if (!task) {
-    return true;
-  }
-
-  if (!task->Start()) {
-    log_debugs << "Failed starting task " << task->Id();
-    current = nullptr;
-    return false;
-  }
-  om::event::TaskStarted();
-  return true;
+  return LoadTask(nullptr);
 }
 
-bool TaskManager::FinishTask() { return LoadTask(std::shared_ptr<Task>()); }
+bool TaskManager::SubmitTask() {
+  auto& current = instance().currentTask_;
+  if (!current) {
+    return true;
+  }
+  log_debugs << "Finishing current task " << current->Id();
+  current->Submit();
+  return LoadTask(nullptr);
+}
+
+void TaskManager::Refresh() {
+  instance().taskCache_.Clear();
+  instance().taskInfoCache_.Clear();
+  instance().datasetCache_.Clear();
+  instance().cellsCache_.Clear();
+}
 
 std::shared_ptr<Task> TaskManager::FindInterruptedTask() {
   return std::shared_ptr<Task>();

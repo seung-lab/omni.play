@@ -32,7 +32,7 @@ class usersImpl {
     currentUser_ = userName;
     userFolder_ = QDir(usersFolderRoot_ + QString::fromStdString(userName))
                       .absolutePath();
-    log_variable(userFolder_.toStdString());
+    log_infos << "User folder: " << userFolder_.toStdString();
 
     // assuming SegmentationID 1:
     if (!om::file::exists(userFolder_.toStdString() +

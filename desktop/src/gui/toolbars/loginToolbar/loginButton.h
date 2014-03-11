@@ -15,4 +15,7 @@ class LoginButton : public QPushButton,
  public
 Q_SLOTS:
   void onClicked();
+
+ private:
+  void setLabel();
 };

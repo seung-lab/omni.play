@@ -15,7 +15,8 @@ class TaskInfoWidget : public QWidget, public om::event::TaskEventListener {
   TaskInfoWidget(QWidget* parent);
   ~TaskInfoWidget();
 
-  void TaskStartedEvent();
+  void TaskStartedEvent() override;
+  void TaskChangeEvent() override;
 
  public
 Q_SLOTS:

@@ -3,6 +3,7 @@
 #include <QtGui>
 
 class LoginButton;
+class SelectTaskButton;
 
 class LoginToolBar : public QToolBar {
   Q_OBJECT;
@@ -12,4 +13,5 @@ class LoginToolBar : public QToolBar {
 
  private:
   LoginButton *const loginButton_;
+  SelectTaskButton *const selectTaskButton_;
 };

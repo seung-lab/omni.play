@@ -14,7 +14,7 @@ class CachedDataSource : public mesh::VertexIndexMeshDSH {
  public:
   CachedDataSource(file::path volumeRoot,
                    chunk::UniqueValuesDS* uniqueValuesSource)
-      : mesh::VertexIndexMeshDSH(4), toCache_(100000) {
+      : mesh::VertexIndexMeshDSH(4), toCache_(1000) {  // 1000 * ~500KB = 500MB
 
     Register<mesh::VertexIndexDataSource>(0, volumeRoot, uniqueValuesSource);
     Register<

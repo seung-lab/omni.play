@@ -14,8 +14,9 @@ class DisplayListCachedDataSource : public DisplayListMeshDSH {
   const size_t toCache_;  // TODO: Make dynamic (Cache Manager)
 
  public:
+  // Needs to be dynamic based on GPU memory instead of CPU memory.
   DisplayListCachedDataSource(VertexIndexMeshDS& rawMeshes)
-      : DisplayListMeshDSH(), toCache_(10000) {
+      : DisplayListMeshDSH(), toCache_(1000) {
 
     Register<DisplayListMeshDataSource<VertexIndexMesh>>(0, rawMeshes);
     Register<datalayer::CacheDataSource<DisplayListMeshCoord,

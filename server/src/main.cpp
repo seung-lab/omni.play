@@ -1,5 +1,6 @@
 #include <zi/arguments.hpp>
 
+#include "version.hpp"
 #include "common/logging.h"
 #include "serverHandler.hpp"
 #include <protocol/TBinaryProtocol.h>
@@ -19,6 +20,7 @@ ZiARG_bool(daemonize, true, "Run as daemon");
 ZiARG_string(mesher, "localhost", "Mesher's address");
 ZiARG_int32(mport, 9090, "Mesher's port");
 ZiARG_string(logfile, "/var/log/omni/omni.server.log", "Log file location");
+ZiARG_bool(version, false, "Show Version information");
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -30,6 +32,15 @@ using namespace ::om::server;
 
 int main(int argc, char *argv[]) {
   zi::parse_arguments(argc, argv, true);
+
+  if (ZiARG_version) {
+    std::cout << "Omni Server Version " << OMNI_SERVER_VERSION << std::endl;
+    return 0;
+  }
+  om::logging::initLogging(ZiARG_logfile, !ZiARG_daemonize);
+
+  log_infos << "Starting Omni Server Version " << OMNI_SERVER_VERSION;
+
   if (ZiARG_daemonize) {
     if (!::zi::system::daemonize(true, true)) {
 
@@ -38,7 +49,6 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  om::logging::initLogging(ZiARG_logfile, false);
   int port = ZiARG_port;
   boost::shared_ptr<serverHandler> handler(
       new serverHandler(ZiARG_mesher, ZiARG_mport));

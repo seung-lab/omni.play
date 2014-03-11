@@ -14,7 +14,7 @@ class CachedUniqueValuesDataSource : public UniqueValuesDSH {
 
  public:
   CachedUniqueValuesDataSource(file::path volPath)
-      : chunk::UniqueValuesDSH(), toCache_(50) {
+      : chunk::UniqueValuesDSH(), toCache_(100) {  // 100 * ~500k = ~50MB
     Register<UniqueValuesFileDataSource>(0, volPath);
     Register<datalayer::CacheDataSource<coords::Chunk, chunk::UniqueValues>>(
         0, toCache_);

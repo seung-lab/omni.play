@@ -185,13 +185,22 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   auto postBounds = post.Metadata().bounds();
   auto dir = getDirection(preBounds, postBounds);
   auto bounds = getBounds(preBounds, postBounds, dir);
+  if (bounds.isEmpty()) {
+    throw ArgException("Bounds do not overlap.");
+  }
+
   auto proxyBounds = bounds.ToDataBbox(pre.Coords(), 0);
   const Vector3i range = slab(bounds);
+  uint64_t overlap_volume =
+      (uint64_t)range.x * (uint64_t)range.y * (uint64_t)range.z;
+  if (overlap_volume > 400 * 128 * 128 * 128) {  // Max overlap size
+    throw ArgException("Overlap region is too large.");
+  }
 
   std::unordered_map<uint32_t, int> mappingCounts;
   std::unordered_map<uint32_t, int> sizes;
 
-  zi::disjoint_sets<uint32_t> sets(range.x * range.y * range.z);
+  zi::disjoint_sets<uint32_t> sets(overlap_volume);
   std::set<uint32_t> included, postSelected;
 
   chunk::Voxels<uint32_t> preGetter(pre.ChunkDS(), pre.Coords());

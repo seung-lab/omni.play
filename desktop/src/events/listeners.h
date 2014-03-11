@@ -73,7 +73,7 @@ struct TaskEventListener : public Listener {
 };
 
 struct ConnectionEventListener : public Listener {
-  ConnectionEventListener() : Listener(Klass::task) {}
+  ConnectionEventListener() : Listener(Klass::connection) {}
   virtual void ConnectionChangeEvent() = 0;
 };
 }

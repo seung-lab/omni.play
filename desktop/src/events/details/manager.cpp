@@ -5,22 +5,17 @@
 namespace om {
 namespace event {
 
+Manager::Manager() : impl_(new ManagerImpl()) {}
+Manager::~Manager() {}
+
 void Manager::AddListener(Klass klass, Listener* listener) {
-  if (impl()) {
-    impl()->AddListener(klass, listener);
-  }
+  instance().impl_->AddListener(klass, listener);
 }
 
 void Manager::RemoveListener(Klass klass, Listener* listener) {
-  if (impl()) {
-    impl()->RemoveListener(klass, listener);
-  }
+  instance().impl_->RemoveListener(klass, listener);
 }
 
-void Manager::Post(Event* event) {
-  if (impl()) {
-    impl()->Post(event);
-  }
-}
+void Manager::Post(Event* event) { instance().impl_->Post(event); }
 }
 }

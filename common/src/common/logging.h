@@ -8,7 +8,8 @@
 namespace om {
 namespace logging {
 
-void initLogging(std::string logfile, bool consoleLog = true);
+void initLogging(std::string logfile, bool consoleLog = true,
+                 size_t logLimit = 0);
 
 inline boost::format& my_printf_core(boost::format& format) { return format; }
 

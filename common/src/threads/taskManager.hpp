@@ -28,7 +28,8 @@
 namespace om {
 namespace thread {
 
-template <typename TaskContainer> class TaskManager {
+template <typename TaskContainer>
+class TaskManager {
  private:
   typedef std::shared_ptr<zi::concurrency_::runnable> task_t;
 
@@ -98,7 +99,7 @@ template <typename TaskContainer> class TaskManager {
   void remove_workers(std::size_t count) { manager_->remove_workers(count); }
 
   // status
-  bool wasStarted() { return manager_; }
+  bool wasStarted() { return (bool)manager_; }
 
   inline int getTaskCount() const { return tasks_.size(); }
 
@@ -118,12 +119,14 @@ template <typename TaskContainer> class TaskManager {
     wake_manager();
   }
 
-  template <typename Runnable> void push_front(std::shared_ptr<Runnable> task) {
+  template <typename Runnable>
+  void push_front(std::shared_ptr<Runnable> task) {
     tasks_.push_front(task);
     wake_manager();
   }
 
-  template <typename Function> void push_front(const Function& task) {
+  template <typename Function>
+  void push_front(const Function& task) {
     tasks_.push_front(task);
     wake_manager();
   }
@@ -134,12 +137,14 @@ template <typename TaskContainer> class TaskManager {
     wake_manager();
   }
 
-  template <typename Runnable> void push_back(std::shared_ptr<Runnable> task) {
+  template <typename Runnable>
+  void push_back(std::shared_ptr<Runnable> task) {
     tasks_.push_back(task);
     wake_manager();
   }
 
-  template <typename Function> void push_back(const Function& task) {
+  template <typename Function>
+  void push_back(const Function& task) {
     tasks_.push_back(task);
     wake_manager();
   }
@@ -150,18 +155,21 @@ template <typename TaskContainer> class TaskManager {
     wake_manager();
   }
 
-  template <typename Runnable> void insert(std::shared_ptr<Runnable> task) {
+  template <typename Runnable>
+  void insert(std::shared_ptr<Runnable> task) {
     tasks_.insert(task);
     wake_manager();
   }
 
-  template <typename Function> void insert(const Function& task) {
+  template <typename Function>
+  void insert(const Function& task) {
     tasks_.insert(task);
     wake_manager();
   }
 
   // insert w/ arg
-  template <typename ARG> void insert(const ARG& arg, task_t task) {
+  template <typename ARG>
+  void insert(const ARG& arg, task_t task) {
     tasks_.insert(arg, task);
     wake_manager();
   }

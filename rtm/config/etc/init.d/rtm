@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# Simple init.d script conceived to work on Linux systems
+# as it does use of the /proc filesystem.
+
+export RTMDIR=/usr/local/omni/rtm
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RTMDIR/lib
+export APPENV=PRODUCTION
+
+ORIGINALDIR=`pwd`
+cd $RTMDIR
+
+PORT=9999
+PIDFILE=/etc/run/rtm_${PORT}.pid
+EXEC="$RTMDIR/rtm --port=$PORT --nodaemonize"
+
+case "$1" in
+    start)
+        if [ -f $PIDFILE ]
+        then
+                echo "$PIDFILE exists, process is already running or crashed"
+        else
+                echo "Starting Real Time Mesher..."
+                `$EXEC`
+        fi
+        ;;
+    stop)
+        if [ ! -f $PIDFILE ]
+        then
+                echo "$PIDFILE does not exist, process is not running"
+        else
+                PID=$(cat $PIDFILE)
+                echo "Stopping PID $PID ..."
+        	   kill $PID
+                while [ -x /proc/${PID} ]
+                do
+                    echo "Waiting for RTM to shutdown ..."
+                    sleep 1
+                done
+		        rm $PIDFILE
+                echo "RTM stopped"
+        fi
+        ;;
+    restart)
+        $0 stop;
+        $0 start;
+    ;;
+    *)
+        echo "Please use start, stop, or restart as first argument"
+    ;;
+esac
+
+cd $ORIGINALDIR

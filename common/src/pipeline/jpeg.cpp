@@ -16,6 +16,7 @@ data_var jpeg::compress(int pixelsize, int jpegsubsamp, uint8_t* in) const {
       {
     throw IoException(tjGetErrorStr());
   }
+  out.size = buffSize;
 
   return out;
 }

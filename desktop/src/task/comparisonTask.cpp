@@ -59,6 +59,9 @@ bool ComparisonTask::Start() {
     }
     segments->UpdateSegmentSelection(allRoots, true);
   } else {
+    // clear any pre-existing selection (which could exist if the previous task
+    // happened to be in the same volume)
+    segments->UpdateSegmentSelection({}, true);
     log_errors << "Missing All segments group.";
   }
 
@@ -97,7 +100,7 @@ bool ComparisonTask::Submit() {
     segIDs[seg->value()] = 1;
   }
 
-  auto uri = system::Account::endpoint() + "/1.0/cube/submit";
+  auto uri = system::Account::endpoint("/1.0/cube/submit");
   network::HTTP::POST(
       uri, std::make_pair("id", id_), std::make_pair("plane", "xy"),
       std::make_pair("segments", segIDs), std::make_pair("reap", "true"),

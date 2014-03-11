@@ -5,6 +5,7 @@
 #include "system/omAppState.hpp"
 #include "system/omConnect.hpp"
 #include "utility/segmentationDataWrapper.hpp"
+#include "actions/omActions.h"
 
 #include <vector>
 #include <tuple>
@@ -41,6 +42,16 @@ TaskInfoWidget::TaskInfoWidget(QWidget* parent)
 TaskInfoWidget::~TaskInfoWidget() {}
 
 void TaskInfoWidget::TaskStartedEvent() { updateInfo(); }
+
+void TaskInfoWidget::TaskChangeEvent() {
+  if (TaskManager::currentTask()) {
+    doneButton_->setEnabled(true);
+    taskSelectorButton_->setText(tr("Skip"));
+  } else {
+    doneButton_->setEnabled(false);
+    taskSelectorButton_->setText(tr("New task"));
+  }
+}
 
 void TaskInfoWidget::updateInfo() {
   auto task = om::task::TaskManager::currentTask().get();
@@ -116,11 +127,30 @@ size_t TaskInfoWidget::getSize(const om::task::SegGroup& group) const {
 }
 
 void TaskInfoWidget::taskSelectorButtonPressed() {
+  QMessageBox box(
+      QMessageBox::Question, "Save project?",
+      "Do you want to save current project?",
+      QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+  int result = box.exec();
+  if (result == QMessageBox::Cancel) {
+    return;
+  }
+  if (result == QMessageBox::Save) {
+    OmActions::Save();
+  }
   OmAppState::OpenTaskSelector();
 }
 
 void TaskInfoWidget::doneButtonPressed() {
-  if (TaskManager::FinishTask()) {
-    OmAppState::OpenTaskSelector();
+  QMessageBox box(
+      QMessageBox::Question, "Submit current task?",
+      "Would you like to submit your accomplishments on the current task?",
+      QMessageBox::Yes | QMessageBox::Cancel);
+  int result = box.exec();
+  if (result == QMessageBox::Cancel) {
+    return;
   }
+  TaskManager::SubmitTask();
+  OmActions::Save();
+  OmAppState::OpenTaskSelector();
 }

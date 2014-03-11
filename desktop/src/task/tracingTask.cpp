@@ -57,7 +57,7 @@ bool TracingTask::Submit() {
     segIDs[seg->value()] = 1;
   }
 
-  auto uri = system::Account::endpoint() + "/1.0/cube/submit";
+  auto uri = system::Account::endpoint("/1.0/cube/submit");
   network::HTTP::POST(uri, std::make_pair("id", id_),
                       std::make_pair("plane", "xy"),
                       std::make_pair("segments", segIDs),

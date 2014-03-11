@@ -24,35 +24,39 @@ class TaskSelector : public QDialog {
  public
 Q_SLOTS:
   void updateEnabled();
+  void updateList();
+  void onManualEntry();
   void updateCells();
   void traceClicked();
   void compareClicked();
-  void reapClicked();
+  void refreshClicked();
 
  protected:
   virtual void showEvent(QShowEvent* event) override;
   virtual void accept() override;
 
+  virtual QSize sizeHint() const override;
+
  private:
+  uint8_t datasetID();
   om::task::Dataset* dataset();
   uint32_t cellID();
   uint32_t taskID();
+  int selectedTaskId();
   void getTasks();
 
   bool populating_;
 
   QComboBox* datasetCombo_;
-  QRadioButton* allCellsRadio_;
-  QRadioButton* cellRadio_;
-  QRadioButton* taskRadio_;
   QComboBox* cellCombo_;
   QLineEdit* taskLineEdit_;
+  QTableWidget* taskTable_;
   QPushButton* traceButton_;
   QPushButton* compareButton_;
-  QPushButton* reapButton_;
+  QPushButton* closeButton_;
+  QPushButton* refreshButton_;
 
   std::shared_ptr<om::task::Task> traceTask_;
   std::shared_ptr<om::task::Task> compareTask_;
-  std::shared_ptr<om::task::Task> reapTask_;
   std::shared_ptr<std::vector<om::task::Dataset>> datasets_;
 };
