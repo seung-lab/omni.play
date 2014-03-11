@@ -33,7 +33,8 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
                << "Cell"
                << "Weight"
                << "Comparison"
-               << "Path";
+               << "Path"
+               << "Users";
   taskTable_->setColumnCount(headerLabels.size());
   taskTable_->setHorizontalHeaderLabels(headerLabels);
 
@@ -222,6 +223,8 @@ void TaskSelector::getTasks() {
     taskTable_->setItem(i, 2, makeTableItem(t.weight));
     taskTable_->setItem(i, 3, makeTableItem(t.inspected_weight == t.weight));
     taskTable_->setItem(i, 4, makeTableItem(QString::fromStdString(t.path)));
+    taskTable_->setItem(
+        i, 5, makeTableItem(QString::fromStdString(om::string::join(t.users))));
   }
   // Clear the remaining table cells if they had contents:
   for (; i < 10; ++i) {
