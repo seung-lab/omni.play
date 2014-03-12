@@ -120,10 +120,10 @@ class OmMeshChunkDataWriterV2 {
 
   QString filePath() {
     const QString volPath =
-        vol_->Folder()->GetMeshChunkFolderPath(threshold_, coord_);
+        vol_->Folder().GetMeshChunkFolderPath(threshold_, coord_);
 
     if (!QDir(volPath).exists()) {
-      vol_->Folder()->MakeMeshChunkFolderPath(threshold_, coord_);
+      vol_->Folder().MakeMeshChunkFolderPath(threshold_, coord_);
     }
 
     return volPath + "meshData.ver2";

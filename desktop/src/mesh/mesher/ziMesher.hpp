@@ -55,7 +55,7 @@ class ziMesher {
   // void RemeshFullVolume()
   // {
   // if(redownsample){
-  //     vol_->VolData()->downsample(vol_);
+  //     vol_->VolData().downsample(vol_);
   // }
   //     OmChunkUtils::RefindUniqueChunkValues(vol_->GetID());
   // }

@@ -126,7 +126,7 @@ class OmMeshManagers {
   DoubleFuzzyStdSet thresholds_;
 
   void findMeshThresholds() {
-    const QString meshFolder = segmentation_->Folder()->GetMeshFolderPath();
+    const QString meshFolder = segmentation_->Folder().GetMeshFolderPath();
     QDir dir(meshFolder);
 
     QStringList filters;

@@ -47,7 +47,7 @@ class LongRangeConnectionButton : public OmButton<om::landmarks::widget> {
         pts_[0].sdw.MakeSegmentationDataWrapper();
     OmSegmentation* vol = sdw.GetSegmentationPtr();
 
-    const QString fpath = vol->Folder()->LongRangeConnectionFile();
+    const QString fpath = vol->Folder().LongRangeConnectionFile();
 
     QFile file(fpath);
 

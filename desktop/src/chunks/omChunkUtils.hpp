@@ -14,14 +14,14 @@ class OmChunkUtils {
       return;
     }
 
-    OmSegments* segments = segmentation->Segments();
+    auto& segments = segmentation->Segments();
     segmentation->SetDendThreshold(threshold);
 
     uint32_t* rawData = chunkData.getScalarPtrMutate();
 
     for (size_t i = 0; i < chunkData.size(); ++i) {
       if (0 != rawData[i]) {
-        rawData[i] = segments->FindRootID(rawData[i]);
+        rawData[i] = segments.FindRootID(rawData[i]);
       }
     }
   }

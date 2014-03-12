@@ -63,7 +63,7 @@ class OmMeshMetadata {
 
  private:
   QString filePath() {
-    return segmentation_->Folder()->MeshMetadataFilePerThreshold(threshold_);
+    return segmentation_->Folder().MeshMetadataFilePerThreshold(threshold_);
   }
 
   bool load() {

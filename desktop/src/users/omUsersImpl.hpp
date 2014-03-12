@@ -103,7 +103,7 @@ class usersImpl {
   }
 
   QString oldGetVolSegmentsPathAbs(OmSegmentation* vol) {
-    const QDir filesDir(vol->Folder()->GetVolPath());
+    const QDir filesDir(vol->Folder().GetVolPath());
     return filesDir.absolutePath() + QLatin1String("/segments/");
   }
 

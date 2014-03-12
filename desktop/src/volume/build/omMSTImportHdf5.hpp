@@ -138,11 +138,11 @@ class OmMSTImportHdf5 {
     std::vector<om::segment::ImportEdge> valid;
     valid.reserve(size);
 
-    OmSegments* segments = vol_->Segments();
+    auto& segments = vol_->Segments();
 
     for (uint32_t i = 0; i < size; ++i) {
-      if (segments->IsSegmentValid(edges_[i].seg1)) {
-        if (segments->IsSegmentValid(edges_[i].seg2)) {
+      if (segments.IsSegmentValid(edges_[i].seg1)) {
+        if (segments.IsSegmentValid(edges_[i].seg2)) {
           valid.push_back(edges_[i]);
           continue;
         }

@@ -27,7 +27,7 @@ class OmMSTImportWatershed {
       throw om::IoException(err.toStdString());
     }
 
-    auto& mst = *vol_->MST();
+    auto& mst = vol_->MST();
 
     mst.resize(edges_.size());
     for (size_t i = 0; i < edges_.size(); ++i) {

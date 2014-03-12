@@ -13,7 +13,7 @@ void om::segmentation::loader::LoadSegmentPages(
     OmPagingPtrStore& ps, QSet<om::common::PageNum>& validPageNumbers,
     uint32_t size) {
   if (OmProject::GetFileVersion() < 17) {
-    vol_->Folder()->MakeUserSegmentsFolder();
+    vol_->Folder().MakeUserSegmentsFolder();
 
     ps.pageSize_ = size;
 
@@ -25,7 +25,7 @@ void om::segmentation::loader::LoadSegmentPages(
 
   if (vol_->IsBuilt()) {
     const QString fullPath =
-        QString::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
+        QString::fromStdString(vol_->Folder().GetVolSegmentsPathAbs());
 
     if (OmFileHelpers::IsFolderEmpty(fullPath)) {
       rebuildSegments();
@@ -39,7 +39,7 @@ void om::segmentation::loader::LoadSegmentPages(
 void om::segmentation::loader::LoadSegmentPages(OmPagingPtrStore& ps) {
   if (vol_->IsBuilt()) {
     const QString fullPath =
-        QString::fromStdString(vol_->Folder()->GetVolSegmentsPathAbs());
+        QString::fromStdString(vol_->Folder().GetVolSegmentsPathAbs());
 
     if (OmFileHelpers::IsFolderEmpty(fullPath)) {
       rebuildSegments();
@@ -62,7 +62,7 @@ void om::segmentation::loader::rebuildSegments() {
   if (om::string::startsWith(answer, "y")) {
     vol_->LoadVolData();
 
-    vol_->VolData()->downsample(vol_);
+    vol_->VolData().downsample(vol_);
 
     vol_->Segments()->StartCaches();
 

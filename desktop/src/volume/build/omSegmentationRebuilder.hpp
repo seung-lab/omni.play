@@ -48,7 +48,7 @@ class segmentation {
   }
 
  private:
-  virtual void downsample() { vol_->VolData()->downsample(vol_); }
+  virtual void downsample() { vol_->VolData().downsample(vol_); }
 
   virtual void processVol() {
     OmVolumeProcessor processor;
@@ -59,6 +59,5 @@ class segmentation {
 
   void setVolAsBuilt() { vol_->SetBuildState(MIPVOL_BUILT); }
 };
-
 }
 }

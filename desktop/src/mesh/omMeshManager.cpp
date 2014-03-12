@@ -21,11 +21,11 @@ OmMeshManager::~OmMeshManager() {}
 
 void OmMeshManager::Create() {
   const QString path =
-      segmentation_->Folder()->GetMeshThresholdFolderPath(threshold_);
+      segmentation_->Folder().GetMeshThresholdFolderPath(threshold_);
 
   OmFileHelpers::RemoveDir(path);
 
-  segmentation_->Folder()->MakeMeshThresholdFolderPath(threshold_);
+  segmentation_->Folder().MakeMeshThresholdFolderPath(threshold_);
 
   reader_.reset(new OmMeshReaderV2(this));
 }

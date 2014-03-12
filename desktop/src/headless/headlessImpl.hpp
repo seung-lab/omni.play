@@ -291,7 +291,7 @@ class HeadlessImpl {
 
   static void DownsampleChannel(const ChannelDataWrapper& cdw) {
     OmChannel* vol = cdw.GetChannelPtr();
-    vol->VolData()->downsample(vol);
+    vol->VolData().downsample(vol);
   }
 
   static void CheckMeshes(const SegmentationDataWrapper& sdw) {

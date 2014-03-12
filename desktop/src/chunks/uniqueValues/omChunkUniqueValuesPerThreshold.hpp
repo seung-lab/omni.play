@@ -85,12 +85,12 @@ class OmChunkUniqueValuesPerThreshold {
     std::unordered_set<uint32_t> segIDs;
 
     if (!qFuzzyCompare(1, threshold_)) {
-      OmSegments* segments = segmentation_->Segments();
+      auto& segments = segmentation_->Segments();
       segmentation_->SetDendThreshold(threshold_);
 
       for (size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i) {
         if (0 != rawData[i]) {
-          segIDs.insert(segments->FindRootID(rawData[i]));
+          segIDs.insert(segments.FindRootID(rawData[i]));
         }
       }
     } else {
@@ -131,10 +131,10 @@ class OmChunkUniqueValuesPerThreshold {
   }
 
   QString filePath() {
-    const QString volPath = segmentation_->Folder()->GetChunkFolderPath(coord_);
+    const QString volPath = segmentation_->Folder().GetChunkFolderPath(coord_);
 
     if (!QDir(volPath).exists()) {
-      segmentation_->Folder()->MakeChunkFolderPath(coord_);
+      segmentation_->Folder().MakeChunkFolderPath(coord_);
     }
 
     const QString fullPath = QString("%1uniqeValues.%2.ver1").arg(volPath).arg(

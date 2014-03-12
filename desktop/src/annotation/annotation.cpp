@@ -13,7 +13,7 @@ namespace om {
 namespace annotation {
 
 std::string manager::filePathV1() const {
-  return vol_->Folder()->AnnotationFile().toStdString();
+  return vol_->Folder().AnnotationFile().toStdString();
 }
 
 void manager::Add(coords::Global coord, const std::string& comment,
