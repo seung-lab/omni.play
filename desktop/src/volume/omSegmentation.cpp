@@ -21,9 +21,11 @@
 #include "actions/omActions.h"
 #include "volume/segmentation.h"
 
+using namespace om;
+
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
-    : loader_(new om::segmentation::loader(this)),
+    : loader_(new segmentation::loader(this)),
       uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
@@ -35,12 +37,12 @@ OmSegmentation::OmSegmentation()
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
-      annotations_(new om::annotation::manager(this)) {}
+      annotations_(new annotation::manager(this)) {}
 
 // used by OmGenericManager
-OmSegmentation::OmSegmentation(om::common::ID id)
+OmSegmentation::OmSegmentation(common::ID id)
     : OmManageableObject(id),
-      loader_(new om::segmentation::loader(this)),
+      loader_(new segmentation::loader(this)),
       uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
@@ -52,7 +54,8 @@ OmSegmentation::OmSegmentation(om::common::ID id)
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
-      annotations_(new om::annotation::manager(this)) {
+      annotations_(new annotation::manager(this)),
+{
   LoadPath();
 
   segments_->StartCaches();
@@ -62,7 +65,25 @@ OmSegmentation::OmSegmentation(om::common::ID id)
 OmSegmentation::~OmSegmentation() {}
 
 void OmSegmentation::LoadPath() {
-  folder_.reset(new om::segmentation::folder(this));
+  folder_.reset(new segmentation::folder(this));
+
+  const auto& p = OmProject::Paths();
+  const auto& username = OmProject::Globals().Users().CurrentUser();
+  auto id = GetID();
+
+  metaDS_.reset(new MetadataDataSource());
+  metaManager_.reset(new MetadataManager(*metaDS_, uri));
+
+  segDataDS_.reset(new segment::FileDataSource(p.UserSegments(username, id)));
+  segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize,
+                                            Metadata().numSegments() + 1));
+
+  segListDataDS_.reset(
+      new segment::ListTypeFileDataSource(p.UserSegments(username, id)));
+  segListData_.reset(new segment::SegListDataVector(
+      *segListDataDS_.reset, segment::PageSize, Metadata().numSegments() + 1));
+
+  mst_.reset(new segment::EdgeVector(p.UserMST(username, id)));
 }
 
 bool OmSegmentation::LoadVolData() {
@@ -78,20 +99,12 @@ bool OmSegmentation::LoadVolData() {
   return false;
 }
 
-om::segment::EdgeVector* OmSegmentation::MST() {
-  if (!mst_) {
-    mst_.reset(new om::segment::EdgeVector(OmProject::Paths().UserMST(
-        OmProject::Globals().Users().CurrentUser(), GetID())));
-  }
-  return mst_.get();
-}
-
 std::string OmSegmentation::GetName() {
-  return "segmentation" + om::string::num(GetID());
+  return "segmentation" + string::num(GetID());
 }
 
 std::string OmSegmentation::GetNameHyphen() {
-  return "segmentation-" + om::string::num(GetID());
+  return "segmentation-" + string::num(GetID());
 }
 
 void OmSegmentation::SetDendThreshold(const double t) {
@@ -168,13 +181,13 @@ OmMeshManager* OmSegmentation::MeshManager(const double threshold) {
   return meshManagers_->GetManager(threshold);
 }
 
-quint32 OmSegmentation::GetVoxelValue(const om::coords::Global& vox) {
+quint32 OmSegmentation::GetVoxelValue(const coords::Global& vox) {
   if (!ContainsVoxel(vox)) {
     return 0;
   }
 
   // find mip_coord and offset
-  const om::coords::Chunk mip0coord = vox.ToChunk(Coords(), 0);
+  const coords::Chunk mip0coord = vox.ToChunk(Coords(), 0);
 
   OmSegChunk* chunk = GetChunk(mip0coord);
 
@@ -182,24 +195,24 @@ quint32 OmSegmentation::GetVoxelValue(const om::coords::Global& vox) {
   return chunk->GetVoxelValue(vox.ToData(Coords(), 0));
 }
 
-void OmSegmentation::SetVoxelValue(const om::coords::Global& vox,
+void OmSegmentation::SetVoxelValue(const coords::Global& vox,
                                    const uint32_t val) {
   if (!ContainsVoxel(vox)) return;
 
   for (int level = 0; level <= coords_.RootMipLevel(); level++) {
-    om::coords::Chunk leaf_mip_coord = vox.ToChunk(Coords(), level);
+    coords::Chunk leaf_mip_coord = vox.ToChunk(Coords(), level);
     OmSegChunk* chunk = GetChunk(leaf_mip_coord);
     chunk->SetVoxelValue(vox.ToData(Coords(), level), val);
   }
 }
 
-bool OmSegmentation::SetVoxelValueIfSelected(const om::coords::Global& vox,
+bool OmSegmentation::SetVoxelValueIfSelected(const coords::Global& vox,
                                              const uint32_t val) {
-  const om::common::SegIDSet selection = Segments()->GetSelectedSegmentIDs();
+  const common::SegIDSet selection = Segments()->GetSelectedSegmentIDs();
   if (selection.size() > 0) {
-    om::coords::Chunk leaf_mip_coord = vox.ToChunk(Coords(), 0);
+    coords::Chunk leaf_mip_coord = vox.ToChunk(Coords(), 0);
     OmSegChunk* chunk = GetChunk(leaf_mip_coord);
-    om::common::SegID target =
+    common::SegID target =
         Segments()->findRootID(chunk->GetVoxelValue(vox.ToData(Coords(), 0)));
 
     if (selection.count(target) == 0) {
@@ -211,7 +224,7 @@ bool OmSegmentation::SetVoxelValueIfSelected(const om::coords::Global& vox,
   return true;
 }
 
-OmSegChunk* OmSegmentation::GetChunk(const om::coords::Chunk& coord) {
+OmSegChunk* OmSegmentation::GetChunk(const coords::Chunk& coord) {
   return chunkCache_->GetChunk(coord);
 }
 
@@ -234,19 +247,19 @@ void OmSegmentation::ClearUserChangesAndSave() {
   segments_->ClearUserEdges();
 
   OmSegments* segments = Segments();
-  for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
+  for (common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
     OmSegment* seg = segments->GetSegment(i);
     if (!seg) {
       continue;
     }
     seg->RandomizeColor();
-    seg->SetListType(om::common::SegListType::WORKING);
+    seg->SetListType(common::SegListType::WORKING);
   }
   ValidGroupNum()->Clear();
 
   SetDendThreshold(OmMST::DefaultThreshold);
-  om::event::RefreshMSTthreshold();
-  om::event::SegmentModified();
+  event::RefreshMSTthreshold();
+  event::SegmentModified();
 
   OmCacheManager::TouchFreshness();
   OmProject::Save();

@@ -30,7 +30,7 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
   virtual QString GetDefaultHDF5DatasetName() = 0;
 
-  OmVolumeData* VolData() { return volData_.get(); }
+  OmVolumeData& VolData() { return *volData_; }
 
   std::string GetName();
   std::string GetNameHyphen();

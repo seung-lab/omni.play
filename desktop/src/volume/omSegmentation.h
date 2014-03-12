@@ -15,10 +15,8 @@ class OmMeshManagers;
 class OmRawSegTileCache;
 class OmSegChunk;
 class OmSegment;
-class OmSegmentLists;
 class OmSegments;
 class OmTileCacheSegmentation;
-class OmUserEdges;
 class OmValidGroupNum;
 class OmViewGroupState;
 class OmVolumeCuller;
@@ -29,7 +27,8 @@ class OmChunkCache;
 
 namespace om {
 namespace volume {
-class ISegmentation;
+class MetadataManager;
+class MetadataDataSource;
 }
 namespace segmentation {
 class folder;
@@ -37,6 +36,10 @@ class loader;
 }
 namespace annotation {
 class manager;
+}
+namespace segment {
+class FileDataSource;
+class ListTypeFileDataSource;
 }
 }
 
@@ -99,41 +102,46 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   inline OmChunkUniqueValuesManager& UniqueValuesDS() {
     return *uniqueChunkValues_;
   }
-  om::segment::EdgeVector* MST();
-  inline OmMeshDrawer* MeshDrawer() { return meshDrawer_.get(); }
-  inline OmMeshManagers* MeshManagers() { return meshManagers_.get(); }
-  inline OmSegments* Segments() { return segments_.get(); }
-  inline OmSegmentLists* SegmentLists() { return segmentLists_.get(); }
-  inline OmUserEdges* MSTUserEdges() { return mstUserEdges_.get(); }
-  inline OmValidGroupNum* ValidGroupNum() { return validGroupNum_.get(); }
-  inline OmVolumeData* VolData() { return volData_.get(); }
-  inline OmRawSegTileCache* SliceCache() { return volSliceCache_.get(); }
-  inline OmChunkCache<OmSegmentation, OmSegChunk>* ChunkCache() {
-    return chunkCache_.get();
+  inline OmMeshDrawer& MeshDrawer() { return *meshDrawer_; }
+  inline OmMeshManagers& MeshManagers() { return *meshManagers_; }
+  inline OmSegments& Segments() { return *segments_; }
+  inline OmValidGroupNum& ValidGroupNum() { return *validGroupNum_; }
+  inline OmVolumeData& VolData() { return *volData_; }
+  inline OmRawSegTileCache& SliceCache() { return *volSliceCache_; }
+  inline OmChunkCache<OmSegmentation, OmSegChunk>& ChunkCache() {
+    return *chunkCache_;
   }
-  inline OmTileCacheSegmentation* TileCache() { return tileCache_.get(); }
-  inline om::segmentation::folder* Folder() const { return folder_.get(); }
+  inline OmTileCacheSegmentation& TileCache() { return *tileCache_; }
+  inline om::segmentation::folder& Folder() const { return *folder_; }
   inline om::annotation::manager& Annotations() const { return *annotations_; }
-  inline om::segmentation::loader* Loader() const { return loader_.get(); }
+
+  om::segment::SegDataVector& SegData() const { return *segData_; }
+  om::segment::SegListDataVector& SegListData() const { return *segListData_; }
+  om::segment::EdgeVector& MST() { return *mst_; }
+  om::volume::MetadataManager& Metadata() const { return *metaManager_; }
 
   void ClearUserChangesAndSave();
 
  private:
   std::unique_ptr<om::segmentation::folder> folder_;
-  std::unique_ptr<om::segmentation::loader> loader_;
   std::unique_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
-  std::unique_ptr<om::segment::EdgeVector> mst_;
   std::unique_ptr<OmMeshDrawer> meshDrawer_;
   std::unique_ptr<OmMeshManagers> meshManagers_;
   std::unique_ptr<OmChunkCache<OmSegmentation, OmSegChunk> > chunkCache_;
   std::unique_ptr<OmSegments> segments_;
-  std::unique_ptr<OmSegmentLists> segmentLists_;
-  std::unique_ptr<OmUserEdges> mstUserEdges_;
   std::unique_ptr<OmValidGroupNum> validGroupNum_;
   std::unique_ptr<OmVolumeData> volData_;
   std::unique_ptr<OmRawSegTileCache> volSliceCache_;
   std::unique_ptr<OmTileCacheSegmentation> tileCache_;
   std::unique_ptr<om::annotation::manager> annotations_;
+
+  std::unique_ptr<om::volume::MetadataDataSource> metaDS_;
+  std::unique_ptr<om::volume::MetadataManager> metaManager_;
+  std::unique_ptr<om::segment::FileDataSource> segDataDS_;
+  std::unique_ptr<om::segment::SegDataVector> segData_;
+  std::unique_ptr<om::segment::ListTypeFileDataSource> segListDataDS_;
+  std::unique_ptr<om::segment::SegListDataVector> segListData_;
+  std::unique_ptr<om::segment::EdgeVector> mst_;
 
   template <class T>
   friend class OmVolumeBuilder;

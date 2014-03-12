@@ -43,7 +43,7 @@ class OmMipVolume {
   virtual std::string GetDirectoryPath() const = 0;
   virtual std::string GetName() = 0;
   virtual bool LoadVolData() = 0;
-  virtual OmVolumeData* VolData() = 0;
+  virtual OmVolumeData& VolData() = 0;
   virtual om::common::ObjectType getVolumeType() const = 0;
   virtual om::common::ID getID() const = 0;
 
