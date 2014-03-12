@@ -4,7 +4,7 @@
 #include "view3d/mesh/drawer/omMeshPlan.h"
 #include "view3d/mesh/drawer/percDone.hpp"
 #include "view3d/mesh/omVolumeCuller.h"
-#include "segment/omSegmentPointers.h"
+#include "mesh/drawer/omSegmentPointers.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 #include "utility/timer.hpp"
 #include "view3d/gl.h"

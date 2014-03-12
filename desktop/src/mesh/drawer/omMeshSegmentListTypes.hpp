@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/common.h"
-#include "segment/omSegmentPointers.h"
+#include "mesh/drawer/omSegmentPointers.h"
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>

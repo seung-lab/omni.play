@@ -8,7 +8,7 @@
 #include "mesh/omMesh.h"
 #include "mesh/omMeshManagers.hpp"
 #include "mesh/omVolumeCuller.h"
-#include "segment/omSegmentPointers.h"
+#include "mesh/drawer/omSegmentPointers.h"
 #include "segment/omSegmentUtils.hpp"
 #include "events/events.h"
 #include "system/omOpenGLGarbageCollector.hpp"
