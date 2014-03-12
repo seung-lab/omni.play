@@ -2,6 +2,7 @@
 
 #include "utility/segmentDataWrapper.hpp"
 #include "common/common.h"
+#include "coordinates/global.h"
 
 namespace om {
 namespace landmarks {

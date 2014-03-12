@@ -58,10 +58,8 @@ class AnnotationListWidget : public QTreeWidget,
   void populate() {
     clear();
 
-    FOR_EACH(it, SegmentationDataWrapper::ValidIDs()) {
-      SegmentationDataWrapper sdw(*it);
-
-      auto& annotations = sdw.GetSegmentation().Annotations();
+    for (auto& seg : SegmentationDataWrapper::GetPtrVec()) {
+      auto& annotations = seg->Annotations();
 
       FOR_EACH(iter, annotations) {
         om::annotation::data& a = *iter->Object;
@@ -241,7 +239,7 @@ Q_SLOTS:
     {
       const SegmentationDataWrapper sdw = vgs_->Segmentation();
       if (sdw.IsValidWrapper()) {
-        return sdw.GetSegmentationPtr();
+        return sdw.GetSegmentation();
       }
     }
 

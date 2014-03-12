@@ -88,11 +88,11 @@ class OmExportVolToHdf5 {
 
     if (rerootSegments) {
       uint32_t* rawData = rawDataPtr.get();
-      OmSegments* segments = vol->Segments();
+      auto& segments = vol->Segments();
 
       for (uint32_t i = 0; i < chunk->Mipping().NumVoxels(); ++i) {
         if (0 != rawData[i]) {
-          rawData[i] = segments->FindRootID(rawData[i]);
+          rawData[i] = segments.FindRootID(rawData[i]);
         }
       }
     }

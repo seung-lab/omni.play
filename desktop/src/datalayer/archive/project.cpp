@@ -103,10 +103,9 @@ void project::postLoad() {
     }
   }
 
-  FOR_EACH(iter, SegmentationDataWrapper::ValidIDs()) {
-    const SegmentationDataWrapper sdw(*iter);
-    if (sdw.IsBuilt()) {
-      sdw.GetSegmentation().MeshManagers()->Load();
+  for (auto& seg : SegmentationDataWrapper::GetPtrVec()) {
+    if (seg->built()) {
+      seg->MeshManagers().Load();
     }
   }
 }

@@ -123,7 +123,7 @@ class OmMeshDrawerImpl {
 
   void drawSegment(OmSegment* seg, const om::coords::Chunk& coord) {
     OmMeshPtr mesh;
-    segmentation_->MeshManagers()->GetMesh(mesh, coord, seg->value(), 1);
+    segmentation_->MeshManagers().GetMesh(mesh, coord, seg->value(), 1);
 
     if (!mesh) {
       redrawNeeded_ = true;

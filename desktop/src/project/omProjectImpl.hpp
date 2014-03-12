@@ -98,8 +98,8 @@ class OmProjectImpl {
       log_errors << "Project saving should have been disabled in the UI.";
       return;
     }
-    FOR_EACH(iter, SegmentationDataWrapper::ValidIDs()) {
-      SegmentationDataWrapper(*iter).GetSegmentation().Flush();
+    for (auto& seg : SegmentationDataWrapper::GetPtrVec()) {
+      seg->Flush();
     }
 
     om::data::archive::project::Write(projectMetadataFile_, this);

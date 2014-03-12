@@ -21,7 +21,11 @@ class OmSegmentShatterActionImpl {
       : sdw_(sdw), desc("Shattering: ") {}
 
   void Execute() {
-    removed_ = sdw_.GetSegmentation().Segments()->Shatter(sdw_.GetSegment());
+    if (!sdw_.IsValidWrapper()) {
+      return;
+    }
+
+    removed_ = sdw_.GetSegmentation()->Segments().Shatter(sdw_.GetSegment());
 
     desc = QString("Shatter seg %1").arg(sdw_.GetSegmentID());
     notify();
@@ -30,7 +34,7 @@ class OmSegmentShatterActionImpl {
   void Undo() {
     FOR_EACH(e, removed_) {
       std::pair<bool, OmSegmentEdge> edge =
-          sdw_.GetSegmentation().Segments()->JoinEdge(*e);
+          sdw_.GetSegmentation()->Segments()->JoinEdge(*e);
 
       if (!edge.first) {
         log_infos << "edge could not be rejoined...";
@@ -52,7 +56,7 @@ class OmSegmentShatterActionImpl {
 
     om::event::SegmentModified();
 
-    sdw_.GetSegmentation().SegmentLists()->RefreshGUIlists();
+    sdw_.GetSegmentation()->SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
     om::event::Redraw2d();

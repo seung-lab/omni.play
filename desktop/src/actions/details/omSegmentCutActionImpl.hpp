@@ -38,7 +38,7 @@ class OmSegmentCutActionImpl {
 
     om::event::SegmentModified();
 
-    sdw_.GetSegmentation().SegmentLists()->RefreshGUIlists();
+    sdw_.GetSegmentation()->SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
     om::event::Redraw2d();
@@ -66,7 +66,7 @@ class OmSegmentCutActionImpl {
 
     om::event::SegmentModified();
 
-    sdw_.GetSegmentation().SegmentLists()->RefreshGUIlists();
+    sdw_.GetSegmentation()->SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
     om::event::Redraw2d();

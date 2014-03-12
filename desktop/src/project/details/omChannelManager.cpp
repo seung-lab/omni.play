@@ -2,7 +2,6 @@
 #include "actions/omActions.h"
 #include "common/common.h"
 #include "datalayer/file.h"
-#include "datalayer/fs/volumeFolders.hpp"
 #include "project/details/omChannelManager.h"
 #include "volume/metadataDataSource.hpp"
 #include "volume/omFilter2d.h"

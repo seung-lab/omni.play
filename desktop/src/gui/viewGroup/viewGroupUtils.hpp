@@ -177,8 +177,7 @@ class ViewGroupUtils {
       return true;
     }
 
-    OmTellInfo("segmentation " + om::string::num(sdw.GetID()) +
-               " is not built");
+    OmTellInfo("segmentation " + om::string::num(sdw.id()) + " is not built");
     return false;
   }
 
@@ -211,7 +210,10 @@ class ViewGroupUtils {
 
   ViewGroupWidgetInfo CreateView2dChannel(const ChannelDataWrapper& cdw,
                                           const om::common::ViewType viewType) {
-    OmChannel& chan = cdw.GetChannel();
+    if (!cdw.IsValidWrapper()) {
+      throw ArgException("Invalid ChannelDataWrapper");
+    }
+    OmChannel& chan = *cdw.GetChannel();
 
     const QString name = getViewName(chan.GetName(), viewType);
 
@@ -238,7 +240,7 @@ class ViewGroupUtils {
     }
 
     vgw.widget = new OmView2d(viewType, mainWindow_, vgs_,
-                              sdw.GetSegmentationPtr(), name.toStdString());
+                              sdw.GetSegmentation(), name.toStdString());
 
     return vgw;
   }

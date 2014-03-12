@@ -4,7 +4,7 @@
 #include "network/http/http.hpp"
 #include "project/omProject.h"
 #include "segment/lists/omSegmentLists.h"
-#include "segment/lowLevel/omSegmentChildren.hpp"
+#include "segment/lowLevel/children.hpp"
 #include "segment/omSegments.h"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
@@ -40,7 +40,7 @@ bool ComparisonTask::Start() {
 
   log_debugs << "Starting Comparison Task.";
 
-  OmSegmentation* segmentation = sdw.GetSegmentationPtr();
+  OmSegmentation* segmentation = sdw.GetSegmentation();
   OmSegments* segments = segmentation->Segments();
 
   segmentation->ClearUserChangesAndSave();

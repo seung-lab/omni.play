@@ -22,7 +22,7 @@ class ExportButton : public OmButton<PageExport> {
 
     const SegmentationDataWrapper& sdw = mParent->GetSDW();
 
-    OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, true);
+    OmExportVolToHdf5::Export(sdw.GetSegmentation(), fileName, true);
   }
 };
 

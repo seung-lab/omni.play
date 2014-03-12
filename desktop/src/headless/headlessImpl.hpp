@@ -83,7 +83,7 @@ class HeadlessImpl {
       printf("Invalid segmentationID: %d\n", segmentationID);
       return;
     }
-    sdw.GetSegmentation().ClearUserChangesAndSave();
+    sdw.GetSegmentation()->ClearUserChangesAndSave();
   }
 
   static void RecolorAllSegments(const om::common::ID segmentationID) {
@@ -295,7 +295,12 @@ class HeadlessImpl {
   }
 
   static void CheckMeshes(const SegmentationDataWrapper& sdw) {
-    OmMeshManagers* meshManagers = sdw.GetSegmentation().MeshManagers();
+    if (!sdw.IsValidWrapper()) {
+      printf("Invalid segmentationID: %d\n", segmentationID);
+      return;
+    }
+
+    OmMeshManagers* meshManagers = sdw.GetSegmentation()->MeshManagers();
     OmMeshManager* meshManager = meshManagers->GetManager(1);
 
     std::unique_ptr<OmMeshWriterV2> meshWriter(new OmMeshWriterV2(meshManager));
@@ -314,11 +319,11 @@ class HeadlessImpl {
 
   static void ExportAndRerootSegments(const SegmentationDataWrapper& sdw,
                                       const QString fileName) {
-    OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, true);
+    OmExportVolToHdf5::Export(sdw.GetSegmentation(), fileName, true);
   }
 
   static void ExportSegmentationRaw(const SegmentationDataWrapper& sdw,
                                     const QString fileName) {
-    OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, false);
+    OmExportVolToHdf5::Export(sdw.GetSegmentation(), fileName, false);
   }
 };

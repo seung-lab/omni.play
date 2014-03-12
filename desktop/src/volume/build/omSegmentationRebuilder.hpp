@@ -29,7 +29,7 @@ class segmentation {
   segmentation(OmSegmentation* vol) : vol_(vol) {}
 
   segmentation(const SegmentationDataWrapper& sdw) {
-    vol_ = sdw.GetSegmentationPtr();
+    vol_ = sdw.GetSegmentation();
   }
 
   void Rebuild() {

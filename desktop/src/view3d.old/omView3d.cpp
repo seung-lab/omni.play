@@ -90,7 +90,7 @@ OmView3d::~OmView3d() {
 
   FOR_EACH(iter, segmentations_) {
     OmSegmentation* vol = *iter;
-    vol->MeshManagers()->ClearMeshCaches();
+    vol->MeshManagers().ClearMeshCaches();
   }
 }
 
@@ -479,7 +479,7 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions) {
   // draw focus axis
   mCamera.DrawFocusAxis();
 
-  const OmSegmentation* seg = vgs_->Segmentation().GetSegmentationPtr();
+  const OmSegmentation* seg = vgs_->Segmentation().GetSegmentation();
   // setup culler to current projection-modelview matrix
   OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
                         om::coords::Norm(mCamera.GetPosition(), seg->Coords()),

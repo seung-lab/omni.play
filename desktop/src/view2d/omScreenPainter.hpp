@@ -215,10 +215,8 @@ class OmScreenPainter {
   }
 
   void drawAnnotations(QPainter& painter) {
-    FOR_EACH(i, SegmentationDataWrapper::ValidIDs()) {
-      SegmentationDataWrapper sdw(*i);
-
-      auto& annotations = sdw.GetSegmentation().Annotations();
+    for (auto& seg : SegmentationDataWrapper::GetPtrVec()) {
+      auto& annotations = seg->Annotations();
 
       FOR_EACH(it, annotations.Enabled()) {
         om::annotation::data& a = *it->Object;

@@ -309,7 +309,7 @@ void Headless::dumpSegTiles(const QString& line) {
   SegmentationDataWrapper sdw(segID);
 
   OmViewGroupState* vgs = new OmViewGroupState(nullptr);
-  OmTileDumper dumper(sdw.GetSegmentationPtr(), fileNameAndPath, vgs);
+  OmTileDumper dumper(sdw.GetSegmentation(), fileNameAndPath, vgs);
   dumper.DumpTiles();
 }
 
@@ -894,7 +894,7 @@ void Headless::replaceSegSlice(const QString& line) {
   const QString fname = args[2];
   const int sliceNum = OmStringHelpers::getUInt(args[3]);
 
-  HeadlessImpl::ReplaceSlice(sdw.GetSegmentationPtr(), fname, sliceNum);
+  HeadlessImpl::ReplaceSlice(sdw.GetSegmentation(), fname, sliceNum);
 }
 
 void Headless::exportSegRaw(const QString& line) {

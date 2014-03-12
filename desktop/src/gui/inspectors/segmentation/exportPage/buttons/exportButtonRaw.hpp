@@ -20,7 +20,7 @@ class ExportButtonRaw : public OmButton<PageExport> {
 
     const SegmentationDataWrapper& sdw = mParent->GetSDW();
 
-    OmExportVolToHdf5::Export(sdw.GetSegmentationPtr(), fileName, false);
+    OmExportVolToHdf5::Export(sdw.GetSegmentation(), fileName, false);
   }
 };
 

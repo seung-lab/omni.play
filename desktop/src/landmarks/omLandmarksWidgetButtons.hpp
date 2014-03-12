@@ -7,6 +7,7 @@
 #include "landmarks/omLandmarksDialog.h"
 #include "landmarks/omLandmarksWidget.h"
 #include "volume/omSegmentationFolder.h"
+#include "utility/segmentationDataWrapper.hpp"
 
 namespace om {
 namespace landmarks {
@@ -45,7 +46,7 @@ class LongRangeConnectionButton : public OmButton<om::landmarks::widget> {
   void doAction() {
     const SegmentationDataWrapper sdw =
         pts_[0].sdw.MakeSegmentationDataWrapper();
-    OmSegmentation* vol = sdw.GetSegmentationPtr();
+    OmSegmentation* vol = sdw.GetSegmentation();
 
     const QString fpath = vol->Folder().LongRangeConnectionFile();
 

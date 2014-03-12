@@ -29,12 +29,12 @@ class OmMSTImportWatershed {
 
     auto& mst = vol_->MST();
 
-    mst.resize(edges_.size());
-    for (size_t i = 0; i < edges_.size(); ++i) {
+    mst.resize(edges.Vector().size());
+    for (size_t i = 0; i < edges.Vector().size(); ++i) {
       mst[i].number = i;
-      mst[i].node1ID = edges_[i].seg1;
-      mst[i].node2ID = edges_[i].seg2;
-      mst[i].threshold = edges_[i].threshold;
+      mst[i].node1ID = edges.Vector()[i].seg1;
+      mst[i].node2ID = edges.Vector()[i].seg2;
+      mst[i].threshold = edges.Vector()[i].threshold;
       mst[i].userJoin = 0;
       mst[i].userSplit = 0;
       mst[i].wasJoined = 0;

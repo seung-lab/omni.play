@@ -11,7 +11,7 @@ void OmMeshSegmentListTask::run() {
   const ChunkUniqueValues chunkSegIDs =
       segmentation_->UniqueValuesDS().Values(mChunk->GetCoordinate(), 1);
 
-  OmSegmentIterator segIter(mRootSeg->Segments());
+  OmSegmentIterator segIter(segmentation_->Segments());
   segIter.iterOverSegmentID(mRootSeg->value());
   OmSegment* seg = segIter.getNextSegment();
 

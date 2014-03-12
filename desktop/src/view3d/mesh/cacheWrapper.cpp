@@ -10,7 +10,7 @@ namespace mesh {
 
 CacheWrapper::CacheWrapper(om::common::ID segmentationID) {
   SegmentationDataWrapper sdw(segmentationID);
-  auto* vol = sdw.GetSegmentationPtr();
+  auto* vol = sdw.GetSegmentation();
   meshManager_.reset(new OmMeshManager(vol, 1.0));
   meshManager_->Load();
 }

@@ -91,12 +91,12 @@ class OmBuildSegmentation : public OmBuildVolumes {
     startTiming(type, build_timer);
 
     if (p) {
-      seg_.MeshManagers()->FullMesh(1, p);
+      seg_.MeshManagers().FullMesh(1, p);
 
     } else {
-      seg_.MeshManagers()->FullMesh(1);
-      // seg_.MeshManagers()->FullMesh(.9);
-      // seg_.MeshManagers()->FullMesh(.8);
+      seg_.MeshManagers().FullMesh(1);
+      // seg_.MeshManagers().FullMesh(.9);
+      // seg_.MeshManagers().FullMesh(.8);
     }
 
     stopTimingAndSave(type, build_timer);

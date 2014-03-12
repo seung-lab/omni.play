@@ -9,6 +9,7 @@
 #include "volume/omMipVolume.h"
 #include "zi/omMutex.h"
 #include "segment/omSegment.h"
+#include "volume/omSegmentation.h"
 
 class OmMeshSegmentList {
  private:
@@ -73,7 +74,7 @@ class OmMeshSegmentList {
 
   OmMeshSegListKey makeKey(OmSegChunk* chunk, OmSegment* rootSeg) {
     const om::coords::Chunk& c = chunk->GetCoordinate();
-    return OmMeshSegListKey(rootSeg->GetSegmentationID(), rootSeg->value(),
+    return OmMeshSegListKey(segmentation_->GetID(), rootSeg->value(),
                             c.mipLevel(), c.x, c.y, c.z);
   }
 };

@@ -31,7 +31,7 @@ void AnnotationsWidget::Draw() {
   FOR_EACH(i, SegmentationDataWrapper::ValidIDs()) {
     SegmentationDataWrapper sdw(*i);
 
-    auto &annotations = sdw.GetSegmentation().Annotations();
+    auto &annotations = sdw.GetSegmentation()->Annotations();
 
     FOR_EACH(it, annotations.Enabled()) {
       om::annotation::data &a = *it->Object;

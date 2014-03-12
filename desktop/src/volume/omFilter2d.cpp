@@ -39,7 +39,7 @@ void OmFilter2d::SetSegmentation(const om::common::ID id) {
     return;
   }
 
-  segVolPtr_ = boost::optional<OmSegmentation*>(sdw.GetSegmentationPtr());
+  segVolPtr_ = boost::optional<OmSegmentation*>(sdw.GetSegmentation());
   filterType_ = om::OVERLAY_SEGMENTATION;
   segID_ = id;
 }

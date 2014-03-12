@@ -15,8 +15,8 @@ class OmCompareVolumes {
 
   static bool CompareSegmentations(const om::common::ID id1,
                                    const om::common::ID id2) {
-    OmSegmentation* seg1 = SegmentationDataWrapper(id1).GetSegmentationPtr();
-    OmSegmentation* seg2 = SegmentationDataWrapper(id2).GetSegmentationPtr();
+    OmSegmentation* seg1 = SegmentationDataWrapper(id1).GetSegmentation();
+    OmSegmentation* seg2 = SegmentationDataWrapper(id2).GetSegmentation();
     return compareVolumes(seg1, seg2);
   }
 

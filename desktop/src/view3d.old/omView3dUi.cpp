@@ -33,7 +33,7 @@ void OmView3dUi::MouseRelease(QMouseEvent* event) {
 }
 
 void OmView3dUi::MouseMove(QMouseEvent* event) {
-  //ignore movement without buttons
+  // ignore movement without buttons
   if (!event->buttons()) return;
 
   navigationModeMouseMove(event);
@@ -111,7 +111,7 @@ bool OmView3dUi::annotate(QMouseEvent* event) {
     return false;
   }
 
-  auto& manager = pickPoint.sdw.GetSegmentation().Annotations();
+  auto& manager = pickPoint.sdw.GetSegmentation()->Annotations();
 
   manager.Add(pickPoint.coord, vgs_->getAnnotationString(),
               vgs_->getAnnotationColor(), vgs_->getAnnotationSize());
@@ -243,23 +243,23 @@ void OmView3dUi::navigationModeMouseWheel(QWheelEvent* event) {
 ///////          Camera Movement Methods
 
 void OmView3dUi::cameraMovementMouseStart(QMouseEvent* event) {
-  //get point and modifier
+  // get point and modifier
   Vector2f point = Vector2f(event->x(), event->y());
   bool shift_modifier = event->modifiers() & Qt::ShiftModifier;
 
-  //left w/o shift moves rotate
+  // left w/o shift moves rotate
   if (event->buttons() & Qt::LeftButton && !shift_modifier) {
     view3d_->mCamera.MovementStart(CAMERA_ORBIT_ROTATE, point);
 
-    //left + shift moves lookat
+    // left + shift moves lookat
   } else if (event->buttons() & Qt::LeftButton && shift_modifier) {
     view3d_->mCamera.MovementStart(CAMERA_LOOKAT_ROTATE, point);
 
-    //mid button pans
+    // mid button pans
   } else if (event->buttons() & Qt::MidButton) {
     view3d_->mCamera.MovementStart(CAMERA_PAN, point);
 
-    //right button zooms
+    // right button zooms
   } else if (event->buttons() & Qt::RightButton) {
     view3d_->mCamera.MovementStart(CAMERA_ZOOM, point);
   }
@@ -299,7 +299,7 @@ void OmView3dUi::cameraMovementMouseWheel(QWheelEvent* event) {
 
 SegmentDataWrapper OmView3dUi::pickSegmentMouse(QMouseEvent* event,
                                                 const bool drag) {
-  //extract event properties
+  // extract event properties
   Vector2i point2di(event->x(), event->y());
 
   const SegmentDataWrapper sdw = view3d_->PickPoint(point2di);
@@ -307,7 +307,7 @@ SegmentDataWrapper OmView3dUi::pickSegmentMouse(QMouseEvent* event,
     return SegmentDataWrapper();
   }
 
-  //check if dragging
+  // check if dragging
   if (drag && sdw == prevSDW_) {
     return SegmentDataWrapper();
   } else {
@@ -329,7 +329,7 @@ void OmView3dUi::showSegmentContextMenu(QMouseEvent* event) {
     return;
   }
 
-  //refersh context menu and display
+  // refersh context menu and display
   segmentContextMenu_.Refresh(pickPoint, vgs_);
   segmentContextMenu_.exec(event->globalPos());
 }
@@ -362,7 +362,7 @@ void OmView3dUi::crosshair(QMouseEvent* event) {
 }
 
 OmSegmentPickPoint OmView3dUi::pickVoxelMouseCrosshair(QMouseEvent* event) {
-  //extract event properties
+  // extract event properties
   const Vector2i point2di(event->x(), event->y());
 
   view3d_->updateGL();
@@ -377,7 +377,7 @@ OmSegmentPickPoint OmView3dUi::pickVoxelMouseCrosshair(QMouseEvent* event) {
     return OmSegmentPickPoint();
   }
 
-  OmSegmentPickPoint ret = { sdw, point3d };
+  OmSegmentPickPoint ret = {sdw, point3d};
 
   return ret;
 }
