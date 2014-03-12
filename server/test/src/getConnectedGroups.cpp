@@ -35,11 +35,12 @@ TEST(GetConnectedGroupsTest, Simple) {
   std::unordered_map<int, common::SegIDSet> groups;
   groups[2].insert({1, 2, 3, 4, 5});
   groups[3].insert({1, 3, 5, 7, 9});
+  groups[4].insert({1, 3, 5});
 
   std::vector<server::group> _return;
   handler::get_connected_groups(_return, vol, groups);
 
-  EXPECT_EQ(6, _return.size());
+  EXPECT_EQ(7, _return.size());
   auto all = getByType(_return, om::server::groupType::ALL);
   EXPECT_EQ(1, all.groups.size());
   EXPECT_EQ(7, all.groups.front().size());
@@ -63,6 +64,9 @@ TEST(GetConnectedGroupsTest, Simple) {
   auto three = getByID(_return, 3);
   EXPECT_EQ(1, three.groups.size());
   EXPECT_EQ(2, three.groups.front().size());
+
+  auto four = getByID(_return, 4);
+  EXPECT_EQ(0, four.groups.size());
 }
 }
 }  // namespace om::test::
