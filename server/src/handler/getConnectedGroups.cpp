@@ -145,7 +145,7 @@ void get_connected_groups(
     if (uid < 2) {
       // Skip (existing comparison) validation by the default user.
       log_errors << "get_connected_groups: received user_id=" << uid
-                << " validation. Manually modified database record?";
+                 << " validation. Manually modified database record?";
       continue;
     }
     agreedFlag |= flag;
@@ -172,6 +172,7 @@ void get_connected_groups(
 
   log_debugs << "3. Connected Components by flag.";
 
+  std::unordered_map<int, int> untouchedUsers(flagToUserid);
   chunk::Voxels<uint32_t> voxels(vol.ChunkDS(), vol.Coords());
   for (const auto& iter : flagToSet) {
     const int& flag = iter.first;
@@ -194,6 +195,7 @@ void get_connected_groups(
       continue;
     }
 
+    untouchedUsers.erase(flag);
     auto uid = flagUIDpair->second;
 
     const auto pairwiseOverlaps = FindPairwiseOverlaps(set, vol);
@@ -213,6 +215,14 @@ void get_connected_groups(
         g.groups.push_back(c);
       }
     }
+    _return.push_back(g);
+  }
+  // Make sure every user has its own group even if it's empty, so in the
+  // database it will overwrite any existing one that might not have been empty:
+  for (const auto& flagUIDpair : untouchedUsers) {
+    server::group g;
+    g.user_id = flagUIDpair.second;
+    g.type = server::groupType::USER;
     _return.push_back(g);
   }
   _return.push_back(all);
