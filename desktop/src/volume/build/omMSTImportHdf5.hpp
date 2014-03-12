@@ -27,7 +27,19 @@ class OmMSTImportHdf5 {
 
     checkSegmentIDs();
 
-    vol_->MST()->Import(edges_);
+    auto& mst = vol_->MST();
+
+    mst.resize(edges_.size());
+    for (size_t i = 0; i < edges_.size(); ++i) {
+      mst[i].number = i;
+      mst[i].node1ID = edges_[i].seg1;
+      mst[i].node2ID = edges_[i].seg2;
+      mst[i].threshold = edges_[i].threshold;
+      mst[i].userJoin = 0;
+      mst[i].userSplit = 0;
+      mst[i].wasJoined = 0;
+    }
+    mst.flush();
 
     return true;
   }
@@ -69,8 +81,8 @@ class OmMSTImportHdf5 {
     float const* const thresholds = dendValues_->getPtr<float>();
 
     for (uint32_t i = 0; i < numEdges; ++i) {
-      edges_[i].node1ID = nodes[i];
-      edges_[i].node2ID = nodes[i + numEdges];
+      edges_[i].seg1 = nodes[i];
+      edges_[i].seg2 = nodes[i + numEdges];
       edges_[i].threshold = thresholds[i];
     }
   }
@@ -129,8 +141,8 @@ class OmMSTImportHdf5 {
     OmSegments* segments = vol_->Segments();
 
     for (uint32_t i = 0; i < size; ++i) {
-      if (segments->IsSegmentValid(edges_[i].node1ID)) {
-        if (segments->IsSegmentValid(edges_[i].node2ID)) {
+      if (segments->IsSegmentValid(edges_[i].seg1)) {
+        if (segments->IsSegmentValid(edges_[i].seg2)) {
           valid.push_back(edges_[i]);
           continue;
         }

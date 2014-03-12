@@ -34,7 +34,7 @@ class ChannelInspector : public QDialog {
     setupLayouts();
   }
 
-  QString Title() { return QString("Channel %1 Inspector").arg(cdw_.GetID()); }
+  QString Title() { return QString("Channel %1 Inspector").arg(cdw_.id()); }
 
   ChannelDataWrapper Channel() const { return cdw_; }
 

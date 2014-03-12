@@ -16,12 +16,10 @@ using namespace om::segment;
 
 OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
                                EdgeVector& mst,
-                               om::segment::UserEdgeVector& userEdges,
                                om::volume::MetadataManager& meta,
                                OmValidGroupNum& valid,
                                SegmentationDataWrapper sdw)
     : mst_(mst),
-      userEdges_(userEdges),
       meta_(meta),
       store_(new Store(data, listData, meta.coordSystem(), meta.maxSegments())),
       graph_(new Graph(meta.maxSegments())),
@@ -32,10 +30,6 @@ OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
                                                      mst_)) {
 
   thresholder_->SetGlobalThreshold();
-
-  for (auto& e : userEdges_) {
-    JoinEdgeFromUser(e);
-  }
 }
 
 OmSegmentsImpl::~OmSegmentsImpl() {}
@@ -156,8 +150,8 @@ om::segment::UserEdge OmSegmentsImpl::splitChildFromParentNoTest(
   }
 
   if (child->getCustomMergeEdge().valid) {
-    userEdges_.erase(std::find(userEdges_.cbegin(), userEdges_.cend(),
-                               child->getCustomMergeEdge()));
+    mst_.erase(
+        std::find(mst_.cbegin(), mst_.cend(), child->getCustomMergeEdge()));
     child->setCustomMergeEdge(om::segment::UserEdge());
   }
 
@@ -179,7 +173,7 @@ std::pair<bool, om::segment::UserEdge> OmSegmentsImpl::JoinFromUserAction(
 
   std::pair<bool, om::segment::UserEdge> edge = JoinEdgeFromUser(e);
   if (edge.first) {
-    userEdges_.push_back(edge.second);
+    mst_.push_back(edge.second);
   }
   return edge;
 }

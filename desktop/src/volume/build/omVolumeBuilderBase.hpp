@@ -112,7 +112,7 @@ class OmVolumeBuilderBase {
     log_infos << "Segmentation MST load done";
     log_infos << "************************";
 
-    OmActions::ChangeMSTthreshold(vol->GetSDW(), OmMST::DefaultThreshold);
+    OmActions::ChangeMSTthreshold(vol->GetSDW(), 0.999);
     om::event::SegmentModified();
   }
 
