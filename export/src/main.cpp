@@ -58,7 +58,7 @@ int getHelp(const Options& opt, int argc, char* argv[]) {
   // po::notify(helpVM);
 
   std::cerr << "Usage: " << argv[0] << " mode [options] path" << std::endl
-            << "  Modes: help mesh tile mst" << std::endl;
+            << "  Modes: help version mesh tile mst" << std::endl;
 
   std::string mode;
 
