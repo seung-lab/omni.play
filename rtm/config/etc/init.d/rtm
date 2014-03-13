@@ -10,9 +10,9 @@ export APPENV=PRODUCTION
 ORIGINALDIR=`pwd`
 cd $RTMDIR
 
-PORT=9999
+PORT=9099 # 9999 is test
 PIDFILE=/etc/run/rtm_${PORT}.pid
-EXEC="$RTMDIR/rtm --port=$PORT --nodaemonize"
+EXEC="screen -d -m -L -S rtm $RTMDIR/rtm --port=$PORT --nodaemonize"
 
 case "$1" in
     start)
@@ -21,7 +21,7 @@ case "$1" in
                 echo "$PIDFILE exists, process is already running or crashed"
         else
                 echo "Starting Real Time Mesher..."
-                `$EXEC`
+                start-stop-daemon --start --pidfile $PIDFILE --make-pidfile --user omni --exec $EXEC
         fi
         ;;
     stop)
@@ -31,13 +31,13 @@ case "$1" in
         else
                 PID=$(cat $PIDFILE)
                 echo "Stopping PID $PID ..."
-        	   kill $PID
+		start-stop-daemon --stop --pidfile $PIDFILE --make-pidfile --user omni --exec $EXEC
                 while [ -x /proc/${PID} ]
                 do
                     echo "Waiting for RTM to shutdown ..."
                     sleep 1
                 done
-		        rm $PIDFILE
+		rm $PIDFILE
                 echo "RTM stopped"
         fi
         ;;
