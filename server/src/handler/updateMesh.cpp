@@ -50,6 +50,7 @@ class Sender : public boost::static_visitor<> {
     localMin.z = min_.z % 128;
 
     if (max_.x <= localMin.x || max_.y <= localMin.y || max_.z <= localMin.z) {
+      log_errors << "Not seding update: Empty Bounds.";
       return;
     }
 
@@ -125,6 +126,7 @@ class Sender : public boost::static_visitor<> {
 bool modified(std::shared_ptr<chunk::UniqueValues> uv,
               const std::set<uint32_t> modifiedSegIds) {
   if (!uv || !uv->Values.size()) {
+    log_errors << "UniqueValues not found";
     return false;
   }
 
