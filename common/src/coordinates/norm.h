@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include "vmmlib/vmmlib.h"
 #include "common/macro.hpp"
 
@@ -52,3 +53,19 @@ class NormBbox : public vmml::AxisAlignedBoundingBox<float> {
 
 }  // namespace coords
 }  // namespace om
+
+namespace std {
+template <>
+struct hash<om::coords::Norm> {
+  typedef om::coords::Norm argument_type;
+  typedef std::size_t value_type;
+
+  value_type operator()(argument_type const &n) const {
+    std::hash<float> hasher;
+    std::size_t h1 = hasher(n.x);
+    std::size_t h2 = hasher(n.y);
+    std::size_t h3 = hasher(n.z);
+    return h1 ^ (h2 << 1) ^ (h3 << 2);
+  }
+};
+}

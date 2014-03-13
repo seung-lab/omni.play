@@ -7,6 +7,9 @@
 #include "chunk/uniqueValuesFileDataSource.hpp"
 #include "volume/segmentation.h"
 #include "common/logging.h"
+
+#include "version.hpp"
+
 using namespace om;
 namespace po = boost::program_options;
 
@@ -262,6 +265,11 @@ int main(int argc, char* argv[]) {
   log_variable(mode);
   if (mode == "help") {
     return getHelp(opt, argc, argv);
+  }
+
+  if (mode == "version") {
+    std::cout << "omni.export version " << OMNI_EXPORT_VERSION << std::endl;
+    return 0;
   }
 
   if (mode == "mesh") {
