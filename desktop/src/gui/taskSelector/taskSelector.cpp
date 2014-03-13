@@ -224,7 +224,8 @@ void TaskSelector::getTasks() {
     taskTable_->setItem(i, 0, makeTableItem(t.id));
     taskTable_->setItem(i, 1, makeTableItem(t.cell));
     taskTable_->setItem(i, 2, makeTableItem(t.weight));
-    taskTable_->setItem(i, 3, makeTableItem(t.inspected_weight == t.weight));
+    taskTable_->setItem(
+        i, 3, makeTableItem(t.inspected_weight == t.weight && t.weight > 1));
     taskTable_->setItem(i, 4, makeTableItem(QString::fromStdString(t.path)));
     taskTable_->setItem(
         i, 5, makeTableItem(QString::fromStdString(om::string::join(t.users))));
