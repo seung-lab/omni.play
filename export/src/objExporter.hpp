@@ -4,12 +4,13 @@
 #include "coordinates/coordinates.h"
 #include "iMeshExporter.hpp"
 
+#include <unordered_map>
+
 namespace om {
 namespace exporter {
 
 class Obj : public IMeshExporter {
  public:
-
   Obj(const coords::VolumeSystem& coords, double scale)
       : coords_(coords), scale_(scale) {
     Matrix4f invTransform;
@@ -24,9 +25,20 @@ class Obj : public IMeshExporter {
                   const uint32_t* strips, const size_t strips_length) {
     size_t current = points_.size() + 1;
     for (size_t i = 0; i < points_length; i += 6) {
-      points_.push_back(coords::Norm(points[i], points[i + 1], points[i + 2],
-                                     coords_).ToGlobal() *
-                        scale_);
+      coords::Norm norm(points[i], points[i + 1], points[i + 2], coords_);
+
+      // Deduplicate verticies
+      auto iter = lookup_vertex.find(norm);
+      if (iter != lookup_vertex.end()) {
+        lookup_index[i + current] = iter->second;
+        continue;
+      } else {
+        lookup_vertex[norm] = i + current;
+        lookup_index[i + current] = i + current;
+      }
+
+      points_.push_back(norm.ToGlobal() * scale_);
+
       Vector3f normal = normTransform_ * Vector4f(points[i + 3], points[i + 4],
                                                   points[i + 5], 1);
       normals_.push_back(normal.getNormalized());
@@ -39,14 +51,13 @@ class Obj : public IMeshExporter {
 
       bool even = true;
       for (uint32_t j = strips[i]; j < strips[i] + strips[i + 1] - 2; ++j) {
+        auto a = lookup_index[indices[j] + current];
+        auto b = lookup_index[indices[j + 1] + current];
+        auto c = lookup_index[indices[j + 2] + current];
         if (even) {
-          faces_.push_back(Vector3i(indices[j] + current,
-                                    indices[j + 1] + current,
-                                    indices[j + 2] + current));
+          faces_.push_back(Vector3i(a, b, c));
         } else {
-          faces_.push_back(Vector3i(indices[j + 2] + current,
-                                    indices[j + 1] + current,
-                                    indices[j] + current));
+          faces_.push_back(Vector3i(c, b, a));
         }
         even = !even;
       }
@@ -77,6 +88,8 @@ class Obj : public IMeshExporter {
   std::vector<coords::Global> points_;
   std::vector<coords::Global> normals_;
   std::vector<Vector3i> faces_;
+  std::unordered_map<coords::Norm, size_t> lookup_vertex;
+  std::unordered_map<size_t, size_t> lookup_index;
   const double scale_;
 };
 }

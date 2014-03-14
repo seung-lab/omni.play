@@ -7,6 +7,9 @@
 #include "chunk/uniqueValuesFileDataSource.hpp"
 #include "volume/segmentation.h"
 #include "common/logging.h"
+
+#include "version.hpp"
+
 using namespace om;
 namespace po = boost::program_options;
 
@@ -55,7 +58,7 @@ int getHelp(const Options& opt, int argc, char* argv[]) {
   // po::notify(helpVM);
 
   std::cerr << "Usage: " << argv[0] << " mode [options] path" << std::endl
-            << "  Modes: help mesh tile mst" << std::endl;
+            << "  Modes: help version mesh tile mst" << std::endl;
 
   std::string mode;
 
@@ -262,6 +265,11 @@ int main(int argc, char* argv[]) {
   log_variable(mode);
   if (mode == "help") {
     return getHelp(opt, argc, argv);
+  }
+
+  if (mode == "version") {
+    std::cout << "omni.export version " << OMNI_EXPORT_VERSION << std::endl;
+    return 0;
   }
 
   if (mode == "mesh") {
