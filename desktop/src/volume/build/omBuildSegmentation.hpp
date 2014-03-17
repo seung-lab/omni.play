@@ -15,15 +15,19 @@
 class OmBuildSegmentation : public OmBuildVolumes {
  private:
   SegmentationDataWrapper sdw_;
-  OmSegmentation& seg_;
+  OmSegmentation* seg_;
 
   typedef std::shared_ptr<om::gui::progress> prog_t;
 
  public:
-  OmBuildSegmentation() : OmBuildVolumes(), seg_(sdw_.Create()) {}
+  OmBuildSegmentation() : OmBuildVolumes(), seg_(&sdw_.Create()) {}
 
   OmBuildSegmentation(const SegmentationDataWrapper& sdw)
-      : OmBuildVolumes(), sdw_(sdw), seg_(sdw_.GetSegmentation()) {}
+      : OmBuildVolumes(), sdw_(sdw), seg_(sdw_.GetSegmentation()) {
+    if (!sdw_.IsValidWrapper()) {
+      throw om::ArgException("Invalid SegmentDataWrapper");
+    }
+  }
 
   virtual ~OmBuildSegmentation() { log_infos << "OmBuildSegmentation done!"; }
 
@@ -46,11 +50,11 @@ class OmBuildSegmentation : public OmBuildVolumes {
       throw om::IoException("no channel 1");
     }
 
-    OmChannel& chann = cdw.GetChannel();
+    OmChannel& chann = *cdw.GetChannel();
 
-    seg_.BuildBlankVolume(chann.Coords().MipLevelDataDimensions(0));
-    seg_.LoadVolData();
-    seg_.Segments()->refreshTree();
+    seg_->BuildBlankVolume(chann.Coords().MipLevelDataDimensions(0));
+    seg_->LoadVolData();
+    seg_->Segments().refreshTree();
 
     OmActions::Save();
 
@@ -75,7 +79,7 @@ class OmBuildSegmentation : public OmBuildVolumes {
     OmTimer build_timer;
     startTiming(type, build_timer);
 
-    OmVolumeBuilder<OmSegmentation> builder(&seg_, mFileNamesAndPaths, "main");
+    OmVolumeBuilder<OmSegmentation> builder(seg_, mFileNamesAndPaths, "main");
     builder.Build();
 
     stopTimingAndSave(type, build_timer);
@@ -91,10 +95,10 @@ class OmBuildSegmentation : public OmBuildVolumes {
     startTiming(type, build_timer);
 
     if (p) {
-      seg_.MeshManagers().FullMesh(1, p);
+      seg_->MeshManagers().FullMesh(1, p);
 
     } else {
-      seg_.MeshManagers().FullMesh(1);
+      seg_->MeshManagers().FullMesh(1);
       // seg_.MeshManagers().FullMesh(.9);
       // seg_.MeshManagers().FullMesh(.8);
     }

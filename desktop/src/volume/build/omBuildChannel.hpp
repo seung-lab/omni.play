@@ -9,7 +9,7 @@
 class OmBuildChannel : public OmBuildVolumes {
  private:
   ChannelDataWrapper cdw_;
-  OmChannel& chan_;
+  OmChannel* chan_;
 
  public:
   OmBuildChannel() : OmBuildVolumes(), chan_(cdw_.Create()) {}

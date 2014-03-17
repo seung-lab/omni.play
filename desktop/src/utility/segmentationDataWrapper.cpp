@@ -49,13 +49,13 @@ SegmentationDataWrapper& SegmentationDataWrapper::operator=(
   return *this;
 }
 
-bool SegmentationDataWrapper::operator==(
-    const SegmentationDataWrapper& sdw) const {
+bool SegmentationDataWrapper::operator==(const SegmentationDataWrapper& sdw)
+    const {
   return id_ == sdw.id_;
 }
 
-bool SegmentationDataWrapper::operator!=(
-    const SegmentationDataWrapper& sdw) const {
+bool SegmentationDataWrapper::operator!=(const SegmentationDataWrapper& sdw)
+    const {
   return !(*this == sdw);
 }
 
@@ -66,12 +66,11 @@ om::common::ID SegmentationDataWrapper::GetSegmentationID() const {
 om::common::ID SegmentationDataWrapper::id() const { return id_; }
 
 OmSegmentation& SegmentationDataWrapper::Create() {
-  throw om::NotImplementedException("SegmentationDataWrapper::Create");
-  // OmSegmentation& s = OmProject::Volumes().Segmentations().AddSegmentation();
-  // id_ = s.id();
-  // log_debugs(unknown) << "create segmentation " << id_;
-  // segmentation_ =  boost::optional<OmSegmentation&>(s);
-  // return s;
+  OmSegmentation& s = OmProject::Volumes().Segmentations().AddSegmentation();
+  id_ = s.id();
+  log_debugs(unknown) << "create segmentation " << id_;
+  segmentation_ = boost::optional<OmSegmentation&>(s);
+  return s;
 }
 
 void SegmentationDataWrapper::Remove() {
