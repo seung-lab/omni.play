@@ -21,6 +21,9 @@ struct ImportEdge {
   common::SegID seg2;
   double threshold;
 };
+inline std::ostream& operator<<(std::ostream& out, const ImportEdge& e) {
+  return out << "{" << e.seg1 << " - " << e.seg2 << " : " << e.threshold << "}";
+}
 
 struct Edge {
   uint32_t number;
