@@ -232,7 +232,7 @@ Q_SLOTS:
     {
       const ChannelDataWrapper cdw = vgs_->Channel();
       if (cdw.IsValidWrapper()) {
-        return cdw.GetChannelPtr();
+        return cdw.GetChannel();
       }
     }
 
