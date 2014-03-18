@@ -177,7 +177,7 @@ endif
 .PHONY: clean
 clean:
 	$(ECHO) Cleaning...
-	$(RM) -rf bin $(GENDIR) build
+	$(RM) -rf bin build
 	$(RM) -f common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
 	$(RM) -f desktop/include/yaml-cpp-old/src/*.o desktop/include/yaml-cpp-old/src/*.d
 	$(RM) -f desktop/lib/strnatcmp.o
