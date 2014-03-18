@@ -5,7 +5,6 @@
 #include "utility/yaml/mipVolume.hpp"
 #include "utility/yaml/omBaseTypes.hpp"
 #include "utility/yaml/omYaml.hpp"
-#include "yaml-cpp-old/yaml.h"
 
 namespace YAMLold {
 

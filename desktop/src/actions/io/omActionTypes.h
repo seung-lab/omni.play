@@ -1,7 +1,5 @@
 #pragma once
-
-#include <map>
-#include <QString>
+#include "precomp.h"
 
 namespace om {
 namespace actions_ {

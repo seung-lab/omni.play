@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/omSegmentationFolder.h"
 #include "datalayer/archive/old/omDataArchiveStd.hpp"
@@ -6,8 +7,6 @@
 #include "utility/omLockedPODs.hpp"
 #include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
-
-#include <QVector>  //TODO: switch to mem-mapped file...
 
 class OmValidGroupNum {
  private:

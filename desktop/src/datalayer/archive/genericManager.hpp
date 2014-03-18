@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <yaml-cpp-old/yaml.h>
 #include "system/omGenericManager.hpp"
 #include "datalayer/archive/baseTypes.hpp"
 

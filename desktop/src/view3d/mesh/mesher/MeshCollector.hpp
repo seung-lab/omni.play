@@ -1,14 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "TriStripCollector.hpp"
-
-#include <zi/bits/cstdint.hpp>
-#include <zi/bits/unordered_map.hpp>
-#include <zi/bits/shared_ptr.hpp>
-#include <zi/vl/vec.hpp>
-#include <zi/concurrency/rwmutex.hpp>
-
-#include <vector>
 
 class MeshCollector {
  private:

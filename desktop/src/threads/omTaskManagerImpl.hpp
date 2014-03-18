@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 //
 // Copyright (C) 2010  Aleksandar Zlateski <zlateski@mit.edu>
@@ -20,20 +21,6 @@
 
 #include "common/stoppable.h"
 #include "threads/omThreadPoolManager.h"
-
-#include <zi/concurrency/config.hpp>
-#include <zi/concurrency/thread.hpp>
-#include <zi/concurrency/mutex.hpp>
-#include <zi/concurrency/condition_variable.hpp>
-#include <zi/concurrency/runnable.hpp>
-
-#include <zi/bits/enable_shared_from_this.hpp>
-#include <zi/bits/shared_ptr.hpp>
-#include <zi/utility/assert.hpp>
-
-#include <cstddef>
-#include <algorithm>
-#include <limits>
 
 template <class TaskContainer>
 class OmTaskManagerImpl
@@ -101,7 +88,6 @@ class OmTaskManagerImpl
   void StoppableStop() { join(); }
 
  private:
-
   void create_workers_nl(std::size_t count) {
     if (count <= 0 || active_workers_ >= worker_limit_) {
       return;
@@ -131,7 +117,6 @@ class OmTaskManagerImpl
   }
 
  public:
-
   void add_workers(std::size_t count) {
     zi::mutex::guard g(mutex_);
 
@@ -255,5 +240,4 @@ class OmTaskManagerImpl
       }
     }
   }
-
 };

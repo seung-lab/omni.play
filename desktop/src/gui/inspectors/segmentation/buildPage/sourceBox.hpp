@@ -1,10 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/omConnect.hpp"
 #include "utility/sortHelpers.h"
 #include "utility/segmentationDataWrapper.hpp"
-
-#include <QtGui>
 
 namespace om {
 namespace segmentationInspector {
@@ -182,7 +181,7 @@ Q_SLOTS:
   }
 
   void populateFileListWidget() {
-    //TODO: use path from where import files were orginally...
+    // TODO: use path from where import files were orginally...
 
     const QString folder = QFileInfo(OmProject::OmniFile()).absolutePath();
     directoryEdit_->setText(folder);

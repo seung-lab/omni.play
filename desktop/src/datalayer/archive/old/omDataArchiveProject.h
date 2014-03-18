@@ -1,6 +1,5 @@
 #pragma once
-
-#include <QString>
+#include "precomp.h"
 
 class OmProjectImpl;
 

@@ -1,9 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/coloring.hpp"
-#include "zi/omMutex.h"
-
-#include <array>
 
 class OmViewGroupState;
 

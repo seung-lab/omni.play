@@ -1,13 +1,12 @@
 #pragma once
+#include "precomp.h"
 
-#include <QString>
 #include "common/common.h"
 #include "common/string.hpp"
 #include "zi/omUtility.h"
 
 class OmStringHelpers {
  public:
-
   template <typename T>
   inline static QString HumanizeNumQT(const T num, const char sep = ',') {
     return QString::fromStdString(om::string::humanizeNum(num, sep));

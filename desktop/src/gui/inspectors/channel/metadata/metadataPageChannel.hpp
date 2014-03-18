@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/inspectors/volInspector.h"
 #include "utility/channelDataWrapper.hpp"

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  *  OmTimer provides a simple cross-platform high-resolution timer for use in
@@ -6,8 +7,6 @@
  */
 
 #include "common/common.h"
-
-#include <zi/time/time.hpp>
 
 class OmTimer {
  private:

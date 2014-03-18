@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <string>
 #include "common/exception.h"
 
 namespace om {

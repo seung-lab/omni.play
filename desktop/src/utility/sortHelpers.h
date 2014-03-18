@@ -1,13 +1,5 @@
 #pragma once
-
-#include <strnatcmp.h>
-
-#include <QFileInfoList>
-#include <QFileInfo>
-#include <QStringList>
-
-#include <vector>
-#include <algorithm>
+#include "precomp.h"
 
 class SortHelpers {
  public:
@@ -31,7 +23,6 @@ class SortHelpers {
   }
 
  private:
-
   static bool naturalStringCaseInsensitiveCompareLessThan(const QString& lhs,
                                                           const QString& rhs) {
     return strnatcmp(qPrintable(lhs), qPrintable(rhs)) < 0;

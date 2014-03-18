@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/lowLevel/store/omSegmentStore.hpp"
 #include "segment/io/omSegmentPage.hpp"

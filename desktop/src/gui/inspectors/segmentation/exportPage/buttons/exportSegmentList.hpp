@@ -1,12 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/fs/omFile.hpp"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
-
-#include <QTextStream>
 
 namespace om {
 namespace segmentationInspector {

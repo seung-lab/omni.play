@@ -1,11 +1,7 @@
 #pragma once
+#include "precomp.h"
 
-#include "zi/omMutex.h"
 #include "zi/omUtility.h"
-
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/variate_generator.hpp>
 
 class OmRand : private om::singletonBase<OmRand> {
  private:

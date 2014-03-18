@@ -1,8 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "mesh/mesh.hpp"
 #include "system/omOpenGLGarbageCollector.hpp"
-#include <QGLContext>
 
 namespace om {
 namespace mesh {

@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
-
-#include <QtGui>
 
 class MainWindow;
 class OmViewGroupState;

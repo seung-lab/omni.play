@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "view2d/omPointsInCircle.hpp"
-
-#include <QObject>
 
 class OmBrushSize : public QObject {
   Q_OBJECT;

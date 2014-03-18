@@ -1,14 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/omConnect.hpp"
 #include "project/omProject.h"
 #include "volume/omMipVolume.h"
-
-#include <QGroupBox>
-#include <QLabel>
-#include <QGridLayout>
-#include <QLineEdit>
-#include <QPushButton>
 
 class OmVolInspector : public QGroupBox {
   Q_OBJECT;

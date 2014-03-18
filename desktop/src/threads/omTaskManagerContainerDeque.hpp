@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 //
 // Copyright (C) 2010  Aleksandar Zlateski <zlateski@mit.edu>
@@ -18,11 +19,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "zi/omMutex.h"
-
-#include <zi/concurrency/runnable.hpp>
-#include <deque>
-
 class OmTaskManagerContainerDeque {
  private:
   typedef zi::shared_ptr<zi::concurrency_::runnable> task_t;
@@ -30,7 +26,8 @@ class OmTaskManagerContainerDeque {
 
   zi::spinlock lock_;
 
-  template <class Function> inline task_t wrapFunction(const Function& task) {
+  template <class Function>
+  inline task_t wrapFunction(const Function& task) {
     return std::shared_ptr<zi::concurrency_::runnable_function_wrapper>(
         new zi::concurrency_::runnable_function_wrapper(task));
   }
@@ -61,34 +58,38 @@ class OmTaskManagerContainerDeque {
     return ret;
   }
 
-  //push_front
+  // push_front
   void push_front(task_t task) {
     zi::guard g(lock_);
     queue_.push_front(task);
   }
 
-  template <class Runnable> void push_front(std::shared_ptr<Runnable> task) {
+  template <class Runnable>
+  void push_front(std::shared_ptr<Runnable> task) {
     zi::guard g(lock_);
     queue_.push_front(task);
   }
 
-  template <class Function> void push_front(const Function& task) {
+  template <class Function>
+  void push_front(const Function& task) {
     zi::guard g(lock_);
     queue_.push_front(wrapFunction(task));
   }
 
-  //push_back
+  // push_back
   void push_back(task_t task) {
     zi::guard g(lock_);
     queue_.push_back(task);
   }
 
-  template <class Runnable> void push_back(std::shared_ptr<Runnable> task) {
+  template <class Runnable>
+  void push_back(std::shared_ptr<Runnable> task) {
     zi::guard g(lock_);
     queue_.push_back(task);
   }
 
-  template <class Function> void push_back(const Function& task) {
+  template <class Function>
+  void push_back(const Function& task) {
     zi::guard g(lock_);
     queue_.push_back(wrapFunction(task));
   }

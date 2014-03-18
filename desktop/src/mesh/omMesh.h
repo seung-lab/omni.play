@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /**
  *  The mesh data associated with the region of a segment enclosed

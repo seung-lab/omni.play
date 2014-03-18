@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/toolbars/mainToolbar/filterWidget.hpp"
-
-#include <qthread.h>
 
 class OmAlphaVegasMode : public QThread {
  public:

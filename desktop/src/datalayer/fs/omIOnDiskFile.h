@@ -1,6 +1,8 @@
 #pragma once
+#include "precomp.h"
 
-template <typename T> class OmIOnDiskFile {
+template <typename T>
+class OmIOnDiskFile {
  public:
   virtual ~OmIOnDiskFile() {}
 

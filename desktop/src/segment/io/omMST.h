@@ -1,20 +1,24 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/io/omMSTtypes.h"
-#include "zi/omMutex.h"
+
 #include "datalayer/archive/segmentation.h"
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "users/omUsers.h"
 
-#include <QString>
-
 class OmSegmentation;
-template <class> class OmIOnDiskFile;
-template <class> class OmMemMappedFileReadQT;
-template <class> class OmMemMappedFileWriteQT;
-template <class> class OmFileReadQT;
-template <class> class OmFileWriteQT;
+template <class>
+class OmIOnDiskFile;
+template <class>
+class OmMemMappedFileReadQT;
+template <class>
+class OmMemMappedFileWriteQT;
+template <class>
+class OmFileReadQT;
+template <class>
+class OmFileWriteQT;
 class QDataStream;
 
 class OmMST {

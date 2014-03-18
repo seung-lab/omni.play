@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  *
@@ -14,5 +15,4 @@ class OmChunkExtentWidget : public OmView3dWidget {
   virtual void Draw();
 
  private:
-
 };

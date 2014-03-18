@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/exception.h"
-
-#include <QPainter>
 
 class OmDisplayInfo {
  public:

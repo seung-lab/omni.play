@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/widgets/omCheckBoxWidget.hpp"
 #include "system/cache/omCacheManager.h"

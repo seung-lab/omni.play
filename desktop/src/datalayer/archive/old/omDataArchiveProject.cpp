@@ -7,8 +7,6 @@
 #include "utility/dataWrappers.h"
 #include "utility/omFileHelpers.h"
 
-#include <QFile>
-
 static const int Latest_Project_Version = 25;
 static const QString Omni_Postfix("OMNI");
 static int fileVersion_;

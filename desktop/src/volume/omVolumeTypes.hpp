@@ -1,11 +1,12 @@
 #pragma once
+#include "precomp.h"
 
-#include <QString>
 #include "common/common.h"
 #include "boost/variant.hpp"
 #include "enum/enum.hpp"
 
-template <typename T> class OmMemMappedVolumeImpl;
+template <typename T>
+class OmMemMappedVolumeImpl;
 
 class OmChannel;
 class OmSegmentation;

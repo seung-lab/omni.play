@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "segment/omSegments.h"
@@ -6,7 +7,6 @@
 #include "utility/dataWrappers.h"
 #include "utility/omTimer.hpp"
 #include "volume/omSegmentation.h"
-#include "zi/omMutex.h"
 
 class OmSegmentUncertain {
  public:

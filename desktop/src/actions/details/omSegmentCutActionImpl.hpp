@@ -1,12 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "events/events.h"
 #include "segment/lists/omSegmentLists.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
-
-#include <QVector>
 
 class OmSegmentCutActionImpl {
  private:

@@ -1,10 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/point2d.hpp"
-#include "zi/omMutex.h"
-
-#include <map>
-#include <vector>
 
 class OmPointsInCircle {
  private:

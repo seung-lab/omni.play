@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 /*
  * AUTHORS:
  *   Aleksandar Zlateski <zlateski@mit.edu>
@@ -9,10 +10,6 @@
 #ifndef DYNAMIC_TREE_HPP
 #define DYNAMIC_TREE_HPP
 
-#include <assert.h>
-#include <string>
-#include <iostream>
-
 namespace zi {
 namespace Trees {
 
@@ -20,7 +17,8 @@ namespace Trees {
 int zRefCnt = 0;
 #endif
 
-template <typename _T> class DynamicTree;
+template <typename _T>
+class DynamicTree;
 
 template <typename _T>
 class DynamicTree {

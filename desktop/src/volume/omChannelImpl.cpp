@@ -14,9 +14,6 @@
 #include "volume/io/omVolumeData.h"
 #include "volume/omChannelImpl.h"
 #include "volume/omFilter2d.h"
-#include "zi/omThreads.h"
-
-#include <float.h>
 
 OmChannelImpl::OmChannelImpl()
     : chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this)),

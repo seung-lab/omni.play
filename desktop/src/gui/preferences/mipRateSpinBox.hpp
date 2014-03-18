@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "view2d/om2dPreferences.hpp"
 #include "gui/widgets/omDoubleSpinBox.hpp"

@@ -1,8 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/omSystemInformation.h"
 #include "threads/omTaskManagerManager.h"
-#include "zi/omThreads.h"
+
 #include "tiles/cache/omMipLevelContainer.hpp"
 
 class OmThreadPoolByMipLevel {

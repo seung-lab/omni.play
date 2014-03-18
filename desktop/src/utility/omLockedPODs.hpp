@@ -1,9 +1,5 @@
 #pragma once
-
-#include <zi/atomic/atomic.hpp>
-#include <zi/bits/type_traits.hpp>
-#include <zi/concurrency/guard.hpp>
-#include <zi/concurrency/spinlock.hpp>
+#include "precomp.h"
 
 class LockedBool {
  public:
@@ -36,7 +32,8 @@ namespace locked_pods_ {
 
 struct locked_number_tag;  // used to get it's own mutex pool
 
-template <class T> class LockedNumberDefault {
+template <class T>
+class LockedNumberDefault {
  public:
   LockedNumberDefault() : val_(static_cast<T>(0)) {}
 
@@ -94,10 +91,10 @@ template <class T> class LockedNumberDefault {
 
  private:
   T val_;
-
 };
 
-template <class T> struct is_integral_with_lte_32_bits {
+template <class T>
+struct is_integral_with_lte_32_bits {
   static const bool value = zi::is_integral<T>::value && (sizeof(T) <= 4);
 };
 
@@ -110,7 +107,8 @@ template <class T> struct is_integral_with_lte_32_bits {
  *       nice assembly implemented functions :)
  */
 
-template <class T> struct LockedIntegralNumber {
+template <class T>
+struct LockedIntegralNumber {
  public:
   LockedIntegralNumber() { zi::atomic::write(&val_, 0); }
 
@@ -126,22 +124,22 @@ template <class T> struct LockedIntegralNumber {
   }
 
   void add(const T& val) {
-    (void) zi::atomic::add_swap(&val_, zi::atomic::atomic_word(val));
+    (void)zi::atomic::add_swap(&val_, zi::atomic::atomic_word(val));
   }
 
   void sub(const T& val) {
-    (void) zi::atomic::add_swap(&val_, zi::atomic::atomic_word(-val));
+    (void)zi::atomic::add_swap(&val_, zi::atomic::atomic_word(-val));
   }
 
   T inc() { return static_cast<T>(zi::atomic::increment_swap(&val_)) + 1; }
 
   LockedIntegralNumber& operator+=(const T& val) {
-    (void) zi::atomic::add_swap(&val_, zi::atomic::atomic_word(val));
+    (void)zi::atomic::add_swap(&val_, zi::atomic::atomic_word(val));
     return *this;
   }
 
   LockedIntegralNumber& operator-=(const T& val) {
-    (void) zi::atomic::add_swap(&val_, zi::atomic::atomic_word(-val));
+    (void)zi::atomic::add_swap(&val_, zi::atomic::atomic_word(-val));
     return *this;
   }
 
@@ -162,7 +160,6 @@ template <class T> struct LockedIntegralNumber {
 
  private:
   volatile zi::atomic::atomic_word val_;
-
 };
 
 }  // namespace locked_pods_
@@ -170,16 +167,13 @@ template <class T> struct LockedIntegralNumber {
 
 template <class T,
           bool = om::locked_pods_::is_integral_with_lte_32_bits<T>::value>
-struct LockedNumber {
-};
+struct LockedNumber {};
 
 template <class T>
-struct LockedNumber<T, false> : om::locked_pods_::LockedNumberDefault<T> {
-};
+struct LockedNumber<T, false> : om::locked_pods_::LockedNumberDefault<T> {};
 
 template <class T>
-struct LockedNumber<T, true> : om::locked_pods_::LockedIntegralNumber<T> {
-};
+struct LockedNumber<T, true> : om::locked_pods_::LockedIntegralNumber<T> {};
 
 typedef LockedNumber<int64_t> LockedInt64;
 typedef LockedNumber<uint64_t> LockedUint64;
@@ -187,7 +181,8 @@ typedef LockedNumber<uint64_t> LockedUint64;
 typedef LockedNumber<int32_t> LockedInt32;
 typedef LockedNumber<uint32_t> LockedUint32;
 
-template <typename T> class OmLockedNumber {
+template <typename T>
+class OmLockedNumber {
  private:
   T val_;
 

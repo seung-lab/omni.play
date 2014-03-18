@@ -1,8 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/colors.h"
 #include "utility/omLockedPODs.hpp"
-#include "zi/omMutex.h"
 
 class OmSegmentColorizerColorCache : public zi::rwmutex {
  private:

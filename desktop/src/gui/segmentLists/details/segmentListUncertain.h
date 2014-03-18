@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "gui/segmentLists/details/segmentListBase.h"
@@ -21,8 +22,8 @@ class SegmentListUncertain : public SegmentListBase {
 
   std::shared_ptr<GUIPageOfSegments> getPageSegments(
       const GUIPageRequest& request) {
-    return sdw_.SegmentLists()
-        ->GetSegmentGUIPage(om::common::SegListType::UNCERTAIN, request);
+    return sdw_.SegmentLists()->GetSegmentGUIPage(
+        om::common::SegListType::UNCERTAIN, request);
   }
 
   int getPreferredTabIndex() { return 2; }

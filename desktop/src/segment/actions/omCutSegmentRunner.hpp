@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/details/omSegmentCutAction.h"
 #include "events/events.h"
@@ -7,7 +8,6 @@
 
 class OmCutSegmentRunner {
  public:
-
   static void CutSegmentFromParent(const SegmentDataWrapper& sdw) {
     OmSegment* seg = sdw.GetSegment();
 

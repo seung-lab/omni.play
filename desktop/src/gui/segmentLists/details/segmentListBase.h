@@ -1,8 +1,5 @@
 #pragma once
-
-#include <memory>
-#include <QtGui>
-#include <QWidget>
+#include "precomp.h"
 
 #include "utility/segmentationDataWrapper.hpp"
 

@@ -1,12 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "zi/utility.h"
-
-#include <QSize>
-#include <QUndoStack>
-#include <QGLWidget>
-#include <QGLContext>
 
 class MainWindow;
 class InspectorWidget;
@@ -42,7 +38,8 @@ class OmAppState : private om::SingletonBase<OmAppState> {
 
   static QSize GetViewBoxSizeHint();
 
-  static bool OpenProject(const std::string& fileNameAndPath, const std::string& username);
+  static bool OpenProject(const std::string& fileNameAndPath,
+                          const std::string& username);
   static void OpenTaskSelector();
 
  private:

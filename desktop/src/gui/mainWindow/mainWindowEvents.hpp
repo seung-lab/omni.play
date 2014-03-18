@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "events/details/nonFatalEvent.h"
 #include "events/listeners.h"

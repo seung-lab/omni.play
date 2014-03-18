@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/sidebars/right/displayTools/location/sliceDepthSpinBoxBase.hpp"
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  *  OmMipVolume is composed of sub-volumes cubes call OmChunks.

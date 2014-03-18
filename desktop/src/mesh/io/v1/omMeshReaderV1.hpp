@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/logging.h"
 #include "datalayer/hdf5/omHdf5.h"

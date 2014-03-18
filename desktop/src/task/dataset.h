@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/macro.hpp"
 #include "yaml-cpp/yaml.h"

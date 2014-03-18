@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <stdio.h>
 #include "common/logging.h"
 #include "utility/glInclude.h"
 
@@ -10,11 +10,11 @@ namespace old {
 /*
  * Standard Colors
  */
-static const float OMGL_WHITE[3] = { 1, 1, 1 };
-static const float OMGL_BLACK[3] = { 0, 0, 0 };
-static const float OMGL_RED[3] = { 1, 0, 0 };
-static const float OMGL_GREEN[3] = { 0, 1, 0 };
-static const float OMGL_BLUE[3] = { 0, 0, 1 };
+static const float OMGL_WHITE[3] = {1, 1, 1};
+static const float OMGL_BLACK[3] = {0, 0, 0};
+static const float OMGL_RED[3] = {1, 0, 0};
+static const float OMGL_GREEN[3] = {0, 1, 0};
+static const float OMGL_BLUE[3] = {0, 0, 1};
 
 /*
  * Macro to check for silent errors that OpenGL builds up.

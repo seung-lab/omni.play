@@ -1,12 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/logging.h"
 #include "datalayer/fs/omIOnDiskFile.h"
 #include "utility/malloc.hpp"
-
-#include <QFile>
-#include <QFileInfo>
-#include <boost/make_shared.hpp>
 
 template <typename T>
 class OmFileQTbase : public OmIOnDiskFile<T> {

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/toolbars/mainToolbar/filterWidget.hpp"
 #include "view2d/omView2d.h"

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/io/omMST.h"
 #include "segment/io/omValidGroupNum.hpp"

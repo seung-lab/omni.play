@@ -1,13 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "segment/omSegmentPointers.h"
 
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
-
 // segmentation ID, segment ID, mip level, x, y, z
-typedef boost::tuple<om::common::ID, om::common::SegID, int, int, int, int>
+typedef std::tuple<om::common::ID, om::common::SegID, int, int, int, int>
     OmMeshSegListKey;
 
 class OmSegPtrListValid {

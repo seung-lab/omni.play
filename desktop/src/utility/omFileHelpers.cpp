@@ -1,14 +1,6 @@
 #include "common/logging.h"
 #include "utility/omFileHelpers.h"
 
-#include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
-
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
-#include <QFileInfoList>
-
 bool OmFileHelpers::IsFileReadOnly(const std::string& fileNameAndPath) {
   QFileInfo file(QString::fromStdString(fileNameAndPath));
 

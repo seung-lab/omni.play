@@ -1,13 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "common/enums.hpp"
 #include "common/logging.h"
 #include "common/string.hpp"
 #include "datalayer/fs/omIOnDiskFile.h"
-
-#include <QFile>
-#include <QFileInfo>
 
 template <typename T>
 class OmMemMappedFileQTbase : public OmIOnDiskFile<T> {

@@ -1,11 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/channelDataWrapper.hpp"
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/inspectors/channel/pageSelectorChannel.hpp"
 #include "gui/inspectors/channel/pagesWidgetChannel.h"
-
-#include <QDialog>
 
 // based off
 // http://doc.qt.nokia.com/latest/dialogs-configdialog-configdialog-cpp.html

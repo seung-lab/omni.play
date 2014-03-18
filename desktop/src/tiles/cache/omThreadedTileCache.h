@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "tiles/cache/omTileCacheThreadPool.hpp"
 #include "system/cache/omCacheBase.h"
@@ -10,8 +11,6 @@
 #include "tiles/omTile.h"
 #include "tiles/omTileTypes.hpp"
 #include "utility/omLockedPODs.hpp"
-
-#include <zi/system.hpp>
 
 /**
  *  Brett Warne - bwarne@mit.edu - 3/12/09

@@ -1,10 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/build/omCompactVolValues.hpp"
 #include "volume/build/omVolumeBuilderBase.hpp"
 #include "volume/build/omDataCopierImages.hpp"
-
-#include <QImage>
 
 template <typename VOL>
 class OmVolumeBuilderImages : public OmVolumeBuilderBase<VOL> {

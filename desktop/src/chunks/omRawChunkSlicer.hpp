@@ -1,8 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "tiles/make_tile.hpp"
 
-template <typename T> class OmRawChunkSlicer {
+template <typename T>
+class OmRawChunkSlicer {
  private:
   const int chunkDim_;         // usually 128
   const int elementsPerTile_;  // chunkDim^2
@@ -58,7 +60,6 @@ template <typename T> class OmRawChunkSlicer {
 
       default:
         throw om::ArgException("unknown plane");
-    }
-    ;
+    };
   }
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 class OmMeshChunkDataWriterTaskV2 {
  private:

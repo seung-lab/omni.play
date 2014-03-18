@@ -1,6 +1,5 @@
 #pragma once
-
-#include "zi/omThreads.h"
+#include "precomp.h"
 
 class OmSegment;
 class OmMeshSegmentList;

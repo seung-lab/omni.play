@@ -1,8 +1,5 @@
 #include "datalayer/fs/omFile.hpp"
 
-#include <QDir>
-#include <boost/filesystem.hpp>
-
 namespace om {
 namespace file {
 namespace old {
@@ -64,7 +61,6 @@ std::string tempPath() { return QDir::tempPath().toStdString(); }
 void mvFile(const std::string& old_fnp, const std::string& new_fnp) {
   try {
     boost::filesystem::rename(old_fnp, new_fnp);
-
   }
   catch (...) {
     throw om::IoException("could not mv file");
@@ -75,13 +71,11 @@ void cpFile(const std::string& from_fnp, const std::string& to_fnp) {
   try {
     rmFile(to_fnp);
     boost::filesystem::copy_file(from_fnp, to_fnp);
-
   }
   catch (...) {
     throw om::IoException("could not mv file");
   }
 }
-
 }
 }
 }  // namespace

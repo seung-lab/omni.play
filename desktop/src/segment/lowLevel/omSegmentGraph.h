@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "segment/lowLevel/omDynamicForestCache.hpp"
@@ -43,7 +44,7 @@ class OmSegmentGraph {
 
   OmSegmentChildren* Children() { return children_.get(); }
 
-  //Do stuff
+  // Do stuff
 
  private:
   OmSegmentation* segmentation_;

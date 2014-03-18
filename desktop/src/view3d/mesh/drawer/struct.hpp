@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 namespace om {
 namespace v3d {
@@ -11,9 +12,9 @@ struct key {
 
   bool operator<(const key &k) const {
     return std::tie(freshness, dustThreshold, shouldVolumeBeShownBroken,
-                    breakThreshold) <
-           std::tie(k.freshness, k.dustThreshold, k.shouldVolumeBeShownBroken,
-                    k.breakThreshold);
+                    breakThreshold) < std::tie(k.freshness, k.dustThreshold,
+                                               k.shouldVolumeBeShownBroken,
+                                               k.breakThreshold);
   }
 };
 }

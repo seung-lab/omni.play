@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <QtGui>
 #include "gui/widgets/omButton.hpp"
 #include "gui/widgets/omTellInfo.hpp"
 #include "system/omConnect.hpp"

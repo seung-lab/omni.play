@@ -1,13 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/omSegmentationFolder.h"
 #include "segment/omSegmentEdge.h"
 #include "volume/omSegmentation.h"
 #include "datalayer/fs/omFileNames.hpp"
-
-#include <QList>
-#include <QFile>
-#include <QDir>
 
 class OmUserEdges {
  private:

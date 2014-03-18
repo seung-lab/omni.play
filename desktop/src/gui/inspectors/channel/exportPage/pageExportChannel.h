@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/channelDataWrapper.hpp"
-
-#include <QtGui>
 
 namespace om {
 namespace channelInspector {

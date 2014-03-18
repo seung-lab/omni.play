@@ -1,7 +1,5 @@
 #pragma once
-
-#include <QString>
-#include <QDataStream>
+#include "precomp.h"
 
 class OmChannel;
 class OmChannelManager;

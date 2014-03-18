@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "../omView3dWidget.h"
 #include "utility/glInclude.h"
@@ -7,13 +8,11 @@
 #include "../omView3d.h"
 #include "omInfoWidget.h"
 
-#include <QFont>
-
 class OmPercDone : public OmView3dWidget {
 
  public:
   OmPercDone(OmView3d* view3d) : OmView3dWidget(view3d) {
-    //set font properties
+    // set font properties
     mFont = QFont("Helvetica", 12);
     mFont.setWeight(QFont::Bold);
     mFont.setItalic(true);
@@ -21,10 +20,11 @@ class OmPercDone : public OmView3dWidget {
 
   virtual void Draw() {
     glPushAttrib(GL_ALL_ATTRIB_BITS);
-    //glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT); // lighting and color mask
+    // glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT); // lighting and color
+    // mask
     glDisable(GL_LIGHTING);  // need to disable lighting for proper text color
 
-    static const float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
+    static const float TEXT_COLOR[4] = {1, 1, 1, 0.8};
     glColor4fv(TEXT_COLOR);  // set text color
 
     determineText();

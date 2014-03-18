@@ -1,11 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "volume/omMipVolume.h"
 #include "utility/omStringHelpers.h"
 #include "datalayer/fs/omFileNames.hpp"
-
-#include <QFile>
 
 class OmVolumeAllocater {
  public:

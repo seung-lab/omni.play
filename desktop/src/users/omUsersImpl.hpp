@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/fs/omSegmentationFolders.hpp"
@@ -6,8 +7,6 @@
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationFolder.h"
 #include "users/userSettings.h"
-
-#include <QDir>
 
 namespace om {
 

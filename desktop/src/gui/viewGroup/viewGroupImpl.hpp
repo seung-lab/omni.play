@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/omConnect.hpp"
 #include "gui/viewGroup/viewGroupMainWindowUtils.hpp"
@@ -111,7 +112,6 @@ Q_SIGNALS:
   }
 
  public:
-
   void AddView3D() { signalAddView3D(); }
 
   void AddView3D4View() { signalAddView3D4View(); }

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "threads/omTaskManager.hpp"
 
@@ -11,7 +12,8 @@ class OmView2dManagerImpl {
 
   ~OmView2dManagerImpl() { threadPool_.join(); }
 
-  template <typename T> inline void AddTaskBack(const T& task) {
+  template <typename T>
+  inline void AddTaskBack(const T& task) {
     threadPool_.push_back(task);
   }
 };

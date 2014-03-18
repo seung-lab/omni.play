@@ -1,11 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "chunks/omSegChunk.h"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "chunks/omSegChunkDataInterface.hpp"
-
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
 
 /**
  * unmanaged cache of slices to speed-up brush select tool
@@ -26,7 +24,7 @@ class OmSliceCache {
 
   // ignore mip level--always 0
   // x, y, z, depth
-  typedef boost::tuple<int, int, int, int> OmSliceKey;
+  typedef std::tuple<int, int, int, int> OmSliceKey;
 
   std::map<OmSliceKey, std::shared_ptr<uint32_t>> cache_;
 

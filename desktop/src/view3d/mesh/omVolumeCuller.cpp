@@ -1,7 +1,6 @@
 #include "omVolumeCuller.h"
 #include "coordinates/coordinates.h"
 
-#include <QtGlobal>
 namespace om {
 namespace v3d {
 VolumeCuller::VolumeCuller(const Matrix4f& projmodelview,
@@ -57,4 +56,4 @@ bool VolumeCuller::operator!=(const VolumeCuller& c) const {
   return !(*this == c);
 }
 }
-}  //namespace
+}  // namespace

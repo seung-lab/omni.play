@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "gui/toolbars/toolbarManager.h"
@@ -7,8 +8,6 @@
 #include "system/omConnect.hpp"
 #include "system/omStateManager.h"
 #include "viewGroup/omBrushSize.hpp"
-
-#include <QKeyEvent>
 
 class OmGlobalKeyPress : public QWidget {
   Q_OBJECT;

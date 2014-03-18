@@ -1,7 +1,5 @@
 #pragma once
-
-#include <QAction>
-#include <QStringList>
+#include "precomp.h"
 
 class RecentFileList {
  private:

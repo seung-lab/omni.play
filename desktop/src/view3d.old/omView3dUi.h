@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  *
@@ -7,8 +8,6 @@
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "utility/dataWrappers.h"
 #include "omSegmentPickPoint.h"
-
-#include <QtGui>
 
 class OmView3d;
 class OmViewGroupState;
@@ -19,7 +18,7 @@ class OmView3dUi {
   OmView3dUi(OmView3d* view3d, OmViewGroupState*);
   ~OmView3dUi();
 
-  //ui events
+  // ui events
   bool GestureEvent(QGestureEvent* event);
 
   void MousePressed(QMouseEvent* event);

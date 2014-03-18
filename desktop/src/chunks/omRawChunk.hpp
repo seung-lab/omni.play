@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -6,10 +7,6 @@
 #include "volume/io/omVolumeData.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
-#include "zi/omMutex.h"
-#include "zi/omThreads.h"
-
-#include <QFile>
 
 template <typename T>
 class OmRawChunk {

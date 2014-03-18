@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  * Manages data structures that are shared between various parts of the system.
@@ -11,8 +12,6 @@
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "zi/omUtility.h"
-
-#include <QSize>
 
 class OmUndoStack;
 class OmBrushSize;
@@ -27,12 +26,12 @@ class OmStateManager : private om::singletonBase<OmStateManager> {
  public:
   static OmBrushSize* BrushSize();
 
-  //tool mode
+  // tool mode
   static om::tool::mode GetToolMode();
   static void SetToolModeAndSendEvent(const om::tool::mode mode);
   static void SetOldToolModeAndSendEvent();
 
-  //undostack
+  // undostack
   static OmUndoStack& UndoStack();
 
  private:

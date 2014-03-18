@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "volume/omVolumeTypes.hpp"
@@ -11,8 +12,6 @@
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "volume/build/omDataCopierBase.hpp"
 #include "volume/build/omDataCopierHdf5Task.hpp"
-
-#include <QFileInfoList>
 
 template <typename VOL>
 class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {

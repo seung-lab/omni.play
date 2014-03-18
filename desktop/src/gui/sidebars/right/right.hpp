@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/sidebars/right/rightImpl.h"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"

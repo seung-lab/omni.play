@@ -1,15 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/io/omActionOperators.h"
 #include "project/omProject.h"
 #include "utility/omLockedPODs.hpp"
-#include "zi/omThreads.h"
-#include "zi/omUtility.h"
 
-#include <QDataStream>
-#include <QDateTime>
-#include <QDir>
-#include <QFile>
+#include "zi/omUtility.h"
 
 static const int Omni_Log_Version = 2;
 static const QString Omni_Postfix("OMNI_LOG");

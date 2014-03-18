@@ -1,8 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/fs/omFileQT.hpp"
 
-template <typename T> class OmVectorInFile {
+template <typename T>
+class OmVectorInFile {
  private:
   const QString fnp_;
   std::vector<T> vec_;

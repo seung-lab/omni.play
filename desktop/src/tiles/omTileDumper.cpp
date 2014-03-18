@@ -7,10 +7,6 @@
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omMipVolume.h"
 
-#include <QFile>
-#include <QImage>
-#include <QGLWidget>
-
 OmTileDumper::OmTileDumper(OmMipVolume* vol, const QString& dumpfile,
                            OmViewGroupState* vgs)
     : vol_(vol), dumpfile_(dumpfile), vgs_(vgs) {}

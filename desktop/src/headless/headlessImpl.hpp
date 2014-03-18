@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/hdf5/omExportVolToHdf5.hpp"
 #include "actions/io/omActionDumper.h"

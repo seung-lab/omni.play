@@ -1,11 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "zi/omUtility.h"
-
-#include <QtCore/QVariant>
-#include <QtGui>
-#include <QWidget>
 
 class ChannelInspector;
 class ChannelDataWrapper;

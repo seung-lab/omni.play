@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSelected.hpp"
@@ -9,8 +10,6 @@
 #include "view2d/omView2dState.hpp"
 #include "view2d/omView2dZoom.hpp"
 #include "viewGroup/omBrushSize.hpp"
-
-#include <QKeyEvent>
 
 class OmKeyEvents {
  private:

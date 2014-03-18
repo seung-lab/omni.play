@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
@@ -11,7 +12,8 @@ class OmView2dManager {
   }
 
  public:
-  template <typename T> inline static void AddTaskBack(const T& task) {
+  template <typename T>
+  inline static void AddTaskBack(const T& task) {
     impl().AddTaskBack(task);
   }
 };

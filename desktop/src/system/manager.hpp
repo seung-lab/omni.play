@@ -1,9 +1,5 @@
 #pragma once
-
-#include <boost/iterator/transform_iterator.hpp>
-#include <boost/iterator/filter_iterator.hpp>
-#include <unordered_map>
-#include <zi/mutex.hpp>
+#include "precomp.h"
 
 #include "common/exception.h"
 #include "utility/omLockedPODs.hpp"
@@ -12,13 +8,13 @@
 namespace om {
 namespace system {
 
-template <typename T> struct ManagedObject {
+template <typename T>
+struct ManagedObject {
   om::common::ID ID;
   bool Enabled;
   zi::spinlock Lock;
   T* Object;
 };
-
 }
 }
 
@@ -34,13 +30,13 @@ Emitter& operator<<(Emitter& out, const om::system::ManagedObject<T>& data) {
 
   return out;
 }
-
 }
 
 namespace om {
 namespace system {
 
-template <typename T> class Manager {
+template <typename T>
+class Manager {
  public:
   typedef ManagedObject<T> obj;
   typedef std::unordered_map<om::common::ID, obj> coll;
@@ -131,7 +127,7 @@ template <typename T> class Manager {
 
   void Load(const YAMLold::Node& in) {
     if (in.FindValue("size"))  // Old Manager Format
-        {
+    {
       om::common::SegIDSet valid, enabled;
       in["valid set"] >> valid;
       in["enabled set"] >> enabled;
@@ -202,6 +198,5 @@ template <typename T> class Manager {
     }
   }
 };
-
 }
 }  // namespace om::system::

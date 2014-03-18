@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "project/details/omSegmentationManager.h"
 #include "project/omProject.h"

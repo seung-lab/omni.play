@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/widgets/omButton.hpp"
 #include "system/omAlphaVegasMode.hpp"

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  *
@@ -8,10 +9,10 @@
 #include "common/exception.h"
 #include "datalayer/archive/segmentation.h"
 #include "datalayer/archive/filter.h"
-#include <QString>
 
 namespace YAMLold {
-template <class T> class mipVolume;
+template <class T>
+class mipVolume;
 }
 
 class OmManageableObject {
@@ -35,8 +36,10 @@ class OmManageableObject {
   QString note_;
   QString customName_;
 
-  template <class T> friend class OmMipVolumeArchive;
+  template <class T>
+  friend class OmMipVolumeArchive;
   friend class OmMipVolumeArchiveOld;
-  template <class T> friend class YAMLold::mipVolume;
+  template <class T>
+  friend class YAMLold::mipVolume;
   friend void YAMLold::operator>>(const YAMLold::Node& in, OmFilter2d& f);
 };

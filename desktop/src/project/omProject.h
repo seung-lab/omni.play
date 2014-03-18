@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <QString>
 #include "common/common.h"
 #include "zi/utility.h"
 #include "datalayer/file.h"

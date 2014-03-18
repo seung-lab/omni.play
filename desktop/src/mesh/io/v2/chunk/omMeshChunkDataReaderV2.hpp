@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/omSegmentationFolder.h"
 #include "common/common.h"

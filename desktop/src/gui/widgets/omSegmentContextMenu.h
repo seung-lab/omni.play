@@ -1,11 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "utility/dataWrappers.h"
 #include "view3d.old/omSegmentPickPoint.h"
 #include "landmarks/omLandmarksTypes.h"
-
-#include <QMenu>
 
 class OmViewGroupState;
 

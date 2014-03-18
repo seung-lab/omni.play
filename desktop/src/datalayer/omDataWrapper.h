@@ -1,10 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "volume/omVolumeTypes.hpp"
 #include "utility/malloc.hpp"
-
-#include <QString>
 
 #define OmDataWrapperRaw(c) (OmDataWrapper<int8_t>::produceNoFree(c))
 #define OmDataWrapperInvalid() (OmDataWrapper<int8_t>::produceNull())

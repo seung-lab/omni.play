@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/fs/omFile.hpp"
 #include "datalayer/fs/omFileNames.hpp"
@@ -39,7 +40,6 @@ class OmSegmentPageVersion {
   }
 
  private:
-
   void storeVersion() {
     QFile file(fnp_);
 

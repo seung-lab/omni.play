@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/omFilter2d.h"
 #include "project/details/omChannelManager.h"

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataWrapper.h"
@@ -20,5 +21,4 @@ class OmHdf5Utils {
   static int getSizeofType(const int);
   static OmDataWrapperPtr getDataWrapper(void*, const int,
                                          const om::OmDataAllocType);
-
 };

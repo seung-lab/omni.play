@@ -1,9 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
-#include "zi/omMutex.h"
-
-#include <QList>
 
 class OmCacheBase;
 class OmCacheInfo;

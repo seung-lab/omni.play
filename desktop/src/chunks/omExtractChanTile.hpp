@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "tiles/omTileFilters.hpp"
 #include "chunks/omRawChunkSlicer.hpp"

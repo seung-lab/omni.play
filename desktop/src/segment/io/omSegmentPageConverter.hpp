@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/malloc.hpp"
 #include "segment/omSegmentTypes.h"

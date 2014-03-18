@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "segment/omSegment.h"
@@ -13,8 +14,8 @@ class OmSegmentChildren {
 
   inline void Resize(const size_t size) { list_.resize(size); }
 
-  inline const segChildCont_t& GetChildren(
-      const om::common::SegID segID) const {
+  inline const segChildCont_t& GetChildren(const om::common::SegID segID)
+      const {
     return list_[segID];
   }
 

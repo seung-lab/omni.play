@@ -1,10 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "project/omProjectGlobals.h"
 #include "utility/omRandColorFile.hpp"
-#include <QColor>
-#include <QPixmap>
 
 namespace om {
 namespace utils {
@@ -19,7 +18,6 @@ class color {
   };
 
  public:
-
   static inline om::common::Color GetRandomColor() {
     return OmProject::Globals().RandColorFile().GetRandomColor();
   }
@@ -65,9 +63,9 @@ class color {
   }
 
   static om::common::Color QColorToColor(const QColor color) {
-    om::common::Color c = { static_cast<uint8_t>(color.red()),
-                            static_cast<uint8_t>(color.green()),
-                            static_cast<uint8_t>(color.blue()) };
+    om::common::Color c = {static_cast<uint8_t>(color.red()),
+                           static_cast<uint8_t>(color.green()),
+                           static_cast<uint8_t>(color.blue())};
     return c;
   }
 

@@ -1,3 +1,4 @@
+#include "precomp.h"
 #include "common/common.h"
 #include "string.hpp"
 #include "zi/utility.h"

@@ -1,7 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "annotation/annotation.h"
-#include "yaml-cpp-old/yaml.h"
+
 #include "utility/yaml/omBaseTypes.hpp"
 #include "utility/yaml/coords.h"
 

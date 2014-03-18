@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 
@@ -38,7 +39,6 @@ struct LargestSegInfoFirst : std::binary_function<SegInfo, SegInfo, bool> {
   bool operator()(const SegInfo& a, const SegInfo& b) const {
     return CmpSegInfo(a, b);
   }
-
 };
 
 std::shared_ptr<GUIPageOfSegments> getPage(const std::vector<SegInfo> list,

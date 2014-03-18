@@ -1,11 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/logging.h"
 #include "events/events.h"
 #include "gui/widgets/omCursors.h"
 #include "system/omConnect.hpp"
-
-#include <QtGui>
 
 class OmDoubleSpinBox : public QDoubleSpinBox {
   Q_OBJECT;
@@ -34,7 +33,6 @@ Q_SLOTS:
 
   void setGUIvalue(const double newThreshold) { setValue(newThreshold); }
 
-  virtual void setInitialGUIThresholdValue() {}
-  ;
+  virtual void setInitialGUIThresholdValue() {};
   virtual void actUponValueChange(const double threshold) = 0;
 };

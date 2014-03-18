@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <stdio.h>
 #include "common/logging.h"
 #include "utility/glInclude.h"
 

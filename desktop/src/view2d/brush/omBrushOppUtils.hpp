@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "view2d/brush/omBrushOppTypes.h"
 #include "view2d/omView2dConverters.hpp"

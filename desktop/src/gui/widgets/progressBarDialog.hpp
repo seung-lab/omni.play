@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/widgets/omTellInfo.hpp"
 #include "gui/widgets/progress.hpp"
@@ -57,7 +58,8 @@ class progressBarDialog : public QDialog {
 
   void SetDone(const uint32_t numDid) { progress_->SetDone(numDid); }
 
-  template <typename T> void push_back(const T& task) {
+  template <typename T>
+  void push_back(const T& task) {
     threadPool_.push_back(task);
   }
 

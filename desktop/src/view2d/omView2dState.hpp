@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "events/events.h"
 #include "system/cache/omCacheManager.h"
@@ -15,9 +16,6 @@
 
 #include "vmmlib/vmmlib.h"
 using namespace vmml;
-
-#include <QSize>
-#include <QMouseEvent>
 
 class OmBrushSize;
 

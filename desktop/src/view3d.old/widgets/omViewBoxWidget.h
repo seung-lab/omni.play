@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "tiles/omTileTypes.hpp"
 #include "../omCamera.h"
@@ -38,5 +39,4 @@ class OmViewBoxWidget : public OmView3dWidget {
 
   void draw2dBoxWrapper(OmViewGroupView2dState* view2dState,
                         const om::common::ViewType viewType);
-
 };

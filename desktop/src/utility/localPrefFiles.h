@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/localPrefFilesImpl.hpp"
 
@@ -62,7 +63,6 @@ class LocalPrefFiles : private om::singletonBase<LocalPrefFiles> {
     catch (...) {
       return defaultRet;
     }
-
   }
 
   inline static void writeSettingQString(const QString& setting,

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "omView3d.h"
 

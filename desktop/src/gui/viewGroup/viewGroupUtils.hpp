@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "gui/mainWindow/mainWindow.h"
@@ -8,8 +9,6 @@
 #include "view2d/omView2d.h"
 #include "view3d.old/omView3d.h"
 #include "viewGroup/omViewGroupState.h"
-
-#include <QtGui>
 
 namespace om {
 namespace gui {

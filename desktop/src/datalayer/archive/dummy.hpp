@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 struct DummyGroup : public OmManageableObject {
   om::common::SegIDSet mIDs;

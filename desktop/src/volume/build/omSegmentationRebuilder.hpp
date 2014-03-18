@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "chunks/omChunkCache.hpp"
 #include "common/logging.h"
@@ -14,8 +15,6 @@
 #include "volume/omMipVolume.h"
 #include "volume/omSegmentation.h"
 #include "headless/headlessImpl.hpp"
-
-#include <QFileInfo>
 
 namespace om {
 namespace rebuilder {
@@ -59,6 +58,5 @@ class segmentation {
 
   void setVolAsBuilt() { vol_->SetBuildState(MIPVOL_BUILT); }
 };
-
 }
 }

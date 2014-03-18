@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  * OmChannel is the MIP data structure for a raw data volume

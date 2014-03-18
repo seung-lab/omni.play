@@ -1,9 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "events/listeners.h"
-
-#include <QtGui>
-#include <QWidget>
 
 class OmViewGroupState;
 

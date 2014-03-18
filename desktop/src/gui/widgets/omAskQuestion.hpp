@@ -1,6 +1,5 @@
 #pragma once
-
-#include <QMessageBox>
+#include "precomp.h"
 
 class OmAskQuestion : public QMessageBox {
  public:

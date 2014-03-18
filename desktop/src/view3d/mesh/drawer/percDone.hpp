@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 namespace om {
 namespace v3d {
@@ -16,7 +17,8 @@ class PercDone {
     numMeshesMissing_ = 0;
   }
 
-  template <class T> void justDrew(T mesh) {
+  template <class T>
+  void justDrew(T mesh) {
     ++numMeshesDrawn_;
     // TODO: could count number of triangles drawn here...
   }

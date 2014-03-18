@@ -1,12 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/logging.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omChannelTileFilter.hpp"
 #include "viewGroup/omViewGroupState.h"
-
-#include <limits>
 
 class ContrastSpinBox : public OmDoubleSpinBox {
   Q_OBJECT;

@@ -1,10 +1,12 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/details/omUndoCommand.hpp"
 #include "actions/io/omActionLogger.hpp"
 #include "common/common.h"
 
-template <typename IMPL> class OmActionBase : public OmUndoCommand {
+template <typename IMPL>
+class OmActionBase : public OmUndoCommand {
  protected:
   std::shared_ptr<IMPL> impl_;
 

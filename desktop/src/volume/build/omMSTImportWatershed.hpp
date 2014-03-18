@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/io/omMST.h"
 #include "volume/omSegmentation.h"
@@ -23,7 +24,8 @@ class OmMSTImportWatershed {
     if (edges.Vector().size() != numEdges) {
       const QString err =
           QString("number of edges mismatch: have %1, but expected %2")
-              .arg(edges.Vector().size()).arg(numEdges);
+              .arg(edges.Vector().size())
+              .arg(numEdges);
       throw om::IoException(err.toStdString());
     }
 

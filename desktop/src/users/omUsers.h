@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "users/userSettings.h"
-
-#include <QString>
 
 class OmSegmentation;
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/old.hpp"
 #include "omCamera.h"
@@ -7,11 +8,6 @@
 
 #include "events/listeners.h"
 #include "common/common.h"
-
-#include <boost/ptr_container/ptr_vector.hpp>
-#include <QGLWidget>
-#include <QTimer>
-#include <QtGui>
 
 class OmViewGroupState;
 

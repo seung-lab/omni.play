@@ -1,14 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
-#include "zi/omMutex.h"
+
 #include "zi/omUtility.h"
 #include "datalayer/hdf5/omHdf5.h"
-
-#include <map>
-#include <QHash>
-#include <QFileInfo>
-#include <boost/make_shared.hpp>
 
 class OmHdf5Manager : private om::singletonBase<OmHdf5Manager> {
 

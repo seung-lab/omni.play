@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  *  Manages data structures that are shared between various parts of the system.

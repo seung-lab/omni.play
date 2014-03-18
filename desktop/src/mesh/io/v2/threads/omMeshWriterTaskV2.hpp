@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "common/enums.hpp"
@@ -8,7 +9,6 @@
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
 #include "mesh/io/v2/omMeshFilePtrCache.hpp"
 #include "mesh/omMeshManager.h"
-#include "zi/omThreads.h"
 
 template <typename U>
 class OmMeshWriterTaskV2 : public zi::runnable {

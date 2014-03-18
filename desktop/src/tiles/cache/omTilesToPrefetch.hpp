@@ -1,7 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "tiles/omTileCoord.h"
-#include "zi/omMutex.h"
 
 class OmTilesToPrefetch {
  private:

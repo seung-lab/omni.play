@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "events/events.h"
 #include "view3d/mesh/drawer/omMeshPlan.h"
@@ -10,8 +11,6 @@
 #include "view3d/gl.h"
 #include "viewGroup/omViewGroupState.h"
 #include "view3d/mesh/cacheWrapper.hpp"
-
-#include <QGLContext>
 
 namespace om {
 namespace v3d {

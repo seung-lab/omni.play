@@ -1,11 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/omGenericManager.hpp"
 #include "zi/omUtility.h"
 #include "datalayer/archive/old/utilsOld.hpp"
 #include "datalayer/archive/old/omDataArchiveBoost.h"
-
-#include <QDataStream>
 
 class OmGenericManagerArchive {
  public:

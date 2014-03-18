@@ -1,12 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "base.h"
 #include "system/omStateManager.h"
 #include "view3d/camera.h"
 #include "view3d/view3d.h"
 #include "view3d/drawStatus.hpp"
-
-#include <QFont>
 
 namespace om {
 namespace v3d {

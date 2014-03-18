@@ -1,8 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "threads/omTaskManager.hpp"
 
-template <class ARG, class T> struct IndivArgPolicy {
+template <class ARG, class T>
+struct IndivArgPolicy {
 
   boost::function<void(T*, const ARG& arg)> func;
   T* classInstantiation;
@@ -18,7 +20,8 @@ template <class ARG, class T> struct IndivArgPolicy {
   }
 };
 
-template <class ARG, class T> struct VectorArgPolicy {
+template <class ARG, class T>
+struct VectorArgPolicy {
 
   boost::function<void(T*, const std::vector<ARG>& args)> func;
   T* classInstantiation;
@@ -54,7 +57,8 @@ class OmThreadPoolBatched {
 
   ~OmThreadPoolBatched() { JoinPool(); }
 
-  template <typename U> void Start(U func, T* classInstantiation) {
+  template <typename U>
+  void Start(U func, T* classInstantiation) {
     const int numWokers = OmSystemInformation::get_num_cores();
     Start(func, classInstantiation, numWokers);
   }
@@ -92,6 +96,5 @@ class OmThreadPoolBatched {
   }
 
  private:
-
   void worker(std::shared_ptr<args_t> argsPtr) { runner_.run(argsPtr); }
 };

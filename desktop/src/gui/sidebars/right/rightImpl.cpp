@@ -10,7 +10,6 @@
 #include "gui/widgets/omWidget.hpp"
 #include "system/omAppState.hpp"
 #include "utility/dataWrappers.h"
-#include <QToolBox>
 
 om::sidebars::rightImpl::rightImpl(MainWindow* mainWindow,
                                    OmViewGroupState* vgs)

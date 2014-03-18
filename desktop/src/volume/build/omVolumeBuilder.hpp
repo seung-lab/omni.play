@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/sortHelpers.h"
 #include "volume/build/omVolumeBuilderHdf5.hpp"
@@ -6,9 +7,8 @@
 #include "volume/build/omVolumeBuilderWatershed.hpp"
 #include "volume/build/omVolumeBuilderEmpty.hpp"
 
-#include <QFileInfo>
-
-template <typename VOL> class OmVolumeBuilder {
+template <typename VOL>
+class OmVolumeBuilder {
  private:
   VOL* const vol_;
   std::vector<QFileInfo> files_;
@@ -76,8 +76,7 @@ template <typename VOL> class OmVolumeBuilder {
         return new OmVolumeBuilderWatershed<VOL>(vol_, files_[0]);
       default:
         throw om::ArgException("unknown type");
-    }
-    ;
+    };
   }
 
   void setup() {

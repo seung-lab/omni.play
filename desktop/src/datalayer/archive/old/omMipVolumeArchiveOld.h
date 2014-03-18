@@ -1,9 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/omSegmentation.h"
 #include "volume/omChannel.h"
-
-#include <QDataStream>
 
 class OmMipVolumeArchiveOld {
  public:

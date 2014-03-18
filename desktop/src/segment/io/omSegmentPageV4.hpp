@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/fs/omMemMappedFileQTNew.hpp"
@@ -38,7 +39,6 @@ class OmSegmentPageV4 {
   void Flush() { data_->Flush(); }
 
  private:
-
   std::string path() { return pathQStr().toStdString(); }
 
   QString pathQStr() const {

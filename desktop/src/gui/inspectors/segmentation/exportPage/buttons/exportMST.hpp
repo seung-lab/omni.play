@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/io/omMST.h"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
@@ -6,8 +7,6 @@
 #include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
-
-#include <QTextStream>
 
 namespace om {
 namespace segmentationInspector {

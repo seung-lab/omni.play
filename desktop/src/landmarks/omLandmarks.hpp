@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "landmarks/omLandmarksTypes.h"
 #include "landmarks/omLandmarksDialog.h"

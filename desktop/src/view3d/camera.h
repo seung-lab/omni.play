@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 //
 // TODO: GIVE CREDIT TO Eugene Hsu, this is mostly HIS CODE
 //       and based on 6.839 demo code for camera!
@@ -14,7 +15,11 @@ namespace v3d {
 class CameraArcBall;
 
 enum class CameraMovementType {
-  NONE, PAN, ZOOM, ORBIT_ROTATE, LOOKAT_ROTATE
+  NONE,
+  PAN,
+  ZOOM,
+  ORBIT_ROTATE,
+  LOOKAT_ROTATE
 };
 
 class Camera {

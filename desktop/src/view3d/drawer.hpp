@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "mesh/omVolumeCuller.h"
 #include "segment/omSegmentSelected.hpp"

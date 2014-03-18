@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "mesh/omMesh.h"
 #include "common/core.hpp"

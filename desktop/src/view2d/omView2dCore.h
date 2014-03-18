@@ -1,11 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "view2d/omOnScreenTileCoords.h"
-
-#include <QWidget>
-#include <QGLPixelBuffer>
-#include <QtGui>
 
 class OmFilter2d;
 class OmScreenPainter;

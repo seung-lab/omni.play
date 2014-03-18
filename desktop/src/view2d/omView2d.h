@@ -1,10 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "view2d/omView2dState.hpp"
 #include "view2d/omView2dCore.h"
 #include "system/omStateManager.h"
-
-#include <boost/scoped_ptr.hpp>
 
 class OmKeyEvents;
 class OmMouseEvents;

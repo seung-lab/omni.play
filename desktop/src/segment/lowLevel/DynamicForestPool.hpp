@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  * AUTHORS:
@@ -6,11 +7,6 @@
  *
  * Do not share without authors permission.
  */
-
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-#include <utility>
 
 //#define DYNAMIC_FOREST_ASSERT(x) (assert(x))
 #define DYNAMIC_FOREST_ASSERT(x) (static_cast<void>(sizeof(x)))

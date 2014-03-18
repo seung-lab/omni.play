@@ -1,9 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheManager.h"
 #include "cache/lockedObjects.hpp"
-#include "zi/omMutex.h"
 
 /**
  * simple locked-protected cache of fixed-sized objects

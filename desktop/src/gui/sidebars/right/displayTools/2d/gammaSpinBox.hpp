@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/widgets/omDoubleSpinBox.hpp"
 #include "tiles/cache/omTileCache.h"

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/colorizer/omSegmentColorizerTypes.h"
 #include "system/omManageableObject.h"
@@ -40,7 +41,7 @@ class OmViewGroupState : public OmManageableObject {
   float mBreakThreshold;
   uint64_t mDustThreshold;
 
-  //toolbar stuff
+  // toolbar stuff
   ToolBarManager* toolBarManager_;
   bool mShatter;
   bool mShowValid;
@@ -49,7 +50,7 @@ class OmViewGroupState : public OmManageableObject {
 
   bool brightenSelected_;
 
-  //annotation stuff
+  // annotation stuff
   om::common::Color annotationColor_;
   std::string annotationString_;
   double annotationSize_;
@@ -61,7 +62,7 @@ class OmViewGroupState : public OmManageableObject {
 
   ViewGroup* GetViewGroup() { return viewGroup_.get(); }
 
-  //viewbox state
+  // viewbox state
   inline OmViewGroupView2dState* View2dState() { return view2dState_.get(); }
 
   inline OmZoomLevel* ZoomLevel() { return zoomLevel_.get(); }

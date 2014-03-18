@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "chunks/omSegChunk.h"
 #include "mesh/drawer/omFindChunksToDraw.hpp"

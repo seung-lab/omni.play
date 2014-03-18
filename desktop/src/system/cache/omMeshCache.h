@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/cache/omThreadedMeshCache.h"
 #include "mesh/omMeshTypes.h"

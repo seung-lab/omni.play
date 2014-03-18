@@ -1,7 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
-#include <QtGlobal>
 
 class QDataStream;
 

@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "landmarks/omLandmarksTypes.h"
-
-#include <QVBoxLayout>
 
 namespace om {
 namespace landmarks {

@@ -1,9 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "gui/tools.hpp"
-
-#include <QtGui>
 
 class MainWindow;
 class NavAndEditButtonGroup;

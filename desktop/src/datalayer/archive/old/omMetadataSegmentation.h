@@ -1,6 +1,5 @@
 #pragma once
-
-#include <QDataStream>
+#include "precomp.h"
 
 class OmSegmentation;
 
@@ -11,6 +10,6 @@ class OmMetadataSegmentation {
  public:
   OmMetadataSegmentation(const int fileVersion) : fileVersion_(fileVersion) {}
 
-  //	void Read(QDataStream& in, OmSegmentation& seg);
-  //	void Write(QDataStream& out, const OmSegmentation& seg);
+  //  void Read(QDataStream& in, OmSegmentation& seg);
+  //  void Write(QDataStream& out, const OmSegmentation& seg);
 };

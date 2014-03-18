@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
-
-#include <QtGui>
 
 class GraphTools;
 class MainWindow;
@@ -28,7 +27,8 @@ class rightImpl : public QWidget {
   static bool GetShowGroupsMode();
 
  private:
-  template <class T> QWidget* wrapWithGroupBox(T* widget) {
+  template <class T>
+  QWidget* wrapWithGroupBox(T* widget) {
     QGroupBox* gbox = new QGroupBox(widget->getName(), this);
     QVBoxLayout* vbox = new QVBoxLayout(gbox);
     vbox->addWidget(widget);

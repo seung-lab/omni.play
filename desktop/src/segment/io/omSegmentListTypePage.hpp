@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "datalayer/fs/omFile.hpp"
@@ -38,7 +39,6 @@ class OmSegmentListTypePage {
   void Flush() { data_->Flush(); }
 
  private:
-
   std::string path() const { return pathQStr().toStdString(); }
 
   QString pathQStr() const {

@@ -14,10 +14,6 @@
 #include "volume/omFilter2d.h"
 #include "mesh/omMeshManagers.hpp"
 
-#include <qtextstream.h>
-#include <fstream>
-#include <sstream>
-
 namespace om {
 namespace data {
 namespace archive {

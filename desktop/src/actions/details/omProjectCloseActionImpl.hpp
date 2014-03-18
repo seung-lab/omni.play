@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 
@@ -15,5 +16,6 @@ class OmProjectCloseActionImpl {
   QString classNameForLogFile() const { return "OmProjectCloseAction"; }
 
  private:
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
 };

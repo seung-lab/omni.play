@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/copyFirstN.hpp"
 #include "common/common.h"
@@ -43,7 +44,8 @@ class OmSegmentJoinActionImpl {
   QString classNameForLogFile() const { return "OmSegmentJoinAction"; }
 
  private:
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
 
   friend class QDataStream& operator<<(QDataStream&,
                                        const OmSegmentJoinActionImpl&);

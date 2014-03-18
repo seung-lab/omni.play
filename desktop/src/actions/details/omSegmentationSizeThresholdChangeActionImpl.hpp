@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/io/omActionLogger.hpp"
 #include "common/common.h"
@@ -57,12 +58,13 @@ class OmSegmentationSizeThresholdChangeActionImpl {
   }
 
  private:
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
 
   friend class QDataStream& operator<<(
       QDataStream&, const OmSegmentationSizeThresholdChangeActionImpl&);
-  friend class QDataStream& operator>>(QDataStream&,
-                                       OmSegmentationSizeThresholdChangeActionImpl&);
+  friend class QDataStream& operator>>(
+      QDataStream&, OmSegmentationSizeThresholdChangeActionImpl&);
   friend class QTextStream& operator<<(
       QTextStream& out, const OmSegmentationSizeThresholdChangeActionImpl& a);
 };

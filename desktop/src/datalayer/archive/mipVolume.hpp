@@ -1,19 +1,17 @@
 #pragma once
+#include "precomp.h"
 
-#include "yaml-cpp-old/yaml.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/omChannelFolder.h"
 #include "volume/omSegmentationFolder.h"
 
-#include <QString>
-#include <QFile>
-
 namespace om {
 namespace data {
 namespace archive {
 
-template <typename VOL> class mipVolume {
+template <typename VOL>
+class mipVolume {
  private:
   VOL& vol_;
 

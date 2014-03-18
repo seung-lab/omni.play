@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #ifdef WIN32
 #include <windows.h>

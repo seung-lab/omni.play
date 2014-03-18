@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/io/omActionLoggerTask.hpp"
 #include "actions/omActions.h"
@@ -8,10 +9,8 @@
 #include "threads/omTaskManager.hpp"
 #include "threads/omTaskManagerTypes.h"
 #include "utility/omFileHelpers.h"
-#include "zi/omMutex.h"
-#include "zi/omUtility.h"
 
-#include <QDir>
+#include "zi/omUtility.h"
 
 class OmActionLogger : private om::singletonBase<OmActionLogger> {
  private:

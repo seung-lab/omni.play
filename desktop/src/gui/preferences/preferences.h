@@ -1,7 +1,5 @@
 #pragma once
-
-#include <QtGui>
-#include <QWidget>
+#include "precomp.h"
 
 class Preferences : public QDialog {
   Q_OBJECT;
@@ -18,5 +16,4 @@ Q_SLOTS:
  private:
   QTabWidget *tabs;
   QPushButton *closeButton;
-
 };

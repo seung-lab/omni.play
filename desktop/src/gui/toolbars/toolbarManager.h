@@ -1,9 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/tools.hpp"
 #include "common/common.h"
-
-#include <QtGui>
 
 class MainWindow;
 class MainToolBar;

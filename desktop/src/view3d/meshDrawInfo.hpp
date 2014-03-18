@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "mesh/drawer/omMeshDrawerImpl.hpp"
 #include "mesh/drawer/omMeshPlanCache.hpp"

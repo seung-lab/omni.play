@@ -1,11 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "gui/widgets/omAskYesNoQuestion.hpp"
 #include "system/omConnect.hpp"
-
-#include <QUndoStack>
-#include <QShortcut>
 
 class OmUndoStack : private QObject {
   Q_OBJECT;

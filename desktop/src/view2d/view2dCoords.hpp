@@ -1,11 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "vmmlib/vmmlib.h"
 #include "viewGroup/omZoomLevel.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "view2d/omView2dConverters.hpp"
-#include <QSize>
 
 using namespace vmml;
 

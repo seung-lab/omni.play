@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/dataSource.hpp"
 #include "mesh/dataSources.hpp"
@@ -58,10 +59,11 @@ class DisplayListMeshDataSource : public DisplayListMeshDS {
 }  // namespace om::mesh::
 
 namespace std {
-template <> struct hash<om::mesh::DisplayListMeshCoord> {
+template <>
+struct hash<om::mesh::DisplayListMeshCoord> {
   size_t operator()(const om::mesh::DisplayListMeshCoord& m) const {
     std::size_t h1 = std::hash<om::coords::Mesh>()(m.Coord);
-    std::size_t h2 = std::hash<size_t>()((size_t) m.Context);
+    std::size_t h2 = std::hash<size_t>()((size_t)m.Context);
     return h1 ^ (h2 << 1);
   }
 };

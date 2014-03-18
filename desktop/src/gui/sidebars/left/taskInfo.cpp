@@ -7,10 +7,6 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "actions/omActions.h"
 
-#include <vector>
-#include <tuple>
-#include <QtGui>
-
 using namespace om::task;
 
 TaskInfoWidget::TaskInfoWidget(QWidget* parent)

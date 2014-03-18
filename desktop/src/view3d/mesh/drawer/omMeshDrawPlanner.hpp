@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "viewGroup/omViewGroupState.h"
 #include "view3d/mesh/drawer/omFindChunksToDraw.hpp"

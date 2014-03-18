@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/widgets/omButton.hpp"
 #include "gui/brushToolbox/brushToolbox.hpp"
@@ -23,5 +24,4 @@ class ShowPaintTools : public OmButton<QWidget> {
       brushToolbox_->Hide();
     }
   }
-
 };

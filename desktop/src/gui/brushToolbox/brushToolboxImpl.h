@@ -1,6 +1,5 @@
 #pragma once
-
-#include <QDialog>
+#include "precomp.h"
 
 class OmViewGroupState;
 

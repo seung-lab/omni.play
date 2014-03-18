@@ -1,12 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "segment/lowLevel/store/omSegmentStore.hpp"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"
 #include "utility/omLockedPODs.hpp"
-
-#include <QHash>
 
 class OmEnabledSegments;
 class OmSegmentSelection;

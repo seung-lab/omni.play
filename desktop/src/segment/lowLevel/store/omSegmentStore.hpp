@@ -1,7 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
-#include "zi/omMutex.h"
+
 #include "datalayer/archive/segmentation.h"
 
 class QDataStream;

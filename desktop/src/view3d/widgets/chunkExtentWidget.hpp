@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "view3d/camera.h"
 #include "view3d/view3d.h"

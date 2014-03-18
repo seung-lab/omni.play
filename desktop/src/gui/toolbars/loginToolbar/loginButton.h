@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <QtGui>
 #include "events/listeners.h"
 
 class LoginButton : public QPushButton,

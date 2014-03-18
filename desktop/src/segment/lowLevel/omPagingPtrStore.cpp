@@ -4,8 +4,6 @@
 #include "utility/omSimpleProgress.hpp"
 #include "volume/omSegmentation.h"
 
-#include <QSet>
-
 static const uint32_t DEFAULT_PAGE_SIZE = 100000;  // about 4.8 MB on disk
 
 OmPagingPtrStore::OmPagingPtrStore(OmSegmentation* vol)

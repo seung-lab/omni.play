@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/widgets/omButton.hpp"
 #include "gui/annotationToolbox/annotationToolbox.h"
@@ -23,5 +24,4 @@ class ShowAnnotationsTools : public OmButton<QWidget> {
       annotationToolbox_->hide();
     }
   }
-
 };

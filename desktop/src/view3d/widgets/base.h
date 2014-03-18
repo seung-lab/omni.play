@@ -1,12 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 /*
  * An interface for widgets belonging to the OmView3d viewing system.
  *
  * Can call a View3d event if the widget needs to be redrawn.
  */
-
-#include <QFont>
 
 class OmCamera;
 
@@ -15,7 +14,7 @@ namespace v3d {
 
 class View3d;
 
-static const float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
+static const float TEXT_COLOR[4] = {1, 1, 1, 0.8};
 
 class Widget {
  protected:

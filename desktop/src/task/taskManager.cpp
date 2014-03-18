@@ -1,5 +1,3 @@
-#include <QtGui>
-
 #include "taskManager.h"
 #include "task/task.h"
 #include "task/taskInfo.hpp"

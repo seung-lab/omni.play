@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/omChannel.h"
 #include "datalayer/archive/affinity.h"

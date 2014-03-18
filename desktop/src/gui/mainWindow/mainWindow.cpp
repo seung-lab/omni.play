@@ -26,8 +26,6 @@
 #include "task/task.h"
 #include "task/taskManager.h"
 
-#include <QCoreApplication>
-
 MainWindow::MainWindow()
     : inspector_(nullptr),
       undoView_(nullptr),
@@ -179,7 +177,7 @@ bool MainWindow::closeProjectIfOpen(bool closeTask) {
   if (!OmProject::IsReadOnly() && closeTask) {
     // closeTask:
     // We skip this user confirmation and saving if we are starting a task -
-    // project saving is handled elsewhere. 
+    // project saving is handled elsewhere.
     // Using closeTask as condition here is a hack. Ideally we should
     // determine whether the project actually changed instead of building
     // special logic for tasks.

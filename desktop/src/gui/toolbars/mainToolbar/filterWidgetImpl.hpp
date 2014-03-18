@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "events/events.h"
@@ -8,9 +9,6 @@
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-
-#include <QSize>
-#include <QSlider>
 
 class FilterWidgetImpl : public QSlider {
   Q_OBJECT;

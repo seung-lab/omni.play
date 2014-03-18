@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "mesh/io/v2/omMeshReaderV2.hpp"
 #include "mesh/io/omMeshConvertV1toV2Task.hpp"

@@ -1,12 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "system/omConnect.hpp"
-
-#include <QDialog>
-#include <QLabel>
-#include <limits>
 
 class DimSpinBox : public OmIntSpinBox {
   float& val_;

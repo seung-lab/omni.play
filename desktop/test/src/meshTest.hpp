@@ -1,5 +1,5 @@
 #pragma once
-
+#include "precomp.h"
 #include "mesh/omMeshManagers.hpp"
 #include "chunks/omChunkUtils.hpp"
 #include "chunks/omSegChunk.h"
@@ -10,8 +10,6 @@
 #include "utility/omLockedPODs.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omSegmentation.h"
-
-#include "zi/omThreads.h"
 
 class MeshTest {
  public:

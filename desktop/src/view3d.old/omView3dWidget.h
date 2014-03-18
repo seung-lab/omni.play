@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  * An interface for widgets belonging to the OmView3d viewing system.

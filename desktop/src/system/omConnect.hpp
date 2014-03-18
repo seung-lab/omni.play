@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/logging.h"
-#include <iostream>
-#include <QObject>
 
 namespace om {
 

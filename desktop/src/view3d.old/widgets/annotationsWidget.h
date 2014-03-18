@@ -1,9 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "../omView3dWidget.h"
 #include "common/common.h"
 #include "volume/omSegmentation.h"
-#include <QFont>
 
 struct annotation {
   QString text;

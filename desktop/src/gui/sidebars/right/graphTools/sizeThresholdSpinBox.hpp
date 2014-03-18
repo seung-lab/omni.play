@@ -1,12 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/omActions.h"
 #include "events/listeners.h"
 #include "events/events.h"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
-
-#include <limits>
 
 class SizeThresholdSpinBox : public OmDoubleSpinBox,
                              public om::event::MSTEventListener {

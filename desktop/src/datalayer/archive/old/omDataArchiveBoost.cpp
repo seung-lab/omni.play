@@ -1,9 +1,8 @@
 #include "datalayer/archive/old/omDataArchiveBoost.h"
 #include "zi/omUtility.h"
-#include <QDataStream>
 
 QDataStream &operator<<(QDataStream &out, const om::common::SegIDSet &set) {
-  out << (quint32) set.size();
+  out << (quint32)set.size();
 
   for (const auto &e : set) {
     out << e;

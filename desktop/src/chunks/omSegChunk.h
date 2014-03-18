@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /**
  * OmSegChunk extends OmChunk with extra funtionality specific to
@@ -8,7 +9,6 @@
  */
 
 #include "chunks/omChunk.h"
-#include "zi/omMutex.h"
 
 class OmSegmentation;
 namespace om {

@@ -1,10 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
-
-#include <QGLWidget>
-#include <QTimer>
-#include <QtGui>
 
 class SegmentDataWrapper;
 class OmSegmentation;

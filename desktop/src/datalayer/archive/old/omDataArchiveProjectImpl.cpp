@@ -23,8 +23,6 @@
 #include "volume/omSegmentationLoader.h"
 #include "datalayer/archive/dummy.hpp"
 
-#include <QSet>
-
 QDataStream& operator>>(QDataStream& in, OmProjectImpl& p) {
   in >> OmPreferences::instance();
   in >> p.volumes_;

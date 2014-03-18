@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  * Segment Object
@@ -13,7 +14,6 @@
 #include "segment/omSegmentTypes.h"
 #include "segment/omSegmentChildrenTypes.h"
 #include "segment/omSegmentEdge.h"
-#include "zi/omMutex.h"
 
 class OmSegments;
 

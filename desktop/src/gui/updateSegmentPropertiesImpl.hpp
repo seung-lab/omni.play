@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/omSelectSegmentParams.hpp"
 #include "events/details/omSegmentEvent.h"
@@ -31,9 +32,9 @@ class UpdateSegmentPropertiesDialogImpl
       return;
     }
 
-    ip_->setOrReplaceWidget(
-        new SegmentInspector(sdw, ip_),
-        QString("Segmentation %1: Segment %2").arg(sdw.GetSegmentationID())
-            .arg(sdw.GetSegmentID()));
+    ip_->setOrReplaceWidget(new SegmentInspector(sdw, ip_),
+                            QString("Segmentation %1: Segment %2")
+                                .arg(sdw.GetSegmentationID())
+                                .arg(sdw.GetSegmentID()));
   }
 };

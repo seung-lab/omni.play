@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/fs/omFileNames.hpp"
-
-#include <QFileDialog>
 
 class OmNewFileDialog {
  private:

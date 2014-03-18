@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "chunks/omChunk.h"
 #include "datalayer/hdf5/omHdf5.h"

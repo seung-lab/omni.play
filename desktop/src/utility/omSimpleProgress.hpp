@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/omLockedPODs.hpp"
 #include "threads/omTaskManager.hpp"

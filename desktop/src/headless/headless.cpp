@@ -24,8 +24,6 @@
 #include "volume/omFilter2d.h"
 #include "volume/omSegmentation.h"
 
-#include <QFileInfo>
-
 void Headless::runInteractive(const QString& fName) {
   QTextStream stream(stdin);
   QString line;

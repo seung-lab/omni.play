@@ -1,8 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "coordinates/chunk.h"
-#include <boost/multi_array.hpp>
 
 template <typename VOL, typename T>
 class OmChunkItemContainerMatrix {

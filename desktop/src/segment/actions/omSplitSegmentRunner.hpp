@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omSplitting.hpp"

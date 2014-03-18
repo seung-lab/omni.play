@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/segmentLists/elementListBox.hpp"
@@ -22,8 +23,8 @@ class SegmentListValid : public SegmentListBase {
 
   std::shared_ptr<GUIPageOfSegments> getPageSegments(
       const GUIPageRequest& request) {
-    return sdw_.SegmentLists()
-        ->GetSegmentGUIPage(om::common::SegListType::VALID, request);
+    return sdw_.SegmentLists()->GetSegmentGUIPage(
+        om::common::SegListType::VALID, request);
   }
 
   int getPreferredTabIndex() { return 1; }

@@ -1,4 +1,3 @@
-#include <QtGlobal>
 #include "omVolumeCuller.h"
 #include "volume/omMipVolume.h"
 #include "utility/glInclude.h"

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /**
  *Preference Naming Convetion:
@@ -16,7 +17,7 @@
 namespace om {
 enum PrefEnum {
 
-  //VIEW2D
+  // VIEW2D
   PREF_VIEW2D_DEPTH_CACHE_SIZE_INT = 500,
   PREF_VIEW2D_MIP_CACHE_SIZE_INT = 501,
   PREF_VIEW2D_SHOW_INFO_BOOL = 502,
@@ -25,7 +26,7 @@ enum PrefEnum {
   PREF_VIEW2D_TRANSPARENT_ALPHA_FLT = 505,
   PREF_VIEW2D_VOLUME_CACHE_SIZE_INT = 506,
 
-  //VIEW3D
+  // VIEW3D
   PREF_VIEW3D_ANTIALIASING_BOOL = 600,
   PREF_VIEW3D_BACKGROUND_COLOR_V3F = 601,
   PREF_VIEW3D_CAMERA_FAR_PLANE_FLT = 602,
@@ -43,7 +44,7 @@ enum PrefEnum {
   PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL = 614
 };
 
-}  //namespace om
+}  // namespace om
 
 class OmPreferenceDefaults {
  public:

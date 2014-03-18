@@ -16,8 +16,6 @@
 #include "utility/yaml/genericManager.hpp"
 #include "datalayer/archive/dummy.hpp"
 
-#include <QSet>
-
 namespace YAMLold {
 
 Emitter& operator<<(Emitter& out, const OmSegmentationManager& m) {

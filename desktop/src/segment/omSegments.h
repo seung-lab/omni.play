@@ -1,10 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/omVolumeTypes.hpp"
 #include "segment/omSegmentPointers.h"
 #include "datalayer/archive/segmentation.h"
-
-#include <zi/mutex.hpp>
 
 class OmSegment;
 class OmSegmentChildren;

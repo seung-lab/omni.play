@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/io/omActionLogger.hpp"
 #include "actions/io/omActionReplayer.hpp"
@@ -27,10 +28,6 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "datalayer/archive/project.h"
 #include "system/account.h"
-
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
 
 class OmProjectImpl {
  private:
@@ -108,7 +105,8 @@ class OmProjectImpl {
   int GetFileVersion() const { return fileVersion_; }
 
   bool IsReadOnly() const {
-    return !globals_ || globals_->Users().CurrentUser() == om::users::defaultUser;
+    return !globals_ ||
+           globals_->Users().CurrentUser() == om::users::defaultUser;
   }
 
   OmProjectGlobals& Globals() { return *globals_; }

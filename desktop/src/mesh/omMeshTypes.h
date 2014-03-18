@@ -1,6 +1,5 @@
 #pragma once
-
-#include <memory>
+#include "precomp.h"
 
 class OmMesh;
 typedef std::shared_ptr<OmMesh> OmMeshPtr;

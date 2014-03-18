@@ -1,4 +1,4 @@
-#include "yaml-cpp-old/yaml.h"
+
 #include "utility/yaml/omYaml.hpp"
 #include "volume/omAffinityGraph.h"
 #include "volume/omAffinityChannel.h"

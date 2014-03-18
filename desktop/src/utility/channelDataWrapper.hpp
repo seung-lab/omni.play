@@ -1,11 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "project/omProject.h"
 #include "project/details/omProjectVolumes.h"
 #include "project/details/omChannelManager.h"
 #include "volume/omChannel.h"
-
-#include <QHash>
 
 class FilterDataWrapper;
 

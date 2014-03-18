@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/menubar.h"
 #include "gui/viewGroup/viewGroupUtils.hpp"

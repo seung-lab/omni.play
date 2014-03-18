@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /**
  * Collect OpengL texture IDs (View2d) and Display List IDs (View3d) of
@@ -23,9 +24,7 @@
 #include "common/container.hpp"
 #include "utility/glInclude.h"
 #include "utility/omTimer.hpp"
-#include <map>
 
-#include "zi/omMutex.h"
 #include "zi/omUtility.h"
 
 class QGLContext;

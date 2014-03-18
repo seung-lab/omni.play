@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 /*
  * AUTHORS:
  *   Aleksandar Zlateski <zlateski@mit.edu>
@@ -9,15 +10,11 @@
 #ifndef FHEAP_HPP_
 #define FHEAP_HPP_
 
-#include <assert.h>
-#include <string>
-#include <iostream>
-#include <algorithm>
-
 namespace zi {
 namespace Trees {
 
-template <typename T> class FHeapable;
+template <typename T>
+class FHeapable;
 
 template <typename T>
 class FHeap {
@@ -87,13 +84,15 @@ void FHeap<T>::erase(C &hp) {
   pop();
 }
 
-template <typename T> void FHeap<T>::heapLink(FHeap::Node *y, FHeap::Node *x) {
+template <typename T>
+void FHeap<T>::heapLink(FHeap::Node *y, FHeap::Node *x) {
   removeFromRootList(y);
   x->addChild(y);
   y->mark_ = false;
 }
 
-template <typename T> void FHeap<T>::cut(FHeap::Node *x, FHeap::Node *) {
+template <typename T>
+void FHeap<T>::cut(FHeap::Node *x, FHeap::Node *) {
   x->detach();
   x->mark_ = 0;
   addToRootList(x);
@@ -155,7 +154,8 @@ void FHeap<T>::addToRootList(FHeap::Node *x) {
   }
 }
 
-template <typename T> void FHeap<T>::removeFromRootList(FHeap::Node *x) {
+template <typename T>
+void FHeap<T>::removeFromRootList(FHeap::Node *x) {
   x->right_->left_ = x->left_;
   x->left_->right_ = x->right_;
   if (rootList_ == x) {

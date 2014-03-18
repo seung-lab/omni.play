@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/logging.h"
@@ -15,9 +16,6 @@
 #include "segment/omSegmentUtils.hpp"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
-
-#include <QtGui>
-#include <QWidget>
 
 class OmViewGroupState;
 
@@ -125,7 +123,6 @@ class ElementListBoxImpl : public QGroupBox,
   }
 
  public:
-
   ElementListBoxImpl(OmViewGroupState* vgs)
       : QGroupBox(""),
         vgs_(vgs),
@@ -203,7 +200,6 @@ class ElementListBoxImpl : public QGroupBox,
   }
 
  private:
-
   void makeSegmentationActive(const SegmentationDataWrapper& sdw) {
     workingList_->MakeSegmentationActive(sdw);
     validList_->MakeSegmentationActive(sdw);

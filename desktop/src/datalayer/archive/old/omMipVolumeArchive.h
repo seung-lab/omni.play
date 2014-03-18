@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/archive/old/utilsOld.hpp"
 #include "utility/yaml/coords.h"
@@ -6,8 +7,6 @@
 #include "volume/omChannelFolder.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
-
-#include <QDataStream>
 
 template <typename VOL>
 class OmMipVolumeArchive {

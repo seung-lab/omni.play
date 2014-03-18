@@ -1,6 +1,5 @@
 #pragma once
-
-#include <QtGui>
+#include "precomp.h"
 
 class OmImageDialog : public QDialog {
  public:
@@ -29,5 +28,4 @@ class OmImageDialog : public QDialog {
   QScrollArea* scrollArea;
 
   QVBoxLayout* layout;
-
 };

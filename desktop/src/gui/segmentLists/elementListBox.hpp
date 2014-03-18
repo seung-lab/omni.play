@@ -1,9 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "zi/omUtility.h"
-
-#include <boost/scoped_ptr.hpp>
-#include <QWidget>
 
 class QString;
 class OmViewGroupState;
