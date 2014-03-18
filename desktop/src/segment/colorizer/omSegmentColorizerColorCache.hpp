@@ -1,9 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "common/colors.h"
-#include "utility/omLockedPODs.hpp"
-
 class OmSegmentColorizerColorCache : public zi::rwmutex {
  private:
   std::atomic<uint32_t> size_;

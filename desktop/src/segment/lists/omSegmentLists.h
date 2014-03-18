@@ -3,6 +3,7 @@
 
 #include "common/enums.hpp"
 #include "segment/lists/omSegmentListsTypes.hpp"
+#include "segment/lowLevel/omSegmentLowLevelTypes.h"
 
 class OmSegmentListsImpl;
 class OmSegmentListGlobal;
