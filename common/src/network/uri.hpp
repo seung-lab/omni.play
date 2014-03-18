@@ -1,8 +1,8 @@
 #pragma once
 
+#include "precomp.h"
 #include "common/macro.hpp"
 #include "common/string.hpp"
-#include <boost/regex.hpp>
 
 namespace om {
 namespace network {

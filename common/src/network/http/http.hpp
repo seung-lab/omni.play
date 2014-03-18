@@ -1,16 +1,12 @@
 #pragma once
 
+#include "precomp.h"
 #include "common/logging.h"
 #include "utility/resourcePool.hpp"
 #include "datalayer/paths.hpp"
 #include "zi/utility.h"
 #include "network/uri.hpp"
 
-#include <memory>
-#include <map>
-#include <unordered_map>
-#include <vector>
-#include <curl/curl.h>
 #include "yaml-cpp/yaml.h"
 
 namespace om {

@@ -1,6 +1,5 @@
+#include "precomp.h"
 #include "stdint.h"
-
-#include <vector>
 
 template class std::vector<bool>;
 template class std::vector<float>;

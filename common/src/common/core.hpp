@@ -1,6 +1,6 @@
 #pragma once
 
-#include <zi/bits/cstdint.hpp>
+#include "precomp.h"
 
 namespace om {
 namespace common {

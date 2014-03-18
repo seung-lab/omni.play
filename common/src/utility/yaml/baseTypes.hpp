@@ -1,7 +1,6 @@
 #pragma once
 
-#include <unordered_map>
-#include <vmmlib/vmmlib.h>
+#include "precomp.h"
 using namespace vmml;
 
 #include "common/common.h"

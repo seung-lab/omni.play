@@ -1,5 +1,5 @@
+#include "precomp.h"
 #include "utility/systemInformation.h"
-#include <zi/system.hpp>
 
 namespace om {
 namespace utility {

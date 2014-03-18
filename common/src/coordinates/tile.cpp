@@ -1,5 +1,5 @@
+#include "precomp.h"
 #include "coordinates/tile.h"
-#include <sstream>
 
 namespace om {
 namespace coords {

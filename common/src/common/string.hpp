@@ -1,15 +1,6 @@
 #pragma once
-#include <zi/for_each.hpp>
 
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/range/algorithm/copy.hpp>
-#include <boost/format.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/range/adaptor/transformed.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-
-#include <string>
+#include "precomp.h"
 
 namespace om {
 namespace string {

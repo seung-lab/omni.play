@@ -3,6 +3,7 @@ bin/*
 *.d
 *.T
 *.o
+*.gch
 *~
 *.pyc
 external

@@ -1,11 +1,12 @@
 #pragma once
 
-#include <boost/iterator/iterator_facade.hpp>
+#include "precomp.h"
 
 // TODO: Conversions between const and non-const iterators
 template <typename TColl, typename TData>
-class indexed_iterator : public boost::iterator_facade<
-    indexed_iterator<TColl, TData>, TData, std::random_access_iterator_tag> {
+class indexed_iterator
+    : public boost::iterator_facade<indexed_iterator<TColl, TData>, TData,
+                                    std::random_access_iterator_tag> {
  public:
   indexed_iterator(TColl& coll, size_t idx) : coll_(&coll), idx_(idx) {}
 

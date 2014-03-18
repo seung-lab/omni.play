@@ -1,15 +1,12 @@
 #pragma once
 
+#include "precomp.h"
 #include "datalayer/dataSource.hpp"
 #include "volume/metadata.hpp"
 #include "coordinates/yaml.hpp"
 
 #include "utility/yaml/baseTypes.hpp"
 #include "utility/yaml/yaml.hpp"
-#include <boost/filesystem.hpp>
-
-#include <boost/regex.hpp>
-#include <string>
 
 namespace om {
 namespace volume {

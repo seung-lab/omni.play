@@ -1,8 +1,7 @@
 #pragma once
 
-#include <vector>
+#include "precomp.h"
 #include "common/indexedIterator.hpp"
-#include <zi/mutex.hpp>
 
 namespace om {
 namespace data {
@@ -11,7 +10,8 @@ namespace data {
 
 class NoAsyncPolicy {
  protected:
-  template <typename TRet> TRet asnyc_do(std::function<TRet()> f) {
+  template <typename TRet>
+  TRet asnyc_do(std::function<TRet()> f) {
     return f();
   }
 
@@ -39,12 +39,14 @@ class ZiLockingPolicy {
 
 // Exception Policies //////////////////////////////
 
-template <typename TKey, typename TValue> class NoThrowPolicy {
+template <typename TKey, typename TValue>
+class NoThrowPolicy {
  protected:
   void throw_invalid_index(TKey idx) const {}
 };
 
-template <typename TKey, typename TValue> class ThrowPolicy {
+template <typename TKey, typename TValue>
+class ThrowPolicy {
  protected:
   void throw_invalid_index(TKey idx) const {
     throw ArgException("Invalid Index", idx);
@@ -53,7 +55,8 @@ template <typename TKey, typename TValue> class ThrowPolicy {
 
 // Storage Policies ////////////////////////////////
 
-template <typename T> class VectorBackedStore {
+template <typename T>
+class VectorBackedStore {
  public:
   size_t size() const { return vec_.size(); }
   void resize(size_t n, const T& val) { vec_.resize(n, val); }

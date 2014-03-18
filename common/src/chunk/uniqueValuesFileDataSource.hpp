@@ -1,8 +1,8 @@
 #pragma once
 
+#include "precomp.h"
 #include "datalayer/vectorFileDataSource.hpp"
 #include "datalayer/paths.hpp"
-#include <boost/format.hpp>
 #include "chunk/dataSources.hpp"
 
 namespace om {

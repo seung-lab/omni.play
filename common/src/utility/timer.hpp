@@ -5,9 +5,8 @@
  *    performance testing by wrapping OS-specific timer functions.
  */
 
+#include "precomp.h"
 #include "common/common.h"
-
-#include <zi/time/time.hpp>
 
 namespace om {
 namespace utility {

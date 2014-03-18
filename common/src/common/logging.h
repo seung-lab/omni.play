@@ -1,9 +1,6 @@
 #pragma once
 
-#include <boost/log/common.hpp>
-#include <boost/log/sources/severity_channel_logger.hpp>
-#include <boost/log/expressions/keyword.hpp>
-#include <boost/format.hpp>
+#include "precomp.h"
 
 namespace om {
 namespace logging {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/date_time.hpp>
+#include "precomp.h"
 
 using boost::posix_time;
 

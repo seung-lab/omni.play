@@ -1,5 +1,6 @@
 #pragma once
 
+#include "precomp.h"
 #include "datalayer/dataSource.hpp"
 #include "common/container.hpp"
 #include "common/enums.hpp"
@@ -7,7 +8,6 @@
 #include "threads/taskManager.hpp"
 #include "zi/concurrency/runnable.hpp"
 #include "cache/lockedObjects.hpp"
-#include <atomic>
 
 namespace om {
 namespace datalayer {

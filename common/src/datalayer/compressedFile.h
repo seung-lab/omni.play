@@ -1,9 +1,6 @@
 #pragma once
 
-#include <memory>
-#include <zi/bits/cstdint.hpp>
-#include <string>
-#include <vector>
+#include "precomp.h"
 
 namespace om {
 namespace file {

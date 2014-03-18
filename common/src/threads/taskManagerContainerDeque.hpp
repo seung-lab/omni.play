@@ -18,9 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <zi/mutex.hpp>
-#include <zi/concurrency/runnable.hpp>
-#include <deque>
+#include "precomp.h"
 
 class TaskManagerContainerDeque {
  private:
@@ -29,7 +27,8 @@ class TaskManagerContainerDeque {
 
   zi::spinlock lock_;
 
-  template <class Function> inline task_t wrapFunction(const Function& task) {
+  template <class Function>
+  inline task_t wrapFunction(const Function& task) {
     return std::shared_ptr<zi::concurrency_::runnable_function_wrapper>(
         new zi::concurrency_::runnable_function_wrapper(task));
   }
@@ -66,12 +65,14 @@ class TaskManagerContainerDeque {
     queue_.push_front(task);
   }
 
-  template <class Runnable> void push_front(std::shared_ptr<Runnable> task) {
+  template <class Runnable>
+  void push_front(std::shared_ptr<Runnable> task) {
     zi::guard g(lock_);
     queue_.push_front(task);
   }
 
-  template <class Function> void push_front(const Function& task) {
+  template <class Function>
+  void push_front(const Function& task) {
     zi::guard g(lock_);
     queue_.push_front(wrapFunction(task));
   }
@@ -82,12 +83,14 @@ class TaskManagerContainerDeque {
     queue_.push_back(task);
   }
 
-  template <class Runnable> void push_back(std::shared_ptr<Runnable> task) {
+  template <class Runnable>
+  void push_back(std::shared_ptr<Runnable> task) {
     zi::guard g(lock_);
     queue_.push_back(task);
   }
 
-  template <class Function> void push_back(const Function& task) {
+  template <class Function>
+  void push_back(const Function& task) {
     zi::guard g(lock_);
     queue_.push_back(wrapFunction(task));
   }

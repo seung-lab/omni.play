@@ -1,11 +1,6 @@
+#include "precomp.h"
 #include "datalayer/file.h"
 #include "datalayer/compressedFile.h"
-
-#include <fstream>
-#include <iostream>
-#include <boost/iostreams/filtering_streambuf.hpp>
-#include <boost/iostreams/copy.hpp>
-#include <boost/iostreams/filter/gzip.hpp>
 
 namespace om {
 namespace file {

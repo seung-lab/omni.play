@@ -1,10 +1,10 @@
 #pragma once
 
+#include "precomp.h"
 #include "datalayer/file.h"
 #include "common/enums.hpp"
 #include "coordinates/chunk.h"
 #include "utility/UUID.hpp"
-#include <string>
 
 namespace om {
 namespace file {

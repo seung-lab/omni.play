@@ -1,9 +1,8 @@
 #pragma once
 
+#include "precomp.h"
 #include "common/common.h"
 #include "pipeline/stage.hpp"
-
-#include <set>
 
 namespace om {
 namespace pipeline {

@@ -1,9 +1,8 @@
 #pragma once
 
+#include "precomp.h"
 #include "common/common.h"
 #include "mesh/vertexIndex/chunkTypes.hpp"
-
-#include <fstream>
 
 namespace om {
 namespace mesh {
